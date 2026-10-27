@@ -29,7 +29,7 @@ Kompetitívna kartová hra pre **presne dvoch hráčov**. Hráči si budujú bal
 bijú sa o lokality a desia starších. Každé kolo je jedna bitka; hra má toľko
 bitiek o lokality, koľko určí dĺžka hry (§3), a po nich **finále** — poslednú
 bitku bez lokality (§14b). Víťazné body sú **špaky** (§14): za vyhratú bitku
-a po každej bitke za starších, ktorí sa hráča boja. Na konci vyhrá, kto má viac
+a k nej za starších, ktorí sa víťaza boja. Na konci vyhrá, kto má viac
 špakov — ak hra neskončí skôr. Pri rovnosti špakov je remíza.
 
 ### Podmienky konca
@@ -195,8 +195,9 @@ nemôže (hra za neho branie ukončí). Keď jeden prestane, druhý má už len 
 poslednú šancu** (jeden ťah), potom branie končí. Prázdny šenok branie ukončí
 obom.
 
-Nevzaté karty ostávajú v šenku do ďalšieho draftu (Starosta a Pohreb Závislého
-z neho berú aj medzitým). Po braní sa šenok **doplní z vrchu spoločného
+Nevzaté karty ostávajú v šenku len do ďalšej stavby — vtedy idú naspodok
+spoločného balíčka (Stavba šenku, vyššie); medzitým z neho berú Starosta a Pohreb
+Závislého. Po braní sa šenok **doplní z vrchu spoločného
 balíčka na 8 kariet**. Keď sa spoločný balíček minie, šenok sa už nedopĺňa
 a stavba sa zmenšuje až na nulu — hra beží ďalej bez trestu.
 
@@ -323,7 +324,9 @@ Zhromaždenie končí, keď obaja odohrajú svoj limit alebo obaja pasujú.
 
 **Pas:** kto pasuje, do najbližšej Pitky už nevykladá (súper vykladá sám)
 a dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť** (zostávajúci
-limit) — aj keď pasuje hra za neho. Pasovanie ruší aj nevyužité ťahy navyše
+limit), **najviac toľko, koľko má kariet v ruke** — teda min(zostávajúci limit,
+karty v ruke); s prázdnou rukou nedostane nič (v6.1). Platí to, aj keď pasuje
+hra za neho. Pasovanie ruší aj nevyužité ťahy navyše
 z Vypiť. Kto v Zhromaždení nemá čo vyložiť, za toho hra pasuje (fajčiť sa
 v Zhromaždení nedá, §7). **Záverečná** (§13) ukončí vykladanie ako pas, ale bez
 cigariet.
@@ -360,6 +363,9 @@ kým sa NA EX neodkryjú.
   neaktívnu akciu** — nie na kartu bez aktívnej akcie ani na kartu, ktorej sú
   aktívne všetky. Aktívna = spárovaná a nezrušená Odporom; rozhoduje stav
   v okamihu výberu (odpoveď na NA EX už nič nemení). Platí aj pre Veterána.
+- **Akcia zrušená Odporom nie je ani aktívna, ani neaktívna** (v6.1): NA EX ju
+  nezruší (už zrušená je) ani nezdvojí, a pri výbere karty sa nepočíta ani do
+  aktívnych, ani do neaktívnych.
 - Na kartu, na ktorej **už poldeci leží** (z predošlej Pitky kola alebo z tvojho
   skrytého NA EX), sa ďalšie NA EX dať nedá. Súperovo skryté NA EX nevidíš —
   obaja tak môžete vybrať tú istú kartu (zrážka, nižšie).
@@ -400,11 +406,18 @@ NA EX.
 a z karty je **Výtržník**. Karta sa najprv spáruje so susedmi s pôvodnými
 akciami (susedom aktivuje akcie ako bez zrážky), potom sa **všetky akcie na
 jej hranách** zmenia na aktívnu **Ranu** pre jej majiteľa — aj akcie bez
-partnera na spoji. NA EX jej nič neruší ani nezdvojuje. Každý platí za svoje
+partnera na spoji. NA EX jej nič neruší ani nezdvojuje. **Posilnenie Výtržníka
+je už len Rana** a suseda nezdvojuje (v6.1; ani pri Veteránovi) — sused má
+spárovanú akciu aktívnu ×1. Každý platí za svoje
 NA EX ako vždy: pečeň +1 tomu, kto NA EX dal, Svokra aj Výpalné za každé
 z oboch NA EX, a v bitke sa vypijú oba poldeci (§9.5). **Po bitke Výtržník
 vytriezvie** — karta má znova pôvodné akcie; Výtržníkom je len počas jednej
 bitky.
+
+Príklad (v6.1): karta má na hrane pri susedovi Posilnenie proti jeho Pecke a vedľa
+neho Ranu bez partnera. Bez zrážky dá sused Pecku ×2. Keď je z karty Výtržník, jej
+Posilnenie aj Rana sú dve aktívne Rany pre jej majiteľa a susedova Pecka platí
+len ×1 — Posilnenie, ktoré sa zmenilo na Ranu, už nič nezdvojuje.
 
 ### Odpoveď na NA EX
 
@@ -546,7 +559,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 | 3 | Poškodenie | §9.3 |
 | 4 | Výsledok (pri remíze Absťáky, potom Dlhy, inak sekera) | §9.4 |
 | 4a | Špaky za bitku víťazovi; lokalita ide na krčmovú nástenku | §9.4, §14 |
-| 4b | Špaky za starších obom hráčom (aj Noviny) | §14 |
+| 4b | Špaky za starších víťazovi, pri sekere obom; Noviny | §14 |
 | 4c | Prebytok — posunie markery pre ďalšiu bitku; po finále a na Kultúrnom dome dá špaky | §9.4 |
 | 5 | Poldeci (aj Na zdravie „do dna“) | §9.5 |
 | 5b | Veštica | §9.5b |
@@ -652,8 +665,8 @@ aký je prebytok (po Puške).
 ktorého marker sa prebytkom posunul**. Viac posunov toho istého staršieho =
 1 cigareta; posuny viacerých starších = viac cigariet. Pohoršenie sa neráta.
 
-> Napätie hry: vystrašený starší ti po každej bitke dá špaky (§14), ale súperovi
-> medzitým dáva svoju priazeň. Kto má veľké mäkké poškodenie, môže aj po prehre
+> Napätie hry: vystrašený starší ti po každej vyhratej bitke dá špaky (§14), ale
+> súperovi medzitým dáva svoju priazeň. Kto má veľké mäkké poškodenie, môže aj po prehre
 > posunúť markery a v ďalšom kole bodovať viac.
 
 ### 9.5 Poldeci
@@ -728,16 +741,19 @@ staršieho, ktorý sa bojí **teba**. Posunúť ho Pohoršením k sebe (§9.2)
 znamená vziať si priazeň a strach z teba zmenšiť. Marker v sivej zóne: nikto
 nemá priazeň a nikoho sa nebojí.
 
-**Strach dáva špaky:** po **každej** bitke (aj po finále) dostane hráč za
-každého staršieho, ktorý sa ho bojí, toľko špakov, aká je zóna — žltá 1,
-oranžová 2, červená 3 (§14). Okrem toho sa strach ráta do vydesenia (§1).
+**Strach dáva špaky — len víťazovi** (v6.1, Michal 2026-10-27): po bitke (aj po
+finále) dostane **víťaz bitky** za každého staršieho, ktorý sa ho bojí, toľko
+špakov, aká je zóna — žltá 1, oranžová 2, červená 3 (§14). **Porazený za
+starších nedostane nič.** Pri **sekere** (§9.4) dostanú špaky za starších
+**obaja**. Okrem toho sa strach ráta do vydesenia (§1).
 
 Príklad: marker Farára na indexe 5 (polovica hráča 1, oranžová zóna) —
-priazeň sily 2 má hráč 1; Farár sa bojí hráča 0 a po každej bitke mu dá
-2 špaky, kým sa marker nepohne.
+priazeň sily 2 má hráč 1; Farár sa bojí hráča 0 a po každej bitke, ktorú hráč 0
+vyhrá (alebo pri sekere), mu dá 2 špaky, kým sa marker nepohne. Bitku, ktorú
+vyhrá hráč 1, mu Farár nedá nič.
 
 Web počas hry ukazuje pri každom staršom priazeň (komu a s akým účinkom),
-koho sa starší bojí a koľko špakov mu po bitke dá.
+koho sa starší bojí a koľko špakov mu dá po bitke, ak ju vyhrá.
 
 ### Krajná pozícia
 
@@ -803,10 +819,11 @@ vo finále.
 
 Cena:
 
-- **cigarety** = koľko markeru chýbalo do červenej: žltá **2**, oranžová **1**,
-  červená **0**,
+- **cigarety** podľa zóny markera (v6.1, Michal 2026-10-27): červená **1**,
+  oranžová **2**, žltá **3**,
 - súper dostane v tejto bitke toľko **Pohoršení navyše**, o koľko polí sa
-  marker vrátil do stredu: **1 / 2 / 3** (spolu s cigaretami vždy 3). Hrá ich
+  marker vrátil do stredu (podľa vzdialenosti od stredu): žltá **1**, oranžová
+  **2**, červená **3**. Hrá ich
   ako svoje (§9.2), ale **nie na staršieho, ktorého si patrón vzal** (v6,
   Michal 2026-10-26) — inak by mu marker hneď vrátil a patronát by nezastavil
   vydesenie. Ostatné súperove Pohoršenia (zo stola, z priazne) na patróna smú;
@@ -1045,8 +1062,8 @@ verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je re
 | Odkiaľ | Koľko | Kedy |
 |---|---|---|
 | Vyhratá bitka | odohrané Pitky kola (finále 3), mínus o koľko má víťaz viac Absťákov než porazený, **aspoň 1**; plus špaky zo sekery | krok 4a (§9.4) |
-| Starší, ktorí sa ťa boja | za každého: žltá **1**, oranžová **2**, červená **3**; sivý nikomu; aj nahradený | po **každej** bitke, aj po finále (krok 4b) |
-| Noviny v Dedičstve | **+1**, keď sa ťa bojí viac starších ako súpera (počet starších) | krok 4b |
+| Starší, ktorí sa ťa boja | za každého: žltá **1**, oranžová **2**, červená **3**; sivý nikomu; aj nahradený | len **víťazovi** bitky, aj finále; pri **sekere obom**; porazený nič (v6.1; krok 4b) |
+| Noviny v Dedičstve | **+1**, keď sa ťa bojí viac starších ako súpera (počet starších) — po každej bitke, aj prehratej | krok 4b |
 | Prebytok vo finále a na Kultúrnom dome | toľko, aký je prebytok (po Puške) | krok 4c |
 | Exekútor | **−** polovica priznaných Dlhov (Záhradkár ich zachráni) | krok 1 (§11) |
 | Nepriznaná Cirhóza | **−5** za kus (ruka aj oba balíčky) | na konci hry, po finále |
@@ -1078,7 +1095,8 @@ Po poslednej bitke o lokalitu (3 / 5 / 7) sa hrá **finále** — posledná bitk
   nepôsobí, lokality s efektom niet).
 - Finále má **vždy 3 Pitky**; víťaz dostane 3 špaky (mínus rozdiel Absťákov,
   aspoň 1). Sekera vo finále špaky kola aj zo sekery **prepadnú**.
-- Po finále sa ešte rozdajú **špaky za starších**. **Prebytok sa nerozdeľuje** —
+- Po finále sa ešte rozdajú **špaky za starších** — ako po každej bitke len
+  víťazovi finále, pri sekere obom (§14). **Prebytok sa nerozdeľuje** —
   jeho držiteľ dostane toľko špakov, aký je prebytok.
 - Potom sa odpočíta nepriznaná Cirhóza (−5 za kus) a vyhrá hráč s viac
   špakmi.
@@ -1147,7 +1165,7 @@ v strede).
 | Silná nezávislá žena | Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát (lokalitu, kartu staršieho ani súperove karty nezdvojí). |
 | Starosta | V Pitke raz: za 1 cigaretu vymeň kartu z ruky za kartu zo šenku. Kartu staršieho z patronátu ním vymeniť nemožno. |
 | Svätý text | Dedičstvo: hodnota majiteľovej Viery je o 1 vyššia. |
-| Noviny | Dedičstvo: po každej bitke pri špakoch za starších dostane majiteľ **1 špak navyše**, ak sa ho bojí **viac starších** ako súpera (počet starších, nie zón; v6, Michal 2026-10-26). |
+| Noviny | Dedičstvo: po každej bitke pri špakoch za starších dostane majiteľ **1 špak navyše**, ak sa ho bojí **viac starších** ako súpera (počet starších, nie zón; v6, Michal 2026-10-26) — aj po prehratej bitke, keď mu starší nedajú nič (v6.1). |
 | Záhradkár | Exekúcia: keď majiteľ čelí exekúcii (§11), smie Záhradkára zahodiť (z ruky, odhadzovacieho či doberacieho balíčka) namiesto špakov — Dlhy zhoria aj tak (v6, Michal 2026-10-26). |
 | Finančná poradkyňa | Dlh z jej akcií dostáva súper, nie jej majiteľ. |
 | Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov (bez stropu). |

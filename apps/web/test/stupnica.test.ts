@@ -36,7 +36,7 @@ describe("stopa posunu", () => {
   it("dôsledok (v6, 7 polí): priazeň hneď tomu, ku komu marker prišiel, strach (špaky po bitke) druhému", () => {
     // Zo stredu do súperovej oranžovej (index 5): súper ♥ +2, hráč 0 budí Strach.
     expect(dosledokPosunu(elder(5), 3, 1)).toBe("♥ +2 hneď");
-    expect(dosledokPosunu(elder(5), 3, 0, true)).toBe("budíš strach: Strach → +2 po bitke");
+    expect(dosledokPosunu(elder(5), 3, 0, true)).toBe("budíš strach: Strach → +2 po výhre");
     // Späť do stredu: priazeň aj strach zmiznú.
     expect(dosledokPosunu(elder(3), 4, 1)).toBe("♥ preč (bolo +1)");
     expect(dosledokPosunu(elder(3), 4, 0)).toBe("už nebudí strach (bolo Znepokojenie)");

@@ -739,7 +739,7 @@ export function HracDoska({
           title={
             spakyKlik.stlacene
               ? "Zavrieť nástenku (Esc)"
-              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po bitke ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]}.` +
+              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po bitke, ak ju ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]} (dlaždica Starší).` +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
                 " Klik ukáže nástenku: odkiaľ sú špaky po bitkách."
           }
@@ -1181,6 +1181,12 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         {!vysledok && stavka !== null && (
           <span className="tip-riadok">
             táto bitka ({stavka.pitky} Pitky): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
+            {stavka.starsi[0] + stavka.starsi[1] > 0 && (
+              <>
+                {" "}
+                (z toho od starších {stavka.starsi[0]} / {stavka.starsi[1]})
+              </>
+            )}
             {stavka.naSekere > 0 && <> · na sekere {stavka.naSekere}</>}
           </span>
         )}
@@ -1333,7 +1339,8 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
             </span>
             <span className="tip-riadok">
               <b>Patronát:</b> komu starší prejavuje priazeň (aspoň žltá), smie si ho vziať do ruky — najprv útočník, potom obranca.
-              Na jeho miesto dá lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety do červenej, súper dostane
+              Na jeho miesto dá lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety podľa zóny (červená 1, oranžová 2,
+              žltá 3), súper dostane
               v bitke Pohoršenia (o koľko marker išiel do stredu). Výhra = starší je jeho; prehra = odhodí poldeci.
             </span>
           </>
@@ -1356,7 +1363,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
               <span className="tip-riadok">
                 Kedykoľvek na ťahu: priznať kliatbu (za Cirhózu sa nedoberá; Dlh sa prizná sám pri dobratí), Nástroj do Dedičstva (za cigarety, cena rastie), fajčiť
                 (cigareta = karta). Kto pasuje, do Pitky už nevykladá a dostane cigaretu za každú kartu, ktorú ešte smel
-                vyložiť. Končí, keď obaja vyčerpajú limit alebo pasujú.
+                vyložiť, najviac toľko, koľko má kariet v ruke. Končí, keď obaja vyčerpajú limit alebo pasujú.
               </span>
               {viac && <span className="tip-stav">{pocetPozn}</span>}
             </>
@@ -1394,7 +1401,8 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
           Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky). Pri rovnakom tuhom vyhrá, kto
           má menej Absťákov, potom menej priznaných Dlhov; inak sekera — špaky kola čakajú na víťaza ďalšej bitky (vo finále prepadnú).
           Víťaz dostane toľko špakov, koľko Pitiek sa odohralo (mínus rozdiel Absťákov, aspoň 1) a lokalita ide na krčmovú nástenku.
-          Potom každému dajú špaky starší, ktorí sa ho boja (žltá 1, oranžová 2, červená 3). Kto má vyššie celkové, rozdelí prebytok —
+          Potom víťazovi dajú špaky starší, ktorí sa ho boja (žltá 1, oranžová 2, červená 3); porazený od nich nič, pri sekere dostanú
+          obaja. Kto má vyššie celkové, rozdelí prebytok —
           posúva markery starších; po finále ho dostane ako špaky.
           <span className="tip-riadok">
             Potom Exekútor, Pohoršenie, Pohreb… a každý si dobere {KONSTANTY.KARTY_PO_BITKE} karty. Porazený je v ďalšom kole

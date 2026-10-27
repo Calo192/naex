@@ -90,7 +90,7 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
     if (!naMojomTahuVZhromazdeni(v, ja) || v.zhromazdenieStav === null) return null;
     // „Už som vyložil“ z pohľadu: moja karta leží v línii (do Zhromaždenia kola nič iné nedáva).
     const vylozil = v.strany.some((strana) => strana.some((pl) => pl.playedBy === ja));
-    return vylozil && kartyZaPas(v.zhromazdenieStav, ja) >= 1 ? ANO : null;
+    return vylozil && kartyZaPas(v.zhromazdenieStav, ja, v.hraci[ja].rukaPocet) >= 1 ? ANO : null;
   },
 
   "lokalita-pravidlo": (d, v, _ja, def) => {

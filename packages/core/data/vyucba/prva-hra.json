@@ -100,7 +100,7 @@
     {
       "id": "i-lokalita",
       "kto": "info",
-      "melichar": "Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najviac po papuli. Ak mu naložíš viac ako on tebe, bitku vyhráš. Slovo sa tu šíri rýchlo a o týchto bitkách sa dozvedia miestne starešiny… Ty im musíš ukázať, kto je tu pán… Ich strach ti po každej bitke prinesie body, ALEBO aj nie, a čo ja viem…"
+      "melichar": "Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najviac po papuli. Ak mu naložíš viac ako on tebe, bitku vyhráš. Slovo sa tu šíri rýchlo a o týchto bitkách sa dozvedia miestne starešiny… Ty im musíš ukázať, kto je tu pán… Ich strach ti po každej vyhratej bitke prinesie body, ALEBO aj nie, a čo ja viem…"
     },
     {
       "id": "i-lokality",
@@ -789,7 +789,7 @@
     {
       "id": "i-starsi",
       "kto": "info",
-      "melichar": "Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a za ten strach ti po každej bitke dávajú body. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.",
+      "melichar": "Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a za ten strach ti po každej vyhratej bitke dávajú body. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -863,9 +863,9 @@
           "vysvetlenie": "Nie, pomáha Štamgastovi a teba sa bojí. Ale pekná predstava."
         },
         {
-          "text": "Jeho strach mi po každej bitke dá body.",
+          "text": "Jeho strach mi po každej vyhratej bitke dá body.",
           "spravna": true,
-          "vysvetlenie": "Áno, kým je na červenej, dá ti tri po každej bitke. Konečne sa ťa niekto bojí."
+          "vysvetlenie": "Áno, kým je na červenej, dá ti tri po každej bitke, ktorú vyhráš. Konečne sa ťa niekto bojí."
         }
       ],
       "zvyraznit": [
@@ -900,7 +900,7 @@
     {
       "id": "i-body",
       "kto": "info",
-      "melichar": "BODY v bare sú tvoje špaky: 2 : 0. Ďalšie ti dajú starší: po každej bitke ti každý, kto sa ťa bojí, dá 1 špak v žltej, 2 v oranžovej a 3 v červenej. Farár ti po ďalšej bitke dá 3, ak ho Štamgast dovtedy neodtlačí.",
+      "melichar": "BODY v bare sú tvoje špaky: 2 : 0. Ďalšie ti dajú starší: po každej bitke, ktorú vyhráš, ti každý, kto sa ťa bojí, dá 1 špak v žltej, 2 v oranžovej a 3 v červenej. Kto prehrá, od starších nedostane nič. Farár ti po ďalšej vyhratej bitke dá 3, ak ho Štamgast dovtedy neodtlačí.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",

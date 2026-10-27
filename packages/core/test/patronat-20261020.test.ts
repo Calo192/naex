@@ -107,7 +107,8 @@ describe("patronát — vzatie staršieho do ruky", () => {
     expect(legal.some((c) => c.type === "patronat" && c.uid !== obcan.uid)).toBe(false);
 
     const po = apply(data, s, { type: "patronat", elderId: elder.elderId, uid: obcan.uid }, u).state;
-    expect(po.hraci[u].cigarety).toBe(3 - 1);
+    // v6.1: z oranžovej 2 cigarety (červená 1, oranžová 2, žltá 3).
+    expect(po.hraci[u].cigarety).toBe(3 - 2);
     expect(po.hraci[u].ruka.map((k) => k.uid)).toContain(elder.karta.uid);
     expect(po.hraci[u].ruka.map((k) => k.uid)).not.toContain(obcan.uid);
     expect(po.starsi[0]!.marker).toBe(3);
@@ -146,16 +147,16 @@ describe("patronát — vzatie staršieho do ruky", () => {
     expect(state.faza).toBe("zhromazdenie");
     const meno = data.cards.get(s.starsi[0]!.karta.defId)!.name;
     const pre = (p: PlayerId) => eventsFor(events, p).flatMap((e) => (e.type === "log" ? [e.text] : []));
-    expect(pre(u)).toContain(`Patronát preskočený: priazeň ti prejavuje ${meno} (2 cigarety), ale máš len 1 cigaretu.`);
+    expect(pre(u)).toContain(`Patronát preskočený: priazeň ti prejavuje ${meno} (3 cigarety), ale máš len 1 cigaretu.`);
     expect(pre(o).some((t) => t.startsWith("Patronát preskočený"))).toBe(false);
   });
 
-  it("z červenej zadarmo, súper dostane 3 Pohoršenia; obávaný hráč patrónom nie je", () => {
+  it("z červenej za 1 cigaretu (v6.1), súper dostane 3 Pohoršenia; obávaný hráč patrónom nie je", () => {
     const { s, u, obcan } = vPatronate(3);
     const elderId = s.starsi[0]!.elderId;
     expect(legalCommands(data, s, opponentOf(u))).toEqual([]);
     const po = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
-    expect(po.hraci[u].cigarety).toBe(3);
+    expect(po.hraci[u].cigarety).toBe(3 - 1);
     expect(po.patronat[u]?.pohorsenia).toBe(3);
   });
 

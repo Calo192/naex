@@ -1,6 +1,6 @@
 // Starší v rade dlaždíc (Michal 2026-10-27, dizajn spaky-starsi-20261027, S1 stupienky):
 // dlaždica Starší ukáže na prvý pohľad, koľko starších dáva hráčovi priazeň ♥
-// (stĺpček hore) a koľko sa ho bojí (stĺpček dole, špaky po bitke); výška stĺpčeka
+// (stĺpček hore) a koľko sa ho bojí (stĺpček dole, špaky po vyhratej bitke); výška stĺpčeka
 // je zóna, aby sa dala prečítať aj bez farieb. Klik prepne stôl na líniu starších
 // a oba bary na bar starších — po dlaždici na každého staršieho: priazeň s efektom,
 // alebo strach so špakmi, patronát a posun od poslednej bitky.
@@ -15,7 +15,7 @@ import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
 export interface DlazdicaStarsichProps {
   readonly view: ClientState;
   readonly p: PlayerId;
-  /** Špaky od starších po najbližšej bitke (spakyTeraz). */
+  /** Špaky od starších po najbližšej bitke, ak ju hráč vyhrá (spakyTeraz). */
   readonly zaStarsich: number;
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string; readonly posuny?: number };
 }
@@ -35,7 +35,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
         starsi.stlacene
           ? "Späť na stôl (Esc)"
           : `Priazeň ♥ ${ja ? "ti" : "mu"} dáva ${priazen} z ${view.starsi.length} starších (stĺpček hore) — ich efekt ${ja ? "máš" : "má"}. ` +
-            `${strach} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): po bitke +${zaStarsich} špakov. Výška = zóna. Klik ukáže starších.` +
+            `${strach} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): po bitke +${zaStarsich} špakov, ak ju ${ja ? "vyhráš" : "vyhrá"} (porazený od starších nič, pri sekere obaja). Výška = zóna. Klik ukáže starších.` +
             (posuny > 0 ? ` Od bitky sa pohlo starších: ${posuny}.` : "")
       }
       onClick={starsi.prepni}
@@ -54,7 +54,8 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
       </span>
       <span className="zdroj-pod">
         <span>
-          {strach > 0 ? `${strach} sa ${ja ? "ťa" : "ho"} bojí · +${zaStarsich}` : `nikto sa ${ja ? "ťa" : "ho"} nebojí`}
+          {/* v6.1: strach platí len víťazovi; koľko starších sa bojí, ukazujú stĺpčeky dole a nápoveda (na 1366 sa oboje nezmestí). */}
+          {strach > 0 ? `+${zaStarsich} ${ja ? "ak vyhráš" : "ak vyhrá"}` : `nikto sa ${ja ? "ťa" : "ho"} nebojí`}
           {strach > 0 && <IkonaSpaku />}
         </span>
       </span>
@@ -95,12 +96,12 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
             <span className="velke-cislo nic">—</span>
           );
         const riadok =
-          smer === "hore" ? ucinok.kratko : smer === "dole" ? `bojí sa ${ja ? "ťa" : "ho"} · po bitke` : `neutrálny · ${ucinok.kratko}`;
+          smer === "hore" ? ucinok.kratko : smer === "dole" ? `bojí sa ${ja ? "ťa" : "ho"} · pri výhre` : `neutrálny · ${ucinok.kratko}`;
         const popis =
           smer === "hore"
             ? `${meno}: ${ucinok.cely}. Zóna ${NAZVY_ZON[zona]}.`
             : smer === "dole"
-              ? `${meno} sa ${ja ? "ťa" : "ho"} bojí (${NAZVY_ZON[zona]}): po každej bitke ${ja ? "ti" : "mu"} dá ${strach} ${strach === 1 ? "špak" : "špaky"}. Priazeň má súper — ${ucinok.cely}.`
+              ? `${meno} sa ${ja ? "ťa" : "ho"} bojí (${NAZVY_ZON[zona]}): po každej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dá ${strach} ${strach === 1 ? "špak" : "špaky"}. Priazeň má súper — ${ucinok.cely}.`
               : `${meno} je v strede, priazeň nemá nikto. ${ucinok.cely}.`;
         return (
           <div

@@ -117,7 +117,8 @@ describe("ohlásené vydesenie sa ruší hneď (Michal 2026-10-26)", () => {
 
   it("§1: po žiadnom ťahu nevisí ohlásenie hráča, ktorý nemá vydesenú polovicu starších (náhodné partie)", () => {
     let ohlasenych = 0;
-    for (const seed of [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]) {
+    // 294: ohlásenie v náhodnej partii pravidiel v6.1 (pôvodné semienka ho už nedosiahnu).
+    for (const seed of [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 294]) {
       let state: GameState = setupGame(data, seed);
       let rng = rngSeed(seed ^ 0x1d);
       for (let i = 0; state.koniec === null && i < 20000; i++) {

@@ -1130,3 +1130,46 @@ efekty. Staré znenie v5:
 > 1 Milujúca manželka, 1 Dievčina na vydaj (v rôznych variáciách). Tieto druhy
 > nie sú v spoločnom balíčku ani v šenku. Zamiešajú sa do jeho **doberacieho
 > balíčka** a hráč si dobere **5 kariet do ruky**.
+
+## v6.1 — dávka z playtestov v6 (Michal 2026-10-27)
+
+Interview o playtestoch v6. Hlavička PRAVIDLA.md a `VERZIA_PRAVIDIEL` ostávajú
+„v6“, kým Leader nerozhodne o čísle verzie.
+
+### Strach platí len víťazovi (§1, §9, §10, §14, §14b)
+
+Staré znenie §10:
+
+> **Strach dáva špaky:** po **každej** bitke (aj po finále) dostane hráč za
+> každého staršieho, ktorý sa ho bojí, toľko špakov, aká je zóna — žltá 1,
+> oranžová 2, červená 3 (§14).
+
+§14: „po **každej** bitke, aj po finále (krok 4b)“; §9 krok 4b: „Špaky za
+starších obom hráčom (aj Noviny)“. Teraz ich dostane len víťaz, pri sekere obaja;
+Noviny platia po každej bitke ako predtým.
+
+### Cena patronátu podľa zóny (§10)
+
+> - **cigarety** = koľko markeru chýbalo do červenej: žltá **2**, oranžová **1**,
+>   červená **0**,
+> - súper dostane … **1 / 2 / 3** (spolu s cigaretami vždy 3).
+
+Teraz červená 1, oranžová 2, žltá 3; Pohoršenia ostávajú 1 / 2 / 3.
+
+### Pas najviac za karty v ruke (§6)
+
+> … dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť** (zostávajúci
+> limit) — aj keď pasuje hra za neho.
+
+### Šenok (§5) — oprava znenia, hra sa nemení
+
+> Nevzaté karty ostávajú v šenku do ďalšieho draftu (Starosta a Pohreb Závislého
+> z neho berú aj medzitým).
+
+Kód ich pri ďalšej stavbe dáva naspodok spoločného balíčka, ako hovorí Stavba šenku.
+
+### Odpor a NA EX, Posilnenie Výtržníka (§7)
+
+Pribudla veta, že akcia zrušená Odporom nie je ani aktívna, ani neaktívna (hra to
+tak robila). Posilnenie Výtržníka predtým susedovi ×2 dávalo („Karta sa najprv
+spáruje so susedmi s pôvodnými akciami“), teraz je už len Rana.

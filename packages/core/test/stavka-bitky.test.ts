@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, GameState } from "../src/index.ts";
-import { apply, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, stavkaBitky, viewFor } from "../src/index.ts";
+import { apply, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, spakyZaStarsich, stavkaBitky, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -46,7 +46,7 @@ describe("stavkaBitky", () => {
     expect(porovnane).toBeGreaterThan(10);
   });
 
-  it("v6: výhra = Pitky kola mínus rozdiel Absťákov (aspoň 1) a sekera", () => {
+  it("v6.1: výhra = Pitky kola mínus rozdiel Absťákov (aspoň 1), sekera a starší, ktorí sa víťaza boja", () => {
     let porovnane = 0;
     prejdiZhromazdenia((state) => {
       const view = viewFor(data, state, 0);
@@ -54,8 +54,11 @@ describe("stavkaBitky", () => {
       if (st === null) return;
       expect(st.pitky).toBe(Math.max(1, view.pitkyCelkom));
       expect(st.naSekere).toBe(view.spakyNaSekere);
-      expect(st.vyhra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere);
-      expect(st.vyhra).toBeLessThanOrEqual(st.pitky + view.spakyNaSekere);
+      // Strach platí len víťazovi (v6.1) — je súčasťou stávky.
+      expect(st.starsi).toEqual([spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)]);
+      expect(st.vyhra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.starsi[0]);
+      expect(st.vyhra).toBeLessThanOrEqual(st.pitky + view.spakyNaSekere + st.starsi[0]);
+      expect(-st.prehra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.starsi[1]);
       porovnane++;
     });
     expect(porovnane).toBeGreaterThan(10);

@@ -3022,7 +3022,7 @@ export function HernaPlocha({
             text: (
               <>
                 Starší, ktorý ti prejavuje priazeň (aspoň Znepokojenie), ti môže prísť na pomoc: vezmeš si ho do ruky, na jeho miesto dáš
-                lícom dole Občana či Zviera z ruky a marker pôjde do stredu. Platíš cigarety do červenej, súper dostane v bitke toľko
+                lícom dole Občana či Zviera z ruky a marker pôjde do stredu. Platíš cigarety podľa zóny (červená 1, oranžová 2, žltá 3), súper dostane v bitke toľko
                 Pohoršení, o koľko marker išiel do stredu. <strong>Vyhráš bitku — starší je tvoj; prehráš — odhodíš poldeci.</strong>
               </>
             ),
@@ -3140,7 +3140,7 @@ export function HernaPlocha({
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
         // každá ďalšia stojí plný poldeci, server dostane ťah až po „potvrdiť“ na stole.
         if (vylozenia.length === 0 || plan === null) {
-          const zaPas = (view.zhromazdenieStav === null ? 0 : kartyZaPas(view.zhromazdenieStav, ja)) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+          const zaPas = (view.zhromazdenieStav === null ? 0 : kartyZaPas(view.zhromazdenieStav, ja, view.hraci[ja].rukaPocet)) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
           // Pas je nevratný: potvrdenie len keď ešte niečo vyložiť môžem (UX N1, U10).
           const mozemVylozit = zostava > 0 && [...moznostiMiesta.values()].some((m) => m.karty.size > 0);
           if (odlozenyPas.caka !== null) {
@@ -3796,7 +3796,7 @@ export function HernaPlocha({
             text: (
               <>
                 Pri staršom vyber smer — každé Pohoršenie posunie marker o jedno pole. <strong>K súperovi</strong>: on dostane priazeň, starší
-                sa začne báť teba (špaky po každej bitke, cesta k vydeseniu). <strong>K sebe</strong>: priazeň sa ti zmení hneď a platí už v
+                sa začne báť teba (špaky po každej bitke, ktorú vyhráš, cesta k vydeseniu). <strong>K sebe</strong>: priazeň sa ti zmení hneď a platí už v
                 tejto bitke.
               </>
             ),
@@ -3941,7 +3941,7 @@ export function HernaPlocha({
     // Bez čísel pozícií (Michal 2026-10-22): hráč 2 vidí stupnicu zrkadlovo, „4 → 5“ by mu klamalo.
     // Pohoršenie k sebe (v5): priazeň sa mení hneď, rozhoduje už túto bitku.
     const hned = k === ja && cezPohorsenie && n.priazen !== priazenHraca(elder) ? " — hneď, platí už v tejto bitke" : "";
-    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`}: ${zonaPred} → ${zonaPo} · ≈ špaky do konca ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}${hned}`;
+    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`}: ${zonaPred} → ${zonaPo} · špaky do konca pri výhrach ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}${hned}`;
   };
   /**
    * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba k súperovi alebo
