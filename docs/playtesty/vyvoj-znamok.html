@@ -203,9 +203,27 @@ const PARTIE = [
   { id: "20261027-105422-3", report: "20261027-105422.html", dlzka: "krátka (3 + finále)", vysledok: "Hela 29 : 4 Jano", mena: ["Jano", "Hela"],
     jano: [7, 8, 5, 6, 9, 7, 6, 7, 8, 7, 6, 9], eva: [8, 8, 6, 7, 9, 7, 6, 8, 8, 7, 6, 9],
     zmenyPred: [] },
+  { id: "20261027-131033-1", report: "20261027-131033.html", dlzka: "stredná (5 + finále)", vysledok: "Fero 35 : 1 Jano", mena: ["Fero","Jano"],
+    jano: [7,8,5,6,9,5,5,7,8,7,5,8], eva: [6,8,5,7,9,6,6,7,8,8,5,9],
+    zmenyPred: ["Veľké pečiatky","Nástenka na mieste stola","Výkupné zvyšných poldecí a cigariet","Rastúca cena fajčenia","Dobratie 1 karta","Pravidlá v7: lokality podľa úrovní, finále na vrchole, Pakt, Kšefty, Úplatok, Konflikt, D6"] },
+  { id: "20261027-131033-2", report: "20261027-131033.html", dlzka: "stredná (5 + finále)", vysledok: "Šimon 9 : −1 Hela", mena: ["Šimon","Hela"],
+    jano: [8,8,5,7,9,5,5,7,8,7,6,9], eva: [7,7,4,6,9,6,5,7,8,7,5,8],
+    zmenyPred: [] },
+  { id: "20261027-131033-3", report: "20261027-131033.html", dlzka: "stredná (5 + finále)", vysledok: "Vilo 52 : 0 Eva", mena: ["Vilo","Eva"],
+    jano: [8,8,5,7,9,6,6,7,8,8,6,9], eva: [6,7,3,6,9,6,5,6,7,8,4,8],
+    zmenyPred: [] },
+  { id: "20261027-161907-1", report: "20261027-161907.html", dlzka: "stredná (5 + finále)", vysledok: "Jano 40 : −5 Eva", mena: ["Jano","Eva"],
+    jano: [7,8,5,7,8,6,6,7,7,7,5,8], eva: [5,6,4,6,8,5,6,6,7,6,4,8],
+    zmenyPred: ["Revízia efektov 14.0 (40 nových efektov, Kšefty, Úplatok, Konflikt)"] },
+  { id: "20261027-161907-2", report: "20261027-161907.html", dlzka: "stredná (5 + finále)", vysledok: "Fero 29 : 6 Šimon", mena: ["Šimon","Fero"],
+    jano: [6,6,4,6,8,5,5,7,6,7,4,8], eva: [8,8,5,7,9,6,6,7,8,7,7,8],
+    zmenyPred: [] },
+  { id: "20261027-161907-3", report: "20261027-161907.html", dlzka: "stredná (5 + finále)", vysledok: "Vilo 46 : 6 Hela", mena: ["Hela","Vilo"],
+    jano: [6,7,4,6,8,6,6,7,7,7,3,8], eva: [7,7,4,7,8,6,6,7,8,7,4,9],
+    zmenyPred: [] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = ["Veľké pečiatky", "Nástenka na mieste stola", "Výkupné zvyšných poldecí a cigariet", "Rastúca cena fajčenia", "Dobratie 1 karta"];
+const CAKAJUCE = ["Opravy z kontroly kódu v7 (Bzdocha, stávka bitky, odhad pred finále; cc22812)", "Sada v27 s ilustráciami"];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");
