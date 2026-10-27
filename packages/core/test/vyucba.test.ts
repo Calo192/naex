@@ -2,8 +2,8 @@
 // s jediným dovoleným príkazom a kontrola, že scenár v jadre prejde.
 
 import { describe, expect, it } from "vitest";
-// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
-import cardsJson from "./data/cards-v6.json";
+// Scenár „Prvá hra“ je od 2026-10-27 na sade v7 (pravidlá v7, lokality úrovne 1).
+import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import scenarJson from "../data/vyucba/prva-hra.json";
@@ -98,7 +98,7 @@ describe("výučba — pevné rozdanie", () => {
       ...r,
       scorecardy: { farar: sc },
       spolocnyBalicek: ["hasic", "svokra/0/1"],
-      hraci: [{ ...r.hraci[0], ruka: ["pijan/1/0"] }, r.hraci[1]],
+      hraci: [{ ...r.hraci[0], ruka: ["hasic/1/0"] }, r.hraci[1]],
     });
     expect(s.starsi.find((e) => e.elderId === "farar")?.scorecard).toBe(sc);
     expect(s.spolocnyBalicek.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["hasic/0/0", "svokra/0/1"]);
@@ -304,16 +304,16 @@ describe("výučba — cigarety pre Melichara (Michal 2026-10-25)", () => {
   const iVitaj = scenar.kroky.findIndex((k) => k.id === "i-vitaj");
   const iStrach = scenar.kroky.findIndex((k) => k.id === "i-strach");
 
-  it("hráč začína s 5, úvod a stupnica strachu mu uberú po cigarete; po 1. časti má 5, Štamgast 8", () => {
+  it("hráč začína s 5, úvod a stupnica strachu mu uberú po cigarete; po 1. časti má 6, Štamgast 8", () => {
     expect(scenar.kroky.filter((k) => k.odovzdaCigaretu === true).map((k) => k.id)).toEqual(["i-vitaj", "i-strach"]);
     expect(zacniVyucbu(data, scenar).hraci[0].cigarety).toBe(5);
     expect(prehrajVyucbu(data, scenar, iVitaj + 1).hraci[0].cigarety).toBe(4);
-    // „Inak, nemáš ešte cigaretku?“ — po dvoch pasoch má hráč 6, Melicharovi dá jednu.
+    // „Inak, nemáš ešte cigaretku?“ — po dvoch pasoch (2 + 2 cigarety) má hráč 7, Melicharovi dá jednu.
     const predStrachom = prehrajVyucbu(data, scenar, iStrach);
-    expect(predStrachom.hraci[0].cigarety).toBe(6);
-    expect(prehrajVyucbu(data, scenar, iStrach + 1).hraci[0].cigarety).toBe(5);
+    expect(predStrachom.hraci[0].cigarety).toBe(7);
+    expect(prehrajVyucbu(data, scenar, iStrach + 1).hraci[0].cigarety).toBe(6);
     const koniec = prehrajVyucbu(data, scenar, scenar.kroky.length);
-    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([5, 8]);
+    expect([koniec.hraci[0].cigarety, koniec.hraci[1].cigarety]).toEqual([6, 8]);
   });
 
   it("úvod ponúkne preskočenie a tlačidlá majú nápis zo scenára; posledný krok uzavrie časť", () => {
@@ -350,73 +350,90 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
   /** Stav po príkaze kroku `id`. */
   const po = (id: string): GameState => prehrajVyucbu(data, scenar, i(id) + 1);
   const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).celkove;
-  // v6: špaky v popolníku (TODO výučba: hlášky scenára hovoria o bodoch v5 — zladiť texty).
-  // Nie „keby skončila teraz“ — to od 2026-10-27 pridáva výkupné poldeci a cigariet.
+  // Špaky v popolníku. Nie „keby skončila teraz“ — to od 2026-10-27 pridáva výkupné poldeci a cigariet.
   const body = (s: GameState): readonly number[] => spakyTeraz(viewFor(data, s, 0)).spaky;
 
-  it("1. časť: verzia scenára a číslo časti (hviezdička), tri lokality, Farár so scorecardom Exekútor", () => {
+  it("1. časť: verzia scenára a číslo časti (hviezdička), tri lokality úrovne 1, Farár so scorecardom Exekútor", () => {
     expect(scenar).toMatchObject({ id: "prva-hra", cast: 1, zverejnena: true });
-    expect(typeof scenar.verzia).toBe("string");
-    expect(scenar.rozdanie.lokality.map((l) => l.split("/")[0])).toEqual(["most", "vinna_pivnica", "cintorin"]);
+    expect(scenar.verzia).toMatch(/v7/);
+    expect(scenar.rozdanie.lokality.map((l) => l.split("/")[0])).toEqual(["lesna_cesta", "jednota", "cintorin"]);
+    // v7: úroveň lokality = počet akcií na hrane; prvé kolo sa bije o lokalitu úrovne 1.
+    for (const l of scenar.rozdanie.lokality) {
+      const def = data.cards.get(l.split("/")[0] ?? "");
+      expect(Object.values(def?.left.actions ?? {}).reduce((a, b) => a + (b ?? 0), 0), l).toBe(1);
+    }
     expect(scenar.rozdanie.scorecardy).toMatchObject({ farar: "EXEKUTOR", krcmarka: "LAKOMEC" });
   });
 
-  it("Most si hráč vyberie a natočí sám; zlá lokalita aj zlé natočenie dostanú radu Melichara", () => {
+  it("Lesnú cestu si hráč vyberie sám, Peckou k sebe; zlá lokalita aj zlé natočenie dostanú radu Melichara", () => {
     const krok = scenar.kroky[i("k-ciel")];
-    expect(krok).toMatchObject({ kto: "hrac", prikaz: { type: "chooseLocation", uid: "lokality:most", otocena: true } });
+    expect(krok).toMatchObject({ kto: "hrac", prikaz: { type: "chooseLocation", uid: "lokality:lesna_cesta", otocena: false } });
     const s = pri("k-ciel");
     const volba = krok?.volba as VolbaKroku;
     const uid = (id: string): number => uidZOdkazu(s, 0, `lokality:${id}`);
-    expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("most"), otocena: false })).toMatch(/Otoč ho/);
-    expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("vinna_pivnica"), otocena: true })).toMatch(/Vínna pivnica/);
+    expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("lesna_cesta"), otocena: true })).toMatch(/Otoč ju/);
+    expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("jednota"), otocena: true })).toMatch(/Jednote/);
     expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("cintorin"), otocena: false })).toMatch(/Cintoríne/);
   });
 
-  it("čísla v hláškach sedia s jadrom: odhad bitky 0 : 2 → 3 : 2 → 3 : 3 → 4 : 3 → 4 : 4 → 7 : 4, Pitky 1 → 2", () => {
+  it("zlý Pijan by s Peckou spojil Poldeci namiesto Rany — rada Melichara to povie", () => {
+    const s = pri("k-pijan");
+    const zly: Command = { type: "tah", kroky: [{ type: "place", uid: uidZOdkazu(s, 0, "ruka:pijan#2"), target: "vlastna" }] };
+    const sums = evaluateLine(data, lineState(apply(data, s, zly, 0).state)).sums[0];
+    expect(sums).toMatchObject({ Pecka: 1, Poldeci: 1 });
+    expect(sums.Rana ?? 0).toBe(0);
+    expect(radaKVolbe(s, scenar.kroky[i("k-pijan")]?.volba as VolbaKroku, zly)).toMatch(/Poldeci/);
+  });
+
+  it("čísla v hláškach sedia s jadrom: odhad bitky 0 : 2 → 3 : 2 → 3 : 3 → 3 : 4 → 7 : 4, Pitky 1 → 2", () => {
     expect(odhad(po("k-zh-bot1"))).toEqual([0, 2]);
     expect(pocetPitiek(data, pri("k-pijan"))).toBe(1);
     expect(odhad(po("k-pijan"))).toEqual([3, 2]);
     expect(pocetPitiek(data, po("k-pijan"))).toBe(2);
     expect(odhad(po("k-zh-bot2"))).toEqual([3, 3]);
-    expect(odhad(po("k-pijan2"))).toEqual([4, 3]);
-    expect(odhad(po("k-zh2-bot"))).toEqual([4, 4]);
+    expect(odhad(po("k-zh2-bot"))).toEqual([3, 4]);
     expect(odhad(po("k-hasic"))).toEqual([7, 4]);
     expect(pri("i-bitka").bitkaStav?.damage?.celkove).toEqual([7, 4]);
+    // Štamgastova Povera z hrany Lesnej cesty bez hráčových priznaných Dlhov nič nedá (i-pecka-povera, i-bitka).
+    expect(evaluateLine(data, lineState(po("k-zh-bot1"))).sums[1]).toMatchObject({ Pecka: 1, Povera: 1 });
+    expect(pri("i-bitka").bitkaStav?.damage?.makke).toEqual([0, 0]);
   });
 
-  // TODO(v7): hlášky výučby učia pravidlá v6 (zadĺženie prepadá, prah Exekútora 10) — scenár treba prepísať na v7.
-  it.skip("Pitka: pečeň 2 z 3 a zadĺženie 1 z 2 prepadnú; Hasič v 2. Zhromaždení = jedna karta Dlh", () => {
-    const nahlad = nahladPitky(data, po("k-pijan2"))[0];
-    expect([nahlad.pecenZoStola, nahlad.prahPecene, nahlad.zadlzenieZoStola, nahlad.prahDlhu]).toEqual([2, 3, 1, 2]);
+  it("Pitka v7 (D6): pečeň sa nuluje, zadĺženie nie; Hasič v 2. Zhromaždení = zadĺženie 1 a žiadna karta Dlh", () => {
+    // Prvá Pitka: hráč na stole nič nemá, Štamgast dostane cigaretu za Cigaretu.
+    expect(nahladPitky(data, pri("k-hotovo"))[0]).toMatchObject({ pecenZoStola: 0, zadlzenieZoStola: 0 });
     const poPitke = po("k-hotovo-bot");
     expect(poPitke.faza).toBe("zhromazdenie");
-    expect(prahyHraca(data, poPitke, 0).priznaneDlhy).toBe(0);
     expect(poPitke.hraci[1].cigarety).toBe(4);
-    expect(nahladPitky(data, po("k-hasic"))[0].zadlzenieZoStola).toBe(2);
+    const nahlad = nahladPitky(data, po("k-hasic"))[0];
+    expect([nahlad.pecenZoStola, nahlad.prahPecene, nahlad.zadlzenieZoStola, nahlad.prahDlhu]).toEqual([1, 3, 1, 2]);
     const poBitke = po("k-hotovo-bot2");
-    expect(prahyHraca(data, poBitke, 0)).toMatchObject({ priznaneDlhy: 1, exekutor: 10 });
+    expect(poBitke.hraci[0]).toMatchObject({ zadlzenie: 1, pecen: 0 });
+    expect(prahyHraca(data, poBitke, 0)).toMatchObject({ priznaneDlhy: 0, exekutor: 7 });
     expect(body(pri("k-hotovo-bot2"))).toEqual([0, 0]);
     // Hráč vyhral bitku o 2 Pitky; starší v strede ešte nič nedali.
     expect(body(poBitke)).toEqual([2, 0]);
   });
 
-  // TODO(v7): ako vyššie — prah Exekútora je vo v7 7 (so súperovou priazňou 6 / 5 / 4).
-  it.skip("prebytok 3 na Farára (v6, 7 polí): prah exekútora 9 → 8 → 7, Štamgast cigareta za posunutého", () => {
-    expect(prahyHraca(data, po("k-prebytok1"), 0).exekutor).toBe(9);
-    expect(prahyHraca(data, po("k-prebytok2"), 0).exekutor).toBe(8);
+  it("prebytok 3 na Farára (7 polí): prah exekútora v7 7 → 6 → 5 → 4, Štamgast cigareta za posunutého", () => {
+    expect(prahyHraca(data, pri("k-prebytok1"), 0).exekutor).toBe(7);
+    expect(prahyHraca(data, po("k-prebytok1"), 0).exekutor).toBe(6);
+    expect(prahyHraca(data, po("k-prebytok2"), 0).exekutor).toBe(5);
     const s = po("k-prebytok3");
-    expect(prahyHraca(data, s, 0).exekutor).toBe(7);
+    expect(prahyHraca(data, s, 0).exekutor).toBe(4);
     expect(s.hraci[1].cigarety).toBe(pri("k-prebytok1").hraci[1].cigarety + 1);
     expect(body(s)).toEqual([2, 0]);
   });
 
-  it("časť končí uprostred partie: 2. kolo, Most je hráčov a hráč vyberá ďalší cieľ", () => {
+  it("časť končí uprostred partie: 2. kolo, hráč vyhral a vyberá ďalší cieľ", () => {
     const s = prehrajVyucbu(data, scenar, scenar.kroky.length);
     expect(s.koniec).toBeNull();
     expect(s.kolo).toBe(2);
     expect(s.faza).toBe("volbaCiela");
     expect(naTahu(s)).toBe(0);
-    expect(s.lokalityVHre.map((k) => k.defId)).toEqual(["vinna_pivnica", "cintorin"]);
+    expect(s.lokalityVHre.map((k) => k.defId)).toEqual(["jednota", "cintorin"]);
+    // D6: zadĺženie z 1. kola hráčovi ostáva aj do 2. kola.
+    expect(s.hraci[0].zadlzenie).toBe(1);
     // Kroky o starších po bitke bežia už v 2. kole — UI ich ukáže namiesto výberu lokality.
     expect(i("i-oranzova")).toBe(i("k-prebytok3") + 1);
     expect(pri("i-oranzova").kolo).toBe(2);
@@ -434,7 +451,7 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
 
   it("každý kľúčový pojem má kvíz (Michal: kvíz po každom pojme), NA EX v 1. časti nie", () => {
     const kvizy = scenar.kroky.filter((k) => k.kto === "otazka").map((k) => k.id);
-    for (const id of ["q-senok", "q-viera", "q-spoj", "q-pitky", "q-dlh", "q-zhromazdenie", "q-fazy", "q-hasic", "q-bitka", "q-starsi", "q-prebytok", "q-lokality"]) {
+    for (const id of ["q-senok", "q-povera", "q-spoj", "q-pitky", "q-dlh", "q-zhromazdenie", "q-fazy", "q-hasic", "q-bitka", "q-starsi", "q-prebytok", "q-lokality"]) {
       expect(kvizy).toContain(id);
     }
     expect(scenar.kroky.some((k) => k.prikaz?.type === "naex")).toBe(false);
@@ -479,10 +496,10 @@ describe("výučba Prvá hra — pripomienky Michala k 1. časti (#107, 2026-10-
     expect(reci.some((t) => /najprv sa naleje/i.test(t))).toBe(false);
   });
 
-  it("natáčanie Mosta svieti lokalitu na stole a tlačidlo otočiť; druhá Pitka svieti spoje Mosta na oboch stranách", () => {
+  it("výber lokality svieti lokalitu na stole a tlačidlo otočiť; druhá Pitka svieti spoje lokality na oboch stranách", () => {
     expect(krok("k-ciel").zvyraznit).toEqual(expect.arrayContaining(["lokalita-navrh", "tlacidlo:otocit"]));
     expect(krok("i-pitky").zvyraznit).toEqual(["os-kola", "spoje-lokality"]);
-    // Na oboch stranách Mosta je pri hláške spojená akcia — inak by „spoje-lokality“ ukázali len jednu stranu.
+    // Na oboch stranách lokality je pri hláške spojená akcia — inak by „spoje-lokality“ ukázali len jednu stranu.
     const s = prehrajVyucbu(data, scenar, scenar.kroky.findIndex((k) => k.id === "i-pitky"));
     expect(evaluateLine(data, lineState(s)).aktivneStredu).toEqual([1, 1]);
   });
