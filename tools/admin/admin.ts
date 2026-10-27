@@ -52,7 +52,8 @@
 // Spätná väzba a web
 //   nazory [kategoria]            spätná väzba hráčov
 //   komentar <id-nazoru> <subor>  komentár k názoru (ako Admin (AI))
-//   stav <id-nazoru> <stav>       nove | prijate | planovane | hotove | zamietnute
+//   stav <id-nazoru> <stav> [--novinka <id>] [--dovod "…"]   nove | prijate | planovane | hotove | zamietnute;
+//                                 pri hotove voliteľne novinka, v ktorej to je; pri zamietnute povinne jedna veta prečo
 //   playtesty                     reporty playtestov
 //   pouzivatelia                  účty na webe
 //   tempo [--json]                koľko trvajú partie a kde ide čas (fázy, príkazy) — roadmapa #9
@@ -318,7 +319,7 @@ const bezDiakritiky = (s: string): string => s.normalize("NFD").replace(/[̀-ͯ]
 
 // ---- príkazový riadok ------------------------------------------------------------
 
-const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok", "--vydanie"]);
+const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok", "--vydanie", "--novinka", "--dovod"]);
 
 /** Štýl avatarov AI účtov — ako avatary offline protihráčov (seed/avatary/boti): dedinčan napoly robot. */
 const STYL_AVATARA =
@@ -863,7 +864,7 @@ async function main(): Promise<void> {
 
     case "nazory": {
       const k = arg[0] === undefined ? "" : `&kategoria=${arg[0]}`;
-      const { nazory } = await api<{ nazory: { id: number; autor: { meno: string }; kategoria: string; stav: string; text: string; cigarety: number; komentare: { autor: { meno: string }; text: string }[] }[] }>("GET", `/nazory?triedenie=nove${k}`);
+      const { nazory } = await api<{ nazory: { id: number; autor: { meno: string }; kategoria: string; stav: string; nadpis?: string; text: string; cigarety: number; komentare: { autor: { meno: string }; text: string }[] }[] }>("GET", `/nazory?triedenie=nove${k}`);
       for (const n of nazory) {
         console.log(`#${n.id} [${n.kategoria}, ${n.stav}] ${n.autor.meno} — ${n.cigarety} cig.\n  ${n.text.replace(/\n/g, "\n  ")}`);
         for (const c of n.komentare) console.log(`    ↳ ${c.autor.meno}: ${c.text.replace(/\n/g, " ")}`);
@@ -881,8 +882,10 @@ async function main(): Promise<void> {
 
     case "stav": {
       const [id, stav] = arg;
-      if (id === undefined || stav === undefined) throw new Error("Použitie: stav <id-nazoru> <nove|prijate|planovane|hotove|zamietnute>");
-      await api("PATCH", `/nazory/${Number(id)}`, { stav });
+      if (id === undefined || stav === undefined) throw new Error("Použitie: stav <id-nazoru> <nove|prijate|planovane|hotove|zamietnute> [--novinka <id>] [--dovod \"…\"]");
+      const novinka = hodnota("--novinka");
+      const dovod = hodnota("--dovod");
+      await api("PATCH", `/nazory/${Number(id)}`, { stav, ...(novinka === undefined ? {} : { novinka: Number(novinka) }), ...(dovod === undefined ? {} : { dovod }) });
       console.log(`Názor #${id}: stav ${stav}.`);
       break;
     }

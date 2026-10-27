@@ -112,7 +112,10 @@ CREATE TABLE IF NOT EXISTS nazory (
   text TEXT NOT NULL,
   stav TEXT NOT NULL DEFAULT 'nove',
   vytvoreny INTEGER NOT NULL,
-  upraveny INTEGER
+  upraveny INTEGER,
+  nadpis TEXT NOT NULL DEFAULT '',
+  dovod TEXT NOT NULL DEFAULT '',
+  novinka INTEGER REFERENCES novinky(id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS nazory_komentare (
   id INTEGER PRIMARY KEY,
@@ -374,6 +377,13 @@ function migruj(db: Db): void {
   doplnStlpce(db, "navrhy", [["verdikt", "TEXT NOT NULL DEFAULT ''"]]);
   // Vydanie novinky (Michal 2026-10-27), napr. „Pravidlá v6“ — nadpis dňa v Novinkách; '' = len dátum.
   doplnStlpce(db, "novinky", [["vydanie", "TEXT NOT NULL DEFAULT ''"]]);
+  doplnStlpce(db, "nazory", [
+    // Spätná väzba S-A (Michal 2026-10-27): voliteľný nadpis „Jednou vetou“ ('' = staré názory
+    // ukážu prvú vetu), prečo „nebudeme robiť“ a novinka, v ktorej je „hotovo“.
+    ["nadpis", "TEXT NOT NULL DEFAULT ''"],
+    ["dovod", "TEXT NOT NULL DEFAULT ''"],
+    ["novinka", "INTEGER REFERENCES novinky(id) ON DELETE SET NULL"],
+  ]);
 }
 
 function stlpceTabulky(db: Db, tabulka: string): Set<string> {
