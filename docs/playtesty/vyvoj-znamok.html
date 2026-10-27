@@ -194,9 +194,18 @@ const PARTIE = [
   { id: "20261027-062058-3", report: "20261027-062058.html", dlzka: "stredná (5 + finále)", vysledok: "Eva 24 : 6 Vilo", mena: ["Vilo", "Eva"],
     jano: [6, 6, 4, 6, 8, 5, 4, 5, 7, 6, 5, 8], eva: [8, 8, 5, 7, 9, 6, 5, 7, 8, 6, 7, 9],
     zmenyPred: [] },
+  { id: "20261027-105422-1", report: "20261027-105422.html", dlzka: "krátka (3 + finále)", vysledok: "Eva 16 : −8 Fero", mena: ["Fero", "Eva"],
+    jano: [7, 7, 5, 6, 9, 5, 6, 7, 7, 8, 5, 9], eva: [8, 8, 6, 7, 9, 6, 7, 8, 8, 7, 6, 9],
+    zmenyPred: [] },
+  { id: "20261027-105422-2", report: "20261027-105422.html", dlzka: "krátka (3 + finále)", vysledok: "Vilo 22 : 0 Šimon", mena: ["Šimon", "Vilo"],
+    jano: [5, 6, 4, 6, 8, 7, 6, 7, 7, 7, 3, 8], eva: [7, 7, 5, 6, 7, 6, 7, 7, 7, 7, 4, 8],
+    zmenyPred: [] },
+  { id: "20261027-105422-3", report: "20261027-105422.html", dlzka: "krátka (3 + finále)", vysledok: "Hela 29 : 4 Jano", mena: ["Jano", "Hela"],
+    jano: [7, 8, 5, 6, 9, 7, 6, 7, 8, 7, 6, 9], eva: [8, 8, 6, 7, 9, 7, 6, 8, 8, 7, 6, 9],
+    zmenyPred: [] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = [];
+const CAKAJUCE = ["Veľké pečiatky", "Nástenka na mieste stola", "Výkupné zvyšných poldecí a cigariet", "Rastúca cena fajčenia", "Dobratie 1 karta"];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");
