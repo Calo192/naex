@@ -61,12 +61,12 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
       faza: "pitka",
       pitkyCelkom: 1,
       pitkaCislo: 1,
-      hraci: [{ ...s0.hraci[0], cigarety: 2 }, s0.hraci[1]],
+      hraci: [{ ...s0.hraci[0], cigarety: 4 }, s0.hraci[1]],
       pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
     } as GameState;
     expect(legalCommands(data, s, 0)).toContainEqual({ type: "smoke", pocet: 1 });
     const po = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
-    expect(po.hraci[0].cigarety).toBe(1);
+    expect(po.hraci[0].cigarety).toBe(3);
     expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 1);
     expect(naTahu(po)).toBe(0);
   });

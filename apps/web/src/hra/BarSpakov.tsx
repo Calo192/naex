@@ -1,11 +1,12 @@
 // Bar špakov (Michal 2026-10-27, dizajn spaky-starsi-20261027): kým je otvorená krčmová
 // nástenka, oba bary hráčov ukážu namiesto zdrojov, odkiaľ hráč špaky má a čo ešte
-// príde — lokality, starší, sekera a finále, Exekútor, Cirhóza a „keby skončila teraz“.
+// príde — lokality, starší, sekera a finále, Exekútor, koniec hry (výkupné zdrojov a Cirhóza)
+// a „keby skončila teraz“.
 // Súčet dlaždíc doteraz dá popolník; čísla ráta jadro (nástenka, spakyTeraz, rozpisSpakov).
 
 import type { CSSProperties } from "react";
 import type { ClientState, PlayerId, SpakyTeraz } from "@naex/core";
-import { KONSTANTY } from "@naex/core";
+import { KONSTANTY, pocet } from "@naex/core";
 import { sMinusom } from "./Spaky.tsx";
 import { spakyPodlaZdroja } from "./spakyAStarsi.ts";
 
@@ -25,6 +26,8 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
   const { vyhrate, zaLokality, zaFinale, zoSekery, finale } = rozpis;
   const mena = vyhrate.map((k) => menoKarty(k.defId));
   const cirhozy = view.koniec === null ? body.cirhozy[p] : (view.koniec.cirhozy?.[p] ?? 0);
+  const vykupne = body.vykupne[p];
+  const zaKoniec = vykupne.spaky - cirhozy * KONSTANTY.SPAKY_ZA_CIRHOZU;
   const dlazdice = [
     {
       kluc: "lokality",
@@ -65,12 +68,16 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       popis: "Špaky, ktoré zhoreli pri exekúcii (polovica priznaných Dlhov).",
     },
     {
-      kluc: "cirhoza",
-      nazov: "Cirhóza",
-      hodnota: zn(-cirhozy * KONSTANTY.SPAKY_ZA_CIRHOZU),
-      trieda: cirhozy > 0 ? "minus" : "",
-      pod: `${cirhozy} nepriznané`,
-      popis: `Nepriznaná Cirhóza zoberie na konci hry ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus (ruka aj oba balíčky).`,
+      // Výkupné a Cirhóza v jednej dlaždici — siedma by sa na notebooku nezmestila.
+      kluc: "koniec",
+      nazov: "Koniec hry",
+      hodnota: zn(zaKoniec),
+      trieda: zaKoniec > 0 ? "plus" : zaKoniec < 0 ? "minus" : "",
+      pod: [`výkupné ${zn(vykupne.spaky)}`, cirhozy > 0 ? `Cirhóza −${cirhozy * KONSTANTY.SPAKY_ZA_CIRHOZU}` : null].filter((t): t is string => t !== null).join(" · "),
+      popis:
+        `Výkupné po finále: každý plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak — ` +
+        `${view.koniec === null ? "teraz" : "na konci"} ${pocet(vykupne.poldeci, "plný poldeci", "plné poldeci", "plných poldeci")} a ${pocet(vykupne.cigarety, "cigareta", "cigarety", "cigariet")} = ${zn(vykupne.spaky)}. ` +
+        `Nepriznaná Cirhóza zoberie na konci hry ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus (ruka aj oba balíčky)${cirhozy > 0 ? `, ${ja ? "máš" : "má"} ${cirhozy}` : ""}.`,
     },
     {
       kluc: "teraz",
@@ -78,7 +85,7 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       hodnota: sMinusom(body.spolu[p]),
       trieda: "",
       pod: `teraz · so staršími až ${sMinusom(body.odhad[p])}`,
-      popis: `Špaky v popolníku mínus nepriznaná Cirhóza. „Až“ pridá starších za bitky, ktoré ešte prídu, keby ${ja ? "si" : ""} ich ${ja ? "vyhral" : "vyhral"} všetky a markery sa nepohli — špaky za bitky nerátá.`,
+      popis: `Špaky v popolníku, výkupné zvyšných poldeci a cigariet, mínus nepriznaná Cirhóza. „Až“ pridá starších za bitky, ktoré ešte prídu, keby ${ja ? "si" : ""} ich ${ja ? "vyhral" : "vyhral"} všetky a markery sa nepohli — špaky za bitky nerátá.`,
     },
   ];
   return (

@@ -9,6 +9,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BattleSide, BitkaStav, CardDef, CardInstance, Event, GameData, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState } from "../src/index.ts";
 import {
+  KONSTANTY,
   apply,
   buildGameData,
   computeDamage,
@@ -277,9 +278,15 @@ describe("§11 Pohreb a §9.7 Návrat kariet", () => {
 // --- §14 Bodovanie ------------------------------------------------------------------------------
 
 describe("§14 Koniec hry po finále (v6)", () => {
-  /** Finále v kroku Pohrebu — skipPohreb ho dokončí a hra sa skončí. */
-  const poFinale = (spaky: [number, number], h0: Partial<PlayerState> = {}): GameState => {
-    const s = predKoncomBitky(57, (x) => sHracom({ ...x, lokalityVHre: [], ciel: { typ: "finale", lokalita: null }, spaky }, 0, h0));
+  /**
+   * Finále v kroku Pohrebu — skipPohreb ho dokončí a hra sa skončí. Bez poldeci
+   * a cigariet, aby výkupné nemiešalo čísla (h0/h1 ich smú doplniť).
+   */
+  const BEZ_ZDROJOV: Partial<PlayerState> = { poldeciPlne: 0, poldeciVypite: 0, cigarety: 0 };
+  const poFinale = (spaky: [number, number], h0: Partial<PlayerState> = {}, h1: Partial<PlayerState> = {}): GameState => {
+    const s = predKoncomBitky(57, (x) =>
+      sHracom(sHracom({ ...x, lokalityVHre: [], ciel: { typ: "finale", lokalita: null }, spaky }, 0, { ...BEZ_ZDROJOV, ...h0 }), 1, { ...BEZ_ZDROJOV, ...h1 }),
+    );
     return apply(data, s, { type: "skipPohreb" }, 0).state;
   };
 
@@ -301,6 +308,34 @@ describe("§14 Koniec hry po finále (v6)", () => {
     expect(po.koniec?.vitaz).toBe(1);
     expect(po.spaky).toEqual([-3, 8]);
   });
+
+  it("§14: výkupné — plný poldeci 1 špak, každých celých 5 cigariet 1 špak, bez stropu; vypitý poldeci nič", () => {
+    const po = poFinale([4, 10], { poldeciPlne: 3, poldeciVypite: 2, cigarety: 14 }, { poldeciPlne: 0, poldeciVypite: 4, cigarety: 4 });
+    expect(po.koniec?.vykupne).toEqual([
+      { poldeci: 3, cigarety: 14, spaky: 3 + 2 },
+      { poldeci: 0, cigarety: 4, spaky: 0 },
+    ]);
+    expect(po.koniec?.body).toEqual([9, 10]);
+    expect(po.koniec?.vitaz).toBe(1);
+    // Bez stropu: 9 plných poldeci a 40 cigariet = 17 špakov.
+    expect(poFinale([0, 0], { poldeciPlne: 9, cigarety: 40 }).koniec?.body).toEqual([17, 0]);
+  });
+
+  it("§14: výkupné rozhodne aj o víťazovi a ráta sa pred určením víťaza, spolu s Cirhózou", () => {
+    const po = poFinale([6, 6], { poldeciPlne: 1, cigarety: 5, ruka: [inst("cirhoza")] }, { cigarety: 9 });
+    // Hráč 1: 6 + 1 + 1 − 5 = 3; hráč 2: 6 + 1 = 7.
+    expect(po.koniec?.body).toEqual([3, 7]);
+    expect(po.koniec?.vitaz).toBe(1);
+    const remiza = poFinale([5, 6], { poldeciPlne: 1 });
+    expect(remiza.koniec).toMatchObject({ vitaz: null, body: [6, 6] });
+  });
+
+  it("§14: výkupné je len po finále — po bitke o lokalitu sa zdroje nevykupujú", () => {
+    const s = predKoncomBitky(57, (x) => sHracom({ ...x, spaky: [2, 2] }, 0, { poldeciPlne: 4, cigarety: 10 }));
+    const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+    expect(po.koniec).toBeNull();
+    expect(po.hraci[0].poldeciPlne).toBeGreaterThanOrEqual(4);
+  });
 });
 
 describe("§8 Absťák a neresti", () => {
@@ -311,8 +346,8 @@ describe("§8 Absťák a neresti", () => {
     const s = sNerestami(2, 1);
     const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
-    // 1 karta za priznaný Absťák + 2 karty po bitke.
-    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 3);
+    // 1 karta za priznaný Absťák + KARTY_PO_BITKE (od 2026-10-27 jedna) po bitke.
+    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 1 + KONSTANTY.KARTY_PO_BITKE);
     expect(po.hraci[0].nerestiMinuleKolo).toBe(1);
   });
 

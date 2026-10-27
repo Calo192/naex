@@ -8,7 +8,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { GameState, PlayerId } from "../src/index.ts";
-import { IllegalCommandError, apply, legalCommands, loadGameData, setupGame } from "../src/index.ts";
+import { IllegalCommandError, apply, cenaFajcenia, cenaFajceniaHraca, legalCommands, loadGameData, mozeHrat, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -62,5 +62,83 @@ describe("v5 bod 1: fajčenie len v Pitke", () => {
     expect(legalCommands(data, s, 0).some((c) => c.type === "smoke")).toBe(false);
     expect(() => apply(data, s, { type: "smoke", pocet: 1 }, 0)).toThrow(/len v Pitke/);
     expect(s.hraci[0].cigarety).toBe(3);
+  });
+});
+
+describe("fajčenie zdražie v Pitke (Michal 2026-10-27)", () => {
+  const sCigaretami = (cigarety: number): GameState => {
+    const s = vStave("pitka", true);
+    const h = s.hraci[0];
+    let uid = s.nextUid;
+    const doberaci = [...h.doberaci, ...Array.from({ length: 8 }, () => ({ uid: uid++, defId: "pijan", leftLayout: 0 as const, rightLayout: 0 as const }))];
+    return { ...s, nextUid: uid, hraci: [{ ...h, cigarety, doberaci, nerestiTotoKolo: 0 }, s.hraci[1]] };
+  };
+  const fajc = (s: GameState): GameState => apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
+
+  it("prvé fajčenie 1 cigareta, druhé 2, tretie 3; každé dá kartu a každá vyfajčená cigareta je nerest", () => {
+    let s = sCigaretami(10);
+    const ruka = s.hraci[0].ruka.length;
+    expect([cenaFajcenia(0), cenaFajcenia(1), cenaFajcenia(2)]).toEqual([1, 2, 3]);
+    s = fajc(s);
+    expect([s.hraci[0].cigarety, s.pitkaStav?.fajcenie[0]]).toEqual([9, 1]);
+    s = fajc(s);
+    expect([s.hraci[0].cigarety, s.pitkaStav?.fajcenie[0]]).toEqual([7, 2]);
+    s = fajc(s);
+    expect([s.hraci[0].cigarety, s.pitkaStav?.fajcenie[0]]).toEqual([4, 3]);
+    expect(s.hraci[0].ruka.length).toBe(ruka + 3);
+    expect(s.hraci[0].nerestiTotoKolo).toBe(1 + 2 + 3);
+    // Nie je to strop: štvrté stojí 4 — so 4 cigaretami sa dá.
+    expect(cenaFajceniaHraca(s, 0)).toBe(4);
+    expect(legalCommands(data, s, 0)).toContainEqual({ type: "smoke", pocet: 1 });
+    expect(fajc(s).hraci[0].cigarety).toBe(0);
+  });
+
+  it("na drahšie fajčenie bez dosť cigariet to nejde a cigarety ostanú", () => {
+    const s0 = sCigaretami(1);
+    const s: GameState = { ...s0, pitkaStav: { ...s0.pitkaStav!, fajcenie: [1, 0] } };
+    expect(legalCommands(data, s, 0).some((c) => c.type === "smoke")).toBe(false);
+    expect(() => apply(data, s, { type: "smoke", pocet: 1 }, 0)).toThrow(/stojí 2 cigarety/);
+  });
+
+  it("viac kariet naraz stojí súčet (1 + 2 + 3), počítadlo má každý hráč zvlášť", () => {
+    const s = apply(data, sCigaretami(10), { type: "smoke", pocet: 3 }, 0).state;
+    expect(s.hraci[0].cigarety).toBe(10 - 6);
+    expect(s.pitkaStav?.fajcenie).toEqual([3, 0]);
+    expect(cenaFajceniaHraca(s, 1)).toBe(1);
+  });
+
+  it("počítadlo fajčení je verejné — súper vidí, koľko ďalšie fajčenie stojí", () => {
+    const s = fajc(fajc(sCigaretami(10)));
+    for (const p of [0, 1] as const) {
+      const v = viewFor(data, s, p);
+      expect(v.pitkaStav?.fajcenie).toEqual([2, 0]);
+      expect(cenaFajceniaHraca(v, 0)).toBe(3);
+    }
+  });
+
+  it("každá Pitka začína fajčenie znova od 1 cigarety (náhodné partie, fajčí sa, kedy sa dá)", () => {
+    let s = setupGame(data, 21, { lokalit: 3 });
+    let rng = rngSeed(5);
+    let novychPitiek = 0;
+    let poFajceni = 0;
+    let fajciliVPredoslej = false;
+    for (let krok = 0; s.koniec === null && krok < 4000; krok++) {
+      const p = ([0, 1] as const).find((q) => mozeHrat(s, q)) ?? naTahu(s);
+      if (p === null) break;
+      const [n, r] = rngInt(rng, 2 ** 31);
+      rng = r;
+      const pred = s;
+      const cmds = legalCommands(data, s, p);
+      const cmd = cmds.find((c) => c.type === "smoke") ?? (cmds[n % cmds.length] as (typeof cmds)[number]);
+      s = apply(data, s, cmd, p).state;
+      if (s.faza === "pitka" && s.pitkaStav !== null && (pred.faza !== "pitka" || pred.pitkaCislo !== s.pitkaCislo)) {
+        novychPitiek++;
+        if (fajciliVPredoslej) poFajceni++;
+        expect(s.pitkaStav.fajcenie).toEqual([0, 0]);
+      }
+      if (s.pitkaStav !== null) fajciliVPredoslej = s.pitkaStav.fajcenie[0] + s.pitkaStav.fajcenie[1] > 0;
+    }
+    expect(novychPitiek).toBeGreaterThan(3);
+    expect(poFajceni).toBeGreaterThan(0);
   });
 });

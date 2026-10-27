@@ -115,7 +115,9 @@ describe("špaky teraz pri staršom (v6)", () => {
         const r = rozpisSpakov(v);
         for (const h of [0, 1] as const) {
           expect(r[h].spolu).toBe(koniec.body[h]);
-          expect(r[h].zaBitky + r[h].zaStarsich + r[h].prebytok + r[h].exekutor + r[h].cirhoza).toBe(koniec.body[h]);
+          expect(r[h].zaBitky + r[h].zaStarsich + r[h].prebytok + r[h].exekutor + r[h].cirhoza + r[h].vykupne).toBe(koniec.body[h]);
+          // Výkupné na konci sedí so zdrojmi, ktoré hráčovi ostali (verejné).
+          expect(r[h].vykupne).toBe(v.hraci[h].poldeciPlne + Math.floor(v.hraci[h].cigarety / 5));
         }
       }
       koncov++;

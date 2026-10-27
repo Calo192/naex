@@ -3,8 +3,8 @@
 // len riadok v páse pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
 import { useEffect, useRef } from "react";
-import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
-import { KONSTANTY, VERZIA_PRAVIDIEL, rozpisSpakov, tvar } from "@naex/core";
+import type { ClientState, GameData, PlayerId, Rod, Vykupne } from "@naex/core";
+import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
 import { Nastenka, PocetSpakov } from "./Spaky.tsx";
@@ -28,6 +28,12 @@ export interface KoniecHryProps {
   readonly rody?: readonly [Rod, Rod];
   /** Fotky hráčov na krčmovú nástenku (víťaz bitky). */
   readonly avatary?: readonly [string | null, string | null];
+}
+
+/** „2 plné poldeci a 7 cigariet = +3“ — čo sa hráčovi na konci vykúpilo. */
+function vykupneText(v: Vykupne | undefined): string {
+  if (v === undefined) return "nič";
+  return `${pocet(v.poldeci, "plný poldeci", "plné poldeci", "plných poldeci")} a ${pocet(v.cigarety, "cigareta", "cigarety", "cigariet")} = +${v.spaky}`;
 }
 
 export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null] }: KoniecHryProps) {
@@ -84,6 +90,12 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
         {rozpis !== null && (
           <div className="koniec-rozpis">
             <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} />
+            {(koniec.vykupne?.[0]?.spaky ?? 0) + (koniec.vykupne?.[1]?.spaky ?? 0) > 0 && (
+              <p className="koniec-cirhozy">
+                Výkupné: plný poldeci {KONSTANTY.SPAKY_ZA_POLDECI} špak, každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak — ty{" "}
+                {vykupneText(koniec.vykupne?.[ja])}, {mena[su]} {vykupneText(koniec.vykupne?.[su])}.
+              </p>
+            )}
             {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (
               <p className="koniec-cirhozy">
                 Nepriznaná Cirhóza na konci: {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus (ruka aj oba balíčky) — ty ×{koniec.cirhozy?.[ja] ?? 0},{" "}

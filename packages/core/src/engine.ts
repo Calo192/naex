@@ -185,7 +185,10 @@ export interface PitkaStav {
   readonly naTahu: PlayerId;
   readonly hotovy: readonly [boolean, boolean];
   readonly naexPouzity: readonly [boolean, boolean];
-  /** Cigarety vyfajčené v tejto pitke (každá už dala kartu). */
+  /**
+   * Koľkokrát hráč v tejto Pitke fajčil (každé fajčenie = 1 karta). Verejné —
+   * určuje cenu ďalšieho fajčenia (cenaFajcenia), na začiatku Pitky je 0.
+   */
   readonly fajcenie: readonly [number, number];
   /**
    * Hráč, ktorý práve smie na súperovo NA EX odpovedať vyložením jednej
@@ -293,7 +296,7 @@ export interface BitkaNaNastenke {
   readonly exekutor: readonly [number, number];
   /** Po finále: držiteľ prebytku dostane špaky namiesto posunu markerov. */
   readonly prebytok: readonly [number, number];
-  /** Špaky oboch po bitke (pred záverečnou Cirhózou). */
+  /** Špaky oboch po bitke (pred záverečnou Cirhózou a výkupným). */
   readonly spakyPo: readonly [number, number];
 }
 
@@ -304,6 +307,16 @@ export interface KoniecHry {
   readonly body: readonly [number, number] | null;
   /** Nepriznané Cirhózy na konci hry (ruka aj oba balíčky) — za každú SPAKY_ZA_CIRHOZU menej. */
   readonly cirhozy?: readonly [number, number];
+  /** Výkupné zvyšných plných poldeci a cigariet po finále (vykupne). */
+  readonly vykupne?: readonly [Vykupne, Vykupne];
+}
+
+/** Výkupné zvyšných zdrojov hráča na konci hry: čo sa vykúpilo a za koľko špakov. */
+export interface Vykupne {
+  /** Plné poldeci (vypité ani ležiace pod NA EX sa nerátajú). */
+  readonly poldeci: number;
+  readonly cigarety: number;
+  readonly spaky: number;
 }
 
 export interface GameState {
@@ -1414,6 +1427,8 @@ export function apply(
 
   aktualizujPitky(s, data);
   dohrajNevyhnutne(data, s, events);
+  // Nevyhnutné ťahy smú odkryť NA EX (hotovo za hráča) — aj to mení počet Pitiek.
+  aktualizujPitky(s, data);
   events.push(...zaznamyPriazne(data, state, s as GameState));
   return { state: s as GameState, events };
 }
@@ -2805,19 +2820,37 @@ export function jeCoTahat(doberaci: number, odhadzovaci: number): boolean {
   return doberaci + odhadzovaci > 0;
 }
 
+/**
+ * Cena fajčenia (Michal 2026-10-27): `pocet` ďalších fajčení po `uz` fajčeniach
+ * v tej istej Pitke — k-te stojí CENA_FAJCENIA_ZAKLAD + (k − 1) × PRIRASTOK,
+ * viac naraz je súčet (1 + 2 + …).
+ */
+export function cenaFajcenia(uz: number, pocet = 1): number {
+  let cena = 0;
+  for (let i = 0; i < pocet; i++) cena += KONSTANTY.CENA_FAJCENIA_ZAKLAD + (uz + i) * KONSTANTY.CENA_FAJCENIA_PRIRASTOK;
+  return cena;
+}
+
+/** Cena najbližšieho fajčenia hráča p v prebiehajúcej Pitke (mimo Pitky ako prvé). */
+export function cenaFajceniaHraca(s: { readonly pitkaStav: Pick<PitkaStav, "fajcenie"> | null }, p: PlayerId, pocet = 1): number {
+  return cenaFajcenia(s.pitkaStav?.fajcenie[p] ?? 0, pocet);
+}
+
 function cmdSmoke(s: MutState, cmd: { pocet: number }, p: PlayerId, events: Event[]): void {
   const pitka = s.pitkaStav;
   const vPitke = s.faza === "pitka" && pitka !== null && pitka.reakcia === null;
   need(vPitke, "Fajčiť sa dá len v Pitke.");
   need(!zakazFajcit(s as GameState), "Benzínka: nikto nesmie fajčiť.");
-  need(cmd.pocet > 0 && Number.isInteger(cmd.pocet), "Počet cigariet musí byť kladný.");
-  need(s.hraci[p].cigarety >= cmd.pocet, "Toľko cigariet nemáš.");
+  need(cmd.pocet > 0 && Number.isInteger(cmd.pocet), "Počet kariet musí byť kladný.");
+  const cena = cenaFajcenia(pitka.fajcenie[p], cmd.pocet);
+  need(s.hraci[p].cigarety >= cena, `Fajčiť teraz stojí ${cigariet(cena)}, máš ${s.hraci[p].cigarety}.`);
   need(jeCoTahat(s.hraci[p].doberaci.length, s.hraci[p].odhadzovaci.length), "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne.");
-  hrac(s, p).cigarety -= cmd.pocet;
-  hrac(s, p).nerestiTotoKolo += cmd.pocet;
+  hrac(s, p).cigarety -= cena;
+  // Nerest je každá vyfajčená cigareta (§8) — aj tie, o ktoré je ďalšie fajčenie drahšie.
+  hrac(s, p).nerestiTotoKolo += cena;
   const tahane = tahaj(s, p, cmd.pocet, events);
-  if (vPitke) pitka.fajcenie[p] += cmd.pocet;
-  events.push({ type: "log", text: `Hráč ${p + 1} fajčí ${cigariet(cmd.pocet)} a doberá si ${kariet(tahane.length)}.` });
+  pitka.fajcenie[p] += cmd.pocet;
+  events.push({ type: "log", text: `Hráč ${p + 1} fajčí za ${cigariet(cena)} a doberá si ${kariet(tahane.length)}.` });
 }
 
 /** Cena stokárskeho barteru hráča p (Lakomec ju vo v5 nezlacňuje — je z neho Abstinent). */
@@ -4419,12 +4452,35 @@ export function nepriznaneCirhozy(h: Pick<PlayerState, "ruka" | "doberaci" | "od
 }
 
 /**
+ * Výkupné zvyšných zdrojov (Michal 2026-10-27, §14): každý plný poldeci
+ * SPAKY_ZA_POLDECI, každých celých CIGARIET_ZA_SPAK cigariet 1 špak, bez stropu.
+ * `skryteNaex` = poldeci hráča pod jeho ešte neodkrytým NA EX — ten sa vypije,
+ * nie vykúpi (rátajú sa len pre vlastné, súperove pohľad nemá).
+ */
+export function vykupneHraca(h: Pick<PlayerState, "poldeciPlne" | "cigarety">, skryteNaex = 0): Vykupne {
+  const poldeci = Math.max(0, h.poldeciPlne - skryteNaex);
+  const cigarety = Math.max(0, h.cigarety);
+  return { poldeci, cigarety, spaky: poldeci * KONSTANTY.SPAKY_ZA_POLDECI + Math.floor(cigarety / KONSTANTY.CIGARIET_ZA_SPAK) };
+}
+
+/**
  * Koniec hry po finále (v6, Michal 2026-10-26): každá nepriznaná Cirhóza
- * stojí SPAKY_ZA_CIRHOZU špakov, vyhrá viac špakov, rovnosť je remíza.
+ * stojí SPAKY_ZA_CIRHOZU špakov, zvyšné plné poldeci a cigarety sa vykúpia
+ * (2026-10-27), vyhrá viac špakov, rovnosť je remíza.
  */
 function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[]): void {
   const cirhozy: [number, number] = [nepriznaneCirhozy(s.hraci[0] as PlayerState), nepriznaneCirhozy(s.hraci[1] as PlayerState)];
+  const vykupne: [Vykupne, Vykupne] = [vykupneHraca(s.hraci[0]), vykupneHraca(s.hraci[1])];
   for (const p of [0, 1] as const) {
+    const v = vykupne[p];
+    if (v.spaky > 0) {
+      s.spaky[p] += v.spaky;
+      const casti = [
+        v.poldeci > 0 ? pocet(v.poldeci, "plný poldeci", "plné poldeci", "plných poldeci") : null,
+        v.cigarety >= KONSTANTY.CIGARIET_ZA_SPAK ? cigariet(v.cigarety) : null,
+      ].filter((t): t is string => t !== null);
+      events.push({ type: "log", text: `Hráč ${p + 1}: výkupné za ${casti.join(" a ")} — plus ${spakov(v.spaky)}.` });
+    }
     if (cirhozy[p] === 0) continue;
     s.spaky[p] -= cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU;
     events.push({ type: "log", text: `Hráč ${p + 1}: ${pocet(cirhozy[p], "nepriznaná Cirhóza", "nepriznané Cirhózy", "nepriznaných Cirhóz")} — mínus ${spakov(cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU)}.` });
@@ -4433,7 +4489,7 @@ function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[]): void
   const vitaz: PlayerId | null = body[0] === body[1] ? null : body[0] > body[1] ? 0 : 1;
   // Záporné špaky (Exekútor, Cirhóza) so znamienkom mínus, nie spojovníkom — vedľa pomlčky pôsobil ako preklep (UI-7).
   const sk = (n: number): string => (n < 0 ? `−${-n}` : String(n));
-  s.koniec = { vitaz, dovod: `Odohralo sa finále, špaky ${sk(body[0])} : ${sk(body[1])}.`, body, cirhozy };
+  s.koniec = { vitaz, dovod: `Odohralo sa finále, špaky ${sk(body[0])} : ${sk(body[1])}.`, body, cirhozy, vykupne };
   s.faza = "koniec";
   events.push({ type: "koniec", vitaz, dovod: s.koniec.dovod, body });
 }
@@ -4443,7 +4499,7 @@ function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[]): void
 
 function mozeFajcit(state: GameState, p: PlayerId): boolean {
   const h = state.hraci[p];
-  return h.cigarety > 0 && !zakazFajcit(state) && jeCoTahat(h.doberaci.length, h.odhadzovaci.length);
+  return h.cigarety >= cenaFajceniaHraca(state, p) && !zakazFajcit(state) && jeCoTahat(h.doberaci.length, h.odhadzovaci.length);
 }
 
 export function legalCommands(data: GameData, state: GameState, p: PlayerId): Command[] {
