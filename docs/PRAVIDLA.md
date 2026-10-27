@@ -1,7 +1,7 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v7 — návrh na vetve `v7/revizia-sady` (revízia sady, Michal
-2026-10-27)**, zatiaľ len na playtest; na živom webe platia v6 (26. 10. 2026).
+**Pravidlá v7 (zmrazené 2026-10-27)** — návrh na vetve `v7/revizia-sady`
+(revízia sady, Michal 2026-10-27), zatiaľ len na playtest; na živom webe platia v6.
 Pravidlá sa menia len v dávkach; celá dávka dostane ďalšiu verziu.
 
 **Zmeny v7 oproti v6** (podklady `docs/napady/revizia-sady/plan.md`, staré
