@@ -319,6 +319,13 @@ describe("Pitka (v7)", () => {
     expect(legalCommands(data, b1, 1).some((c) => c.type === "smoke")).toBe(false);
   });
 
+  it("Benzínka: pri rovnakej vzdialenosti nefajčí nikto (Michal 2026-10-27)", () => {
+    const b = sHracom(sHracom(vPitke("benzinka", [[lezi(inst("zamocnik"), 0)], [lezi(inst("masiar"), 1)]]), 0, { cigarety: 5 }), 1, { cigarety: 5 });
+    expect(legalCommands(data, b, 0).some((c) => c.type === "smoke")).toBe(false);
+    expect(legalCommands(data, { ...b, pitkaStav: pitkaStav(1) }, 1).some((c) => c.type === "smoke")).toBe(false);
+    expect(() => apply(data, b, { type: "smoke" }, 0)).toThrow(/Benzínka/);
+  });
+
   it("Bzdocha: kto vyberá NA EX po súperovi, vidí jeho skryté NA EX — inak nie", () => {
     const strany: GameState["strany"] = [[lezi(inst("zamocnik"), 0), lezi(inst("vandal"), 0)], [lezi(inst("masiar"), 1), lezi(inst("klebetnica"), 1)]];
     // Vínna pivnica: po prvom NA EX má hráč ešte voľbu, Pitku za neho hra neskončí.
@@ -420,11 +427,12 @@ describe("Kšeft (v7)", () => {
 });
 
 describe("Bitka a po bitke (v7)", () => {
-  it("Puška a Vidly: Petelice a Rany o 1 poškodenie viac — aj Rany navyše z efektov", () => {
-    const s = sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("puska"), inst("vidly")] });
-    expect(nastrojeTuhe(s, 0, { Rana: 2, Petelica: 1 }, 1)).toEqual([
+  it("Puška a Vidly: Petelice a Rany z vyložených akcií o 1 viac — Rany navyše z efektov nie (Michal 2026-10-27)", () => {
+    // Strýko z Ameriky kúpil Ranu navyše — Vidly ju nezosilnia.
+    const s = { ...sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("puska"), inst("vidly")] }), kseftRany: [1, 0] as [number, number] };
+    expect(nastrojeTuhe(s, 0, { Rana: 2, Petelica: 1 })).toEqual([
       { zdroj: "puska", tuhe: 1 },
-      { zdroj: "vidly", tuhe: 3 },
+      { zdroj: "vidly", tuhe: 2 },
     ]);
     const bez = poskodenieBitky(data, { ...s, hraci: [{ ...s.hraci[0], dedicstvo: [] }, s.hraci[1]] }, [{ Rana: 2, Petelica: 1 }, {}], [0, 0]).tuhe[0];
     expect(poskodenieBitky(data, s, [{ Rana: 2, Petelica: 1 }, {}], [0, 0]).tuhe[0]).toBe(bez + 3);

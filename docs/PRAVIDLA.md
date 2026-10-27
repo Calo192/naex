@@ -1194,7 +1194,7 @@ finále): Poľovnícka chata, Predsedova vila, Herňa. Hrany sú v `cards.json`
 | Lesná cesta | Bitka | +1 tuhé za každé **svoje Zviera** v súperovom kraji, bez stropu. |
 | Cintorín | Pitka | Nová Cirhóza je hneď priznaná (súper za ňu v bitke dostane +1 tuhé, otvorí sa Pohreb). (efekty v7, plan.md 14.7) |
 | Jednota | Pitka | Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať (doliatie = 2 cigarety za vypitý poldeci; barter smie). Pri rovnosti smú obaja. |
-| Benzínka | Pitka | Fajčiť smie len hráč, ktorého Občan alebo Starešina leží **najďalej od lokality** (index na strane, na ktorejkoľvek strane, skrytá Záverečná sa neráta). Pri rovnosti nefajčí nikto (TODO: návrh, Michal nepotvrdil). |
+| Benzínka | Pitka | Fajčiť smie len hráč, ktorého Občan alebo Starešina leží **najďalej od lokality** (index na strane, na ktorejkoľvek strane, skrytá Záverečná sa neráta). Pri rovnakej vzdialenosti nefajčí nikto (Michal 2026-10-27). |
 | Kar | Pitka | Poškodenie pečene za NA EX dostane **súper** hráča, ktorý ho dal (poldeci a nerest ostávajú dávajúcemu). |
 | Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). NA EX sa smie dať len na kartu v kraji **pri oltári** (pri vytlačenej ľavej hrane; s otočeným Kostolom pri strane hráča 1). |
 | Zberný dvor | Kšeft | Za 1 cigaretu (nerest) ľubovoľná karta zo svojho odhadzovacieho balíčka do ruky, raz za Pitku. |
@@ -1318,7 +1318,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Krabička cigariet | Dedičstvo: Pitka: za každé 2 cigarety, ktoré súper v Pitke vyfajčí (rátajú sa zaplatené cigarety), si hneď doberieš 1 kartu. Nie je to nerest. |
 | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, udelíš mu Pecku navyše. |
 | Puška | Dedičstvo: každá tvoja aktívna Petelica udelí o 1 poškodenie viac. |
-| Vidly | Dedičstvo: každá tvoja Rana — aktívna akcia aj Rana navyše z efektov (Svokra, Pijan, Vymáhač, Strýko) — udelí o 1 poškodenie viac. |
+| Vidly | Dedičstvo: každá tvoja aktívna akcia Rana z vyložených kariet (aj hrany lokality) udelí o 1 poškodenie viac. Rany navyše z efektov kariet (Svokra, Pijan, Vymáhač, Strýko z Ameriky) Vidly nezosilnia (Michal 2026-10-27). |
 | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); v poslednej Pitke kola (pred bitkou) získaš 1 Dlh. |
 | Svätý text | Dedičstvo: hodnota tvojej Viery je o 1 vyššia. |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); poldeci za cigarety dolievať nesmieš. |

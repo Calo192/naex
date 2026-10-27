@@ -1136,7 +1136,7 @@ function stranyBitky(
     return {
       sums: { ...sums[p], Povera: povera, ...(vieraNavyse > 0 ? { Viera: (sums[p].Viera ?? 0) + vieraNavyse } : {}) },
       cirhozaBonus: Math.max(0, cirhozyPriznane(s, opp) - mody[p]!.cirhozaZlava),
-      tuheBonus: mody[p]!.tuheBonus + nastrojeTuhe(s, p, sums[p], mody[p]!.ranyNavyse).reduce((a, z) => a + z.tuhe, 0),
+      tuheBonus: mody[p]!.tuheBonus + nastrojeTuhe(s, p, sums[p]).reduce((a, z) => a + z.tuhe, 0),
       tuheZlava: mody[p]!.tuheZlava,
       // Čierna mačka: Povery bez stropu (Výpalník, predtým Neprajník, vo v5 strop nezdvíha — má Výpalné).
       makkeNadDlhy: vPartii(s, p, "cierna_macka") ? Number.POSITIVE_INFINITY : 0,
@@ -1192,7 +1192,7 @@ export function rozpisPoskodenia(
     const ja = strany[p];
     const su = strany[q];
     const mody = bitkaMody(data, s, p);
-    const bonusy: PolozkaRozpisu[] = [...mody.tuheZdroje, ...nastrojeTuhe(s, p, sums[p], mody.ranyNavyse)].map((z) => ({ zdroj: z.zdroj, hodnota: z.tuhe }));
+    const bonusy: PolozkaRozpisu[] = [...mody.tuheZdroje, ...nastrojeTuhe(s, p, sums[p])].map((z) => ({ zdroj: z.zdroj, hodnota: z.tuhe }));
     if (ja.cirhozaBonus > 0) bonusy.push({ zdroj: "cirhoza", hodnota: ja.cirhozaBonus });
     if (ja.priazenBitkara > 0) bonusy.push({ zdroj: "BITKAR", hodnota: ja.priazenBitkara });
     const zrazky: PolozkaRozpisu[] = [];

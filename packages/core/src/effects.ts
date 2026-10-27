@@ -295,7 +295,7 @@ function najdalej(data: GameData, state: Pick<VerejnyStav, "strany">, p: PlayerI
 /**
  * Prečo hráč p teraz nesmie fajčiť (v7), null = smie. Benzínka: len hráč,
  * ktorého Občan alebo Starešina leží najďalej od lokality — pri rovnosti nikto
- * (TODO v7, plan.md 14.7: návrh, Michal nepotvrdil); skrytá Záverečná sa
+ * (Michal 2026-10-27); skrytá Záverečná sa
  * neráta, inak by ju prezradila. Jednota: kto má viac priznaných Dlhov.
  */
 export function dovodZakazuFajcit(data: GameData, state: VerejnyStav, p: PlayerId): string | null {
@@ -442,8 +442,6 @@ export interface BitkaMody {
   readonly tuheBonus: number;
   /** Tuhé menej z efektov súpera — od v7 žiadne (Pasca udeľuje Pecku). */
   readonly tuheZlava: number;
-  /** Rany navyše z efektov (Svokra, Pijan, Vymáhač, Strýko) — Vidly ich zosilnia ako každú Ranu. */
-  readonly ranyNavyse: number;
   /** Z čoho sa tuheBonus skladá — pre nápovedu v paneli bitky. */
   readonly tuheZdroje: readonly { readonly zdroj: string; readonly tuhe: number }[];
   /** Absťáky, ktoré sa neratajú — od v7 žiadne (Autobusár má Zhromaždenie). */
@@ -498,16 +496,11 @@ export function naexNaZviera(state: VerejnyStav, p: PlayerId): boolean {
 export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): BitkaMody {
   const opp = opponentOf(p);
   const tuheZdroje: { zdroj: string; tuhe: number }[] = [];
-  let ranyNavyse = 0;
   const pridaj = (zdroj: string, tuhe: number): void => {
     if (tuhe > 0) tuheZdroje.push({ zdroj, tuhe });
   };
-  const rany = (zdroj: string, n: number): void => {
-    ranyNavyse += Math.max(0, n);
-    pridaj(zdroj, n);
-  };
 
-  rany("svokra", svokraRany(data, state, p));
+  pridaj("svokra", svokraRany(data, state, p));
   // Rátajú sa tie isté karty ako do prevahy: Občania, Zvieratá, Starešinovia.
   const doPrevahy = (pl: PlacedCard): boolean => rataSaDoPrevahy(defOf(data, pl.card).tags);
   // lesna_cesta (v7, Michal 2026-10-27): +1 tuhé za každé svoje Zviera v súperovom kraji, bez stropu (7.5 body 1–2).
@@ -521,16 +514,16 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   // pijan (Bitka, v7): Rana navyše za každé NA EX majiteľa v tomto kole — poldeci z nich
   // ležia na kartách do kroku 5 bitky, takže sa rátajú zo stola ako pri Svokre.
   const naexMoje = [...state.strany[0], ...state.strany[1]].reduce((n, pl) => n + (pl.naexBy === p ? 1 : 0) + (pl.naexBy2 === p ? 1 : 0), 0);
-  rany("pijan", pocetKariet("pijan") * naexMoje);
+  pridaj("pijan", pocetKariet("pijan") * naexMoje);
   // traktoristka (v7, Na leasing): s prevahou v jej kraji Pecka navyše; bez nej Dlh (engine, začiatok bitky).
   pridaj("traktoristka", 2 * traktoristkySPrevahou(data, state, p));
   // vymahac (v7): za každé 2 priznané Dlhy majiteľa 1 Rana navyše.
   const dlhy = state.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
-  rany("vymahac", pocetKariet("vymahac") * Math.floor(dlhy / 2));
+  pridaj("vymahac", pocetKariet("vymahac") * Math.floor(dlhy / 2));
   // pasca (Dedičstvo: Bitka, v7): súper v tomto kole priložil kartu k tvojej → Pecka navyše.
   if (vDedicstve(state, p, "pasca") && (state.prilozeniaKu?.[p] ?? 0) > 0) pridaj("pasca", 2 * state.hraci[p].dedicstvo.filter((k) => k.defId === "pasca").length);
   // stryko_z_ameriky (Kšeft, v7): Rany kúpené v Pitkách tohto kola.
-  rany("stryko_z_ameriky", state.kseftRany?.[p] ?? 0);
+  pridaj("stryko_z_ameriky", state.kseftRany?.[p] ?? 0);
   // ihrisko (Michal 2026-10-20): v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov.
   if (jeCielLokalita(state, "ihrisko")) {
     for (const strana of state.strany) {
@@ -544,7 +537,6 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
     tuheBonus: tuheZdroje.reduce((a, z) => a + z.tuhe, 0),
     tuheZdroje,
     tuheZlava: 0,
-    ranyNavyse,
     abstakyZlava: 0,
     superovePoveryZlava: 0,
     cirhozaZlava: 0,
@@ -553,15 +545,16 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
 
 /**
  * Puška a Vidly (Dedičstvo, v7): každá aktívna Petelica, resp. Rana hráča p
- * udelí o 1 poškodenie viac — aj Rany navyše z efektov. Jeden výpočet pre bitku
- * aj rozpis poškodenia.
+ * z vyložených akcií udelí o 1 poškodenie viac; Rany navyše z efektov kariet
+ * (Svokra, Pijan, Vymáhač, Strýko) nie (Michal 2026-10-27). Jeden výpočet pre
+ * bitku aj rozpis poškodenia.
  */
-export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Petelica?: number }, ranyNavyse: number): readonly { readonly zdroj: string; readonly tuhe: number }[] {
+export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Petelica?: number }): readonly { readonly zdroj: string; readonly tuhe: number }[] {
   const out: { zdroj: string; tuhe: number }[] = [];
   const kusov = (defId: string): number => state.hraci[p].dedicstvo.filter((k) => k.defId === defId).length;
   const puska = kusov("puska") * (sums.Petelica ?? 0);
   if (puska > 0) out.push({ zdroj: "puska", tuhe: puska });
-  const vidly = kusov("vidly") * ((sums.Rana ?? 0) + ranyNavyse);
+  const vidly = kusov("vidly") * (sums.Rana ?? 0);
   if (vidly > 0) out.push({ zdroj: "vidly", tuhe: vidly });
   return out;
 }

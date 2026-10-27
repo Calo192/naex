@@ -269,7 +269,7 @@ const EFEKTY: Readonly<Record<string, string>> = {
   // Lokality
   cintorin: "Pitka: Nová Cirhóza je hneď priznaná.",
   jednota: "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.",
-  // TODO(v7, plan.md 14.7): pri rovnakej vzdialenosti nefajčí nikto — návrh, Michal nepotvrdil.
+  // Pri rovnakej vzdialenosti nefajčí nikto (Michal 2026-10-27).
   benzinka: "Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality.",
   kar: "Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.",
   obecny_urad: "Kšeft: Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.",
