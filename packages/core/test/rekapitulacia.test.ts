@@ -79,7 +79,7 @@ describe("rekapitulácia Pitky", () => {
           expect(vysledok?.pitka).toBe(r.pitka);
           for (const p of [0, 1] as const) {
             expect(r.zadlzenie.dlhy[p]).toBe(vysledok?.dlhy[p]);
-            expect(r.zadlzenie.dlhy[p]).toBe(Math.floor(zadlzeniePitky(r, p) / r.zadlzenie.prah));
+            expect(r.zadlzenie.dlhy[p]).toBe(Math.floor(zadlzeniePitky(r, p) / r.zadlzenie.prah[p]));
             expect(r.cigarety.zisk[p]).toBe(vysledok?.cigarety[p]);
             expect(r.cigarety.zisk[p]).toBe(r.cigarety.akcie[p] - r.cigarety.obmedzenie[p] + r.cigarety.cigorky[p]);
             expect(r.cigarety.cigorky[p]).toBeGreaterThanOrEqual(0);
@@ -96,7 +96,7 @@ describe("rekapitulácia Pitky", () => {
             expect(Number(m?.[1] ?? 0)).toBe(pecenPitky(r, p) - r.pecen.cirhozy[p] * r.pecen.prah[p]);
             const ucet = z.events.find((x) => x.type === "log" && x.text.startsWith(`Hráč ${p + 1}: zadĺženie `));
             const u = ucet?.type === "log" ? /zadĺženie (\d+) ostáva/.exec(ucet.text) : null;
-            expect(Number(u?.[1] ?? 0)).toBe(zadlzeniePitky(r, p) - r.zadlzenie.dlhy[p] * r.zadlzenie.prah);
+            expect(Number(u?.[1] ?? 0)).toBe(zadlzeniePitky(r, p) - r.zadlzenie.dlhy[p] * r.zadlzenie.prah[p]);
           }
           // Až po otočení Záverečných — inak by prezradila súperovu kartu lícom dole.
           expect(z.po.strany.flat().some((pl) => pl.zaverecna === true)).toBe(false);

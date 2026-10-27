@@ -115,7 +115,8 @@ export interface RekapitulaciaPitky {
     /** Zadĺženie pred vyhodnotením (zvyčajne 0) a z akcií Dlh na stole. */
     readonly pred: Dvojica;
     readonly zoStola: Dvojica;
-    readonly prah: number;
+    /** Prah Dlhu hráčov (Výherný automat ho zvyšuje); rekapitulácie spred v7-opravy majú jedno číslo — čítaj cez prahDlhuPitky. */
+    readonly prah: Dvojica;
     readonly dlhy: Dvojica;
   };
   readonly pecen: {
@@ -291,6 +292,12 @@ export function zadlzeniePitky(r: RekapitulaciaPitky, p: PlayerId): number {
   return r.zadlzenie.pred[p] + r.zadlzenie.zoStola[p];
 }
 
+/** Prah Dlhu hráča v Pitke — rozohrané partie môžu mať v stave ešte spoločné číslo bez Výherného automatu. */
+export function prahDlhuPitky(r: RekapitulaciaPitky, p: PlayerId): number {
+  const prah: Dvojica | number = r.zadlzenie.prah;
+  return typeof prah === "number" ? prah : prah[p];
+}
+
 export interface VstupRekapitulaciePitky {
   readonly pitka: number;
   readonly pitkyCelkom: number;
@@ -302,7 +309,7 @@ export interface VstupRekapitulaciePitky {
   readonly poldeci: Dvojica;
   /** Zadĺženie pred vyhodnotením. */
   readonly zadlzeniePred: Dvojica;
-  readonly prahDlhu: number;
+  readonly prahDlhu: Dvojica;
   /** Karty Dlh z vyhodnotenia (pitkaVysledok). */
   readonly dlhy: Dvojica;
   /** Pečeň na začiatku Pitky (vypité v Zhromaždení) a NA EX, ktoré hráč v Pitke dal. */

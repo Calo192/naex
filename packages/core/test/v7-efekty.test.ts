@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, Command, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState } from "../src/index.ts";
+import type { CardInstance, Command, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState, RekapitulaciaPitky } from "../src/index.ts";
 import {
   apply,
   bitkaMody,
@@ -21,6 +21,8 @@ import {
   setupGame,
   utocnikFinale,
   vidiVolbuSupera,
+  prahDlhuPitky,
+  prahyHraca,
   stavkaBitky,
   viewFor,
   zmiesaneSpoje,
@@ -506,6 +508,21 @@ describe("Bitka a po bitke (v7)", () => {
     const s = sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
     const t = skonciPitku(s);
     expect(dlhy(t, 0)).toBe(dlhy(s, 0) + 1);
+    // Rekapitulácia Pitky delí zadĺženie prahom hráča, nie základným (kontrola kódu v7, bod 8).
+    // Rekapitulácia ide udalosťou pitkaRekap (pitkyKola sa po kole vyprázdni).
+    let rekap: RekapitulaciaPitky | undefined;
+    let u = s;
+    for (let i = 0; i < 6 && rekap === undefined && u.faza === "pitka"; i++) {
+      const q = ([0, 1] as const).find((x) => legalCommands(data, u, x).some((c) => c.type === "skipNaex" || c.type === "bezReakcie"));
+      if (q === undefined) break;
+      const r = apply(data, u, legalCommands(data, u, q).find((c) => c.type === "skipNaex" || c.type === "bezReakcie")!, q);
+      for (const e of r.events) if (e.type === "pitkaRekap") rekap = e.rekap;
+      u = r.state;
+    }
+    expect(rekap?.zadlzenie.prah).toEqual([prahyHraca(data, s, 0).dlh, prahyHraca(data, s, 1).dlh]);
+    expect(prahDlhuPitky(rekap!, 0)).toBe(prahDlhuPitky(rekap!, 1) + 1);
+    // Rozohraná partia spred opravy má v stave jedno číslo.
+    expect(prahDlhuPitky({ ...rekap!, zadlzenie: { ...rekap!.zadlzenie, prah: 3 as unknown as readonly [number, number] } }, 0)).toBe(3);
   });
 
   it("Záhradkár (Exekúcia): zahodený z línie zachráni špaky a spáli Dlhy za aktívne akcie", () => {

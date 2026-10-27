@@ -7,7 +7,7 @@
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { Action, AkciaTuha, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
-import { AKCIE_TUHE, pecenPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
+import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
 import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 
 /** Piktogram akcie a jej názov zo sady (HernaPlocha). */
@@ -471,7 +471,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
     return (
       <div className={`rk-hod ${s}`} role="cell">
         <b className={n === 0 ? "nula" : undefined}>{n > 0 ? n : "–"}</b>
-        <Meter bunky={Array<string>(n).fill("")} prah={r.zadlzenie.prah} />
+        <Meter bunky={Array<string>(n).fill("")} prah={prahDlhuPitky(r, kto)} />
         {n > 0 && (
           <Cip trieda={karty > 0 ? "zisk" : "nic"} title={`${karty} kariet Dlh, hneď priznané`}>
             +{karty} <KartaKliatby ikona={ikona("Dlh")} />
@@ -568,7 +568,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
           {vid(1) && (
             <div className={`rk-riadok${naex ? " nova-skupina" : ""}`} role="row">
               {dlh("l", ja)}
-              <Stred ikona={ikona("Dlh")} nazov={nazov("Dlh")} pod={`zadĺženie, prah ${r.zadlzenie.prah}`} />
+              <Stred ikona={ikona("Dlh")} nazov={nazov("Dlh")} pod={`zadĺženie, prah ${prahDlhuPitky(r, ja) === prahDlhuPitky(r, su) ? prahDlhuPitky(r, ja) : `${prahDlhuPitky(r, ja)} / ${prahDlhuPitky(r, su)}`}`} />
               {dlh("r", su)}
             </div>
           )}

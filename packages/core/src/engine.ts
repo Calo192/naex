@@ -3255,7 +3255,8 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     poskodeniePecene: prirastky.poskodeniePecene,
     poldeci: prirastky.poldeci,
     zadlzeniePred,
-    prahDlhu: prahDlhu(),
+    // Výherný automat (v7) zvyšuje prah Dlhu — rekapitulácia delí tým istým prahom ako vyhodnotenie.
+    prahDlhu: [prahDlhu() + prahDlhuBonus(s as GameState, 0), prahDlhu() + prahDlhuBonus(s as GameState, 1)],
     dlhy: ucet.dlhy,
     pecenNaZaciatku: [zaciatok.pecen[0], zaciatok.pecen[1]],
     // Pečeň z NA EX — na Kare (v7) ju nesie súper toho, kto NA EX dal.
