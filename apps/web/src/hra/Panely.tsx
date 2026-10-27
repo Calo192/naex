@@ -647,7 +647,7 @@ export function HracDoska({
               <span>
                 plné{naexNaStole > 0 && ` · ${naexNaStole} na stole`} · {hrac.poldeciVypite} vypité
               </span>
-              <b>limit {limit}</b>
+              <b>limit kariet {limit}</b>
             </>
           }
           tip={{
@@ -655,7 +655,7 @@ export function HracDoska({
             text: (
               <>
                 <span className="tip-stav">
-                  {kto} {plne} plné, {hrac.poldeciVypite} vypité{naexNaStole > 0 && `, ${naexNaStole} na stole (NA EX${skryteNaex > 0 ? kSkrytemu : ""})`} · limit{" "}
+                  {kto} {plne} plné, {hrac.poldeciVypite} vypité{naexNaStole > 0 && `, ${naexNaStole} na stole (NA EX${skryteNaex > 0 ? kSkrytemu : ""})`} · limit kariet{" "}
                   {limit}
                   {jeCielLokalita(view, "zastavka") && " (Zastávka: spoločný pre oboch)"} · ďalšie kolo {buduci}
                 </span>
