@@ -48,7 +48,7 @@ za krokom** (§5–§10), **Podrobnosti** (§11–§16) a slovník (§17).
 Kompetitívna kartová hra pre **presne dvoch hráčov**. Hráči si budujú balíčky,
 bijú sa o lokality a desia starších. Každé kolo je jedna bitka; hra má toľko
 bitiek o lokality, koľko určí dĺžka hry (§3), a po nich **finále** — poslednú
-bitku bez lokality (§14b). Víťazné body sú **špaky** (§14): za vyhratú bitku
+bitku na vrcholovej (pinnacle) lokalite (§14b). Víťazné body sú **špaky** (§14): za vyhratú bitku
 a k nej za starších, ktorí sa víťaza boja. Na konci vyhrá, kto má viac
 špakov — ak hra neskončí skôr. Pri rovnosti špakov je remíza.
 
@@ -161,12 +161,12 @@ nepoužíva — cigareta je cigareta.
 
 ```
 začiatok kola → voľba cieľa → draft (stavba šenku, branie, patronát)
-  → (Zhromaždenie → Pitka) × 1–4 → bitka → koniec kola
-finále: draft → (Zhromaždenie → Pitka) × 3 → bitka → koniec hry   (§14b)
+  → (Zhromaždenie → Pitka) × 1–4 (pinnacle 1–5) → bitka → koniec kola
+finále: voľba pinnacle → draft → (Zhromaždenie → Pitka) × 1–5 → bitka → koniec hry   (§14b)
 ```
 
 **Útočník** = hráč, ktorý **prehral poslednú bitku** (v prvom kole náhodne;
-pri sekere ostáva útočníkom; vo finále útočí, kto má viac špakov, §14b). **Berie zo šenku prvý, vykladá prvý a v Pitke má
+pri sekere ostáva útočníkom; vo finále útočí, kto má menej špakov, §14b). **Berie zo šenku prvý, vykladá prvý a v Pitke má
 posledné slovo** (na odkryté NA EX odpovedá druhý, §7) — jeho výhody slúžia
 na dobiehanie. **Obranca** je víťaz
 poslednej bitky: **vyberá a natáča cieľ** kola a **Pitku začína**.
@@ -249,8 +249,8 @@ Nástroja sa v striedaní počíta ako ťah, priznanie nie.
 
 - Karty tvoria **jednu súvislú líniu**, vetvenie nie je povolené. **Lokalita**
   leží v jej strede a delí ju na dve **strany** — tvoju (vľavo z tvojho
-  pohľadu) a súperovu. Vo finále lokalita nie je: v strede leží prvá vyložená
-  karta a kraje ani prevaha nie sú (§14b).
+  pohľadu) a súperovu. Aj vo finále leží v strede lokalita — pinnacle
+  (§14b); len finále bez lokality (sada do v6) má v strede prvú vyloženú kartu.
 - Kartu vykladáš vždy na **vonkajší koniec** jednej zo strán — **tvojej aj
   súperovej**. Strana určuje len to, kde karta leží a s čím susedí.
 - **Vnútorná hrana** karty je tá, ktorá je obrátená k lokalite — ňou sa karta
@@ -704,8 +704,8 @@ prebytok       = |rozdiel celkových|      (pri rovnakom celkovom ho nikto nezí
 ```
 
 **Špaky za bitku (krok 4a):** víťaz dostane toľko špakov, koľko Pitiek sa
-v kole **naozaj odohralo** (dopitá Pitka sa ráta, aj keď počet Pitiek medzitým
-klesol; finále má vždy 3). Ak má víťaz **viac Absťákov** ako porazený, dostane
+v kole **naozaj odohralo** — 1 špak za Pitku, aj vo finále (dopitá Pitka sa ráta,
+aj keď počet Pitiek medzitým klesol; finále bez lokality, sada do v6, má vždy 3). Ak má víťaz **viac Absťákov** ako porazený, dostane
 o rozdiel menej, ale **vždy aspoň 1 špak**. Absťáky sa rátajú ako pri remíze
 Víťaz si **lokalitu neberie** —
 karta lokality ide na **krčmovú nástenku** s jeho menom a počtom špakov.
@@ -1127,7 +1127,7 @@ verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je re
 
 | Odkiaľ | Koľko | Kedy |
 |---|---|---|
-| Vyhratá bitka | odohrané Pitky kola (finále 3), mínus o koľko má víťaz viac Absťákov než porazený, **aspoň 1**; plus špaky zo sekery | krok 4a (§9.4) |
+| Vyhratá bitka | 1 za každú odohranú Pitku kola (aj finále), mínus o koľko má víťaz viac Absťákov než porazený, **aspoň 1**; plus špaky zo sekery | krok 4a (§9.4) |
 | Starší, ktorí sa ťa boja | za každého: žltá **1**, oranžová **2**, červená **3**; sivý nikomu; aj nahradený | len **víťazovi** bitky, aj finále; pri **sekere obom**; porazený nič (v6.1; krok 4b) |
 | Noviny v Dedičstve (v7) | špaky za bitku dostane porazený, keď má víťaz viac priznaných Dlhov | krok 4a |
 | Prebytok vo finále a na Kultúrnom dome | toľko, aký je prebytok | krok 4c |
@@ -1145,7 +1145,7 @@ verejné, preto aj výkupné — klient ho ukazuje v riadku „Koniec“ krčmov
 nástenky a v „keby skončila teraz“.
 
 Špaky smú klesnúť do mínusu. **Krčmová nástenka** ukazuje odohrané bitky:
-lokalitu, víťaza a jeho špaky za bitku (finále bez lokality); klient z nej
+lokalitu (aj pinnacle finále, s príznakom finále), víťaza a jeho špaky za bitku; klient z nej
 skladá aj rozpis popolníka.
 
 Scorecard nesie len **priazeň** staršieho (§10). Bodovacie podmienky (Lokality,
@@ -1154,32 +1154,32 @@ ovládnuté lokality už nie sú, preto padá aj všetko, čo sa na ne odvoláva
 
 ## 14b. Finále
 
-Po poslednej bitke o lokalitu (3 / 5 / 7) sa hrá **finále**. **v7:** na
-**pinnacle lokalite** (Poľovnícka chata, Predsedova vila, Herňa), ktorú vyberie
-a natočí **obranca — hráč, ktorý vedie** (viac špakov). Potom šenok, branie
-a **patronát** ako v každom kole. **Kraje a prevaha platia** (Kočovník,
-Presbiter, Dvojčatá ako inde), Pitiek je ako na každej lokalite **1 + menší
-počet aktivovaných akcií hrán** (1–5); víťaz dostane toľko špakov, koľko
-Pitiek sa odohralo (mínus rozdiel Absťákov, aspoň 1). Ostatné body nižšie
-platia aj vo v7, okrem „prvá karta v strede“ a „vždy 3 Pitky“ — tie platia len
-pre finále bez lokality (sada do v6):
+Po poslednej bitke o lokalitu (3 / 5 / 7) sa hrá **finále** — posledná bitka
+na **pinnacle lokalite** (Poľovnícka chata, Predsedova vila, Herňa). Hrá sa
+**ako každé kolo**: lokalita leží v strede línie, karty sa kladú k nej a platia
+jej hrany, efekt, kraje aj prevaha (Kočovník, Dvojčatá ako inde).
 - **Útočí zaostávajúci** — hráč s **menej špakmi** (Michal 2026-10-27, mení
   rozhodnutie z 26. 10.). Pri rovnosti útočí ten, kto **prehral poslednú
   bitku**; keď posledná bitka skončila sekerou, útočník ostáva útočníkom.
   Útočník vykladá prvý a v Pitke má posledné slovo.
-- **Prvá vyložená karta leží v strede** ako lokalita a susedí s oboma
-  stranami: ďalšie karty sa kladú na jej dve strany a párujú sa s ňou bežne.
-  Karta ostáva kartou svojho majiteľa (akcie aj efekty). **Kraje a prevaha
-  v kraji vo finále nie sú** (Kočovník dáva akcie majiteľovi, Presbiter
-  nepôsobí, lokality s efektom niet).
-- Finále má **vždy 3 Pitky**; víťaz dostane 3 špaky (mínus rozdiel Absťákov,
-  aspoň 1). Sekera vo finále špaky kola aj zo sekery **prepadnú**.
+- **Obranca — hráč, ktorý vedie** (viac špakov) — vyberie a natočí pinnacle
+  lokalitu (z troch, §5). Potom šenok, branie a **patronát** ako v každom kole.
+- Pitiek je ako na každej lokalite **1 + menší počet aktivovaných akcií hrán**
+  (1–5). Víťaz dostane **1 špak za každú odohranú Pitku** (mínus rozdiel
+  Absťákov, aspoň 1); na Herni navyše toľko, koľko má porazený priznaných Dlhov
+  (§15). Sekera vo finále špaky kola aj zo sekery **prepadnú**.
 - Po finále sa ešte rozdajú **špaky za starších** — ako po každej bitke len
   víťazovi finále, pri sekere obom (§14). **Prebytok sa nerozdeľuje** —
   jeho držiteľ dostane toľko špakov, aký je prebytok.
 - Potom sa vykúpia zvyšné zdroje (plný poldeci 1 špak, každých celých
   5 cigariet 1 špak, §14), odpočíta sa nepriznaná Cirhóza (−5 za kus) a vyhrá
   hráč s viac špakmi.
+
+**Finále bez lokality** (sada do v6, ktorá nemá pinnacle lokality): prvá
+vyložená karta leží v strede ako lokalita a susedí s oboma stranami — ďalšie
+karty sa kladú na jej dve strany; karta ostáva kartou svojho majiteľa. Kraje
+a prevaha nie sú. Finále má vždy 3 Pitky (víťaz 3 špaky, mínus rozdiel
+Absťákov, aspoň 1).
 
 ## 15. Lokality
 
