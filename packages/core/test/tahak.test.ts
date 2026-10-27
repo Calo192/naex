@@ -28,6 +28,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
       "cena patronátu (v6.1)",
       `červená ${cenaPatronatu({ marker: 0 }).cigarety}, oranžová ${cenaPatronatu({ marker: 1 }).cigarety}, žltá ${cenaPatronatu({ marker: 2 }).cigarety}`,
     ],
+    ["Autobusár", `Autobusár ignoruje ${KONSTANTY.EFEKT.AUTOBUSAR_ABSTAKY} Absťák svojho majiteľa všade`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
   });

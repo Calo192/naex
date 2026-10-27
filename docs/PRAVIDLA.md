@@ -542,11 +542,12 @@ kolom:
 Hra si pamätá, koľko Absťákov hráč **získal za hru** (štatistika); keď sa
 Absťáku zbaví, toto číslo neklesne.
 
-Každý Absťák hráča znižuje **jeho** tuhé poškodenie v bitke o 1 (§9.3;
-Autobusár jeden ignoruje). Absťáky, ktoré hráč **práve má** (priznané, jeho
-karty v línii aj v ruke), navyše rozhodujú remízu v bitke a víťazovi s viac
-Absťákmi uberajú špaky za bitku (§9.4). Klient ukazuje neresti oboch hráčov
-a výhľad (`stavZavislosti`).
+Každý Absťák hráča znižuje **jeho** tuhé poškodenie v bitke o 1 (§9.3).
+Absťáky, ktoré hráč **práve má** (priznané, jeho karty v línii aj v ruke),
+navyše rozhodujú remízu v bitke a víťazovi s viac Absťákmi uberajú špaky za
+bitku (§9.4). **Autobusár** jeden Absťák svojho majiteľa ignoruje všade, kde
+sa v bitke rátajú — v poškodení, remíze aj špakoch víťaza (§16). Klient
+ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`).
 
 ---
 
@@ -611,7 +612,7 @@ hráč, ktorého akcia sa aktivovala; oba smery smie každý hráč.
 
 2. tuhé[ja] = (Rana×1 + Pecka×2 + Petelica×3 + súperove priznané Cirhózy + sila Bitkára)
              − zvyšná_viera[súper] × hodnota_viery(súper)
-             − počet_mojich_absťákov
+             − počet_mojich_absťákov      (Autobusár jeden ignoruje)
      minimum 0
 
 3. mäkké[ja] = min(zvyšná_povera[ja], priznané_dlhy[súper])
@@ -631,7 +632,7 @@ kariet a lokalít (Pes, Pijan, Pasca, Lesná cesta, Ihrisko…, §15, §16).
 ```
 víťaz          = vyššie TUHÉ poškodenie
   remíza v tuhom: vyhrá, kto má MENEJ ABSŤÁKOV (práve teraz: priznané,
-                  jeho karty v línii aj v ruke)
+                  jeho karty v línii aj v ruke; Autobusár jeden ignoruje)
   aj tu rovnosť:  vyhrá, kto má MENEJ PRIZNANÝCH DLHOV
   aj tu rovnosť:  nevyhrá nikto — SEKERA
 prebytok drží  = vyššie CELKOVÉ poškodenie (aj pri remíze v tuhom)
@@ -641,7 +642,8 @@ prebytok       = |rozdiel celkových|      (pri rovnakom celkovom ho nikto nezí
 **Špaky za bitku (krok 4a):** víťaz dostane toľko špakov, koľko Pitiek sa
 v kole **naozaj odohralo** (dopitá Pitka sa ráta, aj keď počet Pitiek medzitým
 klesol; finále má vždy 3). Ak má víťaz **viac Absťákov** ako porazený, dostane
-o rozdiel menej, ale **vždy aspoň 1 špak**. Víťaz si **lokalitu neberie** —
+o rozdiel menej, ale **vždy aspoň 1 špak**. Absťáky sa rátajú ako pri remíze
+(Autobusár jeden ignoruje). Víťaz si **lokalitu neberie** —
 karta lokality ide na **krčmovú nástenku** s jeho menom a počtom špakov.
 
 **Sekera:** keď nerozhodne ani tuhé, ani Absťáky, ani Dlhy, bitku nevyhrá nikto
@@ -1153,6 +1155,7 @@ v strede).
 | Anonymný alkoholik | Súper jeho majiteľa naňho nedá NA EX — ani keď je podstrčený na súperovu stranu. Majiteľ smie. Karty vedľa neho nechráni. Bráni len novému NA EX; poldeci, ktorý už na ňom leží, ostáva. |
 | Šofér | Furt: NA EX na kartu, ktorá so Šoférom susedí (vlastnú aj súperovu, na ktorejkoľvek strane Šoféra), **nezdvojí** jej neaktívne akcie — ostanú neaktívne; aktívne zruší ako vždy. Lokalitu v strede sa to netýka. NA EX na samotného Šoféra platí normálne. |
 | Snúbenica | Nástup: ak ju vyložíš (v Zhromaždení aj ako odpoveď na NA EX) vedľa karty s NA EX, táto karta sa vráti **svojmu majiteľovi** do ruky a Snúbenica sa posunie na jej miesto. Poldeci z nej sa vypije tomu, kto NA EX dal, ako v bitke (vypitý, nerest; pečeň už NA EX započítalo). |
+| Autobusár | Bitka: jeden Absťák majiteľa sa nepočíta **nikde**, kde sa v bitke Absťáky rátajú — v tuhom poškodení (§9.3), pri remíze v tuhom aj v špakoch víťaza (§9.4); nikdy nie pod nulu (Michal 2026-10-26). |
 | Krčmárka | Pri bitke: ak hráč nemá Absťák a v tomto kole nedal NA EX, vypitý poldeci sa mu otočí na plný (automaticky). |
 | Liberál | Ak je v partii majiteľa rovnako žien a chlapov (Liberál sa neráta), jeho aktívne akcie sa rátajú dvakrát. NA EX naň dať nemožno. |
 | Milujúca manželka | Furt (kým je odhalená — v línii aj priznaná): majiteľ dostane Absťák aj pri **rovnakom** počte nerestí ako v predošlom kole; Manželky sa sčítavajú (dve = aj pri o 1 viac nerestiach). Zbavenie Absťáku sa nemení. |
@@ -1179,6 +1182,7 @@ v strede).
 | Vychovávateľka | Keď sa odkryje NA EX majiteľa (§7), jeden jeho priznaný Dlh sa zamieša do súperovho **doberacieho balíčka** (pri dobratí sa súperovi sám prizná, §11). |
 | Veľmi smútiaca vdova | Nástup: odhalí sa vrchná karta súperovho doberacieho balíčka (keď je prázdny, súperov odhadzovací sa zamieša a stane sa z neho nový doberací balíček). Ak je to muž (tag Chlap), ide z hry a majiteľ Vdovy **zahodí** (z hry) 2 svoje Dlhy z ruky, odhadzovacieho balíčka alebo spomedzi priznaných. Log vždy oznámi odhalenú kartu. Hrobár sa za Dlhy nespúšťa. |
 | Niekoho stryná | Nástup: zahodí (z hry) 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných. Hra vyberie za hráča: najprv z ruky, potom z odhadzovacieho, nakoniec priznaný Dlh; Cirhózu pred Dlhom. |
+| Hasič | Nástup: z majiteľovho **odhadzovacieho balíčka** sa vytiahne **náhodná** karta — aj kliatba. Majiteľ sa rozhodne, či si ju **nechá v ruke** (Dlh sa ako vždy sám prizná a hráč si dobere kartu, §11), alebo ju **vráti** do odhadzovacieho balíčka. Kým nerozhodne, hra čaká; v ťahu s viacerými kartami (§13) rozhoduje po zvyšku ťahu, po odpovedi na NA EX sa Pitka vyhodnotí a po otočení Záverečnej dokončí až po voľbe. S prázdnym odhadzovacím balíčkom sa nestane nič. Vytiahnutú kartu vidia obaja — odhadzovací balíček je verejný (Michal 2026-10-26). |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); majiteľ nesmie dolievať poldeci za cigarety. Stokársky barter je povolený. |
 | Zámočník | Aktívne akcie Nástrojov v jeho okolí sa rátajú dvakrát. |
 | Živnostník | Výhra: keď jeho majiteľ vyhrá bitku a Živnostník leží v jeho partii v línii, majiteľ **vyberie** jedno súperovo Dedičstvo a to sa zahodí (z hry). Každý Živnostník jedno. Vyhodnotí sa na začiatku kroku 6c (§9), pred ostatnými efektmi Výhra a Prehra — zahodené Dedičstvo v tejto bitke už nič nedá. Bez súperovho Dedičstva, pri prehre či remíze nič; pri Nástupe nerobí nič. |

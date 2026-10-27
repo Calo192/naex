@@ -38,6 +38,7 @@ import { limitZhromazdenia, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import type { Command, GameState } from "./engine.ts";
 import {
+  abstakyVBitke,
   apply,
   barterCena,
   cieleVykladania,
@@ -380,8 +381,8 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const abstaky: [number, number] = [0, 0];
   abstaky[k.ja] = s.hraci[k.ja].ruka.filter((x) => x.defId === "abstak").length;
   const dmg = poskodenieBitky(data, s, sums, abstaky);
-  // Remíza v tuhom (v6): vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera (šanca ½).
-  const remiza = (p: PlayerId): [number, number] => [verejneAbstaky(s, p) + abstaky[p], prahyHraca(data, s, p).priznaneDlhy];
+  // Remíza v tuhom (v6): vyhrá menej Absťákov (Autobusár jeden ignoruje), potom menej priznaných Dlhov, inak sekera (šanca ½).
+  const remiza = (p: PlayerId): [number, number] => [abstakyVBitke(data, s, p, abstaky[p]), prahyHraca(data, s, p).priznaneDlhy];
   const [aq, dq] = remiza(q);
   const [ao, dO] = remiza(o);
   const tuhe = dmg.tuhe[q] - dmg.tuhe[o];
@@ -758,6 +759,8 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   const prvy = legal[0];
   if (prvy === undefined) throw new Error("Bot nemá legálny ťah.");
   if (legal.length === 1) return prvy;
+  const hasic = volbaHasica(data, state);
+  if (hasic !== null) return hasic;
 
   const [nahoda, r0] = rngNext(rngSeed(seed));
   let rng = r0;
@@ -779,6 +782,14 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
 
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
+}
+
+/** Hasič: kliatbu bot vráti do odhadzovacieho balíčka, inú kartu si nechá. */
+function volbaHasica(data: GameData, state: GameState): Command | null {
+  const volba = state.hasicVolby?.[0];
+  if (volba === undefined) return null;
+  const karta = state.hraci[volba.hrac].odhadzovaci.find((k) => k.uid === volba.uid);
+  return { type: "hasic", nechat: karta !== undefined && !defOf(data, karta).tags.includes("Kliatba") };
 }
 
 function rozhodni(v: Volba): Command | null {

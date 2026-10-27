@@ -45,7 +45,7 @@ export type EfektStatus = "native" | "impl" | "manual";
 export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Texty podľa tlačovej sady (docs/KartyAI_PrintFile_20260716). Zmenený text
   // karty v tvorcovi → skontroluj, či implementácia ešte sedí.
-  autobusar: "impl", // Bitka: ignoruj 1 Absťák
+  autobusar: "impl", // Bitka: ignoruj 1 Absťák — v poškodení, remíze aj špakoch víťaza
   benzinka: "impl", // Zhromaždenie + Pitka: nikto nesmie fajčiť (Michal 2026-10-20)
   cigorky: "impl", // Dedičstvo: žiadny refill; v každej Pitke cigareta navyše
   kocovnik: "native", // Furt: jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (Michal 2026-10-24; evaluateLine)
@@ -54,7 +54,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   dlh: "native", // Bitka: krok Exekútora
   farar: "impl", // Bitka: ignoruj 2 súperove Povery
   financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
-  hasic: "impl", // Nástup: Pracujúci občan z odhadzovacieho do ruky
+  hasic: "impl", // Nástup: náhodná karta z odhadzovacieho — nechať v ruke, alebo vrátiť (príkaz hasic)
   hrobar: "impl", // Furt: cigareta, keď súper zahodí kartu
   ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20)
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2

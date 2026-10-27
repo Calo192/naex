@@ -92,6 +92,8 @@ export class Robot {
     const view = this.view;
     if (view === null) throw new Error("bez stavu");
     const ja = view.ja;
+    // Hasič: robot si kartu vždy nechá.
+    if (view.hasicVolba !== null) return { type: "hasic", nechat: true };
 
     switch (view.faza) {
       case "volbaCiela": {

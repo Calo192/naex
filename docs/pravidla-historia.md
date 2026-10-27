@@ -1180,3 +1180,20 @@ V prvej dávke v6.1 dávali Noviny špak po každej bitke („aj po prehratej bi
 keď mu starší nedajú nič“). Teraz ich špak dostane ako strach len víťaz, pri
 sekere obaja. Odpor Výtržníka predtým rušil susedovu akciu na spoji, teraz je to
 už len Rana ako Posilnenie.
+
+## 2026-10-26 — Autobusár dôsledný, Hasič s voľbou (§8, §9.3, §9.4, §16; Michal 2026-10-26)
+
+Brainstorming kariet. **Autobusár** (variant A „dôsledný“) ignoruje jeden
+Absťák všade, kde sa v bitke rátajú — predtým len v tuhom poškodení, pri
+remíze v tuhom a v špakoch víťaza sa rátali všetky. **Hasič** vytiahne
+náhodnú kartu z odhadzovacieho balíčka (aj kliatbu) a hráč ju nechá alebo
+vráti — predtým si bez voľby vzal prvého Pracujúceho z odhadzovacieho balíčka
+(text karty: „Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho
+balíčka.“; v §16 výklad nemal).
+
+Staré znenie §8 (koniec odseku Nerest a Absťák):
+
+> Každý Absťák hráča znižuje **jeho** tuhé poškodenie v bitke o 1 (§9.3;
+> Autobusár jeden ignoruje). Absťáky, ktoré hráč **práve má** (priznané, jeho
+> karty v línii aj v ruke), navyše rozhodujú remízu v bitke a víťazovi s viac
+> Absťákmi uberajú špaky za bitku (§9.4).

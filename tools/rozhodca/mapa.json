@@ -1093,11 +1093,13 @@
     {
       "id": "9.vysledok.vitaz",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (práve teraz), potom menej priznaných Dlhov, inak sekera.",
+      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (práve teraz; Autobusár jeden ignoruje), potom menej priznaných Dlhov, inak sekera.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera",
-        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky"
+        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky",
+        "packages/core/test/autobusar-hasic.test.ts › §9.4 remíza v tuhom: Autobusár jeden Absťák ignoruje — 1 : 1 Absťák vyhrá jeho majiteľ, bez neho sekera",
+        "packages/core/test/autobusar-hasic.test.ts › §9.4 remíza v tuhom: s jediným Absťákom proti nule je Autobusárov majiteľ vyrovnaný — rozhodnú Dlhy (inak sekera)"
       ]
     },
     {
@@ -1421,6 +1423,18 @@
       "testy": [
         "packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé"
       ]
+    },
+    {
+      "id": "8.abstak.autobusar",
+      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
+      "pravidlo": "Autobusár jeden Absťák majiteľa ignoruje všade, kde sa v bitke rátajú: v tuhom poškodení, pri remíze v tuhom aj v špakoch víťaza (min 0).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/autobusar-hasic.test.ts › §9.4 remíza v tuhom: Autobusár jeden Absťák ignoruje — 1 : 1 Absťák vyhrá jeho majiteľ, bez neho sekera",
+        "packages/core/test/autobusar-hasic.test.ts › §9.4 špaky víťaza: z dvoch Absťákov sa ráta jeden — 3 Pitky mínus 1, tuhé mínus 1",
+        "packages/core/test/autobusar-hasic.test.ts › §9.4 špaky víťaza: Autobusár nikdy nejde pod nulu — bez Absťáku nič nepridá"
+      ],
+      "poznamka": "Michal 2026-10-26 (variant A „dôsledný“): predtým len v tuhom poškodení."
     },
     {
       "id": "8.nerest",
@@ -1786,6 +1800,25 @@
       "testy": [
         "packages/core/test/pravidla-bitka.test.ts › §16 Niekoho stryná: zahodí 1 Dlh aj spomedzi priznaných (verejný dlh 2026-10-21) — len jeden"
       ]
+    },
+    {
+      "id": "16.karta.hasic",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Hasič (Nástup): náhodná karta z majiteľovho odhadzovacieho balíčka, aj kliatba; majiteľ ju nechá v ruke (Dlh sa prizná a ťahá kartu), alebo vráti. Kým nerozhodne, hra čaká (ťah naraz dobehne, odpoveď na NA EX a otočená Záverečná čakajú); prázdny odhadzovací = nič; karta je verejná.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: vytiahne kartu z VLASTNÉHO odhadzovacieho balíčka deterministicky zo semienka hry; aj kliatbu",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: kým hráč nerozhodne, hrá len on a len túto voľbu; karta zatiaľ leží v odhadzovacom",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: nechať — karta ide z odhadzovacieho do ruky, potom je na ťahu súper",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: vrátiť — karta ostáva v odhadzovacom balíčku, ruka sa nemení",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: nechaný Dlh sa sám prizná a hráč ťahá kartu (ako Zberný dvor)",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: s prázdnym odhadzovacím balíčkom sa nič nestane a ťah ide ďalej",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič v ťahu naraz: zvyšok ťahu sa zahrá, o karte hráč rozhodne potom; ťah bez Vypiť po Hasičovi neprejde",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: súper vidí len verejné — kartu z odhadzovacieho (ten je verejný), nie ruku",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako odpoveď na NA EX: Pitka sa vyhodnotí až po voľbe",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako Záverečná: otočí sa na konci Pitky a Pitka sa dokončí až po voľbe"
+      ],
+      "poznamka": "Michal 2026-10-26: predtým bez voľby prvý Pracujúci z odhadzovacieho balíčka."
     },
     {
       "id": "16.karta.manzelka",
