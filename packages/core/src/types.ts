@@ -23,7 +23,9 @@ export type Action =
   | "Poldeci"
   | "Posilnenie"
   | "Odpor"
-  | "Robota";
+  | "Robota"
+  // Pakt (v7, Michal 2026-10-27): na spoji sa správa ako akcia, s ktorou je v páre.
+  | "Pakt";
 
 export const ALL_ACTIONS: readonly Action[] = [
   "Rana",
@@ -41,6 +43,7 @@ export const ALL_ACTIONS: readonly Action[] = [
   "Posilnenie",
   "Odpor",
   "Robota",
+  "Pakt",
 ];
 
 export type Tag =
@@ -88,8 +91,8 @@ export type Trigger =
   | "Dedičstvo"
   | "Výhra"
   | "Prehra"
-  | "Prestávka"
-  | "Exekúcia";
+  // Kšeft (v7): aktívny efekt — majiteľ ho spustí sám v Pitke na svojom ťahu, raz za Pitku.
+  | "Kšeft";
 
 export const ALL_TRIGGERS: readonly Trigger[] = [
   "Nástup",
@@ -100,8 +103,7 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Dedičstvo",
   "Výhra",
   "Prehra",
-  "Prestávka",
-  "Exekúcia",
+  "Kšeft",
 ];
 
 /** Fázy kola — stavový automat motora (M6). */

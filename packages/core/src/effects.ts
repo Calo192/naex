@@ -110,6 +110,30 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   vinna_pivnica: "impl", // Pitka: NA EX až dvakrát
   druzstvo: "impl", // Zhromaždenie: Pracujúci nemíňajú limit vykladania
   kar: "impl", // Bitka: každý smie zahodiť jednu nepriznanú Cirhózu z ruky (roadmapa #80)
+  // Sada v7 (revízia, Michal 2026-10-27) — schválené novinky, nové karty a lokality.
+  vidly: "manual",
+  lievik: "manual",
+  krokodil: "manual",
+  kapybara: "manual",
+  kon: "manual",
+  kohut: "manual",
+  degustatorka: "manual",
+  klebetnica: "manual",
+  dohadzovacka: "manual",
+  vandal: "manual",
+  stryko_z_ameriky: "manual",
+  opatrovatelka: "manual",
+  smetiarka: "manual",
+  brigadnik: "manual",
+  masiar: "native", // bez efektu
+  kulturista: "native", // bez efektu
+  traktoristka: "manual",
+  oslavenec: "manual",
+  vymahac: "manual",
+  sklad: "manual",
+  polovnicka_chata: "manual",
+  predsedova_vila: "manual",
+  herna: "manual",
 };
 
 export function jeEfektManual(defId: string): boolean {

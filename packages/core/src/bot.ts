@@ -159,6 +159,8 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Posilnenie: 0.6,
   Odpor: 0.3,
   Robota: 0.2,
+  // Pakt sa v súčtoch nikdy neobjaví — na spoji sa premení na akciu partnera.
+  Pakt: 0,
 };
 
 /** Čo karte pridáva jej efekt (hrubý odhad z textov sady v6). */

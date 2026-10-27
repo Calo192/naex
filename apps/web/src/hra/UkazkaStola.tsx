@@ -91,7 +91,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1";
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
-    if (hasic && s.faza === "zhromazdenie" && naTahu(s) === ja) return { zaciatok: sHasicom(data, s, ja), dohraj: [] };
+    if (hasic && s.faza === "zhromazdenie" && naTahu(s) === ja) return najdene({ zaciatok: sHasicom(data, s, ja), dohraj: [] });
     if (exekucia && s.faza === "pitka") {
       s = sExekuciou(s, ja);
       exekucia = false;

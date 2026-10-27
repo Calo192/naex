@@ -60,6 +60,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
   A("Robota", "Robota", "Pred kontrolou prahu Exekútora zahodí 1 priznaný Dlh (spáli ho, z hry). Funguje aj bez exekúcie."),
+  A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
 ].map((a, poradie) => ({ ...a, poradie }));
 
 const S = (slovo: string, popis: string): KlucoveSlovo => ({
@@ -92,8 +93,8 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   ),
   S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu (máš vyššie tuhé poškodenie). Pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru."),
   S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu (máš nižšie tuhé poškodenie). Pri rovnakom tuhom neprehrá nikto — lokalita ide na sekeru."),
-  S("Prestávka", "Uplatní sa cez prestávku pred bitkou."),
-  S("Exekúcia", "Uplatní sa, keď ťa navštívi Exekútor."),
+  // Kšeft (v7, Michal 2026-10-27): aktívny efekt za cenu; Prestávka a Exekúcia zanikli (nemali kartu).
+  S("Kšeft", "Aktívny efekt: za cenu (cigarety, poldeci, Dlh, karta) ho spustíš sám v Pitke na svojom ťahu, každú kartu raz za Pitku. Kšeft lokality smie použiť každý hráč."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
   P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet, potom ich vráť."),
