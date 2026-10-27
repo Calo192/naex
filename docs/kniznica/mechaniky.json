@@ -20,7 +20,9 @@
     "prevod": "Pri stupnici 7 polí (v6) leží pri každej zóne strachu na každej polovici žetón Špak: prvý vstup markera do žltej dá vydesujúcemu 1 špak, do oranžovej 1, do červenej 2 (čísla na zmeranie), žetón ide preč. Po bitke sa už nevypláca „každý starší, ktorý sa ťa bojí“; strach sa zaráta raz po finále podľa polohy (1/2/3). Popolník dostane ohorky pri udalosti, nie každé kolo. Scorecard: na stupnici natlačené tri žetóny na stranu. Výučba: „Kto prvý vystraší, berie špak. Kto ho udrží do konca, berie znova.“",
     "rizika": "Zabudnuté žetóny = viac evidencie (web to rieši sám). Ak je korisť príliš malá, strach prestane byť os a hra sa zúži na bitky. Pohoršenie bez limitu (v6) môže v jednej bitke pobrať tri žetóny naraz — treba strop alebo zachovať limit hraníc zón.",
     "merat": "Podiel špakov zo starších vs. z bitiek pri dnešnej v6 a pri koristi; korelácia vedenia po 2. bitke s výhrou partie (snowball); počet žetónov koristi za partiu; frekvencia vydesenia a kolo, v ktorom príde.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -54,7 +56,9 @@
     "prevod": "Popolník (trvalé) a stôl starších (dočasné). Trvalé špaky: vyhratá bitka (odohrané Pitky). Kemet navyše odmeňuje len útok: v NA EX je útočník hráč, ktorý prehral minulú bitku, takže „+1 trvalý špak za bitku vyhratú ako útočník“ je zabudovaný návrat do hry bez darčeka. Dočasné: strach starších sa nepripisuje po každej bitke, ukazuje sa ako živý stav a do popolníka padne raz, po finále. Most ako pri dvoch chrámoch: kto má na konci kola aspoň 3 starších v strachu, dostane 1 trvalý špak. Hanamikoji poučenie: pri remíze v posune marker ostáva, nikto ho nevynuluje.",
     "rizika": "Ak sa strach ráta len na konci, posledná bitka (prebytok) zase rozhoduje veľa — preto len spolu s koristou za hranicu alebo s medzibodovaním. Dva druhy špakov treba vo výučbe ukázať farbou (ohorok vs. horiaca cigareta). Bonus útočníka môže motivovať úmyselnú prehru (overiť).",
     "merat": "Podiel výhier, keď vedúci po 3. bitke vyhrá partiu (dnes / variant); priemerný rozdiel skóre pred finále; či hráči úmyselne prehrávajú kvôli útočníkovi (bitky prehraté s veľkou rezervou kariet).",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -83,7 +87,9 @@
     "prevod": "Strach starších sa v6 nevyplatí po každej bitke, ale len pri zúčtovaní. Dve podoby: (a) pevne — po 2. bitke, po 4. bitke a po finále (stredná hra), rovnakou váhou; (b) cez lokality — každá lokalita má na karte 1–2 starších, ktorých sa v kole o ňu zúčtuje (Kostol → Farár, Krčma → Krčmárka, Obecný úrad → Starosta…). Obranca, ktorý volí cieľ (§5), tak volí aj to, čí strach sa dnes ráta; útočník vie dopredu, kam tlačiť Pohoršenie. Finále zúčtuje všetkých raz. Na kartách lokalít pribudne ikona staršieho; vo výučbe „Na Kare sa ukáže, kto sa koho bojí.“",
     "rizika": "Väzba lokalita → starší je nová dátová vrstva (scorecardy sa rozdávajú náhodne, starší sú pevní, takže väzba ide na kartu staršieho, nie na scorecard). Pri krátkej hre (3 lokality) niektorí starší nemusia prísť na rad — treba finále, ktoré zúčtuje všetkých. Obranca dostane ďalšiu výhodu (už volí cieľ).",
     "merat": "Koľko špakov za strach dá jedno zúčtovanie vs. jedna bitka; či obranca volí cieľ podľa starších (bot aj ľudia); podiel výhier obrancu po zmene; rozptyl výsledku poslednej bitky.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -107,7 +113,9 @@
     "prevod": "Dva popolníky pri mene hráča: Krčma (špaky za bitky) a Dedina (špaky za starších). Vyhrá, kto má väčší menší popolník; pri rovnosti rozhodne väčší. Mierku „19 vs. 4“ netreba ladiť, lebo sa nesčítajú — kto má 19 v Dedine a 4 v Krčme, má 4. Mäkká verzia na meranie: skóre = 2 × menší + väčší. Téma: „V dedine ťa rešpektujú, len keď si chlap v krčme aj pán u fary.“ Výučba: Melichar ukazuje kratší popolník.",
     "rizika": "Nováčik nepochopí, prečo nevedie, hoci má viac špakov — web musí ukazovať „platí menší“. Hráč so zlou rukou na bitky stratí nádej skôr (minimum trestá jednu slabinu tvrdo). Ak jedna os dáva vždy oveľa viac, hrá sa len o druhú — rozhodnutia sa zúžia.",
     "merat": "Rozdelenie (Krčma, Dedina) u víťaza a porazeného; ako často rozhodne menší popolník iné víťazstvo než súčet; počet partií, kde porazený mal vyšší súčet; dĺžka rozhodovania bota.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -146,7 +154,9 @@
     "prevod": "NA EX! to čiastočne už má: v6 dáva víťazovi toľko špakov, koľko Pitiek sa odohralo, a počet Pitiek drží menšia strana (§7 Počet Pitiek) — kto vidí prehru, neaktivuje lokalitu a bitku zlacní. Cigarety za prebytok (§9.4) sú odškodné ako v Cosmic. Chýba výslovný ústup: „Platím a idem“ — pred ďalšou Pitkou smie hráč zaplatiť rundu (napr. 1 cigareta) a odísť; súper vyhrá bitku s doteraz odohranými Pitkami (nie s plánovanými), prebytok sa nerozdeľuje, odchádzajúci si vezme svoje karty z línie späť do ruky (Blood Rage). Vo finále (3 Pitky) by ústup po 1. Pitke dal súperovi 1 špak namiesto 3. Výučba: Melichar „Kto platí, ten ide.“",
     "rizika": "Viac krokov v Pitke (tempo, roadmapa #9). Ak je ústup lacný, bitky sa prestanú dohrávať a NA EX stratí javisko. Karty späť do ruky môžu zrýchliť ďalšie kolo porazeného (preveriť snowball naopak). Tón: odchod z krčmy je satiricky silný, ale nesmie vyzerať ako zbabelosť bez ceny.",
     "merat": "Ako často bot ustúpi a v ktorej Pitke; rozdiel špakov z poslednej bitky (dnes vs. s ústupom); podiel partií, kde finále otočí poradie; dĺžka partie.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
   },
   {
@@ -180,7 +190,220 @@
     "prevod": "NA EX! má ohlásené vydesenie (§1: polovica starších, udržať do konca ďalšieho kola, odpoveď patronátom). V6 ruší zamknutie a limit Pohoršenia, takže vydesenie zrýchli (spaky.html, časť 4). Poučky: (a) Inis — vydesenie si treba nárokovať ťahom (napr. namiesto patronátu, verejne) a súper ho zablokuje, ak má rovnako vydesených starších; (b) Root — kto ohlási vydesenie, prestane zbierať špaky za bitky (stavia všetko na jednu kartu); (c) Twilight Struggle — ukazovať skóre ako jedno číslo rozdielu (popolník vs. popolník) s ryskou náhlej výhry. Scorecard sa nemení; na stole pribudne žetón Ohlásenie.",
     "rizika": "Ďalší pojem a krok; ak je nárok drahý, vydesenie zmizne z hry (dnes je aj tak zriedkavé). Blokovanie rovnosťou môže viesť k pretláčaniu markerov tam a späť (dĺžka).",
     "merat": "Frekvencia ohláseného vydesenia v v6 (bez zamknutia) a kolo, v ktorom príde; podiel ohlásení, ktoré súper odvráti; či hráči vydesenie hrajú zámerne alebo vznikne náhodou.",
-    "temy": ["posledna-bitka-a-vplyv"],
+    "temy": [
+      "posledna-bitka-a-vplyv"
+    ],
     "pridane": "2026-10-26"
+  },
+  {
+    "id": "samoodchod-za-ucinok",
+    "nazov": "Štartovka sa sama spáli za jednorazový účinok (scrap)",
+    "problem": "Slabá štartovka ostáva v balíčku celú partiu a riedi ho. Keď sa smie sama spáliť za malý jednorazový účinok, hráč rozhoduje, kedy ju ešte potrebuje a kedy ju premení na úder a pustí.",
+    "ako": "1. Karta má dve použitia: bežné (zahraj, ostáva v balíčku) a „scrap“ (vyhodnoť silnejší jednorazový účinok a karta ide navždy z hry). 2. Scrap je voliteľný, hráč ho použije v ťahu, keď sa mu hodí. 3. Iné vyradenie karty (efektom súpera) scrap účinok nespustí. 4. V Star Realms sa Explorer (lacná karta z neobmedzenej kôpky) dá kúpiť za 2 obchodu, dáva 2 obchodu, alebo sa zošrotuje za 2 útoku a vráti sa na kôpku.",
+    "hry": [
+      {
+        "nazov": "Star Realms (Kastle, Dougherty, 2014, 2 hráči)",
+        "preco": "Štart je 8 Scoutov a 2 Vipery (10 kariet). Scrap posiela kartu na šrotovisko natrvalo a účinok dáva len vtedy, keď ju hráč šrotuje zámerne. Rozhodnutie: držať kartu kvôli opakovanému príjmu, alebo ju premeniť na jednorazový úder a stenčiť balíček.",
+        "zdroj": "https://rulespal.com/star-realms/rulebook"
+      },
+      {
+        "nazov": "Star Realms — Explorer",
+        "preco": "Explorer stojí 2 obchodu a dáva 2 obchodu, alebo sa šrotuje za 2 útoku a vráti sa na kôpku Explorerov. Lacná karta, ktorá má zabudovaný odchod.",
+        "zdroj": "https://www.dlair.net/the-flexibility-of-star-realms-frontiers/"
+      },
+      {
+        "nazov": "Star Realms — štart a scrap všeobecne",
+        "preco": "Encyklopedický prehľad štartu (8 Scout, 2 Viper, 50 autority) a ťahu.",
+        "zdroj": "https://en.wikipedia.org/wiki/Star_Realms"
+      }
+    ],
+    "kritika": "Ak je jednorazový účinok silný, scrapuje sa vždy hneď a z voľby je reflex (z vlastných vedomostí, neoverené). Samotné Scouty a Vipery v základnej Star Realms scrap nemajú, štart čistia až iné karty, ktoré hráč kúpi (z vlastných vedomostí, neoverené).",
+    "prevod": "NA EX! to už pozná: Dievčina na vydaj sa po bitke spáli a spáli priznané Dlhy (§16). Ten istý vzor pre Miňištranta a Pijana: Miňištrant — „Spoveď: namiesto vyloženia ho z ruky zahoď (z hry) a posuň marker jedného staršieho o 1 k sebe“; Pijan — „Posledná runda: pri bitke ho smieš zahodiť z línie, jeho Rana platí dvakrát“. Karta: druhý riadok efektu. Výučba: „Štartovky sú lacné. Keď ich už nechceš, premeň ich na niečo a pusti.“",
+    "rizika": "Zahodenie z ruky alebo z línie spúšťa súperovho Hrobára (cigareta za kus, §16) — treba vylúčiť alebo s tým rátať. Ak všetky štyri štartovky zmiznú do 2. kola, balíček je pri prázdnom štarte (v6) veľmi malý a ťahanie po bitke nedá nič. Posun staršieho za Spoveď posilní vydesenie, ktoré je už dnes citlivé.",
+    "merat": "Kolo, v ktorom štartovky odídu (priemer a rozptyl); podiel tuhého zo štartoviek vs. zo šenku (dnes 34 : 66 v jednom playteste, progresia-balicka.html); počet kariet v balíčku po 3. kole; či sa scrap používa vždy hneď (reflex) alebo rôzne podľa situácie.",
+    "temy": [
+      "startovky"
+    ],
+    "pridane": "2026-10-27"
+  },
+  {
+    "id": "odchod-s-odmenou",
+    "nazov": "Odchod ako odmena: vyradená karta boduje (promote, exil)",
+    "problem": "Vyradiť štartovku stojí ťah alebo zdroj a hráč za to nič nevidí. Keď vyradenie samo prináša body (alebo nevyradenie body berie), je to rozhodnutie o tempe: oslabím si ruku teraz za body neskôr.",
+    "ako": "1. Niektoré karty majú efekt „povýš inú kartu“ (promote). 2. Povýšená karta odíde z balíčka do osobnej zóny (inner circle) a už sa nikdy nezahrá. 3. Na konci hry má každá karta dve hodnoty bodov: menšiu, ak ostala v balíčku, a väčšiu, ak je povýšená. 4. Opačná podoba (Arnak): zlá karta Strach stojí na konci −1 bod, kým ju hráč neexiluje.",
+    "hry": [
+      {
+        "nazov": "Tyrants of the Underdark (Dill, Rodiek, Ernst, 2016)",
+        "preco": "Povýšená karta odíde z balíčka, už sa nehrá, ale boduje podstatne viac, než keby ostala. Hráč rozhoduje, či si kartu nechá ako silu na tento ťah, alebo ju premení na body a stenčí balíček.",
+        "zdroj": "https://cdn.1j1ju.com/medias/6c/f4/36-tyrants-of-the-underdark-board-game-rulebook.pdf"
+      },
+      {
+        "nazov": "Tyrants of the Underdark — recenzia",
+        "preco": "Opis povýšenia a koncového bodovania (body v balíčku, body vo vnútornom kruhu, žetóny).",
+        "zdroj": "https://geekdad.com/2016/10/tyrants-of-the-underdark/"
+      },
+      {
+        "nazov": "Lost Ruins of Arnak (2020) — Strach",
+        "preco": "Karty Strachu prichádzajú do balíčka (útek pred strážcom, niektoré lokality) a na konci stoja −1 bod, kým ich hráč neexiluje (navždy z hry). Vyradenie zlej karty tak má jasnú cenu v bodoch. Autori (Elwen a Mín): z vlastných vedomostí, neoverené.",
+        "zdroj": "https://www.whatsericplaying.com/2022/04/11/lost-ruins-of-arnak"
+      },
+      {
+        "nazov": "Lost Ruins of Arnak — pravidlá",
+        "preco": "Pravidlá na Yucata: štart, exil, Strach.",
+        "zdroj": "https://yucata.de/en/Rules/Arnak"
+      }
+    ],
+    "kritika": "V Tyrants sa povýšenie stáva hlavnou osou bodovania a hra je o tom, kto skôr stenčí balíček (z vlastných vedomostí, neoverené). V Arnaku je Strach malý trest, hráči ho často ignorujú (−1 bod), kým nemajú lacný exil (z vlastných vedomostí, neoverené).",
+    "prevod": "Pohreb (§11) a náhrada staršieho (§10) už štartovky vyraďujú, len bez odmeny. Variant A (Tyrants): štartovka spálená Pohrebom alebo daná pod staršieho dá 1 špak (len štartovky, nie karty zo šenku). Variant B (Arnak): Miňištrant a Pijan, ktoré sú na konci v balíčku, stoja po 1 špaku — ako mierna nepriznaná Cirhóza (5 špakov). Scorecard sa nemení, efekt nesie karta. Výučba: „Kto sa zbaví štamgastov z prvého kola, dostane špak.“",
+    "rizika": "Špaky sú od v6 jediné víťazné body — každý nový zdroj posúva mierku bitiek a strachu (pozri posledna-bitka-a-vplyv). Variant B pridá ďalšie počítanie na konci a ľudia ho zabudnú (web ho spočíta, ale treba ho ukazovať počas partie). Trest za štartovku pôsobí ako trest za to, že hráč začal — tón: Miňištrant ako hanba je satira, Pijan ako hanba skôr nie.",
+    "merat": "Koľko štartoviek odíde do konca partie (dnes Pijan a Miňištrant takmer nikdy, progresia-balicka.html §3); vplyv 1 špaku na výsledok (podiel partií rozhodnutých o ≤ 1 špak); či hráči robia Pohreb na štartovku častejšie.",
+    "temy": [
+      "startovky"
+    ],
+    "pridane": "2026-10-27"
+  },
+  {
+    "id": "cistenie-sluzba-rastuca-cena",
+    "nazov": "Čistenie ako služba s rastúcou cenou",
+    "problem": "Keď je vyradenie karty zadarmo, čistí sa vždy; keď je drahé, nikdy. Služba s cenou, ktorá stúpa s každým použitím, robí z čistenia investíciu, ktorú hráč dávkuje.",
+    "ako": "1. Na pevnom mieste (obchod, lokalita, akcia) smie hráč zaplatiť za odstránenie jednej karty z balíčka. 2. Platí sa tým istým zdrojom ako za nové karty, takže čistenie súperí s nákupom. 3. Cena stúpa s každým použitím (Slay the Spire: 75 zlata, potom +25 za každé ďalšie). 4. Varianty: Dominion — Chapel stojí kúpu a ťah, ale spáli až 4 karty naraz; Undaunted — Recon stojí akciu jednotky, ktorá mohla robiť niečo iné.",
+    "hry": [
+      {
+        "nazov": "Slay the Spire (Mega Crit, 2019, digitálna)",
+        "preco": "Odstránenie karty u obchodníka stojí 75 zlata a každé ďalšie o 25 viac; zlato súperí s kúpou kariet a relikvií. Hráč rozhoduje, či zaplatí za tenší balíček, alebo za novú silu.",
+        "zdroj": "https://steamcommunity.com/app/646570/discussions/0/1728701877509490724"
+      },
+      {
+        "nazov": "Slay the Spire 2 — prísnejšia cena",
+        "preco": "Na Ascension 6 v pokračovaní začína odstránenie na 100 zlata a stúpa o 50 — dizajnér cenou čistenia ladí obtiažnosť.",
+        "zdroj": "https://sts2.untapped.gg/en/articles/slay-the-spire-2-v01032-patch-notes-main-branch-update"
+      },
+      {
+        "nazov": "Dominion (Vaccarino, 2008) — Chapel",
+        "preco": "Chapel je jeden z najrýchlejších čističov, kupuje sa v 1.–2. ťahu; štartové Estates sa pália skôr ako Coppers, lebo Coppers sú jediné peniaze na začiatku. Čistenie spočiatku znižuje kúpnu silu, ale zvyšuje priemernú hodnotu ruky.",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Chapel"
+      },
+      {
+        "nazov": "Undaunted: Normandy (Benjamin, Thompson, 2019, 2 hráči) — Recon",
+        "preco": "Karty Hmly vojny (Fog of War) prídu do balíčka pri prieskume a sú takmer mŕtve. Prieskumník ich Reconom odstráni, ale za cenu akcie, ktorú by mohol dať na postup. Recenzia: tie isté akcie, ktoré skúmajú mapu, musia čistiť balíček.",
+        "zdroj": "https://icv2.com/articles/reviews/view/43887/review-undaunted-normandy-game"
+      },
+      {
+        "nazov": "Clank! (Dire Wolf, 2016)",
+        "preco": "Štart 10 kariet (6 Burgle, 2 Stumble, Sidestep, Scramble); niektoré karty a miesta dovolia kartu natrvalo odstrániť, čo je najužitočnejšie práve na slabé štartovky.",
+        "zdroj": "https://ultraboardgames.com/clank/advanced-maneuvers.php"
+      }
+    ],
+    "kritika": "Chapel je kritizovaný ako príliš silný — „chapel all the things“ je v mnohých rozloženiach jasne najlepšia cesta (z vlastných vedomostí, neoverené). V Undaunted recenzent skúšal podhadzovať Hmlu súperovi (Conceal) — fungovalo pár ťahov, kým súper nezískal iniciatívu.",
+    "prevod": "Návrh N1 z progresia-balicka.html („výmena pri šenku“) je táto mechanika bez rastúcej ceny. S cenou: v drafte smie hráč namiesto brania dať štartovku z ruky naspodok spoločného balíčka; prvá stojí 1 cigaretu, každá ďalšia v partii o 1 viac (počítadlo na profile hráča). Alebo ako služba lokality: v kole o Kostol smie porazený zadarmo spáliť štartovku (lokalita ako miesto, kde sa „spovedá“). Karta: bez zmeny. Výučba: jedna veta pri drafte.",
+    "rizika": "Cigarety sú už preťažené (branie, fajčenie, pas za cigarety M21, Úžerník) — ďalší výdavok zvýši tlak a nováčik nebude vedieť, čo kúpiť. Rastúca cena znamená ďalšie číslo na sledovanie. Ak sa čistí len v drafte, zrýchli sa draft, nie Pitka.",
+    "merat": "Rast tuhého od 1. po posledné kolo (dnes ×1,64 v simulácii, N1 ×2,1–2,5 podľa progresia-balicka.html); koľko cigariet ide na čistenie vs. branie; výkyv bitiek v neskorých kolách (riziko „lotérie“, ktoré Eva už spomína).",
+    "temy": [
+      "startovky"
+    ],
+    "pridane": "2026-10-27"
+  },
+  {
+    "id": "zla-karta-ako-platidlo",
+    "nazov": "Slabá karta ako platidlo alebo stávka",
+    "problem": "Ruka plná slabých kariet je mŕtva — hráč „nemá čo hrať“. Keď sa slabá karta dá zahodiť ako platba alebo ponuka v dražbe, aj zlá ruka dáva rozhodnutie: čo obetujem a za čo.",
+    "ako": "1. Hráč smie slabú kartu z ruky odhodiť namiesto zdroja (mince, akcie). 2. Undaunted: každé kolo hráč dobere 4 karty a tajne odhodí jednu — jej hodnota je ponuka o iniciatívu; Hmla vojny má hodnotu 0, takže je lacné ju odhodiť, ale iniciatívu nevyhrá. 3. Dominion Baron: odhoď Estate za +4 mince, inak získaš ďalšie Estate.",
+    "hry": [
+      {
+        "nazov": "Undaunted: Normandy — ponuka iniciatívy",
+        "preco": "Odhodenie Hmly je lacný spôsob, ako sa jej zbaviť na kolo, ale prehráš dražbu o iniciatívu proti vyššej karte jednotky. Mŕtva karta tak má cenu aj použitie.",
+        "zdroj": "https://theplayersaid.com/2019/10/22/undaunted-normandy-from-osprey-games-action-point-1/"
+      },
+      {
+        "nazov": "Undaunted: Normandy — recenzia",
+        "preco": "Popis Hmly, Reconu a dražby o iniciatívu z pohľadu hráča.",
+        "zdroj": "https://therewillbe.games/articles-boardgame-reviews/7086-play-matt-undaunted-normandy-review"
+      },
+      {
+        "nazov": "Dominion — Baron",
+        "preco": "+1 kúpa; odhoď Estate za +4 mince, inak získaš Estate. Štartová karta, ktorá je inak mŕtva, sa stane palivom na skorý drahý nákup.",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Baron"
+      },
+      {
+        "nazov": "Dominion — Estate",
+        "preco": "Wiki k štartovému Estate: zvyčajne sa páli skoro, ale niektoré karty ho chcú (Baron) alebo z neho robia užitočnú kartu (Inheritance).",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Estate"
+      }
+    ],
+    "kritika": "V Undaunted Hmla v ruke stále stojí kartu akcie v tom kole — platidlo zmierňuje mŕtvu ruku, ale nezruší ju. Baron je v mnohých rozloženiach považovaný za slabší než vyzerá, lebo bez ďalších Estates prestane fungovať (z vlastných vedomostí, neoverené).",
+    "prevod": "V šenku (§5) smie hráč namiesto 1 cigarety odhodiť štartovku z ruky — štartovka ide do odhadzovacieho balíčka (ostáva v hre, len platí) alebo naspodok spoločného balíčka (odíde, kombinácia s čistením). Druhá podoba (Undaunted): pri voľbe útočníka po sekere alebo vo finále (§14b) rozhodne o rolách tajná ponuka jednej karty z ruky, štartovka má hodnotu 0. Karta: bez zmeny, pravidlo v §5. Výučba: „Nemáš cigaretu? Zaplať Miňištrantom.“ — satiricky sedí (krčmár berie čokoľvek).",
+    "rizika": "Lacnejšie branie = viac kariet v ruke bez limitu ruky (§4) — rast ruky a dĺžky Pitky (roadmapa „Stredná partia do 60 minút“). Ak štartovka ide naspodok spoločného balíčka, tie štyri druhy by sa dostali do šenku, čo pravidlá zakazujú (§3) — treba ich dať z hry. Cigarety ako obmedzenie branie oslabí.",
+    "merat": "Počet kariet vzatých zo šenku za partiu (dnes 4–6 za strednú hru); počet rúk bez tuhého v 2. kole; dĺžka Pitky (čas, počet príkazov z logu) — či viac kariet v ruke nespomalí hru.",
+    "temy": [
+      "startovky"
+    ],
+    "pridane": "2026-10-27"
+  },
+  {
+    "id": "vylepsenie-na-mieste",
+    "nazov": "Vylepšenie štartovky namiesto výmeny (card crafting)",
+    "problem": "Výmena slabej karty za silnú robí z balíčka hromadu, ktorú hráč stráca z očí. Keď sa slabá karta vylepší na mieste, balíček ostane malý a známy a štartovka prerastie do novej úlohy.",
+    "ako": "1. Štartové karty sú v obaloch, niektoré majú prázdne miesta. 2. Kúpené vylepšenie (priesvitná fólia) sa zasunie do obalu na voľné miesto (hore, stred, dole). 3. Skoršie vylepšenia ani tlač pôvodnej karty sa nedajú prekryť; karta sa dá vylepšiť dvakrát, prázdna trikrát. 4. Počet kariet v balíčku sa celú hru nemení.",
+    "hry": [
+      {
+        "nazov": "Mystic Vale (John D. Clair, 2016)",
+        "preco": "Balíček má stále rovnakú veľkosť, menia sa len karty. Hráč rozhoduje, ktorú kartu vylepší a na ktoré miesto, lebo každé miesto je jediné. Recenzia: vylepšovanie existujúcich kariet namiesto pridávania nových.",
+        "zdroj": "https://opinionatedgamers.com/2019/05/07/mystic-vale/"
+      },
+      {
+        "nazov": "Mystic Vale: Essential Edition — recenzia",
+        "preco": "Popis obalov, miest pre vylepšenie a obsahu edície.",
+        "zdroj": "https://tabletopgaming.co.uk/reviews/mystic-vale-essential-edition"
+      },
+      {
+        "nazov": "Dominion — Inheritance",
+        "preco": "Raz za hru: odloží akčnú kartu zo zásoby a štartové Estates sa na zvyšok hry stanú akciami, ktoré hrajú odloženú kartu. Štartovka sa nevyhodí, ale dostane novú úlohu.",
+        "zdroj": "https://wiki.dominionstrategy.com/index.php/Inheritance"
+      }
+    ],
+    "kritika": "Mystic Vale kritici vyčítajú, že vylepšenia sa vyberajú najmä podľa ceny a rozhodnutia sú plytšie než v klasickom deckbuildingu (z vlastných vedomostí, neoverené). Fyzicky je to drahá komponenta; na webe odpadá.",
+    "prevod": "Na webe stačí stav karty v GameState (žiadna fólia). Nástroj zo šenku sa namiesto do ruky „prišije“ na štartovku: Pijan s Fľašou má navyše akciu Nástroja na jednej strane, karta ostáva jedna. Alebo Dedičstvo (§12) nesie aj vylepšenie štartovky. Zmena na kartách: štartovky dostanú prázdne pozície (hodnoty z blocked už existujú — napr. Pijan má blokované pozície 0 a 3 vľavo). Výučba: samostatná kapitola, nie pre prvú partiu.",
+    "rizika": "Veľká zmena modelu karty (packages/core, tvorca kariet, UI karty) — ide proti „dáta, nie kód“ len čiastočne, ale je to nový druh stavu karty. Nováčik nevie, čo karta robí, keď sa zmenila uprostred partie. Satira: Pijan s Puškou je vtipný, Miňištrant s Pascou tiež — tón by mohol vyhrať.",
+    "merat": "Pred implementáciou len simulácia: sila ruky pri konštantnom balíčku 4 + N vylepšení vs. 4 + N kariet zo šenku (nástroj balicky.ts z progresia-balicka); variancia tuhého v bitke (menej kariet = menej náhody v dobere).",
+    "temy": [
+      "startovky"
+    ],
+    "pridane": "2026-10-27"
+  },
+  {
+    "id": "pevny-start-s-identitou",
+    "nazov": "Pevný štart s identitou (podpisová štartovka)",
+    "problem": "Keď je štart náhodný, rozhoduje rozdanie (3 Pijani v 1. kole); keď je pevný a rovnaký pre oboch, je nudný. Pevný štart, kde každá štartovka má jasnú úlohu a jedna je viazaná na postavu hráča, je predvídateľný a pritom osobný.",
+    "ako": "1. Každá postava má na doske presne určenú štartovú ruku (5 kariet) a poradie zvyšku balíčka. 2. Balíček sa nemieša, odhadzovací sa len otočí; hráč volí poradie odhodených kariet. 3. Dune Imperium: Pečatný prsteň v štarte spúšťa schopnosť vodcu — rovnaká karta pre všetkých, iný účinok pre každého. 4. Hearthstone: zámerne slabé základné karty učia nováčika, čo je dobrá karta.",
+    "hry": [
+      {
+        "nazov": "Aeon's End (Kevin Riley, 2016)",
+        "preco": "Každý mág má na doske štartovú ruku a štartový balíček v pevnom poradí (zľava = navrchu). Balíček sa nemieša. Prvé ťahy sa dajú plánovať, náhoda je inde (poradie ťahov z balíčka iniciatívy).",
+        "zdroj": "https://m102.nthu.edu.tw/~s102061202/Aeon%20End/Aeons_End_rulebook.pdf"
+      },
+      {
+        "nazov": "Aeon's End — pravidlá The New Age",
+        "preco": "Postup prípravy: poradie štartového balíčka podľa dosky.",
+        "zdroj": "https://rulespal.com/aeons-end-the-new-age/rulebook"
+      },
+      {
+        "nazov": "Dune: Imperium (Paul Dennen, 2020)",
+        "preco": "Pečatný prsteň je v štartovom balíčku každého hráča, ale jeho účinok určuje vodca. Denník dizajnéra: patrí medzi najsilnejšie štartové karty; Paul Atreides má trvalú schopnosť pozerať vrchnú kartu balíčka.",
+        "zdroj": "https://news.direwolfdigital.com/dune-imperium-designer-diary-1-beginnings/"
+      },
+      {
+        "nazov": "Hearthstone (Blizzard) — prečo sú základné karty slabé",
+        "preco": "Senior dizajnér Ben Brode: zlé základné karty sú tam, aby učili; skúsený hráč ich vie využiť, nováčik sa na nich učí.",
+        "zdroj": "https://quartertothree.com/fp/?p=37478"
+      }
+    ],
+    "kritika": "Pevný štart sa po pár partiách naučí naspamäť a otvorenie je vždy rovnaké (z vlastných vedomostí, neoverené). Asymetrické podpisové karty treba vyvažovať jednu proti druhej.",
+    "prevod": "NA EX! od v6 pevný štart má (4 štartovky v ruke, prázdny doberací balíček, §3) — to je Aeon's End a odstraňuje sťažnosť „3 Pijani v 1. kole“ (20261021-143600, 20261024-075830). Chýba identita: obaja majú rovnaké štyri karty, takže 1. kolo rozhoduje draft a útočník. Prevod: piata štartovka podľa scorecardu staršieho, ktorého hráč dostane alebo si vyberie (Farár → Miňištrant s Vierou navyše; Krčmár → Pijan s Poldeci). Alebo bez novej karty: výučba každej zo štyroch štartoviek pomenuje jednu úlohu (Pijan útok, Miňištrant sabotáž súperovho prebytku cez Odpor, Manželka priznanie za kartu, Dievčina splátka Dlhov).",
+    "rizika": "Asymetria pridá balans na stráženie (8 starších × piata karta). Rovnaký štart pre oboch zvýrazní výhodu útočníka v 1. kole (berie zo šenku prvý). Pomenovanie úloh vo výučbe je lacné a bez rizika, ale nevyrieši, že Miňištrant škodí vlastnému prebytku.",
+    "merat": "Víťaz 1. bitky podľa role (útočník/obranca) pri dnešnom pevnom štarte; podiel výhier víťaza 1. bitky v partii; pri asymetrii: výherné percento podľa podpisovej karty (turnaj botov, ≥ 200 partií na kartu).",
+    "temy": [
+      "startovky"
+    ],
+    "pridane": "2026-10-27"
   }
 ]

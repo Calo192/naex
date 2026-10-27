@@ -58,18 +58,21 @@ footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); c
 <body>
 <main>
 <h1>Knižnica mechaník</h1>
-<p class="uvod">Študent zbiera, ako iné hry vyriešili problémy, ktoré má NA EX!. Čerpajú z nej Vymyselník, Navrhár a stratég. Zdroj dát: <code>docs/kniznica/mechaniky.json</code> (6 mechaník).</p>
+<p class="uvod">Študent zbiera, ako iné hry vyriešili problémy, ktoré má NA EX!. Čerpajú z nej Vymyselník, Navrhár a stratég. Zdroj dát: <code>docs/kniznica/mechaniky.json</code> (12 mechaník).</p>
 <h2>Témy</h2>
 <div class="tab-obal"><table>
 <thead><tr><th>Dátum</th><th>Téma (problém NA EX!)</th><th>Dokument</th></tr></thead>
 <tbody>
 <tr><td>2026-10-26</td><td>Posledná bitka a vplyv starších: ako zabrániť, aby posledné kolo rozhodlo všetko, a ako zo strachu a priazne starších spraviť strategickú os (roadmapa #7, #108, #114 Špaky, #113 Absťák)</td><td><a href="2026-10-26-posledna-bitka-a-vplyv.html">2026-10-26-posledna-bitka-a-vplyv.html</a></td></tr>
+<tr><td>2026-10-27</td><td>Štartovky, ktoré majú zmysel: ako spraviť zámerne slabý štart tak, aby každá štartovka mala jedno dobré použitie alebo lacný odchod z balíčka (roadmapa Teraz „Štartovky, ktoré majú zmysel“, progresia-balicka.html)</td><td><a href="2026-10-27-startovky.html">2026-10-27-startovky.html</a></td></tr>
+
 </tbody></table></div>
 <h2>Mechaniky</h2>
 <input class="hladaj" id="hladaj" type="search" placeholder="Hľadať (hra, pojem, problém)…" aria-label="Hľadať mechaniku">
 <div class="filtre" role="group" aria-label="Téma">
 <button type="button" data-t="" aria-pressed="true">Všetky</button>
 <button type="button" data-t="posledna-bitka-a-vplyv" aria-pressed="false">posledna-bitka-a-vplyv</button>
+<button type="button" data-t="startovky" aria-pressed="false">startovky</button>
 </div>
 <div class="tab-obal"><table id="mech">
 <thead><tr><th>Mechanika</th><th>Problém</th><th>Hry</th><th>Pridané</th></tr></thead>
@@ -80,6 +83,12 @@ footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); c
 <tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#slabsia-os">Skóre podľa slabšej osi (rátaj menší popolník)</a><br><code>slabsia-os</code></td><td>Keď sa sčítajú dve osi s rôznou mierkou (strach a bitky), vyhrá ten, kto sa zahryzne do silnejšej, a dizajnér musí mierku donekonečna ladiť.</td><td>Tigris &amp; Euphrates</td><td>2026-10-26</td></tr>
 <tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#ustup-a-odskodne">Porazený určuje cenu prehry (ústup, odškodné, víťaz platí)</a><br><code>ustup-a-odskodne</code></td><td>Bitka „všetko alebo nič“ s veľkou výhrou robí z poslednej bitky lotériu; keď porazený môže prehru zlacniť (a víťaz za výhru platí), výkyv sa zmenší a pribudne rozhodnutie.</td><td>Air, Land &amp; Sea, Blood Rage, Cosmic Encounter</td><td>2026-10-26</td></tr>
 <tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#ohlasena-vyhra-s-odpovedou">Náhla výhra: ohlásiť, zaplatiť, nechať súpera odpovedať</a><br><code>ohlasena-vyhra-s-odpovedou</code></td><td>Druhá cesta k výhre (vydesenie) dáva vplyvu váhu, ale keď je rýchla a lacná, hra skončí skôr, než sa súper zorientuje; keď je nedosiahnuteľná, nikto ju nehrá.</td><td>Inis, Root, Twilight Struggle, 7 Wonders Duel / Hanamikoji</td><td>2026-10-26</td></tr>
+<tr data-temy="startovky"><td><a href="2026-10-27-startovky.html#samoodchod-za-ucinok">Štartovka sa sama spáli za jednorazový účinok (scrap)</a><br><code>samoodchod-za-ucinok</code></td><td>Slabá štartovka ostáva v balíčku celú partiu a riedi ho. Keď sa smie sama spáliť za malý jednorazový účinok, hráč rozhoduje, kedy ju ešte potrebuje a kedy ju premení na úder a pustí.</td><td>Star Realms</td><td>2026-10-27</td></tr>
+<tr data-temy="startovky"><td><a href="2026-10-27-startovky.html#odchod-s-odmenou">Odchod ako odmena: vyradená karta boduje (promote, exil)</a><br><code>odchod-s-odmenou</code></td><td>Vyradiť štartovku stojí ťah alebo zdroj a hráč za to nič nevidí. Keď vyradenie samo prináša body (alebo nevyradenie body berie), je to rozhodnutie o tempe: oslabím si ruku teraz za body neskôr.</td><td>Tyrants of the Underdark, Lost Ruins of Arnak</td><td>2026-10-27</td></tr>
+<tr data-temy="startovky"><td><a href="2026-10-27-startovky.html#cistenie-sluzba-rastuca-cena">Čistenie ako služba s rastúcou cenou</a><br><code>cistenie-sluzba-rastuca-cena</code></td><td>Keď je vyradenie karty zadarmo, čistí sa vždy; keď je drahé, nikdy. Služba s cenou, ktorá stúpa s každým použitím, robí z čistenia investíciu, ktorú hráč dávkuje.</td><td>Slay the Spire, Dominion, Undaunted: Normandy, Clank!</td><td>2026-10-27</td></tr>
+<tr data-temy="startovky"><td><a href="2026-10-27-startovky.html#zla-karta-ako-platidlo">Slabá karta ako platidlo alebo stávka</a><br><code>zla-karta-ako-platidlo</code></td><td>Ruka plná slabých kariet je mŕtva — hráč „nemá čo hrať“. Keď sa slabá karta dá zahodiť ako platba alebo ponuka v dražbe, aj zlá ruka dáva rozhodnutie: čo obetujem a za čo.</td><td>Undaunted: Normandy, Dominion</td><td>2026-10-27</td></tr>
+<tr data-temy="startovky"><td><a href="2026-10-27-startovky.html#vylepsenie-na-mieste">Vylepšenie štartovky namiesto výmeny (card crafting)</a><br><code>vylepsenie-na-mieste</code></td><td>Výmena slabej karty za silnú robí z balíčka hromadu, ktorú hráč stráca z očí. Keď sa slabá karta vylepší na mieste, balíček ostane malý a známy a štartovka prerastie do novej úlohy.</td><td>Mystic Vale, Dominion</td><td>2026-10-27</td></tr>
+<tr data-temy="startovky"><td><a href="2026-10-27-startovky.html#pevny-start-s-identitou">Pevný štart s identitou (podpisová štartovka)</a><br><code>pevny-start-s-identitou</code></td><td>Keď je štart náhodný, rozhoduje rozdanie (3 Pijani v 1. kole); keď je pevný a rovnaký pre oboch, je nudný. Pevný štart, kde každá štartovka má jasnú úlohu a jedna je viazaná na postavu hráča, je predvídateľný a pritom osobný.</td><td>Aeon&#x27;s End, Dune: Imperium, Hearthstone</td><td>2026-10-27</td></tr>
 </tbody></table></div>
 <footer>NA EX! · Študent · index sa prepisuje celý z mechaniky.json pri každom behu.</footer>
 </main>
