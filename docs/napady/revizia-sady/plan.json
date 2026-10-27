@@ -18,91 +18,106 @@
    "dnes": 30,
    "plan": 30,
    "lokality_dnes": 6,
-   "lokality_plan": 6
+   "lokality_plan": 6,
+   "rozhodnute_karty": 30
   },
   "Povera": {
    "dnes": 32,
    "plan": 40,
    "lokality_dnes": 5,
-   "lokality_plan": 4
+   "lokality_plan": 4,
+   "rozhodnute_karty": 36
   },
   "Cigareta": {
    "dnes": 48,
    "plan": 56,
    "lokality_dnes": 8,
-   "lokality_plan": 9
+   "lokality_plan": 9,
+   "rozhodnute_karty": 52
   },
   "Poldeci": {
    "dnes": 24,
    "plan": 30,
    "lokality_dnes": 5,
-   "lokality_plan": 4
+   "lokality_plan": 4,
+   "rozhodnute_karty": 28
   },
   "PoškodeniePečene": {
    "dnes": 34,
    "plan": 58,
    "lokality_dnes": 1,
-   "lokality_plan": 4
+   "lokality_plan": 4,
+   "rozhodnute_karty": 52
   },
   "Obmedzenie": {
    "dnes": 14,
    "plan": 18,
    "lokality_dnes": 4,
-   "lokality_plan": 4
+   "lokality_plan": 4,
+   "rozhodnute_karty": 18
   },
   "Odpor": {
    "dnes": 20,
    "plan": 18,
    "lokality_dnes": 1,
-   "lokality_plan": 1
+   "lokality_plan": 1,
+   "rozhodnute_karty": 18
   },
   "Rana": {
    "dnes": 38,
    "plan": 36,
    "lokality_dnes": 6,
-   "lokality_plan": 8
+   "lokality_plan": 8,
+   "rozhodnute_karty": 36
   },
   "Pecka": {
    "dnes": 14,
    "plan": 24,
    "lokality_dnes": 6,
-   "lokality_plan": 13
+   "lokality_plan": 13,
+   "rozhodnute_karty": 20
   },
   "Viera": {
    "dnes": 28,
    "plan": 36,
    "lokality_dnes": 6,
-   "lokality_plan": 7
+   "lokality_plan": 7,
+   "rozhodnute_karty": 34
   },
   "Robota": {
    "dnes": 16,
    "plan": 24,
    "lokality_dnes": 4,
-   "lokality_plan": 6
+   "lokality_plan": 6,
+   "rozhodnute_karty": 22
   },
   "Dlh": {
    "dnes": 48,
    "plan": 60,
    "lokality_dnes": 3,
-   "lokality_plan": 8
+   "lokality_plan": 8,
+   "rozhodnute_karty": 58
   },
   "Vízia": {
    "dnes": 10,
    "plan": 14,
    "lokality_dnes": 1,
-   "lokality_plan": 1
+   "lokality_plan": 1,
+   "rozhodnute_karty": 10
   },
   "Posilnenie": {
    "dnes": 8,
    "plan": 10,
    "lokality_dnes": 0,
-   "lokality_plan": 3
+   "lokality_plan": 3,
+   "rozhodnute_karty": 8
   },
   "Petelica": {
    "dnes": 4,
    "plan": 14,
    "lokality_dnes": 2,
-   "lokality_plan": 6
+   "lokality_plan": 6,
+   "rozhodnute_karty": 12
   }
  },
  "model": {
@@ -169,11 +184,36 @@
    "karta": "Puška",
    "typ": "Nástroj",
    "archetyp": "U",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Rana / Pecka",
    "akcie_plan": "Pecka / Petelica",
    "efekt_dnes": "Dedičstvo: prebytok proti tebe −2.",
-   "smer": "Rana → Pecka, Pecka → Petelica (brokovnica po dedovi); efekt ostáva."
+   "smer": "Rana → Pecka, Pecka → Petelica (brokovnica po dedovi); efekt ostáva. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      1
+     ],
+     "actions": {
+      "Pecka": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      1
+     ],
+     "actions": {
+      "Petelica": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Dedičstvo: Prebytočné poškodenie, ktoré proti tebe rozdeľuje súper, je o 2 menšie.",
+   "triggers": [
+    "Dedičstvo"
+   ]
   },
   {
    "id": "svaty_text",
@@ -202,11 +242,31 @@
    "karta": "Výherný automat",
    "typ": "Nástroj",
    "archetyp": "E",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Robota / Dlh×4",
-   "akcie_plan": "",
+   "akcie_plan": "Robota / Dlh×4",
    "efekt_dnes": "Dedičstvo: Výhra 2 cigarety, Prehra 1 Dlh.",
-   "smer": "Väčší hazard: Výhra 3 cigarety, Prehra 2 Dlhy; akcie (Dlh×4) ostávajú."
+   "smer": "Väčší hazard: Výhra 3 cigarety, Prehra 2 Dlhy; akcie (Dlh×4) ostávajú. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [],
+     "actions": {
+      "Robota": 1
+     }
+    },
+    "right": {
+     "blocked": [],
+     "actions": {
+      "Dlh": 4
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Dedičstvo: Výhra: Dostaneš 3 cigarety. Prehra: Získaš 2 Dlhy.",
+   "triggers": [
+    "Dedičstvo",
+    "Prehra"
+   ]
   },
   {
    "id": "vidly",
@@ -268,11 +328,12 @@
    "karta": "Kapybara",
    "typ": "Zviera",
    "archetyp": "E",
-   "verdikt": "nechať, zdražiť",
+   "verdikt": "nechať, zdražiť (rozhodnuté 2026-10-27: 2 cigarety)",
    "akcie_dnes": "Viera / Cig",
    "akcie_plan": "",
    "efekt_dnes": "Kšeft: za cigaretu zožerie súperovi špak (schválené).",
-   "smer": "Cena 2 cigarety (odporúčanie Admina, H1); inak nič."
+   "smer": "Cena 2 cigarety (odporúčanie Admina, H1); inak nič.",
+   "efekt_plan": "Kšeft: Za 2 cigarety zožerie súperovi 1 špak."
   },
   {
    "id": "kon",
@@ -301,11 +362,63 @@
    "karta": "Finančná poradkyňa",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Dlh×2, Povera / Cig, Dlh",
    "akcie_plan": "Dlh×2, Povera / Cig, Dlh, Obmedz",
    "efekt_dnes": "Pitka: Dlh z jej akcií dostáva súper.",
-   "smer": "Spojka: vpravo + Obmedzenie (6 akcií); jej Dlhy zadlžia súpera, kto ju podstrčí, kŕmi Povery."
+   "smer": "Spojka: vpravo + Obmedzenie (6 akcií); jej Dlhy zadlžia súpera, kto ju podstrčí, kŕmi Povery. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [],
+     "actions": {
+      "Dlh": 2,
+      "Povera": 1
+     },
+     "allowed": {
+      "0": [
+       "Dlh"
+      ],
+      "1": [
+       "Dlh"
+      ],
+      "2": [
+       "Povera"
+      ],
+      "3": [
+       "Povera"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [],
+     "actions": {
+      "Cigareta": 1,
+      "Dlh": 1,
+      "Obmedzenie": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta",
+       "Obmedzenie"
+      ],
+      "1": [
+       "Cigareta",
+       "Obmedzenie"
+      ],
+      "2": [
+       "Dlh"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    }
+   },
+   "varianty": 8,
+   "efekt_plan": "Pitka: Dlh z jej akcií dostáva súper, nie ty.",
+   "triggers": [
+    "Pitka"
+   ]
   },
   {
    "id": "velmi_smutiaca_vdova",
@@ -323,11 +436,51 @@
    "karta": "Veštica",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Cig, Vízia / Povera×2, Viera",
    "akcie_plan": "Cig, Vízia, Pečeň / Povera×2, Viera",
    "efekt_dnes": "Prehra: vymeň kartu medzi doberacími balíčkami.",
-   "smer": "Spojka: vľavo + Pečeň (bylinkový likér), 6 akcií."
+   "smer": "Spojka: vľavo + Pečeň (bylinkový likér), 6 akcií. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [],
+     "actions": {
+      "Cigareta": 1,
+      "Vízia": 1,
+      "PoškodeniePečene": 1
+     },
+     "allowed": {
+      "0": [
+       "Vízia"
+      ],
+      "1": [
+       "Vízia"
+      ],
+      "2": [
+       "Cigareta",
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "Cigareta",
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Povera": 2,
+      "Viera": 1
+     }
+    }
+   },
+   "varianty": 12,
+   "efekt_plan": "Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.",
+   "triggers": [
+    "Prehra"
+   ]
   },
   {
    "id": "silna_nezavisla_zena",
@@ -367,11 +520,51 @@
    "karta": "Praudovravec",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Odpor, Povera / Pohorš, Povera, Vízia",
    "akcie_plan": "Odpor, Povera, Viera / Pohorš, Povera, Vízia",
    "efekt_dnes": "Furt: Odpor na jeho spojoch posilní (Dezinformátor, schválené).",
-   "smer": "Spojka-zosilňovač: vľavo + Viera (6 akcií), efekt ostáva."
+   "smer": "Spojka-zosilňovač: vľavo + Viera (6 akcií), efekt ostáva. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Odpor": 1,
+      "Povera": 1,
+      "Viera": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      2
+     ],
+     "actions": {
+      "Pohoršenie": 1,
+      "Povera": 1,
+      "Vízia": 1
+     },
+     "allowed": {
+      "0": [
+       "Povera",
+       "Vízia"
+      ],
+      "1": [
+       "Povera",
+       "Vízia"
+      ],
+      "3": [
+       "Pohoršenie"
+      ]
+     }
+    }
+   },
+   "varianty": 12,
+   "efekt_plan": "Furt: Odpor na jeho spojoch neruší, ale posilní — ráta sa ako Posilnenie.",
+   "triggers": [
+    "Furt"
+   ]
   },
   {
    "id": "zamocnik",
@@ -389,66 +582,314 @@
    "karta": "Niekoho stryná",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Poldeci, Viera / Povera, Viera, Vízia",
    "akcie_plan": "Poldeci, Viera, Pečeň / Povera, Viera, Vízia",
    "efekt_dnes": "Nástup: zahoď 1 Cirhózu alebo Dlh.",
-   "smer": "Spojka: vľavo odblokovať slot 2 a + Pečeň („na zdravie“), 6 akcií."
+   "smer": "Spojka: vľavo odblokovať slot 2 a + Pečeň („na zdravie“), 6 akcií. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Poldeci": 1,
+      "Viera": 1,
+      "PoškodeniePečene": 1
+     },
+     "allowed": {
+      "0": [
+       "Poldeci",
+       "Viera"
+      ],
+      "1": [
+       "Poldeci",
+       "Viera"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [],
+     "actions": {
+      "Povera": 1,
+      "Viera": 1,
+      "Vízia": 1
+     },
+     "allowed": {
+      "0": [
+       "Viera"
+      ],
+      "1": [
+       "Povera",
+       "Viera"
+      ],
+      "2": [
+       "Povera",
+       "Vízia"
+      ],
+      "3": [
+       "Povera",
+       "Vízia"
+      ]
+     }
+    }
+   },
+   "varianty": 12,
+   "efekt_plan": "Nástup: Zahoď 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných.",
+   "triggers": [
+    "Nástup"
+   ]
   },
   {
    "id": "veteran",
    "karta": "Veterán",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Poldeci, Pečeň / Odpor, Pecka",
    "akcie_plan": "Poldeci, Pečeň / Odpor, Petelica",
    "efekt_dnes": "Furt: NA EX zdvojí jeho aktívne akcie.",
-   "smer": "Pecka → Petelica; s NA EX 6 tuhé, ale zdvojí aj jeho Pečeň a Poldeci."
+   "smer": "Pecka → Petelica; s NA EX 6 tuhé, ale zdvojí aj jeho Pečeň a Poldeci. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      2,
+      3
+     ],
+     "actions": {
+      "Poldeci": 1,
+      "PoškodeniePečene": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "Odpor": 1,
+      "Petelica": 1
+     },
+     "allowed": {
+      "1": [
+       "Odpor"
+      ],
+      "2": [
+       "Petelica"
+      ],
+      "3": [
+       "Petelica"
+      ]
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.",
+   "triggers": [
+    "Furt"
+   ]
   },
   {
    "id": "recidivista",
    "karta": "Recidivista",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Dlh, Odpor / Petelica, Rana",
    "akcie_plan": "Dlh×2 / Petelica, Rana",
    "efekt_dnes": "Bitka: Rana navyše za každého Zahraničného súpera.",
-   "smer": "Úderník: vľavo Odpor → Dlh (súdne trovy), Petelica s cenou 2 Dlhov; Odporov je priveľa (+57 %)."
+   "smer": "Úderník: vľavo Odpor → Dlh (súdne trovy), Petelica s cenou 2 Dlhov; Odporov je priveľa (+57 %). — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Dlh": 2
+     }
+    },
+    "right": {
+     "blocked": [],
+     "actions": {
+      "Petelica": 1,
+      "Rana": 1
+     },
+     "allowed": {
+      "0": [
+       "Petelica"
+      ],
+      "1": [
+       "Petelica"
+      ],
+      "2": [
+       "Rana"
+      ],
+      "3": [
+       "Rana"
+      ]
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Bitka: Za každého zahraničného občana v súperovej partii udelí dodatočnú ranu.",
+   "triggers": [
+    "Bitka"
+   ]
   },
   {
    "id": "liberal",
    "karta": "Liberál",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Pohorš / Cig",
    "akcie_plan": "Pohorš, Viera / Cig, Povera",
    "efekt_dnes": "Furt: ×2 pri rovnosti žien a chlapov (bez zákazu NA EX).",
-   "smer": "Akcie 2 → 4 (Pohoršenie, Viera / Cig, Povera), aby ×2 malo čo zdvojiť."
+   "smer": "Akcie 2 → 4 (Pohoršenie, Viera / Cig, Povera), aby ×2 malo čo zdvojiť. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      2,
+      3
+     ],
+     "actions": {
+      "Pohoršenie": 1,
+      "Viera": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      1
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "Povera": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Furt: Ak je v tvojej partii rovnako žien a chlapov, jeho akcie sa rátajú dvakrát.",
+   "triggers": [
+    "Furt"
+   ]
   },
   {
    "id": "zivnostnik",
    "karta": "Živnostník",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Dlh, Odpor / Cig×2, Pečeň",
    "akcie_plan": "Dlh, Odpor, Robota / Cig×2, Pečeň",
    "efekt_dnes": "Výhra: zahoď súperovo Dedičstvo.",
-   "smer": "Spojka: vľavo + Robota (6 akcií); Odpor na spojke je pasca pre suseda, efekt ostáva."
+   "smer": "Spojka: vľavo + Robota (6 akcií); Odpor na spojke je pasca pre suseda, efekt ostáva. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [],
+     "actions": {
+      "Dlh": 1,
+      "Odpor": 1,
+      "Robota": 1
+     },
+     "allowed": {
+      "0": [
+       "Odpor",
+       "Robota"
+      ],
+      "1": [
+       "Odpor",
+       "Robota"
+      ],
+      "2": [
+       "Dlh"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [],
+     "actions": {
+      "Cigareta": 2,
+      "PoškodeniePečene": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Cigareta"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   },
+   "varianty": 8,
+   "efekt_plan": "Výhra: Zahoď jedno súperovo dedičstvo.",
+   "triggers": [
+    "Výhra"
+   ]
   },
   {
    "id": "kocovnik",
    "karta": "Kočovník",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Dlh, Pečeň / Cig, Pečeň, Rana",
    "akcie_plan": "Dlh, Pečeň / Cig, Pečeň, Pecka",
    "efekt_dnes": "Furt: jeho akcie berie hráč s prevahou v kraji.",
-   "smer": "Rana → Pecka: kto ho vyhrá, dostane Pecku aj 2 Pečene a Dlh."
+   "smer": "Rana → Pecka: kto ho vyhrá, dostane Pecku aj 2 Pečene a Dlh. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Dlh": 1,
+      "PoškodeniePečene": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "PoškodeniePečene": 1,
+      "Pecka": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Pecka",
+       "PoškodeniePečene"
+      ],
+      "2": [
+       "Pecka",
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.",
+   "triggers": [
+    "Furt"
+   ]
   },
   {
    "id": "svokra",
@@ -466,33 +907,180 @@
    "karta": "Šarlatán",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Dlh, Povera×2 / Cig, Pohorš",
    "akcie_plan": "Dlh, Povera×2 / Cig, Pohorš, Pečeň",
    "efekt_dnes": "Furt: Viera v okolí platí ako Vízia (slabé, D10).",
-   "smer": "Spojka: vpravo + Pečeň (6 akcií); nový Furt: aktívna Pečeň v jeho okolí sa ráta aj ako Viera (zázračná tinktúra) — vzor ako dnes vieraAkoVizia (partia.ts:529)."
+   "smer": "Spojka: vpravo + Pečeň (6 akcií); nový Furt: aktívna Pečeň v jeho okolí sa ráta aj ako Viera (zázračná tinktúra) — vzor ako dnes vieraAkoVizia (partia.ts:529). — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Dlh": 1,
+      "Povera": 2
+     }
+    },
+    "right": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "Pohoršenie": 1,
+      "PoškodeniePečene": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta",
+       "Pohoršenie"
+      ],
+      "1": [
+       "Cigareta",
+       "Pohoršenie"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   },
+   "varianty": 6,
+   "efekt_plan": "Furt: Každá aktívna akcia Poškodenie pečene na ňom a na kartách v jeho okolí sa ráta aj ako Viera.",
+   "triggers": [
+    "Furt"
+   ]
   },
   {
    "id": "podvodnik",
    "karta": "Podvodník",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Cig×2, Dlh / Obmedz, Rana",
-   "akcie_plan": "",
+   "akcie_plan": "Cig×2, Dlh / Obmedz, Rana",
    "efekt_dnes": "Prehra: ukradni 2 cigarety (slabé, D11).",
-   "smer": "Prehra: jeden tvoj priznaný Dlh prepíšeš na súpera — Dlh dostane zuby."
+   "smer": "Prehra: jeden tvoj priznaný Dlh prepíšeš na súpera — Dlh dostane zuby. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [],
+     "actions": {
+      "Cigareta": 2,
+      "Dlh": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Cigareta"
+      ],
+      "2": [
+       "Dlh"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "Obmedzenie": 1,
+      "Rana": 1
+     },
+     "allowed": {
+      "1": [
+       "Obmedzenie"
+      ],
+      "2": [
+       "Rana"
+      ],
+      "3": [
+       "Rana"
+      ]
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Prehra: Jeden tvoj priznaný Dlh sa presunie medzi súperove priznané.",
+   "triggers": [
+    "Prehra"
+   ]
   },
   {
    "id": "zahradkar",
    "karta": "Záhradkár",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "prerobiť",
+   "verdikt": "otvorené (dávka 2a, plan.md 10.3)",
    "akcie_dnes": "Cig×2, Pečeň / Poldeci, Rana, Robota",
-   "akcie_plan": "",
+   "akcie_plan": "Cig×2, Pečeň / Poldeci, Rana, Robota",
    "efekt_dnes": "Exekúcia: zahoď ho namiesto špakov (mŕtve).",
-   "smer": "Spojka (6 akcií ostáva); nový efekt Výhra: otoč vypitý poldeci na plný (pálenka z vlastnej úrody)."
+   "smer": "Spojka (6 akcií ostáva); nový efekt Výhra: otoč vypitý poldeci na plný (pálenka z vlastnej úrody). — Otvorené: plan.md 10.3.",
+   "strany": {
+    "left": {
+     "blocked": [],
+     "actions": {
+      "Cigareta": 2,
+      "PoškodeniePečene": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Cigareta"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [],
+     "actions": {
+      "Poldeci": 1,
+      "Rana": 1,
+      "Robota": 1
+     },
+     "allowed": {
+      "0": [
+       "Poldeci",
+       "Rana"
+      ],
+      "1": [
+       "Poldeci",
+       "Rana"
+      ],
+      "2": [
+       "Robota"
+      ],
+      "3": [
+       "Robota"
+      ]
+     }
+    }
+   },
+   "varianty": 8,
+   "efekt_plan": "Bitka: Tvoj prah Exekútora je o 2 vyšší.",
+   "efekt_navrhy": [
+    {
+     "k": "A",
+     "efekt": "Bitka: Tvoj prah Exekútora je o 2 vyšší."
+    },
+    {
+     "k": "B",
+     "efekt": "Bitka: Súperov prah Exekútora je o 2 nižší."
+    }
+   ],
+   "odporucanie": "A"
   },
   {
    "id": "anonymny_alkoholik",
@@ -521,22 +1109,76 @@
    "karta": "Dvojčatá",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Dlh, Rana / Cig, Rana",
    "akcie_plan": "Dlh, Pecka / Pečeň, Rana",
    "efekt_dnes": "Furt: do prevahy za dvoch.",
-   "smer": "Rana → Pecka vľavo, Cigareta → Pečeň vpravo (bijú a pijú za dvoch)."
+   "smer": "Rana → Pecka vľavo, Cigareta → Pečeň vpravo (bijú a pijú za dvoch). — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      2,
+      3
+     ],
+     "actions": {
+      "Dlh": 1,
+      "Pecka": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      1
+     ],
+     "actions": {
+      "PoškodeniePečene": 1,
+      "Rana": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Furt: Do prevahy sa rátajú za dvoch.",
+   "triggers": [
+    "Furt"
+   ]
   },
   {
    "id": "sofer",
    "karta": "Šofér",
    "typ": "Občan",
    "archetyp": "R",
-   "verdikt": "prerobiť",
+   "verdikt": "prerobiť (rozhodnuté 2026-10-27)",
    "akcie_dnes": "Poldeci, Rana / Cig, Pečeň",
-   "akcie_plan": "",
+   "akcie_plan": "Poldeci, Rana / Cig, Pečeň",
    "efekt_dnes": "Furt: NA EX na suseda nezdvojí neaktívne (slabé, dvojsečné).",
-   "smer": "Nový efekt Bitka: ak si v tomto kole nedal NA EX, udelíš Pecku navyše (triezvy šofér; menej nerestí = riziko Absťáku). Jadro má naexVKole (engine.ts:333)."
+   "smer": "Nový efekt Bitka: ak si v tomto kole nedal NA EX, udelíš Pecku navyše (triezvy šofér; menej nerestí = riziko Absťáku). Jadro má naexVKole (engine.ts:333). — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Poldeci": 1,
+      "Rana": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "PoškodeniePečene": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše.",
+   "triggers": [
+    "Bitka"
+   ]
   },
   {
    "id": "snubenica",
@@ -1424,110 +2066,453 @@
    "karta": "Vybavovač",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "nová",
+   "verdikt": "nie (rozhodnuté 2026-10-27, do sady nejde)",
    "akcie_dnes": "—",
    "akcie_plan": "Cig, Povera, Robota, Posil / Viera, Vízia, Pečeň",
    "efekt_dnes": "Pitka: za každú kartu, s ktorou tvorí spoj, +1 zadĺženie.",
-   "smer": "Spojka 7 akcií (Cig, Povera, Robota, Posilnenie / Viera, Vízia, Pečeň): všetko vybaví, ale na dlh."
+   "smer": "Spojka 7 akcií (Cig, Povera, Robota, Posilnenie / Viera, Vízia, Pečeň): všetko vybaví, ale na dlh. — Odpadá (plan.md 10.2).",
+   "strany": {
+    "left": {
+     "blocked": [],
+     "actions": {
+      "Cigareta": 1,
+      "Povera": 1,
+      "Robota": 1,
+      "Posilnenie": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Posilnenie",
+       "Robota"
+      ],
+      "2": [
+       "Posilnenie",
+       "Robota"
+      ],
+      "3": [
+       "Povera"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Viera": 1,
+      "Vízia": 1,
+      "PoškodeniePečene": 1
+     },
+     "allowed": {
+      "0": [
+       "Viera"
+      ],
+      "1": [
+       "Vízia",
+       "PoškodeniePečene"
+      ],
+      "2": [
+       "Vízia",
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Pitka: Za každý jeho spoj s aktívnou akciou sa ti zvýši zadĺženie o 1."
   },
   {
    "id": "bufetarka",
    "karta": "Bufetárka",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "nová",
+   "verdikt": "otvorené (dávka 2a, plan.md 10.3)",
    "akcie_dnes": "—",
    "akcie_plan": "Cig, Poldeci, Pečeň / Viera, Povera, Dlh",
    "efekt_dnes": "Pitka: každý, koho karta s ňou tvorí spoj, dostane cigaretu.",
-   "smer": "Spojka 6 akcií (Cig, Poldeci, Pečeň / Viera, Povera, Dlh), obslúži aj súpera."
+   "smer": "Spojka 6 akcií (Cig, Poldeci, Pečeň / Viera, Povera, Dlh), obslúži aj súpera. — Otvorené: plan.md 10.3.",
+   "strany": {
+    "left": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "Poldeci": 1,
+      "PoškodeniePečene": 1
+     },
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Poldeci",
+       "PoškodeniePečene"
+      ],
+      "2": [
+       "Poldeci",
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "Viera": 1,
+      "Povera": 1,
+      "Dlh": 1
+     },
+     "allowed": {
+      "1": [
+       "Viera"
+      ],
+      "2": [
+       "Povera",
+       "Dlh"
+      ],
+      "3": [
+       "Povera",
+       "Dlh"
+      ]
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Pitka: Každý hráč, ktorého karta s ňou tvorí spoj s aktívnou akciou, dostane 1 cigaretu.",
+   "efekt_navrhy": [
+    "Pitka: Každý hráč, ktorého karta s ňou tvorí spoj s aktívnou akciou, dostane 1 cigaretu.",
+    "Pitka: Každý hráč, ktorého karta s ňou tvorí spoj s aktívnou akciou, smie v tejto Pitke raz doliať poldeci za 1 cigaretu (namiesto 2)."
+   ],
+   "odporucanie": "variant"
   },
   {
    "id": "brigadnik",
    "karta": "Brigádnik",
    "typ": "Občan",
    "archetyp": "S",
-   "verdikt": "nová (rezerva)",
+   "verdikt": "nová (rozhodnuté 2026-10-27), rezerva ide do sady",
    "akcie_dnes": "—",
    "akcie_plan": "Robota, Cig, Rana / Robota, Pečeň, Obmedz",
    "efekt_dnes": "Furt: do prevahy sa neráta.",
-   "smer": "Spojka 6 akcií (Robota, Cig, Rana / Robota, Pečeň, Obmedzenie), Pracujúci pre Družstvo."
+   "smer": "Spojka 6 akcií (Robota, Cig, Rana / Robota, Pečeň, Obmedzenie), Pracujúci pre Družstvo. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      3
+     ],
+     "actions": {
+      "Robota": 1,
+      "Cigareta": 1,
+      "Rana": 1
+     },
+     "allowed": {
+      "0": [
+       "Robota"
+      ],
+      "1": [
+       "Cigareta",
+       "Rana"
+      ],
+      "2": [
+       "Cigareta",
+       "Rana"
+      ]
+     }
+    },
+    "right": {
+     "blocked": [
+      0
+     ],
+     "actions": {
+      "Robota": 1,
+      "PoškodeniePečene": 1,
+      "Obmedzenie": 1
+     },
+     "allowed": {
+      "1": [
+       "Robota"
+      ],
+      "2": [
+       "PoškodeniePečene",
+       "Obmedzenie"
+      ],
+      "3": [
+       "PoškodeniePečene",
+       "Obmedzenie"
+      ]
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Furt: Do prevahy sa neráta.",
+   "triggers": [
+    "Furt"
+   ]
   },
   {
    "id": "hromotlk",
    "karta": "Hromotĺk",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "nová",
+   "verdikt": "nie (rozhodnuté 2026-10-27, do sady nejde)",
    "akcie_dnes": "—",
    "akcie_plan": "Petelica / Pečeň×2",
    "efekt_dnes": "Bez efektu.",
-   "smer": "Petelica (len slot 1) / Pečeň×2: bije za troch, pije za dvoch."
+   "smer": "Petelica (len slot 1) / Pečeň×2: bije za troch, pije za dvoch. — Odpadá (plan.md 10.2).",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      2,
+      3
+     ],
+     "actions": {
+      "Petelica": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "PoškodeniePečene": 2
+     }
+    }
+   },
+   "varianty": 1,
+   "efekt_plan": ""
   },
   {
    "id": "masiar",
    "karta": "Mäsiar",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "nová",
+   "verdikt": "nová (rozhodnuté 2026-10-27)",
    "akcie_dnes": "—",
    "akcie_plan": "Pecka, Pečeň / Pecka, Pečeň",
    "efekt_dnes": "Bez efektu.",
-   "smer": "Pecka, Pečeň / Pecka, Pečeň: zabíjačka so slivovicou od rána."
+   "smer": "Pecka, Pečeň / Pecka, Pečeň: zabíjačka so slivovicou od rána. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Pecka": 1,
+      "PoškodeniePečene": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Pecka": 1,
+      "PoškodeniePečene": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "",
+   "triggers": []
   },
   {
    "id": "kulturista",
    "karta": "Kulturista",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "nová",
+   "verdikt": "nová (rozhodnuté 2026-10-27)",
    "akcie_dnes": "—",
    "akcie_plan": "Petelica / Dlh×2",
    "efekt_dnes": "Bez efektu.",
-   "smer": "Petelica / Dlh×2: anaboliká na splátky."
+   "smer": "Petelica / Dlh×2: anaboliká na splátky. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      2,
+      3
+     ],
+     "actions": {
+      "Petelica": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Dlh": 2
+     }
+    }
+   },
+   "varianty": 1,
+   "efekt_plan": "",
+   "triggers": []
   },
   {
    "id": "traktoristka",
    "karta": "Traktoristka",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "nová",
+   "verdikt": "otvorené (dávka 2a, plan.md 10.3)",
    "akcie_dnes": "—",
    "akcie_plan": "Petelica, Pečeň / Dlh",
    "efekt_dnes": "Bez efektu.",
-   "smer": "Petelica, Pečeň / Dlh: úderníčka z plagátu JRD."
+   "smer": "Petelica, Pečeň / Dlh: úderníčka z plagátu JRD. — Otvorené: plan.md 10.3.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Petelica": 1,
+      "PoškodeniePečene": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Dlh": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Bitka: Ak máš v jej kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.",
+   "efekt_navrhy": [
+    {
+     "k": "T1",
+     "efekt": "Bitka: Ak máš v jej kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh."
+    },
+    {
+     "k": "T2",
+     "efekt": "Prehra: Vezmi do ruky jednu svoju kartu z línie."
+    },
+    {
+     "k": "T3",
+     "efekt": "Nástup: Smieš hneď vyložiť jedného Pracujúceho z ruky; limit vykladania nemíňa."
+    }
+   ],
+   "odporucanie": "T1"
   },
   {
    "id": "kucharka",
    "karta": "Kuchárka",
    "typ": "Občan",
    "archetyp": "U",
-   "verdikt": "nová (rezerva)",
+   "verdikt": "nie (rozhodnuté 2026-10-27, do sady nejde)",
    "akcie_dnes": "—",
    "akcie_plan": "Pecka, Dlh / Pecka, Poldeci",
    "efekt_dnes": "Bez efektu.",
-   "smer": "Pecka, Dlh / Pecka, Poldeci: naberačka zo školskej jedálne, obedy na dlh."
+   "smer": "Pecka, Dlh / Pecka, Poldeci: naberačka zo školskej jedálne, obedy na dlh. — Odpadá (plan.md 10.2).",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Pecka": 1,
+      "Dlh": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Pecka": 1,
+      "Poldeci": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": ""
   },
   {
    "id": "oslavenec",
    "karta": "Oslávenec",
    "typ": "Občan",
    "archetyp": "E",
-   "verdikt": "nová",
+   "verdikt": "nová (rozhodnuté 2026-10-27)",
    "akcie_dnes": "—",
    "akcie_plan": "Poldeci, Cig / Rana",
    "efekt_dnes": "Kšeft: za plný poldeci naleješ súperovi — v tejto Pitke dostane 2 Pečene.",
-   "smer": "Kšeft na plný poldeci (bez neresti a pečene platiteľa); akcie Poldeci, Cig / Rana."
+   "smer": "Kšeft na plný poldeci (bez neresti a pečene platiteľa); akcie Poldeci, Cig / Rana. — Rozhodnuté znenie: plan.md 10.1.",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Poldeci": 1,
+      "Cigareta": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Rana": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Kšeft: Za 1 plný poldeci naleješ súperovi — v tejto Pitke dostane 2 poškodenia pečene.",
+   "triggers": [
+    "Kšeft"
+   ]
   },
   {
    "id": "sulac",
    "karta": "Šúľač",
    "typ": "Občan",
    "archetyp": "E",
-   "verdikt": "nová",
+   "verdikt": "nie (rozhodnuté 2026-10-27, do sady nejde)",
    "akcie_dnes": "—",
    "akcie_plan": "Cig, Povera / Vízia",
    "efekt_dnes": "Kšeft: za 1 špak si dober 2 karty.",
-   "smer": "„Zbav sa špaku“: z tvojich ohorkov ušúľa cigaru; akcie Cig, Povera / Vízia."
+   "smer": "„Zbav sa špaku“: z tvojich ohorkov ušúľa cigaru; akcie Cig, Povera / Vízia. — Odpadá (plan.md 10.2).",
+   "strany": {
+    "left": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Cigareta": 1,
+      "Povera": 1
+     }
+    },
+    "right": {
+     "blocked": [
+      0,
+      3
+     ],
+     "actions": {
+      "Vízia": 1
+     }
+    }
+   },
+   "varianty": 4,
+   "efekt_plan": "Kšeft: Za 1 špak si dober 2 karty."
   }
  ],
  "lokality_rozhodnute": {
@@ -1577,5 +2562,55 @@
    "10": "18 lokalít"
   },
   "sloty": "poradie slotov 0–3 zhora nadol, null = blokovaný; kľúče akcií ako v cards.json"
- }
+ },
+ "karty_rozhodnute": {
+  "datum": "2026-10-27",
+  "kto": "Michal",
+  "davka": "revizia-karty.html (2a)",
+  "ano": [
+   "Puška",
+   "Výherný automat",
+   "Finančná poradkyňa",
+   "Veštica",
+   "Praudovravec",
+   "Niekoho stryná",
+   "Veterán",
+   "Recidivista",
+   "Liberál",
+   "Živnostník",
+   "Kočovník",
+   "Šarlatán",
+   "Podvodník",
+   "Dvojčatá",
+   "Šofér",
+   "Brigádnik",
+   "Mäsiar",
+   "Kulturista",
+   "Oslávenec",
+   "Kapybara"
+  ],
+  "nie": [
+   "Vybavovač",
+   "Hromotĺk",
+   "Kuchárka",
+   "Šúľač"
+  ],
+  "otvorene": {
+   "Záhradkár": "Michal: „Zahradkar posuva prah exekucie o 2“ — odporúčanie A (Bitka: tvoj prah +2), alternatíva B (súperov −2).",
+   "Traktoristka": "Michal: „Treba vymyslieť efekt“ — odporúčanie T1 Na leasing, alternatívy T2 Odvoz z krčmy, T3 Vlečka.",
+   "Bufetárka": "bez voľby — plán (cigareta) alebo variant (doliatie za 1 cigaretu), odporúčam variant.",
+   "Oslávenec cena": "bez odpovede — 2 alebo 1 pečeň, odporúčam 2."
+  },
+  "otazky": {
+   "1": "prah Exekútora v7 = 7 (so súperovou priazňou 6/5/4)",
+   "2": "otvorená",
+   "3": "Kapybara 2 cigarety",
+   "4": "Brigádnik áno, Kuchárka nie",
+   "5": "kombá bez stropu, merať",
+   "6": "len merať (poznámka)"
+  },
+  "varianty_poznamka": "Pri Áno platí plánová verzia; varianty Vymyselníka (Automat, Poradkyňa, Hromotĺk, Kulturista, Šúľač, Šarlatán so stropom) odpadli.",
+  "sloty": "strany vo formáte cards.json (blocked, actions, allowed); varianty = počet rozložení podľa variants.ts"
+ },
+ "rozpocet_poznamka": "rozhodnute_karty = kópie v hre (balíček 2× + štart) po rozhodnutí 2026-10-27, s Bufetárkou; bez nej Cig −2, Poldeci −2, Pečeň −2, Viera −2, Povera −2, Dlh −2."
 }
