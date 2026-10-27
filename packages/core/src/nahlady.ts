@@ -7,7 +7,10 @@
 import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import {
+  cielLokalitaId,
+  cieleVykladania,
   cigaretyZPitky,
+  jeFinale,
   lineState,
   nahladPitky,
   paleneDlhyVBitke,
@@ -19,14 +22,15 @@ import {
   silaPriazne,
   svokraZaNaex,
   verejneAbstaky,
+  zablokovaneStrany,
 } from "./engine.ts";
 import { efektHraca, efektPotlaceny, exekutorLokality, partiaHraca, silaDoDna } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
-import type { DamageResult } from "./battle.ts";
+import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, exekutorCheck, zhoriPriExekucii } from "./battle.ts";
-import { cenaPatronatu, MARKER_STRED } from "./elders.ts";
+import { cenaPatronatu, MARKER_STRED, posunMarker } from "./elders.ts";
 import type { ClientState } from "./view.ts";
 import { hodnotaPohorseni } from "./view.ts";
 
@@ -379,6 +383,106 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
 /** Náhľad NA EX na jednu kartu: celá cena a čo sa zúčtuje pri odkrytí. */
 export interface NahladNaexNaKartu extends CenaTahu {
   readonly odkrytie: PoOdkrytiNaex;
+}
+
+/**
+ * Najhoršia odpoveď súpera na NA EX z náhľadu `n` (najhorsiaOdpoved) — zvlášť,
+ * lebo skúša celú sadu (≈ 7 ms na kartu): klient ju ráta len pre vybranú kartu.
+ */
+export function najhorsiaOdpovedNaNaex(data: GameData, view: ClientState, n: NahladNaexNaKartu): NajhorsiaOdpoved | null {
+  const mojeAbstaky = view.ruka.filter((k) => k.defId === "abstak").length;
+  return najhorsiaOdpoved(data, n.odkrytie.view, n.dalsiePitky[1], view.ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky]);
+}
+
+/** Odpoveď súpera, ktorá by hráčovi `ja` dopadla najhoršie. */
+export interface NajhorsiaOdpoved {
+  /** Vzorová karta (druh a rozloženie strán) — súper ju mať nemusí. */
+  readonly karta: CardInstance;
+  /** Na koniec čej strany ju súper vyloží. */
+  readonly strana: PlayerId;
+  readonly damage: DamageResult;
+  readonly vysledok: BattleOutcome;
+}
+
+/**
+ * Najhoršia verejne možná odpoveď súpera na NA EX (playtest 20261026-173610-3,
+ * N5: náhľad 6 : 3, po Dievčine na vydaj 6 : 4). Súperova ruka je skrytá, preto
+ * sa skúša každý druh karty sady, ktorý smie do línie, v každom rozložení
+ * vnútornej hrany, na koniec oboch strán — ako bežné vyloženie (cieleVykladania,
+ * Most, skrytá Záverečná). Hodnotí sa ako hrozba: víťaz, potom prebytok.
+ * `po` je pohľad hráča `po.ja` po jeho NA EX (poOdkrytiNaex). Nástup odpovede
+ * (Snúbenica) nepredvída.
+ */
+export function najhorsiaOdpoved(
+  data: GameData,
+  po: ClientState,
+  dalsiePitky: number,
+  abstakyVRuke: readonly [number, number],
+): NajhorsiaOdpoved | null {
+  const ja = po.ja;
+  const su = opponentOf(ja);
+  if (po.ciel === null || po.hraci[su].rukaPocet <= 0) return null;
+  const hodnotaPreMna = (v: BattleOutcome): number =>
+    (v.vitaz === null ? 0 : v.vitaz === ja ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === ja ? v.prebytok : -v.prebytok);
+  const bitka = (s: ClientState): DamageResult => poskodenieBitky(data, stolPriPoskodeni(data, s, dalsiePitky), evaluateLine(data, lineState(s)).sums, abstakyVRuke);
+  let najhorsia: NajhorsiaOdpoved | null = null;
+  let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
+  const lokalita = cielLokalitaId(po);
+  const zablokovane = zablokovaneStrany(po);
+  const finale = jeFinale(po);
+  for (const def of data.cards.values()) {
+    if (def.tags.includes("Lokalita") || def.tags.includes("Starešina")) continue;
+    const varianty = data.variants.get(def.id);
+    if (varianty === undefined) continue;
+    // Pri konci strany sa páruje len vnútorná hrana — stačí meniť jednu stranu karty.
+    const rozlozenia: [number, number][] = [
+      ...Array.from({ length: varianty.left.length }, (_, l): [number, number] => [l, 0]),
+      ...Array.from({ length: Math.max(0, varianty.right.length - 1) }, (_, r): [number, number] => [0, r + 1]),
+    ];
+    for (const [leftLayout, rightLayout] of rozlozenia) {
+      const karta: CardInstance = { uid: -900, defId: def.id, leftLayout, rightLayout };
+      const ciele = cieleVykladania(data, po.strany, su, karta, Number.POSITIVE_INFINITY, true, lokalita, zablokovane, finale);
+      for (const ciel of ciele) {
+        if (ciel !== "vlastna" && ciel !== "superova") continue;
+        const strana: PlayerId = ciel === "vlastna" ? su : ja;
+        const nova = [...po.strany[strana], { card: karta, playedBy: su }];
+        const strany: ClientState["strany"] = strana === 0 ? [nova, po.strany[1]] : [po.strany[0], nova];
+        const damage = bitka({ ...po, strany });
+        const vysledok = battleOutcome(damage);
+        const h = hodnotaPreMna(vysledok);
+        if (h < najhorsiaHodnota) {
+          najhorsiaHodnota = h;
+          najhorsia = { karta, strana, damage, vysledok };
+        }
+      }
+    }
+  }
+  return najhorsia;
+}
+
+/**
+ * Bitka pred a po jednom Pohoršení hráča `p` na staršieho (k sebe či k súperovi,
+ * playtest 20261026-181227-1 N2: priazeň Bitkára otočí bitku 4 : 4 → 5 : 4).
+ * Ten istý výpočet ako vyhodnotPoskodenie — súčty línie, nová priazeň. Null mimo
+ * bitky pred poškodením alebo keď posun poškodenie nezmení.
+ */
+export function bitkaPoPohorseni(
+  data: GameData,
+  view: ClientState,
+  elderId: string,
+  p: PlayerId,
+  kSebe: boolean,
+  abstakyVRuke: readonly [number, number],
+): { readonly pred: DamageResult; readonly po: DamageResult } | null {
+  if (view.ciel === null || view.bitkaStav === null || view.bitkaStav.damage !== null) return null;
+  const elder = view.starsi.find((e) => e.elderId === elderId);
+  const marker = elder === undefined ? null : posunMarker(elder, kSebe ? p : opponentOf(p));
+  if (marker === null) return null;
+  const sums = evaluateLine(data, lineState(view)).sums;
+  const pred = poskodenieBitky(data, view, sums, abstakyVRuke);
+  const po = poskodenieBitky(data, { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) }, sums, abstakyVRuke);
+  const rovnake = pred.tuhe[0] === po.tuhe[0] && pred.tuhe[1] === po.tuhe[1] && pred.celkove[0] === po.celkove[0] && pred.celkove[1] === po.celkove[1];
+  return rovnake ? null : { pred, po };
 }
 
 /**
