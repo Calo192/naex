@@ -18,8 +18,10 @@ import {
   pocetPitiek,
   prirastkyPitky,
   setupGame,
+  spakyTeraz,
   urovenLokality,
   viewFor,
+  vyplatZaStarsich,
 } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -108,6 +110,20 @@ describe("lokality podľa úrovní a finále na pinnacle (plan.md 7)", () => {
     expect(po.ciel?.lokalita?.defId).toBe("predsedova_vila");
     // Prázdna línia: 1 Pitka (nie pevné 3 finále v6).
     expect(pocetPitiek(data, po)).toBe(1);
+  });
+
+  it("starší ešte vyplatia: vo Voľbe cieľa finále raz (finále je pred nami), v poslednom kole o lokalitu dvakrát", () => {
+    const s0 = setupGame(data, 4);
+    const L = s0.lokalitCelkom;
+    const volbaFinale: GameState = { ...s0, kolo: L + 1, faza: "volbaCiela", ciel: null };
+    expect(vyplatZaStarsich(volbaFinale)).toBe(1);
+    const view = viewFor(data, volbaFinale, 0);
+    expect(spakyTeraz(view).vyplat).toBe(1);
+    expect(vyplatZaStarsich({ ...s0, kolo: L, faza: "volbaCiela", ciel: null })).toBe(2);
+    // Po výbere pinnacle: finále je cieľ tohto kola — stále jedna výplata.
+    const vila = s0.lokalityVHre.find((k) => k.defId === "predsedova_vila")!;
+    const po = apply(data, { ...volbaFinale, utocnik: 0 }, { type: "chooseLocation", uid: vila.uid, otocena: false }, 1).state;
+    expect(vyplatZaStarsich(po)).toBe(1);
   });
 });
 

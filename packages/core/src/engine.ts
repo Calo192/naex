@@ -710,6 +710,16 @@ export function lokalityNaVyber(data: GameData, s: Pick<GameState, "lokalityVHre
   return s.lokalityVHre.filter((k) => urovenLokality(data, k.defId) === u);
 }
 
+/**
+ * Koľko lokalít (bez finále) ešte čaká na výber cieľa — kolá o lokalitu pred
+ * nami. Vo v7 ich ráta rozpis (kolo k je k-te), lokalityVHre je celá sada;
+ * do v6 sú v hre len vyžrebované. Server aj klient (ClientState to spĺňa).
+ */
+export function lokalitNevybranych(s: Pick<GameState, "lokalityVHre" | "ciel" | "kolo" | "lokalitCelkom"> & { readonly rozpis?: readonly number[] }): number {
+  if (s.rozpis === undefined) return s.lokalityVHre.length;
+  return Math.max(0, s.lokalitCelkom - s.kolo + (s.ciel === null ? 1 : 0));
+}
+
 /** Finále bez lokality v strede (v6) — prvá karta leží v strede línie. */
 export function finaleBezStredu(s: Pick<VerejnyStav, "ciel">): boolean {
   return s.ciel?.typ === "finale" && s.ciel.lokalita === null;
@@ -766,10 +776,9 @@ export function vyplatZaStarsich(
 ): number {
   if (s.koniec !== null) return 0;
   const tato = s.ciel === null ? 0 : s.bitkaStav !== null && s.bitkaStav.damage !== null ? 0 : 1;
-  // v7: lokality sa nežrebujú — neodohrané kolá o lokalitu ráta rozpis (kolo k je k-te).
-  const zostava = s.rozpis !== undefined ? Math.max(0, s.lokalitCelkom - s.kolo + (s.ciel === null ? 1 : 0)) : s.lokalityVHre.length;
-  const finaleUz = s.ciel?.typ === "finale" || (s.rozpis !== undefined && s.kolo > s.lokalitCelkom);
-  return zostava + (finaleUz ? 0 : 1) + tato;
+  // Vo Voľbe cieľa finále (v7) je cieľ ešte null — finále je stále pred nami.
+  const finaleUz = s.ciel?.typ === "finale";
+  return lokalitNevybranych(s) + (finaleUz ? 0 : 1) + tato;
 }
 
 /** Efekt karty defId patrí hráčovi p a nie je umlčaný (Praudovravec). */
