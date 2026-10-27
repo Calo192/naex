@@ -1,5 +1,5 @@
 // Účet špakov (pravidlá v6, Michal 2026-10-26): odkiaľ má každý hráč špaky —
-// bitky, starší, prebytok vo finále, Exekútor a nepriznaná Cirhóza. Pre koniec
+// bitky, starší, prebytok vo finále, Exekútor, výkupné zdrojov a nepriznaná Cirhóza. Pre koniec
 // hry a detail partie; rovnaká mriežka ako špaky jednej bitky (SpakyBitky).
 // Čísla ráta jadro (rozpisSpakov), klient ich len píše.
 
@@ -11,6 +11,7 @@ const RIADKY: readonly { readonly kluc: keyof RozpisSpakov; readonly nazov: stri
   { kluc: "zaStarsich", nazov: "starší, ktorí sa boja" },
   { kluc: "prebytok", nazov: "prebytok (finále, Kultúrny dom)" },
   { kluc: "exekutor", nazov: "Exekútor" },
+  { kluc: "vykupne", nazov: "výkupné (poldeci, cigarety)" },
   { kluc: "cirhoza", nazov: "nepriznaná Cirhóza" },
 ];
 

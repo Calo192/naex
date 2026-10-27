@@ -37,7 +37,7 @@ a k nej za starších, ktorí sa víťaza boja. Na konci vyhrá, kto má viac
 | Udalosť | Výsledok |
 |---|---|
 | Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** — ohlásené vydesenie; súper má kolo na odpoveď, napr. patronát nad vydeseným starším vráti marker do stredu (§10) | **vyhráva** |
-| Odohrá sa finále (po 3 / 5 / 7 bitkách o lokality podľa dĺžky hry) | odpočíta sa nepriznaná Cirhóza a vyhrá viac špakov (§14) |
+| Odohrá sa finále (po 3 / 5 / 7 bitkách o lokality podľa dĺžky hry) | vykúpia sa zvyšné plné poldeci a cigarety, odpočíta sa nepriznaná Cirhóza a vyhrá viac špakov (§14) |
 
 Exekúcia prehru nespôsobí — stojí Dlhy a špaky (§11).
 
@@ -147,7 +147,8 @@ poslednej bitky: **vyberá a natáča cieľ** kola a **Pitku začína**.
 
 - Každému hráčovi sa otočí **jeden vypitý poldeci na plný** (§6, limit).
 - Od druhého kola si každý hráč dobere zo svojho doberacieho balíčka
-  **2 karty** (dobratie po bitke). **Keď sa doberací balíček minie,
+  **1 kartu** (dobratie po bitke; do 2026-10-27 dve — ďalšie karty sa
+  kupujú cigaretami v šenku a fajčením). **Keď sa doberací balíček minie,
   odhadzovací sa zamieša a stane sa z neho nový doberací balíček** — pri
   každom ťahaní, aj uprostred neho. Na začiatku hry je doberací balíček
   prázdny (§3): kým hráč nemá ani odhadzovací, ťahanie nedá nič, fajčiť sa
@@ -448,9 +449,12 @@ Pitiek**. Po odpovediach sa Pitka vyhodnotí.
 
 ### Fajčenie, doliatie a barter
 
-- **Fajčenie (len v Pitke):** na svojom ťahu v Pitke smie hráč vyfajčiť
-  cigaretu — hneď si dobere kartu, ťah mu neskončí, ráta sa to ako nerest.
-  **V Zhromaždení sa nefajčí.** Keď sú doberací aj odhadzovací balíček
+- **Fajčenie (len v Pitke):** na svojom ťahu v Pitke smie hráč fajčiť — hneď
+  si dobere kartu, ťah mu neskončí. **Cena rastie** (Michal 2026-10-27): prvé
+  fajčenie hráča v Pitke stojí **1 cigaretu**, druhé **2**, tretie **3** atď.;
+  každá Pitka začína znova od 1 a každý hráč má počítadlo zvlášť (je verejné).
+  Nie je to strop — fajčiť sa dá stále, len drahšie. Každá vyfajčená cigareta
+  je nerest (§8), teda druhé fajčenie 2 neresti. **V Zhromaždení sa nefajčí.** Keď sú doberací aj odhadzovací balíček
   prázdne, **fajčiť sa nedá** — cigareta by nedala kartu. Na Benzínke sa
   nefajčí (§15).
 - **Doliatie, 2 cigarety** (počas Pitky) → otoč jeden vypitý poldeci späť na
@@ -458,6 +462,8 @@ Pitiek**. Po odpovediach sa Pitka vyhodnotí.
 - **Stokársky barter, 5 cigariet** (na Jednote o 1 menej) → nový plný poldeci
   navyše.
 - Zadarmo sa jeden vypitý poldeci otočí na začiatku kola (§4).
+- Čo po finále ostane, sa vykúpi: plný poldeci 1 špak, každých celých
+  5 cigariet 1 špak (výkupné, §14).
 
 ### Vyhodnotenie Pitky
 
@@ -539,7 +545,8 @@ Nová Cirhóza ide do **odhadzovacieho balíčka** hráča (§11).
 ### Nerest a Absťák
 
 **Nerest** je každý poldeci vypitý v Zhromaždení (ďalšia karta v ťahu), NA EX
-(poldeci sa vypije v bitke), každá vyfajčená cigareta, doliatie poldeci (2)
+(poldeci sa vypije v bitke), každá vyfajčená cigareta (aj tie, o ktoré je
+ďalšie fajčenie v Pitke drahšie), doliatie poldeci (2)
 a stokársky barter (za každú cigaretu); aj cigareta na Zbernom dvore. Platba za
 šenok, Dedičstvo a Starostu sa nepočíta, akcie Cigareta a Poldeci tiež nie.
 
@@ -1081,7 +1088,17 @@ verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je re
 | Noviny v Dedičstve | **+1**, keď sa ťa bojí viac starších ako súpera (počet starších) — ako strach len **víťazovi**, pri **sekere obom** | krok 4b |
 | Prebytok vo finále a na Kultúrnom dome | toľko, aký je prebytok (po Puške) | krok 4c |
 | Exekútor | **−** polovica priznaných Dlhov (Záhradkár ich zachráni) | krok 1 (§11) |
+| Výkupné zdrojov | **+1** za každý plný poldeci, **+1** za každých celých 5 cigariet (nadol); **bez stropu** | na konci hry, po finále |
 | Nepriznaná Cirhóza | **−5** za kus (ruka aj oba balíčky) | na konci hry, po finále |
+
+**Výkupné** (Michal 2026-10-27): zdroje, ktoré hráčovi po finále ostanú, sa
+vykúpia za špaky — prebytok sa tak dá zúžitkovať aj na konci, nič neprepadá
+a hra ho neobmedzuje stropom. Ráta sa **plný poldeci** v zásobe hráča (§6,
+limit vykladania): vypitý poldeci nie, poldeci ležiaci cez NA EX sa v bitke
+vypije (§9.5) a tiež nie; Vínko je len limit, nie poldeci. Cigarety sa delia
+piatimi a zvyšok prepadne (14 cigariet = 2 špaky). Zdroje oboch hráčov sú
+verejné, preto aj výkupné — klient ho ukazuje v riadku „Koniec“ krčmovej
+nástenky a v „keby skončila teraz“.
 
 Špaky smú klesnúť do mínusu. **Krčmová nástenka** ukazuje odohrané bitky:
 lokalitu, víťaza a jeho špaky za bitku (finále bez lokality); klient z nej
@@ -1113,8 +1130,9 @@ Po poslednej bitke o lokalitu (3 / 5 / 7) sa hrá **finále** — posledná bitk
 - Po finále sa ešte rozdajú **špaky za starších** — ako po každej bitke len
   víťazovi finále, pri sekere obom (§14). **Prebytok sa nerozdeľuje** —
   jeho držiteľ dostane toľko špakov, aký je prebytok.
-- Potom sa odpočíta nepriznaná Cirhóza (−5 za kus) a vyhrá hráč s viac
-  špakmi.
+- Potom sa vykúpia zvyšné zdroje (plný poldeci 1 špak, každých celých
+  5 cigariet 1 špak, §14), odpočíta sa nepriznaná Cirhóza (−5 za kus) a vyhrá
+  hráč s viac špakmi.
 
 ## 15. Lokality
 
@@ -1206,7 +1224,7 @@ v strede).
 | Absťák | kliatba za menej nerestí než v predošlom kole; rovno priznaná, −1 tvoje tuhé za kus; víťazovi s viac Absťákmi uberie špaky za bitku a rozhoduje remízu (§8, §9.4) |
 | Finále | posledná bitka bez lokality; prvá karta je stred, 3 Pitky, útočí viac špakov (§14b) |
 | Dedičstvo | Nástroj vyložený mimo línie za rastúcu cenu v cigaretách; platí jeho efekt Dedičstvo (§12) |
-| Dobratie po bitke | 2 karty na začiatku každého ďalšieho kola; limit ruky nie je (§4) |
+| Dobratie po bitke | 1 karta na začiatku každého ďalšieho kola; limit ruky nie je (§4) |
 | Kraj | polovica línie od lokality, pomenovaná podľa hrany lokality (Krčma: pri výčape / pri dverách) (§6) |
 | Línia | celý rad kariet v kole; lokalita v strede (§6) |
 | Náhrada | hráč nahradí kartu z množiny určenej efektom; náhrada staršieho je karta na jeho scorecarde po patronáte (§10) |
@@ -1225,11 +1243,12 @@ v strede).
 | Prevaha | v kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje, Cirhóza nie); pri rovnosti hráč, ktorého karta v tom kraji leží hneď pri lokalite; dostane akcie hrany lokality v tom kraji (§6) |
 | Priznanie | vyloženie kliatby mimo línie natrvalo; nemíňa limit ani neodovzdá ťah (§11) |
 | Sekera | bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch); jej špaky berie víťaz najbližšej bitky, vo finále prepadnú (§9.4) |
-| Špak | víťazný bod — za bitku, za starších, prebytok vo finále; mínus Exekútor a nepriznaná Cirhóza (§14) |
+| Špak | víťazný bod — za bitku, za starších, prebytok vo finále, výkupné zvyšných poldeci a cigariet; mínus Exekútor a nepriznaná Cirhóza (§14) |
 | Strana | polovica línie od lokality — tvoja a súperova (§6) |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |
 | Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále viac špakov, §14b) — berie zo šenku prvý, vykladá prvý a v Pitke má posledné slovo (na NA EX odpovedá druhý); obranca je víťaz minulej bitky — volí a natáča cieľ, Pitku začína (§4) |
 | Výtržník | karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka): všetky jej akcie sú aktívne Rany pre majiteľa, len počas jednej bitky (§7) |
 | Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu (§13) |
+| Výkupné | po finále 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, bez stropu (§14) |
 | Záverečná | karta lícom dole za cigaretu, ukončí vykladanie v Zhromaždení; otočí sa na konci Pitky (§13) |
 | Zahodenie | odstrániť kartu z hry (spáliť) |

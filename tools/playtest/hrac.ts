@@ -23,6 +23,7 @@ import {
   kartyZaPas,
   KONSTANTY,
   STUPNICA_ZONY,
+  cigariet,
   battleOutcome,
   cenaPatronatu,
   kandidatiNaNahradu,
@@ -53,6 +54,7 @@ import {
   nahladPosunuPrebytkom,
   vykupZoSrotu,
   zakazFajcit,
+  cenaFajceniaHraca,
   zakazNaex,
   zakazVypit,
   nahladVylozenia,
@@ -337,7 +339,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     out.push(`KONIEC HRY: vyhral ${kto(v.koniec.vitaz)}. ${rozlozRod(v.koniec.dovod, rodyHracov)}${v.koniec.body ? ` Špaky: ty ${v.koniec.body[ja]}, súper ${v.koniec.body[su]}.` : ""}`);
   }
   out.push(
-    `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — zo šenku berieš prvý a vykladáš prvý" : "obranca — vyberáš a natáčaš cieľ kola, zo šenku berieš aj vykladáš druhý"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} ${v.lokalitCelkom <= 4 ? "lokality" : "lokalít"} a potom FINÁLE (bitka bez lokality, 3 Pitky)${v.ciel?.typ === "finale" ? " — TERAZ JE FINÁLE: prvá vyložená karta leží v strede, kraje nie sú" : ""}; odohraných bitiek ${v.nastenka.length}. ŠPAKY (víťazné body): ty ${v.spaky[ja]}, súper ${v.spaky[su]}${v.spakyNaSekere > 0 ? `, na sekere ${v.spakyNaSekere}` : ""}. Limit ruky nie je; po každej bitke si každý dobere ${KONSTANTY.KARTY_PO_BITKE} karty. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
+    `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — zo šenku berieš prvý a vykladáš prvý" : "obranca — vyberáš a natáčaš cieľ kola, zo šenku berieš aj vykladáš druhý"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} ${v.lokalitCelkom <= 4 ? "lokality" : "lokalít"} a potom FINÁLE (bitka bez lokality, 3 Pitky)${v.ciel?.typ === "finale" ? " — TERAZ JE FINÁLE: prvá vyložená karta leží v strede, kraje nie sú" : ""}; odohraných bitiek ${v.nastenka.length}. ŠPAKY (víťazné body): ty ${v.spaky[ja]}, súper ${v.spaky[su]}${v.spakyNaSekere > 0 ? `, na sekere ${v.spakyNaSekere}` : ""}. Limit ruky nie je; po každej bitke si každý dobere ${kariet(KONSTANTY.KARTY_PO_BITKE)}. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
   );
 
   // Stôl po prípadnom vyhodnotení — rovnako ako klient. V strede leží lokalita.
@@ -543,7 +545,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       "ŠPAKY (v6.1): po bitke (aj po finále) dá starší hráčovi, ktorého sa bojí, žltá 1 / oranžová 2 / červená 3 špaky — LEN AK TEN BITKU VYHRAL; porazený za starších nič, pri sekere obaja. " +
       "Pohoršenie a prebytok posunú marker o pole za bod, bez limitu, aj na červenú a z nej späť. Scorecard nesie len priazeň.",
   );
-  out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; po najbližšej bitke od starších víťazovi: ty +${body.zaStarsich[ja]} ak vyhráš, súper +${body.zaStarsich[su]} ak vyhrá; nepriznaná Cirhóza na konci −5 za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); odhad do konca (markery stoja, keby vyhral každú bitku) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
+  out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; po najbližšej bitke od starších víťazovi: ty +${body.zaStarsich[ja]} ak vyhráš, súper +${body.zaStarsich[su]} ak vyhrá; nepriznaná Cirhóza na konci −5 za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); výkupné na konci (plný poldeci 1, každých 5 cigariet 1): ty +${body.vykupne[ja].spaky}, súper +${body.vykupne[su].spaky}; keby skončila teraz ty ${body.spolu[ja]}, súper ${body.spolu[su]}; odhad do konca (markery stoja, keby vyhral každú bitku) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
   // Ohlásené vydesenie (Michal 2026-10-16): výhra až po udržaní do konca ďalšieho kola.
   const prahVyd = prahVydesenia(v);
   const vyd = (p: PlayerId) => v.starsi.filter((e) => vydesil(e, p)).length;
@@ -833,7 +835,10 @@ function moznosti(v: ClientState): string[] {
       if (mamKartu("starosta") && pk?.starosta[ja] !== true && h.cigarety > 0) {
         out.push(`{"type":"starosta","rukaUid":U,"senokUid":S}   — Starosta: za 1 cigaretu vymeň kartu z ruky (U) za kartu zo šenku (S); staršieho z patronátu do šenku nedáš`);
       }
-      if (h.cigarety > 0 && !zakazFajcit(v) && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) c({ type: "smoke", pocet: 1 }, "vyfajč 1 cigaretu — hneď si doberieš kartu (ťah nekončí)");
+      const cenaFajc = cenaFajceniaHraca(v, ja);
+      if (h.cigarety >= cenaFajc && !zakazFajcit(v) && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)) {
+        c({ type: "smoke", pocet: 1 }, `fajči za ${cigariet(cenaFajc)} — hneď si doberieš kartu (ťah nekončí); ďalšie fajčenie v tejto Pitke o cigaretu drahšie`);
+      }
       // Zberný dvor (Michal 2026-10-20): raz za Pitku za cigaretu karta z odhadzovacieho balíčka.
       if (vykupZoSrotu(v) && pk?.vykup?.[ja] !== true && h.cigarety >= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA) {
         for (const k of h.odhadzovaci) c({ type: "vykup", uid: k.uid }, `Zberný dvor: výkup zo šrotu za ${KONSTANTY.EFEKT.ZBERNY_DVOR_CENA} cigaretu — ${popisKarty(k)} z odhadzovacieho balíčka do ruky (raz za Pitku)`);

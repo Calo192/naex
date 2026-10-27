@@ -4,6 +4,7 @@
 
 import type { PlayerId } from "./types.ts";
 import type { Command, Event, GameState } from "./engine.ts";
+import { uidZaverecnej } from "./engine.ts";
 
 export interface StatKarty {
   /** Partie, v ktorých sa karta objavila (jedna partia = 1). */
@@ -65,7 +66,9 @@ export function zapisTahKariet(stat: StatistikyKariet, pred: GameState, cmd: Com
       pridaj(out, defId, { [pole]: 1 });
     }
   } else if (cmd.type === "naex") {
-    const defId = [...pred.strany[0], ...pred.strany[1]].find((pl) => pl.card.uid === cmd.uid)?.card.defId;
+    // NA EX na súperovu skrytú Záverečnú má náhradné uid (uidZaverecnej) — patrí skutočnej karte na tej strane.
+    const skryta = ([0, 1] as const).map((strana) => (uidZaverecnej(strana) === cmd.uid ? pred.strany[strana].find((pl) => pl.zaverecna === true) : undefined)).find((pl) => pl !== undefined);
+    const defId = ([...pred.strany[0], ...pred.strany[1]].find((pl) => pl.card.uid === cmd.uid) ?? skryta)?.card.defId;
     if (defId !== undefined) pridaj(out, defId, { naex: 1 });
   }
   for (const e of events) {

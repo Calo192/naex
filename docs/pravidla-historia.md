@@ -1197,3 +1197,27 @@ Staré znenie §8 (koniec odseku Nerest a Absťák):
 > Autobusár jeden ignoruje). Absťáky, ktoré hráč **práve má** (priznané, jeho
 > karty v línii aj v ruke), navyše rozhodujú remízu v bitke a víťazovi s viac
 > Absťákmi uberajú špaky za bitku (§9.4).
+
+### Doplnok v6.1c: výkupné zvyšných zdrojov (Michal 2026-10-27)
+
+Michal: „Každé ostávajúce nevypité poldeci bude 1 špak a každých 5 cigariet bude
+1 špak.“ Na konci hry, po finále a pred určením víťaza (spolu s nepriznanou
+Cirhózou), dostane hráč 1 špak za každý plný poldeci a 1 špak za každých celých
+5 cigariet, bez stropu (zásada z CLAUDE.md: žiadne umelé stropy zdrojov —
+prebytok sa má dať minúť alebo zúžitkovať). Predtým zdroje na konci prepadli.
+Plný poldeci je ten, ktorý sa ráta do limitu vykladania; vypitý ani ležiaci
+cez NA EX nie, Vínko tiež nie.
+
+### Doplnok v6.1d: fajčenie zdražie v Pitke (Michal 2026-10-27)
+
+Michal: „keď sa fajčí a hráč ťahá karty, ťahá ich za prvé fajčenie 1 cigareta,
+druhé 2 cigarety atď… resetuje sa to v každej Pitke.“ Predtým stálo každé
+fajčenie 1 cigaretu. Počítadlo fajčení je verejné a má ho každý hráč zvlášť;
+strop to nie je. Nerest je každá vyfajčená cigareta (druhé fajčenie = 2 neresti).
+
+### Doplnok v6.1e: dobratie po bitke 1 karta (Michal 2026-10-27)
+
+Michal: „hráč si automaticky ťahá 2 karty z doberacieho balíčka… toto treba
+obmedziť na 1, nech majú cigarety zmysel.“ Playtesteri hlásili prebytok
+cigariet (15–56 za partiu). Dobratie na začiatku kola od 2. kola je teraz
+1 karta (predtým 2); ďalšie karty sa kupujú v šenku a fajčením.

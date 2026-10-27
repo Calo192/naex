@@ -87,7 +87,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             <P k="finale">finále</P> — posledná bitka bez lokality. Víťaz bitky dostane toľko <P k="spak">špakov</P>, koľko
             Pitiek sa v kole odohralo, a k tomu ti každý starší, ktorý sa ťa bojí, dá 1, 2 alebo 3 špaky podľa zóny. Kto bitku
             prehrá, od starších nedostane nič; pri sekere dostanú obaja.
-            Po finále vyhrá, kto má viac špakov.
+            Po finále sa ešte <P k="vykupne">vykúpi</P>, čo ti ostalo: každý plný poldeci 1 špak, každých 5 cigariet 1 špak. Potom vyhrá, kto má
+            viac špakov.
           </div>
           <div className="karticka karticka-ok">
             <strong>Vyhráš hneď</strong>, ak <P k="vydesenie">vydesíš</P> aspoň polovicu starších v hre a udržíš ich do konca
@@ -194,7 +195,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             boja, mu dajú ďalšie; porazený od nich nič. Prebytok posúva starších.
           </li>
           <li>
-            <strong>Po bitke.</strong> Karty z línie idú do odhadzovacích balíčkov, každý si dobere 2 karty a doleje sa mu jeden
+            <strong>Po bitke.</strong> Karty z línie idú do odhadzovacích balíčkov, každý si dobere 1 kartu a doleje sa mu jeden
             vypitý poldeci.
           </li>
         </ol>
@@ -424,7 +425,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="pitka-cigarety">Fajčenie, doliatie a barter</H3>
         <ul>
           <li>
-            <P k="fajcenie">Fajčenie</P> — cigareta = karta z balíčka hneď; len na svojom ťahu v Pitke, v Zhromaždení nie.
+            <P k="fajcenie">Fajčenie</P> — karta z balíčka hneď; len na svojom ťahu v Pitke, v Zhromaždení nie. Prvé fajčenie
+            v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína znova od 1.
           </li>
           <li>
             <P k="doliatie">Doliatie</P> — v Pitke za 2 cigarety otočíš vypitý poldeci späť na plný (nie s Vínkom v Dedičstve).
@@ -433,7 +435,10 @@ export const KAPITOLY: readonly Kapitola[] = [
             <P k="barter">Stokársky barter</P> — v Pitke za 5 cigariet nový plný poldeci.
           </li>
         </ul>
-        <p className="tlmene">Na začiatku každého kola sa ti jeden vypitý poldeci doleje sám.</p>
+        <p className="tlmene">
+          Na začiatku každého kola sa ti jeden vypitý poldeci doleje sám. Čo ti po finále ostane, sa vykúpi: plný poldeci
+          1 špak, každých 5 cigariet 1 špak.
+        </p>
       </>
     ),
   },
@@ -590,7 +595,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Absťák</strong> — porovnanie nerestí kola s minulým; potom sa skontroluje vydesenie.
           </li>
           <li>
-            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 2 karty.
+            <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 1 kartu.
           </li>
         </ol>
       </>
@@ -919,6 +924,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Noviny v Dedičstve</td><td>po vyhratej bitke (pri sekere obom) +1, keď sa ťa bojí viac starších ako súpera</td></tr>
             <tr><td>Prebytok po finále a v bitke o Kultúrny dom</td><td>toľko, aký je prebytok</td></tr>
             <tr><td>Exekútor</td><td>mínus polovica priznaných Dlhov (Záhradkár ich zachráni)</td></tr>
+            <tr><td><P k="vykupne">Výkupné</P> na konci hry</td><td>každý plný poldeci 1, každých celých 5 cigariet 1 (zvyšok prepadne); bez stropu — vypitý poldeci ani poldeci pod NA EX sa nerátajú</td></tr>
             <tr><td>Nepriznaná Cirhóza</td><td>mínus 5 za kus na konci hry (ruka aj oba balíčky)</td></tr>
           </tbody>
         </table>
@@ -942,7 +948,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>Finále má vždy 3 Pitky. Pri sekere vo finále špaky kola aj zo sekery prepadnú.</li>
           <li>
             Po finále sa ešte rozdajú špaky za starších. Prebytok sa nerozdeľuje — jeho držiteľ dostane toľko špakov, aký je
-            prebytok. Potom sa odpočíta nepriznaná Cirhóza a vyhrá hráč s viac špakmi.
+            prebytok. Potom sa vykúpia zvyšné plné poldeci a cigarety (poldeci 1 špak, 5 cigariet 1 špak), odpočíta sa
+            nepriznaná Cirhóza a vyhrá hráč s viac špakmi.
           </li>
         </ul>
         <div className="riadok-tlacidiel">

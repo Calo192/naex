@@ -23,10 +23,11 @@ import type {
   GameState,
   KoniecHry,
   PitkaStav,
+  Vykupne,
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { abstakyVBitke, cenaDedicstva, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
+import { abstakyVBitke, cenaDedicstva, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -391,7 +392,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
 // klient AI hráčov aj kroniku.
 
 /** Stav, z ktorého sa rátajú špaky — ClientState ho spĺňa. */
-export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "lokalityVHre" | "ciel" | "koniec"> & {
+export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "lokalityVHre" | "ciel" | "koniec" | "pitkaStav"> & {
+  readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety">, Pick<HracVerejne, "poldeciPlne" | "cigarety">];
   readonly starsi: readonly ElderState[];
   readonly bitkaStav: { readonly damage: DamageResult | null } | null;
 };
@@ -410,7 +412,12 @@ export interface SpakyTeraz {
   readonly spaky: readonly [number, number];
   /** Nepriznané Cirhózy (ruka aj balíčky) — na konci každá SPAKY_ZA_CIRHOZU menej. */
   readonly cirhozy: readonly [number, number];
-  /** Keby sa hra skončila teraz: špaky mínus nepriznané Cirhózy. */
+  /**
+   * Výkupné, keby sa hra skončila teraz: plné poldeci a cigarety (verejné; vlastný
+   * poldeci pod skrytým NA EX sa nevykúpi). Po konci hry výkupné z konca.
+   */
+  readonly vykupne: readonly [Vykupne, Vykupne];
+  /** Keby sa hra skončila teraz: špaky mínus nepriznané Cirhózy plus výkupné. */
   readonly spolu: readonly [number, number];
   /**
    * Koľko špakov dajú starší hráčovi po najbližšej bitke, ak ju vyhrá (v6.1 —
@@ -429,16 +436,25 @@ export interface SpakyTeraz {
   readonly odhad: readonly [number, number];
 }
 
+const BEZ_VYKUPNEHO: Vykupne = { poldeci: 0, cigarety: 0, spaky: 0 };
+
 export function spakyTeraz(view: PohladSpakov): SpakyTeraz {
   const cirhozy: [number, number] = [view.nepriznaneKliatby[0].cirhoza, view.nepriznaneKliatby[1].cirhoza];
-  // Po konci hry sú Cirhózy už odpočítané v popolníku.
+  // Po konci hry sú Cirhózy aj výkupné už v popolníku.
   const odpocet = (p: PlayerId): number => (view.koniec === null ? cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU : 0);
-  const spolu: [number, number] = [view.spaky[0] - odpocet(0), view.spaky[1] - odpocet(1)];
+  const skryte = (p: PlayerId): number => (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  const vykupne: [Vykupne, Vykupne] =
+    view.koniec === null
+      ? [vykupneHraca(view.hraci[0], skryte(0)), vykupneHraca(view.hraci[1], skryte(1))]
+      : [view.koniec.vykupne?.[0] ?? BEZ_VYKUPNEHO, view.koniec.vykupne?.[1] ?? BEZ_VYKUPNEHO];
+  const navyse = (p: PlayerId): number => (view.koniec === null ? vykupne[p].spaky : 0);
+  const spolu: [number, number] = [view.spaky[0] - odpocet(0) + navyse(0), view.spaky[1] - odpocet(1) + navyse(1)];
   const zaStarsich: [number, number] = [spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)];
   const vyplat = vyplatZaStarsich(view);
   return {
     spaky: view.spaky,
     cirhozy,
+    vykupne,
     spolu,
     zaStarsich,
     starsi: view.starsi.map((e) => ({ elderId: e.elderId, spaky: [strachZ(e, 0), strachZ(e, 1)] })),
@@ -457,6 +473,8 @@ export interface RozpisSpakov {
   readonly exekutor: number;
   /** Nepriznané Cirhózy na konci hry (záporné). */
   readonly cirhoza: number;
+  /** Výkupné plných poldeci a cigariet na konci hry. */
+  readonly vykupne: number;
   readonly spolu: number;
 }
 
@@ -469,6 +487,7 @@ export function rozpisSpakov(view: Pick<ClientState, "nastenka" | "koniec" | "sp
       prebytok: sucet((b) => b.prebytok[p]),
       exekutor: -sucet((b) => b.exekutor[p]),
       cirhoza: -(view.koniec?.cirhozy?.[p] ?? 0) * KONSTANTY.SPAKY_ZA_CIRHOZU,
+      vykupne: view.koniec?.vykupne?.[p]?.spaky ?? 0,
       spolu: view.spaky[p],
     };
   };

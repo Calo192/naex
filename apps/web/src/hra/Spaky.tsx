@@ -70,7 +70,7 @@ export interface NastenkaProps {
   /**
    * Nástenka s účtom (Michal 2026-10-27, variant A): hore dva popolníky so skóre, pod
    * každým lístkom účtenka bitky (starší, Exekútor, prebytok, stav po bitke), na konci
-   * lístok „Koniec“ s nepriznanou Cirhózou a päta „keby skončila teraz“. `zvyraznit`:
+   * lístok „Koniec“ s výkupným zdrojov a nepriznanou Cirhózou a päta „keby skončila teraz“. `zvyraznit`:
    * čí popolník svieti a kto je v účtenkách prvý (klik na súperove Špaky = súper).
    */
   readonly ucet?: { readonly body: SpakyTeraz; readonly zvyraznit: PlayerId } | undefined;
@@ -176,17 +176,22 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
         );
       })}
       {ucet !== undefined && !koniec && (
-        <li className="nastenka-listok koniec" style={{ "--naklon": "1deg" } as CSSProperties} title="Na konci hry zoberie každá nepriznaná Cirhóza (ruka aj oba balíčky) 5 špakov.">
+        <li
+          className="nastenka-listok koniec"
+          style={{ "--naklon": "1deg" } as CSSProperties}
+          title={`Po finále sa vykúpi, čo hráčom ostalo: každý plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak (teraz ${dvojica(ucet.body.vykupne.map((v) => v.poldeci) as [number, number], (n) => `${n} poldeci`)}; ${dvojica(ucet.body.vykupne.map((v) => v.cigarety) as [number, number], (n) => `${n} cig.`)}). Každá nepriznaná Cirhóza (ruka aj oba balíčky) zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`}
+        >
           <span className="nastenka-vitaz">
             <span className="nastenka-otaznik">koniec</span>
           </span>
           <span className="nastenka-nazov">Koniec</span>
           <span className="nastenka-uctenka">
-            <span>nepriznaná Cirhóza</span>
-            <span>{pomer(ucet.body.cirhozy, (n) => `×${n}`)}</span>
-            <b className={ucet.body.cirhozy[0] + ucet.body.cirhozy[1] > 0 ? "minus" : ""}>
-              {pomer(ucet.body.cirhozy, (n) => (n > 0 ? `−${n * KONSTANTY.SPAKY_ZA_CIRHOZU}` : "0"))}
-            </b>
+            <span className={ucet.body.vykupne[0].spaky + ucet.body.vykupne[1].spaky > 0 ? "plus" : ""}>
+              výkupné {pomer([ucet.body.vykupne[0].spaky, ucet.body.vykupne[1].spaky], (n) => (n > 0 ? `+${n}` : "0"))}
+            </span>
+            <span className={ucet.body.cirhozy[0] + ucet.body.cirhozy[1] > 0 ? "minus" : ""}>
+              Cirhóza {pomer(ucet.body.cirhozy, (n) => (n > 0 ? `−${n * KONSTANTY.SPAKY_ZA_CIRHOZU}` : "0"))}
+            </span>
           </span>
         </li>
       )}
@@ -219,7 +224,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
       {zoznam}
       <p className="nastenka-paticka">
         <span>
-          Keby partia skončila teraz: <b>{dvojica(body.spolu, sMinusom)}</b>
+          Keby partia skončila teraz (s výkupným): <b>{dvojica(body.spolu, sMinusom)}</b>
         </span>
         <span>
           Starší víťazovi ešte {body.vyplat}× po bitke: <b>{dvojica(body.zaStarsich, (n) => `+${n}`)}</b>

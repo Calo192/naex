@@ -9,9 +9,10 @@ export const KONSTANTY = {
   START_POLDECI: 2,
   /**
    * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
-   * namiesto doplnenia ruky na 5. Limit ruky nie je.
+   * namiesto doplnenia ruky na 5. Limit ruky nie je. Od 2026-10-27 len 1
+   * (predtým 2): ďalšie karty sa majú kupovať cigaretami (šenok, fajčenie).
    */
-  KARTY_PO_BITKE: 2,
+  KARTY_PO_BITKE: 1,
   START_CIGARETY: 3,
 
   /**
@@ -88,6 +89,13 @@ export const KONSTANTY = {
   FINALE_PITKY: 3,
   SPAKY_ZA_BITKU_MIN: 1,
   SPAKY_ZA_CIRHOZU: 5,
+  /**
+   * Výkupné zvyšných zdrojov na konci hry (Michal 2026-10-27): každý plný
+   * poldeci dá toľkoto špakov a každých CIGARIET_ZA_SPAK cigariet 1 špak.
+   * Bez stropu — prebytok zdrojov sa má dať zúžitkovať, nie prepadnúť.
+   */
+  SPAKY_ZA_POLDECI: 1,
+  CIGARIET_ZA_SPAK: 5,
 
   /**
    * Prehra pri poklese balíčka pod túto hodnotu platila do v4; vo v5 sa ruší
@@ -128,6 +136,13 @@ export const KONSTANTY = {
   BARTER_CENA: 5,
   /** Cigarety → otočenie vypitého poldeci (PRAVIDLA §7). */
   REFILL_CENA: 2,
+  /**
+   * Fajčenie v Pitke (Michal 2026-10-27, PRAVIDLA §7): k-te fajčenie hráča v tej
+   * istej Pitke stojí ZAKLAD + (k − 1) × PRIRASTOK cigariet — 1, 2, 3…; každá Pitka
+   * začína znova od prvého. Nie je to strop: fajčiť sa dá stále, len drahšie.
+   */
+  CENA_FAJCENIA_ZAKLAD: 1,
+  CENA_FAJCENIA_PRIRASTOK: 1,
   /**
    * Nové kolo, nový poldeci (Michal 2026-10-16, playtest 20261016-155120):
    * na začiatku kola sa toľko vypitých poldeci otočí na plné. Bez toho hráč

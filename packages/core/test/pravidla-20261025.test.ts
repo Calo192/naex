@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardDef, CardInstance, GameData, GameState, PlayerId, PlayerState } from "../src/index.ts";
-import { apply, buildGameData, legalCommands, loadGameData, nahladPitky, naTahu, parseScorecards, setupGame, viewFor } from "../src/index.ts";
+import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, nahladPitky, naTahu, parseScorecards, setupGame, viewFor } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { instanceFor, makeDef } from "./helpers.ts";
 
@@ -167,7 +167,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 
-  it("dobratie po bitke (2 karty na ďalšie kolo)", () => {
+  it("dobratie po bitke (KARTY_PO_BITKE = 1 karta na ďalšie kolo, od 2026-10-27)", () => {
     const s0 = setupGame(data, 77);
     const odhodene = kusy(3, "ministrant");
     const s = sHracom(
@@ -202,8 +202,9 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
     );
     const po = apply(data, s, { type: "skipPohreb" }, 0).state;
     expect(po.koniec).toBeNull();
-    expect(po.hraci[0].ruka.filter((k) => odhodene.some((o) => o.uid === k.uid))).toHaveLength(2);
-    expect(po.hraci[0].doberaci).toHaveLength(1);
+    expect(KONSTANTY.KARTY_PO_BITKE).toBe(1);
+    expect(po.hraci[0].ruka.filter((k) => odhodene.some((o) => o.uid === k.uid))).toHaveLength(1);
+    expect(po.hraci[0].doberaci).toHaveLength(2);
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
 

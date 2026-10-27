@@ -349,8 +349,9 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
   /** Stav po príkaze kroku `id`. */
   const po = (id: string): GameState => prehrajVyucbu(data, scenar, i(id) + 1);
   const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).celkove;
-  // v6: špaky (TODO výučba: hlášky scenára hovoria o bodoch v5 — zladiť texty).
-  const body = (s: GameState): readonly number[] => spakyTeraz(viewFor(data, s, 0)).spolu;
+  // v6: špaky v popolníku (TODO výučba: hlášky scenára hovoria o bodoch v5 — zladiť texty).
+  // Nie „keby skončila teraz“ — to od 2026-10-27 pridáva výkupné poldeci a cigariet.
+  const body = (s: GameState): readonly number[] => spakyTeraz(viewFor(data, s, 0)).spaky;
 
   it("1. časť: verzia scenára a číslo časti (hviezdička), tri lokality, Farár so scorecardom Exekútor", () => {
     expect(scenar).toMatchObject({ id: "prva-hra", cast: 1, zverejnena: true });
