@@ -11,6 +11,7 @@ import type { BitkaStav, CardInstance, GameState, MarkerPos, PlacedCard, PlayerI
 import {
 
   apply,
+  eventsFor,
   legalCommands,
   loadGameData,
   naTahu,
@@ -134,6 +135,19 @@ describe("patronát — vzatie staršieho do ruky", () => {
     expect(legalCommands(data, bezPoldeci.s, bezPoldeci.u).some((c) => c.type === "patronat")).toBe(false);
     const bezObcana = vPatronate(2, (s, u) => ({ ...s, hraci: s.hraci.map((h, i) => (i === u ? { ...h, ruka: [inst("noviny")] } : h)) as unknown as GameState["hraci"] }));
     expect(legalCommands(data, bezObcana.s, bezObcana.u)).toEqual([{ type: "bezPatronatu" }]);
+  });
+
+  it("keď hra patronát preskočí pre málo cigariet, povie hráčovi prečo — súperovi nič (playtest 20261026-173610-3)", () => {
+    const { s, u } = vPatronate(1, (s, u) => ({ ...s, hraci: s.hraci.map((h, i) => (i === u ? { ...h, cigarety: 1 } : h)) as unknown as GameState["hraci"] }));
+    const o = opponentOf(u);
+    // Súper sa rozhodne prvý, potom má u na výber len „bez patronátu“ — hra ho odohrá sama.
+    const naSupera = { ...s, draftStav: { ...s.draftStav!, naTahu: o } } as GameState;
+    const { state, events } = apply(data, naSupera, { type: "bezPatronatu" }, o);
+    expect(state.faza).toBe("zhromazdenie");
+    const meno = data.cards.get(s.starsi[0]!.karta.defId)!.name;
+    const pre = (p: PlayerId) => eventsFor(events, p).flatMap((e) => (e.type === "log" ? [e.text] : []));
+    expect(pre(u)).toContain(`Patronát preskočený: priazeň ti prejavuje ${meno} (2 cigarety), ale máš len 1 cigaretu.`);
+    expect(pre(o).some((t) => t.startsWith("Patronát preskočený"))).toBe(false);
   });
 
   it("z červenej zadarmo, súper dostane 3 Pohoršenia; obávaný hráč patrónom nie je", () => {

@@ -111,6 +111,13 @@ describe("hrozba na stole", () => {
     const pouzite = { ...pr, pitkaStav: { ...s.pitkaStav!, naexPouzity: [true, false] as const } };
     expect(mozeEsteNaex(s, pouzite, 0)).toBe(false);
     expect(mozeEsteNaex(s, { ...pouzite, pitkyCelkom: 2 }, 0)).toBe(true);
+    // Vlastné skryté NA EX míňa limit Pitky aj posledný plný poldeci (playtest 20261026-181227-2):
+    // „ty ešte môžeš dať NA EX“ po ňom nemá čo hroziť ani v ďalšej Pitke.
+    const skryte = { ...pr, pitkaStav: { ...s.pitkaStav!, skryteNaex: [{ hrac: 0 as const, uid: s.strany[0][0]!.card.uid }] } };
+    expect(mozeEsteNaex(s, skryte, 0)).toBe(false);
+    expect(mozeEsteNaex(s, { ...skryte, pitkyCelkom: 2 }, 0)).toBe(false);
+    expect(mozeEsteNaex(s, { ...skryte, pitkyCelkom: 2, poldeciPlne: [2, 1] }, 0)).toBe(true);
+    expect(mozeEsteNaex(s, skryte, 1)).toBe(true);
     // Pred Pitkou (Zhromaždenie) áno; v Kostole nikdy.
     expect(mozeEsteNaex(s, { ...pr, faza: "zhromazdenie", pitkaStav: null }, 0)).toBe(true);
     const kostol = s.lokalityVHre.find((l) => l.defId === "kostol") ?? inst("kostol");

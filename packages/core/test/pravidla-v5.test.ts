@@ -378,6 +378,22 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
     expect(eventsFor(hotovo.events, 0)).toEqual(eventsFor(hotovoBez.events, 0));
   });
 
+  it("keď po skrytom NA EX ostáva len „hotovo“, hra ho odohrá bez stopy pre súpera (playtest 20261027-062058)", () => {
+    // Bez cigariet je po NA EX „hotovo“ jediný ťah — hra ho urobí sama. Súper
+    // musí vidieť to isté ako pri ručnom „hotovo“ bez NA EX: log aj pohľad.
+    const { s: s0, lavy } = pitka(104);
+    const s = sHracom(s0, 1, { cigarety: 0 });
+    const naex = apply(sada, s, { type: "naex", uid: lavy }, 1);
+    expect(naex.state.pitkaStav?.hotovy[1]).toBe(true);
+    const bez = apply(sada, s, { type: "skipNaex" }, 1);
+    expect(eventsFor(naex.events, 0)).toEqual(eventsFor(bez.events, 0));
+    expect(viewFor(sada, naex.state, 0)).toEqual(viewFor(sada, bez.state, 0));
+    const texty = (ev: readonly { type: string; text?: string }[]) => ev.flatMap((e) => (e.type === "log" && e.text !== undefined ? [e.text] : []));
+    expect(texty(eventsFor(naex.events, 0))).toEqual(["Hráč 2 končí svoju časť Pitky. Na ťahu je hráč 1."]);
+    // Hráč sám sa dozvie, prečo mu Pitka skončila.
+    expect(texty(eventsFor(naex.events, 1)).some((t) => t.startsWith("Po skrytom NA EX už v Pitke nemáš čo urobiť"))).toBe(true);
+  });
+
   it("bot nevidí súperovo skryté NA EX — rozhodne sa rovnako", () => {
     const { s, lavy } = pitka(102);
     const poNaex = apply(sada, s, { type: "naex", uid: lavy }, 1).state;
