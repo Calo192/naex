@@ -8,11 +8,12 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, Command, GameState, PlayerId } from "../src/index.ts";
+import type { CardInstance, Command, Event, GameState, PlayerId, RekapitulaciaPitky } from "../src/index.ts";
 import {
   DLZKY_HRY,
   apply,
   cieleVykladania,
+  eventsFor,
   legalCommands,
   loadGameData,
   mozeHrat,
@@ -74,12 +75,22 @@ function finale(
 
 /** Dohrá Pitku bez NA EX (Vízia: kartu si nechá), kým sa nezmení fáza. */
 function dohrajPitku(s: GameState): GameState {
+  return dohrajPitkuSUdalostami(s).state;
+}
+
+function dohrajPitkuSUdalostami(s: GameState): { state: GameState; events: Event[] } {
+  const events: Event[] = [];
   for (let i = 0; i < 20 && s.faza === "pitka"; i++) {
     const p = s.vizia !== null ? (([0, 1] as const).find((q) => mozeHrat(s, q)) ?? 0) : (s.pitkaStav?.naTahu ?? 0);
-    s = apply(data, s, s.vizia !== null ? { type: "vizia", vziat: true } : { type: "skipNaex" }, p).state;
+    const r = apply(data, s, s.vizia !== null ? { type: "vizia", vziat: true } : { type: "skipNaex" }, p);
+    s = r.state;
+    events.push(...r.events);
   }
-  return s;
+  return { state: s, events };
 }
+
+const rekapPitky = (events: readonly Event[]): RekapitulaciaPitky | undefined =>
+  events.flatMap((e) => (e.type === "pitkaRekap" ? [e.rekap] : [])).at(-1);
 
 describe("Záverečná po Pitke — cielené prípady", () => {
   it("súperova Záverečná na mojej strane prvým ťahom: po Pitke je otočená a na stranu sa znova vykladá", () => {
@@ -203,4 +214,54 @@ describe("Záverečná po Pitke — náhodné partie", () => {
     for (const seed of [3, 7]) zahrane += odohraj(seed, (s, p, n) => tahBota(data, s, p, n));
     expect(zahrane).toBeGreaterThan(0);
   }, 180_000);
+});
+
+describe("Záverečná po Pitke — odhalenie v rekapitulácii (Michal 2026-10-27)", () => {
+  it("rekapitulácia Pitky nesie odhalenú kartu, jej akcie a efekty pri otočení — obaja ju vidia", () => {
+    const stryna = inst("niekoho_stryna");
+    const cirhoza = inst("cirhoza");
+    const s = finale([[inst("pijan"), inst("hasic")], [stryna, cirhoza, inst("pijan")]], 1);
+    const po = apply(data, apply(data, s, { type: "zaverecna", uid: stryna.uid, target: "superova" }, 1).state, { type: "pass" }, 0).state;
+    const { state, events } = dohrajPitkuSUdalostami(po);
+    const z = rekapPitky(events)?.zaverecne;
+    expect(z).toHaveLength(1);
+    expect(z?.[0]).toMatchObject({ majitel: 1, strana: 0, uid: stryna.uid, defId: "niekoho_stryna" });
+    // Nástup Niekoho strynej (zahodí Cirhózu) je v efektoch, riadok o otočení nie.
+    expect(z?.[0]?.efekty.length).toBeGreaterThan(0);
+    expect(z?.[0]?.efekty.some((t) => t.includes("sa otáča"))).toBe(false);
+    // Akcie sú tie, ktoré karta dávala v línii pred otočením.
+    expect(Object.values(z?.[0]?.akcie ?? {}).every((n) => typeof n === "number" && n > 0)).toBe(true);
+    for (const ja of [0, 1] as const) {
+      const moje = eventsFor(events, ja);
+      expect(rekapPitky(moje)?.zaverecne?.[0]?.defId).toBe("niekoho_stryna");
+      expect(moje.some((e) => e.type === "log" && e.text.includes("Záverečná hráča 2 sa otáča: Niekoho stryná"))).toBe(true);
+    }
+    // Uložená aj v stave — rekapitulácia bitky z nej skladá „z Pitiek kola“.
+    expect(state.pitkyKola?.at(-1)?.zaverecne?.[0]?.uid).toBe(stryna.uid);
+  });
+
+  it("Pitka bez Záverečnej pole zaverecne nemá", () => {
+    const s = finale([[inst("pijan"), inst("hasic")], [inst("pijan"), inst("hasic")]], 1);
+    const po = apply(data, apply(data, s, { type: "pass" }, 1).state, { type: "pass" }, 0).state;
+    expect(rekapPitky(dohrajPitkuSUdalostami(po).events)?.zaverecne).toBeUndefined();
+  });
+
+  it("posledná Pitka pred bitkou: odhalená Záverečná je v rekapitulácii bitky (z Pitiek kola)", () => {
+    const zaverecna = inst("hasic");
+    const s = { ...finale([[inst("pijan")], [zaverecna, inst("pijan")]], 1), pitkyCelkom: 3, pitkaCislo: 2 } as GameState;
+    const po = apply(data, apply(data, s, { type: "zaverecna", uid: zaverecna.uid, target: "superova" }, 1).state, { type: "pass" }, 0).state;
+    const pitka = dohrajPitkuSUdalostami(po);
+    let x = pitka.state;
+    // Bitku dohrajú boti — rozhodnutia v bitke (Pohoršenie, prebytok) nie sú predmetom testu.
+    const vysledky: Event[] = [...pitka.events];
+    for (let i = 0; i < 200 && x.faza === "bitka"; i++) {
+      const kto_ = kto(x);
+      if (kto_ === null) break;
+      const r = apply(data, x, tahBota(data, x, kto_, i), kto_);
+      vysledky.push(...r.events);
+      x = r.state;
+    }
+    const bitka = vysledky.find((e) => e.type === "bitkaVysledok");
+    expect(bitka?.type === "bitkaVysledok" ? bitka.rekap?.pitkyKola?.zaverecne?.map((z) => z.uid) : null).toEqual([zaverecna.uid]);
+  });
 });

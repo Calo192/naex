@@ -53,8 +53,8 @@ import { ALL_DLZKY, DLZKY_HRY, KONSTANTY, PREDVOLENA_DLZKA } from "./constants.t
 import { cigariet, kariet, pocet, rodovo } from "./jazyk.ts";
 import type { Rozdanie } from "./vyucba.ts";
 import type { Moment } from "./momenty.ts";
-import type { RekapitulaciaBitky, RekapitulaciaPitky } from "./rekapitulacia.ts";
-import { rekapitulaciaBitky, rekapitulaciaPitky } from "./rekapitulacia.ts";
+import type { RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "./rekapitulacia.ts";
+import { akcieKartyVLinii, rekapitulaciaBitky, rekapitulaciaPitky } from "./rekapitulacia.ts";
 import {
   doliatieZakazane,
   bitkaMody,
@@ -2010,15 +2010,22 @@ export function zablokovaneStrany(view: { readonly zaverecne: readonly { readonl
 
 /**
  * Otočenie Záverečných na konci Pitky: odložené spúšťače (Svokra,
- * Vychovávateľka, Hrobár) sa vyhodnotia teraz, potom Nástup.
+ * Vychovávateľka, Hrobár) sa vyhodnotia teraz, potom Nástup. Vráti odhalené
+ * karty a čo urobili — do rekapitulácie Pitky.
  */
-function otocZaverecne(s: MutState, data: GameData, events: Event[]): void {
-  for (const { strana, placed } of skryteZaverecne(s as GameState)) {
+function otocZaverecne(s: MutState, data: GameData, events: Event[]): ZaverecnaOdhalena[] {
+  const skryte = skryteZaverecne(s as GameState);
+  if (skryte.length === 0) return [];
+  // Akcie, ktoré karta v práve vyhodnotenej Pitke dávala — línia sa od vyhodnotenia nezmenila.
+  const linia = evaluateLine(data, lineState(s as GameState));
+  const odhalene: ZaverecnaOdhalena[] = [];
+  for (const { strana, placed } of skryte) {
     const p = placed.playedBy;
     const opp = opponentOf(p);
     delete (placed as { zaverecna?: true }).zaverecna;
     const def = defOf(data, placed.card);
     events.push({ type: "log", text: `Záverečná hráča ${p + 1} sa otáča: ${def.name}.` });
+    const odEfektov = events.length;
     const odklad = s.zaverecnaOdklad[p];
     s.zaverecnaOdklad[p] = null;
     if (odklad !== null && maEfekt(s, data, p, def.id)) {
@@ -2037,7 +2044,17 @@ function otocZaverecne(s: MutState, data: GameData, events: Event[]): void {
       }
     }
     if (def.triggers.includes("Nástup")) nastupEfekt(s, data, def.id, p, strana, events);
+    odhalene.push({
+      majitel: p,
+      strana,
+      uid: placed.card.uid,
+      defId: def.id,
+      akcie: akcieKartyVLinii(linia, placed.card.uid),
+      // Súkromné hlášky (pre) do verejnej rekapitulácie nepatria.
+      efekty: events.slice(odEfektov).flatMap((e) => (e.type === "log" && e.pre === undefined ? [e.text] : [])),
+    });
   }
+  return odhalene;
 }
 
 /**
@@ -2992,9 +3009,13 @@ function cmdVizia(s: MutState, data: GameData, cmd: { vziat: boolean }, p: Playe
 function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
   // Záverečné sa otočia ešte pred vynulovaním pečene — Nástup (napr. Niekoho
   // stryná) patrí ešte do tejto Pitky.
-  otocZaverecne(s, data, events);
+  const odhalene = otocZaverecne(s, data, events);
   // Rekapitulácia až teraz: počas Vízie ešte mohla ležať súperova karta lícom dole.
-  const rekap = s.pitkyKola?.at(-1);
+  let rekap = s.pitkyKola?.at(-1);
+  if (rekap !== undefined && rekap.pitka === s.pitkaCislo && odhalene.length > 0) {
+    rekap = { ...rekap, zaverecne: odhalene } as DeepMutable<RekapitulaciaPitky>;
+    s.pitkyKola = [...(s.pitkyKola ?? []).slice(0, -1), rekap];
+  }
   if (rekap !== undefined && rekap.pitka === s.pitkaCislo) events.push({ type: "pitkaRekap", rekap: rekap as RekapitulaciaPitky });
   s.zaciatokPitky = null;
   // Pečeň a zadĺženie žijú len počas Pitky (Michal 2026-10-16) — zvyšok pod

@@ -6,8 +6,8 @@
 // tu sa len kreslia a odkrývajú po vlnách. Tabuľka nezmizne sama, zavrie ju až Ďalej.
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import type { Action, AkciaTuha, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky } from "@naex/core";
-import { AKCIE_TUHE, pecenPitky, zadlzeniePitky } from "@naex/core";
+import type { Action, AkciaTuha, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
+import { AKCIE_TUHE, pecenPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
 import { SpakyBitky } from "./Spaky.tsx";
 
 /** Piktogram akcie a jej názov zo sady (HernaPlocha). */
@@ -89,6 +89,57 @@ export interface RekapBitkyProps {
   /** Kedy sa Viera s Poverou zrušia a kedy zvyšok zaberie (vlny bonusov a zrážok). */
   readonly vlnaRusenia: number;
   readonly vlnaUcinku: number;
+  /** Mená oboch hráčov (index = miesto) — hlášky odhalenej Záverečnej. */
+  readonly mena?: readonly [string, string];
+}
+
+/**
+ * Odhalené Záverečné (Michal 2026-10-27: „nevidel som, čo vlastne zahral“): riadok
+ * „Záverečná: karta — čo urobila“ cez celú šírku — akcie, ktoré v Pitke dávala, a čo
+ * spravila pri otočení (Nástup, odložené efekty). Hlášky motora s menami hráčov.
+ */
+function ZaverecneRiadky({
+  zaverecne,
+  ja,
+  mena,
+  menoKarty,
+  piktogramy,
+}: {
+  readonly zaverecne: readonly ZaverecnaOdhalena[];
+  readonly ja: PlayerId;
+  readonly mena: readonly [string, string];
+  readonly menoKarty: (defId: string) => string;
+  readonly piktogramy: PiktogramyRekapitulacie;
+}) {
+  const hlaska = (text: string): string => rozlozRod(text, [null, null]).replace(/[Hh]ráč ([12])/g, (_, n: string) => mena[Number(n) - 1] ?? `Hráč ${n}`);
+  return (
+    <>
+      {zaverecne.map((z, i) => {
+        const akcie = (Object.entries(z.akcie) as [Action, number][]).filter(([, n]) => n > 0);
+        const efekty = z.efekty.map(hlaska);
+        return (
+          <div key={z.uid} className={`rk-riadok rk-zaverecna${i === 0 ? " nova-skupina" : ""}`} role="row">
+            <span className="rk-zaverecna-text" role="cell">
+              <span className="rk-zaverecna-kto">Záverečná · {z.majitel === ja ? "tvoja" : mena[z.majitel]}:</span> <b>{menoKarty(z.defId)}</b> —{" "}
+              {akcie.length > 0 && (
+                <span className="rk-zaverecna-akcie" title={akcie.map(([a, n]) => `${piktogramy.nazov(a)} ${n}`).join(" · ")}>
+                  dala{" "}
+                  {akcie.map(([a, n]) => (
+                    <span key={a} className="rk-zaverecna-akcia">
+                      {piktogramy.ikona(a)}
+                      {n > 1 ? `×${n}` : ""}
+                    </span>
+                  ))}
+                </span>
+              )}
+              {akcie.length > 0 && efekty.length > 0 && " · "}
+              {efekty.length > 0 ? efekty.join(" ") : akcie.length === 0 ? "žiadna jej akcia nebola aktívna, pri otočení bez efektu" : ""}
+            </span>
+          </div>
+        );
+      })}
+    </>
+  );
 }
 
 /** Koľko riadkov tabuľka bitky na konci má — HernaPlocha podľa toho zmenší karty línie. */
@@ -98,12 +149,12 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky): number {
   if (r.viera.length + r.povera.length > 0) n += 2.6;
   if (r.pohorsenie.polozky.length > 0) n++;
   if (r.naex.karty.length > 0) n += 2;
-  if (r.pitkyKola !== null) n += 2.5;
+  if (r.pitkyKola !== null) n += 2.5 + 1.4 * (r.pitkyKola.zaverecne?.length ?? 0);
   if (r.spaky !== undefined) n += 3;
   return n;
 }
 
-export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku }: RekapBitkyProps) {
+export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena }: RekapBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
   const vid = (uid: number | null, w = vlna): boolean => hotovo || vlnaKarty(uid) <= w;
@@ -181,6 +232,15 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
               </div>
             );
           })}
+          {(pitky.zaverecne?.length ?? 0) > 0 && (
+            <ZaverecneRiadky
+              zaverecne={pitky.zaverecne ?? []}
+              ja={ja}
+              mena={mena ?? (ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"])}
+              menoKarty={menoKarty}
+              piktogramy={piktogramy}
+            />
+          )}
         </>
       )}
       {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} ikonaPovery={ikona("Povera")} />}
@@ -368,13 +428,14 @@ export interface RekapitulaciaPitkyProps {
   readonly onKoniec: () => void;
 }
 
-const KROKOV_PITKY = 4;
 
 export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec }: RekapitulaciaPitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // Krok: 0 NA EX, 1 Dlh, 2 pečeň, 3 cigarety a Vízia (PRAVIDLA §7 Vyhodnotenie Pitky).
+  const zaverecne = r.zaverecne ?? [];
+  // Krok: 0 NA EX, 1 Dlh, 2 pečeň, 3 cigarety a Vízia, 4 odhalené Záverečné (PRAVIDLA §7 Vyhodnotenie Pitky).
+  const KROKOV_PITKY = zaverecne.length > 0 ? 5 : 4;
   const [krok, setKrok] = useState(tlmene ? KROKOV_PITKY - 1 : -1);
   const hotovo = krok >= KROKOV_PITKY - 1;
   useEffect(() => {
@@ -536,6 +597,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
               <Hodnota strana="r" n={r.vizia[su]} max={Math.max(1, ...r.vizia)} />
             </div>
           )}
+          {vid(4) && zaverecne.length > 0 && <ZaverecneRiadky zaverecne={zaverecne} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} />}
         </div>
         <div className="rk-legenda" aria-hidden="true">
           <span>
