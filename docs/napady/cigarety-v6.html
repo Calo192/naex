@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cigarety v6: strop a výstup</title>
+<style>
+/* Rozvrhnutie: verdikt, čísla, tri návrhy vedľa seba, výkyv u botov, kalkulačka šenku, otázky. */
+:root {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --dobre: #2f6b3a; --zle: #a3392c;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+    --text: #f1e8d8; --tlmeny: #b8a993;
+    --akcent: #e9ad45; --dobre: #7cc58a; --zle: #e98a7c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --dobre: #7cc58a; --zle: #e98a7c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 1040px; margin: 0 auto; padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin: 0 0 8px; padding-right: 70px; }
+h2 { font-size: 1.4rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.1rem; margin: 18px 0 8px; }
+p { margin: 0 0 10px; max-width: 75ch; }
+ul, ol { max-width: 75ch; padding-left: 22px; }
+li { margin-bottom: 5px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.uvod { color: var(--tlmeny); }
+.pozn { font-size: .9rem; color: var(--tlmeny); }
+.verdikt { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.verdikt h2 { margin-top: 0; border: 0; padding: 0; font-size: 1.2rem; }
+.tab-obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+caption { text-align: left; caption-side: bottom; padding-top: 6px; font-size: .85rem; color: var(--tlmeny); }
+th, td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { border-bottom: 2px solid var(--okraj); font-size: .85rem; color: var(--tlmeny); font-weight: 600; }
+td.c, th.c { text-align: right; }
+tr.vitaz td:first-child { box-shadow: inset 3px 0 0 var(--akcent); }
+tr.odp td { background: var(--plocha); font-weight: 600; }
+code { font-family: var(--mono); font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; }
+.stitok { display: inline-block; font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid var(--okraj); color: var(--tlmeny); white-space: nowrap; vertical-align: 1px; font-family: var(--sans); }
+.stitok.odp { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+
+/* návrhy vedľa seba, na mobile pod sebou */
+.navrhy { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 880px) { .navrhy { grid-template-columns: 1fr; } }
+.navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px; min-width: 0; }
+.navrh.odp { border: 2px solid var(--akcent); }
+.navrh h3 { margin-top: 0; }
+.znenie { background: var(--plocha-2); border-left: 3px solid var(--akcent); padding: 8px 10px; border-radius: 4px; margin: 8px 0 10px; font-size: .95rem; }
+.navrh dl { margin: 0; }
+.navrh dt { font-weight: 600; margin-top: 10px; font-size: .92rem; }
+.navrh dd { margin: 2px 0 0; font-size: .92rem; }
+.plus { color: var(--dobre); } .minus { color: var(--zle); }
+
+details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 12px; margin: 10px 0; }
+summary { cursor: pointer; font-weight: 600; }
+details[open] summary { margin-bottom: 8px; }
+
+/* kalkulačka */
+.kalk { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px; }
+.kalk label { font-weight: 600; display: block; margin-bottom: 6px; }
+.kalk input[type="range"] { width: min(100%, 420px); accent-color: var(--akcent); }
+.kalk output { font-weight: 700; font-size: 1.2rem; margin-left: 8px; }
+.stlpce { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+@media (max-width: 560px) { .stlpce { grid-template-columns: 1fr; } }
+.stlpec { background: var(--plocha-2); border-radius: 8px; padding: 10px; }
+.stlpec b { display: block; font-size: .85rem; color: var(--tlmeny); font-weight: 600; }
+.stlpec .n { display: block; font-size: 1.5rem; font-weight: 700; font-family: var(--serif); }
+.stlpec .z { font-size: .85rem; color: var(--tlmeny); }
+.otazky li { margin-bottom: 12px; }
+.tema { position: fixed; top: 10px; right: 10px; appearance: none; font: inherit; font-size: .8rem; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--text); cursor: pointer; min-height: 32px; }
+</style>
+</head>
+<body>
+<button class="tema" id="tema" type="button" aria-label="Prepnúť svetlú a tmavú tému">Téma</button>
+<main>
+
+<h1>Cigarety v6: strop a výstup</h1>
+<p class="uvod">Navrhár, 27. 10. 2026. Pravidlá v6 „Špaky“ so zmenami v6.1, ktoré sú už v master (strach dostane len víťaz bitky, patronát stojí 1 / 2 / 3 cigarety, pas dá cigarety najviac za karty v ruke). Podklady: turnus 20261027-062058 (3 partie, 6 AI hráčov), denníky 15 nočných relácií z 26. 10., názory #43, #54 a #55 na webe a vlastné meranie botmi na jadre v6.1 (90–150 partií na variant).</p>
+
+<section class="verdikt" aria-labelledby="h-verdikt">
+<h2 id="h-verdikt">Verdikt</h2>
+<p>Hra netrpí tým, že by sa cigarety nedali minúť. Trpí tým, že <b>jeden náhly prílev rozhodne partiu</b>. Keď boti dostanú v 3. kole 8 cigariet zadarmo, vyhrajú 70 % partií, so 4 navyše 62 %. Taký prílev vznikne, keď súper dá NA EX na kartu s Cigaretou vedľa Silnej ženy: Cigareta sa zrátá štyrikrát, +8 v každej Pitke kola. Brzda v šenku ani tvrdý strop zásoby to v meraní nezmenili, lebo bohatý minie cigarety ešte v tom istom kole a na viac vecí ako šenok. Odporúčam <b>C: strop príjmu z akcií Cigareta, najviac 4 cigarety za jednu Pitku</b>. Ide priamo na zdroj a v bežnej partii sa ho skoro nikto nedotkne (1 % Pitiek). Výkupné zvyšku po finále (A) dáva cigaretám výstup, ale zaviesť ho až po meraní pasivity. Rastúca cena v šenku (B) je záloha.</p>
+</section>
+
+<h2 id="h-co">Čo sa deje — čísla</h2>
+
+<h3>Turnus 20261027-062058: cigarety za celú partiu (6 kôl)</h3>
+<div class="tab-obal">
+<table>
+<caption>Zo štatistík servera relácií. Zvýraznený je víťaz partie. „Šenok“ = kariet zo šenku / zaplatených cigariet.</caption>
+<thead><tr><th scope="col">Hráč</th><th class="c" scope="col">Špaky</th><th class="c" scope="col">Získal</th><th class="c" scope="col">Na kolo</th><th class="c" scope="col">Šenok</th><th class="c" scope="col">Za pas</th><th class="c" scope="col">Vyfajčil</th><th class="c" scope="col">Zvyšok</th></tr></thead>
+<tbody>
+<tr><td>Šimon (P1)</td><td class="c">9</td><td class="c">15</td><td class="c">2,5</td><td class="c">9 / 9</td><td class="c">8</td><td class="c">9</td><td class="c">0</td></tr>
+<tr class="vitaz"><td>Hela (P1)</td><td class="c">22</td><td class="c">15</td><td class="c">2,5</td><td class="c">6 / 6</td><td class="c">10</td><td class="c">10</td><td class="c">2</td></tr>
+<tr><td>Fero (P2)</td><td class="c">15</td><td class="c">27</td><td class="c">4,5</td><td class="c">12 / 17</td><td class="c">12</td><td class="c">1</td><td class="c">6</td></tr>
+<tr class="vitaz"><td>Jano (P2)</td><td class="c">39</td><td class="c">56</td><td class="c">9,3</td><td class="c">19 / 27</td><td class="c">16</td><td class="c">13</td><td class="c">11</td></tr>
+<tr><td>Vilo (P3)</td><td class="c">6</td><td class="c">26</td><td class="c">4,3</td><td class="c">9 / 13</td><td class="c">16</td><td class="c">7</td><td class="c">2</td></tr>
+<tr class="vitaz"><td>Eva (P3)</td><td class="c">24</td><td class="c">39</td><td class="c">6,5</td><td class="c">17 / 23</td><td class="c">15</td><td class="c">5</td><td class="c">3</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><b>Prílev:</b> v P2 v 3. kole dal Fero NA EX na Janovho Zámočníka vedľa Silnej ženy. Cigareta ×2 (NA EX) ×2 (Silná) = +8 za Pitku. NA EX leží na karte do bitky, takže to platí v každej Pitke kola. Jano mal potom 19 cigariet, Fero 0–1. Eva v P3 nazbierala 22 z cigariet za posunutých starších, Výpalného a pasu (názor #54: „v 4. kole som mala 22 cigariet, súper 1“) a +5 z NA EX na kartu s Cigaretou.</li>
+<li><b>Bohatý berie šenok:</b> Jano vzal po drafte 2, 4, 4, 4, 4, 1 kariet a Eva 2, 1, 4, 6, 2, 1. Ich súperi brali 0–2, v 3. a 4. kole aj nič. Šimon: „pri 0 cigaretách stavba šenku — nič kúpiť nemôžem, len blokujem súpera.“ V P2 aj P3 vyhral hráč s viac kartami zo šenku (v P1 naopak Hela so 6 proti 9).</li>
+<li><b>Výstup chýba až pri veľkom zvyšku:</b> Jano skončil s 11, Fero so 6 („nemal ich za čo minúť — kúpil karty a Noviny“). Dedičstvo sa hrá len lacné: Krabička za 1 áno, Nástroje za 3–5 skoro nie. Barter zahral len raz, a to chudobnejší Fero. Bohatý Jano nie, lebo 5 cigariet je 5 nerestí a v ďalšom kole by ho čakal Absťák.</li>
+<li><b>Na druhej strane:</b> 6 z 36 draftov hráča prebehlo bez jedinej karty, väčšinou pre 0 cigariet. Michal: 1. kolo nechať tak.</li>
+</ul>
+
+<h3>Boti: kde cigarety tečú (stredná hra, tri povahy)</h3>
+<div class="tab-obal">
+<table>
+<caption>Na hráča a kolo. v6 = 90 partií na jadre pred v6.1, v6.1 = 150 partií na dnešnom master. Botom chýba „darček“ súpera, NA EX na cigaretovú kartu súpera nedávajú.</caption>
+<thead><tr><th scope="col"></th><th class="c" scope="col">v6</th><th class="c" scope="col">v6.1</th><th scope="col">Z toho (v6.1)</th></tr></thead>
+<tbody>
+<tr><td>Príjem</td><td class="c">3,2</td><td class="c">2,8</td><td>akcie Cigareta v Pitke (aj Svokra, Výpalné) 1,45 · pas 0,65 · po bitke (za posunutých starších, Hrobár, Automat) 0,65</td></tr>
+<tr><td>Výdaj</td><td class="c">3,4</td><td class="c">3,1</td><td>šenok 2,2 · fajčenie 0,45 · Záverečná 0,2 · Svokra a Výpalné 0,05 · patronát 0,04 · doliatie, Dedičstvo, barter spolu 0,06</td></tr>
+<tr><td>Pri začiatku brania</td><td class="c">medián 3</td><td class="c">medián 3</td><td>1 cigareta v 29 % draftov, 8 a viac v 1 %</td></tr>
+<tr><td>Najviac za partiu</td><td class="c">4,8 (max 17)</td><td class="c">4,4 (max 13)</td><td>zvyšok na konci 1,5</td></tr>
+<tr><td>Pitka s +5 a viac</td><td class="c">2 %</td><td class="c">1 %</td><td>najviac +7 za Pitku</td></tr>
+</tbody>
+</table>
+</div>
+<p>v6.1 ubrala asi 0,4 cigarety na hráča a kolo, ako sa čakalo (pas za karty v ruke, drahší patronát). Prílev však nerieši.</p>
+<p class="pozn">Čo už bolo: vo v4 bodovali zvyšné cigarety (3 = 1 bod), vo v5 bola na scorecarde podmienka „Cigarety“ (viac zvyšných cigariet). Stratég vtedy namerial, že spolu s pasom za cigarety robí z hry pasovanie: 45 % remíz bitiek a 1,5 NA EX za partiu, bez nej 13 % a 4,3. Vo v6 podmienka vypadla s ostatnými, a tým zmizol aj jediný výstup pre zvyšok.</p>
+
+<h3 id="h-sok">Prílev u botov: hráč dostane na začiatku 3. kola cigarety zadarmo</h3>
+<div class="tab-obal">
+<table>
+<caption>Jadro v6.1, 90 partií na riadok, rovnaké semienká, prílev dostane striedavo hráč 1 a 2. Rozptyl je asi ±5 percentuálnych bodov. Pri B boti vyberajú podľa starej ceny a novú len zaplatia, takže B je odhad.</caption>
+<thead><tr><th scope="col">Prílev a variant</th><th class="c" scope="col">Hráč s prílevom vyhral</th><th class="c" scope="col">Karty zo šenku od 3. kola: on / súper</th></tr></thead>
+<tbody>
+<tr><td>bez prílevu</td><td class="c">50 %</td><td class="c">—</td></tr>
+<tr><td>+4, dnes</td><td class="c">62 %</td><td class="c">7,0 / 5,2</td></tr>
+<tr><td>+8, dnes</td><td class="c">70 %</td><td class="c">7,8 / 5,4</td></tr>
+<tr><td>+8, B mierna rastúca cena</td><td class="c">78 %</td><td class="c">7,4 / 5,6</td></tr>
+<tr><td>+8, B prísna rastúca cena</td><td class="c">66 %</td><td class="c">6,2 / 4,3</td></tr>
+<tr><td>+8, tvrdý strop zásoby 8</td><td class="c">72 %</td><td class="c">7,8 / 5,4</td></tr>
+<tr class="odp"><td>+8 z jednej Pitky, C strop 4 → zostane +4</td><td class="c">≈ 62 %</td><td class="c">≈ 7,0 / 5,2</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Na jadre v6 (pred v6.1) vyšlo +4 → 69 %, +6 → 73 %, +8 → 71 %, +12 → 80 %. B a tvrdý strop tam pri +12 dali 76 % a 79 %. Riadok C je odvodený: C prílev nezmenší v bitke, ale v Pitke ho oreže na polovicu. Prílev z vlastných kariet (bot si postavil Cigaretu a stálo ho to iné akcie) je slabší: hráč s jedinou Pitkou +5 a viac vyhral 58–64 % partií.</p>
+
+<h2 id="h-navrhy">Tri návrhy</h2>
+<p>Všetky rátajú s v6.1. Čísla v hranatých zátvorkách sú ponuky.</p>
+
+<div class="navrhy">
+
+<article class="navrh" aria-labelledby="h-a">
+<h3 id="h-a">A · Výkupné po finále <span class="stitok">výstup</span> <span class="stitok">malá</span></h3>
+<div class="znenie">§14, nový riadok tabuľky Špaky: <b>Po finále</b>, pred porovnaním špakov, dostane každý hráč <b>1 špak za každé celé [3] cigarety</b>, ktoré mu zostali, <b>najviac [3] špaky</b>. Na nástenke a v rozpise popolníka je to riadok „Výkupné“.</div>
+<dl>
+<dt>Hodnoty na výber</dt>
+<dd>A1: 3 cigarety = 1 špak, najviac 3. A2: 4 = 1, najviac 2 (menšie lákadlo šetriť).</dd>
+<dt>Čo rieši</dt>
+<dd class="plus">Zvyšok má cenu, takže v poslednom drafte a vo finále sa hráč rozhoduje medzi kartou a špakom. Je to jedna veta, ako v 7 Wonders (3 mince = 1 bod).</dd>
+<dt>Čo nerieši</dt>
+<dd class="minus">Prílev ani prázdny draft chudobného. Prílev naopak zhodnotí ešte o pár špakov.</dd>
+<dt>Riziká</dt>
+<dd class="minus">Čiastočne vracia bodovanie zvyšných cigariet z v4 a v5, ktoré stratég namerial ako pasívne (45 % remíz bitiek). Strop 3 špaky a pas len za karty v ruke (v6.1) to tlmia, ale zmerané to nie je.</dd>
+<dt>Ekonomika</dt>
+<dd>Zvyšky AI hráčov 0, 2, 6, 11, 2, 3 by pri A1 dali 0, 0, 2, 3, 0, 1 špaku. Víťaza by to nezmenilo v žiadnej z troch partií (rozdiely 13, 24, 18). Botom (zvyšok 1,5) asi 0,3 špaku na hráča. Počas partie sa príjem ani výdaj nemení. Ak A funguje, hráči budú na konci šetriť a výdaj v poslednom kole klesne.</dd>
+</dl>
+</article>
+
+<article class="navrh" aria-labelledby="h-b">
+<h3 id="h-b">B · Rastúca cena v šenku <span class="stitok">brzda</span> <span class="stitok">stredná</span></h3>
+<div class="znenie">§5 Branie zo šenku: Každá ďalšia karta, ktorú hráč <b>v tom istom drafte</b> berie, stojí viac: <b>prvá a druhá [1] cigaretu, tretia [2], štvrtá [3], piata [4]</b>… Na svojom ťahu vezme <b>1 alebo 2 karty</b> a zaplatí ich súčet. Cena sa ráta každému hráčovi zvlášť a v ďalšom drafte začína od začiatku. Veta „1 karta za 1 cigaretu, alebo 2 karty za 3 cigarety“ vypadne.</div>
+<dl>
+<dt>Hodnoty na výber</dt>
+<dd>Mierna (vyššie): 2 karty = 2, 3 = 4, 4 = 7, 5 = 11, 6 = 16 cigariet. Prísna (1, 2, 3, 4…): 2 = 3 (ako dnešná dvojica), 3 = 6, 4 = 10, 5 = 15. Prísna zdraží aj chudobnému: s 2 cigaretami dostane 1 kartu namiesto 2.</dd>
+<dt>Čo rieši</dt>
+<dd class="plus">Bohatý nevezme celý šenok: s 19 cigaretami 6 kariet (prísna 5). Chudobnému mierna nič nezdraží. Zvyšok ide inam: u botov Záverečná 0,36 namiesto 0,21 na kolo, patronát 0,10 namiesto 0,04. Princíp hráči poznajú z Dedičstva.</dd>
+<dt>Riziká</dt>
+<dd class="minus">Výhodu prílevu u botov merateľne nezmenšila (mierna 78 %, prísna 66 %, dnes 70 %, rozptyl ±5). Bohatý minie cigarety inde: fajčením, Záverečnou, Dedičstvom. V 1. kole dostane hráč za 3 cigarety 2 karty a 1 cigareta mu ostane (dnes až 3, no 5 zo 6 AI hráčov vzalo aj tak 2). Bot nepozná novú cenu, to treba pred zavedením doplniť a zmerať.</dd>
+<dt>Ekonomika</dt>
+<dd>Rovnaké nákupy ako v turnuse by pri miernej stáli: Jano 31 namiesto 27, Eva 29 namiesto 23, Šimon 11 namiesto 9, Fero 15 namiesto 17, Vilo 9 namiesto 13, Hela 6 ako dnes. Pri prísnej: 44, 39, 16, 22, 13, 8. Boti (v6.1, mierna): na šenok 2,0 namiesto 2,2 na kolo, celkový výdaj 3,2.</dd>
+<dt>Náročnosť</dt>
+<dd>Stredná: cena v jadre (<code>CENA_SENKU</code>), bot, tlačidlá šenku („ďalšia karta stojí 2“), pravidlá, ťahák, výučba (šenok naneisto).</dd>
+</dl>
+</article>
+
+<article class="navrh odp" aria-labelledby="h-c">
+<h3 id="h-c">C · Strop príjmu z jednej Pitky <span class="stitok odp">odporúčam</span> <span class="stitok">malá</span></h3>
+<div class="znenie">§7 Vyhodnotenie Pitky, krok 5: z akcií Cigareta dostane hráč v jednej Pitke <b>najviac [4] cigarety</b>, nech sa akcie znásobia akokoľvek (NA EX, Silná žena, Posilnenie):<br><code>nové cigarety = najviac [4] z (Cigarety − súperove Obmedzenia, najmenej 0) + Krabička cigariet v Dedičstve</code><br>Svokra, Výpalné, pas, cigarety po bitke a Fajčiar sa do stropu nerátajú.</div>
+<dl>
+<dt>Hodnoty na výber</dt>
+<dd>C1: 4 (oreže len výnimky). C2: 3 (oreže aj bežnú zostavu so zdvojenou Cigaretou, napr. Živnostníka pri lokalite).</dd>
+<dt>Čo rieši</dt>
+<dd class="plus">Prílev z jednej Pitky klesne na polovicu: Jano by v 3. kole dostal +4 namiesto +8 v každej Pitke, Eva +4 namiesto +5. U botov to zodpovedá poklesu výhry hráča s prílevom zo 70 % na asi 62 %. Z troch návrhov jediný ide na príčinu, ostatné riešia až dôsledky.</dd>
+<dt>Riziká</dt>
+<dd class="minus">Je to ďalšie číslo v pravidlách a výnimka z „násobky sa násobia“. Náhľad Pitky ho musí ukázať („+8, strop 4“), inak bude hráč čakať viac. Cigaretové karty (Zámočník, Živnostník, Silná) stratia vrchol a NA EX na súperovu cigaretovú kartu prestane byť taká chyba. Prílev z cigariet za posunutých starších a Výpalného (Eva) neoreže.</dd>
+<dt>Ekonomika</dt>
+<dd>Boti (v6.1, 150 partií): oreže 0,02 cigarety na hráča a kolo. Príjem 2,77 a výdaj 3,07 ostávajú ako bez stropu (2,78 / 3,09), rozdiel špakov partie tiež (15,6 / 15,7). Najviac za partiu 11 namiesto 13. V bežnej hre sa teda nič nemení, zasiahne len výkyv.</dd>
+<dt>Náročnosť</dt>
+<dd>Malá: krok 5 v jadre a <code>nahladPitky</code>, riadok v náhľade a logu, pravidlá, ťahák, test.</dd>
+</dl>
+</article>
+
+</div>
+
+<h2 id="h-kalk">Kalkulačka: koľko kariet zo šenku za koľko cigariet</h2>
+<div class="kalk">
+<label for="cig">Cigarety na začiatku brania <output id="cig-out" for="cig">19</output></label>
+<input id="cig" type="range" min="0" max="24" value="19" aria-describedby="kalk-pozn">
+<div class="stlpce" aria-live="polite">
+<div class="stlpec"><b>Dnes</b><span class="n" id="k-dnes"></span><span class="z" id="z-dnes"></span></div>
+<div class="stlpec"><b>B mierna</b><span class="n" id="k-b1"></span><span class="z" id="z-b1"></span></div>
+<div class="stlpec"><b>B prísna</b><span class="n" id="k-b2"></span><span class="z" id="z-b2"></span></div>
+</div>
+<p class="pozn" id="kalk-pozn">Najviac kariet, keď berie aj súper a branie neskončí skôr (šenok má 8 kariet). „Dnes“ = po jednej za 1 cigaretu. Keď súper prestane, dnes aj pri B ostáva len jeden posledný ťah.</p>
+</div>
+
+<h2 id="h-odp">Odporúčanie</h2>
+<ol>
+<li><b>C1 (najviac 4 cigarety z akcií Cigareta za Pitku) zaviesť hneď.</b> Je to malá zmena, ktorá v bežnej partii nič nemení a prílev typu „NA EX × Silná × Cigareta“ zmenší na polovicu.</li>
+<li><b>A1 (výkupné po finále, 3 : 1, najviac 3) až po meraní stratéga.</b> Ak bot, ktorý zvyšok cení, nezačne pasovať (remízy bitiek do 20 %, aspoň 3 NA EX za partiu), pridať. Inak vypustiť.</li>
+<li><b>B nechať v zálohe.</b> V meraní výhodu prílevu nezmenšila. Siahnuť po nej, ak po C playtest ešte ukáže hráča, ktorý vezme v jednom drafte 5 a viac kariet.</li>
+<li><b>Tvrdý strop zásoby nezavádzať.</b> Pri +8 dal 72 % proti 70 %, teda nič, lebo bohatý minie cigarety ešte v tom kole. Navyše by bral útechu porazenému.</li>
+</ol>
+
+<details>
+<summary>Čo má zmerať stratég</summary>
+<ul>
+<li>C1 a C2 so skutočným prílevom: vynútený NA EX na súperovu kartu s Cigaretou vedľa Silnej ženy (alebo bot, ktorý ho občas urobí). Koľko vyhrá obdarovaný dnes a so stropom.</li>
+<li>A1 s botom, ktorý v poslednom kole cení zvyšok (1/3 špaku za cigaretu): pasy za kolo, remízy bitiek, NA EX za partiu proti v6.1 bez A.</li>
+<li>B len ak sa k nej vráti: bot musí vyberať podľa novej ceny ďalšej karty (<code>bot.ts</code>, branie zo šenku).</li>
+</ul>
+<p class="pozn">Moje meranie: playtest/navrhy/cigarety-v6/meranie.ts vo worktree naex-cigarety (mimo gitu). Varianty simuluje úpravou stavu medzi ťahmi, jadro nemení. Výsledky sú v podpriečinku v61/.</p>
+</details>
+
+<details>
+<summary>Čo návrhy neriešia a čo som nezaradil</summary>
+<ul>
+<li><b>Chudobný hráč:</b> 6 z 36 draftov hráča v turnuse prebehlo bez karty a v6.1 cigarety ešte ubrala. Michal nechal 1. kolo tak. Dno („od 2. kola dostane hráč s 0 cigaretami 1“) som nenavrhol. Je to kandidát, ak sa to v playteste po v6.1 zhorší.</li>
+<li><b>Prílev z cigariet za posunutých starších</b> (Eva): od v6.1 dostáva strach len víťaz, takže tieto cigarety sú pre porazeného jedinou útechou. Neorezával by som ich.</li>
+<li><b>Spoveď</b> (názor #43): raz za kolo za 3 cigarety zahodiť nepriznanú Cirhózu z ruky. Je to dobrý výstup s rozhodnutím, ale oslabí Kar, Pohreb aj trest za NA EX na pečeň. Patrí do revízie kliatob.</li>
+<li><b>Barter bez nerestí:</b> premenil by zvyšok na poldeci, teda na limit vykladania a ďalšie NA EX. Bohatšiemu by pridal tempo.</li>
+<li><b>Strop kariet zo šenku</b> (Vilo: najviac 3 za draft): nič nespáli, zvyšok by rástol rýchlejšie. B robí to isté mäkšie.</li>
+</ul>
+</details>
+
+<h2 id="h-otazky">Otázky pre Michala</h2>
+<ol class="otazky">
+<li>Má mať príjem z akcií Cigareta strop: v jednej Pitke najviac 4 cigarety, nech sa Cigareta znásobí akokoľvek (dnes NA EX na kartu s Cigaretou vedľa Silnej nezávislej ženy dá +8 v každej Pitke kola)? <b>Áno so stropom 4 / áno so stropom 3 / nie.</b></li>
+<li>Majú zvyšné cigarety po finále dať špaky, 1 špak za 3 cigarety a najviac 3 špaky? Keď vo v5 zvyšné cigarety bodovali bez stropu, hráči začali pasovať a bitky končili remízou. Preto by som to zaviedol až po meraní. <b>Áno hneď / áno po meraní / nie.</b></li>
+<li>Má cena kariet v šenku rásť s každou ďalšou kartou v tom istom drafte (prvé dve po 1 cigarete, tretia 2, štvrtá 3…)? V meraní botov to výhodu bohatého hráča nezmenšilo a v prvom kole by hráč za 3 cigarety dostal 2 karty namiesto až 3. <b>Nechať ako zálohu / zaviesť hneď / zamietnuť.</b></li>
+<li>Zamietnuť tvrdý strop, pri ktorom na začiatku kola prepadnú cigarety nad 8? V meraní nemal účinok. <b>Áno / nie.</b></li>
+</ol>
+
+<h2 id="h-overenie">Ako overiť po zavedení</h2>
+<ul>
+<li>Žiadny hráč nedostane z jednej Pitky viac ako 4 cigarety z akcií Cigareta a v náhľade vidí strop skôr, ako NA EX dá.</li>
+<li>Nikto nemá na začiatku brania viac ako 12 cigariet, alebo nevezme v jednom drafte viac ako 5 kariet.</li>
+<li>Pri A: žiadny hráč nenapíše, že cigarety nemal na čo minúť, a remízy bitiek ostanú do 20 %.</li>
+</ul>
+
+<p class="pozn" style="margin-top:32px">Podklady: docs/playtesty/20261027-062058.html; relácie playtest/20261027-062058-1 až -3 (štatistiky servera, priebeh.log, feedback, denníky); denníky nočných relácií 20261026-143923, -173610, -181223, -181227, -181404; názory na webe #43, #54, #55; docs/playtesty/strategia-v5-priebezne.html (podmienka Cigarety); docs/pravidla-historia.md; PRAVIDLA §5, §6, §7, §10, §14 na master e818e8b. Knižnica (docs/kniznica) výstup pre nadbytok meny zatiaľ nerieši, príklady z iných hier (7 Wonders, Splendor, Osadníci) sú moje.</p>
+</main>
+<script>
+(function () {
+  var koren = document.documentElement;
+  document.getElementById("tema").addEventListener("click", function () {
+    var tmava = koren.getAttribute("data-theme") === "dark" ||
+      (!koren.hasAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    koren.setAttribute("data-theme", tmava ? "light" : "dark");
+  });
+  var SENOK = 8;
+  function cenaMierna(k) { return k <= 0 ? 0 : 1 + (k - 1) * k / 2; } // 1, 1, 2, 3, 4…
+  function cenaPrisna(k) { return k * (k + 1) / 2; }                   // 1, 2, 3, 4…
+  function najviac(cig, cena) { var k = 0; while (k < SENOK && cena(k + 1) <= cig) k++; return k; }
+  function slovo(k) { return k === 1 ? " karta" : (k >= 2 && k <= 4 ? " karty" : " kariet"); }
+  function pis(id, k, zvysok) {
+    document.getElementById("k-" + id).textContent = k + slovo(k);
+    document.getElementById("z-" + id).textContent = "ostane " + zvysok + " cig.";
+  }
+  var vstup = document.getElementById("cig"), vystup = document.getElementById("cig-out");
+  function prepocitaj() {
+    var c = Number(vstup.value);
+    vystup.textContent = String(c);
+    var d = Math.min(SENOK, c); pis("dnes", d, c - d);
+    var m = najviac(c, cenaMierna); pis("b1", m, c - cenaMierna(m));
+    var p = najviac(c, cenaPrisna); pis("b2", p, c - cenaPrisna(p));
+  }
+  vstup.addEventListener("input", prepocitaj);
+  prepocitaj();
+})();
+</script>
+</body>
+</html>
