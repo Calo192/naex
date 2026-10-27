@@ -4605,6 +4605,39 @@ export function pocetBojacichSa(starsi: readonly ElderState[], p: PlayerId): num
   return starsi.filter((e) => obavanyHrac(e) === p).length;
 }
 
+/** Špaky za bitku (krok 4a) pri víťazovi — komu idú a z čoho sa skladajú. */
+export interface SpakyZaVyhru {
+  /** Kto ich dostane: víťaz, s Novinami porazeného porazený. */
+  readonly komu: PlayerId;
+  /** Pitky mínus rozdiel Absťákov (aspoň 1). */
+  readonly zisk: number;
+  readonly zoSekery: number;
+  /** Herňa (v7): toľko, koľko má porazený priznaných Dlhov. */
+  readonly herna: number;
+  readonly spolu: number;
+}
+
+/**
+ * Špaky za bitku, keď ju vyhrá `vitaz` — jeden výpočet pre vyplatSpaky aj
+ * stávku bitky v klientovi (stavkaBitky). Priznané Dlhy (Herňa, Noviny) berie
+ * zo stavu, ktorý dostane: pri výplate po Exekútorovi, v stávke tie teraz.
+ */
+export function spakyZaVyhru(
+  s: VerejnyStav & { readonly spakyNaSekere: number },
+  vitaz: PlayerId,
+  pitky: number,
+  abstaky: readonly [number, number],
+): SpakyZaVyhru {
+  const porazeny = opponentOf(vitaz);
+  const zisk = spakyZaBitku(pitky, abstaky[vitaz], abstaky[porazeny]);
+  const dlhy = (q: PlayerId): number => s.hraci[q].priznane.filter((k) => k.defId === "dlh").length;
+  // Herňa (Bitka, v7): víťaz navyše toľko špakov, koľko má porazený priznaných Dlhov — bez stropu.
+  const herna = jeCielLokalita(s, "herna") ? dlhy(porazeny) : 0;
+  // Noviny (Dedičstvo: Prehra, v7): víťaz s viac priznanými Dlhmi ako porazený — špaky za bitku berie porazený.
+  const komu = vDedicstve(s, porazeny, "noviny") && dlhy(vitaz) > dlhy(porazeny) ? porazeny : vitaz;
+  return { komu, zisk, zoSekery: s.spakyNaSekere, herna, spolu: zisk + s.spakyNaSekere + herna };
+}
+
 /**
  * Špaky po výsledku bitky (v6, Michal 2026-10-26), krok 4a a 4b:
  *  - víťaz dostane odohrané Pitky mínus rozdiel Absťákov (aspoň 1) a špaky zo
@@ -4625,16 +4658,11 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
   const vitaz = outcome.vitaz;
   if (vitaz !== null) {
     const porazeny = opponentOf(vitaz);
-    const zisk = spakyZaBitku(pitky, abstaky[vitaz], abstaky[porazeny]);
+    const { komu, zisk, herna, spolu } = spakyZaVyhru(s as GameState, vitaz, pitky, abstaky);
     abstakZrazka = pitky - zisk > 0 ? pitky - zisk : 0;
     zoSekery = s.spakyNaSekere;
-    // Herňa (Bitka, v7): víťaz navyše toľko špakov, koľko má porazený priznaných Dlhov — bez stropu.
-    const herna = jeCielLokalita(s as GameState, "herna") ? s.hraci[porazeny].priznane.filter((k) => k.defId === "dlh").length : 0;
     if (herna > 0) events.push({ type: "log", text: `Herňa: hráč ${porazeny + 1} má ${pocet(herna, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} — víťaz berie ${spakov(herna)} navyše.` });
-    // Noviny (Dedičstvo: Prehra, v7): víťaz s viac priznanými Dlhmi ako porazený — špaky za bitku berie porazený.
-    const dlhy = (q: PlayerId): number => s.hraci[q].priznane.filter((k) => k.defId === "dlh").length;
-    const komu = vDedicstve(s as GameState, porazeny, "noviny") && dlhy(vitaz) > dlhy(porazeny) ? porazeny : vitaz;
-    zaBitku[komu] = zisk + zoSekery + herna;
+    zaBitku[komu] = spolu;
     s.spakyNaSekere = 0;
     s.spaky[komu] += zaBitku[komu];
     if (komu !== vitaz) events.push({ type: "log", text: `Noviny: hráč ${vitaz + 1} má viac priznaných Dlhov — špaky za bitku (${zaBitku[komu]}) berie hráč ${porazeny + 1}.` });

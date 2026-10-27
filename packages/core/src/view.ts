@@ -28,13 +28,12 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { abstakyVBitke, cenaDedicstva, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
+import { abstakyVBitke, cenaDedicstva, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, spakyZaVyhru, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { efektHraca, efektPotlaceny } from "./effects.ts";
 import type { VerejnyStav } from "./effects.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
-import { spakyZaBitku } from "./battle.ts";
 
 export interface HracVerejne {
   readonly rukaPocet: number;
@@ -699,10 +698,17 @@ export function hodnotaPohorseni(_data: GameData, view: ClientState, p: PlayerId
 export interface StavkaBitky {
   /** Pitky kola, s ktorými sa ráta (odohrané a ešte chystané). */
   readonly pitky: number;
-  /** Moje špaky za výhru: Pitky mínus rozdiel Absťákov (aspoň 1), sekera a starší, ktorí sa ma boja. */
+  /**
+   * Moje špaky za výhru: Pitky mínus rozdiel Absťákov (aspoň 1), sekera, Herňa
+   * a starší, ktorí sa ma boja. S Novinami porazeného ostanú len starší.
+   */
   readonly vyhra: number;
   /** Súperove špaky, keď vyhrá on (záporné číslo z môjho pohľadu). */
   readonly prehra: number;
+  /** Herňa (v7): koľko z výhry [moja, súperova] je za priznané Dlhy porazeného. */
+  readonly herna: readonly [number, number];
+  /** Noviny (v7): špaky za bitku [mojej výhry, súperovej] berie porazený — toľko. */
+  readonly noviny: readonly [number, number];
   /** Špaky na sekere, ktoré vezme víťaz (vo finále pri sekere prepadnú). */
   readonly naSekere: number;
   /** Z toho od starších [ja, súper] — dostane ich len víťaz (v6.1), podľa markerov teraz. */
@@ -712,8 +718,9 @@ export interface StavkaBitky {
 /**
  * Stávka bitky (Michal 2026-10-22, návrh 3 A; v6 v špakoch): čo hráč získa
  * výhrou a čo získa súper, keď vyhrá on — od v6.1 aj so špakmi za starších,
- * ktoré dostane len víťaz. Súperove Absťáky v ruke nevidno — rátajú sa len
- * verejné.
+ * ktoré dostane len víťaz. Špaky za bitku ráta spakyZaVyhru ako výplata
+ * (Herňa, Noviny), s priznanými Dlhmi teraz. Súperove Absťáky v ruke nevidno —
+ * rátajú sa len verejné.
  */
 export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | null {
   if (view.ciel === null || view.koniec !== null) return null;
@@ -724,12 +731,17 @@ export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | nu
   abstaky[ja] = abstakyVBitke(data, view, ja, view.ruka.filter((k) => k.defId === "abstak").length);
   abstaky[su] = abstakyVBitke(data, view, su, 0);
   const starsi: [number, number] = [spakyZaStarsich(view.starsi, ja), spakyZaStarsich(view.starsi, su)];
+  const moja = spakyZaVyhru(view, ja, pitky, abstaky);
+  const jeho = spakyZaVyhru(view, su, pitky, abstaky);
+  const vitazovi = (x: typeof moja, vitaz: PlayerId): number => (x.komu === vitaz ? x.spolu : 0);
   return {
     pitky,
-    vyhra: spakyZaBitku(pitky, abstaky[ja], abstaky[su]) + view.spakyNaSekere + starsi[0],
-    prehra: -(spakyZaBitku(pitky, abstaky[su], abstaky[ja]) + view.spakyNaSekere + starsi[1]),
+    vyhra: vitazovi(moja, ja) + starsi[0],
+    prehra: -(vitazovi(jeho, su) + starsi[1]),
     naSekere: view.spakyNaSekere,
     starsi,
+    herna: [moja.herna, jeho.herna],
+    noviny: [moja.komu === ja ? 0 : moja.spolu, jeho.komu === su ? 0 : jeho.spolu],
   };
 }
 

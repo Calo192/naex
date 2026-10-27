@@ -56,9 +56,12 @@ describe("stavkaBitky", () => {
       expect(st.naSekere).toBe(view.spakyNaSekere);
       // Strach platí len víťazovi (v6.1) — je súčasťou stávky.
       expect(st.starsi).toEqual([spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)]);
-      expect(st.vyhra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.starsi[0]);
-      expect(st.vyhra).toBeLessThanOrEqual(st.pitky + view.spakyNaSekere + st.starsi[0]);
-      expect(-st.prehra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.starsi[1]);
+      // Noviny porazeného (v7) vezmú víťazovi špaky za bitku, Herňa (v7) pridá za Dlhy porazeného.
+      if (st.noviny[0] === 0) {
+        expect(st.vyhra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.herna[0] + st.starsi[0]);
+        expect(st.vyhra).toBeLessThanOrEqual(st.pitky + view.spakyNaSekere + st.herna[0] + st.starsi[0]);
+      } else expect(st.vyhra).toBe(st.starsi[0]);
+      if (st.noviny[1] === 0) expect(-st.prehra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.herna[1] + st.starsi[1]);
       porovnane++;
     });
     expect(porovnane).toBeGreaterThan(10);

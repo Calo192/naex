@@ -21,6 +21,7 @@ import {
   setupGame,
   utocnikFinale,
   vidiVolbuSupera,
+  stavkaBitky,
   viewFor,
   zmiesaneSpoje,
 } from "../src/index.ts";
@@ -479,6 +480,26 @@ describe("Bitka a po bitke (v7)", () => {
     if (bitka.vitaz !== 1) return;
     expect(bitka.zaBitku[0]).toBeGreaterThan(0);
     expect(bitka.zaBitku[1]).toBe(0);
+  });
+
+  it("stávka bitky ráta Herňu a Noviny ako výplata (vyplatSpaky)", () => {
+    const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
+    // Herňa: hráč 1 vyhrá, hráč 0 má 3 priznané Dlhy → víťaz +3.
+    const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { priznane: [inst("dlh"), inst("dlh"), inst("dlh")] });
+    const stavkaH = stavkaBitky(data, viewFor(data, h, 1))!;
+    expect(stavkaH.herna).toEqual([3, 0]);
+    // 1 Pitka + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
+    expect(stavkaH.vyhra).toBe(1 + 3 + stavkaH.starsi[0]);
+    expect(-stavkaBitky(data, viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
+    // Noviny porazeného: víťaz (hráč 1) má viac Dlhov — z výhry mu ostanú len starší.
+    const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { priznane: [inst("dlh"), inst("dlh")] });
+    const stavkaN = stavkaBitky(data, viewFor(data, n, 1))!;
+    expect(stavkaN.vyhra).toBe(stavkaN.starsi[0]);
+    expect(stavkaN.noviny[0]).toBeGreaterThan(0);
+    expect(stavkaBitky(data, viewFor(data, n, 0))!.noviny[1]).toBe(stavkaN.noviny[0]);
+    const poN = dohrajKolo(n).nastenka.at(-1)!;
+    expect(poN.vitaz).toBe(1);
+    expect(poN.zaBitku).toEqual([stavkaN.noviny[0], 0]);
   });
 
   it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {

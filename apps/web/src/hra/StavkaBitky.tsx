@@ -10,9 +10,18 @@ const VYSVETLENIE =
   "a k tomu špaky zo sekery a od starších, ktorí sa ho boja. Porazený od starších nedostane nič, pri sekere dostanú obaja.";
 
 export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavka; readonly kratko?: boolean }) {
-  const casti = [stavka.naSekere > 0 ? `${stavka.naSekere} zo sekery` : null, stavka.starsi[0] > 0 ? `${stavka.starsi[0]} od starších` : null].filter((x) => x !== null);
+  const casti = [
+    stavka.naSekere > 0 && stavka.noviny[0] === 0 ? `${stavka.naSekere} zo sekery` : null,
+    stavka.herna[0] > 0 && stavka.noviny[0] === 0 ? `${stavka.herna[0]} z Herne` : null,
+    stavka.starsi[0] > 0 ? `${stavka.starsi[0]} od starších` : null,
+  ].filter((x) => x !== null);
   const sekera = casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
-  const titul = `Táto bitka (${stavka.pitky} ${stavka.pitky === 1 ? "Pitka" : stavka.pitky < 5 ? "Pitky" : "Pitiek"}): tvoja výhra +${stavka.vyhra} špakov${sekera}, súperova +${-stavka.prehra}. ${VYSVETLENIE}`;
+  // Noviny: víťaz s viac Dlhmi odovzdá špaky za bitku porazenému — povedať, inak „+1“ pri výhre mätie.
+  const noviny = [
+    stavka.noviny[0] > 0 ? ` Keď vyhráš, špaky za bitku (${stavka.noviny[0]}) vezme súper — Noviny.` : "",
+    stavka.noviny[1] > 0 ? ` Keď vyhrá súper, jeho špaky za bitku (${stavka.noviny[1]}) dostaneš ty — Noviny.` : "",
+  ].join("");
+  const titul = `Táto bitka (${stavka.pitky} ${stavka.pitky === 1 ? "Pitka" : stavka.pitky < 5 ? "Pitky" : "Pitiek"}): tvoja výhra +${stavka.vyhra} špakov${sekera}, súperova +${-stavka.prehra}.${noviny} ${VYSVETLENIE}`;
   // Hlavička stola: len „o +3 / +3“ s ohorkom — celé znenie v nápovede.
   if (kratko)
     return (
