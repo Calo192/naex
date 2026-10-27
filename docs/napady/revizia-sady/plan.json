@@ -2885,5 +2885,35 @@
    "ako ho počíta NA EX (aktívna/neaktívna) — návrh: aktívny NA EX zruší, neaktívny sa do filtra „aspoň 1 neaktívna“ neráta"
   ],
   "sloty": "blocked/allowed nových kariet a Paktu predpísať pri zavádzaní do tvorcu podľa docs/napady/analyza-indexy.html (ľavý index 3 podobsadený, 5,5 akcie)"
+ },
+ "konflikt": {
+  "datum": "2026-10-27",
+  "stav": "koncept — otvorené; rozhodnutá je len Michalova definícia",
+  "html": "docs/napady/konflikt.html",
+  "plan_md": "časť 13",
+  "michal": "Keď je karta priložená k súperovej karte (nie náradie… možno s výnimkou pasce) alebo keď je súperova karta priložená k tejto karte… vtedy sa spustí konflikt.",
+  "definicia_navrh": "Konflikt: efekt sa spustí, keď vznikne spoj tejto karty so súperovou kartou. Nezáleží na tom, či si kartu priložil ty k súperovej, alebo súper svoju k tvojej. Spoj s Nástrojom Konflikt nespúšťa.",
+  "zasada": "Trvalá zásada Michala (2026-10-27): efekty bez číselných stropov; vzácnosť cez cenu, zdroj alebo podmienku.",
+  "vzory": [
+   {"nazov": "Hádka o mezu", "typ": "Občan", "efekt": "Konflikt: Kto z vás má v kraji tejto karty menej kariet, dá druhému 1 plný poldeci. Pri rovnosti sa nič nedeje.", "vzacnost": "podmienka (prevaha v kraji), cenu platí slabší"},
+   {"nazov": "Ohováračka", "typ": "Občan", "efekt": "Konflikt: Smieš zaplatiť 1 plný poldeci. Ak to urobíš, posuň marker staršieho, ktorý sa bojí súpera, o 1 pole k stredu.", "vzacnost": "cena (poldeci), zdroj (spoj)"},
+   {"nazov": "Ručiteľ", "typ": "Občan", "efekt": "Konflikt: Súper si vyberie: dá ti 1 plný poldeci, alebo získa 1 Dlh.", "vzacnost": "zdroj; zlá alebo horšia pre súpera"},
+   {"nazov": "Husi", "typ": "Zviera", "efekt": "Konflikt: Ak je súperova karta Zviera, obe karty idú do odhadzovacích balíčkov svojich majiteľov.", "vzacnost": "podmienka (Zviera), cena (odchádzajú aj husi)"},
+   {"nazov": "Pasca v línii", "typ": "Nástroj", "efekt": "Konflikt: Ak je súperova karta Zviera, ide z hry. Pasca ide do tvojho odhadzovacieho balíčka.", "vzacnost": "podmienka, cena; len ak platí výnimka pre Pascu"}
+  ],
+  "otvorene_body": [
+   {"bod": 1, "otazka": "Pasca áno/nie", "navrh": "áno ako jediný Nástroj, len ak Pasca dostane vlastný efekt Konflikt"},
+   {"bod": 2, "otazka": "každý nový spoj, alebo raz na dvojicu", "navrh": "pri vzniku každého spoja; dvojica sa v bitke stretne len raz (výnimka Snúbenica)"},
+   {"bod": 3, "otazka": "karta medzi dve súperove = dva Konflikty", "navrh": "áno, Konflikt patrí spoju; prakticky len Snúbenica a stred finále"},
+   {"bod": 4, "otazka": "Snúbenica", "navrh": "Konflikt až na mieste, kam sa posunie (po Nástupe); spoj s vrátenou kartou sa nepočíta"},
+   {"bod": 5, "otazka": "NA EX na susednú kartu", "navrh": "nie, NA EX spoj nevytvára; odpoveď na NA EX je bežné vyloženie"},
+   {"bod": 6, "otazka": "zrážka", "navrh": "nie, mení akcie, nie susedstvo"},
+   {"bod": 7, "otazka": "Krokodíl", "navrh": "Krokodíl prvý; zožratá karta nemá Nástup ani Konflikt, Krokodílov Konflikt áno"},
+   {"bod": 8, "otazka": "poradie Konflikt vs. Nástup", "navrh": "Krokodíl → Nástup → Konflikt spoja, ktorý po Nástupe existuje"},
+   {"bod": 9, "otazka": "dve karty s Konfliktom na spoji — poradie", "navrh": "najprv ležiaca, potom priložená"},
+   {"bod": 10, "otazka": "Záverečná lícom dole (doplnil Vymyselník)", "navrh": "odložiť na otočenie na konci Pitky ako Nástup"},
+   {"bod": 11, "otazka": "spoj bez aktívnej akcie (doplnil Vymyselník)", "navrh": "áno, stačí susedstvo"}
+  ],
+  "kod": "nový Trigger „Konflikt“ (types.ts:82–92, ALL_TRIGGERS types.ts:94) ako Kšeft; vylozDoLinie (engine.ts:2080–2126) po Nástupe zistí suseda (susedNaKonci :2100) — súperova karta, nie Nástroj → Konflikt oboch kariet; aj Snúbenica, Záverečná (otocZaverecne :2016), stred finále; názov nesmie kolidovať so zvieraKonflikt (engine.ts:3566); effects.ts register; tvorba predvolene.ts popis; bot; tahak.md; rozhodca mapa.json + konflikt.test.ts"
  }
 }
