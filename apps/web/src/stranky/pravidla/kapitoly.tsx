@@ -860,7 +860,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Efekt lokality platí len v kole, keď sa o ňu bije.",
       "Po bitke ide lokalita na krčmovú nástenku — nikto ju neovláda.",
-      "V sade je 15 lokalít.",
+      "V sade je 19 lokalít po úrovniach 1, 2, 3 a pinnacle (len finále).",
     ],
     obsah: () => (
       <table className="tabulka">
