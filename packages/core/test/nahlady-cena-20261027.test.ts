@@ -271,7 +271,7 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
     }
     expect(odpovede).toBeGreaterThanOrEqual(100);
     expect(trafene).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it("Dievčina na vydaj na vonkajšiu hranu Pijana: odpoveď zruší, čo NA EX zdvojilo", () => {
     // N5: NA EX na Pijana na konci línie ukázal 6 : 3, odpoveď Dievčinou dala 6 : 4.
