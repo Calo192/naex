@@ -163,7 +163,7 @@ import { useTahanie } from "./useTahanie.ts";
 import "./hra.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
-import { IkonaSpaku, MiniNastenka, Nastenka, PocetSpakov, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
+import { IkonaSpaku, Nastenka, PocetSpakov, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
 
 /**
  * Čo sa ťahá. `navrh` = karta už leží na stole, ale len ako nepotvrdený návrh.
@@ -265,6 +265,15 @@ const ONESKORENIE_SCROLLU_MS = 200;
 const MIESTO_VOLBY = 0.42;
 /** Karty v šenku a lokalitách — väčšie než kedysi v bočnom paneli. */
 const SIRKA_VO_VRSTVE = 150;
+/**
+ * Nástenka na stole (Michal 2026-10-27): čo okrem karty lokality zaberie výška plste —
+ * popolníky, päta, lístok bez karty (víťaz, názov, účtenka) a okraje. Karty lokalít sa
+ * ukážu, len keď na ne ostane aspoň NASTENKA_KARTA_MIN; inak lístky v rade bez kariet.
+ */
+const NASTENKA_BEZ_KARTY = 300;
+const NASTENKA_KARTA_MIN = 56;
+/** Voľba cieľa: čo okrem kariet lokalít na výber zaberie výška plste (popolníky, päta, okraje). */
+const NASTENKA_VOLBA_REZERVA = 150;
 /** Výška / šírka karty (54 × 80 mm) — výška línie určuje veľkosť kariet (Stôl bez scrollovania, #67). */
 const POMER_KARTY = 80 / 54;
 /** Náhradné uid tieňov vzatých kariet šenku (UID_TIENA − miesto) — mimo uid kariet aj Záverečnej. */
@@ -1678,7 +1687,8 @@ export function HernaPlocha({
       }
     }
     if (z.odkial === "lokality" && view.faza === "volbaCiela") {
-      out.add(z.navrh ? "lokality" : "lokalita");
+      // Navrhnutú lokalitu vráti pravý klik na stole — tlačidlo Nástenka, kam sa púšťala, zaniklo.
+      if (!z.navrh) out.add("lokalita");
     }
     return out;
   };
@@ -2078,7 +2088,13 @@ export function HernaPlocha({
       </div>
     );
   // Krčmová nástenka (v6, spaky.html bod 12): lokalitu si víťaz neberie — ide na nástenku s jeho fotkou a špakmi.
-  const nastenkaEl = (sKartami: boolean, sirkaKarty = 74, ucet = false): ReactNode => (
+  const nastenkaEl = (
+    sKartami: boolean,
+    sirkaKarty = 74,
+    ucet = false,
+    vyber?: (k: CardInstance, sirka: number) => ReactNode,
+    kompaktna = !sKartami,
+  ): ReactNode => (
     <Nastenka
       nastenka={view.nastenka}
       zostava={view.lokalityVHre}
@@ -2086,12 +2102,13 @@ export function HernaPlocha({
       ja={ja}
       mena={[menoHraca(0), menoHraca(1)]}
       avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
-      karta={(k, sirka) => karta({ karta: k, sirka })}
+      karta={sKartami ? (k, sirka) => karta({ karta: k, sirka }) : undefined}
       menoKarty={menoKarty}
       sirkaKarty={Math.round(sirkaKarty)}
-      kompaktna={!sKartami}
+      kompaktna={kompaktna}
       koniec={view.koniec !== null}
       ucet={ucet ? { body, zvyraznit: nastenkaPre } : undefined}
+      vyber={vyber}
     />
   );
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
@@ -2960,7 +2977,7 @@ export function HernaPlocha({
         return lokalitaNavrh === null
           ? {
               nadpis: "Cieľ kola",
-              text: "Klikni na lokalitu v paneli Cieľ kola.",
+              text: mobil ? "Klikni na lokalitu v paneli Cieľ kola." : "Klikni na nástenke na lokalitu, o ktorú sa chceš biť.",
             }
           : {
               nadpis: "Cieľ kola",
@@ -3905,9 +3922,7 @@ export function HernaPlocha({
       ? null
       : mode.typ === "pohrebSenok" && zoSenku.length === 0
         ? "senok"
-        : view.faza === "volbaCiela" && lokalitaNavrh === null
-          ? "lokality"
-          : null;
+        : null;
 
   // ---- starší -------------------------------------------------------------
   // Náhľad posunu (Michal 2026-10-19): komu posun pomôže — body spolu a priazeň.
@@ -4027,6 +4042,11 @@ export function HernaPlocha({
     pocitadlo === null &&
     (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null || ukazStarsich);
   const pohladLinie = pohladStarsich ?? ja;
+  // Krčmová nástenka leží na mieste hracej plochy (Michal 2026-10-27), nie v okne nad stolom.
+  // Pri voľbe cieľa sa ukáže sama a vyberá sa v nej lokalita (obranca klikne, útočník čaká).
+  // Pri ťahaní lokality z nej ustúpi, nech je vidno, kam ju pustiť; krok na staršom má prednosť.
+  const volbaNaStole = !mobil && !pauzaBezi && view.faza === "volbaCiela" && view.koniec === null && lokalitaNavrh === null;
+  const nastenkaNaStole = (vrstva === "lokality" || volbaNaStole) && tahanie === null && !starsiViditelni;
   // Bar starších (Michal 2026-10-27): po kliku na Starších ukážu oba bary dlaždicu na každého staršieho;
   // späť sa prepnú spolu so stolom. Nástenka (Špaky) prepne bary na dlaždice špakov (rezimBaru).
   const bodovyRezim = starsiViditelni && pohladStarsich !== null;
@@ -4058,6 +4078,15 @@ export function HernaPlocha({
     setNastenkaPre(p);
     setVrstva("lokality");
   };
+  // Nástenka na stole nemá okno s krížikom — Esc ju zavrie (lupa karty má prednosť).
+  useEffect(() => {
+    if (vrstva !== "lokality") return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key === "Escape" && lupa === null) setVrstva(null);
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [vrstva, lupa]);
   useEffect(() => {
     if (!starsiViditelni && !nahliadnutie) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -4152,7 +4181,7 @@ export function HernaPlocha({
       return [s.elder.elderId, nadLupou(kluc, (el) => el, true)] as const;
     }),
   );
-  const rezimBaru = vrstva === "lokality" ? ("spaky" as const) : bodovyRezim ? ("starsi" as const) : undefined;
+  const rezimBaru = nastenkaNaStole ? ("spaky" as const) : bodovyRezim ? ("starsi" as const) : undefined;
   const idLinieStarsich = useId();
   // Ponuka patronátu (#110): kým si hráč staršieho nevybral, stôl ukáže namiesto línie
   // starších len tých, ktorých si smie vziať — kartu s akciami, priazeň a cenu.
@@ -4785,8 +4814,28 @@ export function HernaPlocha({
   });
 
   // Počas pauzy po súperovej voľbe cieľa je vidno líniu s vybranou lokalitou, nie stavbu.
-  const vrstvaFazy: ReactNode = mobil || pauzaBezi ? null : cielPanel !== null && lokalitaNavrh === null ? cielPanel : draftPanel;
-  const liniaSkryta = starsiViditelni || vrstvaFazy !== null;
+  // Voľbu cieľa ukazuje na stole nástenka (volbaNaStole); cielPanel ostáva pre mobil.
+  const vrstvaFazy: ReactNode = mobil || pauzaBezi || volbaNaStole ? null : draftPanel;
+  const liniaSkryta = starsiViditelni || vrstvaFazy !== null || nastenkaNaStole;
+  // Karty lokalít na nástenke čo najväčšie, aby sa nástenka zmestila do plste bez posúvania.
+  const sirkaNastenky = Math.min(Math.round(SIRKA_VO_VRSTVE * 0.62), Math.floor((vyskaPlste - NASTENKA_BEZ_KARTY) / POMER_KARTY));
+  const sirkaVolby = Math.max(60, Math.min(SIRKA_VO_VRSTVE, Math.floor((vyskaPlste - NASTENKA_VOLBA_REZERVA) / POMER_KARTY)));
+  // Voľba cieľa na nástenke: lokalita, o ktorú sa ešte nehralo, je karta na výber — klik ju dá
+  // na stôl (otočiť a potvrdiť sa dá tam), dá sa aj potiahnuť. Útočník ich len vidí.
+  const vyberNaNastenke = (k: CardInstance, sirka: number): ReactNode => {
+    const z: Zdroj = { karta: k, odkial: "lokality", navrh: false };
+    const props = {
+      karta: k,
+      sirka,
+      onClick: volimLokalitu
+        ? () => {
+            setNavrh({ typ: "lokalita", uid: k.uid, otocena: lokalitaNavrh?.otocena ?? ja === 1 });
+            setVrstva((v) => (v === "lokality" ? null : v));
+          }
+        : undefined,
+    };
+    return volimLokalitu ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z }) : sLupou(props);
+  };
 
   // ---- jednotný bar: strany, odhad a os kola (Michal 2026-10-25, mock V2) -------------
   // Vydesení sú v osi baru jedným krátkym údajom, celé znenie je v nápovede.
@@ -5087,9 +5136,10 @@ export function HernaPlocha({
         nastroje={
           // Šenok, Lokality a Log sú v osi kola (Michal 2026-10-21) — ovládanie partie je v hlavičke webu.
           <div className="hlava-vrstvy">
-            {(["senok", "lokality", "log"] as const).map((v) => {
-              const pocet = v === "senok" ? view.senok.length : v === "lokality" ? view.lokalityVHre.length : log.length - videnyLog;
-              // Kartu zo šenku či lokalitu vrátiš pustením na jej tlačidlo.
+            {/* Nástenka nemá tlačidlo (Michal 2026-10-27): otvárajú ju Špaky, pri voľbe cieľa sa ukáže sama. */}
+            {(["senok", "log"] as const).map((v) => {
+              const pocet = v === "senok" ? view.senok.length : log.length - videnyLog;
+              // Kartu zo šenku vrátiš pustením na jej tlačidlo (lokalitu na stole pravým klikom).
               const ciel = v === "log" ? null : v;
               return (
                 <button
@@ -5105,12 +5155,8 @@ export function HernaPlocha({
                   data-vyucba={`hlavicka:${v}`}
                   onClick={() => setVrstva(vrstva === v ? null : v)}
                 >
-                  {v === "senok" ? "Šenok" : v === "lokality" ? "Nástenka" : "Log"}
-                  {v === "lokality" ? (
-                    <MiniNastenka nastenka={view.nastenka} zostava={view.lokalityVHre.length + (view.ciel?.typ === "lokalita" ? 1 : 0)} ja={ja} />
-                  ) : (
-                    (v !== "log" || pocet > 0) && <span className={v === "log" ? "pocet nove" : "pocet"}>{pocet}</span>
-                  )}
+                  {v === "senok" ? "Šenok" : "Log"}
+                  {(v !== "log" || pocet > 0) && <span className={v === "log" ? "pocet nove" : "pocet"}>{pocet}</span>}
                 </button>
               );
             })}
@@ -5258,7 +5304,7 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
             </div>
-            {vrstvaFazy !== null && !starsiViditelni && (
+            {vrstvaFazy !== null && !starsiViditelni && !nastenkaNaStole && (
               <div className="vrstva-fazy" ref={setVrstvaFazyEl}>
                 {vrstvaFazy}
               </div>
@@ -5292,6 +5338,25 @@ export function HernaPlocha({
                 />
               )}
             </div>
+            {nastenkaNaStole && (
+              <div className="vrstva-nastenky" data-vyucba="nastenka">
+                {volbaNaStole ? (
+                  <span className="nastenka-pokyn">
+                    <strong>Cieľ kola</strong>
+                    {/* Pokyn na ťah je v pilulke nad stolom — tu len to, čo v nej nie je. */}
+                    {!volimLokalitu && `${menoHraca(super_)} vyberá, o čo sa bude v tomto kole bojovať.`}
+                    {view.spakyNaSekere > 0 && <small>Na sekere {spakov(view.spakyNaSekere)} — vezme ich víťaz tejto bitky.</small>}
+                  </span>
+                ) : (
+                  <button type="button" className="ls-tlacidlo nastenka-spat" onClick={() => setVrstva(null)}>
+                    ← Späť na stôl <kbd>Esc</kbd>
+                  </button>
+                )}
+                {volbaNaStole
+                  ? nastenkaEl(false, sirkaVolby, true, vyberNaNastenke, false)
+                  : nastenkaEl(sirkaNastenky >= NASTENKA_KARTA_MIN, sirkaNastenky, true, undefined, false)}
+              </div>
+            )}
             {nahliadnutie && krokStarsich !== null && (
               <button type="button" className="ls-tlacidlo stol-navrat" onClick={() => setNahliadnutie(false)}>
                 ← späť na starších · {krokStarsich.nazov} <kbd>Esc</kbd>
@@ -5388,57 +5453,6 @@ export function HernaPlocha({
               });
             }, SIRKA_VO_VRSTVE)}
           </div>
-        </VrstvaPanel>
-      )}
-
-      {vrstva === "lokality" && (
-        <VrstvaPanel
-          nazov="Krčmová nástenka"
-          pozn={volimLokalitu ? "klikni na lokalitu, o ktorú sa chceš biť" : undefined}
-          skryta={tahanie !== null}
-          onZavri={() => setVrstva(null)}
-          paticka={
-            volimLokalitu ? (
-              <>
-                <span className="vrstva-paticka-text">
-                  {vybranaLokalita !== undefined ? (
-                    <>
-                      <strong>{menoKarty(vybranaLokalita.defId)}</strong> — na stole ju ešte môžeš otočiť.
-                    </>
-                  ) : (
-                    "Klikni na lokalitu, o ktorú sa chceš biť."
-                  )}
-                </span>
-                <button className="tlacidlo-hlavne" disabled={vybranaLokalita === undefined} onClick={umiestniLokalitu}>
-                  umiestniť na stôl
-                </button>
-              </>
-            ) : undefined
-          }
-        >
-          {/* Krčmová nástenka (v6): nad lokalitou fotka víťaza a jeho špaky; pri voľbe cieľa sa z nej vyberá. */}
-          {volimLokalitu ? (
-            <div className="vrstva-karty harmonika">
-              {view.lokalityVHre.length === 0 && <span className="popis">Žiadne lokality v hre.</span>}
-              {view.lokalityVHre
-                .filter((k) => k.uid !== lokalitaNavrh?.karta.uid)
-                .map((k) => {
-                  const z: Zdroj = { karta: k, odkial: "lokality", navrh: false };
-                  const props = {
-                    karta: k,
-                    sirka: SIRKA_VO_VRSTVE,
-                    vybrana: vyberLokality === k.uid,
-                    onClick: () => setVyberLokality(vyberLokality === k.uid ? null : k.uid),
-                  };
-                  return sLupou(props, {
-                    obsah: tahatelna(z, karta(props)),
-                    zdroj: z,
-                    odstran: vyberLokality === k.uid ? () => setVyberLokality(null) : undefined,
-                  });
-                })}
-            </div>
-          ) : null}
-          {nastenkaEl(!volimLokalitu, SIRKA_VO_VRSTVE * 0.62, true)}
         </VrstvaPanel>
       )}
 

@@ -74,6 +74,11 @@ export interface NastenkaProps {
    * čí popolník svieti a kto je v účtenkách prvý (klik na súperove Špaky = súper).
    */
   readonly ucet?: { readonly body: SpakyTeraz; readonly zvyraznit: PlayerId } | undefined;
+  /**
+   * Voľba cieľa kola (Michal 2026-10-27): lokality, o ktoré sa ešte nehralo, ležia na
+   * nástenke ako karty na výber (klik, ťahanie); ostatné lístky sú bez kariet.
+   */
+  readonly vyber?: ((k: CardInstance, sirka: number) => ReactNode) | undefined;
 }
 
 interface Listok {
@@ -89,7 +94,7 @@ interface Listok {
  * čakajúce špaky), bitka, o ktorú sa práve hrá, lokality, ktoré ešte len prídu,
  * a na konci finále.
  */
-export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet }: NastenkaProps) {
+export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   const poradie: readonly [PlayerId, PlayerId] = ucet === undefined || ucet.zvyraznit === ja ? [ja, ja === 0 ? 1 : 0] : [ucet.zvyraznit, ja];
   const listky: Listok[] = [
@@ -105,7 +110,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
   const pomer = (h: readonly [number, number], f: (n: number) => string): string => poradie.map((p) => f(h[p])).join(" : ");
 
   const zoznam = (
-    <ol className={`nastenka${kompaktna ? " kompaktna" : ""}`} aria-label="Krčmová nástenka">
+    <ol className={`nastenka${kompaktna ? " kompaktna" : ""}${vyber !== undefined ? " volba" : ""}`} aria-label="Krčmová nástenka" data-vyucba={vyber !== undefined ? "lokality" : undefined}>
       {listky.map((l, i) => {
         const b = l.bitka;
         const nazov = l.finale ? "Finále" : l.lokalita === null ? "lokalita" : menoKarty(l.lokalita.defId);
@@ -124,11 +129,19 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
             : vitaz === null
               ? `${nazov} (kolo ${b.kolo}): sekera — ${b.prepadlo > 0 ? `${spakov(b.prepadlo)} prepadlo` : vzal !== null ? `${spakov(b.pitky)} vzal víťaz ďalšej bitky (${kto(vzal)})` : `${spakov(b.pitky)} čaká na víťaza ďalšej bitky`}`
               : `${nazov} (kolo ${b.kolo}): ${vitaz === ja ? "tvoja výhra" : `výhra – ${mena[vitaz]}`}, ${spakov(zisk)} za ${b.pitky} ${b.pitky === 1 ? "Pitku" : b.pitky < 5 ? "Pitky" : "Pitiek"}${pozn.length > 0 ? ` (${pozn.join(", ")})` : ""}`;
+        if (vyber !== undefined && l.stav === "caka" && l.lokalita !== null)
+          return (
+            <li key={l.kluc} className="nastenka-listok caka na-vyber" style={{ "--naklon": `${((i * 37) % 5) - 2}deg`, "--i": i } as CSSProperties}>
+              <span className="nastenka-karta">{vyber(l.lokalita, sirkaKarty)}</span>
+            </li>
+          );
+        // Bez funkcie karta (nízka plsť) sú lístky bez kariet, ale stĺpcom ako s kartou.
+        const sKartou = !kompaktna && vyber === undefined && karta !== undefined;
         return (
           <li
             key={l.kluc}
             className={`nastenka-listok ${l.stav}${l.finale ? " finale" : ""}${vitaz === null ? "" : vitaz === ja ? " moja" : " superova"}`}
-            style={{ "--naklon": `${((i * 37) % 5) - 2}deg` } as CSSProperties}
+            style={{ "--naklon": `${((i * 37) % 5) - 2}deg`, "--i": i } as CSSProperties}
             title={popis}
           >
             <span className="nastenka-vitaz">
@@ -148,9 +161,9 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
                 </>
               )}
             </span>
-            {!kompaktna && karta !== undefined && l.lokalita !== null ? (
+            {sKartou && karta !== undefined && l.lokalita !== null ? (
               <span className="nastenka-karta">{karta(l.lokalita, sirkaKarty)}</span>
-            ) : !kompaktna && l.finale ? (
+            ) : sKartou && l.finale ? (
               <span className="nastenka-karta nastenka-finale" style={{ width: sirkaKarty, height: Math.round(sirkaKarty * 1.48) }}>
                 <b>Finále</b>
                 <small>bez lokality · {pitkyFinale} Pitky</small>
@@ -239,22 +252,6 @@ function Uctenka({
       {b.exekutor[0] + b.exekutor[1] > 0 && <span className="minus">Exekútor {riadok(b.exekutor, (n) => (n > 0 ? `−${n}` : "0"))}</span>}
       {b.prebytok[0] + b.prebytok[1] > 0 && <span>prebytok {riadok(b.prebytok, plus)}</span>}
       <b>stav {riadok(b.spakyPo, sMinusom)}</b>
-    </span>
-  );
-}
-
-/** Mini nástenka do tlačidla v hlavičke stola: bodka za každú bitku (farba víťaza), prázdne čakajú. */
-export function MiniNastenka({ nastenka, zostava, ja }: { readonly nastenka: readonly BitkaNaNastenke[]; readonly zostava: number; readonly ja: PlayerId }) {
-  const finale = nastenka.some((b) => b.lokalita === null);
-  return (
-    <span className="mini-nastenka" aria-hidden="true">
-      {nastenka.map((b, i) => (
-        <i key={i} className={`${b.vitaz === null ? "sekera" : b.vitaz === ja ? "moja" : "superova"}${b.lokalita === null ? " finale" : ""}`} />
-      ))}
-      {Array.from({ length: Math.max(0, zostava) }, (_, i) => (
-        <i key={`z${i}`} />
-      ))}
-      {!finale && <i className="finale" />}
     </span>
   );
 }
