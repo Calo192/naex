@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v6, od 2026-10-26; dávka v6.1 z 2026-10-27)
+# Ťahák — platné pravidlá NA EX! (v7 na vetve v7/revizia-sady: revízia sady 2026-10-27; inak v6 a v6.1)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -7,7 +7,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 čísla stráži test `packages/core/test/tahak.test.ts`.
 
 - **Špaky (v6, 2026-10-26) = víťazné body.** Vyhrá, kto má po finále viac špakov.
-  **Víťaz bitky** dostane špaky = odohrané Pitky kola (finále 3), o rozdiel Absťákov
+  **Víťaz bitky** dostane špaky = odohrané Pitky kola (aj vo finále), o rozdiel Absťákov
   menej, ak ich má viac než porazený (aspoň 1); lokalitu si **neberie** (ide na nástenku).
   **Len víťazovi bitky** (aj finále; v6.1, 2026-10-27) dá potom každý starší, ktorý sa ho bojí,
   špaky: žltá 1, oranžová 2, červená 3 (sivý nikomu). **Porazený za starších nedostane nič**;
@@ -19,14 +19,21 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   sa nerátajú. Vo finále sa preto oplatí doliať (2 cigarety → plný poldeci = špak) a nefajčiť
   cigaretu, ktorá zlomí päťku. Výpis ho ráta do „keby skončila teraz“.
 - **Dĺžka hry** = počet bitiek o lokality (krátka 3, stredná 5, dlhá 7) a potom
-  **finále** (bez lokality).
+  **finále** na pinnacle lokalite.
+- **Lokality podľa úrovní (v7):** úroveň = počet akcií na hrane lokality (1 / 2 / 3, pinnacle 4),
+  Pitiek je 1 + menší počet aktivovaných akcií hrán (úroveň 1: 1–2, úroveň 3: 1–4, pinnacle 1–5).
+  Úrovne po kolách: krátka 1 · 2 · 3 · P, **stredná 1 · 2 · 2 · 3 · 3 · P**, dlhá 1 · 1 · 2 · 2 · 3 · 3 · 3 · P.
+  Nežrebuje sa: obranca vyberá a natáča cieľ zo **všetkých ešte neodohraných lokalít úrovne kola**
+  (výpis ukazuje len tie). Úroveň 1: Zastávka, Most, Lesná cesta, Cintorín, Jednota; 2: Ihrisko,
+  Benzínka, Kar, Zberný dvor, Krčma, Sklad; 3: Obecný úrad, Kultúrny dom, Vínna pivnica, Družstvo,
+  Kostol; pinnacle: Poľovnícka chata, Predsedova vila, Herňa.
 - **Štart (v6):** 4 karty v ruke (1 Miňištrant, 1 Milujúca manželka, 1 Pijan, 1 Dievčina na vydaj), doberací balíček prázdny;
   2 plné poldeci, 3 cigarety, 0 špakov. Kým nemáš odhadzovací balíček, ťahať ani fajčiť sa nedá.
-- **Finále:** útočí, kto má **viac špakov** (pri rovnosti porazený poslednej bitky,
-  po sekere ostáva útočník); cieľ sa nevyberá, šenok a patronát áno. **Prvá vyložená
-  karta leží v strede** a ďalšie sa kladú na jej dve strany; kraje ani prevaha nie sú.
-  Finále má vždy 3 Pitky. Po finále sa prebytok nerozdeľuje — držiteľ dostane toľko
-  špakov.
+- **Finále (v7):** útočí, kto má **viac špakov** (pri rovnosti porazený poslednej bitky,
+  po sekere ostáva útočník); **obranca vyberie a natočí pinnacle lokalitu** (jednu z troch),
+  potom šenok a patronát ako v každom kole. Kraje a prevaha platia, Pitky ako na každej
+  lokalite (1–5). Po finále sa prebytok nerozdeľuje — držiteľ dostane toľko špakov.
+  (Bez rozpisu úrovní — stará sada — finále bez lokality: Finále má vždy 3 Pitky, prvá karta v strede.)
 - **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimky: Nástroj, Kočovník — nižšie). Podstrčený „sabotér"
@@ -73,15 +80,25 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Lokality (2026-10-20)** — efekt platí v kole o ňu: Krčma (s plným
   poldeci povinné NA EX; prah Cirhózy obom +2), Kostol (nikto nevypije ani nedá NA EX — v ťahu
   1 karta), Benzínka (nikto nefajčí), Zastávka (spoločný limit = súčet
-  limitov; pas dá cigarety len za tvoj vlastný zvyšok limitu), Lesná cesta (+1 tuhé za tvojho Občana/Zviera/Starešinu v súperovom kraji, max +2),
+  limitov; pas dá cigarety len za tvoj vlastný zvyšok limitu), Lesná cesta (v7: +1 tuhé za každé svoje Zviera v súperovom kraji, bez stropu),
   Ihrisko (+2 tuhé za každý kraj, kde máš viac svojich Občanov, Zvierat a Starešinov), Zberný
-  dvor (raz za Pitku `vykup`: cigareta → karta z odhadzovacieho do ruky),
-  Most (len na vlastnú stranu), Kar (na začiatku bitky `{"type":"kar","uid":…|null}`: zahoď
-  jednu nepriznanú Cirhózu z ruky), Cintorín (porazený `cintorin`: Nástroj
-  z ruky do Dedičstva zadarmo), Obecný úrad (prah Exekútora −4, Robota
-  spáli 2 Dlhy), Jednota (barter −1), Kultúrny dom (v6: prebytok sa
+  dvor (Kšeft `vykup`: cigareta → karta z tvojho odhadzovacieho do ruky),
+  Most (len na vlastnú stranu), Kar (v7: doliatie zadarmo, ale +1 pečeň), Cintorín (porazený `cintorin`: Nástroj
+  z ruky do Dedičstva zadarmo), Obecný úrad (v7: Robota spáli 2 Dlhy, prah nemení),
+  Jednota (v7 Kšeft: 1 Dlh → 2 cigarety), Sklad (v7 Kšeft: 1 cigareta → vrchná karta súperovho
+  odhadzovacieho balíčka do tvojej ruky), Poľovnícka chata (tuhé z hrán ×2), Predsedova vila
+  (Kšeft: 2 cigarety → marker o 1 k súperovi alebo k sebe, nie staršieho zo súperovho patronátu),
+  Herňa (víťaz + toľko špakov, koľko má porazený priznaných Dlhov), Kultúrny dom (v6: prebytok sa
   nerozdeľuje — držiteľ dostane toľko špakov), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
-  nemíňajú limit). Nové lokality prídu do hry so zverejnením sady.
+  nemíňajú limit).
+- **Kšeft (v7):** aktívny efekt za cenu `{"type":"kseft","uid":…}` (uid karty v línii alebo lokality,
+  Smetiarka s `kartaUid`, Vila s `elderId` a `kSebe`) — v Pitke na svojom ťahu, nie pri odpovedi na
+  NA EX; každá karta raz za Pitku, Kšeft lokality smie každý hráč. Kapybara (2 cigarety → súper −1 špak),
+  Strýko z Ameriky (2 cigarety → v bitke kola +1 Rana), Oslávenec (tvoj plný poldeci → súper +2 pečene),
+  Smetiarka (karta z ruky, nie Kliatba, do odhadzovacieho → 1 cigareta), Jednota, Sklad, Predsedova vila.
+  Starosta a Poštárka sú Kšefty tiež (Starosta nevymení Cirhózu).
+- **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Dlh, Pečeň).
+  Pakt s Paktom nerobí nič, s Posilnením nič nezdvojí, Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
 - **Draft:** stavba šenku naraz, bez podávania: z N kariet dáš **polovicu do šenku
   a polovicu naspodok** (`{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`, pri 8 kartách 4 + 4)
   — vyberáte naraz. Po braní sa šenok sám doplní na 8 z vrchu spoločného balíčka. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
@@ -103,8 +120,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   — prizná ju hneď, alebo riskuješ, že sa ti do konca nevráti do ruky. Kým ju nepriznáš, súper za ňu tuhé
   nedostáva a na Pohreb ju nemáš. Počet súperových
   nepriznaných kliatob je verejný (stav ho ukazuje). Dlh sa sám nepáli (2026-10-22) — spáli ho len Robota,
-  Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova; Milujúca manželka
-  a Absťák kartu dajú. Kliatba do línie nepatrí (len Milujúca manželka). Priznanie nemíňa
+  Dievčina na vydaj (v7: až keď máš aspoň 4 priznané Dlhy), Niekoho stryná a Veľmi smútiaca vdova;
+  Absťák kartu dá. Milujúca manželka už nie je Kliatba (v7). Kliatba do línie nepatrí. Priznanie nemíňa
   limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
@@ -152,7 +169,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Placatka:** NA EX na tvojho vlastného **Anonymného alkoholika** sa nepočíta do limitu NA EX za Pitku
   (smieš ho dať navyše k bežnému, ak máš plný poldeci); na Kostole nie, na Krčme splní povinné NA EX,
   na Anonymného alkoholika s poldeci ďalšie nejde. Súper naňho NA EX dať smie.
-  Šofér: NA EX na kartu vedľa neho neaktívne akcie nezdvojí (aktívne zruší). Snúbenica
+  Šofér (v7): ak si v kole nedal NA EX, v bitke Pecka navyše. Lievik v Dedičstve: NA EX aj na Zviera. Snúbenica
   vyložená vedľa karty s NA EX (aj ako odpoveď) ju vráti majiteľovi do ruky a ľahne na jej miesto. Veterán (v4): NA EX mu aktívne akcie zdvojí
   (nezruší), neaktívne nechá.
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX,
@@ -166,11 +183,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Doliatie** v Pitke: 2 cigarety → vypitý poldeci späť na plný (nie s Vínkom
   v Dedičstve). **Barter:** 5 cigariet → nový plný poldeci. Na začiatku kola sa
   jeden vypitý poldeci doleje sám.
-- **Pečeň a zadĺženie žijú len v Pitke** — vyhodnotia sa v nej a potom sa
-  vynulujú. Za **každý celý prah** jedna kliatba (zadĺženie 8 pri prahu 2 = 4 Dlhy).
+- **Pečeň žije len v Pitke** — vyhodnotí sa v nej a potom sa vynuluje. **Zadĺženie neprepadá (v7, D6):**
+  zvyšok pod prahom ostáva na účte do ďalšej Pitky aj kola. Za **každý celý prah** jedna kliatba
+  (zadĺženie 8 pri prahu 2 = 4 Dlhy). Milujúca manželka (v7) v línii: tvoja pečeň v Pitke −1.
   Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
-- **Absťák:** na konci kola, ak máš menej nerestí než minule (s odhalenou
-  Milujúcou manželkou aj pri rovnosti, dve = aj o 1 viac). Viac nerestí →
+- **Absťák:** na konci kola, ak máš menej nerestí než minule (Opatrovateľka pri Nástupe
+  zníži počet z minulého kola o 2). Viac nerestí →
   jeden Absťák odíde. Absťáky, ktoré **práve máš**, uberajú víťazovi špaky za bitku
   (o rozdiel oproti porazenému) a pri remíze v tuhom prehráva, kto ich má viac.
 - **Stupnica (v6):** 7 polí 3-2-1-0-1-2-3, jedno sivé. Marker určuje **priazeň**
@@ -182,11 +200,11 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (Výpalné): za každé súperovo NA EX ti dá 1 / 2 / 3 cigarety; Fajčiar +1 / +2 / +3
   cigarety po braní zo šenku (Obmedzenie ich neuberá); Alkoholik (Na zdravie
   „do dna“): 1 / 2 / 3 poldeci z tvojho NA EX za kolo sa vráti plných; Veriaci
-  +1 / +2 / +3 Viery. Prah Dlhu 2 (každé 2 zadĺženia = 1 Dlh), prah Cirhózy 3, prah Exekúcie 10 (so súperovým Exekútorom 9 / 8 / 7, Obecný úrad −4).
+  +1 / +2 / +3 Viery. Prah Dlhu 2 (každé 2 zadĺženia = 1 Dlh), prah Cirhózy 3, prah Exekúcie 7 (so súperovým Exekútorom 6 / 5 / 4; tvoj Záhradkár v línii +2).
 - **Exekútor (v6):** kto má priznaných Dlhov aspoň na prahu, tomu zhorí **polovica
   Dlhov (nadol) a rovnako veľa špakov** — Nástroj sa neodovzdáva, prehra nie je.
-  Záhradkár: smieš ho zahodiť namiesto špakov (`{"type":"zahradkar","zahodit":true|false}`),
-  Dlhy zhoria aj tak. **Noviny** (Dedičstvo, v6): +1 špak po vyhratej bitke (pri sekere obom), keď sa ťa bojí
+  Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktoristka: s prevahou v jej kraji Pecka navyše,
+  inak Dlh; Podvodník pri prehre presunie tvoj priznaný Dlh súperovi. **Noviny** (Dedičstvo, v6): +1 špak po vyhratej bitke (pri sekere obom), keď sa ťa bojí
   viac starších ako súpera.
 - **Patronát (2026-10-20, nahradil bitku o staršieho):** po braní zo šenku
   (útočník, potom obranca; `patronat` / `bezPatronatu`) si smieš vziať do ruky

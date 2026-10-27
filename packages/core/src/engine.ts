@@ -3041,6 +3041,8 @@ function cmdStarosta(
   const senokIdx = s.senok.findIndex((k) => k.uid === cmd.senokUid);
   need(senokIdx !== -1, "Karta nie je v šenku.");
   need(!jeKartaPatronatu(s as GameState, cmd.rukaUid), "Staršieho z patronátu do šenku nedáš.");
+  // Kšeft Starostu (v7): Cirhózu z ruky do šenku nevymeníš — obišla by −5 špakov na konci.
+  need(s.hraci[p].ruka.find((k) => k.uid === cmd.rukaUid)?.defId !== "cirhoza", "Cirhózu Starosta nevymení.");
   const zRuky = vezmiZRuky(s, p, cmd.rukaUid);
   const zoSenku = s.senok.splice(senokIdx, 1, zRuky as DeepMutable<CardInstance>)[0] as CardInstance;
   hrac(s, p).ruka.push(zoSenku as DeepMutable<CardInstance>);
@@ -3872,7 +3874,8 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   // 0b. Kar (roadmapa #80): kto má v ruke nepriznanú Cirhózu, smie jednu zahodiť
   // (obranca, potom útočník).
   if (b.krok === "kar") {
-    if (jeCielLokalita(s as GameState, "kar")) {
+    // Kar v7 (Pitka: doliatie zadarmo s pečeňou) už Cirhózu v bitke nezahadzuje — len stará sada.
+    if (jeCielLokalita(s as GameState, "kar") && data.cards.get("kar")?.triggers.includes("Bitka") === true) {
       for (const p of [obranca(s), s.utocnik]) {
         if (b.karHotovy[p]) continue;
         if (!s.hraci[p].ruka.some((k) => k.defId === "cirhoza")) {
@@ -5155,7 +5158,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         !efektPotlaceny(data, state, p, "starosta")
       ) {
         for (const k of state.hraci[p].ruka) {
-          if (jeKartaPatronatu(state, k.uid)) continue;
+          if (jeKartaPatronatu(state, k.uid) || k.defId === "cirhoza") continue;
           for (const z of state.senok) out.push({ type: "starosta", rukaUid: k.uid, senokUid: z.uid });
         }
       }
