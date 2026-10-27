@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cintorín bez Pohrebu — nový efekt</title>
+<style>
+:root {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b; --akcent: #95590a; --dobre: #2f6b3a; --zle: #a3392c;
+  --serif: Georgia, "Times New Roman", serif; --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+    --text: #f1e8d8; --tlmeny: #b8a993; --akcent: #e9ad45; --dobre: #7cc58a; --zle: #e98a7c; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 860px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-left, 0px)) 56px; }
+h1, h2 { font-family: var(--serif); line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 32px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+p { margin: 0 0 10px; }
+ul { padding-left: 20px; margin: 4px 0 10px; }
+li { margin-bottom: 4px; }
+code { font-family: var(--mono); font-size: .85em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.uvod, .pozn { color: var(--tlmeny); }
+.pozn { font-size: .9rem; }
+.verdikt { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.karta { font-family: var(--serif); font-size: 1.1rem; background: var(--plocha-2); border-left: 4px solid var(--akcent); padding: 8px 12px; border-radius: 6px; margin: 8px 0; }
+details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; margin: 10px 0; }
+details[open] { border-color: var(--akcent); }
+summary { cursor: pointer; padding: 12px 14px; font-weight: 600; list-style: none; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "▸"; color: var(--akcent); }
+details[open] summary::before { content: "▾"; }
+.telo { padding: 0 14px 12px; }
+.stitok { font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid var(--okraj); color: var(--tlmeny); font-weight: 400; white-space: nowrap; }
+.stitok.odp { border-color: var(--dobre); color: var(--dobre); font-weight: 600; }
+.stitok.nie { border-color: var(--zle); color: var(--zle); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: 8px 0; }
+dt { color: var(--tlmeny); font-size: .9rem; }
+dd { margin: 0; }
+@media (max-width: 520px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
+.tab-obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 6px; text-align: left; border-bottom: 1px solid var(--okraj); vertical-align: top; }
+thead th { color: var(--tlmeny); font-weight: 600; font-size: .82rem; }
+td.c { text-align: center; }
+.ano { color: var(--dobre); font-weight: 600; } .ciast { color: var(--akcent); } .ne { color: var(--tlmeny); }
+button { font: inherit; background: var(--plocha-2); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+<h1>Cintorín bez Pohrebu</h1>
+<p class="uvod">Vymyselník, 2026-10-27. Michal zrušil Pohreb (§11). Oba efekty Cintorína naň nadväzovali,
+preto potrebuje nový efekt. Štyri návrhy; text na karte je len spúšťač a efekt.</p>
+
+<div class="verdikt">
+  <strong>Odporúčam A — Pozostalosť:</strong>
+  <div class="karta">Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.</div>
+  <p>Zostáva pri téme, ktorú Michal Cintorínu dal 2026-10-20 (dedičstvo po prehre), ale už bez Pohrebu
+  a tak, aby sa naozaj dal použiť: v šenku je po braní 8 kariet a aspoň jeden Nástroj medzi nimi býva
+  zhruba v 85 % kôl. Pomáha porazenému z prvej bitky, dostane Nástroje do hry a v kóde stačí
+  rozšíriť krok, ktorý už existuje.</p>
+</div>
+
+<h2>Čo treba vedieť o Cintoríne</h2>
+<ul>
+  <li><b>Úroveň 1</b>, hrany: vľavo Viera, vpravo Robota. Kraje <i>pri hroboch</i> / <i>pri márnici</i>
+    (<code>tools/sada-v7/generuj.ts:189</code>).</li>
+  <li>Hrá sa len v <b>1. kole</b> (v dlhej hre v 1. alebo 2. kole) a len ak ho obranca vyberie
+    z piatich lokalít úrovne 1. Kolo má 1–2 Pitky.</li>
+  <li>V 1. kole má málokto Cirhózu, Nástroj v ruke či veľa cigariet. Efekt, ktorý pracuje
+    s tým, čo hráč už nazbieral, sa tu takmer nespustí. Lepšie sedí efekt, ktorý niečo
+    <b>založí</b> na celú partiu.</li>
+  <li>Opakovať sa nesmie: Kar (pečeň za NA EX súperovi), Krčma (prah Cirhózy), Zberný dvor a Sklad
+    (karta z odhadzovacieho balíčka), Predsedova vila (marker staršieho za cigarety).</li>
+</ul>
+
+<h2>Návrhy <button type="button" id="vsetky">rozbaliť všetky</button></h2>
+
+<details open>
+<summary>A · Pozostalosť <span class="stitok odp">odporúčam</span><span class="stitok">Prehra</span></summary>
+<div class="telo">
+  <div class="karta">Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.</div>
+  <dl>
+    <dt>Rieši</dt><dd>Nástroje a Dedičstvo sa nehrali vôbec (Jano, report 161907). Porazený z 1. kola
+      dostane trvalú výhodu (efekt Dedičstva po celú partiu), takže prvá prehra hneď nespustí snehovú
+      guľu. Spoločná cena Dedičstva stúpne, takže víťaz zaplatí za ďalšie Dedičstvo viac.</dd>
+    <dt>Riziko</dt><dd>V šenku nemusí byť Nástroj (asi 15 %), vtedy efekt nič nespraví. Víťaz vidí,
+      ktorý Nástroj porazený vzal. Vezme sa jedna karta zo šenku, šenok sa doplní až pri ďalšom braní.</dd>
+    <dt>Náročnosť</dt><dd><b>Malá.</b> Krok bitky <code>cintorin</code> už existuje, treba ho rozšíriť
+      o šenok (podrobnosti nižšie).</dd>
+    <dt>Strážiť</dt><dd><i>Odmena za väčšiu výzvu</i>: výhodu dostáva porazený, nie víťaz.
+      <i>Bez stropov</i>: „jeden Nástroj“ je to, čo efekt dáva, nie strop na zdroj.
+      <i>Nepísať interakcie iných kariet</i>: text nespomína kartu, ktorá Dedičstvo zahadzuje.</dd>
+  </dl>
+</div>
+</details>
+
+<details>
+<summary>B · Hrobové miesto <span class="stitok">Kšeft</span></summary>
+<div class="telo">
+  <div class="karta">Kšeft: Za 3 cigarety získaš Hrob. Na konci hry ti každý Hrob zruší stratu za jednu nepriznanú Cirhózu.</div>
+  <dl>
+    <dt>Rieši</dt><dd>Nepriznané Cirhózy stáli v turnuse spolu −50 špakov. Cigarety dostanú výdaj
+      a hráč sa v 1. kole rozhoduje, či si kúpi poistku proti neskorším Cirhózam (satira: hrobové
+      miesto si na dedine kupuje zavčasu).</dd>
+    <dt>Riziko</dt><dd>Hrob je nový pojem a nové verejné počítadlo. Uberá z rizika NA EX na kartu
+      s neaktívnou Pečeňou, ktoré je dnes vec zručnosti (stratég pri spovedi: cena 3 nie, 5 je hraničná).
+      Cigarety za Kšeft lokality sú nerest, takže nákup zvýši latku Absťáku v 2. kole.
+      Na stomp nemá vplyv, Hrob si kúpia obaja.</dd>
+    <dt>Náročnosť</dt><dd><b>Stredná.</b> Stav hráča, <code>viewFor</code>, záverečné počítanie,
+      dlaždica na stole, bot, štatistiky.</dd>
+    <dt>Strážiť</dt><dd><i>Bez stropov</i>: počet Hrobov obmedzuje len pravidlo Kšeftu (raz za Pitku),
+      nič ďalšie nepridávať. Cenu nastaviť podľa merania, nie odhadom.</dd>
+  </dl>
+</div>
+</details>
+
+<details>
+<summary>C · Márnica <span class="stitok nie">neodporúčam</span><span class="stitok">Kšeft</span></summary>
+<div class="telo">
+  <div class="karta">Kšeft: Za 2 cigarety zahoď z hry 1 nepriznanú Cirhózu z ruky alebo zo svojho odhadzovacieho balíčka.</div>
+  <dl>
+    <dt>Rieši</dt><dd>Priamo zmaže Cirhózu a dá cigaretám výdaj.</dd>
+    <dt>Riziko</dt><dd>V 1. kole takmer niet čo zmazať, efekt by bol mŕtvy. Starý Kar robil skoro to isté
+      a za 90 partií sa použil 2× (<code>docs/napady/analyza-sady.html:777</code>).</dd>
+    <dt>Náročnosť</dt><dd>Malá (Kšeft lokality ako Zberný dvor).</dd>
+    <dt>Strážiť</dt><dd><i>Bez stropov</i>; nevracať sa k zrušenému čisteniu Cirhóz.</dd>
+  </dl>
+</div>
+</details>
+
+<details>
+<summary>D · Zapíjanie <span class="stitok nie">neodporúčam</span><span class="stitok">Výhra</span></summary>
+<div class="telo">
+  <div class="karta">Výhra: Získaš 1 Cirhózu.</div>
+  <dl>
+    <dt>Rieši</dt><dd>Brzdí stomp už po prvej výhre: víťaz Cirhózu, keď mu príde do ruky, buď prizná (súper má potom v každej
+      bitke +1 tuhé), alebo riskuje −5 na konci. Kto vyhrá na cintoríne, zapíja smútok.</dd>
+    <dt>Riziko</dt><dd>Pridáva Cirhózy, hoci ich je už dnes priveľa (−50). Trestá aj víťaza, ktorý bol
+      v bitke znevýhodnený.</dd>
+    <dt>Náročnosť</dt><dd>Malá (pridať kliatbu po bitke).</dd>
+    <dt>Strážiť</dt><dd><i>Odmena za väčšiu výzvu</i>: trest dostane každý víťaz, aj ten, kto vyhral
+      z horšej pozície. To je proti zásade.</dd>
+  </dl>
+</div>
+</details>
+
+<h2>Porovnanie</h2>
+<div class="tab-obal">
+<table>
+  <thead><tr><th>Problém z 161907</th><th class="c">A</th><th class="c">B</th><th class="c">C</th><th class="c">D</th></tr></thead>
+  <tbody>
+    <tr><td>Cirhóza bez nápravy (−50)</td><td class="c ne">—</td><td class="c ano">áno</td><td class="c ciast">slabo</td><td class="c ne">horšie</td></tr>
+    <tr><td>Nehrané Nástroje a Dedičstvo</td><td class="c ano">áno</td><td class="c ne">—</td><td class="c ne">—</td><td class="c ne">—</td></tr>
+    <tr><td>Nevyužité cigarety</td><td class="c ne">—</td><td class="c ano">áno</td><td class="c ciast">slabo</td><td class="c ne">—</td></tr>
+    <tr><td>Stomp</td><td class="c ciast">mierne</td><td class="c ne">—</td><td class="c ne">—</td><td class="c ano">áno</td></tr>
+    <tr><td>Spustí sa v 1. kole</td><td class="c ano">~85 %</td><td class="c ano">áno</td><td class="c ne">zriedka</td><td class="c ano">vždy</td></tr>
+    <tr><td>Náročnosť kódu</td><td class="c">malá</td><td class="c">stredná</td><td class="c">malá</td><td class="c">malá</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="pozn">Cigarety porazeného rieši aj vetva <code>pravidla/vykupne</code> (rastúca cena fajčenia,
+dobratie 1 karta), takže B nie je jediná odpoveď. Cirhózu stratég odporúča riešiť náhľadom hrozby
+(návrh 6C z 161907), nie pravidlom.</p>
+
+<h2>Odporúčanie: A</h2>
+<p>A je jediný návrh, ktorý v 1. kole naozaj pracuje a zároveň založí niečo na celú partiu. Zostáva
+pri téme Dedičstva, ktorú Michal Cintorínu dal 2026-10-20, pomáha porazenému (zásada odmeny za výzvu)
+a v kóde len rozširuje existujúci krok. B je tematicky najlepší a rieši dva problémy, ale prináša
+nový pojem a ide proti stratégovi, ktorý Cirhózu radšej rieši náhľadom.</p>
+
+<h3>Znenie pre pravidlá (§15, tabuľka v7)</h3>
+<p><code>| Cintorín | Prehra | Porazený smie vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia; spoločná cena Dedičstva sa zvýši ako vždy (§12). Pri sekere nikto. |</code></p>
+<p class="pozn">Zmazať riadok Cintorína v tabuľke v6, podsekciu „### Cintorín“ v §11 a vetu
+„Cintorín (v7): nová Cirhóza je hneď priznaná“ v §11 (<code>docs/PRAVIDLA.md:929</code>).</p>
+
+<h3>generuj.ts</h3>
+<p><code>tools/sada-v7/generuj.ts:189</code> (LOKALITY): <code>effect_text: "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.", triggers: ["Prehra"]</code></p>
+<p>V EFEKTY (riadok s <code>cintorin:</code>, sekcia Lokality): <code>cintorin: "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.",</code></p>
+<p class="pozn">Živá sada: zmenu urobí naex-admin v tvorcovi; cards.json je kópia živej sady.</p>
+
+<h3>Pre developera (kód som nemenil)</h3>
+<ul>
+  <li><code>packages/core/src/engine.ts:898</code> a <code>packages/core/src/nahlady.ts:197</code>:
+    zrušiť automatické priznanie Cirhózy na Cintoríne. Nie je viazané na spúšťač v dátach, platilo by ďalej.</li>
+  <li><code>engine.ts:4117</code>: podmienka kroku = Nástroj v ruke <b>alebo v šenku</b>.</li>
+  <li><code>engine.ts:4234</code> <code>cmdCintorin</code>: uid z ruky alebo zo šenku (<code>s.senok</code>).</li>
+  <li><code>engine.ts:5331</code>: legálne ťahy aj pre Nástroje v šenku.</li>
+  <li><code>bot.ts:1284</code>, <code>apps/web/src/hra/HernaPlocha.tsx:3867</code>,
+    <code>tools/playtest/hrac.ts:975</code>: ponuka aj zo šenku.</li>
+</ul>
+</main>
+<script>
+document.getElementById("vsetky").addEventListener("click", (e) => {
+  const d = [...document.querySelectorAll("details")];
+  const otvor = d.some((x) => !x.open);
+  d.forEach((x) => (x.open = otvor));
+  e.target.textContent = otvor ? "zbaliť všetky" : "rozbaliť všetky";
+});
+</script>
+</body>
+</html>
