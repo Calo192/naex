@@ -71,25 +71,20 @@ export const OKNA_PO: Readonly<Record<string, OknaKarty>> = {
   kocovnik: { L: { b: [0, 3] }, R: { b: [2], a: { 3: ["PoškodeniePečene", "Pecka"] } } },
   svokra: { L: { b: [1, 2, 3] }, R: { b: [3] } },
   sarlatan: { L: { b: [2] }, R: { b: [0], a: { 2: ["Pohoršenie"] } } },
-  podvodnik: { L: { b: [1] }, R: { b: [1, 3] } },
+  podvodnik: { L: { b: [1] }, R: { b: [0, 1] } },
   zahradkar: { L: { b: [1] }, R: { b: [2], a: { 1: ["Poldeci"] } } },
   anonymny_alkoholik: { L: { b: [0, 1] }, R: { b: [0, 3] } },
-  presbiter: { L: { b: [1, 3] }, R: { b: [2, 3] } },
   dvojcata: { L: { b: [0, 1] }, R: { b: [0, 1] } },
   sofer: { L: { b: [1, 2] }, R: { b: [1, 3] } },
-  snubenica: { L: { b: [0, 1] }, R: { b: [1, 2] } },
+  snubenica: { L: { b: [0, 2] }, R: { b: [1, 2] } },
   degustatorka: { L: { b: [2, 3] }, R: { b: [1, 2] } },
   klebetnica: { L: { b: [1, 3] }, R: { b: [0, 2] } },
-  dohadzovacka: { L: { b: [0, 1] }, R: { b: [2, 3] } },
+  dohadzovacka: { L: { b: [0, 2] }, R: { b: [2, 3] } },
   vandal: { L: { b: [2, 3] }, R: { b: [0, 1] } },
   stryko_z_ameriky: { L: { b: [0, 1] }, R: { b: [1] } },
-  opatrovatelka: { L: { b: [2, 3] }, R: { b: [0, 1] } },
-  smetiarka: { L: { b: [0, 2] }, R: { b: [1, 3] } },
-  brigadnik: { L: { b: [], a: { 0: ["Cigareta"], 3: ["Pakt"] } }, R: { b: [0], a: { 3: ["Obmedzenie"] } } },
   masiar: { L: { b: [2, 3] }, R: { b: [2, 3] } },
-  kulturista: { L: { b: [0, 2, 3] }, R: { b: [] } },
+  kulturista: { L: { b: [0, 3] }, R: { b: [] } },
   traktoristka: { L: { b: [0, 1] }, R: { b: [2] } },
-  oslavenec: { L: { b: [0, 2] }, R: { b: [0, 3] } },
   vymahac: { L: { b: [2, 3] }, R: { b: [0, 3] } },
   pijan: { L: { b: [1, 2], a: { 0: ["PoškodeniePečene"] } }, R: { b: [1] } },
   milujuca_manzelka: { L: { b: [2, 3] }, R: { b: [0, 2] } },
@@ -119,11 +114,8 @@ const OKNA_PRED_INAK: Readonly<Record<string, OknaKarty>> = {
   dvojcata: { L: { b: [2, 3] }, R: { b: [0, 1] } },
   sofer: { L: { b: [0, 3] }, R: { b: [0, 3] } },
   masiar: { L: { b: [0, 3] }, R: { b: [0, 3] } },
-  kulturista: { L: { b: [0, 2, 3] }, R: { b: [0, 3] } },
+  kulturista: { L: { b: [0, 3] }, R: { b: [0, 3] } }, // E3: Petelica ×2 na 1–2, Dlh ×2 na 1–2
   traktoristka: { L: { b: [0, 3] }, R: { b: [0, 3] } },
-  oslavenec: { L: { b: [0, 3] }, R: { b: [0, 3] } },
-  // 10.1 + Pakt (12.1): Brigádnik Pakt na odblokovaný slot 3, Živnostník Dlh/Pakt na 2–3.
-  brigadnik: { L: { b: [], a: { 0: ["Robota"], 1: ["Cigareta", "Rana"], 2: ["Cigareta", "Rana"], 3: ["Pakt"] } }, R: { b: [0], a: { 1: ["Robota"], 2: ["PoškodeniePečene", "Obmedzenie"], 3: ["PoškodeniePečene", "Obmedzenie"] } } },
   zivnostnik: { L: { b: [], a: { 0: ["Odpor", "Robota"], 1: ["Odpor", "Robota"], 2: ["Dlh", "Pakt"], 3: ["Dlh", "Pakt"] } }, R: { b: [], a: { 0: ["Cigareta"], 1: ["Cigareta"], 2: ["PoškodeniePečene"], 3: ["PoškodeniePečene"] } } },
   // Dávka 3: Svokra s Dlhom namiesto Obmedzenia v tom istom okne, Vymáhač podľa D5.
   svokra: { L: { b: [2, 3] }, R: { b: [], a: { 0: ["Viera"], 1: ["Viera"], 2: ["Dlh", "Pecka"], 3: ["Dlh", "Pecka"] } } },
@@ -140,12 +132,9 @@ const OKNA_PRED_INAK: Readonly<Record<string, OknaKarty>> = {
   dohadzovacka: { L: { b: [0, 1] }, R: { b: [0, 3] } },
   vandal: { L: { b: [0, 3] }, R: { b: [2, 3] } },
   stryko_z_ameriky: { L: { b: [0, 3] }, R: { b: [0, 3] } },
-  opatrovatelka: { L: { b: [0, 3] }, R: { b: [2, 3] } },
-  smetiarka: { L: { b: [0, 3] }, R: { b: [0, 3] } }, // predpoklad: sloty nikde nezapísané
 };
 const PRED_POZNAMKA: Readonly<Record<string, string>> = {
   dohadzovacka: "Pakt v okne 2–3 podľa 12.1 (Viera, Pakt na 2–3)",
-  smetiarka: "sloty nikde nezapísané, predpoklad blok. 0 a 3",
 };
 
 // ---------------------------------------------------------------------------
@@ -368,18 +357,18 @@ function komboP(v: readonly KartaVysledok[], k: Kombo): number {
 
 const PRIPNUTIA: readonly { nazov: string; preco: string; over: (v: readonly KartaVysledok[]) => boolean }[] = [
   {
-    nazov: "Kulturista: Petelica sama na ľavom slote 1",
-    preco: "WAU 1 (plán 5.1, 11.2): tvar „Petelica sama na slote 1, Dlh ×2 vnútri“.",
-    over: (v) => { const k = v.find((x) => x.karta.id === "kulturista")!; return k.L.rozlozenia.length === 1 && k.L.E["Petelica"]![1] === 1; },
+    nazov: "Kulturista (E3): Petelice ×2 vonku, Dlhy ×2 vnútri",
+    preco: "E3 (27. 10.): akcie Petelica ×2 / Dlh ×2. Tvar WAU 1 (5.1) ostáva: útok na vonkajšej hrane, cena (Dlh ×2) na vnútornej, kde ju zapne karta pri lokalite.",
+    over: (v) => { const k = v.find((x) => x.karta.id === "kulturista")!; return k.L.E["Petelica"]!.reduce((a, b) => a + b, 0) === 2 && k.R.E["Dlh"]!.reduce((a, b) => a + b, 0) === 2; },
   },
   {
-    nazov: "Pakt: ľavá strana, okno 2–3 na troch nosičoch",
-    preco: "12.1: Brigádnik slot 3, Živnostník okno 2–3 vedľa Dlhu (Dlh aj Pakt na 2–3), Dohadzovačka okno 2–3.",
+    nazov: "Pakt: ľavá strana na dvoch nosičoch (E3: Brigádnik vypadol)",
+    preco: "12.1 a E3: Živnostník okno 2–3 vedľa Dlhu (Dlh aj Pakt na 2–3), Dohadzovačka sloty 1 a 3 (aby mal vzácny Pakt dve rôzne okná, podmienka 3b).",
     over: (v) => {
       const g = (id: string) => v.find((x) => x.karta.id === id)!.L;
-      const b = g("brigadnik").E["Pakt"]!, z = g("zivnostnik"), d = g("dohadzovacka").E["Pakt"]!;
+      const z = g("zivnostnik"), d = g("dohadzovacka").E["Pakt"]!;
       const len23 = (e: readonly number[]) => e[0] === 0 && e[1] === 0 && e[2]! > 0 && e[3]! > 0;
-      return b[3] === 1 && len23(z.E["Pakt"]!) && z.E["Dlh"]![0] === 0 && z.E["Dlh"]![1] === 0 && len23(d);
+      return len23(z.E["Pakt"]!) && z.E["Dlh"]![0] === 0 && z.E["Dlh"]![1] === 0 && d[0] === 0 && d[1]! > 0 && d[3]! > 0;
     },
   },
   {
@@ -468,7 +457,7 @@ function extremy(s: Suhrn): { text: string; hodnota: number } {
 
 const DRUH_PORADIE = ["Nástroj", "Zviera", "Občan", "Štart"] as const;
 const DRUH_NAZOV: Record<string, string> = { Nástroj: "Nástroje", Zviera: "Zvieratá", Občan: "Občania", Štart: "Štartové" };
-const pripnuteKarty = new Set(["kulturista", "brigadnik", "zivnostnik", "dohadzovacka", "puska", "praudovravec", "hasic", "recidivista", "kon", "vestica", "traktoristka"]);
+const pripnuteKarty = new Set(["kulturista", "zivnostnik", "dohadzovacka", "puska", "praudovravec", "hasic", "recidivista", "kon", "vestica", "traktoristka"]);
 
 function kartyHtml(): string {
   const predMap = new Map(PRED.map((x) => [x.karta.id, x]));
@@ -607,8 +596,8 @@ td.okno{min-width:11em}
 <ul>
 <li><b class="${vsetkoOk ? "dobre" : "zle"}">Podmienky 1–3 ${vsetkoOk ? "prešli" : "NEPREŠLI"}.</b> Všetky karty majú ${Math.min(...PO.map((x) => x.varianty))}–${Math.max(...PO.map((x) => x.varianty))} variantov (pred: ${C_PRED.nad8.length} kariet nad 8, ${C_PRED.pod4.length} pod 4). Každý druh s aspoň 4 výskytmi má na každom indexe ${PODIELY_PO} výskytov (cieľ 15–40 %). Obsadenosť indexov je v pásme ±${OBS_PO} % od priemeru strany (cieľ ±20 %).</li>
 <li><b>Najväčší zostávajúci extrém:</b> ${esc(EX_PO.text)}. Pred preusporiadaním: ${esc(EX_PRED.text)}.</li>
-<li><b>Pakt</b> (3 výskyty na kópiu sady, vzácny druh) ostáva zámerne len na ľavých indexoch 2–3 (12.1). Má dve rôzne okná na rôznych kartách: slot 3 (Brigádnik) a okno 2–3 (Živnostník, Dohadzovačka).</li>
-<li><b>Pripnutia a kombá:</b> Kulturista (Petelica sama na ľavom slote 1) a Pakt ostali. Kombá z plánu, ktoré stoja na polohe, sa zapínajú rovnako často alebo častejšie, okrem WAU 1. Tam to inak nejde, pozri „Čo sa nepodarilo“.</li>
+<li><b>Pakt</b> (2 výskyty na kópiu sady, vzácny druh; po E3 bez Brigádnika) ostáva na ľavej strane. Má dve rôzne okná na rôznych kartách: okno 2–3 (Živnostník, vedľa Dlhu) a sloty 1 a 3 (Dohadzovačka).</li>
+<li><b>Pripnutia a kombá:</b> Kulturista (po E3 Petelica ×2 na ľavých slotoch 1–2, Dlh ×2 vpravo voľne) a Pakt ostali. Kombá z plánu, ktoré stoja na polohe, sa zapínajú rovnako často alebo častejšie, okrem WAU 1. Tam to inak nejde, pozri „Čo sa nepodarilo“.</li>
 <li><b>Allowed</b> má ${C_PO.sAllowed} z ${PO.length} kariet, pred preusporiadaním ${C_PRED.sAllowed}. Ostal len tam, kde spojka so 6–7 akciami inak nevojde do 8 variantov, alebo kde drží pripnutie.</li>
 <li><b>Vedľajší účinok (dôležité):</b> keď sú indexy obsadené rovnomerne, akcia nájde partnera menej často, lebo ubudlo „plného stredu“. Aktívne tuhé na náhodný spoj klesne z ${cislo(SP_PRED.tuhe, 3)} na ${cislo(SP_PO.tuhe, 3)} (${SP_PO.tuhe >= SP_PRED.tuhe ? "+" : "−"}${Math.abs(Math.round((SP_PO.tuhe / SP_PRED.tuhe - 1) * 100))} %) a aktívne akcie z ${cislo(SP_PRED.akcie, 3)} na ${cislo(SP_PO.akcie, 3)} (${SP_PO.akcie >= SP_PRED.akcie ? "+" : "−"}${Math.abs(Math.round((SP_PO.akcie / SP_PRED.akcie - 1) * 100))} %). Bez simulácie, model nižšie.</li>
 </ul>
@@ -628,7 +617,7 @@ td.okno{min-width:11em}
 <tr><td>Pred (akcie po revízii, okná bez zmeny)</td><td>${PRED.length}</td><td class="${C_PRED.nad8.length ? "zle" : ""}">${C_PRED.nad8.length}</td><td class="${C_PRED.pod4.length ? "zle" : ""}">${C_PRED.pod4.length}</td><td class="${P_PRED.some((p) => p.podmienka.startsWith("3")) ? "zle" : ""}">${P_PRED.filter((p) => p.podmienka.startsWith("3")).length}</td><td>${C_PRED.sAllowed}</td></tr>
 <tr><td><b>Po (návrh)</b></td><td>${PO.length}</td><td class="dobre">${C_PO.nad8.length}</td><td class="dobre">${C_PO.pod4.length}</td><td class="${P_PO.length ? "zle" : "dobre"}">${P_PO.filter((p) => p.podmienka.startsWith("3")).length}</td><td>${C_PO.sAllowed}</td></tr>
 </table>
-<p class="pozn">Pred: nad 8 ${esc(C_PRED.nad8.join(", ") || "—")}; pod 4 ${esc(C_PRED.pod4.join(", ") || "—")}. Okná „pred“ sú z <code>cards.json</code>, z <code>plan.json</code> (10.1), zo slotov schválených noviniek (<code>karty-naradie-zvierata.html</code>, <code>karty-kolo2.html</code>, <code>karty-obcania.html</code>) a z 12.1 pre Pakt. Smetiarka nemá sloty nikde zapísané, rátam s blok. 0 a 3.</p>
+<p class="pozn">Pred: nad 8 ${esc(C_PRED.nad8.join(", ") || "—")}; pod 4 ${esc(C_PRED.pod4.join(", ") || "—")}. Okná „pred“ sú z <code>cards.json</code>, z <code>plan.json</code> (10.1), zo slotov schválených noviniek (<code>karty-naradie-zvierata.html</code>, <code>karty-kolo2.html</code>, <code>karty-obcania.html</code>) a z 12.1 pre Pakt. Zloženie sady je po efektoch E3 (27. 10.): bez Presbitera, Opatrovateľky, Smetiarky, Brigádnika a Oslávenca, Kulturista Petelica ×2 / Dlh ×2.</p>
 </section>
 
 <section>
@@ -673,8 +662,8 @@ ${KOMBA_V.map((k) => `<tr><td>${esc(k.nazov)} <span class="pozn">(${k.plan})</sp
 <section>
 <h2>6 · Čo sa nepodarilo a prečo</h2>
 <ul>
-<li><b>WAU 1 (Kulturista za Silnou ženou):</b> pred ${pct(KOMBA_V[0]!.pred)}, po ${pct(KOMBA_V[0]!.po)}. Pred to stálo na Kulturistovi s 1 variantom, čo porušuje podmienku 2. Kulturistova ľavá strana je pripnutá na 1 rozloženie, takže pravá (Dlh ×2) musí mať aspoň 4. Dva Dlhy na 3 voľných slotoch dajú len 3 rozloženia, preto pravá strana musí byť celá voľná (6 rozložení) a každý Dlh je na náhodnom indexe. Silná žena má vľavo len 2 akcie, takže zachytí v priemere polovicu. Viac sa nedá bez porušenia podmienky 2 alebo pripnutia. Tvar komba (Petelica sama na slote 1) ostal, mení sa len, koľko jeho Dlhov sa so Silnou ženou spáruje.</li>
-<li><b>Pakt na indexoch 0–1:</b> 0 % zámerne. Pripnutie z 12.1 (ľavé okno 2–3) má prednosť. Pakt má 3 výskyty, je teda vzácny druh a podmienku 3b spĺňa.</li>
+<li><b>WAU 1 (Kulturista za Silnou ženou):</b> pred ${pct(KOMBA_V[0]!.pred)}, po ${pct(KOMBA_V[0]!.po)}. Pred to stálo na Kulturistovi s 1 variantom, čo porušuje podmienku 2. Po E3 má Kulturista vľavo Petelica ×2 na slotoch 1–2 (1 rozloženie, Petelica tak vyrovná index 1), takže pravá strana (Dlh ×2) musí mať aspoň 4 rozloženia. Dva Dlhy na 3 voľných slotoch dajú len 3 rozloženia, preto pravá strana musí byť celá voľná (6 rozložení) a každý Dlh je na náhodnom indexe. Silná žena má vľavo len 2 akcie, takže zachytí v priemere polovicu. Viac sa nedá bez porušenia podmienky 2 alebo pripnutia. Tvar komba (útok vonku, Dlhy vnútri) ostal, mení sa len, koľko jeho Dlhov sa so Silnou ženou spáruje.</li>
+<li><b>Pakt na indexoch 0–1:</b> 0 % zámerne. Pripnutie z 12.1 (ľavá strana) má prednosť. Pakt má po E3 2 výskyty, je teda vzácny druh a podmienku 3b spĺňa vďaka dvom rôznym oknám (Živnostník 2–3, Dohadzovačka 1 a 3).</li>
 <li><b>Ľavá strana Petelice a Posilnenia:</b> na ľavej strane sú len 2 kusy každého, takže strana sama rovnomerná byť nemôže. Spolu s pravou stranou sú presne na 25 %.</li>
 <li><b>Strany s jedným rozložením:</b> ${PO.flatMap((x) => [[x, "ľavá", x.L] as const, [x, "pravá", x.R] as const]).filter(([, , s]) => s.rozlozenia.length === 1 && Object.values(s.akcie).reduce((a, b) => a + b, 0) < 4).map(([x, n]) => `${esc(x.karta.nazov)} (${n})`).join(", ")}. Karta má aj tak 4–6 variantov. Pevná strana pomáha stlačiť počet pod 8 a dorovnať okrajové indexy.</li>
 <li><b>Menej aktívnych spojov:</b> rovnomernosť (podmienka 3c) znižuje, ako často sa stretnú dve akcie (pozri 7). Rovnomerný návrh to neobchádza. Čiastočne to vráti sklon do stredu v rámci tolerancie (otázka 1), celé len viac tuhých akcií.</li>

@@ -10,11 +10,11 @@
    "porusenia": [],
    "nad8": [],
    "pod4": [],
-   "sAllowed": 10,
-   "extremy": "najviac Pohorš na i0 27 %, najmenej Vízia na i1 20 %",
+   "sAllowed": 9,
+   "extremy": "najviac Obmedz na i1 37 %, najmenej Obmedz na i0 17 %",
    "spoj": {
-    "akcie": 1.8769309807256236,
-    "tuhe": 0.5176224135487528
+    "akcie": 1.8650091845016874,
+    "tuhe": 0.5643876286898202
    }
   },
   "pred": {
@@ -22,7 +22,7 @@
    "nad8": [
     "Veštica 12",
     "Praudovravec 12",
-    "Niekoho stryná 12",
+    "Stryná 12",
     "Milujúca manželka 16",
     "Miňištrant 16",
     "Dievčina na vydaj 12"
@@ -34,11 +34,11 @@
     "Strýko z Ameriky 2",
     "Kulturista 1"
    ],
-   "sAllowed": 19,
-   "extremy": "najviac Pečeň na i2 46 %, najmenej Viera na i3 6 %",
+   "sAllowed": 18,
+   "extremy": "najviac Obmedz na i0 50 %, najmenej Obmedz na i3 0 %",
    "spoj": {
-    "akcie": 2.089201566043083,
-    "tuhe": 0.5823235544217688
+    "akcie": 2.0517375795634156,
+    "tuhe": 0.6365820838139177
    }
   },
   "dnes": {
@@ -66,13 +66,13 @@
  },
  "pripnutia": [
   {
-   "nazov": "Kulturista: Petelica sama na ľavom slote 1",
-   "preco": "WAU 1 (plán 5.1, 11.2): tvar „Petelica sama na slote 1, Dlh ×2 vnútri“.",
+   "nazov": "Kulturista (E3): Petelice ×2 vonku, Dlhy ×2 vnútri",
+   "preco": "E3 (27. 10.): akcie Petelica ×2 / Dlh ×2. Tvar WAU 1 (5.1) ostáva: útok na vonkajšej hrane, cena (Dlh ×2) na vnútornej, kde ju zapne karta pri lokalite.",
    "ok": true
   },
   {
-   "nazov": "Pakt: ľavá strana, okno 2–3 na troch nosičoch",
-   "preco": "12.1: Brigádnik slot 3, Živnostník okno 2–3 vedľa Dlhu (Dlh aj Pakt na 2–3), Dohadzovačka okno 2–3.",
+   "nazov": "Pakt: ľavá strana na dvoch nosičoch (E3: Brigádnik vypadol)",
+   "preco": "12.1 a E3: Živnostník okno 2–3 vedľa Dlhu (Dlh aj Pakt na 2–3), Dohadzovačka sloty 1 a 3 (aby mal vzácny Pakt dve rôzne okná, podmienka 3b).",
    "ok": true
   },
   {
@@ -1210,7 +1210,7 @@
   },
   {
    "id": "niekoho_stryna",
-   "nazov": "Niekoho stryná",
+   "nazov": "Stryná",
    "druh": "Občan",
    "kopie": 2,
    "zdroj_akcii": "10.1: vľavo + Pečeň",
@@ -1725,8 +1725,8 @@
      "Rana": 1
     },
     "blocked": [
-     1,
-     3
+     0,
+     1
     ],
     "rozlozeni": 2
    },
@@ -1896,51 +1896,6 @@
    }
   },
   {
-   "id": "presbiter",
-   "nazov": "Presbiter",
-   "druh": "Občan",
-   "kopie": 2,
-   "zdroj_akcii": "bez zmeny",
-   "variantov": 4,
-   "lava": {
-    "akcie": {
-     "Pohoršenie": 1,
-     "Povera": 1
-    },
-    "blocked": [
-     1,
-     3
-    ],
-    "rozlozeni": 2
-   },
-   "prava": {
-    "akcie": {
-     "Rana": 1,
-     "Viera": 1
-    },
-    "blocked": [
-     2,
-     3
-    ],
-    "rozlozeni": 2
-   },
-   "pred": {
-    "variantov": 4,
-    "lava": {
-     "blocked": [
-      0,
-      3
-     ]
-    },
-    "prava": {
-     "blocked": [
-      2,
-      3
-     ]
-    }
-   }
-  },
-  {
    "id": "dvojcata",
    "nazov": "Dvojčatá",
    "druh": "Občan",
@@ -2043,7 +1998,7 @@
     },
     "blocked": [
      0,
-     1
+     2
     ],
     "rozlozeni": 2
    },
@@ -2121,7 +2076,7 @@
   },
   {
    "id": "klebetnica",
-   "nazov": "Klebetnica",
+   "nazov": "Bzdocha",
    "druh": "Občan",
    "kopie": 2,
    "zdroj_akcii": "schválená novinka",
@@ -2178,7 +2133,7 @@
     },
     "blocked": [
      0,
-     1
+     2
     ],
     "rozlozeni": 2
    },
@@ -2299,178 +2254,6 @@
    }
   },
   {
-   "id": "opatrovatelka",
-   "nazov": "Opatrovateľka",
-   "druh": "Občan",
-   "kopie": 2,
-   "zdroj_akcii": "schválená novinka (v2)",
-   "variantov": 4,
-   "lava": {
-    "akcie": {
-     "Robota": 1,
-     "Cigareta": 1
-    },
-    "blocked": [
-     2,
-     3
-    ],
-    "rozlozeni": 2
-   },
-   "prava": {
-    "akcie": {
-     "Viera": 1,
-     "Posilnenie": 1
-    },
-    "blocked": [
-     0,
-     1
-    ],
-    "rozlozeni": 2
-   },
-   "pred": {
-    "variantov": 4,
-    "lava": {
-     "blocked": [
-      0,
-      3
-     ]
-    },
-    "prava": {
-     "blocked": [
-      2,
-      3
-     ]
-    }
-   }
-  },
-  {
-   "id": "smetiarka",
-   "nazov": "Smetiarka",
-   "druh": "Občan",
-   "kopie": 2,
-   "zdroj_akcii": "schválená novinka",
-   "variantov": 4,
-   "lava": {
-    "akcie": {
-     "Robota": 1,
-     "Cigareta": 1
-    },
-    "blocked": [
-     0,
-     2
-    ],
-    "rozlozeni": 2
-   },
-   "prava": {
-    "akcie": {
-     "Obmedzenie": 1
-    },
-    "blocked": [
-     1,
-     3
-    ],
-    "rozlozeni": 2
-   },
-   "pred": {
-    "variantov": 4,
-    "lava": {
-     "blocked": [
-      0,
-      3
-     ]
-    },
-    "prava": {
-     "blocked": [
-      0,
-      3
-     ]
-    },
-    "poznamka": "sloty nikde nezapísané, predpoklad blok. 0 a 3"
-   }
-  },
-  {
-   "id": "brigadnik",
-   "nazov": "Brigádnik",
-   "druh": "Občan",
-   "kopie": 2,
-   "zdroj_akcii": "4: nová (rezerva ide do sady); 12.1: vľavo + Pakt",
-   "variantov": 4,
-   "lava": {
-    "akcie": {
-     "Robota": 1,
-     "Cigareta": 1,
-     "Rana": 1,
-     "Pakt": 1
-    },
-    "blocked": [],
-    "allowed": {
-     "0": [
-      "Cigareta"
-     ],
-     "3": [
-      "Pakt"
-     ]
-    },
-    "rozlozeni": 2
-   },
-   "prava": {
-    "akcie": {
-     "Robota": 1,
-     "PoškodeniePečene": 1,
-     "Obmedzenie": 1
-    },
-    "blocked": [
-     0
-    ],
-    "allowed": {
-     "3": [
-      "Obmedzenie"
-     ]
-    },
-    "rozlozeni": 2
-   },
-   "pred": {
-    "variantov": 4,
-    "lava": {
-     "blocked": [],
-     "allowed": {
-      "0": [
-       "Robota"
-      ],
-      "1": [
-       "Cigareta",
-       "Rana"
-      ],
-      "2": [
-       "Cigareta",
-       "Rana"
-      ],
-      "3": [
-       "Pakt"
-      ]
-     }
-    },
-    "prava": {
-     "blocked": [
-      0
-     ],
-     "allowed": {
-      "1": [
-       "Robota"
-      ],
-      "2": [
-       "PoškodeniePečene",
-       "Obmedzenie"
-      ],
-      "3": [
-       "PoškodeniePečene",
-       "Obmedzenie"
-      ]
-     }
-    }
-   }
-  },
-  {
    "id": "masiar",
    "nazov": "Mäsiar",
    "druh": "Občan",
@@ -2520,15 +2303,14 @@
    "nazov": "Kulturista",
    "druh": "Občan",
    "kopie": 2,
-   "zdroj_akcii": "4: nová",
+   "zdroj_akcii": "4: nová; E3: Petelica ×2 / Dlh ×2",
    "variantov": 6,
    "lava": {
     "akcie": {
-     "Petelica": 1
+     "Petelica": 2
     },
     "blocked": [
      0,
-     2,
      3
     ],
     "rozlozeni": 1
@@ -2545,7 +2327,6 @@
     "lava": {
      "blocked": [
       0,
-      2,
       3
      ]
     },
@@ -2583,50 +2364,6 @@
      2
     ],
     "rozlozeni": 3
-   },
-   "pred": {
-    "variantov": 4,
-    "lava": {
-     "blocked": [
-      0,
-      3
-     ]
-    },
-    "prava": {
-     "blocked": [
-      0,
-      3
-     ]
-    }
-   }
-  },
-  {
-   "id": "oslavenec",
-   "nazov": "Oslávenec",
-   "druh": "Občan",
-   "kopie": 2,
-   "zdroj_akcii": "4: nová",
-   "variantov": 4,
-   "lava": {
-    "akcie": {
-     "Poldeci": 1,
-     "Cigareta": 1
-    },
-    "blocked": [
-     0,
-     2
-    ],
-    "rozlozeni": 2
-   },
-   "prava": {
-    "akcie": {
-     "Rana": 1
-    },
-    "blocked": [
-     0,
-     3
-    ],
-    "rozlozeni": 2
    },
    "pred": {
     "variantov": 4,
@@ -3200,32 +2937,32 @@
    }
   },
   "pred": {
-   "kariet": 56,
+   "kariet": 51,
    "obsadenost": {
     "lava": [
-     21.417,
-     39.917,
-     33.417,
-     11.25
+     20.417,
+     34.917,
+     29.417,
+     10.25
     ],
     "prava": [
-     19.667,
-     37.833,
-     34.5,
-     19
+     17.667,
+     33.833,
+     32.5,
+     18
     ],
     "akcii": [
-     106,
-     111
+     95,
+     102
     ]
    },
    "druhy": {
     "Petelica": {
-     "spolu": 6,
+     "spolu": 7,
      "lava": [
       0,
       1.5,
-      0.5,
+      1.5,
       0
      ],
      "prava": [
@@ -3251,22 +2988,22 @@
      ]
     },
     "Rana": {
-     "spolu": 19,
+     "spolu": 16,
      "lava": [
       0.5,
+      1,
       1.5,
-      2,
       1
      ],
      "prava": [
-      3,
-      5,
+      2.5,
       4,
+      3.5,
       2
      ]
     },
     "PoškodeniePečene": {
-     "spolu": 25,
+     "spolu": 24,
      "lava": [
       1,
       3.5,
@@ -3276,16 +3013,16 @@
      "prava": [
       1,
       2.5,
-      6.5,
-      4
+      6,
+      3.5
      ]
     },
     "Poldeci": {
-     "spolu": 13,
+     "spolu": 12,
      "lava": [
       3,
-      4.5,
-      2,
+      4,
+      1.5,
       0.5
      ],
      "prava": [
@@ -3311,11 +3048,11 @@
      ]
     },
     "Povera": {
-     "spolu": 17,
+     "spolu": 16,
      "lava": [
       1.5,
-      2.5,
-      2.5,
+      2,
+      2,
       0.5
      ],
      "prava": [
@@ -3326,7 +3063,7 @@
      ]
     },
     "Viera": {
-     "spolu": 16,
+     "spolu": 14,
      "lava": [
       2.833,
       3.333,
@@ -3334,18 +3071,18 @@
       0.5
      ],
      "prava": [
-      3,
-      3.167,
+      2,
+      2.167,
       1.333,
       0.5
      ]
     },
     "Pohoršenie": {
-     "spolu": 15,
+     "spolu": 14,
      "lava": [
       1,
-      2.5,
-      2.5,
+      2,
+      2,
       1
      ],
      "prava": [
@@ -3356,11 +3093,11 @@
      ]
     },
     "Cigareta": {
-     "spolu": 24,
+     "spolu": 20,
      "lava": [
       2.5,
-      6,
-      4.5,
+      4,
+      2.5,
       1
      ],
      "prava": [
@@ -3371,16 +3108,16 @@
      ]
     },
     "Robota": {
-     "spolu": 11,
+     "spolu": 7,
      "lava": [
+      0.75,
       1.75,
-      2.75,
-      2.25,
+      1.25,
       0.25
      ],
      "prava": [
       0.5,
-      2,
+      1,
       1,
       0.5
      ]
@@ -3401,7 +3138,7 @@
      ]
     },
     "Obmedzenie": {
-     "spolu": 7,
+     "spolu": 5,
      "lava": [
       2,
       0.5,
@@ -3410,9 +3147,9 @@
      ],
      "prava": [
       0.5,
-      2,
-      1,
-      0.5
+      1.5,
+      0,
+      0
      ]
     },
     "Vízia": {
@@ -3431,7 +3168,7 @@
      ]
     },
     "Posilnenie": {
-     "spolu": 4,
+     "spolu": 3,
      "lava": [
       0,
       0.5,
@@ -3439,19 +3176,19 @@
       0.5
      ],
      "prava": [
+      0,
       0.5,
-      1,
       0.5,
       0
      ]
     },
     "Pakt": {
-     "spolu": 3,
+     "spolu": 2,
      "lava": [
       0,
       0,
       1,
-      2
+      1
      ],
      "prava": [
       0,
@@ -3463,32 +3200,32 @@
    }
   },
   "po": {
-   "kariet": 56,
+   "kariet": 51,
    "obsadenost": {
     "lava": [
-     26.25,
-     26.25,
-     26.917,
-     26.583
+     23.25,
+     23.75,
+     24.417,
+     23.583
     ],
     "prava": [
-     27.917,
-     27.417,
-     27.917,
-     27.75
+     25.417,
+     24.917,
+     24.917,
+     26.75
     ],
     "akcii": [
-     106,
-     111
+     95,
+     102
     ]
    },
    "druhy": {
     "Petelica": {
-     "spolu": 6,
+     "spolu": 7,
      "lava": [
       0,
       1,
-      0.5,
+      1.5,
       0.5
      ],
      "prava": [
@@ -3514,22 +3251,22 @@
      ]
     },
     "Rana": {
-     "spolu": 19,
+     "spolu": 16,
      "lava": [
       1.333,
-      1.333,
-      1.333,
+      0.833,
+      0.833,
       1
      ],
      "prava": [
-      3.833,
-      3.167,
-      3.5,
-      3.5
+      2.833,
+      2.167,
+      3,
+      4
      ]
     },
     "PoškodeniePečene": {
-     "spolu": 25,
+     "spolu": 24,
      "lava": [
       2.833,
       2.5,
@@ -3538,18 +3275,18 @@
      ],
      "prava": [
       3.25,
-      3.75,
-      3.833,
+      3.25,
+      3.333,
       3.167
      ]
     },
     "Poldeci": {
-     "spolu": 13,
+     "spolu": 12,
      "lava": [
       2.5,
+      2,
       2.5,
-      2.5,
-      2.5
+      2
      ],
      "prava": [
       0.667,
@@ -3574,11 +3311,11 @@
      ]
     },
     "Povera": {
-     "spolu": 17,
+     "spolu": 16,
      "lava": [
-      1.917,
+      1.417,
       1.5,
-      1.833,
+      1.333,
       1.75
      ],
      "prava": [
@@ -3589,26 +3326,26 @@
      ]
     },
     "Viera": {
-     "spolu": 16,
+     "spolu": 14,
      "lava": [
       2.25,
-      2,
-      2,
+      2.5,
+      1.5,
       1.75
      ],
      "prava": [
-      1.833,
-      2.167,
-      1.917,
-      2.083
+      1.333,
+      1.667,
+      1.417,
+      1.583
      ]
     },
     "Pohoršenie": {
-     "spolu": 15,
+     "spolu": 14,
      "lava": [
-      2.083,
       1.583,
-      1.75,
+      1.583,
+      1.25,
       1.583
      ],
      "prava": [
@@ -3619,12 +3356,12 @@
      ]
     },
     "Cigareta": {
-     "spolu": 24,
+     "spolu": 20,
      "lava": [
-      3.667,
+      2.167,
+      1.833,
       3.333,
-      3.333,
-      3.667
+      2.667
      ],
      "prava": [
       2.5,
@@ -3634,17 +3371,17 @@
      ]
     },
     "Robota": {
-     "spolu": 11,
+     "spolu": 7,
      "lava": [
-      1.75,
-      1.75,
-      1.75,
-      1.75
+      1.25,
+      0.75,
+      0.75,
+      1.25
      ],
      "prava": [
       1,
-      1,
-      1,
+      0.5,
+      0.5,
       1
      ]
     },
@@ -3664,7 +3401,7 @@
      ]
     },
     "Obmedzenie": {
-     "spolu": 7,
+     "spolu": 5,
      "lava": [
       0.833,
       0.833,
@@ -3672,10 +3409,10 @@
       0.5
      ],
      "prava": [
+      0,
       1,
-      1,
-      1,
-      1
+      0.5,
+      0.5
      ]
     },
     "Vízia": {
@@ -3694,7 +3431,7 @@
      ]
     },
     "Posilnenie": {
-     "spolu": 4,
+     "spolu": 3,
      "lava": [
       0.5,
       0.5,
@@ -3704,17 +3441,17 @@
      "prava": [
       0.5,
       0.5,
-      0.5,
-      0.5
+      0,
+      0
      ]
     },
     "Pakt": {
-     "spolu": 3,
+     "spolu": 2,
      "lava": [
       0,
-      0,
-      1,
-      2
+      0.5,
+      0.5,
+      1
      ],
      "prava": [
       0,
