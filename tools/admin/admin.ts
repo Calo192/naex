@@ -5,7 +5,8 @@
 // Agent má vlastný účet „Admin (AI)“ s úrovňou subadmin — tvorba kariet áno,
 // meniť úrovne účtov nie. Pri prvom použití ho nástroj založí a povýši
 // heslom admina z .env (NAEX_ADMIN_LOGIN / NAEX_ADMIN_HESLO). Heslo účtu je
-// v playtest/ucty.json (mimo gitu). Web: --url, NAEX_WEB_URL, inak :8787.
+// v spoločnom súbore hesiel AI účtov (tools/playtest/ucty.ts, mimo gitu) a účet je
+// jediný — bez hesla nástroj skončí, ai-admin-2 nezaloží. Web: --url, NAEX_WEB_URL, inak :8787.
 //
 // Použitie (z koreňa repozitára):
 //   node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz> [argumenty]

@@ -177,7 +177,7 @@ Vieš len to, čo by vedel skúsený hráč pri stole:
 - svoj zošit skúseností a spoločný zošit (`tools/playtest/skusenosti/`).
 
 **Nikdy** nečítaj: `hra.json`, priečinok druhého hráča (`hracX/`), `snimky/`,
-`server-data/`, `server.log`, `playtest/ucty.json`, ani kód servera či jadra
+`server-data/`, `server.log`, `playtest/ucty.json`, `naex-ucty.json`, ani kód servera či jadra
 (`packages/`, `apps/`), ani zošity skúseností iných postáv. Nepoužívaj
 klienta za druhého hráča. Nič v repozitári nemeň, ani zošity skúseností. **Pomocné súbory a skripty ukladaj len do svojho priečinka relácie
 (`R/hracN/`)** — nikdy do `/tmp`, `%TEMP%` ani iných spoločných miest: druhý agent
