@@ -8,6 +8,8 @@
 //                  takže beží počítadlo a rekapitulácia
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
 //   &stop=kolo     začiatok kola &i=k
+//   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
+//                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &exekutor=1    hráčovi ?ja pred prvou bitkou pridá Záhradkára a 10 priznaných Dlhov
 //                  (voľba Záhradkára pri exekúcii)
 
@@ -50,8 +52,19 @@ function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: 
 }
 
 function odohraj(data: GameData): Odohrane {
+  const seed = Number(q().get("seed") ?? "8");
+  if (q().get("stop") !== "zaverecna") return odohrajSeed(data, seed).odohrane;
+  // Súperova Záverečná nepadne v každej partii — skúša sa od zadaného seedu ďalej.
+  for (let pokus = 0; pokus < 40; pokus++) {
+    const x = odohrajSeed(data, seed + pokus);
+    if (x.najdene) return x.odohrane;
+  }
+  return odohrajSeed(data, seed).odohrane;
+}
+
+function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohrane; readonly najdene: boolean } {
   const p = q();
-  const seed = Number(p.get("seed") ?? "8");
+  const najdene = (odohrane: Odohrane) => ({ odohrane, najdene: true });
   const stop = p.get("stop") ?? "finale";
   const i = Number(p.get("i") ?? "0");
   const karty = Number(p.get("karty") ?? "3");
@@ -66,20 +79,37 @@ function odohraj(data: GameData): Odohrane {
       exekucia = false;
     }
     if (stop === "finale" && s.ciel?.typ === "finale" && s.faza === "zhromazdenie" && s.strany[0].length + s.strany[1].length >= karty && naTahu(s) === ja)
-      return { zaciatok: s, dohraj: [] };
-    if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return { zaciatok: s, dohraj: [] };
+      return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
     const t = tahy(data, s, rng, n);
     if (t === null) break;
     rng = t.rng;
     const { state: po, events } = apply(data, s, t.cmd, t.kto);
     const bitka = events.some((e) => e.type === "bitkaVysledok");
-    if (stop === "bitka" && bitka && bitiek++ === i) return { zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] };
-    if (stop === "koniec" && po.koniec !== null) return { zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] };
+    if (stop === "bitka" && bitka && bitiek++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
+    if (stop === "koniec" && po.koniec !== null) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
+    const superova = s.strany.findIndex((strana) => strana.some((pl) => pl.zaverecna === true && pl.playedBy !== ja));
+    // S &dalsia=1 len na hráčovej strane — tak ako v hlásení Michala 2026-10-27.
+    if (stop === "zaverecna" && superova >= 0 && (p.get("dalsia") !== "1" || superova === ja) && s.faza === "pitka" && po.faza === "zhromazdenie") {
+      const dohraj: Krok[] = [{ stav: s, cmd: t.cmd, kto: t.kto }];
+      if (p.get("dalsia") !== "1") return najdene({ zaciatok: s, dohraj });
+      // Ďalej až po súperovu novú Záverečnú na tú istú stranu; inak sa ukážka hľadá ďalej.
+      let x = po;
+      let r2 = rng;
+      for (let k = 0; k < 40 && x.faza === "zhromazdenie"; k++) {
+        const u = tahy(data, x, r2, n + 1 + k);
+        if (u === null) break;
+        r2 = u.rng;
+        dohraj.push({ stav: x, cmd: u.cmd, kto: u.kto });
+        x = apply(data, x, u.cmd, u.kto).state;
+        if (x.strany[superova]?.some((pl) => pl.zaverecna === true && pl.playedBy !== ja)) return najdene({ zaciatok: s, dohraj });
+      }
+    }
     // Zahradkár: zastaví sa, keď exekúcia čaká na hráčovu voľbu.
-    if (p.get("exekutor") === "1" && po.bitkaStav?.krok === "exekutor" && po.bitkaStav.caka === ja) return { zaciatok: po, dohraj: [] };
+    if (p.get("exekutor") === "1" && po.bitkaStav?.krok === "exekutor" && po.bitkaStav.caka === ja) return najdene({ zaciatok: po, dohraj: [] });
     s = po;
   }
-  return { zaciatok: s, dohraj: [] };
+  return { odohrane: { zaciatok: s, dohraj: [] }, najdene: stop !== "zaverecna" };
 }
 
 export function UkazkaStola() {
