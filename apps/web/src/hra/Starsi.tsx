@@ -9,6 +9,7 @@ import type { CSSProperties } from "react";
 import type { ClientState, GameData, PlayerId } from "@naex/core";
 import { NAZVY_ZON, STUPNICA_ZONY, priazenSila, strachZ, prahVydesenia, vydesil } from "@naex/core";
 import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
+import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
 import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
 
@@ -23,6 +24,8 @@ export interface DlazdicaStarsichProps {
 export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsichProps) {
   const ja = p === view.ja;
   const { priazen, strach, stlpce } = stupienkyStarsich(view.starsi, p);
+  // Výkričníky pred špakmi za strach: najvyšší stupeň, v akom sa hráča niekto bojí (ako v línii).
+  const najStrach = Math.max(0, ...stlpce.filter((s) => s.smer === "dole").map((s) => s.zona));
   const posuny = starsi.posuny ?? 0;
   // Vydesení (Michal 2026-10-27, dizajn timeline-lista A): z osi do dlaždice — každému jeho číslo.
   const vyd = view.starsi.filter((e) => vydesil(e, p)).length;
@@ -64,6 +67,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
       <span className="zdroj-pod">
         <span>
           {/* v6.1: strach platí len víťazovi; koľko starších sa bojí, ukazujú stĺpčeky dole a nápoveda (na 1366 sa oboje nezmestí). */}
+          {strach > 0 && <ZnackaStrachu uroven={najStrach} trieda={ja ? "moje" : "superove"} />}
           {strach > 0 ? `+${zaStarsich} ${ja ? "ak vyhráš" : "ak vyhrá"}` : `nikto sa ${ja ? "ťa" : "ho"} nebojí`}
           {strach > 0 && <IkonaSpaku />}
         </span>
@@ -121,7 +125,6 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
             role="listitem"
             tabIndex={0}
             className={`zdroj starsi-dlazdica ${smer}`}
-            style={{ "--farba-zony": farbaZony(zona) } as CSSProperties}
             title={
               popis +
               (patron === null ? "" : ` Patrón: ${patron === view.ja ? "ty" : "súper"}.`) +
@@ -129,7 +132,8 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
             }
           >
             <span className="zdroj-nazov">
-              <i className="ls-znacka" aria-hidden="true" />
+              {/* Výkričníky len pri tom, kto sa hráča bojí — v jeho farbe; priazeň nesie ♥ v čísle. */}
+              {smer === "dole" && <ZnackaStrachu uroven={zona} trieda={ja ? "moje" : "superove"} />}
               <span className="starsi-meno">{meno}</span>
             </span>
             <span className="zdroj-hodnota">

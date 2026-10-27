@@ -1,0 +1,23 @@
+/* Ikona strachu (sada „Výkričníky“, Michal 2026-10-27): farbu nesie hráč, ktorého
+   sa starší bojí — rodič dá color, alebo trieda moje / superove. Nikdy nie chybová
+   červená: výkričník v --cervena-text by sa čítal ako hláška webu. */
+.ikona-strachu {
+  display: inline-block;
+  flex: none;
+  /* 16 px je najmenšia veľkosť z návrhu, pri ktorej sa dajú výkričníky spočítať.
+     Záporný okraj: v riadku drobného textu ikona nezväčší výšku riadku. */
+  width: 16px;
+  height: 16px;
+  margin-block: -3px;
+  vertical-align: -0.3em;
+  fill: currentColor;
+  overflow: visible;
+}
+
+.ikona-strachu.moje {
+  color: var(--ja);
+}
+
+.ikona-strachu.superove {
+  color: var(--su);
+}

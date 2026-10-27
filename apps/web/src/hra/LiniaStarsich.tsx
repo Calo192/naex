@@ -29,6 +29,7 @@ import type { IkonaBodovania } from "@naex/tvorba";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE, znamienko } from "./Scorecard.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
+import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
 
 /** Jeden smer posunu markera v kroku (Pohoršenie v5: k súperovi alebo k sebe). */
 export interface VolbaPosunu {
@@ -125,16 +126,18 @@ function vztah(elder: ElderState, marker: MarkerPos) {
   return { priazen: priazenHraca(e), sila: priazenSila(e), obavany: obavanyHrac(e), uroven: STUPNICA_ZONY[marker] };
 }
 
+/** Koniec stupnice hráča p: ♥, ak mu starší prejavuje priazeň, výkričníky, ak sa ho bojí. */
+function KoniecStupnice({ v, p }: { readonly v: ReturnType<typeof vztah>; readonly p: PlayerId }) {
+  if (v.priazen === p) return <b className="ls-koniec-priazen">♥</b>;
+  if (v.obavany === p) return <ZnackaStrachu uroven={v.uroven} />;
+  return null;
+}
+
 /**
  * Farba zóny podľa úrovne 0–3 (farby stupnice sú pevné, ako na tlačenom scorecarde).
  * FARBY_STUPNICE tvorcu má 9 polí (v5); v6 má stupnica 7 polí — farba sa berie podľa zóny.
  */
 export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
-
-/** Farebný štvorček zóny. */
-function ZnackaZony({ uroven }: { readonly uroven: number }) {
-  return <i className="ls-znacka" style={{ background: farbaZony(uroven) }} aria-hidden="true" />;
-}
 
 export function LiniaStarsich({
   starsi,
@@ -294,8 +297,13 @@ function LegendaStupnice({
   return (
     <div className="ls-legenda" id="ls-legenda" role="dialog" aria-label="Ako čítať stupnicu" ref={ref}>
       <p>
-        <b>Tvoja polovica je vždy vľavo</b> (◀ ty), {mena[su]} vpravo. Zóny od stredu: Neutralita, <ZnackaZony uroven={1} /> Znepokojenie,{" "}
-        <ZnackaZony uroven={2} /> Strach, <ZnackaZony uroven={3} /> Vydesenie.
+        <b>Tvoja polovica je vždy vľavo</b> (◀ ty), {mena[su]} vpravo. Zóny od stredu: sivá Neutralita, žltá Znepokojenie, oranžová Strach, červená
+        Vydesenie.
+      </p>
+      <p>
+        <b>Výkričníky</b> ukazujú, koho sa starší bojí — sú v jeho farbe: <ZnackaStrachu uroven={1} trieda="moje" /> Znepokojenie,{" "}
+        <ZnackaStrachu uroven={2} trieda="moje" /> Strach, <ZnackaStrachu uroven={3} trieda="moje" /> Vydesenie (tu sa bojí teba). Na druhom konci
+        stupnice je ♥ toho, komu prejavuje priazeň.
       </p>
       <p>
         <b>♥ Priazeň</b> má ten, na koho polovici marker leží — bonus počas hry, sila +1 / +2 / +3 podľa zóny.
@@ -406,10 +414,10 @@ function ScorecardVLinii({
     >
       <div className="ls-sc-hlava" {...lupaVKroku}>
         <b className="ls-meno">{s.meno}</b>
-        {/* Špaky za strach po bitke (v6) — len číslo a ohorok, meno staršieho má prednosť (UI U02). */}
+        {/* Špaky za strach po bitke (v6) — výkričníky, číslo a ohorok, meno staršieho má prednosť (UI U02). */}
         {body !== undefined && boduje !== null && textTeraz !== null && (
           <span className={`ls-boduje ${boduje === ja ? "moje" : "superove"}`} title={vysvetlenieSpakov(body, ja, mena)} aria-label={`po bitke ${textTeraz} š.`}>
-            +{body.spaky[boduje]}
+            <ZnackaStrachu uroven={teraz.uroven} />+{body.spaky[boduje]}
             <IkonaSpaku />
           </span>
         )}
@@ -418,7 +426,12 @@ function ScorecardVLinii({
       <div className="ls-telo">
         <span className="ls-portret">
           {s.obrazok !== null ? <img src={s.obrazok} alt="" draggable={false} /> : <span className="ls-portret-prazdny" />}
-          {vydeseny && <span className={`ls-peciatka ${teraz.obavany === ja ? "moja" : "superova"}`}>vydesený</span>}
+          {/* Pečiatka bez textu (Michal 2026-10-27): !!! atramentom toho, koho sa bojí. */}
+          {vydeseny && (
+            <span className={`ls-peciatka ${teraz.obavany === ja ? "moja" : "superova"}`} role="img" aria-label={`vydesený — bojí sa ${koho(teraz.obavany ?? su)}`}>
+              <VykricnikyPeciatky />
+            </span>
+          )}
           {s.patron !== null && (
             <span className="ls-patron">
               {s.patron.kto === ja ? "v tvojej ruke" : `v ruke: ${kto(s.patron.kto)}`} · {s.patron.kto === ja ? "súper" : "ty"} +{s.patron.pohorsenia} Pohoršenia
@@ -434,9 +447,14 @@ function ScorecardVLinii({
         priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"}
         hranice={hraniceZon}
       />
+      {/* Na konci stupnice zvýhodneného hráča ♥, na konci obávaného výkričníky — oboje v jeho farbe. */}
       <span className="ls-strany" aria-hidden="true">
-        <span className="moje">◀ ty</span>
-        <span className="superove">{mena[su]} ▶</span>
+        <span className="moje">
+          ◀ <KoniecStupnice v={zobraz} p={ja} /> <span className="ls-strany-meno">ty</span>
+        </span>
+        <span className="superove">
+          <span className="ls-strany-meno">{mena[su]}</span> <KoniecStupnice v={zobraz} p={su} /> ▶
+        </span>
       </span>
       <span className={`ls-stav${poPosune !== null ? " po-posune" : ""}`}>
         <span className={`ls-cip priazen ${zobraz.priazen === null ? "" : zobraz.priazen === ja ? "moja" : "superova"}`} title={`${sc.nazov}: ${ucinok.cely}`}>
@@ -444,7 +462,7 @@ function ScorecardVLinii({
           <span className="ls-cip-dlhe"> · {zobraz.sila > 0 ? UCINOK_KRATKO[fav](zobraz.sila) : sc.nazov}</span>
         </span>
         <span className={`ls-cip strach${zobraz.obavany === null ? " nikoho" : zobraz.obavany === ja ? " moj" : " superov"}`} title={textStrachu(zobraz)}>
-          {zobraz.uroven > 0 && <ZnackaZony uroven={zobraz.uroven} />}
+          <ZnackaStrachu uroven={zobraz.obavany === null ? 0 : zobraz.uroven} />
           {zobraz.obavany === null ? (
             "nikoho sa nebojí"
           ) : (
@@ -695,15 +713,19 @@ export function LupaStarsieho({
             hranice={false}
           />
           <span className="ls-strany">
-            <span className="moje">◀ ty</span>
-            <span className="superove">{mena[su]} ▶</span>
+            <span className="moje">
+              ◀ <KoniecStupnice v={v} p={ja} /> <span className="ls-strany-meno">ty</span>
+            </span>
+            <span className="superove">
+              <span className="ls-strany-meno">{mena[su]}</span> <KoniecStupnice v={v} p={su} /> ▶
+            </span>
           </span>
           <p className={`lst-priazen ${v.priazen === null ? "" : v.priazen === ja ? "moja" : "superova"}`} title={UCINOK_PRIAZNE[fav](v.sila > 0 ? v.sila : 1)}>
             <b>♥ {v.priazen === null ? "nikto" : `${kto(v.priazen)} +${v.sila}`}:</b> {UCINOK_KRATKO[fav](v.sila > 0 ? v.sila : 1)}
             {v.sila === 0 && <span className="lst-tlmene"> (pri +1)</span>}
           </p>
           <p>
-            {v.uroven > 0 && <ZnackaZony uroven={v.uroven} />}
+            <ZnackaStrachu uroven={v.obavany === null ? 0 : v.uroven} trieda={v.obavany === ja ? "moje" : "superove"} />
             {v.obavany === null ? "Nikoho sa nebojí (Neutralita)." : `Bojí sa ${v.obavany === ja ? "teba" : mena[su]} · ${NAZVY_ZON[v.uroven]}`}
           </p>
           {stopa !== undefined && (

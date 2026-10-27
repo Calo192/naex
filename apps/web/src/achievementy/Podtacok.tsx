@@ -4,6 +4,7 @@
 // tajný „???“. Názov po obvode len vo veľkých veľkostiach (88 px a viac).
 
 import { useId } from "react";
+import { PRIESVITNOST_PODKLADU, cestyStrachu } from "../hra/tvaryStrachu.ts";
 import { IKONY } from "../karta/ikony.ts";
 import "./podtacok.css";
 
@@ -14,6 +15,13 @@ const FARBY: Readonly<Record<RankPodtacka | "tajny", { readonly okraj: string; r
   striebro: { okraj: "#9aa3ab", svetly: "#e4e9ee", tmavy: "#5b636b" },
   zlato: { okraj: "#d4a017", svetly: "#ffe08a", tmavy: "#8a6208" },
   tajny: { okraj: "#6b6359", svetly: "#9a9086", tmavy: "#3f3933" },
+};
+
+/** Zónové podmienky kreslí podtácok výkričníkmi z hry (mriežka 100 ako piktogramy akcií), nie nahratou ikonou. */
+const IKONY_STRACHU: Readonly<Record<string, readonly { d: string; evenOdd: boolean; podklad?: boolean }[]>> = {
+  "podmienka:znepokojenie": cestyStrachu(1, 100 / 24),
+  "podmienka:strach": cestyStrachu(2, 100 / 24),
+  "podmienka:vydesenie": cestyStrachu(3, 100 / 24),
 };
 
 export const HVIEZDY_RANKU: Readonly<Record<RankPodtacka, number>> = { bronz: 1, striebro: 2, zlato: 3 };
@@ -72,7 +80,7 @@ export function Podtacok({ rank, ikona, obrazok = null, nazov, ziskany, tajny = 
   const skryty = tajny && !ziskany;
   const f = FARBY[skryty ? "tajny" : rank];
   const kluc = ikona?.startsWith("akcia:") ? ikona.slice(6) : ikona;
-  const cesty = kluc === null ? undefined : (IKONY as Readonly<Record<string, readonly { d: string; evenOdd: boolean }[]>>)[kluc];
+  const cesty = kluc === null ? undefined : (IKONY_STRACHU[kluc] ?? (IKONY as Readonly<Record<string, readonly { d: string; evenOdd: boolean; podklad?: boolean }[]>>)[kluc]);
   const napis = velkost >= NAPIS_OD;
   const textNapisu = skryty ? "TAJNÝ" : nazov;
   const rozmer = rozmerNapisu(textNapisu);
@@ -137,7 +145,7 @@ export function Podtacok({ rank, ikona, obrazok = null, nazov, ziskany, tajny = 
       ) : cesty !== undefined ? (
         <g className="podtacok-piktogram" transform={napis ? "translate(64 60) scale(0.72)" : "translate(57 55) scale(0.86)"}>
           {cesty.map((c, i) => (
-            <path key={i} d={c.d} fillRule={c.evenOdd ? "evenodd" : "nonzero"} />
+            <path key={i} d={c.d} fillRule={c.evenOdd ? "evenodd" : "nonzero"} fillOpacity={c.podklad === true ? PRIESVITNOST_PODKLADU : undefined} />
           ))}
         </g>
       ) : (
