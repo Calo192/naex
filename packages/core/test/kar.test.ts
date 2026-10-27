@@ -3,7 +3,8 @@
 // „pri vdove“ a „pri koláčoch“. Lokalita je vo zverejnenej sade v11 (cards.json).
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6: Kar v7 má iný efekt (doliatie, test v7-karty) — tu sa stráži krok Kar v bitke starej sady.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard } from "../src/index.ts";

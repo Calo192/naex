@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### fero-1 · Keď mám pred finále 8 alebo viac cigariet, minem ich (doliatie poldeci, barter, šenok, fajčenie), nehromadím, lebo cigarety po finále nemajú žiadnu hodnotu.
-- stav: overená
+- stav: neoverená
 - pravidlá: v6
 - potvrdenia: 1
 - vyvrátenia: 0

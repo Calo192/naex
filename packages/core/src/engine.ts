@@ -3598,7 +3598,7 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       const nova = posunMarker(elder, kSebe ? p : opp);
       need(nova !== null, "Marker je na kraji stupnice.");
       h.cigarety -= VILA_CENA;
-      zapisPosun(s, events, { elderId: elder.elderId, z: elder.marker, na: nova, zdroj: "pohorsenie", kto: p });
+      zapisPosun(s, events, { elderId: elder.elderId, z: elder.marker, na: nova, zdroj: "kseft", kto: p });
       elder.marker = nova;
       events.push({ type: "log", text: `Predsedova vila: hráč ${p + 1} platí ${cigariet(VILA_CENA)} — ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "k súperovi")}` });
       skontrolujVydesenie(s, data, events);

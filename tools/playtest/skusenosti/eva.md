@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### eva-1 · Keď súper pred bitkou drží v ruke oveľa viac kariet ako ja, nepasujem kvôli cigaretám, lebo doloží telá a prehodí prevahu.
-- stav: overená
+- stav: neoverená
 - pravidlá: v6
 - potvrdenia: 2
 - vyvrátenia: 0

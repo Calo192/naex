@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### simon-1 · Keď ide posledná bitka partie a starší mi prejavuje priazeň, beriem patronát, lebo bolestné (poldeci natrvalo) po poslednej bitke nič nestojí.
-- stav: overená
+- stav: neoverená
 - pravidlá: v6
 - potvrdenia: 2
 - vyvrátenia: 0
