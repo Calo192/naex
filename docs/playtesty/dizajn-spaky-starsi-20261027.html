@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dizajn: Špaky a Starší na stole (UI) — 2026-10-27</title>
+<style>
+:root {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21;
+  --okraj: #3d3229; --okraj-svetly: #57483a; --text: #f1e8d8; --tlmeny: #b6a790; --slaby-text: #9d8f7b;
+  --akcent: #e9ad45; --akcent-tmavy: #b9802a; --akcent-svetly: #ffd08a; --na-akcente: #2b1b03;
+  --cervena: #d0563f; --cervena-text: #e5735c; --zelena: #7cbf74; --info: #8fc3e0;
+  --ja: #5cc0cf; --ja-tmava: #1d3b40; --su: #e0805f; --su-tmava: #43261d;
+  --z1: #facc15; --z2: #f97316; --z3: #dc2626; --z0: #e5e7eb;
+  --nadpis: "Bitter", Georgia, serif; --pismo: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--pismo); }
+main { max-width: 1240px; margin: 0 auto; padding: 24px 20px 80px; }
+h1, h2, h3 { font-family: var(--nadpis); line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 2.6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.55rem; margin: 48px 0 12px; padding-top: 10px; border-top: 1px solid var(--okraj); }
+h3 { font-size: 1.2rem; margin: 22px 0 8px; }
+p, li { max-width: 78ch; }
+a { color: var(--akcent-svetly); }
+code { font-size: 0.9em; background: var(--plocha-2); padding: 1px 5px; border-radius: 4px; }
+.meta { color: var(--tlmeny); font-size: 0.92rem; }
+.verdikt { background: var(--plocha); border-left: 4px solid var(--akcent); padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; }
+.verdikt p { margin: 6px 0; }
+nav.obsah { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.92rem; margin: 10px 0 0; }
+.panel { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 16px 18px; }
+figure { margin: 0; }
+figcaption { color: var(--tlmeny); font-size: 0.88rem; margin-top: 6px; }
+.snimky { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; }
+.snimky img, .pred img { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--okraj); display: block; }
+.tlacidlo, .filter button, .tab, .prepinac button {
+  font: 600 0.9rem var(--pismo); color: var(--text); background: var(--plocha-2); border: 1px solid var(--okraj-svetly);
+  border-radius: 999px; padding: 6px 14px; cursor: pointer; min-height: 36px;
+}
+.filter button[aria-pressed="true"], .prepinac button[aria-pressed="true"] { background: var(--akcent); color: var(--na-akcente); border-color: var(--akcent); }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--akcent-svetly); outline-offset: 2px; }
+table.audit { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+table.audit th, table.audit td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--okraj); }
+table.audit th { color: var(--tlmeny); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.zav { display: inline-block; font-size: 0.78rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.zav.vysoka { background: #5a1f15; color: #ffb4a5; }
+.zav.stredna { background: #4d3a12; color: #ffd08a; }
+.zav.nizka { background: #26323a; color: #b9dcef; }
+.filter { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 12px; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.tab[aria-selected="true"] { background: var(--akcent); color: var(--na-akcente); border-color: var(--akcent); }
+.karta-navrhu { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.fakty { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 8px 0; }
+.fakt { background: var(--plocha-2); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; }
+.fakt b { display: block; color: var(--tlmeny); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+.prepinac { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 6px 0 10px; }
+.prepinac span { color: var(--tlmeny); font-size: 0.85rem; margin-right: 4px; }
+.pozn { color: var(--tlmeny); font-size: 0.88rem; }
+.odporucanie ol li { margin: 6px 0; }
+.stitok-ok { color: var(--zelena); font-weight: 700; }
+
+/* ================= MOCKUP STOLA (vždy tmavá schéma Krčma) ================= */
+.mock {
+  position: relative; overflow: hidden; border-radius: 12px; border: 1px solid var(--okraj);
+  background: var(--pozadie); color: var(--text); font: 13px/1.3 var(--pismo); padding: 8px; user-select: none;
+  --stol: color-mix(in oklab, #7dff9c 15%, var(--pozadie)); --stol-okraj: color-mix(in oklab, #7dff9c 68%, var(--pozadie));
+}
+.m-os { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 8px; padding: 4px 8px; margin-bottom: 6px; white-space: nowrap; overflow: hidden; }
+.m-os .kolo { color: var(--text); font-weight: 700; }
+.m-os .faza { background: var(--akcent); color: var(--na-akcente); font-weight: 700; padding: 1px 10px; border-radius: 3px; }
+.m-os .vpravo { margin-left: auto; display: flex; gap: 6px; }
+.m-os .vpravo span { border: 1px solid var(--okraj-svetly); border-radius: 6px; padding: 0 6px; color: var(--text); }
+.m-bar { display: flex; gap: 6px; align-items: stretch; padding: 6px; border-radius: 10px; border: 1px solid var(--okraj); }
+.m-bar.su { background: linear-gradient(90deg, var(--plocha), var(--plocha) 85%, color-mix(in srgb, var(--su) 22%, var(--plocha))); border-right: 4px solid var(--su); }
+.m-bar.ja { background: linear-gradient(90deg, color-mix(in srgb, var(--ja) 22%, var(--plocha)), var(--plocha) 18%); border-left: 4px solid var(--ja); border-color: color-mix(in srgb, var(--ja) 60%, var(--okraj)); }
+.m-hrac { display: flex; align-items: center; gap: 8px; padding: 0 6px; min-width: 150px; }
+.m-hrac.su { flex-direction: row-reverse; text-align: right; }
+.m-hrac strong { font-family: var(--nadpis); font-size: 15px; display: block; }
+.m-hrac small { color: var(--tlmeny); font-size: 11px; }
+.av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ja); flex: none; }
+.av.su { border-color: var(--su); }
+.av.mini { width: 26px; height: 26px; border-width: 2px; }
+.z {
+  flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding: 5px 8px; border-radius: 9px;
+  background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.06); position: relative;
+}
+.z .n { font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tlmeny); white-space: nowrap; }
+.z .h { font: 800 22px/1.05 var(--nadpis); font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 5px; }
+.z .h small { font-size: 12px; color: var(--tlmeny); font-weight: 700; }
+.z .p { font-size: 10.5px; color: var(--tlmeny); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.z.klik { cursor: pointer; border-color: color-mix(in srgb, var(--akcent) 35%, transparent); }
+.z.klik::after { content: ""; position: absolute; inset: auto 8px 0 8px; height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--akcent) 55%, transparent); }
+.z.klik:hover { background: color-mix(in srgb, var(--akcent) 10%, rgba(0,0,0,.28)); }
+.z.klik[aria-pressed="true"] { background: color-mix(in srgb, var(--akcent) 18%, var(--plocha-2)); border-color: var(--akcent); box-shadow: inset 0 3px 0 var(--akcent); }
+.z.klik[aria-pressed="true"]::after { display: none; }
+.z.spaky .h { color: var(--text); }
+.z.spaky.ja .h b { color: var(--ja); }
+.z.spaky.su .h b { color: var(--su); }
+.z.stary-stlaceny { background: var(--akcent) !important; color: var(--na-akcente); }
+.z.stary-stlaceny .n, .z.stary-stlaceny .p { color: var(--na-akcente); }
+.z.nova { outline: 2px dashed color-mix(in srgb, var(--akcent) 70%, transparent); outline-offset: 2px; }
+.ik { width: 26px; height: 13px; fill: var(--text); flex: none; }
+.ik.s { width: 18px; height: 9px; }
+.m-stol { position: relative; margin: 8px 0; height: 210px; border-radius: 12px; background: radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--stol) 70%, #2a5a35), var(--stol)); border: 2px solid var(--stol-okraj); display: grid; place-items: center; }
+.m-stol .linia { display: flex; gap: 8px; align-items: center; }
+.m-stol .kk { width: 64px; height: 92px; border-radius: 6px; background: linear-gradient(160deg, #3b3a52, #2a2533); border: 1px solid #5a5070; }
+.m-stol .kk.stred { width: 72px; height: 104px; border: 2px solid var(--akcent); background: linear-gradient(160deg, #4a3a22, #2b2116); display: grid; place-items: center; font: 800 11px var(--nadpis); color: var(--akcent-svetly); text-align: center; }
+.m-stol .pokyn { position: absolute; top: -1px; left: 50%; translate: -50% -50%; background: var(--plocha); border: 1px solid var(--stol-okraj); border-radius: 999px; padding: 2px 12px; font-size: 11px; color: var(--tlmeny); white-space: nowrap; }
+.m-ruka { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+.m-ruka i { width: 48px; height: 26px; border-radius: 5px 5px 0 0; background: linear-gradient(#3a3242, #2a2430); border: 1px solid #514660; border-bottom: 0; }
+.m-skryt { opacity: .35; filter: blur(1px); }
+.m-hint { position: absolute; right: 12px; bottom: 10px; font-size: 11px; color: var(--akcent-svetly); background: rgba(0,0,0,.5); padding: 3px 8px; border-radius: 6px; pointer-events: none; }
+
+/* vrstva (variant A) */
+.m-vrstva { position: absolute; inset: 0; background: rgba(10,8,6,.72); backdrop-filter: blur(2px); display: grid; place-items: center; padding: 18px; z-index: 5; }
+.m-panel { width: min(100%, 1060px); background: var(--plocha); border: 1px solid var(--okraj-svetly); border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.6); overflow: hidden; animation: vynor .18s ease-out; }
+@keyframes vynor { from { opacity: 0; transform: translateY(8px) scale(.985); } }
+@media (prefers-reduced-motion: reduce) { .m-panel, .m-pop, .m-graf { animation: none !important; } }
+.m-panel-hlava { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--okraj); }
+.m-panel-hlava h4 { margin: 0; font: 800 14px var(--nadpis); letter-spacing: .08em; text-transform: uppercase; }
+.m-panel-hlava .zavri { margin-left: auto; display: flex; gap: 8px; align-items: center; color: var(--tlmeny); font-size: 11px; }
+.kbd { border: 1px solid var(--okraj-svetly); border-radius: 4px; padding: 0 5px; font-size: 10px; color: var(--tlmeny); }
+.x { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--okraj-svetly); background: transparent; color: var(--text); cursor: pointer; font-size: 16px; line-height: 1; }
+.popolniky { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; padding: 12px 18px 6px; }
+.popolnik { display: flex; align-items: center; gap: 10px; }
+.popolnik.su { flex-direction: row-reverse; text-align: right; }
+.popolnik .av { width: 48px; height: 48px; }
+.popolnik .meno { font: 700 14px var(--nadpis); }
+.popolnik .rozpis { font-size: 11px; color: var(--tlmeny); font-variant-numeric: tabular-nums; }
+.popolnik .rozpis b { color: var(--text); }
+.popolnik .rozpis .m { color: var(--cervena-text); }
+.popolnik.zvyrazneny .meno { text-decoration: underline 2px var(--akcent); text-underline-offset: 4px; }
+.skore { font: 800 34px/1 var(--nadpis); font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 10px; }
+.skore .ja { color: var(--ja); } .skore .su { color: var(--su); } .skore .dv { color: var(--tlmeny); font-size: 22px; }
+.korok {
+  margin: 8px 14px 10px; padding: 16px 12px 12px; border-radius: 12px; display: flex; gap: 12px; justify-content: center; flex-wrap: nowrap;
+  background:
+    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--akcent-tmavy) 16%, transparent) 0 2px, transparent 3px) 0 0 / 23px 19px,
+    radial-gradient(circle at 70% 60%, color-mix(in srgb, var(--pozadie) 40%, transparent) 0 1.5px, transparent 2.5px) 0 0 / 17px 21px,
+    color-mix(in srgb, var(--akcent-tmavy) 26%, var(--plocha-2));
+  border: 3px solid color-mix(in srgb, var(--akcent-tmavy) 45%, var(--okraj));
+}
+.listok { position: relative; width: 132px; flex: none; background: var(--plocha); border-radius: 4px; padding: 10px 7px 7px; box-shadow: 0 3px 8px rgba(0,0,0,.5); transform: rotate(var(--n, 0deg)); display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.listok::before { content: ""; position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--cervena); }
+.listok.ja { border-top: 3px solid var(--ja); } .listok.su { border-top: 3px solid var(--su); }
+.listok.teraz { outline: 2px solid var(--akcent); outline-offset: 2px; }
+.listok.koniec { background: color-mix(in srgb, var(--plocha) 85%, #000); border: 1px dashed var(--okraj-svetly); }
+.listok .vitaz { display: flex; align-items: center; gap: 5px; font: 800 17px var(--nadpis); }
+.listok .lok { width: 74px; height: 50px; border-radius: 4px; object-fit: cover; border: 1px solid var(--okraj-svetly); }
+.listok .lok.finale { display: grid; place-items: center; font: 800 12px var(--nadpis); color: var(--akcent-svetly); background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--akcent) 22%, transparent), transparent 70%), var(--plocha-2); border-color: var(--akcent); }
+.listok .nazov { font-size: 12px; font-weight: 700; }
+.listok .pz { font-size: 10px; color: var(--tlmeny); }
+.uctenka { width: 100%; margin-top: 3px; padding-top: 4px; border-top: 1px dashed var(--okraj-svetly); font-size: 10.5px; font-variant-numeric: tabular-nums; display: grid; gap: 1px; }
+.uctenka .r { display: flex; justify-content: space-between; color: var(--tlmeny); }
+.uctenka .r b { color: var(--text); font-weight: 700; }
+.uctenka .r .ja { color: var(--ja); } .uctenka .r .su { color: var(--su); } .uctenka .r .m { color: var(--cervena-text); }
+.uctenka .stav { margin-top: 2px; font: 800 13px var(--nadpis); color: var(--text); }
+.uctenka .stav .ja { color: var(--ja); } .uctenka .stav .su { color: var(--su); }
+.m-pata { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 4px 18px 12px; font-size: 11.5px; color: var(--tlmeny); }
+.m-pata b { color: var(--text); }
+.cip { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 1px 8px; border: 1px solid var(--okraj-svetly); font-size: 11px; color: var(--text); background: var(--plocha-2); }
+.cip.m { border-color: color-mix(in srgb, var(--cervena) 60%, transparent); color: var(--cervena-text); }
+
+/* popover (variant B) */
+.m-pop { position: absolute; z-index: 6; width: 470px; background: #f3e9d4; color: #2b2116; border-radius: 6px; box-shadow: 0 14px 40px rgba(0,0,0,.65); padding: 12px 14px 10px; animation: vynor .16s ease-out;
+  background-image: repeating-linear-gradient(#f3e9d4 0 21px, #e6d8bc 21px 22px); font: 12px/1.35 var(--pismo); }
+.m-pop::after { content: ""; position: absolute; width: 14px; height: 14px; background: #f3e9d4; rotate: 45deg; left: var(--sipka, 60px); }
+.m-pop.dole::after { bottom: -7px; } .m-pop.hore::after { top: -7px; }
+.m-pop h4 { margin: 0 0 2px; font: 800 15px var(--nadpis); display: flex; align-items: center; gap: 8px; }
+.m-pop h4 .x { margin-left: auto; color: #2b2116; border-color: #a8957a; width: 26px; height: 26px; font-size: 14px; }
+.m-pop .podnadpis { font-size: 11px; color: #6b5a44; margin-bottom: 6px; }
+.m-pop table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.m-pop th { font-size: 9.5px; text-transform: uppercase; letter-spacing: .06em; color: #6b5a44; text-align: right; font-weight: 700; padding: 2px 4px; border-bottom: 1.5px solid #2b2116; }
+.m-pop th:first-child, .m-pop td:first-child { text-align: left; }
+.m-pop td { text-align: right; padding: 2px 4px; height: 22px; }
+.m-pop td.lok { display: flex; align-items: center; gap: 6px; }
+.m-pop td.lok img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; border: 1.5px solid; }
+.m-pop td.plus { color: #2c6b27; font-weight: 700; } .m-pop td.minus { color: #a8341f; font-weight: 700; } .m-pop td.nic { color: #a8957a; }
+.m-pop td.stav { font: 800 13px var(--nadpis); }
+.m-pop tr.spolu td { border-top: 1.5px solid #2b2116; font-weight: 800; }
+.m-pop tr.buduce td { color: #6b5a44; font-style: italic; }
+.m-pop .ciara { border-top: 1.5px dashed #a8957a; margin: 6px 0 4px; }
+.m-pop .vysledok { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; }
+.m-pop .vysledok b { font: 800 18px var(--nadpis); }
+.m-pop .porovnanie { font-size: 11px; color: #6b5a44; margin-top: 4px; }
+.m-pop .prepni { display: inline-flex; border: 1px solid #a8957a; border-radius: 999px; overflow: hidden; margin-left: 4px; }
+.m-pop .prepni button { border: 0; background: transparent; font: 700 11px var(--pismo); padding: 2px 9px; color: #2b2116; cursor: pointer; }
+.m-pop .prepni button[aria-pressed="true"] { background: #2b2116; color: #f3e9d4; }
+
+/* graf (variant C) */
+.m-graf { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 250px; gap: 12px; padding: 12px 14px; animation: vynor .18s ease-out; }
+.m-graf .lavy { display: flex; flex-direction: column; min-width: 0; }
+.m-graf .lista { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--tlmeny); margin-bottom: 4px; }
+.m-graf .spat { border: 1px solid var(--akcent); border-radius: 999px; padding: 2px 10px; color: var(--text); background: rgba(0,0,0,.25); }
+.m-graf svg { width: 100%; height: auto; flex: 1; }
+.m-graf .pravy { background: rgba(0,0,0,.3); border-radius: 10px; padding: 10px 12px; font-size: 11.5px; overflow: hidden; }
+.m-graf .pravy h5 { margin: 0 0 6px; font: 800 12px var(--nadpis); letter-spacing: .06em; text-transform: uppercase; color: var(--akcent-svetly); }
+.m-graf .pravy ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.m-graf .pravy li { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 4px; font-variant-numeric: tabular-nums; }
+.m-graf .pravy li span:nth-child(2) { color: var(--ja); font-weight: 700; } .m-graf .pravy li span:nth-child(3) { color: var(--su); font-weight: 700; }
+.m-graf .pravy li .m { color: var(--cervena-text) !important; }
+.m-graf .pravy .hlava { color: var(--tlmeny); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; border: 0; }
+
+/* dlaždica Starší */
+.st-stupne { display: flex; align-items: flex-end; gap: 3px; height: 22px; flex: 1; margin-top: 2px; }
+.st-stupne i { flex: 1; min-width: 4px; max-width: 14px; border-radius: 2px 2px 1px 1px; height: 3px; background: color-mix(in srgb, var(--z0) 22%, transparent); position: relative; }
+.st-stupne i.l1 { height: 8px; background: var(--z1); } .st-stupne i.l2 { height: 15px; background: var(--z2); } .st-stupne i.l3 { height: 22px; background: var(--z3); }
+.st-stupne i.prz::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--tlmeny); }
+.st-hlava { display: flex; align-items: center; gap: 8px; }
+.st-hlava .h { margin-left: auto; flex: none; }
+.zdroj-starsi { min-width: 128px; }
+.zdroj-starsi .portrety { flex: 1; min-width: 0; overflow: hidden; }
+.portrety { display: flex; align-items: center; gap: 0; margin-top: 2px; min-height: 30px; }
+.portret { position: relative; width: 28px; height: 28px; flex: none; margin-right: -4px; }
+.portret img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 3px solid; display: block; background: var(--plocha-2); }
+.portret.l1 img { border-color: var(--z1); } .portret.l2 img { border-color: var(--z2); } .portret.l3 img { border-color: var(--z3); }
+.portret b { position: absolute; right: -3px; bottom: -3px; min-width: 14px; height: 14px; border-radius: 7px; font: 800 9.5px/14px var(--pismo); text-align: center; color: #1b1208; border: 1.5px solid var(--plocha); }
+.portret.l1 b { background: var(--z1); } .portret.l2 b { background: var(--z2); } .portret.l3 b { background: #ff7b6b; }
+.portrety .viac { margin-left: 8px; font-size: 11px; color: var(--tlmeny); font-weight: 700; }
+.portrety .nikto { font-size: 11px; color: var(--slaby-text); }
+.posuny.inline { position: static; margin-left: 4px; }
+.posuny { position: absolute; top: 4px; right: 6px; font-size: 9.5px; font-weight: 700; color: var(--akcent-svetly); border: 1px solid color-mix(in srgb, var(--akcent) 60%, transparent); border-radius: 999px; padding: 0 5px; }
+
+.mock-tile-galeria { display: flex; flex-wrap: wrap; gap: 14px; }
+.mock-tile-galeria .bunka { width: 200px; }
+.mock-tile-galeria .bunka .z { min-height: 74px; }
+.mock-tile-galeria .bunka.uzka { width: 132px; }
+.mock-tile-galeria .popis { font-size: 11px; color: var(--tlmeny); margin-top: 6px; }
+.vedla { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+
+@media (prefers-color-scheme: light) {
+  body { background: #f6efe2; color: #2b2116; }
+  .panel, .verdikt { background: #fffaf0; border-color: #d9c9ad; }
+  .meta, figcaption, .pozn, .fakt b, table.audit th { color: #6b5a44; }
+  .fakt, code { background: #efe3cc; }
+  h2 { border-color: #d9c9ad; }
+  table.audit td, table.audit th { border-color: #e2d4ba; }
+  a { color: #8a5a10; }
+  .tlacidlo, .filter button, .tab, .prepinac button { background: #efe3cc; color: #2b2116; border-color: #c9b593; }
+  .prepinac span { color: #6b5a44; }
+  .mock-tile-galeria .popis { color: #6b5a44; }
+}
+@media (max-width: 760px) {
+  .mock { overflow-x: auto; }
+  .mock > .vnutro { min-width: 1060px; }
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <p class="meta">Dizajn · UI · <code>/hra</code> herný stôl · id <code>spaky-starsi-20261027</code> · 2026-10-27 · naex-dizajn (UI)</p>
+  <h1>Špaky a Starší na stole</h1>
+  <p class="meta">Zadanie od Michala, 2026-10-27, doslova: „Keď hráč klikne na špaky, zobrazí sa mu niečo zmysluplné… možno nástenka s lokalitami a získanými špakmi za lokality a fotkou víťaza? A tiež by som chcel na hlavnej stránke hry vidieť priazne starších… možno ďalšia dlaždica.“ UX návrh k tejto téme nevznikol; tento dokument rieši vzhľad aj to, čo sa kam otvára.</p>
+  <div class="verdikt">
+    <p><b>Verdikt.</b> Krčmová nástenka už na stole je, ale schovaná za tlačidlom <i>Nástenka</i> v hlavičke. Ukazuje len špaky za bitky, takže súčet lístkov nesedí so skóre: v ukážkovej partii 6 z 11 a 2 z 8. Klik na Špaky dnes otvorí líniu starších a prepne oba bary na bodový bar. Tým zmiznú Poldeci, Cigarety aj Absťák a jantárová stlačená dlaždica je najhlasnejšia vec na obrazovke.</p>
+    <p><b>Odporúčam:</b> klik na Špaky otvorí <b>nástenku s účtom</b> (variant A, Michalov nápad doplnený o starších a stav po každej bitke). Línia starších sa presunie na novú dlaždicu <b>Starší so stupienkami</b> (S1). Bodový bar sa zruší a jeho čísla sa presunú do päty nástenky.</p>
+  </div>
+  <nav class="obsah" aria-label="Obsah">
+    <a href="#stav">1. Súčasný stav</a><a href="#audit">2. Audit</a><a href="#spaky">3. Klik na Špaky (A, B, C)</a><a href="#starsi">4. Dlaždica Starší (S1, S2)</a><a href="#data">5. Dáta</a><a href="#odporucanie">6. Odporúčanie</a><a href="#otazky">7. Otázky</a>
+  </nav>
+</header>
+
+<section id="stav" aria-labelledby="h-stav">
+  <h2 id="h-stav">1. Súčasný stav</h2>
+  <p>Snímky sú z ukážky stola (<code>/hra/ukazka-stola?lokalit=5</code>, seed 8, Jano proti botovi Rapavý Fero), čistý <code>origin/master</code> b44e7f1. V ukážke hráči nemajú fotky, preto majú na snímkach iniciály. Mockupy nižšie používajú fotky, aby bolo vidno Michalovu „fotku víťaza“.</p>
+  <div class="snimky">
+    <figure><img src="dizajn-spaky-starsi-20261027/stol-1920.jpg" alt="Stôl 1920×1080 v kole 4: rad dlaždíc súpera hore, môj dole, dlaždica Špaky s piktogramom a číslom"><figcaption><b>Pokoj, 1920×1080.</b> Dlaždica Špaky (dole 8, hore 4) má len piktogram a číslo. O starších na stole nevidno nič. Odznak „⇄2“ na Špakoch hovorí o pohnutých starších, nie o špakoch.</figcaption></figure>
+    <figure><img src="dizajn-spaky-starsi-20261027/spaky-klik-1920.jpg" alt="Po kliku na Špaky: línia ôsmich starších namiesto stola, oba bary prepnuté na Bitky, Starší, Cirhóza, Odhad"><figcaption><b>Klik na Špaky, 1920.</b> Stôl nahradí línia starších a oba bary sa prepnú na <i>Bitky / Starší / Cirhóza / Odhad</i>. Stlačená dlaždica je celá jantárová.</figcaption></figure>
+    <figure><img src="dizajn-spaky-starsi-20261027/nastenka-1920.jpg" alt="Vrstva Krčmová nástenka: päť lístkov s víťazom a +1/+2 špakmi, finále teraz"><figcaption><b>Nástenka už existuje</b> (hlavička → <i>Nástenka</i>). Lístky dávajú Janovi 1+2+2 a prebytok +1, teda 6. Skóre je pritom 11 : 8. Špaky od starších (Jano +5, Fero +6) na nástenke nie sú.</figcaption></figure>
+    <figure><img src="dizajn-spaky-starsi-20261027/spaky-klik-1366.jpg" alt="Klik na Špaky pri 1366×650: línia starších orezaná pod riadkom nikoho sa neboja"><figcaption><b>1366×650.</b> Línia starších sa zmestí len po riadok „nikoho sa neboja“, priazne pod ním sa orežú. Bodový bar má 4 dlaždice s rovnako veľkými číslami: „−10“ kričí rovnako ako „+5“.</figcaption></figure>
+    <figure><img src="dizajn-spaky-starsi-20261027/finale-1366.jpg" alt="Finále pri 1366: dialóg 11 : 8 a rad dlaždíc"><figcaption><b>Finále, 1366.</b> Rad dlaždíc je plný: Karty, Poldeci, Cigarety, Absťák, Pečeň, Zadĺženie, Dlhy, Špaky. Po zlúčení Dlhov so Zadĺžením (vetva <code>ui/stol-vacsi</code>) sa uvoľní miesto na Starších.</figcaption></figure>
+  </div>
+</section>
+
+<section id="audit" aria-labelledby="h-audit">
+  <h2 id="h-audit">2. Audit</h2>
+  <div class="filter" role="group" aria-label="Filter závažnosti">
+    <button type="button" data-f="vse" aria-pressed="true">všetko</button>
+    <button type="button" data-f="vysoka" aria-pressed="false">vysoká</button>
+    <button type="button" data-f="stredna" aria-pressed="false">stredná</button>
+    <button type="button" data-f="nizka" aria-pressed="false">nízka</button>
+  </div>
+  <div class="panel" style="overflow-x:auto">
+  <table class="audit">
+    <thead><tr><th>#</th><th>Závažnosť</th><th>Problém</th><th>Dôkaz</th></tr></thead>
+    <tbody>
+      <tr data-z="vysoka"><td>P1</td><td><span class="zav vysoka">vysoká</span></td><td><b>Nástenka nevysvetľuje skóre.</b> Lístok ukazuje len <code>zaBitku</code> víťaza. Špaky od starších, ktoré sú pri v6 polovica bodov a viac, na nástenke chýbajú, takže hráč si skóre zo stola neposkladá.</td><td>nastenka-1920 (lístky 6 vs. skóre 11, 2 vs. 8); <code>hra/Spaky.tsx:113</code></td></tr>
+      <tr data-z="vysoka"><td>P2</td><td><span class="zav vysoka">vysoká</span></td><td><b>Dva vchody, ani jeden neodpovedá na otázku „odkiaľ mám špaky“.</b> Špaky otvoria starších, Nástenka v hlavičke otvorí bitky. Prehľad partie leží pod nenápadným tlačidlom vpravo hore.</td><td><code>hra/Panely.tsx:804–829</code>, <code>hra/HernaPlocha.tsx:5048–5071</code></td></tr>
+      <tr data-z="vysoka"><td>P3</td><td><span class="zav vysoka">vysoká</span></td><td><b>Strach starších nie je na stole vidno.</b> Odkiaľ prídu špaky po ďalšej bitke, sa dá vyčítať len z tooltipu Špakov alebo po kliku. Stav, ktorý rozhoduje partiu, nemá na stole vlastné miesto.</td><td>stol-1920; tooltip <code>Panely.tsx:815</code></td></tr>
+      <tr data-z="stredna"><td>P4</td><td><span class="zav stredna">stredná</span></td><td><b>Bodový bar zmaže zdroje.</b> Kým je otvorená línia starších, z oboch barov zmiznú Poldeci, Cigarety, Absťák aj Pečeň. Pri rozhodovaní o Pohoršení ich pritom hráč potrebuje.</td><td>spaky-klik-1920; <code>hra/BodovyBar.tsx</code>, <code>Panely.tsx:606</code></td></tr>
+      <tr data-z="stredna"><td>P5</td><td><span class="zav stredna">stredná</span></td><td><b>Hierarchia stlačenej dlaždice.</b> Plná jantárová plocha (<code>button.zdroj-body[aria-pressed]</code>) je hlasnejšia ako tlačidlo PASOVAŤ, ktoré je skutočná akcia ťahu.</td><td>spaky-klik-1920; <code>hra/hra.css:332</code></td></tr>
+      <tr data-z="stredna"><td>P6</td><td><span class="zav stredna">stredná</span></td><td><b>Jedna dlaždica, dva časy.</b> „Starší +1 · po bitke · doteraz +5“: veľké číslo hovorí o budúcnosti, malý text o minulosti. „Odhad −5“ bez vzorca nikto nerozlúšti.</td><td>spaky-klik-1366; <code>BodovyBar.tsx:32–56</code></td></tr>
+      <tr data-z="stredna"><td>P7</td><td><span class="zav stredna">stredná</span></td><td><b>Úroveň zóny nesmie niesť len farba.</b> Žltá a oranžová majú medzi sebou 1,83 : 1, oranžová a červená 1,72 : 1. Na malej dlaždici ich od seba nerozoznáš. Línia starších to rieši výškou schodíka a návrhy dlaždice musia tiež.</td><td>výpočet WCAG z <code>FARBY_STUPNICE</code> (<code>tvorba/src/geometria.ts:120</code>)</td></tr>
+      <tr data-z="nizka"><td>P8</td><td><span class="zav nizka">nízka</span></td><td><b>Odznak „⇄ n“ sedí na nesprávnej dlaždici.</b> Počíta pohnutých starších, no visí na Špakoch.</td><td>stol-1920; <code>Panely.tsx:822</code></td></tr>
+      <tr data-z="nizka"><td>P9</td><td><span class="zav nizka">nízka</span></td><td><b>Poznámka na nástenke má nízky kontrast.</b> <code>--slaby-text</code> na korku (#4e3a1e) má 3,41 : 1, pod hranicou AA pre malý text. <code>--tlmeny</code> má 4,58 : 1, ten je v poriadku.</td><td><code>hra/spaky.css</code> (.nastenka-pozn)</td></tr>
+      <tr data-z="nizka"><td>P10</td><td><span class="zav nizka">nízka</span></td><td><b>1366×650:</b> línia starších po kliku oreže priazne pod riadkom strachu. Keď sa na ňu pôjde cez novú dlaždicu Starší, uvoľní sa výška, ktorú dnes zaberá bodový bar.</td><td>spaky-klik-1366</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="spaky" aria-labelledby="h-spaky">
+  <h2 id="h-spaky">3. Klik na Špaky — tri varianty</h2>
+  <p>Všetky tri varianty majú rovnaké dáta: ukážková partia (seed 8, 5 lokalít) pred finále, 11 : 8. Rozdelenie špakov od starších v bitkách 1–3 som dopočítal tak, aby sedeli súčty z ukážky; bitky 4–5 a finále sú presne podľa ukážky. <b>Kliknite v mockupe na dlaždicu Špaky</b>, svoju dole alebo súperovu hore. Zatvára sa klávesom Esc, krížikom alebo opätovným klikom.</p>
+  <div class="tabs" role="tablist" aria-label="Varianty kliku na Špaky">
+    <button class="tab" role="tab" id="tab-A" aria-controls="var-A" aria-selected="true">A · Krčmová nástenka s účtom</button>
+    <button class="tab" role="tab" id="tab-B" aria-controls="var-B" aria-selected="false" tabindex="-1">B · Účet z krčmy</button>
+    <button class="tab" role="tab" id="tab-C" aria-controls="var-C" aria-selected="false" tabindex="-1">C · Pretek popolníkov</button>
+  </div>
+
+  <div class="karta-navrhu" role="tabpanel" id="var-A" aria-labelledby="tab-A">
+    <div class="panel">
+      <h3 style="margin-top:0">A · Krčmová nástenka s účtom <span class="pozn">(Michalov nápad, identitu posilňuje)</span></h3>
+      <p>Nadväzuje na existujúcu nástenku. Lístky pribudnú zľava doprava v poradí, v akom sa lokality hrali. Na lístku je fotka víťaza, <b>+N za bitku</b> a karta lokality. Pod pripináčikom je nová <b>účtenka</b>: čo v tej bitke dali starší obom hráčom, čo vzal Exekútor, prebytok a <b>stav po bitke</b> (2 : 1, 5 : 2…). Hore sú dva popolníky so skóre a rozpisom, takže súčet konečne sedí. Finále je lístok „teraz“ s tým, čo ešte môže padnúť. Za ním je bledý lístok <b>Koniec</b> s nepriznanou Cirhózou. Päta preberá to podstatné z dnešného bodového baru: „keby partia skončila teraz“ a „starší ešte 1×“.</p>
+      <div class="fakty">
+        <div class="fakt"><b>Typ</b>Vrstva nad stolom (dnešný <code>VrstvaPanel</code> ako Šenok a Nástenka). Stôl pod ňou stmavne.</div>
+        <div class="fakt"><b>Zatváranie</b>Esc, ×, klik mimo panelu, druhý klik na Špaky. Fokus sa vráti na dlaždicu.</div>
+        <div class="fakt"><b>Súperova dlaždica</b>Tá istá nástenka, lebo bitky sú spoločné. Zvýraznený je súperov popolník a účtenky sa čítajú „Fero / ty“. Prepínať sa dá aj priamo v paneli.</div>
+        <div class="fakt"><b>Náročnosť</b>Malá až stredná. <code>Nastenka</code> a <code>VrstvaPanel</code> už existujú, pribudne účtenka a hlavička. Tlačidlo Nástenka v hlavičke otvorí to isté.</div>
+      </div>
+      <p class="pozn">Rieši P1, P2, P4, P5. Dotknuté súbory: <code>hra/Spaky.tsx</code> (účtenka, popolníky, lístok Koniec), <code>hra/spaky.css</code>, <code>hra/Panely.tsx</code> (onClick Špakov), <code>hra/HernaPlocha.tsx</code> (vrstva „lokality“ = „spaky“). <code>BodovyBar.tsx</code> sa zruší.</p>
+      <div class="prepinac" role="group" aria-label="Pred alebo po"><span>Ukážka:</span><button type="button" data-pp="A" data-v="po" aria-pressed="true">po (mockup)</button><button type="button" data-pp="A" data-v="pred" aria-pressed="false">pred (snímka)</button></div>
+      <div class="pp" data-pp-box="A">
+        <div class="mock" data-mock="A" data-otvor="ja"><div class="vnutro"></div></div>
+        <div class="pred" hidden><img src="dizajn-spaky-starsi-20261027/nastenka-1920.jpg" alt="Dnešná nástenka"><p class="pozn">Dnes: rovnaká doska, no bez starších a bez stavu, takže lístky nedajú skóre.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="karta-navrhu" role="tabpanel" id="var-B" aria-labelledby="tab-B" hidden>
+    <div class="panel">
+      <h3 style="margin-top:0">B · Účet z krčmy <span class="pozn">(bloček pri dlaždici)</span></h3>
+      <p>Malý papierový <b>bloček</b> vyskočí priamo nad dlaždicou ako účet od krčmárky. Riadky sú bitky, stĺpce <i>za bitku · starší · iné · stav</i>, tabuľkové číslice a čiara pod súčtom. Pod čiarou je „ešte príde“ kurzívou (finále, starší po finále, Cirhóza na konci) a „odhad“ pomenovaný slovami. Stôl ostane celý viditeľný a hráč môže počas Zhromaždenia pozerať aj na líniu. Prepínač <i>ty / Fero</i> je priamo v bločku.</p>
+      <div class="fakty">
+        <div class="fakt"><b>Typ</b>Panel (nemodálny popover) ukotvený na dlaždici, 470 px. Stôl ostáva interaktívny.</div>
+        <div class="fakt"><b>Zatváranie</b>Esc, ×, klik mimo bločku, druhý klik na dlaždicu.</div>
+        <div class="fakt"><b>Súperova dlaždica</b>Bloček sa otvorí pod súperovým barom so súperovým účtom. Porovnanie so mnou je v poslednom riadku.</div>
+        <div class="fakt"><b>Náročnosť</b>Stredná. Treba nový komponent (tabuľka z <code>nastenka</code> + <code>spakyTeraz</code>) a ukotvenie popoveru na okraji obrazovky. Na 1366×650 sa vojde nad spodný bar (≈ 260 px).</div>
+      </div>
+      <p class="pozn">Rieši P1, P4, P6, čiastočne P2: nástenka ostáva v hlavičke a účet je druhý pohľad na tie isté čísla. Najrýchlejšie odpovedá na otázku „prečo mám 11“. Fotku víťaza má len ako malý krúžok pri lokalite, takže krčmová nálada je skôr v papieri bločku než v nástenke.</p>
+      <div class="prepinac" role="group" aria-label="Pred alebo po"><span>Ukážka:</span><button type="button" data-pp="B" data-v="po" aria-pressed="true">po (mockup)</button><button type="button" data-pp="B" data-v="pred" aria-pressed="false">pred (snímka)</button></div>
+      <div class="pp" data-pp-box="B">
+        <div class="mock" data-mock="B" data-otvor="ja"><div class="vnutro"></div></div>
+        <div class="pred" hidden><img src="dizajn-spaky-starsi-20261027/spaky-klik-1920.jpg" alt="Dnešný klik na Špaky"><p class="pozn">Dnes: klik prepne celý stôl aj oba bary.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="karta-navrhu" role="tabpanel" id="var-C" aria-labelledby="tab-C" hidden>
+    <div class="panel">
+      <h3 style="margin-top:0">C · Pretek popolníkov <span class="pozn">(odvážnejší smer)</span></h3>
+      <p>Plochu stola nahradí <b>schodový graf</b> špakov oboch hráčov po bitkách, tak ako dnes plochu nahrádza línia starších. Pod osou je fotka víťaza každej bitky. Od teraz do konca vedie prerušovaná <b>vidlica</b> od najhoršieho po najlepší výsledok: finále 0 až 3, starší ešte raz, Cirhóza −5 za kus. Vpravo je zoznam <b>Čo je ešte v hre</b>. Ako jediný variant ukazuje, či súperov náskok vydrží: Fero má 8, no po Cirhóze skončí medzi −5 a −2.</p>
+      <div class="fakty">
+        <div class="fakt"><b>Typ</b>Náhrada plochy stola, rovnaký mechanizmus ako dnešná línia starších („← Späť na stôl Esc“). Bary aj ruka ostávajú.</div>
+        <div class="fakt"><b>Zatváranie</b>Esc, „Späť na stôl“, druhý klik na Špaky. Keď hra potrebuje stôl (ťah, počítadlo bitky), zatvorí sa sám.</div>
+        <div class="fakt"><b>Súperova dlaždica</b>Ten istý graf, súperova čiara je hrubšia a jeho stĺpec v zozname je prvý.</div>
+        <div class="fakt"><b>Náročnosť</b>Veľká. SVG graf bez knižnice, vidlica z <code>spakyTeraz</code>, max a min finále, a čitateľnosť pri 1366×650 (výška plochy ≈ 250 px).</div>
+      </div>
+      <p class="pozn">Rieši P1, P3 (časť), P6. Riziko: „najlepší/najhorší prípad“ je odhad. Ak sa v ňom hráč pomýli, bude veriť grafu viac ako pravidlám. Vidlica preto nerátá prebytok ani pohyb markerov a hovorí to aj nahlas.</p>
+      <div class="prepinac" role="group" aria-label="Pred alebo po"><span>Ukážka:</span><button type="button" data-pp="C" data-v="po" aria-pressed="true">po (mockup)</button><button type="button" data-pp="C" data-v="pred" aria-pressed="false">pred (snímka)</button></div>
+      <div class="pp" data-pp-box="C">
+        <div class="mock" data-mock="C" data-otvor="ja"><div class="vnutro"></div></div>
+        <div class="pred" hidden><img src="dizajn-spaky-starsi-20261027/spaky-klik-1920.jpg" alt="Dnešný klik na Špaky"><p class="pozn">Dnes: plochu nahradí línia starších. Variant C tam dáva priebeh partie.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="starsi" aria-labelledby="h-starsi">
+  <h2 id="h-starsi">4. Dlaždica Starší</h2>
+  <p>Dlaždica stojí v rade hneď vedľa Špakov, lebo im ich sype. Na prvý pohľad má byť vidno tri veci: <b>koľko špakov mi dajú starší po ďalšej bitke</b> (veľké číslo), <b>koľko starších sa ma bojí</b> a <b>v akej zóne</b>. Klik otvorí to, čo dnes otvárajú Špaky: <b>líniu starších</b> namiesto plochy stola (Esc späť). Rozdiel je, že bary ostanú celé a bodový bar zmizne. Odznak „⇄ n“ (pohnutí starší od bitky) sa presunie sem.</p>
+  <p>Pravidlá §10 hovoria, že priazeň a strach sú dve strany toho istého markera. Starší, ktorý sa bojí mňa, dáva <i>súperovi</i> priazeň. Moja priazeň je teda súperov strach a vidno ju na súperovej dlaždici Starší. Návrh to necháva tak, aby dlaždica nehovorila dve veci naraz. Pozri otázku 1.</p>
+  <div class="prepinac" role="group" aria-label="Stav partie"><span>Stav partie:</span>
+    <button type="button" data-stav="finale" aria-pressed="true">pred finále (ukážka)</button>
+    <button type="button" data-stav="rozbeh" aria-pressed="false">rozbehnutá partia</button>
+    <button type="button" data-stav="nikto" aria-pressed="false">začiatok: nikto</button>
+  </div>
+  <div class="prepinac" role="group" aria-label="Šírka okna"><span>Okno:</span>
+    <button type="button" data-sirka="1920" aria-pressed="true">1920</button>
+    <button type="button" data-sirka="1366" aria-pressed="false">1366</button>
+  </div>
+
+  <div class="panel" style="margin-top:12px">
+    <h3 style="margin-top:0">S1 · Stupienky <span class="pozn">(odporúčam)</span></h3>
+    <p>Osem stĺpčekov, jeden za každého staršieho v poradí línie. <b>Výška aj farba</b> ukazujú zónu, v ktorej sa ma starší bojí (žltá 1, oranžová 2, červená 3). Ten, kto sa ma nebojí, je nízky sivý zárez. Je to ten istý schodíkový jazyk ako stupnica v línii, takže úroveň vyčítaš aj bez farieb (P7). Veľké číslo <b>+N</b> so špakom je to, čo príde po ďalšej bitke, pod ním „2 sa ťa boja“. Šírka 96–200 px, na 1366 sa nič nereže.</p>
+    <div class="fakty">
+      <div class="fakt"><b>Na prvý pohľad</b>+N po bitke · počet · zóny (výška) · kde v línii (poradie stĺpčekov).</div>
+      <div class="fakt"><b>Klik</b>Línia starších namiesto stola. Dlaždica ostane stlačená: jantárový okraj a horná linka, nie plná výplň (P5).</div>
+      <div class="fakt"><b>Náročnosť</b>Malá. Dáta: <code>spakyTeraz(view).starsi</code> a <code>zaStarsich</code>. Nová trieda <code>.zdroj-starsi</code>, žiadny nový token, farby z <code>FARBY_STUPNICE</code>.</div>
+    </div>
+    <div class="mock" data-mock="S1"><div class="vnutro"></div></div>
+  </div>
+
+  <div class="panel" style="margin-top:14px">
+    <h3 style="margin-top:0">S2 · Portréty</h3>
+    <p>Namiesto stĺpčekov sú tu <b>tváre starších, ktorí sa ma boja</b>: krúžok 28 px s farebným rámom zóny a číslom 1/2/3 v rohu. Číslo nesie úroveň aj bez farby. Pri viac ako troch ostane „+2“. Keď sa nikto nebojí, dlaždica povie „nikto sa ťa nebojí“. Je to osobnejšie a viac krčmové, lebo vidno, že ťa sa bojí práve Starosta. Pri 1366 sa však zmestia len 2–3 tváre a v 28 px Farára od Hrobára rozoznáš skôr podľa farby pozadia než podľa tváre.</p>
+    <div class="fakty">
+      <div class="fakt"><b>Na prvý pohľad</b>+N po bitke · kto konkrétne · zóna (rám + číslo).</div>
+      <div class="fakt"><b>Klik</b>Rovnako ako S1. Navyše prejdenie myšou po tvári ukáže lupu staršieho (<code>LupaStarsieho</code> už existuje).</div>
+      <div class="fakt"><b>Náročnosť</b>Stredná. Výrezy portrétov z ilustrácie karty (<code>@512</code> stačí), hover na lupu a pravidlá skracovania.</div>
+    </div>
+    <div class="mock" data-mock="S2"><div class="vnutro"></div></div>
+  </div>
+
+  <div class="panel" style="margin-top:14px">
+    <h3 style="margin-top:0">Stavy dlaždice (S1)</h3>
+    <p class="pozn">Pokoj · hover · fokus z klávesnice · stlačená (línia otvorená) · posun od bitky (⇄) · dnešná stlačená Špaky pre porovnanie.</p>
+    <div class="mock" data-mock="stavy"><div class="vnutro"></div></div>
+  </div>
+</section>
+
+<section id="data" aria-labelledby="h-data">
+  <h2 id="h-data">5. Dáta: čo klient má a čo by chýbalo</h2>
+  <div class="panel">
+    <ul>
+      <li><span class="stitok-ok">Má:</span> <code>view.nastenka[]</code> (<code>BitkaNaNastenke</code>: lokalita, víťaz, pitky, <code>zaBitku</code>, <code>zoSekery</code>, <code>abstakZrazka</code>, <code>prepadlo</code>, <code>zaStarsich</code>, <code>exekutor</code>, <code>prebytok</code>, <code>spakyPo</code>). Z toho sa poskladajú účtenky (A), bloček (B) aj schody grafu (C). Všetky zmeny špakov sa dejú v bitke, takže body po bitkách sú celý priebeh.</li>
+      <li><span class="stitok-ok">Má:</span> <code>spakyTeraz(view)</code>: <code>zaStarsich</code> po ďalšej bitke, <code>starsi[]</code> po staršom, <code>vyplat</code>, <code>cirhozy</code>, <code>odhad</code>. Z toho je dlaždica Starší, päta nástenky a vidlica v grafe. Avatary hráčov sú v <code>HracInfo</code>, portréty starších sú karty z dát hry.</li>
+      <li><span class="stitok-ok">Má:</span> počet súperových nepriznaných Cirhóz (<code>nepriznaneKliatby</code>, verejné, počíta sa z toho, čo sa ukázalo).</li>
+      <li><b>Chýba (len voliteľne):</b> <i>ktorí</i> starší a koľko dali v konkrétnej bitke. Nástenka nesie len súčet <code>zaStarsich</code>. Ak má účtenka ukázať „Starosta +1, Farár +2“, server by musel do <code>BitkaNaNastenke</code> pridať napr. <code>zaStarsichRozpis: { elderId, spaky: [n, n] }[]</code>. Je to verejná informácia, markery sú na stole. Pre návrhy A, B, C ani pre dlaždicu to nie je nutné.</li>
+      <li><b>Chýba pre vidlicu v C:</b> nič na serveri. Maximum finále je <code>FINALE_PITKY</code> = 3, minimum 0 (prehra alebo sekera), starší <code>zaStarsich × vyplat</code>. Prebytok a pohyb markerov sa nepredvídajú a graf to musí napísať.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="odporucanie" class="odporucanie" aria-labelledby="h-odp">
+  <h2 id="h-odp">6. Odporúčanie a poradie</h2>
+  <div class="panel">
+    <ol>
+      <li><b>Dlaždica Starší S1 (stupienky)</b> a presun línie starších zo Špakov na ňu. Zrušiť bodový bar a stlačený stav zmeniť z plnej výplne na okraj. Malá úloha. Hneď rieši P3, P4, P5 a P8 a uvoľní klik na Špaky. Čaká na zlúčenie Dlhov so Zadĺžením (<code>ui/stol-vacsi</code>).</li>
+      <li><b>Klik na Špaky = variant A (nástenka s účtom)</b>. Tlačidlo Nástenka v hlavičke otvorí tú istú vrstvu, takže sú to dva vchody k jednej veci. Malá až stredná úloha, rieši P1, P2, P9. Do päty nástenky patria dva riadky z bodového baru: „keby skončila teraz“ a „starší ešte n×“.</li>
+      <li><b>Neskôr, podľa playtestu:</b> z variantu C len malý <b>schodový graf</b> nad lístkami nástenky (výška 60 px, bez vidlice), ak hráči budú chcieť priebeh. Variant B si nechávam v zálohe pre prípad, že by vrstva cez stôl počas Zhromaždenia prekážala.</li>
+    </ol>
+    <p class="pozn">Rozhodnutie Michala: A, B alebo C pre Špaky; S1 alebo S2; či sa bodový bar ruší celý.</p>
+  </div>
+</section>
+
+<section id="otazky" aria-labelledby="h-otazky">
+  <h2 id="h-otazky">7. Otázky na Michala</h2>
+  <div class="panel">
+    <ol>
+      <li><b>„Priazne starších“ na dlaždici:</b> myslíš strach, teda kto sa ma bojí a dáva mi špaky (návrh S1/S2), alebo priazeň, teda koho efekt ♥ mám ja? Sú to dve strany jedného markera. Dlaždica vie jedno hlavné číslo a druhé ako malý riadok, nie oboje rovnako hlasno.</li>
+      <li><b>Bodový bar zrušiť celý?</b> Jeho čísla (bitky, starší doteraz, Cirhóza, odhad) by sa presunuli do nástenky. Rad dlaždíc by sa už nikdy neprepínal.</li>
+      <li><b>Lístok „Koniec“ s Cirhózou</b> na nástenke ešte pred koncom hry: ukazovať aj súperove nepriznané Cirhózy (−15)? Je to verejný počet, no na lístku to vyzerá ako verdikt.</li>
+      <li><b>Má tlačidlo Nástenka v hlavičke ostať,</b> keď ju otvoria aj Špaky? Navrhujem ostať, lebo pri voľbe cieľa sa z nástenky vyberá lokalita.</li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<noscript><p style="text-align:center;color:#b6a790">Mockupy sa kreslia JavaScriptom. Text a snímky sú čitateľné aj bez neho.</p></noscript>
+
+<script>
+(function () {
+  "use strict";
+  var IMG = {"autobusar":"data:image/jpeg;base64,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","farar":"data:image/jpeg;base64,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","fero":"data:image/jpeg;base64,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","hrobar":"data:image/jpeg;base64,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","jano":"data:image/jpeg;base64,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","jednota":"data:image/jpeg;base64,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","kar":"data:image/jpeg;base64,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","krcmarka":"data:image/jpeg;base64,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","kulturny_dom":"data:image/jpeg;base64,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","most":"data:image/jpeg;base64,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","obecny_urad":"data:image/jpeg;base64,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","postarka":"data:image/jpeg;base64,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","starosta":"data:image/jpeg;base64,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","veterinar":"data:image/jpeg;base64,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","vychovavatelka":"data:image/jpeg;base64,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"};
+  var IK = '<svg class="ik" viewBox="0 25 100 50" aria-hidden="true"><g transform="translate(50 50) rotate(-25) scale(0.93) translate(-50 -58)"><rect x="4" y="40" width="34" height="22" rx="3"/><path d="M43 40H66L84 52L87 56L82.5 59L86 63L79.5 64.5L78 69.5L71.8 70.3L59.4 62H43Z"/><circle cx="92" cy="72" r="4"/><circle cx="95" cy="62" r="2.6"/><circle cx="86" cy="79" r="2.4"/></g></svg>';
+  var IKs = IK.replace('class="ik"', 'class="ik s"');
+  var MENO = { ja: "Jano", su: "Rapavý Fero" };
+  var KTO = { ja: "ty", su: "Fero" };
+  var SKORE = { ja: 11, su: 8 };
+  var CIRH = { ja: 0, su: 3 };
+  var PO_BITKE = { ja: 1, su: 2 };
+  // Ukážka seed 8, 5 lokalít; starší v bitkách 1–3 dopočítaní tak, aby sedeli súčty (ja 5, su 6).
+  var BITKY = [
+    { kolo: 1, lok: "Kultúrny dom", img: "kulturny_dom", vitaz: "ja", pitky: 1, zaBitku: 1, st: { ja: 0, su: 1 }, preb: { ja: 1, su: 0 }, ex: { ja: 0, su: 0 }, po: { ja: 2, su: 1 }, pozn: "" },
+    { kolo: 2, lok: "Obecný úrad", img: "obecny_urad", vitaz: "ja", pitky: 2, zaBitku: 2, st: { ja: 1, su: 1 }, preb: { ja: 0, su: 0 }, ex: { ja: 0, su: 0 }, po: { ja: 5, su: 2 }, pozn: "" },
+    { kolo: 3, lok: "Most", img: "most", vitaz: "ja", pitky: 2, zaBitku: 2, st: { ja: 1, su: 2 }, preb: { ja: 0, su: 0 }, ex: { ja: 0, su: 0 }, po: { ja: 8, su: 4 }, pozn: "" },
+    { kolo: 4, lok: "Kar", img: "kar", vitaz: "su", pitky: 2, zaBitku: 1, st: { ja: 2, su: 1 }, preb: { ja: 0, su: 0 }, ex: { ja: 0, su: 0 }, po: { ja: 10, su: 6 }, pozn: "−1 za Absťák" },
+    { kolo: 5, lok: "Jednota", img: "jednota", vitaz: "su", pitky: 1, zaBitku: 1, st: { ja: 1, su: 1 }, preb: { ja: 0, su: 0 }, ex: { ja: 0, su: 0 }, po: { ja: 11, su: 8 }, pozn: "" }
+  ];
+  var STARSI = ["farar", "krcmarka", "starosta", "postarka", "hrobar", "autobusar", "veterinar", "vychovavatelka"];
+  var MENA_ST = { farar: "Farár", krcmarka: "Krčmárka", starosta: "Starosta", postarka: "Poštárka", hrobar: "Hrobár", autobusar: "Autobusár", veterinar: "Veterinár", vychovavatelka: "Vychovávateľka" };
+  var ZONA = ["", "žltá", "oranžová", "červená"];
+  // Strach: koho sa starší bojí a na akej úrovni. Priazeň je zrkadlo (súper sa teší priazni).
+  var STAVY = {
+    finale: { ja: { starosta: 1 }, su: { krcmarka: 2 }, posuny: 0 },
+    rozbeh: { ja: { farar: 3, starosta: 2, hrobar: 1, vychovavatelka: 1 }, su: { krcmarka: 1, veterinar: 2 }, posuny: 2 },
+    nikto: { ja: {}, su: {}, posuny: 0 }
+  };
+  var stav = "finale", sirka = 1920;
+  var zn = function (n) { return n > 0 ? "+" + n : n < 0 ? "−" + (-n) : "0"; };
+  var mn = function (n) { return n < 0 ? "−" + (-n) : String(n); };
+  var sucet = function (o) { var s = 0; for (var k in o) s += o[k]; return s; };
+  var pocet = function (o) { return Object.keys(o).length; };
+  var boja = function (n) { return n === 1 ? "1 sa ťa bojí" : n >= 2 && n <= 4 ? n + " sa ťa boja" : n + " sa ťa bojí"; };
+  var bojaHo = function (n) { return n === 1 ? "1 sa ho bojí" : n >= 2 && n <= 4 ? n + " sa ho boja" : n + " sa ho bojí"; };
+
+  function z(nazov, h, p, cls, attrs) {
+    return '<div class="z ' + (cls || "") + '" ' + (attrs || "") + '><span class="n">' + nazov + '</span><span class="h">' + h + '</span>' + (p ? '<span class="p">' + p + '</span>' : "") + '</div>';
+  }
+  function dlazdicaSpaky(kto, pressed, interaktivna) {
+    var a = interaktivna ? 'role="button" tabindex="0" aria-pressed="' + (pressed ? "true" : "false") + '" data-akcia="spaky" data-kto="' + kto + '" title="' + (kto === "ja" ? "Tvoje špaky" : "Špaky – " + MENO.su) + ': ' + SKORE[kto] + '. Klik ukáže krčmovú nástenku."' : "";
+    return z("Špaky " + (pressed ? "▴" : "▾"), IK + "<b>" + mn(SKORE[kto]) + "</b>", "", "spaky klik " + kto, a);
+  }
+  function dlazdicaStarsi(kto, varianta, opts) {
+    opts = opts || {};
+    var s = STAVY[stav][kto], n = pocet(s), plus = sucet(s);
+    var tit = (kto === "ja" ? "Po ďalšej bitke ti starší dajú " : "Po ďalšej bitke mu starší dajú ") + plus + " (žltá 1, oranžová 2, červená 3). " +
+      (n === 0 ? "Nikto sa " + (kto === "ja" ? "ťa" : "ho") + " nebojí." : STARSI.filter(function (e) { return s[e]; }).map(function (e) { return MENA_ST[e] + " " + ZONA[s[e]] + " +" + s[e]; }).join(", ") + ".") + " Klik ukáže líniu starších.";
+    var pn = opts.posuny !== undefined ? opts.posuny : STAVY[stav].posuny;
+    var posuny = pn > 0 && kto === "ja" && !opts.bezPosunu ? '<span class="posuny" title="Od bitky sa pohli ' + pn + ' starší — v línii je pri nich stopa">⇄ ' + pn + "</span>" : "";
+    var vnutro;
+    if (varianta === "S1") {
+      var bars = STARSI.map(function (e) { var l = s[e] || 0; return '<i class="' + (l ? "l" + l : "") + '" title="' + MENA_ST[e] + (l ? " · " + ZONA[l] + " +" + l : " · nebojí sa") + '"></i>'; }).join("");
+      vnutro = '<span class="n">Starší ▾</span>' + posuny +
+        '<span class="st-hlava"><span class="st-stupne" aria-hidden="true">' + bars + '</span><span class="h">' + (plus > 0 ? "+" : "") + plus + IKs + '</span></span>' +
+        '<span class="p">' + (n === 0 ? (kto === "ja" ? "nikto sa ťa nebojí" : "nikto sa ho nebojí") : (kto === "ja" ? boja(n) : bojaHo(n)) + " · po bitke") + "</span>";
+    } else {
+      var max = sirka === 1366 ? 3 : 4;
+      var kto_ = STARSI.filter(function (e) { return s[e]; }).sort(function (a, b) { return s[b] - s[a]; });
+      var tvare = kto_.slice(0, max).map(function (e) { return '<span class="portret l' + s[e] + '" title="' + MENA_ST[e] + ' · ' + ZONA[s[e]] + ' +' + s[e] + '"><img src="' + IMG[e] + '" alt="' + MENA_ST[e] + '"><b>' + s[e] + "</b></span>"; }).join("");
+      var viac = kto_.length > max ? '<span class="viac">+' + (kto_.length - max) + "</span>" : "";
+      vnutro = '<span class="n">Starší ▾</span>' + posuny + '<span class="st-hlava"><span class="portrety">' + (n === 0 ? '<span class="nikto">' + (kto === "ja" ? "nikto sa ťa nebojí" : "nikto sa ho nebojí") + "</span>" : tvare + viac) + '</span><span class="h">' + (plus > 0 ? "+" : "") + plus + IKs + "</span></span>";
+    }
+    var cls = "z klik zdroj-starsi" + (opts.nova ? " nova" : "") + (opts.cls ? " " + opts.cls : "");
+    var a = opts.staticky ? "" : 'role="button" tabindex="0" aria-pressed="' + (opts.pressed ? "true" : "false") + '" data-akcia="starsi" data-kto="' + kto + '"';
+    return '<div class="' + cls + '" title="' + tit + '" ' + a + ' style="flex:' + (sirka === 1366 ? "1.05" : "1.25") + ' 1 0">' + vnutro + "</div>";
+  }
+
+  function barSu(o) {
+    var t = [
+      z("Karty ▾", "3<small> ruka</small>", "3 balíček · 4 odhodené"),
+      z("Poldeci", "2", "plné · 0 vypité"),
+      z("Cigarety", "0", "5 do nového poldeci"),
+      z("Absťák", "1<small> −1 tuhé</small>", "neresti 0 / minule 1"),
+      z("Pečeň", "0<small>/3</small>", "v Pitke: Cirhóza ×1"),
+      z("Dlhy", "0<small>/10</small>", "zadĺženie 0/2")
+    ];
+    if (!o.bezStarsich && o.starsi) t.push(dlazdicaStarsi("su", o.starsi, { nova: o.nova, pressed: o.pressedSt === "su" }));
+    t.push(dlazdicaSpaky("su", o.pressed === "su", o.spakyKlik));
+    return '<div class="m-bar su">' + t.join("") + '<div class="m-hrac su"><img class="av su" src="' + IMG.fero + '" alt=""><div><strong>Rapavý Fero</strong><small>⛨ obranca · <span style="color:var(--cervena-text)">nepriznané Cirhóza ×3</span></small></div></div></div>';
+  }
+  function barJa(o) {
+    var t = [dlazdicaSpaky("ja", o.pressed === "ja", o.spakyKlik)];
+    if (!o.bezStarsich && o.starsi) t.push(dlazdicaStarsi("ja", o.starsi, { nova: o.nova, pressed: o.pressedSt === "ja" }));
+    t.push(
+      z("Dlhy", "0<small>/9</small>", "zadĺženie 0/2"),
+      z("Pečeň", "0<small>/3</small>", "v Pitke: nič"),
+      z("Absťák", "1<small> −1 tuhé</small>", "zbavíš sa 1"),
+      z("Cigarety", "2", "3 do nového poldeci"),
+      z("Poldeci", "0", "1 na stole · 1 vypité"),
+      z("Karty ▾", "4<small> ruka</small>", "5 balíček · 3 odhodené")
+    );
+    return '<div class="m-bar ja"><div class="m-hrac"><img class="av" src="' + IMG.jano + '" alt=""><div><strong>Jano <span style="color:var(--tlmeny);font-weight:400">(ty)</span></strong><small style="color:var(--cervena-text)">⚔ útočník</small></div></div>' + t.join("") + "</div>";
+  }
+  function os() {
+    return '<div class="m-os"><span class="kolo">Kolo 6 · finále</span><span>Finále</span><span>Draft</span><span>Z1 P1 ✓</span><span class="faza">Zhromaždenie 2 z 3</span><span>Pitka 2</span><span>Zhromaždenie 3</span><span>Pitka 3</span><span>Bitka</span><span class="vpravo"><span>Šenok 8</span><span>Nástenka ●●●●●○</span><span>Log</span></span></div>';
+  }
+  function stol(obsah) {
+    return '<div class="m-stol">' + (obsah || '<span class="pokyn">Potiahni kartu z ruky na stôl, alebo pasuj do Pitky</span><div class="linia"><span class="kk"></span><span class="kk stred">FINÁLE<br>STRED</span><span class="kk"></span><span class="kk"></span></div>') + "</div>";
+  }
+  function ruka() { return '<div class="m-ruka"><i></i><i></i><i></i><i></i></div>'; }
+
+  // ---------- Variant A: nástenka s účtom ----------
+  function nastenkaA(kto) {
+    var su = kto === "ja" ? "su" : "ja";
+    var rozpis = function (p) {
+      var b = 0, st = 0, pr = 0, ex = 0;
+      BITKY.forEach(function (x) { if (x.vitaz === p) b += x.zaBitku; st += x.st[p]; pr += x.preb[p]; ex += x.ex[p]; });
+      var c = CIRH[p] > 0 ? ' · <span class="m">na konci Cirhóza ×' + CIRH[p] + " −" + CIRH[p] * 5 + "</span>" : "";
+      return "bitky <b>" + zn(b) + "</b> · starší <b>" + zn(st) + "</b>" + (pr ? " · prebytok <b>" + zn(pr) + "</b>" : "") + (ex ? ' · Exekútor <b class="m">−' + ex + "</b>" : "") + c;
+    };
+    var pop = function (p) {
+      return '<div class="popolnik ' + p + (p === kto ? " zvyrazneny" : "") + '"><img class="av ' + (p === "su" ? "su" : "") + '" src="' + IMG[p === "ja" ? "jano" : "fero"] + '" alt=""><div><div class="meno">' + (p === "ja" ? "Jano (ty)" : MENO.su) + '</div><div class="rozpis">' + rozpis(p) + "</div></div></div>";
+    };
+    var listky = BITKY.map(function (b, i) {
+      var r = function (p) { var cast = []; if (b.st[p]) cast.push("+" + b.st[p] + " st."); if (b.preb[p]) cast.push("+" + b.preb[p] + " preb."); if (b.ex[p]) cast.push('<span class="m">−' + b.ex[p] + " Ex.</span>"); return cast.length ? cast.join(" ") : "—"; };
+      var poradie = kto === "ja" ? ["ja", "su"] : ["su", "ja"];
+      return '<div class="listok ' + b.vitaz + '" style="--n:' + (((i * 37) % 5) - 2) + 'deg" title="' + b.lok + " (kolo " + b.kolo + "): " + (b.vitaz === "ja" ? "tvoja výhra" : "výhra – " + MENO.su) + ", +" + b.zaBitku + " za " + b.pitky + (b.pitky === 1 ? " Pitku" : " Pitky") + '">' +
+        '<span class="vitaz"><img class="av mini ' + (b.vitaz === "su" ? "su" : "") + '" src="' + IMG[b.vitaz === "ja" ? "jano" : "fero"] + '" alt="' + MENO[b.vitaz] + '">+' + b.zaBitku + IKs + "</span>" +
+        '<img class="lok" src="' + IMG[b.img] + '" alt=""><span class="nazov">' + b.lok + '</span><span class="pz">' + b.pitky + (b.pitky === 1 ? " Pitka" : " Pitky") + (b.pozn ? " · " + b.pozn : "") + "</span>" +
+        '<span class="uctenka"><span class="r"><span>navyše</span><span><span class="' + poradie[0] + '">' + KTO[poradie[0]] + "</span> " + r(poradie[0]) + "</span></span>" +
+        '<span class="r"><span></span><span><span class="' + poradie[1] + '">' + KTO[poradie[1]] + "</span> " + r(poradie[1]) + "</span></span>" +
+        '<span class="stav">po bitke <span class="' + poradie[0] + '">' + b.po[poradie[0]] + '</span> : <span class="' + poradie[1] + '">' + b.po[poradie[1]] + "</span></span></span></div>";
+    }).join("");
+    var finale = '<div class="listok teraz" style="--n:1deg"><span class="vitaz" style="font-size:12px;color:var(--akcent-svetly)">teraz</span><span class="lok finale">FINÁLE</span><span class="nazov">Finále</span><span class="pz">3 Pitky · bez lokality</span>' +
+      '<span class="uctenka"><span class="r"><span>víťaz</span><b>+1 až +3</b></span><span class="r"><span>starší</span><span><span class="ja">ty</span> +' + PO_BITKE.ja + ' <span class="su">Fero</span> +' + PO_BITKE.su + "</span></span><span class=\"r\"><span>prebytok</span><b>držiteľovi</b></span></span></div>";
+    var koniec = '<div class="listok koniec" style="--n:-1deg"><span class="vitaz" style="font-size:12px;color:var(--tlmeny)">koniec</span><span class="lok finale" style="border-color:var(--okraj-svetly);color:var(--tlmeny)">CIRHÓZA</span><span class="nazov">Na konci hry</span><span class="pz">nepriznaná −5 za kus</span>' +
+      '<span class="uctenka"><span class="r"><span class="ja">ty</span><b>0</b></span><span class="r"><span class="su">Fero</span><span class="m"><b style="color:var(--cervena-text)">−15</b> (3 ks)</span></span></span></div>';
+    var hlava = '<div class="m-panel-hlava"><h4>Krčmová nástenka</h4><span class="pozn" style="font-size:11px">kolo 6 · finále · ' + (kto === "ja" ? "otvorené z tvojej dlaždice" : "otvorené zo súperovej dlaždice") + '</span><span class="zavri"><span class="kbd">Esc</span><button class="x" data-akcia="zavri" aria-label="Zavrieť">×</button></span></div>';
+    var skore = '<div class="popolniky">' + pop("ja") + '<div class="skore"><span class="ja">' + SKORE.ja + '</span><span class="dv">:</span><span class="su">' + SKORE.su + "</span></div>" + pop("su") + "</div>";
+    var pata = '<div class="m-pata"><span>Keby partia skončila teraz: <b><span style="color:var(--ja)">11</span> : <span style="color:var(--su)">−7</span></b> (Cirhóza)</span><span>Starší ešte <b>1×</b> (po finále): <span class="cip">ty +' + PO_BITKE.ja + '</span> <span class="cip">Fero +' + PO_BITKE.su + '</span></span><span>Bez výhry vo finále: <b><span style="color:var(--ja)">12</span> : <span style="color:var(--su)">−5</span></b></span></div>';
+    return '<div class="m-vrstva" data-vrstva><div class="m-panel" role="dialog" aria-label="Krčmová nástenka">' + hlava + skore + '<div class="korok">' + listky + finale + koniec + "</div>" + pata + "</div></div>";
+  }
+
+  // ---------- Variant B: účet z krčmy ----------
+  function blocekB(kto) {
+    var su = kto === "ja" ? "su" : "ja";
+    var riadky = BITKY.map(function (b) {
+      var bit = b.vitaz === kto ? b.zaBitku : 0;
+      var ine = b.preb[kto] ? "+" + b.preb[kto] + " preb." : b.ex[kto] ? "−" + b.ex[kto] + " Ex." : "";
+      return "<tr><td class=\"lok\"><img src=\"" + IMG[b.vitaz === "ja" ? "jano" : "fero"] + "\" alt=\"víťaz " + MENO[b.vitaz] + "\" style=\"border-color:" + (b.vitaz === "ja" ? "#1d8a99" : "#c0583a") + "\">" + b.kolo + ". " + b.lok + "</td>" +
+        '<td class="' + (bit ? "plus" : "nic") + '">' + (bit ? "+" + bit : "—") + "</td>" +
+        '<td class="' + (b.st[kto] ? "plus" : "nic") + '">' + (b.st[kto] ? "+" + b.st[kto] : "—") + "</td>" +
+        '<td class="' + (ine ? (ine[0] === "−" ? "minus" : "plus") : "nic") + '">' + (ine || "—") + "</td>" +
+        '<td class="stav">' + b.po[kto] + "</td></tr>";
+    }).join("");
+    var sb = 0, ss = 0, si = 0; BITKY.forEach(function (b) { if (b.vitaz === kto) sb += b.zaBitku; ss += b.st[kto]; si += b.preb[kto] - b.ex[kto]; });
+    var cir = CIRH[kto] * 5;
+    var buduce = '<tr class="buduce"><td>Finále</td><td>0 až +3</td><td>+' + PO_BITKE[kto] + '</td><td>preb.?</td><td></td></tr>' +
+      '<tr class="buduce"><td>Na konci: Cirhóza ×' + CIRH[kto] + '</td><td></td><td></td><td class="' + (cir ? "minus" : "nic") + '" style="font-style:normal">' + (cir ? "−" + cir : "—") + "</td><td></td></tr>";
+    var min = SKORE[kto] + PO_BITKE[kto] - cir, max = min + 3;
+    var minSu = SKORE[su] + PO_BITKE[su] - CIRH[su] * 5;
+    var hore = kto === "su";
+    var styl = hore ? "top:132px; right:150px; --sipka: 390px" : "bottom:110px; left:160px; --sipka: 76px";
+    return '<div class="m-pop ' + (hore ? "hore" : "dole") + '" style="' + styl + '" role="dialog" aria-label="Účet špakov" data-vrstva>' +
+      '<h4>Účet · ' + (kto === "ja" ? "tvoje špaky" : "špaky – " + MENO.su) + '<span class="prepni" role="group"><button data-akcia="ucet" data-kto="ja" aria-pressed="' + (kto === "ja") + '">ty</button><button data-akcia="ucet" data-kto="su" aria-pressed="' + (kto === "su") + '">Fero</button></span><button class="x" data-akcia="zavri" aria-label="Zavrieť">×</button></h4>' +
+      '<div class="podnadpis">od krčmárky, po bitkách · Esc zatvorí</div>' +
+      "<table><thead><tr><th>bitka</th><th>za bitku</th><th>starší</th><th>iné</th><th>stav</th></tr></thead><tbody>" + riadky +
+      '<tr class="spolu"><td>Spolu teraz</td><td>+' + sb + "</td><td>+" + ss + "</td><td>" + (si ? zn(si) : "—") + '</td><td class="stav">' + SKORE[kto] + "</td></tr>" + buduce + "</tbody></table>" +
+      '<div class="ciara"></div><div class="vysledok"><span>Na konci, keby sa markery nepohli:</span><b>' + mn(min) + " až " + mn(max) + "</b></div>" +
+      '<div class="porovnanie">' + (kto === "ja" ? MENO.su : "Ty") + ": " + SKORE[su] + " teraz → " + mn(minSu) + " až " + mn(minSu + 3) + (CIRH[su] ? " (Cirhóza ×" + CIRH[su] + ")" : "") + ". Prebytok vo finále a pohyb starších odhad nerátá.</div></div>";
+  }
+
+  // ---------- Variant C: pretek popolníkov ----------
+  function grafC(kto) {
+    var W = 760, H = 230, L = 34, R = 70, T = 14, B = 52;
+    var body = [{ x: "štart", ja: 0, su: 0 }].concat(BITKY.map(function (b) { return { x: b.lok, ja: b.po.ja, su: b.po.su, vitaz: b.vitaz, img: b.img }; }));
+    var nX = body.length + 1; // + finále + koniec
+    var ymin = -6, ymax = 16;
+    var X = function (i) { return L + i * (W - L - R) / nX; };
+    var Y = function (v) { return T + (ymax - v) * (H - T - B) / (ymax - ymin); };
+    var mriezka = "";
+    for (var v = -5; v <= 15; v += 5) mriezka += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="' + (v === 0 ? "#57483a" : "#2f2720") + '" stroke-width="' + (v === 0 ? 1.5 : 1) + '"/><text x="' + (L - 6) + '" y="' + (Y(v) + 4) + '" fill="#9d8f7b" font-size="10" text-anchor="end">' + mn(v) + "</text>";
+    var schody = function (p) {
+      var d = "M" + X(0) + " " + Y(0);
+      for (var i = 1; i < body.length; i++) d += " H" + X(i) + " V" + Y(body[i][p]);
+      return d;
+    };
+    var farba = { ja: "#5cc0cf", su: "#e0805f" };
+    var hrubka = function (p) { return p === kto ? 3.5 : 2; };
+    // vidlica: finále (starší + 0..3), koniec (− Cirhóza)
+    var vid = function (p) {
+      var i = body.length - 1, s = body[i][p];
+      var fMin = s + PO_BITKE[p], fMax = fMin + 3, kMin = fMin - CIRH[p] * 5, kMax = fMax - CIRH[p] * 5;
+      return '<path d="M' + X(i) + " " + Y(s) + " L" + X(i + 1) + " " + Y(fMax) + " L" + X(i + 2) + " " + Y(kMax) + " L" + X(i + 2) + " " + Y(kMin) + " L" + X(i + 1) + " " + Y(fMin) + ' Z" fill="' + farba[p] + '" fill-opacity="0.13"/>' +
+        '<path d="M' + X(i) + " " + Y(s) + " L" + X(i + 1) + " " + Y(fMax) + " L" + X(i + 2) + " " + Y(kMax) + '" fill="none" stroke="' + farba[p] + '" stroke-width="1.5" stroke-dasharray="4 4"/>' +
+        '<path d="M' + X(i) + " " + Y(s) + " L" + X(i + 1) + " " + Y(fMin) + " L" + X(i + 2) + " " + Y(kMin) + '" fill="none" stroke="' + farba[p] + '" stroke-width="1.5" stroke-dasharray="4 4"/>' +
+        '<text x="' + (X(i + 2) + 4) + '" y="' + (Y((kMin + kMax) / 2) + 4) + '" fill="' + farba[p] + '" font-size="11" font-weight="700">' + mn(kMin) + "…" + mn(kMax) + "</text>";
+    };
+    var bodky = function (p) { return body.slice(1).map(function (b, j) { return '<circle cx="' + X(j + 1) + '" cy="' + Y(b[p]) + '" r="' + (p === kto ? 4 : 3) + '" fill="' + farba[p] + '"/>' + (j === body.length - 2 ? '<text x="' + (X(j + 1) - 6) + '" y="' + (Y(b[p]) - 8) + '" fill="' + farba[p] + '" font-size="13" font-weight="800" font-family="Georgia" text-anchor="end">' + b[p] + "</text>" : ""); }).join(""); };
+    var osX = body.map(function (b, i) {
+      if (i === 0) return '<text x="' + X(0) + '" y="' + (H - B + 16) + '" fill="#9d8f7b" font-size="10" text-anchor="middle">štart</text>';
+      var c = b.vitaz === "ja" ? farba.ja : farba.su;
+      return '<clipPath id="kc' + i + kto + '"><circle cx="' + X(i) + '" cy="' + (H - B + 18) + '" r="11"/></clipPath><image href="' + IMG[b.vitaz === "ja" ? "jano" : "fero"] + '" x="' + (X(i) - 11) + '" y="' + (H - B + 7) + '" width="22" height="22" clip-path="url(#kc' + i + kto + ')"/><circle cx="' + X(i) + '" cy="' + (H - B + 18) + '" r="11" fill="none" stroke="' + c + '" stroke-width="2"/>' +
+        '<text x="' + X(i) + '" y="' + (H - B + 42) + '" fill="#b6a790" font-size="10" text-anchor="middle">' + b.x + "</text>";
+    }).join("") +
+      '<text x="' + X(body.length) + '" y="' + (H - B + 22) + '" fill="#ffd08a" font-size="11" font-weight="700" text-anchor="middle">Finále</text><text x="' + X(body.length) + '" y="' + (H - B + 42) + '" fill="#9d8f7b" font-size="10" text-anchor="middle">teraz</text>' +
+      '<text x="' + X(body.length + 1) + '" y="' + (H - B + 22) + '" fill="#b6a790" font-size="11" font-weight="700" text-anchor="middle">Koniec</text><text x="' + X(body.length + 1) + '" y="' + (H - B + 42) + '" fill="#9d8f7b" font-size="10" text-anchor="middle">Cirhóza</text>';
+    var poradie = kto === "ja" ? ["su", "ja"] : ["ja", "su"];
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Priebeh špakov oboch hráčov po bitkách a vidlica do konca hry">' + mriezka +
+      '<line x1="' + X(body.length - 1) + '" x2="' + X(body.length - 1) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="#e9ad45" stroke-dasharray="2 4"/>' +
+      poradie.map(vid).join("") +
+      poradie.map(function (p) { return '<path d="' + schody(p) + '" fill="none" stroke="' + farba[p] + '" stroke-width="' + hrubka(p) + '" stroke-linejoin="round"/>'; }).join("") +
+      poradie.map(bodky).join("") + osX + "</svg>";
+    var pravy = '<div class="pravy"><h5>Čo je ešte v hre</h5><ul>' +
+      '<li class="hlava"><span></span><span>ty</span><span>Fero</span></li>' +
+      "<li><span>Finále (3 Pitky, víťaz)</span><span>0–3</span><span>0–3</span></li>" +
+      "<li><span>Starší po finále</span><span>+" + PO_BITKE.ja + "</span><span>+" + PO_BITKE.su + "</span></li>" +
+      "<li><span>Prebytok vo finále</span><span>?</span><span>?</span></li>" +
+      '<li><span>Nepriznaná Cirhóza</span><span>0</span><span class="m">−15</span></li>' +
+      '<li style="border:0"><span><b>Na konci</b></span><span>12–15</span><span class="m">−5…−2</span></li></ul>' +
+      '<p style="margin:8px 0 0;color:var(--tlmeny);font-size:10.5px">Vidlica nerátá prebytok ani pohyb starších. Fero dobehne, len ak prizná Cirhózy.</p></div>';
+    return '<div class="m-graf" data-vrstva><div class="lavy"><div class="lista"><span class="spat">← Späť na stôl <span class="kbd">Esc</span></span><span>Pretek popolníkov · ' + (kto === "ja" ? "tvoja čiara je hrubšia" : "Ferova čiara je hrubšia") + '</span></div>' + svg + "</div>" + pravy + "</div>";
+  }
+
+  // ---------- kreslenie mockov ----------
+  var otvorene = {}; // mock id -> "ja" | "su" | null
+  function kresli(el) {
+    var id = el.getAttribute("data-mock"), v = el.querySelector(".vnutro"), o = otvorene[id] || null, html = "";
+    if (id === "A" || id === "B" || id === "C") {
+      var opts = { starsi: "S1", spakyKlik: true, pressed: o };
+      var plocha = id === "C" && o ? '<div class="m-stol" style="height:290px;place-items:stretch">' + grafC(o) + "</div>" : stol();
+      html = os() + barSu(opts) + plocha + barJa(opts) + ruka();
+      if (o && id === "A") html += nastenkaA(o);
+      if (o && id === "B") html += blocekB(o);
+      if (!o) html += '<span class="m-hint">Klikni na dlaždicu Špaky ↓ alebo ↑</span>';
+    } else if (id === "S1" || id === "S2") {
+      var otv = o;
+      var o2 = { starsi: id, nova: true, spakyKlik: false, pressedSt: otv };
+      var plochaS = otv ? stol('<div style="display:flex;gap:8px;padding:10px;width:100%;overflow:hidden">' + STARSI.map(function (e) { var l = (STAVY[stav].ja[e] || 0), m = (STAVY[stav].su[e] || 0); return '<div style="flex:1;min-width:0;background:rgba(0,0,0,.3);border-radius:8px;padding:5px;font-size:10px"><b>' + MENA_ST[e] + '</b><img src="' + IMG[e] + '" alt="" style="width:100%;height:70px;object-fit:cover;border-radius:4px;margin:3px 0"><div style="color:' + (l ? "var(--ja)" : m ? "var(--su)" : "var(--tlmeny)") + '">' + (l ? "bojí sa teba · +" + l : m ? "bojí sa Fera · +" + m : "nikoho sa nebojí") + "</div></div>"; }).join("") + '<span class="pokyn" style="background:var(--plocha)">← Späť na stôl (Esc) · línia starších ako dnes, bary ostávajú celé</span></div>') : stol();
+      el.style.maxWidth = sirka === 1366 ? "1040px" : "";
+      html = os() + barSu(o2) + plochaS + barJa(o2) + ruka();
+      if (!otv) html += '<span class="m-hint">Nová dlaždica je čiarkovane orámovaná · klikni na ňu</span>';
+    } else if (id === "stavy") {
+      var b = function (popis, obsah) { return '<div class="bunka"><div style="display:flex">' + obsah + '</div><div class="popis">' + popis + "</div></div>"; };
+      var s = function (cls, pressed, bezPosunu) { return dlazdicaStarsi("ja", "S1", { staticky: true, cls: cls, pressed: pressed, bezPosunu: bezPosunu }); };
+      var stary = '<div class="z klik spaky ja stary-stlaceny" style="flex:1"><span class="n">Špaky ▴</span><span class="h">' + IK.replace('class="ik"', 'class="ik" style="fill:var(--na-akcente)"') + "<b style=\"color:var(--na-akcente)\">11</b></span></div>";
+      var novySp = '<div class="z klik spaky ja" aria-pressed="true" style="flex:1"><span class="n">Špaky ▴</span><span class="h">' + IK + "<b>11</b></span></div>";
+      html = '<div class="mock-tile-galeria">' +
+        b("pokoj", s("", false, true)) +
+        b("hover: jemný jantár", s("", false, true).replace('class="z klik', 'style="background:color-mix(in srgb, var(--akcent) 10%, rgba(0,0,0,.28))" class="z klik')) +
+        b("fokus: 3 px obrys", s("", false, true).replace('class="z klik', 'style="outline:3px solid var(--akcent-svetly);outline-offset:2px" class="z klik')) +
+        b("stlačená (línia otvorená)", s("", true, true).replace('class="z klik', 'aria-pressed="true" class="z klik')) +
+        b("posun od bitky ⇄", dlazdicaStarsi("ja", "S1", { staticky: true, posuny: 2 })) +
+        b("Špaky stlačená: dnes", stary) +
+        b("Špaky stlačená: návrh", novySp) +
+        "</div>";
+    }
+    v.innerHTML = html;
+  }
+  function kresliVsetko() { document.querySelectorAll(".mock").forEach(kresli); }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-akcia]");
+    var mock = e.target.closest(".mock");
+    if (t && mock) {
+      var id = mock.getAttribute("data-mock"), a = t.getAttribute("data-akcia"), kto = t.getAttribute("data-kto");
+      if (a === "spaky" && (id === "A" || id === "B" || id === "C")) otvorene[id] = otvorene[id] === kto ? null : kto;
+      else if (a === "starsi" && (id === "S1" || id === "S2")) otvorene[id] = otvorene[id] === kto ? null : kto;
+      else if (a === "zavri") otvorene[id] = null;
+      else if (a === "ucet") otvorene[id] = kto;
+      kresli(mock);
+      var spat = mock.querySelector('[data-akcia="' + (a === "starsi" ? "starsi" : "spaky") + '"][data-kto="' + (kto || "ja") + '"]');
+      if (spat && a !== "zavri") spat.focus();
+      return;
+    }
+    if (mock && !e.target.closest("[data-vrstva] .m-panel, .m-pop") && e.target.closest(".m-vrstva")) {
+      otvorene[mock.getAttribute("data-mock")] = null; kresli(mock);
+    }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      var zmena = false;
+      for (var k in otvorene) if (otvorene[k]) { otvorene[k] = null; zmena = true; }
+      if (zmena) kresliVsetko();
+    }
+    if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches('.mock [role="button"]')) { e.preventDefault(); e.target.click(); }
+  });
+
+  // filter auditu
+  document.querySelectorAll(".filter button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      document.querySelectorAll(".filter button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      document.querySelectorAll("table.audit tbody tr").forEach(function (r) { r.hidden = f !== "vse" && r.getAttribute("data-z") !== f; });
+    });
+  });
+  // záložky variantov
+  var taby = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function vyber(tab) {
+    taby.forEach(function (t) { var s = t === tab; t.setAttribute("aria-selected", String(s)); t.tabIndex = s ? 0 : -1; document.getElementById(t.getAttribute("aria-controls")).hidden = !s; });
+    tab.focus();
+  }
+  taby.forEach(function (t, i) {
+    t.addEventListener("click", function () { vyber(t); });
+    t.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight") vyber(taby[(i + 1) % taby.length]);
+      if (e.key === "ArrowLeft") vyber(taby[(i + taby.length - 1) % taby.length]);
+    });
+  });
+  // pred / po
+  document.querySelectorAll("[data-pp]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.getAttribute("data-pp"), v = b.getAttribute("data-v"), box = document.querySelector('[data-pp-box="' + k + '"]');
+      document.querySelectorAll('[data-pp="' + k + '"]').forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      box.querySelector(".mock").hidden = v !== "po"; box.querySelector(".pred").hidden = v !== "pred";
+    });
+  });
+  // stav partie a šírka pre dlaždicu Starší
+  document.querySelectorAll("[data-stav]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      stav = b.getAttribute("data-stav");
+      document.querySelectorAll("[data-stav]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      kresliVsetko();
+    });
+  });
+  document.querySelectorAll("[data-sirka]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      sirka = Number(b.getAttribute("data-sirka"));
+      document.querySelectorAll("[data-sirka]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      kresliVsetko();
+    });
+  });
+  // otvorený stav pri načítaní: A ukáže nástenku hneď, nech je vidno výsledok aj bez kliku
+  otvorene.A = "ja";
+  kresliVsetko();
+})();
+</script>
+</body>
+</html>
