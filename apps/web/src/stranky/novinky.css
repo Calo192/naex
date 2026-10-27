@@ -1,7 +1,7 @@
 /* Novinky (2026-10-22): dni ako časová os, pod každým záznamy. Farby len cez tokeny zo schemy.css. */
 
 /* Stĺpec na čítanie zľava v šírke stránky (#21 B) — hrana sedí s ostatnými stránkami. */
-.novinky {
+.novinky > :not(.hlava-stranky) {
   max-width: var(--sirka-citanie);
 }
 

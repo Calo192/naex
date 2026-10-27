@@ -21,6 +21,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Posuvník nemení šírku stránky — kostra neposkočí medzi krátkou a dlhou stránkou (UX K-A). */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -331,6 +333,79 @@ textarea {
   padding-inline: var(--okraj-stranky);
 }
 
+/* Nástroj (Tvorba, Playtest, Hráči; Michal 2026-10-27): obsah bez maxima doprava, ale od tej
+   istej ľavej hrany ako ostatné stránky — hrana centrovanej kostry je max(okraj, (100 % − max) / 2). */
+.aplikacia.nastroj main.obsah.kostra {
+  max-width: none;
+  margin-inline: 0;
+  padding-left: max(var(--okraj-stranky), calc((100% - var(--kostra-max)) / 2));
+}
+
+/* ---- typy stránok: 12 stĺpcov (Michal 2026-10-27, UI časť 4) ------------------------ */
+/* Text so stĺpcom vpravo (Novinky, Spätná väzba, Rebríček): obsah 1–8, bok 9–12.
+   Príručka (Pravidlá): obsah 1–3, text 4–9, marginálie 10–12.
+   Galéria (Karty, Dielňa): mriežka 1–8, bok 9–12. Celá kostra: 1–12.
+   Pravý stĺpec je od 1440 px; užšie okno ho dá nad obsah. */
+:root {
+  --zlab: clamp(16px, 1.7vw, 32px);
+}
+
+.mriezka {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--zlab);
+  row-gap: 24px;
+  align-items: start;
+}
+
+.mriezka > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.mriezka > .st-prirucka-obsah {
+  grid-column: 1 / span 3;
+}
+
+.mriezka > .st-prirucka-text {
+  grid-column: 4 / -1;
+}
+
+@media (min-width: 1440px) {
+  .mriezka > .st-obsah {
+    grid-column: 1 / span 8;
+    grid-row: 1;
+  }
+
+  .mriezka > .st-bok {
+    grid-column: 9 / -1;
+    grid-row: 1;
+    position: sticky;
+    top: 80px;
+  }
+
+  .mriezka > .st-prirucka-text.s-okrajom {
+    grid-column: 4 / span 6;
+  }
+
+  .mriezka > .st-prirucka-okraj {
+    grid-column: 10 / -1;
+  }
+}
+
+@media (max-width: 1439.98px) {
+  .mriezka > .st-bok {
+    order: -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .mriezka > .st-prirucka-obsah,
+  .mriezka > .st-prirucka-text {
+    grid-column: 1 / -1;
+  }
+}
+
 .aplikacia {
   min-height: 100vh;
   display: flex;
@@ -501,6 +576,21 @@ button.sprava-tlacidlo {
   text-align: center;
   vertical-align: 0.1em;
   font-variant-numeric: tabular-nums;
+}
+
+/* V lište menu je značka horný index v rohu položky — keď zhasne, menu sa nepohne (UX K-A). */
+.navigacia a {
+  position: relative;
+}
+
+.navigacia .nav-znacka {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  margin: 0;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--pozadie);
 }
 
 /* Novinky či Dielňa schované vo Viac ▾ — bodka, aby značka nezmizla. */
@@ -952,19 +1042,9 @@ button.sprava-tlacidlo {
 
 /* ---- autentifikácia a profil ------------------------------------------- */
 
+/* Formulár (prihlásenie, registrácia) pod hlavou stránky — od hrany kostry, nie na stred. */
 .formular-stred {
   max-width: 440px;
-  margin: 3vh auto 0;
-}
-
-.formular-stred h1 {
-  text-align: center;
-}
-
-.formular-stred .podnadpis {
-  text-align: center;
-  color: var(--tlmeny);
-  margin-bottom: 1.5rem;
 }
 
 .formular-stred form button[type="submit"] {
@@ -1035,27 +1115,16 @@ button.sprava-tlacidlo {
 
 /* ---- domovská stránka --------------------------------------------------- */
 
+/* Nadpis titulky je v hlave stránky ako všade (Michal 2026-10-27); hero je text, výzvy a vejár. */
 .hero {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   gap: 40px;
   align-items: center;
-  min-height: 62vh;
-}
-
-.hero h1 {
-  font-size: clamp(2.6rem, 6vw, 4.4rem);
-  line-height: 1.02;
-  margin-bottom: 0.35em;
-}
-
-.hero h1 em {
-  font-style: normal;
-  color: var(--akcent);
 }
 
 .hero-text {
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   color: var(--tlmeny);
   max-width: 34rem;
   margin-bottom: 1.6rem;

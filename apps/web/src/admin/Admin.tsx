@@ -5,6 +5,7 @@
 import { useEffect, type ReactNode } from "react";
 import { Odkaz, chod } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import { AdminProvider, problemyNavrhov, useAdmin, zmeneneOdZverejnenia } from "./stav.tsx";
 import { Ikona, type NazovIkony } from "./spolocne.tsx";
 import { Prehlad } from "./Prehlad.tsx";
@@ -107,9 +108,9 @@ export function Admin({ cesta }: { readonly cesta: string }) {
   const aktivna = (href: string) => (href === "/admin" ? cesta === "/admin" : cesta.startsWith(href));
   return (
     <AdminProvider>
+      <HlavaStranky nadpis="Tvorba kariet" uvod="Karty, akcie a vzhľad sady. Hra beží na zverejnenej sade." />
       <div className="admin">
         <nav className="admin-menu" aria-label="Tvorba kariet">
-          <div className="admin-menu-titul">Tvorba kariet</div>
           {SKUPINY.map((g) => (
             <div key={g.nazov} className="admin-menu-skupina" role="group" aria-label={g.nazov}>
               <div className="admin-menu-nazov">{g.nazov}</div>

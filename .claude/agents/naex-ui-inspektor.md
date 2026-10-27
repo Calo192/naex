@@ -42,6 +42,12 @@ Zadanie ti povie **url** lokálneho servera (napr. `http://localhost:8793`),
    prihlási sa AI účtom „UI inšpektor (AI)“ so subadminom). Nástroj vypíše
    súhrn po stránkach a po každej stránke dopíše `nalezy.json` (aj zabitý beh
    nechá, čo zmeral; stránka, ktorá zlyhala, je v poli `chyby`). Snímky robí
+   Potom zmeraj **kostru** (Michal 2026-10-27: jednotná štruktúra všetkých stránok
+   mimo herného stola): `tools/ui-inspektor/kostra.ts --url <url>` pri 1920/1440/1366
+   porovná x loga, x a y H1, veľkosť písma H1, hranu obsahu a boku a počet H1
+   a HlavaStranky. Skončí s chybou pri rozdiele nad 2 px — každý ✗ je nález
+   „vysoký“ (stránka vybočuje z kostry).
+   Snímky robí inspekcia.ts
    po obrazovkách v skutočnom okne (`<meno>.png`, `<meno>-2.png` …), takže
    lepiaca hlavička a pripnutá ruka sú na mieste ako u hráča. Na výrezy sa
    spoľahni, vlastné snímky si netreba robiť.

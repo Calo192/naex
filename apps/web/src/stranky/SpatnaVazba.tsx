@@ -8,6 +8,7 @@ import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { tvar } from "./Statistiky.tsx";
 import { HodnotenieHry } from "./HodnotenieHry.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import "./statistiky.css";
 
 const KATEGORIE = {
@@ -459,13 +460,7 @@ export function SpatnaVazba() {
 
   return (
     <div className="spatna-vazba">
-      <header className="stranka-hlava">
-        <h1>Spätná väzba</h1>
-        <p className="tlmene">
-          NA EX! sa ešte ladí a tvoj názor ho posunie. Napíš, čo funguje a čo nie. Ostatní hráči môžu komentovať a za dobrý postreh ti dať{" "}
-          <strong>cigaretu</strong>. Tvorca hry pri každom názore označí, či ho plánuje.
-        </p>
-      </header>
+      <HlavaStranky nadpis="Spätná väzba" uvod="Čo funguje, čo nie a čo by si zmenil. Tvorca pri každom názore označí, čo s ním urobí." />
 
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <HodnotenieHry smiePisat={maPravo(ja, "hodnotit_hru") || ja.ai === true} />

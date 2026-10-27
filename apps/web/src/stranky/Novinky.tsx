@@ -8,6 +8,7 @@ import { api } from "../lib/api.ts";
 import { NOVINKY_VIDENE, citajVidene, ulozVidene } from "../lib/novinky.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import "./novinky.css";
 
 const KATEGORIE = { pravidla: "Pravidlá", karty: "Karty", dizajn: "Dizajn", web: "Web", opravy: "Opravy" } as const;
@@ -76,13 +77,11 @@ export function Novinky() {
 
   return (
     <div className="novinky">
-      <header className="stranka-hlava">
-        <h1>Novinky</h1>
-        <p className="tlmene">
-          Čo sa v hre a na webe zmenilo: pravidlá, karty, vzhľad, nové funkcie aj opravené chyby. Najnovšie sú hore. Kam hra smeruje ďalej,
-          ukazuje <Odkaz href="/vyvoj#roadmapa">roadmapa</Odkaz>.
-        </p>
-      </header>
+      <HlavaStranky
+        nadpis="Novinky"
+        uvod="Čo sa v hre a na webe zmenilo — pravidlá, karty, vzhľad aj opravy. Najnovšie hore."
+        akcia={<Odkaz href="/vyvoj#roadmapa">Kam hra smeruje → Roadmapa</Odkaz>}
+      />
 
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
 

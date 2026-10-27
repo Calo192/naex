@@ -7,6 +7,7 @@ import { IkonaPoldeci } from "../hra/Panely.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { useUcet } from "../lib/ucet.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import { adresaVyucby, bezPrvejCasti, napisVyucby, rozpracovana, useVyucbaUctu } from "../hra/Vyucba.tsx";
 
 const VEJAR = ["pijan", "farar", "krcma"];
@@ -23,16 +24,18 @@ export function Domov() {
 
   return (
     <>
+      <HlavaStranky
+        nadpis={
+          <>
+            Bitka o dedinu. <em>Na ex!</em>
+          </>
+        }
+        uvod="Kompetitívna kartová hra pre dvoch v drsnom dedinskom prostredí."
+      />
       <section className="hero">
         <div>
-          <h1>
-            Bitka o dedinu.
-            <br />
-            <em>Na ex!</em>
-          </h1>
           <p className="hero-text">
-            Kompetitívna kartová hra pre dvoch v drsnom dedinskom prostredí. Stav partiu z kariet, ktoré sa
-            dotýkajú stranami, bi sa o lokality, des starších — a nezabudni na vlastné dlhy.
+            Stav partiu z kariet, ktoré sa dotýkajú stranami, bi sa o lokality, des starších — a nezabudni na vlastné dlhy.
           </p>
           {novacik ? (
             <div className="riadok-tlacidiel hero-novacik">

@@ -1,7 +1,9 @@
-// Kostra stránok mimo hry (Michal 2026-10-26: „Ľavý okraj každej stránky skáče“) —
-// headless Chrome prejde stránky pri 1920, 1440 a 1366 px a zmeria ľavú hranu loga
-// a obsahu. Obsah musí začínať na hrane loga a tá sa medzi stránkami nesmie pohnúť
-// ani o pixel; inak skončí s chybou. Úzke stránky smú byť užšie len sprava.
+// Kostra stránok mimo hry (Michal 2026-10-26: „Ľavý okraj každej stránky skáče“; 2026-10-27:
+// „jednotná štruktúra-kostra, výnimkou je len hra“) — headless Chrome prejde stránky pri
+// 1920, 1440 a 1366 px a zmeria x loga, x a y nadpisu H1, veľkosť jeho písma, x začiatku
+// obsahu a pri stránkach s bokom (.st-bok) x hrany boku. Každá stránka musí mať práve
+// jednu H1 a jednu HlavaStranky. Pri rozdiele nad 2 px medzi stránkami (alebo obsahu
+// voči logu) skončí s chybou.
 //
 //   node --experimental-strip-types --no-warnings tools/ui-inspektor/kostra.ts [cesta …] [--url http://localhost:5176] [--rozlisenia 1920x1080,1440x800,1366x650]
 //
@@ -17,7 +19,7 @@ import { prihlasAgenta } from "../playtest/web.ts";
 
 /** Stránky mimo hry (apps/web/src/App.tsx a admin/); /hrac/:id sa doplní podľa účtu. */
 const STRANKY = [
-  "/", "/hra", "/pravidla", "/karty", "/karty/dielna", "/novinky", "/rebricek", "/spatna-vazba", "/vyvoj", "/vyvoj/roadmapa",
+  "/", "/hra", "/pravidla", "/prihlasenie", "/registracia", "/neexistuje", "/karty", "/karty/dielna", "/novinky", "/rebricek", "/spatna-vazba", "/vyvoj", "/vyvoj/roadmapa",
   "/profil", "/hrac/:ja", "/playtest", "/playtest/reporty", "/hraci", "/achievementy/ukazka",
   "/admin", "/admin/karty", "/admin/akcie", "/admin/bodovacie", "/admin/kategorie", "/admin/klucove-slova", "/admin/nastavenia",
   "/admin/obsah", "/admin/sady", "/admin/media", "/admin/import-export", "/admin/tlac", "/admin/zverejnit",
@@ -77,12 +79,22 @@ const MERANIE = String.raw`(() => {
       prvok = el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).join('.') : '');
     }
   }
-  const nadpis = main.querySelector('h1, h2');
+  const h1 = document.querySelectorAll('h1');
+  const prvaH1 = h1[0];
+  const r1 = prvaH1 ? prvaH1.getBoundingClientRect() : null;
+  // Bok len vtedy, keď stojí vpravo vedľa obsahu (pod 1440 px ide nad obsah).
+  const bok = main.querySelector('.st-bok');
+  const rb = bok ? bok.getBoundingClientRect() : null;
   return {
     logo: logo.getBoundingClientRect().left,
     obsah: min === Infinity ? null : min,
     prvok,
-    nadpis: nadpis ? nadpis.getBoundingClientRect().left : null,
+    h1: h1.length,
+    hlavy: main.querySelectorAll('.hlava-stranky').length,
+    h1x: r1 ? r1.left : null,
+    h1y: r1 ? r1.top + scrollY : null,
+    h1pismo: prvaH1 ? parseFloat(getComputedStyle(prvaH1).fontSize) : null,
+    bok: rb && rb.width > 2 && rb.left > innerWidth / 2 ? rb.left : null,
     stol: document.querySelector('main.obsah > .hra') !== null,
     presah: document.documentElement.scrollWidth > innerWidth + 1,
   };
@@ -92,12 +104,19 @@ interface Meranie {
   readonly logo?: number;
   readonly obsah?: number | null;
   readonly prvok?: string;
-  readonly nadpis?: number | null;
+  readonly h1?: number;
+  readonly hlavy?: number;
+  readonly h1x?: number | null;
+  readonly h1y?: number | null;
+  readonly h1pismo?: number | null;
+  readonly bok?: number | null;
   readonly stol?: boolean;
   readonly presah?: boolean;
   readonly chyba?: string;
 }
 
+const TOLERANCIA = 2;
+const vysledky: { w: number; cesta: string; ok: boolean }[] = [];
 const cdpPort = await volnyPort();
 const prehliadac = spustiChrome(chrome, ["--headless=new", `--remote-debugging-port=${cdpPort}`, "--hide-scrollbars", "about:blank"], "naex-kostra-");
 let chyby = 0;
@@ -143,7 +162,13 @@ try {
   for (const { w, h } of rozlisenia) {
     await posli("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
     console.log(`\n${w} × ${h}`);
-    let hrana: number | null = null;
+    // Vzor = prvá zmeraná stránka; ostatné sa s ňou porovnajú (tolerancia 2 px).
+    const vzor: { logo?: number; h1x?: number; h1y?: number; h1pismo?: number; bok?: number } = {};
+    const sedi = (k: keyof typeof vzor, v: number | null | undefined): boolean => {
+      if (v === null || v === undefined) return true;
+      vzor[k] ??= v;
+      return Math.abs(v - (vzor[k] as number)) <= TOLERANCIA;
+    };
     for (const cesta of zoznam) {
       await posli("Page.navigate", { url: `${zaklad}${cesta}` });
       await pockaj(1800);
@@ -157,17 +182,38 @@ try {
         console.log(`  · ${cesta}: herný stôl — nemeria sa`);
         continue;
       }
-      hrana ??= m.logo;
       const obsah = m.obsah ?? m.logo;
-      const ok = Math.abs(m.logo - hrana) < 0.5 && Math.abs(obsah - m.logo) < 0.5 && m.presah !== true;
-      if (!ok) chyby++;
-      const nadpis = m.nadpis === null || m.nadpis === undefined ? "" : ` · nadpis ${m.nadpis.toFixed(1)}`;
-      console.log(`  ${ok ? "✓" : "✗"} ${cesta}: logo ${m.logo.toFixed(1)} · obsah ${obsah.toFixed(1)} (${m.prvok ?? ""})${nadpis}${m.presah === true ? " · VODOROVNÝ PRESAH" : ""}`);
+      const zle: string[] = [];
+      if (!sedi("logo", m.logo)) zle.push("logo");
+      if (Math.abs(obsah - m.logo) > TOLERANCIA) zle.push(`obsah mimo hrany (${m.prvok ?? ""})`);
+      if (m.h1 !== 1) zle.push(`${m.h1 ?? 0}× H1`);
+      if (m.hlavy !== 1) zle.push(`${m.hlavy ?? 0}× HlavaStranky`);
+      if (!sedi("h1x", m.h1x)) zle.push("x H1");
+      if (!sedi("h1y", m.h1y)) zle.push("y H1");
+      if (!sedi("h1pismo", m.h1pismo)) zle.push("písmo H1");
+      if (!sedi("bok", m.bok)) zle.push("hrana boku");
+      if (m.presah === true) zle.push("VODOROVNÝ PRESAH");
+      if (zle.length > 0) chyby++;
+      const f = (v: number | null | undefined): string => (v === null || v === undefined ? "–" : v.toFixed(1));
+      vysledky.push({ w, cesta, ok: zle.length === 0 });
+      console.log(
+        `  ${zle.length === 0 ? "✓" : "✗"} ${cesta}: logo ${f(m.logo)} · obsah ${f(obsah)} · H1 ${f(m.h1x)},${f(m.h1y)} ${f(m.h1pismo)} px · bok ${f(m.bok)}${zle.length > 0 ? ` — ${zle.join(", ")}` : ""}`,
+      );
     }
   }
   ws.close();
 } finally {
   prehliadac.zastav();
 }
-console.log(chyby === 0 ? "\nKostra drží: ľavá hrana obsahu = logo na všetkých stránkach." : `\n${chyby} stránok mimo kostry.`);
+// Súhrn: stránka × rozlíšenie.
+const sirky = [...new Set(vysledky.map((v) => v.w))];
+console.log(`\n${"stránka".padEnd(26)}${sirky.map((w) => String(w).padStart(6)).join("")}`);
+for (const cesta of [...new Set(vysledky.map((v) => v.cesta))]) {
+  const bunky = sirky.map((w) => {
+    const v = vysledky.find((x) => x.cesta === cesta && x.w === w);
+    return (v === undefined ? "·" : v.ok ? "✓" : "✗").padStart(6);
+  });
+  console.log(`${cesta.padEnd(26)}${bunky.join("")}`);
+}
+console.log(chyby === 0 ? "\nKostra drží: logo, H1 a hrana obsahu aj boku sú na všetkých stránkach na tom istom mieste." : `\n${chyby} meraní mimo kostry.`);
 process.exit(chyby === 0 ? 0 : 1);

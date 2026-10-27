@@ -10,6 +10,7 @@ import { api } from "../../lib/api.ts";
 import { Odkaz, useTitulok } from "../../lib/router.tsx";
 import { useSada } from "../../lib/sada.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
+import { HlavaStranky } from "../../HlavaStranky.tsx";
 import { KrcmovyUcet } from "../../hra/KrcmovyUcet.tsx";
 import { UcetSpakov } from "../../hra/UcetSpakov.tsx";
 import { Nastenka } from "../../hra/Spaky.tsx";
@@ -78,10 +79,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
 
   if (chyba !== null) {
     return (
-      <div className="formular-stred" style={{ textAlign: "center" }}>
-        <h1>Partia sa nenašla</h1>
-        <p className="tlmene">{chyba}</p>
-      </div>
+      <HlavaStranky nadpis="Partia sa nenašla" uvod={chyba} />
     );
   }
   if (d === null || data === null) return <Nacitavanie />;
@@ -99,6 +97,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
 
   return (
     <div className="profil-hraca detail-partie">
+      <HlavaStranky nadpis={`${mena[ja]} – ${mena[su]}`} uvod={`Partia z ${datum(d.koniec)}, kolo po kole.`} />
       <section className="panel profil-hlavicka detail-hlavicka">
         {([ja, su] as const).map((p) => {
           const h = d.hraci[p];

@@ -8,6 +8,7 @@ import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { RankyPrava } from "./RankyPrava.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 
 type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number; readonly rolaRucne?: boolean };
 
@@ -42,7 +43,21 @@ export function Hraci() {
     }
   };
 
-  if (zoznam === null) return chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />;
+  const hlava = (
+    <HlavaStranky
+      nadpis="Hráči"
+      uvod="Účty, ich ranky a práva rankov."
+      viac={
+        <p>
+          Nový účet je Nealko; po výučbe alebo prvej dohratej partii (aj proti počítaču) je z neho Poldeci, potom Deci a Sedmička podľa hviezd
+          achievementov (percentá v Ranky a práva). Rank nastavený ručne (značka „ručne“) automatika nemení, kým ho nevrátiš na automatický. Účty AI
+          agentov majú značku AI — ich spätnú väzbu web predvolene skrýva.{" "}
+          {somAdmin ? "Rank aj značku AI meníš v tabuľke." : "Hráčske ranky meníš v tabuľke; subadminov a značku AI mení len admin."}
+        </p>
+      }
+    />
+  );
+  if (zoznam === null) return <div className="hraci-stranka">{hlava}{chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />}</div>;
   const f = hladat.trim().toLowerCase();
   const sedi = (p: Riadok, x: Rola | "ai" | null) => x === null || (x === "ai" ? p.ai === true : p.rola === x);
   const viditelni = zoznam.filter((p) => sedi(p, filter) && (f === "" || p.login.toLowerCase().includes(f) || p.meno.toLowerCase().includes(f)));
@@ -50,14 +65,7 @@ export function Hraci() {
 
   return (
     <div className="hraci-stranka">
-      <header className="hraci-hlavicka">
-        <h1>Hráči</h1>
-        <p className="tlmene">
-          Nový účet je Nealko; po výučbe alebo prvej dohratej partii (aj proti počítaču) je z neho Poldeci, potom Deci a Sedmička podľa hviezd
-          achievementov (percentá v Ranky a práva). Rank nastavený ručne (značka „ručne“) automatika nemení, kým ho nevrátiš na automatický. Účty AI agentov majú značku AI
-          — ich spätnú väzbu web predvolene skrýva. {somAdmin ? "Rank aj značku AI meníš v tabuľke." : "Hráčske ranky meníš v tabuľke; subadminov a značku AI mení len admin."}
-        </p>
-      </header>
+      {hlava}
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <RankyPrava poZmene={nacitaj} />
       <div className="hraci-ovladanie">

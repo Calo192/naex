@@ -547,10 +547,9 @@ td.cislo {
 /* ---- rebríček ------------------------------------------------------------------ */
 
 /* Zľava na hrane kostry, užší len sprava (Michal 2026-10-26). */
-.rebricek {
+.rebricek-obsah {
   display: grid;
   gap: 24px;
-  max-width: 980px;
 }
 
 .rebricek .stranka-hlava {
@@ -626,8 +625,11 @@ td.cislo {
 /* ---- spätná väzba ------------------------------------------------------------- */
 
 /* Stĺpec na čítanie zľava v šírke stránky (#21 B). */
-.spatna-vazba {
+.spatna-vazba > :not(.hlava-stranky) {
   max-width: var(--sirka-citanie);
+}
+
+.spatna-vazba {
   display: grid;
   gap: 22px;
 }

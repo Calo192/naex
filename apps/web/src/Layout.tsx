@@ -246,12 +246,15 @@ export function Layout({
   children,
   stol = false,
   plna = false,
+  nastroj = false,
 }: {
   readonly children: ReactNode;
   /** Herný stôl mimo živej partie (prehrávač, ukážky) — celá šírka okna ako pri stole. */
   readonly stol?: boolean;
   /** Celé okno pod hlavičkou bez posúvania stránky a bez pätičky. */
   readonly plna?: boolean;
+  /** Nástroj správcu (Tvorba, Playtest, Hráči) — obsah bez maxima doprava, hrana ako inde. */
+  readonly nastroj?: boolean;
 }) {
   const cesta = useCesta();
   const { ja, nacitane, odhlas, pravaNavstevnika } = useUcet();
@@ -355,7 +358,7 @@ export function Layout({
     ) : null;
 
   return (
-    <div className="aplikacia">
+    <div className={nastroj && !stol && !priStole ? "aplikacia nastroj" : "aplikacia"}>
       <header className="hlavicka" onClickCapture={strazOdchodu}>
         <div className={`hlavicka-vnutro${priStole ? " pri-stole" : ""}${kostra}`}>
           <Odkaz href="/" className="logo" aria-label="NA EX! — domov" data-nazov="úvodnú stránku">

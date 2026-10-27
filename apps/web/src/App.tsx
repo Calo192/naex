@@ -5,6 +5,7 @@
 
 import { lazy, Suspense, type ReactNode } from "react";
 import { Layout } from "./Layout.tsx";
+import { HlavaStranky } from "./HlavaStranky.tsx";
 import { Nacitavanie } from "./komponenty.tsx";
 import { Odkaz, useCesta } from "./lib/router.tsx";
 import { jeSpravca, maPravo, useUcet } from "./lib/ucet.tsx";
@@ -28,12 +29,15 @@ import { Playtest } from "./playtest/Playtest.tsx";
 
 function Neprihlaseny() {
   return (
-    <div className="formular-stred panel" style={{ textAlign: "center" }}>
-      <h1>Najprv sa prihlás</h1>
-      <Odkaz href={`/prihlasenie?spat=${encodeURIComponent(location.pathname)}`} className="tlacidlo tlacidlo-hlavne">
-        Prihlásiť sa
-      </Odkaz>
-    </div>
+    <HlavaStranky
+      nadpis="Najprv sa prihlás"
+      uvod="Táto stránka je len pre prihlásených hráčov."
+      akcia={
+        <Odkaz href={`/prihlasenie?spat=${encodeURIComponent(location.pathname)}`} className="tlacidlo tlacidlo-hlavne">
+          Prihlásiť sa
+        </Odkaz>
+      }
+    />
   );
 }
 
@@ -43,13 +47,15 @@ const UkazkaStola = lazy(() => import("./hra/UkazkaStola.tsx").then((m) => ({ de
 
 function Nenajdene() {
   return (
-    <div className="formular-stred" style={{ textAlign: "center" }}>
-      <h1>Tu nič nie je</h1>
-      <p className="tlmene">Táto stránka v dedine neexistuje.</p>
-      <Odkaz href="/" className="tlacidlo">
-        Domov
-      </Odkaz>
-    </div>
+    <HlavaStranky
+      nadpis="Tu nič nie je"
+      uvod="Táto stránka v dedine neexistuje."
+      akcia={
+        <Odkaz href="/" className="tlacidlo">
+          Domov
+        </Odkaz>
+      }
+    />
   );
 }
 
@@ -66,12 +72,12 @@ export function App() {
 
   // Reporty playtestov vidí aj rank s právom (Michal 2026-10-22); návrhy len správca (Playtest to rozlíši).
   if (cesta === "/playtest" || cesta.startsWith("/playtest/")) {
-    return <Layout>{chranene(<Playtest cesta={cesta} />, !maPravo(ja, "reporty_playtestov"))}</Layout>;
+    return <Layout nastroj>{chranene(<Playtest cesta={cesta} />, !maPravo(ja, "reporty_playtestov"))}</Layout>;
   }
-  // Všetky stránky mimo hry sú v jednej kostre na stred, aj Tvorba a Vývoj (Michal 2026-10-26);
-  // celú šírku má len herný stôl.
-  if (cesta.startsWith("/admin")) return <Layout>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
-  if (cesta === "/hraci") return <Layout>{chranene(<Hraci />, true)}</Layout>;
+  // Všetky stránky mimo hry sú v jednej kostre s hlavou stránky (Michal 2026-10-26 a 27); nástroje
+  // správcu (Tvorba, Playtest, Hráči) idú od tej istej hrany doprava bez maxima. Celú šírku má len herný stôl.
+  if (cesta.startsWith("/admin")) return <Layout nastroj>{chranene(<Admin cesta={cesta} />, true)}</Layout>;
+  if (cesta === "/hraci") return <Layout nastroj>{chranene(<Hraci />, true)}</Layout>;
   if (cesta === "/hra") return <Layout><Hra /></Layout>;
   if (cesta === "/pravidla") return <Layout><Pravidla /></Layout>;
   // Vývoj hry a roadmapa sú verejné (Michal 2026-10-21); upravuje ich správca.

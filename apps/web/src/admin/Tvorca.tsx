@@ -320,7 +320,7 @@ export function Tvorca({ id }: { readonly id: string }) {
           <Odkaz href="/admin/karty" className="spat">
             ← Karty
           </Odkaz>
-          <h1>{nova ? k.nazov || "Nová karta" : k.nazov || "(bez názvu)"}</h1>
+          <h2>{nova ? k.nazov || "Nová karta" : k.nazov || "(bez názvu)"}</h2>
           <span className="tvorca-lista-stav">
             {!nova && <code title="Stabilné id — viaže sa naň efekt v jadre, nemení sa">{k.id}</code>}
             {chyby.length > 0 ? (
