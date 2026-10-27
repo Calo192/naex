@@ -20,7 +20,7 @@ import type {
   ZdrojeAkcii,
 } from "@naex/core";
 import { KONSTANTY, battleOutcome, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, pocet, tvar } from "@naex/core";
-import { ZMENA_SVIETI_MS, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
+import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
@@ -1361,7 +1361,16 @@ function KrokOsi({
   );
 }
 
-export function PriebehKola({ view, onBitka }: { readonly view: ClientState; readonly onBitka?: (() => void) | undefined }) {
+export function PriebehKola({
+  view,
+  onBitka,
+  onDraft,
+}: {
+  readonly view: ClientState;
+  readonly onBitka?: (() => void) | undefined;
+  /** Klik na krok Draft mimo Draftu ukáže šenok na pozretie (Michal 2026-10-27 — tlačidlo Šenok zaniklo). */
+  readonly onDraft?: (() => void) | undefined;
+}) {
   const pitiek = Math.max(1, view.pitkyCelkom);
   const viac = pitiek > 1;
   const pocetPozn =
@@ -1416,6 +1425,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
               žltá 3), súper dostane
               v bitke Pohoršenia (o koľko marker išiel do stredu). Výhra = starší je jeho; prehra = odhodí poldeci.
             </span>
+            {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v šenku ({view.senok.length}).</span>}
           </>
         ),
       },
@@ -1551,7 +1561,7 @@ export function PriebehKola({ view, onBitka }: { readonly view: ClientState; rea
         }
         trieda={i === aktualny ? "aktualny" : i < aktualny ? "hotovy" : ""}
         {...(i === aktualny ? { refEl: aktualnyRef } : {})}
-        onKlik={k.id === "bitka" ? onBitka : undefined}
+        onKlik={{ ucetBitky: onBitka, senok: onDraft, nic: undefined }[klikKrokuOsi(k.id, view.faza) ?? "nic"]}
       />,
     );
   }

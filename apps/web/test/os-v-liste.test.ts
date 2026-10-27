@@ -5,6 +5,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { klikKrokuOsi } from "../src/hra/stitokPartie.ts";
 
 const citaj = (subor: string): string => readFileSync(fileURLToPath(new URL(`../src/hra/${subor}`, import.meta.url)), "utf8");
 const hra = citaj("hra.css");
@@ -28,5 +29,18 @@ describe("os kola v lište", () => {
   it("mihnutie „+2“ v dlaždici Špaky sa pri prefers-reduced-motion neanimuje", () => {
     const bloky = [...hra.matchAll(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/g)].map((m) => m[1] ?? "");
     expect(bloky.some((b) => /\.spaky-zmena \{\s*animation: none;/.test(b))).toBe(true);
+  });
+});
+
+describe("klik na krok osi", () => {
+  it("Draft mimo Draftu ukáže šenok na pozretie, v Drafte nie (šenok je na stole)", () => {
+    expect(klikKrokuOsi("draft", "zhromazdenie")).toBe("senok");
+    expect(klikKrokuOsi("draft", "pitka")).toBe("senok");
+    expect(klikKrokuOsi("draft", "draft")).toBeNull();
+  });
+
+  it("Bitka ukáže účet bitky, ostatné kroky nič", () => {
+    expect(klikKrokuOsi("bitka", "volbaCiela")).toBe("ucetBitky");
+    expect(klikKrokuOsi("pitka-1", "zhromazdenie")).toBeNull();
   });
 });

@@ -4857,7 +4857,12 @@ export function HernaPlocha({
           {kod}
         </span>
       )}
-      <PriebehKola view={view} onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined} />
+      <PriebehKola
+        view={view}
+        onBitka={ucetBitky !== null && view.kolo === ucetBitky.kolo + 1 ? () => setUcetBitkyZavrety(false) : undefined}
+        // Šenok na pozretie (napr. pred Starostom) — ďalší klik alebo Esc ho zavrie; v Drafte je na stole.
+        onDraft={() => setVrstva((v) => (v === "senok" ? null : "senok"))}
+      />
     </>
   );
   // Log a ? — tlačidlo Šenok zaniklo (Michal 2026-10-27): šenok sa ukáže sám, keď ho treba
