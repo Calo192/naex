@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analýza spúšťačov efektov</title>
+<style>
+:root{
+  --pozadie:#f5f1e8; --papier:#fffdf7; --text:#2b2520; --tlmene:#6b6155;
+  --linka:#d8cfbf; --akcent:#8a4b2d; --zle:#a33b3b; --dobre:#3d7a3d; --variant:#9a7b22;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+    --linka:#3d372d; --akcent:#d08a5e; --zle:#d97b7b; --dobre:#7dbb7d; --variant:#d3b45a;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.5 Georgia,'Times New Roman',serif;padding:16px}
+main{max-width:1000px;margin:0 auto}
+h1{font-size:1.7em;margin:.2em 0 .1em;color:var(--akcent)}
+.pod{color:var(--tlmene);margin:0 0 1em}
+section{background:var(--papier);border:1px solid var(--linka);border-radius:10px;padding:12px 16px;margin:14px 0}
+h2{font-size:1.15em;margin:.1em 0 .4em;color:var(--akcent)}
+.tab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88em}
+td,th{border-bottom:1px solid var(--linka);padding:4px 8px;text-align:right;vertical-align:top}
+td:first-child,th:first-child{text-align:left}
+td.vl,th.vl{text-align:left}
+th{color:var(--tlmene);font-weight:normal}
+.pozn{color:var(--tlmene);font-size:.88em}
+tr.mrtvy td.vl{color:var(--zle);font-weight:bold}
+tr.malo td.vl{color:var(--zle)}
+tr.pretazeny td.vl{color:var(--variant);font-weight:bold}
+tr.prilezitost td.vl,tr.ok td.vl{color:var(--dobre);font-weight:bold}
+tr.pozor td.vl{color:var(--variant)}
+ul,ol{margin:.3em 0 .5em;padding-left:1.3em}
+li{margin:.35em 0}
+code{font-family:Consolas,monospace;font-size:.88em;background:var(--pozadie);padding:1px 5px;border-radius:4px}
+.zle{color:var(--zle);font-weight:bold}
+.dobre{color:var(--dobre);font-weight:bold}
+.pruh{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:.92em}
+.pruh .meno{width:120px;flex:none}
+.pruh .dráha{flex:1;background:var(--pozadie);border:1px solid var(--linka);border-radius:4px;height:16px;position:relative}
+.pruh .vypln{display:block;height:100%;background:var(--akcent);border-radius:3px}
+.pruh.mrtvy .vypln,.pruh.malo .vypln{background:var(--zle)}
+.pruh.prilezitost .vypln{background:var(--dobre)}
+.pruh.pretazeny .vypln,.pruh.pozor .vypln{background:var(--variant)}
+.pruh .cislo{width:44px;text-align:right;flex:none}
+.filter{display:flex;flex-wrap:wrap;gap:6px;margin:.4em 0 .6em}
+.filter button{font:inherit;font-size:.88em;background:var(--pozadie);color:var(--text);border:1px solid var(--linka);border-radius:16px;padding:3px 12px;cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--akcent);color:var(--papier);border-color:var(--akcent)}
+.karty{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.karty div{border:1px solid var(--linka);border-radius:8px;padding:8px 12px}
+.karty h3{margin:0 0 .3em;font-size:1em}
+@media (max-width:560px){ td,th{padding:3px 4px} body{padding:10px} .pruh .meno{width:92px} }
+</style>
+</head>
+<body>
+<main>
+<h1>Analýza spúšťačov efektov</h1>
+<p class="pod">27. októbra 2026 · Stratég · sada v16 (<code>packages/core/data/cards.json</code>, 63 kariet) ·
+54 partií bot proti botovi nad jadrom (Štamgast, Rapavý Fero, Teta Gizka v 9 dvojiciach, stredná dĺžka = 5 lokalít + finále, 320 bitiek) ·
+podklad pre spúšťač <b>Konflikt</b> a 3 alternatívne efekty ku každej karte</p>
+
+<section>
+<h2>Verdikt</h2>
+<ol>
+<li><b class="zle">Dva spúšťače sú mŕtve a jeden neexistuje.</b> <b>Exekúcia</b> (Záhradkár) sa v 54 partiách nespustila ani raz — Exekútor neprišiel k nikomu, hoci Záhradkár bol vyložený 1,2× za partiu. <b>Prestávka</b> je v <code>ALL_TRIGGERS</code>, ale nenesie ju žiadna karta (Finančná poradkyňa prešla na Pitku). <b>Kšeft</b> v jadre ani v sade nie je.</li>
+<li><b class="zle">Dedičstvo je najmenej účinný spúšťač na kópiu</b> (0,03 účinku za partiu na kópiu; 8 kariet, 16 kópií, spolu 0,46 účinku za partiu). Nástroje sa hrajú ako bežné karty do línie — Puška 2,9× za partiu do línie a 0,2× do Dedičstva, Svätý text 1,4 : 0,1. V línii efekt Nástroja neplatí. Vínko, Pasca a Výherný automat bot zo šenku nevzal nikdy.</li>
+<li><b class="zle">Prehra (0,48 za partiu) a kladná Výhra (0) sú takmer prázdne.</b> Výhra vyzerá silno (2,24 za partiu), ale celé číslo je štartovný Miňištrant, ktorého efekt škodí majiteľovi. Živnostník a Výherný automat sa do hry nedostali. Prehru nesie len Veštica (0,43). Bitka má víťaza aj porazeného 5,7× za partiu, takže okamih tu je, chýbajú len karty.</li>
+<li><b>Preťažené sú Furt a Bitka.</b> Furt má 16 kariet (31 kópií, polovicu Občanov), najviac účinkov za partiu (4,3), ale na kópiu len 0,14: zaberie v 27 % kôl, keď karta leží v línii (Zámočník 15 %, Svokra 21 %, Šofér 0 %). Do okamihu Bitka sa tlačí 13 kariet a k tomu tri kliatby (10,5 výskytu za partiu) aj Exekútor, priazne a Pohoršenie. V bitke sa toho vyhodnocuje najviac a efekty sa navzájom strácajú (Presbiter 5 %, Pijan 7 %).</li>
+<li><b class="dobre">Pre návrhy sú voľné Pitka a Nástup a nový Konflikt.</b> Pitka nastane 11,2× za partiu, teda najčastejšie zo všetkých okamihov, no z 10 kariet je Občanom jediná (Finančná poradkyňa, bot ju nikdy nevzal). Zvyšok tvoria 3 starší a 6 lokalít. Nástup má 52 vyložení za partiu a len 4 karty. Niekoho stryná ukazuje, že Nástup s častou podmienkou funguje (43 %). Pre <b>Konflikt</b> je meradlom Pes, jediná dnešná karta viazaná na spoj so súperovou kartou: jeho podmienka sa naplnila v 44 % kôl, keď ležal v línii, čo je zdravé pásmo.</li>
+</ol>
+</section>
+
+<section>
+<h2>1 · Spúšťače — sada a hra</h2>
+<p class="pozn"><b>Kópie</b>: Občan, Zviera a Nástroj 2× v spoločnom balíčku, štartovky 1× u každého hráča (spolu 2), lokality a starší 1×. Kliatby (Dlh, Cirhóza, Absťák) nie sú v počte — vznikajú akciami. <b>Príležitosť</b>: nastal okamih spúšťača a karta bola tam, kde jej efekt platí (línia, Dedičstvo, prebudený starší, cieľová lokalita). Furt, Bitka, Výhra, Prehra a Dedičstvo sa rátajú raz za kolo. <b>Účinok</b>: efekt naozaj niečo zmenil. Zoradené od najmenej po najviac účinkov za partiu.</p>
+<div class="tab"><table>
+<tr><th>Spúšťač</th><th>kariet</th><th>kópií</th><th class="vl">okamih za partiu</th><th>príležitostí / partia</th><th>účinkov / partia</th><th>účinkov na kópiu</th><th>účinnosť</th><th class="vl">verdikt</th></tr>
+<tr class="mrtvy"><td><b>Prestávka</b><br><span class="pozn">—</span></td><td>0</td><td>0</td><td class="pozn">— (fáza už neexistuje)</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td>–</td><td class="vl">prázdny — žiadna karta</td></tr>
+<tr class="mrtvy"><td><b>Exekúcia</b><br><span class="pozn">1 Občan</span></td><td>1</td><td>2</td><td class="pozn">0,0 exekúcií</td><td>0,00</td><td><b>0,00</b></td><td>0,000</td><td>–</td><td class="vl">mŕtvy — okamih nenastal ani raz</td></tr>
+<tr class="malo"><td><b>Dedičstvo</b><br><span class="pozn">8 Nástroj</span></td><td>8</td><td>16</td><td class="pozn">stav — raz za kolo v Dedičstve</td><td>1,15</td><td><b>0,46</b></td><td>0,029</td><td>40 %</td><td class="vl">málo využívaný</td></tr>
+<tr class="malo"><td><b>Prehra</b><br><span class="pozn">1 Nástroj, 2 Občan, 1 Lokalita</span></td><td>4</td><td>7</td><td class="pozn">5,7 porazených</td><td>1,04</td><td><b>0,48</b></td><td>0,069</td><td>46 %</td><td class="vl">málo využívaný</td></tr>
+<tr class="ok"><td><b>Zhromaždenie</b><br><span class="pozn">4 Lokalita</span></td><td>4</td><td>4</td><td class="pozn">11,2 Zhromaždení</td><td>1,65</td><td><b>1,54</b></td><td>0,384</td><td>93 %</td><td class="vl">len lokality, stále pravidlo</td></tr>
+<tr class="prilezitost"><td><b>Nástup</b><br><span class="pozn">4 Občan</span></td><td>4</td><td>8</td><td class="pozn">52,5 vyložení</td><td>7,89</td><td><b>1,67</b></td><td>0,208</td><td>21 %</td><td class="vl">voľný — častý okamih, málo kariet</td></tr>
+<tr class="pozor"><td><b>Výhra</b><br><span class="pozn">1 Nástroj, 2 Občan</span></td><td>3</td><td>6</td><td class="pozn">5,7 víťazov bitky</td><td>2,35</td><td><b>2,24</b></td><td>0,373</td><td>95 %</td><td class="vl">zdanlivo silný — celé číslo je Miňištrant</td></tr>
+<tr class="prilezitost"><td><b>Pitka</b><br><span class="pozn">1 Občan, 3 Starešina, 6 Lokalita</span></td><td>10</td><td>11</td><td class="pozn">11,2 Pitiek</td><td>5,89</td><td><b>2,28</b></td><td>0,207</td><td>39 %</td><td class="vl">voľný — najčastejší okamih, takmer bez Občanov</td></tr>
+<tr class="pretazeny"><td><b>Bitka</b><br><span class="pozn">4 Starešina, 5 Lokalita, 4 Občan</span></td><td>13</td><td>17</td><td class="pozn">5,9 bitiek</td><td>13,48</td><td><b>3,63</b></td><td>0,214</td><td>27 %</td><td class="vl">preťažený — s kliatbami, lokalitami a staršími</td></tr>
+<tr class="pretazeny"><td><b>Furt</b><br><span class="pozn">13 Občan, 1 Starešina, 2 Zviera</span></td><td>16</td><td>31</td><td class="pozn">stav — ráta sa raz za kolo v línii</td><td>15,72</td><td><b>4,26</b></td><td>0,137</td><td>27 %</td><td class="vl">preťažený počtom, slabý účinkom</td></tr>
+<tr class="mrtvy"><td><b>Kšeft</b><br><span class="pozn">nie je v ALL_TRIGGERS</span></td><td>0</td><td>0</td><td class="pozn">—</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td>–</td><td class="vl">neexistuje</td></tr>
+</table></div>
+<p class="pozn">Bitka bez kliatieb. Kliatby k nej pridávajú 10,5 výskytu za partiu (priznaný Dlh 3,3, priznaná Cirhóza 2,9, Absťák 4,3) — okamih Bitka je teda najhustejší v hre, aj keď to tabuľka kariet neukazuje.</p>
+</section>
+
+<section>
+<h2>2 · Poradie — účinkov za partiu</h2>
+<div class="pruh mrtvy"><span class="meno">Prestávka</span><span class="dráha"><span class="vypln" style="width:0.0%"></span></span><span class="cislo">0,00</span></div>
+<div class="pruh mrtvy"><span class="meno">Exekúcia</span><span class="dráha"><span class="vypln" style="width:0.0%"></span></span><span class="cislo">0,00</span></div>
+<div class="pruh malo"><span class="meno">Dedičstvo</span><span class="dráha"><span class="vypln" style="width:10.9%"></span></span><span class="cislo">0,46</span></div>
+<div class="pruh malo"><span class="meno">Prehra</span><span class="dráha"><span class="vypln" style="width:11.3%"></span></span><span class="cislo">0,48</span></div>
+<div class="pruh ok"><span class="meno">Zhromaždenie</span><span class="dráha"><span class="vypln" style="width:36.1%"></span></span><span class="cislo">1,54</span></div>
+<div class="pruh prilezitost"><span class="meno">Nástup</span><span class="dráha"><span class="vypln" style="width:39.1%"></span></span><span class="cislo">1,67</span></div>
+<div class="pruh pozor"><span class="meno">Výhra</span><span class="dráha"><span class="vypln" style="width:52.6%"></span></span><span class="cislo">2,24</span></div>
+<div class="pruh prilezitost"><span class="meno">Pitka</span><span class="dráha"><span class="vypln" style="width:53.5%"></span></span><span class="cislo">2,28</span></div>
+<div class="pruh pretazeny"><span class="meno">Bitka</span><span class="dráha"><span class="vypln" style="width:85.2%"></span></span><span class="cislo">3,63</span></div>
+<div class="pruh pretazeny"><span class="meno">Furt</span><span class="dráha"><span class="vypln" style="width:100.0%"></span></span><span class="cislo">4,26</span></div>
+<p class="pozn">Červená = mŕtvy alebo málo využívaný, zelená = voľný (návrhy ho majú využiť), okrová = preťažený alebo zavádzajúci (Výhra = Miňištrant).</p>
+</section>
+
+<section>
+<h2>3 · Kam smerovať Konflikt a 3 alternatívne efekty</h2>
+<div class="karty">
+<div><h3 class="dobre">Prednostne</h3>
+<ul>
+<li><b>Pitka</b>: najčastejší okamih (11,2×), Občania ho takmer nemajú. Hráč vidí stav Pitky a efekt viaže na NA EX, poldeci a cigarety, kde sa rozhoduje. Fungujúci vzor je Poštárka (účinok v 66 % Pitiek).</li>
+<li><b>Nástup</b> s podmienkou, ktorá býva splnená (Stryná 43 %). Nie ako Hasič (9 %: Pracujúceho v odhadzovacom balíčku skoro nikdy niet) ani ako Vdova (0 %: muž navrchu súperovho balíčka).</li>
+<li><b>Konflikt</b>: nový spúšťač, cieľ účinnosti ~40–60 % podľa Psa. Odporúčam ho dať najmä Občanom, ktorí dnes nesú Furt — interakcia so súperom je čitateľnejšia ako stály efekt.</li>
+<li><b>Prehra</b>: dobiehanie, ktoré hráč riadi rozhodnutím (Veštica 61 %). Dnes ju má jediná fungujúca karta.</li>
+</ul></div>
+<div><h3 style="color:var(--variant)">Opatrne</h3>
+<ul>
+<li><b>Výhra</b>: kladnú Výhru nemá dnes nikto. Jedna až dve karty áno, ale efekt nesmie znásobovať náskok víťaza (otočky).</li>
+<li><b>Dedičstvo</b>: problém nie je v texte efektu, ale v tom, že Nástroj v línii nemá efekt žiadny. Alternatíva „efekt aj v línii“ alebo lacnejšie Dedičstvo pomôže viac než nový text.</li>
+<li><b>Zhromaždenie</b>: len lokality, stále pravidlo (účinok 93 %). Na kartu hráča len vtedy, keď ide o voľbu (napr. pri vyložení), nie o zákaz.</li>
+</ul></div>
+<div><h3 class="zle">Nepridávať / opraviť</h3>
+<ul>
+<li><b>Furt</b>: 16 kariet je dosť. Alternatívy k Furt kartám premeniť skôr na Konflikt alebo Pitku.</li>
+<li><b>Bitka</b>: okamih je preplnený (kliatby, priazne, Pohoršenie, Exekútor). Efekty sa tu strácajú a hráč ich pri vyhodnotení nevidí.</li>
+<li><b>Exekúcia</b>: okamih nenastáva (prah Exekútora 10). Buď Záhradkárovi dať iný spúšťač, alebo ho viazať na Dlh, ktorý vzniká.</li>
+<li><b>Prestávka</b>: vyradiť z <code>ALL_TRIGGERS</code>, alebo dať novej karte. <b>Kšeft</b> by bol úplne nový pojem: najprv určiť okamih.</li>
+</ul></div>
+</div>
+</section>
+
+<section>
+<h2>4 · Karty — príležitosti a účinky</h2>
+<p class="pozn"><b>V ruke</b> = v koľkých partiách sa aspoň jedna kópia dostala do ruky. <b>Vyložení</b> = vyložení do línie za partiu (Nástroj: línia / Dedičstvo). Zoradené od najmenej účinných.</p>
+<div class="filter" role="group" aria-label="Filter kariet">
+<button type="button" data-f="vse" aria-pressed="true">všetky</button>
+<button type="button" data-f="mrtvy" aria-pressed="false">mŕtve</button>
+<button type="button" data-f="malo" aria-pressed="false">efekt nezaberá / zriedka</button>
+<button type="button" data-f="ok" aria-pressed="false">spoľahlivé</button>
+</div>
+<div class="tab"><table id="karty">
+<tr><th>Karta</th><th class="vl">druh</th><th class="vl">spúšťač</th><th>v ruke</th><th>vyložení / partia</th><th>príležitostí / partia</th><th>účinkov / partia</th><th>účinnosť</th><th class="vl">stav</th></tr>
+<tr class="malo" data-stav="malo"><td><b>Krabička cigariet</b><br><span class="pozn">Dedičstvo: V každej Pitke dostaneš 1 cigaretu navyše.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>3/54</td><td>0,1 / 0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">zriedka v hre</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Vínko</b><br><span class="pozn">Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>0/54</td><td>0,0 / 0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Pasca</b><br><span class="pozn">Dedičstvo: Každé súperovo Zviera v línii mu uberie 1 tuhé poškodenie.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>0/54</td><td>0,0 / 0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Výherný automat</b><br><span class="pozn">Dedičstvo: Výhra: Dostaneš 2 cigarety. Prehra: Získaš 1 Dlh.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>0/54</td><td>0,0 / 0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Výherný automat</b><br><span class="pozn">Dedičstvo: Výhra: Dostaneš 2 cigarety. Prehra: Získaš 1 Dlh.</span></td><td>Nástroj</td><td>Výhra</td><td>0/54</td><td>0,0 / 0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Výherný automat</b><br><span class="pozn">Dedičstvo: Výhra: Dostaneš 2 cigarety. Prehra: Získaš 1 Dlh.</span></td><td>Nástroj</td><td>Prehra</td><td>0/54</td><td>0,0 / 0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Finančná poradkyňa</b><br><span class="pozn">Pitka: Dlh z jej akcií dostáva súper, nie ty.</span></td><td>Občan</td><td>Pitka</td><td>0/54</td><td>0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Živnostník</b><br><span class="pozn">Výhra: Zahoď jedno súperovo dedičstvo.</span></td><td>Občan</td><td>Výhra</td><td>0/54</td><td>0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Kočovník</b><br><span class="pozn">Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu. Vo finále majiteľovi.</span></td><td>Občan</td><td>Furt</td><td>0/54</td><td>0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Šarlatán</b><br><span class="pozn">Furt: Viera v jeho okolí platí ako Vízia.</span></td><td>Občan</td><td>Furt</td><td>0/54</td><td>0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Záhradkár</b><br><span class="pozn">Exekúcia: Môžeš zahodiť Záhradkára namiesto špakov.</span></td><td>Občan</td><td>Exekúcia</td><td>37/54</td><td>1,2</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">okamih nenastal (žiadna exekúcia)</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Anonymný alkoholik</b><br><span class="pozn">Furt: Na neho nesmie súper dať NA EX.</span></td><td>Občan</td><td>Furt</td><td>1/54</td><td>0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">zriedka v hre</td></tr>
+<tr class="mrtvy" data-stav="mrtvy"><td><b>Snúbenica</b><br><span class="pozn">Nástup: Ak ju vyložíš vedľa karty s NA EX, vráti tú kartu majiteľovi do ruky a zaujme jej miesto. Poldeci z tej karty vypije ten, kto dal NA EX.</span></td><td>Občan</td><td>Nástup</td><td>0/54</td><td>0,0</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td class="vl">nedostane sa do hry (bot ju zo šenku nikdy nevzal)</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Podvodník</b><br><span class="pozn">Prehra: Ukradni súperovi 2 cigarety.</span></td><td>Občan</td><td>Prehra</td><td>4/54</td><td>0,0</td><td>0,02</td><td><b>0,00</b></td><td>0 %</td><td class="vl">zriedka v hre</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Dvojčatá</b><br><span class="pozn">Furt: Do prevahy sa rátajú za dvoch.</span></td><td>Občan</td><td>Furt</td><td>2/54</td><td>0,1</td><td>0,06</td><td><b>0,00</b></td><td>0 %</td><td class="vl">zriedka v hre</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Noviny</b><br><span class="pozn">Dedičstvo: Po bitke dostaneš 1 špak navyše, ak sa ťa bojí viac starších ako súpera.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>7/54</td><td>0,1 / 0,0</td><td>0,09</td><td><b>0,00</b></td><td>0 %</td><td class="vl">zriedka v hre</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Veľmi smútiaca vdova</b><br><span class="pozn">Nástup: Ak je vrchná karta doberacieho balíčka súpera muž, odstráň ho z hry a zahoď 2 svoje Dlhy, aj spomedzi priznaných.</span></td><td>Občan</td><td>Nástup</td><td>3/54</td><td>0,1</td><td>0,11</td><td><b>0,00</b></td><td>0 %</td><td class="vl">zriedka v hre</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Šofér</b><br><span class="pozn">Furt: NA EX na kartu, ktorá s ním susedí, nezdvojí jej neaktívne akcie.</span></td><td>Občan</td><td>Furt</td><td>8/54</td><td>0,1</td><td>0,17</td><td><b>0,00</b></td><td>0 %</td><td class="vl">zriedka v hre</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Krčmárka</b><br><span class="pozn">Bitka: Ak nemáš absťák a nedal si NA EX, môžeš otočiť vypitý poldeci.</span></td><td>Starešina</td><td>Bitka</td><td>14/54</td><td>0,2</td><td>0,63</td><td><b>0,00</b></td><td>0 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Zberný dvor</b><br><span class="pozn">Pitka: Raz za Pitku smieš za 1 cigaretu vziať do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.</span></td><td>Lokalita</td><td>Pitka</td><td>–</td><td>–</td><td>0,78</td><td><b>0,00</b></td><td>0 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Silná, nezávislá žena</b><br><span class="pozn">Furt: Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát.</span></td><td>Občan</td><td>Furt</td><td>2/54</td><td>0,0</td><td>0,04</td><td><b>0,02</b></td><td>50 %</td><td class="vl">zriedka v hre</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Jednota</b><br><span class="pozn">Pitka: Stokársky barter stojí o 1 cigaretu menej.</span></td><td>Lokalita</td><td>Pitka</td><td>–</td><td>–</td><td>0,39</td><td><b>0,02</b></td><td>5 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Nealko</b><br><span class="pozn">Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>7/54</td><td>0,2 / 0,0</td><td>0,04</td><td><b>0,04</b></td><td>100 %</td><td class="vl">zriedka v hre</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Obecný úrad</b><br><span class="pozn">Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota spáli 2 priznané Dlhy.</span></td><td>Lokalita</td><td>Bitka</td><td>–</td><td>–</td><td>0,31</td><td><b>0,04</b></td><td>12 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Cintorín</b><br><span class="pozn">Prehra: Po Pohrebe smieš vyložiť jeden Nástroj z ruky do Dedičstva bez platenia.</span></td><td>Lokalita</td><td>Prehra</td><td>–</td><td>–</td><td>0,31</td><td><b>0,06</b></td><td>18 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Vínna pivnica</b><br><span class="pozn">Pitka: Každý hráč smie dať NA EX až dvakrát.</span></td><td>Lokalita</td><td>Pitka</td><td>–</td><td>–</td><td>0,31</td><td><b>0,07</b></td><td>24 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Veterán</b><br><span class="pozn">Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.</span></td><td>Občan</td><td>Furt</td><td>15/54</td><td>0,4</td><td>0,37</td><td><b>0,07</b></td><td>20 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Liberál</b><br><span class="pozn">Furt: Ak je v tvojej partii rovnako žien a chlapov, jeho akcie sa rátajú dvakrát. Furt: Nedá sa naň dať NA EX.</span></td><td>Občan</td><td>Furt</td><td>15/54</td><td>0,4</td><td>0,39</td><td><b>0,07</b></td><td>19 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Vychovávateľka</b><br><span class="pozn">Pitka: Ak dáš NA EX, súper si musí od teba vziať priznaný Dlh do doberacieho balíčka.</span></td><td>Starešina</td><td>Pitka</td><td>8/54</td><td>0,2</td><td>0,89</td><td><b>0,07</b></td><td>8 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Veterinár</b><br><span class="pozn">Bitka: Cirhóza ti pridáva v bitke o 2 poškodenia menej.</span></td><td>Starešina</td><td>Bitka</td><td>11/54</td><td>0,3</td><td>0,44</td><td><b>0,09</b></td><td>21 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="" data-stav=""><td><b>Kar</b><br><span class="pozn">Bitka: Každý hráč smie zahodiť jednu nepriznanú Cirhózu z ruky.</span></td><td>Lokalita</td><td>Bitka</td><td>–</td><td>–</td><td>0,41</td><td><b>0,11</b></td><td>27 %</td><td class="vl"></td></tr>
+<tr class="malo" data-stav="malo"><td><b>Presbiter</b><br><span class="pozn">Bitka: Ak v jeho kraji nemáš iného Občana, Zviera ani Starešinu a súper tam má prevahu, súper má o toľko Viery menej, koľko má Presbiter aktívnych akcií. Vo finále nepôsobí.</span></td><td>Občan</td><td>Bitka</td><td>47/54</td><td>2,9</td><td>2,46</td><td><b>0,11</b></td><td>5 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Starosta</b><br><span class="pozn">Pitka: Za cigaretu môžeš vymeniť kartu z ruky za kartu zo šenku.</span></td><td>Starešina</td><td>Pitka</td><td>15/54</td><td>0,5</td><td>1,20</td><td><b>0,13</b></td><td>11 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="" data-stav=""><td><b>Svätý text</b><br><span class="pozn">Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>36/54</td><td>1,4 / 0,1</td><td>0,31</td><td><b>0,19</b></td><td>59 %</td><td class="vl"></td></tr>
+<tr class="" data-stav=""><td><b>Čierna mačka</b><br><span class="pozn">Furt: Tvoje Povery spôsobujú mäkké poškodenie aj bez súperových priznaných dlhov.</span></td><td>Zviera</td><td>Furt</td><td>21/54</td><td>0,5</td><td>0,43</td><td><b>0,19</b></td><td>43 %</td><td class="vl"></td></tr>
+<tr class="" data-stav=""><td><b>Praudovravec</b><br><span class="pozn">Furt: Autority v súperovej partii neuplatňujú efekt.</span></td><td>Občan</td><td>Furt</td><td>28/54</td><td>0,9</td><td>0,89</td><td><b>0,19</b></td><td>21 %</td><td class="vl"></td></tr>
+<tr class="malo" data-stav="malo"><td><b>Pijan</b> <span class="pozn">(štart)</span><br><span class="pozn">Bitka: Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper ti udelí 1 Ranu.</span></td><td>Občan</td><td>Bitka</td><td>54/54</td><td>2,9</td><td>2,76</td><td><b>0,19</b></td><td>7 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="" data-stav=""><td><b>Hrobár</b><br><span class="pozn">Furt: Keď súper zahodí kartu, dober si cigaretu.</span></td><td>Starešina</td><td>Furt</td><td>15/54</td><td>0,3</td><td>0,63</td><td><b>0,20</b></td><td>32 %</td><td class="vl"></td></tr>
+<tr class="" data-stav=""><td><b>Policajtka</b><br><span class="pozn">Furt: Súperove Pohoršenia proti tebe neplatia.</span></td><td>Občan</td><td>Furt</td><td>23/54</td><td>0,7</td><td>0,65</td><td><b>0,20</b></td><td>31 %</td><td class="vl"></td></tr>
+<tr class="" data-stav=""><td><b>Autobusár</b><br><span class="pozn">Bitka: Ignoruj 1 Absťák.</span></td><td>Starešina</td><td>Bitka</td><td>12/54</td><td>0,3</td><td>0,67</td><td><b>0,22</b></td><td>33 %</td><td class="vl"></td></tr>
+<tr class="" data-stav=""><td><b>Puška</b><br><span class="pozn">Dedičstvo: Prebytočné poškodenie, ktoré proti tebe rozdeľuje súper, je o 2 menšie.</span></td><td>Nástroj</td><td>Dedičstvo</td><td>51/54</td><td>2,9 / 0,2</td><td>0,70</td><td><b>0,24</b></td><td>34 %</td><td class="vl"></td></tr>
+<tr class="ok" data-stav="ok"><td><b>Ihrisko</b><br><span class="pozn">Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.</span></td><td>Lokalita</td><td>Bitka</td><td>–</td><td>–</td><td>0,33</td><td><b>0,26</b></td><td>78 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Kultúrny dom</b><br><span class="pozn">Bitka: Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok.</span></td><td>Lokalita</td><td>Bitka</td><td>–</td><td>–</td><td>0,28</td><td><b>0,28</b></td><td>100 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Družstvo</b><br><span class="pozn">Zhromaždenie: Karty s tagom Pracujúci nemíňajú limit vykladania.</span></td><td>Lokalita</td><td>Zhromaždenie</td><td>–</td><td>–</td><td>0,41</td><td><b>0,30</b></td><td>73 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Lesná cesta</b><br><span class="pozn">Bitka: Za každého svojho Občana, Zviera či Starešinu v súperovom kraji máš 1 tuhé poškodenie navyše, najviac 2.</span></td><td>Lokalita</td><td>Bitka</td><td>–</td><td>–</td><td>0,31</td><td><b>0,31</b></td><td>100 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="" data-stav=""><td><b>Farár</b><br><span class="pozn">Bitka: Ignoruj 2 súperove Povery.</span></td><td>Starešina</td><td>Bitka</td><td>12/54</td><td>0,4</td><td>0,69</td><td><b>0,33</b></td><td>49 %</td><td class="vl"></td></tr>
+<tr class="ok" data-stav="ok"><td><b>Most</b><br><span class="pozn">Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).</span></td><td>Lokalita</td><td>Zhromaždenie</td><td>–</td><td>–</td><td>0,37</td><td><b>0,37</b></td><td>100 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Kostol</b><br><span class="pozn">Zhromaždenie: Nikto nesmie vypiť. Pitka: Nikto nesmie dať NA EX.</span></td><td>Lokalita</td><td>Zhromaždenie</td><td>–</td><td>–</td><td>0,39</td><td><b>0,39</b></td><td>100 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Krčma</b><br><span class="pozn">Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší.</span></td><td>Lokalita</td><td>Pitka</td><td>–</td><td>–</td><td>0,44</td><td><b>0,39</b></td><td>88 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Recidivista</b><br><span class="pozn">Bitka: Za každého zahraničného občana v súperovej partii udelí dodatočnú ranu.</span></td><td>Občan</td><td>Bitka</td><td>53/54</td><td>3,5</td><td>2,85</td><td><b>0,39</b></td><td>14 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Benzínka</b><br><span class="pozn">Pitka: Nikto nesmie fajčiť.</span></td><td>Lokalita</td><td>Pitka</td><td>–</td><td>–</td><td>0,41</td><td><b>0,41</b></td><td>100 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Veštica</b><br><span class="pozn">Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.</span></td><td>Občan</td><td>Prehra</td><td>42/54</td><td>1,6</td><td>0,70</td><td><b>0,43</b></td><td>61 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Zámočník</b><br><span class="pozn">Furt: Akcie nástrojov v jeho okolí sú posilnené.</span></td><td>Občan</td><td>Furt</td><td>51/54</td><td>3,7</td><td>2,91</td><td><b>0,43</b></td><td>15 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="malo" data-stav="malo"><td><b>Hasič</b><br><span class="pozn">Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho balíčka.</span></td><td>Občan</td><td>Nástup</td><td>54/54</td><td>4,9</td><td>4,87</td><td><b>0,43</b></td><td>9 %</td><td class="vl">v hre, efekt nezaberá</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Zastávka</b><br><span class="pozn">Zhromaždenie: Obaja hráči majú spoločný limit vykladania — súčet ich limitov.</span></td><td>Lokalita</td><td>Zhromaždenie</td><td>–</td><td>–</td><td>0,48</td><td><b>0,48</b></td><td>100 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Poštárka</b><br><span class="pozn">Pitka: Raz smieš dobrať až 2 karty navyše; získaš za to 1 Dlh.</span></td><td>Starešina</td><td>Pitka</td><td>12/54</td><td>0,2</td><td>0,81</td><td><b>0,54</b></td><td>66 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Kostol</b><br><span class="pozn">Zhromaždenie: Nikto nesmie vypiť. Pitka: Nikto nesmie dať NA EX.</span></td><td>Lokalita</td><td>Pitka</td><td>–</td><td>–</td><td>0,65</td><td><b>0,65</b></td><td>100 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="" data-stav=""><td><b>Svokra</b><br><span class="pozn">Furt: Keď súper dá NA EX, ukradni mu 2 cigarety.</span></td><td>Občan</td><td>Furt</td><td>52/54</td><td>3,7</td><td>3,13</td><td><b>0,65</b></td><td>21 %</td><td class="vl"></td></tr>
+<tr class="ok" data-stav="ok"><td><b>Pes</b><br><span class="pozn">Furt: Ak leží na tvojej strane, za každý pár akcií na spoji Psa so súperovou kartou dáš v bitke +1 tuhé poškodenie. Nesmie byť v partii s iným zvieraťom.</span></td><td>Zviera</td><td>Furt</td><td>50/54</td><td>2,8</td><td>2,54</td><td><b>1,11</b></td><td>44 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Milujúca manželka</b> <span class="pozn">(štart)</span><br><span class="pozn">Furt: Absťák dostaneš aj vtedy, keď máš v kole rovnako nerestí ako v predošlom.</span></td><td>Občan</td><td>Furt</td><td>54/54</td><td>4,9</td><td>3,54</td><td><b>1,13</b></td><td>32 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Niekoho stryná</b><br><span class="pozn">Nástup: Zahoď 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných.</span></td><td>Občan</td><td>Nástup</td><td>49/54</td><td>2,9</td><td>2,91</td><td><b>1,24</b></td><td>43 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Dievčina na vydaj</b> <span class="pozn">(štart)</span><br><span class="pozn">Bitka: Zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.</span></td><td>Občan</td><td>Bitka</td><td>54/54</td><td>2,0</td><td>1,33</td><td><b>1,30</b></td><td>97 %</td><td class="vl">spoľahlivý</td></tr>
+<tr class="ok" data-stav="ok"><td><b>Miňištrant</b> <span class="pozn">(štart)</span><br><span class="pozn">Výhra: Každý posun markera staršieho prebytkom ťa stojí o 1 prebytok viac.</span></td><td>Občan</td><td>Výhra</td><td>54/54</td><td>5,4</td><td>2,35</td><td><b>2,24</b></td><td>95 %</td><td class="vl">spoľahlivý</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>5 · Takmer mŕtve efekty — tri príčiny</h2>
+<ul>
+<li><b class="zle">Karta sa do hry nedostane</b> (bot ju zo šenku nevzal ani raz, hoci v šenku ležala v 27–42 partiách): Vínko, Pasca, Výherný automat, Finančná poradkyňa, Živnostník, Kočovník, Šarlatán, Snúbenica; Anonymný alkoholik bol v ruke raz a nevyložili ho nikdy. Bot berie karty podľa hodnoty akcií. Všetky majú hodnotu pod 0,8 kvôli Dlhu a Poškodeniu pečene (Automat 4× Dlh, Vínko 4× pečeň). Ich efekt sa tu posúdiť nedá. Je to náznak, že akčná strana ich pochováva, no ľudia môžu hrať inak (zo živého webu zatiaľ nie sú partie ľudí so štatistikami kariet).</li>
+<li><b>Dostane sa zriedka</b> (v ruke v ≤ 8 z 54 partií): Krabička cigariet, Silná nezávislá žena, Dvojčatá, Podvodník, Veľmi smútiaca vdova, Noviny, Nealko, Šofér.</li>
+<li><b>Je v hre, efekt nezaberá</b>: Presbiter (v línii 2,5 kola za partiu, účinok 5 %), Hasič (9 %), Pijan (7 %), Recidivista (14 %), Zámočník (15 %), Krčmárka (0 % — podmienka sa nesplnila alebo bot možnosť nevyužil), Vychovávateľka, Starosta, Veterán, Liberál, Šofér, Záhradkár (Exekúcia nenastala), Jednota, Obecný úrad, Cintorín, Vínna pivnica a Zberný dvor (0 %: bot príkaz „výkup“ nepozná).</li>
+</ul>
+</section>
+
+<section>
+<h2>Metóda a limity</h2>
+<ul class="pozn">
+<li>Skript <code>docs/napady/revizia-sady/skript/spustace.ts</code> (výsledok <code>spustace-vysledok.json</code>, HTML z <code>spustace-html.ts</code>). Jadro sa nemenilo: skript číta stav pred príkazom a po ňom a udalosti motora. Semienka sú pevné, beh sa dá zopakovať (≈ 2 min).</li>
+<li><b>Účinok</b> sa meria trojako: (a) <b>protifakt bitky</b> — tá istá bitka, v ktorej má karta „prázdne dvojča“ (rovnaké akcie, varianty a tagy, iné id, bez efektu); účinok = zmenilo sa poškodenie. Základ sa zhodoval s motorom v 308/320 bitkách, zvyšok sa líši o 1 tuhé, lebo Pohoršenie hýbe priazňou až počas vyhodnotenia. (b) <b>Protifakt Pitky</b> — súčty akcií, zadĺženie, pečeň a cigarety. (c) <b>Hláška motora alebo príkaz</b> (Hrobár, Svokra, Hasič, Poštárka, Kar…). Stále pravidlá (Zastávka, Most, Kostol, Benzínka, Vínko, Nealko, Krabička cigariet) sa rátajú ako účinné vždy, keď platia.</li>
+<li>Nemeria sa, čo efekt <i>zakázal</i> (Anonymný alkoholik a Liberál bez NA EX, Policajtka iba keď zruší Pohoršenie) ani čo hráč <i>neurobil</i> kvôli efektu. Pri kartách so zákazom je účinnosť podhodnotená.</li>
+<li>Bot hrá podľa hodnôt v <code>bot.ts</code>: karty s nízkou hodnotou akcií neberie a niektoré voliteľné efekty nepozná (Zberný dvor). Čísla hovoria, ako sa spúšťače spúšťajú <i>pri tomto bote</i>. Ľudia môžu niektoré karty hrať viac. Rozdiely medzi spúšťačmi sú však veľké (0 – 0,03 – 0,4 účinku na kópiu), takže poradie je spoľahlivejšie než presné čísla.</li>
+<li>Lokality: v partii je 5 z 15, každá teda len asi v tretine partií. Ich čísla sú nízke aj preto.</li>
+</ul>
+</section>
+</main>
+<script>
+(function(){
+  var tlacidla=document.querySelectorAll('.filter button');
+  var riadky=document.querySelectorAll('#karty tr[data-stav]');
+  tlacidla.forEach(function(b){
+    b.addEventListener('click',function(){
+      tlacidla.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+      var f=b.getAttribute('data-f');
+      riadky.forEach(function(r){
+        var s=r.getAttribute('data-stav');
+        r.style.display=(f==='vse'||s===f)?'':'none';
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

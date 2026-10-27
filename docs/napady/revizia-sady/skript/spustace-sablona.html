@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analýza spúšťačov efektov</title>
+<style>
+:root{
+  --pozadie:#f5f1e8; --papier:#fffdf7; --text:#2b2520; --tlmene:#6b6155;
+  --linka:#d8cfbf; --akcent:#8a4b2d; --zle:#a33b3b; --dobre:#3d7a3d; --variant:#9a7b22;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+    --linka:#3d372d; --akcent:#d08a5e; --zle:#d97b7b; --dobre:#7dbb7d; --variant:#d3b45a;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.5 Georgia,'Times New Roman',serif;padding:16px}
+main{max-width:1000px;margin:0 auto}
+h1{font-size:1.7em;margin:.2em 0 .1em;color:var(--akcent)}
+.pod{color:var(--tlmene);margin:0 0 1em}
+section{background:var(--papier);border:1px solid var(--linka);border-radius:10px;padding:12px 16px;margin:14px 0}
+h2{font-size:1.15em;margin:.1em 0 .4em;color:var(--akcent)}
+.tab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88em}
+td,th{border-bottom:1px solid var(--linka);padding:4px 8px;text-align:right;vertical-align:top}
+td:first-child,th:first-child{text-align:left}
+td.vl,th.vl{text-align:left}
+th{color:var(--tlmene);font-weight:normal}
+.pozn{color:var(--tlmene);font-size:.88em}
+tr.mrtvy td.vl{color:var(--zle);font-weight:bold}
+tr.malo td.vl{color:var(--zle)}
+tr.pretazeny td.vl{color:var(--variant);font-weight:bold}
+tr.prilezitost td.vl,tr.ok td.vl{color:var(--dobre);font-weight:bold}
+tr.pozor td.vl{color:var(--variant)}
+ul,ol{margin:.3em 0 .5em;padding-left:1.3em}
+li{margin:.35em 0}
+code{font-family:Consolas,monospace;font-size:.88em;background:var(--pozadie);padding:1px 5px;border-radius:4px}
+.zle{color:var(--zle);font-weight:bold}
+.dobre{color:var(--dobre);font-weight:bold}
+.pruh{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:.92em}
+.pruh .meno{width:120px;flex:none}
+.pruh .dráha{flex:1;background:var(--pozadie);border:1px solid var(--linka);border-radius:4px;height:16px;position:relative}
+.pruh .vypln{display:block;height:100%;background:var(--akcent);border-radius:3px}
+.pruh.mrtvy .vypln,.pruh.malo .vypln{background:var(--zle)}
+.pruh.prilezitost .vypln{background:var(--dobre)}
+.pruh.pretazeny .vypln,.pruh.pozor .vypln{background:var(--variant)}
+.pruh .cislo{width:44px;text-align:right;flex:none}
+.filter{display:flex;flex-wrap:wrap;gap:6px;margin:.4em 0 .6em}
+.filter button{font:inherit;font-size:.88em;background:var(--pozadie);color:var(--text);border:1px solid var(--linka);border-radius:16px;padding:3px 12px;cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--akcent);color:var(--papier);border-color:var(--akcent)}
+.karty{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.karty div{border:1px solid var(--linka);border-radius:8px;padding:8px 12px}
+.karty h3{margin:0 0 .3em;font-size:1em}
+@media (max-width:560px){ td,th{padding:3px 4px} body{padding:10px} .pruh .meno{width:92px} }
+</style>
+</head>
+<body>
+<main>
+<h1>Analýza spúšťačov efektov</h1>
+<p class="pod">27. októbra 2026 · Stratég · sada v16 (<code>packages/core/data/cards.json</code>, 63 kariet) ·
+{{PARTII}} partií bot proti botovi nad jadrom (Štamgast, Rapavý Fero, Teta Gizka v 9 dvojiciach, stredná dĺžka = 5 lokalít + finále, {{BITIEK}} bitiek) ·
+podklad pre spúšťač <b>Konflikt</b> a 3 alternatívne efekty ku každej karte</p>
+
+<section>
+<h2>Verdikt</h2>
+<ol>
+<li><b class="zle">Dva spúšťače sú mŕtve a jeden neexistuje.</b> <b>Exekúcia</b> (Záhradkár) sa v {{PARTII}} partiách nespustila ani raz — Exekútor neprišiel k nikomu, hoci Záhradkár bol vyložený 1,2× za partiu. <b>Prestávka</b> je v <code>ALL_TRIGGERS</code>, ale nenesie ju žiadna karta (Finančná poradkyňa prešla na Pitku). <b>Kšeft</b> v jadre ani v sade nie je.</li>
+<li><b class="zle">Dedičstvo je najmenej účinný spúšťač na kópiu</b> (0,03 účinku za partiu na kópiu; 8 kariet, 16 kópií, spolu 0,46 účinku za partiu). Nástroje sa hrajú ako bežné karty do línie — Puška 2,9× za partiu do línie a 0,2× do Dedičstva, Svätý text 1,4 : 0,1. V línii efekt Nástroja neplatí. Vínko, Pasca a Výherný automat bot zo šenku nevzal nikdy.</li>
+<li><b class="zle">Prehra (0,48 za partiu) a kladná Výhra (0) sú takmer prázdne.</b> Výhra vyzerá silno (2,24 za partiu), ale celé číslo je štartovný Miňištrant, ktorého efekt škodí majiteľovi. Živnostník a Výherný automat sa do hry nedostali. Prehru nesie len Veštica (0,43). Bitka má víťaza aj porazeného 5,7× za partiu, takže okamih tu je, chýbajú len karty.</li>
+<li><b>Preťažené sú Furt a Bitka.</b> Furt má 16 kariet (31 kópií, polovicu Občanov), najviac účinkov za partiu (4,3), ale na kópiu len 0,14: zaberie v 27 % kôl, keď karta leží v línii (Zámočník 15 %, Svokra 21 %, Šofér 0 %). Do okamihu Bitka sa tlačí 13 kariet a k tomu tri kliatby (10,5 výskytu za partiu) aj Exekútor, priazne a Pohoršenie. V bitke sa toho vyhodnocuje najviac a efekty sa navzájom strácajú (Presbiter 5 %, Pijan 7 %).</li>
+<li><b class="dobre">Pre návrhy sú voľné Pitka a Nástup a nový Konflikt.</b> Pitka nastane 11,2× za partiu, teda najčastejšie zo všetkých okamihov, no z 10 kariet je Občanom jediná (Finančná poradkyňa, bot ju nikdy nevzal). Zvyšok tvoria 3 starší a 6 lokalít. Nástup má 52 vyložení za partiu a len 4 karty. Niekoho stryná ukazuje, že Nástup s častou podmienkou funguje (43 %). Pre <b>Konflikt</b> je meradlom Pes, jediná dnešná karta viazaná na spoj so súperovou kartou: jeho podmienka sa naplnila v 44 % kôl, keď ležal v línii, čo je zdravé pásmo.</li>
+</ol>
+</section>
+
+<section>
+<h2>1 · Spúšťače — sada a hra</h2>
+<p class="pozn"><b>Kópie</b>: Občan, Zviera a Nástroj 2× v spoločnom balíčku, štartovky 1× u každého hráča (spolu 2), lokality a starší 1×. Kliatby (Dlh, Cirhóza, Absťák) nie sú v počte — vznikajú akciami. <b>Príležitosť</b>: nastal okamih spúšťača a karta bola tam, kde jej efekt platí (línia, Dedičstvo, prebudený starší, cieľová lokalita). Furt, Bitka, Výhra, Prehra a Dedičstvo sa rátajú raz za kolo. <b>Účinok</b>: efekt naozaj niečo zmenil. Zoradené od najmenej po najviac účinkov za partiu.</p>
+<div class="tab"><table>
+<tr><th>Spúšťač</th><th>kariet</th><th>kópií</th><th class="vl">okamih za partiu</th><th>príležitostí / partia</th><th>účinkov / partia</th><th>účinkov na kópiu</th><th>účinnosť</th><th class="vl">verdikt</th></tr>
+{{SPUSTACE}}
+<tr class="mrtvy"><td><b>Kšeft</b><br><span class="pozn">nie je v ALL_TRIGGERS</span></td><td>0</td><td>0</td><td class="pozn">—</td><td>0,00</td><td><b>0,00</b></td><td>–</td><td>–</td><td class="vl">neexistuje</td></tr>
+</table></div>
+<p class="pozn">Bitka bez kliatieb. Kliatby k nej pridávajú 10,5 výskytu za partiu (priznaný Dlh 3,3, priznaná Cirhóza 2,9, Absťák 4,3) — okamih Bitka je teda najhustejší v hre, aj keď to tabuľka kariet neukazuje.</p>
+</section>
+
+<section>
+<h2>2 · Poradie — účinkov za partiu</h2>
+{{PRUHY}}
+<p class="pozn">Červená = mŕtvy alebo málo využívaný, zelená = voľný (návrhy ho majú využiť), okrová = preťažený alebo zavádzajúci (Výhra = Miňištrant).</p>
+</section>
+
+<section>
+<h2>3 · Kam smerovať Konflikt a 3 alternatívne efekty</h2>
+<div class="karty">
+<div><h3 class="dobre">Prednostne</h3>
+<ul>
+<li><b>Pitka</b>: najčastejší okamih (11,2×), Občania ho takmer nemajú. Hráč vidí stav Pitky a efekt viaže na NA EX, poldeci a cigarety, kde sa rozhoduje. Fungujúci vzor je Poštárka (účinok v 66 % Pitiek).</li>
+<li><b>Nástup</b> s podmienkou, ktorá býva splnená (Stryná 43 %). Nie ako Hasič (9 %: Pracujúceho v odhadzovacom balíčku skoro nikdy niet) ani ako Vdova (0 %: muž navrchu súperovho balíčka).</li>
+<li><b>Konflikt</b>: nový spúšťač, cieľ účinnosti ~40–60 % podľa Psa. Odporúčam ho dať najmä Občanom, ktorí dnes nesú Furt — interakcia so súperom je čitateľnejšia ako stály efekt.</li>
+<li><b>Prehra</b>: dobiehanie, ktoré hráč riadi rozhodnutím (Veštica 61 %). Dnes ju má jediná fungujúca karta.</li>
+</ul></div>
+<div><h3 style="color:var(--variant)">Opatrne</h3>
+<ul>
+<li><b>Výhra</b>: kladnú Výhru nemá dnes nikto. Jedna až dve karty áno, ale efekt nesmie znásobovať náskok víťaza (otočky).</li>
+<li><b>Dedičstvo</b>: problém nie je v texte efektu, ale v tom, že Nástroj v línii nemá efekt žiadny. Alternatíva „efekt aj v línii“ alebo lacnejšie Dedičstvo pomôže viac než nový text.</li>
+<li><b>Zhromaždenie</b>: len lokality, stále pravidlo (účinok 93 %). Na kartu hráča len vtedy, keď ide o voľbu (napr. pri vyložení), nie o zákaz.</li>
+</ul></div>
+<div><h3 class="zle">Nepridávať / opraviť</h3>
+<ul>
+<li><b>Furt</b>: 16 kariet je dosť. Alternatívy k Furt kartám premeniť skôr na Konflikt alebo Pitku.</li>
+<li><b>Bitka</b>: okamih je preplnený (kliatby, priazne, Pohoršenie, Exekútor). Efekty sa tu strácajú a hráč ich pri vyhodnotení nevidí.</li>
+<li><b>Exekúcia</b>: okamih nenastáva (prah Exekútora 10). Buď Záhradkárovi dať iný spúšťač, alebo ho viazať na Dlh, ktorý vzniká.</li>
+<li><b>Prestávka</b>: vyradiť z <code>ALL_TRIGGERS</code>, alebo dať novej karte. <b>Kšeft</b> by bol úplne nový pojem: najprv určiť okamih.</li>
+</ul></div>
+</div>
+</section>
+
+<section>
+<h2>4 · Karty — príležitosti a účinky</h2>
+<p class="pozn"><b>V ruke</b> = v koľkých partiách sa aspoň jedna kópia dostala do ruky. <b>Vyložení</b> = vyložení do línie za partiu (Nástroj: línia / Dedičstvo). Zoradené od najmenej účinných.</p>
+<div class="filter" role="group" aria-label="Filter kariet">
+<button type="button" data-f="vse" aria-pressed="true">všetky</button>
+<button type="button" data-f="mrtvy" aria-pressed="false">mŕtve</button>
+<button type="button" data-f="malo" aria-pressed="false">efekt nezaberá / zriedka</button>
+<button type="button" data-f="ok" aria-pressed="false">spoľahlivé</button>
+</div>
+<div class="tab"><table id="karty">
+<tr><th>Karta</th><th class="vl">druh</th><th class="vl">spúšťač</th><th>v ruke</th><th>vyložení / partia</th><th>príležitostí / partia</th><th>účinkov / partia</th><th>účinnosť</th><th class="vl">stav</th></tr>
+{{KARTY}}
+</table></div>
+</section>
+
+<section>
+<h2>5 · Takmer mŕtve efekty — tri príčiny</h2>
+<ul>
+<li><b class="zle">Karta sa do hry nedostane</b> (bot ju zo šenku nevzal ani raz, hoci v šenku ležala v 27–42 partiách): Vínko, Pasca, Výherný automat, Finančná poradkyňa, Živnostník, Kočovník, Šarlatán, Snúbenica; Anonymný alkoholik bol v ruke raz a nevyložili ho nikdy. Bot berie karty podľa hodnoty akcií. Všetky majú hodnotu pod 0,8 kvôli Dlhu a Poškodeniu pečene (Automat 4× Dlh, Vínko 4× pečeň). Ich efekt sa tu posúdiť nedá. Je to náznak, že akčná strana ich pochováva, no ľudia môžu hrať inak (zo živého webu zatiaľ nie sú partie ľudí so štatistikami kariet).</li>
+<li><b>Dostane sa zriedka</b> (v ruke v ≤ 8 z {{PARTII}} partií): Krabička cigariet, Silná nezávislá žena, Dvojčatá, Podvodník, Veľmi smútiaca vdova, Noviny, Nealko, Šofér.</li>
+<li><b>Je v hre, efekt nezaberá</b>: Presbiter (v línii 2,5 kola za partiu, účinok 5 %), Hasič (9 %), Pijan (7 %), Recidivista (14 %), Zámočník (15 %), Krčmárka (0 % — podmienka sa nesplnila alebo bot možnosť nevyužil), Vychovávateľka, Starosta, Veterán, Liberál, Šofér, Záhradkár (Exekúcia nenastala), Jednota, Obecný úrad, Cintorín, Vínna pivnica a Zberný dvor (0 %: bot príkaz „výkup“ nepozná).</li>
+</ul>
+</section>
+
+<section>
+<h2>Metóda a limity</h2>
+<ul class="pozn">
+<li>Skript <code>docs/napady/revizia-sady/skript/spustace.ts</code> (výsledok <code>spustace-vysledok.json</code>, HTML z <code>spustace-html.ts</code>). Jadro sa nemenilo: skript číta stav pred príkazom a po ňom a udalosti motora. Semienka sú pevné, beh sa dá zopakovať (≈ 2 min).</li>
+<li><b>Účinok</b> sa meria trojako: (a) <b>protifakt bitky</b> — tá istá bitka, v ktorej má karta „prázdne dvojča“ (rovnaké akcie, varianty a tagy, iné id, bez efektu); účinok = zmenilo sa poškodenie. Základ sa zhodoval s motorom v {{ZHODA}} bitkách, zvyšok sa líši o 1 tuhé, lebo Pohoršenie hýbe priazňou až počas vyhodnotenia. (b) <b>Protifakt Pitky</b> — súčty akcií, zadĺženie, pečeň a cigarety. (c) <b>Hláška motora alebo príkaz</b> (Hrobár, Svokra, Hasič, Poštárka, Kar…). Stále pravidlá (Zastávka, Most, Kostol, Benzínka, Vínko, Nealko, Krabička cigariet) sa rátajú ako účinné vždy, keď platia.</li>
+<li>Nemeria sa, čo efekt <i>zakázal</i> (Anonymný alkoholik a Liberál bez NA EX, Policajtka iba keď zruší Pohoršenie) ani čo hráč <i>neurobil</i> kvôli efektu. Pri kartách so zákazom je účinnosť podhodnotená.</li>
+<li>Bot hrá podľa hodnôt v <code>bot.ts</code>: karty s nízkou hodnotou akcií neberie a niektoré voliteľné efekty nepozná (Zberný dvor). Čísla hovoria, ako sa spúšťače spúšťajú <i>pri tomto bote</i>. Ľudia môžu niektoré karty hrať viac. Rozdiely medzi spúšťačmi sú však veľké (0 – 0,03 – 0,4 účinku na kópiu), takže poradie je spoľahlivejšie než presné čísla.</li>
+<li>Lokality: v partii je 5 z 15, každá teda len asi v tretine partií. Ich čísla sú nízke aj preto.</li>
+</ul>
+</section>
+</main>
+<script>
+(function(){
+  var tlacidla=document.querySelectorAll('.filter button');
+  var riadky=document.querySelectorAll('#karty tr[data-stav]');
+  tlacidla.forEach(function(b){
+    b.addEventListener('click',function(){
+      tlacidla.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+      var f=b.getAttribute('data-f');
+      riadky.forEach(function(r){
+        var s=r.getAttribute('data-stav');
+        r.style.display=(f==='vse'||s===f)?'':'none';
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
