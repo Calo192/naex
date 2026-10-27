@@ -998,17 +998,6 @@ export function HernaPlocha({
   const finaleBezLokality = finaleBezStredu(view);
   const sf = view.stredFinale ?? null;
   const stranaStreduFinale: PlayerId | null = finaleBezLokality && sf !== null && view.strany[sf].length > 0 ? sf : null;
-  // Oznam finále (v6): raz na začiatku finále — kto útočí a prečo; sám zmizne alebo ho hráč zavrie.
-  const [oznamFinale, setOznamFinale] = useState<"caka" | "ukazany" | "zavrety">("caka");
-  useEffect(() => {
-    if (!jeFinaleStola || view.koniec !== null || oznamFinale !== "caka") return;
-    setOznamFinale("ukazany");
-  }, [jeFinaleStola, view.koniec, oznamFinale]);
-  useEffect(() => {
-    if (oznamFinale !== "ukazany") return;
-    const t = setTimeout(() => setOznamFinale("zavrety"), 12000);
-    return () => clearTimeout(t);
-  }, [oznamFinale]);
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
   // zvýraznenie spojov aj odhad bitky. Moje skryté NA EX v ňom ležia na kartách
   // (pre mňa sú dané), súperove nie — tie sa ukážu až pri odkrytí.
@@ -1968,8 +1957,8 @@ export function HernaPlocha({
   const pauzaBezi = pauzaCiela !== null && !pocitadloBezi;
   const zrusPauzuCiela = useCallback((): void => setPauzaCiela(null), []);
   // ---- medziobrazovky pri prechode fáz (Michal 2026-10-27) ------------------
-  // Pri výbere lokality, šenku, Pitke, bitke a prebytku (aj v novom kole a vo finále) sa ukáže
-  // názov fázy a čo sa ide diať; ostane do „Rozumiem“. Vypínač v profile, výučba má vlastné
+  // Pri výbere lokality, šenku, Zhromaždení, Pitke, bitke a prebytku (aj v novom kole a vo finále,
+  // ktoré tak nahradilo starý oznam) sa ukáže názov fázy a čo sa ide diať; ostane do „Rozumiem“. Vypínač v profile, výučba má vlastné
   // bubliny. Bitka čaká s počítadlom, kým hráč neklikne — inak by prebehlo pod medziobrazovkou.
   const medziZapnute = useUcet().ja?.medziobrazovky !== false && vyucba !== true && prehravanie === undefined;
   const medziTeraz = medziobrazovka(view, ja, menoHraca(super_), pocitadlo !== null ? pocitadlo.stol.kolo : null);
@@ -1991,8 +1980,7 @@ export function HernaPlocha({
     medziUstalena === medziTeraz.kluc &&
     !pauzaBezi &&
     !cakaOdhalenie &&
-    (vrstvaVyhodnotenia === null || pocitadlo !== null) &&
-    !(oznamFinale === "ukazany" && jeFinaleStola);
+    (vrstvaVyhodnotenia === null || pocitadlo !== null);
   useEffect(() => {
     if (!pauzaBezi) return;
     zavriLupuHned();
@@ -2149,43 +2137,6 @@ export function HernaPlocha({
       </div>
     );
   };
-  const oznamFinaleEl =
-    oznamFinale !== "ukazany" || !jeFinaleStola || view.koniec !== null ? null : (
-      <div className="oznam-finale" role="dialog" aria-labelledby="oznam-finale-nadpis">
-        <h3 id="oznam-finale-nadpis">Finále</h3>
-        <p>
-          {view.ciel?.lokalita != null
-            ? `Posledná bitka na vrcholovej lokalite ${menoKarty(view.ciel.lokalita.defId)} — karty sa kladú k nej ako v každom kole, platia jej hrany, efekt, kraje aj prevaha. Víťaz dostane 1 špak za každú odohranú Pitku.`
-            : `Posledná bitka bez lokality, vždy ${KONSTANTY.FINALE_PITKY} Pitky — víťaz dostane ${KONSTANTY.FINALE_PITKY} špaky.`}
-        </p>
-        <div className="oznam-skore">
-          <PocetSpakov n={view.spaky[ja]} kto="moj" velky titul={`Tvoje špaky: ${view.spaky[ja]}`} />
-          <b>:</b>
-          <PocetSpakov n={view.spaky[super_]} kto="superov" velky titul={`Špaky ${menoHraca(super_)}: ${view.spaky[super_]}`} />
-        </div>
-        <p>
-          {view.spaky[0] === view.spaky[1]
-            ? `Rovnako špakov — útočí ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} (porazený poslednej bitky).`
-            : view.utocnik === ja
-              ? "Máš menej špakov, preto útočíš ty — dobiehaš."
-              : `${menoHraca(super_)} má menej špakov, preto útočí — dobieha.`}{" "}
-          {view.ciel?.lokalita != null
-            ? view.utocnik === ja
-              ? "Vykladáš prvý, v Pitke máš posledné slovo."
-              : "Vedieš: ty si vybral a natočil lokalitu, v Pitke začínaš."
-            : view.utocnik === ja
-              ? "Tvoja prvá karta pôjde do stredu línie a súper uvidí, čo si vyložil — v Pitke máš posledné slovo."
-              : "Jeho prvá karta pôjde do stredu línie; ty kladieš k nej a v Pitke začínaš."}
-        </p>
-        <p className="tlmene">
-          Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky, zvyšné zdroje sa vykúpia (plný poldeci {KONSTANTY.SPAKY_ZA_POLDECI}, každých{" "}
-          {KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1) a nepriznaná Cirhóza zoberie po {KONSTANTY.SPAKY_ZA_CIRHOZU}.
-        </p>
-        <button type="button" className="tlacidlo-hlavne" onClick={() => setOznamFinale("zavrety")}>
-          do finále
-        </button>
-      </div>
-    );
   // Krčmová nástenka (v6, spaky.html bod 12): lokalitu si víťaz neberie — ide na nástenku s jeho fotkou a špakmi.
   const nastenkaEl = (
     sKartami: boolean,
@@ -5451,7 +5402,6 @@ export function HernaPlocha({
               </div>
             )}
             {toastPriazneEl}
-            {oznamFinaleEl}
             {prelety.map((x) => (
               <LetiacaKarta key={x.kluc} prelet={x} koniec={() => setPrelety((p) => p.filter((y) => y.kluc !== x.kluc))}>
                 {karta({ karta: { uid: UID_TIENA - 500, ...x.karta }, sirka: Math.round(x.z.width) })}

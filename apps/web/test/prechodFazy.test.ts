@@ -42,11 +42,13 @@ const p = (ine: Partial<Pohlad>): Pohlad => ({
   rozpis: [1, 2, 3],
   bitkaStav: null,
   koniec: null,
+  ciel: null,
+  spaky: [4, 6],
   ...ine,
 });
 const bitka = (krok: "pohorsenie" | "prebytok", drzi: 0 | 1 | null = null) => ({ krok, caka: drzi, prebytokDrzi: drzi }) as unknown as Pohlad["bitkaStav"];
 
-describe("medziobrazovka — prechody fáz (výber lokality, šenok, Pitka, bitka, prebytok, nové kolo, finále)", () => {
+describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromaždenie, Pitka, bitka, prebytok, nové kolo, finále)", () => {
   it("výber lokality v novom kole: obranca vyberá a natáča, útočník sa dozvie, kto vyberá", () => {
     const obranca = medziobrazovka(p({}), 0, "Eva", null);
     expect(obranca).toMatchObject({ kluc: "2|lokalita", nadnadpis: "Kolo 2", nadpis: "Výber lokality" });
@@ -54,10 +56,29 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Pitka, bitk
     expect(medziobrazovka(p({}), 1, "Eva", null)?.text).toMatch(/^Eva ako obranca vyberá/);
   });
 
-  it("finále: nad nadpisom Finále, vrcholová lokalita", () => {
-    const m = medziobrazovka(p({ kolo: 4 }), 0, "Eva", null);
-    expect(m?.nadnadpis).toBe("Finále");
-    expect(m?.text).toMatch(/vrcholovú lokalitu/);
+  it("finále v7 namiesto výberu lokality: vedúci vyberá vrcholovú lokalitu, zaostávajúci útočí, špak za Pitku", () => {
+    // Hráč 0 vedie (6 : 4) — je obranca, útočí Eva.
+    const vedie = medziobrazovka(p({ kolo: 4, utocnik: 1, spaky: [6, 4] }), 0, "Eva", null);
+    expect(vedie).toMatchObject({ kluc: "4|finale", nadpis: "Finále", nadnadpis: "Posledná bitka" });
+    expect(vedie?.text).toMatch(/^Vedieš, preto vyberáš a natáčaš vrcholovú lokalitu; Eva má menej špakov a útočí./);
+    expect(vedie?.text).toMatch(/1 špak za každú odohranú Pitku/);
+    expect(medziobrazovka(p({ kolo: 4, utocnik: 0, spaky: [4, 6] }), 0, "Eva", null)?.text).toMatch(/^Máš menej špakov, preto útočíš/);
+    expect(medziobrazovka(p({ kolo: 4, utocnik: 0, spaky: [5, 5] }), 0, "Eva", null)?.text).toMatch(/^Špakov máte rovnako, útočíš ty/);
+  });
+
+  it("finále bez lokality (stará sada) sa ohlási v drafte namiesto šenku", () => {
+    const m = medziobrazovka(p({ kolo: 4, faza: "draft", ciel: { typ: "finale", lokalita: null } }), 0, "Eva", null);
+    expect(m).toMatchObject({ kluc: "4|finale", nadpis: "Finále" });
+    expect(m?.text).toMatch(/Vždy 3 Pitky/);
+  });
+
+  it("Zhromaždenie: každé zvlášť; útočník vykladá prvý, pas dá cigarety", () => {
+    const prve = medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null);
+    expect(prve).toMatchObject({ kluc: "2|zhromazdenie|1", nadpis: "Zhromaždenie", nadnadpis: "Kolo 2 · 1 z 2" });
+    expect(medziobrazovka(p({ kolo: 4, faza: "zhromazdenie", pitkaCislo: 0 }), 1, "Eva", null)?.nadnadpis).toBe("Finále · 1 z 2");
+    expect(prve?.text).toMatch(/^Vykladáš prvý/);
+    expect(prve?.text).toMatch(/dostaneš cigaretu/);
+    expect(medziobrazovka(p({ faza: "zhromazdenie", pitkaCislo: 1 }), 0, "Eva", null)).toMatchObject({ kluc: "2|zhromazdenie|2", text: expect.stringMatching(/^Eva vykladá prvý/) });
   });
 
   it("šenok (stavba aj branie) má jednu medziobrazovku s cenami šenku", () => {
@@ -69,7 +90,7 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Pitka, bitk
   it("každá Pitka zvlášť; začína obranca, útočník má posledné slovo", () => {
     const prva = medziobrazovka(p({ faza: "pitka", pitkaCislo: 1 }), 0, "Eva", null);
     const druha = medziobrazovka(p({ faza: "pitka", pitkaCislo: 2 }), 0, "Eva", null);
-    expect(prva?.nadpis).toBe("Pitka 1 z 2");
+    expect(prva).toMatchObject({ nadpis: "Pitka", nadnadpis: "Kolo 2 · 1 z 2" });
     expect(druha?.kluc).not.toBe(prva?.kluc);
     expect(prva?.text).toMatch(/^Začínaš/);
     expect(medziobrazovka(p({ faza: "pitka" }), 1, "Eva", null)?.text).toMatch(/ty máš posledné slovo/);
@@ -87,8 +108,9 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Pitka, bitk
     expect(medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1) }), 0, "Eva", null)?.text).toMatch(/dostaneš cigaretu/);
   });
 
-  it("Zhromaždenie, patronát a koniec hry medziobrazovku nemajú", () => {
-    expect(medziobrazovka(p({ faza: "zhromazdenie" }), 0, "Eva", null)).toBeNull();
+  it("patronát je krok šenku (ten istý kľúč, nová medziobrazovka nepríde); koniec hry ju nemá", () => {
+    const patronat = { krok: "patronat" } as unknown as ClientState["draftStav"];
+    expect(medziobrazovka({ ...p({ faza: "draft" }), draftStav: patronat } as Pohlad, 0, "Eva", null)?.kluc).toBe("2|senok");
     expect(medziobrazovka(p({ koniec: { vitaz: 0 } as unknown as Pohlad["koniec"] }), 0, "Eva", null)).toBeNull();
   });
 });

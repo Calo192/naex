@@ -8756,7 +8756,7 @@ button.auto-hotovo-odkaz {
   display: none;
 }
 
-/* ---- medziobrazovka pri prechode fázy (Michal 2026-10-27) ----
+/* ---- medziobrazovka pri prechode fázy (Michal 2026-10-27; nahradila aj oznam finále) ----
  * Nad stolom aj nad počítadlom bitky (to čaká, kým hráč neklikne), pod lupou a tooltipom. */
 .medziobrazovka {
   position: fixed;
@@ -8782,7 +8782,21 @@ button.auto-hotovo-odkaz {
   background: var(--plocha);
   box-shadow: 0 14px 50px color-mix(in srgb, var(--pozadie) 85%, transparent);
   text-align: center;
-  animation: oznam-finale 0.35s ease-out;
+  animation: medziobrazovka-okno 0.35s ease-out;
+}
+
+@keyframes medziobrazovka-okno {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .medziobrazovka,
+  .medziobrazovka-okno {
+    animation: none;
+  }
 }
 
 .medziobrazovka-nad {
@@ -8795,7 +8809,7 @@ button.auto-hotovo-odkaz {
 
 .medziobrazovka h2 {
   margin: 0;
-  font: 800 clamp(2.2rem, 5vw, 3.4rem) / 1 var(--nadpis);
+  font: 800 clamp(2rem, 4.5vw, 3rem) / 1.05 var(--nadpis);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--akcent);
