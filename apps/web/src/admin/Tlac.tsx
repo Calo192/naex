@@ -142,7 +142,7 @@ export function Tlac() {
     <div className="admin-stranka tlac">
       <style>{stranyCss}</style>
       <div className="tlac-ovladanie">
-        <h1>Tlač</h1>
+        <h2>Tlač</h2>
         <div className="cipy">
           <button className={rezim === "subor" ? "cip aktivny" : "cip"} onClick={() => setRezim("subor")}>
             Tlačový súbor (1 karta na stranu, presah 3 mm)

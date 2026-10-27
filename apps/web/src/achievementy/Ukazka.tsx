@@ -4,6 +4,7 @@
 // zmažeme ju, keď sa achievementy zapnú.
 
 import { useState } from "react";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { OznamAchievementu, type ZiskVOzname } from "./OznamAchievementu.tsx";
 import { piktogramPodtacka } from "./piktogram.ts";
@@ -46,18 +47,22 @@ export function UkazkaAchievementov() {
     ]);
   };
   return (
-    <div className="panel" style={{ display: "grid", gap: 20 }}>
-      <header className="stranka-hlava">
-        <h1>Achievementy — ukážka</h1>
-        <p className="tlmene">Vymyslené dáta na snímky a UI inšpekciu. Skutočná vitrína bude v Profile po napojení API.</p>
+    <>
+    <HlavaStranky
+      nadpis="Achievementy — ukážka"
+      uvod="Vymyslené dáta na snímky a UI inšpekciu."
+      akcia={
         <button className="tlacidlo-hlavne" onClick={ukaz} data-ukazka-oznam="">
           Ukázať oznam v partii (2 zisky po sebe)
         </button>
-      </header>
+      }
+    />
+    <div className="panel" style={{ display: "grid", gap: 20 }}>
       <Vitrina polozky={polozky} kategorie={KATEGORIE} vlastna />
       <h2>Verejný profil (cudzí hráč)</h2>
       <Vitrina polozky={polozky} kategorie={KATEGORIE} vlastna={false} />
       <OznamAchievementu zisky={zisky} />
     </div>
+    </>
   );
 }

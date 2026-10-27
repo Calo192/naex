@@ -3,7 +3,7 @@
 
 const KLUC_VIDENE = "naex.novinkyVidene";
 
-/** Udalosť na window — stránka Novinky sa otvorila, značka v navigácii zhasne. */
+/** Udalosť na window — hráč klikol „Mám prečítané“, značka v navigácii zhasne. */
 export const NOVINKY_VIDENE = "naex:novinky-videne";
 
 /** Čas najnovšej videnej novinky; null = prvá návšteva alebo bez úložiska. */

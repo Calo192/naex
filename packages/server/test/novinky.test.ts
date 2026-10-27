@@ -130,3 +130,55 @@ describe("novinky", () => {
     expect(await pocet(null, String(cerstva.vytvorena))).toBe(0);
   });
 });
+
+describe("novinky — vydanie a „Mám prečítané“ (Michal 2026-10-27)", () => {
+  it("vydanie je voliteľné, uloží sa, dá sa zmeniť aj zmazať", async () => {
+    const r = await volaj("POST", "/admin/novinky", admin, { ...ZAKLAD, nadpis: "Špaky", vydanie: "  Pravidlá   v6 " });
+    expect(r.status).toBe(201);
+    const { novinka } = (await r.json()) as { novinka: Novinka & { vydanie: string } };
+    expect(novinka.vydanie).toBe("Pravidlá v6");
+    const bez = (await (await volaj("POST", "/admin/novinky", admin, { ...ZAKLAD, nadpis: "Bez vydania" })).json()) as { novinka: { vydanie: string } };
+    expect(bez.novinka.vydanie).toBe("");
+
+    const zoz = (await zoznam()) as (Novinka & { vydanie: string })[];
+    expect(zoz.find((n) => n.id === novinka.id)?.vydanie).toBe("Pravidlá v6");
+    // Úprava iného poľa vydanie nezmení, prázdne ho zmaže.
+    const u1 = (await (await volaj("PATCH", `/admin/novinky/${novinka.id}`, admin, { nadpis: "Špaky 2" })).json()) as { novinka: { vydanie: string } };
+    expect(u1.novinka.vydanie).toBe("Pravidlá v6");
+    const u2 = (await (await volaj("PATCH", `/admin/novinky/${novinka.id}`, admin, { vydanie: "" })).json()) as { novinka: { vydanie: string } };
+    expect(u2.novinka.vydanie).toBe("");
+    expect((await volaj("PATCH", `/admin/novinky/${novinka.id}`, admin, { vydanie: "x".repeat(41) })).status).toBe(400);
+    expect((await volaj("PATCH", `/admin/novinky/${novinka.id}`, admin, { vydanie: 6 })).status).toBe(400);
+  });
+
+  it("GET /novinky čas videného nemení — uloží ho až POST /novinky/videne", async () => {
+    const pocet = async (cookie: string): Promise<number> => ((await (await volaj("GET", "/novinky/nove", cookie)).json()) as { pocet: number }).pocet;
+    const videne = async (cookie: string): Promise<number> => ((await (await volaj("GET", "/novinky", cookie)).json()) as { videne: number }).videne;
+    const hrac2 = (await registruj(server.port)).cookie;
+    await chvila();
+    await volaj("POST", "/admin/novinky", admin, { ...ZAKLAD, nadpis: "Prvá po registrácii" });
+    const pred = await videne(hrac2);
+    expect(await pocet(hrac2)).toBe(1);
+    // Otvorenie stránky (aj opakované) nič neuloží — novinka ostane nová.
+    await videne(hrac2);
+    await chvila();
+    expect(await videne(hrac2)).toBe(pred);
+    expect(await pocet(hrac2)).toBe(1);
+
+    // „Mám prečítané“ s časom najnovšej zobrazenej novinky: čo pribudlo medzitým, ostane nové.
+    const prva = (await zoznam()).find((n) => n.nadpis === "Prvá po registrácii") as Novinka;
+    await chvila();
+    await volaj("POST", "/admin/novinky", admin, { ...ZAKLAD, nadpis: "Medzitým" });
+    expect((await volaj("POST", "/novinky/videne", hrac2, { po: prva.vytvorena })).status).toBe(200);
+    expect(await videne(hrac2)).toBe(prva.vytvorena);
+    expect(await pocet(hrac2)).toBe(1);
+    // Starší čas (druhá karta prehliadača) videné nevráti dozadu.
+    expect((await volaj("POST", "/novinky/videne", hrac2, { po: prva.vytvorena - 1000 })).status).toBe(200);
+    expect(await videne(hrac2)).toBe(prva.vytvorena);
+    // Bez tela (starší klient) = teraz; zlé telo je chyba.
+    expect((await volaj("POST", "/novinky/videne", hrac2)).status).toBe(200);
+    expect(await pocet(hrac2)).toBe(0);
+    const zle = await fetch(url("/novinky/videne"), { method: "POST", headers: { "x-naex": "1", "content-type": "application/json", cookie: hrac2 }, body: "{" });
+    expect(zle.status).toBe(400);
+  });
+});

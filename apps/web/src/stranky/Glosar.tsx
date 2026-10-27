@@ -15,6 +15,7 @@ import { KartyZalozky } from "../dielna/Dielna.tsx";
 type AutoriKariet = Readonly<Record<string, { readonly meno: string; readonly prerobena: boolean; readonly navrh: number }>>;
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 
 const TYPY: readonly { readonly nazov: string; readonly tag: string | null }[] = [
   { nazov: "Všetky", tag: null },
@@ -184,8 +185,20 @@ export function Glosar() {
       .catch(() => undefined);
   }, []);
 
-  if (chyba !== null) return <Hlaska>{chyba}</Hlaska>;
-  if (sada === null) return <Nacitavanie />;
+  const hlava = (
+    <HlavaStranky
+      nadpis="Karty"
+      uvod={sada === null ? "Všetky karty hry s efektom, akciami, príbehom a účelom v hre." : `${sada.karty.length} kariet hry s efektom, akciami, príbehom a účelom v hre.`}
+      zalozky={<KartyZalozky aktivna="karty" />}
+      viac={
+        <p>
+          Prejdi myšou ponad <strong>ikonu akcie</strong>, tučný spúšťač alebo pojem v kurzíve — zobrazí sa, čo robí. Klikni na kartu pre detail — aj s
+          jej príbehom a účelom v hre.
+        </p>
+      }
+    />
+  );
+  if (chyba !== null || sada === null) return <div className="glosar">{hlava}{chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />}</div>;
   const vzhlad = vzhladSady(sada);
 
   const filtr = hladat.trim().toLocaleLowerCase("sk");
@@ -197,13 +210,9 @@ export function Glosar() {
 
   return (
     <div className="glosar">
-      <header className="stranka-hlava">
-        <h1>Karty</h1>
-        <KartyZalozky aktivna="karty" />
-        <p className="tlmene">
-          {sada.karty.length} kariet hry. Prejdi myšou ponad <strong>ikonu akcie</strong>, tučný spúšťač alebo pojem v
-          kurzíve — zobrazí sa, čo robí. Klikni na kartu pre detail — aj s jej príbehom a účelom v hre.
-        </p>
+      {hlava}
+      <div className="mriezka">
+      <aside className="st-bok glosar-bok" aria-label="Filter kariet">
         <div className="glosar-ovladanie">
           <div className="cipy" role="group" aria-label="Typ karty">
             {TYPY.map((t) => (
@@ -218,7 +227,8 @@ export function Glosar() {
             <input type="range" min={150} max={420} step={10} value={sirka} onChange={(e) => setSirka(Number(e.target.value))} />
           </label>
         </div>
-      </header>
+      </aside>
+      <div className="st-obsah">
 
       <div className="mriezka-kariet" style={{ gridTemplateColumns: `repeat(auto-fill, ${sirka}px)` }}>
         {viditelne.map((k) => {
@@ -259,6 +269,8 @@ export function Glosar() {
         </ul>
       </section>
 
+      </div>
+      </div>
       {detail !== null && <Detail karta={detail} vzhlad={vzhlad} zavri={() => setDetail(null)} autor={autori[detail.id]} />}
     </div>
   );

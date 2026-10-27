@@ -9,6 +9,7 @@ import { api } from "../../lib/api.ts";
 import { Odkaz, useTitulok } from "../../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
+import { HlavaStranky } from "../../HlavaStranky.tsx";
 import { BilanciaPruh, CisloFrajeriny, GrafFrajeriny, Statistiky, tvar } from "../Statistiky.tsx";
 import {
   SKRATKA_VYSLEDKU,
@@ -253,13 +254,15 @@ export function HracProfil({ id }: { readonly id: number }) {
 
   if (chyba !== null) {
     return (
-      <div className="formular-stred" style={{ textAlign: "center" }}>
-        <h1>Hráč sa nenašiel</h1>
-        <p className="tlmene">{chyba}</p>
-        <Odkaz href="/rebricek" className="tlacidlo">
-          Rebríček
-        </Odkaz>
-      </div>
+      <HlavaStranky
+        nadpis="Hráč sa nenašiel"
+        uvod={chyba}
+        akcia={
+          <Odkaz href="/rebricek" className="tlacidlo">
+            Rebríček
+          </Odkaz>
+        }
+      />
     );
   }
   if (profil === null) return <Nacitavanie />;
@@ -282,11 +285,12 @@ export function HracProfil({ id }: { readonly id: number }) {
 
   return (
     <div className="profil-hraca">
+      <HlavaStranky nadpis={profil.hrac.meno} uvod={vlastny ? "Tvoje štatistiky, partie a achievementy." : "Štatistiky, partie a achievementy hráča."} />
       {profil.skryty && <p className="profil-skryty-pas">Skrytý profil — AI playtester. Hráči ho nevidia, správcovia áno.</p>}
       <section className="panel profil-hlavicka">
         <Avatar meno={profil.hrac.meno} avatar={profil.hrac.avatar} velkost={96} />
         <div className="profil-hlavicka-texty">
-          <h1>{profil.hrac.meno}</h1>
+          <strong className="profil-meno">{profil.hrac.meno}</strong>
           <div className="profil-odznaky">
             <span className="odznak">{f.titul}</span>
             {profil.hrac.rola === "admin" && <span className="odznak odznak-admin">tvorca hry</span>}

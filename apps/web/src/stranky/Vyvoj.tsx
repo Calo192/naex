@@ -10,6 +10,7 @@ import { api, ChybaApi } from "../lib/api.ts";
 import { chod, Odkaz, useTitulok } from "../lib/router.tsx";
 import { maPravo, useUcet } from "../lib/ucet.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import { GrafZnamok, MiniGraf, TabulkaVyvoja, cislo, hodnota, kratkyDen, terajsiaHodnota, type BodVyvoja, type Vyvoj } from "./GrafZnamok.tsx";
 import { Roadmapa, type PoctyRoadmapy } from "./Roadmapa.tsx";
 import "./vyvoj.css";
@@ -326,9 +327,7 @@ export function Vyvoj({ cesta }: { readonly cesta: string }) {
   if (zamknute) {
     return (
       <div className="vyvoj-stranka">
-        <header className="stranka-hlava">
-          <h1>Kam hra smeruje</h1>
-        </header>
+        <HlavaStranky nadpis="Kam hra smeruje" />
         <div className="panel vyvoj-zamknute">
           {ja === null ? (
             <>
@@ -347,12 +346,10 @@ export function Vyvoj({ cesta }: { readonly cesta: string }) {
 
   return (
     <div className="vyvoj-stranka">
-      <header className="stranka-hlava">
-        <h1>Kam hra smeruje</h1>
-        <p className="tlmene">
-          NA EX! sa ešte ladí. Tu vidno, ako hru hodnotia hráči a AI playtesteri v čase, čo sa na nej robí, čo je hotové a podľa čoho sa rozhoduje.
-        </p>
-      </header>
+      <HlavaStranky
+        nadpis="Kam hra smeruje"
+        uvod="NA EX! sa ešte ladí. Tu vidno, ako hru hodnotia hráči a AI playtesteri v čase, čo sa na nej robí, čo je hotové a podľa čoho sa rozhoduje."
+      />
 
       <nav className="sekcny-pas" aria-label="Časti stránky Vývoj">
         <div className="sekcny-pas-odkazy">

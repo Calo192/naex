@@ -13,6 +13,7 @@ import { CASTI, KAPITOLY, STARE_KOTVY, type Kapitola } from "./pravidla/kapitoly
 import { PojmyPravidiel, chodNaPojem } from "./pravidla/Pojem.tsx";
 import { SLOVNIK } from "./pravidla/slovnik.ts";
 import { VyzvaVyucby } from "../hra/VstupyVyucby.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 
 /** Ilustrácie kapitol (generuje Admin, bez nápisu) — chýbajúca = zástupný pás, žiadne 404. */
 const OBRAZKY = import.meta.glob("./pravidla-obrazky/*.{jpg,jpeg,webp,png}", { eager: true, query: "?url", import: "default" }) as Record<
@@ -488,10 +489,11 @@ export function Pravidla() {
 
   return (
     <PojmyPravidiel>
-      <div className="pravidla">
-        <aside className="pravidla-bok">
+      <HlavaStranky nadpis="Pravidlá" uvod="Ako sa NA EX! hrá — od rýchleho štartu po slovník pojmov." />
+      <div className="pravidla mriezka">
+        <aside className="pravidla-bok st-prirucka-obsah">
           <div className="pravidla-bok-hlava">
-            <h2>Pravidlá</h2>
+            <span className="tlmene">Obsah</span>
             <span className="tlmene">
               {kdeSom}
             </span>
@@ -527,7 +529,7 @@ export function Pravidla() {
           </div>
         )}
 
-        <div className="pravidla-kniha" ref={knihaRef}>
+        <div className="pravidla-kniha st-prirucka-text s-okrajom" ref={knihaRef}>
           {/* Kto ešte nemá 1. časť výučby, toho pošleme najprv k Melicharovi; Pravidlá ostanú príručkou (#104). */}
           <VyzvaVyucby />
           {/* Na mobile bok s nadpisom chýba — verzia ide nad prvú kapitolu. */}

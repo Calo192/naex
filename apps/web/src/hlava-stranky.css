@@ -1,0 +1,144 @@
+/* Hlava stránky na kriedovej tabuli (Michal 2026-10-27, UI A + tabuľa z B). Farby tabule,
+   kriedy a dreveného rámu sú len zmesi tokenov schémy, takže fungujú vo všetkých schémach:
+   v tmavých schémach je tabuľa z pozadia, vo svetlých (--tma 0,3) z tmavého textu — vždy
+   tmavá s kriedou svetlej farby. */
+:root {
+  /* 100 % v tmavých schémach (--tma 1), 0 % vo svetlých (--tma 0,3). */
+  --tmave-svetle: calc((var(--tma) - 0.3) / 0.7 * 100%);
+  --tabula: color-mix(in oklab, color-mix(in oklab, var(--pozadie) var(--tmave-svetle), var(--text)) 86%, var(--zelena));
+  --krieda: color-mix(in oklab, var(--text) var(--tmave-svetle), var(--pozadie));
+  --krieda-tlmena: color-mix(in oklab, var(--krieda) 78%, var(--tabula));
+  --drevo: color-mix(in oklab, var(--akcent-tmavy) 42%, var(--plocha-3));
+  --drevo-tmave: color-mix(in oklab, var(--drevo) 70%, var(--pozadie));
+}
+
+.hlava-stranky {
+  margin: 0 0 28px;
+}
+
+.tabula {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  /* Text hore — nadpis je na rovnakej výške bez ohľadu na dĺžku úvodu a akcie. */
+  align-items: start;
+  gap: 12px 32px;
+  min-height: 112px;
+  padding: 16px 26px 18px;
+  border: 8px solid var(--drevo);
+  border-radius: 6px;
+  background:
+    radial-gradient(ellipse 70% 90% at 30% 20%, color-mix(in oklab, var(--krieda) 7%, transparent), transparent 70%),
+    var(--tabula);
+  color: var(--krieda);
+  box-shadow:
+    inset 0 0 0 1px var(--drevo-tmave),
+    0 0 0 1px var(--drevo-tmave),
+    0 10px 26px rgb(0 0 0 / calc(0.35 * var(--tma)));
+}
+
+/* Nadpis má na každej stránke tú istú veľkosť a polohu (kostra.ts). */
+.hlava-stranky h1 {
+  margin: 0;
+  font: 800 2.25rem/1.15 var(--nadpis);
+  letter-spacing: 0.01em;
+  color: var(--krieda);
+  overflow-wrap: anywhere;
+}
+
+.hlava-stranky h1 em {
+  font-style: normal;
+  color: color-mix(in oklab, var(--akcent) 55%, var(--krieda));
+}
+
+.tabula-uvod {
+  margin: 6px 0 0;
+  max-width: 72ch;
+  color: var(--krieda-tlmena);
+  font-size: 1.02rem;
+}
+
+.tabula a:not(.tlacidlo) {
+  color: var(--krieda);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--krieda) 45%, transparent);
+  text-underline-offset: 3px;
+}
+
+.tabula-akcia {
+  align-self: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px 14px;
+  color: var(--krieda-tlmena);
+  font-size: 0.92rem;
+}
+
+.tabula :focus-visible {
+  outline-color: var(--krieda);
+}
+
+.hlava-viac {
+  margin-top: 10px;
+}
+
+.hlava-viac > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  cursor: pointer;
+  color: var(--tlmeny);
+  font-weight: 600;
+  list-style: none;
+}
+
+.hlava-viac > summary::-webkit-details-marker {
+  display: none;
+}
+
+.hlava-viac > summary::after {
+  content: "▸";
+  transition: transform 0.15s ease;
+}
+
+.hlava-viac[open] > summary::after {
+  transform: rotate(90deg);
+}
+
+.hlava-viac-telo {
+  max-width: 80ch;
+  color: var(--tlmeny);
+}
+
+.hlava-viac-telo p {
+  margin: 0.4em 0;
+}
+
+.hlava-zalozky {
+  margin-top: 16px;
+}
+
+@media (max-width: 760px) {
+  .tabula {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 14px 18px 16px;
+    border-width: 6px;
+  }
+
+  .hlava-stranky h1 {
+    font-size: 1.85rem;
+  }
+
+  .tabula-akcia {
+    justify-content: flex-start;
+  }
+}
+
+@media print {
+  .hlava-stranky {
+    display: none;
+  }
+}

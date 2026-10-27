@@ -32,7 +32,7 @@ import type { Novinky } from "./novinky.ts";
 import type { Dielna } from "./dielna.ts";
 import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
-import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
+import { overKategoriu as overKategoriuNazoru, overSkupinu } from "./nazory.ts";
 
 /** Rozohraná partia hráča — pilulka „Partia beží · Späť ku stolu“ v hlavičke mimo stola. */
 export interface RozohranaPartia {
@@ -554,8 +554,18 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const od = ja !== null ? ctx.novinky.videne(ja.id) : Number(query.get("od"));
       return ok({ pocet: Number.isFinite(od) && od > 0 ? ctx.novinky.pocetOd(od) : 0 });
     }
+    // Volá ho až „Mám prečítané“ (Michal 2026-10-27); GET /novinky čas videného nemení.
+    // Telo { po } je voliteľné — starší klient posiela prázdne.
     if (r === "POST /novinky/videne") {
-      ctx.novinky.oznacVidene(prihlaseny().id, teraz);
+      const p = prihlaseny();
+      const buf = await citajTelo(req, JSON_LIMIT);
+      let po: unknown;
+      try {
+        po = buf.length === 0 ? undefined : (JSON.parse(buf.toString("utf8")) as { po?: unknown } | null)?.po;
+      } catch {
+        throw new ChybaVstupu("Neplatné JSON telo požiadavky.");
+      }
+      ctx.novinky.oznacVidene(p.id, teraz, po);
       return ok({ ok: true });
     }
 
@@ -715,11 +725,16 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         const triedenie: Triedenie = t === "cigarety" || t === "diskusia" ? t : "nove";
         const k = query.get("kategoria");
         const kategoria: KategoriaNazoru | null = k === null || k === "" ? null : overKategoriuNazoru(k);
-        return ok({ nazory: ctx.nazory.zoznam(p, triedenie, kategoria) });
+        // Záložka stavu (otvorene | planovane | hotove | zamietnute) a ai=0 len od ľudí / ai=1 len od AI;
+        // bez nich všetko (nástroje agentov). Počty sú pre záložky a prepínač AI.
+        const s = query.get("stav");
+        const a = query.get("ai");
+        const filter = { kategoria, skupina: s === null || s === "" ? null : overSkupinu(s), ai: a === "0" ? false : a === "1" ? true : null };
+        return ok({ nazory: ctx.nazory.zoznam(p, triedenie, filter), pocty: ctx.nazory.pocty(kategoria) });
       }
       if (r === "POST /nazory") {
         const b = await citajJson(req);
-        return ok({ id: ctx.nazory.pridaj(p, b.kategoria, b.text, teraz) }, 201);
+        return ok({ id: ctx.nazory.pridaj(p, b.kategoria, b.text, teraz, b.nadpis) }, 201);
       }
       if (Number.isInteger(kom)) {
         if (metoda === "DELETE" && casti.length === 4) {

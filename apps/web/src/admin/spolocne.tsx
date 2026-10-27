@@ -7,7 +7,7 @@ export function AdminHlava({ titul, popis, children }: { readonly titul: ReactNo
   return (
     <header className="admin-hlavicka">
       <div className="admin-hlavicka-text">
-        <h1>{titul}</h1>
+        <h2>{titul}</h2>
         {popis !== undefined && <p>{popis}</p>}
       </div>
       {children !== undefined && <div className="admin-hlavicka-akcie">{children}</div>}

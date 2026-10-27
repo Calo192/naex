@@ -12,6 +12,7 @@ import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { jeSpravca, maPravo, useUcet } from "../lib/ucet.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { TlacidloCigarety } from "../stranky/SpatnaVazba.tsx";
@@ -133,40 +134,40 @@ function Zoznam({ sada }: { readonly sada: Sada }) {
 
   return (
     <div className="dielna">
-      <header className="stranka-hlava">
-        <h1>Dielňa</h1>
-        <KartyZalozky aktivna="dielna" />
-        <p className="tlmene">
-          Navrhni novú kartu alebo úpravu karty, ktorá už je v hre. Ostatní hráči ti dajú cigaretu a napíšu, čo si myslia, a tvorca hry
-          návrh prevezme do hry, vráti ti ho na úpravu, alebo ho zamietne — vždy s dôvodom. {PRAVIDLO_LUDI}
-        </p>
-        <div className="dielna-ovladanie">
-          {smiem ? (
-            <Odkaz href="/karty/dielna/novy" className={`tlacidlo tlacidlo-hlavne ${data !== null && moje >= data.maxOtvorenych ? "zakazane" : ""}`}>
-              Navrhnúť kartu
-            </Odkaz>
-          ) : ja === null ? (
-            <Odkaz href="/prihlasenie?spat=/karty/dielna" className="tlacidlo">
-              Prihlás sa a navrhni kartu
-            </Odkaz>
-          ) : (
-            <span className="tlmene">Navrhovať karty tvoj rank zatiaľ nesmie.</span>
-          )}
-          {data !== null && ja !== null && smiem && (
-            <span className="tlmene">
-              Otvorené návrhy: {moje} z {data.maxOtvorenych}
-            </span>
-          )}
-          {data !== null && data.noveRozhodnutia > 0 && (
-            <button type="button" className="cip dielna-nove-rozhodnutie" onClick={() => setFilter("moje")}>
-              Nové rozhodnutie o tvojom návrhu: {data.noveRozhodnutia}
-            </button>
-          )}
-        </div>
-      </header>
+      <HlavaStranky
+        nadpis="Dielňa"
+        uvod="Navrhni novú kartu alebo úpravu karty, ktorá už je v hre."
+        akcia={
+          <>
+            {data !== null && ja !== null && smiem && (
+              <span>
+                Otvorené návrhy: {moje} z {data.maxOtvorenych}
+              </span>
+            )}
+            {smiem ? (
+              <Odkaz href="/karty/dielna/novy" className={`tlacidlo tlacidlo-hlavne ${data !== null && moje >= data.maxOtvorenych ? "zakazane" : ""}`}>
+                Navrhnúť kartu
+              </Odkaz>
+            ) : ja === null ? (
+              <Odkaz href="/prihlasenie?spat=/karty/dielna" className="tlacidlo">
+                Prihlás sa a navrhni kartu
+              </Odkaz>
+            ) : (
+              <span>Navrhovať karty tvoj rank zatiaľ nesmie.</span>
+            )}
+          </>
+        }
+        zalozky={<KartyZalozky aktivna="dielna" />}
+        viac={
+          <p>
+            Ostatní hráči ti dajú cigaretu a napíšu, čo si myslia, a tvorca hry návrh prevezme do hry, vráti ti ho na úpravu, alebo ho zamietne —
+            vždy s dôvodom. {PRAVIDLO_LUDI}
+          </p>
+        }
+      />
 
-      {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-
+      <div className="mriezka">
+      <aside className="st-bok dielna-bok">
       <div className="dielna-filtre">
         <div className="cipy" role="group" aria-label="Filter stavu">
           {FILTRE.filter((f) => f.kluc !== "moje" || ja !== null).map((f) => (
@@ -183,7 +184,14 @@ function Zoznam({ sada }: { readonly sada: Sada }) {
           </select>
         </label>
       </div>
-
+      </aside>
+      <div className="st-obsah">
+      {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+      {data !== null && data.noveRozhodnutia > 0 && (
+        <button type="button" className="cip dielna-nove-rozhodnutie" onClick={() => setFilter("moje")}>
+          Nové rozhodnutie o tvojom návrhu: {data.noveRozhodnutia}
+        </button>
+      )}
       {data === null ? (
         chyba === null && <Nacitavanie />
       ) : viditelne.length === 0 ? (
@@ -222,6 +230,8 @@ function Zoznam({ sada }: { readonly sada: Sada }) {
           ))}
         </ul>
       )}
+      </div>
+      </div>
     </div>
   );
 }
@@ -476,9 +486,21 @@ function Detail({ id, sada }: { readonly id: number; readonly sada: Sada }) {
 
   return (
     <div className="dielna dielna-detail">
-      <p>
-        <Odkaz href="/karty/dielna">← Dielňa</Odkaz>
-      </p>
+      <HlavaStranky
+        nadpis={n.obsah.nazov || "Bez názvu"}
+        uvod={
+          <>
+            {n.typ === "nova" ? "Návrh novej karty" : `Návrh úpravy karty ${n.zakladKarta?.nazov ?? ""}`} — navrhol(a) <Autor a={n.autor} />{" "}
+            {kedy(n.odoslany ?? n.vytvoreny)}
+            {n.upraveny > (n.odoslany ?? n.vytvoreny) && ", upravené"}
+          </>
+        }
+        akcia={
+          <Odkaz href="/karty/dielna" className="tlacidlo">
+            ← Dielňa
+          </Odkaz>
+        }
+      />
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <div className="dielna-detail-mriezka">
         <div className="dielna-detail-karta">
@@ -490,11 +512,7 @@ function Detail({ id, sada }: { readonly id: number; readonly sada: Sada }) {
             <span className="dielna-typ">{n.typ === "nova" ? "nová karta" : `úprava karty ${n.zakladKarta?.nazov ?? ""}`}</span>
             {n.skryty && <span className="odznak">skrytý pred hráčmi</span>}
           </div>
-          <h1>{n.obsah.nazov || "Bez názvu"}</h1>
-          <p className="tlmene">
-            {n.obsah.tagy.join(" · ")} — navrhol(a) <Autor a={n.autor} /> {kedy(n.odoslany ?? n.vytvoreny)}
-            {n.upraveny > (n.odoslany ?? n.vytvoreny) && ", upravené"}
-          </p>
+          {n.obsah.tagy.length > 0 && <p className="tlmene">{n.obsah.tagy.join(" · ")}</p>}
           {n.obsah.efekt !== "" && <p className="glosar-efekt">{n.obsah.efekt}</p>}
 
           {n.dovod !== "" && (
@@ -920,14 +938,16 @@ function Editor({ id, zaklad, sada }: { readonly id: number | null; readonly zak
 
   return (
     <div className="dielna dielna-editor">
-      <p>
-        <Odkaz href={id === null ? "/karty/dielna" : `/karty/dielna/${id}`}>← späť</Odkaz>
-      </p>
-      <h1>{id !== null ? "Úprava návrhu" : zakladK !== null ? `Úprava karty ${zakladK.nazov}` : "Nová karta"}</h1>
-      <p className="tlmene">
-        Koncept vidíš len ty, kým ho neodošleš na hlasovanie. {uzHlasuje && "Návrh je v hlasovaní — zmeny uvidia všetci a cigarety ostanú. "}
-        {PRAVIDLO_LUDI}
-      </p>
+      <HlavaStranky
+        nadpis={id !== null ? "Úprava návrhu" : zakladK !== null ? `Úprava karty ${zakladK.nazov}` : "Nová karta"}
+        uvod={uzHlasuje ? "Návrh je v hlasovaní — zmeny uvidia všetci a cigarety ostanú." : "Koncept vidíš len ty, kým ho neodošleš na hlasovanie."}
+        akcia={
+          <Odkaz href={id === null ? "/karty/dielna" : `/karty/dielna/${id}`} className="tlacidlo">
+            ← späť
+          </Odkaz>
+        }
+      />
+      <p className="tlmene">{PRAVIDLO_LUDI}</p>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <div className="dielna-editor-mriezka">
         <form

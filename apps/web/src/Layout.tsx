@@ -16,9 +16,10 @@ import { NAZOV_UROVNE, jeSpravca, useUcet } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
 
 /**
- * Koľko noviniek pribudlo od poslednej návštevy stránky Novinky (roadmapa #20) —
+ * Koľko noviniek pribudlo od posledného „Mám prečítané“ na stránke Novinky (roadmapa #20;
+ * Michal 2026-10-27: značka zhasne až po kliknutí, nie pri otvorení stránky) —
  * prihlásenému to ráta server, návštevníkovi od času uloženého v prehliadači.
- * Zistí sa pri každom prechode na inú stránku; na Novinkách je 0.
+ * Zistí sa pri každom prechode na inú stránku.
  */
 function useNoveNovinky(cesta: string, nacitane: boolean, prihlaseny: boolean): number {
   const [pocet, setPocet] = useState(0);
@@ -28,7 +29,7 @@ function useNoveNovinky(cesta: string, nacitane: boolean, prihlaseny: boolean): 
     return () => window.removeEventListener(NOVINKY_VIDENE, zhasni);
   }, []);
   useEffect(() => {
-    if (!nacitane || cesta === "/novinky") return;
+    if (!nacitane) return;
     const od = prihlaseny ? null : citajVidene();
     // Návštevník, ktorý Novinky ešte neotvoril, značku nevidí — všetko by bolo „nové“.
     if (!prihlaseny && od === null) return;
@@ -43,7 +44,7 @@ function useNoveNovinky(cesta: string, nacitane: boolean, prihlaseny: boolean): 
       zive = false;
     };
   }, [cesta, nacitane, prihlaseny]);
-  return cesta === "/novinky" ? 0 : pocet;
+  return pocet;
 }
 
 /** Koľko rozhodnutí o mojich návrhoch v Dielni som ešte nevidel — značka pri Kartách. */
@@ -246,12 +247,15 @@ export function Layout({
   children,
   stol = false,
   plna = false,
+  nastroj = false,
 }: {
   readonly children: ReactNode;
   /** Herný stôl mimo živej partie (prehrávač, ukážky) — celá šírka okna ako pri stole. */
   readonly stol?: boolean;
   /** Celé okno pod hlavičkou bez posúvania stránky a bez pätičky. */
   readonly plna?: boolean;
+  /** Nástroj správcu (Tvorba, Playtest, Hráči) — obsah bez maxima doprava, hrana ako inde. */
+  readonly nastroj?: boolean;
 }) {
   const cesta = useCesta();
   const { ja, nacitane, odhlas, pravaNavstevnika } = useUcet();
@@ -355,7 +359,7 @@ export function Layout({
     ) : null;
 
   return (
-    <div className="aplikacia">
+    <div className={nastroj && !stol && !priStole ? "aplikacia nastroj" : "aplikacia"}>
       <header className="hlavicka" onClickCapture={strazOdchodu}>
         <div className={`hlavicka-vnutro${priStole ? " pri-stole" : ""}${kostra}`}>
           <Odkaz href="/" className="logo" aria-label="NA EX! — domov" data-nazov="úvodnú stránku">

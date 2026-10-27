@@ -17,6 +17,7 @@ import {
   type Pouzivatel,
 } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import type { Pohlavie } from "@naex/core";
 
 /** Pohlavie v profile (Michal 2026-10-22) — súper ho vidí len v tvare hlášok. */
@@ -59,9 +60,9 @@ export function Prihlasenie() {
   };
 
   return (
+    <>
+    <HlavaStranky nadpis="Vitaj späť" uvod="Prihlás sa a pokračuj tam, kde si prestal." />
     <div className="formular-stred">
-      <h1>Vitaj späť</h1>
-      <p className="podnadpis">Prihlás sa a pokračuj tam, kde si prestal.</p>
       <form className="panel" onSubmit={(e) => void odosli(e)}>
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
         <Pole label="Prihlasovacie meno">
@@ -78,6 +79,7 @@ export function Prihlasenie() {
         Ešte nemáš účet? <Odkaz href={`/registracia${location.search}`}>Zaregistruj sa</Odkaz>
       </p>
     </div>
+    </>
   );
 }
 
@@ -111,9 +113,9 @@ export function Registracia() {
   };
 
   return (
+    <>
+    <HlavaStranky nadpis="Nový účet" uvod="Účet potrebuješ na hranie. Pravidlá a karty sú voľne prístupné." />
     <div className="formular-stred">
-      <h1>Nový účet</h1>
-      <p className="podnadpis">Účet potrebuješ na hranie. Pravidlá a karty sú voľne prístupné.</p>
       <form className="panel" onSubmit={(e) => void odosli(e)}>
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
         <Pole label="Prihlasovacie meno" pomoc="3 – 32 znakov bez diakritiky. Slúži len na prihlásenie.">
@@ -143,6 +145,7 @@ export function Registracia() {
         Už máš účet? <Odkaz href={`/prihlasenie${location.search}`}>Prihlás sa</Odkaz>
       </p>
     </div>
+    </>
   );
 }
 
@@ -373,7 +376,15 @@ export function Profil() {
 
   return (
     <div className="profil profil-siroky">
-      <h1>Môj profil</h1>
+      <HlavaStranky
+        nadpis="Môj profil"
+        uvod="Herné meno, fotka a nastavenia webu aj partie."
+        akcia={
+          <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo">
+            Moje štatistiky a partie
+          </Odkaz>
+        }
+      />
       {novy && <Hlaska druh="ok">Účet je pripravený. Nastav si herné meno a fotku — uvidí ich tvoj súper.</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
