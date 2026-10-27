@@ -2,8 +2,8 @@
 // hráča (viewFor), každá nápoveda má spúšťač a katalog sedí s jadrom.
 
 import { describe, expect, it } from "vitest";
-// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
-import cardsJson from "./data/cards-v6.json";
+// Sada v7 — nápovedy sa overujú aj na scenári výučby „Prvá hra“, ktorý je od 2026-10-27 na v7.
+import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import katalogJson from "../data/vyucba/napovedy.json";
@@ -78,14 +78,16 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     expect(ids(zh(1), 0)).not.toContain("dedicstvo");
   });
 
-  it("lokalita s vlastným pravidlom doplní názov a text karty; Jednota nápovedu nemá", () => {
+  it("lokalita s vlastným pravidlom doplní názov a text karty; Jednota (v7 Kšeft) áno, Cintorín nápovedu nemá", () => {
     const krcma = inst("krcma");
     const s = { ...s0, faza: "zhromazdenie", ciel: { typ: "lokalita", lokalita: krcma } } as unknown as GameState;
     const n = napovedy(data, katalog, viewFor(data, s, 0)).find((x) => x.id === "lokalita-pravidlo");
     expect(n?.text).toBe(`Krčma má vlastné pravidlo a platí celé kolo: ${data.cards.get("krcma")?.effectText}`);
     expect(n?.zvyraznit).toEqual(["linia:krcma"]);
     const jednota = { ...s, ciel: { typ: "lokalita", lokalita: inst("jednota") } } as unknown as GameState;
-    expect(ids(jednota, 0)).not.toContain("lokalita-pravidlo");
+    expect(ids(jednota, 0)).toContain("lokalita-pravidlo");
+    const cintorin = { ...s, ciel: { typ: "lokalita", lokalita: inst("cintorin") } } as unknown as GameState;
+    expect(ids(cintorin, 0)).not.toContain("lokalita-pravidlo");
   });
 
   it("Pohoršenie: kto vyberá, dostane „moje“, súper „superove“", () => {

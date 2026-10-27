@@ -38,7 +38,8 @@ beforeAll(async () => {
   writeFileSync(
     join(dir, "melichar", "zoznam.json"),
     JSON.stringify([
-      { id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, skupina: "udiv" },
+      // meno = súbor bez prípony (import od 2026-10-27); Bzdocha je zo staršieho importu bez neho.
+      { id: ID, nazov: "No toto je marha", meno: "03_No_toto_je_marha", subor: `${ID}.mp3`, skupina: "udiv" },
       // Neplatné id skupiny sa zahodí.
       { id: ID2, nazov: "Bzdocha", subor: `${ID2}.mp3`, skupina: "Zlá skupina!" },
     ]),
@@ -122,7 +123,7 @@ describe("hlášky majstra Melichara", () => {
     const r = (await (await fetch(url("/api/melichar"))).json()) as { hlasky: unknown[]; skupiny: unknown[] };
     // Súbor bez MP3 rámcov — dĺžka sa nedá zistiť, ráta sa s predvolenou.
     expect(r.hlasky).toEqual([
-      { id: ID, nazov: "No toto je marha", subor: `${ID}.mp3`, skupina: "udiv", trvanieMs: TRVANIE_HLASKY_NEZNAME_MS },
+      { id: ID, nazov: "No toto je marha", meno: "03_No_toto_je_marha", subor: `${ID}.mp3`, skupina: "udiv", trvanieMs: TRVANIE_HLASKY_NEZNAME_MS },
       { id: ID2, nazov: "Bzdocha", subor: `${ID2}.mp3`, trvanieMs: TRVANIE_HLASKY_NEZNAME_MS },
     ]);
     expect(r.skupiny).toEqual([{ id: "udiv", nazov: "Údiv", citat: "Boha", ikona: "vykricnik", farba: "info", klaves: "1", nalady: ["udiv"] }]);

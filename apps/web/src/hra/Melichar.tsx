@@ -2,7 +2,8 @@
 // pri pečiatke momentu (Michal 2026-10-23, nápad 5) — už nie náhodne po NA EX.
 // Moment má náladu (jadro, NALADY_MOMENTOV), skupiny hlášok k nálade určujú
 // dáta (pole nalady v skupina.json pri importe). Hlasitosť si hráč nastaví
-// v profile (0 = Melichar mlčí). Hudba hrá ďalej rovnako nahlas a názov
+// v profile (0 = Melichar mlčí). Vo výučbe hovorí len hlášky zo scenára
+// (useHlaskyVyucby). Hudba hrá ďalej rovnako nahlas a názov
 // hlášky sa neukazuje (Michal 2026-10-22).
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,9 +11,10 @@ import type { NaladaMomentu } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { MELICHAR_PREDVOLENY, useUcet } from "../lib/ucet.tsx";
 import { hlasitostZvuku, zamiesaj, type Skladba } from "./Hudba.tsx";
+import { hlaskaNaPrehratie } from "./hlaskyVyucby.ts";
 
-/** Hláška má rovnaký tvar ako skladba — nazov je jej text; trvanieMs pre soundboard, skupina = priečinok pri importe. */
-export type HlaskaMelichara = Skladba & { readonly trvanieMs?: number; readonly skupina?: string };
+/** Hláška má rovnaký tvar ako skladba — nazov je jej text; trvanieMs pre soundboard, skupina = priečinok pri importe, meno = súbor bez prípony (výučba). */
+export type HlaskaMelichara = Skladba & { readonly trvanieMs?: number; readonly skupina?: string; readonly meno?: string };
 
 /** Skupina hlášok (dáta z importu, server skupiny.json). */
 export interface SkupinaMelichara {
@@ -145,4 +147,61 @@ export function useMelichar(aktivny: boolean): { readonly ozviMoment: (nalada: N
 
   const umlcBublinu = useCallback(() => setHovori(false), []);
   return { ozviMoment, hovori, umlcBublinu };
+}
+
+/**
+ * Hlášky vo výučbe (Michal 2026-10-27): useMelichar tam mlčí, zaznie len hláška, ktorú menuje
+ * scenár — rovnaký hlas a hlasitosť z profilu. Nová hláška či zastav() predošlú utne, nevrstvia
+ * sa. Hlasitosť 0, chýbajúca nahrávka aj prehliadač, ktorý pred prvým klikom zvuk nepustí,
+ * znamenajú ticho bez chyby — bublina ide ďalej.
+ */
+export function useHlaskyVyucby(): { readonly prehraj: (hlaska: string | null | undefined) => void; readonly zastav: () => void } {
+  const hlasitost = useUcet().ja?.melichar ?? MELICHAR_PREDVOLENY;
+  const nastavenie = useRef(hlasitost);
+  nastavenie.current = hlasitost;
+  const audio = useRef<HTMLAudioElement | null>(null);
+  // Hláška, ktorej zoznam sa ešte načítava, nezaznie, ak ju medzitým nahradila iná.
+  const poradie = useRef(0);
+  const zije = useRef(false);
+
+  useEffect(() => {
+    if (audio.current === null) return;
+    audio.current.volume = hlasitostZvuku(hlasitost);
+    if (hlasitost <= 0) audio.current.pause();
+  }, [hlasitost]);
+
+  useEffect(() => {
+    zije.current = true;
+    return () => {
+      zije.current = false;
+      const a = audio.current;
+      audio.current = null;
+      if (a === null) return;
+      a.pause();
+      a.removeAttribute("src");
+      a.load();
+    };
+  }, []);
+
+  const zastav = useCallback(() => {
+    poradie.current++;
+    audio.current?.pause();
+  }, []);
+
+  const prehraj = useCallback((hlaska: string | null | undefined) => {
+    if (hlaska === null || hlaska === undefined || nastavenie.current <= 0) return;
+    const n = ++poradie.current;
+    audio.current?.pause();
+    void nacitajMelichara().then((m) => {
+      if (!zije.current || poradie.current !== n) return;
+      const h = hlaskaNaPrehratie(m.hlasky, hlaska, nastavenie.current);
+      if (h === null) return;
+      const a = (audio.current ??= new Audio());
+      a.src = urlHlasky(h);
+      a.volume = hlasitostZvuku(nastavenie.current);
+      a.play().catch(() => undefined);
+    });
+  }, []);
+
+  return { prehraj, zastav };
 }

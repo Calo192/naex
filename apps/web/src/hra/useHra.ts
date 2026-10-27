@@ -69,11 +69,13 @@ export interface KrokVyucby {
   /** Ťah bota či auto krok s textom je vykonaný a čaká na „ďalej“ (vyucbaDalej) — U5. */
   readonly vykonany: boolean;
   readonly melichar: string;
+  /** Hláška zo soundboardu „skupina/súbor“, ktorá zaznie s bublinou (hlaskyVyucby.ts); null = bez zvuku. */
+  readonly hlaska: string | null;
   /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
-  /** Kontrolná otázka: 2–3 možnosti, aspoň jedna správna — klient overí sám; inak null. */
-  readonly moznosti: readonly { readonly text: string; readonly spravna: boolean; readonly vysvetlenie: string }[] | null;
+  /** Kontrolná otázka: 2–3 možnosti, aspoň jedna správna — klient overí sám; inak null. hlaska = zvuk po zlej odpovedi. */
+  readonly moznosti: readonly { readonly text: string; readonly spravna: boolean; readonly vysvetlenie: string; readonly hlaska?: string }[] | null;
   /** Rozhodnutie: kandidáti na zvýraznenie (kľúče ako zvyraznit) namiesto očakávanej karty; inak null. */
   readonly volba: { readonly kandidati: readonly string[] } | null;
   /** Nápis tlačidla „ďalej“ (napr. „Odovzdať cigaretu“); null = „ďalej“. */
@@ -84,6 +86,13 @@ export interface KrokVyucby {
   readonly preskocenie: boolean;
   /** So zvýraznenými prvkami sa hráč smie hrať nanečisto — nič sa neposiela (stavba šenku). */
   readonly naneisto: boolean;
+}
+
+/** Rada Melichara po zlom ťahu v rozhodnutí; n = poradie rady (aj rovnaká rada je nová). */
+export interface RadaVyucby {
+  readonly n: number;
+  readonly text: string;
+  readonly hlaska: string | null;
 }
 
 /** Krok ťahu slovami (jadro popisKroku); uid = karta, ktorú treba zvýrazniť. */
@@ -119,7 +128,7 @@ type ServerMsg =
   /** Zlý ťah vo výučbe: čo chýba a čo je navyše (text príde aj ako error). */
   | { type: "vyucbaChyba"; chybajuce: readonly PopisKrokuVyucby[]; navyse: readonly PopisKrokuVyucby[] }
   /** Rozhodnutie vo výučbe: zlý ťah dostane radu Melichara namiesto chyby. */
-  | { type: "vyucbaRada"; text: string }
+  | { type: "vyucbaRada"; text: string; hlaska: string | null }
   | { type: "error"; text: string };
 
 /**
@@ -192,7 +201,7 @@ export interface HraHook {
   readonly suhrnAchievementov: SuhrnAchievementov | null;
   /** Posledný zlý ťah vo výučbe (čo chýba, čo je navyše); zmizne ďalším ťahom alebo zrusChybu. */
   /** Rada Melichara po zlom ťahu v rozhodnutí; zmizne ďalším ťahom alebo zrusChybu. */
-  readonly radaVyucby: string | null;
+  readonly radaVyucby: RadaVyucby | null;
   /** Odpoveď na kontrolnú otázku (index možnosti) — server si zapíše prvú. */
   vyucbaOdpoved(index: number): void;
   readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
@@ -254,7 +263,9 @@ export function useHra(aktivne: boolean): HraHook {
   const [achievementy, setAchievementy] = useState<{ readonly n: number; readonly zisky: readonly ZiskAchievementu[] }>({ n: 0, zisky: [] });
   const [suhrnAchievementov, setSuhrnAchievementov] = useState<SuhrnAchievementov | null>(null);
   const [chybaVyucby, setChybaVyucby] = useState<HraHook["chybaVyucby"]>(null);
-  const [radaVyucby, setRadaVyucby] = useState<string | null>(null);
+  const [radaVyucby, setRadaVyucby] = useState<RadaVyucby | null>(null);
+  // Každá rada nová, aj rovnaká ako predošlá — jej hláška zaznie znova.
+  const radaN = useRef(0);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -328,7 +339,8 @@ export function useHra(aktivne: boolean): HraHook {
           setSuhrnAchievementov(msg.suhrn);
           break;
         case "vyucbaRada":
-          setRadaVyucby(msg.text);
+          radaN.current++;
+          setRadaVyucby({ n: radaN.current, text: msg.text, hlaska: msg.hlaska });
           break;
         case "vyucbaChyba":
           setChybaVyucby({ chybajuce: msg.chybajuce, navyse: msg.navyse });
