@@ -89,6 +89,13 @@ button { font: inherit; font-size: .9rem; padding: 8px 14px; border-radius: 8px;
 button.hlavne { background: var(--akcent); color: var(--pozadie); font-weight: 600; }
 .skryte { position: absolute; left: -9999px; width: 1px; height: 1px; }
 footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .86rem; }
+.roz { font-weight: 600; border-radius: 8px; padding: 6px 10px; margin: 6px 0 8px; }
+.roz-ano { background: color-mix(in srgb, var(--ok) 18%, var(--plocha)); color: var(--ok); }
+.roz-otv { background: color-mix(in srgb, var(--pozor) 18%, var(--plocha)); color: var(--pozor); }
+.alt.vybrane { border-left: 4px solid var(--ok); padding-left: 10px; border-top-color: var(--ok); }
+details.zbalene { margin: 10px 0 0; border: 1px dashed var(--okraj); border-radius: 10px; padding: 6px 10px; }
+details.zbalene > summary { cursor: pointer; color: var(--tlmeny); font-size: .9rem; }
+.karta.rozh { border-color: var(--ok); }
 @media (max-width: 560px) { .ramik { padding: 12px 10px; } }
 </style>
 </head>
@@ -99,6 +106,7 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <button type="button" id="tema" aria-label="Prepnúť svetlý a tmavý režim">Svetlo / tma</button>
 </div>
 <p class="uvod">Vymyselník · 27. 10. 2026 · pre Michala cez Leadera. 17 občanov, ku každému 3 alternatívne efekty (51 návrhov). Akcie sú po revízii (<code>revizia-sady/sloty.json</code>) a nemenia sa. Pri porovnaní uvádzam dnešný alebo už rozhodnutý efekt. Nič som nesimuloval a v kóde ani v sade sa nič nemení.</p>
+<p class="roz roz-ano">Rozhodnuté Michalom 27. 10.: 10 kariet ponecháva dnešný alebo rozhodnutý efekt, 5 dostáva novú alternatívu (Vdova A, Policajtka A, Stryná A, Recidivista B, Liberál B) a 2 majú efekt „inak“ podľa Michala (Živnostník, Šarlatán). Ich presné znenie je na potvrdenie. Rozhodnuté znenia sú v <code>revizia-sady/plan.md</code>, časť 14.</p>
 
 <section class="ramik def" id="zasady">
   <h2>Zásady dávky</h2>
@@ -129,11 +137,13 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
 </section>
 
 <!-- ====================================================================== -->
-<section class="ramik karta" id="financna_poradkyna" data-karta="financna_poradkyna" data-nazov="Finančná poradkyňa">
+<section class="ramik karta rozh" id="financna_poradkyna" data-karta="financna_poradkyna" data-nazov="Finančná poradkyňa" data-roz="ponechať">
   <h2>Finančná poradkyňa</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať. Michal potvrdil znenie: „Pitka: dlhy, ktoré vygeneruje táto karta, dostáva súper.“ Do sady: <i>Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.</i></p>
   <p class="tagy">Občan · Pracujúci · Žena · spojka</p>
   <p class="riadok"><b>Akcie po revízii:</b> Dlh×2, Povera / Cig, Dlh, Obmedz</p>
   <div class="dnes"><b>Dnes (ostáva v revízii):</b> <span class="ef">Pitka: Dlh z jej akcií dostáva súper, nie ty.</span> <span class="pozn">Bot ju zo šenku nevzal ani raz.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">financna_poradkyna-A</span><span class="nazov">Zmluva drobným písmom</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, podpíše zmluvu: pripíše sa mu toľko zadĺženia, koľko akcií Dlh má táto karta.</p>
     <p class="preco">Tri Dlhy na karte sú zároveň cena pasce: kto sa k nej priblíži, odchádza s Dlhom a čiarkou na účte (D6).</p></div>
@@ -143,31 +153,37 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">financna_poradkyna-C</span><span class="nazov">Pri poldeci sa podpisuje ľahšie</span></div>
     <p class="efekt"><b>Nástup:</b> Za každý plný poldeci, ktorý teraz vypiješ, sa súperovi pripíše 1 zadĺženie. Vypitie ti ťah navyše nedá.</p>
     <p class="preco">Cenu platíš limitom vykladania, pečeňou a nerestou ako pri Vypiť. Strop netreba, lebo plné poldeci dôjdu.</p></div>
-  <p class="odpor"><b>Odporúčam A</b>: je čitateľná a robí z nej kartu, ktorú súperovi nechceš podstrčiť ty, ale ani on tebe.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam A</b>: je čitateľná a robí z nej kartu, ktorú súperovi nechceš podstrčiť ty, ale ani on tebe.</p>
 </section>
 
-<section class="ramik karta" id="velmi_smutiaca_vdova" data-karta="velmi_smutiaca_vdova" data-nazov="Veľmi smútiaca vdova">
+<section class="ramik karta rozh" id="velmi_smutiaca_vdova" data-karta="velmi_smutiaca_vdova" data-nazov="Veľmi smútiaca vdova" data-roz="A">
   <h2>Veľmi smútiaca vdova</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Áno: velmi_smutiaca_vdova-A „Ďalší nebožtík“ (Konflikt). Nahrádza dnešný Nástup.</p>
   <p class="tagy">Občan · Kriminál · Žena · robotník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Dlh, Obmedz, Rana / Pohorš×2 (bez zmeny)</p>
   <div class="dnes"><b>Dnes:</b> <span class="ef">Nástup: Ak je vrchná karta doberacieho balíčka súpera muž, odstráň ho z hry a zahoď 2 svoje Dlhy, aj spomedzi priznaných.</span> <span class="pozn">Účinnosť 0 %, vrch balíčka sa nedá plánovať.</span></div>
-  <div class="alt"><div class="alt-hlava"><span class="id">velmi_smutiaca_vdova-A</span><span class="nazov">Ďalší nebožtík</span><span class="stitok k">K</span></div>
+  <div class="alt vybrane"><div class="alt-hlava"><span class="id">velmi_smutiaca_vdova-A</span><span class="nazov">Ďalší nebožtík</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží k tejto karte Chlapa, ten sa po bitke nevráti do jeho odhadzovacieho balíčka, ale ide z hry.</p>
     <p class="preco">Čierna vdova v línii: každý chlap, ktorý si k nej ľahne, sa domov nevráti. Podmienka (Chlap) a zdroj (spoj) ju robia vzácnou.</p></div>
+  <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">velmi_smutiaca_vdova-B</span><span class="nazov">Životná poistka</span></div>
     <p class="efekt"><b>Prehra:</b> Za každého svojho Chlapa v línii zahoď 1 svoj priznaný Dlh.</p>
     <p class="preco">Prehra sa jej vyplatí. Účinok závisí od toho, koľko mužov poslala do boja, takže o ňom rozhoduje hráč, nie náhoda.</p></div>
   <div class="alt"><div class="alt-hlava"><span class="id">velmi_smutiaca_vdova-C</span><span class="nazov">Znova sa vydá</span></div>
     <p class="efekt"><b>Nástup:</b> Ak je vrchná karta súperovho odhadzovacieho balíčka Chlap, vezmi si ju do ruky, odteraz je tvoja. Jeho dlhy zdedíš: získaš 1 Dlh.</p>
     <p class="preco">Je to dnešná myšlienka, ale nad odhadzovacím balíčkom, ktorého vrch je známy, takže sa dá plánovať. Cenou je Dlh a vzor na prechod karty má Veštica (§9.5b).</p></div>
-  <p class="odpor"><b>Odporúčam C</b>: zachová tému a opraví 0 % účinnosť.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam C</b>: zachová tému a opraví 0 % účinnosť.</p>
 </section>
 
-<section class="ramik karta" id="vestica" data-karta="vestica" data-nazov="Veštica">
+<section class="ramik karta rozh" id="vestica" data-karta="vestica" data-nazov="Veštica" data-roz="ponechať">
   <h2>Veštica</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať dnešný efekt (Prehra: výmena kariet medzi doberacími balíčkami).</p>
   <p class="tagy">Občan · Zahraničný · Žena · spojka</p>
   <p class="riadok"><b>Akcie po revízii:</b> Cig, Vízia, Pečeň / Povera×2, Viera</p>
   <div class="dnes"><b>Dnes (ostáva v revízii):</b> <span class="ef">Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.</span> <span class="pozn">Účinnosť 61 %, spoľahlivá.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">vestica-A</span><span class="nazov">Vidí do pohára</span></div>
     <p class="efekt"><b>Pitka:</b> Na svojom ťahu skryto vyveštíš, či súper v tejto Pitke dá NA EX. Ak trafíš, súper ti dá 2 cigarety. Ak nie, ty jemu 1.</p>
     <p class="preco">Hra so skrytým NA EX dostane čítanie súpera. Stávka má cenu aj odmenu a hráč ju môže, no nemusí podstúpiť.</p></div>
@@ -177,14 +193,17 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">vestica-C</span><span class="nazov">Čím viac vypije, tým viac vidí</span></div>
     <p class="efekt"><b>Nástup:</b> Pozri toľko vrchných kariet svojho doberacieho balíčka, koľko máš vypitých poldeci, a vráť ich v ľubovoľnom poradí.</p>
     <p class="preco">Bez čísla: dosah určuje nedostatok plných poldeci. Satira jarmočnej veštby s likérom.</p></div>
-  <p class="odpor"><b>Odporúčam ponechať dnešný efekt</b>, lebo funguje. Ak sa má meniť, tak A.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam ponechať dnešný efekt</b>, lebo funguje. Ak sa má meniť, tak A.</p>
 </section>
 
-<section class="ramik karta" id="silna_nezavisla_zena" data-karta="silna_nezavisla_zena" data-nazov="Silná, nezávislá žena">
+<section class="ramik karta rozh" id="silna_nezavisla_zena" data-karta="silna_nezavisla_zena" data-nazov="Silná, nezávislá žena" data-roz="ponechať">
   <h2>Silná, nezávislá žena</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať dnešný efekt (Furt: aktívne akcie susedných vlastných kariet ×2).</p>
   <p class="tagy">Občan · Influencer · Žena · eso (zosilňovač WAU)</p>
   <p class="riadok"><b>Akcie po revízii:</b> Cig, Pohorš / Dlh×2 (bez zmeny)</p>
   <div class="dnes"><b>Dnes:</b> <span class="ef">Furt: Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát.</span> <span class="pozn">Nosí kombá WAU 1, 2 a 7.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">silna_nezavisla_zena-A</span><span class="nazov">Zoberie si, čo zarobil</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží k tejto karte Chlapa, aktívne akcie toho Chlapa na tomto spoji sa rátajú tebe, nie jemu.</p>
     <p class="preco">Chlap, ktorý sa k nej priblíži, pracuje pre ňu. Vzor, keď akcie berie iný hráč, už jestvuje (§16 Kočovník).</p></div>
@@ -194,31 +213,37 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">silna_nezavisla_zena-C</span><span class="nazov">Za všetko môže patriarchát</span></div>
     <p class="efekt"><b>Prehra:</b> Súper získa 1 Dlh za každého Chlapa vo svojej partii v línii.</p>
     <p class="preco">Prehra nie je jej chyba. Dobiehanie je viazané na súperovu líniu, ktorú on sám mohol postaviť inak.</p></div>
-  <p class="odpor"><b>Odporúčam B</b>: zachová kombá a dá im cenu. Za najvtipnejšiu považujem C.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam B</b>: zachová kombá a dá im cenu. Za najvtipnejšiu považujem C.</p>
 </section>
 
-<section class="ramik karta" id="policajtka" data-karta="policajtka" data-nazov="Policajtka">
+<section class="ramik karta rozh" id="policajtka" data-karta="policajtka" data-nazov="Policajtka" data-roz="A (nahrádza P1)">
   <h2>Policajtka</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Áno: policajtka-A „Pokuta na mieste“ (Konflikt). <b>Nahrádza efekt z NA EX trojice</b> (P1: Pitka, kto dal viac NA EX, dostane Dlh), ktorý je už naprogramovaný na vetve <code>feature/naex-trojica</code>. Výklad ešte potvrdí Michal.</p>
   <p class="tagy">Občan · Autorita · Žena · eso</p>
   <p class="riadok"><b>Akcie po revízii:</b> Obmedz, Rana / Robota (bez zmeny)</p>
   <div class="dnes"><b>Rozhodnuté (P1, 26. 10.):</b> <span class="ef">Pitka: Ak súper v tejto Pitke dal viac NA EX ako ty, dostane Dlh.</span> <span class="pozn">V sade v16 ešte Furt proti Pohoršeniam.</span></div>
-  <div class="alt"><div class="alt-hlava"><span class="id">policajtka-A</span><span class="nazov">Pokuta na mieste</span><span class="stitok k">K</span></div>
+  <div class="alt vybrane"><div class="alt-hlava"><span class="id">policajtka-A</span><span class="nazov">Pokuta na mieste</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, dostane 1 Dlh. Ak je priložená karta Kriminál, dohodnú sa: súper ti namiesto toho dá 2 cigarety.</p>
     <p class="preco">Poctivý platí pokutu, zločinec sa vyplatí. Dlh dostane zuby a satira sedí na prvé čítanie.</p></div>
+  <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">policajtka-B</span><span class="nazov">Fajčenie na verejnosti</span></div>
     <p class="efekt"><b>Pitka:</b> Ak súper v tejto Pitke fajčil, vyberie si: dá ti 1 plný poldeci, alebo dostane 1 Dlh.</p>
     <p class="preco">Fajčenie (dobratie kariet) dostane cenu a súper si vyberá medzi zlou a horšou možnosťou. Doplní P1, nemení ju.</p></div>
   <div class="alt"><div class="alt-hlava"><span class="id">policajtka-C</span><span class="nazov">Domová prehliadka</span></div>
     <p class="efekt"><b>Nástup:</b> Súper ti ukáže ruku a všetky nepriznané Cirhózy z nej musí hneď priznať.</p>
     <p class="preco">Priznaná Cirhóza ti dáva +1 tuhé v každej bitke (§9.3). Zdroj je nedostatok: bez Cirhóz v ruke nájde len pohľad do karát.</p></div>
-  <p class="odpor"><b>Odporúčam ponechať P1</b> a A zvážiť ako druhú vetu, ak Konflikt prejde.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam ponechať P1</b> a A zvážiť ako druhú vetu, ak Konflikt prejde.</p>
 </section>
 
-<section class="ramik karta" id="hasic" data-karta="hasic" data-nazov="Hasič">
+<section class="ramik karta rozh" id="hasic" data-karta="hasic" data-nazov="Hasič" data-roz="ponechať">
   <h2>Hasič</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať rozhodnutý efekt (Nástup: náhodná karta z odhadzovacieho balíčka, nechaj alebo odhoď).</p>
   <p class="tagy">Občan · Autorita · Chlap · úderník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Posil / Petelica, Rana (bez zmeny)</p>
   <div class="dnes"><b>Rozhodnuté (26. 10.):</b> <span class="ef">Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.</span> <span class="pozn">Znenie podľa Michala; dnešný efekt v16 mal účinnosť 9 %.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">hasic-A</span><span class="nazov">Mokré cigarety</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, Hasič ju oleje striekačkou: akcie Cigareta a Poldeci priloženej karty sa v tomto kole nerátajú.</p>
     <p class="preco">Kto sa priblíži k zásahu, je mokrý. Pasca je slabá a čitateľná a nepridáva stav navyše.</p></div>
@@ -228,14 +253,17 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">hasic-C</span><span class="nazov">Hasí pečeň</span></div>
     <p class="efekt"><b>Pitka:</b> Za každú Cirhózu, ktorá by ti v tejto Pitke vznikla, smieš namiesto nej získať 1 Dlh. Výjazd sa platí.</p>
     <p class="preco">Pri pečeni +70 % je to poistka, ktorá vyrába Dlhy, a tie sú žiaduce. Hráč pri prahu Exekútora 7 volí, či horšia je Cirhóza, alebo Dlh.</p></div>
-  <p class="odpor"><b>Odporúčam C</b>: rieši pečeň a Dlh naraz a dá sa hneď vysvetliť.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam C</b>: rieši pečeň a Dlh naraz a dá sa hneď vysvetliť.</p>
 </section>
 
-<section class="ramik karta" id="praudovravec" data-karta="praudovravec" data-nazov="Praudovravec">
+<section class="ramik karta rozh" id="praudovravec" data-karta="praudovravec" data-nazov="Praudovravec" data-roz="ponechať">
   <h2>Praudovravec</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať rozhodnutý efekt (Dezinformátor: Odpor na jeho spojoch posilní).</p>
   <p class="tagy">Občan · Influencer · Chlap · spojka</p>
   <p class="riadok"><b>Akcie po revízii:</b> Odpor, Povera, Viera / Pohorš, Povera, Vízia</p>
   <div class="dnes"><b>Rozhodnuté (Dezinformátor):</b> <span class="ef">Furt: Odpor na jeho spojoch neruší, ale posilní — ráta sa ako Posilnenie.</span> <span class="pozn">Nosí WAU 2 a 7.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">praudovravec-A</span><span class="nazov">Zdiskredituje autoritu</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží k tejto karte Autoritu, jej efekt do konca kola neplatí.</p>
     <p class="preco">Starý Praudovravec vypínal všetky autority naraz („jedna karta vypne tri“). Tu vypne len tú, ktorá sa s ním stretne.</p></div>
@@ -245,14 +273,17 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">praudovravec-C</span><span class="nazov">Bitka bola zmanipulovaná</span></div>
     <p class="efekt"><b>Prehra:</b> Za každú aktívnu akciu Povera v tvojej partii posuň marker jedného staršieho o 1 pole k sebe.</p>
     <p class="preco">Kto prehrá, šíri, že ho okradli, a starší mu uveria. Riziko: posúva markery bez brzdy ako Pohoršenie, preto je to len pri prehre.</p></div>
-  <p class="odpor"><b>Odporúčam ponechať Dezinformátora</b>, lebo nesie kombá. Z alternatív B.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam ponechať Dezinformátora</b>, lebo nesie kombá. Z alternatív B.</p>
 </section>
 
-<section class="ramik karta" id="zamocnik" data-karta="zamocnik" data-nazov="Zámočník">
+<section class="ramik karta rozh" id="zamocnik" data-karta="zamocnik" data-nazov="Zámočník" data-roz="ponechať">
   <h2>Zámočník</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať dnešný efekt (Furt: akcie Nástrojov v jeho okolí sú posilnené).</p>
   <p class="tagy">Občan · Pracujúci · Chlap · robotník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Cig, Poldeci / Pecka, Robota (bez zmeny)</p>
   <div class="dnes"><b>Dnes:</b> <span class="ef">Furt: Akcie nástrojov v jeho okolí sú posilnené.</span> <span class="pozn">Účinnosť 15 %, WAU 3 s Puškou.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">zamocnik-A</span><span class="nazov">Otvorí aj tvoj zámok</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, pozri jeho ruku a vezmi si z nej jeden Nástroj. Súper za výmenu vložky dostane od teba 1 cigaretu.</p>
     <p class="preco">Majster, ktorý ti robí zámok, má aj kľúč. Bez Nástroja v súperovej ruke ostane len pohľad do karát. Nástroj sám Konflikt nespúšťa, spúšťa ho priložený občan.</p></div>
@@ -262,31 +293,37 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">zamocnik-C</span><span class="nazov">Nabrúsi aj po dedovi</span><span class="stitok furt">ostáva Furt</span></div>
     <p class="efekt"><b>Furt:</b> Nástroj, ktorý s ním tvorí spoj, uplatňuje pre teba aj svoj efekt Dedičstvo, akoby ležal v Dedičstve.</p>
     <p class="preco">Rieši hlavnú príčinu z analýzy, že Nástroj v línii nemá efekt. Podmienkou je spoj s ním a novú Furt kartu to nepridá.</p></div>
-  <p class="odpor"><b>Odporúčam C</b>: z celej dávky má najväčší dosah na mŕtve Dedičstvo.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam C</b>: z celej dávky má najväčší dosah na mŕtve Dedičstvo.</p>
 </section>
 
-<section class="ramik karta" id="niekoho_stryna" data-karta="niekoho_stryna" data-nazov="Niekoho stryná">
+<section class="ramik karta rozh" id="niekoho_stryna" data-karta="niekoho_stryna" data-nazov="Niekoho stryná" data-roz="A + Stryná">
   <h2>Niekoho stryná</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Áno: niekoho_stryna-A „Ešte jeden, nech ti nie je zima“ (Pitka). <b>Karta sa premenúva na „Stryná“.</b> Nahrádza dnešný Nástup (zahodenie Cirhózy alebo Dlhu).</p>
   <p class="tagy">Občan · Pamätník · Žena · spojka</p>
   <p class="riadok"><b>Akcie po revízii:</b> Poldeci, Viera, Pečeň / Povera, Viera, Vízia</p>
   <div class="dnes"><b>Dnes (ostáva v revízii):</b> <span class="ef">Nástup: Zahoď 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka, Dlh aj spomedzi priznaných.</span> <span class="pozn">Účinnosť 43 %, spoľahlivá.</span></div>
-  <div class="alt"><div class="alt-hlava"><span class="id">niekoho_stryna-A</span><span class="nazov">Ešte jeden, nech ti nie je zima</span></div>
+  <div class="alt vybrane"><div class="alt-hlava"><span class="id">niekoho_stryna-A</span><span class="nazov">Ešte jeden, nech ti nie je zima</span></div>
     <p class="efekt"><b>Pitka:</b> Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.</p>
     <p class="preco">Na každej oslave nalieva aj tým, čo nepijú. Trest za abstinenciu platí aj pre majiteľa, takže NA EX dostane ďalší dôvod.</p></div>
+  <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">niekoho_stryna-B</span><span class="nazov">Veď ste rodina</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, ukáže sa, že ste rodina: tá karta sa do konca kola ráta do prevahy v kraji tebe, nie súperovi.</p>
     <p class="preco">Na dedine je každý niekoho. Podstrčenie k nej súperovi pokazí boj o hranu lokality.</p></div>
   <div class="alt"><div class="alt-hlava"><span class="id">niekoho_stryna-C</span><span class="nazov">Prinesie domácu</span></div>
     <p class="efekt"><b>Prehra:</b> Jeden tvoj priznaný Absťák sa vráti do zásoby. Dostaneš 1 poškodenie pečene do najbližšej Pitky.</p>
     <p class="preco">Absťák sa dnes dá stratiť len väčšou nerestou. Stryná ho vylieči pálenkou a cenou je pečeň.</p></div>
-  <p class="odpor"><b>Odporúčam ponechať dnešný efekt</b>. Ak Konflikt prejde, B je najlepšia satira.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam ponechať dnešný efekt</b>. Ak Konflikt prejde, B je najlepšia satira.</p>
 </section>
 
-<section class="ramik karta" id="veteran" data-karta="veteran" data-nazov="Veterán">
+<section class="ramik karta rozh" id="veteran" data-karta="veteran" data-nazov="Veterán" data-roz="ponechať">
   <h2>Veterán</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať dnešný efekt (Furt: NA EX na neho aktívne akcie zdvojí).</p>
   <p class="tagy">Občan · Pamätník · Chlap · robotník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Poldeci, Pečeň / Odpor, Petelica</p>
   <div class="dnes"><b>Dnes (ostáva v revízii):</b> <span class="ef">Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.</span> <span class="pozn">Účinnosť 20 %, s Petelicou 6 tuhého (WAU 4).</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">veteran-A</span><span class="nazov">Za našich čias</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží k tejto karte Influencera, Veterán mu povie svoje a karta sa vráti súperovi do ruky.</p>
     <p class="preco">Generačná satira. Súper prišiel o vyloženie a podmienka (Influencer) ju robí vzácnou.</p></div>
@@ -296,48 +333,61 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">veteran-C</span><span class="nazov">Vojenský prídel</span></div>
     <p class="efekt"><b>Pitka:</b> Ak nemáš žiadny plný poldeci, otoč jeden vypitý na plný. Dostaneš 1 poškodenie pečene.</p>
     <p class="preco">Starý vojak si fľašu vždy nájde. Spúšťa ho nedostatok a cenou je pečeň.</p></div>
-  <p class="odpor"><b>Odporúčam ponechať dnešný efekt</b>, lebo nesie dilemu NA EX. Z alternatív B.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam ponechať dnešný efekt</b>, lebo nesie dilemu NA EX. Z alternatív B.</p>
 </section>
 
-<section class="ramik karta" id="recidivista" data-karta="recidivista" data-nazov="Recidivista">
+<section class="ramik karta rozh" id="recidivista" data-karta="recidivista" data-nazov="Recidivista" data-roz="B">
   <h2>Recidivista</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Áno: recidivista-B „Zas je vonku“ (Prehra). Nahrádza Bitku proti Zahraničným.</p>
   <p class="tagy">Občan · Kriminál · Chlap · Zviera · úderník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Dlh×2 / Petelica, Rana</p>
   <div class="dnes"><b>Dnes (ostáva v revízii):</b> <span class="ef">Bitka: Za každého zahraničného občana v súperovej partii udelí dodatočnú ranu.</span> <span class="pozn">Účinnosť 14 %. Alternatívy zámerne necielia na Zahraničných.</span></div>
+  <div class="alt vybrane"><div class="alt-hlava"><span class="id">recidivista-B</span><span class="nazov">Zas je vonku</span></div>
+    <p class="efekt"><b>Prehra:</b> Po bitke sa táto karta vráti do tvojej ruky, nie do odhadzovacieho balíčka.</p>
+    <p class="preco">Recidivista sa vždy vráti. Úderník s Petelicou je hneď k dispozícii, ale s ním aj jeho Dlh×2. Vzor návratu do ruky má Snúbenica.</p></div>
+  <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">recidivista-A</span><span class="nazov">Pozná ho z basy</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte a je to Kriminál, kryjú sa a obaja dostanete po 2 cigarety. Inak udelíš súperovi v bitke tohto kola 1 Ranu navyše.</p>
     <p class="preco">Kumpána nechá na pokoji, cudziemu vybije zub. Rana navyše už jestvuje (Strýko), takže spúšťač Bitka netreba.</p></div>
-  <div class="alt"><div class="alt-hlava"><span class="id">recidivista-B</span><span class="nazov">Zas je vonku</span></div>
-    <p class="efekt"><b>Prehra:</b> Po bitke sa táto karta vráti do tvojej ruky, nie do odhadzovacieho balíčka.</p>
-    <p class="preco">Recidivista sa vždy vráti. Úderník s Petelicou je hneď k dispozícii, ale s ním aj jeho Dlh×2. Vzor návratu do ruky má Snúbenica.</p></div>
   <div class="alt"><div class="alt-hlava"><span class="id">recidivista-C</span><span class="nazov">Ty mi dlžíš</span></div>
     <p class="efekt"><b>Pitka:</b> Ak máš viac priznaných Dlhov ako súper, pripíše sa súperovi 1 zadĺženie.</p>
     <p class="preco">Kto komu dlží, je vec názoru. Vlastné Dlhy (aj tie z jeho akcií) sa menia na tlak a čiarky na účte (D6) nič nestratia.</p></div>
-  <p class="odpor"><b>Odporúčam B</b>: jedna veta a presne to, čo meno sľubuje.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam B</b>: jedna veta a presne to, čo meno sľubuje.</p>
 </section>
 
-<section class="ramik karta" id="liberal" data-karta="liberal" data-nazov="Liberál">
+<section class="ramik karta rozh" id="liberal" data-karta="liberal" data-nazov="Liberál" data-roz="B">
   <h2>Liberál</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Áno: liberal-B „Kvóty“ (Pitka). Nahrádza rozhodnutý Furt ×2 (10.1).</p>
   <p class="tagy">Občan · Zahraničný · Žena · Chlap · robotník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Pohorš, Viera / Cig, Povera</p>
   <div class="dnes"><b>Rozhodnuté (10.1):</b> <span class="ef">Furt: Ak je v tvojej partii rovnako žien a chlapov, jeho akcie sa rátajú dvakrát.</span> <span class="pozn">Bez vety o NA EX. Účinnosť 19 %.</span></div>
+  <div class="alt vybrane"><div class="alt-hlava"><span class="id">liberal-B</span><span class="nazov">Kvóty</span></div>
+    <p class="efekt"><b>Pitka:</b> Ak v súperovej partii nie je rovnako žien a chlapov, pripíše sa súperovi 1 zadĺženie.</p>
+    <p class="preco">Pokuta za nevyváženú partiu. Súper sa jej vyhne vlastnou stavbou línie a podmienka sa dá splniť aj obísť.</p></div>
+  <details class="zbalene"><summary>Nevybrané alternatívy, zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">liberal-A</span><span class="nazov">Prerozdelenie</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, kto z vás má viac cigariet, dá druhému polovicu rozdielu (nadol).</p>
     <p class="preco">Kázeň o rovnosti s okamžitým účinkom. Počet určuje rozdiel, nie strop, a pri rovnosti sa nič nedeje.</p></div>
-  <div class="alt"><div class="alt-hlava"><span class="id">liberal-B</span><span class="nazov">Kvóty</span></div>
-    <p class="efekt"><b>Pitka:</b> Ak v súperovej partii nie je rovnako žien a chlapov, pripíše sa súperovi 1 zadĺženie.</p>
-    <p class="preco">Pokuta za nevyváženú partiu. Súper sa jej vyhne vlastnou stavbou línie a podmienka sa dá splniť aj obísť.</p></div>
   <div class="alt"><div class="alt-hlava"><span class="id">liberal-C</span><span class="nazov">Neexistujú porazení</span></div>
     <p class="efekt"><b>Prehra:</b> Ak je v tvojej partii rovnako žien a chlapov, víťaz dostane za bitku o 1 špak menej a ty o 1 viac.</p>
     <p class="preco">Všetci sme vyhrali. Dvojitá podmienka (prehra a vyvážená partia) ju robí vzácnou a pravidlo „víťaz aspoň 1 špak“ ostáva.</p></div>
-  <p class="odpor"><b>Odporúčam C</b>: tá istá podmienka ako dnes, ale s účinkom, ktorý hráč pocíti.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam C</b>: tá istá podmienka ako dnes, ale s účinkom, ktorý hráč pocíti.</p>
 </section>
 
-<section class="ramik karta" id="zivnostnik" data-karta="zivnostnik" data-nazov="Živnostník">
+<section class="ramik karta rozh" id="zivnostnik" data-karta="zivnostnik" data-nazov="Živnostník" data-roz="inak">
   <h2>Živnostník</h2>
+  <p class="roz roz-otv">Rozhodnuté 27. 10.: Inak (Michal). Presné znenie navrhol Vymyselník, potvrdí Michal.</p>
   <p class="tagy">Občan · Pracujúci · Chlap · spojka</p>
   <p class="riadok"><b>Akcie po revízii:</b> Dlh, Odpor, Robota, Pakt* / Cig×2, Pečeň <span class="pozn">(*Pakt podľa návrhu 12.1, zatiaľ neschválený)</span></p>
   <div class="dnes"><b>Dnes (ostáva v revízii):</b> <span class="ef">Výhra: Zahoď jedno súperovo dedičstvo.</span> <span class="pozn">Bot ho nevzal ani raz.</span></div>
+  <div class="alt vybrane"><div class="alt-hlava"><span class="id">zivnostnik-M</span><span class="nazov">Dodá aj s náradím</span><span class="stitok">na potvrdenie</span></div>
+    <p class="pozn">Michal doslova: „Smieš spolu s ním vyložiť náradie (vyložia sa 2 karty naraz).“</p>
+    <p class="efekt"><b>Nástup:</b> Hneď za neho smieš z ruky priložiť jeden Nástroj. Obe karty sa vyložia v jednom ťahu.</p>
+    <p class="preco"><b>Výklad:</b> Nástroj ide na tú istú stranu, na vonkajšiu hranu Živnostníka. Je to Občan, takže s ním Nástroj tvorí spoj (§6 :241). Nástroj limit vykladania nemíňa, výhodou je tempo: súper medzi tieto dve karty nič nepodstrčí. Platia bežné obmedzenia Nástroja (nie vedľa Nástroja). Keď Živnostník ide ako Záverečná, Nástup príde až pri otočení a Nástroj sa vtedy nepriloží (na potvrdenie). <b>Synergie</b> (v popise karty sa nemenujú): karta, ktorá posilňuje Nástroje vo svojom okolí, a Zviera, ktoré s Nástrojom tvorí spoj, dajú kombo v jednom ťahu.</p></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">zivnostnik-A</span><span class="nazov">Faktúra</span></div>
     <p class="efekt"><b>Pitka:</b> Za každú aktívnu Robotu na tejto karte a na kartách vedľa nej sa súperovi pripíše 1 zadĺženie.</p>
     <p class="preco">Robota dnes páli tvoj Dlh, tu zároveň fakturuje súperovi. Počet obmedzuje okolie karty, nie číslo.</p></div>
@@ -347,14 +397,17 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">zivnostnik-C</span><span class="nazov">Prevezme podnik</span></div>
     <p class="efekt"><b>Výhra:</b> Smieš si vziať jedno súperovo Dedičstvo do svojho. Súperovi zaň zaplatíš toľko cigariet, koľko je teraz cena Dedičstva.</p>
     <p class="preco">Dnes Dedičstvo len ničí, tu ho kupuje. Víťaz platí, takže náskok nerastie zadarmo.</p></div>
-  <p class="odpor"><b>Odporúčam A</b>: spojka s Robotou dostane úlohu aj v Pitke a Dlh zuby.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam A</b>: spojka s Robotou dostane úlohu aj v Pitke a Dlh zuby.</p>
 </section>
 
-<section class="ramik karta" id="kocovnik" data-karta="kocovnik" data-nazov="Kočovník">
+<section class="ramik karta rozh" id="kocovnik" data-karta="kocovnik" data-nazov="Kočovník" data-roz="ponechať">
   <h2>Kočovník</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať rozhodnutý efekt (Furt: akcie hráčovi s prevahou v jeho kraji).</p>
   <p class="tagy">Občan · Zahraničný · Chlap · robotník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Dlh, Pečeň / Cig, Pečeň, Pecka</p>
   <div class="dnes"><b>Dnes (10.1):</b> <span class="ef">Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.</span> <span class="pozn">Bot ho nevzal ani raz. Alternatívy sú o tulákovi, nie o etniku.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">kocovnik-A</span><span class="nazov">Prespí u suseda</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, musí hosťa uctiť a vyberie si: dá ti 1 plný poldeci, alebo dostane 1 poškodenie pečene do najbližšej Pitky.</p>
     <p class="preco">Pohostinnosť ako zlá a horšia možnosť. Platí sa limitom alebo pečeňou.</p></div>
@@ -364,14 +417,17 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">kocovnik-C</span><span class="nazov">Doniesol zo sveta</span></div>
     <p class="efekt"><b>Nástup:</b> Za 1 cigaretu si vezmi do ruky jednu kartu zo šenku.</p>
     <p class="preco">Šenok aj uprostred kola, ako pri Pohrebe Závislého, a cena je ako v drafte.</p></div>
-  <p class="odpor"><b>Odporúčam B</b>: jednoduché dobiehanie a karta, ktorú bot konečne vezme.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam B</b>: jednoduché dobiehanie a karta, ktorú bot konečne vezme.</p>
 </section>
 
-<section class="ramik karta" id="svokra" data-karta="svokra" data-nazov="Svokra">
+<section class="ramik karta rozh" id="svokra" data-karta="svokra" data-nazov="Svokra" data-roz="ponechať">
   <h2>Svokra</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať rozhodnutý efekt (S1 Varecha).</p>
   <p class="tagy">Občan · Autorita · Žena · robotník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Poldeci / Dlh, Pecka, Viera</p>
   <div class="dnes"><b>Rozhodnuté (S1 Varecha, 26. 10.):</b> <span class="ef">Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">svokra-A</span><span class="nazov">Prekontroluje chladničku</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, ukáže ti ruku a zahodí z nej jednu kartu podľa tvojho výberu. Kliatbu vybrať nesmieš.</p>
     <p class="preco">Svokra na návšteve vyhodí, čo sa jej nepáči. Je to silná pasca, ale len pre toho, kto sa k nej priblíži.</p></div>
@@ -381,14 +437,21 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">svokra-C</span><span class="nazov">Darček, čo sa nevracia</span></div>
     <p class="efekt"><b>Nástup:</b> Daj súperovi do ruky jedného Občana alebo Nástroj zo svojej ruky. Odteraz je jeho.</p>
     <p class="preco">Hrnček s nápisom „Najlepší zať“: zbavíš sa slabej karty a súperovi zahltíš balíček. Kliatby odovzdať nemožno, takže Cirhóza (−5 špakov) nezmení majiteľa.</p></div>
-  <p class="odpor"><b>Odporúčam ponechať Varechu</b>. Ak sa má meniť, tak B kvôli Dlhom.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam ponechať Varechu</b>. Ak sa má meniť, tak B kvôli Dlhom.</p>
 </section>
 
-<section class="ramik karta" id="sarlatan" data-karta="sarlatan" data-nazov="Šarlatán">
+<section class="ramik karta rozh" id="sarlatan" data-karta="sarlatan" data-nazov="Šarlatán" data-roz="inak (Konflikt)">
   <h2>Šarlatán</h2>
+  <p class="roz roz-otv">Rozhodnuté 27. 10.: Inak (Michal), Konflikt. Nahrádza rozhodnutý efekt z revízie (10.1: Pečeň ako Viera padá). Presné znenie navrhol Vymyselník; trvanie potvrdí Michal.</p>
   <p class="tagy">Občan · Influencer · Chlap · spojka</p>
   <p class="riadok"><b>Akcie po revízii:</b> Dlh, Povera×2 / Cig, Pohorš, Pečeň</p>
   <div class="dnes"><b>Rozhodnuté (10.1, zázračná tinktúra):</b> <span class="ef">Furt: Každá aktívna akcia Poškodenie pečene na ňom a na kartách v jeho okolí sa ráta aj ako Viera.</span></div>
+  <div class="alt vybrane"><div class="alt-hlava"><span class="id">sarlatan-M</span><span class="nazov">Zázračné uzdravenie</span><span class="stitok k">K</span><span class="stitok">na potvrdenie</span></div>
+    <p class="pozn">Michal doslova: „Konflikt – keď súper k nemu priloží kartu, jeho dlhy sa menia na vieru a jeho povera na ranu.“</p>
+    <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, akcie Dlh na nej sa odteraz rátajú ako Viera a akcie Povera ako Rana.</p>
+    <p class="preco"><b>Trvanie (otvorený detail, návrh):</b> natrvalo od okamihu Konfliktu, kým karta leží v línii, teda do konca kola. Po bitke ide do balíčka s pôvodnými akciami, ako Výtržník (<code>engine.ts:4173–4177</code>). Mení sa druh akcie, nie jej aktivita: aktívna je ďalej len na spoji s partnerom. Šarlatán po revízii má Dlh a Povera ×2, z ktorých sa stane Viera a Rana ×2. <b>Nahrádza</b> rozhodnutý Furt z 10.1 (Pečeň ako Viera padá). Súper preto k nemu priloží len zámerne, lebo priložením Šarlatána posilní.</p></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">sarlatan-A</span><span class="nazov">Kto verí, platí</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, pripíše sa mu 1 zadĺženie za každú akciu Viera na priloženej karte.</p>
     <p class="preco">Viera sa u neho platí v splátkach. Čiarky na účte (D6) neprepadnú a kariet s Vierou je 32 kópií.</p></div>
@@ -398,14 +461,17 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">sarlatan-C</span><span class="nazov">Detox na liehu</span></div>
     <p class="efekt"><b>Nástup:</b> Za každé 2 cigarety, ktoré zaplatíš, zahoď jednu nepriznanú Cirhózu z ruky. Za každú dostaneš 1 poškodenie pečene do najbližšej Pitky.</p>
     <p class="preco">Liek pomáha a zároveň škodí. Nadbytok cigariet dostane využitie a pečeň sa vráti ako účet.</p></div>
-  <p class="odpor"><b>Odporúčam C</b>, ak tinktúra nevyjde: hráč pochopí vtip aj cenu naraz.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam C</b>, ak tinktúra nevyjde: hráč pochopí vtip aj cenu naraz.</p>
 </section>
 
-<section class="ramik karta" id="podvodnik" data-karta="podvodnik" data-nazov="Podvodník">
+<section class="ramik karta rozh" id="podvodnik" data-karta="podvodnik" data-nazov="Podvodník" data-roz="ponechať">
   <h2>Podvodník</h2>
+  <p class="roz roz-ano">Rozhodnuté 27. 10.: Ponechať rozhodnutý efekt (Prehra: priznaný Dlh sa presunie k súperovi).</p>
   <p class="tagy">Občan · Kriminál · Chlap · robotník</p>
   <p class="riadok"><b>Akcie po revízii:</b> Cig×2, Dlh / Obmedz, Rana (bez zmeny)</p>
   <div class="dnes"><b>Rozhodnuté (10.1):</b> <span class="ef">Prehra: Jeden tvoj priznaný Dlh sa presunie medzi súperove priznané.</span></div>
+  <details class="zbalene"><summary>Alternatívy (nevybrané), zbalené</summary>
   <div class="alt"><div class="alt-hlava"><span class="id">podvodnik-A</span><span class="nazov">Pohárik na zmierenie</span><span class="stitok k">K</span></div>
     <p class="efekt"><b>Konflikt:</b> Keď súper priloží kartu k tejto karte, Podvodník si s ním pripije a vypije mu ho: súperovi sa jeden plný poldeci otočí na vypitý a tebe jeden vypitý na plný.</p>
     <p class="preco">Kradne limit, nie body. Funguje len vtedy, keď súper má plný a ty prázdny, takže hranicu dáva nedostatok.</p></div>
@@ -415,7 +481,8 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
   <div class="alt"><div class="alt-hlava"><span class="id">podvodnik-C</span><span class="nazov">Ahoj babi, to som ja</span></div>
     <p class="efekt"><b>Nástup:</b> Súper ti dá 1 cigaretu za každú svoju kartu Pamätník v línii.</p>
     <p class="preco">Vnúčikovský podvod na pamätníkoch. Pamätníci sú Milujúca manželka zo štartu a dva občania, takže podmienka býva splnená.</p></div>
-  <p class="odpor"><b>Odporúčam ponechať prepis Dlhu</b> a B zvážiť ako druhú vetu.</p>
+  </details>
+  <p class="odpor pozn"><b>Pôvodné odporúčanie:</b> <b>Odporúčam ponechať prepis Dlhu</b> a B zvážiť ako druhú vetu.</p>
 </section>
 
 <section class="ramik" id="dopad">
@@ -436,16 +503,14 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
 </footer>
 </main>
 
-<div class="lista" role="region" aria-label="Súhrn volieb"><div class="lista-in">
-  <span class="lista-text" id="lista-text" aria-live="polite">Zatiaľ nič nie je vybrané.</span>
-  <button type="button" class="hlavne" id="kopiruj">Skopírovať súhrn</button>
+<div class="lista" role="region" aria-label="Stav dávky"><div class="lista-in">
+  <span class="lista-text">Rozhodnuté 27. 10. Na potvrdenie: znenie Živnostníka a Šarlatána (trvanie).</span>
 </div></div>
-<textarea id="schranka" class="skryte" aria-hidden="true" tabindex="-1"></textarea>
 
 <script>
 (function () {
   "use strict";
-  var KLUC = "naex-efekty-2-v1", koren = document.documentElement, stav = {};
+  var KLUC = "naex-efekty-2-v1", koren = document.documentElement;
   try { var t = localStorage.getItem(KLUC + "-tema"); if (t === "light" || t === "dark") koren.setAttribute("data-theme", t); } catch (e) { /* bez úložiska */ }
   document.getElementById("tema").addEventListener("click", function () {
     var teraz = koren.getAttribute("data-theme") || (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
@@ -453,70 +518,14 @@ footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid var(--okraj)
     koren.setAttribute("data-theme", nova);
     try { localStorage.setItem(KLUC + "-tema", nova); } catch (e) { /* bez úložiska */ }
   });
-  try { var ul = JSON.parse(localStorage.getItem(KLUC) || "{}"); if (ul && typeof ul === "object") stav = ul; } catch (e) { /* bez úložiska */ }
-  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) { /* bez úložiska */ } }
-  function zaznam(k) { if (!stav[k] || typeof stav[k] !== "object") stav[k] = {}; return stav[k]; }
-  var MOZNOSTI = [["A", "A"], ["B", "B"], ["C", "C"], ["dnes", "Ponechať dnešný / rozhodnutý"], ["ine", "Inak (poznámka)"]];
-  var karty = Array.prototype.slice.call(document.querySelectorAll(".karta"));
+  // Obsah: odkaz na každú kartu so stavom rozhodnutia (data-roz).
   var obsah = document.getElementById("obsah-zoznam");
-  karty.forEach(function (sek) {
-    var k = sek.getAttribute("data-karta");
-    var a = document.createElement("a");
-    a.href = "#" + k; a.setAttribute("data-k", k);
+  Array.prototype.slice.call(document.querySelectorAll(".karta")).forEach(function (sek) {
+    var a = document.createElement("a"); a.href = "#" + sek.getAttribute("data-karta"); a.className = "zvolene";
     a.appendChild(document.createTextNode(sek.getAttribute("data-nazov")));
-    var s = document.createElement("span"); s.className = "stav"; a.appendChild(s);
+    var s = document.createElement("span"); s.className = "stav"; s.textContent = sek.getAttribute("data-roz") || ""; a.appendChild(s);
     obsah.appendChild(a);
-    var fs = document.createElement("fieldset");
-    var lg = document.createElement("legend"); lg.textContent = "Tvoja voľba"; fs.appendChild(lg);
-    var obal = document.createElement("div"); obal.className = "volby"; fs.appendChild(obal);
-    MOZNOSTI.forEach(function (m) {
-      var l = document.createElement("label"), i = document.createElement("input");
-      i.type = "radio"; i.name = "k-" + k; i.value = m[0]; i.checked = (stav[k] && stav[k].v) === m[0];
-      i.addEventListener("change", function () { zaznam(k).v = m[0]; uloz(); obnov(); });
-      l.appendChild(i); l.appendChild(document.createTextNode(m[0].length === 1 ? k + "-" + m[1] : m[1])); obal.appendChild(l);
-    });
-    var lab = document.createElement("label"); lab.className = "skryte"; lab.htmlFor = "p-" + k; lab.textContent = "Poznámka " + k; fs.appendChild(lab);
-    var ta = document.createElement("textarea"); ta.id = "p-" + k; ta.placeholder = "Poznámka (nepovinné)";
-    ta.value = (stav[k] && stav[k].p) || "";
-    ta.addEventListener("input", function () { zaznam(k).p = ta.value; uloz(); });
-    fs.appendChild(ta);
-    sek.appendChild(fs);
   });
-  function text(v) { var t = "bez voľby"; MOZNOSTI.forEach(function (m) { if (m[0] === v) t = m[1]; }); return t; }
-  function obnov() {
-    var n = 0;
-    karty.forEach(function (sek) {
-      var k = sek.getAttribute("data-karta"), v = stav[k] && stav[k].v;
-      var a = obsah.querySelector('[data-k="' + k + '"]');
-      a.querySelector(".stav").textContent = v ? (v.length === 1 ? v : v === "dnes" ? "dnes" : "inak") : "";
-      a.classList.toggle("zvolene", !!v);
-      if (v) n++;
-    });
-    document.getElementById("lista-text").textContent = n === 0 ? "Zatiaľ nič nie je vybrané." : "Vybrané " + n + " zo " + karty.length + ". Ukladá sa v tomto prehliadači.";
-  }
-  obnov();
-  function suhrn() {
-    var r = ["Michal — Efekty, dávka 2: občania A (docs/napady/efekty-navrhy-2.html):", ""];
-    karty.forEach(function (sek) {
-      var k = sek.getAttribute("data-karta"), s = stav[k] || {}, p = (s.p || "").trim();
-      var v = s.v ? (s.v.length === 1 ? k + "-" + s.v : text(s.v)) : "bez voľby";
-      r.push(sek.getAttribute("data-nazov") + ": " + v + (p ? " — " + p : ""));
-    });
-    return r.join("\n");
-  }
-  function kopiruj(t, hlaska) {
-    var hotovo = function () { document.getElementById("lista-text").textContent = hlaska; };
-    var zaloha = function () {
-      var s = document.getElementById("schranka"); s.value = t; s.select();
-      try { if (document.execCommand("copy")) { hotovo(); return; } } catch (e) { /* ďalej prompt */ }
-      window.prompt("Skopíruj text:", t);
-    };
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(hotovo, zaloha);
-      else zaloha();
-    } catch (e) { zaloha(); }
-  }
-  document.getElementById("kopiruj").addEventListener("click", function () { kopiruj(suhrn(), "Súhrn je skopírovaný. Vlož ho Leaderovi."); });
 })();
 </script>
 </body>

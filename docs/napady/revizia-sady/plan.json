@@ -2919,5 +2919,29 @@
   ],
   "prekonane": "obojsmerný návrh (aj prikladajúca karta), bod 7 „Krokodíl prvý“, bod 9 „najprv ležiaca“, vzor „Pasca v línii“",
   "kod": "nový Trigger „Konflikt“ (types.ts:82–92, ALL_TRIGGERS :94) ako Kšeft; vylozDoLinie (engine.ts:2080–2126) po Nástupe priloženej karty (:2123) pozrie na ležiaceho suseda (susedNaKonci :2100) — ak patrí súperovi prikladajúceho a má Konflikt, spustí jeho efekt; Nástroj nič; Záverečná odklad do otocZaverecne (:2016); Pasca počítadlo za kolo; názov nekoliduje so zvieraKonflikt (engine.ts:3566); effects.ts, tvorba predvolene.ts, bot, tahak.md, rozhodca mapa.json + konflikt.test.ts"
+ },
+ "efekty": {
+  "poznamka": "Rozhodnuté znenia efektov po dávkach (plan.md časť 14); pribúdajú ďalšie dávky. Kde nahrádzajú znenie z 10.1 alebo NA EX trojice, platí toto.",
+  "davky": [
+   {
+    "davka": "E2",
+    "nazov": "občania A",
+    "subor": "docs/napady/efekty-navrhy-2.html",
+    "datum": "2026-10-27",
+    "kto": "Michal",
+    "zmeny": [
+     {"id":"velmi_smutiaca_vdova","karta":"Veľmi smútiaca vdova","volba":"A","spustac":"Konflikt","znenie":"Konflikt: Keď súper priloží k tejto karte Chlapa, ten sa po bitke nevráti do jeho odhadzovacieho balíčka, ale ide z hry.","nahradza":"Nástup: muž navrchu súperovho balíčka ide z hry, zahoď 2 Dlhy"},
+     {"id":"policajtka","karta":"Policajtka","volba":"A","spustac":"Konflikt","znenie":"Konflikt: Keď súper priloží kartu k tejto karte, dostane 1 Dlh. Ak je priložená karta Kriminál, dohodnú sa: súper ti namiesto toho dá 2 cigarety.","nahradza":"P1 z NA EX trojice (Pitka: kto dal viac NA EX, dostane Dlh) — naprogramované na feature/naex-trojica","poznamka":"POZOR: nahrádza naprogramovaný efekt; výklad ešte potvrdí Michal"},
+     {"id":"niekoho_stryna","karta":"Stryná","premenovanie":"Niekoho stryná → Stryná","volba":"A","spustac":"Pitka","znenie":"Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.","nahradza":"Nástup: zahoď 1 Cirhózu alebo 1 Dlh","poznamka":"kľúč v dátach môže ostať niekoho_stryna"},
+     {"id":"recidivista","karta":"Recidivista","volba":"B","spustac":"Prehra","znenie":"Prehra: Po bitke sa táto karta vráti do tvojej ruky, nie do odhadzovacieho balíčka.","nahradza":"Bitka: Rana navyše za každého Zahraničného u súpera"},
+     {"id":"liberal","karta":"Liberál","volba":"B","spustac":"Pitka","znenie":"Pitka: Ak v súperovej partii nie je rovnako žien a chlapov, pripíše sa súperovi 1 zadĺženie.","nahradza":"10.1: Furt ×2 pri rovnosti žien a chlapov"},
+     {"id":"zivnostnik","karta":"Živnostník","volba":"inak","spustac":"Nástup","michal":"Smieš spolu s ním vyložiť náradie (vyložia sa 2 karty naraz).","znenie":"Nástup: Hneď za neho smieš z ruky priložiť jeden Nástroj. Obe karty sa vyložia v jednom ťahu.","nahradza":"Výhra: zahoď súperovo Dedičstvo","poznamka":"znenie na potvrdenie (Vymyselník); synergie so zosilňovačom Nástrojov a Zvieraťom, ktoré s Nástrojom tvorí spoj — v popise sa nemenujú; ako Záverečná sa Nástroj nepriloží (na potvrdenie)"},
+     {"id":"sarlatan","karta":"Šarlatán","volba":"inak","spustac":"Konflikt","michal":"Konflikt – keď súper k nemu priloží kartu, jeho dlhy sa menia na vieru a jeho povera na ranu.","znenie":"Konflikt: Keď súper priloží kartu k tejto karte, akcie Dlh na nej sa odteraz rátajú ako Viera a akcie Povera ako Rana.","nahradza":"10.1: Furt, aktívna Pečeň v okolí sa ráta aj ako Viera (padá)","poznamka":"trvanie na potvrdenie — návrh: od Konfliktu, kým karta leží v línii (do konca kola), po bitke pôvodné akcie ako Výtržník"},
+     {"id":"financna_poradkyna","karta":"Finančná poradkyňa","volba":"ponechať","znenie":"Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.","poznamka":"Michal potvrdil znenie; obsahovo rovnaké ako dnes"}
+    ],
+    "ponechane": ["Veštica","Silná, nezávislá žena","Hasič","Praudovravec","Zámočník","Veterán","Kočovník","Svokra","Podvodník"],
+    "na_potvrdenie": ["znenie Živnostníka","znenie a trvanie Šarlatána","výklad Policajtky (nahrádza P1 z NA EX trojice)"]
+   }
+  ]
  }
 }

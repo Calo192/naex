@@ -481,7 +481,7 @@ Strany v tvare `cards.json`: akcie a počet, blokované sloty, povolené sloty (
 | **Oslávenec** | E | Poldeci 1, Cigareta 1 · blok. 0, 3 ‖ Rana 1 · blok. 0, 3 | 4 | *Kšeft: Za 1 plný poldeci naleješ súperovi — v tejto Pitke dostane 2 poškodenia pečene.* |
 | **Kapybara** | E | Viera 1 · blok. 0, 3 ‖ Cigareta 1 · blok. 0, 3 | 4 | *Kšeft: Za 2 cigarety zožerie súperovi 1 špak.* |
 
-Poznámky k zneniu: Praudovravec má Odpor voľne na slotoch 0–2 (Dezinformátor s Hasičom tým vzniká). Liberál má sloty ako dnes (4 varianty), efekt bez vety o NA EX. Oslávenec: 2 pečene (rozhodnuté); poldeci sa otočí na vypitý, nie je to nerest a platiteľovi nepridá pečeň; raz za Pitku; na Kostole sa Kšeft nedá (výklad Vymyselníka). Záhradkár: prah 7 → 9, so súperovou priazňou Exekútora 8 / 7 / 6; platí, keď leží v línii. Traktoristka: prevaha v kraji, kde leží, sa ráta v bitke ako pri Ihrisku. Kulturista a Puška platia v plánovej verzii, NA EX automat na Kulturistovi a kombá Pušky (12–16) sa merajú.
+Poznámky k zneniu: Praudovravec má Odpor voľne na slotoch 0–2 (Dezinformátor s Hasičom tým vzniká). Liberál má sloty ako dnes (4 varianty), efekt bez vety o NA EX. Oslávenec: 2 pečene (rozhodnuté); poldeci sa otočí na vypitý, nie je to nerest a platiteľovi nepridá pečeň; raz za Pitku; na Kostole sa Kšeft nedá (výklad Vymyselníka). Záhradkár: prah 7 → 9, so súperovou priazňou Exekútora 8 / 7 / 6; platí, keď leží v línii. Traktoristka: prevaha v kraji, kde leží, sa ráta v bitke ako pri Ihrisku. Kulturista a Puška platia v plánovej verzii, NA EX automat na Kulturistovi a kombá Pušky (12–16) sa merajú. **Efekty Liberála, Šarlatána a Živnostníka nahradila dávka E2 (časť 14, 27. 10.).**
 
 ### 10.2 Odpadá
 
@@ -795,3 +795,38 @@ Vzor „Pasca v línii“ odpadol, lebo Nástroj Konflikt nevyvolá ani nespust�
 - **Ťahák:** jedna odrážka do `tools/playtest/tahak.md` (čísla stráži `packages/core/test/tahak.test.ts`).
 - **Rozhodca:** paragraf v `tools/rozhodca/mapa.json` s testom `packages/core/test/konflikt.test.ts`: jednosmernosť, vlastné priloženie nič, NA EX a zrážka nič, Nástup pred Konfliktom, Záverečná, Nástroj.
 - Spolu s Kšeftom a s mazaním spúšťačov Prestávka a Exekúcia (10.6) je to druhá zmena zoznamu spúšťačov vo v7. Robiť ich naraz, aby sa tvorca a Dielňa menili raz.
+
+## 14. Efekty — rozhodnuté znenia
+
+Prehľad nových efektov kariet po dávkach (`docs/napady/efekty-navrhy-N.html`). Pribúdajú ďalšie dávky. Kde nový efekt nahrádza znenie z inej časti plánu (10.1, NA EX trojica), platí táto časť. Zásady dávok: bez číselných stropov, text nemenuje iné karty, Konflikt v jednosmernom znení (časť 13).
+
+### 14.1 Dávka E2 — občania A (Michal, 27. 10.)
+
+| Karta | Predtým | Rozhodnuté znenie | Voľba |
+|---|---|---|---|
+| Veľmi smútiaca vdova | Nástup: muž navrchu súperovho balíčka ide z hry, zahoď 2 Dlhy | *Konflikt: Keď súper priloží k tejto karte Chlapa, ten sa po bitke nevráti do jeho odhadzovacieho balíčka, ale ide z hry.* | A „Ďalší nebožtík“ |
+| **Policajtka** | **P1 z NA EX trojice:** Pitka: kto dal viac NA EX, dostane Dlh (už naprogramované) | *Konflikt: Keď súper priloží kartu k tejto karte, dostane 1 Dlh. Ak je priložená karta Kriminál, dohodnú sa: súper ti namiesto toho dá 2 cigarety.* | A „Pokuta na mieste“ |
+| **Stryná** (premenovaná z Niekoho stryná) | Nástup: zahoď 1 Cirhózu alebo 1 Dlh | *Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.* | A „Ešte jeden, nech ti nie je zima“ |
+| Recidivista | Bitka: Rana navyše za každého Zahraničného u súpera | *Prehra: Po bitke sa táto karta vráti do tvojej ruky, nie do odhadzovacieho balíčka.* | B „Zas je vonku“ |
+| Liberál | 10.1: Furt, ×2 pri rovnosti žien a chlapov | *Pitka: Ak v súperovej partii nie je rovnako žien a chlapov, pripíše sa súperovi 1 zadĺženie.* | B „Kvóty“ |
+| Živnostník | Výhra: zahoď súperovo Dedičstvo | *Nástup: Hneď za neho smieš z ruky priložiť jeden Nástroj. Obe karty sa vyložia v jednom ťahu.* **(znenie na potvrdenie)** | inak (Michal) |
+| Šarlatán | 10.1: Furt, aktívna Pečeň v okolí sa ráta aj ako Viera | *Konflikt: Keď súper priloží kartu k tejto karte, akcie Dlh na nej sa odteraz rátajú ako Viera a akcie Povera ako Rana.* **(znenie a trvanie na potvrdenie)** | inak (Michal) |
+| Finančná poradkyňa | — | ponechať; Michal potvrdil: *Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.* | ponechať |
+
+**Ponechané bez zmeny:** Veštica, Silná nezávislá žena, Hasič (rozhodnutý Nástup), Praudovravec (Dezinformátor), Zámočník, Veterán, Kočovník (10.1), Svokra (Varecha S1), Podvodník (10.1).
+
+**Poznámky k rozhodnutiam:**
+- **POZOR — Policajtka nahrádza P1 z NA EX trojice.** Efekt „kto dal viac NA EX, dostane Dlh“ je naprogramovaný na vetve `feature/naex-trojica`. Ak sa trojica zmerguje pred v7, treba ho tam vymeniť alebo zrušiť. **Výklad ešte potvrdí Michal.** S P1 padá aj brzda „NA EX automatu“ z druhej strany, ktorú plán pripisoval Policajtke (nechané karty v 2a).
+- **Stryná:** mení sa len meno na karte. Kľúč v dátach (`niekoho_stryna`) môže ostať, rozhodne sa pri zavádzaní. Spolu s Nástupom zmizne jeden z odtokov Dlhu a Cirhózy (11.2), čo podporuje dávku 3.
+- **Živnostník** (Michal: „smieš spolu s ním vyložiť náradie, vyložia sa 2 karty naraz“): Nástroj ide na vonkajšiu hranu Živnostníka na tú istú stranu. Je to Občan, takže s ním Nástroj tvorí spoj (§6 :241). Nástroj limit nemíňa a výhodou je tempo: súper medzi tieto dve karty nič nepodstrčí. Platia bežné obmedzenia (nie vedľa Nástroja). Ako Záverečná: Nástup až pri otočení, Nástroj sa vtedy nepriloží (na potvrdenie). Synergie sa v popise nemenujú: karta, ktorá posilňuje Nástroje vo svojom okolí (Zámočník), a Zviera, ktoré s Nástrojom tvorí spoj (Kôň), dajú kombo v jednom ťahu. Navrhovaný Pakt na Živnostníkovi (12.1) tým nie je dotknutý.
+- **Šarlatán** (Michal: „Konflikt – keď súper k nemu priloží kartu, jeho dlhy sa menia na vieru a jeho povera na ranu“): **nahrádza rozhodnutý efekt z 10.1, Pečeň ako Viera padá.** **Trvanie, návrh:** natrvalo od okamihu Konfliktu, kým karta leží v línii, teda do konca kola. Po bitke ide do balíčka s pôvodnými akciami, ako Výtržník (`engine.ts:4173–4177`). Mení sa druh akcie, nie aktivita. Po revízii má Dlh a Povera ×2, z toho bude Viera a Rana ×2. Súper k nemu priloží len zámerne.
+- Vdova, Policajtka a Šarlatán stoja na Konflikte (časť 13, jednosmerný, rozhodnutý).
+
+### 14.2 Dopad na kód (dávka E2)
+
+- **Konflikt** (Vdova, Policajtka, Šarlatán): háčik vo `vylozDoLinie` podľa 13.6. Vdova potrebuje príznak „po bitke z hry“ na priloženej karte (vzor spálenie Dievčiny, `b.spalit`, `engine.ts:4179`). Šarlatán potrebuje zmenu druhu akcie na karte v línii (vzor Výtržník, `engine.ts:4173–4177`).
+- **Pitka:** Stryná (pečeň hráčom bez NA EX, `naexVKole`, `engine.ts:333`; krok 3 Pitky), Liberál (zadĺženie, `pridajZadlzenie`, `engine.ts:798`; prevaha žien a chlapov ako dnes).
+- **Prehra:** Recidivista sa vráti do ruky (vzor Snúbenica, `partia.ts:374`; v kroku 7 ho nedať do odhadzovacieho balíčka).
+- **Nástup:** Živnostník: vyloženie Nástroja v tom istom ťahu (nové rozhodnutie hráča po Nástupe, kontroly z `vylozDoLinie` :2098–2107).
+- **NA EX trojica:** odstrániť alebo nahradiť efekt Policajtky P1 (`feature/naex-trojica`).
+- **Dáta:** meno Stryná, nové texty a spúšťače 7 kariet (Konflikt ×3, Pitka ×2, Prehra, Nástup). Pravidlá §16 pre každú zmenu.
