@@ -559,6 +559,8 @@ const VYDESENIE_OHLASENE = 60;
 
 /** Koľko bitiek príde po tejto (v6 aj finále). */
 function kolPoTomto(s: GameState): number {
+  // v7: s rozpisom úrovní sú v lokalityVHre všetky lokality sady — kolá ráta rozpis.
+  if (s.rozpis !== undefined) return Math.max(0, s.rozpis.length - s.kolo);
   return Math.max(0, s.lokalityVHre.length + (s.ciel?.typ === "finale" ? 0 : 1) - (s.ciel === null ? 1 : 0));
 }
 

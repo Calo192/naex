@@ -145,7 +145,8 @@ export function jeEfektManual(defId: string): boolean {
 
 /** Lokalita aktuálneho kola. */
 export function jeCielLokalita(state: Pick<VerejnyStav, "ciel">, defId: string): boolean {
-  return state.ciel?.typ === "lokalita" && state.ciel.lokalita?.defId === defId;
+  // Aj pinnacle vo finále (v7).
+  return state.ciel?.lokalita?.defId === defId;
 }
 
 /**
@@ -408,7 +409,7 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
     pridaj("recidivista", partiaHraca(state, opp).filter((pl) => defOf(data, pl.card).tags.includes("Zahraničný")).length);
   }
   // pes (Michal 2026-10-20): +1 tuhé za každý pár akcií na spoji Psa so súperovou kartou.
-  pridaj("pes", spojePsa(data, state.strany, state.ciel?.typ === "finale")[p]);
+  pridaj("pes", spojePsa(data, state.strany, state.ciel?.typ === "finale" && state.ciel.lokalita === null)[p]);
   pridaj("svokra", svokraRany(data, state, p));
   // Rátajú sa tie isté karty ako do prevahy: Občania, Zvieratá, Starešinovia.
   const doPrevahy = (pl: PlacedCard): boolean => rataSaDoPrevahy(defOf(data, pl.card).tags);

@@ -100,7 +100,8 @@ export type CielKola =
       /** Karta v strede línie. */
       readonly lokalita: CardInstance | null;
     }
-  | { readonly typ: "finale"; readonly lokalita: null };
+  // v7 (plan.md 7.3): finále sa hrá na pinnacle lokalite; null = finále bez lokality (v6, staré uloženia, výučba).
+  | { readonly typ: "finale"; readonly lokalita: CardInstance | null };
 
 /**
  * Patronát (Michal 2026-10-20): hráč, ktorému starší prejavuje priazeň, si
@@ -331,6 +332,12 @@ export interface GameState {
   readonly lokalityVHre: readonly CardInstance[];
   /** Počet lokalít, o ktoré sa hrá (dĺžka hry); po nich príde finále. */
   readonly lokalitCelkom: number;
+  /**
+   * Rozpis úrovní lokalít po kolách (v7, plan.md 7.2), posledná je finále (4 =
+   * pinnacle). Obranca vyberá zo všetkých ešte neodohraných lokalít úrovne kola;
+   * lokalityVHre sú vtedy všetky lokality sady. Chýba = žreb lokalít ako do v6.
+   */
+  readonly rozpis?: readonly number[];
   /**
    * Špaky — víťazné body (v6, Michal 2026-10-26). Verejné, smú ísť do mínusu
    * (Exekútor). Nepriznaná Cirhóza sa odpočíta až na konci hry.
@@ -611,12 +618,59 @@ function hrac(s: MutState, p: PlayerId): DeepMutable<PlayerState> {
 }
 
 function cielLokalita(s: GameState): CardInstance | null {
-  return s.ciel?.typ === "lokalita" ? (s.ciel.lokalita ?? null) : null;
+  return s.ciel?.lokalita ?? null;
 }
 
-/** defId lokality, o ktorú sa hrá — null v bitke o staršieho (aj pre klienta). */
+/** defId lokality, o ktorú sa hrá (aj pinnacle vo finále v7) — null vo finále bez lokality (aj pre klienta). */
 export function cielLokalitaId(s: Pick<VerejnyStav, "ciel">): string | null {
-  return s.ciel?.typ === "lokalita" ? (s.ciel.lokalita?.defId ?? null) : null;
+  return s.ciel?.lokalita?.defId ?? null;
+}
+
+/** Úroveň lokality (v7, plan.md 7.1) = počet akcií na jej hrane: 1 / 2 / 3, pinnacle 4. */
+export function urovenLokality(data: GameData, defId: string): number {
+  const def = data.cards.get(defId);
+  if (def === undefined) return 0;
+  return Object.values(def.left.actions).reduce((a, n) => a + (n ?? 0), 0);
+}
+
+/** Úroveň pinnacle lokality finále. */
+export const UROVEN_FINALE = 4;
+
+/**
+ * Rozpis úrovní pre dĺžku hry (plan.md 7.2) s finále na konci; null, keď sada
+ * nemá dosť lokalít každej úrovne (stará sada — hrá sa žreb ako do v6).
+ */
+export function rozpisUrovni(data: GameData, lokalit: number): number[] | null {
+  const ROZPISY: Readonly<Record<number, readonly number[]>> = { 3: [1, 2, 3], 5: [1, 2, 2, 3, 3], 7: [1, 1, 2, 2, 3, 3, 3] };
+  const rozpis = ROZPISY[lokalit];
+  if (rozpis === undefined) return null;
+  const s = [...rozpis, UROVEN_FINALE];
+  for (const u of new Set(s)) {
+    const treba = s.filter((x) => x === u).length;
+    if (data.lokality.filter((l) => urovenLokality(data, l.id) === u).length < treba) return null;
+  }
+  return s;
+}
+
+/**
+ * Úroveň, z ktorej sa vyberá cieľ (v7): vo Voľbe cieľa úroveň tohto kola,
+ * inokedy úroveň ďalšieho kola; null bez rozpisu alebo po finále.
+ */
+export function urovenNaVyber(s: { readonly rozpis?: readonly number[]; readonly kolo: number; readonly faza: Phase }): number | null {
+  if (s.rozpis === undefined) return null;
+  return s.rozpis[s.faza === "volbaCiela" ? s.kolo - 1 : s.kolo] ?? null;
+}
+
+/** Lokality, z ktorých obranca vyberá cieľ (v7: neodohrané lokality úrovne kola). */
+export function lokalityNaVyber(data: GameData, s: Pick<GameState, "lokalityVHre" | "kolo" | "faza"> & { readonly rozpis?: readonly number[] }): CardInstance[] {
+  const u = urovenNaVyber(s);
+  if (u === null) return [...s.lokalityVHre];
+  return s.lokalityVHre.filter((k) => urovenLokality(data, k.defId) === u);
+}
+
+/** Finále bez lokality v strede (v6) — prvá karta leží v strede línie. */
+export function finaleBezStredu(s: Pick<VerejnyStav, "ciel">): boolean {
+  return s.ciel?.typ === "finale" && s.ciel.lokalita === null;
 }
 
 /**
@@ -652,7 +706,7 @@ export function jeFinale(s: Pick<VerejnyStav, "ciel">): boolean {
 export function stranaStreduFinale(
   s: Pick<VerejnyStav, "ciel" | "strany"> & { readonly stredFinale?: PlayerId | null },
 ): PlayerId | null {
-  if (!jeFinale(s)) return null;
+  if (!finaleBezStredu(s)) return null;
   const plna = [s.strany[0].length > 0, s.strany[1].length > 0] as const;
   if (!plna[0] && !plna[1]) return null;
   if (plna[0] !== plna[1]) return plna[0] ? 0 : 1;
@@ -665,10 +719,15 @@ export function stranaStreduFinale(
  * odhady (náhľady, bot): marker, ktorý sa už nepohne, dá toľkokrát svoju zónu
  * hráčovi, ktorý vyhrá každú bitku.
  */
-export function vyplatZaStarsich(s: Pick<GameState, "lokalityVHre" | "ciel" | "koniec"> & { readonly bitkaStav: { readonly damage: unknown } | null }): number {
+export function vyplatZaStarsich(
+  s: Pick<GameState, "lokalityVHre" | "ciel" | "koniec" | "kolo" | "lokalitCelkom"> & { readonly bitkaStav: { readonly damage: unknown } | null; readonly rozpis?: readonly number[] },
+): number {
   if (s.koniec !== null) return 0;
   const tato = s.ciel === null ? 0 : s.bitkaStav !== null && s.bitkaStav.damage !== null ? 0 : 1;
-  return s.lokalityVHre.length + (s.ciel?.typ === "finale" ? 0 : 1) + tato;
+  // v7: lokality sa nežrebujú — neodohrané kolá o lokalitu ráta rozpis (kolo k je k-te).
+  const zostava = s.rozpis !== undefined ? Math.max(0, s.lokalitCelkom - s.kolo + (s.ciel === null ? 1 : 0)) : s.lokalityVHre.length;
+  const finaleUz = s.ciel?.typ === "finale" || (s.rozpis !== undefined && s.kolo > s.lokalitCelkom);
+  return zostava + (finaleUz ? 0 : 1) + tato;
 }
 
 /** Efekt karty defId patrí hráčovi p a nie je umlčaný (Praudovravec). */
@@ -1179,16 +1238,22 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     s.starsi.push(freshElder(elderDef.id, karta, sc.id) as DeepMutable<ElderState>);
   });
 
-  // Lokality: náhodný výber z dostupných.
+  // Lokality: v7 podľa úrovní (všetky v hre, obranca vyberá z úrovne kola), inak náhodný výber.
   const pocetLokalit = opts?.lokalit ?? DLZKY_HRY[PREDVOLENA_DLZKA];
   if (pocetLokalit > data.lokality.length) {
     throw new Error(`Sada má len ${data.lokality.length} lokalít, hra potrebuje ${pocetLokalit}.`);
   }
   s.lokalitCelkom = pocetLokalit;
-  const [poradieLokalit, rng1] = rngShuffle(s.rng, data.lokality);
-  s.rng = rng1;
-  for (const def of poradieLokalit.slice(0, pocetLokalit)) {
-    s.lokalityVHre.push(novaInstancia(s, data, def.id) as DeepMutable<CardInstance>);
+  const rozpis = rozpisUrovni(data, pocetLokalit);
+  if (rozpis !== null) {
+    s.rozpis = rozpis;
+    for (const def of data.lokality) s.lokalityVHre.push(novaInstancia(s, data, def.id) as DeepMutable<CardInstance>);
+  } else {
+    const [poradieLokalit, rng1] = rngShuffle(s.rng, data.lokality);
+    s.rng = rng1;
+    for (const def of poradieLokalit.slice(0, pocetLokalit)) {
+      s.lokalityVHre.push(novaInstancia(s, data, def.id) as DeepMutable<CardInstance>);
+    }
   }
 
   // Spoločný doberací balíček: kópie všetkých kariet okrem lokalít,
@@ -1241,6 +1306,8 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
   };
   s.utocnik = r.utocnik;
   s.lokalitCelkom = r.lokality.length;
+  // Výučba má lokality v pevnom poradí — hrá sa bez rozpisu úrovní.
+  delete s.rozpis;
   s.lokalityVHre = r.lokality.map((id) => {
     if (!(data.cards.get(id.split("/")[0] ?? "")?.tags ?? []).includes("Lokalita")) throw new Error(`Rozdanie: „${id}“ nie je lokalita.`);
     return karta(id);
@@ -1507,11 +1574,13 @@ export function zaznamyPriazne(data: GameData, pred: GameState, po: GameState): 
  * stranách. Kto aktivuje 3 akcie lokality a súper 1, pijú sa 2 Pitky.
  */
 export function pocetPitiek(data: GameData, state: VerejnyStav & { readonly lokalitaOtocena: boolean }): number {
-  // Finále má vždy 3 Pitky (v6, Michal 2026-10-26).
-  if (jeFinale(state)) return KONSTANTY.FINALE_PITKY;
+  // Finále bez lokality má vždy 3 Pitky (v6); na pinnacle (v7) platí to isté pravidlo ako inde.
+  if (finaleBezStredu(state)) return KONSTANTY.FINALE_PITKY;
   if (state.ciel?.lokalita == null) return 1;
   const [a, b] = evaluateLine(data, lineState(state)).aktivneStredu;
-  return 1 + Math.min(a, b);
+  // Kohút (Furt, v7): kým leží v línii, kolo má aspoň 2 Pitky.
+  const kohut = vPartii(state, 0, "kohut") || vPartii(state, 1, "kohut");
+  return Math.max(kohut ? 2 : 1, 1 + Math.min(a, b));
 }
 
 /** Počet Pitiek sa mení s líniou, už začaté Pitky však ostávajú. */
@@ -1577,14 +1646,15 @@ function cmdChooseLocation(
   events: Event[],
 ): void {
   need(s.faza === "volbaCiela", "Teraz sa nevyberá cieľ.");
+  need(lokalityNaVyber(data, s as GameState).some((k) => k.uid === cmd.uid), "Takú lokalitu teraz vybrať nemožno.");
   const idx = s.lokalityVHre.findIndex((k) => k.uid === cmd.uid);
-  need(idx !== -1, "Taká lokalita nie je v hre.");
   const karta = s.lokalityVHre.splice(idx, 1)[0] as CardInstance;
-  s.ciel = { typ: "lokalita", lokalita: karta as DeepMutable<CardInstance> };
+  const finale = s.rozpis !== undefined && s.kolo > s.lokalitCelkom;
+  s.ciel = finale ? { typ: "finale", lokalita: karta as DeepMutable<CardInstance> } : { typ: "lokalita", lokalita: karta as DeepMutable<CardInstance> };
   s.lokalitaOtocena = cmd.otocena;
   events.push({
     type: "log",
-    text: `Hráč ${p + 1} ${rodovo(p, "vybral", "vybrala", "vyberá")} bitku o lokalitu ${defOf(data, karta).name}.`,
+    text: `Hráč ${p + 1} ${rodovo(p, "vybral", "vybrala", "vyberá")} ${finale ? "pre finále lokalitu" : "bitku o lokalitu"} ${defOf(data, karta).name}.`,
   });
   s.faza = "draft";
   events.push({ type: "faza", faza: "draft" });
@@ -2206,7 +2276,7 @@ function vylozDoLinie(
   const cielPartia: PlayerId = target === "vlastna" ? p : opponentOf(p);
   // Nástroj nesmie susediť s Nástrojom (PRAVIDLA §12).
   const partia = s.strany[cielPartia];
-  const sused = susedNaKonci(s.strany, cielPartia, jeFinale(s));
+  const sused = susedNaKonci(s.strany, cielPartia, finaleBezStredu(s));
   need(sused?.zaverecna !== true, "Za Záverečnú sa nedá priložiť, kým sa na konci Pitky neotočí.");
   if (def.tags.includes("Nástroj") && sused != null) {
     need(
@@ -2217,7 +2287,7 @@ function vylozDoLinie(
   // pes: nikdy nesmie byť v partii s iným zvieraťom — medzi kartami toho istého majiteľa.
   need(!zvieraKonflikt(data, partiaHraca(s as GameState, p), def), "Pes nesmie byť medzi tvojimi kartami s iným zvieraťom.");
   const karta = vezmiZRuky(s, p, uid);
-  if (jeFinale(s) && s.strany[0].length === 0 && s.strany[1].length === 0) s.stredFinale = cielPartia;
+  if (finaleBezStredu(s) && s.strany[0].length === 0 && s.strany[1].length === 0) s.stredFinale = cielPartia;
   if (zaverecna) {
     partia.push({ card: karta, playedBy: p, zaverecna: true } as DeepMutable<PlacedCard>);
     // Meno karty sa v logu objaví až pri otočení.
@@ -2292,7 +2362,7 @@ function nastupEfekt(
       // NA EX už pečeň započítalo, nerest pripadne tomu, kto ho dal.
       const partia = s.strany[strana];
       // Vo finále môže Snúbenica na prázdnej strane susediť s kartou v strede (v6).
-      const sused = partia.length === 1 && jeFinale(s) ? (s.strany[opponentOf(strana)][0] ?? null) : null;
+      const sused = partia.length === 1 && finaleBezStredu(s) ? (s.strany[opponentOf(strana)][0] ?? null) : null;
       const vracia = sused !== null ? snubenicaVracia([sused as PlacedCard], defId) : snubenicaVracia(partia.slice(0, -1) as readonly PlacedCard[], defId);
       if (vracia === null) break;
       if (sused !== null) s.strany[opponentOf(strana)].splice(0, 1);
@@ -2805,7 +2875,7 @@ export function krcmaVyzaduje(data: GameData, state: GameState, p: PlayerId): bo
 /** Hráč q má v ruke kartu, ktorú môže vyložiť do línie (reakcia je mimo limitu). */
 function mozeReagovat(s: GameState, data: GameData, q: PlayerId): boolean {
   return s.hraci[q].ruka.some((k) =>
-    cieleVykladania(data, s.strany, q, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(s), [false, false], jeFinale(s)).some((c) => c === "vlastna" || c === "superova"),
+    cieleVykladania(data, s.strany, q, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(s), [false, false], finaleBezStredu(s)).some((c) => c === "vlastna" || c === "superova"),
   );
 }
 
@@ -3822,7 +3892,7 @@ export function planVykladania(
   let poldeci = 0;
   const chyba = (text: string): PlanVykladania => ({ kroky, poldeci, chyba: text, zostava });
   const lokalita = cielLokalitaId(stav);
-  const finale = jeFinale(stav);
+  const finale = finaleBezStredu(stav);
   // Kostol: nikto nesmie vypiť — bez Vypiť ide v ťahu len jedna karta.
   if (tahove.length > 1 && zakazVypit(stav)) return chyba("Kostol: nikto nesmie vypiť — v ťahu len jedna karta.");
   for (const x of priznania) {
@@ -4478,7 +4548,21 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
 
   // Ďalšie kolo: útočníkom je porazený; po sekere ostáva ten istý.
   s.kolo += 1;
-  if (s.lokalityVHre.length === 0) {
+  if (s.rozpis !== undefined && s.kolo > s.lokalitCelkom) {
+    // Finále na pinnacle (v7, plan.md 7.3): útočí, kto má viac špakov (pravidlo v6);
+    // obranca — ten, kto zaostáva — vyberie a natočí pinnacle lokalitu ako každý cieľ.
+    s.utocnik = s.spaky[0] !== s.spaky[1] ? (s.spaky[0] > s.spaky[1] ? 0 : 1) : vitaz !== null ? opponentOf(vitaz) : s.utocnik;
+    s.faza = "volbaCiela";
+    events.push({ type: "faza", faza: "volbaCiela" });
+    events.push({
+      type: "log",
+      text: `Finále (${s.spaky[0]} : ${s.spaky[1]} špakov): útočí hráč ${s.utocnik + 1}, hráč ${opponentOf(s.utocnik) + 1} vyberá a natáča pinnacle lokalitu.`,
+    });
+    dolejNaZaciatkuKola(s, events);
+    doberPoBitke(s, events);
+    return;
+  }
+  if (s.rozpis === undefined && s.lokalityVHre.length === 0) {
     // Finále (v6, Michal 2026-10-26): útočí, kto má viac špakov; pri rovnosti
     // porazený poslednej bitky, po sekere ostáva útočník (Leader 2026-10-26).
     s.utocnik = s.spaky[0] !== s.spaky[1] ? (s.spaky[0] > s.spaky[1] ? 0 : 1) : vitaz !== null ? opponentOf(vitaz) : s.utocnik;
@@ -4647,7 +4731,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
 
   switch (state.faza) {
     case "volbaCiela": {
-      for (const lok of state.lokalityVHre) {
+      for (const lok of lokalityNaVyber(data, state)) {
         out.push({ type: "chooseLocation", uid: lok.uid, otocena: false });
         out.push({ type: "chooseLocation", uid: lok.uid, otocena: true });
       }
@@ -4690,7 +4774,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       out.push({ type: "pass" });
       const vylozenia: Command[] = [];
       for (const karta of state.hraci[p].ruka) {
-        for (const target of cieleVykladania(data, state.strany, p, karta, z.zostavaLimit[p], state.hraci[p].cigarety >= cenaDedicstva(state), cielLokalitaId(state), [false, false], jeFinale(state))) {
+        for (const target of cieleVykladania(data, state.strany, p, karta, z.zostavaLimit[p], state.hraci[p].cigarety >= cenaDedicstva(state), cielLokalitaId(state), [false, false], finaleBezStredu(state))) {
           vylozenia.push({ type: "place", uid: karta.uid, target });
           // Záverečná: tá istá karta lícom dole za cigaretu.
           if ((target === "vlastna" || target === "superova") && state.hraci[p].cigarety >= KONSTANTY.CENA_ZAVERECNEJ) {
@@ -4717,7 +4801,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         // Reakcia na NA EX: jedna karta do línie mimo limitu, alebo nič.
         out.push({ type: "bezReakcie" });
         for (const karta of state.hraci[p].ruka) {
-          for (const target of cieleVykladania(data, state.strany, p, karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(state), [false, false], jeFinale(state))) {
+          for (const target of cieleVykladania(data, state.strany, p, karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(state), [false, false], finaleBezStredu(state))) {
             if (target === "vlastna" || target === "superova") out.push({ type: "place", uid: karta.uid, target });
           }
         }

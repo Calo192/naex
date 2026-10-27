@@ -27,7 +27,7 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { abstakyVBitke, cenaDedicstva, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
+import { abstakyVBitke, cenaDedicstva, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, stranaStreduFinale, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { MARKER_STRED, favourStarsieho, posunMarker, priazenHraca, priazenSila, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -148,9 +148,15 @@ export interface ClientState {
   readonly hraci: readonly [HracVerejne, HracVerejne];
   readonly spolocnyBalicekPocet: number;
   readonly senok: readonly CardInstance[];
+  /**
+   * Lokality, z ktorých sa vyberá cieľ: v7 neodohrané lokality úrovne tohto
+   * (vo Voľbe cieľa) alebo ďalšieho kola; bez rozpisu všetky nevybrané.
+   */
   readonly lokalityVHre: readonly CardInstance[];
   /** Počet lokalít hry; po nich príde finále (ciel.typ === "finale"). */
   readonly lokalitCelkom: number;
+  /** Rozpis úrovní lokalít po kolách s finále na konci (v7); chýba = žreb ako do v6. */
+  readonly rozpis?: readonly number[];
   /** Špaky oboch hráčov teraz (v6) — popolníky. */
   readonly spaky: readonly [number, number];
   /** Špaky na sekere — vezme ich víťaz ďalšej bitky, vo finále prepadnú. */
@@ -296,8 +302,9 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     hraci: [publicPlayer(0), publicPlayer(1)],
     spolocnyBalicekPocet: state.spolocnyBalicek.length,
     senok: state.senok,
-    lokalityVHre: state.lokalityVHre,
+    lokalityVHre: lokalityNaVyber(data, state),
     lokalitCelkom: state.lokalitCelkom,
+    ...(state.rozpis !== undefined ? { rozpis: state.rozpis } : {}),
     spaky: state.spaky,
     spakyNaSekere: state.spakyNaSekere,
     nastenka: state.nastenka,
@@ -392,7 +399,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
 // klient AI hráčov aj kroniku.
 
 /** Stav, z ktorého sa rátajú špaky — ClientState ho spĺňa. */
-export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "lokalityVHre" | "ciel" | "koniec" | "pitkaStav"> & {
+export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "lokalityVHre" | "ciel" | "koniec" | "pitkaStav" | "kolo" | "lokalitCelkom" | "rozpis"> & {
   readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety">, Pick<HracVerejne, "poldeciPlne" | "cigarety">];
   readonly starsi: readonly ElderState[];
   readonly bitkaStav: { readonly damage: DamageResult | null } | null;
