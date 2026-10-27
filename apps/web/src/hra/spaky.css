@@ -402,61 +402,6 @@
   text-transform: uppercase;
 }
 
-/* Oznam finále na hrane stola: kto útočí a prečo. */
-.oznam-finale {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 30;
-  transform: translate(-50%, -50%);
-  max-width: min(560px, 90%);
-  padding: 18px 26px 16px;
-  border-radius: 14px;
-  border: 2px solid var(--akcent);
-  background: var(--plocha);
-  box-shadow: 0 10px 40px color-mix(in srgb, var(--pozadie) 85%, transparent);
-  text-align: center;
-  animation: oznam-finale 0.35s ease-out;
-}
-
-.oznam-finale h3 {
-  margin: 0 0 6px;
-  font: 800 2rem/1 var(--nadpis);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--akcent);
-}
-
-.oznam-finale p {
-  margin: 4px 0;
-  color: var(--text);
-}
-
-.oznam-finale .oznam-skore {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
-  margin: 10px 0 6px;
-}
-
-.oznam-finale button {
-  margin-top: 8px;
-}
-
-@keyframes oznam-finale {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -46%) scale(0.96);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .oznam-finale {
-    animation: none;
-  }
-}
-
 /* ---- špaky jednej bitky (účet bitky, rekapitulácia) ---- */
 .spaky-bitky {
   display: grid;
