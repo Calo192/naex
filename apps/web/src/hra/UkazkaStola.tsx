@@ -17,6 +17,8 @@
 //                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
 //   &exekutor=1    hráčovi ?ja pred prvou bitkou pridá Záhradkára a 10 priznaných Dlhov
 //                  (voľba Záhradkára pri exekúcii)
+//   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
+//                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 
@@ -68,6 +70,14 @@ function sBzdochou(data: GameData, s: GameState, p: PlayerId): GameState | null 
   return { ...t, pitkaStav: { ...pitka, naTahu: p, hotovy, skryteNaex: [...(pitka.skryteNaex ?? []), { hrac: su, uid: ciel }] } };
 }
 
+/** Hráčovi p dá do ruky Nástroj a cigarety aspoň na Dedičstvo — stôl ukáže voľbu „odkazujem“. */
+function sNastrojom(s: GameState, p: PlayerId): GameState {
+  const h = s.hraci[p];
+  const vidly: CardInstance = { uid: s.nextUid, defId: "vidly", leftLayout: 0, rightLayout: 0 };
+  const novy = { ...h, ruka: [...h.ruka, vidly], cigarety: Math.max(h.cigarety, s.dedicstvaVylozene + 3) };
+  return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+}
+
 /** Hráčovi p pridá Záhradkára do ruky a priznané Dlhy — exekúcia v najbližšej bitke. */
 function sExekuciou(s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
@@ -115,6 +125,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     }
     if (stop === "finale" && s.ciel?.typ === "finale" && s.faza === "zhromazdenie" && s.strany[0].length + s.strany[1].length >= karty && naTahu(s) === ja)
       return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "nastroj" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
+      return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && s.pitkaStav?.naTahu === ja && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });

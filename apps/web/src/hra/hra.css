@@ -3598,6 +3598,11 @@ button.pecat-koncim .cena-cig {
   font-size: 0.85rem;
 }
 
+/* Odkazujem (Michal 2026-10-27): Nástroj do Dedičstva vedľa pasovať — tá istá pečiatka, opačný sklon. */
+button.pecat-odkaz {
+  rotate: -2deg;
+}
+
 /* Tichá voľba vedľa pečiatky (ešte nie, ešte vykladám). */
 button.pecat-tichy {
   min-height: 44px;

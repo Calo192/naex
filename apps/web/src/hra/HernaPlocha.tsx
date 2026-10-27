@@ -139,6 +139,7 @@ import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type Vrstv
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
+import { polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
 import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -2807,6 +2808,74 @@ export function HernaPlocha({
       </span>
     );
 
+  // ---- dlaždica KARTY ako cieľ priznania a Dedičstva (Michal 2026-10-23, #76) ----
+  // Pri ťahaní kliatby sa dlaždica KARTY v tvojom bare zmení na cieľ „Priznať“, pri Nástroji
+  // na „Dedičstvo“ s cenou; karta sa pustí na ňu (do návrhu ťahu), stôl sa neprepína. Klik na
+  // kartu a potom na dlaždicu robí to isté (aj kláves O). Kam karta patrí, určuje jej typ — keď ju
+  // tam pravidlá teraz nepustia, dlaždica povie prečo. Vybraný Nástroj má navyše pečiatku
+  // „odkazujem“ vedľa pasovať (Michal 2026-10-27: Dedičstvo bolo neintuitívne) — tá aj dlaždica
+  // pošlú ten istý ťah ako „potvrdiť“ (planVykladania → tah), len hneď.
+  const [vybranaDoOblasti, setVybranaDoOblasti] = useState<number | null>(null);
+  useEffect(() => setVybranaDoOblasti(null), [klucTahu]);
+  /** Kam smie karta z ruky — rovnaké ciele ako pri ťahaní (planVykladania). */
+  const kamIde = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
+    const c = cieleZdroja({ karta: k, odkial: "ruka", navrh: false });
+    return { priznanie: c.has("priznanie"), dedicstvo: c.has("dedicstvo") };
+  };
+  const mozemOdkladat = view.faza === "zhromazdenie" && vykladam && !reagujem;
+  const typOblasti = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
+    const tagy = data.cards.get(k.defId)?.tags ?? [];
+    return { priznanie: mozemOdkladat && tagy.includes("Kliatba"), dedicstvo: mozemOdkladat && tagy.includes("Nástroj") };
+  };
+  const tahanaZRuky = tahanie !== null && tahanie.zdroj.odkial === "ruka" && !tahanie.zdroj.navrh ? tahanie.zdroj.karta : null;
+  const vybranaKarta = vybranaDoOblasti === null ? null : (ruka.find((k) => k.uid === vybranaDoOblasti) ?? null);
+  const kartaOblasti = tahanaZRuky ?? vybranaKarta;
+  const typKarty = kartaOblasti === null ? null : typOblasti(kartaOblasti);
+  const cielDlazdice: "priznanie" | "dedicstvo" | null = typKarty === null ? null : typKarty.priznanie ? "priznanie" : typKarty.dedicstvo ? "dedicstvo" : null;
+  const smieNaDlazdicu = kartaOblasti !== null && cielDlazdice !== null && kamIde(kartaOblasti)[cielDlazdice];
+  /** Prečo karta na dlaždicu nesmie — ten istý výpočet, aký urobí server. */
+  const chybaDlazdice =
+    kartaOblasti === null || cielDlazdice === null || smieNaDlazdicu
+      ? null
+      : (planTahu([...vylozenia.filter((x) => x.karta.uid !== kartaOblasti.uid), { karta: kartaOblasti, ciel: cielDlazdice }]).chyba ?? "Sem ju teraz vyložiť nesmieš.");
+  /** Odkáže Nástroj do Dedičstva hneď — návrh ťahu + Nástroj, ten istý príkaz „tah“ ako „potvrdiť“ (odkazTahu.ts). */
+  // Výučba pustí len ťah zo scenára — ako pri „potvrdiť“.
+  const dovodOdkazu = (k: CardInstance): string | null => tahOdkazu(data, view, ja, vylozenia, k).dovod ?? chybaVyucby(polozkyOdkazu(vylozenia, k));
+  const odkaz = (k: CardInstance): void => {
+    const t = tahOdkazu(data, view, ja, vylozenia, k);
+    if (t.kroky === null || dovodOdkazu(k) !== null) return;
+    setVybranaDoOblasti(null);
+    setNavrh(null);
+    posli({ type: "tah", kroky: t.kroky });
+  };
+  /** Nástroj vybraný v ruke, ktorý smie do Dedičstva — vtedy je na hrane stola „odkazujem“. */
+  const nastrojNaOdkaz = vybranaKarta !== null && typOblasti(vybranaKarta).dedicstvo ? vybranaKarta : null;
+  const tlacidloOdkazu: ReactNode = (() => {
+    if (nastrojNaOdkaz === null) return null;
+    const k = nastrojNaOdkaz;
+    const chyba = dovodOdkazu(k);
+    const cena = view.cenaDedicstva;
+    const ineVNavrhu = vylozenia.some((x) => x.karta.uid !== k.uid && x.ciel !== "priznanie");
+    const tip =
+      `Odkážeš kartu ${menoKarty(k.defId)} do Dedičstva za ${cigariet(cena)} (máš ${hJa.cigarety}): jej efekt Dedičstvo platí do konca hry a do línie sa už nevráti. ` +
+      `Limit nemíňa, ale je to tvoj ťah${ineVNavrhu ? " — potvrdíš ním aj karty v návrhu" : ""}. Ďalšie Dedičstvo stojí o cigaretu viac, pre oboch.`;
+    return (
+      <button
+        type="button"
+        className="pecat pecat-koncim pecat-odkaz"
+        data-vyucba="tlacidlo:odkazujem"
+        aria-disabled={chyba !== null}
+        title={chyba ?? tip}
+        onClick={(e) => {
+          if (chyba === null) odkaz(k);
+          else setChybaTahania({ text: chyba, x: e.clientX, y: e.clientY });
+        }}
+      >
+        odkazujem <CenaCigariet n={cena} />
+      </button>
+    );
+  })();
+
   // ---- tlačidlá návrhu na stole (Michal 2026-10-20) ------------------------
   // Potvrdenie patrí k tomu, čo leží na stole — hráč nemusí pozerať dole na pás.
   const stolTlacidla = ((): HranaTahu | null => {
@@ -2841,6 +2910,7 @@ export function HernaPlocha({
             {/* Výučba: prečo sa nedá potvrdiť, priamo pri tlačidle (nápoveda na dotyku nie je). */}
             {chybaVoVyucbe !== null && plan.chyba === null && <span className="vyucba-zamok">{chybaVoVyucbe}</span>}
             {tlacidloZaverecnej}
+            {tlacidloOdkazu}
           </>
         ),
       };
@@ -3368,6 +3438,7 @@ export function HernaPlocha({
             vpravo: (
               <>
                 {tlacidloZaverecnej}
+                {tlacidloOdkazu}
                 <button
                   className="pecat pecat-koncim"
                   data-skratka="p"
@@ -4860,34 +4931,6 @@ export function HernaPlocha({
 
   // Stôl bez scrollovania (#67): na počítači leží voľba cieľa a draft na stole namiesto
   // prázdnej línie. Lokalita na otočenie a potvrdenie je v línii — vtedy sa vráti línia.
-  // ---- dlaždica KARTY ako cieľ priznania a Dedičstva (Michal 2026-10-23, #76) ----
-  // Pri ťahaní kliatby sa dlaždica KARTY v tvojom bare zmení na cieľ „Priznať“, pri Nástroji
-  // na „Dedičstvo“ s cenou; karta sa pustí na ňu, stôl sa neprepína. Klik na kartu a potom
-  // na dlaždicu robí to isté (aj kláves O). Kam karta patrí, určuje jej typ — keď ju tam
-  // pravidlá teraz nepustia, dlaždica povie prečo.
-  const [vybranaDoOblasti, setVybranaDoOblasti] = useState<number | null>(null);
-  useEffect(() => setVybranaDoOblasti(null), [klucTahu]);
-  /** Kam smie karta z ruky — rovnaké ciele ako pri ťahaní (planVykladania). */
-  const kamIde = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
-    const c = cieleZdroja({ karta: k, odkial: "ruka", navrh: false });
-    return { priznanie: c.has("priznanie"), dedicstvo: c.has("dedicstvo") };
-  };
-  const mozemOdkladat = view.faza === "zhromazdenie" && vykladam && !reagujem;
-  const typOblasti = (k: CardInstance): { readonly priznanie: boolean; readonly dedicstvo: boolean } => {
-    const tagy = data.cards.get(k.defId)?.tags ?? [];
-    return { priznanie: mozemOdkladat && tagy.includes("Kliatba"), dedicstvo: mozemOdkladat && tagy.includes("Nástroj") };
-  };
-  const tahanaZRuky = tahanie !== null && tahanie.zdroj.odkial === "ruka" && !tahanie.zdroj.navrh ? tahanie.zdroj.karta : null;
-  const vybranaKarta = vybranaDoOblasti === null ? null : (ruka.find((k) => k.uid === vybranaDoOblasti) ?? null);
-  const kartaOblasti = tahanaZRuky ?? vybranaKarta;
-  const typKarty = kartaOblasti === null ? null : typOblasti(kartaOblasti);
-  const cielDlazdice: "priznanie" | "dedicstvo" | null = typKarty === null ? null : typKarty.priznanie ? "priznanie" : typKarty.dedicstvo ? "dedicstvo" : null;
-  const smieNaDlazdicu = kartaOblasti !== null && cielDlazdice !== null && kamIde(kartaOblasti)[cielDlazdice];
-  /** Prečo karta na dlaždicu nesmie — ten istý výpočet, aký urobí server. */
-  const chybaDlazdice =
-    kartaOblasti === null || cielDlazdice === null || smieNaDlazdicu
-      ? null
-      : (planTahu([...vylozenia.filter((x) => x.karta.uid !== kartaOblasti.uid), { karta: kartaOblasti, ciel: cielDlazdice }]).chyba ?? "Sem ju teraz vyložiť nesmieš.");
   useEffect(() => {
     if (vybranaDoOblasti === null) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -4965,7 +5008,9 @@ export function HernaPlocha({
             aktivny: jeCiel(cielDlazdice) || (vybranaKarta !== null && smieNaDlazdicu),
             nad: nadCielom(cielDlazdice),
             dataCiel: jeCiel(cielDlazdice) ? cielDlazdice : undefined,
-            onKlik: vybranaKarta !== null && smieNaDlazdicu ? () => vylozDoOblasti(cielDlazdice) : undefined,
+            // Klik s vybraným Nástrojom robí to isté ako „odkazujem“ — jedna cesta, nie dve.
+            onKlik:
+              vybranaKarta !== null && smieNaDlazdicu ? () => (cielDlazdice === "dedicstvo" ? odkaz(vybranaKarta) : vylozDoOblasti(cielDlazdice)) : undefined,
           },
   });
 
