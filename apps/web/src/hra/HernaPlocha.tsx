@@ -152,7 +152,7 @@ import {
   BitkaPanel,
   CenaCigariet,
   HracDoska,
-  IkonaCigareta,
+  IkonaKarty,
   IkonaPoldeci,
   OdhadBaru,
   PriebehKola,
@@ -2888,6 +2888,8 @@ export function HernaPlocha({
     readonly dovod: string | null;
     readonly tip: string;
     readonly akcia: () => void;
+    /** Čo hráč za cenu dostane — kreslí sa za cenou so šípkou (fajčenie: cigarety → karta). */
+    readonly zisk?: ReactNode;
   }): ReactNode => (
     <button
       key={p.kluc}
@@ -2906,6 +2908,12 @@ export function HernaPlocha({
         <span className="pecat-riadok">
           {p.ikona}
           {p.cena > 0 && <CenaCigariet n={p.cena} znamienko={p.znamienko ?? "−"} />}
+          {p.zisk !== undefined && (
+            <>
+              <span className="pecat-sipka" aria-hidden="true">→</span>
+              {p.zisk}
+            </>
+          )}
         </span>
       )}
       <span className="pecat-nazov">{p.nazov}</span>
@@ -3598,7 +3606,9 @@ export function HernaPlocha({
             </span>
             {pecatNakupu({
               kluc: "fajcit",
-              ikona: <IkonaCigareta zakaz={zakazFajc !== null} />,
+              // Pečiatka ukazuje, čo hráč dostane (Michal 2026-10-27): cena v cigaretách → karta.
+              ikona: null,
+              zisk: <IkonaKarty zakaz={zakazFajc !== null} />,
               nazov: "fajčiť",
               cena: cenaFajc,
               dovod: zakazFajc !== null

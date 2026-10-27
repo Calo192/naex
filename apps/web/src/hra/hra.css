@@ -3496,6 +3496,28 @@ button.pecat-nakup:active:not([aria-disabled="true"]) {
   stroke-width: 2;
 }
 
+/* Fajčenie: cena → karta, ktorú hráč dostane (Michal 2026-10-27). */
+.pecat-sipka {
+  font: 800 0.85rem/1 var(--nadpis);
+  opacity: 0.7;
+}
+
+.pecat-nakup .ikona-karty {
+  width: 20px;
+  height: 20px;
+  fill: #2b2116;
+}
+
+.pecat-nakup .ikona-karty .ilustracia {
+  fill: #e8dfcc;
+}
+
+.ikona-karty .preskrt {
+  stroke: var(--cervena);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
 /* Nedá sa: nevypálená pečiatka — obrys bez farby, kurzor povie, že nie. */
 button.pecat-nakup.ne,
 button.pecat-nakup.ne:hover {
@@ -3513,9 +3535,14 @@ button.pecat-nakup.ne::after {
 
 .pecat-nakup.ne .cena-cig,
 .pecat-nakup.ne .ikona-cigareta,
-.pecat-nakup.ne .ikona-poldeci {
+.pecat-nakup.ne .ikona-poldeci,
+.pecat-nakup.ne .ikona-karty {
   color: var(--slaby);
   fill: var(--slaby);
+}
+
+.pecat-nakup.ne .ikona-karty .ilustracia {
+  fill: var(--pozadie);
 }
 
 .pecat-nakup.ne .ikona-srotu {

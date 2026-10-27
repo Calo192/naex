@@ -58,6 +58,17 @@ export function IkonaCigareta({ zakaz = false }: { readonly zakaz?: boolean }) {
   );
 }
 
+/** Karta, ktorú hráč dostane (fajčenie: cigarety → karta). */
+export function IkonaKarty({ zakaz = false }: { readonly zakaz?: boolean }) {
+  return (
+    <svg className={`ikona-karty${zakaz ? " zakaz" : ""}`} viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="5" y="2.5" width="14" height="19" rx="2.2" />
+      <rect className="ilustracia" x="7.3" y="4.8" width="9.4" height="8.4" rx="0.8" />
+      {zakaz && <path className="preskrt" d="M3 22L21 2" />}
+    </svg>
+  );
+}
+
 /** Cena v cigaretách: „−2“ a malá cigareta. */
 export function CenaCigariet({ n, znamienko = "−" }: { readonly n: number; readonly znamienko?: "−" | "+" }) {
   return (
