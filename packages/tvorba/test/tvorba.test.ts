@@ -60,7 +60,8 @@ describe("tvorba — varianty a zverejnenie", () => {
     const json = doCardsJson(navrhy, "test");
     const data = loadGameData(json, eldersJson, scorecardsJson);
     expect(data.cards.size).toBe(navrhy.length);
-    expect(data.cards.get("zahradkar")?.triggers).toEqual(["Exekúcia"]);
+    // v7: Záhradkár má spúšťač Bitka (prah Exekútora +2), Exekúcia zanikla.
+    expect(data.cards.get("zahradkar")?.triggers).toEqual(["Bitka"]);
   });
 
   it("obmedzenie pozícií filtruje rozloženia", () => {

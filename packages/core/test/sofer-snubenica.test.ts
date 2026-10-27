@@ -5,7 +5,8 @@
 // Karty sú vo zverejnenej sade v11 (cards.json).
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
@@ -24,8 +25,8 @@ function sloty(strany: GameState["strany"], karta: PlacedCard) {
   return [...(ev?.left ?? []), ...(ev?.right ?? [])].filter((x) => x !== null);
 }
 
-describe("Šofér", () => {
-  it("NA EX na kartu vedľa Šoféra nezdvojí jej neaktívne akcie, aktívne zruší", () => {
+describe("Šofér (v7: NA EX susedov už nemení — efekt je Bitka, test v7-karty)", () => {
+  it("NA EX na kartu vedľa Šoféra zdvojí jej neaktívne akcie ako inde", () => {
     const pijan = lezi("pijan", 0, 1);
     const bez = sloty([[pijan], []], pijan);
     // Osamotený Pijan: všetky akcie neaktívne, NA EX ich zdvojí.
@@ -33,18 +34,7 @@ describe("Šofér", () => {
 
     const sofer = lezi("sofer", 0);
     const vedla = sloty([[pijan, sofer], []], pijan);
-    expect(vedla.some((x) => x.nasobok > 0)).toBe(false);
-    // Spárované so Šoférom boli aktívne — NA EX ich zrušil; ostatné ostali neaktívne.
-    expect(vedla.some((x) => x.stav === "zrusena")).toBe(true);
-    expect(vedla.some((x) => x.stav === "neaktivna")).toBe(true);
-  });
-
-  it("platí aj pre súperovu kartu a cez hranicu majiteľov; vzdialenej karte nevadí", () => {
-    const blizko = lezi("pijan", 1, 0);
-    const daleko = lezi("pijan", 1, 0);
-    const strany: GameState["strany"] = [[], [lezi("sofer", 0), blizko, lezi("hasic", 1), daleko]];
-    expect(sloty(strany, blizko).some((x) => x.nasobok === 2)).toBe(false);
-    expect(sloty(strany, daleko).some((x) => x.nasobok === 2)).toBe(true);
+    expect(vedla.some((x) => x.nasobok === 2)).toBe(true);
   });
 
   it("NA EX na samotného Šoféra zdvojuje normálne", () => {

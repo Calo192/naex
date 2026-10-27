@@ -4,7 +4,8 @@
 // Očakávané hodnoty sú z textu pravidiel, nie z toho, čo kód vráti.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardDef, CardInstance, Command, Event, GameData, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState } from "../src/index.ts";
@@ -287,7 +288,7 @@ describe("§7 NA EX na kartu pri lokalite a §16 NA EX na Veterána", () => {
 // --- §7 Pitka — vyhodnotenie --------------------------------------------------------
 
 describe("§7 Pitka — poradie vyhodnotenia", () => {
-  it("§8: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok sa po Pitke vynuluje", () => {
+  it("§8: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok ostáva na účte (D6, v7)", () => {
     const vonk: Layout4 = ["Dlh", "Dlh", "Dlh", null];
     const vnut: Layout4 = ["Dlh", "Dlh", "Rana", null];
     const o = makeDef("r_dlh_o", EMPTY, vonk);
@@ -299,7 +300,7 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     const { state, events } = dopiPitku(sada, s);
     expect(vysledokPitky(events).dlhy).toEqual([2, 0]);
     expect(state.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(2);
-    expect(state.hraci[0].zadlzenie).toBe(0);
+    expect(state.hraci[0].zadlzenie).toBe(1);
   });
 
   it("§10 Fajčiar (v5): v Pitke cigarety navyše nedáva — dáva ich po šenku", () => {

@@ -3,7 +3,8 @@
 // a efekty kariet, ktoré boli MANUAL. Draft testuje draft.test.ts.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type {
@@ -246,7 +247,8 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     const s0 = setupSBalickom(sada2, 22);
     const d = instanceFor(sada2, "dievcina_na_vydaj", EMPTY, ["Rana", null, null, null]);
     const n = instanceFor(sada2, "sused", ["Rana", null, null, null], EMPTY);
-    const dlhy = [inst("dlh"), inst("dlh"), inst("dlh")];
+    // v7 (D4): veno až od 4 priznaných Dlhov.
+    const dlhy = [inst("dlh"), inst("dlh"), inst("dlh"), inst("dlh")];
     // Hráč 1 je natočený opačne — dáme Dievčinu hráčovi 0 na stranu 1 (bez otočenia).
     const hraci = [{ ...s0.hraci[0], priznane: dlhy }, s0.hraci[1]] as GameState["hraci"];
     let s: GameState = {
@@ -261,7 +263,7 @@ describe("Benzínka, Dievčina na vydaj a Krčmárka pri bitke", () => {
     }
     s = dohrajBitku(sada2, s);
     // 1 aktívna akcia → 1 Dlh; Exekútor mimo ohrozenia už nepáli (Michal 2026-10-22).
-    expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(2);
+    expect(s.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(3);
     const vsetky = [...s.hraci[0].odhadzovaci, ...s.hraci[0].doberaci, ...s.hraci[0].ruka].map((x) => x.uid);
     expect(vsetky).not.toContain(d.uid);
     expect(vsetky).toContain(n.uid);
@@ -340,10 +342,10 @@ describe("efekty v línii", () => {
     expect(evaluateLine(sd, linia("zamocnik", "nastroj")).sums[0].Rana).toBe(1 + 2);
   });
 
-  it("Šarlatán: Viera v jeho okolí platí ako Vízia", () => {
+  it("Šarlatán (v7): Viera v jeho okolí už nie je Vízia (efekt je pečeň ako Viera, test v7-pakt)", () => {
     const sums = evaluateLine(sd, linia("sarlatan", "veriaca")).sums[0];
-    expect(sums.Viera).toBe(1);
-    expect(sums.Vízia).toBe(1);
+    expect(sums.Viera).toBe(2);
+    expect(sums.Vízia).toBeUndefined();
   });
 
   it("Pijan: žena v okolí s aktívnym Poldeci mu dá ranu do vlastnej partie", () => {

@@ -4,7 +4,8 @@
 // blok „z Pitiek kola“ so súčtom Pitiek. NA EX sa ráta majiteľovi karty.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, Event, GameState, PlacedCard, PlayerId, RekapitulaciaPitky } from "../src/index.ts";
@@ -87,12 +88,15 @@ describe("rekapitulácia Pitky", () => {
             expect(r.pecen.cirhozy[p]).toBe(Math.floor(pecenPitky(r, p) / r.pecen.prah[p]));
             if (r.pecen.cirhozy[p] > 0) sCirhozou++;
           }
-          // Zvyšok pod prahom, ktorý motor po Pitke vynuluje (log dokonciPitku).
+          // Zvyšok pečene pod prahom motor po Pitke vynuluje (log dokonciPitku); zadĺženie
+          // od v7 ostáva na účte (D6) — v rekapitulácii je ako zvyšok.
           for (const p of [0, 1] as const) {
             const riadok = z.events.find((x) => x.type === "log" && x.text.startsWith(`Hráč ${p + 1}: po Pitke sa pečeň`));
-            const m = riadok?.type === "log" ? /pečeň \((\d+)\) a zadĺženie \((\d+)\)/.exec(riadok.text) : null;
+            const m = riadok?.type === "log" ? /pečeň \((\d+)\)/.exec(riadok.text) : null;
             expect(Number(m?.[1] ?? 0)).toBe(pecenPitky(r, p) - r.pecen.cirhozy[p] * r.pecen.prah[p]);
-            expect(Number(m?.[2] ?? 0)).toBe(zadlzeniePitky(r, p) - r.zadlzenie.dlhy[p] * r.zadlzenie.prah);
+            const ucet = z.events.find((x) => x.type === "log" && x.text.startsWith(`Hráč ${p + 1}: zadĺženie `));
+            const u = ucet?.type === "log" ? /zadĺženie (\d+) ostáva/.exec(ucet.text) : null;
+            expect(Number(u?.[1] ?? 0)).toBe(zadlzeniePitky(r, p) - r.zadlzenie.dlhy[p] * r.zadlzenie.prah);
           }
           // Až po otočení Záverečných — inak by prezradila súperovu kartu lícom dole.
           expect(z.po.strany.flat().some((pl) => pl.zaverecna === true)).toBe(false);

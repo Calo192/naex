@@ -144,17 +144,16 @@ function zhrom(s: GameState): GameState {
 }
 
 describe("pravidlá v2 a nová tlačová sada", () => {
-  it("Robota je akcia a Záhradkár má spúšťač Exekúcia", () => {
+  it("Robota je akcia a Záhradkár má spúšťač Bitka (v7)", () => {
     expect(data.cards.get("autobusar")?.right.actions.Robota).toBe(1);
-    expect(data.cards.get("zahradkar")?.triggers).toContain("Exekúcia");
+    expect(data.cards.get("zahradkar")?.triggers).toEqual(["Bitka"]);
   });
 
-  it("v6: Záhradkára smie hráč pri exekúcii zahodiť namiesto špakov — hľadá sa v ruke aj v balíčkoch", () => {
+  it("v7: Záhradkár sa pri exekúcii už nezahadzuje — zvyšuje prah (exekutorLokality)", () => {
     const s = fakeState({});
     const ja = s.hraci[0];
     const so = { ...s, hraci: [{ ...ja, ruka: [inst("zahradkar")] }, s.hraci[1]] as unknown as GameState["hraci"] };
-    expect(zahradkarHraca(so, 0)).toBe("ruka");
-    expect(zahradkarHraca(so, 1)).toBeNull();
+    expect(zahradkarHraca(so, 0)).toBeNull();
   });
 
   it("pes sa nesmie vyložiť do partie s iným zvieraťom (a naopak)", () => {

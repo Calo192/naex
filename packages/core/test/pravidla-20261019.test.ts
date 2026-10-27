@@ -4,7 +4,8 @@
 // Veľmi smútiaca vdova a Vychovávateľka.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardDef, CardInstance, Command, GameData, GameState, PlacedCard, PlayerId } from "../src/index.ts";
@@ -216,8 +217,8 @@ function vZhromazdeniHrac0(seed: number, h: Partial<GameState["hraci"][0]>): Gam
   );
 }
 
-describe("Milujúca manželka: Absťák aj pri rovnakom počte nerestí", () => {
-  it("s priznanou Manželkou dostane Absťák pri rovnosti, bez nej nie", () => {
+describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
+  it("s priznanou Manželkou ani bez nej Absťák pri rovnosti nerestí nedostane", () => {
     const zaklad = (manzelky: number): GameState =>
       predKoncomBitky(44, (st) =>
         sHracom(st, 0, {
@@ -231,18 +232,17 @@ describe("Milujúca manželka: Absťák aj pri rovnakom počte nerestí", () => 
     const abstaky = (st: GameState): number => st.hraci[0].priznane.filter((k) => k.defId === "abstak").length;
     expect(abstaky(apply(data, zaklad(0), { type: "skipPohreb" }, 0).state)).toBe(0);
     const s1 = apply(data, zaklad(1), { type: "skipPohreb" }, 0).state;
-    expect(abstaky(s1)).toBe(1);
-    // Aj Absťák je kliatba — za jeho priznanie si hráč dobral kartu (+ 2 po bitke).
-    expect(s1.hraci[0].ruka).toHaveLength(zaklad(1).hraci[0].ruka.length + 1 + KONSTANTY.KARTY_PO_BITKE);
+    expect(abstaky(s1)).toBe(0);
+    expect(s1.hraci[0].ruka).toHaveLength(zaklad(1).hraci[0].ruka.length + KONSTANTY.KARTY_PO_BITKE);
   });
 
-  it("platí aj v línii a sčítava sa: dve Manželky = Absťák aj pri o 1 viac nerestiach", () => {
+  it("ani v línii: dve Manželky pri o 1 viac nerestiach Absťák nedajú", () => {
     const s = predKoncomBitky(45, (st) => ({
       ...sHracom(st, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: 3, priznane: [inst("milujuca_manzelka")] }),
       strany: [[{ card: inst("milujuca_manzelka"), playedBy: 0 }], []],
     }));
     const po = apply(data, s, { type: "skipPohreb" }, 0).state;
-    expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
+    expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(0);
   });
 });
 

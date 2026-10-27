@@ -5,7 +5,8 @@
 // a musí ich udržať do konca nasledujúceho kola (PRAVIDLA §1).
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, Command, GameState, PlayerId, PlayerState } from "../src/index.ts";
@@ -117,8 +118,9 @@ describe("ohlásené vydesenie sa ruší hneď (Michal 2026-10-26)", () => {
 
   it("§1: po žiadnom ťahu nevisí ohlásenie hráča, ktorý nemá vydesenú polovicu starších (náhodné partie)", () => {
     let ohlasenych = 0;
-    // 294 a 69: ohlásenie v náhodnej partii pravidiel v6.1 (294) a s dobratím 1 karty po bitke (69, 2026-10-27).
-    for (const seed of [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 294, 69]) {
+    // 294 a 69: ohlásenie v náhodnej partii pravidiel v6.1 (294) a s dobratím 1 karty po bitke (69, 2026-10-27);
+    // 130: pravidlá v7 (prah Exekútora 7, D6).
+    for (const seed of [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 294, 69, 130]) {
       let state: GameState = setupGame(data, seed);
       let rng = rngSeed(seed ^ 0x1d);
       for (let i = 0; state.koniec === null && i < 20000; i++) {

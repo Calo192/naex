@@ -3143,6 +3143,7 @@ function cmdRefill(s: MutState, data: GameData, p: PlayerId, events: Event[]): v
     hrac(s, p).poldeciVypite -= 1;
     hrac(s, p).poldeciPlne += 1;
     events.push({ type: "log", text: `Kar: hráč ${p + 1} si dolieva zadarmo — pečeň +1.` });
+    pitieVPitke(s, p, 1);
     pridajPecen(s, data, p, 1, events);
     return;
   }
@@ -3455,6 +3456,11 @@ function cmdDohadzovacka(s: MutState, data: GameData, cmd: { elderA: string; eld
   dokonciPoVolbe(s, data, volba, events);
 }
 
+/** Pečeň z pitia počas Pitky (Kar, Oslávenec) — rekapitulácia ju ráta ako pitie zo Zhromaždenia. */
+function pitieVPitke(s: MutState, p: PlayerId, n: number): void {
+  if (s.zaciatokPitky != null) s.zaciatokPitky.pecen[p] += n;
+}
+
 /** Karty s Kšeftom v línii (lokality majú vlastné id nižšie). */
 const KSEFTY_KARIET: readonly string[] = ["kapybara", "stryko_z_ameriky", "oslavenec", "smetiarka"];
 const KSEFTY_LOKALIT: readonly string[] = ["jednota", "sklad", "predsedova_vila"];
@@ -3549,6 +3555,7 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       h.poldeciPlne -= 1;
       h.poldeciVypite += 1;
       events.push({ type: "log", text: `Oslávenec: hráč ${p + 1} nalieva hráčovi ${opp + 1} — ten dostáva ${OSLAVENEC_PECEN} poškodenia pečene.` });
+      pitieVPitke(s, opp, OSLAVENEC_PECEN);
       pridajPecen(s, data, opp, OSLAVENEC_PECEN, events);
       break;
     case "smetiarka": {
@@ -3657,10 +3664,12 @@ export function paleneDlhyVBitke(
   data: GameData,
   s: VerejnyStav & { readonly lokalitaOtocena: boolean },
   vyhodnotenie: LineEval = evaluateLine(data, lineState(s)),
+  /** Dlhy, ktoré do bitky ešte pribudnú (náhľad) — rátajú sa k podmienke Dievčiny. */
+  dlhyNavyse: readonly [number, number] = [0, 0],
 ): readonly [number, number] {
   const pre = (p: PlayerId): number => {
     let n = robotaPali(s, vyhodnotenie.sums[p]);
-    const vena = s.hraci[p].priznane.filter((k) => k.defId === "dlh").length >= DIEVCINA_DLHY;
+    const vena = s.hraci[p].priznane.filter((k) => k.defId === "dlh").length + dlhyNavyse[p] >= DIEVCINA_DLHY;
     for (const placed of partiaHraca(s, p)) {
       if (!vena || placed.card.defId !== "dievcina_na_vydaj" || efektPotlaceny(data, s, p, "dievcina_na_vydaj")) continue;
       n += aktivneAkcieKarty(vyhodnotenie, placed.card.uid);

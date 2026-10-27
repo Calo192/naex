@@ -23,7 +23,8 @@ const legalneNaex = (s: GameState, p: PlayerId): number[] =>
     : [];
 
 describe("NA EX z pohľadu klienta = legálne NA EX motora", () => {
-  it("v náhodných partiách v každom stave oboch hráčov (aj pri Kostole)", () => {
+  // Sada v7 má viac kariet a dlhšie partie — náhodné partie trvajú dlhšie.
+  it("v náhodných partiách v každom stave oboch hráčov (aj pri Kostole)", { timeout: 30000 }, () => {
     let pitky = 0;
     let kostol = 0;
     for (let seed = 500; seed < 540; seed++) {

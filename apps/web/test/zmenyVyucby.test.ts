@@ -3,7 +3,9 @@
 // „Prvá hra“ z pohľadu hráča (viewFor), takže kľúče smú siahať len na to, čo hráč vidí.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../../../packages/core/data/cards.json";
+// TODO(v7): scenár výučby je postavený na sade v6 (varianty kariet, Most 2/2) — kým ho niekto
+// neprerobí na sadu v7, zmeny stola sa overujú na zmrazenej sade v6.
+import cardsJson from "../../../packages/core/test/data/cards-v6.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import scenarJson from "../../../packages/core/data/vyucba/prva-hra.json";

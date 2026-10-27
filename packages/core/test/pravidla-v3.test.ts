@@ -3,7 +3,8 @@
 // test v naex-ochrana.test.ts).
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
@@ -143,13 +144,13 @@ describe("Pečeň a zadĺženie len počas Pitky (Michal 2026-10-16)", () => {
     expect(p.hraci[0].pecen).toBe(0);
   });
 
-  it("po Pitke sa zvyšok pečene a zadĺženia pod prahom vynuluje", () => {
+  it("po Pitke sa zvyšok pečene pod prahom vynuluje, zadĺženie ostáva na účte (D6, v7)", () => {
     let s = vPitke([[], []]);
     s = { ...s, hraci: [{ ...s.hraci[0], pecen: 2, zadlzenie: 1 }, { ...s.hraci[1], pecen: 1 }] } as GameState;
     const pred = [cirhozy(s, 0), cirhozy(s, 1)];
     s = dohrajPitku(s);
     expect(s.faza).not.toBe("pitka");
-    expect([s.hraci[0].pecen, s.hraci[0].zadlzenie, s.hraci[1].pecen, s.hraci[1].zadlzenie]).toEqual([0, 0, 0, 0]);
+    expect([s.hraci[0].pecen, s.hraci[0].zadlzenie, s.hraci[1].pecen, s.hraci[1].zadlzenie]).toEqual([0, 1, 0, 0]);
     expect([cirhozy(s, 0), cirhozy(s, 1)]).toEqual(pred);
   });
 });

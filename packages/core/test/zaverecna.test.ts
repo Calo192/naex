@@ -5,7 +5,8 @@
 // a odložené efekty, ktoré by ju prezradili (Svokra).
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";

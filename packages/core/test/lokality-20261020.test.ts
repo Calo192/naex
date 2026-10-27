@@ -3,7 +3,8 @@
 // testy im dajú syntetickú kartu s tým istým id; efekty idú podľa id.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardDef, CardInstance, GameData, GameState, PitkaStav, PlacedCard, PlayerId } from "../src/index.ts";
@@ -177,8 +178,8 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(naexZaPitku(vKole("krcma"))).toBe(1);
   });
 
-  it("Jednota: stokársky barter o 1 cigaretu lacnejší", () => {
-    expect(barterCena(data, vKole("jednota"), 0)).toBe(barterCena(data, vKole("krcma"), 0) - 1);
+  it("Jednota (v7): barter už nezlacní — má Kšeft (test v7-karty)", () => {
+    expect(barterCena(data, vKole("jednota"), 0)).toBe(barterCena(data, vKole("krcma"), 0));
   });
 
   it("Obecný úrad (v7): Robota odhodí 2 Dlhy, prah Exekútora už nemení", () => {
@@ -211,16 +212,16 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
 // --- Bitka --------------------------------------------------------------------
 
 describe("Lesná cesta a Ihrisko: tuhé za karty na stranách", () => {
-  it("Lesná cesta: +1 za každú svoju kartu na súperovej strane, najviac 2; Nástroj sa neráta", () => {
+  it("Lesná cesta (v7): +1 za každé svoje Zviera v súperovom kraji, bez stropu; Občan a Nástroj sa nerátajú", () => {
     const s = vKole("lesna_cesta");
-    const jedna: GameState = { ...s, strany: [[], [na(inst("pijan"), 0), na(inst("puska"), 0)]] };
+    const jedna: GameState = { ...s, strany: [[], [na(inst("pijan"), 0), na(inst("pes"), 0), na(inst("puska"), 0)]] };
     expect(bitkaMody(data, jedna, 0).tuheBonus).toBe(1);
-    const tri: GameState = { ...s, strany: [[], [na(inst("pijan"), 0), na(inst("ministrant"), 0), na(inst("pijan"), 0)]] };
-    expect(bitkaMody(data, tri, 0).tuheBonus).toBe(KONSTANTY.EFEKT.LESNA_CESTA_MAX);
+    const tri: GameState = { ...s, strany: [[], [na(inst("pes"), 0), na(inst("cierna_macka"), 0), na(inst("pes"), 0)]] };
+    expect(bitkaMody(data, tri, 0).tuheBonus).toBe(3);
     expect(bitkaMody(data, tri, 1).tuheBonus).toBe(0);
     // Rozpis pre panel bitky menuje zdroj bonusu a zrážku za Absťáky v ruke.
     const [r0] = rozpisPoskodenia(data, tri, [{}, {}], [1, 0]);
-    expect(r0.bonusy).toContainEqual({ zdroj: "lesna_cesta", hodnota: KONSTANTY.EFEKT.LESNA_CESTA_MAX });
+    expect(r0.bonusy).toContainEqual({ zdroj: "lesna_cesta", hodnota: 3 });
     expect(r0.zrazky).toContainEqual({ zdroj: "abstak", hodnota: 1 });
   });
 
