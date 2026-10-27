@@ -1,10 +1,11 @@
 {
- "source": "sada v7 — revízia sady a efekty (Michal 2026-10-27), tools/sada-v7/generuj.ts zo sloty.json a plan.md 14.0; len vetvy v7",
+ "source": "sada v26 živého webu (tvorca kariet 2026-10-27T17:06:51.376Z) bez Presbitera — ten je podľa sady v7 mimo sady (tools/sada-v7/generuj.ts MIMO_SADY), na živom webe ostal, lebo dorovnanie karty nemaže",
  "actions": [
   "Cigareta",
   "Dlh",
   "Obmedzenie",
   "Odpor",
+  "Pakt",
   "Pecka",
   "Petelica",
   "Pohoršenie",
@@ -15,8 +16,7 @@
   "Rana",
   "Robota",
   "Viera",
-  "Vízia",
-  "Pakt"
+  "Vízia"
  ],
  "tags": [
   "Autorita",
@@ -549,8 +549,8 @@
      3
     ],
     "actions": {
-     "Poldeci": 1,
-     "Cigareta": 1
+     "Cigareta": 1,
+     "Poldeci": 1
     },
     "allowed": {
      "1": [
@@ -790,8 +790,8 @@
     ],
     "actions": {
      "Cigareta": 1,
-     "Vízia": 1,
-     "PoškodeniePečene": 1
+     "PoškodeniePečene": 1,
+     "Vízia": 1
     },
     "allowed": {
      "3": [
@@ -1035,8 +1035,8 @@
     ],
     "actions": {
      "Poldeci": 1,
-     "Viera": 1,
-     "PoškodeniePečene": 1
+     "PoškodeniePečene": 1,
+     "Viera": 1
     },
     "allowed": {
      "0": [
@@ -1485,8 +1485,8 @@
     "actions": {
      "Dlh": 1,
      "Odpor": 1,
-     "Robota": 1,
-     "Pakt": 1
+     "Pakt": 1,
+     "Robota": 1
     },
     "allowed": {
      "0": [
@@ -1583,8 +1583,8 @@
      2
     ],
     "actions": {
-     "Robota": 1,
-     "Petelica": 1
+     "Petelica": 1,
+     "Robota": 1
     },
     "allowed": {
      "1": [
@@ -1741,8 +1741,8 @@
      3
     ],
     "actions": {
-     "Petelica": 1,
-     "Dlh": 1
+     "Dlh": 1,
+     "Petelica": 1
     },
     "allowed": {
      "0": [
@@ -1878,8 +1878,8 @@
     ],
     "actions": {
      "Cigareta": 1,
-     "PoškodeniePečene": 1,
-     "Pecka": 1
+     "Pecka": 1,
+     "PoškodeniePečene": 1
     },
     "allowed": {
      "3": [
@@ -2257,9 +2257,9 @@
      0
     ],
     "actions": {
+     "Obmedzenie": 1,
      "Robota": 1,
-     "Viera": 1,
-     "Obmedzenie": 1
+     "Viera": 1
     },
     "allowed": {
      "1": [
@@ -2279,8 +2279,8 @@
      3
     ],
     "actions": {
-     "Pecka": 1,
      "Dlh": 1,
+     "Pecka": 1,
      "Povera": 1
     },
     "allowed": {
@@ -2388,8 +2388,8 @@
      3
     ],
     "actions": {
-     "Pecka": 1,
      "Cigareta": 1,
+     "Pecka": 1,
      "Viera": 1
     },
     "allowed": {
@@ -2427,9 +2427,9 @@
      3
     ],
     "actions": {
-     "PoškodeniePečene": 1,
      "Poldeci": 1,
-     "Posilnenie": 1
+     "Posilnenie": 1,
+     "PoškodeniePečene": 1
     },
     "allowed": {
      "0": [
@@ -2449,9 +2449,9 @@
      3
     ],
     "actions": {
-     "Rana": 1,
+     "Cigareta": 1,
      "Pecka": 1,
-     "Cigareta": 1
+     "Rana": 1
     },
     "allowed": {
      "0": [
@@ -2488,9 +2488,9 @@
      2
     ],
     "actions": {
-     "Robota": 1,
      "Poldeci": 1,
-     "Rana": 1
+     "Rana": 1,
+     "Robota": 1
     },
     "allowed": {
      "0": [
@@ -2511,8 +2511,8 @@
     ],
     "actions": {
      "Obmedzenie": 1,
-     "Pohoršenie": 1,
-     "Odpor": 1
+     "Odpor": 1,
+     "Pohoršenie": 1
     },
     "allowed": {
      "0": [
@@ -2675,8 +2675,8 @@
      3
     ],
     "actions": {
-     "Viera": 1,
-     "Povera": 1
+     "Povera": 1,
+     "Viera": 1
     },
     "allowed": {
      "1": [
@@ -2975,8 +2975,8 @@
      3
     ],
     "actions": {
-     "PoškodeniePečene": 1,
-     "Poldeci": 1
+     "Poldeci": 1,
+     "PoškodeniePečene": 1
     }
    },
    "right": {
@@ -2985,8 +2985,8 @@
      2
     ],
     "actions": {
-     "Rana": 1,
-     "Dlh": 1
+     "Dlh": 1,
+     "Rana": 1
     }
    },
    "permutations": {
@@ -3024,8 +3024,8 @@
      2
     ],
     "actions": {
-     "Pohoršenie": 1,
-     "Dlh": 1
+     "Dlh": 1,
+     "Pohoršenie": 1
     }
    },
    "permutations": {
@@ -3053,8 +3053,8 @@
      2
     ],
     "actions": {
-     "Viera": 1,
-     "Pakt": 1
+     "Pakt": 1,
+     "Viera": 1
     }
    },
    "right": {
@@ -3063,8 +3063,8 @@
      3
     ],
     "actions": {
-     "Posilnenie": 1,
-     "Dlh": 1
+     "Dlh": 1,
+     "Posilnenie": 1
     }
    },
    "permutations": {
@@ -3140,8 +3140,8 @@
      1
     ],
     "actions": {
-     "Vízia": 1,
-     "Poldeci": 1
+     "Poldeci": 1,
+     "Vízia": 1
     }
    },
    "permutations": {
@@ -3152,7 +3152,7 @@
   },
   {
    "id": "masiar",
-   "index": 78,
+   "index": 75,
    "name": "Mäsiar",
    "tags": [
     "Občan",
@@ -3191,7 +3191,7 @@
   },
   {
    "id": "kulturista",
-   "index": 79,
+   "index": 76,
    "name": "Kulturista",
    "tags": [
     "Občan",
@@ -3225,7 +3225,7 @@
   },
   {
    "id": "traktoristka",
-   "index": 80,
+   "index": 77,
    "name": "Traktoristka",
    "tags": [
     "Občan",
@@ -3262,7 +3262,7 @@
   },
   {
    "id": "vymahac",
-   "index": 82,
+   "index": 78,
    "name": "Vymáhač",
    "tags": [
     "Občan",
@@ -3279,8 +3279,8 @@
      3
     ],
     "actions": {
-     "Pecka": 1,
-     "Dlh": 1
+     "Dlh": 1,
+     "Pecka": 1
     }
    },
    "right": {
@@ -3289,8 +3289,8 @@
      3
     ],
     "actions": {
-     "Rana": 1,
-     "Dlh": 1
+     "Dlh": 1,
+     "Rana": 1
     }
    },
    "permutations": {
@@ -3301,7 +3301,7 @@
   },
   {
    "id": "sklad",
-   "index": 83,
+   "index": 79,
    "name": "Sklad",
    "tags": [
     "Lokalita"
@@ -3316,8 +3316,8 @@
      3
     ],
     "actions": {
-     "Robota": 1,
-     "Pecka": 1
+     "Pecka": 1,
+     "Robota": 1
     },
     "allowed": {
      "0": [
@@ -3356,7 +3356,7 @@
   },
   {
    "id": "polovnicka_chata",
-   "index": 84,
+   "index": 80,
    "name": "Poľovnícka chata",
    "tags": [
     "Lokalita"
@@ -3368,10 +3368,10 @@
    "left": {
     "blocked": [],
     "actions": {
-     "Posilnenie": 1,
-     "Petelica": 1,
      "Dlh": 1,
-     "Pecka": 1
+     "Pecka": 1,
+     "Petelica": 1,
+     "Posilnenie": 1
     },
     "allowed": {
      "0": [
@@ -3392,10 +3392,10 @@
    "right": {
     "blocked": [],
     "actions": {
-     "Rana": 1,
      "Petelica": 1,
+     "Pohoršenie": 1,
      "PoškodeniePečene": 1,
-     "Pohoršenie": 1
+     "Rana": 1
     },
     "allowed": {
      "0": [
@@ -3421,7 +3421,7 @@
   },
   {
    "id": "predsedova_vila",
-   "index": 85,
+   "index": 81,
    "name": "Predsedova vila",
    "tags": [
     "Lokalita"
@@ -3434,8 +3434,8 @@
     "blocked": [],
     "actions": {
      "Cigareta": 1,
-     "Pecka": 2,
-     "Dlh": 1
+     "Dlh": 1,
+     "Pecka": 2
     },
     "allowed": {
      "0": [
@@ -3456,9 +3456,9 @@
    "right": {
     "blocked": [],
     "actions": {
-     "Posilnenie": 1,
-     "Petelica": 1,
      "Dlh": 1,
+     "Petelica": 1,
+     "Posilnenie": 1,
      "Viera": 1
     },
     "allowed": {
@@ -3485,7 +3485,7 @@
   },
   {
    "id": "herna",
-   "index": 86,
+   "index": 82,
    "name": "Herňa",
    "tags": [
     "Lokalita"
@@ -3497,10 +3497,10 @@
    "left": {
     "blocked": [],
     "actions": {
+     "Dlh": 1,
      "Pecka": 1,
      "Petelica": 1,
-     "PoškodeniePečene": 1,
-     "Dlh": 1
+     "PoškodeniePečene": 1
     },
     "allowed": {
      "0": [
@@ -3521,10 +3521,10 @@
    "right": {
     "blocked": [],
     "actions": {
-     "Rana": 1,
+     "Dlh": 1,
      "Pecka": 1,
-     "Robota": 1,
-     "Dlh": 1
+     "Rana": 1,
+     "Robota": 1
     },
     "allowed": {
      "0": [
