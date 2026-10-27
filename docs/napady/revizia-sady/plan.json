@@ -2595,5 +2595,139 @@
   "varianty_poznamka": "Pri Áno platí plánová verzia; varianty Vymyselníka (Automat, Poradkyňa, Hromotĺk, Kulturista, Šúľač, Šarlatán so stropom, Bufetárka) odpadli.",
   "sloty": "strany vo formáte cards.json (blocked, actions, allowed); varianty = počet rozložení podľa variants.ts"
  },
- "rozpocet_poznamka": "rozhodnute_karty = kópie v hre (balíček 2× + štart) po kompletnom rozhodnutí 2026-10-27 (bez Bufetárky). Cieľ nesedí: Petelica 12/14, Pecka 20/24."
+ "rozpocet_poznamka": "rozhodnute_karty = kópie v hre (balíček 2× + štart) po kompletnom rozhodnutí 2026-10-27 (bez Bufetárky). Cieľ nesedí: Petelica 12/14, Pecka 20/24.",
+ "davka3": {
+  "datum": "2026-10-27",
+  "kto": "Vymyselník",
+  "stav": "otvorené — čaká na Michala; nič nie je rozhodnuté",
+  "zdroj": "interview Michala z playtestov 27. 10.; turnus 20261026-173610 (denníky, nezrovnalosti); report 20261027-062058",
+  "html": "docs/napady/revizia-karty.html#davka3",
+  "plan_md": "časť 11",
+  "dlhy": {
+   "michal": "Treba zariadiť, aby hráči tie Dlhy mali… možno prerábkou kariet a podobne.",
+   "doklad": [
+    "naex/playtest/20261026-173610-2/hrac1/dennik.md:125 — Kmotor (0 Dlhov) a Exekútor (ja 0 Dlhov) sú mŕtve (aj :199, :202)",
+    "naex/playtest/20261026-173610-1/hrac1/dennik.md:91 — Kmotor 3 mne (bezcenné bez Dlhov)",
+    "logy partií: 0–3 Dlhy na hráča za partiu (P1 2:1, P2 0:3, P3 0:2); Dievčina ich v K1 pálila (…-1/hrac1/dennik.md:84, …-2/hrac1/dennik.md:130)",
+    "docs/playtesty/20261027-062058.html:397, :936 — najviac 5 Dlhov, Exekútor sa za 18 bitiek nespustil"
+   ],
+   "pricina": [
+    "osamelý Dlh prepadne: Dlh za každé 2 zadĺženia v jednej Pitke, zvyšok sa po Pitke vynuluje (PRAVIDLA §8 :490–495, §7 :464–465; engine.ts:3021–3029; Michal 2026-10-16)",
+    "vyhnúť sa dá: akciu zapne sused a NA EX ruší vlastné aktívne Dlhy",
+    "odtoky rastú so zdrojmi: Robota 16 → 22 kópií, Dievčina páli v K1, Stryná, Vdova, Kmotor, Záhradkár"
+   ],
+   "revizia_riesi": "asi polovicu; odhad bez simulácie z 0–5 na 3–8 Dlhov na hráča za partiu; Exekútor pri prahu 7 hlavne na objednávku; opatrnému hráčovi ostane Kmotor aj súperov Exekútor mŕtvy",
+   "zasada": "Dlh musí kupovať to, čo cigarety nekúpia, alebo byť nanútený, alebo priamy (karta Dlh, nie zadĺženie)",
+   "volby": [
+    {
+     "id": "D1",
+     "nazov": "Strýko z Ameriky: dolárová pôžička",
+     "druh": "karta (schválená, nechať) — Dlh ako cena za výhodu",
+     "znenie": "Kšeft: Za 2 cigarety udelíš súperovi 1 Ranu navyše, alebo za 1 Dlh 2 Rany navyše.",
+     "preco": "cigarety sú lacné, Dlh bolí; priamy Dlh neprepadne",
+     "riziko": "pri 3–4 Pitkách +6 až +8 tuhého; brzda prah 7, inak Dlhom len raz za kolo",
+     "kod": "Kšeft (v7) s dvoma cenami"
+    },
+    {
+     "id": "D2",
+     "nazov": "Predajca hrncov",
+     "druh": "nová karta — nanútený Dlh",
+     "tagy": ["Občan", "Kriminál", "Chlap"],
+     "archetyp": "R",
+     "akcie": "Povera, Cigareta / Rana, Dlh (blok. 0 a 3 na oboch stranách, 4 varianty)",
+     "znenie": "Nástup: Súper získa 1 Dlh.",
+     "variant": "Nástup: Súper si vyberie: získa 1 Dlh, alebo príde o 1 špak.",
+     "preco": "zdroj, ktorému sa súper nevyhne polohou ani NA EX; šmejd s hrncami na splátky",
+     "riziko": "bez variantu čistý trest; variant potrebuje rozhodnutie súpera mimo jeho ťahu",
+     "kod": "Nástup + pridajKliatbu (vzor Výherný automat, engine.ts:4150)"
+    },
+    {
+     "id": "D3",
+     "nazov": "Svokra a Degustátorka: Obmedzenie → Dlh",
+     "druh": "prerábka akcií (karty nechať)",
+     "akcie": {
+      "Svokra": "pravá Obmedzenie, Pecka, Viera → Dlh, Pecka, Viera (Dlh a Pecka na slotoch 2–3)",
+      "Degustátorka": "pravá Rana, Obmedzenie → Rana, Dlh"
+     },
+     "znenie": "efekty bez zmeny",
+     "preco": "Obmedzenie je pri nadbytku cigariet najslabšia akcia; cena vedľa útoku; Dlh 56 → 60 (cieľ plánu), Obmedzenie 18 → 14",
+     "riziko": "osamelý Dlh v Pitke prepadne, kým platí §8 (D6)",
+     "kod": "len dáta"
+    },
+    {
+     "id": "D4",
+     "nazov": "Dievčina na vydaj: veno, až keď horí",
+     "druh": "štartová karta (po ULTRA)",
+     "znenie": "Bitka: Ak máš aspoň 4 priznané Dlhy, zahoď túto kartu a spáľ toľko svojich priznaných Dlhov, koľko mala aktívnych akcií.",
+     "preco": "dnes páli prvé Dlhy u oboch hráčov v K1; takto Dlhy vyrába a zachráni až pred Exekútorom",
+     "riziko": "pod 4 Dlhmi bez efektu; prah 4 merať; nahrádza návrh „veno“",
+     "kod": "podmienka v efekte Dievčiny (engine.ts:3074, :3124–3127)"
+    },
+    {
+     "id": "D5",
+     "nazov": "Vymáhač",
+     "druh": "nová karta — Dlh ako výhoda",
+     "tagy": ["Občan", "Kriminál", "Chlap"],
+     "archetyp": "U",
+     "akcie": "Pecka, Dlh / Rana, Dlh (blok. 0 a 3 na oboch stranách, 4 varianty)",
+     "znenie": "Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.",
+     "preco": "prvá karta, pre ktorú Dlh chceš; hra tesne pod prahom 7; oživí Exekútora aj voľbu Kmotra; úderníci 8 → 9",
+     "riziko": "so Záhradkárom až +4 Rany; Herňa trestá porazeného dlžníka",
+     "kod": "bitkaMody (effects.ts:359)"
+    },
+    {
+     "id": "D6",
+     "nazov": "Čiarky na účte: zvyšok zadĺženia sa nemaže",
+     "druh": "PRAVIDLO (jadro) — jediná voľba mimo kariet",
+     "dnes": "pečeň aj zadĺženie sa po Pitke vynulujú (§7 :464–465, §8 :485–486; engine.ts:3021–3029; Michal 2026-10-16)",
+     "znenie": "Zadĺženie sa po Pitke nevynuluje. Za každé 2 zadĺženia dostaneš Dlh ako dnes, zvyšok ostáva na účte do ďalšej Pitky, aj do ďalšieho kola. Pečeň sa nuluje ďalej.",
+     "preco": "koreň problému: každá aktívna akcia Dlh je polovica Dlhu, nič neprepadne",
+     "riziko": "mení rozhodnutie zo 16. 10.; UI, náhľad Pitky (nahlady.ts:59) a bot; s D3 a D5 možno priveľa",
+     "kod": "nenulovať zadlzenie (engine.ts:3029); pridajZadlzenie (engine.ts:798) ostáva"
+    }
+   ],
+   "odporucanie": "kartami D4 + D3 + D5, k tomu D2 alebo D1; jediný zásah s najväčším účinkom je D6"
+  },
+  "milujuca_manzelka": {
+   "michal": "Kartu treba prerobiť.",
+   "problem": "Furt o Absťáku: Absťák sa ráta na konci kola po návrate kariet (§4, §8 :518), Furt platí kým je odhalená (§16 :1137), jadro ju ráta pred návratom kariet (engine.ts:4162–4163, :4212–4217); naex/playtest/20261026-173610-3/hrac2/nezrovnalosti.md:10–14 (N2), :48–53 (N9)",
+   "dnes": "Dlh, Viera / Odpor, Povera; Furt: Absťák dostaneš aj vtedy, keď máš v kole rovnako nerestí ako v predošlom.",
+   "spolocne": "akcie ostávajú; tag Kliatba navrhujem zrušiť; popis nemenuje iné karty; len okamžité spúšťače",
+   "volby": [
+    {
+     "id": "M1",
+     "nazov": "Odvedie ťa domov",
+     "znenie": "Bitka: Smieš ju zahodiť z línie (z hry). Vtedy je súperovo tuhé poškodenie proti tebe v tejto bitke o 2 menšie a po bitke dostaneš 1 Absťák.",
+     "okamih": "rozhodnutie aj účinok v bitke; Absťák po bitke ako priamy zisk; jej akcie v bitke ešte platia",
+     "riziko": "−2 tuhé otočí tesnú bitku; Absťák a strata karty sú cena",
+     "kod": "voľba v bitke (vzor Záhradkár, engine.ts:440, :3333), bitkaMody, Absťák ako engine.ts:4218"
+    },
+    {
+     "id": "M2",
+     "nazov": "Rozriedi ti pálenku",
+     "znenie": "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.",
+     "okamih": "v každej Pitke, kým leží v línii; krok 3 Pitky",
+     "riziko": "s Kohútom či 4 Pitkami −4 pečene za kolo, blízko Nealka",
+     "kod": "prirastkyPitky (engine.ts:822)"
+    },
+    {
+     "id": "M3",
+     "nazov": "Pošle mu účet",
+     "znenie": "Prehra: Súper získa 1 Dlh.",
+     "okamih": "Prehra, krok 6c po bitke",
+     "riziko": "slabá (zámer štartovky); zrýchli exekúciu vedúceho",
+     "kod": "Prehra + pridajKliatbu víťazovi (vzor engine.ts:4150)",
+     "tema1": true
+    }
+   ],
+   "odporucanie": "M3; M1, ak má ostať koncept rodiny ako záchrannej siete"
+  },
+  "otazky": {
+   "1": "Dlhy: ktoré z D1–D6? (odporúčam D4 + D3 + D5 a D2 alebo D1; D6 najväčší účinok)",
+   "2": "Predajca hrncov: Dlh bez voľby, alebo súper vyberá Dlh / −1 špak?",
+   "3": "Milujúca manželka: M1, M2, alebo M3? (odporúčam M3)",
+   "4": "Manželka bez tagu Kliatba? (odporúčam áno)"
+  },
+  "merat": "výhoda útočníka vo finále (report 20261027-062058, O3: útočník 3:0) — plan.md 7.9"
+ }
 }
