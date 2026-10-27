@@ -406,9 +406,10 @@ NA EX.
 a z karty je **Výtržník**. Karta sa najprv spáruje so susedmi s pôvodnými
 akciami (susedom aktivuje akcie ako bez zrážky), potom sa **všetky akcie na
 jej hranách** zmenia na aktívnu **Ranu** pre jej majiteľa — aj akcie bez
-partnera na spoji. NA EX jej nič neruší ani nezdvojuje. **Posilnenie Výtržníka
-je už len Rana** a suseda nezdvojuje (v6.1; ani pri Veteránovi) — sused má
-spárovanú akciu aktívnu ×1. Každý platí za svoje
+partnera na spoji. NA EX jej nič neruší ani nezdvojuje. **Posilnenie aj Odpor
+Výtržníka sú už len Rany** (v6.1, Michal 2026-10-27): suseda nezdvojujú ani
+nerušia (ani pri Veteránovi) — sused má spárovanú akciu aktívnu ×1 a Odpor
+Výtržníka nevyvolá Vzburu. Každý platí za svoje
 NA EX ako vždy: pečeň +1 tomu, kto NA EX dal, Svokra aj Výpalné za každé
 z oboch NA EX, a v bitke sa vypijú oba poldeci (§9.5). **Po bitke Výtržník
 vytriezvie** — karta má znova pôvodné akcie; Výtržníkom je len počas jednej
@@ -417,7 +418,9 @@ bitky.
 Príklad (v6.1): karta má na hrane pri susedovi Posilnenie proti jeho Pecke a vedľa
 neho Ranu bez partnera. Bez zrážky dá sused Pecku ×2. Keď je z karty Výtržník, jej
 Posilnenie aj Rana sú dve aktívne Rany pre jej majiteľa a susedova Pecka platí
-len ×1 — Posilnenie, ktoré sa zmenilo na Ranu, už nič nezdvojuje.
+len ×1 — Posilnenie, ktoré sa zmenilo na Ranu, už nič nezdvojuje. Rovnako Odpor:
+bez zrážky by susedovi Pecku zrušil, Výtržníkov Odpor je Rana pre jeho majiteľa
+a susedova Pecka platí ×1.
 
 ### Odpoveď na NA EX
 
@@ -559,7 +562,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 | 3 | Poškodenie | §9.3 |
 | 4 | Výsledok (pri remíze Absťáky, potom Dlhy, inak sekera) | §9.4 |
 | 4a | Špaky za bitku víťazovi; lokalita ide na krčmovú nástenku | §9.4, §14 |
-| 4b | Špaky za starších víťazovi, pri sekere obom; Noviny | §14 |
+| 4b | Špaky za starších a Noviny víťazovi, pri sekere obom | §14 |
 | 4c | Prebytok — posunie markery pre ďalšiu bitku; po finále a na Kultúrnom dome dá špaky | §9.4 |
 | 5 | Poldeci (aj Na zdravie „do dna“) | §9.5 |
 | 5b | Veštica | §9.5b |
@@ -1063,7 +1066,7 @@ verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je re
 |---|---|---|
 | Vyhratá bitka | odohrané Pitky kola (finále 3), mínus o koľko má víťaz viac Absťákov než porazený, **aspoň 1**; plus špaky zo sekery | krok 4a (§9.4) |
 | Starší, ktorí sa ťa boja | za každého: žltá **1**, oranžová **2**, červená **3**; sivý nikomu; aj nahradený | len **víťazovi** bitky, aj finále; pri **sekere obom**; porazený nič (v6.1; krok 4b) |
-| Noviny v Dedičstve | **+1**, keď sa ťa bojí viac starších ako súpera (počet starších) — po každej bitke, aj prehratej | krok 4b |
+| Noviny v Dedičstve | **+1**, keď sa ťa bojí viac starších ako súpera (počet starších) — ako strach len **víťazovi**, pri **sekere obom** | krok 4b |
 | Prebytok vo finále a na Kultúrnom dome | toľko, aký je prebytok (po Puške) | krok 4c |
 | Exekútor | **−** polovica priznaných Dlhov (Záhradkár ich zachráni) | krok 1 (§11) |
 | Nepriznaná Cirhóza | **−5** za kus (ruka aj oba balíčky) | na konci hry, po finále |
@@ -1165,7 +1168,7 @@ v strede).
 | Silná nezávislá žena | Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát (lokalitu, kartu staršieho ani súperove karty nezdvojí). |
 | Starosta | V Pitke raz: za 1 cigaretu vymeň kartu z ruky za kartu zo šenku. Kartu staršieho z patronátu ním vymeniť nemožno. |
 | Svätý text | Dedičstvo: hodnota majiteľovej Viery je o 1 vyššia. |
-| Noviny | Dedičstvo: po každej bitke pri špakoch za starších dostane majiteľ **1 špak navyše**, ak sa ho bojí **viac starších** ako súpera (počet starších, nie zón; v6, Michal 2026-10-26) — aj po prehratej bitke, keď mu starší nedajú nič (v6.1). |
+| Noviny | Dedičstvo: pri špakoch za starších dostane majiteľ **1 špak navyše**, ak sa ho bojí **viac starších** ako súpera (počet starších, nie zón; v6, Michal 2026-10-26) — ako strach len **po vyhratej bitke**, pri sekere aj tak (v6.1, Michal 2026-10-27). |
 | Záhradkár | Exekúcia: keď majiteľ čelí exekúcii (§11), smie Záhradkára zahodiť (z ruky, odhadzovacieho či doberacieho balíčka) namiesto špakov — Dlhy zhoria aj tak (v6, Michal 2026-10-26). |
 | Finančná poradkyňa | Dlh z jej akcií dostáva súper, nie jej majiteľ. |
 | Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov (bez stropu). |

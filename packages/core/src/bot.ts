@@ -199,7 +199,7 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   svaty_text: 0.8,
   cigorky: 0.8,
   puska: 0.6,
-  // v6: +1 špak po každej bitke, keď sa ma bojí viac starších.
+  // v6.1: +1 špak po vyhratej bitke, keď sa ma bojí viac starších.
   noviny: 0.8,
   pasca: 0.5,
   vyherny_automat: 0.4,

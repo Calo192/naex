@@ -1173,3 +1173,10 @@ Kód ich pri ďalšej stavbe dáva naspodok spoločného balíčka, ako hovorí 
 Pribudla veta, že akcia zrušená Odporom nie je ani aktívna, ani neaktívna (hra to
 tak robila). Posilnenie Výtržníka predtým susedovi ×2 dávalo („Karta sa najprv
 spáruje so susedmi s pôvodnými akciami“), teraz je už len Rana.
+
+### Doplnok v6.1b: Noviny len víťazovi, Odpor Výtržníka (Michal 2026-10-27)
+
+V prvej dávke v6.1 dávali Noviny špak po každej bitke („aj po prehratej bitke,
+keď mu starší nedajú nič“). Teraz ich špak dostane ako strach len víťaz, pri
+sekere obaja. Odpor Výtržníka predtým rušil susedovu akciu na spoji, teraz je to
+už len Rana ako Posilnenie.

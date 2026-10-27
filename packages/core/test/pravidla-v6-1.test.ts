@@ -1,6 +1,6 @@
 // Pravidlá v6.1 (Michal 2026-10-27, interview o playtestoch v6): pas platí najviac za
 // karty v ruke, akcia zrušená Odporom nie je ani aktívna, ani neaktívna (NA EX ju
-// nezdvojí), Posilnenie Výtržníka je už len Rana. Strach len víťazovi stráži
+// nezdvojí), Posilnenie aj Odpor Výtržníka sú už len Rany. Strach a Noviny len víťazovi stráži
 // spaky-v6.test.ts, cenu patronátu elders.test.ts. Očakávané hodnoty sú z textu
 // PRAVIDLA.md (§6, §7), nie z kódu.
 
@@ -109,5 +109,21 @@ describe("§7 zrážka a Posilnenie (v6.1): Posilnenie Výtržníka je už len R
   it("platí aj pre Veterána — NA EX mu Posilnenie nerušia, zrážka áno", () => {
     const { s, posil, partner } = sada("veteran");
     expect(linia(s, lezi(partner, 0), vytrznik(posil, 0)).sums[0].Pecka).toBe(1);
+  });
+
+  it("Odpor Výtržníka (v6.1b, Michal 2026-10-27): je len Rana a susedovu akciu neruší", () => {
+    const ODPOR: Layout4 = ["Odpor", null, null, null];
+    const t = syntheticData([makeDef("odporca", EMPTY, ODPOR, { tags: ["Občan"] }), makeDef("partner", PARTNER_L, EMPTY, { tags: ["Občan"] })]);
+    const o = instanceFor(t, "odporca", EMPTY, ODPOR);
+    const p = instanceFor(t, "partner", PARTNER_L, EMPTY);
+    // Bez zrážky Odpor susedovu Pecku zruší.
+    const bez = linia(t, lezi(p, 0), lezi(o, 0));
+    expect(bez.sums[0].Pecka ?? 0).toBe(0);
+    expect(bez.cards.get(p.uid)?.left[0]).toMatchObject({ stav: "zrusena" });
+    // Po zrážke: Pecka suseda platí ×1, Odpor je Rana pre majiteľa Výtržníka.
+    const ev = linia(t, lezi(p, 0), vytrznik(o, 0));
+    expect(ev.cards.get(p.uid)?.left[0]).toMatchObject({ stav: "aktivna", nasobok: 1 });
+    expect(ev.sums[0].Pecka).toBe(1);
+    expect(ev.sums[0].Rana).toBe(1);
   });
 });

@@ -3957,8 +3957,8 @@ export function pocetBojacichSa(starsi: readonly ElderState[], p: PlayerId): num
  *  - víťaz dostane odohrané Pitky mínus rozdiel Absťákov (aspoň 1) a špaky zo
  *    sekery; pri sekere čakajú špaky kola na víťaza ďalšej bitky, vo finále prepadnú,
  *  - potom za starších, ktorí sa hráča boja (žltá 1, oranžová 2, červená 3): len
- *    víťaz, pri sekere obaja (v6.1); Noviny v Dedičstve +1, keď sa hráča bojí viac
- *    starších ako súpera.
+ *    víťaz, pri sekere obaja (v6.1); rovnako Noviny v Dedičstve +1, keď sa hráča
+ *    bojí viac starších ako súpera.
  * Lokalita ide s výsledkom na nástenku.
  */
 function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstaky: readonly [number, number], events: Event[]): void {
@@ -3993,11 +3993,12 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
     events.push({ type: "log", text: `Sekera: remíza v tuhom, v Absťákoch aj v Dlhoch — ${spakov(pitky)} ide na sekeru (spolu ${s.spakyNaSekere}), vezme ich víťaz ďalšej bitky.` });
   }
   // v6.1 (Michal 2026-10-27, playtesty v6): strach platí len víťazovi — porazený za
-  // starších nedostane nič, aby náskok nerástol ako snehová guľa. Noviny sú efekt karty
-  // („po bitke“), víťazstvo nepodmieňujú.
+  // starších nedostane nič, aby náskok nerástol ako snehová guľa. Noviny rovnako
+  // (Michal 2026-10-27): len víťazovi, pri sekere obom.
   const zaStarsich: [number, number] = [0, 0];
-  for (const p of spakyZaStarsichPre(vitaz)) zaStarsich[p] = spakyZaStarsich(s.starsi, p);
-  for (const p of [0, 1] as const) {
+  const komu = spakyZaStarsichPre(vitaz);
+  for (const p of komu) zaStarsich[p] = spakyZaStarsich(s.starsi, p);
+  for (const p of komu) {
     if (vDedicstve(s as GameState, p, "noviny") && pocetBojacichSa(s.starsi as ElderState[], p) > pocetBojacichSa(s.starsi as ElderState[], opponentOf(p))) {
       zaStarsich[p] += 1;
       events.push({ type: "log", text: `Noviny: hráča ${p + 1} sa bojí viac starších ako súpera — špak navyše.` });

@@ -404,7 +404,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p className="zvyraznene">
           <strong>Zrážka:</strong> ak ste obaja vybrali tú istú kartu, je z nej <P k="vytrznik">Výtržník</P>. So susedmi sa
           najprv spáruje ako obvykle, potom sa <strong>všetky jej akcie zmenia na Rany</strong> pre jej majiteľa — aj tie bez
-          partnera. Aj jej Posilnenie je už len Rana a suseda nezdvojuje. Každý platí za svoje NA EX (pečeň, poldeci, Svokra, Výpalné). Po bitke Výtržník vytriezvie a karta má
+          partnera. Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí za svoje NA EX (pečeň, poldeci, Svokra, Výpalné). Po bitke Výtržník vytriezvie a karta má
           znova pôvodné akcie.
         </p>
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
@@ -550,8 +550,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Špaky za bitku</strong> — víťaz dostane špaky za odohrané Pitky; lokalita ide na nástenku.
           </li>
           <li>
-            <strong>Špaky za starších</strong> — víťaz dostane špaky za starších, ktorí sa ho boja; porazený nič, pri sekere obaja
-            (Noviny v Dedičstve dajú svoj špak po každej bitke).
+            <strong>Špaky za starších</strong> — víťaz dostane špaky za starších, ktorí sa ho boja (aj Noviny v Dedičstve); porazený
+            nič, pri sekere obaja.
           </li>
           <li>
             <strong>Prebytok</strong> — hráč s vyšším celkovým poškodením posunie markery starších; prejaví sa až v ďalšej
@@ -909,7 +909,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tbody>
             <tr><td>Vyhratá bitka</td><td>toľko, koľko Pitiek sa v kole odohralo (finále 3); ak má víťaz viac Absťákov ako porazený, o rozdiel menej, ale aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Starší, ktorí sa ťa boja</td><td>po vyhratej bitke (aj finále) za každého: žltá 1, oranžová 2, červená 3; sivý nikomu; porazený nič, pri sekere obaja</td></tr>
-            <tr><td>Noviny v Dedičstve</td><td>po bitke (aj prehratej) +1, keď sa ťa bojí viac starších ako súpera</td></tr>
+            <tr><td>Noviny v Dedičstve</td><td>po vyhratej bitke (pri sekere obom) +1, keď sa ťa bojí viac starších ako súpera</td></tr>
             <tr><td>Prebytok po finále a v bitke o Kultúrny dom</td><td>toľko, aký je prebytok</td></tr>
             <tr><td>Exekútor</td><td>mínus polovica priznaných Dlhov (Záhradkár ich zachráni)</td></tr>
             <tr><td>Nepriznaná Cirhóza</td><td>mínus 5 za kus na konci hry (ruka aj oba balíčky)</td></tr>
