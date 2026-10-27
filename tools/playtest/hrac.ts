@@ -540,7 +540,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       "ŠPAKY (v6.1): po bitke (aj po finále) dá starší hráčovi, ktorého sa bojí, žltá 1 / oranžová 2 / červená 3 špaky — LEN AK TEN BITKU VYHRAL; porazený za starších nič, pri sekere obaja. " +
       "Pohoršenie a prebytok posunú marker o pole za bod, bez limitu, aj na červenú a z nej späť. Scorecard nesie len priazeň.",
   );
-  out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; po najbližšej bitke od starších víťazovi: ty +${body.zaStarsich[ja]} ak vyhráš, súper +${body.zaStarsich[su]} ak vyhrá; nepriznaná Cirhóza na konci −5 za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); odhad do konca (markery stoja, keby vyhral každú bitku) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
+  out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; po najbližšej bitke od starších víťazovi: ty +${body.zaStarsich[ja]} ak vyhráš, súper +${body.zaStarsich[su]} ak vyhrá; nepriznaná Cirhóza na konci −5 za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); výkupné na konci (plný poldeci 1, každých 5 cigariet 1): ty +${body.vykupne[ja].spaky}, súper +${body.vykupne[su].spaky}; keby skončila teraz ty ${body.spolu[ja]}, súper ${body.spolu[su]}; odhad do konca (markery stoja, keby vyhral každú bitku) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
   // Ohlásené vydesenie (Michal 2026-10-16): výhra až po udržaní do konca ďalšieho kola.
   const prahVyd = prahVydesenia(v);
   const vyd = (p: PlayerId) => v.starsi.filter((e) => vydesil(e, p)).length;

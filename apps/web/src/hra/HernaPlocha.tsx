@@ -2071,7 +2071,10 @@ export function HernaPlocha({
             ? "Tvoja prvá karta pôjde do stredu línie a súper uvidí, čo si vyložil — v Pitke máš posledné slovo."
             : "Jeho prvá karta pôjde do stredu línie; ty kladieš k nej a v Pitke začínaš."}
         </p>
-        <p className="tlmene">Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky a nepriznaná Cirhóza zoberie po {KONSTANTY.SPAKY_ZA_CIRHOZU}.</p>
+        <p className="tlmene">
+          Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky, zvyšné zdroje sa vykúpia (plný poldeci {KONSTANTY.SPAKY_ZA_POLDECI}, každých{" "}
+          {KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1) a nepriznaná Cirhóza zoberie po {KONSTANTY.SPAKY_ZA_CIRHOZU}.
+        </p>
         <button type="button" className="tlacidlo-hlavne" onClick={() => setOznamFinale("zavrety")}>
           do finále
         </button>

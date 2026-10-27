@@ -19,6 +19,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["finále", `Finále má vždy ${KONSTANTY.FINALE_PITKY} Pitky`],
     ["Cirhóza na konci", `−${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus`],
+    ["výkupné (2026-10-27)", `plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak`],
     ["karty po bitke", `dobereš **${KONSTANTY.KARTY_PO_BITKE} karty**`],
     ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],

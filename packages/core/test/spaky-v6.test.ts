@@ -246,15 +246,16 @@ describe("v6 bod 11: finále", () => {
     expect(vyplatZaStarsich(s)).toBe(1);
     const st = pohorsenie(s).state;
     expect(st.nastenka.at(-1)).toMatchObject({ lokalita: null, vitaz: 0, zaBitku: [3, 0], zaStarsich: [1, 0], prebytok: [5, 0] });
-    expect(st.koniec).toMatchObject({ vitaz: 0, body: [9, 0] });
-    expect(spakyTeraz(viewFor(data, st, 1)).spolu).toEqual([9, 0]);
+    // Obaja majú zo začiatku 2 plné poldeci a 3 cigarety: výkupné +2 každému (2026-10-27).
+    expect(st.koniec).toMatchObject({ vitaz: 0, body: [9 + 2, 0 + 2] });
+    expect(spakyTeraz(viewFor(data, st, 1)).spolu).toEqual([11, 2]);
   });
 
   it("sekera vo finále: špaky kola aj zo sekery prepadnú", () => {
     const s = predPoskodenim({ ciel: FINALE, lokalityVHre: [], sums: [{}, {}], pitky: 3, uprav: (t) => ({ ...t, spakyNaSekere: 2, spaky: [4, 4] }) });
     const st = pohorsenie(s).state;
     expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, prepadlo: 5, zaBitku: [0, 0] });
-    expect(st.koniec).toMatchObject({ vitaz: 0, body: [5, 4] });
+    expect(st.koniec).toMatchObject({ vitaz: 0, body: [5 + 2, 4 + 2] });
   });
 });
 
@@ -296,12 +297,53 @@ describe("v6: špaky sú verejné", () => {
     }
   });
 
+  it("výkupné (2026-10-27) je verejné: obaja vidia rovnaké plné poldeci, cigarety a špaky z nich", () => {
+    const s0 = setupGame(data, 5);
+    const s: GameState = { ...s0, spaky: [4, 1], hraci: [{ ...s0.hraci[0], poldeciPlne: 3, poldeciVypite: 1, cigarety: 11 }, { ...s0.hraci[1], poldeciPlne: 0, cigarety: 5 }] };
+    const ocakavane = [
+      { poldeci: 3, cigarety: 11, spaky: 3 + 2 },
+      { poldeci: 0, cigarety: 5, spaky: 1 },
+    ];
+    for (const p of [0, 1] as const) {
+      const v = viewFor(data, s, p);
+      expect([v.hraci[0].poldeciPlne, v.hraci[0].cigarety, v.hraci[1].poldeciPlne, v.hraci[1].cigarety]).toEqual([3, 11, 0, 5]);
+      const t = spakyTeraz(v);
+      expect(t.vykupne).toEqual(ocakavane);
+      expect(t.spolu).toEqual([4 + 5, 1 + 1]);
+    }
+  });
+
+  it("výkupné neprezradí skryté NA EX: vlastný poldeci pod ním sa nevykúpi, súper rozdiel nevidí", () => {
+    const s0 = setupGame(data, 5);
+    const pitka = {
+      naTahu: 1 as const,
+      hotovy: [false, false] as const,
+      naexPouzity: [false, false] as const,
+      fajcenie: [0, 0] as const,
+      reakcia: null,
+      postarka: [false, false] as const,
+      starosta: [false, false] as const,
+      naexPocet: [0, 0] as const,
+      vykup: [false, false] as const,
+    };
+    const bez: GameState = { ...s0, faza: "pitka", pitkaStav: pitka };
+    const s: GameState = { ...bez, pitkaStav: { ...pitka, skryteNaex: [{ hrac: 0, uid: 999001 }] } };
+    expect(spakyTeraz(viewFor(data, s, 0)).vykupne[0]).toEqual({ poldeci: 1, cigarety: 3, spaky: 1 });
+    expect(spakyTeraz(viewFor(data, s, 1))).toEqual(spakyTeraz(viewFor(data, bez, 1)));
+    expect(spakyTeraz(viewFor(data, s, 1)).vykupne[0]).toEqual({ poldeci: 2, cigarety: 3, spaky: 2 });
+  });
+
   it("odhad špakov: strach × výplaty, ktoré ešte prídu (lokality + finále)", () => {
     const s0 = setupGame(data, 5, { lokalit: 3 });
     const starsi: ElderState[] = s0.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 6 : 3) as MarkerPos }));
     const t = spakyTeraz(viewFor(data, { ...s0, starsi }, 0));
     expect(t.vyplat).toBe(4);
     expect(t.zaStarsich).toEqual([3, 0]);
-    expect(t.odhad).toEqual([12, 0]);
+    // Odhad aj s výkupným zo začiatku hry: 2 plné poldeci, 3 cigarety = 2 špaky.
+    expect(t.vykupne).toEqual([
+      { poldeci: 2, cigarety: 3, spaky: 2 },
+      { poldeci: 2, cigarety: 3, spaky: 2 },
+    ]);
+    expect(t.odhad).toEqual([12 + 2, 0 + 2]);
   });
 });

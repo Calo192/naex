@@ -604,7 +604,7 @@ export function HracDoska({
                   {jeCielLokalita(view, "zastavka") && " (Zastávka: spoločný pre oboch)"} · ďalšie kolo {buduci}
                 </span>
                 Limit vykladania = plné + 1; na začiatku kola sa {KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám. Plný poldeci platí ďalšiu
-                kartu v ťahu Zhromaždenia alebo NA EX v Pitke.
+                kartu v ťahu Zhromaždenia alebo NA EX v Pitke. Na konci hry je každý plný {KONSTANTY.SPAKY_ZA_POLDECI} špak (výkupné).
               </>
             ),
           }}
@@ -656,7 +656,7 @@ export function HracDoska({
                   {kto} {hrac.cigarety} · {doNovehoPoldeci}
                 </span>
                 Platíš nimi šenok a Dedičstvo; v Pitke na svojom ťahu fajčíš (cigareta = karta). Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový
-                poldeci {obchodCigariet?.cenaBarteru ?? KONSTANTY.BARTER_CENA}.
+                poldeci {obchodCigariet?.cenaBarteru ?? KONSTANTY.BARTER_CENA}. Na konci hry každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak (výkupné).
               </>
             ),
           }}
@@ -740,6 +740,7 @@ export function HracDoska({
             spakyKlik.stlacene
               ? "Zavrieť nástenku (Esc)"
               : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po bitke, ak ju ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]} (dlaždica Starší).` +
+                (body.vykupne[p].spaky > 0 && view.koniec === null ? ` Výkupné poldeci a cigariet na konci hry: +${body.vykupne[p].spaky}.` : "") +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
                 " Klik ukáže nástenku: odkiaľ sú špaky po bitkách."
           }

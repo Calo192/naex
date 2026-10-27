@@ -1180,3 +1180,13 @@ V prvej dávke v6.1 dávali Noviny špak po každej bitke („aj po prehratej bi
 keď mu starší nedajú nič“). Teraz ich špak dostane ako strach len víťaz, pri
 sekere obaja. Odpor Výtržníka predtým rušil susedovu akciu na spoji, teraz je to
 už len Rana ako Posilnenie.
+
+### Doplnok v6.1c: výkupné zvyšných zdrojov (Michal 2026-10-27)
+
+Michal: „Každé ostávajúce nevypité poldeci bude 1 špak a každých 5 cigariet bude
+1 špak.“ Na konci hry, po finále a pred určením víťaza (spolu s nepriznanou
+Cirhózou), dostane hráč 1 špak za každý plný poldeci a 1 špak za každých celých
+5 cigariet, bez stropu (zásada z CLAUDE.md: žiadne umelé stropy zdrojov —
+prebytok sa má dať minúť alebo zúžitkovať). Predtým zdroje na konci prepadli.
+Plný poldeci je ten, ktorý sa ráta do limitu vykladania; vypitý ani ležiaci
+cez NA EX nie, Vínko tiež nie.

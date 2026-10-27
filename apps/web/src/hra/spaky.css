@@ -303,6 +303,10 @@
   color: var(--cervena-svetla);
 }
 
+.nastenka-uctenka .plus {
+  color: var(--zelena);
+}
+
 .nastenka-listok.koniec {
   border-top: 3px dashed var(--okraj-svetly);
   opacity: 0.85;

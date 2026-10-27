@@ -14,6 +14,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   pri **sekere** ich dostanú obaja. Nepriznaná Cirhóza na konci
   **−5 špakov za kus** (ruka aj oba balíčky). Exekútor berie špaky (nižšie). Špaky
   smú ísť do mínusu; výpis ich ukazuje pri oboch hráčoch aj nástenku bitiek.
+- **Výkupné (2026-10-27):** po finále, pred určením víťaza, dá každý **plný poldeci 1 špak,
+  každých celých 5 cigariet 1 špak** (nadol, bez stropu). Vypitý poldeci a poldeci pod NA EX
+  sa nerátajú. Vo finále sa preto oplatí doliať (2 cigarety → plný poldeci = špak) a nefajčiť
+  cigaretu, ktorá zlomí päťku. Výpis ho ráta do „keby skončila teraz“.
 - **Dĺžka hry** = počet bitiek o lokality (krátka 3, stredná 5, dlhá 7) a potom
   **finále** (bez lokality).
 - **Štart (v6):** 4 karty v ruke (1 Miňištrant, 1 Milujúca manželka, 1 Pijan, 1 Dievčina na vydaj), doberací balíček prázdny;

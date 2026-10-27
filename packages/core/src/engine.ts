@@ -293,7 +293,7 @@ export interface BitkaNaNastenke {
   readonly exekutor: readonly [number, number];
   /** Po finále: držiteľ prebytku dostane špaky namiesto posunu markerov. */
   readonly prebytok: readonly [number, number];
-  /** Špaky oboch po bitke (pred záverečnou Cirhózou). */
+  /** Špaky oboch po bitke (pred záverečnou Cirhózou a výkupným). */
   readonly spakyPo: readonly [number, number];
 }
 
@@ -304,6 +304,16 @@ export interface KoniecHry {
   readonly body: readonly [number, number] | null;
   /** Nepriznané Cirhózy na konci hry (ruka aj oba balíčky) — za každú SPAKY_ZA_CIRHOZU menej. */
   readonly cirhozy?: readonly [number, number];
+  /** Výkupné zvyšných plných poldeci a cigariet po finále (vykupne). */
+  readonly vykupne?: readonly [Vykupne, Vykupne];
+}
+
+/** Výkupné zvyšných zdrojov hráča na konci hry: čo sa vykúpilo a za koľko špakov. */
+export interface Vykupne {
+  /** Plné poldeci (vypité ani ležiace pod NA EX sa nerátajú). */
+  readonly poldeci: number;
+  readonly cigarety: number;
+  readonly spaky: number;
 }
 
 export interface GameState {
@@ -4419,12 +4429,35 @@ export function nepriznaneCirhozy(h: Pick<PlayerState, "ruka" | "doberaci" | "od
 }
 
 /**
+ * Výkupné zvyšných zdrojov (Michal 2026-10-27, §14): každý plný poldeci
+ * SPAKY_ZA_POLDECI, každých celých CIGARIET_ZA_SPAK cigariet 1 špak, bez stropu.
+ * `skryteNaex` = poldeci hráča pod jeho ešte neodkrytým NA EX — ten sa vypije,
+ * nie vykúpi (rátajú sa len pre vlastné, súperove pohľad nemá).
+ */
+export function vykupneHraca(h: Pick<PlayerState, "poldeciPlne" | "cigarety">, skryteNaex = 0): Vykupne {
+  const poldeci = Math.max(0, h.poldeciPlne - skryteNaex);
+  const cigarety = Math.max(0, h.cigarety);
+  return { poldeci, cigarety, spaky: poldeci * KONSTANTY.SPAKY_ZA_POLDECI + Math.floor(cigarety / KONSTANTY.CIGARIET_ZA_SPAK) };
+}
+
+/**
  * Koniec hry po finále (v6, Michal 2026-10-26): každá nepriznaná Cirhóza
- * stojí SPAKY_ZA_CIRHOZU špakov, vyhrá viac špakov, rovnosť je remíza.
+ * stojí SPAKY_ZA_CIRHOZU špakov, zvyšné plné poldeci a cigarety sa vykúpia
+ * (2026-10-27), vyhrá viac špakov, rovnosť je remíza.
  */
 function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[]): void {
   const cirhozy: [number, number] = [nepriznaneCirhozy(s.hraci[0] as PlayerState), nepriznaneCirhozy(s.hraci[1] as PlayerState)];
+  const vykupne: [Vykupne, Vykupne] = [vykupneHraca(s.hraci[0]), vykupneHraca(s.hraci[1])];
   for (const p of [0, 1] as const) {
+    const v = vykupne[p];
+    if (v.spaky > 0) {
+      s.spaky[p] += v.spaky;
+      const casti = [
+        v.poldeci > 0 ? pocet(v.poldeci, "plný poldeci", "plné poldeci", "plných poldeci") : null,
+        v.cigarety >= KONSTANTY.CIGARIET_ZA_SPAK ? cigariet(v.cigarety) : null,
+      ].filter((t): t is string => t !== null);
+      events.push({ type: "log", text: `Hráč ${p + 1}: výkupné za ${casti.join(" a ")} — plus ${spakov(v.spaky)}.` });
+    }
     if (cirhozy[p] === 0) continue;
     s.spaky[p] -= cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU;
     events.push({ type: "log", text: `Hráč ${p + 1}: ${pocet(cirhozy[p], "nepriznaná Cirhóza", "nepriznané Cirhózy", "nepriznaných Cirhóz")} — mínus ${spakov(cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU)}.` });
@@ -4433,7 +4466,7 @@ function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[]): void
   const vitaz: PlayerId | null = body[0] === body[1] ? null : body[0] > body[1] ? 0 : 1;
   // Záporné špaky (Exekútor, Cirhóza) so znamienkom mínus, nie spojovníkom — vedľa pomlčky pôsobil ako preklep (UI-7).
   const sk = (n: number): string => (n < 0 ? `−${-n}` : String(n));
-  s.koniec = { vitaz, dovod: `Odohralo sa finále, špaky ${sk(body[0])} : ${sk(body[1])}.`, body, cirhozy };
+  s.koniec = { vitaz, dovod: `Odohralo sa finále, špaky ${sk(body[0])} : ${sk(body[1])}.`, body, cirhozy, vykupne };
   s.faza = "koniec";
   events.push({ type: "koniec", vitaz, dovod: s.koniec.dovod, body });
 }

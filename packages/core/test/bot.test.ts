@@ -238,3 +238,55 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
     }
   });
 });
+
+describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {
+  /** Finále v Pitke, bot (hráč 0) na ťahu; doberací balíček má z čoho fajčiť. */
+  function vPitkeFinale(h: Partial<GameState["hraci"][0]>, lokalityVHre?: readonly CardInstance[]): GameState {
+    const s0 = setupGame(data, 11);
+    let uid = s0.nextUid;
+    const pijani = Array.from({ length: 4 }, (): CardInstance => ({ uid: uid++, defId: "pijan", leftLayout: 0, rightLayout: 0 }));
+    const hrac = { ...s0.hraci[0], doberaci: pijani, ...h };
+    return {
+      ...s0,
+      nextUid: uid,
+      faza: "pitka",
+      kolo: 6,
+      utocnik: 1,
+      strany: [[], []],
+      ciel: lokalityVHre === undefined ? { typ: "finale", lokalita: null } : { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
+      lokalityVHre: lokalityVHre ?? [],
+      pitkyCelkom: 3,
+      pitkaCislo: 3,
+      hraci: [hrac, s0.hraci[1]],
+      pitkaStav: {
+        naTahu: 0,
+        hotovy: [false, false],
+        naexPouzity: [false, false],
+        fajcenie: [0, 0],
+        reakcia: null,
+        postarka: [false, false],
+        starosta: [false, false],
+        naexPocet: [0, 0],
+        vykup: [false, false],
+      },
+    };
+  }
+
+  it("vo finále dolieva vypité poldeci, kým to výkupné zvýši (2 cigarety → plný poldeci = špak)", () => {
+    for (const povaha of POVAHY) {
+      // Bez Absťáku v hre — dolieva kvôli výkupnému, nie kvôli nerestiam.
+      const s = vPitkeFinale({ poldeciPlne: 0, poldeciVypite: 2, cigarety: 7, nerestiMinuleKolo: 0, nerestiTotoKolo: 3 });
+      expect(legalCommands(data, s, 0).some((c) => c.type === "refillPoldeci")).toBe(true);
+      expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("refillPoldeci");
+    }
+  });
+
+  it("vo finále nefajčí cigaretu, ktorá by zobrala špak z výkupného, ani kvôli Absťáku po finále", () => {
+    for (const povaha of POVAHY) {
+      // Jedna karta v ruke (s prázdnou by fajčil — karta mu ešte môže vyhrať finále), v predošlom kole 6 nerestí.
+      const s = vPitkeFinale({ poldeciPlne: 1, poldeciVypite: 0, cigarety: 5, ruka: [{ uid: 990001, defId: "pijan", leftLayout: 0, rightLayout: 0 }], nerestiMinuleKolo: 6, nerestiTotoKolo: 0 });
+      expect(legalCommands(data, s, 0).some((c) => c.type === "smoke")).toBe(true);
+      expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).not.toBe("smoke");
+    }
+  });
+});

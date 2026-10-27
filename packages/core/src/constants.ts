@@ -88,6 +88,13 @@ export const KONSTANTY = {
   FINALE_PITKY: 3,
   SPAKY_ZA_BITKU_MIN: 1,
   SPAKY_ZA_CIRHOZU: 5,
+  /**
+   * Výkupné zvyšných zdrojov na konci hry (Michal 2026-10-27): každý plný
+   * poldeci dá toľkoto špakov a každých CIGARIET_ZA_SPAK cigariet 1 špak.
+   * Bez stropu — prebytok zdrojov sa má dať zúžitkovať, nie prepadnúť.
+   */
+  SPAKY_ZA_POLDECI: 1,
+  CIGARIET_ZA_SPAK: 5,
 
   /**
    * Prehra pri poklese balíčka pod túto hodnotu platila do v4; vo v5 sa ruší
