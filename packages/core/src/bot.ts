@@ -1165,9 +1165,8 @@ function pitka(v: Volba): Command | null {
   // Kšeft a Úplatok (v7): zahrá si ich nanečisto; berie, keď stav zlepší viac než o povahový prah.
   // Poštárka (Dlh za kartu) len, kým je Exekútor ďaleko.
   const prahy = prahyHraca(data, state, ja);
-  const postarkaUid = state.starsi.find((e) => e.karta.defId === "postarka")?.karta.uid;
   const ksefty = v.legal.filter(
-    (c) => (c.type === "kseft" && (c.uid !== postarkaUid || (h.ruka.length < 6 && prahy.exekutor - prahy.priznaneDlhy > 4))) || c.type === "uplatok",
+    (c) => (c.type === "kseft" && (!kseftPostarky(state, c.uid) || (h.ruka.length < 6 && prahy.exekutor - prahy.priznaneDlhy > 4))) || c.type === "uplatok",
   );
   if (ksefty.length > 0) {
     const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 1.5);
@@ -1213,6 +1212,17 @@ function pitka(v: Volba): Command | null {
     if (refill !== undefined) return refill;
   }
   return najdi("skipNaex") ?? null;
+}
+
+/**
+ * Kšeft s uid `uid` je Poštárkin — jadro (kseftStarsieho) mu dá uid jej karty
+ * v línii, ak tam leží, inak karty staršieho na scorecarde.
+ */
+export function kseftPostarky(state: Pick<GameState, "starsi" | "strany">, uid: number): boolean {
+  return (
+    state.starsi.some((e) => e.karta.defId === "postarka" && e.karta.uid === uid) ||
+    [...state.strany[0], ...state.strany[1]].some((pl) => pl.card.defId === "postarka" && pl.card.uid === uid)
+  );
 }
 
 /**

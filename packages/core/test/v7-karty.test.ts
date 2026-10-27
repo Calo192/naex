@@ -15,7 +15,9 @@ import {
   lineState,
   loadGameData,
   lokalitNevybranych,
+  moznostiKseftu,
   moznostiNaex,
+  kseftPostarky,
   naexCieleVLinii,
   pocetPitiek,
   prirastkyPitky,
@@ -248,6 +250,20 @@ describe("limit NA EX v7", () => {
     expect(moznostiNaex(data, s, 0)).toContain(aa.uid);
     const minuty: GameState = { ...s, pitkaStav: { ...s.pitkaStav!, naexPouzity: [true, false] } };
     expect(moznostiNaex(data, minuty, 0)).toEqual([]);
+  });
+});
+
+describe("bot v7: Kšeft Poštárky blízko Exekútora", () => {
+  it("strážca bota spozná Kšeft Poštárky v línii aj na scorecarde — jadro dá najprv uid z línie", () => {
+    const p = inst("postarka");
+    const s0 = vPitke("zastavka", [[lezi(p, 0), lezi(inst("pijan"), 0)], [lezi(inst("vandal"), 1)]]);
+    const s = sHracom(s0, 0, { ruka: [inst("masiar")], doberaci: [inst("vandal")], priznane: [inst("dlh")] });
+    const kseft = moznostiKseftu(data, s, 0).find((c) => c.type === "kseft" && c.uid === p.uid);
+    expect(kseft).toBeDefined();
+    expect(kseftPostarky(s, p.uid)).toBe(true);
+    const naScorecarde = s.starsi.find((e) => e.karta.defId === "postarka")?.karta.uid;
+    if (naScorecarde !== undefined) expect(kseftPostarky(s, naScorecarde)).toBe(true);
+    expect(kseftPostarky(s, s.strany[0][1]!.card.uid)).toBe(false);
   });
 });
 
