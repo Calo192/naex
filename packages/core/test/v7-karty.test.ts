@@ -15,6 +15,7 @@ import {
   lineState,
   loadGameData,
   lokalitNevybranych,
+  moznostiNaex,
   naexCieleVLinii,
   pocetPitiek,
   prirastkyPitky,
@@ -237,6 +238,16 @@ describe("D6: zadĺženie neprepadá", () => {
     expect(st.hraci[0].zadlzenie).toBe(1);
     // Line stále bez Dlhov: Pakt ani karty nič nepridajú, účet čaká.
     expect(evaluateLine(data, lineState(st)).sums[0].Dlh ?? 0).toBe(0);
+  });
+});
+
+describe("limit NA EX v7", () => {
+  it("po minutom limite nejde NA EX ani na vlastného Anonymného alkoholika (placatka vypadla)", () => {
+    const aa = inst("anonymny_alkoholik");
+    const s = sHracom(vPitke("zastavka", [[lezi(aa, 0), lezi(inst("pijan"), 0)], [lezi(inst("vandal"), 1)]]), 0, { poldeciPlne: 3 });
+    expect(moznostiNaex(data, s, 0)).toContain(aa.uid);
+    const minuty: GameState = { ...s, pitkaStav: { ...s.pitkaStav!, naexPouzity: [true, false] } };
+    expect(moznostiNaex(data, minuty, 0)).toEqual([]);
   });
 });
 

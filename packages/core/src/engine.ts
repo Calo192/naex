@@ -195,7 +195,7 @@ export function pasBezCigariet(data: GameData, s: VerejnyStav & { readonly zhrom
 export interface PitkaStav {
   readonly naTahu: PlayerId;
   readonly hotovy: readonly [boolean, boolean];
-  /** Limit NA EX za Pitku je po odkrytí minutý (placatka sa doň neráta). */
+  /** Limit NA EX za Pitku je po odkrytí minutý. */
   readonly naexPouzity: readonly [boolean, boolean];
   /**
    * Koľkokrát hráč v tejto Pitke fajčil (každé fajčenie = 1 karta). Verejné —
@@ -211,7 +211,7 @@ export interface PitkaStav {
   /** Poštárka a Starosta sa smú použiť raz za Pitku. */
   readonly postarka: readonly [boolean, boolean];
   readonly starosta: readonly [boolean, boolean];
-  /** Koľko NA EX hráč v tejto Pitke dal, aj placatku (Policajtka ich porovná). */
+  /** Koľko NA EX hráč v tejto Pitke dal (odkrytých). */
   readonly naexPocet?: readonly [number, number];
   /** Zberný dvor: výkup karty z odhadzovacieho balíčka už v tejto Pitke použitý. */
   readonly vykup?: readonly [boolean, boolean];
@@ -2906,7 +2906,7 @@ function vypalne(s: MutState, data: GameData, dal: PlayerId, events: Event[]): v
 
 /**
  * NA EX hráča p — Občania a Starešinovia v línii (vlastní aj súperovi) bez
- * poldeci. Po minutom limite už len placatka (vlastný Anonymný alkoholik).
+ * poldeci. Po minutom limite žiadne (v7 bez výnimky pre Anonymného alkoholika).
  */
 export function moznostiNaex(data: GameData, state: GameState, p: PlayerId): number[] {
   const pitka = state.pitkaStav;
@@ -3018,9 +3018,8 @@ export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<numbe
 }
 
 /**
- * krcma: kto má plný poldeci (a kam ho dať), musí dať NA EX — jedno. Splní ho
- * aj placatka na vlastného Anonymného alkoholika (Michal 2026-10-26), preto
- * po prvom NA EX v Pitke povinnosť končí, aj keď placatka či druhé NA EX ešte ide.
+ * krcma: kto má plný poldeci (a kam ho dať), musí dať NA EX — jedno. Po prvom
+ * NA EX v Pitke povinnosť končí, aj keď druhé (Vínna pivnica) ešte ide.
  */
 export function krcmaVyzaduje(data: GameData, state: GameState, p: PlayerId): boolean {
   const pitka = state.pitkaStav;

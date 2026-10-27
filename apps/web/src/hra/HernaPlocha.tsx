@@ -1138,7 +1138,7 @@ export function HernaPlocha({
     if (pl.naexBy !== undefined) return "Na karte už poldeci leží.";
     if (def !== undefined && !def.tags.includes("Občan") && !def.tags.includes("Starešina"))
       return `NA EX len na Občana alebo Starešinu${def.tags.includes("Nástroj") ? " — toto je Nástroj" : ""}.`;
-    if (naexLimitMinuty) return "NA EX si v tejto Pitke už dal — mimo limitu ide len na tvojho Anonymného alkoholika.";
+    if (naexLimitMinuty) return "Limit NA EX v tejto Pitke je minutý — ďalšie NA EX až v ďalšej Pitke.";
     return "NA EX ide len na kartu s aspoň jednou aktívnou a jednou neaktívnou akciou.";
   };
   /**
