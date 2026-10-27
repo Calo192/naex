@@ -2985,6 +2985,14 @@ export function HernaPlocha({
         ),
       };
     }
+    if (view.volbaNastupu !== null && view.volbaNastupu.hrac === ja) {
+      // Klebetnica a Dohadzovačka (v7): voľba Nástupu čaká ako Hasič.
+      const nv = view.volbaNastupu;
+      return {
+        nadpis: nv.typ === "klebetnica" ? "Klebetnica" : "Dohadzovačka",
+        text: <VolbaNastupu view={view} posli={posli} />,
+      };
+    }
     if (view.hasicVolba !== null) {
       // Hasič (Michal 2026-10-26): náhodná karta z odhadzovacieho balíčka — do ruky, alebo späť.
       const k = view.hasicVolba.karta;
@@ -3582,6 +3590,7 @@ export function HernaPlocha({
                   akcia: () => cmd({ type: "postarka", pocet: n }),
                 }),
               )}
+            <KseftyPitky view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
           </>
         );
         const koncim = (
@@ -5831,3 +5840,146 @@ function ZmenaFrajeriny({ pred, po }: { readonly pred: number; readonly po: numb
     </span>
   );
 }
+
+type PecatNakupu = (p: {
+  readonly kluc: string;
+  readonly ikona: ReactNode;
+  readonly nazov: string;
+  readonly cena: number;
+  readonly dovod: string | null;
+  readonly tip: string;
+  readonly akcia: () => void;
+}) => ReactNode;
+
+/**
+ * Kšefty v Pitke (v7): pečiatky ako Starosta a Poštárka. Ponúka presne to, čo
+ * jadro dovolí — rovnaký zoznam ako legalCommands, vyrátaný z pohľadu hráča.
+ */
+function KseftyPitky({ view, cmd, pecatNakupu }: { readonly view: ClientState; readonly cmd: (c: Command) => void; readonly pecatNakupu: PecatNakupu }) {
+  const [smetiarka, setSmetiarka] = useState<number | null>(null);
+  const [vila, setVila] = useState<string>("");
+  const ja = view.ja;
+  const su: PlayerId = ja === 0 ? 1 : 0;
+  const pitka = view.pitkaStav;
+  if (pitka === null || pitka.reakcia !== null || pitka.hotovy[ja]) return null;
+  const h = view.hraci[ja];
+  const pouzite = pitka.kseft?.[ja] ?? [];
+  const skryte = (pitka.skryteNaex ?? []).length;
+  const karty = [...view.strany[0], ...view.strany[1]].filter((pl) => pl.playedBy === ja && pl.zaverecna !== true && !pouzite.includes(pl.card.uid));
+  const out: ReactNode[] = [];
+  for (const pl of karty) {
+    const uid = pl.card.uid;
+    if (pl.card.defId === "kapybara")
+      out.push(pecatNakupu({ kluc: `kseft${uid}`, ikona: null, nazov: "Kapybara", cena: 2, dovod: h.cigarety < 2 ? "Kapybara chce 2 cigarety." : null, tip: "Kšeft: za 2 cigarety zožerie súperovi 1 špak.", akcia: () => cmd({ type: "kseft", uid }) }));
+    if (pl.card.defId === "stryko_z_ameriky")
+      out.push(pecatNakupu({ kluc: `kseft${uid}`, ikona: null, nazov: "Strýko", cena: 2, dovod: h.cigarety < 2 ? "Strýko chce 2 cigarety." : null, tip: "Kšeft: za 2 cigarety udelíš v bitke tohto kola 1 Ranu navyše.", akcia: () => cmd({ type: "kseft", uid }) }));
+    if (pl.card.defId === "oslavenec")
+      out.push(
+        pecatNakupu({
+          kluc: `kseft${uid}`,
+          ikona: null,
+          nazov: "Oslávenec",
+          cena: 0,
+          dovod: h.poldeciPlne - skryte <= 0 ? "Oslávenec chce plný poldeci." : view.ciel?.lokalita?.defId === "kostol" ? "Kostol: nikto nesmie vypiť." : null,
+          tip: "Kšeft: za tvoj plný poldeci súper dostane 2 poškodenia pečene.",
+          akcia: () => cmd({ type: "kseft", uid }),
+        }),
+      );
+    if (pl.card.defId === "smetiarka") {
+      const moznosti = view.ruka.filter((k) => k.defId !== "dlh" && k.defId !== "cirhoza" && k.defId !== "abstak");
+      out.push(
+        <span key={`kseft${uid}`} className="pecat pecat-nakup">
+          <select value={smetiarka ?? ""} onChange={(e) => setSmetiarka(e.target.value === "" ? null : Number(e.target.value))}>
+            <option value="">Smetiarka: karta z ruky…</option>
+            {moznosti.map((k) => (
+              <option key={k.uid} value={k.uid}>
+                {k.defId}
+              </option>
+            ))}
+          </select>
+          <button type="button" disabled={smetiarka === null} onClick={() => smetiarka !== null && cmd({ type: "kseft", uid, kartaUid: smetiarka })}>
+            odhodiť za cigaretu
+          </button>
+        </span>,
+      );
+    }
+  }
+  const lok = view.ciel?.lokalita ?? null;
+  if (lok !== null && !pouzite.includes(lok.uid)) {
+    const uid = lok.uid;
+    if (lok.defId === "jednota") out.push(pecatNakupu({ kluc: "kseftJednota", ikona: null, nazov: "Jednota", cena: 0, dovod: null, tip: "Kšeft: za 1 Dlh (hneď priznaný) dostaneš 2 cigarety.", akcia: () => cmd({ type: "kseft", uid }) }));
+    if (lok.defId === "sklad") {
+      const prazdny = view.hraci[su].odhadzovaci.length === 0;
+      out.push(pecatNakupu({ kluc: "kseftSklad", ikona: null, nazov: "Sklad", cena: 1, dovod: prazdny ? "Súperov odhadzovací balíček je prázdny." : h.cigarety < 1 ? "Sklad chce cigaretu." : null, tip: "Kšeft: za cigaretu vrchná karta súperovho odhadzovacieho balíčka do tvojej ruky.", akcia: () => cmd({ type: "kseft", uid }) }));
+    }
+    if (lok.defId === "predsedova_vila" && h.cigarety >= 2) {
+      const chraneny = view.patronat[su]?.elderId;
+      out.push(
+        <span key="kseftVila" className="pecat pecat-nakup">
+          <select value={vila} onChange={(e) => setVila(e.target.value)}>
+            <option value="">Vila (2 cig.): marker…</option>
+            {view.starsi
+              .filter((e) => e.elderId !== chraneny)
+              .flatMap((e) => [
+                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${e.karta.defId} k súperovi`}</option>,
+                <option key={`${e.elderId}-j`} value={`${e.elderId}|1`}>{`${e.karta.defId} k sebe`}</option>,
+              ])}
+          </select>
+          <button
+            type="button"
+            disabled={vila === ""}
+            onClick={() => {
+              const [elderId, kSebe] = vila.split("|");
+              if (elderId !== undefined) cmd({ type: "kseft", uid, elderId, kSebe: kSebe === "1" });
+            }}
+          >
+            posunúť
+          </button>
+        </span>,
+      );
+    }
+  }
+  return <>{out}</>;
+}
+
+/** Klebetnica a Dohadzovačka (v7): voľba Nástupu. Súperovu ruku pohľad pošle len tomu, kto vyberá. */
+function VolbaNastupu({ view, posli }: { readonly view: ClientState; readonly posli: (c: Command) => void }) {
+  const [a, setA] = useState("");
+  const [b, setB] = useState("");
+  const nv = view.volbaNastupu;
+  if (nv === null) return null;
+  if (nv.typ === "klebetnica") {
+    return (
+      <span>
+        Klebetnica: súperovu kartu pošli naspodok jeho doberacieho balíčka.{" "}
+        {(nv.ruka ?? []).map((k) => (
+          <button key={k.uid} type="button" onClick={() => posli({ type: "klebetnica", uid: k.uid })}>
+            {k.defId}
+          </button>
+        ))}
+      </span>
+    );
+  }
+  return (
+    <span>
+      Dohadzovačka: vymeň dvom starším priazne (scorecardy), markery ostanú.{" "}
+      {[
+        [a, setA],
+        [b, setB],
+      ].map(([hodnota, nastav], i) => (
+        <select key={i} value={hodnota as string} onChange={(e) => (nastav as (x: string) => void)(e.target.value)}>
+          <option value="">starší…</option>
+          {view.starsi.map((e) => (
+            <option key={e.elderId} value={e.elderId}>
+              {e.karta.defId}
+            </option>
+          ))}
+        </select>
+      ))}
+      <button type="button" disabled={a === "" || b === "" || a === b} onClick={() => posli({ type: "dohadzovacka", elderA: a, elderB: b })}>
+        vymeniť
+      </button>
+    </span>
+  );
+}
+
