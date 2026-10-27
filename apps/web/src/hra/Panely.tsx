@@ -593,8 +593,8 @@ export function HracDoska({
             tip={
               view.ciel?.typ === "finale"
                 ? utoci
-                  ? { nadpis: "Útočník finále", text: "Má viac špakov (pri rovnosti prehral poslednú bitku). Vyloží prvú kartu do stredu línie, v Pitke má posledné slovo." }
-                  : { nadpis: "Obranca finále", text: "Má menej špakov: vidí prvú kartu útočníka a kladie k nej. V Pitke začína." }
+                  ? { nadpis: "Útočník finále", text: "Má menej špakov — dobieha (pri rovnosti prehral poslednú bitku). Vykladá prvý, v Pitke má posledné slovo." }
+                  : { nadpis: "Obranca finále", text: "Vedie v špakoch: vybral a natočil vrcholovú lokalitu. V Pitke začína." }
                 : utoci
                 ? { nadpis: "Útočník", text: "Prehral poslednú bitku: zo šenku berie a vykladá prvý. V Pitke hrá druhý — má posledné slovo." }
                 : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá cieľ kola, v Pitke začína. Remízu v tuhom vyhrá, kto má menej Absťákov, potom Dlhov; inak idú špaky na sekeru." }
@@ -745,7 +745,7 @@ export function HracDoska({
           }}
         />
         {/* Dlhy a Zadĺženie v jednej dlaždici (Michal 2026-10-27): číslo = priznané Dlhy k Exekútorovi,
-            pod ním zadĺženie tejto Pitky k ďalšiemu Dlhu. Vyučba zvýrazňuje obe časti zvlášť (bar:dlhy, bar:zadlzenie). */}
+            pod ním zadĺženie k ďalšiemu Dlhu (v7 po Pitke neprepadá). Vyučba zvýrazňuje obe časti zvlášť (bar:dlhy, bar:zadlzenie). */}
         <Zdroj
           nazov="Dlhy"
           trieda={`zdroj-dlhy ${
@@ -775,7 +775,7 @@ export function HracDoska({
                   {v !== null && v.zadlzenieZoStola > 0 && ` ▸ ${zadlzeniePo}`} z {prahy.dlh}
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
-                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zadĺženie sa po Pitke vynuluje. Pri {prahy.exekutor} a viac Dlhoch v bitke príde
+                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh (v7). Pri {prahy.exekutor} a viac Dlhoch v bitke príde
                 Exekútor: zhorí polovica Dlhov a toľko špakov.
               </>
             ),
@@ -1389,8 +1389,8 @@ export function PriebehKola({
     nadpis: "Finále",
     text: (
       <>
-        Posledná bitka bez lokality, vždy {KONSTANTY.FINALE_PITKY} Pitky. Útočí, kto má viac špakov (pri rovnosti porazený poslednej
-        bitky); jeho prvá karta leží v strede línie a ďalšie sa kladú na jej dve strany. Kraje ani prevaha vo finále nie sú.
+        Posledná bitka na vrcholovej lokalite (v7): útočí, kto má menej špakov (pri rovnosti porazený poslednej bitky), a vedúci
+        vyberie a natočí lokalitu. Kraje, prevaha aj počet Pitiek ako na každej lokalite.
         <span className="tip-riadok">Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky a odpočíta sa nepriznaná Cirhóza.</span>
       </>
     ),

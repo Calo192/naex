@@ -78,7 +78,8 @@ export const KONSTANTY = {
    * prehrávanie: prebytok posúva markery k porazenému.
    */
   NASOBOK_PRIAZNE: 2,
-  PRAH_EXEKUTORA_ZAKLAD: 10, // + 2 × priazeň Exekútora
+  /** v7 (Michal 2026-10-27, plan.md 10.4): 7, so súperovou priazňou Exekútora 6 / 5 / 4. */
+  PRAH_EXEKUTORA_ZAKLAD: 7,
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   PRESKUMANIE: 5,
   /**
@@ -109,27 +110,23 @@ export const KONSTANTY = {
    * Lakomca a Neprajníka. Texty kariet v tvorcovi uvádzajú tie isté čísla.
    */
   EFEKT: {
-    AUTOBUSAR_ABSTAKY: 1,
-    FARAR_POVERY: 2,
-    VETERINAR_CIRHOZA: 2,
-    LESNA_CESTA_MAX: 2,
     IHRISKO_TUHE: 2,
-    URAD_PRAH_EXEKUTORA: 4,
-    URAD_ROBOTA: 2,
     ZBERNY_DVOR_CENA: 1,
+    /** Do v7 Poštárka (Pitka) dávala až 2 karty; od v7 Kšeft za 1 Dlh 1 karta. */
     POSTARKA_KARTY: 2,
     POSTARKA_DLHY: 1,
-    PODVODNIK_CIGARETY: 2,
-    SVOKRA_CIGARETY: 2,
-    VDOVA_DLHY: 2,
-    STRYNA_KLIATBY: 1,
+    SVOKRA_RANY: 1,
     NEALKO_PRAH_CIRHOZY: 2,
     KRCMA_PRAH_CIRHOZY: 2,
     SVATY_TEXT_VIERA: 1,
-    PUSKA_PREBYTOK: 2,
-    CIGORKY_CIGARETY: 1,
-    AUTOMAT_VYHRA_CIGARETY: 2,
-    AUTOMAT_PREHRA_DLHY: 1,
+    /** Konflikt Policajtky (v7): Kriminál jej majiteľovi dá toľko cigariet. */
+    POLICAJTKA_CIGARETY: 2,
+    /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
+    CIGORKY_ZA_KARTU: 2,
+    /** Kšefty v7 (plan.md 14.0): Strýko, Vychovávateľka, Obecný úrad. */
+    STRYKO_CENA: 2,
+    VYCHOVAVATELKA_CENA: 2,
+    URAD_CENA: 3,
   },
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */
@@ -166,9 +163,10 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
  * pravidlá menia len v dávkach raz za 2 týždne a celá dávka dostane ďalšie
  * číslo („v5“) spolu s novým dátumom platnosti.
  */
-export const VERZIA_PRAVIDIEL = "v6";
+// v7 (revízia sady, Michal 2026-10-27) — zatiaľ len vetva v7/revizia-sady na playtest.
+export const VERZIA_PRAVIDIEL = "v7";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-26";
+export const PRAVIDLA_PLATNE_OD = "2026-10-27";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

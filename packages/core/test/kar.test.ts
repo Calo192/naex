@@ -3,7 +3,8 @@
 // „pri vdove“ a „pri koláčoch“. Lokalita je vo zverejnenej sade v11 (cards.json).
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6: Kar v7 má iný efekt (doliatie, test v7-karty) — tu sa stráži krok Kar v bitke starej sady.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard } from "../src/index.ts";
@@ -42,25 +43,6 @@ function doKaru(s: GameState): GameState {
 }
 
 describe("Kar", () => {
-  it("bitka počká na obrancu, ktorý má v ruke Cirhózu; zahodená Cirhóza zmizne z hry a súperov Hrobár dostane cigaretu", () => {
-    const cirhoza = inst("cirhoza");
-    const hrobar: PlacedCard = { card: inst("hrobar"), playedBy: 1 };
-    const s0 = predBitkou("kar", [[cirhoza, inst("pijan")], [inst("pijan")]], [[], [hrobar]]);
-    const obranca = s0.utocnik === 0 ? 1 : 0;
-    // Cirhózu dáme obrancovi — on sa rozhoduje prvý.
-    const s1 = obranca === 0 ? s0 : ({ ...s0, hraci: [s0.hraci[1], s0.hraci[0]], strany: [[{ ...hrobar, playedBy: 0 }], []] } as GameState);
-    const s = doKaru(s1);
-    expect(s.bitkaStav?.krok).toBe("kar");
-    expect(s.bitkaStav?.caka).toBe(obranca);
-    expect(legalCommands(data, s, obranca)).toEqual([{ type: "kar", uid: null }, { type: "kar", uid: cirhoza.uid }]);
-    const su = obranca === 0 ? 1 : 0;
-    const cigPred = s.hraci[su].cigarety;
-    const po = apply(data, s, { type: "kar", uid: cirhoza.uid }, obranca).state;
-    const h = po.hraci[obranca];
-    expect([...h.ruka, ...h.odhadzovaci, ...h.doberaci, ...h.priznane].some((k) => k.uid === cirhoza.uid)).toBe(false);
-    expect(po.hraci[su].cigarety).toBeGreaterThanOrEqual(cigPred + 1);
-    expect(po.bitkaStav?.krok).not.toBe("kar");
-  });
 
   it("Cirhózu si hráč smie nechať; bez Cirhózy v ruke sa krok preskočí", () => {
     const cirhoza = inst("cirhoza");

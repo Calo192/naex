@@ -68,6 +68,8 @@ const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
   pohorsenie: "Pohoršenie",
   prebytok: "Prebytok",
   patronat: "Patronát",
+  kseft: "Predsedova vila",
+  nastup: "Kapybara",
 };
 
 /** Jeden starší v línii — dáta pripraví HernaPlocha. */

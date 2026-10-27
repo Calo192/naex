@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Návrh slotov: vyrovnané indexy</title>
+<style>
+:root{
+  --pozadie:#f5f1e8; --papier:#fffdf7; --text:#2b2520; --tlmene:#6b6155;
+  --linka:#d8cfbf; --akcent:#8a4b2d; --zle:#a33b3b; --dobre:#3d7a3d; --variant:#9a7b22;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+    --linka:#3d372d; --akcent:#d08a5e; --zle:#d97b7b; --dobre:#7dbb7d; --variant:#d3b45a;
+  }
+}
+:root[data-theme="dark"]{
+  --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+  --linka:#3d372d; --akcent:#d08a5e; --zle:#d97b7b; --dobre:#7dbb7d; --variant:#d3b45a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.5 Georgia,'Times New Roman',serif;padding:16px}
+main{max-width:980px;margin:0 auto}
+h1{font-size:1.7em;margin:.2em 0 .1em;color:var(--akcent)}
+.pod{color:var(--tlmene);margin:0 0 1em}
+section{background:var(--papier);border:1px solid var(--linka);border-radius:10px;padding:12px 16px;margin:14px 0}
+h2{font-size:1.15em;margin:.1em 0 .4em;color:var(--akcent)}
+h3{font-size:1em;margin:1em 0 .3em}
+table{border-collapse:collapse;width:100%;font-size:.9em}
+td,th{border-bottom:1px solid var(--linka);padding:4px 8px;text-align:right;vertical-align:top}
+td:first-child,th:first-child{text-align:left}
+th{color:var(--tlmene);font-weight:normal}
+.zle{color:var(--zle);font-weight:bold}
+.dobre{color:var(--dobre);font-weight:bold}
+.pozn{color:var(--tlmene);font-size:.85em}
+ul,ol{margin:.3em 0 .5em;padding-left:1.3em}
+li{margin:.3em 0}
+code{font-family:Consolas,monospace;font-size:.88em;background:var(--pozadie);padding:1px 5px;border-radius:4px}
+table.karty td{text-align:left}
+td.okno{min-width:11em}
+.str{display:flex;gap:2px}
+.sl{flex:1;min-width:0;border:1px solid var(--linka);border-radius:4px;padding:1px 2px;font-size:.72em;text-align:center;overflow-wrap:anywhere;line-height:1.25}
+.sl.plny{border-color:var(--akcent)}
+.sl.x{color:var(--tlmene);background:var(--pozadie)}
+.pin{color:var(--variant)}
+.dve{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){ td,th{padding:3px 4px} body{padding:10px} .dve{grid-template-columns:1fr} td.okno{min-width:8em} }
+</style>
+</head>
+<body>
+<main>
+<h1>Návrh slotov: vyrovnané indexy</h1>
+<p class="pod">Vymyselník · 27. 10. 2026 · 51 hráčskych kariet po revízii (10 Nástrojov, 6 Zvierat, 31 Občanov, 4 štartové) · mimo rozsahu: starešinovia, kliatby, lokality · nič som nesimuloval, čísla sú výpočet z rozložení (<code>sideLayouts</code>, rovnomerný los <code>engine.ts:679</code>), na 1 kópiu sady</p>
+
+<section>
+<h2>V skratke</h2>
+<ul>
+<li><b class="dobre">Podmienky 1–3 prešli.</b> Všetky karty majú 4–8 variantov (pred: 6 kariet nad 8, 5 pod 4). Každý druh s aspoň 4 výskytmi má na každom indexe 17–37 % výskytov (cieľ 15–40 %). Obsadenosť indexov je v pásme ±5 % od priemeru strany (cieľ ±20 %).</li>
+<li><b>Najväčší zostávajúci extrém:</b> najviac Obmedz na i1 37 %, najmenej Obmedz na i0 17 %. Pred preusporiadaním: najviac Obmedz na i0 50 %, najmenej Obmedz na i3 0 %.</li>
+<li><b>Pakt</b> (2 výskyty na kópiu sady, vzácny druh; po E3 bez Brigádnika) ostáva na ľavej strane. Má dve rôzne okná na rôznych kartách: okno 2–3 (Živnostník, vedľa Dlhu) a sloty 1 a 3 (Dohadzovačka).</li>
+<li><b>Pripnutia a kombá:</b> Kulturista (po E3 Petelica ×2 na ľavých slotoch 1–2, Dlh ×2 vpravo voľne) a Pakt ostali. Kombá z plánu, ktoré stoja na polohe, sa zapínajú rovnako často alebo častejšie, okrem WAU 1. Tam to inak nejde, pozri „Čo sa nepodarilo“.</li>
+<li><b>Allowed</b> má 9 z 51 kariet, pred preusporiadaním 18. Ostal len tam, kde spojka so 6–7 akciami inak nevojde do 8 variantov, alebo kde drží pripnutie.</li>
+<li><b>Vedľajší účinok (dôležité):</b> keď sú indexy obsadené rovnomerne, akcia nájde partnera menej často, lebo ubudlo „plného stredu“. Aktívne tuhé na náhodný spoj klesne z 0,637 na 0,564 (−11 %) a aktívne akcie z 2,052 na 1,865 (−9 %). Bez simulácie, model nižšie.</li>
+</ul>
+<p><b>Odporúčanie:</b> prijať okná z tabuľky kariet. Úbytok aktívneho tuhého (časť 5) treba vedome vyrovnať, napríklad ďalšou Peckou alebo Petelicou na nových kartách (deficit z 10.5 trvá), a zmerať ho v ďalšom turnaji alebo playteste, keď ich Michal povolí.</p>
+</section>
+
+<section>
+<h2>1 · Podmienky Michala a ich prevod na čísla</h2>
+<ol>
+<li>„Žiadna hráčska karta okrem kliatby nebude mať viac ako 8 variant.“ → ľavé × pravé rozloženia ≤ 8.</li>
+<li>„Okrem starešin každá karta má minimálne 4 varianty.“ → ľavé × pravé ≥ 4.</li>
+<li>„Po preorganizovaní akcií (vrátane paktu) bude rozloženie akcií približne rovnomerné. Nemusí to byť presne, ale nesmie to byť, že 80 %, 20 % a inde 0.“ → (a) druh s aspoň 4 očakávanými výskytmi: na každom indexe 15–40 % výskytov druhu (obe strany spolu); (b) vzácnejší druh: aspoň dve rôzne okná na rôznych kartách; (c) obsadenosť každého indexu, ľavá aj pravá strana zvlášť, v pásme ±20 % od priemeru strany.</li>
+</ol>
+<table>
+<tr><th>Sada</th><th>kariet</th><th>&gt; 8 var.</th><th>&lt; 4 var.</th><th>porušení 3a–3c</th><th>s allowed</th></tr>
+<tr><td>Dnes (cards.json, dnešné akcie)</td><td>37</td><td>6</td><td>2</td><td>20</td><td>17</td></tr>
+<tr><td>Pred (akcie po revízii, okná bez zmeny)</td><td>51</td><td class="zle">6</td><td class="zle">5</td><td class="zle">28</td><td>18</td></tr>
+<tr><td><b>Po (návrh)</b></td><td>51</td><td class="dobre">0</td><td class="dobre">0</td><td class="dobre">0</td><td>9</td></tr>
+</table>
+<p class="pozn">Pred: nad 8 Veštica 12, Praudovravec 12, Stryná 12, Milujúca manželka 16, Miňištrant 16, Dievčina na vydaj 12; pod 4 Lievik 2, Pes 2, Silná, nezávislá žena 2, Strýko z Ameriky 2, Kulturista 1. Okná „pred“ sú z <code>cards.json</code>, z <code>plan.json</code> (10.1), zo slotov schválených noviniek (<code>karty-naradie-zvierata.html</code>, <code>karty-kolo2.html</code>, <code>karty-obcania.html</code>) a z 12.1 pre Pakt. Zloženie sady je po efektoch E3 (27. 10.): bez Presbitera, Opatrovateľky, Smetiarky, Brigádnika a Oslávenca, Kulturista Petelica ×2 / Dlh ×2.</p>
+</section>
+
+<section>
+<h2>2 · Obsadenosť indexov (očakávaný počet akcií na kópiu sady)</h2>
+<table>
+<tr><th>Sada · strana</th><th>i0</th><th>i1</th><th>i2</th><th>i3</th><th>priemer</th></tr>
+<tr><td>Dnes · ľavá</td><td>16,4 <span class="pozn">−2 %</span></td><td class="zle">23,9 <span class="pozn">+43 %</span></td><td>18,9 <span class="pozn">+13 %</span></td><td class="zle">7,8 <span class="pozn">−54 %</span></td><td>16,8</td></tr>
+<tr><td>Dnes · pravá</td><td>16,7 <span class="pozn">−13 %</span></td><td class="zle">23,8 <span class="pozn">+24 %</span></td><td>20,5 <span class="pozn">+6 %</span></td><td>16,0 <span class="pozn">−17 %</span></td><td>19,3</td></tr>
+<tr><td>Pred · ľavá</td><td>20,4 <span class="pozn">−14 %</span></td><td class="zle">34,9 <span class="pozn">+47 %</span></td><td class="zle">29,4 <span class="pozn">+24 %</span></td><td class="zle">10,3 <span class="pozn">−57 %</span></td><td>23,8</td></tr>
+<tr><td>Pred · pravá</td><td class="zle">17,7 <span class="pozn">−31 %</span></td><td class="zle">33,8 <span class="pozn">+33 %</span></td><td class="zle">32,5 <span class="pozn">+27 %</span></td><td class="zle">18,0 <span class="pozn">−29 %</span></td><td>25,5</td></tr>
+<tr><td><b>Po</b> · ľavá</td><td>23,3 <span class="pozn">−2 %</span></td><td>23,8 <span class="pozn">+0 %</span></td><td>24,4 <span class="pozn">+3 %</span></td><td>23,6 <span class="pozn">−1 %</span></td><td>23,8</td></tr>
+<tr><td><b>Po</b> · pravá</td><td>25,4 <span class="pozn">−0 %</span></td><td>24,9 <span class="pozn">−2 %</span></td><td>24,9 <span class="pozn">−2 %</span></td><td>26,8 <span class="pozn">+5 %</span></td><td>25,5</td></tr>
+</table>
+<p class="pozn">Percento = odchýlka od priemeru strany; červené je mimo ±20 %. „Dnes“ je 37 hráčskych kariet dnešnej sady s dnešnými akciami. Analýza z rána rátala len 29 Občanov a Zvierat, preto sa čísla líšia.</p>
+</section>
+
+<section>
+<h2>3 · Akcia × index (obe strany spolu, podiel indexu na výskytoch druhu, ideál 25 %)</h2>
+<div class="dve">
+<div><h3>Pred (akcie po revízii, okná bez zmeny)</h3>
+<table><tr><th>Akcia</th><th>spolu</th><th>i0</th><th>i1</th><th>i2</th><th>i3</th></tr>
+<tr><td>Petelica</td><td>7</td><td class="zle" title="ľavá 0,0 · pravá 1,0">14 %</td><td title="ľavá 1,5 · pravá 1,0">36 %</td><td title="ľavá 1,5 · pravá 1,0">36 %</td><td class="zle" title="ľavá 0,0 · pravá 1,0">14 %</td></tr>
+<tr><td>Pecka</td><td>11</td><td class="zle" title="ľavá 1,0 · pravá 0,5">14 %</td><td title="ľavá 2,0 · pravá 2,0">36 %</td><td title="ľavá 2,0 · pravá 2,0">36 %</td><td class="zle" title="ľavá 1,0 · pravá 0,5">14 %</td></tr>
+<tr><td>Rana</td><td>16</td><td title="ľavá 0,5 · pravá 2,5">19 %</td><td title="ľavá 1,0 · pravá 4,0">31 %</td><td title="ľavá 1,5 · pravá 3,5">31 %</td><td title="ľavá 1,0 · pravá 2,0">19 %</td></tr>
+<tr><td>Pečeň</td><td>24</td><td class="zle" title="ľavá 1,0 · pravá 1,0">8 %</td><td title="ľavá 3,5 · pravá 2,5">25 %</td><td class="zle" title="ľavá 5,0 · pravá 6,0">46 %</td><td title="ľavá 1,5 · pravá 3,5">21 %</td></tr>
+<tr><td>Poldeci</td><td>12</td><td title="ľavá 3,0 · pravá 0,5">29 %</td><td class="zle" title="ľavá 4,0 · pravá 1,0">42 %</td><td title="ľavá 1,5 · pravá 1,0">21 %</td><td class="zle" title="ľavá 0,5 · pravá 0,5">8 %</td></tr>
+<tr><td>Dlh</td><td>32</td><td class="zle" title="ľavá 2,5 · pravá 1,0">11 %</td><td title="ľavá 6,0 · pravá 5,5">36 %</td><td title="ľavá 5,0 · pravá 7,0">38 %</td><td title="ľavá 1,5 · pravá 3,5">16 %</td></tr>
+<tr><td>Povera</td><td>16</td><td title="ľavá 1,5 · pravá 2,2">23 %</td><td title="ľavá 2,0 · pravá 3,0">31 %</td><td title="ľavá 2,0 · pravá 3,0">31 %</td><td class="zle" title="ľavá 0,5 · pravá 1,8">15 %</td></tr>
+<tr><td>Viera</td><td>14</td><td title="ľavá 2,8 · pravá 2,0">35 %</td><td title="ľavá 3,3 · pravá 2,2">39 %</td><td title="ľavá 1,3 · pravá 1,3">19 %</td><td class="zle" title="ľavá 0,5 · pravá 0,5">7 %</td></tr>
+<tr><td>Pohorš</td><td>14</td><td title="ľavá 1,0 · pravá 1,5">18 %</td><td title="ľavá 2,0 · pravá 3,2">37 %</td><td title="ľavá 2,0 · pravá 1,7">26 %</td><td title="ľavá 1,0 · pravá 1,7">19 %</td></tr>
+<tr><td>Cig</td><td>20</td><td title="ľavá 2,5 · pravá 3,5">30 %</td><td title="ľavá 4,0 · pravá 3,5">38 %</td><td title="ľavá 2,5 · pravá 2,0">23 %</td><td class="zle" title="ľavá 1,0 · pravá 1,0">10 %</td></tr>
+<tr><td>Robota</td><td>7</td><td title="ľavá 0,8 · pravá 0,5">18 %</td><td title="ľavá 1,8 · pravá 1,0">39 %</td><td title="ľavá 1,3 · pravá 1,0">32 %</td><td class="zle" title="ľavá 0,3 · pravá 0,5">11 %</td></tr>
+<tr><td>Odpor</td><td>9</td><td class="zle" title="ľavá 0,8 · pravá 0,5">15 %</td><td class="zle" title="ľavá 1,8 · pravá 2,0">43 %</td><td title="ľavá 1,3 · pravá 1,5">31 %</td><td class="zle" title="ľavá 0,0 · pravá 1,0">11 %</td></tr>
+<tr><td>Obmedz</td><td>5</td><td class="zle" title="ľavá 2,0 · pravá 0,5">50 %</td><td title="ľavá 0,5 · pravá 1,5">40 %</td><td class="zle" title="ľavá 0,5 · pravá 0,0">10 %</td><td class="zle" title="ľavá 0,0 · pravá 0,0">0 %</td></tr>
+<tr><td>Vízia</td><td>5</td><td title="ľavá 1,0 · pravá 0,5">30 %</td><td title="ľavá 1,0 · pravá 1,0">40 %</td><td title="ľavá 0,0 · pravá 1,0">20 %</td><td class="zle" title="ľavá 0,0 · pravá 0,5">10 %</td></tr>
+<tr><td>Posil <span class="pozn">(vzácna)</span></td><td>3</td><td title="ľavá 0,0 · pravá 0,0">0 %</td><td title="ľavá 0,5 · pravá 0,5">33 %</td><td title="ľavá 1,0 · pravá 0,5">50 %</td><td title="ľavá 0,5 · pravá 0,0">17 %</td></tr>
+<tr><td>Pakt <span class="pozn">(vzácna)</span></td><td>2</td><td title="ľavá 0,0 · pravá 0,0">0 %</td><td title="ľavá 0,0 · pravá 0,0">0 %</td><td title="ľavá 1,0 · pravá 0,0">50 %</td><td title="ľavá 1,0 · pravá 0,0">50 %</td></tr>
+</table></div>
+<div><h3>Po (návrh)</h3>
+<table><tr><th>Akcia</th><th>spolu</th><th>i0</th><th>i1</th><th>i2</th><th>i3</th></tr>
+<tr><td>Petelica</td><td>7</td><td title="ľavá 0,0 · pravá 1,5">21 %</td><td title="ľavá 1,0 · pravá 0,5">21 %</td><td title="ľavá 1,5 · pravá 1,0">36 %</td><td title="ľavá 0,5 · pravá 1,0">21 %</td></tr>
+<tr><td>Pecka</td><td>11</td><td title="ľavá 1,8 · pravá 1,1">26 %</td><td title="ľavá 1,8 · pravá 1,1">26 %</td><td title="ľavá 1,3 · pravá 1,3">23 %</td><td title="ľavá 1,3 · pravá 1,5">25 %</td></tr>
+<tr><td>Rana</td><td>16</td><td title="ľavá 1,3 · pravá 2,8">26 %</td><td title="ľavá 0,8 · pravá 2,2">19 %</td><td title="ľavá 0,8 · pravá 3,0">24 %</td><td title="ľavá 1,0 · pravá 4,0">31 %</td></tr>
+<tr><td>Pečeň</td><td>24</td><td title="ľavá 2,8 · pravá 3,3">25 %</td><td title="ľavá 2,5 · pravá 3,3">24 %</td><td title="ľavá 2,8 · pravá 3,3">26 %</td><td title="ľavá 2,8 · pravá 3,2">25 %</td></tr>
+<tr><td>Poldeci</td><td>12</td><td title="ľavá 2,5 · pravá 0,7">26 %</td><td title="ľavá 2,0 · pravá 1,0">25 %</td><td title="ľavá 2,5 · pravá 0,7">26 %</td><td title="ľavá 2,0 · pravá 0,7">22 %</td></tr>
+<tr><td>Dlh</td><td>32</td><td title="ľavá 3,3 · pravá 4,7">25 %</td><td title="ľavá 4,2 · pravá 4,2">26 %</td><td title="ľavá 3,5 · pravá 4,3">24 %</td><td title="ľavá 4,0 · pravá 3,8">24 %</td></tr>
+<tr><td>Povera</td><td>16</td><td title="ľavá 1,4 · pravá 2,1">22 %</td><td title="ľavá 1,5 · pravá 2,8">27 %</td><td title="ľavá 1,3 · pravá 2,5">24 %</td><td title="ľavá 1,8 · pravá 2,7">28 %</td></tr>
+<tr><td>Viera</td><td>14</td><td title="ľavá 2,3 · pravá 1,3">26 %</td><td title="ľavá 2,5 · pravá 1,7">30 %</td><td title="ľavá 1,5 · pravá 1,4">21 %</td><td title="ľavá 1,8 · pravá 1,6">24 %</td></tr>
+<tr><td>Pohorš</td><td>14</td><td title="ľavá 1,6 · pravá 2,0">26 %</td><td title="ľavá 1,6 · pravá 2,0">26 %</td><td title="ľavá 1,3 · pravá 2,0">23 %</td><td title="ľavá 1,6 · pravá 2,0">26 %</td></tr>
+<tr><td>Cig</td><td>20</td><td title="ľavá 2,2 · pravá 2,5">23 %</td><td title="ľavá 1,8 · pravá 2,7">23 %</td><td title="ľavá 3,3 · pravá 2,7">30 %</td><td title="ľavá 2,7 · pravá 2,2">24 %</td></tr>
+<tr><td>Robota</td><td>7</td><td title="ľavá 1,3 · pravá 1,0">32 %</td><td title="ľavá 0,8 · pravá 0,5">18 %</td><td title="ľavá 0,8 · pravá 0,5">18 %</td><td title="ľavá 1,3 · pravá 1,0">32 %</td></tr>
+<tr><td>Odpor</td><td>9</td><td title="ľavá 1,0 · pravá 1,2">24 %</td><td title="ľavá 1,0 · pravá 1,2">24 %</td><td title="ľavá 1,0 · pravá 1,3">26 %</td><td title="ľavá 1,0 · pravá 1,3">26 %</td></tr>
+<tr><td>Obmedz</td><td>5</td><td title="ľavá 0,8 · pravá 0,0">17 %</td><td title="ľavá 0,8 · pravá 1,0">37 %</td><td title="ľavá 0,8 · pravá 0,5">27 %</td><td title="ľavá 0,5 · pravá 0,5">20 %</td></tr>
+<tr><td>Vízia</td><td>5</td><td title="ľavá 0,5 · pravá 0,8">27 %</td><td title="ľavá 0,5 · pravá 0,5">20 %</td><td title="ľavá 1,0 · pravá 0,3">27 %</td><td title="ľavá 0,0 · pravá 1,3">27 %</td></tr>
+<tr><td>Posil <span class="pozn">(vzácna)</span></td><td>3</td><td title="ľavá 0,5 · pravá 0,5">33 %</td><td title="ľavá 0,5 · pravá 0,5">33 %</td><td title="ľavá 0,5 · pravá 0,0">17 %</td><td title="ľavá 0,5 · pravá 0,0">17 %</td></tr>
+<tr><td>Pakt <span class="pozn">(vzácna)</span></td><td>2</td><td title="ľavá 0,0 · pravá 0,0">0 %</td><td title="ľavá 0,5 · pravá 0,0">25 %</td><td title="ľavá 0,5 · pravá 0,0">25 %</td><td title="ľavá 1,0 · pravá 0,0">50 %</td></tr>
+</table></div>
+</div>
+<p class="pozn">Červené je mimo 15–40 % pri druhu s aspoň 4 výskytmi. Po podržaní prsta alebo myši nad bunkou uvidíš rozpis na ľavú a pravú stranu. Pri otočení karty k súperovi sa indexy obrátia (§6, <code>PRAVIDLA.md:258–266</code>), preto som vyrovnával aj každú stranu zvlášť (pozri <code>sloty.json</code>, <code>matice</code>).</p>
+</section>
+
+<section>
+<h2>4 · Karty: okná a varianty</h2>
+<p class="pozn">Štyri políčka strany = indexy 0–3 zhora. V políčku je, čo naň môže padnúť: ✕ blokovaný, hrubší okraj = vždy plný. Pod tým okno v tvare <code>cards.json</code> (blok. = <code>blocked</code>; „2: Pečeň“ = <code>allowed</code>, na index 2 smie len Pečeň) a počet rozložení strany. ● = zachované pripnutie alebo kombo.</p>
+<h3>Nástroje</h3>
+<table class="karty"><tr><th>Karta · akcie ľ / p</th><th>Ľavá i0–i3</th><th>Pravá i0–i3</th><th>Var. pred → po</th></tr>
+<tr><td><b>Noviny</b><br><span class="pozn">Pohorš / Povera</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl" title="index 1: môže byť prázdny">Pohorš</span><span class="sl" title="index 2: môže byť prázdny">Pohorš</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Povera</span><span class="sl" title="index 1: môže byť prázdny">Povera</span><span class="sl" title="index 2: môže byť prázdny">Povera</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 3 · 3</div></td>
+<td><span class="">4</span> → <b>6</b></td></tr>
+<tr><td><b>Krabička cigariet</b><br><span class="pozn">Cig / Cig</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Cig</span><span class="sl" title="index 1: môže byť prázdny">Cig</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl" title="index 1: môže byť prázdny">Cig</span><span class="sl" title="index 2: môže byť prázdny">Cig</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Vínko</b><br><span class="pozn">Poldeci ×2 / Pečeň ×4</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Poldeci</span><span class="sl" title="index 1: môže byť prázdny">Poldeci</span><span class="sl" title="index 2: môže byť prázdny">Poldeci</span><span class="sl" title="index 3: môže byť prázdny">Poldeci</span></div><div class="pozn">bez bloku · 6</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pečeň</span><span class="sl plny" title="index 1: vždy plný">Pečeň</span><span class="sl plny" title="index 2: vždy plný">Pečeň</span><span class="sl plny" title="index 3: vždy plný">Pečeň</span></div><div class="pozn">bez bloku · 1</div></td>
+<td><span class="">6</span> → <b>6</b></td></tr>
+<tr><td><b>Pasca</b><br><span class="pozn">Obmedz / Odpor</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Obmedz</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Obmedz</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Odpor</span><span class="sl" title="index 1: môže byť prázdny">Odpor</span><span class="sl" title="index 2: môže byť prázdny">Odpor</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 3 · 3</div></td>
+<td><span class="">4</span> → <b>6</b></td></tr>
+<tr><td><b>Puška</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Pecka / Petelica</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Pecka</span><span class="sl" title="index 3: môže byť prázdny">Pecka</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Petelica</span><span class="sl" title="index 3: môže byť prázdny">Petelica</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Svätý text</b><br><span class="pozn">Viera / Viera</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Viera</span><span class="sl" title="index 3: môže byť prázdny">Viera</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Viera</span><span class="sl" title="index 1: môže byť prázdny">Viera</span><span class="sl" title="index 2: môže byť prázdny">Viera</span><span class="sl" title="index 3: môže byť prázdny">Viera</span></div><div class="pozn">bez bloku · 4</div></td>
+<td><span class="">4</span> → <b>8</b></td></tr>
+<tr><td><b>Nealko</b><br><span class="pozn">Pohorš / Pohorš</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Pohorš</span><span class="sl" title="index 1: môže byť prázdny">Pohorš</span><span class="sl" title="index 2: môže byť prázdny">Pohorš</span><span class="sl" title="index 3: môže byť prázdny">Pohorš</span></div><div class="pozn">bez bloku · 4</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pohorš</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 2, 3 · 1</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Výherný automat</b><br><span class="pozn">Robota / Dlh ×4</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Robota</span><span class="sl" title="index 1: môže byť prázdny">Robota</span><span class="sl" title="index 2: môže byť prázdny">Robota</span><span class="sl" title="index 3: môže byť prázdny">Robota</span></div><div class="pozn">bez bloku · 4</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Dlh</span><span class="sl plny" title="index 1: vždy plný">Dlh</span><span class="sl plny" title="index 2: vždy plný">Dlh</span><span class="sl plny" title="index 3: vždy plný">Dlh</span></div><div class="pozn">bez bloku · 1</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Vidly</b><br><span class="pozn">Pecka / Pohorš</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Pecka</span><span class="sl" title="index 1: môže byť prázdny">Pecka</span><span class="sl" title="index 2: môže byť prázdny">Pecka</span><span class="sl" title="index 3: môže byť prázdny">Pecka</span></div><div class="pozn">bez bloku · 4</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl" title="index 1: môže byť prázdny">Pohorš</span><span class="sl" title="index 2: môže byť prázdny">Pohorš</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td><span class="">4</span> → <b>8</b></td></tr>
+<tr><td><b>Lievik</b><br><span class="pozn">Poldeci / Pečeň ×2</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Poldeci</span><span class="sl" title="index 3: môže byť prázdny">Poldeci</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Pečeň</span><span class="sl" title="index 1: môže byť prázdny">Pečeň</span><span class="sl" title="index 2: môže byť prázdny">Pečeň</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 3 · 3</div></td>
+<td><span class="zle">2</span> → <b>6</b></td></tr>
+</table>
+<h3>Zvieratá</h3>
+<table class="karty"><tr><th>Karta · akcie ľ / p</th><th>Ľavá i0–i3</th><th>Pravá i0–i3</th><th>Var. pred → po</th></tr>
+<tr><td><b>Čierna mačka</b><br><span class="pozn">Povera, Pohorš / Povera</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Povera/Pohorš</span><span class="sl plny" title="index 3: vždy plný">Povera/Pohorš</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Povera</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Povera</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Pes</b><br><span class="pozn">Rana / Rana ×2</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Rana</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Rana</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl" title="index 1: môže byť prázdny">Rana</span><span class="sl" title="index 2: môže byť prázdny">Rana</span><span class="sl" title="index 3: môže byť prázdny">Rana</span></div><div class="pozn">blok. 0 · 3</div></td>
+<td><span class="zle">2</span> → <b>6</b></td></tr>
+<tr><td><b>Krokodíl</b><br><span class="pozn">Odpor / Pecka</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Odpor</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Odpor</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Pecka</span><span class="sl" title="index 3: môže byť prázdny">Pecka</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Kapybara</b><br><span class="pozn">Viera / Cig</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl" title="index 1: môže byť prázdny">Viera</span><span class="sl" title="index 2: môže byť prázdny">Viera</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Cig</span><span class="sl" title="index 1: môže byť prázdny">Cig</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Kôň</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Posil / Rana</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Posil</span><span class="sl" title="index 3: môže byť prázdny">Posil</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Rana</span><span class="sl" title="index 1: môže byť prázdny">Rana</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Kohút</b><br><span class="pozn">Pohorš / Odpor</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Pohorš</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Pohorš</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Odpor</span><span class="sl" title="index 1: môže byť prázdny">Odpor</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Odpor</span></div><div class="pozn">blok. 2 · 3</div></td>
+<td><span class="">4</span> → <b>6</b></td></tr>
+</table>
+<h3>Občania</h3>
+<table class="karty"><tr><th>Karta · akcie ľ / p</th><th>Ľavá i0–i3</th><th>Pravá i0–i3</th><th>Var. pred → po</th></tr>
+<tr><td><b>Finančná poradkyňa</b><br><span class="pozn">Dlh ×2, Povera / Dlh, Cig, Obmedz</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Dlh/Povera</span><span class="sl plny" title="index 2: vždy plný">Dlh/Povera</span><span class="sl plny" title="index 3: vždy plný">Dlh/Povera</span></div><div class="pozn">blok. 0 · 3</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Obmedz</span><span class="sl plny" title="index 2: vždy plný">Dlh/Cig</span><span class="sl plny" title="index 3: vždy plný">Dlh/Cig</span></div><div class="pozn">blok. 0; 1: Obmedz · 2</div></td>
+<td><span class="">8</span> → <b>6</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Veľmi smútiaca vdova</b><br><span class="pozn">Rana, Dlh, Obmedz / Pohorš ×2</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Rana/Dlh/Obmedz</span><span class="sl plny" title="index 1: vždy plný">Rana/Dlh/Obmedz</span><span class="sl plny" title="index 2: vždy plný">Rana/Dlh/Obmedz</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 3 · 6</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pohorš</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Pohorš</span></div><div class="pozn">blok. 1, 2 · 1</div></td>
+<td><span class="">6</span> → <b>6</b></td></tr>
+<tr><td><b>Veštica</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Pečeň, Cig, Vízia / Povera ×2, Viera</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Cig/Vízia</span><span class="sl plny" title="index 2: vždy plný">Cig/Vízia</span><span class="sl plny" title="index 3: vždy plný">Pečeň</span></div><div class="pozn">blok. 0; 3: Pečeň · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Povera/Viera</span><span class="sl plny" title="index 2: vždy plný">Povera/Viera</span><span class="sl plny" title="index 3: vždy plný">Povera/Viera</span></div><div class="pozn">blok. 0 · 3</div></td>
+<td><span class="zle">12</span> → <b>6</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Silná, nezávislá žena</b><br><span class="pozn">Pohorš, Cig / Dlh ×2</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Pohorš/Cig</span><span class="sl" title="index 1: môže byť prázdny">Pohorš/Cig</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Pohorš/Cig</span></div><div class="pozn">blok. 2 · 6</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Dlh</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Dlh</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 3 · 1</div></td>
+<td><span class="zle">2</span> → <b>6</b></td></tr>
+<tr><td><b>Policajtka</b><br><span class="pozn">Rana, Obmedz / Robota</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Rana/Obmedz</span><span class="sl plny" title="index 2: vždy plný">Rana/Obmedz</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Robota</span><span class="sl" title="index 1: môže byť prázdny">Robota</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Hasič</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Posil / Petelica, Rana</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Posil</span><span class="sl" title="index 1: môže byť prázdny">Posil</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Petelica/Rana</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Petelica/Rana</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Praudovravec</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Povera, Viera, Odpor / Povera, Pohorš, Vízia</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Povera/Viera/Odpor</span><span class="sl plny" title="index 1: vždy plný">Povera/Viera</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Povera/Viera/Odpor</span></div><div class="pozn">blok. 2; 1: Povera/Viera · 4</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Povera/Pohorš</span><span class="sl plny" title="index 2: vždy plný">Povera/Pohorš</span><span class="sl plny" title="index 3: vždy plný">Vízia</span></div><div class="pozn">blok. 0; 3: Vízia · 2</div></td>
+<td><span class="zle">12</span> → <b>8</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Zámočník</b><br><span class="pozn">Poldeci, Cig / Pecka, Robota</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Poldeci/Cig</span><span class="sl plny" title="index 2: vždy plný">Poldeci/Cig</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Pecka/Robota</span><span class="sl plny" title="index 3: vždy plný">Pecka/Robota</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Stryná</b><br><span class="pozn">Pečeň, Poldeci, Viera / Povera, Viera, Vízia</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Viera</span><span class="sl plny" title="index 1: vždy plný">Pečeň/Poldeci</span><span class="sl plny" title="index 2: vždy plný">Pečeň/Poldeci</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 3; 0: Viera · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Povera/Viera/Vízia</span><span class="sl plny" title="index 1: vždy plný">Povera/Viera/Vízia</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Povera/Viera</span></div><div class="pozn">blok. 2; 3: Povera/Viera · 4</div></td>
+<td><span class="zle">12</span> → <b>8</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Veterán</b><br><span class="pozn">Pečeň, Poldeci / Petelica, Odpor</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Pečeň/Poldeci</span><span class="sl plny" title="index 3: vždy plný">Pečeň/Poldeci</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Petelica/Odpor</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Petelica/Odpor</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Recidivista</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Dlh ×2 / Petelica, Rana</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Dlh</span><span class="sl" title="index 1: môže byť prázdny">Dlh</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Dlh</span></div><div class="pozn">blok. 2 · 3</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Petelica/Rana</span><span class="sl plny" title="index 1: vždy plný">Petelica/Rana</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td><span class="">4</span> → <b>6</b></td></tr>
+<tr><td><b>Liberál</b><br><span class="pozn">Viera, Pohorš / Povera, Cig</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Viera/Pohorš</span><span class="sl plny" title="index 1: vždy plný">Viera/Pohorš</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Povera/Cig</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Povera/Cig</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Živnostník</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Dlh, Robota, Odpor, Pakt / Pečeň, Cig ×2</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Robota</span><span class="sl plny" title="index 1: vždy plný">Odpor</span><span class="sl plny" title="index 2: vždy plný">Dlh/Pakt</span><span class="sl plny" title="index 3: vždy plný">Dlh/Pakt</span></div><div class="pozn">bez bloku; 0: Robota, 1: Odpor · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Pečeň/Cig</span><span class="sl plny" title="index 2: vždy plný">Pečeň/Cig</span><span class="sl plny" title="index 3: vždy plný">Pečeň/Cig</span></div><div class="pozn">blok. 0 · 3</div></td>
+<td><span class="">8</span> → <b>6</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Kočovník</b><br><span class="pozn">Pečeň, Dlh / Pecka, Pečeň, Cig</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Pečeň/Dlh</span><span class="sl plny" title="index 2: vždy plný">Pečeň/Dlh</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pecka/Pečeň/Cig</span><span class="sl plny" title="index 1: vždy plný">Pecka/Pečeň/Cig</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Pecka/Pečeň</span></div><div class="pozn">blok. 2; 3: Pečeň/Pecka · 4</div></td>
+<td><span class="">4</span> → <b>8</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Svokra</b><br><span class="pozn">Poldeci / Pecka, Dlh, Viera</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Poldeci</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 2, 3 · 1</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pecka/Dlh/Viera</span><span class="sl plny" title="index 1: vždy plný">Pecka/Dlh/Viera</span><span class="sl plny" title="index 2: vždy plný">Pecka/Dlh/Viera</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 3 · 6</div></td>
+<td><span class="">8</span> → <b>6</b></td></tr>
+<tr><td><b>Šarlatán</b><br><span class="pozn">Dlh, Povera ×2 / Pečeň, Pohorš, Cig</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Dlh/Povera</span><span class="sl plny" title="index 1: vždy plný">Dlh/Povera</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Dlh/Povera</span></div><div class="pozn">blok. 2 · 3</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Pečeň/Cig</span><span class="sl plny" title="index 2: vždy plný">Pohorš</span><span class="sl plny" title="index 3: vždy plný">Pečeň/Cig</span></div><div class="pozn">blok. 0; 2: Pohorš · 2</div></td>
+<td><span class="">6</span> → <b>6</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Podvodník</b><br><span class="pozn">Dlh, Cig ×2 / Rana, Obmedz</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Dlh/Cig</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Dlh/Cig</span><span class="sl plny" title="index 3: vždy plný">Dlh/Cig</span></div><div class="pozn">blok. 1 · 3</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Rana/Obmedz</span><span class="sl plny" title="index 3: vždy plný">Rana/Obmedz</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td><span class="">4</span> → <b>6</b></td></tr>
+<tr><td><b>Záhradkár</b><br><span class="pozn">Pečeň, Cig ×2 / Rana, Poldeci, Robota</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pečeň/Cig</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Pečeň/Cig</span><span class="sl plny" title="index 3: vždy plný">Pečeň/Cig</span></div><div class="pozn">blok. 1 · 3</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Rana/Robota</span><span class="sl plny" title="index 1: vždy plný">Poldeci</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Rana/Robota</span></div><div class="pozn">blok. 2; 1: Poldeci · 2</div></td>
+<td><span class="">8</span> → <b>6</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Anonymný alkoholik</b><br><span class="pozn">Robota, Odpor / Dlh, Viera</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Robota/Odpor</span><span class="sl plny" title="index 3: vždy plný">Robota/Odpor</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Dlh/Viera</span><span class="sl plny" title="index 2: vždy plný">Dlh/Viera</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Dvojčatá</b><br><span class="pozn">Pecka, Dlh / Rana, Pečeň</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Pecka/Dlh</span><span class="sl plny" title="index 3: vždy plný">Pecka/Dlh</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Rana/Pečeň</span><span class="sl plny" title="index 3: vždy plný">Rana/Pečeň</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Šofér</b><br><span class="pozn">Rana, Poldeci / Pečeň, Cig</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Rana/Poldeci</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Rana/Poldeci</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pečeň/Cig</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Pečeň/Cig</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Snúbenica</b><br><span class="pozn">Robota / Dlh, Viera</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl" title="index 1: môže byť prázdny">Robota</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Robota</span></div><div class="pozn">blok. 0, 2 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Dlh/Viera</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Dlh/Viera</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Degustátorka</b><br><span class="pozn">Pečeň, Poldeci / Rana, Dlh</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pečeň/Poldeci</span><span class="sl plny" title="index 1: vždy plný">Pečeň/Poldeci</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Rana/Dlh</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Rana/Dlh</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Bzdocha</b><br><span class="pozn">Povera, Vízia / Dlh, Pohorš</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Povera/Vízia</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Povera/Vízia</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 1, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Dlh/Pohorš</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Dlh/Pohorš</span></div><div class="pozn">blok. 0, 2 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Dohadzovačka</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Viera, Pakt / Dlh, Posil</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Viera/Pakt</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Viera/Pakt</span></div><div class="pozn">blok. 0, 2 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Dlh/Posil</span><span class="sl plny" title="index 1: vždy plný">Dlh/Posil</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Vandal</b><br><span class="pozn">Pecka, Pečeň / Rana, Odpor</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pecka/Pečeň</span><span class="sl plny" title="index 1: vždy plný">Pecka/Pečeň</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Rana/Odpor</span><span class="sl plny" title="index 3: vždy plný">Rana/Odpor</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Strýko z Ameriky</b><br><span class="pozn">Cig ×2 / Poldeci, Vízia</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Cig</span><span class="sl plny" title="index 3: vždy plný">Cig</span></div><div class="pozn">blok. 0, 1 · 1</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Poldeci/Vízia</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl" title="index 2: môže byť prázdny">Poldeci/Vízia</span><span class="sl" title="index 3: môže byť prázdny">Poldeci/Vízia</span></div><div class="pozn">blok. 1 · 6</div></td>
+<td><span class="zle">2</span> → <b>6</b></td></tr>
+<tr><td><b>Mäsiar</b><br><span class="pozn">Pecka, Pečeň / Pecka, Pečeň</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pecka/Pečeň</span><span class="sl plny" title="index 1: vždy plný">Pecka/Pečeň</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pecka/Pečeň</span><span class="sl plny" title="index 1: vždy plný">Pecka/Pečeň</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+<tr><td><b>Kulturista</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Petelica ×2 / Dlh ×2</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Petelica</span><span class="sl plny" title="index 2: vždy plný">Petelica</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 1</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Dlh</span><span class="sl" title="index 1: môže byť prázdny">Dlh</span><span class="sl" title="index 2: môže byť prázdny">Dlh</span><span class="sl" title="index 3: môže byť prázdny">Dlh</span></div><div class="pozn">bez bloku · 6</div></td>
+<td><span class="zle">1</span> → <b>6</b></td></tr>
+<tr><td><b>Traktoristka</b> <span class="pin" title="zachované pripnutie alebo kombo">●</span><br><span class="pozn">Petelica, Pečeň / Dlh</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Petelica/Pečeň</span><span class="sl plny" title="index 3: vždy plný">Petelica/Pečeň</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Dlh</span><span class="sl" title="index 1: môže byť prázdny">Dlh</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl" title="index 3: môže byť prázdny">Dlh</span></div><div class="pozn">blok. 2 · 3</div></td>
+<td><span class="">4</span> → <b>6</b></td></tr>
+<tr><td><b>Vymáhač</b><br><span class="pozn">Pecka, Dlh / Rana, Dlh</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pecka/Dlh</span><span class="sl plny" title="index 1: vždy plný">Pecka/Dlh</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Rana/Dlh</span><span class="sl plny" title="index 2: vždy plný">Rana/Dlh</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 0, 3 · 2</div></td>
+<td><span class="">4</span> → <b>4</b></td></tr>
+</table>
+<h3>Štartové</h3>
+<table class="karty"><tr><th>Karta · akcie ľ / p</th><th>Ľavá i0–i3</th><th>Pravá i0–i3</th><th>Var. pred → po</th></tr>
+<tr><td><b>Pijan</b><br><span class="pozn">Pečeň, Dlh / Rana, Pečeň, Poldeci</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Pečeň</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Dlh</span></div><div class="pozn">blok. 1, 2; 0: Pečeň · 1</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Rana/Pečeň/Poldeci</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Rana/Pečeň/Poldeci</span><span class="sl plny" title="index 3: vždy plný">Rana/Pečeň/Poldeci</span></div><div class="pozn">blok. 1 · 6</div></td>
+<td><span class="">8</span> → <b>6</b> <span class="pozn">(allowed)</span></td></tr>
+<tr><td><b>Milujúca manželka</b><br><span class="pozn">Dlh, Viera / Povera, Odpor</span></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Dlh/Viera</span><span class="sl plny" title="index 1: vždy plný">Dlh/Viera</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 2, 3 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Povera/Odpor</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Povera/Odpor</span></div><div class="pozn">blok. 0, 2 · 2</div></td>
+<td><span class="zle">16</span> → <b>4</b></td></tr>
+<tr><td><b>Miňištrant</b><br><span class="pozn">Pečeň, Viera / Povera, Cig</span></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl plny" title="index 2: vždy plný">Pečeň/Viera</span><span class="sl plny" title="index 3: vždy plný">Pečeň/Viera</span></div><div class="pozn">blok. 0, 1 · 2</div></td>
+<td class="okno"><div class="str"><span class="sl plny" title="index 0: vždy plný">Povera/Cig</span><span class="sl x" title="index 1: blokovaný">✕</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Povera/Cig</span></div><div class="pozn">blok. 1, 2 · 2</div></td>
+<td><span class="zle">16</span> → <b>4</b></td></tr>
+<tr><td><b>Dievčina na vydaj</b><br><span class="pozn">Dlh ×2 / Povera, Pohorš</span></td>
+<td class="okno"><div class="str"><span class="sl" title="index 0: môže byť prázdny">Dlh</span><span class="sl" title="index 1: môže byť prázdny">Dlh</span><span class="sl" title="index 2: môže byť prázdny">Dlh</span><span class="sl x" title="index 3: blokovaný">✕</span></div><div class="pozn">blok. 3 · 3</div></td>
+<td class="okno"><div class="str"><span class="sl x" title="index 0: blokovaný">✕</span><span class="sl plny" title="index 1: vždy plný">Povera/Pohorš</span><span class="sl x" title="index 2: blokovaný">✕</span><span class="sl plny" title="index 3: vždy plný">Povera/Pohorš</span></div><div class="pozn">blok. 0, 2 · 2</div></td>
+<td><span class="zle">12</span> → <b>6</b></td></tr>
+</table>
+</section>
+
+<section>
+<h2>5 · Zachované pripnutia a kombá</h2>
+<ul>
+<li><b class="dobre">✓</b> <b>Kulturista (E3): Petelice ×2 vonku, Dlhy ×2 vnútri</b> — E3 (27. 10.): akcie Petelica ×2 / Dlh ×2. Tvar WAU 1 (5.1) ostáva: útok na vonkajšej hrane, cena (Dlh ×2) na vnútornej, kde ju zapne karta pri lokalite.</li>
+<li><b class="dobre">✓</b> <b>Pakt: ľavá strana na dvoch nosičoch (E3: Brigádnik vypadol)</b> — 12.1 a E3: Živnostník okno 2–3 vedľa Dlhu (Dlh aj Pakt na 2–3), Dohadzovačka sloty 1 a 3 (aby mal vzácny Pakt dve rôzne okná, podmienka 3b).</li>
+<li><b class="dobre">✓</b> <b>Puška: Petelica na pravých slotoch 2–3</b> — WAU 3 (5.3) a WAU 6 (5.6) počítajú s Petelicou Pušky na 2–3; návrh ju tam nechal a podľa nej postavil Koňa a Vešticu.</li>
+<li><b class="dobre">✓</b> <b>Praudovravec: ľavá strana plná na troch indexoch, Odpor môže stretnúť Petelicu Hasiča</b> — WAU 2 a WAU 7 (5.2, 5.7, poznámka k 10.1: Dezinformátor s Hasičom tým vzniká).</li>
+</ul>
+<table>
+<tr><th>Kombo (plán, časť)</th><th>pred</th><th>po</th></tr>
+<tr><td>WAU 1 · Kulturista za Silnou ženou (jeho Dlhy aktívne) <span class="pozn">(5.1)</span></td><td>100 %</td><td class="zle">50 %</td></tr>
+<tr><td>WAU 2 · Dezinformátor: Petelica Hasiča na Odpore Praudovravca <span class="pozn">(5.2, 10.1 pozn.)</span></td><td>33 %</td><td class="dobre">50 %</td></tr>
+<tr><td>WAU 3 · Petelica Pušky na Posilnení Koňa <span class="pozn">(5.3)</span></td><td>25 %</td><td class="dobre">50 %</td></tr>
+<tr><td>WAU 6 · Petelica Traktoristky na Veštici <span class="pozn">(5.6)</span></td><td>100 %</td><td class="dobre">100 %</td></tr>
+<tr><td>WAU 6 · Petelica Pušky na Veštici <span class="pozn">(5.6)</span></td><td>100 %</td><td class="dobre">100 %</td></tr>
+<tr><td>WAU 7 · Petelica Recidivistu na Praudovravcovi <span class="pozn">(5.7)</span></td><td>100 %</td><td class="dobre">100 %</td></tr>
+</table>
+<p class="pozn">Šanca, že sa spoj v kombe zapne, keď kartu priložíš za tú pri lokalite (jej pravá strana k ľavej strane predošlej, §6). Pri WAU 1 je to podiel Kulturistových Dlhov, ktoré nájdu partnera na Silnej žene.</p>
+<p><b>Ďalšie polohy z plánu, ktoré som nepovažoval za mechanické:</b> úderníci „v strede (sloty 1–2)“ (časť 2, archetyp U a 1.2) a Svokra „Dlh a Pecka na slotoch 2–3“ (D3). Oboje opisuje okná z tlače, nie efekt. Michalova podmienka 3 ich prekonáva: stred bol preplnený práve preto. Zásada 6.1 (cena na tej istej strane ako útok) ostáva, akcie sa medzi stranami nepresúvali.</p>
+</section>
+
+<section>
+<h2>6 · Čo sa nepodarilo a prečo</h2>
+<ul>
+<li><b>WAU 1 (Kulturista za Silnou ženou):</b> pred 100 %, po 50 %. Pred to stálo na Kulturistovi s 1 variantom, čo porušuje podmienku 2. Po E3 má Kulturista vľavo Petelica ×2 na slotoch 1–2 (1 rozloženie, Petelica tak vyrovná index 1), takže pravá strana (Dlh ×2) musí mať aspoň 4 rozloženia. Dva Dlhy na 3 voľných slotoch dajú len 3 rozloženia, preto pravá strana musí byť celá voľná (6 rozložení) a každý Dlh je na náhodnom indexe. Silná žena má vľavo len 2 akcie, takže zachytí v priemere polovicu. Viac sa nedá bez porušenia podmienky 2 alebo pripnutia. Tvar komba (útok vonku, Dlhy vnútri) ostal, mení sa len, koľko jeho Dlhov sa so Silnou ženou spáruje.</li>
+<li><b>Pakt na indexoch 0–1:</b> 0 % zámerne. Pripnutie z 12.1 (ľavá strana) má prednosť. Pakt má po E3 2 výskyty, je teda vzácny druh a podmienku 3b spĺňa vďaka dvom rôznym oknám (Živnostník 2–3, Dohadzovačka 1 a 3).</li>
+<li><b>Ľavá strana Petelice a Posilnenia:</b> na ľavej strane sú len 2 kusy každého, takže strana sama rovnomerná byť nemôže. Spolu s pravou stranou sú presne na 25 %.</li>
+<li><b>Strany s jedným rozložením:</b> Nealko (pravá), Veľmi smútiaca vdova (pravá), Silná, nezávislá žena (pravá), Svokra (ľavá), Strýko z Ameriky (ľavá), Kulturista (ľavá), Pijan (ľavá). Karta má aj tak 4–6 variantov. Pevná strana pomáha stlačiť počet pod 8 a dorovnať okrajové indexy.</li>
+<li><b>Menej aktívnych spojov:</b> rovnomernosť (podmienka 3c) znižuje, ako často sa stretnú dve akcie (pozri 7). Rovnomerný návrh to neobchádza. Čiastočne to vráti sklon do stredu v rámci tolerancie (otázka 1), celé len viac tuhých akcií.</li>
+</ul>
+</section>
+
+<section>
+<h2>7 · Model spoja (výpočet, nie simulácia)</h2>
+<table>
+<tr><th>Sada</th><th>aktívne akcie na spoj</th><th>aktívne tuhé na spoj</th></tr>
+<tr><td>Dnes</td><td>1,965</td><td>0,409</td></tr>
+<tr><td>Pred</td><td>2,052</td><td>0,637</td></tr>
+<tr><td><b>Po</b></td><td>1,865</td><td>0,564</td></tr>
+</table>
+<p class="pozn">Dve náhodné hráčske karty, náhodné rozloženie, každá s polovičnou šancou otočená k súperovi (strany sa vymenia, indexy obrátia). Tuhé: Rana 1, Pecka 2, Petelica 3; Pakt má hodnotu partnera. Lokality a výber hráča (ktorú kartu kam priloží) model nezarátava, preto nejde o rovnaké číslo ako v 1.2 plánu. Porovnávať treba len riadky medzi sebou.</p>
+</section>
+
+<section>
+<h2>8 · Dopad na pravidlá a kód</h2>
+<ul>
+<li><b>Pravidlá:</b> žiadny. Mení sa len <code>blocked</code> a <code>allowed</code> v dátach kariet.</li>
+<li><b>Dáta:</b> okná sa zadajú v tvorcovi pri zavádzaní revízie (v7) a zverejnia s novou sadou. <code>cards.json</code> sa potom skopíruje zo živého webu (CLAUDE.md, pravidlo 5). Strojovo sú v <code>docs/napady/revizia-sady/sloty.json</code> (<code>karty[].lava/prava</code>, tvar <code>cards.json</code>).</li>
+<li><b>Tlač:</b> každé rozloženie je samostatná tlačená karta (<code>variants.ts</code>). Pri 4–8 variantoch je to 4–8 obrázkov rozložení na kartu namiesto 1–16.</li>
+<li><b>Kód:</b> netreba. Pakt potrebuje symbol v tvorcovi (12.3), to platí aj bez tohto návrhu.</li>
+<li><b>Overenie:</b> <code>node --experimental-strip-types --no-warnings docs/napady/revizia-sady/skript/sloty.ts</code> prepočíta tento dokument aj JSON a pri porušení skončí chybou. Okná našiel <code>skript/hladaj.ts</code> (asi 3 minúty, s predvolenými parametrami vráti presne tento návrh).</li>
+</ul>
+</section>
+
+<section>
+<h2>9 · Otázky pre Michala</h2>
+<ol>
+<li><b>Úbytok aktívneho tuhého</b> o 11 % (model 7): (a) prijať a vyrovnať ďalšími Peckami alebo Petelicami na nových kartách, (b) využiť toleranciu ±20 % na mierny sklon do stredu (indexy 1–2 plnšie, Pecky a Rany tam): hľadanie našlo okná, ktoré spĺňajú podmienky aj po stranách a dajú 0,546 (úbytok len 14 %), ale stred je zase plnší, alebo (c) prijať, kým to nezmeria turnaj? Odporúčam (a). Rovnomerné okná nezávisia od toho, ako často sa karty pri spoji otáčajú.</li>
+<li><b>Prevod podmienky 3</b> (15–40 % na index, ±20 % obsadenosť) sedí, alebo chceš prísnejšie čísla? Návrh drží 17–37 % a ±5 %, takže rezervu má.</li>
+<li><b>Pripnutia:</b> stačí zachovať Kulturistu, Pakt a kombá (časť 5), alebo chceš držať aj pôvodné tlačové okná niektorých kariet (napríklad Svokra „Dlh a Pecka na 2–3“)?</li>
+</ol>
+</section>
+
+<p class="pozn">Zdroj: <code>docs/napady/revizia-sady/skript/sloty.ts</code>, <code>hladaj.ts</code> a <code>karty.ts</code> (akcie po revízii: <code>cards.json</code>, plán 3 a 10.1, 4, 12.1, Dávka 3), <code>packages/core/src/variants.ts</code>, <code>engine.ts:679</code>, <code>PRAVIDLA.md:247–266</code>.</p>
+</main>
+</body>
+</html>

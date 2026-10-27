@@ -1,7 +1,7 @@
 {
   "id": "prva-partia",
   "nazov": "Nápovedy Melichara v prvej partii",
-  "verzia": 1,
+  "verzia": 2,
   "zverejnena": false,
   "popis": "Výučba po častiach (prva-hra.json, 1. časť: lokalita, šenok, Zhromaždenie, Pitka, bitka a starší; NA EX príde v 2. časti, dovtedy ho predstaví nápoveda prve-naex). Zvyšok povie Melichar v partii proti botovi, keď sa vec objaví prvýkrát. Každá nápoveda raz za účet, dá sa vypnúť. Špecifikácia: docs/napady/napovedy-prva-partia.html. Spúšťač sa počíta z pohľadu hráča (viewFor), nikdy zo skrytých vecí súpera.",
   "nastavenia": {
@@ -38,7 +38,7 @@
         "jadro": ["packages/core/src/engine.ts:240 GameState.utocnik", "docs/PRAVIDLA.md §4 Útočník a obranca"]
       },
       "melichar": {
-        "utocnik": "Si útočník: kupuješ a kladieš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku. Tak si na tú rolu zvykaj.",
+        "utocnik": "Si útočník: kupuješ a hráš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku. Tak si na tú rolu zvykaj.",
         "obranca": "Si obranca: vyberáš lokalitu a Pitku začínaš ty. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku. Užívaj si to, kým to trvá."
       },
       "zvyraznit": ["os-kola"]
@@ -88,7 +88,7 @@
         "podmienka": "nahladPitky(view)[ja].zadlzenie > 0",
         "jadro": ["packages/core/src/engine.ts:700 nahladPitky", "packages/core/src/engine.ts:873 prahyHraca (dlh)", "docs/PRAVIDLA.md §8 Zadĺženie a Dlh"]
       },
-      "melichar": "Akcia [Dlh] Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
+      "melichar": "Akcia [Dlh] Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh. Zadĺženie po Pitke nezmizne, čaká na ďalší Dlh. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
       "zvyraznit": ["bar:zadlzenie"]
     },
     {
@@ -120,9 +120,9 @@
       "poradie": 9,
       "uroven": "A",
       "spustac": {
-        "kedy": "prvé kolo o lokalitu, ktorej pravidlo mení základný ťah",
+        "kedy": "prvé kolo o lokalitu, ktorej pravidlo mení základný ťah (v7 aj Kšeft lokality a doliatie na Kare)",
         "podmienka": "view.ciel.lokalita.defId v zozname lokality, prvé také kolo",
-        "lokality": ["krcma", "kostol", "benzinka", "zastavka", "most", "vinna_pivnica", "druzstvo"],
+        "lokality": ["krcma", "kostol", "benzinka", "zastavka", "most", "vinna_pivnica", "druzstvo", "kar", "jednota", "zberny_dvor", "sklad", "predsedova_vila"],
         "doplnit": "{lokalita} = názov karty, {efekt} = effect_text z cards.json",
         "jadro": ["packages/core/src/engine.ts:258 GameState.ciel", "docs/PRAVIDLA.md §15 Lokality"]
       },
@@ -138,7 +138,7 @@
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },
-      "melichar": "Body v bare sú tvoje špaky, keby hra skončila teraz. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší dá po bitke, ak ju vyhráš, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
+      "melichar": "Špaky v bare sú tvoje víťazné body. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší dá po bitke, ak ju vyhráš, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
       "zvyraznit": ["bar:body", "bar:starsi"]
     },
     {

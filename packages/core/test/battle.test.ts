@@ -119,11 +119,11 @@ describe("M4 — výsledok", () => {
 });
 
 describe("M4 — Exekútor", () => {
-  it("prah je 10, súperov Exekútor (v5) ho zníži o svoju silu", () => {
-    expect(exekutorCheck(9, 0)).toBe(false);
-    expect(exekutorCheck(10, 0)).toBe(true);
-    expect(exekutorCheck(7, 2)).toBe(false);
-    expect(exekutorCheck(8, 2)).toBe(true);
+  it("prah je 7 (v7), súperov Exekútor (v5) ho zníži o svoju silu", () => {
+    expect(exekutorCheck(6, 0)).toBe(false);
+    expect(exekutorCheck(7, 0)).toBe(true);
+    expect(exekutorCheck(4, 2)).toBe(false);
+    expect(exekutorCheck(5, 2)).toBe(true);
   });
 
   it("v6: zhorí polovica priznaných Dlhov nadol (a rovnako špakov)", () => {

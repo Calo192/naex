@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analýza indexov</title>
+<style>
+:root{
+  --pozadie:#f5f1e8; --papier:#fffdf7; --text:#2b2520; --tlmene:#6b6155;
+  --linka:#d8cfbf; --akcent:#8a4b2d; --zle:#a33b3b; --dobre:#3d7a3d; --variant:#9a7b22;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+    --linka:#3d372d; --akcent:#d08a5e; --zle:#d97b7b; --dobre:#7dbb7d; --variant:#d3b45a;
+  }
+}
+:root[data-theme="dark"]{
+  --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+  --linka:#3d372d; --akcent:#d08a5e; --zle:#d97b7b; --dobre:#7dbb7d; --variant:#d3b45a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.5 Georgia,'Times New Roman',serif;padding:16px}
+main{max-width:940px;margin:0 auto}
+h1{font-size:1.7em;margin:.2em 0 .1em;color:var(--akcent)}
+.pod{color:var(--tlmene);margin:0 0 1em}
+section{background:var(--papier);border:1px solid var(--linka);border-radius:10px;padding:12px 16px;margin:14px 0}
+h2{font-size:1.15em;margin:.1em 0 .4em;color:var(--akcent)}
+table{border-collapse:collapse;width:100%;font-size:.9em}
+td,th{border-bottom:1px solid var(--linka);padding:4px 8px;text-align:right;vertical-align:top}
+td:first-child,th:first-child{text-align:left}
+th{color:var(--tlmene);font-weight:normal}
+.zle{color:var(--zle);font-weight:bold}
+.dobre{color:var(--dobre)}
+.pozn{color:var(--tlmene);font-size:.9em}
+ul{margin:.3em 0 .5em;padding-left:1.3em}
+li{margin:.3em 0}
+code{font-family:Consolas,monospace;font-size:.88em;background:var(--pozadie);padding:1px 5px;border-radius:4px}
+b.v{color:var(--variant)}
+@media (max-width:560px){ td,th{padding:3px 4px} body{padding:12px} }
+</style>
+</head>
+<body>
+<main>
+<h1>Rozloženie akcií po indexoch — občania a zvieratá</h1>
+<p class="pod">27. októbra 2026 · 29 kariet (vrátane štartoviek, každá 2× v hre — pomery to nemení) ·
+metóda = presne ako hra: rovnomerný los z <b>rôznych</b> rozložení (engine.ts:679, generátor <code>sideLayouts</code>), vrátane
+<code>blocked</code> aj <code>allowed</code></p>
+
+<section>
+<h2>Verdikt</h2>
+<ul>
+<li><b class="zle">Obsadenosť indexov NIE je rovnomerná.</b> Spolu (obe strany): i0 = 27,8 · i1 = <b class="zle">42,0</b> · i2 = 32,7 · i3 = <b class="zle">18,5</b> akcií (ideál ≈ 30,3 na index). Index 1 nesie 35 % všetkých akcií, index 3 len 15 %. Najhorší je <b>ľavý index 3</b>: očakávaných 5,5 akcie a len 11 z 29 kariet ho má vôbec odblokovaný.</li>
+<li><b class="zle">Šanca druhu akcie na indexe NIE je podobná.</b> „Horné“ akcie: Viera (80 % na i0+i1), Poldeci (79 %), Obmedzenie (75 %), Cigareta (69 %). „Dolné“: Pečeň (66 % na i2+i3), Pecka (67 %), Dlh (55 %). Extrémy: <b>Petelica padá len na i0/i1, nikdy na i2/i3; Posilnenie naopak len na i2/i3</b> (oboje malé počty, ale 100 % pripnutie).</li>
+<li><b>Príčina je v dátach, nie v náhode:</b> väčšina ručných kariet má <code>allowed</code> — akciu pripnutú na okno 1–2 slotov (dedičstvo importu z tlačového PDF, kde mala každá karta pevné rozloženie). <b>16 z 29 kariet má len 2–4 možné rozloženia.</b> „Náhoda permutácií“ je dnes z veľkej časti ilúzia — losuje sa len vnútri úzkych okien.</li>
+</ul>
+</section>
+
+<section>
+<h2>1 · Obsadenosť indexov (očakávaný počet akcií, na 1 kópiu sady)</h2>
+<table>
+<tr><th>Strana</th><th>i0</th><th>i1</th><th>i2</th><th>i3</th></tr>
+<tr><td>ľavá</td><td>14,67</td><td class="zle">22,17</td><td>15,67</td><td class="zle">5,50</td></tr>
+<tr><td>pravá</td><td>13,17</td><td>19,83</td><td>17,00</td><td>13,00</td></tr>
+<tr><td><b>spolu</b></td><td><b>27,83</b></td><td><b class="zle">42,00</b></td><td><b>32,67</b></td><td><b class="zle">18,50</b></td></tr>
+<tr><td class="pozn">kariet s voľným indexom (ľ/p)</td><td class="pozn">19 / 17</td><td class="pozn">27 / 25</td><td class="pozn">22 / 24</td><td class="pozn">11 / 19</td></tr>
+</table>
+<p class="pozn">Index 1 je takmer vždy odblokovaný (27 z 29 kariet vľavo), index 3 vľavo blokuje 18 z 29 kariet — blokovacie vzory sa v sade opakujú (najčastejšie <code>[2,3]</code> a <code>[0,3]</code>).</p>
+</section>
+
+<section>
+<h2>2 · Akcia × index (obe strany spolu; % = podiel indexu na výskytoch akcie, ideál 25 %)</h2>
+<table>
+<tr><th>Akcia</th><th>spolu</th><th>i0</th><th>i1</th><th>i2</th><th>i3</th></tr>
+<tr><td>Dlh</td><td>18,0</td><td>14 %</td><td>31 %</td><td>33 %</td><td>22 %</td></tr>
+<tr><td>Cigareta</td><td>16,0</td><td>34 %</td><td>34 %</td><td>19 %</td><td class="zle">13 %</td></tr>
+<tr><td>Rana</td><td>15,0</td><td>20 %</td><td>33 %</td><td>30 %</td><td>17 %</td></tr>
+<tr><td>Povera</td><td>14,0</td><td>24 %</td><td>33 %</td><td>30 %</td><td class="zle">13 %</td></tr>
+<tr><td>Pečeň</td><td>9,0</td><td class="zle">6 %</td><td>28 %</td><td class="zle">44 %</td><td>22 %</td></tr>
+<tr><td>Viera</td><td>9,0</td><td class="zle">39 %</td><td class="zle">41 %</td><td>15 %</td><td class="zle">6 %</td></tr>
+<tr><td>Pohoršenie</td><td>9,0</td><td>17 %</td><td class="zle">41 %</td><td>24 %</td><td>19 %</td></tr>
+<tr><td>Poldeci</td><td>7,0</td><td class="zle">36 %</td><td class="zle">43 %</td><td>14 %</td><td class="zle">7 %</td></tr>
+<tr><td>Odpor</td><td>6,0</td><td>17 %</td><td class="zle">42 %</td><td>33 %</td><td class="zle">8 %</td></tr>
+<tr><td>Robota</td><td>5,0</td><td class="zle">10 %</td><td class="zle">40 %</td><td class="zle">40 %</td><td class="zle">10 %</td></tr>
+<tr><td>Obmedzenie</td><td>4,0</td><td class="zle">38 %</td><td class="zle">38 %</td><td class="zle">13 %</td><td class="zle">13 %</td></tr>
+<tr><td>Vízia</td><td>3,0</td><td>33 %</td><td>33 %</td><td>17 %</td><td>17 %</td></tr>
+<tr><td>Pecka</td><td>3,0</td><td>17 %</td><td>17 %</td><td>33 %</td><td>33 %</td></tr>
+<tr><td>Petelica</td><td>2,0</td><td class="zle">50 %</td><td class="zle">50 %</td><td class="zle">0 %</td><td class="zle">0 %</td></tr>
+<tr><td>Posilnenie</td><td>1,0</td><td class="zle">0 %</td><td class="zle">0 %</td><td class="zle">50 %</td><td class="zle">50 %</td></tr>
+</table>
+<p class="pozn">Príklady pripnutia cez <code>allowed</code>: Recidivista — Petelica smie len na i0/i1, Rana len na i2/i3; Milujúca manželka — Viera len i0/i1, Dlh len i2/i3; Hasič — Posilnenie vľavo len i2/i3. Tlačené karty mali pevné rozloženia a <code>allowed</code> ich kopíruje, preto sa druhy zhlukujú.</p>
+</section>
+
+<section>
+<h2>3 · Koľko náhody rozloženia reálne ostáva</h2>
+<p>Žiadna karta nemá úplne pevný layout, ale <b>16 z 29 má len 2–4 varianty</b> (napr. Silná, nezávislá žena a Pes len 2; Policajtka, Zámočník, Kočovník, Šofér… 4). Voľnejších (&gt; 4 variantov) je 13, najviac Milujúca manželka, Miňištrant a Recidivista po 16.</p>
+</section>
+
+<section>
+<h2>4 · Čo s tým — voľby pre Michala</h2>
+<ul>
+<li><b class="v">A · Nechať ako je.</b> Rozloženie je charakter karty (tlačová predloha). Treba ale vedieť, že permutácie potom nie sú zdrojom variability: skúsený hráč sa okná naučí naspamäť (zručnosti to pomáha, pestrosti škodí) a „horné“ akcie sa budú párovať na spoji výrazne častejšie než „dolné“.</li>
+<li><b class="v">B · Uvoľniť <code>allowed</code> na ručných kartách</b> — nechať pripnutia len tam, kde sú mechanicky zámerné (efekt alebo kombo počíta s pozíciou). Šance druhov sa vyrovnajú samé; obsadenosť indexov sa dorovná blokovacími vzormi 21 nových kariet revízie (otvoriť častejšie i3, menej i1).</li>
+<li><b class="v">C · Kompromis:</b> existujúcim kartám rozšíriť okná z 2 slotov na 3 (kde to neničí charakter) a cielene odblokovať ľavý i3; nerovnosti dorovnať výlučne novými kartami.</li>
+</ul>
+<p><b>Odporúčanie:</b> bez ohľadu na A/B/C — <b>21 nových kariet revízie a umiestnenie Paktu sú dorovnanie zadarmo</b>: ešte nemajú <code>blocked</code>/<code>allowed</code>, takže sa im dá predpísať presne to, čo sade chýba (Petelice a Pecky na i2/i3, otvorený ľavý i3, menej i1). Pri zadávaní slotov nových kariet treba vychádzať z tabuliek vyššie.</p>
+</section>
+
+<p class="pozn">Zdroj: packages/core/data/cards.json (zverejnená sada), packages/core/src/variants.ts (generátor layoutov), engine.ts:679 (rovnomerný los variantu). Lokality a starší sú mimo zadania; nové karty revízie slotové dáta zatiaľ nemajú.</p>
+</main>
+</body>
+</html>

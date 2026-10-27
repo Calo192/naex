@@ -1181,6 +1181,23 @@ keď mu starší nedajú nič“). Teraz ich špak dostane ako strach len víťa
 sekere obaja. Odpor Výtržníka predtým rušil susedovu akciu na spoji, teraz je to
 už len Rana ako Posilnenie.
 
+## 2026-10-26 — Autobusár dôsledný, Hasič s voľbou (§8, §9.3, §9.4, §16; Michal 2026-10-26)
+
+Brainstorming kariet. **Autobusár** (variant A „dôsledný“) ignoruje jeden
+Absťák všade, kde sa v bitke rátajú — predtým len v tuhom poškodení, pri
+remíze v tuhom a v špakoch víťaza sa rátali všetky. **Hasič** vytiahne
+náhodnú kartu z odhadzovacieho balíčka (aj kliatbu) a hráč ju nechá alebo
+vráti — predtým si bez voľby vzal prvého Pracujúceho z odhadzovacieho balíčka
+(text karty: „Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho
+balíčka.“; v §16 výklad nemal).
+
+Staré znenie §8 (koniec odseku Nerest a Absťák):
+
+> Každý Absťák hráča znižuje **jeho** tuhé poškodenie v bitke o 1 (§9.3;
+> Autobusár jeden ignoruje). Absťáky, ktoré hráč **práve má** (priznané, jeho
+> karty v línii aj v ruke), navyše rozhodujú remízu v bitke a víťazovi s viac
+> Absťákmi uberajú špaky za bitku (§9.4).
+
 ### Doplnok v6.1c: výkupné zvyšných zdrojov (Michal 2026-10-27)
 
 Michal: „Každé ostávajúce nevypité poldeci bude 1 špak a každých 5 cigariet bude
@@ -1204,3 +1221,35 @@ Michal: „hráč si automaticky ťahá 2 karty z doberacieho balíčka… toto 
 obmedziť na 1, nech majú cigarety zmysel.“ Playtesteri hlásili prebytok
 cigariet (15–56 za partiu). Dobratie na začiatku kola od 2. kola je teraz
 1 karta (predtým 2); ďalšie karty sa kupujú v šenku a fajčením.
+
+## v7 — revízia sady (vetva v7/revizia-sady, Michal 2026-10-27)
+
+Návrh na playtest, na živom webe zatiaľ platí v6. Podklady
+`docs/napady/revizia-sady/plan.md` (časti 7, 10, 11, 12) a `sloty.json`.
+
+Staré znenia:
+
+> §3: „Dĺžku možno zvoliť, len keď má zverejnená sada aspoň toľko lokalít —
+> `cards.json` ich má 15.“ (Lokality sa žrebovali: 3 / 5 / 7.)
+
+> §5: „Vo finále sa cieľ nevyberá — kolo začína rovno stavbou šenku (§14b).“
+
+> §7: „Po vyhodnotení Pitky sa **pečeň aj zadĺženie oboch hráčov vynulujú** —
+> zvyšok pod prahom sa do ďalšej Pitky neprenáša.“ … „**Finále má vždy 3 Pitky.**“
+
+> §11: „prah = 10 − sila súperovej priazne Exekútora (10 / 9 / 8 / 7; Obecný
+> úrad −4)“ … „**Záhradkár:** kto ho má (v ruke či v balíčkoch), smie ho pri
+> exekúcii zahodiť namiesto špakov — Dlhy zhoria aj tak.“
+
+> §14b: „posledná bitka **bez lokality** … **Prvá vyložená karta leží v strede**
+> … **Kraje a prevaha v kraji vo finále nie sú** … Finále má **vždy 3 Pitky**.“
+
+> §15: Lesná cesta „+1 tuhé za každého svojho Občana, Zviera či Starešinu
+> v súperovom kraji, najviac +2“; Kar „zahodiť jednu nepriznanú Cirhózu“; Obecný
+> úrad „Prah Exekútora je o 4 nižší“; Jednota „barter o 1 cigaretu lacnejší“.
+
+Karty: Šofér (NA EX na suseda nezdvojí neaktívne), Šarlatán (Viera v okolí ako
+Vízia), Praudovravec (Autority v súperovej partii neuplatňujú efekt), Podvodník
+(Prehra: ukradni 2 cigarety), Milujúca manželka (Kliatba; Absťák aj pri rovnakom
+počte nerestí), Dievčina na vydaj (bez podmienky 4 Dlhov), Výherný automat
+(výhra 2 cigarety, prehra 1 Dlh). Spúšťače Prestávka a Exekúcia zanikli.

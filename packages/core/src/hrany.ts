@@ -15,8 +15,8 @@ import type { CardInstance, PlayerId, Slot } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, spojVznikne, snubenicaVracia } from "./partia.ts";
-import { bitkaMody, zadlzenieZLinie } from "./effects.ts";
+import { evaluateLine, spojVznikne } from "./partia.ts";
+import { bitkaMody, liberalZadlzenie, zadlzenieZLinie } from "./effects.ts";
 import type { VerejnyStav } from "./effects.ts";
 
 export interface HranyZPohladu {
@@ -110,8 +110,7 @@ export function nahladVylozenia(
   const vnutorna = naMojej ? moje.prava : moje.lava;
   const vonkajsia = naMojej ? moje.lava : moje.prava;
 
-  // Snúbenica vedľa karty s NA EX ju pošle do ruky a ľahne na jej miesto.
-  const strana = snubenicaVracia(line.strany[p], karta.defId) === null ? line.strany[p] : line.strany[p].slice(0, -1);
+  const strana = line.strany[p];
   const krajna = strana[strana.length - 1];
   let sused: SusedNaSpoji | null = null;
   if (krajna !== undefined) {
@@ -133,7 +132,7 @@ export function nahladVylozenia(
   const pary: { index: number; moja: NonNullable<Slot>; susedova: NonNullable<Slot> }[] = [];
   const spoj =
     sused !== null &&
-    spojVznikne({ tags: defOf(data, karta).tags, stred: false }, { tags: defOf(data, sused.karta).tags, stred: sused.stred });
+    spojVznikne({ tags: defOf(data, karta).tags, stred: false, defId: karta.defId }, { tags: defOf(data, sused.karta).tags, stred: sused.stred, defId: sused.karta.defId });
   if (sused !== null && spoj) {
     for (let k = 0; k < 4; k++) {
       const a = vnutorna[k] ?? null;
@@ -147,7 +146,8 @@ export function nahladVylozenia(
   // Dlh tak, ako ho pripíše Pitka — Finančná poradkyňa ho posiela súperovi.
   const sumy = (s: LineState["strany"], ev: LineEval): readonly [ActionSums, ActionSums] => {
     const z = zadlzenieZLinie(data, { strany: s }, ev);
-    return [{ ...ev.sums[0], Dlh: z[0] }, { ...ev.sums[1], Dlh: z[1] }];
+    const l = liberalZadlzenie(data, { strany: s });
+    return [{ ...ev.sums[0], Dlh: z[0] + l[0] }, { ...ev.sums[1], Dlh: z[1] + l[1] }];
   };
   const pred = sumy(line.strany, evaluateLine(data, line));
   const po = sumy(strany, evaluateLine(data, { ...line, strany }));

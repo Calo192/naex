@@ -11,6 +11,8 @@
 // na soundboarde, jeho skupina.json dá názov, ikonu, farbu, kláves a nálady
 // momentov (docs/NASADENIE.md 5c). Priečinok s „_“ na začiatku (_na-posudenie) sa
 // nenahrá. Do <data>/melichar/ ide zoznam.json (hlášky) a skupiny.json.
+// Hláška si nesie aj meno súboru bez prípony — podľa skupiny a mena ju menuje
+// scenár výučby (Michal 2026-10-27).
 // Hláška má aj dĺžku (trvanieMs) — podľa nej server stráži pauzu medzi
 // hláškami zo soundboardu (Michal 2026-10-22); --doplnit ju dopíše hláškam
 // nahraným pred soundboardom bez pôvodného priečinka.
@@ -79,7 +81,7 @@ for (const { cesta, skupina } of vstup) {
   const subor = `${id}.${pripona}`;
   if (!existsSync(join(hudba.adresar, subor))) writeFileSync(join(hudba.adresar, subor), buf);
   const meno = basename(cesta, extname(cesta)).trim();
-  skladby.push(skupina === null ? { id, nazov: meno, subor } : { id, nazov: nazovHlasky(meno), subor, trvanieMs: trvanie(buf), skupina });
+  skladby.push(skupina === null ? { id, nazov: meno, subor } : { id, nazov: nazovHlasky(meno), meno, subor, trvanieMs: trvanie(buf), skupina });
 }
 
 writeFileSync(join(hudba.adresar, ZOZNAM), JSON.stringify(skladby, null, 2));

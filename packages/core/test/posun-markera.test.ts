@@ -61,12 +61,13 @@ describe("posun markera", () => {
         const posun = moje[0] as PosunMarkera;
         expect([posun.z, posun.na]).toEqual([e.marker, teraz.marker]);
         expect(posun.kto).toBe(k.hrac);
-        const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "patronat" ? "patronat" : null;
+        const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "patronat" ? "patronat" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
         expect(posun.zdroj).toBe(zdroj);
         if (posun.zdroj === "prebytok") expect(Math.abs(posun.na - posun.z)).toBe(1);
       }
     }
-    expect([...zdroje].sort()).toEqual(["patronat", "pohorsenie", "prebytok"]);
+    // kseft = Predsedova vila (v7, len finále na nej).
+    for (const z of ["patronat", "pohorsenie", "prebytok"]) expect(zdroje.has(z)).toBe(true);
   });
 
   it("stopa drží do konca Zhromaždenia po bitke a viewFor ju posiela obom", () => {

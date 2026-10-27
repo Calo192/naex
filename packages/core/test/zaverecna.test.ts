@@ -5,7 +5,8 @@
 // a odložené efekty, ktoré by ju prezradili (Svokra).
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
@@ -174,18 +175,6 @@ describe("Záverečná — otočenie na konci Pitky", () => {
     expect(viewFor(data, state, 1).zaverecne).toEqual([]);
   });
 
-  it("Svokra lícom dole za NA EX súpera nekradne hneď — až pri otočení", () => {
-    const pijan: PlacedCard = { card: inst("pijan"), playedBy: 0 };
-    const s = vPitke([[pijan], [skryta(inst("svokra"), 1)]], 0);
-    const naex = naexOdkryte(data, s, pijan.card.uid, 0);
-    expect(naex.state.hraci[0].cigarety).toBe(3);
-    expect(naex.events.some((e) => e.type === "log" && e.text.startsWith("Svokra"))).toBe(false);
-    const odpoved = naex.state.pitkaStav?.reakcia === 1 ? apply(data, naex.state, { type: "bezReakcie" }, 1) : null;
-    const { state, logy: zvysok } = dohrajPitku(odpoved?.state ?? naex.state);
-    const logy = [...(odpoved?.events ?? []).flatMap((e) => (e.type === "log" ? [e.text] : [])), ...zvysok];
-    expect(logy.some((t) => t.startsWith("Svokra:"))).toBe(true);
-    expect(state.hraci[1].cigarety - state.hraci[0].cigarety).toBeGreaterThanOrEqual(4 - 3);
-  });
 });
 
 describe("Záverečná — bot", () => {

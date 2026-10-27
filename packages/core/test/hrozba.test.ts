@@ -118,9 +118,7 @@ describe("hrozba na stole", () => {
     expect(mozeEsteNaex(s, { ...skryte, pitkyCelkom: 2 }, 0)).toBe(false);
     expect(mozeEsteNaex(s, { ...skryte, pitkyCelkom: 2, poldeciPlne: [2, 1] }, 0)).toBe(true);
     expect(mozeEsteNaex(s, skryte, 1)).toBe(true);
-    // Pred Pitkou (Zhromaždenie) áno; v Kostole nikdy.
+    // Pred Pitkou (Zhromaždenie) áno; Kostol (v7) NA EX nezakazuje, len obmedzí na kraj pri oltári.
     expect(mozeEsteNaex(s, { ...pr, faza: "zhromazdenie", pitkaStav: null }, 0)).toBe(true);
-    const kostol = s.lokalityVHre.find((l) => l.defId === "kostol") ?? inst("kostol");
-    expect(mozeEsteNaex({ ...s, ciel: { typ: "lokalita", lokalita: kostol } }, pr, 0)).toBe(false);
   });
 });

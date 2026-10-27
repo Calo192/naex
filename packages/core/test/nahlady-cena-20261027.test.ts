@@ -257,6 +257,8 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
           const karta = r.hraci[su].ruka.find((k) => k.uid === c.uid);
           // Nástup Snúbenice vymení kartu s NA EX — náhľad ho nepredvída (napísané v najhorsiaOdpoved).
           if (karta === undefined || karta.defId === "snubenica") continue;
+          // Cintorín (v7): Cirhóza z pečene odpovede je hneď priznaná — náhľad ju odhaduje len z prahu Pitky.
+          if (r.ciel?.lokalita?.defId === "cintorin") continue;
           const t = apply(data, r, c, su).state;
           const v = viewFor(data, t, p);
           const d = poskodenieBitky(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]), evaluateLine(data, lineState(v)).sums, mojeAbst);
@@ -336,123 +338,14 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
   });
 });
 
-describe("odhad „do konca“ ráta Noviny (playtest 20261026-173610-3 N7)", () => {
-  it("špak navyše z Novín je v zaStarsich odhadu aj vo výplate bitky", () => {
-    const s0 = setupGame(data, 5);
-    const noviny: CardInstance = { uid: 990001, defId: "noviny", leftLayout: 0, rightLayout: 0 };
-    // Traja starší sa boja hráča 0 (marker na polovici hráča 1), ostatní v strede.
-    const starsi = s0.starsi.map((e, i) => ({ ...e, marker: (i < 3 ? 4 : 3) as MarkerPos }));
-    const s: GameState = {
-      ...s0,
-      faza: "bitka",
-      kolo: 3,
-      utocnik: 1,
-      strany: [[], []],
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      lokalityVHre: s0.lokalityVHre.slice(1),
-      pitkaCislo: 2,
-      pitkyCelkom: 2,
-      starsi,
-      hraci: [{ ...s0.hraci[0], dedicstvo: [noviny] }, s0.hraci[1]],
-      bitkaStav: {
-        krok: "pohorsenie",
-        caka: 0,
-        sums: [{ Rana: 5 }, {}],
-        exekutorHotovy: [true, true],
-        exekutor: [0, 0],
-        pohorsenieZostava: [1, 0],
-        damage: null,
-        vitaz: null,
-        prebytokDrzi: null,
-        prebytokZostava: 0,
-        prebytokPosunute: [],
-        pohrebHotovy: [true, true],
-        benzinkaZostava: [0, 0],
-        karHotovy: [true, true],
-        spalit: [],
-        vesticaHotova: true,
-      },
-    };
-    // Pohoršenie na staršieho v strede k súperovi — štvrtý sa začne báť hráča 0.
-    const po = apply(data, s, { type: "pohorsenie", elderId: s.starsi[5]!.elderId }, 0).state;
-    const odhad = spakyTeraz(viewFor(data, { ...s, starsi: po.starsi }, 0));
-    expect(odhad.zaStarsich[0]).toBe(spakyZaStarsich(po.starsi, 0) + 1);
-    expect(po.nastenka.at(-1)?.zaStarsich[0]).toBe(odhad.zaStarsich[0]);
-    // Bez Novín špak navyše nie je.
-    const bez = spakyTeraz(viewFor(data, { ...s, starsi: po.starsi, hraci: [s0.hraci[0], s0.hraci[1]] }, 0));
-    expect(bez.zaStarsich[0]).toBe(spakyZaStarsich(po.starsi, 0));
-  });
-});
 
-describe("náhľad vyloženia Psa ukáže +1 tuhé za pár so súperovou kartou (playtest 20261026-173610-1 N2)", () => {
-  it("tuhé navyše v náhľade = rozdiel bonusu bitky po vyložení", () => {
-    const s0 = setupGame(data, 7);
-    const ciel: GameState["ciel"] = { typ: "lokalita", lokalita: s0.lokalityVHre.find((l) => l.defId !== "ihrisko" && l.defId !== "lesna_cesta")! };
-    let najdene = 0;
-    // Pes hráča 0 na jeho strane vedľa súperovej karty: páry na spoji = tuhé navyše (len na strane majiteľa).
-    for (const sused of ["pijan", "cierna_macka", "dievcina_na_vydaj", "svokra", "hasic"]) {
-      for (let l = 0; l < (data.variants.get("pes")?.left.length ?? 1); l++) {
-        for (let r = 0; r < (data.variants.get("pes")?.right.length ?? 1); r++) {
-          const pes: CardInstance = { uid: 991000 + l * 10 + r, defId: "pes", leftLayout: l, rightLayout: r };
-          const s: GameState = { ...s0, ciel, strany: [[{ card: { uid: 991500, defId: sused, leftLayout: 0, rightLayout: 0 }, playedBy: 1 }], []] };
-          const n = nahladVylozenia(data, lineState({ ...s, lokalitaOtocena: false }), 0, pes, "vlastna");
-          const po: GameState = { ...s, strany: [[...s.strany[0], { card: pes, playedBy: 0 }], []] };
-          const sums = (t: GameState) => evaluateLine(data, lineState({ ...t, lokalitaOtocena: false })).sums;
-          const tuhe = (t: GameState) => poskodenieBitky(data, t, sums(t), [0, 0]).tuhe[0];
-          // Rozdiel tuhého po vyložení = akcie z náhľadu (Rana, Pecka, Petelica) + tuhé navyše.
-          const zAkcii = (n.zmeny[0].Rana ?? 0) + 2 * (n.zmeny[0].Pecka ?? 0) + 3 * (n.zmeny[0].Petelica ?? 0);
-          if (n.pary.length > 0 && (n.zmeny[1].Viera ?? 0) === 0 && (n.zmeny[0].Viera ?? 0) === 0 && (n.zmeny[1].Povera ?? 0) === 0) {
-            expect(n.tuhe[0], `${sused} ${l}/${r}`).toBe(n.pary.length);
-            expect(tuhe(po) - tuhe(s), `${sused} ${l}/${r}`).toBe(zAkcii + n.tuhe[0]);
-            najdene++;
-          }
-        }
-      }
-    }
-    expect(najdene).toBeGreaterThan(0);
-  });
-});
 
-describe("Výpalné pri Svokre: náhľad = odkrytie v motore (roadmapa #49)", () => {
-  const vzorky = stavy(Array.from({ length: 40 }, (_, i) => 6000 + i), predNaex, 1);
-
-  it("Svokra berie prvá, Výpalné len zo zvyšku cigariet — náhľad aj motor", () => {
-    let porovnane = 0;
-    for (const { s: s0, seed } of vzorky) {
-      const p = naTahu(s0) as PlayerId;
-      const su = supera(p);
-      // Súper má Svokru na konci svojej strany a priazeň Výpalníka; hráč málo cigariet.
-      const vypalnik = s0.starsi.find((e) => favourStarsieho(data, e) === "NEPRAJNIK");
-      if (vypalnik === undefined) continue;
-      for (const cigarety of [1, 2, 3, 5]) {
-        const svokra: CardInstance = { uid: 992000 + seed, defId: "svokra", leftLayout: 0, rightLayout: 0 };
-        const strany: GameState["strany"] = su === 0 ? [[...s0.strany[0], { card: svokra, playedBy: su }], s0.strany[1]] : [s0.strany[0], [...s0.strany[1], { card: svokra, playedBy: su }]];
-        const hraci: GameState["hraci"] = p === 0 ? [{ ...s0.hraci[0], cigarety }, s0.hraci[1]] : [s0.hraci[0], { ...s0.hraci[1], cigarety }];
-        const starsi = s0.starsi.map((e) => (e.elderId === vypalnik.elderId ? { ...e, marker: (su === 0 ? 1 : 5) as MarkerPos } : e));
-        const s: GameState = { ...s0, strany, hraci, starsi };
-        const view = viewFor(data, s, p);
-        for (const uid of moznostiNaex(data, s, p)) {
-          const n = nahladNaexNaKartu(data, view, uid, cenyKliatob(view));
-          if (n === null) continue;
-          const r = naOdpoved(s, p, uid);
-          // Bez odpovede sa Pitka hneď vyhodnotí a pripíše aj cigarety z Pitky — porovnáva sa stav po odkrytí.
-          if (r === null) continue;
-          // Svokru môže umlčať Praudovravec — vtedy berie len Výpalné.
-          expect(n.odkrytie.svokra + n.odkrytie.vypalne, `seed ${seed}`).toBeLessThanOrEqual(cigarety);
-          expect(n.odkrytie.view.hraci[p].cigarety, `seed ${seed}: cigarety po odkrytí, ${cigarety} cig.`).toBe(r.hraci[p].cigarety);
-          expect(n.odkrytie.view.hraci[su].cigarety, `seed ${seed}: súper po odkrytí`).toBe(r.hraci[su].cigarety);
-          if (n.odkrytie.svokra > 0 && n.odkrytie.vypalne > 0) porovnane++;
-        }
-      }
-    }
-    expect(porovnane).toBeGreaterThanOrEqual(20);
-  });
-});
 
 describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #49)", () => {
   /** Prvá z viacerých Pitiek kola, lícom dole nič, nikto nemá skryté NA EX; Krčma by NA EX vynútila. */
   const vhodny = (s: GameState): boolean =>
     s.faza === "pitka" &&
+    (s.hasicVolby ?? []).length === 0 &&
     s.ciel?.lokalita?.defId !== "krcma" &&
     s.vizia === null &&
     s.pitkaStav !== null &&

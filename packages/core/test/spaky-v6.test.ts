@@ -4,7 +4,8 @@
 // Noviny, Záhradkár). Očakávané hodnoty sú z pravidla, nie z kódu.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, ElderState, GameState, MarkerPos, PlayerId } from "../src/index.ts";
@@ -153,29 +154,6 @@ describe("v6 karty: Kultúrny dom, Noviny", () => {
     expect(st.starsi.filter((e) => e.marker !== 3)).toHaveLength(1);
   });
 
-  it("Noviny: 1 špak navyše, keď sa hráča bojí viac starších ako súpera (počet starších, nie zón) — v6.1 len víťazovi, pri sekere obom", () => {
-    const sNovinami = (markery: readonly number[], sums: BitkaStav["sums"] = [{ Rana: 5 }, {}]) =>
-      predPoskodenim({
-        ciel: lokalita(s0, "krcma"),
-        sums,
-        uprav: (t) => ({
-          ...t,
-          hraci: [{ ...t.hraci[0], dedicstvo: [inst("noviny")] }, t.hraci[1]],
-          starsi: t.starsi.map((e, i) => ({ ...e, marker: (markery[i] ?? 3) as MarkerPos })),
-        }),
-      });
-    // Hráča 0 sa boja dvaja (prvý po Pohoršení 3 → 4 a druhý), hráča 1 jeden — aj keď v červenej.
-    // Hráč 0 vyhral: 1 + 1 za starších a Noviny +1; porazený hráč 1 nič.
-    expect(pohorsenie(sNovinami([3, 4, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1 + 1 + 1, 0]);
-    // Rovnako starších (1 : 1) — nič navyše.
-    expect(pohorsenie(sNovinami([3, 3, 0])).state.nastenka.at(-1)?.zaStarsich).toEqual([1, 0]);
-    // Hráč 0 prehral: za starších nič a ani Noviny (Michal 2026-10-27).
-    expect(pohorsenie(sNovinami([3, 4, 0], [{}, { Rana: 5 }])).state.nastenka.at(-1)?.zaStarsich).toEqual([0, 3]);
-    // Sekera: obaja za starších, Noviny tiež.
-    expect(pohorsenie(sNovinami([3, 4, 0], [{}, {}])).state.nastenka.at(-1)?.zaStarsich).toEqual([1 + 1 + 1, 3]);
-    // Noviny majú v rozpise vlastnú položku na konci.
-    expect(pohorsenie(sNovinami([3, 4, 0])).state.nastenka.at(-1)?.zaStarsichRozpis?.[0].at(-1)).toEqual({ elderId: null, defId: "noviny", spaky: 1 });
-  });
 });
 
 describe("v6 bod 11: finále", () => {
@@ -195,8 +173,8 @@ describe("v6 bod 11: finále", () => {
   }
   const poBitke = (s: GameState): GameState => apply(data, s, { type: "skipPohreb" }, 0).state;
 
-  it("po poslednej lokalite príde finále: bez lokality, rovno šenok, útočí viac špakov", () => {
-    const s = poBitke(predFinale([5, 3], 1, 1));
+  it("po poslednej lokalite príde finále: bez lokality, rovno šenok, útočí zaostávajúci (Michal 2026-10-27)", () => {
+    const s = poBitke(predFinale([3, 5], 1, 1));
     expect(s.koniec).toBeNull();
     expect(s.ciel).toEqual({ typ: "finale", lokalita: null });
     expect(s.faza).toBe("draft");
@@ -228,7 +206,7 @@ describe("v6 bod 11: finále", () => {
   });
 
   it("útočník vyloží prvú kartu do stredu; obranca sa prikladá k nej", () => {
-    let s = poBitke(predFinale([5, 3], 1, 1));
+    let s = poBitke(predFinale([3, 5], 1, 1));
     // Šenok a patronát preskočí — každý len končí.
     for (let i = 0; i < 40 && s.faza === "draft"; i++) {
       const p = naTahu(s)!;

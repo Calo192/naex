@@ -3,7 +3,8 @@
 // od východiskovej sady v cards.json.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, ElderState, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
@@ -15,7 +16,6 @@ import {
   efektPotlaceny,
   evaluateLine,
   loadGameData,
-  pohorseniaNeplatia,
   posunMarker,
   prebytokProtiZlava,
   printedSides,
@@ -122,27 +122,15 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
     } as GameState;
   };
 
-  it("Policajtka: súperove Pohoršenia proti jej majiteľovi neplatia", () => {
-    const s = stav([[], [lezi("policajtka", 1)]]);
-    expect(pohorseniaNeplatia(data, s, 1)).toBe(true);
-    expect(pohorseniaNeplatia(data, s, 0)).toBe(false);
-  });
-
   it("Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt", () => {
     // Policajtka (Autorita) hráča 1, Praudovravec hráča 0 → umlčaná.
     const s = stav([[lezi("praudovravec", 0)], [lezi("policajtka", 1)]]);
     expect(efektPotlaceny(data, s, 1, "policajtka")).toBe(true);
-    expect(pohorseniaNeplatia(data, s, 1)).toBe(false);
     // Vlastný Praudovravec tvoju Autoritu neumlčí.
     const vlastny = stav([[], [lezi("praudovravec", 1), lezi("policajtka", 1)]]);
     expect(efektPotlaceny(data, vlastny, 1, "policajtka")).toBe(false);
   });
 
-  it("Puška v Dedičstve: prebytok proti jej majiteľovi o 2 menší", () => {
-    const s = stav([[], []], [["puska"], []]);
-    expect(prebytokProtiZlava(s, 0)).toBe(2);
-    expect(prebytokProtiZlava(s, 1)).toBe(0);
-  });
 
   it("v6: Pohoršenie smie na krajnú pozíciu vždy (Noviny majú nový efekt — špak za väčšinu strachu)", () => {
     const e = { ...setupGame(data, 9).starsi[0]!, marker: 1 } as ElderState;

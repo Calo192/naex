@@ -23,7 +23,9 @@ export type Action =
   | "Poldeci"
   | "Posilnenie"
   | "Odpor"
-  | "Robota";
+  | "Robota"
+  // Pakt (v7, Michal 2026-10-27): na spoji sa správa ako akcia, s ktorou je v páre.
+  | "Pakt";
 
 export const ALL_ACTIONS: readonly Action[] = [
   "Rana",
@@ -41,6 +43,7 @@ export const ALL_ACTIONS: readonly Action[] = [
   "Posilnenie",
   "Odpor",
   "Robota",
+  "Pakt",
 ];
 
 export type Tag =
@@ -88,7 +91,13 @@ export type Trigger =
   | "Dedičstvo"
   | "Výhra"
   | "Prehra"
-  | "Prestávka"
+  // Kšeft (v7): aktívny efekt — majiteľ ho spustí sám v Pitke na svojom ťahu, raz za Pitku.
+  | "Kšeft"
+  // Konflikt (v7, plan.md 13.1): ležiaca karta, ku ktorej súper priloží svoju.
+  | "Konflikt"
+  // Úplatok (v7, Kulturista): opak Kšeftu — platí súper, aby kartu oslabil.
+  | "Úplatok"
+  // Exekúcia (v7, Záhradkár): keď majiteľovi v bitke hrozí exekúcia.
   | "Exekúcia";
 
 export const ALL_TRIGGERS: readonly Trigger[] = [
@@ -100,7 +109,9 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Dedičstvo",
   "Výhra",
   "Prehra",
-  "Prestávka",
+  "Kšeft",
+  "Konflikt",
+  "Úplatok",
   "Exekúcia",
 ];
 

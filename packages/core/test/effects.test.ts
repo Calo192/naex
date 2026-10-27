@@ -92,21 +92,6 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     expect(bitkaMody(data, s, 0).tuheBonus).toBe(0);
   });
 
-  it("recidivista pridáva tuhé; farár a veterinár uberajú", () => {
-    const s = fakeState({
-      strany: [
-        [placed("recidivista", 0), placed("pijan", 0), placed("farar", 0)],
-        [placed("kocovnik", 1), placed("veterinar", 1)],
-      ],
-    });
-    const mody0 = bitkaMody(data, s, 0);
-    // kocovnik je Zahraničný → recidivista +1.
-    expect(mody0.tuheBonus).toBe(1);
-    // farár v partii 0: ignoruj 2 súperove Povery (pevné číslo, 2026-10-18).
-    expect(mody0.superovePoveryZlava).toBe(2);
-    // veterinár v partii 1: cirhózy hráča 1 pridávajú hráčovi 0 o 2 menej.
-    expect(mody0.cirhozaZlava).toBe(2);
-  });
 
   it("Neprajník a Čierna mačka: Povery nad súperove priznané Dlhy", () => {
     const strana = (sums: Record<string, number>, dlhy: number, nad?: number) => ({
@@ -144,31 +129,10 @@ function zhrom(s: GameState): GameState {
 }
 
 describe("pravidlá v2 a nová tlačová sada", () => {
-  it("Robota je akcia a Záhradkár má spúšťač Exekúcia", () => {
+  it("Robota je akcia a Záhradkár má spúšťač Exekúcia (v7)", () => {
     expect(data.cards.get("autobusar")?.right.actions.Robota).toBe(1);
-    expect(data.cards.get("zahradkar")?.triggers).toContain("Exekúcia");
+    expect(data.cards.get("zahradkar")?.triggers).toEqual(["Exekúcia"]);
   });
 
-  it("v6: Záhradkára smie hráč pri exekúcii zahodiť namiesto špakov — hľadá sa v ruke aj v balíčkoch", () => {
-    const s = fakeState({});
-    const ja = s.hraci[0];
-    const so = { ...s, hraci: [{ ...ja, ruka: [inst("zahradkar")] }, s.hraci[1]] as unknown as GameState["hraci"] };
-    expect(zahradkarHraca(so, 0)).toBe("ruka");
-    expect(zahradkarHraca(so, 1)).toBeNull();
-  });
 
-  it("pes sa nesmie vyložiť do partie s iným zvieraťom (a naopak)", () => {
-    const base = fakeState({});
-    const sPsom = {
-      ...base,
-      hraci: [{ ...base.hraci[0], ruka: [inst("cierna_macka")] }, base.hraci[1]],
-      strany: [[placed("pes", 0)], []],
-    } as unknown as GameState;
-    const tahy = legalCommands(data, zhrom(sPsom), 0);
-    expect(tahy.some((t) => t.type === "place" && t.target === "vlastna")).toBe(false);
-    // Kontrola, že test nie je prázdny: občan sa k psovi vyložiť smie.
-    const sObcanom = { ...sPsom, hraci: [{ ...base.hraci[0], ruka: [inst("pijan")] }, base.hraci[1]] } as unknown as GameState;
-    const tahy2 = legalCommands(data, zhrom(sObcanom), 0);
-    expect(tahy2.some((t) => t.type === "place" && t.target === "vlastna")).toBe(true);
-  });
 });

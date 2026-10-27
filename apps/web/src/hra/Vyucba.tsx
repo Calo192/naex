@@ -12,7 +12,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ClientState, Command, Event as UdalostHry } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { ZAVES_ODCHODU } from "../lib/odchod.ts";
-import { menoVoVete, rodHraca, textUdalosti, type HracInfo, type KrokVyucby, type PopisKrokuVyucby, type StavVyucby } from "./useHra.ts";
+import { menoVoVete, rodHraca, textUdalosti, type HracInfo, type KrokVyucby, type PopisKrokuVyucby, type RadaVyucby, type StavVyucby } from "./useHra.ts";
+import { hlaskaKroku } from "./hlaskyVyucby.ts";
+import { useHlaskyVyucby } from "./Melichar.tsx";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
 import { moznostiKvizu, rezimMelichara } from "./bar.ts";
@@ -318,7 +320,7 @@ export function VyucbaStol({
   /** Odpoveď na kontrolnú otázku (index možnosti) — server si zapíše prvú. */
   readonly odpovedz: (index: number) => void;
   /** Rada Melichara po zlom ťahu v rozhodnutí (partia sa nezmenila). */
-  readonly rada: string | null;
+  readonly rada: RadaVyucby | null;
   /** Beží Počítadlo bitky — „ďalej“ čaká, inak by Enter preskočil krok (UI inšpekcia). */
   readonly pocitadloBezi: boolean;
   /** Stôl a udalosti poslednej správy — čo sa zmenilo po ťahu bota či hry za hráča. */
@@ -329,6 +331,8 @@ export function VyucbaStol({
   readonly sada: Sada | null;
 }) {
   const krok = stav.krok;
+  const radaText = rada?.text ?? null;
+  const { prehraj: prehrajHlasku, zastav: zastavHlasku } = useHlaskyVyucby();
   useEffect(() => {
     zrusChybu();
     // Len pri zmene kroku — zrusChybu je stabilný (useCallback v useHra).
@@ -490,13 +494,15 @@ export function VyucbaStol({
   const vOdpovedi = pohlad === "odpoved" && vybrana !== undefined;
   const vyber = useCallback(
     (i: number) => {
-      if (moznosti[i] === undefined) return;
+      const m = moznosti[i];
+      if (m === undefined) return;
       setPohlad("odpoved");
       if (i === odpoved || vybrana?.spravna === true) return;
       setOdpoved(i);
       odpovedz(i);
+      if (!m.spravna) prehrajHlasku(m.hlaska);
     },
-    [moznosti, odpoved, vybrana, odpovedz],
+    [moznosti, odpoved, vybrana, odpovedz, prehrajHlasku],
   );
   const spatNaOtazku = useCallback(() => setPohlad("otazka"), []);
   useEffect(() => {
@@ -536,12 +542,12 @@ export function VyucbaStol({
       });
     }
     if (chyba !== null) kusy.push({ kluc: "chyba", obsah: <span className="vyucba-chyba">{chyba}</span> });
-    if (rada !== null) {
+    if (radaText !== null) {
       kusy.push({
         kluc: "rada",
         obsah: (
           <span className="vyucba-rada">
-            <VetaMelichara text={rada} sada={sada} />
+            <VetaMelichara text={radaText} sada={sada} />
           </span>
         ),
       });
@@ -550,7 +556,7 @@ export function VyucbaStol({
     // Ťah hry za hráča bez textu: bar nesmie zmiznúť — stôl by ostal bez slova (playtest výučby 20261025, krok 6).
     if (krok.melichar.trim() === "" && stitokText === null && krok.kto === "auto" && tahaIny) kusy.push({ kluc: "auto", obsah: "Tento ťah spraví hra za teba — chvíľu počkaj." });
   }
-  const podpis = [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", rada ?? "", vOdpovedi ? vybrana.vysvetlenie : (krok?.melichar ?? "")].join("|");
+  const podpis = [krok?.id ?? "hotovo", pohlad, odpoved ?? "", stitokText ?? "", chyba ?? "", radaText ?? "", vOdpovedi ? vybrana.vysvetlenie : (krok?.melichar ?? "")].join("|");
   const strany = useStrany(podpis);
 
   // Enter = „ďalej“ v kroku bez ťahu, aj keď fokus ostal na karte či tlačidle po kliku myšou
@@ -584,9 +590,29 @@ export function VyucbaStol({
   // textu nechá bar hráčovi. Počas Počítadla bitky text čaká (playtest výučby kolo 4, U3) — stmavený
   // pod animáciou hovoril o výsledku skôr, než ho bolo vidno.
   const maText =
-    krok === null || stitokText !== null || chyba !== null || rada !== null || krok.melichar.trim() !== "" || moznosti.length > 0 || jeInfo || (krok.kto === "auto" && tahaIny);
+    krok === null || stitokText !== null || chyba !== null || radaText !== null || krok.melichar.trim() !== "" || moznosti.length > 0 || jeInfo || (krok.kto === "auto" && tahaIny);
   const hovori = maText && !pocitadloBezi;
   const spatHlavne = zlaOdpoved && !strany.dalsiaJe;
+
+  // Hláška kroku zo soundboardu (Michal 2026-10-27) zaznie raz, s bublinou — pri ťahu bota či hry
+  // za hráča až po ťahu a po Počítadle bitky. Nový krok utne hlášku predošlého; koniec výučby nie,
+  // rozlúčka dohrá. Rada po zlom ťahu a zlá odpoveď kvízu majú hlášku vlastnú.
+  const ozvanyKrok = useRef<{ readonly index: number; zaznel: boolean } | null>(null);
+  const hlaskaTeraz = hlaskaKroku(krok, hovori);
+  useEffect(() => {
+    if (krok === null) return;
+    if (ozvanyKrok.current?.index !== krok.index) {
+      if (ozvanyKrok.current !== null) zastavHlasku();
+      ozvanyKrok.current = { index: krok.index, zaznel: false };
+    }
+    if (hlaskaTeraz === null || ozvanyKrok.current.zaznel) return;
+    ozvanyKrok.current.zaznel = true;
+    prehrajHlasku(hlaskaTeraz);
+  }, [krok?.index, hlaskaTeraz]);
+  useEffect(() => {
+    if (rada !== null) prehrajHlasku(rada.hlaska);
+    // Len pri novej rade (n), nie pri prekreslení.
+  }, [rada?.n]);
 
   // Vlastný nápis (Dať cigaretu, Odovzdať cigaretu) až na poslednej strane textu — dovtedy tlačidlo listuje.
   const napisDalej = krok !== null && krok.tlacidlo !== null && jeInfo && !strany.dalsiaJe ? krok.tlacidlo : "ďalej";

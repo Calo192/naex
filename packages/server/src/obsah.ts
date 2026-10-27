@@ -336,7 +336,7 @@ export class Obsah {
    * cards.json); preskočí sa, ak má tvorca nezverejnenú prácu (návrh upravený
    * po poslednom zverejnení) — tú by prepísal.
    */
-  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-v19-20261026"):"hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
+  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-v7-efekty-20261027"):"hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
     if (this.nastaveniaT.jeden(znacka) !== null) return "uz-bezalo";
     const posledna = this.db.prepare("SELECT cas FROM sady ORDER BY verzia DESC LIMIT 1").get() as { cas: number } | undefined;
     const navrhy = this.karty.vsetky();
@@ -386,7 +386,13 @@ export class Obsah {
       // pečene); názov, ikonu a poradie z tvorcu nechá.
       for (const a of PREDVOLENE_AKCIE) {
         const stara = this.akcie.jeden(a.kluc);
-        if (stara === null || stara.popis === a.popis) continue;
+        // Nová vstavaná akcia (Pakt, v7) v starej databáze ešte nie je.
+        if (stara === null) {
+          zmena = true;
+          this.akcie.uloz(a.kluc, a);
+          continue;
+        }
+        if (stara.popis === a.popis) continue;
         zmena = true;
         this.akcie.uloz(a.kluc, { ...stara, popis: a.popis });
       }

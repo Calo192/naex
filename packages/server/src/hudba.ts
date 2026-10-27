@@ -7,7 +7,10 @@
 import { createReadStream, existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { NALADY, type NaladaMomentu } from "@naex/core";
+import { NALADY, nazovHlasky, type NaladaMomentu } from "@naex/core";
+
+// Text hlášky z názvu súboru ráta aj klient (hláška výučby v starom zozname bez mena).
+export { nazovHlasky };
 
 export interface Skladba {
   /** SHA-256 obsahu (40 znakov) — rovnaký súbor sa uloží len raz. */
@@ -24,6 +27,12 @@ export interface Hlaska extends Skladba {
   readonly trvanieMs: number;
   /** Skupina = priečinok pri importe (id zo SKUPINA_RE). */
   readonly skupina?: string;
+  /**
+   * Názov súboru bez prípony („09_Boha“) — podľa skupiny a mena hlášku nájde výučba
+   * (Michal 2026-10-27). Id je hash obsahu a nazov upravený text, ani jedno sa nedá
+   * napísať do scenára. Zoznamy spred importu s menom ho nemajú.
+   */
+  readonly meno?: string;
 }
 
 export const SKUPINY = "skupiny.json";
@@ -232,13 +241,6 @@ export function bezUvodnychNul(buf: Buffer): Buffer {
   return i === 0 ? buf : buf.subarray(i);
 }
 
-/** Text hlášky z názvu súboru: „03_no_toto_je_marha“ → „No toto je marha“. */
-export function nazovHlasky(meno: string): string {
-  // Poradové číslo má najviac dve cifry — „1500_korun“ je hláška o 1500 korunách.
-  const text = meno.replace(/^\d{1,2}[_\s-]+/, "").replace(/_+/g, " ").trim();
-  return text.charAt(0).toLocaleUpperCase("sk") + text.slice(1);
-}
-
 /** Prípona podľa prvých bajtov, nie podľa názvu súboru. */
 export function priponaZvuku(buf: Buffer): string | null {
   if (buf.length < 12) return null;
@@ -289,8 +291,14 @@ export class Hudba {
    */
   hlasky(): Hlaska[] {
     return this.zoznam().map((s) => {
-      const { trvanieMs: ulozene, skupina } = s as Partial<Hlaska>;
-      const zaklad = { id: s.id, nazov: s.nazov, subor: s.subor, ...(typeof skupina === "string" && SKUPINA_RE.test(skupina) ? { skupina } : {}) };
+      const { trvanieMs: ulozene, skupina, meno } = s as Partial<Hlaska>;
+      const zaklad = {
+        id: s.id,
+        nazov: s.nazov,
+        subor: s.subor,
+        ...(typeof skupina === "string" && SKUPINA_RE.test(skupina) ? { skupina } : {}),
+        ...(typeof meno === "string" && meno !== "" ? { meno } : {}),
+      };
       if (typeof ulozene === "number" && ulozene > 0) return { ...zaklad, trvanieMs: ulozene };
       let trvanieMs = this.trvania.get(s.subor);
       if (trvanieMs === undefined) {

@@ -61,52 +61,17 @@ function poPohorseni(s: GameState) {
 }
 
 describe("bitka hlási, čo zmenší či zruší prebytok a Pohoršenia", () => {
-  it("Puška: výsledok bitky nesie prebytok po odpočte a log ho ohlási", () => {
-    const s = vBitke([[], []], { krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0], sums: [{ Rana: 5 }, {}] }, (t) => ({
-      ...t,
-      hraci: [t.hraci[0], { ...t.hraci[1], dedicstvo: [inst("puska")] }],
-    }));
-    const { state, events } = poPohorseni(s);
-    const v = events.find((e) => e.type === "bitkaVysledok");
-    if (v?.type !== "bitkaVysledok") throw new Error("bitka sa nevyhodnotila");
-    expect(v.prebytok).toBe(5);
-    expect(v.prebytokNaRozdelenie).toBe(3);
-    // Ten istý výpočet ponúka klient v odhade bitky.
-    expect(prebytokNaRozdelenie(s, battleOutcome(v.damage))).toBe(3);
-    expect(state.bitkaStav?.prebytokZostava).toBe(3);
-    expect(logy(events)).toContain("Puška hráča 2: prebytok 5 → 3.");
-  });
 
-  it("Miňištrant: prebytok, ktorý na posun nestačí, prepadne s hláškou", () => {
-    // Dvaja Miňištranti víťaza → posun stojí 3; prebytok 4 − Puška 2 = 2.
-    const s = vBitke(
-      [[lezi("ministrant", 0), lezi("ministrant", 0)], []],
-      { krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0], sums: [{ Rana: 4 }, {}] },
-      (t) => ({ ...t, hraci: [t.hraci[0], { ...t.hraci[1], dedicstvo: [inst("puska")] }] }),
-    );
-    const { state, events } = poPohorseni(s);
-    expect(state.bitkaStav?.krok).not.toBe("prebytok");
-    expect(logy(events)).toContain("Prebytok 2 prepadol — posun markera stojí hráča 1 3 (Miňištrant).");
-  });
 
-  it("Policajtka: zrušené Pohoršenia aj z patronátu ohlási; umlčanú Praudovravcom tiež", () => {
+  it("Policajtka (Michal 2026-10-26) Pohoršenia neruší — bitka o nej mlčí a Pohoršenia z patronátu platia", () => {
     // Benzínka: hráč 0 spáli jedného z dvoch Občanov, potom sa prepočítajú Pohoršenia.
-    const s = (strany: GameState["strany"]): GameState =>
-      vBitke(strany, { krok: "benzinka", caka: 0, benzinkaZostava: [1, 0], exekutorHotovy: [false, false] }, (t) => ({
-        ...t,
-        patronat: [null, { elderId: t.starsi[0]!.elderId, nahrada: inst("pijan"), pohorsenia: 2 }],
-      }));
-    const pijan = lezi("pijan", 0);
-    const zrusene = apply(data, s([[pijan, lezi("pijan", 0)], [lezi("policajtka", 1)]]), { type: "benzinka", uids: [pijan.card.uid] }, 0);
-    expect(logy(zrusene.events)).toContain("Policajtka: 2 Pohoršení hráča 1 (2 z patronátu) proti hráčovi 2 neplatí.");
-
-    const pijan2 = lezi("pijan", 0);
-    const umlcana = apply(
-      data,
-      s([[pijan2, lezi("pijan", 0), lezi("praudovravec", 0)], [lezi("policajtka", 1)]]),
-      { type: "benzinka", uids: [pijan2.card.uid] },
-      0,
-    );
-    expect(logy(umlcana.events)).toContain("Praudovravec umlčal Policajtku hráča 2 — Pohoršenia hráča 1 platia.");
+    const s = vBitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], { krok: "benzinka", caka: 0, benzinkaZostava: [1, 0], exekutorHotovy: [false, false] }, (t) => ({
+      ...t,
+      patronat: [null, { elderId: t.starsi[0]!.elderId, nahrada: inst("pijan"), pohorsenia: 2 }],
+    }));
+    const { state, events } = apply(data, s, { type: "benzinka", uids: [s.strany[0][0]!.card.uid] }, 0);
+    expect(logy(events).some((t) => t.startsWith("Policajtka") || t.startsWith("Praudovravec umlčal"))).toBe(false);
+    expect(state.bitkaStav?.pohorseniaPatronatu?.[0]).toBe(2);
+    expect(state.bitkaStav?.pohorseniaSpolu?.[0] ?? 0).toBeGreaterThanOrEqual(2);
   });
 });

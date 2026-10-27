@@ -4,7 +4,8 @@
 // Očakávané hodnoty sú z textu pravidiel, nie z toho, čo kód vráti.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardDef, CardInstance, Command, Event, GameData, GameState, PitkaStav, PlacedCard, PlayerId, PlayerState } from "../src/index.ts";
@@ -287,7 +288,7 @@ describe("§7 NA EX na kartu pri lokalite a §16 NA EX na Veterána", () => {
 // --- §7 Pitka — vyhodnotenie --------------------------------------------------------
 
 describe("§7 Pitka — poradie vyhodnotenia", () => {
-  it("§8: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok sa po Pitke vynuluje", () => {
+  it("§8: za každý celý prah zadĺženia jeden Dlh — 5 pri prahu 2 = 2 Dlhy, zvyšok ostáva na účte (D6, v7)", () => {
     const vonk: Layout4 = ["Dlh", "Dlh", "Dlh", null];
     const vnut: Layout4 = ["Dlh", "Dlh", "Rana", null];
     const o = makeDef("r_dlh_o", EMPTY, vonk);
@@ -299,7 +300,7 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     const { state, events } = dopiPitku(sada, s);
     expect(vysledokPitky(events).dlhy).toEqual([2, 0]);
     expect(state.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(2);
-    expect(state.hraci[0].zadlzenie).toBe(0);
+    expect(state.hraci[0].zadlzenie).toBe(1);
   });
 
   it("§10 Fajčiar (v5): v Pitke cigarety navyše nedáva — dáva ich po šenku", () => {
@@ -315,17 +316,6 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     expect(druha.cigarety).toEqual([0, 0]);
   });
 
-  it("§7 krok 5 / §12 Cigorky: cigareta navyše v každej Pitke — súperove Obmedzenia ju neuberú", () => {
-    const O4: Layout4 = ["Obmedzenie", "Obmedzenie", "Obmedzenie", "Obmedzenie"];
-    const obm = makeDef("r_obm", O4, O4);
-    const sada = sadaS(obm);
-    const strany: GameState["strany"] = [[], [lezi(instanceFor(sada, "r_obm", O4, O4), 1), lezi(instanceFor(sada, "r_obm", O4, O4), 1)]];
-    expect(evaluateLine(sada, { lokalita: null, lokalitaOtocena: false, strany }).sums[1].Obmedzenie).toBe(8);
-    const s = vPitke(sada, 13, strany);
-    const sCigorkami = sHracom(s, 0, { dedicstvo: [inst("cigorky")] });
-    expect(vysledokPitky(dopiPitku(sada, sCigorkami).events).cigarety[0]).toBe(1);
-    expect(vysledokPitky(dopiPitku(sada, s).events).cigarety[0]).toBe(0);
-  });
 
   it("§7 krok 7: o Vízii rozhoduje najprv obranca, potom útočník", () => {
     const V: Layout4 = ["Vízia", null, null, null];
@@ -435,32 +425,6 @@ describe("§10 Patronát — obmedzenia", () => {
     expect(konec.hraci[u].poldeciPlne + konec.hraci[u].poldeciVypite).toBe(1);
   });
 
-  it("§10: kartu staršieho z patronátu nemožno vymeniť Starostom", () => {
-    const { s, u, obcan } = vPatronate();
-    const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
-    const starsiUid = po.starsi[0]!.karta.uid;
-    const zoSenku = inst("pijan");
-    const vlastna: PlacedCard = lezi(inst("starosta"), u);
-    const pitka: GameState = sHracom(
-      {
-        ...po,
-        faza: "pitka",
-        draftStav: null,
-        zhromazdenieStav: null,
-        senok: [zoSenku],
-        strany: u === 0 ? [[vlastna], []] : [[], [vlastna]],
-        pitkyCelkom: 1,
-        pitkaCislo: 1,
-        pitkaStav: pitkaStav(u),
-      },
-      u,
-      { cigarety: 3, ruka: [...po.hraci[u].ruka, inst("pijan")] },
-    );
-    const starosta = legalCommands(data, pitka, u).filter((c) => c.type === "starosta");
-    expect(starosta.length).toBeGreaterThan(0);
-    expect(starosta.some((c) => c.type === "starosta" && c.rukaUid === starsiUid)).toBe(false);
-    expect(() => apply(data, pitka, { type: "starosta", rukaUid: starsiUid, senokUid: zoSenku.uid }, u)).toThrow(IllegalCommandError);
-  });
 });
 
 // --- §3 Príprava hry -----------------------------------------------------------------

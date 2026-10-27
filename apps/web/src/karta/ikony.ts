@@ -9,6 +9,11 @@ export interface IkonaCesta {
 }
 
 export const IKONY: Readonly<Record<Action, readonly IkonaCesta[]>> = {
+  // Pakt (v7) nie je v tlačovom PDF — dve prepletené obrúčky, kým tvorca nedostane vlastný piktogram.
+  "Pakt": [
+    { d: "M10 50a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM19 50a17 17 0 1 0 34 0a17 17 0 1 0 -34 0Z", evenOdd: true },
+    { d: "M38 50a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM47 50a17 17 0 1 0 34 0a17 17 0 1 0 -34 0Z", evenOdd: true },
+  ],
   "Cigareta": [
     { d: "M41.38 6.5C43.15 11.33 62.28 17.97 71.87 19C64.63 20.54 61.51 21.06 60.63 25.25C58.08 37.44 98.03 37.06 83.23 54.98C96.73 51.9 94.55 32.29 86.34 29.62C81.02 27.9 73.89 27.34 77.01 22.13C80.83 17.46 95.99 11.92 85.13 6.5L41.38 6.5M3.12 57.28L3.12 69.78L20.11 69.78L20.11 57.28L3.12 57.28M23.63 57.28L23.63 69.78L77.14 69.78L77.14 57.28L23.63 57.28M80.66 57.28L80.66 69.78L83.78 69.78L83.78 57.28L80.66 57.28M87.3 57.28L87.3 69.78L90.62 69.78L90.62 57.28L87.3 57.28", evenOdd: false },
   ],

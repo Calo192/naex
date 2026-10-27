@@ -15,6 +15,8 @@
 //                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
 //   &exekutor=1    hráčovi ?ja pred prvou bitkou pridá Záhradkára a 10 priznaných Dlhov
 //                  (voľba Záhradkára pri exekúcii)
+//   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
+//                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
@@ -38,6 +40,17 @@ interface Odohrane {
 }
 
 const q = (): URLSearchParams => new URLSearchParams(window.location.search);
+
+/** Hráč p vyloží Hasiča s neprázdnym odhadzovacím balíčkom — stav čaká na jeho voľbu. */
+function sHasicom(data: GameData, s: GameState, p: PlayerId): GameState {
+  let uid = s.nextUid;
+  const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
+  const hasic = karta("hasic");
+  const h = s.hraci[p];
+  const novy = { ...h, ruka: [...h.ruka, hasic], odhadzovaci: [...h.odhadzovaci, karta("cirhoza"), karta("ministrant"), karta("pijan")] };
+  const pred: GameState = { ...s, nextUid: uid, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+  return apply(data, pred, { type: "place", uid: hasic.uid, target: "vlastna" }, p).state;
+}
 
 /** Hráčovi p pridá Záhradkára do ruky a priznané Dlhy — exekúcia v najbližšej bitke. */
 function sExekuciou(s: GameState, p: PlayerId): GameState {
@@ -77,7 +90,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let rng = rngSeed(seed ^ 0x5a);
   let bitiek = 0;
   let exekucia = p.get("exekutor") === "1";
+  const hasic = p.get("hasic") === "1";
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
+    if (hasic && s.faza === "zhromazdenie" && naTahu(s) === ja) return najdene({ zaciatok: sHasicom(data, s, ja), dohraj: [] });
     if (exekucia && s.faza === "pitka") {
       s = sExekuciou(s, ja);
       exekucia = false;

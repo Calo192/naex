@@ -92,6 +92,22 @@ export class Robot {
     const view = this.view;
     if (view === null) throw new Error("bez stavu");
     const ja = view.ja;
+    // Hasič: robot si kartu vždy nechá.
+    if (view.hasicVolba !== null) return { type: "hasic", nechat: true };
+    // Voľby Nástupu v7: Klebetnica pošle naspodok prvú súperovu kartu, Dohadzovačka vymení prvých dvoch starších.
+    const nv = view.volbaNastupu;
+    if (nv !== null && nv.hrac === ja) {
+      const k = nv.ruka?.[0];
+      if (nv.typ === "klebetnica" && k !== undefined) return { type: "klebetnica", uid: k.uid };
+      const [x, y] = view.starsi;
+      if (nv.typ === "dohadzovacka" && x !== undefined && y !== undefined) return { type: "dohadzovacka", elderA: x.elderId, elderB: y.elderId };
+      // v7: karta zo šenku, Nástroj za Živnostníka (robot nič), Kapybara (prvý marker mimo stredu).
+      const zoSenku = view.senok[0];
+      if (nv.typ === "senok" && zoSenku !== undefined) return { type: "senok", uid: zoSenku.uid };
+      if (nv.typ === "nastroj") return { type: "nastroj", uid: null };
+      const kapybara = view.starsi.find((e) => e.marker !== 3);
+      if (nv.typ === "kapybara" && kapybara !== undefined) return { type: "kapybara", elderId: kapybara.elderId };
+    }
 
     switch (view.faza) {
       case "volbaCiela": {
@@ -119,7 +135,7 @@ export class Robot {
         const zostava = view.zhromazdenieStav?.zostavaLimit[ja] ?? 0;
         // Priznaj kliatbu, ak nejakú máš — zbavuje ruku balastu.
         const kliatba = view.ruka.find((k) =>
-          ["dlh", "cirhoza", "abstak", "milujuca_manzelka"].includes(k.defId),
+          ["dlh", "cirhoza", "abstak"].includes(k.defId),
         );
         if (kliatba !== undefined) return { type: "place", uid: kliatba.uid, target: "priznanie" };
         if (zostava > 0) {
