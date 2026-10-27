@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prečo partie končia stompom: náhoda, zručnosť a strach starších (stratég, turnus 20261027-161907)</title>
+<style>
+  :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016; --tlmeny:#5e4f3b;
+    --akcent:#8f5609; --cervena:#a3392c; --zelena:#2f6b3a; --modra:#22646e; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.6 system-ui,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:1000px; margin:0 auto; padding:24px max(14px, env(safe-area-inset-right, 0px)) 90px max(14px, env(safe-area-inset-left, 0px)); }
+  h1,h2,h3 { font-family:Georgia,"Times New Roman",serif; line-height:1.2; text-wrap:balance; }
+  h1 { font-size:clamp(1.5rem,5vw,2.1rem); margin:0 0 6px; }
+  h2 { font-size:1.35rem; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+  h3 { font-size:1.08rem; margin:0 0 6px; }
+  p { margin:0 0 10px; max-width:80ch; }
+  ul, ol { max-width:80ch; padding-left:22px; }
+  li { margin-bottom:5px; }
+  a { color:var(--akcent); }
+  :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+  .pod { color:var(--tlmeny); }
+  .pozn { font-size:.9rem; color:var(--tlmeny); }
+  .verdikt { border:1px solid var(--akcent); background:var(--plocha); border-radius:14px; padding:14px 18px; margin:16px 0; }
+  .verdikt h2 { margin-top:0; border:0; padding:0; font-size:1.2rem; }
+  .dlazdice { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px; margin:12px 0; }
+  .dlazdica { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:10px 12px; min-width:0; }
+  .dlazdica b { display:block; font-size:.82rem; color:var(--tlmeny); font-weight:600; }
+  .dlazdica .velke { display:block; font-size:1.6rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--akcent); }
+  .dlazdica .predtym { display:block; font-size:.8rem; color:var(--tlmeny); }
+  .dlazdica p { font-size:.88rem; margin:4px 0 0; }
+  .tab { overflow-x:auto; background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; margin:10px 0; }
+  table { border-collapse:collapse; width:100%; font-size:.86rem; min-width:640px; font-variant-numeric:tabular-nums; }
+  caption { text-align:left; caption-side:bottom; padding:6px 10px; font-size:.82rem; color:var(--tlmeny); }
+  th,td { padding:7px 8px; border-bottom:1px solid var(--okraj); text-align:right; vertical-align:top; }
+  th:first-child,td:first-child { text-align:left; }
+  td.l, th.l { text-align:left; }
+  th { color:var(--tlmeny); font-size:.75rem; letter-spacing:.02em; }
+  th button { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; text-align:inherit; text-decoration:underline dotted; }
+  tr.zvyr td { background:color-mix(in srgb,var(--zelena) 10%,transparent); font-weight:600; }
+  tr.base td { background:color-mix(in srgb,var(--modra) 9%,transparent); }
+  .zle { color:var(--cervena); font-weight:600; } .dobre { color:var(--zelena); font-weight:600; }
+  .graf { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 14px; margin:10px 0; }
+  .riadok { display:grid; grid-template-columns:190px 1fr; gap:8px; align-items:center; margin:6px 0; font-size:.86rem; }
+  .pruh { position:relative; height:18px; background:var(--plocha-2); border-radius:4px; }
+  .pruh i { position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:var(--akcent); }
+  .pruh.b i { background:var(--modra); }
+  .pruh em { position:absolute; right:6px; top:0; font-style:normal; font-size:.76rem; line-height:18px; }
+  .pruh .ciara { position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--text); left:50%; opacity:.5; }
+  .filter { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 14px; }
+  .filter button { font:inherit; font-size:.9rem; border:1px solid var(--okraj); background:var(--plocha); color:var(--text); border-radius:999px; padding:4px 12px; cursor:pointer; }
+  .filter button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:700; }
+  .karty { display:grid; gap:12px; }
+  .karta { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; }
+  .karta.zaviest { border-left:5px solid var(--zelena); } .karta.skusit { border-left:5px solid var(--akcent); } .karta.zamietnut { border-left:5px solid var(--cervena); }
+  .karta[hidden] { display:none; }
+  .stitok { display:inline-block; font-size:.76rem; font-weight:700; border-radius:999px; padding:1px 10px; color:#fff; margin-left:6px; vertical-align:2px; font-family:system-ui,sans-serif; }
+  .stitok.zaviest { background:var(--zelena); } .stitok.skusit { background:var(--akcent); } .stitok.zamietnut { background:var(--cervena); }
+  .stitok.zasada { background:var(--plocha-2); color:var(--text); border:1px solid var(--okraj); font-weight:600; }
+  dl.vl { display:grid; grid-template-columns:150px 1fr; gap:4px 12px; margin:6px 0 0; font-size:.93rem; }
+  dl.vl dt { font-weight:600; } dl.vl dd { margin:0; }
+  .znenie { background:var(--plocha-2); border-left:3px solid var(--akcent); padding:6px 10px; border-radius:4px; }
+  details { background:var(--plocha); border:1px solid var(--okraj); border-radius:10px; padding:8px 12px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:600; }
+  blockquote { margin:6px 0; padding:4px 10px; border-left:3px solid var(--okraj); color:var(--tlmeny); font-style:italic; font-size:.92rem; }
+  code { font-family:ui-monospace,Consolas,monospace; font-size:.84em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+  ol.otazky li { margin-bottom:10px; }
+  footer { margin-top:44px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.86rem; }
+  @media (max-width:560px) { dl.vl, .riadok { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Prečo partie končia stompom</h1>
+<p class="pod">Rozbor stratéga · turnus <code>20261027-161907</code> (3 partie strednej hry, pravidlá v7, master <code>caf970c</code>) · 27. 10. 2026 · pre Michala</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+<h2 id="verdikt">Verdikt</h2>
+<p>V jednotlivých ťahoch rozhoduje zručnosť. Zo 72 rozhodnutí, ktoré si hráči zapísali do denníkov, pripísali náhode len 3. O <strong>veľkosti</strong> výhry však rozhoduje snehová guľa strachu. Víťaz po prvom väčšom prebytku zaparkuje markery na červenej pri starších, ktorých priazeň porazenému v bitke nepomôže (Fajčiar, Výpalník, Alkoholik, Exekútor, Kmotor bez Dlhov). Každá ďalšia výhra mu potom vynesie 3 špaky za každého z nich. Strach tak tvoril 24, 24 a 33 špakov z konečných rozdielov 45, 23 a 40.</p>
+<p>Ako prvé odporúčam vyskúšať <strong>strach za posun</strong>: starší zaplatí víťazovi len zónu, ktorú mu ešte nezaplatil. Spolu s <strong>prebytkom 1 : 2</strong> na Kultúrnom dome a vo finále to u botov zmenšilo priemerný rozdiel z 18,8 na 13,3 a stompy zo 49 na 32 %. Zručnosť ostala (rebrík pri ε = 0,25: 68 → 69 %). Prepočet troch partií playtestu dáva rozdiely 26, 15 a 17.</p>
+<p>Ústup markera o pole, ktorý navrhlo všetkých šesť hráčov, vychádza u botov bez účinku. Víťaz si markery hneď dotlačí späť prebytkom. Strach za posun je silnejšia podoba toho istého zámeru.</p>
+</section>
+
+<h2 id="cisla">Čísla</h2>
+<p class="pozn">Východisko = dnešný master (v7) vo vlastnom worktree. Bot Štamgast proti Štamgastovi (zrkadlo, 180 partií), mix troch povah (120 partií), rebrík 50 rozdaní × 2 miesta na každé ε. Predošlý rozbor (v5, 25. 10.) je v sivom riadku pod číslom.</p>
+<div class="dlazdice">
+  <div class="dlazdica"><b>Rebrík ε = 0,1</b><span class="velke">61 %</span><span class="predtym">v5: 63 % · krátky beh nástroja 16×2: 53 %</span><p>Bot, ktorý robí 10 % náhodných ťahov, prehrá len o niečo častejšie. Malá chyba sa trestá slabo.</p></div>
+  <div class="dlazdica"><b>Rebrík ε = 0,25</b><span class="velke">68 %</span><span class="predtym">v5: 75 % · krátky beh 16×2: 75 %</span><p>Pri jasne slabšom súperovi vyhrá lepší dve tretiny partií. Je to menej ako v4 (94 %).</p></div>
+  <div class="dlazdica"><b>Delené rozdanie (ε = 0,1)</b><span class="velke">34 %</span><span class="predtym">ε = 0,25: 44 %</span><p>V tretine rozdaní vyhral každý z hráčov tú partiu, v ktorej sedel na tom istom mieste. Rozhodlo miesto alebo rozdanie, nie hráč.</p></div>
+  <div class="dlazdica"><b>Výhoda hráča 1</b><span class="velke">48 %</span><span class="predtym">zrkadlo 32 partií</span><p>Miesto je férové.</p></div>
+  <div class="dlazdica"><b>Otočky</b><span class="velke">31 %</span><span class="predtym">v5: 41 % · vedúci po 3. bitke prehrá: 40 %</span><p>Dobiehanie je v zdravom pásme 20 – 40 %, kým sa neodohrá finále.</p></div>
+  <div class="dlazdica"><b>Predurčenosť rozdania</b><span class="velke">0,49</span><span class="predtym">v5: 0,40 · čistý šum 0,31</span><p>Rozdanie (balíček, starší, prvý útočník) určuje víťaza o niečo viac ako vo v5. Pri 10 rozdaniach je to na hranici šumu.</p></div>
+  <div class="dlazdica"><b>Stomp (rozdiel nad 15)</b><span class="velke">49 %</span><span class="predtym">mix povah: 53 % · AI playtest: 3 z 3</span><p>Polovica partií rovnako silných botov skončí rozdielom nad 15. Rozdiel teda nevytvára zručnosť, ale samotný systém.</p></div>
+  <div class="dlazdica"><b>Víťaz finále vyhrá partiu</b><span class="velke">78 %</span><span class="predtym">mix: 79 % · vedúci pred finále vyhrá 70 %</span><p>Finále rozhodne aj partie, ktoré by inak vyhral vedúci. Zaostávajúci, ktorý útočí, ho vyhrá v 46 %.</p></div>
+</div>
+
+<div class="graf" role="img" aria-labelledby="rebrik-popis">
+  <p id="rebrik-popis"><strong>Rebrík zručnosti dnes</strong>: ako často vyhrá plný bot (Štamgast) proti slabším súperom. Ťahy ε = 0,1 a 0,25 sú z 50 rozdaní × 2 miesta, ostatné z nástroja <code>strategickost.ts</code> (16 × 2). Čiara je pri 50 %.</p>
+  <div class="riadok"><span>ε = 0,1 (skoro rovnaký)</span><div class="pruh"><i style="width:61%"></i><span class="ciara"></span><em>61 %</em></div></div>
+  <div class="riadok"><span>ε = 0,25</span><div class="pruh"><i style="width:68%"></i><span class="ciara"></span><em>68 %</em></div></div>
+  <div class="riadok"><span>ε = 0,5</span><div class="pruh"><i style="width:91%"></i><span class="ciara"></span><em>91 %</em></div></div>
+  <div class="riadok"><span>chamtivý bot</span><div class="pruh"><i style="width:97%"></i><span class="ciara"></span><em>97 %</em></div></div>
+  <div class="riadok"><span>náhodný bot</span><div class="pruh"><i style="width:100%"></i><span class="ciara"></span><em>100 %</em></div></div>
+  <div class="riadok"><span>ε = 0,25 so strachom za posun + 1 : 2</span><div class="pruh b"><i style="width:69%"></i><span class="ciara"></span><em>69 %</em></div></div>
+</div>
+
+<h2 id="stomp">Odkiaľ sa berie stomp</h2>
+<p>Partie som prehral z príkazov uložených na serveri playtestu nad jadrom master. Výsledky sedia na špak.</p>
+<div class="tab"><table>
+<caption>Tri partie turnusu. „Útočník vyhral“ = bitky K2 – finále, ktoré vyhral porazený z predošlej bitky. Na červenej = starší na polovici porazeného na konci partie a priazeň, ktorú porazenému dával.</caption>
+<thead><tr><th class="l">Partia</th><th>Koniec</th><th>Strach víťaza</th><th>Prebytok → špaky</th><th>Útočník vyhral</th><th class="l">Na červenej (priazeň pre porazeného)</th></tr></thead>
+<tbody>
+<tr><td>1 · Jano nad Evou</td><td>40 : −5</td><td>26 (65 %)</td><td>9 : 0</td><td>2 z 5</td><td class="l">Krčmárka (Výpalník), Poštárka (Exekútor), Veterinár (Fajčiar), Vychovávateľka (Kmotor; Eva nemala Dlhy)</td></tr>
+<tr><td>2 · Fero nad Šimonom</td><td>29 : 6</td><td>25 (64 %)</td><td>3 : 8</td><td>2 z 5</td><td class="l">Krčmárka (Alkoholik), Autobusár (Výpalník), Vychovávateľka (Fajčiar)</td></tr>
+<tr><td>3 · Vilo nad Helou</td><td>46 : 6</td><td>36 (78 %)</td><td>1 : 2</td><td>1 z 5</td><td class="l">Starosta (Fajčiar), Poštárka (Alkoholik), Hrobár (Exekútor)</td></tr>
+</tbody></table></div>
+<p><strong>Snehová guľa má tri články.</strong></p>
+<ol>
+<li><strong>Výhra vedúceho platí viac.</strong> Strach sa vypláca po <em>každej</em> výhre a len víťazovi. Šimon o Ferovi: „K3, K4, finále dali Ferovi 4 + 7 + 11 z tých istých červených markerov.“ Vilo dostal po jedinom prebytku 4 v K1 rentu 6 + 7 + 10 + 11.</li>
+<li><strong>Nevýhoda je len zdanlivá.</strong> Pravidlo hovorí, že starší, ktorý sa bojí X, prejavuje priazeň X-ovmu súperovi. Víťaz však sám vyberá, ktorých starších posunie. Na červenú dáva tých, ktorých priazeň v bitke nič nerobí. Fero to napísal ako radu do zošita: „posúvam radšej neškodných starších (Exekútor, Výpalník, Alkoholik) na červenú… nehrozí škoda.“ Porazenému z toho zostanú cigarety (Eva skončila s 26, Hela s 13), nie sila v bitke.</li>
+<li><strong>Preto vedúci vyhráva aj bitky.</strong> U AI hráčov vyhral útočník (porazený z predošlej bitky) len 5 z 15 bitiek K2 – finále. U botov je to 64 %. Boti markery tak cielene neparkujú, preto majú stompov menej.</li>
+</ol>
+<div class="tab"><table>
+<caption>Rozdiel víťaz − porazený po zložkách (priemer na partiu). Boti: zrkadlo 180 partií. AI: priemer troch partií. Boti zbierajú rozdiel hlavne prebytkom vo finále a na Kultúrnom dome, AI hráči strachom. Zložky botov sú len z partií s víťazom, preto ich súčet nesedí s konečným rozdielom presne.</caption>
+<thead><tr><th class="l">Zložka</th><th>Boti dnes</th><th>Boti: strach za posun + 1 : 2</th><th>AI playtest</th></tr></thead>
+<tbody>
+<tr><td>Bitky (Pitky)</td><td>4,0</td><td>3,6</td><td>6,7</td></tr>
+<tr><td>Strach starších</td><td>5,2</td><td class="dobre">1,7</td><td class="zle">27,0</td></tr>
+<tr><td>Prebytok → špaky (finále, Kultúrny dom)</td><td class="zle">7,7</td><td class="dobre">3,2</td><td>1,0</td></tr>
+<tr><td>Nepriznaná Cirhóza</td><td>2,3</td><td>4,6</td><td>3,3</td></tr>
+<tr><td>Výkupné a Exekútor</td><td>−0,1</td><td>0,4</td><td>−2,0</td></tr>
+<tr><td><strong>Konečný rozdiel</strong></td><td><strong>18,8</strong></td><td><strong>13,3</strong></td><td><strong>36,0</strong></td></tr>
+</tbody></table></div>
+<p><strong>Útok zaostávajúceho vo finále</strong> (v7) funguje, ale len na samotnú bitku. U botov vyhrá zaostávajúci finále v 46 %, v playteste 1 z 3 (Hela pri 0 : 44). Rozdiel sa však vtedy už nedá dohnať. Vedúci pred finále vyhrá partiu v 70 %, víťaz finále v 78 %.</p>
+
+<h2 id="nahoda">Mapa náhody</h2>
+<div class="tab"><table>
+<caption>„Pred“ = náhoda vstúpi pred rozhodnutím a hráč na ňu reaguje. „Po“ = zmarí už urobené rozhodnutie.</caption>
+<thead><tr><th class="l">Zdroj</th><th class="l">Kedy vstupuje</th><th class="l">Rozptyl</th><th class="l">Čím sa dá tlmiť</th><th class="l">Závažnosť</th></tr></thead>
+<tbody>
+<tr><td>Štartovacia ruka a balíček</td><td class="l">—</td><td class="l">žiadny: 4 rovnaké karty, prázdny doberací balíček</td><td class="l">—</td><td class="l dobre">žiadna</td></tr>
+<tr><td>Lokality</td><td class="l">pred (všetkých 19 vidno, rozpis úrovní je známy)</td><td class="l">žiadny, od v7 sa nežrebujú</td><td class="l">obranca vyberá a natáča</td><td class="l dobre">žiadna (zlepšenie oproti v6)</td></tr>
+<tr><td>Stavba šenku zo spoločného balíčka</td><td class="l">pred (svoj balík vidíš, súperov nie)</td><td class="l">stredný: kto dostane Dvojčatá, Kulturistu, Veterána, Praudovravca</td><td class="l">útočník berie prvý, zakopanie, cigarety</td><td class="l">stredná</td></tr>
+<tr><td>Dobratie 1 karty, fajčenie</td><td class="l">pred (na začiatku kola)</td><td class="l">nízky, balíček si staviaš sám</td><td class="l">Vízia, fajčenie, Kšeft Zberného dvora</td><td class="l">nízka</td></tr>
+<tr><td>Nepriznaná Cirhóza v balíčku na konci</td><td class="l">po (či ju stihneš dobrať a priznať)</td><td class="l">0 – 15 špakov; v turnuse −10 : −10 a −15 : −10</td><td class="l">fajčenie, Vízia, Anonymný alkoholik (len z odhadzovacieho)</td><td class="l">stredná; po oprave strachu je to 2. najväčšia zložka rozdielu u botov</td></tr>
+<tr><td>Starší a scorecardy (priazne)</td><td class="l">pred (rozdané a verejné od začiatku)</td><td class="l">určujú, koľko je „neškodných“ priazní</td><td class="l">víťaz vyberá, koho posúva</td><td class="l">ako náhoda nízka, ako páka snehovej gule vysoká</td></tr>
+<tr><td>Útočník 1. kola</td><td class="l">pred</td><td class="l">výhoda hráča 1 je 48 %</td><td class="l">—</td><td class="l dobre">žiadna</td></tr>
+<tr><td>Veštica</td><td class="l">po bitke</td><td class="l">nízky, zriedkavá</td><td class="l">—</td><td class="l">nízka</td></tr>
+<tr><td>Súperova ruka a skryté NA EX</td><td class="l">interakcia, nie náhoda</td><td class="l">—</td><td class="l">čítanie súpera, náhľad „po najhoršej odpovedi“</td><td class="l">patrí k hre (23 zo 72 záznamov v denníkoch)</td></tr>
+</tbody></table></div>
+<blockquote>„Bitky sa dali presne predpovedať; náhodu tvorí ťah Cirhózy z balíčka a čo Eva ponúkne do šenku.“ (Jano)</blockquote>
+<blockquote>„Prvé tri šenky boli náhodou zaťažené (Dvojčatá u Vila) a strach starších z malého rozdielu spraví veľký.“ (Hela)</blockquote>
+<p>Hráči odhadli pomer zručnosť : náhoda na 65 – 70 : 30 – 35. Snehová guľa nie je náhoda, je to štruktúra bodovania. Preto sa hráčovi zdá, že rozhodol on, a predsa „po K3 bolo rozhodnuté“ (Hela 3/10 za napätie, Eva 4, Šimon 4, Vilo 4).</p>
+
+<h2 id="zrucnost">Mapa zručnosti</h2>
+<ul>
+<li><strong>Skutočné rozhodnutia s dôsledkom na viac kôl:</strong> prebytok (koho a kam posunúť), Pohoršenia (k sebe na Bitkára, alebo k súperovi na strach), patronát ako odpoveď na vydesenie, šetrenie cigariet na šenok, NA EX na vlastnú kartu, prvá karta pri lokalite a telá v kraji.</li>
+<li><strong>Zdanlivé voľby:</strong> prebytok sa musí minúť celý (Jano, Vilo: chýba „stačí“), patronát na červenej (Eva: „neutrálny“), šenok s 0 cigaretami, pas, keď je bitka prehratá.</li>
+<li><strong>Karty s príliš veľkou silou:</strong> Dvojčatá (prevaha za dvoch), Kulturista a Veterán (Petelica ×2), Praudovravec (Odpor = Posilnenie). O tom, kto ich dostane, rozhoduje šenok. Nerieši to tento rozbor.</li>
+<li><strong>Čo zručnosť dnes prebije:</strong> prvý veľký prebytok. Dobrá hra porazeného (Šimon K5: 13 : 4 a prebytok 8 na Kultúrnom dome) nestačí na rentu z červených.</li>
+</ul>
+
+<h2 id="navrhy">Návrhy</h2>
+<p>Zoradené podľa pomeru prínos : cena. Čísla variantov sú z botov. Bot je ladený na dnešné pravidlá a nový štýl hry sa pri ňom neprejaví, preto sú to <strong>náznaky smeru</strong>. Šum: priemerný rozdiel ± 1,0, stompy ± 4 body (zrkadlo 180), rebrík ± 5 bodov. „Statický prepočet“ preráta tri partie playtestu so zachovanými ťahmi, takže nepočíta s tým, že by hráči hrali inak.</p>
+<div class="filter" role="group" aria-label="Filter návrhov podľa odporúčania">
+  <button type="button" data-filter="vsetky" aria-pressed="true">Všetky (12)</button>
+  <button type="button" data-filter="zaviest" aria-pressed="false">Zaviesť</button>
+  <button type="button" data-filter="skusit" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-filter="zamietnut" aria-pressed="false">Zamietnuť</button>
+</div>
+<div class="karty" id="karty">
+
+<article class="karta skusit" data-odp="skusit">
+<h3>1. Strach za posun (starší zaplatí zónu raz) <span class="stitok skusit">vyskúšať v playteste</span></h3>
+<dl class="vl">
+<dt>Problém</dt><dd>Strach je renta: červený starší dá 3 špaky po každej výhre (víťazi 26, 25 a 36 špakov, 64 – 78 % skóre). Navrhli to Vilo („strach len pri vstupe do vyššej zóny“) a Jano. Ústup od ostatných štyroch hráčov má ten istý cieľ: víťaz si má strach zarobiť znova.</dd>
+<dt>Zmena</dt><dd class="znenie">Po bitke dostane víťaz od každého staršieho, ktorý sa ho bojí, len za <strong>zóny, ktoré mu ešte nezaplatil</strong>: <strong>1 špak za každú novú zónu</strong> (žltá, oranžová, červená, spolu 3 za cestu zo stredu na kraj). Keď marker ustúpi k stredu (Pohoršenie, prebytok, patronát), zóny, z ktorých ustúpil, sa pri ďalšom postupe zaplatia znova. Starší si pamätá, komu a po ktorú zónu už zaplatil (značka na stupnici).</dd>
+<dt>Prečo zručnosť</dt><dd>Prebytok a Pohoršenia sa menia na plán: koho tlačiť ďalej a kedy. Súper môže vyplatené zóny „zmazať“ tým, že marker vráti, a potom o ne obaja bojujú znova. Zaparkovaný marker už nič nenesie, takže víťaz nemôže len čakať.</dd>
+<dt>Čísla</dt><dd>Boti, samotná zmena: rozdiel 18,8 → <strong>16,2</strong> (mix 21,2 → 18,7), stompy 49 → <strong>44 %</strong>, strach 31 → 21 % bodov víťaza, rebrík ε = 0,25 68 → 68 %. Statický prepočet playtestu: rozdiel 45 → <strong>31</strong>, 23 → <strong>13</strong>, 40 → <strong>17</strong>. Strach víťazov 26 / 25 / 36 → 12 / 15 / 13.</dd>
+<dt>Druhá hodnota</dt><dd>Alternatíva „nová zóna platí svoju hodnotu“ (1 + 2 + 3, spolu 6 za cestu na kraj) je slabšia: s prebytkom 1 : 2 rozdiel 15,7 a stompy 39 % (prírastok 13,3 a 32 %). V playteste by zmenila málo (43 / 24 / 26), lebo AI hráči tlačia markery na červenú rýchlo. Odporúčam 1 za zónu.</dd>
+<dt>Cena a riziko</dt><dd>Nový stav pri každom staršom (po ktorú zónu a komu zaplatil) a jeho zobrazenie na stupnici. Hráč sa to musí naučiť. Vydesenie ako výhra ostáva (6 % → 6 %). Pohoršenie k súperovi tesne pred výplatou získa na cene. Patronát (marker do stredu) zmaže vyplatené zóny, súper ich potom smie znova zarobiť Pohoršeniami z patronátu.</dd>
+<dt>Zásady</dt><dd><span class="stitok zasada">bez stropu</span> Každá nová zóna platí, opakovane. <span class="stitok zasada">napätie so zásadou o nevýhode</span> Dnes renta „odmeňuje víťaza, ktorý vyhral napriek priazni súpera“. Priazeň však vyberá víťaz, takže nevýhoda býva zdanlivá (tabuľka vyššie). Po zmene ostane priazeň súperovi natrvalo, kým špaky za ňu sú jednorazové. Odmenou je posun, nie parkovanie.</dd>
+<dt>Náročnosť</dt><dd>stredná (jadro, view, stupnica v klientovi, pravidlá §10 a §14, výučba)</dd>
+</dl>
+</article>
+
+<article class="karta skusit" data-odp="skusit">
+<h3>2. Prebytok na Kultúrnom dome a vo finále: 1 špak za 2 body <span class="stitok skusit">vyskúšať v playteste</span></h3>
+<dl class="vl">
+<dt>Problém</dt><dd>U botov je prebytok premenený na špaky najväčšia zložka rozdielu (7,7 špaka). Jedna bitka na Kultúrnom dome dala Šimonovi 8 špakov a vo finále v partii 1 dal prebytok 9. Navrhol Fero (#111), Šimon chcel strop (ten zásady nepripúšťajú).</dd>
+<dt>Zmena</dt><dd class="znenie">Po finále a na Kultúrnom dome dostane držiteľ prebytku <strong>1 špak za každé 2 body</strong> prebytku. Hodnota A: nadol (zmeraná). Hodnota B: nahor, aby nič „neprepadlo“ (prebytok 1 = 1 špak); rozdiel oproti A je najviac 1 špak na bitku.</dd>
+<dt>Prečo zručnosť</dt><dd>Vo finále rozhoduje viac to, <em>kto</em> vyhrá, a menej to, o koľko. Voľba Kultúrneho domu je potom menej lotéria (Fero ho zvolil pri vedení 20 : 2 a prehral 8 špakov).</dd>
+<dt>Čísla</dt><dd>Samotná zmena: rozdiel 18,8 → <strong>16,0</strong> (mix 21,2 → 16,8), stompy 49 → <strong>41 %</strong>, víťaz finále vyhrá partiu 78 → 75 %, slabší rozdrví silnejšieho (ε = 0,25) 12 → 5 %. <strong>Spolu so strachom za posun:</strong> rozdiel <strong>13,3</strong> (mix 14,1), stompy <strong>32 %</strong> (mix 37 %), nad 25 špakov 27 → 13 %, víťaz finále 74 %, vedúci pred finále 66 %. Vedúci po kole k vyhrá: 54 · 59 · 62 · 63 · 66 % (dnes 52 · 58 · 60 · 61 · 70 %), istota rastie postupne. Rebrík 55 / 69 % (dnes 61 / 68 %, v šume). Statický prepočet playtestu: <strong>26 · 15 · 17</strong> (dnes 45 · 23 · 40).</dd>
+<dt>Cena a riziko</dt><dd>Kultúrny dom je dnes aj nástroj dobiehania. V partii 2 by Šimon dostal 4 namiesto 8 špakov a rozdiel by sa zväčšil o 2. U botov výsledok prevážil prínos. Pravidlo je jednoduché, jedna veta v §9.4 a §14b a text lokality.</dd>
+<dt>Zásady</dt><dd><span class="stitok zasada">bez stropu</span> Je to kurz, nie strop. Pri hodnote A sa nepárny bod stratí, hodnota B to rieši.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+</dl>
+</article>
+
+<article class="karta skusit" data-odp="skusit">
+<h3>3. Patronát: Pohoršenia navyše len k stredu <span class="stitok skusit">vyskúšať v playteste</span></h3>
+<dl class="vl">
+<dt>Problém</dt><dd>Patronát „dá súperovi 3 Pohoršenia, ktoré použije na moje najcennejšie priazne“ (Šimon). Hela: „robí z riadenia rizika dar“. Navrhli Jano, Šimon a Hela.</dd>
+<dt>Zmena</dt><dd class="znenie">Pohoršenia, ktoré súper dostane za patronát, smú posunúť marker len <strong>k stredu</strong>. Vlastné Pohoršenia ostávajú bez obmedzenia smeru.</dd>
+<dt>Prečo zručnosť</dt><dd>Patronát prestane byť ťahom, ktorý súperovi rovno dá strach. Ostane mu odpoveď (vrátiť markery), ale nie útok.</dd>
+<dt>Čísla</dt><dd>Na stomp bez účinku: rozdiel 18,9 (zrkadlo 90 partií), stompy 50 %. Rebrík 64 / 60 %, v šume. Boti patronát používajú zriedka, preto je to náznak, nie dôkaz.</dd>
+<dt>Cena a riziko</dt><dd>Jedna podmienka v §10 a v klientovi (nepovolené smery). Nie je to liek na stomp, len oprava pocitu „patronát je dar“.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+</dl>
+</article>
+
+<article class="karta skusit" data-odp="skusit">
+<h3>4. Úplatok ako všeobecný výdaj cigariet <span class="stitok skusit">vyskúšať v playteste</span> (neskôr, nie kvôli stompu)</h3>
+<dl class="vl">
+<dt>Problém</dt><dd>Porazení končia s veľa cigaretami (Eva 26, Hela 13), ktoré v bitke nič nekúpia. Navrhol Vilo.</dd>
+<dt>Zmena (meraná)</dt><dd class="znenie">V Pitke smie hráč dať Úplatok na <strong>ktorúkoľvek</strong> súperovu kartu v línii, raz za Pitku na kartu. Útoky karty sú do konca kola o stupeň slabšie. N-tý Úplatok v kole stojí N cigariet.</dd>
+<dt>Čísla</dt><dd>Na stomp bez účinku: rozdiel 18,8 → 21,4, stompy 49 → 55 %. Rebrík ε = 0,25 68 → 76 % (na hranici šumu). Bot ho použije 3,4× za partiu, takže ho vie.</dd>
+<dt>Cena a riziko</dt><dd>Kulturista stratí svoju jedinečnosť. Pitka dostane ďalšie rozhodnutie. Boti cigarety nehromadia, preto ukážu len časť účinku. Pomôže to hráčovi, ktorý hromadí cigarety, a pas za cigarety tak dostane zmysel.</dd>
+<dt>Zásady</dt><dd><span class="stitok zasada">výdaj prebytku</span> Presne v duchu „prebytok minúť, nie strop“.</dd>
+<dt>Náročnosť</dt><dd>stredná (jadro je hotové pre Kulturistu, rozšíriť klient a texty)</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>5. Ústup: po výplate sa marker posunie o pole k stredu <span class="stitok zamietnut">zamietnuť (nahradiť návrhom 1)</span></h3>
+<dl class="vl">
+<dt>Problém</dt><dd>Navrhlo všetkých šesť hráčov (#87, #100, #107, #92), takže je to najsilnejší signál turnusu.</dd>
+<dt>Čísla</dt><dd>Boti: rozdiel 18,8 → 18,6, stompy 49 → 52 % (mix 53 → 61 %). Vydesenie 6 → 1 %, rebrík ε = 0,25 68 → 59 %. Statický prepočet (horná hranica, ak by víťaz markery nedotlačil): 35 · 15 · 25. Navrhár to isté meral na v6.1 („vyplatený strach sa upokojí“) s tým istým výsledkom: 15,3 → 15,4.</dd>
+<dt>Prečo nie</dt><dd>Víťaz má prebytok 5 – 9 a ústup štyroch markerov o pole hneď dorovná. Ústup len zdaní prebytok a navyše takmer zruší vydesenie ako cestu k výhre. Návrh 1 dosiahne to, čo hráči chceli („strach si treba zarobiť znova“), bez týchto vedľajších účinkov.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>6. Upokojenie starších za cigarety <span class="stitok zamietnut">zamietnuť v tejto podobe</span></h3>
+<dl class="vl">
+<dt>Zmena (meraná)</dt><dd class="znenie">V kroku Pohoršenie, po vlastných Pohoršeniach, smie hráč za 2 cigarety posunúť marker ktoréhokoľvek staršieho o pole k stredu, koľkokrát chce. Navrhli Šimon a Hela.</dd>
+<dt>Čísla</dt><dd>Rozdiel 18,8 → 22,1, stompy 49 → 58 %, víťaz finále 78 → 85 %. Bot ho použije 1,8× za partiu, z toho len polovicu použije zaostávajúci.</dd>
+<dt>Prečo nie</dt><dd>Nástroj je symetrický. Vedúci ním zhodí súperov strach rovnako ako zaostávajúci vedúcemu, takže dobiehanie nevznikne. U AI hráčov, ktorí hromadia cigarety, by zasa mohol prevládnuť: Eva by za 26 cigariet zrušila všetky štyri Janove červené. Ak ho chceš oživiť, tak len na starších, ktorí sa boja <em>súpera</em>, a až po návrhu 1.</dd>
+<dt>Zásady</dt><dd><span class="stitok zasada">výdaj prebytku</span> V súlade so zásadou, ale nepomáha.</dd>
+<dt>Náročnosť</dt><dd>stredná (nový ťah, bot, klient)</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>7. Remízu prevahy v kraji vyhrá obranca <span class="stitok zamietnut">zamietnuť</span></h3>
+<dl class="vl">
+<dt>Problém</dt><dd>Jano, Eva a Vilo: útočník vykladá prvý a prvá podstrčená karta vyhráva remízy tiel. Hela tvrdí opak (obranca vždy dorovná).</dd>
+<dt>Čísla</dt><dd>Rozdiel 18,8 → 22,5, stompy 49 → <span class="zle">66 %</span>, víťaz finále 86 %, vedúci pred finále v mixe 82 % (90 partií).</dd>
+<dt>Prečo nie</dt><dd>Obranca je víťaz predošlej bitky. Ak mu dáme aj remízy, posilníme toho, kto vedie, a snehová guľa narastie. Výhoda útočníka v kraji je dnes hlavný dobiehací nástroj v bitke.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>8. Útočník vykladá posledný <span class="stitok zamietnut">zamietnuť</span></h3>
+<dl class="vl">
+<dt>Zmena (meraná)</dt><dd class="znenie">Zhromaždenie začína obranca, útočník v Pitke ďalej odpovedá posledný. Navrhla Hela.</dd>
+<dt>Čísla</dt><dd>Rozdiel 18,8 → 21,7, stompy 49 → 56 % (90 partií). Útočník vyhrá bitku v 64 %, rovnako ako dnes.</dd>
+<dt>Prečo nie</dt><dd>Na stomp bez účinku. Hráči sa nezhodnú ani na tom, či prvé vykladanie pomáha, alebo škodí, a hra by stratila jasné „útočník začína“.</dd>
+<dt>Náročnosť</dt><dd>malá</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>9. Strach platí len víťazovi, ktorý pred bitkou nevedie (môj kandidát) <span class="stitok zamietnut">zamietnuť</span></h3>
+<dl class="vl">
+<dt>Zmena (meraná)</dt><dd class="znenie">Starší platia strach len víťazovi, ktorý pred bitkou nemal viac špakov ako súper. Zásadu „odmeniť toho, kto prekonal nevýhodu“ to plní doslova.</dd>
+<dt>Čísla</dt><dd>Rozdiel 18,8 → 17,5, stompy 49 → 53 %. Rebrík ε = 0,25 <span class="zle">68 → 60 %</span>, ε = 0,1 61 → 52 %.</dd>
+<dt>Prečo nie</dt><dd>Trestá vedenie, a tým aj lepšieho hráča. Zručnosť klesne, stomp nie.</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>10. Prebytok rozdeľuje ten, komu priazeň pripadne (môj kandidát) <span class="stitok zamietnut">zamietnuť v tejto podobe</span></h3>
+<dl class="vl">
+<dt>Zmena (meraná)</dt><dd class="znenie">Prebytok posúva markery k porazenému ako dnes, ale <strong>ktorých starších</strong>, vyberá porazený. Zámer: nevýhoda víťaza by bola skutočná, porazený si vyberie priazeň, ktorá mu v bitke pomôže (Bitkár, Veriaci, Abstinent).</dd>
+<dt>Čísla</dt><dd>Rozdiel 18,8 → <span class="zle">25,8</span>, stompy 49 → 63 % (90 partií), vydesenie 0 %.</dd>
+<dt>Prečo nie</dt><dd>Bot ako porazený ťahá markery tak, že víťaz zbiera ešte viac. Bot je na takú voľbu krátkozraký, ale dôkaz v prospech zmeny nemám. Zásadu by spĺňala najlepšie, preto ju nechávam v zozname.</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>11. NA EX zdvojí neaktívne Dlh a Pečeň len v Pitke odkrytia <span class="stitok zamietnut">zamietnuť (nemerané)</span></h3>
+<dl class="vl">
+<dt>Problém</dt><dd>Jano: jeden poldeci súpera dal v dvoch Pitkách 2 Cirhózy a 2 Dlhy, teda −10 špakov. Eva navrhla, aby pečeň a Dlh z cudzieho NA EX dostal ten, kto NA EX dal.</dd>
+<dt>Prečo nie</dt><dd>So stompom to nesúvisí, Cirhózy boli v turnuse symetrické (−10 : −10). Riziko je čitateľné a dá sa obísť. Skúsenosti v zošitoch <code>spolocne-5</code> a <code>spolocne-17</code> to potvrdili („Pijana s neaktívnymi Pečeňami som nedal do línie“). Je to zručnosť, nie náhoda. Lepšie je ukázať riziko vopred, ako navrhol Vilo: výhľad „po všetkých Pitkách kola: Cirhóza ×N, Dlh ×N“. Cirhóza je však po oprave strachu druhá najväčšia zložka rozdielu (4,6 špaka), preto ju treba sledovať.</dd>
+<dt>Náročnosť</dt><dd>stredná</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>12. Strach za posun s hodnotou zóny (1 + 2 + 3) <span class="stitok zamietnut">zamietnuť (druhá hodnota k návrhu 1)</span></h3>
+<dl class="vl">
+<dt>Čísla</dt><dd>So zmenou 2: rozdiel 15,7 (mix 16,6), stompy 39 % (mix 44 %), strach 42 % bodov víťaza (viac ako dnes). Rebrík 55 / 74 %. Statický prepočet: 38 · 26 · 26.</dd>
+<dt>Prečo nie</dt><dd>Cesta na kraj zaplatí 6 špakov, pri rýchlom tlačení markerov skoro toľko ako dnešná renta. Prírastok 1 za zónu je jasne lepší.</dd>
+</dl>
+</article>
+</div>
+
+<details>
+<summary>Návrhy z turnusu, ktoré som nemeral</summary>
+<ul>
+<li><strong>Porazený natáča pinnacle lokalitu</strong> (Fero, Vilo): finále by dalo zaostávajúcemu ešte jednu páku. Dá sa zmerať, až keď bot vie natáčať oddelene od výberu.</li>
+<li><strong>Prebytok smie ostať nepridelený</strong> (Jano, Vilo): pridá voľbu bez rizika, pri návrhu 1 bude mať zmysel častejšie. Malá zmena, odporúčam spolu s návrhom 1.</li>
+<li><strong>Pas a výkupné cigariet</strong> (Jano, Fero, Hela): pas dáva cigarety bez straty karty. Je to téma ekonomiky, ktorá súvisí s návrhmi 4 a 6.</li>
+<li><strong>Porazený chráni jedného staršieho pred prebytkom</strong> (Šimon): zmenšuje stomp nepriamo. Návrh 1 rieši to isté jednoduchšie.</li>
+<li><strong>Remíza v tuhom bez Absťáku</strong> (Eva): mimo témy stompu.</li>
+</ul>
+</details>
+
+<h2 id="tabulka">Všetky varianty v číslach</h2>
+<p class="pozn">Kliknutím na hlavičku stĺpca zoradíš. Zrkadlo = Štamgast proti sebe, mix = tri povahy. Riadky s počtom 90 sú z menšej vzorky. Slabší rozdrví = podiel partií pri ε = 0,25, v ktorých slabší bot vyhral o viac ako 15 (náhoda prebije zručnosť).</p>
+<div class="tab"><table id="var">
+<caption>Bot sa variantom neprispôsobuje: hrá podľa dnešných heuristík. Nové ťahy (upokojenie, Úplatok) používa cez všeobecné hodnotenie stavu.</caption>
+<thead><tr>
+<th class="l"><button type="button" data-k="0">Variant</button></th>
+<th><button type="button" data-k="1">Partií</button></th>
+<th><button type="button" data-k="2">Rozdiel zrkadlo</button></th>
+<th><button type="button" data-k="3">Rozdiel mix</button></th>
+<th><button type="button" data-k="4">Stomp &gt;15</button></th>
+<th><button type="button" data-k="5">Stomp &gt;25</button></th>
+<th><button type="button" data-k="6">Víťaz finále vyhrá</button></th>
+<th><button type="button" data-k="7">Vedúci pred finále</button></th>
+<th><button type="button" data-k="8">Strach z bodov víťaza</button></th>
+<th><button type="button" data-k="9">Rebrík ε 0,1</button></th>
+<th><button type="button" data-k="10">Rebrík ε 0,25</button></th>
+<th><button type="button" data-k="11">Slabší rozdrví</button></th>
+</tr></thead>
+<tbody>
+<tr class="base"><td>Dnes (v7)</td><td>180</td><td>18,8</td><td>21,2</td><td>49 %</td><td>27 %</td><td>78 %</td><td>70 %</td><td>31 %</td><td>61 %</td><td>68 %</td><td>12 %</td></tr>
+<tr class="zvyr"><td>1 + 2 · strach za posun + prebytok 1 : 2</td><td>180</td><td>13,3</td><td>14,1</td><td>32 %</td><td>13 %</td><td>74 %</td><td>66 %</td><td>26 %</td><td>55 %</td><td>69 %</td><td>4 %</td></tr>
+<tr><td>1 · strach za posun</td><td>180</td><td>16,2</td><td>18,7</td><td>44 %</td><td>19 %</td><td>77 %</td><td>67 %</td><td>21 %</td><td>55 %</td><td>68 %</td><td>10 %</td></tr>
+<tr><td>2 · prebytok 1 : 2</td><td>180</td><td>16,0</td><td>16,8</td><td>41 %</td><td>20 %</td><td>75 %</td><td>70 %</td><td>40 %</td><td>54 %</td><td>70 %</td><td>5 %</td></tr>
+<tr><td>12 · zóna 1 + 2 + 3 + prebytok 1 : 2</td><td>180</td><td>15,7</td><td>16,6</td><td>39 %</td><td>17 %</td><td>70 %</td><td>71 %</td><td>42 %</td><td>55 %</td><td>74 %</td><td>4 %</td></tr>
+<tr><td>3 · patronát len k stredu</td><td>90</td><td>18,9</td><td>22,0</td><td>50 %</td><td>27 %</td><td>73 %</td><td>77 %</td><td>29 %</td><td>64 %</td><td>60 %</td><td>17 %</td></tr>
+<tr><td>4 · Úplatok všeobecný</td><td>180</td><td>21,4</td><td>21,9</td><td>55 %</td><td>32 %</td><td>82 %</td><td>69 %</td><td>32 %</td><td>55 %</td><td>76 %</td><td>9 %</td></tr>
+<tr><td>5 · ústup o pole</td><td>180</td><td>18,6</td><td>21,4</td><td>52 %</td><td>29 %</td><td>75 %</td><td>74 %</td><td>26 %</td><td>61 %</td><td>59 %</td><td>19 %</td></tr>
+<tr><td>6 · upokojenie za cigarety</td><td>180</td><td>22,1</td><td>21,9</td><td>58 %</td><td>36 %</td><td>85 %</td><td>76 %</td><td>30 %</td><td>56 %</td><td>75 %</td><td>11 %</td></tr>
+<tr><td>7 · remíza prevahy obrancovi</td><td>90</td><td>22,5</td><td>23,0</td><td>66 %</td><td>37 %</td><td>86 %</td><td>68 %</td><td>33 %</td><td>68 %</td><td>69 %</td><td>14 %</td></tr>
+<tr><td>8 · útočník vykladá posledný</td><td>90</td><td>21,7</td><td>22,0</td><td>56 %</td><td>31 %</td><td>77 %</td><td>72 %</td><td>30 %</td><td>59 %</td><td>74 %</td><td>13 %</td></tr>
+<tr><td>9 · strach len nevedúcemu</td><td>180</td><td>17,5</td><td>17,4</td><td>53 %</td><td>21 %</td><td>84 %</td><td>68 %</td><td>15 %</td><td>52 %</td><td>60 %</td><td>15 %</td></tr>
+<tr><td>10 · prebytok rozdeľuje porazený</td><td>90</td><td>25,8</td><td>22,8</td><td>63 %</td><td>46 %</td><td>89 %</td><td>75 %</td><td>32 %</td><td>51 %</td><td>68 %</td><td>17 %</td></tr>
+</tbody></table></div>
+
+<div class="tab"><table>
+<caption>Statický prepočet troch partií playtestu (ťahy hráčov ostávajú). Dnes = skutočný rozdiel na konci.</caption>
+<thead><tr><th class="l">Partia</th><th>Dnes</th><th>Ústup (horná hranica)</th><th>Strach za posun</th><th>Prebytok 1 : 2</th><th>Posun + 1 : 2</th><th>Zóna 1 + 2 + 3 + 1 : 2</th></tr></thead>
+<tbody>
+<tr><td>1 · Jano – Eva</td><td>45</td><td>35</td><td>31</td><td>40</td><td class="dobre">26</td><td>38</td></tr>
+<tr><td>2 · Fero – Šimon</td><td>23</td><td>15</td><td>13</td><td>25</td><td class="dobre">15</td><td>26</td></tr>
+<tr><td>3 · Vilo – Hela</td><td>40</td><td>25</td><td>17</td><td>40</td><td class="dobre">17</td><td>26</td></tr>
+</tbody></table></div>
+
+<h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
+<ol class="otazky">
+<li><strong>Strach:</strong> Koľko špakov ti dal strach starších a od ktorých? Koľko z tých starších malo priazeň, ktorá súperovi v bitke naozaj pomohla (Bitkár, Veriaci, Abstinent)? Cieľ: strach pod 35 % bodov víťaza.</li>
+<li><strong>Prebytok:</strong> Keď si rozdeľoval prebytok, podľa čoho si vyberal starších? Bola to voľba medzi viacerými rozumnými možnosťami, alebo vždy „neškodní na červenú“?</li>
+<li><strong>Kto vyhral bitky K2 – K5?</strong> Útočník, alebo obranca, a čo rozhodlo (cigarety, karty v ruke, priazne, prvá karta pri lokalite)? Dnes vyhral útočník len 5 z 15 bitiek, u botov 64 %.</li>
+<li><strong>Kedy bolo rozhodnuté?</strong> Rozdiel špakov po K3 a pred finále a či ešte vo finále išlo o víťaza. Cieľ: najviac 1 z 3 partií nad 15 špakov.</li>
+<li><strong>Cigarety porazeného:</strong> Koľko ti ostalo na konci a čo by si za ne kúpil, keby sa dalo?</li>
+</ol>
+
+<h2 id="michal">Na rozhodnutie pre Michala</h2>
+<ul>
+<li>Strach za posun: <strong>1 špak za každú novú zónu</strong> (odporúčam), alebo hodnota zóny 1 + 2 + 3 (slabšie)?</li>
+<li>Prebytok 1 : 2: zaokrúhliť nadol (zmerané), alebo nahor, aby nič neprepadlo?</li>
+<li>Pustiť návrhy 1 + 2 do jedného playtestu spolu (odporúčam: každý sám je na hranici šumu, spolu je účinok jasný), alebo po jednom?</li>
+</ul>
+
+<footer>
+<p><strong>Ako sa meralo.</strong> Každý variant beží vo vlastnom worktree nad master <code>caf970c</code> (pravidlá v7, sada v26) s pevnými semienkami, takže všetky varianty hrajú tie isté rozdania. Stredná hra (5 lokalít + finále). Zrkadlo: Štamgast proti Štamgastovi, 180 partií (varianty 3, 7, 8 a 10 len 90). Mix: Štamgast, Rapavý Fero a Teta Gizka po dvojiciach s vymenenými miestami, 120 partií (90). Rebrík: Štamgast proti Štamgastovi s ε náhodných ťahov, 50 rozdaní × 2 miesta (45). K tomu <code>tools/bot/strategickost.ts</code> pre východisko: zrkadlo 32 partií, predurčenosť 10 rozdaní × 6 behov, rebrík 16 × 2. Spolu asi 8 600 partií botov.</p>
+<p><strong>Bot sa variantom neprispôsobuje.</strong> Hrá podľa heuristík ladených na v7: strach odhaduje ako rentu a cigarety nehromadí. Čísla variantov sú preto náznak smeru. AI hráči vytvárajú snehovú guľu cielenejšie ako boti (strach 64 – 78 % bodov víťaza oproti 31 %), preto rozbor pridáva statický prepočet troch partií z príkazov uložených na serveri. Nové ťahy (upokojenie, všeobecný Úplatok) bot hrá cez všeobecné hodnotenie stavu bez osobitného tréningu. Varianty sú zapojené čo najmenšou zmenou jadra. Ústup napríklad nevydá udalosť posunu a ohlásené vydesenie prepočíta až na konci kola. Testy jadra (<code>vitest</code>) padajú len na staré hodnoty a na tieto chýbajúce udalosti, výnimky nehádžu. Na živom webe zatiaľ nie sú partie ľudí (<code>karty-v-partiach --zivy --ludia</code>: 0).</p>
+<p>Podklady: feedbacky, denníky a nezrovnalosti šiestich hráčov (relácie <code>playtest/20261027-161907-1</code> až <code>-3</code>), návrh navrhára <code>docs/napady/stomp-v6.html</code>. Skripty, diffy variantov a výsledky (mimo gitu): <code>playtest/strategia/20261027-161907/</code> (<code>stomp.ts</code>, <code>prehraj.ts</code>, <code>*.diff</code>, <code>suhrn.json</code>). Hlavnú vetvu som nemenil.</p>
+</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  var tlacidla = document.querySelectorAll(".filter button");
+  var karty = document.querySelectorAll("#karty .karta");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-filter");
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      karty.forEach(function (k) { k.hidden = !(f === "vsetky" || k.getAttribute("data-odp") === f); });
+    });
+  });
+  var tab = document.getElementById("var");
+  var telo = tab.tBodies[0];
+  var smer = {};
+  function hodnota(td) {
+    var t = td.textContent.replace(/\s/g, "").replace("%", "").replace(",", ".");
+    var n = parseFloat(t);
+    return isNaN(n) ? td.textContent : n;
+  }
+  tab.querySelectorAll("th button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = Number(b.getAttribute("data-k"));
+      smer[k] = smer[k] === 1 ? -1 : 1;
+      var riadky = Array.prototype.slice.call(telo.rows);
+      riadky.sort(function (x, y) {
+        var a = hodnota(x.cells[k]), c = hodnota(y.cells[k]);
+        if (typeof a === "number" && typeof c === "number") return (a - c) * smer[k];
+        return String(a).localeCompare(String(c), "sk") * smer[k];
+      });
+      riadky.forEach(function (r) { telo.appendChild(r); });
+    });
+  });
+})();
+</script>
+</body>
+</html>
