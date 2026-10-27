@@ -1,0 +1,3729 @@
+{
+ "zdroj": "Vymyselník 2026-10-27 — návrh slotov hráčskych kariet po revízii (skript/sloty.ts). Bez simulácie: očakávané výskyty cez rozloženia sideLayouts (variants.ts), rovnomerný los (engine.ts:679). Počty na 1 kópiu sady (každá karta 1×; v hre 2×, pomery rovnaké).",
+ "podmienky": {
+  "1": "Žiadna hráčska karta okrem kliatby nebude mať viac ako 8 variantov (Michal).",
+  "2": "Okrem starešinov každá karta má minimálne 4 varianty (Michal).",
+  "3": "Rozloženie akcií (vrátane Paktu) približne rovnomerné, nie 80 % / 20 % a inde 0 (Michal). Prevod: druh s ≥ 4 výskytmi 15–40 % na každom indexe (obe strany spolu); vzácny druh ≥ 2 okná na rôznych kartách; obsadenosť indexu ±20 % od priemeru strany."
+ },
+ "vysledok": {
+  "po": {
+   "porusenia": [],
+   "nad8": [],
+   "pod4": [],
+   "sAllowed": 10,
+   "extremy": "najviac Pohorš na i0 27 %, najmenej Vízia na i1 20 %",
+   "spoj": {
+    "akcie": 1.8769309807256236,
+    "tuhe": 0.5176224135487528
+   }
+  },
+  "pred": {
+   "porusenia": 39,
+   "nad8": [
+    "Veštica 12",
+    "Praudovravec 12",
+    "Niekoho stryná 12",
+    "Milujúca manželka 16",
+    "Miňištrant 16",
+    "Dievčina na vydaj 12"
+   ],
+   "pod4": [
+    "Lievik 2",
+    "Pes 2",
+    "Silná, nezávislá žena 2",
+    "Strýko z Ameriky 2",
+    "Kulturista 1"
+   ],
+   "sAllowed": 19,
+   "extremy": "najviac Pečeň na i2 46 %, najmenej Viera na i3 6 %",
+   "spoj": {
+    "akcie": 2.089201566043083,
+    "tuhe": 0.5823235544217688
+   }
+  },
+  "dnes": {
+   "porusenia": 28,
+   "nad8": [
+    "Milujúca manželka 16",
+    "Miňištrant 16",
+    "Veštica 12",
+    "Niekoho stryná 12",
+    "Recidivista 16",
+    "Dievčina na vydaj 12"
+   ],
+   "pod4": [
+    "Silná, nezávislá žena 2",
+    "Pes 2"
+   ],
+   "sAllowed": 17,
+   "extremy": "najviac Viera na i1 42 %, najmenej Viera na i3 5 %",
+   "spoj": {
+    "akcie": 1.965171252333414,
+    "tuhe": 0.4090577063550037
+   },
+   "kariet": 37
+  }
+ },
+ "pripnutia": [
+  {
+   "nazov": "Kulturista: Petelica sama na ľavom slote 1",
+   "preco": "WAU 1 (plán 5.1, 11.2): tvar „Petelica sama na slote 1, Dlh ×2 vnútri“.",
+   "ok": true
+  },
+  {
+   "nazov": "Pakt: ľavá strana, okno 2–3 na troch nosičoch",
+   "preco": "12.1: Brigádnik slot 3, Živnostník okno 2–3 vedľa Dlhu (Dlh aj Pakt na 2–3), Dohadzovačka okno 2–3.",
+   "ok": true
+  },
+  {
+   "nazov": "Puška: Petelica na pravých slotoch 2–3",
+   "preco": "WAU 3 (5.3) a WAU 6 (5.6) počítajú s Petelicou Pušky na 2–3; návrh ju tam nechal a podľa nej postavil Koňa a Vešticu.",
+   "ok": true
+  },
+  {
+   "nazov": "Praudovravec: ľavá strana plná na troch indexoch, Odpor môže stretnúť Petelicu Hasiča",
+   "preco": "WAU 2 a WAU 7 (5.2, 5.7, poznámka k 10.1: Dezinformátor s Hasičom tým vzniká).",
+   "ok": true
+  }
+ ],
+ "komba": [
+  {
+   "nazov": "WAU 1 · Kulturista za Silnou ženou (jeho Dlhy aktívne)",
+   "plan": "5.1",
+   "pred": 1,
+   "po": 0.5
+  },
+  {
+   "nazov": "WAU 2 · Dezinformátor: Petelica Hasiča na Odpore Praudovravca",
+   "plan": "5.2, 10.1 pozn.",
+   "pred": 0.333,
+   "po": 0.5
+  },
+  {
+   "nazov": "WAU 3 · Petelica Pušky na Posilnení Koňa",
+   "plan": "5.3",
+   "pred": 0.25,
+   "po": 0.5
+  },
+  {
+   "nazov": "WAU 6 · Petelica Traktoristky na Veštici",
+   "plan": "5.6",
+   "pred": 1,
+   "po": 1
+  },
+  {
+   "nazov": "WAU 6 · Petelica Pušky na Veštici",
+   "plan": "5.6",
+   "pred": 1,
+   "po": 1
+  },
+  {
+   "nazov": "WAU 7 · Petelica Recidivistu na Praudovravcovi",
+   "plan": "5.7",
+   "pred": 1,
+   "po": 1
+  }
+ ],
+ "karty": [
+  {
+   "id": "noviny",
+   "nazov": "Noviny",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Pohoršenie": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Povera": 1
+    },
+    "blocked": [
+     3
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "cigorky",
+   "nazov": "Krabička cigariet",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Cigareta": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      1
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "vinko",
+   "nazov": "Vínko",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Poldeci": 2
+    },
+    "blocked": [],
+    "rozlozeni": 6
+   },
+   "prava": {
+    "akcie": {
+     "PoškodeniePečene": 4
+    },
+    "blocked": [],
+    "rozlozeni": 1
+   },
+   "pred": {
+    "variantov": 6,
+    "lava": {
+     "blocked": []
+    },
+    "prava": {
+     "blocked": []
+    }
+   }
+  },
+  {
+   "id": "pasca",
+   "nazov": "Pasca",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Obmedzenie": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Odpor": 1
+    },
+    "blocked": [
+     3
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      1,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "puska",
+   "nazov": "Puška",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: Rana → Pecka, Pecka → Petelica",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pecka": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Petelica": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      1
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "svaty_text",
+   "nazov": "Svätý text",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 8,
+   "lava": {
+    "akcie": {
+     "Viera": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Viera": 1
+    },
+    "blocked": [],
+    "rozlozeni": 4
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "nealko",
+   "nazov": "Nealko",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pohoršenie": 1
+    },
+    "blocked": [],
+    "rozlozeni": 4
+   },
+   "prava": {
+    "akcie": {
+     "Pohoršenie": 1
+    },
+    "blocked": [
+     1,
+     2,
+     3
+    ],
+    "rozlozeni": 1
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      1
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "vyherny_automat",
+   "nazov": "Výherný automat",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: akcie bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Robota": 1
+    },
+    "blocked": [],
+    "rozlozeni": 4
+   },
+   "prava": {
+    "akcie": {
+     "Dlh": 4
+    },
+    "blocked": [],
+    "rozlozeni": 1
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": []
+    },
+    "prava": {
+     "blocked": []
+    }
+   }
+  },
+  {
+   "id": "vidly",
+   "nazov": "Vidly",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 8,
+   "lava": {
+    "akcie": {
+     "Pecka": 1
+    },
+    "blocked": [],
+    "rozlozeni": 4
+   },
+   "prava": {
+    "akcie": {
+     "Pohoršenie": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      1,
+      2
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "lievik",
+   "nazov": "Lievik",
+   "druh": "Nástroj",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Poldeci": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "PoškodeniePečene": 2
+    },
+    "blocked": [
+     3
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 2,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "cierna_macka",
+   "nazov": "Čierna mačka",
+   "druh": "Zviera",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pohoršenie": 1,
+     "Povera": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Povera": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "pes",
+   "nazov": "Pes",
+   "druh": "Zviera",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Rana": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Rana": 2
+    },
+    "blocked": [
+     0
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 2,
+    "lava": {
+     "blocked": [
+      0,
+      1
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "krokodil",
+   "nazov": "Krokodíl",
+   "druh": "Zviera",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Odpor": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Pecka": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "kapybara",
+   "nazov": "Kapybara",
+   "druh": "Zviera",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Viera": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "kon",
+   "nazov": "Kôň",
+   "druh": "Zviera",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Posilnenie": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Rana": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      1,
+      2
+     ]
+    }
+   }
+  },
+  {
+   "id": "kohut",
+   "nazov": "Kohút",
+   "druh": "Zviera",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Pohoršenie": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Odpor": 1
+    },
+    "blocked": [
+     2
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      1,
+      2
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "financna_poradkyna",
+   "nazov": "Finančná poradkyňa",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: vpravo + Obmedzenie",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Dlh": 2,
+     "Povera": 1
+    },
+    "blocked": [
+     0
+    ],
+    "rozlozeni": 3
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1,
+     "Dlh": 1,
+     "Obmedzenie": 1
+    },
+    "blocked": [
+     0
+    ],
+    "allowed": {
+     "1": [
+      "Obmedzenie"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 8,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Dlh"
+      ],
+      "1": [
+       "Dlh"
+      ],
+      "2": [
+       "Povera"
+      ],
+      "3": [
+       "Povera"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Cigareta",
+       "Obmedzenie"
+      ],
+      "1": [
+       "Cigareta",
+       "Obmedzenie"
+      ],
+      "2": [
+       "Dlh"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "velmi_smutiaca_vdova",
+   "nazov": "Veľmi smútiaca vdova",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Dlh": 1,
+     "Obmedzenie": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     3
+    ],
+    "rozlozeni": 6
+   },
+   "prava": {
+    "akcie": {
+     "Pohoršenie": 2
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 1
+   },
+   "pred": {
+    "variantov": 6,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Obmedzenie"
+      ],
+      "1": [
+       "Dlh"
+      ],
+      "2": [
+       "Rana"
+      ],
+      "3": [
+       "Rana"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [
+      0
+     ]
+    }
+   }
+  },
+  {
+   "id": "vestica",
+   "nazov": "Veštica",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: vľavo + Pečeň",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Cigareta": 1,
+     "Vízia": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     0
+    ],
+    "allowed": {
+     "3": [
+      "PoškodeniePečene"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Povera": 2,
+     "Viera": 1
+    },
+    "blocked": [
+     0
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 12,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Vízia"
+      ],
+      "1": [
+       "Vízia"
+      ],
+      "2": [
+       "Cigareta",
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "Cigareta",
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "silna_nezavisla_zena",
+   "nazov": "Silná, nezávislá žena",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Cigareta": 1,
+     "Pohoršenie": 1
+    },
+    "blocked": [
+     2
+    ],
+    "rozlozeni": 6
+   },
+   "prava": {
+    "akcie": {
+     "Dlh": 2
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 1
+   },
+   "pred": {
+    "variantov": 2,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "policajtka",
+   "nazov": "Policajtka",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Obmedzenie": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Robota": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "hasic",
+   "nazov": "Hasič",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Posilnenie": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Petelica": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      1
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "praudovravec",
+   "nazov": "Praudovravec",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: vľavo + Viera",
+   "variantov": 8,
+   "lava": {
+    "akcie": {
+     "Odpor": 1,
+     "Povera": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     2
+    ],
+    "allowed": {
+     "1": [
+      "Povera",
+      "Viera"
+     ]
+    },
+    "rozlozeni": 4
+   },
+   "prava": {
+    "akcie": {
+     "Pohoršenie": 1,
+     "Povera": 1,
+     "Vízia": 1
+    },
+    "blocked": [
+     0
+    ],
+    "allowed": {
+     "3": [
+      "Vízia"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 12,
+    "lava": {
+     "blocked": [
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2
+     ],
+     "allowed": {
+      "0": [
+       "Povera",
+       "Vízia"
+      ],
+      "1": [
+       "Povera",
+       "Vízia"
+      ],
+      "3": [
+       "Pohoršenie"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "zamocnik",
+   "nazov": "Zámočník",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Cigareta": 1,
+     "Poldeci": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Pecka": 1,
+     "Robota": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "niekoho_stryna",
+   "nazov": "Niekoho stryná",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: vľavo + Pečeň",
+   "variantov": 8,
+   "lava": {
+    "akcie": {
+     "Poldeci": 1,
+     "Viera": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     3
+    ],
+    "allowed": {
+     "0": [
+      "Viera"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Povera": 1,
+     "Viera": 1,
+     "Vízia": 1
+    },
+    "blocked": [
+     2
+    ],
+    "allowed": {
+     "3": [
+      "Povera",
+      "Viera"
+     ]
+    },
+    "rozlozeni": 4
+   },
+   "pred": {
+    "variantov": 12,
+    "lava": {
+     "blocked": [
+      3
+     ],
+     "allowed": {
+      "0": [
+       "Poldeci",
+       "Viera"
+      ],
+      "1": [
+       "Poldeci",
+       "Viera"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Viera"
+      ],
+      "1": [
+       "Povera",
+       "Viera"
+      ],
+      "2": [
+       "Povera",
+       "Vízia"
+      ],
+      "3": [
+       "Povera",
+       "Vízia"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "veteran",
+   "nazov": "Veterán",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: Pecka → Petelica",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Poldeci": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Odpor": 1,
+     "Petelica": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0
+     ],
+     "allowed": {
+      "1": [
+       "Odpor"
+      ],
+      "2": [
+       "Petelica"
+      ],
+      "3": [
+       "Petelica"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "recidivista",
+   "nazov": "Recidivista",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: vľavo Odpor → Dlh",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Dlh": 2
+    },
+    "blocked": [
+     2
+    ],
+    "rozlozeni": 3
+   },
+   "prava": {
+    "akcie": {
+     "Petelica": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Petelica"
+      ],
+      "1": [
+       "Petelica"
+      ],
+      "2": [
+       "Rana"
+      ],
+      "3": [
+       "Rana"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "liberal",
+   "nazov": "Liberál",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: akcie 2 → 4",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pohoršenie": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1,
+     "Povera": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "zivnostnik",
+   "nazov": "Živnostník",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: vľavo + Robota; 12.1: vľavo + Pakt",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Dlh": 1,
+     "Odpor": 1,
+     "Robota": 1,
+     "Pakt": 1
+    },
+    "blocked": [],
+    "allowed": {
+     "0": [
+      "Robota"
+     ],
+     "1": [
+      "Odpor"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 2,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     0
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 8,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Odpor",
+       "Robota"
+      ],
+      "1": [
+       "Odpor",
+       "Robota"
+      ],
+      "2": [
+       "Dlh",
+       "Pakt"
+      ],
+      "3": [
+       "Dlh",
+       "Pakt"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Cigareta"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "kocovnik",
+   "nazov": "Kočovník",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: Rana → Pecka",
+   "variantov": 8,
+   "lava": {
+    "akcie": {
+     "Dlh": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1,
+     "PoškodeniePečene": 1,
+     "Pecka": 1
+    },
+    "blocked": [
+     2
+    ],
+    "allowed": {
+     "3": [
+      "PoškodeniePečene",
+      "Pecka"
+     ]
+    },
+    "rozlozeni": 4
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      3
+     ],
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Pecka",
+       "PoškodeniePečene"
+      ],
+      "2": [
+       "Pecka",
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "svokra",
+   "nazov": "Svokra",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "Dávka 3 D3: Obmedzenie → Dlh",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Poldeci": 1
+    },
+    "blocked": [
+     1,
+     2,
+     3
+    ],
+    "rozlozeni": 1
+   },
+   "prava": {
+    "akcie": {
+     "Dlh": 1,
+     "Pecka": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     3
+    ],
+    "rozlozeni": 6
+   },
+   "pred": {
+    "variantov": 8,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Viera"
+      ],
+      "1": [
+       "Viera"
+      ],
+      "2": [
+       "Dlh",
+       "Pecka"
+      ],
+      "3": [
+       "Dlh",
+       "Pecka"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "sarlatan",
+   "nazov": "Šarlatán",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: vpravo + Pečeň",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Dlh": 1,
+     "Povera": 2
+    },
+    "blocked": [
+     2
+    ],
+    "rozlozeni": 3
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1,
+     "Pohoršenie": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     0
+    ],
+    "allowed": {
+     "2": [
+      "Pohoršenie"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 6,
+    "lava": {
+     "blocked": [
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      3
+     ],
+     "allowed": {
+      "0": [
+       "Cigareta",
+       "Pohoršenie"
+      ],
+      "1": [
+       "Cigareta",
+       "Pohoršenie"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "podvodnik",
+   "nazov": "Podvodník",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: akcie bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Cigareta": 2,
+     "Dlh": 1
+    },
+    "blocked": [
+     1
+    ],
+    "rozlozeni": 3
+   },
+   "prava": {
+    "akcie": {
+     "Obmedzenie": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Cigareta"
+      ],
+      "2": [
+       "Dlh"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [
+      0
+     ],
+     "allowed": {
+      "1": [
+       "Obmedzenie"
+      ],
+      "2": [
+       "Rana"
+      ],
+      "3": [
+       "Rana"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "zahradkar",
+   "nazov": "Záhradkár",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: akcie bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Cigareta": 2,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     1
+    ],
+    "rozlozeni": 3
+   },
+   "prava": {
+    "akcie": {
+     "Poldeci": 1,
+     "Rana": 1,
+     "Robota": 1
+    },
+    "blocked": [
+     2
+    ],
+    "allowed": {
+     "1": [
+      "Poldeci"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 8,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Cigareta"
+      ],
+      "1": [
+       "Cigareta"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Poldeci",
+       "Rana"
+      ],
+      "1": [
+       "Poldeci",
+       "Rana"
+      ],
+      "2": [
+       "Robota"
+      ],
+      "3": [
+       "Robota"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "anonymny_alkoholik",
+   "nazov": "Anonymný alkoholik",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Odpor": 1,
+     "Robota": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Dlh": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0
+     ],
+     "allowed": {
+      "1": [
+       "Viera"
+      ],
+      "2": [
+       "Viera"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "presbiter",
+   "nazov": "Presbiter",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pohoršenie": 1,
+     "Povera": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Rana": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "dvojcata",
+   "nazov": "Dvojčatá",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: Rana → Pecka, Cig → Pečeň",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Dlh": 1,
+     "Pecka": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "PoškodeniePečene": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "sofer",
+   "nazov": "Šofér",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "10.1: akcie bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Poldeci": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "snubenica",
+   "nazov": "Snúbenica",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Robota": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Dlh": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      1
+     ]
+    }
+   }
+  },
+  {
+   "id": "degustatorka",
+   "nazov": "Degustátorka",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka; Dávka 3 D3: Obmedzenie → Dlh",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "PoškodeniePečene": 1,
+     "Poldeci": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Rana": 1,
+     "Dlh": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "klebetnica",
+   "nazov": "Klebetnica",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Povera": 1,
+     "Vízia": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Pohoršenie": 1,
+     "Dlh": 1
+    },
+    "blocked": [
+     0,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "dohadzovacka",
+   "nazov": "Dohadzovačka",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka; 12.1: vľavo Cig → Pakt",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Viera": 1,
+     "Pakt": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Posilnenie": 1,
+     "Dlh": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      1
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "poznamka": "Pakt v okne 2–3 podľa 12.1 (Viera, Pakt na 2–3)"
+   }
+  },
+  {
+   "id": "vandal",
+   "nazov": "Vandal",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pecka": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Odpor": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "stryko_z_ameriky",
+   "nazov": "Strýko z Ameriky",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Cigareta": 2
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 1
+   },
+   "prava": {
+    "akcie": {
+     "Vízia": 1,
+     "Poldeci": 1
+    },
+    "blocked": [
+     1
+    ],
+    "rozlozeni": 6
+   },
+   "pred": {
+    "variantov": 2,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "opatrovatelka",
+   "nazov": "Opatrovateľka",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka (v2)",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Robota": 1,
+     "Cigareta": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Viera": 1,
+     "Posilnenie": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      2,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "smetiarka",
+   "nazov": "Smetiarka",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "schválená novinka",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Robota": 1,
+     "Cigareta": 1
+    },
+    "blocked": [
+     0,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Obmedzenie": 1
+    },
+    "blocked": [
+     1,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "poznamka": "sloty nikde nezapísané, predpoklad blok. 0 a 3"
+   }
+  },
+  {
+   "id": "brigadnik",
+   "nazov": "Brigádnik",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "4: nová (rezerva ide do sady); 12.1: vľavo + Pakt",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Robota": 1,
+     "Cigareta": 1,
+     "Rana": 1,
+     "Pakt": 1
+    },
+    "blocked": [],
+    "allowed": {
+     "0": [
+      "Cigareta"
+     ],
+     "3": [
+      "Pakt"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Robota": 1,
+     "PoškodeniePečene": 1,
+     "Obmedzenie": 1
+    },
+    "blocked": [
+     0
+    ],
+    "allowed": {
+     "3": [
+      "Obmedzenie"
+     ]
+    },
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Robota"
+      ],
+      "1": [
+       "Cigareta",
+       "Rana"
+      ],
+      "2": [
+       "Cigareta",
+       "Rana"
+      ],
+      "3": [
+       "Pakt"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [
+      0
+     ],
+     "allowed": {
+      "1": [
+       "Robota"
+      ],
+      "2": [
+       "PoškodeniePečene",
+       "Obmedzenie"
+      ],
+      "3": [
+       "PoškodeniePečene",
+       "Obmedzenie"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "masiar",
+   "nazov": "Mäsiar",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "4: nová",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pecka": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Pecka": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "kulturista",
+   "nazov": "Kulturista",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "4: nová",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Petelica": 1
+    },
+    "blocked": [
+     0,
+     2,
+     3
+    ],
+    "rozlozeni": 1
+   },
+   "prava": {
+    "akcie": {
+     "Dlh": 2
+    },
+    "blocked": [],
+    "rozlozeni": 6
+   },
+   "pred": {
+    "variantov": 1,
+    "lava": {
+     "blocked": [
+      0,
+      2,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "traktoristka",
+   "nazov": "Traktoristka",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "4: nová",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Petelica": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Dlh": 1
+    },
+    "blocked": [
+     2
+    ],
+    "rozlozeni": 3
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "oslavenec",
+   "nazov": "Oslávenec",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "4: nová",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Poldeci": 1,
+     "Cigareta": 1
+    },
+    "blocked": [
+     0,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Rana": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "vymahac",
+   "nazov": "Vymáhač",
+   "druh": "Občan",
+   "kopie": 2,
+   "zdroj_akcii": "Dávka 3 D5: nová",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Pecka": 1,
+     "Dlh": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Rana": 1,
+     "Dlh": 1
+    },
+    "blocked": [
+     0,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 4,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [
+      0,
+      3
+     ]
+    }
+   }
+  },
+  {
+   "id": "pijan",
+   "nazov": "Pijan",
+   "druh": "Štart",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Dlh": 1,
+     "PoškodeniePečene": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "allowed": {
+     "0": [
+      "PoškodeniePečene"
+     ]
+    },
+    "rozlozeni": 1
+   },
+   "prava": {
+    "akcie": {
+     "Poldeci": 1,
+     "PoškodeniePečene": 1,
+     "Rana": 1
+    },
+    "blocked": [
+     1
+    ],
+    "rozlozeni": 6
+   },
+   "pred": {
+    "variantov": 8,
+    "lava": {
+     "blocked": [
+      0,
+      3
+     ],
+     "allowed": {
+      "1": [
+       "Dlh",
+       "PoškodeniePečene"
+      ],
+      "2": [
+       "Dlh",
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Rana"
+      ],
+      "1": [
+       "Rana"
+      ],
+      "2": [
+       "Poldeci",
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "Poldeci",
+       "PoškodeniePečene"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "milujuca_manzelka",
+   "nazov": "Milujúca manželka",
+   "druh": "Štart",
+   "kopie": 2,
+   "zdroj_akcii": "Dávka 3 M2: akcie bez zmeny, bez tagu Kliatba",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "Dlh": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     2,
+     3
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Odpor": 1,
+     "Povera": 1
+    },
+    "blocked": [
+     0,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 16,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Viera"
+      ],
+      "1": [
+       "Viera"
+      ],
+      "2": [
+       "Dlh"
+      ],
+      "3": [
+       "Dlh"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Povera"
+      ],
+      "1": [
+       "Povera"
+      ],
+      "2": [
+       "Odpor"
+      ],
+      "3": [
+       "Odpor"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "ministrant",
+   "nazov": "Miňištrant",
+   "druh": "Štart",
+   "kopie": 2,
+   "zdroj_akcii": "bez zmeny",
+   "variantov": 4,
+   "lava": {
+    "akcie": {
+     "PoškodeniePečene": 1,
+     "Viera": 1
+    },
+    "blocked": [
+     0,
+     1
+    ],
+    "rozlozeni": 2
+   },
+   "prava": {
+    "akcie": {
+     "Cigareta": 1,
+     "Povera": 1
+    },
+    "blocked": [
+     1,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 16,
+    "lava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Viera"
+      ],
+      "1": [
+       "Viera"
+      ],
+      "2": [
+       "PoškodeniePečene"
+      ],
+      "3": [
+       "PoškodeniePečene"
+      ]
+     }
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Povera"
+      ],
+      "1": [
+       "Povera"
+      ],
+      "2": [
+       "Cigareta"
+      ],
+      "3": [
+       "Cigareta"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "dievcina_na_vydaj",
+   "nazov": "Dievčina na vydaj",
+   "druh": "Štart",
+   "kopie": 2,
+   "zdroj_akcii": "Dávka 3 D4: akcie bez zmeny",
+   "variantov": 6,
+   "lava": {
+    "akcie": {
+     "Dlh": 2
+    },
+    "blocked": [
+     3
+    ],
+    "rozlozeni": 3
+   },
+   "prava": {
+    "akcie": {
+     "Pohoršenie": 1,
+     "Povera": 1
+    },
+    "blocked": [
+     0,
+     2
+    ],
+    "rozlozeni": 2
+   },
+   "pred": {
+    "variantov": 12,
+    "lava": {
+     "blocked": [
+      3
+     ]
+    },
+    "prava": {
+     "blocked": [],
+     "allowed": {
+      "0": [
+       "Pohoršenie"
+      ],
+      "1": [
+       "Pohoršenie"
+      ],
+      "2": [
+       "Povera"
+      ],
+      "3": [
+       "Povera"
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "matice": {
+  "dnes": {
+   "kariet": 37,
+   "obsadenost": {
+    "lava": [
+     16.417,
+     23.917,
+     18.917,
+     7.75
+    ],
+    "prava": [
+     16.667,
+     23.833,
+     20.5,
+     16
+    ],
+    "akcii": [
+     67,
+     77
+    ]
+   },
+   "druhy": {
+    "Petelica": {
+     "spolu": 2,
+     "lava": [
+      0,
+      0,
+      0,
+      0
+     ],
+     "prava": [
+      1,
+      1,
+      0,
+      0
+     ]
+    },
+    "Pecka": {
+     "spolu": 4,
+     "lava": [
+      0,
+      0,
+      0,
+      0
+     ],
+     "prava": [
+      0.5,
+      0.5,
+      1.5,
+      1.5
+     ]
+    },
+    "Rana": {
+     "spolu": 16,
+     "lava": [
+      1,
+      1.5,
+      2,
+      1.5
+     ],
+     "prava": [
+      2,
+      3.5,
+      3,
+      1.5
+     ]
+    },
+    "PoškodeniePečene": {
+     "spolu": 13,
+     "lava": [
+      0.5,
+      1.5,
+      2,
+      1
+     ],
+     "prava": [
+      1,
+      2,
+      3,
+      2
+     ]
+    },
+    "Poldeci": {
+     "spolu": 9,
+     "lava": [
+      2.5,
+      3,
+      1,
+      0.5
+     ],
+     "prava": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+     ]
+    },
+    "Dlh": {
+     "spolu": 22,
+     "lava": [
+      2.5,
+      4.5,
+      4,
+      2
+     ],
+     "prava": [
+      1,
+      2,
+      3,
+      3
+     ]
+    },
+    "Povera": {
+     "spolu": 15,
+     "lava": [
+      1.167,
+      2.167,
+      2.167,
+      0.5
+     ],
+     "prava": [
+      2.167,
+      3,
+      2.5,
+      1.333
+     ]
+    },
+    "Viera": {
+     "spolu": 11,
+     "lava": [
+      2,
+      2,
+      0,
+      0
+     ],
+     "prava": [
+      2.5,
+      2.667,
+      1.333,
+      0.5
+     ]
+    },
+    "Pohoršenie": {
+     "spolu": 12,
+     "lava": [
+      0.5,
+      2.5,
+      2.5,
+      0.5
+     ],
+     "prava": [
+      1.5,
+      2.167,
+      0.667,
+      1.667
+     ]
+    },
+    "Cigareta": {
+     "spolu": 18,
+     "lava": [
+      2.5,
+      3,
+      1.5,
+      1
+     ],
+     "prava": [
+      3.5,
+      3,
+      2,
+      1.5
+     ]
+    },
+    "Robota": {
+     "spolu": 6,
+     "lava": [
+      0.25,
+      1.25,
+      1.25,
+      0.25
+     ],
+     "prava": [
+      0.5,
+      1,
+      1,
+      0.5
+     ]
+    },
+    "Odpor": {
+     "spolu": 7,
+     "lava": [
+      1,
+      1.5,
+      1.5,
+      0
+     ],
+     "prava": [
+      0,
+      1,
+      1,
+      1
+     ]
+    },
+    "Obmedzenie": {
+     "spolu": 5,
+     "lava": [
+      2,
+      0.5,
+      0.5,
+      0
+     ],
+     "prava": [
+      0,
+      1,
+      0.5,
+      0.5
+     ]
+    },
+    "Vízia": {
+     "spolu": 3,
+     "lava": [
+      0.5,
+      0.5,
+      0,
+      0
+     ],
+     "prava": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+     ]
+    },
+    "Posilnenie": {
+     "spolu": 1,
+     "lava": [
+      0,
+      0,
+      0.5,
+      0.5
+     ],
+     "prava": [
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  },
+  "pred": {
+   "kariet": 56,
+   "obsadenost": {
+    "lava": [
+     21.417,
+     39.917,
+     33.417,
+     11.25
+    ],
+    "prava": [
+     19.667,
+     37.833,
+     34.5,
+     19
+    ],
+    "akcii": [
+     106,
+     111
+    ]
+   },
+   "druhy": {
+    "Petelica": {
+     "spolu": 6,
+     "lava": [
+      0,
+      1.5,
+      0.5,
+      0
+     ],
+     "prava": [
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    "Pecka": {
+     "spolu": 11,
+     "lava": [
+      1,
+      2,
+      2,
+      1
+     ],
+     "prava": [
+      0.5,
+      2,
+      2,
+      0.5
+     ]
+    },
+    "Rana": {
+     "spolu": 19,
+     "lava": [
+      0.5,
+      1.5,
+      2,
+      1
+     ],
+     "prava": [
+      3,
+      5,
+      4,
+      2
+     ]
+    },
+    "PoškodeniePečene": {
+     "spolu": 25,
+     "lava": [
+      1,
+      3.5,
+      5,
+      1.5
+     ],
+     "prava": [
+      1,
+      2.5,
+      6.5,
+      4
+     ]
+    },
+    "Poldeci": {
+     "spolu": 13,
+     "lava": [
+      3,
+      4.5,
+      2,
+      0.5
+     ],
+     "prava": [
+      0.5,
+      1,
+      1,
+      0.5
+     ]
+    },
+    "Dlh": {
+     "spolu": 32,
+     "lava": [
+      2.5,
+      6,
+      5,
+      1.5
+     ],
+     "prava": [
+      1,
+      5.5,
+      7,
+      3.5
+     ]
+    },
+    "Povera": {
+     "spolu": 17,
+     "lava": [
+      1.5,
+      2.5,
+      2.5,
+      0.5
+     ],
+     "prava": [
+      2.167,
+      3,
+      3,
+      1.833
+     ]
+    },
+    "Viera": {
+     "spolu": 16,
+     "lava": [
+      2.833,
+      3.333,
+      1.333,
+      0.5
+     ],
+     "prava": [
+      3,
+      3.167,
+      1.333,
+      0.5
+     ]
+    },
+    "Pohoršenie": {
+     "spolu": 15,
+     "lava": [
+      1,
+      2.5,
+      2.5,
+      1
+     ],
+     "prava": [
+      1.5,
+      3.167,
+      1.667,
+      1.667
+     ]
+    },
+    "Cigareta": {
+     "spolu": 24,
+     "lava": [
+      2.5,
+      6,
+      4.5,
+      1
+     ],
+     "prava": [
+      3.5,
+      3.5,
+      2,
+      1
+     ]
+    },
+    "Robota": {
+     "spolu": 11,
+     "lava": [
+      1.75,
+      2.75,
+      2.25,
+      0.25
+     ],
+     "prava": [
+      0.5,
+      2,
+      1,
+      0.5
+     ]
+    },
+    "Odpor": {
+     "spolu": 9,
+     "lava": [
+      0.833,
+      1.833,
+      1.333,
+      0
+     ],
+     "prava": [
+      0.5,
+      2,
+      1.5,
+      1
+     ]
+    },
+    "Obmedzenie": {
+     "spolu": 7,
+     "lava": [
+      2,
+      0.5,
+      0.5,
+      0
+     ],
+     "prava": [
+      0.5,
+      2,
+      1,
+      0.5
+     ]
+    },
+    "Vízia": {
+     "spolu": 5,
+     "lava": [
+      1,
+      1,
+      0,
+      0
+     ],
+     "prava": [
+      0.5,
+      1,
+      1,
+      0.5
+     ]
+    },
+    "Posilnenie": {
+     "spolu": 4,
+     "lava": [
+      0,
+      0.5,
+      1,
+      0.5
+     ],
+     "prava": [
+      0.5,
+      1,
+      0.5,
+      0
+     ]
+    },
+    "Pakt": {
+     "spolu": 3,
+     "lava": [
+      0,
+      0,
+      1,
+      2
+     ],
+     "prava": [
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  },
+  "po": {
+   "kariet": 56,
+   "obsadenost": {
+    "lava": [
+     26.25,
+     26.25,
+     26.917,
+     26.583
+    ],
+    "prava": [
+     27.917,
+     27.417,
+     27.917,
+     27.75
+    ],
+    "akcii": [
+     106,
+     111
+    ]
+   },
+   "druhy": {
+    "Petelica": {
+     "spolu": 6,
+     "lava": [
+      0,
+      1,
+      0.5,
+      0.5
+     ],
+     "prava": [
+      1.5,
+      0.5,
+      1,
+      1
+     ]
+    },
+    "Pecka": {
+     "spolu": 11,
+     "lava": [
+      1.75,
+      1.75,
+      1.25,
+      1.25
+     ],
+     "prava": [
+      1.083,
+      1.083,
+      1.333,
+      1.5
+     ]
+    },
+    "Rana": {
+     "spolu": 19,
+     "lava": [
+      1.333,
+      1.333,
+      1.333,
+      1
+     ],
+     "prava": [
+      3.833,
+      3.167,
+      3.5,
+      3.5
+     ]
+    },
+    "PoškodeniePečene": {
+     "spolu": 25,
+     "lava": [
+      2.833,
+      2.5,
+      2.833,
+      2.833
+     ],
+     "prava": [
+      3.25,
+      3.75,
+      3.833,
+      3.167
+     ]
+    },
+    "Poldeci": {
+     "spolu": 13,
+     "lava": [
+      2.5,
+      2.5,
+      2.5,
+      2.5
+     ],
+     "prava": [
+      0.667,
+      1,
+      0.667,
+      0.667
+     ]
+    },
+    "Dlh": {
+     "spolu": 32,
+     "lava": [
+      3.333,
+      4.167,
+      3.5,
+      4
+     ],
+     "prava": [
+      4.667,
+      4.167,
+      4.333,
+      3.833
+     ]
+    },
+    "Povera": {
+     "spolu": 17,
+     "lava": [
+      1.917,
+      1.5,
+      1.833,
+      1.75
+     ],
+     "prava": [
+      2.083,
+      2.75,
+      2.5,
+      2.667
+     ]
+    },
+    "Viera": {
+     "spolu": 16,
+     "lava": [
+      2.25,
+      2,
+      2,
+      1.75
+     ],
+     "prava": [
+      1.833,
+      2.167,
+      1.917,
+      2.083
+     ]
+    },
+    "Pohoršenie": {
+     "spolu": 15,
+     "lava": [
+      2.083,
+      1.583,
+      1.75,
+      1.583
+     ],
+     "prava": [
+      2,
+      2,
+      2,
+      2
+     ]
+    },
+    "Cigareta": {
+     "spolu": 24,
+     "lava": [
+      3.667,
+      3.333,
+      3.333,
+      3.667
+     ],
+     "prava": [
+      2.5,
+      2.667,
+      2.667,
+      2.167
+     ]
+    },
+    "Robota": {
+     "spolu": 11,
+     "lava": [
+      1.75,
+      1.75,
+      1.75,
+      1.75
+     ],
+     "prava": [
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    "Odpor": {
+     "spolu": 9,
+     "lava": [
+      1,
+      1,
+      1,
+      1
+     ],
+     "prava": [
+      1.167,
+      1.167,
+      1.333,
+      1.333
+     ]
+    },
+    "Obmedzenie": {
+     "spolu": 7,
+     "lava": [
+      0.833,
+      0.833,
+      0.833,
+      0.5
+     ],
+     "prava": [
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    "Vízia": {
+     "spolu": 5,
+     "lava": [
+      0.5,
+      0.5,
+      1,
+      0
+     ],
+     "prava": [
+      0.833,
+      0.5,
+      0.333,
+      1.333
+     ]
+    },
+    "Posilnenie": {
+     "spolu": 4,
+     "lava": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+     ],
+     "prava": [
+      0.5,
+      0.5,
+      0.5,
+      0.5
+     ]
+    },
+    "Pakt": {
+     "spolu": 3,
+     "lava": [
+      0,
+      0,
+      1,
+      2
+     ],
+     "prava": [
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  }
+ }
+}
