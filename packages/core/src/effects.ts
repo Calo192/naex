@@ -14,7 +14,7 @@ import type { ElderState } from "./elders.ts";
 import { favourStarsieho, prebudenyPre, priazenHraca, priazenSila } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { LineEval, PlacedCard } from "./partia.ts";
-import { rataSaDoPrevahy, spojePsa } from "./partia.ts";
+import { evaluateLine, rataSaDoPrevahy, spojePsa } from "./partia.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
@@ -293,21 +293,34 @@ export function vlastnyLimitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaP
 }
 
 /**
- * Odhad limitu v ďalšom kole: poldeci na stole cez NA EX sa pri bitke
- * vypijú, na začiatku kola sa dolejú (KONSTANTY.POLDECI_NA_ZACIATKU_KOLA).
- * Nevie o akcii Poldeci, Krčmárke, doliatí cigaretami ani o budúcej Zastávke —
- * ukazuje, s čím hráč ráta, ak nič z toho nepríde. `naex` = dá teraz NA EX.
+ * Odhad limitu v ďalšom kole v poradí motora: poldeci na stole cez NA EX sa
+ * pri bitke vypijú (vypiPoldeci), aktívne akcie Poldeci v línii otočia vypité
+ * na plné a na začiatku kola sa dolejú (KONSTANTY.POLDECI_NA_ZACIATKU_KOLA).
+ * Nevie o Krčmárke, doliatí cigaretami ani o budúcej Zastávke — ukazuje, s čím
+ * hráč ráta, ak nič z toho nepríde. `naex` = dá teraz NA EX (na neznámu kartu;
+ * kto ju pozná, pošle stav po NA EX a `naex` false). Akciu Poldeci ráta len
+ * s dátami sady a so stavom, ktorý pozná otočenie lokality — predtým ju náhľad
+ * vynechal a sľuboval limit o 1 nižší (playtest 20261026-173610-1).
  */
-export function limitBuduceKolo(state: StavPoldeci, p: PlayerId, naex = false, data?: GameData): number {
+export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?: boolean }, p: PlayerId, naex = false, data?: GameData): number {
   const h = state.hraci[p];
   // Zrážka NA EX (v5, Výtržník): druhý poldeci na karte je toho druhého hráča.
   const naStole = state.strany.flat().filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + (naex ? 1 : 0);
   // Na zdravie „do dna“ (Alkoholik v5): poldeci z toľkých NA EX, aká je sila priazne, sa po bitke
   // vráti plný (vypiPoldeci) — bez dát sady sa priazeň nepozná, náhľad ju neráta.
   const vratia = data === undefined ? 0 : Math.min(naStole, silaDoDna(data, state, p));
-  const plne = h.poldeciPlne - (naex ? 1 : 0) + vratia;
-  const dolieva = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, h.poldeciVypite + naStole - vratia);
+  const vypite = h.poldeciVypite + naStole - vratia;
+  const otocia = data === undefined || state.lokalitaOtocena === undefined ? 0 : Math.min(vypite, akciePoldeci(data, state, state.lokalitaOtocena)[p]);
+  const plne = h.poldeciPlne - (naex ? 1 : 0) + vratia + otocia;
+  const dolieva = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, vypite - otocia);
   return plne + dolieva + 1 + limitBonus(state, p);
+}
+
+/** Aktívne akcie Poldeci v línii — v bitke otočia toľko vypitých poldeci na plné (vypiPoldeci). */
+function akciePoldeci(data: GameData, state: VerejnyStav, lokalitaOtocena: boolean): readonly [number, number] {
+  const finale = state.ciel?.typ === "finale";
+  const sums = evaluateLine(data, { lokalita: state.ciel?.lokalita ?? null, lokalitaOtocena, strany: state.strany, ...(finale ? { finale: true } : {}) }).sums;
+  return [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0];
 }
 
 /** Sila priazne Alkoholika („do dna“) hráča p — koľko poldeci z jeho NA EX sa za kolo vráti plných. */

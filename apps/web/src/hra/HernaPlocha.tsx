@@ -73,6 +73,9 @@ import {
   pocitadloBitky,
   pitkaPredBitkou,
   hrozbaNaex,
+  bitkaPoPohorseni,
+  nepridelenePohorsenia,
+  rozsahPohorseni,
   krokStavby,
   planVykladania,
   barterCena,
@@ -92,6 +95,7 @@ import {
   naexZaPitku,
   sMojimiSkrytymiNaex,
   nahladNaexNaKartu,
+  najhorsiaOdpovedNaNaex,
   cenaTahu,
   nahladPosunuMarkera,
   nahladPosunuPrebytkom,
@@ -987,7 +991,7 @@ export function HernaPlocha({
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
   // zvýraznenie spojov aj odhad bitky. Moje skryté NA EX v ňom ležia na kartách
   // (pre mňa sú dané), súperove nie — tie sa ukážu až pri odkrytí.
-  const { stol, lineEval, odhad, rozpis, hrozby } = useMemo(() => {
+  const { stol, lineEval, odhad, rozpis, hrozby, rozsahy } = useMemo(() => {
     let strany: ClientState["strany"] = zaklad.strany;
     let hraci = zaklad.hraci;
     for (const x of vylozenia) {
@@ -1023,7 +1027,17 @@ export function HernaPlocha({
       ciel === null || view.bitkaStav !== null
         ? ([null, null] as const)
         : ([hrozbaNaex(data, stolBitky, priebeh, 0, abstakyVRuke), hrozbaNaex(data, stolBitky, priebeh, 1, abstakyVRuke)] as const);
-    return { stol, lineEval, odhad, rozpis, hrozby };
+    // Nepridelené Pohoršenia (Michal 2026-10-27 „ukázať rozsah“): kam až ich hráč bitku dotiahne.
+    const stolPohorseni = { ...stolBitky, patronat: view.patronat, bitkaStav: view.bitkaStav };
+    const nepridelene = nepridelenePohorsenia(data, stolPohorseni, lineEval.sums);
+    const rozsahy =
+      ciel === null
+        ? ([null, null] as const)
+        : ([
+            rozsahPohorseni(data, stolPohorseni, lineEval.sums, nepridelene, 0, abstakyVRuke),
+            rozsahPohorseni(data, stolPohorseni, lineEval.sums, nepridelene, 1, abstakyVRuke),
+          ] as const);
+    return { stol, lineEval, odhad, rozpis, hrozby, rozsahy };
     // vylozene a lokalitaNavrh sú odvodené len z navrh a view.
   }, [data, view, navrh, somNaTahu, zaklad]);
 
@@ -1264,6 +1278,14 @@ export function HernaPlocha({
   };
   const textZmien = (z: ActionSums): string =>
     (Object.entries(z) as [string, number][]).map(([k, d]) => `${nazovAkcie(k)} ${d > 0 ? "+" : "−"}${Math.abs(d)}`).join(", ") || "bez zmeny";
+  // Zmeny akcií aj tuhé navyše z kariet (Pes, Recidivista…) — bonus Psa náhľad vynechal (playtest 20261026-173610-1).
+  const textZmienVylozenia = (n: NahladVylozenia, p: PlayerId): string => {
+    const akcie = textZmien(n.zmeny[p]);
+    const t = n.tuhe[p];
+    if (t === 0) return akcie;
+    const tuhe = `tuhé navyše ${t > 0 ? "+" : "−"}${Math.abs(t)}`;
+    return akcie === "bez zmeny" ? tuhe : `${akcie}, ${tuhe}`;
+  };
   const textSpoja = (n: NahladVylozenia): string =>
     n.sused === null
       ? "nič sa nespojí"
@@ -1298,7 +1320,7 @@ export function HernaPlocha({
       strany = kam === 0 ? [nova, strany[1]] : [strany[0], nova];
     }
     const n = nahladVylozenia(data, { ...lineState(view), strany }, ja, posledna.karta, posledna.ciel === "vlastna" ? "vlastna" : "superova");
-    return { n, uid: posledna.karta.uid, spoj: textSpoja(n), ja: textZmien(n.zmeny[ja]), su: textZmien(n.zmeny[super_]) };
+    return { n, uid: posledna.karta.uid, spoj: textSpoja(n), ja: textZmienVylozenia(n, ja), su: textZmienVylozenia(n, super_) };
     // vylozenia sú odvodené z navrh a view.
   }, [data, view, navrh, ja, super_, sada]);
 
@@ -2202,7 +2224,7 @@ export function HernaPlocha({
     nahladTahania === null ? null : (
       <span className="nahlad-spojov">
         <strong>{menoKarty(tahanie?.zdroj.karta.defId ?? "")}</strong> → {POPIS_CIELA[nahladTahania.ciel]} · {textSpoja(nahladTahania.n)} · ty:{" "}
-        {textZmien(nahladTahania.n.zmeny[ja])} · {menoHraca(super_)}: {textZmien(nahladTahania.n.zmeny[super_])}
+        {textZmienVylozenia(nahladTahania.n, ja)} · {menoHraca(super_)}: {textZmienVylozenia(nahladTahania.n, super_)}
       </span>
     );
 
@@ -2412,9 +2434,9 @@ export function HernaPlocha({
           <strong>{nazovMiesta}</strong>
           <span>k lokalite ide tvoja {n.vnutornaVytlacena === "left" ? "ľavá" : "pravá"} hrana</span>
           <span className={n.pary.length > 0 ? "nm-spoj" : "nm-bez"}>{textSpoja(n)}</span>
-          <span>ty: {textZmien(n.zmeny[ja])}</span>
+          <span>ty: {textZmienVylozenia(n, ja)}</span>
           <span>
-            {menoHraca(super_)}: {textZmien(n.zmeny[super_])}
+            {menoHraca(super_)}: {textZmienVylozenia(n, super_)}
           </span>
           {varovaniePoldeci}
         </span>
@@ -3570,8 +3592,12 @@ export function HernaPlocha({
         // Vybraná karta (klik na kartu so značkou): pod kartou „vybraná“, v pilulke náhľad, na hrane pečiatka NA EX!.
         const vybranaUid = mode.typ === "naexCiel" ? mode.uid : null;
         const vybrana = vybranaUid === null ? undefined : nahladNaex.get(vybranaUid);
+        // Najhoršia verejne možná odpoveď súpera — skúša celú sadu, preto len pre vybranú kartu (playtest 20261026-173610-3).
+        const odpoved = vybrana === undefined ? null : najhorsiaOdpovedNaNaex(data, view, vybrana);
         const naRub = vybranaUid !== null && view.zaverecne.some((z) => z.uid === vybranaUid);
         const menoVybranej = naRub ? "súperovu Záverečnú" : vybranaUid === null ? "" : menoKarty(view.strany.flat().find((pl) => pl.card.uid === vybranaUid)?.card.defId ?? "");
+        // Limit po NA EX na túto kartu: akcie Poldeci po NA EX (zruší či zdvojí ich) — playtest 20261026-173610-1.
+        const limitPoVybranej = vybrana === undefined ? limitPo : limitBuduceKolo(vybrana.odkrytie.view, ja, false, data);
         const textVyberu = naRub ? (
           <span className="naex-vyber-text">
             <strong>NA EX na súperovu Záverečnú</strong> · nevieš, čo to je — prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte · pečeň +1
@@ -3588,6 +3614,14 @@ export function HernaPlocha({
                 : vybrana.po.tuhe[ja] - vybrana.po.tuhe[super_] < vybrana.pred.tuhe[ja] - vybrana.pred.tuhe[super_]
                   ? "▼"
                   : "="}{" "}
+              {odpoved !== null && (
+                <span title={`Súperovu ruku nevidíš — takto by dopadla najhoršia karta sady, akou môže odpovedať (napr. ${menoKarty(odpoved.karta.defId)} na koniec ${odpoved.strana === ja ? "tvojej" : "svojej"} strany).`}>
+                  · po najhoršej odpovedi {menoHraca(super_)} až{" "}
+                  <b>
+                    {odpoved.damage.tuhe[ja]}:{odpoved.damage.tuhe[super_]}
+                  </b>{" "}
+                </span>
+              )}
               {kratkaCena(vybrana.kliatby, vybrana.dopady) !== null && <>· cena: <b>{kratkaCena(vybrana.kliatby, vybrana.dopady)}</b> </>}
               · ty: {vybrana.zmeny[ja].length > 0 ? vybrana.zmeny[ja].join(", ") : "bez zmeny"} · {menoHraca(super_)}:{" "}
               {vybrana.zmeny[super_].length > 0 ? vybrana.zmeny[super_].join(", ") : "bez zmeny"}
@@ -3607,7 +3641,7 @@ export function HernaPlocha({
                 {vybrana.odkrytie.krcmarka && <> · Krčmárka ti v bitke neotočí vypitý poldeci (NA EX v kole)</>}
                 {vybrana.odkrytie.doDna && <> · Na zdravie: poldeci sa ti po bitke vráti plný</>}
                 {view.zaverecne.some((z) => z.majitel === super_) && <> · bez súperovej Záverečnej lícom dole</>} · v ďalšom kole limit{" "}
-                {limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`} · skryto do konca Pitky; ak {menoHraca(super_)} dá NA EX
+                {limitPoVybranej === limitBez ? `ostane ${limitBez}` : `${limitPoVybranej} namiesto ${limitBez}`} · skryto do konca Pitky; ak {menoHraca(super_)} dá NA EX
                 na tú istú kartu, je z nej Výtržník (všetky akcie Rany pre majiteľa) · platí, ak {menoHraca(super_)} neodpovie (v ruke má{" "}
                 {view.hraci[super_].rukaPocet} {view.hraci[super_].rukaPocet === 1 ? "kartu" : view.hraci[super_].rukaPocet >= 2 && view.hraci[super_].rukaPocet <= 4 ? "karty" : "kariet"})
               </span>
@@ -3959,7 +3993,11 @@ export function HernaPlocha({
     // Bez čísel pozícií (Michal 2026-10-22): hráč 2 vidí stupnicu zrkadlovo, „4 → 5“ by mu klamalo.
     // Pohoršenie k sebe (v5): priazeň sa mení hneď, rozhoduje už túto bitku.
     const hned = k === ja && cezPohorsenie && n.priazen !== priazenHraca(elder) ? " — hneď, platí už v tejto bitke" : "";
-    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`}: ${zonaPred} → ${zonaPo} · špaky do konca pri výhrach ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}${hned}`;
+    // Priazeň sa mení hneď — keď to pohne poškodením (Bitkár, Veriaci), náhľad ukáže bitku pred a po (playtest 20261026-181227-1).
+    const mojeAbstaky = view.ruka.filter((x) => x.defId === "abstak").length;
+    const zmenaBitky = cezPohorsenie ? bitkaPoPohorseni(data, view, elder.elderId, ja, k === ja, ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky]) : null;
+    const bitka = zmenaBitky === null ? "" : ` · bitka ${zmenaBitky.pred.tuhe[ja]} : ${zmenaBitky.pred.tuhe[super_]} → ${zmenaBitky.po.tuhe[ja]} : ${zmenaBitky.po.tuhe[super_]}`;
+    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`}: ${zonaPred} → ${zonaPo} · špaky do konca pri výhrach ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[super_])}${doZony} · ${priazen}${hned}${bitka}`;
   };
   /**
    * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba k súperovi alebo
@@ -4261,7 +4299,31 @@ export function HernaPlocha({
       cele: `${kdo} dať NA EX na ${karta}: ${tuhe}${prebytok} (z kariet na stole, ruka sa neráta).`,
     };
   };
-  const hrozbyBitky = (["su", "ja"] as const).map(textHrozby).filter((h): h is HrozbaBitky => h !== null);
+  // Rozsah nepridelených Pohoršení — vedľa hrozby NA EX, rovnakým tvarom (Michal 2026-10-27).
+  const textRozsahu = (kto: "ja" | "su"): HrozbaBitky | null => {
+    const r = rozsahy[kto === "ja" ? ja : super_];
+    if (r === null) return null;
+    const v = r.vysledok;
+    const tuhe = `tuhé ${r.damage.tuhe[ja]} : ${r.damage.tuhe[super_]}`;
+    const pohorseni = `${r.pocet} ${r.pocet === 1 ? "Pohoršenie" : r.pocet <= 4 ? "Pohoršenia" : "Pohoršení"}`;
+    return {
+      kto,
+      zdroj: "pohorsenia",
+      uid: null,
+      // Pohoršenia prídu isto — riadok s nimi začína bez „ešte môže“; číslo ide hneď za kto,
+      // aby ho pri 1366 px neodrezalo (snímka 1366 × 650).
+      mini: `${kto === "ja" ? "ty" : "súper"} až ${r.damage.tuhe[ja]} : ${r.damage.tuhe[super_]} Pohoršeniami`,
+      kratko: `${kto === "ja" ? "Ty" : "Súper"} Pohoršeniami (${r.pocet}) až: ${tuhe}`,
+      cele: `${kto === "ja" ? `Máš ${pohorseni}` : `${menoHraca(super_)} má ${pohorseni}`}, ktoré sa rozdelia až v bitke — priazeň platí hneď (Bitkár, Veriaci): najviac ${tuhe}${v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`}.`,
+    };
+  };
+  // Pohoršenia prídu v bitke isto, NA EX len možno — idú prvé; pri viacerých položkách bez prebytku
+  // (je v titulku a nápovede), inak by sa do riadku pri 1366 px nezmestila ani druhá.
+  const polozkyHrozby = [textRozsahu("su"), textHrozby("su"), textRozsahu("ja"), textHrozby("ja")].filter((h): h is HrozbaBitky => h !== null);
+  const hrozbyBitky =
+    polozkyHrozby.length < 2
+      ? polozkyHrozby
+      : polozkyHrozby.map((h) => ({ ...h, mini: h.zdroj === "pohorsenia" ? h.mini : h.mini.replace(/ \(prebytok [^)]*\)$/, "").replace(/^(ty|súper) až/, "$1 NA EX až") }));
   // Odhad bitky len keď ho hráči ovplyvnia — v Zhromaždení, Pitke a bitke;
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
   const bitkaProps: BitkaPanelProps | null =

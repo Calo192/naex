@@ -1109,14 +1109,19 @@ export interface BitkaPanelProps {
 
 export interface HrozbaBitky {
   readonly kto: "ja" | "su";
+  /** NA EX z kariet na stole (predvolené), alebo rozsah nepridelených Pohoršení. */
+  readonly zdroj?: "naex" | "pohorsenia";
   /** Krátko do riadku bitky: „Súper ešte môže: tuhé 0 : 8“. */
   readonly kratko: string;
   /** Najkratšie, keď hrozbu majú obaja a idú do jedného riadku: „súper až 0 : 8“. */
   readonly mini: string;
   /** Celé znenie (titulok): aj karta a prebytok. */
   readonly cele: string;
-  readonly uid: number;
+  /** Karta v línii, ktorú riadok zvýrazní; Pohoršenia žiadnu nemajú. */
+  readonly uid: number | null;
 }
+
+const klucHrozby = (h: HrozbaBitky): string => `${h.kto}-${h.zdroj ?? "naex"}`;
 
 /**
  * Riadky hrozby — v celom paneli pod verdiktom. V riadku bitky (pevná výška pásu)
@@ -1135,10 +1140,10 @@ function RiadkyHrozby({
   if (hrozby === undefined || hrozby.length === 0) return null;
   const cast = (h: HrozbaBitky, text: string) => (
     <span
-      key={h.kto}
+      key={klucHrozby(h)}
       className={`hrozba-bitky ${h.kto}`}
       title={h.cele}
-      onMouseEnter={() => ukazHrozbu?.(h.uid)}
+      onMouseEnter={() => h.uid !== null && ukazHrozbu?.(h.uid)}
       onMouseLeave={() => ukazHrozbu?.(null)}
     >
       {text}
@@ -1147,8 +1152,9 @@ function RiadkyHrozby({
   if (!jedenRiadok) return <>{hrozby.map((h) => cast(h, h.kratko))}</>;
   return (
     <span className="hrozba-bitky-riadok" data-vyucba="hrozba" title={hrozby.map((h) => h.cele).join("\n")}>
-      ešte môže: {hrozby.map((h, i) => (
-        <span key={h.kto}>
+      {hrozby[0]?.zdroj === "pohorsenia" ? "" : "ešte môže: "}
+      {hrozby.map((h, i) => (
+        <span key={klucHrozby(h)}>
           {i > 0 && " · "}
           {cast(h, h.mini)}
         </span>
@@ -1225,7 +1231,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
             : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunyText} (posun stojí ${cenaPosunu}${cenaPosunu > 1 ? ", Miňištrant" : ""})`}
         </span>
         {(props.hrozby ?? []).map((h) => (
-          <span key={h.kto} className="tip-riadok">
+          <span key={klucHrozby(h)} className="tip-riadok">
             {h.cele}
           </span>
         ))}
