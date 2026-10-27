@@ -5940,8 +5940,9 @@ button.auto-hotovo-odkaz {
 }
 
 /* ---- bodový bar (Michal 2026-10-23): po kliku na Body body podľa podmienok ----
- * Päť zdrojov ustúpi jednému prvku cez ich stĺpce; Body a Karty ostávajú. */
-.doska.bodovy :is(.zdroj-dlhy, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci) {
+ * Päť zdrojov ustúpi jednému prvku cez ich stĺpce; Body a Karty ostávajú. Výber cez .doska-zdroje —
+ * nízke okno dáva dlaždiciam display: grid pravidlom s rovnakou váhou. */
+.doska.bodovy .doska-zdroje > :is(.zdroj-dlhy, .zdroj-pecen, .zdroj-abstak, .zdroj-cigarety, .zdroj-poldeci) {
   display: none;
 }
 
