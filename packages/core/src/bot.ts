@@ -34,7 +34,7 @@ import { evaluateLine } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
 import { MARKER_STRED, cenaPatronatu, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
-import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, naexZaPitku, partiaHraca } from "./effects.ts";
+import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import type { Command, GameState } from "./engine.ts";
 import {
@@ -1195,13 +1195,13 @@ function pitka(v: Volba): Command | null {
           };
         }
       }
-      return sPolicajtkou(data, po0, po, ja, (x) => hodnotaStavu(k, x, 1.5));
+      return hodnotaStavu(k, po, 1.5);
     };
     const best = najlepsi(v, naex, poOdpovedi);
     if (best !== null) {
       if (krcmaVyzaduje(data, state, ja)) return best;
       const s0 = v.vzorky[0] ?? state;
-      const bez = sPolicajtkou(data, s0, sNaexNaKartach(s0), ja, (x) => hodnotaStavu(k, x, 1.5));
+      const bez = hodnotaStavu(k, sNaexNaKartach(s0), 1.5);
       if (priemer(v, best, poOdpovedi) > bez + k.povaha.prahRiziko) return best;
     }
   }
@@ -1220,7 +1220,8 @@ function pitka(v: Volba): Command | null {
  * pečeň +1 tomu, kto NA EX dal, nerest, Výpalné súpera. Samotné
  * sNaexNaKartach pečeň ani cigarety neráta — bot by NA EX pod súperovým
  * Výpalným dával, akoby nič nestálo. Rany od súperovej Svokry ráta odhad
- * bitky (bitkaMody), Dlh od Policajtky sPolicajtkou.
+ * bitky (bitkaMody). Policajtka vo v7 za NA EX Dlh nedáva — len Konflikt
+ * pri priložení, ten ráta simulácia vyloženia.
  */
 function poOdkrytiNaex(data: GameData, s: GameState, ja: PlayerId): GameState {
   const pocet = (s.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === ja).length;
@@ -1238,53 +1239,6 @@ function poOdkrytiNaex(data: GameData, s: GameState, ja: PlayerId): GameState {
   const moj = { ...h, cigarety, pecen: h.pecen + pocet, nerestiTotoKolo: h.nerestiTotoKolo + pocet };
   const jeho = { ...po.hraci[su], cigarety: po.hraci[su].cigarety + platba };
   return { ...po, hraci: ja === 0 ? [moj, jeho] : [jeho, moj] };
-}
-
-/** Šanca, že súper v Pitke dá NA EX — jeho skryté NA EX bot nevidí (v5); boti ho dávajú zhruba v každej druhej. */
-const SUPER_DA_NAEX = 0.5;
-
-/** Šanca, že hráč su v tejto Pitke dá aspoň jedno NA EX (Krčma ho vynúti, bez poldeci či cieľa nič). */
-function sancaNaexSupera(data: GameData, s: GameState, su: PlayerId): number {
-  if (s.pitkaStav === null || s.hraci[su].poldeciPlne <= 0) return 0;
-  if (naexCieleVLinii(data, lineState(s), su).length === 0) return 0;
-  return jeCielLokalita(s, "krcma") ? 1 : SUPER_DA_NAEX;
-}
-
-/** Stav s jedným priznaným Dlhom hráča p navyše (Dlh od Policajtky sa hneď prizná). */
-function sDlhom(s: GameState, p: PlayerId): GameState {
-  const h = s.hraci[p];
-  const dlh: CardInstance = { uid: -7000 - p, defId: "dlh", leftLayout: 0, rightLayout: 0 };
-  const novy = { ...h, priznane: [...h.priznane, dlh] };
-  return { ...s, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
-}
-
-/**
- * Hodnota stavu `po` s Dlhom od Policajtky (Michal 2026-10-26): kto dá v Pitke
- * viac NA EX, dostane od súperovej Policajtky Dlh pri odkrytí. Súperove skryté
- * NA EX bot nevidí, preto hodnotu zmieša podľa odhadu, koľko ich dá súper —
- * s Policajtkou súpera tak nedá NA EX navyše zbytočne a so svojou radšej nechá
- * piť súpera. `pitka` je stav pred odkrytím s mojimi skrytými NA EX; keď NA EX
- * jadro už odkrylo (Pitku dohralo samo), Dlh v stave je.
- */
-function sPolicajtkou(data: GameData, pitka: GameState, po: GameState, ja: PlayerId, hodnota: (s: GameState) => number): number {
-  const zaklad = hodnota(po);
-  const ps = pitka.pitkaStav;
-  if (pitka.faza !== "pitka" || ps === null || (ps.hotovy[0] && ps.hotovy[1])) return zaklad;
-  const su = opponentOf(ja);
-  const plati = (p: PlayerId): boolean => efektHraca(po, p, "policajtka") && !efektPotlaceny(data, po, p, "policajtka");
-  const jeho = plati(su);
-  const moja = plati(ja);
-  if (!jeho && !moja) return zaklad;
-  const mojich = (ps.skryteNaex ?? []).filter((x) => x.hrac === ja).length + (ps.naexPocet?.[ja] ?? 0);
-  const aspon1 = sancaNaexSupera(data, pitka, su);
-  const aspon2 = naexZaPitku(pitka) > 1 ? aspon1 * aspon1 : 0;
-  // Súper dá menej NA EX ako ja → Dlh mne; viac → Dlh jemu.
-  const menej = mojich === 0 ? 0 : 1 - (mojich === 1 ? aspon1 : aspon2);
-  const viac = mojich === 0 ? aspon1 : mojich === 1 ? aspon2 : 0;
-  let v = zaklad;
-  if (jeho && menej > 0) v += menej * (hodnota(sDlhom(po, ja)) - zaklad);
-  if (moja && viac > 0) v += viac * (hodnota(sDlhom(po, su)) - zaklad);
-  return v;
 }
 
 // --- Bitka -----------------------------------------------------------------

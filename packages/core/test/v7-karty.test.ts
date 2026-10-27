@@ -18,8 +18,10 @@ import {
   naexCieleVLinii,
   pocetPitiek,
   prirastkyPitky,
+  POVAHY,
   setupGame,
   spakyTeraz,
+  tahBota,
   urovenLokality,
   viewFor,
   vyplatZaStarsich,
@@ -120,7 +122,7 @@ describe("lokality podľa úrovní a finále na pinnacle (plan.md 7)", () => {
     expect(vyplatZaStarsich(volbaFinale)).toBe(1);
     const view = viewFor(data, volbaFinale, 0);
     expect(spakyTeraz(view).vyplat).toBe(1);
-    expect(vyplatZaStarsich({ ...s0, kolo: L, faza: "volbaCiela", ciel: null })).toBe(2);
+    expect(vyplatZaStarsich({ ...s0, kolo: L, faza: "volbaCiela", ciel: null } as GameState)).toBe(2);
     // Po výbere pinnacle: finále je cieľ tohto kola — stále jedna výplata.
     const vila = s0.lokalityVHre.find((k) => k.defId === "predsedova_vila")!;
     const po = apply(data, { ...volbaFinale, utocnik: 0 }, { type: "chooseLocation", uid: vila.uid, otocena: false }, 1).state;
@@ -133,7 +135,7 @@ describe("lokality podľa úrovní a finále na pinnacle (plan.md 7)", () => {
     // Voľba cieľa 1. kola: 5 lokalít úrovne 1 na výber, nevybraných L (celá hra pred nami).
     expect(viewFor(data, s0, 1).lokalityVHre).toHaveLength(5);
     expect(lokalitNevybranych(viewFor(data, s0, 1))).toBe(L);
-    expect(lokalitNevybranych({ ...s0, kolo: 2, faza: "draft", ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } })).toBe(L - 2);
+    expect(lokalitNevybranych({ ...s0, kolo: 2, faza: "draft", ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } } as GameState)).toBe(L - 2);
     // Voľba cieľa finále: len pinnacle (úroveň 4), lokalít už nie.
     const volbaFinale: GameState = { ...s0, kolo: L + 1, faza: "volbaCiela", ciel: null, utocnik: 0 };
     const naVyber = viewFor(data, volbaFinale, 1).lokalityVHre;
@@ -235,5 +237,30 @@ describe("D6: zadĺženie neprepadá", () => {
     expect(st.hraci[0].zadlzenie).toBe(1);
     // Line stále bez Dlhov: Pakt ani karty nič nepridajú, účet čaká.
     expect(evaluateLine(data, lineState(st)).sums[0].Dlh ?? 0).toBe(0);
+  });
+});
+
+describe("bot v7: Policajtka", () => {
+  // Kópia Policajtky s iným id: rovnaké akcie aj tagy, ale bez jej efektu.
+  const sada = cardsJson as { cards: { id: string; name: string; triggers: string[]; effect_text: string }[] };
+  const kopia = { ...sada.cards.find((c) => c.id === "policajtka")!, id: "policajtka_bez_efektu", name: "Policajtka bez efektu", triggers: [], effect_text: "" };
+  const dataKopia = loadGameData({ ...sada, cards: [...sada.cards, kopia] }, eldersJson, scorecardsJson);
+
+  it("za NA EX nečaká Dlh od súperovej Policajtky — vo v7 má len Konflikt", () => {
+    // Prípady, v ktorých bot do opravy kvôli Policajtke NA EX vynechal (Sklad, Vínna pivnica).
+    for (const seed of [4, 5, 9]) {
+      for (const lok of ["sklad", "vinna_pivnica"]) {
+        const stav = (defId: string): GameState => {
+          uidSeq = 975000;
+          const s = vPitke(lok, [[lezi(inst("pijan"), 0), lezi(inst("masiar"), 0)], [lezi(inst(defId), 1), lezi(inst("vandal"), 1)]], seed);
+          return sHracom(sHracom({ ...s, pitkyCelkom: 2 }, 0, { poldeciPlne: 2, cigarety: 3 }), 1, { poldeciPlne: 2 });
+        };
+        for (const povaha of POVAHY) {
+          const s = tahBota(dataKopia, stav("policajtka"), 0, seed, { povaha: povaha.id });
+          const bez = tahBota(dataKopia, stav("policajtka_bez_efektu"), 0, seed, { povaha: povaha.id });
+          expect(s, `${povaha.id} ${lok} seed ${seed}`).toEqual(bez);
+        }
+      }
+    }
   });
 });
