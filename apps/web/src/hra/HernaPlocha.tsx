@@ -1399,6 +1399,28 @@ export function HernaPlocha({
     logPoMojomTahu.current = log.length;
     // Snímka len pri konci môjho ťahu — nie pri každom súperovom vyložení.
   }, [somNaTahu]);
+  // Záverečné otočené na konci poslednej Pitky (hlásenie Michala 2026-10-27): súper (aj bot)
+  // často hneď zahrá novú Záverečnú na tú istú stranu a bez štítku to vyzerá, akoby sa
+  // stará nikdy neotočila. Otočenie príde vždy s koncom Pitky, preto sa porovná len ten krok.
+  const [otoceneZaverecne, setOtoceneZaverecne] = useState<{ readonly kolo: number; readonly pitka: number; readonly uids: ReadonlySet<number> } | null>(null);
+  const viewPredOtocenim = useRef<ClientState | null>(null);
+  useEffect(() => {
+    const pred = viewPredOtocenim.current;
+    viewPredOtocenim.current = view;
+    if (pred === null || pred.faza !== "pitka" || view.faza === "pitka" || pred.zaverecne.length === 0) return;
+    const predtym = new Set([...pred.strany[0], ...pred.strany[1]].map((pl) => pl.card.uid));
+    const uids = new Set<number>();
+    for (const z of pred.zaverecne) {
+      for (const pl of view.strany[z.strana]) {
+        if (pl.playedBy !== z.majitel || pl.zaverecna === true) continue;
+        // Svoju Záverečnú poznám podľa uid; súperova mala náhradné uid a v strany nebola.
+        if (z.majitel === ja ? pl.card.uid === z.uid : !predtym.has(pl.card.uid)) uids.add(pl.card.uid);
+      }
+    }
+    if (uids.size > 0) setOtoceneZaverecne({ kolo: view.kolo, pitka: view.pitkaCislo, uids });
+  }, [view, ja]);
+  const otoceneTeraz: ReadonlySet<number> =
+    otoceneZaverecne !== null && otoceneZaverecne.kolo === view.kolo && otoceneZaverecne.pitka === view.pitkaCislo ? otoceneZaverecne.uids : new Set();
   const noveSuperove: readonly number[] =
     somNaTahu && liniaPoMojomTahu.current !== null
       ? [...view.strany[0], ...view.strany[1]]
@@ -2174,7 +2196,9 @@ export function HernaPlocha({
     {
       const uid = placed.card.uid;
       const vybranaBenzinka = mode.typ === "vyber" && benzinkaCiele.has(uid) && mode.uids.includes(uid);
-      const nova = noveSuperove.includes(uid);
+      const otocena = otoceneTeraz.has(uid);
+      // Otočená súperova Záverečná je v línii „nová“ — štítok otočenia povie viac.
+      const nova = noveSuperove.includes(uid) && !otocena;
       // NA EX na karte je štítok nad kartou, výber pre NA EX nápis pod ňou (Michal 2026-10-21).
       const naexBy = placed.naexBy;
       // NA EX naraz (v5): moje skryté NA EX vidím len ja; zrážka oboch = Výtržník.
@@ -2182,7 +2206,7 @@ export function HernaPlocha({
       const vytrznik = placed.vytrznik === true;
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
       const stitky =
-        nova || naexBy !== undefined || skryteMoje || vybranaNaex || placed.zaverecna === true ? (
+        nova || otocena || naexBy !== undefined || skryteMoje || vybranaNaex || placed.zaverecna === true ? (
           <>
             {nova && (
               <span className="nova-stitok" title={`Vyložil ${menoHraca(super_)} v poslednom ťahu`}>
@@ -2211,6 +2235,11 @@ export function HernaPlocha({
             {placed.zaverecna === true && (
               <span className="zaverecna-stitok" title="Tvoja Záverečná — súper ju nevidí a nevie, čo dáva; za ňu sa nedá priložiť. Otočí sa na konci Pitky.">
                 Záverečná · lícom dole
+              </span>
+            )}
+            {otocena && (
+              <span className="zaverecna-stitok" title="Záverečná, ktorá sa otočila na konci Pitky — za ňu sa už dá prikladať.">
+                Záverečná · otočená
               </span>
             )}
             {vybranaNaex && <span className="vybrana-pod">vybraná</span>}
@@ -2383,6 +2412,8 @@ export function HernaPlocha({
   const rubZaverecnej = (p: PlayerId): ReactNode => {
     const z = view.zaverecne.find((x) => x.strana === p && x.majitel !== ja);
     if (z === undefined) return null;
+    // Na strane leží jeho predošlá, už otočená Záverečná — táto je nová z tohto Zhromaždenia.
+    const dalsiaZaverecna = view.strany[p].some((pl) => otoceneTeraz.has(pl.card.uid));
     const vybrana = mode.typ === "naexCiel" && mode.uid === z.uid;
     // Ako karta v línii: značka, keď NA EX dať môžeš; klik rovno, alebo po pečiatke NA EX!.
     const znacka = naexMozny && naexCiele.has(z.uid);
@@ -2394,11 +2425,11 @@ export function HernaPlocha({
         style={{ width: sirkaVLinii, height: (sirkaVLinii * 80) / 54 }}
         disabled={klik === undefined}
         onClick={klik}
-        title={`Záverečná ${menoHraca(super_)} lícom dole — nevieš, čo to je, ale ráta sa do bitky. Za ňu sa nedá priložiť, otočí sa na konci Pitky.${klik !== undefined ? " Klik: NA EX (prejde vždy)." : ""}`}
+        title={`Záverečná ${menoHraca(super_)} lícom dole — nevieš, čo to je, ale ráta sa do bitky. Za ňu sa nedá priložiť, otočí sa na konci Pitky.${dalsiaZaverecna ? " Je to nová Záverečná — predošlá sa už otočila." : ""}${klik !== undefined ? " Klik: NA EX (prejde vždy)." : ""}`}
       >
         <span className="rub-text">
           Záverečná
-          <small>lícom dole · otočí sa na konci Pitky</small>
+          <small>{dalsiaZaverecna ? "nová" : "lícom dole"} · otočí sa na konci Pitky</small>
         </span>
         {z.naexBy !== null ? (
           <span className="naex-nad">
