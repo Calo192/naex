@@ -2257,6 +2257,34 @@ button.dlzka-volba {
   color: var(--tlmeny);
 }
 
+/* Zamknutá liga (Michal 2026-10-28): zámok a podmienka sú čitateľné, nie len v nápovede. */
+.dlzka-volba strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.liga-zamok {
+  flex: none;
+}
+
+.dlzka-volba .liga-podmienka,
+.liga-podmienka {
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: var(--tlmeny);
+}
+
+.otvorene-hry .liga-podmienka {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+button.dlzka-volba.zamknuta:disabled {
+  opacity: 0.75;
+}
+
 .dlzka-volba.aktivna,
 button.dlzka-volba.aktivna {
   border-color: var(--akcent);

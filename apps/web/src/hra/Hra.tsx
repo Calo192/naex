@@ -23,6 +23,7 @@ import { tvar } from "../stranky/Statistiky.tsx";
 import { bezPrvejCasti, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
+import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
 import "./hra.css";
 
 interface OtvorenaHra {
@@ -32,10 +33,20 @@ interface OtvorenaHra {
   readonly vytvorena: number;
 }
 
-/** „3 lokality“, „5 lokalít“ — krátka hra má od 2026-10-24 len 3. */
+/** „3 lokality“, „5 lokalít“ — Tretia liga má od 2026-10-24 len 3. */
 const lokalit = (n: number): string => `${n} ${tvar(n, "lokalita", "lokality", "lokalít")}`;
 
-/** Popis dĺžky hry: „Stredná · 5 lokalít“. */
+/** Zámok zamknutej ligy (Michal 2026-10-28). */
+function IkonaZamku() {
+  return (
+    <svg className="liga-zamok" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+      <rect x="3" y="7" width="10" height="7.5" rx="1.5" fill="currentColor" />
+      <path d="M5.2 7V5a2.8 2.8 0 0 1 5.6 0v2" fill="none" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+/** Popis ligy: „Druhá liga · 5 lokalít“. */
 export function popisDlzky(d: DlzkaHry): string {
   return `${NAZOV_DLZKY[d]} · ${lokalit(DLZKY_HRY[d])}`;
 }
@@ -69,6 +80,10 @@ function Lobby({
   const [hry, setHry] = useState<readonly OtvorenaHra[] | null>(null);
   const [dostupne, setDostupne] = useState<readonly DlzkaHry[]>([PREDVOLENA_DLZKA]);
   const [dlzka, setDlzka] = useState<DlzkaHry>(PREDVOLENA_DLZKA);
+  // Ligy, ktoré hráč smie (Michal 2026-10-28); null = ešte nedošli.
+  const [ligy, setLigy] = useState<readonly StavLigy[] | null>(null);
+  const [ligyAjProtiPocitacu, setLigyAjProtiPocitacu] = useState(true);
+  const zamokZvolenej = popisZamku(ligy, dlzka);
   // Uzávierka pred nasadením (Michal 2026-10-23): text oznamu zo servera, alebo null.
   const [uzavierka, setUzavierka] = useState<string | null>(null);
   const zavrete = uzavierka !== null;
@@ -81,11 +96,15 @@ function Lobby({
     let zive = true;
     const nacitaj = () =>
       api
-        .get<{ hry: OtvorenaHra[]; dlzky: DlzkaHry[]; uzavierka: string | null }>("/hry/otvorene")
+        .get<{ hry: OtvorenaHra[]; dlzky: DlzkaHry[]; ligy?: StavLigy[]; ligyAjProtiPocitacu?: boolean; uzavierka: string | null }>("/hry/otvorene")
         .then((r) => {
           if (!zive) return;
           setHry(r.hry);
           setDostupne(r.dlzky);
+          setLigy(r.ligy ?? null);
+          setLigyAjProtiPocitacu(r.ligyAjProtiPocitacu ?? true);
+          // Zamknutá voľba (nový hráč a predvolená Druhá liga) sa prepne na najvyššiu, ktorú smie.
+          setDlzka((d) => zvolenaLiga(r.ligy ?? null, r.ligyAjProtiPocitacu ?? true, r.dlzky, d));
           setUzavierka(r.uzavierka);
         })
         .catch(() => zive && setHry([]));
@@ -107,22 +126,27 @@ function Lobby({
         <section className="panel">
           <h2>Nová hra</h2>
           <p className="tlmene">Súkromná hra je len pre toho, komu pošleš kód. Verejná sa ukáže v zozname vpravo.</p>
-          <div className="dlzka-hry" role="radiogroup" aria-label="Dĺžka hry">
+          <div className="dlzka-hry" role="radiogroup" aria-label="Liga">
             {ALL_DLZKY.map((d) => {
               const ide = dostupne.includes(d);
+              const zamok = popisZamku(ligy, d);
               return (
                 <button
                   key={d}
                   type="button"
                   role="radio"
                   aria-checked={dlzka === d}
-                  className={`dlzka-volba ${dlzka === d ? "aktivna" : ""}`}
-                  disabled={!ide}
+                  className={`dlzka-volba ${dlzka === d ? "aktivna" : ""} ${zamok !== null ? "zamknuta" : ""}`}
+                  disabled={!ide || !volitelnaLiga(ligy, ligyAjProtiPocitacu, d)}
                   onClick={() => setDlzka(d)}
-                  title={ide ? undefined : `Sada zatiaľ nemá ${lokalit(DLZKY_HRY[d])} — pribudnú v tvorbe kariet.`}
+                  title={zamok ?? (ide ? undefined : `Sada zatiaľ nemá ${lokalit(DLZKY_HRY[d])} — pribudnú v tvorbe kariet.`)}
                 >
-                  <strong>{NAZOV_DLZKY[d]}</strong>
+                  <strong>
+                    {zamok !== null && <IkonaZamku />}
+                    {NAZOV_DLZKY[d]}
+                  </strong>
                   <span>{lokalit(DLZKY_HRY[d])}</span>
+                  {zamok !== null && <span className="liga-podmienka">{zamok}</span>}
                 </button>
               );
             })}
@@ -130,11 +154,16 @@ function Lobby({
           {maPravo(ja, "hrat_ludia") ? (
             <div className="riadok-tlacidiel">
               {maPravo(ja, "sukromne_miestnosti") && (
-                <button className={hlavneZalozenie ? "tlacidlo-hlavne" : undefined} onClick={() => zaloz(false, dlzka)} disabled={zavrete} title={preco}>
+                <button
+                  className={hlavneZalozenie && zamokZvolenej === null ? "tlacidlo-hlavne" : undefined}
+                  onClick={() => zaloz(false, dlzka)}
+                  disabled={zavrete || zamokZvolenej !== null}
+                  title={preco ?? zamokZvolenej ?? undefined}
+                >
                   Súkromná hra s kódom
                 </button>
               )}
-              <button onClick={() => zaloz(true, dlzka)} disabled={zavrete} title={preco}>
+              <button onClick={() => zaloz(true, dlzka)} disabled={zavrete || zamokZvolenej !== null} title={preco ?? zamokZvolenej ?? undefined}>
                 Verejná hra
               </button>
             </div>
@@ -174,21 +203,35 @@ function Lobby({
             <p className="tlmene">{zavrete ? "Práve nikto nečaká." : "Práve nikto nečaká. Založ verejnú hru — zobrazí sa tu ostatným."}</p>
           ) : (
             <ul className="otvorene-hry">
-              {hry.map((h) => (
-                <li key={h.kod}>
-                  <Avatar meno={h.hostitel.meno} avatar={h.hostitel.avatar} velkost={36} />
-                  <div>
-                    <strong>{h.hostitel.meno}</strong>
-                    {h.hostitel.frajerina !== null && <span className="frajerina-cislo" title="Frajerina"> {h.hostitel.frajerina}</span>}
-                    <div className="tlmene">
-                      {popisDlzky(h.dlzka)} · čaká {Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000))} min
+              {hry.map((h) => {
+                // Do cudzej ligy, ktorú hráč nemá, sa nepripojí — vidí prečo (server to overí tiež).
+                const zamok = popisZamku(ligy, h.dlzka);
+                return (
+                  <li key={h.kod}>
+                    <Avatar meno={h.hostitel.meno} avatar={h.hostitel.avatar} velkost={36} />
+                    <div>
+                      <strong>{h.hostitel.meno}</strong>
+                      {h.hostitel.frajerina !== null && <span className="frajerina-cislo" title="Frajerina"> {h.hostitel.frajerina}</span>}
+                      <div className="tlmene">
+                        {popisDlzky(h.dlzka)} · čaká {Math.max(1, Math.round((Date.now() - h.vytvorena) / 60000))} min
+                      </div>
+                      {zamok !== null && (
+                        <div className="liga-podmienka">
+                          <IkonaZamku /> {zamok}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <button className="tlacidlo-hlavne tlacidlo-male" onClick={() => pripoj(h.kod)} disabled={zavrete} title={preco}>
-                    Hrať
-                  </button>
-                </li>
-              ))}
+                    <button
+                      className={zamok === null ? "tlacidlo-hlavne tlacidlo-male" : "tlacidlo-male"}
+                      onClick={() => pripoj(h.kod)}
+                      disabled={zavrete || !smieLigu(ligy, h.dlzka)}
+                      title={preco ?? zamok ?? undefined}
+                    >
+                      Hrať
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
@@ -496,7 +539,8 @@ export function Hra() {
         preskocit={preskocVyucbuPriStole}
         hratProtiPocitacu={() => {
           prerusVyucbu();
-          hra.zaloz(false, PREDVOLENA_DLZKA, true);
+          // Ligu vyberie server — predvolenú, alebo najvyššiu, ktorú hráč smie.
+          hra.zaloz(false, undefined, true);
         }}
         menoBota={hra.hraci[1]?.meno ?? "Štamgast"}
         chybaVyucby={hra.chybaVyucby}

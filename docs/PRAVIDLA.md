@@ -138,11 +138,12 @@ nepoužíva — cigareta je cigareta.
 
 ## 3. Príprava hry
 
-- **Dĺžka hry** sa volí pred začiatkom počtom lokalít: krátka **3**, stredná
-  **5** (predvolená), dlhá **7**, potom finále.
+- **Dĺžka hry (liga)** sa volí pred začiatkom počtom lokalít: Tretia liga **3**,
+  Druhá liga **5** (predvolená), Prvá liga **7**, potom finále. Ktoré ligy hráč
+  smie hrať, určuje admin (odomykanie výhrami proti človeku; web, nie pravidlá).
 - **Lokality (v7):** v hre sú **všetky lokality sady** (`cards.json` ich má 19)
   a nežrebujú sa. Každé kolo má **úroveň** podľa rozpisu, ktorý obaja vidia od
-  začiatku: krátka **1 · 2 · 3 · P**, stredná **1 · 2 · 2 · 3 · 3 · P**, dlhá
+  začiatku: Tretia liga **1 · 2 · 3 · P**, Druhá **1 · 2 · 2 · 3 · 3 · P**, Prvá
   **1 · 1 · 2 · 2 · 3 · 3 · 3 · P** (P = pinnacle vo finále). Úroveň lokality je
   počet akcií na jej hrane (obe hrany majú rovnako): 1 spodok, 2 dedina,
   3 sídla dedinskej šľachty, 4 pinnacle s korupciou.

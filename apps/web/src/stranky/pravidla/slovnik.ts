@@ -18,7 +18,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "cirhoza", pojem: "Cirhóza", popis: "Kliatba z pečene; ide do tvojho odhadzovacieho balíčka, priznaná dá súperovi v bitke +1 tuhé, nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí 3 špaky." },
   { id: "dedicstvo", pojem: "Dedičstvo", popis: "Nástroj vyložený mimo línie; platí jeho efekt a cena rastie pre oboch: 1., 2., 3. Nástroj stojí 1, 2, 3 cigarety." },
   { id: "dlh", pojem: "Dlh", popis: "Kliatba zo zadĺženia: každé 2 zadĺženia v Pitke = 1 Dlh; prizná sa sám; za priznané Dlhy príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac." },
-  { id: "dlzka-hry", pojem: "Dĺžka hry", popis: "Počet lokalít, o ktoré sa hrá: krátka 3, stredná 5, dlhá 7; po nich príde finále." },
+  { id: "dlzka-hry", pojem: "Liga", popis: "Dĺžka hry — počet lokalít, o ktoré sa hrá: Tretia liga 3, Druhá liga 5, Prvá liga 7; po nich príde finále." },
   { id: "doliatie", pojem: "Doliatie", popis: "Počas Pitky za 2 cigarety otočíš vypitý poldeci späť na plný." },
   { id: "efekt", pojem: "Efekt", popis: "Text karty: čo karta robí a kedy; kedy hovorí tučné slovo na jeho začiatku." },
   { id: "exekutor", pojem: "Exekútor", popis: "Príde v každej bitke, kým máš priznaný Dlh: zhorí ti polovica Dlhov (zaokrúhlene nahor) a rovnako veľa špakov, so súperovou priazňou Exekútora o 1 / 2 / 3 viac. Záhradkár v tvojej partii ťa v tom kole ochráni." },
