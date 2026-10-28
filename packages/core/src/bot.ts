@@ -211,7 +211,8 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   pijan: 0.3,
   degustatorka: 0.3,
   klebetnica: 0.3,
-  dohadzovacka: 0.4,
+  // Nástup presunie súperovu kartu z druhej strany — účinok ráta simulácia vyloženia (sPrilozenou).
+  dohadzovacka: 0.3,
   masiar: 0.2,
   kulturista: 0.2,
   vandal: 0.2,

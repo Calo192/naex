@@ -628,7 +628,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 
 | Krok | Čo sa deje | Kde |
 |---|---|---|
-| 0 | Efekty na začiatku bitky (Traktoristka, Dohadzovačka; v starej sade Kar) | §9.0 |
+| 0 | Efekty na začiatku bitky (Traktoristka; v starej sade Kar) | §9.0 |
 | 1 | Exekútor (Robota, prah, exekúcia — Dlhy a špaky) | §11 |
 | 2 | Pohoršenie (aj z patronátu a z priazne Abstinenta) | §9.2 |
 | 3 | Poškodenie | §9.3 |
@@ -645,8 +645,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 
 ### 9.0 Efekty na začiatku bitky
 
-Traktoristka bez prevahy (Dlh) a Dohadzovačka (karty zo šenku za zmiešané
-spoje, voľba hráča) (§16). V starej sade (do v6) Kar: každý hráč s nepriznanou
+Traktoristka bez prevahy (Dlh) (§16). V starej sade (do v6) Kar: každý hráč s nepriznanou
 Cirhózou v ruke sa rozhodne (obranca, potom útočník), či jednu zahodí.
 
 ### 9.2 Pohoršenie
@@ -1295,7 +1294,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Bzdocha | Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX. Majiteľ čaká, kým súper skončí svoju časť Pitky, potom hrá a vidí súperove skryté NA EX; majú ju obaja → nečaká nikto (§7, Michal 2026-10-27). |
 | Záhradkár | Exekúcia: keď majiteľ čelí exekúcii (§11), smie Záhradkára zahodiť namiesto špakov — Dlhy zhoria aj tak. Z línie (ponúkne sa prvý) ide po bitke z hry a navyše spáli toľko priznaných Dlhov, koľko mal aktívnych akcií; z ruky či balíčkov zachráni len špaky. |
 | Anonymný alkoholik | Nástup: majiteľ prizná všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka (§11). |
-| Dohadzovačka | Bitka: za každý spoj Ženy majiteľa so súperovým Chlapom alebo Chlapa majiteľa so súperovou Ženou (kdekoľvek v línii) si majiteľ na začiatku bitky vezme kartu zo šenku (podľa voľby, kým je šenok). Karta s oboma tagmi sa ráta ako oboje. |
+| Dohadzovačka | Nástup (Michal 2026-10-28): keď ju hráč priloží k Občanovi alebo Starešinovi O2 (jej vnútorný sused, karta ktoréhokoľvek hráča), z **druhej strany lokality** sa **najvzdialenejší** (od lokality) Občan alebo Starešina opačného pohlavia ako O2 (Žena ↔ Chlap; karta ktoréhokoľvek hráča) presunie za Dohadzovačku — na vonkajší koniec jej strany. Príklad: „O1 … … O2“, Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“. Presun je **povinný**, bez voľby. Karta ostáva svojho majiteľa a natočená k nemu, medzera na druhej strane sa uzavrie a spoje sa prepočítajú. Karta s oboma tagmi (Liberál) sa ráta ako oboje — ako O2 hľadá Ženu aj Chlapa, ako O1 sa hodí k obom. Presun **nie je priloženie**: Konflikt presunutej ani susednej karty sa nespustí a Pasca ho neráta. Skrytá Záverečná sa nepresúva (a ako O2 nerozhoduje); ako Záverečná sa Dohadzovačka vyhodnotí pri otočení. Ak O2 nemá Ženu ani Chlapa, nie je Občan ani Starešina, alebo na druhej strane nie je vhodný O1, nič sa nestane. Do 2026-10-28 Bitka: karta zo šenku za zmiešané spoje. |
 | Kulturista | Úplatok (vyššie). |
 | Vymáhač | Bitka: za každé 2 tvoje priznané Dlhy Rana navyše (za každého Vymáhača). |
 | Finančná poradkyňa | Pitka: Dlhy z jej akcií dostáva súper, nie majiteľ. |

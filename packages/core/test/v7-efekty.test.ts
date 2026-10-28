@@ -25,7 +25,6 @@ import {
   prahyHraca,
   stavkaBitky,
   viewFor,
-  zmiesaneSpoje,
 } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -453,13 +452,6 @@ describe("Bitka a po bitke (v7)", () => {
     expect(bitkaMody(data, s, 0).tuheZdroje).toContainEqual({ zdroj: "pijan", tuhe: 2 });
     expect(bitkaMody(data, s, 0).tuheZdroje.some((z) => z.zdroj === "pasca")).toBe(false);
     expect(bitkaMody(data, { ...s, prilozeniaKu: [1, 0] }, 0).tuheZdroje).toContainEqual({ zdroj: "pasca", tuhe: 2 });
-  });
-
-  it("Dohadzovačka: za spoj Žena–Chlap so súperom karta zo šenku", () => {
-    const s = vPitke("zastavka", [[lezi(inst("dohadzovacka"), 0), lezi(inst("masiar"), 1)], []]);
-    expect(zmiesaneSpoje(data, s, 0)).toBe(1);
-    const t = skonciPitku(s);
-    expect(t.hasicVolby?.[0]).toMatchObject({ hrac: 0, typ: "senok" });
   });
 
   it("Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie", () => {

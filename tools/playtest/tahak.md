@@ -151,8 +151,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Nástup s voľbou (v7):** Živnostník — za neho hneď smieš priložiť Nástroj z ruky mimo limitu
   (`{"type":"nastroj","uid":…}`, nič = `"uid":null`; aj pri otočení Záverečnej); Starosta — karta zo
   šenku (`{"type":"senok","uid":…}`); Kapybara — marker jedného staršieho o 1 pole k stredu
-  (`{"type":"kapybara","elderId":…}`). Dohadzovačka (Bitka): za každý spoj tvojej Ženy so súperovým
-  Chlapom či tvojho Chlapa so súperovou Ženou karta zo šenku (`senok`).
+  (`{"type":"kapybara","elderId":…}`). Dohadzovačka (Nástup, 2026-10-28): keď ju priložíš k Občanovi či Starešinovi, z druhej strany
+  lokality sa najvzdialenejší Občan alebo Starešina opačného pohlavia ako jej sused presunie za ňu
+  (na koniec jej strany; povinné, karta ostáva majiteľovi, Konflikt sa nespustí).
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = zahodiť
   (navždy z hry).

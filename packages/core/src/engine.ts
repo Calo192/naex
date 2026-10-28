@@ -9,7 +9,7 @@
 // Rozhodnutia pri nejasných pravidlách sú vypísané v README (sekcia
 // „Rozhodnuté nejasnosti“) a označené v komentároch ako [R#].
 
-import type { CardDef, CardInstance, Phase, PlayerId } from "./types.ts";
+import type { CardDef, CardInstance, Phase, PlayerId, Tag } from "./types.ts";
 import { opponentOf, priazenZKluca } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
@@ -2459,7 +2459,11 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
     }
   }
   const zamen = (pl: PlacedCard): PlacedCard => (pl === sused && lezi !== null ? lezi : pl);
-  const strany = ([0, 1] as const).map((q) => [...s.strany[q].map(zamen), ...(q === strana ? [nova] : [])]) as unknown as T["strany"];
+  let strany = ([0, 1] as const).map((q) => [...s.strany[q].map(zamen), ...(q === strana ? [nova] : [])]) as unknown as T["strany"];
+  // Dohadzovačka (Nástup): presun najvzdialenejšieho Občana opačného pohlavia za ňu.
+  if (karta.defId === "dohadzovacka" && defOf(data, karta).triggers.includes("Nástup") && !efektPotlaceny(data, s, kto, "dohadzovacka")) {
+    strany = presunDohadzovackou(data, strany, strana, karta.uid).strany;
+  }
   const prilozeniaKu: [number, number] = [s.prilozeniaKu?.[0] ?? 0, s.prilozeniaKu?.[1] ?? 0];
   if (sused !== null && sused.playedBy !== kto) prilozeniaKu[sused.playedBy] += 1;
   return { ...s, strany, hraci, prilozeniaKu };
@@ -2565,6 +2569,18 @@ function nastupEfekt(
   }
   const opp = opponentOf(p);
   switch (defId) {
+    case "dohadzovacka": {
+      const d = s.strany[strana].at(-1);
+      if (d === undefined || d.card.defId !== "dohadzovacka") break;
+      const { strany, presunuta } = presunDohadzovackou(data, s.strany as GameState["strany"], strana, d.card.uid);
+      if (presunuta === null) break;
+      s.strany = strany as MutState["strany"];
+      events.push({
+        type: "log",
+        text: `Dohadzovačka: ${defOf(data, presunuta.card).name} (${presunuta.playedBy === p ? `hráča ${p + 1}` : `hráča ${opp + 1}`}) sa presúva z druhej strany lokality za Dohadzovačku.`,
+      });
+      break;
+    }
     case "zivnostnik": {
       // v7: v tom istom ťahu smie za neho priložiť Nástroj z ruky — mimo limitu.
       if (!s.hraci[p].ruka.some((k) => defOf(data, k as CardInstance).tags.includes("Nástroj"))) break;
@@ -3822,24 +3838,6 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
   };
   const b = s.bitkaStav;
 
-  // Dohadzovačka (Bitka, v7): za každý spoj Ženy majiteľa so súperovým Chlapom alebo
-  // Chlapa majiteľa so súperovou Ženou karta zo šenku — hráč si ju vyberie (voľba senok).
-  const zoSenku: [number, number] = [0, 0];
-  for (const p of [0, 1] as const) {
-    const dohadzovacky = partiaHraca(s as GameState, p).filter((pl) => pl.card.defId === "dohadzovacka" && pl.zaverecna !== true).length;
-    if (dohadzovacky === 0 || efektPotlaceny(data, s as GameState, p, "dohadzovacka")) continue;
-    zoSenku[p] = dohadzovacky * zmiesaneSpoje(data, s as GameState, p);
-  }
-  let volby = 0;
-  for (const p of [obranca(s), s.utocnik]) {
-    const n = Math.min(zoSenku[p], s.senok.length - volby);
-    if (n <= 0) continue;
-    events.push({ type: "log", text: `Dohadzovačka: hráč ${p + 1} si za zmiešané spoje berie zo šenku ${kariet(n)}.` });
-    for (let i = 0; i < n; i++) s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: 0, potom: null }];
-    volby += n;
-  }
-
-
   // Traktoristka (v7, Na leasing): bez prevahy v jej kraji Dlh — pred Exekútorom.
   for (const p of [0, 1] as const) {
     for (let i = traktoristkyBezPrevahy(data, s as GameState, p); i > 0; i--) {
@@ -3850,29 +3848,46 @@ function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
 
   manualEfekty(s, data, "Bitka", events);
   manualEfekty(s, data, "Furt", events);
-  // Voľby zo šenku (Dohadzovačka) idú pred zvyškom bitky — po poslednej bitka pokračuje.
   if (odlozPoHasicovi(s, "bitka")) return;
   pokracujBitku(s, data, events);
 }
 
 /**
- * Zmiešané spoje hráča p (Dohadzovačka v7): jeho Žena vedľa súperovho Chlapa
- * alebo jeho Chlap vedľa súperovej Ženy, kdekoľvek v línii. Karta s oboma
- * tagmi sa ráta ako oboje.
+ * Dohadzovačka (Nástup, Michal 2026-10-28): leží na konci strany `strana` (uid). Ak jej
+ * vnútorný sused O2 je Občan alebo Starešina s tagom Žena či Chlap (karta ktoréhokoľvek
+ * hráča), z druhej strany lokality sa najvzdialenejší Občan alebo Starešina opačného
+ * pohlavia presunie za ňu — na vonkajší koniec jej strany; medzera sa uzavrie. Presun je
+ * povinný, karta ostáva majiteľovi a natočená k nemu. Karta s oboma tagmi sa ráta ako
+ * oboje. Presun nie je priloženie (Konflikt ani Pascu nespustí); skrytá Záverečná sa
+ * nepresúva. Vráti nové strany a presunutú kartu (null = nič sa nestalo).
  */
-export function zmiesaneSpoje(data: GameData, s: VerejnyStav & { readonly lokalitaOtocena: boolean }, p: PlayerId): number {
-  const line = lineState(s);
-  let n = 0;
-  for (const pl of partiaHraca(s, p)) {
-    if (pl.zaverecna === true) continue;
-    const moje = defOf(data, pl.card).tags;
-    for (const sused of okolieVLinii(line, pl.card.uid)) {
-      if (sused === null || sused.playedBy === p || sused.zaverecna === true) continue;
-      const jeho = defOf(data, sused.card).tags;
-      if ((moje.includes("Žena") && jeho.includes("Chlap")) || (moje.includes("Chlap") && jeho.includes("Žena"))) n++;
-    }
+export function presunDohadzovackou<S extends readonly [readonly PlacedCard[], readonly PlacedCard[]]>(
+  data: GameData,
+  strany: S,
+  strana: PlayerId,
+  uid: number,
+): { readonly strany: S; readonly presunuta: PlacedCard | null } {
+  const moja = strany[strana];
+  const i = moja.findIndex((pl) => pl.card.uid === uid);
+  const o2 = i > 0 ? moja[i - 1] : undefined;
+  const nic = { strany, presunuta: null };
+  if (o2 === undefined || o2.zaverecna === true) return nic;
+  const tagy2 = defOf(data, o2.card).tags;
+  const clovek = (t: readonly Tag[]): boolean => t.includes("Občan") || t.includes("Starešina");
+  if (!clovek(tagy2)) return nic;
+  const hladam: Tag[] = [...(tagy2.includes("Žena") ? (["Chlap"] as const) : []), ...(tagy2.includes("Chlap") ? (["Žena"] as const) : [])];
+  if (hladam.length === 0) return nic;
+  const druha = strany[opponentOf(strana)];
+  for (let j = druha.length - 1; j >= 0; j--) {
+    const o1 = druha[j] as PlacedCard;
+    if (o1.zaverecna === true) continue;
+    const t = defOf(data, o1.card).tags;
+    if (!clovek(t) || !hladam.some((x) => t.includes(x))) continue;
+    const zostava = druha.filter((_, k) => k !== j);
+    const nova = [...moja, o1];
+    return { strany: (strana === 0 ? [nova, zostava] : [zostava, nova]) as unknown as S, presunuta: o1 };
   }
-  return n;
+  return nic;
 }
 
 /** Vlastní Občania hráča p v línii, ktorí sa ešte nezahadzujú. */

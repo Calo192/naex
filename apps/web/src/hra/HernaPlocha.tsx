@@ -1003,15 +1003,21 @@ export function HernaPlocha({
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
   // zvýraznenie spojov aj odhad bitky. Moje skryté NA EX v ňom ležia na kartách
   // (pre mňa sú dané), súperove nie — tie sa ukážu až pri odkrytí.
-  const { stol, lineEval, odhad, rozpis, hrozby, rozsahy } = useMemo(() => {
+  const { stol, lineEval, odhad, rozpis, hrozby, rozsahy, presunute } = useMemo(() => {
     let strany: ClientState["strany"] = zaklad.strany;
     let hraci = zaklad.hraci;
     let prilozeniaKu = zaklad.prilozeniaKu;
+    // Karty, ktoré navrhnutá Dohadzovačka presunie z druhej strany lokality za seba.
+    const presunute = new Set<number>();
     for (const x of vylozenia) {
       if (x.ciel === "vlastna" || x.ciel === "superova") {
         const kam = x.ciel === "vlastna" ? ja : super_;
-        // Konflikt a Miňištrant (v7) menia stôl už pri priložení — ako motor.
+        // Konflikt, Miňištrant a Dohadzovačka menia stôl už pri priložení — ako motor.
         const po = sPrilozenou(data, { ...zaklad, strany, hraci, ...(prilozeniaKu === undefined ? {} : { prilozeniaKu }) }, kam, x.karta, ja);
+        if (x.karta.defId === "dohadzovacka") {
+          const pred = new Set(strany[kam].map((pl) => pl.card.uid));
+          for (const pl of po.strany[kam]) if (!pred.has(pl.card.uid) && pl.card.uid !== x.karta.uid) presunute.add(pl.card.uid);
+        }
         strany = po.strany;
         hraci = po.hraci;
         prilozeniaKu = po.prilozeniaKu;
@@ -1064,7 +1070,7 @@ export function HernaPlocha({
             rozsahPohorseni(data, stolPohorseni, lineEval.sums, nepridelene, 0, abstakyVRuke),
             rozsahPohorseni(data, stolPohorseni, lineEval.sums, nepridelene, 1, abstakyVRuke),
           ] as const);
-    return { stol, lineEval, odhad, rozpis, hrozby, rozsahy };
+    return { stol, lineEval, odhad, rozpis, hrozby, rozsahy, presunute };
     // vylozene a lokalitaNavrh sú odvodené len z navrh a view.
   }, [data, view, navrh, somNaTahu, zaklad]);
 
@@ -2292,9 +2298,15 @@ export function HernaPlocha({
       const skryteSupera = superoveSkryteNaex.has(uid);
       const vytrznik = placed.vytrznik === true;
       const vybranaNaex = mode.typ === "naexCiel" && mode.uid === uid;
+      const presunieSa = presunute.has(uid);
       const stitky =
-        nova || otocena || naexBy !== undefined || skryteMoje || skryteSupera || vybranaNaex || placed.zaverecna === true ? (
+        nova || otocena || presunieSa || naexBy !== undefined || skryteMoje || skryteSupera || vybranaNaex || placed.zaverecna === true ? (
           <>
+            {presunieSa && (
+              <span className="nova-stitok" title="Navrhnutá Dohadzovačka túto kartu po potvrdení presunie z druhej strany lokality za seba (na koniec svojej strany).">
+                presunie sa za Dohadzovačku
+              </span>
+            )}
             {nova && (
               <span className="nova-stitok" title={`Vyložil ${menoHraca(super_)} v poslednom ťahu`}>
                 nová

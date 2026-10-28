@@ -2067,12 +2067,11 @@
     {
       "id": "16.karta.v7.bitka",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Bitka a po nej v7: Puška, Vidly, Pasca, Pijan, Dohadzovačka, Recidivista, Dievčina, Farár, Noviny, Výherný automat, Záhradkár (Exekúcia).",
+      "pravidlo": "Bitka a po nej v7: Puška, Vidly, Pasca, Pijan, Recidivista, Dievčina, Farár, Noviny, Výherný automat, Záhradkár (Exekúcia).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Puška a Vidly: Petelice a Rany o 1 poškodenie viac — aj Rany navyše z efektov",
         "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX",
-        "packages/core/test/v7-efekty.test.ts › Dohadzovačka: za spoj Žena–Chlap so súperom karta zo šenku",
         "packages/core/test/v7-efekty.test.ts › Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie",
         "packages/core/test/v7-efekty.test.ts › Noviny: víťaz s viac priznanými Dlhmi — špaky za bitku dostane porazený",
         "packages/core/test/v7-efekty.test.ts › Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh",
@@ -2107,6 +2106,19 @@
       "testy": [
         "packages/core/test/pravidla-v8.test.ts › sila 2: dva tvoje priznané Dlhy prejdú medzi súperove priznané",
         "packages/core/test/pravidla-v8.test.ts › menej Dlhov, ako je sila: presunie, koľko máš; bez Dlhu nič"
+      ]
+    },
+    {
+      "id": "16.karta.dohadzovacka",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Dohadzovačka (Nástup, Michal 2026-10-28): priložená k Občanovi či Starešinovi O2 presunie z druhej strany lokality najvzdialenejšieho Občana či Starešinu opačného pohlavia za seba; povinné, karta ostáva majiteľovi, nie je to priloženie (Konflikt nie), skrytá Záverečná sa nepresúva, karta s oboma tagmi ráta ako oboje.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/dohadzovacka.test.ts › príklad Michala: „O1 … … O2“ + Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“; karta ostáva majiteľovi",
+        "packages/core/test/dohadzovacka.test.ts › na súperovej strane: O2 je súperova Žena, presunie sa môj Chlap z mojej strany",
+        "packages/core/test/dohadzovacka.test.ts › nič sa nestane: O2 nie je Občan ani Starešina, nemá pohlavie, alebo na druhej strane nie je vhodný O1",
+        "packages/core/test/dohadzovacka.test.ts › skrytá Záverečná sa nepresúva — presunie sa najvzdialenejší z ostatných; karta s oboma tagmi sa ráta ako oboje",
+        "packages/core/test/dohadzovacka.test.ts › náhľad a bot (sPrilozenou) ukážu ten istý presun ako motor"
       ]
     }
   ]
