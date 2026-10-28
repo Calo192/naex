@@ -227,7 +227,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "05-ciel-a-senok",
     vSkratke: [
       "Obranca vyberie a natočí lokalitu.",
-      "Stavba šenku: polovica kariet do šenku, polovica na Smetisko.",
+      "Stavba šenku: polovica kariet do šenku, polovica naspodok balíčka.",
       "Branie striedavo: 1 karta za 1 cigaretu, 2 karty za 3.",
       "Patronát: starší, ktorý ti prejavuje priazeň, ti môže prísť na pomoc.",
     ],
@@ -244,7 +244,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Nevzaté karty zo starého šenku idú naspodok spoločného balíčka. Potom si každý zo spoločného balíčka vezme toľko kariet,
           koľko je v hre nenahradených starších (zaokrúhlené nadol na párne číslo; na začiatku 8). Obaja naraz a tajne dáte <strong>polovicu do šenku</strong> a
-          polovicu na <P k="smetisko">Smetisko</P> — naspodok balíčka. Nič si nepodávate; pri 8 kartách 4 + 4 a šenok má 8 kariet.
+          polovicu <strong>naspodok balíčka</strong> (súper ju nevidí). Nič si nepodávate; pri 8 kartách 4 + 4 a šenok má 8 kariet.
         </p>
         <H3 id="senok-branie">Branie zo šenku</H3>
         <p>
