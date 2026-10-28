@@ -39,7 +39,7 @@ const SKUPINY: readonly { readonly nazov: string; readonly sekcie: readonly Sekc
       { href: "/admin/akcie", text: "Akcie a ikony", ikona: "akcie" },
       { href: "/admin/klucove-slova", text: "Kľúčové slová", ikona: "slova" },
       { href: "/admin/nastavenia", text: "Farby a rozmery", ikona: "farby" },
-      { href: "/admin/bodovacie", text: "Bodovacie karty", ikona: "bodovacie" },
+      { href: "/admin/bodovacie", text: "Karty priazne", ikona: "bodovacie" },
     ],
   },
   {

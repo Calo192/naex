@@ -41,7 +41,7 @@ export const METRIKY: readonly DefMetriky[] = [
   { kluc: "naexUspech", nazov: "Úspešné NA EX", popis: "NA EX, ktoré po súperovej odpovedi zlepšilo bitku v tvoj prospech.", jednotka: "%", lepsie: "viac", z: (s) => podiel(s.naexUspesne, s.naexHodnotene) },
   { kluc: "naex", nazov: "NA EX na partiu", popis: "Koľkokrát v partii si dal NA EX.", jednotka: "x", lepsie: "viac", z: (s) => s.naex },
   { kluc: "senokKarty", nazov: "Karty zo šenku", popis: "Koľko kariet si za partiu vzal zo šenku.", jednotka: "x", lepsie: "viac", z: (s) => (s.partieV2 > 0 ? s.senokKarty : null) },
-  { kluc: "dlhyNaKonci", nazov: "Dlhy na konci", popis: "Koľko Dlhov si mal na konci partie (každý uberá body).", jednotka: "x", lepsie: "menej", z: (s) => (s.partieV2 > 0 ? s.dlhyNaKonci : null) },
+  { kluc: "dlhyNaKonci", nazov: "Dlhy na konci", popis: "Koľko Dlhov si mal na konci partie. Na konci hry už nič nestoja — špaky za ne berie Exekútor počas hry.", jednotka: "x", lepsie: "menej", z: (s) => (s.partieV2 > 0 ? s.dlhyNaKonci : null) },
   { kluc: "lokality", nazov: "Ovládnuté lokality", popis: "Koľko lokalít si v partii ovládol.", jednotka: "x", lepsie: "viac", z: (s) => s.lokalityOvladnute },
   { kluc: "vydeseni", nazov: "Vydesení starší", popis: "Koľko starších sa ťa na konci partie bálo naplno.", jednotka: "x", lepsie: "viac", z: (s) => s.starsiVydeseni },
 ];

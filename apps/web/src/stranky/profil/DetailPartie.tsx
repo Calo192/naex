@@ -140,7 +140,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
       {bodyPo.length > 1 && (
         <section className="panel profil-karta">
           <header className="profil-karta-hlava">
-            <h2>{v6 ? "Priebeh špakov" : "Priebeh bodov"}</h2>
+            <h2>{v6 ? "Priebeh špakov" : "Priebeh bodov (partia do v5)"}</h2>
             <span className="tlmene">
               <span className="priebeh-legenda ja">{ty(ja)}</span> · <span className="priebeh-legenda su">{mena[su]}</span> ·{" "}
               {v6 ? "špaky v popolníku po kole" : "body po kole, keby sa skončilo"}
@@ -237,7 +237,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
         </section>
       ) : d.zaverecne !== null ? (
         <section className="profil-karta detail-ucet">
-          <h2>Záverečné bodovanie</h2>
+          <h2>Záverečné body (partia do v5)</h2>
           <div className="detail-ucet-obal">
             <KrcmovyUcet
               body={d.zaverecne}
@@ -250,7 +250,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
           </div>
         </section>
       ) : (
-        moj.body !== null && <Hlaska druh="info">Rozpis záverečného bodovania sa pri tejto partii nezapísal.</Hlaska>
+        moj.body !== null && <Hlaska druh="info">Rozpis záverečného účtu sa pri tejto partii nezapísal (starší archív).</Hlaska>
       )}
     </div>
   );

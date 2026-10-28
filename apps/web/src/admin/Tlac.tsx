@@ -157,7 +157,7 @@ export function Tlac() {
           </label>
           {rezim === "a4" && (
             <label>
-              <input type="checkbox" checked={sBodovacimi} onChange={(e) => setSBodovacimi(e.target.checked)} /> aj bodovacie karty
+              <input type="checkbox" checked={sBodovacimi} onChange={(e) => setSBodovacimi(e.target.checked)} /> aj karty priazne
             </label>
           )}
           <label className="glosar-velkost">

@@ -57,7 +57,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           <strong>NA EX!</strong> je kartová hra pre dvoch hráčov zasadená do drsnej dediny. Každé kolo sa bijete o jednu{" "}
           <P k="lokalita">lokalitu</P> — krčmu, kostol, benzínku — a cestou desíte <P k="starsi">starších</P>, vážené osoby
-          dediny. Kto vyhráva bitky, ten zbiera <P k="spak">špaky</P> — víťazné body — a k nim ďalšie od starších, ktorí sa ho boja.
+          dediny. Kto vyhráva bitky, ten zbiera <P k="spak">špaky</P> a k nim ďalšie od starších, ktorí sa ho boja.
         </p>
         <p>
           Karty kladiete do spoločnej <P k="linia">línie</P>, pijete <P k="poldeci">poldeci</P>, fajčíte{" "}
@@ -902,7 +902,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Špaky a finále",
     obrazok: "15-bodovanie",
     vSkratke: [
-      "Špaky sú víťazné body; po finále vyhrá, kto ich má viac, rovnosť je remíza.",
+      "Po finále vyhrá, kto má viac špakov; rovnosť je remíza.",
       "Vyhratá bitka: 1 špak za každú kartu v línii (aspoň 1).",
       "Po vyhratej bitke: každý starší, ktorý sa ťa bojí, zaplatí nové zóny — žltá 1, oranžová 2, červená 3, každú raz.",
       "Finále: bitka o pinnacle lokalitu ako o každú inú; vyberá ju vedúci, útočí zaostávajúci.",

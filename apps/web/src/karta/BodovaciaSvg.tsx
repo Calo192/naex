@@ -87,7 +87,7 @@ export function BodovaciaSvg({
       width={sirka}
       style={{ aspectRatio: `${g.sirka} / ${g.vyska}` }}
       role="img"
-      aria-label={`Bodovacia karta ${karta.nazov}`}
+      aria-label={`Karta priazne ${karta.nazov}`}
     >
       <defs>
         <clipPath id={`bk-${karta.id}`}>

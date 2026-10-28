@@ -171,7 +171,7 @@ function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly
           </button>
           <button onClick={zavri}>Zrušiť</button>
           {obsah.bodovacie.some((x) => x.id === b.id) && (
-            <button className="tlacidlo-nebezpecne" onClick={() => window.confirm("Zmazať bodovaciu kartu?") && void zmazBodovaciu(b.id).then(zavri)}>
+            <button className="tlacidlo-nebezpecne" onClick={() => window.confirm("Zmazať kartu priazne?") && void zmazBodovaciu(b.id).then(zavri)}>
               Zmazať
             </button>
           )}
@@ -204,7 +204,7 @@ function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly
 }
 
 export function Bodovacie() {
-  useTitulok("Bodovacie karty — tvorba");
+  useTitulok("Karty priazne — tvorba");
   const { obsah } = useAdmin();
   const [upravuje, setUpravuje] = useState<BodovaciaKarta | null>(null);
   if (obsah === null) return null;
@@ -225,12 +225,12 @@ export function Bodovacie() {
   return (
     <div className="admin-stranka">
       <AdminHlava
-        titul="Bodovacie karty"
+        titul="Karty priazne"
         popis="Podložka, do ktorej sa vkladá karta staršieho. Bočné pozície ležia presne na výškach akcií karty, takže neprázdna akcia staršieho „ukazuje“ na bodovaciu podmienku."
       >
         {upravuje === null && (
           <button className="tlacidlo-hlavne" onClick={() => setUpravuje(nova())}>
-            + Nová bodovacia karta
+            + Nová karta priazne
           </button>
         )}
       </AdminHlava>
@@ -246,7 +246,7 @@ export function Bodovacie() {
               <span>{b.nazov || "bez názvu"}</span>
             </button>
           ))}
-          {obsah.bodovacie.length === 0 && <p className="tlmene">Zatiaľ žiadne bodovacie karty.</p>}
+          {obsah.bodovacie.length === 0 && <p className="tlmene">Zatiaľ žiadne karty priazne.</p>}
         </div>
       )}
       <IkonyBodovania />
