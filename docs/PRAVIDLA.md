@@ -560,8 +560,11 @@ každá aktívna akcia hrany (aj Odpor či Posilnenie v páre). **Odpor na hrane
 lokality** sa ráta ako jej aktívna akcia; akcia hrany, ktorú zrušil **Odpor
 karty** v páre, sa neráta.
 
-Príklad: hráč A aktivuje 3 akcie lokality, hráč B 1 → **2 Pitky**; kto pri
-lokalite nič neaktivuje, kolo má 1 Pitku. Pred každou Pitkou je Zhromaždenie
+Príklad: na jednej strane lokality sú aktivované 3 jej akcie, na druhej 1 →
+**2 Pitky**; keď je na niektorej strane 0, kolo má 1 Pitku. Ráta sa **podľa
+strán, nie podľa hráčov**: nezáleží na tom, kto kartu zahral (aj podstrčená
+karta aktivuje hranu pri strane, kde leží), ani kto má v kraji prevahu. Akcia
+hrany zdvojená Posilnením (×2) je stále **jedna** aktivovaná akcia. Pred každou Pitkou je Zhromaždenie
 (limit sa ráta nanovo, začína útočník). Počet sa prepočítava s líniou počas
 kola (vykladanie, odpoveď, NA EX); už začatá Pitka sa vždy dopije. Lokality
 majú na každej strane 1–4 akcie (úroveň), teda 1–5 Pitiek; aj finále na
@@ -1123,6 +1126,9 @@ voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako p
   kartou ťahu po Vypiť a platia pre ňu všetky pravidlá vykladania.
 - Kým leží lícom dole, **ráta sa normálne** — akcie, spoje, prevaha, tuhé.
   Súper z nej nevidí nič (ani meno v logu); jej príspevok mu ostáva neznámy.
+  Ani cez jeho vlastné karty: akciu jeho karty, ktorú Záverečná spáruje
+  (aktivuje, zdvojí či zruší), mu hra neukáže a odhad bitky ju nezarátava —
+  uvidí ju až po otočení.
 - **Za ňu sa nedá priložiť** žiadna karta (ani odpoveď na NA EX), kým sa
   neotočí — tá strana je dovtedy zablokovaná.
 - **NA EX** na ňu smie v Pitke dať len **súper** a prejde vždy (nekontroluje
