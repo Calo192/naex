@@ -13,7 +13,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, PlayerId, PocitadloBitky as Pocitadlo, RekapitulaciaBitky, StolBitky } from "@naex/core";
 import { stavPocitadla, vlnyKariet } from "@naex/core";
 import { IkonaPoldeci } from "./Panely.tsx";
-import { RekapBitky, riadkovRekapitulacieBitky, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
+import { RekapBitky, riadkovRekapitulacieBitky, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 
 /** Zdroje bonusov a zrážok, ktoré nie sú kartou. */
 const ZDROJ: Readonly<Record<string, string>> = {
@@ -42,9 +42,11 @@ export interface PocitadloBitkyProps {
   /** Vlna karty v línii (vlnyKariet zo stola v okamihu bitky). */
   readonly vlnyKariet?: ReadonlyMap<number, number>;
   readonly piktogramy?: PiktogramyRekapitulacie;
+  /** Odpovede na NA EX v Pitkách kola — rekapitulácia ich povie slovami. */
+  readonly odpovede?: readonly OdpovedNaNaex[];
 }
 
-export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy }: PocitadloBitkyProps) {
+export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [] }: PocitadloBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const posledna = p.vln - 1;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -147,6 +149,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             vlnaRusenia={p.vlnaBonusov}
             vlnaUcinku={p.vlnaZrazok}
             mena={mena}
+            odpovede={odpovede}
           />
         )}
         <div className="pocitadlo-pata">
@@ -188,7 +191,13 @@ export type KreslenieKarty = (k: {
 }) => ReactNode;
 
 export interface PocitadloSLiniouProps {
-  readonly vrstva: { readonly p: Pocitadlo; readonly stol: StolBitky; readonly linia: LineEval; readonly rekap: RekapitulaciaBitky | null };
+  readonly vrstva: {
+    readonly p: Pocitadlo;
+    readonly stol: StolBitky;
+    readonly linia: LineEval;
+    readonly rekap: RekapitulaciaBitky | null;
+    readonly odpovede?: readonly OdpovedNaNaex[];
+  };
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly karta: KreslenieKarty;
@@ -252,6 +261,7 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
       rekap={rekap}
       vlnyKariet={vlnyKariet(stol)}
       piktogramy={piktogramy}
+      odpovede={vrstva.odpovede ?? []}
     />
   );
 }

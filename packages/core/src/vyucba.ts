@@ -489,9 +489,9 @@ export function porovnajSKrokom(data: GameData, state: GameState, prijaty: Comma
     for (const c of chce) {
       const i = zostava.findIndex((d) => d.k === c.k);
       if (i >= 0) zostava.splice(i, 1);
-      else chybajuce.push({ typ: "stavbaSenku", popis: `daj na Smetisko aj „${menoKarty(data, state, c.u)}“`, uid: c.u });
+      else chybajuce.push({ typ: "stavbaSenku", popis: `daj naspodok balíčka aj „${menoKarty(data, state, c.u)}“`, uid: c.u });
     }
-    const navyse = zostava.map((d): PopisKroku => ({ typ: "stavbaSenku", popis: `„${menoKarty(data, state, d.u)}“ na Smetisko nepatrí`, uid: d.u }));
+    const navyse = zostava.map((d): PopisKroku => ({ typ: "stavbaSenku", popis: `„${menoKarty(data, state, d.u)}“ naspodok balíčka nepatrí`, uid: d.u }));
     return { zhoda: chybajuce.length === 0 && navyse.length === 0, chybajuce, navyse };
   }
   const zostava = krokyPrikazu(prijaty).map((c) => ({ c, k: klucKroku(state, c) }));

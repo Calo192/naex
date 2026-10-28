@@ -38,6 +38,10 @@ export interface KartaLicoProps {
   readonly odznaky?: ReactNode;
   readonly onClick?: (() => void) | undefined;
   readonly vybrana?: boolean;
+  /** Karta je prepínač (výber do šenku): aria-pressed; undefined = obyčajné tlačidlo. */
+  readonly stlacena?: boolean | undefined;
+  /** Klik nič neurobí (plný výber) — aria-disabled, karta je zosivená. */
+  readonly zakazana?: boolean | undefined;
   /** Karta leží voči divákovi nohami hore (zahral ju ten druhý hráč). */
   readonly otocena?: boolean;
   /** Vytlačená strana, ktorou sa karta v línii páruje k lokalite — zvýrazní sa, protiľahlá ostane voľná. */
@@ -160,6 +164,8 @@ export function KartaLico(props: KartaLicoProps) {
       } as CSSProperties}
       onClick={onClick}
       role={onClick !== undefined ? "button" : undefined}
+      aria-pressed={onClick !== undefined ? props.stlacena : undefined}
+      aria-disabled={onClick !== undefined && props.zakazana === true ? true : undefined}
       tabIndex={onClick !== undefined ? 0 : undefined}
       onKeyDown={onClick !== undefined ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}
     >

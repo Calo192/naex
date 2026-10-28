@@ -492,8 +492,11 @@
 }
 
 .ucet-bitky-spaky {
-  list-style: none;
-  margin-top: 4px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
 }
 
 /* ---- koniec hry (v6): špaky a nástenka ---- */
@@ -606,6 +609,94 @@
     0 10px 22px color-mix(in srgb, var(--pozadie) 55%, transparent);
   animation: listok-polozeny 0.3s ease-out both;
   animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+/* Mierka nástenky na stole (Michal 2026-10-28: „zväčšiť, a to o dosť“): šírku karty
+   (--nk-sirka), mierku písma (--nk) a lístkov v rade (--nk-stlpcov) ráta rozmerNastenky
+   podľa plochy plste. Lístky majú šírku karty, aby stĺpce stáli rovno a zalomili sa do radov. */
+.vrstva-nastenky .nastenka {
+  max-width: calc(var(--nk-stlpcov, 12) * (var(--nk-sirka, 90px) + 14px) + (var(--nk-stlpcov, 12) - 1) * 14px + 24px);
+  gap: 14px;
+}
+
+.vrstva-nastenky .nastenka-listok {
+  width: calc(var(--nk-sirka, 90px) + 14px);
+  max-width: none;
+  gap: calc(4px * var(--nk, 1));
+  padding: calc(10px * var(--nk, 1)) 7px 6px;
+}
+
+.vrstva-nastenky .nastenka-listok.na-vyber {
+  width: auto;
+  padding: 0;
+}
+
+/* Nízka plsť: lístky bez kariet majú šírku podľa obsahu ako predtým. */
+.vrstva-nastenky.bez-kariet .nastenka-listok {
+  width: auto;
+  max-width: 132px;
+}
+
+.vrstva-nastenky .nastenka-nazov {
+  font-size: calc(0.78rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-pozn,
+.vrstva-nastenky .nastenka-uctenka,
+.vrstva-nastenky .nastenka-finale small {
+  font-size: calc(0.7rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-uctenka .nastenka-rozpis {
+  font-size: calc(0.66rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-zisk {
+  font-size: calc(1.1rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-finale b {
+  font-size: calc(1.15rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-vitaz {
+  min-height: calc(36px * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-otaznik {
+  min-width: calc(34px * var(--nk, 1));
+  height: calc(34px * var(--nk, 1));
+  font-size: calc(0.8rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-sekera {
+  font-size: calc(0.8rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-popolnik {
+  padding: calc(6px * var(--nk, 1)) calc(12px * var(--nk, 1));
+  column-gap: calc(8px * var(--nk, 1));
+}
+
+.vrstva-nastenky .np-meno {
+  font-size: calc(0.82rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .np-rozpis {
+  font-size: calc(0.72rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-popolnik .velke-cislo {
+  font-size: calc(1.9rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-popolnik .pocet-spakov .ikona-spaku {
+  width: calc(52px * var(--nk, 1));
+  height: calc(26px * var(--nk, 1));
+}
+
+.vrstva-nastenky .nastenka-paticka {
+  font-size: calc(0.82rem * var(--nk, 1));
 }
 
 /* Pripináčik patrí ku korku — na stole nie je. */

@@ -57,7 +57,6 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "priznanie", pojem: "Priznanie", popis: "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka." },
   { id: "sekera", pojem: "Na sekeru", popis: "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú." },
   { id: "senok", pojem: "Šenok", popis: "Ponuka kariet lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3." },
-  { id: "smetisko", pojem: "Smetisko", popis: "Polovica kariet zo stavby šenku, ktorú dáš naspodok balíčka; súper ju nevidí." },
   { id: "spoj", pojem: "Spoj", popis: "Miesto, kde sa dotknú hrany dvoch kariet alebo karty a lokality." },
   { id: "starsi", pojem: "Starší", popis: "Vážená osoba dediny so stupnicou strachu (7 polí); desíš ho posúvaním markera k súperovi." },
   { id: "strach", pojem: "Strach", popis: "Úroveň 1 až 3, na ktorej sa ťa starší bojí; po bitke, ktorú vyhráš (pri sekere aj tak), ti zaplatí každú zónu, ktorú ti ešte nezaplatil: žltá 1, oranžová 2, červená 3." },

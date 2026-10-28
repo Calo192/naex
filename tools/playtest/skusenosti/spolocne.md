@@ -53,7 +53,7 @@ vo feedback.md (návrh označí ako spoločný).
 - partie: 20261027-105422-1, 20261027-105422-2, 20261027-131033-2, 20261027-131033-3, 20261027-161907-1, 20261027-161907-2, 20261027-161907-3
 - prečo: PRAVIDLA §7, §8 (nová Cirhóza ide do odhadzovacieho balíčka), §14 (−5). 105422-1 finále: Autobusár + Silná + NA EX Evy dali Ferovi 3 Cirhózy, 2 ostali nepriznané (−10); 105422-2 K2: Vilo podľa náhľadu nedal NA EX na Veterána pri párovaní s Dievčinou (pečeň 3) a Cirhózu nedostal. 131033: P3 K4 Evino Hasičovo Posilnenie zdvojilo Vilovej Smetiarke Cigaretu (+4 cig.), K5 Posilnenie dalo Traktoristke Pečeň ×2 a odomklo NA EX Petelica ×2 (+6); P2 Šimon dal Silnú vedľa Svokry a mal zadĺženie +3 za Pitku. 161907: P1 K4 Evin NA EX na Janov Kočovník (neaktívna Pečeň + Dlh) dal 2 Cirhózy + 2 Dlh, K5 Jano to isté Evinmu Pijanovi; P2 K3 Fero pečeň 7/5 po NA EX na Záhradkára; P3 Vilo Pijana s neaktívnou pečeňou do línie nedal.
 
-### spolocne-6 · Keď beriem zo šenku prvý (útočník), dám do šenku svoje najlepšie karty a hneď ich vezmem; keď berie prvý súper, silné karty zakopem na Smetisko, lebo ponuka v šenku je dar tomu, kto berie prvý.
+### spolocne-6 · Keď beriem zo šenku prvý (útočník), dám do šenku svoje najlepšie karty a hneď ich vezmem; keď berie prvý súper, silné karty zakopem naspodok balíčka, lebo ponuka v šenku je dar tomu, kto berie prvý.
 - stav: neoverená
 - pravidlá: v7
 - potvrdenia: 9
