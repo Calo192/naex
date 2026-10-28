@@ -72,6 +72,16 @@ describe("efekty polohy v línii (v7)", () => {
     expect(evaluateLine(data, l).sums[0]).toEqual({ Pecka: 2 });
   });
 
+  it("Praudovravec: posilní aj súperovu akciu na spoji (§16, návrh #41 A)", () => {
+    // Súperova karta je otočená (playedBy 1): jej ľavá strana [_, _, Pecka, _] leží proti Praudovravcovi ako [_, Pecka, _, _].
+    const PECKA_OTOCENA: Layout4 = [null, null, "Pecka", null];
+    const data = syntheticData([makeDef("praudovravec", [null, "Odpor", null, null], EMPTY), makeDef("b", PECKA_OTOCENA, EMPTY)]);
+    const a = instanceFor(data, "praudovravec", [null, "Odpor", null, null], EMPTY);
+    const b = instanceFor(data, "b", PECKA_OTOCENA, EMPTY);
+    const sums = evaluateLine(data, line(own(a), { card: b, playedBy: 1 })).sums;
+    expect(sums[1]).toEqual({ Pecka: 2 });
+  });
+
 
   it("Kôň: Nástroj s ním tvorí spoj", () => {
     const kon = makeDef("kon", [null, "Rana", null, null], EMPTY, { tags: ["Zviera"] });

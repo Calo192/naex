@@ -25,6 +25,16 @@
       ]
     },
     {
+      "id": "1.koniec.vydesenie-finale",
+      "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
+      "pravidlo": "Vydesenie ohlásené v poslednej bitke o lokalitu sa skontroluje na konci finále ešte pred konečnými špakmi a môže vyhrať hru; ohlásené vo finále nerozhoduje.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/dobiehanie.test.ts › finále: vydesenie ohlásené v poslednej bitke o lokalitu vyhrá na konci finále pred špakmi; ohlásené vo finále nie (§1, §14b, návrh #41 A)"
+      ],
+      "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
+    },
+    {
       "id": "1.koniec.exekucia",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
       "pravidlo": "Exekúcia prehru nespôsobí (v6): kto má priznané Dlhy na prahu, tomu zhorí polovica Dlhov a rovnako špakov.",
@@ -430,6 +440,16 @@
         "packages/core/test/naex-posilnenie.test.ts › hrana lokality ostáva aktívna, ale bez ×2 od zrušeného Posilnenia",
         "packages/core/test/naex-posilnenie.test.ts › Veterán s Posilnením: NA EX ho nezruší, partner má ×2 ďalej"
       ]
+    },
+    {
+      "id": "7.naex.partner-zrusenej",
+      "paragraf": "7. Pitka › NA EX",
+      "pravidlo": "Partner akcie, ktorú NA EX zrušil (akejkoľvek), ostáva na spoji aktívny ×1.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-posilnenie.test.ts › NA EX zruší Pecku partnera, jeho Rana na spoji ostáva aktívna ×1"
+      ],
+      "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
     },
     {
       "id": "7.odpoved",
@@ -1011,12 +1031,12 @@
     {
       "id": "11.exekutor.robota",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Robota v kroku exekúcie (po poškodení) pred Exekútorom spáli 1 priznaný Dlh za aktívnu Robotu — Povera v poškodení ešte ráta s Dlhmi.",
+      "pravidlo": "Robota v kroku exekúcie (po poškodení) pred Exekútorom spáli 1 priznaný Dlh za aktívnu Robotu; po hráčoch — obranca Robota a Exekútor, potom útočník.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-bitka.test.ts › §11: Robota spáli priznaný Dlh ešte pred exekúciou — 6 Dlhov, Robota 1, exekúcia 3 (polovica z 5 nahor)"
       ],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Poradie po hráčoch dopísané v §11 (Návrh #41 A (rozhodca, Michal 2026-10-28).); samostatný test poradia nie je, kód exekucieBitky."
     },
     {
       "id": "11.exekutor.nepali",
@@ -1597,10 +1617,24 @@
     {
       "id": "16.karta.pes",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Pes: +1 tuhé za každý pár akcií na spoji so súperovou kartou (aj zrušený), len na strane majiteľa; smie sa naň podstrčiť.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "pravidlo": "Pes: jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; platí aj podstrčený (§13 a §16 sa zhodujú).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)",
+        "packages/core/test/v7-efekty.test.ts › podstrčený Pes platí: na súperovej strane vedľa súperovej karty sa jeho aktívne akcie rátajú dvakrát (§13, návrh #41 A)"
+      ],
+      "poznamka": "§13 hovoril „Podstrčený Pes nedá nič“ — opravené. Návrh #41 A (rozhodca, Michal 2026-10-28)."
+    },
+    {
+      "id": "16.karta.kapybara",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Kapybara: Nástup povinný — marker jedného staršieho o 1 pole k stredu, aj keď sú mimo stredu len markery na polovici majiteľa.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Starosta (karta zo šenku), Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)",
+        "packages/core/test/v7-efekty.test.ts › Kapybara je povinná: aj keď je mimo stredu len marker na polovici majiteľa, iná voľba nie je (§16, návrh #41 A)"
+      ],
+      "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
     },
     {
       "id": "16.karta.pijan",
@@ -1613,11 +1647,13 @@
     {
       "id": "16.karta.policajtka-praudovravec",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Policajtka (2026-10-26): kto dal v Pitke viac NA EX ako jej majiteľ (rátajú sa všetky, aj placatka), dostane pri odkrytí jeden Dlh, hneď priznaný; pri rovnosti a na Kostole nič; vyložená až ako odpoveď sa v tej Pitke neráta, skrytá Záverečná sa vyhodnotí pri otočení; Pohoršenia neruší. Praudovravec umlčí Autority v súperovej partii.",
+      "pravidlo": "Policajtka (2026-10-26): kto dal v Pitke viac NA EX ako jej majiteľ (rátajú sa všetky, aj placatka), dostane pri odkrytí jeden Dlh, hneď priznaný; pri rovnosti a na Kostole nič; vyložená až ako odpoveď sa v tej Pitke neráta, skrytá Záverečná sa vyhodnotí pri otočení; Pohoršenia neruší. Praudovravec umlčí Autority v súperovej partii. Praudovravec: Odpor na jeho spojoch neruší, ale ráta sa ako Posilnenie — zdvojí aj súperovu akciu na spoji.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita)",
-        "packages/core/test/revizia-kariet.test.ts › Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt"
+        "packages/core/test/revizia-kariet.test.ts › Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt",
+        "packages/core/test/v7-pakt.test.ts › Praudovravec: Odpor na jeho spoji neruší, ale posilní",
+        "packages/core/test/v7-pakt.test.ts › Praudovravec: posilní aj súperovu akciu na spoji (§16, návrh #41 A)"
       ]
     },
     {
@@ -1914,6 +1950,16 @@
       "testy": [
         "packages/core/test/spaky-v6.test.ts › po finále: špaky za karty a za starších; prebytok rozdelí držiteľ, nové zóny sa vyplatia ešte po finále; potom koniec"
       ]
+    },
+    {
+      "id": "14b.finale.bez-abstaku",
+      "paragraf": "14b. Finále",
+      "pravidlo": "Po finále sa Absťák ani karta zaň neudeľujú.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/abstak-nervak.test.ts › v ťahu, ktorý odohrá finále, nepribudne ani neodíde Absťák a nikto si nedoberie kartu"
+      ],
+      "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
     },
     {
       "id": "15.lokalita.kulturny-dom",

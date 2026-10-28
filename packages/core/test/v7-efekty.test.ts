@@ -204,6 +204,40 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
 });
 
 describe("efekty v línii (v7)", () => {
+  it("podstrčený Pes platí: na súperovej strane vedľa súperovej karty sa jeho aktívne akcie rátajú dvakrát (§13, návrh #41 A)", () => {
+    const sucet = (s: GameState): number => {
+      const ev = evaluateLine(data, lineState(s)).cards.get(1)!;
+      return [...ev.left, ...ev.right].reduce((n, x) => n + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
+    };
+    const pocet = (s: GameState): number => {
+      const ev = evaluateLine(data, lineState(s)).cards.get(1)!;
+      return [...ev.left, ...ev.right].filter((x) => x?.stav === "aktivna").length;
+    };
+    let overene = 0;
+    const pv = data.variants.get("pes")!;
+    const zv = data.variants.get("zamocnik")!;
+    for (const [pl, pr] of [...pv.left.map((_, i) => [i, 0] as const), ...pv.right.map((_, i) => [0, i] as const)]) {
+      for (let zl = 0; zl < zv.left.length; zl++) {
+        const pes: CardInstance = { uid: 1, defId: "pes", leftLayout: pl, rightLayout: pr };
+        const zam = (kto: PlayerId): PlacedCard => lezi({ uid: 2, defId: "zamocnik", leftLayout: zl, rightLayout: 0 }, kto);
+        const bez = vPitke("zastavka", [[], [lezi(pes, 0)]]);
+        const cudzi = vPitke("zastavka", [[], [lezi(pes, 0), zam(1)]]);
+        expect(sucet(cudzi) - sucet(bez)).toBe(2 * (pocet(cudzi) - pocet(bez)));
+        if (pocet(cudzi) > pocet(bez)) overene++;
+      }
+    }
+    expect(overene).toBeGreaterThan(0);
+  });
+
+  it("Kapybara je povinná: aj keď je mimo stredu len marker na polovici majiteľa, iná voľba nie je (§16, návrh #41 A)", () => {
+    const kapy = inst("kapybara");
+    const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
+    const starsi = sk.starsi.map((e, i) => (i === 0 ? { ...e, marker: 1 as const } : { ...e, marker: 3 as const }));
+    const pk = apply(data, { ...sk, starsi }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0).state;
+    const volby = legalCommands(data, pk, 0);
+    expect(volby).toEqual([{ type: "kapybara", elderId: starsi[0]!.elderId }]);
+  });
+
   it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)", () => {
     const sucet = (s: GameState, uid: number): number => {
       const ev = evaluateLine(data, lineState(s)).cards.get(uid)!;

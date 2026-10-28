@@ -394,7 +394,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú aktívne.</li>
           <li>
             NA EX na kartu s Posilnením zruší Posilnenie aj ×2, ktoré dávalo partnerovi na spoji — partnerova akcia (aj hrana
-            lokality) ostáva aktívna, ale len ×1.
+            lokality) ostáva aktívna, ale len ×1. Rovnako pri každej zrušenej akcii: jej partner na spoji ostáva aktívny ×1.
           </li>
           <li>Veterán je výnimka: NA EX mu aktívne akcie zdvojí (nezruší) a neaktívne nechá.</li>
           <li>Súperovu Záverečnú (lícom dole) smie dostať NA EX vždy.</li>
@@ -592,7 +592,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             do odhadzovacieho balíčka.
           </li>
           <li>
-            <strong>Absťák</strong> — porovnanie nerestí kola s minulým; potom sa skontroluje vydesenie.
+            <strong>Absťák</strong> — porovnanie nerestí oboch v tomto kole (po finále už nie); potom sa skontroluje vydesenie.
           </li>
           <li>
             <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 1 kartu.
@@ -679,7 +679,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             <P k="vydesenie">Vydesenie:</P> kto má na krajnej zóne polovicu starších v hre a udrží ich do konca nasledujúceho kola,
-            vyhrá. Keď ich čo i len na chvíľu klesne pod polovicu (napr. patronátom), hrozba padá a ráta sa odznova.
+            vyhrá. Keď ich čo i len na chvíľu klesne pod polovicu (napr. patronátom), hrozba padá a ráta sa odznova. Vydesenie
+            ohlásené v poslednej bitke o lokalitu rozhodne na konci finále, ešte pred konečnými špakmi; ohlásené vo finále už nie.
           </li>
         </ul>
         <p className="tlmene">
@@ -736,7 +737,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kliatby-exekutor">Exekútor a Robota</H3>
         <ol>
           <li>
-            <strong>Robota:</strong> po poškodení, tesne pred exekúciou, spáliš za každú aktívnu Robotu 1 priznaný Dlh.
+            <strong>Robota:</strong> po poškodení, tesne pred exekúciou, spáliš za každú aktívnu Robotu 1 priznaný Dlh. Ide sa po
+            hráčoch: obranca Robota a Exekútor, potom útočník.
           </li>
           <li>
             Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong> po poškodení a špakoch za bitku (Povery tvoje Dlhy ešte spočítajú), kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}

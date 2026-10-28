@@ -5063,7 +5063,10 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   // Log uvádza počty — playtest 20261019-055945: hráči nevedeli, odkiaľ sa Absťák berie.
   const neresti: [number, number] = [s.hraci[0].nerestiTotoKolo, s.hraci[1].nerestiTotoKolo];
   events.push({ type: "log", text: `Neresti v kole: hráč 1 ${neresti[0]}, hráč 2 ${neresti[1]}.` });
-  for (const p of [0, 1] as const) {
+  // Po poslednej bitke hry (finále, sada bez finále po poslednej lokalite) Absťák ani
+  // karta zaň už nič neznamenajú — neudeľujú sa (návrh #41 A, Michal 2026-10-28).
+  const poslednaBitka = jeFinale(s) || (s.rozpis === undefined && s.lokalityVHre.length === 0);
+  for (const p of poslednaBitka ? [] : ([0, 1] as const)) {
     const ja = neresti[p];
     const on = neresti[opponentOf(p)];
     if (ja < on) {

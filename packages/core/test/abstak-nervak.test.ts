@@ -67,3 +67,32 @@ describe("§9.2 Nervák: Absťák = Pohoršenie navyše", () => {
     expect(videl).toBeGreaterThan(0);
   });
 });
+
+describe("§14b po finále sa Absťák ani karta zaň neudeľujú (návrh #41 A)", () => {
+  it("v ťahu, ktorý odohrá finále, nepribudne ani neodíde Absťák a nikto si nedoberie kartu", () => {
+    let videl = 0;
+    for (const seed of [2, 5, 8, 11, 14]) {
+      let st: GameState = setupGame(data, seed);
+      let rng = rngSeed(seed ^ 0x41);
+      for (let i = 0; st.koniec === null && i < 20000; i++) {
+        const p = naTahu(st);
+        if (p === null) break;
+        const cmds = legalCommands(data, st, p);
+        const [j, r] = rngInt(rng, cmds.length);
+        rng = r;
+        const res = apply(data, st, cmds[j]!, p);
+        if (res.state.koniec !== null && /finále/.test(res.state.koniec.dovod)) {
+          const texty = res.events.flatMap((e) => (e.type === "log" ? [e.text] : []));
+          expect(texty.some((x) => /získava Absťák|zbavuje sa Absťáku|doberá/.test(x))).toBe(false);
+          for (const q of [0, 1] as const) {
+            const pocet = (s: GameState): number => s.hraci[q].priznane.filter((k) => k.defId === "abstak").length;
+            expect(pocet(res.state)).toBe(pocet(st));
+          }
+          videl++;
+        }
+        st = res.state;
+      }
+    }
+    expect(videl).toBeGreaterThan(0);
+  });
+});

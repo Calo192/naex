@@ -34,6 +34,20 @@ function linia(s: GameData, partner: PlacedCard, posil: PlacedCard): LineEval {
   return evaluateLine(s, { lokalita: null, lokalitaOtocena: false, strany: [[partner, posil], []] });
 }
 
+describe("§7 partner akcie, ktorú NA EX zrušil (návrh #41 A)", () => {
+  it("NA EX zruší Pecku partnera, jeho Rana na spoji ostáva aktívna ×1", () => {
+    const L: Layout4 = ["Rana", null, null, null];
+    const P: Layout4 = ["Pecka", "Cigareta", null, null];
+    const s = syntheticData([makeDef("l", L, EMPTY, { tags: ["Občan"] }), makeDef("p", EMPTY, P, { tags: ["Občan"] })]);
+    const l = instanceFor(s, "l", L, EMPTY);
+    const p = instanceFor(s, "p", EMPTY, P);
+    const sNaex = linia(s, lezi(l, 0), lezi(p, 0, 1));
+    expect(sNaex.sums[0].Pecka).toBeUndefined();
+    expect(sNaex.sums[0].Rana).toBe(1);
+    expect(sNaex.cards.get(l.uid)?.left[0]).toMatchObject({ stav: "aktivna", nasobok: 1 });
+  });
+});
+
 describe("§7 NA EX na kartu s Posilnením (O1, Michal 2026-10-24)", () => {
   it("zruší aj ×2 partnera na spoji — jeho akcia ostáva aktívna ×1", () => {
     const { sada: s, posil, partner } = sada();

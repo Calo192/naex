@@ -1523,3 +1523,11 @@ zmerané v docs/playtesty/abstak-meranie-20261028.html. Staré znenia doslovne:
 > aspoň 1 špak**. Absťáky sa rátajú ako pri remíze.
 
 > | Absťák | keď hráč v kole skonzumuje **menej nerestí** než v predošlom (§8) — **rovno priznaný** | znižuje **tvoje** tuhé poškodenie o 1 za kus; víťazovi s viac Absťákmi uberie špaky za bitku a remízu v bitke prehráva, kto má viac Absťákov (§9.4) |
+
+## v8 — spresnené znenie (rozhodca, návrh #41 A, Michal 2026-10-28)
+
+Hra sa nemení, okrem kozmetiky po finále (Absťák a karta zaň sa už neudeľujú).
+Staré znenie §13: „Podstrčený Pes nedá nič (§16)“ — odporovalo §16 („Platí aj
+podstrčený“). Doplnené: vydesenie vo finále (§1, §14b), partner zrušenej akcie
+(§7), poradie Robota → Exekútor po hráčoch (§11), Kapybara povinná a Praudovravec
+zdvojí aj súperovu akciu (§16).

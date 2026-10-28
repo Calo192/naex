@@ -151,7 +151,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karty, ktorú spáruje, mu výpis ani odhad bitky neukáže. Otočí sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
 - **Nástup s voľbou (v7):** Živnostník — za neho hneď smieš priložiť Nástroj z ruky mimo limitu
   (`{"type":"nastroj","uid":…}`, nič = `"uid":null`; aj pri otočení Záverečnej); Starosta — karta zo
-  šenku (`{"type":"senok","uid":…}`); Kapybara — marker jedného staršieho o 1 pole k stredu
+  šenku (`{"type":"senok","uid":…}`); Kapybara — marker jedného staršieho o 1 pole k stredu (povinne)
   (`{"type":"kapybara","elderId":…}`). Dohadzovačka (Nástup, 2026-10-28): keď ju priložíš k Občanovi či Starešinovi, z druhej strany
   lokality sa najvzdialenejší Občan alebo Starešina opačného pohlavia ako jej sused presunie za ňu
   (na koniec jej strany; povinné, karta ostáva majiteľovi, Konflikt sa nespustí).
@@ -227,7 +227,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktoristka: s prevahou v jej kraji Pecka navyše,
   inak Dlh; Podvodník pri prehre presunie tvoj priznaný Dlh súperovi. **Noviny** (Dedičstvo: Prehra, v7):
   keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za bitku dostaneš ty.
-- **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2; Mäsiar —
+- **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2 (platí aj podstrčený); Mäsiar —
   efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky idú z hry všetci Občania a Zvieratá
   v jeho okolí; Puška / Vidly (Dedičstvo) — tvoje Petelice / Rany z vyložených akcií o 1 poškodenie viac (Rany navyše z efektov nie); Pasca
   (Dedičstvo) — keď súper v kole priložil kartu k tvojej, Pecka navyše; Krabička (Dedičstvo) — za každé
@@ -265,5 +265,6 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   priznaných Dlhov**; inak **sekera** — špaky kola (karty v línii) vezme víťaz najbližšej bitky,
   vo finále prepadnú; za starších dostanú špaky obaja; útočník ostáva, patronát = prehra. Celkové určuje len prebytok.
   **Ohlásené vydesenie:** polovicu starších treba udržať do konca ďalšieho kola; keď
-  klesne pod polovicu (aj patronátom), padá hneď a nové doplnenie ohlasuje odznova.
+  klesne pod polovicu (aj patronátom), padá hneď a nové doplnenie ohlasuje odznova. Ohlásené
+  v poslednej bitke o lokalitu rozhodne na konci finále (pred konečnými špakmi); ohlásené vo finále nie.
   **Cigarety za prebytok** dostane ten, proti komu sa prebytok delil.

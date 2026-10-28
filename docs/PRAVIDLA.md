@@ -82,6 +82,10 @@ Vydesenie sa kontroluje na konci kola (§4) a po každom posune markera:
 keď hráčovi klesne počet vydesených starších pod polovicu (patronát, Pohoršenie,
 prebytok), ohlásenie **padá hneď** — ak ich v tom istom kole znova doplní,
 ohlasuje odznova a musí ich udržať do konca nasledujúceho kola (Michal 2026-10-26).
+**Vo finále:** vydesenie ohlásené v poslednej bitke o lokalitu sa skontroluje
+na konci finále **ešte pred konečnými špakmi** (§14b) — keď ho hráč udržal,
+vyhráva hru. Vydesenie ohlásené až vo finále už nič nerozhoduje (ďalšie kolo
+nepríde).
 Malý balíček prehru nespôsobí:
 keď sa doberací aj odhadzovací balíček minú, hráč len nemá čo ťahať (a fajčiť
 sa vtedy nedá, §7).
@@ -441,6 +445,8 @@ kým sa NA EX neodkryjú.
   partnerovi** na spoji: partnerova akcia (aj akcia hrany lokality) ostáva
   aktívna, ale už len ×1. Akcia, ktorú karta zrušila Odporom, ostáva zrušená.
   Veteránovi NA EX Posilnenie nezruší, takže partner má ×2 ďalej.
+- **Partner zrušenej akcie** na spoji (akcie, ktorú NA EX zrušil — akejkoľvek,
+  nielen Posilnenia) ostáva **aktívny ×1**: spoj zaniká len pre zrušenú akciu.
 - NA EX leží na karte až do bitky — jej akcie sa vyhodnotia v **každej** Pitke
   kola.
 - Poldeci **ostáva hráča, ktorý NA EX dal**: do limitu sa neráta (§6) a pri
@@ -1048,7 +1054,8 @@ Kliatby a špaky (v6): nepriznaná Cirhóza stojí na konci 3 špaky (v8), Dlh b
 ### Exekútor
 
 Krok 4c bitky (§9), aj vo finále — **po poškodení, výsledku a špakoch za bitku
-a za starších, pred prebytkom** (Michal 2026-10-28); obranca, potom útočník.
+a za starších, pred prebytkom** (Michal 2026-10-28); **vždy po hráčoch: obranca
+Robota a Exekútor, potom útočník Robota a Exekútor**.
 Povery v poškodení, remíza na Dlhy, Herňa a Noviny teda rátajú priznané Dlhy
 **pred** exekúciou. Najprv **Robota**: za každú aktívnu Robotu hráč **spáli**
 1 priznaný Dlh — v tomto kroku, nie pred poškodením, aby Povere nezobrala cieľ;
@@ -1178,7 +1185,8 @@ v tvojej partii a míňa tvoj limit (§6). Jedna podstrčená karta neukradne ak
 hrany lokality, ale tvorí s nimi spoj: ak leží pri lokalite, určuje, ktoré
 akcie hrany sa aktivujú, a dostane ich hráč s prevahou v kraji (§6).
 Podstrčený Kočovník je výnimka z „akcie bodujú pre teba“ — jeho akcie dostane
-hráč s prevahou v jeho kraji (§16). Podstrčený Pes nedá nič (§16) a na Moste
+hráč s prevahou v jeho kraji (§16). **Podstrčený Pes platí** — jeho aktívne akcie
+na spoji so súperovou kartou sa zdvoja aj na súperovej strane (§16); na Moste
 sa na súperovu stranu nevykladá (§15).
 
 ---
@@ -1237,6 +1245,10 @@ jej hrany, efekt, kraje aj prevaha (Kočovník, Dvojčatá ako inde).
   bitke len víťazovi finále, pri sekere obom (§14). Potom **prebytok** rozdelí jeho
   držiteľ medzi starších (§9.4) a strach za nové zóny, ktoré tým vzniknú, sa
   vyplatí hneď rovnako — víťazovi finále, pri sekere obom.
+- Potom sa skontroluje **vydesenie ohlásené v poslednej bitke o lokalitu** (§1):
+  keď ho hráč cez finále udržal, vyhráva ešte pred konečnými špakmi. Vydesenie
+  ohlásené vo finále už nerozhoduje. **Absťák** ani kartu zaň po finále nikto
+  nedostane (§8).
 - Potom sa vykúpia zvyšné zdroje (plný poldeci 1 špak, každých celých
   5 cigariet 1 špak, §14), odpočíta sa nepriznaná Cirhóza (−3 za kus) a vyhrá
   hráč s viac špakmi.
@@ -1335,7 +1347,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Pes | Furt: jeho aktívne akcie na spoji so súperovou kartou (strana Psa k tej karte) sa rátajú dvakrát; násobky sa násobia (§7). Platí aj podstrčený či podstrčením vzniknutý spoj. |
 | Mäsiar | Furt (Michal 2026-10-28): **efekty Zvierat** v jeho okolí (oboch hráčov) neplatia, kým s ním susedia; ich **akcie sa rátajú normálne**. Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Bitka, aj jeho koniec bitky), Kohúta (Pitka) a Recidivistu (Prehra — rozhoduje okolie v chvíli, keď sa efekt spúšťa). Kapybara priložená k Mäsiarovi sa nespustí; Nástup, ktorý už prebehol, sa nevracia. Mäsiar lícom dole (Záverečná) ešte nič neumlčí. Do 2026-10-28 Mäsiar rušil akcie Zvierat. |
 | Krokodíl | Bitka: na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí (oboch hráčov); Starešinovia a Nástroje nie. Ich akcie v bitke ešte platia. |
-| Kapybara | Nástup: marker jedného staršieho (podľa voľby majiteľa) sa posunie o 1 pole k stredu. |
+| Kapybara | Nástup: marker jedného staršieho (podľa voľby majiteľa) sa posunie o 1 pole k stredu. **Povinný** — keď je aspoň jeden marker mimo stredu, posunie sa, aj keď sú to len markery na polovici majiteľa. |
 | Kohút | Pitka: posledné slovo pri odpovediach na NA EX (§7) má jeho majiteľ aj ako obranca — súper odpovedá prvý. Keď ho majú obaja, platí bežné poradie. |
 | Pijan | Bitka: za každé NA EX, ktoré majiteľ v tomto kole dal (poldeci ešte leží na karte), udelí súperovi Ranu navyše — za každého Pijana. |
 | Milujúca manželka | Pitka: tvoje poškodenie pečene v Pitke je o 1 menšie (najprv z akcií Poškodenie pečene, potom z Poldeci); latku Absťáku nemení, nie je Kliatba. |
@@ -1354,7 +1366,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Šofér | Bitka: ak si v tomto kole nedal NA EX, udelíš súperovi Pecku navyše (+2 tuhé), za každého Šoféra. |
 | Traktoristka | Bitka: s prevahou v kraji, kde leží, Pecka navyše; bez nej dostaneš na začiatku bitky Dlh. |
 | Podvodník | Prehra: jeden tvoj priznaný Dlh prejde medzi súperove priznané (za každého Podvodníka). |
-| Praudovravec | Furt: Odpor na jeho spojoch neruší, ale ráta sa ako Posilnenie. |
+| Praudovravec | Furt: Odpor na jeho spojoch neruší, ale ráta sa ako Posilnenie — zdvojí partnerovu akciu na spoji (§6), aj keď je to súperova akcia. |
 | Kočovník | Furt: všetky jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (§6). |
 | Dvojčatá | Furt: do prevahy sa rátajú za dvoch — aj pre bonus Ihriska (v8). Lesná cesta ráta len Zvieratá. |
 | Silná nezávislá žena | Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát. |
