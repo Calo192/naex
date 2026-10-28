@@ -3,6 +3,7 @@
 
 import type { KoloKroniky, StatistikyHraca, UcetSpakov } from "@naex/core";
 import type { BodyTeraz } from "../../hra/bodyPodmienok.tsx";
+import type { StavLigy } from "../../hra/ligy.ts";
 import type { VitrinaApi } from "../../achievementy/data.ts";
 import type { ProfilHraca } from "../Statistiky.tsx";
 
@@ -64,6 +65,8 @@ export type ProfilApi = ProfilHraca & {
   readonly achievementy?: VitrinaApi | null;
   /** Len vo vlastnom profile: hviezdy (★) achievementov a koľko treba na ďalší rank; null bez achievementov. */
   readonly postupRanku?: PostupRanku | null;
+  /** Ligy hráča (Michal 2026-10-28): čo má odomknuté a čo mu chýba — vlastný aj cudzí profil. */
+  readonly ligy?: readonly StavLigy[];
 };
 
 export interface PostupRanku {

@@ -7,9 +7,9 @@
 // * admin cesty overujú rolu na serveri pri každej požiadavke.
 
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { DlzkaHry, Podmienka } from "@naex/core";
-import { ALL_PODMIENKY, dostupneDlzky, prazdneStatistiky } from "@naex/core";
-import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
+import type { DlzkaHry } from "@naex/core";
+import { dostupneDlzky, prazdneStatistiky } from "@naex/core";
+import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, Nastavenia } from "@naex/tvorba";
 import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
@@ -693,7 +693,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const suhrnSkryty = ciel.skrytySuhrn;
       if (cudzi && suhrnSkryty) {
         // Skrytý súhrn: ani staré súčty štatistík (pole statistiky) ani vitrínu achievementov cudziemu nepošleme.
-        return ok({ ...profil, statistiky: prazdneStatistiky(), casSpolu: 0, suhrnSkryty, suhrn: null, achievementy: null });
+        return ok({ ...profil, statistiky: prazdneStatistiky(), casSpolu: 0, suhrnSkryty, suhrn: null, achievementy: null, ligy: ctx.ligy.stav(ciel) });
       }
       // Hviezdy a cesta k ďalšiemu ranku len vo vlastnom profile (Michal 2026-10-25).
       const h = ctx.ucty.hviezdy(id);
@@ -701,7 +701,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         pohlad === "vlastny" && h.spolu > 0
           ? { hviezdy: h.hviezdy, spolu: h.spolu, dalsi: jeRankHraca(ciel.rola) ? dalsiRank(ctx.prava.nastavenie().postup, ciel.rola, h) : null }
           : null;
-      return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi), achievementy: ctx.achievementy?.vitrina(id) ?? null, postupRanku });
+      return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi), achievementy: ctx.achievementy?.vitrina(id) ?? null, postupRanku, ligy: ctx.ligy.stav(ciel) });
     }
 
     // Vlastná vitrína achievementov (Michal 2026-10-23); cudzie sú v GET /hraci/:id.
@@ -876,25 +876,6 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ ok: true });
     }
 
-    if (metoda === "PUT" && casti[2] === "ikony-bodovania" && casti.length === 4) {
-      if (!ID_RE.test(id)) throw new ChybaVstupu("Neplatné id.");
-      const b = await citajJson(req);
-      const podmienka = b.podmienka === null || b.podmienka === undefined ? null : str(b.podmienka, 20, "Význam");
-      if (podmienka !== null && !(ALL_PODMIENKY as readonly string[]).includes(podmienka)) throw new ChybaVstupu("Neznámy význam ikony.");
-      const ikona: IkonaBodovania = {
-        id,
-        nazov: str(b.nazov, 40, "Názov").trim(),
-        media: mediaId(b.media, "Ikona"),
-        podmienka: podmienka as Podmienka | null,
-      };
-      ctx.obsah.ikonyBodovania.uloz(id, ikona);
-      return ok(ikona);
-    }
-    if (metoda === "DELETE" && casti[2] === "ikony-bodovania" && casti.length === 4) {
-      ctx.obsah.ikonyBodovania.zmaz(id);
-      return ok({ ok: true });
-    }
-
     if (sub === "POST /media") {
       const druh = (query.get("druh") ?? "karta") as DruhMedia;
       if (!["karta", "ikona", "kniznica", "pozadie"].includes(druh)) throw new ChybaVstupu("Neznámy druh súboru.");
@@ -1028,7 +1009,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ ...n, prava: PRAVA, popis: POPIS_PRAVA, ranky: RANKY_HRACOV, hviezdySpolu: spolu, prahyHviezd: prahyRankov(n.postup, spolu) });
     }
     // Ligy (Michal 2026-10-28): čo odomyká ktorú ligu, prepínač „všetci smú všetko“.
-    if (sub === "GET /ligy") return ok(ctx.ligy.nastavenie());
+    // K nastaveniu aj achievementy na výber (null = vypnuté).
+    if (sub === "GET /ligy") return ok({ ...ctx.ligy.nastavenie(), achievementy: ctx.ligy.ponukaAchievementov() });
     if (sub === "PUT /ligy") return ok(ctx.ligy.uloz(ja2, await citajJson(req)));
     if (sub === "PUT /prava") {
       const nove = ctx.prava.uloz(ja2, await citajJson(req));

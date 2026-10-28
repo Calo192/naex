@@ -28,6 +28,8 @@ import {
   type Vysledok,
 } from "./typy.ts";
 import { PoslednePodtacky, VitrinaHraca } from "../../achievementy/VitrinaHraca.tsx";
+import { DLZKY_HRY, NAZOV_DLZKY } from "@naex/core";
+import { stavLigyVProfile, type StavLigy } from "../../hra/ligy.ts";
 import "./profil.css";
 
 type Zalozka = "prehlad" | "suhrn" | "partie" | "achievementy";
@@ -213,6 +215,43 @@ function BilanciaRiadok({ b, nazov }: { readonly b: Bilancia; readonly nazov: st
       </span>
       <BilanciaPruh vyhry={b.vyhry} remizy={b.remizy} prehry={b.prehry} />
     </div>
+  );
+}
+
+/** Ligy hráča (Michal 2026-10-28): stav každej, výhry proti ľuďom v nej a čo chýba do odomknutia. */
+function Ligy({ ligy, vlastny }: { readonly ligy: readonly StavLigy[]; readonly vlastny: boolean }) {
+  return (
+    <section className="panel profil-karta">
+      <header className="profil-karta-hlava">
+        <h2>Ligy</h2>
+        <span className="tlmene">výhry proti ľuďom, s počítačom sa nerátajú</span>
+      </header>
+      <ul className="profil-ligy">
+        {ligy.map((l) => {
+          const { stav, detail } = stavLigyVProfile(l);
+          return (
+            <li key={l.liga} className={`profil-liga profil-liga-${l.pristup ?? (l.smie ? "odomknuta" : "zamknuta")}`}>
+              <div className="profil-liga-hlava">
+                <strong>{NAZOV_DLZKY[l.liga]}</strong>
+                <span className="tlmene">
+                  {DLZKY_HRY[l.liga]} {tvar(DLZKY_HRY[l.liga], "lokalita", "lokality", "lokalít")}
+                </span>
+                <span className="odznak">{stav}</span>
+              </div>
+              <div className="tlmene">
+                {l.vyhry ?? 0} {tvar(l.vyhry ?? 0, "výhra", "výhry", "výhier")}
+                {detail !== null && <> · {vlastny ? detail : detail.replace("(máš ", "(má ")}</>}
+              </div>
+              {l.postup !== null && l.pristup !== "odomknuta" && (
+                <span className="profil-liga-pruh" aria-hidden="true">
+                  <span style={{ width: `${Math.min(100, (100 * l.postup.ma) / Math.max(1, l.postup.treba))}%` }} />
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
@@ -417,6 +456,7 @@ export function HracProfil({ id }: { readonly id: number }) {
             <BilanciaRiadok b={profil.bilancia.ludia} nazov="s ľuďmi" />
             <BilanciaRiadok b={profil.bilancia.boti} nazov="s botmi" />
           </section>
+          {profil.ligy !== undefined && <Ligy ligy={profil.ligy} vlastny={vlastny} />}
           {plny && (
             <div className="profil-dva-stlpce">
               <section className="panel profil-karta">
