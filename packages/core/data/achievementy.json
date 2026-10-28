@@ -1102,7 +1102,7 @@
       "id": "maraton",
       "nazov": "Maratón",
       "kategoria": "partie",
-      "popis": "Vyhrané dlhé partie (7 lokalít): spolu {prah}.",
+      "popis": "Vyhrané partie Prvej ligy (7 lokalít): spolu {prah}.",
       "metrika": "vyhra.dlha",
       "rozsah": "kariera",
       "prahy": [
@@ -1574,7 +1574,7 @@
     {
       "id": "vyhra.dlha",
       "typ": "počítadlo",
-      "popis": "výhra v dlhej partii (aj vyhra.kratka, vyhra.stredna)"
+      "popis": "výhra v Prvej lige — dlhej partii (aj vyhra.kratka, vyhra.stredna)"
     },
     {
       "id": "vyhraVydesenim",

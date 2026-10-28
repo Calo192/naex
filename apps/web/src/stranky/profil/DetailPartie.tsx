@@ -3,7 +3,7 @@
 // súperove skryté čísla server neposiela.
 
 import { useEffect, useMemo, useState } from "react";
-import { loadGameData, type PlayerId } from "@naex/core";
+import { NAZOV_DLZKY, loadGameData, type DlzkaHry, type PlayerId } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import { api } from "../../lib/api.ts";
@@ -119,7 +119,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
         <p className="detail-meta tlmene">
           {datum(d.koniec)} · {d.kola.length > 0 ? `${d.kola.length} ${tvar(d.kola.length, "kolo", "kolá", "kôl")} · ` : ""}
           {trvanie(d.trvanie)}
-          {d.dlzka !== null && ` · ${d.dlzka}`}
+          {d.dlzka !== null && ` · ${NAZOV_DLZKY[d.dlzka as DlzkaHry] ?? d.dlzka}`}
           {!d.dohrata && " · nedohraná"}
           {d.verziaPravidiel !== null && ` · pravidlá ${d.verziaPravidiel}`}
           {` · ${d.dovod}`}
