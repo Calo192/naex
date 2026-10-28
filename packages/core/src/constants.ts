@@ -154,7 +154,7 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
  * číslo („v5“) spolu s novým dátumom platnosti.
  */
 // v8 (Michal 2026-10-28): bodovanie kartami v línii, strach za nové zóny, prebytok
-// rozdeľuje porazený, Kultúrny dom „Obaja bodujú“, Cirhóza −3, Exekútor 6, Kmotor presúva Dlhy.
+// rozdeľuje porazený, Kultúrny dom „Obaja bodujú“, Cirhóza −3, Exekútor bez prahu (Záhradkár ho obíde), Kmotor presúva Dlhy.
 export const VERZIA_PRAVIDIEL = "v8";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-10-28";

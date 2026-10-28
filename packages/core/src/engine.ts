@@ -893,7 +893,7 @@ function pridajKliatbu(s: MutState, data: GameData, p: PlayerId, defId: string, 
   else hrac(s, p).odhadzovaci.push(karta);
   const text =
     defId === "dlh"
-      ? `Hráč ${p + 1} získava Dlh — hneď sa priznáva (ráta sa k prahu Exekútora).`
+      ? `Hráč ${p + 1} získava Dlh — hneď sa priznáva (v bitke ho páli Exekútor).`
       : defId === "cirhoza"
         ? `Hráč ${p + 1} získava Cirhózu — ide do jeho odhadzovacieho balíčka.`
         : `Hráč ${p + 1} získava kartu Absťák.`;
