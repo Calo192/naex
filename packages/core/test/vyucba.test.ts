@@ -25,6 +25,10 @@ import {
   PAUZA_PRED_TAHOM_MS,
   PAUZA_TICHA_MS,
   cakaNaDalej,
+  castKroku,
+  castiScenara,
+  hlaskaPriChybe,
+  koniecCastiPoKroku,
   pauzaKrokuVyucby,
   pocetPitiek,
   poskodenieBitky,
@@ -51,15 +55,14 @@ import {
 } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
-const scenar = scenarJson as unknown as ScenarVyucby;
-/**
- * 2. a 3. časť (Vymyselník 2026-10-28): kroky čakajú v „pokracovanie“, kým server nevie hranice
- * častí — inak by hráč po 1. časti pokračoval rovno ďalej bez hviezdičky.
- */
-interface CastVyucby { readonly cast: number; readonly nazov: string; readonly od: string; readonly po: string; readonly minuty: number }
-const meta = scenarJson as unknown as { readonly casti: readonly CastVyucby[]; readonly hlaskyChyby: readonly string[]; readonly pokracovanie: ScenarVyucby["kroky"] };
-const pokracovanie = meta.pokracovanie;
-const hlaskyChyby = meta.hlaskyChyby;
+/** Celá výučba: tri časti v jednej partii (roadmapa #105). */
+const celyScenar = scenarJson as unknown as ScenarVyucby;
+const koniecPrvej = celyScenar.kroky.findIndex((k) => k.koniecCasti === 1);
+/** 1. časť ako samostatný scenár — testy 1. časti rátajú s jej koncom uprostred partie. */
+const scenar: ScenarVyucby = { ...celyScenar, casti: (celyScenar.casti ?? []).slice(0, 1), kroky: celyScenar.kroky.slice(0, koniecPrvej + 1) };
+/** 2. a 3. časť (Vymyselník 2026-10-28). */
+const pokracovanie = celyScenar.kroky.slice(koniecPrvej + 1);
+const hlaskyChyby = celyScenar.hlaskyChyby ?? [];
 
 describe("výučba — scenár", () => {
   it("scenár prva-hra prejde v jadre od začiatku do konca (každý krok legálny, na ťahu ten, komu patrí)", () => {
@@ -382,7 +385,8 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
   const body = (s: GameState): readonly number[] => spakyTeraz(viewFor(data, s, 0)).spaky;
 
   it("1. časť: verzia scenára a číslo časti (hviezdička), tri lokality úrovne 1, Farár so scorecardom Exekútor", () => {
-    expect(scenar).toMatchObject({ id: "prva-hra", cast: 1, zverejnena: true });
+    expect(celyScenar).toMatchObject({ id: "prva-hra", zverejnena: true });
+    expect(celyScenar.casti?.[0]).toMatchObject({ cast: 1, od: "i-vitaj", po: "i-dovidenia" });
     expect(scenar.verzia).toMatch(/v7/);
     // v7: úroveň lokality = počet akcií na hrane; prvé kolo sa bije o lokalitu úrovne 1.
     expect(lokalityNaVyber(data, pri("k-ciel")).map((k) => k.defId)).toEqual(["lesna_cesta", "jednota", "cintorin"]);
@@ -606,13 +610,14 @@ describe("výučba — hláška v kroku a v rade (Michal 2026-10-27)", () => {
     expect(castiHlasky("09_Boha")).toBeNull();
     expect(castiHlasky("udiv/a/b")).toBeNull();
     expect(nazovHlasky("09_Boha")).toBe("Boha");
-    const zly: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === 0 ? { ...k, hlaska: "bez-skupiny" } : k)) };
+    const zly: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === 0 ? { ...k, hlaskaChyby: "bez-skupiny" } : k)) };
     expect(overScenar(data, zly)).toMatch(/hláška „bez-skupiny“/);
+    expect(overScenar(data, { ...scenar, hlaskyChyby: ["udiv/ok", "bez-skupiny"] })).toMatch(/Záložná hláška „bez-skupiny“/);
   });
 });
 
 describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez prahu; texty sú návrh)", () => {
-  const cela: ScenarVyucby = { ...scenar, kroky: [...scenar.kroky, ...pokracovanie] };
+  const cela = celyScenar;
   const i = (id: string): number => {
     const n = cela.kroky.findIndex((k) => k.id === id);
     if (n < 0) throw new Error(`Scenár nemá krok ${id}`);
@@ -622,7 +627,6 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez pra
   const po = (id: string): GameState => prehrajVyucbu(data, cela, i(id) + 1);
   const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).tuhe;
   const body = (s: GameState): readonly number[] => s.spaky;
-  type SCastou = { readonly cast?: number; readonly koniecCasti?: number };
 
   it("celá partia (1. + 2. + 3. časť) prejde v jadre od začiatku do konca hry", () => {
     expect(overScenar(data, cela)).toBeNull();
@@ -632,12 +636,13 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez pra
   });
 
   it("časti nadväzujú: každá má začiatok a koniec, idú za sebou a 2. časť začína tam, kde 1. skončila", () => {
-    expect(meta.casti.map((c) => c.cast)).toEqual([1, 2, 3]);
+    const casti = cela.casti ?? [];
+    expect(casti.map((c) => c.cast)).toEqual([1, 2, 3]);
     let predosly = -1;
-    for (const c of meta.casti) {
+    for (const c of casti) {
       expect(i(c.od), c.od).toBe(predosly + 1);
-      expect((cela.kroky[i(c.od)] as SCastou).cast).toBe(c.cast);
-      expect((cela.kroky[i(c.po)] as SCastou).koniecCasti).toBe(c.cast);
+      expect(cela.kroky[i(c.od)]?.cast).toBe(c.cast);
+      expect(cela.kroky[i(c.po)]?.koniecCasti).toBe(c.cast);
       predosly = i(c.po);
     }
     expect(predosly).toBe(cela.kroky.length - 1);
@@ -696,5 +701,72 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez pra
         expect(text, k.id).not.toMatch(/(?<!\p{L})(body|bodov|BODY)(?!\p{L})/u);
       }
     }
+  });
+});
+
+describe("výučba v troch častiach — hranice, hlášky pri chybe, lokalita kola (roadmapa #105)", () => {
+  const index = (id: string): number => celyScenar.kroky.findIndex((k) => k.id === id);
+
+  it("časti s indexmi krokov: 1. časť po i-dovidenia, 2. a 3. nadväzujú; koniec časti po poslednom kroku", () => {
+    const casti = castiScenara(celyScenar);
+    expect(casti.map((c) => [c.cast, c.od, c.po])).toEqual([
+      [1, 0, koniecPrvej],
+      [2, index("i-vitaj2"), index("i-dovidenia2")],
+      [3, index("i-vitaj3"), celyScenar.kroky.length - 1],
+    ]);
+    expect(castKroku(celyScenar, index("k-kseft"))?.cast).toBe(3);
+    expect(castKroku(celyScenar, celyScenar.kroky.length)).toBeNull();
+    expect(koniecCastiPoKroku(celyScenar, index("i-dovidenia2"))).toBe(2);
+    expect(koniecCastiPoKroku(celyScenar, index("i-vitaj2"))).toBeNull();
+    // Scenár bez častí je jedna časť cez všetky kroky (testy, staré scenáre).
+    expect(castiScenara({ id: scenar.id, nazov: scenar.nazov, rozdanie: scenar.rozdanie, kroky: scenar.kroky, cast: 2 })).toEqual([{ cast: 2, nazov: scenar.nazov, minuty: 0, navrh: false, od: 0, po: scenar.kroky.length - 1 }]);
+  });
+
+  it("1. časť sa nezmenila: rozohraný postup podľa indexu ostáva na tom istom kroku", () => {
+    // Uložený vyucba_krok spred delenia na časti je index do 1. časti — jej kroky musia ostať na mieste.
+    expect(celyScenar.kroky.slice(0, 4).map((k) => k.id)).toEqual(["i-vitaj", "i-lokalita", "i-lokality", "i-hrany"]);
+    expect(koniecPrvej).toBe(64);
+    expect(celyScenar.verzia).toBe("cast1-v7-2026-10-27b");
+  });
+
+  it("overScenar stráži hranice častí: medzera, chýbajúci koniec, zlé číslo", () => {
+    expect(overScenar(data, celyScenar)).toBeNull();
+    const casti = celyScenar.casti ?? [];
+    const bezKonca: ScenarVyucby = { ...celyScenar, kroky: celyScenar.kroky.map((k) => (k.id === "i-dovidenia2" ? (Object.fromEntries(Object.entries(k).filter(([x]) => x !== "koniecCasti")) as typeof k) : k)) };
+    expect(overScenar(data, bezKonca)).toMatch(/i-dovidenia2.*nemá koniecCasti/);
+    const medzera: ScenarVyucby = { ...celyScenar, casti: casti.map((c) => (c.cast === 2 ? { ...c, od: "i-kolo2" } : c)) };
+    expect(overScenar(data, medzera)).toMatch(/Časť 2 nenadväzuje/);
+    const neznamy: ScenarVyucby = { ...celyScenar, casti: casti.map((c) => (c.cast === 3 ? { ...c, po: "neexistuje" } : c)) };
+    expect(overScenar(data, neznamy)).toMatch(/Časť 3: krok neexistuje/);
+    const zleCislo: ScenarVyucby = { ...celyScenar, kroky: celyScenar.kroky.map((k) => (k.id === "i-dovidenia" ? { ...k, koniecCasti: 2 } : k)) };
+    expect(overScenar(data, zleCislo)).toMatch(/i-dovidenia.*koniecCasti 2 nesedí/);
+  });
+
+  it("hláška pri chybe: vlastná > kroku > záložná; záložné idú dookola bez opakovania po sebe", () => {
+    const krok = celyScenar.kroky[index("k-ciel2")];
+    expect(krok?.hlaskaChyby).toBeDefined();
+    expect(hlaskaPriChybe(celyScenar, krok, "udiv/vlastna", 0)).toEqual({ hlaska: "udiv/vlastna", zaloha: false });
+    expect(hlaskaPriChybe(celyScenar, krok, null, 0)).toEqual({ hlaska: krok?.hlaskaChyby, zaloha: false });
+    const bez = celyScenar.kroky.find((k) => k.kto === "hrac" && k.hlaskaChyby === undefined);
+    expect(bez).toBeDefined();
+    const zalohy = Array.from({ length: hlaskyChyby.length * 2 }, (_, n) => hlaskaPriChybe(celyScenar, bez, undefined, n));
+    expect(zalohy.every((z) => z.zaloha)).toBe(true);
+    expect(new Set(zalohy.map((z) => z.hlaska))).toEqual(new Set(hlaskyChyby));
+    for (let n = 1; n < zalohy.length; n++) expect(zalohy[n]?.hlaska).not.toBe(zalohy[n - 1]?.hlaska);
+    expect(hlaskaPriChybe({ ...celyScenar, hlaskyChyby: [] }, bez, null, 3)).toEqual({ hlaska: null, zaloha: false });
+  });
+
+  it("Kšeft vily mieri na lokalitu kola cez odkaz ciel:, nie natvrdo uid", () => {
+    const i = index("k-kseft");
+    const prikaz = celyScenar.kroky[i]?.prikaz;
+    expect(prikaz).toMatchObject({ type: "kseft", uid: "ciel:predsedova_vila" });
+    const s = prehrajVyucbu(data, celyScenar, i);
+    const lokalita = s.ciel?.lokalita;
+    expect(lokalita?.defId).toBe("predsedova_vila");
+    expect(uidZOdkazu(s, 0, "ciel:predsedova_vila")).toBe(lokalita?.uid);
+    // Vybratá lokalita medzi lokalitami na výber už nie je — preto zóna ciel.
+    expect(() => uidZOdkazu(s, 0, "lokality:predsedova_vila")).toThrow();
+    expect(uidZOdkazu(prehrajVyucbu(data, celyScenar, 0), 0, "lokality:lesna_cesta")).toBeGreaterThan(0);
+    expect(() => uidZOdkazu(prehrajVyucbu(data, celyScenar, 0), 0, "ciel:lesna_cesta")).toThrow(/v zóne nie je/);
   });
 });

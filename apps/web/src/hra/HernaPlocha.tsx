@@ -2550,6 +2550,8 @@ export function HernaPlocha({
       <button
         type="button"
         className={["rub-zaverecnej", znacka ? "naex-mozny" : "", superoveSkryteNaex.has(z.uid) ? "naex-supera" : "", vybrana ? "vybrana" : ""].join(" ")}
+        // Výučba (2. časť): kľúč „zaverecna“ svieti aj súperovu Záverečnú, nielen pečiatku.
+        data-vyucba="zaverecna"
         style={{ width: sirkaVLinii, height: (sirkaVLinii * 80) / 54 }}
         disabled={klik === undefined}
         onClick={klik}
@@ -6007,7 +6009,8 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
     if (lok.defId === "predsedova_vila" && h.cigarety >= 2) {
       const chraneny = view.patronat[su]?.elderId;
       out.push(
-        <span key="kseftVila" className="pecat pecat-nakup">
+        // Výučba (3. časť) svieti Kšeft vily ako tlacidlo:kseft.
+        <span key="kseftVila" className="pecat pecat-nakup" data-vyucba="tlacidlo:kseft">
           <select value={vila} onChange={(e) => setVila(e.target.value)}>
             <option value="">Vila (2 cig.): marker…</option>
             {view.starsi

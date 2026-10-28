@@ -68,9 +68,9 @@ export interface KrokVyucby {
   readonly kto: "hrac" | "bot" | "info" | "auto" | "otazka";
   /** Ťah bota či auto krok s textom je vykonaný a čaká na „ďalej“ (vyucbaDalej) — U5. */
   readonly vykonany: boolean;
+  /** Časť výučby, do ktorej krok patrí: poradie kroku v nej (od 0) a počet jej krokov. */
+  readonly cast: { readonly cast: number; readonly nazov: string; readonly poradie: number; readonly krokov: number };
   readonly melichar: string;
-  /** Hláška zo soundboardu „skupina/súbor“, ktorá zaznie s bublinou (hlaskyVyucby.ts); null = bez zvuku. */
-  readonly hlaska: string | null;
   /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
@@ -102,10 +102,30 @@ export interface PopisKrokuVyucby {
   readonly uid: number | null;
 }
 
+/** Časť výučby v ponuke po konci predošlej (roadmapa #105). */
+export interface CastVyucbyInfo {
+  readonly cast: number;
+  readonly nazov: string;
+  readonly minuty: number;
+}
+
 export interface StavVyucby {
-  /** null po poslednom kroku. */
+  /** null po poslednom kroku časti. */
   readonly krok: KrokVyucby | null;
+  /** Časť skončila, partia stojí. */
   readonly hotovo: boolean;
+  /** Číslo práve dokončenej časti; null kým beží. */
+  readonly koniecCasti: number | null;
+  /** Ďalšia časť, ktorou sa dá hneď pokračovať (vyucbaPokracuj). */
+  readonly dalsiaCast: CastVyucbyInfo | null;
+  /** Ďalšia časť existuje, ale ešte ju pripravujeme (texty na schválenie). */
+  readonly pripravujeme: CastVyucbyInfo | null;
+}
+
+/** Hláška Melichara pri chybe hráča (zlý ťah, zlá odpoveď); n = poradie, aj rovnaká zaznie znova. */
+export interface HlaskaChybyVyucby {
+  readonly n: number;
+  readonly hlaska: string;
 }
 
 type ServerMsg =
@@ -120,13 +140,15 @@ type ServerMsg =
   /** Hláška majstra Melichara zo soundboardu — server ju posiela obom hráčom. */
   | { type: "melichar"; id: string; seat: 0 | 1; trvanieMs: number }
   /** Výučba „Prvá hra“: aktuálny krok po každej zmene. */
-  | { type: "vyucba"; krok: KrokVyucby | null; hotovo: boolean }
+  | { type: "vyucba"; krok: KrokVyucby | null; hotovo: boolean; koniecCasti?: number | null; dalsiaCast?: CastVyucbyInfo | null; pripravujeme?: CastVyucbyInfo | null }
   /** Achievement práve získaný — server ho posiela LEN tomuto hráčovi. */
   | { type: "achievement"; zisk: ZiskAchievementu }
   /** Na konci partie (aj po návrate do skončenej partie): získané a „chýbalo málo“. */
   | { type: "achievementySuhrn"; suhrn: SuhrnAchievementov }
   /** Zlý ťah vo výučbe: čo chýba a čo je navyše (text príde aj ako error). */
-  | { type: "vyucbaChyba"; chybajuce: readonly PopisKrokuVyucby[]; navyse: readonly PopisKrokuVyucby[] }
+  | { type: "vyucbaChyba"; chybajuce: readonly PopisKrokuVyucby[]; navyse: readonly PopisKrokuVyucby[]; hlaska?: string | null }
+  /** Zlá odpoveď v kvíze vo výučbe: hláška Melichara (Michal 2026-10-28: hlášky len pri chybe). */
+  | { type: "vyucbaHlaska"; hlaska: string }
   /** Rozhodnutie vo výučbe: zlý ťah dostane radu Melichara namiesto chyby. */
   | { type: "vyucbaRada"; text: string; hlaska: string | null }
   | { type: "error"; text: string };
@@ -205,10 +227,14 @@ export interface HraHook {
   /** Odpoveď na kontrolnú otázku (index možnosti) — server si zapíše prvú. */
   vyucbaOdpoved(index: number): void;
   readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
+  /** Posledná hláška pri chybe vo výučbe (zlý ťah, rada, zlá odpoveď kvízu); zaznie raz. */
+  readonly hlaskaChybyVyucby: HlaskaChybyVyucby | null;
   /** Spustí výučbu (server pokračuje od uloženého kroku). */
   zalozVyucbu(): void;
   /** Potvrdí krok výučby bez ťahu (len text Melichara). */
   vyucbaDalej(): void;
+  /** Po konci časti pokračuje ďalšou časťou v tej istej partii. */
+  vyucbaPokracuj(): void;
   /** Nová hra; bot = proti offline protihráčovi (počítač), začína hneď. */
   zaloz(verejna: boolean, dlzka: DlzkaHry, bot?: boolean): void;
   pripoj(code: string): void;
@@ -264,8 +290,15 @@ export function useHra(aktivne: boolean): HraHook {
   const [suhrnAchievementov, setSuhrnAchievementov] = useState<SuhrnAchievementov | null>(null);
   const [chybaVyucby, setChybaVyucby] = useState<HraHook["chybaVyucby"]>(null);
   const [radaVyucby, setRadaVyucby] = useState<RadaVyucby | null>(null);
+  const [hlaskaChybyVyucby, setHlaskaChybyVyucby] = useState<HlaskaChybyVyucby | null>(null);
   // Každá rada nová, aj rovnaká ako predošlá — jej hláška zaznie znova.
   const radaN = useRef(0);
+  const hlaskaN = useRef(0);
+  const ozviChybu = useCallback((hlaska: string | null | undefined) => {
+    if (hlaska === null || hlaska === undefined) return;
+    hlaskaN.current++;
+    setHlaskaChybyVyucby({ n: hlaskaN.current, hlaska });
+  }, []);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -330,7 +363,13 @@ export function useHra(aktivne: boolean): HraHook {
           setMelichar((h) => ({ n: (h?.n ?? 0) + 1, id: msg.id, seat: msg.seat, trvanieMs: msg.trvanieMs }));
           break;
         case "vyucba":
-          setVyucba({ krok: msg.krok, hotovo: msg.hotovo });
+          setVyucba({
+            krok: msg.krok,
+            hotovo: msg.hotovo,
+            koniecCasti: msg.koniecCasti ?? null,
+            dalsiaCast: msg.dalsiaCast ?? null,
+            pripravujeme: msg.pripravujeme ?? null,
+          });
           break;
         case "achievement":
           setAchievementy((a) => ({ n: a.n + 1, zisky: [...a.zisky, msg.zisk] }));
@@ -341,9 +380,14 @@ export function useHra(aktivne: boolean): HraHook {
         case "vyucbaRada":
           radaN.current++;
           setRadaVyucby({ n: radaN.current, text: msg.text, hlaska: msg.hlaska });
+          ozviChybu(msg.hlaska);
           break;
         case "vyucbaChyba":
           setChybaVyucby({ chybajuce: msg.chybajuce, navyse: msg.navyse });
+          ozviChybu(msg.hlaska);
+          break;
+        case "vyucbaHlaska":
+          ozviChybu(msg.hlaska);
           break;
         case "error": {
           // Server odpovedá v poradí správ — prvá chyba po rejoin patrí rejoinu.
@@ -420,9 +464,11 @@ export function useHra(aktivne: boolean): HraHook {
     vyucba,
     chybaVyucby,
     radaVyucby,
+    hlaskaChybyVyucby,
     vyucbaOdpoved: useCallback((index: number) => posli({ type: "vyucbaOdpoved", index }), [posli]),
     zalozVyucbu: useCallback(() => posli({ type: "create", vyucba: true }), [posli]),
     vyucbaDalej: useCallback(() => posli({ type: "vyucbaDalej" }), [posli]),
+    vyucbaPokracuj: useCallback(() => posli({ type: "vyucbaPokracuj" }), [posli]),
     zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
     pripoj: useCallback((code: string) => posli({ type: "join", code: code.trim().toUpperCase() }), [posli]),
     cmd: useCallback((command: Command) => posli({ type: "cmd", cmd: command }), [posli]),

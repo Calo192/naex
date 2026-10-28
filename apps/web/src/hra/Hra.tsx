@@ -20,7 +20,7 @@ import { Soundboard } from "./Soundboard.tsx";
 import { useHra } from "./useHra.ts";
 import { OznamZiskov } from "../achievementy/VPartii.tsx";
 import { tvar } from "../stranky/Statistiky.tsx";
-import { bezPrvejCasti, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
+import { bezPrvejCasti, rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
 import { useNepodporovaneZariadenie } from "./zariadenie.ts";
 import "./hra.css";
@@ -314,7 +314,8 @@ export function Hra() {
   useEffect(() => {
     if (new URLSearchParams(location.search).get("vyucba") === null || !pripojene || miestnost !== null || vyucbaUctu === null) return;
     history.replaceState(null, "", "/hra");
-    if (vyucbaUctu.dostupna) zacniVyucbu(vyucbaUctu.stav === "hotova");
+    // Odznova, len keď nie je čím pokračovať (rozohraná časť, alebo hotová časť a ďalšia čaká).
+    if (vyucbaUctu.dostupna) zacniVyucbu(vyucbaUctu.stav !== null && !rozpracovana(vyucbaUctu));
   }, [pripojene, miestnost, vyucbaUctu, zacniVyucbu]);
   useEffect(() => {
     const kod = new URLSearchParams(location.search).get("kod");
@@ -463,7 +464,7 @@ export function Hra() {
       zaHracaHra={krokVyucby?.kto === "auto" && !krokVyucby.vykonany}
       naneisto={krokVyucby?.kto === "info" && krokVyucby.naneisto}
       // 1. časť výučby končí po prvej bitke: o starších hovorí, keď je partia už v 2. kole.
-      ukazStarsich={hra.vyucba !== null && hra.view.kolo > 1 && krokVyucby?.kto !== "hrac"}
+      ukazStarsich={hra.vyucba !== null && ukazStarsichVoVyucbe(hra.vyucba, hra.view.kolo)}
       // Vo výučbe chybu ukazuje bublina Melichara.
       chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}
@@ -498,6 +499,8 @@ export function Hra() {
           prerusVyucbu();
           hra.zaloz(false, PREDVOLENA_DLZKA, true);
         }}
+        pokracovat={hra.vyucbaPokracuj}
+        hlaskaChyby={hra.hlaskaChybyVyucby}
         menoBota={hra.hraci[1]?.meno ?? "Štamgast"}
         chybaVyucby={hra.chybaVyucby}
         odpovedz={hra.vyucbaOdpoved}

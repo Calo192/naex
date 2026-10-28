@@ -41,6 +41,7 @@ function sOdkazmi(state: GameState, p: PlayerId, c: Command): string {
     ["ruka", state.hraci[p].ruka],
     ["senok", state.senok],
     ["lokality", state.lokalityVHre],
+    ["ciel", state.ciel?.lokalita == null ? [] : [state.ciel.lokalita]],
     ["stavba", state.draftStav?.balicky[p] ?? []],
     ["priznane", state.hraci[p].priznane],
     ["linia", [...state.strany[0], ...state.strany[1]].filter((pl) => pl.playedBy === p).map((pl) => pl.card)],

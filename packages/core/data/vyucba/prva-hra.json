@@ -1,7 +1,6 @@
 {
   "id": "prva-hra",
   "nazov": "Prvá hra",
-  "cast": 1,
   "verzia": "cast1-v7-2026-10-27b",
   "zverejnena": true,
   "casti": [
@@ -1020,9 +1019,7 @@
       "melichar": "To je prvá časť. V 2. časti ťa naučím NA EX a zopár podlostí, tú ešte chystám. Dovtedy choď hrať proti počítaču, ak si myslíš, že už všetko vieš. Za tie dve cigarety ďakujem. Tretiu mi niekedy dones, neponáhľaj sa. Na zdravie!",
       "tlacidlo": "Dokončiť 1. časť",
       "koniecCasti": 1
-    }
-  ],
-  "pokracovanie": [
+    },
     {
       "id": "i-vitaj2",
       "kto": "info",
@@ -2774,7 +2771,7 @@
       "kto": "hrac",
       "prikaz": {
         "type": "kseft",
-        "uid": 140,
+        "uid": "ciel:predsedova_vila",
         "elderId": "hrobar",
         "kSebe": false
       },

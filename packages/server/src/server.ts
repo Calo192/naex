@@ -21,6 +21,10 @@ import {
   IllegalCommandError,
   ktoVykona,
   cakaNaDalej,
+  castKroku,
+  hlaskaPriChybe,
+  koniecCastiPoKroku,
+  type CastScenara,
   pauzaKrokuVyucby,
   prelozKluceZvyraznenia,
   radaVyucby,
@@ -65,7 +69,7 @@ import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
-import type { OtvorenaHra, RozohranaPartia, StavServera, Uzavierka } from "./api.ts";
+import type { OtvorenaHra, PostupVyucby, RozohranaPartia, StavServera, Uzavierka } from "./api.ts";
 import { OZNAM_UZAVIERKY, spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
@@ -173,9 +177,11 @@ interface Room {
    * Výučba „Prvá hra“: index nasledujúceho kroku scenára. Server pustí len
    * príkaz, ktorý krok dovoľuje; ťahy bota hrá podľa skriptu. Nič z nej
    * nejde do archívu, štatistík ani Frajeriny. vykonany = ťah bota či auto
-   * krok s textom je vykonaný a čaká na „ďalej“ (U5).
+   * krok s textom je vykonaný a čaká na „ďalej“ (U5). koniecCasti = číslo časti, ktorú hráč
+   * práve dokončil — partia stojí, kým nepokračuje ďalšou (vyucbaPokracuj) alebo neodíde.
+   * zalohy = koľko záložných hlášok pri chybe už zaznelo (striedajú sa dookola).
    */
-  vyucba: { krok: number; vykonany: boolean } | null;
+  vyucba: { krok: number; vykonany: boolean; koniecCasti: number | null; zalohy: number } | null;
   /** Strop pečiatok momentov (Michal 2026-10-23): 1 za úsek kola, zlato 2 za partiu. */
   momenty: StavMomentov;
   /** Achievementy partie (Michal 2026-10-23); null = nič sa nezískava (výučba, ešte nezačala). */
@@ -193,9 +199,9 @@ export interface KrokVyucbyKlient {
   readonly kto: "hrac" | "bot" | "info" | "auto" | "otazka";
   /** Ťah bota či auto krok je vykonaný a čaká na „ďalej“ (U5); inak false. */
   readonly vykonany: boolean;
+  /** Časť, do ktorej krok patrí: poradie kroku v nej (od 0) a počet jej krokov — percentá v bare. */
+  readonly cast: { readonly cast: number; readonly nazov: string; readonly poradie: number; readonly krokov: number };
   readonly melichar: string;
-  /** Hláška zo soundboardu „skupina/súbor“ (Michal 2026-10-27); null = krok bez zvuku. */
-  readonly hlaska: string | null;
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
   /** Kontrolná otázka: možnosti aj s hláškou zlej odpovede (klient overí sám); inak null. */
@@ -234,6 +240,7 @@ function novyKod(rooms: Map<string, Room>): string {
 type ClientMsg =
   | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry; bot?: boolean; vyucba?: boolean }
   | { type: "vyucbaDalej" }
+  | { type: "vyucbaPokracuj" }
   | { type: "vyucbaOdpoved"; index: number }
   | { type: "join"; code: string }
   | { type: "rejoin"; code: string }
@@ -293,8 +300,31 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const scenarVyucby = opts.scenarVyucby ?? nacitajVyucbu();
   /** Výučba je pre hráčov, až keď je scenár zverejnený; dovtedy ju spustí len správca. */
   const vyucbaPreHracov = opts.vyucbaZapnuta ?? scenarVyucby.zverejnena === true;
-  /** Výučba prešla posledným krokom — časť môže skončiť uprostred partie (1. časť po prvej bitke). */
-  const vyucbaSkoncila = (room: Room): boolean => room.vyucba !== null && room.vyucba.krok >= scenarVyucby.kroky.length;
+  /** Výučba prešla posledným krokom časti — časť končí uprostred partie (1. časť po prvej bitke). */
+  const vyucbaSkoncila = (room: Room): boolean =>
+    room.vyucba !== null && (room.vyucba.koniecCasti !== null || room.vyucba.krok >= scenarVyucby.kroky.length);
+  const idKrokovVyucby = scenarVyucby.kroky.map((k) => k.id);
+  /** Časť s textami na schválenie (navrh) spustí len správca — ako vypínač celej výučby. */
+  const castPreHraca = (c: CastScenara, ja: Pick<Pouzivatel, "rola">): boolean => !c.navrh || jeSpravca(ja.rola);
+  /**
+   * Postup výučby účtu: uložený krok (index) a kde v častiach stojí. Na začiatku časti 2+
+   * je predošlá dokončená — „Pokračovať vo výučbe“ spustí ďalšiu, ak ju hráč smie hrať.
+   */
+  const postupVyucby = (ja: Pick<Pouzivatel, "id" | "rola">): PostupVyucby => {
+    const ulozene = ucty.vyucba(ja.id, scenarVyucby.verzia ?? null, idKrokovVyucby);
+    const cast = castKroku(scenarVyucby, ulozene.krok);
+    const naZaciatku = cast !== null && ulozene.krok === cast.od;
+    const dalsia = naZaciatku && cast.cast > 1 ? cast : null;
+    return {
+      krok: ulozene.krok,
+      idKroku: idKrokovVyucby[ulozene.krok] ?? null,
+      stav: ulozene.stav,
+      cast,
+      rozpracovana: cast !== null && !naZaciatku,
+      dalsia: dalsia !== null && castPreHraca(dalsia, ja) ? dalsia : null,
+      pripravujeme: dalsia !== null && !castPreHraca(dalsia, ja) ? dalsia : null,
+    };
+  };
   const archiv = new Archiv(db);
   // Katalóg achievementov (Navrhár, data/achievementy.json): chyba v ňom vypne achievementy, nie server.
   // Kým katalóg nemá „zapnute“: true, achievementy sa nepočítajú, neukladajú ani neposielajú (Michal 2026-10-23).
@@ -439,6 +469,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           nastavUzavierku,
           vyucbaKrokov: scenarVyucby.kroky.length,
           vyucbaVerzia: scenarVyucby.verzia ?? null,
+          postupVyucby,
           vyucbaPreHracov,
         },
         req,
@@ -747,13 +778,36 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       case "vyucbaOdpoved": {
         // Kontrolná otázka: klient overí odpoveď sám, server si zapíše prvú (metrika).
         const room = info.room;
-        const k = room?.vyucba == null ? undefined : scenarVyucby.kroky[room.vyucba.krok];
+        const k = room === null || room.vyucba === null || vyucbaSkoncila(room) ? undefined : scenarVyucby.kroky[room.vyucba.krok];
         const moznost = k?.kto === "otazka" && Number.isInteger(msg.index) ? k.moznosti?.[msg.index] : undefined;
-        if (k === undefined || moznost === undefined) {
+        if (room === null || k === undefined || moznost === undefined) {
           sendError(ws, "Teraz nie je otázka, na ktorú sa dá odpovedať.");
           return;
         }
         ucty.ulozOdpovedVyucby(ja.id, k.id, msg.index, moznost.spravna, teraz());
+        // Zlá odpoveď je chyba — hláška Melichara (vlastná, kroku, alebo záložná).
+        if (!moznost.spravna) {
+          const hlaska = hlaskaChyby(room, moznost.hlaska);
+          if (hlaska !== null) send(ws, { type: "vyucbaHlaska", hlaska });
+        }
+        break;
+      }
+      case "vyucbaPokracuj": {
+        // Po konci časti: ďalšia časť v tej istej partii (roadmapa #105).
+        const room = info.room;
+        const dalsia = room?.vyucba == null ? null : castKroku(scenarVyucby, room.vyucba.krok);
+        if (room === null || room.vyucba === null || room.vyucba.koniecCasti === null || dalsia === null) {
+          sendError(ws, "Teraz nie je časť výučby, ktorou by sa dalo pokračovať.");
+          return;
+        }
+        if (!castPreHraca(dalsia, ja)) {
+          sendError(ws, `${dalsia.cast}. časť výučby ešte pripravujeme.`);
+          return;
+        }
+        room.vyucba.koniecCasti = null;
+        room.lastActivity = teraz();
+        posliVyucbu(room);
+        naplanujVyucbu(room);
         break;
       }
       case "vyucbaDalej": {
@@ -761,6 +815,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         const room = info.room;
         if (room === null || room.vyucba === null) {
           sendError(ws, "Nie si vo výučbe.");
+          return;
+        }
+        if (vyucbaSkoncila(room)) {
+          sendError(ws, "Táto časť výučby sa skončila.");
           return;
         }
         const krok = scenarVyucby.kroky[room.vyucba.krok];
@@ -897,15 +955,19 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
 
   // ---- výučba „Prvá hra“ (Michal 2026-10-23) ---------------------------------
 
-  /** Nová výučba hráča `ja` — pokračuje od uloženého kroku (dokončená začne odznova). */
+  /**
+   * Nová výučba hráča `ja` — pokračuje od uloženého kroku; po dokončenej časti od začiatku
+   * ďalšej (prehrá partiu po jej prvý krok). Celá prejdená, alebo ďalšia časť, ktorú hráč
+   * ešte nesmie hrať (navrh), začne odznova.
+   */
   const zalozVyucbu = (ws: WebSocket, ja: Pouzivatel): void => {
     if (!vyucbaPreHracov && !jeSpravca(ja.rola)) {
       sendError(ws, "Výučba „Prvá hra“ ešte nie je hotová.");
       return;
     }
     const { sada, data } = obsah.aktualnaSada();
-    const ulozene = ucty.vyucba(ja.id, scenarVyucby.verzia ?? null);
-    let krok = ulozene.stav === "hotova" || ulozene.krok >= scenarVyucby.kroky.length ? 0 : ulozene.krok;
+    const postup = postupVyucby(ja);
+    let krok = postup.cast === null || !castPreHraca(postup.cast, ja) ? 0 : postup.krok;
     let state: GameState;
     try {
       state = prehrajVyucbu(data, scenarVyucby, krok);
@@ -930,19 +992,21 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       seed: scenarVyucby.rozdanie.seed,
       bot: VYUCBA_BOT,
       botPovaha: "stamgast",
-      vyucba: { krok, vykonany: false },
+      // Záložné hlášky začnú v každej partii inde — nie vždy tou istou.
+      vyucba: { krok, vykonany: false, koniecCasti: null, zalohy: randomInt(1_000) },
     });
     room.hraci[VYUCBA_BOT] = hracBot(room.botPovaha);
     usadit(ws, room, VYUCBA_HRAC);
     naplanujVyucbu(room);
   };
 
-  /** Aktuálny krok výučby pre klienta, alebo null po poslednom kroku. */
+  /** Aktuálny krok výučby pre klienta, alebo null po poslednom kroku časti. */
   const krokVyucby = (room: Room): KrokVyucbyKlient | null => {
-    if (room.vyucba === null || room.state === null) return null;
+    if (room.vyucba === null || room.state === null || vyucbaSkoncila(room)) return null;
     const i = room.vyucba.krok;
     const k = scenarVyucby.kroky[i];
-    if (k === undefined) return null;
+    const cast = castKroku(scenarVyucby, i);
+    if (k === undefined || cast === null) return null;
     let ocakava: Command | null = null;
     try {
       ocakava = ocakavanyPrikaz(scenarVyucby, room.state, i);
@@ -955,8 +1019,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       id: k.id,
       kto: k.kto,
       vykonany: room.vyucba.vykonany,
+      cast: { cast: cast.cast, nazov: cast.nazov, poradie: i - cast.od, krokov: cast.po - cast.od + 1 },
       melichar: k.melichar,
-      hlaska: k.hlaska ?? null,
       zvyraznit: prelozKluceZvyraznenia(room.state, k.zvyraznit ?? []),
       ocakava,
       moznosti: k.kto === "otazka" ? (k.moznosti ?? []) : null,
@@ -968,28 +1032,49 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     };
   };
 
+  /**
+   * Krok výučby, koniec časti a čo ďalej: po konci časti krok null, hotovo a ďalšia časť —
+   * ponuka „Pokračovať“ (dalsiaCast), alebo „pripravujeme“, kým jej texty Michal neschváli.
+   */
   const posliVyucbu = (room: Room): void => {
     const ws = room.sockets[VYUCBA_HRAC];
     if (ws === null || room.vyucba === null) return;
-    send(ws, { type: "vyucba", krok: krokVyucby(room), hotovo: room.vyucba.krok >= scenarVyucby.kroky.length });
+    const koniec = room.vyucba.koniecCasti;
+    const dalsia = koniec === null ? null : castKroku(scenarVyucby, room.vyucba.krok);
+    const hracId = room.hraci[VYUCBA_HRAC]?.id;
+    const hrac = hracId === undefined ? null : ucty.podlaId(hracId);
+    const smie = dalsia !== null && hrac !== null && castPreHraca(dalsia, hrac);
+    const opis = (c: CastScenara | null): { cast: number; nazov: string; minuty: number } | null => (c === null ? null : { cast: c.cast, nazov: c.nazov, minuty: c.minuty });
+    send(ws, {
+      type: "vyucba",
+      krok: krokVyucby(room),
+      hotovo: vyucbaSkoncila(room),
+      koniecCasti: koniec,
+      dalsiaCast: smie ? opis(dalsia) : null,
+      pripravujeme: smie ? null : opis(dalsia),
+    });
   };
 
-  /** Krok hotový: uloží postup k účtu, pošle ďalší krok a ak je na rade bot, naplánuje ho. */
+  /**
+   * Krok hotový: uloží postup k účtu, pošle ďalší krok a ak je na rade bot, naplánuje ho.
+   * Po poslednom kroku časti partia zastane (roadmapa #105) — ďalšia časť až na vyucbaPokracuj.
+   */
   const posunVyucbu = (room: Room): void => {
     if (room.vyucba === null) return;
+    const koniec = koniecCastiPoKroku(scenarVyucby, room.vyucba.krok);
     room.vyucba.krok++;
     room.vyucba.vykonany = false;
+    if (koniec !== null) room.vyucba.koniecCasti = koniec;
     const id = room.hraci[VYUCBA_HRAC]?.id;
-    const hotovo = room.vyucba.krok >= scenarVyucby.kroky.length;
     if (id !== undefined) {
-      ucty.ulozVyucbu(id, room.vyucba.krok, hotovo ? "hotova" : undefined, scenarVyucby.verzia ?? null);
-      if (hotovo) {
+      ucty.ulozVyucbu(id, room.vyucba.krok, koniec !== null ? "hotova" : undefined, scenarVyucby.verzia ?? null, idKrokovVyucby[room.vyucba.krok] ?? null);
+      if (koniec !== null) {
         // Dokončená časť výučby = hviezdička achievementu Prvá hra za časť (Michal 2026-10-25)
         // a z návštevníka Poldeci — bez archívu, štatistík a Frajeriny. AI playtester achievementy
-        // nezískava. Partia ostane stáť uprostred (ďalší ťah vykonajVyucbu nepustí) a zanikne odchodom.
+        // nezískava. Partia stojí (ďalší ťah vykonajVyucbu nepustí), kým hráč nepokračuje ďalšou
+        // časťou; odchodom zanikne a ďalšia časť sa prehrá z uloženého postupu.
         const ws = room.sockets[VYUCBA_HRAC];
-        const zisky =
-          achievementy !== null && room.hraci[VYUCBA_HRAC]?.ai !== true ? achievementy.udelZaVyucbu(id, teraz(), scenarVyucby.cast ?? 1) : [];
+        const zisky = achievementy !== null && room.hraci[VYUCBA_HRAC]?.ai !== true ? achievementy.udelZaVyucbu(id, teraz(), koniec) : [];
         if (ws !== null) for (const zisk of zisky) send(ws, { type: "achievement", zisk });
         ucty.povysPoPartii(id, prava.nastavenie().postup);
       }
@@ -998,12 +1083,20 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     naplanujVyucbu(room);
   };
 
+  /** Hláška Melichara pri chybe hráča: vlastná, kroku, alebo ďalšia záložná (Michal 2026-10-28). */
+  const hlaskaChyby = (room: Room, vlastna: string | null | undefined): string | null => {
+    if (room.vyucba === null) return null;
+    const h = hlaskaPriChybe(scenarVyucby, scenarVyucby.kroky[room.vyucba.krok], vlastna, room.vyucba.zalohy);
+    if (h.zaloha) room.vyucba.zalohy++;
+    return h.hlaska;
+  };
+
   /** Príkaz hráča vo výučbe: prejde len ten, ktorý krok dovoľuje. */
   const vykonajVyucbu = (ws: WebSocket, room: Room, cmd: Command): void => {
     if (room.vyucba === null || room.state === null) return;
     const k = scenarVyucby.kroky[room.vyucba.krok];
-    if (k === undefined) {
-      sendError(ws, "Výučba sa skončila.");
+    if (k === undefined || vyucbaSkoncila(room)) {
+      sendError(ws, "Táto časť výučby sa skončila.");
       return;
     }
     if (k.kto !== "hrac") {
@@ -1028,13 +1121,14 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const porovnanie = porovnajSKrokom(room.data, room.state, cmd, ocakava);
     // Rozhodnutie: zlý ťah dostane radu Melichara, nie chybu (UX N2).
     if (!porovnanie.zhoda && k.volba !== undefined) {
-      send(ws, { type: "vyucbaRada", ...radaVyucby(room.state, k.volba, cmd) });
+      const rada = radaVyucby(room.state, k.volba, cmd);
+      send(ws, { type: "vyucbaRada", text: rada.text, hlaska: hlaskaChyby(room, rada.hlaska) });
       posliVyucbu(room);
       return;
     }
     if (!porovnanie.zhoda) {
       sendError(ws, textChybyKroku(porovnanie));
-      send(ws, { type: "vyucbaChyba", chybajuce: porovnanie.chybajuce, navyse: porovnanie.navyse });
+      send(ws, { type: "vyucbaChyba", chybajuce: porovnanie.chybajuce, navyse: porovnanie.navyse, hlaska: hlaskaChyby(room, null) });
       posliVyucbu(room);
       return;
     }
@@ -1050,13 +1144,13 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
 
   /** Ťah bota a automatický ťah hráča (auto) zo scenára po pauze — aby ho hráč stihol sledovať. */
   const naplanujVyucbu = (room: Room): void => {
-    if (room.vyucba === null || room.botTimer !== null || room.state === null) return;
+    if (room.vyucba === null || room.botTimer !== null || room.state === null || vyucbaSkoncila(room)) return;
     const najblizsi = scenarVyucby.kroky[room.vyucba.krok];
     if (najblizsi === undefined || (najblizsi.kto !== "bot" && najblizsi.kto !== "auto") || room.vyucba.vykonany) return;
     room.botTimer = setTimeout(() => {
       room.botTimer = null;
       const state = room.state;
-      if (state === null || room.vyucba === null || !rooms.has(room.code)) return;
+      if (state === null || room.vyucba === null || !rooms.has(room.code) || vyucbaSkoncila(room)) return;
       const krok = scenarVyucby.kroky[room.vyucba.krok];
       if ((krok?.kto !== "bot" && krok?.kto !== "auto") || krok.prikaz === undefined) return;
       const hrac = ktoVykona(krok);

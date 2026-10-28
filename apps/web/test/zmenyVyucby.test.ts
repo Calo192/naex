@@ -9,7 +9,7 @@ import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import scenarJson from "../../../packages/core/data/vyucba/prva-hra.json";
 import type { ClientState, KrokVyucby as KrokScenara, ScenarVyucby } from "@naex/core";
-import { apply, ktoVykona, loadGameData, prikazZoScenara, viewFor, VYUCBA_HRAC, zacniVyucbu } from "@naex/core";
+import { loadGameData, viewFor, vykonajKrok, VYUCBA_HRAC, zacniVyucbu } from "@naex/core";
 import { stitokTahu, zmenyStola } from "../src/hra/zmenyVyucby.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -19,11 +19,11 @@ const scenar = scenarJson as unknown as ScenarVyucby;
 function tahySoZmenami(): { readonly krok: KrokScenara; readonly pred: ClientState; readonly po: ClientState }[] {
   let state = zacniVyucbu(data, scenar);
   const out: { krok: KrokScenara; pred: ClientState; po: ClientState }[] = [];
-  for (const krok of scenar.kroky) {
-    if (krok.kto === "info" || krok.kto === "otazka" || krok.prikaz === undefined) continue;
-    const kto = ktoVykona(krok);
+  for (const [i, krok] of scenar.kroky.entries()) {
     const pred = viewFor(data, state, VYUCBA_HRAC);
-    state = apply(data, state, prikazZoScenara(state, kto, krok.prikaz), kto).state;
+    // Aj info krok môže meniť partiu (cigareta pre Melichara v 2. časti).
+    state = vykonajKrok(data, scenar, state, i);
+    if (krok.kto === "info" || krok.kto === "otazka" || krok.prikaz === undefined) continue;
     out.push({ krok, pred, po: viewFor(data, state, VYUCBA_HRAC) });
   }
   return out;

@@ -2,10 +2,15 @@
 // Štamgastovi — server pustí len príkaz kroku, bot hrá podľa skriptu, postup sa
 // ukladá k účtu a dohratie spraví z návštevníka hráča bez archívu a štatistík.
 
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Command } from "@naex/core";
 import type { GameServer } from "../src/server.ts";
 import { nacitajVyucbu } from "../src/server.ts";
+import { Ucty } from "../src/auth.ts";
+import { otvorDb } from "../src/db.ts";
 import type { Msg } from "./pomocnik.ts";
 import { Klient, TEST_ADMIN, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
@@ -170,7 +175,9 @@ describe("výučba po častiach — 1. časť končí uprostred partie (Michal 2
     expect(koniec).toMatchObject({ hotovo: true, krok: null });
     // Hráč by bol na ťahu (voľba cieľa 2. kola) — vo výučbe už nie.
     k.posli({ type: "cmd", cmd: { type: "chooseLocation", uid: 1, otocena: false } });
-    expect(String((await k.cakaj("error")).text)).toMatch(/Výučba sa skončila/);
+    expect(String((await k.cakaj("error")).text)).toMatch(/časť výučby sa skončila/);
+    k.posli({ type: "vyucbaDalej" });
+    expect(String((await k.cakaj("error")).text)).toMatch(/časť výučby sa skončila/);
     expect((await stavServera()).partie.sBotom).toBe(pred);
     k.zavri();
     await new Promise((r) => setTimeout(r, 50));
@@ -278,16 +285,18 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       await k.otvorene();
       k.posli({ type: "create", vyucba: true });
       let msg = await k.cakaj("vyucba");
-      // Krok bez hlášky má null — od 2026-10-28 zaznie hláška len pri chybe hráča (Michal).
-      expect(msg.krok).toMatchObject({ id: "i-vitaj", hlaska: null });
+      // Krok hlášku nenesie — od 2026-10-28 zaznie len pri chybe hráča (Michal).
+      expect(msg.krok).toMatchObject({ id: "i-vitaj", cast: { cast: 1, poradie: 0 } });
+      expect(msg.krok).not.toHaveProperty("hlaska");
       k.posli({ type: "vyucbaDalej" });
       msg = await k.cakaj("vyucba");
       const q = msg.krok as KrokMsg & { moznosti: { spravna: boolean }[] | null };
-      expect(q).toMatchObject({ kto: "otazka", melichar: "Čo dá spoj?", hlaska: null });
+      expect(q).toMatchObject({ kto: "otazka", melichar: "Čo dá spoj?" });
       expect(q.moznosti).toHaveLength(2);
       expect(q.moznosti?.[0]).toMatchObject({ spravna: false, hlaska: "urazky/marha" });
-      // Najprv zle, potom dobre — zapíše sa len prvá odpoveď.
+      // Najprv zle, potom dobre — zapíše sa len prvá odpoveď; zlá je chyba a pošle hlášku možnosti.
       k.posli({ type: "vyucbaOdpoved", index: 0 });
+      expect(await k.cakaj("vyucbaHlaska")).toMatchObject({ hlaska: "urazky/marha" });
       k.posli({ type: "vyucbaOdpoved", index: 1 });
       k.posli({ type: "vyucbaOdpoved", index: 7 });
       expect(String((await k.cakaj("error")).text)).toMatch(/nie je otázka/);
@@ -308,7 +317,10 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       // Rada nesie aj hlášku vzoru, všeobecná je bez nej (Michal 2026-10-27).
       expect(await k.cakaj("vyucbaRada")).toMatchObject({ text: "Ešte nepasuj.", hlaska: "nervy/bud_ticho" });
       k.posli({ type: "cmd", cmd: { type: "skipNaex" } });
-      expect(await k.cakaj("vyucbaRada")).toMatchObject({ text: "Skús inú kartu.", hlaska: null });
+      // Všeobecná rada nemá hlášku vzoru — zaznie záložná zo scenára (Michal 2026-10-28).
+      const rada = await k.cakaj("vyucbaRada");
+      expect(rada).toMatchObject({ text: "Skús inú kartu." });
+      expect(zaklad.hlaskyChyby).toContain(rada.hlaska);
       k.zavri();
     } finally {
       await zmazQ();
@@ -368,5 +380,131 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
     k.posli({ type: "vyucbaDalej" });
     expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(5);
     k.zavri();
+  });
+});
+
+describe("výučba v troch častiach (roadmapa #105)", () => {
+  const scenar = nacitajVyucbu();
+  const idKroku = (msg: Msg): string => (msg.krok as { id: string }).id;
+  const ziadaj = async (port: number, cookie: string): Promise<Record<string, unknown>> =>
+    (await (await fetch(`http://127.0.0.1:${port}/api/vyucba`, { headers: { cookie } })).json()) as Record<string, unknown>;
+
+  it("hráč po 1. časti: hviezdička, partia stojí a 2. časť (texty na schválenie) mu server ešte nepustí", async () => {
+    expect(scenar.casti?.find((c) => c.cast === 2)?.navrh).toBe(true);
+    const { cookie } = await registruj(server.port);
+    const { k, prvy } = await zacni(cookie);
+    const koniec = await hraj(k, prvy);
+    expect(koniec).toMatchObject({ hotovo: true, krok: null, koniecCasti: 1, dalsiaCast: null, pripravujeme: { cast: 2, nazov: "NA EX a podlosti" } });
+    expect((await k.cakaj("achievement")).zisk).toMatchObject({ id: "prva-hra", rank: 1 });
+    k.posli({ type: "vyucbaPokracuj" });
+    expect(String((await k.cakaj("error")).text)).toMatch(/2\. časť výučby ešte pripravujeme/);
+    k.zavri();
+    expect(await ziadaj(server.port, cookie)).toMatchObject({
+      krok: scenar.kroky.findIndex((x) => x.id === "i-vitaj2"),
+      stav: "hotova",
+      castiHotove: 1,
+      rozpracovana: false,
+      dalsiaCast: null,
+      pripravujeme: { cast: 2 },
+    });
+    // „Pokračovať“ by nemal čím — nová výučba začne 1. časťou.
+    const znova = await zacni(cookie);
+    expect(idKroku(znova.prvy)).toBe("i-vitaj");
+    znova.k.zavri();
+  });
+
+  it("správca prejde všetky tri časti: po každej hviezdička, ďalšia časť v tej istej partii aj z lobby od svojho začiatku", async () => {
+    const { server: s, zmaz: z } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, vyucbaZapnuta: true });
+    try {
+      const admin = await prihlas(s.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
+      const k = new Klient(s.port, admin);
+      await k.otvorene();
+      k.posli({ type: "create", vyucba: true });
+      const prva = await hraj(k, await k.cakaj("vyucba"));
+      expect(prva).toMatchObject({ hotovo: true, koniecCasti: 1, dalsiaCast: { cast: 2, nazov: "NA EX a podlosti" }, pripravujeme: null });
+      expect((await k.cakaj("achievement")).zisk).toMatchObject({ rank: 1 });
+
+      // Pokračovať 2. časťou: tá istá partia, prvý krok 2. časti.
+      k.posli({ type: "vyucbaPokracuj" });
+      let msg = await k.cakaj("vyucba");
+      expect(msg.krok).toMatchObject({ id: "i-vitaj2", cast: { cast: 2, poradie: 0 } });
+      // Krok s hláškou pri chybe: zlý ťah ju pošle s vyucbaChyba.
+      while ((msg.krok as KrokMsg).kto !== "hrac" || (msg.krok as { volba: unknown }).volba !== null) {
+        const krok = msg.krok as KrokMsg;
+        if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
+        else potvrd(k, krok);
+        msg = await k.cakaj("vyucba");
+      }
+      const sHlaskou = scenar.kroky.find((x) => x.id === idKroku(msg));
+      expect(sHlaskou?.hlaskaChyby).toBeDefined();
+      k.posli({ type: "cmd", cmd: { type: "pass" } });
+      expect(await k.cakaj("vyucbaChyba")).toMatchObject({ hlaska: sHlaskou?.hlaskaChyby });
+      msg = await k.cakaj("vyucba");
+      const druha = await hraj(k, msg);
+      expect(druha).toMatchObject({ hotovo: true, koniecCasti: 2, dalsiaCast: { cast: 3 } });
+      expect((await k.cakaj("achievement")).zisk).toMatchObject({ rank: 2 });
+      k.zavri();
+      await new Promise((r) => setTimeout(r, 50));
+
+      // Z lobby: „Pokračovať vo výučbe“ = 3. časť od jej prvého kroku (partia sa prehrá po ňu).
+      expect(await ziadaj(s.port, admin)).toMatchObject({ castiHotove: 2, rozpracovana: false, cast: { cast: 3 }, dalsiaCast: { cast: 3, nazov: "Celá hra" } });
+      const tretia = new Klient(s.port, admin);
+      await tretia.otvorene();
+      tretia.posli({ type: "create", vyucba: true });
+      const zaciatok = await tretia.cakaj("vyucba");
+      expect(zaciatok.krok).toMatchObject({ id: "i-vitaj3", cast: { cast: 3, poradie: 0 } });
+      const koniec = await hraj(tretia, zaciatok);
+      expect(koniec).toMatchObject({ hotovo: true, koniecCasti: 3, dalsiaCast: null, pripravujeme: null });
+      expect((await tretia.cakaj("achievement")).zisk).toMatchObject({ rank: 3 });
+      tretia.zavri();
+      expect(await ziadaj(s.port, admin)).toMatchObject({ castiHotove: 3, cast: null, rozpracovana: false, dalsiaCast: null });
+    } finally {
+      await z();
+    }
+  });
+
+  it("zlý ťah bez hlášky kroku: záložná zo scenára, dve po sebe nie sú rovnaké", async () => {
+    const { cookie } = await registruj(server.port);
+    const { k, prvy } = await zacni(cookie);
+    let msg = prvy;
+    while ((msg.krok as KrokMsg).kto !== "hrac" || (msg.krok as { volba: unknown }).volba !== null) {
+      const krok = msg.krok as KrokMsg;
+      if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
+      else potvrd(k, krok);
+      msg = await k.cakaj("vyucba");
+    }
+    expect(scenar.kroky.find((x) => x.id === idKroku(msg))?.hlaskaChyby).toBeUndefined();
+    const hlasky: unknown[] = [];
+    for (let n = 0; n < 3; n++) {
+      k.posli({ type: "cmd", cmd: { type: "pass" } });
+      hlasky.push((await k.cakaj("vyucbaChyba")).hlaska);
+    }
+    for (const h of hlasky) expect(scenar.hlaskyChyby).toContain(h);
+    expect(hlasky[1]).not.toBe(hlasky[0]);
+    expect(hlasky[2]).not.toBe(hlasky[1]);
+    k.zavri();
+  });
+
+  it("uložený postup sa nájde podľa id kroku aj po zmene scenára; staršie uloženie bez id podľa verzie", () => {
+    const dir = mkdtempSync(join(tmpdir(), "naex-vyucba-"));
+    const db = otvorDb(join(dir, "naex.db"));
+    try {
+      const ucty = new Ucty(db, { login: "Admin", heslo: null });
+      const u = ucty.registruj("jano", "tajneheslo", "Jano", 1);
+      ucty.ulozVyucbu(u.id, 2, undefined, "v1", "c");
+      expect(ucty.vyucba(u.id, "v1", ["a", "b", "c"]).krok).toBe(2);
+      // Pred „c“ pribudli kroky — postup ide s ním, aj keď sa zmenila verzia.
+      expect(ucty.vyucba(u.id, "v2", ["x", "y", "a", "b", "c"]).krok).toBe(4);
+      // Krok zo scenára zmizol: rovnaká verzia drží index, iná začne odznova.
+      expect(ucty.vyucba(u.id, "v1", ["a", "b"]).krok).toBe(2);
+      expect(ucty.vyucba(u.id, "v2", ["a", "b"]).krok).toBe(0);
+      // Uložené pred 2026-10-28 (bez id).
+      ucty.ulozVyucbu(u.id, 5, "hotova", "v1");
+      expect(ucty.vyucba(u.id, "v1", ["a", "b", "c"])).toEqual({ krok: 5, stav: "hotova" });
+      expect(ucty.vyucba(u.id, "v2", ["a", "b", "c"]).krok).toBe(0);
+    } finally {
+      db.close();
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
