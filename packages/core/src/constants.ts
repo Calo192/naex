@@ -8,29 +8,23 @@ export const KONSTANTY = {
    */
   START_POLDECI: 2,
   /**
-   * Štartovacia ruka (rozhodnutie Michala 2026-10-11): štartovacie karty sa
-   * zamiešajú do doberacieho balíčka a hráč si dobere toľkoto. Kliatby idú
-   * do odhadzovacieho balíčka, nie do ruky.
-   */
-  VELKOST_RUKY: 5,
-  /**
    * Po každej bitke si hráč dobere toľkoto kariet (Michal 2026-10-19) —
-   * namiesto doplnenia ruky na 5. Limit ruky nie je.
+   * namiesto doplnenia ruky na 5. Limit ruky nie je. Od 2026-10-27 len 1
+   * (predtým 2): ďalšie karty sa majú kupovať cigaretami (šenok, fajčenie).
    */
-  KARTY_PO_BITKE: 2,
+  KARTY_PO_BITKE: 1,
   START_CIGARETY: 3,
 
   /**
-   * Štartovací balíček každého hráča: 7 kariet (Michal 2026-10-22, roadmapa #8;
-   * predtým 10 = 4/2/2/2). Slabé štartovky majú hráča hnať do šenku a skôr
-   * ustúpiť silnejším kartám; 5 by hráča nechalo hneď na hranici prehry
-   * (balíček pod 5) a s jedným Miňištrantom bez cigariet na šenok. Tieto štyri
-   * druhy sú výhradne štartovacie — v spoločnom balíčku ani v šenku nie sú.
+   * Počiatočná ruka každého hráča (v6, Michal 2026-10-26): len tieto štyri
+   * karty, doberací balíček je na začiatku prázdny (predtým 7 štartoviek
+   * 3/2/1/1 v balíčku a 5 v ruke). Tieto štyri druhy sú výhradne štartovacie —
+   * v spoločnom balíčku ani v šenku nie sú.
    */
   START_RUKA: {
-    pijan: 3,
-    ministrant: 2,
+    ministrant: 1,
     milujuca_manzelka: 1,
+    pijan: 1,
     dievcina_na_vydaj: 1,
   } as Readonly<Record<string, number>>,
 
@@ -57,7 +51,8 @@ export const KONSTANTY = {
   PRAH_DLHU_ZAKLAD: 2,
   /**
    * Pas (Michal 2026-10-20): kto v Zhromaždení pasuje, dostane toľko cigariet,
-   * koľko kariet ešte smel vyložiť (zostávajúci limit), a hrá až v Pitke.
+   * koľko kariet ešte smel vyložiť (zostávajúci limit), najviac toľko, koľko má
+   * kariet v ruke (v6.1), a hrá až v Pitke.
    */
   CIGARETY_ZA_PAS_NA_KARTU: 1,
   /** Záverečná (roadmapa #83, Michal 2026-10-23): karta lícom dole za cigaretu. */
@@ -83,14 +78,24 @@ export const KONSTANTY = {
    * prehrávanie: prebytok posúva markery k porazenému.
    */
   NASOBOK_PRIAZNE: 2,
-  PRAH_EXEKUTORA_ZAKLAD: 10, // + 2 × priazeň Exekútora
+  /** v7 (Michal 2026-10-27, plan.md 10.4): 7, so súperovou priazňou Exekútora 6 / 5 / 4. */
+  PRAH_EXEKUTORA_ZAKLAD: 7,
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   /**
-   * Pohoršenie (Michal 2026-10-20): ten istý marker smie ísť v bitke aj
-   * viackrát, Pohoršenia jedného hráča ho však posunú najviac cez toľkoto
-   * hraníc zón (pravá sivá → ľavá oranžová áno). Kultúrny dom limit ruší.
+   * Špaky (pravidlá v6, Michal 2026-10-26): finále má vždy toľkoto Pitiek,
+   * víťaz bitky dostane vždy aspoň SPAKY_ZA_BITKU_MIN a nepriznaná Cirhóza
+   * na konci hry stojí toľkoto špakov za kus (ruka aj oba balíčky).
    */
-  POHORSENIE_MAX_HRANIC: 2,
+  FINALE_PITKY: 3,
+  SPAKY_ZA_BITKU_MIN: 1,
+  SPAKY_ZA_CIRHOZU: 5,
+  /**
+   * Výkupné zvyšných zdrojov na konci hry (Michal 2026-10-27): každý plný
+   * poldeci dá toľkoto špakov a každých CIGARIET_ZA_SPAK cigariet 1 špak.
+   * Bez stropu — prebytok zdrojov sa má dať zúžitkovať, nie prepadnúť.
+   */
+  SPAKY_ZA_POLDECI: 1,
+  CIGARIET_ZA_SPAK: 5,
 
   /**
    * Pevné čísla z efektov kariet (Michal 2026-10-18, revízia kariet, variant A):
@@ -98,27 +103,23 @@ export const KONSTANTY = {
    * Lakomca a Neprajníka. Texty kariet v tvorcovi uvádzajú tie isté čísla.
    */
   EFEKT: {
-    AUTOBUSAR_ABSTAKY: 1,
-    FARAR_POVERY: 2,
-    VETERINAR_CIRHOZA: 2,
-    LESNA_CESTA_MAX: 2,
     IHRISKO_TUHE: 2,
-    URAD_PRAH_EXEKUTORA: 4,
-    URAD_ROBOTA: 2,
     ZBERNY_DVOR_CENA: 1,
+    /** Do v7 Poštárka (Pitka) dávala až 2 karty; od v7 Kšeft za 1 Dlh 1 karta. */
     POSTARKA_KARTY: 2,
     POSTARKA_DLHY: 1,
-    PODVODNIK_CIGARETY: 2,
-    SVOKRA_CIGARETY: 2,
-    VDOVA_DLHY: 2,
-    STRYNA_KLIATBY: 1,
+    SVOKRA_RANY: 1,
     NEALKO_PRAH_CIRHOZY: 2,
     KRCMA_PRAH_CIRHOZY: 2,
     SVATY_TEXT_VIERA: 1,
-    PUSKA_PREBYTOK: 2,
-    CIGORKY_CIGARETY: 1,
-    AUTOMAT_VYHRA_CIGARETY: 2,
-    AUTOMAT_PREHRA_DLHY: 1,
+    /** Konflikt Policajtky (v7): Kriminál jej majiteľovi dá toľko cigariet. */
+    POLICAJTKA_CIGARETY: 2,
+    /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
+    CIGORKY_ZA_KARTU: 2,
+    /** Kšefty v7 (plan.md 14.0): Strýko, Vychovávateľka, Obecný úrad. */
+    STRYKO_CENA: 2,
+    VYCHOVAVATELKA_CENA: 2,
+    URAD_CENA: 3,
   },
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */
@@ -126,19 +127,25 @@ export const KONSTANTY = {
   /** Cigarety → otočenie vypitého poldeci (PRAVIDLA §7). */
   REFILL_CENA: 2,
   /**
+   * Fajčenie v Pitke (Michal 2026-10-27, PRAVIDLA §7): k-te fajčenie hráča v tej
+   * istej Pitke stojí ZAKLAD + (k − 1) × PRIRASTOK cigariet — 1, 2, 3…; každá Pitka
+   * začína znova od prvého. Nie je to strop: fajčiť sa dá stále, len drahšie.
+   */
+  CENA_FAJCENIA_ZAKLAD: 1,
+  CENA_FAJCENIA_PRIRASTOK: 1,
+  /**
    * Nové kolo, nový poldeci (Michal 2026-10-16, playtest 20261016-155120):
    * na začiatku kola sa toľko vypitých poldeci otočí na plné. Bez toho hráč
    * po drafte a NA EX ostal s limitom 1 až do konca partie (Eva 4 zo 7 kôl).
    */
   POLDECI_NA_ZACIATKU_KOLA: 1,
-
-  // Body na konci hry sú v data/scorecards.json (podmienky scorecardov).
 } as const;
 
 /**
  * Dĺžka hry = počet lokalít, o ktoré sa hráči bijú (rozhodnutie Michala
- * 2026-10-11; 3 / 5 / 7 od 2026-10-24, predtým 5 / 7 / 11). Dĺžku, na ktorú
- * sada nemá dosť lokalít, ponuka vynechá.
+ * 2026-10-11; 3 / 5 / 7 od 2026-10-24, predtým 5 / 7 / 11). Od v6 sa po nich
+ * hrá ešte finále bez lokality. Dĺžku, na ktorú sada nemá dosť lokalít,
+ * ponuka vynechá.
  */
 export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 
@@ -149,9 +156,10 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
  * pravidlá menia len v dávkach raz za 2 týždne a celá dávka dostane ďalšie
  * číslo („v5“) spolu s novým dátumom platnosti.
  */
-export const VERZIA_PRAVIDIEL = "v5";
+// v7 (revízia sady, Michal 2026-10-27) — zatiaľ len vetva v7/revizia-sady na playtest.
+export const VERZIA_PRAVIDIEL = "v7";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-25";
+export const PRAVIDLA_PLATNE_OD = "2026-10-27";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

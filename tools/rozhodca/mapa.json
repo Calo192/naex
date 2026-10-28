@@ -1,6 +1,6 @@
 {
   "pravidlaCommit": "e832dad38119bd7cf966223c11d09046e478333e",
-  "aktualizovane": "2026-10-25",
+  "aktualizovane": "2026-10-26",
   "pravidla": [
     {
       "id": "1.zaklad.dvaja-hraci",
@@ -13,22 +13,24 @@
     {
       "id": "1.koniec.vydesenie-ohlasene",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Kto vydesí aspoň polovicu starších (aj nahradených), vyhrá, až keď ich udrží do konca nasledujúceho kola; keď ich stratí, hrozba padá.",
+      "pravidlo": "Kto vydesí aspoň polovicu starších (aj nahradených), vyhrá, až keď ich udrží do konca nasledujúceho kola; keď klesne pod polovicu (patronát, Pohoršenie, prebytok), hrozba padá hneď a opätovné doplnenie v tom istom kole ohlasuje odznova.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/dobiehanie.test.ts › polovica vydesených starších hru neukončí hneď — vydesenie sa ohlási",
         "packages/core/test/dobiehanie.test.ts › kto vydesenie udrží do konca nasledujúceho kola, vyhrá",
-        "packages/core/test/pravidla-bitka.test.ts › §1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá"
+        "packages/core/test/pravidla-bitka.test.ts › §1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá",
+        "packages/core/test/vydesenie-zrusenie.test.ts › §1/§10: patronát nad vydeseným starším zruší ohlásenie v tej chvíli — aj v pohľade oboch hráčov",
+        "packages/core/test/vydesenie-zrusenie.test.ts › §1: kto po zrušení v tom istom kole znova doplní polovicu, ohlasuje odznova — na konci kola nevyhrá",
+        "packages/core/test/vydesenie-zrusenie.test.ts › §1: po žiadnom ťahu nevisí ohlásenie hráča, ktorý nemá vydesenú polovicu starších (náhodné partie)"
       ]
     },
     {
       "id": "1.koniec.exekucia",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Kto nedokáže čeliť exekúcii (priznané Dlhy na prahu a žiadny Nástroj), okamžite prehráva.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §1/§11: kto má priznané Dlhy na prahu Exekútora (10) a nemá Nástroj, okamžite prehráva; pod prahom (9) nie"
-      ]
+      "pravidlo": "Exekúcia prehru nespôsobí (v6): kto má priznané Dlhy na prahu, tomu zhorí polovica Dlhov a rovnako špakov.",
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "1.koniec.balicek-pod-5",
@@ -41,11 +43,11 @@
     {
       "id": "1.koniec.posledna-bitka",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Po poslednej bitke o lokalitu (3 / 5 / 7) sa spočítajú body.",
+      "pravidlo": "Po poslednej bitke o lokalitu (3 / 5 / 7) príde finále; po finále sa odpočíta nepriznaná Cirhóza a vyhrá viac špakov, rovnosť je remíza.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/engine.test.ts › celá hra náhodnými legálnymi ťahmi dobehne",
-        "packages/core/test/pravidla-bitka.test.ts › §14 Kategórie: na konci hry sú body len súčtom aktívnych podmienok scorecardov — plošné body nie sú"
+        "packages/core/test/pravidla-bitka.test.ts › §14 (v6): po poslednej bitke o lokalitu hra nekončí — príde finále bez lokality",
+        "packages/core/test/pravidla-bitka.test.ts › §14: vyhrá viac špakov, rovnosť je remíza; ďalšie kolo už nie je"
       ]
     },
     {
@@ -127,11 +129,9 @@
       "id": "2.akcie.robota",
       "paragraf": "2. Karta, akcie, tagy, varianty › Akcie",
       "pravidlo": "Robota v kroku Exekútora pred kontrolou prahu spáli 1 priznaný Dlh — aj bez exekúcie.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11: Robota spáli priznaný Dlh ešte pred kontrolou prahu — 10 Dlhov a 1 Robota exekúciu nespustí",
-        "packages/core/test/lokality-20261020.test.ts › Obecný úrad: prah Exekútora −4 a Robota odhodí 2 Dlhy"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "2.akcie.kluc-cigaretka",
@@ -224,9 +224,7 @@
       "pravidlo": "Nástroj nesmie susediť s Nástrojom na konci strany; Pes sa nestretne s iným Zvieraťom vo svojej partii.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie",
-        "packages/core/test/vykladanie.test.ts › pes sa nestretne s iným zvieraťom toho istého majiteľa — v žiadnej partii",
-        "packages/core/test/effects.test.ts › pes sa nesmie vyložiť do partie s iným zvieraťom (a naopak)"
+        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie"
       ]
     },
     {
@@ -386,15 +384,13 @@
       ]
     },
     {
-      "id": "7.naex.liberal-alkoholik",
+      "id": "7.naex.placatka",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "Na Liberála NA EX nemožno; na súperovho Anonymného alkoholika tiež nie — jeho susedov nechráni.",
+      "pravidlo": "Placatka (2026-10-26): NA EX na vlastného Anonymného alkoholika (aj podstrčeného) sa do limitu NA EX za Pitku neráta — navyše k bežnému, pred ním aj po ňom, na Vínnej pivnici k obom; treba plný poldeci, na Kostole nejde, na Anonymného alkoholika s poldeci ďalšie NA EX nie. Súper naňho NA EX smie a jemu sa do limitu ráta; Liberála NA EX nezakazuje.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať nemožno",
-        "packages/core/test/naex-ochrana.test.ts › súper nedá NA EX na neho, na majiteľove karty vedľa neho áno",
-        "packages/core/test/naex-ochrana.test.ts › majiteľ smie dať NA EX na neho aj na svoje karty vedľa neho",
-        "packages/core/test/naex-ochrana.test.ts › podstrčený na súperovu stranu chráni seba, súperove karty vedľa seba nie"
+        "packages/core/test/naex-ochrana.test.ts › NA EX naň smie (Michal 2026-10-26 zrušil vetu „Na Liberála NA EX dať nemožno“)",
+        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať smie (Michal 2026-10-26)"
       ]
     },
     {
@@ -408,10 +404,10 @@
     {
       "id": "7.naex.krcma",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "Na Krčme hráč s plným poldeci a kartou, kam ho dať, musí dať (skryté) NA EX, inak Pitku neskončí; prah Cirhózy je obom o 2 vyšší.",
+      "pravidlo": "Na Krčme hráč s plným poldeci a kartou, kam ho dať, musí dať (skryté) NA EX, inak Pitku neskončí — jedno; splní ho aj placatka na vlastného Anonymného alkoholika, ďalšie NA EX je dobrovoľné. Prah Cirhózy je obom o 2 vyšší.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › s plným poldeci a vlastným Občanom v línii sa Pitka bez NA EX neskončí; packages/core/test/lokality-20261020.test.ts › Krčma: prah Cirhózy o 2 vyšší obom, povinné NA EX pri pečeni 2 Cirhózu nedá (Michal 2026-10-22); packages/core/test/naex-ochrana.test.ts › Krčma nevyžaduje NA EX, keď jediný Občan je súperov Alkoholik; Občan vedľa neho už áno."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › s plným poldeci a vlastným Občanom v línii sa Pitka bez NA EX neskončí; packages/core/test/lokality-20261020.test.ts › Krčma: prah Cirhózy o 2 vyšší obom, povinné NA EX pri pečeni 2 Cirhózu nedá (Michal 2026-10-22). Placatka (2026-10-26): packages/core/test/naex-ochrana.test.ts › Krčma: povinné NA EX splní aj placatka; po bežnom NA EX placatka povinná nie je."
     },
     {
       "id": "7.naex.pri-lokalite",
@@ -461,12 +457,14 @@
       ]
     },
     {
-      "id": "7.naex.svokra",
+      "id": "7.naex.efekty-okolo",
       "paragraf": "7. Pitka › NA EX",
-      "pravidlo": "Pri odkrytí každého NA EX súpera mu majiteľ Svokry vezme 2 cigarety (každá Svokra dve, bez cigarety nič); pri zrážke za každé z oboch NA EX.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/naex-ochrana.test.ts › za NA EX súpera ukradne jej majiteľ 2 cigarety; packages/core/test/naex-ochrana.test.ts › súper bez cigarety nestratí nič; vlastné NA EX majiteľa nič nespustí; packages/core/test/naex-ochrana.test.ts › dve Svokry ukradnú 4 cigarety, viac než súper má nie."
+      "pravidlo": "Pri odkrytí platia Výpalné, Vychovávateľka a nakoniec Policajtka (Dlh tomu, kto dal v Pitke viac NA EX); Svokra (Rana za majiteľovu kartu so súperovým NA EX) až v bitke a cigarety už neberie. Odpoveď na NA EX počet pre Policajtku nezmení.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-ochrana.test.ts › pri odkrytí NA EX už súperovi cigarety neberie",
+        "packages/core/test/naex-ochrana.test.ts › v bitke je Rana navyše v tuhom: to isté NA EX od súpera dá o 1 tuhé viac ako vlastné"
+      ]
     },
     {
       "id": "7.naex.pecen-a-poldeci",
@@ -535,7 +533,7 @@
     },
     {
       "id": "11.priznanie.tempo",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Priznanie nemíňa limit, neodovzdá ťah a smie aj pri vyčerpanom limite.",
       "stav": "pokryte",
       "testy": [
@@ -546,7 +544,7 @@
     },
     {
       "id": "11.priznanie.karta",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Za priznanú kliatbu si hráč hneď dobere kartu (Dlh, Milujúca manželka, Absťák); za Cirhózu nie.",
       "stav": "pokryte",
       "testy": [
@@ -557,7 +555,7 @@
     },
     {
       "id": "11.priznanie.dlh-sam",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Dobratý Dlh sa hneď sám prizná a hráč ťahá ďalšiu kartu (aj v reťazi).",
       "stav": "pokryte",
       "testy": [
@@ -566,7 +564,7 @@
     },
     {
       "id": "11.priznanie.mimo-linie",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Kliatba do línie nepatrí, dá sa len priznať; výnimka je Milujúca manželka (Občan).",
       "stav": "pokryte",
       "testy": [
@@ -575,7 +573,7 @@
     },
     {
       "id": "11.priznanie.cirhoza-tuhe",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Priznanie",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
       "pravidlo": "Priznaná Cirhóza dá súperovi v každej bitke +1 tuhé.",
       "stav": "pokryte",
       "testy": [
@@ -607,9 +605,7 @@
       "pravidlo": "Efekt Nástroja platí len v Dedičstve (Svätý text, Puška, Cigorky, Pasca…).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Svätý text: hodnota tvojej Viery je o 1 vyššia",
-        "packages/core/test/revizia-kariet.test.ts › Puška v Dedičstve: prebytok proti jej majiteľovi o 2 menší",
-        "packages/core/test/pravidla-kolo.test.ts › §7 krok 5 / §12 Cigorky: cigareta navyše v každej Pitke — súperove Obmedzenia ju neuberú"
+        "packages/core/test/playtest-055944.test.ts › Svätý text: hodnota tvojej Viery je o 1 vyššia"
       ]
     },
     {
@@ -627,8 +623,8 @@
       "pravidlo": "Útočník je porazený z minulej bitky, v prvom kole náhodný; pri remíze ostáva.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §4: útočník prvého kola je náhodný — zo semienka raz jeden, raz druhý hráč",
-        "packages/core/test/pravidla-20261021.test.ts › rovnaké tuhé nevyhrá nikto: lokalita ide na sekeru, berie ju víťaz najbližšej bitky; v poslednej bitke prepadne"
+        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky",
+        "packages/core/test/spaky-v6.test.ts › pri rovnosti špakov útočí porazený poslednej bitky; po sekere ostáva útočník (Leader 2026-10-26)"
       ]
     },
     {
@@ -649,10 +645,8 @@
       "testy": [
         "packages/core/test/pravidla-20261025.test.ts › fajčenie",
         "packages/core/test/pravidla-20261025.test.ts › fajčenie uprostred: najprv zvyšok doberacieho, potom zamiešaný odhadzovací",
-        "packages/core/test/pravidla-20261025.test.ts › Poštárka",
         "packages/core/test/pravidla-20261025.test.ts › priznanie kliatby",
-        "packages/core/test/pravidla-20261025.test.ts › dobratie po bitke (2 karty na ďalšie kolo)",
-        "packages/core/test/pravidla-20261025.test.ts › Veľmi smútiaca vdova odhalí vrchnú kartu zamiešaného odhadzovacieho balíčka súpera",
+        "packages/core/test/pravidla-20261025.test.ts › dobratie po bitke (KARTY_PO_BITKE = 1 karta na ďalšie kolo, od 2026-10-27)",
         "packages/core/test/pravidla-20261025.test.ts › pri prázdnom doberacom sa odhadzovací zamieša a nová Cirhóza príde do ruky (Vízia: vziať)",
         "packages/core/test/michal-20261018.test.ts › aj keď je doberací prázdny — zamieša sa odhadzovací"
       ]
@@ -734,7 +728,8 @@
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › 3 a 1 aktivované akcie → 2 Pitky; jedna strana prázdna → 1 Pitka",
         "packages/core/test/pravidla-20261019.test.ts › po prvej Pitke ide ďalšie Zhromaždenie a druhá Pitka, potom bitka",
-        "packages/core/test/draft.test.ts › bez kariet v línii sa ráta jedna Pitka (Michal 2026-10-19 — Pitky podľa akcií lokality)"
+        "packages/core/test/draft.test.ts › bez kariet v línii sa ráta jedna Pitka (Michal 2026-10-19 — Pitky podľa akcií lokality)",
+        "packages/core/test/pravidla-medzery-v62.test.ts › §7: akcie hrany aktivované podstrčenou kartou sa rátajú strane, kde karta leží — 3 a 1 → 2 Pitky"
       ]
     },
     {
@@ -752,9 +747,7 @@
       "pravidlo": "Patrón: marker aspoň v žltej zóne na jeho polovici, na ukazovateli pôvodný starší; náhrada je Občan či Zviera z ruky; hráč má aspoň jeden poldeci.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/elders.test.ts › patronát len patrónovi a od žltej zóny (Michal 2026-10-20)",
-        "packages/core/test/patronat-20261020.test.ts › bez cigariet, bez poldeci alebo bez Občana či Zvieraťa sa staršieho vziať nedá",
-        "packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno"
+        "packages/core/test/elders.test.ts › patronát len patrónovi a od žltej zóny"
       ]
     },
     {
@@ -770,11 +763,11 @@
     {
       "id": "10.patronat.cena",
       "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Cena: cigarety do červenej (žltá 2, oranžová 1, červená 0) a súperove Pohoršenia navyše o posun do stredu (2 / 3 / 4).",
+      "pravidlo": "Cena (v6.1): cigarety podľa zóny (žltá 3, oranžová 2, červená 1) a súperove Pohoršenia navyše o počet polí do stredu (1 / 2 / 3).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/elders.test.ts › cena patronátu: cigarety do červenej + Pohoršenia do stredu, spolu 4",
-        "packages/core/test/patronat-20261020.test.ts › z červenej zadarmo, súper dostane 4 Pohoršenia; obávaný hráč patrónom nie je"
+        "packages/core/test/elders.test.ts › cena (v6.1): cigarety žltá 3 / oranžová 2 / červená 1, súperove Pohoršenia 1 / 2 / 3",
+        "packages/core/test/patronat-20261020.test.ts › z červenej za 1 cigaretu (v6.1), súper dostane 3 Pohoršenia; obávaný hráč patrónom nie je"
       ]
     },
     {
@@ -790,10 +783,10 @@
     {
       "id": "10.patronat.marker-stred",
       "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Marker ide do stredu a ráta sa ako začiatok kola — na krajnú pozíciu sa v tomto kole nedostane.",
+      "pravidlo": "Marker ide do stredu (index 3); zamknutie krajnej pozície v6 nie je.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §10: po patronáte marker ide do stredu a ráta sa ako začiatok kola — na krajnú sa v tomto kole nedostane"
+        "packages/core/test/pravidla-kolo.test.ts › §10: po patronáte marker ide do stredu (v6: zamknutie krajnej pozície sa ruší)"
       ]
     },
     {
@@ -808,18 +801,18 @@
     {
       "id": "10.patronat.pohorsenia",
       "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Súper hrá Pohoršenia z patronátu ako svoje, aj na toho istého staršieho; patrónova Policajtka ich zruší.",
+      "pravidlo": "Súper hrá Pohoršenia z patronátu ako svoje, ale nie na staršieho, ktorého si patrón vzal (v6); jeho ostatné Pohoršenia naňho smú, hra minie najprv tie z patronátu. Patrónova Policajtka ich od 2026-10-26 neruší.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/patronat-20261020.test.ts › súper dostane Pohoršenia v bitke a vráti nimi marker toho istého staršieho až do oranžovej",
-        "packages/core/test/patronat-20261020.test.ts › Policajtka patróna zruší aj Pohoršenia z patronátu",
-        "packages/core/test/hlasky-bitky.test.ts › Policajtka: zrušené Pohoršenia aj z patronátu ohlási; umlčanú Praudovravcom tiež"
+        "packages/core/test/patronat-20261020.test.ts › v6: súperove Pohoršenia z patronátu nesmú na patróna — patrón z červenej zastaví vydesenie (Michal 2026-10-26)",
+        "packages/core/test/patronat-20261020.test.ts › v6: na patróna smú súperove ostatné Pohoršenia (zo stola) — z patronátu sa minú najprv",
+        "packages/core/test/patronat-20261020.test.ts › Policajtka patróna Pohoršenia z patronátu neruší (Michal 2026-10-26)"
       ]
     },
     {
       "id": "10.patronat.vysledok",
       "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Výhra: starší ostáva patrónovi, náhrada sa otočí; prehra aj remíza: starší späť, náhrada do ruky, bolestné poldeci (vypitý, inak plný).",
+      "pravidlo": "Výhra: starší ostáva patrónovi, náhrada sa otočí; prehra aj sekera: starší späť, náhrada do ruky, bolestné poldeci (vypitý, inak plný).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/patronat-20261020.test.ts › výhra: starší ostáva patrónovi, karta lícom dole sa otáča na scorecarde",
@@ -828,14 +821,12 @@
       ]
     },
     {
-      "id": "10.patronat.pohreb-starosta",
+      "id": "10.patronat.starosta",
       "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Kartu staršieho z patronátu nemožno pochovať ani vymeniť Starostom.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/patronat-20261020.test.ts › staršieho z patronátu nemožno pochovať",
-        "packages/core/test/pravidla-kolo.test.ts › §10: kartu staršieho z patronátu nemožno vymeniť Starostom"
-      ]
+      "pravidlo": "Kartu staršieho z patronátu nemožno vymeniť Starostom.",
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Pohreb zrušil Michal 2026-10-27 (test „nemožno pochovať“ zanikol); test Starostu treba doplniť."
     },
     {
       "id": "6.zacina-utocnik",
@@ -860,7 +851,7 @@
     {
       "id": "4.kolo.nevyhnutne",
       "paragraf": "4. Priebeh kola",
-      "pravidlo": "Keď hráč nemá inú možnosť než pasovať, preskočiť NA EX alebo Pohreb, hra ťah urobí za neho (aj s cigaretami v Zhromaždení).",
+      "pravidlo": "Keď hráč nemá inú možnosť než pasovať alebo preskočiť NA EX, hra ťah urobí za neho (aj s cigaretami v Zhromaždení).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/tempo.test.ts › keď hráč nemá čo vyložiť, pas sa odohrá sám a začne Pitka",
@@ -902,11 +893,10 @@
     {
       "id": "13.zaverecna.otocenie",
       "paragraf": "13. Pokročilé ťahy › Záverečná",
-      "pravidlo": "Záverečná sa otočí na konci Pitky; Nástup a efekty, ktoré by ju prezradili (Svokra), sa vyhodnotia až vtedy.",
+      "pravidlo": "Záverečná sa otočí na konci Pitky; Nástup a efekty, ktoré by ju prezradili (Policajtka), sa vyhodnotia až vtedy.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/zaverecna.test.ts › otočí sa a Nástup sa vyhodnotí až vtedy",
-        "packages/core/test/zaverecna.test.ts › Svokra lícom dole za NA EX súpera nekradne hneď — až pri otočení"
+        "packages/core/test/zaverecna.test.ts › otočí sa a Nástup sa vyhodnotí až vtedy"
       ]
     },
     {
@@ -993,10 +983,9 @@
       "id": "7.vyhodnotenie.nulovanie",
       "paragraf": "7. Pitka › Vyhodnotenie Pitky",
       "pravidlo": "Po vyhodnotení Pitky sa pečeň aj zadĺženie oboch hráčov vynulujú.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-v3.test.ts › po Pitke sa zvyšok pečene a zadĺženia pod prahom vynuluje"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "9.zaciatok.krcmarka-dievcina",
@@ -1004,59 +993,66 @@
       "pravidlo": "Na začiatku bitky Krčmárka otočí vypitý poldeci (bez Absťáku a NA EX) a Dievčina spáli priznané Dlhy a seba.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)",
-        "packages/core/test/playtest-055944.test.ts › Dievčina spáli toľko priznaných Dlhov, koľko mala aktívnych akcií, a sama sa spáli"
+        "packages/core/test/playtest-055944.test.ts › Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20)"
       ]
     },
     {
       "id": "11.exekutor.prah",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Exekútor",
-      "pravidlo": "Prah Exekútora = 10 − sila súperovej priazne Exekútora (Obecný úrad −4); pri priznaných Dlhoch ≥ prah hráč odovzdá Nástroj (ruka, balíček, Dedičstvo) a polovica Dlhov (nadol) zhorí.",
-      "stav": "na-overenie",
-      "testy": [],
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
+      "pravidlo": "Prah Exekútora = 10 − sila súperovej priazne Exekútora (Obecný úrad −4); pri priznaných Dlhoch ≥ prah zhorí polovica Dlhov (nadol) a rovnako špakov (v6, Nástroj sa neodovzdáva); Záhradkár smie ísť namiesto špakov.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/battle.test.ts › v6: zhorí polovica priznaných Dlhov nadol (a rovnako špakov)"
+      ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/battle.test.ts › prah je 10 + 2×priazeň; packages/core/test/battle.test.ts › po odovzdaní Nástroja zhorí polovica dlhov nadol; packages/core/test/pravidla-bitka.test.ts › §11: s Nástrojom hráč exekúcii čelí — odovzdá ho a polovica priznaných Dlhov (nadol) zhorí: 11 → 6."
     },
     {
       "id": "11.exekutor.robota",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Exekútor",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
       "pravidlo": "Najprv Robota: za každú aktívnu spáli 1 priznaný Dlh, potom sa kontroluje prah.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11: Robota spáli priznaný Dlh ešte pred kontrolou prahu — 10 Dlhov a 1 Robota exekúciu nespustí"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "11.exekutor.nepali",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Exekútor",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
       "pravidlo": "Kto exekúcii nečelí, Dlh nepáli.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-20261021.test.ts › Dlh sa sám nepáli — kto exekúcii nečelí, priznané Dlhy si nechá (Michal 2026-10-22)",
-        "packages/core/test/pravidla-bitka.test.ts › §1/§11: kto má priznané Dlhy na prahu Exekútora (10) a nemá Nástroj, okamžite prehráva; pod prahom (9) nie"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "9.pohorsenie.posun",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Každé Pohoršenie posunie marker staršieho o 1 k súperovi alebo k sebe (staršieho aj smer vyberá hráč akcie, smie každý), bez ohľadu na výsledok bitky; priazeň sa mení hneď a platí už v tej istej bitke.",
-      "stav": "na-overenie",
-      "testy": [],
+      "pravidlo": "Každé Pohoršenie posunie marker staršieho o jedno pole k súperovi alebo k sebe, bez ohľadu na výsledok bitky; priazeň aj strach sa menia hneď (strach už v špakoch tejto bitky).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v5.test.ts › legálne sú oba smery; k sebe posunie marker k hráčovi a priazeň platí už v poškodení tejto bitky",
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane odohrané Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie"
+      ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno."
     },
     {
       "id": "9.pohorsenie.hranice",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Ten istý marker smie ísť viackrát, Pohoršenia jedného hráča ho prenesú najviac cez dve hranice zón — oba smery spolu; Kultúrny dom limit ruší.",
-      "stav": "na-overenie",
-      "testy": [],
+      "pravidlo": "V6: Pohoršenie nemá limit hraníc zón — ten istý marker smie ísť viackrát (oba smery).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v5.test.ts › v6: limit hraníc zón sa ruší — 6 Pohoršení prejde celú stupnicu oboma smermi",
+        "packages/core/test/patronat-20261020.test.ts › z pravej oranžovej až na ľavú červenú — limit hraníc zón ani zákaz kraja nie sú"
+      ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/patronat-20261020.test.ts › z pravej oranžovej len po ľavú sivú — tretia hranica nie; packages/core/test/patronat-20261020.test.ts › Kultúrny dom limit ruší, na krajnú však Pohoršenie nesmie; packages/core/test/elders.test.ts › hranice zón: v sivej sa nič neprekračuje."
     },
     {
       "id": "9.pohorsenie.kraj",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Pohoršením sa nedá dostať na krajnú pozíciu v žiadnom smere (okrem Novín).",
-      "stav": "na-overenie",
-      "testy": [],
+      "pravidlo": "V6: Pohoršenie smie na krajnú pozíciu (zo stredu na červenú tri), ďalej von nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v5.test.ts › v6: aj k sebe smie na krajnú pozíciu, ďalej von nie",
+        "packages/core/test/patronat-20261020.test.ts › zo stredu na červenú tri Pohoršenia, ďalej už nie"
+      ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › Pohoršenie nikdy nedostane marker na krajnú pozíciu; packages/core/test/revizia-kariet.test.ts › Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola."
     },
     {
@@ -1073,35 +1069,34 @@
       "pravidlo": "Za každú priznanú Cirhózu hráča dostane súper v bitke +1 tuhé (Veterinár znižuje).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › za každú priznanú Cirhózu dá súper +1 tuhé",
-        "packages/core/test/effects.test.ts › recidivista pridáva tuhé; farár a veterinár uberajú"
+        "packages/core/test/pravidla-20261019.test.ts › za každú priznanú Cirhózu dá súper +1 tuhé"
       ]
     },
     {
       "id": "9.vysledok.vitaz",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Víťaz má vyššie tuhé; pri rovnakom tuhom nevyhrá nikto a lokalita ide na sekeru.",
+      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (práve teraz; Autobusár jeden ignoruje), potom menej priznaných Dlhov, inak sekera.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › pri úplnej remíze nevyhrá nikto (ani obranca)",
-        "packages/core/test/battle.test.ts › pri remíze v tuhom nevyhrá nikto, prebytok drží vyššie celkové",
-        "packages/core/test/pravidla-20261021.test.ts › rovnaké tuhé nevyhrá nikto: lokalita ide na sekeru, berie ju víťaz najbližšej bitky; v poslednej bitke prepadne"
+        "packages/core/test/battle.test.ts › remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera",
+        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky"
       ]
     },
     {
       "id": "9.vysledok.sekera",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Na sekere sa lokality kopia, berie ich víťaz najbližšej bitky; v poslednej bitke pri remíze prepadnú, víťaz poslednej berie všetko.",
+      "pravidlo": "Pri sekere čakajú špaky kola (odohrané Pitky) na víťaza najbližšej bitky a kopia sa; vo finále prepadnú.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261021.test.ts › rovnaké tuhé nevyhrá nikto: lokalita ide na sekeru, berie ju víťaz najbližšej bitky; v poslednej bitke prepadne",
-        "packages/core/test/hodnota-lokality.test.ts › so sekerou ráta aj lokality na sekere — víťaz ich berie spolu s cieľom"
+        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky",
+        "packages/core/test/spaky-v6.test.ts › sekera: remíza v tuhom, Absťákoch aj Dlhoch — špaky kola čakajú, vezme ich víťaz ďalšej bitky",
+        "packages/core/test/spaky-v6.test.ts › sekera vo finále: špaky kola aj zo sekery prepadnú"
       ]
     },
     {
       "id": "9.vysledok.prebytok-drzi",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Prebytok rozdelí hráč, ktorý ho drží (vyššie celkové — aj porazený či pri remíze v tuhom), smerom k svojmu súperovi.",
+      "pravidlo": "Prebytok rozdelí hráč, ktorý ho drží (vyššie celkové), až po špakoch za bitku a za starších — o pole za bod k svojmu súperovi; po finále a na Kultúrnom dome dá držiteľovi špaky.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › prebytok drží hráč s vyšším celkovým, aj keď bitku prehral",
@@ -1114,11 +1109,9 @@
       "id": "9.vysledok.minstrant",
       "paragraf": "9. Bitka › 9.4 Výsledok",
       "pravidlo": "Miňištrant vo víťazovej partii zdraží každý posun o 1; posun drahší než zvyšok prebytku prepadne.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/dobiehanie.test.ts › posun, ktorý stojí viac než zvyšný prebytok, sa nedá urobiť",
-        "packages/core/test/hlasky-bitky.test.ts › Miňištrant: prebytok, ktorý na posun nestačí, prepadne s hláškou"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "9.vysledok.cigarety",
@@ -1151,32 +1144,14 @@
       ]
     },
     {
-      "id": "11.pohreb.zavisly",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Pohreb",
-      "pravidlo": "Pohreb Závislého: hráč si smie navyše vziať jednu kartu zo šenku; bez Dlhu (pravidlá v4, Liečba zlúčená do Pohrebu). Kartu zo šenku dá len Závislý.",
+      "id": "15.lokalita.cintorin",
+      "paragraf": "15. Lokality",
+      "pravidlo": "Cintorín (Prehra, Michal 2026-10-27): porazený smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo; cena Dedičstva sa zvýši; pri sekere nikto.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11 Pohreb Závislého: spáli priznanú Cirhózu a Závislého z línie, hráč si smie vziať kartu zo šenku — bez Dlhu (v4)",
-        "packages/core/test/pravidla-bitka.test.ts › §11 Pohreb: kartu zo šenku dá len Závislý; Závislého smie pochovať aj bez nej"
-      ]
-    },
-    {
-      "id": "11.pohreb",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Pohreb",
-      "pravidlo": "Pohreb: spáľ priznanú Cirhózu a ľubovoľnú svoju kartu z línie.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11 Pohreb: spáli priznanú Cirhózu a ľubovoľnú svoju kartu z línie — karta sa nevráti"
-      ]
-    },
-    {
-      "id": "11.cintorin",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Cintorín",
-      "pravidlo": "Pri bitke o Cintorín porazený smie dať jeden Nástroj z ruky do Dedičstva zadarmo; cena Dedičstva sa zvýši.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/lokality-20261020.test.ts › po Pohrebe čaká Cintorín na porazeného; Nástroj ide do Dedičstva bez cigariet a cena Dedičstva rastie",
-        "packages/core/test/lokality-20261020.test.ts › bez Nástroja v ruke alebo inde sa Cintorín preskočí"
+        "packages/core/test/v7-efekty.test.ts › porazený dá Nástroj z ruky do Dedičstva zadarmo; spoločná cena Dedičstva rastie",
+        "packages/core/test/v7-efekty.test.ts › porazený smie vziať Nástroj aj zo šenku — zo šenku zmizne",
+        "packages/core/test/v7-efekty.test.ts › bez Nástroja v ruke aj v šenku, na inej lokalite a pri sekere sa Cintorín preskočí"
       ]
     },
     {
@@ -1185,7 +1160,6 @@
       "pravidlo": "Kar: na začiatku bitky smie každý (obranca, potom útočník) zahodiť jednu nepriznanú Cirhózu z ruky — navždy z hry.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/kar.test.ts › bitka počká na obrancu, ktorý má v ruke Cirhózu; zahodená Cirhóza zmizne z hry a súperov Hrobár dostane cigaretu",
         "packages/core/test/kar.test.ts › Cirhózu si hráč smie nechať; bez Cirhózy v ruke sa krok preskočí",
         "packages/core/test/kar.test.ts › inde ako na Kare sa krok nekoná"
       ]
@@ -1211,17 +1185,16 @@
     {
       "id": "9.navrat",
       "paragraf": "9. Bitka › 9.7 Návrat kariet",
-      "pravidlo": "Karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral; zahodené (Dievčina) nie; lokalitu získa víťaz.",
+      "pravidlo": "Karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral; zahodené (Dievčina) nie; lokalita ide na nástenku (v6).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §9.7: karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral — aj zo súperovej strany",
-        "packages/core/test/playtest-055944.test.ts › Dievčina spáli toľko priznaných Dlhov, koľko mala aktívnych akcií, a sama sa spáli"
+        "packages/core/test/pravidla-bitka.test.ts › §9.7: karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral — aj zo súperovej strany"
       ]
     },
     {
       "id": "10.nahradeny",
       "paragraf": "10. Starší",
-      "pravidlo": "Nahradený starší ostáva v hre (marker, priazeň, body, vydesenie); náhradu si nikto nevezme do ruky.",
+      "pravidlo": "Nahradený starší ostáva v hre (marker, priazeň, špaky za strach, vydesenie); náhradu si nikto nevezme do ruky.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno"
@@ -1230,12 +1203,11 @@
     {
       "id": "10.stupnica.sila",
       "paragraf": "10. Starší › Stupnica strachu",
-      "pravidlo": "Sila priazne podľa pozície 3-2-1-0-0-0-1-2-3, marker začína v strede (index 4).",
+      "pravidlo": "Stupnica 7 polí 3-2-1-0-1-2-3 (v6), sila priazne 1 / 2 / 3 podľa zóny.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/dobiehanie.test.ts › bonus = 2 × sila podľa zóny na polovici hráča",
-        "packages/core/test/elders.test.ts › sila priazne rastie so vzdialenosťou od stredu",
-        "packages/core/test/pravidla-kolo.test.ts › §3: 8 starších s markerom v strede, nikto nič neohlásil"
+        "packages/core/test/elders.test.ts › 3-2-1-0-1-2-3: jedno sivé pole v strede",
+        "packages/core/test/elders.test.ts › sila priazne 1 / 2 / 3 podľa zóny"
       ]
     },
     {
@@ -1251,20 +1223,22 @@
     {
       "id": "10.marker.priazen-strach",
       "paragraf": "10. Starší › Dvojaká úloha markera",
-      "pravidlo": "Priazeň má hráč, na ktorého polovici marker leží; starší sa bojí súpera na úrovni zóny; v sivej nikto. Strach určuje body za tohto staršieho (1 + úroveň) a ráta sa do zónových podmienok ostatných starších.",
-      "stav": "na-overenie",
-      "testy": [],
+      "pravidlo": "Priazeň má hráč, na ktorého polovici marker leží; starší sa bojí súpera na úrovni zóny; v sivej nikto. Strach dáva po každej bitke obávanému 1 / 2 / 3 špaky.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/elders.test.ts › posun k hráčovi 1 → priazeň má hráč 1, starší sa bojí hráča 0",
+        "packages/core/test/elders.test.ts › starší dá obávanému hráčovi žltá 1, oranžová 2, červená 3; sivý nikomu"
+      ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › marker v strede → priazeň nemá nikto; packages/core/test/elders.test.ts › posun k hráčovi 1 → priazeň má hráč 1, ale starší sa bojí hráča 0."
     },
     {
       "id": "10.zamknuta",
-      "paragraf": "10. Starší › Zamknutá pozícia",
-      "pravidlo": "Na krajnú pozíciu len z predposlednej, na ktorej marker bol od začiatku kola; z krajnej sa bežným posunom nepohne.",
+      "paragraf": "10. Starší › Krajná pozícia",
+      "pravidlo": "V6 sa zamknutie ruší: na krajnú pozíciu smie marker aj viac posunmi v kole a z nej ho smie súper odtlačiť; ďalej von nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/elders.test.ts › z pozície 6 sa v jednom kole nedá dôjsť ďalej než na 7",
-        "packages/core/test/elders.test.ts › z pozície 7 na začiatku kola sa dá na 8 → prebudenie pre tlačiaceho",
-        "packages/core/test/elders.test.ts › z krajnej pozície sa marker bežným posunom nepohne"
+        "packages/core/test/elders.test.ts › 1 posun = 1 pole; zo stredu na červenú tri posuny v jednom kole (zamknutie sa ruší)",
+        "packages/core/test/elders.test.ts › z krajnej pozície ďalej von nie, späť k súperovi áno"
       ]
     },
     {
@@ -1273,8 +1247,7 @@
       "pravidlo": "Na krajnej červenej pozícii sa efekt staršieho (Furt, Bitka, Pitka…) uplatňuje pre vydesujúceho hráča; priazeň ostáva súperovi.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/elders.test.ts › z pozície 7 na začiatku kola sa dá na 8 → prebudenie pre tlačiaceho",
-        "packages/core/test/pravidla-bitka.test.ts › §10 Prebudenie: efekt staršieho na krajnej pozícii (Bitka) sa uplatní pre vydesujúceho hráča"
+        "packages/core/test/elders.test.ts › 1 posun = 1 pole; zo stredu na červenú tri posuny v jednom kole (zamknutie sa ruší)"
       ],
       "poznamka": "Nástup sa pri prebudení neuplatní — karta na ukazovateli sa nevykladá, Nástup sa spúšťa len vo vylozDoLinie."
     },
@@ -1305,73 +1278,24 @@
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-20261019.test.ts › stará sada so Zberateľom alebo Očumovateľom sa načíta ako Úžerník."
     },
     {
-      "id": "14.podmienka.aktivacia",
-      "paragraf": "14. Bodovanie › Scorecardy",
-      "pravidlo": "Podmienku aktivuje neprázdna akcia karty na ukazovateli na tej istej strane a indexe; náhrada mení aktívne podmienky.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/elders.test.ts › podmienky staršieho: aktívna je tá, pri ktorej má karta akciu"
-      ]
-    },
-    {
-      "id": "14.bez-stran",
-      "paragraf": "14. Bodovanie › Scorecardy",
-      "pravidlo": "Každá aktívna podmienka (ľavá aj pravá) je súboj oboch hráčov; dve rovnaké aktívne podmienky = dva súboje; rovnosť nevyhrá nikto.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › podmienky za kus bodujú obom hráčom bez ohľadu na marker a stranu (Michal 2026-10-16); packages/core/test/elders.test.ts › každá aktívna podmienka sa ráta zvlášť, aj keď je rovnaká."
-    },
-    {
-      "id": "14.zonove",
-      "paragraf": "14. Bodovanie › Zónové podmienky",
-      "pravidlo": "Zónové podmienky rátajú len ostatných starších: hodnota hráča = počet ostatných starších, ktorí sa ho boja aspoň na úrovni podmienky.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › zónové podmienky bodujú za strach všetkých starších, vrátane tohto — príklad s Farárom."
-    },
-    {
-      "id": "14.body",
-      "paragraf": "14. Bodovanie › Body za staršieho",
-      "pravidlo": "Body za staršieho získa, kto vyhrá viac jeho podmienok, pri rovnosti obaja: 1 + 1 za každú zónu strachu, v ktorej sa ho starší bojí (priazeň či stred 1).",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-bitka.test.ts › §14: body za podmienky — znepokojenie 1, strach 2, vydesenie 3, lokalita 2, starší 2, cigarety 1, Cirhóza −2, Dlh −1."
-    },
-    {
-      "id": "14.kusy",
-      "paragraf": "14. Bodovanie › Scorecardy",
-      "pravidlo": "Súboje: viac lokalít, starších z patronátu, cigariet, plných poldeci (Rezerva, Vínko +1); menej Dlhov (aj priznaných), nepriznaných Cirhóz (ruka aj balíčky) a Absťákov získaných za hru.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-bitka.test.ts › §14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach; packages/core/test/pravidla-20261021.test.ts › nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide do odhadzovacieho balíčka."
-    },
-    {
-      "id": "14.kategorie",
-      "paragraf": "14. Bodovanie",
-      "pravidlo": "Plošné body ani násobenie počtom podmienok nie sú — body sú súčtom bodov za starších; rovnosť bodov = remíza.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-bitka.test.ts › §14 Kategórie: na konci hry sú body len súčtom aktívnych podmienok scorecardov — plošné body nie sú."
-    },
-    {
       "id": "3.start.karty",
       "paragraf": "3. Príprava hry",
-      "pravidlo": "Každý má 7 štartovacích kariet (3 Pijan, 2 Miňištrant, Milujúca manželka, Dievčina) — nie sú v spoločnom balíčku; zamiešajú sa a 5 ide do ruky.",
+      "pravidlo": "Každý má na začiatku v ruke 4 karty — Miňištrant, Milujúca manželka, Pijan, Dievčina na vydaj; doberací balíček je prázdny; tieto druhy nie sú v spoločnom balíčku (v6).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/michal-20261018.test.ts › obaja začínajú so 7 štartovkami: 3 Pijani, 2 Miňištranti, Manželka a Dievčina (Michal 2026-10-22)",
-        "packages/core/test/michal-20261018.test.ts › v spoločnom balíčku (a teda v šenku) štartovky nie sú",
-        "packages/core/test/engine.test.ts › hra sa rozdá: 7 štartovacích kariet, z toho 5 na ruke, šenok prázdny, poldeci 2, cigarety 3"
+        "packages/core/test/michal-20261018.test.ts › v6: obaja začínajú so 4 kartami v ruke — Miňištrant, Milujúca manželka, Pijan a Dievčina na vydaj (Michal 2026-10-26)",
+        "packages/core/test/engine.test.ts › hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 2, cigarety 3"
       ]
     },
     {
       "id": "3.start.zdroje",
       "paragraf": "3. Príprava hry",
-      "pravidlo": "Štart: 3 cigarety, 2 plné poldeci, 0 dlhov, pečeň a absťákov; šenok prázdny.",
+      "pravidlo": "Štart: 3 cigarety, 2 plné poldeci, 0 špakov, 0 dlhov, pečeň a absťákov; šenok prázdny.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › štart: 2 poldeci (Michal 2026-10-20), 3 cigarety, 5 kariet v ruke",
-        "packages/core/test/engine.test.ts › hra sa rozdá: 7 štartovacích kariet, z toho 5 na ruke, šenok prázdny, poldeci 2, cigarety 3"
+        "packages/core/test/pravidla-20261019.test.ts › štart: 2 poldeci (Michal 2026-10-20), 3 cigarety, 4 karty v ruke (v6)",
+        "packages/core/test/engine.test.ts › hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 2, cigarety 3",
+        "packages/core/test/pravidla-kolo.test.ts › §3: 8 starších s markerom v strede, nikto nič neohlásil"
       ]
     },
     {
@@ -1395,7 +1319,7 @@
     },
     {
       "id": "11.kliatby.verejny-dlh",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
       "pravidlo": "Nový Dlh sa hneď prizná (bez karty); nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25, predtým navrch doberacieho).",
       "stav": "pokryte",
       "testy": [
@@ -1406,7 +1330,7 @@
     },
     {
       "id": "11.kliatby.verejny-pocet",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
       "pravidlo": "Počet súperových nepriznaných Dlhov a Cirhóz je verejný — každá zmena je vo verejnom logu, ktoré karty sa neposiela.",
       "stav": "pokryte",
       "testy": [
@@ -1415,8 +1339,8 @@
     },
     {
       "id": "11.kliatby.cirhoza-drzanie",
-      "paragraf": "11. Kliatby, priznanie, Exekútor, Pohreb › Kliatby",
-      "pravidlo": "Nepriznaná Cirhóza, ktorú má hráč po bitke v ruke, ide do jeho odhadzovacieho balíčka; kým ju neprizná, súper za ňu tuhé nedostáva a na Pohreb nie je; na konci sa ráta v ruke aj v balíčkoch.",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
+      "pravidlo": "Nepriznaná Cirhóza, ktorú má hráč po bitke v ruke, ide do jeho odhadzovacieho balíčka; kým ju neprizná, súper za ňu tuhé nedostáva; na konci hry stojí 5 špakov (v6).",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/kar.test.ts › Cirhózu si hráč smie nechať; bez Cirhózy v ruke sa krok preskočí; packages/core/test/pravidla-bitka.test.ts › §14/§11: Dlh uberá aj priznaný, Cirhóza len nepriznaná (ruka aj oba balíčky), cigarety po trojiciach; packages/core/test/pravidla-20261019.test.ts › za každú priznanú Cirhózu dá súper +1 tuhé."
@@ -1442,11 +1366,9 @@
       "id": "8.abstak.manzelka",
       "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
       "pravidlo": "S Milujúcou manželkou Absťák aj pri rovnakom počte nerestí; Manželky sa sčítavajú.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › s priznanou Manželkou dostane Absťák pri rovnosti, bez nej nie",
-        "packages/core/test/pravidla-20261019.test.ts › platí aj v línii a sčítava sa: dve Manželky = Absťák aj pri o 1 viac nerestiach"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "8.abstak.tuhe",
@@ -1456,6 +1378,14 @@
       "testy": [
         "packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé"
       ]
+    },
+    {
+      "id": "8.abstak.autobusar",
+      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
+      "pravidlo": "Autobusár jeden Absťák majiteľa ignoruje všade, kde sa v bitke rátajú: v tuhom poškodení, pri remíze v tuhom aj v špakoch víťaza (min 0).",
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "8.nerest",
@@ -1480,11 +1410,9 @@
       "id": "15.lokalita.kostol",
       "paragraf": "15. Lokality",
       "pravidlo": "Kostol: nikto nesmie vypiť (v ťahu jedna karta) ani dať NA EX.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/lokality-20261020.test.ts › v Zhromaždení niet Vypiť a návrh s dvoma kartami neprejde",
-        "packages/core/test/lokality-20261020.test.ts › v Pitke niet NA EX"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "15.lokalita.benzinka",
@@ -1511,7 +1439,6 @@
       "pravidlo": "Lesná cesta +1 tuhé za každú svoju kartu do prevahy v súperovom kraji (najviac 2); Ihrisko +2 za každý kraj s prevahou kariet.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/lokality-20261020.test.ts › Lesná cesta: +1 za každú svoju kartu na súperovej strane, najviac 2; Nástroj sa neráta",
         "packages/core/test/lokality-20261020.test.ts › Ihrisko: +2 za každú stranu, kde má hráč viac svojich kariet — teda až 4"
       ]
     },
@@ -1519,11 +1446,9 @@
       "id": "15.lokalita.zberny-dvor",
       "paragraf": "15. Lokality",
       "pravidlo": "Zberný dvor: raz za Pitku za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/lokality-20261020.test.ts › raz za Pitku za cigaretu karta z vlastného odhadzovacieho balíčka do ruky",
-        "packages/core/test/lokality-20261020.test.ts › inde výkup nie je"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "15.lokalita.most",
@@ -1538,7 +1463,7 @@
     {
       "id": "15.lokalita.urad-jednota-pivnica-dom",
       "paragraf": "15. Lokality",
-      "pravidlo": "Obecný úrad (prah −4, Robota 2), Jednota (barter −1), Vínna pivnica (2× skryté NA EX na rôzne karty), Kultúrny dom (Pohoršenie bez limitu hraníc v oboch smeroch).",
+      "pravidlo": "Obecný úrad (prah −4, Robota 2), Jednota (barter −1), Vínna pivnica (2× skryté NA EX na rôzne karty), Kultúrny dom (v6: prebytok sa nerozdeľuje, držiteľ dostane špaky).",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/lokality-20261020.test.ts › Obecný úrad: prah Exekútora −4 a Robota odhodí 2 Dlhy; packages/core/test/lokality-20261020.test.ts › Jednota: stokársky barter o 1 cigaretu lacnejší; packages/core/test/lokality-20261020.test.ts › Vínna pivnica: dve NA EX za Pitku; packages/core/test/lokality-20261020.test.ts › Kultúrny dom: Pohoršenie bez limitu hraníc zón (Michal 2026-10-20)."
@@ -1565,11 +1490,9 @@
       "id": "16.karta.dievcina",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Dievčina na vydaj sa pri bitke zahodí a spáli toľko priznaných Dlhov, koľko mala aktívnych akcií; jej akcie v tej bitke platia.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/playtest-055944.test.ts › Dievčina spáli toľko priznaných Dlhov, koľko mala aktívnych akcií, a sama sa spáli",
-        "packages/core/test/pravidla-bitka.test.ts › §16 Dievčina na vydaj: pri bitke spáli toľko priznaných Dlhov, koľko má aktívnych akcií, a jej akcie v tej bitke ešte platia"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.hrobar",
@@ -1577,30 +1500,16 @@
       "pravidlo": "Hrobár: keď súper zahodí kartu (z ruky, z línie efektom, Víziou z vrchu balíčka), majiteľ dostane cigaretu; návrat po bitke nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §16 Hrobár: keď súper Víziou zahodí vrchnú kartu, majiteľ Hrobára dostane cigaretu",
         "packages/core/test/playtest-055944.test.ts › veľká ruka sa po bitke neodhadzuje a súperov Hrobár za nič nedostane"
-      ]
-    },
-    {
-      "id": "16.karta.hrobar-pohreb",
-      "paragraf": "16. Výklad kariet",
-      "pravidlo": "Spálenie karty z línie Pohrebom je zahodenie z línie — súperov Hrobár dostane cigaretu (Michal 2026-10-22, rozhodca #9).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §16 Hrobár: keď súper Pohrebom spáli svoju kartu z línie, majiteľ Hrobára dostane cigaretu (rozhodca #9)",
-        "packages/core/test/pravidla-bitka.test.ts › §16 Hrobár: keď súper pochová Závislého a vezme kartu zo šenku, majiteľ Hrobára dostane cigaretu (rozhodca #9)",
-        "packages/core/test/pravidla-bitka.test.ts › §16 Hrobár: vlastný Pohreb majiteľovi Hrobára cigaretu nedá"
       ]
     },
     {
       "id": "16.karta.anonymny-alkoholik",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Anonymný alkoholik: súper naňho NA EX nedá (ani podstrčený), majiteľ smie; susedov nechráni.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/naex-ochrana.test.ts › súper nedá NA EX na neho, na majiteľove karty vedľa neho áno",
-        "packages/core/test/naex-ochrana.test.ts › podstrčený na súperovu stranu chráni seba, súperove karty vedľa seba nie"
-      ]
+      "pravidlo": "Anonymný alkoholik (2026-10-26): NA EX majiteľa naňho (placatka) sa nepočíta do limitu NA EX za Pitku, aj podstrčený; súper naňho NA EX smie a jemu sa ráta. Kostol zakazuje aj placatku, na Krčme ju splní, na Anonymného alkoholika s poldeci ďalšie NA EX nie; do počtu NA EX Pitky (Policajtka) sa ráta.",
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.sofer",
@@ -1608,8 +1517,6 @@
       "pravidlo": "Šofér: NA EX na susednú kartu nezdvojí jej neaktívne akcie, aktívne zruší; na samotného Šoféra platí normálne.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/sofer-snubenica.test.ts › NA EX na kartu vedľa Šoféra nezdvojí jej neaktívne akcie, aktívne zruší",
-        "packages/core/test/sofer-snubenica.test.ts › platí aj pre súperovu kartu a cez hranicu majiteľov; vzdialenej karte nevadí",
         "packages/core/test/sofer-snubenica.test.ts › NA EX na samotného Šoféra zdvojuje normálne"
       ]
     },
@@ -1617,12 +1524,9 @@
       "id": "16.karta.snubenica",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Snúbenica: vyložená vedľa karty s NA EX ju vráti jej majiteľovi do ruky a zaujme jej miesto; poldeci sa vypije tomu, kto NA EX dal.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/sofer-snubenica.test.ts › vyložená vedľa karty s NA EX ju vráti majiteľovi do ruky a zaujme jej miesto",
-        "packages/core/test/sofer-snubenica.test.ts › vlastnú kartu s NA EX vráti do ruky jej majiteľovi, aj keď NA EX dal súper",
-        "packages/core/test/sofer-snubenica.test.ts › vedľa karty bez NA EX nerobí nič"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.krcmarka",
@@ -1636,11 +1540,10 @@
     {
       "id": "16.karta.liberal",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Liberál: pri rovnakom počte žien a chlapov v partii (on sa neráta) sa jeho aktívne akcie rátajú dvakrát; NA EX naň nemožno.",
+      "pravidlo": "Liberál: pri rovnakom počte žien a chlapov v partii (on sa neráta) sa jeho aktívne akcie rátajú dvakrát. NA EX naň smie (2026-10-26).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/playtest-055944.test.ts › Liberál: pri rovnakom počte žien a chlapov sa jeho akcie rátajú dvakrát",
-        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať nemožno"
+        "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať smie (Michal 2026-10-26)"
       ]
     },
     {
@@ -1660,51 +1563,43 @@
       "id": "16.karta.pasca",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Pasca v Dedičstve: každé súperovo Zviera v línii mu uberie 1 tuhé.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/lokality-20261020.test.ts › bez Pascy nič, s Pascou súpera −1 za každé moje Zviera; v rozpise ako zrážka"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.pes",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Pes: +1 tuhé za každý pár akcií na spoji so súperovou kartou (aj zrušený), len na strane majiteľa; smie sa naň podstrčiť.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pes-20261020.test.ts › súperova karta za Psom: rátajú sa páry vonkajšej hrany Psa",
-        "packages/core/test/pes-20261020.test.ts › podstrčený na súperovu stranu nedá nič (Michal 2026-10-22)",
-        "packages/core/test/pes-20261020.test.ts › ráta sa aj pár zrušený Odporom — karty sú spojené",
-        "packages/core/test/pes-20261020.test.ts › na súperovho Psa na konci jeho strany sa už smie podstrčiť"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.pijan",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Pijan: Žena v okolí s aktívnym Poldeci → súper majiteľa dostane +1 Ranu.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/playtest-055944.test.ts › Pijan: žena v okolí s aktívnym Poldeci mu dá ranu do vlastnej partie"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.policajtka-praudovravec",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Policajtka: súperove Pohoršenia proti majiteľovi neplatia — všetky, v oboch smeroch, aj z patronátu a Abstinenta; Praudovravec umlčí Autority v súperovej partii.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/revizia-kariet.test.ts › Policajtka: súperove Pohoršenia proti jej majiteľovi neplatia; packages/core/test/revizia-kariet.test.ts › Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt."
+      "pravidlo": "Policajtka (2026-10-26): kto dal v Pitke viac NA EX ako jej majiteľ (rátajú sa všetky, aj placatka), dostane pri odkrytí jeden Dlh, hneď priznaný; pri rovnosti a na Kostole nič; vyložená až ako odpoveď sa v tej Pitke neráta, skrytá Záverečná sa vyhodnotí pri otočení; Pohoršenia neruší. Praudovravec umlčí Autority v súperovej partii.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita)",
+        "packages/core/test/revizia-kariet.test.ts › Praudovravec: Autority v SÚPEROVEJ partii neuplatňujú efekt"
+      ]
     },
     {
       "id": "16.karta.postarka",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Poštárka: v Pitke raz smie majiteľ dobrať 1 až 2 karty; Dlh získa, len ak naozaj dobral do ruky; s prázdnym doberacím aj odhadzovacím balíčkom sa použiť nedá (Michal 2026-10-22, rozhodca #8).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/playtest-055944.test.ts › Poštárka dober navyše s Dlhom; Starosta vymení kartu za cigaretu",
-        "packages/core/test/pravidla-bitka.test.ts › §16 Poštárka: s prázdnym doberacím aj odhadzovacím balíčkom sa nepoužije a Dlh nedá (rozhodca #8)",
-        "packages/core/test/pravidla-bitka.test.ts › §16 Poštárka: kto dobral aspoň jednu kartu, získa 1 Dlh — aj keď chcel dve",
-        "packages/core/test/pravidla-bitka.test.ts › §16 Poštárka: balíček len s Dlhmi — Dlhy sa samy priznajú, do ruky nič, Dlh z Poštárky nepribudne"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.presbiter-dvojcata",
@@ -1731,21 +1626,17 @@
       "id": "16.karta.starosta",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Starosta: v Pitke raz za cigaretu vymeň kartu z ruky za kartu zo šenku.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/playtest-055944.test.ts › Poštárka dober navyše s Dlhom; Starosta vymení kartu za cigaretu"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.dedicstvo-nastroje",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Svätý text (Viera +1), Noviny (Pohoršenie na kraj z predposlednej od začiatku kola), Vínko (limit +1, bez doliatia, barter áno).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/playtest-055944.test.ts › Svätý text: hodnota tvojej Viery je o 1 vyššia",
-        "packages/core/test/revizia-kariet.test.ts › Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola",
-        "packages/core/test/effects.test.ts › nealko: prah Cirhózy +2; vinko doliatie aj +1 limit, zastávka spoločný limit"
-      ]
+      "pravidlo": "Svätý text (Viera +1), Noviny (v6: +1 špak po bitke, keď sa majiteľa bojí viac starších ako súpera), Vínko (limit +1, bez doliatia, barter áno).",
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.poradkyna-macka",
@@ -1760,19 +1651,24 @@
     {
       "id": "16.karta.svokra",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Svokra: pri odkrytí každého NA EX súpera mu vezme 2 cigarety (každá Svokra), pri zrážke za obe NA EX; Praudovravec ju umlčí.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/naex-ochrana.test.ts › za NA EX súpera ukradne jej majiteľ 2 cigarety; packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita); packages/core/test/naex-ochrana.test.ts › Nástup Svokry už NA EX nezakazuje."
+      "pravidlo": "Svokra (2026-10-26): v bitke za každú majiteľovu kartu (na ktorejkoľvek strane, aj podstrčenú a samu seba) so súperovým poldeci z NA EX udelí súperovi Ranu (+1 tuhé), aj pri zrážke; vlastné NA EX majiteľa nie; každá Svokra zvlášť; cigarety už neberie; Praudovravec ju umlčí.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naex-ochrana.test.ts › ráta majiteľove karty so súperovým NA EX na oboch stranách, aj podstrčené aj Svokru samu; vlastné NA EX nie",
+        "packages/core/test/naex-ochrana.test.ts › zrážka (Výtržník) sa ráta — na karte leží aj súperov poldeci",
+        "packages/core/test/naex-ochrana.test.ts › v bitke je Rana navyše v tuhom: to isté NA EX od súpera dá o 1 tuhé viac ako vlastné",
+        "packages/core/test/naex-ochrana.test.ts › Praudovravec súpera ju umlčí (Autorita); dve Svokry — Rana od každej",
+        "packages/core/test/naex-ochrana.test.ts › pri odkrytí NA EX už súperovi cigarety neberie",
+        "packages/core/test/nahlady.test.ts › Svokra (Michal 2026-10-26): náhľad NA EX na jej majiteľovu kartu ukáže Ranu, cigarety nekradne"
+      ]
     },
     {
       "id": "16.karta.sarlatan",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Šarlatán: Viera v okolí sa ráta ako Vízia.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/playtest-055944.test.ts › Šarlatán: Viera v jeho okolí platí ako Vízia"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.vestica",
@@ -1795,49 +1691,57 @@
       "id": "16.karta.vdova",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Veľmi smútiaca vdova: muž navrchu súperovho balíčka ide z hry a majiteľ zahodí 2 Dlhy (ruka, odhadzovací, priznané); log vždy oznámi kartu.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › muž navrchu ide z hry a Dlhy sa naozaj zahodia — aj z odhadzovacieho",
-        "packages/core/test/pravidla-20261019.test.ts › keď navrchu nie je muž, log to povie",
-        "packages/core/test/pravidla-bitka.test.ts › §16 Veľmi smútiaca vdova: muž navrchu súperovho balíčka ide z hry a majiteľ zahodí 2 Dlhy aj spomedzi priznaných"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.zivnostnik",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Živnostník (Výhra): keď jeho majiteľ vyhrá bitku a Živnostník leží v jeho partii, majiteľ vyberie jedno súperovo Dedičstvo, ktoré sa zahodí; každý Živnostník jedno; na začiatku kroku 6c; bez Dedičstva, pri prehre či remíze nič; Nástup nerobí nič.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/zivnostnik-vyhra.test.ts › Nástup už nič nezahodí",
-        "packages/core/test/zivnostnik-vyhra.test.ts › po vyhratej bitke čaká na víťaza; zahodí sa ním vybrané Dedičstvo, ostatné ostanú",
-        "packages/core/test/zivnostnik-vyhra.test.ts › dvaja Živnostníci = dve zahodenia, každé podľa výberu",
-        "packages/core/test/zivnostnik-vyhra.test.ts › bez súperovho Dedičstva, pri prehre či remíze nič",
-        "packages/core/test/zivnostnik-vyhra.test.ts › Živnostník podstrčený súperom patrí súperovi — víťazovi nič nedá"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "16.karta.niekoho-stryna",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Niekoho stryná: zahodí 1 Cirhózu alebo 1 Dlh z ruky či odhadzovacieho, Dlh aj spomedzi priznaných.",
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+    },
+    {
+      "id": "16.karta.hasic",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Hasič (Nástup): náhodná karta z majiteľovho odhadzovacieho balíčka, aj kliatba; majiteľ ju nechá v ruke (Dlh sa prizná a ťahá kartu), alebo vráti. Kým nerozhodne, hra čaká (ťah naraz dobehne, odpoveď na NA EX a otočená Záverečná čakajú); prázdny odhadzovací = nič; karta je verejná.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §16 Niekoho stryná: zahodí 1 Dlh aj spomedzi priznaných (verejný dlh 2026-10-21) — len jeden"
-      ]
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: vytiahne kartu z VLASTNÉHO odhadzovacieho balíčka deterministicky zo semienka hry; aj kliatbu",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: kým hráč nerozhodne, hrá len on a len túto voľbu; karta zatiaľ leží v odhadzovacom",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: nechať — karta ide z odhadzovacieho do ruky, potom je na ťahu súper",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: vrátiť — karta ostáva v odhadzovacom balíčku, ruka sa nemení",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: nechaný Dlh sa sám prizná a hráč ťahá kartu (ako Zberný dvor)",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: s prázdnym odhadzovacím balíčkom sa nič nestane a ťah ide ďalej",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič v ťahu naraz: zvyšok ťahu sa zahrá, o karte hráč rozhodne potom; ťah bez Vypiť po Hasičovi neprejde",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: súper vidí len verejné — kartu z odhadzovacieho (ten je verejný), nie ruku",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako odpoveď na NA EX: Pitka sa vyhodnotí až po voľbe",
+        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako Záverečná: otočí sa na konci Pitky a Pitka sa dokončí až po voľbe"
+      ],
+      "poznamka": "Michal 2026-10-26: predtým bez voľby prvý Pracujúci z odhadzovacieho balíčka."
     },
     {
       "id": "16.karta.manzelka",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Milujúca manželka (Furt, v línii aj priznaná): Absťák aj pri rovnakom počte nerestí; sčítavajú sa.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › s priznanou Manželkou dostane Absťák pri rovnosti, bez nej nie",
-        "packages/core/test/pravidla-20261019.test.ts › platí aj v línii a sčítava sa: dve Manželky = Absťák aj pri o 1 viac nerestiach"
-      ]
+      "stav": "na-overenie",
+      "testy": [],
+      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "7.naex.odkrytie",
       "paragraf": "7. Pitka › Odkrytie NA EX a Výtržník",
-      "pravidlo": "Keď sú hotoví obaja, skryté NA EX sa odkryjú — najprv obrancove, potom útočníkove; až vtedy poldeci ľahne na kartu, pripíše sa pečeň a platia Svokra, Výpalné a Vychovávateľka.",
+      "pravidlo": "Keď sú hotoví obaja, skryté NA EX sa odkryjú — najprv obrancove, potom útočníkove; až vtedy poldeci ľahne na kartu, pripíše sa pečeň a platia Výpalné, Vychovávateľka a Policajtka.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
@@ -1861,7 +1765,7 @@
     {
       "id": "7.naex.zrazka-platby",
       "paragraf": "7. Pitka › Odkrytie NA EX a Výtržník",
-      "pravidlo": "Pri zrážke platí každý za svoje NA EX: pečeň +1, poldeci (v bitke sa vypijú oba), Svokra aj Výpalné za každé z oboch NA EX.",
+      "pravidlo": "Pri zrážke platí každý za svoje NA EX: pečeň +1, poldeci (v bitke sa vypijú oba), Výpalné za každé z oboch NA EX; Policajtka ráta 1 : 1 a Svokra majiteľa karty ju ráta ako kartu so súperovým NA EX.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
@@ -1893,7 +1797,7 @@
     {
       "id": "9.pohorsenie.abstinent",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Priazeň Abstinenta pridá v bitke +1/2/3 Pohoršenia; Policajtka ich ruší.",
+      "pravidlo": "Priazeň Abstinenta pridá v bitke +1/2/3 Pohoršenia.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
@@ -1915,20 +1819,268 @@
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
     },
     {
-      "id": "14.rezerva-abstak",
-      "paragraf": "14. Bodovanie › Scorecardy",
-      "pravidlo": "Rezerva = plné poldeci na konci (Vínko v Dedičstve +1); Absťák = Absťáky získané za hru, zbavenie sa ich neuberie.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
+      "id": "14.spaky.za-bitku",
+      "paragraf": "14. Špaky",
+      "pravidlo": "Víťaz bitky dostane odohrané Pitky kola (finále 3), o rozdiel Absťákov menej, ak ich má viac než porazený, aspoň 1; plus špaky zo sekery. Lokalitu si neberie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane odohrané Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie",
+        "packages/core/test/spaky-v6.test.ts › Absťák: víťaz s viac Absťákmi dostane o rozdiel menej, aspoň 1",
+        "packages/core/test/battle.test.ts › víťaz dostane odohrané Pitky mínus rozdiel Absťákov, aspoň 1"
+      ]
     },
     {
-      "id": "14.rovnost-obaja",
-      "paragraf": "14. Bodovanie › Body za staršieho",
-      "pravidlo": "Pri rovnosti vyhratých podmienok (aj 0 : 0) dostanú body za staršieho obaja, každý podľa svojho strachu; kto vyhral menej, nedostane nič.",
-      "stav": "na-overenie",
+      "id": "14.spaky.za-starsich",
+      "paragraf": "14. Špaky",
+      "pravidlo": "Po každej bitke (aj po finále) dostane víťaz bitky (v6.1; pri sekere obaja) za starších, ktorí sa ho boja, žltá 1, oranžová 2, červená 3; sivý nikomu; aj nahradený.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/spaky-v6.test.ts › bod 4: starší dá obávanému 1 / 2 / 3 podľa zóny; sivý nikomu — v6.1 len víťazovi",
+        "packages/core/test/elders.test.ts › súčet za všetkých starších, aj nahradeného",
+        "packages/core/test/spaky-v6.test.ts › pri sekere (špaky za bitku idú na sekeru) dostanú za starších obaja"
+      ]
+    },
+    {
+      "id": "14.spaky.cirhoza",
+      "paragraf": "14. Špaky",
+      "pravidlo": "Na konci hry stojí každá nepriznaná Cirhóza (ruka aj oba balíčky) 5 špakov; priznaná nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-bitka.test.ts › §11/§14: nepriznaná Cirhóza na konci −5 špakov za kus (ruka aj oba balíčky), priznaná nie"
+      ]
+    },
+    {
+      "id": "14.spaky.verejne",
+      "paragraf": "14. Špaky",
+      "pravidlo": "Špaky, nástenka a sekera sú verejné; scorecard nesie len priazeň.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/spaky-v6.test.ts › pohľad oboch hráčov nesie špaky, sekeru, nástenku a priazeň staršieho bez scorecardu",
+        "packages/core/test/elders.test.ts › priazeň staršieho určuje jeho scorecard; v6 bez bodovacích podmienok"
+      ]
+    },
+    {
+      "id": "14b.finale.utocnik",
+      "paragraf": "14b. Finále",
+      "pravidlo": "Finále bez lokality a bez voľby cieľa; útočí viac špakov, pri rovnosti porazený poslednej bitky, po sekere ostáva útočník.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/spaky-v6.test.ts › pri rovnosti špakov útočí porazený poslednej bitky; po sekere ostáva útočník (Leader 2026-10-26)"
+      ]
+    },
+    {
+      "id": "14b.finale.linia",
+      "paragraf": "14b. Finále",
+      "pravidlo": "Prvá vyložená karta leží v strede a susedí s oboma stranami; kraje a prevaha nie sú; vždy 3 Pitky.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/spaky-v6.test.ts › vždy 3 Pitky; prvá karta je stred línie a susedí s oboma stranami, kraje nie sú",
+        "packages/core/test/spaky-v6.test.ts › útočník vyloží prvú kartu do stredu; obranca sa prikladá k nej"
+      ]
+    },
+    {
+      "id": "14b.finale.prebytok",
+      "paragraf": "14b. Finále",
+      "pravidlo": "Po finále sa rozdajú špaky za starších, prebytok sa nerozdeľuje — držiteľ dostane toľko špakov; potom koniec hry.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/spaky-v6.test.ts › po finále: špaky za bitku (3 Pitky) a za starších, prebytok sa nerozdeľuje — držiteľ dostane špaky; potom koniec"
+      ]
+    },
+    {
+      "id": "15.lokalita.kulturny-dom",
+      "paragraf": "15. Lokality",
+      "pravidlo": "Kultúrny dom (v6): prebytok sa nerozdeľuje medzi starších, držiteľ dostane toľko špakov.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/spaky-v6.test.ts › Kultúrny dom (K1): prebytok sa nerozdeľuje, držiteľ dostane toľko špakov",
+        "packages/core/test/lokality-20261020.test.ts › Kultúrny dom (v6, K1): prebytok sa nerozdeľuje, držiteľ dostane špaky"
+      ]
+    },
+    {
+      "id": "7.pitky.podla-strany",
+      "paragraf": "7. Pitka › Počet Pitiek",
+      "pravidlo": "Počet Pitiek sa ráta podľa strán lokality (aktívne akcie každej hrany), nie podľa hráča, ktorý kartu zahral, ani podľa prevahy.",
+      "stav": "chyba-v-pravidlach",
+      "testy": [
+        "packages/core/test/pravidla-medzery-v62.test.ts › §7: akcie hrany aktivované podstrčenou kartou sa rátajú strane, kde karta leží — 3 a 1 → 2 Pitky"
+      ],
+      "poznamka": "Hlavná veta §7 a hra sa zhodujú; príklad „hráč A aktivuje 3 akcie, hráč B 1“ hovorí o hráčoch a pri podstrčenej karte (playtest 20261027-062058, Hela) vedie k inému číslu. Nové znenie príkladu: návrh rozhodca 20261027-150555."
+    },
+    {
+      "id": "7.pitky.posilnenie-raz",
+      "paragraf": "7. Pitka › Počet Pitiek",
+      "pravidlo": "Akcia hrany zdvojená Posilnením (×2) je v počte Pitiek jedna aktivovaná akcia.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-medzery-v62.test.ts › §7: akcia hrany zdvojená Posilnením je jedna aktivovaná akcia — 1 a 2 → 2 Pitky, nie 3"
+      ],
+      "poznamka": "Doslovné čítanie „ráta sa každá aktívna akcia“; hráči sa pýtali (playtest 20261027-105422 nález 5, 062058). Doplniť vetu: návrh rozhodca 20261027-150555."
+    },
+    {
+      "id": "8.pecen.poldeci-akcia",
+      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Pečeň a Cirhóza",
+      "pravidlo": "Každá aktívna akcia Poldeci pridá v Pitke majiteľovi karty pečeň +1 (popri otočení poldeci v bitke); za každý celý prah 3 Cirhóza.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-medzery-v62.test.ts › §8: každá aktívna akcia Poldeci = pečeň +1 majiteľovi; prah 3 → 6 pečene = 2 Cirhózy, 4 = 1"
+      ],
+      "poznamka": "Nočné nezrovnalosti 20261026-173610-1 (Šimon N1): pravidlo aj hra sedia, výpis línie pečeň z Poldeci neukazuje — to je náhľad (roadmapa #49), nie pravidlo."
+    },
+    {
+      "id": "13.zaverecna.odhad",
+      "paragraf": "13. Pokročilé ťahy › Záverečná",
+      "pravidlo": "Súperova Záverečná lícom dole sa ráta normálne (aj páry s tvojimi kartami), ale tvoj pohľad je rovnaký, nech je to ktorákoľvek karta — ani aktivácia tvojej akcie ju neprezradí.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-medzery-v62.test.ts › §13: súperova Záverečná aktivuje moju Ranu v bitke, ale môj pohľad (a odhad z neho) je rovnaký ako bez páru"
+      ],
+      "poznamka": "Nočné nezrovnalosti 20261026-173610-1 (Šimon N6, ODHAD BITKY 2 : 6 → 3 : 7). Hra drží §13; doplniť vetu, že odhad tieto páry nezarátava: návrh rozhodca 20261027-150555."
+    },
+    {
+      "id": "16.karta.snubenica.koniec-linie",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Snúbenica sa vykladá len na vonkajší koniec strany, takže zaberie, len keď je karta s NA EX doteraz poslednou kartou tej strany (vo finále na prázdnej strane karta v strede).",
+      "stav": "chyba-v-pravidlach",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
+      "poznamka": "Roadmapa #54, playtest 20261027-062058 nález 9: text „vedľa karty s NA EX“ nehovorí, že „vedľa“ je len posledná karta strany. Hra je jednoznačná (engine.ts efekt snubenica, partia.ts snubenicaVracia). Revízia v7 Snúbenicu nemení. Znenie: návrh rozhodca 20261027-150555."
+    },
+    {
+      "id": "16.karta.vinko.uprostred",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Vínko vyložené do Dedičstva uprostred Zhromaždenia: limit +1 hneď, alebo až od ďalšieho Zhromaždenia?",
+      "stav": "nejasne",
+      "testy": [],
+      "poznamka": "§6 „limit sa počíta nanovo na začiatku Zhromaždenia“ vs. „zostávajúci limit hneď klesne“ pri Vypiť. Hra: od ďalšieho. Testy oboch čítaní mimo gitu: playtest/rozhodca/20261027-150555/16-vinko-limit-uprostred-zhromazdenia.test.ts. návrh rozhodca 20261027-150555."
+    },
+    {
+      "id": "16.karta.liberal.nula",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Liberál pri 0 žien a 0 chlapov v partii (okrem neho): zdvojuje, alebo nie?",
+      "stav": "nejasne",
+      "testy": [],
+      "poznamka": "Roadmapa #54, playtest 20261027-062058 O6. Hra (partia.ts, zeny === chlapi) zdvojuje aj pri 0 : 0. Liberál sa prerába v revízii v7 (session Brainstorming) — len zapísané, znenie sa nenavrhuje."
+    },
+    {
+      "id": "16.karta.pes.finale",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Pes vo finále: kedy „leží na strane svojho majiteľa“, keď kraje nie sú (§14b) a Pes môže byť aj stredovou kartou?",
+      "stav": "nejasne",
+      "testy": [],
+      "poznamka": "Playtest 20261027-105422 nález 4 (Fero): hra bonus vo finále započítala. Pes sa prerába v revízii v7 — len zapísané, znenie sa nenavrhuje."
+    },
+    {
+      "id": "5.stavba.smetisko",
+      "paragraf": "5. Cieľ a draft › Stavba šenku",
+      "pravidlo": "Polovica kariet zo stavby ide naspodok spoločného balíčka — web toto miesto volá Smetisko, pravidlá to slovo nepoznajú.",
+      "stav": "chyba-v-pravidlach",
+      "testy": [],
+      "poznamka": "Playtest 20261027-105422 nález 7 (Eva). Pojem z HernaPlocha.tsx (Michal 2026-10-16); jadrom netestovateľné. Znenie §5 a §17: návrh rozhodca 20261027-150555."
+    },
+    {
+      "id": "10.marker.smer-k-superovi",
+      "paragraf": "10. Starší › Dvojaká úloha markera",
+      "pravidlo": "„K súperovi / k sebe“ je smer na stupnici (k súperovmu kraju), nie polovica: posun k súperovi z tvojej polovice marker len priblíži k stredu.",
+      "stav": "nejasne",
+      "testy": [
+        "packages/core/test/elders.test.ts › z krajnej pozície ďalej von nie, späť k súperovi áno"
+      ],
+      "poznamka": "Playtest 20261027-105422 nález 6 (Hela): log „Vychovávateľka o krok k súperovi → Strach, priazeň +2 má hráč 2“ zodpovedá §9.4, ale čitateľ čaká, že marker prejde k súperovi. návrh rozhodca 20261027-150555."
+    },
+    {
+      "id": "6.konflikt",
+      "paragraf": "6. Zhromaždenie › Línia, strany a kraje",
+      "pravidlo": "Konflikt (v7): efekt ležiacej karty, keď k nej súper priloží svoju — po Nástupe priloženej karty; vlastné priloženie, Nástroj, NA EX ani zrážka ho nespúšťajú; Záverečná až pri otočení.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › vlastné priloženie a priložený Nástroj Konflikt nevyvolajú",
+        "packages/core/test/v7-efekty.test.ts › NA EX na kartu vedľa Konfliktu ho nespustí",
+        "packages/core/test/v7-efekty.test.ts › Záverečná vyvolá Konflikt až pri otočení na konci Pitky"
+      ]
+    },
+    {
+      "id": "16.karta.v7.konflikt-karty",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Konflikt kariet v7: Policajtka (Dlh / 2 cigarety za Kriminála), Vdova a Hrobár (z hry, posledná), Snúbenica (Chlap k nej), Šarlatán (Dlh = Viera, Povera = Rana), Miňištrant (Nástup, Viera = Pecka).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Policajtka: súper, ktorý k nej priloží kartu, získa Dlh; za Kriminála jej majiteľ dostane 2 cigarety",
+        "packages/core/test/v7-efekty.test.ts › Vdova a Hrobár: priložená karta ide po bitke z hry; za Hrobárom sa už nepriloží",
+        "packages/core/test/v7-efekty.test.ts › Snúbenica: priložený Chlap ide po bitke do odhadzovacieho balíčka jej majiteľa",
+        "packages/core/test/v7-efekty.test.ts › Šarlatán: po Konflikte sa do konca kola jeho Dlhy rátajú ako Viera a Povery ako Rana",
+        "packages/core/test/v7-efekty.test.ts › Miňištrant: Nástup — vyvolal Konflikt, jeho Viera sa ráta ako Pecka"
+      ]
+    },
+    {
+      "id": "7.uplatok",
+      "paragraf": "7. Pitka › Úplatok (v7)",
+      "pravidlo": "Úplatok (Kulturista): súper cigaretou zníži útoky karty o stupeň do konca kola, raz za Pitku na kartu; vlastný Kulturista Úplatok neponúka.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Úplatok: súper cigaretou zníži útoky Kulturistu o stupeň, raz za Pitku"
+      ]
+    },
+    {
+      "id": "16.karta.v7.linia",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Pes (×2 na spoji so súperovou kartou), Mäsiar (akcie Zvierat v okolí neplatia), Krokodíl (Občania a Zvieratá v okolí z hry po bitke).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; Mäsiar ich zruší",
+        "packages/core/test/v7-efekty.test.ts › Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)"
+      ]
+    },
+    {
+      "id": "16.karta.v7.pitka",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Pitka v7: Stryná, Liberál, Veterinár, Kar, Krčmárka, Kohút, Cintorín, Jednota, Benzínka, Bzdocha, Krabička cigariet.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Stryná: hráč bez NA EX v Pitke +1 pečeň; Liberál: súper bez rovnováhy žien a chlapov +1 zadĺženie",
+        "packages/core/test/v7-efekty.test.ts › Veterinár: karty v jeho okolí nepridávajú poškodenie pečene",
+        "packages/core/test/v7-efekty.test.ts › Kar: pečeň za NA EX dostane súper toho, kto ho dal",
+        "packages/core/test/v7-efekty.test.ts › Krčmárka: na NA EX majiteľa súper kartou neodpovedá; Kohút: posledné slovo má obranca",
+        "packages/core/test/v7-efekty.test.ts › Cintorín: nová Cirhóza je hneď priznaná",
+        "packages/core/test/v7-efekty.test.ts › Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka: fajčí len najďalej",
+        "packages/core/test/v7-efekty.test.ts › Bzdocha: kto vyberá NA EX po súperovi, vidí jeho skryté NA EX — inak nie",
+        "packages/core/test/v7-efekty.test.ts › Krabička cigariet: za každé 2 cigarety, ktoré súper vyfajčí, karta navyše"
+      ]
+    },
+    {
+      "id": "16.karta.v7.nastup-kseft",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Nástup s voľbou (Starosta, Kapybara, Živnostník, Anonymný alkoholik), Autobusár, Kšefty Poštárky, Vychovávateľky, Obecného úradu a Zberného dvora, prebudený starší s Kšeftom.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Autobusár: súper, ktorý pasuje po majiteľovi, cigarety za pas nedostane",
+        "packages/core/test/v7-efekty.test.ts › Starosta (karta zo šenku), Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)",
+        "packages/core/test/v7-efekty.test.ts › Poštárka (1 Dlh → 1 karta), Vychovávateľka (2 cigarety → Povera), Obecný úrad, Zberný dvor",
+        "packages/core/test/v7-efekty.test.ts › prebudená Poštárka (marker na kraji) dáva Kšeft vydesujúcemu hráčovi"
+      ]
+    },
+    {
+      "id": "16.karta.v7.bitka",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Bitka a po nej v7: Puška, Vidly, Pasca, Pijan, Dohadzovačka, Recidivista, Dievčina, Farár, Noviny, Výherný automat, Záhradkár (Exekúcia).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Puška a Vidly: Petelice a Rany o 1 poškodenie viac — aj Rany navyše z efektov",
+        "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX",
+        "packages/core/test/v7-efekty.test.ts › Dohadzovačka: za spoj Žena–Chlap so súperom karta zo šenku",
+        "packages/core/test/v7-efekty.test.ts › Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie",
+        "packages/core/test/v7-efekty.test.ts › Noviny: víťaz s viac priznanými Dlhmi — špaky za bitku dostane porazený",
+        "packages/core/test/v7-efekty.test.ts › Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh",
+        "packages/core/test/v7-efekty.test.ts › Záhradkár (Exekúcia): zahodený z línie zachráni špaky a spáli Dlhy za aktívne akcie"
+      ]
+    },
+    {
+      "id": "14b.finale.utocnik.v7",
+      "paragraf": "14b. Finále",
+      "pravidlo": "Vo finále útočí zaostávajúci (menej špakov); pri rovnosti porazený poslednej bitky, po sekere ostáva útočník (Michal 2026-10-27).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › útočí zaostávajúci; pri rovnosti porazený poslednej bitky; po sekere ostáva útočník"
+      ]
     }
   ]
 }

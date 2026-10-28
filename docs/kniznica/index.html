@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knižnica mechaník — NA EX!</title>
+<style>
+:root { --pozadie:#15120f; --plocha:#1f1a15; --plocha-2:#2a231c; --okraj:#43372c; --text:#f1e8d8; --tlmeny:#b8a993;
+  --akcent:#e9ad45; --dobre:#7fbf7a; --zle:#d8705f; --stred:#d9c04a; --jano:#8fb4e0; --zuza:#e08f9c;
+  --serif:Georgia,"Times New Roman",serif; --sans:system-ui,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,Consolas,monospace; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; --jano:#2d5a8f; --zuza:#a33a52; color-scheme:light; } }
+:root[data-theme="light"] { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; --jano:#2d5a8f; --zuza:#a33a52; color-scheme:light; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 var(--sans); }
+main { max-width:980px; margin:0 auto; padding:28px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+h1,h2,h3 { font-family:var(--serif); line-height:1.2; text-wrap:balance; }
+h1 { font-size:clamp(1.7rem,4.6vw,2.5rem); margin:0 0 8px; }
+h2 { font-size:1.4rem; margin:40px 0 14px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.08rem; margin:18px 0 6px; }
+p, ul, ol { max-width:74ch; } p { margin:0 0 10px; } li { margin-bottom:5px; }
+a { color:var(--akcent); } :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.uvod, .pozn { color:var(--tlmeny); } .pozn { font-size:.9rem; }
+.skratka { background:var(--plocha); border:1px solid var(--akcent); border-radius:12px; padding:14px 16px; margin:18px 0; }
+.skratka h2 { margin:0 0 6px; border:0; padding:0; font-size:1.2rem; }
+.tab-obal { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.92rem; }
+th, td { padding:7px 6px; text-align:left; vertical-align:top; border-bottom:1px solid var(--okraj); }
+thead th { border-bottom:2px solid var(--okraj); font-size:.85rem; color:var(--tlmeny); font-weight:600; }
+.znamka { display:inline-block; font-size:.78rem; border-radius:999px; padding:0 8px; border:1px solid currentColor; white-space:nowrap; }
+.n { color:var(--dobre); } .s { color:var(--stred); } .v { color:var(--zle); }
+.filtre { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+button { appearance:none; font:inherit; font-size:.88rem; padding:6px 11px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); cursor:pointer; }
+button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:600; }
+tr[hidden] { display:none; }
+details.mech { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; margin:12px 0; }
+details.mech[open] { border-color:var(--akcent); }
+details.mech summary { cursor:pointer; font-family:var(--serif); font-size:1.12rem; }
+details.mech summary small { font-family:var(--sans); color:var(--tlmeny); font-size:.82rem; }
+.hra { border-left:3px solid var(--okraj); padding:2px 0 2px 12px; margin:8px 0; }
+.hra b { display:block; }
+.mriezka { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:4px 22px; }
+.kalk { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:14px 16px; }
+.ovl { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px 20px; margin-bottom:12px; }
+.ovl label { display:block; font-size:.9rem; color:var(--tlmeny); }
+.ovl input[type=range] { width:100%; accent-color:var(--akcent); }
+.ovl output { color:var(--text); font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+.j { color:var(--jano); font-weight:600; } .z { color:var(--zuza); font-weight:600; }
+.myslienky li { margin-bottom:10px; }
+code { font-family:var(--mono); font-size:.86em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.88rem; }
+
+.hladaj { width:100%; max-width:420px; font:inherit; padding:8px 10px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); margin:0 0 12px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Knižnica mechaník</h1>
+<p class="uvod">Študent zbiera, ako iné hry vyriešili problémy, ktoré má NA EX!. Čerpajú z nej Vymyselník, Navrhár a stratég. Zdroj dát: <code>docs/kniznica/mechaniky.json</code> (6 mechaník).</p>
+<h2>Témy</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Dátum</th><th>Téma (problém NA EX!)</th><th>Dokument</th></tr></thead>
+<tbody>
+<tr><td>2026-10-26</td><td>Posledná bitka a vplyv starších: ako zabrániť, aby posledné kolo rozhodlo všetko, a ako zo strachu a priazne starších spraviť strategickú os (roadmapa #7, #108, #114 Špaky, #113 Absťák)</td><td><a href="2026-10-26-posledna-bitka-a-vplyv.html">2026-10-26-posledna-bitka-a-vplyv.html</a></td></tr>
+</tbody></table></div>
+<h2>Mechaniky</h2>
+<input class="hladaj" id="hladaj" type="search" placeholder="Hľadať (hra, pojem, problém)…" aria-label="Hľadať mechaniku">
+<div class="filtre" role="group" aria-label="Téma">
+<button type="button" data-t="" aria-pressed="true">Všetky</button>
+<button type="button" data-t="posledna-bitka-a-vplyv" aria-pressed="false">posledna-bitka-a-vplyv</button>
+</div>
+<div class="tab-obal"><table id="mech">
+<thead><tr><th>Mechanika</th><th>Problém</th><th>Hry</th><th>Pridané</th></tr></thead>
+<tbody>
+<tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#korist-za-hranicu">Korisť za prvý vstup do zóny (namiesto renty za každé kolo)</a><br><code>korist-za-hranicu</code></td><td>Vplyv, ktorý sa vypláca po každej bitke, je úrok: kto vydesí staršieho skoro, inkasuje ho pri každej ďalšej bitke a mierka „starší vs. bitky“ sa rozíde (v6 príklad: strach 19 špakov, bitky 4).</td><td>7 Wonders Duel</td><td>2026-10-26</td></tr>
+<tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#trvale-a-docasne-body">Trvalé body za čin, dočasné body za držbu</a><br><code>trvale-a-docasne-body</code></td><td>Keď sa každý bod hneď stane trvalým, vedenie z prvej polovice sa nedá dobehnúť; keď je všetko dočasné, rozhodne len posledný stav (posledná bitka).</td><td>Kemet, Ra, Hanamikoji</td><td>2026-10-26</td></tr>
+<tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#medzibodovanie">Zúčtovanie vplyvu v ohlásených chvíľach (a kto ich spúšťa)</a><br><code>medzibodovanie</code></td><td>Keď sa vplyv boduje stále, je to pozadie; keď len na konci, je to lotéria posledného kola. Ohlásené zúčtovanie robí z vplyvu plán: viem, kedy a čo sa ráta.</td><td>El Grande, Twilight Struggle, Ra</td><td>2026-10-26</td></tr>
+<tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#slabsia-os">Skóre podľa slabšej osi (rátaj menší popolník)</a><br><code>slabsia-os</code></td><td>Keď sa sčítajú dve osi s rôznou mierkou (strach a bitky), vyhrá ten, kto sa zahryzne do silnejšej, a dizajnér musí mierku donekonečna ladiť.</td><td>Tigris &amp; Euphrates</td><td>2026-10-26</td></tr>
+<tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#ustup-a-odskodne">Porazený určuje cenu prehry (ústup, odškodné, víťaz platí)</a><br><code>ustup-a-odskodne</code></td><td>Bitka „všetko alebo nič“ s veľkou výhrou robí z poslednej bitky lotériu; keď porazený môže prehru zlacniť (a víťaz za výhru platí), výkyv sa zmenší a pribudne rozhodnutie.</td><td>Air, Land &amp; Sea, Blood Rage, Cosmic Encounter</td><td>2026-10-26</td></tr>
+<tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#ohlasena-vyhra-s-odpovedou">Náhla výhra: ohlásiť, zaplatiť, nechať súpera odpovedať</a><br><code>ohlasena-vyhra-s-odpovedou</code></td><td>Druhá cesta k výhre (vydesenie) dáva vplyvu váhu, ale keď je rýchla a lacná, hra skončí skôr, než sa súper zorientuje; keď je nedosiahnuteľná, nikto ju nehrá.</td><td>Inis, Root, Twilight Struggle, 7 Wonders Duel / Hanamikoji</td><td>2026-10-26</td></tr>
+</tbody></table></div>
+<footer>NA EX! · Študent · index sa prepisuje celý z mechaniky.json pri každom behu.</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  var tema = "", q = document.getElementById("hladaj");
+  function filtruj() {
+    var t = q.value.toLowerCase();
+    document.querySelectorAll("#mech tbody tr").forEach(function (tr) {
+      var okT = !tema || tr.getAttribute("data-temy").split(" ").indexOf(tema) >= 0;
+      tr.hidden = !(okT && tr.textContent.toLowerCase().indexOf(t) >= 0);
+    });
+  }
+  q.addEventListener("input", filtruj);
+  var tl = document.querySelectorAll(".filtre button");
+  tl.forEach(function (b) { b.addEventListener("click", function () {
+    tl.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    tema = b.getAttribute("data-t"); filtruj();
+  }); });
+})();
+</script>
+</body>
+</html>

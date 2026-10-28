@@ -1,0 +1,274 @@
+{
+  "davka": "20261026-152000",
+  "zdroj": "dizajn",
+  "podklady": [
+    "dizajn-vyvoj-web-20261026-1520-ui.html",
+    "dizajn-vyvoj-web-20261026-1520-ux.html"
+  ],
+  "navrhy": [
+    {
+      "kluc": "vyvoj-roadmapa",
+      "nazov": "Roadmapa je schovaná za malým čipom a orezaná na okraji obrazovky",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "Stránka Vývoj má dve polovice, známky a roadmapu, a medzi nimi sa prepína dvoma malými čipmi pod úvodom. Vyzerajú ako filter, nie ako polovica stránky. Roadmapa sa nezmestí do okna: správca na 1920 px nevidí celý stĺpec Hotové (67 položiek) a na 1366–1440 px ho nevidí vôbec. Posuvník do strany je až pod 2 000 px vysokou tabuľou.\n\nZvyšok stránky nevyužíva šírku. Tabuľka kritérií má 550 z 1 560 px, graf s osou 1–10 kreslí pohyb 6,3–7,2 ako rovnú čiaru a zásady aj ciele sú natvrdo v kóde a zastarané („Po horizonte Teraz prídu Pravidlá v4“).",
+      "pricina": "Rozhranie: Vyvoj.tsx (r. 262–269) prepína stránky čipmi .cip. Stĺpce roadmapy majú najmenej 270 px a obsah stránky najviac 1 600 px (vyvoj.css r. 379–388, styles.css r. 536). Hráč má 5 stĺpcov (1 398 px), správca 6 (1 680 px). Hotové je zbalené (Roadmapa.tsx r. 554–560). Graf má pevnú os (GrafZnamok.tsx r. 78) a zásady a ciele sú konštanty v Vyvoj.tsx (r. 15–57, 229).",
+      "prejav": "Michal 26. 10.: „veľmi podstatné dáta sa skrývajú za takýmto malým buttonom… roadmapa je odseknutá, nevidno to celé“. Na živom webe pri 1440 px správca vidí Prijímač (0 položiek), Teraz, Ďalej, Potom a polovicu stĺpca Neskôr. Hotové nevidno. Na mobile má tabuľka cieľov 5 stĺpcov a stĺpec „Kto meria“ je za okrajom.",
+      "dokazy": [
+        "ukážka UI, Súčasný stav a audit A1, A2, A6, A7, A8, A10, A13 (snímky 152335-zivy-rm-1440, 152324-zivy-vyvoj, 152326-vyvoj-mobil)",
+        "ukážka UX, toky T1 a T2, audit A1, A2, A5–A9, graf „Prečo sa roadmapa nezmestí“ (ux-roadmapa-1920, ux-roadmapa-1440, ux-vyvoj-dnes)",
+        "Michal 26. 10. 2026 (podnet k Vývoju)"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Rýchla výhra: roadmapa celá v okne, záložky namiesto čipov",
+          "popis": "Vyvoj.tsx: čipy „Kde hra je / Roadmapa“ nahradia záložky s počtom („Kde hra je 6,9“, „Roadmapa 45“), vysoké 44 px a s jantárovou čiarou pod aktívnou.\n\nRoadmapa.tsx a vyvoj.css: od 900 px si stĺpce delia šírku okna (repeat(počet, minmax(0, 1fr))) a tabuľa sa nikdy neposúva do strany. Hotové vypadne z tabule a ide do pásu pod ňou: posledných 6 položiek s dátumom a tlačidlo „Ukázať všetkých 67“, ktoré otvorí bočný panel (existujúci detail .rm-detail). Prijímač je u správcu pás nad tabuľou, len keď v ňom niečo je. Krátky text karty má najviac 2 riadky.\n\nPod 900 px ostáva dnešné správanie. Ukážka UI, návrh N1 (pred a po 1366 px); ukážka UX, návrh V1.",
+          "dopad": "Rieši oba Michalove podnety za asi hodinu, bez zmeny servera. Na 1366 px má správca 4 stĺpce horizontov po ≈ 300 px. Známky, zásady a mobil ostávajú, ako sú.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Vývoj ako jedna stránka: súhrn, roadmapa na celú šírku, známky vedľa seba",
+          "popis": "Všetko z A a k tomu: Vyvoj.tsx bude jedna stránka bez prepínania. Pod hlavičkou je lepkavý sekčný pás (scrollspy) „Známky 6,9 · Roadmapa 45 · Hotové 67 · Zásady a ciele“ s jediným hlavným tlačidlom „Ohodnotiť hru“. /vyvoj/roadmapa otvorí tú istú stránku na kotve #roadmapa, takže staré odkazy fungujú.\n\n1. Súhrn: 4 dlaždice, každá s jedným číslom a čitateľným popisom (priemer ▼ za týždeň, hodnotitelia ľudia/AI, najsilnejšie, najslabšie). Pod nimi graf a kritériá vedľa seba (7 : 5). Graf má automatickú os (min − 0,5 až max + 0,5) so značkou zlomu. Kritériá sú riadky s mini-grafom a klik na riadok prekreslí veľký graf; select zmizne.\n2. Roadmapa na celú šírku podľa A. Ciele horizontu sú odrážkové grafy „dnes → cieľ“ v hlavičke stĺpca Teraz a Ďalej („Rovnováha 4,7 → 6,5“) namiesto 5-stĺpcovej tabuľky. Správca má prepínač „Len na rozhodnutie (2)“.\n3. Zásady sú kompaktný číslovaný zoznam (nadpis + 1 riadok) a zásady aj ciele sa upravujú ako dáta v roadmape (server roadmapa.ts), nie v kóde.\n\nMobil: dlaždice 2 × 2, roadmapa s prepínačom horizontov (Teraz 12 · Ďalej 8 · Potom 14 · Neskôr 11 · Hotové), filtre oblastí v jednom tlačidle „Oblasť ▾“, nikde posun do strany. Súbory: stranky/Vyvoj.tsx, GrafZnamok.tsx, Roadmapa.tsx, vyvoj.css, App.tsx, server roadmapa.ts. Ukážka UI, návrh N2 (1440 px a mobil 390 px); ukážka UX, návrh V2.",
+          "dopad": "Na prvej obrazovke odpovedá na otázky „ako je na tom hra, čo sa robí, čo je hotové, ako pomôcť“ a celá stránka sa zmestí na šírku. Michal má položky na rozhodnutie na jeden klik. Práca 1–1,5 dňa. Ciele treba aj tak prepísať pre pravidlá v6.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "Odvážny smer: roadmapa ako krčmová nástenka",
+          "popis": "Rozloženie ako B, ale roadmapa vyzerá ako nástenka v krčme: drevený rám, stĺpce popísané kriedou („Teraz na čape“, „Ďalej na rade“, „Potom“, „Raz, keď bude čas“), položky ako lístky pripnuté špendlíkom a mierne natočené (rovné pri myši a fokuse, bez pohybu pri prefers-reduced-motion). Hotové je „Vypité“, rad prázdnych poldecákov s počtom, a súhrn známok je účtenka. Nový zdieľaný komponent Nastenka (komponenty.tsx) potom použije aj krčmová nástenka lokalít v hre (v6). Ukážka UI, návrh N3.",
+          "dopad": "Silná identita a jeden vizuálny jazyk s nástenkou v6. Lístok je asi o 15 % vyšší ako karta, takže tabuľa je dlhšia. Práca ≈ 2 dni a ideálne spolu s nástenkou v hre.",
+          "narocnost": "veľká",
+          "odporucana": false
+        },
+        {
+          "kluc": "D",
+          "nazov": "Odvážny smer: roadmapa aj ako časová os",
+          "popis": "Rozloženie ako B a roadmapa má prepínač „Tabuľa / Časová os“. Tabuľa je pracovný pohľad správcu. Časová os je predvolená pre hráčov a mobil: zvislý zoznam Hotové (po týždňoch, pri každom týždni novinky z neho a známka po zmene) → Teraz → Ďalej → Potom → Neskôr. Súbory: Roadmapa.tsx (nový pohľad), Novinky.tsx (zdieľaná položka), server roadmapa.ts a novinky.ts (väzba novinka ↔ položka). Ukážka UX, návrh V3.",
+          "dopad": "Jedno miesto pre „čo sa zmenilo“ a funguje na každej šírke. Pribudne väzba noviniek na položky roadmapy, ktorú musí Admin udržiavať.",
+          "narocnost": "veľká",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B. UI aj UX dizajnér sa zhodli na jednej stránke s lepkavými kotvami a roadmapou bez posúvania do strany. A je jej prvý krok a dá sa nasadiť hneď, takže ak treba rýchlo, najprv A a potom zvyšok B. C je voliteľná vrstva nad B, ak sa Michalovi páči smer krčmovej nástenky a robí sa spolu s nástenkou v6. D je pre prípad, že by hráči na mobile tabuľu nečítali.",
+      "otazky": [
+        "Pre koho je Vývoj hlavne, pre hráčov alebo pre teba? Podľa toho bude nad ohybom súhrn (B), alebo rovno tabuľa.",
+        "Hotové (67 a stále pribúdajú): stačí pás posledných 6 pod tabuľou a panel so všetkými, alebo ich chceš vidieť v tabuli ako stĺpec?",
+        "Roadmapa ako kanban (B) alebo ako krčmová nástenka (C)?",
+        "Zásady a ciele: prepísať pre v6 a presunúť do dát, ktoré upravíš v roadmape, alebo ich z verejnej stránky dať preč?",
+        "Ciele horizontov: v hlavičke stĺpca Teraz/Ďalej (UX), alebo v sekcii Zásady a ciele vedľa zásad (UI)?"
+      ],
+      "overenie": [
+        "Na 1366, 1440 a 1920 px pohľadom hráča aj správcu nemá roadmapa vodorovný posuvník a vidno všetky horizonty aj pás Hotové.",
+        "Človek v playteste do 20 s odpovie na otázku „Čo sa na hre robí teraz a čo bolo hotové minulý týždeň?“.",
+        "Na mobile 390 px sa stránka Vývoj nikde neposúva do strany (ani tabuľka cieľov)."
+      ]
+    },
+    {
+      "kluc": "kostra-sirka-webu",
+      "nazov": "Web má šesť rôznych ľavých okrajov a hlavička je inak široká ako obsah",
+      "kritickost": "stredna",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "Pri prechode medzi stránkami skáče ľavý okraj. Na 1920 px začína logo na 300 px, Vývoj a Pravidlá na 180 px, Domov a Karty na 380 px, Spätná väzba na 530 px, Novinky na 550 px a hra na 20 px. Hlavička má mimo hry 1 360 px na strede a v hre celú šírku, takže logo pri vstupe do partie skočí z 300 na 20 px. Široké monitory web nevyužije.",
+      "pricina": "Rozhranie: hlavička má max. 1 360 px (styles.css r. 338–339), obsah 1 200 alebo 1 600 px podľa toho, či stránka dostane siroky (styles.css r. 528–538, App.tsx), Novinky majú vlastných 820 px (novinky.css r. 4). V hre hlavička max. šírku zruší (styles.css r. 618).",
+      "prejav": "Michal 26. 10.: „mohla by využívať lepšie celú šírku monitora, teraz je napríklad počas hry vrchný panel iný ako mimo hry“. Hráč to vidí pri každom vstupe do partie a pri každom prechode medzi stránkami.",
+      "dokazy": [
+        "ukážka UI, audit A3 a A4, „Mriežka na 1920 px“ pred a po (snímky 152343-domov-1920, 152359-novinky-1920)",
+        "ukážka UX, audit A10, návrh H1 (ux-ucet-menu, ux-roadmapa-1920)"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Hlavička vždy na celú šírku",
+          "popis": "styles.css: .hlavicka-vnutro bez max-width, s okrajom var(--okraj-stranky) = clamp(16px, 2.5vw, 40px) na každej stránke, presne ako dnes v hre. Logo a účet sú všade na tom istom mieste, aj v partii. Obsah stránok sa nemení. Ukážka UI, návrh N4 variant A; ukážka UX, návrh H1.",
+          "dopad": "Hlavička pri vstupe do hry neskáče. Obsah stránok ostáva rôzne zarovnaný. Asi 30 minút práce.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "Jedna mriežka: tri šírky obsahu a jeden okraj",
+          "popis": "A a k tomu tri šírky obsahu cez tokeny v styles.css :root: --sirka-citanie 760 px (Novinky, Spätná väzba, text Pravidiel), --sirka-stranky 1 280 px (Domov, Karty, Profil, Rebríček), --sirka-siroka 1 680 px (Vývoj, Tvorba, Playtest, Hráči). Layout dostane sirka=„citanie | stranka | siroka“ namiesto siroky a App.tsx priradí stránkam šírku. Úzke stránky majú text v čitateľnom stĺpci, ale nadpis a nástroje sú na šírke stránky. Pod 1 760 px sa široké stránky natiahnu po okraj a ich ľavá hrana sedí s logom. Zmažú sa samostatné media queries hlavičky v hre (styles.css r. 618–704). Ukážka UI, návrh N4 variant B a „Mriežka na 1920 px“, po (B); ukážka UX, návrh H1.",
+          "dopad": "Namiesto šiestich ľavých hrán sú tri a sú predvídateľné. Na 1366–1440 px sú Vývoj, Tvorba aj hra zarovnané s logom. Asi pol dňa práce a treba prejsť všetky stránky na snímkach.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "Odvážny smer: bočná lišta aplikácie",
+          "popis": "Od 1 280 px je navigácia zvislá lišta vľavo (≈ 92 px, ikona a popis), rovnaká na každej stránke. V partii sa zúži na ikony (≈ 56 px). Hore ostane len tenký pás s partiou a účtom. Pod 1 280 px je spodná lišta s 5 položkami. Ukážka UX, návrh N3.",
+          "dopad": "Najlepšie využije široký monitor a kostra je všade rovnaká. Mení sa ale layout všetkých stránok a stôl stratí 56 px šírky.",
+          "narocnost": "veľká",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B. UI aj UX dizajnér chcú hlavičku na celú šírku a obsah zarovnaný s logom. B to dotiahne cez tri šírky a je predpokladom pre jednotnú hlavičku v hre (návrh hlavicka-hra). A je jej prvý krok na 30 minút. C len ako záloha, ak by ani potom web nepôsobil ako jeden celok.",
+      "otazky": [
+        "Široké stránky na 1920 px a viac: strop 1 680 px pre Vývoj, Tvorbu a Playtest, alebo celá šírka okna ako v hre?"
+      ],
+      "overenie": [
+        "Na 1366, 1600 a 1920 px je ľavý okraj loga a nadpisu stránky na všetkých širokých stránkach rovnaký (± 4 px).",
+        "Pri vstupe do partie a pri odchode z nej sa logo ani účet v hlavičke nepohnú."
+      ]
+    },
+    {
+      "kluc": "hlavicka-hra",
+      "nazov": "Hlavička v partii je iná ako mimo nej a mimo stola nevidno, že partia beží",
+      "kritickost": "vysoka",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "V partii má hlavička inú šírku a pod 1 400 px schová menu za hamburger, hoci mimo hry je na tej istej šírke vypísané. Blok partie má šesť rovnako hlasných prvkov (kód, súper, kontumácia, hudba, vzdať sa, odísť) a nevratné „vzdať sa“ je stále na očiach. Stav partie je v troch pásoch nad stolom (hlavička, pás ťahu, krokovač), spolu ≈ 125 px pri 1440 px.\n\nKeď hráč odbehne do Pravidiel, hlavička nič nepripomína, hoci súper si po 3 minútach môže vyžiadať kontumáciu. Pre pravidlá v6 (špaky, finále, nástenka) v hlavičke nie je miesto.",
+      "pricina": "Rozhranie: styles.css r. 618–704 (päť media queries len pre hru, hamburger pod 1 399 px), HernaPlocha.tsx r. 5005–5055 (portál bloku partie s tlačidlami vzdať sa a odísť). Layout.tsx o rozohranej partii nevie, hoci ju klient má v prehliadači (naex.miestnost, useHra.ts r. 208).",
+      "prejav": "Michal 26. 10.: „počas hry vrchný panel iný ako mimo hry“. Playtest 20261011-125943, sledovateľ: „tlačidlá ‚kontumačná výhra/vzdať sa‘ pri hlavičke“. Iný hráč navrhol „vzdať sa/odísť do menu ‚⋯‘“. Dialóg odchodu (Layout.tsx r. 127): „po 3 minútach bez teba si môže vyžiadať kontumačnú výhru“.",
+      "dokazy": [
+        "ukážka UI, audit A4 a A5, „Hlavička: mimo hry a v hre“ (snímky 152551-hrac1-hra-1920, 152559-hrac1-hra-1366)",
+        "ukážka UX, tok T3, audit A3, A4, A11, A12 (ux-hra-hlavicka-1440)",
+        "playtest 20261011-125943, hodnotenie sledovateľa V5"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Rovnaká kostra, zápasový štítok a menu „Partia ▾“",
+          "popis": "Layout.tsx a styles.css: hlavička má v hre aj mimo nej tri rovnaké zóny (logo · menu · pravá zóna) a výšku 64 px. Menu sa kvôli hre nikdy nemení na hamburger. Keď sa nezmestí, posledné položky idú do „Viac ▾“ (aj mimo hry pod 1 300 px).\n\nHernaPlocha.tsx: blok partie nahradí zápasový štítok s kódom miestnosti, krokom („Bitka 2 z 4“, posledná „Finále“; dnes „Kolo 1 · lokalita 1/3“), skóre v špakoch ako dva popolníky s číslom (ty 3 : 1 súper; nová ikona popolníka, rovnaká ako pri mene hráča vo v6) a stavom súpera („● pripojený“ / „odpojený“ textom). Hudba, „Odísť (partia beží ďalej)“ a „Vzdať sa…“ (s potvrdením) idú do menu „Partia ▾“. Kontumácia je v ňom zvýraznená, len kým je súper odpojený.\n\nMimo hry má pravá zóna pilulku „● Partia HZ3T beží · Späť ku stolu“, keď má hráč rozohranú partiu (z naex.miestnost; zmizne, ak miestnosť už neexistuje). Ukážka UI, návrh N4 variant C (v hre 1920 a 1366 px); pilulka v ukážke UX, návrh H2 (mimo hry).",
+          "dopad": "Hlavička je naozaj rovnaká v hre aj mimo nej a nebezpečné tlačidlá zmiznú z očí. Hráč sa vždy vráti ku stolu na jeden klik. Pásy nad stolom ostávajú tri. Skóre je v hlavičke aj v bare hráča. Asi pol dňa práce a robí sa spolu s v6.",
+          "narocnost": "stredná",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "V hre menu ako „☰ Web“ a stav ťahu v hlavičke",
+          "popis": "Rovnaká kostra (logo · navigácia · kontext · účet), ale v partii sa navigácia zbalí do jedného tlačidla „☰ Web“, lebo každá jej položka aj tak otvorí dialóg odchodu. Uvoľnené miesto zaberie riadok stavu presunutý z pásu ťahu (JednotnyBar.tsx): „Bitka 2 z 4 · Pitka 1/2 · na ťahu: TY“. Pri ňom je súper ●/○ a menu „⋯“ (kopírovať kód, odísť, vzdať sa…, kontumácia len keď sa dá). Špaky ostávajú len v bare pri mene hráča. Krokovač fáz s nástrojmi (Šenok, Nástenka, Log, ?) je prvý riadok stola. Mimo hry je pilulka „Partia HZ3T beží · Späť ku stolu“ ako v A. Zmena ťahu sa oznámi čítačke cez aria-live. Ukážka UX, návrh H2.",
+          "dopad": "Nad stolom je o jeden pás menej (cieľ ≤ 90 px namiesto ≈ 125 px) a skóre nie je dvakrát. Navigácia sa však v hre opäť správa inak, čo je opak Michalovej požiadavky.",
+          "narocnost": "stredná",
+          "odporucana": false
+        },
+        {
+          "kluc": "C",
+          "nazov": "Odvážny smer: režim stola bez hlavičky webu",
+          "popis": "V partii hlavička webu zmizne. Hore je jediná herná lišta (≈ 44 px): „‹ Web“ (zásuvka s navigáciou a varovaním o odchode), stav bitky, súper, nástroje stola a „⋯“. Klávesa F prepne späť. Ukážka UX, návrh H3.",
+          "dopad": "Stôl získa 60–80 px výšky. Hra sa ale stane inou aplikáciou ako web, čo ide proti Michalovej požiadavke.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Michal chce rovnakú hlavičku v hre aj mimo nej a to spĺňa len A, lebo menu ostane na svojom mieste. Na tom, že vzdať sa a odísť patria do menu, sa UI aj UX zhodli. Pilulka „Partia beží · Späť ku stolu“ je z UX a s A sa zlučuje bez konfliktu. B je lepšie, ak je dôležitejšia výška stola ako rovnaké menu. Robiť spolu s v6, aby popolník a počítadlo špakov vznikli raz pre hlavičku aj bar hráča. Predpokladom je návrh kostra-sirka-webu (aspoň A).",
+      "otazky": [
+        "Súhlasíš, že „vzdať sa“ a „odísť“ pôjdu do menu „Partia ▾“ a kontumácia bude zvýraznená len vtedy, keď je súper odpojený?",
+        "Menu webu v partii: má ostať vypísané (A, pri nedostatku miesta „Viac ▾“), alebo stačí jedno tlačidlo „☰ Web“ (B)?",
+        "Špaky v hlavičke: má štítok ukazovať súčet (3 : 1), alebo majú byť len v bare pri mene hráča, aby skóre nebolo dvakrát? Ak v hlavičke, aj s poslednou zmenou (+2 za bitku, krátko zvýraznené)?"
+      ],
+      "overenie": [
+        "Na 1366, 1440 a 1920 px sú logo, menu a účet v partii na tom istom mieste ako mimo nej.",
+        "Hráč v playteste dostane úlohu „počas partie si pozri pravidlo o Pitke a vráť sa ku stolu“ a vráti sa do 3 minút bez hľadania.",
+        "Nikto v playteste neklikne na „vzdať sa“ omylom a hráč, ktorý sa chce vzdať, tlačidlo nájde."
+      ]
+    },
+    {
+      "kluc": "navigacia-webu",
+      "nazov": "Navigácia mieša hru so správou a tie isté položky sú na dvoch miestach",
+      "kritickost": "nizka",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "Menu má 9 položiek bez skupín. Hrať je tretie a ničím nevyniká. Správcovské Playtest a Tvorba stoja v jednom rade s hráčskymi stránkami. Menu účtu opakuje Hrať, Playtest a Tvorbu a stránka Hráči je len v ňom. Dielňa a výučba s Melicharom v menu nie sú.",
+      "pricina": "Rozhranie: zoznam NAVIGACIA v Layout.tsx (r. 11–21) je plochý a menu účtu (r. 251–279) má vlastný zoznam odkazov.",
+      "prejav": "Na mobile je 9 riadkov bez nadpisov. Nováčik hľadá „Hrať“ medzi ôsmimi rovnako vyzerajúcimi odkazmi. Na živom webe nie je žiadny názor o navigácii; signál je od Michala a z dizajnu.",
+      "dokazy": [
+        "ukážka UX, audit A13, A17, A18, návrh N1 (ux-ucet-menu, ux-menu-mobil)",
+        "ukážka UI, návrh N4 variant C (menu „Viac ▾“ podľa priority)"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Poradie, skupiny a jedno menu „Správa“",
+          "popis": "Layout.tsx: Hrať je prvé a zvýraznené ako tlačidlo, potom Pravidlá · Karty · Rebríček, oddeľovač, Novinky · Vývoj · Spätná väzba. Playtest (s počtom návrhov na rozhodnutie), Tvorba a Hráči idú do jedného menu „Správa ▾“ vpravo pri účte, len pre rolu s právom. Menu účtu ponechá Môj profil, Moje štatistiky a Odhlásiť sa. Na mobile sú tie isté skupiny s nadpismi „Hra“, „Vývoj a komunita“, „Správa“. Položky s nižšou prioritou idú pri nedostatku miesta do „Viac ▾“ (zladené s návrhom hlavicka-hra). Ukážka UX, návrh N1.",
+          "dopad": "Hráč vidí 7 položiek v dvoch skupinách a Hrať je na prvý pohľad. Správca má správu na jednom mieste a o klik ďalej. Asi 2 hodiny práce.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "B",
+          "nazov": "A a Novinky ako prvá časť Vývoja",
+          "popis": "Ako A, navyše Vývoj začne časťou „Čo je nové“ (posledné novinky so značkou neprečítaných), potom „Kde hra je“ a „Čo príde“. Odkaz Novinky v menu zanikne a značka nových noviniek sa presunie na Vývoj. /novinky ostane ako adresa celej histórie. Súbory: Layout.tsx, stranky/Vyvoj.tsx, stranky/Novinky.tsx. Ukážka UX, návrh N2.",
+          "dopad": "O položku menej a „čo sa zmenilo“ je na jednom mieste. Ide proti rozhodnutiu z 22. 10., že Novinky sú samostatná stránka.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "A. Nič neodoberá, len usporiada a odstráni duplicity. Dá sa spraviť naraz so zmenou hlavičky (návrhy kostra-sirka-webu a hlavicka-hra). B len ak Michal zmení rozhodnutie o samostatných Novinkách.",
+      "otazky": [
+        "Môžu ísť Playtest, Tvorba a Hráči do jedného menu „Správa“, pri Playteste s počtom návrhov na rozhodnutie?",
+        "Platí ešte, že Novinky majú byť samostatná stránka (rozhodnutie 22. 10.), alebo ich zlúčiť s Vývojom?"
+      ],
+      "overenie": [
+        "Nováčik v playteste pri úlohe „začni partiu“ klikne ako prvé na Hrať.",
+        "V menu účtu ani v hornom menu nie je žiadna položka dvakrát."
+      ]
+    },
+    {
+      "kluc": "pravidla-bez-dalej",
+      "nazov": "Tlačidlá „Ďalej“ v Pravidlách skáču na text, ktorý je pár pixelov pod nimi",
+      "kritickost": "stredna",
+      "oblast": "rozhranie",
+      "zdroj": "dizajn",
+      "problem": "Na konci každej z 15 kapitol je tlačidlo „Ďalej: názov kapitoly →“. Ďalšia kapitola však začína hneď pod ním, takže klik posunie stránku len o kúsok. Lepkavý obsah po boku so stavom „2 / 15“ už existuje, ale časti, v ktorých čitateľ nie je, zbalí na „6 kap.“ a štruktúru pravidiel nevidno. Na 1920 px je vpravo od textu 660 px prázdneho miesta.",
+      "pricina": "Rozhranie: odkaz .kapitola-dalej v Pravidla.tsx (r. 539–548, štýl stranky.css r. 618–635). Bok zbaľuje časti v kompaktnom režime (Pravidla.tsx r. 219–243).",
+      "prejav": "Michal 26. 10.: „tieto tlačidlá pri pravidlách sú nezmysel, keďže sú scrollovateľné a tá sekcia ‚ďalej‘ je pár pixelov pod tlačidlom… prerobiť.“ Na snímkach 1440, 1600 aj 390 px je tlačidlo 40–100 px nad začiatkom kapitoly, na ktorú skáče.",
+      "dokazy": [
+        "ukážka UI, audit A9, návrh N5 (snímky 152531-pravidla-dalej, 152454-pravidla-1920)",
+        "ukážka UX, tok T4, audit A14, A15, návrhy P1–P3 (ux-pravidla-dalej, ux-pravidla-dalej-mobil)",
+        "Michal 26. 10. 2026 (doplnok zadania)"
+      ],
+      "moznosti": [
+        {
+          "kluc": "A",
+          "nazov": "Zrušiť „Ďalej“ a rozbaliť obsah",
+          "popis": "Pravidla.tsx: odkaz .kapitola-dalej zmizne zo všetkých kapitol a stranky.css r. 618–635 sa zmažú. Koniec kapitoly označí len tichý predeľ „koniec kapitoly 2“ (čiara s malým textom, nie tlačidlo). Bok s obsahom ukáže všetky časti a kapitoly, keď je okno vyššie ako ≈ 820 px, a zbalí ich len v nízkom okne. Podkapitoly sa zobrazia len pri aktívnej kapitole. Prečítané kapitoly (trieda precitana už existuje) dostanú ✓ a skrytý text „prečítané“. Ukážka UX, návrh P1; ukážka UI, návrh N5 bod 1.",
+          "dopad": "Odstráni 15 zbytočných tlačidiel a obsah ukáže celú štruktúru pravidiel. Asi hodina práce.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "B",
+          "nazov": "A a šípky ‹ › na celé kapitoly v boku aj na mobile",
+          "popis": "Ako A a k tomu: v hlavičke boku sú šípky „‹ 2 / 15 ›“ (predchádzajúca a ďalšia kapitola, ciele 28 px a pri dotyku 44 px) a aktívna kapitola má jantárovú zvislú linku a rozbalené podkapitoly so zvýraznenou tou, ktorú čitateľ práve číta. Mobilná lišta „2 / 15 Ako sa vyhráva ▾“ (Pravidla.tsx r. 477–488) dostane na kraje šípky ‹ › (44 × 44 px) s aria-label „Ďalšia kapitola: …“. Ukážka UI, návrh N5 body 1–2 a mobil 390 px; ukážka UX, návrhy P1 a P2.",
+          "dopad": "Skok o celú kapitolu je stále po ruke tam, kde čitateľ pozerá (bok, mobilná lišta), a nie na konci textu. Na mobile, kde má kapitola 5–10 obrazoviek, to šetrí najviac. Asi 2 hodiny práce.",
+          "narocnost": "malá",
+          "odporucana": true
+        },
+        {
+          "kluc": "C",
+          "nazov": "B a pravý stĺpec „V tejto kapitole“ na širokom monitore",
+          "popis": "Ako B a od 1 500 px pribudne pravý lepkavý stĺpec „V tejto kapitole“ (240 px): podkapitoly ako scrollspy a čas čítania. Text ostane v stĺpci 68 znakov. Pod 1 500 px sú podkapitoly len v boku. Súbory: Pravidla.tsx (pravý stĺpec z existujúcich podkapitol), stranky.css (.pravidla na 3 stĺpce od 1 500 px). Ukážka UI, návrh N5 bod 3 (1920 px).",
+          "dopad": "Využije prázdnych 660 px na širokom monitore. Pridá však ďalší prvok na už bohatú stránku a zaberie miesto, ktoré Michal 24. 10. nechcel dať ilustrácii.",
+          "narocnost": "malá",
+          "odporucana": false
+        },
+        {
+          "kluc": "D",
+          "nazov": "Pamäť čítania: „Pokračuj, kde si skončil“",
+          "popis": "Ako B a účet si pamätá poslednú kapitolu a prečítané kapitoly. Na Pravidlách hore a na Domove pri „Pravidlá na čítanie“ je „Pokračuj: 6 / 15 Pitka →“. Súbory: Pravidla.tsx, Domov.tsx, server profily.ts (pole na účte; návštevník len počas návštevy). Ukážka UX, návrh P3.",
+          "dopad": "Pomôže tomu, kto číta 15 kapitol na viackrát. Pribudne pole v databáze účtu.",
+          "narocnost": "stredná",
+          "odporucana": false
+        }
+      ],
+      "odporucanie": "B. UI aj UX dizajnér sa zhodli: tlačidlá zrušiť a navigáciu nechať na lepkavom boku, ktorý už existuje. Šípky v boku a na mobile preskočia celú kapitolu, takže úloha „Ďalej“ ostane tam, kde dáva zmysel. C a D sú voliteľné rozšírenia.",
+      "otazky": [
+        "Má obsah po boku ukazovať všetkých 15 kapitol naraz, keď je okno dosť vysoké?",
+        "Pravý stĺpec „V tejto kapitole“ od 1 500 px: nebude ti tam chýbať miesto, ktoré si 24. 10. nechcel dať ilustrácii?",
+        "Mobilná lišta so šípkami: hore pod hlavičkou ako dnes (UI), alebo dole v dosahu palca (UX)?",
+        "Má si web pamätať, kde čitateľ v pravidlách skončil (D)?"
+      ],
+      "overenie": [
+        "V Pravidlách nie je žiadne tlačidlo „Ďalej“. Na 1600 × 1000 px vidno v boku všetkých 15 kapitol, na 1366 × 768 px sa časti zbalia.",
+        "Čitateľ v playteste pri úlohe „nájdi kapitolu o Pitke“ klikne ako prvé do obsahu po boku.",
+        "Na mobile 390 px majú šípky aspoň 44 × 44 px a lišta neprekrýva text."
+      ]
+    }
+  ]
+}

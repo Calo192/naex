@@ -9,6 +9,8 @@ import { kariet, loadGameData, rozlozRod } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { Sada } from "@naex/tvorba";
+import { KLUC_MIESTNOSTI } from "../lib/odchod.ts";
+import { reakciaNaChybu, TEXT_ZANIKLEJ_PARTIE } from "./chybaMiestnosti.ts";
 
 export interface HracInfo {
   readonly id?: number;
@@ -67,11 +69,13 @@ export interface KrokVyucby {
   /** Ťah bota či auto krok s textom je vykonaný a čaká na „ďalej“ (vyucbaDalej) — U5. */
   readonly vykonany: boolean;
   readonly melichar: string;
+  /** Hláška zo soundboardu „skupina/súbor“, ktorá zaznie s bublinou (hlaskyVyucby.ts); null = bez zvuku. */
+  readonly hlaska: string | null;
   /** Kľúče prvkov na zvýraznenie, napr. „bar:poldeci“, „ruka:hasic“ — v UI atribút data-vyucba. */
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
-  /** Kontrolná otázka: 2–3 možnosti, aspoň jedna správna — klient overí sám; inak null. */
-  readonly moznosti: readonly { readonly text: string; readonly spravna: boolean; readonly vysvetlenie: string }[] | null;
+  /** Kontrolná otázka: 2–3 možnosti, aspoň jedna správna — klient overí sám; inak null. hlaska = zvuk po zlej odpovedi. */
+  readonly moznosti: readonly { readonly text: string; readonly spravna: boolean; readonly vysvetlenie: string; readonly hlaska?: string }[] | null;
   /** Rozhodnutie: kandidáti na zvýraznenie (kľúče ako zvyraznit) namiesto očakávanej karty; inak null. */
   readonly volba: { readonly kandidati: readonly string[] } | null;
   /** Nápis tlačidla „ďalej“ (napr. „Odovzdať cigaretu“); null = „ďalej“. */
@@ -82,6 +86,13 @@ export interface KrokVyucby {
   readonly preskocenie: boolean;
   /** So zvýraznenými prvkami sa hráč smie hrať nanečisto — nič sa neposiela (stavba šenku). */
   readonly naneisto: boolean;
+}
+
+/** Rada Melichara po zlom ťahu v rozhodnutí; n = poradie rady (aj rovnaká rada je nová). */
+export interface RadaVyucby {
+  readonly n: number;
+  readonly text: string;
+  readonly hlaska: string | null;
 }
 
 /** Krok ťahu slovami (jadro popisKroku); uid = karta, ktorú treba zvýrazniť. */
@@ -103,7 +114,8 @@ type ServerMsg =
   | { type: "state"; view: ClientState; events: Event[] }
   /** Doterajší log partie pri návrate (obnovenie stránky, výpadok) — nahrádza miestny. */
   | { type: "historia"; events: Event[] }
-  | { type: "superPripojeny"; connected: boolean }
+  /** odpojenyMs: ako dlho súper chýba — len pri návrate k stolu, inak práve odišiel. */
+  | { type: "superPripojeny"; connected: boolean; odpojenyMs?: number }
   | { type: "frajerina"; zmeny: ZmenyFrajeriny }
   /** Hláška majstra Melichara zo soundboardu — server ju posiela obom hráčom. */
   | { type: "melichar"; id: string; seat: 0 | 1; trvanieMs: number }
@@ -116,7 +128,7 @@ type ServerMsg =
   /** Zlý ťah vo výučbe: čo chýba a čo je navyše (text príde aj ako error). */
   | { type: "vyucbaChyba"; chybajuce: readonly PopisKrokuVyucby[]; navyse: readonly PopisKrokuVyucby[] }
   /** Rozhodnutie vo výučbe: zlý ťah dostane radu Melichara namiesto chyby. */
-  | { type: "vyucbaRada"; text: string }
+  | { type: "vyucbaRada"; text: string; hlaska: string | null }
   | { type: "error"; text: string };
 
 /**
@@ -174,6 +186,8 @@ export interface HraHook {
   readonly udalosti: { readonly id: number; readonly events: readonly Event[] };
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
+  /** Odkedy je súper odpojený (čas prehliadača) — odpočet kontumácie; null = pripojený. */
+  readonly superOdpojenyOd: number | null;
   readonly frajerina: ZmenyFrajeriny | null;
   /** Posledná hláška Melichara pustená v partii (ktorýmkoľvek hráčom). */
   readonly melichar: HlaskaVPartii | null;
@@ -187,7 +201,7 @@ export interface HraHook {
   readonly suhrnAchievementov: SuhrnAchievementov | null;
   /** Posledný zlý ťah vo výučbe (čo chýba, čo je navyše); zmizne ďalším ťahom alebo zrusChybu. */
   /** Rada Melichara po zlom ťahu v rozhodnutí; zmizne ďalším ťahom alebo zrusChybu. */
-  readonly radaVyucby: string | null;
+  readonly radaVyucby: RadaVyucby | null;
   /** Odpoveď na kontrolnú otázku (index možnosti) — server si zapíše prvú. */
   vyucbaOdpoved(index: number): void;
   readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
@@ -205,7 +219,7 @@ export interface HraHook {
   zrusChybu(): void;
 }
 
-const KLUC = "naex.miestnost";
+const KLUC = KLUC_MIESTNOSTI;
 
 export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [Rod, Rod]): string | null {
   const meno = (p: number) => mena[p] ?? `Hráč ${p + 1}`;
@@ -219,11 +233,15 @@ export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [
     case "moment":
       return `★ ${textHlasky(e.moment.popis, mena, rody)}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${e.vitaz === null ? "remíza, lokalita ide na sekeru" : `vyhráva ${meno(e.vitaz)}`}${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${
+        e.vitaz === null
+          ? "sekera, špaky za bitku čakajú na víťaza ďalšej bitky"
+          : `vyhráva ${meno(e.vitaz)}${e.rozhodlo === "abstak" ? " (remíza, menej Absťákov)" : e.rozhodlo === "dlhy" ? " (remíza, menej priznaných Dlhov)" : ""}`
+      }${e.prebytok > 0 ? `, prebytok ${e.prebytok}` : ""}.`;
     case "koniec":
       return e.body === null
         ? `KONIEC: ${textHlasky(e.dovod, mena, rody)}`
-        : `KONIEC: ${textHlasky(e.dovod, mena, rody)} Body ${e.body[0]}:${e.body[1]}.`;
+        : `KONIEC: ${textHlasky(e.dovod, mena, rody)} Špaky ${e.body[0]}:${e.body[1]}.`;
     default:
       return null;
   }
@@ -238,13 +256,16 @@ export function useHra(aktivne: boolean): HraHook {
   const [udalosti, setUdalosti] = useState<{ readonly id: number; readonly events: readonly Event[] }>({ id: 0, events: [] });
   const [chyba, setChyba] = useState<string | null>(null);
   const [superPripojeny, setSuperPripojeny] = useState(true);
+  const [superOdpojenyOd, setSuperOdpojenyOd] = useState<number | null>(null);
   const [frajerina, setFrajerina] = useState<ZmenyFrajeriny | null>(null);
   const [melichar, setMelichar] = useState<HlaskaVPartii | null>(null);
   const [vyucba, setVyucba] = useState<StavVyucby | null>(null);
   const [achievementy, setAchievementy] = useState<{ readonly n: number; readonly zisky: readonly ZiskAchievementu[] }>({ n: 0, zisky: [] });
   const [suhrnAchievementov, setSuhrnAchievementov] = useState<SuhrnAchievementov | null>(null);
   const [chybaVyucby, setChybaVyucby] = useState<HraHook["chybaVyucby"]>(null);
-  const [radaVyucby, setRadaVyucby] = useState<string | null>(null);
+  const [radaVyucby, setRadaVyucby] = useState<RadaVyucby | null>(null);
+  // Každá rada nová, aj rovnaká ako predošlá — jej hláška zaznie znova.
+  const radaN = useRef(0);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -259,6 +280,7 @@ export function useHra(aktivne: boolean): HraHook {
     ws.onopen = () => {
       setPripojene(true);
       const kod = localStorage.getItem(KLUC);
+      navratRef.current = kod !== null;
       if (kod !== null) ws.send(JSON.stringify({ type: "rejoin", code: kod }));
     };
 
@@ -273,6 +295,7 @@ export function useHra(aktivne: boolean): HraHook {
           // Krok výučby príde hneď po privítaní — iná miestnosť výučbu nemá.
           setVyucba(null);
           localStorage.setItem(KLUC, msg.code);
+          navratRef.current = false;
           setChyba(null);
           break;
         case "hraci":
@@ -298,6 +321,7 @@ export function useHra(aktivne: boolean): HraHook {
           break;
         case "superPripojeny":
           setSuperPripojeny(msg.connected);
+          setSuperOdpojenyOd(msg.connected ? null : Date.now() - (msg.odpojenyMs ?? 0));
           break;
         case "frajerina":
           setFrajerina(msg.zmeny);
@@ -315,31 +339,34 @@ export function useHra(aktivne: boolean): HraHook {
           setSuhrnAchievementov(msg.suhrn);
           break;
         case "vyucbaRada":
-          setRadaVyucby(msg.text);
+          radaN.current++;
+          setRadaVyucby({ n: radaN.current, text: msg.text, hlaska: msg.hlaska });
           break;
         case "vyucbaChyba":
           setChybaVyucby({ chybajuce: msg.chybajuce, navyse: msg.navyse });
           break;
-        case "error":
-          // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
-          // v pamäti). Inak by plocha ukazovala starý stav a každý ťah by
-          // padal do prázdna; radšej späť do lobby s vysvetlením.
-          if (miestnostRef.current !== null && /neexistuje|Nie si v miestnosti/.test(msg.text)) {
+        case "error": {
+          // Server odpovedá v poradí správ — prvá chyba po rejoin patrí rejoinu.
+          const reakcia = reakciaNaChybu(msg.text, { priStole: miestnostRef.current !== null, automatickyNavrat: navratRef.current });
+          navratRef.current = false;
+          if (reakcia.druh === "zanikla") {
+            // Rozohraná partia zanikla (napr. reštart servera — miestnosti žijú
+            // v pamäti). Inak by plocha ukazovala starý stav a každý ťah by
+            // padal do prázdna; radšej späť do lobby s vysvetlením.
             localStorage.removeItem(KLUC);
             setMiestnost(null);
             setView(null);
             setLog([]);
             setHraci([null, null]);
             setVyucba(null);
-            setChyba("Partia sa stratila — server sa medzitým reštartoval. Založ novú hru.");
+            setChyba(TEXT_ZANIKLEJ_PARTIE);
             break;
           }
           // Zaniknutá alebo cudzia miestnosť pred vstupom → zabudni ju.
-          if (/neexistuje|nehráš|plná/.test(msg.text) && localStorage.getItem(KLUC) !== null && miestnostRef.current === null) {
-            localStorage.removeItem(KLUC);
-          }
-          setChyba(msg.text);
+          if (reakcia.druh === "zabudni") localStorage.removeItem(KLUC);
+          if (reakcia.druh === "ukaz" || reakcia.ukaz) setChyba(msg.text);
           break;
+        }
       }
     };
 
@@ -354,6 +381,8 @@ export function useHra(aktivne: boolean): HraHook {
 
   const miestnostRef = useRef<Miestnost | null>(null);
   miestnostRef.current = miestnost;
+  /** Čaká sa na odpoveď na automatický rejoin z localStorage — nie na kód zadaný hráčom. */
+  const navratRef = useRef(false);
 
   useEffect(() => {
     if (!aktivne) return;
@@ -382,6 +411,7 @@ export function useHra(aktivne: boolean): HraHook {
     udalosti,
     chyba,
     superPripojeny,
+    superOdpojenyOd,
     frajerina,
     melichar,
     achievementy,

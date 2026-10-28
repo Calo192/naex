@@ -92,6 +92,22 @@ export class Robot {
     const view = this.view;
     if (view === null) throw new Error("bez stavu");
     const ja = view.ja;
+    // Hasič: robot si kartu vždy nechá.
+    if (view.hasicVolba !== null) return { type: "hasic", nechat: true };
+    // Voľby Nástupu v7: Klebetnica pošle naspodok prvú súperovu kartu, Dohadzovačka vymení prvých dvoch starších.
+    const nv = view.volbaNastupu;
+    if (nv !== null && nv.hrac === ja) {
+      const k = nv.ruka?.[0];
+      if (nv.typ === "klebetnica" && k !== undefined) return { type: "klebetnica", uid: k.uid };
+      const [x, y] = view.starsi;
+      if (nv.typ === "dohadzovacka" && x !== undefined && y !== undefined) return { type: "dohadzovacka", elderA: x.elderId, elderB: y.elderId };
+      // v7: karta zo šenku, Nástroj za Živnostníka (robot nič), Kapybara (prvý marker mimo stredu).
+      const zoSenku = view.senok[0];
+      if (nv.typ === "senok" && zoSenku !== undefined) return { type: "senok", uid: zoSenku.uid };
+      if (nv.typ === "nastroj") return { type: "nastroj", uid: null };
+      const kapybara = view.starsi.find((e) => e.marker !== 3);
+      if (nv.typ === "kapybara" && kapybara !== undefined) return { type: "kapybara", elderId: kapybara.elderId };
+    }
 
     switch (view.faza) {
       case "volbaCiela": {
@@ -119,7 +135,7 @@ export class Robot {
         const zostava = view.zhromazdenieStav?.zostavaLimit[ja] ?? 0;
         // Priznaj kliatbu, ak nejakú máš — zbavuje ruku balastu.
         const kliatba = view.ruka.find((k) =>
-          ["dlh", "cirhoza", "abstak", "milujuca_manzelka"].includes(k.defId),
+          ["dlh", "cirhoza", "abstak"].includes(k.defId),
         );
         if (kliatba !== undefined) return { type: "place", uid: kliatba.uid, target: "priznanie" };
         if (zostava > 0) {
@@ -161,15 +177,12 @@ export class Robot {
           return { type: "benzinka", uids: obcania.slice(0, b.benzinkaZostava[ja]).map((pl) => pl.card.uid) };
         }
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
-        if (b.krok === "exekutor") {
-          const volba = view.volbyExekutor?.[0];
-          if (volba === undefined) throw new Error("exekútor bez volieb");
-          return { type: "exekutorTool", defId: volba.defId, kde: volba.kde };
-        }
+        // v6: Exekútor sa pýta len na Záhradkára — robot ho zahodí.
+        if (b.krok === "exekutor") return { type: "zahradkar", zahodit: true };
         if (b.krok === "pohorsenie" || b.krok === "prebytok") {
           const smerK = ja === 0 ? 1 : 0;
           const elder = view.starsi.find((e) =>
-            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK, false) !== null,
+            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK) !== null,
           );
           // v5: Pohoršenie smie aj k sebe — keď k súperovi nejde nič.
           const kSebe = b.krok === "pohorsenie" && elder === undefined ? view.starsi.find((e) => pohorsenieMozne(view, ja, e, true)) : undefined;
@@ -182,7 +195,7 @@ export class Robot {
         // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.
         if (b.krok === "cintorin") return { type: "cintorin", uid: null };
         if (b.krok === "kar") return { type: "kar", uid: null };
-        return { type: "skipPohreb" };
+        throw new Error(`nečakaný krok bitky ${b.krok}`);
       }
       default:
         throw new Error(`nečakaná fáza ${view.faza}`);

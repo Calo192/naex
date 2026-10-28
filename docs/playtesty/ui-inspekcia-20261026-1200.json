@@ -1,0 +1,158 @@
+[
+ {
+  "id": "U01",
+  "zavaznost": "vysoka",
+  "typ": "orezany-text",
+  "stranky": [
+   "Hra - stôl (viac fáz)"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:6208 (--bar-h: 80px), hra.css:287 (overflow: hidden), hra.css:471 (.zdroj-pod)",
+  "popis": "1440×800: v lište hráča sa orezáva spodný riadok dlaždíc – „limit 3“, „1. kolo = základ“, „po bitke ×1 · 0 b“, „po Pitke: Cirhóza ×2 · −2 b“ a podtext dlaždice BODY („… Bot Štamgast +2“) vytŕča 3–4 px pod dlaždicu a je odseknutý. Pri 1366×650 (76 px) a 1920×1080 sa to nedeje.",
+  "navrh": "Pri okne 1440×800 padá lišta do pásma 80 px, ale text dlaždíc má stále 2–3 riadky a dlaždica má overflow:hidden. Navrhujem pre toto pásmo zvýšiť --bar-h na ≈ 90 px (okno má rezervu) alebo skrátiť podtexty na jeden riadok.",
+  "vyrez": "ui-inspekcia-20261026-1200/u01a.png"
+ },
+ {
+  "id": "U02",
+  "zavaznost": "vysoka",
+  "typ": "orezany-text",
+  "stranky": [
+   "Hra - stupnica starších"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:5097 (.ls-meno, ellipsis), hra.css:5211 (.ls-sc-hlava > .ls-boduje), hra.css:5221 (@container ls-sc)",
+  "popis": "Meno staršieho na scorecarde je skrátené na „K…“ (Krčmárka), „Vychová…“, „Autob…“ – čip „teraz: Bot Štamgast 1 b“ / „teraz: ty 1 · Bot Štamgast 3 b“ mu zje miesto. Vidno pri 1366×650 aj 1440×800 pri otvorenej stupnici a pri 1920×1080 po koncovom účte (Autob…, Vychováva…). Hráč nevie, ktorý starší to je.",
+  "navrh": "Čip bodov má flex:none a meno sa skracuje ako posledné. Meno staršieho nech má prednosť: čip skrátiť na hviezdičku + číslo už pri šírke scorecardu < 230 px (teraz je prah 175 px) alebo ho dať na druhý riadok.",
+  "vyrez": "ui-inspekcia-20261026-1200/u02a.png"
+ },
+ {
+  "id": "U03",
+  "zavaznost": "vysoka",
+  "typ": "orezany-text",
+  "stranky": [
+   "Hra - stupnica starších"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:5916 (.bodova-dlazdica, overflow:hidden), hra.css:5902 (.bodovy-bar, 6 stĺpcov)",
+  "popis": "1366×650 a 1440×800: pri otvorenej stupnici je názov „ZNEPOKOJENIE“ orezaný na „ZNEPOKOJE“ a podtext „súbojov · má 0 ks“ sa láme a odsekne (nástroj 6× pri 1366, 22× pri 1440).",
+  "navrh": "Dlaždica má 1/9 šírky, názov Znepokojenie sa nezmestí a podtext sa láme do 2 riadkov vo výške 76–80 px. Skrátiť názov (Znepok.) alebo podtext na jeden riadok („má 0“).",
+  "vyrez": "ui-inspekcia-20261026-1200/u03.png"
+ },
+ {
+  "id": "U04",
+  "zavaznost": "vysoka",
+  "typ": "prekryty-text",
+  "stranky": [
+   "Hra - Voľba cieľa (zvýraznená lokalita)"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:1417 (.linia-skupina.lokalita.navrh), hra.css:1405 (.otocit-tip), hra.css:3528 (.pecat-tahu-obal, pečiatka POTVRDIŤ)",
+  "popis": "1366×650: vybraná lokalita (Kultúrny dom) je zmenšená tak, že sa text efektu na karte prekrýva sám so sebou (nečitateľný), pečiatka POTVRDIŤ zakrýva spodok karty a nápovedu „klik na kartu = otočiť“. Jantárové zvýraznenie samo funguje; pri 1440×800 a 1920×1080 je všetko čitateľné. Nástroj to neoznačil, vidno na snímke.",
+  "navrh": "V nízkom okne sa karta lokality škáluje podľa výšky riadku, ale pečiatka je mimo toku. V nízkom pásme (max-height ~700 px) dať POTVRDIŤ vedľa karty alebo skryť text efektu na karte (je v pokyne a lupe).",
+  "vyrez": "ui-inspekcia-20261026-1200/u04.png"
+ },
+ {
+  "id": "U05",
+  "zavaznost": "stredna",
+  "typ": "prekryty-text",
+  "stranky": [
+   "Hra - Bitka (krok Kar), pečiatky akcií"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:3528 (.pecat-tahu-obal), hra.css:3534 (button.pecat-potvrd)",
+  "popis": "1366×650: pečiatka ZAHODIŤ CIRHÓZU leží cez text efektu kariet Starosta a Kar (nástroj 2× prekryty-text). Hráč nedočíta efekt karty, o ktorej rozhoduje.",
+  "navrh": "Pečiatka je prilepená na hranu stola a v nízkom okne siaha do línie. Zväčšiť dolný odstup línie o výšku pečiatky, kým je zobrazená.",
+  "vyrez": "ui-inspekcia-20261026-1200/u05.png"
+ },
+ {
+  "id": "U06",
+  "zavaznost": "stredna",
+  "typ": "maly-ciel",
+  "stranky": [
+   "Hra - lepiaca hlavička"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:87 (.priebeh-kola li), apps/web/src/hra/jbar.css:202 (.jbar-odhad), hra.css:3706 (.jbar button.hlava-vrstva)",
+  "popis": "1366×650 a 1440×800: klikacie ciele v hlavičke sú nižšie ako 24 px – kroky kola (17/22 px), tlačidlá Šenok, Lokality, Log, „?“ (14/19 px), CIEĽ (17/20 px). Pri 1920×1080 je všetko ≥ 24 px.",
+  "navrh": "Nízke okno stláča hlavičku. Pridať min-height:24px (alebo neviditeľný padding cez ::after), vizuálne nemusí vyrásť.",
+  "vyrez": "ui-inspekcia-20261026-1200/u06.png"
+ },
+ {
+  "id": "U07",
+  "zavaznost": "stredna",
+  "typ": "maly-ciel",
+  "stranky": [
+   "Úvod"
+  ],
+  "zdroj": "apps/web/src/styles.css:929 (.hero-pravidla), apps/web/src/stranky/Domov.tsx:49",
+  "popis": "Odkaz „Pravidlá na čítanie“ má cieľ 120×23 px (o 1 px pod 24). Všetky tri rozlíšenia.",
+  "navrh": "Pridať .hero-pravidla { display:inline-block; padding-block:2px; } alebo min-height:24px.",
+  "vyrez": "ui-inspekcia-20261026-1200/u07.png"
+ },
+ {
+  "id": "U08",
+  "zavaznost": "stredna",
+  "typ": "maly-ciel",
+  "stranky": [
+   "Hra - bublina výučby"
+  ],
+  "zdroj": "apps/web/src/hra/jbar.css:952 (.mel-dalej), apps/web/src/hra/Vyucba.tsx:705",
+  "popis": "1366×650: tlačidlo „Preskočiť výučbu“ v bubline Majstra Melichara má 120×23 px.",
+  "navrh": "min-height:24px pre .mel-dalej.",
+  "vyrez": "ui-inspekcia-20261026-1200/u08.png"
+ },
+ {
+  "id": "U09",
+  "zavaznost": "stredna",
+  "typ": "bez-fokusu",
+  "stranky": [
+   "Hra - Voľba cieľa (zvýraznená lokalita)"
+  ],
+  "zdroj": "apps/web/src/hra/HernaPlocha.tsx:4336 (.volba-ciela-karty > .kl-klik)",
+  "popis": "Karta lokality, na ktorú sa pri voľbe cieľa dá kliknúť, pri fokuse z klávesnice nemení vzhľad – klávesnicou nevidno, na ktorej lokalite stojíš (všetky tri rozlíšenia).",
+  "navrh": "Pridať .volba-ciela-karty .kl-klik:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }.",
+  "vyrez": "ui-inspekcia-20261026-1200/u09.png"
+ },
+ {
+  "id": "U10",
+  "zavaznost": "nizka",
+  "typ": "nizky-kontrast",
+  "stranky": [
+   "Hra - Pitka"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:856 (.efekty-ziadne, farba var(--slaby))",
+  "popis": "1366×650 a 1440×800: „žiadne aktívne akcie“ v hlavičke súpera má kontrast 3,96 : 1 (treba 4,5 : 1, písmo 13 px).",
+  "navrh": "Použiť var(--tlmeny) alebo mierne zosvetliť --slaby.",
+  "vyrez": "ui-inspekcia-20261026-1200/u10.png"
+ },
+ {
+  "id": "U11",
+  "zavaznost": "nizka",
+  "typ": "skrateny-text",
+  "stranky": [
+   "Hra - pokyn stola"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:6131 (.linia-stav > .pilulka-text, ellipsis), hra.css:1065 (width: fit-content, max šírka ≈ 1160 px)",
+  "popis": "Pokyn v pilulke nad stolom je skrátený trojbodkou aj pri 1920×1080, kde je dosť miesta (Patronát „… z ruky a …“, Zhromaždenie „… smieš pri…“). Plné znenie sa rozbalí pod myšou, takže ide o zámer pre nízke okná; pri veľkom okne je maximálna šírka zbytočne malá.",
+  "navrh": "Pri šírke ≥ 1600 px zdvihnúť max-width pilulky na ~ 90 % panela.",
+  "vyrez": "ui-inspekcia-20261026-1200/u11.png"
+ },
+ {
+  "id": "U12",
+  "zavaznost": "stredna",
+  "typ": "prekryty-text",
+  "stranky": [
+   "Hra - Zhromaždenie (otočená karta)"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:2926 (.strany-stredu), hra.css:1445 (.partia-popis)",
+  "popis": "1366×650: nadpisy strán „PRI VDOVE · prevaha: ty“ / „PRI KOLÁČOCH“ sú vo výške vrchu otočenej karty (Recidivista) a pri hrane sa zlievajú s kartou. Overené len na snímke, nástroj to neoznačil. Pri 1920×1080 je to v poriadku.",
+  "navrh": "V nízkom okne dať nadpisy strán nad pás kariet (rezervovať riadok) alebo ich zmenšiť.",
+  "vyrez": "ui-inspekcia-20261026-1200/u12.png"
+ },
+ {
+  "id": "U13",
+  "zavaznost": "nizka",
+  "typ": "skrateny-text",
+  "stranky": [
+   "Hra - stupnica starších"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:5446–5470 (.ls-listok, ellipsis)",
+  "popis": "Lístok posunu na portréte skracuje zdroj („Prebytok · Bot S…“, „Pohoršenie · Bot…“). Celé znenie je v title, preto len nízka; lístok navyše zakrýva spodok portrétu (zámer).",
+  "navrh": "Pri 1366/1440 dať lístok na 2 riadky alebo skrátiť meno na „Štamgast“.",
+  "vyrez": "ui-inspekcia-20261026-1200/u13.png"
+ }
+]

@@ -63,7 +63,7 @@ väzby**.
 - **Plánovanie dopredu:** dalo sa plánovať na viac kôl (balíček, starší,
   scorecardy, zdroje)? Kde plán zničila náhoda tak, že sa nedalo reagovať?
 - **Zmiernenie náhody:** ktoré nástroje na zmiernenie smoly existujú
-  (fajčenie, šenok, Vízia, priznanie, Pohreb, …), či si ich použil a či
+  (fajčenie, šenok, Vízia, priznanie, Dedičstvo, …), či si ich použil a či
   stačili. Kde chýba spôsob, ako zlú ruku zachrániť šikovnosťou?
 - **Čítanie súpera:** dalo sa z verejných informácií (stôl, zdroje, odhodené,
   šenok, čo súper pustil v stavbe šenku) odhadnúť, čo chystá? Odmenila hra

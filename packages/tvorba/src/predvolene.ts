@@ -11,7 +11,7 @@ import type { AkciaDef, Kategoria, KlucoveSlovo } from "./typy.ts";
  * Poškodenie pečene, Poldeci, Cigareta; nikde „fyzická cigareta“) a nová
  * Vízia. Server nimi pri štarte prepíše staré databázy (zjednotNazvyAkcii).
  * Popisy Dlhu a Poškodenia pečene sú už podľa M23 (verejný dlh, 2026-10-21),
- * Dlh podľa pravidiel v5 s číslami z jadra (Michal 2026-10-25) — staré
+ * Dlh podľa pravidiel v6 s číslami z jadra (Michal 2026-10-26) — staré
  * databázy ich dostanú z dorovnajSoSeedom (len s novou značkou).
  */
 export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: string; readonly popis: string }[] = [
@@ -21,7 +21,7 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     popis:
       `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — hneď sa prizná. ` +
       `Pri ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD} priznaných Dlhoch ťa v bitke čaká Exekúcia (súperov Exekútor ten prah zníži o 1 / 2 / 3). ` +
-      "Na konci hry vyhrá súboj o podmienku Dlh, kto má Dlhov menej — rátajú sa aj priznané.",
+      "Exekúcia ti spáli polovicu priznaných Dlhov a rovnako veľa špakov; pri remíze v bitke prehráva, kto má viac priznaných Dlhov (v6).",
   },
   {
     kluc: "PoškodeniePečene",
@@ -60,6 +60,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
   A("Robota", "Robota", "Pred kontrolou prahu Exekútora zahodí 1 priznaný Dlh (spáli ho, z hry). Funguje aj bez exekúcie."),
+  A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
 ].map((a, poradie) => ({ ...a, poradie }));
 
 const S = (slovo: string, popis: string): KlucoveSlovo => ({
@@ -92,8 +93,12 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   ),
   S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu (máš vyššie tuhé poškodenie). Pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru."),
   S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu (máš nižšie tuhé poškodenie). Pri rovnakom tuhom neprehrá nikto — lokalita ide na sekeru."),
-  S("Prestávka", "Uplatní sa cez prestávku pred bitkou."),
-  S("Exekúcia", "Uplatní sa, keď ťa navštívi Exekútor."),
+  // Kšeft (v7, Michal 2026-10-27): aktívny efekt za cenu; Prestávka a Exekúcia zanikli (nemali kartu).
+  S("Kšeft", "Aktívny efekt: za cenu (cigarety, poldeci, Dlh, karta) ho spustíš sám v Pitke na svojom ťahu, každú kartu raz za Pitku. Kšeft lokality smie použiť každý hráč."),
+  // Konflikt, Úplatok a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14).
+  S("Konflikt", "Spustí sa, keď táto karta leží v línii a súper k nej priloží svoju kartu. Keď prikladáš ty, Konflikt nevyvoláš; priložený Nástroj, NA EX ani zrážka ho nespúšťajú."),
+  S("Úplatok", "Súper smie v Pitke na svojom ťahu dať na túto kartu cigaretu, raz za Pitku; cigareta prepadne."),
+  S("Exekúcia", "Uplatní sa, keď ti v bitke hrozí exekúcia (priznané Dlhy na prahu Exekútora)."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
   P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet, potom ich vráť."),

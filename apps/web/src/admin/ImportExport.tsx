@@ -39,7 +39,7 @@ export function ImportExport() {
       <section className="panel">
         <h2>Export</h2>
         <p className="tlmene">
-          Textový popis všetkých návrhov — názov, tagy, efekt, blokované pozície, akcie a obmedzenia po stranách. Rovnaký
+          Textový popis všetkých návrhov — názov, tagy, efekt, blokované pozície, akcie a obmedzenia po stranách, príbeh a účel v hre. Rovnaký
           formát ako „Export“ v MAUI aplikácii KartyAI; dá sa naimportovať späť aj sem.
         </p>
         <a className="tlacidlo tlacidlo-hlavne" href="/api/admin/export" download>
@@ -49,7 +49,7 @@ export function ImportExport() {
       <section className="panel">
         <h2>Import</h2>
         <p className="tlmene">
-          Karty sa spárujú podľa názvu: existujúcim sa prepíšu tagy, efekt a akcie, nové sa pridajú. Ilustrácie, farby
+          Karty sa spárujú podľa názvu: existujúcim sa prepíšu tagy, efekt a akcie (aj príbeh a účel, ak ich súbor má — export z MAUI ich nemá), nové sa pridajú. Ilustrácie, farby
           a rozmery ostanú. Akcie sa hľadajú podľa názvu — neznáme sa preskočia.
         </p>
         <input

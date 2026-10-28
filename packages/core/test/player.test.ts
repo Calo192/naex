@@ -1,7 +1,8 @@
 // M3 — stav hráča a odvodené hodnoty.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { PlacedCard } from "../src/index.ts";
@@ -75,8 +76,8 @@ describe("M3 — odvodené hodnoty", () => {
   it("v5: prahy priazeň nezdvíha, súperov Exekútor prah Exekúcie zníži; hodnota Viery je 1", () => {
     expect(prahCirhozy()).toBe(3);
     expect(prahDlhu()).toBe(2);
-    expect(prahExekutora()).toBe(10);
-    expect(prahExekutora(2)).toBe(8);
+    expect(prahExekutora()).toBe(7);
+    expect(prahExekutora(2)).toBe(5);
     expect(hodnotaViery()).toBe(1);
   });
 });

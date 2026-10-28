@@ -1,7 +1,7 @@
 ---
 name: naex-playtest
-description: Spustí playtest hry NA EX! — 1 až 3 partie naraz, v každej dvaja AI playtesteri náhodne vybraní zo šiestich postáv s rôznym herným štýlom (poznajú všetky pravidlá, hrajú cez skutočný server bez znalosti súperovej ruky) a spätnú väzbu zverejnia na živom webe. Podľa parametra followup potom nič (min), spisovateľ napíše report zo všetkých partií (predvolene), alebo navyše stratég s navrhárom spoločne pripravia návrhy zmien, o ktorých Michal rozhoduje v sekcii Playtest na webe (max). S parametrom vyucba namiesto partie traja nováčikovia prejdú výučbu „Prvá hra“ v prehliadači. Použi, keď používateľ povie /naex-playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi", „otestuj výučbu nováčikmi".
-argument-hint: "[počet partií 1–3] [min|max] [kratka|stredna|dlha] | vyucba [1–3]"
+description: Spustí playtest hry NA EX! — 1 až 3 partie naraz, v každej dvaja AI playtesteri náhodne vybraní zo šiestich postáv s rôznym herným štýlom (poznajú všetky pravidlá, hrajú cez skutočný server bez znalosti súperovej ruky) a spätnú väzbu zverejnia na živom webe. Podľa parametra followup potom nič (min), spisovateľ napíše report zo všetkých partií (predvolene), alebo navyše stratég s navrhárom spoločne pripravia návrhy zmien, o ktorých Michal rozhoduje v sekcii Playtest na webe (max); ULTRA = ako max, všetci agenti na modeli fable s effortom xhigh, len na výslovný pokyn Michala. S parametrom vyucba namiesto partie traja nováčikovia prejdú výučbu „Prvá hra“ v prehliadači. Použi, keď používateľ povie /naex-playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi", „otestuj výučbu nováčikmi".
+argument-hint: "[počet partií 1–3] [min|max|ULTRA] [kratka|stredna|dlha] | vyucba [1–3]"
 ---
 
 # Playtest NA EX!
@@ -29,6 +29,17 @@ a do partií nezasahuješ.
     `naex-implementacia`. Cieľ je čo najlepší výsledok, aj keď to trvá dlhšie
     a stojí viac — preto `max` len pred veľkým rozhodnutím (napr. pred
     zmrazením pravidiel), inak predvolený report (Michal 2026-10-23, tokeny).
+  - `ULTRA` — ako `max`, ale **všetci agenti** (playtesteri, spisovateľ,
+    stratég, navrhár) bežia na modeli **fable** s effortom **xhigh** —
+    v každom volaní Agent `model: "fable"` a `effort: "xhigh"` (Michal
+    2026-10-26). Nový druh agenta nie je, sú to tí istí agenti. Používa sa
+    zriedka: **len na výslovný pokyn Michala** (nikdy z routine ani z vlastnej
+    iniciatívy) a pred založením turnusu sa ešte raz spýtaj — ukáž počet
+    agentov (2 × počet + spisovateľ, stratég, navrhár) a odhad trvania.
+    Inak postup ako pri `max` (kroky 6–7). Michal 2026-10-26 schválil:
+    ULTRA pred veľkými rozhodnutiami (zmrazenie pravidiel, ladenie mierky),
+    ako porovnanie s bežným playtestom na tej istej verzii (spisovateľ
+    porovná, čo silnejší hráči našli navyše), predvolene dĺžka `dlha`.
 - **dĺžka hry** `kratka` (3 lokality) | `stredna` (5, predvolená) | `dlha` (7).
 - **`vyucba [1–3]`**: namiesto partie playtest výučby „Prvá hra“ s nováčikmi
   v prehliadači (predvolene 3). Postup je v časti **Režim vyucba** nižšie,
@@ -244,7 +255,8 @@ Krok výučby a hlášky servera berie zo záznamu WebSocketu (strážca v
 
 - Relácie a turnusy sú v `playtest/` (v `.gitignore`); reporty
   v `docs/playtesty/` sú v gite.
-- Heslá AI účtov sú v `playtest/ucty.json` (mimo gitu), kľúčované adresou
+- Heslá AI účtov sú v spoločnom súbore všetkých pracovísk (`.git/naex-ucty.json`
+  hlavného repa alebo `NAEX_UCTY`, mimo gitu; `tools/playtest/ucty.ts`), kľúčované adresou
   webu; rovnaké meno = rovnaký účet. Na živom webe ich nástroj zaradí heslom
   admina z `deploy/.env.produkcia`. Spätnú väzbu AI web predvolene skrýva
   (prepínač „Zobraziť aj spätnú väzbu od AI“).

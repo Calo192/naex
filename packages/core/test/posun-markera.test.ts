@@ -9,7 +9,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, PlayerId, PosunMarkera } from "../src/index.ts";
-import { apply, bodyTeraz, eventsFor, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
+import { apply, rozpisSpakov, spakyTeraz, eventsFor, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -61,12 +61,13 @@ describe("posun markera", () => {
         const posun = moje[0] as PosunMarkera;
         expect([posun.z, posun.na]).toEqual([e.marker, teraz.marker]);
         expect(posun.kto).toBe(k.hrac);
-        const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "patronat" ? "patronat" : null;
+        const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "patronat" ? "patronat" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
         expect(posun.zdroj).toBe(zdroj);
         if (posun.zdroj === "prebytok") expect(Math.abs(posun.na - posun.z)).toBe(1);
       }
     }
-    expect([...zdroje].sort()).toEqual(["patronat", "pohorsenie", "prebytok"]);
+    // kseft = Predsedova vila (v7, len finále na nej).
+    for (const z of ["patronat", "pohorsenie", "prebytok"]) expect(zdroje.has(z)).toBe(true);
   });
 
   it("stopa drží do konca Zhromaždenia po bitke a viewFor ju posiela obom", () => {
@@ -99,22 +100,25 @@ describe("posun markera", () => {
   });
 });
 
-describe("body teraz pri staršom (#109)", () => {
-  it("na konci hry sa body z pohľadu oboch hráčov zhodujú so záverečným bodovaním", () => {
+describe("špaky teraz pri staršom (v6)", () => {
+  it("na konci hry sedia špaky z pohľadu oboch hráčov a popolník s koncom hry", () => {
     let koncov = 0;
     for (const k of partie(SEEDY)) {
       const koniec = k.po.koniec;
       if (koniec === null || koniec.body === null) continue;
       for (const p of [0, 1] as const) {
-        const teraz = bodyTeraz(data, viewFor(data, k.po, p));
+        const v = viewFor(data, k.po, p);
+        const teraz = spakyTeraz(v);
         expect(teraz.spolu).toEqual(koniec.body);
-        // Rozpis: víťaz súbojov (aj pri rovnosti) dostane 1 + strach, porazený nič.
-        for (const s of teraz.starsi) {
-          for (const h of [0, 1] as const) {
-            const su = h === 0 ? 1 : 0;
-            expect(s.body[h]).toBe(s.vyhry[h] >= s.vyhry[su] ? 1 + s.strach[h] : 0);
-          }
-          expect(s.strach[0] === 0 || s.strach[1] === 0).toBe(true);
+        expect(teraz.vyplat).toBe(0);
+        // Starší dáva špaky len tomu, koho sa bojí.
+        for (const s of teraz.starsi) expect(s.spaky[0] === 0 || s.spaky[1] === 0).toBe(true);
+        const r = rozpisSpakov(v);
+        for (const h of [0, 1] as const) {
+          expect(r[h].spolu).toBe(koniec.body[h]);
+          expect(r[h].zaBitky + r[h].zaStarsich + r[h].prebytok + r[h].exekutor + r[h].cirhoza + r[h].vykupne).toBe(koniec.body[h]);
+          // Výkupné na konci sedí so zdrojmi, ktoré hráčovi ostali (verejné).
+          expect(r[h].vykupne).toBe(v.hraci[h].poldeciPlne + Math.floor(v.hraci[h].cigarety / 5));
         }
       }
       koncov++;

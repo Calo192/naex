@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
+import { navratZ } from "../lib/navrat.ts";
 import {
   HUDBA_PREDVOLENA,
   LUPA_DO,
@@ -17,6 +18,7 @@ import {
   type Pouzivatel,
 } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Pole } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import type { Pohlavie } from "@naex/core";
 
 /** Pohlavie v profile (Michal 2026-10-22) — súper ho vidí len v tvare hlášok. */
@@ -28,12 +30,7 @@ const VOLBY_POHLAVIA: readonly { readonly id: Pohlavie | null; readonly nazov: s
 import { hlasitostZvuku, nacitajSkladby, urlSkladby } from "../hra/Hudba.tsx";
 import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
 import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
-
-/** Kam sa vrátiť po prihlásení (?spat=/hra). */
-function navrat(): string {
-  const spat = new URLSearchParams(location.search).get("spat");
-  return spat !== null && spat.startsWith("/") && !spat.startsWith("//") ? spat : "/hra";
-}
+import { VyberParu } from "./VyberParu.tsx";
 
 export function Prihlasenie() {
   useTitulok("Prihlásenie");
@@ -50,7 +47,7 @@ export function Prihlasenie() {
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/prihlasenie", { login, heslo });
       nastav(r.pouzivatel);
-      chod(navrat(), true);
+      chod(navratZ(location.search) ?? "/hra", true);
     } catch (err) {
       setChyba(err instanceof Error ? err.message : String(err));
     } finally {
@@ -59,9 +56,9 @@ export function Prihlasenie() {
   };
 
   return (
+    <>
+    <HlavaStranky nadpis="Vitaj späť" uvod="Prihlás sa a pokračuj tam, kde si prestal." />
     <div className="formular-stred">
-      <h1>Vitaj späť</h1>
-      <p className="podnadpis">Prihlás sa a pokračuj tam, kde si prestal.</p>
       <form className="panel" onSubmit={(e) => void odosli(e)}>
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
         <Pole label="Prihlasovacie meno">
@@ -78,6 +75,7 @@ export function Prihlasenie() {
         Ešte nemáš účet? <Odkaz href={`/registracia${location.search}`}>Zaregistruj sa</Odkaz>
       </p>
     </div>
+    </>
   );
 }
 
@@ -102,7 +100,8 @@ export function Registracia() {
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/registracia", { login, heslo, meno: meno.trim() || login });
       nastav(r.pouzivatel);
-      chod("/profil?novy=1", true);
+      // S návratom (pozvánka do miestnosti) rovno späť, inak nováčik začína profilom.
+      chod(navratZ(location.search) ?? "/profil?novy=1", true);
     } catch (err) {
       setChyba(err instanceof Error ? err.message : String(err));
     } finally {
@@ -111,9 +110,9 @@ export function Registracia() {
   };
 
   return (
+    <>
+    <HlavaStranky nadpis="Nový účet" uvod="Účet potrebuješ na hranie. Pravidlá a karty sú voľne prístupné." />
     <div className="formular-stred">
-      <h1>Nový účet</h1>
-      <p className="podnadpis">Účet potrebuješ na hranie. Pravidlá a karty sú voľne prístupné.</p>
       <form className="panel" onSubmit={(e) => void odosli(e)}>
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
         <Pole label="Prihlasovacie meno" pomoc="3 – 32 znakov bez diakritiky. Slúži len na prihlásenie.">
@@ -143,6 +142,7 @@ export function Registracia() {
         Už máš účet? <Odkaz href={`/prihlasenie${location.search}`}>Prihlás sa</Odkaz>
       </p>
     </div>
+    </>
   );
 }
 
@@ -285,6 +285,16 @@ export function Profil() {
       .catch(chyba);
   };
 
+  // Medziobrazovky pri prechode fáz v partii (Michal 2026-10-27).
+  const [medziobrazovky, setMedziobrazovky] = useState(ja?.medziobrazovky !== false);
+  const prepniMedziobrazovky = (zapnute: boolean): void => {
+    setMedziobrazovky(zapnute);
+    api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { medziobrazovky: zapnute })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(chyba);
+  };
+
   // Nápovedy majstra Melichara v partii (Michal 2026-10-24): vypnúť a ukázať znova.
   const [napovedy, setNapovedy] = useState(ja?.napovedy !== false);
   const [napovedyZnova, setNapovedyZnova] = useState(false);
@@ -373,13 +383,22 @@ export function Profil() {
 
   return (
     <div className="profil profil-siroky">
-      <h1>Môj profil</h1>
+      <HlavaStranky
+        nadpis="Môj profil"
+        uvod="Herné meno, fotka a nastavenia webu aj partie."
+        akcia={
+          <Odkaz href={`/hrac/${ja.id}`} className="tlacidlo">
+            Moje štatistiky a partie
+          </Odkaz>
+        }
+      />
       {novy && <Hlaska druh="ok">Účet je pripravený. Nastav si herné meno a fotku — uvidí ich tvoj súper.</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
       <section className="panel profil-hlava">
         <div className="profil-avatar">
-          <Avatar meno={ja.meno} avatar={ja.avatar} velkost={112} />
+          {/* Jediný avatar mimo partie vo farbe hráča — hneď pod ním sa pár volí. */}
+          <Avatar meno={ja.meno} avatar={ja.avatar} velkost={112} farba="ja" />
         </div>
         <div>
           <h2 style={{ marginBottom: 4 }}>{ja.meno}</h2>
@@ -425,6 +444,7 @@ export function Profil() {
             )}
           </div>
         </div>
+        <VyberParu chyba={chyba} />
       </section>
 
       {galeriaOtvorena && (
@@ -468,8 +488,8 @@ export function Profil() {
       <section className="panel vzhlad-webu" aria-labelledby="vzhlad-webu-nadpis">
         <h3 id="vzhlad-webu-nadpis">Vzhľad webu</h3>
         <p className="tlmene">
-          Farby inšpirované knihou Sanza Wadu <i>A Dictionary of Color Combinations</i>. Mení sa len okolie — karty, farby
-          hráčov a zóny starších ostávajú. Ukladá sa samo.
+          Farby inšpirované knihou Sanza Wadu <i>A Dictionary of Color Combinations</i>. Mení sa len okolie — karty a zóny
+          starších ostávajú. Svoju farbu a farbu súpera si vyberáš hore pri avatare. Ukladá sa samo.
         </p>
         {/* Dve skupiny, Tmavé a Svetlé, po 14 (Michal 2026-10-23). */}
         {([
@@ -510,6 +530,13 @@ export function Profil() {
           <span>
             <b>Klávesové skratky v partii</b> — K končím / hotovo / potvrdiť, P pasovať, N NA EX!, Esc zrušiť, ? zoznam. Pri písaní do poľa
             nefungujú; M otvorí pult Melichara a číslice na ňom buchnú pečiatkou.
+          </span>
+        </label>
+        <label className="skratky-volba">
+          <input type="checkbox" checked={medziobrazovky} onChange={(e) => prepniMedziobrazovky(e.target.checked)} />
+          <span>
+            <b>Medziobrazovky pri prechode fáz</b> — pri výbere lokality, šenku, Zhromaždení, Pitke, bitke, prebytku a vo finále sa ukáže názov fázy a čo máš
+            robiť. Ostane, kým neklikneš „Rozumiem“.
           </span>
         </label>
         <label className="skratky-volba">

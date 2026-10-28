@@ -1,10 +1,14 @@
 // Textový export a import kariet — presne formát MAUI CardExportService /
 // CardImportService (kartyai_cards_*.txt). Ten istý súbor číta aj
 // tools/parse_cards.py, takže výmena s MAUI aplikáciou funguje oboma smermi.
+// Príbeh a účel karty (STORY, PURPOSE) idú až za „Total permutations“ — tam ich
+// MAUI aj parse_cards.py preskočia; riadky textu sú odsadené, aby žiadny nevyzeral
+// ako hlavička karty.
 
 import type { AkciaDef, KartaNavrh, Pozicia, StranaNavrhu } from "./typy.ts";
 import { POZICIE } from "./typy.ts";
 import { rozlozeniaStrany } from "./varianty.ts";
+import { MAX_TEXTU_KARTY, sTextomKarty } from "./pribeh.ts";
 
 const CIARA = "============================================================";
 const POMLCKY = "------------------------------------------------------------";
@@ -29,6 +33,15 @@ function strana(sb: string[], label: string, s: StranaNavrhu, lava: boolean, akc
   sb.push(
     `  Position restrictions: ${obmedzenia.length === 0 ? "none (all positions allow every action)" : obmedzenia.join("; ")}`,
   );
+}
+
+function textovyBlok(sb: string[], hlavicka: string, text: string | undefined): void {
+  const t = text?.trim() ?? "";
+  if (t === "") {
+    sb.push(`${hlavicka}: (none)`);
+    return;
+  }
+  sb.push(`${hlavicka}:`, ...t.split("\n").map((r) => (r.trim() === "" ? "" : `  ${r.trimEnd()}`)));
 }
 
 export function exportTxt(karty: readonly KartaNavrh[], akcie: readonly AkciaDef[], teraz: Date): string {
@@ -62,7 +75,10 @@ export function exportTxt(karty: readonly KartaNavrh[], akcie: readonly AkciaDef
     sb.push("");
     const l = rozlozeniaStrany(k.lava).length;
     const r = rozlozeniaStrany(k.prava).length;
-    sb.push(`Total permutations: ${l * r} (left ${l} x right ${r})`, "");
+    sb.push(`Total permutations: ${l * r} (left ${l} x right ${r})`);
+    textovyBlok(sb, "STORY", k.pribeh);
+    textovyBlok(sb, "PURPOSE", k.ucel);
+    sb.push("");
   });
   return sb.join("\n");
 }
@@ -74,6 +90,9 @@ export interface ImportKarta {
   readonly efekt: string;
   readonly lava: StranaNavrhu;
   readonly prava: StranaNavrhu;
+  /** Príbeh a účel len vtedy, keď ich súbor nesie (export z MAUI ich nemá — karte ostanú). "" = zmazať. */
+  readonly pribeh?: string;
+  readonly ucel?: string;
 }
 
 export interface ImportVysledok {
@@ -129,6 +148,32 @@ function parseStrana(blok: string, akcie: readonly AkciaDef[], nezname: Set<stri
   return { blokovane, akcie: akcieMap, povolene };
 }
 
+/** Texty, ktoré súbor nesie — aj prázdne (zmazanie), na rozdiel od textyKarty v pribeh.ts. */
+function textyZoSuboru(pribeh: string | undefined, ucel: string | undefined): { pribeh?: string; ucel?: string } {
+  return { ...(pribeh === undefined ? {} : { pribeh }), ...(ucel === undefined ? {} : { ucel }) };
+}
+
+/** Karta s príbehom a účelom z importu; súbor bez STORY/PURPOSE (export z MAUI) jej texty nechá. */
+export function sTextamiZImportu(k: KartaNavrh, ik: Pick<ImportKarta, "pribeh" | "ucel">): KartaNavrh {
+  const sPribehom = ik.pribeh === undefined ? k : sTextomKarty(k, "pribeh", ik.pribeh.slice(0, MAX_TEXTU_KARTY));
+  return ik.ucel === undefined ? sPribehom : sTextomKarty(sPribehom, "ucel", ik.ucel.slice(0, MAX_TEXTU_KARTY));
+}
+
+/** Odsadený blok textu pod hlavičkou; undefined = hlavička v súbore nie je. */
+function citajTextovyBlok(telo: string, hlavicka: string): string | undefined {
+  const riadky = telo.split("\n");
+  const i = riadky.findIndex((r) => r.startsWith(`${hlavicka}:`));
+  if (i < 0) return undefined;
+  const hned = (riadky[i] ?? "").slice(hlavicka.length + 1).trim();
+  if (hned === "(none)") return "";
+  const text = hned === "" ? [] : [hned];
+  for (const r of riadky.slice(i + 1)) {
+    if (r.trim() !== "" && !/^\s/.test(r)) break;
+    text.push(r.replace(/^ {2}/, "").trimEnd());
+  }
+  return text.join("\n").trim();
+}
+
 export function importTxt(text: string, akcie: readonly AkciaDef[]): ImportVysledok {
   const nezname = new Set<string>();
   const karty: ImportKarta[] = [];
@@ -146,6 +191,7 @@ export function importTxt(text: string, akcie: readonly AkciaDef[]): ImportVysle
       efekt: efekt === "(none)" ? "" : efekt,
       lava: parseStrana(lavyBlok, akcie, nezname),
       prava: parseStrana(pravyBlok, akcie, nezname),
+      ...textyZoSuboru(citajTextovyBlok(telo, "STORY"), citajTextovyBlok(telo, "PURPOSE")),
     });
   }
   return { karty, nezname: [...nezname] };

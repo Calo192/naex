@@ -628,5 +628,195 @@
   "mierkaIkon": 1.3,
   "kopie": 1,
   "obrazok": "snubenica.jpg"
+ },
+ {
+  "id": "vidly",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vidly.jpg"
+ },
+ {
+  "id": "lievik",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "lievik.jpg"
+ },
+ {
+  "id": "krokodil",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "krokodil.jpg"
+ },
+ {
+  "id": "kapybara",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kapybara.jpg"
+ },
+ {
+  "id": "kon",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kon.jpg"
+ },
+ {
+  "id": "kohut",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kohut.jpg"
+ },
+ {
+  "id": "degustatorka",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "degustatorka.jpg"
+ },
+ {
+  "id": "klebetnica",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "klebetnica.jpg"
+ },
+ {
+  "id": "dohadzovacka",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "dohadzovacka.jpg"
+ },
+ {
+  "id": "vandal",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vandal.jpg"
+ },
+ {
+  "id": "stryko_z_ameriky",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "stryko_z_ameriky.jpg"
+ },
+ {
+  "id": "masiar",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "masiar.jpg"
+ },
+ {
+  "id": "kulturista",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kulturista.jpg"
+ },
+ {
+  "id": "traktoristka",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "traktoristka.jpg"
+ },
+ {
+  "id": "vymahac",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vymahac.jpg"
+ },
+ {
+  "id": "sklad",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "sklad.jpg"
+ },
+ {
+  "id": "polovnicka_chata",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "polovnicka_chata.jpg"
+ },
+ {
+  "id": "predsedova_vila",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "predsedova_vila.jpg"
+ },
+ {
+  "id": "herna",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "herna.jpg"
  }
 ]

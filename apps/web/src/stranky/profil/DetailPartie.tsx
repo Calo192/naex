@@ -10,7 +10,10 @@ import { api } from "../../lib/api.ts";
 import { Odkaz, useTitulok } from "../../lib/router.tsx";
 import { useSada } from "../../lib/sada.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
+import { HlavaStranky } from "../../HlavaStranky.tsx";
 import { KrcmovyUcet } from "../../hra/KrcmovyUcet.tsx";
+import { UcetSpakov } from "../../hra/UcetSpakov.tsx";
+import { Nastenka } from "../../hra/Spaky.tsx";
 import { tvar } from "../Statistiky.tsx";
 import { TEXT_VYSLEDKU, datum, trvanie, type DetailPartieApi } from "./typy.ts";
 import "./profil.css";
@@ -76,10 +79,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
 
   if (chyba !== null) {
     return (
-      <div className="formular-stred" style={{ textAlign: "center" }}>
-        <h1>Partia sa nenašla</h1>
-        <p className="tlmene">{chyba}</p>
-      </div>
+      <HlavaStranky nadpis="Partia sa nenašla" uvod={chyba} />
     );
   }
   if (d === null || data === null) return <Nacitavanie />;
@@ -88,6 +88,8 @@ export function DetailPartie({ id }: { readonly id: number }) {
   const ja: PlayerId = d.ja ?? 0;
   const su: PlayerId = ja === 0 ? 1 : 0;
   const mena: [string, string] = [d.hraci[0].meno, d.hraci[1].meno];
+  // Partie v6: víťazné body sú špaky (Michal 2026-10-26); staršie archívy ostávajú v bodoch.
+  const v6 = d.zaverecne !== null && "verzia" in d.zaverecne;
   const ty = (p: PlayerId): string => (d.ja === p ? "ty" : mena[p]);
   const menoLokality = (defId: string | null): string => (defId === null ? "—" : (data.cards.get(defId)?.name ?? defId));
   const bodyPo = d.kola.flatMap((k) => (k.bodyPo === null ? [] : [k.bodyPo]));
@@ -95,6 +97,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
 
   return (
     <div className="profil-hraca detail-partie">
+      <HlavaStranky nadpis={`${mena[ja]} – ${mena[su]}`} uvod={`Partia z ${datum(d.koniec)}, kolo po kole.`} />
       <section className="panel profil-hlavicka detail-hlavicka">
         {([ja, su] as const).map((p) => {
           const h = d.hraci[p];
@@ -137,9 +140,10 @@ export function DetailPartie({ id }: { readonly id: number }) {
       {bodyPo.length > 1 && (
         <section className="panel profil-karta">
           <header className="profil-karta-hlava">
-            <h2>Priebeh bodov</h2>
+            <h2>{v6 ? "Priebeh špakov" : "Priebeh bodov"}</h2>
             <span className="tlmene">
-              <span className="priebeh-legenda ja">{ty(ja)}</span> · <span className="priebeh-legenda su">{mena[su]}</span> · body po kole, keby sa skončilo
+              <span className="priebeh-legenda ja">{ty(ja)}</span> · <span className="priebeh-legenda su">{mena[su]}</span> ·{" "}
+              {v6 ? "špaky v popolníku po kole" : "body po kole, keby sa skončilo"}
             </span>
           </header>
           <PriebehBodov body={bodyPo} mena={mena} ja={ja} />
@@ -163,7 +167,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
                   <th>Pas</th>
                   <th>Šenok</th>
                   <th>Kliatby</th>
-                  <th>Body</th>
+                  <th>{v6 ? "Špaky" : "Body"}</th>
                 </tr>
               </thead>
               <tbody>
@@ -171,8 +175,8 @@ export function DetailPartie({ id }: { readonly id: number }) {
                   <tr key={k.cislo} className={k.vitaz === null ? "" : k.vitaz === ja ? "vyhra" : "prehra"}>
                     <th scope="row">{k.cislo}</th>
                     <td>
-                      {menoLokality(k.lokalita)}
-                      {k.sekera && " · na sekeru"}
+                      {k.lokalita === null && v6 ? "finále" : menoLokality(k.lokalita)}
+                      {k.sekera && (v6 ? " · sekera" : " · na sekeru")}
                     </td>
                     <td>{ty(k.utocnik)}</td>
                     <td className="cislo">
@@ -210,7 +214,28 @@ export function DetailPartie({ id }: { readonly id: number }) {
         </section>
       )}
 
-      {d.zaverecne !== null ? (
+      {d.zaverecne !== null && "verzia" in d.zaverecne ? (
+        <section className="profil-karta detail-ucet">
+          <h2>Záverečný účet špakov</h2>
+          {/* Krčmová nástenka (v6): kto vyhral ktorú bitku a koľko špakov za ňu dostal. */}
+          {d.zaverecne.nastenka.length > 0 && (
+            <Nastenka
+              nastenka={d.zaverecne.nastenka}
+              zostava={[]}
+              ciel={null}
+              ja={ja}
+              mena={mena}
+              avatary={[d.hraci[0].avatar, d.hraci[1].avatar]}
+              menoKarty={(defId) => menoLokality(defId)}
+              kompaktna
+              koniec
+            />
+          )}
+          <div className="detail-ucet-obal">
+            <UcetSpakov rozpis={d.zaverecne.rozpis} ja={ja} mena={mena} />
+          </div>
+        </section>
+      ) : d.zaverecne !== null ? (
         <section className="profil-karta detail-ucet">
           <h2>Záverečné bodovanie</h2>
           <div className="detail-ucet-obal">

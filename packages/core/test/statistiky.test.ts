@@ -7,8 +7,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { Command, DvojicaStatistik, Event, GameState } from "../src/index.ts";
 import {
   apply,
-  bodyTeraz,
-  elderScore,
+  spakyTeraz,
   legalCommands,
   loadGameData,
   naTahu,
@@ -59,17 +58,17 @@ describe("štatistiky partie", () => {
         expect(s.bitkyVyhrane).toBe(bitky.filter((b) => b.vitaz === p).length);
         expect(s.tuheUdelene).toBe(bitky.reduce((a, b) => a + b.damage.tuhe[p], 0));
         expect(s.kola).toBe(state.kolo);
-        expect(s.lokalityOvladnute).toBe(state.ovladnute.filter((o) => o.hrac === p).length);
+        // v6: vyhraté bitky o lokalitu (lokalitu si víťaz neberie).
+        expect(s.lokalityOvladnute).toBe(state.nastenka.filter((b) => b.vitaz === p && b.lokalita !== null).length);
         const pecen = udalosti.reduce((a, e) => a + (e.type === "pecen" && e.hrac === p ? e.mnozstvo : 0), 0);
         expect(s.poskodeniePecene).toBe(pecen);
         // Každá Cirhóza vzniká z pečene: aspoň prah 2 poškodenia na kus.
         expect(s.poskodeniePecene).toBeGreaterThanOrEqual(s.cirhozyZiskane * 2);
         if (state.koniec?.body != null) {
           expect(s.body).toBe(state.koniec.body[p]);
-          // v5: bodyPodla = vyhraté súboje podmienok, body sú za starších.
-          const podla = Object.values(s.bodyPodla).reduce((a, x) => a + x, 0);
-          expect(podla).toBe(state.starsi.reduce((a, e) => a + elderScore(data, state, e).vyhry[p], 0));
-          expect(s.body).toBe(state.starsi.reduce((a, e) => a + elderScore(data, state, e).body[p], 0));
+          expect(s.body).toBe(state.spaky[p]);
+          // v6 podmienky nebodujú.
+          expect(s.bodyPodla).toEqual({});
         }
       }
       // Remíza o staršieho nemá víťaza.
@@ -112,20 +111,17 @@ describe("vzdanie sa", () => {
   });
 });
 
-describe("bodyTeraz — živý odhad bodov z pohľadu hráča", () => {
-  it("na konci hry sa odhad oboch hráčov rovná záverečnému bodovaniu (súperove kliatby z verejného počtu)", () => {
+describe("spakyTeraz — špaky z pohľadu hráča", () => {
+  it("na konci hry sa špaky oboch hráčov rovnajú konečným (Cirhóza už odpočítaná)", () => {
     let overene = 0;
     for (const seed of [3, 8, 21, 55, 89]) {
       const { state } = odohraj(seed);
       const body = state.koniec?.body;
       if (body == null) continue;
       for (const p of [0, 1] as const) {
-        const odhad = bodyTeraz(data, viewFor(data, state, p));
-        expect(odhad.spolu[p]).toBe(body[p]);
-        const su = p === 0 ? 1 : 0;
-        expect(odhad.spolu[su]).toBe(body[su]);
-        // Súčet je presne súčet scorecardov — rozpis sedí s „body teraz“.
-        expect(odhad.starsi.reduce((a, b) => a + b.body[p], 0)).toBe(odhad.spolu[p]);
+        const odhad = spakyTeraz(viewFor(data, state, p));
+        expect(odhad.spolu).toEqual(body);
+        expect(odhad.odhad).toEqual(body);
         overene++;
       }
     }

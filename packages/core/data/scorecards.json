@@ -1,33 +1,24 @@
 {
  "_comment": [
-  "Scorecardy (bodovacie karty starších) pravidiel v5 — východisková sada pre prvé spustenie",
-  "a testy (Navrhár 2026-10-24, docs/napady/scorecardy-v5.html). V hre platí sada zverejnená",
-  "v tvorcovi (Tvorba → Bodovacie karty); rozloženie v4 je v histórii gitu.",
+  "Scorecardy (bodovacie karty starších) pravidiel v6 — východisková sada pre prvé spustenie",
+  "a testy. V hre platí sada zverejnená v tvorcovi (Tvorba → Bodovacie karty).",
   "",
-  "lava/prava: 4 pozície zhora nadol. Podmienku aktivuje NEPRÁZDNA akcia karty na",
-  "ukazovateli na tej istej strane a indexe.",
-  "",
-  "Bodovanie v5 (docs/pravidla-v5/davka.md): každá aktívna podmienka staršieho je súboj",
-  "hráčov (dve rovnaké = dva súboje). Kto vyhrá viac súbojov, dostane za staršieho 1 b + 1",
-  "za každú zónu strachu, v ktorej sa ho starší bojí (priazeň či stred = 1 b). Pri rovnosti",
-  "dostanú body obaja. Zónové podmienky rátajú len OSTATNÝCH starších.",
-  "",
-  "body: v5 sa za kusy neboduje. Číslo udáva len smer súboja:",
-  "      +1 = vyhrá, kto má viac; -1 = vyhrá, kto má menej.",
-  "      abstak = Absťáky získané za hru (Michal 2026-10-25); rezerva = plné poldeci",
-  "      na konci, Vínko v Dedičstve sa ráta ako plný poldeci (Michal 2026-10-25)."
+  "Pravidlá v6 (Michal 2026-10-26, docs/napady/spaky.html): scorecard nesie už len priazeň",
+  "staršieho. Bodovacie podmienky sa rušia — víťazné body sú špaky (po každej bitke dá starší",
+  "obávanému hráčovi 1 / 2 / 3 špaky podľa zóny). lava/prava a body ostávajú len ako formát",
+  "bodovacích kariet tvorcu; hra ich nečíta. Rozloženie v5 je v histórii gitu."
  ],
  "body": {
-  "znepokojenie": 1,
-  "strach": 1,
-  "vydesenie": 1,
-  "lokality": 1,
-  "starsi": 1,
-  "cigarety": 1,
-  "rezerva": 1,
-  "cirhoza": -1,
-  "dlh": -1,
-  "abstak": -1
+  "znepokojenie": 0,
+  "strach": 0,
+  "vydesenie": 0,
+  "lokality": 0,
+  "starsi": 0,
+  "cigarety": 0,
+  "rezerva": 0,
+  "cirhoza": 0,
+  "dlh": 0,
+  "abstak": 0
  },
  "scorecards": [
   {
@@ -35,16 +26,16 @@
    "nazov": "Kmotor",
    "favour": "UZERNIK",
    "lava": [
-    "strach",
-    "abstak",
-    "dlh",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "dlh",
-    "lokality",
-    "cigarety",
-    "rezerva"
+    null,
+    null,
+    null,
+    null
    ]
   },
   {
@@ -52,16 +43,16 @@
    "nazov": "Veriaci",
    "favour": "VERIACI",
    "lava": [
-    "cirhoza",
-    "starsi",
-    "cirhoza",
-    "lokality"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "abstak",
-    "znepokojenie",
-    "dlh",
-    "abstak"
+    null,
+    null,
+    null,
+    null
    ]
   },
   {
@@ -69,16 +60,16 @@
    "nazov": "Alkoholik",
    "favour": "ALKOHOLIK",
    "lava": [
-    "strach",
-    "cigarety",
-    "starsi",
-    "abstak"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "lokality",
-    "abstak",
-    "cirhoza",
-    "rezerva"
+    null,
+    null,
+    null,
+    null
    ]
   },
   {
@@ -86,16 +77,16 @@
    "nazov": "Bitkár",
    "favour": "BITKAR",
    "lava": [
-    "strach",
-    "lokality",
-    "vydesenie",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "cigarety",
-    "dlh",
-    "abstak",
-    "lokality"
+    null,
+    null,
+    null,
+    null
    ]
   },
   {
@@ -103,16 +94,16 @@
    "nazov": "Fajčiar",
    "favour": "FAJCIAR",
    "lava": [
-    "znepokojenie",
-    "abstak",
-    "lokality",
-    "cigarety"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "dlh",
-    "cigarety",
-    "strach",
-    "rezerva"
+    null,
+    null,
+    null,
+    null
    ]
   },
   {
@@ -120,16 +111,16 @@
    "nazov": "Abstinent",
    "favour": "LAKOMEC",
    "lava": [
-    "cigarety",
-    "cirhoza",
-    "rezerva",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "rezerva",
-    "dlh",
-    "cigarety",
-    "lokality"
+    null,
+    null,
+    null,
+    null
    ]
   },
   {
@@ -137,16 +128,16 @@
    "nazov": "Výpalník",
    "favour": "NEPRAJNIK",
    "lava": [
-    "cirhoza",
-    "strach",
-    "dlh",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "abstak",
-    "rezerva",
-    "cigarety",
-    "znepokojenie"
+    null,
+    null,
+    null,
+    null
    ]
   },
   {
@@ -154,16 +145,16 @@
    "nazov": "Exekútor",
    "favour": "EXEKUTOR",
    "lava": [
-    "dlh",
-    "rezerva",
-    "cigarety",
-    "starsi"
+    null,
+    null,
+    null,
+    null
    ],
    "prava": [
-    "cirhoza",
-    "starsi",
-    "lokality",
-    "vydesenie"
+    null,
+    null,
+    null,
+    null
    ]
   }
  ]

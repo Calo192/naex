@@ -1,12 +1,13 @@
-// Obrazovka konca hry (playtest 20261012-055944): víťaz, body po starších,
-// zmena Frajeriny a návrat do lobby. Kým bol koniec len riadok v páse
-// pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
+// Obrazovka konca hry (playtest 20261012-055944): víťaz, špaky, krčmová
+// nástenka a účet špakov (v6), zmena Frajeriny a návrat do lobby. Kým bol koniec
+// len riadok v páse pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
 import { useEffect, useRef } from "react";
-import type { ClientState, GameData, PlayerId, Rod } from "@naex/core";
-import { VERZIA_PRAVIDIEL, bodyTeraz, tvar } from "@naex/core";
+import type { ClientState, GameData, PlayerId, Rod, Vykupne } from "@naex/core";
+import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
-import { RozpisBodov } from "./RozpisBodov.tsx";
+import { UcetSpakov } from "./UcetSpakov.tsx";
+import { Nastenka, PocetSpakov } from "./Spaky.tsx";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
 import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
@@ -25,9 +26,17 @@ export interface KoniecHryProps {
   readonly rodJa?: Rod;
   /** Rody oboch hráčov pre dôvod konca („Eva udržala…“); chýba = neutrálne. */
   readonly rody?: readonly [Rod, Rod];
+  /** Fotky hráčov na krčmovú nástenku (víťaz bitky). */
+  readonly avatary?: readonly [string | null, string | null];
 }
 
-export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null] }: KoniecHryProps) {
+/** „2 plné poldeci a 7 cigariet = +3“ — čo sa hráčovi na konci vykúpilo. */
+function vykupneText(v: Vykupne | undefined): string {
+  if (v === undefined) return "nič";
+  return `${pocet(v.poldeci, "plný poldeci", "plné poldeci", "plných poldeci")} a ${pocet(v.cigarety, "cigareta", "cigarety", "cigariet")} = +${v.spaky}`;
+}
+
+export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null] }: KoniecHryProps) {
   const koniec = view.koniec;
   // Fokus na „späť do lobby“ bez posunu — autoFocus vyroloval vysoké okno nadol a výsledok
   // hore hráč nevidel (UI inšpekcia 2026-10-24).
@@ -43,11 +52,9 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy
         ? tvar(rodJa, "Vyhral si!", "Vyhrala si!", "Výhra!")
         : tvar(rodJa, "Prehral si", "Prehrala si", "Prehra");
   const dovod = textHlasky(koniec.dovod, mena, rody);
-  // Rozpis po starších tým istým bodovaním ako na konci hry — súperove
-  // nepriznané kliatby pozná view z verejného počtu, takže sa sčíta na
-  // koniec.body (playtest 20261021-041728: predtým dva rôzne súčty v jednom okne).
-  // Pri vzdaní, exekúcii či vydesení sa nebodovalo — rozpis by mýlil.
-  const rozpis = koniec.body === null ? null : bodyTeraz(data, view);
+  // Účet špakov z nástenky a konca hry (v6) — sčíta sa na koniec.body.
+  // Pri vzdaní či vydesení sa nebodovalo — rozpis by mýlil.
+  const rozpis = koniec.body === null ? null : rozpisSpakov(view);
   const zmena = frajerina?.[ja];
 
   return (
@@ -55,28 +62,46 @@ export function KoniecHry({ view, data, mena, menoKarty, frajerina, achievementy
       <div className={`koniec-okno ${koniec.vitaz === null ? "" : koniec.vitaz === ja ? "vyhra" : "prehra"}`}>
         <h2 id="koniec-nadpis">{nadpis}</h2>
         <p className="koniec-dovod">{dovod}</p>
-        {koniec.body !== null && (
-          <p className="koniec-skore">
-            <span className="moje">
-              ty <b>{koniec.body[ja]}</b>
-            </span>
-            <span className="dvojbodka">:</span>
-            <span className="superove">
-              <b>{koniec.body[su]}</b> {mena[su]}
-            </span>
-          </p>
+        {/* Špaky (v6): konečné špaky po finále, inak to, čo hráči nazbierali do konca. */}
+        <p className="koniec-skore koniec-spaky">
+          <span className="moje">
+            ty
+            <PocetSpakov n={koniec.body?.[ja] ?? view.spaky[ja]} kto="moj" velky />
+          </span>
+          <span className="dvojbodka">:</span>
+          <span className="superove">
+            <PocetSpakov n={koniec.body?.[su] ?? view.spaky[su]} kto="superov" velky />
+            {mena[su]}
+          </span>
+        </p>
+        {view.nastenka.length > 0 && (
+          <Nastenka
+            nastenka={view.nastenka}
+            zostava={[]}
+            ciel={null}
+            ja={ja}
+            mena={mena}
+            avatary={avatary}
+            menoKarty={menoKarty}
+            kompaktna
+            koniec
+          />
         )}
         {rozpis !== null && (
           <div className="koniec-rozpis">
-            <RozpisBodov
-              body={rozpis}
-              starsi={view.starsi}
-              data={data}
-              ja={ja}
-              menoSupera={mena[su]}
-              menoKarty={menoKarty}
-              nadpis="Vyúčtovanie po starších — kto vyhrá viac súbojov, tomu dá starší body (rovnosť = obom)"
-            />
+            <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} />
+            {(koniec.vykupne?.[0]?.spaky ?? 0) + (koniec.vykupne?.[1]?.spaky ?? 0) > 0 && (
+              <p className="koniec-cirhozy">
+                Výkupné: plný poldeci {KONSTANTY.SPAKY_ZA_POLDECI} špak, každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak — ty{" "}
+                {vykupneText(koniec.vykupne?.[ja])}, {mena[su]} {vykupneText(koniec.vykupne?.[su])}.
+              </p>
+            )}
+            {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (
+              <p className="koniec-cirhozy">
+                Nepriznaná Cirhóza na konci: {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus (ruka aj oba balíčky) — ty ×{koniec.cirhozy?.[ja] ?? 0},{" "}
+                {mena[su]} ×{koniec.cirhozy?.[su] ?? 0}.
+              </p>
+            )}
           </div>
         )}
         {zmena !== undefined && (

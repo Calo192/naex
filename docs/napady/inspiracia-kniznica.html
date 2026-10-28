@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Posledná bitka a vplyv starších — návrhy pre v6</title>
+<style>
+/* Rozvrhnutie: zhrnutie, prehľad s príkladom Jano a Zuza, šesť návrhov ako karty s voľbou, mimo témy, otázky, M0, lišta s kopírovaním. */
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --ok: #7fb069; --pozor: #e08a3a; --zle: #d0604f;
+  --jano: #8fb4e0; --zuza: #e08f9c;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b;
+    --jano: #2d5a8f; --zuza: #a33a52;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b;
+  --jano: #2d5a8f; --zuza: #a33a52;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 12px; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 980px; margin: 0 auto; padding-block: 24px 140px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.7rem, 5vw, 2.5rem); margin: 0 0 8px; }
+h2 { font-size: 1.4rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.08rem; margin: 18px 0 6px; }
+p, li { max-width: 76ch; }
+p { margin: 0 0 10px; }
+li { margin-bottom: 5px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+code { font-family: var(--mono); font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.hlavicka { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.uvod, .pozn { color: var(--tlmeny); }
+.pozn { font-size: .9rem; }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 18px; margin: 18px 0; }
+.skratka h2 { margin: 0 0 8px; border: 0; padding: 0; font-size: 1.2rem; }
+.skratka h3 { margin: 12px 0 4px; font-size: 1rem; }
+.skratka ul { margin: 0; padding-left: 20px; }
+.prve { background: var(--plocha-2); border-radius: 10px; padding: 10px 14px; margin-top: 12px; }
+.prve b { color: var(--akcent); }
+.j { color: var(--jano); font-weight: 600; } .z { color: var(--zuza); font-weight: 600; }
+.tab-obal { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { font-size: .82rem; color: var(--tlmeny); font-weight: 600; border-bottom: 2px solid var(--okraj); }
+td.num, th.num { text-align: right; white-space: nowrap; }
+tr.klik { cursor: pointer; }
+tr.klik:hover td { background: var(--plocha); }
+tr.dnes td { color: var(--tlmeny); }
+.stitok { display: inline-block; font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.s-ano { color: var(--ok); } .s-variant { color: var(--akcent); } .s-neskor { color: var(--pozor); } .s-nie { color: var(--zle); }
+.s-skup { color: var(--tlmeny); }
+.skupina { background: var(--plocha-2); border-left: 3px solid var(--pozor); border-radius: 8px; padding: 10px 14px; margin: 14px 0; font-size: .94rem; }
+.navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 16px 18px; margin: 22px 0; }
+.navrh.odp { border-color: var(--akcent); box-shadow: inset 4px 0 0 var(--akcent); }
+.navrh > header { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.navrh > header h2 { margin: 0; padding: 0; border: 0; font-size: 1.3rem; flex: 1 1 280px; }
+.cislo { font-family: var(--serif); font-size: 1.6rem; color: var(--akcent); line-height: 1; }
+.povod { font-size: .86rem; color: var(--tlmeny); margin: 4px 0 10px; }
+.pravidlo { font-family: var(--serif); font-size: 1.06rem; background: var(--plocha-2); border-radius: 10px; padding: 10px 14px; margin: 10px 0 12px; }
+.pravidlo b { color: var(--akcent); }
+.priklad { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 8px 0 12px; }
+.pk { background: var(--plocha-2); border-radius: 10px; padding: 8px 10px; }
+.pk small { display: block; color: var(--tlmeny); font-size: .78rem; }
+.pk .v { font-family: var(--serif); font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.pk .v s { color: var(--tlmeny); font-size: .95rem; text-decoration-thickness: 1px; }
+dl.riadky { display: grid; grid-template-columns: 8.5em 1fr; gap: 6px 12px; margin: 8px 0; font-size: .94rem; }
+dl.riadky dt { color: var(--tlmeny); font-weight: 600; }
+dl.riadky dd { margin: 0; }
+dl.riadky dd ul { margin: 0; padding-left: 18px; }
+.rozchod { border: 1px dashed var(--pozor); border-radius: 10px; padding: 10px 14px; margin: 12px 0; font-size: .94rem; }
+.rozchod h3 { margin: 0 0 6px; font-size: 1rem; color: var(--pozor); }
+.rozchod p:last-child { margin-bottom: 0; }
+.odporucanie { margin: 12px 0 4px; padding: 10px 14px; border-radius: 10px; background: var(--plocha-2); }
+.odporucanie b:first-child { color: var(--akcent); }
+details { margin: 8px 0; }
+details summary { cursor: pointer; color: var(--akcent); font-size: .94rem; }
+.volba { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--okraj); }
+.volba fieldset { border: 0; padding: 0; margin: 0; }
+.volba legend { font-weight: 600; font-size: .94rem; margin-bottom: 6px; padding: 0; }
+.volby { display: flex; flex-wrap: wrap; gap: 6px; }
+.volby label { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--okraj); border-radius: 999px; cursor: pointer; background: var(--plocha-2); min-height: 40px; }
+.volby input { accent-color: var(--akcent); width: 18px; height: 18px; margin: 0; }
+.volby label:has(input:checked) { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.volby label.odp-volba::after { content: "odporúčam"; font-size: .7rem; color: var(--tlmeny); font-weight: 400; margin-left: 2px; }
+.volba-vyznam { font-size: .86rem; color: var(--tlmeny); margin: 6px 0; }
+textarea { width: 100%; min-height: 3.2em; font: inherit; font-size: .94rem; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--pozadie); color: var(--text); resize: vertical; }
+.ramik { border-radius: 14px; padding: 16px 18px; margin: 22px 0; background: var(--plocha); }
+.ramik.mimo { border: 2px solid var(--zle); }
+.ramik.otazky-r { border: 1px solid var(--akcent); }
+.ramik.m0 { border: 1px solid var(--okraj); }
+.ramik > h2 { margin-top: 0; border: 0; padding: 0; }
+.ramik.mimo > h2 { color: var(--zle); }
+ol.otazky > li { margin-bottom: 14px; }
+ol.otazky textarea { margin-top: 6px; }
+.stlpce { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pruh { display: grid; grid-template-columns: 3.2em 1fr 2.4em; gap: 6px; align-items: center; font-size: .82rem; }
+.pruh .bar { height: 10px; border-radius: 5px; background: var(--plocha-2); overflow: hidden; }
+.pruh .bar i { display: block; height: 100%; }
+.pruh.j .bar i { background: var(--jano); } .pruh.z .bar i { background: var(--zuza); }
+.pruh b { text-align: right; font-variant-numeric: tabular-nums; }
+.lista { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--akcent); z-index: 5; }
+.lista-in { max-width: 980px; margin: 0 auto; padding: 10px max(16px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.lista-text { flex: 1 1 240px; font-size: .9rem; }
+button { font: inherit; font-size: .9rem; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--akcent); background: var(--plocha); color: var(--akcent); cursor: pointer; min-height: 40px; }
+button.hlavne { background: var(--akcent); color: var(--pozadie); font-weight: 600; }
+.skryte { position: absolute; left: -9999px; width: 1px; height: 1px; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .88rem; }
+footer ul { padding-left: 18px; }
+@media (max-width: 640px) {
+  dl.riadky { grid-template-columns: 1fr; gap: 2px; }
+  dl.riadky dt { margin-top: 8px; }
+  .stlpce { grid-template-columns: 1fr; }
+  .navrh, .ramik { padding: 14px 12px; }
+  table.prehlad .skry-m { display: none; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<div class="hlavicka">
+  <div>
+    <p class="uvod">Navrhár · 26. 10. 2026 · pre Michala cez session Brainstorming</p>
+  </div>
+  <button type="button" id="tema" aria-label="Prepnúť svetlý a tmavý režim">Svetlý / tmavý</button>
+</div>
+<h1>Posledná bitka a vplyv starších: návrhy pre v6</h1>
+<p class="uvod">Šesť návrhov, ako doladiť v6 Špaky tak, aby rozhodovala celá partia a nie len jej začiatok
+alebo koniec. Vychádzajú z knižnice mechaník Študenta (12 hier, 6 mechaník), z rozboru Vymyselníka
+(6 nápadov) a z výpočtu Stratéga na papieri. v6 sa neprepisuje: každý návrh mení len pravidlo 1.4
+(špaky za starších) alebo k nemu niečo pridáva. Nič z toho ešte nie je zmerané turnajom botov,
+meranie pobeží až po nasadení v6.</p>
+
+<section class="skratka" aria-labelledby="h-skratka">
+  <h2 id="h-skratka">V skratke</h2>
+  <h3>Čo zistil Študent</h3>
+  <ul>
+    <li>v6 opravuje starý problém v5 (prebytok poslednej bitky prepísal celú tabuľku), ale strach starších
+      vypláca <b>po každej bitke</b>. Je to úrok: kto vydesí staršieho skoro, inkasuje za neho pri každej
+      ďalšej bitke. V príklade zo Špakov dal strach Janovi 19 špakov a bitky 4.</li>
+    <li>Hry pre dvoch to riešia štyrmi spôsobmi: vplyv ako jednorazová korisť (7 Wonders Duel),
+      zúčtovanie v ohlásenú chvíľu (Twilight Struggle, El Grande), ráta sa slabšia os (Tigris &amp; Euphrates)
+      a porazený si sám určí cenu prehry (Air, Land &amp; Sea: ústup).</li>
+  </ul>
+  <h3>Čo potvrdil Stratég (výpočet na papieri, nie meranie)</h3>
+  <ul>
+    <li>Jeden bod prebytku v 1. bitke má cenu <b>5 špakov</b>, v 5. bitke 1 špak. Jedno Pohoršenie v 1. bitke 6.</li>
+    <li>Strach dá <b>75–80 %</b> všetkých špakov (v príklade 70 %). Bitky v strednej hre 21 %, v dlhej len 16 %,
+      lebo strach rastie s druhou mocninou dĺžky hry.</li>
+    <li>Kto vedie po 2. bitke, vyhrá asi v <b>80 %</b> partií. Víťaz finále vyhrá už len asi v 57 % (v5 namerané 86 %).
+      Problém sa teda nevyriešil, len sa presunul z konca na začiatok.</li>
+    <li>Prvé dve bitky sa hrajú so štartovacími balíčkami, takže náhoda rozdania dostane väčšiu váhu a zručnosť menšiu.
+      To je opak toho, čo chceš.</li>
+  </ul>
+  <div class="prve">
+    <b>Čo vziať najskôr:</b> po nasadení v6 nechať Stratéga zmerať východisko (M0) a ako prvú opravu
+    vyskúšať <a href="#n1">návrh 1, Korisť za nové pole</a>, spolu so zmenou „víťaz bitky dostane Pitky + 1“.
+    Je to najlacnejšia zmena, ktorá vyrovná váhu bitiek v čase (bod prebytku má cenu 1,1–1,4 špaku v každej bitke
+    namiesto 5 až 1) a nepridá výhodu vedúcemu hráčovi.
+  </div>
+</section>
+
+<h2 id="prehlad">Prehľad návrhov</h2>
+<div class="skupina">
+  <b>Návrhy 1, 2 a 3 sa navzájom vylučujú.</b> Všetky tri menia to isté pravidlo 1.4 (kedy a za čo sa platia
+  špaky za starších), do jednej verzie pravidiel patrí len jeden. Návrhy 4 a 5 sú doplnky, dajú sa pridať
+  ku ktorémukoľvek. Návrh 6 nahrádza celé sčítanie skóre a s ostatnými sa nekombinuje.
+</div>
+<div class="tab-obal">
+<table class="prehlad">
+  <thead><tr>
+    <th>#</th><th>Návrh</th><th class="skry-m">Rieši hlavne</th><th class="num">Príklad <span class="j">J</span> : <span class="z">Z</span></th><th class="skry-m">Vylučuje sa s</th><th>Odporúčam</th>
+  </tr></thead>
+  <tbody>
+    <tr class="dnes"><td>–</td><td>v6 dnes (strach po každej bitke)</td><td class="skry-m">–</td><td class="num">20 : 18</td><td class="skry-m">–</td><td>–</td></tr>
+    <tr class="klik" data-ciel="n1"><td>1</td><td><a href="#n1">Korisť za nové pole</a></td><td class="skry-m">úrok za skoré vydesenie, mierka</td><td class="num">12 : 18</td><td class="skry-m">2, 3, 6</td><td><span class="stitok s-ano">áno</span></td></tr>
+    <tr class="klik" data-ciel="n2"><td>2</td><td><a href="#n2">Na mieste činu</a> (strach sa zúčtuje na lokalite)</td><td class="skry-m">plánovanie, mierka</td><td class="num">8 : 11</td><td class="skry-m">1, 3, 6</td><td><span class="stitok s-neskor">neskôr</span></td></tr>
+    <tr class="klik" data-ciel="n3"><td>3</td><td><a href="#n3">Strach len dvakrát</a> (alebo strop zo stola)</td><td class="skry-m">najlacnejšia oprava úroku</td><td class="num">6 : 12</td><td class="skry-m">1, 2, 6</td><td><span class="stitok s-variant">variant</span></td></tr>
+    <tr class="klik" data-ciel="n4"><td>4</td><td><a href="#n4">Odveta +1</a></td><td class="skry-m">dobiehanie</td><td class="num">13 : 20</td><td class="skry-m">nič</td><td><span class="stitok s-variant">variant</span></td></tr>
+    <tr class="klik" data-ciel="n5"><td>5</td><td><a href="#n5">Platím a idem</a> (ústup vo finále)</td><td class="skry-m">posledná bitka</td><td class="num">12 : 16</td><td class="skry-m">nič</td><td><span class="stitok s-neskor">neskôr</span></td></tr>
+    <tr class="klik" data-ciel="n6"><td>6</td><td><a href="#n6">Dva popolníky</a> (ráta sa menší)</td><td class="skry-m">mierka</td><td class="num">4 : 9</td><td class="skry-m">1–5</td><td><span class="stitok s-nie">nie</span></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="pozn">Príklad: tá istá partia Jana a Zuzy ako v <code>docs/napady/spaky.html</code> (rovnaké bitky, Pitky, prebytky
+a Pohoršenia), prepočítaná ručne podľa každého návrhu. Návrh 1 je s „Pitky + 1“, návrhy 4 a 5 sú pridané k návrhu 1,
+návrh 6 je bez kliatob. Pri inom pravidle by hráči hrali inak, takže príklad ukazuje mierku, nie predpoveď.</p>
+
+<h3>Príklad Jano a Zuza podrobnejšie</h3>
+<div class="tab-obal">
+<table>
+  <thead><tr>
+    <th>Pravidlo</th><th class="num">Výsledok</th><th class="num">Podiel strachu</th><th class="num">Cena Janovho prebytku z 1. bitky</th><th class="num">Po 2. bitke</th><th class="num">Pred finále</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>v6 dnes</td><td class="num"><span class="j">20</span> : <span class="z">18</span></td><td class="num">70 %</td><td class="num">15</td><td class="num">5 : 2</td><td class="num">19 : 15</td></tr>
+    <tr><td>1 Korisť (bitka = Pitky)</td><td class="num"><span class="j">10</span> : <span class="z">14</span></td><td class="num">57 %</td><td class="num">8</td><td class="num">5 : 4</td><td class="num">9 : 11</td></tr>
+    <tr><td>1 Korisť + Pitky + 1</td><td class="num"><span class="j">12</span> : <span class="z">18</span></td><td class="num">47 %</td><td class="num">8</td><td class="num">6 : 5</td><td class="num">11 : 14</td></tr>
+    <tr><td>2 Na mieste činu (lokalita ×2, finále ×1)</td><td class="num"><span class="j">8</span> : <span class="z">11</span></td><td class="num">48 %</td><td class="num">7</td><td class="num">4 : 1</td><td class="num">7 : 8</td></tr>
+    <tr><td>3A Strach len dvakrát</td><td class="num"><span class="j">6</span> : <span class="z">12</span></td><td class="num">46 %</td><td class="num">6</td><td class="num">2 : 1</td><td class="num">5 : 9</td></tr>
+    <tr><td>3B Strop zo stola</td><td class="num"><span class="j">11</span> : <span class="z">17</span></td><td class="num">62 %</td><td class="num">6</td><td class="num">3 : 2</td><td class="num">10 : 14</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="pozn">„Cena prebytku“ = o koľko by sa zmenil konečný rozdiel Jano mínus Zuza, keby Jano po Krčme svoj prebytok 3
+nerozdelil a všetko ostatné by bolo rovnaké. Za samotnú výhru v Krčme dostal 2 špaky. Stratég rátal 12 len z Janovho
+popolníka, tu je to zmena celého rozdielu, preto 15. Strach je podiel špakov zo starších zo všetkých špakov za bitky
+a starších (Stratégov cieľ 45–65 %).</p>
+<p class="pozn"><b>Pozor na jednu vec:</b> vo všetkých opravených verziách vyhrá Zuza, ktorá vyhrala 4 zo 6 bitiek. To je
+v poriadku pre túto partiu, ale meranie musí stráviť aj opačné riziko: aby sme sa nevrátili do v5, kde kto vyhral
+viac bitiek, vyhral v 86–89 % partií. Preto pri každom návrhu meriame aj podiel strachu (nesmie klesnúť pod 45 %).</p>
+
+<!-- ================= NÁVRH 1 ================= -->
+<article class="navrh odp" id="n1" data-kluc="n1" data-odp="ano" data-nazov="Korisť za nové pole">
+  <header><span class="cislo">1</span><h2>Korisť za nové pole</h2><span class="stitok s-ano">odporúčam áno</span> <span class="stitok s-skup">vylučuje 2, 3, 6</span></header>
+  <p class="povod">Študent: 7 Wonders Duel (korisť pri prvom vstupe do zóny). Vymyselník ho dáva ako zálohu (svoj návrh 2),
+    Stratég ako prvú voľbu v podobe „rekordu“.</p>
+  <div class="pravidlo">
+    Strach sa po bitke už nevypláca. Keď sa marker staršieho prvýkrát v partii dostane na <b>nové pole</b> na súperovej polovici,
+    hráč, ktorého sa starší bojí, hneď dostane <b>1 špak</b> (žltá, oranžová aj červená po 1, teda najviac 3 za staršieho
+    a stranu). Po finále sa raz zaráta stav všetkých starších <b>1 / 2 / 3</b> a víťaz každej bitky dostane
+    <b>odohrané Pitky + 1</b>.
+  </div>
+  <h3>Čo rieši</h3>
+  <div class="priklad">
+    <div class="pk"><small>Výsledok Jano : Zuza</small><span class="v"><s>20 : 18</s> → 12 : 18</span></div>
+    <div class="pk"><small>Strach zo všetkých špakov</small><span class="v"><s>70 %</s> → 47 %</span></div>
+    <div class="pk"><small>Cena Janovho prebytku z Krčmy</small><span class="v"><s>15</s> → 8</span></div>
+    <div class="pk"><small>Po 2. bitke vedie Jano</small><span class="v"><s>5 : 2</s> → 6 : 5</span></div>
+  </div>
+  <dl class="riadky">
+    <dt>Mierka</dt><dd>Strach dá korisť raz, nie päťkrát. Stratég: strach asi 22–26 špakov za partiu, bitky s Pitky + 1 asi 19,
+      teda bitky okolo <b>45 %</b> (dnes 21 %). V príklade Jano dostal za vydesenie 8 špakov koristi a 1 za stav po finále,
+      Zuza 5 a 3.</dd>
+    <dt>Posledná bitka</dt><dd>Finále ostane dôležité (stav po finále 1/2/3 a 3 + 1 špaky za výhru), ale nerozhodne všetko.
+      Stratég: víťaz finále vyhrá asi 64 % partií (cieľ #7 je najviac 65 %), kto vedie po 2. bitke, asi 70 % (dnes 80 %).
+      V príklade sa partia otočila: Jano viedol po 3. bitke 14 : 5, Zuza ho dobehla.</dd>
+    <dt>Absťák</dt><dd>Bitky sú zrazu polovica skóre, takže pravidlo „víťaz s viac Absťákmi dostane menej“ začne naozaj
+      rozhodovať. Starý účinok −1 tuhé (menší prebytok) už nebude v 1. bitke stáť 5 špakov a v 5. jeden, ale všade
+      zhruba rovnako. Odmena Predsavzatia (+1 špak, <code>abstak.html</code> smer B) bude mať zmysel.</dd>
+    <dt>Plánovanie</dt><dd>Nové rozhodnutie: kedy pretlačiť staršieho cez hranicu (korisť teraz) a koho udržať do konca
+      (stav po finále). Tlačiť marker tam a späť nič nedá, nové pole sa ráta len raz.</dd>
+  </dl>
+  <h3>Čo sa mení</h3>
+  <dl class="riadky">
+    <dt>Pravidlá</dt><dd>Špaky 1.4 nanovo (korisť a stav po finále), 1.2 (Pitky + 1), 1.5 krok 4b zostane len pre finále,
+      1.9 (stav po finále). Pri každom staršom sa na každej polovici pamätá najďalšie pole, kam marker došiel.</dd>
+    <dt>Karty</dt><dd>Kultúrny dom K2 („špaky za starších 2×“, <code>karty-v6.html</code>) stratí zmysel, ostáva K1, ktorý
+      Admin aj tak odporučil. Noviny N1 v poriadku. Abstinent (+3 Pohoršenia) zoberie zo stredu najviac 3 špaky naraz,
+      rovnako ako tri posuny po jednom, takže netreba strop.</dd>
+    <dt>Web</dt><dd>Na stupnici pri každej polovici ryha „sem už marker došiel“. V popolníku pribudne ohorok hneď pri posune
+      s popisom („Farár sa ťa prvýkrát zľakol“). Náhľad „špaky po tejto bitke“ ukáže korisť z Pohoršení a z prebytku.</dd>
+    <dt>Výučba</dt><dd>Jedna veta Melichara: „Kto prvý vystraší, berie špak. Kto ho udrží do konca, berie znova.“
+      Stratég hodnotí ťažkosť pre nováčika 2 z 5.</dd>
+    <dt>Jadro a bot</dt><dd>Dve čísla pri každom staršom, korisť pri každom posune markera. Bot musí poznať novú hodnotu
+      budúcich špakov (bot-tréner), inak čísla z merania len naznačia smer.</dd>
+  </dl>
+  <h3>Riziko</h3>
+  <ul>
+    <li>Strach môže byť priveľmi slabý a hra sa zúži na bitky, teda späť k v5. Preto podiel strachu 45–65 % v meraní.</li>
+    <li>Patronát stratí časť hodnoty: marker vráti, ale korisť už je zobratá. Ostáva mu priazeň, stav po finále a obrana
+      pred vydesením (a tá má vo v6 vlastnú dieru, pozri rámik <a href="#mimo">Mimo témy</a>).</li>
+    <li>Nový pojem „ryha“ na stupnici. Web ho musí ukázať, inak si ho hráč nebude pamätať.</li>
+  </ul>
+  <div class="rozchod">
+    <h3>Kde sa Vymyselník a Stratég rozchádzajú</h3>
+    <p><b>Výška koristi.</b> Vymyselník: žltá 1, oranžová 1, červená 2 (najviac 4 na stranu), príklad 11 : 14. Stratég: všetko po 1
+      („rekord“), príklad 10 : 14. Odporúčam Stratéga: pri hodnotách po 1 je jedno, či marker ide po jednom poli alebo
+      trikrát naraz (Pohoršenie bez limitu), a nepridáva sa váha červenej, teda vydeseniu.</p>
+    <p><b>Vyrovnanie mierky.</b> Stratég ponúka dve hodnoty: víťaz bitky <b>Pitky + 1</b> (bitky asi 45 %, víťaz finále 64 %)
+      alebo <b>2 × Pitky</b> (bitky asi 52 %, víťaz finále 66 %, ale jedna bitka zahojdá viac). Odporúčam Pitky + 1.
+      Vymyselník mierku bitiek nemení.</p>
+  </div>
+  <h3>Čo zmerať</h3>
+  <p>Stratég, <code>strategickost.ts</code> (rebrík 64 rozdaní × 2 miesta, zrkadlo 64 partií, pri rozdiele na hrane šumu 128,
+    predurčenosť 10 × 6), <code>turnaj.ts</code> a skript zdrojov špakov, krátka, stredná aj dlhá hra, s Pitky + 1 aj bez.
+    Bot naučený na korisť. <b>Úspech:</b> strach 45–65 % špakov; príspevok bitiek 1 až 5 sa líši najviac 1,5-krát;
+    vedúci po 2. bitke vyhrá najviac 75 %; víťaz finále 60–75 %; otočky 20–40 %; rebrík zručnosti neklesne o viac
+    ako 5 p. b. oproti v6 (ideálne stúpne); predurčenosť rozdaním nie vyššia ako vo v6.</p>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Prvý variant na meranie hneď po M0, s hodnotami po 1 a Pitky + 1. Najlepší
+    pomer prínosu a ceny: rieši úrok aj mierku jednou vetou v pravidlách a bez nových dát.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = korisť podľa Vymyselníka (1/1/2) alebo 2 × Pitky namiesto Pitky + 1. Napíš do poznámky, ktoré.</p>
+    <label class="skryte" for="pozn-n1">Poznámka k návrhu 1</label>
+    <textarea id="pozn-n1" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ================= NÁVRH 2 ================= -->
+<article class="navrh" id="n2" data-kluc="n2" data-odp="neskor" data-nazov="Na mieste činu">
+  <header><span class="cislo">2</span><h2>Na mieste činu: strach sa zúčtuje na lokalite</h2><span class="stitok s-neskor">odporúčam neskôr</span> <span class="stitok s-skup">vylučuje 1, 3, 6</span></header>
+  <p class="povod">Študent: Twilight Struggle a El Grande (zúčtovanie v ohlásenú chvíľu). Vymyselníkov najsilnejší návrh (jeho 1),
+    Stratég ho dáva až na neskorší playtest.</p>
+  <div class="pravidlo">
+    Každá lokalita má na karte <b>1–2 starších</b>. Po bitke o ňu dostanú špaky za strach len títo starší:
+    <b>2 / 4 / 6</b> za žltú, oranžovú a červenú (variant 1 / 2 / 3). Po finále sa raz zúčtujú všetci ôsmi po <b>1 / 2 / 3</b>
+    (variant: finále nezúčtuje nikoho).
+  </div>
+  <h3>Čo rieši</h3>
+  <div class="priklad">
+    <div class="pk"><small>Výsledok Jano : Zuza</small><span class="v"><s>20 : 18</s> → 8 : 11</span></div>
+    <div class="pk"><small>Strach zo všetkých špakov</small><span class="v"><s>70 %</s> → 48 %</span></div>
+    <div class="pk"><small>Cena Janovho prebytku z Krčmy</small><span class="v"><s>15</s> → 7</span></div>
+    <div class="pk"><small>Varianty</small><span class="v">1/2/3: 5 : 10 · bez finále 7 : 8</span></div>
+  </div>
+  <dl class="riadky">
+    <dt>Mierka</dt><dd>Za bitku sa zúčtujú 1–2 starší, bežne 2–6 špakov, a bitka dá 1–4. Strach a bitky sú v jednom rade.
+      Stratég: strach asi 24, bitky 13 (35 %), s Pitky + 1 asi 45 %.</dd>
+    <dt>Posledná bitka</dt><dd>Stratég: víťaz finále asi 63 %, vedúci po 2. bitke asi 73 %. Ak finále zúčtuje všetkých,
+      dá Zuze v príklade 8 zo 16 špakov. Preto lokality ×2 a finále ×1.</dd>
+    <dt>Absťák</dt><dd>Rovnako ako návrh 1: bitky sú zhruba polovica skóre, Absťák začne rozhodovať.</dd>
+    <dt>Plánovanie</dt><dd><b>Najviac zo všetkých návrhov.</b> Päť lokalít v hre je verejných od začiatku, takže obaja
+      vedia, ktorí starší sa kedy zúčtujú. Útočník vie, kam tlačiť Pohoršenie v tej istej bitke, obranca voľbou cieľa
+      volí, čí strach sa dnes ráta. Patronát dostane presné načasovanie.</dd>
+  </dl>
+  <details><summary>Vymyselníkovo priradenie starších k lokalitám (každý starší pri 3 lokalitách)</summary>
+    <div class="tab-obal"><table>
+      <thead><tr><th>Starší</th><th>Lokality</th></tr></thead>
+      <tbody>
+        <tr><td>Farár</td><td>Kostol, Cintorín, Vínna pivnica</td></tr>
+        <tr><td>Krčmárka</td><td>Krčma, Kar, Vínna pivnica</td></tr>
+        <tr><td>Starosta</td><td>Obecný úrad, Družstvo, Kultúrny dom</td></tr>
+        <tr><td>Poštárka</td><td>Jednota, Zberný dvor, Most</td></tr>
+        <tr><td>Hrobár</td><td>Cintorín, Kar, Lesná cesta</td></tr>
+        <tr><td>Autobusár</td><td>Zastávka, Benzínka, Most</td></tr>
+        <tr><td>Veterinár</td><td>Družstvo, Lesná cesta, Ihrisko</td></tr>
+        <tr><td>Vychovávateľka</td><td>Ihrisko, Kultúrny dom, Jednota</td></tr>
+      </tbody>
+    </table></div>
+    <p class="pozn">Väzba ide na staršieho, nie na scorecard: starší sú pevní, scorecardy s priazňou sa rozdávajú náhodne.</p>
+  </details>
+  <h3>Čo sa mení</h3>
+  <dl class="riadky">
+    <dt>Pravidlá</dt><dd>Špaky 1.4 nanovo, pravidlá §15 Lokality dostanú stĺpec „Starší“, jedna veta v §10.</dd>
+    <dt>Karty a dáta</dt><dd>15 lokalít dostane 1–2 starších (pole v tvorcovi alebo samostatný súbor vedľa starších).
+      Text kariet sa nemení, portrétiky kreslí web nad kartou. Kultúrny dom K2 by sa tu znásobil na 4×, preto K1;
+      Noviny N2 idú proti tomuto pravidlu, N1 je v poriadku.</dd>
+    <dt>Web</dt><dd>Na lokalite v rade portréty jej starších, počas bitky sa ich stupnice zvýraznia („dnes sa ráta“),
+      náhľad špakov ráta len ich.</dd>
+    <dt>Výučba</dt><dd>Melichar pri prvej bitke: „Na Kare sa ukáže, kto sa koho bojí.“ Pre nováčika 3 z 5 (Stratég)
+      a treba povedať, že niektorí starší na rad neprídu.</dd>
+    <dt>Bot</dt><dd>Voľba cieľa musí vážiť starších lokality, Pohoršenie a prebytok ich musia cieliť. Bez toho je meranie nespravodlivé.</dd>
+  </dl>
+  <h3>Riziko</h3>
+  <ul>
+    <li><b>Dvojitá páka pre vedúceho.</b> Obranca je víťaz minulej bitky a už volí cieľ, a tým aj počet Pitiek (1–4).
+      Teraz by volil aj to, čí strach sa ráta.</li>
+    <li>Niektorí starší neprídu na rad vôbec (5 lokalít × asi 1,6 staršieho). Pri dvoch kolách s tými istými staršími sa hra zúži.</li>
+    <li>Najviac práce: dáta pre 15 lokalít, ikony, bot.</li>
+  </ul>
+  <div class="rozchod">
+    <h3>Kde sa Vymyselník a Stratég rozchádzajú</h3>
+    <p><b>Vymyselník:</b> najsilnejší návrh, lebo najlepšie drží myšlienku v6 („každá bitka a strach starších majú váhu“, #114)
+      a dáva najviac plánovania. Zúčtuje sa v kroku 4b, teda po Pohoršeniach tej istej bitky.</p>
+    <p><b>Stratég:</b> plánovania naozaj najviac (↑↑), ale obranca dostane ďalšiu páku a väzba stojí dáta. Ak, tak zúčtovať
+      <b>pred</b> bitkou (stav po patronáte), aby útočník mal celé Zhromaždenie na odpoveď, a poslednú lokalitu nechať
+      vynútenú. Merať až po návrhu 1, ako playtest.</p>
+    <p><b>Navrhár:</b> súhlasím so Stratégom v poradí, nie v hodnote. Najprv návrh 1, lebo je lacný a nepridáva páku
+      vedúcemu. Na mieste činu je najlepší kandidát na druhé kolo, ak korisť hru zúži na bitky alebo ak chceš viac
+      plánovania. Otvorené ostáva, kedy sa lokalita zúčtuje (po Pohoršeniach alebo pred bitkou). Vybrať to treba až pred meraním.</p>
+  </div>
+  <h3>Čo zmerať</h3>
+  <p>Ako pri návrhu 1, k tomu: ako často obranca volí cieľ podľa starších (bot aj ľudia v denníkoch) a koľko bitiek obranca
+    vyhrá. Bot najprv naučiť voliť cieľ podľa starších. <b>Úspech:</b> kritériá návrhu 1 a obranca vyhrá najviac 55 % bitiek
+    (dnes útočník 52–54 %).</p>
+  <div class="odporucanie"><b>Odporúčanie: neskôr.</b> Druhý kandidát po návrhu 1. Dáta a priradenie starších nech pripraví
+    Admin, až keď ho vyberieš.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = iné hodnoty (všetko 1/2/3, alebo finále bez zúčtovania) alebo zúčtovanie pred bitkou. Napíš do poznámky, ktoré.</p>
+    <label class="skryte" for="pozn-n2">Poznámka k návrhu 2</label>
+    <textarea id="pozn-n2" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ================= NÁVRH 3 ================= -->
+<article class="navrh" id="n3" data-kluc="n3" data-odp="variant" data-nazov="Strach len dvakrát (alebo strop zo stola)">
+  <header><span class="cislo">3</span><h2>Strach len dvakrát, alebo strop zo stola</h2><span class="stitok s-variant">odporúčam variant</span> <span class="stitok s-skup">vylučuje 1, 2, 6</span></header>
+  <p class="povod">Dve najlacnejšie opravy úroku. A je Stratégova „minimálna podoba“, B je Vymyselníkov návrh 3.
+    Obaja ich vidia hlavne ako kontrolnú vzorku pri meraní.</p>
+  <div class="pravidlo">
+    <b>A:</b> strach sa vyplatí len <b>dvakrát</b>: po polovici lokalít (krátka hra po 2., stredná po 3., dlhá po 4. bitke)
+    a po finále, vždy 1 / 2 / 3.<br>
+    <b>B:</b> po každej bitke ako vo v6, ale za starších dostaneš najviac <b>toľko špakov, koľko Pitiek sa odohralo</b> (vo finále 3).
+  </div>
+  <h3>Čo rieši</h3>
+  <div class="priklad">
+    <div class="pk"><small>A: Jano : Zuza</small><span class="v"><s>20 : 18</s> → 6 : 12</span></div>
+    <div class="pk"><small>A s Pitky + 1</small><span class="v">8 : 16</span></div>
+    <div class="pk"><small>B: Jano : Zuza</small><span class="v"><s>20 : 18</s> → 11 : 17</span></div>
+    <div class="pk"><small>Strach A / B</small><span class="v"><s>70 %</s> → 46 % / 62 %</span></div>
+  </div>
+  <dl class="riadky">
+    <dt>Mierka</dt><dd>A: Stratég ráta strach asi 24 + Pohoršenia, bitky 32 %, s Pitky + 1 40 %. B: strach za bitku nikdy
+      neprevýši bitku, v príklade Janov strach 10 namiesto 19.</dd>
+    <dt>Posledná bitka</dt><dd>A: váha bodu prebytku v bitkách 1 až finále je 2, 2, 1, 1, 1, 1 namiesto 5, 4, 3, 2, 1, 1.
+      Vedúci po 2. bitke asi 76 %, víťaz finále asi 63 %. B Stratég nepočítal.</dd>
+    <dt>Absťák</dt><dd>Pri A sú bitky asi tretina skóre, Absťák váži viac než dnes, menej než pri návrhu 1.</dd>
+    <dt>Plánovanie</dt><dd>A: viem, kedy príde zúčtovanie (ako El Grande), a stavím k nemu. B: lokality so 4 Pitkami sú
+      cennejšie aj pre strach, obranca volí cieľ aj podľa toho.</dd>
+  </dl>
+  <h3>Čo sa mení</h3>
+  <dl class="riadky">
+    <dt>Pravidlá</dt><dd>Jedna veta v Špakoch 1.4.</dd>
+    <dt>Karty</dt><dd>Žiadne. Kultúrny dom K2 pri A platí len, ak je Kultúrny dom bitkou zúčtovania, preto aj tu radšej K1.</dd>
+    <dt>Web</dt><dd>A: na nástenke značka „tu sa zúčtuje dedina“ za polovicou lokalít. B: v popolníku „za starších 7, strop 2“.</dd>
+    <dt>Výučba</dt><dd>A: „V polovici a na konci sa dedina spočíta.“ B: „Viac, ako sa vypilo, ti dedina nedá.“ Nováčik 1 z 5.</dd>
+  </dl>
+  <h3>Riziko</h3>
+  <ul>
+    <li>A: úrok len zmierni (5 : 1 na 2 : 1), neodstráni. Medzi zúčtovaniami strach „nič nerobí“ a hráč to môže prestať sledovať.</li>
+    <li>B: kto je už nad stropom, nemá dôvod desiť ďalej (okrem vydesenia). Lacné lokality s 2 Pitkami zastropujú aj strach
+      a stanú sa výplňou.</li>
+  </ul>
+  <h3>Čo zmerať</h3>
+  <p>V tom istom behu ako návrh 1, rovnaké metriky a rozsah. Pri B navyše, ako často strop zasiahne a o koľko.
+    <b>Úspech</b> (ak by sa mal stať pravidlom): strach 40–65 %, vedúci po 2. bitke najviac 76 %, víťaz finále 60–75 %,
+    rebrík neklesne o viac ako 5 p. b.</p>
+  <div class="odporucanie"><b>Odporúčanie: variant.</b> A zaradiť ako kontrolnú vzorku do merania návrhu 1 a nechať ako zálohu,
+    ak nechceš nový pojem „korisť“. B len ako kontrola, ako trvalé pravidlo je menej elegantné.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = A ako pravidlo namiesto návrhu 1. Variant = A (prípadne aj B) len ako kontrolná vzorka v meraní.</p>
+    <label class="skryte" for="pozn-n3">Poznámka k návrhu 3</label>
+    <textarea id="pozn-n3" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ================= NÁVRH 4 ================= -->
+<article class="navrh" id="n4" data-kluc="n4" data-odp="variant" data-nazov="Odveta +1">
+  <header><span class="cislo">4</span><h2>Odveta: +1 špak za bitku vyhratú po prehre</h2><span class="stitok s-variant">odporúčam variant</span> <span class="stitok s-skup">doplnok k 1, 2 alebo 3</span></header>
+  <p class="povod">Študent: Kemet (trvalé body za vyhratý útok). Vymyselník ho navrhuje ako „Odvetu“, Stratég ako „útočník +1“.</p>
+  <div class="pravidlo">
+    Kto vyhrá bitku o lokalitu a predošlú bitku prehral (teda útočník od 2. bitky), dostane navyše <b>1 špak</b>.
+    Vo finále odveta neplatí.
+  </div>
+  <h3>Čo rieši</h3>
+  <div class="priklad">
+    <div class="pk"><small>K v6: Jano : Zuza</small><span class="v"><s>20 : 18</s> → 21 : 20</span></div>
+    <div class="pk"><small>K návrhu 1</small><span class="v"><s>12 : 18</s> → 13 : 20</span></div>
+    <div class="pk"><small>Odvety v príklade</small><span class="v">Zuza 2, Jano 1</span></div>
+  </div>
+  <dl class="riadky">
+    <dt>Mierka</dt><dd>Málo: Stratég rátá asi +2,7 špaku pre bitky za partiu (pri v6 z 21 na 25 %).</dd>
+    <dt>Posledná bitka</dt><dd>Bez zmeny, finále sa netýka.</dd>
+    <dt>Dobiehanie</dt><dd>Odmena za čin, nie darček za zaostávanie. Útočník už dnes má výhody dobiehania (§4), odveta
+      ich ukáže na nástenke. Stratég čaká o 3–8 p. b. viac otočiek.</dd>
+    <dt>Absťák</dt><dd>Odveta sa pripočíta k špakom za bitku ešte pred odpočtom Absťákov (víťaz stále dostane aspoň 1). Ponuka,
+      dá sa aj obrátiť.</dd>
+  </dl>
+  <h3>Čo sa mení</h3>
+  <dl class="riadky">
+    <dt>Pravidlá</dt><dd>Jedna veta v Špakoch 1.2.</dd>
+    <dt>Karty</dt><dd>Žiadne.</dd>
+    <dt>Web</dt><dd>Na nástenke pečiatka „Odveta +1“, hodí sa aj ako moment pre Melichara.</dd>
+    <dt>Výučba</dt><dd>V prvej partii netreba, stačí ťahák a pečiatka.</dd>
+  </dl>
+  <h3>Riziko</h3>
+  <ul>
+    <li>Samo nič nevyrieši. Pri dnešnej rente (strach 19 : 4) je to kozmetika.</li>
+    <li>Motív úmyselne prehrať, aby som bol útočník. Neoplatí sa: prehra stojí Pitky a dá súperovi prebytok, odveta vráti
+      najviac 1 a len pri výhre (Stratég: nádej asi 0,54).</li>
+  </ul>
+  <div class="rozchod">
+    <h3>Kde sa Vymyselník a Stratég rozchádzajú</h3>
+    <p>V bitkách o lokality je to to isté: útočník je ten, kto prehral predošlú bitku. Rozdiel je vo finále. <b>Vymyselník</b>
+      chce odvetu aj tam (pre toho, kto prehral poslednú rozhodnutú bitku), <b>Stratég</b> len v bitkách o lokality, lebo vo finále
+      je útočníkom vedúci hráč a bonus by šiel jemu. Odporúčam Stratéga: finále má už vlastnú váhu a pravidlo je kratšie.</p>
+  </div>
+  <h3>Čo zmerať</h3>
+  <p>Na víťaznom variante návrhu 1 (alebo 3) s odvetou a bez nej, rovnaký rozsah. <b>Úspech:</b> otočky +3 až 8 p. b. bez
+    poklesu rebríka zručnosti; bitky prehraté s veľkou rezervou kariet (úmyselná prehra) pod 5 %.</p>
+  <div class="odporucanie"><b>Odporúčanie: variant.</b> Lacný doplnok, merať spolu s návrhom 1 zapnutý aj vypnutý.
+    Samostatne nezavádzať.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = merať ako doplnok k návrhu 1, rozhodnúť podľa čísel. Áno = zaviesť rovno spolu s návrhom 1.</p>
+    <label class="skryte" for="pozn-n4">Poznámka k návrhu 4</label>
+    <textarea id="pozn-n4" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ================= NÁVRH 5 ================= -->
+<article class="navrh" id="n5" data-kluc="n5" data-odp="neskor" data-nazov="Platím a idem (ústup vo finále)">
+  <header><span class="cislo">5</span><h2>Platím a idem: ústup vo finále</h2><span class="stitok s-neskor">odporúčam neskôr</span> <span class="stitok s-skup">doplnok k 1, 2 alebo 3</span></header>
+  <p class="povod">Študent: Air, Land &amp; Sea (ústup), Blood Rage. Vymyselník aj Stratég ho chcú len vo finále.</p>
+  <div class="pravidlo">
+    Vo finále smie hráč na začiatku 2. alebo 3. Pitky zaplatiť <b>1 cigaretu</b> a odísť. Súper vyhrá a dostane
+    <b>odohrané Pitky + 1</b> špak a k tomu <b>2 špaky</b> ako prebytok (variant: bez prebytku).
+  </div>
+  <h3>Čo rieši</h3>
+  <div class="priklad">
+    <div class="pk"><small>K v6, Jano ide po 1. Pitke</small><span class="v"><s>20 : 18</s> → 20 : 17</span></div>
+    <div class="pk"><small>Bez prebytku (Vymyselník)</small><span class="v">20 : 15</span></div>
+    <div class="pk"><small>K návrhu 1</small><span class="v"><s>12 : 18</s> → 12 : 16</span></div>
+    <div class="pk"><small>Zuzine špaky za finále (bez strachu)</small><span class="v"><s>5</s> → 4 alebo 2</span></div>
+  </div>
+  <dl class="riadky">
+    <dt>Posledná bitka</dt><dd>Kto vidí prehru, zlacní ju. V bežnom kole to v6 už má (počet Pitiek drží slabšia strana,
+      §7), finále má pevne 3 Pitky a túto páku nemá. V príklade ústup ušetrí 1–3 špaky, Stratég po oprave úroku odhaduje 4–5.</dd>
+    <dt>Mierka</dt><dd>Nemení.</dd>
+    <dt>Absťák</dt><dd>Pri ústupe sa neráta (víťaz dostane pevné číslo). Karty, ktoré menia prebytok (Kultúrny dom K1, Noviny N1),
+      pri ústupe nemajú čo meniť.</dd>
+    <dt>Plánovanie</dt><dd>Nové rozhodnutie vo finále: dopiť a riskovať, alebo zaplatiť rundu a odísť. Satira sedí:
+      „Kto platí, ten ide.“</dd>
+  </dl>
+  <h3>Čo sa mení</h3>
+  <dl class="riadky">
+    <dt>Pravidlá</dt><dd>Nový odsek v Špakoch 1.9, Slovník „Ústup“. Patronát vo finále: ústup sa ráta ako prehra odchádzajúceho
+      (starší späť, bolestné).</dd>
+    <dt>Karty</dt><dd>Žiadne.</dd>
+    <dt>Web</dt><dd>Tlačidlo „Platím a idem“ na začiatku Pitky vo finále s náhľadom „súper dostane N špakov“.</dd>
+    <dt>Výučba</dt><dd>Nie v prvej partii, Melichar ústup neponúkne.</dd>
+    <dt>Bot</dt><dd>Nové rozhodnutie (porovná odhad prebytku s cenou ústupu), treba ho naučiť.</dd>
+  </dl>
+  <h3>Riziko</h3>
+  <ul>
+    <li>Vedúci môže finále „zabiť“ po prvej Pitke a ubudne drámy aj NA EX. Preto cena cigarety a +1 pre súpera.</li>
+    <li>Ústup v <b>bežných</b> bitkách je pri dnešnej v6 zlomený (Stratég): zrušil by prebytok a Pohoršenia, ktoré v 1. bitke
+      stoja 15–18 špakov, za cenu 1 cigarety. Preto len vo finále.</li>
+    <li>Stratégov model hovorí, že víťaz finále vyhrá už vo v6 len asi 57 %. Ak to M0 potvrdí, ústup nie je potrebný.</li>
+  </ul>
+  <div class="rozchod">
+    <h3>Kde sa Vymyselník a Stratég rozchádzajú</h3>
+    <p><b>Vymyselník:</b> pri ústupe prebytok nie je, súper dostane len Pitky + 1 (variant + 0). <b>Stratég:</b> súper dostane aj
+      pevný prebytok 2, aby ústup nebol únik pred strachom, a odchádzajúci si vezme karty z línie späť. Odporúčam Stratéga
+      (prebytok 2); karty späť sú vo finále bez účinku, netreba ich do pravidla.</p>
+  </div>
+  <h3>Čo zmerať</h3>
+  <p>Až po oprave úroku (návrh 1 alebo 3) a len ak M0 alebo meranie návrhu 1 ukáže, že víťaz finále vyhrá viac ako 65–70 %.
+    Bot naučiť nový ťah. <b>Úspech:</b> ústup v 5–20 % finále, NA EX za partiu najviac o 20 % menej, víťaz finále najviac 65 %,
+    rebrík neklesne.</p>
+  <div class="odporucanie"><b>Odporúčanie: neskôr.</b> Pekná satira, ale rieši problém, ktorý v6 možno už nemá. Najprv čísla z M0.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = ústup bez prebytku (Vymyselník). Áno = zaradiť do merania hneď s návrhom 1.</p>
+    <label class="skryte" for="pozn-n5">Poznámka k návrhu 5</label>
+    <textarea id="pozn-n5" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ================= NÁVRH 6 ================= -->
+<article class="navrh" id="n6" data-kluc="n6" data-odp="nie" data-nazov="Dva popolníky (ráta sa menší)">
+  <header><span class="cislo">6</span><h2>Dva popolníky: ráta sa menší</h2><span class="stitok s-nie">odporúčam nie</span> <span class="stitok s-skup">nahrádza celé skóre</span></header>
+  <p class="povod">Študent: Tigris &amp; Euphrates. Vymyselník aj Stratég ho odporúčajú zamietnuť, nechávam ho tu, aby si videl prečo.</p>
+  <div class="pravidlo">
+    Pri mene hráča sú dva popolníky: <b>Krčma</b> (špaky za bitky a prebytok vo finále) a <b>Dedina</b> (špaky za starších).
+    Vyhrá, kto má väčší <b>menší</b> popolník, pri rovnosti rozhodne väčší. Mäkko: skóre = 2 × menší + väčší.
+  </div>
+  <h3>Čo rieši</h3>
+  <div class="priklad">
+    <div class="pk"><small>Jano : Zuza (bez kliatob)</small><span class="v">min 4 : 9</span></div>
+    <div class="pk"><small>Mäkká verzia</small><span class="v">27 : 30</span></div>
+  </div>
+  <dl class="riadky">
+    <dt>Mierka</dt><dd>Osi sa nesčítavajú, takže mierku netreba ladiť. Ale pri dnešnej rente je Dedina 24–48 a Krčma 4–9,
+      menší popolník je takmer vždy Krčma a partiu rozhodnú len bitky (Stratég). Mierku to nevyrovná, len skryje.</dd>
+    <dt>Posledná bitka</dt><dd>Stratég: víťaz finále 65–70 %, teda horšie ako v6.</dd>
+    <dt>Absťák</dt><dd>Uberá priamo z rozhodujúcej osi, váha výrazne stúpne.</dd>
+    <dt>Plánovanie</dt><dd>Strach sa stane len prahom, plánovanie klesne.</dd>
+  </dl>
+  <h3>Čo sa mení</h3>
+  <dl class="riadky">
+    <dt>Pravidlá</dt><dd>§14 nanovo (druhýkrát za týždeň). Exekútor a Cirhóza treba priradiť k popolníku.</dd>
+    <dt>Web</dt><dd>Dva popolníky, zvýraznený menší, „kto vedie“ inak než súčtom.</dd>
+    <dt>Výučba</dt><dd>Nový pojem „ráta sa menší“. Pre nováčika 4 z 5, najťažšie zo všetkých: „prečo nevediem, keď mám viac?“</dd>
+  </dl>
+  <h3>Riziko</h3>
+  <ul><li>Nováčik nevie, kto vedie. Hráč so slabou rukou na bitky stratí nádej skôr. Ide proti jednoduchosti v6.</li></ul>
+  <h3>Čo zmerať</h3>
+  <p>Len ako kontrolnú vzorku a len ak návrh 1 alebo 2 vyrovná osi: ako často menší popolník určí iného víťaza než súčet
+    (zmysluplné pri 10–30 %), rozdelenie Krčma a Dedina u víťaza.</p>
+  <div class="odporucanie"><b>Odporúčanie: nie.</b> Téma je pekná („V dedine ťa rešpektujú, len keď si chlap v krčme aj pán u fary“),
+    ale pri dnešnej mierke hru zúži na bitky. Vrátiť sa k nemu len po oprave mierky, ak by si chcel túto tému.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = mäkká verzia 2 × menší + väčší ako kontrola v meraní.</p>
+    <label class="skryte" for="pozn-n6">Poznámka k návrhu 6</label>
+    <textarea id="pozn-n6" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ================= MIMO TÉMY ================= -->
+<section class="ramik mimo" id="mimo" data-kluc="mimo" data-odp="ano" data-nazov="Mimo témy: patronát nezastaví vydesenie">
+  <h2>Mimo témy, ale dôležité: patronát vo v6 nezastaví ohlásené vydesenie</h2>
+  <p>Stratég to našiel pri výpočte a platí to nezávisle od všetkých návrhov vyššie.</p>
+  <ul>
+    <li><b>Čo sa stane.</b> Súper ohlási vydesenie. Ty vezmeš patronátom vystrašeného staršieho a marker sa vráti o 1–3 polia
+      do stredu. Súper za to dostane presne toľko Pohoršení navyše (1 / 2 / 3). Vo v6 Pohoršenie nemá limit hraníc ani zákaz
+      krajnej pozície a hrá sa v kroku 2 tej istej bitky. Súper teda marker vráti <b>na červenú ešte pred kontrolou na konci
+      kola</b>. Patronát je proti vydeseniu bezzubý a pre špaky vždy nulový (kamkoľvek súper Pohoršenia dá, rozdiel sa vyrovná).</li>
+    <li><b>Čo ostáva na obranu.</b> Len vlastný prebytok, Pohoršenie k sebe alebo Policajtka. Dnes (v5) je patronát jediné, čo
+      uvoľní krajnú pozíciu (PRAVIDLA.md §10), vo v6 by túto úlohu stratil.</li>
+    <li><b>Brzda cez priazeň sa dá obísť.</b> Strach je lineárny, takže je jedno, ako prebytok rozložíš. Rozhoduje len, akú
+      priazeň dávaš súperovi. Kmotor a Exekútor majú mŕtve priazne, Výpalné a Na zdravie takmer mŕtve (meranie priazní v5).
+      Vedúci bude tlačiť práve týchto starších a jediná vstavaná brzda (vystrašený starší dáva súperovi priazeň) nezaberie.</li>
+  </ul>
+  <div class="pravidlo"><b>Návrh Stratéga:</b> Pohoršenia z patronátu nesmú ísť na staršieho, ktorého si súper vzal.</div>
+  <p><b>Čo zmerať v M0:</b> koľkokrát súper po patronáte vráti marker na červenú; podiel partií s vydesením a kolo, v ktorom
+    príde (poplach: vydesenie vo viac ako 10 % partií alebo pred 3. kolom). Ak sa potvrdí, opraviť vetou vyššie. Mŕtve
+    priazne Kmotra a Exekútora sú samostatná úloha pre Admina.</p>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Zaradiť do M0 hneď po nasadení v6. Ak sa diera potvrdí, opraviť jednou vetou
+    ešte pred meraním návrhov 1–5, inak bude vydesenie skresľovať všetky čísla.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = overiť v M0 a pri potvrdení rovno opraviť. Variant = opraviť hneď, bez čakania na M0.</p>
+    <label class="skryte" for="pozn-mimo">Poznámka k patronátu</label>
+    <textarea id="pozn-mimo" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</section>
+
+<!-- ================= OTÁZKY ================= -->
+<section class="ramik otazky-r" id="otazky" aria-labelledby="h-otazky">
+  <h2 id="h-otazky">Otázky pre Michala</h2>
+  <p class="pozn">Zlúčené z Vymyselníka a Stratéga. Stačí krátka odpoveď, skopíruje sa spolu s voľbami.</p>
+  <ol class="otazky">
+    <li data-otazka="o1">Ako sa majú platiť špaky za starších: po každej bitke za všetkých (v6 dnes), ako korisť za nové pole a stav
+      po finále (návrh 1), alebo len za starších lokality, o ktorú sa bilo (návrh 2)?
+      <label class="skryte" for="odp-o1">Odpoveď na otázku 1</label><textarea id="odp-o1" placeholder="Odpoveď"></textarea></li>
+    <li data-otazka="o2">Ak korisť: víťaz bitky dostane Pitky + 1 (odporúčam), alebo 2 × Pitky? A korisť po 1 za každé pole (odporúčam),
+      alebo 1 / 1 / 2?
+      <label class="skryte" for="odp-o2">Odpoveď na otázku 2</label><textarea id="odp-o2" placeholder="Odpoveď"></textarea></li>
+    <li data-otazka="o3">Ak niekedy Na mieste činu: lokality ×2 a finále ×1 (odporúčam), všetko ×1, alebo finále bez zúčtovania?
+      Priradenie starších k lokalitám vezmeš od Vymyselníka, alebo ho pripraví Admin?
+      <label class="skryte" for="odp-o3">Odpoveď na otázku 3</label><textarea id="odp-o3" placeholder="Odpoveď"></textarea></li>
+    <li data-otazka="o4">Ústup vo finále (návrh 5): zaradiť hneď do merania, alebo až keď čísla ukážu, že finále prevažuje (víťaz finále viac ako 65 %)?
+      <label class="skryte" for="odp-o4">Odpoveď na otázku 4</label><textarea id="odp-o4" placeholder="Odpoveď"></textarea></li>
+    <li data-otazka="o5">Smie Leader zaradiť meranie M0 hneď po nasadení v6, vrátane kontroly patronátu, a ak sa diera potvrdí,
+      rovno ju opraviť zákazom Pohoršení z patronátu na toho istého staršieho?
+      <label class="skryte" for="odp-o5">Odpoveď na otázku 5</label><textarea id="odp-o5" placeholder="Odpoveď"></textarea></li>
+  </ol>
+</section>
+
+<!-- ================= M0 ================= -->
+<section class="ramik m0" id="m0" aria-labelledby="h-m0">
+  <h2 id="h-m0">Meranie M0 po nasadení v6</h2>
+  <p>Najprv zmerať v6 tak, ako bude nasadená. M0 potvrdí alebo vyvráti celý rozbor vyššie a dá východisko, s ktorým sa
+    porovnajú návrhy 1–5. Robí Stratég, poradie zaradí Leader. Bot musí byť najprv naučený na v6 (bot-tréner).</p>
+  <div class="tab-obal">
+  <table>
+    <thead><tr><th>Čo</th><th>Nástroj a rozsah</th><th>Kritérium</th></tr></thead>
+    <tbody>
+      <tr><td>Podiel špakov zo strachu; príspevok každej bitky ku konečnému rozdielu (1. bitka až finále)</td>
+        <td>skript zdrojov špakov nad jadrom (<code>playtest/strategia/v6/zdroje.ts</code>), rovnaké semienka ako v5</td>
+        <td>Zistenie Študenta platí, ak strach ≥ 60 % a 1. bitka prispeje aspoň 2× viac ako finále (model čaká 75–80 % a asi 3×).</td></tr>
+      <tr><td>Vedúci po bitke k vyhrá; víťaz finále vyhrá; otočky</td>
+        <td><code>strategickost.ts</code>, krátka, stredná aj dlhá hra</td>
+        <td>model čaká vedúci po 2. bitke ~80 %, víťaz finále ~57 %, otočky pod 20 %</td></tr>
+      <tr><td>Rebrík zručnosti a predurčenosť rozdaním</td>
+        <td><code>strategickost.ts</code>: rebrík 64 rozdaní × 2 miesta, zrkadlo 64 partií (128 pri hrane šumu ±8 p. b.), predurčenosť 10 × 6</td>
+        <td>porovnať s v5; pokles rebríka potvrdí, že rozhoduje štart</td></tr>
+      <tr><td>Vydesenie: podiel partií, kolo; koľkokrát súper po patronáte vráti marker na červenú</td>
+        <td><code>turnaj.ts</code> (riadok „Ťahy bota podľa typu“) a záznamy partií</td>
+        <td><b>Poplach:</b> vydesenie vo viac ako 10 % partií alebo pred 3. kolom</td></tr>
+      <tr><td>Výška prebytku (priemer, medián)</td>
+        <td>záznamy partií botov</td>
+        <td>v5 v denníkoch medián 3, priemer 3,4; vo v6 čakáme viac</td></tr>
+      <tr><td>Karty u ľudí: Pohoršenie, Puška, Policajtka, Miňištrant</td>
+        <td><code>admin.ts karty-v-partiach --zivy --ludia</code> po aspoň 20 živých partiách v6</td>
+        <td>ak ich ľudia berú výrazne viac ako bot, úrok sa potvrdzuje aj u ľudí</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <details><summary>Otázky do zadania ďalšieho playtestu v6 (od Stratéga)</summary>
+    <ol>
+      <li>Po ktorej bitke si vedel, kto vyhrá? Zapíš si stav špakov po 2. bitke a pred finále.</li>
+      <li>Koľko ti dal prebytok z 1. bitky do konca hry? (spočítaj z popolníka)</li>
+      <li>Tlačil si prebytok na starších, ktorých priazeň súperovi nepomôže (Kmotor, Exekútor…)? Prečo?</li>
+      <li>Keď súper ohlásil vydesenie, mal si čím odpovedať? Pomohol patronát?</li>
+      <li>Oplatilo sa ti vyhrať bitku, alebo len mať vyššie celkové poškodenie?</li>
+    </ol>
+  </details>
+  <p class="pozn">Poradie potom: M0 → návrh 1 (s Pitky + 1 aj bez, s odvetou aj bez) a návrh 3A ako kontrola v jednom behu →
+    podľa výsledku návrh 2 ako playtest, návrh 5 len ak finále prevažuje.</p>
+</section>
+
+<footer>
+  <p><b>Podklady</b></p>
+  <ul>
+    <li>Študent: <code>docs/kniznica/2026-10-26-posledna-bitka-a-vplyv.html</code>, <code>docs/kniznica/mechaniky.json</code> (12 hier, 6 mechaník)</li>
+    <li>Vymyselník: rozbor 6 návrhov s odkazmi do pravidiel a kódu (26. 10. 2026)</li>
+    <li>Stratég: výpočet na papieri z pravidiel v6, 14 denníkov AI playtesterov 21.–26. 10., <code>strategia-v5.html</code>; bez turnajov</li>
+    <li>v6: <code>docs/napady/spaky.html</code>, <code>docs/napady/karty-v6.html</code>, <code>docs/napady/abstak.html</code>, <code>docs/PRAVIDLA.md</code></li>
+    <li>Príklad Jano a Zuza prepočítal Navrhár z dát príkladu v <code>spaky.html</code> (ručný prepočet, nie simulácia hry)</li>
+  </ul>
+  <p>NA EX! · Navrhár · vetva brainstorming/kniznica-20261026 · <code>docs/napady/inspiracia-kniznica.html</code></p>
+</footer>
+</main>
+
+<div class="lista" role="region" aria-label="Súhrn volieb">
+  <div class="lista-in">
+    <span class="lista-text" id="lista-text" aria-live="polite">Zatiaľ nič nie je vybrané.</span>
+    <button type="button" id="odporucane">Doplniť odporúčané</button>
+    <button type="button" id="kopiruj" class="hlavne">Skopírovať pre Leadera</button>
+  </div>
+</div>
+<label class="skryte" for="schranka">Text na skopírovanie</label>
+<textarea id="schranka" class="skryte" tabindex="-1" aria-hidden="true"></textarea>
+
+<script>
+(function () {
+  "use strict";
+  var KLUC = "naex-inspiracia-kniznica-v1";
+  var VOLBY = [["ano", "Áno"], ["variant", "Variant"], ["nie", "Nie"], ["neskor", "Neskôr"]];
+  var NAZVY_VOLIEB = { ano: "Áno", variant: "Variant", nie: "Nie", neskor: "Neskôr" };
+  var stav = { volby: {}, poznamky: {}, odpovede: {} };
+  try {
+    var ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}");
+    if (ulozene && typeof ulozene === "object") {
+      stav.volby = ulozene.volby || {}; stav.poznamky = ulozene.poznamky || {}; stav.odpovede = ulozene.odpovede || {};
+    }
+  } catch (e) { /* bez úložiska */ }
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) { /* bez úložiska */ } }
+
+  // Téma: svetlá/tmavá, voľba sa pamätá (ak úložisko ide).
+  var koren = document.documentElement;
+  try { var t = localStorage.getItem(KLUC + "-tema"); if (t === "light" || t === "dark") koren.setAttribute("data-theme", t); } catch (e) { /* bez úložiska */ }
+  document.getElementById("tema").addEventListener("click", function () {
+    var teraz = koren.getAttribute("data-theme") ||
+      (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    var nova = teraz === "light" ? "dark" : "light";
+    koren.setAttribute("data-theme", nova);
+    try { localStorage.setItem(KLUC + "-tema", nova); } catch (e) { /* bez úložiska */ }
+  });
+
+  var bloky = Array.prototype.slice.call(document.querySelectorAll("[data-kluc]"));
+  bloky.forEach(function (blok) {
+    var kluc = blok.getAttribute("data-kluc");
+    var odp = blok.getAttribute("data-odp");
+    var obal = blok.querySelector(".volby");
+    VOLBY.forEach(function (v) {
+      var l = document.createElement("label");
+      if (v[0] === odp) l.className = "odp-volba";
+      var i = document.createElement("input");
+      i.type = "radio"; i.name = "volba-" + kluc; i.value = v[0];
+      if (stav.volby[kluc] === v[0]) i.checked = true;
+      i.addEventListener("change", function () { stav.volby[kluc] = v[0]; uloz(); obnovListu(); });
+      l.appendChild(i); l.appendChild(document.createTextNode(v[1]));
+      obal.appendChild(l);
+    });
+    var ta = blok.querySelector(".volba textarea");
+    ta.value = stav.poznamky[kluc] || "";
+    ta.addEventListener("input", function () { stav.poznamky[kluc] = ta.value; uloz(); });
+  });
+
+  var otazky = Array.prototype.slice.call(document.querySelectorAll("[data-otazka]"));
+  otazky.forEach(function (li) {
+    var k = li.getAttribute("data-otazka");
+    var ta = li.querySelector("textarea");
+    ta.value = stav.odpovede[k] || "";
+    ta.addEventListener("input", function () { stav.odpovede[k] = ta.value; uloz(); });
+  });
+
+  function obnovListu() {
+    var n = bloky.filter(function (b) { return stav.volby[b.getAttribute("data-kluc")]; }).length;
+    document.getElementById("lista-text").textContent = n === 0 ? "Zatiaľ nič nie je vybrané." :
+      "Vybraté: " + n + " z " + bloky.length + ". Voľby sa ukladajú v tomto prehliadači.";
+  }
+  obnovListu();
+
+  document.getElementById("odporucane").addEventListener("click", function () {
+    bloky.forEach(function (b) {
+      var kluc = b.getAttribute("data-kluc"), odp = b.getAttribute("data-odp");
+      if (stav.volby[kluc]) return; // tvoju voľbu neprepíše
+      stav.volby[kluc] = odp;
+      var r = b.querySelector('input[value="' + odp + '"]');
+      if (r) r.checked = true;
+    });
+    uloz(); obnovListu();
+  });
+
+  // Riadky prehľadu skočia na návrh.
+  Array.prototype.forEach.call(document.querySelectorAll("tr.klik"), function (tr) {
+    tr.addEventListener("click", function (e) {
+      if (e.target.tagName === "A") return;
+      var c = document.getElementById(tr.getAttribute("data-ciel"));
+      if (c) { c.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    });
+  });
+
+  function suhrn() {
+    var r = ["Michal — voľby k návrhom „Posledná bitka a vplyv starších“ (docs/napady/inspiracia-kniznica.html):", ""];
+    bloky.forEach(function (b, i) {
+      var k = b.getAttribute("data-kluc");
+      var cislo = k === "mimo" ? "Mimo témy" : (i + 1) + ".";
+      var v = stav.volby[k] ? NAZVY_VOLIEB[stav.volby[k]] : "bez voľby";
+      var p = (stav.poznamky[k] || "").trim();
+      r.push(cislo + " " + b.getAttribute("data-nazov") + ": " + v + (p ? " — " + p : ""));
+    });
+    var odp = otazky.map(function (li, i) {
+      var a = (stav.odpovede[li.getAttribute("data-otazka")] || "").trim();
+      return a ? "Otázka " + (i + 1) + ": " + a : null;
+    }).filter(Boolean);
+    if (odp.length) { r.push(""); r.push("Odpovede na otázky:"); r = r.concat(odp); }
+    return r.join("\n");
+  }
+
+  document.getElementById("kopiruj").addEventListener("click", function () {
+    var text = suhrn();
+    var hotovo = function () { document.getElementById("lista-text").textContent = "Skopírované. Vlož to Leaderovi."; };
+    var zaloha = function () {
+      var s = document.getElementById("schranka");
+      s.value = text; s.select();
+      try { document.execCommand("copy"); hotovo(); }
+      catch (e) { window.prompt("Skopíruj text:", text); }
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(hotovo, zaloha);
+      } else { zaloha(); }
+    } catch (e) { zaloha(); }
+  });
+})();
+</script>
+</body>
+</html>

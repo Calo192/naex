@@ -23,10 +23,10 @@ import {
   cakaNaDalej,
   pauzaKrokuVyucby,
   prelozKluceZvyraznenia,
-  radaKVolbe,
+  radaVyucby,
   type MoznostOtazky,
   VERZIA_PRAVIDIEL,
-  bodyTeraz,
+  ucetSpakov,
   defOf,
   doplnNaexZKroniky,
   novaKronika,
@@ -65,7 +65,7 @@ import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
-import type { OtvorenaHra, StavServera, Uzavierka } from "./api.ts";
+import type { OtvorenaHra, RozohranaPartia, StavServera, Uzavierka } from "./api.ts";
 import { OZNAM_UZAVIERKY, spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
@@ -194,9 +194,11 @@ export interface KrokVyucbyKlient {
   /** Ťah bota či auto krok je vykonaný a čaká na „ďalej“ (U5); inak false. */
   readonly vykonany: boolean;
   readonly melichar: string;
+  /** Hláška zo soundboardu „skupina/súbor“ (Michal 2026-10-27); null = krok bez zvuku. */
+  readonly hlaska: string | null;
   readonly zvyraznit: readonly string[];
   readonly ocakava: Command | null;
-  /** Kontrolná otázka: možnosti (klient overí sám); inak null. */
+  /** Kontrolná otázka: možnosti aj s hláškou zlej odpovede (klient overí sám); inak null. */
   readonly moznosti: readonly MoznostOtazky[] | null;
   /** Rozhodnutie hráča: kandidáti na zvýraznenie namiesto očakávanej karty; inak null. */
   readonly volba: { readonly kandidati: readonly string[] } | null;
@@ -396,6 +398,14 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       }))
       .sort((a, b) => b.vytvorena - a.vytvorena);
 
+  // Hotová výučba stojí uprostred partie, no nikto ju nedohrá — „Späť ku stolu“ by viedlo do prázdna.
+  const rozohranaPartia = (kod: string, hracId: number): RozohranaPartia | null => {
+    const room = rooms.get(kod);
+    if (room === undefined || room.state === null || room.state.koniec !== null || vyucbaSkoncila(room)) return null;
+    if (!room.hraci.some((h, i) => h !== null && i !== room.bot && h.id === hracId)) return null;
+    return { kod: room.code, vyucba: room.vyucba !== null };
+  };
+
   const http = createServer((req, res) => {
     const url = new URL(req.url ?? "/", "http://localhost");
     if (url.pathname.startsWith("/api/")) {
@@ -423,6 +433,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           teraz,
           bezpecneCookie: opts.bezpecneCookie ?? false,
           otvoreneHry,
+          rozohranaPartia,
           poZverejneni: () => undefined,
           stavServera,
           nastavUzavierku,
@@ -536,7 +547,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       send(ws, { type: "historia", events: room.historia[seat] });
       send(ws, { type: "state", view: viewFor(room.data, room.state, seat), events: [] });
       const druhe: PlayerId = seat === 0 ? 1 : 0;
-      send(ws, { type: "superPripojeny", connected: room.sockets[druhe] !== null || room.bot === druhe });
+      const connected = room.sockets[druhe] !== null || room.bot === druhe;
+      // Po návrate (obnovenie stránky) klient nevie, odkedy súper chýba — odpočet kontumácie by začal odznova.
+      const od = room.odpojenyOd[druhe];
+      send(ws, { type: "superPripojeny", connected, ...(connected || od === null ? {} : { odpojenyMs: Math.max(0, teraz() - od) }) });
     }
     if (room.vysledok !== null) send(ws, { type: "frajerina", zmeny: room.vysledok });
     const suhrn = room.achievementy?.hraci[seat]?.suhrn ?? null;
@@ -942,6 +956,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       kto: k.kto,
       vykonany: room.vyucba.vykonany,
       melichar: k.melichar,
+      hlaska: k.hlaska ?? null,
       zvyraznit: prelozKluceZvyraznenia(room.state, k.zvyraznit ?? []),
       ocakava,
       moznosti: k.kto === "otazka" ? (k.moznosti ?? []) : null,
@@ -1013,7 +1028,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const porovnanie = porovnajSKrokom(room.data, room.state, cmd, ocakava);
     // Rozhodnutie: zlý ťah dostane radu Melichara, nie chybu (UX N2).
     if (!porovnanie.zhoda && k.volba !== undefined) {
-      send(ws, { type: "vyucbaRada", text: radaKVolbe(room.state, k.volba, cmd) });
+      send(ws, { type: "vyucbaRada", ...radaVyucby(room.state, k.volba, cmd) });
       posliVyucbu(room);
       return;
     }
@@ -1150,10 +1165,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         verziaPravidiel: VERZIA_PRAVIDIEL,
         seed: room.seed,
         prikazy: room.prikazy,
-        // Kronika: kolá a záverečné bodovanie (BodyTeraz z jadra, ten istý účet ako na stole) s menami starších.
+        // Kronika: kolá a záverečný účet špakov (v6, ten istý rozpis ako na stole) s menami starších.
         kronika: {
           kola: room.kronika?.kola ?? [],
-          zaverecne: bodyTeraz(room.data, viewFor(room.data, koniec, 0)),
+          zaverecne: ucetSpakov(viewFor(room.data, koniec, 0)),
           menaStarsich: Object.fromEntries(koniec.starsi.map((e) => [e.elderId, defOf(room.data, e.karta).name])),
         },
         // Hodnotená (Frajerina) len keď na to majú právo obaja a nehrá človek proti AI

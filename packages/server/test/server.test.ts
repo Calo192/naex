@@ -143,6 +143,47 @@ describe("M7 — server", () => {
     klient.zavri();
     zly.zavri();
   });
+
+  it("rozohraná partia pre pilulku „Späť ku stolu“ a odpočet kontumácie po návrate", async () => {
+    const moja = async (cookie: string, kod: string): Promise<unknown> =>
+      ((await (await fetch(`http://127.0.0.1:${server.port}/api/hry/moja?kod=${kod}`, { headers: { cookie } })).json()) as { partia: unknown }).partia;
+    const a = new Klient(server.port, hracA);
+    await a.otvorene();
+    a.posli({ type: "create" });
+    const kod = (await a.cakaj("privitanie")).code as string;
+    // Kým partia nezačala, nič nebeží.
+    expect(await moja(hracA, kod)).toBeNull();
+    const b = new Klient(server.port, hracB);
+    await b.otvorene();
+    b.posli({ type: "join", code: kod });
+    await b.cakaj("state");
+    expect((await a.cakaj("superPripojeny")).connected).toBe(true);
+    expect(await moja(hracA, kod)).toEqual({ kod, vyucba: false });
+    expect(await moja(hracB, kod.toLowerCase())).toEqual({ kod, vyucba: false });
+    // Cudzí hráč ani neprihlásený sa o partii nedozvie.
+    expect(await moja(hracC, kod)).toBeNull();
+    expect(await moja("", kod)).toBeNull();
+    expect(await moja(hracA, "ZZZZ")).toBeNull();
+
+    // Súper odíde od stola; po návrate hráč dostane, ako dlho súper chýba.
+    b.zavri();
+    expect((await a.cakaj("superPripojeny")).connected).toBe(false);
+    a.zavri();
+    const a2 = new Klient(server.port, hracA);
+    await a2.otvorene();
+    a2.posli({ type: "rejoin", code: kod });
+    const spojenie = await a2.cakaj("superPripojeny");
+    expect(spojenie.connected).toBe(false);
+    expect(typeof spojenie.odpojenyMs).toBe("number");
+    expect(spojenie.odpojenyMs as number).toBeGreaterThanOrEqual(0);
+    // Odchodom od stola partia nekončí.
+    expect(await moja(hracB, kod)).toEqual({ kod, vyucba: false });
+
+    a2.posli({ type: "cmd", cmd: { type: "vzdat" } });
+    await a2.cakaj("state");
+    expect(await moja(hracA, kod)).toBeNull();
+    a2.zavri();
+  });
 });
 
 describe("M12 — účty, profil a admin API", () => {
@@ -199,7 +240,8 @@ describe("M12 — účty, profil a admin API", () => {
     expect((await api("/admin/obsah", { cookie })).status).toBe(403);
     expect((await api("/admin/obsah")).status).toBe(401);
     const sada = await api("/sada");
-    expect((sada.telo?.karty as unknown[]).length).toBe(63);
+    // Sada v7 (revízia a efekty, Michal 2026-10-27): 81 kariet.
+    expect((sada.telo?.karty as unknown[]).length).toBe(81);
     expect(sada.telo?.verzia).toBe(1);
     // Scorecardy z KartyAI sú v sade od prvého spustenia, ikony s významom v hre.
     expect((sada.telo?.bodovacie as unknown[]).length).toBe(8);

@@ -25,8 +25,8 @@
 //    ostáva. Výnimka: zrušené Posilnenie prestane zdvojovať partnera na spoji
 //    (Michal 2026-10-24, O1 z playtestu 20261024-075830).
 //
-// Efekty kariet, ktoré závisia od polohy v línii (Liberál, Silná nezávislá
-// žena, Zámočník, Šarlatán, Pijan), sa vyhodnocujú tu, po spojoch
+// Efekty kariet, ktoré závisia od polohy v línii (Silná nezávislá žena,
+// Zámočník, Mäsiar, Pes; premena Šarlatána a Miňištranta), sa vyhodnocujú tu, po spojoch
 // a NA EX — „okolie“ karty sú jej susedia v línii (aj lokalita či starší
 // v strede). Výklad textov schválil Michal 2026-10-12.
 
@@ -57,6 +57,20 @@ export interface PlacedCard {
    * majiteľa (až po spárovaní). Len do konca bitky, potom vytriezvie (Michal 2026-10-25).
    */
   readonly vytrznik?: true;
+  /**
+   * Premena akcií do konca kola (v7): Šarlatán po Konflikte (Dlh → Viera,
+   * Povera → Rana), Miňištrant, ktorý vyvolal Konflikt (Viera → Pecka).
+   * Mení sa druh akcie, nie jej aktivita; po bitke ide karta do balíčka s pôvodnými.
+   */
+  readonly premena?: "sarlatan" | "ministrant";
+  /** Úplatky na Kulturistovi v tomto kole (v7): každý zníži jeho útoky o stupeň. */
+  readonly uplatky?: number;
+  /** Hrobár (Konflikt, v7): za túto kartu sa na jej strane už nič nepriloží. */
+  readonly posledna?: true;
+  /** Po bitke ide karta z hry (Vdova, Hrobár — Konflikt v7). */
+  readonly poBitkeZHry?: true;
+  /** Po bitke ide karta do odhadzovacieho balíčka tohto hráča a je jeho (Snúbenica, Konflikt v7). */
+  readonly poBitkeK?: PlayerId;
 }
 
 export interface LineState {
@@ -69,6 +83,13 @@ export interface LineState {
   readonly lokalitaOtocena: boolean;
   /** partie[p][0] je karta najbližšie k lokalite. */
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
+  /**
+   * Finále (v6, Michal 2026-10-26): v strede nie je lokalita — prvá vyložená
+   * karta leží v strede a ďalšie sa kladú na jej dve strany. Línia je jeden
+   * súvislý úsek (strana hráča 0 obrátene, potom strana hráča 1), kraje
+   * a prevaha v kraji nie sú.
+   */
+  readonly finale?: boolean;
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -124,8 +145,14 @@ export interface LineEval {
   readonly zdroje: readonly [ZdrojeAkcii, ZdrojeAkcii];
 }
 
-/** Posilnenie a Odpor sú modifikátory spoja — do súčtov nikdy neprispievajú. */
-const MODIFIERS: readonly Action[] = ["Posilnenie", "Odpor"];
+/**
+ * Posilnenie a Odpor sú modifikátory spoja — do súčtov nikdy neprispievajú.
+ * Pakt (v7) bez partnera nemá čo kopírovať; spárovaný sa na spoji premení na
+ * akciu partnera (resolveJunction), takže v súčtoch sa ráta už ako ona.
+ */
+const TUHE: Partial<Record<Action, number>> = { Rana: 1, Pecka: 2, Petelica: 3 };
+
+const MODIFIERS: readonly Action[] = ["Posilnenie", "Odpor", "Pakt"];
 
 interface Elem {
   readonly uid: number;
@@ -145,9 +172,19 @@ interface Elem {
   readonly nasobok: number[][];
   /** vzbura[side] pre lokalitu; karta má vzburu vždy za obe strany naraz. */
   readonly vzbura: [boolean, boolean];
+  /**
+   * Skutočná Vzbura (Odpor + Odpor). Odpor proti Posilneniu tiež aktivuje
+   * neprepojené akcie, ale Vzbura to nie je — štítok a moment ju nehlásia
+   * (playtest v7 131033).
+   */
+  skutocnaVzbura: boolean;
   readonly naexBy: PlayerId | undefined;
-  /** Šarlatán v okolí: Viera tejto karty sa ráta ako Vízia. */
+  /** Šarlatán v okolí: Viera tejto karty sa ráta ako Vízia (do v6; v7 nepoužíva). */
   vieraAkoVizia: boolean;
+  /** Premena akcií do konca kola (PlacedCard.premena). */
+  readonly premena: PlacedCard["premena"];
+  /** Úplatky na Kulturistovi (PlacedCard.uplatky). */
+  readonly uplatky: number;
   /** dovody[side][k]: čo akciu aktivovalo či zdvojilo (ZdrojAkcie.dovody). */
   readonly dovody: string[][][];
   /** Akcie susedov, ktoré Posilnenie tejto karty zdvojilo — NA EX ich zdvojenie zruší. */
@@ -205,7 +242,8 @@ function presbiter(
 
 /** Koľko karta váži v prevahe: Dvojčatá (Furt) za dvoch, ostatné do prevahy 1, iné 0. */
 function vahaVPrevahe(defId: string, tags: readonly Tag[]): number {
-  if (!rataSaDoPrevahy(tags)) return 0;
+  // Brigádnik (Furt, v7): do prevahy sa neráta.
+  if (!rataSaDoPrevahy(tags) || defId === "brigadnik") return 0;
   return defId === "dvojcata" ? 2 : 1;
 }
 
@@ -281,6 +319,7 @@ function makeElem(
   isLokalita: boolean,
   naexBy: PlayerId | undefined,
   strana: PlayerId | null,
+  pl?: PlacedCard,
 ): Elem {
   const printed = printedSides(data, card);
   return {
@@ -297,14 +336,18 @@ function makeElem(
     stav: [freshStav(), freshStav()],
     nasobok: [freshNasobok(), freshNasobok()],
     vzbura: [false, false],
+    skutocnaVzbura: false,
     naexBy,
     vieraAkoVizia: false,
+    premena: pl?.premena,
+    uplatky: pl?.uplatky ?? 0,
     dovody: [0, 1].map(() => [[], [], [], []]),
     posilnene: [],
   };
 }
 
-function markVzbura(elem: Elem, side: 0 | 1): void {
+function markVzbura(elem: Elem, side: 0 | 1, skutocna = true): void {
+  if (skutocna) elem.skutocnaVzbura = true;
   if (elem.isLokalita) {
     elem.vzbura[side] = true;
   } else {
@@ -318,62 +361,48 @@ function markVzbura(elem: Elem, side: 0 | 1): void {
  * (Michal 2026-10-18). Pri lokalite, karte staršieho v strede či karte bez
  * týchto tagov spoj nevznikne — neaktivuje sa nič ani na susedovi.
  */
-export function spojVznikne(a: { readonly tags: readonly Tag[]; readonly stred: boolean }, b: { readonly tags: readonly Tag[]; readonly stred: boolean }): boolean {
-  const podporuje = (x: typeof a): boolean => !x.stred && (x.tags.includes("Občan") || x.tags.includes("Starešina"));
+export function spojVznikne(
+  a: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string },
+  b: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string },
+): boolean {
+  // Kôň (Furt, v7): Nástroj vedľa neho s ním tvorí spoj ako s Občanom.
+  const podporuje = (x: typeof a): boolean => !x.stred && (x.tags.includes("Občan") || x.tags.includes("Starešina") || x.defId === "kon");
   if (a.tags.includes("Nástroj") && !a.stred && !podporuje(b)) return false;
   if (b.tags.includes("Nástroj") && !b.stred && !podporuje(a)) return false;
   return true;
 }
 
-/**
- * Pes (Michal 2026-10-20): za každý pár akcií na spoji Psa so súperovou
- * kartou (z ktorejkoľvek strany Psa) dá majiteľ Psa v bitke +1 tuhé.
- * Rátajú sa všetky spárované akcie, aj zrušené Odporom či NA EX — spojené sú.
- * Len keď Pes leží na strane svojho majiteľa (Michal 2026-10-22) — podstrčený
- * súperovi nedá nič.
- * Výsledok [hráč 0, hráč 1] = dodatočné tuhé majiteľa Psov.
- */
-export function spojePsa(data: GameData, strany: readonly [readonly PlacedCard[], readonly PlacedCard[]]): [number, number] {
-  const out: [number, number] = [0, 0];
-  for (const strana of [0, 1] as const) {
-    // V úseku línie leží strana hráča 0 obrátene (index 0 je pri lokalite).
-    const rad = strana === 0 ? [...strany[0]].reverse() : strany[1];
-    const elems = rad.map((pl) => makeElem(data, pl.card, pl.playedBy, pl.playedBy === 1, false, pl.naexBy, strana));
-    for (let i = 0; i + 1 < elems.length; i++) {
-      const a = elems[i] as Elem;
-      const b = elems[i + 1] as Elem;
-      if (a.owner === b.owner) continue;
-      const pes = a.defId === "pes" ? a : b.defId === "pes" ? b : null;
-      if (pes === null || !spojVznikne({ tags: a.tags, stred: false }, { tags: b.tags, stred: false })) continue;
-      let pary = 0;
-      for (let k = 0; k < 4; k++) if (a.effRight[k] != null && b.effLeft[k] != null) pary++;
-      // Pes vedľa súperovho Psa: každý dá svojmu majiteľovi.
-      if (a.defId === "pes" && a.owner === strana) out[a.owner] += pary;
-      if (b.defId === "pes" && b.owner === strana) out[b.owner] += pary;
-    }
-  }
-  return out;
-}
-
-/**
- * Snúbenica (Nástup, roadmapa #71; do 2026-10-23 Ujo s fúrikom): vyložená vedľa karty s NA EX ju vráti
- * jej majiteľovi do ruky a zaujme jej miesto. `strana` je partia PRED
- * vyložením Snúbenice — jej jediný sused je krajná karta strany. Vracia kartu, ktorá
- * odíde, alebo null.
- */
-export function snubenicaVracia(strana: readonly PlacedCard[], defId: string): PlacedCard | null {
-  if (defId !== "snubenica") return null;
-  const krajna = strana[strana.length - 1];
-  return krajna !== undefined && krajna.naexBy !== undefined ? krajna : null;
-}
-
 /** Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`. */
 function resolveJunction(a: Elem, b: Elem): void {
-  if (!spojVznikne({ tags: a.tags, stred: a.isLokalita }, { tags: b.tags, stred: b.isLokalita })) return;
+  if (!spojVznikne({ tags: a.tags, stred: a.isLokalita, defId: a.defId }, { tags: b.tags, stred: b.isLokalita, defId: b.defId })) return;
+  // Praudovravec (Dezinformátor, v7): Odpor na jeho spojoch neruší, ale posilní.
+  const dezinformator = (!a.isLokalita && a.defId === "praudovravec") || (!b.isLokalita && b.defId === "praudovravec");
   for (let k = 0; k < 4; k++) {
-    const actA = a.effRight[k];
-    const actB = b.effLeft[k];
+    let actA = a.effRight[k];
+    let actB = b.effLeft[k];
     if (actA == null || actB == null) continue;
+    if (dezinformator) {
+      if (actA === "Odpor") actA = "Posilnenie";
+      if (actB === "Odpor") actB = "Posilnenie";
+    }
+    if (actA === "Pakt" && actB === "Pakt") {
+      // Pakt s Paktom (plan.md 12.3 bod 1): pár je, kopírovať nemá čo — nerobí nič.
+      a.stav[1]![k] = "aktivna";
+      b.stav[0]![k] = "aktivna";
+      continue;
+    }
+    // Pakt (v7): na spoji sa správa ako akcia, s ktorou je v páre — premení sa pred
+    // násobkami (12.3 bod 2), takže pri Posilnení vzniknú dve Posilnenia bez účinku.
+    // Odpor ho zruší ako každú akciu (bod 4).
+    if (actA === "Pakt" && actB !== "Odpor") {
+      actA = actB;
+      (a.effRight as Slot[])[k] = actB;
+      a.dovody[1]![k]!.push("Pakt");
+    } else if (actB === "Pakt" && actA !== "Odpor") {
+      actB = actA;
+      (b.effLeft as Slot[])[k] = actA;
+      b.dovody[0]![k]!.push("Pakt");
+    }
 
     const odporA = actA === "Odpor";
     const odporB = actB === "Odpor";
@@ -393,7 +422,7 @@ function resolveJunction(a: Elem, b: Elem): void {
       odporElem.stav[odporSide]![k] = "aktivna";
       otherElem.stav[otherSide]![k] = "zrusena";
       // Posilnenie + Odpor: neprepojené akcie aktivuje IBA karta s Odporom.
-      if (otherAct === "Posilnenie") markVzbura(odporElem, odporSide);
+      if (otherAct === "Posilnenie") markVzbura(odporElem, odporSide, false);
     } else if (posilA && posilB) {
       // Posilnenie + Posilnenie: pravidlá mlčia — rozhodnutie: nič sa nedeje.
       a.stav[1]![k] = "aktivna";
@@ -452,7 +481,7 @@ function zrusPosilnenie(elem: Elem): void {
   }
 }
 
-function applyNaex(elem: Elem, bezZdvojenia: boolean): void {
+function applyNaex(elem: Elem): void {
   if (elem.naexBy === undefined) return;
   if (elem.defId === "veteran") {
     zdvojAktivne(elem, "NA EX", "NA EX");
@@ -466,7 +495,8 @@ function applyNaex(elem: Elem, bezZdvojenia: boolean): void {
       if (stav === "aktivna") {
         elem.stav[side]![k] = "zrusena";
         elem.nasobok[side]![k] = 0;
-      } else if (stav === "neaktivna" && !bezZdvojenia) {
+      } else if (stav === "neaktivna" && actions[k] !== "Pakt") {
+        // Neaktívny Pakt nemá čo zdvojiť (12.3 bod 6).
         elem.stav[side]![k] = "aktivna";
         elem.nasobok[side]![k] = 2;
         elem.dovody[side]![k]!.push("NA EX");
@@ -486,54 +516,76 @@ function zdvojAktivne(elem: Elem, zdroj: string, dovod = `karta:${zdroj}`): void
   }
 }
 
-function maAktivnu(elem: Elem, action: Action): boolean {
-  for (const side of [0, 1] as const) {
-    const actions = side === 0 ? elem.effLeft : elem.effRight;
-    for (let k = 0; k < 4; k++) {
-      if (actions[k] === action && elem.stav[side]![k] === "aktivna") return true;
-    }
-  }
-  return false;
-}
-
 /**
- * Efekty kariet závislé od polohy v línii. Vracia rany navyše, ktoré Pijan
- * udelil do partie svojho majiteľa — rátajú sa jeho súperovi.
+ * Efekty kariet závislé od polohy v línii (Zámočník, Silná žena, Mäsiar, Pes).
+ * Mäsiar ide prvý — akcie Zvieraťa, ktoré neplatia, Pes už nezdvojí.
  */
-function kartoveEfekty(segments: readonly (readonly Elem[])[]): [number, number] {
+function kartoveEfekty(segments: readonly (readonly Elem[])[]): void {
   const susedia = new Map<Elem, [Elem | null, Elem | null]>();
   for (const seg of segments) {
     seg.forEach((e, i) => susedia.set(e, [seg[i - 1] ?? null, seg[i + 1] ?? null]));
   }
   const karty = [...susedia.keys()].filter((e) => !e.isLokalita);
   const okolie = (e: Elem): Elem[] => (susedia.get(e) ?? [null, null]).filter((x): x is Elem => x !== null);
+  // Mäsiar (Furt, v7): akcie Zvierat v jeho okolí neplatia — ako zrušené Odporom.
   for (const e of karty) {
-    if (e.defId === "liberal") {
-      // Dvojnásobný efekt jeho akcií, ak je v partii rovnako žien a chlapov (on sám sa neráta).
-      const partia = karty.filter((x) => x !== e && x.owner === e.owner);
-      const zeny = partia.filter((x) => x.tags.includes("Žena")).length;
-      const chlapi = partia.filter((x) => x.tags.includes("Chlap")).length;
-      if (zeny === chlapi) zdvojAktivne(e, e.defId);
-    } else if (e.defId === "zamocnik") {
+    if (e.defId !== "masiar") continue;
+    for (const z of okolie(e)) if (!z.isLokalita && z.tags.includes("Zviera")) zrusVsetky(z);
+  }
+  for (const e of karty) {
+    if (e.defId === "zamocnik") {
       for (const s of okolie(e)) if (s.tags.includes("Nástroj")) zdvojAktivne(s, e.defId);
-    } else if (e.defId === "sarlatan") {
-      for (const s of okolie(e)) s.vieraAkoVizia = true;
     } else if (e.defId === "silna_nezavisla_zena") {
       // Michal 2026-10-18: podporuje okolie — aktívne akcie susedných kariet
       // toho istého majiteľa sa rátajú dvakrát (lokalitu a cudzie karty nie).
       for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner) zdvojAktivne(s, e.defId);
+    } else if (e.defId === "pes") {
+      // Pes (Furt, v7): aktívne akcie na spoji so súperovou kartou ×2 — strana k tomu susedovi.
+      const [lavy, pravy] = susedia.get(e) ?? [null, null];
+      for (const [side, sused] of [[0, lavy], [1, pravy]] as const) {
+        if (sused !== null && !sused.isLokalita && sused.owner !== e.owner) zdvojStranu(e, side, e.defId);
+      }
     }
   }
+}
 
-  const rany: [number, number] = [0, 0];
-  for (const e of karty) {
-    if (e.defId !== "pijan") continue;
-    // Žena v okolí s aktívnou akciou Poldeci → rana do partie majiteľa Pijana.
-    if (okolie(e).some((s) => s.tags.includes("Žena") && maAktivnu(s, "Poldeci"))) {
-      rany[opponentOf(e.owner)] += 1;
+/** Všetky akcie karty sa zrušia (Mäsiar). */
+function zrusVsetky(elem: Elem): void {
+  for (const side of [0, 1] as const) {
+    for (let k = 0; k < 4; k++) {
+      if (elem.stav[side]![k] !== "aktivna") continue;
+      elem.stav[side]![k] = "zrusena";
+      elem.nasobok[side]![k] = 0;
+      elem.dovody[side]![k]!.push("karta:masiar");
     }
   }
-  return rany;
+}
+
+/** Aktívne akcie jednej strany karty sa rátajú dvakrát (Pes). */
+function zdvojStranu(elem: Elem, side: 0 | 1, zdroj: string): void {
+  for (let k = 0; k < 4; k++) {
+    if (elem.stav[side]![k] !== "aktivna") continue;
+    elem.nasobok[side]![k] = (elem.nasobok[side]![k] as number) * 2;
+    elem.dovody[side]![k]!.push(`karta:${zdroj}`);
+  }
+}
+
+/** Útoky od najsilnejšieho — Úplatok Kulturistu ich znižuje o stupeň (posledný stupeň je „nič“). */
+const STUPNE_UTOKU: readonly Action[] = ["Petelica", "Pecka", "Rana"];
+
+/**
+ * Akcia, ktorou sa slot karty ráta (v7): premena Šarlatána a Miňištranta,
+ * Úplatok Kulturistu; null = akcia sa neráta (útok znížený pod Ranu).
+ */
+function akciaPoPremene(elem: Elem, action: Action): Action | null {
+  let a: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
+  if (elem.premena === "sarlatan") a = a === "Dlh" ? "Viera" : a === "Povera" ? "Rana" : a;
+  else if (elem.premena === "ministrant" && a === "Viera") a = "Pecka";
+  if (elem.uplatky > 0) {
+    const i = STUPNE_UTOKU.indexOf(a);
+    if (i !== -1) return STUPNE_UTOKU[i + elem.uplatky] ?? null;
+  }
+  return a;
 }
 
 function elemEval(elem: Elem): CardLineEval {
@@ -555,7 +607,7 @@ function elemEval(elem: Elem): CardLineEval {
   };
   return {
     uid: elem.uid,
-    vzbura: elem.vzbura[0] || elem.vzbura[1],
+    vzbura: elem.skutocnaVzbura,
     left: [0, 1, 2, 3].map((k) => printedSlot(0, k)),
     right: [0, 1, 2, 3].map((k) => printedSlot(1, k)),
   };
@@ -569,16 +621,28 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const vytrznici = new Set<number>();
   for (const strana of line.strany) for (const p of strana) if (p.vytrznik === true) vytrznici.add(p.card.uid);
   const partia0 = line.strany[0].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 0),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 0, p),
   );
   const partia1 = line.strany[1].map((p) =>
-    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 1),
+    makeElem(data, p.card, p.playedBy, p.playedBy === 1, false, p.vytrznik === true ? undefined : p.naexBy, 1, p),
   );
+  // Posilnenie a Odpor Výtržníka sú už len Rany (v6.1, Michal 2026-10-27): suseda
+  // nezdvojujú ani nerušia, spoj s nimi je obyčajný pár. Ostatné akcie sa spárujú
+  // ako vytlačené — zmena na Rany príde až po spojoch (nižšie).
+  for (const elem of [...partia0, ...partia1]) {
+    if (!vytrznici.has(elem.uid)) continue;
+    const bezModifikatora = (x: Slot): Slot => (x === "Posilnenie" || x === "Odpor" ? "Rana" : x);
+    const m = elem as { effLeft: readonly Slot[]; effRight: readonly Slot[] };
+    m.effLeft = elem.effLeft.map(bezModifikatora);
+    m.effRight = elem.effRight.map(bezModifikatora);
+  }
 
   // Prevaha (Michal 2026-10-20, rozbor strategia-strany-20261020): akcie hrany
   // lokality dostane, kto má na tej strane viac svojich kariet (Nástroje sa
   // nerátajú); pri rovnosti majiteľ karty pri lokalite (pravidlá v3).
-  const susedLokality: [PlayerId | null, PlayerId | null] = [prevaha(partia0), prevaha(partia1)];
+  // Vo finále kraje nie sú — Kočovník ostáva majiteľovi, Presbiter nepôsobí.
+  const finale = line.finale === true && line.lokalita === null;
+  const susedLokality: [PlayerId | null, PlayerId | null] = finale ? [null, null] : [prevaha(partia0), prevaha(partia1)];
   let stred: Elem | null = null;
   if (line.lokalita !== null) {
     // owner lokality je len formálny — súčty jej strán idú majiteľovi suseda.
@@ -586,9 +650,12 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     stred = lok;
     segments.push([...[...partia0].reverse(), lok, ...partia1]);
     elems.push(...partia0, lok, ...partia1);
+  } else if (finale) {
+    // Prvá karta finále leží na začiatku jednej zo strán a susedí s oboma.
+    segments.push([...[...partia0].reverse(), ...partia1]);
+    elems.push(...partia0, ...partia1);
   } else {
-    // Bez karty v strede (len testy a ukážky — v bitke o staršieho leží
-    // v strede karta staršieho): strany sú dva samostatné úseky.
+    // Bez karty v strede (len testy a ukážky): strany sú dva samostatné úseky.
     segments.push([...partia0].reverse(), [...partia1]);
     elems.push(...partia0, ...partia1);
   }
@@ -599,18 +666,12 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     }
   }
   for (const elem of elems) applyVzbura(elem);
-  const vedlaSofera = new Set<Elem>();
-  for (const seg of segments) {
-    seg.forEach((e, i) => {
-      if (e.isLokalita || e.defId !== "sofer") return;
-      for (const sused of [seg[i - 1], seg[i + 1]]) if (sused !== undefined && !sused.isLokalita) vedlaSofera.add(sused);
-    });
-  }
   for (const elem of elems) zrusPosilnenie(elem);
-  for (const elem of elems) applyNaex(elem, vedlaSofera.has(elem));
-  const ranyPijana = kartoveEfekty(segments);
+  for (const elem of elems) applyNaex(elem);
+  kartoveEfekty(segments);
   // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre
-  // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami — Výtržník ich nemení.
+  // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami (okrem Posilnenia
+  // a Odporu, vyššie) — Výtržník ich nemení.
   for (const elem of elems) {
     if (!vytrznici.has(elem.uid)) continue;
     const rana = (x: Slot): Slot => (x === null ? null : "Rana");
@@ -642,11 +703,6 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const pridajZdroj = (p: PlayerId, a: Action, z: ZdrojAkcie): void => {
     (zdroje[p][a] ??= []).push(z);
   };
-  for (const p of [0, 1] as const) {
-    if (ranyPijana[p] === 0) continue;
-    sums[p].Rana = ranyPijana[p];
-    pridajZdroj(p, "Rana", { defId: "pijan", uid: -1, hodnota: ranyPijana[p], vStrede: false, dovody: ["karta:pijan"] });
-  }
   for (const elem of elems) {
     for (const side of [0, 1] as const) {
       const actions = side === 0 ? elem.effLeft : elem.effRight;
@@ -663,11 +719,15 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const kocovnik = elem.defId === "kocovnik" && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
         const nastroj = susedNastroja.get(elem)?.[side] ?? null;
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
-        const ako: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
-        sums[target][ako] = (sums[target][ako] ?? 0) + nasobok;
+        const ako = akciaPoPremene(elem, action);
+        if (ako === null) continue;
+        // Poľovnícka chata (Furt, v7): aktívne Rany, Pecky a Petelice z jej hrán sa rátajú dvakrát.
+        const hodnota = elem.isLokalita && elem.defId === "polovnicka_chata" && TUHE[ako] !== undefined ? nasobok * 2 : nasobok;
+        sums[target][ako] = (sums[target][ako] ?? 0) + hodnota;
         const dovody = [...(elem.dovody[side]![k] ?? [])];
-        if (ako !== action) dovody.push("karta:sarlatan");
-        pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota: nasobok, vStrede: elem.isLokalita, dovody });
+        if (hodnota !== nasobok) dovody.push("karta:polovnicka_chata");
+        if (ako !== action) dovody.push(elem.uplatky > 0 && elem.premena === undefined ? "Úplatok" : `karta:${elem.premena ?? "sarlatan"}`);
+        pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota, vStrede: elem.isLokalita, dovody });
       }
     }
   }
@@ -698,7 +758,6 @@ export interface KartaVBitke {
   readonly zle: number;
 }
 
-const TUHE: Partial<Record<Action, number>> = { Rana: 1, Pecka: 2, Petelica: 3 };
 const ZLE: readonly Action[] = ["Dlh", "PoškodeniePečene"];
 
 /** Rozpis vyhodnotenej línie po kartách (lokalita sa nepočíta — nie je ničia). */
@@ -722,4 +781,22 @@ export function prispevkyKariet(line: LineState, ev: LineEval): KartaVBitke[] {
     out.push({ uid: placed.card.uid, defId: placed.card.defId, majitel: placed.playedBy, akcii, aktivne, tuhe, zle });
   }
   return out;
+}
+
+/**
+ * Susedia karty v línii — „okolie“ z textov kariet (Veterinár, Krokodíl):
+ * karty na oboch stranách bez ohľadu na majiteľa, aj lokalita v strede (null
+ * v zozname = lokalita). Vo finále bez lokality je línia jeden úsek.
+ */
+export function okolieVLinii(line: LineState, uid: number): (PlacedCard | null)[] {
+  const lava = [...line.strany[0]].reverse();
+  const stred: (PlacedCard | null)[] = line.lokalita !== null ? [null] : [];
+  const useky: (PlacedCard | null)[][] =
+    line.lokalita !== null || line.finale === true ? [[...lava, ...stred, ...line.strany[1]]] : [lava, [...line.strany[1]]];
+  for (const usek of useky) {
+    const i = usek.findIndex((x) => x !== null && x.card.uid === uid);
+    if (i === -1) continue;
+    return [usek[i - 1], usek[i + 1]].filter((x): x is PlacedCard | null => x !== undefined);
+  }
+  return [];
 }

@@ -1,13 +1,13 @@
 // Stávka bitky (Michal 2026-10-22, návrh 3 A z playtestu 20261021-143600):
 // výpočet je v jadre nad verejným pohľadom, takže obaja hráči musia vidieť
-// tú istú stávku, len s opačným znamienkom.
+// tú istú stávku, len s opačným znamienkom. V6 sa stávka ráta v špakoch.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { ClientState, Command, GameState } from "../src/index.ts";
-import { apply, bodyTeraz, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, stavkaBitky, viewFor } from "../src/index.ts";
+import type { Command, GameState } from "../src/index.ts";
+import { apply, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, spakyZaStarsich, stavkaBitky, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -34,6 +34,8 @@ describe("stavkaBitky", () => {
     prejdiZhromazdenia((state) => {
       // So skrytou Záverečnou vidí každý inú líniu — stávka sa líšiť smie.
       if (state.strany.some((strana) => strana.some((pl) => pl.zaverecna === true))) return;
+      // Absťák v ruke pozná len jeho majiteľ.
+      if (state.hraci.some((h) => h.ruka.some((k) => k.defId === "abstak"))) return;
       const s0 = stavkaBitky(data, viewFor(data, state, 0));
       const s1 = stavkaBitky(data, viewFor(data, state, 1));
       expect(s0).not.toBeNull();
@@ -44,38 +46,25 @@ describe("stavkaBitky", () => {
     expect(porovnane).toBeGreaterThan(10);
   });
 
-  it("bez prebytku je výhra presne cena lokality (aj zo sekery)", () => {
+  it("v6.1: výhra = Pitky kola mínus rozdiel Absťákov (aspoň 1), sekera a starší, ktorí sa víťaza boja", () => {
     let porovnane = 0;
     prejdiZhromazdenia((state) => {
       const view = viewFor(data, state, 0);
-      const lokalita = view.ciel?.lokalita;
-      if (lokalita === undefined || lokalita === null) return;
-      const rozdiel = (v: ClientState): number => {
-        const b = bodyTeraz(data, v).spolu;
-        return b[0] - b[1];
-      };
-      const ziskane = [lokalita, ...view.naSekeru].map((karta) => ({ karta, hrac: 0 as const }));
-      const ocakavane = rozdiel({ ...view, ovladnute: [...view.ovladnute, ...ziskane] }) - rozdiel(view);
-      expect(stavkaBitky(data, view, 0)?.vyhra).toBe(ocakavane);
+      const st = stavkaBitky(data, view);
+      if (st === null) return;
+      expect(st.pitky).toBe(Math.max(1, view.pitkyCelkom));
+      expect(st.naSekere).toBe(view.spakyNaSekere);
+      // Strach platí len víťazovi (v6.1) — je súčasťou stávky.
+      expect(st.starsi).toEqual([spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)]);
+      // Noviny porazeného (v7) vezmú víťazovi špaky za bitku, Herňa (v7) pridá za Dlhy porazeného.
+      if (st.noviny[0] === 0) {
+        expect(st.vyhra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.herna[0] + st.starsi[0]);
+        expect(st.vyhra).toBeLessThanOrEqual(st.pitky + view.spakyNaSekere + st.herna[0] + st.starsi[0]);
+      } else expect(st.vyhra).toBe(st.starsi[0]);
+      if (st.noviny[1] === 0) expect(-st.prehra).toBeGreaterThanOrEqual(1 + view.spakyNaSekere + st.herna[1] + st.starsi[1]);
       porovnane++;
     });
     expect(porovnane).toBeGreaterThan(10);
-  });
-
-  it("„najviac, čo môže súper získať“ len v poslednej bitke a aspoň toľko ako prehra o 3", () => {
-    let posledne = 0;
-    prejdiZhromazdenia((state) => {
-      const view = viewFor(data, state, 0);
-      const s = stavkaBitky(data, view);
-      if (view.lokalityVHre.length > 0) {
-        expect(s?.superNajviac).toBeNull();
-        return;
-      }
-      expect(s?.superNajviac).not.toBeNull();
-      expect(s?.superNajviac ?? Number.NaN).toBeGreaterThanOrEqual(-(s?.prehra ?? Number.NaN));
-      posledne++;
-    });
-    expect(posledne).toBeGreaterThan(0);
   });
 
   it("mimo bitky o lokalitu stávka nie je", () => {

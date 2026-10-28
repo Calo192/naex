@@ -5,13 +5,13 @@
 // nepriznaných kliatob vo viewFor.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, Event, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   apply,
-  bodyTeraz,
   buildGameData,
   eventsFor,
   legalCommands,
@@ -28,6 +28,7 @@ import {
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { instanceFor, makeDef } from "./helpers.ts";
+import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -41,7 +42,7 @@ interface Krok {
 
 /** Náhodná partia legálnymi ťahmi — každý krok s výsledkom pre kontrolu invariantov. */
 function partia(seed: number, kazdyKrok: (k: Krok) => void): GameState {
-  let state = setupGame(data, seed);
+  let state = setupSBalickom(data, seed);
   let rng = rngSeed(seed ^ 0x5eca);
   for (let i = 0; state.koniec === null && i < 20000; i++) {
     const hrac = naTahu(state);
@@ -59,42 +60,38 @@ function partia(seed: number, kazdyKrok: (k: Krok) => void): GameState {
 
 const SEEDY = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233];
 
-describe("remíza na sekeru (Michal 2026-10-21)", () => {
-  it("rovnaké tuhé nevyhrá nikto: lokalita ide na sekeru, berie ju víťaz najbližšej bitky; v poslednej bitke prepadne", () => {
-    let remiz = 0;
+describe("remíza a sekera v6 (Michal 2026-10-26; sekera od 2026-10-21)", () => {
+  it("remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky", () => {
+    let sekier = 0;
     let zoSekery = 0;
+    let rozhodliRemizu = 0;
     for (const seed of SEEDY) {
-      let vitaz: PlayerId | null = null;
       partia(seed, ({ pred, po, events }) => {
         const vysledok = events.find((e) => e.type === "bitkaVysledok");
-        if (vysledok?.type === "bitkaVysledok") {
-          // Víťaz je len pri vyššom tuhom — rola ani celkové nerozhodujú.
-          const [a, b] = vysledok.damage.tuhe;
-          expect(vysledok.vitaz).toBe(a === b ? null : a > b ? 0 : 1);
-          vitaz = vysledok.vitaz;
-        }
-        // Lokality nemiznú: v hre + ovládnuté + prepadnuté + na sekere (+ cieľ) = všetky.
-        const spolu = po.lokalityVHre.length + po.ovladnute.length + po.prepadnute.length + po.naSekeru.length + (po.ciel?.lokalita != null ? 1 : 0);
+        // Lokality nemiznú: v hre + na nástenke (+ cieľ) = všetky.
+        const spolu = po.lokalityVHre.length + po.nastenka.filter((b) => b.lokalita !== null).length + (po.ciel?.typ === "lokalita" && po.bitkaStav?.damage == null ? 1 : 0);
         expect(spolu).toBe(po.lokalitCelkom);
-        // Koniec bitky: cieľ kola zmizne (ak hra neskončila uprostred bitky).
-        const lok = pred.ciel?.lokalita;
-        if (lok == null || po.ciel !== null || vysledok === undefined && pred.bitkaStav === null) return;
-        if (vitaz === null) {
-          remiz++;
-          if (pred.lokalityVHre.length > 0) expect(po.naSekeru.map((k) => k.uid)).toContain(lok.uid);
-          else expect(po.prepadnute.map((k) => k.uid)).toContain(lok.uid);
-          // Remíza nemení útočníka.
-          if (po.koniec === null) expect(po.utocnik).toBe(pred.utocnik);
-        }
-        if (vitaz !== null && pred.naSekeru.length > 0) {
-          zoSekery++;
-          expect(po.naSekeru).toHaveLength(0);
-          for (const k of pred.naSekeru) expect(po.ovladnute).toContainEqual({ karta: k, hrac: vitaz });
+        if (vysledok?.type !== "bitkaVysledok") return;
+        const [a, b] = vysledok.damage.tuhe;
+        if (a !== b) expect([vysledok.vitaz, vysledok.rozhodlo]).toEqual([a > b ? 0 : 1, "tuhe"]);
+        else if (vysledok.rozhodlo !== "sekera") rozhodliRemizu++;
+        const zaznam = po.nastenka.at(-1)!;
+        expect(zaznam.vitaz).toBe(vysledok.vitaz);
+        const finale = pred.ciel?.typ === "finale";
+        if (vysledok.vitaz === null) {
+          sekier++;
+          if (!finale) expect(po.spakyNaSekere).toBe(pred.spakyNaSekere + zaznam.pitky);
+          else expect(zaznam.prepadlo).toBe(pred.spakyNaSekere + zaznam.pitky);
+        } else {
+          expect(zaznam.zoSekery).toBe(pred.spakyNaSekere);
+          expect(po.spakyNaSekere).toBe(0);
+          if (pred.spakyNaSekere > 0) zoSekery++;
         }
       });
     }
-    expect(remiz).toBeGreaterThan(0);
+    expect(sekier).toBeGreaterThan(0);
     expect(zoSekery).toBeGreaterThan(0);
+    expect(rozhodliRemizu).toBeGreaterThan(0);
   });
 });
 
@@ -128,7 +125,7 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
   }
 
   it("nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide do odhadzovacieho balíčka", () => {
-    const s1 = setupGame(sada, 77);
+    const s1 = setupSBalickom(sada, 77);
     // Doberací balíček so 6 kartami: dobratie po bitke ho nevyčerpá, odhadzovací sa nezamieša.
     const plny = Array.from({ length: 6 }, (_, i): CardInstance => ({ uid: 700001 + i, defId: "pijan", leftLayout: 0, rightLayout: 0 }));
     const s0: GameState = { ...s1, hraci: [{ ...s1.hraci[0], doberaci: plny, odhadzovaci: [] }, s1.hraci[1]] };
@@ -151,19 +148,10 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
     expect(state.hraci[0].odhadzovaci.filter((k) => k.defId === "cirhoza")).toHaveLength(nahlad[0].cirhozy);
     expect(state.hraci[0].doberaci.some((k) => k.defId === "cirhoza")).toBe(false);
     expect(state.hraci[0].ruka.some((k) => k.defId === "cirhoza")).toBe(false);
-    // Priznaný Dlh uberá body na konci rovnako ako nepriznaný.
-    const v = viewFor(sada, state, 1);
-    const pred = bodyTeraz(sada, v).spolu[0];
-    const bezDlhov = {
-      ...v,
-      hraci: [{ ...v.hraci[0], priznane: v.hraci[0].priznane.filter((k) => k.defId !== "dlh") }, v.hraci[1]] as typeof v.hraci,
-    };
-    const dlhSaRata = v.starsi.some((e) => bodyTeraz(sada, bezDlhov).starsi.find((x) => x.elderId === e.elderId)?.body[0] !== bodyTeraz(sada, v).starsi.find((x) => x.elderId === e.elderId)?.body[0]);
-    if (dlhSaRata) expect(bodyTeraz(sada, bezDlhov).spolu[0]).toBeGreaterThan(pred);
   });
 
   it("Dlh sa sám nepáli — kto exekúcii nečelí, priznané Dlhy si nechá (Michal 2026-10-22)", () => {
-    const s0 = setupGame(sada, 77);
+    const s0 = setupSBalickom(sada, 77);
     const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
     const sDlhmi: GameState = {
       ...s0,

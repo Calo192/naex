@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kolo 2: Kšeft, prepracovaní občania, náradie a zvieratá — NA EX!</title>
+<style>
+/* Rozvrhnutie: skratka, časť 1 Kšeft (aktívne efekty), časť 2 sedem kariet, časť 3 náradie a zvieratá, otázky, lišta s kopírovaním. */
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --ok: #7fb069; --pozor: #e08a3a; --zle: #d0604f;
+  --kseft: #c9a0e8;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b;
+    --kseft: #6b3a91;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b;
+  --kseft: #6b3a91;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 12px; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 980px; margin: 0 auto; padding-block: 24px 140px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.6rem, 5vw, 2.3rem); margin: 0 0 8px; }
+h2 { font-size: 1.4rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.08rem; margin: 18px 0 6px; }
+p, li { max-width: 76ch; }
+p { margin: 0 0 10px; }
+li { margin-bottom: 5px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+code { font-family: var(--mono); font-size: .84em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.hlavicka { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.uvod, .pozn { color: var(--tlmeny); }
+.pozn { font-size: .9rem; }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 18px; margin: 18px 0; }
+.skratka h2 { margin: 0 0 8px; border: 0; padding: 0; font-size: 1.2rem; }
+.skratka ul { margin: 0; padding-left: 20px; }
+.obsah { font-size: .92rem; }
+.obsah ol { margin: 4px 0 0; padding-left: 20px; }
+.tab-obal { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 8px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { font-size: .82rem; color: var(--tlmeny); font-weight: 600; border-bottom: 2px solid var(--okraj); }
+td.ver { white-space: nowrap; font-weight: 600; }
+.stitok { display: inline-block; font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.s-ano { color: var(--ok); } .s-variant { color: var(--akcent); } .s-neskor { color: var(--pozor); } .s-nie { color: var(--zle); }
+.s-sk { color: var(--tlmeny); } .s-kseft { color: var(--kseft); }
+.navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 16px 18px; margin: 22px 0; }
+.navrh.odp { border-color: var(--akcent); box-shadow: inset 4px 0 0 var(--akcent); }
+.navrh > header { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.navrh > header h3 { margin: 0; font-size: 1.3rem; flex: 1 1 220px; }
+.cislo { font-family: var(--serif); font-size: 1.6rem; color: var(--akcent); line-height: 1; }
+.kt { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 14px; margin: 10px 0 12px; }
+.kt.stare { opacity: .8; border-style: dashed; }
+.kt-hlava { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.kt-hlava b { font-family: var(--serif); font-size: 1.1rem; color: var(--akcent); }
+.kt-tagy { font-size: .82rem; color: var(--tlmeny); }
+.kt-efekt { font-family: var(--serif); font-size: 1.05rem; margin: 6px 0; }
+.kt-efekt .sp { font-weight: 700; }
+.kt-efekt .sp.k { color: var(--kseft); }
+.kt-akcie { font-size: .86rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+.kt-akcie small { color: var(--tlmeny); }
+.kt-akcie .cela { grid-column: 1 / -1; }
+.kt-pod { font-size: .8rem; color: var(--tlmeny); margin-top: 4px; }
+dl.riadky { display: grid; grid-template-columns: 8.5em 1fr; gap: 6px 12px; margin: 8px 0; font-size: .94rem; }
+dl.riadky dt { color: var(--tlmeny); font-weight: 600; }
+dl.riadky dd { margin: 0; }
+dl.riadky dd ul { margin: 0; padding-left: 18px; }
+.odporucanie { margin: 12px 0 4px; padding: 10px 14px; border-radius: 10px; background: var(--plocha-2); }
+.odporucanie b:first-child { color: var(--akcent); }
+details { margin: 8px 0; }
+details summary { cursor: pointer; color: var(--akcent); font-size: .92rem; }
+details pre { background: var(--plocha-2); border-radius: 8px; padding: 8px 10px; overflow-x: auto; font-size: .78rem; font-family: var(--mono); white-space: pre-wrap; }
+.volba { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--okraj); }
+.volba fieldset { border: 0; padding: 0; margin: 0; }
+.volba legend { font-weight: 600; font-size: .94rem; margin-bottom: 6px; padding: 0; }
+.volby { display: flex; flex-wrap: wrap; gap: 6px; }
+.volby label { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--okraj); border-radius: 999px; cursor: pointer; background: var(--plocha-2); min-height: 40px; }
+.volby input { accent-color: var(--akcent); width: 18px; height: 18px; margin: 0; }
+.volby label:has(input:checked) { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.volby label.odp-volba::after { content: "odporúčam"; font-size: .7rem; color: var(--tlmeny); font-weight: 400; margin-left: 2px; }
+.volba-vyznam { font-size: .86rem; color: var(--tlmeny); margin: 6px 0; }
+textarea { width: 100%; min-height: 3.2em; font: inherit; font-size: .94rem; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--pozadie); color: var(--text); resize: vertical; }
+.ramik { border-radius: 14px; padding: 16px 18px; margin: 22px 0; background: var(--plocha); border: 1px solid var(--okraj); }
+.ramik > h2, .ramik > h3 { margin-top: 0; border: 0; padding: 0; }
+.ramik.kseft-r { border-left: 4px solid var(--kseft); }
+.ramik.otazky-r { border-color: var(--akcent); }
+.pravidlo { font-family: var(--serif); background: var(--plocha-2); border-left: 3px solid var(--kseft); border-radius: 6px; padding: 10px 14px; margin: 10px 0; }
+.pravidlo ul { margin: 6px 0 0; padding-left: 20px; }
+ol.otazky > li { margin-bottom: 14px; }
+ol.otazky textarea { margin-top: 6px; }
+.lista { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--akcent); z-index: 5; }
+.lista-in { max-width: 980px; margin: 0 auto; padding: 10px max(16px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.lista-text { flex: 1 1 240px; font-size: .9rem; }
+button { font: inherit; font-size: .9rem; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--akcent); background: var(--plocha); color: var(--akcent); cursor: pointer; min-height: 40px; }
+button.hlavne { background: var(--akcent); color: var(--pozadie); font-weight: 600; }
+.skryte { position: absolute; left: -9999px; width: 1px; height: 1px; }
+footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .88rem; }
+footer ul { padding-left: 18px; }
+@media (max-width: 640px) {
+  dl.riadky { grid-template-columns: 1fr; gap: 2px; }
+  dl.riadky dt { margin-top: 8px; }
+  .kt-akcie { grid-template-columns: 1fr; }
+  .navrh, .ramik { padding: 14px 12px; }
+  .skry-m { display: none; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<div class="hlavicka">
+  <p class="uvod">Vymyselník · 26. 10. 2026 · kolo 2 pre Michala cez session Brainstorming</p>
+  <button type="button" id="tema" aria-label="Prepnúť svetlý a tmavý režim">Svetlý / tmavý</button>
+</div>
+<h1>Kolo 2: Kšeft, sedem prepracovaných kariet, náradie a zvieratá</h1>
+<p class="uvod">Michal rozhodol o dávke občanov aj o dávke náradia a zvierat. V časti 1 rozvádzam jeho nápad aktívnych a pasívnych efektov,
+v časti 2 je sedem kariet podľa jeho volieb a v časti 3 štyri zvieratá a nástroje. Vychádzam z pravidiel v6 (<code>docs/PRAVIDLA.md</code>),
+z jadra a sady na <code>origin/master 1a3209a</code> a z dávok <code>karty-obcania.html</code> a <code>karty-naradie-zvierata.html</code>.
+Nič nie je zmerané turnajom, čísla sú prvý odhad. Do tvorcu nič nejde.</p>
+
+<section class="skratka" aria-labelledby="h-skratka">
+  <h2 id="h-skratka">V skratke</h2>
+  <ul>
+    <li><b>Aktívny efekt má dostať meno Kšeft:</b> „Kšeft: Za 2 cigarety …“. Majiteľ ho spustí sám v Pitke na svojom ťahu, každá karta raz za Pitku.
+      Hra to už pozná, len bez mena: Starosta, Poštárka a Zberný dvor. Platí sa cigaretami, plným poldeci, Dlhom alebo kartou z ruky.
+      Nový spúšťač patrí do pravidiel v7, Strýka z Ameriky sa však dá spraviť hneď cez dnešný spúšťač Pitka.</li>
+    <li><b>Občania:</b> Degustátorka súperovi „ochutná“ poldeci. Večná sťažovateľka nahradí Advokátku, nemá Autoritu. Opatrovateľka zníži
+      latku Absťáku o 2. Vandal otočí lokalitu. Strýko z Ameriky dá za 2 cigarety 1 Ranu. Policajtka dá súperovi 2 Dlhy, ak v kole pil
+      (Vypiť). Odpor na spojoch Praudovravca neruší, ale posilní.</li>
+    <li><b>Zvieratá a náradie:</b> Kapybara bez cigarety (Viera a Vízia). Kohút má Pohoršenie a Odpor. Krokodíl zožratú kartu spáli.
+      Lievik odporúčam len na Zviera. Vidly a Zverák ostávajú bez zmien, Hrable nie, klauzula ostáva len Psovi. <b>Kôň v rozhodnutí chýba.</b></li>
+    <li>Na konci je 5 otázok.</li>
+  </ul>
+</section>
+
+<nav class="ramik obsah" aria-label="Obsah">
+  <b>Obsah</b>
+  <ol>
+    <li><a href="#cast1">Aktívne a pasívne efekty: Kšeft</a></li>
+    <li><a href="#cast2">Sedem prepracovaných kariet</a></li>
+    <li><a href="#cast3">Náradie a zvieratá, kolo 2</a></li>
+    <li><a href="#otazky">Otázky pre Michala</a></li>
+  </ol>
+</nav>
+
+<!-- ======================= ČASŤ 1 ======================= -->
+<h2 id="cast1">1. Aktívne a pasívne efekty: Kšeft</h2>
+<p>Michal: „pasívny sa stane vždy pri nejakej udalosti (nástup, pitka, bitka…) a [aktívny], že za nejakú cenu tá karta niečo spraví…
+napríklad cigarety, poldeci, možno dlh“. Rozvádzam to v ôsmich bodoch: tri druhy efektov, ako sa to píše na kartu, kedy a ako často,
+meny, jadro, stôl a tvorca, riziká, päť ukážok a postup zavedenia.</p>
+
+<h3 id="druhy">1.1 Tri druhy efektov</h3>
+<div class="tab-obal"><table>
+  <thead><tr><th>Druh</th><th>Na karte</th><th>Kto a kedy</th><th class="skry-m">Dnes v hre</th></tr></thead>
+  <tbody>
+    <tr><td><b>Pasívny</b></td><td>spúšťač Nástup, Furt, Bitka, Výhra, Prehra, Pitka, Zhromaždenie, Dedičstvo, Exekúcia (<code>types.ts:94</code>)</td>
+      <td>stane sa sám pri udalosti</td><td class="skry-m">väčšina kariet</td></tr>
+    <tr><td><b>Platba pri udalosti</b></td><td>spúšťač a „smieš zaplatiť / zahodiť …“</td>
+      <td>udalosť ponúkne voľbu, majiteľ zaplatí alebo nie</td><td class="skry-m">Záhradkár (Exekúcia), Kar; nová Večná sťažovateľka</td></tr>
+    <tr><td><b style="color:var(--kseft)">Kšeft</b> (aktívny)</td><td>„Kšeft: Za &lt;cena&gt; &lt;účinok&gt;.“</td>
+      <td>majiteľ sám, v Pitke na svojom ťahu</td><td class="skry-m">Starosta, Poštárka, Zberný dvor (dnes pod spúšťačom Pitka)</td></tr>
+  </tbody>
+</table></div>
+<p class="pozn">Hra aktívne efekty už má, len im tak nehovorí. Starosta („Za cigaretu môžeš vymeniť…“, PRAVIDLA.md:1144), Poštárka (karty za Dlh, :1139)
+a Zberný dvor (karta za cigaretu, :1096) sú karty. Vypiť (plný poldeci za ťah navyše, :975–998) a Záverečná (cigareta za kartu lícom dole, :1002) sú
+pravidlá. Kšeft im dá jedno meno, jedno okno a jedno tlačidlo.</p>
+
+<h3 id="jazyk">1.2 Ako sa to píše na kartu</h3>
+<div class="pravidlo">Kšeft: Za 2 cigarety udelíš v tejto bitke 1 Ranu navyše.</div>
+<ul>
+  <li><b>Kšeft</b> je spúšťač ako Furt, hovorový a dedinský, a hovorí „niečo za niečo“. Za ním vždy „Za &lt;cena&gt;“ a potom účinok.</li>
+  <li><b>Prečo nie „Aktívny“:</b> v pravidlách je „aktívna akcia“ akcia spárovaná na spoji (PRAVIDLA.md:249–251) a NA EX „zruší aktívne akcie“
+    (:352–353). Hráč by si „aktívny efekt“ a „aktívnu akciu“ pomýlil. Pojmy aktívny a pasívny ostanú v dokumentoch, na kartách a v Pravidlách bude Kšeft.</li>
+  <li>Náhradné mená (otázka 1): „Runda:“, „Objednávka:“, „Za cenu:“.</li>
+  <li>Text karty nepomenúva iné karty, platí ako doteraz.</li>
+</ul>
+
+<h3 id="okno">1.3 Kedy a ako často</h3>
+<div class="pravidlo">
+  Návrh do §7 (pravidlá v7), za „Fajčenie, doliatie a barter“:
+  <ul>
+    <li><b>Kedy:</b> v Pitke na svojom ťahu, pred „hotovo“, teda tam, kde hráč fajčí, dolieva a používa Starostu (PRAVIDLA.md:336–338).
+      Počas odpovede na NA EX nie, rovnako ako fajčenie (:413).</li>
+    <li><b>Ako často:</b> každá karta raz za Pitku.</li>
+    <li><b>Čia karta:</b> karta odkrytá v partii majiteľa (aj podstrčená na súperovej strane), prebudený starší (§10, :750–752) a Nástroj v Dedičstve.
+      Skrytá Záverečná nie, rovnako ako dnes Starosta či Poštárka (:1020).</li>
+    <li><b>Platba</b> je verejná (log) a ťah neukončí. Kšeft nie je ťah, ako fajčenie (:419–421).</li>
+    <li><b>„V tejto bitke“</b> znamená bitku tohto kola. Kúpené sa uloží a pripočíta sa v bitke.</li>
+    <li>Obranca Pitku začína, útočník vidí jeho Kšefty a má posledné slovo. To je dobiehanie, rovnako ako pri NA EX.</li>
+  </ul>
+</div>
+<div class="tab-obal"><table>
+  <thead><tr><th>Možnosť</th><th>Za</th><th>Proti</th><th>Verdikt</th></tr></thead>
+  <tbody>
+    <tr><td>Raz za Pitku za kartu</td><td>Precedens Poštárky, Starostu a Zberného dvora. Kto chce kúpiť viackrát, musí kupovať aj v skorších Pitkách, keď línia ešte nie je hotová.</td>
+      <td>V kole so 4 Pitkami až 4 nákupy.</td><td class="ver s-ano">odporúčam</td></tr>
+    <tr><td>Raz za kolo</td><td>Menší výkyv.</td><td>Nové počítadlo. Slabšia karta, ak ju vyložíš až pred poslednou Pitkou.</td>
+      <td class="ver s-variant">na kartu, keď treba</td></tr>
+    <tr><td>Bez obmedzenia</td><td>Nič.</td><td>Hráč dlho rozmýšľa a cigarety sa premenia na silu bez stropu.</td><td class="ver s-nie">nie</td></tr>
+    <tr><td>Aj v Zhromaždení</td><td>Nič.</td><td>Ťah v Zhromaždení je vyloženie a fajčenie sa odtiaľ vo v5 presunulo do Pitky (:419–421). Príkaz <code>tah</code> je celý ťah naraz (:977–980).</td>
+      <td class="ver s-nie">nie</td></tr>
+    <tr><td>Aj v bitke</td><td>Kupuje sa so znalosťou výsledku.</td><td>Bitka beží sama. Každá voľba v nej je čakanie pre oboch a poradie volieb prezrádza.
+      Na voľbu v bitke je druh 2, platba pri udalosti.</td><td class="ver s-nie">nie</td></tr>
+  </tbody>
+</table></div>
+
+<h3 id="meny">1.4 Meny</h3>
+<div class="tab-obal"><table>
+  <thead><tr><th>Mena</th><th>Ako sa platí</th><th>Čo to hráča stojí</th><th class="skry-m">Precedens</th><th>Verdikt</th></tr></thead>
+  <tbody>
+    <tr><td><b>Cigarety</b></td><td>Idú do zásoby. Nie je to nerest.</td><td>Menej šenku a fajčenia.</td><td class="skry-m">Starosta, Zberný dvor, Záverečná, doliatie</td>
+      <td class="ver s-ano">hlavná mena</td></tr>
+    <tr><td><b>Plný poldeci</b></td><td>Otočí sa na vypitý. Nie je to nerest ani pečeň, poldeci vypil niekto iný (otázka 2).</td>
+      <td>Limit vykladania −1 od ďalšieho Zhromaždenia, doliatie stojí 2 cigarety.</td><td class="skry-m">Vypiť (§13), bolestné pri patronáte</td><td class="ver s-ano">áno</td></tr>
+    <tr><td><b>Dlh</b></td><td>Nový Dlh sa hneď prizná (§11).</td><td>Bližšie k Exekútorovi, terč súperových Povier, prehra pri remíze.</td>
+      <td class="skry-m">Poštárka</td><td class="ver s-ano">áno, zriedka</td></tr>
+    <tr><td><b>Karta z ruky</b></td><td>Zahodí sa (z hry), nie Kliatba.</td><td>Karta, súperov Hrobár dostane cigaretu (:1127).</td>
+      <td class="skry-m">Kar, Záhradkár, Benzínka</td><td class="ver s-variant">opatrne</td></tr>
+    <tr><td>Poškodenie pečene</td><td>+1 pečeň v tejto Pitke.</td><td>Hrozí Cirhóza.</td><td class="skry-m">akcia Poškodenie pečene</td><td class="ver s-neskor">neskôr</td></tr>
+    <tr><td>Špak</td><td>−1 špak.</td><td>Priamo body.</td><td class="skry-m">Exekútor</td><td class="ver s-nie">nie, víťazstvo by sa kupovalo</td></tr>
+    <tr><td>Karta z línie</td><td>Odíde z línie.</td><td>Zmení spoje, prevahu aj počet Pitiek.</td><td class="skry-m">Pohreb, Benzínka</td><td class="ver s-nie">nie, línia sa v Pitke nemá hýbať</td></tr>
+  </tbody>
+</table></div>
+
+<h3 id="jadro">1.5 Kam to patrí v jadre</h3>
+<p>Kšeft je zámer klienta ako dnes Poštárka a Starosta. Klient pošle „chcem Kšeft karty X“ a server overí, zaplatí a vykoná (CLAUDE.md, pravidlo 3).</p>
+<ul>
+  <li><b>Príkaz</b> <code>{ type: "kseft"; uid: number; volba?: { uids?: number[]; pocet?: number } }</code> vedľa <code>postarka</code> a <code>starosta</code>
+    (<code>engine.ts:421–424</code>).</li>
+  <li><b>Stav Pitky:</b> <code>kseft: number[]</code>, teda uid kariet použitých v tejto Pitke. Nahradí príznaky <code>postarka</code>, <code>starosta</code> a <code>vykup</code>
+    (<code>engine.ts:192–198</code>). Tie sa dnes rátajú na hráča, nie na kartu, takže dve Poštárky v línii sú dnes ako jedna.</li>
+  <li><b>Overenie</b> ako <code>cmdPostarka</code> (<code>engine.ts:2694–2709</code>): fáza Pitka, nie počas odpovede, karta v partii (<code>vPartii</code> vynechá Záverečnú,
+    <code>effects.ts:141–143</code>), Autorita neumlčaná (<code>efektPotlaceny</code>, <code>effects.ts:163</code>), ešte nepoužitá a hráč má na cenu.</li>
+  <li><b>Register</b> <code>KSEFTY</code> v <code>effects.ts</code> vedľa <code>REGISTER</code> (<code>:45</code>): na kartu jedna malá funkcia s cenou, možnými voľbami a účinkom.
+    Bez DSL, ako to chce CLAUDE.md.</li>
+  <li><b>Účinok do bitky</b> (Rana, Viera) sa uloží v stave kola a vynuluje sa spolu s <code>naexVKole</code> (<code>engine.ts:4217</code>).
+    Do bitky ho pripočíta <code>bitkaMody</code> (<code>effects.ts:359</code>), a tým ho uvidí aj živý odhad bitky v klientovi.</li>
+  <li><b>Ďalej:</b> <code>legalCommands</code> (<code>engine.ts:4454–4473</code>) Kšefty ponúkne botovi aj klientovi. <code>viewFor</code> nemusí skrývať nič nové,
+    platba je verejná a dobraté karty idú do ruky ako vždy. Bot použije vzor <code>bot.ts:1013–1032</code> a nanečisto si Kšeft zahrá ako NA EX (<code>bot.ts:1034</code>).</li>
+</ul>
+
+<h3 id="stol">1.6 Stôl a tvorca</h3>
+<ul>
+  <li><b>Karta v línii</b> dostane v rohu cenovku (ikona meny a číslo). Na tvojom ťahu v Pitke svieti, keď na ňu máš. Po použití sa do konca Pitky preškrtne.
+    Súperova cenovka je sivá, takže vidíš, čo si môže kúpiť.</li>
+  <li><b>Panel Pitky:</b> Kšefty pribudnú medzi „pečate nákupu“ (<code>HernaPlocha.tsx:3420–3455</code>). Tam už sú Starosta, Poštárka a výkup zo šrotu,
+    takže nový panel netreba. Pečať ukáže cenu aj dôvod, prečo nejde („Máš 1 cigaretu, treba 2.“).</li>
+  <li><b>Náhľad:</b> Kšeft do bitky hneď zmení odhad bitky (+1 Rana). Okamžitý Kšeft (Starosta) otvorí výber ako dnes.</li>
+  <li><b>Log a Melichar:</b> „Strýko z Ameriky platí rundu: +1 Rana.“ Je to dobrý moment na hlášku.</li>
+  <li><b>Tvorca:</b> Kšeft pribudne do kľúčových slov (tučne a na nový riadok, <code>predvolene.ts:83–96</code>) a do spúšťačov (<code>types.ts:94</code>).
+    Kontrola textov (<code>texty.ts:62–66</code>) ho tým prijme a môže pridať upozornenie, ak za „Kšeft:“ nenasleduje „Za …“. Cena nie je dátové pole,
+    cenu aj účinok má kód karty. Nová karta bez kódu je „manual“ ako dnes (<code>texty.ts:85–87</code>).</li>
+  <li><b>Výučba:</b> do prvej partie nie. V Pravidlách patrí do Podrobností.</li>
+</ul>
+
+<h3 id="rizika">1.7 Riziká</h3>
+<ul>
+  <li><b>Ekonomika cigariet.</b> Kšeft cigarety míňa. Vo v6 nebodujú (<code>karty-v6.html</code>), takže nové míňanie je žiaduce. Kto ich však hromadí
+    (Fajčiar, pas, Hrobár), premení ich na silu. Merať priemer cigariet pred bitkou a podiel výhier majiteľa karty.</li>
+  <li><b>Dlhé rozmýšľanie.</b> Ťah v Pitke už má fajčenie, doliatie, barter, Starostu, Poštárku a NA EX. Brzdy: raz za Pitku, Kšeft na nanajvýš
+    5 kartách v sade, pečate len pri tom, čo sa dá zaplatiť, a náhľad hneď.</li>
+  <li><b>Bot.</b> Kšeft, ktorému bot nevie dať hodnotu, nebude používať, ako sa stalo Praudovravcovi. Zahrať si ho nanečisto to pokryje,
+    no treba pustiť <code>strategickost.ts</code>.</li>
+  <li><b>Nováčik</b> má o jeden pojem viac. Preto len pár kariet a mimo prvej partie.</li>
+  <li><b>Pravidlá v6 sú zmrazené</b> (PRAVIDLA.md:3–4). Nový spúšťač je zmena pravidiel, patrí do dávky v7. Do nej sa dá Kšeft písať cez spúšťač Pitka, ako to robí Starosta.</li>
+</ul>
+
+<h3 id="ukazky">1.8 Päť ukážok</h3>
+<p class="pozn">Dve nové karty, dva prepisy bez zmeny správania a Strýko z časti 2. Akcie nových kariet sú len náčrt.</p>
+
+<div class="kt">
+  <div class="kt-hlava"><b>Strýko z Ameriky</b><span class="kt-tagy">Občan · Influencer · Zahraničný · Chlap · nový, <a href="#k5">časť 2</a></span></div>
+  <div class="kt-efekt"><span class="sp k">Kšeft:</span> Za 2 cigarety udelíš v tejto bitke 1 Ranu navyše.</div>
+  <div class="kt-pod">Mena cigarety, účinok do bitky. Útok.</div>
+</div>
+
+<article class="navrh" id="u-kostolnik" data-kluc="u-kostolnik" data-odp="neskor" data-nazov="Ukážka · Kostolník (nový)">
+  <header><span class="cislo">U1</span><h3>Kostolník</h3><span class="stitok s-kseft">Kšeft</span> <span class="stitok s-neskor">odporúčam neskôr</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Kostolník</b><span class="kt-tagy">Občan · Pamätník · Chlap</span></div>
+    <div class="kt-efekt"><span class="sp k">Kšeft:</span> Za plný poldeci máš v tejto bitke 1 Vieru navyše.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Viera, Vízia <small>(sloty 2–3 blokované)</small></div>
+      <div><small>vpravo</small> Robota, Poldeci <small>(sloty 0 a 3 blokované)</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Ukazuje</dt><dd>Menu poldeci a obranu, oproti Strýkovi, ktorý útočí. Omšové víno sa vypije a dedina zrazu verí.</dd>
+    <dt>Riziko</dt><dd>Lacné: poldeci sa doleje za 2 cigarety. Viera navyše zruší aj súperovu Poveru (1 : 1, §9.3). Akcia Poldeci vráti, čím zaplatil.</dd>
+    <dt>Ilustrácia</dt><dd>Starý kostolník v sakristii s kľúčmi na opasku, pred ním otvorená fľaša omšového vína a jeden poldecák, okno s vitrážou; nikto nefajčí, žiadny dym.</dd>
+  </dl>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Neskôr = až po zavedení Kšeftu (v7). Áno = do ďalšej dávky kariet.</p>
+    <label class="skryte" for="pozn-u-kostolnik">Poznámka ku Kostolníkovi</label>
+    <textarea id="pozn-u-kostolnik" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<article class="navrh" id="u-smetiarka" data-kluc="u-smetiarka" data-odp="neskor" data-nazov="Ukážka · Smetiarka (nová)">
+  <header><span class="cislo">U2</span><h3>Smetiarka</h3><span class="stitok s-kseft">Kšeft</span> <span class="stitok s-neskor">odporúčam neskôr</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Smetiarka</b><span class="kt-tagy">Občan · Pracujúci · Žena</span></div>
+    <div class="kt-efekt"><span class="sp k">Kšeft:</span> Za zahodenú kartu z ruky (nie Kliatbu) dostaneš cigaretu.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Robota, Cigareta <small>(sloty 0 a 3 blokované)</small></div>
+      <div><small>vpravo</small> Obmedzenie <small>(sloty 0 a 3 blokované)</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Ukazuje</dt><dd>Menu „karta z ruky“. Je to náhradníčka z 1. kola, z Nástupu sa stal Kšeft.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Čistí balíček od štartoviek (Pijan, Miňištrant). V hre, kde si každý stavia balíček, je to silné, preto len 1 cigareta za kartu.</li>
+      <li>Súperov Hrobár dostane za každú zahodenú kartu cigaretu (PRAVIDLA.md:1127).</li>
+      <li>Kliatby nie: nepriznaná Cirhóza sa zahodiť nedá, inak by obišla −5 špakov (§14).</li>
+    </ul></dd>
+    <dt>Ilustrácia</dt><dd>Žena v reflexnej veste pri smetiarskom aute na dedinskej ulici, v kontajneri trčia staré hracie karty; nikto nefajčí, žiadny dym.</dd>
+  </dl>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = karta sa len odhodí (do odhadzovacieho balíčka), nie zahodí. Slabšie, balíček sa nečistí.</p>
+    <label class="skryte" for="pozn-u-smetiarka">Poznámka k Smetiarke</label>
+    <textarea id="pozn-u-smetiarka" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<article class="navrh odp" id="u-prepis" data-kluc="u-prepis" data-odp="ano" data-nazov="Ukážka · Prepis Starostu, Poštárky a Zberného dvora">
+  <header><span class="cislo">U3</span><h3>Prepis Starostu, Poštárky a Zberného dvora</h3><span class="stitok s-kseft">Kšeft</span> <span class="stitok s-ano">odporúčam áno, s v7</span></header>
+  <div class="kt stare">
+    <div class="kt-hlava"><b>Starosta</b><span class="kt-tagy">Starešina · Chlap · dnes: „Pitka: Za cigaretu môžeš vymeniť kartu z ruky za kartu zo šenku.“</span></div>
+    <div class="kt-efekt"><span class="sp k">Kšeft:</span> Za cigaretu vymeň kartu z ruky za kartu zo šenku.</div>
+  </div>
+  <div class="kt stare">
+    <div class="kt-hlava"><b>Poštárka</b><span class="kt-tagy">Starešina · Žena · dnes: „Pitka: Raz smieš dobrať až 2 karty navyše; získaš za to 1 Dlh.“</span></div>
+    <div class="kt-efekt"><span class="sp k">Kšeft:</span> Za 1 Dlh si dober až 2 karty.</div>
+  </div>
+  <div class="kt stare">
+    <div class="kt-hlava"><b>Zberný dvor</b><span class="kt-tagy">Lokalita · dnes: „Pitka: Raz za Pitku smieš za 1 cigaretu vziať do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.“</span></div>
+    <div class="kt-efekt"><span class="sp k">Kšeft:</span> Za cigaretu si vezmi do ruky kartu zo svojho odhadzovacieho balíčka.</div>
+  </div>
+  <dl class="riadky">
+    <dt>Ukazuje</dt><dd>Kšeft nie je nová vec. Tri karty, ktoré hráči poznajú, ho už robia, a texty budú kratšie. Poštárka ukazuje Dlh ako menu,
+      Zberný dvor Kšeft lokality, ktorý majú obaja hráči.</dd>
+    <dt>Správanie</dt><dd>Ostáva rovnaké. Poštárka dá Dlh len za kartu, ktorá naozaj prišla do ruky (<code>engine.ts:2701–2707</code>), a tak to ostane aj v §16.
+      Jediná zmena je raz za Pitku <i>za kartu</i> namiesto za hráča (1.5).</dd>
+    <dt>Kód</dt><dd>Prepis textu a jadra musí ísť spolu. Tvorca inak zmenený text karty, ktorú hra vyhodnocuje kódom, nahlási ako chybu (<code>texty.ts:82–84</code>).</dd>
+  </dl>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = prepísať s dávkou v7. Nie = staré texty nechať, Kšeft len pre nové karty.</p>
+    <label class="skryte" for="pozn-u-prepis">Poznámka k prepisu</label>
+    <textarea id="pozn-u-prepis" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<h3 id="postup">1.9 Postup a rozhodnutie</h3>
+<ol>
+  <li><b>Hneď, bez zmeny pravidiel:</b> Strýko z Ameriky so spúšťačom Pitka, ako Starosta (text v časti 2).</li>
+  <li><b>Dávka pravidiel v7:</b> spúšťač Kšeft v §2 a §7, prepis Starostu, Poštárky a Zberného dvora, jeden príkaz <code>kseft</code>.</li>
+  <li><b>Potom</b> ďalšie Kšefty (Kostolník, Smetiarka) podľa merania, najviac 5 v sade.</li>
+</ol>
+<article class="navrh odp ramik kseft-r" id="kseft" data-kluc="kseft" data-odp="ano" data-nazov="Časť 1 · Kšeft ako tretí druh efektu">
+  <header><span class="cislo">K</span><h3>Kšeft: koncept a pravidlá okna</h3><span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Pomenuje to, čo hra už robí, a dá cigaretám vo v6 znova cenu. Okno (Pitka, vlastný ťah, raz za Pitku za kartu)
+    má precedens, takže z pravidiel nič nepadá.</div>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = iné meno, iné okno alebo iná frekvencia (napíš). Neskôr = až po meraní M0 v6.</p>
+    <label class="skryte" for="pozn-kseft">Poznámka ku Kšeftu</label>
+    <textarea id="pozn-kseft" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ======================= ČASŤ 2 ======================= -->
+<h2 id="cast2">2. Sedem prepracovaných kariet</h2>
+<p class="pozn">Karty v ruke a šenku sú bežní radoví ľudia. Text nepomenúva iné karty, interakcie sú v riziku. JSON je vo formáte <code>cards.json</code>
+na neskôr, do tvorcu zatiaľ nie.</p>
+<div class="tab-obal"><table>
+  <thead><tr><th>#</th><th>Karta</th><th>Čo sa zmenilo</th><th>Odporúčam</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><a href="#k1">Degustátorka</a></td><td>meno (bola Vyžierka), finálny text</td><td><span class="stitok s-ano">áno</span></td></tr>
+    <tr><td>2</td><td><a href="#k2">Večná sťažovateľka</a></td><td>namiesto Advokátky, bez Autority, cigarety do zásoby</td><td><span class="stitok s-ano">áno</span></td></tr>
+    <tr><td>3</td><td><a href="#k3">Opatrovateľka</a></td><td>zníži latku Absťáku, nezahodí ho</td><td><span class="stitok s-ano">áno</span></td></tr>
+    <tr><td>4</td><td><a href="#k4">Vandal</a></td><td>meno (bol Chuligán), finálny text</td><td><span class="stitok s-ano">áno</span></td></tr>
+    <tr><td>5</td><td><a href="#k5">Strýko z Ameriky</a></td><td>2 cigarety = 1 Rana, v Pitke</td><td><span class="stitok s-ano">áno</span></td></tr>
+    <tr><td>6</td><td><a href="#k6">Policajtka</a></td><td>Dychová skúška: kto pil, 2 Dlhy</td><td><span class="stitok s-ano">áno</span></td></tr>
+    <tr><td>7</td><td><a href="#k7">Praudovravec</a></td><td>Odpor pri ňom posilní</td><td><span class="stitok s-ano">áno (D1)</span></td></tr>
+  </tbody>
+</table></div>
+
+<!-- 1 Degustátorka -->
+<article class="navrh odp" id="k1" data-kluc="k1" data-odp="ano" data-nazov="Kolo 2 · 1 Degustátorka">
+  <header><span class="cislo">1</span><h3>Degustátorka</h3><span class="stitok s-sk">premenovaná Vyžierka</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Degustátorka</b><span class="kt-tagy">Občan · Závislý · Kriminál · Žena</span></div>
+    <div class="kt-efekt"><span class="sp">Nástup:</span> Ak má súper viac plných poldeci ako ty, jeden mu ochutná — otoč ho na vypitý.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Poškodenie pečene, Poldeci <small>(sloty 2–3 blokované)</small></div>
+      <div><small>vpravo</small> Rana, Obmedzenie <small>(sloty 0 a 3 blokované)</small></div><div class="cela"><small>4 varianty, akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Zmena</dt><dd>Meno a slovo „ochutná“, ktoré nesie vtip. Pravidlo je to isté ako pri Vyžierke.</dd>
+    <dt>Výklad (§16)</dt><dd><ul>
+      <li>Rátajú sa plné poldeci v zásobe. Poldeci na kartách cez NA EX ani Vínko v Dedičstve nie.</li>
+      <li>Nie je to nerest ani pečeň, ani súperovi, ani majiteľovi. Vypila to Degustátorka.</li>
+      <li>Zostávajúci limit súpera v tomto Zhromaždení sa nemení, nižší je až od ďalšieho, ako pri NA EX (PRAVIDLA.md:296–299).</li>
+      <li>Na Kostole platí, lebo to nie je Vypiť. Ako Záverečná sa vyhodnotí pri otočení (:1016–1018), ako odpoveď na NA EX hneď.</li>
+    </ul></dd>
+    <dt>Kód</dt><dd>Vetva v <code>nastupEfekt</code> (<code>engine.ts:2133</code>) nad <code>poldeciPlne</code> a <code>poldeciVypite</code> (<code>player.ts:14–15</code>),
+      REGISTER, test, hodnota pre bota. Malé.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Na Krčme môže súpera zbaviť povinného NA EX (:1090), majiteľ to musí zvážiť.</li>
+      <li>Ako odpoveď na NA EX alebo Záverečná udrie v najhoršej chvíli. Podmienka „viac ako ty“ nedovolí vysušiť súpera na nulu.</li>
+      <li>Je Žena s akciou Poldeci, takže Pijan vedľa nej trestá svojho majiteľa. Kapybara (nemíňa limit) je proti nej prirodzená obrana.</li>
+    </ul></dd>
+    <dt>Ilustrácia</dt><dd>Postaršia žena v šatke pri krčmovom stole drží cudzí poldecák proti svetlu ako sommelierka, malíček vystrčený, privoniava. Pred ňou rad prázdnych
+      poldecákov, v popolníku dymiaca cigareta.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Toto je finálne znenie.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"degustatorka","index":64,"name":"Degustátorka","tags":["Občan","Závislý","Kriminál","Žena"],
+ "effect_text":"Nástup: Ak má súper viac plných poldeci ako ty, jeden mu ochutná — otoč ho na vypitý.","triggers":["Nástup"],
+ "left":{"blocked":[2,3],"actions":{"PoškodeniePečene":1,"Poldeci":1}},
+ "right":{"blocked":[0,3],"actions":{"Rana":1,"Obmedzenie":1}},
+ "permutations":{"total":4,"left":2,"right":2}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = bez podmienky „viac ako ty“ (silnejšie). Napíš do poznámky.</p>
+    <label class="skryte" for="pozn-k1">Poznámka k Degustátorke</label>
+    <textarea id="pozn-k1" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- 2 Večná sťažovateľka -->
+<article class="navrh odp" id="k2" data-kluc="k2" data-odp="ano" data-nazov="Kolo 2 · 2 Večná sťažovateľka (namiesto Advokátky)">
+  <header><span class="cislo">2</span><h3>Večná sťažovateľka</h3><span class="stitok s-sk">namiesto Advokátky</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Večná sťažovateľka</b><span class="kt-tagy">Občan · Pamätník · Žena</span></div>
+    <div class="kt-efekt"><span class="sp">Bitka:</span> Keď súper drží prebytok, smieš ho zmenšiť najviac o 2. Každý bod ťa stojí 2 cigarety.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Odpor, Obmedzenie <small>(sloty 2–3 blokované)</small></div>
+      <div><small>vpravo</small> Cigareta ×2 <small>(sloty 0 a 3 blokované)</small></div><div class="cela"><small>2 varianty, akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Kto to je</dt><dd>Suseda, ktorá od roku 1987 píše sťažnosti na obec, na susedov, do novín aj do televízie. Nič nevybaví, ale všetkým zdrží
+      a pokazí radosť. Žiadna funkcia ani úrad, je to radová dôchodkyňa s guľôčkovým perom. Meno sedí k ironickým dvojslovným menám v sade
+      (Veľmi smútiaca vdova, Silná nezávislá žena).</dd>
+    <dt>Iné mená</dt><dd>Sťažovateľka (jednoduchšie), Kverulantka (presnejšie, ale menej známe slovo). Mužský Kverulant by pomer žien a mužov v spoločnom balíčku zhoršil o 2.</dd>
+    <dt>Zmeny</dt><dd><ul>
+      <li>Tag <b>Autorita preč, Pamätník</b> namiesto nej. Pamätá si, kto komu čo v roku 1987.</li>
+      <li>Efekt je ten istý ako pri Advokátke (2 cigarety za bod, najviac 2). Navrhujem jedinú zmenu: <b>cigarety idú do zásoby</b> (kolky za sťažnosť),
+        nie súperovi. Pri sťažnosti sa so súperom nič nedohaduje a cigarety súperovi by dávali vedúcemu ďalšie zdroje (otázka 3).</li>
+    </ul></dd>
+    <dt>Kedy (§9.4)</dt><dd>V kroku 4c, po Puške a pred rozdelením prebytku (PRAVIDLA.md:633–640). Vo finále a na Kultúrnom dome zmenší špaky
+      z prebytku (:642–644). Je to druh 2, platba pri udalosti, nie Kšeft: platí sa až vtedy, keď je prebytok známy.</dd>
+    <dt>Kód</dt><dd>Nový krok bitky pred „prebytok“ (<code>BitkaKrok</code>, <code>engine.ts:214–224</code>), rovnako ako Kar a Záhradkár. Príkaz
+      <code>{ type: "staznost"; body: 0 | 1 | 2 }</code>, náhľad bitky, bot. Stredné.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Je to Puška na jednu bitku za cigarety.</li>
+      <li>Menší prebytok znamená menej posunutých starších, a tak porazený dostane menej cigariet za prebytok (:646–649).</li>
+      <li>Hráč s veľa cigaretami (Fajčiar) ňou spomalí súperovo desenie starších. Ak prejde návrh Korisť (bod prebytku za 1,1–1,4 špaku), sú 2 cigarety priveľa.</li>
+      <li>Cenu nastaviť po meraní v6 (M0).</li>
+    </ul></dd>
+    <dt>Ilustrácia</dt><dd>Staršia žena v kvetovanom župane sedí pri kuchynskom stole nad kôpkou obálok a hrubým zošitom, okuliare na retiazke, vedľa
+      kolky a guľôčkové pero. Na stene kalendár s krúžkami, v popolníku dymiaca cigareta. Žiadny kostým, aktovka ani úrad.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Advokátka bez autority. Rovnaká mechanika, radová postava, vtip je v tom, že sťažnosť nič nevyrieši, len zmenší súperovu radosť.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"vecna_stazovatelka","index":68,"name":"Večná sťažovateľka","tags":["Občan","Pamätník","Žena"],
+ "effect_text":"Bitka: Keď súper drží prebytok, smieš ho zmenšiť najviac o 2. Každý bod ťa stojí 2 cigarety.","triggers":["Bitka"],
+ "left":{"blocked":[2,3],"actions":{"Odpor":1,"Obmedzenie":1}},
+ "right":{"blocked":[0,3],"actions":{"Cigareta":2}},
+ "permutations":{"total":2,"left":2,"right":1}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = iné meno (Sťažovateľka, Kverulantka) alebo cigarety súperovi ako pri Advokátke. Napíš do poznámky.</p>
+    <label class="skryte" for="pozn-k2">Poznámka k Večnej sťažovateľke</label>
+    <textarea id="pozn-k2" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- 3 Opatrovateľka -->
+<article class="navrh odp" id="k3" data-kluc="k3" data-odp="ano" data-nazov="Kolo 2 · 3 Opatrovateľka v2">
+  <header><span class="cislo">3</span><h3>Opatrovateľka</h3><span class="stitok s-sk">v2: zníži latku</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Opatrovateľka</b><span class="kt-tagy">Občan · Zahraničný · Pracujúci · Žena</span></div>
+    <div class="kt-efekt"><span class="sp">Nástup:</span> Počet tvojich nerestí z minulého kola klesne o 2.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Robota, Cigareta <small>(sloty 0 a 3 blokované)</small></div>
+      <div><small>vpravo</small> Viera, Posilnenie <small>(sloty 2–3 blokované)</small></div><div class="cela"><small>4 varianty, akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Michal</dt><dd>„Dobrá myšlienka, ale treba to dosiahnuť inak… buď tak, že zníži prah, alebo niečo podobné… úplne ho odhodiť, to sa mi nepáči.“</dd>
+    <dt>Ako zníži prah</dt><dd>Prahom Absťáku sú neresti minulého kola. Pravidlá mu hovoria latka (PRAVIDLA.md:893). Menej nerestí znamená Absťák,
+      viac znamená, že jeden odíde (:514–520). Opatrovateľka latku zníži o 2. Kto mal minule 5 nerestí, teraz potrebuje 3, aby Absťák neprišiel,
+      a 4, aby jeden odišiel. Absťák sama neodhodí, hráč ho musí „prepiť“, len cez nižšiu latku. Je to opak Milujúcej manželky, ktorá latku dvíha.</dd>
+    <dt>Výklad (§8, §16)</dt><dd><ul>
+      <li>Najmenej na 0. V 1. kole nerobí nič, lebo kolo len nastaví základ.</li>
+      <li>Mení len porovnanie na konci tohto kola. Ako „minulé“ sa potom uloží skutočný počet tohto kola.</li>
+      <li>Viac Opatrovateliek sa sčíta. Štatistika Absťákov za hru sa nemení.</li>
+    </ul></dd>
+    <dt>Kód</dt><dd>Nástup v <code>nastupEfekt</code> (<code>engine.ts:2133</code>) posunie latku. Porovnanie na konci kola (<code>engine.ts:4188–4211</code>)
+      aj výhľad (<code>zavislost.ts:58–64</code>) ju už čítajú. Lepšie je vlastné pole posunu ako prepísať <code>nerestiMinuleKolo</code>
+      (<code>player.ts:27</code>), aby panel Absťáku (<code>Panely.tsx:162–167</code>) ukázal „minulé kolo 5, s Opatrovateľkou 3“. Malé.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Absťák sa prerába (<code>napady/abstak.html</code>). Pri smere bez Absťáku je efekt mŕtvy, meno aj tagy však sedia na hocijaký smer.</li>
+      <li>S Milujúcou manželkou sa ich účinky odčítajú (−2 a +1).</li>
+      <li>Zahraničná: súperov Recidivista za ňu udelí Ranu navyše. Pracujúca: Hasič ju vráti do ruky, na Družstve nemíňa limit.</li>
+    </ul></dd>
+    <dt>Ilustrácia</dt><dd>Žena s veľkou cestovnou taškou a bonboniérou vystupuje z diaľkového autobusu na dedinskej zastávke, pod pazuchou krabička liekov na týždeň; nikto nefajčí, žiadny dym.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno, o 2.</b> Zníži prah, ako chcel Michal, a striezlivá cesta von ostáva: hráč smie piť o niečo menej a Absťák aj tak odíde.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"opatrovatelka","index":69,"name":"Opatrovateľka","tags":["Občan","Zahraničný","Pracujúci","Žena"],
+ "effect_text":"Nástup: Počet tvojich nerestí z minulého kola klesne o 2.","triggers":["Nástup"],
+ "left":{"blocked":[0,3],"actions":{"Robota":1,"Cigareta":1}},
+ "right":{"blocked":[2,3],"actions":{"Viera":1,"Posilnenie":1}},
+ "permutations":{"total":4,"left":2,"right":2}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = o 1 (mäkšie: pri rovnakom počte nerestí Absťák odíde, o jeden menej je bez zmeny).</p>
+    <label class="skryte" for="pozn-k3">Poznámka k Opatrovateľke</label>
+    <textarea id="pozn-k3" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- 4 Vandal -->
+<article class="navrh odp" id="k4" data-kluc="k4" data-odp="ano" data-nazov="Kolo 2 · 4 Vandal">
+  <header><span class="cislo">4</span><h3>Vandal</h3><span class="stitok s-sk">premenovaný Chuligán</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Vandal</b><span class="kt-tagy">Občan · Kriminál · Chlap</span></div>
+    <div class="kt-efekt"><span class="sp">Nástup:</span> Otoč lokalitu o 180° — jej hrany si vymenia strany.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Pecka, Poškodenie pečene <small>(sloty 0 a 3 blokované)</small></div>
+      <div><small>vpravo</small> Odpor, Rana <small>(sloty 2–3 blokované)</small></div><div class="cela"><small>4 varianty, akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Výklad (§16)</dt><dd><ul>
+      <li>Je to výnimka z §5: natočenie, ktoré volí obranca (PRAVIDLA.md:166–167), sa v kole smie zmeniť.</li>
+      <li>Kraje (polovice línie) a prevaha v nich ostávajú. Mení sa len to, ktorá hrana pri ktorom kraji leží, a s ňou aj meno kraja.</li>
+      <li>Počet Pitiek sa prepočíta a začatá Pitka sa dopije (:473–474). NA EX, ktoré už leží, ostáva.</li>
+      <li>Ako Záverečná otočí lokalitu, keď sa otočí sám (:1016). Ako odpoveď na NA EX hneď. Vo finále nerobí nič, lokalita tam nie je.</li>
+    </ul></dd>
+    <dt>Kód</dt><dd>Prepnúť <code>lokalitaOtocena</code> (<code>engine.ts:336</code>) a zapísať do logu. Náhľad spoja ukáže otočenú lokalitu, bot vyhodnotí oba stavy. Malé.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Veľký výkyv ako Záverečná alebo odpoveď na NA EX, keď má útočník posledné slovo.</li>
+      <li>Merať, či obranca neklesne pod 45 % vyhratých bitiek. Dvaja Vandali sa navzájom zrušia.</li>
+    </ul></dd>
+    <dt>Ilustrácia</dt><dd>Mladík v teplákoch a s kapucňou sa opiera o prekrútenú smerovú tabuľu na kraji dediny, šípka ukazuje do poľa, na stĺpe čerstvý sprej
+      bez čitateľného textu, v ústach cigareta.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno, bez obmedzenia.</b> Ak meranie ukáže priveľký výkyv, obmedziť ho len na Zhromaždenie (variant z 1. kola).</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"vandal","index":70,"name":"Vandal","tags":["Občan","Kriminál","Chlap"],
+ "effect_text":"Nástup: Otoč lokalitu o 180° — jej hrany si vymenia strany.","triggers":["Nástup"],
+ "left":{"blocked":[0,3],"actions":{"Pecka":1,"PoškodeniePečene":1}},
+ "right":{"blocked":[2,3],"actions":{"Odpor":1,"Rana":1}},
+ "permutations":{"total":4,"left":2,"right":2}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = len v Zhromaždení, nie ako odpoveď na NA EX ani ako Záverečná.</p>
+    <label class="skryte" for="pozn-k4">Poznámka k Vandalovi</label>
+    <textarea id="pozn-k4" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- 5 Strýko z Ameriky -->
+<article class="navrh odp" id="k5" data-kluc="k5" data-odp="ano" data-nazov="Kolo 2 · 5 Strýko z Ameriky (variant Michala)">
+  <header><span class="cislo">5</span><h3>Strýko z Ameriky</h3><span class="stitok s-kseft">ukážka Kšeftu</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Strýko z Ameriky</b><span class="kt-tagy">Občan · Influencer · Zahraničný · Chlap</span></div>
+    <div class="kt-efekt"><span class="sp">Pitka:</span> Raz za Pitku smieš zaplatiť 2 cigarety — v tejto bitke potom udelíš 1 Ranu navyše.</div>
+    <div class="kt-pod">Od v7: <span class="sp k" style="color:var(--kseft);font-weight:700">Kšeft:</span> Za 2 cigarety udelíš v tejto bitke 1 Ranu navyše.</div>
+    <div class="kt-akcie" style="margin-top:6px"><div><small>vľavo</small> Cigareta ×2 <small>(sloty 0 a 3 blokované)</small></div>
+      <div><small>vpravo</small> Vízia, Poldeci <small>(sloty 0 a 3 blokované)</small></div><div class="cela"><small>2 varianty, akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Michal</dt><dd>„Ak odhodíš 2 cigarety, udelíš poškodenie navyše.“</dd>
+    <dt>Čísla</dt><dd><ul>
+      <li><b>2 cigarety = 1 Rana</b> (1 tuhé). Toľko stojí doliatie poldeci (PRAVIDLA.md:424), cenu teda hráči poznajú. Pri 1 cigarete by bola Rana
+        lacnejšia než karta z fajčenia, ktorú v poslednej Pitke už nevyložíš.</li>
+      <li><b>Raz za Pitku:</b> najviac toľko Rán, koľko je Pitiek (1–4, finále 3). Nákup v poslednej Pitke je istý, v skoršej je stávka,
+        lebo línia sa ešte zmení. Strop sa tak drží sám a väčšia bitka (viac Pitiek, viac špakov) znesie väčší nákup.</li>
+    </ul></dd>
+    <dt>Načasovanie</dt><dd>V Pitke na svojom ťahu, pred „hotovo“ (PRAVIDLA.md:336–338). Obranca kupuje prvý, útočník to vidí a má posledné slovo.
+      Platba je verejná, cigarety idú do zásoby a nie je to nerest, lebo cigareta sa nevyfajčí, Strýko platí rundu. V bitke sa Rana pripočíta
+      v kroku 3 (§9.3), takže ju súperova Viera zníži a Absťák uberie, ako každú Ranu. Nie v bitke samej: pozri 1.3.</dd>
+    <dt>Kód</dt><dd>Dnes ako Poštárka: príkaz, príznak v stave Pitky (<code>engine.ts:192–198</code>), počet kúpených Rán do bitky cez <code>bitkaMody</code>
+      (<code>effects.ts:359</code>), náhľad, bot. Od v7 jeden riadok v registri Kšeftov (1.5).</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Fajčiar a Strýko spolu si kúpia bitku. Cigarety tým znova majú cenu, čo je zámer, a merať treba, koľko.</li>
+      <li>Vo finále cigarety nemajú inú hodnotu, takže pôjdu všetky na Rany. Sledovať výhry vo finále.</li>
+      <li>Zahraničný: súperov Recidivista za neho udelí Ranu navyše. Karty, ktoré kradnú cigarety (Svokra, Podvodník, Výpalné), zosilnejú.</li>
+    </ul></dd>
+    <dt>Ilustrácia</dt><dd>Starší muž v kovbojskom klobúku a kockovanej košeli sa opiera o dedinský výčap, pred ním rozsypané krabičky cigariet ako napitné
+      pre celú krčmu a poldecák, v ústach hrubá cigara.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Prvý Kšeft a dá sa spraviť hneď, bez zmeny pravidiel (precedens Starosta). Ak bude priveľa, strop „najviac 2 za kolo“.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"stryko_z_ameriky","index":71,"name":"Strýko z Ameriky","tags":["Občan","Influencer","Zahraničný","Chlap"],
+ "effect_text":"Pitka: Raz za Pitku smieš zaplatiť 2 cigarety — v tejto bitke potom udelíš 1 Ranu navyše.","triggers":["Pitka"],
+ "left":{"blocked":[0,3],"actions":{"Cigareta":2}},
+ "right":{"blocked":[0,3],"actions":{"Vízia":1,"Poldeci":1}},
+ "permutations":{"total":2,"left":1,"right":2}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = najviac 2 Rany za kolo, alebo iná cena (napíš).</p>
+    <label class="skryte" for="pozn-k5">Poznámka k Strýkovi z Ameriky</label>
+    <textarea id="pozn-k5" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- 6 Policajtka -->
+<article class="navrh odp" id="k6" data-kluc="k6" data-odp="ano" data-nazov="Kolo 2 · 6 Policajtka · Dychová skúška">
+  <header><span class="cislo">6</span><h3>Policajtka: Dychová skúška</h3><span class="stitok s-sk">nový efekt</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt stare">
+    <div class="kt-hlava"><b>Dnes</b><span class="kt-tagy">Furt: Súperove Pohoršenia proti tebe neplatia.</span></div>
+  </div>
+  <div class="kt">
+    <div class="kt-hlava"><b>Policajtka</b><span class="kt-tagy">Občan · Autorita · Žena</span></div>
+    <div class="kt-efekt"><span class="sp">Bitka:</span> Ak súper v tomto kole vyložil v jednom ťahu viac kariet (Vypiť), dostane 2 Dlhy.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Obmedzenie, Rana <small>(sloty 2–3 blokované)</small></div>
+      <div><small>vpravo</small> Robota <small>(sloty 0 a 3 blokované)</small></div><div class="cela"><small>akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Michal</dt><dd>„Ak súper vypil (čiže hral 2 karty naraz), dostane 2 dlhy!“</dd>
+    <dt>Čo je „vypil“</dt><dd>Pokročilý ťah Vypiť (§13, PRAVIDLA.md:975–998). V jednom ťahu sa dajú vyložiť dve karty jedine s ním, preto karta hovorí
+      „viac kariet v jednom ťahu“ a Vypiť len v zátvorke. NA EX, Snúbenica, doliatie ani povinné NA EX na Krčme sa nerátajú, hoci sa pri nich
+      poldeci tiež „vypije“ (:657–658).</dd>
+    <dt>Kedy</dt><dd>V kroku 0 bitky (§9.0), vedľa Krčmárky (:556–557), raz za kolo bez ohľadu na to, koľkokrát súper pil. Nové Dlhy sa hneď priznajú (§11),
+      takže v tej istej bitke rátajú do Exekútora (krok 1), do mäkkého poškodenia od Povier (krok 3) aj do remízy (krok 4). Chytí aj pitie spred
+      jej vyloženia: fúka sa za celý večer. Dve Policajtky dajú 4 Dlhy.</dd>
+    <dt>Prečo v bitke</dt><dd>Variant „hneď pri Vypiť“ by súpera odstrašil, ale Policajtka vyložená neskôr by nechytila nič. V bitke stačí, aby ležala
+      v línii, a majiteľ volí, kedy ju vyloží. Kým leží na stole, súper aj tak vie, čo mu hrozí.</dd>
+    <dt>Kód</dt><dd>Príznak <code>vypilVKole</code> vedľa <code>naexVKole</code> (<code>engine.ts:333</code>). Nastaví sa v <code>cmdVypit</code>
+      (<code>engine.ts:2295–2311</code>), vynuluje na konci kola (<code>:4217</code>) a uplatní v <code>zacniBitku</code> vedľa Krčmárky (<code>:3092–3097</code>)
+      cez <code>pridajKliatbu</code> ako Poštárka (<code>:2707</code>). Starý štít proti Pohoršeniam (<code>:3172</code>, <code>:3220</code>) a zastaraný komentár
+      (<code>effects.ts:71</code>) zmiznú. Náhľad Vypiť: „Policajtka: v bitke 2 Dlhy.“ Malé.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Súper, ktorý prestane piť, má menej nerestí a hrozí mu Absťák. Policajtka ho tak chytí z oboch strán, čo je dobré rozhodnutie, nie mŕtva karta.</li>
+      <li>Vypiť je ťah na kombá, Policajtka ich tlmí. Na Kostole nikto nepije (:1091), tam nerobí nič.</li>
+      <li>+2 Dlhy pred Exekútorom môžu spustiť exekúciu (prah 10, so súperovou priazňou Exekútora až 7). V meraní v5 exekúcia nenastala ani raz.</li>
+      <li>Pohoršenia už nikto neruší. Brzdou Pohoršení je teraz Zverák (časť 3), ktorý sa s Policajtkou už neprekrýva.</li>
+    </ul></dd>
+    <dt>Ilustrácia</dt><dd>Policajtka v reflexnej veste stojí pri zelenej Škodovke na kraji dediny s alkohol testerom v ruke, za ňou krčma so svietiacim oknom; nikto nefajčí, žiadny dym.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Koniec binárneho štítu, pri ktorom Šimon „nevidel, ako ju z hry dostať“ (<code>20261024-075830</code>). Pokuta v Dlhoch k téme sedí a kód je malý.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"policajtka","name":"Policajtka","tags":["Občan","Autorita","Žena"],
+ "effect_text":"Bitka: Ak súper v tomto kole vyložil v jednom ťahu viac kariet (Vypiť), dostane 2 Dlhy.","triggers":["Bitka"],
+ "left":{"blocked":[2,3],"actions":{"Obmedzenie":1,"Rana":1}},
+ "right":{"blocked":[0,3],"actions":{"Robota":1}}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = Dlhy hneď pri Vypiť, len keď už Policajtka leží v línii (odstrašuje, ale neskoro vyložená nechytí nič).</p>
+    <label class="skryte" for="pozn-k6">Poznámka k Policajtke</label>
+    <textarea id="pozn-k6" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- 7 Praudovravec -->
+<article class="navrh odp" id="k7" data-kluc="k7" data-odp="ano" data-nazov="Kolo 2 · 7 Praudovravec · Dezinformátor (D1)">
+  <header><span class="cislo">7</span><h3>Praudovravec: Dezinformátor</h3><span class="stitok s-sk">nový efekt</span> <span class="stitok s-ano">odporúčam D1</span></header>
+  <div class="kt stare">
+    <div class="kt-hlava"><b>Dnes</b><span class="kt-tagy">Furt: Autority v súperovej partii neuplatňujú efekt.</span></div>
+  </div>
+  <div class="kt">
+    <div class="kt-hlava"><b>Praudovravec</b><span class="kt-tagy">Občan · Influencer · Chlap</span></div>
+    <div class="kt-efekt"><span class="sp">Furt:</span> Odpor na jeho spojoch neruší, ale posilní — ráta sa ako Posilnenie.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Odpor (pozícia 2), Povera <small>(slot 3 blokovaný)</small></div>
+      <div><small>vpravo</small> Pohoršenie, Povera, Vízia <small>(slot 2 blokovaný)</small></div><div class="cela"><small>akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Michal</dt><dd>„Vzdor v jeho okolí neruší, ale posilňuje akcie?“ Vzdor je v hre akcia Odpor. Čím viac mu odporuješ, tým viac si verí.</dd>
+    <dt>D1 a D2</dt><dd><b>D1 (odporúčam):</b> len nová veta, Autority už nikto neumlčí. <b>D2:</b> nová veta a k nej pôvodná o Autoritách, ako dve vety pri Liberálovi.
+      D1 stačí, lebo Policajtka po zmene nie je štít, proti ktorému by Praudovravec bol jediná zbraň, a karta má jednu jasnú vec.</dd>
+    <dt>Výklad (§6, §16)</dt><dd><ul>
+      <li><b>Jeho spoje</b> sú dva spoje so susedmi, aj s lokalitou v strede. Pojem spoj už na kartách je (Pes, :1136). Slovo okolie nepoužívam,
+        lebo pri Šarlatánovi znamená všetky akcie susedných kariet (:1151).</li>
+      <li>Každý Odpor na nich sa ráta ako Posilnenie: jeho vlastný (vľavo, pozícia 2) aj Odpor suseda, súperov či tvoj. Potom platí tabuľka
+        Modifikátory na spoji (:266–273). Odpor + X dá X ×2. Odpor + Odpor sú dve Posilnenia, nestane sa nič, Vzbura nebude.
+        Odpor + Posilnenie sú tiež dve Posilnenia, nestane sa nič.</li>
+      <li>Na hrane lokality sa ráta do Pitiek ako každá aktívna akcia hrany (:465–469). Akcia, ktorú by Odpor zrušil, sa teraz ráta, takže Pitiek môže byť o 1 viac.</li>
+      <li>NA EX na Praudovravca zruší aj prevedené Posilnenie, ako každé (:373–375).</li>
+    </ul></dd>
+    <dt>V jadre</dt><dd><b>Realizovateľné, malé.</b> <code>evaluateLine</code> (<code>partia.ts:574</code>) najprv poskladá úseky línie (<code>:594–609</code>) a až potom
+      rieši spoje (<code>:611–615</code>). Medzi tým stačí jeden prechod, ktorý na hranách dotýkajúcich sa Praudovravca prepíše Odpor na Posilnenie.
+      <code>resolveJunction</code> (<code>:381–427</code>) sa nemení. Výpis „Odpor ako Posilnenie“ ako pri Šarlatánovi (<code>:563</code>, <code>:681–684</code>).
+      Náhľad spoja, počet Pitiek (<code>engine.ts:1439</code>) aj bot počítajú tou istou funkciou, dostanú to teda zadarmo. Pri skrytej Záverečnej
+      (<code>PlacedCard.zaverecna</code>, <code>partia.ts:48</code>) prevod vynechať, inak by kartu prezradil. Šarlatán to dnes nerobí, na to je samostatná oprava.
+      D1 zmaže <code>efektPotlaceny</code> (<code>effects.ts:163–167</code>) a jeho volania.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Súperov Odpor vedľa neho zdvojí jeho Pohoršenie, vo v6 najsilnejšiu akciu. Súper to bude vedieť a Odpor tam nedá, takže najmä ho nemá čím vypnúť.</li>
+      <li>Jeho vonkajší koniec je pozvánka: kto k nemu priloží kartu s akciou na pozícii 2, má ju ×2, aj súper. O ten koniec sa bude bojovať.</li>
+      <li>Vedľa Kohúta, Zveráka alebo Anonymného alkoholika (všetci majú Odpor) sa správanie otočí. Treba riadok v ťaháku a náhľad.</li>
+      <li>D1: Svokra, Presbiter a Obvodná lekárka nemajú protihru. Tag Autorita potom nečíta žiadne pravidlo, ostane len tematický ako Kriminál.</li>
+    </ul></dd>
+    <dt>Meno</dt><dd>Ostáva Praudovravec, ak si v 1. kole (otázka 3) nerozhodol inak. Ilustrácia ostáva.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: D1.</b> Rieši výčitku „často nepoužiteľný“: súper ho nevie vypnúť Odporom a jeho vlastný Odpor pracuje. Vtip je hneď čitateľný.</div>
+  <details><summary>JSON (na neskôr, D1)</summary><pre>{"id":"praudovravec","name":"Praudovravec","tags":["Občan","Influencer","Chlap"],
+ "effect_text":"Furt: Odpor na jeho spojoch neruší, ale posilní — ráta sa ako Posilnenie.","triggers":["Furt"],
+ "left":{"blocked":[3],"actions":{"Odpor":1,"Povera":1},"allowed":{"0":["Povera"],"1":["Povera"],"2":["Odpor"]}},
+ "right":{"blocked":[2],"actions":{"Pohoršenie":1,"Povera":1,"Vízia":1},"allowed":{"0":["Povera","Vízia"],"1":["Povera","Vízia"],"3":["Pohoršenie"]}}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = D1. Variant = D2 (aj s pôvodnou vetou o Autoritách) alebo len súperov Odpor (vlastný Odpor ostane Odporom).</p>
+    <label class="skryte" for="pozn-k7">Poznámka k Praudovravcovi</label>
+    <textarea id="pozn-k7" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<p class="pozn"><b>Tagy po zmenách:</b> Autorita stratí Sťažovateľku (Advokátka bola Autoritou), Pamätník ju získa. Pomer žien a mužov sa oproti 1. kolu nemení,
+Degustátorka, Sťažovateľka aj Opatrovateľka sú ženy, Vandal a Strýko muži.</p>
+
+<!-- ======================= ČASŤ 3 ======================= -->
+<h2 id="cast3">3. Náradie a zvieratá, kolo 2</h2>
+<div class="tab-obal"><table>
+  <thead><tr><th>Karta</th><th>Michal</th><th>Stav</th></tr></thead>
+  <tbody>
+    <tr><td><b>Vidly</b> (Nástroj)</td><td>Áno</td><td>Bez zmien: Dedičstvo +1 tuhé, kým máš menej špakov ako súper.</td></tr>
+    <tr><td><b>Zverák</b> (Nástroj)</td><td>Áno</td><td>Bez zmien. V 1. kole som ho odporúčal až neskôr pre prekryv s Policajtkou. Ten s Dychovou skúškou zmizol,
+      Zverák je teraz jediná brzda Pohoršení.</td></tr>
+    <tr><td><b>Hrable</b> (Nástroj)</td><td>Nie</td><td>Vypadávajú.</td></tr>
+    <tr><td><b>Klauzula Psa</b></td><td>Áno (A)</td><td>Ostáva len Psovi, kód sa nemení.</td></tr>
+    <tr><td><b>Kôň</b> (Zviera)</td><td>–</td><td><b>V rozhodnutí chýba.</b> Doplň, prosím (otázka 5).</td></tr>
+    <tr><td>Kapybara, Kohút, Krokodíl, Lievik</td><td>nižšie</td><td>Prerobené alebo dopísané podľa poznámok.</td></tr>
+  </tbody>
+</table></div>
+
+<!-- Kapybara -->
+<article class="navrh odp" id="z-kapybara" data-kluc="z-kapybara" data-odp="ano" data-nazov="Kolo 2 · Kapybara (bez cigarety)">
+  <header><span class="cislo">Z1</span><h3>Kapybara</h3><span class="stitok s-sk">Zviera, bez cigarety</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Kapybara</b><span class="kt-tagy">Zviera</span></div>
+    <div class="kt-efekt"><span class="sp">Zhromaždenie:</span> Kapybara nemíňa limit vykladania.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Viera <small>(sloty 0 a 3 blokované)</small></div>
+      <div><small>vpravo</small> Vízia <small>(sloty 0 a 3 blokované)</small></div><div class="cela"><small>4 varianty</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Michal</dt><dd>„Prečo má cigaretu?“</dd>
+    <dt>Kde ju mala</dt><dd>Ako <b>akciu Cigareta</b> na pravej strane. Ilustrácia mala „nikto nefajčí“, ale na stole pred ňou stál poldecák.
+      Teraz nemá cigaretu v akcii ani na obrázku a pitie pri nej tiež nie je.</dd>
+    <dt>Prečo Vízia</dt><dd>Má rovnakú hodnotu ako Cigareta: cigareta je v Pitke jedna karta fajčením (PRAVIDLA.md:419–421), Vízia je jedna vrchná karta,
+      ktorú si vezmeš alebo zahodíš (:446–451). A sedí k zvieraťu, ktoré len pokojne pozoruje svet. Viera ostáva.</dd>
+    <dt>Koncept</dt><dd>Pohoda ostáva: telo do prevahy, ktoré nemíňa limit. Pomôže hráčovi s limitom 1 (často porazenému). Lepší koncept som nenašiel,
+      tento je najjednoduchší a rieši zmeranú dieru.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>NA EX na ňu nejde a je zadarmo, preto je ideálnym telom do línie, na ktorú NA EX nejde. Protiváhou je Lievik (nižšie) a Pasca.</li>
+      <li>S pasom: vyložíš ju a pasuješ s celým limitom, teda máš cigarety za pas aj telo. Ihrisko a Lesná cesta sa s ňou lacno preklopia.</li>
+      <li>Na Zastávke nemíňa spoločný limit, náhľad limitu to musí ukázať. Proti Degustátorke je prirodzená obrana. Pes nesmie byť v jej partii.</li>
+    </ul></dd>
+    <dt>Kód</dt><dd>Bez zmeny oproti 1. kolu: kontrola limitu vedľa výnimky pre Pracujúcich na Družstve, REGISTER, náhľad limitu. Malé.</dd>
+    <dt>Ilustrácia</dt><dd>Kapybara pokojne sedí na drevenej lavici pri kachľovej peci v dedinskej krčme. Na hlave jej leží mandarínka a na chrbte drieme vrabec,
+      ako na známych fotkách. Pred ňou je len jablko a roztrhnutý balík s colnými pečiatkami bez čitateľného textu. Žiadne cigarety ani poháre, nikto nefajčí, žiadny dym.</dd>
+  </dl>
+  <details><summary>Námet pre Leonardo (Admin, neskôr)</summary><pre>a calm heavy-lidded capybara sitting on a wooden bench by a tiled stove in a shabby village pub, a mandarin orange resting on its head and a sparrow dozing on its back, only an apple and a torn cardboard parcel with illegible customs stamps on the table in front of it, warm light of a bare bulb, no cigarettes, no glasses, nobody is smoking, no smoke anywhere</pre></details>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Rovnaká karta, len pokojné akcie. Vtip nesie mandarínka, nie cigareta.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"kapybara","index":69,"name":"Kapybara","tags":["Zviera"],
+ "effect_text":"Zhromaždenie: Kapybara nemíňa limit vykladania.","triggers":["Zhromaždenie"],
+ "left":{"blocked":[0,3],"actions":{"Viera":1}},
+ "right":{"blocked":[0,3],"actions":{"Vízia":1}},
+ "permutations":{"total":4,"left":2,"right":2}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = vpravo Posilnenie namiesto Vízie („na kapybaru si sadne každý“): zdvojí akciu suseda, aj súperovho. Silnejšie, treba merať.</p>
+    <label class="skryte" for="pozn-z-kapybara">Poznámka ku Kapybare</label>
+    <textarea id="pozn-z-kapybara" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- Kohút -->
+<article class="navrh odp" id="z-kohut" data-kluc="z-kohut" data-odp="ano" data-nazov="Kolo 2 · Kohút (Pohoršenie a Odpor)">
+  <header><span class="cislo">Z2</span><h3>Kohút</h3><span class="stitok s-sk">Zviera, finálne</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Kohút</b><span class="kt-tagy">Zviera</span></div>
+    <div class="kt-efekt"><span class="sp">Furt:</span> Kým leží Kohút v línii, kolo má aspoň 2 Pitky.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Pohoršenie <small>(sloty 1–2 blokované, teda pozícia 0 alebo 3)</small></div>
+      <div><small>vpravo</small> Odpor <small>(sloty 0 a 3 blokované, teda pozícia 1 alebo 2)</small></div><div class="cela"><small>4 varianty</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Michal</dt><dd>„Pohoršenie a Odpor by mali byť jeho akcie.“ Poldeci (ranný pohárik) vypadol. Kohút budí a pohoršuje celú ulicu a nedá sa, je to bitkár zo dvora.</dd>
+    <dt>Pravidlá</dt><dd>§7 Počet Pitiek (PRAVIDLA.md:465–475): jedna veta. Vo finále (vždy 3 Pitky) nerobí nič. §16.</dd>
+    <dt>Kód</dt><dd><code>pocetPitiek</code> (<code>engine.ts:1439</code>) vráti s Kohútom v línii najmenej 2. Klient aj náhľad Pitiek počítajú tou istou funkciou. Malé.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>S Odporom a Pohoršením je z neho dobrá podstrčená karta: Odpor zruší súperovi akciu, Pohoršenie ide majiteľovi a NA EX naňho nejde (bez Lievika).</li>
+      <li>Jeho Odpor pri lokalite zruší akciu hrany a zníži počet Pitiek na tej strane. Kohút ich aj tak drží na aspoň 2.</li>
+      <li>Odpor + Odpor so susedom je Vzbura. Pri Praudovravcovi sa jeho Odpor ráta ako Posilnenie.</li>
+      <li>Kolá sú dlhšie a pečene je viac. Pes nesmie byť v jeho partii.</li>
+    </ul></dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Michalove akcie sedia k povahe kohúta. Pohoršenie mal už predtým, Odpor z neho robí aj obrancu.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"kohut","index":71,"name":"Kohút","tags":["Zviera"],
+ "effect_text":"Furt: Kým leží Kohút v línii, kolo má aspoň 2 Pitky.","triggers":["Furt"],
+ "left":{"blocked":[1,2],"actions":{"Pohoršenie":1}},
+ "right":{"blocked":[0,3],"actions":{"Odpor":1}},
+ "permutations":{"total":4,"left":2,"right":2}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Variant = Odpor vľavo a Pohoršenie vpravo (iné pozície), alebo „o 1 Pitku viac, najviac 4“ z 1. kola.</p>
+    <label class="skryte" for="pozn-z-kohut">Poznámka ku Kohútovi</label>
+    <textarea id="pozn-z-kohut" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- Krokodíl -->
+<article class="navrh odp" id="z-krokodil" data-kluc="z-krokodil" data-odp="ano" data-nazov="Kolo 2 · Krokodíl (zožratá karta z hry)">
+  <header><span class="cislo">Z3</span><h3>Krokodíl</h3><span class="stitok s-sk">Zviera, finálne</span> <span class="stitok s-ano">odporúčam áno</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Krokodíl</b><span class="kt-tagy">Zviera</span></div>
+    <div class="kt-efekt"><span class="sp">Furt:</span> Občana alebo Zviera, ktorého súper vyloží vedľa Krokodíla, Krokodíl po bitke zožerie — karta sa zahodí (z hry).</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Odpor <small>(sloty 0 a 3 blokované)</small></div>
+      <div><small>vpravo</small> Pecka <small>(sloty 0 a 3 blokované)</small></div><div class="cela"><small>4 varianty, akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Michal</dt><dd>„Von z hry, zahodiť, zapáliť.“ Zahodenie je v slovníku „odstrániť kartu z hry (spáliť)“ (PRAVIDLA.md:1196). Zožratá karta sa nevráti
+      do odhadzovacieho balíčka ani naspodok doberacieho.</dd>
+    <dt>Výklad (§16)</dt><dd><ul>
+      <li>„Vyloží vedľa“: karta pri vyložení ležala hneď vedľa Krokodíla, z ktorejkoľvek strany. Platí to pre Zhromaždenie, odpoveď na NA EX aj Záverečnú,
+        tú pri otočení. Kartu, ktorá vedľa neho už ležala, nezje.</li>
+      <li>Snúbenica, ktorá sa posunie na miesto vedľa neho, nie je vyloženie. Nástroj ani staršieho z patronátu nezje.</li>
+      <li>Zahodí sa v kroku 7 namiesto návratu, ako Dievčina na vydaj. Ak Krokodíl v kroku 6 odíde z línie (Pohreb), nezje nič.</li>
+      <li>Hrobár sa za zožratú kartu nespúšťa, inak by Krokodíl s Hrobárom dával cigaretu za každé jedlo. Je to rovnaký prístup ako pri vlastnej Vdove (:1127).</li>
+    </ul></dd>
+    <dt>Kód</dt><dd>Pri vyložení označiť kartu „vedľa Krokodíla“ a v bitke ju pridať do <code>bitkaStav.spalit</code> (<code>engine.ts:254</code>, plní sa ako pri Dievčine
+      <code>:3112</code>). Hotový mechanizmus, karta sa vtedy nevráti. Náhľad pred vyložením: „Krokodíl ju po bitke zožerie.“ Moment pre Melichara. Stredné.</dd>
+    <dt>Riziko</dt><dd><ul>
+      <li>Súper mu môže dávať štartovky (Pijan, Miňištrant). Keď karta ide z hry, čistí si tým balíček ešte viac. Bot to musí vedieť.</li>
+      <li>Nástroj vedľa neho je lacný spôsob, ako obísť stráž. Vo finále je zožratie bez následku.</li>
+      <li>Trvalé odstránenie súperovej karty je najsilnejší druh efektu a v6 začína so 4 kartami. Ak bude priveľa, prepnúť na naspodok balíčka.</li>
+      <li>Pes nesmie byť v jeho partii.</li>
+    </ul></dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: áno.</b> Michalova voľba, a zábava je práve v tom, že zje naozaj.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"krokodil","index":68,"name":"Krokodíl","tags":["Zviera"],
+ "effect_text":"Furt: Občana alebo Zviera, ktorého súper vyloží vedľa Krokodíla, Krokodíl po bitke zožerie — karta sa zahodí (z hry).","triggers":["Furt"],
+ "left":{"blocked":[0,3],"actions":{"Odpor":1}},
+ "right":{"blocked":[0,3],"actions":{"Pecka":1}},
+ "permutations":{"total":4,"left":2,"right":2}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = takto, aj s výkladom (Hrobár sa nespúšťa, Pohreb Krokodíla zruší žranie). Variant = iný výklad (napíš).</p>
+    <label class="skryte" for="pozn-z-krokodil">Poznámka ku Krokodílovi</label>
+    <textarea id="pozn-z-krokodil" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- Lievik -->
+<article class="navrh odp" id="z-lievik" data-kluc="z-lievik" data-odp="ano" data-nazov="Kolo 2 · Lievik (rozsah: len Zviera)">
+  <header><span class="cislo">Z4</span><h3>Lievik: len na Zviera</h3><span class="stitok s-sk">Nástroj, rozsah</span> <span class="stitok s-ano">odporúčam len Zviera</span></header>
+  <div class="kt">
+    <div class="kt-hlava"><b>Lievik</b><span class="kt-tagy">Nástroj</span></div>
+    <div class="kt-efekt"><span class="sp">Dedičstvo:</span> NA EX smieš dať aj na Zviera.</div>
+    <div class="kt-akcie"><div><small>vľavo</small> Poldeci <small>(sloty 0 a 3 blokované)</small></div>
+      <div><small>vpravo</small> Poškodenie pečene ×2 <small>(sloty 0–1 blokované)</small></div><div class="cela"><small>akcie bez zmeny</small></div></div>
+  </div>
+  <dl class="riadky">
+    <dt>Otázka</dt><dd>Má Lievik ísť len na Zviera, alebo aj na karty, ktorým NA EX zakazuje ich vlastný text (Anonymný alkoholik, Liberál)?</dd>
+    <dt>Prečo len Zviera</dt><dd><ul>
+      <li><b>Účel.</b> Lievik vznikol ako protiváha štyroch nových zvierat, ktorých imunita voči NA EX ide z pravidla (§7), nie z ich textu. Len Zviera mieri presne tam.</li>
+      <li><b>Dedičstvo je trvalé.</b> Celý efekt Anonymného alkoholika je „súper naňho nedá NA EX“. Proti majiteľovi Lievika by bol do konca hry prázdna karta,
+        a presne to sme vyčítali Praudovravcovi.</li>
+      <li><b>Text karty platí bez výnimky.</b> Keby Lievik prebíjal „nesmie“ inej karty, vznikne spor, čo vyhráva, a riadok v §16 navyše.</li>
+      <li><b>Kratší text</b> bez „ktorej efekt NA EX zakazuje“.</li>
+    </ul></dd>
+    <dt>Ostáva</dt><dd>Podmienky NA EX (aspoň jedna aktívna a jedna neaktívna akcia, nie na kartu s poldeci, Kostol vôbec). Povinnosť na Krčme hovorí o Občanovi
+      či Starešinovi a nemení sa (PRAVIDLA.md:1090).</dd>
+    <dt>Kód</dt><dd>Podmienka tagu pri NA EX (<code>engine.ts:2402–2405</code>) a v cieľoch (<code>:2603</code>): „alebo Zviera, keď máš Lievik v Dedičstve“.
+      Liberál (<code>:2406</code>, <code>:2601</code>) a Anonymný alkoholik (<code>:2633</code>) ostávajú. Test aj vo <code>viewFor</code>. Malé.</dd>
+    <dt>Riziko</dt><dd>NA EX na Psa jeho bonus nezmenší (páry sa rátajú aj zrušené, :1136). Snúbenica s Lievikom vráti do ruky aj Zviera s NA EX, napríklad Kohúta, a Pitky klesnú.</dd>
+  </dl>
+  <div class="odporucanie"><b>Odporúčanie: len Zviera.</b> Mieri na dieru, kvôli ktorej Lievik vznikol, a nevyprázdni Anonymného alkoholika.</div>
+  <details><summary>JSON (na neskôr)</summary><pre>{"id":"lievik","index":65,"name":"Lievik","tags":["Nástroj"],
+ "effect_text":"Dedičstvo: NA EX smieš dať aj na Zviera.","triggers":["Dedičstvo"],
+ "left":{"blocked":[0,3],"actions":{"Poldeci":1}},
+ "right":{"blocked":[0,1],"actions":{"PoškodeniePečene":2}}}</pre></details>
+  <div class="volba">
+    <fieldset><legend>Tvoja voľba</legend><div class="volby"></div></fieldset>
+    <p class="volba-vyznam">Áno = len Zviera. Variant = aj karty, ktorým NA EX zakazuje ich text (Anonymný alkoholik, Liberál).</p>
+    <label class="skryte" for="pozn-z-lievik">Poznámka k Lieviku</label>
+    <textarea id="pozn-z-lievik" placeholder="Poznámka pre Leadera (nepovinné)"></textarea>
+  </div>
+</article>
+
+<!-- ======================= OTÁZKY ======================= -->
+<section class="ramik otazky-r" id="otazky" aria-labelledby="h-otazky">
+  <h2 id="h-otazky">Otázky pre Michala</h2>
+  <p class="pozn">Stačí krátka odpoveď, skopíruje sa spolu s voľbami.</p>
+  <ol class="otazky">
+    <li data-otazka="q1">Meno spúšťača pre aktívny efekt: Kšeft (odporúčam), alebo Runda, Objednávka či Za cenu?
+      <label class="skryte" for="odp-q1">Odpoveď na otázku 1</label><textarea id="odp-q1" placeholder="Odpoveď (nepovinné)"></textarea></li>
+    <li data-otazka="q2">Platba poldeci pri Kšefte: poldeci sa len otočí na vypitý (odporúčam, bez nerestí a pečene), alebo ho „vypiješ“ (nerest a pečeň, pomáha proti Absťáku)?
+      <label class="skryte" for="odp-q2">Odpoveď na otázku 2</label><textarea id="odp-q2" placeholder="Odpoveď (nepovinné)"></textarea></li>
+    <li data-otazka="q3">Večná sťažovateľka: cigarety do zásoby (odporúčam, kolky), alebo súperovi ako pri Advokátke?
+      <label class="skryte" for="odp-q3">Odpoveď na otázku 3</label><textarea id="odp-q3" placeholder="Odpoveď (nepovinné)"></textarea></li>
+    <li data-otazka="q4">Strýko z Ameriky: raz za Pitku (až 4 Rany v kole so 4 Pitkami, odporúčam), alebo najviac 2 Rany za kolo?
+      <label class="skryte" for="odp-q4">Odpoveď na otázku 4</label><textarea id="odp-q4" placeholder="Odpoveď (nepovinné)"></textarea></li>
+    <li data-otazka="q5">Kôň (Zviera, Nástroj s ním tvorí spoj) v rozhodnutí o náradí a zvieratách chýba. Áno, nie, alebo neskôr?
+      <label class="skryte" for="odp-q5">Odpoveď na otázku 5</label><textarea id="odp-q5" placeholder="Odpoveď (nepovinné)"></textarea></li>
+  </ol>
+</section>
+
+<footer>
+  <p>Podklady:</p>
+  <ul>
+    <li>Pravidlá v6: <code>docs/PRAVIDLA.md</code> (§2, §6, §7, §8, §9, §13, §16). Sada <code>packages/core/data/cards.json</code>, jadro <code>engine.ts</code>, <code>effects.ts</code>,
+      <code>partia.ts</code>, <code>player.ts</code>, <code>zavislost.ts</code>, <code>bot.ts</code>, tvorca <code>packages/tvorba/src</code>, klient <code>HernaPlocha.tsx</code>, <code>Panely.tsx</code>
+      (všetko <code>origin/master 1a3209a</code>).</li>
+    <li>Dávky 1. kola: <code>docs/napady/karty-obcania.html</code>, <code>karty-naradie-zvierata.html</code> (vetva <code>brainstorming/karty-20261026</code>), rozhodnutia Michala cez Leadera.</li>
+  </ul>
+  <p>NA EX! · Vymyselník · <code>naex-tmp/brainstorming-karty/obcania-kolo2.html</code> · v repe ani v tvorcovi sa nič nezmenilo</p>
+</footer>
+</main>
+
+<div class="lista" role="region" aria-label="Súhrn volieb">
+  <div class="lista-in">
+    <span class="lista-text" id="lista-text" aria-live="polite">Zatiaľ nič nie je vybrané.</span>
+    <button type="button" id="odporucane">Doplniť odporúčané</button>
+    <button type="button" id="kopiruj" class="hlavne">Skopírovať pre Leadera</button>
+  </div>
+</div>
+<label class="skryte" for="schranka">Text na skopírovanie</label>
+<textarea id="schranka" class="skryte" tabindex="-1" aria-hidden="true"></textarea>
+
+<script>
+(function () {
+  "use strict";
+  var KLUC = "naex-obcania-kolo2-20261026-v1";
+  var VOLBY = [["ano", "Áno"], ["variant", "Variant"], ["nie", "Nie"], ["neskor", "Neskôr"]];
+  var NAZVY_VOLIEB = { ano: "Áno", variant: "Variant", nie: "Nie", neskor: "Neskôr" };
+  var stav = { volby: {}, poznamky: {}, odpovede: {} };
+  try {
+    var ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}");
+    if (ulozene && typeof ulozene === "object") {
+      stav.volby = ulozene.volby || {}; stav.poznamky = ulozene.poznamky || {}; stav.odpovede = ulozene.odpovede || {};
+    }
+  } catch (e) { /* bez úložiska */ }
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) { /* bez úložiska */ } }
+
+  // Téma: svetlá/tmavá, voľba sa pamätá (ak úložisko ide).
+  var koren = document.documentElement;
+  try { var t = localStorage.getItem(KLUC + "-tema"); if (t === "light" || t === "dark") koren.setAttribute("data-theme", t); } catch (e) { /* bez úložiska */ }
+  document.getElementById("tema").addEventListener("click", function () {
+    var teraz = koren.getAttribute("data-theme") ||
+      (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    var nova = teraz === "light" ? "dark" : "light";
+    koren.setAttribute("data-theme", nova);
+    try { localStorage.setItem(KLUC + "-tema", nova); } catch (e) { /* bez úložiska */ }
+  });
+
+  var bloky = Array.prototype.slice.call(document.querySelectorAll("[data-kluc]"));
+  bloky.forEach(function (blok) {
+    var kluc = blok.getAttribute("data-kluc");
+    var odp = blok.getAttribute("data-odp");
+    var obal = blok.querySelector(".volby");
+    VOLBY.forEach(function (v) {
+      var l = document.createElement("label");
+      if (v[0] === odp) l.className = "odp-volba";
+      var i = document.createElement("input");
+      i.type = "radio"; i.name = "volba-" + kluc; i.value = v[0];
+      if (stav.volby[kluc] === v[0]) i.checked = true;
+      i.addEventListener("change", function () { stav.volby[kluc] = v[0]; uloz(); obnov(); });
+      l.appendChild(i); l.appendChild(document.createTextNode(v[1]));
+      obal.appendChild(l);
+    });
+    var ta = blok.querySelector(".volba textarea");
+    ta.value = stav.poznamky[kluc] || "";
+    ta.addEventListener("input", function () { stav.poznamky[kluc] = ta.value; uloz(); });
+  });
+
+  var otazky = Array.prototype.slice.call(document.querySelectorAll("[data-otazka]"));
+  otazky.forEach(function (li) {
+    var k = li.getAttribute("data-otazka");
+    var ta = li.querySelector("textarea");
+    ta.value = stav.odpovede[k] || "";
+    ta.addEventListener("input", function () { stav.odpovede[k] = ta.value; uloz(); });
+  });
+
+  function obnov() {
+    var n = bloky.filter(function (b) { return stav.volby[b.getAttribute("data-kluc")]; }).length;
+    document.getElementById("lista-text").textContent = n === 0 ? "Zatiaľ nič nie je vybrané." :
+      "Vybraté: " + n + " z " + bloky.length + ". Voľby sa ukladajú v tomto prehliadači.";
+  }
+  obnov();
+
+  document.getElementById("odporucane").addEventListener("click", function () {
+    bloky.forEach(function (b) {
+      var kluc = b.getAttribute("data-kluc"), odp = b.getAttribute("data-odp");
+      if (stav.volby[kluc]) return; // tvoju voľbu neprepíše
+      stav.volby[kluc] = odp;
+      var r = b.querySelector('input[value="' + odp + '"]');
+      if (r) r.checked = true;
+    });
+    uloz(); obnov();
+  });
+
+  function suhrn() {
+    var r = ["Michal — voľby, kolo 2: Kšeft, občania, náradie a zvieratá (naex-tmp/brainstorming-karty/obcania-kolo2.html):", ""];
+    bloky.forEach(function (b) {
+      var k = b.getAttribute("data-kluc");
+      var v = stav.volby[k] ? NAZVY_VOLIEB[stav.volby[k]] : "bez voľby";
+      var p = (stav.poznamky[k] || "").trim();
+      r.push(b.getAttribute("data-nazov") + ": " + v + (p ? " — " + p : ""));
+    });
+    var odp = otazky.map(function (li, i) {
+      var a = (stav.odpovede[li.getAttribute("data-otazka")] || "").trim();
+      return a ? "Otázka " + (i + 1) + ": " + a : null;
+    }).filter(Boolean);
+    if (odp.length) { r.push(""); r.push("Odpovede na otázky:"); r = r.concat(odp); }
+    return r.join("\n");
+  }
+
+  document.getElementById("kopiruj").addEventListener("click", function () {
+    var text = suhrn();
+    var hotovo = function () { document.getElementById("lista-text").textContent = "Skopírované. Vlož to Leaderovi."; };
+    var zaloha = function () {
+      var s = document.getElementById("schranka");
+      s.value = text; s.select();
+      try { document.execCommand("copy"); hotovo(); }
+      catch (e) { window.prompt("Skopíruj text:", text); }
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(hotovo, zaloha);
+      } else { zaloha(); }
+    } catch (e) { zaloha(); }
+  });
+})();
+</script>
+</body>
+</html>

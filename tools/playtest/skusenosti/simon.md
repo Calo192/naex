@@ -6,11 +6,12 @@ vo feedback.md.
 
 ## Skúsenosti
 
-### simon-1 · Keď ide posledná bitka partie a starší mi prejavuje priazeň, beriem patronát, lebo bolestné (poldeci natrvalo) po poslednej bitke nič nestojí.
-- stav: neoverená
-- pravidlá: v4
-- potvrdenia: 1
-- vyvrátenia: 0
-- dátum: 2026-10-24
-- partie: 20261024-075830-2
-- prečo: K7 patronát na Veterinára, náhľad „pri výhre 93 : 16, pri prehre 82 : 7“, bitka vyhratá 4 : 0, ±12 b (report 20261024-075830, PRAVIDLA §10 Patronát).
+### simon-1 · Keď ide posledná bitka partie a starší mi prejavuje priazeň, zvažujem patronát: bolestné (poldeci natrvalo) po poslednej bitke nič nestojí, ale súper dostane Pohoršenia navyše (1/2/3 podľa zóny) a použije ich na posun markerov a na vlastný strach.
+- stav: overená
+- pravidlá: v7
+- potvrdenia: 4
+- vyvrátenia: 1
+- dátum: 2026-10-27
+- partie: 20261024-075830-2, 20261027-062058-1, 20261027-161907-2, 20261027-161907-1
+- prečo: PRAVIDLA §10 Patronát (v6.1: cigarety 1/2/3, súper dostane Pohoršenia navyše). 131033-1 K5 Janov patronát (nie finále): Fero z 3 Pohoršení patronátu + 2 z línie spravil +5 špakov za strach hneď; 131033-2 K3 Helin patronát: Šimon dostal 3 Pohoršenia a vrátil jej markery (Hela len 2 špaky). Pôvodný dôvod „bolestné nič nestojí“ nestačí — cena patronátu sú Pohoršenia. 161907: P2 K5 Šimonov patronát za 1 cigaretu zrušil vydesenie 4/4, stál 3 Pohoršenia (Fero ich použil na Veterinára a Hrobára k sebe); P1 K6 (finále) Evin patronát na Farára zrušil vydesenie 3/4 a dal Janovi 3 Pohoršenia (+3 strach, Bitkár).
+- oprava: 2026-10-27 20261027-131033-2: pôvodné pravidlo správania „beriem patronát v poslednej bitke“ ignorovalo Pohoršenia navyše pre súpera (v6.1); Šimon ho v partii nepoužil a vyvrátil ho podľa §10 a dvoch cudzích patronátov.

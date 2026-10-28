@@ -1,0 +1,1026 @@
+<!doctype html>
+<html lang="sk" data-schema="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dizajn UI — Vývoj, roadmapa a kostra webu (vyvoj-web-20261026-1520)</title>
+<style>
+/* Tokeny sú kópia apps/web/src/schemy.css (Krčma, Noc, Jedálny lístok) — mockupy nepoužívajú inú farbu. */
+:root, :root[data-schema="krcma"] {
+  --graf-ludia:#1fa2b5; --graf-ai:#d9653a;
+  --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --plocha-3:#332a21;
+  --okraj:#3d3229; --okraj-svetly:#57483a; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a; --slaby-text:#9d8f7b;
+  --akcent:#e9ad45; --akcent-tmavy:#b9802a; --akcent-svetly:#ffd08a; --na-akcente:#2b1b03;
+  --cervena:#d0563f; --cervena-text:#e5735c; --zelena:#7cbf74; --info:#8fc3e0; --info-silna:#5aa9d6;
+  --ja:#5cc0cf; --ja-tmava:#1d3b40; --su:#e0805f; --su-tmava:#43261d; --tma:1;
+  color-scheme: dark;
+}
+:root[data-schema="noc"] {
+  --pozadie:#0d1219; --plocha:#121a26; --plocha-2:#182333; --plocha-3:#1e2c41; --okraj:#25354c; --okraj-svetly:#354c6e;
+  --text:#f0e8da; --tlmeny:#b3a892; --slaby:#877e6c; --slaby-text:#9d9380; --akcent:#efc179; --akcent-tmavy:#bf9552; --akcent-svetly:#ffdfaa; --na-akcente:#271700;
+}
+:root[data-schema="listok"] {
+  --graf-ludia:#00889e; --graf-ai:#c2531c;
+  --pozadie:#f5ecd9; --plocha:#fef9ee; --plocha-2:#f0e5cf; --plocha-3:#e7dbc2; --okraj:#d9ccb4; --okraj-svetly:#bdb093;
+  --text:#312317; --tlmeny:#624e3f; --slaby:#917c6b; --slaby-text:#705c4c; --akcent:#723f00; --akcent-tmavy:#633100; --akcent-svetly:#794b06; --na-akcente:#fff9f3;
+  --cervena:#b8452f; --cervena-text:#a8321f; --zelena:#256d2f; --info:#2e5f86; --info-silna:#3a76ad; --ja:#006a77; --ja-tmava:#d2ecee; --su:#a3401d; --su-tmava:#f5ddd2; --tma:.3;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root[data-schema="auto"] {
+    --graf-ludia:#00889e; --graf-ai:#c2531c;
+    --pozadie:#f5ecd9; --plocha:#fef9ee; --plocha-2:#f0e5cf; --plocha-3:#e7dbc2; --okraj:#d9ccb4; --okraj-svetly:#bdb093;
+    --text:#312317; --tlmeny:#624e3f; --slaby:#917c6b; --slaby-text:#705c4c; --akcent:#723f00; --akcent-tmavy:#633100; --akcent-svetly:#794b06; --na-akcente:#fff9f3;
+    --cervena:#b8452f; --cervena-text:#a8321f; --zelena:#256d2f; --info:#2e5f86; --info-silna:#3a76ad; --ja:#006a77; --ja-tmava:#d2ecee; --su:#a3401d; --su-tmava:#f5ddd2; --tma:.3;
+    color-scheme: light;
+  }
+}
+:root { --nadpis: "Bitter", Georgia, serif; --pismo: Roboto, "Segoe UI", system-ui, sans-serif; --polomer: 12px; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+body { margin: 0; font: 16px/1.55 var(--pismo); background: var(--pozadie); color: var(--text); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { font-family: var(--nadpis); line-height: 1.2; margin: 0 0 .5em; }
+a { color: var(--akcent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+code { font: .86em/1.4 ui-monospace, Consolas, monospace; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 5px; padding: 0 4px; overflow-wrap: anywhere; }
+pre { font: .8rem/1.5 ui-monospace, Consolas, monospace; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 10px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 14px; }
+pre code { background: none; border: 0; padding: 0; }
+.tlm { color: var(--tlmeny); }
+.slb { color: var(--slaby-text); }
+
+.r-obal { max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 40px) 80px; }
+.r-hlava { padding: 36px 0 20px; border-bottom: 1px solid var(--okraj); margin-bottom: 8px; }
+.r-hlava h1 { font-size: clamp(1.7rem, 4vw, 2.5rem); margin-bottom: .3em; }
+.r-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .9rem; color: var(--tlmeny); margin-bottom: 14px; }
+.verdikt { background: var(--plocha); border: 1px solid var(--okraj); border-left: 4px solid var(--akcent); border-radius: var(--polomer); padding: 14px 18px; max-width: 80ch; }
+.verdikt p { margin: 0 0 .5em; } .verdikt p:last-child { margin: 0; }
+.r-nav { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--pozadie) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--okraj); margin: 0 calc(-1 * clamp(16px, 3vw, 40px)); padding: 8px clamp(16px, 3vw, 40px); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: .9rem; }
+.r-nav a { color: var(--tlmeny); text-decoration: none; padding: 6px 4px; }
+.r-nav a:hover { color: var(--text); }
+.r-nav label { margin-left: auto; display: flex; gap: 6px; align-items: center; color: var(--slaby-text); }
+select, .r-btn { font: 500 .88rem/1.2 var(--pismo); color: var(--text); background: var(--plocha-3); border: 1px solid var(--okraj-svetly); border-radius: 8px; padding: 6px 10px; min-height: 36px; }
+.r-btn { cursor: pointer; }
+.r-btn[aria-pressed="true"] { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+section.r { padding-top: 40px; scroll-margin-top: 56px; }
+section.r > h2 { font-size: 1.6rem; }
+.r p, .r li { max-width: 78ch; }
+
+/* súčasný stav */
+.snimky { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 16px; }
+.snimky figure { margin: 0; background: var(--plocha); border: 1px solid var(--okraj); border-radius: var(--polomer); padding: 10px; }
+.snimky figure.siroka { grid-column: 1 / -1; }
+.snimky img { display: block; width: 100%; height: auto; border-radius: 6px; }
+.snimky figcaption { font-size: .85rem; color: var(--tlmeny); margin-top: 8px; }
+.snimky figcaption b { color: var(--text); }
+
+/* audit */
+.filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 12px; }
+.tab-obal { overflow-x: auto; }
+table.audit { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.audit th, .audit td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid color-mix(in srgb, var(--okraj) 70%, transparent); }
+.audit thead th { font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--slaby-text); }
+.audit td:first-child { font-weight: 700; white-space: nowrap; }
+.zav { display: inline-block; font-size: .76rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+.zav.vysoka { color: var(--cervena-text); border-color: var(--cervena-text); }
+.zav.stredna { color: var(--akcent); border-color: var(--akcent); }
+.zav.nizka { color: var(--tlmeny); border-color: var(--okraj-svetly); }
+@media (max-width: 720px) {
+  table.audit, .audit tbody, .audit tr, .audit td { display: block; }
+  .audit thead { display: none; }
+  .audit tr { border: 1px solid var(--okraj); border-radius: 10px; margin-bottom: 10px; padding: 4px 0; }
+  .audit td { border: 0; padding: 4px 12px; }
+}
+
+/* karty návrhov */
+.navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 16px; padding: clamp(14px, 2.5vw, 26px); margin: 22px 0; }
+.navrh.odporucany { border-color: var(--akcent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--akcent) 40%, transparent); }
+.navrh-hlava { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; margin-bottom: 10px; }
+.navrh-hlava h3 { font-size: 1.35rem; margin: 0; }
+.stitok { font-size: .76rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); white-space: nowrap; }
+.stitok.hlavny { background: var(--akcent); color: var(--na-akcente); border-color: var(--akcent); }
+.udaje { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: .9rem; margin: 10px 0 16px; }
+.udaje dt { color: var(--slaby-text); } .udaje dd { margin: 0; }
+@media (max-width: 600px) { .udaje { grid-template-columns: 1fr; } .udaje dd { margin-bottom: 6px; } }
+.prepinac { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 10px; }
+.porovnanie[data-rezim="pred"] .po, .porovnanie[data-rezim="po"] .pred { display: none; }
+.porovnanie[data-rezim="oba"] .stlpce, .porovnanie:not([data-rezim]) .stlpce { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.porovnanie.pod-sebou .stlpce { display: block !important; } .porovnanie.pod-sebou .stlpce > * + * { margin-top: 18px; }
+@media (max-width: 900px) { .porovnanie .stlpce { display: block !important; } .porovnanie .stlpce > * + * { margin-top: 14px; } }
+.ukazka-popis { font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--slaby-text); margin: 0 0 6px; }
+.ukazka-popis b { color: var(--akcent); }
+.pred img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--okraj); }
+
+/* okno prehliadača so zmenšenou ukážkou */
+.okno { max-width: 100%; min-width: 0; border: 1px solid var(--okraj-svetly); border-radius: 10px; overflow: auto; background: var(--pozadie); position: relative; }
+.okno-lista { display: flex; justify-content: space-between; gap: 8px; font: 600 .72rem/1 var(--pismo); color: var(--slaby-text); padding: 6px 10px; background: var(--plocha-2); border-bottom: 1px solid var(--okraj); }
+.okno-vnutro { transform-origin: 0 0; }
+.js .okno { overflow: hidden; }
+
+/* ================== mockup: komponenty webu (prefix m-) ================== */
+.m { font: 16px/1.55 var(--pismo); color: var(--text); background: radial-gradient(ellipse 90% 60% at 50% -10%, color-mix(in srgb, var(--akcent) 13%, transparent), transparent 60%), var(--pozadie); }
+.m h1 { font-size: 2.4rem; margin: 0 0 .25em; }
+.m p { margin: 0 0 .8em; }
+.m-hl { height: 64px; display: flex; align-items: center; gap: 22px; border-bottom: 1px solid var(--okraj); background: color-mix(in srgb, var(--pozadie) 86%, transparent); }
+.m-hl.okraj { padding: 0 var(--m-okraj, 32px); }
+.m-hl-vnutro { display: flex; align-items: center; gap: 22px; height: 100%; width: 100%; }
+.m-logo { display: flex; align-items: center; gap: 9px; font: 800 1.4rem/1 var(--nadpis); white-space: nowrap; }
+.m-pohar { width: 17px; height: 23px; border: 2.5px solid var(--text); border-top: 0; border-radius: 0 0 4px 4px; background: linear-gradient(180deg, transparent 38%, var(--akcent) 38%); clip-path: polygon(-10% 0, 110% 0, 92% 100%, 8% 100%); }
+.m-nav { display: flex; gap: 2px; flex: 1; min-width: 0; }
+.m-nav span { padding: 8px 12px; border-radius: 8px; color: var(--tlmeny); font-weight: 500; white-space: nowrap; }
+.m-nav span.akt { color: var(--text); background: var(--plocha-3); }
+.m-nav span.viac::after { content: " ▾"; font-size: .8em; }
+.m-ucet { display: flex; align-items: center; gap: 10px; font-weight: 600; white-space: nowrap; }
+.m-av { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 50% 38%, var(--tlmeny) 0 30%, var(--plocha-3) 31%); border: 1px solid var(--okraj-svetly); flex: none; }
+.m-av.ja { box-shadow: 0 0 0 2px var(--ja); }
+.m-av.su { box-shadow: 0 0 0 2px var(--su); }
+.m-btn { display: inline-flex; align-items: center; gap: .4em; font: 500 .92rem/1.2 var(--pismo); padding: .55rem .95rem; border-radius: 9px; border: 1px solid var(--okraj-svetly); background: var(--plocha-3); color: var(--text); white-space: nowrap; }
+.m-btn.hl { background: linear-gradient(180deg, color-mix(in oklab, var(--akcent) 67%, var(--akcent-svetly)), color-mix(in oklab, var(--akcent) 55%, var(--akcent-tmavy))); border-color: var(--akcent); color: var(--na-akcente); font-weight: 700; }
+.m-btn.jemne { background: transparent; border-color: transparent; color: var(--tlmeny); }
+.m-btn.male { font-size: .82rem; padding: .35rem .7rem; }
+.m-cip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: .3rem .85rem; font-size: .88rem; background: var(--plocha-2); border: 1px solid var(--okraj-svetly); color: var(--text); white-space: nowrap; }
+.m-cip.akt { background: var(--text); color: var(--pozadie); border-color: var(--text); }
+.m-cip.odkaz { color: var(--akcent); text-decoration: underline; text-underline-offset: 3px; }
+.m-cip i, .m-ob i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--obl); }
+.obl-pravidla { --obl: var(--akcent); } .obl-ui { --obl: var(--info); } .obl-karty { --obl: var(--zelena); }
+.obl-2v2 { --obl: var(--su); } .obl-platforma { --obl: var(--info-silna); } .obl-komunita { --obl: var(--cervena-text); }
+.m-panel { background: var(--plocha); border: 1px solid var(--okraj); border-radius: var(--polomer); }
+.m-cap { font: 700 .72rem/1 var(--pismo); letter-spacing: .07em; text-transform: uppercase; color: var(--slaby-text); }
+
+/* roadmapa — súčasná */
+.m-rm { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(270px, 1fr); gap: 12px; align-items: start; }
+.m-st { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; }
+.m-st.prij { background: transparent; border-style: dashed; border-color: var(--okraj-svetly); }
+.m-st-h { padding: 12px 12px 8px; border-bottom: 1px solid var(--okraj); }
+.m-st-h h3 { font-size: 1.05rem; margin: 0; display: flex; gap: 8px; align-items: baseline; }
+.m-pocet { font: 600 .78rem/1 var(--pismo); color: var(--slaby-text); background: var(--plocha-2); border-radius: 999px; padding: 3px 8px; }
+.m-hor { margin-left: auto; font: 500 .7rem/1 var(--pismo); color: var(--slaby-text); text-transform: uppercase; letter-spacing: .06em; }
+.m-st-h p { margin: 4px 0 0; font-size: .82rem; color: var(--tlmeny); }
+.m-st-t { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.m-k { background: var(--plocha-2); border: 1px solid var(--okraj); border-left: 4px solid var(--obl); border-radius: 10px; padding: 9px 10px 9px 12px; }
+.m-k-h { display: flex; gap: 6px; align-items: center; font-size: .72rem; color: var(--slaby-text); margin-bottom: 2px; }
+.m-k-h b { font: 700 .76rem/1 var(--nadpis); color: var(--tlmeny); }
+.m-ob { display: inline-flex; align-items: center; gap: 5px; }
+.m-nar { margin-left: auto; border: 1px solid var(--okraj-svetly); border-radius: 6px; padding: 0 5px; font-weight: 600; }
+.m-k h4 { font: 600 .93rem/1.3 var(--pismo); margin: 0; }
+.m-k p { margin: 3px 0 0; font-size: .81rem; color: var(--tlmeny); }
+.m-st-sp { margin: 7px 0 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.m-st-sp span { font-size: .7rem; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--okraj-svetly); color: var(--tlmeny); }
+.m-st-sp span.nove { background: var(--akcent); border-color: var(--akcent); color: var(--na-akcente); font-weight: 600; }
+
+/* roadmapa — návrh: všetky stĺpce v šírke okna */
+.m-rm2 { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)) 64px; gap: 10px; align-items: start; }
+.m-rm2.admin { --n: 5; }
+.m-rm2 .m-k p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.m-rm2 .m-st-h { position: sticky; top: 0; background: var(--plocha); border-radius: 14px 14px 0 0; }
+.m-kolaj { border: 1px solid var(--okraj); border-radius: 14px; background: transparent; writing-mode: vertical-rl; display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 14px 0; min-height: 360px; font: 700 1rem/1 var(--nadpis); color: var(--tlmeny); }
+.m-kolaj .m-pocet { writing-mode: horizontal-tb; }
+.m-kolaj small { font: 500 .78rem/1 var(--pismo); color: var(--akcent); text-decoration: underline; }
+.m-dalsie { text-align: center; font-size: .8rem; color: var(--slaby-text); padding: 4px 0 2px; border-top: 1px dashed var(--okraj); }
+
+/* záložky stránky Vývoj (návrh) */
+.m-zalozky { display: flex; gap: 4px; border-bottom: 1px solid var(--okraj); }
+.m-zal { display: flex; align-items: center; gap: 10px; padding: 12px 18px 11px; font: 700 1.05rem/1 var(--nadpis); color: var(--tlmeny); border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.m-zal.akt { color: var(--text); border-bottom-color: var(--akcent); }
+.m-zal .m-pocet { font-family: var(--pismo); }
+
+/* sekčný pás jednej stránky (N2) */
+.m-pas { position: sticky; top: 0; display: flex; align-items: center; gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--okraj); background: color-mix(in srgb, var(--pozadie) 92%, transparent); }
+.m-pas span { padding: 8px 14px; border-radius: 8px; color: var(--tlmeny); font-weight: 600; display: inline-flex; gap: 8px; align-items: center; }
+.m-pas span.akt { color: var(--text); background: var(--plocha-3); box-shadow: inset 0 -2px 0 var(--akcent); }
+.m-pas .m-btn { margin-left: auto; }
+.m-sek-h { display: flex; align-items: baseline; gap: 12px; margin: 34px 0 14px; }
+.m-sek-h h2 { font-size: 1.55rem; margin: 0; }
+.m-sek-h .tlm { font-size: .9rem; }
+
+/* KPI */
+.m-kpi { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.m-kpi > div { background: var(--plocha); border: 1px solid var(--okraj); border-radius: var(--polomer); padding: 14px 16px; }
+.m-kpi .vel { font: 700 2.1rem/1 var(--nadpis); font-variant-numeric: tabular-nums; }
+.m-kpi .pop { font-size: .84rem; color: var(--tlmeny); margin-top: 6px; }
+.m-kpi .dvoj { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .9rem; margin-top: 8px; }
+.m-kpi .dvoj b { font-variant-numeric: tabular-nums; }
+.m-kpi .dole { color: var(--cervena-text); font-size: .84rem; white-space: nowrap; }
+.m-silne { color: var(--zelena); } .m-slabe { color: var(--cervena-text); }
+
+/* graf + kritériá (N2) */
+.m-dvoj { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 16px; align-items: start; }
+.m-graf { padding: 14px 16px 10px; }
+.m-graf svg { display: block; width: 100%; height: auto; }
+.m-leg { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+.m-leg .m-cip { font-size: .8rem; padding: .2rem .7rem; }
+.m-leg .ciara { width: 18px; height: 3px; border-radius: 2px; background: var(--c); }
+.m-krit { padding: 6px 4px; }
+.m-krit-r { display: grid; grid-template-columns: minmax(0, 1fr) 84px 44px; gap: 10px; align-items: center; padding: 6px 12px; border-radius: 8px; font-size: .9rem; }
+.m-krit-r.akt { background: var(--plocha-3); box-shadow: inset 3px 0 0 var(--akcent); }
+.m-krit-r b { font-variant-numeric: tabular-nums; text-align: right; }
+.m-krit-r svg { width: 84px; height: 22px; display: block; }
+.m-krit-r .zn { font-size: .7rem; font-weight: 700; margin-left: 6px; padding: 0 6px; border-radius: 999px; border: 1px solid currentColor; }
+.m-krit-h { display: grid; grid-template-columns: minmax(0, 1fr) 84px 44px; gap: 10px; padding: 4px 12px 8px; }
+
+/* ciele ako odrážkové grafy */
+.m-ciele { display: grid; gap: 4px; }
+.m-ciel { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px; gap: 14px; align-items: center; padding: 8px 12px; border-bottom: 1px solid color-mix(in srgb, var(--okraj) 60%, transparent); font-size: .9rem; }
+.m-ciel .tr { position: relative; height: 8px; border-radius: 4px; background: var(--plocha-3); }
+.m-ciel .tr i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--tlmeny); }
+.m-ciel .tr u { position: absolute; top: -4px; bottom: -4px; width: 3px; border-radius: 2px; background: var(--akcent); }
+.m-ciel .h { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.m-ciel .h b { color: var(--text); }
+.m-zas { counter-reset: z; list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
+.m-zas li { counter-increment: z; display: grid; grid-template-columns: 30px 1fr; gap: 4px 8px; padding: 9px 12px; border-bottom: 1px solid color-mix(in srgb, var(--okraj) 60%, transparent); }
+.m-zas li::before { content: counter(z); font: 700 1.25rem/1 var(--nadpis); color: var(--akcent); grid-row: span 2; }
+.m-zas b { font-family: var(--nadpis); }
+.m-zas span { font-size: .84rem; color: var(--tlmeny); }
+
+/* mobil */
+.m-mob { width: 390px; }
+.m-mob .m-hl { padding: 0 16px; gap: 10px; }
+.m-mob .m-hl .m-logo { font-size: 1.25rem; }
+.m-ham { margin-left: auto; display: grid; gap: 4px; padding: 12px 8px; }
+.m-ham i { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; }
+.m-seg { display: flex; gap: 6px; overflow: hidden; padding: 8px 16px; border-bottom: 1px solid var(--okraj); position: sticky; top: 0; background: var(--pozadie); }
+.m-seg .m-cip { min-height: 40px; }
+.m-ciel-k { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 12px; display: grid; gap: 6px; font-size: .88rem; }
+.m-ciel-k .r1 { display: flex; justify-content: space-between; gap: 10px; }
+
+/* krčmová tabuľa (N3) */
+.m-tabula { position: relative; padding: 18px; border-radius: 18px; background:
+   repeating-linear-gradient(90deg, color-mix(in srgb, var(--plocha-3) 70%, var(--pozadie)) 0 2px, transparent 2px 46px),
+   linear-gradient(180deg, var(--plocha-2), var(--plocha));
+  border: 10px solid var(--plocha-3); box-shadow: inset 0 0 0 1px var(--okraj-svetly), inset 0 18px 40px rgba(0,0,0,calc(.35 * var(--tma))), 0 14px 36px rgba(0,0,0,calc(.4 * var(--tma))); }
+.m-tabula-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 4px 14px; }
+.m-tabula-h h2 { font-size: 1.7rem; margin: 0; letter-spacing: .01em; }
+.m-tabula-h h2 em { font-style: normal; color: var(--akcent); }
+.m-tab-st { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) 150px; gap: 16px; align-items: start; }
+.m-tab-st h3 { font: 800 .92rem/1.1 var(--nadpis); letter-spacing: .12em; text-transform: uppercase; color: var(--text); margin: 0 0 4px; padding-bottom: 6px; border-bottom: 2px dashed var(--okraj-svetly); display: flex; justify-content: space-between; }
+.m-tab-st h3 span { color: var(--akcent); letter-spacing: 0; }
+.m-tab-st .zamer { font-size: .8rem; color: var(--tlmeny); margin: 0 0 12px; }
+.m-lis { position: relative; background: color-mix(in srgb, var(--akcent-svetly) 9%, var(--plocha-2)); border: 1px solid var(--okraj-svetly); border-radius: 3px; padding: 14px 12px 10px; margin-bottom: 12px; box-shadow: 0 6px 12px rgba(0,0,0,calc(.35 * var(--tma))); transform: rotate(var(--r, -.6deg)); }
+.m-lis:nth-child(even) { --r: .7deg; }
+.m-lis::before { content: ""; position: absolute; top: -6px; left: 50%; width: 13px; height: 13px; margin-left: -6px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--akcent-svetly), var(--akcent) 55%, var(--akcent-tmavy)); box-shadow: 0 2px 3px rgba(0,0,0,.4); }
+.m-lis h4 { font: 700 .95rem/1.25 var(--nadpis); margin: 0 0 3px; }
+.m-lis p { font-size: .8rem; color: var(--tlmeny); margin: 0; }
+.m-lis .ob { display: flex; gap: 6px; align-items: center; font-size: .7rem; color: var(--slaby-text); margin-bottom: 4px; }
+.m-lis .ob i { width: 8px; height: 8px; border-radius: 50%; background: var(--obl); display: inline-block; }
+.m-vypite { border: 2px dashed var(--okraj-svetly); border-radius: 10px; padding: 12px; text-align: center; }
+.m-vypite .poh { display: flex; justify-content: center; gap: 3px; flex-wrap: wrap; margin: 8px 0; }
+.m-vypite .poh i { width: 10px; height: 16px; border: 2px solid var(--tlmeny); border-top: 0; border-radius: 0 0 3px 3px; opacity: .8; }
+.m-ucetka { background: color-mix(in srgb, var(--akcent-svetly) 9%, var(--plocha-2)); border: 1px solid var(--okraj-svetly); border-radius: 3px; padding: 14px 16px; font: .86rem/1.5 ui-monospace, Consolas, monospace; box-shadow: 0 6px 12px rgba(0,0,0,calc(.35 * var(--tma))); }
+.m-ucetka div { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dotted var(--okraj-svetly); padding: 3px 0; }
+.m-ucetka .sum { font-weight: 700; font-size: 1rem; border-bottom: 0; border-top: 2px solid var(--text); margin-top: 6px; padding-top: 6px; }
+
+/* hlavička v hre (N4) */
+.m-zapas { display: flex; align-items: center; gap: 10px; padding: 4px 6px 4px 10px; border: 1px solid var(--okraj-svetly); border-radius: 999px; background: var(--plocha); font-size: .86rem; white-space: nowrap; }
+.m-kod { font: 800 .8rem/1 var(--nadpis); letter-spacing: .12em; color: var(--akcent); }
+.m-sep { width: 1px; height: 20px; background: var(--okraj-svetly); }
+.m-skore { display: flex; align-items: center; gap: 8px; font: 700 1.05rem/1 var(--nadpis); font-variant-numeric: tabular-nums; }
+.m-skore .m-av { width: 26px; height: 26px; }
+.m-pop { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 4px; border-radius: 999px; background: var(--plocha-3); }
+.m-pop svg { width: 22px; height: 14px; }
+.m-pop.ja { box-shadow: inset 0 0 0 1px var(--ja); } .m-pop.su { box-shadow: inset 0 0 0 1px var(--su); }
+.m-odp { display: inline-flex; align-items: center; gap: 6px; color: var(--cervena-text); font-weight: 600; font-size: .8rem; }
+.m-odp::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 2px solid currentColor; }
+.m-partia-btn::after { content: " ▾"; font-size: .8em; }
+.m-menu { position: absolute; right: 70px; top: 58px; width: 230px; background: var(--plocha-2); border: 1px solid var(--okraj-svetly); border-radius: 12px; padding: 6px; box-shadow: 0 10px 30px rgba(0,0,0,.35); font-size: .9rem; z-index: 2; }
+.m-menu div { padding: 9px 10px; border-radius: 8px; display: flex; justify-content: space-between; }
+.m-menu div + div { border-top: 1px solid var(--okraj); }
+.m-menu .neb { color: var(--cervena-text); }
+.m-menu .upoz { color: var(--akcent); font-weight: 600; }
+
+/* mriežka webu (N4) */
+.m-mriezka { position: relative; height: 420px; background: var(--pozadie); border-bottom: 1px solid var(--okraj); }
+.m-ciara { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed var(--c, var(--cervena-text)); }
+.m-ciara span { position: absolute; top: var(--y, 70px); left: 6px; font: 700 1.25rem/1.2 var(--pismo); color: var(--c, var(--cervena-text)); white-space: nowrap; background: var(--pozadie); padding: 1px 4px; border-radius: 4px; }
+.m-blok { position: absolute; top: var(--t); height: var(--h); left: var(--l); width: var(--w); background: var(--plocha); border: 1px solid var(--okraj-svetly); border-radius: 8px; font: 600 1.35rem/1.2 var(--pismo); color: var(--tlmeny); padding: 10px 14px 10px 150px; }
+
+/* pravidlá (N5) */
+.m-prav { display: grid; grid-template-columns: 272px minmax(0, 760px) 240px; gap: 44px; justify-content: center; padding: 18px var(--m-okraj, 32px) 0; }
+.m-prav.pred-rozl { grid-template-columns: 272px minmax(0, 760px); justify-content: start; }
+.m-bok { display: flex; flex-direction: column; gap: 10px; font-size: .9rem; }
+.m-bok-h { display: flex; justify-content: space-between; align-items: baseline; }
+.m-bok-h h2 { font-size: 1.3rem; margin: 0; }
+.m-sip { display: inline-flex; gap: 4px; align-items: center; font-size: .82rem; font-variant-numeric: tabular-nums; color: var(--tlmeny); }
+.m-sip b { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--okraj-svetly); color: var(--text); font-weight: 600; }
+.m-pokrok { height: 4px; border-radius: 2px; background: var(--plocha-3); overflow: hidden; } .m-pokrok i { display: block; height: 100%; width: 13%; background: var(--akcent); }
+.m-hladaj { border: 1px solid var(--okraj-svetly); border-radius: 9px; padding: 9px 12px; color: var(--slaby-text); background: var(--plocha); }
+.m-ob-cast { font: 700 .72rem/1 var(--pismo); letter-spacing: .08em; color: var(--akcent); text-transform: uppercase; margin-top: 4px; display: flex; justify-content: space-between; }
+.m-ob-cast span { color: var(--slaby-text); letter-spacing: 0; text-transform: none; font-weight: 500; }
+.m-kap { display: grid; grid-template-columns: 22px 1fr; padding: 5px 10px; border-radius: 8px; color: var(--tlmeny); }
+.m-kap.akt { background: var(--plocha-3); color: var(--text); font-weight: 700; box-shadow: inset 3px 0 0 var(--akcent); }
+.m-kap.akt.pred-akt { box-shadow: inset 3px 0 0 var(--akcent); }
+.m-kap .pp { grid-column: 2; margin-top: 6px; display: grid; gap: 3px; font-weight: 400; font-size: .84rem; color: var(--tlmeny); }
+.m-kap .pp span.ak { color: var(--akcent); }
+.m-kniha { font-size: 1.02rem; line-height: 1.65; }
+.m-kniha p { max-width: 68ch; }
+.m-dalej { display: inline-block; margin-top: 10px; padding: 10px 14px; border: 1px solid var(--okraj); border-radius: 10px; color: var(--tlmeny); }
+.m-dalej b { color: var(--text); }
+.m-kniha hr { border: 0; border-top: 1px solid var(--okraj); margin: 26px 0; }
+.m-koniec { display: flex; align-items: center; gap: 12px; margin: 26px 0 22px; color: var(--slaby-text); font: 700 .74rem/1 var(--pismo); letter-spacing: .1em; text-transform: uppercase; }
+.m-koniec::before, .m-koniec::after { content: ""; flex: 1; border-top: 1px solid var(--okraj); }
+.m-ilu { height: 150px; border-radius: 12px; background:
+  radial-gradient(ellipse 30% 60% at 50% 100%, color-mix(in srgb, var(--akcent) 30%, transparent), transparent),
+  linear-gradient(180deg, color-mix(in srgb, var(--plocha-3) 60%, var(--pozadie)), var(--plocha-2)); border: 1px solid var(--okraj); display: grid; place-items: center; color: var(--slaby-text); font-size: .8rem; }
+.m-kicker { font: 700 .74rem/1 var(--pismo); letter-spacing: .1em; text-transform: uppercase; color: var(--akcent); margin: 14px 0 6px; }
+.m-kniha h2 { font-size: 2rem; margin: 0 0 12px; }
+.m-vs { background: var(--plocha-2); border-left: 4px solid var(--akcent); border-radius: 10px; padding: 10px 16px; font-size: .95rem; }
+.m-vs .m-cap { color: var(--akcent); }
+.m-vs ul { margin: 6px 0 0; padding-left: 18px; }
+.m-rail { position: sticky; top: 16px; font-size: .86rem; display: grid; gap: 8px; align-content: start; align-self: start; border-left: 1px solid var(--okraj); padding-left: 16px; }
+.m-rail span { color: var(--tlmeny); }
+.m-rail span.ak { color: var(--text); font-weight: 600; box-shadow: -17px 0 0 -15px var(--akcent); }
+
+/* odporúčanie, otázky */
+.poradie { counter-reset: p; list-style: none; padding: 0; display: grid; gap: 10px; }
+.poradie li { counter-increment: p; background: var(--plocha); border: 1px solid var(--okraj); border-radius: var(--polomer); padding: 12px 16px 12px 56px; position: relative; max-width: none; }
+.poradie li::before { content: counter(p); position: absolute; left: 18px; top: 10px; font: 700 1.5rem/1 var(--nadpis); color: var(--akcent); }
+.otazky li { margin-bottom: 8px; }
+.pozn { font-size: .86rem; color: var(--slaby-text); }
+</style>
+</head>
+<body>
+<div class="r-obal">
+
+<header class="r-hlava">
+  <p class="slb" style="margin:0 0 6px;font-size:.85rem">Dizajn UI · návrh <b>vyvoj-web-20261026-1520</b> · 26. 10. 2026 · UI dizajnér (AI)</p>
+  <h1>Vývoj, roadmapa a kostra celého webu</h1>
+  <div class="r-meta">
+    <span>Cieľ: <code>/vyvoj</code>, <code>/vyvoj/roadmapa</code>, hlavička a šírka webu, navigácia v <code>/pravidla</code></span>
+    <span>UX pohľad: <a href="dizajn-vyvoj-web-20261026-1520-ux.html">dizajn-vyvoj-web-20261026-1520-ux.html</a></span>
+  </div>
+  <div class="verdikt">
+    <p><b>Verdikt.</b> Stránka Vývoj má dobré dáta, ale nesprávnu hierarchiu: najdôležitejší obsah (roadmapa) je za najslabším prvkom stránky, malým čipom pod perexom. Roadmapa sa pritom do bežného notebooku (1366–1440 px) nezmestí, lebo každý stĺpec má aspoň 270 px. Graf známok kreslí os 1–10, takže pohyb v rozpätí 6,3–7,2 vyzerá ako rovná čiara.</p>
+    <p>Celý web má na 1920 px <b>šesť rôznych ľavých hrán</b> a hlavička v hre mení šírku aj správanie menu. Odporúčam jednu stránku Vývoj so sekčným pásom (N2) a nad ňou jednotnú kostru: hlavička vždy na celú šírku, tri šírky obsahu cez tokeny a v hre zápasový štítok so špakmi (N4 B+C). Ako rýchlu výhru na dnes: roadmapa bez orezania (N1). V Pravidlách tlačidlo „Ďalej“ zrušiť. Navigáciu nesie bok so šípkami a pravý stĺpec podkapitol (N5).</p>
+  </div>
+</header>
+
+<nav class="r-nav" aria-label="Obsah návrhu">
+  <a href="#stav">Súčasný stav</a><a href="#audit">Audit</a><a href="#n1">N1</a><a href="#n2">N2</a><a href="#n3">N3</a><a href="#n4">N4</a><a href="#n5">N5</a><a href="#poradie">Poradie</a><a href="#otazky">Otázky</a>
+  <label>Schéma ukážok
+    <select id="schema">
+      <option value="auto">podľa systému</option>
+      <option value="krcma">Krčma</option>
+      <option value="noc">Polnoc na dedine</option>
+      <option value="listok">Jedálny lístok (svetlá)</option>
+    </select>
+  </label>
+</nav>
+<noscript><p class="pozn">Bez JavaScriptu sú ukážky v plnej šírke (posuň ich do strany) a prepínače pred/po ukážu obe verzie.</p></noscript>
+
+<!-- ============================ SÚČASNÝ STAV ============================ -->
+<section class="r" id="stav" aria-labelledby="stav-h">
+  <h2 id="stav-h">Súčasný stav</h2>
+  <p class="tlm">Snímky z lokálneho servera <code>:5179</code> (origin/master 6734665) a zo živého webu (Vývoj so známkami). Lokálne nie sú známky, preto je graf zo živého webu. Všetky snímky sú v <code>playtest/dizajn/vyvoj-web-20261026-1520/</code>, poznámky v <code>ui-poznamky.md</code>.</p>
+  <div class="snimky">
+    <figure class="siroka">
+      <img src="dizajn-vyvoj-web-20261026-1520/sucasna-roadmapa-1440.jpg" alt="Roadmapa na 1440 px: stĺpec Hotové je mimo obrazovky, Neskôr siaha až po okraj" width="1100" height="688" loading="lazy">
+      <figcaption><b>Roadmapa, 1440 px, správca (živý web).</b> Šesť stĺpcov × min. 270 px + medzery = 1 680 px, k dispozícii 1 400 px. Stĺpec Hotové (67 položiek) je celý mimo, Neskôr siaha po okraj a lišta posunu nie je vidieť. Prepínač „Kde hra je / Roadmapa“ sú dva 30 px čipy pod perexom. <span class="slb">152335-zivy-rm-1440-hore</span></figcaption>
+    </figure>
+    <figure>
+      <img src="dizajn-vyvoj-web-20261026-1520/sucasny-vyvoj.jpg" alt="Stránka Vývoj so známkami: graf s plochou čiarou, úzka tabuľka kritérií" width="1000" height="1013" loading="lazy">
+      <figcaption><b>Vývoj, 1600 px (živý web).</b> Graf má os 1–10 a pri dátach 6,3–7,2 kreslí plochú čiaru. Kritériá sú v selecte a v tabuľke, ktorá zaberá 550 z 1 560 px. Zásady sú päť plných panelov. <span class="slb">152324-zivy-vyvoj-cela</span></figcaption>
+    </figure>
+    <figure>
+      <img src="dizajn-vyvoj-web-20261026-1520/vyvoj-mobil-ciele.jpg" alt="Mobil: tabuľka cieľov s piatimi stĺpcami, posledný za okrajom" width="390" height="760" loading="lazy" style="max-width:300px;margin:0 auto">
+      <figcaption><b>Vývoj, mobil 390 px.</b> V tabuľke cieľov je 5 stĺpcov a stĺpec „Kto meria“ je za okrajom. Metriky sa lámu na 3–4 riadky. <span class="slb">152326-vyvoj-mobil-cela</span></figcaption>
+    </figure>
+    <figure class="siroka">
+      <img src="dizajn-vyvoj-web-20261026-1520/hlavicka-mimo-hry-1920.jpg" alt="Hlavička mimo hry na 1920 px: logo odsadené 300 px od okraja" width="1200" height="41" loading="lazy">
+      <img src="dizajn-vyvoj-web-20261026-1520/hlavicka-v-hre-1920.jpg" alt="Hlavička v hre na 1920 px: logo pri ľavom okraji, vpravo blok partie" width="1200" height="41" loading="lazy" style="margin-top:8px">
+      <figcaption><b>Hlavička na 1920 px: mimo hry (hore) a v hre (dole).</b> Mimo hry má vnútro max. 1 360 px a logo je 300 px od okraja. V hre sa hlavička roztiahne a logo skočí k okraju. Blok partie má 6 rovnako hlasných prvkov a nemá kde ukázať skóre. <span class="slb">152343-domov-1920, 152551-hrac1-hra-1920</span></figcaption>
+    </figure>
+    <figure>
+      <img src="dizajn-vyvoj-web-20261026-1520/hlavicka-v-hre-1366.jpg" alt="Hlavička v hre na 1366 px: navigácia schovaná v hamburgeri" width="1000" height="97" loading="lazy">
+      <figcaption><b>V hre, 1366 px.</b> Menu odišlo za hamburger, hoci mimo hry je na tej istej šírke vypísané (<code>styles.css:664</code>). Hráč tak v hre a mimo nej vidí dve rôzne hlavičky. <span class="slb">152559-hrac1-hra-1366-hore</span></figcaption>
+    </figure>
+    <figure>
+      <img src="dizajn-vyvoj-web-20261026-1520/novinky-1920.jpg" alt="Novinky na 1920 px: obsah začína 550 px od okraja, logo na 300 px" width="1100" height="172" loading="lazy">
+      <figcaption><b>Novinky, 1920 px.</b> Obsah začína na 550 px, logo na 300 px a Karty na 380 px. Pri prechode medzi stránkami ľavá hrana skáče. <span class="slb">152359-novinky-1920-hore</span></figcaption>
+    </figure>
+    <figure>
+      <img src="dizajn-vyvoj-web-20261026-1520/pravidla-dalej.jpg" alt="Pravidlá: tlačidlo Ďalej Ako sa vyhráva a hneď pod ním ilustrácia ďalšej kapitoly" width="900" height="513" loading="lazy">
+      <figcaption><b>Pravidlá, 1440 px.</b> Tlačidlo „Ďalej: Ako sa vyhráva →“ je asi 100 px nad ilustráciou tej istej kapitoly. Ľavý bok s obsahom a zvýraznenou kapitolou už existuje, takže tlačidlo nič nepridáva. <span class="slb">152531-pravidla-dalej-hore</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================ AUDIT ============================ -->
+<section class="r" id="audit" aria-labelledby="audit-h">
+  <h2 id="audit-h">Audit</h2>
+  <div class="filtre" role="group" aria-label="Filtrovať podľa závažnosti">
+    <button class="r-btn" type="button" data-filter="vsetko" aria-pressed="true">Všetko <span class="slb">13</span></button>
+    <button class="r-btn" type="button" data-filter="vysoka" aria-pressed="false">Vysoká <span class="slb">5</span></button>
+    <button class="r-btn" type="button" data-filter="stredna" aria-pressed="false">Stredná <span class="slb">5</span></button>
+    <button class="r-btn" type="button" data-filter="nizka" aria-pressed="false">Nízka <span class="slb">3</span></button>
+  </div>
+  <div class="tab-obal">
+  <table class="audit">
+    <thead><tr><th>#</th><th>Oblasť</th><th>Problém</th><th>Dôkaz</th><th>Závažnosť</th></tr></thead>
+    <tbody>
+      <tr data-zav="vysoka"><td>A1</td><td>Hierarchia</td><td>Roadmapa a „Kde hra je“ sú za dvoma čipmi 0,9rem pod perexom. Je to najmenší prvok v hlavičke stránky, hoci nesie polovicu obsahu. Čip je <code>&lt;a&gt;</code>, takže dedí jantárovú farbu a podčiarknutie odkazu. Nevyzerá ako prepínač ani ako záložka.</td><td><code>Vyvoj.tsx:262–269</code>, <code>stranky.css:21–34</code>; 152211-vyvoj-1600</td><td><span class="zav vysoka">vysoká</span></td></tr>
+      <tr data-zav="vysoka"><td>A2</td><td>Mriežka</td><td>Roadmapa je orezaná: <code>grid-auto-columns: minmax(270px, 1fr)</code> s <code>overflow-x: auto</code>. Pre hráča (5 stĺpcov) treba 1 398 px a pre správcu (6 stĺpcov) 1 680 px. Na 1366 aj 1440 px je Hotové mimo obrazovky a nič nenaznačuje, že sa dá posúvať.</td><td><code>vyvoj.css:418–425</code>; 152227, 152317, 152335-zivy-rm-1440</td><td><span class="zav vysoka">vysoká</span></td></tr>
+      <tr data-zav="vysoka"><td>A3</td><td>Mriežka</td><td>Na 1920 px je šesť rôznych ľavých hrán: hlavička 300, Vývoj a Pravidlá 180, Domov a Karty 380, Spätná väzba 530, Novinky 550 a hra 20 px. Logo nie je zarovnané s ničím pod ním.</td><td><code>styles.css:338–339</code> (1 360), <code>:528–538</code> (1 200 / 1 600), <code>novinky.css:4</code> (820)</td><td><span class="zav vysoka">vysoká</span></td></tr>
+      <tr data-zav="vysoka"><td>A4</td><td>Konzistencia</td><td>Hlavička sa v hre mení. Má inú šírku (logo skočí z 300 na 20 px), iné medzery a na 1366–1399 px skryje menu za hamburger, kým mimo hry je menu vypísané. Pre hru je v CSS päť samostatných media queries.</td><td><code>styles.css:618–694</code>; 152551 vs. 152343, 152559 vs. 152227</td><td><span class="zav vysoka">vysoká</span></td></tr>
+      <tr data-zav="vysoka"><td>A5</td><td>Hierarchia (hra)</td><td>Blok partie v hlavičke má šesť prvkov s rovnakou váhou: kód, stav súpera, kontumácia, hudba, vzdať sa a odísť. Nebezpečná akcia „vzdať sa“ je trvalo na očiach a pre skóre ani špaky (v6) nie je miesto.</td><td><code>HernaPlocha.tsx:5006–5060</code>; 152551-hrac1-hra-1920</td><td><span class="zav vysoka">vysoká</span></td></tr>
+      <tr data-zav="stredna"><td>A6</td><td>Dátová vizualizácia</td><td>Graf známok má pevnú os 1–10 (<code>(10 − v) / 9</code>), takže celý priebeh 6,3–7,2 zaberie desatinu výšky. Zmena o 0,6 sa nedá prečítať. Kritérium sa vyberá v selecte a 12 kritérií sa nedá porovnať naraz.</td><td><code>GrafZnamok.tsx:78</code>, <code>:189</code>; 152324-zivy-vyvoj</td><td><span class="zav stredna">stredná</span></td></tr>
+      <tr data-zav="stredna"><td>A7</td><td>Využitie šírky</td><td>Na Vývoji pri 1600 px zaberá tabuľka kritérií 550 px (<code>max-width: 760px</code>) a vpravo je 1 000 px prázdna. Zásady sú päť plných panelov s textom do 85ch, takže pravá polovica je zasa prázdna.</td><td><code>vyvoj.css</code> koniec, <code>.vyvoj-zasady p</code>; 152324</td><td><span class="zav stredna">stredná</span></td></tr>
+      <tr data-zav="stredna"><td>A8</td><td>Responzivita</td><td>Na mobile má tabuľka cieľov 5 stĺpcov a „Kto meria“ je za okrajom (vodorovný posun). Roadmapa sú stĺpce pod sebou: na živom webe asi 45 kariet plus Hotové a filtre zaberú 3 riadky.</td><td>152326-vyvoj-mobil, 152334-roadmapa-mobil</td><td><span class="zav stredna">stredná</span></td></tr>
+      <tr data-zav="stredna"><td>A9</td><td>Pravidlá</td><td>Tlačidlo „Ďalej: …“ na konci kapitoly je asi 100 px nad ďalšou kapitolou. Duplikuje bok s obsahom a v súvislom texte pôsobí ako koniec stránky. Na 1920 px je vpravo od textu 660 px prázdneho miesta.</td><td><code>Pravidla.tsx:538–548</code>, <code>stranky.css:618</code>; 152531, 152454-pravidla-1920</td><td><span class="zav stredna">stredná</span></td></tr>
+      <tr data-zav="stredna"><td>A10</td><td>Typografia</td><td>Dlaždice na Vývoji spájajú dve čísla bodkou („0 · 6“, „9,0 · 8,5“). Bez popisu pod nimi sa nedajú prečítať a popis je drobný text 0,88rem.</td><td><code>Vyvoj.tsx:99–124</code>; 152324</td><td><span class="zav stredna">stredná</span></td></tr>
+      <tr data-zav="nizka"><td>A11</td><td>Kontrast</td><td><code>--slaby</code> na <code>--plocha-2</code> = <b>3,96 : 1</b> (&lt; 4,5) v hlavičke menu účtu (login a rola). <code>--slaby</code> na <code>--plocha</code> = 4,35 : 1. Ostatný text prešiel: <code>--slaby-text</code>/plocha 5,52, <code>--tlmeny</code>/plocha 7,41, <code>--graf-ai</code>/plocha 4,88 a <code>--graf-ludia</code>/plocha 5,72.</td><td><code>styles.css:469–472</code></td><td><span class="zav nizka">nízka</span></td></tr>
+      <tr data-zav="nizka"><td>A12</td><td>Komponenty</td><td>Filtre oblastí v roadmape a prepínač stránky vyzerajú rovnako (ten istý <code>.cip</code>), hoci jeden filtruje a druhý mení stránku. Obidva majú výšku asi 30 px, pod 44 px na dotyk.</td><td><code>Roadmapa.tsx:405–416</code></td><td><span class="zav nizka">nízka</span></td></tr>
+      <tr data-zav="nizka"><td>A13</td><td>Hierarchia</td><td>Na Vývoji nie je hlavné tlačidlo. „Pozrieť roadmapu →“ je sivé tlačidlo na konci stránky a „Ohodnotiť hru“, jediná akcia, ktorou hráč dáta mení, je len odkaz v perexe.</td><td><code>Vyvoj.tsx:286–292</code></td><td><span class="zav nizka">nízka</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============================ NÁVRHY ============================ -->
+<section class="r" id="navrhy" aria-labelledby="navrhy-h">
+  <h2 id="navrhy-h">Návrhy</h2>
+  <p class="tlm">Zoradené od najmenšieho zásahu. Ukážky sú živé HTML s tokenmi webu, zmenšené do okna (lišta nad nimi ukazuje šírku). Prepínač „Schéma ukážok“ hore overí, či fungujú aj vo svetlej schéme.</p>
+
+  <!-- N1 -->
+  <article class="navrh" id="n1" aria-labelledby="n1-h">
+    <div class="navrh-hlava"><h3 id="n1-h">N1 · Roadmapa celá v okne a záložky namiesto čipov</h3><span class="stitok">rýchla výhra · ≈ 1 h</span><span class="stitok">malá</span></div>
+    <dl class="udaje">
+      <dt>Rieši</dt><dd>A1, A2, A12 (čiastočne A13)</dd>
+      <dt>Zmena</dt><dd>(1) Stĺpce roadmapy sa delia o šírku okna. Hotové je zbalené do úzkej lišty, ktorá sa po kliknutí rozbalí ako bočný panel (komponent detailu <code>.rm-detail</code> už existuje). (2) Krátky text karty má najviac 2 riadky. (3) Čipy „Kde hra je / Roadmapa“ nahradia záložky s počtom (Bitter 1.05rem, jantárová podčiarkovacia čiara 3 px, výška 44 px).</dd>
+      <dt>Mobil</dt><dd>Pod 900 px ostáva dnešné správanie (stĺpce pod sebou). Lepší mobil prináša N2.</dd>
+      <dt>Súbory</dt><dd><code>stranky/vyvoj.css</code> (<code>.rm-tabula</code>, <code>.rm-kratko</code>, nové <code>.zalozky</code>), <code>stranky/Vyvoj.tsx</code> (nav), <code>stranky/Roadmapa.tsx</code> (Hotové ako lišta)</dd>
+    </dl>
+<pre><code>/* vyvoj.css — stĺpce sa delia o šírku; Hotové = 64 px lišta */
+@media (min-width: 900px) {
+  .rm-tabula {
+    grid-auto-flow: initial;
+    grid-template-columns: repeat(var(--rm-stlpce), minmax(0, 1fr)) 64px;
+    overflow-x: visible;
+  }
+}
+.rm-kratko { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* Roadmapa.tsx: style={{ "--rm-stlpce": stlpce.length - 1 }} ; Hotové → &lt;button class="rm-hotove-lista"&gt; */</code></pre>
+    <p class="pozn">Výpočet: na 1366 px je 1 326 px obsahu. Správca má 5 stĺpcov po (1 326 − 64 − 5 × 10) / 5 = 242 px, hráč 4 stĺpce po 303 px. Text karty pri 242 px má asi 34 znakov na riadok, a to je ešte čitateľné.</p>
+    <div class="porovnanie pod-sebou" data-start="oba">
+      <div class="prepinac" role="group" aria-label="Pred alebo po (N1)"><button class="r-btn" type="button" data-rezim="pred">Pred</button><button class="r-btn" type="button" data-rezim="po">Po</button><button class="r-btn" type="button" data-rezim="oba">Oboje</button></div>
+      <div class="stlpce">
+        <div class="pred">
+          <p class="ukazka-popis">Pred · 1366 px · správca</p>
+          <div class="okno" data-sirka="1366"><div class="okno-lista"><span>naex / vyvoj / roadmapa</span><span>1366 px</span></div><div class="okno-vnutro">
+            <div class="m" style="padding:20px 20px 24px;height:640px;overflow:hidden">
+              <h1>Kam hra smeruje</h1>
+              <p class="tlm" style="max-width:640px">NA EX! sa ešte ladí. Tu vidno, ako hru hodnotia hráči a AI playtesteri v čase, podľa čoho sa rozhoduje, čo ďalej, a čo je na rade.</p>
+              <div style="display:flex;gap:6px;margin:4px 0 22px"><span class="m-cip odkaz">Kde hra je</span><span class="m-cip akt">Roadmapa</span></div>
+              <div style="display:flex;gap:6px;margin-bottom:14px"><span class="m-cip akt">Všetko</span><span class="m-cip obl-pravidla"><i></i>Pravidlá a balans</span><span class="m-cip obl-ui"><i></i>Rozhranie</span><span class="m-cip obl-karty"><i></i>Karty</span><span class="m-cip obl-2v2"><i></i>2 na 2</span><span class="m-cip obl-platforma"><i></i>Platforma</span><span class="m-cip obl-komunita"><i></i>Ľudia a komunita</span></div>
+              <div class="m-rm" data-rm="stary"></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="po">
+          <p class="ukazka-popis"><b>Po</b> · 1366 px · správca</p>
+          <div class="okno" data-sirka="1366"><div class="okno-lista"><span>naex / vyvoj / roadmapa</span><span>1366 px</span></div><div class="okno-vnutro">
+            <div class="m" style="padding:20px 20px 24px;height:640px;overflow:hidden">
+              <h1>Kam hra smeruje</h1>
+              <p class="tlm" style="max-width:640px">NA EX! sa ešte ladí. Tu vidno, ako hru hodnotia hráči a AI playtesteri v čase, podľa čoho sa rozhoduje, čo ďalej, a čo je na rade.</p>
+              <div class="m-zalozky" style="margin:6px 0 16px"><span class="m-zal">Kde hra je <span class="m-pocet">6,9</span></span><span class="m-zal akt">Roadmapa <span class="m-pocet">45</span></span></div>
+              <div style="display:flex;gap:6px;margin-bottom:14px;align-items:center"><span class="m-cap" style="margin-right:6px">Oblasť</span><span class="m-cip akt">Všetko</span><span class="m-cip obl-pravidla"><i></i>Pravidlá a balans</span><span class="m-cip obl-ui"><i></i>Rozhranie</span><span class="m-cip obl-karty"><i></i>Karty</span><span class="m-cip obl-2v2"><i></i>2 na 2</span><span class="m-cip obl-platforma"><i></i>Platforma</span><span class="m-cip obl-komunita"><i></i>Ľudia</span><span class="m-btn hl male" style="margin-left:auto">+ Položka</span></div>
+              <div class="m-rm2 admin" data-rm="novy" data-admin="1"></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- N2 -->
+  <article class="navrh odporucany" id="n2" aria-labelledby="n2-h">
+    <div class="navrh-hlava"><h3 id="n2-h">N2 · Vývoj ako jedna stránka: známky, roadmapa, zásady</h3><span class="stitok hlavny">odporúčaný</span><span class="stitok">stredná · ≈ 1–1,5 dňa</span></div>
+    <dl class="udaje">
+      <dt>Rieši</dt><dd>A1, A2, A6, A7, A8, A10, A13 (s N1 ako základom roadmapy)</dd>
+      <dt>Štruktúra</dt><dd>
+        Jedna stránka a nad ňou <b>sekčný pás</b> (sticky pod hlavičkou): <i>Známky 6,9 · Roadmapa 45 · Zásady a ciele</i> + jediné hlavné tlačidlo <b>Ohodnotiť hru</b>. Pás je zároveň scrollspy, aktívna sekcia má jantárovú linku. <code>/vyvoj/roadmapa</code> ostáva ako adresa a skočí na kotvu <code>#roadmapa</code> (staré odkazy fungujú).<br>
+        <b>1. Známky:</b> 4 dlaždice s jedným číslom a čitateľným popisom (A10). Pod nimi <b>graf a kritériá vedľa seba</b> (7 : 5). Graf má automatickú os (min − 0,5 až max + 0,5, zaokrúhlené na 0,5) a značku zlomu pri osi. Udalosti roadmapy sú hustota pod osou X, nie trojuholníky. Vpravo je 12 kritérií ako riadky s <b>mini-grafom (sparkline)</b> a hodnotou. Klik na riadok prekreslí veľký graf, takže select zmizne. Dve najslabšie a dve najsilnejšie majú štítok textom, nie len farbou.<br>
+        <b>2. Roadmapa:</b> v plnej šírke, podľa N1. <b>3. Zásady a ciele</b> sú vedľa seba. Zásady sú kompaktný číslovaný zoznam (nadpis + 1 riadok) a ciele <b>odrážkové grafy</b> „dnes → cieľ“ namiesto 5-stĺpcovej tabuľky.</dd>
+      <dt>Mobil</dt><dd>Dlaždice 2 × 2, graf, kritériá pod ním. Roadmapa má <b>horizonty ako segmentový prepínač</b> (Teraz 12 · Ďalej 8 · Potom 14 · Neskôr 11 · Hotové), sticky pod sekčným pásom. Naraz sa ukáže jeden horizont, nie 45 kariet pod sebou. Filtre oblastí idú do jedného tlačidla „Oblasť ▾“. Ciele sú karty s odrážkovým grafom, takže stránka sa nikde neposúva do strany.</dd>
+      <dt>Tokeny</dt><dd>Žiadne nové farby. Nový je komponent <code>.sekcny-pas</code> (sticky, <code>top: 64px</code>), ktorý sa hodí aj pre Profil a Štatistiky, a <code>.odrazkovy-graf</code>.</dd>
+      <dt>Súbory</dt><dd><code>stranky/Vyvoj.tsx</code> (jedna stránka, pás, dlaždice, ciele), <code>stranky/GrafZnamok.tsx</code> (os, hustota udalostí, sparkline export), <code>stranky/Roadmapa.tsx</code> (mobilný prepínač horizontov), <code>stranky/vyvoj.css</code>, <code>App.tsx</code> (oba smery na tú istú stránku)</dd>
+    </dl>
+    <div class="porovnanie" data-start="po">
+      <div class="prepinac" role="group" aria-label="Pred alebo po (N2)"><button class="r-btn" type="button" data-rezim="pred">Pred</button><button class="r-btn" type="button" data-rezim="po">Po</button><button class="r-btn" type="button" data-rezim="oba">Oboje</button></div>
+      <div class="stlpce">
+        <div class="pred">
+          <p class="ukazka-popis">Pred · 1600 px · živý web</p>
+          <img src="dizajn-vyvoj-web-20261026-1520/sucasny-vyvoj.jpg" alt="Súčasná stránka Vývoj: dlaždice, plochý graf, úzka tabuľka kritérií" width="1000" height="1013" loading="lazy">
+        </div>
+        <div class="po">
+          <p class="ukazka-popis"><b>Po</b> · 1440 px · hráč</p>
+          <div class="okno" data-sirka="1440"><div class="okno-lista"><span>naex / vyvoj</span><span>1440 px</span></div><div class="okno-vnutro">
+            <div class="m">
+              <div class="m-hl okraj" style="--m-okraj:36px"><span class="m-logo"><span class="m-pohar"></span>NA EX!</span><nav class="m-nav"><span>Pravidlá</span><span>Karty</span><span>Hrať</span><span>Rebríček</span><span>Spätná väzba</span><span>Novinky</span><span class="akt">Vývoj</span></nav><span class="m-ucet"><span class="m-av"></span>Jano</span></div>
+              <div style="max-width:1680px;padding:24px 36px 30px">
+                <h1>Kam hra smeruje</h1>
+                <p class="tlm" style="max-width:72ch">NA EX! sa ešte ladí. Tu vidno, ako hru hodnotia hráči a AI playtesteri v čase, podľa čoho sa rozhoduje, čo ďalej, a čo je na rade.</p>
+                <div class="m-pas"><span class="akt">Známky <span class="m-pocet">6,9</span></span><span>Roadmapa <span class="m-pocet">45</span></span><span>Zásady a ciele</span><span class="m-btn hl">Ohodnotiť hru</span></div>
+
+                <div class="m-sek-h"><h2>Kde hra je</h2><span class="tlm">k 24. 10. · priemer ľudí sa ukáže od 3 hodnotiteľov</span></div>
+                <div class="m-kpi">
+                  <div><div class="m-cap">Priemerná známka</div><div class="vel" style="margin-top:8px">6,9 <span class="dole">▼ 0,1 za týždeň</span></div><div class="pop">zo všetkých 12 kritérií (AI)</div></div>
+                  <div><div class="m-cap">Hodnotitelia</div><div class="dvoj"><span>Ľudia</span><b>0 / 3</b><span>AI playtesteri</span><b>6</b></div><div class="pop">ľudia sa rátajú od 3</div></div>
+                  <div><div class="m-cap m-silne">Najsilnejšie</div><div class="dvoj"><span>Interakcia hráčov</span><b>9,0</b><span>Originalita</span><b>8,5</b></div></div>
+                  <div><div class="m-cap m-slabe">Najslabšie</div><div class="dvoj"><span>Rovnováha a férovosť</span><b>4,7</b><span>Tempo a prestoje</span><b>5,3</b></div></div>
+                </div>
+                <div class="m-dvoj" style="margin-top:14px">
+                  <div class="m-panel m-graf">
+                    <div class="m-leg"><span class="m-cap" style="margin-right:8px">Priemer všetkých kritérií</span><span class="m-cip" style="--c:var(--graf-ludia)"><span class="ciara"></span>Ľudia</span><span class="m-cip" style="--c:var(--graf-ai)"><span class="ciara"></span>AI playtesteri</span><span class="m-cip" style="--c:var(--tlmeny)"><span class="ciara"></span>Spolu</span></div>
+                    <div data-graf="velky"></div>
+                    <p class="slb" style="font-size:.78rem;margin:4px 0 0">Os 5,5–8 (zlom pri osi). Pruhy pod osou = položky roadmapy dokončené v ten deň; klik ich ukáže v stĺpci Hotové.</p>
+                  </div>
+                  <div class="m-panel m-krit">
+                    <div class="m-krit-h"><span class="m-cap">Kritérium</span><span class="m-cap">11.–24. 10.</span><span class="m-cap" style="text-align:right">AI</span></div>
+                    <div data-krit></div>
+                  </div>
+                </div>
+
+                <div class="m-sek-h"><h2>Roadmapa</h2><span class="tlm">stĺpce sú horizonty, poradie zhora je priorita</span></div>
+                <div class="m-rm2" style="--n:4" data-rm="novy" data-max="3"></div>
+
+                <div class="m-sek-h"><h2>Zásady a ciele</h2><span class="tlm">podľa čoho sa rozhoduje a kedy je horizont splnený</span></div>
+                <div class="m-dvoj" style="grid-template-columns:minmax(0,5fr) minmax(0,7fr)">
+                  <ol class="m-zas m-panel">
+                    <li><b>Najprv čitateľnosť, potom čísla</b><span>Každá mechanika musí mať cenu na stole ešte pred rozhodnutím.</span></li>
+                    <li><b>Zmraziť pravidlá a meniť ich po dávkach</b><span>Zmeria stratég, overí playtest, potom rozhodnutie.</span></li>
+                    <li><b>Ľudia pred formátom 2 na 2</b><span>Najprv hodnotenia ľudí tými istými kritériami.</span></li>
+                    <li><b>2 na 2 ako ďalší formát, nie náhrada</b><span>Hlavná ostáva hra 1 na 1.</span></li>
+                    <li><b>Nový obsah až po zmrazení</b><span>Nové karty až nad stabilnými pravidlami.</span></li>
+                  </ol>
+                  <div class="m-panel m-ciele" style="padding:6px 4px">
+                    <div class="m-ciel"><span>Rovnováha a férovosť</span><span class="tr"><i style="width:47%"></i><u style="left:65%"></u></span><span class="h"><b>4,7</b> → ≥ 6,5</span></div>
+                    <div class="m-ciel"><span>Zrozumiteľnosť pravidiel</span><span class="tr"><i style="width:55%"></i><u style="left:65%"></u></span><span class="h"><b>5,5</b> → ≥ 6,5</span></div>
+                    <div class="m-ciel"><span>Víťaz poslednej bitky vyhrá partiu</span><span class="tr"><i style="width:85%"></i><u style="left:65%"></u></span><span class="h"><b>85 %</b> → ≤ 65 %</span></div>
+                    <div class="m-ciel"><span>Lepší bot porazí slabšieho</span><span class="tr"><i style="width:67%"></i><u style="left:72%"></u></span><span class="h"><b>67 %</b> → ≥ 72 %</span></div>
+                    <div class="m-ciel"><span>Dĺžka strednej partie</span><span class="tr"><i style="width:69%"></i><u style="left:50%"></u></span><span class="h"><b>83 min</b> → ≤ 60</span></div>
+                    <div class="m-ciel"><span>Ľudia s hodnotením hry</span><span class="tr"><i style="width:0%"></i><u style="left:100%;margin-left:-3px"></u></span><span class="h"><b>0</b> → ≥ 10</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div></div>
+          <p class="ukazka-popis" style="margin-top:16px"><b>Po</b> · mobil 390 px</p>
+          <div class="okno" data-sirka="390" style="max-width:300px"><div class="okno-lista"><span>vyvoj</span><span>390</span></div><div class="okno-vnutro">
+            <div class="m m-mob">
+              <div class="m-hl"><span class="m-logo"><span class="m-pohar"></span>NA EX!</span><span class="m-ham"><i></i><i></i><i></i></span></div>
+              <div style="padding:14px 16px 0"><h1 style="font-size:1.8rem">Kam hra smeruje</h1></div>
+              <div class="m-pas" style="padding:6px 10px;gap:0;font-size:.86rem"><span class="akt" style="padding:8px 10px">Známky</span><span style="padding:8px 10px">Roadmapa</span><span style="padding:8px 10px">Ciele</span></div>
+              <div style="padding:12px 16px" class="m-kpi" data-mob-kpi>
+                <div><div class="m-cap">Priemer</div><div class="vel" style="font-size:1.7rem;margin-top:6px">6,9</div><div class="pop"><span class="dole">▼ 0,1</span> za týždeň</div></div>
+                <div><div class="m-cap">Hodnotitelia</div><div class="dvoj"><span>Ľudia</span><b>0</b><span>AI</span><b>6</b></div></div>
+              </div>
+              <div style="padding:0 16px"><div class="m-panel" style="padding:10px"><div data-graf="maly"></div></div></div>
+              <div class="m-sek-h" style="padding:0 16px;margin:22px 0 8px"><h2 style="font-size:1.3rem">Roadmapa</h2></div>
+              <div class="m-seg"><span class="m-cip akt">Teraz 12</span><span class="m-cip">Ďalej 8</span><span class="m-cip">Potom 14</span><span class="m-cip">Neskôr 11</span></div>
+              <div style="padding:10px 16px;display:grid;gap:8px" data-rm-mob></div>
+              <div style="padding:6px 16px 18px"><span class="m-btn male" style="width:100%;justify-content:center">Oblasť: všetky ▾</span></div>
+              <div style="padding:0 16px 20px;display:grid;gap:8px">
+                <div class="m-ciel-k"><div class="r1"><span>Rovnováha a férovosť</span><span><b>4,7</b> → ≥ 6,5</span></div><div class="m-ciel" style="display:block;padding:0;border:0"><span class="tr" style="display:block"><i style="width:47%"></i><u style="left:65%"></u></span></div></div>
+                <div class="m-ciel-k"><div class="r1"><span>Víťaz poslednej bitky vyhrá partiu</span><span><b>85 %</b> → ≤ 65 %</span></div><div class="m-ciel" style="display:block;padding:0;border:0"><span class="tr" style="display:block"><i style="width:85%"></i><u style="left:65%"></u></span></div></div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- N3 -->
+  <article class="navrh" id="n3" aria-labelledby="n3-h">
+    <div class="navrh-hlava"><h3 id="n3-h">N3 · Krčmová tabuľa — odvážny smer s identitou</h3><span class="stitok">odvážny</span><span class="stitok">stredná až veľká · ≈ 2 dni</span></div>
+    <dl class="udaje">
+      <dt>Rieši</dt><dd>A1, A2, A10. Zároveň posilňuje identitu a pripravuje vizuálny jazyk pre <b>krčmovú nástenku z pravidiel v6</b> (fotka víťaza a špaky pri lokalite).</dd>
+      <dt>Myšlienka</dt><dd>Rozloženie ako v N2, ale roadmapa nevyzerá ako SaaS kanban. Je to <b>nástenka v krčme</b>: drevený rám, stĺpce popísané kriedou („Teraz na čape“, „Ďalej na rade“, „Potom“, „Raz, keď bude čas“) a položky ako <b>lístky pripnuté jantárovým špendlíkom</b>, mierne natočené (±0,7°, pri hoveri a fokuse rovné). Hotové je „Vypité“: rad prázdnych poldecákov s počtom. Súhrn známok je <b>účtenka</b> s bodkovanými riadkami a súčtom.<br>Ten istý komponent <code>.nastenka</code> + <code>.listok-pripnuty</code> potom nesie v hre nástenku lokalít (v6), takže web a stôl hovoria jedným jazykom.</dd>
+      <dt>Prístupnosť</dt><dd>Natočenie je len <code>transform</code> (text ostáva text), pri <code>prefers-reduced-motion</code> bez prechodu. Lístok má kontrast textu ≥ 7 : 1 (<code>--text</code> na zmesi <code>--akcent-svetly</code> 9 % + <code>--plocha-2</code>). Farby sú len z tokenov, takže svetlé schémy dajú „papier na korku“.</dd>
+      <dt>Mobil</dt><dd>Rovnaký prepínač horizontov ako v N2, lístky bez natočenia (úzky stĺpec by pôsobil neporiadne).</dd>
+      <dt>Riziko</dt><dd>Hustota: lístok je o asi 15 % vyšší ako karta v N1. Pri 45 položkách je stĺpec dlhší, a preto zostáva kompaktný prepínač „Tabuľa / Zoznam“.</dd>
+      <dt>Súbory</dt><dd><code>stranky/vyvoj.css</code>, <code>stranky/Roadmapa.tsx</code> (len triedy), nový <code>komponenty.tsx: Nastenka</code> (zdieľaný s hrou v6)</dd>
+    </dl>
+    <div class="porovnanie" data-start="po">
+      <div class="prepinac" role="group" aria-label="Pred alebo po (N3)"><button class="r-btn" type="button" data-rezim="pred">Pred</button><button class="r-btn" type="button" data-rezim="po">Po</button><button class="r-btn" type="button" data-rezim="oba">Oboje</button></div>
+      <div class="stlpce">
+        <div class="pred">
+          <p class="ukazka-popis">Pred · 1440 px · živý web</p>
+          <img src="dizajn-vyvoj-web-20261026-1520/sucasna-roadmapa-1440.jpg" alt="Súčasná roadmapa ako kanban, Hotové mimo obrazovky" width="1100" height="688" loading="lazy">
+        </div>
+        <div class="po">
+          <p class="ukazka-popis"><b>Po</b> · 1440 px</p>
+          <div class="okno" data-sirka="1440"><div class="okno-lista"><span>naex / vyvoj#roadmapa</span><span>1440 px</span></div><div class="okno-vnutro">
+            <div class="m" style="padding:26px 36px 34px">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:end;margin-bottom:22px">
+                <div><h1>Kam hra smeruje</h1><p class="tlm" style="max-width:66ch;margin:0">Čo je na čape, čo príde na rad a čo sme už vypili. Lístky pripína Michal; poradie zhora je priorita.</p></div>
+                <div class="m-ucetka" aria-label="Súhrn známok">
+                  <div><span>Zábava</span><span>7,3</span></div>
+                  <div><span>Interakcia hráčov</span><span>9,0</span></div>
+                  <div><span>Rovnováha a férovosť</span><span>4,7</span></div>
+                  <div><span>… 9 ďalších kritérií</span><span></span></div>
+                  <div class="sum"><span>SPOLU (6 × AI)</span><span>6,9</span></div>
+                </div>
+              </div>
+              <div class="m-tabula">
+                <div class="m-tabula-h"><h2>Nástenka <em>U Melichara</em></h2><span style="display:flex;gap:6px"><span class="m-cip akt">Všetko</span><span class="m-cip obl-pravidla"><i></i>Pravidlá</span><span class="m-cip obl-ui"><i></i>Rozhranie</span><span class="m-cip obl-karty"><i></i>Karty</span><span class="m-cip obl-2v2"><i></i>2 na 2</span></span></div>
+                <div class="m-tab-st" data-tabula></div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- N4 -->
+  <article class="navrh odporucany" id="n4" aria-labelledby="n4-h">
+    <div class="navrh-hlava"><h3 id="n4-h">N4 · Kostra webu: jedna mriežka a jedna hlavička v hre aj mimo nej</h3><span class="stitok hlavny">odporúčaný: B + C</span><span class="stitok">A malá · B stredná · C stredná</span></div>
+    <dl class="udaje">
+      <dt>Rieši</dt><dd>A3, A4, A5 a miesto pre špaky (v6)</dd>
+      <dt>Varianty</dt><dd>
+        <b>A — najmenší zásah (≈ 30 min):</b> hlavička je <i>vždy</i> na celú šírku s okrajom <code>clamp(16px, 2.5vw, 40px)</code>, presne ako dnes v hre. Logo je na rovnakom mieste na každej stránke aj v partii. Obsah sa nemení. Odstráni skok hlavičky, ale nie skákanie obsahu.<br>
+        <b>B — jedna mriežka (≈ ½ dňa):</b> A + tri šírky obsahu cez tokeny a jeden okraj. <code>--sirka-citanie: 760px</code> (Pravidlá – text, Novinky, Spätná väzba – formulár), <code>--sirka-stranky: 1280px</code> (Domov, Karty, Profil, Rebríček), <code>--sirka-siroka: 1680px</code> (Vývoj, Tvorba, Playtest, Hráči). Úzke stránky majú text v čitateľnom stĺpci, ale nadpis stránky a pás nástrojov ostávajú na šírke stránky. Ľavé hrany sú tak namiesto šiestich tri a sú predvídateľné.<br>
+        <b>C — hlavička v hre (≈ ½ dňa):</b> tri rovnaké zóny <i>logo · menu · pravá zóna</i> a výška 64 px v hre aj mimo nej. Menu sa nikdy nemení na hamburger kvôli hre. Keď sa nezmestí, posledné položky idú do <b>„Viac ▾“</b> (priority+), aj mimo hry pod 1300 px. V hre do stredu pribudne <b>zápasový štítok</b>: kód, kolo, <b>skóre v špakoch ako dva popolníky</b> (ty modrozelený <code>--ja</code>, súper <code>--su</code>, číslo vždy pri ikone) a stav spojenia. Akcie „hudba / vzdať sa / odísť“ sú v menu <b>„Partia ▾“</b>, kontumácia je v ňom zvýraznená, len kým je súper odpojený (stav je navyše v štítku textom „odpojený“).</dd>
+      <dt>Mobil</dt><dd>Mimo hry bez zmeny (logo, avatar, hamburger). Hra je dnes od 900 px. Ak príde na mobil, štítok sa zmení na druhý riadok hlavičky 40 px: „HZ3T · K1 · [popolník] 3 : 1 [popolník]“.</dd>
+      <dt>Tokeny</dt><dd>Nové v <code>styles.css :root</code> (nie farby): <code>--okraj-stranky</code>, <code>--sirka-citanie</code>, <code>--sirka-stranky</code>, <code>--sirka-siroka</code>, <code>--vyska-hlavicky: 64px</code>. Nová ikona <b>popolník</b> (SVG, rovnaký štýl obrysu ako pohár v logu, 2 px), ktorú v6 použije aj pri mene hráča.</dd>
+      <dt>Súbory</dt><dd><code>styles.css</code> (hlavička: zmazať bloky 618–694, <code>.obsah*</code>), <code>Layout.tsx</code> (<code>sirka="citanie|stranka|siroka"</code> namiesto <code>siroky</code>, „Viac ▾“), <code>App.tsx</code> (šírky stránok), <code>hra/HernaPlocha.tsx:5006</code> (štítok + menu Partia), <code>hra/hra.css:3753</code></dd>
+    </dl>
+<pre><code>/* styles.css — jedna kostra */
+:root { --okraj-stranky: clamp(16px, 2.5vw, 40px); --sirka-citanie: 760px; --sirka-stranky: 1280px; --sirka-siroka: 1680px; }
+.hlavicka-vnutro { max-width: none; padding: 0 var(--okraj-stranky); }      /* A: vždy, aj mimo hry */
+.obsah { max-width: calc(var(--sirka, var(--sirka-stranky)) + 2 * var(--okraj-stranky)); padding-inline: var(--okraj-stranky); }
+.obsah-citanie { --sirka: var(--sirka-citanie); } .obsah-siroky { --sirka: var(--sirka-siroka); }
+/* C: menu „priority+“ — položky s data-priorita="2" idú do Viac ▾ pod 1300 px alebo keď je v hlavičke partia */
+@container hlavicka (max-width: 1300px) { .navigacia [data-priorita="2"] { display: none; } .nav-viac { display: inline-flex; } }</code></pre>
+    <h4 style="margin:18px 0 6px">Mriežka na 1920 px</h4>
+    <div class="porovnanie pod-sebou" data-start="oba">
+      <div class="prepinac" role="group" aria-label="Pred alebo po (N4 mriežka)"><button class="r-btn" type="button" data-rezim="pred">Pred</button><button class="r-btn" type="button" data-rezim="po">Po</button><button class="r-btn" type="button" data-rezim="oba">Oboje</button></div>
+      <div class="stlpce">
+        <div class="pred">
+          <p class="ukazka-popis">Pred · ľavé hrany obsahu, 1920 px</p>
+          <div class="okno" data-sirka="1920"><div class="okno-lista"><span>naex</span><span>1920 px</span></div><div class="okno-vnutro">
+            <div class="m m-mriezka">
+              <div class="m-blok" style="--t:14px;--h:70px;--l:300px;--w:1320px">hlavička · max 1 360</div>
+              <div class="m-blok" style="--t:110px;--h:70px;--l:180px;--w:1560px">Vývoj, Pravidlá, Profil · 1 600</div>
+              <div class="m-blok" style="--t:210px;--h:70px;--l:380px;--w:1160px">Domov, Karty · 1 200</div>
+              <div class="m-blok" style="--t:310px;--h:70px;--l:550px;--w:820px">Novinky · 820</div>
+              <div class="m-ciara" style="left:20px;--y:392px;--c:var(--info)"><span>hra 20</span></div>
+              <div class="m-ciara" style="left:180px;--y:132px"><span>180</span></div>
+              <div class="m-ciara" style="left:300px;--y:36px"><span>300</span></div>
+              <div class="m-ciara" style="left:380px;--y:232px"><span>380</span></div>
+              <div class="m-ciara" style="left:530px;--y:392px"><span>530 Spätná v.</span></div>
+              <div class="m-ciara" style="left:550px;--y:332px"><span>550</span></div>
+            </div>
+          </div></div>
+        </div>
+        <div class="po">
+          <p class="ukazka-popis"><b>Po (B)</b> · tri šírky, jeden okraj</p>
+          <div class="okno" data-sirka="1920"><div class="okno-lista"><span>naex</span><span>1920 px</span></div><div class="okno-vnutro">
+            <div class="m m-mriezka">
+              <div class="m-blok" style="--t:14px;--h:70px;--l:40px;--w:1840px">hlavička · celá šírka, okraj 40 (v hre aj mimo nej)</div>
+              <div class="m-blok" style="--t:110px;--h:70px;--l:120px;--w:1680px">--sirka-siroka 1 680 · Vývoj, Tvorba, Playtest, Hráči</div>
+              <div class="m-blok" style="--t:210px;--h:70px;--l:320px;--w:1280px">--sirka-stranky 1 280 · Domov, Karty, Profil, Rebríček</div>
+              <div class="m-blok" style="--t:310px;--h:70px;--l:580px;--w:760px">--sirka-citanie 760 · Novinky, Spätná väzba</div>
+              <div class="m-ciara" style="left:40px;--y:36px;--c:var(--zelena)"><span>40 logo · hra</span></div>
+              <div class="m-ciara" style="left:120px;--y:132px;--c:var(--zelena)"><span>120</span></div>
+              <div class="m-ciara" style="left:320px;--y:232px;--c:var(--zelena)"><span>320</span></div>
+              <div class="m-ciara" style="left:580px;--y:332px;--c:var(--zelena)"><span>580</span></div>
+            </div>
+          </div></div>
+          <p class="pozn">Pod 1 760 px sa široké stránky natiahnu na okraj 40 px, takže ľavá hrana je zhodná s logom. Na 1366–1440 px sú tak Vývoj, Tvorba aj hra zarovnané s logom.</p>
+        </div>
+      </div>
+    </div>
+
+    <h4 style="margin:22px 0 6px">Hlavička: mimo hry a v hre (1920 px a 1366 px)</h4>
+    <div class="porovnanie" data-start="po">
+      <div class="prepinac" role="group" aria-label="Pred alebo po (N4 hlavička)"><button class="r-btn" type="button" data-rezim="pred">Pred</button><button class="r-btn" type="button" data-rezim="po">Po</button><button class="r-btn" type="button" data-rezim="oba">Oboje</button></div>
+      <div class="stlpce">
+        <div class="pred">
+          <p class="ukazka-popis">Pred · mimo hry / v hre 1920 / v hre 1366</p>
+          <img src="dizajn-vyvoj-web-20261026-1520/hlavicka-mimo-hry-1920.jpg" alt="Hlavička mimo hry 1920" width="1200" height="41" loading="lazy">
+          <img src="dizajn-vyvoj-web-20261026-1520/hlavicka-v-hre-1920.jpg" alt="Hlavička v hre 1920" width="1200" height="41" loading="lazy" style="margin-top:8px">
+          <img src="dizajn-vyvoj-web-20261026-1520/hlavicka-v-hre-1366.jpg" alt="Hlavička v hre 1366 s hamburgerom" width="1000" height="97" loading="lazy" style="margin-top:8px">
+        </div>
+        <div class="po">
+          <p class="ukazka-popis"><b>Po (C)</b> · mimo hry 1920</p>
+          <div class="okno" data-sirka="1920"><div class="okno-vnutro">
+            <div class="m"><div class="m-hl okraj" style="--m-okraj:40px"><span class="m-logo"><span class="m-pohar"></span>NA EX!</span><nav class="m-nav"><span>Pravidlá</span><span>Karty</span><span>Hrať</span><span>Rebríček</span><span>Spätná väzba</span><span>Novinky</span><span class="akt">Vývoj</span><span>Playtest</span><span>Tvorba</span></nav><span class="m-ucet"><span class="m-av"></span>Dizajn 1</span></div></div>
+          </div></div>
+          <p class="ukazka-popis" style="margin-top:12px"><b>Po (C)</b> · v hre 1920: zápasový štítok so špakmi</p>
+          <div class="okno" data-sirka="1920"><div class="okno-vnutro">
+            <div class="m" style="position:relative;height:250px"><div class="m-hl okraj" style="--m-okraj:40px"><span class="m-logo"><span class="m-pohar"></span>NA EX!</span><nav class="m-nav"><span>Pravidlá</span><span>Karty</span><span class="akt">Hrať</span><span>Rebríček</span><span>Spätná väzba</span><span>Novinky</span><span>Vývoj</span><span>Playtest</span></nav>
+              <span class="m-zapas"><span class="m-kod">HZ3T</span><span class="m-sep"></span><span>Kolo 1 · lokalita 1/3</span><span class="m-sep"></span>
+                <span class="m-skore"><span class="m-av ja"></span><span class="m-pop ja" title="tvoje špaky"><svg viewBox="0 0 22 14" aria-hidden="true"><path d="M1 5h20l-3 8H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 5l4-4" stroke="var(--akcent)" stroke-width="2" stroke-linecap="round"/></svg>3</span><span class="slb">:</span><span class="m-pop su" title="súperove špaky"><svg viewBox="0 0 22 14" aria-hidden="true"><path d="M1 5h20l-3 8H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 5l-3-4M13 5l3-4" stroke="var(--akcent)" stroke-width="2" stroke-linecap="round"/></svg>1</span><span class="m-av su"></span></span>
+                <span class="m-sep"></span><span class="m-odp">Dizajn 2 odpojený</span></span>
+              <span class="m-btn male m-partia-btn" style="border-color:var(--akcent)">Partia</span><span class="m-ucet"><span class="m-av"></span></span></div>
+              <div class="m-menu"><div class="upoz">Kontumačná výhra <span>od 2:41</span></div><div>Hudba <span class="slb">zap.</span></div><div>Odísť (partia beží)</div><div class="neb">Vzdať sa…</div></div>
+            </div>
+          </div></div>
+          <p class="ukazka-popis" style="margin-top:12px"><b>Po (C)</b> · v hre 1366: menu sa skráti cez „Viac ▾“, nie hamburger</p>
+          <div class="okno" data-sirka="1366"><div class="okno-vnutro">
+            <div class="m"><div class="m-hl okraj" style="--m-okraj:20px;gap:16px"><span class="m-logo"><span class="m-pohar"></span>NA EX!</span><nav class="m-nav"><span>Pravidlá</span><span>Karty</span><span class="akt">Hrať</span><span class="viac">Viac</span></nav>
+              <span class="m-zapas"><span class="m-kod">HZ3T</span><span class="m-sep"></span><span>K1 · 1/3</span><span class="m-sep"></span><span class="m-skore"><span class="m-pop ja"><svg viewBox="0 0 22 14" aria-hidden="true"><path d="M1 5h20l-3 8H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>3</span><span class="slb">:</span><span class="m-pop su"><svg viewBox="0 0 22 14" aria-hidden="true"><path d="M1 5h20l-3 8H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>1</span></span><span class="m-sep"></span><span class="m-odp">odpojený</span></span>
+              <span class="m-btn male m-partia-btn">Partia</span><span class="m-ucet"><span class="m-av"></span></span></div></div>
+          </div></div>
+          <p class="pozn">Ikona popolníka je zástupná. Ohorky v nej pribúdajú so špakmi (0, 1–2, 3–5, 6+), číslo je vždy vedľa, takže význam nenesie len obrázok. Rovnakú ikonu použije v6 pri mene hráča na stole a hlavička len zrkadlí súčet.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- N5 -->
+  <article class="navrh" id="n5" aria-labelledby="n5-h">
+    <div class="navrh-hlava"><h3 id="n5-h">N5 · Pravidlá: navigácia bez tlačidiel „Ďalej“</h3><span class="stitok">doplnok Michala</span><span class="stitok">malá · ≈ 2–3 h</span></div>
+    <dl class="udaje">
+      <dt>Rieši</dt><dd>A9 (Michal: „tlačidlá pri pravidlách sú nezmysel… sekcia ‚ďalej‘ je pár pixelov pod tlačidlom“)</dd>
+      <dt>Zmena</dt><dd>
+        (1) <b>Zrušiť <code>.kapitola-dalej</code>.</b> Koniec kapitoly označí len tichý predeľ „koniec kapitoly 1“ (čiara s malým textom, <code>--slaby-text</code> 5,5 : 1), nie tlačidlo.<br>
+        (2) <b>Bok s obsahom nesie navigáciu:</b> v hlavičke boku sú šípky <b>‹ 2 / 15 ›</b> (28 × 28 px, pri dotyku 44 px). Aktívna kapitola má jantárovú zvislú linku, tučný názov a <b>rozbalené podkapitoly</b> so zvýraznenou tou, ktorú práve čítaš. Pruh pokroku ostáva.<br>
+        (3) <b>Od 1 500 px pravý stĺpec „V tejto kapitole“</b> (240 px, sticky). Podkapitoly sú ako scrollspy a pod nimi čas čítania. Využije 660 px, ktoré sú dnes prázdne, a text ostane v stĺpci 68ch. Pod 1 500 px sa podkapitoly zobrazia len v boku (bod 2).</dd>
+      <dt>Mobil</dt><dd>Lišta „2 / 15 Ako sa vyhráva ▾“ pod hlavičkou ostáva (už dnes plní úlohu Ďalej). Pribudnú do nej šípky ‹ › na krajoch (44 × 44 px). Tlačidlo na konci kapitoly zmizne aj tu.</dd>
+      <dt>Súbory</dt><dd><code>stranky/Pravidla.tsx</code> (zmazať 538–548, šípky v <code>pravidla-bok-hlava</code>, pravý stĺpec z existujúceho <code>podkapitoly</code>), <code>stranky/stranky.css</code> (<code>.pravidla</code> grid na 3 stĺpce od 1 500 px, <code>.kapitola-koniec</code>)</dd>
+    </dl>
+    <div class="porovnanie pod-sebou" data-start="oba">
+      <div class="prepinac" role="group" aria-label="Pred alebo po (N5)"><button class="r-btn" type="button" data-rezim="pred">Pred</button><button class="r-btn" type="button" data-rezim="po">Po</button><button class="r-btn" type="button" data-rezim="oba">Oboje</button></div>
+      <div class="stlpce">
+        <div class="pred">
+          <p class="ukazka-popis">Pred · 1440 px</p>
+          <img src="dizajn-vyvoj-web-20261026-1520/pravidla-dalej.jpg" alt="Tlačidlo Ďalej tesne nad ďalšou kapitolou" width="900" height="513" loading="lazy">
+        </div>
+        <div class="po">
+          <p class="ukazka-popis"><b>Po</b> · 1920 px (3 stĺpce)</p>
+          <div class="okno" data-sirka="1920"><div class="okno-lista"><span>naex / pravidla#ako-sa-vyhrava</span><span>1920 px</span></div><div class="okno-vnutro">
+            <div class="m" style="height:700px;overflow:hidden">
+              <div class="m-hl okraj" style="--m-okraj:40px"><span class="m-logo"><span class="m-pohar"></span>NA EX!</span><nav class="m-nav"><span class="akt">Pravidlá</span><span>Karty</span><span>Hrať</span><span>Rebríček</span><span>Spätná väzba</span><span>Novinky</span><span>Vývoj</span></nav><span class="m-ucet"><span class="m-av"></span>Jano</span></div>
+              <div class="m-prav">
+                <aside class="m-bok">
+                  <div class="m-bok-h"><h2>Pravidlá</h2><span class="m-sip"><b>‹</b>2 / 15<b>›</b></span></div>
+                  <div class="slb" style="font-size:.78rem;margin-top:-6px">Pravidlá v5, platné od 25. 10. 2026</div>
+                  <div class="m-pokrok"><i></i></div>
+                  <div class="m-hladaj">Hľadaj pravidlo alebo pojem…</div>
+                  <div class="m-ob-cast">A · Rýchly štart</div>
+                  <div class="m-kap"><span>1</span><span>Čo je NA EX!</span></div>
+                  <div class="m-kap akt"><span>2</span><span>Ako sa vyhráva</span><span class="pp"><span class="ak">Body na konci</span><span>Vyhráš hneď</span><span>Prehráš hneď</span></span></div>
+                  <div class="m-kap"><span>3</span><span>Čo máš pred sebou</span></div>
+                  <div class="m-kap"><span>4</span><span>Kolo a príprava</span></div>
+                  <div class="m-ob-cast">B · Kolo krok za krokom <span>6 kap.</span></div>
+                  <div class="m-ob-cast">C · Podrobnosti <span>5 kap.</span></div>
+                </aside>
+                <div class="m-kniha">
+                  <p>Karty kladiete do spoločnej línie, pijete poldeci, fajčíte cigarety a robíte dlhy. Všetko má svoju cenu — pečeň, zadĺženie a abstinenčné príznaky ťa dobehnú.</p>
+                  <p class="slb" style="font-size:.85rem">Hra je fikcia a zámerne zveličená karikatúra.</p>
+                  <div class="m-koniec">koniec kapitoly 1</div>
+                  <div class="m-ilu">ilustrácia kapitoly</div>
+                  <div class="m-kicker">A · kapitola 2 / 15 · ≈ 1 min</div>
+                  <h2>Ako sa vyhráva</h2>
+                  <div class="m-vs"><span class="m-cap">V skratke</span><ul><li>Na konci sa body počítajú za každého staršieho zvlášť.</li><li>Okamžitá výhra: vydesíš polovicu starších a udržíš ich do konca ďalšieho kola.</li></ul></div>
+                </div>
+                <aside class="m-rail"><span class="m-cap" style="margin-bottom:4px">V tejto kapitole</span><span class="ak">Body na konci</span><span>Vyhráš hneď</span><span>Prehráš hneď</span><span class="slb" style="margin-top:10px">≈ 1 min čítania</span></aside>
+              </div>
+            </div>
+          </div></div>
+          <p class="ukazka-popis" style="margin-top:14px"><b>Po</b> · mobil 390 px: lišta so šípkami</p>
+          <div class="okno" data-sirka="390" style="max-width:300px"><div class="okno-vnutro">
+            <div class="m m-mob" style="height:300px;overflow:hidden">
+              <div class="m-hl"><span class="m-logo"><span class="m-pohar"></span>NA EX!</span><span class="m-ham"><i></i><i></i><i></i></span></div>
+              <div style="display:flex;align-items:center;gap:8px;padding:0 4px;border-bottom:1px solid var(--okraj);height:48px"><span style="width:44px;height:44px;display:grid;place-items:center;color:var(--text)">‹</span><span class="m-pocet" style="color:var(--akcent)">2 / 15</span><b style="flex:1;font-size:.95rem">Ako sa vyhráva ▾</b><span style="width:44px;height:44px;display:grid;place-items:center;color:var(--text)">›</span></div>
+              <div style="height:3px;background:var(--plocha-3)"><i style="display:block;height:3px;width:13%;background:var(--akcent)"></i></div>
+              <div class="m-kniha" style="padding:14px 16px"><p style="font-size:.95rem">… a abstinenčné príznaky ťa dobehnú.</p><div class="m-koniec" style="margin:16px 0">koniec kapitoly 1</div><div class="m-kicker" style="margin-top:0">A · kapitola 2 / 15</div><h2 style="font-size:1.5rem">Ako sa vyhráva</h2></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- ============================ PORADIE ============================ -->
+<section class="r" id="poradie" aria-labelledby="poradie-h">
+  <h2 id="poradie-h">Odporúčané poradie</h2>
+  <ol class="poradie">
+    <li><b>N1 dnes</b> (≈ 1 h). Roadmapa sa zmestí do 1366–1920 px a záložky nahradia čipy. Hneď rieši oba Michalove podnety k Vývoju a nič neblokuje.</li>
+    <li><b>N4 A + N5</b> (≈ ½ dňa spolu). Hlavička na celú šírku vždy, teda koniec skoku pri vstupe do hry, a Pravidlá bez tlačidiel Ďalej. Obe sú malé CSS/TSX zmeny bez nových rozhodnutí.</li>
+    <li><b>N4 C pred nasadením v6 „Špaky“</b>. Zápasový štítok s popolníkmi a menu „Partia ▾“ treba spraviť spolu s nástenkou v6, aby ikona popolníka a počítadlo špakov vznikli raz a rovnaké pre hlavičku aj bar hráča.</li>
+    <li><b>N2</b> (≈ 1–1,5 dňa). Vývoj ako jedna stránka s grafom vedľa kritérií, roadmapou v plnej šírke a cieľmi ako odrážkovými grafmi. Na mobile prepínač horizontov.</li>
+    <li><b>N4 B</b> (≈ ½ dňa). Tri šírky obsahu cez tokeny a postupné preradenie stránok. Po ňom vyzerá celý web ako jeden celok.</li>
+    <li><b>N3 ako voliteľná vrstva nad N2</b>, ak sa Michalovi páči smer „krčmová nástenka“. Ideálne spolu s nástenkou v hre (v6), lebo komponent je zdieľaný.</li>
+  </ol>
+</section>
+
+<!-- ============================ OTÁZKY ============================ -->
+<section class="r" id="otazky" aria-labelledby="otazky-h">
+  <h2 id="otazky-h">Otázky na Michala</h2>
+  <ul class="otazky">
+    <li><b>Roadmapa: kanban (N2) alebo krčmová nástenka (N3)?</b> N3 je identita a zdieľa jazyk s nástenkou v6. N2 je hustejšia a rýchlejšia na čítanie.</li>
+    <li><b>Hotové (67 položiek):</b> stačí zbalená lišta s panelom (N1), alebo ich chceš vidieť aj v tabuli? Rastú každý deň a v plnom stĺpci by prerástli všetko ostatné.</li>
+    <li><b>Hlavička v hre:</b> súhlasíš, že „vzdať sa“ a „odísť“ pôjdu do menu „Partia ▾“ a v hlavičke ostane len štítok so skóre? Kontumácia bude zvýraznená, len kým je súper odpojený.</li>
+    <li><b>Špaky v hlavičke:</b> má štítok ukazovať len súčet (3 : 1), alebo aj poslednú zmenu (+2 za bitku, na 3 s zvýraznené)? Zmenu by nieslo krátke mihnutie (200 ms, vypnuté pri <code>prefers-reduced-motion</code>).</li>
+    <li><b>Široké stránky na 1920+:</b> 1 680 px ako strop pre Vývoj, Tvorbu a Playtest, alebo celá šírka okna ako v hre?</li>
+    <li><b>Pravidlá:</b> pravý stĺpec „V tejto kapitole“ od 1 500 px. Nebude ti tam chýbať miesto, ktoré si 2026-10-24 nechcel dať ilustrácii?</li>
+  </ul>
+  <p class="pozn">Čo som videl: snímky v <code>playtest/dizajn/vyvoj-web-20261026-1520/</code> a miesta v kóde uvedené v audite. Čo si myslím: odhady času, šírky stĺpcov a čitateľnosť lístkov v N3 sú návrh, nie meranie. Overiť ich treba po implementácii snímkami na 1366, 1440, 1920 a 390 px.</p>
+</section>
+
+</div>
+
+<script>
+(function () {
+  document.documentElement.classList.add("js");
+  var sel = document.getElementById("schema");
+  sel.addEventListener("change", function () { document.documentElement.setAttribute("data-schema", sel.value); });
+
+  /* ---- dáta zo živého webu (/api/znamky, /api/roadmapa, 26. 10. 2026) ---- */
+  var DNI = ["11.10", "12.10", "16.10", "17.10", "18.10", "19.10", "21.10", "22.10", "24.10"];
+  var DEN_X = [0, 1, 5, 6, 7, 8, 10, 11, 13];
+  var KRIT = [
+    ["Zábava", [6.5, 7, 7.5, 7, 7, 6.5, 7.5, 7.5, 7.33]],
+    ["Zmysluplné rozhodnutia", [7, 7.5, 7.5, 7, 7.5, 6.5, 7.67, 8, 8.17]],
+    ["Rovnováha a férovosť", [4.5, 5, 5, 5, 5, 4, 5, 4.83, 4.67]],
+    ["Náhoda vs. zručnosť", [6, 5.5, 6.5, 6, 6, 5.5, 6.5, 6.33, 6.5]],
+    ["Interakcia hráčov", [8.5, 9, 8.5, 8.5, 9, 9, 9, 8.83, 9]],
+    ["Tempo a prestoje", [5.5, 6, 7, 7, 6, 7.5, 5.83, 5.5, 5.33]],
+    ["Zrozumiteľnosť pravidiel", [4, 5.5, 4.5, 5, 5, 4.5, 5.5, 5.33, 5.5]],
+    ["Hĺbka vs. zložitosť", [6.5, 7.5, 7, 7, 7, 6.5, 7.17, 7.33, 7.33]],
+    ["Znovuhrateľnosť", [7, 7.5, 7.5, 7.5, 7.5, 7, 7.33, 7.17, 7.5]],
+    ["Téma a prepojenie", [7, 8, 7.5, 7.5, 8, 7.5, 7.17, 6.17, 6.5]],
+    ["Napätie a priebeh", [5, 5.5, 8.5, 8, 7.5, 4, 7, 7.5, 7]],
+    ["Originalita", [8, 9, 9, 9, 9, 9, 8.83, 8.5, 8.5]]
+  ];
+  var CELKOM = [6.29, 6.92, 7.17, 7.04, 7.04, 6.46, 7.04, 6.92, 6.94];
+  var UDALOSTI = [0, 0, 0, 0, 0, 0, 0, 1, 1, 3, 4, 17, 19, 4, 0, 13]; /* dni 11.–26. 10. */
+  var cislo = function (v) { return v.toFixed(1).replace(".", ","); };
+
+  function graf(el, sirka, vyska, maly) {
+    var M = { l: maly ? 26 : 34, r: maly ? 18 : 40, t: 10, b: maly ? 22 : 40 };
+    var lo = 5.5, hi = 8, dni = 15;
+    var x = function (d) { return M.l + d / dni * (sirka - M.l - M.r); };
+    var y = function (v) { return M.t + (hi - v) / (hi - lo) * (vyska - M.t - M.b); };
+    var s = '<svg viewBox="0 0 ' + sirka + ' ' + vyska + '" role="img" aria-label="Priemerná známka AI playtesterov 11. až 24. 10.: od 6,3 po 7,2, naposledy 6,9">';
+    [5.5, 6, 6.5, 7, 7.5, 8].forEach(function (v) {
+      s += '<line x1="' + M.l + '" x2="' + (sirka - M.r) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--okraj)" stroke-width="1"/>';
+      if (!maly || v % 1 === 0) s += '<text x="' + (M.l - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end" font-size="' + (maly ? 10 : 12) + '" fill="var(--slaby-text)">' + cislo(v) + '</text>';
+    });
+    /* zlom osi */
+    s += '<path d="M' + (M.l - 4) + ' ' + (vyska - M.b + 2) + 'l8 -4m-8 9l8 -4" stroke="var(--slaby-text)" stroke-width="1.4" fill="none"/>';
+    var d = "";
+    CELKOM.forEach(function (v, i) {
+      var xx = x(DEN_X[i]), yy = y(v);
+      if (i === 0) d += "M" + xx + " " + yy; else d += "H" + xx + "V" + yy;
+    });
+    d += "H" + x(15);
+    s += '<path d="' + d + '" fill="none" stroke="var(--graf-ai)" stroke-width="' + (maly ? 2 : 2.5) + '" stroke-linejoin="round"/>';
+    CELKOM.forEach(function (v, i) { s += '<circle cx="' + x(DEN_X[i]) + '" cy="' + y(v) + '" r="' + (maly ? 2.5 : 3.5) + '" fill="var(--graf-ai)" stroke="var(--plocha)" stroke-width="2"/>'; });
+    if (!maly) {
+      s += '<text x="' + (x(15) + 6) + '" y="' + (y(6.94) + 4) + '" font-size="12" font-weight="700" fill="var(--text)">6,9</text>';
+      for (var i = 0; i <= 15; i += 1) {
+        var h = UDALOSTI[i] ? Math.max(3, UDALOSTI[i] * 1.1) : 0;
+        if (h) s += '<rect x="' + (x(i) - 4) + '" y="' + (vyska - 22 - h) + '" width="8" height="' + h + '" rx="2" fill="var(--akcent)" opacity=".85"/>';
+        if (i % 2 === 0) s += '<text x="' + x(i) + '" y="' + (vyska - 6) + '" text-anchor="middle" font-size="12" fill="var(--slaby-text)">' + (11 + i) + '.10.</text>';
+      }
+    } else {
+      [0, 5, 10, 15].forEach(function (i) { s += '<text x="' + x(i) + '" y="' + (vyska - 6) + '" text-anchor="middle" font-size="10" fill="var(--slaby-text)">' + (11 + i) + '.10.</text>'; });
+    }
+    el.innerHTML = s + "</svg>";
+  }
+  document.querySelectorAll('[data-graf="velky"]').forEach(function (el) { graf(el, 760, 300, false); });
+  document.querySelectorAll('[data-graf="maly"]').forEach(function (el) { graf(el, 340, 160, true); });
+
+  function spark(v) {
+    var lo = 3.5, hi = 9.5, w = 84, h = 22;
+    var p = v.map(function (z, i) { return (i ? "L" : "M") + (2 + DEN_X[i] / 13 * (w - 4)).toFixed(1) + " " + (2 + (hi - z) / (hi - lo) * (h - 4)).toFixed(1); }).join("");
+    var last = v[v.length - 1];
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" aria-hidden="true"><path d="' + p + '" fill="none" stroke="var(--graf-ai)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="' + (w - 2) + '" cy="' + (2 + (hi - last) / (hi - lo) * (h - 4)) + '" r="2.4" fill="var(--graf-ai)"/></svg>';
+  }
+  document.querySelectorAll("[data-krit]").forEach(function (el) {
+    var sorted = KRIT.map(function (k) { return k[1][8]; }).slice().sort(function (a, b) { return a - b; });
+    var html = '<div class="m-krit-r akt"><span><b style="text-align:left">Priemer všetkých</b></span>' + spark(CELKOM) + '<b>6,9</b></div>';
+    KRIT.forEach(function (k) {
+      var v = k[1][8], zn = "";
+      if (v <= sorted[1]) zn = '<span class="zn m-slabe">najslabšie</span>';
+      if (v >= sorted[10]) zn = '<span class="zn m-silne">najsilnejšie</span>';
+      html += '<div class="m-krit-r"><span>' + k[0] + zn + "</span>" + spark(k[1]) + "<b>" + cislo(v) + "</b></div>";
+    });
+    el.innerHTML = html;
+  });
+
+  /* ---- roadmapa (živý web) ---- */
+  var RM = [
+    { k: "prijimac", n: "Prijímač", h: "", z: "Návrhy z playtestov a dizajnu, ktoré čakajú na zaradenie do horizontu.", p: [], spolu: 0, admin: true },
+    { k: "teraz", n: "Teraz", h: "Horizont 1", z: "Férová a čitateľná partia.", spolu: 12, p: [
+      ["pravidla", "S", "Playtest pravidiel v6", "Turnus AI playtesterov po nasadení v6: špaky, finále, stupnica 7 polí.", "na rozhodnutie"],
+      ["platforma", "L", "Prvá hra: výučba s Majstrom Melicharom", "Výuková hra proti Majstrovi Melicharovi, začne požičanou cigaretou.", "rozpracované"],
+      ["ui", "M", "Náhľady sľubujú inú cenu, než hra potom zúčtuje", "Náhľad pred ťahom má ukázať presne tú cenu, ktorú hra zúčtuje.", "treba overiť"],
+      ["pravidla", "M", "Posledná bitka nerozhoduje celú partiu", "Dnes vyhrá 85 % partií bot, ktorý vyhrá poslednú bitku.", "treba overiť"],
+      ["pravidla", "M", "Medzery a nejasné vety v pravidlách", "Dopísať dnešné správanie, Zastávka: pas za vlastný limit.", "treba overiť"],
+      ["pravidla", "M", "Vyrovnanie slabých priazní (v6)", "Zdvihnúť slabé priazne na úroveň Bitkára.", "na rozhodnutie"],
+      ["platforma", "L", "Achievementy s podtáckami", "~60 achievementov × 3 ranky, badge pivný podtácok.", "rozpracované"]
+    ] },
+    { k: "dalej", n: "Ďalej", h: "Horizont 2", z: "Pripravená pre ľudí.", spolu: 8, p: [
+      ["ui", "L", "Prvá partia s nápovedou", "Pripravená partia proti Štamgastovi s pevným seedom.", "treba overiť"],
+      ["komunita", "M", "Prvých 10 ľudských partií", "Pozvať kamarátov; po partii ohodnotiť hru 12 kritériami.", "rozpracované"],
+      ["karty", "M", "Karty, ktoré nikto nehrá", "Presbiter, Pasca a Anonymný alkoholik: posilniť alebo prerobiť.", "nápad"],
+      ["karty", "S", "Nástroje v Dedičstve", "3 zo 4 Nástrojov hráči zahodili Živnostníkom.", "nápad"],
+      ["ui", "S", "Zvuk a klávesové skratky", "Zvuk NA EX!, prípitku a bitky; skratky na hotovo, pas a NA EX.", "nápad"],
+      ["platforma", "M", "Hodiny pri stole (voliteľné)", "Bez hodín / svižná / pomalá — časový limit na ťah.", "nápad"],
+      ["ui", "L", "Rozbor partie: tri najdrahšie rozhodnutia", "Po partii bot ukáže 3 rozhodnutia, ktoré stáli najviac.", "nápad"]
+    ] },
+    { k: "potom", n: "Potom", h: "Horizont 3", z: "Hra vo dvojici: formát 2 na 2.", spolu: 14, p: [
+      ["2v2", "S", "Rozhodnúť otázky 2 na 2", "Šesť rozhodnutí z návrhu: formát, ruka partnera, protivník…", "nápad"],
+      ["2v2", "M", "Pravidlá: § Formát 2 na 2", "Strana patrí tímu, hospodárstvo hráčovi.", "nápad"],
+      ["2v2", "M", "Výklad kariet a lokalít pre 2 na 2", "„Súper“ v texte = protivník pri ruke, balíčku, cigaretách.", "nápad"],
+      ["2v2", "L", "Jadro: tím a miesto", "PlayerId ostane tímom, pribudne SeatId 0–3.", "nápad"],
+      ["2v2", "M", "Poradie ťahov pre štyroch", "Jedna funkcia dalsiNaTahu pre šenok, Zhromaždenie aj Pitku.", "nápad"],
+      ["2v2", "M", "Čo kto vidí: viewFor pre štyroch", "Partnerova ruka podľa rozhodnutia o viditeľnosti.", "nápad"],
+      ["2v2", "M", "Bot na každom mieste", "Voľné miesto obsadí bot, aj ako partner človeka.", "nápad"]
+    ] },
+    { k: "neskor", n: "Neskôr", h: "Horizont 4", z: "Obsah a komunita. Nápady a odložené návrhy.", spolu: 11, p: [
+      ["platforma", "M", "Partia týždňa", "Všetci hrajú rovnaké rozdanie proti botovi.", "nápad"],
+      ["platforma", "S", "Sezóny rebríčka", "Sezóna rebríčka = verzia pravidiel.", "nápad"],
+      ["karty", "L", "Rozšírenie: Hody", "Hody, Zabíjačka, Svadba, Fašiangy ako lokality a karty.", "nápad"],
+      ["karty", "M", "Tlač z tvorcu", "Export zverejnenej sady do tlačového PDF.", "nápad"],
+      ["platforma", "L", "Hra na pokračovanie", "Ťah, keď máš čas, s upozornením.", "nápad"],
+      ["platforma", "M", "Divácky režim", "Pozerať partiu kamarátov s oneskorením.", "nápad"],
+      ["komunita", "S", "Úspechy a zbierka", "Odznaky a odomykateľné avatary.", "nápad"]
+    ] },
+    { k: "hotove", n: "Hotové", h: "", z: "Implementované a nasadené.", spolu: 67, p: [] }
+  ];
+  var OBL = { pravidla: "Pravidlá a balans", ui: "Rozhranie", karty: "Karty", "2v2": "2 na 2", platforma: "Platforma", komunita: "Ľudia a komunita" };
+  function karta(q, i) {
+    return '<div class="m-k obl-' + q[0] + '"><div class="m-k-h"><b>' + (i + 1) + '.</b><span class="m-ob"><i></i>' + OBL[q[0]] + '</span><span class="m-nar">' + q[1] + "</span></div><h4>" + q[2] + "</h4><p>" + q[3] + '</p><div class="m-st-sp"><span class="' + (q[4] === "na rozhodnutie" ? "nove" : "") + '">' + q[4] + "</span></div></div>";
+  }
+  function hlava(s) {
+    return '<div class="m-st-h"><h3>' + s.n + ' <span class="m-pocet">' + s.spolu + "</span>" + (s.h ? '<span class="m-hor">' + s.h + "</span>" : "") + "</h3><p>" + s.z + "</p></div>";
+  }
+  document.querySelectorAll("[data-rm]").forEach(function (el) {
+    var novy = el.getAttribute("data-rm") === "novy", admin = el.hasAttribute("data-admin") || !novy;
+    var max = Number(el.getAttribute("data-max") || 4), html = "";
+    RM.forEach(function (s) {
+      if (s.admin && !admin) return;
+      if (s.k === "hotove" && novy) { html += '<div class="m-kolaj">Hotové <span class="m-pocet">67</span><small>ukázať</small></div>'; return; }
+      var t = s.p.length === 0 ? '<p class="slb" style="text-align:center;font-size:.84rem;margin:10px 0;border:1px dashed var(--okraj);border-radius:10px;padding:14px 6px">' + (s.k === "hotove" ? '<u style="color:var(--tlmeny)">Ukázať 67 hotových</u>' : "Sem potiahni položku.") + "</p>" : s.p.slice(0, max).map(karta).join("");
+      if (s.p.length && novy) t += '<div class="m-dalsie">… ' + (s.spolu - max) + " ďalších (v mockupe skrátené)</div>";
+      html += '<section class="m-st' + (s.k === "prijimac" ? " prij" : "") + '">' + hlava(s) + '<div class="m-st-t">' + t + "</div></section>";
+    });
+    el.innerHTML = html;
+  });
+  document.querySelectorAll("[data-rm-mob]").forEach(function (el) { el.innerHTML = RM[1].p.slice(0, 3).map(karta).join(""); });
+  document.querySelectorAll("[data-tabula]").forEach(function (el) {
+    var nazvy = { teraz: ["Teraz na čape", 12], dalej: ["Ďalej na rade", 8], potom: ["Potom", 14], neskor: ["Raz, keď bude čas", 11] };
+    var html = "";
+    RM.forEach(function (s) {
+      if (!nazvy[s.k]) return;
+      html += "<div><h3>" + nazvy[s.k][0] + "<span>" + nazvy[s.k][1] + '</span></h3><p class="zamer">' + s.z + "</p>" + s.p.slice(0, 3).map(function (q) {
+        return '<div class="m-lis obl-' + q[0] + '"><div class="ob"><i></i>' + OBL[q[0]] + " · " + q[1] + "</div><h4>" + q[2] + "</h4><p>" + q[3] + "</p></div>";
+      }).join("") + "</div>";
+    });
+    html += '<div class="m-vypite"><h3 style="justify-content:center;border:0">Vypité<span>&nbsp;67</span></h3><div class="poh">' + new Array(25).join("<i></i>") + '</div><span class="slb" style="font-size:.8rem">posledné: Čakajúci hráč nevie, čo súper so staršími robí</span></div>';
+    el.innerHTML = html;
+  });
+  document.querySelectorAll("[data-mob-kpi]").forEach(function (el) { el.style.gridTemplateColumns = "1fr 1fr"; });
+
+  /* ---- okná: zmenšenie ukážky na šírku stránky ---- */
+  function prepocitaj() {
+    document.querySelectorAll(".okno").forEach(function (o) {
+      var v = o.querySelector(".okno-vnutro"), w = Number(o.getAttribute("data-sirka"));
+      var lista = o.querySelector(".okno-lista");
+      var dostupne = o.clientWidth;
+      if (!dostupne) return;
+      var s = Math.min(1, dostupne / w);
+      v.style.width = w + "px";
+      v.style.transform = "scale(" + s + ")";
+      v.style.height = "";
+      var h = v.scrollHeight;
+      v.style.height = h + "px";
+      v.style.marginBottom = (h * s - h) + "px";
+      o.style.height = (h * s + (lista ? lista.offsetHeight : 0) + 2) + "px";
+    });
+  }
+  window.addEventListener("resize", prepocitaj);
+  if (window.ResizeObserver) { var ro = new ResizeObserver(prepocitaj); document.querySelectorAll(".okno").forEach(function (o) { ro.observe(o); }); }
+
+  /* ---- prepínače pred / po ---- */
+  document.querySelectorAll(".porovnanie").forEach(function (p) {
+    var nastav = function (r) {
+      p.setAttribute("data-rezim", r);
+      p.querySelectorAll(".prepinac button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-rezim") === r)); });
+      prepocitaj();
+    };
+    p.querySelectorAll(".prepinac button").forEach(function (b) { b.addEventListener("click", function () { nastav(b.getAttribute("data-rezim")); }); });
+    nastav(p.getAttribute("data-start") || "oba");
+  });
+
+  /* ---- filter auditu ---- */
+  var fb = document.querySelectorAll("[data-filter]");
+  fb.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-filter");
+      fb.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      document.querySelectorAll(".audit tbody tr").forEach(function (tr) { tr.hidden = f !== "vsetko" && tr.getAttribute("data-zav") !== f; });
+    });
+  });
+  prepocitaj();
+})();
+</script>
+</body>
+</html>

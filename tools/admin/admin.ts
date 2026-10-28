@@ -5,7 +5,8 @@
 // Agent má vlastný účet „Admin (AI)“ s úrovňou subadmin — tvorba kariet áno,
 // meniť úrovne účtov nie. Pri prvom použití ho nástroj založí a povýši
 // heslom admina z .env (NAEX_ADMIN_LOGIN / NAEX_ADMIN_HESLO). Heslo účtu je
-// v playtest/ucty.json (mimo gitu). Web: --url, NAEX_WEB_URL, inak :8787.
+// v spoločnom súbore hesiel AI účtov (tools/playtest/ucty.ts, mimo gitu) a účet je
+// jediný — bez hesla nástroj skončí, ai-admin-2 nezaloží. Web: --url, NAEX_WEB_URL, inak :8787.
 //
 // Použitie (z koreňa repozitára):
 //   node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz> [argumenty]
@@ -52,7 +53,8 @@
 // Spätná väzba a web
 //   nazory [kategoria]            spätná väzba hráčov
 //   komentar <id-nazoru> <subor>  komentár k názoru (ako Admin (AI))
-//   stav <id-nazoru> <stav>       nove | prijate | planovane | hotove | zamietnute
+//   stav <id-nazoru> <stav> [--novinka <id>] [--dovod "…"]   nove | prijate | planovane | hotove | zamietnute;
+//                                 pri hotove voliteľne novinka, v ktorej to je; pri zamietnute povinne jedna veta prečo
 //   playtesty                     reporty playtestov
 //   pouzivatelia                  účty na webe
 //   tempo [--json]                koľko trvajú partie a kde ide čas (fázy, príkazy) — roadmapa #9
@@ -75,9 +77,10 @@
 //   roadmapa-pridaj <subor.json>  nová položka do Prijímača ({nazov, kratko, preco, hotovo, oblast, narocnost, zdroj})
 // Novinky (stránka /novinky, Michal 2026-10-22) — píšu sa až po nasadení na živý web
 //   novinky [--json]              všetky novinky, najnovšie hore
-//   novinka-pridaj <subor.json>   nová novinka alebo pole noviniek
-//                                 ({datum RRRR-MM-DD, kategoria pravidla|karty|dizajn|web|opravy, nadpis, text, odkaz?})
-//   novinka-uprav <id> <subor.json>   zmení len polia zo súboru
+//   novinka-pridaj <subor.json> [--vydanie "Pravidlá v6"]   nová novinka alebo pole noviniek
+//                                 ({datum RRRR-MM-DD, kategoria pravidla|karty|dizajn|web|opravy, nadpis, text, odkaz?, vydanie?});
+//                                 --vydanie dá vydanie novinkám, ktoré ho v súbore nemajú (nadpis dňa „26. 10. · Pravidlá v6“)
+//   novinka-uprav <id> <subor.json>   zmení len polia zo súboru (aj vydanie; "" ho zmaže)
 //   novinka-zmaz <id> --potvrdene zmaže novinku
 // Avatary AI účtov (Leonardo.Ai, v štýle avatarov offline protihráčov)
 //   avatar-generuj <kluc> "<námet po anglicky>" [--seed N]   jedno kolo (2 obrázky) do admin-agent/avatary/<kluc>/
@@ -111,6 +114,7 @@ interface Novinka {
   readonly nadpis: string;
   readonly text: string;
   readonly odkaz: string;
+  readonly vydanie?: string;
 }
 
 interface ObsahTvorcu {
@@ -316,7 +320,7 @@ const bezDiakritiky = (s: string): string => s.normalize("NFD").replace(/[̀-ͯ]
 
 // ---- príkazový riadok ------------------------------------------------------------
 
-const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok"]);
+const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok", "--vydanie", "--novinka", "--dovod"]);
 
 /** Štýl avatarov AI účtov — ako avatary offline protihráčov (seed/avatary/boti): dedinčan napoly robot. */
 const STYL_AVATARA =
@@ -861,7 +865,7 @@ async function main(): Promise<void> {
 
     case "nazory": {
       const k = arg[0] === undefined ? "" : `&kategoria=${arg[0]}`;
-      const { nazory } = await api<{ nazory: { id: number; autor: { meno: string }; kategoria: string; stav: string; text: string; cigarety: number; komentare: { autor: { meno: string }; text: string }[] }[] }>("GET", `/nazory?triedenie=nove${k}`);
+      const { nazory } = await api<{ nazory: { id: number; autor: { meno: string }; kategoria: string; stav: string; nadpis?: string; text: string; cigarety: number; komentare: { autor: { meno: string }; text: string }[] }[] }>("GET", `/nazory?triedenie=nove${k}`);
       for (const n of nazory) {
         console.log(`#${n.id} [${n.kategoria}, ${n.stav}] ${n.autor.meno} — ${n.cigarety} cig.\n  ${n.text.replace(/\n/g, "\n  ")}`);
         for (const c of n.komentare) console.log(`    ↳ ${c.autor.meno}: ${c.text.replace(/\n/g, " ")}`);
@@ -879,8 +883,10 @@ async function main(): Promise<void> {
 
     case "stav": {
       const [id, stav] = arg;
-      if (id === undefined || stav === undefined) throw new Error("Použitie: stav <id-nazoru> <nove|prijate|planovane|hotove|zamietnute>");
-      await api("PATCH", `/nazory/${Number(id)}`, { stav });
+      if (id === undefined || stav === undefined) throw new Error("Použitie: stav <id-nazoru> <nove|prijate|planovane|hotove|zamietnute> [--novinka <id>] [--dovod \"…\"]");
+      const novinka = hodnota("--novinka");
+      const dovod = hodnota("--dovod");
+      await api("PATCH", `/nazory/${Number(id)}`, { stav, ...(novinka === undefined ? {} : { novinka: Number(novinka) }), ...(dovod === undefined ? {} : { dovod }) });
       console.log(`Názor #${id}: stav ${stav}.`);
       break;
     }
@@ -1085,7 +1091,7 @@ async function main(): Promise<void> {
       const { novinky } = await api<{ novinky: Novinka[] }>("GET", "/novinky");
       if (prep.has("--json")) console.log(JSON.stringify(novinky, null, 2));
       else if (novinky.length === 0) console.log("Zatiaľ žiadne novinky.");
-      else for (const n of novinky) console.log(`#${n.id}  ${n.datum}  ${n.kategoria.padEnd(8)} ${n.nadpis}${n.odkaz === "" ? "" : `  → ${n.odkaz}`}`);
+      else for (const n of novinky) console.log(`#${n.id}  ${n.datum}${n.vydanie ? ` (${n.vydanie})` : ""}  ${n.kategoria.padEnd(8)} ${n.nadpis}${n.odkaz === "" ? "" : `  → ${n.odkaz}`}`);
       break;
     }
 
@@ -1093,9 +1099,11 @@ async function main(): Promise<void> {
       const subor = arg[0];
       if (subor === undefined || !existsSync(subor)) throw new Error("Použitie: novinka-pridaj <novinka.json> (objekt alebo pole objektov)");
       const zoSuboru = JSON.parse(readFileSync(subor, "utf8")) as unknown;
+      const vydanie = hodnota("--vydanie");
       for (const telo of Array.isArray(zoSuboru) ? zoSuboru : [zoSuboru]) {
-        const { novinka } = await api<{ novinka: Novinka }>("POST", "/admin/novinky", telo);
-        console.log(`Novinka #${novinka.id} (${novinka.datum}, ${novinka.kategoria}) — ${novinka.nadpis}`);
+        const s = telo as Record<string, unknown>;
+        const { novinka } = await api<{ novinka: Novinka }>("POST", "/admin/novinky", vydanie !== undefined && s.vydanie === undefined ? { ...s, vydanie } : s);
+        console.log(`Novinka #${novinka.id} (${novinka.datum}${novinka.vydanie ? ` · ${novinka.vydanie}` : ""}, ${novinka.kategoria}) — ${novinka.nadpis}`);
       }
       console.log(`${url}/novinky`);
       break;

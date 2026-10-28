@@ -29,6 +29,7 @@ import {
   doCardsJson,
   doScorecardsJson,
   neznameAkcie,
+  textyKarty,
 } from "@naex/tvorba";
 import type { Db } from "./db.ts";
 import { JsonTabulka, transakcia } from "./db.ts";
@@ -74,7 +75,8 @@ interface SeedNavrh {
 }
 
 type RawSide = { blocked: Pozicia[]; actions: Record<string, number>; allowed?: Record<string, string[]>; name?: string };
-type RawCard = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide };
+/** pribeh a ucel nesie len sada zverejnená po ich zavedení (2026-10-26) — staršia ich nemá. */
+type RawCard = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide; pribeh?: string; ucel?: string };
 
 /** Karty východiskovej sady z repozitára (packages/core/data/cards.json). */
 function nacitajCards(): RawCard[] {
@@ -161,6 +163,7 @@ export class Obsah {
             lava: stranaZJson(c.left),
             prava: stranaZJson(c.right),
             upravene: teraz,
+            ...textyKarty(c.pribeh, c.ucel),
           },
           i,
         );
@@ -333,7 +336,7 @@ export class Obsah {
    * cards.json); preskočí sa, ak má tvorca nezverejnenú prácu (návrh upravený
    * po poslednom zverejnení) — tú by prepísal.
    */
-  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-v19-20261026"):"hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
+  dorovnajSoSeedom(teraz: number, znacka = "migracia-sada-v7-efekty-20261027"):"hotovo" | "bez-zmeny" | "preskocene" | "uz-bezalo" {
     if (this.nastaveniaT.jeden(znacka) !== null) return "uz-bezalo";
     const posledna = this.db.prepare("SELECT cas FROM sady ORDER BY verzia DESC LIMIT 1").get() as { cas: number } | undefined;
     const navrhy = this.karty.vsetky();
@@ -344,7 +347,7 @@ export class Obsah {
     const cards = nacitajCards();
     const seed = nacitajSeedNavrhy();
     const kluc = (k: KartaNavrh): string =>
-      JSON.stringify([k.nazov, k.tagy, k.efekt, k.obrazok, k.farba, k.mierkaTextu, k.mierkaIkon, k.sirkaMm, k.vyskaMm, k.kopie, rovnaStrana(k.lava), rovnaStrana(k.prava)]);
+      JSON.stringify([k.nazov, k.tagy, k.efekt, k.obrazok, k.farba, k.mierkaTextu, k.mierkaIkon, k.sirkaMm, k.vyskaMm, k.kopie, rovnaStrana(k.lava), rovnaStrana(k.prava), k.pribeh ?? null, k.ucel ?? null]);
     let zmena = false;
     transakcia(this.db, () => {
       cards.forEach((c, i) => {
@@ -366,6 +369,8 @@ export class Obsah {
           lava: stranaZJson(c.left),
           prava: stranaZJson(c.right),
           upravene: teraz,
+          // Príbeh a účel píše admin v tvorcovi; cards.json bez nich ich nezmaže.
+          ...textyKarty(c.pribeh ?? stary?.pribeh, c.ucel ?? stary?.ucel),
         };
         if (stary !== null && kluc(stary) === kluc(novy)) return;
         zmena = true;
@@ -381,7 +386,13 @@ export class Obsah {
       // pečene); názov, ikonu a poradie z tvorcu nechá.
       for (const a of PREDVOLENE_AKCIE) {
         const stara = this.akcie.jeden(a.kluc);
-        if (stara === null || stara.popis === a.popis) continue;
+        // Nová vstavaná akcia (Pakt, v7) v starej databáze ešte nie je.
+        if (stara === null) {
+          zmena = true;
+          this.akcie.uloz(a.kluc, a);
+          continue;
+        }
+        if (stara.popis === a.popis) continue;
         zmena = true;
         this.akcie.uloz(a.kluc, { ...stara, popis: a.popis });
       }

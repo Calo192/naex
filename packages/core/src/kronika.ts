@@ -11,7 +11,6 @@ import { evaluateLine } from "./partia.ts";
 import type { DvojicaStatistik } from "./statistiky.ts";
 import type { PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
-import { bodyTeraz, viewFor } from "./view.ts";
 
 export interface NaexVKole {
   readonly kto: PlayerId;
@@ -28,7 +27,7 @@ export interface KoloKroniky {
   readonly pitky: number;
   readonly tuhe: readonly [number, number];
   readonly makke: readonly [number, number];
-  /** null = remíza v tuhom (lokalita na sekeru) alebo bitka sa neodohrala. */
+  /** null = sekera (remíza v tuhom, Absťákoch aj Dlhoch) alebo bitka sa neodohrala. */
   readonly vitaz: PlayerId | null;
   readonly sekera: boolean;
   readonly prebytok: { readonly drzi: PlayerId; readonly kolko: number } | null;
@@ -41,7 +40,7 @@ export interface KoloKroniky {
   /** Nové Dlhy a Cirhózy v kole. */
   readonly dlhy: readonly [number, number];
   readonly cirhozy: readonly [number, number];
-  /** Body oboch po kole (rovnaký výpočet ako bodyTeraz); pri konci hry v strede kola stav na konci. */
+  /** Špaky oboch po kole (v6); pri konci hry konečné špaky. */
   readonly bodyPo: readonly [number, number] | null;
 }
 
@@ -148,9 +147,9 @@ export function zapisDoKroniky(
     }
   }
 
-  // Koniec kola (nové kolo alebo koniec hry): body po kole a ďalšie kolo.
+  // Koniec kola (nové kolo alebo koniec hry): špaky po kole a ďalšie kolo.
   if (po.kolo !== pred.kolo || (po.koniec !== null && pred.koniec === null)) {
-    const body = bodyTeraz(data, viewFor(data, po, 0)).spolu;
+    const body = po.koniec?.body ?? po.spaky;
     const hotove: KoloKroniky = { ...kolo, bodyPo: [body[0], body[1]] };
     return { kola: [...k.kola, hotove], kolo: prazdneKolo(po), caka: null };
   }

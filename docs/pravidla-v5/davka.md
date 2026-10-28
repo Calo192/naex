@@ -71,7 +71,7 @@ Podklad: docs/napady/priazne-v5-set.html.
 - **Lakomec → Abstinent:** v bitke +1/+2/+3 Pohoršenie („uvidíme, čo to spraví“ — meria stratég).
 - **Exekútor:** súperov prah Exekúcie je nižší o 1/2/3.
 - **Úžerník → Kmotor:** po bitke zníži priznaný Dlh o 1/2/3. Bez Dlhu nerobí nič (nechať tak, bez náhrady).
-- Návrhy nápadníka Výpalné za každé súperovo NA EX a Na zdravie „do dna“ (poldeci z tvojho NA EX sa vráti plný) zatiaľ nerozhodnuté — čakajú na meranie.
+- Návrhy vymyselníka Výpalné za každé súperovo NA EX a Na zdravie „do dna“ (poldeci z tvojho NA EX sa vráti plný) zatiaľ nerozhodnuté — čakajú na meranie.
 
 ## Interview 3 (Michal 2026-10-25): otvorené otázky
 
@@ -110,8 +110,8 @@ Zmrazenie pravidiel trvá najviac týždeň; v5 má výnimku a nasadí sa na Mic
 | Jadro | etapy 1–9 z tabuľky vyššie, VERZIA_PRAVIDIEL v5 | programátor (v5/pravidla) | beží |
 | Bot | hrať v5: Pohoršenie k sebe, fajčiť v Pitke, Cirhóza priznať/riskovať, súperovi najslabšia priazeň | bot-tréner (max 2 procesy) | po jadre |
 | Stôl (UI) | bodovanie po starších (kto by ho teraz bodoval), Pohoršenie oboma smermi, nové priazne, NA EX naraz (ak áno), scorecardy Absťák/Rezerva, jednotný bar (mocky ui/jednotny-bar) | programátor UI | po jadre a výbere baru |
-| Pravidlá | docs/PRAVIDLA.md, stránka /pravidla (poradie hry), tlač, ťahák AI hráčov tools/playtest/tahak.md, mapa rozhodcu | nápadník + rozhodca | po rozhodnutiach |
-| Výučba | nová výuková hra proti Majstrovi Melicharovi (Ladislav Melisko, ktorý narobil v dedine dlhy, preto vystupuje pod tajným menom); začne tým, že si od hráča požičia cigaretu a za to ho naučí hrať; bublina nie na celej ľavej strane (súperove zdroje alebo jednotný bar). Dnešná výučba sa Michalovi nepáčila. | Michal premýšľa → nápadník scenár | čaká na Michala |
+| Pravidlá | docs/PRAVIDLA.md, stránka /pravidla (poradie hry), tlač, ťahák AI hráčov tools/playtest/tahak.md, mapa rozhodcu | vymyselník + rozhodca | po rozhodnutiach |
+| Výučba | nová výuková hra proti Majstrovi Melicharovi (Ladislav Melisko, ktorý narobil v dedine dlhy, preto vystupuje pod tajným menom); začne tým, že si od hráča požičia cigaretu a za to ho naučí hrať; bublina nie na celej ľavej strane (súperove zdroje alebo jednotný bar). Dnešná výučba sa Michalovi nepáčila. | Michal premýšľa → vymyselník scenár | čaká na Michala |
 | Nápovedy | packages/core/src/napovedy.ts — texty a spúšťače podľa v5 | programátor | po pravidlách |
 | Scorecardy, priazne | dáta, texty na kartách starších, ilustrácie nových mien (Abstinent, Kmotor…) | admin, ilustrátor | po rozhodnutiach |
 | Štatistiky, achievementy, Vývoj | partie v5 oddelene od v4, známky | programátor | pred nasadením |

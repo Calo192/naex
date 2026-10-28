@@ -8,6 +8,7 @@ import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
 import { variant, variantyKarty } from "@naex/tvorba";
+import { ZnackaStrachu } from "../hra/IkonaStrachu.tsx";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -179,7 +180,8 @@ export function UkazkaBitky() {
     hodnotaViery: 1,
   });
   const d = computeDamage([strana(s[0]), strana(s[1])]);
-  const o = battleOutcome(d);
+  // v6: remízu v tuhom rozhodnú Absťáky, potom priznané Dlhy (PRAVIDLA.md §9.4).
+  const o = battleOutcome(d, { abstaky: [s[0].abstaky, s[1].abstaky], dlhy: [s[0].dlhy, s[1].dlhy] });
   const MENA = ["Ty", "Súper"];
 
   return (
@@ -228,11 +230,13 @@ export function UkazkaBitky() {
       <div className="ukazka-vysledok" aria-live="polite">
         {o.vitaz === null ? (
           <>
-            <strong>Remíza</strong> v tuhom — lokalitu nezíska nikto, ide na sekeru a vezme si ju víťaz najbližšej bitky.
+            <strong>Sekera</strong> — tuhé, Absťáky aj priznané Dlhy sú vyrovnané. Bitku nevyhrá nikto a jej špaky vezme víťaz
+            najbližšej bitky.
           </>
         ) : (
           <>
-            Vyhráva <strong>{MENA[o.vitaz]}</strong>.
+            Vyhráva <strong>{MENA[o.vitaz]}</strong>
+            {o.rozhodlo === "abstak" ? " — remízu v tuhom rozhodlo menej Absťákov" : o.rozhodlo === "dlhy" ? " — remízu v tuhom rozhodlo menej priznaných Dlhov" : ""}.
           </>
         )}{" "}
         {o.prebytokDrzi === null
@@ -243,15 +247,16 @@ export function UkazkaBitky() {
   );
 }
 
-const ZONY = ["Vydesenie", "Strach", "Znepokojenie", "Neutralita", "Neutralita", "Neutralita", "Znepokojenie", "Strach", "Vydesenie"];
-const ZONA_TRIEDA = ["cervena", "oranzova", "zlta", "siva", "siva", "siva", "zlta", "oranzova", "cervena"];
+// v6: 7 polí, jediné sivé v strede (index 3).
+const ZONY = ["Vydesenie", "Strach", "Znepokojenie", "Neutralita", "Znepokojenie", "Strach", "Vydesenie"];
+const ZONA_TRIEDA = ["cervena", "oranzova", "zlta", "siva", "zlta", "oranzova", "cervena"];
 
 /** Stupnica strachu: kto má priazeň a koho sa starší bojí. */
 export function UkazkaStupnice() {
-  const [m, setM] = useState(4);
+  const [m, setM] = useState(3);
   const hodnota = STUPNICA_HODNOTY[m] ?? 0;
   const uroven = STUPNICA_ZONY[m] ?? 0;
-  const strana = m < 3 ? "tvojej" : m > 5 ? "súperovej" : null;
+  const strana = m < 3 ? "tvojej" : m > 3 ? "súperovej" : null;
   return (
     <div className="ukazka">
       <div className="ukazka-hlava">Posúvaj marker po stupnici staršieho.</div>
@@ -262,9 +267,14 @@ export function UkazkaStupnice() {
           </button>
         ))}
       </div>
+      {/* Ako v hre: na konci zvýhodneného ♥, na konci obávaného výkričníky v jeho farbe. */}
       <div className="stupnica-popis">
-        <span>← tvoja polovica</span>
-        <span>súperova polovica →</span>
+        <span>
+          ← {strana === "tvojej" ? <b className="stupnica-priazen moje">♥</b> : strana === "súperovej" && <ZnackaStrachu uroven={uroven} trieda="moje" />} tvoja polovica
+        </span>
+        <span>
+          súperova polovica {strana === "súperovej" ? <b className="stupnica-priazen superove">♥</b> : strana === "tvojej" && <ZnackaStrachu uroven={uroven} trieda="superove" />} →
+        </span>
       </div>
       <div className="ukazka-vysledok" aria-live="polite">
         {strana === null ? (
@@ -273,10 +283,9 @@ export function UkazkaStupnice() {
           <>
             Marker leží na {strana} polovici v zóne <strong>{ZONY[m]}</strong>: priazeň s hodnotou <strong>{hodnota}</strong>{" "}
             má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na úrovni{" "}
-            <strong>{uroven}</strong> — ak {strana === "tvojej" ? "súper" : "ty"} vyhrá viac podmienok tohto staršieho, dostane
-            za neho {1 + uroven} body namiesto 1. Na scorecardoch ostatných starších sa ráta do Znepokojenia, Strachu či
-            Vydesenia.
-            {(m === 0 || m === 8) && " Krajná pozícia je zamknutá a starší sa prebudí pre vydesujúceho hráča."}
+            <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — po každej bitke, ktorú {strana === "tvojej" ? "súper vyhrá, mu" : "vyhráš, ti"} dá {uroven}{" "}
+            {uroven === 1 ? "špak" : "špaky"}.
+            {(m === 0 || m === 6) && " Na krajnej pozícii sa starší prebudí pre vydesujúceho hráča a ráta sa do vydesenia."}
           </>
         )}
       </div>

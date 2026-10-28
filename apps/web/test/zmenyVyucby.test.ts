@@ -3,6 +3,7 @@
 // „Prvá hra“ z pohľadu hráča (viewFor), takže kľúče smú siahať len na to, čo hráč vidí.
 
 import { describe, expect, it } from "vitest";
+// Scenár „Prvá hra“ je od 2026-10-27 na sade v7.
 import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";

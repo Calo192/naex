@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Posledná bitka a vplyv starších — knižnica mechaník NA EX!</title>
+<style>
+:root { --pozadie:#15120f; --plocha:#1f1a15; --plocha-2:#2a231c; --okraj:#43372c; --text:#f1e8d8; --tlmeny:#b8a993;
+  --akcent:#e9ad45; --dobre:#7fbf7a; --zle:#d8705f; --stred:#d9c04a; --jano:#8fb4e0; --zuza:#e08f9c;
+  --serif:Georgia,"Times New Roman",serif; --sans:system-ui,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,Consolas,monospace; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; --jano:#2d5a8f; --zuza:#a33a52; color-scheme:light; } }
+:root[data-theme="light"] { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; --jano:#2d5a8f; --zuza:#a33a52; color-scheme:light; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 var(--sans); }
+main { max-width:980px; margin:0 auto; padding:28px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+h1,h2,h3 { font-family:var(--serif); line-height:1.2; text-wrap:balance; }
+h1 { font-size:clamp(1.7rem,4.6vw,2.5rem); margin:0 0 8px; }
+h2 { font-size:1.4rem; margin:40px 0 14px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.08rem; margin:18px 0 6px; }
+p, ul, ol { max-width:74ch; } p { margin:0 0 10px; } li { margin-bottom:5px; }
+a { color:var(--akcent); } :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.uvod, .pozn { color:var(--tlmeny); } .pozn { font-size:.9rem; }
+.skratka { background:var(--plocha); border:1px solid var(--akcent); border-radius:12px; padding:14px 16px; margin:18px 0; }
+.skratka h2 { margin:0 0 6px; border:0; padding:0; font-size:1.2rem; }
+.tab-obal { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.92rem; }
+th, td { padding:7px 6px; text-align:left; vertical-align:top; border-bottom:1px solid var(--okraj); }
+thead th { border-bottom:2px solid var(--okraj); font-size:.85rem; color:var(--tlmeny); font-weight:600; }
+.znamka { display:inline-block; font-size:.78rem; border-radius:999px; padding:0 8px; border:1px solid currentColor; white-space:nowrap; }
+.n { color:var(--dobre); } .s { color:var(--stred); } .v { color:var(--zle); }
+.filtre { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+button { appearance:none; font:inherit; font-size:.88rem; padding:6px 11px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); cursor:pointer; }
+button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:600; }
+tr[hidden] { display:none; }
+details.mech { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; margin:12px 0; }
+details.mech[open] { border-color:var(--akcent); }
+details.mech summary { cursor:pointer; font-family:var(--serif); font-size:1.12rem; }
+details.mech summary small { font-family:var(--sans); color:var(--tlmeny); font-size:.82rem; }
+.hra { border-left:3px solid var(--okraj); padding:2px 0 2px 12px; margin:8px 0; }
+.hra b { display:block; }
+.mriezka { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:4px 22px; }
+.kalk { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:14px 16px; }
+.ovl { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px 20px; margin-bottom:12px; }
+.ovl label { display:block; font-size:.9rem; color:var(--tlmeny); }
+.ovl input[type=range] { width:100%; accent-color:var(--akcent); }
+.ovl output { color:var(--text); font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+.j { color:var(--jano); font-weight:600; } .z { color:var(--zuza); font-weight:600; }
+.myslienky li { margin-bottom:10px; }
+code { font-family:var(--mono); font-size:.86em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.88rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="pozn"><a href="index.html">Knižnica mechaník</a> · Študent · 26. 10. 2026</p>
+<h1>Posledná bitka a vplyv starších</h1>
+<p class="uvod">Ako iné hry zabránia tomu, aby posledné kolo rozhodlo všetko, a ako z vplyvu (strach a priazeň starších) spraviť strategickú os, nie odmenu za šťastie. Rešerš 12 hier, 6 mechaník. Knižnica nič nenavrhuje Michalovi; je podkladom pre Vymyselníka, Navrhára a stratéga.</p>
+
+<section class="skratka">
+<h2>V skratke</h2>
+<ul>
+<li>V5 má problém v <b>poslednej bitke</b> (prebytok a strach sa zrátajú až na konci). V6 Špaky ho rieši priebežnou výplatou, ale strach sa platí <b>po každej bitke ako renta</b>. To presúva váhu na <b>začiatok</b> (kto vydesí skoro, inkasuje 5–6×) a rozbíja mierku (príklad: strach 19, bitky 4).</li>
+<li>Hry pre dvoch to riešia tak, že vplyv je <b>udalosť</b> (7 Wonders Duel: korisť pri prvom vstupe do zóny), <b>stav zúčtovaný v ohlásenú chvíľu</b> (Twilight Struggle, El Grande) alebo <b>druhá os, ktorá sa nesčítava</b> (Tigris &amp; Euphrates: ráta sa slabšia).</li>
+<li>Proti „všetko alebo nič“ v poslednej bitke: <b>porazený určuje cenu prehry</b> (Air, Land &amp; Sea: ústup; Blood Rage: víťaz platí kartami). NA EX! to v6 skryto má cez počet Pitiek.</li>
+</ul>
+</section>
+
+<h2>1. Problém v NA EX!</h2>
+<p><b>Dnes (v5).</b> Body sa rátajú len na konci (PRAVIDLA.md §14) a strach starších sa mení prebytkom víťaza (§9.4) a Pohoršením (§9.2). Prebytok poslednej bitky preto prepíše tabuľku: „K5 obrátila 64 bodov“ (<code>docs/playtesty/20261021-143600.html</code>), „Posledná bitka rozhodne hru — štvrtý playtest za sebou“, 51 : 45 → 17 : 62 (<code>docs/playtesty/20261018-185541.html</code>); hráči navrhli obmedziť posledný prebytok alebo rátať body pred ním. Stratég: kto vyhrá viac bitiek, vyhrá partiu v 86–89 % (<code>docs/playtesty/strategia-v5.html</code>). Roadmapa #7 a #108.</p>
+<p><b>V6 Špaky</b> (<code>docs/napady/spaky.html</code>): víťaz bitky dostane špaky za odohrané Pitky (1.2), po každej bitke obaja dostanú 1/2/3 špaky za každého staršieho, ktorý sa ich bojí (1.4), stupnica 7 polí bez zamknutia a Pohoršenie bez limitu (1.6), finále bez lokality a s prebytkom vyplateným v špakoch (1.9). Otvorené: <b>mierka</b> (v príklade strach 19, bitky 4) a <b>riziko skoršieho vydesenia</b> (časť 4). Absťák (roadmapa #113, <code>docs/napady/abstak.html</code>) v v6 uberá víťazovi špaky a rozhoduje remízy.</p>
+<p><b>Jadro problému:</b> výplata „po každej bitke“ je úrok. Starší vydesený v 1. bitke zaplatí 6×, v 5. bitke 2×. Záver tým stráca váhu (dobré pre #108), ale vedenie z prvých kôl sa samo zúročí (nový snowball). V6 má jednu vstavanú brzdu: strach dáva súperovi priazeň (§10, dvojaká úloha markera) — presne druh negatívnej spätnej väzby, ktorý odporúča článok o runaway leaderoch (<a href="https://brandonthegamedev.com/colony-letting-leaders-lead/">Brandon the Game Dev</a>). Otázka pre meranie je, či stačí.</p>
+
+<h2>2. Hry v rešerši</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Hra</th><th>Hráči</th><th>Čo rieši</th><th>Zdroj</th></tr></thead>
+<tbody>
+<tr><td>7 Wonders Duel</td><td>2</td><td>vojenská stopa: korisť pri prvom vstupe do zóny, body za pozíciu raz na konci, okamžitá výhra v hlavnom meste</td><td><a href="https://rulespal.com/7-wonders-duel/rulebook">odkaz</a></td></tr>
+<tr><td>Twilight Struggle</td><td>2</td><td>jedna stopa ±20, karty zúčtovania regiónov (kto, kedy, nesmie držať), záverečné zúčtovanie každého regiónu raz</td><td><a href="https://en.wikipedia.org/wiki/Twilight_Struggle">odkaz</a></td></tr>
+<tr><td>Air, Land &amp; Sea</td><td>2</td><td>ústup: čím skôr ustúpiš, tým menej bodov súper dostane (plná bitka 6, hra do 12)</td><td><a href="https://rulespal.com/air-land-and-sea/rulebook">odkaz</a></td></tr>
+<tr><td>Hanamikoji</td><td>2</td><td>priazeň gejší ostáva medzi kolami, pri remíze sa nehýbe; 4 gejše alebo 11 bodov = výhra</td><td><a href="https://en.boardgamearena.com/gamepanel?game=hanamikoji">odkaz</a></td></tr>
+<tr><td>Kemet</td><td>2–5</td><td>trvalé body za vyhratý útok, dočasné za držbu chrámov a pyramíd</td><td><a href="https://islaythedragon.com/featured/i-like-king-tut-and-i-cannot-lie-a-review-of-kemet/">odkaz</a></td></tr>
+<tr><td>Blood Rage</td><td>2–5</td><td>víťaz bitky stratí zahrané karty, porazený si ich vezme späť; Loki odmeňuje prehru</td><td><a href="https://rules.dized.com/game/8mhSnWp6QFijr_ZCDSjP_w/SarC8sklQG6DseH3hMivtw/resolution">odkaz</a></td></tr>
+<tr><td>Cosmic Encounter</td><td>3–5</td><td>odškodné: porazený vyjednávač berie víťazovi karty z ruky podľa stratených lodí</td><td><a href="https://en.wikipedia.org/wiki/Cosmic_Encounter">odkaz</a></td></tr>
+<tr><td>El Grande</td><td>2–5</td><td>zúčtovanie majorít po 3., 6. a 9. kole, body aj za 2. a 3. miesto</td><td><a href="https://ultraboardgames.com/el-grande/game-rules.php">odkaz</a></td></tr>
+<tr><td>Ra</td><td>2–5</td><td>epochy: časť dlaždíc sa po epoche zahodí, monumenty bodujú až na konci</td><td><a href="https://en.wikipedia.org/wiki/Ra_(board_game)">odkaz</a></td></tr>
+<tr><td>Tigris &amp; Euphrates</td><td>2–4</td><td>ráta sa najslabšia zo štyroch farieb</td><td><a href="https://www.avclub.com/tigris-and-euphrates-boardgame-review">odkaz</a></td></tr>
+<tr><td>Inis</td><td>2–4</td><td>žetón Pretender: výhra až na začiatku ďalšieho kola, ak ťa nikto nedorovná</td><td><a href="https://www.meeplemountain.com/reviews/inis-review-lets-make-a-king/">odkaz</a></td></tr>
+<tr><td>Root</td><td>2–4</td><td>Dominancia: zíď zo stopy bodov a vyhraj držbou čistiniek (podľa jedného zdroja až od 3 hráčov)</td><td><a href="https://www.avclub.com/the-brutally-cute-game-of-root">odkaz</a></td></tr>
+</tbody></table></div>
+<p class="pozn">Hry pre 3–5 hráčov (Cosmic, Root, Inis, Blood Rage) sú tu pre jednu časť pravidla; pri každej mechanike je posúdené, či prežije prevod na dvoch. Root Dominancia podľa jedného zdroja pri dvoch hráčoch neplatí.</p>
+
+<h2>3. Porovnanie mechaník</h2>
+<div class="filtre" role="group" aria-label="Filtrovať podľa problému">
+<button type="button" data-f="vsetko" aria-pressed="true">Všetky</button><button type="button" data-f="posledna" aria-pressed="false">Posledná bitka (#7, #108)</button><button type="button" data-f="mierka" aria-pressed="false">Mierka starší vs. bitky</button><button type="button" data-f="snowball" aria-pressed="false">Snowball vedúceho</button><button type="button" data-f="os" aria-pressed="false">Vplyv ako os</button><button type="button" data-f="vydesenie" aria-pressed="false">Skoré vydesenie</button>
+</div>
+<div class="tab-obal"><table id="porov">
+<thead><tr><th>Mechanika</th><th>Rozhodnutie hráča</th><th>Zložitosť pre nováčika</th><th>Zásah do pravidiel</th><th>Hlavné riziko</th></tr></thead>
+<tbody>
+<tr data-riesi="mierka snowball"><td><a href="#korist-za-hranicu">Korisť za prvý vstup do zóny (namiesto renty za každé kolo)</a></td><td>kedy tlačiť marker cez hranicu (udalosť), nie koho držať</td>
+<td><span class="znamka n">nízka</span></td><td><span class="znamka s">§9.4, §10, bodovanie v6 1.4</span></td><td>strach príliš slabý; Pohoršenie bez limitu zoberie korisť naraz</td></tr>
+<tr data-riesi="snowball posledna"><td><a href="#trvale-a-docasne-body">Trvalé body za čin, dočasné body za držbu</a></td><td>útočiť pre istý špak, alebo držať starších pre stav</td>
+<td><span class="znamka s">stredná</span></td><td><span class="znamka s">bodovanie v6 1.2, 1.4</span></td><td>bez korekcie zase rozhodne koniec; motív úmyselne prehrať kvôli útočníkovi</td></tr>
+<tr data-riesi="posledna mierka os"><td><a href="#medzibodovanie">Zúčtovanie vplyvu v ohlásených chvíľach (a kto ich spúšťa)</a></td><td>obranca volí cieľ = volí, čí strach sa dnes ráta</td>
+<td><span class="znamka s">stredná</span></td><td><span class="znamka v">§5, §15 lokality, bodovanie v6</span></td><td>nová väzba lokalita → starší; ďalšia výhoda obrancu</td></tr>
+<tr data-riesi="mierka os"><td><a href="#slabsia-os">Skóre podľa slabšej osi (rátaj menší popolník)</a></td><td>ktorú nohu predĺžiť — krčmu, alebo dedinu</td>
+<td><span class="znamka v">vyššia (čítanie skóre)</span></td><td><span class="znamka n">len bodovanie (§14 / v6 1.x)</span></td><td>nováčik nevie, kto vedie; jedna slabina trestá tvrdo</td></tr>
+<tr data-riesi="posledna snowball"><td><a href="#ustup-a-odskodne">Porazený určuje cenu prehry (ústup, odškodné, víťaz platí)</a></td><td>dohrať, alebo zaplatiť rundu a odísť pred ďalšou Pitkou</td>
+<td><span class="znamka n">nízka</span></td><td><span class="znamka s">§7 Pitka, §9.4, finále v6 1.9</span></td><td>bitky sa nedohrajú; dlhšia Pitka</td></tr>
+<tr data-riesi="vydesenie"><td><a href="#ohlasena-vyhra-s-odpovedou">Náhla výhra: ohlásiť, zaplatiť, nechať súpera odpovedať</a></td><td>kedy sa odhaliť a čoho sa vzdať za náhlu výhru</td>
+<td><span class="znamka s">stredná</span></td><td><span class="znamka s">§1, §10 patronát</span></td><td>vydesenie zmizne, ak je nárok drahý</td></tr>
+</tbody></table></div>
+<p class="pozn">Zložitosť a zásah sú odhad Študenta, nie meranie. Zásah sa vzťahuje na pravidlá v5 a návrh v6.</p>
+
+<h2>4. Mierka na skúšku</h2>
+<p>Ilustračný výpočet (nie meranie, nie simulácia): stredná hra, 5 bitiek po 2 Pitkách a finále s 3, spolu 13 špakov za bitky. Jano vydesí niekoľko starších do oranžovej, Zuza vyhráva bitky (posledné, vrátane finále) a drží pár starších v žltej od 3. bitky. Ako by to isté skóre vyzeralo pri rôznych pravidlách?</p>
+<div class="kalk">
+<div class="ovl">
+<label>Jano: starší v oranžovej <output id="o-n">3</output><input id="n" type="range" min="0" max="4" value="3"></label>
+<label>…bojí sa ho od bitky <output id="o-k">2</output><input id="k" type="range" min="1" max="6" value="2"></label>
+<label>Zuza: vyhraté bitky <output id="o-b">5</output><input id="b" type="range" min="0" max="6" value="5"></label>
+<label>Zuza: starší v žltej (od 3. bitky) <output id="o-m">1</output><input id="m" type="range" min="0" max="4" value="1"></label>
+</div>
+<div class="tab-obal"><table>
+<thead><tr><th>Pravidlo</th><th class="num"><span class="j">Jano</span></th><th class="num"><span class="z">Zuza</span></th><th>Vyhrá</th><th class="num">Strach v Janovom skóre</th></tr></thead>
+<tbody id="vysl"></tbody></table></div>
+<p class="pozn">Renta v6 = 2 špaky za oranžového staršieho po každej bitke od bitky k. Korisť = 1 špak pri vstupe do žltej, 1 pri vstupe do oranžovej, potom stav raz po finále (2). Zúčtovanie = stav po 2., 4. bitke a po finále. Slabšia os = menší z (bitky, strach podľa renty), pri rovnosti väčší.</p>
+</div>
+
+<h2>5. Mechaniky podrobne</h2>
+
+<details class="mech" id="korist-za-hranicu">
+<summary>Korisť za prvý vstup do zóny (namiesto renty za každé kolo) <small>· 2 zdroje · <code>korist-za-hranicu</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Vplyv, ktorý sa vypláca po každej bitke, je úrok: kto vydesí staršieho skoro, inkasuje ho pri každej ďalšej bitke a mierka „starší vs. bitky“ sa rozíde (v6 príklad: strach 19 špakov, bitky 4).</p>
+<h3>Ako funguje</h3><ol><li>Na stupnici ťahanej oboma hráčmi (tug-of-war) ležia pri zónach jednorazové žetóny koristi.</li><li>Keď marker prvýkrát vstúpi do zóny so žetónom, aktívny hráč žetón vyhodnotí (súper stratí mince / ty dostaneš body) a žetón ide z hry.</li><li>Návrat markera a opätovný vstup už nič nedáva.</li><li>Na konci hry sa raz zaráta pozícia markera (0 / 2 / 5 / 10 VP).</li><li>Marker v hlavnom meste súpera = okamžitá výhra.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>7 Wonders Duel (Bauza, Cathala, 2015, 2 hráči)</b>Vojenská stopa je jediná spoločná stupnica. Žetóny Looting (súper stratí 2 alebo 5 mincí) sa vyhodnotia len pri prvom vstupe do zóny a idú do škatule; body za pozíciu (0/2/5/10) sa rátajú len raz na konci. Hráč rozhoduje, kedy tlačiť: tlak je udalosť s okamžitým účinkom, nie investícia, ktorá úročí. Slabší vo vojsku navyše volí, kto začne ďalší vek. <a href="https://rulespal.com/7-wonders-duel/rulebook">zdroj</a></div><div class="hra"><b>7 Wonders Duel — prečo stopa ťahá oboch</b>Recenzia: stopa dáva obom stály dôvod reagovať; tlačiť znamená brať súperovi mince a body, súper môže tlačiť späť, investícia do vojska chýba inde. <a href="https://bargames101.com/7-wonders-duel/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>V 7WD je vojenská výhra častá pri nepozornom súperovi a hráči ju vnímajú ako „náhlu smrť“ (z vlastných vedomostí, neoverené). Jednorazová korisť sama nebrzdí cestu na kraj stupnice — to robí až dĺžka stupnice a protitlak.</p></div>
+<div><h3>Riziká v NA EX!</h3><p>Zabudnuté žetóny = viac evidencie (web to rieši sám). Ak je korisť príliš malá, strach prestane byť os a hra sa zúži na bitky. Pohoršenie bez limitu (v6) môže v jednej bitke pobrať tri žetóny naraz — treba strop alebo zachovať limit hraníc zón.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Pri stupnici 7 polí (v6) leží pri každej zóne strachu na každej polovici žetón Špak: prvý vstup markera do žltej dá vydesujúcemu 1 špak, do oranžovej 1, do červenej 2 (čísla na zmeranie), žetón ide preč. Po bitke sa už nevypláca „každý starší, ktorý sa ťa bojí“; strach sa zaráta raz po finále podľa polohy (1/2/3). Popolník dostane ohorky pri udalosti, nie každé kolo. Scorecard: na stupnici natlačené tri žetóny na stranu. Výučba: „Kto prvý vystraší, berie špak. Kto ho udrží do konca, berie znova.“</p>
+<h3>Čo zmerať (stratég)</h3><p>Podiel špakov zo starších vs. z bitiek pri dnešnej v6 a pri koristi; korelácia vedenia po 2. bitke s výhrou partie (snowball); počet žetónov koristi za partiu; frekvencia vydesenia a kolo, v ktorom príde.</p>
+</details>
+
+<details class="mech" id="trvale-a-docasne-body">
+<summary>Trvalé body za čin, dočasné body za držbu <small>· 4 zdroje · <code>trvale-a-docasne-body</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Keď sa každý bod hneď stane trvalým, vedenie z prvej polovice sa nedá dobehnúť; keď je všetko dočasné, rozhodne len posledný stav (posledná bitka).</p>
+<h3>Ako funguje</h3><ol><li>Body sú dvoch druhov.</li><li>Trvalé dáva čin (vyhratý útok, obeta) a už sa nestratia.</li><li>Dočasné dáva držba (chrám, pyramída, priazeň) a platia, len kým držíš; súper ti ich vezme.</li><li>Víťazný prah (8 / 10) sa ráta zo súčtu oboch.</li><li>Malý most: držba dvoch chrámov na konci kola sa premení na 1 trvalý bod.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Kemet (Bariot, Montiel, 2012)</b>Trvalé body len za vyhratý útok, za obranu nič; chrámy a pyramídy úrovne 4 dávajú dočasné body, ktoré sa dajú stratiť. Armády sa preto tlačia v „preťahovaní, kde nikto nie je v bezpečí“. Hráč rozhoduje: útočiť pre istotu, alebo držať pre stav. <a href="https://islaythedragon.com/featured/i-like-king-tut-and-i-cannot-lie-a-review-of-kemet/">zdroj</a></div><div class="hra"><b>Kemet — zdroje bodov</b>Zoznam trvalých (útoky, dva chrámy, Svätyňa, dlaždice) a dočasných (chrám, pyramída 4) bodov. <a href="https://goonhammer.com/boardhammer-kemet-ta-seti-expansion">zdroj</a></div><div class="hra"><b>Ra (Knizia, 1999)</b>Dlaždice civilizácie a bohov sa na konci epochy zahodia (dočasné), monumenty sa bodujú až na konci hry (trvalé). Hráč váži: istý bod teraz, alebo budovať na koniec. Že sa faraóni držia a bodujú každú epochu, je z vlastných vedomostí, neoverené. <a href="https://en.wikipedia.org/wiki/Ra_(board_game)">zdroj</a></div><div class="hra"><b>Hanamikoji (Nakayama, 2013, 2 hráči)</b>Priazeň gejše (marker) ostáva medzi kolami u toho, kto ju získal; pri remíze sa nepohne a body z nej platia, len kým ju súper nevyhrá späť. Držiteľovi stačí remíza, vyzývateľ musí vyhrať. <a href="https://en.boardgamearena.com/gamepanel?game=hanamikoji">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Kemet sa pre 2 hráčov hrá horšie ako pre 3–5 (z vlastných vedomostí, neoverené); okamžitý koniec pri prahu môže dať výhru tomu, kto len dočasne dosiahol číslo (Kemet to rieši tým, že sa kontroluje na konci dňa — podľa vydania, viď pravidlá v3.4). Dva druhy bodov sú pojem navyše pre nováčika.</p></div>
+<div><h3>Riziká v NA EX!</h3><p>Ak sa strach ráta len na konci, posledná bitka (prebytok) zase rozhoduje veľa — preto len spolu s koristou za hranicu alebo s medzibodovaním. Dva druhy špakov treba vo výučbe ukázať farbou (ohorok vs. horiaca cigareta). Bonus útočníka môže motivovať úmyselnú prehru (overiť).</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Popolník (trvalé) a stôl starších (dočasné). Trvalé špaky: vyhratá bitka (odohrané Pitky). Kemet navyše odmeňuje len útok: v NA EX je útočník hráč, ktorý prehral minulú bitku, takže „+1 trvalý špak za bitku vyhratú ako útočník“ je zabudovaný návrat do hry bez darčeka. Dočasné: strach starších sa nepripisuje po každej bitke, ukazuje sa ako živý stav a do popolníka padne raz, po finále. Most ako pri dvoch chrámoch: kto má na konci kola aspoň 3 starších v strachu, dostane 1 trvalý špak. Hanamikoji poučenie: pri remíze v posune marker ostáva, nikto ho nevynuluje.</p>
+<h3>Čo zmerať (stratég)</h3><p>Podiel výhier, keď vedúci po 3. bitke vyhrá partiu (dnes / variant); priemerný rozdiel skóre pred finále; či hráči úmyselne prehrávajú kvôli útočníkovi (bitky prehraté s veľkou rezervou kariet).</p>
+</details>
+
+<details class="mech" id="medzibodovanie">
+<summary>Zúčtovanie vplyvu v ohlásených chvíľach (a kto ich spúšťa) <small>· 3 zdroje · <code>medzibodovanie</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Keď sa vplyv boduje stále, je to pozadie; keď len na konci, je to lotéria posledného kola. Ohlásené zúčtovanie robí z vplyvu plán: viem, kedy a čo sa ráta.</p>
+<h3>Ako funguje</h3><ol><li>Vplyv (majorita, priazeň) sa nezapisuje priebežne.</li><li>Zúčtuje sa v pevných chvíľach (po 3., 6.,</li><li>kole) alebo keď niekto zahrá kartu zúčtovania pre konkrétny región.</li><li>Karta zúčtovania sa nesmie držať — musí sa zahrať v tomto kole, majiteľ volí len chvíľu.</li><li>Na konci sa každý región zúčtuje ešte raz, rovnakou váhou ako počas hry.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>El Grande (Kramer, Ulrich, 1995)</b>Zúčtovanie po 3., 6. a 9. kole, body za 1., 2. a 3. miesto v regióne. Hráč vie, kedy príde zúčtovanie, a stavia majority k nemu; aj druhé miesto niečo dá. <a href="https://ultraboardgames.com/el-grande/game-rules.php">zdroj</a></div><div class="hra"><b>Twilight Struggle (Gupta, Matthews, 2005, 2 hráči)</b>Karty zúčtovania regiónov sú v balíčku, kto ju má, volí chvíľu, ale držať ju nesmie. Body (prítomnosť / dominancia / kontrola) dostanú obaja. Na konci 10. kola sa každý región zúčtuje raz. Vplyv je preto plán na niekoľko ťahov dopredu, nie stav na konci. <a href="https://en.wikipedia.org/wiki/Twilight_Struggle">zdroj</a></div><div class="hra"><b>Ra (Knizia, 1999)</b>Body sa rátajú po každej z troch epoch a na konci; časť zdrojov po epoche zmizne, takže každá epocha je malá hra so záverom. <a href="https://boardgame.de/reviews/ra.htm">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>V Twilight Struggle hráči kritizujú „ruku plnú zúčtovaní“ a náhodu, kedy karta príde (z vlastných vedomostí, neoverené). V El Grande je posledné zúčtovanie najväčšie (body sa opakujú, nerastú), takže aj tu má záver váhu — len nie celú.</p></div>
+<div><h3>Riziká v NA EX!</h3><p>Väzba lokalita → starší je nová dátová vrstva (scorecardy sa rozdávajú náhodne, starší sú pevní, takže väzba ide na kartu staršieho, nie na scorecard). Pri krátkej hre (3 lokality) niektorí starší nemusia prísť na rad — treba finále, ktoré zúčtuje všetkých. Obranca dostane ďalšiu výhodu (už volí cieľ).</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Strach starších sa v6 nevyplatí po každej bitke, ale len pri zúčtovaní. Dve podoby: (a) pevne — po 2. bitke, po 4. bitke a po finále (stredná hra), rovnakou váhou; (b) cez lokality — každá lokalita má na karte 1–2 starších, ktorých sa v kole o ňu zúčtuje (Kostol → Farár, Krčma → Krčmárka, Obecný úrad → Starosta…). Obranca, ktorý volí cieľ (§5), tak volí aj to, čí strach sa dnes ráta; útočník vie dopredu, kam tlačiť Pohoršenie. Finále zúčtuje všetkých raz. Na kartách lokalít pribudne ikona staršieho; vo výučbe „Na Kare sa ukáže, kto sa koho bojí.“</p>
+<h3>Čo zmerať (stratég)</h3><p>Koľko špakov za strach dá jedno zúčtovanie vs. jedna bitka; či obranca volí cieľ podľa starších (bot aj ľudia); podiel výhier obrancu po zmene; rozptyl výsledku poslednej bitky.</p>
+</details>
+
+<details class="mech" id="slabsia-os">
+<summary>Skóre podľa slabšej osi (rátaj menší popolník) <small>· 2 zdroje · <code>slabsia-os</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Keď sa sčítajú dve osi s rôznou mierkou (strach a bitky), vyhrá ten, kto sa zahryzne do silnejšej, a dizajnér musí mierku donekonečna ladiť.</p>
+<h3>Ako funguje</h3><ol><li>Hráč zbiera body v niekoľkých farbách (osiach).</li><li>Na konci sa mu započíta len najslabšia farba.</li><li>Pri rovnosti rozhoduje druhá najslabšia atď.</li><li>Sila v jednej osi nepomôže, kým nedorovnáš ostatné.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Tigris &amp; Euphrates (Knizia, 1997)</b>Body v štyroch farbách (poľnohospodárstvo, obchod, náboženstvo, vláda); ráta sa najslabšia. Recenzenti: tlačí proti špecializácii a odmeňuje vyváženú hru. Hráč stále rozhoduje, ktorá noha je najkratšia a kde ju predĺžiť lacno. <a href="https://www.avclub.com/tigris-and-euphrates-boardgame-review">zdroj</a></div><div class="hra"><b>Tigris &amp; Euphrates — pôvod mechaniky</b>Esej: „Highest-Lowest scoring“ je dnes uznávaná mechanika a Tigris ju urobil prvý; väčšina hier s ňou je od Knizia. <a href="https://20thcenturygames.substack.com/p/tigris-and-euphrates">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Skóre je ťažšie čitateľné — vedúci nie je ten s najviac bodmi. AV Club: pri dvoch hráčoch sa dajú postaviť nedobytné pozície. Bez dôvodu „prečo práve minimum“ v téme pôsobí ako matematická poučka.</p></div>
+<div><h3>Riziká v NA EX!</h3><p>Nováčik nepochopí, prečo nevedie, hoci má viac špakov — web musí ukazovať „platí menší“. Hráč so zlou rukou na bitky stratí nádej skôr (minimum trestá jednu slabinu tvrdo). Ak jedna os dáva vždy oveľa viac, hrá sa len o druhú — rozhodnutia sa zúžia.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Dva popolníky pri mene hráča: Krčma (špaky za bitky) a Dedina (špaky za starších). Vyhrá, kto má väčší menší popolník; pri rovnosti rozhodne väčší. Mierku „19 vs. 4“ netreba ladiť, lebo sa nesčítajú — kto má 19 v Dedine a 4 v Krčme, má 4. Mäkká verzia na meranie: skóre = 2 × menší + väčší. Téma: „V dedine ťa rešpektujú, len keď si chlap v krčme aj pán u fary.“ Výučba: Melichar ukazuje kratší popolník.</p>
+<h3>Čo zmerať (stratég)</h3><p>Rozdelenie (Krčma, Dedina) u víťaza a porazeného; ako často rozhodne menší popolník iné víťazstvo než súčet; počet partií, kde porazený mal vyšší súčet; dĺžka rozhodovania bota.</p>
+</details>
+
+<details class="mech" id="ustup-a-odskodne">
+<summary>Porazený určuje cenu prehry (ústup, odškodné, víťaz platí) <small>· 5 zdroje · <code>ustup-a-odskodne</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Bitka „všetko alebo nič“ s veľkou výhrou robí z poslednej bitky lotériu; keď porazený môže prehru zlacniť (a víťaz za výhru platí), výkyv sa zmenší a pribudne rozhodnutie.</p>
+<h3>Ako funguje</h3><ol><li>Bitka má plnú hodnotu (napr. 6 VP).</li><li>Ktorýkoľvek hráč smie na svojom ťahu ustúpiť — súper bitku vyhrá, ale dostane menej, čím skôr sa ustúpilo (podľa počtu kariet v ruke ustupujúceho).</li><li>Alternatívne: porazený dostane odškodné od víťaza (karty z jeho ruky podľa strát), alebo víťaz svoje zahrané karty stratí a porazený si ich vezme späť.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Air, Land &amp; Sea (Perry, 2019, 2 hráči)</b>Bitka bez ústupu dá víťazovi 6 VP, hra ide do 12. Ústup: súper dostane body podľa karty Supreme Commander ustupujúceho — „čím dlhšie čakáš, tým viac bodov dostane súper“. Hráč rozhoduje, kedy sa bitka už neoplatí. Presná tabuľka (2/3/4/6 podľa kariet v ruke) je z vlastných vedomostí, neoverené. <a href="https://rulespal.com/air-land-and-sea/rulebook">zdroj</a></div><div class="hra"><b>Air, Land &amp; Sea — strategický ústup</b>Recenzia SU&amp;SD: niekedy je najlepšie ustúpiť, aby si súperovi upieral úplné víťazstvo; strategický ústup prehrá bitku, ale vyhrá vojnu. <a href="https://www.shutupandsitdown.com/?p=41256">zdroj</a></div><div class="hra"><b>Blood Rage (Lang, 2015)</b>Víťaz bitky musí odhodiť zahrané bojové karty, porazení si ich vezmú späť do ruky; Loki odmeňuje prehru. Vydavateľ: vyhrávať bitky nie je vždy najlepšie, správna karta dá viac za to, že ťa rozdrvia. <a href="https://rules.dized.com/game/8mhSnWp6QFijr_ZCDSjP_w/SarC8sklQG6DseH3hMivtw/resolution">zdroj</a></div><div class="hra"><b>Blood Rage — prečo prehra nie je koniec</b>Recenzia: Loki odmeňuje prehrávanie alebo trestá víťaza; víťazstvo v bitke nie je vždy najlepší ťah. <a href="https://www.meeplemountain.com/boardgame/blood-rage/">zdroj</a></div><div class="hra"><b>Cosmic Encounter (Eberle, Kittredge, Olotka, 1977)</b>Kto zahrá Vyjednávanie proti Útoku, prehrá, ale ako odškodné si berie z ruky víťaza toľko kariet, koľko stratil lodí. Prehra je obchod, nie len strata. <a href="https://en.wikipedia.org/wiki/Cosmic_Encounter">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Ústup môže zabíjať drámu („nikto nedohrá bitku do konca“). Odškodné, ktoré je príliš veľké, kazí motiváciu vyhrať — článok o Colony varuje, že prehnané dobiehanie robí z hry hod mincou v poslednom ťahu (<a href="https://brandonthegamedev.com/colony-letting-leaders-lead/">zdroj</a>).</p></div>
+<div><h3>Riziká v NA EX!</h3><p>Viac krokov v Pitke (tempo, roadmapa #9). Ak je ústup lacný, bitky sa prestanú dohrávať a NA EX stratí javisko. Karty späť do ruky môžu zrýchliť ďalšie kolo porazeného (preveriť snowball naopak). Tón: odchod z krčmy je satiricky silný, ale nesmie vyzerať ako zbabelosť bez ceny.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>NA EX! to čiastočne už má: v6 dáva víťazovi toľko špakov, koľko Pitiek sa odohralo, a počet Pitiek drží menšia strana (§7 Počet Pitiek) — kto vidí prehru, neaktivuje lokalitu a bitku zlacní. Cigarety za prebytok (§9.4) sú odškodné ako v Cosmic. Chýba výslovný ústup: „Platím a idem“ — pred ďalšou Pitkou smie hráč zaplatiť rundu (napr. 1 cigareta) a odísť; súper vyhrá bitku s doteraz odohranými Pitkami (nie s plánovanými), prebytok sa nerozdeľuje, odchádzajúci si vezme svoje karty z línie späť do ruky (Blood Rage). Vo finále (3 Pitky) by ústup po 1. Pitke dal súperovi 1 špak namiesto 3. Výučba: Melichar „Kto platí, ten ide.“</p>
+<h3>Čo zmerať (stratég)</h3><p>Ako často bot ustúpi a v ktorej Pitke; rozdiel špakov z poslednej bitky (dnes vs. s ústupom); podiel partií, kde finále otočí poradie; dĺžka partie.</p>
+</details>
+
+<details class="mech" id="ohlasena-vyhra-s-odpovedou">
+<summary>Náhla výhra: ohlásiť, zaplatiť, nechať súpera odpovedať <small>· 4 zdroje · <code>ohlasena-vyhra-s-odpovedou</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Druhá cesta k výhre (vydesenie) dáva vplyvu váhu, ale keď je rýchla a lacná, hra skončí skôr, než sa súper zorientuje; keď je nedosiahnuteľná, nikto ju nehrá.</p>
+<h3>Ako funguje</h3><ol><li>Okrem bodov existuje okamžitá výhra (podmienka na stole alebo prah na jednej stupnici).</li><li>Splnenie nestačí: hráč si ju nárokuje akciou alebo musí stav udržať do ďalšieho kola.</li><li>Nárok je verejný, súper dostane ťah na odpoveď.</li><li>Niekde nárok stojí: kto ide na náhlu výhru, vzdá sa bodov (Root).</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Inis (Bisson, 2016)</b>Tri podmienky výhry; kto splní aspoň jednu, smie si ťahom vziať žetón Pretender a vyhrá na začiatku ďalšieho kola, ak ho iný hráč nedorovná v počte splnených podmienok. Rozhodnutie: kedy sa odhaliť. <a href="https://www.meeplemountain.com/reviews/inis-review-lets-make-a-king/">zdroj</a></div><div class="hra"><b>Root (Wehrle, 2018)</b>Od 10 VP smie hráč aktivovať kartu Dominancie: zíde zo stopy bodov a vyhrá, ak na začiatku svojho ďalšieho ťahu ovláda dané čistinky. Karta je verejná, ostatní ju môžu blokovať. Jeden zdroj uvádza, že Dominancia platí až od 3 hráčov — pri dvoch by teda nebola. <a href="https://www.avclub.com/the-brutally-cute-game-of-root">zdroj</a></div><div class="hra"><b>Twilight Struggle (2 hráči)</b>Jedna spoločná stopa od −20 do +20: kto dosiahne 20, vyhrá hneď; inak sa po 10. kole zúčtuje. Celé skóre je jedno číslo — vždy vidno, kto vedie a o koľko. <a href="https://en.wikipedia.org/wiki/Twilight_Struggle">zdroj</a></div><div class="hra"><b>7 Wonders Duel / Hanamikoji (2 hráči)</b>7WD: konflikt v hlavnom meste súpera = okamžitá výhra. Hanamikoji: 4 gejše alebo 11 bodov šarmu končí hru hneď. Obe držia hrozbu viditeľnú celú hru. <a href="https://en.boardgamearena.com/gamepanel?game=hanamikoji">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Okamžité výhry vedú k „zabudol som sa brániť“ prehrám a hráči ich niekedy vnímajú ako antiklimax (z vlastných vedomostí, neoverené). Dominancia v Roote je pri dvoch hráčoch podľa jedného zdroja vypnutá — mechanika je stavaná na koalície viacerých.</p></div>
+<div><h3>Riziká v NA EX!</h3><p>Ďalší pojem a krok; ak je nárok drahý, vydesenie zmizne z hry (dnes je aj tak zriedkavé). Blokovanie rovnosťou môže viesť k pretláčaniu markerov tam a späť (dĺžka).</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>NA EX! má ohlásené vydesenie (§1: polovica starších, udržať do konca ďalšieho kola, odpoveď patronátom). V6 ruší zamknutie a limit Pohoršenia, takže vydesenie zrýchli (spaky.html, časť 4). Poučky: (a) Inis — vydesenie si treba nárokovať ťahom (napr. namiesto patronátu, verejne) a súper ho zablokuje, ak má rovnako vydesených starších; (b) Root — kto ohlási vydesenie, prestane zbierať špaky za bitky (stavia všetko na jednu kartu); (c) Twilight Struggle — ukazovať skóre ako jedno číslo rozdielu (popolník vs. popolník) s ryskou náhlej výhry. Scorecard sa nemení; na stole pribudne žetón Ohlásenie.</p>
+<h3>Čo zmerať (stratég)</h3><p>Frekvencia ohláseného vydesenia v v6 (bez zamknutia) a kolo, v ktorom príde; podiel ohlásení, ktoré súper odvráti; či hráči vydesenie hrajú zámerne alebo vznikne náhodou.</p>
+</details>
+
+<h2>6. Kam to sedí v otvorených otázkach v6</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Otvorená otázka</th><th>Mechaniky z knižnice</th></tr></thead>
+<tbody>
+<tr><td>Posledná bitka má neúmernú váhu (#7, #108); prebytok vo finále vyplatený v špakoch</td><td><a href="#ustup-a-odskodne">Ústup a odškodné</a>, <a href="#medzibodovanie">Zúčtovanie</a> (finále = jedno z rovnocenných zúčtovaní, nie bonus)</td></tr>
+<tr><td>Mierka starší vs. bitky (strach 19, bitky 4)</td><td><a href="#korist-za-hranicu">Korisť za hranicu</a>, <a href="#slabsia-os">Slabšia os</a>, <a href="#trvale-a-docasne-body">Trvalé a dočasné</a></td></tr>
+<tr><td>Skoré vydesenie (zrušené zamknutie, Pohoršenie bez limitu)</td><td><a href="#ohlasena-vyhra-s-odpovedou">Ohlásená výhra s odpoveďou</a>, korisť ako strop (žetón len raz)</td></tr>
+<tr><td>Vplyv ako strategická os, nie lotéria</td><td><a href="#medzibodovanie">Zúčtovanie viazané na lokalitu</a> (obranca volí, čí strach sa ráta), <a href="#slabsia-os">Slabšia os</a></td></tr>
+<tr><td>Absťák v6 (víťaz platí)</td><td>Blood Rage v <a href="#ustup-a-odskodne">Ústupe a odškodnom</a>: cena za výhru má byť rozhodnutie pred bitkou, nie účet po nej</td></tr>
+</tbody></table></div>
+
+<footer>NA EX! · Študent · vetva <code>student/2026-10-26</code> · <code>docs/kniznica/2026-10-26-posledna-bitka-a-vplyv.html</code> · tvrdenia bez odkazu sú označené „z vlastných vedomostí, neoverené“.</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  // Filtrovanie porovnávacej tabuľky podľa problému.
+  var tlacidla = document.querySelectorAll(".filtre button");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      var f = b.getAttribute("data-f");
+      document.querySelectorAll("#porov tbody tr").forEach(function (tr) {
+        tr.hidden = f !== "vsetko" && tr.getAttribute("data-riesi").split(" ").indexOf(f) < 0;
+      });
+    });
+  });
+  // Odkaz na mechaniku otvorí jej detail.
+  function otvor() { var d = document.getElementById(location.hash.slice(1)); if (d && d.tagName === "DETAILS") d.open = true; }
+  window.addEventListener("hashchange", otvor); otvor();
+
+  // Ilustračná mierka.
+  var PITKY = [2, 2, 2, 2, 2, 3];
+  function v(id) { return Number(document.getElementById(id).value); }
+  function bitky(b) { var z = 0; for (var i = 6 - b; i < 6; i++) z += PITKY[i]; return [13 - z, z]; }
+  function pocitaj() {
+    var n = v("n"), k = v("k"), b = v("b"), m = v("m");
+    ["n", "k", "b", "m"].forEach(function (id) { document.getElementById("o-" + id).textContent = v(id); });
+    var bt = bitky(b);
+    var bitiekOdK = 6 - k + 1, zuzaOd3 = 4;
+    var bodyZuc = [2, 4, 6].filter(function (c) { return c >= k; }).length;
+    var zucZ = [2, 4, 6].filter(function (c) { return c >= 3; }).length;
+    var r = [
+      ["Renta v6 (po každej bitke)", bt[0] + n * 2 * bitiekOdK, bt[1] + m * 1 * zuzaOd3, n * 2 * bitiekOdK],
+      ["Korisť za hranicu + stav po finále", bt[0] + n * 4, bt[1] + m * 2, n * 4],
+      ["Zúčtovanie po 2., 4. a finále", bt[0] + n * 2 * bodyZuc, bt[1] + m * zucZ, n * 2 * bodyZuc]
+    ];
+    var sj = n * 2 * bitiekOdK, sz = m * zuzaOd3;
+    var minJ = Math.min(bt[0], sj), minZ = Math.min(bt[1], sz);
+    var tb = document.getElementById("vysl"); tb.innerHTML = "";
+    r.forEach(function (x) {
+      var w = x[1] > x[2] ? '<span class="j">Jano</span>' : x[1] < x[2] ? '<span class="z">Zuza</span>' : "remíza";
+      var pod = x[1] > 0 ? Math.round(100 * x[3] / x[1]) + " %" : "–";
+      tb.insertAdjacentHTML("beforeend", "<tr><td>" + x[0] + '</td><td class="num">' + x[1] + '</td><td class="num">' + x[2] + "</td><td>" + w + '</td><td class="num">' + pod + "</td></tr>");
+    });
+    var w2 = minJ > minZ ? '<span class="j">Jano</span>' : minJ < minZ ? '<span class="z">Zuza</span>' :
+      (Math.max(bt[0], sj) > Math.max(bt[1], sz) ? '<span class="j">Jano</span> (väčší)' : Math.max(bt[0], sj) < Math.max(bt[1], sz) ? '<span class="z">Zuza</span> (väčší)' : "remíza");
+    tb.insertAdjacentHTML("beforeend", "<tr><td>Slabšia os (min z bitiek a strachu)</td>" + '<td class="num">' + minJ + " <small>(" + bt[0] + "/" + sj + ")</small></td>" +
+      '<td class="num">' + minZ + " <small>(" + bt[1] + "/" + sz + ")</small></td><td>" + w2 + '</td><td class="num">–</td></tr>');
+  }
+  document.querySelectorAll(".ovl input").forEach(function (i) { i.addEventListener("input", pocitaj); });
+  pocitaj();
+})();
+</script>
+</body>
+</html>

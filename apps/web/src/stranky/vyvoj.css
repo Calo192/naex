@@ -1,16 +1,117 @@
 /* Vývoj hry (/vyvoj): známky v čase, zásady, ciele, roadmapa; hodnotenie v Spätnej väzbe.
    Farby len cez tokeny zo schemy.css (--graf-ludia a --graf-ai sú série grafu). */
 
+.vyvoj-stranka {
+  --vyvoj-pas: 56px;
+}
+
+.vyvoj-stranka .stranka-hlava {
+  margin-bottom: 14px;
+}
+
 .vyvoj-stranka h2 {
-  margin: 36px 0 14px;
+  margin: 0;
 }
 
 .vyvoj-stranka h3 {
-  margin: 28px 0 10px;
+  margin: 0 0 10px;
 }
 
-.vyvoj-stranka .stranka-hlava .cipy {
-  margin-top: 14px;
+/* ---- sekčný pás: kotvy na časti stránky, lepkavý pod hlavičkou webu ---- */
+.sekcny-pas {
+  position: sticky;
+  top: 65px;
+  z-index: 30;
+  display: flex;
+  gap: 10px 18px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--vyvoj-pas);
+  /* V kostre bez presahu do strán — pás začína na hrane loga ako obsah. */
+  padding: 6px 0;
+  background: color-mix(in srgb, var(--pozadie) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--okraj);
+}
+
+.sekcny-pas-odkazy {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sekcny-pas-odkazy a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  font: 600 1.02rem/1 var(--nadpis);
+  color: var(--tlmeny);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+.sekcny-pas-odkazy a:hover {
+  color: var(--text);
+}
+
+.sekcny-pas-odkazy a.aktivna {
+  color: var(--text);
+  border-bottom-color: var(--akcent);
+}
+
+.sekcny-pas-pocet {
+  font: 600 0.78rem/1 var(--pismo);
+  color: var(--slaby-text);
+  background: var(--plocha-2);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sekcny-pas-akcia {
+  flex: none;
+}
+
+/* Skok na kotvu dopadne pod hlavičku a pás, nie pod ne. */
+.vyvoj-sekcia {
+  scroll-margin-top: calc(65px + var(--vyvoj-pas) + 12px);
+  margin-top: 30px;
+}
+
+.vyvoj-sekcia-hlava {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.vyvoj-sekcia-hlava h2 {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.vyvoj-sekcia-hlava .tlmene {
+  font-size: 0.9rem;
+  max-width: 110ch;
+}
+
+.vyvoj-skryte {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.vyvoj-zamknute {
+  max-width: 60ch;
 }
 
 .vyvoj-pozn {
@@ -18,59 +119,110 @@
   max-width: 80ch;
 }
 
-/* ---- dlaždice ---- */
+/* ---- dlaždice súhrnu: jedno číslo a čitateľný popis ---- */
 .vyvoj-dlazdice {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 10px;
-  margin: 0 0 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 14px;
 }
 
 .vyvoj-dlazdica {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   background: var(--plocha);
   border: 1px solid var(--okraj);
   border-radius: var(--polomer);
-  padding: 12px 14px;
+  padding: 12px 16px;
+  min-width: 0;
 }
 
-.vyvoj-dlazdica b {
-  display: block;
-  font: 700 1.6rem/1.15 var(--nadpis);
+.vyvoj-cap {
+  font: 700 0.74rem/1.2 var(--pismo);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slaby-text);
+}
+
+.vyvoj-cap.silne {
+  color: var(--zelena);
+}
+
+.vyvoj-cap.slabe {
+  color: var(--cervena-text);
+}
+
+.vyvoj-velke {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  font: 700 2rem/1.1 var(--nadpis);
   font-variant-numeric: tabular-nums;
   color: var(--text);
 }
 
-.vyvoj-dlazdica span {
-  color: var(--tlmeny);
-  font-size: 0.88rem;
-}
-
-.vyvoj-dlazdica em {
+.vyvoj-velke em {
+  font: 600 0.88rem/1.2 var(--pismo);
   font-style: normal;
   white-space: nowrap;
 }
 
-.vyvoj-dlazdica em.hore {
+.vyvoj-velke em.hore {
   color: var(--zelena);
 }
 
-.vyvoj-dlazdica em.dole {
+.vyvoj-velke em.dole {
   color: var(--cervena-text);
 }
 
-/* ---- graf ---- */
-.vyvoj-graf-hlava {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  align-items: baseline;
-  justify-content: space-between;
+.vyvoj-pop {
+  color: var(--tlmeny);
+  font-size: 0.86rem;
 }
 
-.vyvoj-graf-hlava label {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+.vyvoj-dvojice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.vyvoj-dvojice > div {
+  display: contents;
+}
+
+.vyvoj-dvojice dt {
+  color: var(--tlmeny);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vyvoj-dvojice dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ---- graf a kritériá vedľa seba (7 : 5) ---- */
+.vyvoj-dvoj {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.vyvoj-graf h3 {
+  font-size: 1.05rem;
+}
+
+.vyvoj-graf h3 span {
+  color: var(--tlmeny);
+  font-weight: 500;
 }
 
 .graf-znamok {
@@ -188,13 +340,15 @@
   font-variant-numeric: tabular-nums;
 }
 
-.graf-udalost line {
-  stroke: var(--okraj-svetly);
-  stroke-dasharray: 2 4;
+.graf-udalost rect {
+  fill: var(--akcent);
+  opacity: 0.75;
 }
 
-.graf-udalost path {
-  fill: var(--akcent);
+.graf-zlom {
+  fill: none;
+  stroke: var(--slaby-text);
+  stroke-width: 1.5;
 }
 
 .graf-kurzor {
@@ -288,17 +442,105 @@
   text-align: right;
 }
 
-.vyvoj-kriteria tbody tr {
+/* ---- kritériá: riadok = tlačidlo, klik prekreslí graf ---- */
+.vyvoj-krit {
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+  border-radius: var(--polomer);
+  padding: 8px 6px;
+  --krit-stlpce: minmax(0, 1fr) 84px repeat(3, 3.4em);
+}
+
+.vyvoj-krit-hlava,
+.vyvoj-krit-riadok {
+  display: grid;
+  grid-template-columns: var(--krit-stlpce);
+  gap: 10px;
+  align-items: center;
+}
+
+.vyvoj-krit-hlava {
+  padding: 4px 10px 8px;
+  border-bottom: 1px solid var(--okraj);
+  font: 700 0.72rem/1.2 var(--pismo);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--slaby-text);
+}
+
+.vyvoj-krit .cislo {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.vyvoj-krit ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vyvoj-krit-riadok {
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  text-align: left;
   cursor: pointer;
 }
 
-.vyvoj-kriteria tbody tr:hover,
-.vyvoj-kriteria tbody tr.vybrane {
+.vyvoj-krit-riadok:hover {
   background: var(--plocha-2);
 }
 
-.vyvoj-kriteria tbody th {
-  font-weight: 500;
+.vyvoj-krit-riadok[aria-pressed="true"] {
+  background: var(--plocha-2);
+  box-shadow: inset 3px 0 0 var(--akcent);
+}
+
+.vyvoj-krit-riadok.celkom {
+  font-weight: 600;
+}
+
+.krit-nazov {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.krit-stitok {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.krit-stitok.silne {
+  color: var(--zelena);
+}
+
+.krit-stitok.slabe {
+  color: var(--cervena-text);
+}
+
+.mini-graf {
+  width: 84px;
+  height: 22px;
+}
+
+.mini-graf polyline {
+  fill: none;
+  stroke: var(--tlmeny);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.vyvoj-krit-riadok[aria-pressed="true"] .mini-graf polyline {
+  stroke: var(--akcent);
 }
 
 /* Známka s jemným pruhom pod číslom — dĺžka = známka z 10. */
@@ -311,49 +553,136 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- zásady ---- */
+/* ---- zásady (nadpis + riadok) a ciele ako odrážkové grafy ---- */
+.vyvoj-zasady-ciele {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 14px;
+  align-items: start;
+}
+
 .vyvoj-zasady {
   list-style: none;
   counter-reset: z;
-  padding: 0;
-  display: grid;
-  gap: 10px;
+  margin: 0;
+  padding: 6px 0;
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+  border-radius: var(--polomer);
 }
 
 .vyvoj-zasady li {
   counter-increment: z;
   position: relative;
-  background: var(--plocha);
-  border: 1px solid var(--okraj);
-  border-radius: var(--polomer);
-  padding: 12px 16px 12px 52px;
+  display: grid;
+  gap: 2px;
+  padding: 9px 16px 9px 48px;
+}
+
+.vyvoj-zasady li + li {
+  border-top: 1px solid color-mix(in srgb, var(--okraj) 60%, transparent);
 }
 
 .vyvoj-zasady li::before {
   content: counter(z);
   position: absolute;
   left: 16px;
-  top: 10px;
-  font: 700 1.45rem/1 var(--nadpis);
+  top: 8px;
+  font: 700 1.25rem/1 var(--nadpis);
   color: var(--akcent);
 }
 
-.vyvoj-zasady h3 {
-  margin: 0 0 4px;
+.vyvoj-zasady span {
+  color: var(--tlmeny);
+  font-size: 0.9rem;
+}
+
+.vyvoj-ciele {
+  background: var(--plocha);
+  border: 1px solid var(--okraj);
+  border-radius: var(--polomer);
+  padding: 12px 16px 4px;
+}
+
+.vyvoj-ciele h3 {
   font-size: 1.05rem;
 }
 
-.vyvoj-zasady p {
+.vyvoj-ciele ul {
+  list-style: none;
   margin: 0;
+  padding: 0;
+}
+
+.vyvoj-ciel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(90px, 1fr) 13em;
+  gap: 6px 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid color-mix(in srgb, var(--okraj) 60%, transparent);
+}
+
+.vyvoj-ciel-nazov {
+  display: grid;
+  gap: 1px;
+  font-size: 0.92rem;
+}
+
+.vyvoj-ciel-nazov small {
+  color: var(--slaby-text);
+  font-size: 0.76rem;
+}
+
+/* Pruh = dnes na stupnici, zvislá čiarka = cieľ; čísla vedľa nesú význam, farba nie. */
+.odrazkovy-graf {
+  position: relative;
+  display: block;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--plocha-2);
+}
+
+.odrazkovy-graf i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 5px;
+  background: var(--akcent);
+  opacity: 0.85;
+}
+
+.odrazkovy-graf u {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--text);
+}
+
+.vyvoj-ciel-hodnoty {
+  font-size: 0.9rem;
   color: var(--tlmeny);
-  max-width: 85ch;
+  white-space: nowrap;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.vyvoj-ciel-hodnoty b {
+  color: var(--text);
+}
+
+.vyvoj-splnene {
+  color: var(--zelena);
+  font-weight: 600;
 }
 
 /* ---- roadmapa ---- */
 .obl-pravidla { --obl: var(--akcent); }
 .obl-ui { --obl: var(--info); }
 .obl-karty { --obl: var(--zelena); }
-.obl-2v2 { --obl: var(--su); }
+.obl-2v2 { --obl: var(--graf-ai); } /* nie --su: tá sa mení podľa páru hráča */
 .obl-platforma { --obl: var(--info-silna); }
 .obl-komunita { --obl: var(--cervena-text); }
 
@@ -376,23 +705,67 @@
   margin-right: 6px;
 }
 
+/* Horizonty si delia šírku okna — tabuľa sa nikdy neposúva do strany (dizajn #20). */
 .rm-tabula {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(270px, 1fr);
+  grid-template-columns: repeat(var(--rm-stlpce, 4), minmax(0, 1fr));
   gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 10px;
   align-items: start;
-  scroll-snap-type: x proximity;
 }
 
-/* Mobil: stĺpce pod sebou (Teraz navrchu) namiesto 4,5 obrazovky do strany. */
-@media (max-width: 600px) {
+.rm-horizonty,
+.rm-oblast-vyber {
+  display: none;
+}
+
+.rm-spravca-nastroje {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Mobil a úzke okno: jeden horizont naraz cez prepínač, oblasti v jednom výbere. */
+@media (max-width: 899px) {
   .rm-tabula {
-    grid-auto-flow: row;
-    grid-auto-columns: auto;
-    overflow-x: visible;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rm-tabula .rm-stlpec:not(.vybrany) {
+    display: none;
+  }
+
+  .rm-horizonty {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    margin-bottom: 10px;
+    padding-bottom: 2px;
+  }
+
+  .rm-horizonty .cip {
+    flex: 1 0 auto;
+    min-height: 40px;
+    padding: 0.35rem 0.5rem;
+  }
+
+  .rm-horizonty .rm-pocet {
+    padding: 2px 5px;
+  }
+
+  .rm-horizonty .cip.aktivny .rm-pocet {
+    background: transparent;
+    color: inherit;
+  }
+
+  .rm-nastroje .rm-oblasti {
+    display: none;
+  }
+
+  .rm-oblast-vyber {
+    display: flex;
+    gap: 8px;
+    align-items: center;
   }
 }
 
@@ -406,10 +779,19 @@
   scroll-snap-align: start;
 }
 
+/* Prijímač vidí len správca — pás nad tabuľou, len keď v ňom niečo je alebo sa ťahá. */
 .rm-prijimac {
   background: transparent;
   border-style: dashed;
   border-color: var(--okraj-svetly);
+  min-height: 0;
+  margin-bottom: 12px;
+}
+
+.rm-prijimac .rm-stlpec-telo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-items: start;
 }
 
 .rm-hotove {
@@ -451,17 +833,6 @@
   color: var(--tlmeny);
 }
 
-.rm-zbal {
-  background: none;
-  border: 0;
-  padding: 4px 0;
-  min-height: 24px;
-  margin-top: 2px;
-  color: var(--slaby-text);
-  font-size: 0.82rem;
-  text-decoration: underline;
-  cursor: pointer;
-}
 
 .rm-stlpec-telo {
   padding: 10px;
@@ -564,10 +935,86 @@
   color: var(--zelena);
 }
 
+/* Najviac dva riadky — celý text je v detaile. */
 .rm-kratko {
   margin: 3px 0 0;
   font-size: 0.83rem;
   color: var(--tlmeny);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- Hotové: pás posledných pod tabuľou a panel so všetkými ---- */
+.rm-hotove-pas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+  padding: 2px;
+  border-radius: 12px;
+}
+
+/* Šesť posledných v jednom rade (od 1200 px), inak dva rady po troch. */
+@media (min-width: 1200px) {
+  .rm-hotove-pas {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 700px) and (max-width: 1199px) {
+  .rm-hotove-pas {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.rm-hotove-pas.nad {
+  background: color-mix(in srgb, var(--akcent) 7%, transparent);
+}
+
+.rm-hotove-vsetky {
+  margin-top: 12px;
+}
+
+.rm-hotove-zoznam {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.rm-hotove-zoznam button {
+  display: grid;
+  grid-template-columns: 3.4em 10px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--okraj) 60%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rm-hotove-zoznam button:hover {
+  background: var(--plocha-2);
+}
+
+.rm-hotove-zoznam i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--obl);
+}
+
+.rm-hotove-datum {
+  color: var(--slaby-text);
+  font-variant-numeric: tabular-nums;
 }
 
 .rm-stitky {
@@ -626,7 +1073,8 @@
   position: fixed;
   inset: 0;
   background: color-mix(in srgb, var(--pozadie) 70%, transparent);
-  z-index: 40;
+  /* Nad lepkavou hlavičkou webu (50), pod otvoreným menu (80). */
+  z-index: 55;
 }
 
 .rm-detail {
@@ -637,7 +1085,7 @@
   width: min(460px, 100%);
   background: var(--plocha);
   border-left: 1px solid var(--okraj);
-  z-index: 41;
+  z-index: 56;
   overflow-y: auto;
   padding: 18px 20px 30px;
   box-shadow: var(--tien);
@@ -886,16 +1334,80 @@
     height: 34px;
   }
 
-  .rm-tabula {
-    grid-auto-columns: 86%;
-  }
-
   .rm-dva,
   .rm-udaje {
     grid-template-columns: 1fr;
   }
 }
 
-.vyvoj-kriteria {
-  max-width: 760px;
+/* ---- užšie okná ---- */
+@media (max-width: 1100px) {
+  .vyvoj-dvoj,
+  .vyvoj-zasady-ciele {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .vyvoj-dlazdice {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Obsah má pod 760 px okraj 16 px (styles.css) — pás siaha presne po kraj okna. */
+@media (max-width: 760px) {
+  .sekcny-pas {
+    margin: 0 -16px;
+    padding: 6px 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .vyvoj-stranka {
+    --vyvoj-pas: 48px;
+  }
+
+  .sekcny-pas {
+    padding: 2px 8px;
+  }
+
+  .sekcny-pas-odkazy a {
+    padding: 0 9px;
+    font-size: 0.92rem;
+  }
+
+  .sekcny-pas-pocet,
+  .sekcny-pas .sekcny-pas-akcia {
+    display: none;
+  }
+
+  .vyvoj-dlazdice {
+    gap: 8px;
+  }
+
+  .vyvoj-dlazdica {
+    padding: 10px 12px;
+  }
+
+  .vyvoj-velke {
+    font-size: 1.6rem;
+  }
+
+  .vyvoj-krit {
+    --krit-stlpce: minmax(0, 1fr) repeat(3, 2.9em);
+  }
+
+  .vyvoj-krit .mini-graf,
+  .vyvoj-krit-hlava > :nth-child(2) {
+    display: none;
+  }
+
+  .vyvoj-ciel {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .vyvoj-ciel .odrazkovy-graf {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }

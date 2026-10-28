@@ -1,11 +1,52 @@
-// Body za starších (pravidlá v5, návrh Michala 2026-10-24, docs/pravidla-v5/davka.md):
-// pri každom staršom je každá aktívna podmienka súboj hráčov — kto ich vyhrá viac,
-// tomu dá starší body (1 + zóny strachu, v ktorých sa ho bojí; s priazňou či v strede 1),
-// pri rovnosti obom. Z bodyTeraz, spoločné pre línie starších, bodový bar, koniec hry
-// a krčmový účet. Do v4 sa bodovalo za kusy — staré partie číta KrcmovyUcet po starom.
+// Záverečné bodovanie partií do v5 (archív): pri každom staršom bola každá
+// aktívna podmienka súboj hráčov — kto ich vyhral viac, tomu dal starší body
+// (1 + zóny strachu), pri rovnosti obom; do v4 sa bodovalo za kusy. Od v6
+// (Michal 2026-10-26) sú víťazné body špaky a podmienky nebodujú — tento modul
+// už len číta záznamy starých partií (detail partie v profile, KrcmovyUcet).
+// Tvar je kópia výstupu bodyTeraz jadra v5, ktorý server uložil do kroniky.
 
-import type { BodPodmienky, BodyStarsieho, BodyTeraz, ElderState, Podmienka, PlayerId } from "@naex/core";
-import { priazenHraca, strachZ, urovenPodmienky } from "@naex/core";
+import type { Podmienka, PlayerId, SlotIndex } from "@naex/core";
+
+/** Podmienka scorecardu v záverečnom bodovaní v5 (BodPodmienky jadra v5). */
+export interface BodPodmienky {
+  readonly strana: "lava" | "prava";
+  readonly index: SlotIndex;
+  readonly podmienka: Podmienka;
+  readonly aktivna: boolean;
+  readonly body: number;
+  readonly kusy: number;
+}
+
+/** Body za jedného staršieho v záverečnom bodovaní v5. */
+export interface BodyStarsieho {
+  readonly elderId: string;
+  readonly body: readonly [number, number];
+  readonly vyhry: readonly [number, number];
+  readonly strach: readonly [0 | 1 | 2 | 3, 0 | 1 | 2 | 3];
+  readonly polozky: readonly [readonly BodPodmienky[], readonly BodPodmienky[]];
+}
+
+/** Záverečné bodovanie partie do v5 tak, ako ho server uložil do kroniky. */
+export interface BodyTeraz {
+  readonly spolu: readonly [number, number];
+  readonly starsi: readonly BodyStarsieho[];
+}
+
+/** Smer súboja v5: +1 vyhrá viac, −1 vyhrá menej (scorecards.json v5, `body`). */
+export const SMER_V5: Readonly<Record<Podmienka, number>> = {
+  znepokojenie: 1,
+  strach: 1,
+  vydesenie: 1,
+  lokality: 1,
+  starsi: 1,
+  cigarety: 1,
+  rezerva: 1,
+  cirhoza: -1,
+  dlh: -1,
+  abstak: -1,
+};
+
+const ZONOVE: readonly Podmienka[] = ["znepokojenie", "strach", "vydesenie"];
 
 export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "cigarety", "rezerva", "znepokojenie", "strach", "vydesenie", "dlh", "cirhoza", "abstak"];
 
@@ -25,7 +66,7 @@ export const ZA_CO: Readonly<Record<Podmienka, string>> = {
 
 /** Jednotka hodnoty v súboji: zónové podmienky rátajú starších, ostatné kusy. */
 export function jednotka(podmienka: Podmienka, n: number): string {
-  if (urovenPodmienky(podmienka) !== null) return n === 1 ? "starší" : "starších";
+  if (ZONOVE.includes(podmienka)) return n === 1 ? "starší" : "starších";
   return "ks";
 }
 
@@ -57,13 +98,6 @@ export function kohoBoduje(s: BodyStarsieho): PlayerId | "obaja" | null {
   if (a > 0) return 0;
   if (b > 0) return 1;
   return null;
-}
-
-/** Prečo hráč p dostane za staršieho práve toľko: „1 + 2 za strach“, „1 (priazeň)“, „1 (stred)“. */
-export function preco(elder: ElderState, p: PlayerId): string {
-  const z = strachZ(elder, p);
-  if (z > 0) return `1 + ${z} za strach`;
-  return priazenHraca(elder) === p ? "1, má jeho priazeň" : "1, marker v strede";
 }
 
 /** Bodovanie v5 má pri každom staršom aj počty vyhratých súbojov — staré partie (v4) nie. */

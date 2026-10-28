@@ -167,17 +167,7 @@ body.vyucba-bezi:not(.vyucba-vydesenie) .jbar-desi {
   visibility: hidden;
 }
 
-body.vyucba-bezi:not(.vyucba-body) .zdroj-body .zdroj-pod {
-  visibility: hidden;
-}
-
 /* ---- čitateľnosť stola vo výučbe (playtest výučby kolo 4, U1; V9 4,3) ---- */
-
-/* Súperove karty ležia hore nohami (3/3 nováčikov): otočená ostáva plocha s obrázkom a akciami
-   (hrany sa tak párujú ako na stole), názov a text sa otočia späť, nech sa čítajú rovno. */
-body.vyucba-bezi .kl-otocena > .kl-plocha > :is(.kl-pas, .kl-efekt) {
-  transform: rotate(180deg);
-}
 
 /* Stávku bitky (±3: +19 / −21 b) scenár nevysvetľuje — ukáže sa, až keď o nej Melichar hovorí. */
 body.vyucba-bezi:not(.vyucba-stavka) .stavka-bitky {

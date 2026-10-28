@@ -151,7 +151,7 @@
   gap: 18px;
 }
 
-.admin-stranka > h1 {
+.admin-stranka > h2 {
   margin-bottom: 0;
 }
 
@@ -179,7 +179,7 @@
   padding-bottom: 4px;
 }
 
-.admin-hlavicka h1 {
+.admin-hlavicka h2 {
   margin: 0 0 6px;
 }
 
@@ -522,7 +522,7 @@ button.tlacidlo-ikona.nebezpecne:hover:not(:disabled) {
   min-width: 0;
 }
 
-.tvorca-lista h1 {
+.tvorca-lista h2 {
   margin: 0;
   font-size: 1.6rem;
   overflow: hidden;
@@ -590,6 +590,11 @@ button.tlacidlo-ikona.nebezpecne:hover:not(:disabled) {
 
 .tvorca-formular .panel h3 {
   margin-top: 0;
+}
+
+.tvorca-poznamka {
+  margin: -4px 0 12px;
+  font-size: 0.88rem;
 }
 
 /* ---- návrh v galérii ---- */

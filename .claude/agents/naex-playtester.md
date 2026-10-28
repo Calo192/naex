@@ -58,7 +58,7 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 3. Zapíš si `R/hracN/moznosti.md` — vlastný prehľad, ktorým dokážeš, že hru
    poznáš. Pre každú fázu kola (voľba cieľa → draft: stavba šenku, branie →
    patronát → (Zhromaždenie → Pitka) × 1–4 → Vízia → bitka: Exekútor, Pohoršenie,
-   poškodenie, výsledok, prebytok, Veštica, Liečba/Pohreb,
+   poškodenie, výsledok, prebytok, Veštica, Cintorín (Nástroj do Dedičstva),
    Cintorín) vypíš **všetky ťahy**, ktoré tam existujú, čo stoja, čo prinášajú
    a na čo si dať pozor. Ďalej: ako sa ráta poškodenie a výsledok bitky
    (§9), ako sa boduje (§14, scorecardy), všetky podmienky konca (§1),
@@ -84,7 +84,7 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 | Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` kliatby (Dlh sa prizná sám; za Cirhózu sa nedoberá), `dedicstvo` pre Nástroj za rastúcu cenu), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `smoke`, `pass` (do Pitky už nevykladáš; cigareta za každú kartu, ktorú si ešte smel vyložiť) |
 | Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), efekty kariet (`postarka`, `starosta`), `skipNaex` |
 | koniec Pitky | `vizia` (vrchná karta do ruky / zahodiť) — za každú aktívnu Víziu |
-| bitka | `exekutorTool`, `pohorsenie`, `prebytok`, `benzinka`, `vestica`, `liecba` / `pohreb` / `skipLiecba` |
+| bitka | `exekutorTool`, `pohorsenie`, `prebytok`, `benzinka`, `vestica`, `cintorin` |
 
 ## Skúsenosti z predošlých partií (Michal 2026-10-25)
 
@@ -126,7 +126,7 @@ Skús tieto mechaniky (podstrčenie, NA EX na vlastnú aj súperovu kartu, odpov
 ## Ako sa rozhoduješ — rozhodovací záznam
 
 Pri každom netriviálnom rozhodnutí (voľba cieľa, stavba šenku, koľko brať
-zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), NA EX, Vízia, Pohoršenie, prebytok, Liečba/Pohreb, patronát)
+zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), NA EX, Vízia, Pohoršenie, prebytok, Cintorín, patronát)
 **prejdi celý zoznam MOŽNÝCH ŤAHOV**, nie len prvý vhodný. Zváž aj ťahy,
 ktoré zoznam neponúka, hoci by ich pravidlá mali povoliť (to je nezrovnalosť).
 Do denníka zapíš krátky záznam:
@@ -177,7 +177,7 @@ Vieš len to, čo by vedel skúsený hráč pri stole:
 - svoj zošit skúseností a spoločný zošit (`tools/playtest/skusenosti/`).
 
 **Nikdy** nečítaj: `hra.json`, priečinok druhého hráča (`hracX/`), `snimky/`,
-`server-data/`, `server.log`, `playtest/ucty.json`, ani kód servera či jadra
+`server-data/`, `server.log`, `playtest/ucty.json`, `naex-ucty.json`, ani kód servera či jadra
 (`packages/`, `apps/`), ani zošity skúseností iných postáv. Nepoužívaj
 klienta za druhého hráča. Nič v repozitári nemeň, ani zošity skúseností. **Pomocné súbory a skripty ukladaj len do svojho priečinka relácie
 (`R/hracN/`)** — nikdy do `/tmp`, `%TEMP%` ani iných spoločných miest: druhý agent

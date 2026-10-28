@@ -27,7 +27,7 @@ import type { Command, DlzkaHry, GameState, PlayerId } from "../../packages/core
 import {
   DLZKY_HRY,
   apply,
-  bodyTeraz,
+  spakyTeraz,
   evaluateLine,
   legalCommands,
   lineState,
@@ -115,8 +115,8 @@ interface Vysledok {
 }
 
 function body(s: GameState): [number, number] {
-  // Každý hráč pozná presne len svoje kliatby — vlastné body z vlastného pohľadu.
-  return [bodyTeraz(data, viewFor(data, s, 0)).spolu[0], bodyTeraz(data, viewFor(data, s, 1)).spolu[1]];
+  // v6: špaky (mínus nepriznaná Cirhóza) — z pohľadu každého hráča.
+  return [spakyTeraz(viewFor(data, s, 0)).spolu[0], spakyTeraz(viewFor(data, s, 1)).spolu[1]];
 }
 
 function odohraj(seedHry: number, seedBotov: number, hraci: readonly [Hrac, Hrac]): Vysledok {

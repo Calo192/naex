@@ -14,7 +14,6 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
 import { cenaPatronatu, patronatMozny, priazenHraca, priazenSila, prebudenyPre, vydesil } from "./elders.ts";
-import { zakazNaex } from "./effects.ts";
 import { kandidatiNaNahradu, kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -71,7 +70,7 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   "prve-naex": (d, v, ja) => {
     const p = v.pitkaStav;
     if (v.faza !== "pitka" || v.naTahu !== ja || p === null || p.reakcia != null || p.hotovy[ja] || p.naexPouzity[ja]) return null;
-    if (zakazNaex(v) || v.hraci[ja].poldeciPlne <= 0) return null;
+    if (v.hraci[ja].poldeciPlne <= 0) return null;
     return naexCieleVLinii(d, lineState(v), ja).length > 0 ? ANO : null;
   },
 
@@ -90,7 +89,7 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
     if (!naMojomTahuVZhromazdeni(v, ja) || v.zhromazdenieStav === null) return null;
     // „Už som vyložil“ z pohľadu: moja karta leží v línii (do Zhromaždenia kola nič iné nedáva).
     const vylozil = v.strany.some((strana) => strana.some((pl) => pl.playedBy === ja));
-    return vylozil && kartyZaPas(v.zhromazdenieStav, ja) >= 1 ? ANO : null;
+    return vylozil && kartyZaPas(v.zhromazdenieStav, ja, v.hraci[ja].rukaPocet) >= 1 ? ANO : null;
   },
 
   "lokalita-pravidlo": (d, v, _ja, def) => {

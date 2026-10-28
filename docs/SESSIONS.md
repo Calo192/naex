@@ -15,7 +15,7 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 | Agent | Model | Na čo |
 |---|---|---|
 | `naex-programator` | Opus | funkcie, opravy, UI v klientovi, nástroje — vetva v pracovisku, commit, bez push |
-| `naex-napady` | Opus | dávky nápadov, scenár výučby, osnovy a audity pravidiel |
+| `naex-vymyselnik` | Opus | dávky nápadov, scenár výučby, osnovy a audity pravidiel |
 | `naex-admin` | Opus | karty v tvorcovi, priradenie ilustrácií, rebalans, Novinky |
 | `naex-ilustrator` | Opus | všetky obrázky (Leonardo) vo všetkých aktívnych štýloch, koláž na výber, katalóg štýlov `tools/admin/styly.json` |
 | `naex-ui`, `naex-ux` | Opus | návrhy dizajnu s ukážkami (skill `naex-dizajn`) |
@@ -24,7 +24,7 @@ viac kôl dizajnu). Vtedy pre ňu platí časť „Ďalšia session“ nižšie.
 | `naex-citac` | Sonnet | dlhé dokumenty, reporty, logy — odpovede s `cesta:riadok` |
 | `naex-overovac` | Haiku | rebase, test, typecheck, build — verdikt a padnuté testy |
 | `naex-upratovac` | Opus, xhigh | týždenné čistenie kódu bez zmeny správania (cloud, piatok 04:00 SEČ) — PR `upratovanie/<dátum>`, zmerguje Leader po `naex-overovac` |
-| `naex-student` | Opus | štúdium iných hier: knižnica mechaník `docs/kniznica/` pre Nápadníka a Navrhára (cloud, utorok 04:00 SEČ) |
+| `naex-student` | Opus | štúdium iných hier: knižnica mechaník `docs/kniznica/` pre Vymyselníka a Navrhára (cloud, utorok 04:00 SEČ) |
 | `naex-strazca` | Opus, xhigh | bezpečnosť: únik skrytých informácií, podvádzanie, práva, vstupy — len lokálny server, report súkromne, nie do gitu (cloud, streda 04:00 SEČ) |
 | `naex-prevadzkar` | Sonnet | živý server: dostupnosť, logy, disk, zálohy, certifikát — len číta, lokálne (SSH), denne |
 | `naex-analytik` | Sonnet | správanie ľudí: lievik výučby, partie, retencia, známky — len číta, lokálne (heslo admina), týždenne |

@@ -5,6 +5,7 @@ import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import { CisloFrajeriny, tvar } from "./Statistiky.tsx";
 import "./statistiky.css";
 
@@ -51,14 +52,16 @@ export function Rebricek() {
 
   return (
     <div className="rebricek">
-      <header className="stranka-hlava">
-        <h1>Rebríček</h1>
-        <p className="tlmene">
-          Poradie hráčov podľa <strong>Frajeriny</strong>. Funguje ako šachové Elo: za výhru nad rovnako silným súperom získaš asi 16 bodov a on ich
-          toľko stratí. Keď porazíš oveľa slabšieho, pohnete sa obaja len o pár bodov. Keď slabší porazí favorita, získa skoro 30. Otáznik znamená
-          provizórne hodnotenie — ustáli sa po piatich partiách.
-        </p>
-      </header>
+      <HlavaStranky
+        nadpis="Rebríček"
+        uvod={
+          <>
+            Poradie hráčov podľa <strong>Frajeriny</strong>.
+          </>
+        }
+      />
+      <div className="mriezka">
+      <div className="st-obsah rebricek-obsah">
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       {hraci === null && chyba === null && <Nacitavanie />}
       {hraci !== null && hraci.length === 0 && (
@@ -112,7 +115,15 @@ export function Rebricek() {
           </table>
         </div>
       )}
+      </div>
+      <aside className="st-bok rebricek-bok">
       <section className="panel hodnosti">
+        <h2>Ako sa počíta Frajerina</h2>
+        <p className="tlmene">
+          Funguje ako šachové Elo: za výhru nad rovnako silným súperom získaš asi 16 bodov a on ich toľko stratí. Keď porazíš oveľa slabšieho,
+          pohnete sa obaja len o pár bodov. Keď slabší porazí favorita, získa skoro 30. Otáznik znamená provizórne hodnotenie — ustáli sa po
+          piatich partiách.
+        </p>
         <h3>Hodnosti</h3>
         <ul>
           {HODNOSTI.map(([od, nazov]) => (
@@ -127,6 +138,8 @@ export function Rebricek() {
           {hraci !== null && hraci.length > 0 && ` V rebríčku je ${hraci.length} ${tvar(hraci.length, "hráč", "hráči", "hráčov")}.`}
         </p>
       </section>
+      </aside>
+      </div>
     </div>
   );
 }

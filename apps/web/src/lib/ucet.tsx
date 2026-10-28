@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { api } from "./api.ts";
+import { aktualnyPar, pouziPar, volbaDoUctu, volbaZUctu } from "./paryHraca.ts";
 import { aktualnaSchema, pouziSchemu } from "./schemy.ts";
 import type { Pohlavie } from "@naex/core";
 
@@ -36,7 +37,8 @@ export type Pravo =
   | "profily_inych"
   | "vlastna_fotka"
   | "reporty_playtestov"
-  | "navrhovat_karty";
+  | "navrhovat_karty"
+  | "vidiet_vyvoj";
 
 /** Má prihlásený používateľ právo? Bez zoznamu (starý server) áno — server aj tak overí. */
 export const maPravo = (ja: Pick<Pouzivatel, "prava"> | null, pravo: Pravo): boolean => ja !== null && (ja.prava === undefined || ja.prava.includes(pravo));
@@ -64,10 +66,14 @@ export interface Pouzivatel {
   readonly ai?: boolean;
   /** Farebná schéma webu (lib/schemy.ts); null = predvolená. */
   readonly schema?: string | null;
+  /** Pár farieb hráča v partii (lib/paryHraca.ts, "w20" / "w20-prehod"); null = predvolený. */
+  readonly par?: string | null;
   /** Nápovedy majstra Melichara v partii (Michal 2026-10-24); chýba = zapnuté. */
   readonly napovedy?: boolean;
   /** Klávesové skratky v partii (K, P, N, Esc, ?); chýba = zapnuté. */
   readonly skratky?: boolean;
+  /** Medziobrazovky pri prechode fáz v partii (Michal 2026-10-27); chýba = zapnuté. */
+  readonly medziobrazovky?: boolean;
   /** Pohlavie pre tvary hlášok v partii; null/chýba = neuvádza (neutrálne hlášky). */
   readonly pohlavie?: Pohlavie | null;
 }
@@ -81,6 +87,8 @@ export const MELICHAR_PREDVOLENY = 70;
 interface UcetKontext {
   readonly ja: Pouzivatel | null;
   readonly nacitane: boolean;
+  /** Práva neprihláseného (Nealko) — podľa nich hlavička skrýva odkazy; null = server ich neposlal. */
+  readonly pravaNavstevnika: readonly Pravo[] | null;
   nastav(p: Pouzivatel | null): void;
   /** Znova načíta účet zo servera — úroveň sa mení aj počas partie (hráčom po prvej dohratej partii). */
   obnov(): void;
@@ -92,17 +100,22 @@ const Kontext = createContext<UcetKontext | null>(null);
 export function UcetProvider({ children }: { children: ReactNode }) {
   const [ja, setJaStav] = useState<Pouzivatel | null>(null);
   const [nacitane, setNacitane] = useState(false);
+  const [pravaNavstevnika, setPravaNavstevnika] = useState<readonly Pravo[] | null>(null);
 
-  // Schéma uložená v účte má prednosť pred tou v prehliadači — platí na každom zariadení.
+  // Schéma a pár farieb uložené v účte majú prednosť pred prehliadačom — platia na každom zariadení.
   const setJa = useCallback((p: Pouzivatel | null): void => {
     if (p?.schema != null && p.schema !== aktualnaSchema()) pouziSchemu(p.schema);
+    if (p?.par != null && p.par !== volbaDoUctu(aktualnyPar())) pouziPar(volbaZUctu(p.par));
     setJaStav(p);
   }, []);
 
   const obnov = useCallback((): void => {
     api
-      .get<{ pouzivatel: Pouzivatel | null }>("/ja")
-      .then((r) => setJa(r.pouzivatel))
+      .get<{ pouzivatel: Pouzivatel | null; prava?: readonly Pravo[] }>("/ja")
+      .then((r) => {
+        setPravaNavstevnika(r.pouzivatel === null ? (r.prava ?? null) : null);
+        setJa(r.pouzivatel);
+      })
       .catch(() => setJa(null))
       .finally(() => setNacitane(true));
   }, [setJa]);
@@ -112,9 +125,11 @@ export function UcetProvider({ children }: { children: ReactNode }) {
   const odhlas = useCallback(async () => {
     await api.post("/odhlasenie");
     setJa(null);
-  }, []);
+    // Práva návštevníka (čo hlavička ukáže bez účtu).
+    obnov();
+  }, [obnov]);
 
-  return <Kontext.Provider value={{ ja, nacitane, nastav: setJa, obnov, odhlas }}>{children}</Kontext.Provider>;
+  return <Kontext.Provider value={{ ja, nacitane, pravaNavstevnika, nastav: setJa, obnov, odhlas }}>{children}</Kontext.Provider>;
 }
 
 export function useUcet(): UcetKontext {

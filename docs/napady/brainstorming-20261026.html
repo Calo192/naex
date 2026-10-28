@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brainstorming 26. 10.</title>
+<style>
+:root{
+  --pozadie:#f5f1e8; --papier:#fffdf7; --text:#2b2520; --tlmene:#6b6155;
+  --linka:#d8cfbf; --akcent:#8a4b2d; --ano:#3d7a3d; --nie:#a33b3b; --variant:#9a7b22; --bezi:#3b5f8a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+    --linka:#3d372d; --akcent:#d08a5e; --ano:#7dbb7d; --nie:#d97b7b; --variant:#d3b45a; --bezi:#8fb3dd;
+  }
+}
+:root[data-theme="dark"]{
+  --pozadie:#1d1a16; --papier:#262219; --text:#e8e0d2; --tlmene:#a89c8a;
+  --linka:#3d372d; --akcent:#d08a5e; --ano:#7dbb7d; --nie:#d97b7b; --variant:#d3b45a; --bezi:#8fb3dd;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pozadie);color:var(--text);font:16px/1.55 Georgia,'Times New Roman',serif;padding:16px}
+main{max-width:860px;margin:0 auto}
+h1{font-size:1.7em;margin:.2em 0 .1em;color:var(--akcent)}
+.pod{color:var(--tlmene);margin:0 0 1.2em}
+section{background:var(--papier);border:1px solid var(--linka);border-radius:10px;padding:14px 18px;margin:14px 0}
+h2{font-size:1.15em;margin:.1em 0 .5em;color:var(--akcent)}
+h3{font-size:1em;margin:.8em 0 .3em}
+table{border-collapse:collapse;width:100%;font-size:.93em}
+td,th{border-bottom:1px solid var(--linka);padding:5px 8px;text-align:left;vertical-align:top}
+th{color:var(--tlmene);font-weight:normal}
+.st{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.82em;white-space:nowrap;border:1px solid currentColor}
+.ano{color:var(--ano)} .nie{color:var(--nie)} .variant{color:var(--variant)} .bezi{color:var(--bezi)} .ciaka{color:var(--tlmene)}
+ul{margin:.3em 0 .5em;padding-left:1.3em}
+li{margin:.25em 0}
+code{font-family:Consolas,monospace;font-size:.88em;background:var(--pozadie);padding:1px 5px;border-radius:4px}
+a{color:var(--akcent)}
+.pozn{color:var(--tlmene);font-size:.9em}
+@media (max-width:480px){ body{padding:16px 16px} td,th{padding:4px 5px} .skry-m{display:none} }
+</style>
+</head>
+<body>
+<main>
+<h1>Brainstorming — zhrnutie dňa</h1>
+<p class="pod">26. októbra 2026 · session Brainstorming · stav k večeru, bežiace úlohy označené</p>
+
+<section>
+<h2>1 · Inšpirácia z knižnice Študenta <span class="st ano">zmergované</span></h2>
+<p>Podklady Študenta (posledná bitka a vplyv) rozobrali Vymyselník a Stratég, Navrhár zoradil do
+<a href="inspiracia-kniznica.html">inspiracia-kniznica.html</a> — 6 návrhov pre v6 (1. korisť za nové pole … 6. dva popolníky).
+Stratég potvrdil: strach tvorí 75–80 % špakov, prvé dve bitky nesú ~polovicu hry.</p>
+<ul>
+<li><b>Patronát</b>: diera „ohlásené vydesenie cez Kmotra/Exekútora“ — Michal schválil opravu, je vo v6 (patronát chráni patróna).</li>
+<li>O 6 návrhoch rozhodne Michal po <b>ULTRA playteste a meraní M0</b>. Dokument sa nemaže.</li>
+</ul>
+</section>
+
+<section>
+<h2>2 · Štartovacie karty — návrh Leadera session <span class="st ciaka">čaká na Michala</span></h2>
+<p>Koncept <b>rodina ako záchranná sieť</b>: v línii slabé, raz sa dajú obetovať, každá zachraňuje v inej mene.</p>
+<ul>
+<li><b>Miňištrant (2×)</b> — <i>rozhrešenie:</i> Zhromaždenie: zahoď z ruky → marker staršieho, ktorý sa bojí teba, o 1 k stredu. (Brzda strachového úroku v6.)</li>
+<li><b>Milujúca manželka</b> — <i>odvedie ťa domov:</i> Furt: Absťák aj pri rovnakom počte nerestí. Bitka: zahoď z línie → súperovo tuhé poškodenie proti tebe −2.</li>
+<li><b>Dievčina na vydaj</b> — <i>veno:</i> Bitka: zahoď → spáľ Dlhy podľa aktívnych akcií ALEBO si vezmi 2 cigarety.</li>
+</ul>
+</section>
+
+<section>
+<h2>3 · Nové karty — voľby Michala</h2>
+<h3>Občania (<a href="karty-obcania.html">karty-obcania.html</a>)</h3>
+<table>
+<tr><th>Karta</th><th>Voľba</th><th class="skry-m">Poznámka</th></tr>
+<tr><td>Vyžierka</td><td><span class="st ano">Áno</span></td><td class="skry-m">premenovať na <b>Degustátorka</b></td></tr>
+<tr><td>Klebetnica</td><td><span class="st ano">Áno</span></td><td class="skry-m"></td></tr>
+<tr><td>Dohadzovačka</td><td><span class="st ano">Áno</span></td><td class="skry-m"></td></tr>
+<tr><td>Obvodná lekárka</td><td><span class="st nie">Nie</span></td><td class="skry-m">vzbudzuje dojem autority</td></tr>
+<tr><td>Advokátka</td><td><span class="st nie">Nie</span></td><td class="skry-m">efekt dobrý → nové meno a ilustrácia radového človeka (kolo 2)</td></tr>
+<tr><td>Opatrovateľka</td><td><span class="st nie">Nie</span></td><td class="skry-m">dosiahnuť inak — znížiť prah (kolo 2)</td></tr>
+<tr><td>Chuligán</td><td><span class="st ano">Áno</span></td><td class="skry-m">premenovať na <b>Vandal</b></td></tr>
+<tr><td>Strýko z Ameriky</td><td><span class="st variant">Variant</span></td><td class="skry-m">„odhoď 2 cigarety → poškodenie navyše“ (kolo 2)</td></tr>
+</table>
+<h3>Náradie a zvieratá (<a href="karty-naradie-zvierata.html">karty-naradie-zvierata.html</a>)</h3>
+<table>
+<tr><th>Karta</th><th>Voľba</th><th class="skry-m">Poznámka</th></tr>
+<tr><td>Vidly · Lievik · Zverák</td><td><span class="st ano">Áno</span></td><td class="skry-m">Lievik: rozsah (len Zviera?) doladí kolo 2</td></tr>
+<tr><td>Hrable</td><td><span class="st nie">Nie</span></td><td class="skry-m"></td></tr>
+<tr><td>Krokodíl</td><td><span class="st ano">Áno</span></td><td class="skry-m">zožratá karta von z hry — „zahodiť, zapáliť“</td></tr>
+<tr><td>Kapybara</td><td><span class="st nie">Nie v tejto podobe</span></td><td class="skry-m">„Prečo má cigaretu?“ — kolo 2 bez cigarety</td></tr>
+<tr><td>Kôň</td><td><span class="st ano">Áno</span></td><td class="skry-m">Nástroj s ním tvorí spoj</td></tr>
+<tr><td>Kohút</td><td><span class="st ano">Áno</span></td><td class="skry-m">akcie zmeniť na Pohoršenie a Odpor</td></tr>
+</table>
+<p class="pozn">Všetko zatiaľ len koncepty — do tvorcu až po schválení finálnych znení a po zverejnení v21 (obmedzenie Leadera). Klauzula „bez iného zvieraťa“ ostáva len Psovi. Trvalé zásady: občania = bežní radoví ľudia; rodová rovnosť sa zvažuje, humor má prednosť.</p>
+</section>
+
+<section>
+<h2>4 · Prerábky existujúcich kariet</h2>
+<ul>
+<li><b>Policajtka</b> — ilustrácia č. 1 (fén zapojený do policajného auta) <span class="st ano">priradená v tvorcovi</span>, von pôjde so sadou v21. Efekt: varianty Pokuta a Hliadka nie; <span class="st variant">Dychová skúška</span> — „ak súper vypil (hral 2 karty naraz), dostane 2 Dlhy“ — dopracúva kolo 2.</li>
+<li><b>Praudovravec</b> — <span class="st variant">Dezinformátor</span>: „Odpor v jeho okolí neruší, ale posilňuje akcie“ — dopracúva kolo 2.</li>
+<li><b>Zámočník</b> — texty (a neskôr ilustrácia) podľa Michala: mechanicky zručný chlap, čo vie zvárať; nie výrobca zámkov.</li>
+<li><b>Aktívne a pasívne efekty</b> — nový koncept (pasívny pri udalosti, aktívny za cenu: cigarety, poldeci, Dlh…) — rozvádza kolo 2.</li>
+</ul>
+</section>
+
+<section>
+<h2>5 · Príbehy a účely kariet</h2>
+<ul>
+<li><b>Feature</b> <span class="st ano">zmergovaná do master</span> (852 testov): polia <code>pribeh</code> a <code>ucel</code> v tvorcovi (panel „Pre hráča“), zobrazenie v detaile glosára <code>/karty</code>, hľadanie prehľadáva aj texty. Na živý web s v6.</li>
+<li><b>Vzorka 10 kariet</b> (<a href="pribehy-vzorka.html">pribehy-vzorka.html</a>): 9× Áno, Zámočník prepísať.</li>
+<li><b>Tón schválený:</b> Účel vecný, Príbeh ostrý; jazyk hrubší — urážky, satira, sarkazmus, pasívna agresia; žiadne etnické nadávky.</li>
+<li><span class="st bezi">beží</span> Príbehy zvyšku sady: občania + kliatby + Čierna mačka a starešinovia + lokality + nástroje (dve dávky na schválenie).</li>
+<li>Texty do tvorcu vloží Admin až po schválení dávok.</li>
+</ul>
+</section>
+
+<section>
+<h2>6 · Ilustrácie <span class="st bezi">beží</span></h2>
+<ul>
+<li><b>Policajtka</b>: hotová a priradená (koláže v <code>F:\Projects\handoff\ilustracie-policajtka-20261026\</code>).</li>
+<li><b>Nezamietnuté nové karty</b> — generujú sa kandidáti (3–4 na kartu, do 1 USD na kartu): Vidly, Lievik, Zverák, Krokodíl, Kôň, Kohút, Kapybara (bez cigarety) a Degustátorka, Klebetnica, Dohadzovačka, Vandal, Strýko z Ameriky. Koláže pribudnú do <code>F:\Projects\handoff\ilustracie-karty-20261026\</code>.</li>
+</ul>
+</section>
+
+<section>
+<h2>7 · Ostatné</h2>
+<ul>
+<li>Roadmapa: <b>#123 „Lepšie využiť tagy na kartách“</b> (stĺpec Neskôr).</li>
+<li>Vetvy: <code>brainstorming/kniznica-20261026</code> a <code>feature/karta-pribeh</code> zmergované; <code>brainstorming/karty-20261026</code> čaká na kolo 2, potom ide Leaderovi.</li>
+<li>Čaká na Michala: reakcia na štartovacie karty (bod 2), kolo 2 po dobehnutí, dávky príbehov, výber ilustrácií.</li>
+</ul>
+</section>
+
+<p class="pozn">Zostavila session Brainstorming z výstupov Vymyselníkov, Stratéga, Navrhára, Ilustrátora, Admina a programátora.</p>
+</main>
+</body>
+</html>

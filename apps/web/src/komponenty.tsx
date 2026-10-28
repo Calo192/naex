@@ -3,7 +3,21 @@
 import type { ReactNode } from "react";
 import { mediaUrl } from "./lib/api.ts";
 
-export function Avatar({ meno, avatar, velkost = 40 }: { readonly meno: string; readonly avatar: string | null; readonly velkost?: number }) {
+/**
+ * Avatar hráča. `farba` len v partii (a v hlavičke profilu, kde sa pár volí): iniciály
+ * vyplní farbou hráča, fotke dá prstenec — mimo stola farba hráča nič neznamená.
+ */
+export function Avatar({
+  meno,
+  avatar,
+  velkost = 40,
+  farba,
+}: {
+  readonly meno: string;
+  readonly avatar: string | null;
+  readonly velkost?: number;
+  readonly farba?: "ja" | "su";
+}) {
   const inicialy = meno
     .split(/\s+/)
     .map((s) => s.charAt(0))
@@ -13,12 +27,13 @@ export function Avatar({ meno, avatar, velkost = 40 }: { readonly meno: string; 
   // Stála farba podľa mena — hráč je rozpoznateľný aj bez fotky.
   let h = 0;
   for (const ch of meno) h = (h * 31 + ch.charCodeAt(0)) % 360;
+  const hraca = farba === undefined ? "" : ` avatar-hraca avatar-${farba}`;
   return avatar !== null ? (
-    <img className="avatar" src={mediaUrl(avatar, true)} alt="" width={velkost} height={velkost} style={{ width: velkost, height: velkost }} />
+    <img className={`avatar${hraca}`} src={mediaUrl(avatar, true)} alt="" width={velkost} height={velkost} style={{ width: velkost, height: velkost }} />
   ) : (
     <span
-      className="avatar avatar-inicialy"
-      style={{ width: velkost, height: velkost, fontSize: velkost * 0.4, background: `hsl(${h} 38% 42%)` }}
+      className={`avatar avatar-inicialy${hraca}`}
+      style={{ width: velkost, height: velkost, fontSize: velkost * 0.4, ...(farba === undefined ? { background: `hsl(${h} 38% 42%)` } : {}) }}
       aria-hidden="true"
     >
       {inicialy}

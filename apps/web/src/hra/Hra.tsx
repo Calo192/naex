@@ -6,8 +6,10 @@ import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core"
 import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
+import { sNavratom } from "../lib/navrat.ts";
 import { maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { HudbaPartie } from "./Hudba.tsx";
 import { useMelichar } from "./Melichar.tsx";
@@ -97,10 +99,7 @@ function Lobby({
 
   return (
     <>
-      <header className="stranka-hlava">
-        <h1>Hrať</h1>
-        <p className="tlmene">Založ hru a pošli kamarátovi kód, alebo sa pridaj k niekomu, kto čaká na súpera.</p>
-      </header>
+      <HlavaStranky nadpis="Hrať" uvod="Založ hru a pošli kamarátovi kód, alebo sa pridaj k niekomu, kto čaká na súpera." />
       {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
       {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}
       {vyucba !== null && vyucba.dostupna && !zavrete && <VyucbaVLobby vyucba={vyucba} zacni={zacniVyucbu} />}
@@ -201,8 +200,9 @@ function Lobby({
 /** Mobil a úzke okno: hra sa tu zatiaľ hrať nedá (Michal 2026-10-22), zvyšok webu áno. */
 function NepodporovaneZariadenie({ dovod }: { readonly dovod: "dotyk" | "uzke" }) {
   return (
-    <div className="formular-stred panel" style={{ textAlign: "center" }}>
-      <h1>Tu sa NA EX! zatiaľ hrať nedá</h1>
+    <>
+    <HlavaStranky nadpis="Tu sa NA EX! zatiaľ hrať nedá" />
+    <div className="formular-stred panel">
       {dovod === "dotyk" ? (
         <p>
           Herný stôl potrebuje širokú obrazovku a myš. Otvor NA EX! na počítači alebo na tablete na šírku — rozohraná partia ťa tam
@@ -212,7 +212,7 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: "dotyk" | "uzke" }
         <p>Okno je na herný stôl príliš úzke. Roztiahni ho aspoň na 900 px a hra sa ukáže — rozohraná partia ťa počká.</p>
       )}
       <p className="tlmene">Kým sa hra dostane aj na mobil, môžeš si tu čítať:</p>
-      <div className="riadok-tlacidiel" style={{ justifyContent: "center" }}>
+      <div className="riadok-tlacidiel">
         <Odkaz href="/pravidla" className="tlacidlo tlacidlo-hlavne">
           Pravidlá
         </Odkaz>
@@ -227,6 +227,7 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: "dotyk" | "uzke" }
         </Odkaz>
       </div>
     </div>
+    </>
   );
 }
 
@@ -329,19 +330,25 @@ export function Hra() {
   if (nepodporovane !== null) return <NepodporovaneZariadenie dovod={nepodporovane} />;
   if (!nacitane) return <Nacitavanie />;
   if (ja === null) {
+    // Pozvánka /hra?kod=ABCD: po prihlásení aj registrácii späť s kódom — efekt vyššie hráča pripojí.
+    // Bez pozvánky začína nový účet profilom ako doteraz.
+    const cesta = location.pathname + location.search;
+    const pozvanka = new URLSearchParams(location.search).get("kod") !== null;
     return (
-      <div className="formular-stred panel" style={{ textAlign: "center" }}>
-        <h1>Hrať môžu prihlásení</h1>
-        <p className="tlmene">Súper ťa uvidí pod tvojím herným menom a s fotkou z profilu.</p>
-        <div className="riadok-tlacidiel" style={{ justifyContent: "center" }}>
-          <Odkaz href="/prihlasenie?spat=/hra" className="tlacidlo tlacidlo-hlavne">
-            Prihlásiť sa
-          </Odkaz>
-          <Odkaz href="/registracia?spat=/hra" className="tlacidlo">
-            Vytvoriť účet
-          </Odkaz>
-        </div>
-      </div>
+      <HlavaStranky
+        nadpis="Hrať môžu prihlásení"
+        uvod="Súper ťa uvidí pod tvojím herným menom a s fotkou z profilu."
+        akcia={
+          <>
+            <Odkaz href={pozvanka ? sNavratom("/registracia", cesta) : "/registracia"} className="tlacidlo">
+              Vytvoriť účet
+            </Odkaz>
+            <Odkaz href={sNavratom("/prihlasenie", cesta)} className="tlacidlo tlacidlo-hlavne">
+              Prihlásiť sa
+            </Odkaz>
+          </>
+        }
+      />
     );
   }
   if (!hra.pripojene && hra.miestnost === null) return <Nacitavanie text="Pripájam sa na server…" />;
@@ -361,13 +368,12 @@ export function Hra() {
   if (hra.view === null || hra.data === null) {
     const [h0, h1] = hra.hraci;
     return (
+      <>
+      <HlavaStranky
+        nadpis="Čaká sa na súpera"
+        uvod={m.verejna ? "Hra je verejná — ktokoľvek sa môže pridať zo zoznamu. Alebo pošli kód." : "Pošli súperovi tento kód. Hra začne, keď sa pripojí."}
+      />
       <div className="cakaren panel">
-        <h1>Čaká sa na súpera</h1>
-        {m.verejna ? (
-          <p className="tlmene">Hra je verejná — ktokoľvek sa môže pridať zo zoznamu. Alebo pošli kód:</p>
-        ) : (
-          <p className="tlmene">Pošli súperovi tento kód. Hra začne, keď sa pripojí.</p>
-        )}
         <div className="cakaren-kod">{m.code}</div>
         <p className="tlmene" style={{ margin: 0 }}>{popisDlzky(m.dlzka)}</p>
         <button
@@ -401,6 +407,7 @@ export function Hra() {
           Zrušiť
         </button>
       </div>
+      </>
     );
   }
 
@@ -461,6 +468,7 @@ export function Hra() {
       chyba={hra.vyucba !== null ? null : hra.chyba}
       zrusChybu={hra.zrusChybu}
       superPripojeny={hra.superPripojeny}
+      superOdpojenyOd={hra.superOdpojenyOd}
       kod={m.code}
       cmd={cmd}
       opustit={hra.odid}

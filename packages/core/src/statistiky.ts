@@ -9,9 +9,10 @@ import type { Action, CardInstance, PlayerId, Podmienka } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { Command, Event, GameState } from "./engine.ts";
+import { cenaFajceniaHraca } from "./engine.ts";
 import type { PlayerState } from "./player.ts";
 import type { ElderState } from "./elders.ts";
-import { elderScore, vydesil } from "./elders.ts";
+import { vydesil } from "./elders.ts";
 
 export interface StatistikyHraca {
   /** Partie, z ktorých súčet vznikol (jedna partia = 1). */
@@ -42,7 +43,7 @@ export interface StatistikyHraca {
   readonly poskodeniePecene: number;
   readonly cirhozyZiskane: number;
   readonly cirhozyPriznane: number;
-  /** Pohreby — od pravidiel v4 aj bývalé Liečby (zlúčené do Pohrebu, Michal 2026-10-23). */
+  /** Pohreby zo starých partií (Pohreb zrušil Michal 2026-10-27; v4 doň zlúčil Liečby). */
   readonly pohreby: number;
 
   readonly dlhyZiskane: number;
@@ -259,6 +260,9 @@ function zapisJedneho(
   const opp = opponentOf(p);
   const hPred = pred.hraci[p];
   const hPo = po.hraci[p];
+  // Exekúcia v6 je automatická: zhorené špaky na nástenke, alebo zahodený Záhradkár.
+  const novaBitka = po.nastenka.length > pred.nastenka.length ? po.nastenka[po.nastenka.length - 1] : undefined;
+  if ((novaBitka?.exekutor[p] ?? 0) > 0 || (autor === p && cmd.type === "zahradkar" && cmd.zahodit)) s.exekucie += 1;
 
   // ---- príkazy tohto hráča
   if (autor === p) {
@@ -286,7 +290,8 @@ function zapisJedneho(
           break;
         }
         case "smoke":
-          s.cigaretyVyfajcene += c.pocet;
+          // Fajčenie zdražie v Pitke (2026-10-27) — ráta sa, koľko cigariet sa naozaj vyfajčilo.
+          s.cigaretyVyfajcene += cenaFajceniaHraca(pred, p, c.pocet);
           break;
         case "barter":
           s.bartery += 1;
@@ -294,17 +299,11 @@ function zapisJedneho(
         case "refillPoldeci":
           s.dolievania += 1;
           break;
-        case "exekutorTool":
-          s.exekucie += 1;
-          break;
         case "pohorsenie":
           s.posunyPohorsenim += 1;
           break;
         case "prebytok":
           s.posunyPrebytkom += 1;
-          break;
-        case "pohreb":
-          s.pohreby += 1;
           break;
         case "patronat":
           s.bitkyOStarsich += 1;
@@ -377,7 +376,7 @@ export function zapisTah(
   return [zapisJedneho(stat[0], pred, cmd, autor, po, events, 0), zapisJedneho(stat[1], pred, cmd, autor, po, events, 1)];
 }
 
-/** Záver partie: lokality, starší, vydesenie a body podľa podmienok scorecardov. */
+/** Záver partie: vyhraté bitky o lokality, vydesenie a konečné špaky (v6). */
 export function uzavriStatistiky(data: GameData, stat: DvojicaStatistik, koniec: GameState): DvojicaStatistik {
   const bodovana = koniec.koniec?.body != null;
   const out = stat.map((st, i) => {
@@ -390,15 +389,11 @@ export function uzavriStatistiky(data: GameData, stat: DvojicaStatistik, koniec:
       const h = koniec.hraci[p];
       s.dlhyNaKonci = [...h.ruka, ...h.doberaci, ...h.odhadzovaci, ...h.priznane].filter((k) => k.defId === "dlh").length;
     }
-    s.lokalityOvladnute = koniec.ovladnute.filter((o) => o.hrac === p).length;
+    // v6: lokalitu si víťaz neberie — ráta sa, koľko bitiek o lokalitu hráč vyhral.
+    s.lokalityOvladnute = koniec.nastenka.filter((b) => b.vitaz === p && b.lokalita !== null).length;
     s.starsiVydeseni = koniec.starsi.filter((e) => vydesil(e as ElderState, p)).length;
     if (bodovana) {
       s.bodovanePartie = 1;
-      for (const elder of koniec.starsi) {
-        for (const pol of elderScore(data, koniec, elder).polozky[p]) {
-          s.bodyPodla[pol.podmienka] = (s.bodyPodla[pol.podmienka] ?? 0) + pol.body;
-        }
-      }
       s.body = koniec.koniec?.body?.[p] ?? 0;
       s.najviacBodov = s.body;
     }

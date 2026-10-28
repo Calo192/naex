@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analýza novej sady kariet: čoho je veľa, čo je mŕtve, čo sa opakuje — NA EX!</title>
+<style>
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --ok: #7fb069; --pozor: #e08a3a; --zle: #d0604f; --info: #6fa8dc;
+  --bar-pred: #5a4a3a; --bar-po: #e9ad45;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b; --info: #2c5f8f;
+    --bar-pred: #d8c8ad; --bar-po: #b8741a;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b; --info: #2c5f8f;
+  --bar-pred: #d8c8ad; --bar-po: #b8741a;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 12px; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 1040px; margin: 0 auto; padding-block: 24px 150px;
+  padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); margin: 0 0 8px; }
+h2 { font-size: 1.4rem; margin: 44px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.1rem; margin: 24px 0 8px; }
+p, li { max-width: 80ch; }
+p { margin: 0 0 10px; }
+li { margin-bottom: 5px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+code { font-family: var(--mono); font-size: .84em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.hlavicka { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.uvod, .tlmeny { color: var(--tlmeny); }
+.pozn { color: var(--tlmeny); font-size: .86rem; line-height: 1.4; margin-top: 3px; }
+.tlacidlo { background: var(--plocha-2); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 7px 12px; font: inherit; font-size: .9rem; cursor: pointer; min-height: 40px; }
+.tlacidlo:hover { border-color: var(--akcent); }
+.tlacidlo.hlavne { background: var(--akcent); color: var(--pozadie); border-color: var(--akcent); font-weight: 600; }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 18px; margin: 18px 0; }
+.skratka h2 { margin: 0 0 8px; border: 0; padding: 0; font-size: 1.2rem; }
+.skratka ol { margin: 0; padding-left: 22px; }
+.skratka li { margin-bottom: 8px; }
+.obsah { font-size: .92rem; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 16px; }
+.obsah ol { margin: 4px 0 0; padding-left: 20px; columns: 2 260px; }
+.prepinac { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--plocha-2); border: 1px dashed var(--okraj); border-radius: 10px; padding: 10px 14px; margin: 14px 0; font-size: .92rem; }
+.prepinac input { width: 20px; height: 20px; accent-color: var(--akcent); }
+.tab-obal { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--okraj); border-radius: 10px; background: var(--plocha); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 8px 8px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+tr:last-child td { border-bottom: 0; }
+th { background: var(--plocha-2); font-weight: 600; font-size: .82rem; position: sticky; top: 0; }
+th.trieď { cursor: pointer; user-select: none; white-space: nowrap; }
+th.trieď::after { content: " ↕"; color: var(--tlmeny); font-weight: 400; }
+td.c, th.c { text-align: center; white-space: nowrap; }
+.zm { display: block; font-size: .78rem; color: var(--tlmeny); }
+.bar { position: relative; height: 6px; background: transparent; margin-top: 6px; min-width: 90px; }
+.bar span { position: absolute; left: 0; top: 0; height: 6px; border-radius: 3px; }
+.bar-pred { background: var(--bar-pred); height: 6px; }
+.bar-po { background: var(--bar-po); opacity: .75; height: 3px !important; top: 1.5px !important; }
+.stitok { display: inline-block; font-size: .74rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.t-vela { color: var(--pozor); } .t-malo { color: var(--info); } .t-ok { color: var(--ok); } .t-pozor { color: var(--zle); }
+.v-mrtvy { color: var(--zle); } .v-takmer { color: var(--pozor); } .v-uzky { color: var(--info); } .v-zije { color: var(--ok); } .v-riziko { color: var(--akcent); }
+b.nove { color: var(--akcent); }
+.mena { font-size: .86rem; margin: 6px 0 0; }
+details summary { cursor: pointer; color: var(--akcent); font-size: .85rem; }
+details > *:not(summary) { margin-top: 6px; }
+.dlazdice { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 14px 0; }
+.dlazdica { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 10px 12px; }
+.dlazdica b { display: block; font-family: var(--serif); font-size: 1.45rem; color: var(--akcent); line-height: 1.1; }
+.dlazdica span { font-size: .8rem; color: var(--tlmeny); line-height: 1.3; display: block; margin-top: 4px; }
+.nalez { background: var(--plocha); border: 1px solid var(--okraj); border-left: 4px solid var(--akcent); border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
+.nalez.vazne { border-left-color: var(--zle); }
+.nalez.stredne { border-left-color: var(--pozor); }
+.nalez.male { border-left-color: var(--info); }
+.nalez h3 { margin-top: 0; }
+.nalez .odpor { background: var(--plocha-2); border-radius: 8px; padding: 8px 12px; margin-top: 10px; }
+.nalez .odpor b:first-child { color: var(--akcent); }
+.volby { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+.volby label { display: inline-flex; align-items: center; gap: 5px; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-size: .86rem; min-height: 36px; }
+.volby input { accent-color: var(--akcent); }
+.volby label:has(input:checked) { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.volby textarea { flex: 1 1 100%; min-height: 40px; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px 8px; font: inherit; font-size: .88rem; }
+.filtre { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+.filtre button { background: var(--plocha-2); color: var(--text); border: 1px solid var(--okraj); border-radius: 999px; padding: 5px 12px; font: inherit; font-size: .84rem; cursor: pointer; min-height: 36px; }
+.filtre button[aria-pressed="true"] { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.karta-txt { font-style: italic; }
+.lista { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--akcent); z-index: 5; }
+.lista-vnut { max-width: 1040px; margin: 0 auto; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  padding: 10px max(14px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px)); }
+.lista span { font-size: .88rem; color: var(--tlmeny); }
+.skryte { position: absolute; left: -9999px; width: 1px; height: 1px; }
+.dva { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.dva > div { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 12px 14px; }
+.dva h3 { margin-top: 0; }
+@media (max-width: 720px) {
+  .skry-m { display: none; }
+  .dva { grid-template-columns: 1fr; }
+  th, td { padding: 7px 6px; }
+  table { font-size: .85rem; }
+}
+@media (max-width: 720px) {
+  table.skladaj thead { display: none; }
+  table.skladaj tr { display: block; padding: 10px 10px 8px; border-bottom: 1px solid var(--okraj); }
+  table.skladaj tr:last-child { border-bottom: 0; }
+  table.skladaj td { display: block; border: 0; padding: 3px 0; text-align: left; white-space: normal; }
+  table.skladaj td.skry-m { display: none; }
+  table.skladaj td[data-l]::before { content: attr(data-l) ": "; color: var(--tlmeny); font-size: .8rem; font-weight: 600; }
+  table.skladaj td:first-child { font-size: 1rem; }
+  table.skladaj .zm { display: inline; margin-left: 6px; }
+}
+@media print { .lista, .volby, .filtre, #tema { display: none; } }
+</style>
+</head>
+<body>
+<main>
+
+<div class="hlavicka">
+  <div>
+    <h1>Analýza novej sady kariet</h1>
+    <p class="uvod">Admin (AI) · 26. 10. 2026 · pre Michala cez session Brainstorming · len analýza, v tvorcovi ani v repe sa nič nezmenilo</p>
+  </div>
+  <button type="button" class="tlacidlo" id="tema" aria-label="Prepnúť svetlý alebo tmavý režim">Režim: auto</button>
+</div>
+
+<p>Michal: <em>„Analyzuj novo vzniknutú sadu kariet (po tomto update), zisti čoho je veľa, čoho je málo, či sú efekty dostatočné,
+či nie je nejaký efekt mŕtvy alebo opakovaný viackrát na rôznych kartách len s iným znením.“</em></p>
+
+<section class="skratka" aria-labelledby="h-skratka">
+  <h2 id="h-skratka">V skratke: 5 najdôležitejších zistení</h2>
+  <ol>
+    <li><b>Kapybara je najsilnejšia výmena v sade a nemá protihru.</b> 1 cigareta = súper −1 špak, každú Pitku. Strýko platí za 1 tuhé
+      2 cigarety a vyhratá 1-Pitková bitka (53 % bitiek o lokalitu) dá tiež len 1 špak. Kapybara je Zviera, takže NA EX na ňu bez Lievika nejde.
+      Odporúčam pred tvorcom zdražiť alebo obmedziť (<a href="#n-kapybara">H1</a>).</li>
+    <li><b>Exekútor je mŕtvy.</b> V 90 partiách botov podľa pravidiel v6 nenastala ani jedna exekúcia, ani na Obecnom úrade (prah 6). S ním sú mŕtvi
+      Záhradkár (jediný spúšťač Exekúcia), polovica Obecného úradu a priazeň Exekútor, ktorú boti rozdali 586-krát. Mŕtve sú aj Jednota
+      (barter 2× za 90 partií) a takmer mŕtvy Kar (2 použitia v 36 bitkách) (<a href="#c2">časť 2</a>).</li>
+    <li><b>NA EX má menej cieľov a dve karty majú tú istú vetu.</b> Telá, na ktoré NA EX nejde, stúpnu zo 16 % na 23 % (4 nové Zvieratá).
+      Anonymný alkoholik a druhá veta Liberála robia to isté. Odporúčam Liberálovi vetu zmazať (<a href="#d1">D1</a>, <a href="#n-naex">H2</a>).</li>
+    <li><b>Pohoršenie stratilo brzdu.</b> Policajtka po Dychovej skúške Pohoršenia nechráni (boti ňou zrušili Pohoršenia 28×) a spustí sa len pri Vypiť,
+      ktoré boti robia v 6 % kôl. Pohoršenia pritom pribudli (Klebetnica, Vidly, Kohút) a Kohút zdvojí 53 % bitiek. Jediná brzda je Zverák
+      v Dedičstve. Treba to merať v playteste (<a href="#n-pohorsenie">H3</a>).</li>
+    <li><b>Duplicity:</b> Svokra = priazeň Výpalník, Kar ⊂ Niekoho stryná, Nealko = Krčma (prah Cirhózy +2), štyri ×2 efekty (Silná žena, Zámočník,
+      Liberál, Veterán) a teraz aj Praudovravec D1. Tri slová pre to isté: <i>zahoď / spáľ / odstráň z hry</i>, štyri pre susedstvo:
+      <i>okolie / susedí / vedľa / spoj</i> (<a href="#c3">časť 3</a>).</li>
+  </ol>
+</section>
+
+<nav class="obsah" aria-label="Obsah">
+  <b>Obsah</b>
+  <ol>
+    <li><a href="#c0">Čo je „nová sada“</a></li>
+    <li><a href="#c1">Čoho je veľa a čoho málo</a></li>
+    <li><a href="#c2">Mŕtve a takmer mŕtve efekty</a></li>
+    <li><a href="#c3">Duplicitné efekty</a></li>
+    <li><a href="#c4">Diery: stratégie bez protihry, meny bez využitia</a></li>
+    <li><a href="#c5">Zhrnutie: top 5 odporúčaní</a></li>
+    <li><a href="#c6">Otázky pre Michala a podklady</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ 0 -->
+<h2 id="c0">0. Čo je „nová sada“</h2>
+<p><b>Pred</b> = <code>packages/core/data/cards.json</code> na vetve <code>brainstorming/karty-20261026</code>: koncept v6 nad sadou v20, 63 kariet.
+<b>Po</b> = pred + schválené zmeny z dnešných dávok (<code>docs/napady/karty-obcania.html</code>, <code>karty-naradie-zvierata.html</code>,
+<code>karty-kolo2.html</code>) a rozhodnutia Michala, ktoré mi poslala session Brainstorming. Sú to <b>76 kariet</b>, so Strýkom z Ameriky* 77.</p>
+
+<div class="dva">
+  <div>
+    <h3>Pridané (13 + 1*)</h3>
+    <p class="pozn"><b>Občania:</b> Degustátorka, Klebetnica, Dohadzovačka, Vandal, Opatrovateľka v2 (latka Absťáku −2), Smetiarka (variant: karta sa
+      odhodí, nezahodí). <b>Nástroje:</b> Vidly, Lievik (NA EX len na Zviera), Zverák. <b>Zvieratá:</b> Krokodíl (zožratá karta ide z hry), Kapybara
+      (Kšeft: za cigaretu súper stratí špak, akcia Cigareta), Kôň, Kohút (Pohoršenie + Odpor).<br>
+      <b>*</b> Strýko z Ameriky je nedorozhodnutý. Prepínač nižšie ho do čísel zaráta.</p>
+  </div>
+  <div>
+    <h3>Zmenené (5) a vynechané (4)</h3>
+    <p class="pozn"><b>Policajtka:</b> Dychová skúška (kto v kole použil Vypiť, dostane v bitke 2 Dlhy). <b>Praudovravec:</b> D1 Dezinformátor
+      (Odpor na jeho spojoch sa ráta ako Posilnenie). <b>Starosta, Poštárka, Zberný dvor:</b> prepísané na Kšeft.<br>
+      <b>Vynechané:</b> Obvodná lekárka, Večná sťažovateľka, Kostolník, Hrable.</p>
+  </div>
+</div>
+<p class="pozn">Predpoklady: Kapybara má akcie z 1. kola (vľavo Viera, vpravo Cigareta, pozície 0 a 3 blokované) a jej efekt je len Kšeft
+(„nemíňa limit“ odpadol). Smetiarka má akcie z kola 2. Ak je niečo inak, čísla v časti 1 sa posunú najviac o 2 kópie.</p>
+
+<div class="prepinac">
+  <input type="checkbox" id="stryko"><label for="stryko">Zarátať <b>Strýka z Ameriky*</b> do čísel (Občan · Influencer · Zahraničný · Chlap,
+  vľavo Cigareta ×2, vpravo Vízia a Poldeci, Kšeft: za 2 cigarety 1 Rana)</label>
+</div>
+
+<!-- ============================================================ 1 -->
+<h2 id="c1">1. Čoho je veľa a čoho málo</h2>
+
+<h3>1.1 Druhy kariet a balíček</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Druh</th><th class="c">Pred</th><th class="c">Po</th><th>Čo to znamená</th></tr></thead>
+<tbody>
+<tr><td>Občan</td><td class="c">23</td><td class="c"><span class="sv" data-po="29" data-pos="30">29</span></td><td class="pozn">Recidivista sa ráta tu (je aj Zviera).</td></tr>
+<tr><td>Zviera (čisté)</td><td class="c">2</td><td class="c"><b>6</b></td><td class="pozn">Pes, Čierna mačka + Krokodíl, Kapybara, Kôň, Kohút. NA EX na ne nejde.</td></tr>
+<tr><td>Nástroj</td><td class="c">8</td><td class="c">11</td><td class="pozn">Vidly, Lievik, Zverák. Cena Dedičstva je spoločná, takže sa zdražie skôr.</td></tr>
+<tr><td>Starešina / Lokalita / Kliatba / Štart</td><td class="c">8 / 15 / 3 / 4</td><td class="c">8 / 15 / 3 / 4</td><td class="pozn">Bez zmeny.</td></tr>
+<tr><td>Spoločný balíček (2 kópie)</td><td class="c">66</td><td class="c"><b><span class="sv" data-po="92" data-pos="94">92</span></b></td><td class="pozn">Konkrétnu kartu uvidíš v šenku o 28 % menej často (2/66 → 2/92). Platí to aj pre silné karty (Svokra, Pes, Policajtka).</td></tr>
+<tr><td>Kariet v hre (balíček + štart oboch)</td><td class="c">74</td><td class="c"><b><span class="sv" data-po="100" data-pos="102">100</span></b></td><td class="pozn">Základ pre stĺpec „kópie v hre“ nižšie.</td></tr>
+<tr><td>Akcií na kartu v hre</td><td class="c">3,89</td><td class="c"><span class="sv" data-po="3,64" data-pos="3,65">3,64</span></td><td class="pozn">Nové karty sú „tenšie“: občania 4 akcie, zvieratá a nástroje 2–3.</td></tr>
+<tr><td>Zlé akcie (Dlh + Poškodenie pečene)</td><td class="c">24 %</td><td class="c"><span class="sv" data-po="23 %" data-pos="22 %">23 %</span></td><td class="pozn">Podiel mierne klesol.</td></tr>
+<tr><td>Útok v hre (Rana + 2 × Pecka + 3 × Petelica)</td><td class="c">60 tuhého</td><td class="c">78 tuhého</td><td class="pozn">Na kartu 0,81 → 0,78, teda takmer bez zmeny.</td></tr>
+</tbody></table></div>
+
+<h3>1.2 Akcie</h3>
+<p><b>Kópie v hre</b> = koľkokrát je akcia na kartách, ktoré sa dajú mať v balíčku (2 kópie každého Občana, Zvieraťa a Nástroja + štartové karty
+oboch hráčov). <b>Na kartu</b> = kópie v hre / počet kariet v hre. To je hustota, s akou akciu uvidíš v šenku a v ruke. Lokality a starší sú zvlášť,
+lebo ležia na stole inak. Kliknutím na hlavičku sa tabuľka zoradí. Pruh: tmavý = pred, svetlý = po.</p>
+<div class="tab-obal"><table id="t-akcie" class="skladaj">
+<thead><tr><th class="trieď" data-kluc="meno">Akcia</th><th class="c">Kariet</th><th class="c trieď" data-kluc="pool">Kópie v hre</th>
+<th class="c trieď" data-kluc="hust">Na kartu (zmena)</th><th class="c skry-m">na lokalitách</th><th class="c skry-m">na starších</th><th>Verdikt</th></tr></thead>
+<tbody>
+<tr data-pool="48" data-hust="0.480" data-zmena="0.09090909090909091" data-meno="Dlh">
+  <td><b>Dlh</b><div class="bar"><span class="bar-pred" style="width:92%"></span><span class="bar-po" style="width:100%"></span></div></td>
+  <td class="c">18 → 20</td>
+  <td class="c">44 → <b>48</b></td>
+  <td class="c">0,59 → <span class="sv" data-po="0,48" data-pos="0,47">0,48</span> <span class="zm"><span class="sv" data-po="−19 %" data-pos="−21 %">−19 %</span></span></td>
+  <td class="c skry-m">3</td><td class="c skry-m">0</td>
+  <td><span class="stitok t-vela">najviac v balíčku</span><div class="pozn">Najčastejšia akcia (0,48 na kartu). Bolí však málo: boti v 90 partiách v6 nemali ani jednu exekúciu. Dievčina na vydaj sa spálila 165×, Robota pálila 84×, Niekoho stryná zahodila Dlh 51× a Kmotor 37×.</div></td></tr>
+<tr data-pool="44" data-hust="0.440" data-zmena="0.2222222222222222" data-meno="Cigareta">
+  <td><b>Cigareta</b><div class="bar"><span class="bar-pred" style="width:75%"></span><span class="bar-po" style="width:92%"></span></div></td>
+  <td class="c">27 → <span class="sv" data-po="31" data-pos="32">31</span></td>
+  <td class="c">36 → <b><span class="sv" data-po="44" data-pos="48">44</span></b></td>
+  <td class="c">0,49 → <span class="sv" data-po="0,44" data-pos="0,47">0,44</span> <span class="zm"><span class="sv" data-po="−10 %" data-pos="−3 %">−10 %</span></span></td>
+  <td class="c skry-m">8</td><td class="c skry-m">6</td>
+  <td><span class="stitok t-vela">veľa</span><div class="pozn">Najčastejšia dobrá akcia (+8 na lokalitách, +6 na starších). Vo v6 nebodujú, ale Kšefty z nich robia menu a Kapybara rovno špaky.</div></td></tr>
+<tr data-pool="38" data-hust="0.380" data-zmena="0.1875" data-meno="Rana">
+  <td><b>Rana</b><div class="bar"><span class="bar-pred" style="width:67%"></span><span class="bar-po" style="width:79%"></span></div></td>
+  <td class="c">18 → 21</td>
+  <td class="c">32 → <b>38</b></td>
+  <td class="c">0,43 → <span class="sv" data-po="0,38" data-pos="0,37">0,38</span> <span class="zm"><span class="sv" data-po="−12 %" data-pos="−14 %">−12 %</span></span></td>
+  <td class="c skry-m">6</td><td class="c skry-m">0</td>
+  <td><span class="stitok t-ok">v poriadku</span><div class="pozn">Hlavný útok. Hustota mierne klesla, lebo nové karty majú menej akcií.</div></td></tr>
+<tr data-pool="34" data-hust="0.340" data-zmena="0.3076923076923077" data-meno="Poškodenie pečene">
+  <td><b>Poškodenie pečene</b><div class="bar"><span class="bar-pred" style="width:54%"></span><span class="bar-po" style="width:71%"></span></div></td>
+  <td class="c">9 → 12</td>
+  <td class="c">26 → <b>34</b></td>
+  <td class="c">0,35 → <span class="sv" data-po="0,34" data-pos="0,33">0,34</span> <span class="zm"><span class="sv" data-po="−3 %" data-pos="−5 %">−3 %</span></span></td>
+  <td class="c skry-m">1</td><td class="c skry-m">0</td>
+  <td><span class="stitok t-vela">veľa</span><div class="pozn">Boti v6: 5,2 Cirhózy za partiu, nepriznané stáli na konci asi 4,8 špaku na partiu. Nové Nástroje (Lievik ×2) pridávajú.</div></td></tr>
+<tr data-pool="32" data-hust="0.320" data-zmena="0.06666666666666667" data-meno="Povera">
+  <td><b>Povera</b><div class="bar"><span class="bar-pred" style="width:63%"></span><span class="bar-po" style="width:67%"></span></div></td>
+  <td class="c">19 → 20</td>
+  <td class="c">30 → <b>32</b></td>
+  <td class="c">0,41 → <span class="sv" data-po="0,32" data-pos="0,31">0,32</span> <span class="zm"><span class="sv" data-po="−21 %" data-pos="−23 %">−21 %</span></span></td>
+  <td class="c skry-m">5</td><td class="c skry-m">3</td>
+  <td><span class="stitok t-vela">veľa na svoj cieľ</span><div class="pozn">Mäkké poškodenie len do výšky súperových priznaných Dlhov. Tie sa rýchlo pália, takže Povera často nemá do čoho biť (výnimka Čierna mačka).</div></td></tr>
+<tr data-pool="30" data-hust="0.300" data-zmena="0.25" data-meno="Pohoršenie">
+  <td><b>Pohoršenie</b><div class="bar"><span class="bar-pred" style="width:50%"></span><span class="bar-po" style="width:63%"></span></div></td>
+  <td class="c">16 → 19</td>
+  <td class="c">24 → <b>30</b></td>
+  <td class="c">0,32 → <span class="sv" data-po="0,30" data-pos="0,29">0,30</span> <span class="zm"><span class="sv" data-po="−8 %" data-pos="−9 %">−8 %</span></span></td>
+  <td class="c skry-m">6</td><td class="c skry-m">1</td>
+  <td><span class="stitok t-pozor">silné, bez brzdy</span><div class="pozn">Vo v6 najsilnejšia akcia. Absolútne +6 kópií (Klebetnica, Vidly, Kohút), štít Policajtky zmizol.</div></td></tr>
+<tr data-pool="28" data-hust="0.280" data-zmena="0.2727272727272727" data-meno="Viera">
+  <td><b>Viera</b><div class="bar"><span class="bar-pred" style="width:46%"></span><span class="bar-po" style="width:58%"></span></div></td>
+  <td class="c">17 → 20</td>
+  <td class="c">22 → <b>28</b></td>
+  <td class="c">0,30 → <span class="sv" data-po="0,28" data-pos="0,27">0,28</span> <span class="zm"><span class="sv" data-po="−6 %" data-pos="−8 %">−6 %</span></span></td>
+  <td class="c skry-m">6</td><td class="c skry-m">3</td>
+  <td><span class="stitok t-ok">v poriadku</span><div class="pozn">Obrana proti tuhému aj Povere. Kapybara, Dohadzovačka, Opatrovateľka pridávajú.</div></td></tr>
+<tr data-pool="22" data-hust="0.220" data-zmena="0.2222222222222222" data-meno="Poldeci">
+  <td><b>Poldeci</b><div class="bar"><span class="bar-pred" style="width:38%"></span><span class="bar-po" style="width:46%"></span></div></td>
+  <td class="c">18 → <span class="sv" data-po="20" data-pos="21">20</span></td>
+  <td class="c">18 → <b><span class="sv" data-po="22" data-pos="24">22</span></b></td>
+  <td class="c">0,24 → <span class="sv" data-po="0,22" data-pos="0,24">0,22</span> <span class="zm"><span class="sv" data-po="−10 %" data-pos="−3 %">−10 %</span></span></td>
+  <td class="c skry-m">5</td><td class="c skry-m">5</td>
+  <td><span class="stitok t-ok">v poriadku</span><div class="pozn">Otočí vypitý poldeci až v bitke. Žiadny Kšeft dnes neplatí poldeci, takže ho nič nové nespotrebuje.</div></td></tr>
+<tr data-pool="22" data-hust="0.220" data-zmena="0.5714285714285714" data-meno="Odpor">
+  <td><b>Odpor</b><div class="bar"><span class="bar-pred" style="width:29%"></span><span class="bar-po" style="width:46%"></span></div></td>
+  <td class="c">8 → 12</td>
+  <td class="c">14 → <b>22</b></td>
+  <td class="c">0,19 → 0,22 <span class="zm"><span class="sv" data-po="+16 %" data-pos="+14 %">+16 %</span></span></td>
+  <td class="c skry-m">1</td><td class="c skry-m">0</td>
+  <td><span class="stitok t-ok">rastie</span><div class="pozn">+57 % kópií (Vandal, Zverák, Krokodíl, Kohút). Pri Praudovravcovi D1 sa mení na Posilnenie, takže pri ňom je dvojsečný.</div></td></tr>
+<tr data-pool="18" data-hust="0.180" data-zmena="0.5" data-meno="Robota">
+  <td><b>Robota</b><div class="bar"><span class="bar-pred" style="width:25%"></span><span class="bar-po" style="width:38%"></span></div></td>
+  <td class="c">12 → 15</td>
+  <td class="c">12 → <b>18</b></td>
+  <td class="c">0,16 → 0,18 <span class="zm"><span class="sv" data-po="+11 %" data-pos="+9 %">+11 %</span></span></td>
+  <td class="c skry-m">4</td><td class="c skry-m">2</td>
+  <td><span class="stitok t-malo">často naprázdno</span><div class="pozn">Páli len priznaný Dlh. Ten sa páli aj inak a exekúcia nenastáva, takže Robota je často prázdna akcia. Napriek tomu +50 % (Opatrovateľka, Smetiarka, Zverák).</div></td></tr>
+<tr data-pool="14" data-hust="0.140" data-zmena="0.4" data-meno="Obmedzenie">
+  <td><b>Obmedzenie</b><div class="bar"><span class="bar-pred" style="width:21%"></span><span class="bar-po" style="width:29%"></span></div></td>
+  <td class="c">11 → 13</td>
+  <td class="c">10 → <b>14</b></td>
+  <td class="c">0,14 → 0,14 <span class="zm"><span class="sv" data-po="+4 %" data-pos="+2 %">+4 %</span></span></td>
+  <td class="c skry-m">4</td><td class="c skry-m">2</td>
+  <td><span class="stitok t-ok">v poriadku</span><div class="pozn">Jediná priama brzda cigariet. S Kapybarou (cigareta = špak) stúpne jej cena.</div></td></tr>
+<tr data-pool="14" data-hust="0.140" data-zmena="0.75" data-meno="Pecka">
+  <td><b>Pecka</b><div class="bar"><span class="bar-pred" style="width:17%"></span><span class="bar-po" style="width:29%"></span></div></td>
+  <td class="c">12 → 15</td>
+  <td class="c">8 → <b>14</b></td>
+  <td class="c">0,11 → 0,14 <span class="zm"><span class="sv" data-po="+30 %" data-pos="+27 %">+30 %</span></span></td>
+  <td class="c skry-m">6</td><td class="c skry-m">3</td>
+  <td><span class="stitok t-ok">v poriadku</span><div class="pozn">+30 % na kartu (Vandal, Vidly, Krokodíl).</div></td></tr>
+<tr data-pool="8" data-hust="0.080" data-zmena="3" data-meno="Posilnenie">
+  <td><b>Posilnenie</b><div class="bar"><span class="bar-pred" style="width:4%"></span><span class="bar-po" style="width:17%"></span></div></td>
+  <td class="c">3 → 6</td>
+  <td class="c">2 → <b>8</b></td>
+  <td class="c">0,03 → 0,08 <span class="zm"><span class="sv" data-po="+196 %" data-pos="+190 %">+196 %</span></span></td>
+  <td class="c skry-m">0</td><td class="c skry-m">4</td>
+  <td><span class="stitok t-malo">málo, ale lepšie</span><div class="pozn">Pred updatom bolo v balíčku len na Hasičovi (zvyšok na starších). Teraz Dohadzovačka, Opatrovateľka a Kôň, teda ×4.</div></td></tr>
+<tr data-pool="8" data-hust="0.080" data-zmena="0.3333333333333333" data-meno="Vízia">
+  <td><b>Vízia</b><div class="bar"><span class="bar-pred" style="width:13%"></span><span class="bar-po" style="width:17%"></span></div></td>
+  <td class="c">6 → <span class="sv" data-po="7" data-pos="8">7</span></td>
+  <td class="c">6 → <b><span class="sv" data-po="8" data-pos="10">8</span></b></td>
+  <td class="c">0,08 → <span class="sv" data-po="0,08" data-pos="0,10">0,08</span> <span class="zm"><span class="sv" data-po="−1 %" data-pos="+21 %">−1 %</span></span></td>
+  <td class="c skry-m">1</td><td class="c skry-m">3</td>
+  <td><span class="stitok t-malo">málo</span><div class="pozn">Jediná akcia na výber karty a zahodenie Cirhózy (boti ňou zahodili 72 Cirhóz). Pribudla len Klebetnica (a Strýko*).</div></td></tr>
+<tr data-pool="4" data-hust="0.040" data-zmena="0" data-meno="Petelica">
+  <td><b>Petelica</b><div class="bar"><span class="bar-pred" style="width:8%"></span><span class="bar-po" style="width:8%"></span></div></td>
+  <td class="c">4 → 4</td>
+  <td class="c">4 → <b>4</b></td>
+  <td class="c">0,05 → 0,04 <span class="zm"><span class="sv" data-po="−26 %" data-pos="−27 %">−26 %</span></span></td>
+  <td class="c skry-m">2</td><td class="c skry-m">0</td>
+  <td><span class="stitok t-malo">veľmi málo</span><div class="pozn">V balíčku len Hasič a Recidivista (4 kópie zo 100). Najsilnejší útok mimo lokalít takmer neexistuje a update ho nepridal.</div></td></tr>
+</tbody></table></div>
+
+<div class="nalez stredne" id="n-akcie">
+  <h3>Zistenie A: veľa Dlhov, Cigariet a Povier; málo Petelice, Vízie a Posilnenia</h3>
+  <ul>
+    <li><b>Dlh je najčastejšia akcia v hre</b> (48 kópií zo 100 kariet). Málo však bolí: Exekútor nenastáva a 4 karty, akcia Robota a priazeň Kmotor
+      priznané Dlhy pália. Preto je <b>Povera</b> (32 kópií), ktorá bije len do priznaných Dlhov, často bez cieľa a <b>Robota</b> (18 kópií) často prázdna.</li>
+    <li><b>Cigareta</b> (44 kópií, ďalších 8 na lokalitách a 6 na starších) je najčastejšia dobrá akcia. Vo v6 cigarety nebodujú, preto Kšeft dáva zmysel.
+      S Kapybarou sa však menia priamo na špaky (H1).</li>
+    <li><b>Petelica</b> je v balíčku len na Hasičovi a Recidivistovi (4 kópie). <b>Vízia</b> (8, so Strýkom 10) a <b>Posilnenie</b> (8) sú vzácne.
+      Posilnenie bolo pred updatom v balíčku len na Hasičovi a update ho zoštvornásobil, čo je dobrý smer.</li>
+  </ul>
+  <div class="odpor"><b>Odporúčanie:</b> ďalšie nové karty dávať skôr s Víziou, Posilnením či Obmedzením a nie s Dlhom, Robotou či Poverou.
+    Ktorú novú kartu prestaviť, rozhodne playtest. Teraz nič nemeniť, Michal akcie schválil.</div>
+  <div class="volby" data-id="A-akcie" data-nazov="A: smer akcií pre ďalšie karty (viac Vízie/Posilnenia, menej Dlhu/Roboty/Povery)"></div>
+</div>
+
+<h3>1.3 Pozície: kde sa akcie spájajú</h3>
+<p>Šanca, že na danej pozícii leží akcia (náhodná karta v hre, náhodný variant), a šanca, že akcia na tej pozícii nájde partnera u náhodného suseda
+v náhodnom natočení (§6: spoj = rovnaký index, otočením 0↔3 a 1↔2).</p>
+<div class="tab-obal"><table>
+<thead><tr><th class="c">Pozícia</th><th class="c">Akcia vľavo</th><th class="c">Akcia vpravo</th><th class="c">Partner pre akciu vľavo</th><th class="c">Partner pre akciu vpravo</th></tr></thead>
+<tbody>
+<tr><td class="c">0 (hore)</td>
+<td class="c">44 % → 40 %</td>
+<td class="c">45 % → 38 %</td>
+<td class="c">33 % → <b>28 %</b></td>
+<td class="c">44 % → <b>37 %</b></td></tr>
+<tr><td class="c">1</td>
+<td class="c">65 % → 64 %</td>
+<td class="c">64 % → 64 %</td>
+<td class="c">58 % → <b>57 %</b></td>
+<td class="c">60 % → <b>59 %</b></td></tr>
+<tr><td class="c">2</td>
+<td class="c">51 % → 50 %</td>
+<td class="c">55 % → 55 %</td>
+<td class="c">60 % → <b>59 %</b></td>
+<td class="c">58 % → <b>57 %</b></td></tr>
+<tr><td class="c">3 (dole)</td>
+<td class="c">21 % → 19 %</td>
+<td class="c">43 % → 35 %</td>
+<td class="c">44 % → <b>37 %</b></td>
+<td class="c">33 % → <b>28 %</b></td></tr>
+</tbody></table></div>
+<p class="pozn">Nové karty majú akcie hlavne v strede: 9 z 13 má okraje (0 alebo 3) zablokované na oboch stranách. Akcie na okrajových pozíciách starých kariet
+tak nájdu partnera menej často: vľavo na 0 a vpravo na 3 z 33 % na 28 %, vpravo na 0 a vľavo na 3 zo 44 % na 37 %. Stred (1, 2) ostáva okolo 58 %.
+Najviac to oslabí karty, ktoré majú dôležitú akciu na okraji. Je to malý posun, netreba ho riešiť, len vedieť o ňom pri ďalších kartách.</p>
+
+<h3>1.4 Spúšťače efektov</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Spúšťač</th><th class="c">Pred</th><th class="c">Po</th><th>Poznámka a karty (nové tučne)</th></tr></thead>
+<tbody>
+<tr><td><b>Furt</b><div class="pozn">Kým je karta odkrytá.</div></td><td class="c">16</td><td class="c"><b>18</b></td>
+<td><div class="pozn">Krokodíl, Kôň a Kohút pribudli, Policajtka odišla do Bitky.</div><details><summary>karty (18)</summary><p class="mena">Milujúca manželka, Silná, nezávislá žena, Praudovravec, Zámočník, Veterán, Hrobár, Liberál, Čierna mačka, Kočovník, Pes, Svokra, Šarlatán, Anonymný alkoholik, Dvojčatá, Šofér, <b class="nove">Krokodíl</b>, <b class="nove">Kôň</b>, <b class="nove">Kohút</b><br><span class="tlmeny">odišli: Policajtka</span></p></details></td></tr>
+<tr><td><b>Bitka</b><div class="pozn">Pri bitke.</div></td><td class="c">16</td><td class="c"><b>17</b></td>
+<td><div class="pozn">Policajtka (Dychová skúška) pribudla.</div><details><summary>karty (17)</summary><p class="mena">Veterinár, Autobusár, Dlh, Cirhóza, Lesná cesta, Ihrisko, Pijan, <b class="nove">Policajtka</b>, Recidivista, Farár, Dievčina na vydaj, Krčmárka, Absťák, Obecný úrad, Kultúrny dom, Presbiter, Kar</p></details></td></tr>
+<tr><td><b>Dedičstvo</b><div class="pozn">Nástroj v Dedičstve.</div></td><td class="c">8</td><td class="c"><b>11</b></td>
+<td><div class="pozn">Vidly, Lievik, Zverák. Výherný automat a Vidly majú vnorený spúšťač (Výhra/Prehra, Bitka).</div><details><summary>karty (11)</summary><p class="mena">Noviny, Krabička cigariet, Vínko, Pasca, Puška, Svätý text, Nealko, Výherný automat, <b class="nove">Vidly</b>, <b class="nove">Lievik</b>, <b class="nove">Zverák</b></p></details></td></tr>
+<tr><td><b>Nástup</b><div class="pozn">Pri vyložení.</div></td><td class="c">4</td><td class="c"><b>9</b></td>
+<td><div class="pozn">Najväčší nárast (+5): Degustátorka, Klebetnica, Dohadzovačka, Vandal, Opatrovateľka. Nástup je najčitateľnejší spúšťač, pri Záverečnej sa odkladá.</div><details><summary>karty (9)</summary><p class="mena">Veľmi smútiaca vdova, Hasič, Niekoho stryná, Snúbenica, <b class="nove">Degustátorka</b>, <b class="nove">Klebetnica</b>, <b class="nove">Dohadzovačka</b>, <b class="nove">Vandal</b>, <b class="nove">Opatrovateľka</b></p></details></td></tr>
+<tr><td><b>Pitka</b><div class="pozn">V Pitke (pasívne).</div></td><td class="c">9</td><td class="c"><b>6</b></td>
+<td><div class="pozn">Starosta, Poštárka a Zberný dvor odišli do Kšeftu. Ostali Finančná poradkyňa, Vychovávateľka a štyri lokality.</div><details><summary>karty (6)</summary><p class="mena">Finančná poradkyňa, Vychovávateľka, Benzínka, Krčma, Jednota, Vínna pivnica<br><span class="tlmeny">odišli: Starosta, Poštárka, Zberný dvor</span></p></details></td></tr>
+<tr><td><b>Kšeft</b><div class="pozn">Za cenu v Pitke, raz za Pitku (nové).</div></td><td class="c">0</td><td class="c"><b><span class="sv" data-po="5" data-pos="6">5</span></b></td>
+<td><div class="pozn">Starosta, Poštárka, Zberný dvor, Smetiarka, Kapybara (+ Strýko*). Vymyselník navrhoval najviac 5 v sade, so Strýkom je ich 6.</div><details><summary>karty (6)</summary><p class="mena"><b class="nove">Starosta</b>, <b class="nove">Poštárka</b>, <b class="nove">Zberný dvor</b>, <b class="nove">Smetiarka</b>, <b class="nove">Kapybara</b>, <b class="nove">Strýko z Ameriky *</b></p></details></td></tr>
+<tr><td><b>Zhromaždenie</b><div class="pozn">Počas Zhromaždenia.</div></td><td class="c">4</td><td class="c"><b>4</b></td>
+<td><div class="pozn">Len lokality (Zastávka, Kostol, Most, Družstvo). Žiadna karta v ruke nemá spúšťač Zhromaždenie.</div><details><summary>karty (4)</summary><p class="mena">Zastávka, Kostol, Most, Družstvo</p></details></td></tr>
+<tr><td><b>Prehra</b><div class="pozn">Po prehratej bitke.</div></td><td class="c">3</td><td class="c"><b>3</b></td>
+<td><div class="pozn">Veštica, Podvodník, Cintorín (+ Výherný automat vnorene).</div><details><summary>karty (3)</summary><p class="mena">Veštica, Podvodník, Cintorín</p></details></td></tr>
+<tr><td><b>Výhra</b><div class="pozn">Po vyhratej bitke.</div></td><td class="c">2</td><td class="c"><b>2</b></td>
+<td><div class="pozn">Miňištrant (malus) a Živnostník (+ Výherný automat vnorene). Za výsledok bitky odmeňujú len 2 karty.</div><details><summary>karty (2)</summary><p class="mena">Miňištrant, Živnostník</p></details></td></tr>
+<tr><td><b>Exekúcia</b><div class="pozn">Keď hráč čelí exekúcii.</div></td><td class="c">1</td><td class="c"><b>1</b></td>
+<td><div class="pozn">Len Záhradkár, a exekúcia v 90 partiách v6 nenastala ani raz. Spúšťač je mŕtvy.</div><details><summary>karty (1)</summary><p class="mena">Záhradkár</p></details></td></tr>
+<tr><td><b>Prestávka</b><div class="pozn">Je v zozname spúšťačov jadra (ALL_TRIGGERS).</div></td><td class="c">0</td><td class="c"><b>0</b></td>
+<td><div class="pozn">Žiadna karta. Mŕtvy spúšťač.</div><details><summary>karty (0)</summary><p class="mena">—</p></details></td></tr>
+</tbody></table></div>
+
+<div class="nalez male">
+  <h3>Zistenie B: veľa Furt a Bitka, málo Výhra a Prehra, dva spúšťače naprázdno</h3>
+  <ul>
+    <li>Furt (18) a Bitka (17) tvoria takmer polovicu efektov. Nástup sa z 4 zväčšil na 9, a to je dobré, Nástup sa číta najľahšie.</li>
+    <li><b>Výhra a Prehra</b> má spolu len 5 kariet (+ Výherný automat vnorene). Vo v6 je bitka zdroj špakov, no odmenu alebo útechu za výsledok
+      nesie málo kariet.</li>
+    <li><b>Exekúcia</b> (1 karta, mŕtva, časť 2) a <b>Prestávka</b> (0 kariet, ale je v <code>ALL_TRIGGERS</code> jadra) sú spúšťače naprázdno.</li>
+    <li><b>Kšeft</b> má 5 kariet (so Strýkom 6). Vymyselník navrhoval strop 5 v sade, so Strýkom ho prekročíme.</li>
+  </ul>
+  <div class="odpor"><b>Odporúčanie:</b> ďalšie karty písať skôr na Výhru a Prehru. Prestávku zmazať zo zoznamu spúšťačov, alebo ju použiť
+    (zadanie pre vývoj, malé). Pri Strýkovi rozhodnúť strop Kšeftov.</div>
+  <div class="volby" data-id="B-spustace" data-nazov="B: viac Výhra/Prehra, Prestávku zmazať, strop Kšeftov"></div>
+</div>
+
+<h3>1.5 Tagy a pohlavie</h3>
+<p>„V balíčku“ = druhy kariet v spoločnom balíčku (bez štartových, starších, lokalít a kliatob). Stĺpec <b>Číta ho pravidlo?</b> hovorí, či na tag
+odkazuje pravidlo alebo efekt (overené v <code>packages/core/src</code>).</p>
+<div class="tab-obal"><table>
+<thead><tr><th>Tag</th><th class="c">Celá sada</th><th class="c">V balíčku</th><th>Číta ho pravidlo?</th></tr></thead>
+<tbody>
+<tr><td><b>Žena</b></td><td class="c">14 → 19</td><td class="c">9 → <b>14</b></td><td><span class="stitok t-ok">áno</span> <span class="pozn">Liberál, Pijan, Veľmi smútiaca vdova</span></td></tr>
+<tr><td><b>Chlap</b></td><td class="c">22 → <span class="sv" data-po="23" data-pos="24">23</span></td><td class="c">15 → <b><span class="sv" data-po="16" data-pos="17">16</span></b></td><td><span class="stitok t-ok">áno</span> <span class="pozn">Liberál, Veľmi smútiaca vdova</span></td></tr>
+<tr><td><b>Zviera</b></td><td class="c">3 → 7</td><td class="c">3 → <b>7</b></td><td><span class="stitok t-ok">áno</span> <span class="pozn">pravidlo NA EX, Nástroj, Pes, Pasca, Lesná cesta, Ihrisko, Lievik</span></td></tr>
+<tr><td><b>Nástroj</b></td><td class="c">8 → 11</td><td class="c">8 → <b>11</b></td><td><span class="stitok t-ok">áno</span> <span class="pozn">Dedičstvo, limit, Zámočník, Kôň</span></td></tr>
+<tr><td><b>Pracujúci</b></td><td class="c">4 → 6</td><td class="c">4 → <b>6</b></td><td><span class="stitok t-ok">áno</span> <span class="pozn">Hasič, Družstvo</span></td></tr>
+<tr><td><b>Zahraničný</b></td><td class="c">3 → <span class="sv" data-po="4" data-pos="5">4</span></td><td class="c">3 → <b><span class="sv" data-po="4" data-pos="5">4</span></b></td><td><span class="stitok t-ok">áno</span> <span class="pozn">Recidivista</span></td></tr>
+<tr><td><b>Závislý</b></td><td class="c">4 → 5</td><td class="c">1 → <b>2</b></td><td><span class="stitok t-ok">áno</span> <span class="pozn">Pohreb (karta zo šenku)</span></td></tr>
+<tr><td><b>Autorita</b></td><td class="c">4 → 4</td><td class="c">4 → <b>4</b></td><td><span class="stitok t-pozor">po D1 nie</span> <span class="pozn">dnes len Praudovravec; jeho nový efekt (D1) Autority už nečíta</span></td></tr>
+<tr><td><b>Kriminál</b></td><td class="c">3 → 5</td><td class="c">3 → <b>5</b></td><td><span class="stitok t-malo">nie</span> <span class="pozn">žiadna karta ani pravidlo</span></td></tr>
+<tr><td><b>Influencer</b></td><td class="c">3 → <span class="sv" data-po="4" data-pos="5">4</span></td><td class="c">3 → <b><span class="sv" data-po="4" data-pos="5">4</span></b></td><td><span class="stitok t-malo">nie</span> <span class="pozn">žiadna karta ani pravidlo</span></td></tr>
+<tr><td><b>Pamätník</b></td><td class="c">3 → 4</td><td class="c">2 → <b>3</b></td><td><span class="stitok t-malo">nie</span> <span class="pozn">žiadna karta ani pravidlo</span></td></tr>
+</tbody></table></div>
+
+<div class="nalez male">
+  <h3>Zistenie C: pohlavie sa vyrovnalo, štyri tagy nerobia nič</h3>
+  <ul>
+    <li><b>Ženy : muži v balíčku 9 : 15 → 14 : 16</b> (so Strýkom 14 : 17). V celej sade 14 : 22 → 19 : 23. Starší ostávajú 3 : 5. Štartová štvorica je 2 : 2.</li>
+    <li>Kariet bez pohlavia (Zvieratá, Nástroje) je v balíčku 17 zo 46 druhov (pred 10 z 33). <b>Veľmi smútiaca vdova</b> („ak je navrchu muž“)
+      tým oslabne a <b>Liberál</b> („rovnako žien a chlapov“) ľahšie dosiahne rovnosť.</li>
+    <li><b>Kriminál, Influencer a Pamätník</b> nečíta žiadne pravidlo ani karta. Po Praudovravcovi D1 sa k nim pridá <b>Autorita</b>.
+      Je to roadmapa #123 „Lepšie využiť tagy“.</li>
+  </ul>
+  <div class="odpor"><b>Odporúčanie:</b> Autorita po D1 nič nerobí a Svokra (Autorita) príde o jedinú cielenú protihru, pozri H4.
+    Ďalšiu dávku kariet písať tak, aby odkazovala na Kriminála alebo Influencera (napr. „za každého Kriminála v súperovej partii…“).</div>
+  <div class="volby" data-id="C-tagy" data-nazov="C: ďalšie karty nech čítajú tagy Kriminál/Influencer/Pamätník/Autorita"></div>
+</div>
+
+<!-- ============================================================ 2 -->
+<h2 id="c2">2. Mŕtve a takmer mŕtve efekty</h2>
+<p><b>Ako som meral.</b> Ostré partie ľudí na živom webe: <b>0</b> (<code>admin.ts karty-v-partiach --zivy --ludia</code>, štatistiky sa po v6 zbierajú nanovo).
+Preto som pustil <b>90 partií botov podľa pravidiel v6</b> nad sadou <i>pred</i> (jadro z tejto vetvy, povahy Štamgast, Rapavý Fero a Teta Gizka
+na striedačku, stredná hra, 510 bitiek). K tomu som pridal staré playtesty (9 partií v3–v4 z <code>playtest/*/naex.sqlite</code>), report
+<code>20261024-075830</code> (Eva, Šimon) a merania stratéga (<code>strategia-v5.html</code>, <code>priazne-rozbor-20261024.html</code>).
+Boti hrajú inak ako ľudia. Čísla teda hovoria, či sa podmienka v hre vôbec vyskytne, nie či je karta silná.</p>
+
+<div class="dlazdice">
+  <div class="dlazdica"><b>9,5</b><span>NA EX za partiu (oba hráči). NA EX je vo v6 časté.</span></div>
+  <div class="dlazdica"><b>0,7</b><span>Vypiť za partiu (6 % hráč-kôl)</span></div>
+  <div class="dlazdica"><b>0</b><span>exekúcií v 90 partiách (aj na Obecnom úrade, 31 bitiek)</span></div>
+  <div class="dlazdica"><b>0,02</b><span>barterov za partiu (2 v 90 partiách). Doliatie 0,17.</span></div>
+  <div class="dlazdica"><b>53 %</b><span>bitiek o lokalitu má 1 Pitku, 39 % má 2, 8 % má 3, žiadna 4</span></div>
+  <div class="dlazdica"><b>5,4 / 5,2</b><span>Dlhov / Cirhóz za partiu. Dievčina na vydaj sa spálila 165×, Robota pálila 84×</span></div>
+  <div class="dlazdica"><b>5,3</b><span>posunov markera na červenú za partiu. Ohlásené vydesenie 32× v 90 partiách.</span></div>
+  <div class="dlazdica"><b>2,2</b><span>patronátu za partiu. Absťák 3,2 za partiu.</span></div>
+</div>
+
+<div class="filtre" role="group" aria-label="Filter verdiktu">
+  <button type="button" data-f="vse" aria-pressed="true">všetko</button>
+  <button type="button" data-f="mrtvy" aria-pressed="false">mŕtvy</button>
+  <button type="button" data-f="takmer" aria-pressed="false">takmer mŕtvy</button>
+  <button type="button" data-f="uzky" aria-pressed="false">úzky</button>
+  <button type="button" data-f="riziko" aria-pressed="false">riziko (nové)</button>
+  <button type="button" data-f="zije" aria-pressed="false">ožije updatom</button>
+</div>
+<div class="tab-obal"><table id="t-mrtve" class="skladaj">
+<thead><tr><th>Karta a efekt</th><th>Prečo sa nespustí (pravidlá v6)</th><th>Dôkaz</th><th>Verdikt a odporúčanie</th></tr></thead>
+<tbody>
+<tr data-v="mrtvy"><td><b>Záhradkár</b><div class="karta-txt pozn">Exekúcia: Môžeš zahodiť Záhradkára namiesto špakov.</div></td>
+  <td>Exekúcia potrebuje priznané Dlhy ≥ 10 (§11; so súperovým Exekútorom 9–7, na Obecnom úrade 6). Dlhy sa pália skôr, než sa nazbierajú.</td>
+  <td>0 exekúcií v 90 partiách v6. V meraní v5 tiež 0, najviac 7 Dlhov. Bot ho vykladá (101 výskytov v línii), ale len pre akcie.</td>
+  <td><span class="stitok v-mrtvy">mŕtvy</span><div class="pozn">Jediná karta so spúšťačom Exekúcia. Nový efekt, alebo počkať na nižší prah Exekútora v dávke v7 (otázka 2).</div></td></tr>
+<tr data-v="mrtvy"><td><b>Obecný úrad</b> (polovica)<div class="karta-txt pozn">Bitka: Prah Exekútora je o 4 nižší a každá aktívna Robota spáli 2 priznané Dlhy.</div></td>
+  <td>Ani s prahom 6 sa Dlhy nenazbierajú. Robota ×2 Dlhy ešte viac páli, takže obe vety idú proti sebe.</td>
+  <td>31 bitiek o Obecný úrad, 0 exekúcií.</td>
+  <td><span class="stitok v-mrtvy">polovica mŕtva</span><div class="pozn">Nechať a sledovať. Policajtka v2 (+2 Dlhy) a Poštárka (Dlh za karty) ho môžu oživiť.</div></td></tr>
+<tr data-v="mrtvy"><td><b>Priazeň Exekútor</b> (scorecard, nie karta)<div class="karta-txt pozn">súperov prah Exekúcie −1/−2/−3</div></td>
+  <td>To isté ako vyššie.</td>
+  <td>Boti ju rozdali 586× (najčastejšia priazeň, „bezpečný dar“), prejavila sa 0×. To isté zistil priazne-rozbor.</td>
+  <td><span class="stitok v-mrtvy">mŕtva</span><div class="pozn">Dohadzovačka (výmena scorecardov) jej mŕtvosť čiastočne obchádza. Patrí to do revízie priazní, nie do tejto sady.</div></td></tr>
+<tr data-v="mrtvy"><td><b>Jednota</b><div class="karta-txt pozn">Pitka: Stokársky barter stojí o 1 cigaretu menej.</div></td>
+  <td>Barter (5 cigariet za nový poldeci, §7) takmer nikto nerobí, lacnejšie je doliatie za 2.</td>
+  <td>Barter 2× v 90 partiách, Jednota bola cieľom 36×. Priazeň Lakomec s tým istým účinkom stratég nameral ako „takmer mŕtvu“ a nahradil ju Abstinent (§10).</td>
+  <td><span class="stitok v-mrtvy">mŕtvy</span><div class="pozn">Nový efekt lokality (otázka 3). Napríklad lacnejšie doliatie, alebo Kšeft lokality ako Zberný dvor.</div></td></tr>
+<tr data-v="mrtvy"><td><b>Spúšťač Prestávka</b><div class="pozn">v <code>ALL_TRIGGERS</code> jadra</div></td>
+  <td>Nemá ho žiadna karta.</td><td>—</td>
+  <td><span class="stitok v-mrtvy">mŕtvy</span><div class="pozn">Zadanie pre vývoj (zmazať), alebo nechať pre budúcu kartu. V tvorcovi nič.</div></td></tr>
+<tr data-v="takmer"><td><b>Kar</b><div class="karta-txt pozn">Bitka: Každý hráč smie zahodiť jednu nepriznanú Cirhózu z ruky.</div></td>
+  <td>Hráč musí mať nepriznanú Cirhózu v ruke práve v kole o Kar. Cirhóza ide do odhadzovacieho balíčka (§11), po bitke z ruky tiež (§9.7).</td>
+  <td>2 použitia v 36 bitkách o Kar. Šimon: „nepoužité“. Niekoho stryná robí to isté a viac (D4).</td>
+  <td><span class="stitok v-takmer">takmer mŕtvy</span><div class="pozn">Nový efekt (otázka 3). Kar je pohreb, téma Pohrebu sa ponúka.</div></td></tr>
+<tr data-v="riziko"><td><b>Policajtka v2</b><div class="karta-txt pozn">Bitka: Ak súper v tomto kole vyložil v jednom ťahu viac kariet (Vypiť), dostane 2 Dlhy.</div></td>
+  <td>Vypiť (§13) je pokročilý ťah. Kto vidí Policajtku v línii, nepije, a na Kostole sa nepije vôbec.</td>
+  <td>Boti pili v 6 % hráč-kôl (63× za 90 partií). AI playtesteri Vypiť používajú (reporty 20261021, 20261022), ale nevieme ako často.</td>
+  <td><span class="stitok v-riziko">riziko: z najsilnejšej môže byť mŕtva</span><div class="pozn">V playteste merať, koľkokrát sa spustila.
+    Záloha: rátať aj NA EX ako „pil“ (otázka 4). To je však už variant C, ktorý Michal nechcel.</div></td></tr>
+<tr data-v="riziko"><td><b>Lievik</b><div class="karta-txt pozn">Dedičstvo: NA EX smieš dať aj na Zviera.</div></td>
+  <td>NA EX smie len na kartu s aspoň 1 aktívnou a 1 neaktívnou akciou (§7). Nové zvieratá majú po 1 akcii na strane, takže NA EX na ne
+    iba zruší jednu akciu. Dedičstvo stojí rastúcu cenu.</td>
+  <td>Odhad z pravidiel, bot ho nemá.</td>
+  <td><span class="stitok v-uzky">úzky</span><div class="pozn">Nechať (Michal: len Zviera). Ako jediná protihra Kapybary a Kohúta je však slabý (H1, H2).</div></td></tr>
+<tr data-v="takmer"><td><b>Šofér</b><div class="karta-txt pozn">Furt: NA EX na kartu, ktorá s ním susedí, nezdvojí jej neaktívne akcie.</div></td>
+  <td>NA EX je časté, podmienka teda nie je vzácna. Efekt však len zmierňuje (aktívne aj tak zruší) a platí aj proti vlastnému NA EX.</td>
+  <td>Bot ho mal v línii 23× z 510 bitiek. Eva: „nepoužité“.</td>
+  <td><span class="stitok v-takmer">slabý, dvojsečný</span><div class="pozn">Kandidát na prerobenie. Pozor na prekryv s ochranou proti NA EX (D1).</div></td></tr>
+<tr data-v="uzky"><td><b>Pijan</b> (malus)<div class="karta-txt pozn">Bitka: Ak má Žena v jeho okolí aktívnu akciu Poldeci, súper ti udelí 1 Ranu.</div></td>
+  <td>Ženy s akciou Poldeci v balíčku sú len Niekoho stryná, Svokra a Degustátorka (nová). K tomu musí byť akcia aktívna.</td>
+  <td>Bot ho v logu nevyhodnotil ani raz (efekt sa ráta potichu, presné číslo nemám).</td>
+  <td><span class="stitok v-uzky">úzky</span><div class="pozn">Pijan je štartová karta, jeho text čítajú všetci. Riešiť v návrhu štartovej rodiny (Leader).</div></td></tr>
+<tr data-v="uzky"><td><b>Hasič</b> (Nástup)<div class="karta-txt pozn">Nástup: Zober si pracujúceho občana do ruky z odhadzovacieho balíčka.</div></td>
+  <td>Pracujúci musí ležať v tvojom odhadzovacom balíčku.</td>
+  <td>23× z 395 výskytov v línii (6 %). Karta žije z Petelice.</td>
+  <td><span class="stitok v-uzky">úzky</span><div class="pozn">Pracujúcich je po update 6 namiesto 4 (Opatrovateľka, Smetiarka), trochu ožije. Nechať.</div></td></tr>
+<tr data-v="uzky"><td><b>Krčmárka</b> (starší)<div class="karta-txt pozn">Bitka: Ak nemáš absťák a nedal si NA EX, môžeš otočiť vypitý poldeci.</div></td>
+  <td>NA EX dáva hráč často (9,5 za partiu), čím sa podmienka „nedal si NA EX“ väčšinou zruší.</td>
+  <td>3× za 90 partií, hoci marker na červenú ide 5,3× za partiu.</td>
+  <td><span class="stitok v-uzky">úzky</span><div class="pozn">Starší je zriedka v línii, takže je to v poriadku. Nechať.</div></td></tr>
+<tr data-v="uzky"><td><b>Farár, Veterinár, Autobusár</b> (starší)<div class="pozn">ignoruj 2 Povery / Cirhóza −2 tuhé / ignoruj 1 Absťák</div></td>
+  <td>Dvojitá podmienka: starší v línii (patronát, prebudenie) a k tomu Povera proti priznaným Dlhom, priznaná Cirhóza, Absťák.</td>
+  <td>Starší sú prebúdzaní často, ale ich bitkové efekty nič nelogujú. Autobusár visí na Absťáku, ktorý sa prerába.</td>
+  <td><span class="stitok v-uzky">úzky</span><div class="pozn">Starší majú byť vzácni. Riešiť až s revíziou Absťáku (abstak.html).</div></td></tr>
+<tr data-v="zije"><td><b>Pasca</b><div class="karta-txt pozn">Dedičstvo: Každé súperovo Zviera v línii mu uberie 1 tuhé.</div></td>
+  <td>Pred updatom boli v balíčku 3 Zvieratá (6 kópií).</td>
+  <td>Bot 0×, Eva: „nepoužité“. Po update 7 Zvierat (14 kópií).</td>
+  <td><span class="stitok v-zije">ožije</span><div class="pozn">Nechať, merať po zverejnení.</div></td></tr>
+<tr data-v="zije"><td><b>Recidivista, Družstvo, Cintorín</b><div class="pozn">Zahraničný / Pracujúci / Nástroj v ruke</div></td>
+  <td>Podmienky čítajú tagy, ktorých pribudlo: Zahraniční 3 → 4 (5), Pracujúci 4 → 6, Nástroje 8 → 11.</td>
+  <td>Šimon: Družstvo „nepoužité“. Cintorín: 6 použití v 34 bitkách.</td>
+  <td><span class="stitok v-zije">ožijú</span><div class="pozn">Nechať.</div></td></tr>
+<tr data-v="uzky"><td><b>Veľmi smútiaca vdova</b><div class="karta-txt pozn">Nástup: Ak je vrchná karta súperovho balíčka muž…</div></td>
+  <td>Kariet bez pohlavia v balíčku pribudlo (10 → 17 druhov).</td>
+  <td>Spustila sa 8× (bot ju vykladá málo).</td>
+  <td><span class="stitok v-uzky">oslabne</span><div class="pozn">Nechať, je to tematické.</div></td></tr>
+</tbody></table></div>
+
+<div class="nalez stredne">
+  <h3>Karty, ktoré bot vôbec nehrá, a čo hovoria ľudia</h3>
+  <p>V línii pri bitke (z 510 bitiek): <b>0×</b> Vínko, Pasca, Výherný automat, Finančná poradkyňa, Živnostník, Kočovník, Snúbenica;
+  <b>2–10×</b> Silná nezávislá žena, Anonymný alkoholik, Krabička cigariet, Dvojčatá, Šarlatán, Noviny, Vdova, Podvodník.
+  Bot časť z nich nevie oceniť. Finančnú poradkyňu a Silnú ženu majú ľudia za silné (Eva, Šimon), Živnostník v starých partiách vyhrával 71 % bitiek.
+  Bot k nim teda nie je dôkaz.</p>
+  <p><b>Dva nezávislé zdroje</b> (bot ich nehrá a playtester ich označil za nepoužité alebo slabé): <b>Vínko, Pasca, Podvodník</b>, k tomu
+  <b>Šofér</b> a <b>Kar</b>. Pasca ožije s novými zvieratami. Zvyšok ide do rebalansu po prvých partiách v6. Dlhšie by to trvalo,
+  lebo ostré partie ľudí sú teraz 0.</p>
+  <p class="pozn">Bot nepoužíva ani Kšeft Zberného dvora (výkup 0× v 29 bitkách). Je to medzera bota, nie karty. Treba ju opraviť pred meraním Kšeftov (zadanie pre bot-trénera).</p>
+  <div class="odpor"><b>Odporúčanie:</b> Jednota, Kar a Záhradkár dostanú nové efekty (otázky 2 a 3). Vínko, Podvodník a Šofér rebalansovať až podľa
+    čísel z partií v6, najviac 1–2 karty naraz.</div>
+  <div class="volby" data-id="M-mrtve" data-nazov="Mŕtve: nové efekty pre Jednotu, Kar, Záhradkára; Vínko/Podvodník/Šofér po meraní"></div>
+</div>
+
+<!-- ============================================================ 3 -->
+<h2 id="c3">3. Duplicitné efekty</h2>
+<p>Rovnaká mechanika na rôznych kartách, len inak napísaná. <b>Rovnaké</b> = robí to isté, <b>prekryv</b> = čiastočne. Pri každej je návrh, čo nechať
+a ako druhú odlíšiť. Nové hodnoty sú len návrhy, rozhoduje Michal.</p>
+<div class="tab-obal"><table class="skladaj">
+<thead><tr><th>#</th><th>Mechanika</th><th>Karty a znenia</th><th>Typ</th><th>Odporúčanie</th></tr></thead>
+<tbody>
+<tr id="d1"><td>D1</td><td><b>Na kartu nejde NA EX</b></td>
+  <td>Anonymný alkoholik <i>„Na neho nesmie súper dať NA EX.“</i> · Liberál (2. veta) <i>„Nedá sa naň dať NA EX.“</i> · pravidlom všetky Zvieratá (6) · Kostol</td>
+  <td><span class="stitok v-mrtvy">rovnaké</span></td>
+  <td>Liberálovi vetu zmazať. Má vlastný efekt (×2 pri rovnosti žien a chlapov) a NA EX tým dostane späť jeden cieľ. Anonymný alkoholik ostáva
+    jediný „imúnny“ občan. Zákaz je v jadre (<code>engine.ts</code>), treba malé zadanie pre vývoj.</td></tr>
+<tr><td>D2</td><td><b>Cigarety za súperovo NA EX</b></td>
+  <td>Svokra <i>„Keď súper dá NA EX, ukradni mu 2 cigarety.“</i> · priazeň Výpalník <i>„za každé súperovo NA EX ti súper dá 1/2/3 cigarety“</i></td>
+  <td><span class="stitok v-mrtvy">rovnaké</span></td>
+  <td>Svokru nechať, je to postava aj silná karta (kradla 77× za 90 partií, Výpalné 19×). Výpalníka zmeniť pri revízii priazní.</td></tr>
+<tr><td>D3</td><td><b>×2 akcií v okolí</b></td>
+  <td>Silná nezávislá žena (susedné vlastné ×2) · Zámočník (Nástroje v okolí ×2) · Liberál (vlastné ×2 pri rovnosti) · Veterán (NA EX zdvojí aktívne)
+    · nové: Praudovravec D1 (Odpor → Posilnenie), Kôň (Posilnenie + spoj s Nástrojom) · akcia Posilnenie</td>
+  <td><span class="stitok v-takmer">prekryv</span></td>
+  <td>Násobky sa násobia (§7). Kôň (Posilnenie) + Zámočník dajú akcii Nástroja ×4, NA EX so Silnou ženou dáva ×4 už dnes. Ďalší ×2 efekt nepridávať
+    a pred zverejnením prepočítať najhorší prípad Koňa so Zámočníkom (Vymyselník to tiež žiada).</td></tr>
+<tr id="d4"><td>D4</td><td><b>Zbav sa nepriznanej Cirhózy</b></td>
+  <td>Kar <i>„zahodiť jednu nepriznanú Cirhózu z ruky“</i> · Niekoho stryná <i>„Zahoď 1 Cirhózu alebo 1 Dlh z ruky či z odhadzovacieho balíčka…“</i> · Vízia (zahodí z vrchu) · Pohreb</td>
+  <td><span class="stitok v-takmer">Kar ⊂ Stryná</span></td>
+  <td>Kar je slabšia podmnožina Strynej a navyše takmer mŕtvy. Karu dať nový efekt (otázka 3).</td></tr>
+<tr><td>D5</td><td><b>Pálenie priznaných Dlhov</b></td>
+  <td>akcia Robota (15 kariet) · Dievčina na vydaj · Niekoho stryná · Veľmi smútiaca vdova · Obecný úrad (Robota ×2) · priazeň Kmotor</td>
+  <td><span class="stitok v-takmer">prekryv</span></td>
+  <td>Šesť ciest proti hrozbe, ktorá nenastáva (Exekútor 0×). Nepridávať ďalšie. Z nových kariet pridávajú Robotu Opatrovateľka, Smetiarka a Zverák.
+    Ak treba vymeniť jednu akciu, Zverákova Robota je najmenšia páka.</td></tr>
+<tr><td>D6</td><td><b>Prah Cirhózy +2</b></td>
+  <td>Nealko <i>„Tvoj prah Cirhózy je o 2 vyšší.“</i> · Krčma <i>„Prah Cirhózy je tu o 2 vyšší.“</i></td>
+  <td><span class="stitok v-uzky">rovnaké číslo</span></td>
+  <td>Krčma to má ako náhradu za povinné NA EX, to je v poriadku. Nealko je slabé (Šimon: nepoužité, bot 18×). Pri rebalanse dať Nealku iný účinok,
+    najlepšie proti NA EX či pitiu (abstinent).</td></tr>
+<tr><td>D7</td><td><b>Karta do ruky za cigaretu</b></td>
+  <td>Starosta (Kšeft: zo šenku) · Zberný dvor (Kšeft: z odhadzovacieho) · Hasič (Nástup: Pracujúci z odhadzovacieho, zadarmo) · pravidlo fajčenia
+    (z balíčka) · opačne Smetiarka (karta → cigareta)</td>
+  <td><span class="stitok v-uzky">prekryv, zámerný</span></td>
+  <td>Jednotná cena 1 cigareta s rôznym zdrojom je dobrá. Zberný dvor a Hasič sa prekrývajú, ale Hasič je zadarmo a úzky. Nechať.</td></tr>
+<tr><td>D8</td><td><b>Súperova karta ide z hry</b></td>
+  <td>Krokodíl <i>„zožerie — karta sa zahodí (z hry)“</i> · Veľmi smútiaca vdova <i>„odstráň ho z hry“</i> · Živnostník (Dedičstvo) · a Kapybara
+    <i>„zožerie súperovi špak“</i></td>
+  <td><span class="stitok v-uzky">prekryv + to isté slovo</span></td>
+  <td>Trvalé odstránenie majú tri karty, v malých balíčkoch v6 je to silné, merať. <b>Kapybare dať iné sloveso</b>, „zožerie“ už znamená, že karta ide z hry.</td></tr>
+<tr><td>D9</td><td><b>Latka Absťáku</b></td>
+  <td>Milujúca manželka (+1) · Opatrovateľka v2 (−2) · Autobusár (ignoruj 1) · Krčmárka (bonus bez Absťáku)</td>
+  <td><span class="stitok v-riziko">riziko</span></td>
+  <td>Nie je to duplicita, ale štyri karty visia na pravidle, ktoré sa prerába (<code>abstak.html</code>). Opatrovateľku a Manželku písať
+    rovnakými slovami (pozri T4).</td></tr>
+<tr><td>D10</td><td><b>Premena akcie v okolí</b></td>
+  <td>Šarlatán (Viera → Vízia) · Praudovravec D1 (Odpor → Posilnenie)</td>
+  <td><span class="stitok v-uzky">rovnaká šablóna</span></td>
+  <td>Šarlatán je slabý (bot 4×), Viera → Vízia je väčšinou zhoršenie. Pri rebalanse otočiť smer na zlepšenie, ako má Praudovravec.</td></tr>
+<tr><td>D11</td><td><b>Cigarety za výsledok bitky</b></td>
+  <td>Podvodník (Prehra: ukradni 2) · Výherný automat (Výhra: +2, Prehra: Dlh) · pravidlo „cigarety za prebytok“ porazenému</td>
+  <td><span class="stitok v-uzky">prekryv</span></td>
+  <td>Podvodník len zdvojuje útechu, ktorú porazený už má. Slabý podľa Evy aj bota. Kandidát na prerobenie, napríklad Kšeft.</td></tr>
+<tr><td>D12</td><td><b>Telá v kraji → tuhé</b></td>
+  <td>Ihrisko (+2 za prevahu v kraji) · Lesná cesta (+1 za telo v súperovom kraji, najviac 2)</td>
+  <td><span class="stitok v-uzky">prekryv</span></td>
+  <td>Iná geometria (vlastný kraj vs. súperov). Nechať.</td></tr>
+<tr><td>D13</td><td><b>Dlh súperovi</b></td>
+  <td>Finančná poradkyňa · Vychovávateľka · Policajtka v2 · Kočovník</td>
+  <td><span class="stitok v-zije">doplnkové</span></td>
+  <td>Každá iným spôsobom, kŕmia súperovu Poveru. Nechať.</td></tr>
+<tr><td>D14</td><td><b>Zrkadlo: dobiehanie a náskok</b></td>
+  <td>Vidly (+1 tuhé, keď máš menej špakov) · Noviny (+1 špak, keď sa ťa bojí viac starších)</td>
+  <td><span class="stitok v-zije">zámerný pár</span></td>
+  <td>Dobrý pár Dedičstiev. Nechať.</td></tr>
+</tbody></table></div>
+
+<h3>To isté, iné slová (znenie textov)</h3>
+<div class="tab-obal"><table class="skladaj">
+<thead><tr><th>#</th><th>Pojem</th><th>Dnes na kartách</th><th>Návrh</th></tr></thead>
+<tbody>
+<tr><td>T1</td><td>odstrániť kartu z hry</td><td>Krokodíl <i>„zahodí (z hry)“</i>, Dievčina <i>„Zahoď … spáľ“</i>, Vdova <i>„odstráň ho z hry … zahoď“</i>, Stryná <i>„Zahoď“</i>, Živnostník <i>„Zahoď“</i></td>
+  <td>Všade <b>zahoď</b> (kľúčové slovo s tooltipom, slovník §17: zahodenie = z hry). Vdova má „odstráň“ a Dievčina „spáľ“ navyše. Pri impl efektoch je to len text, kód sa nemení.</td></tr>
+<tr><td>T2</td><td>susedstvo</td><td><i>„v jeho okolí“</i> (Pijan, Zámočník, Šarlatán), <i>„ktoré s ňou susedia“</i> (Silná žena), <i>„ktorá s ním susedí“</i> (Šofér), <i>„vedľa“</i> (Krokodíl, Snúbenica), <i>„na jeho spojoch“</i> (Praudovravec D1, Pes)</td>
+  <td><b>okolie</b> = susedné karty (§16), <b>spoj</b> = spárovaná hrana. „Vedľa“ nechať len pri Nástupe (Krokodíl, Snúbenica), lebo tam ide o miesto vyloženia.</td></tr>
+<tr><td>T3</td><td>vziať kartu do ruky</td><td><i>„Zober si … do ruky“</i> (Hasič), <i>„vezmi do ruky“</i> (Zberný dvor), <i>„dober si“</i> (Poštárka)</td>
+  <td><b>dober</b> = z doberacieho balíčka, <b>vezmi do ruky</b> = odinakiaľ. Hasiča zjednotiť na „vezmi“.</td></tr>
+<tr><td>T4</td><td>latka Absťáku</td><td>Manželka <i>„Absťák dostaneš aj vtedy, keď máš v kole rovnako nerestí ako v predošlom.“</i> · Opatrovateľka <i>„Počet tvojich nerestí z minulého kola klesne o 2.“</i></td>
+  <td>Ten istý pojem dvoma spôsobmi. Opatrovateľka je nová, a tak ju napísať v jazyku Manželky, alebo obe cez „latku“ (pojem z §11). Znenie je otázka 5.</td></tr>
+<tr><td>T5</td><td>cena Kšeftu</td><td><i>„Za cigaretu“</i> (Starosta, Zberný dvor, Kapybara), <i>„Za 1 Dlh“</i> (Poštárka), <i>„Za 2 cigarety“</i> (Strýko)</td>
+  <td>Jedna forma: „Za 1 cigaretu / Za 1 Dlh / Za 2 cigarety“.</td></tr>
+</tbody></table></div>
+<div class="nalez stredne">
+  <h3>Čo z duplicít riešiť teraz</h3>
+  <p>Teraz <b>D1</b> (Liberál bez vety o NA EX), <b>D8</b> (sloveso Kapybary) a <b>T1–T5</b> pri zápise nových kariet do tvorcu (nové texty
+  hneď jednotne, staré pri najbližšej úprave). D3 a D5 sú pravidlá pre ďalšie dávky: nepridávať ×2 a pálenie Dlhov. D2, D4, D6, D10 a D11 patria
+  do rebalansu po playteste.</p>
+  <div class="volby" data-id="D-teraz" data-nazov="Duplicity: teraz D1 (Liberál), D8 (Kapybara sloveso), T1–T5 pri zápise"></div>
+</div>
+
+<!-- ============================================================ 4 -->
+<h2 id="c4">4. Diery: stratégie bez protihry, akcie a meny bez využitia</h2>
+
+<div class="nalez vazne" id="n-kapybara">
+  <h3>H1 · Kapybara: cigarety na špaky 1 : 1, bez protihry</h3>
+  <p><span class="karta-txt">„Kšeft: Za cigaretu zožerie súperovi špak.“</span> Kšeft platí raz za Pitku za kartu, kým Kapybara leží v línii.</p>
+  <div class="tab-obal"><table>
+  <thead><tr><th>Kšeft</th><th>Cena</th><th>Dostaneš</th><th>Hodnota</th></tr></thead>
+  <tbody>
+  <tr><td>Starosta</td><td>1 cigareta</td><td>výmena karty z ruky za kartu zo šenku</td><td class="pozn">ako šenok (1 cig = 1 karta)</td></tr>
+  <tr><td>Zberný dvor</td><td>1 cigareta</td><td>karta z odhadzovacieho do ruky</td><td class="pozn">ako fajčenie, ale s výberom</td></tr>
+  <tr><td>Poštárka</td><td>1 Dlh</td><td>až 2 karty</td><td class="pozn">Dlh je lacný (exekúcia 0×)</td></tr>
+  <tr><td>Smetiarka</td><td>1 karta z ruky</td><td>1 cigareta</td><td class="pozn">opak šenku</td></tr>
+  <tr><td>Strýko z Ameriky*</td><td>2 cigarety</td><td>+1 Rana v bitke</td><td class="pozn">1 tuhé, súperova Viera ho zníži</td></tr>
+  <tr><td><b>Kapybara</b></td><td><b>1 cigareta</b></td><td><b>súper −1 špak</b></td><td class="pozn"><b>priamo body</b>. Vyhratá 1-Pitková bitka (53 % bitiek) dá tiež len 1 špak.</td></tr>
+  </tbody></table></div>
+  <ul>
+    <li>Je to presne mena, ktorú Kšeft sám vylúčil: „Špak: nie, víťazstvo by sa kupovalo“ (<code>karty-kolo2.html</code>, 1.4). Kupuje sa tu zápornou stranou.</li>
+    <li><b>Palivo je všade:</b> Cigareta je najčastejšia dobrá akcia (44 kópií), pas dáva cigaretu za každú nevyloženú kartu, porazený ich dostane
+      za prebytok. Svokra kradla 77× za 90 partií a jej cigarety sa teraz menia na špaky.</li>
+    <li><b>Protihra takmer nie je:</b> je to Zviera, NA EX ide len s Lievikom v Dedičstve. Súperov Krokodíl ju zje len vtedy, keď ju majiteľ vyloží vedľa neho.
+      Pasca uberá tuhé, nie Kšeft. Zostáva Obmedzenie (menej cigariet) a kradnutie cigariet.</li>
+    <li>V kole s 3 Pitkami (finále má vždy 3) je to −3 špaky za 3 cigarety, s dvoma Kapybarami −6.</li>
+  </ul>
+  <div class="odpor"><b>Odporúčanie (pred zápisom do tvorcu):</b> najmenšia páka je cena. Navrhujem <b>2 cigarety</b> (ako Strýko a doliatie),
+    alebo „raz za kolo“ namiesto raz za Pitku. Kapybara by potom stála na úrovni Strýka. Sloveso zmeniť (D8). Rozhodnúť je otázka 1.
+    Ak má ostať 1 : 1, zmerať to v playteste ako prvé.</div>
+  <div class="volby" data-id="H1-kapybara" data-nazov="H1 Kapybara: zdražiť na 2 cigarety alebo raz za kolo, iné sloveso"></div>
+</div>
+
+<div class="nalez vazne" id="n-naex">
+  <h3>H2 · NA EX: menej cieľov, jediná protihra v Dedičstve</h3>
+  <ul>
+    <li>Telá v balíčku (Občan alebo Zviera), na ktoré súper NA EX nedá: pred <b>4 z 25 (16 %)</b> (Pes, Čierna mačka, Anonymný alkoholik, Liberál),
+      po <b>8 z 35 (23 %)</b> (+ Krokodíl, Kapybara, Kôň, Kohút).</li>
+    <li>Na NA EX stojí veľa efektov: Svokra, Vychovávateľka, Šofér, Snúbenica, Veterán, Krčma, Kostol, Vínna pivnica, Lievik, priazne Výpalník a Alkoholik
+      a nepriamo Degustátorka. Hra sa volá NA EX a vo v6 je u botov časté (9,5 za partiu).</li>
+    <li>Kohút a Kapybara, dve najsilnejšie nové zvieratá, sú tak mimo dosahu NA EX. Protihra je len Lievik (Dedičstvo, rastúca cena) a aj ten NA EX
+      na ne iba zruší jednu akciu.</li>
+  </ul>
+  <div class="odpor"><b>Odporúčanie:</b> D1 (Liberál bez imunity) vráti jeden cieľ bez novej karty. Pri ďalších zvieratách dávať 2 akcie
+    na stranu, nech je Lievik zmysluplný, alebo zvieratá písať slabšie. Lievik nechať len na Zviera.</div>
+  <div class="volby" data-id="H2-naex" data-nazov="H2 NA EX: Liberál bez imunity; budúce zvieratá s 2 akciami na stranu"></div>
+</div>
+
+<div class="nalez vazne" id="n-pohorsenie">
+  <h3>H3 · Pohoršenie stratilo brzdu</h3>
+  <ul>
+    <li>Pohoršenie je vo v6 najsilnejšia akcia (stratég: asi 6 špakov v 1. bitke). Kópií v hre je 24 → 30 (+ 6 na lokalitách). Nové sú Klebetnica,
+      Vidly a Kohút, a Praudovravec D1 vie zdvojiť svoje Pohoršenie súperovým Odporom.</li>
+    <li><b>Stará Policajtka</b> zrušila súperove Pohoršenia 28× za 90 partií. Po Dychovej skúške Pohoršenia nechráni nič okrem <b>Zveráka</b>
+      (Dedičstvo, najviac 1 pole na staršieho za bitku). K tomu Odpor na spoji a NA EX na kartu s Pohoršením.</li>
+    <li><b>Kohút</b> („aspoň 2 Pitky“) zmení 53 % bitiek o lokalitu z 1 Pitky na 2: víťazovi +1 špak, jedno Zhromaždenie a Pitka navyše. Je to Zviera
+      s Pohoršením a Odporom, takže NA EX naň nejde. Silnejší, ako vyzerá.</li>
+    <li>Boti v6 posúvajú marker na červenú 5,3× za partiu a vydesenie ohlásili 32× v 90 partiách (4 partie skončili pred finále).</li>
+  </ul>
+  <div class="odpor"><b>Odporúčanie:</b> netreba nič meniť pred playtestom, ale v ňom merať vydesenie (ohlásené, dokončené) a koľko bitiek mal Kohút
+    na 2 Pitkách. Ak vydesenie stúpne, najmenšia páka je vymeniť Pohoršenie Klebetnice za inú akciu (Kohútove akcie Michal chcel výslovne).</div>
+  <div class="volby" data-id="H3-pohorsenie" data-nazov="H3 Pohoršenie: merať vydesenie a Kohúta; páka = Klebetnica bez Pohoršenia"></div>
+</div>
+
+<div class="nalez stredne" id="n-autorita">
+  <h3>H4 · Praudovravec D1 zruší jedinú protihru proti Svokre a Presbiterovi</h3>
+  <p>Praudovravec dnes umlčí Autority súpera (boti: Hasiča 18×, Policajtku 5×). Po D1 tag Autorita nečíta nič. <b>Svokra</b>, ktorú obaja playtesteri
+  označili za silnú a ktorá s Kapybarou mení NA EX súpera na špaky, tak nemá cielenú protihru. Zostáva len NA EX na ňu (je Občan) a Odpor proti jej akciám.</p>
+  <div class="odpor"><b>Odporúčanie:</b> sledovať Svokru v prvých partiách. Ak dominuje, najmenšia páka je jej text: „2 cigarety“ na „1 cigaretu“.</div>
+  <div class="volby" data-id="H4-svokra" data-nazov="H4 Svokra: sledovať, páka 2 → 1 cigareta"></div>
+</div>
+
+<div class="nalez stredne">
+  <h3>H5 · Meny Kšeftu: dve bez jedinej karty</h3>
+  <div class="tab-obal"><table>
+  <thead><tr><th>Mena (kolo 2, 1.4)</th><th class="c">Karty</th><th>Poznámka</th></tr></thead>
+  <tbody>
+  <tr><td>Cigarety</td><td class="c">4 (5*)</td><td>Starosta, Zberný dvor, Kapybara (+ Strýko). Takmer celý Kšeft je odtok cigariet.</td></tr>
+  <tr><td>Dlh</td><td class="c">1</td><td>Poštárka (starší, cez patronát a prebudenie; boti ju použili 64× za 90 partií).</td></tr>
+  <tr><td>Karta z ruky</td><td class="c">1</td><td>Smetiarka.</td></tr>
+  <tr><td>Plný poldeci</td><td class="c"><b>0</b></td><td>Kostolník vypadol. Pritom akcia Poldeci (22 kópií) nemá nič nové, čo by ju spotrebovalo.</td></tr>
+  <tr><td>Špak</td><td class="c">0</td><td>Michal „časom“. Kapybara je však v praxi špaková mena (H1).</td></tr>
+  </tbody></table></div>
+  <p><b>Pozor na prepis Zberného dvora:</b> dnes je jeho cigareta <b>nerest</b> (§8 aj §15: „cigareta je nerest ako pri barteri“). Kšeft podľa kola 2 (1.4)
+  platí cigaretami bez nerestí. Prepis tak potichu mení Absťák. Treba výslovne rozhodnúť (otázka 6).</p>
+  <div class="odpor"><b>Odporúčanie:</b> ďalší Kšeft dať na <b>plný poldeci</b> (vrátiť Kostolníka v7, alebo inú kartu), aby sa meny vyvážili.
+    Pri Zbernom dvore rozhodnúť nerest.</div>
+  <div class="volby" data-id="H5-meny" data-nazov="H5 Kšeft: ďalší na plný poldeci; Zberný dvor nerest áno/nie"></div>
+</div>
+
+<div class="nalez male">
+  <h3>H6 · Ďalšie diery v skratke</h3>
+  <ul>
+    <li><b>Limit 1 po vypití:</b> Kapybara mala byť odpoveďou („nemíňa limit“, Eva hrala 4 zo 7 kôl s limitom 1). S Kšeftom túto úlohu stratila
+      a diera je znova otvorená. Zostáva len Družstvo pre Pracujúcich.</li>
+    <li><b>Dedičstvo:</b> Nástrojov je 11 namiesto 8, Dedičstvo bude častejšie. Jediná protihra je Živnostník (bot ho nehrá vôbec).</li>
+    <li><b>Robota a Povera bez cieľa:</b> pozri Zistenie A. Kým Dlh nebolí (Exekútor), sú to často prázdne akcie.</li>
+    <li><b>Poldeci súpera:</b> Degustátorka je prvá karta, ktorá ich berie, a to je dobré. Policajtka v2 trestá Vypiť. Obe mieria na pitie, ale nekryjú sa.</li>
+    <li><b>Hromadenie ruky, podstrčenie, natočenie, rezanie Pitiek, mŕtve priazne</b> majú po update odpoveď (Klebetnica, Krokodíl, Vandal, Kohút,
+      Dohadzovačka). Medzery z rozborov Vymyselníka sa tak zaplnili.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ 5 -->
+<h2 id="c5">5. Zhrnutie: top 5 odporúčaní</h2>
+<div class="nalez vazne">
+  <h3>1 · Kapybara: zdražiť pred zápisom do tvorcu</h3>
+  <p>Kšeft za <b>2 cigarety</b> alebo <b>raz za kolo</b> a iné sloveso než „zožerie“. Dnes je to najlacnejšia cesta k špakom v hre a nedá sa vypnúť (H1).</p>
+  <div class="volby" data-id="Z1" data-nazov="Top 1: Kapybara zdražiť (2 cig / raz za kolo), iné sloveso"></div>
+</div>
+<div class="nalez vazne">
+  <h3>2 · Tri mŕtve efekty prepísať: Záhradkár, Jednota, Kar</h3>
+  <p>0 exekúcií, 2 bartery a 2 použitia Karu v 90 partiách. Každej dať nový efekt z toho, čo sa v hre naozaj deje (doliatie, Pohreb, Kšeft lokality).
+  Do dávky v7 zvážiť nižší prah Exekútora, ktorý by oživil aj Obecný úrad a priazeň Exekútor.</p>
+  <div class="volby" data-id="Z2" data-nazov="Top 2: nové efekty Záhradkár, Jednota, Kar; prah Exekútora do v7"></div>
+</div>
+<div class="nalez stredne">
+  <h3>3 · Liberálovi zmazať „Nedá sa naň dať NA EX“</h3>
+  <p>Je to presná kópia Anonymného alkoholika. Vráti NA EX jeden cieľ v čase, keď 4 nové Zvieratá cieľov ubrali (16 % → 23 % imúnnych tiel).
+  Text aj jadro, malé zadanie pre vývoj (D1, H2).</p>
+  <div class="volby" data-id="Z3" data-nazov="Top 3: Liberál bez imunity voči NA EX"></div>
+</div>
+<div class="nalez stredne">
+  <h3>4 · Playtest v6 zamerať na Pohoršenie, Kohúta, Policajtku v2 a Svokru</h3>
+  <p>Merať vydesenie, počet bitiek s Kohútom na 2 Pitkách, koľkokrát sa spustila Dychová skúška a cigarety zo Svokry. Pred tým naučiť bota
+  Kšefty (Zberný dvor dnes 0×), inak budú čísla klamať (H3, H4).</p>
+  <div class="volby" data-id="Z4" data-nazov="Top 4: playtest — Pohoršenie, Kohút, Policajtka v2, Svokra; bot naučiť Kšeft"></div>
+</div>
+<div class="nalez male">
+  <h3>5 · Nové karty zapísať jednotným jazykom a ďalšie dávky kormidlovať</h3>
+  <p>Pri zápise do tvorcu: <i>zahoď</i>, <i>okolie / spoj</i>, <i>dober / vezmi</i>, „Za 1 cigaretu“, Opatrovateľka v jazyku Manželky (T1–T5).
+  Pre ďalšie dávky: nepridávať ×2, pálenie Dlhov ani Dlh. Pridávať Víziu, Posilnenie, Výhru a Prehru, Kšeft na poldeci a karty, ktoré čítajú
+  Kriminála, Influencera a Pamätníka.</p>
+  <div class="volby" data-id="Z5" data-nazov="Top 5: jednotné texty T1–T5 a smer ďalších dávok"></div>
+</div>
+
+<!-- ============================================================ 6 -->
+<h2 id="c6">6. Otázky pre Michala a podklady</h2>
+<ol>
+  <li><b>Kapybara:</b> cena 1 cigareta (ako dnes), 2 cigarety, alebo „raz za kolo“? A sloveso: „zožerie“ ostane, alebo napríklad „schrúme“?</li>
+  <li><b>Záhradkár:</b> nový efekt hneď, alebo počkať na nižší prah Exekútora v dávke v7? Ak nový, na čo: Dlh, Robota, Pohreb?</li>
+  <li><b>Jednota a Kar:</b> nové efekty. Návrh smeru: Jednota „doliatie o 1 lacnejšie“ alebo Kšeft lokality, Kar niečo s Pohrebom. Texty pripraví Vymyselník.</li>
+  <li><b>Policajtka v2:</b> ak playtest ukáže, že sa takmer nespúšťa, smie rátať ako „pil“ aj NA EX?</li>
+  <li><b>Opatrovateľka:</b> zapísať rovnakým jazykom ako Milujúca manželka (obe cez „neresti v predošlom kole“), alebo obe cez pojem latka Absťáku (§11)? Presné znenie pripraví Vymyselník.</li>
+  <li><b>Zberný dvor ako Kšeft:</b> ostane cigareta nerest (dnes áno, §8, §15), alebo prestane (Kšeft 1.4)?</li>
+</ol>
+<details>
+  <summary>Podklady a postup merania</summary>
+  <ul class="pozn">
+    <li>Sada pred: <code>F:\Projects\naex-navrhar\packages\core\data\cards.json</code> (koncept v6 nad v20, 63 kariet), vetva <code>brainstorming/karty-20261026</code> (e04c7fc).</li>
+    <li>Nové a zmenené karty: <code>docs/napady/karty-obcania.html</code>, <code>karty-naradie-zvierata.html</code>, <code>karty-kolo2.html</code>,
+      <code>brainstorming-20261026.html</code> + rozhodnutia Michala zo session Brainstorming (Kapybara Kšeft, Kôň áno, Smetiarka variant).</li>
+    <li>Pravidlá: <code>docs/PRAVIDLA.md</code> v6 (§6 spoj a prevaha, §7 NA EX a Pitky, §8 nerest, §9 bitka, §11 Exekútor, §13 Vypiť, §15 lokality, §16 výklad).</li>
+    <li>Tagy v jadre: <code>packages/core/src</code> (effects.ts, engine.ts, partia.ts). Kriminál, Influencer a Pamätník sa nečítajú nikde, Autorita len v effects.ts:165 (Praudovravec).</li>
+    <li>Meranie: 90 partií bot proti botovi, jadro z vetvy (pravidlá v6), sada pred, semienka 5000–5089, povahy na striedačku, stredná hra. 510 bitiek,
+      86 finále. Počítané z príkazov a logu udalostí (vlastný skript mimo repa). Bitkové efekty, ktoré sa nelogujú (Pijan, Recidivista, Farár…), nemajú číslo.</li>
+    <li>Staré partie: 9 partií z <code>playtest/*/server-data/naex.sqlite</code> (pravidlá v3–v4), len pre orientáciu.</li>
+    <li>Živý web: <code>karty-v-partiach --zivy --ludia</code> aj <code>--zivy</code> = 0 partií so štatistikami.</li>
+    <li>Rozbory: <code>docs/playtesty/20261024-075830.html</code> (Eva, Šimon: silné a nepoužité karty), <code>strategia-v5.html</code>,
+      <code>priazne-rozbor-20261024.html</code>, <code>progresia-balicka.html</code>, <code>docs/napady/karty-v6.html</code>.</li>
+    <li>Pozície (1.3): každý variant karty rovnako pravdepodobný, sused v náhodnom natočení. Je to štrukturálny odhad, hráči spoje vyberajú.</li>
+  </ul>
+</details>
+<p class="pozn">NA EX! · Admin (AI) · <code>F:\Projects\naex-tmp\brainstorming-karty\analyza-sady.html</code> · v tvorcovi, v repe ani na webe sa nič nezmenilo.</p>
+
+</main>
+
+<div class="lista" role="region" aria-label="Voľby">
+  <div class="lista-vnut">
+    <span id="stav">Zatiaľ nič nie je vybrané.</span>
+    <span style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="tlacidlo" id="odporucane">Doplniť odporúčané</button>
+      <button type="button" class="tlacidlo hlavne" id="kopiruj">Skopírovať pre Leadera</button>
+    </span>
+  </div>
+</div>
+<label class="skryte" for="schranka">Text na skopírovanie</label>
+<textarea class="skryte" id="schranka" tabindex="-1"></textarea>
+
+<script>
+(function () {
+  "use strict";
+  var KLUC = "naex-analyza-sady-20261026";
+  var ulozene = {};
+  try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) { ulozene = {}; }
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) { /* bez úložiska */ } }
+
+  // Na mobile sa tabuľky skladajú pod seba — bunka dostane popis z hlavičky.
+  document.querySelectorAll("table.skladaj").forEach(function (tab) {
+    var hl = Array.prototype.map.call(tab.querySelectorAll("thead th"), function (th) { return th.textContent.replace(/[↕]/g, "").trim(); });
+    tab.querySelectorAll("tbody tr").forEach(function (tr) {
+      Array.prototype.forEach.call(tr.cells, function (td, i) { if (i > 0 && hl[i] && hl[i] !== "#") td.setAttribute("data-l", hl[i]); });
+    });
+  });
+
+  // Režim svetlý / tmavý / auto
+  var tema = document.getElementById("tema");
+  var REZIMY = ["auto", "light", "dark"], NAZVY = { auto: "auto", light: "svetlý", dark: "tmavý" };
+  function nastavTemu(r) {
+    if (r === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", r);
+    tema.textContent = "Režim: " + NAZVY[r];
+  }
+  var rezim = ulozene._tema || "auto";
+  nastavTemu(rezim);
+  tema.addEventListener("click", function () {
+    rezim = REZIMY[(REZIMY.indexOf(rezim) + 1) % 3];
+    ulozene._tema = rezim; uloz(); nastavTemu(rezim);
+  });
+
+  // Strýko z Ameriky
+  var stryko = document.getElementById("stryko");
+  function prepniStryka() {
+    var s = stryko.checked;
+    document.querySelectorAll(".sv").forEach(function (el) { el.textContent = s ? el.dataset.pos : el.dataset.po; });
+    ulozene._stryko = s; uloz();
+  }
+  stryko.checked = !!ulozene._stryko;
+  stryko.addEventListener("change", prepniStryka);
+  prepniStryka();
+
+  // Triedenie tabuľky akcií
+  var t = document.getElementById("t-akcie");
+  t.querySelectorAll("th.trieď").forEach(function (th) {
+    var smer = -1;
+    th.addEventListener("click", function () {
+      var kluc = th.dataset.kluc; smer = -smer;
+      var tb = t.tBodies[0];
+      var riadky = Array.prototype.slice.call(tb.rows);
+      riadky.sort(function (a, b) {
+        if (kluc === "meno") return smer * a.dataset.meno.localeCompare(b.dataset.meno, "sk");
+        return smer * (parseFloat(a.dataset[kluc]) - parseFloat(b.dataset[kluc]));
+      });
+      riadky.forEach(function (r) { tb.appendChild(r); });
+    });
+  });
+
+  // Filter mŕtvych efektov
+  var filtre = document.querySelectorAll(".filtre button");
+  filtre.forEach(function (b) {
+    b.addEventListener("click", function () {
+      filtre.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      var f = b.dataset.f;
+      document.querySelectorAll("#t-mrtve tbody tr").forEach(function (r) {
+        r.style.display = f === "vse" || r.dataset.v === f ? "" : "none";
+      });
+    });
+  });
+
+  // Voľby pri zisteniach
+  var VOLBY = [["ano", "Áno"], ["neskor", "Neskôr"], ["nie", "Nie"]];
+  var boxy = document.querySelectorAll(".volby");
+  boxy.forEach(function (box) {
+    var id = box.dataset.id;
+    VOLBY.forEach(function (v) {
+      var l = document.createElement("label");
+      var i = document.createElement("input");
+      i.type = "radio"; i.name = "v-" + id; i.value = v[0];
+      if (ulozene[id] && ulozene[id].v === v[0]) i.checked = true;
+      i.addEventListener("change", function () { ulozene[id] = ulozene[id] || {}; ulozene[id].v = v[0]; uloz(); stav(); });
+      l.appendChild(i); l.appendChild(document.createTextNode(v[1]));
+      box.appendChild(l);
+    });
+    var ta = document.createElement("textarea");
+    ta.placeholder = "Poznámka (nepovinné)"; ta.setAttribute("aria-label", "Poznámka: " + box.dataset.nazov);
+    ta.value = (ulozene[id] && ulozene[id].p) || "";
+    ta.addEventListener("input", function () { ulozene[id] = ulozene[id] || {}; ulozene[id].p = ta.value; uloz(); stav(); });
+    box.appendChild(ta);
+  });
+  function stav() {
+    var n = 0; boxy.forEach(function (b) { if (ulozene[b.dataset.id] && ulozene[b.dataset.id].v) n++; });
+    document.getElementById("stav").textContent = n === 0 ? "Zatiaľ nič nie je vybrané." : "Vybrané: " + n + " z " + boxy.length + ".";
+  }
+  stav();
+  document.getElementById("odporucane").addEventListener("click", function () {
+    boxy.forEach(function (b) {
+      var id = b.dataset.id;
+      if (ulozene[id] && ulozene[id].v) return;
+      ulozene[id] = ulozene[id] || {}; ulozene[id].v = "ano";
+      var i = b.querySelector('input[value="ano"]'); if (i) i.checked = true;
+    });
+    uloz(); stav();
+  });
+  document.getElementById("kopiruj").addEventListener("click", function () {
+    var NAZ = { ano: "Áno", neskor: "Neskôr", nie: "Nie" };
+    var riadky = ["Analýza sady 26. 10. — voľby Michala" + (stryko.checked ? " (so Strýkom*)" : "")];
+    boxy.forEach(function (b) {
+      var u = ulozene[b.dataset.id];
+      if (!u || (!u.v && !u.p)) return;
+      riadky.push("- " + b.dataset.nazov + ": " + (u.v ? NAZ[u.v] : "—") + (u.p ? " — " + u.p.replace(/\s+/g, " ") : ""));
+    });
+    if (riadky.length === 1) riadky.push("(nič nevybrané)");
+    var text = riadky.join("\n");
+    var sch = document.getElementById("schranka"); sch.value = text;
+    var hotovo = function () { var b = document.getElementById("kopiruj"); var p = b.textContent; b.textContent = "Skopírované"; setTimeout(function () { b.textContent = p; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(hotovo, function () { sch.select(); document.execCommand("copy"); hotovo(); });
+    else { sch.select(); document.execCommand("copy"); hotovo(); }
+  });
+})();
+</script>
+</body>
+</html>

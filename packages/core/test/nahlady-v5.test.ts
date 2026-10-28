@@ -38,7 +38,7 @@ const sada = buildGameData(
 /** Priazeň `favour` hráčovi p so silou sila (marker na jeho polovici). */
 function sPriaznou(s: GameState, favour: Favour, p: PlayerId, sila: 1 | 2 | 3): GameState {
   const marker = (p === 0 ? 3 - sila : 5 + sila) as ElderState["marker"];
-  return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, marker, markerZaciatokKola: marker } : e)) };
+  return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, marker} : e)) };
 }
 
 /**
@@ -76,7 +76,7 @@ function dohraj(s0: GameState): GameState {
     const p = naTahu(s);
     if (p === null) break;
     const legal = legalCommands(sada, s, p);
-    const cmd = legal.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || c.type === "skipPohreb") ?? legal[0]!;
+    const cmd = legal.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || (c.type === "cintorin" && c.uid === null)) ?? legal[0]!;
     s = apply(sada, s, cmd, p).state;
   }
   return s;
@@ -95,8 +95,8 @@ describe("náhľad NA EX v5 = zúčtovanie motora", () => {
       if (st.pitkaStav?.hotovy[1] !== true) st = apply(sada, st, { type: "skipNaex" }, 1).state;
       st = apply(sada, st, { type: "skipNaex" }, 0).state;
       expect(st.pitkaStav?.reakcia).toBe(0);
-      expect(sV.hraci[1].cigarety - st.hraci[1].cigarety).toBe(nahlad.vypalne + nahlad.svokra);
-      expect(st.hraci[0].cigarety - sV.hraci[0].cigarety).toBe(nahlad.vypalne + nahlad.svokra);
+      expect(sV.hraci[1].cigarety - st.hraci[1].cigarety).toBe(nahlad.vypalne);
+      expect(st.hraci[0].cigarety - sV.hraci[0].cigarety).toBe(nahlad.vypalne);
     }
   });
 

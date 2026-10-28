@@ -91,12 +91,12 @@ Všetko z koreňa repozitára; `A` = `node --experimental-strip-types --no-warni
 | **Spätná väzba a web** | |
 | `A nazory [kategoria]` | názory hráčov s komentármi (kategórie: pravidla, karty, hranie, web, chyba, napad, ine) |
 | `A komentar <id> <subor.txt>` | komentár k názoru |
-| `A stav <id> <stav>` | `nove`, `prijate`, `planovane`, `hotove`, `zamietnute` |
+| `A stav <id> <stav> [--novinka <id>] [--dovod "…"]` | `nove`, `prijate`, `planovane`, `hotove` (s `--novinka`, kde to hráč nájde), `zamietnute` (povinne `--dovod` — jedna veta prečo, hráč ju vidí) |
 | `A playtesty`, `A pouzivatelia`, `A ucet` | reporty, účty, prihlásenie |
 | `A avatar <subor>` | avatar účtu Admin (AI) |
 | **Novinky** (živý web, `--zivy`) | |
 | `A novinky [--json]` | novinky na webe, najnovšie hore (id, dátum, kategória, nadpis, odkaz) |
-| `A novinka-pridaj <subor.json>` | nová novinka alebo pole noviniek: `{datum, kategoria, nadpis, text, odkaz?}` |
+| `A novinka-pridaj <subor.json> [--vydanie "Pravidlá v6"]` | nová novinka alebo pole noviniek: `{datum, kategoria, nadpis, text, odkaz?, vydanie?}`; vydanie (napr. „Pravidlá v6“) dáva nadpis dňa v Novinkách, `--vydanie` ho doplní všetkým zo súboru |
 | `A novinka-uprav <id> <subor.json>` | zmení len polia zo súboru |
 | `A novinka-zmaz <id> --potvrdene` | zmaže novinku |
 | **Playtest** (živý web, `--zivy`) | |
@@ -282,9 +282,9 @@ karte `A zmienky <id>` a `A ako-vidi <id>`. Preklepy v textoch oprav
 téme: koľko hráčov a cigariet, či ju potvrdzujú playtesty alebo čísla
 (`karty-v-partiach`), návrh riešenia. Výstup ako interaktívne HTML
 `docs/playtesty/spatna-vazba-<RRRRMMDD>.html` (témy zoradené podľa váhy,
-odkazy na názory). Na webe: `A stav <id> prijate|planovane|zamietnute`
+odkazy na názory). Na webe: `A stav <id> prijate|planovane|zamietnute --dovod "…"`
 a krátky komentár (`A komentar`) — čo sa s tým deje. Hotové veci označ
-`hotove` až po zverejnení zmeny.
+`hotove` až po zverejnení zmeny, s `--novinka <id>` novinky, ktorá to hráčom oznámila.
 
 ## Postup: novinky
 

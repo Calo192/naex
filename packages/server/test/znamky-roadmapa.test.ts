@@ -94,7 +94,7 @@ describe("hodnotenia — ukladanie a vývoj", () => {
       h.uloz(ja, { znamky: { zabava: 9 } }, T0 + DEN);
       const { n } = db.prepare("SELECT COUNT(*) AS n FROM znamky").get() as { n: number };
       expect(n).toBe(2);
-      expect(h.moje(ja)).toEqual({ znamky: { zabava: 9 }, cas: T0 + DEN, smie: true });
+      expect(h.moje(ja)).toMatchObject({ znamky: { zabava: 9 }, cas: T0 + DEN, smie: true });
       expect(() => h.uloz(ja, { znamky: { zabava: 11 } }, T0)).toThrow(/1 až 10/);
       expect(() => h.uloz(ja, { znamky: { nieco: 5 } }, T0)).toThrow(/Neznáme kritérium/);
     } finally {

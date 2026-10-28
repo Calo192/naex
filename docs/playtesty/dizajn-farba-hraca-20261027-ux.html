@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UX návrh: farba hráča a piktogramy strachu · farba-hraca-20261027</title>
+<style>
+:root {
+  --bg: #14110e; --pl: #1e1914; --pl2: #28211a; --ok: #3d3229; --tx: #f1e8d8; --tl: #b6a790;
+  --ak: #e9ad45; --ce: #e5735c; --ze: #7cbf74;
+  --serif: "Bitter", Georgia, "Times New Roman", serif;
+  --sans: Roboto, "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f5efe5; --pl: #fffaf2; --pl2: #efe5d5; --ok: #d8c9b2; --tx: #2a2017; --tl: #5e4f3d; --ak: #9a6510; --ce: #a8341f; --ze: #2f7a33; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: 0s !important; animation: none !important; } }
+body { margin: 0; background: var(--bg); color: var(--tx); font: 16px/1.6 var(--sans); }
+main { max-width: 1120px; margin: 0 auto; padding: 24px 18px 80px; }
+h1, h2, h3, h4 { font-family: var(--serif); line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 3.6vw, 2.3rem); margin: 0 0 6px; }
+h2 { font-size: 1.5rem; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--ok); }
+h3 { font-size: 1.2rem; margin: 26px 0 8px; }
+h4 { font-size: 1rem; margin: 16px 0 6px; }
+p { margin: 0 0 12px; max-width: 76ch; }
+ul, ol { max-width: 80ch; padding-left: 1.3em; }
+li { margin-bottom: 4px; }
+a { color: var(--ak); text-underline-offset: 3px; }
+code { font: 0.86em/1.4 Consolas, "Cascadia Mono", monospace; background: var(--pl2); padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere; }
+:focus-visible { outline: 2px solid var(--ak); outline-offset: 2px; }
+.meta { color: var(--tl); font-size: 0.95rem; }
+.verdikt { margin: 16px 0 0; padding: 14px 18px; border-left: 4px solid var(--ak); background: var(--pl); border-radius: 0 12px 12px 0; }
+.verdikt p { max-width: none; }
+.verdikt p:last-child { margin-bottom: 0; }
+nav.obsah { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 0; }
+nav.obsah a { padding: 8px 12px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 999px; background: var(--pl); border: 1px solid var(--ok); text-decoration: none; color: var(--tx); font-size: 0.9rem; }
+nav.obsah a:hover { border-color: var(--ak); }
+.panel { background: var(--pl); border: 1px solid var(--ok); border-radius: 14px; padding: 16px 18px; margin: 12px 0; }
+.dve { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.tri { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 860px) { .dve, .tri { grid-template-columns: 1fr; } }
+.galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.galeria figure { margin: 0; background: var(--pl); border: 1px solid var(--ok); border-radius: 12px; overflow: hidden; }
+.galeria figure.siroka { grid-column: 1 / -1; }
+.galeria img { display: block; width: 100%; height: auto; }
+.galeria figure.vysoka img { max-height: 520px; object-fit: cover; object-position: top; }
+.galeria figcaption { padding: 10px 12px; font-size: 0.88rem; color: var(--tl); }
+.galeria figcaption b { color: var(--tx); }
+.tab-obal { overflow-x: auto; border: 1px solid var(--ok); border-radius: 12px; margin: 0 0 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.siroka { min-width: 720px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 11px; border-bottom: 1px solid var(--ok); }
+thead th { background: var(--pl2); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tl); }
+tbody tr:last-child td { border-bottom: none; }
+td.num { text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+td.zle { color: var(--ce); }
+td.dobre { color: var(--ze); }
+.filtre { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.filtre button, .prep button { font: 600 0.88rem/1 var(--sans); padding: 10px 14px; min-height: 44px; border-radius: 9px; border: 1px solid var(--ok); background: var(--pl); color: var(--tx); cursor: pointer; }
+.filtre button[aria-pressed="true"], .prep button[aria-pressed="true"] { background: var(--ak); border-color: var(--ak); color: #2b1b03; }
+.zav { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.zav.z4, .zav.z3 { background: #5a1f15; color: #ffc2b4; }
+.zav.z2 { background: #4a3510; color: #ffd98f; }
+.zav.z1 { background: #22312a; color: #b5e3b0; }
+.zav.z3::before { content: "▲ "; } .zav.z2::before { content: "■ "; } .zav.z1::before { content: "▼ "; }
+.navrh { background: var(--pl); border: 1px solid var(--ok); border-radius: 16px; padding: 18px; margin: 16px 0; }
+.navrh.odporucany { border-color: var(--ak); border-width: 2px; }
+.navrh h3 { margin-top: 0; }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 12px; }
+.stitok { font-size: 0.78rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--ok); color: var(--tl); white-space: nowrap; }
+.stitok.odp { background: var(--ak); border-color: var(--ak); color: #2b1b03; font-weight: 700; }
+.stitok.mala { border-color: var(--ze); color: var(--ze); }
+.stitok.stredna { border-color: var(--ak); color: var(--ak); }
+.stitok.velka { border-color: var(--ce); color: var(--ce); }
+.tok { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 8px 0 12px; }
+@media (max-width: 760px) { .tok { grid-template-columns: 1fr; } }
+.tok > div { background: var(--pl2); border-radius: 10px; padding: 10px 14px; }
+.tok h4 { margin: 0 0 6px; font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tl); }
+.tok ol { margin: 0; font-size: 0.92rem; }
+.pozn { font-size: 0.86rem; color: var(--tl); }
+.citat { border-left: 3px solid var(--ok); padding: 4px 0 4px 12px; margin: 8px 0; color: var(--tl); font-style: italic; max-width: 76ch; }
+.citat b { font-style: normal; color: var(--tx); }
+.zasada { font: 700 1.15rem/1.4 var(--serif); padding: 14px 18px; border: 2px dashed var(--ak); border-radius: 12px; margin: 12px 0; }
+.zasada small { display: block; font: 400 0.9rem/1.5 var(--sans); color: var(--tl); margin-top: 4px; }
+
+/* ---------- drôtené modely (low-fi) ---------- */
+.dm { --ja: #5cc0cf; --su: #e0805f; --zona-0: #e5e7eb; --zona-1: #facc15; --zona-2: #f97316; --zona-3: #dc2626;
+  --sivy: #3a332c; --sivy2: #4a4239; --txd: #efe6d8; --tld: #b0a28c;
+  background: #191512; color: var(--txd); border: 1px dashed #6b5d4d; border-radius: 12px; padding: 14px; font: 13px/1.4 var(--sans); color-scheme: dark; }
+.dm-nadpis { font: 700 0.72rem/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--tld); margin: 0 0 10px; }
+.dm-blok { background: var(--sivy); border-radius: 6px; }
+.dm h5 { font: 700 15px/1.2 var(--serif); margin: 0 0 4px; }
+.dm .pom { color: var(--tld); font-size: 12px; margin: 0 0 10px; max-width: 60ch; }
+.farby { display: flex; flex-wrap: wrap; gap: 8px; border: 0; padding: 0; margin: 0 0 12px; }
+.farby legend { padding: 0; margin-bottom: 6px; font-weight: 700; }
+.farba-volba { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 12px 6px 8px; border: 1px solid #5a4e41; border-radius: 10px; cursor: pointer; background: #221d18; }
+.farba-volba:has(input:checked) { border-color: var(--txd); box-shadow: 0 0 0 1px var(--txd); }
+.farba-volba input { margin: 0; width: 18px; height: 18px; accent-color: var(--ak); }
+.farba-volba .vz { width: 22px; height: 22px; border-radius: 50%; background: var(--f); box-shadow: 0 0 0 2px #191512, 0 0 0 3px #6b5d4d; }
+.farba-volba small { color: var(--tld); }
+.nahlad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 620px) { .nahlad { grid-template-columns: 1fr; } }
+.nahlad-obal[data-filter="deuter"] .nahlad { filter: url(#deuter); }
+.nahlad-obal[data-filter="protan"] .nahlad { filter: url(#protan); }
+.nahlad-obal[data-filter="sivo"] .nahlad { filter: grayscale(1); }
+.prep { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; align-items: center; }
+.prep span { font-size: 12px; color: var(--tld); margin-right: 4px; }
+.sc { background: #221b15; border: 1px solid #3d3229; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+.sc-hlava { display: flex; align-items: center; gap: 6px; font: 700 13px/1.2 var(--serif); }
+.sc-hlava .spak { margin-left: auto; font: 800 11px/1.4 var(--sans); padding: 0 6px; border: 1px solid currentColor; border-radius: 99px; }
+.portret { position: relative; height: 128px; border-radius: 6px; background: repeating-linear-gradient(45deg, #2c251f 0 10px, #312a23 10px 20px); display: flex; align-items: flex-end; justify-content: center; color: #7d705f; font-size: 11px; padding-bottom: 6px; }
+.peciatka { position: absolute; top: 18%; left: 50%; translate: -50% 0; rotate: -8deg; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; border: 3px solid currentColor; border-radius: 6px; background: color-mix(in srgb, #14110e 80%, transparent); text-transform: uppercase; color: var(--ink); }
+.peciatka b { font: 900 17px/1 var(--sans); letter-spacing: 0.08em; display: block; }
+.peciatka i { font: 800 11px/1.2 var(--sans); font-style: normal; letter-spacing: 0.06em; display: block; }
+.peciatka .ik { width: 30px; height: 30px; }
+.stup { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; position: relative; height: 14px; }
+.stup i { border-radius: 2px; }
+.stup .mk { position: absolute; top: -3px; width: 20px; height: 20px; margin-left: -10px; left: calc((var(--p) + 0.5) / 7 * 100%); border-radius: 50%; background: #2b2420; border: 3px solid #efe6da; box-shadow: 0 0 0 2px var(--prst); }
+.strany { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; }
+.cip { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+.cip .ik, .cip .srd { width: 18px; height: 18px; flex: none; }
+.ja { color: var(--ja); } .su { color: var(--su); }
+.ik { fill: currentColor; overflow: visible; }
+.ik.z1 { color: var(--zona-1); } .ik.z2 { color: var(--zona-2); } .ik.z3 { color: var(--zona-3); }
+.doska { display: flex; gap: 8px; align-items: center; background: #181512; border: 1px solid #3d3229; border-left: 5px solid var(--ja); border-radius: 8px; padding: 6px 10px; font: 700 13px var(--serif); }
+.doska.su { border-left-color: var(--su); }
+.doska small { font: 400 11px var(--sans); color: var(--tld); }
+.pozn-nahladu { font-size: 12px; color: var(--tld); margin: 8px 0 0; }
+.sady { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 760px) { .sady { grid-template-columns: repeat(2, 1fr); } }
+.sada { background: #221b15; border: 1px solid #3d3229; border-radius: 10px; padding: 10px; text-align: center; }
+.sada.odp { border-color: var(--ak); border-width: 2px; }
+.sada .rad { display: flex; justify-content: center; gap: 8px; margin: 6px 0; }
+.sada .rad svg { width: 28px; height: 28px; }
+.sada .male svg { width: 16px; height: 16px; }
+.sada b { font: 700 13px var(--serif); }
+.sada p { font-size: 12px; color: var(--tld); margin: 4px 0 0; }
+.minca { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.minca .str { width: 92px; height: 92px; border-radius: 50%; border: 3px solid var(--c); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: #221b15; font-size: 11px; font-weight: 700; color: var(--c); text-align: center; line-height: 1.2; }
+.minca .str svg { width: 30px; height: 30px; fill: currentColor; }
+.bublina { background: #2a2219; border: 1px solid #6b5d4d; border-radius: 12px; padding: 10px 14px; font-size: 13px; max-width: 62ch; }
+.bublina b { color: var(--ak); }
+/* len pre čítačku */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.pruh { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.pruh .dm-blok { height: 28px; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+  <!-- Piktogramy strachu: A kvapky potu, B tvár staršieho, C vlasy dupkom, D kolená; 1 = Znepokojenie, 2 = Strach, 3 = Vydesenie. Mriežka 24 × 24, farba cez currentColor. -->
+  <path id="kv" d="M0-5.8C0-5.8-4.2-.4-4.2 1.8A4.2 4.2 0 0 0 4.2 1.8C4.2-.4 0-5.8 0-5.8Z"/>
+  <symbol id="A1" viewBox="0 0 24 24"><use href="#kv" transform="translate(12 11.6) scale(1.6)"/></symbol>
+  <symbol id="A2" viewBox="0 0 24 24"><use href="#kv" transform="translate(6.6 12.6) scale(1.12)"/><use href="#kv" transform="translate(17.4 12.6) scale(1.12)"/></symbol>
+  <symbol id="A3" viewBox="0 0 24 24"><use href="#kv" transform="translate(4.3 13) scale(.9)"/><use href="#kv" transform="translate(12 13) scale(.9)"/><use href="#kv" transform="translate(19.7 13) scale(.9)"/></symbol>
+  <mask id="mB1" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="9.3" cy="13.4" r="1.6" fill="#000"/><circle cx="14.7" cy="13.4" r="1.6" fill="#000"/>
+    <path d="M6.6 10.6 10.6 9.2M13.4 9.2 17.4 10.6" stroke="#000" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+    <path d="M8.4 18.2q1.2-1.3 2.4 0t2.4 0 2.4 0" stroke="#000" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+  </mask>
+  <mask id="mB2" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="8.9" cy="12.6" r="2.5" fill="#000"/><circle cx="15.1" cy="12.6" r="2.5" fill="#000"/>
+    <circle cx="8.9" cy="13" r=".95" fill="#fff"/><circle cx="15.1" cy="13" r=".95" fill="#fff"/>
+    <path d="M6.2 8.8q2.6-1.9 4.8-.6M13 8.2q2.2-1.3 4.8.6" stroke="#000" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <ellipse cx="12" cy="18.3" rx="2" ry="2.3" fill="#000"/>
+  </mask>
+  <mask id="mB3" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="8.8" cy="12.8" r="2.8" fill="#000"/><circle cx="15.2" cy="12.8" r="2.8" fill="#000"/>
+    <circle cx="8.8" cy="12.8" r=".8" fill="#fff"/><circle cx="15.2" cy="12.8" r=".8" fill="#fff"/>
+    <ellipse cx="12" cy="18.9" rx="2.9" ry="2.6" fill="#000"/>
+    <path d="M9.6 17.6h4.8" stroke="#fff" stroke-width="1"/>
+  </mask>
+  <symbol id="B1" viewBox="0 0 24 24"><g transform="translate(-1.8 0)"><circle cx="12" cy="14" r="8.6" mask="url(#mB1)"/></g><use href="#kv" transform="translate(21.2 7) scale(.68)"/></symbol>
+  <symbol id="B2" viewBox="0 0 24 24"><g transform="translate(-1.8 0)"><circle cx="12" cy="14" r="8.6" mask="url(#mB2)"/></g><use href="#kv" transform="translate(21.2 6.6) scale(.66)"/><use href="#kv" transform="translate(21.2 14.4) scale(.66)"/></symbol>
+  <symbol id="B3" viewBox="0 0 24 24"><g transform="translate(-1.8 0)"><path d="M4.87 8.18L2.19 5.77M8.1 5.83L6.63 2.54M12 5L12 1.4M15.9 5.83L17.37 2.54M19.13 8.18L21.81 5.77" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="14.6" r="8.2" mask="url(#mB3)"/></g><use href="#kv" transform="translate(21.6 8.6) scale(.5)"/><use href="#kv" transform="translate(21.6 14.8) scale(.5)"/><use href="#kv" transform="translate(21.6 21) scale(.5)"/></symbol>
+  <path id="klobuk" d="M4 4.2h16a.9.9 0 0 1 0 1.8H4a.9.9 0 0 1 0-1.8ZM7.6 4.2V1.6Q7.6 0 9.2 0h5.6q1.6 0 1.6 1.6v2.6Z"/>
+  <mask id="mHlava" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="9.7" cy="19.4" r="1.45" fill="#000"/><circle cx="14.3" cy="19.4" r="1.45" fill="#000"/>
+  </mask>
+  <mask id="mHlava3" maskUnits="userSpaceOnUse" x="-4" y="-4" width="32" height="32">
+    <rect x="-4" y="-4" width="32" height="32" fill="#fff"/>
+    <circle cx="9.5" cy="18.8" r="1.9" fill="#000"/><circle cx="14.5" cy="18.8" r="1.9" fill="#000"/>
+    <ellipse cx="12" cy="23.2" rx="1.5" ry="1.3" fill="#000"/>
+  </mask>
+  <symbol id="C1" viewBox="0 0 24 24"><path d="M7.4 17L7.4 14.2L7.62 12.6L9.24 14.2L9.81 12.3L11.08 14.2L12 12.2L12.92 14.2L14.19 12.3L14.76 14.2L16.38 12.6L16.6 14.2L16.6 17Z"/><circle cx="12" cy="20.8" r="6.2" mask="url(#mHlava)"/><use href="#klobuk" transform="translate(0 5.8)"/></symbol>
+  <symbol id="C2" viewBox="0 0 24 24"><path d="M6.2 17L6.2 12L6.29 10L8.13 12L8.57 9.1L10.07 12L10.86 8.66L12 12L13.14 8.66L13.93 12L15.43 9.1L15.87 12L17.71 10L17.8 12L17.8 17Z"/><circle cx="12" cy="20.8" r="6.2" mask="url(#mHlava)"/><use href="#klobuk" transform="translate(0 2.2)"/></symbol>
+  <symbol id="C3" viewBox="0 0 24 24"><path d="M4.4 17L4.4 11L2.92 8L6.93 11L6.55 5.44L9.47 11L10.18 4.16L12 11L13.82 4.16L14.53 11L17.45 5.44L17.07 11L21.08 8L19.6 11L19.6 17Z"/><circle cx="12" cy="20.8" r="6.2" mask="url(#mHlava3)"/><use href="#klobuk" transform="translate(4 -1.6) rotate(-20 12 3) scale(.84)"/></symbol>
+  <path id="nohyR" d="M5.6 2h12.8v3.2l-.6 14.6h-4.4L12 9.6l-1.4 10.2H6.2L5.6 5.2Z"/>
+  <path id="nohyX" d="M5.6 2h12.8v3.2l-1.6 6.4 2.4 8.2h-4.4l-2.6-7-.2-2.2-.2 2.2-2.6 7H4.8l2.4-8.2-1.6-6.4Z"/>
+  <symbol id="D1" viewBox="0 0 24 24"><use href="#nohyR" transform="translate(0 1.2)"/><path d="M3 10.4q-1.2 1.6 0 3.2M21 10.4q1.2 1.6 0 3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="D2" viewBox="0 0 24 24"><use href="#nohyX" transform="translate(0 1.2)"/><path d="M3.2 9.6q-1.2 1.6 0 3.2M21 9.6q1.2 1.6 0 3.2M1.2 8.6q-1.4 2.6 0 5.2M22.8 8.6q1.4 2.6 0 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="D3" viewBox="0 0 24 24"><use href="#nohyX" transform="translate(0 -.4)"/><path d="M3 8.4q-1.2 1.6 0 3.2M21 8.4q1.2 1.6 0 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M12 13.4c-.9 1.4-1 2.2-.4 2.7.5.4 1.1.1 1.1-.6 0-.6-.3-1.2-.7-2.1Z"/><path d="M2.4 22.2c0-1.3 4.4-2.2 9.6-2.2s9.6.9 9.6 2.2-4.4 1.8-9.6 1.8-9.6-.5-9.6-1.8Z"/></symbol>
+  <symbol id="SRDCE" viewBox="0 0 24 24"><path d="M12 21.2 3.6 12.9A5 5 0 0 1 12 6.1a5 5 0 0 1 8.4 6.8Z"/></symbol>
+  <filter id="deuter" color-interpolation-filters="linearRGB"><feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"/></filter>
+  <filter id="protan" color-interpolation-filters="linearRGB"><feColorMatrix type="matrix" values="0.152286 1.052583 -0.204868 0 0  0.114503 0.786281 0.099216 0 0  -0.003882 -0.048116 1.051998 0 0  0 0 0 1 0"/></filter>
+</defs>
+</svg>
+<main>
+<p class="meta">Dizajn · UX návrh · id <code>farba-hraca-20261027</code> · 2026-10-27 · súbežný UI návrh: <a href="dizajn-farba-hraca-20261027.html">dizajn-farba-hraca-20261027.html</a> (kde všade farba) · predchádzajúci UI návrh piktogramov: <a href="dizajn-strach-piktogramy-20261027.html">dizajn-strach-piktogramy-20261027.html</a> (sady A–D)</p>
+<h1>Farba hráča a piktogramy strachu: ako to bude fungovať</h1>
+<p><b>Cieľ:</b> herný stôl <code>/hra</code> (línia a bar starších, pečiatka VYDESENÝ), profil <code>/profil</code> (nová voľba farby), výučba a nápovedy Melichara.
+<b>Používatelia:</b> hráč počas partie (rýchlo zistiť, kto sa koho bojí a čo z toho mám), nováčik vo výučbe (pochopiť, prečo sú priazeň a strach „naopak“), hráč v profile (vybrať si farbu a vidieť, čo zmení).</p>
+<div class="verdikt">
+<p><b>Verdikt.</b> Farbu hráča odporúčam robiť <b>z pohľadu hráča: „ja vždy moja farba“</b>. Každý si v profile vyberie, akou farbou vidí <i>seba</i>, a súper dostane na jeho obrazovke vždy kontrastnú párovú farbu. Súper moju voľbu nevidí. Kolízia tak nikdy nevznikne a farboslepý hráč nikdy nedostane dvojicu, ktorá sa mu zlieva. Pri piktogramoch strachu je pre nováčika bez legendy najzrozumiteľnejšia sada <b>B „Tvár staršieho“</b>. A a D si požičiavajú kvapku a chvenie, ktoré už na stole znamenajú Absťák.</p>
+<p>Rub a líc strachu a priazne samotný piktogram nevyrieši. Hráči nechápu <i>prečo</i> je to naopak, nie <i>čo</i> to je. Treba jednu zásadu pre farby (<b>zóna hovorí koľko, farba hráča hovorí koho</b>) a jednu vetu príbehu do výučby: <i>kto sa ťa bojí, uteká sa schovať k súperovi</i>.</p>
+</div>
+<nav class="obsah" aria-label="Obsah">
+<a href="#dnes">Dnes</a><a href="#audit">Audit</a><a href="#pikt">1 · Piktogramy</a><a href="#farba">2 · Farba hráča</a><a href="#rizika">3 · Riziká</a><a href="#navrhy">Návrhy</a><a href="#poradie">Poradie</a><a href="#otazky">Otázky</a>
+</nav>
+
+<h2 id="dnes">Ako to funguje dnes</h2>
+<p>Snímky línie a baru sú z ukážky stola (1366 × 650, kolo 4, Jano proti Botovi Rapavému Ferovi), ktorú nafotil UI dizajnér. Profil som odfotil pri 1366 px. Farby hráčov sú dnes pevné: ty <b>tyrkysová</b> <code>--ja #5cc0cf</code>, súper <b>tehlová</b> <code>--su #e0805f</code> (<code>apps/web/src/schemy.css:37–39</code>). Každý sa vidí tyrkysovo, takže model „ja vždy moja farba“ už v hre funguje, len s jedinou farbou. Na tokeny <code>--ja/--su</code> sa odvoláva 136 miest, z toho 96 v <code>hra/hra.css</code>.</p>
+<div class="galeria">
+<figure><img src="dizajn-farba-hraca-20261027/ux-linia-1366.jpg" alt="Dve karty starších v línii: Krčmárka so žltým štvorčekom a textom bojí sa teba, Starosta s červenou pečiatkou VYDESENÝ a červeným štvorčekom bojí sa teba." loading="lazy" width="660" height="464"><figcaption><b>Línia pri 1366 (2×).</b> Starosta sa bojí <i>teba</i> (čip „bojí sa teba“ je tyrkysový), no pečiatka VYDESENÝ má farbu <code>--cervena-text #e5735c</code>. Od súperovej tehlovej sa takmer nelíši (ΔE 9), takže vyzerá ako „súperova“. Marker má tehlový lem, lebo priazeň má súper. Na jednej karte sú tak dve farby hráčov a nič nevysvetľuje, prečo.</figcaption></figure>
+<figure><img src="dizajn-farba-hraca-20261027/ux-bar-1366.jpg" alt="Bar starších: dlaždica Starší s ♥0, Farár s bielym štvorčekom, Krčmárka a Starosta so zeleným +1 a +3 a textom bojí sa ťa." loading="lazy" width="930" height="120"><figcaption><b>Bar starších.</b> Strach z teba je tu <b>zelený</b> „+1 / +3“ s ohorkom, v línii tyrkysový. Ten istý význam má na dvoch miestach dve rôzne farby. Zelená (<code>--zelena</code>) a súperova tehlová sú pri deuteranopii takmer rovnaké (ΔE 10).</figcaption></figure>
+<figure class="siroka vysoka"><img src="dizajn-farba-hraca-20261027/ux-profil-1366.png" alt="Stránka Môj profil: hlavička s avatarom, Štatistiky, Nastavenia účtu s panelom Vzhľad webu (28 farebných schém), Preferencie, Herné meno, Zmena hesla, Zväčšenie kariet, Hudba, Majster Melichar." loading="lazy" width="1366" height="2712"><figcaption><b>Profil dnes (1366).</b> Voľba farby hráča chýba. Panel <i>Vzhľad webu</i> dokonca sľubuje: „Mení sa len okolie — karty, farby hráčov a zóny starších ostávajú“ (<code>Ucet.tsx:482–483</code>). Herné meno je opísané ako „Ako ťa uvidí súper“, schéma sa ukladá sama. Tieto dva vzory určujú, kam farba patrí.</figcaption></figure>
+</div>
+
+<h3>Signály z playtestov a spätnej väzby</h3>
+<p class="citat">„Prebytkom ich posúvam k súperovi. Starší sa potom bojí mňa […] Súper dostane jeho ‚priazeň‘, malý bonus. <b>Prečo je to takto otočené, neviem vysvetliť.</b>“ <br>— hráčka 1, výučba <code>playtest/vyucba-20261024-155610/hrac1/feedback.md</code></p>
+<p class="citat">„Súper dostane jeho priazeň (malý bonus), ja body za strach. <b>Priazeň a strach si trochu pletiem.</b>“ <br>— hráč 2, tá istá výučba (<code>hrac2/feedback.md:9</code>)</p>
+<p class="citat">„<b>Dvojitý význam ‚k súperovi / k sebe‘</b> pri Pohoršení (kto má priazeň, kto strach) zmätie nováčika.“ <br>— <code>playtest/20261027-105422-3/hrac2/feedback.md</code></p>
+<p class="citat">„Poštárka v oranžovej dala súperke +2 cigarety — <b>nevšimol som si, že priazeň je pre ňu výhoda.</b>“ <br>— <code>playtest/20261012-101447/hrac1/feedback.md</code></p>
+<p class="citat">Opačný signál: „Po prvej bitke som z neho <b>bez pravidiel pochopila</b>, komu starší prejavuje priazeň a koho sa bojí (pečiatka ‚VYDESENÝ‘, stupnica ◀ ty / Jano ▶)“ (spätná väzba #74). Podobne: „karty starších s tým, kto sa koho bojí (pekné, <b>pochopil som to hneď</b>)“ (#65). Sledovateľ hodnotí konzistenciu známkou 8: „‚ty‘ vždy vľavo/modrá“ (<code>playtest/20261011-101224/sledovatel/hodnotenie.md</code>).</p>
+<p class="pozn">Záver zo signálov: hráč, ktorý už pár bitiek odohral, stav na stole prečíta. Nováčik vo výučbe zlyhá na <i>dôvode</i>, prečo sú priazeň a strach rozdelené. Stabilná kotva „ja = moja farba“ je to, čo dnes funguje, a návrh ju nesmie rozbiť. Pozor, všetky citáty sú od AI playtesterov. Ľudia sa k tejto téme v spätnej väzbe zatiaľ nevyjadrili.</p>
+
+<h2 id="audit">Audit použiteľnosti</h2>
+<p>Závažnosť podľa Nielsena 0–4 (4 = katastrofa). Rozdiely farieb ΔE sú CIELAB 76; farbosleposť som simuloval podľa Machado 2009 (závažnosť 1,0), tou istou maticou ako UI návrh. Prah „rozlíšiteľné“ som stanovil na ΔE ≥ 40 vo všetkých troch videniach. Je to odhad, nie norma.</p>
+<div class="filtre" role="group" aria-label="Filter podľa závažnosti">
+<button type="button" data-f="vsetky" aria-pressed="true">Všetky</button>
+<button type="button" data-f="3" aria-pressed="false">▲ 3 vážne</button>
+<button type="button" data-f="2" aria-pressed="false">■ 2 stredné</button>
+<button type="button" data-f="1" aria-pressed="false">▼ 1 kozmetické</button>
+</div>
+<div class="tab-obal">
+<table class="siroka" id="audit-tab">
+<thead><tr><th>#</th><th>Problém</th><th>Heuristika</th><th>Záv.</th><th>Dôkaz</th><th>Koho, ako často</th></tr></thead>
+<tbody>
+<tr data-z="3"><td>P1</td><td><b>Pečiatka VYDESENÝ hovorí opak.</b> Je vždy v <code>--cervena-text #e5735c</code>, takmer zhodnej so súperovou tehlovou <code>#e0805f</code> (ΔE 9, pri deuteranopii 2). Keď je starší vydesený <i>z teba</i>, pečiatka vyzerá ako súperova. Všetky ostatné farby na karte pritom znamenajú „hráč, o ktorom čip hovorí“ (<code>hra.css:5574</code>).</td><td>Konzistencia, zhoda so svetom</td><td><span class="zav z3">3</span></td><td><code>LiniaStarsich.tsx:421</code>, <code>hra.css:5406–5420</code>; snímka línie</td><td>Každý pri vydesení, čo je výherná podmienka. Pri 4 vydesených je to najdôležitejší stav partie.</td></tr>
+<tr data-z="3"><td>P2</td><td><b>Rub a líc bez príbehu.</b> Hráč vie, <i>že</i> priazeň má súper a strach on, ale nevie <i>prečo</i>. Pravidlo si preto pamätá namiesto toho, aby ho pochopil, a v Pohoršení „k sebe / k súperovi“ sa pomýli.</td><td>Zhoda so svetom, rozpoznanie namiesto pamätania</td><td><span class="zav z3">3</span></td><td>3 citáty vyššie; výučba <code>prva-hra.json:800</code> („Čím viac sa ťa bojí, tým viac pomáha druhému!“, bez dôvodu)</td><td>Nováčikovia, 2 z 2 hráčov výučby 2026-10-24</td></tr>
+<tr data-z="3"><td>P3</td><td><b>Strach nemá znak</b> (U1 v UI návrhu). Priazeň má ♥, strach nesie len text, farba a ohorok.</td><td>Rozpoznanie namiesto pamätania</td><td><span class="zav z3">3</span></td><td><code>Starsi.tsx:90–96</code>, snímka baru</td><td>Všetci, v každom kole</td></tr>
+<tr data-z="3"><td>P4</td><td><b>Studené farby sa pri farbosleposti zlievajú.</b> Chrpová a fialová majú pri protanopii ΔE 3, tyrkysová a malinová 15. Keby si farbu volili obaja a obaja ju videli, dvojica sa často nerozlíši. Bezpečne sa od celej studenej skupiny odlišuje len tehlová.</td><td>Prístupnosť (WCAG 1.4.1, 1.4.11)</td><td><span class="zav z3">3</span></td><td>Tabuľka ΔE v časti <a href="#farba">2</a></td><td>Asi 8 % mužov (deuteranomália a protanomália, odhad z literatúry). Týka sa len modelu identity.</td></tr>
+<tr data-z="2"><td>P5</td><td><b>Súperova tehlová patrí do rodiny zón.</b> Od červenej zóny ju pri deuteranopii delí ΔE 20, od oranžovej 32 (kontrast 1,01 : 1, U6 v UI návrhu). Tehlová pečiatka súpera teda môže vyzerať ako „červená zóna“.</td><td>Prevencia chýb, prístupnosť</td><td><span class="zav z2">2</span></td><td><code>schemy.css:39</code>, <code>geometria.ts:120</code></td><td>Všetci pri pohľade na stupnicu, farboslepí výrazne</td></tr>
+<tr data-z="2"><td>P6</td><td><b>Ten istý strach má dve farby:</b> v bare zelenú, v línii tyrkysovú. Zelená inde znamená „dobré / plus“.</td><td>Konzistencia</td><td><span class="zav z2">2</span></td><td>Snímka baru, <code>Starsi.tsx:88–96</code></td><td>Všetci</td></tr>
+<tr data-z="2"><td>P7</td><td><b>Kvapka a chvenie už majú význam.</b> Ikona Absťáku je „prázdny pohárik v trasúcej sa ruke“ s kvapkou a čiarami chvenia. Sady A (kvapky) a D (chvenie, mláčka) by sa s ňou plietli, v krčme navyše kvapka = pálenka.</td><td>Konzistencia, zhoda so svetom</td><td><span class="zav z2">2</span></td><td><code>hra/Panely.tsx:71–79</code></td><td>Všetci, Absťák je na doske stále</td></tr>
+<tr data-z="2"><td>P8</td><td><b>Nápoveda pri prvom strachu chýba.</b> Melichar vysvetlí priazeň, keď je starší na <i>tvojej</i> polovici (<code>napovedy.json:185</code>), a vydesenie (<code>:222</code>). Častejší prvý zážitok, keď sa ťa starší začne báť po vyhratej bitke, vysvetlený nie je.</td><td>Pomoc a dokumentácia</td><td><span class="zav z2">2</span></td><td><code>packages/core/data/vyucba/napovedy.json</code></td><td>Každý nováčik po prvej vyhratej bitke</td></tr>
+<tr data-z="1"><td>P9</td><td><b>Farbu si nemožno vybrať</b> a profil tvrdí, že farby hráčov ostávajú. Ide o novú požiadavku, nie o chybu.</td><td>Kontrola a sloboda</td><td><span class="zav z1">1</span></td><td><code>Ucet.tsx:482–483</code></td><td>Všetci, ktorí chcú hrať „svojou“ farbou</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="pikt">1 · Piktogramy strachu: čo pochopí nováčik bez legendy</h2>
+<p>Hodnotím len zrozumiteľnosť, vzhľad patrí UI dizajnérovi. Kľúčová otázka znie, čo si človek pomyslí pri 20 px na stole, kde už sú ♥, ohorok, poldeci, Absťák a cigareta. Odhady v tabuľke treba overiť 5-sekundovým testom (pozri <a href="#otazky">otázky do playtestu</a>).</p>
+<div class="dm">
+<p class="dm-nadpis">Sady z UI návrhu: 1 Znepokojenie · 2 Strach · 3 Vydesenie (28 px a 16 px)</p>
+<div class="sady">
+<div class="sada"><b>A · Kvapky potu</b><div class="rad"><svg class="ik z1" aria-hidden="true"><use href="#A1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#A2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#A3"/></svg></div><div class="rad male"><svg class="ik z1" aria-hidden="true"><use href="#A1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#A2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#A3"/></svg></div><p>Odhad bez legendy: „voda? pálenka? krv?“</p></div>
+<div class="sada odp"><b>B · Tvár staršieho</b><div class="rad"><svg class="ik z1" aria-hidden="true"><use href="#B1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#B2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#B3"/></svg></div><div class="rad male"><svg class="ik z1" aria-hidden="true"><use href="#B1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#B2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#B3"/></svg></div><p>Odhad: „bojí sa, viac, panika“</p></div>
+<div class="sada"><b>C · Vlasy dupkom</b><div class="rad"><svg class="ik z1" aria-hidden="true"><use href="#C1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#C2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#C3"/></svg></div><div class="rad male"><svg class="ik z1" aria-hidden="true"><use href="#C1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#C2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#C3"/></svg></div><p>Odhad: „klobúk, starší… a čo s ním?“</p></div>
+<div class="sada"><b>D · Kolená</b><div class="rad"><svg class="ik z1" aria-hidden="true"><use href="#D1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#D2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#D3"/></svg></div><div class="rad male"><svg class="ik z1" aria-hidden="true"><use href="#D1"/></svg><svg class="ik z2" aria-hidden="true"><use href="#D2"/></svg><svg class="ik z3" aria-hidden="true"><use href="#D3"/></svg></div><p>Odhad: „nohavice? trasie sa, Absťák?“</p></div>
+</div>
+</div>
+<div class="tab-obal" style="margin-top:12px">
+<table class="siroka">
+<thead><tr><th>Kritérium použiteľnosti</th><th>A Kvapky</th><th>B Tvár</th><th>C Vlasy</th><th>D Kolená</th></tr></thead>
+<tbody>
+<tr><td>Význam „strach“ bez legendy (emoji ako 😟 😨 😱 pozná každý)</td><td class="num zle">slabý</td><td class="num dobre">silný</td><td class="num">stredný</td><td class="num zle">slabý</td></tr>
+<tr><td>Stupňovanie 1 → 3 bez legendy (výraz, počet)</td><td class="num">počet</td><td class="num dobre">výraz + počet</td><td class="num zle">2 px klobúka</td><td class="num">tvar nôh</td></tr>
+<tr><td>Kolízia so znakmi, ktoré už na stole sú</td><td class="num zle">kvapka = Absťák, pálenka</td><td class="num dobre">žiadna</td><td class="num dobre">žiadna</td><td class="num zle">chvenie = Absťák</td></tr>
+<tr><td>Čí je to stav? Tvár patrí <i>staršiemu</i>, nie hráčovi.</td><td class="num">nejasné</td><td class="num dobre">jasné</td><td class="num dobre">jasné</td><td class="num">jasné</td></tr>
+<tr><td>Prenos do vety „starší sa bojí teba“</td><td class="num">„potí sa“</td><td class="num dobre">„bojí sa“</td><td class="num">„ježia sa mu vlasy“</td><td class="num">„trasú sa mu kolená“</td></tr>
+<tr><td><b>Poradie pre nováčika (odhad)</b></td><td class="num">3</td><td class="num dobre">1</td><td class="num">2</td><td class="num">4</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>Odporúčam B</b>, rovnako ako UI dizajnér. Z pohľadu použiteľnosti preto, že výraz tváre je jediný znak, ktorý nováčik prečíta bez učenia. Kvapky v B sú už len doplnok, ktorý počtom zodpovedá špakom. D je vtipnejšia a hodí sa ako <i>ilustrácia</i> do výučby alebo na pečiatku momentu, nie ako 16 px znak stavu.</p>
+
+<h3>Rieši B rub a líc? Len spolu so zásadou farieb</h3>
+<p>Piktogram povie, <b>čo</b> starší cíti. Rub a líc je však otázka, <b>ku komu</b> to cíti a <b>komu</b> prejavuje priazeň. Dnes sú na jednej karte dve farby hráčov (lem markera = priazeň, čip strachu = strach) a vzťah k nim nesie len text. Navrhujem pevnú zásadu pre celý stôl:</p>
+<div class="zasada">Zóna hovorí <u>koľko</u>, farba hráča hovorí <u>koho</u>, symbol hovorí <u>ako</u>.
+<small>Žltá / oranžová / červená = sila 1 / 2 / 3, vždy s tvarom (výraz tváre, počet kvapiek). Farba hráča sa nikdy nezobrazí bez symbolu vzťahu: ♥ = „má jeho priazeň“, tvár = „bojí sa ho“. Výnimkou je pečiatka VYDESENÝ, ktorá je vždy na stupni 3. Farba zóny by tam nič nepridala, preto má atrament hráča, ako chce Michal.</small></div>
+<p>Na karte staršieho tak vždy stoja dva čipy a čítajú sa ako jedna veta: <span style="white-space:nowrap">„♥ <b>Fero</b> · <svg class="ik" style="width:18px;height:18px;vertical-align:-4px;color:#f97316" aria-hidden="true"><use href="#B2"/></svg> bojí sa <b>teba</b> · +2 po tvojej výhre“</span>. Farba mena (Fero tehlovo, teba tyrkysovo) je až tretí nositeľ informácie.</p>
+
+<h3>Ako to naučiť: tri vrstvy</h3>
+<div class="tri">
+<div class="panel"><h4>Výučba (krok <code>i-strach</code>)</h4><p>Pridať <b>príbeh</b>, ktorý dnes chýba. Texty výučby sú Michalove, preto len návrh vety: <i>„Kto sa ťa bojí, uteká sa schovať k súperovi. Preto má súper jeho priazeň a ty jeho strach. Jedna minca, dve strany.“</i> K tomu ukážka mince (nižšie), ktorá sa pri posune markera raz otočí.</p></div>
+<div class="panel"><h4>Nápoveda Melichara (nová)</h4><p>Spúšťač: <i>prvý starší, ktorý sa bojí teba</i> (marker prvýkrát na súperovej polovici v zóne 1–3). Je to zrkadlo nápovedy <code>priazen</code> (<code>napovedy.json:185</code>). Návrh: <i>„{starsi} sa ťa bojí, tak sa schoval k súperovi a ten má jeho priazeň. Po každej bitke, ktorú vyhráš, ti dá {n} špaky. Nie je to láska, ale aj to sa počíta.“</i></p></div>
+<div class="panel"><h4>Legenda na požiadanie</h4><p>Klik alebo ťuk na piktogram či ♥ otvorí legendu „? stupnica“ (<code>LiniaStarsich.tsx:295–316</code>), nielen hover. Riadok slovníka <i>Strach</i> (<code>slovnik.ts:59</code>) dostane piktogram B a vetu o úteku k súperovi. Rovnakú mincu použijú aj pravidlá (<code>Ukazky.tsx:250</code>).</p></div>
+</div>
+<div class="dm">
+<p class="dm-nadpis">Drôtený model: minca do výučby a legendy</p>
+<div class="minca">
+<div class="str" style="--c:#e0805f"><svg aria-hidden="true"><use href="#SRDCE"/></svg>líc<br>♥ Fero</div>
+<span aria-hidden="true">⇄</span>
+<div class="str" style="--c:#5cc0cf"><svg aria-hidden="true"><use href="#B2"/></svg>rub<br>bojí sa teba</div>
+<div class="bublina"><b>Melichar:</b> „Starosta sa ťa zľakol, tak utiekol k Ferovi pod krídla. Fero má jeho priazeň, ty jeho strach. Za strach ti po vyhratej bitke dá špaky.“</div>
+</div>
+</div>
+
+<h2 id="farba">2 · Farba hráča v profile</h2>
+<h3>Kto čiu farbu vidí: tri modely</h3>
+<div class="tab-obal">
+<table class="siroka">
+<thead><tr><th>Kritérium</th><th>P · „Ja vždy moja farba“ (odporúčam)</th><th>I · Identita (súper vidí moju farbu)</th><th>H · Hybrid (súper svojou, ak sa nebije)</th></tr></thead>
+<tbody>
+<tr><td>Ako to funguje</td><td>Na mojej obrazovke som ja vo svojej farbe a súper v párovej farbe k nej. Súper si to isté robí u seba.</td><td>Každý má jednu farbu a vidia ju obaja. Pri zhode sa jeden prefarbí.</td><td>Ja vo svojej farbe, súper v svojej, ak sa od mojej dosť líši. Inak dostane párovú.</td></tr>
+<tr><td>Kolízie</td><td class="dobre">nikdy, dvojica je pevná</td><td class="zle">pri zhode aj pri CVD dvojiciach (P4), treba pravidlo, kto ustúpi</td><td>riešené na mojej obrazovke, každý môže súpera vidieť inak</td></tr>
+<tr><td>Farbosleposť</td><td class="dobre">každá dvojica overená vopred</td><td class="zle">z 5 farieb prejdú len dvojice s tehlovou</td><td>podobne ako I, väčšina dvojíc spadne na párovú</td></tr>
+<tr><td>Učenie, kotva</td><td class="dobre">„ja = moja farba“ platí v každej partii</td><td>súper má v každej partii inú farbu, „ja“ tiež môže ustúpiť</td><td>ja stabilne, súper sa mení</td></tr>
+<tr><td>Sociálna hodnota</td><td>súper moju voľbu nevidí</td><td class="dobre">„Fero je fialový“</td><td>čiastočná</td></tr>
+<tr><td>Náročnosť</td><td class="dobre">malá až stredná: nastavenie klienta ako schéma, server len uloží</td><td>stredná: farba súpera v <code>viewFor</code>, rozhodca kolízií, náhrady</td><td>stredná</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>Odporúčam model P.</b> Hra je striktne pre dvoch na dvoch obrazovkách, takže nikto „spoločnú“ farbu nepotrebuje. Rozhodujú dva dôvody. Prvý: dnešná kotva „ty vždy tyrkysová“ funguje (sledovateľ, #74), a model P ju zachová, len si ju hráč sám vyberie. Druhý: pri dvoch voľných farbách sa väčšina dvojíc pre farboslepého zleje. Na model I by tak doplatil práve hráč, ktorému má farba pomáhať. Voľby farby súpera sa netýkajú skrytej informácie. Server by ju v modeli I smel poslať, len to nič nezlepší.</p>
+
+<h4>Ktoré farby smú byť „moje“: minimálne ΔE (normálne, deuteranopia, protanopia)</h4>
+<div class="tab-obal">
+<table>
+<thead><tr><th></th><th>tyrkysová</th><th>chrpová</th><th>fialová</th><th>purpurová</th><th>tehlová</th></tr></thead>
+<tbody>
+<tr><td><b>tyrkysová</b> #5cc0cf</td><td class="num">–</td><td class="num zle">29</td><td class="num zle">22</td><td class="num zle">16</td><td class="num dobre">44</td></tr>
+<tr><td><b>chrpová</b> #7b9cf0</td><td class="num zle">29</td><td class="num">–</td><td class="num zle">3</td><td class="num zle">10</td><td class="num dobre">73</td></tr>
+<tr><td><b>fialová</b> #b38be8</td><td class="num zle">22</td><td class="num zle">3</td><td class="num">–</td><td class="num zle">7</td><td class="num dobre">73</td></tr>
+<tr><td><b>purpurová</b> #d36ad6</td><td class="num zle">16</td><td class="num zle">10</td><td class="num zle">7</td><td class="num">–</td><td class="num dobre">71</td></tr>
+<tr><td><b>tehlová</b> #e0805f</td><td class="num dobre">44</td><td class="num dobre">73</td><td class="num dobre">73</td><td class="num dobre">71</td><td class="num">–</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Hodnoty sú pre tmavé schémy a slúžia ako príklad pre UI dizajnéra, ktorý odtiene doladí. Zamietol som malinovú (#e77fb3, od tyrkysovej 15, od sivej zóny 23), mätovú a zelenú (zelená znamená „plus“, ΔE 27), kostenú (od sivej zóny 16), jantárovú (akcent a žltá zóna) a žltú, oranžovú a červenú (zóny). Všetky „moje“ farby majú kontrast nad 6 : 1 voči <code>--plocha</code>. Svetlé schémy potrebujú tmavší variant, podobne ako dnes <code>--ja #006a77</code>.</p>
+<p><b>Pravidlo páru:</b> ak je moja farba studená (tyrkysová, chrpová, fialová, purpurová), súper je <b>tehlový</b>. Ak si vyberiem tehlovú, súper je <b>tyrkysový</b>. Prehodenie je jediný prípad, keď hráč uvidí súpera vo „svojej starej“ farbe. Mikrocopy ho na to vopred upozorní.</p>
+
+<h3>Tok nastavenia</h3>
+<div class="tok">
+<div><h4>Dnes</h4><ol><li>Hráč sa farbu zmeniť nedá.</li><li>Profil tvrdí „farby hráčov ostávajú“.</li></ol></div>
+<div><h4>Po návrhu (2 kroky, bez uloženia)</h4><ol><li>Profil → Nastavenia účtu → <i>Vzhľad webu</i> → <b>Tvoja farba v partii</b> (hneď pod schémami, lebo ide o to, ako vidíš <i>ty</i>; nie pri hernom mene, ktoré „uvidí súper“).</li><li>Klik na farbu. Náhľad mini-stola sa prefarbí okamžite a farba sa uloží sama, ako schéma (<code>Ucet.tsx:271–277</code>).</li><li>Z partie: legenda „? stupnica“ a ponuka nastavení dostanú odkaz <b>„Zmeniť svoju farbu“</b> na <code>/profil#farba</code>.</li></ol></div>
+</div>
+<p><b>Predvolená farba je tyrkysová</b> a súper ostáva tehlový, takže hráčovi, ktorý nič nezmení, sa nezmení nič. Farbu si pamätá účet (rovnako ako schému), takže platí na každom zariadení. Návštevník bez účtu má predvolenú farbu.</p>
+
+<div class="dm nahlad-obal" id="nahlad-obal">
+<p class="dm-nadpis">Drôtený model: Profil → Vzhľad webu → Tvoja farba v partii (interaktívny)</p>
+<div class="dm-blok" style="height:10px;width:40%;margin-bottom:12px" aria-hidden="true"></div>
+<h5 id="farba-nadpis">Tvoja farba v partii</h5>
+<p class="pom">Takto sa v partii uvidíš ty: tvoja doska, tvoje čipy, pečiatka staršieho, ktorý sa ťa bojí. Súper dostane farbu, ktorá sa od tvojej vždy dobre líši. Súper si partiu farbí po svojom a tvoju farbu nevidí. Ukladá sa samo.</p>
+<fieldset class="farby">
+<legend class="sr">Tvoja farba</legend>
+<label class="farba-volba"><input type="radio" name="farba" value="#5cc0cf" data-par="#e0805f" data-meno="tyrkysová" checked><span class="vz" style="--f:#5cc0cf" aria-hidden="true"></span>Tyrkysová <small>(predvolená)</small></label>
+<label class="farba-volba"><input type="radio" name="farba" value="#7b9cf0" data-par="#e0805f" data-meno="chrpová"><span class="vz" style="--f:#7b9cf0" aria-hidden="true"></span>Chrpová</label>
+<label class="farba-volba"><input type="radio" name="farba" value="#b38be8" data-par="#e0805f" data-meno="fialová"><span class="vz" style="--f:#b38be8" aria-hidden="true"></span>Fialová</label>
+<label class="farba-volba"><input type="radio" name="farba" value="#d36ad6" data-par="#e0805f" data-meno="purpurová"><span class="vz" style="--f:#d36ad6" aria-hidden="true"></span>Purpurová</label>
+<label class="farba-volba"><input type="radio" name="farba" value="#e0805f" data-par="#5cc0cf" data-meno="tehlová"><span class="vz" style="--f:#e0805f" aria-hidden="true"></span>Tehlová <small>(súper bude tyrkysový)</small></label>
+</fieldset>
+<div class="prep" role="group" aria-label="Simulácia videnia (len v tomto návrhu)"><span>Skús, ako to vidí:</span>
+<button type="button" data-v="" aria-pressed="true">bežné oko</button><button type="button" data-v="deuter" aria-pressed="false">deuteranopia</button><button type="button" data-v="protan" aria-pressed="false">protanopia</button><button type="button" data-v="sivo" aria-pressed="false">bez farieb</button></div>
+<div class="nahlad" id="nahlad" aria-label="Náhľad">
+<div class="sc">
+<div class="sc-hlava">Starosta <span class="spak ja">+3 po tvojej výhre</span></div>
+<div class="portret">portrét
+<span class="peciatka ja" style="--ink:var(--ja)" role="img" aria-label="Vydesený z teba"><svg class="ik" aria-hidden="true"><use href="#B3"/></svg><span><b>Vydesený</b><i>z teba</i></span></span></div>
+<div class="stup" aria-hidden="true"><i style="background:var(--zona-3)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-0)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-3)"></i><b class="mk" style="--p:6;--prst:var(--su)"></b></div>
+<div class="strany" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">Fero ▶</span></div>
+<div class="cip su"><svg class="srd" aria-hidden="true" style="fill:currentColor"><use href="#SRDCE"/></svg>Fero · priazeň sily 3</div>
+<div class="cip ja"><svg class="ik z3" aria-hidden="true"><use href="#B3"/></svg>bojí sa teba · Vydesenie</div>
+</div>
+<div class="sc">
+<div class="sc-hlava">Hrobár <span class="spak su">+3 po Ferovej výhre</span></div>
+<div class="portret">portrét
+<span class="peciatka su" style="--ink:var(--su)" role="img" aria-label="Vydesený z Fera"><svg class="ik" aria-hidden="true"><use href="#B3"/></svg><span><b>Vydesený</b><i>z Fera</i></span></span></div>
+<div class="stup" aria-hidden="true"><i style="background:var(--zona-3)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-0)"></i><i style="background:var(--zona-1)"></i><i style="background:var(--zona-2)"></i><i style="background:var(--zona-3)"></i><b class="mk" style="--p:0;--prst:var(--ja)"></b></div>
+<div class="strany" aria-hidden="true"><span class="ja">◀ ty</span><span class="su">Fero ▶</span></div>
+<div class="cip ja"><svg class="srd" aria-hidden="true" style="fill:currentColor"><use href="#SRDCE"/></svg>ty · priazeň sily 3</div>
+<div class="cip su"><svg class="ik z3" aria-hidden="true"><use href="#B3"/></svg>bojí sa Fera · Vydesenie</div>
+</div>
+<div class="doska">Jano <small>ty · obranca</small></div>
+<div class="doska su">Fero <small>súper · útočník</small></div>
+</div>
+<p class="pozn-nahladu" id="nahlad-text" aria-live="polite">Ty: tyrkysová. Súper: tehlová.</p>
+</div>
+<p><b>Prístupnosť voľby:</b> natívne rádiové tlačidlá vo <code>fieldset</code> s <code>legend</code>, ako voľba „Ako o tebe písať“ (<code>Ucet.tsx:538–547</code>). Každá farba má <b>meno</b>, nie iba vzorku, a cieľ má výšku aspoň 44 px. Zmenu náhľadu ohlási <code>aria-live="polite"</code>. Zvolená voľba sa okrem farby líši aj rámikom a bodkou rádia.</p>
+
+<h3>Čo keď sa farby zrazia</h3>
+<ul>
+<li><b>V modeli P sa farby hráčov nezrazia nikdy.</b> Dvojica „moja + párová“ je pevná a overená aj pre farboslepých.</li>
+<li><b>Zrážka so zónami:</b> zo „svojich“ farieb sú vylúčené žltá, oranžová a červená. Ostáva len dnešná tehlová, ktorá je blízko zón (P5). Preto pečiatka a čipy nesú vždy aj <b>slovo</b> („z teba / z Fera“) a symbol. Farba zóny sa nikdy nepoužije ako farba hráča a naopak.</li>
+<li><b>Zrážka so sémantikou:</b> zelená „+“ a červená „−“ nesmú byť farbou hráča. Strach v bare (P6) má byť vo farbe hráča s piktogramom, nie zelený, ako navrhuje aj UI návrh (<code>Starsi.tsx:88–96</code>).</li>
+<li><b>Farebná schéma webu:</b> farba hráča musí mať kontrast aspoň 3 : 1 (grafika) a 4,5 : 1 (text) na <code>--plocha</code> v <i>každej</i> schéme. Preto potrebuje tmavý a svetlý variant, ako dnešné <code>--ja</code>. Overiť sa to dá rovnako ako farby grafu známok, ktoré prešli validátorom palety (<code>schemy.css:11</code>).</li>
+</ul>
+
+<h3>Mimo stola</h3>
+<p>Kde všade sa farba použije, rozhoduje UI návrh. Z pohľadu použiteľnosti platí jedno pravidlo: <b>„moja farba“ smie označovať len mňa, keď sa pozerám ja</b>. Graf priebehu partie v <code>DetailPartie</code> (<code>profil.css:474–507</code>) a prehrávač teda farbia mňa mojou farbou. Na cudzom profile <code>/hrac/:id</code> však majiteľ profilu nesmie dostať <i>moju</i> farbu, inak by som v ňom videl seba. Tam ostanú neutrálne predvolené farby.</p>
+
+<h2 id="rizika">3 · Riziká</h2>
+<div class="tab-obal">
+<table class="siroka">
+<thead><tr><th>Riziko</th><th>Prečo</th><th>Zmiernenie</th></tr></thead>
+<tbody>
+<tr><td><b>Mätenie farby hráča so zónou</b></td><td>Pečiatka VYDESENÝ v súperovej tehlovej leží na portréte hneď nad červenou krajnou zónou stupnice (ΔE 20 pri deuteranopii). Dnes je pečiatka červená, takže hráči môžu mať naučené „červená pečiatka = červená zóna“.</td><td>Na pečiatke slovo „z teba / z Fera“ a piktogram B3. Atrament nikdy nie je zóna. Zóna je len na stupnici a v piktograme čipu.</td></tr>
+<tr><td><b>Dve farby hráčov na jednej karte</b></td><td>Lem markera má farbu majiteľa priazne, čip strachu a pečiatka farbu toho, koho sa starší bojí. Pri každom vydesenom staršom sú tak na karte obe farby. To je správne, lebo ide o rub a líc, no vyžaduje to vysvetlenie.</td><td>Zásada „farba vždy so symbolom“ (♥ alebo tvár) a minca vo výučbe. Overiť otázkou v playteste (nižšie).</td></tr>
+<tr><td><b>Kognitívna záťaž</b></td><td>Počet farieb na stole sa nezvýši, mení sa len odtieň. Nová je iba jedna voľba v profile.</td><td>Predvolená farba ostáva rovnaká a voľba je nepovinná. V partii sa nič nenastavuje.</td></tr>
+<tr><td><b>Stará kotva „modrá = ja“</b></td><td>Kto si vyberie tehlovú, uvidí súpera tyrkysovo, teda vo farbe, ktorú mal doteraz za svoju.</td><td>Mikrocopy pri voľbe: „súper bude tyrkysový“. Odhad: týka sa málokoho.</td></tr>
+<tr><td><b>Pravidlá a obrázky</b></td><td>Ukážky v pravidlách (<code>Ukazky.tsx</code>) a snímky vo výučbe ukazujú tyrkysovú. Hráč s fialovou si ich nespojí so sebou.</td><td>Ukážky kresliť tokenmi <code>--ja/--su</code>, nie natvrdo. Statické obrázky výučby nech farbu hráča neobsahujú.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="navrhy">Návrhy</h2>
+
+<article class="navrh odporucany" id="n1">
+<h3>N1 · Pečiatka VYDESENÝ: veľká, atramentom toho, koho sa bojí, a so slovom „z koho“</h3>
+<div class="stitky"><span class="stitok odp">rýchla výhra · prvý</span><span class="stitok mala">náročnosť: malá</span><span class="stitok">rieši P1, P5</span></div>
+<div class="tok">
+<div><h4>Pred</h4><ol><li>Hráč vidí červenú pečiatku (0,6 rem).</li><li>Z farby nevie, či je vydesený z neho, alebo zo súpera. Červená navyše pripomína súpera.</li><li>Musí čítať malý čip pod stupnicou.</li></ol></div>
+<div><h4>Po</h4><ol><li>Hráč vidí veľkú pečiatku s tvárou B3 a nápisom <b>VYDESENÝ · z teba</b> v tvojej farbe, alebo <b>z Fera</b> v súperovej.</li><li>Kto, aký stav a čia je výhoda, prečíta jedným pohľadom aj bez farby.</li></ol></div>
+</div>
+<p><b>Mikrocopy:</b> pečiatka „VYDESENÝ“ / „z teba“ alebo „z {meno}“. <code>aria-label</code>: „Starosta je vydesený z teba. Po tvojej výhre ti dá 3 špaky, priazeň má Fero.“ Dnes je tam len text „vydesený“ (<code>LiniaStarsich.tsx:421</code>).</p>
+<p><b>Prístupnosť:</b> farba je až tretí nositeľ (slovo, tvár). Animácia dopadu pečiatky sa nespustí pri <code>prefers-reduced-motion</code>. Ohlásenie hrozby vydesenia už existuje (<code>role="alert"</code>, <code>HernaPlocha.tsx:4312</code>).</p>
+<p><b>Súbory:</b> <code>hra/LiniaStarsich.tsx:421</code>, <code>hra/hra.css:5406–5420</code> (triedy <code>.moja/.superova</code> už existujú, len nemajú štýl). Ide aj bez N3, s dnešnými <code>--ja/--su</code>.</p>
+<p><b>Ako overiť:</b> v playteste sa po prvom vydesení opýtať „Z koho je Starosta vydesený a čo z toho máš?“. Úspech: aspoň 9 z 10 správnych odpovedí bez otvorenia legendy.</p>
+</article>
+
+<article class="navrh" id="n2">
+<h3>N2 · Jeden znak strachu (B) a zásada „zóna = koľko, farba = koho, symbol = ako“</h3>
+<div class="stitky"><span class="stitok stredna">náročnosť: stredná</span><span class="stitok">rieši P3, P6, P7</span></div>
+<div class="tok">
+<div><h4>Pred</h4><ol><li>Strach z teba je v bare zelený „+1 ohorok“, v línii tyrkysový text, na nástenke slovo „starší“.</li><li>Hráč si musí pamätať, že zelené +1 = strach.</li></ol></div>
+<div><h4>Po</h4><ol><li>Všade rovnaká tvár B v zóne (koľko), vedľa nej meno alebo „teba“ vo farbe hráča (koho).</li><li>Priazeň vždy ♥ a hneď za ňou strach, takže rub a líc stojí vedľa seba.</li></ol></div>
+</div>
+<p>Implementačný plán je v UI návrhu piktogramov (komponent <code>IkonaStrachu</code>, línia, bar, nástenka). UX dopĺňa dve veci: (1) zelené „+n“ v bare nahradiť farbou hráča a piktogramom a (2) čipy priazne a strachu stavať vždy ako vetu „♥ X · tvár bojí sa Y · +n po výhre Y“.</p>
+<p><b>Ako overiť:</b> 5-sekundový test (pozri otázky) a v partii počet otvorení legendy „? stupnica“ za kolo. Ak by po zmene neklesol, znak nepomohol.</p>
+</article>
+
+<article class="navrh odporucany" id="n3">
+<h3>N3 · Moja farba v profile: model „ja vždy moja farba“</h3>
+<div class="stitky"><span class="stitok odp">odporúčané riešenie úlohy 2</span><span class="stitok stredna">náročnosť: stredná</span><span class="stitok">rieši P4, P9</span></div>
+<p>Tok, drôtený model a mikrocopy sú v <a href="#farba">časti 2</a> vyššie. Zhrnutie:</p>
+<ul>
+<li>5 farieb: tyrkysová (predvolená), chrpová, fialová, purpurová, tehlová. Každá má meno.</li>
+<li>Súper je na mojej obrazovke vždy v párovej farbe (tehlová, pri tehlovej tyrkysová) a moju voľbu nevidí.</li>
+<li>Miesto: Profil → Vzhľad webu → „Tvoja farba v partii“, ukladá sa samo, s náhľadom mini-stola. Z partie vedie odkaz „Zmeniť svoju farbu“.</li>
+<li>Text v paneli Vzhľad webu sa zmení na: „Mení sa len okolie — karty a zóny starších ostávajú. Svoju farbu v partii si vyber nižšie.“</li>
+</ul>
+<p><b>Súbory (odhad):</b> nový <code>lib/farbyHraca.ts</code> (zoznam ako <code>lib/schemy.ts</code>), <code>schemy.css</code> (tokeny <code>--ja/--su</code> podľa <code>data-farba</code> na <code>&lt;html&gt;</code>, rizikový zdieľaný súbor), <code>public/schema.js</code> (nastaviť pred vykreslením), <code>stranky/Ucet.tsx</code> (voľba), <code>/api/profil</code> (uložiť pole <code>farba</code>). Do jadra ani do <code>viewFor</code> nezasahuje.</p>
+<p><b>Ako overiť:</b> 3 ľudí požiadať „nastav si fialovú“ so štartom na <code>/hra</code> a merať čas a slepé uličky (cieľ: pod 30 s, bez hľadania v hlavičke). Po partii sa opýtať „Mal si niekedy pocit, že súper je ty?“.</p>
+</article>
+
+<article class="navrh" id="n4">
+<h3>N4 · Rub a líc: príbeh do výučby, nová nápoveda a minca v legende</h3>
+<div class="stitky"><span class="stitok mala">náročnosť: malá (texty) až stredná (minca)</span><span class="stitok">rieši P2, P8</span></div>
+<div class="tok">
+<div><h4>Pred</h4><ol><li>Výučba: „Čím viac sa ťa bojí, tým viac pomáha druhému!“, bez dôvodu.</li><li>Prvý strach z teba po vyhratej bitke Melichar nevysvetlí.</li><li>Legenda len pri hoveri alebo kliku na „? stupnica“.</li></ol></div>
+<div><h4>Po</h4><ol><li>Výučba pridá vetu: „Kto sa ťa bojí, uteká sa schovať k súperovi.“</li><li>Nová nápoveda <code>strach</code> pri prvom staršom, ktorý sa bojí teba.</li><li>Klik alebo ťuk na tvár či ♥ otvorí legendu s mincou.</li></ol></div>
+</div>
+<p>Texty výučby a Melichara píše Michal, vety vyššie sú len návrh. Nápoveda je dátová zmena v <code>packages/core/data/vyucba/napovedy.json</code> (vzor: <code>priazen</code>, <code>:185–196</code>).</p>
+<p><b>Ako overiť:</b> výučba s 2 AI nováčikmi a vo feedbacku otázka „Prečo má súper priazeň staršieho, ktorý sa bojí teba?“. Dnes 0 z 2 vedelo dôvod, cieľ je 2 z 2 vlastnými slovami.</p>
+</article>
+
+<article class="navrh" id="n5">
+<h3>N5 · Odvážnejší smer: identita farieb (súper vidí moju farbu)</h3>
+<div class="stitky"><span class="stitok velka">náročnosť: veľká</span><span class="stitok">neodporúčam teraz</span></div>
+<p>Ak Michal chce, aby farba bola <i>značkou hráča</i> („Fero je vždy fialový“), dá sa to postaviť na N3 bez prerábania. Server pošle súperovu voľbu v profile hráča. Na mojej obrazovke ju klient použije len vtedy, keď je jej minimálne ΔE voči mojej farbe vo všetkých troch videniach aspoň 40. Inak súper dostane párovú farbu a malú poznámku „Fero hrá fialovou, u teba je tehlový, aby ste sa nezliali“. Z tabuľky vyššie vyplýva, že pri studených farbách by to nastalo skoro vždy, takže sociálny prínos je malý a cena (rôzne farby súpera v rôznych partiách, vysvetľovanie) veľká.</p>
+<div class="tok">
+<div><h4>Plus</h4><ol><li>Identita a vtip („fialový Fero“).</li><li>Súpera spoznáš na prvý pohľad aj v rebríčku.</li></ol></div>
+<div><h4>Mínus</h4><ol><li>Väčšina dvojíc spadne na náhradu.</li><li>Súper má v každej partii inú farbu, takže stratí kotvu.</li><li>Viac pravidiel, ktoré treba vysvetliť.</li></ol></div>
+</div>
+</article>
+
+<h2 id="poradie">Odporúčané poradie</h2>
+<ol>
+<li><b>N1</b> pečiatka VYDESENÝ s dnešnými farbami. Dá sa nasadiť hneď, nezávisí od ničoho a opravuje stav, ktorý dnes hovorí opak.</li>
+<li><b>N2</b> znak B naprieč stolom podľa UI návrhu piktogramov, so zásadou farieb z tohto návrhu.</li>
+<li><b>N3</b> farba v profile spolu s UI návrhom <i>kde všade</i>. Tokeny <code>--ja/--su</code> už sú, takže hlavná práca je profil a validácia kontrastov v 28 schémach.</li>
+<li><b>N4</b> texty výučby a nápovedy, keď ich Michal napíše. Najlepšie v tej istej dávke ako N2, aby výučba ukazovala nový znak.</li>
+<li><b>N5</b> len ak Michal výslovne chce identitu farieb.</li>
+</ol>
+
+<h2 id="otazky">Otázky</h2>
+<h3>Do playtestu</h3>
+<ul>
+<li><b>5-sekundový test znaku</b> (3 ľudia, ak sa dá, inak AI hráči pred partiou): ukázať B1–B3 pri 20 px bez legendy a opýtať sa „Čo znamená tento znak? Ktorý je najsilnejší?“. Úspech: slovo strach, bojí sa alebo zľakol sa a správne poradie.</li>
+<li><b>Rub a líc v partii</b>, v kole 3: „Kto má priazeň Starostu, koho sa bojí a čo z toho bude mať víťaz bitky?“. Sledovať, či hráč odpovedá z karty, alebo otvára legendu.</li>
+<li><b>Farba:</b> „Nastav si fialovú farbu“ so štartom na <code>/hra</code>. Sledovať čas, kde hráč hľadá najprv, a či v partii niekedy zamenil súpera za seba.</li>
+<li><b>Farbosleposť:</b> ak hrá človek s poruchou farbocitu, opýtať sa, či rozlíši svoju farbu od súperovej a od zón.</li>
+</ul>
+<h3>Na Michala</h3>
+<ol>
+<li><b>Má súper vidieť moju farbu?</b> Odporúčam nie (model P): každý vidí seba svojou farbou a súpera v párovej. Ak áno, ide o N5 s náhradami.</li>
+<li><b>Paleta:</b> stačí 5 farieb (tyrkysová, chrpová, fialová, purpurová, tehlová)? Pri ďalších studených farbách treba súpera vždy tehlovo. Teplé farby blízko zón do palety nepúšťam.</li>
+<li><b>Pečiatka „VYDESENÝ · z teba / z Fera“:</b> súhlasíš s doplnkom „z koho“? Bez neho by farba bola jediným nositeľom informácie (WCAG 1.4.1).</li>
+<li><b>Veta do výučby a nová nápoveda</b> „Kto sa ťa bojí, uteká sa schovať k súperovi“: sedí ti príbeh? Texty napíšeš ty.</li>
+<li><b>Boti:</b> majú mať boti (Štamgast, Rapavý Fero, Teta Gizka) vlastnú farbu? Pri modeli P to netreba, súper je vždy v párovej.</li>
+</ol>
+<p class="pozn">Návrh nemení pravidlá hry ani kód. Snímky línie a baru pochádzajú z UI návrhu piktogramov, snímka profilu je z lokálneho servera (účet Dizajnér AI). Pracovné snímky sú v <code>playtest/dizajn/farba-hraca-20261027/</code> (mimo gitu).</p>
+</main>
+<script>
+(function () {
+  var f = document.querySelectorAll('.filtre button');
+  var riadky = document.querySelectorAll('#audit-tab tbody tr');
+  f.forEach(function (b) {
+    b.addEventListener('click', function () {
+      f.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      var v = b.getAttribute('data-f');
+      riadky.forEach(function (r) { r.hidden = !(v === 'vsetky' || r.getAttribute('data-z') === v); });
+    });
+  });
+  var obal = document.getElementById('nahlad-obal');
+  var text = document.getElementById('nahlad-text');
+  var mena = { '#5cc0cf': 'tyrkysová', '#e0805f': 'tehlová' };
+  document.querySelectorAll('input[name="farba"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      obal.style.setProperty('--ja', r.value);
+      obal.style.setProperty('--su', r.getAttribute('data-par'));
+      text.textContent = 'Ty: ' + r.getAttribute('data-meno') + '. Súper: ' + mena[r.getAttribute('data-par')] + '.';
+    });
+  });
+  var v = document.querySelectorAll('.prep button');
+  v.forEach(function (b) {
+    b.addEventListener('click', function () {
+      v.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      var d = b.getAttribute('data-v');
+      if (d) obal.setAttribute('data-filter', d); else obal.removeAttribute('data-filter');
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -17,11 +17,13 @@ export interface Novinka {
   readonly text: string;
   /** Cesta na webe (napr. /pravidla#bitka) alebo ''. */
   readonly odkaz: string;
+  /** Vydanie, do ktorého zmena patrí (napr. „Pravidlá v6“), alebo '' — nadpis dňa v Novinkách. */
+  readonly vydanie: string;
   readonly vytvorena: number;
   readonly upravena: number;
 }
 
-type ObsahNovinky = Pick<Novinka, "datum" | "kategoria" | "nadpis" | "text" | "odkaz">;
+type ObsahNovinky = Pick<Novinka, "datum" | "kategoria" | "nadpis" | "text" | "odkaz" | "vydanie">;
 
 function text(v: unknown, max: number, pole: string, povinny: boolean): string {
   if (v !== undefined && typeof v !== "string") throw new ChybaVstupu(`${pole}: musí byť text.`);
@@ -58,6 +60,7 @@ function overObsah(v: Record<string, unknown>, stara: ObsahNovinky | null): Obsa
     nadpis: ma("nadpis") ? text(v.nadpis, 120, "Nadpis", true) : (stara as ObsahNovinky).nadpis,
     text: ma("text") ? text(v.text, 1500, "Text", true) : (stara as ObsahNovinky).text,
     odkaz: ma("odkaz") ? odkaz(v.odkaz) : (stara as ObsahNovinky).odkaz,
+    vydanie: ma("vydanie") ? text(v.vydanie, 40, "Vydanie", false).replace(/\s+/g, " ") : (stara as ObsahNovinky).vydanie,
   };
 }
 
@@ -76,6 +79,7 @@ export class Novinky {
       nadpis: String(r.nadpis),
       text: String(r.text),
       odkaz: String(r.odkaz),
+      vydanie: String(r.vydanie),
       vytvorena: Number(r.vytvorena),
       upravena: Number(r.upravena),
     };
@@ -96,18 +100,18 @@ export class Novinky {
     const o = overObsah(telo, null);
     const r = this.db
       .prepare(
-        `INSERT INTO novinky (datum, kategoria, nadpis, text, odkaz, autor, vytvorena, upravena)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+        `INSERT INTO novinky (datum, kategoria, nadpis, text, odkaz, vydanie, autor, vytvorena, upravena)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
       )
-      .get(o.datum, o.kategoria, o.nadpis, o.text, o.odkaz, autor, teraz, teraz) as { id: number };
+      .get(o.datum, o.kategoria, o.nadpis, o.text, o.odkaz, o.vydanie, autor, teraz, teraz) as { id: number };
     return this.jedna(Number(r.id));
   }
 
   uprav(id: number, telo: Record<string, unknown>, teraz: number): Novinka {
     const o = overObsah(telo, this.jedna(id));
     this.db
-      .prepare("UPDATE novinky SET datum = ?, kategoria = ?, nadpis = ?, text = ?, odkaz = ?, upravena = ? WHERE id = ?")
-      .run(o.datum, o.kategoria, o.nadpis, o.text, o.odkaz, teraz, id);
+      .prepare("UPDATE novinky SET datum = ?, kategoria = ?, nadpis = ?, text = ?, odkaz = ?, vydanie = ?, upravena = ? WHERE id = ?")
+      .run(o.datum, o.kategoria, o.nadpis, o.text, o.odkaz, o.vydanie, teraz, id);
     return this.jedna(id);
   }
 
@@ -127,7 +131,13 @@ export class Novinky {
     return r === undefined ? 0 : Number(r.t);
   }
 
-  oznacVidene(pouzivatel: number, teraz: number): void {
-    this.db.prepare("UPDATE pouzivatelia SET novinky_videne = ? WHERE id = ?").run(teraz, pouzivatel);
+  /**
+   * „Mám prečítané“ (Michal 2026-10-27), nie samotné otvorenie stránky. `po` = čas najnovšej
+   * novinky, ktorú mal hráč pred očami — čo pribudlo, kým čítal, ostane nové.
+   * Čas sa nevráti dozadu (dve karty prehliadača so starším zoznamom).
+   */
+  oznacVidene(pouzivatel: number, teraz: number, po?: unknown): void {
+    const cas = typeof po === "number" && Number.isFinite(po) && po > 0 ? Math.min(Math.floor(po), teraz) : teraz;
+    this.db.prepare("UPDATE pouzivatelia SET novinky_videne = MAX(COALESCE(novinky_videne, 0), ?) WHERE id = ?").run(cas, pouzivatel);
   }
 }

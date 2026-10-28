@@ -61,10 +61,10 @@ const NAZOV_TAHU: Readonly<Record<string, string>> = {
   smoke: "cigareta",
   barter: "výmena",
   refillPoldeci: "dolieva poldeci",
-  exekutorTool: "Exekútor",
+  zahradkar: "Exekútor (Záhradkár)",
+  hasic: "Hasič",
   pohorsenie: "Pohoršenie",
   prebytok: "rozdeľuje prebytok",
-  pohreb: "Pohreb",
   kar: "Kar",
 };
 

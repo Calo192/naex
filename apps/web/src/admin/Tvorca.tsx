@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AkciaDef, KartaNavrh, Pozicia, StranaNavrhu } from "@naex/tvorba";
 import {
+  MAX_TEXTU_KARTY,
   POZICIE,
   chybyNavrhu,
   farbaKarty,
@@ -13,6 +14,7 @@ import {
   pastelHex,
   pocetAkcii,
   rozlozeniaStrany,
+  sTextomKarty,
   slug,
   spustaceVTexte,
   variant,
@@ -318,7 +320,7 @@ export function Tvorca({ id }: { readonly id: string }) {
           <Odkaz href="/admin/karty" className="spat">
             ← Karty
           </Odkaz>
-          <h1>{nova ? k.nazov || "Nová karta" : k.nazov || "(bez názvu)"}</h1>
+          <h2>{nova ? k.nazov || "Nová karta" : k.nazov || "(bez názvu)"}</h2>
           <span className="tvorca-lista-stav">
             {!nova && <code title="Stabilné id — viaže sa naň efekt v jadre, nemení sa">{k.id}</code>}
             {chyby.length > 0 ? (
@@ -376,6 +378,30 @@ export function Tvorca({ id }: { readonly id: string }) {
               }
             >
               <textarea value={k.efekt} onChange={(e) => nastav("efekt", e.target.value)} rows={3} maxLength={600} />
+            </Pole>
+          </section>
+
+          <section className="panel">
+            <h3>Pre hráča</h3>
+            <p className="tlmene tvorca-poznamka">
+              Nepovinné. Hráči ich uvidia len v detaile karty v glosári <Odkaz href="/karty">Karty</Odkaz> po zverejnení sady — hra ani výučba ich
+              neukazujú.
+            </p>
+            <Pole label="Príbeh" pomoc="Kto alebo čo to v dedine je a odkiaľ sa vzal. Prázdny riadok začne nový odsek.">
+              <textarea
+                value={k.pribeh ?? ""}
+                onChange={(e) => setK(sTextomKarty(k, "pribeh", e.target.value))}
+                rows={4}
+                maxLength={MAX_TEXTU_KARTY}
+              />
+            </Pole>
+            <Pole label="Účel v hre" pomoc="Čo s kartou hráč dosiahne a aké zahrania ponúka. Zahranie na nový riadok začni „- “ — zobrazí sa ako odrážka.">
+              <textarea
+                value={k.ucel ?? ""}
+                onChange={(e) => setK(sTextomKarty(k, "ucel", e.target.value))}
+                rows={5}
+                maxLength={MAX_TEXTU_KARTY}
+              />
             </Pole>
           </section>
 

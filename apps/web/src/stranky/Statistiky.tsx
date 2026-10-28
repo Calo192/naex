@@ -2,14 +2,12 @@
 // bilancia partií a podrobné počítadlá z archívu dohraných partií.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { Action, Podmienka, StatistikyHraca } from "@naex/core";
-import { ALL_PODMIENKY, rozlozRod } from "@naex/core";
+import type { Action, StatistikyHraca } from "@naex/core";
+import { rozlozRod } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
-import { IkonaPodmienky } from "../karta/IkonaPodmienky.tsx";
-import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
 import "./statistiky.css";
 
 // ---- tvar odpovede /api/hraci/:id -------------------------------------------
@@ -281,41 +279,6 @@ function AkcieVBitkach({ akcie, bitky }: { readonly akcie: StatistikyHraca["akci
   );
 }
 
-/**
- * Podmienky scorecardov — kladné doprava, záporné (dlh, cirhóza) doľava od nuly. Do v4 body
- * za podmienku, od v5 vyhraté súboje (body dáva starší, nie podmienka — statistiky.ts).
- */
-function BodyPodla({ body }: { readonly body: StatistikyHraca["bodyPodla"] }) {
-  const { sada } = useSada();
-  const ikony = sada?.ikonyBodovania ?? [];
-  const riadky = ALL_PODMIENKY.map((p) => ({ p, n: body[p] ?? 0 }));
-  const maxKladne = Math.max(0, ...riadky.map((r) => r.n));
-  const maxZaporne = Math.max(0, ...riadky.map((r) => -r.n));
-  const rozsah = maxKladne + maxZaporne || 1;
-  const nula = (maxZaporne / rozsah) * 100;
-  return (
-    <ul className="body-podla">
-      {riadky.map(({ p, n }) => (
-        <li key={p}>
-          <span className="body-podla-nazov">
-            <IkonaPodmienky podmienka={p as Podmienka} ikony={ikony} />
-            {NAZOV_PODMIENKY[p]}
-          </span>
-          <span className="body-podla-os" style={{ ["--nula" as string]: `${nula}%` }}>
-            {n !== 0 && (
-              <span
-                className={`body-podla-pruh ${n < 0 ? "zaporny" : ""}`}
-                style={n > 0 ? { left: `${nula}%`, width: `${(n / rozsah) * 100}%` } : { right: `${100 - nula}%`, width: `${(-n / rozsah) * 100}%` }}
-              />
-            )}
-          </span>
-          <span className={`body-podla-hodnota ${n === 0 ? "tlmene" : ""}`}>{n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0"}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 // ---- partie a súperi -------------------------------------------------------------
 
 const TEXT_VYSLEDKU: Record<Vysledok, string> = { vyhra: "výhra", prehra: "prehra", remiza: "remíza" };
@@ -450,13 +413,10 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
         <GrafFrajeriny historia={profil.historia} />
       </section>
 
-      <Sekcia siroka nazov="Bodovanie" ikona={<span className="stat-ikona-text">★</span>} popis="Body zo záverečného bodovania. Pod tým podmienky scorecardov: v partiách do v4 body za podmienku, od v5 vyhraté súboje pri starších.">
+      <Sekcia siroka nazov="Bodovanie" ikona={<span className="stat-ikona-text">★</span>} popis="Konečné špaky (od pravidiel v6) a body zo záverečného bodovania starších partií.">
         <Udaj nazov="bodov spolu" hodnota={cislo(s.body)} vyrazny />
         <Udaj nazov="na bodovanú partiu" hodnota={priemer(s.body, s.bodovanePartie)} pomoc={`${s.bodovanePartie} ${tvar(s.bodovanePartie, "partia sa skončila", "partie sa skončili", "partií sa skončilo")} záverečným bodovaním.`} />
         <Udaj nazov="najviac v partii" hodnota={cislo(s.najviacBodov)} />
-        <div className="udaj-siroky">
-          <BodyPodla body={s.bodyPodla} />
-        </div>
       </Sekcia>
 
       <div className="stat-mriezka">
@@ -488,7 +448,6 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
           <Udaj nazov="cirhóz získaných" hodnota={cislo(s.cirhozyZiskane)} />
           <Udaj nazov="cirhóz na partiu" hodnota={priemer(s.cirhozyZiskane, s.partie)} />
           <Udaj nazov="cirhóz priznaných" hodnota={cislo(s.cirhozyPriznane)} />
-          <Udaj nazov="pohreby" hodnota={cislo(s.pohreby)} />
         </Sekcia>
 
         <Sekcia nazov="Povery a viera" ikona={<Akcia kluc="Povera" />}>

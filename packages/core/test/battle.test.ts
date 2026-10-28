@@ -5,8 +5,9 @@ import type { BattleSide } from "../src/index.ts";
 import {
   battleOutcome,
   computeDamage,
-  dlhyPoExekucii,
   exekutorCheck,
+  spakyZaBitku,
+  zhoriPriExekucii,
 } from "../src/index.ts";
 
 function side(overrides: Partial<BattleSide> = {}): BattleSide {
@@ -118,15 +119,38 @@ describe("M4 — výsledok", () => {
 });
 
 describe("M4 — Exekútor", () => {
-  it("prah je 10, súperov Exekútor (v5) ho zníži o svoju silu", () => {
-    expect(exekutorCheck(9, 0)).toBe("mimoOhrozenia");
-    expect(exekutorCheck(10, 0)).toBe("musiOdovzdatNastroj");
-    expect(exekutorCheck(7, 2)).toBe("mimoOhrozenia");
-    expect(exekutorCheck(8, 2)).toBe("musiOdovzdatNastroj");
+  it("prah je 7 (v7), súperov Exekútor (v5) ho zníži o svoju silu", () => {
+    expect(exekutorCheck(6, 0)).toBe(false);
+    expect(exekutorCheck(7, 0)).toBe(true);
+    expect(exekutorCheck(4, 2)).toBe(false);
+    expect(exekutorCheck(5, 2)).toBe(true);
   });
 
-  it("po odovzdaní Nástroja zhorí polovica dlhov nadol", () => {
-    expect(dlhyPoExekucii(10)).toBe(5);
-    expect(dlhyPoExekucii(11)).toBe(6); // zhorí 5
+  it("v6: zhorí polovica priznaných Dlhov nadol (a rovnako špakov)", () => {
+    expect(zhoriPriExekucii(10)).toBe(5);
+    expect(zhoriPriExekucii(11)).toBe(5);
+    expect(zhoriPriExekucii(1)).toBe(0);
+  });
+});
+
+describe("v6 — výsledok bitky a špaky za bitku (Michal 2026-10-26)", () => {
+  const remiza = { tuhe: [3, 3], makke: [0, 2], celkove: [3, 5], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
+
+  it("remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera", () => {
+    expect(battleOutcome(remiza, { abstaky: [1, 0], dlhy: [0, 0] })).toMatchObject({ vitaz: 1, rozhodlo: "abstak", prebytokDrzi: 1 });
+    expect(battleOutcome(remiza, { abstaky: [1, 1], dlhy: [2, 3] })).toMatchObject({ vitaz: 0, rozhodlo: "dlhy" });
+    expect(battleOutcome(remiza, { abstaky: [0, 0], dlhy: [1, 1] })).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
+    // Rozhoduje tuhé — Absťáky ani Dlhy nič nemenia.
+    const tuhe = { ...remiza, tuhe: [4, 3] } as const;
+    expect(battleOutcome(tuhe, { abstaky: [5, 0], dlhy: [9, 0] })).toMatchObject({ vitaz: 0, rozhodlo: "tuhe" });
+  });
+
+  it("víťaz dostane odohrané Pitky mínus rozdiel Absťákov, aspoň 1", () => {
+    expect(spakyZaBitku(3, 0, 0)).toBe(3);
+    expect(spakyZaBitku(3, 2, 0)).toBe(1);
+    expect(spakyZaBitku(3, 2, 1)).toBe(2);
+    expect(spakyZaBitku(2, 5, 0)).toBe(1);
+    // Viac Absťákov u porazeného víťazovi nepridá.
+    expect(spakyZaBitku(2, 0, 3)).toBe(2);
   });
 });

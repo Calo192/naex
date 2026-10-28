@@ -9,8 +9,9 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, GameState, MarkerPos, PlacedCard, PlayerId } from "../src/index.ts";
 import {
-  KONSTANTY,
+
   apply,
+  eventsFor,
   legalCommands,
   loadGameData,
   naTahu,
@@ -28,7 +29,7 @@ const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayou
 const lezi = (card: CardInstance, playedBy: PlayerId): PlacedCard => ({ card, playedBy });
 
 /** Marker na polovici hráča p v danej zóne (1 žltá, 2 oranžová, 3 červená). */
-const naPolovici = (p: PlayerId, zona: 1 | 2 | 3): MarkerPos => (p === 0 ? 3 - zona : 5 + zona) as MarkerPos;
+const naPolovici = (p: PlayerId, zona: 1 | 2 | 3): MarkerPos => (p === 0 ? 3 - zona : 3 + zona) as MarkerPos;
 
 /** Stav v kroku patronátu: útočník u je na ťahu, starší[0] mu prejavuje priazeň v danej zóne. */
 function vPatronate(zona: 1 | 2 | 3, uprav: (s: GameState, u: PlayerId) => GameState = (s) => s): { s: GameState; u: PlayerId; obcan: CardInstance } {
@@ -47,7 +48,7 @@ function vPatronate(zona: 1 | 2 | 3, uprav: (s: GameState, u: PlayerId) => GameS
     faza: "draft",
     ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
     lokalityVHre: s0.lokalityVHre.slice(1),
-    starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker, markerZaciatokKola: marker } : e)),
+    starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker} : e)),
     hraci,
     draftStav: {
       krok: "patronat",
@@ -68,13 +69,12 @@ function bitka(c: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     pohorsenieZostava: [0, 0],
-    pohorsenieHranice: {},
+    exekutor: [0, 0],
     damage: null,
     vitaz: null,
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    pohrebHotovy: [true, true],
     benzinkaZostava: [0, 0],
 
     karHotovy: [true, true],
@@ -106,11 +106,13 @@ describe("patronát — vzatie staršieho do ruky", () => {
     expect(legal.some((c) => c.type === "patronat" && c.uid !== obcan.uid)).toBe(false);
 
     const po = apply(data, s, { type: "patronat", elderId: elder.elderId, uid: obcan.uid }, u).state;
-    expect(po.hraci[u].cigarety).toBe(3 - 1);
+    // v6.1: z oranžovej 2 cigarety (červená 1, oranžová 2, žltá 3).
+    expect(po.hraci[u].cigarety).toBe(3 - 2);
     expect(po.hraci[u].ruka.map((k) => k.uid)).toContain(elder.karta.uid);
     expect(po.hraci[u].ruka.map((k) => k.uid)).not.toContain(obcan.uid);
-    expect(po.starsi[0]!.marker).toBe(4);
-    expect(po.patronat[u]).toEqual({ elderId: elder.elderId, nahrada: obcan, pohorsenia: 3 });
+    expect(po.starsi[0]!.marker).toBe(3);
+    // v6: Pohoršenia súpera 1 / 2 / 3 (o koľko polí sa marker vrátil do stredu).
+    expect(po.patronat[u]).toEqual({ elderId: elder.elderId, nahrada: obcan, pohorsenia: 2 });
     // Obranca nemá koho vziať — hra jeho rozhodnutie preskočí a začína Zhromaždenie.
     expect(po.faza).toBe("zhromazdenie");
     expect(naTahu(po)).toBe(u);
@@ -122,7 +124,7 @@ describe("patronát — vzatie staršieho do ruky", () => {
     const jeho = viewFor(data, po, opponentOf(u));
     expect(JSON.stringify(jeho)).not.toContain(`"uid":${obcan.uid},`);
     expect(jeho.mojaNahrada).toBeNull();
-    expect(jeho.patronat[u]).toEqual({ elderId: s.starsi[0]!.elderId, pohorsenia: 2 });
+    expect(jeho.patronat[u]).toEqual({ elderId: s.starsi[0]!.elderId, pohorsenia: 1 });
     expect(viewFor(data, po, u).mojaNahrada).toEqual(obcan);
   });
 
@@ -135,34 +137,71 @@ describe("patronát — vzatie staršieho do ruky", () => {
     expect(legalCommands(data, bezObcana.s, bezObcana.u)).toEqual([{ type: "bezPatronatu" }]);
   });
 
-  it("z červenej zadarmo, súper dostane 4 Pohoršenia; obávaný hráč patrónom nie je", () => {
+  it("keď hra patronát preskočí pre málo cigariet, povie hráčovi prečo — súperovi nič (playtest 20261026-173610-3)", () => {
+    const { s, u } = vPatronate(1, (s, u) => ({ ...s, hraci: s.hraci.map((h, i) => (i === u ? { ...h, cigarety: 1 } : h)) as unknown as GameState["hraci"] }));
+    const o = opponentOf(u);
+    // Súper sa rozhodne prvý, potom má u na výber len „bez patronátu“ — hra ho odohrá sama.
+    const naSupera = { ...s, draftStav: { ...s.draftStav!, naTahu: o } } as GameState;
+    const { state, events } = apply(data, naSupera, { type: "bezPatronatu" }, o);
+    expect(state.faza).toBe("zhromazdenie");
+    const meno = data.cards.get(s.starsi[0]!.karta.defId)!.name;
+    const pre = (p: PlayerId) => eventsFor(events, p).flatMap((e) => (e.type === "log" ? [e.text] : []));
+    expect(pre(u)).toContain(`Patronát preskočený: priazeň ti prejavuje ${meno} (3 cigarety), ale máš len 1 cigaretu.`);
+    expect(pre(o).some((t) => t.startsWith("Patronát preskočený"))).toBe(false);
+  });
+
+  it("z červenej za 1 cigaretu (v6.1), súper dostane 3 Pohoršenia; obávaný hráč patrónom nie je", () => {
     const { s, u, obcan } = vPatronate(3);
     const elderId = s.starsi[0]!.elderId;
     expect(legalCommands(data, s, opponentOf(u))).toEqual([]);
     const po = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
-    expect(po.hraci[u].cigarety).toBe(3);
-    expect(po.patronat[u]?.pohorsenia).toBe(4);
+    expect(po.hraci[u].cigarety).toBe(3 - 1);
+    expect(po.patronat[u]?.pohorsenia).toBe(3);
   });
 
-  it("súper dostane Pohoršenia v bitke a vráti nimi marker toho istého staršieho až do oranžovej", () => {
-    const { s, u, obcan } = vPatronate(2);
+  it("v6: súperove Pohoršenia z patronátu nesmú na patróna — patrón z červenej zastaví vydesenie (Michal 2026-10-26)", () => {
+    const { s, u, obcan } = vPatronate(3);
     const elderId = s.starsi[0]!.elderId;
     let st = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
     st = doBitky(st);
     const o = opponentOf(u);
     expect(st.bitkaStav?.krok).toBe("pohorsenie");
     expect(st.bitkaStav?.pohorsenieZostava[o]).toBe(3);
-    for (let i = 0; i < 3; i++) st = apply(data, st, { type: "pohorsenie", elderId }, o).state;
-    expect(st.starsi[0]!.marker).toBe(naPolovici(u, 2));
+    expect(st.bitkaStav?.pohorseniaPatronatu?.[o]).toBe(3);
+    // Na patróna nie (ani k sebe, ani k súperovi), na ostatných starších áno.
+    const legal = legalCommands(data, st, o);
+    expect(legal.some((c) => c.type === "pohorsenie" && c.elderId === elderId)).toBe(false);
+    expect(() => apply(data, st, { type: "pohorsenie", elderId }, o)).toThrow(/patróna/);
+    const iny = st.starsi[1]!.elderId;
+    for (let i = 0; i < 3 && st.bitkaStav?.krok === "pohorsenie"; i++) st = apply(data, st, { type: "pohorsenie", elderId: iny }, o).state;
+    expect(st.starsi[0]!.marker).toBe(3);
   });
 
-  it("Policajtka patróna zruší aj Pohoršenia z patronátu", () => {
+  it("v6: na patróna smú súperove ostatné Pohoršenia (zo stola) — z patronátu sa minú najprv", () => {
+    const { s, u, obcan } = vPatronate(1);
+    const elderId = s.starsi[0]!.elderId;
+    let st = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
+    st = doBitky(st);
+    const o = opponentOf(u);
+    // Súper má 1 Pohoršenie z patronátu a k tomu 1 zo stola.
+    const b = st.bitkaStav!;
+    const zostava: [number, number] = [b.pohorsenieZostava[0], b.pohorsenieZostava[1]];
+    zostava[o] += 1;
+    st = { ...st, bitkaStav: { ...b, caka: o, pohorsenieZostava: zostava } };
+    expect(legalCommands(data, st, o)).toContainEqual({ type: "pohorsenie", elderId });
+    const po = apply(data, st, { type: "pohorsenie", elderId }, o).state;
+    expect(po.starsi[0]!.marker).toBe(naPolovici(u, 1));
+    // Zostalo len Pohoršenie z patronátu — na patróna už nie.
+    if (po.bitkaStav?.krok === "pohorsenie") expect(legalCommands(data, po, o).some((c) => c.type === "pohorsenie" && c.elderId === elderId)).toBe(false);
+  });
+
+  it("Policajtka patróna Pohoršenia z patronátu neruší (Michal 2026-10-26)", () => {
     const { s, u, obcan } = vPatronate(2);
     const elderId = s.starsi[0]!.elderId;
     let st = apply(data, s, { type: "patronat", elderId, uid: obcan.uid }, u).state;
     st = { ...st, strany: (u === 0 ? [[lezi(inst("policajtka"), 0)], []] : [[], [lezi(inst("policajtka"), 1)]]) as GameState["strany"] };
     st = doBitky(st);
-    expect(st.bitkaStav?.pohorsenieZostava[opponentOf(u)] ?? 0).toBe(0);
+    expect(st.bitkaStav?.pohorseniaPatronatu?.[opponentOf(u)] ?? 0).toBeGreaterThan(0);
   });
 });
 
@@ -185,7 +224,7 @@ describe("patronát — po bitke", () => {
       faza: "bitka",
       draftStav: null,
       hraci: st.hraci.map((h) => ({ ...h, poldeciPlne: 1, poldeciVypite: 1 })) as unknown as GameState["hraci"],
-      bitkaStav: bitka({ krok: "pohreb", caka: 0, pohrebHotovy: [false, true], vitaz, prebytokDrzi: vitaz }),
+      bitkaStav: bitka({ krok: "cintorin", caka: 0, vitaz, prebytokDrzi: vitaz }),
     };
     return { s: st, u, elderUid: elderKarta.uid, obcan };
   }
@@ -193,7 +232,7 @@ describe("patronát — po bitke", () => {
   it("výhra: starší ostáva patrónovi, karta lícom dole sa otáča na scorecarde", () => {
     for (const vLinii of [false, true]) {
       const { s, u, elderUid, obcan } = predKoncom(vPatronate(2).u, vLinii);
-      const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+      const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
       const e = po.starsi[0]!;
       expect(e.karta).toEqual(obcan);
       expect(e.nahradeny).toBe(true);
@@ -209,11 +248,11 @@ describe("patronát — po bitke", () => {
     for (const vLinii of [false, true]) {
       const u0 = vPatronate(2).u;
       const { s, u, elderUid, obcan } = predKoncom(opponentOf(u0), vLinii);
-      const po = apply(data, s, { type: "skipPohreb" }, 0).state;
+      const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
       const e = po.starsi[0]!;
       expect(e.karta.uid).toBe(elderUid);
       expect(e.nahradeny).toBe(false);
-      expect(e.marker).toBe(4);
+      expect(e.marker).toBe(3);
       const h = po.hraci[u];
       expect(h.ruka.some((k) => k.uid === obcan.uid)).toBe(true);
       expect([...h.ruka, ...h.odhadzovaci, ...h.doberaci].some((k) => k.uid === elderUid)).toBe(false);
@@ -222,19 +261,9 @@ describe("patronát — po bitke", () => {
       expect([h.poldeciPlne, h.poldeciVypite]).toEqual([1, 0]);
     }
   });
-
-  it("staršieho z patronátu nemožno pochovať", () => {
-    const { s, u, elderUid } = predKoncom(0, true);
-    const st: GameState = {
-      ...s,
-      hraci: s.hraci.map((h, i) => (i === u ? { ...h, priznane: [...h.priznane, inst("cirhoza")] } : h)) as unknown as GameState["hraci"],
-      bitkaStav: bitka({ krok: "pohreb", caka: u, pohrebHotovy: [u === 1, u === 0], vitaz: 0 }),
-    };
-    expect(legalCommands(data, st, u).some((c) => c.type === "pohreb" && c.kartaUid === elderUid)).toBe(false);
-  });
 });
 
-describe("Pohoršenie: viac posunov, najviac dve hranice zón (Michal 2026-10-20)", () => {
+describe("Pohoršenie v6: o pole, bez limitu, aj na červenú (Michal 2026-10-26)", () => {
   function vPohorseni(lokalita: string, marker: MarkerPos): GameState {
     const s0 = setupGame(data, 32);
     const lok = { uid: 69999, defId: lokalita, leftLayout: 0, rightLayout: 0 };
@@ -242,7 +271,7 @@ describe("Pohoršenie: viac posunov, najviac dve hranice zón (Michal 2026-10-20
       ...s0,
       faza: "bitka",
       ciel: { typ: "lokalita", lokalita: lok },
-      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker, markerZaciatokKola: marker } : e)),
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker} : e)),
       bitkaStav: bitka({ krok: "pohorsenie", caka: 1, pohorsenieZostava: [0, 6] }),
     };
   }
@@ -256,17 +285,15 @@ describe("Pohoršenie: viac posunov, najviac dve hranice zón (Michal 2026-10-20
     return st;
   };
 
-  it("pravá sivá → ľavá oranžová (4 posuny) smie", () => {
-    expect(posuvaj(vPohorseni("krcma", 5)).starsi[0]!.marker).toBe(1);
+  it("zo stredu na červenú tri Pohoršenia, ďalej už nie", () => {
+    const st = posuvaj(vPohorseni("krcma", 3));
+    expect(st.starsi[0]!.marker).toBe(0);
+    // Zvyšné Pohoršenia smú už len k sebe alebo na iných starších.
+    expect(st.bitkaStav?.pohorsenieZostava[1]).toBe(3);
   });
 
-  it("z pravej oranžovej len po ľavú sivú — tretia hranica nie", () => {
-    expect(posuvaj(vPohorseni("krcma", 7)).starsi[0]!.marker).toBe(3);
-  });
-
-  it("Kultúrny dom limit ruší, na krajnú však Pohoršenie nesmie", () => {
-    expect(posuvaj(vPohorseni("kulturny_dom", 7)).starsi[0]!.marker).toBe(1);
-    expect(KONSTANTY.POHORSENIE_MAX_HRANIC).toBe(2);
+  it("z pravej oranžovej až na ľavú červenú — limit hraníc zón ani zákaz kraja nie sú", () => {
+    expect(posuvaj(vPohorseni("krcma", 5)).starsi[0]!.marker).toBe(0);
   });
 });
 

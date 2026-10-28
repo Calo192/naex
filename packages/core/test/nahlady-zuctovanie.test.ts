@@ -7,12 +7,14 @@
 // Súper NA EX nedá a neodpovie — náhľad to tak sľubuje.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../data/cards.json";
+// Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
+import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { ActionSums, ClientState, Command, DamageResult, GameState, PlayerId } from "../src/index.ts";
 import {
   apply,
+  partiaHraca,
   battleOutcome,
   cenaKliatby,
   dalsiePitkyKola,
@@ -23,7 +25,6 @@ import {
   nahladNaexNaKartu,
   naTahu,
   pohorseniaVBitke,
-  pohorseniaZruseneVBitke,
   poskodenieBitky,
   prebytokNaRozdelenie,
   rngInt,
@@ -164,12 +165,10 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
           expect(n.dopady[q].cigarety, `${kde}: cigarety hráča ${q}`).toBe(s1.hraci[q].cigarety - bez.hraci[q].cigarety);
           expect(n.kliatby[q].cirhozy + n.kliatby[q].dalejCirhozy, `${kde}: Cirhózy hráča ${q}`).toBe(s1.cirhozyVKole[q] - bez.cirhozyVKole[q]);
           // Bitka ráta Pohoršenia zo svojich súčtov (nastavSumy) — tým istým výpočtom ako náhľad.
-          const poh = (t: GameState, sums: readonly [ActionSums, ActionSums]) => [pohorseniaVBitke(data, t, sums)[q], pohorseniaZruseneVBitke(data, t, sums)[q]] as const;
-          const [pA, zA] = poh(s1, b1.sums);
-          const [pB, zB] = poh(bez, b0.sums);
+          const pA = pohorseniaVBitke(data, s1, b1.sums)[q];
+          const pB = pohorseniaVBitke(data, bez, b0.sums)[q];
           expect(n.dopady[q].pohorseniaSpolu, `${kde}: Pohoršenia hráča ${q}`).toBe(pA);
           expect(n.dopady[q].pohorsenia, `${kde}: Pohoršenia navyše hráča ${q}`).toBe(pA - pB);
-          expect(n.dopady[q].pohorseniaZrusene, `${kde}: Policajtka, hráč ${q}`).toBe(zA - zB);
         }
         porovnane++;
         // Bitka až po poškodenie. Benzínka mení líniu voľbou hráča — tú náhľad nepredvída.
@@ -179,10 +178,12 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         const dB = bezBitka.s.bitkaStav;
         if (sNaex.s.faza !== "bitka" || bezBitka.s.faza !== "bitka" || dA == null || dB == null) continue;
         for (const q of [0, 1] as const) {
+          // Záhradkár pri exekúcii (Exekúcia v7) je voľba hráča — náhľad ju nepredvída.
+          if (partiaHraca(s, q).some((pl) => pl.card.defId === "zahradkar")) continue;
           // Priznané Dlhy pri poškodení — strop súperovho mäkkého.
           expect(dlhy(stolPriPoskodeni(data, n.odkrytie.view, 0), q), `${kde}: Dlhy pri poškodení, hráč ${q}`).toBe(dlhy(sNaex.s, q));
           expect(dlhy(stolPriPoskodeni(data, zaklad, 0), q), `${kde}: Dlhy bez NA EX, hráč ${q}`).toBe(dlhy(bezBitka.s, q));
-          if (!sNaex.rozhodnutia.has("exekutorTool") && !bezBitka.rozhodnutia.has("exekutorTool")) {
+          if (!sNaex.rozhodnutia.has("zahradkar") && !bezBitka.rozhodnutia.has("zahradkar")) {
             expect(n.kliatby[q].dlhyPoBitke, `${kde}: Dlhy po bitke, hráč ${q}`).toBe(dlhy(sNaex.s, q) - dlhy(bezBitka.s, q));
           }
         }

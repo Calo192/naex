@@ -6,6 +6,7 @@ import { Odkaz } from "../lib/router.tsx";
 import { jeSpravca, useUcet } from "../lib/ucet.tsx";
 import { Navrhy } from "./Navrhy.tsx";
 import { Reporty } from "./Reporty.tsx";
+import { HlavaStranky } from "../HlavaStranky.tsx";
 import "./playtest.css";
 
 export function Playtest({ cesta }: { readonly cesta: string }) {
@@ -15,8 +16,10 @@ export function Playtest({ cesta }: { readonly cesta: string }) {
   const reporty = casti[1] === "reporty" || !spravca;
   return (
     <div className="playtest-stranka">
-      <header className="playtest-hlavicka">
-        <h1>Playtest</h1>
+      <HlavaStranky
+        nadpis="Playtest"
+        uvod={spravca ? "Návrhy z playtestov na rozhodnutie a reporty z partií AI playtesterov." : "Reporty z partií AI playtesterov."}
+        zalozky={
         <nav className="cipy" aria-label="Playtest">
           {spravca && (
             <Odkaz href="/playtest" className={`cip ${reporty ? "" : "aktivny"}`}>
@@ -27,7 +30,8 @@ export function Playtest({ cesta }: { readonly cesta: string }) {
             Reporty
           </Odkaz>
         </nav>
-      </header>
+        }
+      />
       {reporty ? <Reporty subor={casti[2] !== undefined ? decodeURIComponent(casti[2]) : null} /> : <Navrhy />}
     </div>
   );

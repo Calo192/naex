@@ -12,6 +12,9 @@
 // --klik klikne na prvok (CSS selektor, napr. ".tlacidlo-naex") a odfotí výsledok;
 // --klik sa dá zopakovať — kliky idú postupne, po každom snímka.
 // --schema noc odfotí web vo farebnej schéme (id z apps/web/src/lib/schemy.ts).
+// --par w9 [--prehod] odfotí web s párom farieb hráča (apps/web/src/lib/paryHraca.ts);
+// pár uložený v účte má prednosť, preto len pre účty, ktoré si ho v profile nevybrali.
+// --miestnost KÓD uloží v režime „web“ kód miestnosti do prehliadača (návrat do partie po načítaní).
 //
 // Režim „web“ nepotrebuje partiu: prihlási sa na web (predvolene vývojový server
 // :8787, inak --url / NAEX_WEB_URL) AI účtom „<--ako> (AI)“ — hráč, s --tvorba
@@ -31,7 +34,7 @@ import { prihlasAgenta, webUrl } from "./web.ts";
 
 const args = process.argv.slice(2);
 /** Prepínače bez hodnoty — argument za nimi je voľný (relácia, názov). */
-const BEZ_HODNOTY = new Set(["--tvorba", "--plna", "--mobil"]);
+const BEZ_HODNOTY = new Set(["--tvorba", "--plna", "--mobil", "--prehod"]);
 const volba = (k: string): string | undefined => {
   const i = args.indexOf(k);
   return i < 0 ? undefined : args[i + 1];
@@ -63,6 +66,7 @@ if (!cesta.startsWith("/")) cesta = `/${cesta}`;
 const kliky = args.flatMap((a, i) => (args[i - 1] === "--klik" ? [a] : []));
 /** Farebná schéma webu (apps/web/src/lib/schemy.ts), napr. „noc"; inak tá z účtu. */
 const schema = volba("--schema");
+const par = volba("--par");
 const nazov = ((web ? hracArg : nazovArg) ?? "stav").replace(/[^a-z0-9_-]/gi, "_");
 
 /** Kam a ako sa prihlásiť: hráč partie playtestu, alebo AI účet na webe. */
@@ -79,7 +83,7 @@ async function prihlasenie(): Promise<Prihlasenie> {
   if (web) {
     const url = webUrl(args);
     const ucet = await prihlasAgenta(url, volba("--ako") ?? "Dizajnér", ma("--tvorba") ? "subadmin" : "hrac");
-    return { zaklad: url, login: ucet.login, heslo: ucet.heslo, miestnost: null, vystup: volba("--vystup") ?? join("playtest", "dizajn", "snimky"), predpona: "" };
+    return { zaklad: url, login: ucet.login, heslo: ucet.heslo, miestnost: volba("--miestnost") ?? null, vystup: volba("--vystup") ?? join("playtest", "dizajn", "snimky"), predpona: "" };
   }
   const hra = JSON.parse(readFileSync(join(relacia ?? "", "hra.json"), "utf8")) as {
     port: number;
@@ -158,7 +162,8 @@ try {
   await pockaj(1500);
   const miestnost =
     (ucet.miestnost === null ? "" : `localStorage.setItem('naex.miestnost',${JSON.stringify(ucet.miestnost)});`) +
-    (schema === undefined ? "" : `localStorage.setItem('naex-schema',${JSON.stringify(schema)});`);
+    (schema === undefined ? "" : `localStorage.setItem('naex-schema',${JSON.stringify(schema)});`) +
+    (par === undefined ? "" : `localStorage.setItem('naex-par',${JSON.stringify(par)});localStorage.setItem('naex-prehod',${JSON.stringify(ma("--prehod") ? "1" : "0")});`);
   await js(
     `fetch('/api/prihlasenie',{method:'POST',headers:{'content-type':'application/json','x-naex':'1'},body:JSON.stringify(${JSON.stringify({ login: ucet.login, heslo: ucet.heslo })})}).then(r=>r.status).then(s=>{${miestnost}return s})`,
   );

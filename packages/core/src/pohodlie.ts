@@ -18,8 +18,8 @@ export function navrhPrebytku(data: GameData, view: ClientState): { readonly kro
   const b = view.bitkaStav;
   const ja = view.ja;
   if (view.faza !== "bitka" || b === null || b.krok !== "prebytok" || b.caka !== ja || !view.mozemHrat) return null;
-  // Miňištrant zdražuje posun víťaza, nie toho, kto prebytok rozdeľuje inak (§9.4).
-  const cena = b.vitaz === ja ? 1 + partiaHraca(view, ja).filter((pl) => pl.card.defId === "ministrant").length : 1;
+  // Od v7 stojí posun markera vždy 1 (Miňištrant ho už nezdražuje).
+  const cena = 1;
   const { kroky } = hltavyPrebytok(data, view, ja, b.prebytokZostava, cena);
   if (kroky.length === 0) return null;
   return { kroky, prikaz: { type: "tah", kroky: kroky.map((elderId) => ({ type: "prebytok", elderId })) } };
@@ -31,7 +31,7 @@ export function navrhPrebytku(data: GameData, view: ClientState): { readonly kro
  * ostáva na hráčovi a Krčma, ktorá NA EX vynúti, prepínač vypne.
  */
 export function autoKoniecPitky(view: ClientState, kolo: number | null): Command | null {
-  if (kolo === null || kolo !== view.kolo || view.koniec !== null || !view.mozemHrat) return null;
+  if (kolo === null || kolo !== view.kolo || view.koniec !== null || !view.mozemHrat || view.hasicVolba !== null) return null;
   const ps = view.pitkaStav;
   const ja: PlayerId = view.ja;
   if (view.faza !== "pitka" || ps === null || ps.reakcia !== null || ps.naTahu !== ja || ps.hotovy[ja]) return null;

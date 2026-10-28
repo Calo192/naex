@@ -8,7 +8,7 @@ Web má tri časti a prihlásenie:
 | Časť | Kto | Čo |
 |---|---|---|
 | **Pravidlá** (`/pravidla`) | ktokoľvek | pravidlá v2 po kapitolách s ilustráciami a interaktívnymi ukážkami |
-| **Karty** (`/karty`) | ktokoľvek | glosár kariet v tlačovom vzhľade, tooltipy akcií a pojmov, varianty |
+| **Karty** (`/karty`) | ktokoľvek | glosár kariet v tlačovom vzhľade, tooltipy akcií a pojmov, varianty; v detaile karty príbeh a účel v hre (texty z tvorcu, hra ani výučba ich neukazujú) |
 | **Hrať** (`/hra`) | prihlásený hráč | súkromná hra s kódom alebo verejná hra zo zoznamu, mená a avatary |
 | **Tvorba** (`/admin`) | admin, subadmin | webová verzia MAUI aplikácie KartyAI — návrhy kariet, tvorca, akcie, kľúčové slová, farby, bodovacie karty, tlač, import/export, zverejnenie sady |
 | **Hráči** (`/hraci`) | admin, subadmin | účty a úrovne (admin / subadmin / hráč / návštevník), značka AI; úrovne mení len admin |
@@ -156,7 +156,7 @@ na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
 celkové) smerom k súperovi; veľkosť balíčka sa kontroluje po drafte
 a na konci kola (nie uprostred, keď karty ležia v partiách); Vízia sa
 vyhodnocuje automaticky (zahodí kliatby z práve dobraných); Pohreb
-Závislého berie kartu zo šenku priamo (Liečba sa v4 zlúčila do Pohrebu); barter berie
+(v4 doň zlúčená Liečba) Michal 2026-10-27 zrušil; barter berie
 len fyzické cigarety.
 
 ## Zmeny pravidiel po playteste 20261012-055944 (2026-10-12)
@@ -188,7 +188,7 @@ Rozhodnutia Michala, skúšobné. Prečo a čo sledovať je v
    platia od žltej. V playteste dali riadky za kus v žltej zóne 51:1
    (`elders.ts`, `PRAH_PODMIENKY` / `prahPodmienky`).
 2. **Nevyhnutné ťahy robí hra sama** — pas, keď hráč nemá čo vyložiť;
-   „bez NA EX“, keď v Pitke nemá inú možnosť; vynechanie Pohrebu. Vypiť sa
+   „bez NA EX“, keď v Pitke nemá inú možnosť. Vypiť sa
    neponúka, keď sa nedá nič vyložiť do línie (`engine.ts`,
    `dohrajNevyhnutne`, `legalCommands`). Tretina príkazov playtestu boli
    takéto potvrdenia.

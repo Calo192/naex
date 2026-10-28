@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Texty na pravidlá v6 — čo sa zmenilo</title>
+<style>
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993; --akcent: #e9ad45;
+  --pred: #e08f9c; --po: #8fd0a0;
+  --serif: Georgia, "Times New Roman", serif; --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root { --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b; --akcent: #95590a; --pred: #a33a52; --po: #2c7a41; color-scheme: light; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 860px; margin: 0 auto; padding: 24px max(14px, env(safe-area-inset-right, 0px)) 56px max(14px, env(safe-area-inset-left, 0px)); }
+h1 { font-family: var(--serif); font-size: clamp(1.6rem, 5vw, 2.3rem); margin: 0 0 6px; }
+h2 { font-family: var(--serif); font-size: 1.3rem; margin: 34px 0 10px; padding-bottom: 5px; border-bottom: 1px solid var(--okraj); }
+p, li { max-width: 72ch; }
+.uvod { color: var(--tlmeny); }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 12px 16px; margin: 16px 0; }
+.skratka ul { margin: 6px 0 0; padding-left: 20px; }
+details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; margin: 8px 0; }
+summary { cursor: pointer; padding: 10px 12px; font-weight: 600; }
+summary small { font-weight: 400; color: var(--tlmeny); }
+.zmena { padding: 0 12px 12px; }
+.zmena p { margin: 6px 0; }
+.pred, .po { border-left: 3px solid; padding: 4px 10px; margin: 6px 0; border-radius: 0 6px 6px 0; background: var(--plocha-2); }
+.pred { border-color: var(--pred); }
+.po { border-color: var(--po); }
+.pred::before { content: "pred: "; color: var(--pred); font-weight: 600; }
+.po::before { content: "po: "; color: var(--po); font-weight: 600; }
+.preco { font-size: .9rem; color: var(--tlmeny); }
+code { font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px; border-bottom: 1px solid var(--okraj); }
+footer { margin-top: 36px; color: var(--tlmeny); font-size: .88rem; border-top: 1px solid var(--okraj); padding-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Texty na pravidlá v6 „Špaky“</h1>
+<p class="uvod">Výučba Prvá hra, nápovedy Melichara a stránka Pravidlá prepísané na v6 (jadro v master, <code>docs/PRAVIDLA.md</code> §14 a §14b). Spísal Vymyselník 26. 10. 2026, vetva <code>v6/texty</code>.</p>
+
+<div class="skratka">
+  <strong>V skratke</strong>
+  <ul>
+    <li>Tvoje texty (výučba, Melichar) som menil len tam, kde odporujú v6. Tón a vety, ktoré platia, ostali doslova.</li>
+    <li>Nové slovo <b>špaky</b> zavádza výučba jedenkrát, až po bitke (krok <code>i-lokality-body</code>). Dovtedy Melichar hovorí „body“, tak ako dlaždica Body v bare.</li>
+    <li>Na stupnici so 7 poľami posunie Farára prebytok 3 až na <b>červenú</b> (v5 bol na oranžovej). Tri kroky o prebytku som preto posunul o jedno pole.</li>
+    <li>Rozdanie výučby som nemenil (5 kariet v ruke a 2 v balíčku, v6 má 4 v ruke a prázdny balíček). Dôvod je v otázke 1.</li>
+    <li>Scenár sedí (<code>tools/vyucba/prehraj.ts --ticho</code>), testy (832), typecheck aj build prešli.</li>
+  </ul>
+</div>
+
+<h2>1. Výučba Prvá hra (<code>packages/core/data/vyucba/prva-hra.json</code>)</h2>
+<p class="preco">Verzia scenára <code>cast1-2026-10-25</code> → <code>cast1-v6-2026-10-26</code>: postup uložený vo výučbe v5 začne odznova, lebo jadro v6 má iný stav po bitke.</p>
+
+<details open><summary>i-lokalita <small>body po každej bitke</small></summary><div class="zmena">
+  <p class="pred">… Ich strach ti na konci hry prinesie body, ALEBO aj nie, a čo ja viem…</p>
+  <p class="po">… Ich strach ti po každej bitke prinesie body, ALEBO aj nie, a čo ja viem…</p>
+  <p class="preco">V6 dávajú starší špaky po každej bitke, nie na konci hry.</p>
+</div></details>
+
+<details open><summary>i-lokality <small>lokalitu si víťaz neberie, finále</small></summary><div class="zmena">
+  <p class="pred">Na stole sú tri lokality, dnes teda tri kolá: v každom sa bijete o jednu. Kto bitku vyhrá, lokalitu si berie. Na konci hry ti za ňu dajú body starší, ukážem ti to po bitke. V prvom kole vyberáš ty, potom vždy ten, kto vyhral poslednú bitku.</p>
+  <p class="po">Na stole sú tri lokality, dnes teda tri kolá: v každom sa bijete o jednu. Potom príde ešte posledná bitka, už bez lokality. Kto bitku vyhrá, dostane body, ukážem ti to po bitke. V prvom kole vyberáš ty, potom vždy ten, kto vyhral poslednú bitku.</p>
+  <p class="preco">Slovo „finále“ zámerne nepadne. Je to len oznam, 1. časť sa k finále nedostane.</p>
+</div></details>
+
+<details><summary>i-zhromazdenie</summary><div class="zmena">
+  <p class="pred">… Kto bude mať v bitke viac tuhého, berie Most. …</p>
+  <p class="po">… Kto bude mať v bitke viac tuhého, vyhrá bitku o Most. …</p>
+</div></details>
+
+<details><summary>i-zadlzenie</summary><div class="zmena">
+  <p class="pred">… dostaneš kartu Dlh a tá ťa na konci hry stojí body. …</p>
+  <p class="po">… dostaneš kartu Dlh, a keď sa ich nazbiera veľa, budú ťa stáť body. …</p>
+  <p class="preco">V6 stojí Dlh špaky len cez Exekútora (a rozhoduje remízu).</p>
+</div></details>
+
+<details><summary>k-zh2-bot <small>remíza</small></summary><div class="zmena">
+  <p class="pred">… Odhad 4 : 4. Pri remíze Most nedostane nikto. To by bola hanba.</p>
+  <p class="po">… Odhad 4 : 4. Pri remíze vyhrá, kto má menej Dlhov. To by bola hanba.</p>
+  <p class="preco">Remízu najprv rozhodujú Absťáky. V 1. kole ich nemá nikto, preto tu rozhodnú Dlhy. Hráč o chvíľu dostane Dlh, takže by remízu prehral.</p>
+</div></details>
+
+<details><summary>k-hotovo-bot2 <small>body po bitke stúpnu</small></summary><div class="zmena">
+  <p class="pred">… A ak ti práve spadli BODY, to je tiež Dlh. Body ti vysvetlím po bitke.</p>
+  <p class="po">… A ak ti práve pribudli BODY, to je za bitku. Body ti vysvetlím po bitke.</p>
+  <p class="preco">Pri tejto hláške je bitka už vyhodnotená a dlaždica Body ukazuje 2 : 0 (overené v jadre). Dlh body neuberá.</p>
+</div></details>
+
+<details><summary>i-bitka</summary><div class="zmena">
+  <p class="pred">… Štamgast: Pecka 2 a dve Rany, 4. Most je tvoj.</p>
+  <p class="po">… Štamgast: Pecka 2 a dve Rany, 4. Bitka o Most je tvoja.</p>
+</div></details>
+
+<details><summary>i-starsi</summary><div class="zmena">
+  <p class="pred">… Bitky v nich vzbudzujú respekt a strach a body na konci hry dávajú len oni. …</p>
+  <p class="po">… Bitky v nich vzbudzujú respekt a strach a za ten strach ti po každej bitke dávajú body. …</p>
+</div></details>
+
+<details open><summary>k-prebytok2 <small>1. klik: v6 rovno žltá</small></summary><div class="zmena">
+  <p class="pred">Farár je o políčko bližšie k Štamgastovi, ale ešte v sivej. V sivej sa nikto nikoho nebojí, ako na farskej oslave. Klikni naňho znova.</p>
+  <p class="po">Farár je o políčko bližšie k Štamgastovi a zo sivej, kde sa nikto nikoho nebojí ako na farskej oslave, je rovno v žltej. Začína sa ťa báť a Štamgastovi prejavuje priazeň. Pozri na svoje Dlhy: prah exekútora klesol z 10 na 9, lebo Farárova priazeň je Exekútor. Klikni naňho znova.</p>
+  <p class="preco">Zvýraznenie pribudlo <code>bar:dlhy</code>. Tvoja farská oslava ostala. Scorecard sa v6 nezobrazuje, preto „Farárova priazeň“.</p>
+</div></details>
+
+<details open><summary>k-prebytok3 <small>2. klik: oranžová</small></summary><div class="zmena">
+  <p class="pred">Žltá! Farár sa ťa začína báť a Štamgastovi prejavuje priazeň. Pozri na svoje Dlhy: prah exekútora klesol z 10 na 9, lebo Farár je na scorecarde Exekútor. Posledný klik a je oranžový.</p>
+  <p class="po">Oranžová! Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: tvoj prah exekútora je 8. Posledný klik a je červený.</p>
+</div></details>
+
+<details open><summary>i-oranzova <small>3. klik: červená (id kroku ostáva)</small></summary><div class="zmena">
+  <p class="pred">Oranžová. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: tvoj prah exekútora je 8. Stupnica sa posunula, …</p>
+  <p class="po">Červená. Farár sa ťa bojí na treťom stupni, viac sa už nedá, a Štamgast má jeho priazeň sily 3: tvoj prah exekútora je 7. Stupnica sa posunula, …</p>
+  <p class="preco">Zvyšok vety („… lebo si vyhral o 3 … Útecha pre porazených.“) je bez zmeny. Červená znamená aj vydesenie a prebudenie. Melichar ich nemenuje, sú v otázke 2.</p>
+</div></details>
+
+<details><summary>q-starsi</summary><div class="zmena">
+  <p class="pred">Jeho strach mi dá body. — Áno, za jeho strach môžeš dostať viac bodov. Konečne sa ťa niekto bojí.</p>
+  <p class="po">Jeho strach mi po každej bitke dá body. — Áno, kým je na červenej, dá ti tri po každej bitke. Konečne sa ťa niekto bojí.</p>
+</div></details>
+
+<details open><summary>q-prebytok <small>jedna odpoveď prestala platiť</small></summary><div class="zmena">
+  <p class="pred">„V sivej by sa ma nikto nebál.“ (správna) — Áno. Rozhádzaný prebytok je ako rozliata pálenka: škoda ho.<br>„Štamgast by dostal tri cigarety namiesto jednej.“ (správna) — Aj to: cigaretu dostane za každého posunutého staršieho. Dve správne odpovede, nezvykaj si.</p>
+  <p class="po">„V sivej by sa ma nikto nebál.“ (<b>nesprávna</b>) — Bál by sa: každý bod posunie staršieho o políčko, zo sivej rovno do žltej. Traja starší v žltej by ti dali spolu tiež tri body, lenže Štamgast by dostal tri cigarety.<br>„Štamgast by dostal tri cigarety namiesto jednej.“ (správna) — Áno: cigaretu dostane za každého posunutého staršieho. Rozhádzaný prebytok je ako rozliata pálenka: škoda ho.</p>
+  <p class="preco">Na 7 poliach dá aj jeden bod žltú. Tri žlté = 3 špaky po bitke, rovnako ako jedna červená. Rozdiel robia cigarety (a vydesenie). Tvoja veta o pálenke prešla k správnej odpovedi, „nezvykaj si“ vypadlo, lebo správna je už len jedna.</p>
+</div></details>
+
+<details open><summary>i-lokality-body <small>tu prvý raz „špaky“</small></summary><div class="zmena">
+  <p class="pred">Most je tvoj. Pamätáš, prečo ho chceš? Traja starší majú podmienku Lokality: na konci hry ju vyhrá, kto má viac lokalít. Teraz si to ty.</p>
+  <p class="po">Bitka o Most je tvoja. Pamätáš, prečo si sa bil? Za vyhratú bitku dostaneš body, tu sa im hovorí špaky: toľko, koľko sa v kole odohralo Pitiek. Dnes dve. Ohorky, áno, tie ja zbieram celý život.</p>
+  <p class="preco">Zvýraznenie: namiesto troch starších s Lokalitami dlaždica <code>bar:body</code>. Vtip o ohorkoch je nový, kľudne ho škrtni.</p>
+</div></details>
+
+<details open><summary>i-body</summary><div class="zmena">
+  <p class="pred">BODY v bare sú body, keby hra skončila teraz: 8 : 5. Body dáva každý starší zvlášť: kto vyhrá viac jeho podmienok, dostane bod a ďalší za každú zónu, v ktorej sa ho bojí. Farár: vyhrávaš jeho Lokality a bojí sa ťa v oranžovej, to sú 3 body.</p>
+  <p class="po">BODY v bare sú tvoje špaky: 2 : 0. Ďalšie ti dajú starší: po každej bitke ti každý, kto sa ťa bojí, dá 1 špak v žltej, 2 v oranžovej a 3 v červenej. Farár ti po ďalšej bitke dá 3, ak ho Štamgast dovtedy neodtlačí.</p>
+  <p class="preco">2 : 0 je stav z jadra (<code>spakyTeraz</code>). Špaky za starších sa rozdávajú pred prebytkom, preto Farár zatiaľ nič nedal.</p>
+</div></details>
+
+<details open><summary>q-lokality <small>nová otázka, id ostáva</small></summary><div class="zmena">
+  <p class="pred">Načo ti bude Most na konci hry? — „Pomôže mi vyhrať podmienku Lokality pri starších.“ (Áno. Preto si ho vyberal a preto si sa bil.) / „Na nič, bitku som už vyhral.“ (Bitka bola len cesta. Lokality sú podmienka bodovania. Za to ti dal Farár 3 body, nie za pekné oči.)</p>
+  <p class="po">Koľko špakov ti dala bitka o Most? — „Dva, za každú odohranú Pitku jeden.“ (Áno. Preto si sa bil.) / „Tri, vyhral som o 3 tuhé.“ (Tie tri boli prebytok a ten si dal Farárovi. Špaky za bitku sú za Pitky, nie za pekné oči.)</p>
+</div></details>
+
+<p class="preco">Bez zmeny ostali: uvítanie, hrany, natočenie Mosta, fázy, bar, šenok, spoj, Viera, Pitky, pečeň, Pitka, fajčenie, NA EX, Hasič, kvíz o bitke, stupnica (<code>i-strach</code>), prvý klik prebytku a rozlúčka. „Zvyšné cigarety sa ti zídu na konci“ (<code>k-stop</code>) som nechal, lebo Melichar si cigaretu pýta na konci lekcie. Ak si tým myslel koniec hry, v6 už cigarety nebodujú.</p>
+
+<h2>2. Nápovedy Melichara (<code>packages/core/data/vyucba/napovedy.json</code>)</h2>
+
+<details open><summary>dlh</summary><div class="zmena">
+  <p class="pred">Prvý Dlh! Úprimne, nečudujem sa. Leží medzi priznanými kartami. Na konci hry pri starších s podmienkou Dlhy vyhrá ten, kto má Dlhov menej.</p>
+  <p class="po">Prvý Dlh! Úprimne, nečudujem sa. Leží medzi priznanými kartami. Keď ich bude veľa, príde Exekútor aj po tvoje špaky, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá.</p>
+</div></details>
+<details open><summary>body</summary><div class="zmena">
+  <p class="pred">Body v bare ukazujú, koľko by si mal, keby hra skončila teraz. Klikni na ne a uvidíš, čo ti dáva ktorý starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.</p>
+  <p class="po">Body v bare sú tvoje špaky, keby hra skončila teraz. Klikni na ne a uvidíš, koľko ti ktorý starší dá po bitke. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.</p>
+  <p class="preco">Odkaz na jadro <code>bodyTeraz</code> → <code>spakyTeraz</code>, §14 Bodovanie → §14 Špaky.</p>
+</div></details>
+<details open><summary>abstak</summary><div class="zmena">
+  <p class="pred">… Každý ti v bitke uberie 1 tuhé a na konci sa rátajú všetky, čo si za hru dostal. Ja len radím, rob si, ako chceš.</p>
+  <p class="po">… Každý ti v bitke uberie 1 tuhé, a keď vyhráš s viac Absťákmi ako súper, aj špaky za bitku. Ja len radím, rob si, ako chceš.</p>
+</div></details>
+<details open><summary>cirhoza</summary><div class="zmena">
+  <p class="pred">… Priznaná ťa body nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry prehráva súboje o Cirhózu.</p>
+  <p class="po">… Priznaná ťa špaky nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry ťa stojí 5 špakov.</p>
+</div></details>
+<details open><summary>priazen</summary><div class="zmena">
+  <p class="pred">{starší} je na tvojej polovici a prejavuje ti priazeň: malý bonus podľa jeho podložky. Bojí sa zato súpera. Niekto ťa má rád, to by som nečakal.</p>
+  <p class="po">{starší} je na tvojej polovici a prejavuje ti priazeň: malý bonus, ten vidíš pri ňom. Bojí sa zato súpera a po bitke mu dá špaky. Niekto ťa má rád, to by som nečakal.</p>
+</div></details>
+<details open><summary>exekutor</summary><div class="zmena">
+  <p class="pred">… Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: odovzdáš mu Nástroj, alebo prehráš. Poznám ho, neodporúčam.</p>
+  <p class="po">… Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: zhorí ti polovica Dlhov a rovnako veľa špakov. Poznám ho, neodporúčam.</p>
+</div></details>
+<details><summary>vydesenie <small>len popis spúšťača</small></summary><div class="zmena">
+  <p class="pred">marker staršieho prvýkrát na indexe 0 alebo 8</p>
+  <p class="po">marker staršieho prvýkrát na indexe 0 alebo 6 (v6: stupnica 7 polí)</p>
+</div></details>
+<p class="preco">Bez zmeny: stavba šenku, rola, odpoveď na NA EX, prvé NA EX, počet Pitiek, zadĺženie, pas, pravidlo lokality, Pohoršenie, prevaha, patronát, text vydesenia, Dedičstvo, Záverečná. Rola hovorí „odteraz je útočníkom ten, kto prehrá bitku“. Vo finále útočí, kto má viac špakov, ale nápoveda padne v 1. kole, tak som ju nechal.</p>
+
+<h2>3. Stránka Pravidlá (<code>apps/web/src/stranky/pravidla/</code>)</h2>
+<p class="preco">Menil som len texty a obsah kapitol. Poradie a ID kapitol aj kotvy ostali, kapitola <code>#bodovanie</code> má nový názov „Špaky a finále“.</p>
+<table>
+<thead><tr><th>Kapitola</th><th>Pred (v5)</th><th>Po (v6)</th></tr></thead>
+<tbody>
+<tr><td>Čo je NA EX!</td><td>Kto ovládne viac lokalít a koho sa starší boja, ten na konci zbiera body.</td><td>Kto vyhráva bitky a koho sa starší boja, ten zbiera špaky — víťazné body.</td></tr>
+<tr><td>Ako sa vyhráva</td><td>Body za staršieho podľa podmienok scorecardu; okamžitá prehra pri exekúcii.</td><td>Karta Špaky (bitky o lokality, potom finále; za bitku Pitky, starší 1/2/3), okamžitá výhra vydesením ostáva, karta „O špaky prídeš“ (exekúcia, Cirhóza −5; okamžitá prehra nie je).</td></tr>
+<tr><td>Čo máš pred sebou</td><td>bar: poldeci, cigarety, pečeň, zadĺženie, neresti</td><td>pribudli špaky</td></tr>
+<tr><td>Kolo a príprava</td><td>Štart 7 kariet, 5 do ruky; bitka berie lokalitu; náhodné scorecardy</td><td>4 karty v ruke (Miňištrant, Manželka, Pijan, Dievčina), prázdny doberací, 0 špakov; bitka dá špaky víťazovi a za starších; každý starší náhodnú priazeň; finále v skratke a útočník vo finále</td></tr>
+<tr><td>Cieľ a šenok</td><td>Patronát: Pohoršenia 2 / 3 / 4; „vyhráš lokalitu aj staršieho“; „marker z krajnej uvoľní len patronát“</td><td>Pohoršenia 1 / 2 / 3 a nie na patróna; patronát aj vo finále; vo finále sa cieľ nevyberá; patronát = najrýchlejšia odpoveď na vydesenie</td></tr>
+<tr><td>Zhromaždenie</td><td>—</td><td>veta o línii vo finále (prvá karta v strede, bez krajov a prevahy)</td></tr>
+<tr><td>Pitka</td><td>—</td><td>Finále má vždy 3 Pitky; koľko Pitiek, toľko špakov víťazovi</td></tr>
+<tr><td>Cena pitia</td><td>Absťáky získané za hru (podmienka scorecardu)</td><td>štatistika; Absťáky rozhodujú remízu a uberajú víťazovi špaky</td></tr>
+<tr><td>Bitka</td><td>remíza = lokalita na sekeru; 15 krokov bitky v poradí v5</td><td>remíza: Absťáky → Dlhy → sekera so špakmi; odstavec o špakoch za bitku a nástenke; kroky podľa §9 v6 (špaky za bitku, za starších, prebytok, Výhra a Prehra s cigaretami za prebytok)</td></tr>
+<tr><td>Starší a prebytok</td><td>scorecard s 8 podmienkami; strach zvýši body, ak vyhráš podmienky; Pohoršenie najviac cez 2 hranice; zamknutá krajná pozícia</td><td>stupnica 7 polí; strach = špaky 1/2/3 po bitke; prebytok o pole za bod, prejaví sa až v ďalšej bitke; Pohoršenie bez limitu; krajná pozícia sa dá odtlačiť</td></tr>
+<tr><td>Kliatby</td><td>Dlh do podmienky Dlhy; Cirhóza prehráva súboje; Absťáky za hru; Exekútor: odovzdáš Nástroj alebo prehráš</td><td>Dlhy pri remíze; Cirhóza −5 špakov; Absťák uberá špaky; Exekútor spáli polovicu Dlhov a rovnako špakov, Záhradkár namiesto špakov</td></tr>
+<tr><td>Lokality</td><td>Kultúrny dom: Pohoršenie bez limitu hraníc</td><td>Kultúrny dom: prebytok → špaky (text karty v6); lokalita ide na nástenku</td></tr>
+<tr><td>Bodovanie na konci → Špaky a finále</td><td>súboje podmienok, body za staršieho, príklad s Farárom</td><td>tabuľka zdrojov špakov podľa §14 (aj Noviny, Exekútor, Cirhóza), príklad 5 : 1, Finále v bodoch podľa §14b</td></tr>
+</tbody>
+</table>
+
+<p><b>Slovník</b> (<code>slovnik.ts</code>): vypadli Body za staršieho, Podmienka, Rezerva, Scorecard a Súboj podmienok. Pribudli Špak, Finále a Krčmová nástenka. Na v6 som prepísal Absťák, Bitku, Cirhózu, Dlh, Dĺžku hry, Exekútora, Kolo, Líniu, Pitku, Prebytok, Sekeru, Staršieho, Strach, Tuhé a Útočníka.</p>
+<p><b>Ukážky</b> (<code>Ukazky.tsx</code>): kalkulačka bitky rozhoduje remízu Absťákmi, potom Dlhmi, a pri sekere hovorí o špakoch. Stupnica má 7 polí, ukazuje špaky 1/2/3 a pri krajnej pozícii prebudenie bez zamknutia. V <code>stranky.css</code> som zmenil mriežku stupnice z 9 na 7 stĺpcov, inak by ostali dve prázdne polia. Na rozloženie som nesiahal.</p>
+
+<h2>4. Mimo môjho rozsahu — v6 ešte chýba v hre</h2>
+<p class="preco">Kód hry nemením. Toto zostalo v klientovi z v5, patrí to Developerovi alebo dizajnu:</p>
+<ul>
+  <li><code>apps/web/src/hra/Panely.tsx:795</code>: tip Dlhov „musí odovzdať Nástroj …, inak prehráva“, <code>:797</code> „súboj Dlhy pri staršom“.</li>
+  <li><code>apps/web/src/hra/Panely.tsx:771</code> a <code>:773</code>: „na konci hry uberá body aj priznaný“, „súboje o Dlhy pri starších“.</li>
+  <li><code>apps/web/src/hra/Panely.tsx:593</code> a <code>:735</code>: nepriznané kliatby „uberajú body“ (v6 ich uberá len Cirhóza, −5).</li>
+  <li><code>apps/web/src/hra/Panely.tsx:818</code>: titulok dlaždice Body „súboje podmienok“. Dlaždica sa stále volá „Body“, hoci ukazuje špaky. Výučba preto hovorí „BODY v bare sú tvoje špaky“.</li>
+</ul>
+
+<h2>5. Otázky pre Michala</h2>
+<ol>
+  <li><b>Rozdanie výučby:</b> výučba má v ruke 5 kariet (2 Pijani) a v balíčku 2. V6 začína so 4 kartami a prázdnym balíčkom. Celé Zhromaždenie výučby stojí na dvoch Pijanoch a fajčenie v Pitke na plnom balíčku, preto som rozdanie nechal. Mám ho zladiť s v6? Znamenalo by to prepísať Zhromaždenie výučby nanovo.</li>
+  <li><b>Červený Farár:</b> prebytok 3 teraz Farára vydesí a prebudí (jeho efekt „ignoruj 2 súperove Povery“ platí pre hráča). Melichar to nemenuje. Vysvetliť to v 1. časti, alebo dať Farárovi len 2 body a tretí inému staršiemu? To by zmenilo kvíz o prebytku.</li>
+  <li><b>Nástenka:</b> Most po bitke zmizne zo stola na krčmovú nástenku. Výučba to nehovorí (jedno nové slovo na krok). Pridať krátku vetu do <code>i-lokality-body</code>?</li>
+</ol>
+
+<footer>NA EX! · Vymyselník · vetva <code>v6/texty</code> · <code>docs/napady/v6-texty.html</code></footer>
+</main>
+</body>
+</html>

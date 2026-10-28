@@ -10,10 +10,10 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { DlzkaHry, Podmienka } from "@naex/core";
 import { ALL_PODMIENKY, dostupneDlzky, prazdneStatistiky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, IkonaBodovania, Nastavenia } from "@naex/tvorba";
-import { exportTxt, importTxt, slug, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
+import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPrepinac, overPohlavie, overIdNapovedy, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overIdNapovedy, citajCookie, jeSpravca } from "./auth.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -32,7 +32,13 @@ import type { Novinky } from "./novinky.ts";
 import type { Dielna } from "./dielna.ts";
 import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
-import { overKategoriu as overKategoriuNazoru } from "./nazory.ts";
+import { overKategoriu as overKategoriuNazoru, overSkupinu } from "./nazory.ts";
+
+/** Rozohraná partia hráča — pilulka „Partia beží · Späť ku stolu“ v hlavičke mimo stola. */
+export interface RozohranaPartia {
+  readonly kod: string;
+  readonly vyucba: boolean;
+}
 
 export interface OtvorenaHra {
   readonly kod: string;
@@ -108,6 +114,8 @@ export interface ApiKontext {
   readonly bezpecneCookie: boolean;
   /** Verejné hry čakajúce na súpera (z herného servera). */
   readonly otvoreneHry: () => readonly OtvorenaHra[];
+  /** Partia v miestnosti s kódom, v ktorej hráč sedí a ktorá ešte beží; inak null. */
+  readonly rozohranaPartia: (kod: string, hracId: number) => RozohranaPartia | null;
   /** Po zverejnení novej sady — nové hry pobežia na nej. */
   readonly poZverejneni: () => void;
   readonly stavServera: () => StavServera;
@@ -253,7 +261,14 @@ export function overNavrh(v: Record<string, unknown>, id: string, teraz: number)
     lava: overStranu(v.lava, "Ľavá strana"),
     prava: overStranu(v.prava, "Pravá strana"),
     upravene: teraz,
+    ...textyKarty(textKarty(v.pribeh, "Príbeh"), textKarty(v.ucel, "Účel v hre")),
   };
+}
+
+/** Príbeh či účel karty: nepovinný text, konce riadkov ako v prehliadači. */
+function textKarty(v: unknown, pole: string): string | undefined {
+  if (v === undefined || v === null) return undefined;
+  return str(v, MAX_TEXTU_KARTY, pole).replace(/\r\n?/g, "\n");
 }
 
 function overAkciu(v: Record<string, unknown>, kluc: string, existujuca: AkciaDef | null): AkciaDef {
@@ -338,7 +353,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // ----- účet ----------------------------------------------------------
     // Počet dohratých partií — návštevník vidí, koľko mu chýba do úrovne hráč.
     if (r === "GET /ja") {
-      return ok({ pouzivatel: ja === null ? null : { ...ja, dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) } });
+      // Neprihlásený má práva Nealka — klient podľa nich skryje odkazy (Vývoj), ktoré by server odmietol.
+      if (ja === null) return ok({ pouzivatel: null, prava: ctx.prava.zoznam(null) });
+      return ok({ pouzivatel: { ...ja, dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) } });
     }
 
     if (r === "POST /registracia") {
@@ -377,7 +394,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.hudba !== undefined ? { hudba: overHlasitost(b.hudba) } : {}),
           ...(b.melichar !== undefined ? { melichar: overHlasitost(b.melichar, "hlášok") } : {}),
           ...(b.schema !== undefined ? { schema: overSchemu(b.schema) } : {}),
+          ...(b.par !== undefined ? { par: overPar(b.par) } : {}),
           ...(b.skratky !== undefined ? { skratky: overPrepinac(b.skratky, "Klávesové skratky") } : {}),
+          ...(b.medziobrazovky !== undefined ? { medziobrazovky: overPrepinac(b.medziobrazovky, "Medziobrazovky") } : {}),
           ...(b.napovedy !== undefined ? { napovedy: overPrepinac(b.napovedy, "Nápovedy Melichara") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),
           ...(b.skrytySuhrn !== undefined ? { skrytySuhrn: overPrepinac(b.skrytySuhrn, "Skryť môj súhrn") } : {}),
@@ -479,6 +498,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // ----- verejné -------------------------------------------------------
     if (r === "GET /sada") return ok(ctx.obsah.aktualnaSada().sada);
 
+    // Kód je z prehliadača hráča; cudziu ani skončenú partiu server neprezradí.
+    if (r === "GET /hry/moja") {
+      const kod = (query.get("kod") ?? "").trim().toUpperCase();
+      return ok({ partia: ja === null || !/^[A-Z0-9]{1,8}$/.test(kod) ? null : ctx.rozohranaPartia(kod, ja.id) });
+    }
     if (r === "GET /hry/otvorene") {
       prihlaseny();
       return ok({
@@ -488,14 +512,22 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       });
     }
 
-    // ----- známky hry a roadmapa (verejné čítanie) -----------------------
+    // ----- známky hry a roadmapa (stránka Vývoj) --------------------------
     // Von idú len priemery; ľudia až od MIN_LUDI hodnotiteľov (znamky.ts).
-    if (r === "GET /znamky") return ok({ ...ctx.hodnotenia.vyvoj(), udalosti: ctx.roadmapa.udalosti() });
+    // Kto Vývoj vidí, určuje admin rankom (právo vidiet_vyvoj, Michal 2026-10-26);
+    // kritériá na hodnotenie dáva aj /znamky/moje, aby hodnotiť šlo aj bez Vývoja.
+    if (r === "GET /znamky") {
+      ctx.prava.vyzaduj(ja, "vidiet_vyvoj");
+      return ok({ ...ctx.hodnotenia.vyvoj(), udalosti: ctx.roadmapa.udalosti() });
+    }
     if (r === "GET /znamky/moje") return ok(ctx.hodnotenia.moje(prihlaseny()));
     if (r === "PUT /znamky") return ok(ctx.hodnotenia.uloz(prihlaseny(), await citajJson(req), teraz));
 
     if (casti[1] === "roadmapa") {
-      if (r === "GET /roadmapa") return ok(ctx.roadmapa.zoznam(ja));
+      if (r === "GET /roadmapa") {
+        ctx.prava.vyzaduj(ja, "vidiet_vyvoj");
+        return ok(ctx.roadmapa.zoznam(ja));
+      }
       const p = prihlaseny();
       if (r === "POST /roadmapa") return ok({ id: ctx.roadmapa.pridaj(p, await citajJson(req), teraz) }, 201);
       const id = Number(casti[2]);
@@ -524,8 +556,18 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const od = ja !== null ? ctx.novinky.videne(ja.id) : Number(query.get("od"));
       return ok({ pocet: Number.isFinite(od) && od > 0 ? ctx.novinky.pocetOd(od) : 0 });
     }
+    // Volá ho až „Mám prečítané“ (Michal 2026-10-27); GET /novinky čas videného nemení.
+    // Telo { po } je voliteľné — starší klient posiela prázdne.
     if (r === "POST /novinky/videne") {
-      ctx.novinky.oznacVidene(prihlaseny().id, teraz);
+      const p = prihlaseny();
+      const buf = await citajTelo(req, JSON_LIMIT);
+      let po: unknown;
+      try {
+        po = buf.length === 0 ? undefined : (JSON.parse(buf.toString("utf8")) as { po?: unknown } | null)?.po;
+      } catch {
+        throw new ChybaVstupu("Neplatné JSON telo požiadavky.");
+      }
+      ctx.novinky.oznacVidene(p.id, teraz, po);
       return ok({ ok: true });
     }
 
@@ -685,11 +727,16 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         const triedenie: Triedenie = t === "cigarety" || t === "diskusia" ? t : "nove";
         const k = query.get("kategoria");
         const kategoria: KategoriaNazoru | null = k === null || k === "" ? null : overKategoriuNazoru(k);
-        return ok({ nazory: ctx.nazory.zoznam(p, triedenie, kategoria) });
+        // Záložka stavu (otvorene | planovane | hotove | zamietnute) a ai=0 len od ľudí / ai=1 len od AI;
+        // bez nich všetko (nástroje agentov). Počty sú pre záložky a prepínač AI.
+        const s = query.get("stav");
+        const a = query.get("ai");
+        const filter = { kategoria, skupina: s === null || s === "" ? null : overSkupinu(s), ai: a === "0" ? false : a === "1" ? true : null };
+        return ok({ nazory: ctx.nazory.zoznam(p, triedenie, filter), pocty: ctx.nazory.pocty(kategoria) });
       }
       if (r === "POST /nazory") {
         const b = await citajJson(req);
-        return ok({ id: ctx.nazory.pridaj(p, b.kategoria, b.text, teraz) }, 201);
+        return ok({ id: ctx.nazory.pridaj(p, b.kategoria, b.text, teraz, b.nadpis) }, 201);
       }
       if (Number.isInteger(kom)) {
         if (metoda === "DELETE" && casti.length === 4) {
@@ -899,24 +946,29 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       for (const ik of karty) {
         const k = existujuce.find((e) => e.nazov.toLocaleLowerCase("sk") === ik.nazov.toLocaleLowerCase("sk"));
         if (k !== undefined) {
-          ctx.obsah.ulozKartu({ ...k, tagy: ik.tagy, efekt: ik.efekt, lava: ik.lava, prava: ik.prava, upravene: teraz });
+          ctx.obsah.ulozKartu(sTextamiZImportu({ ...k, tagy: ik.tagy, efekt: ik.efekt, lava: ik.lava, prava: ik.prava, upravene: teraz }, ik));
           upravene++;
         } else {
           let nove = slug(ik.nazov) || "karta";
           while (ctx.obsah.karty.jeden(nove) !== null) nove += "_2";
-          ctx.obsah.ulozKartu({
-            id: nove,
-            nazov: ik.nazov,
-            tagy: ik.tagy,
-            efekt: ik.efekt,
-            obrazok: null,
-            farba: null,
-            ...n,
-            kopie: 1,
-            lava: ik.lava,
-            prava: ik.prava,
-            upravene: teraz,
-          });
+          ctx.obsah.ulozKartu(
+            sTextamiZImportu(
+              {
+                id: nove,
+                nazov: ik.nazov,
+                tagy: ik.tagy,
+                efekt: ik.efekt,
+                obrazok: null,
+                farba: null,
+                ...n,
+                kopie: 1,
+                lava: ik.lava,
+                prava: ik.prava,
+                upravene: teraz,
+              },
+              ik,
+            ),
+          );
           pridane++;
         }
       }
@@ -940,6 +992,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
     // Návrhy zlepšení z playtestov — sekcia Playtest.
     if (sub === "GET /navrhy") return ok({ navrhy: ctx.navrhy.zoznam() });
+    if (sub === "GET /navrhy/pocet") return ok({ naRozhodnutie: ctx.navrhy.naRozhodnutie() });
     if (sub === "POST /navrhy") return ok({ ids: ctx.navrhy.nahraj(ja2, await citajJson(req), teraz) }, 201);
     if (casti[2] === "navrhy" && casti.length === 4 && /^\d+$/.test(id)) {
       if (metoda === "PATCH") {

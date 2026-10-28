@@ -8,5 +8,5 @@
     "allowImportingTsExtensions": true,
     "emitDeclarationOnly": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "data/*.json", "data/vyucba/*.json"]
+  "include": ["src/**/*.ts", "test/**/*.ts", "data/*.json", "data/vyucba/*.json", "test/data/*.json"]
 }

@@ -60,6 +60,7 @@ describe("tvorba — varianty a zverejnenie", () => {
     const json = doCardsJson(navrhy, "test");
     const data = loadGameData(json, eldersJson, scorecardsJson);
     expect(data.cards.size).toBe(navrhy.length);
+    // v7 (efekty): Záhradkár má spúšťač Exekúcia.
     expect(data.cards.get("zahradkar")?.triggers).toEqual(["Exekúcia"]);
   });
 

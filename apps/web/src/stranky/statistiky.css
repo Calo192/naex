@@ -546,11 +546,10 @@ td.cislo {
 
 /* ---- rebríček ------------------------------------------------------------------ */
 
-.rebricek {
+/* Zľava na hrane kostry, užší len sprava (Michal 2026-10-26). */
+.rebricek-obsah {
   display: grid;
   gap: 24px;
-  max-width: 980px;
-  margin: 0 auto;
 }
 
 .rebricek .stranka-hlava {
@@ -625,9 +624,8 @@ td.cislo {
 
 /* ---- spätná väzba ------------------------------------------------------------- */
 
+/* Stĺpec na čítanie zľava v šírke stránky (#21 B). */
 .spatna-vazba {
-  max-width: 860px;
-  margin: 0 auto;
   display: grid;
   gap: 22px;
 }
@@ -1022,5 +1020,311 @@ button.cigareta-tlacidlo {
 
   .rebricek-hrac {
     gap: 8px;
+  }
+}
+
+/* ---- Spätná väzba S-A (Michal 2026-10-27): záložky stavu, filtre, čistý zoznam ---- */
+
+.nazory-obsah {
+  display: grid;
+  gap: 16px;
+}
+
+.nazory-zalozky {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.nazory-zalozky button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--tlmeny);
+  font-weight: 600;
+}
+
+.nazory-zalozky button.aktivna {
+  color: var(--text);
+  border-bottom-color: var(--akcent);
+}
+
+.nazory-zalozky small,
+.nazory-ai small {
+  color: var(--slaby-text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.nazory-filtre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+}
+
+.nazory-filtre label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+}
+
+.nazory-filtre select {
+  width: auto;
+}
+
+.nazory-ai {
+  display: inline-flex;
+  margin-left: auto;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid var(--okraj);
+  background: var(--plocha);
+}
+
+.nazory-ai button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--tlmeny);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.nazory-ai button[aria-pressed="true"] {
+  background: var(--plocha-3);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.nazory-prazdne {
+  padding: 18px 22px;
+}
+
+.nazory-prazdne p {
+  margin: 0 0 12px;
+}
+
+.nazor-riadok {
+  display: grid;
+  gap: 6px;
+  padding: 14px 18px 12px;
+  scroll-margin-top: 90px;
+}
+
+.nazor-riadok:focus-visible {
+  outline: 2px solid var(--akcent);
+  outline-offset: 2px;
+}
+
+.nazor-titul {
+  margin: 0;
+  font: 700 1.05rem/1.35 var(--pismo);
+}
+
+.nazor-titul button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nazor-titul button:hover {
+  color: var(--akcent);
+}
+
+/* Prvé 2 riadky textu; celý text po rozbalení. */
+.nazor-ukazka {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--tlmeny);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.nazor-telo {
+  max-width: 72ch;
+}
+
+.nazor-pata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.nazor-komentare-tlacidlo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ikona-bubliny {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.nazor-stav.nove {
+  color: var(--info);
+  border-color: color-mix(in srgb, var(--info) 45%, transparent);
+}
+
+.nazor-stav a {
+  color: inherit;
+}
+
+.nazor-stav.zamietnute {
+  text-decoration: none;
+}
+
+.nazor-dovod {
+  font-weight: 500;
+  color: var(--tlmeny);
+}
+
+.nazor-sprava {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.nazor-sprava select {
+  max-width: 260px;
+}
+
+.nazor-dovod-pole {
+  width: 280px;
+  font-size: 0.88rem;
+}
+
+.novy-nazor {
+  display: grid;
+  gap: 14px;
+}
+
+.novy-nazor-kategorie {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.novy-nazor-kategorie legend {
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.novy-nazor-kategorie label.cip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  border: 1px solid var(--okraj-pola);
+  cursor: pointer;
+}
+
+/* Prepínač je skutočný radio — viditeľný je len čip, fokus ukáže obrys čipu. */
+.novy-nazor-kategorie input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.novy-nazor-kategorie label.cip:has(input:focus-visible) {
+  outline: 2px solid var(--akcent);
+  outline-offset: 2px;
+}
+
+.novy-nazor-chyba {
+  margin: 8px 0 0;
+  color: var(--cervena-text);
+  font-weight: 600;
+}
+
+.novy-nazor-pole {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.novy-nazor-pole input,
+.novy-nazor-pole textarea {
+  font-weight: 400;
+}
+
+/* Kompaktná dlaždica „Ohodnoť hru“ v boku; formulár v dialógu. */
+.hodnotenie-kompakt {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  margin: 0;
+}
+
+.hodnotenie-kompakt h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.hodnotenie-kompakt p {
+  margin: 0;
+}
+
+.hodnotenie-dialog {
+  width: min(860px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  padding: 20px 24px;
+  border: 1px solid var(--okraj);
+  border-radius: 14px;
+  background: var(--plocha);
+  color: var(--text);
+}
+
+.hodnotenie-dialog::backdrop {
+  background: rgb(0 0 0 / 0.55);
+}
+
+.hodnotenie-dialog-hlava {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.hodnotenie-dialog-hlava h2 {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .nazory-ai {
+    margin-left: 0;
+  }
+
+  .nazor-sprava {
+    margin-left: 0;
   }
 }

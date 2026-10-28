@@ -1,7 +1,8 @@
 // Tvar odpovedí API profilov (server: archiv.ts, profily.ts, suhrn.ts).
 // Čo kto vidí, rozhoduje server (Michal 2026-10-22) — klient len kreslí.
 
-import type { BodyTeraz, KoloKroniky, StatistikyHraca } from "@naex/core";
+import type { KoloKroniky, StatistikyHraca, UcetSpakov } from "@naex/core";
+import type { BodyTeraz } from "../../hra/bodyPodmienok.tsx";
 import type { VitrinaApi } from "../../achievementy/data.ts";
 import type { ProfilHraca } from "../Statistiky.tsx";
 
@@ -115,7 +116,8 @@ export interface DetailPartieApi {
   readonly hraci: readonly [HracVPartii, HracVPartii];
   readonly kola: readonly KoloKroniky[];
   readonly strany: readonly [Partial<StatistikyHraca>, Partial<StatistikyHraca>];
-  readonly zaverecne: BodyTeraz | null;
+  /** Záverečný účet: v6 špaky, do v5 bodovanie po starších (archív). */
+  readonly zaverecne: UcetSpakov | BodyTeraz | null;
   readonly menaStarsich: Readonly<Record<string, string>>;
 }
 

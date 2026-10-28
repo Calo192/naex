@@ -28,8 +28,17 @@ export interface RozdanieHraca {
 export interface Rozdanie {
   /** Semienko pre to, čo scenár neurčí (zamiešanie odhodených, varianty kariet spoločného balíčka). */
   readonly seed: number;
-  /** Lokality v poradí, v akom prídu do hry — ich počet je dĺžka hry. */
+  /**
+   * Bez `rozpis`: lokality v poradí, v akom prídu do hry — ich počet je dĺžka hry.
+   * S `rozpis`: zásoba lokalít, z ktorej obranca vyberá lokalitu úrovne kola (v7).
+   */
   readonly lokality: readonly string[];
+  /**
+   * Úrovne lokalít po kolách vrátane finále (v7, napr. [1, 2, 3, 4]): výučba hrá
+   * ako bežná hra s rozpisom, dĺžka hry je počet úrovní bez finále. Učí, že čím
+   * vyššie kolo, tým viac akcií na hrane lokality (Michal 2026-10-27).
+   */
+  readonly rozpis?: readonly number[];
   /**
    * Scorecard pre každého staršieho (elderId → priazeň, napr. „UZERNIK“, alebo
    * id scorecardu); chýbajúci podľa seedu. Priazeň platí v každej sade.
@@ -56,7 +65,16 @@ export interface MoznostOtazky {
   readonly text: string;
   readonly spravna: boolean;
   readonly vysvetlenie: string;
+  /** Hláška Melichara po kliku na túto (zlú) odpoveď. */
+  readonly hlaska?: HlaskaScenara;
 }
+
+/**
+ * Hláška zo soundboardu Melichara (Michal 2026-10-27): „skupina/súbor bez prípony“
+ * z data/majster_melichar, napr. „udiv/09_Boha“. Text bubliny ostáva, hláška je
+ * len zvuk navyše.
+ */
+export type HlaskaScenara = string;
 
 /**
  * Rozhodnutie hráča v kroku „hrac“: UI zvýrazní kandidátov namiesto očakávanej
@@ -65,7 +83,7 @@ export interface MoznostOtazky {
  */
 export interface VolbaKroku {
   readonly kandidati: readonly string[];
-  readonly zle?: readonly { readonly prikaz: PrikazScenara; readonly text: string }[];
+  readonly zle?: readonly { readonly prikaz: PrikazScenara; readonly text: string; readonly hlaska?: HlaskaScenara }[];
   readonly inak: string;
 }
 
@@ -84,6 +102,8 @@ export interface KrokVyucby {
   readonly prikaz?: PrikazScenara;
   /** Text majstra Melichara v bubline (môže byť prázdny pri ťahu bota). */
   readonly melichar: string;
+  /** Hláška s bublinou kroku; pri ťahu bota či hry za hráča zaznie až po ťahu (reakcia). */
+  readonly hlaska?: HlaskaScenara;
   /** Čo v UI zvýrazniť: CSS selektory alebo id prvkov (dohoda s UX/UI). */
   readonly zvyraznit?: readonly string[];
   /** Nápis tlačidla „ďalej“ pri info kroku (napr. „Odovzdať cigaretu“). */
@@ -305,6 +325,11 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
     return `Rozdanie: ${(e as Error).message}`;
   }
   for (const [i, krok] of scenar.kroky.entries()) {
+    // Hláška v zlom tvare by v klientovi potichu nezaznela — chyba patrí do testu scenára.
+    const zlaHlaska = [krok.hlaska, ...(krok.volba?.zle ?? []).map((z) => z.hlaska), ...(krok.moznosti ?? []).map((m) => m.hlaska)].find(
+      (h) => h !== undefined && castiHlasky(h) === null,
+    );
+    if (zlaHlaska !== undefined) return `Krok ${i} (${krok.id}): hláška „${zlaHlaska}“ nemá tvar skupina/súbor.`;
     if (krok.kto === "otazka") {
       const chyba = chybaOtazky(krok);
       if (chyba !== null) return `Krok ${i} (${krok.id}): ${chyba}`;
@@ -544,7 +569,35 @@ export function zodpovedaVzoru(state: GameState, prikaz: Command, vzorScenara: P
   return kroky.some((k) => krokZodpoveda(state, k, vzor));
 }
 
-/** Rada Melichara k zlému ťahu v rozhodnutí: text prvého sediaceho vzoru, inak všeobecná. */
+/** Rada Melichara k zlému ťahu: text a hláška zo soundboardu (null = bez zvuku). */
+export interface RadaVyucby {
+  readonly text: string;
+  readonly hlaska: HlaskaScenara | null;
+}
+
+/** Rada Melichara k zlému ťahu v rozhodnutí: prvý sediaci vzor, inak všeobecná (tá je bez hlášky). */
+export function radaVyucby(state: GameState, volba: VolbaKroku, prikaz: Command): RadaVyucby {
+  const zly = (volba.zle ?? []).find((z) => zodpovedaVzoru(state, prikaz, z.prikaz));
+  return zly === undefined ? { text: volba.inak, hlaska: null } : { text: zly.text, hlaska: zly.hlaska ?? null };
+}
+
 export function radaKVolbe(state: GameState, volba: VolbaKroku, prikaz: Command): string {
-  return (volba.zle ?? []).find((z) => zodpovedaVzoru(state, prikaz, z.prikaz))?.text ?? volba.inak;
+  return radaVyucby(state, volba, prikaz).text;
+}
+
+/** Skupina a súbor bez prípony z hlášky scenára; null pri zlom tvare. */
+export function castiHlasky(hlaska: HlaskaScenara): { readonly skupina: string; readonly meno: string } | null {
+  // Skupina ako id skupiny pri importe (SKUPINA_RE v server/hudba.ts).
+  const m = /^([a-z0-9][a-z0-9-]*)\/([^/]+)$/.exec(hlaska.trim());
+  return m?.[1] === undefined || m[2] === undefined ? null : { skupina: m[1], meno: m[2] };
+}
+
+/**
+ * Text hlášky z názvu súboru: „03_no_toto_je_marha“ → „No toto je marha“. Import ho
+ * ukladá ako nazov — klient podľa neho nájde hlášku aj v zozname bez poľa meno.
+ */
+export function nazovHlasky(meno: string): string {
+  // Poradové číslo má najviac dve cifry — „1500_korun“ je hláška o 1500 korunách.
+  const text = meno.replace(/^\d{1,2}[_\s-]+/, "").replace(/_+/g, " ").trim();
+  return text.charAt(0).toLocaleUpperCase("sk") + text.slice(1);
 }

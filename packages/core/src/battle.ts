@@ -8,6 +8,7 @@ import type { ActionSums } from "./partia.ts";
 import type { PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import { prahExekutora } from "./player.ts";
+import { KONSTANTY } from "./constants.ts";
 
 /** Vstup jedného hráča do výpočtu poškodenia. */
 export interface BattleSide {
@@ -92,37 +93,66 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
   };
 }
 
+/** Čím sa rozhodla bitka (v6): tuhé, pri remíze menej Absťákov, potom menej priznaných Dlhov, inak sekera. */
+export type RozhodnutieBitky = "tuhe" | "abstak" | "dlhy" | "sekera";
+
 export interface BattleOutcome {
   /**
-   * Vyššie TUHÉ poškodenie. Remíza (Michal 2026-10-21, rozbor
-   * strategia-remiza-20261021): pri rovnakom tuhom nevyhrá nikto — lokalita
-   * ide „na sekeru“ a berie ju víťaz najbližšej bitky. Rola (obranca) ani
-   * celkové poškodenie remízu nerozhodujú.
+   * Víťaz bitky: vyššie TUHÉ poškodenie. Pri remíze v tuhom (v6, Michal
+   * 2026-10-26) vyhrá, kto má menej Absťákov, potom kto má menej priznaných
+   * Dlhov; inak nikto — špaky kola idú na sekeru. Bez údajov o remíze
+   * (náhľady) je remíza v tuhom vždy sekera.
    */
   readonly vitaz: PlayerId | null;
+  readonly rozhodlo: RozhodnutieBitky;
   /** Vyššie CELKOVÉ poškodenie — aj pri remíze v tuhom; pri rovnosti nikto. */
   readonly prebytokDrzi: PlayerId | null;
   readonly prebytok: number;
 }
 
-export function battleOutcome(damage: DamageResult): BattleOutcome {
+/** Čo rozhoduje remízu v tuhom: Absťáky, ktoré hráči práve majú, a ich priznané Dlhy. */
+export interface RemizaBitky {
+  readonly abstaky: readonly [number, number];
+  readonly dlhy: readonly [number, number];
+}
+
+/** Hráč s menším číslom, pri rovnosti null. */
+function menej(x: readonly [number, number]): PlayerId | null {
+  return x[0] === x[1] ? null : x[0] < x[1] ? 0 : 1;
+}
+
+export function battleOutcome(damage: DamageResult, remiza?: RemizaBitky): BattleOutcome {
   const prebytokDrzi: PlayerId | null =
     damage.celkove[0] === damage.celkove[1] ? null : damage.celkove[0] > damage.celkove[1] ? 0 : 1;
-  const vitaz: PlayerId | null = damage.tuhe[0] === damage.tuhe[1] ? null : damage.tuhe[0] > damage.tuhe[1] ? 0 : 1;
-  return { vitaz, prebytokDrzi, prebytok: Math.abs(damage.celkove[0] - damage.celkove[1]) };
+  const prebytok = Math.abs(damage.celkove[0] - damage.celkove[1]);
+  if (damage.tuhe[0] !== damage.tuhe[1]) return { vitaz: damage.tuhe[0] > damage.tuhe[1] ? 0 : 1, rozhodlo: "tuhe", prebytokDrzi, prebytok };
+  const zAbstakov = remiza === undefined ? null : menej(remiza.abstaky);
+  if (zAbstakov !== null) return { vitaz: zAbstakov, rozhodlo: "abstak", prebytokDrzi, prebytok };
+  const zDlhov = remiza === undefined ? null : menej(remiza.dlhy);
+  if (zDlhov !== null) return { vitaz: zDlhov, rozhodlo: "dlhy", prebytokDrzi, prebytok };
+  return { vitaz: null, rozhodlo: "sekera", prebytokDrzi, prebytok };
 }
 
-/** Krok Exekútora pre jedného hráča (PRAVIDLA §11). */
-export type ExekutorVysledok = "mimoOhrozenia" | "musiOdovzdatNastroj";
-
-/** zlavaPrahu = sila súperovej priazne Exekútora (v5). */
-export function exekutorCheck(priznaneDlhy: number, zlavaPrahu = 0): ExekutorVysledok {
-  return priznaneDlhy >= prahExekutora(zlavaPrahu)
-    ? "musiOdovzdatNastroj"
-    : "mimoOhrozenia";
+/**
+ * Exekútor (§11, v6): kto má aspoň prah priznaných Dlhov, čelí exekúcii.
+ * zlavaPrahu = sila súperovej priazne Exekútora (v5).
+ */
+export function exekutorCheck(priznaneDlhy: number, zlavaPrahu = 0): boolean {
+  return priznaneDlhy >= prahExekutora(zlavaPrahu);
 }
 
-/** Po odovzdaní Nástroja zhorí polovica priznaných dlhov (zaokrúhlené nadol). */
-export function dlhyPoExekucii(priznaneDlhy: number): number {
-  return priznaneDlhy - Math.floor(priznaneDlhy / 2);
+/**
+ * Exekúcia v6 (Michal 2026-10-26): zhorí polovica priznaných Dlhov (nadol)
+ * a rovnaký počet špakov. Nástroj sa neodovzdáva a prehra exekúciou sa ruší.
+ */
+export function zhoriPriExekucii(priznaneDlhy: number): number {
+  return Math.floor(priznaneDlhy / 2);
+}
+
+/**
+ * Špaky víťaza za bitku (v6): odohrané Pitky mínus o koľko má víťaz viac
+ * Absťákov než porazený, vždy aspoň 1.
+ */
+export function spakyZaBitku(pitky: number, abstakyVitaza: number, abstakyPorazeneho: number): number {
+  return Math.max(KONSTANTY.SPAKY_ZA_BITKU_MIN, pitky - Math.max(0, abstakyVitaza - abstakyPorazeneho));
 }

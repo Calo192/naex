@@ -112,20 +112,17 @@ describe("scorecardy v5 na serveri", () => {
     expect(uzernik?.lava).toEqual(["dlh", "znepokojenie", "vydesenie", "starsi"]);
     expect(data.scorecards.find((sc) => sc.favour === "LAKOMEC")?.nazov).toBe("Lakomec");
     expect(data.scorecards.flatMap((sc) => [...sc.lava, ...sc.prava])).not.toContain("abstak");
-    expect(data.bodyPodmienok).toEqual(jadro.body);
     for (const seed of [1, 2]) dohraj(data, seed);
     db.close();
   });
 });
 
 describe("popis akcie Dlh v tvorcovi (v5)", () => {
-  it("čísla sú z jadra: prah Dlhu, prah Exekúcie a súboj o podmienku Dlh", () => {
+  it("čísla sú z jadra: prah Dlhu, prah Exekúcie a v6 špaky pri exekúcii", () => {
     const dlh = AKCIE_20261019.find((a) => a.kluc === "Dlh")?.popis ?? "";
     expect(dlh).toContain(`za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia`);
     expect(dlh).toContain(`Pri ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD} priznaných Dlhoch`);
-    expect(dlh).toContain("súboj o podmienku Dlh");
-    expect(dlh).not.toMatch(/Úžerník|uberá bod/);
-    // Smer súboja: Dlh vyhrá, kto má menej (záporné body v jadre).
-    expect(jadro.body.dlh).toBeLessThan(0);
+    expect(dlh).toContain("rovnako veľa špakov");
+    expect(dlh).not.toMatch(/Úžerník|uberá bod|súboj o podmienku/);
   });
 });

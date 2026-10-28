@@ -49,7 +49,56 @@ export const kratkyDen = (den: string): string => {
 };
 export const cislo = (x: number): string => x.toLocaleString("sk-SK", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-const M = { l: 34, r: 92, t: 14, b: 46 };
+const M = { l: 38, r: 92, t: 14, b: 50 };
+
+/**
+ * Rozsah osi z hodnôt: od min − 0,5 po max + 0,5, zaokrúhlené na pol známky
+ * (dizajn 2026-10-26). Pevná os 1–10 kreslila pohyb 6,3–7,2 ako rovnú čiaru.
+ */
+export function rozsahOsi(hodnoty: readonly number[]): { readonly od: number; readonly po: number } {
+  if (hodnoty.length === 0) return { od: 1, po: 10 };
+  let od = Math.max(1, Math.floor((Math.min(...hodnoty) - 0.5) * 2) / 2);
+  let po = Math.min(10, Math.ceil((Math.max(...hodnoty) + 0.5) * 2) / 2);
+  // Najmenej jedna a pol známky, aby šum o desatinu nevyzeral ako prepad.
+  while (po - od < 1.5) {
+    if (od > 1) od -= 0.5;
+    if (po - od < 1.5 && po < 10) po += 0.5;
+  }
+  return { od, po };
+}
+
+/** Hodnoty viditeľných sérií pre kritérium — podklad osi. */
+const hodnotySerii = (body: readonly BodVyvoja[], serie: Iterable<Seria>, kriterium: string): number[] => {
+  const v: number[] = [];
+  for (const s of serie) for (const b of body) {
+    const p = hodnota(b, s, kriterium).priemer;
+    if (p !== null) v.push(p);
+  }
+  return v;
+};
+
+/** Spoločný priemer, a kým nie sú ľudia, priemer AI — hodnota, ktorú stránka ukazuje ako „dnes“. */
+export const terajsiaHodnota = (b: BodVyvoja, kriterium: string): number | null => hodnota(b, "spolu", kriterium).priemer ?? hodnota(b, "ai", kriterium).priemer;
+
+/** Mini-graf kritéria v riadku: vlastná os, bez popisov — len smer. */
+export function MiniGraf({ body, kriterium }: { readonly body: readonly BodVyvoja[]; readonly kriterium: string }) {
+  const W = 84;
+  const H = 22;
+  const hodnoty = body.map((b) => terajsiaHodnota(b, kriterium));
+  const cisla = hodnoty.filter((v): v is number => v !== null);
+  if (cisla.length < 2) return <svg className="mini-graf" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" />;
+  const min = Math.min(...cisla);
+  const max = Math.max(...cisla);
+  const rozsah = Math.max(0.5, max - min);
+  const body2 = hodnoty
+    .map((v, i) => (v === null ? null : `${((i / (hodnoty.length - 1)) * (W - 4) + 2).toFixed(1)},${(H - 3 - ((v - min) / rozsah) * (H - 6)).toFixed(1)}`))
+    .filter((p): p is string => p !== null);
+  return (
+    <svg className="mini-graf" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      <polyline points={body2.join(" ")} />
+    </svg>
+  );
+}
 
 export function GrafZnamok({ vyvoj, kriterium }: { readonly vyvoj: Vyvoj; readonly kriterium: string }) {
   const [viditelne, setViditelne] = useState<ReadonlySet<Seria>>(new Set<Seria>(["ludia", "ai", "spolu"]));
@@ -58,7 +107,7 @@ export function GrafZnamok({ vyvoj, kriterium }: { readonly vyvoj: Vyvoj; readon
   const plocha = useRef<HTMLDivElement>(null);
   // viewBox = skutočná šírka v px, aby písmo a čiary ostali rovnako veľké na mobile aj na širokom monitore.
   const [W, setW] = useState(760);
-  const H = W < 520 ? 240 : 280;
+  const H = W < 520 ? 240 : W < 900 ? 300 : 360;
   useEffect(() => {
     const el = plocha.current;
     if (el === null) return;
@@ -70,18 +119,22 @@ export function GrafZnamok({ vyvoj, kriterium }: { readonly vyvoj: Vyvoj; readon
   }, []);
   const body = vyvoj.body;
 
-  const { x, y, od, po, ticky } = useMemo(() => {
+  const { x, y, od, po, ticky, os } = useMemo(() => {
     const prvy = body[0]?.den ?? dnes();
     const od = casDna(prvy) - DEN_MS / 2;
     const po = Math.max(casDna(dnes()), casDna(body.at(-1)?.den ?? prvy)) + DEN_MS / 2;
+    const r = rozsahOsi(hodnotySerii(body, viditelne, kriterium));
     const x = (t: number): number => M.l + ((t - od) / (po - od)) * (W - M.l - M.r);
-    const y = (v: number): number => M.t + ((10 - v) / 9) * (H - M.t - M.b);
+    const y = (v: number): number => M.t + ((r.po - v) / (r.po - r.od)) * (H - M.t - M.b);
     const dni = Math.round((po - od) / DEN_MS);
     const krok = Math.max(1, Math.ceil(dni / Math.max(3, Math.floor((W - M.l - M.r) / 70))));
     const ticky: number[] = [];
     for (let t = casDna(prvy); t <= po; t += krok * DEN_MS) ticky.push(t);
-    return { x, y, od, po, ticky };
-  }, [body, W, H]);
+    const krokOsi = r.po - r.od <= 3 ? 0.5 : r.po - r.od <= 6 ? 1 : 2;
+    const znacky: number[] = [];
+    for (let v = Math.ceil(r.od / krokOsi) * krokOsi; v <= r.po + 1e-9; v += krokOsi) znacky.push(Math.round(v * 10) / 10);
+    return { x, y, od, po, ticky, os: { ...r, znacky } };
+  }, [body, W, H, viditelne, kriterium]);
 
   // Schodovitá čiara: hodnota platí do ďalšej zmeny, posledná až po dnešok.
   const cesta = (s: Seria): string => {
@@ -186,26 +239,32 @@ export function GrafZnamok({ vyvoj, kriterium }: { readonly vyvoj: Vyvoj; readon
           onKeyDown={klavesy}
           onBlur={() => setAktivny(null)}
         >
-          {[2, 4, 6, 8, 10].map((v) => (
+          {os.znacky.map((v) => (
             <g key={v} className="graf-mriezka">
               <line x1={M.l} x2={W - M.r} y1={y(v)} y2={y(v)} />
               <text x={M.l - 8} y={y(v)} dy="0.32em" textAnchor="end">
-                {v}
+                {Number.isInteger(v) ? v : cislo(v)}
               </text>
             </g>
           ))}
+          {/* Zlom osi: stupnica nezačína od 1, nech pohyb o desatinu nevyzerá ako prepad. */}
+          {os.od > 1 && <path className="graf-zlom" d={`M${M.l - 5},${H - M.b + 1}l4,-4l3,6l4,-4`} />}
           {ticky.map((t) => (
             <text key={t} className="graf-os-x" x={x(t)} y={H - M.b + 18} textAnchor="middle">
               {kratkyDen(new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Bratislava" }).format(t))}
             </text>
           ))}
-          {znacky.map((z) => (
-            <g key={z.den} className="graf-udalost">
-              <title>{`${kratkyDen(z.den)}: ${z.texty.join(" · ")}`}</title>
-              <line x1={x(casDna(z.den))} x2={x(casDna(z.den))} y1={M.t} y2={H - M.b} />
-              <path d={`M${x(casDna(z.den))},${H - M.b + 26}l-5,8h10z`} />
-            </g>
-          ))}
+          {/* Hustota hotových položiek pod osou: výška pruhu = počet v ten deň. */}
+          {znacky.map((z) => {
+            const vyska = Math.min(16, 3 + z.texty.length * 2);
+            const sirka = Math.max(4, Math.min(14, (x(casDna(z.den)) - x(casDna(z.den) - DEN_MS)) * 0.5));
+            return (
+              <g key={z.den} className="graf-udalost">
+                <title>{`${kratkyDen(z.den)}: ${z.texty.length} hotové — ${z.texty.join(" · ")}`}</title>
+                <rect x={x(casDna(z.den)) - sirka / 2} y={H - 2 - vyska} width={sirka} height={vyska} rx={1.5} />
+              </g>
+            );
+          })}
           {bod != null && <line className="graf-kurzor" x1={x(casDna(bod.den))} x2={x(casDna(bod.den))} y1={M.t} y2={H - M.b} />}
           {SERIE.filter((s) => viditelne.has(s.kluc)).map((s) => (
             <g key={s.kluc} className={`seria-${s.kluc}`}>
@@ -249,7 +308,8 @@ export function GrafZnamok({ vyvoj, kriterium }: { readonly vyvoj: Vyvoj; readon
         )}
       </div>
       <figcaption className="tlmene">
-        Hodnota platí, kým ju niekto nezmení. V zátvorke je počet hodnotiteľov. Trojuholník pod osou je dokončená položka roadmapy.
+        Os {cislo(os.od)}–{cislo(os.po)}{os.od > 1 ? " (zlom pri osi)" : ""}. Hodnota platí, kým ju niekto nezmení; v zátvorke je počet hodnotiteľov.
+        Pruhy pod osou sú položky roadmapy dokončené v ten deň.
       </figcaption>
     </figure>
   );
