@@ -265,7 +265,16 @@ export function prahCirhozyBonus(state: VerejnyStav, p: PlayerId): number {
 
 /** vinko: počíta sa ako nevypitý poldeci navyše (limit vykladania +1). */
 export function limitBonus(state: VerejnyStav, p: PlayerId): number {
-  return vDedicstve(state, p, "vinko") ? 1 : 0;
+  return limitBonusDedicstva(state.hraci[p].dedicstvo);
+}
+
+/**
+ * Bonus k limitu z Dedičstva samotného — engine aj plán ťahu ho porovnajú pred
+ * a po vyložení, lebo Vínko vyložené v Zhromaždení platí hneď (návrh #26 B,
+ * Michal 2026-10-28), nie až od ďalšieho Zhromaždenia.
+ */
+export function limitBonusDedicstva(dedicstvo: readonly { readonly defId: string }[]): number {
+  return dedicstvo.some((k) => k.defId === "vinko") ? 1 : 0;
 }
 
 /** zastavka (Michal 2026-10-20): obaja hráči majú spoločný limit vykladania — súčet ich limitov. */

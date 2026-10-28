@@ -348,7 +348,8 @@ limit vykladania = plné poldeci + 1
   zahral** — bez výnimky (aj Kočovník).
 - Každá ďalšia karta v tom istom ťahu stojí plný poldeci (Vypiť, §13), takže
   zostávajúci limit hneď klesne.
-- Limit sa počíta **nanovo na začiatku každého Zhromaždenia**.
+- Limit sa počíta **nanovo na začiatku každého Zhromaždenia**. Výnimka: Vínko
+  vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď (§16).
 - **Na začiatku každého kola** (pred voľbou cieľa a stavbou šenku) sa každému
   hráčovi otočí **jeden vypitý poldeci na plný**. Viac vypitých si treba doliať
   (cigarety, barter, akcia Poldeci, Krčmárka — §7, §9.5, §16).
@@ -1353,7 +1354,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Vidly | Dedičstvo: každá tvoja aktívna akcia Rana z vyložených kariet (aj hrany lokality) udelí o 1 poškodenie viac. Rany navyše z efektov kariet (Svokra, Pijan, Vymáhač, Strýko z Ameriky) Vidly nezosilnia (Michal 2026-10-27). |
 | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); v poslednej Pitke kola (pred bitkou) získaš 1 Dlh. |
 | Svätý text | Dedičstvo: hodnota tvojej Viery je o 1 vyššia. |
-| Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); poldeci za cigarety dolievať nesmieš. |
+| Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); vyložené v Zhromaždení platí **hneď** — zostávajúci limit sa zvýši o 1 (na Zastávke spoločný obom aj tvoj vlastný; návrh #26 B, Michal 2026-10-28). Druhé Vínko limit nezvýši. Poldeci za cigarety dolievať nesmieš. |
 | Nealko | Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (sčíta sa s Krčmou). Poldeci, NA EX ani akciu Poldeci nemení. |
 | Lievik | Dedičstvo: NA EX smieš dať aj na Zviera. |
 

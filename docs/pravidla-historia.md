@@ -1483,3 +1483,9 @@ Hra sa nemení. §7: príklad Pitiek hovoril o hráčoch („hráč A aktivuje 3
 lokality, hráč B 1 → 2 Pitky; kto pri lokalite nič neaktivuje, kolo má 1 Pitku“),
 teraz o stranách lokality, s vetou o podstrčenej karte a o akcii ×2. §13: k
 Záverečnej veta, že akciu tvojej karty, ktorú spáruje, neukáže ani odhad bitky.
+
+## v8 — Vínko zvýši limit hneď (rozhodca, návrh #26 B, Michal 2026-10-28)
+
+Staré znenie §16: „Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1);
+poldeci za cigarety dolievať nesmieš.“ — hra dávala +1 až od ďalšieho
+Zhromaždenia (limit sa počíta na jeho začiatku, §6).

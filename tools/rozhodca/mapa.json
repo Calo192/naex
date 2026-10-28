@@ -1957,10 +1957,15 @@
     {
       "id": "16.karta.vinko.uprostred",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Vínko vyložené do Dedičstva uprostred Zhromaždenia: limit +1 hneď, alebo až od ďalšieho Zhromaždenia?",
-      "stav": "nejasne",
-      "testy": [],
-      "poznamka": "§6 „limit sa počíta nanovo na začiatku Zhromaždenia“ vs. „zostávajúci limit hneď klesne“ pri Vypiť. Hra: od ďalšieho. Testy oboch čítaní mimo gitu: playtest/rozhodca/20261027-150555/16-vinko-limit-uprostred-zhromazdenia.test.ts. návrh rozhodca 20261027-150555."
+      "pravidlo": "Vínko vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď o 1 (na Zastávke spoločný obom aj vlastný majiteľovi); druhé Vínko nič.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vinko-limit-hned.test.ts › zostávajúci limit stúpne hneď o 1, limit ďalšieho Zhromaždenia tiež",
+        "packages/core/test/vinko-limit-hned.test.ts › druhé Vínko limit nezvýši — bonus je len jeden, ako na začiatku Zhromaždenia",
+        "packages/core/test/vinko-limit-hned.test.ts › Zastávka: spoločný limit stúpne obom, vlastný len majiteľovi Vínka",
+        "packages/core/test/vinko-limit-hned.test.ts › plán ťahu (náhľad limitu) ráta Vínko do Dedičstva ako +1 aj pre ďalšiu kartu ťahu"
+      ],
+      "poznamka": "Návrh #26 B, Michal 2026-10-28: hneď (predtým hra dávala +1 až od ďalšieho Zhromaždenia)."
     },
     {
       "id": "16.karta.liberal.nula",

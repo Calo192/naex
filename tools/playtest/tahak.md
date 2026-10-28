@@ -168,7 +168,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   zadĺženie za každú svoju aktívnu Poveru. Poštárka dá Dlh len za naozaj dobratú kartu.
 - **Dedičstvo** (Nástroj do hracej oblasti, `target` `dedicstvo`): cena rastie
   pre oboch spolu — 1., 2., 3. Nástroj v hre stojí 1, 2, 3 cigarety. Efekt
-  Nástroja platí **len v Dedičstve**.
+  Nástroja platí **len v Dedičstve**. Vínko vyložené v Zhromaždení zvýši zostávajúci
+  limit **hneď** o 1 (2026-10-28; na Zastávke spoločný aj tvoj vlastný).
 - **Nástroj v línii** tvorí spoj len s Občanom/Starešinom a jeho akcie dostane
   **majiteľ karty, s ktorou tvorí spoj** (podstrčený Nástroj pracuje pre
   súpera).
