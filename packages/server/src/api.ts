@@ -20,6 +20,7 @@ import type { Obsah } from "./obsah.ts";
 import type { Archiv } from "./archiv.ts";
 import type { TempoPartii } from "./tempo.ts";
 import type { Prava } from "./prava.ts";
+import type { Ligy } from "./ligy.ts";
 import type { FilterPartii, Profily } from "./profily.ts";
 import { FILTRE_PARTII } from "./profily.ts";
 import type { Prehravac } from "./prehravac.ts";
@@ -94,6 +95,8 @@ export interface ApiKontext {
   readonly tempoPartii: TempoPartii;
   /** Ranky a práva (Michal 2026-10-22) — matica rank × právo a pravidlá postupu. */
   readonly prava: Prava;
+  /** Ligy (Michal 2026-10-28) — ktoré dĺžky hry smie hráč hrať a čo ich odomkne. */
+  readonly ligy: Ligy;
   /** Zoznam a detail partií pre profily (Michal 2026-10-22). */
   readonly profily: Profily;
   /** Prehrávač partie zo seedu a príkazov (roadmapa #18). */
@@ -537,9 +540,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ partia: ja === null || !/^[A-Z0-9]{1,8}$/.test(kod) ? null : ctx.rozohranaPartia(kod, ja.id) });
     }
     if (r === "GET /hry/otvorene") {
-      prihlaseny();
+      const p = prihlaseny();
       return ok({
         hry: ctx.otvoreneHry(),
+        // Ktoré ligy hráč smie a čo ho delí od zamknutých — lobby podľa toho kreslí zámky (server aj tak overí).
+        ligy: ctx.ligy.stav(p),
+        ligyAjProtiPocitacu: ctx.ligy.nastavenie().ajProtiPocitacu,
         dlzky: dostupneDlzky(ctx.obsah.aktualnaSada().data),
         uzavierka: ctx.stavServera().uzavierka === null ? null : OZNAM_UZAVIERKY,
       });
@@ -1054,6 +1060,9 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       // Prahy v hviezdach k percentám — admin vidí, čo percentá dnes znamenajú (null = achievementy vypnuté).
       return ok({ ...n, prava: PRAVA, popis: POPIS_PRAVA, ranky: RANKY_HRACOV, hviezdySpolu: spolu, prahyHviezd: prahyRankov(n.postup, spolu) });
     }
+    // Ligy (Michal 2026-10-28): čo odomyká ktorú ligu, prepínač „všetci smú všetko“.
+    if (sub === "GET /ligy") return ok(ctx.ligy.nastavenie());
+    if (sub === "PUT /ligy") return ok(ctx.ligy.uloz(ja2, await citajJson(req)));
     if (sub === "PUT /prava") {
       const nove = ctx.prava.uloz(ja2, await citajJson(req));
       ctx.ucty.prepocitajRanky(nove.postup);

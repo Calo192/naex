@@ -37,6 +37,7 @@ import {
   zapisDoKroniky,
   POVAHY,
   PREDVOLENA_DLZKA,
+  ALL_DLZKY,
   apply,
   dostupneDlzky,
   eventsFor,
@@ -77,6 +78,7 @@ import type { StavTempa } from "./tempo.ts";
 import { TempoPartii, fazaPrikazu, noveTempo, zapisPrikaz } from "./tempo.ts";
 import type { Pravo } from "./prava.ts";
 import { POPIS_PRAVA, Prava } from "./prava.ts";
+import { Ligy } from "./ligy.ts";
 import { Profily } from "./profily.ts";
 import { Prehravac } from "./prehravac.ts";
 import { hashJadra } from "./verziaJadra.ts";
@@ -337,6 +339,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   }
   const tempoPartii = new TempoPartii(db);
   const prava = new Prava(db);
+  const ligy = new Ligy(db, teraz);
   const profily = new Profily(db);
   /** Keď používateľ právo nemá, pošle mu chybu a vráti true (ws príkaz sa nevykoná). */
   const bezPrava = (ws: WebSocket, ja: Pouzivatel, pravo: Pravo): boolean => {
@@ -451,6 +454,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           achievementy,
           tempoPartii,
           prava,
+          ligy,
           profily,
           prehravac,
           nazory,
@@ -684,9 +688,20 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         // Práva rankov (Michal 2026-10-22): proti botovi, proti ľuďom, súkromná miestnosť.
         if (bezPrava(ws, ja, protiBotovi ? "hrat_bot" : "hrat_ludia")) return;
         if (!protiBotovi && msg.verejna !== true && bezPrava(ws, ja, "sukromne_miestnosti")) return;
-        const dlzka = msg.dlzka ?? PREDVOLENA_DLZKA;
+        // Bez zvolenej ligy (partia s počítačom po výučbe) predvolená, a keď je hráčovi zamknutá, najvyššia, ktorú smie.
+        const smieLigu = (d: DlzkaHry): boolean => ligy.preco(ja, d, protiBotovi) === null;
+        const dlzka =
+          msg.dlzka ??
+          (smieLigu(PREDVOLENA_DLZKA)
+            ? PREDVOLENA_DLZKA
+            : ([...ALL_DLZKY].reverse().find((d) => dostupneDlzky(data).includes(d) && smieLigu(d)) ?? PREDVOLENA_DLZKA));
         if (!dostupneDlzky(data).includes(dlzka)) {
           sendError(ws, `Na túto dĺžku hry nemá sada dosť lokalít (má ${data.lokality.length}).`);
+          return;
+        }
+        const zamknuta = ligy.preco(ja, dlzka, protiBotovi);
+        if (zamknuta !== null) {
+          sendError(ws, zamknuta);
           return;
         }
         const room = novaMiestnost({
@@ -732,6 +747,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           return;
         }
         if (bezPrava(ws, ja, "hrat_ludia")) return;
+        const zamknuta = ligy.preco(ja, room.dlzka, false);
+        if (zamknuta !== null) {
+          sendError(ws, zamknuta);
+          return;
+        }
         const seat: PlayerId = room.hraci[0] === null ? 0 : 1;
         usadit(ws, room, seat);
         // Dvaja hráči → hra začína.
@@ -919,6 +939,13 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (skoncila && room.vyucba === null) {
       zapisDoArchivu(room, result.state, dohrata);
       zapisTempo(room, result.state, dohrata);
+      // Výhra proti človeku môže odomknúť ďalšiu ligu — zapíše sa hneď, nech ju neskoršie sprísnenie nevezme.
+      if (room.bot === null) {
+        for (const h of room.hraci) {
+          const u = h === null ? null : ucty.podlaId(h.id);
+          if (u !== null) ligy.dorovnaj(u);
+        }
+      }
     }
     naplanujBota(room);
   };

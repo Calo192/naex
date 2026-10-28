@@ -1322,6 +1322,35 @@ button.cip.aktivny {
   text-align: center;
 }
 
+/* Ligy (Michal 2026-10-28) — podmienky odomknutia pod maticou práv. */
+.prava-lig-prepinace {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.prava-lig-podmienka {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.prava-lig-podmienka input[type="number"] {
+  width: 4.5em;
+}
+
+.prava-lig-podmienka select {
+  width: auto;
+}
+
+/* Kým smú všetci všetko, pravidlá sa len pripravujú — tabuľka je stlmená, ale upraviteľná. */
+.prava-lig-neplati td {
+  opacity: 0.65;
+}
+
 .ranky-matica .ranky-spravca {
   color: var(--tlmeny);
   opacity: 0.6;

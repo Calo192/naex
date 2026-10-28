@@ -236,7 +236,8 @@ export interface HraHook {
   /** Po konci časti pokračuje ďalšou časťou v tej istej partii. */
   vyucbaPokracuj(): void;
   /** Nová hra; bot = proti offline protihráčovi (počítač), začína hneď. */
-  zaloz(verejna: boolean, dlzka: DlzkaHry, bot?: boolean): void;
+  /** Bez ligy (undefined) ju vyberie server — predvolenú, alebo najvyššiu, ktorú hráč smie. */
+  zaloz(verejna: boolean, dlzka: DlzkaHry | undefined, bot?: boolean): void;
   pripoj(code: string): void;
   cmd(command: Command): void;
   /** Kontumačná výhra, keď je súper dlho odpojený (server overí čas). */
@@ -469,7 +470,7 @@ export function useHra(aktivne: boolean): HraHook {
     zalozVyucbu: useCallback(() => posli({ type: "create", vyucba: true }), [posli]),
     vyucbaDalej: useCallback(() => posli({ type: "vyucbaDalej" }), [posli]),
     vyucbaPokracuj: useCallback(() => posli({ type: "vyucbaPokracuj" }), [posli]),
-    zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
+    zaloz: useCallback((verejna: boolean, dlzka: DlzkaHry | undefined, bot = false) => posli({ type: "create", verejna, dlzka, bot }), [posli]),
     pripoj: useCallback((code: string) => posli({ type: "join", code: code.trim().toUpperCase() }), [posli]),
     cmd: useCallback((command: Command) => posli({ type: "cmd", cmd: command }), [posli]),
     kontumacia: useCallback(() => posli({ type: "kontumacia" }), [posli]),

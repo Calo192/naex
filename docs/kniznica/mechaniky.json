@@ -182,5 +182,254 @@
     "merat": "Frekvencia ohláseného vydesenia v v6 (bez zamknutia) a kolo, v ktorom príde; podiel ohlásení, ktoré súper odvráti; či hráči vydesenie hrajú zámerne alebo vznikne náhodou.",
     "temy": ["posledna-bitka-a-vplyv"],
     "pridane": "2026-10-26"
+  },
+  {
+    "id": "spolocny-stol-osobna-kasa",
+    "nazov": "Spoločný stôl a skóre tímu, osobná ruka a zdroje",
+    "problem": "Keď tím zdieľa všetko (ruku, zdroje, skóre), hrá jeden mozog so štyrmi rukami a slabší partner sa stáva divákom. Keď nezdieľa nič, sú to dve partie 1 na 1 vedľa seba. Treba presne povedať, čo je tímové a čo ostáva hráčovi.",
+    "ako": "1. Tím má jedno spoločné počítadlo výhry (život, skóre, zóna štítov, vyložené kombinácie). 2. Každý hráč má vlastnú ruku, balíček a platidlo (mana, obchod, cigarety). 3. Účinky sa dejú hráčovi, výsledok sa pripíše tímu (poškodenie hráčovi → spoločný život). 4. Zdroje medzi partnermi sa nedajú presúvať, alebo len výslovne povoleným kanálom. 5. Tím vyhráva a prehráva len ako celok.",
+    "hry": [
+      {
+        "nazov": "Magic: Two-Headed Giant (pravidlo 810)",
+        "preco": "Tím má jeden život (30), ťah spoločný, ale ruka, knižnica a mana sú každého zvlášť: „The team does not share any other resources other than life“. Poškodenie sa deje hráčovi a pripíše sa tímovému životu (810.9), život sa medzi partnermi nedá vymeniť (810.9e), partner nesmie hýbať tvojimi kartami (810.5). Hráč tak stále rozhoduje o svojej ruke, tím rozhoduje o spoločnom cieli.",
+        "zdroj": "https://mtg-rules.vercel.app/chapters/810"
+      },
+      {
+        "nazov": "Magic: Two-Headed Giant — oficiálna stránka formátu",
+        "preco": "„any reference to 'you' on a card still applies to the individual holder“; spoločný je len život. Hra trvá podľa Wizards 120 minút.",
+        "zdroj": "https://magic.wizards.com/en/formats/two-headed-giant"
+      },
+      {
+        "nazov": "Canasta (klasická, 4 hráči v pároch)",
+        "preco": "Vyložené kombinácie patria páru („melds belong to the partnership“), leží pred jedným z partnerov a obaja do nich prikladajú. Ruka je súkromná a partneri si ju neukazujú. Karty, ktoré partnerovi ostanú v ruke, keď druhý ukončí, sa odpočítajú celému páru — spoločná zodpovednosť za osobné hospodárstvo.",
+        "zdroj": "https://www.pagat.com/rummy/canasta.html"
+      },
+      {
+        "nazov": "Star Realms — variant Hydra (2 na 2, deck-builder)",
+        "preco": "Tím má spoločnú Authority (75), každý hráč vlastný balíček, ruku a odhadzovacie kôpky. Na rozdiel od Magicu smú partneri zložiť obchod na kúpu karty („may pool their respective Trade“) a spolu ničiť základne; útok a obchod inak ostáva každého. Outpost jedného chráni celý tím.",
+        "zdroj": "https://ultraboardgames.com/star-realms/multiplayer-rules.php"
+      },
+      {
+        "nazov": "Gundam Card Game — Team Battle",
+        "preco": "Tím má jednu zónu štítov (4 karty z balíčka každého) a spoločný limit 6 jednotiek; karty, náklady a efekty ostávajú majiteľovi („cannot use teammates' cards“). Tím prehrá, aj keď sa minie balíček jedného hráča.",
+        "zdroj": "https://www.gundam-gcg.com/en/news/team-battle.html"
+      },
+      {
+        "nazov": "Spades (partnerský)",
+        "preco": "Každý dráži sám, ale páru sa sčítajú drážky do jedného kontraktu a body, aj trest za „bags“ (10 prebytočných štichov = −100), idú páru. Osobné rozhodnutie má tímový následok.",
+        "zdroj": "https://www.pagat.com/auctionwhist/spades.html"
+      }
+    ],
+    "kritika": "2HG je podľa článku na TappedOut dlhší ako bežná hra 1 na 1 (jedna hra na kolo turnaja). Star Realms Hydra povoľuje skladať obchod, čo otvára cestu silnejšiemu hráčovi „nakupovať za oboch“. V Gundam Team Battle tím prehrá na balíčku jedného hráča — slabší partner tak môže potopiť tím bez toho, aby to videl (z pravidiel na oficiálnej stránke; dopad na hráčov neoverený).",
+    "prevod": "Strana (kraj línie, prevaha, markery starších, nástenka bitiek, popolník so špakmi) patrí tímu; hospodárstvo (ruka, balíček, poldeci, cigarety, pečeň, kliatby, neresti, Dedičstvo) hráčovi — rovnako ako navrh-2v2.html. V8 to robí ľahším: exekúcia ani malý balíček už prehru nespôsobujú (PRAVIDLA §1, §11), takže otázka „prehrá celý tím za cudzie dlhy“ odpadá; ostáva len „čie špaky zhoria“. Ako pri 2HG: účinok sa deje hráčovi (exekúcia, nepriznaná Cirhóza −3, výkupné), výsledok v špakoch ide do tímového popolníka. Výkupné rátať každému zvlášť (5 cigariet = 1 špak u hráča, nie súčet tímu), aby sa cigarety nepresúvali kvôli zaokrúhleniu. Scorecard netreba meniť (od v6 nesie len priazeň). Výučba: „Popolník máte spoločný, poldeci si pije každý sám.“",
+    "rizika": "Tímový popolník skryje, kto partiu ťahal — rebríček a achievementy potrebujú osobnú stopu (koľko špakov kto priniesol). Ak sa zdroje dajú voľne presúvať (Hydra), osobné riziko pitia a fajčenia, jadro témy, sa rozplynie. Spoločné limity (Gundam: 6 jednotiek tímu) narážajú na zásadu bez umelých stropov — ako limit sa dá použiť len existujúce pravidlo (limit vykladania), nie nový strop.",
+    "merat": "Rozdiel príspevku do popolníka medzi partnermi (kto nosí špaky); koľko špakov stratí tím na exekúcii a nepriznanej Cirhóze jedného hráča; či sa v tíme hromadia cigarety u jedného (pri povolenom podávaní).",
+    "temy": ["hra-2-na-2"],
+    "pridane": "2026-10-28"
+  },
+  {
+    "id": "poradie-krizom-alebo-timovy-tah",
+    "nazov": "Poradie pre štyroch: striedanie krížom, alebo spoločný ťah tímu",
+    "problem": "So štyrmi hráčmi sa kolo predĺži a každý čaká trikrát dlhšie. Poradie ťahov rozhoduje o dĺžke partie, o tom, kto komu odpovedá, a o tom, koľko si partneri stihnú povedať.",
+    "ako": "A · Krížom: partneri sedia oproti, ťahy idú dookola, takže sa striedajú tímy (A1 → B1 → A2 → B2); na každý ťah odpovedá najprv súper. B · Spoločný ťah tímu: oba hráči tímu hrajú svoje karty v tej istej fáze naraz (v ľubovoľnom poradí, môžu sa radiť), potom celý ťah druhého tímu. C · Čakajúci tím dostane malé rozhodnutie aj počas cudzieho ťahu (tip vľavo/vpravo vo Wavelength).",
+    "hry": [
+      {
+        "nazov": "Bridž, Spades, Euchre, Tichu (klasické kartové hry v pároch)",
+        "preco": "Partneri sedia oproti, hrá sa v smere hodín, takže ťahy tímov sa striedajú a každý štich je odpoveďou súpera. Bridž: „four players sit in two partnerships with players sitting opposite their partners“, hrá sa v smere hodín.",
+        "zdroj": "https://en.wikipedia.org/wiki/Contract_bridge"
+      },
+      {
+        "nazov": "One Piece Card Game — Buddy Battle (2 na 2)",
+        "preco": "Moderná TCG volí krížové striedanie: „Team A Player 1 → Team B Player 1 → Team A Player 2 → Team B Player 2“, partneri sa smú radiť; zápas zvyčajne 90 minút.",
+        "zdroj": "https://en.onepiece-cardgame.com/events/buddy_battle/"
+      },
+      {
+        "nazov": "Magic: Two-Headed Giant",
+        "preco": "Spoločný ťah tímu (810.2, voľba „shared team turns“): kolo má dva ťahy, nie štyri. Partneri sa radia pred každou hrou.",
+        "zdroj": "https://mtg-rules.vercel.app/chapters/810"
+      },
+      {
+        "nazov": "Star Realms — Hydra",
+        "preco": "Ťahy sa striedajú po tímoch, partneri hrajú hlavnú fázu, odhadzovanie a dobratie „at the same time“. Tím, ktorý začína, má na začiatku 3 karty, druhý 5 — vyrovnanie výhody prvého ťahu.",
+        "zdroj": "https://ultraboardgames.com/star-realms/multiplayer-rules.php"
+      },
+      {
+        "nazov": "Gundam Card Game — Team Battle",
+        "preco": "Partneri hrajú naraz a fázy prechádzajú spolu, vrátane útokov. Pri nezhode „the leader has the final say“ (vodca = hráč vpravo).",
+        "zdroj": "https://www.gundam-gcg.com/en/news/team-battle.html"
+      },
+      {
+        "nazov": "Wavelength (tímová párty hra)",
+        "preco": "Tímy sa striedajú, ale počas ťahu jedného tímu tipuje druhý, či je cieľ vľavo alebo vpravo od ručičky, a za správny tip berie 1 bod. Čakajúci tím tak nikdy len nesedí. Tím, ktorý zaboduje 4 a stále prehráva, hrá hneď znova.",
+        "zdroj": "https://rulespal.com/wavelength/rulebook"
+      }
+    ],
+    "kritika": "Spoločný ťah zvádza na to, že ťah tímu odohrá silnejší hráč (pozri anti-quarterbacking). Krížové striedanie zdvojnásobí počet ťahov v kole; 2HG je podľa TappedOut aj so spoločným ťahom dlhší ako 1 na 1. Tichu sa hrá, „until a team scores 1,000 points“ (Wikipedia) — tímové klasiky sú dlhé hry.",
+    "prevod": "NA EX! má tri fázy so striedaním a jednu súbežnú. Pitka je už dnes súbežná (PRAVIDLA §7, Michal 2026-10-27) — pre štyroch sa dá rozšíriť bez nového pravidla: všetci štyria fajčia, dolievajú a skryto dávajú NA EX naraz, odkrytie najprv obranný tím, potom útočný (posledné slovo). Zhromaždenie (§6) a branie zo šenku (§5) striedajú: A · krížom U1 → O1 → U2 → O2 (navrh-2v2.html), každý so svojím limitom vykladania; B · tímový ťah: útočný tím vyloží obe svoje karty (každý jednu, v poradí podľa dohody), potom obranný — počet „výmen“ ostane ako v 1 na 1, ale pribudne porada. Pas (§6) platí za hráča, partner hrá ďalej. Patronát (§10) je dnes postupný (útočník, potom obranca): v tímovom ťahu sa rozhoduje za tím. C · podľa Wavelength: obranný tím počas cudzieho Zhromaždenia nemá rozhodnutie; mohol by tipovať, na ktorú kartu súper dá NA EX — to je už nová mechanika na posúdenie.",
+    "rizika": "Krížom: kolo s 3 Zhromaždeniami a limitom 3 má až 36 ťahov namiesto 18 — stredná hra (5 bitiek + finále) sa môže natiahnuť na dvojnásobok. Tímový ťah: porada pred každou kartou natiahne čas viac, ako ušetrí, a otvára quarterbacking. Útočník má dnes výhodu „vykladá prvý“ — pri krížom má prvý ťah len U1; treba overiť, či sa útočník–obranca nerozbije.",
+    "merat": "Turnaj botov 2 na 2: počet ťahov a čas na kolo pri A a B vs. 1 na 1; podiel výhier útočného tímu pri A a B; pri ľuďoch čas čakania na jedného hráča (sekundy medzi jeho ťahmi).",
+    "temy": ["hra-2-na-2"],
+    "pridane": "2026-10-28"
+  },
+  {
+    "id": "obmedzeny-kanal-partnera",
+    "nazov": "Obmedzený kanál medzi partnermi (namiesto otvorenej ruky a voľnej reči)",
+    "problem": "Keď partner vidí tvoju ruku a môže hovoriť, silnejší hráč hrá za oboch (quarterbacking) a hra sa zmení na jedného hráča s dvoma rukami. Keď nevidí nič a mlčí, tímové prvky sa hrajú naslepo.",
+    "ako": "1. Ruka partnera je skrytá. 2. Informácia smie ísť len pevným kanálom: drážka (bridž), jedna odkrytá karta so žetónom „najvyššia / jediná / najnižšia“ (The Crew), nápoveda farby alebo čísla za žetón (Hanabi), jedno slovo a číslo (Codenames), otázka „môžem ukončiť?“ so záväznou odpoveďou (Canasta). 3. Kanál je vzácny (raz za misiu, žetóny, raz za rozdanie). 4. Bridž navyše: význam dohôd musí poznať aj súper.",
+    "hry": [
+      {
+        "nazov": "Bridž (kontraktný)",
+        "preco": "„information may be passed only by the calls made and later by the cards played“ a „the agreed-upon meaning of each call and play must be available to the opponents“. Komunikácia je súčasť hry, nie podvod — a je verejná.",
+        "zdroj": "https://en.wikipedia.org/wiki/Contract_bridge"
+      },
+      {
+        "nazov": "The Crew: The Quest for Planet Nine (Kennerspiel des Jahres 2020)",
+        "preco": "Hráči nesmú hovoriť o kartách, „except by revealing one of their cards along with a communicator token“; žetón hore / v strede / dole hovorí najvyššia / jediná / najnižšia vo farbe. Jedna informácia je taká cenná, že sa o ňu hrá.",
+        "zdroj": "https://en.wikipedia.org/wiki/The_Crew_(card_game)"
+      },
+      {
+        "nazov": "Hanabi",
+        "preco": "Vlastné karty nevidíš, nápoveda (farba alebo číslo, celá, nie čiastočná) stojí žetón, žetón sa vráti odhodením karty. Tím si musí vybudovať dohody (konvencie).",
+        "zdroj": "https://boardgamearena.com/doc/Gamehelphanabi"
+      },
+      {
+        "nazov": "Codenames Duet",
+        "preco": "Nápoveda je jedno slovo a číslo; každý ťah minie žetón času. Obmedzenie kanála je samotná hra.",
+        "zdroj": "https://rulespal.com/codenames-duet/rulebook"
+      },
+      {
+        "nazov": "Canasta",
+        "preco": "Jediná predpísaná reč medzi partnermi: hráč sa smie spýtať „may I go out?“, partner musí odpovedať áno alebo nie a odpoveď je záväzná (v Modern American raz za rozdanie). Partner tak rozhoduje o kľúčovom okamihu, hoci nevidí ruku.",
+        "zdroj": "https://www.pagat.com/rummy/canasta.html"
+      },
+      {
+        "nazov": "Magic: Two-Headed Giant, Star Realms Raid, One Piece Buddy Battle (opačná voľba: otvorené ruky)",
+        "preco": "Otvorené ruky v tíme: „Teammates may review each other's hands and discuss strategies at any time“ (MTG 810.5). V Star Realms Raid sa útočníci smú pozrieť do rúk a koordinovať.",
+        "zdroj": "https://mtg-rules.vercel.app/chapters/810"
+      },
+      {
+        "nazov": "Lorcana 2 na 2 (organizátorské pravidlá, nie oficiálne)",
+        "preco": "Organizátori sa nezhodnú: na Japan Expo partneri ruky ukazovať nesmú, El Cardboard to povoľuje. Podľa súhrnu vyhľadávania; stránky som priamo neprečítal (presmerovanie, 429).",
+        "zdroj": "https://elcardboard.shop/blogs/articles/2v2-rules-el-cardboard"
+      },
+      {
+        "nazov": "Don't Eat the Meeples (článok o quarterbackingu)",
+        "preco": "Proti dominantnému hráčovi pomáha skrytá osobná informácia (The Mind, The Crew), súbežné hranie, časový tlak a asymetrické úlohy so súkromnou rukou (Spirit Island). Meeple Mountain pridáva semi-kooperáciu (osobné ciele) a kritiku, že problém je aj v hráčovi, nie len v hre.",
+        "zdroj": "https://www.donteatthemeeples.com/p/mitigating-quarterbacking-cooperative-games"
+      }
+    ],
+    "kritika": "Online sa mlčanie nedá vynútiť: kamaráti na hlasovom hovore obídu akýkoľvek kanál (navrh-2v2.html to uvádza ako dôvod pre otvorené ruky). Hanabi a The Crew sú kooperatívne — zákaz reči je tam celá hra; v súťažnej hre s nepriateľom je to len vrstva navyše. Bridžové konvencie sú pre nováčika bariéra (z vlastných vedomostí, neoverené). Meeple Mountain: časový tlak dominanciu len toleruje, nerieši.",
+    "prevod": "Dve cesty: (1) Otvorené karty v tíme (2HG): viewFor(seat) pošle ruku partnera, tímový chat je voľný — férové online, nič sa neschováva pred podvodníkom. (2) Skrytá ruka a pevné signály v štýle The Crew a Canasty: „ukazovák“ na kartu v línii; jeden žetón „Pozri sem“ za kolo, ktorým hráč odkryje partnerovi jednu kartu z ruky; záväzná otázka „Dáme NA EX?“ — partner odpovie áno/nie a ak áno, musí v tejto Pitke NA EX dať (Canasta „may I go out?“). Bridžová zásada pre web: tímový chat si po partii prečíta aj súper (dohody sú verejné). Skrytý výber NA EX (§7) ostáva skrytý aj pred partnerom, kým ho hráč sám neukáže — inak by NA EX tímu bolo jedno rozhodnutie.",
+    "rizika": "Skrytá ruka pri ľuďoch na hlasovom hovore znevýhodní poctivých; dá sa vynútiť len v hodnotených partiách s náhodnými partnermi. Otvorená ruka urobí z NA EX! s dvoma rukami jedného hráča — slabší partner len kliká. Signály sú ďalšie tlačidlá na stole pre štyroch, ktorý sám o sebe pridá panely hráčov.",
+    "merat": "Pri botoch: rozdiel výkonu tímu s otvorenou a skrytou rukou (koľko stojí neinformovanosť). Pri ľuďoch: koľko ťahov slabšieho hráča zodpovedá návrhu partnera (pri otvorenom chate); koľkokrát za partiu sa použije signál; či hráči v anketách cítia „hral som ja“.",
+    "temy": ["hra-2-na-2"],
+    "pridane": "2026-10-28"
+  },
+  {
+    "id": "osobna-stavka-v-time",
+    "nazov": "Osobná stávka v tímovom skóre (Tichu, nula, ísť sám)",
+    "problem": "V tíme sa slabší partner ľahko schová za silnejšieho a víťazstvo nemá meno. Osobná stávka dá každému hráčovi chvíľu, keď rozhoduje on, a jeho úspech či zlyhanie má tímovú cenu.",
+    "ako": "1. Pred kolom (alebo pred prvou zahranou kartou) hráč ohlási osobný cieľ: vyjdem prvý (Tichu), nevezmem ani jeden štich (nula), hrám sám (Euchre). 2. Partner pokračuje v tímovom cieli, alebo pri „sám“ odloží karty a nehrá. 3. Splnenie dá tímu veľký bonus, zlyhanie rovnaký trest (Tichu ±100, nula ±100, slepá nula ±200; sám v Euchre 4 body namiesto 2). 4. Najväčšia stávka býva len pre tím, ktorý prehráva (slepá nula pri manku 100 bodov).",
+    "hry": [
+      {
+        "nazov": "Tichu",
+        "preco": "Tichu (100) a Grand Tichu (200, pred dobratím posledných kariet) sú stávka, že ohlasujúci, nie partner, vyjde prvý; body idú tímu. Hráč s dobrou rukou berie riziko na seba, partner mu pomáha (pri výmene mu dá najlepšiu kartu). Obaja von pred súpermi = 200 a karty sa nerátajú.",
+        "zdroj": "https://en.wikipedia.org/wiki/Tichu"
+      },
+      {
+        "nazov": "Tichu — stratégia výmeny",
+        "preco": "Návod: so slabou rukou predpokladaj, že partner je silnejší, a daj mu najlepšiu kartu; Pes je zlá karta pre majiteľa, ale skvelá pre partnera. Osobná stávka určuje, kto v tíme ťahá.",
+        "zdroj": "https://scv.bu.edu/~aarondf/Games/Tichu/tichu_strategy.html"
+      },
+      {
+        "nazov": "Spades — nula a slepá nula",
+        "preco": "Nula je osobná drážka 0 štichov; „the partnership also has the objective of winning the number of tricks bid by the Nil's partner“. Slepá nula sa ohlasuje pred pozretím kariet, za ±200, zvyčajne len keď pár prehráva aspoň o 100, a partneri si smú vymeniť dve karty.",
+        "zdroj": "https://www.pagat.com/auctionwhist/spades.html"
+      },
+      {
+        "nazov": "Euchre — hrať sám (going alone)",
+        "preco": "Po určení tromfu smie hráč ohlásiť, že hrá sám; partner odloží karty lícom dole a „takes no part in the play“. Všetkých päť štichov sám = 4 body namiesto 2. V severoamerickej variante mu partner smie poslať jednu kartu lícom dole (railroading).",
+        "zdroj": "https://www.pagat.com/euchre/euchre.html"
+      }
+    ],
+    "kritika": "Stávka môže byť sebecká — hráč ohlási, lebo chce hrať on, nie lebo to pomôže tímu (z vlastných vedomostí, neoverené). Pagat pri Euchre spomína, že niektoré skupiny zakazujú „pascu“ obrancu hrajúceho sám. Partner, ktorý pri „sám“ odloží karty, kolo nehrá — pre online hru je to 1–2 minúty nečinnosti.",
+    "prevod": "Dve podoby, obe s pojmami NA EX!: (a) „Na moju päsť“ — pred Zhromaždením hráč ohlási, že bitku vyhrá jeho kraj: ak tím bitku vyhrá a v jeho kraji leží viac jeho kariet než partnerových, tím dostane navyše 1 špak za každú jeho kartu v línii; ak tím prehrá, toľko špakov stratí. (b) „Idem sám“ (Euchre): hráč ohlási pred Zhromaždením; partner v tomto kole nevykladá, nepije a nedáva NA EX (šetrí poldeci, pečeň aj neresti) a za pas dostane cigarety ako dnes (§6); tím za výhru dostane dvojnásobok špakov za bitku, za prehru nič navyše. Ako slepá nula len pre zaostávajúci tím — zodpovedá zásade „odmena za väčšiu výzvu“ (memory: zasada-odmena-za-vyzvu). Krčmový tón: „Fero platí rundu sám, Jano len drží pohár.“",
+    "rizika": "Ďalšie ohlásenie pred kolom = dlhšia príprava a ťažšia výučba. Dvojnásobné špaky za bitku môžu prebiť strach starších (mierka z témy posledna-bitka-a-vplyv). „Idem sám“ vylúči partnera z kola — pri ľuďoch nuda, pri botoch bez problému. Stávka podporí presne silnejšieho hráča, ak sa nedá ohlásiť aj na slabší kraj.",
+    "merat": "Ako často bot ohlási stávku a s akou úspešnosťou; podiel výhier tímu, ktorý stávku použil zo zaostávania; či sa stávkou dobieha vedenie (korelácia vedenia pred finále s výhrou); rozdelenie ohlásení medzi silnejšieho a slabšieho partnera.",
+    "temy": ["hra-2-na-2"],
+    "pridane": "2026-10-28"
+  },
+  {
+    "id": "podanie-s-cenou",
+    "nazov": "Podanie v tíme s cenou (výmena kariet a zdrojov medzi partnermi)",
+    "problem": "Bez možnosti pomôcť si sú partneri len dve hospodárstva vedľa seba; s voľným presúvaním sa z dvoch hráčov stane jeden. Podanie musí niečo stáť alebo byť obmedzené, aby bolo rozhodnutím.",
+    "ako": "1. V pevnom okamihu (pred kolom, raz za ťah) smie hráč dať partnerovi kartu alebo zdroj. 2. Podanie stojí: ťah, kartu pre súpera, alebo je viazané na stávku. 3. Tichu: každý pošle lícom dole po jednej karte každému z troch hráčov — aj súperom. 4. Niektoré hry presun výslovne zakazujú (život v 2HG, karty v Gundame).",
+    "hry": [
+      {
+        "nazov": "Tichu — výmena pred hrou",
+        "preco": "„each player passes one face-down card to each opponent and one to their partner“. Partnerovi pomáhaš, ale súperom musíš dať tiež — obvykle to najhoršie. Podanie je teda rozhodnutie o troch kartách naraz.",
+        "zdroj": "https://en.wikipedia.org/wiki/Tichu"
+      },
+      {
+        "nazov": "Spades — výmena pri slepej nule",
+        "preco": "Výmena dvoch kariet medzi partnermi je povolená len ako súčasť najrizikovejšej stávky — podanie je odmena za riziko, nie bežný nástroj.",
+        "zdroj": "https://www.pagat.com/auctionwhist/spades.html"
+      },
+      {
+        "nazov": "Euchre — railroading",
+        "preco": "Keď partner hrá sám, smieš mu poslať jednu (najlepšiu) kartu lícom dole; on jednu zo svojich alebo z poslanej odhodí.",
+        "zdroj": "https://www.pagat.com/euchre/euchre.html"
+      },
+      {
+        "nazov": "Star Realms Hydra a Magic 2HG (dve krajnosti)",
+        "preco": "Hydra povoľuje skladať obchod na kúpu karty; 2HG zakazuje meniť život medzi partnermi (810.9e) a hýbať partnerovými kartami (810.5). Dve krajnosti tej istej voľby.",
+        "zdroj": "https://ultraboardgames.com/star-realms/multiplayer-rules.php"
+      }
+    ],
+    "kritika": "Voľné presúvanie (Hydra) je podľa navrh-2v2.html (variant C „spoločná pokladnica“) cesta, kde silnejší ťahá tím a mizne osobné riziko pitia a fajčenia. Tichu výmena predlžuje prípravu každého rozdania (z vlastných vedomostí, neoverené).",
+    "prevod": "Navrh-2v2.html už má „podanie pod stolom“ (raz za kolo namiesto vyloženia: 1 karta alebo 2 cigarety, cena = ťah). Tichu ponúka inú cenu, ktorá sedí na stavbu šenku (§5): pri stavbe hráč namiesto „polovica do šenku, polovica naspodok“ smie jednu kartu podať partnerovi lícom dole, ale vtedy jednu musí podstrčiť protivníkovi — a NA EX! má na podstrčenie tému aj pravidlá (Kliatby, §11; Podstrčenie, §13). Railroading sedí na „Idem sám“: partner, ktorý sedí, smie hráčovi pred Zhromaždením podať jednu kartu. Zásada bez umelých stropov: podanie nesmie byť „najviac X cigariet“ — cenou je ťah alebo karta pre súpera, nie číslo stropu.",
+    "rizika": "Podstrčenie kliatby súperovi je silné a zlomyseľné — tón áno, balans neistý. Viac skrytých presunov = viac testov viewFor (pravidlo č. 2 v CLAUDE.md). Pri otvorených rukách v tíme sa podanie stane mechanickým optimalizovaním jedného hráča.",
+    "merat": "Koľkokrát za partiu sa podáva a čo (karta/cigarety); či podanie mení rozdiel cigariet medzi partnermi; pri Tichu verzii: aké karty idú súperovi (kliatby?) a ako to mení počet Dlhov a Cirhóz.",
+    "temy": ["hra-2-na-2"],
+    "pridane": "2026-10-28"
+  },
+  {
+    "id": "kto-je-super",
+    "nazov": "Kto je „súper“ v texte karty, keď sú súperi dvaja",
+    "problem": "Karty písané pre dvoch hovoria „súper“, „tvoj“, „tvoja partia“. Pri dvoch protivníkoch treba jedno pravidlo výkladu, inak treba prepísať každú kartu (v NA EX! 29 z 81 kariet v cards.json spomína súpera).",
+    "ako": "Tri overené riešenia: A · Každý súper zvlášť — „each opponent“ zasiahne oboch, „you“ je len držiteľ karty (2HG, One Piece Buddy). B · Voľba pri zahraní — „opponent“ = ktorýkoľvek súper podľa voľby hráča (Gundam Team Battle, Star Realms Free-for-all). C · Pevný protivník — hráč smie mieriť len na súpera oproti (Star Realms Emperor: admirál len na admirála oproti; Hunter: len vľavo). K tomu výklad „náš“: „friendly“ zahŕňa partnera, „your“ je len majiteľ (Gundam).",
+    "hry": [
+      {
+        "nazov": "Magic: Two-Headed Giant",
+        "preco": "„any reference to 'you' on a card still applies to the individual holder“; „each opponent“ a „each player“ „affect each team member separately“. Účinok, ktorý číta život jedného hráča, číta tímový (810.9a).",
+        "zdroj": "https://magic.wizards.com/en/formats/two-headed-giant"
+      },
+      {
+        "nazov": "Gundam Card Game — Team Battle",
+        "preco": "Jedna veta na typ slova: „Friendly“ zahŕňa partnerove karty, „Your“ znamená majiteľa karty, pri „Opponent“ smieš „freely choose any opponent's card“.",
+        "zdroj": "https://www.gundam-gcg.com/en/news/team-battle.html"
+      },
+      {
+        "nazov": "Star Realms — Emperor a Hunter",
+        "preco": "Emperor (3 na 3): admiráli smú útočiť len na admirála oproti, až po jeho porážke na cisára; cisár na kohokoľvek. Hunter: útok len na hráča vľavo. Pevný cieľ robí z hry pre viac hráčov sériu súbojov.",
+        "zdroj": "https://ultraboardgames.com/star-realms/multiplayer-rules.php"
+      },
+      {
+        "nazov": "One Piece Card Game — Buddy Battle",
+        "preco": "Podľa súhrnu oficiálnych pravidiel (PDF som nevedel prečítať): trvalé účinky zasiahnu oboch súperov (4-3), pri účinkoch „you“ si hráč zvolí jedného z tímu (4-4). Neoverené priamo.",
+        "zdroj": "https://en.onepiece-cardgame.com/pdf/rule_buddy_event.pdf"
+      },
+      {
+        "nazov": "One Piece Card Game — 2on2 turnaj 2025 (opačný prístup)",
+        "preco": "Každý člen tímu hrá jeden zápas 1 na 1 proti členovi druhého tímu a tím zbiera body z výsledkov — karty sa nemusia vykladať vôbec.",
+        "zdroj": "https://en.onepiece-cardgame.com/events/2025/2on2/"
+      }
+    ],
+    "kritika": "Voľba (B) dovolí obom súperom sústrediť sa na slabšieho hráča (Star Realms Hunter a Emperor vznikli práve preto, aby sa útok rozložil — z vlastných vedomostí, neoverené). „Každý súper“ (A) zdvojí silu kariet proti hráčom — jedna karta zasiahne dvoch. Pevný protivník (C) robí z 2 na 2 dve partie vedľa seba, keď nie je nič spoločné.",
+    "prevod": "Pravidlo palca z navrh-2v2.html je zmes A a C: „súper“ = protivník, keď ide o ruku, balíček, cigarety či kliatby jedného človeka; = súperský tím, keď ide o líniu, bitku alebo markery. Gundam ukazuje, ako to napísať do jedného odseku pravidiel namiesto 29 prepisov: „tvoj / tvoja partia“ = tím (ako „friendly“), „ty“ = majiteľ karty, „súper“ pri osobných zdrojoch = protivník, ktorého … (A pevný oproti / B voľba pri zahraní). Zásada „nepísať interakcie iných kariet“ (memory) ostáva — výklad patrí do PRAVIDLA §16 a do §„Formát 2 na 2“, nie na karty. Kritické karty: Svokra (cigarety pri NA EX súpera), Finančná poradkyňa, Vychovávateľka (Dlh do balíčka súpera), Policajtka, Krčmárka (súper nesmie odpovedať), Kočovník, Veštica.",
+    "rizika": "B s 29 kartami vytvorí „hon na slabšieho“ — online s náhodnými partnermi frustrujúce. A zdvojnásobí silu kariet ako Svokra (dve NA EX súperov = dvojnásobok cigariet). C vyžaduje, aby UI jasne ukázalo, kto je čí protivník (dva páry farieb?). Každá voľba je ďalší ťah klikom, ktorý bot musí vedieť.",
+    "merat": "Pre každú z 29 kariet: hodnota karty pre bota v 1 na 1 vs. 2 na 2 pri A, B, C (výhry s kartou v línii); koľko negatívnych účinkov skončí na slabšom hráčovi pri B.",
+    "temy": ["hra-2-na-2"],
+    "pridane": "2026-10-28"
   }
 ]

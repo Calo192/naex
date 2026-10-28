@@ -62,6 +62,14 @@ CREATE TABLE IF NOT EXISTS nastavenia (
   kluc TEXT PRIMARY KEY,
   data TEXT NOT NULL
 );
+-- Odomknuté ligy (Michal 2026-10-28): odomknutie sa nikdy nevracia, ani keď
+-- admin neskôr sprísni podmienky (ligy.ts).
+CREATE TABLE IF NOT EXISTS ligy_odomknute (
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  liga TEXT NOT NULL,
+  cas INTEGER NOT NULL,
+  PRIMARY KEY (pouzivatel, liga)
+);
 CREATE TABLE IF NOT EXISTS sady (
   verzia INTEGER PRIMARY KEY AUTOINCREMENT,
   cas INTEGER NOT NULL,

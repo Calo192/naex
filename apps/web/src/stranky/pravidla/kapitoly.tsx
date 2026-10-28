@@ -84,7 +84,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <div className="karticky">
           <div className="karticka">
-            <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">dĺžky hry</P> a potom{" "}
+            <strong>Špaky.</strong> Hrá sa 3, 5 alebo 7 bitiek o lokality podľa <P k="dlzka-hry">ligy</P> a potom{" "}
             <P k="finale">finále</P> — posledná bitka o pinnacle lokalitu, ktorú vyberie hráč s viac špakmi — útočí zaostávajúci. Víťaz bitky (aj finále) dostane 1 <P k="spak">špak</P> za každú
             kartu, ktorá pri bitke leží v línii (tvoje aj súperove), a k tomu ti každý starší, ktorý sa ťa bojí, zaplatí zóny, ktoré ti
             ešte nezaplatil: žltá 1, oranžová 2, červená 3. Kto bitku prehrá, od starších nedostane nič; pri sekere dostanú obaja.
@@ -173,7 +173,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Cieľ → šenok → Zhromaždenie a Pitka (1–5×) → bitka → po bitke.",
       "Štart: 4 karty v ruke, prázdny balíček, 2 plné poldeci, 3 cigarety.",
       "Útočník prehral poslednú bitku, obranca ju vyhral.",
-      "Lokality idú po úrovniach (stredná hra 1 · 2 · 2 · 3 · 3), obranca vyberá z lokalít úrovne kola.",
+      "Lokality idú po úrovniach (Druhá liga 1 · 2 · 2 · 3 · 3), obranca vyberá z lokalít úrovne kola.",
       "Po poslednej lokalite finále na pinnacle lokalite (Poľovnícka chata, Predsedova vila, Herňa).",
     ],
     obsah: () => (
@@ -203,7 +203,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ol>
         <H3 id="kolo-priprava">Príprava</H3>
         <p>
-          Zvoľte <P k="dlzka-hry">dĺžku hry</P> — 3, 5 alebo 7 lokalít; po nich príde <P k="finale">finále</P>. Každý hráč má
+          Zvoľte <P k="dlzka-hry">ligu</P> — Tretia liga má 3 lokality, Druhá 5, Prvá 7; po nich príde <P k="finale">finále</P>. Každý hráč má
           na začiatku v ruke <strong>4 štartovacie karty</strong> — Miňištranta, Milujúcu manželku, Pijana a Dievčinu na vydaj.
           Doberací balíček je prázdny, naplní ho až odhadzovací; dovtedy sa nedá ťahať ani fajčiť. K tomu{" "}
           <strong>2 plné poldeci, 3 cigarety a 0 špakov</strong>. Hra rozdá 8 starších, každému náhodne jeho priazeň; markery
