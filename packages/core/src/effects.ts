@@ -14,7 +14,7 @@ import type { ElderState } from "./elders.ts";
 import { favourStarsieho, prebudenyPre, priazenHraca, priazenSila } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { LineEval, PlacedCard } from "./partia.ts";
-import { evaluateLine, prevahaStran, rataSaDoPrevahy } from "./partia.ts";
+import { evaluateLine, prevahaStran, rataSaDoPrevahy, silaVKraji, zvieratAUmlcane } from "./partia.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
@@ -66,7 +66,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
   hasic: "impl", // Nástup: náhodná karta z odhadzovacieho — nechať v ruke, alebo vrátiť (príkaz hasic)
   hrobar: "impl", // Konflikt (v7): priložená karta je posledná na strane, po bitke z hry (konflikt)
-  ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20)
+  ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20; Dvojčatá za dve, v8)
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2
   krcmarka: "impl", // Pitka (v7): na NA EX majiteľa súper neodpovedá kartou (odhalNaex)
   lesna_cesta: "impl", // Bitka (v7): +1 tuhé za každé svoje Zviera v súperovom kraji
@@ -128,10 +128,10 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
   degustatorka: "impl", // Nástup: súperovi s viac plnými poldeci otočí jeden na vypitý
   klebetnica: "impl", // Pitka (Bzdocha, Michal 2026-10-27): majiteľ hrá Pitku po súperovi a vidí jeho NA EX (zacniPitku, viewFor)
-  dohadzovacka: "impl", // Bitka (v7): za zmiešaný spoj Žena–Chlap karta zo šenku (voľba senok)
+  dohadzovacka: "impl", // Nástup (Michal 2026-10-28): najvzdialenejší Občan opačného pohlavia ako jej sused z druhej strany sa presunie za ňu (presunDohadzovackou)
   vandal: "impl", // Nástup: otoč lokalitu o 180°
   stryko_z_ameriky: "impl", // Kšeft: za 2 cigarety Rana navyše v bitke kola
-  masiar: "impl", // Furt (v7): akcie Zvierat v jeho okolí neplatia (partia.ts)
+  masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Úplatok (v7): súper cigaretou zníži jeho útoky o stupeň (príkaz uplatok)
   traktoristka: "impl", // Bitka: s prevahou v jej kraji Pecka navyše, inak Dlh
   vymahac: "impl", // Bitka: za každé 2 priznané Dlhy Rana navyše
@@ -170,6 +170,15 @@ export function partiaHraca(state: { readonly strany: VerejnyStav["strany"] }, p
  */
 export function vPartii(state: Pick<VerejnyStav, "strany">, p: PlayerId, defId: string): boolean {
   return partiaHraca(state, p).some((pl) => pl.card.defId === defId && pl.zaverecna !== true);
+}
+
+/**
+ * Efekt Zvieraťa defId v partii hráča p platí: aspoň jedno odkryté také Zviera,
+ * ktoré nesusedí s Mäsiarom (Michal 2026-10-28, zvieratAUmlcane).
+ */
+export function zvieraPlati(data: GameData, state: Pick<VerejnyStav, "strany" | "ciel">, p: PlayerId, defId: string): boolean {
+  const umlcane = zvieratAUmlcane(data, { lokalita: state.ciel?.lokalita ?? null, strany: state.strany });
+  return partiaHraca(state, p).some((pl) => pl.card.defId === defId && pl.zaverecna !== true && !umlcane.has(pl.card.uid));
 }
 
 export function vDedicstve(state: VerejnyStav, p: PlayerId, defId: string): boolean {
@@ -392,9 +401,7 @@ export function limitBuduceKolo(state: StavPoldeci & { readonly lokalitaOtocena?
 
 /** Aktívne akcie Poldeci v línii — v bitke otočia toľko vypitých poldeci na plné (vypiPoldeci). */
 function akciePoldeci(data: GameData, state: VerejnyStav, lokalitaOtocena: boolean): readonly [number, number] {
-  // Finále bez lokality (v6) má líniu bez stredu; na pinnacle (v7) je línia ako inde.
-  const finale = state.ciel?.typ === "finale" && state.ciel.lokalita === null;
-  const sums = evaluateLine(data, { lokalita: state.ciel?.lokalita ?? null, lokalitaOtocena, strany: state.strany, ...(finale ? { finale: true } : {}) }).sums;
+  const sums = evaluateLine(data, { lokalita: state.ciel?.lokalita ?? null, lokalitaOtocena, strany: state.strany }).sums;
   return [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0];
 }
 
@@ -470,8 +477,6 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   };
 
   pridaj("svokra", svokraRany(data, state, p));
-  // Rátajú sa tie isté karty ako do prevahy: Občania, Zvieratá, Starešinovia.
-  const doPrevahy = (pl: PlacedCard): boolean => rataSaDoPrevahy(defOf(data, pl.card).tags);
   // lesna_cesta (v7, Michal 2026-10-27): +1 tuhé za každé svoje Zviera v súperovom kraji, bez stropu (7.5 body 1–2).
   if (jeCielLokalita(state, "lesna_cesta")) {
     pridaj("lesna_cesta", state.strany[opp].filter((pl) => pl.playedBy === p && pl.zaverecna !== true && defOf(data, pl.card).tags.includes("Zviera")).length);
@@ -493,12 +498,12 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   if (vDedicstve(state, p, "pasca") && (state.prilozeniaKu?.[p] ?? 0) > 0) pridaj("pasca", 2 * state.hraci[p].dedicstvo.filter((k) => k.defId === "pasca").length);
   // stryko_z_ameriky (Kšeft, v7): Rany kúpené v Pitkách tohto kola.
   pridaj("stryko_z_ameriky", state.kseftRany?.[p] ?? 0);
-  // ihrisko (Michal 2026-10-20): v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov.
+  // ihrisko (Michal 2026-10-20): v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat
+  // a Starešinov — rátajú sa ako do prevahy, Dvojčatá za dve (v8, Michal 2026-10-28, návrh #32).
   if (jeCielLokalita(state, "ihrisko")) {
     for (const strana of state.strany) {
-      const moje = strana.filter((pl) => pl.playedBy === p && doPrevahy(pl)).length;
-      const jeho = strana.filter((pl) => pl.playedBy === opp && doPrevahy(pl)).length;
-      if (moje > jeho) pridaj("ihrisko", KONSTANTY.EFEKT.IHRISKO_TUHE);
+      const sila = silaVKraji(data, strana);
+      if (sila[p] > sila[opp]) pridaj("ihrisko", KONSTANTY.EFEKT.IHRISKO_TUHE);
     }
   }
 

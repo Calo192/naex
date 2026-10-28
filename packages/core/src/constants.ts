@@ -78,17 +78,19 @@ export const KONSTANTY = {
    * prehrávanie: prebytok posúva markery k porazenému.
    */
   NASOBOK_PRIAZNE: 2,
-  /** v7 (Michal 2026-10-27, plan.md 10.4): 7, so súperovou priazňou Exekútora 6 / 5 / 4. */
-  PRAH_EXEKUTORA_ZAKLAD: 7,
+  /**
+   * v8 (Michal 2026-10-28, návrh #34 A): 6, so súperovou priazňou Exekútora 5 / 4 / 3
+   * (v7 bolo 7 — exekúcia sa spustila raz z 18 bitiek, Dlh nič nestál).
+   */
+  PRAH_EXEKUTORA_ZAKLAD: 6,
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   /**
-   * Špaky (pravidlá v6, Michal 2026-10-26): finále má vždy toľkoto Pitiek,
-   * víťaz bitky dostane vždy aspoň SPAKY_ZA_BITKU_MIN a nepriznaná Cirhóza
-   * na konci hry stojí toľkoto špakov za kus (ruka aj oba balíčky).
+   * Špaky (pravidlá v6, Michal 2026-10-26): víťaz bitky dostane vždy aspoň
+   * SPAKY_ZA_BITKU_MIN a nepriznaná Cirhóza na konci hry stojí toľkoto špakov
+   * za kus (ruka aj oba balíčky) — v8 (Michal 2026-10-28, návrh #33) 3, predtým 5.
    */
-  FINALE_PITKY: 3,
   SPAKY_ZA_BITKU_MIN: 1,
-  SPAKY_ZA_CIRHOZU: 5,
+  SPAKY_ZA_CIRHOZU: 3,
   /**
    * Výkupné zvyšných zdrojov na konci hry (Michal 2026-10-27): každý plný
    * poldeci dá toľkoto špakov a každých CIGARIET_ZA_SPAK cigariet 1 špak.
@@ -143,9 +145,9 @@ export const KONSTANTY = {
 
 /**
  * Dĺžka hry = počet lokalít, o ktoré sa hráči bijú (rozhodnutie Michala
- * 2026-10-11; 3 / 5 / 7 od 2026-10-24, predtým 5 / 7 / 11). Od v6 sa po nich
- * hrá ešte finále bez lokality. Dĺžku, na ktorú sada nemá dosť lokalít,
- * ponuka vynechá.
+ * 2026-10-11; 3 / 5 / 7 od 2026-10-24, predtým 5 / 7 / 11). Po nich sa hrá
+ * ešte finále na pinnacle lokalite (v7). Dĺžku, na ktorú sada nemá dosť
+ * lokalít, ponuka vynechá.
  */
 export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 
@@ -156,10 +158,11 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
  * pravidlá menia len v dávkach raz za 2 týždne a celá dávka dostane ďalšie
  * číslo („v5“) spolu s novým dátumom platnosti.
  */
-// v7 (revízia sady, Michal 2026-10-27) — zatiaľ len vetva v7/revizia-sady na playtest.
-export const VERZIA_PRAVIDIEL = "v7";
+// v8 (Michal 2026-10-28): bodovanie kartami v línii, strach za nové zóny, prebytok
+// rozdeľuje porazený, Kultúrny dom „Obaja bodujú“, Cirhóza −3, Exekútor 6, Kmotor presúva Dlhy.
+export const VERZIA_PRAVIDIEL = "v8";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-27";
+export const PRAVIDLA_PLATNE_OD = "2026-10-28";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

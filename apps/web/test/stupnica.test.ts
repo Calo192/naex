@@ -49,7 +49,7 @@ describe("špaky pri staršom (v6)", () => {
   it("komu starší dá po bitke špaky", () => {
     expect(vysvetlenieSpakov({ elderId: "x", spaky: [2, 0] }, 0, ["Ty", "Fero"])).toMatch(/Bojí sa teba/);
     expect(vysvetlenieSpakov({ elderId: "x", spaky: [0, 3] }, 0, ["Ty", "Fero"])).toMatch(/Bojí sa Fero/);
-    expect(vysvetlenieSpakov({ elderId: "x", spaky: [0, 0] }, 0, ["Ty", "Fero"])).toMatch(/Nikoho/);
+    expect(vysvetlenieSpakov({ elderId: "x", spaky: [0, 0] }, 0, ["Ty", "Fero"])).toMatch(/^Nikomu nič nedá/);
   });
 });
 

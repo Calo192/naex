@@ -41,7 +41,7 @@ describe("dôvod konca po finále", () => {
   }, 60000);
 
   it("záporné špaky so znamienkom mínus, nikdy so spojovníkom", () => {
-    const s = dohraj(8, (x) => ({ ...x, spaky: [-40, -50] }));
+    const s = dohraj(8, (x) => ({ ...x, spaky: [-140, -150] }));
     const [a, b] = s.koniec!.body!;
     expect(a).toBeLessThan(0);
     expect(b).toBeLessThan(0);

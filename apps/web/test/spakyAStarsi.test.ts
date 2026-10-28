@@ -7,7 +7,7 @@ import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { ClientState, GameState, PlayerId } from "@naex/core";
-import { apply, loadGameData, naTahu, priazenHraca, setupGame, spakyTeraz, strachZ, tahBota, viewFor } from "@naex/core";
+import { apply, jeFinaleNaNastenke, loadGameData, naTahu, priazenHraca, setupGame, spakyTeraz, strachNaVyplatu, strachZ, tahBota, viewFor } from "@naex/core";
 import { rezimRadov, spakyPodlaZdroja, stupienkyStarsich } from "../src/hra/spakyAStarsi.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -43,7 +43,7 @@ describe("bar špakov", () => {
         for (const p of [0, 1] as const satisfies readonly PlayerId[]) {
           const r = spakyPodlaZdroja(v, p);
           expect(r.zaLokality + r.zaStarsich + r.zaFinale + r.exekutor).toBe(v.spaky[p]);
-          expect(r.vyhrate.length).toBe(v.nastenka.filter((b) => b.lokalita !== null && b.vitaz === p).length);
+          expect(r.vyhrate.length).toBe(v.nastenka.filter((b) => !jeFinaleNaNastenke(b) && b.lokalita !== null && b.vitaz === p).length);
         }
       }
     }, DLHO);
@@ -68,8 +68,9 @@ describe("dlaždica Starší", () => {
         const s = stupienkyStarsich(v.starsi, p);
         expect(s.priazen).toBe(v.starsi.filter((e) => priazenHraca(e) === p).length);
         expect(s.strach).toBe(v.starsi.filter((e) => strachZ(e, p) > 0).length);
-        // Stĺpčeky dole spolu dajú špaky od starších po bitke.
-        expect(s.stlpce.filter((x) => x.smer === "dole").reduce((a, x) => a + x.zona, 0)).toBe(body.zaStarsich[p]);
+        // Stĺpčeky dole ukazujú zónu; po bitke od nich príde len to, čo ešte nezaplatili (v8).
+        expect(body.zaStarsich[p]).toBe(v.starsi.reduce((a, e) => a + strachNaVyplatu(e, p), 0));
+        expect(body.zaStarsich[p]).toBeLessThanOrEqual(s.stlpce.filter((x) => x.smer === "dole").reduce((a, x) => a + (x.zona * (x.zona + 1)) / 2, 0));
       }
     }
   }, DLHO);

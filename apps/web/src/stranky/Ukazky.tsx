@@ -283,8 +283,8 @@ export function UkazkaStupnice() {
           <>
             Marker leží na {strana} polovici v zóne <strong>{ZONY[m]}</strong>: priazeň s hodnotou <strong>{hodnota}</strong>{" "}
             má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na úrovni{" "}
-            <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — po každej bitke, ktorú {strana === "tvojej" ? "súper vyhrá, mu" : "vyhráš, ti"} dá {uroven}{" "}
-            {uroven === 1 ? "špak" : "špaky"}.
+            <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — po najbližšej bitke, ktorú {strana === "tvojej" ? "súper vyhrá, mu" : "vyhráš, ti"} zaplatí zóny, ktoré ešte nezaplatil (táto{" "}
+            {uroven === 1 ? "1 špak" : `${uroven} špaky`}, spolu so zónami pod ňou {(uroven * (uroven + 1)) / 2}); zaparkovaný marker druhýkrát nič nedá.
             {(m === 0 || m === 6) && " Na krajnej pozícii sa starší prebudí pre vydesujúceho hráča a ráta sa do vydesenia."}
           </>
         )}

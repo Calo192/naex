@@ -44,7 +44,9 @@ describe("NA EX mimo limitu vykladania", () => {
           pitka.reakcia === null &&
           s.pitkaCislo < s.pitkyCelkom &&
           s.ciel?.lokalita?.defId !== "krcma" &&
-          (pitka.skryteNaex ?? []).length === 0
+          (pitka.skryteNaex ?? []).length === 0 &&
+          // Záverečná otočená po Pitke (Degustátorka) by poldeci menila podľa toho, koľko ich kto má plných.
+          !s.strany.some((x) => x.some((pl) => pl.zaverecna === true))
         ) {
           const uid = moznostiNaex(data, s, p)[0];
           if (uid !== undefined) {

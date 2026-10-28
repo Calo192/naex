@@ -60,7 +60,8 @@ describe("posun markera", () => {
         expect(moje).toHaveLength(1);
         const posun = moje[0] as PosunMarkera;
         expect([posun.z, posun.na]).toEqual([e.marker, teraz.marker]);
-        expect(posun.kto).toBe(k.hrac);
+        // Pri prebytku je „kto“ držiteľ — rozdeľuje ho od v8 jeho súper (spravidla porazený).
+        expect(posun.kto).toBe(k.cmd.type === "prebytok" ? k.pred.bitkaStav?.prebytokDrzi : k.hrac);
         const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "patronat" ? "patronat" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
         expect(posun.zdroj).toBe(zdroj);
         if (posun.zdroj === "prebytok") expect(Math.abs(posun.na - posun.z)).toBe(1);

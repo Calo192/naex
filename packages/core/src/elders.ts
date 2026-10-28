@@ -6,8 +6,9 @@
 //
 //  - Priazeň: marker na polovici hráča → TEN hráč má priazeň sily 1 / 2 / 3.
 //  - Strach: starší sa bojí hráča na OPAČNEJ strane. Po bitke, ktorú obávaný
-//    hráč vyhral (pri sekere obom, v6.1), mu dá toľko špakov, aká je zóna
-//    (žltá 1, oranžová 2, červená 3); sivý stred nedá nikomu.
+//    hráč vyhral (pri sekere obom, v6.1), mu zaplatí len za zóny, ktoré mu ešte
+//    nezaplatil (v8): žltá 1, oranžová 2, červená 3; sivý stred nedá nikomu.
+//    Ústup markera k stredu vyplatené zóny zmaže (sPosunutymMarkerom).
 //  - Nahradený starší (patronát) ostáva v hre celý: marker, priazeň,
 //    prebudenie aj špaky.
 
@@ -55,6 +56,11 @@ export interface ElderState {
   readonly ziskal: PlayerId | null;
   /** Id scorecardu, na ktorom ukazovateľ leží (rozdaný pri príprave, aj po náhrade). */
   readonly scorecard: string;
+  /**
+   * Po ktorú zónu (1 žltá … 3 červená) už starší zaplatil strach hráčovi, ktorého
+   * sa bojí (v8, Michal 2026-10-28). Nikdy nie je väčšia ako zóna markera; chýba = 0.
+   */
+  readonly vyplatene?: number;
 }
 
 export function freshElder(elderId: string, karta: CardInstance, scorecard: string): ElderState {
@@ -96,13 +102,46 @@ export function strachZ(elder: Pick<ElderState, "marker">, p: PlayerId): 0 | 1 |
   return obavanyHrac(elder) === p ? STUPNICA_ZONY[elder.marker] : 0;
 }
 
+/** Súčet hodnôt zón od (od + 1) po `po` — žltá 1, oranžová 2, červená 3. */
+function hodnotaZon(od: number, po: number): number {
+  return (po * (po + 1)) / 2 - (od * (od + 1)) / 2;
+}
+
 /**
- * Špaky za starších po bitke (v6, Michal 2026-10-26): každý starší, ktorý sa
- * hráča bojí, mu dá toľko špakov, aká je zóna — aj nahradený. Vypláca sa len
- * víťazovi bitky, pri sekere obom (v6.1, spakyZaStarsichPre v engine.ts).
+ * Strach za nové zóny (v8, Michal 2026-10-28, návrh #28 B): koľko špakov dá
+ * starší hráčovi p po jeho najbližšej výhre — len zóny, ktoré mu ešte nezaplatil
+ * (zo stredu na červenú 1 + 2 + 3 = 6). Zaparkovaný marker po výplate nedá nič.
  */
-export function spakyZaStarsich(starsi: readonly Pick<ElderState, "marker">[], p: PlayerId): number {
-  return starsi.reduce((a, e) => a + strachZ(e, p), 0);
+export function strachNaVyplatu(elder: Pick<ElderState, "marker" | "vyplatene">, p: PlayerId): number {
+  const zona = strachZ(elder, p);
+  return hodnotaZon(Math.min(elder.vyplatene ?? 0, zona), zona);
+}
+
+/**
+ * Špaky za starších po bitke: každý starší, ktorý sa hráča bojí, mu zaplatí
+ * nevyplatené zóny (v8) — aj nahradený. Vypláca sa len víťazovi bitky, pri
+ * sekere obom (v6.1, spakyZaStarsichPre v engine.ts).
+ */
+export function spakyZaStarsich(starsi: readonly Pick<ElderState, "marker" | "vyplatene">[], p: PlayerId): number {
+  return starsi.reduce((a, e) => a + strachNaVyplatu(e, p), 0);
+}
+
+/**
+ * Starší s markerom na novej pozícii — jediné miesto, kde sa ráta, čo ostane
+ * vyplatené (v8): ústup k stredu zmaže zóny, z ktorých marker odišiel, prechod
+ * cez stred zmaže všetko (druhá polovica platí nanovo druhému hráčovi).
+ */
+export function sPosunutymMarkerom<E extends Pick<ElderState, "marker" | "vyplatene">>(elder: E, na: MarkerPos): E {
+  const ostava = obavanyHrac(elder) === obavanyHrac({ marker: na }) ? Math.min(elder.vyplatene ?? 0, STUPNICA_ZONY[na]) : 0;
+  const bez: E = { ...elder, marker: na };
+  delete (bez as { vyplatene?: number }).vyplatene;
+  return ostava > 0 ? { ...bez, vyplatene: ostava } : bez;
+}
+
+/** Starší po výplate strachu: zóny po tú, kde marker leží, sú vyplatené. */
+export function poVyplateStrachu<E extends Pick<ElderState, "marker" | "vyplatene">>(elder: E): E {
+  const zona = STUPNICA_ZONY[elder.marker];
+  return zona === 0 ? elder : { ...elder, vyplatene: zona };
 }
 
 /**

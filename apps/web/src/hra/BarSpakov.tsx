@@ -42,8 +42,8 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       nazov: "Starší",
       hodnota: zn(rozpis.zaStarsich),
       trieda: rozpis.zaStarsich > 0 ? "plus" : "",
-      pod: `+${body.zaStarsich[p]} po bitke, ak ${ja ? "vyhráš" : "vyhrá"} · ešte ${body.vyplat}×`,
-      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po ďalšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsich[p]} (kto sa ${ja ? "ťa" : "ho"} bojí: žltá 1, oranžová 2, červená 3), ale len keď ju ${ja ? "vyhráš" : "vyhrá"} — porazený od starších nedostane nič, pri sekere dostanú obaja. Vyplácajú ešte ${body.vyplat}×.`,
+      pod: `+${body.zaStarsich[p]} za nové zóny, ak ${ja ? "vyhráš" : "vyhrá"}`,
+      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dajú ${body.zaStarsich[p]}: každý, kto sa ${ja ? "ťa" : "ho"} bojí, zaplatí len zóny, ktoré ešte nezaplatil (žltá 1, oranžová 2, červená 3) — zaparkovaný marker druhýkrát nič nedá, kým neustúpi k stredu. Porazený od starších nedostane nič, pri sekere dostanú obaja.`,
     },
     {
       kluc: "finale",
@@ -51,13 +51,13 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       hodnota: zn(zaFinale),
       trieda: zaFinale > 0 ? "plus" : "",
       pod: [
-        finale === null ? (view.rozpis !== undefined ? "finále: 1 za Pitku" : `finále až +${KONSTANTY.FINALE_PITKY}`) : `finále ${zn(finale.zaBitku[p])}`,
+        finale === null ? "finále: 1 za kartu v línii" : `finále ${zn(finale.zaBitku[p])}`,
         rozpis.prebytok > 0 ? `prebytok +${rozpis.prebytok}` : null,
         view.spakyNaSekere > 0 ? `na sekere ${view.spakyNaSekere}` : null,
       ]
         .filter((t): t is string => t !== null)
         .join(" · "),
-      popis: `Finále (${view.rozpis !== undefined ? "na vrcholovej lokalite: víťaz dostane 1 špak za každú odohranú Pitku, 1–5" : `${KONSTANTY.FINALE_PITKY} Pitky`}) a prebytok. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
+      popis: `Finále na vrcholovej lokalite: víťaz dostane 1 špak za každú kartu v línii; prebytok v ňom rozdelí jeho držiteľ a nové zóny strachu sa vyplatia hneď. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
     },
     {
       kluc: "exekutor",
@@ -77,7 +77,7 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       popis:
         `Výkupné po finále: každý plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak — ` +
         `${view.koniec === null ? "teraz" : "na konci"} ${pocet(vykupne.poldeci, "plný poldeci", "plné poldeci", "plných poldeci")} a ${pocet(vykupne.cigarety, "cigareta", "cigarety", "cigariet")} = ${zn(vykupne.spaky)}. ` +
-        `Nepriznaná Cirhóza zoberie na konci hry ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus (ruka aj oba balíčky)${cirhozy > 0 ? `, ${ja ? "máš" : "má"} ${cirhozy}` : ""}.`,
+        `Nepriznaná Cirhóza zoberie na konci hry ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus (ruka aj oba balíčky)${cirhozy > 0 ? `, ${ja ? "máš" : "má"} ${cirhozy}` : ""}.`,
     },
     {
       kluc: "teraz",
@@ -85,7 +85,7 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       hodnota: sMinusom(body.spolu[p]),
       trieda: "",
       pod: `teraz · so staršími až ${sMinusom(body.odhad[p])}`,
-      popis: `Špaky v popolníku, výkupné zvyšných poldeci a cigariet, mínus nepriznaná Cirhóza. „Až“ pridá starších za bitky, ktoré ešte prídu, keby ${ja ? "si" : ""} ich ${ja ? "vyhral" : "vyhral"} všetky a markery sa nepohli — špaky za bitky nerátá.`,
+      popis: `Špaky v popolníku, výkupné zvyšných poldeci a cigariet, mínus nepriznaná Cirhóza. „Až“ pridá nevyplatené zóny starších, keby ${ja ? "si" : ""} ešte ${ja ? "vyhral" : "vyhral"} bitku a markery sa nepohli — špaky za bitky nerátá.`,
     },
   ];
   return (

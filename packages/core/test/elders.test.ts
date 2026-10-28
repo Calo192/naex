@@ -19,7 +19,10 @@ import {
   prebudenyPre,
   priazenHraca,
   priazenSila,
+  poVyplateStrachu,
+  sPosunutymMarkerom,
   spakyZaStarsich,
+  strachNaVyplatu,
   strachZ,
   vydesil,
 } from "../src/index.ts";
@@ -75,10 +78,25 @@ describe("v6 — špaky za starších", () => {
     expect(strachZ(elderAt(0), 1)).toBe(3);
   });
 
-  it("súčet za všetkých starších, aj nahradeného", () => {
+  it("súčet za všetkých starších, aj nahradeného — v8 nevyplatené zóny (zo stredu na červenú 1 + 2 + 3)", () => {
     const starsi = [elderAt(6), elderAt(4), { ...elderAt(1), nahradeny: true }, elderAt(3)];
-    expect(spakyZaStarsich(starsi, 0)).toBe(4);
-    expect(spakyZaStarsich(starsi, 1)).toBe(2);
+    expect(spakyZaStarsich(starsi, 0)).toBe(6 + 1);
+    expect(spakyZaStarsich(starsi, 1)).toBe(1 + 2);
+    // Vyplatené zóny sa už neplatia: červená vyplatená po oranžovú dá len 3.
+    expect(spakyZaStarsich([{ ...elderAt(6), vyplatene: 2 }], 0)).toBe(3);
+    expect(spakyZaStarsich([{ ...elderAt(6), vyplatene: 3 }], 0)).toBe(0);
+  });
+
+  it("v8: ústup k stredu zmaže zóny, z ktorých marker odišiel; prechod na druhú polovicu zmaže všetko", () => {
+    const cervena = { ...elderAt(6), vyplatene: 3 };
+    expect(sPosunutymMarkerom(cervena, 5).vyplatene).toBe(2);
+    expect(strachNaVyplatu(sPosunutymMarkerom(sPosunutymMarkerom(cervena, 5), 6), 0)).toBe(3);
+    expect(sPosunutymMarkerom(cervena, 4).vyplatene).toBe(1);
+    expect(sPosunutymMarkerom(cervena, 3).vyplatene).toBeUndefined();
+    expect(sPosunutymMarkerom({ ...elderAt(4), vyplatene: 1 }, 2).vyplatene).toBeUndefined();
+    // Postup ďalej od stredu nič nezmaže.
+    expect(sPosunutymMarkerom({ ...elderAt(5), vyplatene: 2 }, 6).vyplatene).toBe(2);
+    expect(poVyplateStrachu(elderAt(5)).vyplatene).toBe(2);
   });
 });
 

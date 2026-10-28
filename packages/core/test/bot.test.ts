@@ -171,37 +171,35 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
   }
   const priazenStarsieho = (s: GameState, elderId: string): string => favourStarsieho(data, s.starsi.find((e) => e.elderId === elderId) as ElderState);
 
-  it("v6: posledné Pohoršenie dá radšej na strach (špaky po vyhratých bitkách) než na výhru Bitkárom", () => {
+  it("v8: posledné Pohoršenie dá radšej k sebe na výhru Bitkárom než na strach — žltá zóna zaplatí len raz", () => {
     for (const seed of [71, 72, 73]) {
-      // Všetci v strede, prázdna línia 0 : 0. Bitkár k sebe by vyhral bitku o 1 Pitku (1 špak),
-      // strach súpera dá pri sekere špak obom a potom po každej bitke, ktorú bot vyhrá.
+      // Všetci v strede, prázdna línia 0 : 0. Bitkár k sebe vyhrá bitku (aspoň 1 špak) a priazeň
+      // ostane botovi; strach súpera by dal pri sekere 1 špak raz a súperovi priazeň (v8).
       const s = vPohorseni(seed, () => 3);
       for (const povaha of POVAHY) {
         const cmd = tahBota(data, s, 0, seed, { povaha: povaha.id });
         expect(cmd.type, povaha.id).toBe("pohorsenie");
         if (cmd.type !== "pohorsenie") continue;
-        // v6.1 strach platí len víťazovi — agresívny Fero smie radšej vyhrať bitku hneď.
-        if (povaha.id !== "rapavy_fero") expect(cmd.kSebe === true, `${povaha.id} ${seed}`).toBe(false);
+        expect(cmd.kSebe === true, `${povaha.id} ${seed}`).toBe(true);
         expect(apply(data, s, cmd, 0).state.spaky[0]).toBe(1);
       }
     }
   }, 30_000);
 
-  it("prebytkom dá súperovi priazeň, ktorá mu v tejto partii urobí najmenej", () => {
+  it("v8: prebytok rozdeľuje porazený — vezme víťazovi Bitkára, ktorý mu v bitke škodí", () => {
     for (const seed of [81, 82, 83]) {
-      // Po výhre Bitkárom drží hráč 0 prebytok 1; všetci ostatní starší sú tesne pred zónou súpera.
+      // Po výhre Bitkárom (k sebe) drží hráč 0 prebytok 1; rozdeľuje ho porazený hráč 1.
       const bitkar = (e: ElderState): boolean => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR";
       const s = vPohorseni(seed, () => 3);
       const id = s.starsi.find(bitkar)?.elderId as string;
       const po = apply(data, s, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
-      expect(po.bitkaStav?.krok).toBe("prebytok");
-      expect(po.bitkaStav?.prebytokDrzi).toBe(0);
+      expect(po.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1 });
       for (const povaha of POVAHY) {
-        const cmd = tahBota(data, po, 0, seed, { povaha: povaha.id });
+        const cmd = tahBota(data, po, 1, seed, { povaha: povaha.id });
         expect(cmd.type, povaha.id).toBe("prebytok");
         if (cmd.type !== "prebytok") continue;
-        // Súper nemá priznaný Dlh (Kmotor nič nerobí) a NA EX dáva zriedka (Výpalné, „do dna“).
-        expect(["EXEKUTOR", "UZERNIK", "NEPRAJNIK", "ALKOHOLIK"], `${povaha.id} ${seed}`).toContain(priazenStarsieho(po, cmd.elderId));
+        // Posun k porazenému vráti Bitkára do stredu: víťaz o priazeň príde a strach nevznikne.
+        expect(priazenStarsieho(po, cmd.elderId), `${povaha.id} ${seed}`).toBe("BITKAR");
       }
     }
   }, 30_000);
@@ -235,7 +233,7 @@ describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {
       kolo: 6,
       utocnik: 1,
       strany: [[], []],
-      ciel: lokalityVHre === undefined ? { typ: "finale", lokalita: null } : { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
+      ciel: { typ: lokalityVHre === undefined ? "finale" : "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
       lokalityVHre: lokalityVHre ?? [],
       pitkyCelkom: 3,
       pitkaCislo: 3,

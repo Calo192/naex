@@ -25,7 +25,6 @@ import {
   prahyHraca,
   stavkaBitky,
   viewFor,
-  zmiesaneSpoje,
 } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -204,7 +203,7 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
 });
 
 describe("efekty v línii (v7)", () => {
-  it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; Mäsiar ich zruší", () => {
+  it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)", () => {
     const sucet = (s: GameState, uid: number): number => {
       const ev = evaluateLine(data, lineState(s)).cards.get(uid)!;
       return [...ev.left, ...ev.right].reduce((n, x) => n + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
@@ -234,7 +233,8 @@ describe("efekty v línii (v7)", () => {
     }
     expect(overene).toBeGreaterThan(0);
     const pes: CardInstance = { uid: 1, defId: "pes", leftLayout: 0, rightLayout: 0 };
-    expect(sucet(vPitke("zastavka", [[lezi(pes, 0), lezi(inst("masiar"), 1)], []]), 1)).toBe(0);
+    const priMasiarovi = vPitke("zastavka", [[lezi(pes, 0), lezi(inst("masiar"), 1)], []]);
+    expect(sucet(priMasiarovi, 1)).toBe(pocet(priMasiarovi, 1));
   });
 
   it("Úplatok: súper cigaretou zníži útoky Kulturistu o stupeň, raz za Pitku", () => {
@@ -256,13 +256,17 @@ describe("efekty v línii (v7)", () => {
   it("Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)", () => {
     const kroko = inst("krokodil");
     const moj = inst("zamocnik");
-    const jeho = inst("masiar");
+    const jeho = inst("sofer");
     const s = vPitke("zastavka", [[lezi(moj, 0), lezi(kroko, 0), lezi(jeho, 1)], []]);
     const po = dohrajKolo(s);
-    const vsetky = (p: PlayerId): number[] => [...po.hraci[p].ruka, ...po.hraci[p].doberaci, ...po.hraci[p].odhadzovaci].map((k) => k.uid);
+    const vsetky = (p: PlayerId, t: GameState = po): number[] => [...t.hraci[p].ruka, ...t.hraci[p].doberaci, ...t.hraci[p].odhadzovaci].map((k) => k.uid);
     expect(vsetky(0)).not.toContain(moj.uid);
     expect(vsetky(1)).not.toContain(jeho.uid);
     expect(vsetky(0)).toContain(kroko.uid);
+    // Vedľa Mäsiara (2026-10-28) Krokodíl nič nezožerie.
+    const masiar = inst("masiar");
+    const priMasiarovi = dohrajKolo(vPitke("zastavka", [[lezi(inst("zamocnik"), 0), lezi(inst("krokodil"), 0), lezi(masiar, 1)], []]));
+    expect(vsetky(1, priMasiarovi)).toContain(masiar.uid);
   });
 });
 
@@ -455,13 +459,6 @@ describe("Bitka a po bitke (v7)", () => {
     expect(bitkaMody(data, { ...s, prilozeniaKu: [1, 0] }, 0).tuheZdroje).toContainEqual({ zdroj: "pasca", tuhe: 2 });
   });
 
-  it("Dohadzovačka: za spoj Žena–Chlap so súperom karta zo šenku", () => {
-    const s = vPitke("zastavka", [[lezi(inst("dohadzovacka"), 0), lezi(inst("masiar"), 1)], []]);
-    expect(zmiesaneSpoje(data, s, 0)).toBe(1);
-    const t = skonciPitku(s);
-    expect(t.hasicVolby?.[0]).toMatchObject({ hrac: 0, typ: "senok" });
-  });
-
   it("Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie", () => {
     const rec = inst("recidivista");
     const dievc = inst("dievcina_na_vydaj");
@@ -492,8 +489,8 @@ describe("Bitka a po bitke (v7)", () => {
     const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { priznane: [inst("dlh"), inst("dlh"), inst("dlh")] });
     const stavkaH = stavkaBitky(data, viewFor(data, h, 1))!;
     expect(stavkaH.herna).toEqual([3, 0]);
-    // 1 Pitka + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
-    expect(stavkaH.vyhra).toBe(1 + 3 + stavkaH.starsi[0]);
+    // 4 karty v línii (v8) + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
+    expect(stavkaH.vyhra).toBe(4 + 3 + stavkaH.starsi[0]);
     expect(-stavkaBitky(data, viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
     // Noviny porazeného: víťaz (hráč 1) má viac Dlhov — z výhry mu ostanú len starší.
     const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { priznane: [inst("dlh"), inst("dlh")] });
