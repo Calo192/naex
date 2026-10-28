@@ -16,7 +16,7 @@ zmeny v7 oproti v6 tamže, sekcia v7):
 - **Prebytok rozdeľuje porazený** (§9.4): ten, proti komu sa prebytok ráta, si
   vyberá, ktorých starších posunie; vo finále rozdeľuje držiteľ a strach za nové
   zóny sa vyplatí hneď. Prebytok sa nikde nemení na špaky 1 : 1.
-- **Kultúrny dom „Obaja bodujú“** (§15, návrh #29): porazený dostane 1 špak za
+- **Kultúrny dom „Obaja získajú špaky“** (§15, návrh #29): porazený dostane 1 špak za
   každú svoju kartu v línii.
 - **Finále** (§14b, návrh #32): posledná bitka je o pinnacle lokalitu a hrá sa
   ako o každú inú; finále bez lokality (sada do v6) z pravidiel aj z hry vypadlo.
@@ -749,7 +749,7 @@ ktorého marker sa prebytkom posunul**. Viac posunov toho istého staršieho =
 
 > Napätie hry: vystrašený starší ti za každú novú zónu raz dá špaky (§10, §14), ale
 > súperovi medzitým dáva svoju priazeň — a ktorú, vyberá pri prebytku súper. Kto má
-> veľké mäkké poškodenie, môže aj po prehre posunúť markery a v ďalšom kole bodovať viac.
+> veľké mäkké poškodenie, môže aj po prehre posunúť markery a v ďalšom kole získať viac špakov.
 
 ### 9.5 Poldeci
 
@@ -1215,7 +1215,7 @@ finále): Poľovnícka chata, Predsedova vila, Herňa. Hrany sú v `cards.json`
 | Poľovnícka chata | Furt | Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát (Dlh, Pečeň, Posilnenie, Pohoršenie nie). Kraje pri trofejach / na posede. |
 | Predsedova vila | Kšeft | Za 2 cigarety posuň marker ľubovoľného staršieho o 1 k súperovi alebo k sebe; nie staršieho, ktorého si súper v tomto kole vzal do patronátu. Kraje pri bazéne / v pracovni. |
 | Herňa | Bitka | Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov (po Exekútorovi a Robote, bez stropu); pri sekere nič. Kraje pri automatoch / v zadnej miestnosti. |
-| Kultúrny dom | Bitka | **Obaja bodujú** (v8, Michal 2026-10-28, návrh #29): víťaz dostane špaky za všetky karty v línii ako inde, porazený 1 špak za každú svoju kartu v línii (svoju partiu, na ktorejkoľvek strane). Pri sekere nikto nie je porazený — špaky kola idú na sekeru ako inde. Prebytok sa rozdeľuje ako inde (§9.4). |
+| Kultúrny dom | Bitka | **Obaja získajú špaky** (v8, Michal 2026-10-28, návrh #29): víťaz dostane špaky za všetky karty v línii ako inde, porazený 1 špak za každú svoju kartu v línii (svoju partiu, na ktorejkoľvek strane). Pri sekere nikto nie je porazený — špaky kola idú na sekeru ako inde. Prebytok sa rozdeľuje ako inde (§9.4). |
 | Ihrisko | Bitka | V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (pri rovnosti nikto) — rátajú sa ako do prevahy, **Dvojčatá za dve** (v8, návrh #32); z oboch krajov teda až +4. |
 
 Tabuľka v6 — platí len pre lokality, ktoré v tabuľke vyššie nie sú (Krčma, Zastávka, Most, Vínna pivnica, Družstvo). Akcie na hranách určujú počet Pitiek (§7); efekt platí v kole,

@@ -1031,9 +1031,9 @@
     },
     {
       "id": "majster-bodov",
-      "nazov": "Majster bodov",
+      "nazov": "Majster špakov",
       "kategoria": "partie",
-      "popis": "Získaj v jednej partii aspoň {prah} bodov.",
+      "popis": "Získaj v jednej partii aspoň {prah} špakov.",
       "metrika": "stat.body",
       "rozsah": "partia",
       "prahy": [
@@ -1056,7 +1056,7 @@
       "id": "na-hlavu",
       "nazov": "Na hlavu",
       "kategoria": "partie",
-      "popis": "Vyhraj partiu aspoň o {prah} bodov.",
+      "popis": "Vyhraj partiu aspoň o {prah} špakov.",
       "metrika": "rozdielBodov",
       "rozsah": "partia",
       "prahy": [
@@ -1079,7 +1079,7 @@
       "id": "z-popola",
       "nazov": "Z popola",
       "kategoria": "partie",
-      "popis": "Vyhraj partiu, hoci si po niektorom kole prehrával aspoň o {prah} bodov.",
+      "popis": "Vyhraj partiu, hoci si po niektorom kole prehrával aspoň o {prah} špakov.",
       "metrika": "obrat",
       "rozsah": "partia",
       "prahy": [
@@ -1519,7 +1519,7 @@
     {
       "id": "obrat",
       "typ": "rekord",
-      "popis": "najväčší bodový deficit po kole (bodyTeraz), z ktorého hráč partiu vyhral; inak 0"
+      "popis": "najväčší deficit špakov po kole (bodyTeraz), z ktorého hráč partiu vyhral; inak 0"
     },
     {
       "id": "seriaVyhier",

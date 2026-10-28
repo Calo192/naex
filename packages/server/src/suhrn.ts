@@ -33,8 +33,8 @@ const naBitku = (a: number, s: StatistikyHraca): number | null => (s.bitky > 0 ?
 
 export const METRIKY: readonly DefMetriky[] = [
   { kluc: "vyhry", nazov: "Výhry", popis: "Podiel vyhratých partií (remíza za pol).", jednotka: "%", lepsie: "viac", z: (_s, v) => (v === "vyhra" ? 100 : v === "remiza" ? 50 : 0) },
-  { kluc: "body", nazov: "Body na partiu", popis: "Body zo záverečného bodovania (len partie dohraté do konca).", jednotka: "b", lepsie: "viac", z: (_s, _v, b) => b },
-  { kluc: "rozdielBodov", nazov: "Rozdiel bodov", popis: "O koľko bodov si mal viac (alebo menej) ako súper na konci partie.", jednotka: "b", lepsie: "viac", z: (_s, _v, b, sb) => (b === null || sb === null ? null : b - sb) },
+  { kluc: "body", nazov: "Špaky na partiu", popis: "Špaky na konci partie (len partie dohraté do konca).", jednotka: "b", lepsie: "viac", z: (_s, _v, b) => b },
+  { kluc: "rozdielBodov", nazov: "Rozdiel špakov", popis: "O koľko špakov si mal viac (alebo menej) ako súper na konci partie.", jednotka: "b", lepsie: "viac", z: (_s, _v, b, sb) => (b === null || sb === null ? null : b - sb) },
   { kluc: "bitkyVyhrane", nazov: "Vyhraté bitky", popis: "Podiel bitiek o lokalitu, ktoré si vyhral.", jednotka: "%", lepsie: "viac", z: (s) => podiel(s.bitkyVyhrane, s.bitky) },
   { kluc: "tuheNaBitku", nazov: "Tuhé na bitku", popis: "Koľko tuhého poškodenia si udelil priemerne v jednej bitke.", jednotka: "x", lepsie: "viac", z: (s) => naBitku(s.tuheUdelene, s) },
   { kluc: "obdrzaneNaBitku", nazov: "Obdržané na bitku", popis: "Koľko poškodenia ti súper udelil priemerne v jednej bitke.", jednotka: "x", lepsie: "menej", z: (s) => naBitku(s.poskodenieObdrzane, s) },
@@ -131,7 +131,7 @@ export function spocitajSuhrn(partie: readonly PartiaSuhrnu[], populacia: readon
           const su = zaokruhli(priemer(bezNull(ich)));
           const s: Stranka = {
             kluc: m.kluc,
-            text: `${m.nazov}: ${ja}${m.jednotka === "%" ? " %" : m.jednotka === "b" ? " b" : ""} oproti ${su} u súperov`,
+            text: `${m.nazov}: ${ja}${m.jednotka === "%" ? " %" : m.jednotka === "b" ? " š" : ""} oproti ${su} u súperov`,
             dokaz: `${str > 0 ? "lepšie" : "horšie"} v ${rovnako} z ${n} partií`,
           };
           (str > 0 ? silne : slabe).push({ s, sila: Math.abs(str) / PRAH[m.jednotka] });

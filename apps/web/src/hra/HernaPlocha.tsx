@@ -1167,10 +1167,10 @@ export function HernaPlocha({
     const cirhozy = k.cirhozy + k.dalejCirhozy;
     const dlhy = k.dlhy + k.dalejDlhy;
     const casti: string[] = [];
-    if (cirhozy !== 0) casti.push(`${znak(cirhozy)}× Cirhóza${cirhozy > 0 ? " (priznaná body neuberie, súper za ňu +1 tuhé v každej bitke)" : ""}`);
+    if (cirhozy !== 0) casti.push(`${znak(cirhozy)}× Cirhóza${cirhozy > 0 ? " (priznaná špaky neuberie, súper za ňu +1 tuhé v každej bitke)" : ""}`);
     if (dlhy !== 0) casti.push(`${znak(dlhy)}× Dlh${dlhy !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke === 0 ? "nič" : znak(k.dlhyPoBitke)} (spáli Robota či Dievčina)` : ""}`);
     if (k.dalejCirhozy !== 0 || k.dalejDlhy !== 0) casti.push("vrátane ďalších Pitiek kola");
-    return `${casti.length === 0 ? "nič" : casti.join(", ")}${k.body !== 0 ? ` · ${k.body > 0 ? "+" : "−"}${Math.abs(k.body)} b` : ""}`;
+    return `${casti.length === 0 ? "nič" : casti.join(", ")}${k.body !== 0 ? ` · ${k.body > 0 ? "+" : "−"}${Math.abs(k.body)} š` : ""}`;
   };
   /**
    * Zvyšok ceny ťahu (návrh #1, playtest 20261024-075830): cigarety z Pitiek
@@ -1223,7 +1223,7 @@ export function HernaPlocha({
     const kto = (p: PlayerId): string => (p === ja ? "ty" : "súper");
     const hraci = [ja, super_] as const;
     const casti = [
-      ...hraci.filter((p) => k[p].body !== 0).map((p) => `${kto(p)} ${znak(k[p].body)} b`),
+      ...hraci.filter((p) => k[p].body !== 0).map((p) => `${kto(p)} ${znak(k[p].body)} š`),
       ...hraci.filter((p) => d[p].cigarety !== 0).map((p) => `${kto(p)} ${znak(d[p].cigarety)} cig`),
       ...hraci
         .filter((p) => d[p].pohorsenia !== 0)
@@ -3471,7 +3471,7 @@ export function HernaPlocha({
                   {" "}
                   Ťah ťa stojí {plan.poldeci} {plan.poldeci === 1 ? "plný poldeci" : "plné poldeci"} — limit {zostava} → {plan.zostava}, pečeň +{plan.poldeci}
                   {mojVyhlad !== null && mojVyhlad.cirhozy > 0
-                    ? ` → v Pitke Cirhóza ×${mojVyhlad.cirhozy} (${mojVyhlad.cirhozy * cenyKliatob[ja].cirhoza} b)`
+                    ? ` → v Pitke Cirhóza ×${mojVyhlad.cirhozy} (${mojVyhlad.cirhozy * cenyKliatob[ja].cirhoza} š)`
                     : ""}
                   .
                 </strong>
@@ -5223,7 +5223,7 @@ export function HernaPlocha({
       if (ucetPitky.cirhozy[p] > 0) casti.push(`+${ucetPitky.cirhozy[p]} Cirhóza`);
       if (ucetPitky.dlhy[p] > 0) casti.push(`+${ucetPitky.dlhy[p]} Dlh`);
       const body = ucetPitky.cirhozy[p] * cenyKliatob[p].cirhoza + ucetPitky.dlhy[p] * cenyKliatob[p].dlh;
-      if (body !== 0) casti.push(`(${zn(body)} b)`);
+      if (body !== 0) casti.push(`(${zn(body)} š)`);
       if (ucetPitky.cigarety[p] > 0) casti.push(`+${ucetPitky.cigarety[p]} cig.`);
       return casti.length === 0 ? "nič" : casti.join(" ");
     };

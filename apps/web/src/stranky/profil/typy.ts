@@ -139,5 +139,5 @@ export const znamienko = (d: number): string => (d > 0 ? `+${d}` : d < 0 ? `−$
 export function hodnotaMetriky(m: Pick<Metrika, "jednotka">, v: number | null): string {
   if (v === null) return "—";
   const c = v.toLocaleString("sk-SK", { maximumFractionDigits: 1 });
-  return m.jednotka === "%" ? `${c} %` : m.jednotka === "b" ? `${c} b` : c;
+  return m.jednotka === "%" ? `${c} %` : m.jednotka === "b" ? `${c} š` : c;
 }
