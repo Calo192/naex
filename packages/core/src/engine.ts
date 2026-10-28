@@ -72,6 +72,7 @@ import {
   jeCielLokalita,
   jeEfektManual,
   lenVlastnaStrana,
+  limitBonusDedicstva,
   limitZhromazdenia,
   vlastnyLimitZhromazdenia,
   naexZaPitku,
@@ -2242,7 +2243,9 @@ function cmdPlace(
     hrac(s, p).cigarety -= cena;
     s.dedicstvaVylozene += 1;
     const karta = vezmiZRuky(s, p, cmd.uid);
+    const bonusPred = limitBonusDedicstva(s.hraci[p].dedicstvo);
     hrac(s, p).dedicstvo.push(karta as DeepMutable<CardInstance>);
+    pridajLimit(z, p, limitBonusDedicstva(s.hraci[p].dedicstvo) - bonusPred);
     events.push({
       type: "log",
       text: `Hráč ${p + 1} vykladá ${def.name} do Dedičstva za ${cigariet(cena)} (ďalšie Dedičstvo stojí ${cenaDedicstva(s as GameState)}).`,
@@ -2687,6 +2690,17 @@ function nastupEfekt(
     default:
       break;
   }
+}
+
+/**
+ * Vínko vyložené do Dedičstva v Zhromaždení (návrh #26 B, Michal 2026-10-28):
+ * zostávajúci limit stúpne hneď; na Zastávke spoločný obom aj vlastný hráčovi,
+ * ako keby bol v limite od začiatku Zhromaždenia.
+ */
+function pridajLimit(z: DeepMutable<ZhromazdenieStav>, p: PlayerId, n: number): void {
+  if (n === 0) return;
+  for (const q of z.spolocny === true ? ([0, 1] as const) : [p]) z.zostavaLimit[q] += n;
+  if (z.vlastny !== undefined) z.vlastny[p] += n;
 }
 
 /** Uberie z limitu vykladania; na Zastávke zo spoločného limitu obom. */
@@ -4267,6 +4281,13 @@ export interface PlanVykladania {
   readonly zostava: number;
 }
 
+/** Hráč v pláne ťahu; Dedičstvo kvôli Vínku, ktoré zvýši limit hneď. */
+export interface PlanHraca {
+  readonly cigarety: number;
+  readonly poldeciPlne: number;
+  readonly dedicstvo?: readonly { readonly defId: string }[];
+}
+
 /**
  * Celý ťah v Zhromaždení naraz (Michal 2026-10-19): priznania nič nestoja
  * a ťah neukončia; každá ďalšia karta do línie či do Dedičstva po prvej stojí
@@ -4279,7 +4300,7 @@ export function planVykladania(
     readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
     readonly ciel: VerejnyStav["ciel"];
     readonly dedicstvaVylozene: number;
-    readonly hraci: readonly [{ readonly cigarety: number; readonly poldeciPlne: number }, { readonly cigarety: number; readonly poldeciPlne: number }];
+    readonly hraci: readonly [PlanHraca, PlanHraca];
     /** Skryté Záverečné (ClientState) — klient súpera ich v strany nemá. */
     readonly zaverecne?: readonly { readonly strana: PlayerId }[];
   },
@@ -4296,6 +4317,7 @@ export function planVykladania(
   let plne = stav.hraci[p].poldeciPlne;
   let cigarety = stav.hraci[p].cigarety;
   let dedicstva = stav.dedicstvaVylozene;
+  let mojeDedicstvo: readonly { readonly defId: string }[] = stav.hraci[p].dedicstvo ?? [];
   let poldeci = 0;
   const chyba = (text: string): PlanVykladania => ({ kroky, poldeci, chyba: text, zostava });
   const lokalita = cielLokalitaId(stav);
@@ -4337,6 +4359,9 @@ export function planVykladania(
     if (x.ciel === "dedicstvo") {
       cigarety -= cena;
       dedicstva += 1;
+      const bonusPred = limitBonusDedicstva(mojeDedicstvo);
+      mojeDedicstvo = [...mojeDedicstvo, x.karta];
+      zostava += limitBonusDedicstva(mojeDedicstvo) - bonusPred;
     } else {
       const kam: PlayerId = x.ciel === "vlastna" ? p : opponentOf(p);
       const nova = [...strany[kam], { card: x.karta, playedBy: p }];
