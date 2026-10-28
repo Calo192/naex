@@ -3,7 +3,9 @@
 // Ligy). Predvolene smie každý všetko; pravidlo odomykania je pripravené —
 // Tretia liga hneď, Druhá po 1 výhre v Tretej proti človeku, Prvá po 3 výhrach
 // v Druhej — a admin ho zapne vypnutím „všetci smú všetko“ bez nasadenia.
-// Partie s botom sa nerátajú (ako v štatistikách). Odomknutie sa zapíše do
+// Partie s botom sa nerátajú (ako v štatistikách); výhra, keď súper vzdá
+// alebo prehrá kontumačne, áno (Michal 2026-10-28). Partie proti počítaču
+// ligy predvolene neobmedzujú (Michal 2026-10-28). Odomknutie sa zapíše do
 // ligy_odomknute, takže ho neskoršie sprísnenie podmienok hráčovi nevezme.
 // Správcovia a AI playtesteri smú vždy všetko (turnusy). Server ligu overí pri
 // založení aj pripojení — klient len ukazuje zámok (CLAUDE.md, pravidlá 2 a 3).
@@ -47,7 +49,7 @@ export interface StavLigy {
 
 export const PREDVOLENE_LIGY: NastavenieLig = {
   vsetkym: true,
-  ajProtiPocitacu: true,
+  ajProtiPocitacu: false,
   ligy: {
     kratka: { podmienka: null, ranky: [] },
     stredna: { podmienka: { liga: "kratka", vyhier: 1 }, ranky: [] },
@@ -56,6 +58,12 @@ export const PREDVOLENE_LIGY: NastavenieLig = {
 };
 
 const KLUC = "ligy";
+/**
+ * Verzia uloženého záznamu. Do verzie 2 bolo „aj proti počítaču“ predvolene
+ * zapnuté a uložilo sa s každou zmenou — staršiemu záznamu sa preto neverí
+ * a platí vypnuté (Michal 2026-10-28: partie proti počítaču ligy neobmedzujú).
+ */
+const VERZIA_ZAZNAMU = 2;
 /** Strop len proti preklepu v správe (999 výhier), nie herný limit. */
 const MAX_VYHIER = 999;
 
@@ -101,7 +109,7 @@ export class Ligy {
   /** Uložené nastavenie doplnené o predvolené; pokazený záznam ligy = predvolené pravidlo. */
   nastavenie(): NastavenieLig {
     const r = this.db.prepare("SELECT data FROM nastavenia WHERE kluc = ?").get(KLUC) as { data: string } | undefined;
-    let ulozene: Partial<{ vsetkym: unknown; ajProtiPocitacu: unknown; ligy: Record<string, unknown> }> = {};
+    let ulozene: Partial<{ verzia: unknown; vsetkym: unknown; ajProtiPocitacu: unknown; ligy: Record<string, unknown> }> = {};
     try {
       ulozene = r === undefined ? {} : (JSON.parse(r.data) as typeof ulozene);
     } catch {
@@ -119,7 +127,8 @@ export class Ligy {
     }
     return {
       vsetkym: typeof ulozene.vsetkym === "boolean" ? ulozene.vsetkym : PREDVOLENE_LIGY.vsetkym,
-      ajProtiPocitacu: typeof ulozene.ajProtiPocitacu === "boolean" ? ulozene.ajProtiPocitacu : PREDVOLENE_LIGY.ajProtiPocitacu,
+      ajProtiPocitacu:
+        ulozene.verzia === VERZIA_ZAZNAMU && typeof ulozene.ajProtiPocitacu === "boolean" ? ulozene.ajProtiPocitacu : PREDVOLENE_LIGY.ajProtiPocitacu,
       ligy,
     };
   }
@@ -145,16 +154,16 @@ export class Ligy {
     };
     this.db
       .prepare("INSERT INTO nastavenia (kluc, data) VALUES (?, ?) ON CONFLICT(kluc) DO UPDATE SET data = excluded.data")
-      .run(KLUC, JSON.stringify(nove));
+      .run(KLUC, JSON.stringify({ verzia: VERZIA_ZAZNAMU, ...nove }));
     return nove;
   }
 
-  /** Výhry hráča v lige proti človeku — dohraté partie bez bota (vzdaná partia sa nepočíta, ako pri Poldeci). */
+  /** Výhry hráča v lige proti človeku (bez bota) — aj keď súper vzdal alebo prehral kontumačne (Michal 2026-10-28). */
   vyhry(pouzivatel: number, liga: DlzkaHry): number {
     const r = this.db
       .prepare(
         `SELECT COUNT(*) AS n FROM partie_hraci ph JOIN partie pa ON pa.id = ph.partia
-         WHERE ph.pouzivatel = ? AND ph.vysledok = 'vyhra' AND pa.dohrata = 1 AND pa.s_botom = 0 AND pa.dlzka = ?`,
+         WHERE ph.pouzivatel = ? AND ph.vysledok = 'vyhra' AND pa.s_botom = 0 AND pa.dlzka = ?`,
       )
       .get(pouzivatel, liga) as { n: number };
     return Number(r.n);
