@@ -103,8 +103,8 @@ export function prvkyKluca(kluc: string): HTMLElement[] {
   if (kluc.startsWith("uid:")) {
     return [...document.querySelectorAll<HTMLElement>(`[data-vyucba-uid="${Number(kluc.slice(4))}"]`)].filter((el) => el.closest(".lupa") === null);
   }
-  // Pri stavbe šenku len karty, ktoré ešte ležia v balíčku — na Smetisku už sú, kde majú byť.
-  if (kluc.startsWith("smetisko:")) return [...document.querySelectorAll<HTMLElement>(`.stavba-balicek [data-vyucba-uid="${Number(kluc.slice(9))}"]`)];
+  // Pri stavbe šenku len karty do Šenku, ktoré ešte nie sú vybraté (zdvihnuté) — tie sú, kde majú byť.
+  if (kluc.startsWith("senok:")) return [...document.querySelectorAll<HTMLElement>(`.stavba-balicek .stavba-vyber:not(.vybrata) [data-vyucba-uid="${Number(kluc.slice(6))}"]`)];
   const css = (x: string): string => x.replace(/["\\]/g, "");
   if (kluc === "spoje-lokality") return spojeLokality();
   if (kluc.startsWith("akcia:")) return [...document.querySelectorAll<HTMLElement>(`:is(.ruka-rad, .linia) .kl-slot[data-akcia="${css(kluc.slice(6))}"]`)];
@@ -146,16 +146,16 @@ function spojeLokality(): HTMLElement[] {
 }
 
 /**
- * Čo zvýrazniť z príkazu, ktorý krok čaká: karty (pri stavbe šenku len tie na Smetisko —
- * tie hráč presúva) a staršieho. Text Melichara ich nemusí vymenovať všetky.
+ * Čo zvýrazniť z príkazu, ktorý krok čaká: karty (pri stavbe šenku len tie do Šenku —
+ * tie hráč vyberá klikom, #148) a staršieho. Text Melichara ich nemusí vymenovať všetky.
  */
 function kluceZOcakavania(c: Command | null): string[] {
   if (c === null) return [];
   const o = c as unknown as Readonly<Record<string, unknown>>;
   const out: string[] = [];
   for (const pole of ["uid", "rukaUid", "senokUid", "kartaUid", "cirhozaUid"]) if (typeof o[pole] === "number") out.push(`uid:${o[pole] as number}`);
-  const zoznam = o[c.type === "stavbaSenku" ? "odhod" : "uids"];
-  if (Array.isArray(zoznam)) for (const u of zoznam) if (typeof u === "number") out.push(c.type === "stavbaSenku" ? `smetisko:${u}` : `uid:${u}`);
+  const zoznam = o[c.type === "stavbaSenku" ? "doSenku" : "uids"];
+  if (Array.isArray(zoznam)) for (const u of zoznam) if (typeof u === "number") out.push(c.type === "stavbaSenku" ? `senok:${u}` : `uid:${u}`);
   if (typeof o.elderId === "string") out.push(`starsi:${o.elderId}`);
   if (c.type === "tah") for (const k of c.kroky) out.push(...kluceZOcakavania(k as Command));
   return out;

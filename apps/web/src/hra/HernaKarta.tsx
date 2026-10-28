@@ -48,9 +48,12 @@ export interface HernaKartaProps {
   readonly spoj?: { readonly left: readonly number[]; readonly right: readonly number[] } | undefined;
   /** Zrážka NA EX (v5): karta je počas bitky Výtržník — každá jej akcia je Rana pre majiteľa. */
   readonly vytrznik?: boolean | undefined;
+  /** Prepínač výberu (stavba šenku): aria-pressed a pri plnom výbere aria-disabled. */
+  readonly stlacena?: boolean | undefined;
+  readonly zakazana?: boolean | undefined;
 }
 
-export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, vytrznik = false }: HernaKartaProps) {
+export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev, onClick, vybrana, bezPopisov, hranaVnutorna, spoj, vytrznik = false, stlacena, zakazana }: HernaKartaProps) {
   const vytlacene = printedSides(data, karta);
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
     // Výtržník kreslí Rany na miestach vytlačených akcií — hráč má vidieť, čo karta naozaj robí.
@@ -83,6 +86,8 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
       odznaky={odznaky}
       onClick={onClick}
       vybrana={vybrana ?? false}
+      stlacena={stlacena}
+      zakazana={zakazana}
       otocena={otocena}
       hranaVnutorna={hranaVnutorna === undefined ? undefined : hranaVnutorna === "left" ? "lava" : "prava"}
       bezPopisov={bezPopisov ?? false}

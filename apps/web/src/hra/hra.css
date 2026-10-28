@@ -2600,12 +2600,76 @@ button.dlzka-volba.aktivna {
   color: var(--slaby-text);
 }
 
-/* Stavba: Smetisko | tvoj balíček | Šenok. */
+/* Stavba (Michal 2026-10-28, #147): lokalita, o ktorú sa bije | tvoj balíček — výber klikom. */
 .stavba-rad {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 14px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+/* Lokalita ako tieň karty: väčšia, čitateľná, s prerušovaným rámom — leží tu len na ukážku. */
+.stavba-lokalita {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.stavba-lokalita-nazov {
+  font: 800 0.8rem/1.1 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.stavba-lokalita-karta > .kl {
+  opacity: 0.9;
+  outline: 2px dashed color-mix(in srgb, var(--akcent) 70%, transparent);
+  outline-offset: 3px;
+}
+
+/* Výber do Šenku (#148): vybraná karta sa zdvihne, pri plnom výbere sú ostatné zosivené. */
+.stavba-vyber {
+  transition: transform 0.15s ease-out;
+}
+
+.stavba-vyber.vybrata {
+  transform: translateY(-16px);
+}
+
+.stavba-vyber.vybrata > .kl {
+  box-shadow:
+    0 0 0 3px var(--akcent),
+    0 12px 22px color-mix(in srgb, #000 calc(var(--tma) * 50%), transparent);
+}
+
+.stavba-vyber.zosivena > .kl {
+  opacity: 0.38;
+  filter: grayscale(0.85);
+}
+
+.stavba-vyber.zosivena > .kl[role="button"] {
+  cursor: not-allowed;
+}
+
+/* Zdvihnutá karta (−16 px) nesmie zakryť nadpis nad radom. */
+.stavba-balicek .stavba-balicek-nazov {
+  margin-bottom: 12px;
+}
+
+.stavba-balicek-pozn {
+  display: block;
+  margin-top: 2px;
+  font: 600 0.72rem/1.2 var(--pismo);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--slaby-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stavba-vyber {
+    transition: none;
+  }
 }
 
 .stavba-balicek {
@@ -2614,7 +2678,8 @@ button.dlzka-volba.aktivna {
   justify-content: center;
   gap: 10px;
   min-height: 100px;
-  padding: 6px;
+  /* Miesto nad kartami pre zdvihnutú (vybranú) kartu. */
+  padding: 20px 6px 6px;
   border-radius: 10px;
 }
 
@@ -3007,16 +3072,7 @@ button.dlzka-volba.aktivna {
 
 @media (max-width: 760px) {
   .stavba-rad {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .stavba-balicek {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  .stavba-zona {
-    max-width: none;
+    grid-template-columns: 1fr;
   }
 }
 
