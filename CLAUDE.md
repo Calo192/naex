@@ -12,8 +12,11 @@ kritériami (M0–M10). Rozšírenie o platformu (M11–M14) popisuje `README.md
 
 ## Rozsah
 
-Hra je podľa pravidiel **striktne pre dvoch hráčov**. „Multiplayer" znamená
-dvaja ľudia na dvoch zariadeniach, nie viac hráčov naraz.
+Hra je **1 na 1** a pribúda formát **2 na 2** — dva tímy po dvoch hráčoch,
+ktorý bude súčasťou hry (Michal 2026-10-28; roadmapa #21–#31, otázky
+docs/napady/2na2-otazky.html). Rozhodnuté: jedna línia, strany patria tímom,
+poradie striedavo tímy U1 → O1 → U2 → O2, „súper“ = druhý tím ako celok.
+Kým nie je § Formát 2 na 2 v PRAVIDLA.md, platí všetko pre 1 na 1.
 
 ## Nemenné pravidlá
 
