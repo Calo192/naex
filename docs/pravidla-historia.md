@@ -1396,3 +1396,45 @@ znenia doslovne:
 > | Kultúrny dom | Bitka | Prebytok sa nerozdeľuje medzi starších — kto ho drží, dostane toľko špakov, aký je prebytok (v6, Michal 2026-10-26). |
 
 > | Dvojčatá | Furt: do prevahy sa rátajú za dvoch (na Ihrisko a Lesnú cestu nie). |
+
+
+## v8 — Exekútor bez prahu, nový Záhradkár (Michal 2026-10-28)
+
+Dlh a Exekútor bez prahu: Exekútor príde v každej bitke ku každému s priznaným
+Dlhom (polovica nahor, priazeň Exekútora navyše 1 / 2 / 3). Záhradkár:
+„Exekúcia v tomto kole pre teba neplatí.“ Staré znenia doslovne:
+
+> - **Exekútor 6** (so súperovou priazňou 5 / 4 / 3) a **Kmotor presúva Dlhy
+>   súperovi** (§10, §11, návrh #34).
+
+> | Dlh | `Dlh` | zvýši **zadĺženie** o 1; každé 2 zadĺženia = 1 karta Dlh, hneď priznaná (§8; v7 zvyšok neprepadá); priznané Dlhy na prahu Exekúcie 6 (so súperovou priazňou Exekútora 5 / 4 / 3) privolajú Exekútora (§11) |
+
+> | Robota | `Robota` | v kroku Exekútora, **pred** kontrolou prahu, spáli 1 priznaný Dlh (z hry, §11); funguje aj bez exekúcie |
+
+> | Exekútor | Exekútor v bitke (§11) | **súperov** prah Exekúcie je nižší | −1 / −2 / −3 |
+
+> ### Exekútor
+>
+> Krok 1 bitky (§9). Najprv **Robota**: za každú aktívnu Robotu hráč **spáli**
+> 1 priznaný Dlh. Potom sa spočítajú **priznané** Dlhy
+> (nepriznané sa nerátajú).
+>
+> ```
+> prah = 6 − sila súperovej priazne Exekútora    (v8: 6 / 5 / 4 / 3)
+> ```
+>
+> Ak `priznané_dlhy ≥ prah`, hráč **čelí exekúcii**: zhorí mu **polovica
+> priznaných Dlhov** (nadol) a **rovnaký počet špakov** — zhoria, súper ich
+> nedostane, a hráč smie ísť do mínusu. Nástroj sa neodovzdáva a exekúcia
+> prehru nespôsobí (v6). **Záhradkár (Exekúcia, v7):** kto ho má (v línii, v ruke
+> či v balíčkoch), smie ho zahodiť namiesto špakov; z línie navyše spáli toľko
+> priznaných Dlhov, koľko mal aktívnych akcií (§16).
+>
+> Kto exekúcii **nečelí**, Dlh **nepáli**. Priznané Dlhy pália len Robota,
+> Exekútor a Záhradkár; Obecný úrad, Podvodník a priazeň Kmotra (v8) ich presúvajú
+> k súperovi.
+>
+
+> | Exekútor | **−** polovica priznaných Dlhov (Záhradkár ich zachráni) | krok 1 (§11) |
+
+> | Záhradkár | Exekúcia: keď majiteľ čelí exekúcii (§11), smie Záhradkára zahodiť namiesto špakov — Dlhy zhoria aj tak. Z línie (ponúkne sa prvý) ide po bitke z hry a navyše spáli toľko priznaných Dlhov, koľko mal aktívnych akcií; z ruky či balíčkov zachráni len špaky. |

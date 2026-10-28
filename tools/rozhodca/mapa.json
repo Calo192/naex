@@ -998,27 +998,30 @@
     {
       "id": "11.exekutor.prah",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Prah Exekútora = 6 − sila súperovej priazne Exekútora (v8: 6 / 5 / 4 / 3); pri priznaných Dlhoch ≥ prah zhorí polovica Dlhov (nadol) a rovnako špakov; Záhradkár smie ísť namiesto špakov.",
+      "pravidlo": "Exekútor bez prahu (Michal 2026-10-28): v kroku 1 bitky (aj vo finále, po Robote) ku každému s aspoň 1 priznaným Dlhom — zhorí polovica priznaných Dlhov nahor + sila súperovej priazne Exekútora (najviac všetky) a rovnako špakov, aj do mínusu; zvyšné Dlhy na konci hry nič.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › prah je 6 (v8, návrh #34), súperov Exekútor (v5) ho zníži o svoju silu: 6 / 5 / 4 / 3",
-        "packages/core/test/battle.test.ts › v6: zhorí polovica priznaných Dlhov nadol (a rovnako špakov)",
-        "packages/core/test/pravidla-bitka.test.ts › §1/§11 (v8): na prahu Exekútora (6) hráč neprehráva — zhorí polovica Dlhov a rovnako špakov, aj do mínusu; pod prahom (5) nič"
-      ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/battle.test.ts › prah je 10 + 2×priazeň; packages/core/test/battle.test.ts › po odovzdaní Nástroja zhorí polovica dlhov nadol; packages/core/test/pravidla-bitka.test.ts › §11: s Nástrojom hráč exekúcii čelí — odovzdá ho a polovica priznaných Dlhov (nadol) zhorí: 11 → 6."
+        "packages/core/test/battle.test.ts › bez prahu (Michal 2026-10-28): zhorí polovica priznaných Dlhov NAHOR — aj z jedného Dlhu",
+        "packages/core/test/battle.test.ts › súperova priazeň Exekútora zhorí navyše 1 / 2 / 3 Dlhy, najviac všetky",
+        "packages/core/test/pravidla-bitka.test.ts › §1/§11 (Michal 2026-10-28): exekúcia bez prahu — každý s priznaným Dlhom stratí polovicu Dlhov nahor a rovnako špakov, aj do mínusu; hráč neprehráva",
+        "packages/core/test/pravidla-20261021.test.ts › exekúcia bez prahu (Michal 2026-10-28): už pri 2 priznaných Dlhoch zhorí polovica nahor — 1 Dlh a 1 špak",
+        "packages/core/test/pravidla-v5.test.ts › Exekútor (Michal 2026-10-28): súperova priazeň zhorí pri exekúcii navyše toľko Dlhov, aká je sila"
+      ]
     },
     {
       "id": "11.exekutor.robota",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Najprv Robota: za každú aktívnu spáli 1 priznaný Dlh, potom sa kontroluje prah.",
-      "stav": "na-overenie",
-      "testy": [],
+      "pravidlo": "Robota v kroku Exekútora pred exekúciou spáli 1 priznaný Dlh za aktívnu Robotu.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-bitka.test.ts › §11: Robota spáli priznaný Dlh ešte pred exekúciou — 6 Dlhov, Robota 1, exekúcia 3 (polovica z 5 nahor)"
+      ],
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
       "id": "11.exekutor.nepali",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Kto exekúcii nečelí, Dlh nepáli.",
+      "pravidlo": "Priznané Dlhy pália len Robota a Exekútor; Obecný úrad, Podvodník a Kmotor ich presúvajú súperovi.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
@@ -2079,8 +2082,7 @@
         "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX",
         "packages/core/test/v7-efekty.test.ts › Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie",
         "packages/core/test/v7-efekty.test.ts › Noviny: víťaz s viac priznanými Dlhmi — špaky za bitku dostane porazený",
-        "packages/core/test/v7-efekty.test.ts › Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh",
-        "packages/core/test/v7-efekty.test.ts › Záhradkár (Exekúcia): zahodený z línie zachráni špaky a spáli Dlhy za aktívne akcie"
+        "packages/core/test/v7-efekty.test.ts › Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh"
       ]
     },
     {
@@ -2124,6 +2126,15 @@
         "packages/core/test/dohadzovacka.test.ts › nič sa nestane: O2 nie je Občan ani Starešina, nemá pohlavie, alebo na druhej strane nie je vhodný O1",
         "packages/core/test/dohadzovacka.test.ts › skrytá Záverečná sa nepresúva — presunie sa najvzdialenejší z ostatných; karta s oboma tagmi sa ráta ako oboje",
         "packages/core/test/dohadzovacka.test.ts › náhľad a bot (sPrilozenou) ukážu ten istý presun ako motor"
+      ]
+    },
+    {
+      "id": "16.karta.zahradkar",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Záhradkár (Exekúcia, Michal 2026-10-28): odkrytý v línii v partii majiteľa — exekúcia ho v tomto kole obíde (žiadny Dlh ani špak); nezahadzuje sa; súperov Záhradkár nechráni.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Záhradkár (Exekúcia, Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde — Dlhy ani špaky nezhoria"
       ]
     }
   ]

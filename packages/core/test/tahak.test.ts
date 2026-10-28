@@ -22,7 +22,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["špaky za bitku (v8)", "1 špak za každú kartu v línii"],
     ["strach za novú zónu (v8)", "len zóny, ktoré mu ešte nezaplatil: žltá 1, oranžová 2, červená 3 (zo stredu na červenú spolu 6)"],
     ["Kmotor (v8)", "Kmotor: po bitke presunie 1 / 2 / 3 tvoje priznané Dlhy medzi súperove"],
-    ["prah Exekútora (v8)", `prah Exekúcie ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD} (so súperovým Exekútorom ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 1} / ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 2} / ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 3})`],
+    ["Exekútor bez prahu (2026-10-28)", "Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor"],
     ["rozpis úrovní (v7)", "stredná 1 · 2 · 2 · 3 · 3 · P"],
     ["Cirhóza na konci", `−${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus`],
     ["výkupné (2026-10-27)", `plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak`],

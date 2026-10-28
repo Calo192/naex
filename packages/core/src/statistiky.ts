@@ -260,9 +260,9 @@ function zapisJedneho(
   const opp = opponentOf(p);
   const hPred = pred.hraci[p];
   const hPo = po.hraci[p];
-  // Exekúcia v6 je automatická: zhorené špaky na nástenke, alebo zahodený Záhradkár.
+  // Exekúcia je automatická: zhorené špaky na nástenke (Záhradkár ju obíde celkom).
   const novaBitka = po.nastenka.length > pred.nastenka.length ? po.nastenka[po.nastenka.length - 1] : undefined;
-  if ((novaBitka?.exekutor[p] ?? 0) > 0 || (autor === p && cmd.type === "zahradkar" && cmd.zahodit)) s.exekucie += 1;
+  if ((novaBitka?.exekutor[p] ?? 0) > 0) s.exekucie += 1;
 
   // ---- príkazy tohto hráča
   if (autor === p) {

@@ -7,7 +7,6 @@
 import type { ActionSums } from "./partia.ts";
 import type { PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
-import { prahExekutora } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
 /** Vstup jedného hráča do výpočtu poškodenia. */
@@ -134,19 +133,14 @@ export function battleOutcome(damage: DamageResult, remiza?: RemizaBitky): Battl
 }
 
 /**
- * Exekútor (§11, v6): kto má aspoň prah priznaných Dlhov, čelí exekúcii.
- * zlavaPrahu = sila súperovej priazne Exekútora (v5).
+ * Exekúcia bez prahu (Michal 2026-10-28): Exekútor príde v každej bitke ku každému
+ * hráčovi s aspoň 1 priznaným Dlhom a zhorí polovica jeho priznaných Dlhov
+ * zaokrúhlene NAHOR a rovnaký počet špakov. Súperova priazeň Exekútora zhorí
+ * navyše toľko Dlhov (a špakov), aká je jej sila — najviac všetky Dlhy.
  */
-export function exekutorCheck(priznaneDlhy: number, zlavaPrahu = 0): boolean {
-  return priznaneDlhy >= prahExekutora(zlavaPrahu);
-}
-
-/**
- * Exekúcia v6 (Michal 2026-10-26): zhorí polovica priznaných Dlhov (nadol)
- * a rovnaký počet špakov. Nástroj sa neodovzdáva a prehra exekúciou sa ruší.
- */
-export function zhoriPriExekucii(priznaneDlhy: number): number {
-  return Math.floor(priznaneDlhy / 2);
+export function zhoriPriExekucii(priznaneDlhy: number, silaExekutora = 0): number {
+  if (priznaneDlhy <= 0) return 0;
+  return Math.min(priznaneDlhy, Math.ceil(priznaneDlhy / 2) + silaExekutora);
 }
 
 /**

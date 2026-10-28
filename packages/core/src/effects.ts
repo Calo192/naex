@@ -101,7 +101,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
   kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v7): NA EX len na kartu v kraji pri oltári
-  zahradkar: "impl", // Exekúcia (v7): zahodiť namiesto špakov a spáliť Dlhy podľa aktívnych akcií
+  zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
   svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Konflikt (v7): jeho Dlhy sú Viera a Povery Rana do konca kola (partia.ts)
   podvodnik: "impl", // Prehra (v7): jeden tvoj priznaný Dlh prejde k súperovi

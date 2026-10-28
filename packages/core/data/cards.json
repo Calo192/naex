@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-28T08:15:47.953Z",
+ "source": "tvorca kariet 2026-10-28T08:22:51.522Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -2119,7 +2119,7 @@
     "Pracujúci",
     "Chlap"
    ],
-   "effect_text": "Exekúcia: Smieš ju zahodiť namiesto špakov a spáliť toľko priznaných Dlhov, koľko mala aktívnych akcií.",
+   "effect_text": "Exekúcia: Exekúcia v tomto kole pre teba neplatí.",
    "triggers": [
     "Exekúcia"
    ],

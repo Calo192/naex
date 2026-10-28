@@ -79,7 +79,7 @@ export type Trigger =
   | "Konflikt"
   // Úplatok (v7, Kulturista): opak Kšeftu — platí súper, aby kartu oslabil.
   | "Úplatok"
-  // Exekúcia (v7, Záhradkár): keď majiteľovi v bitke hrozí exekúcia.
+  // Exekúcia (Záhradkár, Michal 2026-10-28): exekúcia v tomto kole pre majiteľa neplatí.
   | "Exekúcia";
 
 export const ALL_TRIGGERS: readonly Trigger[] = [

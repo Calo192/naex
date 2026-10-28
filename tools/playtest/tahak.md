@@ -140,10 +140,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   priznanú dostane v bitke +1 tuhé (nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry −3 špaky za kus)
   — prizná ju hneď, alebo riskuješ, že sa ti do konca nevráti do ruky. Kým ju nepriznáš, súper za ňu tuhé
   nedostáva. Počet súperových
-  nepriznaných kliatob je verejný (stav ho ukazuje). Dlh sa sám nepáli (2026-10-22) — spáli ho len Robota
-  (1 Dlh za aktívnu Robotu), Exekútor a Záhradkár; Obecný úrad ho presunie súperovi. Anonymný
+  nepriznaných kliatob je verejný (stav ho ukazuje). Dlh pália Robota (1 Dlh za aktívnu Robotu) a Exekútor
+  (v každej bitke); Obecný úrad, Podvodník a Kmotor ho presunú súperovi. Anonymný
   alkoholik (Nástup, v7) prizná všetky Cirhózy z tvojho odhadzovacieho balíčka. Absťák kartu dá. Milujúca manželka už nie je Kliatba (v7). Kliatba do línie nepatrí. Priznanie nemíňa
-  limit ani neodovzdá ťah. Priznaný Dlh sa ráta k Exekútorovi.
+  limit ani neodovzdá ťah. Za priznané Dlhy príde v každej bitke Exekútor.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
   nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy). Otočí
@@ -210,16 +210,16 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Scorecard nesie už len priazeň, bodovacie podmienky nie sú.
 - **Priazeň (v5)** sila 1 / 2 / 3 podľa zóny, bez dvojnásobku: Bitkár +1 / +2 / +3
   tuhého; Kmotor: po bitke presunie 1 / 2 / 3 tvoje priznané Dlhy medzi súperove (v8; koľko máš); Abstinent +1 / +2 / +3
-  Pohoršenia v bitke; Exekútor: súperov prah Exekúcie −1 / 2 / 3; Výpalník
+  Pohoršenia v bitke; Exekútor: exekúcia súperovi zhorí navyše 1 / 2 / 3 Dlhy; Výpalník
   (Výpalné): za každé súperovo NA EX ti dá 1 / 2 / 3 cigarety; Fajčiar +1 / +2 / +3
   cigarety po braní zo šenku (Obmedzenie ich neuberá); Alkoholik (Na zdravie
   „do dna“): 1 / 2 / 3 poldeci z tvojho NA EX za kolo sa vráti plných; Veriaci
-  +1 / +2 / +3 Viery. Prah Dlhu 2 (každé 2 zadĺženia = 1 Dlh), prah Cirhózy 3, prah Exekúcie 6 (so súperovým Exekútorom 5 / 4 / 3).
+  +1 / +2 / +3 Viery. Prah Dlhu 2 (každé 2 zadĺženia = 1 Dlh), prah Cirhózy 3. Exekútor (priazeň): exekúcia súperovi zhorí navyše 1 / 2 / 3 Dlhy a toľko špakov.
   Výherný automat (Dedičstvo, v7): tvoj prah Dlhu +1, ale v poslednej Pitke kola získaš 1 Dlh.
-- **Exekútor (v6):** kto má priznaných Dlhov aspoň na prahu, tomu zhorí **polovica
-  Dlhov (nadol) a rovnako veľa špakov** — Nástroj sa neodovzdáva, prehra nie je. **Záhradkár**
-  (Exekúcia, v7): smieš ho zahodiť namiesto špakov (`{"type":"zahradkar","zahodit":true}`); z línie
-  navyše spáli toľko priznaných Dlhov, koľko mal aktívnych akcií.
+- **Exekútor bez prahu (2026-10-28):** Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor
+  (aj jediný Dlh) a rovnako veľa špakov, so súperovou priazňou Exekútora navyše 1 / 2 / 3 — ešte pred
+  poškodením (Robota pred ním). Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
+  keď leží v línii v tvojej partii, exekúcia ťa v tomto kole obíde (žiadny Dlh ani špak); nezahadzuje sa.
   Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktoristka: s prevahou v jej kraji Pecka navyše,
   inak Dlh; Podvodník pri prehre presunie tvoj priznaný Dlh súperovi. **Noviny** (Dedičstvo: Prehra, v7):
   keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za bitku dostaneš ty.

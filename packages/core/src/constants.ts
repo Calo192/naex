@@ -78,11 +78,6 @@ export const KONSTANTY = {
    * prehrávanie: prebytok posúva markery k porazenému.
    */
   NASOBOK_PRIAZNE: 2,
-  /**
-   * v8 (Michal 2026-10-28, návrh #34 A): 6, so súperovou priazňou Exekútora 5 / 4 / 3
-   * (v7 bolo 7 — exekúcia sa spustila raz z 18 bitiek, Dlh nič nestál).
-   */
-  PRAH_EXEKUTORA_ZAKLAD: 6,
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   /**
    * Špaky (pravidlá v6, Michal 2026-10-26): víťaz bitky dostane vždy aspoň

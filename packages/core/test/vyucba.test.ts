@@ -19,6 +19,7 @@ import {
   loadGameData,
   nahladPitky,
   naTahu,
+  silaPriazne,
   ocakavanyPrikaz,
   overScenar,
   PAUZA_PRED_TAHOM_MS,
@@ -388,7 +389,7 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
       "za [Cigareta] cigaretu si hneď doberieš kartu; každé ďalšie fajčenie v tej istej Pitke je o cigaretu drahšie.",
     );
     // v8: špaky za bitku sú karty v línii — 6, nie 2 Pitky (Michal 2026-10-28, návrh #28).
-    expect(scenar.kroky[i("i-body")]?.melichar).toMatch(/^Špaky v bare: 6 : 0\./);
+    expect(scenar.kroky[i("i-body")]?.melichar).toMatch(/^Špaky v bare: 5 : −1\./);
   });
 
   it("Lesnú cestu si hráč vyberie sám, Peckou k sebe; zlá lokalita aj zlé natočenie dostanú radu Melichara", () => {
@@ -423,9 +424,9 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(evaluateLine(data, lineState(po("k-zh-bot1"))).sums[1]).toMatchObject({ Pecka: 1, Povera: 1 });
     // Dievčinina Povera, zdvojená Hasičovým Posilnením (k-dievcina).
     expect(evaluateLine(data, lineState(po("k-dievcina"))).sums[0]).toMatchObject({ Povera: 2 });
-    // Bitka (i-bitka): tuhé 7 : 4, Povery sa vyrovnajú 1 : 1 — „vyhral si o 3“ je aj prebytok 3.
+    // Bitka (i-bitka): tuhé 7 : 4; Dlhy zhorel exekútor pred poškodením (2026-10-28), Povery nič — prebytok 3.
     const d = pri("i-bitka").bitkaStav?.damage;
-    expect([d?.tuhe, d?.makke, d?.celkove]).toEqual([[7, 4], [1, 1], [8, 5]]);
+    expect([d?.tuhe, d?.makke, d?.celkove]).toEqual([[7, 4], [0, 0], [7, 4]]);
   });
 
   it("Pitka v7 (D6): pečeň sa nuluje, zadĺženie nie; Hasič v oboch Pitkách = karta Dlh, hneď priznaná", () => {
@@ -437,24 +438,25 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(poPitke.hraci[1].cigarety).toBe(3);
     const poBitke = po("k-hotovo-bot2");
     expect(poBitke.hraci[0]).toMatchObject({ zadlzenie: 0, pecen: 0 });
-    expect(prahyHraca(data, poBitke, 0)).toMatchObject({ priznaneDlhy: 1, exekutor: 6 });
-    // Štamgast má tiež jednu kartu Dlh (k-hotovo-bot2, i-bitka).
-    expect(prahyHraca(data, poBitke, 1).priznaneDlhy).toBe(1);
+    // Karta Dlh vznikla, ale exekútor (bez prahu, 2026-10-28) ju v bitke hneď zhorel — obom aj s 1 špakom.
+    expect(prahyHraca(data, poBitke, 0).priznaneDlhy).toBe(0);
+    expect(prahyHraca(data, poBitke, 1).priznaneDlhy).toBe(0);
+    expect(poBitke.nastenka.at(-1)?.exekutor).toEqual([1, 1]);
     expect(body(pri("k-hotovo-bot2"))).toEqual([0, 0]);
     // Hráč vyhral bitku so 6 kartami v línii (v8); starší v strede ešte nič nedali.
-    expect(body(poBitke)).toEqual([6, 0]);
+    expect(body(poBitke)).toEqual([5, -1]);
   });
 
-  it("prebytok 3 rozdeľuje porazený Štamgast, celý na Farára (v8): prah exekútora 6 → 5 → 4 → 3, cigareta za posunutého", () => {
+  it("prebytok 3 rozdeľuje porazený Štamgast, celý na Farára (v8): jeho Exekútor 0 → 1 → 2 → 3 (exekúcia hráčovi o toľko viac), cigareta za posunutého", () => {
     for (const id of ["k-prebytok1", "k-prebytok2", "k-prebytok3"]) expect(scenar.kroky[i(id)]?.kto).toBe("bot");
     expect(naTahu(pri("k-prebytok1"))).toBe(1);
-    expect(prahyHraca(data, pri("k-prebytok1"), 0).exekutor).toBe(6);
-    expect(prahyHraca(data, po("k-prebytok1"), 0).exekutor).toBe(5);
-    expect(prahyHraca(data, po("k-prebytok2"), 0).exekutor).toBe(4);
+    expect(silaPriazne(data, pri("k-prebytok1"), "EXEKUTOR", 1)).toBe(0);
+    expect(silaPriazne(data, po("k-prebytok1"), "EXEKUTOR", 1)).toBe(1);
+    expect(silaPriazne(data, po("k-prebytok2"), "EXEKUTOR", 1)).toBe(2);
     const s = po("k-prebytok3");
-    expect(prahyHraca(data, s, 0).exekutor).toBe(3);
+    expect(silaPriazne(data, s, "EXEKUTOR", 1)).toBe(3);
     expect(s.hraci[1].cigarety).toBe(pri("k-prebytok1").hraci[1].cigarety + 1);
-    expect(body(s)).toEqual([6, 0]);
+    expect(body(s)).toEqual([5, -1]);
   });
 
   it("časť končí uprostred partie: 2. kolo, hráč vyhral a vyberá ďalší cieľ", () => {
@@ -467,8 +469,8 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(lokalityNaVyber(data, s).map((k) => k.defId)).toEqual(["ihrisko", "benzinka", "zberny_dvor"]);
     for (const k of lokalityNaVyber(data, s)) expect(urovenLokality(data, k.defId), k.defId).toBe(2);
     expect(viewFor(data, s, 0).lokalityVHre.map((k) => k.defId)).toEqual(["ihrisko", "benzinka", "zberny_dvor"]);
-    // Karta Dlh z 1. kola ostáva priznaná.
-    expect(prahyHraca(data, s, 0).priznaneDlhy).toBe(1);
+    // Karta Dlh z 1. kola zhorela pri exekúcii (bez prahu, 2026-10-28).
+    expect(prahyHraca(data, s, 0).priznaneDlhy).toBe(0);
     // Kroky o starších po bitke bežia už v 2. kole — UI ich ukáže namiesto výberu lokality.
     expect(i("i-oranzova")).toBe(i("k-prebytok3") + 1);
     expect(pri("i-oranzova").kolo).toBe(2);

@@ -84,14 +84,6 @@ export function prahDlhu(): number {
   return KONSTANTY.PRAH_DLHU_ZAKLAD;
 }
 
-/**
- * Prah Exekúcie hráča (§11). Priazeň Exekútora v5 (Michal 2026-10-25): SÚPEROV
- * prah je nižší o silu priazne (1 / 2 / 3) — `zlava` = sila súperovho Exekútora.
- */
-export function prahExekutora(zlava = 0): number {
-  return KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - zlava;
-}
-
 /** Hodnota jednej Viery; Veriaci od 2026-10-20 dáva Vieru navyše, nie vyššiu hodnotu. */
 export function hodnotaViery(): number {
   return KONSTANTY.HODNOTA_VIERY_ZAKLAD;

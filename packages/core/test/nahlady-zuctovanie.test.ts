@@ -178,14 +178,10 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         const dB = bezBitka.s.bitkaStav;
         if (sNaex.s.faza !== "bitka" || bezBitka.s.faza !== "bitka" || dA == null || dB == null) continue;
         for (const q of [0, 1] as const) {
-          // Záhradkár pri exekúcii (Exekúcia v7) je voľba hráča — náhľad ju nepredvída.
-          if (partiaHraca(s, q).some((pl) => pl.card.defId === "zahradkar")) continue;
           // Priznané Dlhy pri poškodení — strop súperovho mäkkého.
           expect(dlhy(stolPriPoskodeni(data, n.odkrytie.view, 0), q), `${kde}: Dlhy pri poškodení, hráč ${q}`).toBe(dlhy(sNaex.s, q));
           expect(dlhy(stolPriPoskodeni(data, zaklad, 0), q), `${kde}: Dlhy bez NA EX, hráč ${q}`).toBe(dlhy(bezBitka.s, q));
-          if (!sNaex.rozhodnutia.has("zahradkar") && !bezBitka.rozhodnutia.has("zahradkar")) {
-            expect(n.kliatby[q].dlhyPoBitke, `${kde}: Dlhy po bitke, hráč ${q}`).toBe(dlhy(sNaex.s, q) - dlhy(bezBitka.s, q));
-          }
+          expect(n.kliatby[q].dlhyPoBitke, `${kde}: Dlhy po bitke, hráč ${q}`).toBe(dlhy(sNaex.s, q) - dlhy(bezBitka.s, q));
         }
         // Pohoršenia, ktoré bitka hráčovi pridelila (prvý, kto ich má, ešte nezačal).
         for (const q of [0, 1] as const) {

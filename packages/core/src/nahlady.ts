@@ -27,7 +27,8 @@ import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
-import { battleOutcome, exekutorCheck, zhoriPriExekucii } from "./battle.ts";
+import { battleOutcome, zhoriPriExekucii } from "./battle.ts";
+import { zahradkarChrani } from "./engine.ts";
 import { cenaPatronatu, MARKER_STRED, posunMarker } from "./elders.ts";
 import type { ClientState } from "./view.ts";
 import { hodnotaPohorseni } from "./view.ts";
@@ -64,7 +65,8 @@ export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: numb
     const nove = noveDlhy[p];
     const teraz = stol.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
     const poPaleni = Math.max(0, teraz + nove - kapacita[p]);
-    const exekucia = exekutorCheck(poPaleni, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p))) ? zhoriPriExekucii(poPaleni) : 0;
+    // Exekúcia bez prahu (Michal 2026-10-28); Záhradkár v partii ju obíde.
+    const exekucia = zahradkarChrani(data, stol, p) ? 0 : zhoriPriExekucii(poPaleni, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p)));
     return { nove, kapacita: kapacita[p], exekucia, poBitke: poPaleni - exekucia };
   };
   return [pre(0), pre(1)];

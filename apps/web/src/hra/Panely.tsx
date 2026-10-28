@@ -19,7 +19,7 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, tvar, vidiVolbuSupera } from "@naex/core";
+import { KONSTANTY, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, spakov, tvar, vidiVolbuSupera } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
@@ -424,7 +424,7 @@ export interface HracDoskaProps {
   readonly data: GameData;
   readonly p: PlayerId;
   readonly info: HracInfo | null;
-  readonly prahy: { readonly cirhoza: number; readonly dlh: number; readonly exekutor: number; readonly priznaneDlhy: number };
+  readonly prahy: { readonly cirhoza: number; readonly dlh: number; readonly exekucia: number; readonly priznaneDlhy: number };
   /** Absťáky, neresti kola a výhľad na koniec kola (stavZavislosti). */
   readonly zavislost: StavZavislosti;
   readonly menoKarty: (defId: string) => string;
@@ -772,12 +772,12 @@ export function HracDoska({
         <Zdroj
           nazov="Dlhy"
           trieda={`zdroj-dlhy ${
-            (v?.dlhy ?? 0) > 0 ? "hrozi" : zadlzeniePo >= prahy.dlh - 1 || prahy.priznaneDlhy >= prahy.exekutor - 2 ? "varovanie" : ""
+            (v?.dlhy ?? 0) > 0 || prahy.exekucia > 0 ? "hrozi" : zadlzeniePo >= prahy.dlh - 1 ? "varovanie" : ""
           }`}
           hodnota={
             <span className="velke-cislo">
               {prahy.priznaneDlhy}
-              <small>/{prahy.exekutor}</small>
+              {prahy.exekucia > 0 && <small> −{prahy.exekucia}</small>}
             </span>
           }
           pod={
@@ -786,7 +786,15 @@ export function HracDoska({
                 zadĺženie {hrac.zadlzenie}
                 {v !== null && v.zadlzenieZoStola > 0 && <span className="projekcia"> ▸ {zadlzeniePo}</span>}/{prahy.dlh}
               </span>
-              {vyhladZadlzenia !== null ? <TextVyhladu x={vyhladZadlzenia} /> : <span>do Exekútora</span>}
+              {vyhladZadlzenia !== null ? (
+                <TextVyhladu x={vyhladZadlzenia} />
+              ) : prahy.exekucia > 0 ? (
+                <span>exekúcia v bitke: −{spakov(prahy.exekucia)}</span>
+              ) : prahy.priznaneDlhy > 0 ? (
+                <span>Záhradkár: exekúcia ťa obíde</span>
+              ) : (
+                <span>bez Dlhov</span>
+              )}
             </>
           }
           tip={{
@@ -794,12 +802,13 @@ export function HracDoska({
             text: (
               <>
                 <span className="tip-stav">
-                  {prahy.priznaneDlhy} z {prahy.exekutor} do Exekútora · zadĺženie {hrac.zadlzenie}
+                  {prahy.priznaneDlhy} {prahy.priznaneDlhy === 1 ? "priznaný Dlh" : "priznané Dlhy"}
+                  {prahy.exekucia > 0 ? ` · exekúcia v tejto bitke: −${spakov(prahy.exekucia)}` : prahy.priznaneDlhy > 0 ? " · Záhradkár: exekúcia ťa obíde" : ""} · zadĺženie {hrac.zadlzenie}
                   {v !== null && v.zadlzenieZoStola > 0 && ` ▸ ${zadlzeniePo}`} z {prahy.dlh}
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
-                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh (v7). Pri {prahy.exekutor} a viac Dlhoch v bitke príde
-                Exekútor: zhorí polovica Dlhov a toľko špakov.
+                Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh (v7). Za priznané Dlhy príde v každej bitke
+                Exekútor: zhorí polovica Dlhov (zaokrúhlene nahor) a toľko špakov, so súperovou priazňou Exekútora o 1 / 2 / 3 viac. Záhradkár v tvojej partii ho v tom kole obíde.
               </>
             ),
           }}

@@ -5,7 +5,6 @@ import type { BattleSide } from "../src/index.ts";
 import {
   battleOutcome,
   computeDamage,
-  exekutorCheck,
   spakyZaBitku,
   zhoriPriExekucii,
 } from "../src/index.ts";
@@ -119,18 +118,19 @@ describe("M4 — výsledok", () => {
 });
 
 describe("M4 — Exekútor", () => {
-  it("prah je 6 (v8, návrh #34), súperov Exekútor (v5) ho zníži o svoju silu: 6 / 5 / 4 / 3", () => {
-    expect(exekutorCheck(5, 0)).toBe(false);
-    expect(exekutorCheck(6, 0)).toBe(true);
-    expect(exekutorCheck(3, 2)).toBe(false);
-    expect(exekutorCheck(4, 2)).toBe(true);
-    expect(exekutorCheck(3, 3)).toBe(true);
+  it("bez prahu (Michal 2026-10-28): zhorí polovica priznaných Dlhov NAHOR — aj z jedného Dlhu", () => {
+    expect(zhoriPriExekucii(0)).toBe(0);
+    expect(zhoriPriExekucii(1)).toBe(1);
+    expect(zhoriPriExekucii(2)).toBe(1);
+    expect(zhoriPriExekucii(5)).toBe(3);
+    expect(zhoriPriExekucii(10)).toBe(5);
   });
 
-  it("v6: zhorí polovica priznaných Dlhov nadol (a rovnako špakov)", () => {
-    expect(zhoriPriExekucii(10)).toBe(5);
-    expect(zhoriPriExekucii(11)).toBe(5);
-    expect(zhoriPriExekucii(1)).toBe(0);
+  it("súperova priazeň Exekútora zhorí navyše 1 / 2 / 3 Dlhy, najviac všetky", () => {
+    expect(zhoriPriExekucii(5, 1)).toBe(4);
+    expect(zhoriPriExekucii(5, 3)).toBe(5);
+    expect(zhoriPriExekucii(2, 3)).toBe(2);
+    expect(zhoriPriExekucii(0, 3)).toBe(0);
   });
 });
 

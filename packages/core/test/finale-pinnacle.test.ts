@@ -71,7 +71,6 @@ function dohraj(s0: GameState): { s: GameState; logy: string[] } {
       legal.find((c) => c.type === "pass") ??
       legal.find((c) => c.type === "bezReakcie") ??
       legal.find((c) => c.type === "vizia" && c.vziat) ??
-      legal.find((c) => c.type === "zahradkar" && !c.zahodit) ??
       (legal[0] as Command);
     const r = apply(data, s, cmd, q);
     for (const e of r.events) if (e.type === "log") logy.push(e.text);

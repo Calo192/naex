@@ -32,6 +32,7 @@ import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import type { PlacedCard } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
+import { zhoriPriExekucii } from "./battle.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
 import { MARKER_STRED, cenaPatronatu, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
 import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, partiaHraca } from "./effects.ts";
@@ -56,6 +57,7 @@ import {
   pohorseniaVBitke,
   jeFinale,
   kartyBitky,
+  zahradkarChrani,
   spakyZaStarsichPre,
   prahVydesenia,
   prahyHraca,
@@ -373,8 +375,32 @@ const PODIEL_VYHIER = 0.5;
 function rozdielBodov(_data: GameData, s: GameState, ja: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
   const su = opponentOf(ja);
   const odhad = (p: PlayerId): number =>
-    s.spaky[p] - KONSTANTY.SPAKY_ZA_CIRHOZU * nepriznaneCirhozy(s.hraci[p]) + vykupneVOdhade(s, p) + strachVOdhade(s, p, starsi);
+    s.spaky[p] -
+    KONSTANTY.SPAKY_ZA_CIRHOZU * nepriznaneCirhozy(s.hraci[p]) +
+    vykupneVOdhade(s, p) +
+    strachVOdhade(s, p, starsi) -
+    exekucieDoKonca(_data, s, p);
   return odhad(ja) - odhad(su);
+}
+
+/**
+ * Špaky, ktoré hráčovi p zhoria pri exekúciách do konca hry (Michal 2026-10-28,
+ * exekúcia bez prahu): v každej zvyšnej bitke polovica Dlhov nahor a sila súperovho
+ * Exekútora, kým Dlhy nezmiznú. Záhradkár v línii obíde len túto bitku; nové Dlhy,
+ * Robotu ani Kmotra odhad nepredvída.
+ */
+function exekucieDoKonca(data: GameData, s: GameState, p: PlayerId): number {
+  let dlhy = s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+  if (dlhy === 0) return 0;
+  const sila = silaPriazne(data, s, "EXEKUTOR", opponentOf(p));
+  const tato = s.ciel !== null && (s.bitkaStav === null || !s.bitkaStav.exekutorHotovy[p]) && !zahradkarChrani(data, s, p) ? 1 : 0;
+  let spolu = 0;
+  for (let n = kolPoTomto(s) + tato; n > 0 && dlhy > 0; n--) {
+    const z = zhoriPriExekucii(dlhy, sila);
+    spolu += z;
+    dlhy -= z;
+  }
+  return spolu;
 }
 
 /**
@@ -520,11 +546,8 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   v += 0.3 * h.ruka.length * f;
   v *= k.povaha.zdroje;
   let postih = 1.3 * verejneAbstaky(s, p);
-  const prahy = prahyHraca(k.data, s, p);
-  postih += 0.3 * prahy.priznaneDlhy;
-  const rezerva = prahy.exekutor - prahy.priznaneDlhy;
-  if (rezerva <= 1) postih += 4;
-  else if (rezerva <= 3) postih += 1.5;
+  // Priznaný Dlh: remíza v bitke, súperove Povery; špaky, ktoré zhoria pri exekúcii, ráta rozdielBodov.
+  postih += 0.3 * prahyHraca(k.data, s, p).priznaneDlhy;
   // Absťák: menej nerestí než minulé kolo; prvé kolo len nastavuje základ.
   if (s.kolo === 1) {
     postih += 0.25 * h.nerestiTotoKolo;
@@ -1206,11 +1229,8 @@ function pitka(v: Volba): Command | null {
   if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length <= 2 && h.cigarety >= cenaFajc + 1 && neresti + cenaFajc <= strop) return smoke;
 
   // Kšeft a Úplatok (v7): zahrá si ich nanečisto; berie, keď stav zlepší viac než o povahový prah.
-  // Poštárka (Dlh za kartu) len, kým je Exekútor ďaleko.
-  const prahy = prahyHraca(data, state, ja);
-  const ksefty = v.legal.filter(
-    (c) => (c.type === "kseft" && (!kseftPostarky(state, c.uid) || (h.ruka.length < 6 && prahy.exekutor - prahy.priznaneDlhy > 4))) || c.type === "uplatok",
-  );
+  // Poštárka (Dlh za kartu) len s tenkou rukou — cenu Dlhu (istú exekúciu) ráta hodnotaStavu.
+  const ksefty = v.legal.filter((c) => (c.type === "kseft" && (!kseftPostarky(state, c.uid) || h.ruka.length < 6)) || c.type === "uplatok");
   if (ksefty.length > 0) {
     const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 1.5);
     const best = najlepsi(v, ksefty, ohodnot);
@@ -1307,9 +1327,6 @@ function bitka(v: Volba): Command | null {
     case "pohorsenie":
     case "prebytok":
       return najlepsi(v, v.legal, ohodnot);
-    case "exekutor":
-      // Záhradkár (v6): radšej zahodí kartu, než by mu zhoreli špaky.
-      return { type: "zahradkar", zahodit: true };
     case "benzinka": {
       const pocet = v.legal.find((c) => c.type === "benzinka")?.uids.length ?? 0;
       const spalit = b.spalit;

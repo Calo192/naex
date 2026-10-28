@@ -146,11 +146,8 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
     return k === undefined ? null : { text: { karta: defOf(d, k).name }, kluce: { defId: k.defId } };
   },
 
-  // Rovnako ako varovanie Dlhov v bare (Panely.tsx), len až keď nejaký Dlh je.
-  exekutor: (d, v, ja) => {
-    const p = prahyHraca(d, v, ja);
-    return p.priznaneDlhy > 0 && p.priznaneDlhy >= p.exekutor - 2 ? ANO : null;
-  },
+  // Exekúcia bez prahu (Michal 2026-10-28): prvý priznaný Dlh — Exekútor príde v najbližšej bitke.
+  exekutor: (d, v, ja) => (prahyHraca(d, v, ja).priznaneDlhy > 0 ? ANO : null),
 
   zaverecna: (_d, v, ja) => (v.kolo >= 2 && naMojomTahuVZhromazdeni(v, ja) && v.zaverecnaMozna ? ANO : null),
 };

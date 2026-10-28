@@ -80,8 +80,9 @@ describe("remíza a sekera v6 (Michal 2026-10-26; sekera od 2026-10-21)", () => 
         const finale = pred.ciel?.typ === "finale";
         if (vysledok.vitaz === null) {
           sekier++;
-          if (!finale) expect(po.spakyNaSekere).toBe(pred.spakyNaSekere + zaznam.pitky);
-          else expect(zaznam.prepadlo).toBe(pred.spakyNaSekere + zaznam.pitky);
+          // v8: špaky kola = karty v línii (zaznam.karty).
+          if (!finale) expect(po.spakyNaSekere).toBe(pred.spakyNaSekere + (zaznam.karty ?? zaznam.pitky));
+          else expect(zaznam.prepadlo).toBe(pred.spakyNaSekere + (zaznam.karty ?? zaznam.pitky));
         } else {
           expect(zaznam.zoSekery).toBe(pred.spakyNaSekere);
           expect(po.spakyNaSekere).toBe(0);
@@ -150,7 +151,7 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
     expect(state.hraci[0].ruka.some((k) => k.defId === "cirhoza")).toBe(false);
   });
 
-  it("Dlh sa sám nepáli — kto exekúcii nečelí, priznané Dlhy si nechá (Michal 2026-10-22)", () => {
+  it("exekúcia bez prahu (Michal 2026-10-28): už pri 2 priznaných Dlhoch zhorí polovica nahor — 1 Dlh a 1 špak", () => {
     const s0 = setupSBalickom(sada, 77);
     const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
     const sDlhmi: GameState = {
@@ -159,9 +160,12 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
     };
     let s = vPitke(sDlhmi, [[{ card: instanceFor(sada, "piticka", P4, P4), playedBy: 0 }], []]);
     s = apply(sada, s, { type: "skipNaex" }, naTahu(s)!).state;
+    const spaky = s.spaky[0];
     const { state, events } = apply(sada, s, { type: "skipNaex" }, naTahu(s)!);
-    expect(events.some((e) => e.type === "log" && e.text.includes("páli"))).toBe(false);
-    expect(state.hraci[0].priznane.filter((k) => k.defId === "dlh").map((k) => k.uid)).toEqual([900001, 900002]);
+    expect(events.some((e) => e.type === "log" && e.text.startsWith("Exekútor: hráčovi 1 zhorí 1 priznaný Dlh a 1 špak"))).toBe(true);
+    expect(state.hraci[0].priznane.filter((k) => k.defId === "dlh").map((k) => k.uid)).toEqual([900002]);
+    expect(state.nastenka.at(-1)?.exekutor).toEqual([1, 0]);
+    expect(state.spaky[0] - spaky).toBe((state.nastenka.at(-1)?.zaBitku[0] ?? 0) + (state.nastenka.at(-1)?.zaStarsich[0] ?? 0) - 1);
   });
 });
 
