@@ -12,8 +12,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ClientState, Command, Event as UdalostHry } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { ZAVES_ODCHODU } from "../lib/odchod.ts";
-import { menoVoVete, rodHraca, textUdalosti, type HracInfo, type KrokVyucby, type PopisKrokuVyucby, type RadaVyucby, type StavVyucby } from "./useHra.ts";
-import { hlaskaKroku } from "./hlaskyVyucby.ts";
+import {
+  menoVoVete,
+  rodHraca,
+  textUdalosti,
+  type CastVyucbyInfo,
+  type HlaskaChybyVyucby,
+  type HracInfo,
+  type KrokVyucby,
+  type PopisKrokuVyucby,
+  type RadaVyucby,
+  type StavVyucby,
+} from "./useHra.ts";
 import { useHlaskyVyucby } from "./Melichar.tsx";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
@@ -38,6 +48,14 @@ export interface VyucbaUctu {
   readonly ponuknut: boolean;
   /** Dokončené časti — hviezdičky achievementu Prvá hra; „Začať odznova“ ich neuberie. */
   readonly castiHotove: number;
+  /** Časť, v ktorej uložený postup stojí; null = celá výučba prejdená. */
+  readonly cast: CastVyucbyInfo | null;
+  /** Z časti už niečo prešiel (nie je na jej začiatku). */
+  readonly rozpracovana: boolean;
+  /** Predošlá časť je hotová a táto čaká — „Pokračovať vo výučbe“ ju spustí od začiatku. */
+  readonly dalsiaCast: CastVyucbyInfo | null;
+  /** Ďalšia časť existuje, ale ju ešte pripravujeme (texty na schválenie). */
+  readonly pripravujeme: CastVyucbyInfo | null;
 }
 
 export function useVyucbaUctu(prihlaseny: boolean): { readonly vyucba: VyucbaUctu | null; readonly obnov: () => void } {
@@ -53,8 +71,8 @@ export function useVyucbaUctu(prihlaseny: boolean): { readonly vyucba: VyucbaUct
   return { vyucba, obnov };
 }
 
-/** Rozpracovaná výučba: niečo už prešiel, ale ešte nie je hotová. */
-export const rozpracovana = (v: VyucbaUctu): boolean => v.stav !== "hotova" && v.krok > 0 && v.krok < v.spolu;
+/** Výučba, v ktorej sa dá pokračovať: rozohraná časť, alebo hotová časť a ďalšia čaká (roadmapa #105). */
+export const rozpracovana = (v: VyucbaUctu): boolean => v.rozpracovana || v.dalsiaCast !== null;
 
 /**
  * Nováčik bez 1. časti výučby (#104, Michal 2026-10-26): výučba je preňho hlavná výzva, Pravidlá
@@ -104,13 +122,16 @@ export function prvkyKluca(kluc: string): HTMLElement[] {
     return [...document.querySelectorAll<HTMLElement>(`[data-vyucba-uid="${Number(kluc.slice(4))}"]`)].filter((el) => el.closest(".lupa") === null);
   }
   // Pri stavbe šenku len karty do Šenku, ktoré ešte nie sú vybraté (zdvihnuté) — tie sú, kde majú byť.
-  if (kluc.startsWith("senok:")) return [...document.querySelectorAll<HTMLElement>(`.stavba-balicek .stavba-vyber:not(.vybrata) [data-vyucba-uid="${Number(kluc.slice(6))}"]`)];
+  // „senok:<uid>“ je z očakávaného ťahu; „senok:hasic“ (karta v šenku) zo scenára hľadá zóna nižšie.
+  if (/^senok:\d+$/.test(kluc)) return [...document.querySelectorAll<HTMLElement>(`.stavba-balicek .stavba-vyber:not(.vybrata) [data-vyucba-uid="${Number(kluc.slice(6))}"]`)];
   const css = (x: string): string => x.replace(/["\\]/g, "");
   if (kluc === "spoje-lokality") return spojeLokality();
   if (kluc.startsWith("akcia:")) return [...document.querySelectorAll<HTMLElement>(`:is(.ruka-rad, .linia) .kl-slot[data-akcia="${css(kluc.slice(6))}"]`)];
   const priame = [...document.querySelectorAll<HTMLElement>(`[data-vyucba="${css(kluc)}"]`)];
   // Účet bitky je na stole až v ďalšom kole — počas bitky je jej výsledok v odhade jednotného baru.
   if (kluc === "bitka-ucet" && priame.length === 0) return [...document.querySelectorAll<HTMLElement>(".jbar-odhad")];
+  // Kým súper stavia, šenok je ešte panel stavby (výučba, 3. časť: Melichar postavil za hráča).
+  if (kluc === "senok" && priame.length === 0) return [...document.querySelectorAll<HTMLElement>('[data-vyucba="stavba"]')];
   if (priame.length > 0 || !kluc.includes(":")) return priame;
   const [zona, id] = [kluc.slice(0, kluc.indexOf(":")), kluc.slice(kluc.indexOf(":") + 1)];
   return [
@@ -287,6 +308,21 @@ export function krokSoStarsimi(krok: KrokVyucby | null): boolean {
   );
 }
 
+/**
+ * Línia starších namiesto stola po prvej bitke (HernaPlocha ukazStarsich). 1. časť končí pri voľbe
+ * cieľa 2. kola a o starších hovorí až tam — výber lokality by hráča posielal na ťah, ktorý výučba
+ * nepustí. V 2. a 3. časti partia beží ďalej: starší len v kroku o nich (aj ťah hráča, napr. Kšeft
+ * vily na Hrobára), inak línia kariet; krok o nástenke či lokalitách ich nechce, ani keď ukazuje špaky.
+ */
+export function ukazStarsichVoVyucbe(stav: Pick<StavVyucby, "krok" | "koniecCasti">, kolo: number): boolean {
+  if (kolo <= 1) return false;
+  const krok = stav.krok;
+  if (krok === null) return stav.koniecCasti === 1;
+  if (krok.kto === "hrac") return krok.cast.cast > 1 && krokSoStarsimi(krok);
+  if (krok.cast.cast === 1) return true;
+  return krokSoStarsimi(krok) && !krok.zvyraznit.some((k) => k === "nastenka" || k === "lokality");
+}
+
 export function VyucbaStol({
   stav,
   dalej,
@@ -295,10 +331,12 @@ export function VyucbaStol({
   prerusit,
   preskocit,
   hratProtiPocitacu,
+  pokracovat,
   menoBota,
   chybaVyucby,
   odpovedz,
   rada,
+  hlaskaChyby,
   pocitadloBezi,
   view,
   udalosti,
@@ -314,6 +352,8 @@ export function VyucbaStol({
   /** Preskočí výučbu (ako „Preskočiť“ v ponuke) a odíde od stola — úvod s cigaretou. */
   readonly preskocit: () => void;
   readonly hratProtiPocitacu: () => void;
+  /** Po konci časti: ďalšia časť v tej istej partii. */
+  readonly pokracovat: () => void;
   readonly menoBota: string;
   /** Čo zlému ťahu chýbalo a čo bolo navyše (server, vyucbaChyba) — karty sa zvýraznia. */
   readonly chybaVyucby: { readonly chybajuce: readonly PopisKrokuVyucby[]; readonly navyse: readonly PopisKrokuVyucby[] } | null;
@@ -321,6 +361,8 @@ export function VyucbaStol({
   readonly odpovedz: (index: number) => void;
   /** Rada Melichara po zlom ťahu v rozhodnutí (partia sa nezmenila). */
   readonly rada: RadaVyucby | null;
+  /** Hláška pri chybe (zlý ťah, rada, zlá odpoveď kvízu) — vyberá server, tu len zaznie. */
+  readonly hlaskaChyby: HlaskaChybyVyucby | null;
   /** Beží Počítadlo bitky — „ďalej“ čaká, inak by Enter preskočil krok (UI inšpekcia). */
   readonly pocitadloBezi: boolean;
   /** Stôl a udalosti poslednej správy — čo sa zmenilo po ťahu bota či hry za hráča. */
@@ -332,7 +374,7 @@ export function VyucbaStol({
 }) {
   const krok = stav.krok;
   const radaText = rada?.text ?? null;
-  const { prehraj: prehrajHlasku, zastav: zastavHlasku } = useHlaskyVyucby();
+  const { prehraj: prehrajHlasku } = useHlaskyVyucby();
   useEffect(() => {
     zrusChybu();
     // Len pri zmene kroku — zrusChybu je stabilný (useCallback v useHra).
@@ -340,8 +382,8 @@ export function VyucbaStol({
 
   // Pri novom kroku sa stôl vráti z pohľadu starších a zavrú sa vrstvy, ktoré krok
   // nepotrebuje (playtest: po kroku Body ostali starší otvorení, Lokality zakryli bar).
-  // Po prvej bitke drží starších na stole HernaPlocha (ukazStarsich) — klik na Starších by ich zavrel.
-  const poBitke = view.kolo > 1;
+  // Kým drží starších na stole HernaPlocha (ukazStarsich), klik na Starších by ich zavrel.
+  const poBitke = ukazStarsichVoVyucbe(stav, view.kolo);
   useEffect(() => {
     if (krok === null) return;
     const kluceKroku = krok.zvyraznit;
@@ -352,6 +394,11 @@ export function VyucbaStol({
       else if (!poBitke && kluceKroku.some((k) => k === "starsi-stupnica" || k === "linia-starsich")) {
         document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="starsi"][aria-pressed="false"]')?.click();
       }
+      // Nástenku (Špaky) otvorí krok, ktorý o nej hovorí, a ďalší ju zavrie — pri voľbe cieľa leží na stole sama.
+      const nastenka = kluceKroku.includes("nastenka");
+      const spaky = document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="body"]');
+      if (nastenka && document.querySelector('[data-vyucba="nastenka"]') === null) spaky?.click();
+      else if (!nastenka && spaky?.classList.contains("stlacene") === true) spaky.click();
       const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "patronat";
       if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
     }, 350);
@@ -499,10 +546,10 @@ export function VyucbaStol({
       setPohlad("odpoved");
       if (i === odpoved || vybrana?.spravna === true) return;
       setOdpoved(i);
+      // Hlášku zlej odpovede pošle server (vlastná, kroku, alebo záložná).
       odpovedz(i);
-      if (!m.spravna) prehrajHlasku(m.hlaska);
     },
-    [moznosti, odpoved, vybrana, odpovedz, prehrajHlasku],
+    [moznosti, odpoved, vybrana, odpovedz],
   );
   const spatNaOtazku = useCallback(() => setPohlad("otazka"), []);
   useEffect(() => {
@@ -525,7 +572,7 @@ export function VyucbaStol({
   // Text v bare po stranách — nescrolluje sa (Michal 2026-10-25); „ďalej“ najprv listuje.
   const kusy: KusVety[] = [];
   if (krok === null) {
-    kusy.push(...kusyVety("hotovo", TEXT_NA_KONIEC, sada));
+    kusy.push(...kusyVety("hotovo", textNaKonci(stav, view), sada));
   } else if (vOdpovedi) {
     kusy.push({ kluc: "verdikt", obsah: <strong className="mel-verdikt">{vybrana.spravna === true ? "Správne. " : "Nie celkom. "}</strong> });
     kusy.push(...kusyVety("vysvetlenie", vybrana.vysvetlenie, sada));
@@ -585,7 +632,8 @@ export function VyucbaStol({
     if ((jeInfo || vOdpovedi) && document.querySelector(`.${ZAVES_ODCHODU}`) === null) dalejRef.current?.focus({ preventScroll: true });
   }, [krok?.id, jeInfo, vOdpovedi, strany.strana]);
 
-  const percento = krok === null ? 100 : Math.round(((krok.index + 1) / krok.spolu) * 100);
+  // Percentá časti, nie celej výučby — v 1. časti by inak skončili na tretine.
+  const percento = krok === null ? 100 : Math.round(((krok.cast.poradie + 1) / krok.cast.krokov) * 100);
   // Melichar hovorí v bare (Michal 2026-10-25), kým má čo povedať alebo čaká na „ďalej“; ťah bez
   // textu nechá bar hráčovi. Počas Počítadla bitky text čaká (playtest výučby kolo 4, U3) — stmavený
   // pod animáciou hovoril o výsledku skôr, než ho bolo vidno.
@@ -594,25 +642,12 @@ export function VyucbaStol({
   const hovori = maText && !pocitadloBezi;
   const spatHlavne = zlaOdpoved && !strany.dalsiaJe;
 
-  // Hláška kroku zo soundboardu (Michal 2026-10-27) zaznie raz, s bublinou — pri ťahu bota či hry
-  // za hráča až po ťahu a po Počítadle bitky. Nový krok utne hlášku predošlého; koniec výučby nie,
-  // rozlúčka dohrá. Rada po zlom ťahu a zlá odpoveď kvízu majú hlášku vlastnú.
-  const ozvanyKrok = useRef<{ readonly index: number; zaznel: boolean } | null>(null);
-  const hlaskaTeraz = hlaskaKroku(krok, hovori);
+  // Hláška Melichara zaznie len pri chybe hráča (Michal 2026-10-28): zlý ťah, rada, zlá odpoveď
+  // kvízu. Ktorú, vyberie server; nový krok ju neutne — nadávka dohrá aj po opravenom ťahu.
   useEffect(() => {
-    if (krok === null) return;
-    if (ozvanyKrok.current?.index !== krok.index) {
-      if (ozvanyKrok.current !== null) zastavHlasku();
-      ozvanyKrok.current = { index: krok.index, zaznel: false };
-    }
-    if (hlaskaTeraz === null || ozvanyKrok.current.zaznel) return;
-    ozvanyKrok.current.zaznel = true;
-    prehrajHlasku(hlaskaTeraz);
-  }, [krok?.index, hlaskaTeraz]);
-  useEffect(() => {
-    if (rada !== null) prehrajHlasku(rada.hlaska);
-    // Len pri novej rade (n), nie pri prekreslení.
-  }, [rada?.n]);
+    if (hlaskaChyby !== null) prehrajHlasku(hlaskaChyby.hlaska);
+    // Len pri novej hláške (n), nie pri prekreslení.
+  }, [hlaskaChyby?.n]);
 
   // Vlastný nápis (Dať cigaretu, Odovzdať cigaretu) až na poslednej strane textu — dovtedy tlačidlo listuje.
   const napisDalej = krok !== null && krok.tlacidlo !== null && jeInfo && !strany.dalsiaJe ? krok.tlacidlo : "ďalej";
@@ -652,7 +687,12 @@ export function VyucbaStol({
           // Percentá, nie „krok n / 70“ — ťahy Štamgasta sa spájajú a číslo by preskakovalo (playtest).
           pocitadlo={
             <>
-              <span className="mel-pocitadlo" aria-label={`Výučba: ${percento} %`}>
+              <span
+                className="mel-pocitadlo"
+                aria-label={`Výučba, ${krok?.cast.cast ?? stav.koniecCasti ?? 1}. časť: ${percento} %`}
+                title={krok === null ? undefined : `${krok.cast.cast}. časť: ${krok.cast.nazov}`}
+              >
+                {krok !== null && <span className="mel-cast">{krok.cast.cast}. časť · </span>}
                 {percento} %
               </span>
               <CisloStrany strany={strany} />
@@ -697,11 +737,23 @@ export function VyucbaStol({
                   tlacidloDalej
                 ) : (
                   <>
-                    {/* 2. časť ešte nie je (Michal 2026-10-25) — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
-                    <button type="button" disabled data-vyucba-dalsia-cast="" title="2. časť výučby (NA EX a zopár podlostí) pripravujeme.">
-                      2. časť pripravujeme
-                    </button>
-                    <button className="tlacidlo-hlavne" onClick={hratProtiPocitacu} data-vyucba-koniec="">
+                    {stav.dalsiaCast !== null && (
+                      <button
+                                                className="tlacidlo-hlavne"
+                        onClick={pokracovat}
+                        data-vyucba-dalsia-cast=""
+                        title={`${stav.dalsiaCast.cast}. časť: ${stav.dalsiaCast.nazov} (asi ${stav.dalsiaCast.minuty} minút)`}
+                      >
+                        Pokračovať {stav.dalsiaCast.cast}. časťou
+                      </button>
+                    )}
+                    {/* Ďalšia časť ešte nie je hotová — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
+                    {stav.pripravujeme !== null && (
+                      <button type="button" disabled data-vyucba-dalsia-cast="" title={`${stav.pripravujeme.cast}. časť výučby (${stav.pripravujeme.nazov}) pripravujeme.`}>
+                        {stav.pripravujeme.cast}. časť pripravujeme
+                      </button>
+                    )}
+                    <button className={stav.dalsiaCast === null ? "tlacidlo-hlavne" : undefined} onClick={hratProtiPocitacu} data-vyucba-koniec="">
                       Hrať proti počítaču
                     </button>
                     <button onClick={prerusit}>Do lobby</button>
@@ -749,6 +801,31 @@ export function VyucbaStol({
   );
 }
 
-// Na konci časti sa už rozlúčil posledný krok scenára — tu len kam ďalej.
-const TEXT_NA_KONIEC =
-  "1. časť máš za sebou, hviezdička za ňu je tvoja. V partii proti počítaču sa ozvem krátkou nápovedou, keď sa objaví niečo nové.";
+/**
+ * Na konci časti sa už rozlúčil posledný krok scenára — tu len kam ďalej. Po poslednej časti
+ * aj výsledok partie (okno konca hry výučba neukazuje, zakrylo by bar).
+ */
+export function textNaKonci(stav: Pick<StavVyucby, "koniecCasti" | "dalsiaCast" | "pripravujeme">, view: Pick<ClientState, "koniec" | "ja">): string {
+  const cast = stav.koniecCasti ?? 1;
+  const napoveda = "V partii proti počítaču sa ozvem krátkou nápovedou, keď sa objaví niečo nové.";
+  const dalsia = stav.dalsiaCast ?? stav.pripravujeme;
+  if (dalsia === null) {
+    const k = view.koniec;
+    const su = view.ja === 0 ? 1 : 0;
+    const vysledok =
+      k === null || k.body === null
+        ? ""
+        : ` Partia skončila ${k.body[view.ja]} : ${k.body[su]} na špaky — ${k.vitaz === view.ja ? "vyhral si" : k.vitaz === null ? "remíza" : "vyhral Štamgast"}.`;
+    return `Výučbu máš za sebou, hviezdička za ${radovaCast(cast, "akuzativ")} časť je tvoja.${vysledok} ${napoveda}`;
+  }
+  const co =
+    stav.dalsiaCast !== null
+      ? `${velke(radovaCast(dalsia.cast, "nominativ"))} časť, ${dalsia.nazov}, trvá asi ${dalsia.minuty} minút — pokračuje táto partia.`
+      : `${velke(radovaCast(dalsia.cast, "akuzativ"))} časť (${dalsia.nazov}) pripravujeme.`;
+  return `${velke(radovaCast(cast, "akuzativ"))} časť máš za sebou, hviezdička za ňu je tvoja. ${co} ${napoveda}`;
+}
+
+// Bar delí text na vety podľa bodky — „1. časť“ by sa zlomila za číslom, preto slovom.
+const RADOVE = { nominativ: ["prvá", "druhá", "tretia", "štvrtá"], akuzativ: ["prvú", "druhú", "tretiu", "štvrtú"] } as const;
+const radovaCast = (n: number, pad: keyof typeof RADOVE): string => RADOVE[pad][n - 1] ?? `${n}`;
+const velke = (s: string): string => s.charAt(0).toLocaleUpperCase("sk") + s.slice(1);

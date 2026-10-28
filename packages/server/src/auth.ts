@@ -212,14 +212,18 @@ export class Ucty {
 
   /**
    * Postup výučby „Prvá hra“: krok scenára a či je dokončená alebo preskočená.
-   * Krok uložený pri inej verzii scenára (`verzia` = ScenarVyucby.verzia) nesedí na
-   * dnešné kroky — rozohraná výučba vtedy začne od prvého kroku; stav ostáva.
+   * Krok sa hľadá podľa uloženého id kroku (`idKrokov` = id krokov scenára v poradí) —
+   * scenár môže pribudnúť či zmeniť poradie a postup ostane. Bez id (uložené pred
+   * 2026-10-28) platí index pri tej istej verzii scenára (`verzia` = ScenarVyucby.verzia),
+   * inak výučba začne od prvého kroku; stav ostáva.
    */
-  vyucba(id: number, verzia: string | null): { krok: number; stav: "hotova" | "preskocena" | null } {
-    const r = this.db.prepare("SELECT vyucba_krok, vyucba_stav, vyucba_verzia FROM pouzivatelia WHERE id = ?").get(id) as
-      | { vyucba_krok: number; vyucba_stav: string | null; vyucba_verzia: string | null }
+  vyucba(id: number, verzia: string | null, idKrokov: readonly string[] = []): { krok: number; stav: "hotova" | "preskocena" | null } {
+    const r = this.db.prepare("SELECT vyucba_krok, vyucba_krok_id, vyucba_stav, vyucba_verzia FROM pouzivatelia WHERE id = ?").get(id) as
+      | { vyucba_krok: number; vyucba_krok_id: string | null; vyucba_stav: string | null; vyucba_verzia: string | null }
       | undefined;
     const stav = r?.vyucba_stav === "hotova" || r?.vyucba_stav === "preskocena" ? r.vyucba_stav : null;
+    const podlaId = r?.vyucba_krok_id == null ? -1 : idKrokov.indexOf(r.vyucba_krok_id);
+    if (podlaId >= 0) return { krok: podlaId, stav };
     const krok = Number(r?.vyucba_krok ?? 0);
     return { krok: (r?.vyucba_verzia ?? null) === verzia ? krok : 0, stav };
   }
@@ -265,10 +269,13 @@ export class Ucty {
     this.db.prepare("UPDATE pouzivatelia SET napovedy_videne = NULL WHERE id = ?").run(id);
   }
 
-  /** Uloží postup výučby; stav undefined = nemení sa, verzia = scenár, na ktorého kroky krok sedí. */
-  ulozVyucbu(id: number, krok: number, stav?: "hotova" | "preskocena" | null, verzia: string | null = null): void {
-    if (stav === undefined) this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_verzia = ? WHERE id = ?").run(krok, verzia, id);
-    else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_stav = ?, vyucba_verzia = ? WHERE id = ?").run(krok, stav, verzia, id);
+  /**
+   * Uloží postup výučby; stav undefined = nemení sa, verzia = scenár, na ktorého kroky krok sedí,
+   * idKroku = id kroku na indexe krok (null za posledným krokom).
+   */
+  ulozVyucbu(id: number, krok: number, stav?: "hotova" | "preskocena" | null, verzia: string | null = null, idKroku: string | null = null): void {
+    if (stav === undefined) this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_krok_id = ?, vyucba_verzia = ? WHERE id = ?").run(krok, idKroku, verzia, id);
+    else this.db.prepare("UPDATE pouzivatelia SET vyucba_krok = ?, vyucba_krok_id = ?, vyucba_stav = ?, vyucba_verzia = ? WHERE id = ?").run(krok, idKroku, stav, verzia, id);
   }
 
   /** Zdroj hviezd achievementov — nastaví server, keď sú achievementy zapnuté. */

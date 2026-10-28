@@ -55,7 +55,7 @@ export interface Rozdanie {
 /**
  * Príkaz v scenári: ako Command, len namiesto uid smie byť odkaz na kartu
  * „zóna:defId“ — ruka, linia (moja karta v línii), liniaSupera, senok,
- * lokality, stavba (môj balíček stavby šenku), priznane. Pri viacerých
+ * lokality, ciel (lokalita kola), stavba (môj balíček stavby šenku), priznane. Pri viacerých
  * rovnakých kartách „zóna:defId#2“ = druhá v poradí.
  */
 export type PrikazScenara = Readonly<Record<string, unknown>> & { readonly type: Command["type"] };
@@ -102,8 +102,15 @@ export interface KrokVyucby {
   readonly prikaz?: PrikazScenara;
   /** Text majstra Melichara v bubline (môže byť prázdny pri ťahu bota). */
   readonly melichar: string;
-  /** Hláška s bublinou kroku; pri ťahu bota či hry za hráča zaznie až po ťahu (reakcia). */
-  readonly hlaska?: HlaskaScenara;
+  /**
+   * Hláška pri chybe v tomto kroku (Michal 2026-10-28: hlášky len pri chybe) — zlý či neúplný
+   * ťah, rada bez vlastnej hlášky, zlá odpoveď kvízu bez vlastnej. Bez nej záloha hlaskyChyby.
+   */
+  readonly hlaskaChyby?: HlaskaScenara;
+  /** Prvý krok časti (číslo časti) — kontrola k ScenarVyucby.casti. */
+  readonly cast?: number;
+  /** Posledný krok časti: po ňom server udelí hviezdičku za časť a partia zastane. */
+  readonly koniecCasti?: number;
   /** Čo v UI zvýrazniť: CSS selektory alebo id prvkov (dohoda s UX/UI). */
   readonly zvyraznit?: readonly string[];
   /** Nápis tlačidla „ďalej“ pri info kroku (napr. „Odovzdať cigaretu“). */
@@ -122,17 +129,50 @@ export interface KrokVyucby {
   readonly naneisto?: boolean;
 }
 
+/** Časť výučby v scenári (Michal 2026-10-25: výučba po častiach, hviezdička za každú). */
+export interface CastVyucby {
+  readonly cast: number;
+  readonly nazov: string;
+  /** Id prvého a posledného kroku časti. */
+  readonly od: string;
+  readonly po: string;
+  readonly minuty: number;
+  /**
+   * Texty čakajú na schválenie Michala: časť spustí len správca (ako vypínač zverejnena),
+   * hráč po predošlej časti vidí „pripravujeme“.
+   */
+  readonly navrh?: boolean;
+}
+
+/** Časť s indexmi krokov (od, po vrátane). */
+export interface CastScenara {
+  readonly cast: number;
+  readonly nazov: string;
+  readonly minuty: number;
+  readonly navrh: boolean;
+  readonly od: number;
+  readonly po: number;
+}
+
 export interface ScenarVyucby {
   readonly id: string;
   readonly nazov: string;
   /**
-   * Časť výučby (Michal 2026-10-25: výučba po častiach, hviezdička za každú) —
-   * dokončenie scenára dá achievement Prvá hra s týmto rankom. Bez nej 1.
+   * Scenár bez `casti` je jedna časť s týmto číslom (hviezdička achievementu Prvá hra
+   * s týmto rankom). Bez neho 1.
    */
   readonly cast?: number;
+  /** Časti za sebou; posledný krok každej má koniecCasti. Bez nich je celý scenár jedna časť. */
+  readonly casti?: readonly CastVyucby[];
+  /**
+   * Záložné hlášky pri chybe, keď ju chyba ani krok nemajú (Michal 2026-10-28) — striedajú sa,
+   * tá istá nezaznie dvakrát po sebe.
+   */
+  readonly hlaskyChyby?: readonly HlaskaScenara[];
   /**
    * Verzia krokov: uložený postup inej verzie nesedí na kroky (iné poradie aj
-   * počet), preto rozohraná výučba so starou verziou začne odznova.
+   * počet). Postup sa hľadá podľa id kroku; kde id chýba, platí index len pri tej
+   * istej verzii, inak výučba začne odznova.
    */
   readonly verzia?: string;
   /**
@@ -189,6 +229,9 @@ function zona(state: GameState, kto: PlayerId, nazov: string): readonly CardInst
       return state.senok;
     case "lokality":
       return state.lokalityVHre;
+    // Lokalita kola na stole — z ponuky lokalít po výbere zmizne (Kšeft lokality).
+    case "ciel":
+      return state.ciel?.lokalita === undefined || state.ciel.lokalita === null ? [] : [state.ciel.lokalita];
     case "stavba":
       return state.draftStav?.balicky[kto] ?? [];
     case "linia":
@@ -318,6 +361,8 @@ export function ocakavanyPrikaz(scenar: ScenarVyucby, state: GameState, i: numbe
  * legálny a je na ťahu ten, komu krok patrí. Vracia prvú chybu, alebo null.
  */
 export function overScenar(data: GameData, scenar: ScenarVyucby): string | null {
+  const zlaZaloha = (scenar.hlaskyChyby ?? []).find((h) => castiHlasky(h) === null);
+  if (zlaZaloha !== undefined) return `Záložná hláška „${zlaZaloha}“ nemá tvar skupina/súbor.`;
   let state: GameState;
   try {
     state = zacniVyucbu(data, scenar);
@@ -326,7 +371,7 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
   }
   for (const [i, krok] of scenar.kroky.entries()) {
     // Hláška v zlom tvare by v klientovi potichu nezaznela — chyba patrí do testu scenára.
-    const zlaHlaska = [krok.hlaska, ...(krok.volba?.zle ?? []).map((z) => z.hlaska), ...(krok.moznosti ?? []).map((m) => m.hlaska)].find(
+    const zlaHlaska = [krok.hlaskaChyby, ...(krok.volba?.zle ?? []).map((z) => z.hlaska), ...(krok.moznosti ?? []).map((m) => m.hlaska)].find(
       (h) => h !== undefined && castiHlasky(h) === null,
     );
     if (zlaHlaska !== undefined) return `Krok ${i} (${krok.id}): hláška „${zlaHlaska}“ nemá tvar skupina/súbor.`;
@@ -366,7 +411,69 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
       return `Krok ${i} (${krok.id}): ${(e as Error).message}`;
     }
   }
+  // Hranice častí až po krokoch — chyba v kroku je pre autora scenára dôležitejšia.
+  return chybaCastiScenara(scenar);
+}
+
+// ---------------------------------------------------------------------------
+// Časti výučby (roadmapa #105): jedna partia, po každej časti hviezdička a prestávka.
+
+/** Časti scenára s indexmi krokov; scenár bez `casti` je jedna časť cez všetky kroky. */
+export function castiScenara(scenar: ScenarVyucby): readonly CastScenara[] {
+  if (scenar.casti === undefined || scenar.casti.length === 0) {
+    return [{ cast: scenar.cast ?? 1, nazov: scenar.nazov, minuty: 0, navrh: false, od: 0, po: scenar.kroky.length - 1 }];
+  }
+  const index = (id: string): number => scenar.kroky.findIndex((k) => k.id === id);
+  return scenar.casti.map((c) => ({ cast: c.cast, nazov: c.nazov, minuty: c.minuty, navrh: c.navrh === true, od: index(c.od), po: index(c.po) }));
+}
+
+/** Časť, do ktorej patrí krok `i`; null za posledným krokom. */
+export function castKroku(scenar: ScenarVyucby, i: number): CastScenara | null {
+  return castiScenara(scenar).find((c) => i >= c.od && i <= c.po) ?? null;
+}
+
+/** Číslo časti, ktorú krok `i` uzatvára (po ňom partia zastane), alebo null. */
+export function koniecCastiPoKroku(scenar: ScenarVyucby, i: number): number | null {
+  return castiScenara(scenar).find((c) => c.po === i)?.cast ?? null;
+}
+
+/** Časti musia pokryť všetky kroky za sebou a značky kroku (cast, koniecCasti) sedieť s nimi. */
+function chybaCastiScenara(scenar: ScenarVyucby): string | null {
+  if (scenar.casti === undefined) return scenar.kroky.some((k) => k.koniecCasti !== undefined) ? "koniecCasti bez zoznamu casti" : null;
+  const casti = castiScenara(scenar);
+  let dalsi = 0;
+  for (const [n, c] of casti.entries()) {
+    const zdroj = scenar.casti[n];
+    if (c.od < 0 || c.po < 0) return `Časť ${c.cast}: krok ${c.od < 0 ? zdroj?.od : zdroj?.po} v scenári nie je.`;
+    if (c.cast !== n + 1) return `Časti majú byť číslované 1, 2, 3… — ${n + 1}. je ${c.cast}.`;
+    if (c.od !== dalsi || c.po < c.od) return `Časť ${c.cast} nenadväzuje: začína krokom ${c.od}, čaká sa ${dalsi}.`;
+    dalsi = c.po + 1;
+  }
+  if (dalsi !== scenar.kroky.length) return `Kroky od ${dalsi} nepatria do žiadnej časti.`;
+  for (const [i, k] of scenar.kroky.entries()) {
+    const c = castKroku(scenar, i);
+    if (k.koniecCasti !== undefined && (c?.po !== i || c.cast !== k.koniecCasti)) return `Krok ${i} (${k.id}): koniecCasti ${k.koniecCasti} nesedí s casti.`;
+    if (k.cast !== undefined && (c?.od !== i || c.cast !== k.cast)) return `Krok ${i} (${k.id}): cast ${k.cast} nesedí s casti.`;
+    if (c?.po === i && k.koniecCasti === undefined) return `Krok ${i} (${k.id}): posledný krok časti ${c.cast} nemá koniecCasti.`;
+  }
   return null;
+}
+
+/**
+ * Hláška pri chybe (Michal 2026-10-28): vlastná hláška chyby (vzor rady, možnosť kvízu), inak
+ * hláška kroku, inak záloha scenára. `poradie` = koľkatá záloha v partii — idú dookola,
+ * takže pri dvoch a viac sa tá istá po sebe nezopakuje.
+ */
+export function hlaskaPriChybe(
+  scenar: ScenarVyucby,
+  krok: KrokVyucby | undefined,
+  vlastna: HlaskaScenara | null | undefined,
+  poradie: number,
+): { readonly hlaska: HlaskaScenara | null; readonly zaloha: boolean } {
+  if (vlastna !== null && vlastna !== undefined) return { hlaska: vlastna, zaloha: false };
+  if (krok?.hlaskaChyby !== undefined) return { hlaska: krok.hlaskaChyby, zaloha: false };
+  const zoznam = scenar.hlaskyChyby ?? [];
+  return zoznam.length === 0 ? { hlaska: null, zaloha: false } : { hlaska: zoznam[poradie % zoznam.length] ?? null, zaloha: true };
 }
 
 // ---------------------------------------------------------------------------
@@ -477,7 +584,7 @@ export function popisKroku(data: GameData, state: GameState, c: Command): PopisK
 
 /**
  * Porovná ťah hráča s krokom scenára po krokoch (poradie nerozhoduje). Pri
- * stavbe šenku porovná karty na Smetisku. Karty s rovnakým defId a variantom
+ * stavbe šenku porovná karty vybraté do Šenku. Karty s rovnakým defId a variantom
  * sú zameniteľné — server potom vykoná krok zo scenára.
  */
 export function porovnajSKrokom(data: GameData, state: GameState, prijaty: Command, ocakava: Command): PorovnanieSKrokom {
@@ -575,7 +682,7 @@ export interface RadaVyucby {
   readonly hlaska: HlaskaScenara | null;
 }
 
-/** Rada Melichara k zlému ťahu v rozhodnutí: prvý sediaci vzor, inak všeobecná (tá je bez hlášky). */
+/** Rada Melichara k zlému ťahu v rozhodnutí: prvý sediaci vzor, inak všeobecná (tá je bez hlášky — doplní ju hlaskaPriChybe). */
 export function radaVyucby(state: GameState, volba: VolbaKroku, prikaz: Command): RadaVyucby {
   const zly = (volba.zle ?? []).find((z) => zodpovedaVzoru(state, prikaz, z.prikaz));
   return zly === undefined ? { text: volba.inak, hlaska: null } : { text: zly.text, hlaska: zly.hlaska ?? null };

@@ -26,9 +26,22 @@ export function VyzvaVyucby() {
   );
 }
 
+/** Čo v lobby povedať o výučbe: kde hráč stojí v častiach (roadmapa #105). */
+export function popisVyucbyVLobby(vyucba: VyucbaUctu): string {
+  if (vyucba.rozpracovana && vyucba.cast !== null) return `Majster Melichar ťa čaká pri stole — rozohranú máš ${vyucba.cast.cast}. časť (${vyucba.cast.nazov}).`;
+  if (vyucba.dalsiaCast !== null) {
+    const c = vyucba.dalsiaCast;
+    return `${c.cast - 1}. časť máš za sebou. ${c.cast}. časť: ${c.nazov}, asi ${c.minuty} minút — začne tam, kde si skončil.`;
+  }
+  if (vyucba.pripravujeme !== null) return `${vyucba.pripravujeme.cast - 1}. časť máš za sebou. ${vyucba.pripravujeme.cast}. časť (${vyucba.pripravujeme.nazov}) pripravujeme.`;
+  if (vyucba.stav === "hotova" || vyucba.castiHotove > 0) return "Výučbu máš za sebou. Ak si chceš pravidlá zopakovať, zahraj si ju znova.";
+  return "1. časť: majster Melichar ťa prevedie prvým kolom proti Štamgastovi — Voľba cieľa, Draft, Zhromaždenie, Pitka, Bitka a starší. NA EX! príde v 2. časti. Do štatistík sa neráta.";
+}
+
 /**
- * Vstup do výučby v lobby (/hra): „Prvá hra — nauč sa hrať“ alebo „Pokračovať vo výučbe“.
- * Nováčikovi bez 1. časti je to najväčšia výzva stránky (#104), Pravidlá len odkaz.
+ * Vstup do výučby v lobby (/hra): „Prvá hra — nauč sa hrať“ alebo „Pokračovať vo výučbe“
+ * (rozohraná časť, alebo ďalšia časť od jej začiatku). Nováčikovi bez 1. časti je to
+ * najväčšia výzva stránky (#104), Pravidlá len odkaz.
  */
 export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; readonly zacni: (odznova: boolean) => void }) {
   const pokracuj = rozpracovana(vyucba);
@@ -38,13 +51,7 @@ export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; r
       <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={novacik ? 88 : 64} height={novacik ? 88 : 64} />
       <div>
         <h2>{novacik ? "Nauč sa hrať za ~15 minút s Majstrom Melicharom" : "Prvá hra — nauč sa hrať"}</h2>
-        <p className="tlmene">
-          {pokracuj
-            ? `Majster Melichar ťa čaká pri stole — si v kroku ${vyucba.krok + 1} z ${vyucba.spolu}.`
-            : vyucba.stav === "hotova" || vyucba.castiHotove > 0
-              ? "Výučbu máš za sebou. Ak si chceš pravidlá zopakovať, zahraj si ju znova."
-              : "1. časť: majster Melichar ťa prevedie prvým kolom proti Štamgastovi — Voľba cieľa, Draft, Zhromaždenie, Pitka, Bitka a starší. NA EX! príde v 2. časti. Do štatistík sa neráta."}
-        </p>
+        <p className="tlmene">{popisVyucbyVLobby(vyucba)}</p>
         {novacik && (
           <p className="tlmene vyucba-vstup-pravidla">
             Radšej čítaš? <Odkaz href="/pravidla">Pravidlá</Odkaz> sú tu ako príručka.
@@ -55,7 +62,7 @@ export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; r
         {pokracuj ? (
           <>
             <button className="tlacidlo-hlavne" onClick={() => zacni(false)} data-vyucba-vstup="pokracovat">
-              Pokračovať vo výučbe
+              Pokračovať vo výučbe{vyucba.dalsiaCast !== null ? ` (${vyucba.dalsiaCast.cast}. časť)` : ""}
             </button>
             <button onClick={() => zacni(true)}>Začať odznova</button>
           </>
