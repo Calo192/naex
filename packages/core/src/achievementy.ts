@@ -142,7 +142,7 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   vyucba: { druh: "sucet", popis: "dokončené časti výučby Prvá hra (udeľuje server, v partii nič)", zmer: () => [null, null] },
   rozdielBodov: {
     druh: "max",
-    popis: "o koľko bodov hráč vyhral záverečné bodovanie",
+    popis: "o koľko špakov hráč vyhral partiu",
     zmer: (k) =>
       pre((p) => {
         const body = k.po.koniec?.body;
@@ -182,7 +182,7 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   },
   obrat: {
     druh: "max",
-    popis: "najväčší bodový deficit po niektorom kole, z ktorého hráč partiu vyhral",
+    popis: "najväčší deficit špakov po niektorom kole, z ktorého hráč partiu vyhral",
     zmer: (k) =>
       pre((p) => {
         if (!vyhral(k, p)) return null;

@@ -291,7 +291,7 @@ function PoslednePartie({ partie }: { readonly partie: readonly PartiaVProfile[]
           <tr>
             <th>Výsledok</th>
             <th>Súper</th>
-            <th className="cislo">Body</th>
+            <th className="cislo">Špaky</th>
             <th className="cislo">Frajerina</th>
             <th className="cislo skryt-mobil">Kolá</th>
             <th className="cislo skryt-mobil">Trvanie</th>
@@ -413,8 +413,8 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
         <GrafFrajeriny historia={profil.historia} />
       </section>
 
-      <Sekcia siroka nazov="Bodovanie" ikona={<span className="stat-ikona-text">★</span>} popis="Konečné špaky (od pravidiel v6) a body zo záverečného bodovania starších partií.">
-        <Udaj nazov="bodov spolu" hodnota={cislo(s.body)} vyrazny />
+      <Sekcia siroka nazov="Špaky" ikona={<span className="stat-ikona-text">★</span>} popis="Konečné špaky (od pravidiel v6) a body zo záverečného bodovania starších partií.">
+        <Udaj nazov="špakov spolu" hodnota={cislo(s.body)} vyrazny />
         <Udaj nazov="na bodovanú partiu" hodnota={priemer(s.body, s.bodovanePartie)} pomoc={`${s.bodovanePartie} ${tvar(s.bodovanePartie, "partia sa skončila", "partie sa skončili", "partií sa skončilo")} záverečným bodovaním.`} />
         <Udaj nazov="najviac v partii" hodnota={cislo(s.najviacBodov)} />
       </Sekcia>

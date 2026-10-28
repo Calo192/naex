@@ -889,7 +889,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Poľovnícka chata</td><td>Furt</td><td>Aktívne Rany, Pecky a Petelice z hrán sa rátajú dvakrát (len finále).</td></tr>
           <tr><td>Predsedova vila</td><td>Kšeft</td><td>Za 2 cigarety posuň marker staršieho o 1 k súperovi alebo k sebe — nie patróna súpera (len finále).</td></tr>
           <tr><td>Herňa</td><td>Bitka</td><td>Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov (len finále).</td></tr>
-          <tr><td>Kultúrny dom</td><td>Bitka</td><td>Obaja bodujú: víťaz dostane špak za každú kartu v línii ako inde, porazený 1 špak za každú svoju kartu v línii.</td></tr>
+          <tr><td>Kultúrny dom</td><td>Bitka</td><td>Obaja získajú špaky: víťaz dostane špak za každú kartu v línii ako inde, porazený 1 špak za každú svoju kartu v línii.</td></tr>
           <tr><td>Vínna pivnica</td><td>Pitka</td><td>NA EX až dvakrát za Pitku.</td></tr>
           <tr><td>Družstvo</td><td>Zhromaždenie</td><td>Pracujúci nemíňajú limit vykladania.</td></tr>
         </tbody>
