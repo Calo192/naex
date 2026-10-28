@@ -267,10 +267,13 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(barterCena(data, sPriaznou(s0, "LAKOMEC", 1, 3), 1)).toBe(KONSTANTY.BARTER_CENA);
   });
 
-  it("Exekútor: súperov prah Exekúcie je nižší o silu, vlastný ostáva 10", () => {
-    const s = sPriaznou(setupSBalickom(data, 93), "EXEKUTOR", 1, 2);
-    expect(prahyHraca(data, s, 0).exekutor).toBe(KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - 2);
-    expect(prahyHraca(data, s, 1).exekutor).toBe(KONSTANTY.PRAH_EXEKUTORA_ZAKLAD);
+  it("Exekútor (Michal 2026-10-28): súperova priazeň zhorí pri exekúcii navyše toľko Dlhov, aká je sila", () => {
+    const s0 = sPriaznou(setupSBalickom(data, 93), "EXEKUTOR", 1, 2);
+    const dlhy = (n: number) => Array.from({ length: n }, (_, i) => ({ uid: 930000 + i, defId: "dlh", leftLayout: 0, rightLayout: 0 }));
+    const s = { ...s0, hraci: [{ ...s0.hraci[0], priznane: dlhy(4) }, { ...s0.hraci[1], priznane: dlhy(4) }] } as typeof s0;
+    // Hráč 0 (súper má priazeň sily 2): 2 + 2; hráč 1: polovica nahor.
+    expect(prahyHraca(data, s, 0).exekucia).toBe(4);
+    expect(prahyHraca(data, s, 1).exekucia).toBe(2);
   });
 
   it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Výpalník (Neprajník) strop mäkkého nezdvíha", () => {

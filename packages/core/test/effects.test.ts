@@ -14,7 +14,6 @@ import {
   computeDamage,
   jeEfektManual,
   legalCommands,
-  zahradkarHraca,
   limitBonus,
   spolocnyLimit,
   loadGameData,

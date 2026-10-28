@@ -368,7 +368,6 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
         legal.find((c) => c.type === "bezReakcie") ??
         legal.find((c) => c.type === "vizia" && c.vziat) ??
         legal.find((c) => c.type === "kar" && c.uid === null) ??
-        legal.find((c) => c.type === "zahradkar" && !c.zahodit) ??
         legal[0];
       if (cmd === undefined) break;
       s = apply(data, s, cmd, q).state;

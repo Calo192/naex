@@ -33,6 +33,8 @@ let uidSeq = 980000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
 const lezi = (card: CardInstance, playedBy: PlayerId, x: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...x });
 const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+/** Priznané Dlhy aj tie, ktoré v bitke zhoreli pri exekúcii (bez prahu, Michal 2026-10-28). */
+const dlhyAjZhorene = (s: GameState, p: PlayerId): number => dlhy(s, p) + s.nastenka.reduce((a, b) => a + b.exekutor[p], 0);
 
 function sHracom(s: GameState, p: PlayerId, h: Partial<PlayerState>): GameState {
   const hraci = [...s.hraci] as [PlayerState, PlayerState];
@@ -100,7 +102,6 @@ function dohrajKolo(s0: GameState): GameState {
       legal.find((c) => c.type === "bezReakcie") ??
       legal.find((c) => (c.type === "cintorin" && c.uid === null)) ??
       legal.find((c) => c.type === "vizia" && c.vziat) ??
-      legal.find((c) => c.type === "zahradkar" && !c.zahodit) ??
       (legal[0] as Command);
     s = apply(data, s, cmd, q).state;
   }
@@ -198,7 +199,7 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
       if (q === undefined) break;
       t = apply(data, t, legalCommands(data, t, q).find((c) => c.type === "skipNaex" || c.type === "bezReakcie")!, q).state;
     }
-    expect(dlhy(t, 0)).toBeGreaterThanOrEqual(dlhy(s, 0) + 1);
+    expect(dlhyAjZhorene(t, 0)).toBeGreaterThanOrEqual(dlhy(s, 0) + 1);
   });
 });
 
@@ -506,7 +507,7 @@ describe("Bitka a po bitke (v7)", () => {
   it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {
     const s = sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
     const t = skonciPitku(s);
-    expect(dlhy(t, 0)).toBe(dlhy(s, 0) + 1);
+    expect(dlhyAjZhorene(t, 0)).toBe(dlhy(s, 0) + 1);
     // Rekapitulácia Pitky delí zadĺženie prahom hráča, nie základným (kontrola kódu v7, bod 8).
     // Rekapitulácia ide udalosťou pitkaRekap (pitkyKola sa po kole vyprázdni).
     let rekap: RekapitulaciaPitky | undefined;
@@ -524,21 +525,19 @@ describe("Bitka a po bitke (v7)", () => {
     expect(prahDlhuPitky({ ...rekap!, zadlzenie: { ...rekap!.zadlzenie, prah: 3 as unknown as readonly [number, number] } }, 0)).toBe(3);
   });
 
-  it("Záhradkár (Exekúcia): zahodený z línie zachráni špaky a spáli Dlhy za aktívne akcie", () => {
+  it("Záhradkár (Exekúcia, Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde — Dlhy ani špaky nezhoria", () => {
     const zah = inst("zahradkar");
     const s = sHracom(vPitke("zastavka", [[lezi(zah, 0), lezi(inst("vandal"), 1)], []]), 0, { priznane: Array.from({ length: 8 }, () => inst("dlh")) });
-    let t = skonciPitku(s);
-    for (let i = 0; i < 6 && !(t.bitkaStav?.krok === "exekutor" && t.bitkaStav.caka === 0); i++) {
-      const q = ([0, 1] as const).find((x) => legalCommands(data, t, x).length > 0);
-      if (q === undefined) break;
-      t = apply(data, t, legalCommands(data, t, q)[0]!, q).state;
-    }
-    expect(t.bitkaStav?.caka).toBe(0);
-    const spaky = t.spaky[0];
-    const po = apply(data, t, { type: "zahradkar", zahodit: true }, 0).state;
-    expect(po.spaky[0]).toBe(spaky);
-    expect(dlhy(po, 0)).toBeLessThanOrEqual(4);
-    expect(po.bitkaStav?.spalit).toContain(zah.uid);
+    const t = skonciPitku(s);
+    expect(t.bitkaStav?.krok === "exekutor" && t.bitkaStav.caka !== null).toBe(false);
+    const zaznam = t.nastenka.at(-1);
+    expect(zaznam?.exekutor[0] ?? 0).toBe(0);
+    expect(dlhy(t, 0)).toBe(8);
+    // Záhradkár sa nezahadzuje.
+    expect(t.bitkaStav?.spalit ?? []).not.toContain(zah.uid);
+    // Súperov Záhradkár (podstrčený do mojej strany) ma nechráni — rozhoduje partia.
+    const cudzi = skonciPitku(sHracom(vPitke("zastavka", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { priznane: Array.from({ length: 8 }, () => inst("dlh")) }));
+    expect(dlhy(cudzi, 0)).toBe(4);
   });
 });
 
@@ -567,7 +566,6 @@ describe("Cintorín — Pozostalosť (Michal 2026-10-27, Pohreb zrušený)", () 
         legal.find((c) => c.type === "pass") ??
         legal.find((c) => c.type === "bezReakcie") ??
         legal.find((c) => c.type === "vizia" && c.vziat) ??
-        legal.find((c) => c.type === "zahradkar" && !c.zahodit) ??
         (legal[0] as Command);
       s = apply(data, s, cmd, q).state;
     }

@@ -533,7 +533,7 @@
     {
       "id": "i-zadlzenie",
       "kto": "info",
-      "melichar": "[Dlh] Dlh ti v Pitke pridá 1 do zadĺženia, bar to už ukazuje šípkou. Za každé 2 zadĺženia dostaneš kartu Dlh, a keď sa ich nazbiera veľa, budú ťa stáť body. Budeš mať 1, teda zatiaľ nič. Zatiaľ: zadĺženie po Pitke nezmizne, počká na ďalší Dlh.",
+      "melichar": "[Dlh] Dlh ti v Pitke pridá 1 do zadĺženia, bar to už ukazuje šípkou. Za každé 2 zadĺženia dostaneš kartu Dlh a v každej bitke ťa bude stáť špaky. Budeš mať 1, teda zatiaľ nič. Zatiaľ: zadĺženie po Pitke nezmizne, počká na ďalší Dlh.",
       "zvyraznit": [
         "bar:zadlzenie"
       ],
@@ -724,7 +724,7 @@
           }
         ]
       },
-      "melichar": "Teraz polož Dievčinu na vydaj za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí jej [Povera] Poveru. Štamgast bude mať po Pitke kartu Dlh a tvoja Povera mu ju v bitke spočíta, tak ako jeho tebe.",
+      "melichar": "Teraz polož Dievčinu na vydaj za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí jej [Povera] Poveru. Štamgast bude mať po Pitke kartu Dlh a tvoja Povera by mu ju v bitke spočítala, ak ju stihne.",
       "zvyraznit": [
         "ruka:dievcina_na_vydaj"
       ],
@@ -775,7 +775,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Zadĺženie 2 z 2: máš kartu Dlh. Hneď je priznaná a už sa ťa drží. Dlhy v bare ukazujú 1 z 6: pri šiestich príde exekútor. Ja o tom niečo viem. Štamgast má tiež jednu. A ak ti práve pribudli BODY, to je za bitku. Body ti vysvetlím po bitke.",
+      "melichar": "Zadĺženie 2 z 2: dostal si kartu Dlh, hneď priznanú. A v bitke prišiel exekútor: chodí v každej bitke ku každému, kto má priznaný Dlh, a zhorí mu polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Tvoj jediný Dlh zhorel aj s jedným špakom. Ja o tom niečo viem. Štamgastovi rovnako. A ak ti práve pribudli BODY, to je za bitku. Body ti vysvetlím po bitke.",
       "zvyraznit": [
         "bar:dlhy",
         "bar:zadlzenie",
@@ -787,7 +787,7 @@
     {
       "id": "i-bitka",
       "kto": "info",
-      "melichar": "Bitka! Tvoje tuhé: Rana, Pecka Lesnej cesty, Rana a Petelica Hasiča, 1 + 2 + 1 + 3 = 7. Štamgast: Pecka 2 a dve Rany, 4. Povery sa vyrovnali: jeho ti za tvoj Dlh naložila 1, tvoja jemu za jeho tiež 1. Bitka o Lesnú cestu je tvoja.",
+      "melichar": "Bitka! Tvoje tuhé: Rana, Pecka Lesnej cesty, Rana a Petelica Hasiča, 1 + 2 + 1 + 3 = 7. Štamgast: Pecka 2 a dve Rany, 4. Povery nenaložili nič: exekútor vám Dlhy zhorel ešte pred poškodením. Bitka o Lesnú cestu je tvoja.",
       "zvyraznit": [
         "bitka-ucet"
       ],
@@ -836,7 +836,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Vyhral si o 3 tuhé, BOHA jeho! Prebytok tuhého znamená tvoju dominanciu v bitke a tým si buduješ respekt u starších. My to tu voláme „respekt“, ale v skutočnosti je to strach. Za každý bod prebytku sa jeden starší posunie o políčko k Štamgastovi, a ktorý, to si vyberá porazený. Štamgast si vybral Farára. Ten je zo sivej, kde sa nikto nikoho nebojí ako na farskej oslave, rovno v žltej: začína sa ťa báť a Štamgastovi prejavuje priazeň. Pozri na svoje Dlhy: prah exekútora klesol zo 6 na 5, lebo Farárova priazeň je Exekútor.",
+      "melichar": "Vyhral si o 3 tuhé, BOHA jeho! Prebytok tuhého znamená tvoju dominanciu v bitke a tým si buduješ respekt u starších. My to tu voláme „respekt“, ale v skutočnosti je to strach. Za každý bod prebytku sa jeden starší posunie o políčko k Štamgastovi, a ktorý, to si vyberá porazený. Štamgast si vybral Farára. Ten je zo sivej, kde sa nikto nikoho nebojí ako na farskej oslave, rovno v žltej: začína sa ťa báť a Štamgastovi prejavuje priazeň. Farárova priazeň je Exekútor: kým ju má Štamgast, exekúcia ti zhorí o Dlh viac.",
       "zvyraznit": [
         "starsi:farar",
         "bar:dlhy"
@@ -850,7 +850,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Oranžová! Štamgast ťahá Farára ďalej. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: tvoj prah exekútora je 4.",
+      "melichar": "Oranžová! Štamgast ťahá Farára ďalej. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: exekúcia ti zhorí o dva Dlhy viac.",
       "zvyraznit": [
         "starsi:farar",
         "bar:dlhy"
@@ -872,7 +872,7 @@
     {
       "id": "i-oranzova",
       "kto": "info",
-      "melichar": "Červená. Farár sa ťa bojí na treťom stupni, viac sa už nedá, a Štamgast má jeho priazeň sily 3: tvoj prah exekútora je 3. Stupnica sa posunula, lebo si vyhral o 3 a ten prebytok dal Štamgast celý Farárovi. Za posunutého staršieho dostal cigaretu. Útecha pre porazených.",
+      "melichar": "Červená. Farár sa ťa bojí na treťom stupni, viac sa už nedá, a Štamgast má jeho priazeň sily 3: exekúcia ti zhorí o tri Dlhy viac. Stupnica sa posunula, lebo si vyhral o 3 a ten prebytok dal Štamgast celý Farárovi. Za posunutého staršieho dostal cigaretu. Útecha pre porazených.",
       "zvyraznit": [
         "starsi:farar",
         "bar:dlhy",
@@ -927,7 +927,7 @@
     {
       "id": "i-body",
       "kto": "info",
-      "melichar": "Špaky v bare: 6 : 0. Ďalšie ti dajú starší: keď vyhráš bitku, každý, kto sa ťa bojí, ti zaplatí za zóny, ktoré ti ešte nezaplatil: 1 špak za žltú, 2 za oranžovú a 3 za červenú. Kto prehrá, od starších nedostane nič. Farár ti po ďalšej vyhratej bitke dá 6, ak ho Štamgast dovtedy neodtlačí, a potom už nič, kým sa nepohne.",
+      "melichar": "Špaky v bare: 5 : −1. Šesť za bitku, ale exekútor vám obom zobral po jednom. Ďalšie ti dajú starší: keď vyhráš bitku, každý, kto sa ťa bojí, ti zaplatí za zóny, ktoré ti ešte nezaplatil: 1 špak za žltú, 2 za oranžovú a 3 za červenú. Kto prehrá, od starších nedostane nič. Farár ti po ďalšej vyhratej bitke dá 6, ak ho Štamgast dovtedy neodtlačí, a potom už nič, kým sa nepohne.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",

@@ -373,7 +373,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
         ? ` | po odkrytí tvojho skrytého NA EX: poldeci plné ${poOdkryti.poldeciPlne}, pečeň ${poOdkryti.pecen}, cigarety ${poOdkryti.cigarety}`
         : "";
     out.push(
-      `${p === ja ? "TVOJE ZDROJE" : "SÚPEROVE ZDROJE"}: poldeci plné ${h.poldeciPlne}, vypité ${h.poldeciVypite} (limit vykladania ${limitZhromazdenia(v, p)}, v ďalšom kole ${limitBuduceKolo(vs, p, false, DATA)}) | cigarety ${h.cigarety} | pečeň ${h.pecen}/${pr.cirhoza} | pečeň žije len počas Pitky, zadĺženie ${h.zadlzenie}/${pr.dlh} ostáva na účte aj do ďalšieho kola (D6) | priznané dlhy ${pr.priznaneDlhy}/${pr.exekutor} (do Exekútora: zhorí polovica a rovnako veľa špakov; pri remíze v bitke prehráva viac Dlhov) | nepriznané kliatby: Cirhóza ${v.nepriznaneKliatby[p].cirhoza}, Dlh ${v.nepriznaneKliatby[p].dlh} (verejný počet) | ruka ${h.rukaPocet}, balíček ${h.doberaciPocet}, odhodené ${h.odhadzovaci.length}${poSkrytom}`,
+      `${p === ja ? "TVOJE ZDROJE" : "SÚPEROVE ZDROJE"}: poldeci plné ${h.poldeciPlne}, vypité ${h.poldeciVypite} (limit vykladania ${limitZhromazdenia(v, p)}, v ďalšom kole ${limitBuduceKolo(vs, p, false, DATA)}) | cigarety ${h.cigarety} | pečeň ${h.pecen}/${pr.cirhoza} | pečeň žije len počas Pitky, zadĺženie ${h.zadlzenie}/${pr.dlh} ostáva na účte aj do ďalšieho kola (D6) | priznané dlhy ${pr.priznaneDlhy} (Exekútor v každej bitke: zhorí polovica nahor a rovnako veľa špakov — teraz ${pr.exekucia}${pr.priznaneDlhy > 0 && pr.exekucia === 0 ? ", Záhradkár ťa obíde" : ""}; pri remíze v bitke prehráva viac Dlhov) | nepriznané kliatby: Cirhóza ${v.nepriznaneKliatby[p].cirhoza}, Dlh ${v.nepriznaneKliatby[p].dlh} (verejný počet) | ruka ${h.rukaPocet}, balíček ${h.doberaciPocet}, odhodené ${h.odhadzovaci.length}${poSkrytom}`,
     );
     const vyhladP = vyhladPitkyText(vs, p);
     if (vyhladP !== null) out.push(`  VÝHĽAD PITKY: ${vyhladP}`);
@@ -630,7 +630,7 @@ const UCINOK: Record<string, (s: number) => string> = {
   VERIACI: (s) => `+${s} Viery v každej bitke`,
   FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} po výbere zo šenku`,
   ALKOHOLIK: (s) => `Na zdravie: poldeci z ${s} tvojich NA EX za kolo sa po bitke vráti plný`,
-  EXEKUTOR: (s) => `súperov prah Exekúcie ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - s} namiesto ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}`,
+  EXEKUTOR: (s) => `exekúcia súperovi zhorí navyše ${s} Dlhy a toľko špakov`,
 };
 
 function popisStarsieho(e: ElderState, kto: (p: PlayerId | null) => string, mojeSpaky: number, jehoSpaky: number): string {
@@ -817,16 +817,12 @@ function moznosti(v: ClientState): string[] {
           }
         }
       }
-      // Playtest 20261012-101447: Dlhy v ruke nikto nepriznal, hoci bol od
-      // Exekútora ďaleko — odhadzovali ich a dotiahli znova.
+      // Playtest 20261012-101447: Dlhy v ruke nikto nepriznal — odhadzovali ich a dotiahli znova.
       const dlhyVRuke = v.ruka.filter((k) => k.defId === "dlh").length;
       if (dlhyVRuke > 0) {
-        const stol: VerejnyStav = { ciel: v.ciel, strany: v.strany, starsi: v.starsi, hraci: v.hraci };
-        const pr = prahyHraca(DATA, stol, ja);
-        if (pr.priznaneDlhy + dlhyVRuke < pr.exekutor - 2)
-          out.push(
-            `(Máš v ruke ${dlhyVRuke}× Dlh a od Exekútora si ďaleko (${pr.priznaneDlhy}/${pr.exekutor}): priznaním za každý Dlh hneď dobereš kartu, Dlh navždy zmizne z balíčka; priznaný ide k Exekútorovi (zhorí polovica a rovnako veľa špakov). Odhodený Dlh sa vráti do balíčka.)`,
-          );
+        out.push(
+          `(Máš v ruke ${dlhyVRuke}× Dlh: priznaním za každý Dlh hneď dobereš kartu a Dlh navždy zmizne z balíčka; priznaný Dlh však v každej bitke páli Exekútor (polovica nahor a rovnako veľa špakov). Odhodený Dlh sa vráti do balíčka.)`,
+        );
       }
       // Tamže: Jano držal 6 Cirhóz v ruke a nikdy ich nepriznal.
       if (v.ruka.some((k) => k.defId === "cirhoza"))
@@ -992,11 +988,6 @@ function moznosti(v: ClientState): string[] {
           videne.add(k.defId);
           c({ type: "zivnostnik", uid: k.uid }, `Živnostník: súperovi zahoď z Dedičstva ${meno(k.defId)} (navždy z hry)`);
         }
-      }
-      if (b?.krok === "exekutor") {
-        // v6: zhorí polovica priznaných Dlhov a rovnako veľa špakov — Záhradkár smie ísť namiesto špakov.
-        c({ type: "zahradkar", zahodit: true }, "Exekútor: zahoď Záhradkára — špaky ti nezhoria (Dlhy áno)");
-        c({ type: "zahradkar", zahodit: false }, "Exekútor: Záhradkára si nechaj — zhorí polovica Dlhov a rovnako veľa špakov");
       }
       // Len markery, ktoré sa naozaj dajú posunúť (krajná pozícia je zamknutá).
       const nahlad = (e: ElderState, cezPohorsenie: boolean, k: PlayerId = su): string => {

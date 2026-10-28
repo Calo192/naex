@@ -118,30 +118,31 @@ const zony = (h: PlayerState): number[] => [...h.ruka, ...h.doberaci, ...h.odhad
 // --- §1 Podmienky konca -----------------------------------------------------------
 
 describe("§1 Podmienky konca", () => {
-  it("§1/§11 (v8): na prahu Exekútora (6) hráč neprehráva — zhorí polovica Dlhov a rovnako špakov, aj do mínusu; pod prahom (5) nič", () => {
-    const na = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(6, "dlh") })).state;
-    expect(na.koniec).toBeNull();
-    const zaznam = na.nastenka.at(-1)!;
+  it("§1/§11 (Michal 2026-10-28): exekúcia bez prahu — každý s priznaným Dlhom stratí polovicu Dlhov nahor a rovnako špakov, aj do mínusu; hráč neprehráva", () => {
+    const st = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(5, "dlh") })).state;
+    expect(st.koniec).toBeNull();
+    const zaznam = st.nastenka.at(-1)!;
     expect(zaznam.exekutor).toEqual([3, 0]);
-    expect(na.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(3);
+    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(2);
     // Prázdna línia 0 : 0 a rovnako Absťákov — remízu vyhrá menej priznaných Dlhov (hráč 2; 0 kariet, aspoň 1 špak).
     expect([zaznam.vitaz, zaznam.rozhodlo]).toEqual([1, "dlhy"]);
-    expect(na.spaky).toEqual([-3, 1]);
-    const pod = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(5, "dlh") })).state;
-    expect(pod.koniec).toBeNull();
-    // Kto exekúcii nečelí, Dlh nepáli (Michal 2026-10-22).
-    expect(pod.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(5);
+    expect(st.spaky).toEqual([-3, 1]);
+    // Aj jediný Dlh: zhorí celý a jeden špak.
+    const jeden = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(1, "dlh") })).state;
+    expect(jeden.nastenka.at(-1)?.exekutor).toEqual([1, 0]);
+    expect(jeden.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(0);
   });
 
 
-  it("§11: Robota spáli priznaný Dlh ešte pred kontrolou prahu — 6 Dlhov a 1 Robota exekúciu nespustí (prah v8 6)", () => {
+  it("§11: Robota spáli priznaný Dlh ešte pred exekúciou — 6 Dlhov, Robota 1, exekúcia 3 (polovica z 5 nahor)", () => {
     const vonk: Layout4 = ["Robota", null, null, null];
     const vnut: Layout4 = ["Rana", null, null, null];
     const sada = sadaS(makeDef("r_rob_o", EMPTY, vonk), makeDef("r_rob_i", vnut, EMPTY));
     const strany: GameState["strany"] = [[lezi(instanceFor(sada, "r_rob_i", vnut, EMPTY), 0), lezi(instanceFor(sada, "r_rob_o", EMPTY, vonk), 0)], []];
     const st = doBitky(sada, sHracom(vPitke(sada, 43, strany), 0, { priznane: kusy(6, "dlh") })).state;
     expect(st.koniec).toBeNull();
-    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(5);
+    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(2);
+    expect(st.nastenka.at(-1)?.exekutor[0]).toBe(3);
   });
 
   it("§1 (v5 bod 4): balíček pod 5 kariet na konci kola už neprehráva — ani 1 karta", () => {

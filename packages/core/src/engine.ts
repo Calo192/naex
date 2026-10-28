@@ -25,11 +25,10 @@ import {
   hodnotaViery,
   prahCirhozy,
   prahDlhu,
-  prahExekutora,
   textNeresti,
 } from "./player.ts";
 import type { BattleOutcome, BattleSide, DamageResult, RozhodnutieBitky } from "./battle.ts";
-import { battleOutcome, computeDamage, exekutorCheck, spakyZaBitku, zhoriPriExekucii } from "./battle.ts";
+import { battleOutcome, computeDamage, spakyZaBitku, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState, MarkerPos, PosunMarkera } from "./elders.ts";
 import {
   MARKER_STRED,
@@ -507,8 +506,6 @@ export type Command =
   | { readonly type: "cintorin"; readonly uid: number | null }
   // Živnostník (Výhra): uid súperovho Dedičstva, ktoré víťaz zahodí.
   | { readonly type: "zivnostnik"; readonly uid: number }
-  // Záhradkár pri exekúcii (v6, Michal 2026-10-26): zahodiť ho namiesto špakov, alebo nie.
-  | { readonly type: "zahradkar"; readonly zahodit: boolean }
   // Hasič (Nástup, Michal 2026-10-26): kartu z odhadzovacieho balíčka si nechať v ruke (true), alebo ju vrátiť (false).
   | { readonly type: "hasic"; readonly nechat: boolean }
   // Kšeft (v7): uid karty v línii alebo lokality; voľba podľa karty (Smetiarka: karta z ruky,
@@ -1203,14 +1200,16 @@ export function prahyHraca(
   data: GameData,
   s: VerejnyStav,
   p: PlayerId,
-): { readonly cirhoza: number; readonly dlh: number; readonly exekutor: number; readonly priznaneDlhy: number } {
+): { readonly cirhoza: number; readonly dlh: number; readonly exekucia: number; readonly priznaneDlhy: number } {
+  const priznaneDlhy = pocetKariet(s.hraci[p], "dlh", "priznane");
   return {
     // nealko (Dedičstvo) a Krčma (cieľ kola): prah Cirhózy je vyšší.
     cirhoza: prahCirhozy() + prahCirhozyBonus(s, p),
     dlh: prahDlhu() + prahDlhuBonus(s, p),
-    // Súperov Exekútor (v5) znižuje prah o svoju silu.
-    exekutor: prahExekutora(silaPriazne(data, s, "EXEKUTOR", opponentOf(p))),
-    priznaneDlhy: pocetKariet(s.hraci[p], "dlh", "priznane"),
+    // Exekúcia bez prahu (Michal 2026-10-28): koľko Dlhov a špakov by v bitke zhorelo teraz
+    // (pred Robotou); Záhradkár v partii ju obíde.
+    exekucia: zahradkarChrani(data, s, p) ? 0 : zhoriPriExekucii(priznaneDlhy, silaPriazne(data, s, "EXEKUTOR", opponentOf(p))),
+    priznaneDlhy,
   };
 }
 
@@ -1636,9 +1635,6 @@ function applyPrikaz(
       break;
     case "refillPoldeci":
       cmdRefill(s, data, hracId, events);
-      break;
-    case "zahradkar":
-      cmdZahradkar(s, data, cmd, hracId, events);
       break;
     case "hasic":
       cmdHasic(s, data, cmd, hracId, events);
@@ -4043,20 +4039,18 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
         events.push({ type: "log", text: `Robota: hráč ${p + 1} páli 1 priznaný Dlh.` });
       }
       const dlhy = pocetKariet(s.hraci[p] as PlayerState, "dlh", "priznane");
-      // Exekútor v5 (Michal 2026-10-25): súperova priazeň znižuje prah tohto hráča.
-      if (!exekutorCheck(dlhy, silaPriazne(data, s as GameState, "EXEKUTOR", opponentOf(p)))) {
-        // Dlh sa sám nepáli (Michal 2026-10-22, návrh #4 B) — pália ho len
-        // Robota, Dievčina na vydaj, Niekoho stryná a Veľmi smútiaca vdova.
+      // Exekúcia bez prahu (Michal 2026-10-28): Exekútor príde ku každému s priznaným Dlhom.
+      if (dlhy === 0) {
         b.exekutorHotovy[p] = true;
         continue;
       }
-      // Záhradkár (v6): kto ho má, rozhodne, či ho zahodí namiesto špakov.
-      if (zhoriPriExekucii(dlhy) > 0 && zahradkarHraca(s as GameState, p) !== null) {
-        b.caka = p;
-        events.push({ type: "log", text: `Exekútor u hráča ${p + 1} — môže zahodiť Záhradkára namiesto špakov.` });
-        return;
+      // Záhradkár (Exekúcia, Michal 2026-10-28): odkrytý v hráčovej partii — exekúcia ho v tomto kole obíde.
+      if (zahradkarChrani(data, s as GameState, p)) {
+        events.push({ type: "log", text: `Záhradkár: exekúcia hráča ${p + 1} v tomto kole obchádza — Dlhy ani špaky nezhoria.` });
+        b.exekutorHotovy[p] = true;
+        continue;
       }
-      exekucia(s, data, p, false, events);
+      exekucia(s, data, p, events);
     }
     b.krok = "pohorsenie";
   }
@@ -4408,24 +4402,25 @@ export function cieleVykladania(
   return out;
 }
 
-/** Kde má hráč p Záhradkára, ktorého smie pri exekúcii zahodiť (ruka, potom balíčky); null = nikde. */
-export function zahradkarHraca(s: GameState, p: PlayerId): "linia" | "ruka" | "odhadzovaci" | "doberaci" | null {
-  // Exekúcia (v7): Záhradkár v línii navyše spáli Dlhy za aktívne akcie — ponúkne sa prvý.
-  if (partiaHraca(s, p).some((pl) => pl.card.defId === "zahradkar")) return "linia";
-  for (const kde of ["ruka", "odhadzovaci", "doberaci"] as const) if (s.hraci[p][kde].some((k) => k.defId === "zahradkar")) return kde;
-  return null;
+/**
+ * Záhradkár (Exekúcia, Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ —
+ * odkrytý v partii hráča p v línii tejto bitky; vtedy ho Exekútor obíde celkom.
+ */
+export function zahradkarChrani(data: GameData, s: Pick<VerejnyStav, "strany">, p: PlayerId): boolean {
+  return partiaHraca(s, p).some((pl) => pl.card.defId === "zahradkar" && pl.zaverecna !== true && !efektPotlaceny(data, s, p, "zahradkar"));
 }
 
 /**
- * Exekúcia (v6, Michal 2026-10-26): zhorí polovica priznaných Dlhov (nadol)
- * a rovnaký počet špakov — smie ísť do mínusu, súper ich nedostane. Záhradkár
- * (Michal 2026-10-26): kto ho zahodí, špaky nestratí, Dlhy zhoria aj tak.
+ * Exekúcia bez prahu (Michal 2026-10-28): zhorí polovica priznaných Dlhov
+ * zaokrúhlene nahor, navyše sila súperovej priazne Exekútora, a rovnaký počet
+ * špakov — smú ísť do mínusu, súper ich nedostane.
  */
-function exekucia(s: MutState, data: GameData, p: PlayerId, zahradkar: boolean, events: Event[]): void {
+function exekucia(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
   const dlhy = s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
-  const zhori = zhoriPriExekucii(dlhy);
+  // Polovica nahor a navyše sila súperovej priazne Exekútora (Michal 2026-10-28).
+  const zhori = zhoriPriExekucii(dlhy, silaPriazne(data, s as GameState, "EXEKUTOR", opponentOf(p)));
   let spalit = zhori;
   hrac(s, p).priznane = s.hraci[p].priznane.filter((k) => {
     if (k.defId === "dlh" && spalit > 0) {
@@ -4434,33 +4429,9 @@ function exekucia(s: MutState, data: GameData, p: PlayerId, zahradkar: boolean, 
     }
     return true;
   });
-  const kde = zahradkar ? zahradkarHraca(s as GameState, p) : null;
-  if (kde === "linia") {
-    // Exekúcia (v7): Záhradkár z línie ide z hry a spáli toľko priznaných Dlhov, koľko mal aktívnych akcií.
-    const pl = partiaHraca(s as GameState, p).find((x) => x.card.defId === "zahradkar") as PlacedCard;
-    let navyse = aktivneAkcieKarty(evaluateLine(data, lineState(s as GameState)), pl.card.uid);
-    let spalene = 0;
-    while (navyse-- > 0) {
-      const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
-      if (idx === -1) break;
-      hrac(s, p).priznane.splice(idx, 1);
-      spalene++;
-    }
-    // Akcie v tejto bitke ešte platia — z hry ide pri návrate kariet.
-    b.spalit.push(pl.card.uid);
-    events.push({
-      type: "log",
-      text: `Exekútor: hráčovi ${p + 1} zhorí ${pocet(zhori, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")}; Záhradkár ide z hry namiesto špakov${spalene > 0 ? ` a spáli ešte ${pocet(spalene, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")}` : ""}.`,
-    });
-  } else if (kde !== null) {
-    const zona = hrac(s, p)[kde];
-    zona.splice(zona.findIndex((k) => k.defId === "zahradkar"), 1);
-    events.push({ type: "log", text: `Exekútor: hráčovi ${p + 1} zhorí ${pocet(zhori, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")}; špaky zachráni zahodený Záhradkár.` });
-  } else {
-    s.spaky[p] -= zhori;
-    b.exekutor[p] += zhori;
-    events.push({ type: "log", text: `Exekútor: hráčovi ${p + 1} zhorí ${pocet(zhori, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} a ${spakov(zhori)}.` });
-  }
+  s.spaky[p] -= zhori;
+  b.exekutor[p] += zhori;
+  events.push({ type: "log", text: `Exekútor: hráčovi ${p + 1} zhorí ${pocet(zhori, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} a ${spakov(zhori)}.` });
   b.exekutorHotovy[p] = true;
 }
 
@@ -4473,14 +4444,6 @@ export function spakov(n: number): string {
 function existujeLegalnyPrebytok(s: MutState, drzi: PlayerId): boolean {
   if ((s.bitkaStav?.prebytokZostava ?? 0) < 1) return false;
   return s.starsi.some((e) => posunMarker(e, opponentOf(drzi)) !== null);
-}
-
-function cmdZahradkar(s: MutState, data: GameData, cmd: { zahodit: boolean }, p: PlayerId, events: Event[]): void {
-  const b = s.bitkaStav;
-  need(s.faza === "bitka" && b !== null && b.krok === "exekutor" && b.caka === p, "Nečaká sa na Záhradkára.");
-  need(!cmd.zahodit || zahradkarHraca(s as GameState, p) !== null, "Záhradkára nemáš.");
-  exekucia(s, data, p, cmd.zahodit, events);
-  pokracujBitku(s, data, events);
 }
 
 /**
@@ -5386,8 +5349,6 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         for (const moja of prve(state.hraci[p].doberaci)) {
           for (const jeho of prve(state.hraci[opp].doberaci)) out.push({ type: "vestica", moja, jeho });
         }
-      } else if (b.krok === "exekutor") {
-        out.push({ type: "zahradkar", zahodit: true }, { type: "zahradkar", zahodit: false });
       } else if (b.krok === "pohorsenie") {
         for (const elder of state.starsi) {
           if (pohorsenieMozne(state, p, elder)) out.push({ type: "pohorsenie", elderId: elder.elderId });

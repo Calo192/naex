@@ -3998,34 +3998,6 @@ export function HernaPlocha({
             ),
           };
         }
-        if (b.krok === "exekutor") {
-          // v6: zhorí polovica priznaných Dlhov a rovnako špakov — Záhradkár smie ísť namiesto špakov.
-          const dlhy = hJa.priznane.filter((k) => k.defId === "dlh").length;
-          const zhori = Math.floor(dlhy / 2);
-          // Kde Záhradkár leží — engine ho berie z ruky, potom z odhadzovacieho, potom z doberacieho balíčka.
-          const kde = view.ruka.some((k) => k.defId === "zahradkar")
-            ? "z ruky"
-            : hJa.odhadzovaci.some((k) => k.defId === "zahradkar")
-              ? "z odhadzovacieho balíčka"
-              : "z doberacieho balíčka";
-          return {
-            nadpis: "Exekútor!",
-            text: (
-              <>
-                Máš {dlhy} priznaných Dlhov — zhorí ich {zhori} a k tomu {spakov(zhori)} ({view.spaky[ja]} → {String(view.spaky[ja] - zhori).replace("-", "−")}). Záhradkára smieš
-                zahodiť {kde} namiesto špakov; Dlhy zhoria aj tak.
-              </>
-            ),
-            tlacidla: (
-              <>
-                <button className="tlacidlo-hlavne" onClick={() => posli({ type: "zahradkar", zahodit: true })}>
-                  zahodiť Záhradkára · špaky ostanú
-                </button>
-                <button onClick={() => posli({ type: "zahradkar", zahodit: false })}>nechať Záhradkára · −{spakov(zhori)}</button>
-              </>
-            ),
-          };
-        }
         if (b.krok === "pohorsenie") {
           return {
             nadpis: (

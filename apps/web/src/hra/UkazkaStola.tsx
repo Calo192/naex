@@ -16,7 +16,7 @@
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
 //                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
-//   &exekutor=1    hráčovi ?ja pred prvou bitkou pridá Záhradkára a 10 priznaných Dlhov
+//   &exekutor=1    hráčovi ?ja v prvej Pitke pridá 10 priznaných Dlhov (bar ukáže exekúciu v bitke)
 //                  (voľba Záhradkára pri exekúcii)
 //   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
@@ -89,7 +89,7 @@ function sExekuciou(s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
   const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
   const h = s.hraci[p];
-  const novy = { ...h, ruka: [...h.ruka, karta("zahradkar")], priznane: [...h.priznane, ...Array.from({ length: 10 }, () => karta("dlh"))] };
+  const novy = { ...h, priznane: [...h.priznane, ...Array.from({ length: 10 }, () => karta("dlh"))] };
   return { ...s, nextUid: uid, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
@@ -121,14 +121,11 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let s = setupGame(data, seed, { lokalit: Number(p.get("lokalit") ?? "3") });
   let rng = rngSeed(seed ^ 0x5a);
   let bitiek = 0;
-  let exekucia = p.get("exekutor") === "1";
+  const exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1";
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
     if (hasic && s.faza === "zhromazdenie" && naTahu(s) === ja) return najdene({ zaciatok: sHasicom(data, s, ja), dohraj: [] });
-    if (exekucia && s.faza === "pitka") {
-      s = sExekuciou(s, ja);
-      exekucia = false;
-    }
+    if (exekucia && s.faza === "pitka") return najdene({ zaciatok: sExekuciou(s, ja), dohraj: [] });
     if (stop === "finale" && s.ciel?.typ === "finale" && s.faza === "zhromazdenie" && s.strany[0].length + s.strany[1].length >= karty && naTahu(s) === ja)
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "nastroj" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
@@ -165,8 +162,6 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
         if (x.strany[superova]?.some((pl) => pl.zaverecna === true && pl.playedBy !== ja)) return najdene({ zaciatok: s, dohraj });
       }
     }
-    // Zahradkár: zastaví sa, keď exekúcia čaká na hráčovu voľbu.
-    if (p.get("exekutor") === "1" && po.bitkaStav?.krok === "exekutor" && po.bitkaStav.caka === ja) return najdene({ zaciatok: po, dohraj: [] });
     s = po;
   }
   return { odohrane: { zaciatok: s, dohraj: [] }, najdene: stop !== "zaverecna" };

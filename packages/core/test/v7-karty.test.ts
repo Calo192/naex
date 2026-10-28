@@ -208,7 +208,8 @@ describe("efekty v bitke (v7)", () => {
     expect(bitkaMody(data, bez, 0).tuheZdroje.some((z) => z.zdroj === "traktoristka")).toBe(false);
     let st = bez;
     for (let i = 0; i < 2 && st.faza === "pitka"; i++) st = apply(data, st, { type: "skipNaex" }, st.pitkaStav!.naTahu).state;
-    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh").length).toBeGreaterThanOrEqual(1);
+    // Dlh z Traktoristky príde pred Exekútorom — ten ho hneď zhorí (bez prahu, 2026-10-28).
+    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh").length + (st.nastenka.at(-1)?.exekutor[0] ?? 0)).toBeGreaterThanOrEqual(1);
   });
 
   it("Milujúca manželka: pečeň majiteľa v Pitke o 1 menšia", () => {

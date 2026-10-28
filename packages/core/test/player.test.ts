@@ -15,7 +15,6 @@ import {
   prahCirhozy,
   prahDlhu,
   setupGame,
-  prahExekutora,
   velkostBalicka,
 } from "../src/index.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
@@ -76,8 +75,6 @@ describe("M3 — odvodené hodnoty", () => {
   it("v5: prahy priazeň nezdvíha, súperov Exekútor prah Exekúcie zníži; hodnota Viery je 1", () => {
     expect(prahCirhozy()).toBe(3);
     expect(prahDlhu()).toBe(2);
-    expect(prahExekutora()).toBe(6);
-    expect(prahExekutora(2)).toBe(4);
     expect(hodnotaViery()).toBe(1);
   });
 });

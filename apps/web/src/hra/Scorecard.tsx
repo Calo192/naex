@@ -22,7 +22,7 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
   // Michal 2026-10-19: cigarety platia šenok aj Dedičstvo — Fajčiar dáva silu, bez dvojnásobku.
   FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} po výbere zo šenku (Obmedzenie ich neuberá).`,
   ALKOHOLIK: (s) => `Na zdravie: poldeci z ${s === 1 ? "jedného tvojho NA EX" : `${s} tvojich NA EX`} v kole sa ti po bitke vráti plný.`,
-  EXEKUTOR: (s) => `Súperov prah Exekúcie ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD - s} namiesto ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD}.`,
+  EXEKUTOR: (s) => `Exekúcia súperovi zhorí navyše ${s} ${s === 1 ? "Dlh" : "Dlhy"} a toľko špakov.`,
 };
 
 /**
@@ -37,6 +37,6 @@ export const UCINOK_KRATKO: Readonly<Record<Favour, (sila: number) => string>> =
   VERIACI: (s) => `+${s} ${s === 1 ? "Viera" : "Viery"} v bitke`,
   FAJCIAR: (s) => `+${s} cig. po šenku`,
   ALKOHOLIK: (s) => `${s} NA EX do dna`,
-  EXEKUTOR: (s) => `súperov prah Exekúcie −${s}`,
+  EXEKUTOR: (s) => `súperovi exekúcia +${s}`,
 };
 

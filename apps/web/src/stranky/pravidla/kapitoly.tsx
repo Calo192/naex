@@ -96,7 +96,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             nasledujúceho kola. Hra ohlásenie ukáže obom — súper má jedno kolo na odpoveď.
           </div>
           <div className="karticka karticka-zle">
-            <strong>O špaky prídeš</strong> pri <P k="exekutor">exekúcii</P> (zhorí polovica tvojich Dlhov a rovnako veľa
+            <strong>O špaky prídeš</strong> pri <P k="exekutor">exekúcii</P> (v každej bitke, keď máš priznané Dlhy: zhorí polovica tvojich Dlhov nahor a rovnako veľa
             špakov) a za každú nepriznanú Cirhózu na konci hry (3 špaky). Okamžitá prehra nie je — ani exekúcia, ani malý
             balíček ťa o hru nepripravia.
           </div>
@@ -547,8 +547,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             jednu nepriznanú Cirhózu z ruky.
           </li>
           <li>
-            <strong>Exekútor</strong> — najprv Robota, potom kontrola prahu priznaných Dlhov; pri exekúcii zhorí polovica Dlhov
-            a rovnako veľa špakov (kapitola <a href="#kliatby">Kliatby a priznanie</a>).
+            <strong>Exekútor</strong> — najprv Robota, potom exekúcia každému s priznaným Dlhom: zhorí polovica Dlhov nahor
+            a rovnako veľa špakov; Záhradkár v partii ju obíde (kapitola <a href="#kliatby">Kliatby a priznanie</a>).
           </li>
           <li>
             <strong>Pohoršenie</strong> — posúva markery starších k súperovi alebo k sebe (kapitola{" "}
@@ -663,7 +663,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Bitkár</td><td>Tuhé poškodenie v bitke</td><td>+1 / +2 / +3</td></tr>
             <tr><td>Kmotor</td><td>Po bitke prejdú tvoje priznané Dlhy medzi súperove (bez Dlhu nič)</td><td>1 / 2 / 3</td></tr>
             <tr><td>Abstinent</td><td>Pohoršenia navyše v bitke</td><td>+1 / +2 / +3</td></tr>
-            <tr><td>Exekútor</td><td>Súperov prah Exekúcie je nižší</td><td>−1 / −2 / −3</td></tr>
+            <tr><td>Exekútor</td><td>Exekúcia súperovi zhorí navyše toľko Dlhov a špakov</td><td>+1 / +2 / +3</td></tr>
             <tr><td>Výpalník — Výpalné</td><td>Za každé súperovo NA EX ti súper dá cigarety</td><td>1 / 2 / 3</td></tr>
             <tr><td>Fajčiar</td><td>Cigarety po braní zo šenku (Obmedzenie ich neuberá)</td><td>+1 / +2 / +3</td></tr>
             <tr><td>Alkoholik — Na zdravie „do dna“</td><td>Poldeci z tvojho NA EX sa po bitke vráti plný (za kolo)</td><td>1 / 2 / 3</td></tr>
@@ -704,7 +704,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka.",
       "Priznanie vyloží kliatbu natrvalo mimo línie; limit nemíňa.",
       "Za priznanie dobereš kartu — nie za Cirhózu a nie za nový Dlh z prahu.",
-      "Priznané Dlhy na prahu Exekútora = zhorí polovica Dlhov a rovnako veľa špakov.",
+      "Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov nahor a rovnako veľa špakov.",
       "Nepriznaná Cirhóza ťa na konci hry stojí 3 špaky.",
     ],
     obsah: () => (
@@ -718,14 +718,14 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>
             <strong>Dlh</strong> — nový Dlh z prahu zadĺženia sa prizná sám a kartu zaň <strong>nedobereš</strong>. Dlh, ktorý
-            ti súper podstrčí do balíčka (Vychovávateľka), sa pri dobratí prizná sám a ťaháš ďalšiu kartu. Priznané Dlhy sa
-            rátajú k prahu Exekútora a pri remíze v bitke prehrá, kto ich má viac.
+            ti súper podstrčí do balíčka (Vychovávateľka), sa pri dobratí prizná sám a ťaháš ďalšiu kartu. Za priznané Dlhy
+            príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac.
           </li>
           <li>
             <strong>Cirhóza</strong> — ide do odhadzovacieho balíčka; do ruky príde, až keď sa doberací balíček minie
             a odhadzovací sa zamieša. Priznáš ju, keď chceš, ale kartu za ňu{" "}
             <strong>nedobereš</strong>. Priznaná dá súperovi v každej bitke +1 tuhé. <strong>Nepriznaná ide po bitke do tvojho odhadzovacieho
-            balíčka; na konci hry ti zoberie 5 špakov</strong> (ráta sa ruka aj oba balíčky). Buď ju prizníš hneď, alebo
+            balíčka; na konci hry ti zoberie 3 špaky</strong> (ráta sa ruka aj oba balíčky). Buď ju prizníš hneď, alebo
             riskuješ, že sa ti do konca hry nevráti do ruky.
           </li>
           <li>
@@ -740,16 +740,16 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kliatby-exekutor">Exekútor a Robota</H3>
         <ol>
           <li>
-            <strong>Robota:</strong> v bitke ešte pred kontrolou prahu spáliš za každú aktívnu Robotu 1 priznaný Dlh.
+            <strong>Robota:</strong> v bitke ešte pred exekúciou spáliš za každú aktívnu Robotu 1 priznaný Dlh.
           </li>
           <li>
-            Ak priznané Dlhy dosiahnu prah <P k="exekutor">Exekútora</P> (6; so súperovou priazňou Exekútora 5 / 4 / 3), čelíš exekúcii: zhorí ti <strong>polovica priznaných Dlhov</strong> (zaokrúhlené
-            nadol) a <strong>rovnako veľa špakov</strong>. Súper ich nedostane a smieš ísť do mínusu. Kto má Záhradkára, smie ho
-            zahodiť namiesto špakov — Dlhy zhoria aj tak; z línie navyše spáli toľko Dlhov, koľko mal aktívnych akcií.
+            Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong>, kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
+            <strong>polovica priznaných Dlhov</strong> (zaokrúhlené nahor, aj jediný Dlh) a <strong>rovnako veľa špakov</strong>.
+            So súperovou priazňou Exekútora zhorí navyše 1 / 2 / 3 Dlhy a toľko špakov. Súper ich nedostane a smieš ísť do mínusu.
           </li>
           <li>
-            Kto exekúcii nečelí, tomu sa Dlh sám nepáli — pália ho len Robota, Dievčina na vydaj, Niekoho stryná a Veľmi
-            smútiaca vdova.
+            <strong>Záhradkár</strong> v línii v tvojej partii: exekúcia ťa v tom kole obíde — nezhorí nič. Zvyšné Dlhy na konci hry
+            nestoja nič.
           </li>
         </ol>
       </>
@@ -927,7 +927,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Prehratá bitka o Kultúrny dom</td><td>1 za každú svoju kartu v línii</td></tr>
             <tr><td>Starší, ktorí sa ťa boja</td><td>po vyhratej bitke (aj finále) za každú novú zónu: žltá 1, oranžová 2, červená 3 — čo už zaplatil, druhýkrát nedá, kým marker neustúpi; sivý nikomu; porazený nič, pri sekere obaja</td></tr>
             <tr><td>Noviny v Dedičstve</td><td>keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za bitku dostaneš ty</td></tr>
-            <tr><td>Exekútor</td><td>mínus polovica priznaných Dlhov</td></tr>
+            <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (so súperovou priazňou Exekútora o 1 / 2 / 3 viac)</td></tr>
             <tr><td><P k="vykupne">Výkupné</P> na konci hry</td><td>každý plný poldeci 1, každých celých 5 cigariet 1 (zvyšok prepadne); bez stropu — vypitý poldeci ani poldeci pod NA EX sa nerátajú</td></tr>
             <tr><td>Nepriznaná Cirhóza</td><td>mínus 3 za kus na konci hry (ruka aj oba balíčky)</td></tr>
           </tbody>

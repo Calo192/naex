@@ -252,11 +252,11 @@
       "poradie": 19,
       "uroven": "B",
       "spustac": {
-        "kedy": "priznané Dlhy hráča sa prvýkrát priblížia k prahu Exekútora",
-        "podmienka": "prahyHraca(view, ja).priznaneDlhy >= prahyHraca(view, ja).exekutor - 2 (rovnako ako varovanie v bare)",
+        "kedy": "hráč má prvýkrát priznaný Dlh (Exekútor príde v najbližšej bitke, bez prahu)",
+        "podmienka": "prahyHraca(view, ja).priznaneDlhy > 0",
         "jadro": ["packages/core/src/engine.ts:873 prahyHraca", "apps/web/src/hra/Panely.tsx:769 varovanie Dlhov", "docs/PRAVIDLA.md §11 Exekútor"]
       },
-      "melichar": "Priznaných Dlhov máš už dosť, nechcem nič hovoriť. Keď dosiahnu číslo za lomkou, v bitke príde Exekútor: zhorí ti polovica Dlhov a rovnako veľa špakov. Poznám ho, neodporúčam.",
+      "melichar": "Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Poznám ho, neodporúčam.",
       "zvyraznit": ["bar:dlhy"]
     },
     {

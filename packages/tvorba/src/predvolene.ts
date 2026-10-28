@@ -20,8 +20,8 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     nazov: "Dlh",
     popis:
       `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — hneď sa prizná. ` +
-      `Pri ${KONSTANTY.PRAH_EXEKUTORA_ZAKLAD} priznaných Dlhoch ťa v bitke čaká Exekúcia (súperov Exekútor ten prah zníži o 1 / 2 / 3). ` +
-      "Exekúcia ti spáli polovicu priznaných Dlhov a rovnako veľa špakov; pri remíze v bitke prehráva, kto má viac priznaných Dlhov (v6).",
+      "Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov, " +
+      "so súperovou priazňou Exekútora o 1 / 2 / 3 viac; pri remíze v bitke prehráva, kto má viac priznaných Dlhov.",
   },
   {
     kluc: "PoškodeniePečene",
