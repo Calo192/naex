@@ -1,7 +1,6 @@
 // Dohadzovačka — nový efekt (Michal 2026-10-28): Nástup: keď ju hráč priloží k Občanovi
 // alebo Starešinovi O2, z druhej strany lokality sa najvzdialenejší Občan alebo Starešina
 // opačného pohlavia ako O2 presunie za ňu (na vonkajší koniec jej strany). Povinné, bez voľby.
-// Sada do v22 má ešte starý spúšťač Bitka — test si ho prepne na Nástup.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -10,10 +9,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, loadGameData, presunDohadzovackou, sPrilozenou, setupGame } from "../src/index.ts";
 
-type KartaJson = { id: string; triggers?: string[] };
-const zoznam = (Array.isArray(cardsJson) ? cardsJson : (cardsJson as { cards: KartaJson[] }).cards) as KartaJson[];
-const sNastupom = zoznam.map((k) => (k.id === "dohadzovacka" ? { ...k, triggers: ["Nástup"] } : k));
-const data = loadGameData(Array.isArray(cardsJson) ? sNastupom : { ...(cardsJson as object), cards: sNastupom }, eldersJson, scorecardsJson);
+const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 let uidSeq = 770000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });

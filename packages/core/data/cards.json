@@ -1,5 +1,5 @@
 {
- "source": "sada v26 živého webu (tvorca kariet 2026-10-27T17:06:51.376Z) bez Presbitera — ten je podľa sady v7 mimo sady (tools/sada-v7/generuj.ts MIMO_SADY), na živom webe ostal, lebo dorovnanie karty nemaže",
+ "source": "tvorca kariet 2026-10-28T08:13:10.629Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -436,7 +436,7 @@
    "tags": [
     "Kliatba"
    ],
-   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 5 špakov.",
+   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 3 špaky.",
    "triggers": [
     "Bitka"
    ],
@@ -1096,7 +1096,7 @@
     ],
     "actions": {
      "Odpor": 1,
-     "Petelica": 1
+     "Pecka": 1
     }
    },
    "permutations": {
@@ -1133,7 +1133,7 @@
      3
     ],
     "actions": {
-     "Petelica": 1,
+     "Pecka": 1,
      "Rana": 1
     }
    },
@@ -2358,7 +2358,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Bitka: Prebytok sa nerozdeľuje medzi starších. Kto ho drží, dostane toľko špakov, aký je prebytok.",
+   "effect_text": "Bitka: Aj porazený dostane špaky — 1 za každú svoju kartu v línii.",
    "triggers": [
     "Bitka"
    ],
@@ -3043,9 +3043,9 @@
     "Pamätník",
     "Žena"
    ],
-   "effect_text": "Bitka: Za každý spoj tvojej Ženy so súperovým Chlapom alebo tvojho Chlapa so súperovou Ženou si vezmi 1 kartu zo šenku.",
+   "effect_text": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhej strany lokality.",
    "triggers": [
-    "Bitka"
+    "Nástup"
    ],
    "left": {
     "blocked": [
@@ -3159,7 +3159,7 @@
     "Pracujúci",
     "Chlap"
    ],
-   "effect_text": "Furt: Akcie Zvierat v jeho okolí neplatia.",
+   "effect_text": "Furt: Efekty Zvierat v jeho okolí neplatia.",
    "triggers": [
     "Furt"
    ],
@@ -3208,7 +3208,16 @@
      3
     ],
     "actions": {
-     "Petelica": 2
+     "Pecka": 1,
+     "Petelica": 1
+    },
+    "allowed": {
+     "1": [
+      "Petelica"
+     ],
+     "2": [
+      "Pecka"
+     ]
     }
    },
    "right": {
@@ -3242,7 +3251,7 @@
      1
     ],
     "actions": {
-     "Petelica": 1,
+     "Pecka": 1,
      "PoškodeniePečene": 1
     }
    },
