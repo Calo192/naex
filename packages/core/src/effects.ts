@@ -73,7 +73,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   liberal: "impl", // Pitka (v7): súper bez rovnováhy žien a chlapov získa 1 zadĺženie (prirastkyPitky)
   milujuca_manzelka: "impl", // Pitka (v7, M2): tvoje poškodenie pečene v Pitke −1 (prirastkyPitky)
   ministrant: "impl", // Nástup (v7): ak vyvolá Konflikt, jeho Viera sa do konca kola ráta ako Pecka (partia.ts)
-  nealko: "impl", // Dedičstvo: Poldeci/NA EX bez pečene; Poldeci nedopĺňa
+  nealko: "impl", // Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (prahCirhozyBonus)
   niekoho_stryna: "impl", // Pitka (v7, Stryná): kto v Pitke nedal NA EX, +1 pečeň (prirastkyPitky)
   noviny: "impl", // Dedičstvo: Prehra (v7): víťaz s viac priznanými Dlhmi — špaky za bitku porazenému (vyplatSpaky)
   pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Pecka navyše (bitkaMody)

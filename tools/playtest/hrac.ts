@@ -315,7 +315,7 @@ function cenaNaexText(v: ClientState, uid: number): string {
     const d = k.dlhy + k.dalejDlhy;
     if (c === 0 && d === 0) return "nič";
     const poBitke = d !== k.dlhyPoBitke ? ` → po bitke ${k.dlhyPoBitke} (Robota či Dievčina na vydaj spáli)` : "";
-    return `${c !== 0 ? `Cirhóza ${c > 0 ? "+" : "−"}${Math.abs(c)} (nepriznaná na konci −5 špakov; priznaná nič, ale súper za ňu +1 tuhé v každej bitke) ` : ""}${d !== 0 ? `Dlh ${d > 0 ? "+" : "−"}${Math.abs(d)}${poBitke} ` : ""}(${k.body < 0 ? "−" : "+"}${Math.abs(k.body)} špakov)`;
+    return `${c !== 0 ? `Cirhóza ${c > 0 ? "+" : "−"}${Math.abs(c)} (nepriznaná na konci −${spakov(KONSTANTY.SPAKY_ZA_CIRHOZU)}; priznaná nič, ale súper za ňu +1 tuhé v každej bitke) ` : ""}${d !== 0 ? `Dlh ${d > 0 ? "+" : "−"}${Math.abs(d)}${poBitke} ` : ""}(${k.body < 0 ? "−" : "+"}${Math.abs(k.body)} špakov)`;
   };
   const dopady = dopadyText(n.dopady, ja);
   const o = n.odkrytie;

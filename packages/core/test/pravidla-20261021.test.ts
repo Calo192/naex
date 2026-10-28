@@ -58,7 +58,7 @@ function partia(seed: number, kazdyKrok: (k: Krok) => void): GameState {
   return state;
 }
 
-const SEEDY = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233];
+const SEEDY = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610];
 
 describe("remíza a sekera v6 (Michal 2026-10-26; sekera od 2026-10-21)", () => {
   it("remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky", () => {

@@ -228,7 +228,7 @@ export interface VyhladPitky {
   readonly vPitke: boolean;
   /** Pitky kola po tejto — NA EX a karty na stole sa v nich vyhodnotia znova. */
   readonly dalsiePitky: number;
-  /** Špaky jednej kliatby navyše na konci hry (záporné; v6 Cirhóza −5, Dlh 0). */
+  /** Špaky jednej kliatby navyše na konci hry (záporné; Cirhóza −SPAKY_ZA_CIRHOZU, Dlh 0). */
   readonly cenaCirhozy: number;
   readonly cenaDlhu: number;
   /**
@@ -238,7 +238,7 @@ export interface VyhladPitky {
   readonly dlhyBitka: { readonly pali: number; readonly ostane: number };
 }
 
-/** „ · −5 š“ — cena kliatby v špakoch na konci hry; Dlh špaky neberie (v6), vtedy nič. */
+/** „ · −3 š“ — cena kliatby v špakoch na konci hry; Dlh na konci špaky neberie, vtedy nič. */
 function bodov(n: number): string {
   return n === 0 ? "" : ` · ${n > 0 ? "+" : "−"}${Math.abs(n)} š`;
 }
@@ -1441,7 +1441,7 @@ export function PriebehKola({
       <>
         Posledná bitka na vrcholovej lokalite (v7): útočí, kto má menej špakov (pri rovnosti porazený poslednej bitky), a vedúci
         vyberie a natočí lokalitu. Kraje, prevaha aj počet Pitiek ako na každej lokalite.
-        <span className="tip-riadok">Po finále dajú starší ešte raz špaky, prebytok sa zmení na špaky a odpočíta sa nepriznaná Cirhóza.</span>
+        <span className="tip-riadok">Po finále dajú starší ešte raz špaky za nové zóny (aj z prebytku, ktorý rozdelí jeho držiteľ) a odpočíta sa nepriznaná Cirhóza.</span>
       </>
     ),
   };

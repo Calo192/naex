@@ -424,9 +424,9 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(evaluateLine(data, lineState(po("k-zh-bot1"))).sums[1]).toMatchObject({ Pecka: 1, Povera: 1 });
     // Dievčinina Povera, zdvojená Hasičovým Posilnením (k-dievcina).
     expect(evaluateLine(data, lineState(po("k-dievcina"))).sums[0]).toMatchObject({ Povera: 2 });
-    // Bitka (i-bitka): tuhé 7 : 4; Dlhy zhorel exekútor pred poškodením (2026-10-28), Povery nič — prebytok 3.
+    // Bitka (i-bitka): tuhé 7 : 4, Povery sa vyrovnajú 1 : 1 (exekúcia až po poškodení, 2026-10-28) — prebytok 3.
     const d = pri("i-bitka").bitkaStav?.damage;
-    expect([d?.tuhe, d?.makke, d?.celkove]).toEqual([[7, 4], [0, 0], [7, 4]]);
+    expect([d?.tuhe, d?.makke, d?.celkove]).toEqual([[7, 4], [1, 1], [8, 5]]);
   });
 
   it("Pitka v7 (D6): pečeň sa nuluje, zadĺženie nie; Hasič v oboch Pitkách = karta Dlh, hneď priznaná", () => {

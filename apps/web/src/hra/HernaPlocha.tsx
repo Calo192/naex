@@ -1117,7 +1117,7 @@ export function HernaPlocha({
       ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
     return nahladPitky(data, { ciel: stol.ciel, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia });
   }, [data, view, stol, ja, vypijemVTahu, otocenaTeraz, zaklad]);
-  /** Špaky jednej Cirhózy a jedného Dlhu na konci hry (v6: Cirhóza −5, Dlh 0). */
+  /** Špaky jednej Cirhózy a jedného Dlhu na konci hry (cenaKliatby: Cirhóza −SPAKY_ZA_CIRHOZU, Dlh 0). */
   const cenyKliatob = useMemo(
     () =>
       ([0, 1] as const).map((p) => ({ cirhoza: cenaKliatby(data, view, p, "cirhoza"), dlh: cenaKliatby(data, view, p, "dlh") })) as [

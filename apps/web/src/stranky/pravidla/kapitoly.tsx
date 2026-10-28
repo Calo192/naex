@@ -547,8 +547,9 @@ export const KAPITOLY: readonly Kapitola[] = [
             jednu nepriznanú Cirhózu z ruky.
           </li>
           <li>
-            <strong>Exekútor</strong> — najprv Robota, potom exekúcia každému s priznaným Dlhom: zhorí polovica Dlhov nahor
-            a rovnako veľa špakov; Záhradkár v partii ju obíde (kapitola <a href="#kliatby">Kliatby a priznanie</a>).
+            <strong>Exekútor</strong> — po špakoch za bitku a za starších: najprv Robota, potom exekúcia každému s priznaným
+            Dlhom: zhorí polovica Dlhov nahor a rovnako veľa špakov; Záhradkár v partii ju obíde (kapitola{" "}
+            <a href="#kliatby">Kliatby a priznanie</a>).
           </li>
           <li>
             <strong>Pohoršenie</strong> — posúva markery starších k súperovi alebo k sebe (kapitola{" "}
@@ -740,10 +741,10 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kliatby-exekutor">Exekútor a Robota</H3>
         <ol>
           <li>
-            <strong>Robota:</strong> v bitke ešte pred exekúciou spáliš za každú aktívnu Robotu 1 priznaný Dlh.
+            <strong>Robota:</strong> po poškodení, tesne pred exekúciou, spáliš za každú aktívnu Robotu 1 priznaný Dlh.
           </li>
           <li>
-            Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong>, kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
+            Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong> po poškodení a špakoch za bitku (Povery tvoje Dlhy ešte spočítajú), kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
             <strong>polovica priznaných Dlhov</strong> (zaokrúhlené nahor, aj jediný Dlh) a <strong>rovnako veľa špakov</strong>.
             So súperovou priazňou Exekútora zhorí navyše 1 / 2 / 3 Dlhy a toľko špakov. Súper ich nedostane a smieš ísť do mínusu.
           </li>

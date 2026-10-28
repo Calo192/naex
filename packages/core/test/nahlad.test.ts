@@ -39,8 +39,12 @@ describe("poskodenieBitky z verejného pohľadu", () => {
         // (Bitkár, prebudený Veterinár…), ale poškodenie bitky je už dané.
         const prave = predtymBezPoskodenia && b !== null && b.damage !== null;
         predtymBezPoskodenia = b === null || b.damage === null;
-        if (prave && b !== null && b.krok === "prebytok" && b.damage !== null) {
-          const view = viewFor(data, state, 0);
+        // Exekúcia (od 2026-10-28 po poškodení) už Dlhy spálila — vrátia sa do pohľadu; bitky s Robotou sa vynechajú.
+        const bezRoboty = b !== null && (b.sums[0].Robota ?? 0) + (b.sums[1].Robota ?? 0) === 0;
+        if (prave && bezRoboty && b !== null && b.krok === "prebytok" && b.damage !== null) {
+          const v0 = viewFor(data, state, 0);
+          const sDlhmi = (p: PlayerId) => ({ ...v0.hraci[p], priznane: [...v0.hraci[p].priznane, ...Array.from({ length: b.exekutor[p] }, (_, i) => ({ uid: -500 - 10 * p - i, defId: "dlh", leftLayout: 0, rightLayout: 0 }))] });
+          const view = { ...v0, hraci: [sDlhmi(0), sDlhmi(1)] as typeof v0.hraci };
           // lineState ako klient: karta v strede (aj starší) a Pasca v Dedičstve.
           const linia = evaluateLine(data, lineState(view));
           const odhad = poskodenieBitky(data, view, linia.sums, [abstakyVRuke(state, 0), abstakyVRuke(state, 1)]);

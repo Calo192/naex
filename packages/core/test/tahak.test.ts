@@ -47,4 +47,11 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
   });
+
+  it("klient agentov (hrac.ts) berie cenu Cirhózy z jadra, nie natvrdo (playtest 20261028-090549-3, názor #119)", () => {
+    const hrac = readFileSync(new URL("../../../tools/playtest/hrac.ts", import.meta.url), "utf8");
+    expect(hrac).not.toMatch(/Cirhóz.{0,80}[−-] ?5 špak/);
+    expect(hrac).toContain("KONSTANTY.SPAKY_ZA_CIRHOZU");
+    expect(KONSTANTY.SPAKY_ZA_CIRHOZU).toBe(3);
+  });
 });

@@ -181,7 +181,7 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
           // Priznané Dlhy pri poškodení — strop súperovho mäkkého.
           expect(dlhy(stolPriPoskodeni(data, n.odkrytie.view, 0), q), `${kde}: Dlhy pri poškodení, hráč ${q}`).toBe(dlhy(sNaex.s, q));
           expect(dlhy(stolPriPoskodeni(data, zaklad, 0), q), `${kde}: Dlhy bez NA EX, hráč ${q}`).toBe(dlhy(bezBitka.s, q));
-          expect(n.kliatby[q].dlhyPoBitke, `${kde}: Dlhy po bitke, hráč ${q}`).toBe(dlhy(sNaex.s, q) - dlhy(bezBitka.s, q));
+          // Dlhy po bitke (po exekúcii, ktorá ide od 2026-10-28 až po poškodení) overuje test výhľadu Dlhov.
         }
         // Pohoršenia, ktoré bitka hráčovi pridelila (prvý, kto ich má, ešte nezačal).
         for (const q of [0, 1] as const) {
