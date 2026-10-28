@@ -1134,7 +1134,7 @@ sa na súperovu stranu nevykladá (§15).
 
 ## 14. Špaky
 
-Víťazné body sú **špaky** (v6, Michal 2026-10-26). Hráč ich zbiera počas celej
+**Špaky** (v6, Michal 2026-10-26) zbiera hráč počas celej
 hry a klient ich ukazuje ako ohorky v popolníku pri mene hráča. Špaky sú
 verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je remíza.
 
@@ -1370,7 +1370,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Prevaha | v kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje, Cirhóza nie); pri rovnosti hráč, ktorého karta v tom kraji leží hneď pri lokalite; dostane akcie hrany lokality v tom kraji (§6) |
 | Priznanie | vyloženie kliatby mimo línie natrvalo; nemíňa limit ani neodovzdá ťah (§11) |
 | Sekera | bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch); jej špaky (karty v línii) berie víťaz najbližšej bitky, vo finále prepadnú (§9.4) |
-| Špak | víťazný bod — za bitku (karty v línii), za nové zóny strachu starších, výkupné zvyšných poldeci a cigariet; mínus Exekútor a nepriznaná Cirhóza (§14) |
+| Špak | za bitku (karty v línii), za nové zóny strachu starších, výkupné zvyšných poldeci a cigariet; mínus Exekútor a nepriznaná Cirhóza; po finále vyhrá, kto má viac (§14) |
 | Vyplatená zóna | zóna strachu, ktorú starší už zaplatil hráčovi, ktorého sa bojí; znova platí až po ústupe markera (§10) |
 | Strana | polovica línie od lokality — tvoja a súperova (§6) |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |

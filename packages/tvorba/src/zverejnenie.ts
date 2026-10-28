@@ -93,9 +93,9 @@ export function doScorecardsJson(
   const scorecards = bodovacie.map((b) => {
     const kluc = slug(b.nazov).toUpperCase();
     const favour: Favour = priazenZKluca(kluc) ?? (kluc as Favour);
-    if (priazenZKluca(kluc) === null) problemy.push(`Bodovacia karta „${b.nazov}“: názov nie je žiadna priazeň (${ALL_FAVOURS.join(", ")}).`);
+    if (priazenZKluca(kluc) === null) problemy.push(`Karta priazne „${b.nazov}“: názov nie je žiadna priazeň (${ALL_FAVOURS.join(", ")}).`);
     const strana = (s: readonly (string | null)[], nazov: string) =>
-      [0, 1, 2, 3].map((i) => podmienka(s[i] ?? null, `Bodovacia karta „${b.nazov}“ ${nazov} ${i + 1}`));
+      [0, 1, 2, 3].map((i) => podmienka(s[i] ?? null, `Karta priazne „${b.nazov}“ ${nazov} ${i + 1}`));
     return { id: b.id, nazov: b.nazov, favour, lava: strana(b.lava, "vľavo"), prava: strana(b.prava, "vpravo") };
   });
   return { json: { body, scorecards }, problemy };

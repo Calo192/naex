@@ -413,9 +413,9 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
         <GrafFrajeriny historia={profil.historia} />
       </section>
 
-      <Sekcia siroka nazov="Špaky" ikona={<span className="stat-ikona-text">★</span>} popis="Konečné špaky (od pravidiel v6) a body zo záverečného bodovania starších partií.">
+      <Sekcia siroka nazov="Špaky" ikona={<span className="stat-ikona-text">★</span>} popis="Špaky na konci partie; pri partiách do v5 (body) ich záverečné body.">
         <Udaj nazov="špakov spolu" hodnota={cislo(s.body)} vyrazny />
-        <Udaj nazov="na bodovanú partiu" hodnota={priemer(s.body, s.bodovanePartie)} pomoc={`${s.bodovanePartie} ${tvar(s.bodovanePartie, "partia sa skončila", "partie sa skončili", "partií sa skončilo")} záverečným bodovaním.`} />
+        <Udaj nazov="na partiu" hodnota={priemer(s.body, s.bodovanePartie)} pomoc={`Priemer z ${s.bodovanePartie} ${tvar(s.bodovanePartie, "partie, ktorá sa skončila", "partií, ktoré sa skončili", "partií, ktoré sa skončili")} sčítaním špakov (nie vzdaním ani vydesením).`} />
         <Udaj nazov="najviac v partii" hodnota={cislo(s.najviacBodov)} />
       </Sekcia>
 
