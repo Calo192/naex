@@ -8,6 +8,11 @@
 //                  takže beží počítadlo a rekapitulácia
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
 //   &stop=kolo     začiatok kola &i=k
+//   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
+//                  z prebytku (stopa v línii starších)
+//   &stop=prebytok krok Prebytok po bitke, keď posúva hráč ?ja (náhľad posunu v línii starších)
+//   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
+//                  odpovie a bitka sa vyhodnotí v jeho ťahu
 //   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
@@ -20,6 +25,7 @@
 //                  (voľba Záhradkára pri exekúcii)
 //   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
+//   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
@@ -134,6 +140,27 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "nastroj" && s.kolo >= 2 && s.faza === "zhromazdenie" && naTahu(s) === ja && s.zhromazdenieStav?.pasoval[ja] === false)
       return najdene({ zaciatok: sNastrojom(s, ja), dohraj: [] });
     if (stop === "kolo" && s.kolo === i && s.faza === "volbaCiela") return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "draft" && s.kolo >= (p.get("i") === null ? 2 : i) && s.faza === "draft" && s.draftStav?.krok === "stavba" && s.draftStav.vyber[ja] === null)
+      return najdene({ zaciatok: s, dohraj: [] });
+    // Posledná Pitka kola: hráč ?ja dá NA EX, súper odpovie a hráč nemá čím (prázdna ruka) —
+    // celé vyhodnotenie aj bitka prídu v jednom súperovom ťahu (hlásenie Michala 2026-10-28).
+    if (
+      stop === "posledna-pitka" &&
+      s.kolo >= 2 &&
+      s.faza === "pitka" &&
+      s.pitkaCislo === s.pitkyCelkom &&
+      s.pitkaStav !== null &&
+      s.pitkaStav.reakcia === null &&
+      s.vizia === null &&
+      mozeHrat(s, ja) &&
+      !s.pitkaStav.hotovy[ja === 0 ? 1 : 0] &&
+      moznostiNaex(data, s, ja).length > 0 &&
+      s.hraci[ja === 0 ? 1 : 0].ruka.length >= 2
+    ) {
+      const h = { ...s.hraci[ja], ruka: [] };
+      return najdene({ zaciatok: { ...s, hraci: ja === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] }, dohraj: [] });
+    }
+    if (stop === "prebytok" && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[ja === 0 ? 1 : 0] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
@@ -238,9 +265,11 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   }, [stav, ja, data, dohrate]);
 
   const view = useMemo(() => viewFor(data, stav, ja), [data, stav, ja]);
+  // &avatar=<id médiá hráča>,<id médiá súpera> — snímky avatarov s fotkou (prstenec vo farbe hráča).
+  const [avJa = null, avSu = null] = q().get("avatar")?.split(",") ?? [];
   const hraci: readonly [HracInfo, HracInfo] = ja === 0
-    ? [{ meno: "Jano", avatar: null }, { meno: "Rapavý Fero", avatar: null, bot: true, profil: "ziadny" }]
-    : [{ meno: "Rapavý Fero", avatar: null, bot: true, profil: "ziadny" }, { meno: "Jano", avatar: null }];
+    ? [{ meno: "Jano", avatar: avJa }, { meno: "Rapavý Fero", avatar: avSu, bot: true, profil: "ziadny" }]
+    : [{ meno: "Rapavý Fero", avatar: avSu, bot: true, profil: "ziadny" }, { meno: "Jano", avatar: avJa }];
   return (
     <>
     <HernaPlocha

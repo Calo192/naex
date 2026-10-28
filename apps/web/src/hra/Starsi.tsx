@@ -2,7 +2,7 @@
 // dlaždica Starší ukáže na prvý pohľad, koľko starších dáva hráčovi priazeň ♥
 // (stĺpček hore) a koľko sa ho bojí (stĺpček dole, špaky po vyhratej bitke); výška stĺpčeka
 // je zóna, aby sa dala prečítať aj bez farieb. Klik prepne stôl na líniu starších
-// a oba bary na bar starších — po dlaždici na každého staršieho: priazeň s efektom,
+// a oba bary na bar starších — po dlaždici na každého staršieho: priazeň ♥ (účinok je v línii),
 // alebo strach so špakmi, patronát a posun od poslednej bitky.
 
 import type { CSSProperties } from "react";
@@ -12,6 +12,7 @@ import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
 import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
+import { NAZOV_ZDROJA, riadokDlazdice, titulStrachu, titulStrachuSpolu } from "./textyStarsich.ts";
 
 export interface DlazdicaStarsichProps {
   readonly view: ClientState;
@@ -31,7 +32,11 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
   const vyd = view.starsi.filter((e) => vydesil(e, p)).length;
   const prah = prahVydesenia(view);
   const desiHrozi = vyd >= prah - 1;
-  const desiTitul = `Vydesení starší: ${vyd} z ${prah}. Kto vydesí ${prah} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.`;
+  // Ohlásené vydesenie (toast na stole zmizne) drží odznak: svieti a titulok povie, do kedy.
+  const ohlasene = view.koniec === null ? view.ohlaseneVydesenie[p] : null;
+  const desiTitul =
+    `Vydesení starší: ${vyd} z ${prah}. Kto vydesí ${prah} starších (krajná červená pozícia) a udrží ich do konca ďalšieho kola, vyhrá.` +
+    (ohlasene === null ? "" : ` Ohlásené: ak ich ${ja ? "udržíš" : "udrží"} do konca kola ${ohlasene + 1}, ${ja ? "vyhráš" : "vyhrá"}.`);
   return (
     <button
       type="button"
@@ -43,7 +48,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
         starsi.stlacene
           ? "Späť na stôl (Esc)"
           : `Priazeň ♥ ${ja ? "ti" : "mu"} dáva ${priazen} z ${view.starsi.length} starších (stĺpček hore) — ich efekt ${ja ? "máš" : "má"}. ` +
-            `${strach} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): po bitke +${zaStarsich} špakov, ak ju ${ja ? "vyhráš" : "vyhrá"} (porazený od starších nič, pri sekere obaja). Výška = zóna. Klik ukáže starších.` +
+            `${titulStrachuSpolu(strach, ja, zaStarsich)} Výška = zóna. Klik ukáže starších.` +
             (posuny > 0 ? ` Od bitky sa pohlo starších: ${posuny}.` : "")
       }
       onClick={starsi.prepni}
@@ -68,7 +73,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
         <span>
           {/* v6.1: strach platí len víťazovi; koľko starších sa bojí, ukazujú stĺpčeky dole a nápoveda (na 1366 sa oboje nezmestí). */}
           {strach > 0 && <ZnackaStrachu uroven={najStrach} trieda={ja ? "moje" : "superove"} />}
-          {strach > 0 ? `+${zaStarsich} ${ja ? "ak vyhráš" : "ak vyhrá"}` : `nikto sa ${ja ? "ťa" : "ho"} nebojí`}
+          {strach > 0 ? `+${zaStarsich} ${riadokDlazdice("dole", ja)}` : `nikto sa ${ja ? "ťa" : "ho"} nebojí`}
           {strach > 0 && <IkonaSpaku />}
         </span>
         <span className={`starsi-desi-riadok${desiHrozi ? " hrozi" : ""}`} title={desiTitul}>
@@ -111,13 +116,14 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
           ) : (
             <span className="velke-cislo nic">—</span>
           );
-        const riadok =
-          smer === "hore" ? ucinok.kratko : smer === "dole" ? `bojí sa ${ja ? "ťa" : "ho"} · pri výhre` : `neutrálny · ${ucinok.kratko}`;
+        // Účinok priazne a koho sa bojí ukazuje línia nad barom (Michal 2026-10-28: dlaždica
+        // nemusí opakovať panel) — tu len krátke slovo; patrón a posun ako značky v tom istom riadku.
+        const riadok = patron !== null ? `patrón${patron === p ? "" : " súpera"}` : riadokDlazdice(smer, ja);
         const popis =
           smer === "hore"
             ? `${meno}: ${ucinok.cely}. Zóna ${NAZVY_ZON[zona]}.`
             : smer === "dole"
-              ? `${meno} sa ${ja ? "ťa" : "ho"} bojí (${NAZVY_ZON[zona]}): po každej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dá ${strach} ${strach === 1 ? "špak" : "špaky"}. Priazeň má súper — ${ucinok.cely}.`
+              ? `${titulStrachu(meno, ja, zona, strach)} Priazeň má súper — ${ucinok.cely}.`
               : `${meno} je v strede, priazeň nemá nikto. ${ucinok.cely}.`;
         return (
           <div
@@ -125,24 +131,24 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
             role="listitem"
             tabIndex={0}
             className={`zdroj starsi-dlazdica ${smer}`}
+            style={{ "--znakov": meno.length } as CSSProperties}
             title={
               popis +
               (patron === null ? "" : ` Patrón: ${patron === view.ja ? "ty" : "súper"}.`) +
-              (posuny.length === 0 ? "" : ` Od bitky sa pohol ${posuny.length}× (${[...new Set(posuny.map((x) => x.zdroj))].join(", ")}).`)
+              (posuny.length === 0 ? "" : ` Od bitky sa pohol ${posuny.length}× (${[...new Set(posuny.map((x) => NAZOV_ZDROJA[x.zdroj]))].join(", ")}).`)
             }
           >
             <span className="zdroj-nazov">
-              {/* Výkričníky len pri tom, kto sa hráča bojí — v jeho farbe; priazeň nesie ♥ v čísle. */}
-              {smer === "dole" && <ZnackaStrachu uroven={zona} trieda={ja ? "moje" : "superove"} />}
               <span className="starsi-meno">{meno}</span>
             </span>
-            <span className="zdroj-hodnota">
-              {hodnota}
-              {patron !== null && <span className="starsi-cip">patrón{patron === p ? "" : " súpera"}</span>}
-              {posuny.length > 0 && <span className="zdroj-posuny">⇄</span>}
-            </span>
+            <span className="zdroj-hodnota">{hodnota}</span>
             <span className="zdroj-pod">
-              <span>{riadok}</span>
+              <span className="starsi-riadok">
+                {/* Výkričníky len pri tom, kto sa hráča bojí — v jeho farbe; priazeň nesie ♥ v čísle. */}
+                {smer === "dole" && <ZnackaStrachu uroven={zona} trieda={ja ? "moje" : "superove"} />}
+                {riadok}
+                {posuny.length > 0 && <span className="starsi-posun">⇄</span>}
+              </span>
             </span>
           </div>
         );

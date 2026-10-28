@@ -16,7 +16,8 @@
   min-width: 0;
   border: 1px solid var(--okraj);
   border-top: none;
-  border-radius: 0 0 12px 12px;
+  /* Ostré rohy ako lišta priebehu kola (Michal 2026-10-28). */
+  border-radius: 0;
   background: var(--plocha-2);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
@@ -382,7 +383,7 @@ button.jbar-odhad::before {
   min-width: 0;
   padding-right: 4px;
   border-top: 1px solid var(--okraj);
-  border-radius: 0 0 11px 11px;
+  border-radius: 0;
   background: var(--pozadie);
 }
 

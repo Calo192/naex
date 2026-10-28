@@ -579,6 +579,11 @@ export type Event =
       readonly prebytokDrzi: PlayerId | null;
       /** Karty v línii pri vyhodnotení (verejné) — štatistiky kariet pre tvorcu. */
       readonly karty: readonly KartaVBitke[];
+      /**
+       * Línia pri vyhodnotení (verejná ako karty vyššie) — klient z nej počíta Počítadlo bitky,
+       * keď bitka prišla v tom istom ťahu ako odpoveď na NA EX (jeho posledný pohľad ju ešte nemal).
+       */
+      readonly strany?: readonly [readonly PlacedCard[], readonly PlacedCard[]];
       /** Rekapitulácia pod Počítadlom bitky (roadmapa #106); chýba v starších záznamoch. */
       readonly rekap?: RekapitulaciaBitky;
     }
@@ -600,6 +605,17 @@ export type Event =
    * Vízie neprezradila, čo dáva súperova karta lícom dole.
    */
   | { readonly type: "pitkaRekap"; readonly rekap: RekapitulaciaPitky }
+  /**
+   * Odpoveď na odkryté NA EX (Michal 2026-10-28: „neviem, ako súper zareagoval“) — verejná:
+   * karta ide do línie lícom hore. uid/defId null = hráč neodpovedal.
+   */
+  | {
+      readonly type: "odpovedNaNaex";
+      readonly hrac: PlayerId;
+      readonly uid: number | null;
+      readonly defId: string | null;
+      readonly ciel: CielVykladania | null;
+    }
   /** Posun markera staršieho — verejný ako marker sám; klient z neho kreslí stopu a účtenku. */
   | ({ readonly type: "posunMarkera" } & PosunMarkera)
   /** Pečiatka momentu (momenty.ts) — verejná, rovnaká pre oboch; server ju pridá po príkaze. */
@@ -3087,7 +3103,9 @@ function cmdReakcia(
   need(s.faza === "pitka" && pitka !== null && pitka.reakcia === p, "Teraz nemôžeš reagovať na NA EX.");
   const prevahaPred = prevahaStran(data, s.strany);
   const pitkyPred = s.pitkyCelkom;
+  const defId = s.hraci[p].ruka.find((k) => k.uid === cmd.uid)?.defId ?? null;
   vylozDoLinie(s, data, p, cmd.uid, cmd.target, events);
+  events.push({ type: "odpovedNaNaex", hrac: p, uid: cmd.uid, defId, ciel: cmd.target });
   // Odpoveď smie zmeniť prevahu v kraji aj počet Pitiek (PRAVIDLÁ, b22d4d6) —
   // hráč to musí vidieť (názor #27, Michal 2026-10-22).
   const prevahaPo = prevahaStran(data, s.strany);
@@ -3110,6 +3128,7 @@ function cmdBezReakcie(s: MutState, data: GameData, p: PlayerId, events: Event[]
   const pitka = s.pitkaStav;
   need(s.faza === "pitka" && pitka !== null && pitka.reakcia === p, "Teraz nemôžeš reagovať na NA EX.");
   events.push({ type: "log", text: `Hráč ${p + 1} na NA EX neodpovedá.` });
+  events.push({ type: "odpovedNaNaex", hrac: p, uid: null, defId: null, ciel: null });
   ukonciReakciu(s, data, events);
 }
 
@@ -4598,6 +4617,7 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
     prebytokNaRozdelenie: b.prebytokZostava,
     prebytokDrzi: outcome.prebytokDrzi,
     karty: prispevkyKariet(line, linia),
+    strany: [[...s.strany[0]], [...s.strany[1]]],
     rekap: spaky === undefined ? rekap : { ...rekap, spaky },
   });
   events.push(...logy);

@@ -5,31 +5,22 @@
 // polovica vľavo) — bodovacie podmienky scorecardov v6 nie sú (Michal 2026-10-26:
 // „Ostala len priazeň a na tú scorecard netreba“).
 //
-// Popis stupnice a stopa posunu (roadmapa #95, Michal 2026-10-26): pod stupnicou
-// strany „◀ ty · súper ▶“ a dva čipy, ktoré nikdy nezmiznú (komu priazeň, koho
-// sa bojí); po posune duch na starom mieste a lístok so zdrojom a dôsledkom pre
-// oboch; pri Pohoršení a prebytku čipy pri prejdení myšou ukážu stav po posune.
-// Pri každom staršom čip so špakmi, ktoré dá po bitke jej víťazovi (v6.1, spakyTeraz jadra).
+// Každá informácia na jednom mieste (Michal 2026-10-28: „strašne veľa textu… mouseover
+// je redundantný“): pod stupnicou strany „◀ ty · súper ▶“ a dva riadky — komu priazeň
+// s krátkym účinkom a koho sa bojí so špakmi po vyhratej bitke. Na portréte štítok so
+// zdrojom posunu od bitky (duch na starom mieste). V kroku duch ukáže cieľ posunu a riadky
+// pri prejdení myšou stav po posune. Lupa nesie len to, čo na karte nie je: plné znenie
+// priazne, pravidlo strachu, vydesenie a odkiaľ sa marker pohol. Texty: textyStarsich.ts.
 
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { ElderState, GameData, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
-import {
-  NAZVY_ZON,
-  STUPNICA_ZONY,
-  favourStarsieho,
-  obavanyHrac,
-  priazenHraca,
-  priazenSila,
-  scorecardStarsieho,
-  strachZ,
-  type MarkerPos,
-} from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, scorecardStarsieho, type MarkerPos } from "@naex/core";
 import type { IkonaBodovania } from "@naex/tvorba";
 import { FARBY_STUPNICE } from "@naex/tvorba";
-import { UCINOK_KRATKO, UCINOK_PRIAZNE, znamienko } from "./Scorecard.tsx";
-import { IkonaSpaku } from "./Spaky.tsx";
+import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
+import { PRAVIDLO_STRACHU, plnaPriazen, pokynPrebytku, prikladStrachu, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textVydesenia } from "./textyStarsich.ts";
 
 /** Jeden smer posunu markera v kroku (Pohoršenie v5: k súperovi alebo k sebe). */
 export interface VolbaPosunu {
@@ -42,7 +33,7 @@ export interface VolbaPosunu {
   readonly klik: () => void;
 }
 
-/** Posuny jedného staršieho od poslednej bitky (do konca Zhromaždenia) — duch a lístok. */
+/** Posuny jedného staršieho od poslednej bitky (do konca Zhromaždenia) — duch a štítok. */
 export interface StopaStarsieho {
   /** Pozícia markera pred prvým posunom. */
   readonly z: MarkerPos;
@@ -64,14 +55,6 @@ export function stopaStarsieho(posuny: readonly PosunMarkera[], elderId: string)
   return { z: prvy.z, zdroje };
 }
 
-const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
-  pohorsenie: "Pohoršenie",
-  prebytok: "Prebytok",
-  patronat: "Patronát",
-  kseft: "Predsedova vila",
-  nastup: "Kapybara",
-};
-
 /** Jeden starší v línii — dáta pripraví HernaPlocha. */
 export interface StarsiVLinii {
   readonly elder: ElderState;
@@ -84,7 +67,7 @@ export interface StarsiVLinii {
   readonly klik?: { readonly akcia: string; readonly klik: () => void } | undefined;
   /** Pohoršenie (v5): povolené smery posunu — namiesto kliku na celý scorecard. */
   readonly volby?: readonly VolbaPosunu[] | undefined;
-  /** Kam by sa marker posunul (duch markera pri prejdení myšou). */
+  /** Kam by sa marker posunul (duch markera v kroku). */
   readonly ciel?: MarkerPos | null | undefined;
   /** Prečo sa v kroku nedá kliknúť (zamknutý starší). */
   readonly dovod?: string | undefined;
@@ -93,7 +76,7 @@ export interface StarsiVLinii {
   readonly patron: { readonly kto: PlayerId; readonly pohorsenia: number } | null;
   /** Vybraný v patronáte (čaká sa na kartu z ruky). */
   readonly vybrany?: boolean;
-  /** Posuny od poslednej bitky — duch na starom mieste a lístok so zdrojom. */
+  /** Posuny od poslednej bitky — duch na starom mieste a štítok so zdrojom. */
   readonly stopa?: StopaStarsieho | undefined;
 }
 
@@ -102,12 +85,9 @@ export interface LiniaStarsichProps {
   readonly data: GameData;
   readonly ikony: readonly IkonaBodovania[];
   readonly ja: PlayerId;
-  /** Čie čísla sú zvýraznené — po kliku na súperove Body súperove. */
+  /** Čí pohľad línia ukazuje — po kliku na súperovu dlaždicu Starší súperov. */
   readonly pohlad: PlayerId;
   readonly mena: readonly [string, string];
-  readonly vydeseni: readonly [number, number];
-  readonly prahVydesenia: number;
-  readonly spolu: readonly [number, number];
   /** Krok na staršom, ktorý línia práve ukazuje (Pohoršenie…) — inak null. */
   readonly krok: string | null;
   /** Pri Pohoršení svietia hranice zón (§9.2: najviac 2 na marker). */
@@ -141,39 +121,19 @@ function KoniecStupnice({ v, p }: { readonly v: ReturnType<typeof vztah>; readon
  */
 export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
 
-export function LiniaStarsich({
-  starsi,
-  data,
-  ikony,
-  ja,
-  pohlad,
-  mena,
-  vydeseni,
-  prahVydesenia,
-  spolu,
-  krok,
-  hraniceZon,
-  zmenene,
-  tlacidlo,
-  lupa,
-  prebytok,
-}: LiniaStarsichProps) {
+export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hraniceZon, zmenene, tlacidlo, lupa, prebytok }: LiniaStarsichProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<{ readonly elderId: string; readonly smer: "ja" | "su" | null } | null>(null);
   const [legenda, setLegenda] = useState(false);
   const nahladovany = starsi.find((s) => s.elder.elderId === nahlad?.elderId);
   const akciaNahladu = nahladovany?.volby?.find((v) => v.smer === nahlad?.smer)?.akcia ?? nahladovany?.klik?.akcia;
-  const priazne = (p: PlayerId): string =>
-    starsi
-      .filter((s) => priazenHraca(s.elder) === p)
-      .map((s) => `${scorecardStarsieho(data, s.elder).nazov} +${priazenSila(s.elder)}`)
-      .join(" · ") || "žiadna";
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
-  const posunov = prebytok === undefined || prebytok.cena <= 0 ? null : Math.floor(prebytok.zostava / prebytok.cena);
 
+  // Mimo kroku hlavička nič nezhŕňa — priazeň je pri každom staršom, vydesení a špaky
+  // na dlaždiciach hráčov (Michal 2026-10-28: každá informácia na jednom mieste).
   const stred =
-    krok !== null ? (
+    krok === null ? null : (
       <span className="ls-nahlad" aria-live="polite">
         {nahladovany !== undefined && akciaNahladu !== undefined ? (
           <>
@@ -185,17 +145,11 @@ export function LiniaStarsich({
           <span className="ls-tlmene">
             {starsi.some((s) => s.volby !== undefined)
               ? "Pri staršom vyber smer: k súperovi, alebo k sebe — priazeň sa zmení hneď a platí už v tejto bitke."
-              : posunov !== null && prebytok !== undefined && prebytok.cena > 1
-                ? `Prebytok ${prebytok.zostava}, posun stojí ${prebytok.cena} (Miňištrant) — vystačí na ${posunov} ${posunov === 1 ? "posun" : posunov < 5 ? "posuny" : "posunov"}. Prejdi myšou na staršieho.`
-                : "Prejdi myšou alebo Tabom na staršieho — čipy pod stupnicou ukážu stav po posune."}
+              : prebytok !== undefined
+                ? pokynPrebytku(prebytok.zostava, prebytok.cena)
+                : "Prejdi myšou alebo Tabom na staršieho — riadky pod stupnicou ukážu stav po posune."}
           </span>
         )}
-      </span>
-    ) : (
-      <span className="ls-suhrn">
-        vydesení <b className="moje">ty {vydeseni[ja]}/{prahVydesenia}</b> · <b className="superove">{mena[su]} {vydeseni[su]}/{prahVydesenia}</b>
-        <span className="ls-oddel" aria-hidden="true">·</span>
-        špaky <b className="moje">ty {znamienko(spolu[ja])}</b> · <b className="superove">{mena[su]} {znamienko(spolu[su])}</b>
       </span>
     );
 
@@ -213,13 +167,7 @@ export function LiniaStarsich({
         >
           ? stupnica
         </button>
-        <span className="ls-priazne moje">
-          <b>♥ tvoje:</b> {priazne(ja)}
-        </span>
         {stred}
-        <span className="ls-priazne superove">
-          <b>♥ {mena[su]}:</b> {priazne(su)}
-        </span>
       </div>
       {legenda && <LegendaStupnice starsi={starsi} data={data} ja={ja} mena={mena} zavri={() => setLegenda(false)} />}
       <div className="ls-rad">
@@ -231,7 +179,6 @@ export function LiniaStarsich({
             data={data}
             ikony={ikony}
             ja={ja}
-            pohlad={pohlad}
             mena={mena}
             krok={krok}
             hraniceZon={hraniceZon}
@@ -240,7 +187,6 @@ export function LiniaStarsich({
             onNahlad={(n, smer = null) => setNahlad(n ? { elderId: s.elder.elderId, smer } : (x) => (x?.elderId === s.elder.elderId ? null : x))}
             kto={kto}
             lupa={lupa?.(s)}
-            posunov={posunov}
           />
         ))}
       </div>
@@ -287,12 +233,10 @@ function LegendaStupnice({
   } else {
     const v = vztah(priklad.elder, priklad.elder.marker);
     const fav = favourStarsieho(data, priklad.elder);
-    const ty = v.obavany === ja;
     prikladText = (
       <>
-        <b>Teraz:</b> {priklad.meno} je v zóne {NAZVY_ZON[v.uroven]} na {ty ? `strane ${mena[su]}` : "tvojej strane"}. {ty ? `Priazeň +${v.sila} má ${mena[su]}` : `Priazeň +${v.sila} máš ty`} (
-        {UCINOK_KRATKO[fav](v.sila)}). Bojí sa {ty ? "teba" : mena[su]}: po každej bitke, ktorú {ty ? "vyhráš" : "vyhrá"}, {ty ? "dostaneš" : `${mena[su]} dostane`}{" "}
-        {v.uroven} {v.uroven === 1 ? "špak" : "špaky"}.
+        <b>Teraz:</b>{" "}
+        {prikladStrachu({ meno: priklad.meno, zona: v.uroven, ty: v.obavany === ja, super: mena[su], sila: v.sila, ucinok: UCINOK_KRATKO[fav](v.sila) })}
       </>
     );
   }
@@ -310,10 +254,7 @@ function LegendaStupnice({
       <p>
         <b>♥ Priazeň</b> má ten, na koho polovici marker leží — bonus počas hry, sila +1 / +2 / +3 podľa zóny.
       </p>
-      <p>
-        <b>Bojí sa toho druhého</b> — a po bitke, ktorú ten vyhrá (aj finále), mu dá špaky: žltá 1, oranžová 2, červená 3. Porazenému nedá nič, pri sekere
-        dajú starší obom. V sivom strede nedá nikomu nič.
-      </p>
+      <p>{PRAVIDLO_STRACHU}</p>
       <p>{prikladText}</p>
       <p className="ls-tlmene">
         Posúva ho prebytok po bitke (k súperovi toho, kto ho drží) a Pohoršenie — každé o jedno pole k súperovi alebo k sebe, aj na červenú a z nej
@@ -330,9 +271,7 @@ function ScorecardVLinii({
   s,
   poradie,
   data,
-  ikony,
   ja,
-  pohlad,
   mena,
   krok,
   hraniceZon,
@@ -341,14 +280,12 @@ function ScorecardVLinii({
   onNahlad,
   kto,
   lupa,
-  posunov,
 }: {
   readonly s: StarsiVLinii;
   readonly poradie: number;
   readonly data: GameData;
   readonly ikony: readonly IkonaBodovania[];
   readonly ja: PlayerId;
-  readonly pohlad: PlayerId;
   readonly mena: readonly [string, string];
   readonly krok: string | null;
   readonly hraniceZon: boolean;
@@ -358,12 +295,9 @@ function ScorecardVLinii({
   readonly onNahlad: (n: boolean, smer?: "ja" | "su" | null) => void;
   readonly kto: (p: PlayerId) => string;
   readonly lupa: HTMLAttributes<HTMLElement> | undefined;
-  /** Na koľko posunov ešte prebytok vystačí (Miňištrant), mimo prebytku null. */
-  readonly posunov: number | null;
 }) {
   const { elder, body, klik, volby } = s;
   const su: PlayerId = ja === 0 ? 1 : 0;
-  const sc = scorecardStarsieho(data, elder);
   const fav = favourStarsieho(data, elder);
   // Zrkadlenie (Michal 2026-10-22, #55): každý vidí svoju polovicu stupnice vľavo.
   const poloha = (m: number): number => (ja === 0 ? m : 6 - m);
@@ -371,25 +305,59 @@ function ScorecardVLinii({
 
   const krokTrieda =
     krok === null ? "" : s.vybrany === true ? " vybrany" : klik !== undefined || volby !== undefined ? ` klik${nahlad !== undefined ? " nahl" : ""}${volby !== undefined ? " smery" : ""}` : " nedost";
-  const ciel =
-    volby !== undefined ? (volby.find((v) => v.smer === nahlad)?.ciel ?? null) : nahlad !== undefined || s.vybrany === true ? (s.ciel ?? null) : null;
-  // Náhľad pred posunom (návrh stupnica-posun C): čipy ukážu stav po posune.
-  const poPosune = ciel !== null && ciel !== elder.marker ? ciel : null;
+  // Náhľad ťahu ako jedna značka (Michal 2026-10-28): v kroku duch markera ukáže cieľ posunu
+  // aj bez myši; riadky pod stupnicou prejdú na stav po posune až pri prejdení myšou.
+  // Smer Pohoršenia sa vyberá tlačidlom — duch až pri ňom.
+  const cielKroku = volby !== undefined ? (volby.find((v) => v.smer === nahlad)?.ciel ?? null) : klik !== undefined || s.vybrany === true ? (s.ciel ?? null) : null;
+  const duch = cielKroku !== null && cielKroku !== elder.marker ? cielKroku : null;
+  const poPosune = duch !== null && (volby !== undefined || nahlad !== undefined || s.vybrany === true) ? duch : null;
   const teraz = vztah(elder, elder.marker);
   const zobraz = poPosune === null ? teraz : vztah(elder, poPosune);
   const vydeseny = teraz.uroven === 3;
 
-  const ucinok = ucinokPriazne(data, elder);
-  const textPriazne = (v: ReturnType<typeof vztah>): string => (v.priazen === null ? "nikto" : `${kto(v.priazen)} +${v.sila}`);
-  const textStrachu = (v: ReturnType<typeof vztah>): string => (v.obavany === null ? "nikoho sa nebojí" : `bojí sa ${koho(v.obavany)} · ${NAZVY_ZON[v.uroven]}`);
-  const popisMarkera = `${s.meno}: ${textStrachu(teraz)}, priazeň ${textPriazne(teraz)}`;
-
-  // Špaky po bitke (v6.1): dostane ich ten, koho sa starší bojí, ak bitku vyhrá.
-  const boduje: PlayerId | null = body === undefined ? null : body.spaky[ja] > 0 ? ja : body.spaky[su] > 0 ? su : null;
-  const textTeraz = body === undefined || boduje === null ? null : `${kto(boduje)} +${body.spaky[boduje]}`;
+  // Špaky za strach: teraz z jadra (spakyTeraz), po posune podľa zóny cieľa.
+  const spaky = (v: ReturnType<typeof vztah>, poPosune: boolean): number =>
+    v.obavany === null ? 0 : !poPosune && body !== undefined ? body.spaky[v.obavany] : v.uroven;
+  const priazenText = (v: ReturnType<typeof vztah>): string => riadokPriazne(fav, v.priazen === null ? null : kto(v.priazen), v.sila);
+  const strachText = (v: ReturnType<typeof vztah>, po: boolean): string => riadokStrachu(v.obavany === null ? null : mena[v.obavany], v.obavany === ja, spaky(v, po));
+  const priazenTeraz = priazenText(teraz);
+  const priazenPo = priazenText(zobraz);
+  const strachTeraz = strachText(teraz, false);
+  const strachPo = strachText(zobraz, poPosune !== null);
+  const popisMarkera = `${s.meno}: ♥ ${priazenTeraz}; ${strachTeraz}`;
 
   const stopa = s.stopa;
   const lupaVKroku = krok !== null ? lupaBezKliku(lupa) : undefined;
+  const pata =
+    volby !== undefined ? (
+      <span className="ls-smery">
+        {(["ja", "su"] as const).map((smer) => {
+          const v = volby.find((x) => x.smer === smer);
+          const nazov = smer === "ja" ? "◀ k sebe" : "k súperovi ▶";
+          return v === undefined ? (
+            <button key={smer} type="button" className={`ls-smer ${smer}`} disabled title={smer === "ja" ? "K sebe sa tento marker posunúť nedá." : "K súperovi sa tento marker posunúť nedá."}>
+              {nazov}
+            </button>
+          ) : (
+            <button
+              key={smer}
+              type="button"
+              className={`ls-smer ${smer}${nahlad === smer ? " nahl" : ""}`}
+              aria-label={`${s.meno}: ${v.akcia}`}
+              onClick={v.klik}
+              onMouseEnter={() => onNahlad(true, smer)}
+              onMouseLeave={() => onNahlad(false)}
+              onFocus={() => onNahlad(true, smer)}
+              onBlur={() => onNahlad(false)}
+            >
+              {nazov}
+            </button>
+          );
+        })}
+      </span>
+    ) : s.dovod !== undefined ? (
+      <span className="ls-dovod">{s.dovod}</span>
+    ) : null;
 
   return (
     <div
@@ -416,13 +384,6 @@ function ScorecardVLinii({
     >
       <div className="ls-sc-hlava" {...lupaVKroku}>
         <b className="ls-meno">{s.meno}</b>
-        {/* Špaky za strach po bitke (v6) — výkričníky, číslo a ohorok, meno staršieho má prednosť (UI U02). */}
-        {body !== undefined && boduje !== null && textTeraz !== null && (
-          <span className={`ls-boduje ${boduje === ja ? "moje" : "superove"}`} title={vysvetlenieSpakov(body, ja, mena)} aria-label={`po bitke ${textTeraz} š.`}>
-            <ZnackaStrachu uroven={teraz.uroven} />+{body.spaky[boduje]}
-            <IkonaSpaku />
-          </span>
-        )}
         <span className="ls-poradie">{poradie}</span>
       </div>
       <div className="ls-telo">
@@ -439,12 +400,12 @@ function ScorecardVLinii({
               {s.patron.kto === ja ? "v tvojej ruke" : `v ruke: ${kto(s.patron.kto)}`} · {s.patron.kto === ja ? "súper" : "ty"} +{s.patron.pohorsenia} Pohoršenia
             </span>
           )}
-          {stopa !== undefined && s.patron === null && poPosune === null && <ListokPosunu stopa={stopa} elder={elder} ja={ja} mena={mena} kto={kto} />}
+          {stopa !== undefined && s.patron === null && <StitokPosunu stopa={stopa} ja={ja} />}
         </span>
       </div>
       <Stupnica
         marker={poloha(elder.marker)}
-        ciel={poPosune === null ? null : poloha(poPosune)}
+        ciel={duch === null ? null : poloha(duch)}
         stopa={stopa === undefined || stopa.z === elder.marker ? null : poloha(stopa.z)}
         priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"}
         hranice={hraniceZon}
@@ -458,92 +419,26 @@ function ScorecardVLinii({
           <span className="ls-strany-meno">{mena[su]}</span> <KoniecStupnice v={zobraz} p={su} /> ▶
         </span>
       </span>
-      <span className={`ls-stav${poPosune !== null ? " po-posune" : ""}`}>
-        <span className={`ls-cip priazen ${zobraz.priazen === null ? "" : zobraz.priazen === ja ? "moja" : "superova"}`} title={`${sc.nazov}: ${ucinok.cely}`}>
-          ♥ {poPosune !== null && textPriazne(teraz) !== textPriazne(zobraz) && <s>{textPriazne(teraz)}</s>} {textPriazne(zobraz)}
-          <span className="ls-cip-dlhe"> · {zobraz.sila > 0 ? UCINOK_KRATKO[fav](zobraz.sila) : sc.nazov}</span>
+      <span className="ls-stav" aria-hidden="true">
+        <span className={`ls-cip priazen${zobraz.priazen === null ? "" : zobraz.priazen === ja ? " moja" : " superova"}${priazenPo !== priazenTeraz ? " po-posune" : ""}`}>
+          ♥ {priazenPo}
         </span>
-        <span className={`ls-cip strach${zobraz.obavany === null ? " nikoho" : zobraz.obavany === ja ? " moj" : " superov"}`} title={textStrachu(zobraz)}>
+        <span
+          className={`ls-cip strach${zobraz.obavany === null ? " nikoho" : zobraz.obavany === ja ? " moj" : " superov"}${strachPo !== strachTeraz ? " po-posune" : ""}`}
+        >
           <ZnackaStrachu uroven={zobraz.obavany === null ? 0 : zobraz.uroven} />
-          {zobraz.obavany === null ? (
-            "nikoho sa nebojí"
-          ) : (
-            <>
-              bojí sa {koho(zobraz.obavany)}
-              <span className="ls-cip-dlhe">
-                {" "}
-                · {poPosune !== null && teraz.uroven !== zobraz.uroven && teraz.obavany === zobraz.obavany && <s>{NAZVY_ZON[teraz.uroven]}</s>} {NAZVY_ZON[zobraz.uroven]}
-              </span>
-            </>
-          )}
+          {strachPo}
         </span>
       </span>
-      <div className="ls-pata">
-        {volby !== undefined ? (
-          <span className="ls-smery">
-            {(["ja", "su"] as const).map((smer) => {
-              const v = volby.find((x) => x.smer === smer);
-              const nazov = smer === "ja" ? "◀ k sebe" : "k súperovi ▶";
-              return v === undefined ? (
-                <button key={smer} type="button" className={`ls-smer ${smer}`} disabled title={smer === "ja" ? "K sebe sa tento marker posunúť nedá." : "K súperovi sa tento marker posunúť nedá."}>
-                  {nazov}
-                </button>
-              ) : (
-                <button
-                  key={smer}
-                  type="button"
-                  className={`ls-smer ${smer}${nahlad === smer ? " nahl" : ""}`}
-                  aria-label={`${s.meno}: ${v.akcia}`}
-                  onClick={v.klik}
-                  onMouseEnter={() => onNahlad(true, smer)}
-                  onMouseLeave={() => onNahlad(false)}
-                  onFocus={() => onNahlad(true, smer)}
-                  onBlur={() => onNahlad(false)}
-                >
-                  {nazov}
-                </button>
-              );
-            })}
-          </span>
-        ) : s.dovod !== undefined ? (
-          <span className="ls-dovod">{s.dovod}</span>
-        ) : poPosune !== null && posunov !== null ? (
-          <span className="ls-po-posune">
-            {posunov <= 1 ? "po posune · prebytok sa minie" : `po posune · prebytok ešte na ${posunov - 1} ${posunov - 1 === 1 ? "posun" : posunov - 1 < 5 ? "posuny" : "posunov"}`}
-          </span>
-        ) : (
-          <span className="ls-body" title="Špaky, ktoré starší dá po bitke tomu, koho sa bojí, ak ju vyhrá (žltá 1, oranžová 2, červená 3; pri sekere obom).">
-            <span className={`moje ${triedaBodov(body?.spaky[ja] ?? 0)}`}>ty +{body?.spaky[ja] ?? 0}</span>
-            <span className="ls-suboje">
-              <IkonaSpaku /> po výhre
-            </span>
-            <span className={`superove ${triedaBodov(body?.spaky[su] ?? 0)}`}>
-              {mena[su]} +{body?.spaky[su] ?? 0}
-            </span>
-          </span>
-        )}
-        <span className="ls-ucinok" title={ucinok.cely}>
-          {teraz.priazen === null ? (
-            <>
-              <b>Priazeň</b> zatiaľ nikto — pri +1: {UCINOK_PRIAZNE[fav](1)}
-            </>
-          ) : (
-            <>
-              <b>{teraz.priazen === ja ? "Tvoja" : "Súperova"} priazeň:</b> {UCINOK_PRIAZNE[fav](teraz.sila)}
-            </>
-          )}
-        </span>
-      </div>
+      {pata !== null && <div className="ls-pata">{pata}</div>}
     </div>
   );
 }
 
-const triedaBodov = (b: number): string => (b > 0 ? "plus" : b < 0 ? "minus" : "nula");
-
 /**
  * Lupa počas kroku (UX N4): na celý scorecard sa v kroku kliká a prejdenie myšou
- * ukazuje stav po posune, preto lupu otvorí len hlavička (meno a body) — a ťuk
- * na nej posun nespustí.
+ * ukazuje stav po posune, preto lupu otvorí len hlavička (meno) — a ťuk na nej
+ * posun nespustí.
  */
 function lupaBezKliku(lupa: HTMLAttributes<HTMLElement> | undefined): HTMLAttributes<HTMLElement> | undefined {
   if (lupa === undefined) return undefined;
@@ -560,62 +455,13 @@ function lupaBezKliku(lupa: HTMLAttributes<HTMLElement> | undefined): HTMLAttrib
 }
 
 /**
- * Lístok posunu na portréte (návrh stupnica-posun B): zdroj posunov od poslednej
- * bitky a čo z nich má ktorý hráč — priazeň hneď, strach (body) na konci.
+ * Štítok posunu na portréte (návrh stupnica-posun B): len zdroj a počet — kto posúval,
+ * nesie farba; dôsledok je v riadkoch pod stupnicou, celé znenie v lupe.
  */
-function ListokPosunu({
-  stopa,
-  elder,
-  ja,
-  mena,
-  kto,
-}: {
-  readonly stopa: StopaStarsieho;
-  readonly elder: ElderState;
-  readonly ja: PlayerId;
-  readonly mena: readonly [string, string];
-  readonly kto: (p: PlayerId) => string;
-}) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
-  const zdroj = stopa.zdroje.map((x) => `${NAZOV_ZDROJA[x.zdroj]} · ${kto(x.kto)}${x.pocet > 1 ? ` ×${x.pocet}` : ""}`).join(" · ");
-  const riadky = ([ja, su] as const).map((p) => ({ p, text: dosledokPosunu(elder, stopa.z, p, p === ja) }));
-  const nic = riadky.every((r) => r.text === null);
-  return (
-    <span className="ls-listok" title={`${zdroj}. ${riadky.map((r) => `${r.p === ja ? "Ty" : mena[r.p]}: ${r.text ?? "bez zmeny"}`).join(". ")}.`}>
-      <b>{zdroj}</b>
-      {nic ? (
-        <span className="ls-listok-riadok">zatiaľ bez účinku · {NAZVY_ZON[STUPNICA_ZONY[elder.marker]]}</span>
-      ) : (
-        riadky.map((r) => (
-          <span key={r.p} className={`ls-listok-riadok ${r.p === ja ? "moje" : "superove"}`}>
-            <b>{r.p === ja ? "ty" : mena[r.p]}:</b> {r.text ?? "bez zmeny"}
-          </span>
-        ))
-      )}
-    </span>
-  );
-}
-
-/** Čo posun z `z` na dnešnú polohu dal hráčovi p: priazeň (hneď) a strach (špaky po vyhratej bitke); null = nič. */
-export function dosledokPosunu(elder: ElderState, z: MarkerPos, p: PlayerId, ty = false): string | null {
-  const pred = { ...elder, marker: z };
-  const priazen = (e: ElderState): number => (priazenHraca(e) === p ? priazenSila(e) : 0);
-  const [prPred, prPo] = [priazen(pred), priazen(elder)];
-  const [stPred, stPo] = [strachZ(pred, p), strachZ(elder, p)];
-  const casti: string[] = [];
-  if (prPo !== prPred) casti.push(prPo > 0 ? `♥ +${prPo}${prPred > 0 ? ` (bolo +${prPred})` : " hneď"}` : `♥ preč (bolo +${prPred})`);
-  // „budí / budíš strach“ — bez zámena, ktorý by musel poznať rod hráča.
-  const budi = ty ? "budíš" : "budí";
-  if (stPo !== stPred) casti.push(stPo > 0 ? `${budi} strach: ${NAZVY_ZON[stPo]} → +${stPo} po výhre` : `už ne${budi} strach (bolo ${NAZVY_ZON[stPred]})`);
-  return casti.length === 0 ? null : casti.join(" · ");
-}
-
-/** Komu starší dá po bitke špaky (v6.1 len víťazovi) — čísla zo spakyTeraz jadra. */
-export function vysvetlenieSpakov(body: SpakyStarsieho, ja: PlayerId, mena: readonly [string, string]): string {
-  const su: PlayerId = ja === 0 ? 1 : 0;
-  if (body.spaky[ja] > 0) return `Bojí sa teba — po každej bitke, ktorú vyhráš, ti dá ${body.spaky[ja]} š.`;
-  if (body.spaky[su] > 0) return `Bojí sa ${mena[su]} — po každej bitke, ktorú súper vyhrá, mu dá ${body.spaky[su]} š.`;
-  return "Nikoho sa nebojí — špaky nedá nikomu.";
+function StitokPosunu({ stopa, ja }: { readonly stopa: StopaStarsieho; readonly ja: PlayerId }) {
+  const kto = new Set(stopa.zdroje.map((x) => x.kto));
+  const farba = kto.size !== 1 ? "" : kto.has(ja) ? " moje" : " superove";
+  return <span className={`ls-listok${farba}`}>⇄ {stitokStopy(stopa.zdroje)}</span>;
 }
 
 /** Schodová stupnica: výška segmentu = úroveň zóny, marker je tmavý disk s prstencom priazne. */
@@ -668,15 +514,13 @@ export function ucinokPriazne(data: GameData, elder: ElderState): { readonly kra
 }
 
 /**
- * Lupa staršieho (Michal 2026-10-23): karta staršieho s akciami, stupnica, priazeň,
- * strach a kto priazeň získa pri vydesení; pod tým podmienky 4 + 4 ako na scorecarde
- * (ľavá a pravá strana) s bodmi ty / súper a rozpis, prečo starší dáva práve
- * tieto body (#109). Výška podľa obsahu (Lupa ju zmeria), dlhé znenia sú v titulkoch.
+ * Lupa staršieho (Michal 2026-10-23, zúžená 2026-10-28): len to, čo na karte v línii nie je —
+ * karta s akciami, plné znenie priazne, pravidlo strachu, čo prinesie vydesenie a odkiaľ
+ * sa marker od bitky pohol. Stupnicu, komu priazeň a koho sa bojí ukazuje karta v línii.
  */
 export function LupaStarsieho({
   s,
   data,
-  ikony,
   ja,
   mena,
   sirka,
@@ -691,12 +535,10 @@ export function LupaStarsieho({
   /** Karta staršieho s akciami (HernaKarta) v šírke ≈ 26 % lupy — výška ako text vedľa nej. */
   readonly karta: ReactNode;
 }) {
-  const { elder, body } = s;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const { elder } = s;
   const sc = scorecardStarsieho(data, elder);
   const fav = favourStarsieho(data, elder);
-  const v = vztah(elder, elder.marker);
-  const poloha = (m: number): number => (ja === 0 ? m : 6 - m);
+  const sila = priazenSila(elder);
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   const stopa = s.stopa;
   return (
@@ -707,52 +549,19 @@ export function LupaStarsieho({
           <div className="lst-hlava">
             <b>{s.meno}</b> <span className="lst-tlmene">· {sc.nazov}</span>
           </div>
-          <Stupnica
-            marker={poloha(elder.marker)}
-            ciel={null}
-            stopa={stopa === undefined || stopa.z === elder.marker ? null : poloha(stopa.z)}
-            priazen={v.priazen === null ? null : v.priazen === ja ? "ja" : "su"}
-            hranice={false}
-          />
-          <span className="ls-strany">
-            <span className="moje">
-              ◀ <KoniecStupnice v={v} p={ja} /> <span className="ls-strany-meno">ty</span>
-            </span>
-            <span className="superove">
-              <span className="ls-strany-meno">{mena[su]}</span> <KoniecStupnice v={v} p={su} /> ▶
-            </span>
-          </span>
-          <p className={`lst-priazen ${v.priazen === null ? "" : v.priazen === ja ? "moja" : "superova"}`} title={UCINOK_PRIAZNE[fav](v.sila > 0 ? v.sila : 1)}>
-            <b>♥ {v.priazen === null ? "nikto" : `${kto(v.priazen)} +${v.sila}`}:</b> {UCINOK_KRATKO[fav](v.sila > 0 ? v.sila : 1)}
-            {v.sila === 0 && <span className="lst-tlmene"> (pri +1)</span>}
+          <p className="lst-priazen">
+            <b>♥ Priazeň{sila > 0 ? ` +${sila}` : ""}:</b> {plnaPriazen(fav, sila)}
           </p>
-          <p>
-            <ZnackaStrachu uroven={v.obavany === null ? 0 : v.uroven} trieda={v.obavany === ja ? "moje" : "superove"} />
-            {v.obavany === null ? "Nikoho sa nebojí (Neutralita)." : `Bojí sa ${v.obavany === ja ? "teba" : mena[su]} · ${NAZVY_ZON[v.uroven]}`}
-          </p>
+          <p className="lst-vydesenie">{textVydesenia(fav)}</p>
           {stopa !== undefined && (
             <p className="lst-stopa">
-              <b>Od bitky:</b> {stopa.zdroje.map((x) => `${NAZOV_ZDROJA[x.zdroj]} · ${kto(x.kto)}${x.pocet > 1 ? ` ×${x.pocet}` : ""}`).join(" · ")}
-              {stopa.z === elder.marker
-                ? " — marker je späť, kde bol."
-                : ` — ${NAZVY_ZON[STUPNICA_ZONY[stopa.z]]} → ${NAZVY_ZON[v.uroven]}. Ty: ${dosledokPosunu(elder, stopa.z, ja, true) ?? "bez zmeny"}. ${mena[su]}: ${dosledokPosunu(elder, stopa.z, su) ?? "bez zmeny"}.`}
+              <b>Od bitky:</b> {textStopy(stopa.zdroje, kto)}
+              {stopa.z === elder.marker ? " — marker je späť, kde bol." : ` (${NAZVY_ZON[STUPNICA_ZONY[stopa.z]]} → ${NAZVY_ZON[STUPNICA_ZONY[elder.marker]]}).`}
             </p>
           )}
-          <p className="lst-vydesenie" title={`Vydesíš ho ty → priazeň +3 dostane ${mena[su]}: ${UCINOK_PRIAZNE[fav](3)} Vydesí ho ${mena[su]} → dostaneš ju ty.`}>
-            <b>Vydesíš</b> → 3 špaky po bitke, súper ♥ +3 ({UCINOK_KRATKO[fav](3)}) · <b>vydesí súper</b> → ty ♥ +3
-          </p>
+          <p className="lst-tlmene">{PRAVIDLO_STRACHU}</p>
         </div>
       </div>
-      {body !== undefined && (
-        <div className="lst-spolu">
-          <p>
-            <b>
-              <IkonaSpaku /> Po bitke:
-            </b>{" "}
-            {vysvetlenieSpakov(body, ja, mena)}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

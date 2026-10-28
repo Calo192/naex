@@ -6,7 +6,7 @@
 // tu sa len kreslia a odkrývajú po vlnách. Tabuľka nezmizne sama, zavrie ju až Ďalej.
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import type { Action, AkciaTuha, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
+import type { Action, AkciaTuha, CielVykladania, NaexRekapitulacie, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
 import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
 import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 
@@ -17,6 +17,51 @@ export interface PiktogramyRekapitulacie {
 }
 
 type Strana = "l" | "r";
+
+/** Odpoveď na odkryté NA EX (udalosť odpovedNaNaex) — defId null = bez odpovede. */
+export interface OdpovedNaNaex {
+  readonly hrac: PlayerId;
+  readonly defId: string | null;
+  readonly ciel: CielVykladania | null;
+}
+
+/**
+ * Čo sa stalo s NA EX v Pitke, slovami (Michal 2026-10-28: „neviem, ako súper zareagoval na
+ * moje NA EX“): kto dal NA EX na ktorú kartu a čo spravilo, potom odpovede. Prvé v rekapitulácii.
+ */
+export function vetyNaex(
+  naex: NaexRekapitulacie,
+  odpovede: readonly OdpovedNaNaex[],
+  ja: PlayerId,
+  mena: readonly [string, string],
+  menoKarty: (defId: string) => string,
+): string[] {
+  const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
+  const vety = naex.karty.map((x) => {
+    const ucinok = [x.zdvojilo > 0 ? `zdvojilo ${x.zdvojilo}` : "", x.zrusilo > 0 ? `zrušilo ${x.zrusilo}` : ""].filter(Boolean).join(", ");
+    return `NA EX — ${kto(x.dal)}: na ${x.majitel === x.dal ? "svoju" : x.majitel === ja ? "tvoju" : "súperovu"} kartu ${menoKarty(x.defId)}${ucinok === "" ? " (bez aktívnych akcií)" : ` → ${ucinok}`}`;
+  });
+  for (const o of odpovede) {
+    vety.push(
+      o.defId === null
+        ? `Odpoveď na NA EX — ${kto(o.hrac)}: žiadna`
+        : `Odpoveď na NA EX — ${kto(o.hrac)}: ${menoKarty(o.defId)} ${o.ciel === "vlastna" ? (o.hrac === ja ? "na tvoju stranu" : "na svoju stranu") : o.hrac === ja ? "na súperovu stranu" : "na tvoju stranu"}`,
+    );
+  }
+  return vety;
+}
+
+/** Vety o NA EX a odpovediach na začiatku rekapitulácie — čitateľne, nie len v titulkoch pruhov. */
+function NaexSlovami({ vety }: { readonly vety: readonly string[] }) {
+  if (vety.length === 0) return null;
+  return (
+    <div className="rk-naex-vety" role="row">
+      {vety.map((v) => (
+        <span key={v}>{v}</span>
+      ))}
+    </div>
+  );
+}
 
 /** Číslo a pruh od stredu; „+n“ vyletí, keď hodnota v tejto vlne narástla. */
 function Hodnota({ strana, n, max, prirastok, title, children }: { readonly strana: Strana; readonly n: number; readonly max: number; readonly prirastok?: number; readonly title?: string | undefined; readonly children?: ReactNode }) {
@@ -91,6 +136,8 @@ export interface RekapBitkyProps {
   readonly vlnaUcinku: number;
   /** Mená oboch hráčov (index = miesto) — hlášky odhalenej Záverečnej. */
   readonly mena?: readonly [string, string];
+  /** Odpovede na NA EX v Pitkách kola — blok „z Pitiek kola“ ich povie slovami. */
+  readonly odpovede?: readonly OdpovedNaNaex[];
 }
 
 /**
@@ -154,7 +201,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky): number {
   return n;
 }
 
-export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena }: RekapBitkyProps) {
+export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [] }: RekapBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
   const vid = (uid: number | null, w = vlna): boolean => hotovo || vlnaKarty(uid) <= w;
@@ -203,6 +250,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
       {tuhe}
       <VieraPovera r={r} ja={ja} menoSupera={menoSupera} piktogramy={piktogramy} vid={vid} rusi={hotovo || vlna >= vlnaRusenia} ucinkuje={hotovo || vlna >= vlnaUcinku} />
       {riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} />, true)}
+      {hotovo && <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, mena ?? (ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]), menoKarty)} />}
       {riadok("naex-x2", naexX2, <Stred ikona={<ZnakNaex znak="×2" ikona={poldeci} />} nazov="NA EX" pod="zdvojilo" />, true, (kto) => titulNaex("zdvojilo", kto))}
       {riadok("naex-zrus", naexZrus, <Stred ikona={<ZnakNaex znak="✕" ikona={poldeci} />} nazov="NA EX" pod="zrušilo" />, naexX2.length === 0, (kto) => titulNaex("zrusilo", kto))}
       {hotovo && pitky !== null && (
@@ -426,10 +474,12 @@ export interface RekapitulaciaPitkyProps {
   readonly menoKarty: (defId: string) => string;
   readonly piktogramy: PiktogramyRekapitulacie;
   readonly onKoniec: () => void;
+  /** Odpovede na NA EX v tejto Pitke. */
+  readonly odpovede?: readonly OdpovedNaNaex[];
 }
 
 
-export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec }: RekapitulaciaPitkyProps) {
+export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [] }: RekapitulaciaPitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -549,6 +599,8 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
               {mena[su]}
             </span>
           </div>
+          {/* Čo sa stalo s NA EX — prvé a slovami, ešte pred číslami. */}
+          <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, mena, menoKarty)} />
           {naex && vid(0) && (
             <>
               {(
