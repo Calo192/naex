@@ -58,18 +58,20 @@ footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); c
 <body>
 <main>
 <h1>Knižnica mechaník</h1>
-<p class="uvod">Študent zbiera, ako iné hry vyriešili problémy, ktoré má NA EX!. Čerpajú z nej Vymyselník, Navrhár a stratég. Zdroj dát: <code>docs/kniznica/mechaniky.json</code> (6 mechaník).</p>
+<p class="uvod">Študent zbiera, ako iné hry vyriešili problémy, ktoré má NA EX!. Čerpajú z nej Vymyselník, Navrhár a stratég. Zdroj dát: <code>docs/kniznica/mechaniky.json</code> (12 mechaník).</p>
 <h2>Témy</h2>
 <div class="tab-obal"><table>
 <thead><tr><th>Dátum</th><th>Téma (problém NA EX!)</th><th>Dokument</th></tr></thead>
 <tbody>
 <tr><td>2026-10-26</td><td>Posledná bitka a vplyv starších: ako zabrániť, aby posledné kolo rozhodlo všetko, a ako zo strachu a priazne starších spraviť strategickú os (roadmapa #7, #108, #114 Špaky, #113 Absťák)</td><td><a href="2026-10-26-posledna-bitka-a-vplyv.html">2026-10-26-posledna-bitka-a-vplyv.html</a></td></tr>
+<tr><td>2026-10-28</td><td>Hra vo dvojici 2 na 2: čo patrí tímu a čo hráčovi, viditeľnosť a komunikácia partnerov, poradie ťahov pre štyroch, „súper“ v texte karty, tímová výhra, quarterbacking a dĺžka partie (roadmapa Potom #21–#31)</td><td><a href="2026-10-28-hra-2-na-2.html">2026-10-28-hra-2-na-2.html</a></td></tr>
 </tbody></table></div>
 <h2>Mechaniky</h2>
 <input class="hladaj" id="hladaj" type="search" placeholder="Hľadať (hra, pojem, problém)…" aria-label="Hľadať mechaniku">
 <div class="filtre" role="group" aria-label="Téma">
 <button type="button" data-t="" aria-pressed="true">Všetky</button>
 <button type="button" data-t="posledna-bitka-a-vplyv" aria-pressed="false">posledna-bitka-a-vplyv</button>
+<button type="button" data-t="hra-2-na-2" aria-pressed="false">hra-2-na-2</button>
 </div>
 <div class="tab-obal"><table id="mech">
 <thead><tr><th>Mechanika</th><th>Problém</th><th>Hry</th><th>Pridané</th></tr></thead>
@@ -80,6 +82,12 @@ footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); c
 <tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#slabsia-os">Skóre podľa slabšej osi (rátaj menší popolník)</a><br><code>slabsia-os</code></td><td>Keď sa sčítajú dve osi s rôznou mierkou (strach a bitky), vyhrá ten, kto sa zahryzne do silnejšej, a dizajnér musí mierku donekonečna ladiť.</td><td>Tigris &amp; Euphrates</td><td>2026-10-26</td></tr>
 <tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#ustup-a-odskodne">Porazený určuje cenu prehry (ústup, odškodné, víťaz platí)</a><br><code>ustup-a-odskodne</code></td><td>Bitka „všetko alebo nič“ s veľkou výhrou robí z poslednej bitky lotériu; keď porazený môže prehru zlacniť (a víťaz za výhru platí), výkyv sa zmenší a pribudne rozhodnutie.</td><td>Air, Land &amp; Sea, Blood Rage, Cosmic Encounter</td><td>2026-10-26</td></tr>
 <tr data-temy="posledna-bitka-a-vplyv"><td><a href="2026-10-26-posledna-bitka-a-vplyv.html#ohlasena-vyhra-s-odpovedou">Náhla výhra: ohlásiť, zaplatiť, nechať súpera odpovedať</a><br><code>ohlasena-vyhra-s-odpovedou</code></td><td>Druhá cesta k výhre (vydesenie) dáva vplyvu váhu, ale keď je rýchla a lacná, hra skončí skôr, než sa súper zorientuje; keď je nedosiahnuteľná, nikto ju nehrá.</td><td>Inis, Root, Twilight Struggle, 7 Wonders Duel / Hanamikoji</td><td>2026-10-26</td></tr>
+<tr data-temy="hra-2-na-2"><td><a href="2026-10-28-hra-2-na-2.html#spolocny-stol-osobna-kasa">Spoločný stôl a skóre tímu, osobná ruka a zdroje</a><br><code>spolocny-stol-osobna-kasa</code></td><td>Keď tím zdieľa všetko (ruku, zdroje, skóre), hrá jeden mozog so štyrmi rukami a slabší partner sa stáva divákom. Keď nezdieľa nič, sú to dve partie 1 na 1 vedľa seba. Treba presne povedať, čo je tímové a čo ostáva hráčovi.</td><td>Magic: Two-Headed Giant, Canasta, Star Realms, Gundam Card Game, Spades</td><td>2026-10-28</td></tr>
+<tr data-temy="hra-2-na-2"><td><a href="2026-10-28-hra-2-na-2.html#poradie-krizom-alebo-timovy-tah">Poradie pre štyroch: striedanie krížom, alebo spoločný ťah tímu</a><br><code>poradie-krizom-alebo-timovy-tah</code></td><td>So štyrmi hráčmi sa kolo predĺži a každý čaká trikrát dlhšie. Poradie ťahov rozhoduje o dĺžke partie, o tom, kto komu odpovedá, a o tom, koľko si partneri stihnú povedať.</td><td>Bridž, Spades, Euchre, Tichu, One Piece Card Game, Magic: Two-Headed Giant, Star Realms, Gundam Card Game, Wavelength</td><td>2026-10-28</td></tr>
+<tr data-temy="hra-2-na-2"><td><a href="2026-10-28-hra-2-na-2.html#obmedzeny-kanal-partnera">Obmedzený kanál medzi partnermi (namiesto otvorenej ruky a voľnej reči)</a><br><code>obmedzeny-kanal-partnera</code></td><td>Keď partner vidí tvoju ruku a môže hovoriť, silnejší hráč hrá za oboch (quarterbacking) a hra sa zmení na jedného hráča s dvoma rukami. Keď nevidí nič a mlčí, tímové prvky sa hrajú naslepo.</td><td>Bridž, The Crew: The Quest for Planet Nine, Hanabi, Codenames Duet, Canasta, Magic: Two-Headed Giant, Star Realms Raid, One Piece Buddy Battle, Lorcana 2 na 2, Don't Eat the Meeples</td><td>2026-10-28</td></tr>
+<tr data-temy="hra-2-na-2"><td><a href="2026-10-28-hra-2-na-2.html#osobna-stavka-v-time">Osobná stávka v tímovom skóre (Tichu, nula, ísť sám)</a><br><code>osobna-stavka-v-time</code></td><td>V tíme sa slabší partner ľahko schová za silnejšieho a víťazstvo nemá meno. Osobná stávka dá každému hráčovi chvíľu, keď rozhoduje on, a jeho úspech či zlyhanie má tímovú cenu.</td><td>Tichu, Spades, Euchre</td><td>2026-10-28</td></tr>
+<tr data-temy="hra-2-na-2"><td><a href="2026-10-28-hra-2-na-2.html#podanie-s-cenou">Podanie v tíme s cenou (výmena kariet a zdrojov medzi partnermi)</a><br><code>podanie-s-cenou</code></td><td>Bez možnosti pomôcť si sú partneri len dve hospodárstva vedľa seba; s voľným presúvaním sa z dvoch hráčov stane jeden. Podanie musí niečo stáť alebo byť obmedzené, aby bolo rozhodnutím.</td><td>Tichu, Spades, Euchre, Star Realms Hydra a Magic 2HG</td><td>2026-10-28</td></tr>
+<tr data-temy="hra-2-na-2"><td><a href="2026-10-28-hra-2-na-2.html#kto-je-super">Kto je „súper“ v texte karty, keď sú súperi dvaja</a><br><code>kto-je-super</code></td><td>Karty písané pre dvoch hovoria „súper“, „tvoj“, „tvoja partia“. Pri dvoch protivníkoch treba jedno pravidlo výkladu, inak treba prepísať každú kartu (v NA EX! 29 z 81 kariet v cards.json spomína súpera).</td><td>Magic: Two-Headed Giant, Gundam Card Game, Star Realms, One Piece Card Game</td><td>2026-10-28</td></tr>
 </tbody></table></div>
 <footer>NA EX! · Študent · index sa prepisuje celý z mechaniky.json pri každom behu.</footer>
 </main>
