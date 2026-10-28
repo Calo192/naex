@@ -16,7 +16,7 @@ import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, spojVznikne } from "./partia.ts";
+import { evaluateLine, spojVznikne, zvieratAUmlcane } from "./partia.ts";
 import { bitkaMody, liberalZadlzenie, zadlzenieZLinie } from "./effects.ts";
 import type { VerejnyStav } from "./effects.ts";
 
@@ -125,7 +125,10 @@ export function nahladVylozenia(
   const pary: { index: number; moja: NonNullable<Slot>; susedova: NonNullable<Slot> }[] = [];
   const spoj =
     sused !== null &&
-    spojVznikne({ tags: defOf(data, karta).tags, stred: false, defId: karta.defId }, { tags: defOf(data, sused.karta).tags, stred: sused.stred, defId: sused.karta.defId });
+    spojVznikne(
+      { tags: defOf(data, karta).tags, stred: false, defId: karta.defId },
+      { tags: defOf(data, sused.karta).tags, stred: sused.stred, defId: sused.karta.defId, umlcany: zvieratAUmlcane(data, line).has(sused.karta.uid) },
+    );
   if (sused !== null && spoj) {
     for (let k = 0; k < 4; k++) {
       const a = vnutorna[k] ?? null;

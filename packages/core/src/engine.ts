@@ -16,7 +16,7 @@ import { defOf } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
 import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard } from "./partia.ts";
-import { evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet } from "./partia.ts";
+import { evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet, zvieratAUmlcane } from "./partia.ts";
 import { krajeStran } from "./hrany.ts";
 import type { PlayerState } from "./player.ts";
 import {
@@ -83,6 +83,7 @@ import {
   vDedicstve,
   partiaHraca,
   vPartii,
+  zvieraPlati,
   naexNaZviera,
   liberalZadlzenie,
   traktoristkyBezPrevahy,
@@ -1124,7 +1125,7 @@ function stranyBitky(
       cirhozaBonus: cirhozyPriznane(s, opp),
       tuheBonus: mody[p]!.tuheBonus + nastrojeTuhe(s, p, sums[p]).reduce((a, z) => a + z.tuhe, 0),
       // Čierna mačka: Povery bez stropu (Výpalník, predtým Neprajník, vo v5 strop nezdvíha — má Výpalné).
-      makkeNadDlhy: vPartii(s, p, "cierna_macka") ? Number.POSITIVE_INFINITY : 0,
+      makkeNadDlhy: zvieraPlati(data, s, p, "cierna_macka") ? Number.POSITIVE_INFINITY : 0,
       abstaky: abstakyVBitke(data, s, p, abstakyVRuke[p]),
       priznaneDlhy: pocetKariet(s.hraci[p], "dlh", "priznane"),
       // Bitkár v5 (Michal 2026-10-24): +1 / +2 / +3 tuhého, nie dvojnásobok.
@@ -2598,6 +2599,12 @@ function nastupEfekt(
       break;
     }
     case "kapybara": {
+      // Mäsiar (Furt, Michal 2026-10-28): Kapybara priložená k nemu sa nespustí.
+      const k = s.strany[strana].at(-1);
+      if (k !== undefined && zvieratAUmlcane(data, { lokalita: s.ciel?.lokalita ?? null, strany: s.strany as GameState["strany"] }).has(k.card.uid)) {
+        events.push({ type: "log", text: "Mäsiar: Kapybara vedľa neho nič nespraví." });
+        break;
+      }
       if (!s.starsi.some((e) => e.marker !== MARKER_STRED)) {
         events.push({ type: "log", text: "Kapybara: všetky markery sú v strede — nič sa nestane." });
         break;
@@ -2891,7 +2898,8 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
   // Odpovede: obranca na NA EX útočníka, potom útočník na NA EX obrancu — posledné
   // slovo má útočník; Kohút (Pitka, v7) ho dá obrancovi, keď ho má len on.
   // Krčmárka (Pitka, v7): na NA EX jej majiteľa súper kartou neodpovedá.
-  const kohut = (q: PlayerId): boolean => maEfekt(s, data, q, "kohut");
+  // Kohút je Zviera — vedľa Mäsiara posledné slovo nedá (Michal 2026-10-28).
+  const kohut = (q: PlayerId): boolean => zvieraPlati(data, s as GameState, q, "kohut");
   const posledny: PlayerId = kohut(obr) && !kohut(s.utocnik) ? obr : s.utocnik;
   const prvy = opponentOf(posledny);
   const odpovede = (na: PlayerId): number => (maEfekt(s, data, na, "krcmarka") ? 0 : pocty[na]);
@@ -4923,14 +4931,16 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     }
   }
 
-  // Efekty Výhra/Prehra — ešte kým karty ležia v partiách.
+  // Efekty Výhra/Prehra — ešte kým karty ležia v partiách. Zvieratá vedľa Mäsiara
+  // (Recidivista, Krokodíl) sa nespustia — rozhoduje okolie v tejto chvíli.
+  const umlcane = zvieratAUmlcane(data, lineState(s as GameState));
   const doRukyPoBitke = new Set<number>();
   if (vitaz !== null && porazeny !== null) {
     const linia = evaluateLine(data, lineState(s as GameState));
     for (const pl of partiaHraca(s as GameState, porazeny)) {
       if (pl.zaverecna === true || b.spalit.includes(pl.card.uid) || efektPotlaceny(data, s as GameState, porazeny, pl.card.defId)) continue;
       // Recidivista (Prehra, v7): po bitke sa vráti majiteľovi do ruky.
-      if (pl.card.defId === "recidivista") {
+      if (pl.card.defId === "recidivista" && !umlcane.has(pl.card.uid)) {
         doRukyPoBitke.add(pl.card.uid);
         events.push({ type: "log", text: `Recidivista: zas je vonku — hráčovi ${porazeny + 1} sa po bitke vráti do ruky.` });
       }
@@ -4967,7 +4977,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   // bez ohľadu na majiteľa; Starešinovia a Nástroje ostávajú.
   const line = lineState(s as GameState);
   for (const pl of [...s.strany[0], ...s.strany[1]]) {
-    if (pl.card.defId !== "krokodil" || pl.zaverecna === true || efektPotlaceny(data, s as GameState, pl.playedBy as PlayerId, "krokodil")) continue;
+    if (pl.card.defId !== "krokodil" || pl.zaverecna === true || umlcane.has(pl.card.uid) || efektPotlaceny(data, s as GameState, pl.playedBy as PlayerId, "krokodil")) continue;
     for (const obet of okolieVLinii(line, pl.card.uid)) {
       if (obet === null || b.spalit.includes(obet.card.uid)) continue;
       const tagy = defOf(data, obet.card).tags;

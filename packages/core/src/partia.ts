@@ -355,19 +355,21 @@ function markVzbura(elem: Elem, side: 0 | 1, skutocna = true): void {
  * týchto tagov spoj nevznikne — neaktivuje sa nič ani na susedovi.
  */
 export function spojVznikne(
-  a: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string },
-  b: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string },
+  a: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string; readonly umlcany?: boolean },
+  b: { readonly tags: readonly Tag[]; readonly stred: boolean; readonly defId?: string; readonly umlcany?: boolean },
 ): boolean {
-  // Kôň (Furt, v7): Nástroj vedľa neho s ním tvorí spoj ako s Občanom.
-  const podporuje = (x: typeof a): boolean => !x.stred && (x.tags.includes("Občan") || x.tags.includes("Starešina") || x.defId === "kon");
+  // Kôň (Furt, v7): Nástroj vedľa neho s ním tvorí spoj ako s Občanom — nie vedľa Mäsiara (umlcany).
+  const podporuje = (x: typeof a): boolean =>
+    !x.stred && (x.tags.includes("Občan") || x.tags.includes("Starešina") || (x.defId === "kon" && x.umlcany !== true));
   if (a.tags.includes("Nástroj") && !a.stred && !podporuje(b)) return false;
   if (b.tags.includes("Nástroj") && !b.stred && !podporuje(a)) return false;
   return true;
 }
 
-/** Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`. */
-function resolveJunction(a: Elem, b: Elem): void {
-  if (!spojVznikne({ tags: a.tags, stred: a.isLokalita, defId: a.defId }, { tags: b.tags, stred: b.isLokalita, defId: b.defId })) return;
+/** Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`; `umlcane` = Zvieratá vedľa Mäsiara. */
+function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>): void {
+  const x = { tags: a.tags, stred: a.isLokalita, defId: a.defId, umlcany: umlcane.has(a.uid) };
+  if (!spojVznikne(x, { tags: b.tags, stred: b.isLokalita, defId: b.defId, umlcany: umlcane.has(b.uid) })) return;
   // Praudovravec (Dezinformátor, v7): Odpor na jeho spojoch neruší, ale posilní.
   const dezinformator = (!a.isLokalita && a.defId === "praudovravec") || (!b.isLokalita && b.defId === "praudovravec");
   for (let k = 0; k < 4; k++) {
@@ -510,21 +512,16 @@ function zdvojAktivne(elem: Elem, zdroj: string, dovod = `karta:${zdroj}`): void
 }
 
 /**
- * Efekty kariet závislé od polohy v línii (Zámočník, Silná žena, Mäsiar, Pes).
- * Mäsiar ide prvý — akcie Zvieraťa, ktoré neplatia, Pes už nezdvojí.
+ * Efekty kariet závislé od polohy v línii (Zámočník, Silná žena, Pes). Pes vedľa
+ * Mäsiara (umlcane) nezdvojuje — efekty Zvierat v okolí Mäsiara neplatia.
  */
-function kartoveEfekty(segments: readonly (readonly Elem[])[]): void {
+function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: ReadonlySet<number>): void {
   const susedia = new Map<Elem, [Elem | null, Elem | null]>();
   for (const seg of segments) {
     seg.forEach((e, i) => susedia.set(e, [seg[i - 1] ?? null, seg[i + 1] ?? null]));
   }
   const karty = [...susedia.keys()].filter((e) => !e.isLokalita);
   const okolie = (e: Elem): Elem[] => (susedia.get(e) ?? [null, null]).filter((x): x is Elem => x !== null);
-  // Mäsiar (Furt, v7): akcie Zvierat v jeho okolí neplatia — ako zrušené Odporom.
-  for (const e of karty) {
-    if (e.defId !== "masiar") continue;
-    for (const z of okolie(e)) if (!z.isLokalita && z.tags.includes("Zviera")) zrusVsetky(z);
-  }
   for (const e of karty) {
     if (e.defId === "zamocnik") {
       for (const s of okolie(e)) if (s.tags.includes("Nástroj")) zdvojAktivne(s, e.defId);
@@ -532,24 +529,12 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[]): void {
       // Michal 2026-10-18: podporuje okolie — aktívne akcie susedných kariet
       // toho istého majiteľa sa rátajú dvakrát (lokalitu a cudzie karty nie).
       for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner) zdvojAktivne(s, e.defId);
-    } else if (e.defId === "pes") {
+    } else if (e.defId === "pes" && !umlcane.has(e.uid)) {
       // Pes (Furt, v7): aktívne akcie na spoji so súperovou kartou ×2 — strana k tomu susedovi.
       const [lavy, pravy] = susedia.get(e) ?? [null, null];
       for (const [side, sused] of [[0, lavy], [1, pravy]] as const) {
         if (sused !== null && !sused.isLokalita && sused.owner !== e.owner) zdvojStranu(e, side, e.defId);
       }
-    }
-  }
-}
-
-/** Všetky akcie karty sa zrušia (Mäsiar). */
-function zrusVsetky(elem: Elem): void {
-  for (const side of [0, 1] as const) {
-    for (let k = 0; k < 4; k++) {
-      if (elem.stav[side]![k] !== "aktivna") continue;
-      elem.stav[side]![k] = "zrusena";
-      elem.nasobok[side]![k] = 0;
-      elem.dovody[side]![k]!.push("karta:masiar");
     }
   }
 }
@@ -606,9 +591,26 @@ function elemEval(elem: Elem): CardLineEval {
   };
 }
 
+/**
+ * Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia — uid Zvierat
+ * (ktoréhokoľvek hráča), ktoré v línii susedia s odkrytým Mäsiarom. Akcie Zvierat
+ * sa rátajú normálne (do 2026-10-28 Mäsiar rušil akcie). Jeden výpočet pre líniu
+ * (Pes, Kôň) aj motor (Čierna mačka, Krokodíl, Kohút, Recidivista, Kapybara).
+ */
+export function zvieratAUmlcane(data: GameData, line: Pick<LineState, "lokalita" | "strany">): ReadonlySet<number> {
+  const out = new Set<number>();
+  const l = line as LineState;
+  for (const pl of [...line.strany[0], ...line.strany[1]]) {
+    if (!defOf(data, pl.card).tags.includes("Zviera")) continue;
+    if (okolieVLinii(l, pl.card.uid).some((s) => s !== null && s.card.defId === "masiar" && s.zaverecna !== true)) out.add(pl.card.uid);
+  }
+  return out;
+}
+
 export function evaluateLine(data: GameData, line: LineState): LineEval {
   const elems: Elem[] = [];
   const segments: Elem[][] = [];
+  const umlcane = zvieratAUmlcane(data, line);
 
   // Výtržník NA EX nezdvojuje — jeho akcie sa prepíšu na Rany nižšie.
   const vytrznici = new Set<number>();
@@ -649,13 +651,13 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   for (const segment of segments) {
     for (let i = 0; i + 1 < segment.length; i++) {
-      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem);
+      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem, umlcane);
     }
   }
   for (const elem of elems) applyVzbura(elem);
   for (const elem of elems) zrusPosilnenie(elem);
   for (const elem of elems) applyNaex(elem);
-  kartoveEfekty(segments);
+  kartoveEfekty(segments, umlcane);
   // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre
   // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami (okrem Posilnenia
   // a Odporu, vyššie) — Výtržník ich nemení.

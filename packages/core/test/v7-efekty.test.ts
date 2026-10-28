@@ -203,7 +203,7 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
 });
 
 describe("efekty v línii (v7)", () => {
-  it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; Mäsiar ich zruší", () => {
+  it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)", () => {
     const sucet = (s: GameState, uid: number): number => {
       const ev = evaluateLine(data, lineState(s)).cards.get(uid)!;
       return [...ev.left, ...ev.right].reduce((n, x) => n + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
@@ -233,7 +233,8 @@ describe("efekty v línii (v7)", () => {
     }
     expect(overene).toBeGreaterThan(0);
     const pes: CardInstance = { uid: 1, defId: "pes", leftLayout: 0, rightLayout: 0 };
-    expect(sucet(vPitke("zastavka", [[lezi(pes, 0), lezi(inst("masiar"), 1)], []]), 1)).toBe(0);
+    const priMasiarovi = vPitke("zastavka", [[lezi(pes, 0), lezi(inst("masiar"), 1)], []]);
+    expect(sucet(priMasiarovi, 1)).toBe(pocet(priMasiarovi, 1));
   });
 
   it("Úplatok: súper cigaretou zníži útoky Kulturistu o stupeň, raz za Pitku", () => {
@@ -255,13 +256,17 @@ describe("efekty v línii (v7)", () => {
   it("Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)", () => {
     const kroko = inst("krokodil");
     const moj = inst("zamocnik");
-    const jeho = inst("masiar");
+    const jeho = inst("sofer");
     const s = vPitke("zastavka", [[lezi(moj, 0), lezi(kroko, 0), lezi(jeho, 1)], []]);
     const po = dohrajKolo(s);
-    const vsetky = (p: PlayerId): number[] => [...po.hraci[p].ruka, ...po.hraci[p].doberaci, ...po.hraci[p].odhadzovaci].map((k) => k.uid);
+    const vsetky = (p: PlayerId, t: GameState = po): number[] => [...t.hraci[p].ruka, ...t.hraci[p].doberaci, ...t.hraci[p].odhadzovaci].map((k) => k.uid);
     expect(vsetky(0)).not.toContain(moj.uid);
     expect(vsetky(1)).not.toContain(jeho.uid);
     expect(vsetky(0)).toContain(kroko.uid);
+    // Vedľa Mäsiara (2026-10-28) Krokodíl nič nezožerie.
+    const masiar = inst("masiar");
+    const priMasiarovi = dohrajKolo(vPitke("zastavka", [[lezi(inst("zamocnik"), 0), lezi(inst("krokodil"), 0), lezi(masiar, 1)], []]));
+    expect(vsetky(1, priMasiarovi)).toContain(masiar.uid);
   });
 });
 

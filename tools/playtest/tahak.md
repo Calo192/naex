@@ -224,7 +224,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   inak Dlh; Podvodník pri prehre presunie tvoj priznaný Dlh súperovi. **Noviny** (Dedičstvo: Prehra, v7):
   keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za bitku dostaneš ty.
 - **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2; Mäsiar —
-  akcie Zvierat v jeho okolí neplatia; Krokodíl — na konci bitky idú z hry všetci Občania a Zvieratá
+  efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky idú z hry všetci Občania a Zvieratá
   v jeho okolí; Puška / Vidly (Dedičstvo) — tvoje Petelice / Rany z vyložených akcií o 1 poškodenie viac (Rany navyše z efektov nie); Pasca
   (Dedičstvo) — keď súper v kole priložil kartu k tvojej, Pecka navyše; Krabička (Dedičstvo) — za každé
   2 cigarety, ktoré súper vyfajčí, karta; Liberál (Pitka) — súper bez rovnováhy žien a chlapov

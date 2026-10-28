@@ -2029,11 +2029,16 @@
     {
       "id": "16.karta.v7.linia",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Pes (×2 na spoji so súperovou kartou), Mäsiar (akcie Zvierat v okolí neplatia), Krokodíl (Občania a Zvieratá v okolí z hry po bitke).",
+      "pravidlo": "Pes (×2 na spoji so súperovou kartou), Mäsiar (efekty Zvierat v okolí neplatia, akcie áno — 2026-10-28), Krokodíl (Občania a Zvieratá v okolí z hry po bitke).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/v7-efekty.test.ts › Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; Mäsiar ich zruší",
-        "packages/core/test/v7-efekty.test.ts › Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)"
+        "packages/core/test/v7-efekty.test.ts › Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)",
+        "packages/core/test/v7-efekty.test.ts › Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)",
+        "packages/core/test/masiar.test.ts › umlčané sú Zvieratá oboch hráčov, ktoré susedia s odkrytým Mäsiarom",
+        "packages/core/test/masiar.test.ts › akcie Zvierat sa rátajú normálne (Mäsiar ich už neruší); Pes vedľa Mäsiara nezdvojuje",
+        "packages/core/test/masiar.test.ts › Kôň vedľa Mäsiara netvorí spoj s Nástrojom",
+        "packages/core/test/masiar.test.ts › Čierna mačka vedľa Mäsiara nezruší strop mäkkého; Kohút a Krokodíl neplatia",
+        "packages/core/test/masiar.test.ts › Kapybara priložená k Mäsiarovi sa nespustí"
       ]
     },
     {

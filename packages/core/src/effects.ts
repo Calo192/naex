@@ -14,7 +14,7 @@ import type { ElderState } from "./elders.ts";
 import { favourStarsieho, prebudenyPre, priazenHraca, priazenSila } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { LineEval, PlacedCard } from "./partia.ts";
-import { evaluateLine, prevahaStran, rataSaDoPrevahy, silaVKraji } from "./partia.ts";
+import { evaluateLine, prevahaStran, rataSaDoPrevahy, silaVKraji, zvieratAUmlcane } from "./partia.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
@@ -131,7 +131,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   dohadzovacka: "impl", // Nástup (Michal 2026-10-28): najvzdialenejší Občan opačného pohlavia ako jej sused z druhej strany sa presunie za ňu (presunDohadzovackou)
   vandal: "impl", // Nástup: otoč lokalitu o 180°
   stryko_z_ameriky: "impl", // Kšeft: za 2 cigarety Rana navyše v bitke kola
-  masiar: "impl", // Furt (v7): akcie Zvierat v jeho okolí neplatia (partia.ts)
+  masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Úplatok (v7): súper cigaretou zníži jeho útoky o stupeň (príkaz uplatok)
   traktoristka: "impl", // Bitka: s prevahou v jej kraji Pecka navyše, inak Dlh
   vymahac: "impl", // Bitka: za každé 2 priznané Dlhy Rana navyše
@@ -170,6 +170,15 @@ export function partiaHraca(state: { readonly strany: VerejnyStav["strany"] }, p
  */
 export function vPartii(state: Pick<VerejnyStav, "strany">, p: PlayerId, defId: string): boolean {
   return partiaHraca(state, p).some((pl) => pl.card.defId === defId && pl.zaverecna !== true);
+}
+
+/**
+ * Efekt Zvieraťa defId v partii hráča p platí: aspoň jedno odkryté také Zviera,
+ * ktoré nesusedí s Mäsiarom (Michal 2026-10-28, zvieratAUmlcane).
+ */
+export function zvieraPlati(data: GameData, state: Pick<VerejnyStav, "strany" | "ciel">, p: PlayerId, defId: string): boolean {
+  const umlcane = zvieratAUmlcane(data, { lokalita: state.ciel?.lokalita ?? null, strany: state.strany });
+  return partiaHraca(state, p).some((pl) => pl.card.defId === defId && pl.zaverecna !== true && !umlcane.has(pl.card.uid));
 }
 
 export function vDedicstve(state: VerejnyStav, p: PlayerId, defId: string): boolean {

@@ -1282,7 +1282,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Živnostník | Nástup: hneď za neho smie majiteľ priložiť 1 Nástroj z ruky na tú istú stranu — mimo limitu vykladania; Nástroj s ním tvorí spoj (§12). Hra počká na voľbu ako pri Hasičovi; v ťahu s viacerými kartami sa voľba robí hneď po Živnostníkovi (ďalšia karta na tú stranu ju zruší). Ako Záverečná: pri otočení. |
 | Šarlatán | Konflikt: do konca kola sa jeho akcie Dlh rátajú ako Viera a Povera ako Rana (mení sa druh, nie aktivita); po bitke ide do balíčka s pôvodnými akciami. |
 | Pes | Furt: jeho aktívne akcie na spoji so súperovou kartou (strana Psa k tej karte) sa rátajú dvakrát; násobky sa násobia (§7). Platí aj podstrčený či podstrčením vzniknutý spoj. |
-| Mäsiar | Furt: akcie Zvierat v jeho okolí (oboch hráčov) neplatia — ako zrušené Odporom; efekty Zvierat platia. |
+| Mäsiar | Furt (Michal 2026-10-28): **efekty Zvierat** v jeho okolí (oboch hráčov) neplatia, kým s ním susedia; ich **akcie sa rátajú normálne**. Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Bitka, aj jeho koniec bitky), Kohúta (Pitka) a Recidivistu (Prehra — rozhoduje okolie v chvíli, keď sa efekt spúšťa). Kapybara priložená k Mäsiarovi sa nespustí; Nástup, ktorý už prebehol, sa nevracia. Mäsiar lícom dole (Záverečná) ešte nič neumlčí. Do 2026-10-28 Mäsiar rušil akcie Zvierat. |
 | Krokodíl | Bitka: na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí (oboch hráčov); Starešinovia a Nástroje nie. Ich akcie v bitke ešte platia. |
 | Kapybara | Nástup: marker jedného staršieho (podľa voľby majiteľa) sa posunie o 1 pole k stredu. |
 | Kohút | Pitka: posledné slovo pri odpovediach na NA EX (§7) má jeho majiteľ aj ako obranca — súper odpovedá prvý. Keď ho majú obaja, platí bežné poradie. |
