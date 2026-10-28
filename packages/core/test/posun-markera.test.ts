@@ -99,6 +99,32 @@ describe("posun markera", () => {
     }
     expect(videl).toBeGreaterThan(5);
   });
+
+  it("log posunu ukáže zónu pred a po aj obe strany — komu priazeň stúpla či klesla a kto ho desí (návrh #27 A)", () => {
+    const zona = ["Vydesenie", "Strach", "Znepokojenie", "Neutralita", "Znepokojenie", "Strach", "Vydesenie"];
+    let klesla = 0;
+    for (const k of partie(SEEDY.slice(0, 4))) {
+      if (k.cmd.type !== "pohorsenie" && k.cmd.type !== "prebytok") continue;
+      const id = k.cmd.elderId;
+      const z = k.pred.starsi.find((e) => e.elderId === id)?.marker as number;
+      const na = k.po.starsi.find((e) => e.elderId === id)?.marker as number;
+      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Prebytok) \(hráč [12]\): /.test(e.text) ? [e.text] : []))[0] as string;
+      expect(log).toContain(`— ${zona[z]} → ${zona[na]}: `);
+      if (na === 3) {
+        expect(log).toMatch(z === 3 ? /nikto nemá priazeň/ : new RegExp(`hráč ${z < 3 ? 1 : 2} prišiel o priazeň, nikto ho nedesí`));
+        continue;
+      }
+      const komu = na < 3 ? 1 : 2;
+      const sila = Math.abs(na - 3);
+      const pred = z === 3 || z < 3 !== na < 3 ? "nová" : Math.abs(z - 3) < sila ? `stúpla z +${Math.abs(z - 3)}` : `klesla z +${Math.abs(z - 3)}`;
+      expect(log).toContain(`hráč ${komu} má priazeň +${sila} (${pred}), hráč ${3 - komu} ho desí`);
+      if (pred.startsWith("klesla")) {
+        expect(log).toContain("ho desí menej");
+        klesla++;
+      }
+    }
+    expect(klesla).toBeGreaterThan(0);
+  });
 });
 
 describe("špaky teraz pri staršom (v6)", () => {

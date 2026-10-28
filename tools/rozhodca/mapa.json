@@ -1995,11 +1995,12 @@
       "id": "10.marker.smer-k-superovi",
       "paragraf": "10. Starší › Dvojaká úloha markera",
       "pravidlo": "„K súperovi / k sebe“ je smer na stupnici (k súperovmu kraju), nie polovica: posun k súperovi z tvojej polovice marker len priblíži k stredu.",
-      "stav": "nejasne",
+      "stav": "pokryte",
       "testy": [
-        "packages/core/test/elders.test.ts › z krajnej pozície ďalej von nie, späť k súperovi áno"
+        "packages/core/test/elders.test.ts › z krajnej pozície ďalej von nie, späť k súperovi áno",
+        "packages/core/test/posun-markera.test.ts › log posunu ukáže zónu pred a po aj obe strany — komu priazeň stúpla či klesla a kto ho desí (návrh #27 A)"
       ],
-      "poznamka": "Playtest 20261027-105422 nález 6 (Hela): log „Vychovávateľka o krok k súperovi → Strach, priazeň +2 má hráč 2“ zodpovedá §9.4, ale čitateľ čaká, že marker prejde k súperovi. návrh rozhodca 20261027-150555."
+      "poznamka": "Návrh #27 A, Michal 2026-10-28: odsek „Smer posunu“ v §10 a log posunu so zónou pred a po a s oboma stranami."
     },
     {
       "id": "6.konflikt",
