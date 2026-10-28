@@ -349,8 +349,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Po Zhromaždení nasleduje <P k="pitka">Pitka</P>. V bitke je ich <strong>1 + menší z počtov aktivovaných akcií lokality</strong>{" "}
           na jej dvoch stranách (1 až 4). Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta,
-          akcia hrany zrušená Odporom karty nie. Ak tvoja karta aktivuje 3 akcie lokality a súperova 1, pijú sa{" "}
-          <strong>2 Pitky</strong>. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
+          akcia hrany zrušená Odporom karty nie. Ak sú na jednej strane lokality aktivované 3 jej akcie a na druhej 1, pijú sa{" "}
+          <strong>2 Pitky</strong> — ráta sa podľa strán, nie podľa toho, kto kartu zahral; akcia ×2 je stále jedna. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
           dopije. Úroveň lokality je počet akcií na jej hrane (1, 2, 3, pinnacle 4), takže kolo má 1 až 5 Pitiek. Koľko Pitiek sa odohrá, toľko špakov dostane víťaz bitky.
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
