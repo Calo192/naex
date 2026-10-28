@@ -472,25 +472,21 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="cena-abstak">Neresti a Absťák</H3>
         <p>
           <P k="nerest">Nerest</P> je každý poldeci vypitý v Zhromaždení, každé NA EX, každá vyfajčená cigareta, doliatie a barter
-          (za každú cigaretu). Platba za šenok, Dedičstvo a Starostu sa nepočíta. Na konci kola sa neresti porovnajú s minulým
-          kolom:
+          (za každú cigaretu). Platba za šenok, Dedičstvo a Starostu sa nepočíta. Na konci kola sa porovnajú neresti{" "}
+          <strong>oboch hráčov v tomto kole</strong> — kto nedrží krok so stolom, toho to chytí:
         </p>
         <ul>
           <li>
-            <strong>Menej</strong> → <P k="abstak">Absťák</P> rovno priznaný do hracej oblasti; za priznanie si dobereš kartu.
+            <strong>Menej ako súper</strong> → <P k="abstak">Absťák</P> rovno priznaný do hracej oblasti; za priznanie si dobereš kartu.
           </li>
           <li>
-            <strong>Viac</strong> → jeden Absťák odíde. <strong>Rovnako</strong> → nič. Prvé kolo len nastaví základ.
-          </li>
-          <li>
-            S odhalenou <strong>Milujúcou manželkou</strong> (v línii alebo priznanou) dostaneš Absťák aj pri rovnakom počte; dve
-            manželky aj pri o 1 viac nerestiach.
+            <strong>Viac ako súper</strong> → jeden tvoj Absťák odíde. <strong>Rovnako</strong> → nič.
           </li>
         </ul>
         <p>
-          Každý Absťák ti v bitke zníži tuhé poškodenie o 1 — trasú sa ti ruky. Hra si pamätá, koľko
-          Absťákov si <strong>získal za hru</strong> (štatistika). Absťáky, ktoré práve máš, navyše rozhodujú remízu v bitke
-          a víťazovi s viac Absťákmi uberajú špaky za bitku.
+          Každý Absťák ti v bitke zníži tuhé poškodenie o 1 — trasú sa ti ruky —, ale dá ti <strong>1 Pohoršenie navyše</strong>:
+          kto je na suchu, robí scény. Absťáky, ktoré práve máš, rozhodujú aj remízu v bitke (prehrá, kto ich má viac). Hra si
+          pamätá, koľko Absťákov si <strong>získal za hru</strong> (štatistika).
         </p>
       </>
     ),
@@ -536,7 +532,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p className="zvyraznene">
           Víťaz dostane 1 <P k="spak">špak</P> za každú kartu, ktorá pri bitke leží v línii — na oboch stranách, aj odkrytá
           Záverečná, aj vo finále; priznané karty, Dedičstvo a karty, ktoré z línie počas kola zmizli, sa nerátajú. Ak má viac
-          Absťákov ako porazený, dostane o rozdiel menej, ale vždy aspoň 1 špak. Lokalitu si neberie — ide na krčmovú{" "}
+          Absťáky špaky nezrážajú. Lokalitu si neberie — ide na krčmovú{" "}
           <P k="nastenka">nástenku</P> s jeho menom a špakmi. Prebytok drží hráč s vyšším <strong>celkovým</strong>{" "}
           poškodením — aj pri remíze v tuhom —, ale rozdeľuje ho jeho súper.
         </p>
@@ -552,7 +548,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <a href="#kliatby">Kliatby a priznanie</a>).
           </li>
           <li>
-            <strong>Pohoršenie</strong> — posúva markery starších k súperovi alebo k sebe (kapitola{" "}
+            <strong>Pohoršenie</strong> (aj 1 za každý tvoj Absťák) — posúva markery starších k súperovi alebo k sebe (kapitola{" "}
             <a href="#starsi">Starší a prebytok</a>).
           </li>
           <li>
@@ -730,12 +726,11 @@ export const KAPITOLY: readonly Kapitola[] = [
             riskuješ, že sa ti do konca hry nevráti do ruky.
           </li>
           <li>
-            <strong>Absťák</strong> — príde rovno priznaný a za neho si dobereš kartu. Víťazovi s viac Absťákmi uberie špaky za
-            bitku a remízu v bitke prehrá, kto ich má viac.
+            <strong>Absťák</strong> — príde rovno priznaný a za neho si dobereš kartu. V bitke o ranu menej a 1 Pohoršenie navyše;
+            remízu v bitke prehrá, kto ich má viac.
           </li>
           <li>
-            <strong>Milujúca manželka</strong> — za priznanie si dobereš kartu; odhalená (v línii či priznaná) ti sťažuje
-            Absťák.
+            <strong>Milujúca manželka</strong> — za priznanie si dobereš kartu.
           </li>
         </ul>
         <H3 id="kliatby-exekutor">Exekútor a Robota</H3>
@@ -924,7 +919,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             </tr>
           </thead>
           <tbody>
-            <tr><td>Vyhratá bitka</td><td>1 za každú kartu v línii na oboch stranách (aj finále); ak má víťaz viac Absťákov ako porazený, o rozdiel menej, ale aspoň 1; k tomu špaky zo sekery</td></tr>
+            <tr><td>Vyhratá bitka</td><td>1 za každú kartu v línii na oboch stranách (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Prehratá bitka o Kultúrny dom</td><td>1 za každú svoju kartu v línii</td></tr>
             <tr><td>Starší, ktorí sa ťa boja</td><td>po vyhratej bitke (aj finále) za každú novú zónu: žltá 1, oranžová 2, červená 3 — čo už zaplatil, druhýkrát nedá, kým marker neustúpi; sivý nikomu; porazený nič, pri sekere obaja</td></tr>
             <tr><td>Noviny v Dedičstve</td><td>keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za bitku dostaneš ty</td></tr>

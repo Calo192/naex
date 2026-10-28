@@ -379,17 +379,15 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     if (vyhladP !== null) out.push(`  VÝHĽAD PITKY: ${vyhladP}`);
     const z = stavZavislosti(DATA, { ...stol, kolo: v.kolo, hraci: v.hraci }, p);
     const vyhlad =
-      z.vyhlad === "zaklad"
-        ? "1. kolo len nastaví základ"
-        : z.vyhlad === "ziska"
-          ? `na konci kola +1 Absťák, ak nepribudne ešte ${textNeresti(z.doBezpecia)}`
-          : z.vyhlad === "zbavi"
-            ? "na konci kola odíde 1 Absťák"
-            : z.doZbavenia > 0
-              ? `bez zmeny; ešte ${textNeresti(z.doZbavenia)} a 1 Absťák odíde`
-              : "bez zmeny";
+      z.vyhlad === "ziska"
+        ? `na konci kola +1 Absťák, ak nepribudne ešte ${textNeresti(z.doBezpecia)}`
+        : z.vyhlad === "zbavi"
+          ? "na konci kola odíde 1 Absťák"
+          : z.doZbavenia > 0
+            ? `bez zmeny; ešte ${textNeresti(z.doZbavenia)} a 1 Absťák odíde`
+            : "bez zmeny";
     out.push(
-      `  ABSŤÁK: ${z.abstaky} (v bitke −${z.ubera} tuhé) | neresti v kole ${z.teraz}${z.naexNaStole > 0 ? ` (z toho ${z.naexNaStole} NA EX na stole)` : ""}, minulé kolo ${z.minule} → ${vyhlad}. Nerest = Vypiť, NA EX, každá vyfajčená cigareta, doliatie a barter (cigarety); šenok, Dedičstvo a Starosta nie.`,
+      `  ABSŤÁK: ${z.abstaky} (v bitke −${z.ubera} tuhé, +${z.pohorsenia} Pohoršenie) | neresti v kole ${z.teraz}${z.naexNaStole > 0 ? ` (z toho ${z.naexNaStole} NA EX na stole)` : ""}, súper ${z.super} → ${vyhlad}. Nerest = Vypiť, NA EX, každá vyfajčená cigareta, doliatie a barter (cigarety); šenok, Dedičstvo a Starosta nie.`,
     );
     if (h.priznane.length > 0) out.push(`  priznané: ${h.priznane.map((k) => meno(k.defId)).join(", ")}`);
     if (h.dedicstvo.length > 0) out.push(`  dedičstvo: ${h.dedicstvo.map((k) => meno(k.defId)).join(", ")}`);

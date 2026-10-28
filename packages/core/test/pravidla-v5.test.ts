@@ -190,12 +190,12 @@ describe("v5 bod 5 a v6: scorecardy nesú len priazeň", () => {
   });
 
   it("Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne", () => {
-    // Menej nerestí než minulé kolo → Absťák a počítadlo +1.
-    const s = predKoncomBitky(81, (x) => sHracom(x, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: 1, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
+    // Menej nerestí než súper v kole → Absťák a počítadlo +1.
+    const s = predKoncomBitky(81, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 2 }), 0, { nerestiTotoKolo: 1, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].abstakyZiskane).toBe(2);
     // Viac nerestí → Absťák späť do zásoby, získané ostávajú.
-    const s2 = predKoncomBitky(82, (x) => sHracom(x, 0, { nerestiMinuleKolo: 1, nerestiTotoKolo: 3, abstakyZiskane: 2, priznane: [inst("abstak")], doberaci: kusy(4, "pijan") }));
+    const s2 = predKoncomBitky(82, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 1 }), 0, { nerestiTotoKolo: 3, abstakyZiskane: 2, priznane: [inst("abstak")], doberaci: kusy(4, "pijan") }));
     const po2 = apply(data, s2, { type: "cintorin", uid: null }, 0).state;
     expect(po2.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
     expect(po2.hraci[0].abstakyZiskane).toBe(2);

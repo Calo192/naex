@@ -155,6 +155,8 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
  */
 // v8 (Michal 2026-10-28): bodovanie kartami v línii, strach za nové zóny, prebytok
 // rozdeľuje porazený, Kultúrny dom „Obaja bodujú“, Cirhóza −3, Exekútor bez prahu (Záhradkár ho obíde), Kmotor presúva Dlhy.
+// v8.1 (Michal 2026-10-28, roadmapa #113) bez novej značky — test drží tvar „vN“: Absťák Nervák
+// (porovnanie nerestí so súperom, +1 Pohoršenie, bez zrážky špakov).
 export const VERZIA_PRAVIDIEL = "v8";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-10-28";

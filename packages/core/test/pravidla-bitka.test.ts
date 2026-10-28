@@ -200,8 +200,9 @@ describe("§9.5 Poldeci v bitke", () => {
     expect(st.bitkaStav).toBeNull();
     expect([st.hraci[0].poldeciPlne, st.hraci[0].poldeciVypite]).toEqual([1, 0]);
     expect([st.hraci[1].poldeciPlne, st.hraci[1].poldeciVypite]).toEqual([1, 0]);
-    // §8: NA EX je nerest (poldeci sa vypije v bitke) — po kole je to nerest minulého kola.
-    expect(st.hraci[0].nerestiMinuleKolo).toBe(1);
+    // §8: NA EX je nerest (poldeci sa vypije v bitke) — ráta sa do porovnania na konci kola.
+    expect(doBitky(sada, s).events.some((e) => e.type === "log" && /^Neresti v kole: hráč 1 1,/.test(e.text))).toBe(true);
+    expect(st.hraci[0].nerestiTotoKolo).toBe(0);
   });
 });
 
@@ -284,24 +285,38 @@ describe("§14 Koniec hry po finále (v6)", () => {
   });
 });
 
-describe("§8 Absťák a neresti", () => {
-  const sNerestami = (minule: number, teraz: number, priznane: CardInstance[] = []) =>
-    predKoncomBitky(50, (s) => sHracom(s, 0, { nerestiMinuleKolo: minule, nerestiTotoKolo: teraz, priznane, doberaci: [...s.hraci[0].doberaci, ...kusy(5, "pijan")] }));
+describe("§8 Absťák a neresti — Krok so stolom (v8.1)", () => {
+  /** Hráč 0 má v kole `ja` nerestí, súper `on`. */
+  const sNerestami = (on: number, ja: number, priznane: CardInstance[] = []) =>
+    predKoncomBitky(50, (s) =>
+      sHracom(sHracom(s, 1, { nerestiTotoKolo: on }), 0, { nerestiTotoKolo: ja, priznane, doberaci: [...s.hraci[0].doberaci, ...kusy(5, "pijan")] }),
+    );
 
-  it("§8: menej nerestí než v predošlom kole → Absťák rovno priznaný a hráč si zaň dobere kartu", () => {
+  it("§8: menej nerestí než súper v tomto kole → Absťák rovno priznaný a hráč si zaň dobere kartu", () => {
     const s = sNerestami(2, 1);
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
+    expect(po.hraci[1].priznane.filter((k) => k.defId === "abstak")).toHaveLength(0);
     // 1 karta za priznaný Absťák + KARTY_PO_BITKE (od 2026-10-27 jedna) po bitke.
     expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + 1 + KONSTANTY.KARTY_PO_BITKE);
-    expect(po.hraci[0].nerestiMinuleKolo).toBe(1);
+    expect(po.hraci[0].nerestiTotoKolo).toBe(0);
   });
 
-  it("§8: rovnako nerestí (bez Milujúcej manželky) → nič; viac → jeden Absťák späť do zásoby", () => {
+  it("§8: rovnako ako súper → nič (aj keď obaja nič); viac → jeden Absťák späť do zásoby", () => {
     const rovnako = apply(data, sNerestami(2, 2), { type: "cintorin", uid: null }, 0).state;
     expect(rovnako.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
+    const nic = apply(data, sNerestami(0, 0), { type: "cintorin", uid: null }, 0).state;
+    expect(nic.hraci.every((h) => !h.priznane.some((k) => k.defId === "abstak"))).toBe(true);
     const viac = apply(data, sNerestami(2, 3, [inst("abstak"), inst("abstak")]), { type: "cintorin", uid: null }, 0).state;
     expect(viac.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
+    // Súper s menej nerestiami Absťák dostane.
+    expect(viac.hraci[1].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
+  });
+
+  it("§8: platí už v prvom kole — základ z minulého kola nie je", () => {
+    const s: GameState = { ...sNerestami(1, 0), kolo: 1 };
+    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
+    expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
   });
 
   it("§8 nerest: doliatie poldeci 2, barter za každú cigaretu, fajčenie 1; Dedičstvo ani šenok nie", () => {

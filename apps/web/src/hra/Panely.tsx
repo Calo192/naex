@@ -115,24 +115,19 @@ export function IkonaAbstak() {
 // ---- doska hráča --------------------------------------------------------------
 
 /**
- * Neresti kola proti minulému: dieliky po čiaru minulého kola treba
- * zaplniť, aby Absťák nepribudol; dielik za čiarou jeden Absťák zoberie.
+ * Neresti kola proti súperovým (v8.1 Krok so stolom): dieliky po čiaru súpera
+ * treba zaplniť, aby Absťák nepribudol; dielik za čiarou jeden Absťák zoberie.
  */
 function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
-  const prve = z.vyhlad === "zaklad";
-  const dieliky = prve ? Math.max(z.teraz, 1) : Math.max(z.minule + 1, z.teraz);
+  const dieliky = Math.max(z.super + 1, z.teraz);
   return (
     <span className="neresti-pruh" aria-hidden="true">
       {Array.from({ length: dieliky }, (_, i) => {
         const plny = i < z.teraz;
-        const trieda = prve
-          ? plny ? "plny" : ""
-          : i < z.minule
-            ? plny ? "plny" : "chyba"
-            : plny ? "plny nad" : "nad";
+        const trieda = i < z.super ? (plny ? "plny" : "chyba") : plny ? "plny nad" : "nad";
         return (
           <span key={i} className={trieda}>
-            {!prve && i === z.minule && <i className="ciara" />}
+            {i === z.super && <i className="ciara" />}
           </span>
         );
       })}
@@ -143,8 +138,6 @@ function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
 /** Krátky výhľad pod počítadlom a jeho trieda (farba). */
 function vyhladAbstaku(z: StavZavislosti, ja: boolean): { text: string; trieda: string } {
   switch (z.vyhlad) {
-    case "zaklad":
-      return { text: "1. kolo = základ", trieda: "" };
     case "ziska":
       return { text: `hrozí +1 · chýba ${z.doBezpecia}`, trieda: "zly" };
     case "zbavi":
@@ -177,8 +170,7 @@ function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boole
       pod={
         <>
           <span className="neresti-pocet">
-            neresti {z.teraz}
-            {z.vyhlad !== "zaklad" && <> / minule {z.minule}</>}
+            {ja ? `súper ${z.super} · ty ${z.teraz}` : `ty ${z.super} · on ${z.teraz}`}
           </span>
           <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.text}</span>
         </>
@@ -189,11 +181,10 @@ function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boole
           <>
             <span className="tip-stav">
               {ja ? "Máš" : "Má"} {z.abstaky}
-              {z.abstaky > 0 && ` · v bitke −${z.ubera} tuhé`} · neresti {z.teraz}
-              {z.vyhlad !== "zaklad" && ` / minule ${z.minule}`} · {vyhlad.text}
+              {z.abstaky > 0 && ` · v bitke −${z.ubera} tuhé, +${z.pohorsenia} Pohoršenie`} · neresti {z.teraz}, súper {z.super} · {vyhlad.text}
             </span>
-            Na konci kola: menej nerestí ako minule = +1 Absťák, viac = jeden odíde. Nerest je poldeci navyše, NA EX, cigareta, doliatie aj
-            barter.
+            Na konci kola sa porovnajú neresti oboch: menej ako súper = +1 Absťák, viac = jeden odíde, rovnako nič. Každý Absťák v bitke o ranu
+            menej a 1 Pohoršenie navyše. Nerest je poldeci navyše, NA EX, cigareta, doliatie aj barter.
           </>
         ),
       }}

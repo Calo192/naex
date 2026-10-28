@@ -545,23 +545,48 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   v += 0.3 * h.cigarety * f;
   v += 0.3 * h.ruka.length * f;
   v *= k.povaha.zdroje;
-  let postih = 1.3 * verejneAbstaky(s, p);
+  // Absťák (v8.1 Nervák): o ranu menej, ale Pohoršenie navyše — nie je čisto záporný
+  // (váhy zo stratégovho merania, playtest/strategia/abstak-20261028).
+  let postih = 0.5 * verejneAbstaky(s, p);
   // Priznaný Dlh: remíza v bitke, súperove Povery; špaky, ktoré zhoria pri exekúcii, ráta rozdielBodov.
   postih += 0.3 * prahyHraca(k.data, s, p).priznaneDlhy;
-  // Absťák: menej nerestí než minulé kolo; prvé kolo len nastavuje základ.
-  if (s.kolo === 1) {
-    postih += 0.25 * h.nerestiTotoKolo;
-  } else {
-    const deficit = h.nerestiMinuleKolo - h.nerestiTotoKolo;
-    if (deficit > 0) postih += Math.min(1.3, 0.45 * deficit);
-    else postih += 0.1 * -deficit;
-  }
+  postih += hrozbaAbstaku(s, p);
   v -= k.povaha.kliatby * postih;
   // Tenký balíček už neprehráva (v5), len sa z neho nedá fajčiť ani ťahať.
   const balicek = h.doberaci.length + h.odhadzovaci.length + h.ruka.length + partiaHraca(s, p).length;
   if (balicek < TENKY_BALICEK) v -= (TENKY_BALICEK - balicek) * 0.5;
   for (const kus of h.dedicstvo) v += (DEDICSTVO[kus.defId] ?? 0) * f;
   return v;
+}
+
+/** Neresti hráča v tomto kole vrátane NA EX, ktoré ležia na stole (vypijú sa v bitke). */
+function nerestiKola(s: GameState, p: PlayerId): number {
+  let n = s.hraci[p].nerestiTotoKolo;
+  for (const strana of s.strany) {
+    for (const pl of strana) {
+      if (pl.naexBy === p) n++;
+      if (pl.naexBy2 === p) n++;
+    }
+  }
+  return n;
+}
+
+/**
+ * Výhľad Absťáku na konci kola (v8.1 Krok so stolom): menej nerestí než súper = Absťák,
+ * viac = jeden odíde. Kladné číslo je postih, záporné zisk. Po finále už nič neznamená.
+ */
+function hrozbaAbstaku(s: GameState, p: PlayerId): number {
+  if (kolPoTomto(s) === 0) return 0;
+  const ja = nerestiKola(s, p);
+  const on = nerestiKola(s, opponentOf(p));
+  if (ja < on) return 0.45;
+  if (ja === on) return 0.35 * 0.45;
+  return verejneAbstaky(s, p) > 0 ? -0.6 * 0.45 : 0;
+}
+
+/** Koľko nerestí chýba, aby na konci kola neprišiel Absťák (0 = netreba). */
+function chybajuceNeresti(s: GameState, ja: PlayerId): number {
+  return Math.max(0, nerestiKola(s, opponentOf(ja)) - nerestiKola(s, ja));
 }
 
 /** Pod toľko kariet (ruka, balíčky, partia) hráč balíček nepreriedi. */
@@ -1159,17 +1184,12 @@ function ziskPriznaniaCirhozy(v: Volba, karta: CardInstance): number {
 const BONUS_ZAVERECNEJ = 0.25;
 
 /**
- * Koľko nerestí smie hráč v tomto kole mať bez toho, aby si zdvihol latku na
- * ďalšie kolo (Absťák = menej nerestí než minule). Každá nerest navyše je
- * záväzok aj na budúce kolo — barter za 5 cigariet ich pridá 5 (playtest
- * 20261019-102558: Teta Gizka sa tak roztočila na tri Absťáky). V poslednej
- * bitke už na tom nezáleží.
+ * Koľko nerestí smie hráč v tomto kole mať. Do v8 bola každá nerest navyše záväzok
+ * na ďalšie kolo (latka minulého kola); od v8.1 latku určuje súper v tom istom
+ * kole, takže strop nie je.
  */
-function stropNeresti(state: GameState, ja: PlayerId): number {
-  if (kolPoTomto(state) === 0) return Number.POSITIVE_INFINITY;
-  const h = state.hraci[ja];
-  if (state.kolo === 1) return 1;
-  return h.nerestiMinuleKolo + (verejneAbstaky(state, ja) > 0 ? 1 : 0);
+function stropNeresti(_state: GameState, _ja: PlayerId): number {
+  return Number.POSITIVE_INFINITY;
 }
 
 // --- Pitka -----------------------------------------------------------------
@@ -1267,11 +1287,12 @@ function pitka(v: Volba): Command | null {
       if (priemer(v, best, poOdpovedi) > bez + k.povaha.prahRiziko) return best;
     }
   }
-  // Koniec ťahu v Pitke: chýbajúce neresti dorovnať, inak hrozí Absťák.
-  if (!finale && state.kolo > 1 && neresti < h.nerestiMinuleKolo) {
-    if (refill !== undefined && h.nerestiMinuleKolo - neresti >= 2) return refill;
+  // Koniec ťahu v Pitke: dorovnať súperove neresti, keď je to lacné, inak hrozí Absťák.
+  const chyba = chybajuceNeresti(state, ja);
+  if (!finale && chyba > 0) {
+    if (refill !== undefined && chyba >= 2) return refill;
     // Drahé fajčenie (3. a ďalšie v Pitke) by na chýbajúcu nerest spálilo zbytočne veľa cigariet.
-    if (smoke !== undefined && maCoTahat && cenaFajc <= h.nerestiMinuleKolo - neresti + 1) return smoke;
+    if (smoke !== undefined && maCoTahat && cenaFajc <= chyba + 1) return smoke;
     if (refill !== undefined) return refill;
   }
   return najdi("skipNaex") ?? null;

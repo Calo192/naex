@@ -146,12 +146,8 @@ describe("v6 — výsledok bitky a špaky za bitku (Michal 2026-10-26)", () => {
     expect(battleOutcome(tuhe, { abstaky: [5, 0], dlhy: [9, 0] })).toMatchObject({ vitaz: 0, rozhodlo: "tuhe" });
   });
 
-  it("víťaz dostane odohrané Pitky mínus rozdiel Absťákov, aspoň 1", () => {
-    expect(spakyZaBitku(3, 0, 0)).toBe(3);
-    expect(spakyZaBitku(3, 2, 0)).toBe(1);
-    expect(spakyZaBitku(3, 2, 1)).toBe(2);
-    expect(spakyZaBitku(2, 5, 0)).toBe(1);
-    // Viac Absťákov u porazeného víťazovi nepridá.
-    expect(spakyZaBitku(2, 0, 3)).toBe(2);
+  it("víťaz dostane 1 špak za kartu v línii, aspoň 1 — Absťáky od v8.1 nič nezrážajú (Nervák)", () => {
+    expect(spakyZaBitku(3)).toBe(3);
+    expect(spakyZaBitku(0)).toBe(1);
   });
 });

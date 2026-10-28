@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-28T08:22:51.522Z",
+ "source": "tvorca kariet 2026-10-28T11:15:40.424Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -1785,7 +1785,7 @@
    "tags": [
     "Kliatba"
    ],
-   "effect_text": "Bitka: Udeluješ súperovi o ranu menej. Ak máš viac Absťákov než súper, pri remíze v tuhom prehráš, a keď vyhráš, dostaneš o rozdiel menej špakov (aspoň 1).",
+   "effect_text": "Bitka: Udeluješ súperovi o ranu menej, ale máš 1 Pohoršenie navyše. Ak máš viac Absťákov než súper, pri remíze v tuhom prehráš.",
    "triggers": [
     "Bitka"
    ],

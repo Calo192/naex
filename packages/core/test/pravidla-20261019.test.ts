@@ -220,10 +220,9 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
   it("s priznanou Manželkou ani bez nej Absťák pri rovnosti nerestí nedostane", () => {
     const zaklad = (manzelky: number): GameState =>
       predKoncomBitky(44, (st) =>
-        sHracom(st, 0, {
+        sHracom(sHracom(st, 1, { nerestiTotoKolo: 2 }), 0, {
           // 7 štartoviek: aby bolo z čoho ťahať za Absťák aj po bitke.
           doberaci: [...st.hraci[0].doberaci, inst("pijan"), inst("pijan"), inst("pijan")],
-          nerestiMinuleKolo: 2,
           nerestiTotoKolo: 2,
           priznane: Array.from({ length: manzelky }, () => inst("milujuca_manzelka")),
         }),
@@ -237,7 +236,7 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
 
   it("ani v línii: dve Manželky pri o 1 viac nerestiach Absťák nedajú", () => {
     const s = predKoncomBitky(45, (st) => ({
-      ...sHracom(st, 0, { nerestiMinuleKolo: 2, nerestiTotoKolo: 3, priznane: [inst("milujuca_manzelka")] }),
+      ...sHracom(sHracom(st, 1, { nerestiTotoKolo: 2 }), 0, { nerestiTotoKolo: 3, priznane: [inst("milujuca_manzelka")] }),
       strany: [[{ card: inst("milujuca_manzelka"), playedBy: 0 }], []],
     }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;

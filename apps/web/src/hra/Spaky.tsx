@@ -73,7 +73,7 @@ export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string):
 
 /**
  * Špaky za Dlhy porazeného na Herni (v7) — nástenka ich nenesie zvlášť: zvyšok
- * špakov za bitku po kartách v línii (mínus Absťáky, aspoň 1) a sekere.
+ * špakov za bitku po kartách v línii (do v8 mínus Absťáky, aspoň 1) a sekere.
  */
 export function spakyZaHernu(b: BitkaNaNastenke): number {
   if (b.vitaz === null || b.lokalita?.defId !== "herna") return 0;

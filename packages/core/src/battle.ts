@@ -144,9 +144,9 @@ export function zhoriPriExekucii(priznaneDlhy: number, silaExekutora = 0): numbe
 }
 
 /**
- * Špaky víťaza za bitku (v6): odohrané Pitky mínus o koľko má víťaz viac
- * Absťákov než porazený, vždy aspoň 1.
+ * Špaky víťaza za bitku (v8): karty v línii, vždy aspoň 1. Zrážka za Absťáky
+ * zanikla v8.1 (Nervák, Michal 2026-10-28) — Absťák dáva Pohoršenie navyše.
  */
-export function spakyZaBitku(pitky: number, abstakyVitaza: number, abstakyPorazeneho: number): number {
-  return Math.max(KONSTANTY.SPAKY_ZA_BITKU_MIN, pitky - Math.max(0, abstakyVitaza - abstakyPorazeneho));
+export function spakyZaBitku(karty: number): number {
+  return Math.max(KONSTANTY.SPAKY_ZA_BITKU_MIN, karty);
 }

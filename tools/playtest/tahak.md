@@ -9,7 +9,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Špaky (v6, 2026-10-26) = víťazné body.** Vyhrá, kto má po finále viac špakov.
   **Víťaz bitky** dostane **1 špak za každú kartu v línii** na oboch stranách v čase bitky (v8,
   2026-10-28; aj odkrytá Záverečná, nie priznané karty ani Dedičstvo, nie karty, ktoré z línie počas
-  kola zmizli), o rozdiel Absťákov menej, ak ich má viac než porazený (aspoň 1); lokalitu si
+  kola zmizli), aspoň 1 — Absťáky ich od v8.1 neuberajú; lokalitu si
   **neberie** (ide na nástenku). Počet Pitiek už špaky neurčuje.
   **Strach za novú zónu (v8):** **len víťazovi bitky** (aj finále; pri **sekere** obom) zaplatí každý
   starší, ktorý sa ho bojí, **len zóny, ktoré mu ešte nezaplatil: žltá 1, oranžová 2, červená 3
@@ -204,9 +204,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   zvyšok pod prahom ostáva na účte do ďalšej Pitky aj kola. Za **každý celý prah** jedna kliatba
   (zadĺženie 8 pri prahu 2 = 4 Dlhy). Milujúca manželka (v7) v línii: tvoja pečeň v Pitke −1.
   Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
-- **Absťák:** na konci kola, ak máš menej nerestí než minule. Viac nerestí →
-  jeden Absťák odíde. Absťáky, ktoré **práve máš**, uberajú víťazovi špaky za bitku
-  (o rozdiel oproti porazenému) a pri remíze v tuhom prehráva, kto ich má viac.
+- **Absťák (v8.1 Nervák, 2026-10-28):** na konci kola sa porovnajú neresti **oboch v tomto kole** —
+  menej ako súper → Absťák (rovno priznaný, +1 karta); viac → jeden tvoj Absťák odíde; rovnako nič.
+  Každý Absťák: v bitke o ranu menej a **+1 Pohoršenie**; pri remíze v tuhom prehráva, kto ich má viac.
+  Špaky za bitku neuberá. Výpis ukazuje „neresti v kole X, súper Y“.
 - **Stupnica (v6):** 7 polí 3-2-1-0-1-2-3, jedno sivé. Marker určuje **priazeň**
   (komu je posunutý, sila 1 / 2 / 3) a koho sa starší bojí (nové zóny mu zaplatí po bitke, ktorú ten vyhrá).
   Scorecard nesie už len priazeň, bodovacie podmienky nie sú.
@@ -247,7 +248,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Smer posunu** (2026-10-28): „k súperovi / k sebe“ je smer na stupnici, nie polovica — z tvojej
   polovice posun k súperovi marker len priblíži k stredu (tvoja priazeň −1, súpera sa bojí menej).
   Log posunu píše zónu pred → po, komu priazeň stúpla/klesla a kto staršieho desí.
-- **Pohoršenie (v5 oboma smermi):** každé posunie marker o 1 **k súperovi alebo
+- **Pohoršenie (v5 oboma smermi):** z akcií, patronátu, priazne Abstinenta a 1 za každý tvoj Absťák;
+  každé posunie marker o 1 **k súperovi alebo
   k sebe** (`{"type":"pohorsenie","elderId":…}`, k sebe s `"kSebe":true`);
   k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Pohoršenie
   ide pred špakmi za starších, takže nová zóna z neho platí už v tejto bitke (ak ju vyhráš). V6: ten istý

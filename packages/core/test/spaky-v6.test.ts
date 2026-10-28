@@ -103,7 +103,7 @@ describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
     expect(v?.type === "bitkaVysledok" ? v.rekap?.spaky?.zaBitku : null).toEqual([2, 0]);
   });
 
-  it("Absťák: víťaz s viac Absťákmi dostane o rozdiel menej, aspoň 1", () => {
+  it("Absťák (v8.1 Nervák): víťaz s viac Absťákmi dostane špaky za bitku celé — zrážka zanikla", () => {
     const s = predPoskodenim({
       ciel: lokalita(s0, "krcma"),
       sums: [{ Rana: 9 }, {}],
@@ -111,7 +111,7 @@ describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
       uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], priznane: [inst("abstak"), inst("abstak")] }, t.hraci[1]] }),
     });
     const zaznam = pohorsenie(s).state.nastenka.at(-1)!;
-    expect(zaznam).toMatchObject({ vitaz: 0, zaBitku: [1, 0], abstakZrazka: 2 });
+    expect(zaznam).toMatchObject({ vitaz: 0, zaBitku: [3, 0], abstakZrazka: 0 });
   });
 
   it("sekera: remíza v tuhom, Absťákoch aj Dlhoch — špaky kola čakajú, vezme ich víťaz ďalšej bitky", () => {

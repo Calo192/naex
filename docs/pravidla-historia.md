@@ -1495,3 +1495,31 @@ Zhromaždenia (limit sa počíta na jeho začiatku, §6).
 Hra sa nemení. §10 dostal odsek „Smer posunu“ (smer na stupnici, nie polovica).
 Log posunu predtým: „Vychovávateľka o krok k súperovi → Strach, priazeň +2 má
 hráč 2“; teraz so zónou pred a po a s oboma stranami.
+
+## v8.1 — Absťák „Nervák“: Krok so stolom (Michal 2026-10-28, roadmapa #113)
+
+Absťák vznikal porovnaním s vlastným minulým kolom (špirála, „menej pitia = trest“)
+a víťazovi s viac Absťákmi uberal špaky za bitku. Návrhy 1 + 4 z docs/napady/abstak-2.html,
+zmerané v docs/playtesty/abstak-meranie-20261028.html. Staré znenia doslovne:
+
+> **Absťák:** na konci kola (po bitke) sa porovnajú neresti hráča s predošlým
+> kolom:
+>
+> - **menej nerestí** (s Milujúcou manželkou aj rovnako, §16) → hráč dostane
+>   **Absťák rovno priznaný** a dobere si zaň kartu,
+> - **viac nerestí** → jeden priznaný Absťák sa vráti do zásoby,
+> - prvé kolo len nastaví základ.
+>
+> Hra si pamätá, koľko Absťákov hráč **získal za hru** (štatistika); keď sa
+> Absťáku zbaví, toto číslo neklesne.
+>
+> Každý Absťák hráča znižuje **jeho** tuhé poškodenie v bitke o 1 (§9.3).
+> Absťáky, ktoré hráč **práve má** (priznané, jeho karty v línii aj v ruke),
+> navyše rozhodujú remízu v bitke a víťazovi s viac Absťákmi uberajú špaky za
+> bitku (§9.4). Klient
+> ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`).
+
+> Ak má víťaz **viac Absťákov** ako porazený, dostane o rozdiel menej, ale **vždy
+> aspoň 1 špak**. Absťáky sa rátajú ako pri remíze.
+
+> | Absťák | keď hráč v kole skonzumuje **menej nerestí** než v predošlom (§8) — **rovno priznaný** | znižuje **tvoje** tuhé poškodenie o 1 za kus; víťazovi s viac Absťákmi uberie špaky za bitku a remízu v bitke prehráva, kto má viac Absťákov (§9.4) |

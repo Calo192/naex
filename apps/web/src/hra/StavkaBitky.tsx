@@ -7,7 +7,7 @@ import { pocet } from "@naex/core";
 import { IkonaSpaku } from "./Spaky.tsx";
 
 const VYSVETLENIE =
-  "Víťaz bitky dostane 1 špak za každú kartu v línii (na oboch stranách, v čase bitky), mínus o koľko má viac Absťákov než porazený (aspoň 1), " +
+  "Víťaz bitky dostane 1 špak za každú kartu v línii (na oboch stranách, v čase bitky), aspoň 1, " +
   "a k tomu špaky zo sekery a od starších, ktorí sa ho boja — len za zóny, ktoré mu ešte nezaplatili. Porazený od starších nedostane nič, pri sekere dostanú obaja. " +
   "Každá ďalšia karta v línii zvýši stávku o 1.";
 

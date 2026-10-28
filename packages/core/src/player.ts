@@ -23,8 +23,7 @@ export interface PlayerState {
   readonly pecen: number;
   /** Zadĺženie z akcií Dlh v tejto Pitke (pri prahu vzniká Dlh); po Pitke sa vynuluje. */
   readonly zadlzenie: number;
-  /** Spotrebované neresti v predošlom kole — porovnanie dáva Absťák. */
-  readonly nerestiMinuleKolo: number;
+  /** Neresti v tomto kole — na konci kola ich porovnanie so súperovými dáva Absťák (v8.1). */
   readonly nerestiTotoKolo: number;
   /**
    * Absťáky získané za celú hru (v5, podmienka Absťák — Michal 2026-10-25):
@@ -50,7 +49,6 @@ export function freshPlayer(): PlayerState {
     cigarety: KONSTANTY.START_CIGARETY,
     pecen: 0,
     zadlzenie: 0,
-    nerestiMinuleKolo: 0,
     nerestiTotoKolo: 0,
     abstakyZiskane: 0,
   };

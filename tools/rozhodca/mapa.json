@@ -1079,7 +1079,7 @@
     {
       "id": "9.vysledok.vitaz",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (práve teraz; Autobusár jeden ignoruje), potom menej priznaných Dlhov, inak sekera.",
+      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (práve teraz), potom menej priznaných Dlhov, inak sekera.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera",
@@ -1354,27 +1354,35 @@
     {
       "id": "8.abstak.vznik",
       "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Menej nerestí než v predošlom kole → Absťák rovno priznaný, karta za neho a +1 k Absťákom získaným za hru; prvé kolo len nastaví základ.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-bitka.test.ts › §8: menej nerestí než v predošlom kole → Absťák rovno priznaný a hráč si zaň dobere kartu; packages/core/test/zavislost.test.ts › prvé kolo len nastaví základ."
+      "pravidlo": "Na konci kola menej nerestí než súper v tom istom kole → Absťák rovno priznaný, karta za neho a +1 k Absťákom získaným za hru; platí aj v prvom kole (v8.1 Krok so stolom).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-bitka.test.ts › §8: menej nerestí než súper v tomto kole → Absťák rovno priznaný a hráč si zaň dobere kartu",
+        "packages/core/test/pravidla-bitka.test.ts › §8: platí už v prvom kole — základ z minulého kola nie je",
+        "packages/core/test/pravidla-v5.test.ts › Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne"
+      ],
+      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
     },
     {
       "id": "8.abstak.zbavenie",
       "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Viac nerestí → jeden Absťák späť do zásoby; rovnako bez Manželky nič.",
+      "pravidlo": "Viac nerestí než súper v tom istom kole → jeden Absťák späť do zásoby; rovnako (aj 0 : 0) nič.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §8: rovnako nerestí (bez Milujúcej manželky) → nič; viac → jeden Absťák späť do zásoby"
-      ]
+        "packages/core/test/pravidla-bitka.test.ts › §8: rovnako ako súper → nič (aj keď obaja nič); viac → jeden Absťák späť do zásoby"
+      ],
+      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
     },
     {
       "id": "8.abstak.manzelka",
       "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "S Milujúcou manželkou Absťák aj pri rovnakom počte nerestí; Manželky sa sčítavajú.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "pravidlo": "Milujúca manželka (v7) latku Absťáku neposúva — Absťák pri rovnakom počte nerestí ako súper nevznikne ani s ňou.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-20261019.test.ts › s priznanou Manželkou ani bez nej Absťák pri rovnosti nerestí nedostane",
+        "packages/core/test/pravidla-20261019.test.ts › ani v línii: dve Manželky pri o 1 viac nerestiach Absťák nedajú"
+      ],
+      "poznamka": "Manželka v7 už nie je Kliatba ani latka Absťáku; v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
     },
     {
       "id": "8.abstak.tuhe",
@@ -1386,12 +1394,24 @@
       ]
     },
     {
+      "id": "9.pohorsenie.abstak",
+      "paragraf": "9. Bitka › 9.2 Pohoršenie",
+      "pravidlo": "Nervák (v8.1): každý Absťák hráča (priznaný a v línii, nie v ruke) mu dá v bitke 1 Pohoršenie navyše.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/abstak-nervak.test.ts › každý priznaný Absťák pridá hráčovi 1 Pohoršenie, súperovi nič",
+        "packages/core/test/abstak-nervak.test.ts › Absťák v ruke sa do Pohoršení neráta — počet Pohoršení by prezradil ruku",
+        "packages/core/test/abstak-nervak.test.ts › v partii hráč s Absťákmi dostane v kroku Pohoršenie aspoň toľko Pohoršení, koľko má Absťákov"
+      ],
+      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
+    },
+    {
       "id": "8.abstak.autobusar",
       "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
       "pravidlo": "Autobusár jeden Absťák majiteľa ignoruje všade, kde sa v bitke rátajú: v tuhom poškodení, pri remíze v tuhom aj v špakoch víťaza (min 0).",
-      "stav": "na-overenie",
+      "stav": "netestovatelne",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Autobusár v sade v29 Absťák nespomína (Zhromaždenie: súper bez cigariet za pas); jadro výnimku nemá. Pohoršenie z Absťáku sa preto ráta celé. v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
     },
     {
       "id": "8.nerest",
@@ -1740,10 +1760,10 @@
     {
       "id": "16.karta.manzelka",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Milujúca manželka (Furt, v línii aj priznaná): Absťák aj pri rovnakom počte nerestí; sčítavajú sa.",
+      "pravidlo": "Milujúca manželka (v7): tvoje poškodenie pečene v Pitke −1; Absťáku sa netýka.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "poznamka": "Latka Absťáku zanikla v v8.1 (porovnanie so súperom). v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
     },
     {
       "id": "7.naex.odkrytie",
@@ -1828,12 +1848,12 @@
     {
       "id": "14.spaky.za-bitku",
       "paragraf": "14. Špaky",
-      "pravidlo": "Víťaz bitky dostane 1 špak za každú kartu v línii na oboch stranách v čase bitky (v8; aj finále), o rozdiel Absťákov menej, ak ich má viac než porazený, aspoň 1; plus špaky zo sekery. Lokalitu si neberie.",
+      "pravidlo": "Víťaz bitky dostane 1 špak za každú kartu v línii na oboch stranách v čase bitky (v8; aj finále), aspoň 1 — od v8.1 bez zrážky za Absťáky; plus špaky zo sekery. Lokalitu si neberie.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie",
-        "packages/core/test/spaky-v6.test.ts › Absťák: víťaz s viac Absťákmi dostane o rozdiel menej, aspoň 1",
-        "packages/core/test/battle.test.ts › víťaz dostane odohrané Pitky mínus rozdiel Absťákov, aspoň 1",
+        "packages/core/test/spaky-v6.test.ts › Absťák (v8.1 Nervák): víťaz s viac Absťákmi dostane špaky za bitku celé — zrážka zanikla",
+        "packages/core/test/battle.test.ts › víťaz dostane 1 špak za kartu v línii, aspoň 1 — Absťáky od v8.1 nič nezrážajú (Nervák)",
         "packages/core/test/finale-pinnacle.test.ts › nástenka označí finále aj s lokalitou; log píše zvlášť 1 špak za kartu v línii a Herňu za Dlhy porazeného"
       ]
     },

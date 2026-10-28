@@ -255,7 +255,7 @@ describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {
   it("vo finále dolieva vypité poldeci, kým to výkupné zvýši (2 cigarety → plný poldeci = špak)", () => {
     for (const povaha of POVAHY) {
       // Bez Absťáku v hre — dolieva kvôli výkupnému, nie kvôli nerestiam.
-      const s = vPitkeFinale({ poldeciPlne: 0, poldeciVypite: 2, cigarety: 7, nerestiMinuleKolo: 0, nerestiTotoKolo: 3 });
+      const s = vPitkeFinale({ poldeciPlne: 0, poldeciVypite: 2, cigarety: 7, nerestiTotoKolo: 3 });
       expect(legalCommands(data, s, 0).some((c) => c.type === "refillPoldeci")).toBe(true);
       expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("refillPoldeci");
     }
@@ -263,8 +263,9 @@ describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {
 
   it("vo finále nefajčí cigaretu, ktorá by zobrala špak z výkupného, ani kvôli Absťáku po finále", () => {
     for (const povaha of POVAHY) {
-      // Jedna karta v ruke (s prázdnou by fajčil — karta mu ešte môže vyhrať finále), v predošlom kole 6 nerestí.
-      const s = vPitkeFinale({ poldeciPlne: 1, poldeciVypite: 0, cigarety: 5, ruka: [{ uid: 990001, defId: "pijan", leftLayout: 0, rightLayout: 0 }], nerestiMinuleKolo: 6, nerestiTotoKolo: 0 });
+      // Jedna karta v ruke (s prázdnou by fajčil — karta mu ešte môže vyhrať finále), súper má v kole 6 nerestí.
+      const s0 = vPitkeFinale({ poldeciPlne: 1, poldeciVypite: 0, cigarety: 5, ruka: [{ uid: 990001, defId: "pijan", leftLayout: 0, rightLayout: 0 }], nerestiTotoKolo: 0 });
+      const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], nerestiTotoKolo: 6 }] };
       expect(legalCommands(data, s, 0).some((c) => c.type === "smoke")).toBe(true);
       expect(tahBota(data, s, 0, 5, { povaha: povaha.id }).type, povaha.id).not.toBe("smoke");
     }
