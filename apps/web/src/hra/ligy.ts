@@ -5,11 +5,19 @@
 import type { DlzkaHry } from "@naex/core";
 import { ALL_DLZKY } from "@naex/core";
 
+/** Prečo hráč ligu smie: odomkol ju sám, smú ju všetci, smie vždy (správca, AI), alebo nesmie. */
+export type PristupKLige = "odomknuta" | "vsetci" | "vzdy" | "zamknuta";
+
 export interface StavLigy {
   readonly liga: DlzkaHry;
   readonly smie: boolean;
+  /** Chýba pri starom serveri. */
+  readonly pristup?: PristupKLige;
+  /** Čo treba splniť, aj s postupom výhier („… proti človeku (máš 0/1).“). */
   readonly podmienka: string | null;
   readonly postup: { readonly ma: number; readonly treba: number } | null;
+  /** Výhry proti ľuďom v lige. */
+  readonly vyhry?: number;
 }
 
 /** Smie hráč ligu? Bez stavu (starý server, ešte nenačítané) áno — server aj tak overí. */
@@ -17,12 +25,20 @@ export function smieLigu(ligy: readonly StavLigy[] | null, liga: DlzkaHry): bool
   return ligy?.find((l) => l.liga === liga)?.smie ?? true;
 }
 
-/** Text zámku: podmienka a postup („Vyhraj 3 partie Druhej ligy proti človeku. (1/3)“); null, keď liga nie je zamknutá. */
+/** Text zámku — podmienka s postupom od servera; null, keď liga nie je zamknutá. */
 export function popisZamku(ligy: readonly StavLigy[] | null, liga: DlzkaHry): string | null {
   const s = ligy?.find((l) => l.liga === liga);
   if (s === undefined || s.smie) return null;
-  const postup = s.postup === null ? "" : ` (${s.postup.ma}/${s.postup.treba})`;
-  return `${s.podmienka ?? "Túto ligu ti zatiaľ nepustili."}${postup}`;
+  return s.podmienka ?? "Túto ligu ti zatiaľ nepustili.";
+}
+
+/** Riadok ligy v profile: stav a čo chýba (Michal 2026-10-28). */
+export function stavLigyVProfile(s: StavLigy): { readonly stav: string; readonly detail: string | null } {
+  const pristup = s.pristup ?? (s.smie ? "odomknuta" : "zamknuta");
+  const stav = { odomknuta: "odomknutá", vsetci: "zatiaľ voľná pre všetkých", vzdy: "voľná vždy", zamknuta: "zamknutá" }[pristup];
+  // Kým smú všetci, podmienka ukazuje, čo bude treba, až ju admin zapne.
+  const detail = s.podmienka === null ? null : pristup === "vsetci" ? `Na odomknutie: ${s.podmienka}` : pristup === "zamknuta" ? s.podmienka : null;
+  return { stav, detail };
 }
 
 /**

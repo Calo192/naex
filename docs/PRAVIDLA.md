@@ -348,7 +348,8 @@ limit vykladania = plné poldeci + 1
   zahral** — bez výnimky (aj Kočovník).
 - Každá ďalšia karta v tom istom ťahu stojí plný poldeci (Vypiť, §13), takže
   zostávajúci limit hneď klesne.
-- Limit sa počíta **nanovo na začiatku každého Zhromaždenia**.
+- Limit sa počíta **nanovo na začiatku každého Zhromaždenia**. Výnimka: Vínko
+  vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď (§16).
 - **Na začiatku každého kola** (pred voľbou cieľa a stavbou šenku) sa každému
   hráčovi otočí **jeden vypitý poldeci na plný**. Viac vypitých si treba doliať
   (cigarety, barter, akcia Poldeci, Krčmárka — §7, §9.5, §16).
@@ -560,8 +561,11 @@ každá aktívna akcia hrany (aj Odpor či Posilnenie v páre). **Odpor na hrane
 lokality** sa ráta ako jej aktívna akcia; akcia hrany, ktorú zrušil **Odpor
 karty** v páre, sa neráta.
 
-Príklad: hráč A aktivuje 3 akcie lokality, hráč B 1 → **2 Pitky**; kto pri
-lokalite nič neaktivuje, kolo má 1 Pitku. Pred každou Pitkou je Zhromaždenie
+Príklad: na jednej strane lokality sú aktivované 3 jej akcie, na druhej 1 →
+**2 Pitky**; keď je na niektorej strane 0, kolo má 1 Pitku. Ráta sa **podľa
+strán, nie podľa hráčov**: nezáleží na tom, kto kartu zahral (aj podstrčená
+karta aktivuje hranu pri strane, kde leží), ani kto má v kraji prevahu. Akcia
+hrany zdvojená Posilnením (×2) je stále **jedna** aktivovaná akcia. Pred každou Pitkou je Zhromaždenie
 (limit sa ráta nanovo, začína útočník). Počet sa prepočítava s líniou počas
 kola (vykladanie, odpoveď, NA EX); už začatá Pitka sa vždy dopije. Lokality
 majú na každej strane 1–4 akcie (úroveň), teda 1–5 Pitiek; aj finále na
@@ -813,6 +817,14 @@ a ráta sa do vydesenia. Jediný rozdiel: náhradu si nikto nevezme do ruky
 **Konvencia strán:** indexy 0–2 = polovica hráča 0, 4–6 = polovica hráča 1,
 3 = neutrálny stred. Každý posun (prebytok, Pohoršenie, §9) je **jedno pole**:
 zo stredu do žltej 1, do oranžovej 2, na červenú 3 — a rovnako späť.
+
+**Smer posunu** (návrh #27 A, Michal 2026-10-28): „k súperovi“ a „k sebe“ je
+**smer na stupnici** — k súperovmu, alebo k svojmu kraju — nie polovica. Keď
+marker leží na tvojej polovici, posun k súperovi ho priblíži k stredu: tvoja
+priazeň klesne o stupeň a starší sa súpera bojí menej; priazeň súperovi dá až
+posun za stred. Na súperovej polovici posun k súperovi zväčší jeho priazeň aj
+strach z teba. Log posunu píše zónu pred a po a obe strany (komu priazeň
+stúpla či klesla, kto staršieho desí).
 
 ### Dvojaká úloha markera
 
@@ -1123,6 +1135,9 @@ voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako p
   kartou ťahu po Vypiť a platia pre ňu všetky pravidlá vykladania.
 - Kým leží lícom dole, **ráta sa normálne** — akcie, spoje, prevaha, tuhé.
   Súper z nej nevidí nič (ani meno v logu); jej príspevok mu ostáva neznámy.
+  Ani cez jeho vlastné karty: akciu jeho karty, ktorú Záverečná spáruje
+  (aktivuje, zdvojí či zruší), mu hra neukáže a odhad bitky ju nezarátava —
+  uvidí ju až po otočení.
 - **Za ňu sa nedá priložiť** žiadna karta (ani odpoveď na NA EX), kým sa
   neotočí — tá strana je dovtedy zablokovaná.
 - **NA EX** na ňu smie v Pitke dať len **súper** a prejde vždy (nekontroluje
@@ -1347,7 +1362,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Vidly | Dedičstvo: každá tvoja aktívna akcia Rana z vyložených kariet (aj hrany lokality) udelí o 1 poškodenie viac. Rany navyše z efektov kariet (Svokra, Pijan, Vymáhač, Strýko z Ameriky) Vidly nezosilnia (Michal 2026-10-27). |
 | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); v poslednej Pitke kola (pred bitkou) získaš 1 Dlh. |
 | Svätý text | Dedičstvo: hodnota tvojej Viery je o 1 vyššia. |
-| Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); poldeci za cigarety dolievať nesmieš. |
+| Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); vyložené v Zhromaždení platí **hneď** — zostávajúci limit sa zvýši o 1 (na Zastávke spoločný obom aj tvoj vlastný; návrh #26 B, Michal 2026-10-28). Druhé Vínko limit nezvýši. Poldeci za cigarety dolievať nesmieš. |
 | Nealko | Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (sčíta sa s Krčmou). Poldeci, NA EX ani akciu Poldeci nemení. |
 | Lievik | Dedičstvo: NA EX smieš dať aj na Zviera. |
 

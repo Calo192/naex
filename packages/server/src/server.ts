@@ -309,7 +309,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   }
   const tempoPartii = new TempoPartii(db);
   const prava = new Prava(db);
-  const ligy = new Ligy(db, teraz);
+  const ligy = new Ligy(db, teraz, achievementy);
   const profily = new Profily(db);
   /** Keď používateľ právo nemá, pošle mu chybu a vráti true (ws príkaz sa nevykoná). */
   const bezPrava = (ws: WebSocket, ja: Pouzivatel, pravo: Pravo): boolean => {

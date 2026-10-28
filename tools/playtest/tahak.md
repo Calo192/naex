@@ -63,7 +63,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   vypit, karta“ server odmietne), alebo jednotlivé `place` / `vypit`.
 - **Pitky:** Pitiek v bitke = **1 + menší počet aktivovaných akcií lokality**
   z jej dvoch strán (1–4); Odpor na hrane lokality sa ráta, akcia hrany zrušená
-  Odporom karty nie. Pred každou
+  Odporom karty nie. Ráta sa podľa strán, nie podľa toho, kto kartu zahral (aj
+  podstrčená); akcia hrany ×2 je stále jedna. Pred každou
   Pitkou je Zhromaždenie. Počet sa mení s líniou — výpis ho ukazuje. „Ešte
   jednu!“ už neexistuje.
 - **Prevaha (2026-10-20):** akcie hrany lokality dostane, kto má v tej
@@ -146,8 +147,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   limit ani neodovzdá ťah. Za priznané Dlhy príde v každej bitke Exekútor.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
-  nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy). Otočí
-  sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
+  nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy); akciu jeho
+  karty, ktorú spáruje, mu výpis ani odhad bitky neukáže. Otočí sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
 - **Nástup s voľbou (v7):** Živnostník — za neho hneď smieš priložiť Nástroj z ruky mimo limitu
   (`{"type":"nastroj","uid":…}`, nič = `"uid":null`; aj pri otočení Záverečnej); Starosta — karta zo
   šenku (`{"type":"senok","uid":…}`); Kapybara — marker jedného staršieho o 1 pole k stredu
@@ -167,7 +168,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   zadĺženie za každú svoju aktívnu Poveru. Poštárka dá Dlh len za naozaj dobratú kartu.
 - **Dedičstvo** (Nástroj do hracej oblasti, `target` `dedicstvo`): cena rastie
   pre oboch spolu — 1., 2., 3. Nástroj v hre stojí 1, 2, 3 cigarety. Efekt
-  Nástroja platí **len v Dedičstve**.
+  Nástroja platí **len v Dedičstve**. Vínko vyložené v Zhromaždení zvýši zostávajúci
+  limit **hneď** o 1 (2026-10-28; na Zastávke spoločný aj tvoj vlastný).
 - **Nástroj v línii** tvorí spoj len s Občanom/Starešinom a jeho akcie dostane
   **majiteľ karty, s ktorou tvorí spoj** (podstrčený Nástroj pracuje pre
   súpera).
@@ -242,6 +244,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   vyložiť. **Výhra** = starší ostáva tebe (náhrada sa otočí); **prehra** aj sekera = starší
   sa vráti, náhrada do ruky a **odhodíš poldeci** natrvalo. Patronát platí aj vo finále
   a vráti marker z červenej naraz do stredu.
+- **Smer posunu** (2026-10-28): „k súperovi / k sebe“ je smer na stupnici, nie polovica — z tvojej
+  polovice posun k súperovi marker len priblíži k stredu (tvoja priazeň −1, súpera sa bojí menej).
+  Log posunu píše zónu pred → po, komu priazeň stúpla/klesla a kto staršieho desí.
 - **Pohoršenie (v5 oboma smermi):** každé posunie marker o 1 **k súperovi alebo
   k sebe** (`{"type":"pohorsenie","elderId":…}`, k sebe s `"kSebe":true`);
   k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Pohoršenie

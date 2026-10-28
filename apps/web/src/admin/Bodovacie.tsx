@@ -4,9 +4,7 @@
 // na obrazovke aj v tlači.
 
 import { useRef, useState } from "react";
-import type { Podmienka } from "@naex/core";
-import { ALL_PODMIENKY } from "@naex/core";
-import type { BodovaciaKarta, IkonaBodovania } from "@naex/tvorba";
+import type { BodovaciaKarta } from "@naex/tvorba";
 import { mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { useTitulok } from "../lib/router.tsx";
@@ -15,77 +13,8 @@ import { nahrajMedia, nahrajNahlad, noveId, useAdmin } from "./stav.tsx";
 import { AdminHlava } from "./spolocne.tsx";
 
 import { BodovaciaSvg } from "../karta/BodovaciaSvg.tsx";
-import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
 
 export { BodovaciaSvg };
-
-function IkonyBodovania() {
-  const { obsah, ulozIkonuBodovania, zmazIkonuBodovania } = useAdmin();
-  const [chyba, setChyba] = useState<string | null>(null);
-  const subor = useRef<HTMLInputElement>(null);
-  if (obsah === null) return null;
-  return (
-    <section className="panel">
-      <div className="admin-hlava">
-        <h3>Ikony bodovania</h3>
-        <input
-          ref={subor}
-          type="file"
-          accept=".svg,image/svg+xml,image/png"
-          multiple
-          hidden
-          onChange={(e) => {
-            const subory = Array.from(e.target.files ?? []);
-            e.target.value = "";
-            void (async () => {
-              try {
-                for (const f of subory) {
-                  const media = await nahrajMedia(f, "ikona", f.name);
-                  await ulozIkonuBodovania({ id: noveId("ikona"), nazov: f.name.replace(/\.[a-z]+$/i, ""), media });
-                }
-              } catch (err) {
-                setChyba(err instanceof Error ? err.message : String(err));
-              }
-            })();
-          }}
-        />
-        <button className="tlacidlo-male" onClick={() => subor.current?.click()}>
-          + Nahrať SVG
-        </button>
-      </div>
-      {chyba !== null && <Hlaska>{chyba}</Hlaska>}
-      <p className="tlmene">Ikony bočných bodovacích pozícií. Každej treba určiť, čo v hre znamená.</p>
-      <div className="ikony-bodovania">
-        {obsah.ikonyBodovania.map((i) => (
-          <div key={i.id} className="ikona-bodovania">
-            <img src={mediaUrl(i.media)} alt="" />
-            <span>{i.nazov}</span>
-            {/* Bez významu sa scorecard s touto ikonou nedá zverejniť. */}
-            <select
-              value={i.podmienka ?? ""}
-              aria-label={`Význam ikony ${i.nazov}`}
-              onChange={(e) => {
-                const v = e.target.value;
-                void ulozIkonuBodovania({ ...i, podmienka: v === "" ? null : (v as Podmienka) });
-              }}
-            >
-              <option value="">— význam v hre —</option>
-              {ALL_PODMIENKY.map((p) => (
-                <option key={p} value={p}>
-                  {NAZOV_PODMIENKY[p]}
-                </option>
-              ))}
-            </select>
-            <button className="tlacidlo-male tlacidlo-jemne" onClick={() => void zmazIkonuBodovania(i.id)} aria-label={`Zmazať ${i.nazov}`}>
-              ✕
-            </button>
-          </div>
-        ))}
-        {obsah.ikonyBodovania.length === 0 && <span className="tlmene">Zatiaľ žiadne ikony.</span>}
-      </div>
-    </section>
-  );
-}
 
 function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly zavri: () => void }) {
   const { obsah, ulozBodovaciu, zmazBodovaciu } = useAdmin();
@@ -195,7 +124,7 @@ function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly
                 </button>
               ))}
             </div>
-            {obsah.ikonyBodovania.length === 0 && <p className="tlmene">Najprv nahraj ikony v sekcii „Ikony bodovania“.</p>}
+            {obsah.ikonyBodovania.length === 0 && <p className="tlmene">Sada nemá žiadne ikony bodovania.</p>}
           </div>
         </div>
       )}
@@ -249,7 +178,6 @@ export function Bodovacie() {
           {obsah.bodovacie.length === 0 && <p className="tlmene">Zatiaľ žiadne karty priazne.</p>}
         </div>
       )}
-      <IkonyBodovania />
     </div>
   );
 }

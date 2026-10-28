@@ -1476,3 +1476,22 @@ bitku a za starších, pred prebytkom. Staré znenia doslovne:
 > hráča (jeho karta, v tejto bitke), Exekútor ho v kroku 1 obíde — nezhorí mu ani
 > jeden Dlh a neodpočíta žiadne špaky (ani navyše za súperovu priazeň Exekútora).
 > Nezahadzuje sa, po bitke sa vráti ako každá karta (§16).
+
+## v8 — spresnené znenie §7 a §13 (rozhodca, návrh #25 A, Michal 2026-10-28)
+
+Hra sa nemení. §7: príklad Pitiek hovoril o hráčoch („hráč A aktivuje 3 akcie
+lokality, hráč B 1 → 2 Pitky; kto pri lokalite nič neaktivuje, kolo má 1 Pitku“),
+teraz o stranách lokality, s vetou o podstrčenej karte a o akcii ×2. §13: k
+Záverečnej veta, že akciu tvojej karty, ktorú spáruje, neukáže ani odhad bitky.
+
+## v8 — Vínko zvýši limit hneď (rozhodca, návrh #26 B, Michal 2026-10-28)
+
+Staré znenie §16: „Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1);
+poldeci za cigarety dolievať nesmieš.“ — hra dávala +1 až od ďalšieho
+Zhromaždenia (limit sa počíta na jeho začiatku, §6).
+
+## v8 — smer posunu markera v §10 (rozhodca, návrh #27 A, Michal 2026-10-28)
+
+Hra sa nemení. §10 dostal odsek „Smer posunu“ (smer na stupnici, nie polovica).
+Log posunu predtým: „Vychovávateľka o krok k súperovi → Strach, priazeň +2 má
+hráč 2“; teraz so zónou pred a po a s oboma stranami.

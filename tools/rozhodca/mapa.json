@@ -1910,11 +1910,11 @@
       "id": "7.pitky.podla-strany",
       "paragraf": "7. Pitka › Počet Pitiek",
       "pravidlo": "Počet Pitiek sa ráta podľa strán lokality (aktívne akcie každej hrany), nie podľa hráča, ktorý kartu zahral, ani podľa prevahy.",
-      "stav": "chyba-v-pravidlach",
+      "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-medzery-v62.test.ts › §7: akcie hrany aktivované podstrčenou kartou sa rátajú strane, kde karta leží — 3 a 1 → 2 Pitky"
       ],
-      "poznamka": "Hlavná veta §7 a hra sa zhodujú; príklad „hráč A aktivuje 3 akcie, hráč B 1“ hovorí o hráčoch a pri podstrčenej karte (playtest 20261027-062058, Hela) vedie k inému číslu. Nové znenie príkladu: návrh rozhodca 20261027-150555."
+      "poznamka": "Príklad §7 prepísaný na strany lokality (podstrčená karta sa ráta strane, kde leží; ani prevaha nerozhoduje) — návrh #25 A, Michal 2026-10-28."
     },
     {
       "id": "7.pitky.posilnenie-raz",
@@ -1924,7 +1924,7 @@
       "testy": [
         "packages/core/test/pravidla-medzery-v62.test.ts › §7: akcia hrany zdvojená Posilnením je jedna aktivovaná akcia — 1 a 2 → 2 Pitky, nie 3"
       ],
-      "poznamka": "Doslovné čítanie „ráta sa každá aktívna akcia“; hráči sa pýtali (playtest 20261027-105422 nález 5, 062058). Doplniť vetu: návrh rozhodca 20261027-150555."
+      "poznamka": "Veta o ×2 doplnená do §7, stránky Pravidlá aj ťaháka — návrh #25 A, Michal 2026-10-28."
     },
     {
       "id": "8.pecen.poldeci-akcia",
@@ -1944,23 +1944,28 @@
       "testy": [
         "packages/core/test/pravidla-medzery-v62.test.ts › §13: súperova Záverečná aktivuje moju Ranu v bitke, ale môj pohľad (a odhad z neho) je rovnaký ako bez páru"
       ],
-      "poznamka": "Nočné nezrovnalosti 20261026-173610-1 (Šimon N6, ODHAD BITKY 2 : 6 → 3 : 7). Hra drží §13; doplniť vetu, že odhad tieto páry nezarátava: návrh rozhodca 20261027-150555."
+      "poznamka": "Veta doplnená do §13 (akciu tvojej karty spárovanú súperovou Záverečnou hra neukáže ani v odhade bitky) — návrh #25 A, Michal 2026-10-28."
     },
     {
       "id": "16.karta.snubenica.koniec-linie",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Snúbenica sa vykladá len na vonkajší koniec strany, takže zaberie, len keď je karta s NA EX doteraz poslednou kartou tej strany (vo finále na prázdnej strane karta v strede).",
-      "stav": "chyba-v-pravidlach",
+      "stav": "netestovatelne",
       "testy": [],
-      "poznamka": "Roadmapa #54, playtest 20261027-062058 nález 9: text „vedľa karty s NA EX“ nehovorí, že „vedľa“ je len posledná karta strany. Hra je jednoznačná (engine.ts efekt snubenica, partia.ts snubenicaVracia). Revízia v7 Snúbenicu nemení. Znenie: návrh rozhodca 20261027-150555."
+      "poznamka": "Snúbenica v7 má iný efekt (Konflikt: priložený Chlap po bitke k majiteľovi Snúbenice), veta „vedľa karty s NA EX“ už v §16 nie je — bod 2 návrhu #25 nemá čo spresniť (Developer 2026-10-28)."
     },
     {
       "id": "16.karta.vinko.uprostred",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Vínko vyložené do Dedičstva uprostred Zhromaždenia: limit +1 hneď, alebo až od ďalšieho Zhromaždenia?",
-      "stav": "nejasne",
-      "testy": [],
-      "poznamka": "§6 „limit sa počíta nanovo na začiatku Zhromaždenia“ vs. „zostávajúci limit hneď klesne“ pri Vypiť. Hra: od ďalšieho. Testy oboch čítaní mimo gitu: playtest/rozhodca/20261027-150555/16-vinko-limit-uprostred-zhromazdenia.test.ts. návrh rozhodca 20261027-150555."
+      "pravidlo": "Vínko vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď o 1 (na Zastávke spoločný obom aj vlastný majiteľovi); druhé Vínko nič.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vinko-limit-hned.test.ts › zostávajúci limit stúpne hneď o 1, limit ďalšieho Zhromaždenia tiež",
+        "packages/core/test/vinko-limit-hned.test.ts › druhé Vínko limit nezvýši — bonus je len jeden, ako na začiatku Zhromaždenia",
+        "packages/core/test/vinko-limit-hned.test.ts › Zastávka: spoločný limit stúpne obom, vlastný len majiteľovi Vínka",
+        "packages/core/test/vinko-limit-hned.test.ts › plán ťahu (náhľad limitu) ráta Vínko do Dedičstva ako +1 aj pre ďalšiu kartu ťahu"
+      ],
+      "poznamka": "Návrh #26 B, Michal 2026-10-28: hneď (predtým hra dávala +1 až od ďalšieho Zhromaždenia)."
     },
     {
       "id": "16.karta.liberal.nula",
@@ -1982,19 +1987,20 @@
       "id": "5.stavba.smetisko",
       "paragraf": "5. Cieľ a draft › Stavba šenku",
       "pravidlo": "Polovica kariet zo stavby ide naspodok spoločného balíčka — web toto miesto volá Smetisko, pravidlá to slovo nepoznajú.",
-      "stav": "chyba-v-pravidlach",
+      "stav": "netestovatelne",
       "testy": [],
-      "poznamka": "Playtest 20261027-105422 nález 7 (Eva). Pojem z HernaPlocha.tsx (Michal 2026-10-16); jadrom netestovateľné. Znenie §5 a §17: návrh rozhodca 20261027-150555."
+      "poznamka": "Rozhranie Smetisko už nemá (stavba šenku klikom, d45d2c3); §5 hovorí „naspodok spoločného balíčka“ a tak ostáva (návrh #25 A, Michal 2026-10-28). Slovo Smetisko ostalo len v textoch Melichara vo výučbe (prva-hra.json, napovedy.json) — tie schvaľuje Michal."
     },
     {
       "id": "10.marker.smer-k-superovi",
       "paragraf": "10. Starší › Dvojaká úloha markera",
       "pravidlo": "„K súperovi / k sebe“ je smer na stupnici (k súperovmu kraju), nie polovica: posun k súperovi z tvojej polovice marker len priblíži k stredu.",
-      "stav": "nejasne",
+      "stav": "pokryte",
       "testy": [
-        "packages/core/test/elders.test.ts › z krajnej pozície ďalej von nie, späť k súperovi áno"
+        "packages/core/test/elders.test.ts › z krajnej pozície ďalej von nie, späť k súperovi áno",
+        "packages/core/test/posun-markera.test.ts › log posunu ukáže zónu pred a po aj obe strany — komu priazeň stúpla či klesla a kto ho desí (návrh #27 A)"
       ],
-      "poznamka": "Playtest 20261027-105422 nález 6 (Hela): log „Vychovávateľka o krok k súperovi → Strach, priazeň +2 má hráč 2“ zodpovedá §9.4, ale čitateľ čaká, že marker prejde k súperovi. návrh rozhodca 20261027-150555."
+      "poznamka": "Návrh #27 A, Michal 2026-10-28: odsek „Smer posunu“ v §10 a log posunu so zónou pred a po a s oboma stranami."
     },
     {
       "id": "6.konflikt",

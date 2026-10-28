@@ -41,8 +41,6 @@ interface AdminKontext {
   ulozNastavenia(n: Nastavenia): Promise<void>;
   ulozBodovaciu(b: BodovaciaKarta): Promise<void>;
   zmazBodovaciu(id: string): Promise<void>;
-  ulozIkonuBodovania(i: IkonaBodovania): Promise<void>;
-  zmazIkonuBodovania(id: string): Promise<void>;
   zverejni(): Promise<number>;
 }
 
@@ -131,19 +129,6 @@ export function AdminProvider({ children }: { readonly children: ReactNode }) {
       zmazBodovaciu: async (id) => {
         await api.del(`/admin/bodovacie/${id}`);
         zmen((o) => ({ ...o, bodovacie: o.bodovacie.filter((x) => x.id !== id) }));
-      },
-      ulozIkonuBodovania: async (i) => {
-        const ulozena = await api.put<IkonaBodovania>(`/admin/ikony-bodovania/${i.id}`, i);
-        zmen((o) => ({
-          ...o,
-          ikonyBodovania: o.ikonyBodovania.some((x) => x.id === i.id)
-            ? o.ikonyBodovania.map((x) => (x.id === i.id ? ulozena : x))
-            : [...o.ikonyBodovania, ulozena],
-        }));
-      },
-      zmazIkonuBodovania: async (id) => {
-        await api.del(`/admin/ikony-bodovania/${id}`);
-        zmen((o) => ({ ...o, ikonyBodovania: o.ikonyBodovania.filter((x) => x.id !== id) }));
       },
       zverejni: async () => {
         const r = await api.post<{ verzia: number }>("/admin/zverejnit");

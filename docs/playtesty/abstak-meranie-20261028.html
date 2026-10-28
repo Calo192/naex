@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absťák — meranie šiestich variantov (stratég, 28. 10. 2026)</title>
+<style>
+  :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016; --tlmeny:#5e4f3b;
+    --akcent:#8f5609; --cervena:#a3392c; --zelena:#2f6b3a; --modra:#22646e; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.6 system-ui,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:1040px; margin:0 auto; padding:24px max(14px, env(safe-area-inset-right, 0px)) 90px max(14px, env(safe-area-inset-left, 0px)); }
+  h1,h2,h3 { font-family:Georgia,"Times New Roman",serif; line-height:1.2; text-wrap:balance; }
+  h1 { font-size:clamp(1.5rem,5vw,2.1rem); margin:0 0 6px; }
+  h2 { font-size:1.35rem; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+  h3 { font-size:1.08rem; margin:0 0 6px; }
+  p { margin:0 0 10px; max-width:80ch; }
+  ul, ol { max-width:80ch; padding-left:22px; }
+  li { margin-bottom:5px; }
+  a { color:var(--akcent); }
+  :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+  .pod { color:var(--tlmeny); }
+  .pozn { font-size:.88rem; color:var(--tlmeny); font-weight:400; }
+  .verdikt { border:1px solid var(--akcent); background:var(--plocha); border-radius:14px; padding:14px 18px; margin:16px 0; }
+  .verdikt h2 { margin-top:0; border:0; padding:0; font-size:1.2rem; }
+  .dlazdice { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin:12px 0; }
+  .dlazdica { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:10px 12px; min-width:0; }
+  .dlazdica b { display:block; font-size:.82rem; color:var(--tlmeny); font-weight:600; }
+  .dlazdica .velke { display:block; font-size:1.5rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--akcent); }
+  .dlazdica .predtym { display:block; font-size:.8rem; color:var(--tlmeny); }
+  .dlazdica p { font-size:.88rem; margin:4px 0 0; }
+  .tab { overflow-x:auto; background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; margin:10px 0; }
+  .tab[hidden] { display:none; }
+  table { border-collapse:collapse; width:100%; font-size:.84rem; min-width:820px; font-variant-numeric:tabular-nums; }
+  caption { text-align:left; caption-side:bottom; padding:6px 10px; font-size:.8rem; color:var(--tlmeny); }
+  th,td { padding:6px 7px; border-bottom:1px solid var(--okraj); text-align:right; vertical-align:top; }
+  th:first-child,td:first-child { text-align:left; position:sticky; left:0; background:var(--plocha); }
+  th.l { text-align:left; font-weight:600; color:var(--text); font-size:.84rem; }
+  thead th { color:var(--tlmeny); font-size:.75rem; letter-spacing:.02em; }
+  tr.base td, tr.base th { background:color-mix(in srgb,var(--modra) 8%,var(--plocha)); }
+  .zle { color:var(--cervena); font-weight:600; } .dobre { color:var(--zelena); font-weight:600; }
+  .graf { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 14px; margin:10px 0; }
+  .graf figcaption { margin-bottom:6px; }
+  .riadok { display:grid; grid-template-columns:170px 1fr; gap:8px; align-items:center; margin:6px 0; font-size:.86rem; }
+  .pruh { position:relative; height:18px; background:var(--plocha-2); border-radius:4px; }
+  .pruh i { position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:var(--akcent); }
+  .pruh.b i { background:var(--modra); }
+  .pruh em { position:absolute; right:6px; top:0; font-style:normal; font-size:.76rem; line-height:18px; }
+  .pruh .ciara { position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--text); opacity:.5; }
+  .filter { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 14px; }
+  .filter button { font:inherit; font-size:.9rem; border:1px solid var(--okraj); background:var(--plocha); color:var(--text); border-radius:999px; padding:6px 14px; cursor:pointer; min-height:36px; }
+  .filter button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:700; }
+  .karty { display:grid; gap:12px; }
+  .karta { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; }
+  .karta.zaviest { border-left:5px solid var(--zelena); } .karta.skusit { border-left:5px solid var(--akcent); } .karta.zamietnut { border-left:5px solid var(--cervena); } .karta.info { border-left:5px solid var(--modra); }
+  .karta[hidden] { display:none; }
+  .stitok { display:inline-block; font-size:.76rem; font-weight:700; border-radius:999px; padding:1px 10px; color:#fff; margin-left:6px; vertical-align:2px; font-family:system-ui,sans-serif; }
+  .stitok.zaviest { background:var(--zelena); } .stitok.skusit { background:var(--akcent); } .stitok.zamietnut { background:var(--cervena); } .stitok.info { background:var(--modra); }
+  dl.vl { display:grid; grid-template-columns:150px 1fr; gap:4px 12px; margin:6px 0 0; font-size:.93rem; }
+  dl.vl dt { font-weight:600; } dl.vl dd { margin:0; }
+  .znenie { background:var(--plocha-2); border-left:3px solid var(--akcent); padding:6px 10px; border-radius:4px; }
+  details { background:var(--plocha); border:1px solid var(--okraj); border-radius:10px; padding:8px 12px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:600; }
+  code { font-family:ui-monospace,Consolas,monospace; font-size:.84em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+  ol.otazky li { margin-bottom:10px; }
+  footer { margin-top:44px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.86rem; }
+  @media (max-width:560px) { dl.vl, .riadok { grid-template-columns:1fr; } .riadok { gap:2px; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Absťák — čo ukázalo meranie šiestich variantov</h1>
+<p class="pod">Stratég · roadmapa #113 · návrhy <code>docs/napady/abstak-2.html</code> · pravidlá v8, <code>origin/master 7f66216</code> · 28. 10. 2026 · pre Michala</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+<h2 id="verdikt">Verdikt</h2>
+<p><strong>Na výsledok partie má Absťák vo v8 malý vplyv v každom variante.</strong> Bot, ktorý na Absťák vôbec neberie ohľad (nedorovnáva neresti, nehasí), vyhráva proti bežnému botovi 48 % dnes a 44 %–53 % vo variantoch (± 8 p. b.). Bitku Absťák rozhodne remízou raz za 14 partií a zrážka špakov je 0,6 špaku na partiu pri priemernom rozdiele 24,3. O prestavbe preto rozhodne hlavne <strong>zrozumiteľnosť a téma</strong>, menej rovnováha.</p>
+<p>Ako prvé odporúčam <strong>1 + 4 Nervák</strong> vyskúšať v playteste. Ruší špirálu, zachováva polaritu (suché kolá 23 % proti dnešným 25 %) a Absťák sa delí rovnomerne medzi víťaza a porazeného. Stompov je o 5 p. b. menej a rebrík zručnosti sa nezhoršil (ε 0,25: 69 % proti 69 %). Zámerná suchota nie je dominantná. Stojí to o 57 % viac Pohoršení, takže starší sa hýbu viac.</p>
+<p>Samotný Krok (1) bez Nerváka neodporúčam: zrážka špakov stúpne takmer štvornásobne, padá viac na porazeného a rebrík pri ε 0,25 klesne na 57 %. <strong>Hladinka</strong> s dnešnými číslami nefunguje, lebo pečeň vo v8 pochádza hlavne z akcií kariet, nie z pitia (Cirhózy +37 až +48 %). <strong>Kocovina</strong> potvrdila obrátenú polaritu: nerestí je o 34 % menej a 41 % kôl je suchých.</p>
+</section>
+
+<h2 id="dlazdice">Kľúčové čísla — Nervák proti dnešku</h2>
+<div class="dlazdice">
+  <div class="dlazdica"><b>Absťáky za partiu</b><span class="velke">3,9</span><span class="predtym">dnes 2,7</span><p>Porovnanie so súperom dáva Absťák častejšie ako porovnanie s minulým kolom.</p></div>
+  <div class="dlazdica"><b>Absťáky víťaza / porazeného</b><span class="velke">2,0 / 2,0</span><span class="predtym">dnes 1,3 / 1,4 · samotný Krok 1,8 / 2,1</span><p>Absťák netlačí porazeného ešte nižšie.</p></div>
+  <div class="dlazdica"><b>Stompy (rozdiel &gt; 15)</b><span class="velke">63 %</span><span class="predtym">dnes 68 %</span><p>Mierne menej. Rozdiel ako podiel zo súčtu: 42 % (dnes 45 %).</p></div>
+  <div class="dlazdica"><b>Suché kolá</b><span class="velke">23 %</span><span class="predtym">dnes 25 % · zaostávajúci 24 % (dnes 28 %)</span><p>Polarita drží, zámerná suchota sa nerozmohla.</p></div>
+  <div class="dlazdica"><b>Rebrík ε 0,1 / 0,25</b><span class="velke">58 % / 69 %</span><span class="predtym">dnes 55 % / 69 % (± 6 p. b.)</span><p>Chyba sa trestá rovnako ako dnes.</p></div>
+  <div class="dlazdica"><b>Pohoršenia za partiu</b><span class="velke">18,7</span><span class="predtym">dnes 11,9</span><p>Cena: viac pohybu markerov a o 4 % viac ťahov.</p></div>
+</div>
+
+<h2 id="tabulka">Všetky varianty</h2>
+<p>Čísla sú z partií botov so semienkami, ktoré sú pre všetky varianty rovnaké. Prepni, ktoré partie chceš vidieť.</p>
+<div class="filter" role="group" aria-label="Ktoré partie">
+  <button type="button" data-cast="spolu" aria-pressed="true">Spolu</button>
+  <button type="button" data-cast="zrkadlo" aria-pressed="false">Zrkadlo Štamgast</button>
+  <button type="button" data-cast="mix" aria-pressed="false">Mix povah</button>
+</div>
+<div class="tab" data-cast="spolu"><table><caption>Spolu (300 partií). Zelená/červená = o viac ako 5 % lepšie/horšie ako dnes pri metrikách, kde je smer jasný.</caption><thead><tr><th scope="col">Meranie</th><th scope="col">Dnes</th><th scope="col">1 Krok so stolom</th><th scope="col">1 + 4 Nervák</th><th scope="col">1 + 3 Triaška</th><th scope="col">5 Hladinka (−2)</th><th scope="col">5 Hladinka (−3)</th><th scope="col">2 Kocovina</th></tr></thead><tbody><tr class="base"><th scope="row" class="l">Absťáky za partiu (oba hráči)</th><td>2,68</td><td>3,95</td><td>3,94</td><td>3,93</td><td>0,85</td><td>4,43</td><td>3,70</td></tr>
+<tr><th scope="row" class="l">Absťák dostal vedúci / zaostávajúci</th><td>51 % / 45 %</td><td>46 % / 52 %</td><td>46 % / 51 %</td><td>45 % / 52 %</td><td>40 % / 56 %</td><td>49 % / 48 %</td><td>52 % / 44 %</td></tr>
+<tr><th scope="row" class="l">Absťáky víťaza / porazeného partie</th><td>1,33 / 1,35</td><td>1,82 / 2,14</td><td>1,98 / 1,96</td><td>1,87 / 2,07</td><td>0,37 / 0,48</td><td>2,17 / 2,25</td><td>2,03 / 1,66</td></tr>
+<tr><th scope="row" class="l">Zrážka špakov za Absťák (za partiu)</th><td>0,61</td><td>2,26</td><td>0,00</td><td>0,00</td><td>0,46</td><td>1,54</td><td>0,67</td></tr>
+<tr><th scope="row" class="l">Bitky rozhodnuté remízou v Absťákoch</th><td>0,07</td><td>0,17</td><td>0,12</td><td>0,00</td><td>0,05</td><td>0,11</td><td>0,03</td></tr>
+<tr><th scope="row" class="l">Rozdiel špakov (priemer / medián)</th><td>24,3 / 22</td><td>24,6 / 23</td><td>24,3 / 22</td><td class="dobre">21,3 / 19</td><td>24,3 / 24</td><td>23,1 / 21</td><td class="dobre">23,0 / 21</td></tr>
+<tr><th scope="row" class="l">Rozdiel ako podiel zo súčtu špakov</th><td>45 %</td><td class="zle">48 %</td><td class="dobre">42 %</td><td class="dobre">43 %</td><td class="zle">54 %</td><td class="zle">50 %</td><td>44 %</td></tr>
+<tr class="base"><th scope="row" class="l">Stompy (rozdiel > 15)</th><td>68 %</td><td>66 %</td><td class="dobre">63 %</td><td class="dobre">58 %</td><td>65 %</td><td class="dobre">61 %</td><td class="dobre">59 %</td></tr>
+<tr><th scope="row" class="l">Veľké stompy (rozdiel > 25)</th><td>44 %</td><td>43 %</td><td>42 %</td><td class="dobre">34 %</td><td>45 %</td><td class="dobre">38 %</td><td class="dobre">38 %</td></tr>
+<tr><th scope="row" class="l">Neresti na hráča a kolo</th><td>1,24</td><td>1,68</td><td>1,45</td><td>1,49</td><td>1,30</td><td>1,43</td><td>0,82</td></tr>
+<tr><th scope="row" class="l">Suché kolá (0 nerestí)</th><td>25 %</td><td>16 %</td><td>23 %</td><td>21 %</td><td>23 %</td><td>21 %</td><td>41 %</td></tr>
+<tr><th scope="row" class="l">Suché kolá zaostávajúceho / vedúceho</th><td>28 % / 16 %</td><td>15 % / 11 %</td><td>24 % / 17 %</td><td>22 % / 16 %</td><td>23 % / 15 %</td><td>22 % / 14 %</td><td>45 % / 37 %</td></tr>
+<tr><th scope="row" class="l">Cirhózy za partiu</th><td>6,84</td><td class="zle">7,55</td><td>6,84</td><td>6,82</td><td class="zle">9,40</td><td class="zle">10,14</td><td class="dobre">6,37</td></tr>
+<tr><th scope="row" class="l">Pohoršenia za partiu</th><td>11,9</td><td>11,8</td><td>18,7</td><td>11,6</td><td>11,8</td><td>12,2</td><td>11,6</td></tr>
+<tr><th scope="row" class="l">Ťahov za partiu (kôl)</th><td>179 (6,0)</td><td>177 (6,0)</td><td>186 (6,0)</td><td>172 (6,0)</td><td>178 (6,0)</td><td>180 (6,0)</td><td>172 (6,0)</td></tr>
+<tr><th scope="row" class="l">Hráč 1 vyhral</th><td>51 %</td><td>51 %</td><td>53 %</td><td>48 %</td><td>48 %</td><td>46 %</td><td>50 %</td></tr>
+<tr><th scope="row" class="l">Otočky (vedúci po 3. kole prehral)</th><td>44 %</td><td>43 %</td><td>46 %</td><td>43 %</td><td>46 %</td><td>44 %</td><td>42 %</td></tr></tbody></table></div>
+<div class="tab" data-cast="zrkadlo" hidden><table><caption>Zrkadlo Štamgast × Štamgast (180 partií). Zelená/červená = o viac ako 5 % lepšie/horšie ako dnes pri metrikách, kde je smer jasný.</caption><thead><tr><th scope="col">Meranie</th><th scope="col">Dnes</th><th scope="col">1 Krok so stolom</th><th scope="col">1 + 4 Nervák</th><th scope="col">1 + 3 Triaška</th><th scope="col">5 Hladinka (−2)</th><th scope="col">5 Hladinka (−3)</th><th scope="col">2 Kocovina</th></tr></thead><tbody><tr class="base"><th scope="row" class="l">Absťáky za partiu (oba hráči)</th><td>2,75</td><td>3,93</td><td>3,92</td><td>3,93</td><td>0,88</td><td>4,36</td><td>3,73</td></tr>
+<tr><th scope="row" class="l">Absťák dostal vedúci / zaostávajúci</th><td>51 % / 46 %</td><td>45 % / 51 %</td><td>45 % / 51 %</td><td>45 % / 51 %</td><td>42 % / 56 %</td><td>49 % / 48 %</td><td>49 % / 47 %</td></tr>
+<tr><th scope="row" class="l">Absťáky víťaza / porazeného partie</th><td>1,41 / 1,34</td><td>1,81 / 2,13</td><td>1,97 / 1,94</td><td>1,82 / 2,12</td><td>0,41 / 0,47</td><td>2,10 / 2,24</td><td>1,99 / 1,73</td></tr>
+<tr><th scope="row" class="l">Zrážka špakov za Absťák (za partiu)</th><td>0,64</td><td>2,16</td><td>0,00</td><td>0,00</td><td>0,49</td><td>1,54</td><td>0,69</td></tr>
+<tr><th scope="row" class="l">Bitky rozhodnuté remízou v Absťákoch</th><td>0,11</td><td>0,18</td><td>0,13</td><td>0,00</td><td>0,03</td><td>0,07</td><td>0,02</td></tr>
+<tr><th scope="row" class="l">Rozdiel špakov (priemer / medián)</th><td>24,5 / 23</td><td>24,2 / 22</td><td>24,6 / 23</td><td class="dobre">20,5 / 18</td><td>23,9 / 24</td><td>23,5 / 21</td><td class="dobre">21,7 / 20</td></tr>
+<tr><th scope="row" class="l">Rozdiel ako podiel zo súčtu špakov</th><td>47 %</td><td>48 %</td><td class="dobre">43 %</td><td class="dobre">42 %</td><td class="zle">55 %</td><td class="zle">51 %</td><td class="dobre">41 %</td></tr>
+<tr class="base"><th scope="row" class="l">Stompy (rozdiel > 15)</th><td>68 %</td><td>65 %</td><td class="dobre">63 %</td><td class="dobre">58 %</td><td class="dobre">64 %</td><td class="dobre">61 %</td><td class="dobre">56 %</td></tr>
+<tr><th scope="row" class="l">Veľké stompy (rozdiel > 25)</th><td>46 %</td><td class="dobre">42 %</td><td>44 %</td><td class="dobre">31 %</td><td>46 %</td><td class="dobre">39 %</td><td class="dobre">34 %</td></tr>
+<tr><th scope="row" class="l">Neresti na hráča a kolo</th><td>1,25</td><td>1,66</td><td>1,37</td><td>1,44</td><td>1,30</td><td>1,42</td><td>0,82</td></tr>
+<tr><th scope="row" class="l">Suché kolá (0 nerestí)</th><td>26 %</td><td>16 %</td><td>24 %</td><td>22 %</td><td>23 %</td><td>20 %</td><td>42 %</td></tr>
+<tr><th scope="row" class="l">Suché kolá zaostávajúceho / vedúceho</th><td>29 % / 15 %</td><td>17 % / 11 %</td><td>26 % / 18 %</td><td>24 % / 17 %</td><td>24 % / 15 %</td><td>22 % / 14 %</td><td>47 % / 37 %</td></tr>
+<tr><th scope="row" class="l">Cirhózy za partiu</th><td>6,84</td><td class="zle">7,79</td><td>6,98</td><td>6,75</td><td class="zle">9,31</td><td class="zle">10,35</td><td class="dobre">6,08</td></tr>
+<tr><th scope="row" class="l">Pohoršenia za partiu</th><td>12,0</td><td>11,8</td><td>18,5</td><td>11,0</td><td>11,5</td><td>12,0</td><td>11,3</td></tr>
+<tr><th scope="row" class="l">Ťahov za partiu (kôl)</th><td>179 (6,0)</td><td>178 (6,0)</td><td>186 (6,0)</td><td>170 (6,0)</td><td>177 (6,0)</td><td>181 (6,0)</td><td>170 (6,0)</td></tr>
+<tr><th scope="row" class="l">Hráč 1 vyhral</th><td>49 %</td><td>49 %</td><td>52 %</td><td>49 %</td><td>50 %</td><td>46 %</td><td>53 %</td></tr>
+<tr><th scope="row" class="l">Otočky (vedúci po 3. kole prehral)</th><td>44 %</td><td>44 %</td><td>46 %</td><td>38 %</td><td>45 %</td><td>43 %</td><td>42 %</td></tr></tbody></table></div>
+<div class="tab" data-cast="mix" hidden><table><caption>Mix povah (120 partií). Zelená/červená = o viac ako 5 % lepšie/horšie ako dnes pri metrikách, kde je smer jasný.</caption><thead><tr><th scope="col">Meranie</th><th scope="col">Dnes</th><th scope="col">1 Krok so stolom</th><th scope="col">1 + 4 Nervák</th><th scope="col">1 + 3 Triaška</th><th scope="col">5 Hladinka (−2)</th><th scope="col">5 Hladinka (−3)</th><th scope="col">2 Kocovina</th></tr></thead><tbody><tr class="base"><th scope="row" class="l">Absťáky za partiu (oba hráči)</th><td>2,58</td><td>3,98</td><td>3,98</td><td>3,93</td><td>0,80</td><td>4,54</td><td>3,65</td></tr>
+<tr><th scope="row" class="l">Absťák dostal vedúci / zaostávajúci</th><td>52 % / 45 %</td><td>46 % / 52 %</td><td>46 % / 51 %</td><td>46 % / 52 %</td><td>38 % / 57 %</td><td>48 % / 48 %</td><td>58 % / 40 %</td></tr>
+<tr><th scope="row" class="l">Absťáky víťaza / porazeného partie</th><td>1,20 / 1,37</td><td>1,83 / 2,15</td><td>2,00 / 1,98</td><td>1,94 / 1,99</td><td>0,30 / 0,50</td><td>2,27 / 2,27</td><td>2,09 / 1,55</td></tr>
+<tr><th scope="row" class="l">Zrážka špakov za Absťák (za partiu)</th><td>0,57</td><td>2,42</td><td>0,00</td><td>0,00</td><td>0,41</td><td>1,55</td><td>0,63</td></tr>
+<tr><th scope="row" class="l">Bitky rozhodnuté remízou v Absťákoch</th><td>0,03</td><td>0,14</td><td>0,11</td><td>0,00</td><td>0,07</td><td>0,17</td><td>0,06</td></tr>
+<tr><th scope="row" class="l">Rozdiel špakov (priemer / medián)</th><td>24,0 / 21</td><td class="zle">25,2 / 24</td><td>23,9 / 21</td><td class="dobre">22,6 / 20</td><td>25,1 / 24</td><td class="dobre">22,7 / 20</td><td>25,0 / 22</td></tr>
+<tr><th scope="row" class="l">Rozdiel ako podiel zo súčtu špakov</th><td>44 %</td><td class="zle">47 %</td><td class="dobre">40 %</td><td>43 %</td><td class="zle">52 %</td><td class="zle">49 %</td><td class="zle">47 %</td></tr>
+<tr class="base"><th scope="row" class="l">Stompy (rozdiel > 15)</th><td>68 %</td><td>67 %</td><td class="dobre">63 %</td><td class="dobre">58 %</td><td>68 %</td><td class="dobre">62 %</td><td class="dobre">64 %</td></tr>
+<tr><th scope="row" class="l">Veľké stompy (rozdiel > 25)</th><td>42 %</td><td class="zle">46 %</td><td>40 %</td><td class="dobre">39 %</td><td class="zle">44 %</td><td class="dobre">36 %</td><td class="zle">44 %</td></tr>
+<tr><th scope="row" class="l">Neresti na hráča a kolo</th><td>1,24</td><td>1,71</td><td>1,58</td><td>1,58</td><td>1,31</td><td>1,43</td><td>0,82</td></tr>
+<tr><th scope="row" class="l">Suché kolá (0 nerestí)</th><td>25 %</td><td>15 %</td><td>21 %</td><td>20 %</td><td>23 %</td><td>22 %</td><td>40 %</td></tr>
+<tr><th scope="row" class="l">Suché kolá zaostávajúceho / vedúceho</th><td>26 % / 17 %</td><td>12 % / 12 %</td><td>21 % / 15 %</td><td>19 % / 15 %</td><td>22 % / 16 %</td><td>22 % / 14 %</td><td>42 % / 38 %</td></tr>
+<tr><th scope="row" class="l">Cirhózy za partiu</th><td>6,83</td><td class="zle">7,18</td><td>6,62</td><td>6,93</td><td class="zle">9,54</td><td class="zle">9,82</td><td>6,81</td></tr>
+<tr><th scope="row" class="l">Pohoršenia za partiu</th><td>11,8</td><td>11,8</td><td>19,1</td><td>12,4</td><td>12,3</td><td>12,4</td><td>12,1</td></tr>
+<tr><th scope="row" class="l">Ťahov za partiu (kôl)</th><td>178 (6,0)</td><td>177 (6,0)</td><td>187 (6,0)</td><td>176 (6,0)</td><td>179 (6,0)</td><td>178 (6,0)</td><td>174 (6,0)</td></tr>
+<tr><th scope="row" class="l">Hráč 1 vyhral</th><td>55 %</td><td>53 %</td><td>54 %</td><td>48 %</td><td>47 %</td><td>45 %</td><td>46 %</td></tr>
+<tr><th scope="row" class="l">Otočky (vedúci po 3. kole prehral)</th><td>44 %</td><td>40 %</td><td>45 %</td><td>51 %</td><td>47 %</td><td>46 %</td><td>41 %</td></tr></tbody></table></div>
+<div class="tab"><table><caption>Rebrík: Štamgast proti Štamgastovi, ktorý s pravdepodobnosťou ε ťahá náhodne (150 rozdaní × 2 miesta na ε, ±6 p. b.). Ignorant: Štamgast bez ohľadu na Absťák proti bežnému Štamgastovi (80 rozdaní × 2 miesta, ±8 p. b.). Delené = každú z dvoch partií rozdania vyhral ten istý stolec.</caption>
+<thead><tr><th scope="col">Zručnosť</th><th scope="col">Dnes</th><th scope="col">1 Krok so stolom</th><th scope="col">1 + 4 Nervák</th><th scope="col">1 + 3 Triaška</th><th scope="col">5 Hladinka (−2)</th><th scope="col">5 Hladinka (−3)</th><th scope="col">2 Kocovina</th></tr></thead><tbody>
+<tr class="base"><th scope="row" class="l">Rebrík ε 0,1: silný vyhral</th><td>55 %</td><td>54 %</td><td>58 %</td><td>49 %</td><td>56 %</td><td>53 %</td><td>52 %</td></tr>
+<tr><th scope="row" class="l">Rebrík ε 0,1: delené</th><td>47 %</td><td>46 %</td><td>44 %</td><td>43 %</td><td>49 %</td><td>49 %</td><td>53 %</td></tr>
+<tr class="base"><th scope="row" class="l">Rebrík ε 0,25: silný vyhral</th><td>69 %</td><td class="zle">57 %</td><td>69 %</td><td>67 %</td><td>67 %</td><td>68 %</td><td class="zle">60 %</td></tr>
+<tr><th scope="row" class="l">Rebrík ε 0,25: rozdiel špakov</th><td>15,3</td><td>10,6</td><td>18,3</td><td>14,7</td><td>13,7</td><td>13,4</td><td>12,2</td></tr>
+<tr class="base"><th scope="row" class="l">Ignorant vyhral</th><td>48 %</td><td>44 %</td><td>47 %</td><td>48 %</td><td>49 %</td><td>53 %</td><td>50 %</td></tr>
+<tr><th scope="row" class="l">Absťáky ignoranta / bežného</th><td>1,6 / 1,4</td><td>2,5 / 1,6</td><td>2,3 / 1,8</td><td>2,4 / 1,7</td><td>0,7 / 0,4</td><td>2,5 / 2,3</td><td>2,6 / 1,5</td></tr>
+<tr><th scope="row" class="l">Neresti ignoranta / bežného (za kolo)</th><td>1,28 / 1,28</td><td>1,26 / 1,61</td><td>1,30 / 1,44</td><td>1,22 / 1,42</td><td>1,07 / 1,29</td><td>1,16 / 1,39</td><td>1,38 / 0,88</td></tr>
+</tbody></table></div>
+
+<h2 id="grafy">V grafoch</h2>
+<figure class="graf"><figcaption><b>Absťáky za partiu (oba hráči)</b></figcaption><div class="riadok"><span>Dnes</span><div class="pruh b" role="img" aria-label="Dnes: 2,68"><i style="width:53.7%"></i><em>2,68</em></div></div><div class="riadok"><span>1 Krok so stolom</span><div class="pruh" role="img" aria-label="1 Krok so stolom: 3,95"><i style="width:79.1%"></i><em>3,95</em></div></div><div class="riadok"><span>1 + 4 Nervák</span><div class="pruh" role="img" aria-label="1 + 4 Nervák: 3,94"><i style="width:78.8%"></i><em>3,94</em></div></div><div class="riadok"><span>1 + 3 Triaška</span><div class="pruh" role="img" aria-label="1 + 3 Triaška: 3,93"><i style="width:78.7%"></i><em>3,93</em></div></div><div class="riadok"><span>5 Hladinka (−2)</span><div class="pruh" role="img" aria-label="5 Hladinka (−2): 0,85"><i style="width:17.0%"></i><em>0,85</em></div></div><div class="riadok"><span>5 Hladinka (−3)</span><div class="pruh" role="img" aria-label="5 Hladinka (−3): 4,43"><i style="width:88.6%"></i><em>4,43</em></div></div><div class="riadok"><span>2 Kocovina</span><div class="pruh" role="img" aria-label="2 Kocovina: 3,70"><i style="width:73.9%"></i><em>3,70</em></div></div></figure>
+<figure class="graf"><figcaption><b>Stompy — rozdiel špakov > 15</b> <span class="pozn">čiara = dnes</span></figcaption><div class="riadok"><span>Dnes</span><div class="pruh b" role="img" aria-label="Dnes: 68 %"><i style="width:68.0%"></i><span class="ciara" style="left:68.0%"></span><em>68 %</em></div></div><div class="riadok"><span>1 Krok so stolom</span><div class="pruh" role="img" aria-label="1 Krok so stolom: 66 %"><i style="width:65.7%"></i><span class="ciara" style="left:68.0%"></span><em>66 %</em></div></div><div class="riadok"><span>1 + 4 Nervák</span><div class="pruh" role="img" aria-label="1 + 4 Nervák: 63 %"><i style="width:63.3%"></i><span class="ciara" style="left:68.0%"></span><em>63 %</em></div></div><div class="riadok"><span>1 + 3 Triaška</span><div class="pruh" role="img" aria-label="1 + 3 Triaška: 58 %"><i style="width:58.0%"></i><span class="ciara" style="left:68.0%"></span><em>58 %</em></div></div><div class="riadok"><span>5 Hladinka (−2)</span><div class="pruh" role="img" aria-label="5 Hladinka (−2): 65 %"><i style="width:65.3%"></i><span class="ciara" style="left:68.0%"></span><em>65 %</em></div></div><div class="riadok"><span>5 Hladinka (−3)</span><div class="pruh" role="img" aria-label="5 Hladinka (−3): 61 %"><i style="width:61.3%"></i><span class="ciara" style="left:68.0%"></span><em>61 %</em></div></div><div class="riadok"><span>2 Kocovina</span><div class="pruh" role="img" aria-label="2 Kocovina: 59 %"><i style="width:59.3%"></i><span class="ciara" style="left:68.0%"></span><em>59 %</em></div></div></figure>
+<figure class="graf"><figcaption><b>Neresti na hráča a kolo (polarita: brzdí Absťák nepitie?)</b> <span class="pozn">čiara = dnes</span></figcaption><div class="riadok"><span>Dnes</span><div class="pruh b" role="img" aria-label="Dnes: 1,24"><i style="width:62.2%"></i><span class="ciara" style="left:62.2%"></span><em>1,24</em></div></div><div class="riadok"><span>1 Krok so stolom</span><div class="pruh" role="img" aria-label="1 Krok so stolom: 1,68"><i style="width:84.0%"></i><span class="ciara" style="left:62.2%"></span><em>1,68</em></div></div><div class="riadok"><span>1 + 4 Nervák</span><div class="pruh" role="img" aria-label="1 + 4 Nervák: 1,45"><i style="width:72.5%"></i><span class="ciara" style="left:62.2%"></span><em>1,45</em></div></div><div class="riadok"><span>1 + 3 Triaška</span><div class="pruh" role="img" aria-label="1 + 3 Triaška: 1,49"><i style="width:74.7%"></i><span class="ciara" style="left:62.2%"></span><em>1,49</em></div></div><div class="riadok"><span>5 Hladinka (−2)</span><div class="pruh" role="img" aria-label="5 Hladinka (−2): 1,30"><i style="width:65.1%"></i><span class="ciara" style="left:62.2%"></span><em>1,30</em></div></div><div class="riadok"><span>5 Hladinka (−3)</span><div class="pruh" role="img" aria-label="5 Hladinka (−3): 1,43"><i style="width:71.4%"></i><span class="ciara" style="left:62.2%"></span><em>1,43</em></div></div><div class="riadok"><span>2 Kocovina</span><div class="pruh" role="img" aria-label="2 Kocovina: 0,82"><i style="width:41.1%"></i><span class="ciara" style="left:62.2%"></span><em>0,82</em></div></div></figure>
+<figure class="graf"><figcaption><b>Suché kolá (hráč bez jedinej neresti)</b> <span class="pozn">čiara = dnes</span></figcaption><div class="riadok"><span>Dnes</span><div class="pruh b" role="img" aria-label="Dnes: 25 %"><i style="width:50.7%"></i><span class="ciara" style="left:50.7%"></span><em>25 %</em></div></div><div class="riadok"><span>1 Krok so stolom</span><div class="pruh" role="img" aria-label="1 Krok so stolom: 16 %"><i style="width:31.6%"></i><span class="ciara" style="left:50.7%"></span><em>16 %</em></div></div><div class="riadok"><span>1 + 4 Nervák</span><div class="pruh" role="img" aria-label="1 + 4 Nervák: 23 %"><i style="width:45.1%"></i><span class="ciara" style="left:50.7%"></span><em>23 %</em></div></div><div class="riadok"><span>1 + 3 Triaška</span><div class="pruh" role="img" aria-label="1 + 3 Triaška: 21 %"><i style="width:41.8%"></i><span class="ciara" style="left:50.7%"></span><em>21 %</em></div></div><div class="riadok"><span>5 Hladinka (−2)</span><div class="pruh" role="img" aria-label="5 Hladinka (−2): 23 %"><i style="width:45.3%"></i><span class="ciara" style="left:50.7%"></span><em>23 %</em></div></div><div class="riadok"><span>5 Hladinka (−3)</span><div class="pruh" role="img" aria-label="5 Hladinka (−3): 21 %"><i style="width:41.2%"></i><span class="ciara" style="left:50.7%"></span><em>21 %</em></div></div><div class="riadok"><span>2 Kocovina</span><div class="pruh" role="img" aria-label="2 Kocovina: 41 %"><i style="width:82.4%"></i><span class="ciara" style="left:50.7%"></span><em>41 %</em></div></div></figure>
+<figure class="graf"><figcaption><b>Cirhózy za partiu</b> <span class="pozn">čiara = dnes</span></figcaption><div class="riadok"><span>Dnes</span><div class="pruh b" role="img" aria-label="Dnes: 6,84"><i style="width:57.0%"></i><span class="ciara" style="left:57.0%"></span><em>6,84</em></div></div><div class="riadok"><span>1 Krok so stolom</span><div class="pruh" role="img" aria-label="1 Krok so stolom: 7,55"><i style="width:62.9%"></i><span class="ciara" style="left:57.0%"></span><em>7,55</em></div></div><div class="riadok"><span>1 + 4 Nervák</span><div class="pruh" role="img" aria-label="1 + 4 Nervák: 6,84"><i style="width:57.0%"></i><span class="ciara" style="left:57.0%"></span><em>6,84</em></div></div><div class="riadok"><span>1 + 3 Triaška</span><div class="pruh" role="img" aria-label="1 + 3 Triaška: 6,82"><i style="width:56.9%"></i><span class="ciara" style="left:57.0%"></span><em>6,82</em></div></div><div class="riadok"><span>5 Hladinka (−2)</span><div class="pruh" role="img" aria-label="5 Hladinka (−2): 9,40"><i style="width:78.3%"></i><span class="ciara" style="left:57.0%"></span><em>9,40</em></div></div><div class="riadok"><span>5 Hladinka (−3)</span><div class="pruh" role="img" aria-label="5 Hladinka (−3): 10,14"><i style="width:84.5%"></i><span class="ciara" style="left:57.0%"></span><em>10,14</em></div></div><div class="riadok"><span>2 Kocovina</span><div class="pruh" role="img" aria-label="2 Kocovina: 6,37"><i style="width:53.1%"></i><span class="ciara" style="left:57.0%"></span><em>6,37</em></div></div></figure>
+<figure class="graf"><figcaption><b>Rebrík ε 0,25 — silný bot vyhral</b> <span class="pozn">čiara = 50 %</span></figcaption><div class="riadok"><span>Dnes</span><div class="pruh b" role="img" aria-label="Dnes: 69 %"><i style="width:69.0%"></i><span class="ciara" style="left:50.0%"></span><em>69 %</em></div></div><div class="riadok"><span>1 Krok so stolom</span><div class="pruh" role="img" aria-label="1 Krok so stolom: 57 %"><i style="width:57.0%"></i><span class="ciara" style="left:50.0%"></span><em>57 %</em></div></div><div class="riadok"><span>1 + 4 Nervák</span><div class="pruh" role="img" aria-label="1 + 4 Nervák: 69 %"><i style="width:68.7%"></i><span class="ciara" style="left:50.0%"></span><em>69 %</em></div></div><div class="riadok"><span>1 + 3 Triaška</span><div class="pruh" role="img" aria-label="1 + 3 Triaška: 67 %"><i style="width:67.0%"></i><span class="ciara" style="left:50.0%"></span><em>67 %</em></div></div><div class="riadok"><span>5 Hladinka (−2)</span><div class="pruh" role="img" aria-label="5 Hladinka (−2): 67 %"><i style="width:66.7%"></i><span class="ciara" style="left:50.0%"></span><em>67 %</em></div></div><div class="riadok"><span>5 Hladinka (−3)</span><div class="pruh" role="img" aria-label="5 Hladinka (−3): 68 %"><i style="width:68.3%"></i><span class="ciara" style="left:50.0%"></span><em>68 %</em></div></div><div class="riadok"><span>2 Kocovina</span><div class="pruh" role="img" aria-label="2 Kocovina: 60 %"><i style="width:60.3%"></i><span class="ciara" style="left:50.0%"></span><em>60 %</em></div></div></figure>
+
+<h2 id="navrhy">Varianty jeden po druhom</h2>
+<div class="filter" role="group" aria-label="Filter podľa odporúčania">
+  <button type="button" data-filter="vsetky" aria-pressed="true">Všetky</button>
+  <button type="button" data-filter="skusit" aria-pressed="false">Vyskúšať v playteste</button>
+  <button type="button" data-filter="zamietnut" aria-pressed="false">Zamietnuť</button>
+  <button type="button" data-filter="info" aria-pressed="false">Východisko</button>
+</div>
+<div class="karty">
+
+<article class="karta skusit" data-odp="skusit">
+<h3>1 + 4 Nervák <span class="stitok skusit">vyskúšať v playteste</span></h3>
+<dl class="vl">
+<dt>Pravidlo</dt><dd><span class="znenie">Na konci kola sa porovnajú neresti oboch hráčov v tomto kole. Kto mal menej, dostane Absťák rovno priznaný (+1 karta). Kto mal viac, zbaví sa jedného priznaného. Rovnosť nič. Každý Absťák: o ranu menej a +1 Pohoršenie v kroku Pohoršenie. Zrážka špakov víťazovi zaniká, remízu v tuhom ďalej rozhodujú Absťáky.</span></dd>
+<dt>Čo ukázalo meranie</dt><dd>Absťákov je 3,9 na partiu (dnes 2,7). Delia sa rovnomerne (víťaz 1,98, porazený 1,96) a o niečo častejšie ich dostane zaostávajúci (51 %), ktorému Pohoršenia pomôžu. Stompy 63 % (dnes 68 %), rozdiel ako podiel zo súčtu 42 % (dnes 45 %). Neresti 1,45 za kolo (dnes 1,24), suché kolá 23 %. Rebrík 58 % / 69 % je na úrovni dneška.</dd>
+<dt>Úmyselná suchota</dt><dd>Nie je dominantná. Ignorant, ktorý neresti kvôli Absťáku nerobí (1,30 za kolo proti 1,44), nazbiera 2,3 Absťáku proti 1,8 a vyhrá 47 %. Suché kolá zaostávajúceho 24 %, vedúceho 17 %, čo je takmer ako dnes (28 % / 16 %).</dd>
+<dt>Cena a riziko</dt><dd>Pohoršení je 18,7 na partiu namiesto 11,9, teda viac posunov markerov a viac rozhodnutí v kroku Pohoršenie (+4 % ťahov). Človek môže suchotu využiť lepšie ako bot: bot nevie plánovať „dnes nasucho, aby som zajtra posunul staršieho“. Treba sa na to pozrieť v playteste. Opatrovateľka v2 (latka Absťáku −2) stratí zmysel, lebo latka minulého kola zanikne. Jej text treba prepísať na porovnanie so súperom, napríklad „pri porovnaní nerestí sa ti ráta +2“ (návrh, číslo nemerané).</dd>
+<dt>Náročnosť</dt><dd>Stredná: koniec kola, §9.2 Pohoršenie, §9.4 špaky, text karty Absťák (Admin), výhľad <code>zavislost.ts</code> a doska hráča („súper 3 · ty 1 → hrozí Absťák“), nápoveda Melichara, bot.</dd>
+</dl>
+</article>
+
+<article class="karta skusit" data-odp="skusit">
+<h3>1 + 3 Triaška <span class="stitok skusit">vyskúšať, ak Nervák nebude zrozumiteľný</span></h3>
+<dl class="vl">
+<dt>Pravidlo (meraná verzia)</dt><dd><span class="znenie">Vznik ako Krok. Nový Absťák ide do odhadzovacieho balíčka (bez karty za priznanie). Keď ho máš v ruke, smieš ho na svojom ťahu v Zhromaždení alebo v Pitke uhasiť: 1 cigareta, alebo 1 plný poldeci (pečeň +1, v Zhromaždení −1 limit). Uhasenie je nerest a Absťák sa vráti do zásoby. Neuhasený sa v bitke ráta ako dnes a na konci kola sa prizná sám. Kto mal viac nerestí ako súper, zbaví sa jedného priznaného.</span></dd>
+<dt>Čo ukázalo meranie</dt><dd>Najmenej stompov zo všetkých variantov: 58 % (dnes 68 %), veľkých 34 % (dnes 44 %), priemerný rozdiel 20,5 v zrkadle (dnes 24,5). Hlavný dôvod je ale, že <strong>Absťák stratí zuby</strong>: väčšinu času leží v balíčku, kde nepôsobí, a keď príde do ruky, bot ho uhasí (1,13× za partiu). Remíza Absťákom ani zrážka špakov nenastali ani raz za 300 partií. Uhasenie bolo v 66 % prípadov poldecákom, lebo botom chýbali cigarety, takže výdaj cigariet, ktorý návrh sľuboval, sa takmer neprejavil.</dd>
+<dt>Cena a riziko</dt><dd>Nový príkaz a tlačidlo pri karte v ruke. Náhoda v čase (kedy si Absťák doberieš) je väčšia ako pri Nerváku. Rebrík pri ε 0,1 klesol na 49 % (dnes 55 %), čo je v rámci šumu, ale smer je nepriaznivý. Absťák prestáva brzdiť nepitie: dá sa takmer vždy lacno uhasiť.</dd>
+<dt>Náročnosť</dt><dd>Stredná až veľká: kliatba v balíčku (vzor Cirhóza), nový ťah v jadre, klient, bot.</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>1 Krok so stolom (samotný) <span class="stitok zamietnut">zamietnuť bez 4</span></h3>
+<dl class="vl">
+<dt>Čo ukázalo meranie</dt><dd>Absťákov pribudne (4,0 na partiu). Bot nerestí viac (1,68 za kolo), lebo nerest navyše už nezdvíha latku na ďalšie kolo. Zrážka špakov stúpne z 0,61 na 2,26 za partiu a Absťák padá viac na porazeného (2,14 proti 1,82 u víťaza). Rebrík pri ε 0,25 klesne zo 69 % na 57 %, čo je asi trojnásobok štandardnej chyby. Náhodné ťahy často pridajú nerest, a tak náhodného hráča pred Absťákom chránia. Ignorant tu prehráva najviac (44 %), takže v Kroku je najviac rozhodovania o Absťáku, ale chyba sa trestá menej.</dd>
+<dt>Záver</dt><dd>Krok má zmysel len so zrušením zrážky špakov (4 Nervák). Bez nej len vyrába viac Absťákov pre porazeného.</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>5 Hladinka <span class="stitok zamietnut">zamietnuť v tejto podobe</span></h3>
+<dl class="vl">
+<dt>Meraná zjednodušená verzia</dt><dd><span class="znenie">Stupnica = počítadlo pečene, ktoré sa po Pitke nenuluje. Hore ju posúva poškodenie pečene (akcie, NA EX, vypitý poldeci = 1 pole) a každá nerest z cigariet (fajčenie, barter, doliatie, kšefty za cigarety). Horný okraj = dnešný prah Cirhózy 3 nad stredom (Nealko a Krčma +2). Na konci kola vytriezvenie −2 (druhá verzia −3). Pri −3 a nižšie Absťák (priznaný, +1 karta) a návrat do stredu. Kto je po vytriezvení v strede alebo vyššie, zbaví sa jedného Absťáku. Vypitý poldeci je nerest aj pečeň, ale posúva len o 1 pole.</span></dd>
+<dt>Čo ukázalo meranie</dt><dd>Dnes sa pečeň po každej Pitke nuluje a Cirhóza vyžaduje 3 pečene v jednej Pitke. Väčšina pečene pritom pochádza z akcií kariet v línii: hráč dostane priemerne 3,9 pečene za kolo (medián 2, chvost až 15; 20 partií), ale nerestí má len 1,3 a Vypiť dá bot 0,04-krát za kolo. Spoločná stupnica preto meria hlavne karty v línii, nie rozhodnutie piť. S vytriezvením −2: Cirhózy 9,40 na partiu (dnes 6,84, +37 %), Absťák takmer zmizne (0,85), rozdiel ako podiel zo súčtu stúpne na 54 %. S vytriezvením −3: Absťákov 4,43 aj Cirhóz 10,14 (+48 %). Polarita sa nevyváži, oba tresty len zosilnejú.</dd>
+<dt>Ak chceš Hladinku oživiť</dt><dd>Na stupnici by museli byť len neresti (rozhodnutia hráča) a pečeň z kariet by ostala, ako je dnes. To je však iný návrh a treba ho znova zmerať. Vytriezvenie by potom muselo byť blízko priemeru nerestí za kolo (dnes 1,3), inak sa stupnica rozbehne jedným smerom (návrh, nemerané).</dd>
+</dl>
+</article>
+
+<article class="karta zamietnut" data-odp="zamietnut">
+<h3>2 Kocovina (kontrola polarity) <span class="stitok zamietnut">zamietnuť</span></h3>
+<dl class="vl">
+<dt>Čo ukázalo meranie</dt><dd>Polarita sa obráti, ako návrh predpovedal. Nerestí je 0,82 za kolo (dnes 1,24) a suchých kôl 41 % (dnes 25 %). Rozdiel nerestí medzi hráčmi klesne na 0,67 za kolo, lebo obaja sa držia pri zemi. Ako jediný variant dáva Absťák viac víťazovi (2,03) ako porazenému (1,66), čiže by fungoval ako brzda vedúceho. Vyprošťovák sa použil 2,75× za partiu. Rebrík pri ε 0,25 klesne na 60 %.</dd>
+<dt>Záver</dt><dd>Krčmová hra, v ktorej sa nepije, ide proti téme. Myšlienku „Absťák brzdí vedúceho“ sa oplatí zapamätať, ale cez iný spúšťač.</dd>
+</dl>
+</article>
+
+<article class="karta info" data-odp="info">
+<h3>Dnes (východisko) <span class="stitok info">východisko</span></h3>
+<dl class="vl">
+<dt>Čo ukázalo meranie</dt><dd>2,68 Absťáku za partiu, rovnomerne medzi víťaza (1,33) a porazeného (1,35). Neresti 1,24 za kolo, suché kolá 25 %. Špirálu u botov nevidno, lebo bot drží neresti na latke minulého kola a navyše nepridáva. Problém dneška je v zrozumiteľnosti (hráči nevedia, prečo Absťák prišli), nie v číslach. Ignorant, ktorý latku nestráži, vyhrá 48 %, takže stráženie latky je skoro prázdne rozhodnutie.</dd>
+<dt>Iné zistenie</dt><dd>Vo v8 vyhrá vedúci pred finále v zrkadle len 57 % partií. Pred v8 to bolo 70 % (rozbor 20261027-161907, v7). Rebrík pri ε 0,1 je 55 %, pred v8 61 %. S Absťákom to nesúvisí. Odporúčam pozrieť sa na to zvlášť, pretože finále vo v8 prehadzuje výsledok viac ako predtým.</dd>
+</dl>
+</article>
+
+<article class="karta info" data-odp="info">
+<h3>6 Predsavzatie <span class="stitok info">nemerané</span></h3>
+<p>Nebolo v zadaní merania. Absťák by bol zriedkavý a prestal by brzdiť nepitie, rovnako ako pri Kocovine sa dá čakať pokles nerestí.</p>
+</article>
+</div>
+
+<h2 id="bot">Čo sa bot naučil (minimálne heuristiky)</h2>
+<p>Bot je ladený na dnešné pravidlá. V každom variante dostal len toto, takže čísla variantov sú náznak smeru, nie dôkaz:</p>
+<ul>
+<li><strong>Krok, Nervák, Triaška:</strong> hrozba Absťáku = súper má v tomto kole viac nerestí (vrátane NA EX na stole). Postih 1,0 (Nervák 0,45, Triaška 0,7), pri rovnosti 35 % z toho, pri prevahe a priznanom Absťáku bonus. Strop nerestí zmizne, lebo latka minulého kola už nie je. Na konci ťahu v Pitke dorovná chýbajúce neresti súpera fajčením alebo doliatím. Nervák: priznaný Absťák stojí 0,5 namiesto 1,3 a Pohoršenia z Absťáku vidí v odhade bitky.</li>
+<li><strong>Triaška:</strong> Absťák v ruke uhasí hneď: cigaretou, keď má aspoň 2, inak plným poldecákom (v Zhromaždení nie posledným).</li>
+<li><strong>Hladinka:</strong> hrozba = po vytriezvení klesne na spodný okraj. Strop nerestí = koľko polí ostáva po horný okraj. Dorovnáva, keď je pod stredom. Pečeň pod stredom nepovažuje za bonus.</li>
+<li><strong>Kocovina:</strong> hrozba = viac nerestí ako súper. Strop nerestí = súperove neresti, nedorovnáva. Vyprošťovák vidí cez simuláciu ťahu.</li>
+<li><strong>Ignorant</strong> (meranie hodnoty rozhodnutia): rovnaký Štamgast, ale hrozbu Absťáku nevidí, nedorovnáva a nehasí.</li>
+</ul>
+<p>Či bot nové pravidlá používa: uhasenia 1,13 za partiu, vyprošťováky 2,75, Pohoršenia z Absťáku +6,8 za partiu.</p>
+
+<h2 id="playtest">Čo sledovať v playteste Nerváka</h2>
+<ol class="otazky">
+<li>Vieš po každom kole povedať, prečo si Absťák dostal alebo sa ho zbavil? Pomohol výhľad „súper 3 · ty 1“?</li>
+<li>Išiel si niekedy zámerne nasucho, aby si mal Pohoršenia? V ktorom kole, proti akému náskoku, a vyplatilo sa to?</li>
+<li>Dorovnával si súperove neresti? Koľko ťa to stálo (cigarety, pečeň, Cirhóza) a bolo to tvoje rozhodnutie, alebo nutnosť?</li>
+<li>Pridal ti súper Absťák zámerne tým, že pil viac? Dalo sa na to odpovedať?</li>
+<li>Hýbu sa starší pri viacerých Pohoršeniach priveľa? Stratil si kvôli tomu zónu, ktorú si mal vyplatenú?</li>
+</ol>
+
+<h2 id="rozhodnutia">Čo potrebujem od Michala</h2>
+<ul>
+<li>Pustiť Nervák (1 + 4) do playtestu? Text karty Absťák by prepísal Admin, napríklad „Bitka: Udeluješ súperovi o ranu menej a máš +1 Pohoršenie. Ak máš viac Absťákov než súper, pri remíze v tuhom prehráš.“</li>
+<li>Opatrovateľka v2 („latka Absťáku −2“) potrebuje nové znenie, pretože latka zanikne.</li>
+<li>Hladinku ďalej skúmať len ako „stupnicu nerestí“ (bez pečene z kariet)? Ide o nový návrh a treba ho zmerať.</li>
+</ul>
+
+<footer>
+<p><strong>Ako sa meralo.</strong> Jadro <code>origin/master 7f66216</code> (pravidlá v8: špaky za karty v línii, strach za novú zónu, prebytok rozdeľuje porazený, Exekútor v každej bitke). Presun exekúcie za poškodenie, na ktorom Developer práve pracuje, v ňom ešte nie je. Každý variant vo vlastnom worktree <code>playtest/varianty/abstak-*</code> s rovnakými semienkami. Stredná hra (Druhá liga, 5 lokalít + finále, 6 kôl). Zrkadlo: 180 partií Štamgast × Štamgast. Mix: 120 partií Štamgast / Rapavý Fero / Teta Gizka s vymenenými miestami. Rebrík: 150 rozdaní × 2 miesta pri ε 0,1 aj 0,25. Ignorant: 80 rozdaní × 2 miesta. Spolu 7420 partií. Bot sa variantom neprispôsobuje (len minimálne heuristiky vyššie), takže čísla variantov sú náznak smeru.</p>
+<p>Skripty, diffy a surové výsledky: <code>playtest/strategia/abstak-20261028/</code> (<code>abstak.ts</code>, <code>suhrn.cjs</code>, <code>suhrn.txt</code>, <code>&lt;variant&gt;.diff</code>; mimo gitu). Pravidlá na master sa nemenili.</p>
+</footer>
+</main>
+<script>
+(function () {
+  var tl = document.querySelectorAll('.filter button[data-cast]');
+  tl.forEach(function (b) {
+    b.addEventListener('click', function () {
+      tl.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      document.querySelectorAll('.tab[data-cast]').forEach(function (t) { t.hidden = t.getAttribute('data-cast') !== b.getAttribute('data-cast'); });
+    });
+  });
+  var fl = document.querySelectorAll('.filter button[data-filter]');
+  fl.forEach(function (b) {
+    b.addEventListener('click', function () {
+      fl.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      var f = b.getAttribute('data-filter');
+      document.querySelectorAll('.karta').forEach(function (k) { k.hidden = f !== 'vsetky' && k.getAttribute('data-odp') !== f; });
+    });
+  });
+})();
+</script>
+</body>
+</html>

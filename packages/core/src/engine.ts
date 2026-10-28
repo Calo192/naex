@@ -72,6 +72,7 @@ import {
   jeCielLokalita,
   jeEfektManual,
   lenVlastnaStrana,
+  limitBonusDedicstva,
   limitZhromazdenia,
   vlastnyLimitZhromazdenia,
   naexZaPitku,
@@ -2242,7 +2243,9 @@ function cmdPlace(
     hrac(s, p).cigarety -= cena;
     s.dedicstvaVylozene += 1;
     const karta = vezmiZRuky(s, p, cmd.uid);
+    const bonusPred = limitBonusDedicstva(s.hraci[p].dedicstvo);
     hrac(s, p).dedicstvo.push(karta as DeepMutable<CardInstance>);
+    pridajLimit(z, p, limitBonusDedicstva(s.hraci[p].dedicstvo) - bonusPred);
     events.push({
       type: "log",
       text: `Hráč ${p + 1} vykladá ${def.name} do Dedičstva za ${cigariet(cena)} (ďalšie Dedičstvo stojí ${cenaDedicstva(s as GameState)}).`,
@@ -2687,6 +2690,17 @@ function nastupEfekt(
     default:
       break;
   }
+}
+
+/**
+ * Vínko vyložené do Dedičstva v Zhromaždení (návrh #26 B, Michal 2026-10-28):
+ * zostávajúci limit stúpne hneď; na Zastávke spoločný obom aj vlastný hráčovi,
+ * ako keby bol v limite od začiatku Zhromaždenia.
+ */
+function pridajLimit(z: DeepMutable<ZhromazdenieStav>, p: PlayerId, n: number): void {
+  if (n === 0) return;
+  for (const q of z.spolocny === true ? ([0, 1] as const) : [p]) z.zostavaLimit[q] += n;
+  if (z.vlastny !== undefined) z.vlastny[p] += n;
 }
 
 /** Uberie z limitu vykladania; na Zastávke zo spoločného limitu obom. */
@@ -3687,8 +3701,9 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       const nova = posunMarker(elder, kSebe ? p : opp);
       need(nova !== null, "Marker je na kraji stupnice.");
       h.cigarety -= VILA_CENA;
+      const z = elder.marker;
       presunMarker(s, events, elder, nova, "kseft", p);
-      events.push({ type: "log", text: `Predsedova vila: hráč ${p + 1} platí ${cigariet(VILA_CENA)} — ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "k súperovi")}` });
+      events.push({ type: "log", text: `Predsedova vila: hráč ${p + 1} platí ${cigariet(VILA_CENA)} — ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "k súperovi", z)}` });
       skontrolujVydesenie(s, data, events);
       break;
     }
@@ -4267,6 +4282,13 @@ export interface PlanVykladania {
   readonly zostava: number;
 }
 
+/** Hráč v pláne ťahu; Dedičstvo kvôli Vínku, ktoré zvýši limit hneď. */
+export interface PlanHraca {
+  readonly cigarety: number;
+  readonly poldeciPlne: number;
+  readonly dedicstvo?: readonly { readonly defId: string }[];
+}
+
 /**
  * Celý ťah v Zhromaždení naraz (Michal 2026-10-19): priznania nič nestoja
  * a ťah neukončia; každá ďalšia karta do línie či do Dedičstva po prvej stojí
@@ -4279,7 +4301,7 @@ export function planVykladania(
     readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
     readonly ciel: VerejnyStav["ciel"];
     readonly dedicstvaVylozene: number;
-    readonly hraci: readonly [{ readonly cigarety: number; readonly poldeciPlne: number }, { readonly cigarety: number; readonly poldeciPlne: number }];
+    readonly hraci: readonly [PlanHraca, PlanHraca];
     /** Skryté Záverečné (ClientState) — klient súpera ich v strany nemá. */
     readonly zaverecne?: readonly { readonly strana: PlayerId }[];
   },
@@ -4296,6 +4318,7 @@ export function planVykladania(
   let plne = stav.hraci[p].poldeciPlne;
   let cigarety = stav.hraci[p].cigarety;
   let dedicstva = stav.dedicstvaVylozene;
+  let mojeDedicstvo: readonly { readonly defId: string }[] = stav.hraci[p].dedicstvo ?? [];
   let poldeci = 0;
   const chyba = (text: string): PlanVykladania => ({ kroky, poldeci, chyba: text, zostava });
   const lokalita = cielLokalitaId(stav);
@@ -4337,6 +4360,9 @@ export function planVykladania(
     if (x.ciel === "dedicstvo") {
       cigarety -= cena;
       dedicstva += 1;
+      const bonusPred = limitBonusDedicstva(mojeDedicstvo);
+      mojeDedicstvo = [...mojeDedicstvo, x.karta];
+      zostava += limitBonusDedicstva(mojeDedicstvo) - bonusPred;
     } else {
       const kam: PlayerId = x.ciel === "vlastna" ? p : opponentOf(p);
       const nova = [...strany[kam], { card: x.karta, playedBy: p }];
@@ -4488,11 +4514,28 @@ function presunMarker(s: MutState, events: Event[], elder: DeepMutable<ElderStat
   else elder.vyplatene = po.vyplatene;
 }
 
-/** Log posunu s menom staršieho a dôsledkom — „hráč N“ klient nahradí menom (UX U11). */
-function textPosunu(data: GameData, elder: ElderState, smer: "k sebe" | "k súperovi"): string {
+/**
+ * Log posunu s menom staršieho a dôsledkom — „hráč N“ klient nahradí menom (UX U11).
+ * Zóna pred a po aj obe strany (návrh #27 A, Michal 2026-10-28): „k súperovi“ je smer
+ * na stupnici, nie polovica — z vlastnej polovice tvoja priazeň klesne a súper ho desí
+ * menej. Mená idú len v 1. páde („hráč N“), preto „desí ho hráč N“, nie „bojí sa hráča N“.
+ */
+function textPosunu(data: GameData, elder: ElderState, smer: "k sebe" | "k súperovi", z: MarkerPos): string {
+  const pred = { marker: z };
+  const komuPred = priazenHraca(pred);
   const komu = priazenHraca(elder);
-  const priazen = komu === null ? "" : `, priazeň +${priazenSila(elder)} má hráč ${komu + 1}`;
-  return `${defOf(data, elder.karta).name} o krok ${smer} → ${NAZVY_ZON[STUPNICA_ZONY[elder.marker]]}${priazen}.`;
+  const silaPred = priazenSila(pred);
+  const sila = priazenSila(elder);
+  const zony = `${NAZVY_ZON[STUPNICA_ZONY[z]]} → ${NAZVY_ZON[STUPNICA_ZONY[elder.marker]]}`;
+  let strany: string;
+  if (komu === null) {
+    strany = komuPred === null ? "nikto nemá priazeň" : `hráč ${komuPred + 1} prišiel o priazeň, nikto ho nedesí`;
+  } else {
+    const zmena = komuPred !== komu ? "nová" : sila > silaPred ? `stúpla z +${silaPred}` : `klesla z +${silaPred}`;
+    const strach = komuPred !== komu ? "desí" : sila > silaPred ? "desí viac" : "desí menej";
+    strany = `hráč ${komu + 1} má priazeň +${sila} (${zmena}), hráč ${opponentOf(komu) + 1} ho ${strach}`;
+  }
+  return `${defOf(data, elder.karta).name} o krok ${smer} — ${zony}: ${strany}.`;
 }
 
 function cmdPohorsenie(
@@ -4513,6 +4556,7 @@ function cmdPohorsenie(
   need(nova !== null, "Marker je na kraji stupnice.");
   need(pohorsenieMozne(s as GameState, p, elder, kSebe), "Pohoršenia z patronátu nesmú na staršieho, ktorého si súper vzal za patróna.");
   // Priazeň aj strach sa menia hneď — platia už v poškodení a v špakoch tejto bitky.
+  const z = elder.marker;
   presunMarker(s, events, elder, nova, "pohorsenie", p);
   // Najprv sa míňajú Pohoršenia z patronátu — na patróna smú len ostatné.
   const zPatronatu = b.pohorseniaPatronatu?.[p] ?? 0;
@@ -4522,7 +4566,7 @@ function cmdPohorsenie(
     b.pohorseniaPatronatu = nove;
   }
   b.pohorsenieZostava[p] -= 1;
-  events.push({ type: "log", text: `Pohoršenie (hráč ${p + 1}): ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "k súperovi")}` });
+  events.push({ type: "log", text: `Pohoršenie (hráč ${p + 1}): ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "k súperovi", z)}` });
   skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
 }
@@ -4837,10 +4881,11 @@ function cmdPrebytok(
   const drzi = b.prebytokDrzi as PlayerId;
   const nova = posunMarker(elder, opponentOf(drzi));
   need(nova !== null, "Marker sa nedá posunúť.");
+  const z = elder.marker;
   presunMarker(s, events, elder, nova, "prebytok", drzi);
   if (!b.prebytokPosunute.includes(cmd.elderId)) b.prebytokPosunute.push(cmd.elderId);
   b.prebytokZostava -= 1;
-  events.push({ type: "log", text: `Prebytok (hráč ${p + 1}): ${textPosunu(data, elder as ElderState, p === drzi ? "k súperovi" : "k sebe")}` });
+  events.push({ type: "log", text: `Prebytok (hráč ${p + 1}): ${textPosunu(data, elder as ElderState, p === drzi ? "k súperovi" : "k sebe", z)}` });
   skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
 }
