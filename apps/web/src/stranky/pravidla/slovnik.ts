@@ -10,7 +10,7 @@ export interface PojemSlovnika {
 }
 
 export const SLOVNIK: readonly PojemSlovnika[] = [
-  { id: "abstak", pojem: "Absťák", popis: "Kliatba za menej nerestí než v minulom kole; príde rovno priznaná a v bitke ti uberie 1 tuhé. Víťazovi s viac Absťákmi uberie špaky za bitku a rozhoduje remízu." },
+  { id: "abstak", pojem: "Absťák", popis: "Kliatba za menej nerestí než súper v tom istom kole; príde rovno priznaná, v bitke ti uberie 1 tuhé a dá 1 Pohoršenie navyše. Rozhoduje remízu v tuhom." },
   { id: "akcia", pojem: "Akcia", popis: "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške." },
   { id: "barter", pojem: "Stokársky barter", popis: "Počas Pitky za 5 cigariet nový plný poldeci (na Jednote o 1 menej)." },
   { id: "bitka", pojem: "Bitka", popis: "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, prebytok posúva markery starších." },

@@ -632,7 +632,9 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(overScenar(data, cela)).toBeNull();
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
     expect(koniec.koniec?.vitaz).toBe(0);
-    expect(koniec.koniec?.body).toEqual([32, 9]);
+    expect(koniec.koniec?.body).toEqual([23, 9]);
+    // Dve nepriznané Cirhózy z Pitiek finále (i-koniec, q-koniec): −3 za kus.
+    expect(koniec.koniec?.cirhozy).toEqual([2, 0]);
   });
 
   it("časti nadväzujú: každá má začiatok a koniec, idú za sebou a 2. časť začína tam, kde 1. skončila", () => {
@@ -675,23 +677,33 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     const kolo3 = po("k-prebytok-bot2");
     expect(kolo3.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
     expect(kolo3.starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(4);
-    expect(kolo3.hraci[0].nerestiMinuleKolo).toBe(3);
+    // Absťák Nervák (v8.1): Štamgast mal v 2. kole menej nerestí (1 : 3) — Absťák dostal on (i-neresti).
+    expect(kolo3.hraci[1].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
+    expect(kolo3.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
   });
 
   it("3. časť: patronát Štamgasta (ukážka), Dedičstvo, Exekútor, Kultúrny dom, Absťák a finále na Predsedovej vile", () => {
     expect(po("k-patronat-bot").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(3);
     expect(po("k-dedicstvo").hraci[0].dedicstvo.map((k) => k.defId)).toEqual(["vidly"]);
-    expect(odhad(po("k-nastroj"))).toEqual([5, 6]);
+    expect(odhad(po("k-nastroj"))).toEqual([5, 5]);
     expect(body(po("k-hotovo6"))).toEqual([4, 6]);
-    expect(odhad(po("k-pohorsenie2"))).toEqual([6, 5]);
+    // Štamgastov Absťák: −1 tuhé, +1 Pohoršenie — ťahá Starostu k sebe (5 : 6), hráč ho vráti (5 : 5).
+    expect(odhad(po("k-pohorsenie3-bot"))).toEqual([5, 6]);
+    expect(odhad(po("k-pohorsenie1"))).toEqual([5, 5]);
+    expect(odhad(po("k-pohorsenie2"))).toEqual([5, 4]);
     const vyhra = po("k-pohorsenie4");
     expect(body(vyhra)).toEqual([17, 7]);
     const kolo4 = po("k-prebytok3-bot");
     expect(kolo4.kolo).toBe(4);
     expect(kolo4.hraci[1].poldeciPlne + kolo4.hraci[1].poldeciVypite).toBe(1);
-    for (const p of [0, 1] as const) expect(kolo4.hraci[p].priznane.some((k) => k.defId === "abstak"), `Absťák ${p}`).toBe(true);
-    expect(odhad(po("k-hasic-finale"))).toEqual([4, 4]);
-    expect(po("k-kseft").starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(6);
+    // Koniec 3. kola: hráč 0 nerestí, Štamgast 1 (fajčil) — Absťák dostane hráč, Štamgast sa svojho zbaví (i-abstak).
+    expect(kolo4.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(true);
+    expect(kolo4.hraci[1].priznane.some((k) => k.defId === "abstak")).toBe(false);
+    expect(odhad(po("k-pijan-finale"))).toEqual([2, 5]);
+    expect(po("k-kseft").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(2);
+    expect(odhad(po("k-kseft"))).toEqual([3, 5]);
+    // Absťák hráča vo finále: Pohoršenie navyše, Hrobár na červenú.
+    expect(po("k-pohorsenie-abstak").starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(6);
   });
 
   it("3. časť: hráč sám robí patronát, Obmedzenie, Víziu, doliatie a NA EX so zrážkou (Michal 2026-10-28)", () => {
@@ -717,7 +729,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(rec?.naexBy).toBeDefined();
     expect(evaluateLine(data, lineState(po("k-finale-p3-bot"))).sums[1].Rana).toBe(4);
     // Patronát vyšiel: Poštárka ostáva hráčovi.
-    expect(po("k-prebytok-finale2").starsi.find((e) => e.elderId === "postarka")).toMatchObject({ nahradeny: true, ziskal: 0 });
+    expect(po("k-prebytok-finale1").starsi.find((e) => e.elderId === "postarka")).toMatchObject({ nahradeny: true, ziskal: 0 });
   });
 
   it("texty nehovoria o Smetisku ani o bodoch (Michal 2026-10-28: stavba klikom, víťazné body sú špaky)", () => {

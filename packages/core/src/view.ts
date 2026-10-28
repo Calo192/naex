@@ -49,11 +49,10 @@ export interface HracVerejne {
   readonly pecen: number;
   readonly zadlzenie: number;
   /**
-   * Neresti tohto a predošlého kola (Absťák). Verejné — pitie, fajčenie aj
-   * NA EX vidí každý pri stole.
+   * Neresti tohto kola (Absťák: porovnanie so súperom, v8.1). Verejné — pitie,
+   * fajčenie aj NA EX vidí každý pri stole.
    */
   readonly nerestiTotoKolo: number;
-  readonly nerestiMinuleKolo: number;
   /** Absťáky získané za hru — verejné, Absťák sa priznáva hneď. */
   readonly abstakyZiskane: number;
 }
@@ -287,7 +286,6 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       pecen: hrac.pecen,
       zadlzenie: hrac.zadlzenie,
       nerestiTotoKolo: hrac.nerestiTotoKolo,
-      nerestiMinuleKolo: hrac.nerestiMinuleKolo,
       abstakyZiskane: hrac.abstakyZiskane ?? 0,
     };
   };
@@ -727,20 +725,17 @@ export interface StavkaBitky {
  * Stávka bitky (Michal 2026-10-22, návrh 3 A; v6 v špakoch): čo hráč získa
  * výhrou a čo získa súper, keď vyhrá on — od v6.1 aj so špakmi za starších,
  * ktoré dostane len víťaz. Špaky za bitku ráta spakyZaVyhru ako výplata
- * (Herňa, Noviny), s priznanými Dlhmi teraz. Súperove Absťáky v ruke nevidno —
- * rátajú sa len verejné.
+ * (Herňa, Noviny), s priznanými Dlhmi teraz. Absťáky špaky za bitku od v8.1
+ * neuberajú.
  */
 export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | null {
   if (view.ciel === null || view.koniec !== null) return null;
   const ja = view.ja;
   const su = opponentOf(ja);
   const karty = kartyBitky(view);
-  const abstaky: [number, number] = [0, 0];
-  abstaky[ja] = abstakyVBitke(data, view, ja, view.ruka.filter((k) => k.defId === "abstak").length);
-  abstaky[su] = abstakyVBitke(data, view, su, 0);
   const starsi: [number, number] = [spakyZaStarsich(view.starsi, ja), spakyZaStarsich(view.starsi, su)];
-  const moja = spakyZaVyhru(view, ja, karty, abstaky);
-  const jeho = spakyZaVyhru(view, su, karty, abstaky);
+  const moja = spakyZaVyhru(view, ja, karty);
+  const jeho = spakyZaVyhru(view, su, karty);
   const vitazovi = (x: typeof moja, vitaz: PlayerId): number => (x.komu === vitaz ? x.spolu : 0);
   return {
     karty: karty.spolu,

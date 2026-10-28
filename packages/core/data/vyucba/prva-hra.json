@@ -1895,15 +1895,23 @@
     {
       "id": "i-neresti",
       "kto": "info",
-      "melichar": "Ešte jedna vec. Hra si pamätá tvoje neresti: vypitý poldeci, NA EX, každú vyfajčenú cigaretu. V tomto kole ich máš tri. Ak ich v ďalšom kole bude menej, niečo dostaneš, a nebude sa ti to páčiť.",
+      "melichar": "Ešte jedna vec: neresti. Vypitý poldeci, NA EX, každá vyfajčená cigareta. Na konci kola sa porovnajú tvoje so Štamgastovými: ty si mal tri, on jednu. Kto mal menej, dostane Absťák, takže Štamgast, hneď priznaný, a dobral si zaň kartu. Kto mal viac, jedného sa zbaví. Áno, aj polepšenie sa tu trestá.",
       "zvyraznit": [
-        "bar"
+        "bar-supera"
+      ]
+    },
+    {
+      "id": "i-abstak-supera",
+      "kto": "info",
+      "melichar": "Čo Absťák robí? V bitke uberie jedno tuhé, ale dá jedno [Pohoršenie] Pohoršenie navyše. Kto je na suchu, robí scény. Uvidíš to na Štamgastovi v ďalšom kole.",
+      "zvyraznit": [
+        "bar-supera"
       ]
     },
     {
       "id": "i-dovidenia2",
       "kto": "info",
-      "melichar": "To je druhá časť. Teraz vieš viac ako polovica krčmy. V tretej ťa naučím zvyšok: patronát, Dedičstvo, Absťák a finále. Potom ma už nebudeš potrebovať. Ja teba áno, tie cigarety mi chýbajú. Na zdravie!",
+      "melichar": "To je druhá časť. Teraz vieš viac ako polovica krčmy. V tretej ťa naučím zvyšok: patronát, Dedičstvo a finále. Potom ma už nebudeš potrebovať. Ja teba áno, tie cigarety mi chýbajú. Na zdravie!",
       "tlacidlo": "Dokončiť 2. časť",
       "koniecCasti": 2
     },
@@ -2319,6 +2327,18 @@
       ]
     },
     {
+      "id": "k-fajcit3-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "smoke",
+        "pocet": 1
+      },
+      "melichar": "Štamgast si v Pitke zafajčil: cigareta, karta a jedna nerest. Zapamätaj si to, na konci kola sa to bude rátať.",
+      "zvyraznit": [
+        "bar-supera:cigarety"
+      ]
+    },
+    {
       "id": "k-hotovo5-bot",
       "kto": "bot",
       "prikaz": {
@@ -2367,6 +2387,19 @@
       ]
     },
     {
+      "id": "k-pohorsenie3-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pohorsenie",
+        "elderId": "starosta",
+        "kSebe": true
+      },
+      "melichar": "Bitka. Pohoršenia rozdeľuje najprv obranca, teda Štamgast. Má jedno z Absťáku a ťahá si Starostu k sebe, priazeň Bitkár. Absťák mu jedno tuhé zobral, Starosta mu ho vrátil. Bitka 5 : 6.",
+      "zvyraznit": [
+        "starsi:starosta"
+      ]
+    },
+    {
       "id": "i-pohorsenie3",
       "kto": "info",
       "melichar": "Teraz tvoje [Pohoršenie] Pohoršenia: jedno z Dievčiny a tri z patronátu, spolu štyri. Bitka je 5 : 6. Pohoršenie mení priazeň hneď, to ti predviedol Štamgast. Teraz ty.",
@@ -2383,7 +2416,7 @@
         "elderId": "starosta",
         "kSebe": true
       },
-      "melichar": "Ťahaj Starostu k sebe. Bude v žltej na tvojej polovici a dá ti priazeň Bitkár: 1 tuhé navyše, hneď. Na to ide Pohoršenie z Dievčiny, tie z patronátu na Starostu nesmú.",
+      "melichar": "Ťahaj Starostu k sebe. Vráti sa do stredu a Štamgast príde o Bitkára, hneď: 5 : 5. Na to ide Pohoršenie z Dievčiny, tie z patronátu na Starostu nesmú.",
       "hlaskaChyby": "nervy/19_ach_boha",
       "zvyraznit": [
         "starsi:starosta"
@@ -2397,7 +2430,7 @@
         "elderId": "postarka",
         "kSebe": true
       },
-      "melichar": "Poštárku tiež k sebe. Jej priazeň je Veriaci: [Viera] Viera navyše, a tá uberie Štamgastovi tuhé. 6 : 5.",
+      "melichar": "Poštárku tiež k sebe. Jej priazeň je Veriaci: [Viera] Viera navyše, a tá uberie Štamgastovi tuhé. 5 : 4.",
       "hlaskaChyby": "urazky/marha",
       "zvyraznit": [
         "starsi:postarka"
@@ -2468,7 +2501,7 @@
     {
       "id": "i-vyhra3",
       "kto": "info",
-      "melichar": "Vyhral si, 6 : 5. Špaky: šesť za karty v línii, Farár konečne zaplatil 6 a Hrobár 3, za žltú a oranžovú. Exekútor ti potom zobral dva. Máš 17.",
+      "melichar": "Vyhral si, 5 : 4. Špaky: šesť za karty v línii, Farár konečne zaplatil 6 a Hrobár 3, za žltú a oranžovú. Exekútor ti potom zobral dva. Máš 17.",
       "zvyraznit": [
         "bar:body"
       ]
@@ -2523,7 +2556,7 @@
     {
       "id": "i-abstak",
       "kto": "info",
-      "melichar": "A koniec kola: dnes si nemal ani jednu nerest, minule tri. Menej nerestí znamená Absťák. Je hneď priznaný a dobral si zaň kartu. V každej bitke ti uberie 1 tuhé. Štamgast má tiež jeden, aj on sa polepšil.",
+      "melichar": "A koniec kola: neresti. Ty si dnes nemal žiadnu, Štamgast jednu, tú cigaretu. Menej máš ty, takže Absťák je tvoj, hneď priznaný, a dobral si zaň kartu. Štamgast mal viac, a tak sa svojho Absťáku zbavil. Keby ste mali rovnako, nedostane nikto nič. V bitke ti Absťák uberie jedno tuhé a dá ti jedno Pohoršenie navyše.",
       "zvyraznit": [
         "bar:abstak"
       ]
@@ -2534,14 +2567,14 @@
       "melichar": "Prečo máš Absťák?",
       "moznosti": [
         {
-          "text": "V tomto kole som mal menej nerestí ako v minulom.",
+          "text": "V tomto kole som mal menej nerestí ako Štamgast.",
           "spravna": true,
-          "vysvetlenie": "Áno. Tu sa trestá polepšenie. Tak pi, keď už piješ."
+          "vysvetlenie": "Áno. Kto pije menej ako súper, dostane Absťák. Tak pi, keď už piješ."
         },
         {
           "text": "Lebo som pil.",
           "spravna": false,
-          "vysvetlenie": "Naopak. Lebo si pil menej.",
+          "vysvetlenie": "Naopak. Lebo si pil menej ako on. Kto pije viac, Absťáku sa zbaví.",
           "hlaska": "udiv/jezis_maria"
         }
       ]
@@ -2728,7 +2761,7 @@
     {
       "id": "i-patronat-ty",
       "kto": "info",
-      "melichar": "Poštárka je na tvojej polovici v žltej a prejavuje ti priazeň. Vezmi si ju: zo žltej to stojí tri [Cigareta] cigarety a Štamgast dostane v bitke jedno [Pohoršenie] Pohoršenie navyše, ktoré na Poštárku nesmie. Ako náhradu jej daj lícom dole Anonymného alkoholika.",
+      "melichar": "Poštárka je na tvojej polovici v žltej a prejavuje ti priazeň. Vezmi si ju: zo žltej to stojí tri [Cigareta] cigarety a Štamgast dostane v bitke jedno [Pohoršenie] Pohoršenie navyše, ktoré na Poštárku nesmie. Ako náhradu jej daj lícom dole Miňištranta.",
       "zvyraznit": [
         "ponuka-patronatu"
       ]
@@ -2739,9 +2772,9 @@
       "prikaz": {
         "type": "patronat",
         "elderId": "postarka",
-        "uid": "ruka:anonymny_alkoholik"
+        "uid": "ruka:ministrant"
       },
-      "melichar": "Vezmi Poštárku do patronátu a za náhradu daj Anonymného alkoholika. Ak finále vyhráš, Poštárka ti ostane. Ak prehráš, vráti sa a ty odhodíš poldeci.",
+      "melichar": "Vezmi Poštárku do patronátu a za náhradu daj Miňištranta. Ak finále vyhráš, Poštárka ti ostane. Ak prehráš, vráti sa a ty odhodíš poldeci.",
       "hlaskaChyby": "urazky/hovado_ozrate_vyjebane",
       "zvyraznit": [
         "ponuka-patronatu"
@@ -2751,7 +2784,7 @@
           "starsi:postarka",
           "starsi:starosta",
           "starsi:autobusar",
-          "ruka:anonymny_alkoholik"
+          "ruka:ministrant"
         ],
         "zle": [
           {
@@ -2778,7 +2811,7 @@
             "hlaska": "nervy/20_uz_mam_v_pici_nervy_zas"
           }
         ],
-        "inak": "Poštárka, náhrada Anonymný alkoholik."
+        "inak": "Poštárka, náhrada Miňištrant."
       }
     },
     {
@@ -2797,33 +2830,23 @@
       "melichar": "Finále sa hrá ako každé kolo. Štamgast útočí, vykladá prvý: Recidivista k vile."
     },
     {
-      "id": "k-hasic-finale",
+      "id": "k-pijan-finale",
       "kto": "hrac",
       "prikaz": {
         "type": "tah",
         "kroky": [
           {
             "type": "place",
-            "uid": "ruka:hasic",
+            "uid": "ruka:pijan",
             "target": "vlastna"
           }
         ]
       },
-      "melichar": "Polož Hasiča k vile. Jeho [Rana] Rana sa spojí s [Cigareta] Cigaretou vily a [Petelica] Petelica s jej [Dlh] Dlhom. Odhad 4 : 4.",
+      "melichar": "Polož Pijana k vile. Spojí tri jej akcie: [Cigareta] Cigaretu, [Pecka] Pecku a [Dlh] Dlh. Pitky budú tri. Odhad 2 : 5, zatiaľ.",
       "hlaskaChyby": "urazky/ty_debil",
       "zvyraznit": [
-        "ruka:hasic"
+        "ruka:pijan"
       ]
-    },
-    {
-      "id": "k-hasic-volba",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "hasic",
-        "nechat": true
-      },
-      "melichar": "Hasič má Nástup: vytiahol ti náhodnú kartu z odhadzovacieho balíčka, Pušku. Nechaj si ju.",
-      "hlaskaChyby": "nervy/bud_ticho"
     },
     {
       "id": "k-zh-finale-pas-bot",
@@ -2839,7 +2862,7 @@
       "prikaz": {
         "type": "pass"
       },
-      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty: za každú dostaneš [Cigareta] cigaretu a na Kšeft vily potrebuješ dve. Policajtku a Poštárku vyložíš v ďalšom Zhromaždení. Pitky budú tri.",
+      "melichar": "Teraz pasuj (P), hoci smieš ešte dve karty: za každú dostaneš [Cigareta] cigaretu a na Kšeft vily potrebuješ dve. Policajtku a Poštárku vyložíš v ďalšom Zhromaždení.",
       "hlaskaChyby": "urazky/vyjebany",
       "zvyraznit": [
         "tlacidlo:pas"
@@ -2851,13 +2874,13 @@
       "prikaz": {
         "type": "kseft",
         "uid": "ciel:predsedova_vila",
-        "elderId": "hrobar",
-        "kSebe": false
+        "elderId": "starosta",
+        "kSebe": true
       },
-      "melichar": "Kšeft vily: za 2 [Cigareta] cigarety posuň Hrobára o políčko k Štamgastovi, na červenú. Ak vyhráš, zaplatí ti aj červenú, 3 špaky, a vydesených budeš mať zas dvoch. Kšeft nie je ťah a každý ho smie raz za Pitku.",
+      "melichar": "Kšeft vily: za 2 [Cigareta] cigarety posuň Starostu o políčko k sebe, do žltej. Jeho priazeň Bitkár ti dá tuhé navyše hneď: 3 : 5. Kšeft nie je ťah a každý ho smie raz za Pitku.",
       "hlaskaChyby": "urazky/marha",
       "zvyraznit": [
-        "starsi:hrobar",
+        "starsi:starosta",
         "tlacidlo:kseft"
       ]
     },
@@ -2920,7 +2943,7 @@
           }
         ]
       },
-      "melichar": "Vypi a polož Policajtku za Hasiča a Poštárku za ňu, v jednom ťahu. Policajtkino [Obmedzenie] Obmedzenie sa spojí s Poštárkinou [Vízia] Víziou a budú platiť obe. A Hasičovo [Posilnenie] Posilnenie zdvojí Policajtke [Robota] Robotu.",
+      "melichar": "Vypi a polož Policajtku za Pijana a Poštárku za ňu, v jednom ťahu. Policajtkino [Obmedzenie] Obmedzenie sa spojí s Poštárkinou [Vízia] Víziou a budú platiť obe. Odhad 6 : 5.",
       "hlaskaChyby": "urazky/takuto_marhu_vyjebanu_skurvenu_spinavu",
       "volba": {
         "kandidati": [
@@ -2938,20 +2961,12 @@
             "hlaska": "nervy/daj_to_do_pice"
           }
         ],
-        "inak": "Vypi, Policajtka za Hasiča, Poštárka za ňu. Jeden ťah."
+        "inak": "Vypi, Policajtka za Pijana, Poštárka za ňu. Jeden ťah."
       }
     },
     {
       "id": "k-finale-z2-bot2",
       "kto": "bot",
-      "prikaz": {
-        "type": "pass"
-      },
-      "melichar": ""
-    },
-    {
-      "id": "k-finale-z2",
-      "kto": "auto",
       "prikaz": {
         "type": "pass"
       },
@@ -2999,24 +3014,12 @@
       "melichar": ""
     },
     {
-      "id": "k-finale-z3",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "pass"
-      },
-      "melichar": "Pasuj (P). Za Pušku v ruke dostaneš [Cigareta] cigaretu, budeš mať tri.",
-      "hlaskaChyby": "nervy/bud_ticho",
-      "zvyraznit": [
-        "tlacidlo:pas"
-      ]
-    },
-    {
       "id": "k-doliatie",
       "kto": "hrac",
       "prikaz": {
         "type": "refillPoldeci"
       },
-      "melichar": "Posledná Pitka. Doliatie: za dve [Cigareta] cigarety otočíš vypitý [Poldeci] poldeci späť na plný. Na konci hry je plný poldeci špak, dve cigarety nie. Počítaj. Kúpiť úplne nový by stálo päť.",
+      "melichar": "Posledná Pitka. Ruku máš prázdnu, za teba hra pasovala. Doliatie: za dve [Cigareta] cigarety otočíš vypitý [Poldeci] poldeci späť na plný. Na konci hry je plný poldeci špak, dve cigarety nie. Počítaj. Kúpiť úplne nový by stálo päť.",
       "hlaskaChyby": "urazky/svine_vyjebane",
       "zvyraznit": [
         "tlacidlo:doliat",
@@ -3064,22 +3067,9 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Odkryté. Štamgast dal NA EX na toho istého Recidivistu, prečo, nevie ani on. To je zrážka a z karty je Výtržník: všetky jej akcie sú aktívne Rany pre majiteľa, teda pre Štamgasta, do konca bitky. Tvoje NA EX mu nezrušilo nič. A za tvoje NA EX ti zobral cigaretu: Výpalník od Veterinára.",
+      "melichar": "Odkryté. Štamgast dal NA EX na toho istého Recidivistu, prečo, nevie ani on. To je zrážka a z karty je Výtržník: všetky jej akcie sú aktívne Rany pre majiteľa, teda pre Štamgasta, do konca bitky. Tvoje NA EX mu nezrušilo nič. Odpovedať nemáš čím, ruka je prázdna.",
       "zvyraznit": [
-        "linia:recidivista",
-        "bar:cigarety"
-      ]
-    },
-    {
-      "id": "k-bez-odpovede-finale",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "bezReakcie"
-      },
-      "melichar": "Rozumnú odpoveď nemáš, klikni bez odpovede.",
-      "hlaskaChyby": "nervy/bud_ticho",
-      "zvyraznit": [
-        "tlacidlo:bez-odpovede"
+        "linia:recidivista"
       ]
     },
     {
@@ -3097,8 +3087,21 @@
         "type": "vizia",
         "vziat": true
       },
-      "melichar": "Ešte raz Vízia: navrchu je Miňištrant. Toho si vezmi do ruky.",
+      "melichar": "Ešte raz Vízia: navrchu je Hasič. Toho si vezmi do ruky.",
       "hlaskaChyby": "urazky/marha"
+    },
+    {
+      "id": "k-pohorsenie-abstak",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "pohorsenie",
+        "elderId": "hrobar"
+      },
+      "melichar": "Bitka. Si obranca, Pohoršenia rozdeľuješ prvý, a tvoj Absťák ti dal jedno. Pošli Hrobára na červenú: ak vyhráš, zaplatí ti aj červenú, 3 špaky.",
+      "hlaskaChyby": "nervy/jebem_im_boha_vyjebaneho",
+      "zvyraznit": [
+        "starsi:hrobar"
+      ]
     },
     {
       "id": "k-pohorsenie-finale-bot",
@@ -3116,7 +3119,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Bitka finále 6 : 4, vyhral si a Poštárka ti ostáva, patronát vyšiel. Špaky: za päť kariet v línii, Hrobár za červenú a Veterinár za žltú. Po bitke tvoja dvojitá [Robota] Robota spálila tvoj Dlh skôr, ako prišiel exekútor. Štamgastovi zhoreli dva.",
+      "melichar": "Bitka finále 6 : 5, vyhral si a Poštárka ti ostáva, patronát vyšiel. Špaky: za päť kariet v línii, Hrobár za červenú a Veterinár za žltú. Po bitke exekútor: tebe zhorel Dlh aj so špakom, Štamgastovi dva.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body"
@@ -3125,7 +3128,7 @@
     {
       "id": "i-prebytok-finale",
       "kto": "info",
-      "melichar": "Prebytok 2 je tvoj a vo finále ho rozdeľuje ten, kto ho drží: ty. Porazenému by priazne už nepomohli. A za nové zóny, ktoré tým vzniknú, ti starší zaplatia ešte teraz, po finále.",
+      "melichar": "Prebytok 1 je tvoj a vo finále ho rozdeľuje ten, kto ho drží: ty. Porazenému by priazne už nepomohli. A za nové zóny, ktoré tým vzniknú, ti starší zaplatia ešte teraz, po finále.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -3144,22 +3147,9 @@
       ]
     },
     {
-      "id": "k-prebytok-finale2",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "prebytok",
-        "elderId": "veterinar"
-      },
-      "melichar": "A ešte raz Veterinára, na červenú: 3. Vydesený je tretí.",
-      "hlaskaChyby": "urazky/kokot_blaznivy_jebnuty",
-      "zvyraznit": [
-        "starsi:veterinar"
-      ]
-    },
-    {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. A nepriznaná Cirhóza by ťa stála 3 špaky za kus, v ruke aj v balíčkoch. Svoju máš priznanú. 32 : 9, vyhral si.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. A v Pitkách finále ti dvakrát pretiekla pečeň: dve Cirhózy ležia v balíčku nepriznané a stoja ťa 3 špaky za kus. 23 : 9, aj tak si vyhral.",
       "zvyraznit": [
         "bar:body",
         "nastenka"
@@ -3168,7 +3158,7 @@
     {
       "id": "q-koniec",
       "kto": "otazka",
-      "melichar": "Štamgast by mal na konci dve nepriznané Cirhózy. Koľko by ho stáli?",
+      "melichar": "Koľko ťa stáli tvoje dve nepriznané Cirhózy?",
       "moznosti": [
         {
           "text": "6 špakov.",

@@ -314,7 +314,7 @@ export interface BitkaNaNastenke {
   readonly zaBitku: readonly [number, number];
   /** Koľko zo zaBitku víťaz zobral zo sekery (predošlé remízy). */
   readonly zoSekery: number;
-  /** Absťáky víťaza navyše oproti porazenému — o toľko dostal menej. */
+  /** Absťáky víťaza navyše oproti porazenému — o toľko dostal menej (do v8; od v8.1 vždy 0). */
   readonly abstakZrazka: number;
   /** Špaky po sekere, ktoré prepadli (remíza vo finále). */
   readonly prepadlo: number;
@@ -2681,12 +2681,6 @@ function nastupEfekt(
       }
       break;
     }
-    case "opatrovatelka": {
-      const pred = s.hraci[p].nerestiMinuleKolo;
-      hrac(s, p).nerestiMinuleKolo = Math.max(0, pred - 2);
-      events.push({ type: "log", text: `Opatrovateľka: hráčovi ${p + 1} klesá počet nerestí z minulého kola z ${pred} na ${s.hraci[p].nerestiMinuleKolo}.` });
-      break;
-    }
     default:
       break;
   }
@@ -4008,8 +4002,11 @@ function rozpisPohorseni(
   const zPatronatu = s.patronat[opponentOf(p)]?.pohorsenia ?? 0;
   // Abstinent v5 (Michal 2026-10-25): v bitke +1 / +2 / +3 Pohoršenia.
   const abstinent = silaPriazne(data, s, "LAKOMEC", p);
+  // Nervák (v8.1, Michal 2026-10-28): každý Absťák +1 Pohoršenie — rátajú sa verejné
+  // (priznané a v línii), aby počet Pohoršení neprezradil ruku.
+  const nervak = verejneAbstaky(s, p);
   // Policajtka ich od 2026-10-26 neruší — jej efekt je Dlh za NA EX v Pitke.
-  return { spolu: (sums[p].Pohoršenie ?? 0) + zPatronatu + abstinent, zPatronatu };
+  return { spolu: (sums[p].Pohoršenie ?? 0) + zPatronatu + abstinent + nervak, zPatronatu };
 }
 
 /**
@@ -4610,7 +4607,7 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   // Špaky za bitku a za starších (v6) idú aj do rekapitulácie bitky; exekúcia
   // (Michal 2026-10-28) až po nich — Povera, remíza, Herňa a Noviny vidia Dlhy pred ňou.
   const logy: Event[] = [];
-  vyplatSpaky(s, data, outcome, abstaky, logy);
+  vyplatSpaky(s, data, outcome, logy);
   exekucieBitky(s, data, logy);
   const spaky = s.nastenka[s.nastenka.length - 1] as BitkaNaNastenke | undefined;
   events.push({
@@ -4761,10 +4758,9 @@ export function spakyZaVyhru(
   s: VerejnyStav & { readonly spakyNaSekere: number },
   vitaz: PlayerId,
   karty: KartyBitky,
-  abstaky: readonly [number, number],
 ): SpakyZaVyhru {
   const porazeny = opponentOf(vitaz);
-  const zisk = spakyZaBitku(karty.spolu, abstaky[vitaz], abstaky[porazeny]);
+  const zisk = spakyZaBitku(karty.spolu);
   const dlhy = (q: PlayerId): number => s.hraci[q].priznane.filter((k) => k.defId === "dlh").length;
   // Herňa (Bitka, v7): víťaz navyše toľko špakov, koľko má porazený priznaných Dlhov — bez stropu.
   const herna = jeCielLokalita(s, "herna") ? dlhy(porazeny) : 0;
@@ -4777,13 +4773,13 @@ export function spakyZaVyhru(
 
 /**
  * Špaky po výsledku bitky (v6, Michal 2026-10-26), krok 4a a 4b:
- *  - víťaz dostane odohrané Pitky mínus rozdiel Absťákov (aspoň 1) a špaky zo
- *    sekery; pri sekere čakajú špaky kola na víťaza ďalšej bitky, vo finále prepadnú,
+ *  - víťaz dostane 1 špak za kartu v línii (aspoň 1; od v8.1 bez zrážky za Absťáky)
+ *    a špaky zo sekery; pri sekere čakajú špaky kola na víťaza ďalšej bitky, vo finále prepadnú,
  *  - potom za starších, ktorí sa hráča boja (žltá 1, oranžová 2, červená 3): len
  *    víťaz, pri sekere obaja (v6.1). Noviny (v7) presunú špaky za bitku porazenému.
  * Lokalita ide s výsledkom na nástenku.
  */
-function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstaky: readonly [number, number], events: Event[]): void {
+function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
   const finale = jeFinale(s);
@@ -4792,13 +4788,12 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
   const karty = kartyBitky(s as GameState);
   const zaBitku: [number, number] = [0, 0];
   let zoSekery = 0;
-  let abstakZrazka = 0;
+  const abstakZrazka = 0;
   let prepadlo = 0;
   const vitaz = outcome.vitaz;
   if (vitaz !== null) {
     const porazeny = opponentOf(vitaz);
-    const { komu, zisk, herna, spolu, porazenemu } = spakyZaVyhru(s as GameState, vitaz, karty, abstaky);
-    abstakZrazka = karty.spolu - zisk > 0 ? karty.spolu - zisk : 0;
+    const { komu, zisk, herna, spolu, porazenemu } = spakyZaVyhru(s as GameState, vitaz, karty);
     zoSekery = s.spakyNaSekere;
     zaBitku[komu] += spolu;
     zaBitku[porazeny] += porazenemu;
@@ -4810,7 +4805,7 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, abstak
     events.push({
       type: "log",
       // Zložky zvlášť (Michal 2026-10-27): karty v línii, Herňa za Dlhy porazeného, sekera.
-      text: `Bitku ${rodovo(vitaz, "vyhral", "vyhrala", "vyhráva")} hráč ${vitaz + 1}${preco}: ${spakov(zisk + zoSekery + herna)} — 1 špak za kartu v línii (${kariet(karty.spolu)})${abstakZrazka > 0 ? ` mínus ${abstakZrazka} za Absťák` : ""}${herna > 0 ? `, +${herna} za Dlhy porazeného (Herňa, ${pocet(herna, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")})` : ""}${zoSekery > 0 ? `, +${zoSekery} zo sekery` : ""}.`,
+      text: `Bitku ${rodovo(vitaz, "vyhral", "vyhrala", "vyhráva")} hráč ${vitaz + 1}${preco}: ${spakov(zisk + zoSekery + herna)} — 1 špak za kartu v línii (${kariet(karty.spolu)})${herna > 0 ? `, +${herna} za Dlhy porazeného (Herňa, ${pocet(herna, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")})` : ""}${zoSekery > 0 ? `, +${zoSekery} zo sekery` : ""}.`,
     });
     if (porazenemu > 0) {
       events.push({ type: "log", text: `Kultúrny dom: aj porazený hráč ${porazeny + 1} dostáva ${spakov(porazenemu)} — 1 za každú svoju kartu v línii.` });
@@ -5062,39 +5057,33 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
 
   // Víťaz si lokalitu neberie (v6) — karta je už na nástenke (vyplatSpaky).
 
-  // Absťák (pravidlá v2): menej nerestí než minulé kolo → Absťák rovno do
-  // hracej oblasti (priznaný); viac → jeden Absťák späť do zásoby. Prvé kolo
-  // len nastaví základ.
-  // Log uvádza počty nerestí — playtest 20261019-055945: hráči nevedeli,
-  // odkiaľ sa Absťák berie.
-  if (s.kolo === 1) {
-    events.push({
-      type: "log",
-      text: `Základ závislosti: hráč 1 mal v kole ${textNeresti(s.hraci[0].nerestiTotoKolo)}, hráč 2 ${textNeresti(s.hraci[1].nerestiTotoKolo)}. Kto bude mať v ďalšom kole menej, dostane Absťák.`,
-    });
-  }
+  // Absťák (v8.1 Krok so stolom, Michal 2026-10-28): neresti oboch v tomto kole sa
+  // porovnajú — kto mal menej, dostane Absťák rovno priznaný (+1 karta), kto viac,
+  // zbaví sa jedného priznaného; rovnosť nič. Latku určuje súper, nie minulé kolo.
+  // Log uvádza počty — playtest 20261019-055945: hráči nevedeli, odkiaľ sa Absťák berie.
+  const neresti: [number, number] = [s.hraci[0].nerestiTotoKolo, s.hraci[1].nerestiTotoKolo];
+  events.push({ type: "log", text: `Neresti v kole: hráč 1 ${neresti[0]}, hráč 2 ${neresti[1]}.` });
   for (const p of [0, 1] as const) {
-    const teraz = s.hraci[p].nerestiTotoKolo;
-    const minule = s.hraci[p].nerestiMinuleKolo;
-    if (s.kolo > 1 && teraz < minule) {
+    const ja = neresti[p];
+    const on = neresti[opponentOf(p)];
+    if (ja < on) {
       hrac(s, p).priznane.push(novaInstancia(s, data, "abstak") as DeepMutable<CardInstance>);
       hrac(s, p).abstakyZiskane = (s.hraci[p].abstakyZiskane ?? 0) + 1;
       // Absťák sa rovno priznáva — a priznanie kliatby dáva kartu (Michal 2026-10-19).
       const dobral = tahaj(s, p, 1, events).length;
       events.push({
         type: "log",
-        text: `Hráč ${p + 1} získava Absťák: v kole mal ${textNeresti(teraz)}, v predošlom ${textNeresti(minule)}. Každý Absťák mu v bitke uberie 1 tuhé.${dobral > 0 ? " Za priznaný Absťák si doberá kartu." : ""}`,
+        text: `Hráč ${p + 1} získava Absťák: v kole mal ${textNeresti(ja)}, súper ${textNeresti(on)}. Každý Absťák mu v bitke uberie 1 tuhé a dá 1 Pohoršenie navyše.${dobral > 0 ? " Za priznaný Absťák si doberá kartu." : ""}`,
       });
-    } else if (s.kolo > 1 && teraz > minule) {
+    } else if (ja > on) {
       const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "abstak");
       if (idx !== -1) {
         hrac(s, p).priznane.splice(idx, 1);
-        events.push({ type: "log", text: `Hráč ${p + 1} sa zbavuje Absťáku: v kole mal ${textNeresti(teraz)}, v predošlom ${textNeresti(minule)}.` });
+        events.push({ type: "log", text: `Hráč ${p + 1} sa zbavuje Absťáku: v kole mal ${textNeresti(ja)}, súper ${textNeresti(on)}.` });
       }
     }
-    hrac(s, p).nerestiMinuleKolo = s.hraci[p].nerestiTotoKolo;
-    hrac(s, p).nerestiTotoKolo = 0;
   }
+  for (const p of [0, 1] as const) hrac(s, p).nerestiTotoKolo = 0;
 
   const boloFinale = jeFinale(s);
   s.bitkaStav = null;
