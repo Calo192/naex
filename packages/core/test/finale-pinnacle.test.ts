@@ -118,9 +118,10 @@ describe("finále na pinnacle lokalite sa hrá ako bežné kolo (Michal 2026-10-
     expect(jeFinaleNaNastenke(b)).toBe(true);
     expect(po.nastenka.slice(0, -1).some((x) => jeFinaleNaNastenke(x))).toBe(false);
     expect(b.vitaz).toBe(1);
-    const dlhy = po.hraci[0].priznane.filter((k) => k.defId === "dlh").length;
-    // v8: 1 špak za každú kartu v línii (zrážka za Absťáky, aspoň 1) a Herňa za Dlhy porazeného.
-    expect(b.zaBitku[1]).toBe(Math.max(1, (b.karty ?? 0) - b.abstakZrazka) + dlhy);
+    // v8: 1 špak za každú kartu v línii (zrážka za Absťáky, aspoň 1) a Herňa za Dlhy porazeného
+    // pri bitke — pred exekúciou (2026-10-28), ktorá ich potom spáli; hráč 0 ich mal aspoň 2.
+    const dlhy = b.zaBitku[1] - Math.max(1, (b.karty ?? 0) - b.abstakZrazka);
+    expect(dlhy).toBeGreaterThanOrEqual(2);
     const vyhra = logy.find((t) => t.startsWith("Bitku"))!;
     expect(vyhra).toContain("1 špak za kartu v línii");
     expect(vyhra).not.toMatch(/za Pitku/);

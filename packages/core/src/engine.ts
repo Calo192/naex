@@ -4043,34 +4043,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
         return;
       }
     }
-    b.krok = "exekutor";
-  }
-
-  // 1. Exekútor (obranca, potom útočník).
-  if (b.krok === "exekutor") {
-    for (const p of [obranca(s), s.utocnik]) {
-      if (b.exekutorHotovy[p]) continue;
-      // Robota (pravidlá v2): ešte pred kontrolou prahu spáli za každú
-      // aktívnu Robotu 1 priznaný Dlh.
-      // Verejný dlh (2026-10-21): predtým ho odhodila do balíčka, odkiaľ by sa
-      // pri dobratí znova priznal — teraz z hry zmizne.
-      for (let r = odoberDlhy(s, p, "priznane", robotaPali(b.sums[p] as ActionSums)); r > 0; r--) {
-        events.push({ type: "log", text: `Robota: hráč ${p + 1} páli 1 priznaný Dlh.` });
-      }
-      const dlhy = pocetKariet(s.hraci[p] as PlayerState, "dlh", "priznane");
-      // Exekúcia bez prahu (Michal 2026-10-28): Exekútor príde ku každému s priznaným Dlhom.
-      if (dlhy === 0) {
-        b.exekutorHotovy[p] = true;
-        continue;
-      }
-      // Záhradkár (Exekúcia, Michal 2026-10-28): odkrytý v hráčovej partii — exekúcia ho v tomto kole obíde.
-      if (zahradkarChrani(data, s as GameState, p)) {
-        events.push({ type: "log", text: `Záhradkár: exekúcia hráča ${p + 1} v tomto kole obchádza — Dlhy ani špaky nezhoria.` });
-        b.exekutorHotovy[p] = true;
-        continue;
-      }
-      exekucia(s, data, p, events);
-    }
+    // Exekúcia (Robota, Exekútor) ide od 2026-10-28 až po poškodení a špakoch za bitku (exekucieBitky).
     b.krok = "pohorsenie";
   }
 
@@ -4422,6 +4395,40 @@ export function cieleVykladania(
 }
 
 /**
+ * Exekúcia (Michal 2026-10-28, krok 4c): po poškodení, výsledku a špakoch za bitku
+ * a za starších, pred prebytkom; obranca, potom útočník. Najprv Robota spáli za každú
+ * aktívnu Robotu 1 priznaný Dlh (z hry), potom Exekútor — bez prahu — ku každému
+ * s priznaným Dlhom; Záhradkár v partii ho obíde. Zhorené špaky sa zapíšu do
+ * záznamu bitky na nástenke.
+ */
+function exekucieBitky(s: MutState, data: GameData, events: Event[]): void {
+  const b = s.bitkaStav;
+  if (b === null) return;
+  for (const p of [obranca(s), s.utocnik]) {
+    if (b.exekutorHotovy[p]) continue;
+    for (let r = odoberDlhy(s, p, "priznane", robotaPali(b.sums[p] as ActionSums)); r > 0; r--) {
+      events.push({ type: "log", text: `Robota: hráč ${p + 1} páli 1 priznaný Dlh.` });
+    }
+    const dlhy = pocetKariet(s.hraci[p] as PlayerState, "dlh", "priznane");
+    if (dlhy === 0) {
+      b.exekutorHotovy[p] = true;
+      continue;
+    }
+    if (zahradkarChrani(data, s as GameState, p)) {
+      events.push({ type: "log", text: `Záhradkár: exekúcia hráča ${p + 1} v tomto kole obchádza — Dlhy ani špaky nezhoria.` });
+      b.exekutorHotovy[p] = true;
+      continue;
+    }
+    exekucia(s, data, p, events);
+  }
+  const zaznam = s.nastenka[s.nastenka.length - 1];
+  if (zaznam !== undefined) {
+    zaznam.exekutor = [b.exekutor[0], b.exekutor[1]];
+    zaznam.spakyPo = [s.spaky[0], s.spaky[1]];
+  }
+}
+
+/**
  * Záhradkár (Exekúcia, Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ —
  * odkrytý v partii hráča p v línii tejto bitky; vtedy ho Exekútor obíde celkom.
  */
@@ -4556,9 +4563,11 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
     prebytok: outcome.prebytok,
     prebytokDrzi: outcome.prebytokDrzi,
   });
-  // Špaky za bitku a za starších (v6) idú aj do rekapitulácie bitky.
+  // Špaky za bitku a za starších (v6) idú aj do rekapitulácie bitky; exekúcia
+  // (Michal 2026-10-28) až po nich — Povera, remíza, Herňa a Noviny vidia Dlhy pred ňou.
   const logy: Event[] = [];
   vyplatSpaky(s, data, outcome, abstaky, logy);
+  exekucieBitky(s, data, logy);
   const spaky = s.nastenka[s.nastenka.length - 1] as BitkaNaNastenke | undefined;
   events.push({
     type: "bitkaVysledok",
@@ -4868,7 +4877,6 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
     if (vratene[q] > 0) events.push({ type: "log", text: `Na zdravie (priazeň Alkoholika): hráčovi ${q + 1} sa ${vratene[q] === 1 ? "poldeci z NA EX vracia plný" : `${vratene[q]} poldeci z NA EX vracajú plné`}.` });
   }
   for (const p of [0, 1] as const) {
-    // nealko: akcia Poldeci nedopĺňa poldeci.
     let otocenia = b.sums[p].Poldeci ?? 0;
     while (otocenia > 0 && s.hraci[p].poldeciVypite > 0) {
       hrac(s, p).poldeciVypite -= 1;

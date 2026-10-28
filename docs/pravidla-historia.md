@@ -1438,3 +1438,41 @@ Dlhom (polovica nahor, priazeň Exekútora navyše 1 / 2 / 3). Záhradkár:
 > | Exekútor | **−** polovica priznaných Dlhov (Záhradkár ich zachráni) | krok 1 (§11) |
 
 > | Záhradkár | Exekúcia: keď majiteľ čelí exekúcii (§11), smie Záhradkára zahodiť namiesto špakov — Dlhy zhoria aj tak. Z línie (ponúkne sa prvý) ide po bitke z hry a navyše spáli toľko priznaných Dlhov, koľko mal aktívnych akcií; z ruky či balíčkov zachráni len špaky. |
+
+
+## v8 — exekúcia až po poškodení (Michal 2026-10-28)
+
+Exekútor bežal v kroku 1 bitky pred poškodením, takže jediný Dlh zhorel skôr,
+ako ho Povera spočítala. Exekúcia (Robota aj Exekútor) ide teraz po špakoch za
+bitku a za starších, pred prebytkom. Staré znenia doslovne:
+
+> | 0 | Efekty na začiatku bitky (Traktoristka; v starej sade Kar) | §9.0 |
+> | 1 | Exekútor (Robota, exekúcia každému s priznaným Dlhom — Dlhy a špaky; Záhradkár ju obíde) | §11 |
+> | 2 | Pohoršenie (aj z patronátu a z priazne Abstinenta) | §9.2 |
+> | 3 | Poškodenie | §9.3 |
+> | 4 | Výsledok (pri remíze Absťáky, potom Dlhy, inak sekera) | §9.4 |
+> | 4a | Špaky za bitku (karty v línii) víťazovi, na Kultúrnom dome aj porazenému; lokalita ide na krčmovú nástenku | §9.4, §14 |
+> | 4b | Špaky za starších — nové zóny — víťazovi, pri sekere obom (Noviny presunú špaky za bitku, §16) | §10, §14 |
+> | 4c | Prebytok — rozdeľuje ho ten, proti komu sa ráta; posunie markery pre ďalšiu bitku, vo finále sa nové zóny vyplatia hneď | §9.4 |
+
+> Krok 1 bitky (§9), aj vo finále; obranca, potom útočník. Najprv **Robota**: za
+> každú aktívnu Robotu hráč **spáli** 1 priznaný Dlh. Potom príde **Exekútor —
+> bez prahu, vždy** (Michal 2026-10-28), ku každému hráčovi s aspoň 1
+> **priznaným** Dlhom (nepriznané sa nerátajú):
+>
+> ```
+> zhorí = polovica priznaných Dlhov, zaokrúhlene NAHOR
+>         + sila súperovej priazne Exekútora (1 / 2 / 3)
+>         najviac všetky priznané Dlhy
+> ```
+>
+> Zhorí toľko priznaných Dlhov a **rovnaký počet špakov** — zhoria, súper ich
+> nedostane, a hráč smie ísť do mínusu. Exekúcia prehru nespôsobí. Príklad: 5 Dlhov
+> a súperov Exekútor sily 1 → zhoria 3 + 1 = 4 Dlhy a 4 špaky. Jediný Dlh zhorí
+> celý (aj s 1 špakom) — skôr, ako sa ráta poškodenie, takže proti jedinému Dlhu
+> Povera v tej bitke nič nenaloží.
+>
+> **Záhradkár (Exekúcia, Michal 2026-10-28):** keď leží odkrytý v línii v partii
+> hráča (jeho karta, v tejto bitke), Exekútor ho v kroku 1 obíde — nezhorí mu ani
+> jeden Dlh a neodpočíta žiadne špaky (ani navyše za súperovu priazeň Exekútora).
+> Nezahadzuje sa, po bitke sa vráti ako každá karta (§16).
