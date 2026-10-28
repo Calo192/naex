@@ -15,6 +15,7 @@ import type { BattleOutcome, BitkaStav, CardInstance, ClientState, Command, Dama
 import {
   apply,
   battleOutcome,
+  silaPriazne,
   bitkaPoPohorseni,
   cenaKliatby,
   evaluateLine,
@@ -289,7 +290,8 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
       }
     }
     expect(najdene).toBeGreaterThan(10);
-  });
+    // Dlhý výpočet (náhľad každého NA EX aj najhoršej odpovede) — na vyťaženom stroji nad 5 s.
+  }, 30_000);
 });
 
 describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-173610-1 N2)", () => {
@@ -358,7 +360,8 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
     let s = s0;
     for (let i = 0; i < 200 && s.koniec === null; i++) {
       const b = s.bitkaStav;
-      if (b !== null && (b.krok === "pohorsenie" || b.krok === "prebytok" || b.damage !== null)) return s;
+      // Exekúcia ide od 2026-10-28 až po poškodení — Dlhy po nej sú hotové, keď je poškodenie.
+      if (b !== null && b.damage !== null) return s;
       const q = kto(s);
       if (q === null) break;
       const legal = legalCommands(data, s, q);
@@ -381,9 +384,11 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
     for (const { s, seed } of vzorky) {
       const t = poExekutora(s);
       if (t.faza !== "bitka" || t.kolo !== s.kolo) continue;
-      // Benzínka mení líniu voľbou hráča — výhľad ju nepredvída.
+      // Benzínka mení líniu voľbou hráča — výhľad ju nepredvída. Pohoršenia v bitke idú od
+      // 2026-10-28 pred exekúciou a smú pohnúť priazňou Exekútora — ani to výhľad nevie.
       if (s.ciel?.lokalita?.defId === "benzinka") continue;
       for (const p of [0, 1] as const) {
+        if (silaPriazne(data, s, "EXEKUTOR", p === 0 ? 1 : 0) !== silaPriazne(data, t, "EXEKUTOR", p === 0 ? 1 : 0)) continue;
         const view = viewFor(data, s, p);
         const vyhlad = vyhladDlhov(data, view, s.pitkyCelkom - s.pitkaCislo)[p];
         const dlhy = t.hraci[p].priznane.filter((k) => k.defId === "dlh").length;

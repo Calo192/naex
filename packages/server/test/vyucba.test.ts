@@ -43,8 +43,8 @@ interface KrokMsg {
 const api = async <T>(cookie: string, metoda: string, cesta: string): Promise<T> =>
   (await (await fetch(`http://127.0.0.1:${server.port}/api${cesta}`, { method: metoda, headers: { cookie, "x-naex": "1" } })).json()) as T;
 
-async function zacni(cookie: string): Promise<{ k: Klient; prvy: Msg }> {
-  const k = new Klient(server.port, cookie);
+async function zacni(cookie: string, port = server.port): Promise<{ k: Klient; prvy: Msg }> {
+  const k = new Klient(port, cookie);
   await k.otvorene();
   k.posli({ type: "create", vyucba: true });
   return { k, prvy: await k.cakaj("vyucba") };
@@ -389,10 +389,22 @@ describe("výučba v troch častiach (roadmapa #105)", () => {
   const ziadaj = async (port: number, cookie: string): Promise<Record<string, unknown>> =>
     (await (await fetch(`http://127.0.0.1:${port}/api/vyucba`, { headers: { cookie } })).json()) as Record<string, unknown>;
 
-  it("hráč po 1. časti: hviezdička, partia stojí a 2. časť (texty na schválenie) mu server ešte nepustí", async () => {
-    expect(scenar.casti?.find((c) => c.cast === 2)?.navrh).toBe(true);
+  it("hráč po 1. časti: hviezdička, partia stojí a ponúkne 2. časť (texty schválené, Michal 2026-10-28)", async () => {
+    expect(scenar.casti?.every((c) => c.navrh !== true)).toBe(true);
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
+    expect(await hraj(k, prvy)).toMatchObject({ hotovo: true, krok: null, koniecCasti: 1, dalsiaCast: { cast: 2, nazov: "NA EX a podlosti" }, pripravujeme: null });
+    expect((await k.cakaj("achievement")).zisk).toMatchObject({ id: "prva-hra", rank: 1 });
+    k.zavri();
+  });
+
+  it("časť s navrh (texty na schválenie) hráčovi server nepustí", async () => {
+    const sNavrhom = { ...scenar, casti: scenar.casti?.map((c) => (c.cast === 1 ? c : { ...c, navrh: true })) };
+    const { server: srv, zmaz: zmazN } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, vyucbaZapnuta: true, scenarVyucby: sNavrhom });
+    const server = srv;
+    try {
+    const { cookie } = await registruj(server.port);
+    const { k, prvy } = await zacni(cookie, server.port);
     const koniec = await hraj(k, prvy);
     expect(koniec).toMatchObject({ hotovo: true, krok: null, koniecCasti: 1, dalsiaCast: null, pripravujeme: { cast: 2, nazov: "NA EX a podlosti" } });
     expect((await k.cakaj("achievement")).zisk).toMatchObject({ id: "prva-hra", rank: 1 });
@@ -408,9 +420,12 @@ describe("výučba v troch častiach (roadmapa #105)", () => {
       pripravujeme: { cast: 2 },
     });
     // „Pokračovať“ by nemal čím — nová výučba začne 1. časťou.
-    const znova = await zacni(cookie);
+    const znova = await zacni(cookie, server.port);
     expect(idKroku(znova.prvy)).toBe("i-vitaj");
     znova.k.zavri();
+    } finally {
+      await zmazN();
+    }
   });
 
   it("správca prejde všetky tri časti: po každej hviezdička, ďalšia časť v tej istej partii aj z lobby od svojho začiatku", async () => {

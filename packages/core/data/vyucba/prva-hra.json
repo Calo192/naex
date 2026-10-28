@@ -800,7 +800,7 @@
           }
         ]
       },
-      "melichar": "Teraz polož Dievčinu na vydaj za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí jej [Povera] Poveru. Štamgast bude mať po Pitke kartu Dlh a tvoja Povera by mu ju v bitke spočítala, ak ju stihne.",
+      "melichar": "Teraz polož Dievčinu na vydaj za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí jej [Povera] Poveru. Štamgast bude mať po Pitke kartu Dlh a tvoja Povera mu ju v bitke spočíta, tak ako jeho tebe.",
       "zvyraznit": [
         "ruka:dievcina_na_vydaj"
       ]
@@ -850,7 +850,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Zadĺženie 2 z 2: dostal si kartu Dlh, hneď priznanú. A v bitke prišiel exekútor: chodí v každej bitke ku každému, kto má priznaný Dlh, a zhorí mu polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Tvoj jediný Dlh zhorel aj s jedným špakom. Ja o tom niečo viem. Štamgastovi rovnako. A ak ti práve pribudli ŠPAKY, to je za bitku. Špaky ti vysvetlím po bitke.",
+      "melichar": "Zadĺženie 2 z 2: dostal si kartu Dlh, hneď priznanú. Po bitke prišiel exekútor: chodí v každej bitke ku každému, kto má priznaný Dlh, a zhorí mu polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Tvoj jediný Dlh zhorel aj s jedným špakom. Ja o tom niečo viem. Štamgastovi rovnako. A ak ti práve pribudli ŠPAKY, to je za bitku. Špaky ti vysvetlím po bitke.",
       "zvyraznit": [
         "bar:dlhy",
         "bar:zadlzenie",
@@ -861,7 +861,7 @@
     {
       "id": "i-bitka",
       "kto": "info",
-      "melichar": "Bitka! Tvoje tuhé: Rana, Pecka Lesnej cesty, Rana a Petelica Hasiča, 1 + 2 + 1 + 3 = 7. Štamgast: Pecka 2 a dve Rany, 4. Povery nenaložili nič: exekútor vám Dlhy zhorel ešte pred poškodením. Bitka o Lesnú cestu je tvoja.",
+      "melichar": "Bitka! Tvoje tuhé: Rana, Pecka Lesnej cesty, Rana a Petelica Hasiča, 1 + 2 + 1 + 3 = 7. Štamgast: Pecka 2 a dve Rany, 4. Povery sa vyrovnali: jeho ti za tvoj Dlh naložila 1, tvoja jemu za jeho tiež 1. Bitka o Lesnú cestu je tvoja.",
       "zvyraznit": [
         "bitka-ucet"
       ]
@@ -1745,9 +1745,7 @@
       },
       "melichar": "A Štamgast má posledné slovo. Položil svoju manželku za tvojho Alkoholika a spojil jeho osamotený [Odpor] Odpor a [Robota] Robotu. Tvoje NA EX ich namiesto zdvojenia zrušilo: Robota je preč. A jeho manželka sa ti ráta do trávnika: zas 4 : 4.",
       "zvyraznit": [
-        "linia:milujuca_manzelka",
-        "linia:anonymny_alkoholik",
-        "prevaha"
+        "linia-starsich"
       ]
     },
     {
@@ -1771,10 +1769,8 @@
     {
       "id": "i-exekutor2",
       "kto": "info",
-      "melichar": "Bitka. Prvý príde exekútor, ako minule: tvoj nový Dlh zhorel aj s jedným špakom, Štamgastovi zhoreli dva. Potom [Pohoršenie] Pohoršenia: každé posunie jedného staršieho o políčko k súperovi alebo k sebe. Štamgast ich má tri, dve zo zdvojenej Dievčiny a jedno zo Silnej ženy.",
+      "melichar": "Bitka. Najprv [Pohoršenie] Pohoršenia: každé posunie jedného staršieho o políčko k súperovi alebo k sebe. Štamgast ich má tri, dve zo zdvojenej Dievčiny a jedno zo Silnej ženy. Exekútor príde ako minule, až po bitke.",
       "zvyraznit": [
-        "bar:dlhy",
-        "bar-supera:dlhy",
         "linia-starsich"
       ]
     },
@@ -1812,8 +1808,7 @@
       },
       "melichar": "Trikrát. Starosta je na červenej pri Štamgastovi: Bitkár sily 3, teda 3 tuhé navyše. Bitka 5 : 6. Prehral si.",
       "zvyraznit": [
-        "starsi:starosta",
-        "bitka-ucet"
+        "starsi:starosta"
       ]
     },
     {
@@ -1853,9 +1848,9 @@
     {
       "id": "i-makke2",
       "kto": "info",
-      "melichar": "A prebytok? Tvoje [Povera] Povery dali 1 mäkké: Povera bije do súperových priznaných Dlhov a Štamgastovi jeden po exekútorovi ostal. Bitku rozhoduje tuhé, prebytok celkové, teda tuhé plus mäkké: 6 : 6. Pri rovnakom celkovom prebytok nemá nikto.",
+      "melichar": "A prebytok? Tvoje dve [Povera] Povery dali 2 mäkké: Povera bije do súperových priznaných Dlhov a Štamgast ich mal tri, exekútor ich spáli až po bitke. Bitku rozhoduje tuhé, prebytok celkové, teda tuhé plus mäkké: 7 : 6. Prebytok je tvoj, hoci si prehral.",
       "zvyraznit": [
-        "bitka-ucet"
+        "bar-supera:dlhy"
       ]
     },
     {
@@ -1877,9 +1872,21 @@
       ]
     },
     {
+      "id": "k-prebytok-bot2",
+      "kto": "bot",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "hrobar"
+      },
+      "melichar": "Rozdeľuje ho ten, proti komu sa ráta, teda Štamgast. Dal ho Hrobárovi: ten sa začne báť teba a Štamgastovi dá priazeň Alkoholik. A za posunutého staršieho dostal Štamgast cigaretu.",
+      "zvyraznit": [
+        "starsi:hrobar"
+      ]
+    },
+    {
       "id": "i-spaky2",
       "kto": "info",
-      "melichar": "Špaky: Štamgast dostal 9, jeden za každú kartu v línii, aj za tvoje. Ty nič: Starosta sa ťa síce bojí, ale platí len víťazovi. Na krčmovej nástenke pribudlo Ihrisko s jeho menom. Hnusné.",
+      "melichar": "Špaky: Štamgast dostal 9, jeden za každú kartu v línii, aj za tvoje. Ty nič: Starosta sa ťa síce bojí, ale platí len víťazovi. Potom exekútor: tebe zhorel Dlh aj so špakom, Štamgastovi dva. 4 : 6. Na krčmovej nástenke pribudlo Ihrisko s jeho menom. Hnusné.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body"
@@ -1947,7 +1954,7 @@
       },
       "melichar": "Šenok som ti dnes postavil ja, to už vieš. Dal som doň Vidly, Pušku, Psa a Veterána.",
       "zvyraznit": [
-        "senok"
+        "stavba"
       ]
     },
     {
@@ -2165,7 +2172,7 @@
       },
       "melichar": "Nástup Starostu: Štamgast si vzal zo šenku Veterána. Zadarmo. Ako vždy, keď ide o Starostu.",
       "zvyraznit": [
-        "senok"
+        "linia:starosta"
       ]
     },
     {
@@ -2360,41 +2367,6 @@
       ]
     },
     {
-      "id": "i-exekutor3",
-      "kto": "info",
-      "melichar": "Bitka a prvý príde exekútor. Chodí v každej bitke ku každému, kto má priznaný Dlh, a zhorí mu polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Kto má od súpera priazeň Exekútor, tomu zhorí o 1, 2 alebo 3 Dlhy viac. Štamgast má Farára, tak ti zhoreli oba Dlhy aj s dvoma špakmi. Dlhy, čo ostanú, ťa na konci hry nestoja nič.",
-      "zvyraznit": [
-        "bar:dlhy",
-        "bar:body"
-      ]
-    },
-    {
-      "id": "q-exekutor",
-      "kto": "otazka",
-      "melichar": "Máš 3 priznané Dlhy, súper priazeň Exekútor nemá. Čo ti zhorí?",
-      "moznosti": [
-        {
-          "text": "2 Dlhy a 2 špaky.",
-          "spravna": true,
-          "vysvetlenie": "Áno. Polovica, zaokrúhlene nahor. Ten posledný Dlh ťa na konci nestojí nič."
-        },
-        {
-          "text": "Nič, kým ich nemám viac.",
-          "spravna": false,
-          "vysvetlenie": "Exekútor príde vždy, keď máš aspoň jeden Dlh. Neskrývaj sa, nájde ťa.",
-          "hlaska": "bieda/boha_za_vodu_sme_550_dlzny"
-        }
-      ]
-    },
-    {
-      "id": "i-robota",
-      "kto": "info",
-      "melichar": "Pred exekútorom ešte pracuje [Robota] Robota: každá spojená Robota spáli jeden Dlh, a za ten už špaky nedáš. Tú tvoju ti Štamgast v minulom kole zrušil, pamätáš.",
-      "zvyraznit": [
-        "bar:dlhy"
-      ]
-    },
-    {
       "id": "i-pohorsenie3",
       "kto": "info",
       "melichar": "Teraz tvoje [Pohoršenie] Pohoršenia: jedno z Dievčiny a tri z patronátu, spolu štyri. Bitka je 5 : 6. Pohoršenie mení priazeň hneď, to ti predviedol Štamgast. Teraz ty.",
@@ -2438,7 +2410,7 @@
         "type": "pohorsenie",
         "elderId": "hrobar"
       },
-      "melichar": "Tretie tlač Hrobára k Štamgastovi. Štamgast dostane jeho priazeň, ale ty jeho strach, a strach platí víťazovi.",
+      "melichar": "Tretie tlač Hrobára k Štamgastovi, do oranžovej. Štamgast dostane jeho priazeň, ale ty jeho strach, a strach platí víťazovi.",
       "hlaskaChyby": "udiv/jezis_maria",
       "zvyraznit": [
         "starsi:hrobar"
@@ -2459,12 +2431,46 @@
       ]
     },
     {
+      "id": "i-exekutor3",
+      "kto": "info",
+      "melichar": "Po bitke prišiel exekútor. Chodí v každej bitke ku každému, kto má priznaný Dlh, a zhorí mu polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Kto má od súpera priazeň Exekútor, tomu zhorí o 1, 2 alebo 3 Dlhy viac. Štamgast má Farára, tak ti zhoreli oba Dlhy aj s dvoma špakmi. Dlhy, čo ostanú, ťa na konci hry nestoja nič.",
+      "zvyraznit": [
+        "bar:dlhy",
+        "bar:body"
+      ]
+    },
+    {
+      "id": "q-exekutor",
+      "kto": "otazka",
+      "melichar": "Máš 3 priznané Dlhy, súper priazeň Exekútor nemá. Čo ti zhorí?",
+      "moznosti": [
+        {
+          "text": "2 Dlhy a 2 špaky.",
+          "spravna": true,
+          "vysvetlenie": "Áno. Polovica, zaokrúhlene nahor. Ten posledný Dlh ťa na konci nestojí nič."
+        },
+        {
+          "text": "Nič, kým ich nemám viac.",
+          "spravna": false,
+          "vysvetlenie": "Exekútor príde vždy, keď máš aspoň jeden Dlh. Neskrývaj sa, nájde ťa.",
+          "hlaska": "bieda/boha_za_vodu_sme_550_dlzny"
+        }
+      ]
+    },
+    {
+      "id": "i-robota",
+      "kto": "info",
+      "melichar": "Pred exekútorom ešte pracuje [Robota] Robota: každá spojená Robota spáli jeden Dlh, a za ten už špaky nedáš. Tú tvoju ti Štamgast v minulom kole zrušil, pamätáš.",
+      "zvyraznit": [
+        "bar:dlhy"
+      ]
+    },
+    {
       "id": "i-vyhra3",
       "kto": "info",
-      "melichar": "Vyhral si, 6 : 5. Špaky: šesť za karty v línii, Farár konečne zaplatil 6 a Hrobár 1 za žltú. Exekútor ti predtým zobral dva. Máš 15.",
+      "melichar": "Vyhral si, 6 : 5. Špaky: šesť za karty v línii, Farár konečne zaplatil 6 a Hrobár 3, za žltú a oranžovú. Exekútor ti potom zobral dva. Máš 17.",
       "zvyraznit": [
-        "bar:body",
-        "nastenka"
+        "bar:body"
       ]
     },
     {
@@ -2597,7 +2603,7 @@
               "type": "chooseLocation",
               "uid": "lokality:herna"
             },
-            "text": "Herňa dá víťazovi toľko špakov, koľko má porazený Dlhov. Štamgastovi ich exekútor spáli skôr. Vila.",
+            "text": "Herňa dá víťazovi toľko špakov, koľko má porazený Dlhov. Pekné, ale ja ťa chcem naučiť kšeftovať. Vila.",
             "hlaska": "urazky/marha"
           },
           {
@@ -2724,7 +2730,6 @@
       "kto": "info",
       "melichar": "Poštárka je na tvojej polovici v žltej a prejavuje ti priazeň. Vezmi si ju: zo žltej to stojí tri [Cigareta] cigarety a Štamgast dostane v bitke jedno [Pohoršenie] Pohoršenie navyše, ktoré na Poštárku nesmie. Ako náhradu jej daj lícom dole Anonymného alkoholika.",
       "zvyraznit": [
-        "starsi:postarka",
         "ponuka-patronatu"
       ]
     },
@@ -2739,7 +2744,6 @@
       "melichar": "Vezmi Poštárku do patronátu a za náhradu daj Anonymného alkoholika. Ak finále vyhráš, Poštárka ti ostane. Ak prehráš, vráti sa a ty odhodíš poldeci.",
       "hlaskaChyby": "urazky/hovado_ozrate_vyjebane",
       "zvyraznit": [
-        "starsi:postarka",
         "ponuka-patronatu"
       ],
       "volba": {
@@ -2850,7 +2854,7 @@
         "elderId": "hrobar",
         "kSebe": false
       },
-      "melichar": "Kšeft vily: za 2 [Cigareta] cigarety posuň Hrobára o políčko k Štamgastovi, do oranžovej. Ak vyhráš, zaplatí ti aj oranžovú, 2 špaky. Kšeft nie je ťah a každý ho smie raz za Pitku.",
+      "melichar": "Kšeft vily: za 2 [Cigareta] cigarety posuň Hrobára o políčko k Štamgastovi, na červenú. Ak vyhráš, zaplatí ti aj červenú, 3 špaky, a vydesených budeš mať zas dvoch. Kšeft nie je ťah a každý ho smie raz za Pitku.",
       "hlaskaChyby": "urazky/marha",
       "zvyraznit": [
         "starsi:hrobar",
@@ -3104,16 +3108,15 @@
         "elderId": "starosta",
         "kSebe": true
       },
-      "melichar": "Bitka. Najprv Robota: tvoja dvojitá Robota ti spálila Dlh skôr, ako prišiel exekútor. Potom Pohoršenie, čo Štamgast dostal za tvoj patronát: vrátil Starostu do stredu a o Bitkára si prišiel. Na Poštárku ho použiť nesmel.",
+      "melichar": "Bitka. Štamgast použil Pohoršenie, čo dostal za tvoj patronát: vrátil Starostu do stredu a o Bitkára si prišiel. Na Poštárku ho použiť nesmel.",
       "zvyraznit": [
-        "starsi:starosta",
-        "bar:dlhy"
+        "starsi:starosta"
       ]
     },
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Bitka finále 6 : 4, vyhral si a Poštárka ti ostáva, patronát vyšiel. Špaky: za päť kariet v línii, Hrobár za oranžovú a Veterinár za žltú.",
+      "melichar": "Bitka finále 6 : 4, vyhral si a Poštárka ti ostáva, patronát vyšiel. Špaky: za päť kariet v línii, Hrobár za červenú a Veterinár za žltú. Po bitke tvoja dvojitá [Robota] Robota spálila tvoj Dlh skôr, ako prišiel exekútor. Štamgastovi zhoreli dva.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body"
@@ -3122,7 +3125,7 @@
     {
       "id": "i-prebytok-finale",
       "kto": "info",
-      "melichar": "Prebytok 2 je tvoj a vo finále ho rozdeľuje ten, kto ho drží: ty. Porazenému by priazne už nepomohli. A za novú zónu ti starší zaplatí hneď.",
+      "melichar": "Prebytok 2 je tvoj a vo finále ho rozdeľuje ten, kto ho drží: ty. Porazenému by priazne už nepomohli. A za nové zóny, ktoré tým vzniknú, ti starší zaplatia ešte teraz, po finále.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -3132,12 +3135,12 @@
       "kto": "hrac",
       "prikaz": {
         "type": "prebytok",
-        "elderId": "hrobar"
+        "elderId": "veterinar"
       },
-      "melichar": "Hrobára z oranžovej na červenú: 3 špaky, hneď.",
+      "melichar": "Veterinára zo žltej do oranžovej: 2 špaky.",
       "hlaskaChyby": "urazky/ty_marha",
       "zvyraznit": [
-        "starsi:hrobar"
+        "starsi:veterinar"
       ]
     },
     {
@@ -3147,7 +3150,7 @@
         "type": "prebytok",
         "elderId": "veterinar"
       },
-      "melichar": "A Veterinára zo žltej do oranžovej: 2.",
+      "melichar": "A ešte raz Veterinára, na červenú: 3. Vydesený je tretí.",
       "hlaskaChyby": "urazky/kokot_blaznivy_jebnuty",
       "zvyraznit": [
         "starsi:veterinar"
@@ -3156,7 +3159,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. A nepriznaná Cirhóza by ťa stála 3 špaky za kus, v ruke aj v balíčkoch. Svoju máš priznanú. 29 : 9, vyhral si.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. A nepriznaná Cirhóza by ťa stála 3 špaky za kus, v ruke aj v balíčkoch. Svoju máš priznanú. 32 : 9, vyhral si.",
       "zvyraznit": [
         "bar:body",
         "nastenka"

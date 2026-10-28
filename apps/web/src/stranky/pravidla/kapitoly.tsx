@@ -349,8 +349,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Po Zhromaždení nasleduje <P k="pitka">Pitka</P>. V bitke je ich <strong>1 + menší z počtov aktivovaných akcií lokality</strong>{" "}
           na jej dvoch stranách (1 až 4). Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta,
-          akcia hrany zrušená Odporom karty nie. Ak tvoja karta aktivuje 3 akcie lokality a súperova 1, pijú sa{" "}
-          <strong>2 Pitky</strong>. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
+          akcia hrany zrušená Odporom karty nie. Ak sú na jednej strane lokality aktivované 3 jej akcie a na druhej 1, pijú sa{" "}
+          <strong>2 Pitky</strong> — ráta sa podľa strán, nie podľa toho, kto kartu zahral; akcia ×2 je stále jedna. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
           dopije. Úroveň lokality je počet akcií na jej hrane (1, 2, 3, pinnacle 4), takže kolo má 1 až 5 Pitiek. Koľko Pitiek sa odohrá, toľko špakov dostane víťaz bitky.
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
@@ -547,8 +547,9 @@ export const KAPITOLY: readonly Kapitola[] = [
             jednu nepriznanú Cirhózu z ruky.
           </li>
           <li>
-            <strong>Exekútor</strong> — najprv Robota, potom exekúcia každému s priznaným Dlhom: zhorí polovica Dlhov nahor
-            a rovnako veľa špakov; Záhradkár v partii ju obíde (kapitola <a href="#kliatby">Kliatby a priznanie</a>).
+            <strong>Exekútor</strong> — po špakoch za bitku a za starších: najprv Robota, potom exekúcia každému s priznaným
+            Dlhom: zhorí polovica Dlhov nahor a rovnako veľa špakov; Záhradkár v partii ju obíde (kapitola{" "}
+            <a href="#kliatby">Kliatby a priznanie</a>).
           </li>
           <li>
             <strong>Pohoršenie</strong> — posúva markery starších k súperovi alebo k sebe (kapitola{" "}
@@ -740,10 +741,10 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kliatby-exekutor">Exekútor a Robota</H3>
         <ol>
           <li>
-            <strong>Robota:</strong> v bitke ešte pred exekúciou spáliš za každú aktívnu Robotu 1 priznaný Dlh.
+            <strong>Robota:</strong> po poškodení, tesne pred exekúciou, spáliš za každú aktívnu Robotu 1 priznaný Dlh.
           </li>
           <li>
-            Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong>, kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
+            Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong> po poškodení a špakoch za bitku (Povery tvoje Dlhy ešte spočítajú), kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
             <strong>polovica priznaných Dlhov</strong> (zaokrúhlené nahor, aj jediný Dlh) a <strong>rovnako veľa špakov</strong>.
             So súperovou priazňou Exekútora zhorí navyše 1 / 2 / 3 Dlhy a toľko špakov. Súper ich nedostane a smieš ísť do mínusu.
           </li>

@@ -436,9 +436,9 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(evaluateLine(data, lineState(po("k-zh-bot1"))).sums[1]).toMatchObject({ Pecka: 1, Povera: 1 });
     // Dievčinina Povera, zdvojená Hasičovým Posilnením (k-dievcina).
     expect(evaluateLine(data, lineState(po("k-dievcina"))).sums[0]).toMatchObject({ Povera: 2 });
-    // Bitka (i-bitka): tuhé 7 : 4; Dlhy zhorel exekútor pred poškodením (2026-10-28), Povery nič — prebytok 3.
+    // Bitka (i-bitka): tuhé 7 : 4, Povery sa vyrovnajú 1 : 1 (exekúcia až po poškodení, 2026-10-28) — prebytok 3.
     const d = pri("i-bitka").bitkaStav?.damage;
-    expect([d?.tuhe, d?.makke, d?.celkove]).toEqual([[7, 4], [0, 0], [7, 4]]);
+    expect([d?.tuhe, d?.makke, d?.celkove]).toEqual([[7, 4], [1, 1], [8, 5]]);
   });
 
   it("Pitka v7 (D6): pečeň sa nuluje, zadĺženie nie; Hasič v oboch Pitkách = karta Dlh, hneď priznaná", () => {
@@ -616,7 +616,7 @@ describe("výučba — hláška v kroku a v rade (Michal 2026-10-27)", () => {
   });
 });
 
-describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez prahu; texty sú návrh)", () => {
+describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poškodení; texty schválené 2026-10-28)", () => {
   const cela = celyScenar;
   const i = (id: string): number => {
     const n = cela.kroky.findIndex((k) => k.id === id);
@@ -632,7 +632,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez pra
     expect(overScenar(data, cela)).toBeNull();
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
     expect(koniec.koniec?.vitaz).toBe(0);
-    expect(koniec.koniec?.body).toEqual([29, 9]);
+    expect(koniec.koniec?.body).toEqual([32, 9]);
   });
 
   it("časti nadväzujú: každá má začiatok a koniec, idú za sebou a 2. časť začína tam, kde 1. skončila", () => {
@@ -662,34 +662,36 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez pra
     expect(odhad(po("k-hotovo3-bot"))).toEqual([1, 9]);
     expect(odhad(po("k-prevaha"))).toEqual([4, 4]);
     expect(odhad(po("k-prevaha2"))).toEqual([6, 5]);
-    // Exekútor v bitke 2. kola: hráčovi zhorí 1 Dlh a 1 špak, Štamgastovi 2 a 2.
-    expect(body(po("k-odpoved-bot"))).toEqual([4, -3]);
-    expect(pri("i-exekutor2").bitkaStav?.exekutor).toEqual([1, 2]);
-    // Tri Pohoršenia na Starostu: Bitkár 3, bitka 5 : 6, celkové 6 : 6 — prebytok nemá nikto.
+    // Exekútor až po poškodení (master 3ab061b): pred bitkou sa špaky nemenia.
+    expect(body(po("k-odpoved-bot"))).toEqual([5, -1]);
+    // Tri Pohoršenia na Starostu: Bitkár 3, bitka 5 : 6; celkové 7 : 6 — prebytok drží hráč, rozdeľuje Štamgast.
     const pred = po("k-pohorsenie-bot2");
     expect(odhad(pred)).toEqual([5, 5]);
     expect(pred.starsi.find((e) => e.elderId === "starosta")?.marker).toBe(5);
     const s = po("k-pohorsenie-bot3");
-    expect(s.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
+    expect(s.bitkaStav).toMatchObject({ vitaz: 1, prebytokDrzi: 0, exekutor: [1, 2], damage: { tuhe: [5, 6], celkove: [7, 6] } });
     expect(body(s)).toEqual([4, 6]);
     expect(s.starsi.find((e) => e.elderId === "starosta")?.marker).toBe(6);
-    expect(s.hraci[0].nerestiMinuleKolo).toBe(3);
+    const kolo3 = po("k-prebytok-bot2");
+    expect(kolo3.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
+    expect(kolo3.starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(4);
+    expect(kolo3.hraci[0].nerestiMinuleKolo).toBe(3);
   });
 
   it("3. časť: patronát Štamgasta (ukážka), Dedičstvo, Exekútor, Kultúrny dom, Absťák a finále na Predsedovej vile", () => {
     expect(po("k-patronat-bot").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(3);
     expect(po("k-dedicstvo").hraci[0].dedicstvo.map((k) => k.defId)).toEqual(["vidly"]);
     expect(odhad(po("k-nastroj"))).toEqual([5, 6]);
-    expect(body(po("k-hotovo6"))).toEqual([2, 5]);
+    expect(body(po("k-hotovo6"))).toEqual([4, 6]);
     expect(odhad(po("k-pohorsenie2"))).toEqual([6, 5]);
     const vyhra = po("k-pohorsenie4");
-    expect(body(vyhra)).toEqual([15, 7]);
+    expect(body(vyhra)).toEqual([17, 7]);
     const kolo4 = po("k-prebytok3-bot");
     expect(kolo4.kolo).toBe(4);
     expect(kolo4.hraci[1].poldeciPlne + kolo4.hraci[1].poldeciVypite).toBe(1);
     for (const p of [0, 1] as const) expect(kolo4.hraci[p].priznane.some((k) => k.defId === "abstak"), `Absťák ${p}`).toBe(true);
     expect(odhad(po("k-hasic-finale"))).toEqual([4, 4]);
-    expect(po("k-kseft").starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(5);
+    expect(po("k-kseft").starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(6);
   });
 
   it("3. časť: hráč sám robí patronát, Obmedzenie, Víziu, doliatie a NA EX so zrážkou (Michal 2026-10-28)", () => {

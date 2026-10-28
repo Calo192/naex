@@ -63,7 +63,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   vypit, karta“ server odmietne), alebo jednotlivé `place` / `vypit`.
 - **Pitky:** Pitiek v bitke = **1 + menší počet aktivovaných akcií lokality**
   z jej dvoch strán (1–4); Odpor na hrane lokality sa ráta, akcia hrany zrušená
-  Odporom karty nie. Pred každou
+  Odporom karty nie. Ráta sa podľa strán, nie podľa toho, kto kartu zahral (aj
+  podstrčená); akcia hrany ×2 je stále jedna. Pred každou
   Pitkou je Zhromaždenie. Počet sa mení s líniou — výpis ho ukazuje. „Ešte
   jednu!“ už neexistuje.
 - **Prevaha (2026-10-20):** akcie hrany lokality dostane, kto má v tej
@@ -146,8 +147,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   limit ani neodovzdá ťah. Za priznané Dlhy príde v každej bitke Exekútor.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
-  nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy). Otočí
-  sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
+  nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy); akciu jeho
+  karty, ktorú spáruje, mu výpis ani odhad bitky neukáže. Otočí sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
 - **Nástup s voľbou (v7):** Živnostník — za neho hneď smieš priložiť Nástroj z ruky mimo limitu
   (`{"type":"nastroj","uid":…}`, nič = `"uid":null`; aj pri otočení Záverečnej); Starosta — karta zo
   šenku (`{"type":"senok","uid":…}`); Kapybara — marker jedného staršieho o 1 pole k stredu
@@ -217,8 +218,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   +1 / +2 / +3 Viery. Prah Dlhu 2 (každé 2 zadĺženia = 1 Dlh), prah Cirhózy 3. Exekútor (priazeň): exekúcia súperovi zhorí navyše 1 / 2 / 3 Dlhy a toľko špakov.
   Výherný automat (Dedičstvo, v7): tvoj prah Dlhu +1, ale v poslednej Pitke kola získaš 1 Dlh.
 - **Exekútor bez prahu (2026-10-28):** Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor
-  (aj jediný Dlh) a rovnako veľa špakov, so súperovou priazňou Exekútora navyše 1 / 2 / 3 — ešte pred
-  poškodením (Robota pred ním). Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
+  (aj jediný Dlh) a rovnako veľa špakov, so súperovou priazňou Exekútora navyše 1 / 2 / 3 — **až po
+  poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže Povery, remíza, Herňa a Noviny
+  rátajú Dlhy pred exekúciou. Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
   keď leží v línii v tvojej partii, exekúcia ťa v tomto kole obíde (žiadny Dlh ani špak); nezahadzuje sa.
   Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktoristka: s prevahou v jej kraji Pecka navyše,
   inak Dlh; Podvodník pri prehre presunie tvoj priznaný Dlh súperovi. **Noviny** (Dedičstvo: Prehra, v7):
@@ -246,8 +248,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Pohoršenie
   ide pred špakmi za starších, takže nová zóna z neho platí už v tejto bitke (ak ju vyhráš). V6: ten istý
   marker smieš posúvať **bez limitu, o pole za Pohoršenie, aj na červenú** (zo stredu 3).
-- **Poradie bitky (v6):** Exekútor → Pohoršenie → poškodenie → výsledok → špaky za bitku
-  → špaky za starších (víťazovi, pri sekere obom) → prebytok (posunie markery o pole za bod k súperovi
+- **Poradie bitky:** Pohoršenie → poškodenie → výsledok → špaky za bitku
+  → špaky za starších (víťazovi, pri sekere obom) → exekúcia (Robota, Exekútor) → prebytok (posunie markery o pole za bod k súperovi
   držiteľa, aj na červenú a z nej von — zamknutie sa ruší; prejaví sa až v ďalšej bitke, vo finále hneď).
   **Prebytok rozdeľuje porazený (v8):** markery idú ako doteraz (starší sa začnú báť víťaza), ale
   **ktorých starších posunie, vyberá ten, proti komu sa prebytok ráta** — spravidla porazený si sám

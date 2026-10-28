@@ -40,6 +40,8 @@ export type StolNahladu = Parameters<typeof nahladPitky>[1];
 export interface DlhyDoBitky {
   /** Nové Dlhy v tejto Pitke a v ďalších Pitkách kola (ak sa na stole nič nezmení). */
   readonly nove: number;
+  /** Priznané Dlhy pri poškodení — Povery, remíza, Herňa a Noviny (pred Robotou a Exekútorom, 2026-10-28). */
+  readonly priPoskodeni: number;
   /** Koľko priznaných Dlhov bitka najviac spáli (Robota). */
   readonly kapacita: number;
   /** Koľko Dlhov (a toľko špakov) zhorí pri exekúcii (v6). */
@@ -50,8 +52,8 @@ export interface DlhyDoBitky {
 
 /**
  * Výhľad Dlhov do bitky oboch hráčov — doska hráča v Zhromaždení a Pitke.
- * Po pálení Robotou príde Exekútor: v6 je exekúcia
- * automatická, zhorí polovica (Záhradkár zachráni len špaky, nie Dlhy).
+ * Po poškodení a špakoch za bitku (Michal 2026-10-28) Robota spáli Dlhy a príde
+ * Exekútor bez prahu; Záhradkár v partii ho obíde.
  */
 export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: number): readonly [DlhyDoBitky, DlhyDoBitky] {
   const nahlad = nahladPitky(data, stol);
@@ -67,7 +69,7 @@ export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: numb
     const poPaleni = Math.max(0, teraz + nove - kapacita[p]);
     // Exekúcia bez prahu (Michal 2026-10-28); Záhradkár v partii ju obíde.
     const exekucia = zahradkarChrani(data, stol, p) ? 0 : zhoriPriExekucii(poPaleni, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p)));
-    return { nove, kapacita: kapacita[p], exekucia, poBitke: poPaleni - exekucia };
+    return { nove, priPoskodeni: teraz + nove, kapacita: kapacita[p], exekucia, poBitke: poPaleni - exekucia };
   };
   return [pre(0), pre(1)];
 }
@@ -186,7 +188,7 @@ export function dopadyNahladu(
 
 /**
  * Stôl tak, ako ho bitka uvidí pri poškodení: priznané Dlhy po Pitkách kola
- * (Dlh sa hneď prizná), po pálení (Robota v kroku Exekútora) a po Exekútorovi (zhorí polovica, v6).
+ * (Dlh sa hneď prizná); Robota a Exekútor prídu až po poškodení (Michal 2026-10-28).
  * Priznané Dlhy súpera sú strop mäkkého — náhľad ich predtým bral spred Pitky.
  * Benzínku nepredvída.
  */
@@ -196,7 +198,7 @@ export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: nu
   const vyhlad = vyhladDlhov(data, s, dalsiePitky);
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [s.hraci[0], s.hraci[1]];
   for (const p of [0, 1] as const) {
-    const d = vyhlad[p].poBitke;
+    const d = vyhlad[p].priPoskodeni;
     const h = hraci[p];
     const stare = h.priznane.filter((k) => k.defId === "dlh");
     if (stare.length === d) continue;
