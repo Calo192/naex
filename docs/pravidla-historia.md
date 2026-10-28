@@ -1489,3 +1489,9 @@ Záverečnej veta, že akciu tvojej karty, ktorú spáruje, neukáže ani odhad 
 Staré znenie §16: „Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1);
 poldeci za cigarety dolievať nesmieš.“ — hra dávala +1 až od ďalšieho
 Zhromaždenia (limit sa počíta na jeho začiatku, §6).
+
+## v8 — smer posunu markera v §10 (rozhodca, návrh #27 A, Michal 2026-10-28)
+
+Hra sa nemení. §10 dostal odsek „Smer posunu“ (smer na stupnici, nie polovica).
+Log posunu predtým: „Vychovávateľka o krok k súperovi → Strach, priazeň +2 má
+hráč 2“; teraz so zónou pred a po a s oboma stranami.

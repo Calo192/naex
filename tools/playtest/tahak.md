@@ -244,6 +244,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   vyložiť. **Výhra** = starší ostáva tebe (náhrada sa otočí); **prehra** aj sekera = starší
   sa vráti, náhrada do ruky a **odhodíš poldeci** natrvalo. Patronát platí aj vo finále
   a vráti marker z červenej naraz do stredu.
+- **Smer posunu** (2026-10-28): „k súperovi / k sebe“ je smer na stupnici, nie polovica — z tvojej
+  polovice posun k súperovi marker len priblíži k stredu (tvoja priazeň −1, súpera sa bojí menej).
+  Log posunu píše zónu pred → po, komu priazeň stúpla/klesla a kto staršieho desí.
 - **Pohoršenie (v5 oboma smermi):** každé posunie marker o 1 **k súperovi alebo
   k sebe** (`{"type":"pohorsenie","elderId":…}`, k sebe s `"kSebe":true`);
   k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Pohoršenie

@@ -818,6 +818,14 @@ a ráta sa do vydesenia. Jediný rozdiel: náhradu si nikto nevezme do ruky
 3 = neutrálny stred. Každý posun (prebytok, Pohoršenie, §9) je **jedno pole**:
 zo stredu do žltej 1, do oranžovej 2, na červenú 3 — a rovnako späť.
 
+**Smer posunu** (návrh #27 A, Michal 2026-10-28): „k súperovi“ a „k sebe“ je
+**smer na stupnici** — k súperovmu, alebo k svojmu kraju — nie polovica. Keď
+marker leží na tvojej polovici, posun k súperovi ho priblíži k stredu: tvoja
+priazeň klesne o stupeň a starší sa súpera bojí menej; priazeň súperovi dá až
+posun za stred. Na súperovej polovici posun k súperovi zväčší jeho priazeň aj
+strach z teba. Log posunu píše zónu pred a po a obe strany (komu priazeň
+stúpla či klesla, kto staršieho desí).
+
 ### Dvojaká úloha markera
 
 - **Priazeň (počas hry)** — marker leží na polovici jedného hráča → **ten**
