@@ -161,4 +161,10 @@ export const PRAVIDLA_PLATNE_OD = "2026-10-28";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";
-export const NAZOV_DLZKY: Readonly<Record<DlzkaHry, string>> = { kratka: "Krátka", stredna: "Stredná", dlha: "Dlhá" };
+/**
+ * Ligy (Michal 2026-10-28): hráč vidí dĺžku hry ako ligu — Tretia (3 lokality),
+ * Druhá (5), Prvá (7). Interné id, API a databáza ostávajú kratka/stredna/dlha.
+ */
+export const NAZOV_DLZKY: Readonly<Record<DlzkaHry, string>> = { kratka: "Tretia liga", stredna: "Druhá liga", dlha: "Prvá liga" };
+/** Genitív názvu ligy — „Vyhraj 1 partiu Tretej ligy“. */
+export const NAZOV_DLZKY_GENITIV: Readonly<Record<DlzkaHry, string>> = { kratka: "Tretej ligy", stredna: "Druhej ligy", dlha: "Prvej ligy" };

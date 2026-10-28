@@ -8,6 +8,7 @@ import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { RankyPrava } from "./RankyPrava.tsx";
+import { PravaLig } from "./PravaLig.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 
 type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number; readonly rolaRucne?: boolean };
@@ -68,6 +69,7 @@ export function Hraci() {
       {hlava}
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <RankyPrava poZmene={nacitaj} />
+      <PravaLig />
       <div className="hraci-ovladanie">
         <input type="search" placeholder="Hľadať meno alebo login…" value={hladat} onChange={(e) => setHladat(e.target.value)} aria-label="Hľadať hráča" />
         <div className="cipy" role="group" aria-label="Filter podľa úrovne">
