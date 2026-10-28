@@ -7,7 +7,7 @@
 // * admin cesty overujú rolu na serveri pri každej požiadavke.
 
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { DlzkaHry } from "@naex/core";
+import type { CastScenara, DlzkaHry } from "@naex/core";
 import { dostupneDlzky, prazdneStatistiky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, Nastavenia } from "@naex/tvorba";
 import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
@@ -126,10 +126,29 @@ export interface ApiKontext {
   readonly vyucbaKrokov: number;
   /** Verzia scenára výučby — uložený postup inej verzie začne odznova (ScenarVyucby.verzia). */
   readonly vyucbaVerzia: string | null;
+  /** Kde vo výučbe hráč stojí (časti, roadmapa #105) — počíta herný server zo scenára. */
+  readonly postupVyucby: (p: Pouzivatel) => PostupVyucby;
   /** Vypínač výučby: false = hráčom sa nezobrazí (ponuka ani tlačidlo), správcom áno. */
   readonly vyucbaPreHracov: boolean;
   /** Zapne alebo vypne uzávierku; vráti nový stav. */
   readonly nastavUzavierku: (zapnut: boolean) => Uzavierka | null;
+}
+
+/** Postup výučby účtu podľa častí scenára (server.ts postupVyucby). */
+export interface PostupVyucby {
+  /** Index nasledujúceho kroku (= počet prejdených). */
+  readonly krok: number;
+  /** Id kroku na indexe krok — uložený postup sa podľa neho nájde aj po zmene scenára. */
+  readonly idKroku: string | null;
+  readonly stav: "hotova" | "preskocena" | null;
+  /** Časť, v ktorej uložený krok leží; null = celá výučba prejdená. */
+  readonly cast: CastScenara | null;
+  /** Časť je rozohraná — hráč z nej už niečo prešiel. */
+  readonly rozpracovana: boolean;
+  /** Predošlá časť je dokončená a ďalšia (táto) čaká; null, keď nie je alebo ju hráč ešte nesmie hrať. */
+  readonly dalsia: CastScenara | null;
+  /** Ďalšia časť existuje, ale texty čakajú na schválenie — hráč vidí „pripravujeme“. */
+  readonly pripravujeme: CastScenara | null;
 }
 
 const JSON_LIMIT = 2 * 1024 * 1024;
@@ -432,14 +451,27 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     // nezačal, nedokončil ani nepreskočil. Partia samotná ide cez WebSocket.
     if (r === "GET /vyucba") {
       const p = prihlaseny();
-      const v = ctx.ucty.vyucba(p.id, ctx.vyucbaVerzia);
+      const v = ctx.postupVyucby(p);
       // dostupna: či ukázať tlačidlo „Prvá hra“; kým je vypínač vypnutý, len správcom (skúšanie).
       const dostupna = ctx.vyucbaPreHracov || jeSpravca(p.rola);
       // Dokončené časti podľa hviezdičky achievementu Prvá hra (#104); bez achievementov podľa stavu účtu.
       const castiHotove = ctx.achievementy?.castiVyucby(p.id) ?? (v.stav === "hotova" ? 1 : 0);
       // Ponuka „Najprv výučba?“ pri zakladaní prvej partie: návštevník bez 1. časti, ktorý ju nepreskočil.
       const ponuknut = ctx.vyucbaPreHracov && castiHotove === 0 && v.stav === null && p.rola === "navstevnik";
-      return ok({ krok: v.krok, spolu: ctx.vyucbaKrokov, stav: v.stav, dostupna, ponuknut, castiHotove });
+      const cast = (c: CastScenara | null): { cast: number; nazov: string; minuty: number } | null =>
+        c === null ? null : { cast: c.cast, nazov: c.nazov, minuty: c.minuty };
+      return ok({
+        krok: v.krok,
+        spolu: ctx.vyucbaKrokov,
+        stav: v.stav,
+        dostupna,
+        ponuknut,
+        castiHotove,
+        cast: cast(v.cast),
+        rozpracovana: v.rozpracovana,
+        dalsiaCast: cast(v.dalsia),
+        pripravujeme: cast(v.pripravujeme),
+      });
     }
 
     // Prvé odpovede na kontrolné otázky výučby (metrika pre Navrhára, Michal 2026-10-23).
@@ -450,14 +482,15 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     if (r === "POST /vyucba/preskocit") {
       const p = prihlaseny();
-      ctx.ucty.ulozVyucbu(p.id, ctx.ucty.vyucba(p.id, ctx.vyucbaVerzia).krok, "preskocena", ctx.vyucbaVerzia);
+      const v = ctx.postupVyucby(p);
+      ctx.ucty.ulozVyucbu(p.id, v.krok, "preskocena", ctx.vyucbaVerzia, v.idKroku);
       return ok({ ok: true });
     }
 
     // Začať odznova (aj po dokončení či preskočení).
     if (r === "POST /vyucba/znova") {
       const p = prihlaseny();
-      ctx.ucty.ulozVyucbu(p.id, 0, null);
+      ctx.ucty.ulozVyucbu(p.id, 0, null, ctx.vyucbaVerzia, null);
       return ok({ ok: true });
     }
 

@@ -375,6 +375,8 @@ function migruj(db: Db): void {
     ["vyucba_stav", "TEXT"],
     // Verzia scenára, na ktorého kroky sedí vyucba_krok (výučba po častiach, 2026-10-25); NULL = starší scenár.
     ["vyucba_verzia", "TEXT"],
+    // Id kroku na indexe vyucba_krok (výučba v troch častiach, 2026-10-28): postup prežije zmenu scenára.
+    ["vyucba_krok_id", "TEXT"],
     // Nápovedy Melichara v partii (Michal 2026-10-24): 0 = vypnuté, NULL = zapnuté;
     // videné = JSON pole id z napovedy.json (každá sa ukáže len raz, reset v profile).
     ["napovedy", "INTEGER"],
