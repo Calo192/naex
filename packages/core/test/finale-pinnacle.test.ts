@@ -81,13 +81,10 @@ function dohraj(s0: GameState): { s: GameState; logy: string[] } {
 }
 
 describe("finále na pinnacle lokalite sa hrá ako bežné kolo (Michal 2026-10-27)", () => {
-  it("línia finále má lokalitu v strede — bez príznaku finále bez lokality", () => {
+  it("línia finále má lokalitu v strede a vyhodnotí sa ako každá iná", () => {
     const s = vPitkeFinale("herna", [[], []]);
     expect(lineState(s).lokalita?.defId).toBe("herna");
-    expect(lineState(s).finale).toBeUndefined();
-    expect(lineState({ ...s, ciel: { typ: "finale", lokalita: null } }).finale).toBe(true);
     const v = viewFor(data, s, 0);
-    expect(v.stredFinale).toBeNull();
     expect(evaluateLine(data, lineState(v))).toEqual(evaluateLine(data, lineState({ ...v, ciel: { typ: "lokalita", lokalita: v.ciel!.lokalita! } })));
   });
 
@@ -111,7 +108,7 @@ describe("finále na pinnacle lokalite sa hrá ako bežné kolo (Michal 2026-10-
     expect(o).toEqual(najhorsiaOdpoved(data, bezne, 0, [0, 0]));
   });
 
-  it("nástenka označí finále aj s lokalitou; log píše zvlášť 1 špak za Pitku a Herňu za Dlhy porazeného", () => {
+  it("nástenka označí finále aj s lokalitou; log píše zvlášť 1 špak za kartu v línii a Herňu za Dlhy porazeného", () => {
     const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
     const s = sHracom(vPitkeFinale("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { priznane: [inst("dlh"), inst("dlh")] });
     const { s: po, logy } = dohraj(s);
@@ -123,11 +120,12 @@ describe("finále na pinnacle lokalite sa hrá ako bežné kolo (Michal 2026-10-
     expect(po.nastenka.slice(0, -1).some((x) => jeFinaleNaNastenke(x))).toBe(false);
     expect(b.vitaz).toBe(1);
     const dlhy = po.hraci[0].priznane.filter((k) => k.defId === "dlh").length;
-    expect(b.zaBitku[1]).toBe(b.pitky + dlhy);
+    // v8: 1 špak za každú kartu v línii (zrážka za Absťáky, aspoň 1) a Herňa za Dlhy porazeného.
+    expect(b.zaBitku[1]).toBe(Math.max(1, (b.karty ?? 0) - b.abstakZrazka) + dlhy);
     const vyhra = logy.find((t) => t.startsWith("Bitku"))!;
-    expect(vyhra).toContain("1 špak za Pitku");
+    expect(vyhra).toContain("1 špak za kartu v línii");
+    expect(vyhra).not.toMatch(/za Pitku/);
     if (dlhy > 0) expect(vyhra).toContain(`+${dlhy} za Dlhy porazeného (Herňa`);
-    // Staré záznamy: finále bez lokality, bez príznaku.
-    expect(jeFinaleNaNastenke({ lokalita: null })).toBe(true);
+    expect(jeFinaleNaNastenke({})).toBe(false);
   });
 });

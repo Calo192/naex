@@ -80,7 +80,7 @@ export interface NahladVylozenia {
 
 /** Tuhé navyše z kariet v línii — ten istý výpočet ako bitka (bitkaMody), bez Dedičstva a starších. */
 function tuheZLinie(data: GameData, line: LineState, strany: LineState["strany"]): readonly [number, number] {
-  const ciel: VerejnyStav["ciel"] = line.finale === true ? { typ: "finale", lokalita: line.lokalita } : line.lokalita === null ? null : { typ: "lokalita", lokalita: line.lokalita };
+  const ciel: VerejnyStav["ciel"] = line.lokalita === null ? null : { typ: "lokalita", lokalita: line.lokalita };
   const stav: VerejnyStav = { ciel, strany, starsi: [], hraci: [{ priznane: [], dedicstvo: [] }, { priznane: [], dedicstvo: [] }] };
   return [bitkaMody(data, stav, 0).tuheBonus, bitkaMody(data, stav, 1).tuheBonus];
 }
@@ -120,14 +120,6 @@ export function nahladVylozenia(
   } else if (line.lokalita !== null) {
     const s = stranyLokality(data, line.lokalita, line.lokalitaOtocena, ja);
     sused = { karta: line.lokalita, stred: true, majitel: null, hrana: naMojej ? s.kTebe : s.kSuperovi };
-  } else if (line.finale === true) {
-    // Finále: línia je jeden úsek, prvá karta druhej strany je stredová — jej
-    // vnútorná hrana sa obracia k tejto strane (playtest 20261027-062058: „nič sa nespojí“).
-    const stredova = line.strany[p === 0 ? 1 : 0][0];
-    if (stredova !== undefined) {
-      const h = hranyZPohladu(data, stredova.card, stredova.playedBy !== ja);
-      sused = { karta: stredova.card, stred: false, majitel: stredova.playedBy, hrana: naMojej ? h.lava : h.prava };
-    }
   }
 
   const pary: { index: number; moja: NonNullable<Slot>; susedova: NonNullable<Slot> }[] = [];

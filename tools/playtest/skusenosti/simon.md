@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### simon-1 · Keď ide posledná bitka partie a starší mi prejavuje priazeň, zvažujem patronát: bolestné (poldeci natrvalo) po poslednej bitke nič nestojí, ale súper dostane Pohoršenia navyše (1/2/3 podľa zóny) a použije ich na posun markerov a na vlastný strach.
-- stav: overená
+- stav: neoverená
 - pravidlá: v7
 - potvrdenia: 4
 - vyvrátenia: 1

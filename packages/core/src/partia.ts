@@ -83,13 +83,6 @@ export interface LineState {
   readonly lokalitaOtocena: boolean;
   /** partie[p][0] je karta najbližšie k lokalite. */
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
-  /**
-   * Finále (v6, Michal 2026-10-26): v strede nie je lokalita — prvá vyložená
-   * karta leží v strede a ďalšie sa kladú na jej dve strany. Línia je jeden
-   * súvislý úsek (strana hráča 0 obrátene, potom strana hráča 1), kraje
-   * a prevaha v kraji nie sú.
-   */
-  readonly finale?: boolean;
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -640,9 +633,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   // Prevaha (Michal 2026-10-20, rozbor strategia-strany-20261020): akcie hrany
   // lokality dostane, kto má na tej strane viac svojich kariet (Nástroje sa
   // nerátajú); pri rovnosti majiteľ karty pri lokalite (pravidlá v3).
-  // Vo finále kraje nie sú — Kočovník ostáva majiteľovi, Presbiter nepôsobí.
-  const finale = line.finale === true && line.lokalita === null;
-  const susedLokality: [PlayerId | null, PlayerId | null] = finale ? [null, null] : [prevaha(partia0), prevaha(partia1)];
+  const susedLokality: [PlayerId | null, PlayerId | null] = [prevaha(partia0), prevaha(partia1)];
   let stred: Elem | null = null;
   if (line.lokalita !== null) {
     // owner lokality je len formálny — súčty jej strán idú majiteľovi suseda.
@@ -650,10 +641,6 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
     stred = lok;
     segments.push([...[...partia0].reverse(), lok, ...partia1]);
     elems.push(...partia0, lok, ...partia1);
-  } else if (finale) {
-    // Prvá karta finále leží na začiatku jednej zo strán a susedí s oboma.
-    segments.push([...[...partia0].reverse(), ...partia1]);
-    elems.push(...partia0, ...partia1);
   } else {
     // Bez karty v strede (len testy a ukážky): strany sú dva samostatné úseky.
     segments.push([...partia0].reverse(), [...partia1]);
@@ -786,13 +773,13 @@ export function prispevkyKariet(line: LineState, ev: LineEval): KartaVBitke[] {
 /**
  * Susedia karty v línii — „okolie“ z textov kariet (Veterinár, Krokodíl):
  * karty na oboch stranách bez ohľadu na majiteľa, aj lokalita v strede (null
- * v zozname = lokalita). Vo finále bez lokality je línia jeden úsek.
+ * v zozname = lokalita).
  */
 export function okolieVLinii(line: LineState, uid: number): (PlacedCard | null)[] {
   const lava = [...line.strany[0]].reverse();
   const stred: (PlacedCard | null)[] = line.lokalita !== null ? [null] : [];
   const useky: (PlacedCard | null)[][] =
-    line.lokalita !== null || line.finale === true ? [[...lava, ...stred, ...line.strany[1]]] : [lava, [...line.strany[1]]];
+    line.lokalita !== null ? [[...lava, ...stred, ...line.strany[1]]] : [lava, [...line.strany[1]]];
   for (const usek of useky) {
     const i = usek.findIndex((x) => x !== null && x.card.uid === uid);
     if (i === -1) continue;

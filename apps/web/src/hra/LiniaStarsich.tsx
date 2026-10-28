@@ -21,7 +21,9 @@ import {
   obavanyHrac,
   priazenHraca,
   priazenSila,
+  pocet,
   scorecardStarsieho,
+  strachNaVyplatu,
   strachZ,
   type MarkerPos,
 } from "@naex/core";
@@ -291,8 +293,8 @@ function LegendaStupnice({
     prikladText = (
       <>
         <b>Teraz:</b> {priklad.meno} je v zóne {NAZVY_ZON[v.uroven]} na {ty ? `strane ${mena[su]}` : "tvojej strane"}. {ty ? `Priazeň +${v.sila} má ${mena[su]}` : `Priazeň +${v.sila} máš ty`} (
-        {UCINOK_KRATKO[fav](v.sila)}). Bojí sa {ty ? "teba" : mena[su]}: po každej bitke, ktorú {ty ? "vyhráš" : "vyhrá"}, {ty ? "dostaneš" : `${mena[su]} dostane`}{" "}
-        {v.uroven} {v.uroven === 1 ? "špak" : "špaky"}.
+        {UCINOK_KRATKO[fav](v.sila)}). Bojí sa {ty ? "teba" : mena[su]}: za každú zónu raz — po najbližšej bitke, ktorú {ty ? "vyhráš" : "vyhrá"},{" "}
+        {ty ? "dostaneš" : `${mena[su]} dostane`} {pocet(strachNaVyplatu(priklad.elder, ty ? ja : su), "špak", "špaky", "špakov")} za zóny, ktoré ešte nezaplatil.
       </>
     );
   }
@@ -613,9 +615,9 @@ export function dosledokPosunu(elder: ElderState, z: MarkerPos, p: PlayerId, ty 
 /** Komu starší dá po bitke špaky (v6.1 len víťazovi) — čísla zo spakyTeraz jadra. */
 export function vysvetlenieSpakov(body: SpakyStarsieho, ja: PlayerId, mena: readonly [string, string]): string {
   const su: PlayerId = ja === 0 ? 1 : 0;
-  if (body.spaky[ja] > 0) return `Bojí sa teba — po každej bitke, ktorú vyhráš, ti dá ${body.spaky[ja]} š.`;
-  if (body.spaky[su] > 0) return `Bojí sa ${mena[su]} — po každej bitke, ktorú súper vyhrá, mu dá ${body.spaky[su]} š.`;
-  return "Nikoho sa nebojí — špaky nedá nikomu.";
+  if (body.spaky[ja] > 0) return `Bojí sa teba — po najbližšej bitke, ktorú vyhráš, ti dá ${body.spaky[ja]} š. za nové zóny.`;
+  if (body.spaky[su] > 0) return `Bojí sa ${mena[su]} — po najbližšej bitke, ktorú súper vyhrá, mu dá ${body.spaky[su]} š. za nové zóny.`;
+  return "Nikomu nič nedá — nikoho sa nebojí, alebo už zaplatil všetky zóny.";
 }
 
 /** Schodová stupnica: výška segmentu = úroveň zóny, marker je tmavý disk s prstencom priazne. */

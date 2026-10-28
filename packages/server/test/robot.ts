@@ -180,7 +180,8 @@ export class Robot {
         // v6: Exekútor sa pýta len na Záhradkára — robot ho zahodí.
         if (b.krok === "exekutor") return { type: "zahradkar", zahodit: true };
         if (b.krok === "pohorsenie" || b.krok === "prebytok") {
-          const smerK = ja === 0 ? 1 : 0;
+          // Prebytok ide k súperovi držiteľa — od v8 ho rozdeľuje spravidla porazený, teda k nemu.
+          const smerK = b.krok === "prebytok" && b.prebytokDrzi !== null ? (b.prebytokDrzi === 0 ? 1 : 0) : ja === 0 ? 1 : 0;
           const elder = view.starsi.find((e) =>
             b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK) !== null,
           );

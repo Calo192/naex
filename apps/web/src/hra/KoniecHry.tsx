@@ -98,7 +98,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             )}
             {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (
               <p className="koniec-cirhozy">
-                Nepriznaná Cirhóza na konci: {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov za kus (ruka aj oba balíčky) — ty ×{koniec.cirhozy?.[ja] ?? 0},{" "}
+                Nepriznaná Cirhóza na konci: {pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus (ruka aj oba balíčky) — ty ×{koniec.cirhozy?.[ja] ?? 0},{" "}
                 {mena[su]} ×{koniec.cirhozy?.[su] ?? 0}.
               </p>
             )}

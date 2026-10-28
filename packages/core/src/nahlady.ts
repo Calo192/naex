@@ -10,7 +10,6 @@ import {
   cielLokalitaId,
   cieleVykladania,
   cigaretyZPitky,
-  finaleBezStredu,
   lineState,
   nahladPitky,
   paleneDlhyVBitke,
@@ -410,8 +409,6 @@ export function najhorsiaOdpoved(
   let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
   const lokalita = cielLokalitaId(po);
   const zablokovane = zablokovaneStrany(po);
-  // Prázdna strana sa prikladá ku karte v strede len vo finále bez lokality (v6).
-  const finale = finaleBezStredu(po);
   for (const def of data.cards.values()) {
     if (def.tags.includes("Lokalita") || def.tags.includes("Starešina")) continue;
     const varianty = data.variants.get(def.id);
@@ -423,7 +420,7 @@ export function najhorsiaOdpoved(
     ];
     for (const [leftLayout, rightLayout] of rozlozenia) {
       const karta: CardInstance = { uid: -900, defId: def.id, leftLayout, rightLayout };
-      const ciele = cieleVykladania(data, po.strany, su, karta, Number.POSITIVE_INFINITY, true, lokalita, zablokovane, finale);
+      const ciele = cieleVykladania(data, po.strany, su, karta, Number.POSITIVE_INFINITY, true, lokalita, zablokovane);
       for (const ciel of ciele) {
         if (ciel !== "vlastna" && ciel !== "superova") continue;
         const strana: PlayerId = ciel === "vlastna" ? su : ja;

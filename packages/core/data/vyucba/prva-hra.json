@@ -111,7 +111,7 @@
     {
       "id": "i-lokalita",
       "kto": "info",
-      "melichar": "Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najviac po papuli. Ak mu naložíš viac ako on tebe, bitku vyhráš. Slovo sa tu šíri rýchlo a o týchto bitkách sa dozvedia miestne starešiny… Ty im musíš ukázať, kto je tu pán… Ich strach ti po každej vyhratej bitke prinesie body, ALEBO aj nie, a čo ja viem…",
+      "melichar": "Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najviac po papuli. Ak mu naložíš viac ako on tebe, bitku vyhráš. Slovo sa tu šíri rýchlo a o týchto bitkách sa dozvedia miestne starešiny… Ty im musíš ukázať, kto je tu pán… Ich strach ti po vyhratej bitke prinesie body, ALEBO aj nie, a čo ja viem…",
       "hlaska": "pohoda/07_toto_je_ZIVOT"
     },
     {
@@ -775,7 +775,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Zadĺženie 2 z 2: máš kartu Dlh. Hneď je priznaná a už sa ťa drží. Dlhy v bare ukazujú 1 z 7: pri siedmich príde exekútor. Ja o tom niečo viem. Štamgast má tiež jednu. A ak ti práve pribudli BODY, to je za bitku. Body ti vysvetlím po bitke.",
+      "melichar": "Zadĺženie 2 z 2: máš kartu Dlh. Hneď je priznaná a už sa ťa drží. Dlhy v bare ukazujú 1 z 6: pri šiestich príde exekútor. Ja o tom niečo viem. Štamgast má tiež jednu. A ak ti práve pribudli BODY, to je za bitku. Body ti vysvetlím po bitke.",
       "zvyraznit": [
         "bar:dlhy",
         "bar:zadlzenie",
@@ -814,7 +814,7 @@
     {
       "id": "i-starsi",
       "kto": "info",
-      "melichar": "Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a za ten strach ti po každej vyhratej bitke dávajú body. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.",
+      "melichar": "Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a za ten strach ti po vyhratej bitke dávajú body. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -831,25 +831,26 @@
     },
     {
       "id": "k-prebytok1",
-      "kto": "hrac",
+      "kto": "bot",
       "prikaz": {
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Vyhral si o 3 tuhé, BOHA jeho! Prebytok tuhého znamená tvoju dominanciu v bitke a tým si buduješ respekt u starších. My to tu voláme „respekt“, ale v skutočnosti je to strach. Za každý bod prebytku posunieš staršieho o políčko k Štamgastovi. Klikni na Farára. Na Farára, nie na mňa.",
+      "melichar": "Vyhral si o 3 tuhé, BOHA jeho! Prebytok tuhého znamená tvoju dominanciu v bitke a tým si buduješ respekt u starších. My to tu voláme „respekt“, ale v skutočnosti je to strach. Za každý bod prebytku sa jeden starší posunie o políčko k Štamgastovi, a ktorý, to si vyberá porazený. Štamgast si vybral Farára. Ten je zo sivej, kde sa nikto nikoho nebojí ako na farskej oslave, rovno v žltej: začína sa ťa báť a Štamgastovi prejavuje priazeň. Pozri na svoje Dlhy: prah exekútora klesol zo 6 na 5, lebo Farárova priazeň je Exekútor.",
       "zvyraznit": [
-        "starsi:farar"
+        "starsi:farar",
+        "bar:dlhy"
       ],
       "hlaska": "udiv/09_Boha"
     },
     {
       "id": "k-prebytok2",
-      "kto": "hrac",
+      "kto": "bot",
       "prikaz": {
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Farár je o políčko bližšie k Štamgastovi a zo sivej, kde sa nikto nikoho nebojí ako na farskej oslave, je rovno v žltej. Začína sa ťa báť a Štamgastovi prejavuje priazeň. Pozri na svoje Dlhy: prah exekútora klesol zo 7 na 6, lebo Farárova priazeň je Exekútor. Klikni naňho znova.",
+      "melichar": "Oranžová! Štamgast ťahá Farára ďalej. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: tvoj prah exekútora je 4.",
       "zvyraznit": [
         "starsi:farar",
         "bar:dlhy"
@@ -857,12 +858,12 @@
     },
     {
       "id": "k-prebytok3",
-      "kto": "hrac",
+      "kto": "bot",
       "prikaz": {
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Oranžová! Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2: tvoj prah exekútora je 5. Posledný klik a je červený.",
+      "melichar": "",
       "zvyraznit": [
         "starsi:farar",
         "bar:dlhy"
@@ -871,7 +872,7 @@
     {
       "id": "i-oranzova",
       "kto": "info",
-      "melichar": "Červená. Farár sa ťa bojí na treťom stupni, viac sa už nedá, a Štamgast má jeho priazeň sily 3: tvoj prah exekútora je 4. Stupnica sa posunula, lebo si vyhral o 3 a ten prebytok si dal Farárovi. Štamgast za posunutého staršieho dostal cigaretu. Útecha pre porazených.",
+      "melichar": "Červená. Farár sa ťa bojí na treťom stupni, viac sa už nedá, a Štamgast má jeho priazeň sily 3: tvoj prah exekútora je 3. Stupnica sa posunula, lebo si vyhral o 3 a ten prebytok dal Štamgast celý Farárovi. Za posunutého staršieho dostal cigaretu. Útecha pre porazených.",
       "zvyraznit": [
         "starsi:farar",
         "bar:dlhy",
@@ -889,9 +890,9 @@
           "vysvetlenie": "Nie, pomáha Štamgastovi a teba sa bojí. Ale pekná predstava."
         },
         {
-          "text": "Jeho strach mi po každej vyhratej bitke dá body.",
+          "text": "Jeho strach mi po vyhratej bitke dá body.",
           "spravna": true,
-          "vysvetlenie": "Áno, kým je na červenej, dá ti tri po každej bitke, ktorú vyhráš. Konečne sa ťa niekto bojí."
+          "vysvetlenie": "Áno, po najbližšej bitke, ktorú vyhráš, ti zaplatí každú novú zónu raz: žltá 1, oranžová 2, červená 3, spolu 6. Potom už nič, kým sa nepohne. Konečne sa ťa niekto bojí."
         }
       ],
       "zvyraznit": [
@@ -901,24 +902,24 @@
     {
       "id": "q-prebytok",
       "kto": "otazka",
-      "melichar": "Prečo si všetky tri body nedal trom rôznym starším?",
+      "melichar": "Prečo prebytok z tvojej výhry rozdeľoval Štamgast?",
       "moznosti": [
         {
-          "text": "V sivej by sa ma nikto nebál.",
-          "spravna": false,
-          "vysvetlenie": "Bál by sa: každý bod posunie staršieho o políčko, zo sivej rovno do žltej. Traja starší v žltej by ti dali spolu tiež tri body, lenže Štamgast by dostal tri cigarety."
+          "text": "Prehral, tak si vyberá, ktoré priazne dostane.",
+          "spravna": true,
+          "vysvetlenie": "Áno. Starší sa začnú báť teba, ale ktorí, to vyberá porazený. A za každého posunutého staršieho dostane cigaretu. Útecha, ako vravím."
         },
         {
-          "text": "Štamgast by dostal tri cigarety namiesto jednej.",
-          "spravna": true,
-          "vysvetlenie": "Áno: cigaretu dostane za každého posunutého staršieho. Rozhádzaný prebytok je ako rozliata pálenka: škoda ho."
+          "text": "Lebo je na ťahu útočník.",
+          "spravna": false,
+          "vysvetlenie": "Nie, prebytok rozdeľuje ten, kto prehral. Že je potom aj útočníkom, je len ďalšia smola."
         }
       ]
     },
     {
       "id": "i-lokality-body",
       "kto": "info",
-      "melichar": "Bitka o Lesnú cestu je tvoja. Pamätáš, prečo si sa bil? Za vyhratú bitku dostaneš body, tu sa im hovorí špaky: toľko, koľko sa v kole odohralo Pitiek. Dnes dve. Ohorky, áno, tie ja zbieram celý život.",
+      "melichar": "Bitka o Lesnú cestu je tvoja. Pamätáš, prečo si sa bil? Za vyhratú bitku dostaneš body, tu sa im hovorí špaky: toľko, koľko kariet leží v línii na oboch stranách. Dnes šesť. Ohorky, áno, tie ja zbieram celý život.",
       "zvyraznit": [
         "bar:body"
       ]
@@ -926,7 +927,7 @@
     {
       "id": "i-body",
       "kto": "info",
-      "melichar": "Špaky v bare: 2 : 0. Ďalšie ti dajú starší: po každej bitke, ktorú vyhráš, ti každý, kto sa ťa bojí, dá 1 špak v žltej, 2 v oranžovej a 3 v červenej. Kto prehrá, od starších nedostane nič. Farár ti po ďalšej vyhratej bitke dá 3, ak ho Štamgast dovtedy neodtlačí.",
+      "melichar": "Špaky v bare: 6 : 0. Ďalšie ti dajú starší: keď vyhráš bitku, každý, kto sa ťa bojí, ti zaplatí za zóny, ktoré ti ešte nezaplatil: 1 špak za žltú, 2 za oranžovú a 3 za červenú. Kto prehrá, od starších nedostane nič. Farár ti po ďalšej vyhratej bitke dá 6, ak ho Štamgast dovtedy neodtlačí, a potom už nič, kým sa nepohne.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",
@@ -939,14 +940,14 @@
       "melichar": "Koľko špakov ti dala bitka o Lesnú cestu?",
       "moznosti": [
         {
-          "text": "Dva, za každú odohranú Pitku jeden.",
+          "text": "Šesť, za každú kartu v línii jeden.",
           "spravna": true,
           "vysvetlenie": "Áno. Preto si sa bil."
         },
         {
           "text": "Tri, vyhral som o 3 tuhé.",
           "spravna": false,
-          "vysvetlenie": "Tie tri boli prebytok a ten si dal Farárovi. Špaky za bitku sú za Pitky, nie za pekné oči."
+          "vysvetlenie": "Tie tri boli prebytok a ten dal Štamgast Farárovi. Špaky za bitku sú za karty v línii, nie za pekné oči."
         }
       ]
     },

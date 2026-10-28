@@ -1,6 +1,6 @@
 {
   "pravidlaCommit": "e832dad38119bd7cf966223c11d09046e478333e",
-  "aktualizovane": "2026-10-26",
+  "aktualizovane": "2026-10-28",
   "pravidla": [
     {
       "id": "1.zaklad.dvaja-hraci",
@@ -43,10 +43,10 @@
     {
       "id": "1.koniec.posledna-bitka",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Po poslednej bitke o lokalitu (3 / 5 / 7) príde finále; po finále sa odpočíta nepriznaná Cirhóza a vyhrá viac špakov, rovnosť je remíza.",
+      "pravidlo": "Po poslednej bitke o lokalitu (3 / 5 / 7) príde finále o pinnacle lokalitu; po finále sa odpočíta nepriznaná Cirhóza a vyhrá viac špakov, rovnosť je remíza. Bez lokality sa nehrá (v8): sada bez pinnacle lokalít finále nemá.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §14 (v6): po poslednej bitke o lokalitu hra nekončí — príde finále bez lokality",
+        "packages/core/test/pravidla-bitka.test.ts › §14 (v8): sada bez pinnacle lokalít (testovacia sada v6) finále nemá — po poslednej lokalite hra skončí, bez lokality sa nehrá",
         "packages/core/test/pravidla-bitka.test.ts › §14: vyhrá viac špakov, rovnosť je remíza; ďalšie kolo už nie je"
       ]
     },
@@ -623,8 +623,7 @@
       "pravidlo": "Útočník je porazený z minulej bitky, v prvom kole náhodný; pri remíze ostáva.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky",
-        "packages/core/test/spaky-v6.test.ts › pri rovnosti špakov útočí porazený poslednej bitky; po sekere ostáva útočník (Leader 2026-10-26)"
+        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky"
       ]
     },
     {
@@ -999,10 +998,12 @@
     {
       "id": "11.exekutor.prah",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Prah Exekútora = 10 − sila súperovej priazne Exekútora (Obecný úrad −4); pri priznaných Dlhoch ≥ prah zhorí polovica Dlhov (nadol) a rovnako špakov (v6, Nástroj sa neodovzdáva); Záhradkár smie ísť namiesto špakov.",
+      "pravidlo": "Prah Exekútora = 6 − sila súperovej priazne Exekútora (v8: 6 / 5 / 4 / 3); pri priznaných Dlhoch ≥ prah zhorí polovica Dlhov (nadol) a rovnako špakov; Záhradkár smie ísť namiesto špakov.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › v6: zhorí polovica priznaných Dlhov nadol (a rovnako špakov)"
+        "packages/core/test/battle.test.ts › prah je 6 (v8, návrh #34), súperov Exekútor (v5) ho zníži o svoju silu: 6 / 5 / 4 / 3",
+        "packages/core/test/battle.test.ts › v6: zhorí polovica priznaných Dlhov nadol (a rovnako špakov)",
+        "packages/core/test/pravidla-bitka.test.ts › §1/§11 (v8): na prahu Exekútora (6) hráč neprehráva — zhorí polovica Dlhov a rovnako špakov, aj do mínusu; pod prahom (5) nič"
       ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/battle.test.ts › prah je 10 + 2×priazeň; packages/core/test/battle.test.ts › po odovzdaní Nástroja zhorí polovica dlhov nadol; packages/core/test/pravidla-bitka.test.ts › §11: s Nástrojom hráč exekúcii čelí — odovzdá ho a polovica priznaných Dlhov (nadol) zhorí: 11 → 6."
     },
@@ -1029,7 +1030,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-v5.test.ts › legálne sú oba smery; k sebe posunie marker k hráčovi a priazeň platí už v poškodení tejto bitky",
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane odohrané Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie"
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie"
       ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno."
     },
@@ -1096,12 +1097,14 @@
     {
       "id": "9.vysledok.prebytok-drzi",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Prebytok rozdelí hráč, ktorý ho drží (vyššie celkové), až po špakoch za bitku a za starších — o pole za bod k svojmu súperovi; po finále a na Kultúrnom dome dá držiteľovi špaky.",
+      "pravidlo": "Prebytok drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku a za starších — o pole za bod k súperovi držiteľa. Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › prebytok drží hráč s vyšším celkovým, aj keď bitku prehral",
         "packages/core/test/battle.test.ts › pri remíze v celkovom poškodení nikto nezíska prebytok",
-        "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1"
+        "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1",
+        "packages/core/test/pravidla-v8.test.ts › víťaz drží prebytok, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on",
+        "packages/core/test/pravidla-v8.test.ts › pri sekere rozdeľuje ten s nižším celkovým poškodením"
       ],
       "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23)."
     },
@@ -1223,7 +1226,7 @@
     {
       "id": "10.marker.priazen-strach",
       "paragraf": "10. Starší › Dvojaká úloha markera",
-      "pravidlo": "Priazeň má hráč, na ktorého polovici marker leží; starší sa bojí súpera na úrovni zóny; v sivej nikto. Strach dáva po každej bitke obávanému 1 / 2 / 3 špaky.",
+      "pravidlo": "Priazeň má hráč, na ktorého polovici marker leží; starší sa bojí súpera na úrovni zóny; v sivej nikto. Strach dáva obávanému po vyhratej bitke len nevyplatené zóny (v8).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/elders.test.ts › posun k hráčovi 1 → priazeň má hráč 1, starší sa bojí hráča 0",
@@ -1436,10 +1439,11 @@
     {
       "id": "15.lokalita.lesna-cesta-ihrisko",
       "paragraf": "15. Lokality",
-      "pravidlo": "Lesná cesta +1 tuhé za každú svoju kartu do prevahy v súperovom kraji (najviac 2); Ihrisko +2 za každý kraj s prevahou kariet.",
+      "pravidlo": "Lesná cesta +1 tuhé za každé svoje Zviera v súperovom kraji (v7, bez stropu); Ihrisko +2 za každý kraj s prevahou kariet, Dvojčatá za dve (v8).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/lokality-20261020.test.ts › Ihrisko: +2 za každú stranu, kde má hráč viac svojich kariet — teda až 4"
+        "packages/core/test/lokality-20261020.test.ts › Ihrisko: +2 za každú stranu, kde má hráč viac svojich kariet — teda až 4",
+        "packages/core/test/pravidla-v8.test.ts › Dvojčatá proti dvom súperovým Občanom kraj nevyhrajú za jedného — je to rovnosť, nikto bonus"
       ]
     },
     {
@@ -1821,32 +1825,34 @@
     {
       "id": "14.spaky.za-bitku",
       "paragraf": "14. Špaky",
-      "pravidlo": "Víťaz bitky dostane odohrané Pitky kola (finále 3), o rozdiel Absťákov menej, ak ich má viac než porazený, aspoň 1; plus špaky zo sekery. Lokalitu si neberie.",
+      "pravidlo": "Víťaz bitky dostane 1 špak za každú kartu v línii na oboch stranách v čase bitky (v8; aj finále), o rozdiel Absťákov menej, ak ich má viac než porazený, aspoň 1; plus špaky zo sekery. Lokalitu si neberie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane odohrané Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie",
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie",
         "packages/core/test/spaky-v6.test.ts › Absťák: víťaz s viac Absťákmi dostane o rozdiel menej, aspoň 1",
-        "packages/core/test/battle.test.ts › víťaz dostane odohrané Pitky mínus rozdiel Absťákov, aspoň 1"
+        "packages/core/test/battle.test.ts › víťaz dostane odohrané Pitky mínus rozdiel Absťákov, aspoň 1",
+        "packages/core/test/finale-pinnacle.test.ts › nástenka označí finále aj s lokalitou; log píše zvlášť 1 špak za kartu v línii a Herňu za Dlhy porazeného"
       ]
     },
     {
       "id": "14.spaky.za-starsich",
       "paragraf": "14. Špaky",
-      "pravidlo": "Po každej bitke (aj po finále) dostane víťaz bitky (v6.1; pri sekere obaja) za starších, ktorí sa ho boja, žltá 1, oranžová 2, červená 3; sivý nikomu; aj nahradený.",
+      "pravidlo": "Po bitke (aj po finále) dostane víťaz bitky (v6.1; pri sekere obaja) od starších, ktorí sa ho boja, len zóny, ktoré mu ešte nezaplatili (v8): žltá 1, oranžová 2, červená 3; sivý nikomu; aj nahradený.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › bod 4: starší dá obávanému 1 / 2 / 3 podľa zóny; sivý nikomu — v6.1 len víťazovi",
-        "packages/core/test/elders.test.ts › súčet za všetkých starších, aj nahradeného",
-        "packages/core/test/spaky-v6.test.ts › pri sekere (špaky za bitku idú na sekeru) dostanú za starších obaja"
+        "packages/core/test/spaky-v6.test.ts › bod 4: starší dá obávanému nevyplatené zóny (v8: oranžová = 1 + 2); sivý nikomu — v6.1 len víťazovi",
+        "packages/core/test/elders.test.ts › súčet za všetkých starších, aj nahradeného — v8 nevyplatené zóny (zo stredu na červenú 1 + 2 + 3)",
+        "packages/core/test/spaky-v6.test.ts › pri sekere (špaky za bitku idú na sekeru) dostanú za starších obaja",
+        "packages/core/test/pravidla-v8.test.ts › zaparkovaný marker nezaplatí druhýkrát: po výplate oranžovej dá ďalšia výhra 0"
       ]
     },
     {
       "id": "14.spaky.cirhoza",
       "paragraf": "14. Špaky",
-      "pravidlo": "Na konci hry stojí každá nepriznaná Cirhóza (ruka aj oba balíčky) 5 špakov; priznaná nie.",
+      "pravidlo": "Na konci hry stojí každá nepriznaná Cirhóza (ruka aj oba balíčky) 3 špaky (v8); priznaná nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11/§14: nepriznaná Cirhóza na konci −5 špakov za kus (ruka aj oba balíčky), priznaná nie"
+        "packages/core/test/pravidla-bitka.test.ts › §11/§14: nepriznaná Cirhóza na konci −3 špaky za kus (v8; ruka aj oba balíčky), priznaná nie"
       ]
     },
     {
@@ -1862,39 +1868,39 @@
     {
       "id": "14b.finale.utocnik",
       "paragraf": "14b. Finále",
-      "pravidlo": "Finále bez lokality a bez voľby cieľa; útočí viac špakov, pri rovnosti porazený poslednej bitky, po sekere ostáva útočník.",
+      "pravidlo": "Finále na pinnacle lokalite: vyberá a natáča ju obranca (vedúci), útočí zaostávajúci (menej špakov), pri rovnosti porazený poslednej bitky, po sekere ostáva útočník.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › pri rovnosti špakov útočí porazený poslednej bitky; po sekere ostáva útočník (Leader 2026-10-26)"
+        "packages/core/test/v7-efekty.test.ts › útočí zaostávajúci; pri rovnosti porazený poslednej bitky; po sekere ostáva útočník"
       ]
     },
     {
       "id": "14b.finale.linia",
       "paragraf": "14b. Finále",
-      "pravidlo": "Prvá vyložená karta leží v strede a susedí s oboma stranami; kraje a prevaha nie sú; vždy 3 Pitky.",
+      "pravidlo": "Finále sa hrá o pinnacle lokalitu ako o každú inú: lokalita v strede, kraje a prevaha, Pitky podľa spojov s lokalitou (1–5).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › vždy 3 Pitky; prvá karta je stred línie a susedí s oboma stranami, kraje nie sú",
-        "packages/core/test/spaky-v6.test.ts › útočník vyloží prvú kartu do stredu; obranca sa prikladá k nej"
+        "packages/core/test/finale-pinnacle.test.ts › línia finále má lokalitu v strede a vyhodnotí sa ako každá iná"
       ]
     },
     {
       "id": "14b.finale.prebytok",
       "paragraf": "14b. Finále",
-      "pravidlo": "Po finále sa rozdajú špaky za starších, prebytok sa nerozdeľuje — držiteľ dostane toľko špakov; potom koniec hry.",
+      "pravidlo": "Po finále sa rozdajú špaky za starších; prebytok rozdelí jeho držiteľ (v8) a strach za nové zóny, ktoré vzniknú, sa vyplatí hneď víťazovi (pri sekere obom); potom koniec hry.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › po finále: špaky za bitku (3 Pitky) a za starších, prebytok sa nerozdeľuje — držiteľ dostane špaky; potom koniec"
+        "packages/core/test/spaky-v6.test.ts › po finále: špaky za karty a za starších; prebytok rozdelí držiteľ, nové zóny sa vyplatia ešte po finále; potom koniec"
       ]
     },
     {
       "id": "15.lokalita.kulturny-dom",
       "paragraf": "15. Lokality",
-      "pravidlo": "Kultúrny dom (v6): prebytok sa nerozdeľuje medzi starších, držiteľ dostane toľko špakov.",
+      "pravidlo": "Kultúrny dom (v8, Obaja bodujú): víťaz špaky za všetky karty v línii, porazený 1 špak za každú svoju kartu v línii; prebytok sa rozdeľuje ako inde.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › Kultúrny dom (K1): prebytok sa nerozdeľuje, držiteľ dostane toľko špakov",
-        "packages/core/test/lokality-20261020.test.ts › Kultúrny dom (v6, K1): prebytok sa nerozdeľuje, držiteľ dostane špaky"
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane špaky za všetky karty v línii, porazený za svoje; prebytok sa rozdeľuje ako inde (porazený)",
+        "packages/core/test/spaky-v6.test.ts › pri sekere na Kultúrnom dome nikto nie je porazený — karty idú na sekeru ako inde",
+        "packages/core/test/lokality-20261020.test.ts › Kultúrny dom (v8): prebytok sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)"
       ]
     },
     {
@@ -2080,6 +2086,27 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › útočí zaostávajúci; pri rovnosti porazený poslednej bitky; po sekere ostáva útočník"
+      ]
+    },
+    {
+      "id": "10.strach.vyplatene-zony",
+      "paragraf": "10. Starší › Dvojaká úloha markera",
+      "pravidlo": "Vyplatené zóny (v8): ústup markera k stredu (akýkoľvek posun) zmaže zóny, z ktorých ustúpil, a pri ďalšom postupe sa platia znova; prechod cez stred platí nanovo druhému hráčovi; postup od stredu nič nemaže.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/elders.test.ts › v8: ústup k stredu zmaže zóny, z ktorých marker odišiel; prechod na druhú polovicu zmaže všetko",
+        "packages/core/test/pravidla-v8.test.ts › ústup k stredu zmaže vyplatenú zónu — po návrate sa platí znova",
+        "packages/core/test/pravidla-v8.test.ts › prechod cez stred: druhá polovica platí nanovo druhému hráčovi"
+      ]
+    },
+    {
+      "id": "10.priazne.kmotor",
+      "paragraf": "10. Starší › Priazne",
+      "pravidlo": "Kmotor (v8): po bitke presunie 1 / 2 / 3 tvoje priznané Dlhy medzi súperove priznané; ak ich máš menej, presunie, koľko máš.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v8.test.ts › sila 2: dva tvoje priznané Dlhy prejdú medzi súperove priznané",
+        "packages/core/test/pravidla-v8.test.ts › menej Dlhov, ako je sila: presunie, koľko máš; bez Dlhu nič"
       ]
     }
   ]

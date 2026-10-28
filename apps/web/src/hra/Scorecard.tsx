@@ -13,7 +13,7 @@ export function znamienko(n: number): string {
 /** Čo priazeň danej sily (1 / 2 / 3) dáva — od v5 silou, bez dvojnásobku. PRAVIDLA §10. */
 export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> = {
   // Priazne v5 (Michal 2026-10-24/25): účinok = sila 1 / 2 / 3, bez dvojnásobku.
-  UZERNIK: (s) => `Kmotor: po bitke ti zmizne ${s} ${s === 1 ? "priznaný Dlh" : "priznané Dlhy"}.`,
+  UZERNIK: (s) => `Kmotor: po bitke prejde ${s === 1 ? "1 tvoj priznaný Dlh" : `${s} tvoje priznané Dlhy`} medzi súperove priznané.`,
   LAKOMEC: (s) => `Abstinent: v bitke +${s} ${s === 1 ? "Pohoršenie" : "Pohoršenia"}.`,
   NEPRAJNIK: (s) => `Výpalné: za každé súperovo NA EX ti zaplatí ${s} ${s === 1 ? "cigaretu" : "cigarety"}.`,
   BITKAR: (s) => `+${s} tuhého poškodenia v každej bitke.`,
@@ -30,7 +30,7 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
  * vidno vždy, aj keď priazeň nemá nikto — aby hráč videl, koho sa oplatí desiť).
  */
 export const UCINOK_KRATKO: Readonly<Record<Favour, (sila: number) => string>> = {
-  UZERNIK: (s) => `−${s} Dlh po bitke`,
+  UZERNIK: (s) => `${s} Dlh súperovi po bitke`,
   LAKOMEC: (s) => `+${s} Pohoršenie v bitke`,
   NEPRAJNIK: (s) => `výpalné ${s} cig. za NA EX`,
   BITKAR: (s) => `+${s} tuhé v bitke`,

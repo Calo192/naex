@@ -64,10 +64,10 @@ function poNaex(strany: GameState["strany"], rukaReagujuceho: CardInstance[]): G
 
 
 describe("bot", () => {
-  it("odpovie na NA EX Snúbenicou, ktorá súperovi vezme kartu so zdvojenou Peckou", () => {
+  it("v8: v prehratej bitke nepridá do línie kartu, ktorá bitku nezmení — každá karta v línii je špak pre víťaza", () => {
     const snubenica = inst("snubenica");
+    // Svokra nie je Chlap — Snúbenica nič nevezme a 5 : 0 neotočí.
     const s = { ...poNaex([[lezi("policajtka", 0), lezi("svokra", 0, 0)], []], [snubenica]), ciel: { typ: "lokalita", lokalita: inst("jednota") } } as GameState;
-    const tah = tahBota(data, s, 1, 7);
-    expect(tah).toMatchObject({ type: "place", uid: snubenica.uid });
+    expect(tahBota(data, s, 1, 7)).toEqual({ type: "bezReakcie" });
   });
 });

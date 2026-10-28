@@ -1253,3 +1253,146 @@ Vízia), Praudovravec (Autority v súperovej partii neuplatňujú efekt), Podvod
 (Prehra: ukradni 2 cigarety), Milujúca manželka (Kliatba; Absťák aj pri rovnakom
 počte nerestí), Dievčina na vydaj (bez podmienky 4 Dlhov), Výherný automat
 (výhra 2 cigarety, prehra 1 Dlh). Spúšťače Prestávka a Exekúcia zanikli.
+
+
+## v8 — bodovanie kartami, strach za novú zónu, prebytok porazenému (Michal 2026-10-28)
+
+Dávka návrhov #28, #29, #32, #33, #34 z playtestu 20261027-161907 (interview
+Michala cez Leadera 2026-10-28). Zmeny sú v úvode `docs/PRAVIDLA.md`; staré
+znenia doslovne:
+
+### Úvod PRAVIDLA.md v7 (zmeny v7 oproti v6)
+
+> **Pravidlá v7 (zmrazené 2026-10-27)** — návrh na vetve `v7/revizia-sady`
+> (revízia sady, Michal 2026-10-27), zatiaľ len na playtest; na živom webe platia v6.
+> Pravidlá sa menia len v dávkach; celá dávka dostane ďalšiu verziu.
+>
+> **Zmeny v7 oproti v6** (podklady `docs/napady/revizia-sady/plan.md`, staré
+> znenia v `docs/pravidla-historia.md`, sekcia v7):
+>
+> - **Lokality podľa úrovní** (§3, §5, §15): úroveň = počet akcií na hrane
+>   (1 / 2 / 3, pinnacle 4); 19 lokalít, nežrebujú sa; rozpis úrovní po kolách
+>   (stredná 1 · 2 · 2 · 3 · 3 · P); obranca vyberá z neodohraných lokalít úrovne.
+> - **Finále na pinnacle lokalite** (§14b): vyberá a natáča ju obranca, Pitky
+>   aj kraje ako inde (1–5 Pitiek); „prvá karta v strede“ a pevné 3 Pitky zanikajú.
+> - **Akcia Pakt** (§2, §6) a spúšťač **Kšeft** (§2, §7).
+> - **D6 — zadĺženie neprepadá** (§7, §8): po Pitke sa nuluje len pečeň.
+> - **Prah Exekútora 7** (so súperovou priazňou 6 / 5 / 4) (§11). Spúšťač
+>   Prestávka zanikol.
+> - Nové a prerobené karty a lokality (§15, §16), Milujúca manželka už nie je Kliatba.
+> - **Efekty v7 (Michal 2026-10-27, plan.md 14):** spúšťače **Konflikt** (súper
+>   priloží kartu k tvojej ležiacej), **Úplatok** (súper platí za oslabenie
+>   tvojej karty) a **Exekúcia** (Záhradkár); 40 nových znení kariet, Poštárka
+>   upravená; zo sady vypadli Presbiter, Opatrovateľka, Smetiarka, Brigádnik
+>   a Oslávenec. Vo finále útočí zaostávajúci (§14b).
+> - **Pohreb zrušený** (Michal 2026-10-27, §11): priznaná Cirhóza už nič neodomyká.
+> - **Pitka naraz** (Michal 2026-10-27, §7): obaja hrajú Pitku súčasne a každý
+>   skončí sám; poradie (obranca, potom útočník s posledným slovom) platí len pre
+>   odkrytie NA EX a odpovede. Jediná výnimka je Bzdocha (§16).
+>   **Cintorín** dostal efekt Pozostalosť (§15): porazený smie dať Nástroj z ruky
+>   alebo zo šenku do Dedičstva zadarmo.
+
+### §3 a §7 — sada do v6 a finále bez lokality
+
+>   3 sídla dedinskej šľachty, 4 pinnacle s korupciou. Sada, ktorá nemá dosť
+>   lokalít každej úrovne (do v6), hrá postaru: náhodne sa vyžrebuje toľko
+>   lokalít, aká je dĺžka, a finále je bez lokality.
+
+> majú na každej strane 1–4 akcie (úroveň), teda 1–5 Pitiek; aj finále na
+> pinnacle (v7). Finále bez lokality
+> (sada do v6) má vždy 3 Pitky.
+
+### §9 tabuľka, §9.4 — špaky za bitku, prebytok
+
+> | 4a | Špaky za bitku víťazovi; lokalita ide na krčmovú nástenku | §9.4, §14 |
+> | 4b | Špaky za starších víťazovi, pri sekere obom (Noviny presunú špaky za bitku, §16) | §14 |
+> | 4c | Prebytok — posunie markery pre ďalšiu bitku; po finále a na Kultúrnom dome dá špaky | §9.4 |
+
+> **Špaky za bitku (krok 4a):** víťaz dostane toľko špakov, koľko Pitiek sa
+> v kole **naozaj odohralo** — 1 špak za Pitku, aj vo finále (dopitá Pitka sa ráta,
+> aj keď počet Pitiek medzitým klesol; finále bez lokality, sada do v6, má vždy 3). Ak má víťaz **viac Absťákov** ako porazený, dostane
+> o rozdiel menej, ale **vždy aspoň 1 špak**. Absťáky sa rátajú ako pri remíze
+> Víťaz si **lokalitu neberie** —
+> karta lokality ide na **krčmovú nástenku** s jeho menom a počtom špakov.
+>
+> **Sekera:** keď nerozhodne ani tuhé, ani Absťáky, ani Dlhy, bitku nevyhrá nikto
+> a špaky kola (odohrané Pitky) **čakajú na sekere** — vezme ich víťaz najbližšej
+> bitky navyše k svojim (bez zrážky za Absťák); viac sekier po sebe sa kopí.
+> **Vo finále** špaky zo sekery **prepadnú**. Sekera nemení roly (útočník ostáva
+> útočníkom), patronát sa vyrieši ako prehra (starší späť, bolestné, §10).
+>
+> **Prebytok (krok 4c)** rozdelí medzi starších hráč, ktorý ho drží (vyššie
+> celkové poškodenie — spravidla víťaz, no aj porazený či pri remíze v tuhom), až
+> **po špakoch za bitku a za starších** — prejaví sa teda až v ďalšej bitke. Každý
+> pridelený bod posunie marker o **jedno pole** smerom k jeho súperovi (aj na
+> červenú a aj z červenej von, zamknutie sa ruší, §10). Smie prideliť aj viac
+> bodov tomu istému staršiemu.
+>
+> **Prebytok do špakov:** **po finále** (§14b) a v bitke o **Kultúrny dom** (§15)
+> sa prebytok medzi starších nerozdeľuje — jeho držiteľ dostane toľko špakov,
+> aký je prebytok.
+
+> > Napätie hry: vystrašený starší ti po každej vyhratej bitke dá špaky (§14), ale
+> > súperovi medzitým dáva svoju priazeň. Kto má veľké mäkké poškodenie, môže aj po prehre
+> > posunúť markery a v ďalšom kole bodovať viac.
+
+### §10 — strach po každej výhre, Kmotor
+
+> **Strach dáva špaky — len víťazovi** (v6.1, Michal 2026-10-27): po bitke (aj po
+> finále) dostane **víťaz bitky** za každého staršieho, ktorý sa ho bojí, toľko
+> špakov, aká je zóna — žltá 1, oranžová 2, červená 3 (§14). **Porazený za
+> starších nedostane nič.** Pri **sekere** (§9.4) dostanú špaky za starších
+> **obaja**. Okrem toho sa strach ráta do vydesenia (§1).
+>
+> Príklad: marker Farára na indexe 5 (polovica hráča 1, oranžová zóna) —
+> priazeň sily 2 má hráč 1; Farár sa bojí hráča 0 a po každej bitke, ktorú hráč 0
+> vyhrá (alebo pri sekere), mu dá 2 špaky, kým sa marker nepohne. Bitku, ktorú
+> vyhrá hráč 1, mu Farár nedá nič.
+>
+> Web počas hry ukazuje pri každom staršom priazeň (komu a s akým účinkom),
+> koho sa starší bojí a koľko špakov mu dá po bitke, ak ju vyhrá.
+
+> | Kmotor | Po bitke (§9, krok 6c) | priznané Dlhy zmiznú z hry; bez priznaného Dlhu nerobí nič | 1 / 2 / 3 Dlhy |
+
+### §11 — Cirhóza −5, prah Exekútora 7
+
+> | **Cirhóza** | za každý celý prah poškodenia pečene (§8) — ide do **odhadzovacieho balíčka** | nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí **5 špakov** za kus (§14); priznaná dá súperovi v každej bitke +1 tuhé (§9.3) |
+
+> ```
+> prah = 7 − sila súperovej priazne Exekútora    (v7: 7 / 6 / 5 / 4)
+> ```
+
+### §14 a §14b — tabuľka špakov, finále bez lokality
+
+> | Vyhratá bitka | 1 za každú odohranú Pitku kola (aj finále), mínus o koľko má víťaz viac Absťákov než porazený, **aspoň 1**; plus špaky zo sekery | krok 4a (§9.4) |
+> | Starší, ktorí sa ťa boja | za každého: žltá **1**, oranžová **2**, červená **3**; sivý nikomu; aj nahradený | len **víťazovi** bitky, aj finále; pri **sekere obom**; porazený nič (v6.1; krok 4b) |
+> | Noviny v Dedičstve (v7) | špaky za bitku dostane porazený, keď má víťaz viac priznaných Dlhov | krok 4a |
+> | Prebytok vo finále a na Kultúrnom dome | toľko, aký je prebytok | krok 4c |
+> | Exekútor | **−** polovica priznaných Dlhov (Záhradkár ich zachráni) | krok 1 (§11) |
+> | Výkupné zdrojov | **+1** za každý plný poldeci, **+1** za každých celých 5 cigariet (nadol); **bez stropu** | na konci hry, po finále |
+> | Nepriznaná Cirhóza | **−5** za kus (ruka aj oba balíčky) | na konci hry, po finále |
+
+> - Pitiek je ako na každej lokalite **1 + menší počet aktivovaných akcií hrán**
+>   (1–5). Víťaz dostane **1 špak za každú odohranú Pitku** (mínus rozdiel
+>   Absťákov, aspoň 1); na Herni navyše toľko, koľko má porazený priznaných Dlhov
+>   (§15). Sekera vo finále špaky kola aj zo sekery **prepadnú**.
+> - Po finále sa ešte rozdajú **špaky za starších** — ako po každej bitke len
+>   víťazovi finále, pri sekere obom (§14). **Prebytok sa nerozdeľuje** —
+>   jeho držiteľ dostane toľko špakov, aký je prebytok.
+> - Potom sa vykúpia zvyšné zdroje (plný poldeci 1 špak, každých celých
+>   5 cigariet 1 špak, §14), odpočíta sa nepriznaná Cirhóza (−5 za kus) a vyhrá
+>   hráč s viac špakmi.
+>
+> **Finále bez lokality** (sada do v6, ktorá nemá pinnacle lokality): prvá
+> vyložená karta leží v strede ako lokalita a susedí s oboma stranami — ďalšie
+> karty sa kladú na jej dve strany; karta ostáva kartou svojho majiteľa. Kraje
+> a prevaha nie sú. Finále má vždy 3 Pitky (víťaz 3 špaky, mínus rozdiel
+> Absťákov, aspoň 1).
+
+### §15 a §16 — Kultúrny dom, Ihrisko, Dvojčatá
+
+> | Ihrisko | Bitka | V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (pri rovnosti nikto) — z oboch krajov teda až +4. |
+
+> | Kultúrny dom | Bitka | Prebytok sa nerozdeľuje medzi starších — kto ho drží, dostane toľko špakov, aký je prebytok (v6, Michal 2026-10-26). |
+
+> | Dvojčatá | Furt: do prevahy sa rátajú za dvoch (na Ihrisko a Lesnú cestu nie). |

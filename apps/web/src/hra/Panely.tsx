@@ -632,8 +632,8 @@ export function HracDoska({
                 className="cip kliatba"
                 title={
                   ja
-                    ? `Tvoje nepriznané kliatby v ruke a v balíčkoch. Každá Cirhóza ti na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
-                    : `Súperove nepriznané kliatby podľa toho, čo bolo vidno na stole. Každá Cirhóza mu na konci hry zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`
+                    ? `Tvoje nepriznané kliatby v ruke a v balíčkoch. Každá Cirhóza ti na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`
+                    : `Súperove nepriznané kliatby podľa toho, čo bolo vidno na stole. Každá Cirhóza mu na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`
                 }
               >
                 nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
@@ -761,7 +761,7 @@ export function HracDoska({
                   {v !== null && v.pecenZoStola > 0 && ` ▸ ${pecenPo}`} z {prahy.cirhoza}
                   {vyhladPecene !== null && ` · ${vyhladPitky(vyhladPecene).cele.join(" · ")}`}
                 </span>
-                Za každé {prahy.cirhoza} vznikne v Pitke Cirhóza: nepriznaná {ja ? "ti" : "mu"} na konci hry zoberie {KONSTANTY.SPAKY_ZA_CIRHOZU} špakov, priznaná dá
+                Za každé {prahy.cirhoza} vznikne v Pitke Cirhóza: nepriznaná {ja ? "ti" : "mu"} na konci hry zoberie {pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}, priznaná dá
                 súperovi +1 tuhé v bitke. Po každej Pitke sa pečeň vynuluje.
               </>
             ),
@@ -1263,7 +1263,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         {!vysledok && rozdiel !== 0 && <span className="tip-riadok">pri remíze: {coPriRemize}</span>}
         {!vysledok && stavka !== null && (
           <span className="tip-riadok">
-            táto bitka ({stavka.pitky} Pitky): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
+            táto bitka ({pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
             {stavka.starsi[0] + stavka.starsi[1] > 0 && (
               <>
                 {" "}

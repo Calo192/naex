@@ -67,7 +67,6 @@ import {
   tvar,
   vyhladDlhov,
   cieleVykladania,
-  finaleBezStredu,
   cielLokalitaId,
   evaluateLine,
   pocitadloBitky,
@@ -999,13 +998,8 @@ export function HernaPlocha({
   // Pre mňa sú skryté NA EX dané: náhľady a výhľady rátajú s nimi tak, ako ich motor
   // zúčtuje pri odkrytí (poldeci, pečeň, Svokra, Výpalné — sMojimiSkrytymiNaex).
   const zaklad = useMemo(() => sMojimiSkrytymiNaex(data, view), [data, view]);
-  // Finále v7 je na pinnacle lokalite a línia je ako v každom kole (Michal 2026-10-27:
-  // stôl kreslil prázdny stred finále v6). Len finále bez lokality (stará sada) má
-  // v strede prvú vyloženú kartu (strany[stranaStreduFinale][0]).
+  // Finále je na pinnacle lokalite a línia je ako v každom kole (Michal 2026-10-27).
   const jeFinaleStola = view.ciel?.typ === "finale";
-  const finaleBezLokality = finaleBezStredu(view);
-  const sf = view.stredFinale ?? null;
-  const stranaStreduFinale: PlayerId | null = finaleBezLokality && sf !== null && view.strany[sf].length > 0 ? sf : null;
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
   // zvýraznenie spojov aj odhad bitky. Moje skryté NA EX v ňom ležia na kartách
   // (pre mňa sú dané), súperove nie — tie sa ukážu až pri odkrytí.
@@ -1378,7 +1372,7 @@ export function HernaPlocha({
       for (const k of volne) {
         // Odpoveď na NA EX je jediná karta — nová nahradí navrhnutú, ráta sa teda bez nej.
         const chyba = reagujem
-          ? cieleVykladania(data, view.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view), finaleBezStredu(view)).includes(c)
+          ? cieleVykladania(data, view.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view)).includes(c)
             ? null
             : "Sem žiadnu kartu z ruky vyložiť nesmieš."
           : planTahu([...vylozenia, { karta: k, ciel: c }]).chyba;
@@ -1731,7 +1725,7 @@ export function HernaPlocha({
       if (z.navrh) out.add("ruka");
     }
     if (z.odkial === "ruka" && reagujem) {
-      for (const c of cieleVykladania(data, view.strany, ja, z.karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view), finaleBezStredu(view))) {
+      for (const c of cieleVykladania(data, view.strany, ja, z.karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(view), zablokovaneStrany(view))) {
         if (c === "vlastna" || c === "superova") out.add(c);
       }
       if (z.navrh) out.add("ruka");
@@ -2167,7 +2161,6 @@ export function HernaPlocha({
       koniec={view.koniec !== null}
       ucet={ucet ? { body, zvyraznit: nastenkaPre } : undefined}
       vyber={vyber}
-      finaleNaVrchole={view.rozpis !== undefined}
     />
   );
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
@@ -2281,8 +2274,7 @@ export function HernaPlocha({
   // vyhodnocujú spoje. Karta je otočená, ak ju zahral ten druhý z vás
   // (súperove vlastné karty sú voči tebe nohami hore).
   const kartyStrany = (p: PlayerId): ReactNode[] => {
-    // Finále: prvá karta leží v strede línie (stredLinie), na strane ostáva zvyšok.
-    const strana = stranaStreduFinale === p ? view.strany[p].slice(1) : view.strany[p];
+    const strana = view.strany[p];
     const poradie = p === ja ? [...strana].reverse() : strana;
     return poradie.map((placed) => kartaVLinii(placed));
   };
@@ -2396,9 +2388,6 @@ export function HernaPlocha({
 
   /** Vonkajší koniec strany: navrhnuté karty, a počas ťahania voľné miesto. */
   const naStoleNavrh = nahladZaverecnej && zaverecna?.kroky != null ? polozkySoZaverecnou(vylozenia) : vylozenia;
-  // Finále bez karty v strede: prvá navrhnutá karta do línie pôjde do stredu — kreslí ju stredLinie.
-  const navrhStreduFinale =
-    finaleBezLokality && stranaStreduFinale === null ? (naStoleNavrh.find((x) => x.ciel === "vlastna" || x.ciel === "superova") ?? null) : null;
   const navrhnutaKarta = (x: (typeof naStoleNavrh)[number]): ReactNode => {
     {
       const z: Zdroj = { karta: x.karta, odkial: "ruka", navrh: true };
@@ -2427,7 +2416,7 @@ export function HernaPlocha({
   };
   const koniecStrany = (p: PlayerId): ReactNode => {
     const ciel: CielVykladania = p === ja ? "vlastna" : "superova";
-    const navrhnute = naStoleNavrh.filter((x) => x.ciel === ciel && x !== navrhStreduFinale).map(navrhnutaKarta);
+    const navrhnute = naStoleNavrh.filter((x) => x.ciel === ciel).map(navrhnutaKarta);
     const volne = tahanie === null ? miestoNaKlik(p, ciel) : miestoNaKonci(p, ciel);
     if (navrhnute.length === 0) return volne;
     // Tvoja strana vedie od lokality doľava — najvzdialenejšia karta je vľavo.
@@ -2550,7 +2539,7 @@ export function HernaPlocha({
   };
   const radStrany = (p: PlayerId): ReactNode => {
     const koniec = koniecStrany(p);
-    const karty = view.strany[p].length === (stranaStreduFinale === p ? 1 : 0) ? null : kartyStrany(p);
+    const karty = view.strany[p].length === 0 ? null : kartyStrany(p);
     const rub = rubZaverecnej(p);
     // Prázdna strana má veľkosť karty v línii — pevných 198 px pretieklo nízky stôl (posuvník línie).
     if (koniec === null && karty === null && rub === null) {
@@ -2646,21 +2635,6 @@ export function HernaPlocha({
       </span>
     );
   const stredLinie = ((): ReactNode => {
-    // Finále bez lokality (v6): v strede leží prvá vyložená karta — línia ide od nej na obe strany.
-    if (finaleBezLokality) {
-      const stred = stranaStreduFinale === null ? undefined : view.strany[stranaStreduFinale][0];
-      if (stred !== undefined) return kartaVLinii(stred);
-      if (navrhStreduFinale !== null) return navrhnutaKarta(navrhStreduFinale);
-      return vLinii(
-        <span className="prazdna lokalita-miesto finale-miesto" style={{ width: sirkaVLinii, minHeight: Math.round(sirkaVLinii * POMER_KARTY) }}>
-          <b>Finále</b>
-          <span>
-            {view.utocnik === ja ? "Tvoja prvá karta pôjde sem, do stredu línie." : `Prvú kartu sem vyloží ${menoHraca(view.utocnik)}.`}
-          </span>
-          <span className="tlmene">Ďalšie karty sa kladú na jej dve strany.</span>
-        </span>,
-      );
-    }
     if (lokalita !== null) {
       return sLupou({
         karta: lokalita,
@@ -3078,8 +3052,16 @@ export function HernaPlocha({
           <span className="cakanie-text">
             {prebytok ? (
               <>
-                <strong>{menoHraca(super_)}</strong> posúva starších k tebe: ty máš hneď ich priazeň, starší sa začnú báť súpera (body na konci).
-                Za každého staršieho cigareta.
+                {bsCak.prebytokDrzi === ja ? (
+                  <>
+                    <strong>{menoHraca(super_)}</strong> rozdeľuje tvoj prebytok: vyberá, ktorí starší pôjdu k nemu — on dostane ich priazeň, teba sa
+                    začnú báť (nové zóny ti zaplatia po najbližšej výhre). Za každého staršieho dostane cigaretu.
+                  </>
+                ) : (
+                  <>
+                    <strong>{menoHraca(super_)}</strong> posúva starších k tebe: ty máš hneď ich priazeň, starší sa začnú báť súpera.
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -4042,7 +4024,7 @@ export function HernaPlocha({
             text: (
               <>
                 Pri staršom vyber smer — každé Pohoršenie posunie marker o jedno pole. <strong>K súperovi</strong>: on dostane priazeň, starší
-                sa začne báť teba (špaky po každej bitke, ktorú vyhráš, cesta k vydeseniu). <strong>K sebe</strong>: priazeň sa ti zmení hneď a platí už v
+                sa začne báť teba (nová zóna ti zaplatí po najbližšej výhre, cesta k vydeseniu). <strong>K sebe</strong>: priazeň sa ti zmení hneď a platí už v
                 tejto bitke.
               </>
             ),
@@ -4057,7 +4039,9 @@ export function HernaPlocha({
             ),
             text: (
               <>
-                Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť). Posun stojí 1.
+                {b.prebytokDrzi === ja
+                  ? "Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť; nová zóna ti zaplatí ešte po finále). Rozdeliť treba celý prebytok."
+                  : `Prebytok drží ${menoHraca(super_)}, ale vyberáš ty: klikni na staršieho — marker ide k tebe (ty priazeň, súpera sa začne báť a nová zóna mu zaplatí po jeho najbližšej výhre). Za každého posunutého staršieho cigareta. Rozdeliť treba celý prebytok.`}
                 {navrhRozdelenia !== null && (
                   <span className="tlmene">
                     {" "}
@@ -4158,11 +4142,11 @@ export function HernaPlocha({
       };
     }
     const b = view.bitkaStav;
-    const smerKSuperovi = super_;
     if (view.faza === "bitka" && b?.caka === ja) {
-      // Zamknuté markery (krajná pozícia, Pohoršenie na krajnú, limit dvoch hraníc zón) sa neponúkajú.
-      if (b.krok === "prebytok" && posunMarker(elder, smerKSuperovi) !== null) {
-        return { akcia: `posunúť marker${popisPosunu(elder, false)}`, klik: () => cmd({ type: "prebytok", elderId: elder.elderId }) };
+      // Prebytok ide vždy k súperovi držiteľa — rozdeľuje ho od v8 spravidla porazený, teda k nemu.
+      const smerPrebytku: PlayerId = b.prebytokDrzi === super_ ? ja : super_;
+      if (b.krok === "prebytok" && posunMarker(elder, smerPrebytku) !== null) {
+        return { akcia: `posunúť marker${popisPosunu(elder, false, false, smerPrebytku)}`, klik: () => cmd({ type: "prebytok", elderId: elder.elderId }) };
       }
     }
     return undefined;
@@ -5459,7 +5443,7 @@ export function HernaPlocha({
                       : `Hrana k tebe: ${krajStrany(ja)} · hrana k súperovi: ${krajStrany(super_)}`
                   }
                 >
-                  {finaleBezLokality ? "finále · stred" : jeFinaleStola && lokalita !== null ? "finále · lokalita" : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
+                  {jeFinaleStola && lokalita !== null ? "finále · lokalita" : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}

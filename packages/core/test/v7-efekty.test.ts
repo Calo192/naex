@@ -492,8 +492,8 @@ describe("Bitka a po bitke (v7)", () => {
     const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { priznane: [inst("dlh"), inst("dlh"), inst("dlh")] });
     const stavkaH = stavkaBitky(data, viewFor(data, h, 1))!;
     expect(stavkaH.herna).toEqual([3, 0]);
-    // 1 Pitka + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
-    expect(stavkaH.vyhra).toBe(1 + 3 + stavkaH.starsi[0]);
+    // 4 karty v línii (v8) + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
+    expect(stavkaH.vyhra).toBe(4 + 3 + stavkaH.starsi[0]);
     expect(-stavkaBitky(data, viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
     // Noviny porazeného: víťaz (hráč 1) má viac Dlhov — z výhry mu ostanú len starší.
     const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { priznane: [inst("dlh"), inst("dlh")] });

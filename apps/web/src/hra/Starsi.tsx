@@ -7,7 +7,7 @@
 
 import type { CSSProperties } from "react";
 import type { ClientState, GameData, PlayerId } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, priazenSila, strachZ, prahVydesenia, vydesil } from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, priazenSila, strachNaVyplatu, prahVydesenia, vydesil } from "@naex/core";
 import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
@@ -97,7 +97,8 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
         const zona = STUPNICA_ZONY[e.marker];
         const meno = menoKarty(e.karta.defId);
         const ucinok = ucinokPriazne(data, e);
-        const strach = strachZ(e, p);
+        // v8: len zóny, ktoré starší ešte nezaplatil.
+        const strach = strachNaVyplatu(e, p);
         const patron = view.patronat[p]?.elderId === e.elderId ? p : view.patronat[su]?.elderId === e.elderId ? su : null;
         const posuny = (view.posunyMarkerov ?? []).filter((x) => x.elderId === e.elderId);
         const hodnota =
@@ -117,7 +118,7 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
           smer === "hore"
             ? `${meno}: ${ucinok.cely}. Zóna ${NAZVY_ZON[zona]}.`
             : smer === "dole"
-              ? `${meno} sa ${ja ? "ťa" : "ho"} bojí (${NAZVY_ZON[zona]}): po každej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dá ${strach} ${strach === 1 ? "špak" : "špaky"}. Priazeň má súper — ${ucinok.cely}.`
+              ? `${meno} sa ${ja ? "ťa" : "ho"} bojí (${NAZVY_ZON[zona]}): ${strach > 0 ? `po najbližšej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dá ${strach} ${strach === 1 ? "špak" : strach < 5 ? "špaky" : "špakov"} za zóny, ktoré ešte nezaplatil` : "zóny už zaplatil — ďalší špak až po novom postupe markera"}. Priazeň má súper — ${ucinok.cely}.`
               : `${meno} je v strede, priazeň nemá nikto. ${ucinok.cely}.`;
         return (
           <div

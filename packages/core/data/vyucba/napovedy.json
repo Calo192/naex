@@ -178,7 +178,7 @@
         "podmienka": "view.hraci[ja].ruka obsahuje defId \"cirhoza\"",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok (cirhozy)", "docs/PRAVIDLA.md §11 Priznanie"]
       },
-      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa špaky nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry ťa stojí 5 špakov.",
+      "melichar": "V ruke máš Cirhózu z pretečenej pečene. Varoval som ťa, ale dobre. Priznaná ťa špaky nestojí, no súper za ňu dostane v každej bitke 1 tuhé. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry ťa stojí 3 špaky.",
       "zvyraznit": ["ruka:cirhoza"]
     },
     {

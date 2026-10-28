@@ -19,7 +19,7 @@ import {
   loadGameData,
   moznostiNaex,
   naexZaPitku,
-  prebytokDoSpakov,
+  rozdelujePrebytok,
   parseScorecards,
   planVykladania,
   evaluateLine,
@@ -157,9 +157,9 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(naex("krcma")).toBe(false);
   });
 
-  it("Kultúrny dom (v6, K1): prebytok sa nerozdeľuje, držiteľ dostane špaky", () => {
-    expect(prebytokDoSpakov(vKole("kulturny_dom"))).toBe(true);
-    expect(prebytokDoSpakov(vKole("krcma"))).toBe(false);
+  it("Kultúrny dom (v8): prebytok sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)", () => {
+    expect(rozdelujePrebytok(vKole("kulturny_dom"), 0)).toBe(1);
+    expect(rozdelujePrebytok(vKole("krcma"), 1)).toBe(0);
   });
 });
 
