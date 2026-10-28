@@ -278,8 +278,8 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
       await k.otvorene();
       k.posli({ type: "create", vyucba: true });
       let msg = await k.cakaj("vyucba");
-      // Krok nesie hlášku zo scenára (úvod: „Sem poď“), krok bez nej null.
-      expect(msg.krok).toMatchObject({ id: "i-vitaj", hlaska: "reci/sem_pod2" });
+      // Krok bez hlášky má null — od 2026-10-28 zaznie hláška len pri chybe hráča (Michal).
+      expect(msg.krok).toMatchObject({ id: "i-vitaj", hlaska: null });
       k.posli({ type: "vyucbaDalej" });
       msg = await k.cakaj("vyucba");
       const q = msg.krok as KrokMsg & { moznosti: { spravna: boolean }[] | null };

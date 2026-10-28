@@ -52,6 +52,14 @@ import {
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const scenar = scenarJson as unknown as ScenarVyucby;
+/**
+ * 2. a 3. časť (Vymyselník 2026-10-28): kroky čakajú v „pokracovanie“, kým server nevie hranice
+ * častí — inak by hráč po 1. časti pokračoval rovno ďalej bez hviezdičky.
+ */
+interface CastVyucby { readonly cast: number; readonly nazov: string; readonly od: string; readonly po: string; readonly minuty: number }
+const meta = scenarJson as unknown as { readonly casti: readonly CastVyucby[]; readonly hlaskyChyby: readonly string[]; readonly pokracovanie: ScenarVyucby["kroky"] };
+const pokracovanie = meta.pokracovanie;
+const hlaskyChyby = meta.hlaskyChyby;
 
 describe("výučba — scenár", () => {
   it("scenár prva-hra prejde v jadre od začiatku do konca (každý krok legálny, na ťahu ten, komu patrí)", () => {
@@ -542,39 +550,47 @@ describe("výučba Prvá hra — pripomienky Michala k 1. časti (#107, 2026-10-
   });
 });
 
-describe("výučba — hlášky Melichara zo soundboardu (Michal 2026-10-27)", () => {
+describe("výučba — hlášky Melichara len pri chybe hráča (Michal 2026-10-28)", () => {
   // Pole „hlaska“ = „skupina/súbor bez prípony“ z data/majster_melichar (priečinok je mimo gitu,
-  // existenciu súborov overil Vymyselník pri zápise). Hlášky na posúdenie sa vo výučbe nepoužijú.
+  // existenciu súborov overil Vymyselník pri zápise). Od 2026-10-28 zaznie hláška len pri chybe:
+  // zlý ťah (volba.zle, hlaskaChyby kroku, hlaskyChyby scenára) a zlá odpoveď v kvíze.
   const SKUPINY = ["pohoda", "bieda", "nervy", "reci", "udiv", "urazky", "vyhrazky"];
-  type SHlaskou = { readonly hlaska?: string };
-  const hlasky = scenar.kroky.flatMap((k) => [
-    (k as SHlaskou).hlaska,
-    ...(k.volba?.zle ?? []).map((z) => (z as SHlaskou).hlaska),
-    ...(k.moznosti ?? []).map((m) => (m as SHlaskou).hlaska),
-  ]);
+  type SHlaskou = { readonly hlaska?: string; readonly hlaskaChyby?: string };
+  const vsetky = [...scenar.kroky, ...pokracovanie];
+  const hlasky = [
+    ...vsetky.flatMap((k) => [
+      (k as SHlaskou).hlaskaChyby,
+      ...(k.volba?.zle ?? []).map((z) => (z as SHlaskou).hlaska),
+      ...(k.moznosti ?? []).map((m) => (m as SHlaskou).hlaska),
+    ]),
+    ...hlaskyChyby,
+  ];
 
-  it("každá hláška má tvar skupina/súbor zo známej skupiny; nie v každej bubline", () => {
+  it("každá hláška má tvar skupina/súbor zo známej skupiny", () => {
     const pouzite = hlasky.filter((h): h is string => h !== undefined);
     expect(pouzite.length).toBeGreaterThan(10);
     for (const h of pouzite) {
       expect(h).toMatch(/^[a-z]+\/[^/\s.]+$/);
       expect(SKUPINY, h).toContain(h.split("/")[0]);
+      expect(castiHlasky(h), h).not.toBeNull();
     }
-    // „Nemusia v každom chatovom okne“ — najviac polovica krokov.
-    expect(scenar.kroky.filter((k) => (k as SHlaskou).hlaska !== undefined).length).toBeLessThanOrEqual(scenar.kroky.length / 2);
   });
 
-  it("hláška pri kvíze len pri zlej odpovedi a „BOHA jeho!“ z textu zaznie aj nahlas", () => {
-    for (const k of scenar.kroky) for (const m of k.moznosti ?? []) if ((m as SHlaskou).hlaska !== undefined) expect(m.spravna, k.id).toBe(false);
-    const prebytok = scenar.kroky.find((k) => k.id === "k-prebytok1");
-    expect(prebytok?.melichar).toContain("BOHA jeho!");
-    expect((prebytok as SHlaskou | undefined)?.hlaska).toBe("udiv/09_Boha");
+  it("žiadny krok nemá hlášku na ozdobu; kvíz má hlášku len pri zlej odpovedi", () => {
+    for (const k of vsetky) expect((k as SHlaskou).hlaska, k.id).toBeUndefined();
+    for (const k of vsetky) for (const m of k.moznosti ?? []) if ((m as SHlaskou).hlaska !== undefined) expect(m.spravna, k.id).toBe(false);
+  });
+
+  it("2. a 3. časť: každá zlá odpoveď a každý krok hráča má hlášku pri chybe", () => {
+    for (const k of pokracovanie) {
+      for (const m of k.moznosti ?? []) if (!m.spravna) expect((m as SHlaskou).hlaska, k.id).toBeDefined();
+      if (k.kto === "hrac") expect((k as SHlaskou).hlaskaChyby, k.id).toBeDefined();
+    }
   });
 });
 
 describe("výučba — hláška v kroku a v rade (Michal 2026-10-27)", () => {
-  it("krok nesie hlášku zo scenára; rada k zlému ťahu nesie hlášku vzoru, všeobecná je bez nej", () => {
-    expect(scenar.kroky.find((k) => k.id === "i-vitaj")?.hlaska).toBe("reci/sem_pod2");
+  it("rada k zlému ťahu nesie hlášku vzoru, všeobecná je bez nej", () => {
     const i = scenar.kroky.findIndex((k) => k.id === "k-ciel");
     const volba = scenar.kroky[i]?.volba as VolbaKroku;
     const s = prehrajVyucbu(data, scenar, i);
@@ -592,5 +608,93 @@ describe("výučba — hláška v kroku a v rade (Michal 2026-10-27)", () => {
     expect(nazovHlasky("09_Boha")).toBe("Boha");
     const zly: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === 0 ? { ...k, hlaska: "bez-skupiny" } : k)) };
     expect(overScenar(data, zly)).toMatch(/hláška „bez-skupiny“/);
+  });
+});
+
+describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez prahu; texty sú návrh)", () => {
+  const cela: ScenarVyucby = { ...scenar, kroky: [...scenar.kroky, ...pokracovanie] };
+  const i = (id: string): number => {
+    const n = cela.kroky.findIndex((k) => k.id === id);
+    if (n < 0) throw new Error(`Scenár nemá krok ${id}`);
+    return n;
+  };
+  const pri = (id: string): GameState => prehrajVyucbu(data, cela, i(id));
+  const po = (id: string): GameState => prehrajVyucbu(data, cela, i(id) + 1);
+  const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).tuhe;
+  const body = (s: GameState): readonly number[] => s.spaky;
+  type SCastou = { readonly cast?: number; readonly koniecCasti?: number };
+
+  it("celá partia (1. + 2. + 3. časť) prejde v jadre od začiatku do konca hry", () => {
+    expect(overScenar(data, cela)).toBeNull();
+    const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
+    expect(koniec.koniec?.vitaz).toBe(0);
+    expect(koniec.koniec?.body).toEqual([27, 10]);
+  });
+
+  it("časti nadväzujú: každá má začiatok a koniec, idú za sebou a 2. časť začína tam, kde 1. skončila", () => {
+    expect(meta.casti.map((c) => c.cast)).toEqual([1, 2, 3]);
+    let predosly = -1;
+    for (const c of meta.casti) {
+      expect(i(c.od), c.od).toBe(predosly + 1);
+      expect((cela.kroky[i(c.od)] as SCastou).cast).toBe(c.cast);
+      expect((cela.kroky[i(c.po)] as SCastou).koniecCasti).toBe(c.cast);
+      predosly = i(c.po);
+    }
+    expect(predosly).toBe(cela.kroky.length - 1);
+    expect(i("i-vitaj2")).toBe(scenar.kroky.length);
+    // 2. časť: 2. kolo, hráč vyhral a vyberá cieľ; 3. časť: 3. kolo, vyberá Štamgast.
+    expect(pri("i-vitaj2")).toMatchObject({ faza: "volbaCiela", kolo: 2 });
+    expect(naTahu(pri("i-vitaj2"))).toBe(0);
+    expect(pri("i-vitaj3")).toMatchObject({ faza: "volbaCiela", kolo: 3 });
+    expect(naTahu(pri("i-vitaj3"))).toBe(1);
+    expect(pri("i-dovidenia3").faza).toBe("koniec");
+  });
+
+  it("2. časť: Ihrisko, prevaha, Záverečná a NA EX — čísla v textoch sedia s jadrom", () => {
+    expect(odhad(po("k-vypit"))).toEqual([6, 2]);
+    expect(po("k-vypit").pitkyCelkom).toBe(2);
+    expect(odhad(po("k-zh2-bot2"))).toEqual([4, 2]);
+    expect(odhad(po("k-hotovo3-bot"))).toEqual([1, 9]);
+    expect(odhad(po("k-prevaha"))).toEqual([4, 4]);
+    expect(odhad(po("k-prevaha2"))).toEqual([6, 5]);
+    // Exekútor v bitke 2. kola: hráčovi zhorí 1 Dlh a 1 špak, Štamgastovi 2 a 2.
+    expect(body(po("k-odpoved-bot"))).toEqual([4, -3]);
+    expect(pri("i-exekutor2").bitkaStav?.exekutor).toEqual([1, 2]);
+    // Tri Pohoršenia na Starostu: Bitkár 3, bitka 5 : 6, celkové 6 : 6 — prebytok nemá nikto.
+    const pred = po("k-pohorsenie-bot2");
+    expect(odhad(pred)).toEqual([5, 5]);
+    expect(pred.starsi.find((e) => e.elderId === "starosta")?.marker).toBe(5);
+    const s = po("k-pohorsenie-bot3");
+    expect(s.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
+    expect(body(s)).toEqual([4, 6]);
+    expect(s.starsi.find((e) => e.elderId === "starosta")?.marker).toBe(6);
+    expect(s.hraci[0].nerestiMinuleKolo).toBe(3);
+  });
+
+  it("3. časť: patronát Štamgasta, Dedičstvo, Exekútor, Kultúrny dom, Absťák a finále na Predsedovej vile", () => {
+    expect(po("k-patronat-bot").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(3);
+    expect(po("k-dedicstvo").hraci[0].dedicstvo.map((k) => k.defId)).toEqual(["vidly"]);
+    expect(odhad(po("k-nastroj"))).toEqual([5, 6]);
+    expect(body(po("k-hotovo6"))).toEqual([2, 5]);
+    expect(odhad(po("k-pohorsenie2"))).toEqual([6, 5]);
+    const vyhra = po("k-pohorsenie4");
+    expect(body(vyhra)).toEqual([17, 7]);
+    const kolo4 = po("k-prebytok3-bot");
+    expect(kolo4.kolo).toBe(4);
+    expect(kolo4.hraci[1].poldeciPlne + kolo4.hraci[1].poldeciVypite).toBe(1);
+    for (const p of [0, 1] as const) expect(kolo4.hraci[p].priznane.some((k) => k.defId === "abstak"), `Absťák ${p}`).toBe(true);
+    expect(odhad(po("k-hasic-finale"))).toEqual([4, 3]);
+    expect(po("k-kseft").starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(6);
+  });
+
+  it("texty nehovoria o Smetisku ani o bodoch (Michal 2026-10-28: stavba klikom, víťazné body sú špaky)", () => {
+    for (const k of cela.kroky) {
+      const texty = [k.melichar, ...(k.moznosti ?? []).flatMap((m) => [m.text, m.vysvetlenie]), ...(k.volba?.zle ?? []).map((z) => z.text), k.volba?.inak ?? ""];
+      for (const text of texty) {
+        expect(text, k.id).not.toMatch(/Smetisk/);
+        // „bod prebytku“ je iný význam a ostáva; víťazné body sú špaky.
+        expect(text, k.id).not.toMatch(/(?<!\p{L})(body|bodov|BODY)(?!\p{L})/u);
+      }
+    }
   });
 });
