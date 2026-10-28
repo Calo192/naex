@@ -1,7 +1,6 @@
 // Stav hráča a odvodené hodnoty (M3).
 
-import type { CardInstance, PlayerId } from "./types.ts";
-import type { PlacedCard } from "./partia.ts";
+import type { CardInstance } from "./types.ts";
 import { KONSTANTY } from "./constants.ts";
 
 export interface PlayerState {

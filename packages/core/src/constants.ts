@@ -35,7 +35,7 @@ export const KONSTANTY = {
    */
   KOPIE_V_SPOLOCNOM_BALICKU: 2,
 
-  /** Základy odvodených hodnôt (PRAVIDLA §8 a §10). */
+  // Základy odvodených hodnôt (PRAVIDLA §8 a §10).
   /**
    * Prah Cirhózy (+ priazeň Alkoholika). Michal 2026-10-12 zvýšil z 2 na 3:
    * v playteste 20261011-183315 hráči priznávali kliatby po jednej a kolá sa
@@ -81,7 +81,6 @@ export const KONSTANTY = {
   /** v7 (Michal 2026-10-27, plan.md 10.4): 7, so súperovou priazňou Exekútora 6 / 5 / 4. */
   PRAH_EXEKUTORA_ZAKLAD: 7,
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
-  PRESKUMANIE: 5,
   /**
    * Špaky (pravidlá v6, Michal 2026-10-26): finále má vždy toľkoto Pitiek,
    * víťaz bitky dostane vždy aspoň SPAKY_ZA_BITKU_MIN a nepriznaná Cirhóza
@@ -97,12 +96,6 @@ export const KONSTANTY = {
    */
   SPAKY_ZA_POLDECI: 1,
   CIGARIET_ZA_SPAK: 5,
-
-  /**
-   * Prehra pri poklese balíčka pod túto hodnotu platila do v4; vo v5 sa ruší
-   * (Michal 2026-10-24). Ostáva ako opatrnosť bota pri zahadzovaní kariet.
-   */
-  MIN_VELKOST_BALICKA: 5,
 
   /**
    * Pevné čísla z efektov kariet (Michal 2026-10-18, revízia kariet, variant A):

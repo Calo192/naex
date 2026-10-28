@@ -5,6 +5,7 @@
 // príkaz — server len posiela kroky klientovi. Žiadna náhoda mimo seedu.
 
 import type { CardInstance, PlayerId } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { Command, GameState } from "./engine.ts";
@@ -176,7 +177,7 @@ const UID_ZOZNAMY = ["uids", "doSenku", "odhod"] as const;
 
 function zona(state: GameState, kto: PlayerId, nazov: string): readonly CardInstance[] {
   const h = state.hraci[kto];
-  const su: PlayerId = kto === 0 ? 1 : 0;
+  const su = opponentOf(kto);
   switch (nazov) {
     case "ruka":
       return h.ruka;

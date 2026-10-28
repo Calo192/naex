@@ -13,9 +13,10 @@
 // Špaky, ich história (nástenka) a sekera sú verejné (v6).
 
 import type { CardInstance, Favour, Phase, PlayerId } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
-import type { ElderState, PosunMarkera } from "./elders.ts";
+import type { ElderState, MarkerPos, PosunMarkera } from "./elders.ts";
 import type {
   BitkaKrok,
   BitkaNaNastenke,
@@ -405,7 +406,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     mojaNahrada: state.patronat[ja]?.nahrada ?? null,
     volbaVestica:
       mojaBitkovaVolba && bitka.krok === "vestica"
-        ? { moj: state.hraci[ja].doberaci, jeho: state.hraci[ja === 0 ? 1 : 0].doberaci }
+        ? { moj: state.hraci[ja].doberaci, jeho: state.hraci[opponentOf(ja)].doberaci }
         : null,
     vizia: state.vizia,
     volbaVizia: state.vizia !== null && naTahu(state) === ja ? (state.hraci[ja].doberaci[0] ?? null) : null,
@@ -545,6 +546,11 @@ export function cenaKliatby(_data: GameData, _view: ClientState, _p: PlayerId, d
   return defId === "cirhoza" ? -KONSTANTY.SPAKY_ZA_CIRHOZU : 0;
 }
 
+/** Pohľad, v ktorom marker staršieho `elderId` stojí na `marker`. */
+function sMarkerom(view: ClientState, elderId: string, marker: MarkerPos): ClientState {
+  return { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) };
+}
+
 /** Odhad konečných špakov pri patronáte: teraz, pri prehre a pri výhre patróna. */
 export interface NahladPatronatu {
   readonly teraz: readonly [number, number];
@@ -600,7 +606,7 @@ export function nahladPosunuMarkera(_data: GameData, view: ClientState, elderId:
   if (marker === null) return null;
   const posunuty = { ...elder, marker };
   const pred = spakyTeraz(view).odhad;
-  const po = spakyTeraz({ ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? posunuty : e)) }).odhad;
+  const po = spakyTeraz(sMarkerom(view, elderId, marker)).odhad;
   return {
     odhad: po,
     zmena: [po[0] - pred[0], po[1] - pred[1]],
@@ -614,7 +620,7 @@ export function nahladPosunuMarkera(_data: GameData, view: ClientState, elderId:
 export function nahladPosunuPrebytkom(data: GameData, view: ClientState, elderId: string): NahladPosunu | null {
   const drzi = view.bitkaStav?.prebytokDrzi ?? null;
   if (drzi === null) return null;
-  return nahladPosunuMarkera(data, view, elderId, drzi === 0 ? 1 : 0);
+  return nahladPosunuMarkera(data, view, elderId, opponentOf(drzi));
 }
 
 /**
@@ -643,7 +649,7 @@ export function hltavyPrebytok(
   prebytok: number,
   cena: number,
 ): { readonly kroky: readonly string[]; readonly view: ClientState } {
-  const super_: PlayerId = drzi === 0 ? 1 : 0;
+  const super_ = opponentOf(drzi);
   let v = view;
   const kroky: string[] = [];
   for (let zostava = prebytok; zostava >= cena; zostava -= cena) {
@@ -651,7 +657,7 @@ export function hltavyPrebytok(
     for (const e of v.starsi) {
       const marker = posunMarker(e, super_);
       if (marker === null) continue;
-      const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
+      const po = sMarkerom(v, e.elderId, marker);
       const hodnota = hodnotaPohladu(po, drzi);
       if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId };
     }
@@ -669,7 +675,7 @@ export function hltavyPrebytok(
  * Pohoršenia v tej istej bitke nerieši, preto „≈“.
  */
 export function hodnotaPohorseni(_data: GameData, view: ClientState, p: PlayerId, pocet: number): number {
-  const super_: PlayerId = p === 0 ? 1 : 0;
+  const super_ = opponentOf(p);
   const rozdiel = (v: ClientState): number => {
     const o = spakyTeraz(v).odhad;
     return o[p] - o[super_];
@@ -683,7 +689,7 @@ export function hodnotaPohorseni(_data: GameData, view: ClientState, p: PlayerId
       for (const smer of [super_, p] as const) {
         const marker = posunMarker(e, smer);
         if (marker === null) continue;
-        const po: ClientState = { ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) };
+        const po = sMarkerom(v, e.elderId, marker);
         const hodnota = hodnotaPohladu(po, p);
         if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota };
       }
@@ -725,7 +731,7 @@ export interface StavkaBitky {
 export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | null {
   if (view.ciel === null || view.koniec !== null) return null;
   const ja = view.ja;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const pitky = Math.max(view.pitkyCelkom, view.pitkaCislo, 1);
   const abstaky: [number, number] = [0, 0];
   abstaky[ja] = abstakyVBitke(data, view, ja, view.ruka.filter((k) => k.defId === "abstak").length);

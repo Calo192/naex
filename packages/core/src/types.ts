@@ -63,24 +63,6 @@ export type Tag =
   | "Závislý"
   | "Žena";
 
-export const ALL_TAGS: readonly Tag[] = [
-  "Autorita",
-  "Chlap",
-  "Influencer",
-  "Kliatba",
-  "Kriminál",
-  "Lokalita",
-  "Nástroj",
-  "Občan",
-  "Pamätník",
-  "Pracujúci",
-  "Starešina",
-  "Zahraničný",
-  "Zviera",
-  "Závislý",
-  "Žena",
-];
-
 /** Spúšťače efektov (union hodnôt z cards.json a pojmov z pravidiel). */
 export type Trigger =
   | "Nástup"
@@ -211,9 +193,6 @@ export function priazenZKluca(kluc: string): Favour | null {
   if ((ALL_FAVOURS as readonly string[]).includes(kluc)) return kluc as Favour;
   return PRIAZNE_ALIAS[kluc] ?? null;
 }
-
-/** Zóny stupnice strachu: 1 = Znepokojenie, 2 = Strach, 3 = Vydesenie. */
-export type Zone = 1 | 2 | 3;
 
 export interface ElderDef {
   readonly id: string;

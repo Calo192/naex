@@ -10,6 +10,7 @@ import type { GameData } from "./data.ts";
 import { evaluateLine } from "./partia.ts";
 import type { DvojicaStatistik } from "./statistiky.ts";
 import type { PlayerId } from "./types.ts";
+import { opponentOf } from "./types.ts";
 
 export interface NaexVKole {
   readonly kto: PlayerId;
@@ -74,7 +75,6 @@ export function novaKronika(s: GameState): StavKroniky {
   return { kola: [], kolo: prazdneKolo(s), caka: null };
 }
 
-const super_ = (p: PlayerId): PlayerId => (p === 0 ? 1 : 0);
 const pocet = (s: GameState, p: PlayerId, defId: string): number => {
   const h = s.hraci[p];
   return [...h.ruka, ...h.doberaci, ...h.odhadzovaci, ...h.priznane].filter((k) => k.defId === defId).length;
@@ -83,7 +83,7 @@ const pocet = (s: GameState, p: PlayerId, defId: string): number => {
 function rozdiel(data: GameData, s: GameState, p: PlayerId): number {
   const abstaky = (q: PlayerId): number => s.hraci[q].ruka.filter((k) => k.defId === "abstak").length;
   const d = poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [abstaky(0), abstaky(1)]);
-  return d.tuhe[p] - d.tuhe[super_(p)];
+  return d.tuhe[p] - d.tuhe[opponentOf(p)];
 }
 const dvojica = (x: readonly [number, number], p: PlayerId, o: number): [number, number] =>
   p === 0 ? [x[0] + o, x[1]] : [x[0], x[1] + o];

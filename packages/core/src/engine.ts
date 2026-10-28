@@ -9,7 +9,7 @@
 // Rozhodnutia pri nejasných pravidlách sú vypísané v README (sekcia
 // „Rozhodnuté nejasnosti“) a označené v komentároch ako [R#].
 
-import type { CardDef, CardInstance, Phase, PlayerId, Tag } from "./types.ts";
+import type { CardDef, CardInstance, Phase, PlayerId } from "./types.ts";
 import { opponentOf, priazenZKluca } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
@@ -660,6 +660,18 @@ function hrac(s: MutState, p: PlayerId): DeepMutable<PlayerState> {
   return s.hraci[p] as DeepMutable<PlayerState>;
 }
 
+/** Odstráni z hry najviac `najviac` Dlhov hráča z miesta `kde`; vráti, koľko ich naozaj bolo. */
+function odoberDlhy(s: MutState, p: PlayerId, kde: "ruka" | "odhadzovaci" | "priznane", najviac: number): number {
+  let odobrate = 0;
+  while (odobrate < najviac) {
+    const idx = s.hraci[p][kde].findIndex((k) => k.defId === "dlh");
+    if (idx === -1) break;
+    hrac(s, p)[kde].splice(idx, 1);
+    odobrate++;
+  }
+  return odobrate;
+}
+
 function cielLokalita(s: GameState): CardInstance | null {
   return s.ciel?.lokalita ?? null;
 }
@@ -797,10 +809,6 @@ export function vyplatZaStarsich(
 /** Efekt karty defId patrí hráčovi p a nie je umlčaný (Praudovravec). */
 function maEfekt(s: MutState, data: GameData, p: PlayerId, defId: string): boolean {
   return efektHraca(s as GameState, p, defId) && !efektPotlaceny(data, s as GameState, p, defId);
-}
-
-function tagOf(data: GameData, card: CardInstance): readonly Tag[] {
-  return defOf(data, card).tags;
 }
 
 function najdiVLinii(s: MutState, uid: number): { strana: PlayerId; index: number } | null {
@@ -1618,7 +1626,7 @@ function applyPrikaz(
       cmdPass(s, data, hracId, events);
       break;
     case "vypit":
-      cmdVypit(s, data, hracId, events);
+      cmdVypit(s, hracId, events);
       break;
     case "naex":
       cmdNaex(s, data, cmd, hracId, events);
@@ -2708,7 +2716,7 @@ function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): voi
  * hneď klesne o 1 (poldeci už nie je plný), pečeň +1 a ráta sa ako nerest —
  * zato hráč ďalšou kartou neodovzdá ťah. Smie piť opakovane.
  */
-function cmdVypit(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
+function cmdVypit(s: MutState, p: PlayerId, events: Event[]): void {
   const z = s.zhromazdenieStav;
   need(s.faza === "zhromazdenie" && z !== null, "Vypiť sa dá len v Zhromaždení.");
   need(!z.pasoval[p], "Už si pasoval.");
@@ -4037,10 +4045,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       // aktívnu Robotu 1 priznaný Dlh.
       // Verejný dlh (2026-10-21): predtým ho odhodila do balíčka, odkiaľ by sa
       // pri dobratí znova priznal — teraz z hry zmizne.
-      for (let r = robotaPali(b.sums[p] as ActionSums); r > 0; r--) {
-        const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
-        if (idx === -1) break;
-        hrac(s, p).priznane.splice(idx, 1);
+      for (let r = odoberDlhy(s, p, "priznane", robotaPali(b.sums[p] as ActionSums)); r > 0; r--) {
         events.push({ type: "log", text: `Robota: hráč ${p + 1} páli 1 priznaný Dlh.` });
       }
       const dlhy = pocetKariet(s.hraci[p] as PlayerState, "dlh", "priznane");
@@ -4784,25 +4789,22 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
   // tvojich NA EX za kolo, aká je sila priazne, sa ti vráti plný. Nerest ostáva.
   const doDna: [number, number] = [silaPriazne(data, s as GameState, "ALKOHOLIK", 0), silaPriazne(data, s as GameState, "ALKOHOLIK", 1)];
   const vratene: [number, number] = [0, 0];
+  const vypiNaex = (q: PlayerId): void => {
+    if (vratene[q] < doDna[q]) {
+      hrac(s, q).poldeciPlne += 1;
+      vratene[q] += 1;
+    } else hrac(s, q).poldeciVypite += 1;
+    hrac(s, q).nerestiTotoKolo += 1;
+  };
   for (const partia of s.strany) {
     for (const placed of partia) {
       if (placed.naexBy !== undefined) {
-        const q = placed.naexBy as PlayerId;
-        if (vratene[q] < doDna[q]) {
-          hrac(s, q).poldeciPlne += 1;
-          vratene[q] += 1;
-        } else hrac(s, q).poldeciVypite += 1;
-        hrac(s, q).nerestiTotoKolo += 1;
+        vypiNaex(placed.naexBy as PlayerId);
         delete (placed as { naexBy?: PlayerId }).naexBy;
       }
       // Zrážka NA EX (Výtržník): druhý poldeci na karte pije druhý hráč.
       if (placed.naexBy2 !== undefined) {
-        const q = placed.naexBy2 as PlayerId;
-        if (vratene[q] < doDna[q]) {
-          hrac(s, q).poldeciPlne += 1;
-          vratene[q] += 1;
-        } else hrac(s, q).poldeciVypite += 1;
-        hrac(s, q).nerestiTotoKolo += 1;
+        vypiNaex(placed.naexBy2 as PlayerId);
         delete (placed as { naexBy2?: PlayerId }).naexBy2;
       }
     }
@@ -4844,15 +4846,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   // Kmotor (Úžerník v5, Michal 2026-10-25): po bitke sa priznaný Dlh zníži
   // o silu priazne (1 / 2 / 3) — Dlh zmizne z hry. Bez Dlhu nerobí nič.
   for (const p of [0, 1] as const) {
-    let zostava = silaPriazne(data, s as GameState, "UZERNIK", p);
-    let spalene = 0;
-    while (zostava > 0) {
-      const idx = s.hraci[p].priznane.findIndex((k) => k.defId === "dlh");
-      if (idx === -1) break;
-      hrac(s, p).priznane.splice(idx, 1);
-      zostava--;
-      spalene++;
-    }
+    const spalene = odoberDlhy(s, p, "priznane", silaPriazne(data, s as GameState, "UZERNIK", p));
     if (spalene > 0) events.push({ type: "log", text: `Priazeň Kmotra: hráčovi ${p + 1} ${spalene === 1 ? "mizne 1 priznaný Dlh" : `miznú ${spalene} priznané Dlhy`}.` });
   }
 

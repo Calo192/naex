@@ -9,14 +9,26 @@
     "apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout)",
     "tools"
   ],
-  "dalsia": 0,
+  "dalsia": 1,
   "behy": [
     {
       "datum": "2026-10-26",
       "vetva": "upratovanie/2026-10-26",
-      "casti": ["packages/server/src"],
+      "casti": [
+        "packages/server/src"
+      ],
       "poznamka": "Ručný beh mimo poradia na pokyn Leadera — packages/core/src a apps/web/src/hra menili bežiace vetvy, preto „dalsia“ ostáva packages/core/src. Prejdené: server.ts, obsah.ts, db.ts, auth.ts, profily.ts, dielna.ts, archiv.ts, znamky.ts, hudba.ts, hudba-import.ts a mŕtve exporty v ďalších moduloch. Vynechané api.ts a achievementy.ts (rozrobená výučba) a zmeny pohľadu hráča a protokolu správ (bežiace vetvy ich môžu rozširovať) — keď server/src príde na rad, začni nimi.",
       "zmenenychRiadkov": 569,
+      "odtlacok": "c4bb90c0629f5645e6ee11dfbd91bf7421c607ea35a7d4adf90b390cd618252b"
+    },
+    {
+      "datum": "2026-10-26",
+      "vetva": "upratovanie/2026-10-26",
+      "casti": [
+        "packages/core/src"
+      ],
+      "poznamka": "Druhý beh v ten istý deň (plánovaná routine), vetva založená nanovo z master — ranný beh už bol zmergovaný. Prejdené: celé packages/core/src okrem bot.ts (rizikový zdieľaný súbor) — mŕtve exporty, konštanty a importy (tsc --noUnusedLocals), opponentOf všade, odoberDlhy v engine.ts, spoločné pomocné funkcie náhľadov vo view.ts. Nechané: bot.ts (mŕtve sNajlepsimNaex, limitZhromazdenia, nepoužité parametre), nepoužité parametre data a pitkaCislo vo verejnom cigaretyZPitky, exporty používané len vo vlastnom súbore. Ďalej packages/server/src — začni api.ts a achievementy.ts.",
+      "zmenenychRiadkov": 219,
       "odtlacok": "c4bb90c0629f5645e6ee11dfbd91bf7421c607ea35a7d4adf90b390cd618252b"
     }
   ]

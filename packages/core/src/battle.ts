@@ -6,6 +6,7 @@
 
 import type { ActionSums } from "./partia.ts";
 import type { PlayerId } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import { prahExekutora } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
@@ -62,8 +63,8 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
 
   const tuhe = ([0, 1] as const).map((p) => {
     const me = sides[p];
-    const opp = sides[p === 0 ? 1 : 0];
-    const oppViera = zvysnaViera[p === 0 ? 1 : 0];
+    const opp = sides[opponentOf(p)];
+    const oppViera = zvysnaViera[opponentOf(p)];
     const base =
       n(me.sums.Rana) * 1 +
       n(me.sums.Pecka) * 2 +
@@ -77,7 +78,7 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
   // 3. Mäkké poškodenie je zastropené súperovým PRIZNANÝM dlhom (+ priazeň
   //    Neprajníka, Čierna mačka strop ruší).
   const makke = ([0, 1] as const).map((p) => {
-    const q = p === 0 ? 1 : 0;
+    const q = opponentOf(p);
     const strop = sides[q].priznaneDlhy + (sides[p].makkeNadDlhy ?? 0);
     return Math.max(0, Math.min(zvysnaPovera[p], strop));
   }) as [number, number];
