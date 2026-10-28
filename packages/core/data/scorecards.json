@@ -4,8 +4,8 @@
   "a testy. V hre platí sada zverejnená v tvorcovi (Tvorba → Bodovacie karty).",
   "",
   "Pravidlá v6 (Michal 2026-10-26, docs/napady/spaky.html): scorecard nesie už len priazeň",
-  "staršieho. Bodovacie podmienky sa rušia — víťazné body sú špaky (po každej bitke dá starší",
-  "obávanému hráčovi 1 / 2 / 3 špaky podľa zóny). lava/prava a body ostávajú len ako formát",
+  "staršieho. Bodovacie podmienky sa rušia — víťazné body sú špaky (po vyhratej bitke dá starší",
+  "obávanému hráčovi zóny, ktoré mu ešte nezaplatil: 1 / 2 / 3 — v8). lava/prava a body ostávajú len ako formát",
   "bodovacích kariet tvorcu; hra ich nečíta. Rozloženie v5 je v histórii gitu."
  ],
  "body": {

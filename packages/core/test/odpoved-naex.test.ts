@@ -7,20 +7,21 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { Event, GameState } from "../src/index.ts";
+import type { Command, Event, GameState } from "../src/index.ts";
 import { apply, eventsFor, loadGameData, naTahu, setupGame, tahBota } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 /** Ťahy botov s udalosťami, kým partia neskončí. */
-function partia(seed: number): { readonly pred: GameState; readonly events: readonly Event[] }[] {
+function partia(seed: number): { readonly pred: GameState; readonly cmd: Command; readonly events: readonly Event[] }[] {
   let s = setupGame(data, seed, { lokalit: 3 });
-  const out: { pred: GameState; events: readonly Event[] }[] = [];
+  const out: { pred: GameState; cmd: Command; events: readonly Event[] }[] = [];
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
     const kto = naTahu(s);
     if (kto === null) break;
-    const r = apply(data, s, tahBota(data, s, kto, seed * 7919 + n), kto);
-    out.push({ pred: s, events: r.events });
+    const cmd = tahBota(data, s, kto, seed * 7919 + n);
+    const r = apply(data, s, cmd, kto);
+    out.push({ pred: s, cmd, events: r.events });
     s = r.state;
   }
   return out;
@@ -30,7 +31,8 @@ describe("odpoveď na NA EX", () => {
   const tahy = [3, 9, 21].flatMap(partia);
 
   it("každý ťah hráča na rade s odpoveďou ohlási odpoveď udalosťou (karta alebo žiadna)", () => {
-    const reakcie = tahy.filter((t) => t.pred.faza === "pitka" && t.pred.pitkaStav?.reakcia != null);
+    // Len samotná odpoveď (karta alebo „bez odpovede“) — počas odpovede smú prísť aj voľby efektov (Hasič).
+    const reakcie = tahy.filter((t) => t.pred.faza === "pitka" && t.pred.pitkaStav?.reakcia != null && (t.cmd.type === "place" || t.cmd.type === "bezReakcie"));
     expect(reakcie.length).toBeGreaterThan(0);
     for (const t of reakcie) {
       const q = t.pred.pitkaStav?.reakcia;

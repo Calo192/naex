@@ -5,7 +5,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { BitkaNaNastenke, CardInstance, CielKola, PlayerId, SpakyTeraz } from "@naex/core";
-import { KONSTANTY, jeFinaleNaNastenke, rozpisSpakov, spakov } from "@naex/core";
+import { KONSTANTY, jeFinaleNaNastenke, pocet, rozpisSpakov, spakov } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
@@ -38,9 +38,27 @@ export function PocetSpakov({
   );
 }
 
+/** Z čoho sú špaky za bitku: od v8 karty v línii, v starších záznamoch odohrané Pitky. */
+export function zakladBitky(b: Pick<BitkaNaNastenke, "karty" | "pitky">): number {
+  return b.karty ?? b.pitky;
+}
+
+/** „6 kariet v línii“ (v8), v starších záznamoch „2 Pitky“. */
+export function textZakladu(b: Pick<BitkaNaNastenke, "karty" | "pitky">): string {
+  return b.karty !== undefined ? `${pocet(b.karty, "karta", "karty", "kariet")} v línii` : pocet(b.pitky, "Pitka", "Pitky", "Pitiek");
+}
+
+/** Kultúrny dom (v8): špaky porazeného za jeho karty v línii; inak 0. */
+export function spakyPorazeneho(b: BitkaNaNastenke): number {
+  if (b.vitaz === null || b.lokalita?.defId !== "kulturny_dom") return 0;
+  return b.zaBitku[b.vitaz === 0 ? 1 : 0];
+}
+
 /** Prečo a ako sa bitka rozhodla — krátko pod lokalitu na nástenke. */
 export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string): string[] {
   const out: string[] = [];
+  const porazenemu = spakyPorazeneho(b);
+  if (porazenemu > 0 && b.vitaz !== null) out.push(`${kto(b.vitaz === 0 ? 1 : 0)} +${porazenemu} za svoje karty (Kultúrny dom)`);
   if (b.rozhodlo === "abstak") out.push("remíza → menej Absťákov");
   if (b.rozhodlo === "dlhy") out.push("remíza → menej Dlhov");
   if (b.abstakZrazka > 0) out.push(`−${b.abstakZrazka} za Absťák`);
@@ -55,12 +73,12 @@ export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string):
 
 /**
  * Špaky za Dlhy porazeného na Herni (v7) — nástenka ich nenesie zvlášť: zvyšok
- * špakov za bitku po Pitkách (mínus Absťáky, aspoň 1) a sekere.
+ * špakov za bitku po kartách v línii (mínus Absťáky, aspoň 1) a sekere.
  */
 export function spakyZaHernu(b: BitkaNaNastenke): number {
   if (b.vitaz === null || b.lokalita?.defId !== "herna") return 0;
   const spolu = b.zaBitku[0] + b.zaBitku[1];
-  return Math.max(0, spolu - Math.max(1, b.pitky - b.abstakZrazka) - b.zoSekery);
+  return Math.max(0, spolu - Math.max(1, zakladBitky(b) - b.abstakZrazka) - b.zoSekery);
 }
 
 export interface NastenkaProps {
@@ -92,8 +110,6 @@ export interface NastenkaProps {
    * nástenke ako karty na výber (klik, ťahanie); ostatné lístky sú bez kariet.
    */
   readonly vyber?: ((k: CardInstance, sirka: number) => ReactNode) | undefined;
-  /** Finále sa hrá na pinnacle lokalite (v7, rozpis úrovní); false = finále bez lokality, vždy 3 Pitky. */
-  readonly finaleNaVrchole?: boolean;
   /** Mierka avatarov na stole (rozmerNastenky) — písmo škáluje CSS cez --nk. */
   readonly mierka?: number;
   /** Šírka kariet na výber (voľba cieľa) — bez víťaza a účtenky smú byť väčšie. */
@@ -113,7 +129,7 @@ interface Listok {
  * čakajúce špaky), bitka, o ktorú sa práve hrá, lokality, ktoré ešte len prídu,
  * a na konci finále.
  */
-export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber, finaleNaVrchole = true, mierka = 1, sirkaVyberu = sirkaKarty }: NastenkaProps) {
+export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   const poradie: readonly [PlayerId, PlayerId] = ucet === undefined || ucet.zvyraznit === ja ? [ja, ja === 0 ? 1 : 0] : [ucet.zvyraznit, ja];
   const listky: Listok[] = [
@@ -123,8 +139,8 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
   ];
   const finaleHotove = listky.some((l) => l.finale);
   if (!finaleHotove && !koniec) listky.push({ kluc: "finale", lokalita: null, finale: true, stav: "caka" });
-  // Finále: v7 na pinnacle 1 špak za každú odohranú Pitku (1–5), bez lokality vždy 3 Pitky.
-  const finaleText = finaleNaVrchole ? "vrcholová lokalita · 1 špak za Pitku" : `bez lokality · ${KONSTANTY.FINALE_PITKY} Pitky`;
+  // Finále na pinnacle: 1 špak za každú kartu v línii (v8), ako o každú lokalitu.
+  const finaleText = "vrcholová lokalita · 1 špak za kartu v línii";
   const dvojica = (h: readonly [number, number], f: (n: number) => string): string => poradie.map((p) => `${kto(p)} ${f(h[p])}`).join(" · ");
   // Účtenka je úzka: čísla oboch v poradí popolníkov nad nástenkou („ty : súper“), bez mien.
   const pomer = (h: readonly [number, number], f: (n: number) => string): string => poradie.map((p) => f(h[p])).join(" : ");
@@ -136,6 +152,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
         const nazov = l.finale ? (l.lokalita === null ? "Finále" : `Finále · ${menoKarty(l.lokalita.defId)}`) : l.lokalita === null ? "lokalita" : menoKarty(l.lokalita.defId);
         const vitaz = b?.vitaz ?? null;
         const zisk = b === undefined || vitaz === null ? 0 : b.zaBitku[vitaz];
+        const zaklad = b === undefined ? 0 : zakladBitky(b);
         const pozn = b === undefined ? [] : poznamkaBitky(b, kto);
         // Sekera: špaky si vzal víťaz najbližšej ďalšej bitky (ak už bola).
         const vzal = b === undefined || vitaz !== null ? null : (nastenka.slice(i + 1).find((x) => x.vitaz !== null)?.vitaz ?? null);
@@ -147,8 +164,8 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
                 ? `Finále: posledná bitka, ${finaleText}`
                 : `${nazov}: ešte sa o ňu nehralo`
             : vitaz === null
-              ? `${nazov} (kolo ${b.kolo}): sekera — ${b.prepadlo > 0 ? `${spakov(b.prepadlo)} prepadlo` : vzal !== null ? `${spakov(b.pitky)} vzal víťaz ďalšej bitky (${kto(vzal)})` : `${spakov(b.pitky)} čaká na víťaza ďalšej bitky`}`
-              : `${nazov} (kolo ${b.kolo}): ${vitaz === ja ? "tvoja výhra" : `výhra – ${mena[vitaz]}`}, ${spakov(zisk)} (1 za Pitku, ${b.pitky} ${b.pitky === 1 ? "Pitka" : b.pitky < 5 ? "Pitky" : "Pitiek"})${pozn.length > 0 ? ` (${pozn.join(", ")})` : ""}`;
+              ? `${nazov} (kolo ${b.kolo}): sekera — ${b.prepadlo > 0 ? `${spakov(b.prepadlo)} prepadlo` : vzal !== null ? `${spakov(zaklad)} vzal víťaz ďalšej bitky (${kto(vzal)})` : `${spakov(zaklad)} čaká na víťaza ďalšej bitky`}`
+              : `${nazov} (kolo ${b.kolo}): ${vitaz === ja ? "tvoja výhra" : `výhra – ${mena[vitaz]}`}, ${spakov(zisk)} (${b.karty !== undefined ? "1 za kartu v línii" : "1 za Pitku"}, ${textZakladu(b)})${pozn.length > 0 ? ` (${pozn.join(", ")})` : ""}`;
         if (vyber !== undefined && l.stav === "caka" && l.lokalita !== null)
           return (
             <li key={l.kluc} className="nastenka-listok caka na-vyber" style={{ "--naklon": `${((i * 37) % 5) - 2}deg`, "--i": i } as CSSProperties}>
@@ -169,7 +186,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
                 <span className="nastenka-otaznik">{l.stav === "teraz" ? "teraz" : "?"}</span>
               ) : vitaz === null ? (
                 <span className="nastenka-sekera">
-                  sekera <small>{b.prepadlo > 0 ? `−${b.prepadlo}` : vzal !== null ? `${b.pitky} → ${kto(vzal)}` : `${b.pitky} čaká`}</small>
+                  sekera <small>{b.prepadlo > 0 ? `−${b.prepadlo}` : vzal !== null ? `${zaklad} → ${kto(vzal)}` : `${zaklad} čaká`}</small>
                 </span>
               ) : (
                 <>
@@ -199,7 +216,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
         <li
           className="nastenka-listok koniec"
           style={{ "--naklon": "1deg" } as CSSProperties}
-          title={`Po finále sa vykúpi, čo hráčom ostalo: každý plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak (teraz ${dvojica(ucet.body.vykupne.map((v) => v.poldeci) as [number, number], (n) => `${n} poldeci`)}; ${dvojica(ucet.body.vykupne.map((v) => v.cigarety) as [number, number], (n) => `${n} cig.`)}). Každá nepriznaná Cirhóza (ruka aj oba balíčky) zoberie ${KONSTANTY.SPAKY_ZA_CIRHOZU} špakov.`}
+          title={`Po finále sa vykúpi, čo hráčom ostalo: každý plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak (teraz ${dvojica(ucet.body.vykupne.map((v) => v.poldeci) as [number, number], (n) => `${n} poldeci`)}; ${dvojica(ucet.body.vykupne.map((v) => v.cigarety) as [number, number], (n) => `${n} cig.`)}). Každá nepriznaná Cirhóza (ruka aj oba balíčky) zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`}
         >
           <span className="nastenka-vitaz">
             <span className="nastenka-otaznik">koniec</span>
@@ -352,7 +369,8 @@ export function SpakyBitky({
   const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "—");
   const zaBitku = (p: PlayerId): string => {
     if (b.zaBitku[p] === 0) return "";
-    const casti = [`${b.pitky} ${b.pitky === 1 ? "Pitka" : b.pitky < 5 ? "Pitky" : "Pitiek"}`];
+    if (b.vitaz !== null && b.vitaz !== p && spakyPorazeneho(b) > 0) return "svoje karty (Kultúrny dom)";
+    const casti = [textZakladu(b)];
     if (b.abstakZrazka > 0) casti.push(`−${b.abstakZrazka} Absťák`);
     const herna = spakyZaHernu(b);
     if (herna > 0) casti.push(`+${herna} Dlhy (Herňa)`);
@@ -370,7 +388,7 @@ export function SpakyBitky({
   }[] = [
     { kluc: "bitka", nazov: "za bitku", h: b.zaBitku, pozn: zaBitku },
     // v6.1: starší platia len víťazovi, pri sekere obom — porazený má v riadku „—“.
-    { kluc: "starsi", nazov: b.vitaz === null ? "za starších (sekera — obom)" : "za starších (len víťaz)", h: b.zaStarsich, pozn: zaStarsich, pod: true },
+    { kluc: "starsi", nazov: b.vitaz === null ? "za starších — nové zóny (sekera — obom)" : "za starších — nové zóny (len víťaz)", h: b.zaStarsich, pozn: zaStarsich, pod: true },
     ...(b.prebytok[0] + b.prebytok[1] > 0 ? [{ kluc: "prebytok", nazov: jeFinaleNaNastenke(b) ? "prebytok (finále)" : "prebytok", h: b.prebytok }] : []),
     ...(b.exekutor[0] + b.exekutor[1] > 0 ? [{ kluc: "exekutor", nazov: "Exekútor", h: [-b.exekutor[0], -b.exekutor[1]] as const }] : []),
   ];
@@ -416,7 +434,7 @@ export function SpakyBitky({
         <span className="sb-sekera">
           {b.prepadlo > 0
             ? `Sekera vo finále: ${spakov(b.prepadlo)} prepadlo.`
-            : `Sekera: ${spakov(b.pitky)} za bitku čaká na víťaza ďalšej bitky.`}
+            : `Sekera: ${spakov(zakladBitky(b))} za bitku čaká na víťaza ďalšej bitky.`}
         </span>
       )}
     </div>
@@ -433,7 +451,7 @@ export function textSpakovBitky(b: BitkaNaNastenke, pred: readonly [number, numb
     if (b.exekutor[p] > 0) casti.push(`−${b.exekutor[p]} Exekútor`);
     return casti.length === 0 ? "" : ` (${casti.join(", ")})`;
   };
-  const sekera = b.vitaz !== null ? "" : b.prepadlo > 0 ? ` · sekera: ${spakov(b.prepadlo)} prepadlo` : ` · sekera: ${spakov(b.pitky)} čaká`;
+  const sekera = b.vitaz !== null ? "" : b.prepadlo > 0 ? ` · sekera: ${spakov(b.prepadlo)} prepadlo` : ` · sekera: ${spakov(zakladBitky(b))} čaká`;
   return poradie.map((p) => `${kto(p)} ${sMinusom(pred[p])} → ${sMinusom(b.spakyPo[p])}${za(p)}`).join(" · ") + sekera;
 }
 

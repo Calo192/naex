@@ -7,7 +7,7 @@ import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { ClientState, ElderState, GameState, MarkerPos } from "../src/index.ts";
-import { apply, spakyTeraz, loadGameData, nahladPosunuMarkera, nahladPosunuPrebytkom, posunMarker, setupGame, viewFor } from "../src/index.ts";
+import { STUPNICA_ZONY, apply, spakyTeraz, loadGameData, nahladPosunuMarkera, nahladPosunuPrebytkom, posunMarker, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -22,7 +22,8 @@ function vPrebytku(seed: number, zostava: number): GameState {
     hraci: [s0.hraci[0], { ...s0.hraci[1], cigarety: 2 }],
     bitkaStav: {
       krok: "prebytok",
-      caka: 0,
+      // v8: prebytok víťaza rozdeľuje porazený.
+      caka: 1,
       sums: [{}, {}],
       exekutorHotovy: [true, true],
       pohorsenieZostava: [0, 0],
@@ -41,14 +42,14 @@ function vPrebytku(seed: number, zostava: number): GameState {
   } as GameState;
 }
 
-describe("náhľad posunu prebytkom (v6)", () => {
-  it("posun k porazenému pridá držiteľovi v odhade vždy jednu zónu × výplaty, ktoré ešte prídu", () => {
+describe("náhľad posunu prebytkom (v8)", () => {
+  it("posun k porazenému pohne rozdielom odhadov o jednu zónu (nová zóna platí raz), kým ešte príde výplata", () => {
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
       const s = vPrebytku(seed, 2);
-      const v = viewFor(data, s, 0);
+      const v = viewFor(data, s, 1);
       const vyplat = spakyTeraz(v).vyplat;
-      // Bitka je po výsledku: ostávajú výplaty ďalších bitiek (lokality + finále).
-      expect(vyplat).toBe(s.lokalityVHre.length + 1);
+      // Bitka je po výsledku: ostávajú výplaty ďalších bitiek (testovacia sada v6 finále nemá).
+      expect(vyplat).toBe(s.lokalityVHre.length);
       for (const e of v.starsi) {
         const n = nahladPosunuPrebytkom(data, v, e.elderId);
         if (n === null) {
@@ -57,11 +58,13 @@ describe("náhľad posunu prebytkom (v6)", () => {
         }
         const marker = posunMarker(e, 1)!;
         expect(n.odhad).toEqual(spakyTeraz({ ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) }).odhad);
-        expect(n.zmena[0] - n.zmena[1]).toBe(vyplat);
+        // Žiadna zóna ešte nie je vyplatená: rozdiel sa pohne o zónu poľa ďalej od stredu.
+        expect(n.zmena[0] - n.zmena[1]).toBe(STUPNICA_ZONY[e.marker >= 3 ? marker : e.marker]);
         expect(n).toEqual(nahladPosunuMarkera(data, v, e.elderId, 1));
       }
       const elderId = v.starsi.find((e) => posunMarker(e, 1) !== null)!.elderId;
-      const po = viewFor(data, apply(data, s, { type: "prebytok", elderId }, 0).state, 0);
+      expect(() => apply(data, s, { type: "prebytok", elderId }, 0)).toThrow();
+      const po = viewFor(data, apply(data, s, { type: "prebytok", elderId }, 1).state, 1);
       expect(po.bitkaStav?.prebytokPosunute).toEqual([elderId]);
     }
   });

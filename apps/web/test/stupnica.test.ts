@@ -8,7 +8,7 @@ import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { PosunMarkera } from "@naex/core";
 import { loadGameData, setupGame } from "@naex/core";
 import { stopaStarsieho } from "../src/hra/LiniaStarsich.tsx";
-import { pokynPrebytku, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
+import { PRAVIDLO_STRACHU, nahladStrachu, pokynPrebytku, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
@@ -46,10 +46,19 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
     expect(riadokPriazne("BITKAR", null, 0)).toBe("nikto · pri +1: +1 tuhé v bitke");
   });
 
-  it("strach: koho sa bojí a koľko špakov dá po vyhratej bitke", () => {
-    expect(riadokStrachu("Fero", false, 2)).toBe("bojí sa Fero · +2 š, keď vyhrá");
-    expect(riadokStrachu("Jano", true, 1)).toBe("bojí sa teba · +1 š, keď vyhráš");
+  it("strach (v8): koho sa bojí a koľko zaplatí za ďalšiu výhru — len nezaplatené zóny", () => {
+    expect(riadokStrachu("Fero", false, 2)).toBe("bojí sa Fero · +2 š za ďalšiu výhru");
+    expect(riadokStrachu("Jano", true, 6)).toBe("bojí sa teba · +6 š za ďalšiu výhru");
+    expect(riadokStrachu("Fero", false, 0)).toBe("bojí sa Fero · zóny zaplatené");
     expect(riadokStrachu(null, false, 0)).toBe("nikoho sa nebojí");
+  });
+
+  it("náhľad posunu (v8) hovorí o najbližšej výhre, nie o každej", () => {
+    expect(nahladStrachu(3, 0, "Fero")).toBe("za strach pri ďalšej výhre ty +3");
+    expect(nahladStrachu(0, 1, "Fero")).toBe("za strach pri ďalšej výhre Fero +1");
+    expect(nahladStrachu(0, 0, "Fero")).toBe("za strach nič nové");
+    expect(PRAVIDLO_STRACHU).toMatch(/každú zónu raz/);
+    expect(PRAVIDLO_STRACHU).not.toMatch(/po každej/);
   });
 
   it("riadky sú krátke — pri bežnom mene najviac dva riadky karty, bez „…“", () => {
@@ -62,6 +71,7 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
   it("dlaždica v bare len slovo — účinok je v línii", () => {
     expect(riadokDlazdice("hore", true)).toBe("pomáha ti");
     expect(riadokDlazdice("dole", false)).toBe("ak vyhrá");
+    expect(riadokDlazdice("dole", true, 0)).toBe("zaplatené");
     expect(riadokDlazdice("nic", true)).toBe("neutrálny");
   });
 

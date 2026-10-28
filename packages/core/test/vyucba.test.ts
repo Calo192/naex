@@ -126,10 +126,10 @@ describe("výučba — pevné rozdanie", () => {
     expect(() => setupZRozdania(data, { ...r, rozpis: [1] })).toThrow(/finále/);
   });
 
-  it("hra s jednou lokalitou sa po bitke a finále skončí so špakmi", () => {
+  it("sada bez rozpisu úrovní finále nemá: hra s jednou lokalitou sa po bitke skončí so špakmi", () => {
     // Väčšie balíčky, nech hra neskončí prehrou na balíček skôr než bitkami.
     const balicek = ["pijan", "pijan", "ministrant", "ministrant", "hasic", "svokra", "pijan", "ministrant", "hasic", "svokra"];
-    // Bez rozpisu úrovní: lokality v pevnom poradí a finále bez lokality (ako do v6).
+    // Bez rozpisu úrovní: lokality v pevnom poradí; bez pinnacle lokality finále nie je (v8).
     const bezRozpisu: Rozdanie = { seed: r.seed, lokality: r.lokality.slice(0, 1), utocnik: r.utocnik, hraci: [{ ...r.hraci[0], doberaci: balicek }, { ...r.hraci[1], doberaci: balicek }] };
     let s: GameState = setupZRozdania(data, bezRozpisu);
     let rng = rngSeed(3);
@@ -141,11 +141,10 @@ describe("výučba — pevné rozdanie", () => {
       rng = r2;
       s = apply(data, s, cmds[idx] as Command, p).state;
     }
-    // v6: po jedinej lokalite príde ešte finále.
-    expect(s.koniec?.dovod).toMatch(/finále/);
+    expect(s.koniec?.dovod).toMatch(/všetky lokality/);
     expect(s.koniec?.body).not.toBeNull();
-    expect(s.kolo).toBe(2);
-    expect(s.nastenka.map((b) => b.lokalita?.defId ?? null)).toEqual([r.lokality[0]!.split("/")[0], null]);
+    expect(s.kolo).toBe(1);
+    expect(s.nastenka.map((b) => b.lokalita?.defId ?? null)).toEqual([r.lokality[0]!.split("/")[0]]);
   });
 });
 
@@ -388,7 +387,8 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(scenar.kroky[i("i-fajcit")]?.melichar).toContain(
       "za [Cigareta] cigaretu si hneď doberieš kartu; každé ďalšie fajčenie v tej istej Pitke je o cigaretu drahšie.",
     );
-    expect(scenar.kroky[i("i-body")]?.melichar).toMatch(/^Špaky v bare: 2 : 0\./);
+    // v8: špaky za bitku sú karty v línii — 6, nie 2 Pitky (Michal 2026-10-28, návrh #28).
+    expect(scenar.kroky[i("i-body")]?.melichar).toMatch(/^Špaky v bare: 6 : 0\./);
   });
 
   it("Lesnú cestu si hráč vyberie sám, Peckou k sebe; zlá lokalita aj zlé natočenie dostanú radu Melichara", () => {
@@ -437,22 +437,24 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(poPitke.hraci[1].cigarety).toBe(3);
     const poBitke = po("k-hotovo-bot2");
     expect(poBitke.hraci[0]).toMatchObject({ zadlzenie: 0, pecen: 0 });
-    expect(prahyHraca(data, poBitke, 0)).toMatchObject({ priznaneDlhy: 1, exekutor: 7 });
+    expect(prahyHraca(data, poBitke, 0)).toMatchObject({ priznaneDlhy: 1, exekutor: 6 });
     // Štamgast má tiež jednu kartu Dlh (k-hotovo-bot2, i-bitka).
     expect(prahyHraca(data, poBitke, 1).priznaneDlhy).toBe(1);
     expect(body(pri("k-hotovo-bot2"))).toEqual([0, 0]);
-    // Hráč vyhral bitku o 2 Pitky; starší v strede ešte nič nedali.
-    expect(body(poBitke)).toEqual([2, 0]);
+    // Hráč vyhral bitku so 6 kartami v línii (v8); starší v strede ešte nič nedali.
+    expect(body(poBitke)).toEqual([6, 0]);
   });
 
-  it("prebytok 3 na Farára (7 polí): prah exekútora v7 7 → 6 → 5 → 4, Štamgast cigareta za posunutého", () => {
-    expect(prahyHraca(data, pri("k-prebytok1"), 0).exekutor).toBe(7);
-    expect(prahyHraca(data, po("k-prebytok1"), 0).exekutor).toBe(6);
-    expect(prahyHraca(data, po("k-prebytok2"), 0).exekutor).toBe(5);
+  it("prebytok 3 rozdeľuje porazený Štamgast, celý na Farára (v8): prah exekútora 6 → 5 → 4 → 3, cigareta za posunutého", () => {
+    for (const id of ["k-prebytok1", "k-prebytok2", "k-prebytok3"]) expect(scenar.kroky[i(id)]?.kto).toBe("bot");
+    expect(naTahu(pri("k-prebytok1"))).toBe(1);
+    expect(prahyHraca(data, pri("k-prebytok1"), 0).exekutor).toBe(6);
+    expect(prahyHraca(data, po("k-prebytok1"), 0).exekutor).toBe(5);
+    expect(prahyHraca(data, po("k-prebytok2"), 0).exekutor).toBe(4);
     const s = po("k-prebytok3");
-    expect(prahyHraca(data, s, 0).exekutor).toBe(4);
+    expect(prahyHraca(data, s, 0).exekutor).toBe(3);
     expect(s.hraci[1].cigarety).toBe(pri("k-prebytok1").hraci[1].cigarety + 1);
-    expect(body(s)).toEqual([2, 0]);
+    expect(body(s)).toEqual([6, 0]);
   });
 
   it("časť končí uprostred partie: 2. kolo, hráč vyhral a vyberá ďalší cieľ", () => {

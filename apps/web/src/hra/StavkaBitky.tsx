@@ -3,11 +3,13 @@
 // keď vyhrá on — od v6.1 aj so staršími. Čísla ráta jadro (stavkaBitky), klient ich len píše.
 
 import type { StavkaBitky as Stavka } from "@naex/core";
+import { pocet } from "@naex/core";
 import { IkonaSpaku } from "./Spaky.tsx";
 
 const VYSVETLENIE =
-  "Víťaz bitky dostane toľko špakov, koľko Pitiek sa v kole odohrá, mínus o koľko má viac Absťákov než porazený (aspoň 1), " +
-  "a k tomu špaky zo sekery a od starších, ktorí sa ho boja. Porazený od starších nedostane nič, pri sekere dostanú obaja.";
+  "Víťaz bitky dostane 1 špak za každú kartu v línii (na oboch stranách, v čase bitky), mínus o koľko má viac Absťákov než porazený (aspoň 1), " +
+  "a k tomu špaky zo sekery a od starších, ktorí sa ho boja — len za zóny, ktoré mu ešte nezaplatili. Porazený od starších nedostane nič, pri sekere dostanú obaja. " +
+  "Každá ďalšia karta v línii zvýši stávku o 1.";
 
 export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavka; readonly kratko?: boolean }) {
   const casti = [
@@ -21,7 +23,12 @@ export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavk
     stavka.noviny[0] > 0 ? ` Keď vyhráš, špaky za bitku (${stavka.noviny[0]}) vezme súper — Noviny.` : "",
     stavka.noviny[1] > 0 ? ` Keď vyhrá súper, jeho špaky za bitku (${stavka.noviny[1]}) dostaneš ty — Noviny.` : "",
   ].join("");
-  const titul = `Táto bitka (${stavka.pitky} ${stavka.pitky === 1 ? "Pitka" : stavka.pitky < 5 ? "Pitky" : "Pitiek"}): tvoja výhra +${stavka.vyhra} špakov${sekera}, súperova +${-stavka.prehra}.${noviny} ${VYSVETLENIE}`;
+  // Kultúrny dom (v8): aj porazený dostane špaky za svoje karty v línii.
+  const kd =
+    stavka.porazenemu[0] + stavka.porazenemu[1] > 0
+      ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${stavka.porazenemu[0]}, súper +${stavka.porazenemu[1]}.`
+      : "";
+  const titul = `Táto bitka (${pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra +${stavka.vyhra} špakov${sekera}, súperova +${-stavka.prehra}.${noviny}${kd} ${VYSVETLENIE}`;
   // Hlavička stola: len „o +3 / +3“ s ohorkom — celé znenie v nápovede.
   if (kratko)
     return (

@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### hela-1 · Keď hazardujem, vyberám hazard s vyčísliteľnou cenou (Veľmi smútiaca vdova, NA EX s náhľadom) a vyhýbam sa pečeni, keď má súper Oslávenca, lebo Cirhóza z posledných Pitiek je −5 a nedá sa priznať.
-- stav: overená
+- stav: neoverená
 - pravidlá: v7
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -16,7 +16,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §16 Veľmi smútiaca vdova, Oslávenec, §14. 131033-2 K4 Hela: vdova — vrchná karta Šimonovho balíčka bol muž (Praudovravec), zahodila 2 Dlhy (~50 %, hodnota 2 Dlhy); finále: Šimonov Oslávenec +2 pečene v oboch Pitkách + ďalšie zdroje pečene (Pijan, Záhradkár cez Posilnenie) = 3 Cirhózy, −15 špakov.
 
 ### hela-2 · Keď dávam Pohoršenie k sebe na Veriaceho (Viera +1), najprv skontrolujem súperove Povery, lebo Viera najprv ruší Poveru 1 : 1 a tuhé sa nemusí zmeniť; Bitkár zvýši tuhé vždy.
-- stav: overená
+- stav: neoverená
 - pravidlá: v7
 - potvrdenia: 1
 - vyvrátenia: 0

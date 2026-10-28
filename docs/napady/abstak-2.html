@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absťák — šesť návrhov</title>
+<style>
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --dobre: #7fbf7a; --zle: #d8705f; --neutral: #9a8f80;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --dobre: #2f7a2b; --zle: #a8402f; --neutral: #6e6355;
+    color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 1000px; margin: 0 auto; padding: 28px 16px 56px; }
+h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin: 0 0 6px; }
+h2 { font-size: 1.35rem; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.2rem; margin: 0; }
+p { margin: 0 0 10px; max-width: 75ch; }
+ul { max-width: 75ch; padding-left: 20px; margin: 0 0 8px; }
+li { margin-bottom: 4px; }
+.uvod { color: var(--tlmeny); }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.skratka h2 { margin: 0 0 6px; border: 0; padding: 0; font-size: 1.15rem; }
+.navrhy { display: grid; gap: 16px; }
+.navrh { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 16px; }
+.navrh.odpor { border-color: var(--akcent); }
+.hlava { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; margin-bottom: 6px; }
+.cislo { font-family: var(--serif); font-size: 1.6rem; color: var(--akcent); line-height: 1; }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; }
+.stitok { font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+.stitok.odpor { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.motto { font-style: italic; color: var(--tlmeny); margin: 0 0 10px; }
+.pravidlo { font-family: var(--serif); font-size: 1.08rem; border-left: 3px solid var(--akcent); padding: 4px 0 4px 12px; margin: 8px 0 12px; max-width: 75ch; }
+.mriezka { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 6px 22px; }
+.mriezka h4 { margin: 8px 0 4px; font-size: .82rem; color: var(--tlmeny); text-transform: uppercase; letter-spacing: .05em; }
+.tab-obal { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 7px 6px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { border-bottom: 2px solid var(--okraj); font-size: .82rem; color: var(--tlmeny); font-weight: 600; }
+.plus { color: var(--dobre); font-weight: 600; } .minus { color: var(--zle); font-weight: 600; } .nula { color: var(--neutral); }
+.pozn { font-size: .9rem; color: var(--tlmeny); }
+</style>
+</head>
+<body>
+<main>
+<h1>Absťák — šesť návrhov</h1>
+<p class="uvod">Roadmapa #113 · 2026-10-28 · Michal: „Chcem návrh, ako zmeniť Absťák. Musí to sedieť tematicky aj mechanicky do hry. Návrhov mi daj aspoň 5.“ Nadväzuje na <a href="abstak.html">smery z 26. 10.</a> (Suché kolo, Predsavzatie, Ponuka pohárika, Bez Absťáku). Pevná latka bola zamietnutá 22. 10.</p>
+
+<div class="skratka">
+<h2>Skratka</h2>
+<p>Dnes Absťák vzniká porovnaním s <strong>vlastným minulým kolom</strong>. Je to špirála: aby sa mu hráč vyhol, musí piť stále viac. Hráč pri ňom nič nerozhoduje, len stráži počty, a keď ho dostane, nevie prečo. Absťák pritom plní dôležitú úlohu: <strong>je jediná brzda proti nepitiu</strong>. Pečeň trestá pitie, Absťák suchotu, a hráč balansuje medzi nimi. Túto polaritu majú dobré návrhy zachovať.</p>
+<p><strong>Odporúčam 1 + 4 ako jeden balík.</strong> Absťák dostane, kto nedrží krok so súperom (koniec špirály, viac interakcie), a Absťák prestane byť len trestom: nervózny hráč robí scény (Pohoršenie). Ako ambicióznejšiu cestu odporúčam <strong>5 · Hladinka</strong>: pečeň a Absťák v jednej stupnici. Stratég nech zmeria dnešok, 1, 1 + 4, 3 a 5.</p>
+</div>
+
+<h2>Čo platí dnes</h2>
+<ul>
+  <li><strong>Nerest</strong> (§8): poldeci vypitý v Zhromaždení, NA EX, vyfajčená cigareta, doliatie (2), barter za cigaretu, cigareta na Zbernom dvore.</li>
+  <li><strong>Vznik:</strong> na konci kola menej nerestí ako v minulom kole → Absťák rovno priznaný (+1 karta). Viac nerestí → jeden priznaný Absťák preč. Prvé kolo nastaví základ.</li>
+  <li><strong>Účinok</strong> (karta Absťák): o ranu menej; s viac Absťákmi prehráš remízu v tuhom; keď vyhráš, dostaneš o rozdiel menej špakov (aspoň 1). Platí aj v8.</li>
+  <li><strong>Čo naň nadväzuje:</strong> karta Dlh („pri remíze v tuhom aj v Absťákoch…“), výhľad v klientovi (<code>zavislost.ts</code>), bot, nápoveda Melichara, achievement za Absťáky, Opatrovateľka v2 z revízie (latka Absťáku −2). Krčmárka, Manželka a Autobusár v sade v26 Absťák už nespomínajú.</li>
+  <li><strong>Čo hlásia hráči:</strong> „menej pitia = trest“, „Jano dostal 5 Absťákov a nevedel prečo“, „Absťák mi vzal 2 bitky“, nováčikovia ho vo výučbe nepochopili.</li>
+</ul>
+
+<h2>Návrhy</h2>
+<div class="navrhy">
+
+<section class="navrh odpor">
+  <div class="hlava"><span class="cislo">1</span><h3>Krok so stolom</h3>
+    <div class="stitky"><span class="stitok odpor">odporúčam (s 4)</span><span class="stitok">zásah S</span><span class="stitok">vznik</span></div></div>
+  <p class="motto">„Kto nedrží krok so stolom, toho to chytí.“</p>
+  <p class="pravidlo">Na konci kola sa porovnajú neresti <strong>oboch hráčov v tomto kole</strong>. Kto ich mal menej, dostane Absťák rovno priznaný (+1 karta ako dnes). Kto ich mal viac, zbaví sa jedného priznaného Absťáku. Pri rovnosti sa nič nedeje.</p>
+  <div class="mriezka">
+    <div><h4>Téma</h4><ul><li>V krčme sa pije spolu. Kto zaostáva za stolom, trasie sa a Melichar sa mu vysmeje.</li><li>Absťák už nie je trest „za to, že si pil menej ako včera“, ale za to, že pri stole nevydržíš.</li></ul></div>
+    <div><h4>Rozhodnutie hráča</h4><ul><li>Neresti súpera sú verejné. Rozhoduješ, či ho dorovnáš: každá nerest navyše stojí pečeň alebo cigarety.</li><li>Súper môže zámerne piť viac, aby ti Absťák podstrčil, a riskuje pri tom Cirhózu. To je interakcia, ktorá dnes chýba.</li><li>Žiadna špirála: latku určuje súperova hra v tomto kole, nie tvoja minulosť.</li></ul></div>
+    <div><h4>Riziko</h4><ul><li>Hráč s lepšou pečeňou (Nealko) alebo s cigaretami môže súpera tlačiť. Zmerať, či to nepomáha vedúcemu.</li><li>Keď obaja nepijú, Absťák nevzniká vôbec.</li></ul></div>
+    <div><h4>Jadro, klient, bot</h4><ul><li>Iné porovnanie na konci kola, <code>nerestiMinuleKolo</code> zanikne.</li><li>Výhľad v bare: „súper 3 · ty 1 → hrozí Absťák“.</li><li>Bot: dorovnať súpera, keď je to lacné.</li></ul></div>
+  </div>
+</section>
+
+<section class="navrh">
+  <div class="hlava"><span class="cislo">2</span><h3>Kocovina a vyprošťovák</h3>
+    <div class="stitky"><span class="stitok">zásah M</span><span class="stitok">vznik + liečba</span><span class="stitok">mení polaritu</span></div></div>
+  <p class="motto">„Večer sa pije, ráno sa trpí. A lieči sa pohárikom.“</p>
+  <p class="pravidlo">Absťák dostane na konci kola ten, kto mal v kole <strong>viac</strong> nerestí ako súper (pri rovnosti nikto). <strong>Vyprošťovák:</strong> prvý poldeci, ktorý v ďalšom kole vypiješ (Vypiť v Zhromaždení alebo NA EX), vráti jeden tvoj Absťák do zásoby ešte pred bitkou.</p>
+  <div class="mriezka">
+    <div><h4>Téma</h4><ul><li>Ráno po zábave. Liekom je ranný pohárik, ktorý ťa ťahá do ďalšieho kola pitia. Alkoholický kolotoč, satira sedí.</li></ul></div>
+    <div><h4>Rozhodnutie hráča</h4><ul><li>Dnes zatlačiť (NA EX, Vypiť) a zaplatiť zajtra, alebo sa udržať.</li><li>Liečiť sa znamená znova piť, teda pečeň a riziko, že budeš zasa „viac ako súper“.</li></ul></div>
+    <div><h4>Riziko</h4><ul><li><strong>Mení polaritu:</strong> pitie by brzdila pečeň aj Absťák a k pitiu by netlačilo nič okrem NA EX a akcií. Hrozí hra, kde nikto nepije. Treba zmerať.</li><li>Kolidovalo by s Cirhózou: dvojitý trest za to isté.</li></ul></div>
+    <div><h4>Jadro, klient, bot</h4><ul><li>Porovnanie ako v 1, opačný smer. Nový spúšťač „prvý poldeci v kole“.</li><li>Bot: novú voľbu treba naučiť.</li></ul></div>
+  </div>
+</section>
+
+<section class="navrh">
+  <div class="hlava"><span class="cislo">3</span><h3>Triaška v balíčku</h3>
+    <div class="stitky"><span class="stitok">zásah M</span><span class="stitok">účinok + liečba</span><span class="stitok">výdaj cigariet</span></div></div>
+  <p class="motto">„Absťák príde, keď ho najmenej čakáš. Ruky sa trasú práve vtedy, keď ich potrebuješ.“</p>
+  <p class="pravidlo">Absťák vzniká ako v návrhu 1, ale <strong>nepriznáva sa hneď</strong>. Ide do odhadzovacieho balíčka ako Cirhóza. Keď si ho doberieš, smieš ho kedykoľvek na svojom ťahu <strong>zapiť alebo zafajčiť</strong>: 1 nerest (vyfajčiť cigaretu alebo vypiť plný poldeci) a Absťák sa vráti do zásoby. Inak ostane v ruke a v bitke sa ráta ako dnes (o ranu menej, remíza, špaky). Na konci kola sa prizná sám.</p>
+  <div class="mriezka">
+    <div><h4>Téma</h4><ul><li>Abstinenčné príznaky prichádzajú vo vlnách. Fajčiar si zapáli na nervy, pijan si dá jeden „na upokojenie“.</li></ul></div>
+    <div><h4>Rozhodnutie hráča</h4><ul><li>Kedy a čím ho uhasiť: cigaretou (cigarety dostanú zmysluplný výdaj) alebo poldecákom (pečeň, limit).</li><li>Uhasenie je nerest, takže ťa zároveň posunie bližšie k súperovi v počte nerestí (1).</li><li>V8: Absťák v ruke zaberá miesto karte, ktorá by išla do línie. Menej kariet v línii znamená menej špakov.</li></ul></div>
+    <div><h4>Riziko</h4><ul><li>Náhoda v čase: kedy si ho doberieš. Vznik je však zaslúžený a liečba je v rukách hráča.</li><li>Michal hrá s nedostatkom cigariet. Liečba aj poldecákom je preto nutná, inak by bola pre človeka priveľmi drahá.</li></ul></div>
+    <div><h4>Jadro, klient, bot</h4><ul><li>Kliatba v balíčku už existuje (Cirhóza). Pribudne ťah „uhasiť Absťák“.</li><li>Klient: tlačidlo pri karte v ruke (cena → odmena).</li></ul></div>
+  </div>
+</section>
+
+<section class="navrh odpor">
+  <div class="hlava"><span class="cislo">4</span><h3>Nervák</h3>
+    <div class="stitky"><span class="stitok odpor">odporúčam (s 1)</span><span class="stitok">zásah S</span><span class="stitok">účinok</span></div></div>
+  <p class="motto">„Na suchu je zlý ako pes. Hádže sa do každého.“</p>
+  <p class="pravidlo">Vznik ako v návrhu 1 (alebo ako dnes). Mení sa účinok: každý Absťák hráča mu v bitke dá <strong>o ranu menej</strong> (ako dnes), ale zároveň <strong>+1 Pohoršenie</strong> v kroku Pohoršenie (§9.2). Absťáky ďalej rozhodujú remízu v tuhom. <strong>Zrážka špakov víťazovi zaniká</strong>, aby Absťák netrestal trikrát.</p>
+  <div class="mriezka">
+    <div><h4>Téma</h4><ul><li>Kto abstinuje, je podráždený, robí scény a uráža starších. Pohoršenie je presne to.</li></ul></div>
+    <div><h4>Rozhodnutie hráča</h4><ul><li>Ísť zámerne nasucho: slabšia bitka za Pohoršenia, ktorými posunieš starších. V8 tak zmažeš súperove vyplatené zóny alebo si pritiahneš užitočnú priazeň.</li><li>Z trestu sa stáva nástroj, najmä pre zaostávajúceho, ktorý bitku aj tak pravdepodobne nevyhrá (zásada „odmena za väčšiu výzvu“).</li></ul></div>
+    <div><h4>Riziko</h4><ul><li>Úmyselná suchota každé kolo: zmerať, či sa nestane dominantnou stratégiou.</li><li>Viac Pohoršení = viac pohybu markerov. Zmerať dopad na stompy v8.</li></ul></div>
+    <div><h4>Jadro, klient, bot</h4><ul><li>Malá zmena v §9.2 a §9.4, nový text karty Absťák (Admin).</li><li>Bot: Absťák už nie je čisto záporný.</li></ul></div>
+  </div>
+</section>
+
+<section class="navrh">
+  <div class="hlava"><span class="cislo">5</span><h3>Hladinka</h3>
+    <div class="stitky"><span class="stitok">zásah L</span><span class="stitok">zjednodušenie</span><span class="stitok">zlúči pečeň a Absťák</span></div></div>
+  <p class="motto">„Byť na hladinke: ani opitý, ani triezvy.“</p>
+  <p class="pravidlo">Pečeň a Absťák sa zlúčia do jednej verejnej stupnice <strong>Hladinka</strong> pri hráčovi, so stredom „na hladinke“. Každá nerest a každé poškodenie pečene posunie značku o pole <strong>hore</strong>. Na konci kola organizmus vytriezvie a značka klesne o 2 polia. Prejde horný okraj → <strong>Cirhóza</strong>, klesne pod spodný okraj → <strong>Absťák</strong> (priznaný). Po oboch sa značka vráti do stredu.</p>
+  <div class="mriezka">
+    <div><h4>Téma</h4><ul><li>Najpresnejší obraz dedinského pijana: nechce byť ani opitý, ani triezvy. Hra hovorí presne to, čo každý v krčme pozná.</li></ul></div>
+    <div><h4>Rozhodnutie hráča</h4><ul><li>Každé kolo plánuješ, koľko pitia potrebuješ, ani veľa, ani málo. Súperovo NA EX ťa vystrelí hore, fajčenie a Vypiť sú jemné doladenie.</li><li>Obe brzdy vidno na jednej stupnici. Riziko sa ukazuje vopred, nie až po bitke.</li></ul></div>
+    <div><h4>Riziko</h4><ul><li>Najväčší zásah: mení Cirhózu (prah 3, Nealko +2, Krčma +2, akcie Poškodenie pečene). Karty s prahom Cirhózy sa prepíšu na „širšia hladinka“.</li><li>Šírku stupnice a vytriezvenie treba nastaviť meraním.</li></ul></div>
+    <div><h4>Jadro, klient, bot</h4><ul><li>Dve počítadlá (pečeň, neresti dvoch kôl) nahradí jedna stupnica, takže na stole bude menej čísel.</li><li>Nová stupnica v klientovi, prerobený výhľad, bot.</li></ul></div>
+  </div>
+</section>
+
+<section class="navrh">
+  <div class="hlava"><span class="cislo">6</span><h3>Predsavzatie</h3>
+    <div class="stitky"><span class="stitok">zásah M</span><span class="stitok">z dávky 26. 10., aktualizované na v8</span></div></div>
+  <p class="motto">„Od pondelka nepijem. Ako každý pondelok.“</p>
+  <p class="pravidlo">Pri voľbe cieľa smie hráč verejne sľúbiť <strong>„dnes nepijem“</strong>. Dodržaný sľub (0 nerestí v kole) ho zbaví jedného Absťáku a dobere si kartu. Porušený sľub (prvá nerest) mu dá Absťák rovno priznaný a sľub padá. <strong>Bez sľubu Absťák nevzniká.</strong></p>
+  <div class="mriezka">
+    <div><h4>Téma</h4><ul><li>Satira večných predsavzatí, Melichar má o čom rozprávať.</li></ul></div>
+    <div><h4>Rozhodnutie hráča</h4><ul><li>Tempo a výbušnosť (NA EX, Vypiť) proti istej odmene. V8: karta navyše môže skončiť v línii a dať špak.</li><li>Verejná informácia: súper vie, že od teba nepríde NA EX. Porušiť sľub v rozhodujúcej Pitke je vedomý ťah.</li></ul></div>
+    <div><h4>Riziko</h4><ul><li>Absťák bude zriedkavý a prestane brzdiť nepitie (polarita zmizne).</li><li>Nový krok na začiatku kola.</li></ul></div>
+    <div><h4>Jadro, klient, bot</h4><ul><li>Nový príkaz pri voľbe cieľa, verejný stav sľubu, varovanie pred ťahom, ktorý sľub poruší.</li></ul></div>
+  </div>
+</section>
+</div>
+
+<h2>Porovnanie</h2>
+<div class="tab-obal">
+<table>
+<thead><tr><th>Návrh</th><th>Kedy vznikne</th><th>Čo robí</th><th>Ako sa ho zbaviť</th><th>Brzdí nepitie?</th><th>Interakcia</th><th>Zásah</th></tr></thead>
+<tbody>
+<tr><td>Dnes</td><td>menej nerestí ako minulé kolo</td><td>−1 rana, remíza, menej špakov</td><td>viac nerestí ako minule</td><td class="plus">áno, so špirálou</td><td class="nula">žiadna</td><td>—</td></tr>
+<tr><td><strong>1</strong> Krok so stolom</td><td>menej nerestí ako súper</td><td>ako dnes</td><td>viac ako súper</td><td class="plus">áno</td><td class="plus">vysoká</td><td>S</td></tr>
+<tr><td><strong>2</strong> Kocovina</td><td>viac nerestí ako súper</td><td>ako dnes</td><td>vyprošťovák (prvý poldeci)</td><td class="minus">nie, obráti ju</td><td class="plus">vysoká</td><td>M</td></tr>
+<tr><td><strong>3</strong> Triaška</td><td>ako 1</td><td>v balíčku, v ruke −1 rana</td><td>cigareta alebo poldeci</td><td class="plus">áno</td><td>stredná</td><td>M</td></tr>
+<tr><td><strong>4</strong> Nervák</td><td>ako 1 alebo dnes</td><td>−1 rana, <strong>+1 Pohoršenie</strong>, bez zrážky špakov</td><td>ako 1</td><td class="nula">čiastočne (je aj nástroj)</td><td class="plus">vysoká (starší)</td><td>S</td></tr>
+<tr><td><strong>5</strong> Hladinka</td><td>spodný okraj stupnice</td><td>ako dnes; Cirhóza na hornom okraji</td><td>piť späť na hladinku</td><td class="plus">áno, vyvážene s pečeňou</td><td>stredná (NA EX)</td><td>L</td></tr>
+<tr><td><strong>6</strong> Predsavzatie</td><td>len porušený sľub</td><td>ako dnes</td><td>dodržaný sľub</td><td class="minus">nie</td><td>stredná (informácia)</td><td>M</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Návrhy 1 (vznik), 3 a 4 (účinok a liečba) sa dajú kombinovať. Návrh 2 je opak návrhu 1, preto platí len jeden z nich. Návrhy 5 a 6 menia celý systém.</p>
+
+<h2>Odporúčanie a meranie</h2>
+<ul>
+  <li><strong>1 + 4 ako balík.</strong> Najmenší zásah, zachová polaritu pečeň ↔ Absťák, zruší špirálu a dá interakciu. Absťák bude zároveň voľba, nie len trest. Text karty Absťák prepíše Admin, kartu Dlh netreba meniť.</li>
+  <li><strong>Ak chceš viac:</strong> 1 + 3 + 4 (cigarety dostanú výdaj), alebo 5 · Hladinka ako veľká prestavba, ktorá zjednoduší stôl.</li>
+  <li><strong>Meranie stratéga</strong> (zrkadlo a mix povah, rebrík): dnes · 1 · 1 + 4 · 1 + 3 · 5. Sleduje sa, koľko Absťákov za partiu a u koho (vedúci / zaostávajúci), rozdiel špakov a stompy v8, či sa nestane dominantnou úmyselná suchota (4) a podiel zručnosti.</li>
+</ul>
+</main>
+</body>
+</html>

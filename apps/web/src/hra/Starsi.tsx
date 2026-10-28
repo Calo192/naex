@@ -7,7 +7,7 @@
 
 import type { CSSProperties } from "react";
 import type { ClientState, GameData, PlayerId } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, priazenSila, strachZ, prahVydesenia, vydesil } from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, priazenSila, strachNaVyplatu, prahVydesenia, vydesil } from "@naex/core";
 import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
@@ -73,8 +73,8 @@ export function DlazdicaStarsich({ view, p, zaStarsich, starsi }: DlazdicaStarsi
         <span>
           {/* v6.1: strach platí len víťazovi; koľko starších sa bojí, ukazujú stĺpčeky dole a nápoveda (na 1366 sa oboje nezmestí). */}
           {strach > 0 && <ZnackaStrachu uroven={najStrach} trieda={ja ? "moje" : "superove"} />}
-          {strach > 0 ? `+${zaStarsich} ${riadokDlazdice("dole", ja)}` : `nikto sa ${ja ? "ťa" : "ho"} nebojí`}
-          {strach > 0 && <IkonaSpaku />}
+          {strach === 0 ? `nikto sa ${ja ? "ťa" : "ho"} nebojí` : zaStarsich > 0 ? `+${zaStarsich} ${riadokDlazdice("dole", ja)}` : riadokDlazdice("dole", ja, 0)}
+          {strach > 0 && zaStarsich > 0 && <IkonaSpaku />}
         </span>
         <span className={`starsi-desi-riadok${desiHrozi ? " hrozi" : ""}`} title={desiTitul}>
           vydesení {vyd}/{prah}
@@ -102,7 +102,8 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
         const zona = STUPNICA_ZONY[e.marker];
         const meno = menoKarty(e.karta.defId);
         const ucinok = ucinokPriazne(data, e);
-        const strach = strachZ(e, p);
+        // v8: len zóny, ktoré starší ešte nezaplatil.
+        const strach = strachNaVyplatu(e, p);
         const patron = view.patronat[p]?.elderId === e.elderId ? p : view.patronat[su]?.elderId === e.elderId ? su : null;
         const posuny = (view.posunyMarkerov ?? []).filter((x) => x.elderId === e.elderId);
         const hodnota =
@@ -118,7 +119,7 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
           );
         // Účinok priazne a koho sa bojí ukazuje línia nad barom (Michal 2026-10-28: dlaždica
         // nemusí opakovať panel) — tu len krátke slovo; patrón a posun ako značky v tom istom riadku.
-        const riadok = patron !== null ? `patrón${patron === p ? "" : " súpera"}` : riadokDlazdice(smer, ja);
+        const riadok = patron !== null ? `patrón${patron === p ? "" : " súpera"}` : riadokDlazdice(smer, ja, strach);
         const popis =
           smer === "hore"
             ? `${meno}: ${ucinok.cely}. Zóna ${NAZVY_ZON[zona]}.`

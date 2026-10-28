@@ -97,12 +97,12 @@ describe("výkričníky vo farbe obávaného", () => {
     expect(moja).not.toContain("♥");
     expect(superova).toContain("♥");
     expect(superova).not.toContain("ikona-strachu");
-    expect(html).toMatch(/ls-cip strach moj[^>]*>.*ikona-strachu s3.*bojí sa teba · \+3 š, keď vyhráš/);
+    expect(html).toMatch(/ls-cip strach moj[^>]*>.*ikona-strachu s3.*bojí sa teba · \+6 š za ďalšiu výhru/);
   });
 
   it("marker na mojej žltej: ! vo Ferovej farbe, ♥ na mojom konci", () => {
     const html = karta(2);
-    expect(html).toMatch(/ls-cip strach superov[^>]*>.*ikona-strachu s1.*bojí sa Fero · \+1 š, keď vyhrá/);
+    expect(html).toMatch(/ls-cip strach superov[^>]*>.*ikona-strachu s1.*bojí sa Fero · \+1 š za ďalšiu výhru/);
     expect(html).toMatch(/ls-cip priazen moja[^>]*>♥ ty \+1/);
   });
 

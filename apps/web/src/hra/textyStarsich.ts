@@ -28,33 +28,41 @@ export function plnaPriazen(fav: Favour, sila: number): string {
 }
 
 /**
- * Riadok strachu pod stupnicou: koho sa bojí a koľko špakov mu dá po vyhratej bitke (v6.1).
- * `koho` = null, ak sa nebojí nikoho; `ty` = bojí sa hráča, ktorý sa pozerá.
+ * Riadok strachu pod stupnicou: koho sa bojí a koľko mu zaplatí pri ďalšej výhre — v8 len
+ * zóny, ktoré mu ešte nezaplatil (strachNaVyplatu jadra). `koho` = null, ak sa nebojí nikoho;
+ * `ty` = bojí sa hráča, ktorý sa pozerá; `spaky` = 0 pri zaplatených zónach.
  */
 export function riadokStrachu(koho: string | null, ty: boolean, spaky: number): string {
   if (koho === null) return "nikoho sa nebojí";
   const komu = ty ? "teba" : koho;
-  return spaky > 0 ? `bojí sa ${komu} · +${spaky} š, keď ${ty ? "vyhráš" : "vyhrá"}` : `bojí sa ${komu}`;
+  return spaky > 0 ? `bojí sa ${komu} · +${spaky} š za ďalšiu výhru` : `bojí sa ${komu} · zóny zaplatené`;
 }
 
 /** Krátky riadok dlaždice v bare hráča: ako starší k nemu stojí (číslo nad ním povie koľko). */
-export function riadokDlazdice(smer: "hore" | "dole" | "nic", ja: boolean): string {
-  return smer === "hore" ? (ja ? "pomáha ti" : "pomáha mu") : smer === "dole" ? (ja ? "ak vyhráš" : "ak vyhrá") : "neutrálny";
+export function riadokDlazdice(smer: "hore" | "dole" | "nic", ja: boolean, spaky = 1): string {
+  if (smer === "hore") return ja ? "pomáha ti" : "pomáha mu";
+  if (smer === "dole") return spaky > 0 ? (ja ? "ak vyhráš" : "ak vyhrá") : "zaplatené";
+  return "neutrálny";
 }
 
-/** Titulok dlaždice staršieho, ktorý sa hráča bojí. */
+/** Titulok dlaždice staršieho, ktorý sa hráča bojí (v8: platí len nové zóny). */
 export function titulStrachu(meno: string, ja: boolean, zona: number, spaky: number): string {
-  return `${meno} sa ${ja ? "ťa" : "ho"} bojí (${NAZVY_ZON[zona]}): po každej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dá ${spaky} ${spakov(spaky)}.`;
+  return (
+    `${meno} sa ${ja ? "ťa" : "ho"} bojí (${NAZVY_ZON[zona]}): ` +
+    (spaky > 0
+      ? `po najbližšej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dá ${spaky} ${spakov(spaky)} za zóny, ktoré ešte nezaplatil.`
+      : "zóny už zaplatil — ďalší špak až po novom postupe markera.")
+  );
 }
 
 /** Strach v titulku dlaždice Starší (súhrn za všetkých starších). */
 export function titulStrachuSpolu(pocet: number, ja: boolean, spaky: number): string {
-  return `${pocet} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): po bitke +${spaky} ${spakov(spaky)}, ak ju ${ja ? "vyhráš" : "vyhrá"} (porazený od starších nič, pri sekere obaja).`;
+  return `${pocet} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): po najbližšej výhre +${spaky} ${spakov(spaky)} za zóny, ktoré ešte nezaplatili (porazený od starších nič, pri sekere obaja).`;
 }
 
-/** Ako starší platí za strach — legenda stupnice a lupa staršieho. */
+/** Ako starší platí za strach (v8) — legenda stupnice a lupa staršieho. */
 export const PRAVIDLO_STRACHU =
-  "Bojí sa toho druhého — a po bitke, ktorú ten vyhrá (aj finále), mu dá špaky: žltá 1, oranžová 2, červená 3. Porazenému nedá nič, pri sekere dajú starší obom. V sivom strede nedá nikomu nič.";
+  "Bojí sa toho druhého — po bitke, ktorú ten vyhrá (aj finále), mu zaplatí každú zónu raz: žltá 1, oranžová 2, červená 3 (zo stredu po červenú spolu 6). Zaparkovaný marker po výplate nedá nič; ústup k stredu zaplatené zóny zmaže. Porazenému nedá nič, pri sekere obom. V sivom strede nikomu.";
 
 /** Príklad do legendy stupnice: jeden starší mimo stredu z tejto partie. */
 export function prikladStrachu(o: {
@@ -64,17 +72,19 @@ export function prikladStrachu(o: {
   readonly super: string;
   readonly sila: number;
   readonly ucinok: string;
+  /** Nezaplatené zóny (strachNaVyplatu) — koľko dá pri najbližšej výhre. */
+  readonly spaky: number;
 }): string {
-  const { meno, zona, ty, super: su, sila, ucinok } = o;
+  const { meno, zona, ty, super: su, sila, ucinok, spaky } = o;
   return (
     `${meno} je v zóne ${NAZVY_ZON[zona]} na ${ty ? `strane ${su}` : "tvojej strane"}. ${ty ? `Priazeň +${sila} má ${su}` : `Priazeň +${sila} máš ty`} (${ucinok}). ` +
-    `Bojí sa ${ty ? "teba" : su}: po každej bitke, ktorú ${ty ? "vyhráš" : "vyhrá"}, ${ty ? "dostaneš" : `${su} dostane`} ${zona} ${spakov(zona)}.`
+    `Bojí sa ${ty ? "teba" : su}: za každú zónu raz — po najbližšej bitke, ktorú ${ty ? "vyhráš" : "vyhrá"}, ${ty ? "dostaneš" : `${su} dostane`} ${spaky} ${spakov(spaky)} za zóny, ktoré ešte nezaplatil.`
   );
 }
 
 /** Čo prinesie vydesenie (krajná červená) — lupa staršieho. */
 export function textVydesenia(fav: Favour): string {
-  return `Vydesíš ho → 3 š po každej tvojej výhre, ale súper ♥ +3 (${UCINOK_KRATKO[fav](3)}). Vydesí ho súper → ty ♥ +3.`;
+  return `Vydesíš ho → pri ďalšej výhre ti zaplatí aj červenú zónu (+3 š), ale súper ♥ +3 (${UCINOK_KRATKO[fav](3)}). Vydesí ho súper → ty ♥ +3.`;
 }
 
 /** Zdroje posunov od poslednej bitky: „Prebytok · Michal ×3“. */
@@ -85,6 +95,15 @@ export function textStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdroj
 /** Štítok posunu na portréte — len zdroj a počet, kto posúval nesie farba (celé znenie je v lupe). */
 export function stitokStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdroj"]; readonly pocet: number }[]): string {
   return zdroje.map((x) => `${NAZOV_ZDROJA[x.zdroj]}${x.pocet > 1 ? ` ×${x.pocet}` : ""}`).join(" · ");
+}
+
+/**
+ * Náhľad posunu markera v hlavičke línie (v8): koľko tento starší zaplatí za strach pri
+ * najbližšej výhre po posune — nahladPosunuMarkera/Prebytkom jadra (spakyZaStarsieho).
+ */
+export function nahladStrachu(ty: number, su: number, menoSupera: string): string {
+  if (ty === 0 && su === 0) return "za strach nič nové";
+  return `za strach pri ďalšej výhre ${ty > 0 ? `ty +${ty}` : `${menoSupera} +${su}`}`;
 }
 
 /** Pokyn v hlavičke línie počas Prebytku: koľko posunov ešte zostáva. */

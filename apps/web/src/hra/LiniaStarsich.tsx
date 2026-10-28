@@ -15,7 +15,7 @@
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { ElderState, GameData, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, scorecardStarsieho, type MarkerPos } from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, scorecardStarsieho, strachNaVyplatu, type MarkerPos } from "@naex/core";
 import type { IkonaBodovania } from "@naex/tvorba";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
@@ -236,7 +236,15 @@ function LegendaStupnice({
     prikladText = (
       <>
         <b>Teraz:</b>{" "}
-        {prikladStrachu({ meno: priklad.meno, zona: v.uroven, ty: v.obavany === ja, super: mena[su], sila: v.sila, ucinok: UCINOK_KRATKO[fav](v.sila) })}
+        {prikladStrachu({
+          meno: priklad.meno,
+          zona: v.uroven,
+          ty: v.obavany === ja,
+          super: mena[su],
+          sila: v.sila,
+          ucinok: UCINOK_KRATKO[fav](v.sila),
+          spaky: strachNaVyplatu(priklad.elder, v.obavany === ja ? ja : su),
+        })}
       </>
     );
   }
@@ -315,9 +323,14 @@ function ScorecardVLinii({
   const zobraz = poPosune === null ? teraz : vztah(elder, poPosune);
   const vydeseny = teraz.uroven === 3;
 
-  // Špaky za strach: teraz z jadra (spakyTeraz), po posune podľa zóny cieľa.
+  // Špaky za strach pri najbližšej výhre (v8: len nezaplatené zóny): teraz z jadra
+  // (spakyTeraz), po posune s vyplatenými zónami tak, ako ich posun nechá (sPosunutymMarkerom).
   const spaky = (v: ReturnType<typeof vztah>, poPosune: boolean): number =>
-    v.obavany === null ? 0 : !poPosune && body !== undefined ? body.spaky[v.obavany] : v.uroven;
+    v.obavany === null
+      ? 0
+      : !poPosune
+        ? (body?.spaky[v.obavany] ?? strachNaVyplatu(elder, v.obavany))
+        : strachNaVyplatu(sPosunutymMarkerom(elder, cielKroku ?? elder.marker), v.obavany);
   const priazenText = (v: ReturnType<typeof vztah>): string => riadokPriazne(fav, v.priazen === null ? null : kto(v.priazen), v.sila);
   const strachText = (v: ReturnType<typeof vztah>, po: boolean): string => riadokStrachu(v.obavany === null ? null : mena[v.obavany], v.obavany === ja, spaky(v, po));
   const priazenTeraz = priazenText(teraz);

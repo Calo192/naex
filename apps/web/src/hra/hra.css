@@ -298,6 +298,8 @@
    okraj, dlaždice boli nižšie ako v tvojom bare a druhý riadok výhľadu sa orezal. */
 .plocha > section.doska {
   padding: 8px 12px;
+  /* .plocha > section má zaoblené rohy — súperov bar má byť ostrý ako tvoj (Michal 2026-10-28). */
+  border-radius: 0;
 }
 
 .doska.superova {

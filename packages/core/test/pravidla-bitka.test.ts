@@ -118,30 +118,30 @@ const zony = (h: PlayerState): number[] => [...h.ruka, ...h.doberaci, ...h.odhad
 // --- §1 Podmienky konca -----------------------------------------------------------
 
 describe("§1 Podmienky konca", () => {
-  it("§1/§11 (v7): na prahu Exekútora (7) hráč neprehráva — zhorí polovica Dlhov a rovnako špakov, aj do mínusu; pod prahom (6) nič", () => {
-    const na = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(7, "dlh") })).state;
+  it("§1/§11 (v8): na prahu Exekútora (6) hráč neprehráva — zhorí polovica Dlhov a rovnako špakov, aj do mínusu; pod prahom (5) nič", () => {
+    const na = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(6, "dlh") })).state;
     expect(na.koniec).toBeNull();
     const zaznam = na.nastenka.at(-1)!;
     expect(zaznam.exekutor).toEqual([3, 0]);
-    expect(na.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(4);
-    // Prázdna línia 0 : 0 a rovnako Absťákov — remízu vyhrá menej priznaných Dlhov (hráč 2, 1 Pitka).
+    expect(na.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(3);
+    // Prázdna línia 0 : 0 a rovnako Absťákov — remízu vyhrá menej priznaných Dlhov (hráč 2; 0 kariet, aspoň 1 špak).
     expect([zaznam.vitaz, zaznam.rozhodlo]).toEqual([1, "dlhy"]);
     expect(na.spaky).toEqual([-3, 1]);
-    const pod = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(6, "dlh") })).state;
+    const pod = doBitky(data, sHracom(vPitke(data, 41, [[], []]), 0, { priznane: kusy(5, "dlh") })).state;
     expect(pod.koniec).toBeNull();
     // Kto exekúcii nečelí, Dlh nepáli (Michal 2026-10-22).
-    expect(pod.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(6);
+    expect(pod.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(5);
   });
 
 
-  it("§11: Robota spáli priznaný Dlh ešte pred kontrolou prahu — 7 Dlhov a 1 Robota exekúciu nespustí", () => {
+  it("§11: Robota spáli priznaný Dlh ešte pred kontrolou prahu — 6 Dlhov a 1 Robota exekúciu nespustí (prah v8 6)", () => {
     const vonk: Layout4 = ["Robota", null, null, null];
     const vnut: Layout4 = ["Rana", null, null, null];
     const sada = sadaS(makeDef("r_rob_o", EMPTY, vonk), makeDef("r_rob_i", vnut, EMPTY));
     const strany: GameState["strany"] = [[lezi(instanceFor(sada, "r_rob_i", vnut, EMPTY), 0), lezi(instanceFor(sada, "r_rob_o", EMPTY, vonk), 0)], []];
-    const st = doBitky(sada, sHracom(vPitke(sada, 43, strany), 0, { priznane: kusy(7, "dlh") })).state;
+    const st = doBitky(sada, sHracom(vPitke(sada, 43, strany), 0, { priznane: kusy(6, "dlh") })).state;
     expect(st.koniec).toBeNull();
-    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(6);
+    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(5);
   });
 
   it("§1 (v5 bod 4): balíček pod 5 kariet na konci kola už neprehráva — ani 1 karta", () => {
@@ -230,7 +230,7 @@ describe("§14 Koniec hry po finále (v6)", () => {
   const BEZ_ZDROJOV: Partial<PlayerState> = { poldeciPlne: 0, poldeciVypite: 0, cigarety: 0 };
   const poFinale = (spaky: [number, number], h0: Partial<PlayerState> = {}, h1: Partial<PlayerState> = {}): GameState => {
     const s = predKoncomBitky(57, (x) =>
-      sHracom(sHracom({ ...x, lokalityVHre: [], ciel: { typ: "finale", lokalita: null }, spaky }, 0, { ...BEZ_ZDROJOV, ...h0 }), 1, { ...BEZ_ZDROJOV, ...h1 }),
+      sHracom(sHracom({ ...x, lokalityVHre: [], ciel: { typ: "finale", lokalita: inst("krcma") }, spaky }, 0, { ...BEZ_ZDROJOV, ...h0 }), 1, { ...BEZ_ZDROJOV, ...h1 }),
     );
     return apply(data, s, { type: "cintorin", uid: null }, 0).state;
   };
@@ -241,7 +241,7 @@ describe("§14 Koniec hry po finále (v6)", () => {
     expect(poFinale([1, 2]).koniec?.vitaz).toBe(1);
   });
 
-  it("§11/§14: nepriznaná Cirhóza na konci −5 špakov za kus (ruka aj oba balíčky), priznaná nie", () => {
+  it("§11/§14: nepriznaná Cirhóza na konci −3 špaky za kus (v8; ruka aj oba balíčky), priznaná nie", () => {
     const po = poFinale([12, 8], {
       ruka: [inst("cirhoza"), inst("pijan")],
       doberaci: [inst("cirhoza")],
@@ -249,9 +249,9 @@ describe("§14 Koniec hry po finále (v6)", () => {
       priznane: [inst("cirhoza")],
     });
     expect(po.koniec?.cirhozy).toEqual([3, 0]);
-    expect(po.koniec?.body).toEqual([12 - 15, 8]);
+    expect(po.koniec?.body).toEqual([12 - 9, 8]);
     expect(po.koniec?.vitaz).toBe(1);
-    expect(po.spaky).toEqual([-3, 8]);
+    expect(po.spaky).toEqual([3, 8]);
   });
 
   it("§14: výkupné — plný poldeci 1 špak, každých celých 5 cigariet 1 špak, bez stropu; vypitý poldeci nič", () => {
@@ -268,8 +268,8 @@ describe("§14 Koniec hry po finále (v6)", () => {
 
   it("§14: výkupné rozhodne aj o víťazovi a ráta sa pred určením víťaza, spolu s Cirhózou", () => {
     const po = poFinale([6, 6], { poldeciPlne: 1, cigarety: 5, ruka: [inst("cirhoza")] }, { cigarety: 9 });
-    // Hráč 1: 6 + 1 + 1 − 5 = 3; hráč 2: 6 + 1 = 7.
-    expect(po.koniec?.body).toEqual([3, 7]);
+    // Hráč 1: 6 + 1 + 1 − 3 = 5; hráč 2: 6 + 1 = 7.
+    expect(po.koniec?.body).toEqual([5, 7]);
     expect(po.koniec?.vitaz).toBe(1);
     const remiza = poFinale([5, 6], { poldeciPlne: 1 });
     expect(remiza.koniec).toMatchObject({ vitaz: null, body: [6, 6] });
@@ -365,11 +365,11 @@ describe("§16 Výklad kariet", () => {
 
 describe("§10 Prebudenie a §14 finále", () => {
 
-  it("§14 (v6): po poslednej bitke o lokalitu hra nekončí — príde finále bez lokality", () => {
+  it("§14 (v8): sada bez pinnacle lokalít (testovacia sada v6) finále nemá — po poslednej lokalite hra skončí, bez lokality sa nehrá", () => {
     const s = predKoncomBitky(57, (x) => ({ ...x, lokalityVHre: [] }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
-    expect(po.koniec).toBeNull();
-    expect(po.ciel).toEqual({ typ: "finale", lokalita: null });
-    expect(po.faza).toBe("draft");
+    expect(po.koniec?.body).not.toBeNull();
+    expect(po.koniec?.dovod).toMatch(/^Odohrali sa všetky lokality/);
+    expect(po.ciel).toBeNull();
   });
 });
