@@ -632,7 +632,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez pra
     expect(overScenar(data, cela)).toBeNull();
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
     expect(koniec.koniec?.vitaz).toBe(0);
-    expect(koniec.koniec?.body).toEqual([27, 10]);
+    expect(koniec.koniec?.body).toEqual([29, 9]);
   });
 
   it("časti nadväzujú: každá má začiatok a koniec, idú za sebou a 2. časť začína tam, kde 1. skončila", () => {
@@ -676,20 +676,46 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, Exekútor bez pra
     expect(s.hraci[0].nerestiMinuleKolo).toBe(3);
   });
 
-  it("3. časť: patronát Štamgasta, Dedičstvo, Exekútor, Kultúrny dom, Absťák a finále na Predsedovej vile", () => {
+  it("3. časť: patronát Štamgasta (ukážka), Dedičstvo, Exekútor, Kultúrny dom, Absťák a finále na Predsedovej vile", () => {
     expect(po("k-patronat-bot").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(3);
     expect(po("k-dedicstvo").hraci[0].dedicstvo.map((k) => k.defId)).toEqual(["vidly"]);
     expect(odhad(po("k-nastroj"))).toEqual([5, 6]);
     expect(body(po("k-hotovo6"))).toEqual([2, 5]);
     expect(odhad(po("k-pohorsenie2"))).toEqual([6, 5]);
     const vyhra = po("k-pohorsenie4");
-    expect(body(vyhra)).toEqual([17, 7]);
+    expect(body(vyhra)).toEqual([15, 7]);
     const kolo4 = po("k-prebytok3-bot");
     expect(kolo4.kolo).toBe(4);
     expect(kolo4.hraci[1].poldeciPlne + kolo4.hraci[1].poldeciVypite).toBe(1);
     for (const p of [0, 1] as const) expect(kolo4.hraci[p].priznane.some((k) => k.defId === "abstak"), `Absťák ${p}`).toBe(true);
-    expect(odhad(po("k-hasic-finale"))).toEqual([4, 3]);
-    expect(po("k-kseft").starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(6);
+    expect(odhad(po("k-hasic-finale"))).toEqual([4, 4]);
+    expect(po("k-kseft").starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(5);
+  });
+
+  it("3. časť: hráč sám robí patronát, Obmedzenie, Víziu, doliatie a NA EX so zrážkou (Michal 2026-10-28)", () => {
+    // Patronát: Poštárka zo žltej za 3 cigarety; na tri ich hráč došetril (dve kúpy po jednej, Fajčiar).
+    expect(pri("k-patronat").hraci[0].cigarety).toBe(3);
+    const pat = po("k-patronat");
+    expect(pat.hraci[0].cigarety).toBe(0);
+    expect(pat.hraci[0].ruka.some((k) => k.defId === "postarka")).toBe(true);
+    expect(pat.starsi.find((e) => e.elderId === "postarka")?.marker).toBe(3);
+    for (const id of ["k-patronat", "k-kup-finale", "k-vypit-finale", "k-vizia", "k-doliatie", "k-naex-vytrznik"]) expect(cela.kroky[i(id)]?.kto, id).toBe("hrac");
+    // Obmedzenie: Štamgastov Miňištrant má spojenú Cigaretu, Obmedzenie mu ju v Pitke zoberie.
+    const sums = evaluateLine(data, lineState(po("k-vypit-finale"))).sums;
+    expect(sums[0].Obmedzenie).toBe(1);
+    expect(sums[0]["Vízia"]).toBe(1);
+    expect(sums[1].Cigareta).toBe(1);
+    expect(po("k-finale-p2-bot").hraci[1].cigarety).toBe(pri("k-finale-p2-bot").hraci[1].cigarety);
+    // Doliatie: vypitý poldeci späť na plný za 2 cigarety.
+    expect(pri("k-doliatie").hraci[0]).toMatchObject({ poldeciPlne: 1, poldeciVypite: 1 });
+    expect(po("k-doliatie").hraci[0]).toMatchObject({ poldeciPlne: 2, poldeciVypite: 0 });
+    expect(po("k-doliatie").hraci[0].cigarety).toBe(pri("k-doliatie").hraci[0].cigarety - 2);
+    // Zrážka: obaja NA EX na Recidivistu, z karty je Výtržník (všetky akcie Rany).
+    const rec = po("k-finale-p3-bot").strany[1].find((pl) => pl.card.defId === "recidivista");
+    expect(rec?.naexBy).toBeDefined();
+    expect(evaluateLine(data, lineState(po("k-finale-p3-bot"))).sums[1].Rana).toBe(4);
+    // Patronát vyšiel: Poštárka ostáva hráčovi.
+    expect(po("k-prebytok-finale2").starsi.find((e) => e.elderId === "postarka")).toMatchObject({ nahradeny: true, ziskal: 0 });
   });
 
   it("texty nehovoria o Smetisku ani o bodoch (Michal 2026-10-28: stavba klikom, víťazné body sú špaky)", () => {
