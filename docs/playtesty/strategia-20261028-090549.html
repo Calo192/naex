@@ -334,6 +334,28 @@
 <li><strong>Živý web:</strong> <code>karty-v-partiach --zivy --ludia</code> má 1 partiu ľudí, na porovnanie s botmi to nestačí.</li>
 </ul>
 
+<h3 style="margin-top:28px">Doplnkové merania k návrhom navrhára (master <code>b3f8dce</code>, s exekúciou po poškodení)</h3>
+<p class="pozn">Merané na novšom masteri ako zvyšok rozboru (obsahuje exekúciu po poškodení, Absťák Nervák ešte nie), preto má vlastné východisko. Rovnaké semienka a parametre. Posudok k jednotlivým návrhom je v <code>playtest/navrhy/20261028-090549/posudok-stratega.md</code>.</p>
+<div class="tab"><table>
+<caption>C = finále porazený + zóna 1 · 1 · 1 (balík 1 + 2 z tohto rozboru). Ping-pong B = marker posunutý prebytkom sa v ďalšej bitke nesmie prebytkom vrátiť. Ping-pong C = prvá podstrčená karta do prázdneho súperovho kraja stojí 1 cigaretu. Noviny B a C dávajú rovnaké čísla ako východisko: boti Noviny nespustili ani raz.</caption>
+<thead><tr><th class="l">Variant</th><th>Rozdiel Z / M</th><th>Stomp &gt;15</th><th>Víťaz finále vyhrá</th><th>Vedúci pred finále Z / M</th><th>Strach</th><th>Otočky</th><th>Útočník vyhrá</th><th>Rebrík 0,1 / 0,25</th><th>Vydesenie Z / M</th></tr></thead>
+<tbody>
+<tr class="base"><td>Dnes (b3f8dce)</td><td>26,2 / 27,5</td><td>73 %</td><td>92 %</td><td>57 / 58 %</td><td>39 %</td><td>37 %</td><td>76 %</td><td>50 / 62 %</td><td>1 / 0 %</td></tr>
+<tr><td>Finále porazený</td><td>19,1 / 21,9</td><td>52 %</td><td>86 %</td><td>63 / 70 %</td><td>30 %</td><td>33 %</td><td>76 %</td><td>50 / 63 %</td><td>1 / 2 %</td></tr>
+<tr class="zvyr"><td>C · finále porazený + zóna 1 · 1 · 1</td><td>19,0 / 19,6</td><td>53 %</td><td>76 %</td><td>63 / 79 %</td><td>24 %</td><td>29 %</td><td>77 %</td><td>63 / 67 %</td><td>0 / 3 %</td></tr>
+<tr><td>Finále porazený + zóna 1 · 1 · 2</td><td>18,8 / 19,9</td><td>58 %</td><td>82 %</td><td>65 / 75 %</td><td>26 %</td><td>40 %</td><td>76 %</td><td>43 / 63 %</td><td>2 / 0 %</td></tr>
+<tr><td>C + ping-pong B (ochrana priazne)</td><td>21,3 / 20,1</td><td>57 %</td><td>77 %</td><td>69 / 73 %</td><td>28 %</td><td class="zle">20 %</td><td>70 %</td><td>62 / 73 %</td><td class="zle">10 / 15 %</td></tr>
+<tr class="zvyr"><td>C + ping-pong C (cigareta za 1. podstrčenú)</td><td>15,2 / 17,4</td><td>37 %</td><td>64 %</td><td>74 / 68 %</td><td>22 %</td><td>35 %</td><td>68 %</td><td>52 / 72 %</td><td>0 / 2 %</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>1 · 1 · 2</strong> je medzi samotným finále a C a pri malej chybe trestá horšie (rebrík 43 %). Odporúčam 1 · 1 · 1.</li>
+<li><strong>Ping-pong C</strong> je spolu s C najlepší zmeraný variant: útočník vyhrá 68 %, víťaz finále 64 %, vedenie rastie postupne (57 · 56 · 65 · 68 · 74 %), slabší rozdrví silnejšieho len v 7 %. Je to výdaj cigariet, nie strop.</li>
+<li><strong>Ping-pong B</strong> zastaví striedanie, ale chránené markery dozrejú na vydesenie: hra skončí vydesením v 10 – 15 % partií a vedúci po K3 vyhrá 80 %. Rozhodovala by sa priskoro.</li>
+<li><strong>NA EX, statický prepočet:</strong> Ferovo zadĺženie / pečeň v P1 je dnes 38 / 24, pri kliatbach len v Pitke odkrytia 18 / 16, keď Silná nezdvojí zdvojenie z NA EX 22 / 16, pri oboch 12 / 12. Rozšírenie na Cigaretu, Obmedzenie a Víziu by vzalo Janovi 8 cigariet a Šimonovi 4 Obmedzenia z NA EX na vlastnú kartu, teda z plánu, nie z bomby. Neodporúčam ho.</li>
+<li><strong>Noviny, statický prepočet P2:</strong> dnes 24 : 12, Noviny B 14 : 12, Noviny C 19 : 17. Víťaz partie sa nemení.</li>
+<li><strong>Vydesenie vo finále</strong> ukončí u botov 0 – 1 % partií (s balíkom C 0 – 3 %). Voľba A alebo B v medzerách v8 je pre boty bez účinku a rozhodne ju playtest.</li>
+</ul>
+
 <h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
 <ol class="otazky">
 <li><strong>Finále:</strong> Koľko špakov ti dalo finále a koľko z toho strach po prebytku? Vyhral partiu ten, kto viedol pred finále? Ak nie, čo ho otočilo? Cieľ: vedúci pred finále vyhrá v 2 z 3 partií.</li>
