@@ -9,8 +9,10 @@
 // ligy_odomknute, takže ho neskoršie sprísnenie podmienok hráčovi nevezme.
 // Správcovia a AI playtesteri smú vždy všetko (turnusy). Server ligu overí pri
 // založení aj pripojení — klient len ukazuje zámok (CLAUDE.md, pravidlá 2 a 3).
+// Ligu môže odomknúť aj achievement (Michal 2026-10-28) — ktorákoľvek splnená
+// cesta stačí: výhry, achievement alebo rank.
 
-import { ALL_DLZKY, NAZOV_DLZKY, NAZOV_DLZKY_GENITIV, type DlzkaHry } from "@naex/core";
+import { ALL_DLZKY, NAZOV_DLZKY, NAZOV_DLZKY_GENITIV, type DlzkaHry, type KatalogAchievementov } from "@naex/core";
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 import type { Db } from "./db.ts";
@@ -22,11 +24,28 @@ export interface PodmienkaLigy {
   readonly vyhier: number;
 }
 
+/** Ligu odomkne achievement aspoň na danom ranku (★). */
+export interface AchievementLigy {
+  readonly id: string;
+  readonly rank: number;
+}
+
 export interface PravidloLigy {
-  /** null = liga je otvorená každému. */
+  /** Výhry, ktoré ligu odomknú; null = bez podmienky výhier. */
   readonly podmienka: PodmienkaLigy | null;
+  /** Achievement, ktorý ligu odomkne; null = bez neho. Bez výhier aj achievementu je liga otvorená každému. */
+  readonly achievement: AchievementLigy | null;
   /** Ranky, ktoré ligu majú bez ohľadu na výhry. */
   readonly ranky: readonly RankHraca[];
+}
+
+/** Prečo hráč ligu smie: splnil podmienku sám, smú ju všetci, smie vždy (správca, AI), alebo nesmie. */
+export type PristupKLige = "odomknuta" | "vsetci" | "vzdy" | "zamknuta";
+
+/** Čo Ligy potrebujú z achievementov: katalóg (názvy, ranky) a čo hráč drží. */
+export interface ZdrojAchievementov {
+  readonly katalog: KatalogAchievementov;
+  drzane(pouzivatel: number): ReadonlyMap<string, number>;
 }
 
 export interface NastavenieLig {
@@ -41,19 +60,25 @@ export interface NastavenieLig {
 export interface StavLigy {
   readonly liga: DlzkaHry;
   readonly smie: boolean;
-  /** Čo treba splniť („Vyhraj 1 partiu Tretej ligy proti človeku.“); null, keď smie. */
+  readonly pristup: PristupKLige;
+  /**
+   * Čo treba splniť, s postupom („Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).“);
+   * null, keď ju hráč odomkol sám alebo liga podmienku nemá.
+   */
   readonly podmienka: string | null;
-  /** Postup k podmienke výhier; null, keď smie alebo liga nemá podmienku výhier. */
+  /** Postup k podmienke výhier; null, keď je odomknutá alebo nemá podmienku výhier. */
   readonly postup: { readonly ma: number; readonly treba: number } | null;
+  /** Výhry proti ľuďom v tejto lige — profil. */
+  readonly vyhry: number;
 }
 
 export const PREDVOLENE_LIGY: NastavenieLig = {
   vsetkym: true,
   ajProtiPocitacu: false,
   ligy: {
-    kratka: { podmienka: null, ranky: [] },
-    stredna: { podmienka: { liga: "kratka", vyhier: 1 }, ranky: [] },
-    dlha: { podmienka: { liga: "stredna", vyhier: 3 }, ranky: [] },
+    kratka: { podmienka: null, achievement: null, ranky: [] },
+    stredna: { podmienka: { liga: "kratka", vyhier: 1 }, achievement: null, ranky: [] },
+    dlha: { podmienka: { liga: "stredna", vyhier: 3 }, achievement: null, ranky: [] },
   },
 };
 
@@ -76,8 +101,33 @@ export function textPodmienky(p: PodmienkaLigy): string {
   return `Vyhraj ${p.vyhier} ${partii(p.vyhier)} ${NAZOV_DLZKY_GENITIV[p.liga]} proti človeku.`;
 }
 
-/** Overí pravidlo jednej ligy z tela požiadavky; chyby hlási po slovensky. */
-function overPravidlo(liga: DlzkaHry, v: unknown): PravidloLigy {
+/** „získaj achievement „Maratón“ ★2“ — hviezda len pri achievemente s viac rankami. */
+export function textAchievementu(a: AchievementLigy, katalog: KatalogAchievementov | null): string {
+  const def = katalog?.achievementy.find((x) => x.id === a.id);
+  const hviezda = def !== undefined && def.prahy.length > 1 ? ` ★${a.rank}` : "";
+  return `získaj achievement „${def?.nazov ?? a.id}“${hviezda}`;
+}
+
+/**
+ * Celá podmienka ligy pre hráča: výhry s postupom, achievement, alebo oboje
+ * („… (máš 0/1) alebo získaj achievement „Maratón“ ★2.“). null = liga podmienku nemá.
+ */
+export function textPravidla(pravidlo: PravidloLigy, vyhier: number, katalog: KatalogAchievementov | null): string | null {
+  const casti: string[] = [];
+  const p = pravidlo.podmienka;
+  if (p !== null) casti.push(`${textPodmienky(p).slice(0, -1)} (máš ${Math.min(vyhier, p.vyhier)}/${p.vyhier})`);
+  if (pravidlo.achievement !== null) casti.push(textAchievementu(pravidlo.achievement, katalog));
+  if (casti.length === 0) return null;
+  const veta = casti.join(" alebo ");
+  return `${veta.charAt(0).toUpperCase()}${veta.slice(1)}.`;
+}
+
+/**
+ * Overí pravidlo jednej ligy z tela požiadavky; chyby hlási po slovensky.
+ * Uložený achievement, ktorý z katalógu medzičasom zmizol, sa pri čítaní
+ * (prisne = false) len vynechá — ostatné cesty k lige platia ďalej.
+ */
+function overPravidlo(liga: DlzkaHry, v: unknown, katalog: KatalogAchievementov | null, prisne: boolean): PravidloLigy {
   if (typeof v !== "object" || v === null || Array.isArray(v)) throw new ChybaVstupu(`${NAZOV_DLZKY[liga]}: objekt { podmienka, ranky }.`);
   const o = v as Record<string, unknown>;
   const ranky = o.ranky ?? [];
@@ -94,16 +144,37 @@ function overPravidlo(liga: DlzkaHry, v: unknown): PravidloLigy {
     if (p.liga === liga && p.vyhier > 0) throw new ChybaVstupu(`${NAZOV_DLZKY[liga]} sa nemôže odomykať výhrami v sebe samej.`);
     if (p.vyhier > 0) podmienka = { liga: p.liga, vyhier: p.vyhier };
   }
-  return { podmienka, ranky: RANKY_HRACOV.filter((x) => ranky.includes(x)) };
+  let achievement: AchievementLigy | null = null;
+  if (o.achievement !== null && o.achievement !== undefined) {
+    const a = o.achievement as Record<string, unknown>;
+    const def = typeof a.id === "string" ? katalog?.achievementy.find((x) => x.id === a.id) : undefined;
+    if (def === undefined) {
+      if (prisne) throw new ChybaVstupu(katalog === null ? "Achievementy sú vypnuté — ligu achievementom odomknúť nemožno." : `${NAZOV_DLZKY[liga]}: neznámy achievement.`);
+    } else {
+      if (typeof a.rank !== "number" || !Number.isInteger(a.rank) || a.rank < 1 || a.rank > def.prahy.length) {
+        throw new ChybaVstupu(`${NAZOV_DLZKY[liga]}: rank achievementu „${def.nazov}“ je 1 až ${def.prahy.length}.`);
+      }
+      achievement = { id: def.id, rank: a.rank };
+    }
+  }
+  return { podmienka, achievement, ranky: RANKY_HRACOV.filter((x) => ranky.includes(x)) };
 }
 
 export class Ligy {
   private readonly db: Db;
   private readonly teraz: () => number;
+  /** null = achievementy sú vypnuté; podmienka achievementom sa potom nedá splniť ani nastaviť. */
+  private readonly achievementy: ZdrojAchievementov | null;
 
-  constructor(db: Db, teraz: () => number) {
+  constructor(db: Db, teraz: () => number, achievementy: ZdrojAchievementov | null = null) {
     this.db = db;
     this.teraz = teraz;
+    this.achievementy = achievementy;
+  }
+
+  /** Achievementy na výber v správe Lig; null = vypnuté. */
+  ponukaAchievementov(): { readonly id: string; readonly nazov: string; readonly rankov: number }[] | null {
+    return this.achievementy?.katalog.achievementy.map((a) => ({ id: a.id, nazov: a.nazov, rankov: a.prahy.length })) ?? null;
   }
 
   /** Uložené nastavenie doplnené o predvolené; pokazený záznam ligy = predvolené pravidlo. */
@@ -120,7 +191,7 @@ export class Ligy {
       const v = ulozene.ligy?.[l];
       if (v === undefined) continue;
       try {
-        ligy[l] = overPravidlo(l, v);
+        ligy[l] = overPravidlo(l, v, this.achievementy?.katalog ?? null, false);
       } catch {
         // Necháme predvolené — radšej prísnejšie pravidlo zo zadania ako pokazený záznam.
       }
@@ -144,7 +215,7 @@ export class Ligy {
       if (typeof telo.ligy !== "object" || telo.ligy === null || Array.isArray(telo.ligy)) throw new ChybaVstupu("Ligy: objekt liga → pravidlo.");
       for (const [l, v] of Object.entries(telo.ligy as Record<string, unknown>)) {
         if (!jeLiga(l)) throw new ChybaVstupu(`Neznáma liga „${l}“.`);
-        ligy[l] = overPravidlo(l, v);
+        ligy[l] = overPravidlo(l, v, this.achievementy?.katalog ?? null, true);
       }
     }
     const nove: NastavenieLig = {
@@ -183,16 +254,34 @@ export class Ligy {
     const volny = jeSpravca(ja.rola) || ja.ai;
     const odomknute = this.odomknute(ja.id);
     const zapis = this.db.prepare("INSERT OR IGNORE INTO ligy_odomknute (pouzivatel, liga, cas) VALUES (?, ?, ?)");
+    const katalog = this.achievementy?.katalog ?? null;
+    const drzane = ALL_DLZKY.some((l) => n.ligy[l].achievement !== null) ? (this.achievementy?.drzane(ja.id) ?? null) : null;
+    const vyhryVLige = new Map<DlzkaHry, number>(ALL_DLZKY.map((l) => [l, this.vyhry(ja.id, l)]));
     return ALL_DLZKY.map((liga): StavLigy => {
       const pravidlo = n.ligy[liga];
       const p = pravidlo.podmienka;
-      const ma = p === null ? 0 : this.vyhry(ja.id, p.liga);
+      const a = pravidlo.achievement;
+      const ma = p === null ? 0 : (vyhryVLige.get(p.liga) ?? 0);
+      // Bez výhier aj achievementu je liga otvorená každému — ranky samé ju nezamknú (tak platilo od začiatku).
+      const otvorena = p === null && a === null;
+      const zVyhier = p !== null && ma >= p.vyhier;
       const zRanku = jeRankHraca(ja.rola) && pravidlo.ranky.includes(ja.rola);
-      const splnene = p === null || ma >= p.vyhier || zRanku;
-      if (splnene && !odomknute.has(liga) && (p !== null || zRanku)) zapis.run(ja.id, liga, this.teraz());
-      const smie = volny || n.vsetkym || splnene || odomknute.has(liga);
-      if (smie || p === null) return { liga, smie, podmienka: null, postup: null };
-      return { liga, smie, podmienka: textPodmienky(p), postup: { ma, treba: p.vyhier } };
+      const zAchievementu = a !== null && (drzane?.get(a.id) ?? 0) >= a.rank;
+      const splnene = otvorena || zVyhier || zRanku || zAchievementu;
+      if (splnene && !otvorena && !odomknute.has(liga)) zapis.run(ja.id, liga, this.teraz());
+      const odomknuta = splnene || odomknute.has(liga);
+      const pristup: PristupKLige = odomknuta ? "odomknuta" : volny ? "vzdy" : n.vsetkym ? "vsetci" : "zamknuta";
+      const smie = pristup !== "zamknuta";
+      const vyhry = vyhryVLige.get(liga) ?? 0;
+      if (odomknuta) return { liga, smie, pristup, podmienka: null, postup: null, vyhry };
+      return {
+        liga,
+        smie,
+        pristup,
+        podmienka: textPravidla(pravidlo, ma, katalog),
+        postup: p === null ? null : { ma: Math.min(ma, p.vyhier), treba: p.vyhier },
+        vyhry,
+      };
     });
   }
 
@@ -209,7 +298,6 @@ export class Ligy {
     if (protiPocitacu && !this.nastavenie().ajProtiPocitacu) return null;
     const s = this.stav(ja).find((x) => x.liga === liga);
     if (s === undefined || s.smie) return null;
-    const postup = s.postup === null ? "" : ` Máš ${s.postup.ma} z ${s.postup.treba}.`;
-    return `${NAZOV_DLZKY[liga]} je pre teba zatiaľ zamknutá. ${s.podmienka ?? ""}${postup}`.trim();
+    return `${NAZOV_DLZKY[liga]} je pre teba zatiaľ zamknutá. ${s.podmienka ?? ""}`.trim();
   }
 }

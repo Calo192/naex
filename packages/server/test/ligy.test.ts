@@ -13,6 +13,7 @@ import { Archiv } from "../src/archiv.ts";
 import { Ucty } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
 import { Ligy, PREDVOLENE_LIGY, textPodmienky } from "../src/ligy.ts";
+import { Achievementy, nacitajKatalog } from "../src/achievementy.ts";
 import type { GameServer } from "../src/server.ts";
 import { Klient, TEST_ADMIN, nastavUroven, prihlas, registruj, testovaciServer } from "./pomocnik.ts";
 
@@ -39,9 +40,9 @@ describe("ligy — nastavenie a odomykanie", () => {
     // Michal 2026-10-28: partie proti počítaču ligy neobmedzujú.
     expect(PREDVOLENE_LIGY.ajProtiPocitacu).toBe(false);
     expect(PREDVOLENE_LIGY.ligy).toEqual({
-      kratka: { podmienka: null, ranky: [] },
-      stredna: { podmienka: { liga: "kratka", vyhier: 1 }, ranky: [] },
-      dlha: { podmienka: { liga: "stredna", vyhier: 3 }, ranky: [] },
+      kratka: { podmienka: null, achievement: null, ranky: [] },
+      stredna: { podmienka: { liga: "kratka", vyhier: 1 }, achievement: null, ranky: [] },
+      dlha: { podmienka: { liga: "stredna", vyhier: 3 }, achievement: null, ranky: [] },
     });
     expect(textPodmienky({ liga: "kratka", vyhier: 1 })).toBe("Vyhraj 1 partiu Tretej ligy proti človeku.");
     expect(textPodmienky({ liga: "stredna", vyhier: 3 })).toBe("Vyhraj 3 partie Druhej ligy proti človeku.");
@@ -69,11 +70,11 @@ describe("ligy — nastavenie a odomykanie", () => {
       const b = ucty.registruj("eva", "tajneheslo", "Eva", 1);
 
       expect(ligy.stav(a)).toEqual([
-        { liga: "kratka", smie: true, podmienka: null, postup: null },
-        { liga: "stredna", smie: false, podmienka: "Vyhraj 1 partiu Tretej ligy proti človeku.", postup: { ma: 0, treba: 1 } },
-        { liga: "dlha", smie: false, podmienka: "Vyhraj 3 partie Druhej ligy proti človeku.", postup: { ma: 0, treba: 3 } },
+        { liga: "kratka", smie: true, pristup: "odomknuta", podmienka: null, postup: null, vyhry: 0 },
+        { liga: "stredna", smie: false, pristup: "zamknuta", podmienka: "Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).", postup: { ma: 0, treba: 1 }, vyhry: 0 },
+        { liga: "dlha", smie: false, pristup: "zamknuta", podmienka: "Vyhraj 3 partie Druhej ligy proti človeku (máš 0/3).", postup: { ma: 0, treba: 3 }, vyhry: 0 },
       ]);
-      expect(ligy.preco(a, "stredna", false)).toBe("Druhá liga je pre teba zatiaľ zamknutá. Vyhraj 1 partiu Tretej ligy proti človeku. Máš 0 z 1.");
+      expect(ligy.preco(a, "stredna", false)).toBe("Druhá liga je pre teba zatiaľ zamknutá. Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).");
 
       // Výhra proti botovi (aj vzdaná), prehra a výhra v inej lige Druhú ligu neodomknú.
       partia(archiv, a.id, null, "kratka");
@@ -92,6 +93,8 @@ describe("ligy — nastavenie a odomykanie", () => {
       partia(archiv, a.id, null, "stredna");
       partia(archiv, a.id, b.id, "stredna");
       expect(ligy.stav(a).find((s) => s.liga === "dlha")?.postup).toEqual({ ma: 2, treba: 3 });
+      // Profil: výhry proti ľuďom v každej lige (bot sa neráta).
+      expect(ligy.stav(a).map((s) => s.vyhry)).toEqual([1, 2, 0]);
       partia(archiv, a.id, b.id, "stredna");
       expect(smie(ligy, a)).toEqual({ kratka: true, stredna: true, dlha: true });
 
@@ -110,6 +113,7 @@ describe("ligy — nastavenie a odomykanie", () => {
 
       // Správca a AI playtester smú vždy všetko.
       expect(smie(ligy, { ...c, rola: "subadmin" })).toEqual({ kratka: true, stredna: true, dlha: true });
+      expect(ligy.stav({ ...c, rola: "subadmin" }).map((s) => s.pristup)).toEqual(["odomknuta", "vzdy", "vzdy"]);
       expect(smie(ligy, { ...c, ai: true })).toEqual({ kratka: true, stredna: true, dlha: true });
 
       // Proti počítaču predvolene smie všetko; obmedzenie platí len so zapnutým „aj proti počítaču“.
@@ -118,6 +122,45 @@ describe("ligy — nastavenie a odomykanie", () => {
       ligy.uloz({ rola: "admin" }, { ajProtiPocitacu: true });
       expect(ligy.preco(c, "dlha", true)).not.toBeNull();
       expect(ligy.nastavenie().ajProtiPocitacu).toBe(true);
+    } finally {
+      zmaz();
+    }
+  });
+
+  it("achievement odomkne ligu popri výhrach; neznámy alebo zlý rank správa odmietne", () => {
+    const { db, zmaz } = docasnaDb();
+    try {
+      const ucty = new Ucty(db, { login: "Admin", heslo: null });
+      const katalog = nacitajKatalog();
+      const achievementy = new Achievementy(db, katalog);
+      const ligy = new Ligy(db, () => 1, achievementy);
+      const maraton = katalog.achievementy.find((x) => x.id === "maraton");
+      if (maraton === undefined) throw new Error("katalóg bez Maratónu");
+      expect(ligy.ponukaAchievementov()).toContainEqual({ id: "maraton", nazov: maraton.nazov, rankov: maraton.prahy.length });
+
+      ligy.uloz({ rola: "admin" }, { vsetkym: false, ligy: { dlha: { podmienka: { liga: "stredna", vyhier: 3 }, achievement: { id: "maraton", rank: 2 }, ranky: [] } } });
+      const a = ucty.registruj("jano", "tajneheslo", "Jano", 1);
+      const dlha = () => ligy.stav(a).find((s) => s.liga === "dlha");
+      expect(dlha()?.podmienka).toBe(`Vyhraj 3 partie Druhej ligy proti človeku (máš 0/3) alebo získaj achievement „${maraton.nazov}“ ★2.`);
+      // ★1 nestačí, ★2 áno.
+      const vloz = db.prepare("INSERT INTO achievementy_zisky (pouzivatel, achievement, rank, ziskane, miestnost, partia) VALUES (?, 'maraton', ?, 1, 'test', NULL)");
+      vloz.run(a.id, 1);
+      expect(dlha()?.smie).toBe(false);
+      vloz.run(a.id, 2);
+      expect(dlha()).toMatchObject({ smie: true, pristup: "odomknuta", podmienka: null });
+
+      // Len achievement (bez výhier): liga nie je otvorená každému.
+      ligy.uloz({ rola: "admin" }, { ligy: { stredna: { podmienka: null, achievement: { id: "maraton", rank: 1 }, ranky: [] } } });
+      const b = ucty.registruj("eva", "tajneheslo", "Eva", 1);
+      expect(ligy.stav(b).find((s) => s.liga === "stredna")).toMatchObject({ smie: false, podmienka: `Získaj achievement „${maraton.nazov}“ ★1.`, postup: null });
+
+      expect(() => ligy.uloz({ rola: "admin" }, { ligy: { dlha: { podmienka: null, achievement: { id: "neexistuje", rank: 1 }, ranky: [] } } })).toThrow(/neznámy achievement/);
+      expect(() => ligy.uloz({ rola: "admin" }, { ligy: { dlha: { podmienka: null, achievement: { id: "maraton", rank: 9 }, ranky: [] } } })).toThrow(/rank achievementu/);
+      // Bez achievementov (vypnuté) sa podmienka achievementom nastaviť nedá.
+      expect(() => new Ligy(db, () => 1).uloz({ rola: "admin" }, { ligy: { dlha: { podmienka: null, achievement: { id: "maraton", rank: 1 }, ranky: [] } } })).toThrow(/vypnuté/);
+      // Uložený achievement, ktorý z katalógu zmizol, sa pri čítaní vynechá — výhry platia ďalej.
+      db.prepare("UPDATE nastavenia SET data = replace(data, '\"maraton\"', '\"zmizol\"') WHERE kluc = 'ligy'").run();
+      expect(ligy.nastavenie().ligy.dlha).toEqual({ podmienka: { liga: "stredna", vyhier: 3 }, achievement: null, ranky: [] });
     } finally {
       zmaz();
     }
@@ -237,9 +280,9 @@ describe("ligy — server vynucuje pri založení a pripojení", () => {
 
     const r = await api("/hry/otvorene", hrac.cookie);
     expect(r.ligy).toEqual([
-      { liga: "kratka", smie: true, podmienka: null, postup: null },
-      { liga: "stredna", smie: false, podmienka: "Vyhraj 1 partiu Tretej ligy proti človeku.", postup: { ma: 0, treba: 1 } },
-      { liga: "dlha", smie: false, podmienka: "Vyhraj 3 partie Druhej ligy proti človeku.", postup: { ma: 0, treba: 3 } },
+      { liga: "kratka", smie: true, pristup: "odomknuta", podmienka: null, postup: null, vyhry: 0 },
+      { liga: "stredna", smie: false, pristup: "zamknuta", podmienka: "Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).", postup: { ma: 0, treba: 1 }, vyhry: 0 },
+      { liga: "dlha", smie: false, pristup: "zamknuta", podmienka: "Vyhraj 3 partie Druhej ligy proti človeku (máš 0/3).", postup: { ma: 0, treba: 3 }, vyhry: 0 },
     ]);
 
     const k = new Klient(server.port, hrac.cookie);
@@ -295,6 +338,15 @@ describe("ligy — server vynucuje pri založení a pripojení", () => {
     const poVzdani = (await api("/hry/otvorene", vitaz.cookie)).ligy as { liga: string; smie: boolean }[];
     expect(poVzdani.map((l) => l.smie)).toEqual([true, true, false]);
     expect(((await api("/hry/otvorene", porazeny.cookie)).ligy as { smie: boolean }[]).map((l) => l.smie)).toEqual([true, false, false]);
+
+    // Profil ukazuje ligy vlastné aj cudzie: víťaz vidí postup porazeného.
+    const idPorazeneho = ((await api("/ja", porazeny.cookie)).pouzivatel as { id: number }).id;
+    const idVitaza = ((await api("/ja", vitaz.cookie)).pouzivatel as { id: number }).id;
+    const cudzi = (await api(`/hraci/${idPorazeneho}`, vitaz.cookie)).ligy as { liga: string; pristup: string; podmienka: string | null; vyhry: number }[];
+    expect(cudzi.map((l) => l.pristup)).toEqual(["odomknuta", "zamknuta", "zamknuta"]);
+    expect(cudzi[1]?.podmienka).toBe("Vyhraj 1 partiu Tretej ligy proti človeku (máš 0/1).");
+    const vlastny = (await api(`/hraci/${idVitaza}`, vitaz.cookie)).ligy as { pristup: string; vyhry: number }[];
+    expect(vlastny.map((l) => [l.pristup, l.vyhry])).toEqual([["odomknuta", 1], ["odomknuta", 0], ["zamknuta", 0]]);
 
     // Vypnutie pravidiel bez nasadenia: hneď smie každý všetko.
     await api("/admin/ligy", admin, { method: "PUT", body: { vsetkym: true } });

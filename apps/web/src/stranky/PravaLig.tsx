@@ -1,4 +1,5 @@
-// Ligy (Michal 2026-10-28): čo odomyká Tretiu, Druhú a Prvú ligu. Mení admin
+// Ligy (Michal 2026-10-28): čo odomyká Tretiu, Druhú a Prvú ligu — výhry,
+// achievement alebo rank, stačí ktorékoľvek. Mení admin
 // aj subadmin; prepínač „všetci smú všetky ligy“ pravidlá vypne bez nasadenia.
 // Správcovia a AI playtesteri smú vždy všetko. Server ligu overí sám.
 
@@ -12,6 +13,7 @@ import { tvar } from "./Statistiky.tsx";
 
 interface PravidloLigy {
   readonly podmienka: { readonly liga: DlzkaHry; readonly vyhier: number } | null;
+  readonly achievement: { readonly id: string; readonly rank: number } | null;
   readonly ranky: readonly Rola[];
 }
 
@@ -19,6 +21,8 @@ interface NastavenieLig {
   readonly vsetkym: boolean;
   readonly ajProtiPocitacu: boolean;
   readonly ligy: Readonly<Record<DlzkaHry, PravidloLigy>>;
+  /** Achievementy na výber; null = vypnuté. */
+  readonly achievementy?: readonly { readonly id: string; readonly nazov: string; readonly rankov: number }[] | null;
 }
 
 /** Rozpísané hodnoty formulára jednej ligy (číslo ako text, kým ho admin píše). */
@@ -76,8 +80,9 @@ export function PravaLig() {
       </summary>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <p className="tlmene">
-        Ligu odomkne počet výhier proti človeku v inej lige (rátajú sa aj partie, ktoré súper vzdal alebo prehral kontumačne; s počítačom nie) alebo rank. Odomknutie sa
-        nevracia — ani keď podmienku neskôr sprísniš. Admin, subadmin a účty AI smú vždy všetko.
+        Ligu odomkne počet výhier proti človeku v inej lige (rátajú sa aj partie, ktoré súper vzdal alebo prehral kontumačne; s počítačom nie), achievement
+        alebo rank — stačí ktorékoľvek. Bez výhier aj achievementu je liga otvorená každému. Odomknutie sa nevracia — ani keď podmienku neskôr sprísniš.
+        Admin, subadmin a účty AI smú vždy všetko.
       </p>
       <div className="prava-lig-prepinace">
         <label>
@@ -96,6 +101,7 @@ export function PravaLig() {
             <tr>
               <th>Liga</th>
               <th>Odomkne výhra proti človeku</th>
+              <th>alebo achievement</th>
               {RANKY_HRACOV.map((r) => (
                 <th key={r}>{NAZOV_UROVNE[r]}</th>
               ))}
@@ -104,6 +110,9 @@ export function PravaLig() {
           <tbody>
             {ALL_DLZKY.map((l) => {
               const f = form[l];
+              const pravidlo = n.ligy[l];
+              const otvorena = pravidlo.podmienka === null && pravidlo.achievement === null;
+              const ach = n.achievementy?.find((a) => a.id === pravidlo.achievement?.id);
               const zmenene = f.vyhier !== String(n.ligy[l].podmienka?.vyhier ?? 0) || (n.ligy[l].podmienka !== null && f.liga !== n.ligy[l].podmienka?.liga);
               return (
                 <tr key={l} className={n.vsetkym ? "prava-lig-neplati" : undefined}>
@@ -140,8 +149,41 @@ export function PravaLig() {
                         ))}
                       </select>
                       {zmenene && <button type="submit">uložiť</button>}
-                      {Number(f.vyhier) === 0 && <span className="tlmene">= otvorená každému</span>}
+                      {Number(f.vyhier) === 0 && <span className="tlmene">{otvorena ? "= otvorená každému" : "= bez výhier"}</span>}
                     </form>
+                  </td>
+                  <td>
+                    {n.achievementy == null ? (
+                      <span className="tlmene">achievementy sú vypnuté</span>
+                    ) : (
+                      <div className="prava-lig-podmienka">
+                        <select
+                          value={pravidlo.achievement?.id ?? ""}
+                          onChange={(e) => ulozLigu(l, { achievement: e.target.value === "" ? null : { id: e.target.value, rank: 1 } })}
+                          aria-label={`${NAZOV_DLZKY[l]}: achievement`}
+                        >
+                          <option value="">— žiadny —</option>
+                          {n.achievementy.map((a) => (
+                            <option key={a.id} value={a.id}>
+                              {a.nazov}
+                            </option>
+                          ))}
+                        </select>
+                        {ach !== undefined && ach.rankov > 1 && pravidlo.achievement !== null && (
+                          <select
+                            value={pravidlo.achievement.rank}
+                            onChange={(e) => ulozLigu(l, { achievement: { id: ach.id, rank: Number(e.target.value) } })}
+                            aria-label={`${NAZOV_DLZKY[l]}: rank achievementu`}
+                          >
+                            {Array.from({ length: ach.rankov }, (_, i) => i + 1).map((r) => (
+                              <option key={r} value={r}>
+                                {"★".repeat(r)}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    )}
                   </td>
                   {RANKY_HRACOV.map((r) => {
                     const ma = n.ligy[l].ranky.includes(r);
@@ -149,8 +191,8 @@ export function PravaLig() {
                       <td key={r}>
                         <input
                           type="checkbox"
-                          checked={ma || n.ligy[l].podmienka === null}
-                          disabled={n.ligy[l].podmienka === null}
+                          checked={ma || otvorena}
+                          disabled={otvorena}
                           onChange={() => prepniRank(l, r, !ma)}
                           aria-label={`${NAZOV_UROVNE[r]} smie ${NAZOV_DLZKY[l]} vždy`}
                         />
@@ -163,7 +205,7 @@ export function PravaLig() {
           </tbody>
         </table>
       </div>
-      <p className="tlmene">Zaškrtnutý rank smie ligu hrať aj bez výhier.</p>
+      <p className="tlmene">Zaškrtnutý rank smie ligu hrať aj bez výhier a achievementu.</p>
     </details>
   );
 }
