@@ -76,7 +76,7 @@ export function PravaLig() {
       </summary>
       {chyba !== null && <Hlaska>{chyba}</Hlaska>}
       <p className="tlmene">
-        Ligu odomkne počet výhier proti človeku v inej lige (dohraté partie, nie s počítačom ani vzdané) alebo rank. Odomknutie sa
+        Ligu odomkne počet výhier proti človeku v inej lige (rátajú sa aj partie, ktoré súper vzdal alebo prehral kontumačne; s počítačom nie) alebo rank. Odomknutie sa
         nevracia — ani keď podmienku neskôr sprísniš. Admin, subadmin a účty AI smú vždy všetko.
       </p>
       <div className="prava-lig-prepinace">

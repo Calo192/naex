@@ -1,6 +1,6 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { DlzkaHry, NaladaMomentu } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
@@ -82,7 +82,10 @@ function Lobby({
   const [dlzka, setDlzka] = useState<DlzkaHry>(PREDVOLENA_DLZKA);
   // Ligy, ktoré hráč smie (Michal 2026-10-28); null = ešte nedošli.
   const [ligy, setLigy] = useState<readonly StavLigy[] | null>(null);
-  const [ligyAjProtiPocitacu, setLigyAjProtiPocitacu] = useState(true);
+  const [ligyAjProtiPocitacu, setLigyAjProtiPocitacu] = useState(false);
+  // Kým hráč ligu sám nezvolí, predvolí sa taká, ktorú smie aj proti ľuďom — inak by mal
+  // nováčik (zamknutá Druhá liga, voľná na počítač) založenie hry s ľuďmi hneď vypnuté.
+  const ligaOdHraca = useRef(false);
   const zamokZvolenej = popisZamku(ligy, dlzka);
   // Uzávierka pred nasadením (Michal 2026-10-23): text oznamu zo servera, alebo null.
   const [uzavierka, setUzavierka] = useState<string | null>(null);
@@ -102,9 +105,9 @@ function Lobby({
           setHry(r.hry);
           setDostupne(r.dlzky);
           setLigy(r.ligy ?? null);
-          setLigyAjProtiPocitacu(r.ligyAjProtiPocitacu ?? true);
+          setLigyAjProtiPocitacu(r.ligyAjProtiPocitacu ?? false);
           // Zamknutá voľba (nový hráč a predvolená Druhá liga) sa prepne na najvyššiu, ktorú smie.
-          setDlzka((d) => zvolenaLiga(r.ligy ?? null, r.ligyAjProtiPocitacu ?? true, r.dlzky, d));
+          setDlzka((d) => zvolenaLiga(r.ligy ?? null, ligaOdHraca.current ? (r.ligyAjProtiPocitacu ?? false) : true, r.dlzky, d));
           setUzavierka(r.uzavierka);
         })
         .catch(() => zive && setHry([]));
@@ -138,7 +141,10 @@ function Lobby({
                   aria-checked={dlzka === d}
                   className={`dlzka-volba ${dlzka === d ? "aktivna" : ""} ${zamok !== null ? "zamknuta" : ""}`}
                   disabled={!ide || !volitelnaLiga(ligy, ligyAjProtiPocitacu, d)}
-                  onClick={() => setDlzka(d)}
+                  onClick={() => {
+                    ligaOdHraca.current = true;
+                    setDlzka(d);
+                  }}
                   title={zamok ?? (ide ? undefined : `Sada zatiaľ nemá ${lokalit(DLZKY_HRY[d])} — pribudnú v tvorbe kariet.`)}
                 >
                   <strong>

@@ -1,7 +1,8 @@
 // Ligy (Michal 2026-10-28): Tretia / Druhá / Prvá liga = krátka / stredná /
 // dlhá hra. Admin definuje, čo ktorú odomyká; predvolene smie každý všetko.
 // Pravidlo: Druhá po 1 výhre v Tretej proti človeku, Prvá po 3 výhrach v Druhej;
-// bot sa neráta, odomknutie sa nevracia, správcovia a AI smú vždy.
+// bot sa neráta, výhra po vzdaní súpera áno, odomknutie sa nevracia, správcovia
+// a AI smú vždy, partie proti počítaču predvolene neobmedzuje.
 
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -35,6 +36,8 @@ const smie = (ligy: Ligy, ja: Parameters<Ligy["stav"]>[0]) => Object.fromEntries
 describe("ligy — nastavenie a odomykanie", () => {
   it("predvolene smie každý všetko; pravidlo odomykania je pripravené", () => {
     expect(PREDVOLENE_LIGY.vsetkym).toBe(true);
+    // Michal 2026-10-28: partie proti počítaču ligy neobmedzujú.
+    expect(PREDVOLENE_LIGY.ajProtiPocitacu).toBe(false);
     expect(PREDVOLENE_LIGY.ligy).toEqual({
       kratka: { podmienka: null, ranky: [] },
       stredna: { podmienka: { liga: "kratka", vyhier: 1 }, ranky: [] },
@@ -55,7 +58,7 @@ describe("ligy — nastavenie a odomykanie", () => {
     }
   });
 
-  it("po vypnutí „všetci smú všetko“: Tretia hneď, Druhá po 1 výhre proti človeku, Prvá po 3; bot a vzdané sa nerátajú", () => {
+  it("po vypnutí „všetci smú všetko“: Tretia hneď, Druhá po 1 výhre proti človeku, Prvá po 3; bot sa neráta, vzdanie súpera áno", () => {
     const { db, zmaz } = docasnaDb();
     try {
       const ucty = new Ucty(db, { login: "Admin", heslo: null });
@@ -72,14 +75,15 @@ describe("ligy — nastavenie a odomykanie", () => {
       ]);
       expect(ligy.preco(a, "stredna", false)).toBe("Druhá liga je pre teba zatiaľ zamknutá. Vyhraj 1 partiu Tretej ligy proti človeku. Máš 0 z 1.");
 
-      // Výhra proti botovi, prehra a vzdaná partia Druhú ligu neodomknú.
+      // Výhra proti botovi (aj vzdaná), prehra a výhra v inej lige Druhú ligu neodomknú.
       partia(archiv, a.id, null, "kratka");
+      partia(archiv, a.id, null, "kratka", { dohrata: false });
       partia(archiv, a.id, b.id, "kratka", { vyhra: false });
-      partia(archiv, a.id, b.id, "kratka", { dohrata: false });
       partia(archiv, a.id, b.id, "stredna");
       expect(smie(ligy, a)).toEqual({ kratka: true, stredna: false, dlha: false });
 
-      partia(archiv, a.id, b.id, "kratka");
+      // Súper vzdal (alebo prehral kontumačne — archív ich nerozlišuje, obe sú nedohraté) — výhra sa ráta.
+      partia(archiv, a.id, b.id, "kratka", { dohrata: false });
       expect(smie(ligy, a)).toEqual({ kratka: true, stredna: true, dlha: false });
       // Eva vyhrala partiu, ktorú Jano prehral — Druhú ligu má aj ona.
       expect(smie(ligy, b)).toEqual({ kratka: true, stredna: true, dlha: false });
@@ -108,11 +112,12 @@ describe("ligy — nastavenie a odomykanie", () => {
       expect(smie(ligy, { ...c, rola: "subadmin" })).toEqual({ kratka: true, stredna: true, dlha: true });
       expect(smie(ligy, { ...c, ai: true })).toEqual({ kratka: true, stredna: true, dlha: true });
 
-      // Proti počítaču platí obmedzenie len so zapnutým „aj proti počítaču“.
-      expect(ligy.preco(c, "dlha", true)).not.toBeNull();
-      ligy.uloz({ rola: "admin" }, { ajProtiPocitacu: false });
+      // Proti počítaču predvolene smie všetko; obmedzenie platí len so zapnutým „aj proti počítaču“.
       expect(ligy.preco(c, "dlha", true)).toBeNull();
       expect(ligy.preco(c, "dlha", false)).not.toBeNull();
+      ligy.uloz({ rola: "admin" }, { ajProtiPocitacu: true });
+      expect(ligy.preco(c, "dlha", true)).not.toBeNull();
+      expect(ligy.nastavenie().ajProtiPocitacu).toBe(true);
     } finally {
       zmaz();
     }
@@ -130,6 +135,29 @@ describe("ligy — nastavenie a odomykanie", () => {
       ligy.dorovnaj(a);
       ligy.uloz({ rola: "admin" }, { vsetkym: false, ligy: { stredna: { podmienka: { liga: "kratka", vyhier: 5 }, ranky: [] } } });
       expect(smie(ligy, a)).toEqual({ kratka: true, stredna: true, dlha: false });
+    } finally {
+      zmaz();
+    }
+  });
+
+  it("záznam spred verzie 2 so zapnutým „aj proti počítaču“ sa číta ako vypnutý", () => {
+    const { db, zmaz } = docasnaDb();
+    try {
+      // Tak to uložila feature/ligy (691bc00) pri každej zmene v správe.
+      db.prepare("INSERT INTO nastavenia (kluc, data) VALUES ('ligy', ?)").run(
+        JSON.stringify({ vsetkym: false, ajProtiPocitacu: true, ligy: { stredna: { podmienka: { liga: "kratka", vyhier: 2 }, ranky: [] } } }),
+      );
+      const ligy = new Ligy(db, () => 1);
+      const n = ligy.nastavenie();
+      expect(n.ajProtiPocitacu).toBe(false);
+      // Ostatné uložené hodnoty platia ďalej.
+      expect(n.vsetkym).toBe(false);
+      expect(n.ligy.stredna.podmienka).toEqual({ liga: "kratka", vyhier: 2 });
+      // Ďalšia zmena v správe uloží verziu 2 — vypnuté ostane vypnuté, zapnuté sa odteraz zapamätá.
+      expect(ligy.uloz({ rola: "admin" }, { vsetkym: true }).ajProtiPocitacu).toBe(false);
+      expect(ligy.nastavenie().ajProtiPocitacu).toBe(false);
+      ligy.uloz({ rola: "admin" }, { ajProtiPocitacu: true });
+      expect(ligy.nastavenie().ajProtiPocitacu).toBe(true);
     } finally {
       zmaz();
     }
@@ -217,11 +245,15 @@ describe("ligy — server vynucuje pri založení a pripojení", () => {
     const k = new Klient(server.port, hrac.cookie);
     await k.otvorene();
     expect(await odmietnute(k, { dlzka: "stredna", verejna: true })).toMatch(/Druhá liga je pre teba zatiaľ zamknutá\. Vyhraj 1 partiu Tretej ligy proti človeku/);
-    // Ani proti počítaču (predvolene „aj proti počítaču“).
+    // Proti počítaču smie predvolene hociktorú ligu (Michal 2026-10-28).
+    expect(await zaloz(k, { dlzka: "dlha", bot: true })).toMatchObject({ dlzka: "dlha" });
+    k.posli({ type: "leave" });
+    // So zapnutým „aj proti počítaču“ nie; bez zvolenej ligy (po výučbe) dostane najvyššiu, ktorú smie.
+    await api("/admin/ligy", admin, { method: "PUT", body: { ajProtiPocitacu: true } });
     expect(await odmietnute(k, { dlzka: "dlha", bot: true })).toMatch(/Prvá liga je pre teba zatiaľ zamknutá/);
-    // Bez zvolenej ligy (po výučbe) dostane najvyššiu, ktorú smie.
     expect(await zaloz(k, { bot: true })).toMatchObject({ dlzka: "kratka" });
     k.posli({ type: "leave" });
+    await api("/admin/ligy", admin, { method: "PUT", body: { ajProtiPocitacu: false } });
     expect(await zaloz(k, { dlzka: "kratka", verejna: true })).toMatchObject({ dlzka: "kratka" });
     k.zavri();
 
@@ -244,6 +276,25 @@ describe("ligy — server vynucuje pri založení a pripojení", () => {
     expect((await d.cakaj("state")).type).toBe("state");
     d.zavri();
     s.zavri();
+
+    // Súper vzdá partiu Tretej ligy — víťaz smie Druhú hneď po nej.
+    const vitaz = await registruj(server.port);
+    const porazeny = await registruj(server.port);
+    const v = new Klient(server.port, vitaz.cookie);
+    const p = new Klient(server.port, porazeny.cookie);
+    await v.otvorene();
+    await p.otvorene();
+    const tretia = await zaloz(v, { dlzka: "kratka", verejna: true });
+    p.posli({ type: "join", code: tretia.kod });
+    await v.cakaj("state");
+    await p.cakaj("state");
+    p.posli({ type: "cmd", cmd: { type: "vzdat" } });
+    await v.cakaj("frajerina");
+    v.zavri();
+    p.zavri();
+    const poVzdani = (await api("/hry/otvorene", vitaz.cookie)).ligy as { liga: string; smie: boolean }[];
+    expect(poVzdani.map((l) => l.smie)).toEqual([true, true, false]);
+    expect(((await api("/hry/otvorene", porazeny.cookie)).ligy as { smie: boolean }[]).map((l) => l.smie)).toEqual([true, false, false]);
 
     // Vypnutie pravidiel bez nasadenia: hneď smie každý všetko.
     await api("/admin/ligy", admin, { method: "PUT", body: { vsetkym: true } });
