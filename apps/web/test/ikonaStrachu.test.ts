@@ -14,7 +14,7 @@ import { loadGameData, setupGame } from "@naex/core";
 import { Podtacok } from "../src/achievementy/Podtacok.tsx";
 import { piktogramPodtacka } from "../src/achievementy/piktogram.ts";
 import { IkonaStrachu, ZnackaStrachu } from "../src/hra/IkonaStrachu.tsx";
-import { LupaStarsieho } from "../src/hra/LiniaStarsich.tsx";
+import { LiniaStarsich, LupaStarsieho } from "../src/hra/LiniaStarsich.tsx";
 import { RozpisStarsich } from "../src/hra/Spaky.tsx";
 import { cestyStrachu, stupenStrachu, svgIkonyBodovania } from "../src/hra/tvaryStrachu.ts";
 
@@ -71,10 +71,51 @@ describe("výkričníky vo farbe obávaného", () => {
   const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
   const s0 = setupGame(data, 5);
   const elder = (marker: MarkerPos): ElderState => ({ ...(s0.starsi[0] as ElderState), marker });
-  const lupa = (marker: MarkerPos): string =>
+  // Od 2026-10-28 (Michal: „mouseover je redundantný“) stupnicu, priazeň a strach ukazuje len
+  // karta staršieho v línii — lupa nesie plné znenie priazne a pravidlá.
+  const karta = (marker: MarkerPos): string =>
     renderToStaticMarkup(
+      createElement(LiniaStarsich, {
+        starsi: [{ elder: elder(marker), meno: "Farár", obrazok: null, body: undefined, patron: null }],
+        data,
+        ikony: [],
+        ja: 0,
+        pohlad: 0,
+        mena: ["Jano", "Fero"],
+        krok: null,
+        hraniceZon: false,
+        zmenene: new Set<string>(),
+      }),
+    );
+
+  it("marker na súperovej červenej: ♥ na Ferovom konci, !!! v mojej farbe na mojom", () => {
+    // Pozícia 6 = krajná na strane hráča 1: priazeň má Fero, bojí sa hráča 0 (ja).
+    const html = karta(6);
+    const strany = html.slice(html.indexOf('class="ls-strany"'), html.indexOf('class="ls-stav"'));
+    const [moja, superova] = strany.split('class="superove"');
+    expect(moja).toContain("ikona-strachu s3");
+    expect(moja).not.toContain("♥");
+    expect(superova).toContain("♥");
+    expect(superova).not.toContain("ikona-strachu");
+    expect(html).toMatch(/ls-cip strach moj[^>]*>.*ikona-strachu s3.*bojí sa teba · \+6 š za ďalšiu výhru/);
+  });
+
+  it("marker na mojej žltej: ! vo Ferovej farbe, ♥ na mojom konci", () => {
+    const html = karta(2);
+    expect(html).toMatch(/ls-cip strach superov[^>]*>.*ikona-strachu s1.*bojí sa Fero · \+1 š za ďalšiu výhru/);
+    expect(html).toMatch(/ls-cip priazen moja[^>]*>♥ ty \+1/);
+  });
+
+  it("v strede nikto: žiadne výkričníky ani ♥ na stupnici", () => {
+    const html = karta(3);
+    expect(html).not.toContain("ikona-strachu");
+    expect(html).toContain("nikoho sa nebojí");
+  });
+
+  it("lupa neopakuje kartu: bez stupnice a riadkov priazne a strachu, s plným znením priazne", () => {
+    const html = renderToStaticMarkup(
       createElement(LupaStarsieho, {
-        s: { elder: elder(marker), meno: "Farár", obrazok: null, body: undefined, patron: null },
+        s: { elder: elder(2), meno: "Farár", obrazok: null, body: undefined, patron: null },
         data,
         ikony: [],
         ja: 0,
@@ -83,28 +124,9 @@ describe("výkričníky vo farbe obávaného", () => {
         karta: null,
       }),
     );
-
-  it("marker na súperovej červenej: ♥ na Ferovom konci, !!! v mojej farbe na mojom", () => {
-    // Pozícia 6 = krajná na strane hráča 1: priazeň má Fero, bojí sa hráča 0 (ja).
-    const html = lupa(6);
-    const strany = html.slice(html.indexOf('class="ls-strany"'), html.indexOf("lst-priazen"));
-    const [moja, superova] = strany.split('class="superove"');
-    expect(moja).toContain("ikona-strachu s3");
-    expect(moja).not.toContain("♥");
-    expect(superova).toContain("♥");
-    expect(superova).not.toContain("ikona-strachu");
-    expect(html).toMatch(/ikona-strachu s3 moje[^>]*>.*Bojí sa teba · Vydesenie/);
-  });
-
-  it("marker na mojej žltej: ! vo Ferovej farbe, ♥ na mojom konci", () => {
-    const html = lupa(2);
-    expect(html).toMatch(/ikona-strachu s1 superove[^>]*>.*Bojí sa Fero · Znepokojenie/);
-  });
-
-  it("v strede nikto: žiadne výkričníky ani ♥", () => {
-    const html = lupa(3);
-    expect(html).not.toContain("ikona-strachu");
-    expect(html).toContain("Nikoho sa nebojí");
+    expect(html).not.toContain("ls-stupnica");
+    expect(html).not.toContain("ls-cip");
+    expect(html).toContain("Priazeň +1:");
   });
 
   it("rozpis za starších: výkričníky podľa špakov vo farbe toho, kto ich dostal; Noviny bez nich", () => {

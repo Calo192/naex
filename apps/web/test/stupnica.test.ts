@@ -1,17 +1,17 @@
-// Popis stupnice a stopa posunu (roadmapa #95) a rozpis bodov pri staršom (#109):
-// lístok posunu zráta zdroje a povie, čo z posunu má ktorý hráč; v6 špaky pri staršom.
+// Popis stupnice a stopa posunu (roadmapa #95) a texty pri staršom (Michal 2026-10-28):
+// stopa zráta zdroje posunov; riadky pod stupnicou sú krátke a každá veta je na jednom mieste.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
-import type { ElderState, MarkerPos, PosunMarkera } from "@naex/core";
+import type { PosunMarkera } from "@naex/core";
 import { loadGameData, setupGame } from "@naex/core";
-import { dosledokPosunu, stopaStarsieho, vysvetlenieSpakov } from "../src/hra/LiniaStarsich.tsx";
+import { stopaStarsieho } from "../src/hra/LiniaStarsich.tsx";
+import { PRAVIDLO_STRACHU, nahladStrachu, pokynPrebytku, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
-const elder = (marker: MarkerPos): ElderState => ({ ...(s0.starsi[0] as ElderState), marker });
 
 describe("stopa posunu", () => {
   const id = s0.starsi[0]!.elderId;
@@ -33,23 +33,50 @@ describe("stopa posunu", () => {
     expect(stopaStarsieho(posuny, "nikto")).toBeUndefined();
   });
 
-  it("dôsledok (v6, 7 polí): priazeň hneď tomu, ku komu marker prišiel, strach (špaky po bitke) druhému", () => {
-    // Zo stredu do súperovej oranžovej (index 5): súper ♥ +2, hráč 0 budí Strach.
-    expect(dosledokPosunu(elder(5), 3, 1)).toBe("♥ +2 hneď");
-    expect(dosledokPosunu(elder(5), 3, 0, true)).toBe("budíš strach: Strach → +2 po výhre");
-    // Späť do stredu: priazeň aj strach zmiznú.
-    expect(dosledokPosunu(elder(3), 4, 1)).toBe("♥ preč (bolo +1)");
-    expect(dosledokPosunu(elder(3), 4, 0)).toBe("už nebudí strach (bolo Znepokojenie)");
-    // Bez posunu nič.
-    expect(dosledokPosunu(elder(3), 3, 0)).toBeNull();
+  it("štítok na portréte nesie len zdroj a počet, lupa aj kto posúval", () => {
+    const stopa = stopaStarsieho(posuny, id)!;
+    expect(stitokStopy(stopa.zdroje)).toBe("Pohoršenie · Prebytok ×2");
+    expect(textStopy(stopa.zdroje, (p) => (p === 0 ? "ty" : "Fero"))).toBe("Pohoršenie · ty · Prebytok · ty ×2");
   });
 });
 
-describe("špaky pri staršom (v6)", () => {
-  it("komu starší dá po bitke špaky", () => {
-    expect(vysvetlenieSpakov({ elderId: "x", spaky: [2, 0] }, 0, ["Ty", "Fero"])).toMatch(/Bojí sa teba/);
-    expect(vysvetlenieSpakov({ elderId: "x", spaky: [0, 3] }, 0, ["Ty", "Fero"])).toMatch(/Bojí sa Fero/);
-    expect(vysvetlenieSpakov({ elderId: "x", spaky: [0, 0] }, 0, ["Ty", "Fero"])).toMatch(/^Nikomu nič nedá/);
+describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
+  it("priazeň: komu a krátky účinok, bez priazne účinok pri +1", () => {
+    expect(riadokPriazne("NEPRAJNIK", "ty", 1)).toBe("ty +1 · výpalné 1 cig. za NA EX");
+    expect(riadokPriazne("BITKAR", null, 0)).toBe("nikto · pri +1: +1 tuhé v bitke");
+  });
+
+  it("strach (v8): koho sa bojí a koľko zaplatí za ďalšiu výhru — len nezaplatené zóny", () => {
+    expect(riadokStrachu("Fero", false, 2)).toBe("bojí sa Fero · +2 š za ďalšiu výhru");
+    expect(riadokStrachu("Jano", true, 6)).toBe("bojí sa teba · +6 š za ďalšiu výhru");
+    expect(riadokStrachu("Fero", false, 0)).toBe("bojí sa Fero · zóny zaplatené");
+    expect(riadokStrachu(null, false, 0)).toBe("nikoho sa nebojí");
+  });
+
+  it("náhľad posunu (v8) hovorí o najbližšej výhre, nie o každej", () => {
+    expect(nahladStrachu(3, 0, "Fero")).toBe("za strach pri ďalšej výhre ty +3");
+    expect(nahladStrachu(0, 1, "Fero")).toBe("za strach pri ďalšej výhre Fero +1");
+    expect(nahladStrachu(0, 0, "Fero")).toBe("za strach nič nové");
+    expect(PRAVIDLO_STRACHU).toMatch(/každú zónu raz/);
+    expect(PRAVIDLO_STRACHU).not.toMatch(/po každej/);
+  });
+
+  it("riadky sú krátke — pri bežnom mene najviac dva riadky karty, bez „…“", () => {
+    for (const fav of ["UZERNIK", "LAKOMEC", "NEPRAJNIK", "BITKAR", "VERIACI", "FAJCIAR", "ALKOHOLIK", "EXEKUTOR"] as const) {
+      for (const sila of [0, 1, 2, 3]) expect(riadokPriazne(fav, sila === 0 ? null : "Michal", sila).length).toBeLessThanOrEqual(44);
+    }
+    expect(riadokStrachu("Michal", false, 3).length).toBeLessThanOrEqual(44);
+  });
+
+  it("dlaždica v bare len slovo — účinok je v línii", () => {
+    expect(riadokDlazdice("hore", true)).toBe("pomáha ti");
+    expect(riadokDlazdice("dole", false)).toBe("ak vyhrá");
+    expect(riadokDlazdice("dole", true, 0)).toBe("zaplatené");
+    expect(riadokDlazdice("nic", true)).toBe("neutrálny");
+  });
+
+  it("pokyn prebytku povie, na koľko posunov vystačí", () => {
+    expect(pokynPrebytku(3, 1)).toMatch(/^Prebytok 3 — vystačí na 3 posuny\./);
+    expect(pokynPrebytku(5, 2)).toMatch(/^Prebytok 5, posun stojí 2 \(Miňištrant\) — vystačí na 2 posuny\./);
   });
 });
-

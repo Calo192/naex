@@ -110,6 +110,10 @@ export interface NastenkaProps {
    * nástenke ako karty na výber (klik, ťahanie); ostatné lístky sú bez kariet.
    */
   readonly vyber?: ((k: CardInstance, sirka: number) => ReactNode) | undefined;
+  /** Mierka avatarov na stole (rozmerNastenky) — písmo škáluje CSS cez --nk. */
+  readonly mierka?: number;
+  /** Šírka kariet na výber (voľba cieľa) — bez víťaza a účtenky smú byť väčšie. */
+  readonly sirkaVyberu?: number;
 }
 
 interface Listok {
@@ -125,7 +129,7 @@ interface Listok {
  * čakajúce špaky), bitka, o ktorú sa práve hrá, lokality, ktoré ešte len prídu,
  * a na konci finále.
  */
-export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber }: NastenkaProps) {
+export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   const poradie: readonly [PlayerId, PlayerId] = ucet === undefined || ucet.zvyraznit === ja ? [ja, ja === 0 ? 1 : 0] : [ucet.zvyraznit, ja];
   const listky: Listok[] = [
@@ -165,11 +169,11 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
         if (vyber !== undefined && l.stav === "caka" && l.lokalita !== null)
           return (
             <li key={l.kluc} className="nastenka-listok caka na-vyber" style={{ "--naklon": `${((i * 37) % 5) - 2}deg`, "--i": i } as CSSProperties}>
-              <span className="nastenka-karta">{vyber(l.lokalita, sirkaKarty)}</span>
+              <span className="nastenka-karta">{vyber(l.lokalita, sirkaVyberu)}</span>
             </li>
           );
         // Bez funkcie karta (nízka plsť) sú lístky bez kariet, ale stĺpcom ako s kartou.
-        const sKartou = !kompaktna && vyber === undefined && karta !== undefined;
+        const sKartou = !kompaktna && karta !== undefined;
         return (
           <li
             key={l.kluc}
@@ -186,7 +190,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
                 </span>
               ) : (
                 <>
-                  <Avatar meno={mena[vitaz]} avatar={avatary[vitaz]} velkost={kompaktna ? 24 : 34} farba={vitaz === ja ? "ja" : "su"} />
+                  <Avatar meno={mena[vitaz]} avatar={avatary[vitaz]} velkost={Math.round((kompaktna ? 24 : 34) * mierka)} farba={vitaz === ja ? "ja" : "su"} />
                   <b className="nastenka-zisk">
                     +{zisk}
                     <IkonaSpaku />
@@ -246,7 +250,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
           ];
           return (
             <div key={p} className={`nastenka-popolnik ${p === ja ? "moj" : "superov"}${p === ucet.zvyraznit ? " zvyrazneny" : ""}`}>
-              <Avatar meno={mena[p]} avatar={avatary[p]} velkost={30} farba={p === ja ? "ja" : "su"} />
+              <Avatar meno={mena[p]} avatar={avatary[p]} velkost={Math.round(30 * mierka)} farba={p === ja ? "ja" : "su"} />
               <span className="np-meno">{p === ja ? "ty" : mena[p]}</span>
               <PocetSpakov n={body.spaky[p]} kto={p === ja ? "moj" : "superov"} />
               <span className="np-rozpis">{casti.join(" · ")}</span>

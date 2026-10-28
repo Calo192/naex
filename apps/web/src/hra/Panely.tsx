@@ -80,6 +80,27 @@ export function CenaCigariet({ n, znamienko = "−" }: { readonly n: number; rea
   );
 }
 
+/**
+ * Výmena v jednom poradí na každom tlačidle a náhľade (Michal 2026-10-28: „zjednotiť to treba“):
+ * čo dáš → čo dostaneš. Cena v cigaretách vľavo, odmena vpravo; pri zisku cigariet
+ * (pas) je vľavo úkon a vpravo +cigarety. Bez odmeny ostane len cena.
+ */
+export function Vymena({ das, dostanes }: { readonly das: ReactNode; readonly dostanes?: ReactNode }) {
+  return (
+    <span className="vymena">
+      {das}
+      {dostanes !== undefined && dostanes !== null && (
+        <>
+          <span className="pecat-sipka" aria-hidden="true">
+            →
+          </span>
+          {dostanes}
+        </>
+      )}
+    </span>
+  );
+}
+
 /** Absťák: prázdny pohárik v trasúcej sa ruke. */
 export function IkonaAbstak() {
   return (
@@ -704,7 +725,7 @@ export function HracDoska({
                   }
                   onClick={obchodCigariet.doliat}
                 >
-                  doliať −{KONSTANTY.REFILL_CENA}
+                  <Vymena das={`−${KONSTANTY.REFILL_CENA}`} dostanes="doliať" />
                 </button>
                 <button
                   disabled={!obchodCigariet.mozno || hrac.cigarety < obchodCigariet.cenaBarteru}
@@ -715,7 +736,7 @@ export function HracDoska({
                   }
                   onClick={obchodCigariet.novy}
                 >
-                  nový poldeci −{obchodCigariet.cenaBarteru}
+                  <Vymena das={`−${obchodCigariet.cenaBarteru}`} dostanes="nový poldeci" />
                 </button>
                 </span>
               </>
