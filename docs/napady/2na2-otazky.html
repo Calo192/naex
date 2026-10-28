@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2 na 2 — otvorené otázky — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 20px 12px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 36px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.v2 { color: var(--oranzova); } .chip.v3 { color: var(--slaby); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a, .ovl button { flex: none; font: inherit; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.roz { background: var(--plocha); border: 1px solid var(--okraj); border-left: 4px solid var(--zelena); border-radius: 10px; padding: 8px 12px; margin: 0 0 8px; }
+.roz .qid { margin-right: 4px; }
+.roz q { quotes: none; }
+.roz p { margin: 4px 0 0; }
+.roz .zm { font-size: .82rem; color: var(--slaby); }
+details.q { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details.q[open] { padding-bottom: 10px; border-color: var(--akcent); }
+details.q summary { cursor: pointer; padding: 10px 0; list-style: none; }
+details.q summary::-webkit-details-marker { display: none; }
+.qid { font: 700 .95rem Georgia, serif; color: var(--akcent); margin-right: 4px; }
+.qt { font-weight: 600; }
+.volba { margin-left: 6px; color: var(--zelena); font-weight: 700; }
+.preco { color: var(--tlmeny); font-size: .93rem; }
+ol.moznosti { list-style: none; padding: 0; margin: 8px 0; }
+li.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--plocha-2); }
+li.moz.rec { border-color: var(--zelena); }
+li.moz.zvol { border-color: var(--akcent); border-width: 2px; }
+.chip.zv { color: var(--akcent); }
+.rozp { border-left: 4px solid var(--akcent); padding-left: 10px; }
+li.moz label { display: block; cursor: pointer; }
+li.moz span:not(.chip) { display: block; font-size: .9rem; color: var(--tlmeny); margin-top: 2px; }
+li.moz input { accent-color: var(--akcent); }
+.odp { border-left: 3px solid var(--zelena); padding-left: 10px; }
+.zav { font-size: .85rem; color: var(--slaby); }
+.pozn { display: block; font-size: .8rem; color: var(--slaby); }
+.pozn textarea { width: 100%; font: inherit; font-size: .9rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px; margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+tbody th { font-family: Georgia, serif; width: 32%; }
+@media (max-width: 560px) { .tab tr { display: block; border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  .tab th, .tab td { display: block; border: 0; padding: 2px 4px; width: auto; } }
+#vystup { width: 100%; min-height: 120px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+details.q, section, h2 { scroll-margin-top: 52px; }
+</style>
+</head>
+<body>
+<main>
+<h1>NA EX! vo dvojici — otázky 2 na 2</h1>
+<p class="mini">verzia 3 · 2026-10-28 · vlna 1 aj 2 rozhodnuté (Michal 2026-10-28) · 9 otázok na neskôr · návrh paragrafu: <code>docs/napady/2na2-paragraf.md</code> · pravidlá ani kód sa nemenia</p>
+
+<div class="box zv">
+  <p><b>Čo z rozhodnutí vyšlo.</b> Tím je takmer <b>jeden hráč s dvoma rukami</b>: spoločné sú strana, línia, balíček,
+  poldeci a limit, cigarety, Dlhy a zadĺženie, pečeň a Cirhózy, neresti a Absťák, špaky; „súper“ je druhý tím ako celok.
+  Osobná ostáva <b>len ruka</b> a ťah v poradí U1 → O1 → U2 → O2. Tímové voľby (cieľ, NA EX, prebytok…) robí kapitán, ktorý sa strieda každé kolo.</p>
+  <p>Väčšina otázok z prvej verzie tým odpadla. Vlna 2 rozhodla, <b>ako sa delia dve ruky</b> (dobratie, limit, pas, šenok,
+  Pitka, odpoveď, patronát, Záverečná, podanie, viditeľnosť), bota a ligu. Zvyšok je v sekcii „Vyplýva“ na potvrdenie
+  a v návrhu § Formát 2 na 2 (<code>docs/napady/2na2-paragraf.md</code>, roadmapa #22).</p>
+  <p class="mini">Rešerš Študenta: <code>docs/kniznica/2026-10-28-hra-2-na-2.html</code> (vetva <code>kniznica/2na2</code>) — Two-Headed Giant (spoločný život, osobná ruka, otvorené karty), Gundam Team Battle (jeden odsek výkladu „friendly / your / opponent“, vodca rozhoduje), Tichu a Euchre (osobná stávka „Idem sám“).</p>
+</div>
+
+<nav class="skupiny" aria-label="Časti">
+  <a href="#rozhodnute">Rozhodnuté</a>
+  <a href="#vyplyva">Vyplýva</a>
+  <a href="#vlna2">Vlna 2</a>
+  <a href="#vlna3">Neskôr</a>
+  <a href="#stav">Prvá verzia</a>
+  <a href="#volby">Moje voľby</a>
+</nav>
+
+<h2 id="rozhodnute">Rozhodnuté — vlna 1 (Michal 2026-10-28)</h2>
+<p class="mini">Text za „Rozhodnuté:“ je zápis z interview tak, ako ho poslal Leader.</p>
+<div class="roz" id="F1"><span class="qid">F1</span> <b>Je 2 na 2 samostatný formát vedľa 1 na 1?</b>
+  <p><b>Rozhodnuté:</b> 2 na 2 bude súčasťou hry (nie len skúšobný formát). CLAUDE.md je upravený.</p><p class="zm">A · samostatný formát</p></div>
+<div class="roz" id="F2"><span class="qid">F2</span> <b>Jedna spoločná línia, alebo dve?</b>
+  <p><b>Rozhodnuté:</b> jedna línia, strany patria tímom.</p><p class="zm">A · jedna línia</p></div>
+<div class="roz" id="F3"><span class="qid">F3</span> <b>Poradie miest pri stole</b>
+  <p><b>Rozhodnuté:</b> striedavo tímy U1 → O1 → U2 → O2.</p><p class="zm">A · striedavo tímy</p></div>
+<div class="roz" id="F4"><span class="qid">F4</span> <b>Kto je „súper“ v efekte</b>
+  <p><b>Rozhodnuté:</b> „Páry sú teraz v podstate ako tím jedna entita. Pojem súper je druhý tím.“</p><p class="zm">nová možnosť · súper = druhý tím ako celok (efekt sa nezdvojí, lebo tím má jedny zdroje)</p></div>
+<div class="roz" id="T1"><span class="qid">T1</span> <b>Čo patrí tímu a čo hráčovi</b>
+  <p><b>Rozhodnuté:</b> „Spoločné zdroje (a iné) budú: Dlhy, prah hazardu (zadĺženia), Cirhóza, prah poškodenia pečene, špaky, cigarety, poldeci. Prah Cirhózy a hazardu bude v 2v2 vyšší o jedna. Začínajúce poldeci budú 3. Začínajúce cigarety budú 4.“ (na tím)</p><p class="zm">nová možnosť · spoločné zdroje aj kliatby (B + C z prvej verzie)</p></div>
+<div class="roz" id="T2"><span class="qid">T2</span> <b>„Tvoja partia“ a „tvoje karty“</b>
+  <p><b>Rozhodnuté:</b> „tvoja partia / tvoje karty“ = vždy tím.</p><p class="zm">C · vždy tím</p></div>
+<div class="roz" id="T4"><span class="qid">T4</span> <b>Ako sa bitka ráta za tím</b>
+  <p><b>Rozhodnuté:</b> bitka všetko súčtom tímu.</p><p class="zm">A · súčet tímu</p></div>
+<div class="roz" id="P1"><span class="qid">P1</span> <b>Kapitán kola</b>
+  <p><b>Rozhodnuté:</b> kapitán sa strieda každé kolo.</p><p class="zm">A · strieda sa</p></div>
+<div class="roz" id="H1"><span class="qid">H1</span> <b>Ruka a balíček (kolo 2)</b>
+  <p><b>Rozhodnuté:</b> ruky osobné, doberací a odhadzovací balíček SPOLOČNÝ tímu.</p><p class="zm">nová otázka z interview</p></div>
+<div class="roz" id="H2"><span class="qid">H2</span> <b>Limit vykladania (kolo 2)</b>
+  <p><b>Rozhodnuté:</b> limit vykladania tímový (plné poldeci tímu), členovia sa delia.</p><p class="zm">nová otázka z interview → podrobnosti Q2</p></div>
+<div class="roz" id="N1"><span class="qid">N1</span> <b>Koľko NA EX za Pitku</b>
+  <p><b>Rozhodnuté:</b> jedno NA EX na tím v Pitke, rozhoduje kapitán.</p><p class="zm">B · tím raz (+ rozhoduje kapitán)</p></div>
+<div class="roz" id="K2"><span class="qid">K2</span> <b>Neresti a Absťák pri tímoch</b>
+  <p><b>Rozhodnuté:</b> neresti a Absťák tímové.</p><p class="zm">B · neresti tímu spolu</p></div>
+
+<h2 id="vyplyva">Čo z toho vyplýva (na potvrdenie, bez otázky)</h2>
+<p class="mini">Priamy dôsledok princípu „tím = jeden hráč, súper = druhý tím“ a rozhodnutí vlny 2. Michal to ešte nepotvrdil — v návrhu paragrafu je to označené [na potvrdenie].</p>
+<div class="tab box"><table><tbody>
+<tr><th>Pas hráča (Q3, presné pravidlo)</th><td><b>Pas = predaj limitu.</b> Keď pasuje člen tímu, vyberie si počet <i>k</i> od 0 do min(zostávajúci limit tímu, karty v jeho ruke) a dostane <i>k</i> cigariet do tímovej kasy; zostávajúci limit tímu klesne o <i>k</i>. Partner hrá ďalej zo zvyšku; keď pasuje aj on, ráta sa rovnako zo zvyšku a jeho ruky. Každá jednotka limitu sa tak buď vyloží, alebo vyplatí — nikdy oboje, ani dvakrát. Hra predvolene ponúkne polovicu zvyšku nahor, a ak partner už pasoval, celý zvyšok. Nevyužité ťahy z Vypiť pas ruší ako dnes. Keď limit tímu klesne na 0, obaja členovia skončili s vykladaním (bez cigariet). <i>Odmietnuté alternatívy:</i> pasujúci berie automaticky celý zvyšok (prvý pas zoberie partnerovi všetky ťahy) / pasujúci dostane polovicu zvyšku nadol bez voľby (jednoduchšie, ale nepredáš limit, ktorý partner nevyužije).</td></tr>
+<tr><th>Záverečná (Q8)</th><td>jedna za tím v Zhromaždení, za 1 cigaretu z tímovej kasy; ukončí vykladanie celého tímu ako pas tímu, ale bez cigariet — ani pre člena, ktorý ešte nepasoval.</td></tr>
+<tr><th>Začiatok kola</th><td>tímu sa otočí <b>jeden</b> vypitý poldeci (tím = hráč); od 2. kola si každá ruka dobere 1 kartu zo spoločného doberacieho balíčka (Q1).</td></tr>
+<tr><th>Zdroje na začiatku</th><td>tím: 3 poldeci, 4 cigarety, 0 špakov; prah Dlhu 3 (2 + 1), prah Cirhózy 4 (3 + 1); Nealko (+2), Krčma (+2) a Výherný automat (+1) sa pripočítajú k tímovému prahu.</td></tr>
+<tr><th>Akcie z línie</th><td>všetky aktívne akcie kariet tímu idú tímu — bojové do bitky, Dlh, Pečeň, Cigareta, Poldeci, Vízia, Robota do tímových zdrojov; Obmedzenie uberá súperskému tímu. Akcie hrany lokality dostane tím s prevahou (otázka T3 odpadla).</td></tr>
+<tr><th>Kapitán rozhoduje</th><td>voľbu a natočenie cieľa, NA EX, Pohoršenia (aj z patronátu a Abstinenta), rozdelenie prebytku (vo finále držiteľ), Víziu (kartu do ktorej ruky), poradie pri exekúcii. Útočník „prvý“ = kapitán útočného tímu (U1).</td></tr>
+<tr><th>Starší</th><td>priazeň aj strach tímu, raz za tím (tím = hráč): Fajčiar a Výpalník dávajú cigarety tímu, Alkoholik vráti poldeci tímu, Kmotor presúva tímové Dlhy súperskému tímu. Prebudený starší patrí tímu. Vydesenie: polovica starších pre tím.</td></tr>
+<tr><th>Kliatby</th><td>Exekútor: polovica tímových Dlhov nahor (ako v 1 na 1); Záhradkár chráni tím. Cirhóza ide do tímového odhadzovacieho balíčka, priznaná dá súperskému tímu +1 tuhé, nepriznaná −3 tímu (obe ruky a balíčky). Absťák tímový; kartu zaň dobere ruka podľa kapitána.</td></tr>
+<tr><th>Zrážka</th><td>jedno NA EX na tím → zrážka len medzi tímami, Výtržník bez zmeny (otázka N2 odpadla).</td></tr>
+<tr><th>Dedičstvo</th><td>tímové (platí sa tímovými cigaretami); Nástroj z ktorejkoľvek ruky; cena rastie spoločne pre oba tímy ako dnes. Efekty „tvoje“ = tím.</td></tr>
+<tr><th>Špaky</th><td>jeden popolník tímu; výkupné z tímových poldeci a cigariet (5 cigariet = 1 špak zo súčtu); remíza v bitke: Absťáky, potom Dlhy tímov.</td></tr>
+<tr><th>Lokality</th><td>Zastávka = spoločný limit oboch tímov; Vínna pivnica = tím dvakrát; Most, Ihrisko, Lesná cesta, Kultúrny dom, Kočovník, Jednota, Benzínka, Cintorín, Herňa rátajú tímy namiesto hráčov.</td></tr>
+<tr><th>Karty</th><td>„súper“ = druhý tím, „ty / tvoj / tvoja partia“ = tím. Jediná výnimka je ruka: karta, ktorú efekt dáva „do ruky“ (Starosta, Hasič, Recidivista, Poštárka, Zberný dvor, Sklad, fajčenie), ide do ruky hráča, ktorý ju spustil; Živnostník priloží Nástroj z ruky toho, kto ho zahral. Partner nie je súper — Konflikt nespúšťa, Úplatok nedáva, Pes s ním nemá „súperov spoj“. Bzdocha: súperský tím hrá Pitku pred tvojím tímom.</td></tr>
+</tbody></table></div>
+
+<h2 id="vlna2">Rozhodnuté — vlna 2 (Michal 2026-10-28)</h2>
+<p class="mini">Text za „Rozhodnuté:“ je zápis z interview tak, ako ho poslal Leader. Zvolená možnosť je orámovaná, odporúčaná má štítok. Q3 a Q8 Michal rozhodol inak, ako som odporúčal.</p>
+<div class="ovl"><button type="button" id="rozbal">Rozbaliť všetko</button><button type="button" id="zbal">Zbaliť</button></div>
+
+  <details class="q" id="Q1" data-v="2">
+    <summary><span class="qid">Q1</span> <span class="qt">Počiatočná ruka a dobratie po bitke</span> <span class="chip v2">#22, #24</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> každá ruka 4, každá dobere 1.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Každý hráč začína so 4 kartami v ruke (Miňištrant, Milujúca manželka, Pijan, Dievčina na vydaj) a prázdnym doberacím balíčkom (<code>PRAVIDLA.md:152-155</code>); od 2. kola si dobere 1 kartu (<code>PRAVIDLA.md:181-183</code>). Teraz je balíček tímový, ruky osobné.</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Každá ruka 4 karty, každá ruka dobere 1</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>tím má 8 štartovacích kariet a dobratie 2 za kolo; balíček tímu je 2× väčší, takže sa míňa rovnako rýchlo ako v 1 na 1.</span></li>
+      <li class="moz"><label> <b>B · Tím 4 karty (2 + 2), dobratie 1 za tím</b></label><span>tím má kariet ako jeden hráč; malé ruky, pri tímovom limite (Q2) jedna ruka často prázdna.</span></li>
+      <li class="moz"><label> <b>C · Každá ruka 4, dobratie 1 za tím</b></label><span>kapitán určí, do ktorej ruky; kompromis — štart plný, prílev ako jeden hráč.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Dve ruky potrebujú dvojnásobný prílev kariet, inak jedna z nich vyschne. Fajčenie, Vízia a efekty „dober kartu“ dávajú kartu do ruky toho, kto ich spustil.</p>
+    <p class="zav"><b>Závisí od:</b> T1, H1 · <b>Ovplyvní:</b> Q2, Q4, Q10</p>
+    
+  </details>
+
+  <details class="q" id="Q2" data-v="2">
+    <summary><span class="qid">Q2</span> <span class="qt">Limit vykladania tímu</span> <span class="chip v2">#22, #24</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> plné poldeci tímu + 1.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Limit = plné poldeci + 1, vždy aspoň 1 (<code>PRAVIDLA.md:332-354</code>). Tím začína s 3 poldeci → limit 4 na dve ruky (v 1 na 1 má hráč 3 na jednu ruku). Na začiatku kola sa každému hráčovi otočí jeden vypitý poldeci — v tíme jeden, alebo dva?</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Plné poldeci tímu + 1</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>štart 4; ruky sa delia ľubovoľne, „aspoň 1“ platí pre tím; na začiatku kola sa tímu otočí 1 poldeci. Línia asi o tretinu dlhšia ako v 1 na 1; jedna ruka môže ostať bez ťahu.</span></li>
+      <li class="moz"><label> <b>B · Plné poldeci tímu + 2</b></label><span>každá ruka má svoju „prvú kartu“, štart 5; obe ruky zahrajú, línia dlhšia, bitka cennejšia (L3).</span></li>
+      <li class="moz"><label> <b>C · Plné + 1, ale každá ruka aspoň 1 kartu</b></label><span>ak partner minul limit tímu, druhý aj tak vyloží jednu; nikto neostane bez ťahu, nové pravidlo „aspoň 1 na ruku“.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Priamy prepis Michalových čísel (3 poldeci). Ak turnaj ukáže ruky bez ťahu, prejsť na C. Na začiatku kola sa otočí 1 poldeci tímu (tím = hráč). Vypiť: každá ďalšia karta v ťahu člena stojí plný poldeci tímu.</p>
+    <p class="zav"><b>Závisí od:</b> H2, T1 · <b>Ovplyvní:</b> Q3, Q8, L3, Zastávka</p>
+    
+  </details>
+
+  <details class="q" id="Q3" data-v="2">
+    <summary><span class="qid">Q3</span> <span class="qt">Pas a cigarety za pas</span> <span class="chip v2">#22, #25</span> <span class="chip zv">rozhodnuté C</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> cigarety hneď každému za seba — kto pasuje, dostane hneď cigarety za svoju časť limitu; cigarety idú do tímovej kasy. <span class="mini">Michal zvolil inú ako odporúčanú možnosť. Ako sa ráta „svoja časť limitu“: pozri Vyplýva → Pas hráča (návrh na potvrdenie).</span></p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Kto pasuje, nevykladá a dostane min(zostávajúci limit, karty v ruke) cigariet (<code>PRAVIDLA.md:357-368</code>). Pri tímovom limite a tímových cigaretách by pas každého člena zvlášť vyplatil ten istý limit dvakrát.</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label> <b>A · Pasuje hráč, cigarety až za pas tímu</b> <span class="chip ok">odporúčané</span></label><span>partner hrá ďalej zo zvyšku limitu; keď pasuje aj on, tím dostane min(zostávajúci limit tímu, karty v oboch rukách). Nič sa nevyplatí dvakrát.</span></li>
+      <li class="moz"><label> <b>B · Pas tímu</b></label><span>kapitán pasuje za oboch; jednoduché, partner prichádza o ťahy.</span></li>
+      <li class="moz zvol"><label> <b>C · Pasuje hráč, cigarety hneď</b> <span class="chip zv">zvolené</span></label><span>min(zostávajúci limit, jeho karty); partner za tú časť limitu už nič; zložité účtovanie.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Každý sa rozhoduje za svoju ruku, tím dostane zaplatené raz. Autobusár: „súper pasuje po tebe“ = súperský tím dokončí pas po tvojom tíme.</p>
+    <p class="zav"><b>Závisí od:</b> Q2 · <b>Ovplyvní:</b> Q8, Autobusár</p>
+    
+  </details>
+
+  <details class="q" id="Q4" data-v="2">
+    <summary><span class="qid">Q4</span> <span class="qt">Stavba šenku a branie</span> <span class="chip v2">#25</span> <span class="chip zv">rozhodnuté B</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> každý člen stavia a berie.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Každý hráč vezme N kariet, polovicu dá do šenku; berie sa striedavo za cigarety (1 za 1, 2 za 3), začína útočník (<code>PRAVIDLA.md:208-240</code>). Tím je teraz jeden hráč so spoločnými cigaretami a dvoma rukami.</p>
+    <ol class="moznosti">
+      <li class="moz"><label> <b>A · Tím stavia ako jeden hráč</b></label><span>N kariet, rozhoduje kapitán (partner vidí); berie sa striedavo tímy, kapitán dá kartu do ktorejkoľvek ruky. Šenok aj tempo ako v 1 na 1, partner v drafte len radí.</span></li>
+      <li class="moz rec zvol"><label> <b>B · Každý člen N/2, berie sa dookola</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>každý stavia zo svojej polovice (do šenku polovicu nahor), berie sa U1 → O1 → U2 → O2 z tímových cigariet do vlastnej ruky; posledná šanca, keď prestane celý tím. Obaja rozhodujú, šenok ostane okolo 8 kariet.</span></li>
+      <li class="moz"><label> <b>C · Stavia kapitán, berú obaja</b></label><span>N kariet stavia kapitán, berie sa dookola do vlastnej ruky.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam B.</b> Draft je jediné miesto pred Zhromaždením, kde môže rozhodovať aj nekapitán; zdroje sa nezdvoja, lebo cigarety sú tímové.</p>
+    <p class="zav"><b>Závisí od:</b> F3, Q1 · <b>Ovplyvní:</b> Starosta, Cintorín, #25</p>
+    
+  </details>
+
+  <details class="q" id="Q5" data-v="2">
+    <summary><span class="qid">Q5</span> <span class="qt">Kto riadi Pitku (fajčenie, doliatie, Kšefty, Úplatok)</span> <span class="chip v2">#22, #25</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> obaja fajčia a platia Kšefty, NA EX a koniec Pitky kapitán.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Pitka je naraz (<code>PRAVIDLA.md:377-392</code>). Cena fajčenia rastie 1, 2, 3… a „každý hráč má počítadlo zvlášť“ (<code>PRAVIDLA.md:484-491</code>); Kšeft lokality smie použiť „každý hráč“ raz za Pitku (<code>PRAVIDLA.md:536-545</code>); Úplatok raz za Pitku na kartu (<code>PRAVIDLA.md:547-551</code>). NA EX dáva tím raz a rozhoduje kapitán (rozhodnuté).</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Obaja hrajú, zdroje a počítadlá tímové</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>fajčiť, dolievať, barterovať a platiť Kšefty smie každý člen z tímových cigariet; karta z fajčenia ide do jeho ruky; cena fajčenia rastie za tím; Kšeft lokality a Úplatok raz za tím; NA EX a „hotovo“ dáva kapitán.</span></li>
+      <li class="moz"><label> <b>B · Všetko robí kapitán</b></label><span>aj fajčenie; kartu dá do ktorejkoľvek ruky. Partner v Pitke len radí.</span></li>
+      <li class="moz"><label> <b>C · Ako A, ale počítadlo fajčenia na ruku</b></label><span>prvé fajčenie každého člena stojí 1; tím fajčí lacnejšie ako hráč 1 na 1 — dve ruky = dvojnásobok lacných kariet.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Obaja majú v Pitke čo robiť, ale tím nedostane nič navyše oproti jednému hráčovi.</p>
+    <p class="zav"><b>Závisí od:</b> T1, N1 · <b>Ovplyvní:</b> Q6, Bzdocha, #25</p>
+    
+  </details>
+
+  <details class="q" id="Q6" data-v="2">
+    <summary><span class="qid">Q6</span> <span class="qt">Odpoveď na NA EX</span> <span class="chip v2">#25</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> jeden člen, určí kapitán.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky (<code>PRAVIDLA.md:470-480</code>). Súperský tím dá v Pitke najviac jedno NA EX (rozhodnuté), takže odpoveď je jedna — no ruky sú dve.</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Jeden člen podľa kapitána</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>odpovie ktorýkoľvek člen zo svojej ruky; kto, rozhodne kapitán (pri bote ten, kto má vhodnú kartu).</span></li>
+      <li class="moz"><label> <b>B · Len kapitán</b></label><span>zo svojej ruky; jednoduché, ale často bez vhodnej karty.</span></li>
+      <li class="moz"><label> <b>C · Obaja</b></label><span>dve karty na jedno NA EX; odpoveď silnejšia ako v 1 na 1, NA EX slabne.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Tím má výhodu dvoch rúk len vo výbere, nie v počte.</p>
+    <p class="zav"><b>Závisí od:</b> N1, Q5 · <b>Ovplyvní:</b> Krčmárka, Kohút</p>
+    
+  </details>
+
+  <details class="q" id="Q7" data-v="2">
+    <summary><span class="qid">Q7</span> <span class="qt">Patronát</span> <span class="chip v2">#22</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> tím jedného, vyberá kapitán.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Každý hráč smie vziať najviac jedného staršieho za kolo; platí cigarety, bolestné poldeci a dá náhradu z ruky (<code>PRAVIDLA.md:900-943</code>). Cigarety aj poldeci sú teraz tímové.</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Tím jedného, vyberá kapitán</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>karta staršieho ide do ruky člena podľa kapitána, náhradu dá ten istý člen. Ako v 1 na 1 (tím = hráč).</span></li>
+      <li class="moz"><label> <b>B · Každý člen jedného</b></label><span>tím až dvoch za kolo z tímových zdrojov; vydesenie sa dá zastaviť ľahšie ako v 1 na 1.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Zladené s „tím = jeden hráč“; sila patronátu ostane rovnaká.</p>
+    <p class="zav"><b>Závisí od:</b> T1, P1 · <b>Ovplyvní:</b> Predsedova vila</p>
+    
+  </details>
+
+  <details class="q" id="Q8" data-v="2">
+    <summary><span class="qid">Q8</span> <span class="qt">Záverečná</span> <span class="chip v2">#22</span> <span class="chip zv">rozhodnuté B</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> Záverečná jedna za tím a končí celý tím. <span class="mini">Michal zvolil inú ako odporúčanú možnosť.</span></p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Za 1 cigaretu karta lícom dole; míňa limit, ukončí vykladanie hráča, v Zhromaždení najviac jedna (<code>PRAVIDLA.md:1110-1130</code>).</p>
+    <ol class="moznosti">
+      <li class="moz"><label> <b>A · Každý člen jednu, končí len jeho</b></label><span>tím môže mať 2 Záverečné v Zhromaždení.</span></li>
+      <li class="moz zvol"><label> <b>B · Jedna za tím, končí celý tím</b> <span class="chip zv">zvolené</span></label><span>presne ako v 1 na 1; partner príde o zvyšok limitu.</span></li>
+      <li class="moz rec"><label> <b>C · Jedna za tím, končí len toho, kto ju zahral</b> <span class="chip ok">odporúčané</span></label><span>skrytá karta ostane vzácna, partner dohrá zvyšok limitu.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam C.</b> Skrytá karta je silná, tak jedna na tím; ukončenie len hráča je zladené s pasom (Q3).</p>
+    <p class="zav"><b>Závisí od:</b> Q2, Q3 · <b>Ovplyvní:</b> —</p>
+    
+  </details>
+
+  <details class="q" id="Q9" data-v="2">
+    <summary><span class="qid">Q9</span> <span class="qt">Čo vidí partner</span> <span class="chip v2">#26</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> partner vidí všetko.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Ruka ostala osobná; NA EX, stavbu šenku, náhradu pri patronáte a Záverečnú pred súpermi skrývame (<code>PRAVIDLA.md:396-402</code>, <code>PRAVIDLA.md:212-216</code>, <code>PRAVIDLA.md:910</code>). <code>viewFor</code> (<code>view.ts:275</code>, nemenné pravidlo 2). Rešerš: online TCG ruky partnerov otvárajú (Two-Headed Giant, Gundam), klasiky pri stole ich skrývajú (<a href="../kniznica/2026-10-28-hra-2-na-2.html">knižnica 2 na 2</a>).</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Všetko</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>ruku partnera aj skryté voľby tímu; viewFor filtruje podľa tímu — najjednoduchší test úniku; férové online.</span></li>
+      <li class="moz"><label> <b>B · Skryté voľby áno, ruku nie</b></label><span>pevné signály (ukazovák, „Pozri sem“); viac čítania partnera, ale kapitán volí NA EX bez znalosti partnerovej ruky a online sa to nedá vynútiť.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Tím je jedna entita, rozhoduje kapitán — musí vidieť, s čím hrá.</p>
+    <p class="zav"><b>Závisí od:</b> F4, H1 · <b>Ovplyvní:</b> L1, Q10, #26</p>
+    
+  </details>
+
+  <details class="q" id="Q10" data-v="2">
+    <summary><span class="qid">Q10</span> <span class="qt">Podanie karty partnerovi</span> <span class="chip v2">#22</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> bez podania.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Ruka je jediné, čo ostalo osobné. Prvý návrh mal „podanie pod stolom“; rešerš: Tichu podáva kartu partnerovi aj súperom, Two-Headed Giant a Gundam presun zakazujú — voľný presun = „jeden hráč s dvoma rukami“ (<a href="../kniznica/2026-10-28-hra-2-na-2.html">knižnica 2 na 2</a>).</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Bez podania</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>karta ostáva v ruke, kam prišla; ruka je osobná zodpovednosť.</span></li>
+      <li class="moz"><label> <b>B · Podanie za ťah</b></label><span>v Zhromaždení namiesto vyloženia dá člen partnerovi kartu; míňa limit tímu. Tímová voľba s cenou, bez stropu.</span></li>
+      <li class="moz"><label> <b>C · Voľne kedykoľvek</b></label><span>dve ruky by boli jedna; rozdelenie rúk by nemalo zmysel.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Kartu už rozdeľuje kapitán pri šenku a dobratí (Q1, Q4). Ak turnaj ukáže zaseknuté ruky, pridať B.</p>
+    <p class="zav"><b>Závisí od:</b> Q1, Q9 · <b>Ovplyvní:</b> L5</p>
+    
+  </details>
+
+  <details class="q" id="Q11" data-v="2">
+    <summary><span class="qid">Q11</span> <span class="qt">Kapitán v tíme s botom a pri odpojení</span> <span class="chip v2">#27</span> <span class="chip zv">rozhodnuté B</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> človek je vždy kapitán.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Kapitán sa strieda každé kolo (rozhodnuté). V tíme človek + bot by bot každé druhé kolo rozhodoval NA EX, patronát, cieľ a prebytok aj za človeka.</p>
+    <ol class="moznosti">
+      <li class="moz"><label> <b>A · Strieda sa aj s botom</b></label><span>rovnaké pravidlo pre všetkých; človek polovicu kôl nerozhoduje.</span></li>
+      <li class="moz rec zvol"><label> <b>B · Človek je vždy kapitán</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>v tíme človek + bot; bot hrá len svoju ruku. Odpojeného kapitána zastúpi bot.</span></li>
+      <li class="moz"><label> <b>C · Strieda sa, bot-kapitán len navrhne</b></label><span>človek potvrdí; najviac práce v UI.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam B.</b> Človek s botom-partnerom chce rozhodovať on.</p>
+    <p class="zav"><b>Závisí od:</b> P1 · <b>Ovplyvní:</b> L4, L5</p>
+    
+  </details>
+
+  <details class="q" id="Q12" data-v="2">
+    <summary><span class="qid">Q12</span> <span class="qt">Predvolená dĺžka (liga) pre 2 na 2</span> <span class="chip v2">#30</span> <span class="chip zv">rozhodnuté A</span><span class="volba"></span></summary>
+    <p class="rozp"><b>Rozhodnuté:</b> Tretia liga.</p>
+    <p class="preco"><b>Prečo bola otvorená.</b> Dĺžky sú teraz ligy: Tretia 3, Druhá 5 (predvolená), Prvá 7 bitiek + finále (<code>PRAVIDLA.md:141-146</code> na masteri). Kolo má viac ťahov (U1 → O1 → U2 → O2), ale tímový limit 4 namiesto 2 × 3 → Zhromaždenie odhadom 1,3–1,6× dlhšie. Rešerš: One Piece Buddy 90 min, Two-Headed Giant 120 min a dlhší ako 1 na 1.</p>
+    <ol class="moznosti">
+      <li class="moz rec zvol"><label> <b>A · Predvolená Tretia liga</b> <span class="chip ok">odporúčané</span> <span class="chip zv">zvolené</span></label><span>3 bitky + finále; ostatné ligy na výber.</span></li>
+      <li class="moz"><label> <b>B · Predvolená Druhá liga</b></label><span>ako v 1 na 1; partia dlhšia.</span></li>
+      <li class="moz"><label> <b>C · Len Tretia liga</b></label><span>menej kombinácií na vyváženie.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Turnaj (#30) zmeria skutočné trvanie.</p>
+    <p class="zav"><b>Závisí od:</b> Q2 · <b>Ovplyvní:</b> #30</p>
+    
+  </details>
+
+<h2 id="vlna3">Neskôr — vlna 3</h2>
+<p class="mini">Stačí rozhodnúť pred stolom (#28), tímovými prvkami (#29) a turnajom (#30).</p>
+
+  <details class="q" id="L1" data-v="3">
+    <summary><span class="qid">L1</span> <span class="qt">Tímová komunikácia</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Pri otvorených kartách (Q9) stačí ukazovák. Voľný chat sa nedá ustrážiť (texty bez etnických nadávok, Michal 2026-10-23).</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L1" value="A"> <b>A · Ukazovák + pevné signály</b> <span class="chip ok">odporúčané</span></label><span>„NA EX sem“, „pasujem“; rozumie aj bot.</span></li>
+      <li class="moz"><label><input type="radio" name="L1" value="B"> <b>B · Voľný tímový chat</b></label><span>bot nerozumie, treba moderovať; rešerš (bridž): chat po partii môže čítať aj súper.</span></li>
+      <li class="moz"><label><input type="radio" name="L1" value="C"> <b>C · Nič</b></label><span>dohoda mimo hry.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> </p>
+    <p class="zav"><b>Závisí od:</b> Q9 · <b>Ovplyvní:</b> #28</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L1" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L2" data-v="3">
+    <summary><span class="qid">L2</span> <span class="qt">Osobná stávka „Idem sám“ / „Na moju päsť“</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Rešerš: tím skryje, kto partiu ťahal; Tichu, Spades a Euchre dávajú hráčovi osobnú stávku. „Idem sám“: partner v kole nevykladá, tím dostane za výhru dvojnásobok špakov za bitku — len pre zaostávajúci tím (zásada „odmena za väčšiu výzvu“) (<a href="../kniznica/2026-10-28-hra-2-na-2.html">knižnica, osobná stávka</a>).</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L2" value="A"> <b>A · Nie</b> <span class="chip ok">odporúčané</span></label><span>v prvej verzii bez stávky.</span></li>
+      <li class="moz"><label><input type="radio" name="L2" value="B"> <b>B · „Idem sám“ len pre zaostávajúci tím</b></label><span>dobiehanie; partner kolo nehrá.</span></li>
+      <li class="moz"><label><input type="radio" name="L2" value="C"> <b>C · „Na moju päsť“</b></label><span>hráč ručí za kraj; ±1 špak za jeho kartu v línii.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Kandidát B do #29 po turnaji, ak 2 na 2 bude mať slabé dobiehanie.</p>
+    <p class="zav"><b>Závisí od:</b> Q2 · <b>Ovplyvní:</b> #29, #30</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L2" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L3" data-v="3">
+    <summary><span class="qid">L3</span> <span class="qt">Hodnota bitky pri dlhšej línii</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> 1 špak za kartu v línii (<code>PRAVIDLA.md:713-717</code>); pri tímovom limite je línia asi o tretinu dlhšia, strach starších rovnaký.</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L3" value="A"> <b>A · Nechať 1 za kartu</b> <span class="chip ok">odporúčané</span></label><span>bitka o niečo cennejšia.</span></li>
+      <li class="moz"><label><input type="radio" name="L3" value="B"> <b>B · Upraviť po turnaji</b></label><span>konštanta len pre 2 na 2.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> </p>
+    <p class="zav"><b>Závisí od:</b> Q2 · <b>Ovplyvní:</b> #30</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L3" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L4" data-v="3">
+    <summary><span class="qid">L4</span> <span class="qt">Zostava, štatistiky a osobná stopa</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Partie s botom sa nerátajú do štatistík (CLAUDE.md). Tímový popolník skryje, kto partiu ťahal (rešerš).</p>
+    <ol class="moznosti">
+      <li class="moz"><label><input type="radio" name="L4" value="A"> <b>A · Akákoľvek zostava, výhra tímu každému</b></label><span>do štatistík a líg len štyria ľudia, 2 na 2 oddelene.</span></li>
+      <li class="moz rec"><label><input type="radio" name="L4" value="B"> <b>B · Navyše osobná stopa</b> <span class="chip ok">odporúčané</span></label><span>vyložené karty, kapitánske kolá, NA EX ako kapitán — v profile, nie vo výsledku.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam B.</b> </p>
+    <p class="zav"><b>Závisí od:</b> Q11 · <b>Ovplyvní:</b> #27, #28</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L4" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L5" data-v="3">
+    <summary><span class="qid">L5</span> <span class="qt">Bot v 2 na 2</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Tím je jedna entita: bot-kapitán robí tímové voľby, bot-partner len hrá ruku.</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L5" value="A"> <b>A · Jeden „mozog“ tímu</b> <span class="chip ok">odporúčané</span></label><span>pri dvoch botoch v tíme rozhoduje jedna inštancia za obe ruky.</span></li>
+      <li class="moz"><label><input type="radio" name="L5" value="B"> <b>B · Bot na mieste</b></label><span>každé miesto zvlášť, tímové voľby len kapitán.</span></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> </p>
+    <p class="zav"><b>Závisí od:</b> Q11 · <b>Ovplyvní:</b> #27, #30</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L5" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L6" data-v="3">
+    <summary><span class="qid">L6</span> <span class="qt">Stôl pre štyroch na telefóne</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Michal hrá na telefóne (390 px); pribudnú dva panely hráčov, jedny tímové zdroje.</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L6" value="A"> <b>A · Pás tímov hore</b> <span class="chip ok">odporúčané</span></label><span>tímové zdroje raz za tím, dve ruky (moja dole, partnerova zložená).</span></li>
+      <li class="moz"><label><input type="radio" name="L6" value="B"> <b>B · Prepínač pohľadu</b></label><span>môj tím / súperi.</span></li>
+      <li class="moz"><label><input type="radio" name="L6" value="C"> <b>C · Prvá verzia len počítač</b></label></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> Najprv tri rôzne rozloženia ako mockupy (zásada „mockupy = rôzne layouty“).</p>
+    <p class="zav"><b>Závisí od:</b> Q9, L1 · <b>Ovplyvní:</b> #28</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L6" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L7" data-v="3">
+    <summary><span class="qid">L7</span> <span class="qt">Časový limit a odpadnutý hráč</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Časový limit ťahu dnes v kóde nie je.</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L7" value="A"> <b>A · Bez limitu, odpadnutého nahradí bot</b> <span class="chip ok">odporúčané</span></label></li>
+      <li class="moz"><label><input type="radio" name="L7" value="B"> <b>B · Limit ťahu, potom ťahá bot</b></label></li>
+      <li class="moz"><label><input type="radio" name="L7" value="C"> <b>C · Odchod = prehra tímu</b></label></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> </p>
+    <p class="zav"><b>Závisí od:</b> Q11 · <b>Ovplyvní:</b> #28</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L7" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L8" data-v="3">
+    <summary><span class="qid">L8</span> <span class="qt">Výučba a pravidlá pre 2 na 2</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Výučba je dnes pre 1 na 1 (partia s Majstrom Melicharom).</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L8" value="A"> <b>A · Kapitola v Pravidlách + krátky úvod pred prvou partiou</b> <span class="chip ok">odporúčané</span></label><span>„Popolník, poldeci aj cigarety máte spoločné, ruku má každý svoju, kapitán rozhoduje.“</span></li>
+      <li class="moz"><label><input type="radio" name="L8" value="B"> <b>B · Samostatná výučba 2 na 2</b></label><span>Melichar ako partner.</span></li>
+      <li class="moz"><label><input type="radio" name="L8" value="C"> <b>C · Len kapitola v Pravidlách</b></label></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> </p>
+    <p class="zav"><b>Závisí od:</b> Q1–Q8 · <b>Ovplyvní:</b> #22</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L8" rows="2"></textarea></label>
+  </details>
+
+  <details class="q" id="L9" data-v="3">
+    <summary><span class="qid">L9</span> <span class="qt">Čo musí ukázať turnaj botov</span><span class="volba"></span></summary>
+    
+    <p class="preco"><b>Prečo bola otvorená.</b> Čísla 2 na 2 (limit, dobratie, šenok, prahy +1, 3 poldeci, 4 cigarety) sú nemerané (#30).</p>
+    <ol class="moznosti">
+      <li class="moz rec"><label><input type="radio" name="L9" value="A"> <b>A · Kritériá ako 1 na 1 + čas</b> <span class="chip ok">odporúčané</span></label><span>vyrovnanosť tímov a strán, strategickosť, dĺžka, nevyužité ruky.</span></li>
+      <li class="moz"><label><input type="radio" name="L9" value="B"> <b>B · Len hrateľnosť</b></label></li>
+    </ol>
+    <p class="odp"><b>Odporúčam A.</b> </p>
+    <p class="zav"><b>Závisí od:</b> Q12 · <b>Ovplyvní:</b> #30, #31</p>
+    <label class="pozn">Poznámka z interview <textarea data-pozn="L9" rows="2"></textarea></label>
+  </details>
+
+<h2 id="stav">Otázky z prvej verzie: čo sa s nimi stalo</h2>
+<div class="tab box"><table><tbody>
+<tr><th>F1, F2, F3, F4, T1, T2, T4, P1, N1, K2</th><td>rozhodnuté (vyššie)</td></tr>
+<tr><th>T3 hrany lokality</th><td>odpadla — akcie idú tímu (T1)</td></tr>
+<tr><th>V1 tímové špaky, V3 výkupné</th><td>odpadli — špaky aj zdroje sú tímové (T1)</td></tr>
+<tr><th>R1, R2 ruka a skryté voľby</th><td>→ <a href="#Q9">Q9</a></td></tr>
+<tr><th>R3 komunikácia</th><td>→ <a href="#L1">L1</a></td></tr>
+<tr><th>R4 podanie</th><td>→ <a href="#Q10">Q10</a></td></tr>
+<tr><th>R5 ručenie a prípitok</th><td>odpadla — Dlhy sú tímové, NA EX jedno na tím</td></tr>
+<tr><th>P2, P3 šenok</th><td>→ <a href="#Q4">Q4</a></td></tr>
+<tr><th>P4 pas</th><td>→ <a href="#Q3">Q3</a></td></tr>
+<tr><th>P5 Pitka</th><td>→ <a href="#Q5">Q5</a></td></tr>
+<tr><th>N2 zrážka</th><td>odpadla — jedno NA EX na tím</td></tr>
+<tr><th>N3 odpoveď</th><td>→ <a href="#Q6">Q6</a></td></tr>
+<tr><th>S1, S3, S4, S5 priazeň, prebytok, Pohoršenia, prebudený</th><td>odpadli — tím = hráč, rozhoduje kapitán</td></tr>
+<tr><th>S2 patronát</th><td>→ <a href="#Q7">Q7</a></td></tr>
+<tr><th>U1 výsady útočníka</th><td>odpadla — U1 je kapitán útočného tímu</td></tr>
+<tr><th>K1 Exekútor, K3 presun Dlhov</th><td>odpadli — Dlhy sú tímové</td></tr>
+<tr><th>C1–C6 Konflikt, Kočovník, Zastávka, Vínna pivnica, Dedičstvo, porovnávacie lokality</th><td>odpadli — súper = druhý tím (pozri „Vyplýva“)</td></tr>
+<tr><th>V2 hodnota bitky</th><td>→ <a href="#L3">L3</a></td></tr>
+<tr><th>B1, B2, B3, B4</th><td>→ <a href="#L4">L4</a>, <a href="#L5">L5</a>, <a href="#L6">L6</a>, <a href="#L7">L7</a></td></tr>
+<tr><th>D1 dĺžka</th><td>→ <a href="#Q12">Q12</a></td></tr>
+<tr><th>D2 turnaj</th><td>→ <a href="#L9">L9</a></td></tr>
+</tbody></table></div>
+
+<h2 id="volby">Moje voľby</h2>
+<p class="mini">Text pre Leadera po interview (voľby a poznámky z tohto zariadenia).</p>
+<div class="ovl"><button type="button" id="kopiruj">Skopírovať voľby</button><button type="button" id="vymaz">Vymazať voľby</button></div>
+<textarea id="vystup" readonly></textarea>
+</main>
+<script>
+(function () {
+  var KLUC = "naex-2na2-otazky-v2";
+  var ulozene = {};
+  try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) {}
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) {} vypis(); }
+  function vypis() {
+    var riadky = [];
+    document.querySelectorAll("details.q").forEach(function (d) {
+      var v = ulozene[d.id], p = ulozene[d.id + "_p"];
+      d.querySelector(".volba").textContent = v ? "→ " + v : "";
+      if (v || p) riadky.push(d.id + ": " + (v || "?") + (p ? " — " + p : ""));
+    });
+    document.getElementById("vystup").value = riadky.join("\n");
+  }
+  document.querySelectorAll("li.moz input").forEach(function (i) {
+    if (ulozene[i.name] === i.value) i.checked = true;
+    i.addEventListener("change", function () { ulozene[i.name] = i.value; uloz(); });
+  });
+  document.querySelectorAll("textarea[data-pozn]").forEach(function (t) {
+    var k = t.getAttribute("data-pozn") + "_p"; t.value = ulozene[k] || "";
+    t.addEventListener("input", function () { ulozene[k] = t.value.trim(); uloz(); });
+  });
+  document.getElementById("rozbal").onclick = function () { document.querySelectorAll("details.q").forEach(function (d) { d.open = true; }); };
+  document.getElementById("zbal").onclick = function () { document.querySelectorAll("details.q").forEach(function (d) { d.open = false; }); };
+  document.getElementById("kopiruj").onclick = function () {
+    var t = document.getElementById("vystup"); t.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value); else document.execCommand("copy");
+  };
+  document.getElementById("vymaz").onclick = function () {
+    if (!confirm("Vymazať všetky voľby a poznámky?")) return;
+    ulozene = {}; uloz();
+    document.querySelectorAll("li.moz input").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll("textarea[data-pozn]").forEach(function (t) { t.value = ""; });
+  };
+  function otvor(id) { var d = document.getElementById(id); if (d && d.tagName === "DETAILS") d.open = true; }
+  if (location.hash) otvor(location.hash.slice(1));
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) { a.addEventListener("click", function () { otvor(a.getAttribute("href").slice(1)); }); });
+  vypis();
+})();
+</script>
+</body>
+</html>
