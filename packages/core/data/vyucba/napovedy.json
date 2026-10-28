@@ -166,7 +166,7 @@
         "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo pribudol Absťák medzi mojimi priznanými",
         "jadro": ["packages/core/src/zavislost.ts:58 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
-      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako súper, dostane ho. Každý ti v bitke uberie 1 tuhé, ale dá ti Pohoršenie navyše, na suchu robíš scény. Ja len radím, rob si, ako chceš.",
+      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako súper, dostane ho. Každý ti v bitke uberie 1 tuhé, ale dá ti Pohoršenie navyše: na suchu robíš scény. Kto pije viac, jedného sa zbaví. Ja len radím, rob si, ako chceš.",
       "zvyraznit": ["bar:abstak"]
     },
     {
