@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Návrhy zlepšení 28. 10. 2026 — NA EX!</title>
+<style>
+:root{--bg:#14110e;--plocha:#1e1914;--plocha2:#2a231c;--text:#f1e8d8;--tlm:#bfb29c;--jantar:#e9ad45;--tehla:#d0563f;--zelena:#7cbf74;--ciara:#3a3027}
+@media (prefers-color-scheme: light){:root{--bg:#f6f0e4;--plocha:#fffaf0;--plocha2:#efe4cf;--text:#2a2016;--tlm:#5e5140;--jantar:#8a5a00;--tehla:#a8321e;--zelena:#2f7a2a;--ciara:#d8c9ad}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:1rem}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{color:var(--jantar);margin:.5rem 0}
+h2{border-bottom:2px solid var(--ciara);padding-bottom:.3rem;margin-top:2.2rem}
+h4{margin:1.1rem 0 .3rem;color:var(--jantar)}
+h5{margin:.7rem 0 .2rem;font-size:.95rem}
+a{color:var(--jantar)}
+a:focus,tr:focus,summary:focus{outline:3px solid var(--jantar);outline-offset:2px}
+.skip{position:absolute;left:-999px}.skip:focus{left:1rem;top:1rem;background:var(--plocha);padding:.5rem}
+.meta,.tlmene{color:var(--tlm);font-size:.92rem}
+.verdikt{background:var(--plocha);border-left:4px solid var(--jantar);padding:.6rem 1rem;border-radius:6px}
+.tab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--plocha)}
+th,td{border-bottom:1px solid var(--ciara);padding:.45rem .55rem;text-align:left;vertical-align:top}
+th{background:var(--plocha2);font-size:.9rem}
+tbody tr[data-ciel]{cursor:pointer}
+tbody tr[data-ciel]:hover{background:var(--plocha2)}
+.krit{display:inline-block;font-size:.78rem;font-weight:700;padding:.05rem .45rem;border-radius:99px;white-space:nowrap;vertical-align:middle}
+.k-kriticka{background:var(--tehla);color:#fff}.k-vysoka{background:var(--jantar);color:#1b1206}.k-stredna{background:var(--plocha2);color:var(--text);border:1px solid var(--ciara)}.k-nizka{background:transparent;color:var(--tlm);border:1px solid var(--ciara)}
+.bod{background:var(--plocha);border:1px solid var(--ciara);border-radius:10px;padding:.4rem 1.1rem 1rem;margin:1.4rem 0}
+.bod h3 .cislo{display:inline-block;min-width:1.8rem;height:1.8rem;line-height:1.8rem;text-align:center;border-radius:50%;background:var(--jantar);color:#1b1206;font-family:system-ui,sans-serif;font-size:1rem;margin-right:.3rem}
+.moznosti{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.8rem}
+.moznost{background:var(--bg);border:1px solid var(--ciara);border-radius:8px;padding:.3rem .8rem .6rem}
+.moznost h4{color:var(--text);font-size:1rem}
+.moznost.odporucana{border:2px solid var(--zelena);box-shadow:0 0 0 3px color-mix(in srgb,var(--zelena) 25%,transparent)}
+.stitok{background:var(--zelena);color:#0d1a0b;font-size:.75rem;padding:.05rem .4rem;border-radius:4px;font-family:system-ui,sans-serif}
+.narocnost{color:var(--tlm);font-size:.88rem;margin-bottom:0}
+.odporucanie{border-left:4px solid var(--zelena);padding:.1rem .9rem;margin-top:1rem;background:var(--plocha2);border-radius:6px}
+.strateg{border-left:4px solid var(--jantar);padding:.4rem .9rem;background:var(--plocha2);border-radius:6px}
+details{margin:.6rem 0;background:var(--plocha2);border-radius:6px;padding:.3rem .8rem}
+summary{cursor:pointer;font-weight:600}
+.otazky li,.rozhodnutia li{margin:.3rem 0}
+.balik{background:var(--plocha);border:2px solid var(--zelena);border-radius:8px;padding:.5rem 1rem}
+footer{margin-top:2.5rem;color:var(--tlm);font-size:.9rem;border-top:1px solid var(--ciara);padding-top:1rem}
+@media (max-width:640px){main{padding:.6rem}.bod{padding:.3rem .7rem .8rem}th,td{padding:.35rem}}
+
+.prehlad td.cislo{white-space:nowrap}
+.prehlad tbody tr[data-ciel]:focus{outline:3px solid var(--jantar);outline-offset:-3px}
+.navrat{font-size:.88rem}
+ol.rozhodnutia{padding-left:1.4rem}
+.oblast{color:var(--tlm);font-size:.85rem}
+@media (max-width:640px){
+ body{font-size:15.5px}
+ h1{font-size:1.45rem}
+ .prehlad thead{position:absolute;left:-9999px}
+ .prehlad,.prehlad tbody,.prehlad tr,.prehlad td{display:block;width:100%}
+ .prehlad tr{border-bottom:2px solid var(--ciara);padding:.4rem 0}
+ .prehlad td{border:0;padding:.15rem .5rem}
+ .prehlad td[data-l]::before{content:attr(data-l) ": ";font-weight:600;color:var(--tlm)}
+ .moznosti{grid-template-columns:1fr}
+ table.sirka{font-size:.85rem}
+}</style>
+</head>
+<body>
+<a class="skip" href="#obsah">Preskočiť na obsah</a>
+<main id="obsah">
+<header>
+<h1>Návrhy zlepšení 28. 10. 2026</h1>
+<p class="meta">Dávka 20261028-090549 · turnus 3 partií strednej hry, prvý playtest pravidiel v8 · report spisovateľa, rozbor a posudok stratéga, 6 feedbackov, denníky a nezrovnalosti, 17 názorov z webu (#117–#133, všetky od AI, od ľudí žiadny) · potvrdenie zo starších playtestov od 19. 10.</p>
+<div class="verdikt">
+<p><strong>Verdikt.</strong> V jednotlivých ťahoch rozhoduje zručnosť (hráči pripísali náhode 2 zo 117 rozhodnutí), ale o víťazovi rozhoduje štruktúra bodovania. Finále so strachom z prebytku váži ako tri bitky: kto ho vyhrá, vyhrá partiu v 92 %, a vedenie z piatich bitiek pred ním znamená málo. Druhý problém je NA EX, ktoré naleje kliatby v každej Pitke kola, takže jeden ťah stál Fera asi 30 špakov a predtým ho nebolo vidieť.</p>
+<p>Ako prvé odporúčam balík zo stratégových meraní: vo finále rozdeľuje prebytok porazený, strach 1 špak za každú novú zónu a cigareta za prvú podstrčenú kartu do prázdneho kraja (body 1 a 4). Zároveň do playtestu poslať kliatby z NA EX len v Pitke odkrytia (bod 2) spolu s hrozbou, ktorá kliatby ukáže (bod 3).</p>
+</div>
+</header>
+
+<section aria-labelledby="h-prehlad" id="prehlad">
+<h2 id="h-prehlad">Prehľad bodov</h2>
+<p class="tlmene">Klik na riadok otvorí detail.</p>
+<div class="tab">
+<table class="prehlad">
+<thead><tr><th scope="col">#</th><th scope="col">Téma</th><th scope="col">Oblasť</th><th scope="col">Prečo je to dôležité</th><th scope="col">Odporúčaná možnosť</th><th scope="col">Náročnosť</th></tr></thead>
+<tbody>
+<tr data-ciel="bod-1" tabindex="0"><td class="cislo" data-l="Bod">1</td><td data-l="Téma"><a href="#bod-1">Finále a strach rozhodujú partiu</a> <span class="krit k-kriticka">kritická</span></td><td data-l="Oblasť">pravidlá</td><td data-l="Prečo">Víťaz finále vyhrá partiu v 92–94 %, vedúci pred finále len v 52–57 %; návrh #28 nezabral.</td><td data-l="Odporúčam">C · Oboje spolu: finále rozdeľuje porazený a strach 1 za zónu</td><td data-l="Náročnosť">malá</td></tr>
+<tr data-ciel="bod-2" tabindex="0"><td class="cislo" data-l="Bod">2</td><td data-l="Téma"><a href="#bod-2">NA EX: kliatby v každej Pitke</a> <span class="krit k-kriticka">kritická</span></td><td data-l="Oblasť">pravidlá</td><td data-l="Prečo">Jeden ťah za 1 poldeci stál Fera asi 30 špakov; hlásilo 5 zo 6 hráčov a opakuje sa od 19. 10.</td><td data-l="Odporúčam">B · Kliatby z NA EX len v Pitke odkrytia, k tomu hrozba</td><td data-l="Náročnosť">stredná</td></tr>
+<tr data-ciel="bod-3" tabindex="0"><td class="cislo" data-l="Bod">3</td><td data-l="Téma"><a href="#bod-3">Náhľady nevidia celú cenu</a> <span class="krit k-vysoka">vysoká</span></td><td data-l="Oblasť">rozhranie</td><td data-l="Prečo">Cirhóza z cudzieho NA EX prekvapila 4 zo 6; návrh #1 nezabral po druhý raz a je podmienkou bodu 2.</td><td data-l="Odporúčam">B · A a k tomu efekty Prehra a prebytok v jednom výpočte jadra</td><td data-l="Náročnosť">stredná</td></tr>
+<tr data-ciel="bod-4" tabindex="0"><td class="cislo" data-l="Bod">4</td><td data-l="Téma"><a href="#bod-4">Ping-pong: útočník vyhrá 3 zo 4</a> <span class="krit k-vysoka">vysoká</span></td><td data-l="Oblasť">pravidlá</td><td data-l="Prečo">Útočník vyhrá 76–77 % bitiek a zmena finále to sama nezmení; rovnováha je dlhodobo najnižšia známka.</td><td data-l="Odporúčam">C · Prvá podstrčená karta do prázdneho kraja stojí 1 cigaretu</td><td data-l="Náročnosť">malá</td></tr>
+<tr data-ciel="bod-5" tabindex="0"><td class="cislo" data-l="Bod">5</td><td data-l="Téma"><a href="#bod-5">Noviny otočia bitku o 20</a> <span class="krit k-stredna">stredná</span></td><td data-l="Oblasť">karty</td><td data-l="Prečo">Za 2 cigarety presun 20 špakov; zhodli sa víťaz aj obeť (1 partia).</td><td data-l="Odporúčam">B · Víťaz nedostane špaky za bitku</td><td data-l="Náročnosť">malá</td></tr>
+<tr data-ciel="bod-6" tabindex="0"><td class="cislo" data-l="Bod">6</td><td data-l="Téma"><a href="#bod-6">Medzery v pravidlách v8</a> <span class="krit k-stredna">stredná</span></td><td data-l="Oblasť">pravidlá</td><td data-l="Prečo">Hra robí správne, pravidlá mlčia alebo si odporujú; vydesenie vo finále mení výsledok. Návrh #7 nezabral.</td><td data-l="Odporúčam">A · Dopísať dnešné správanie, vydesenie rozhodne aj vo finále</td><td data-l="Náročnosť">malá</td></tr>
+</tbody>
+</table>
+</div>
+<p class="balik"><strong>Súvislosti.</strong> Body 1 a 4 stratég zmeral spolu: finále C a cigareta za prvú podstrčenú kartu dajú rozdiel 15,2 špaka, stompy 37 % a útočník vyhrá 68 % bitiek (dnes 26,2 · 73 % · 76 %). Bod 3 je podmienkou bodu 2 (hrozba s kliatbami) a bodu 1 (porazený vo finále vidí, koľko víťazovi zaplatí). Bod 5 sa opiera o riadok v odhade z bodu 3.</p>
+</section>
+
+<section aria-labelledby="h-body">
+<h2 id="h-body">Body</h2>
+<section class="bod" id="bod-1" aria-labelledby="h-1">
+<h3 id="h-1"><span class="cislo">1</span>Finále a strach rozhodujú partiu, päť bitiek pred finále skoro nič neznamená <span class="krit k-kriticka">kritická</span></h3>
+<p class="oblast">Oblasť: pravidlá · kľúč finale-a-strach</p>
+<h4>Problém</h4>
+<p>Pravidlá v8 odstránili rentu zo zaparkovaného markera, ale strach starších ostal najväčšou zložkou rozdielu. Vo finále si prebytok rozdelí víťaz sám a nové zóny sa mu hneď vyplatia, takže finále váži ako tri bitky. U botov vyhrá partiu víťaz finále v 92–94 %, kým hráč, ktorý viedol pred finále, len v 52–57 % (dve merania stratéga, pred exekúciou po poškodení a po nej). Vedenie z piatich bitiek tak má hodnotu hodu mincou.</p>
+<p>V playteste rozhodla jedna politická bitka: Šimon dostal v K5 za strach 23 špakov a za karty 5.</p>
+<h4>Čo ho spôsobuje</h4>
+<p>Tri pravidlá spolu. (1) §9.4 a §14b: vo finále rozdeľuje prebytok jeho držiteľ (engine.ts rozdelujePrebytok vracia vo finále držiteľa) a strach za zóny, ktoré tým vzniknú, sa mu vyplatí hneď. Michal 2026-10-28 to zvolil zámerne: „porazenému sú priazne na nič“. (2) §14: nová zóna platí žltá 1, oranžová 2, červená 3, cesta zo stredu na červenú teda 6 špakov. (3) Pohoršenia (Abstinent, patronát, hrana) vyrobia nové zóny v tej istej bitke, v ktorej sa vyplatia.</p>
+<h4>Ako sa prejavuje</h4>
+<p>Partia 3: strach dal Šimonovi 30 zo 43 špakov (70 %), v K5 23 z 28; bez strachu by vyhrala Hela 20 : 13. Partia 1: Vilo vo finále posunul prebytkom Krčmárku a Hrobára na Ferovu červenú a hneď dostal 6 špakov. Návrh #28 je preto vrátený ako nezabratý: strach tvoril 28 / 0 / 70 % špakov víťaza, cieľ bol najviac 35 %.</p>
+<p>U botov má finále priemerne 10,8 špaka za karty a 16,0 za strach, bežná bitka posunie rozdiel o 9 špakov, finále o 27.</p>
+<details><summary>Dôkazy (5)</summary><ul><li>stratég 20261028-090549: víťaz finále vyhrá partiu v 94 % (v7 78 %), vedúci pred finále v 52 %; priemerný rozdiel 26,7 špaka (v7 18,8), rozdiel nad 15 v 71 % partií (v7 49 %), otočky 47 % (cieľ 20–40 %)</li><li>playtest 20261028-090549-3, Šimon: „žiadny iný zdroj nepridal viac než 11 špakov za bitku“, K5 23 z 28 za strach; Hela (#120): „Pohoršenia z priazní sú dnes silnejšie než karty a rozhodujú aj finále“</li><li>playtest 20261028-090549-1, Fero (#125): súper „posunul dvoch starších ku mne na červenú a v tej istej chvíli dostal za nové zóny 6 špakov“; Vilo to potvrdzuje</li><li>návrh #28 (dávka 20261027-161907) nezabral: strach 28 / 0 / 70 % špakov víťaza, Šimon a Hela ho nazvali rentou</li><li>stratég, posudok (master b3f8dce s exekúciou po poškodení): dnes víťaz finále vyhrá partiu v 92 %, vedúci pred finále v 57 %, strach 39 % špakov víťaza; s balíkom C 76 %, 63 / 79 % a 24 %</li></ul></details>
+<h4>Možnosti riešenia</h4>
+<div class="moznosti">
+<div class="moznost">
+<h4>A · Vo finále rozdeľuje prebytok porazený </h4>
+<p>Výnimka pre finále v §9.4 a §14b zanikne: aj vo finále vyberá starších hráč, proti ktorému sa prebytok ráta (porazený, pri sekere ten s nižším celkovým poškodením). Markery idú ako doteraz (starší sa začnú báť víťaza) a nové zóny sa víťazovi finále vyplatia hneď, len ich už nevyberá on. Strach 1 · 2 · 3 ostáva. Zmena v engine.ts rozdelujePrebytok, §9.4, §14b, ťaháku, výučbe finále a v náhľade prebytku.</p>
+<h5>Čo to spraví</h5>
+<p>Stratég (master b3f8dce, s exekúciou po poškodení): rozdiel 26,2 → 19,1 (mix 27,5 → 21,9), stompy 73 → 52 %, víťaz finále vyhrá partiu 92 → 86 %, vedúci pred finále 57 → 63 % (mix 70 %), strach 39 → 30 % špakov víťaza, otočky 37 → 33 %, rebrík bez zmeny (50 / 63 %). Je to polovica účinku C. Statický prepočet: partia 1 73 → 67, partia 3 11 → 6. Porazený vo finále získa obranu proti strachu (vráti markery k stredu), pravidlo je o vetu kratšie. Mení Michalovo rozhodnutie z 28. 10.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost">
+<h4>B · Strach 1 špak za každú novú zónu </h4>
+<p>§14 a §10: starší zaplatí víťazovi 1 špak za každú zónu, ktorú mu ešte nezaplatil: žltá 1, oranžová 1, červená 1 (zo stredu na červenú spolu 3 namiesto 6). Všetko ostatné z v8 ostáva: raz za zónu, ústup k stredu vyplatené zóny zmaže, pri sekere obom. Stupnica 1 · 2 · 3 ostáva pre priazeň a vydesenie, mení sa len cena v špakoch. Zmena vo funkcii hodnoty zón, v bote (odhad novej zóny), na stupnici v klientovi, v ťaháku a výučbe.</p>
+<p>Medzistupeň 1 · 1 · 2 (zo stredu na červenú 4) stratég zmeral: spolu so zmenou finále rozdiel 18,8, stompy 58 %, víťaz finále 82 %, ale rebrík pri malej chybe 43 % (horší ako dnes). Je to ústupok pre prípad, že červená má stáť viac, nie lepšia možnosť.</p>
+<h5>Čo to spraví</h5>
+<p>Stratég (master 6827e2d, samotná zmena zón): rozdiel 26,7 → 17,2, stompy 71 → 44 % (nad 25 špakov 51 → 26 %), strach 41 → 27 % špakov víťaza a partie so strachom nad 50 % 21 → 1 %, víťaz finále 94 → 82 %, rebrík 48 / 73 → 62 / 65 %. Statický prepočet: partia 3 by vyhrala Hela o 1 (Šimonov plán K4 → K5 by dal 11 špakov namiesto 23). Plán cez Pohoršenia ostáva najväčšou zložkou bitky, len sám neotočí partiu.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost odporucana">
+<h4>C · Oboje spolu: finále rozdeľuje porazený a strach 1 za zónu <span class="stitok">odporúčam</span></h4>
+<p>Zmeny A aj B naraz.</p>
+<h5>Čo to spraví</h5>
+<p>Stratég zmeral C dvakrát po 270 partiách botov, pred exekúciou po poškodení a po nej. Na aktuálnom masteri b3f8dce: rozdiel 26,2 → 19,0 (mix 27,5 → 19,6), stompy 73 → 53 %, nad 25 špakov 50 → 23 %, víťaz finále vyhrá partiu 92 → 76 %, vedúci pred finále 57 → 63 % (mix 58 → 79 %), strach 39 → 24 % špakov víťaza, otočky 37 → 29 %, rebrík pri ε = 0,1 50 → 63 %, pri ε = 0,25 62 → 67 %. Na staršom masteri 6827e2d vyšlo to isté v silnejšej miere (rozdiel 15,7, stompy 41 %, víťaz finále 72 %).</p>
+<p>Riziko: útočník ďalej vyhrá asi 77 % bitiek; rieši to bod Ping-pong (možnosť C). Spolu s ňou je to najlepší zmeraný balík: rozdiel 15,2, stompy 37 %, víťaz finále 64 %, vedúci pred finále 74 %.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost">
+<h4>D · Konečné zúčtovanie strachu po finále obom </h4>
+<p>Počas hry ostáva „strach len víťazovi“. Po finále dostanú obaja hráči špaky za nevyplatené zóny starších, ktorí sa ich boja (podľa toho, aká hodnota zón platí). Banka porazeného tak neprepadne.</p>
+<h5>Čo to spraví</h5>
+<p>Stratég (master 6827e2d, znova nemeral, C ho prekonáva): samotné rozdiel 21,8, stompy 63 %, víťaz finále 80 %, vedúci pred finále 69 %, otočky 35 %; so strachom 1 za zónu rozdiel 15,7, stompy 47 %, víťaz finále 67 %. Statický prepočet partie 3: 43 : 44, vyhrala by Hela. Cena: vracia výplatu porazenému, ktorú v6.1 zámerne zrušila, a víťaz finále musí rátať aj so súperovou bankou; balík C dosiahne to isté jednoduchšie.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+</div>
+<div class="odporucanie"><h4>Odporúčanie</h4>
+<p>C so strachom 1 · 1 · 1, zaviesť hneď a overiť playtestom. Stratég zmeral C dvakrát po 270 partiách botov (pred exekúciou po poškodení a po nej) a je to jediný variant, pri ktorom má vedenie pred finále váhu (63–79 %) a zručnosť neklesne (rebrík 50 → 63 %). Medzistupeň 1 · 1 · 2 je podľa stratéga horší vo všetkom okrem otočiek.</p>
+<p>Prečo by to zabralo tam, kde #28 nezabral: #28 zrušil opakovanú výplatu zaparkovaného markera a to fungovalo (52–78 % → 28 / 0 / 70 %). Nechal však vysokú cenu jednej cesty na červenú (6) a výrobu zón vo finále, kde ich víťaz vyberá sám sebe. C zmenší práve tieto dve veci. Michal pred playtestom zvolil 1 · 2 · 3; dnes sú čísla: pri 1 · 2 · 3 tvorí strach 39–41 % špakov víťaza u botov a 70 % v partii 3.</p>
+<p>Súvisí s bodom Ping-pong (jeho možnosť C je zmeraná práve s týmto balíkom) a s bodom Náhľady: porazený vo finále musí pri prebytku vidieť, koľko víťazovi zaplatí.</p></div>
+<p class="strateg"><strong>Stratég:</strong> Podporuje C s 1 · 1 · 1: na aktuálnom masteri víťaz finále 92 → 76 %, strach 39 → 24 %, rebrík 50 → 63 %; 1 · 1 · 2 je horšie (rebrík 43 %).</p>
+<h4>Čo musí Michal rozhodnúť</h4>
+<ul class="otazky"><li>Vo finále rozdeľuje prebytok porazený ako v každej inej bitke? áno / nie</li><li>Strach za novú zónu: 1 · 1 · 1 (odporúčané), 1 · 1 · 2 (ústupok, pri malej chybe trestá horšie), alebo ponechať 1 · 2 · 3?</li><li>Ak ani C nestačí: skúsiť konečné zúčtovanie strachu obom (D)? áno / nie</li></ul>
+<h4>Ako overiť v ďalšom playteste</h4>
+<ul><li>Strach tvorí v každej partii najviac 35 % špakov víťaza a v žiadnej bitke nedá víťazovi viac špakov ako karty v línii.</li><li>Hráč, ktorý viedol pred finále, vyhrá aspoň 2 z 3 partií.</li><li>Najviac 1 z 3 partií skončí rozdielom nad 15 špakov.</li></ul>
+<p class="navrat"><a href="#prehlad">↑ späť na prehľad</a></p>
+</section>
+<section class="bod" id="bod-2" aria-labelledby="h-2">
+<h3 id="h-2"><span class="cislo">2</span>Jedno skryté NA EX naleje súperovi kliatby v každej Pitke kola, až za −30 špakov <span class="krit k-kriticka">kritická</span></h3>
+<p class="oblast">Oblasť: pravidlá · kľúč naex-kliatby-kazda-pitka</p>
+<h4>Problém</h4>
+<p>NA EX na kartu s neaktívnym Dlhom alebo Poškodením pečene zdvojí tieto kliatby v každej Pitke kola, pokiaľ karta leží. Silná, nezávislá žena vedľa ich zdvojí ešte raz, teda ×4. Obeť to vopred nevidí. Po odkrytí smie odpovedať jedinou kartou a vonkajšie hrany sú často obsadené. Jeden ťah za 1 poldeci tak rozhodne partiu viac ako päť bitiek.</p>
+<h4>Čo ho spôsobuje</h4>
+<p>§7 NA EX: „NA EX leží na karte až do bitky — jej akcie sa vyhodnotia v každej Pitke kola.“ §7 Vyhodnotenie Pitky: násobky sa násobia, NA EX × Silná žena = ×4 aj pri Dlhu a Poškodení pečene. Text Silnej ženy pritom hovorí „aktívne akcie tvojich kariet“, hra však násobí aj neaktívne akcie zdvojené cez NA EX. V8 navyše premenila každý Dlh na špaky: Exekútor bez prahu berie polovicu Dlhov a rovnako veľa špakov a Herňa dá víťazovi špak za každý zvyšný Dlh porazeného. HROZBA NA STOLE (hrozba.ts) ukazuje len tuhé, kliatby nie (bod Náhľady).</p>
+<h4>Ako sa prejavuje</h4>
+<p>Partia 1, finále: Vilo dal NA EX na Ferovu Recidivistu vedľa Silnej ženy a potom na Pijana. Výsledok: 9 zadĺžení za Pitku, spolu 17 Dlhov, Exekútor −9 špakov, Herňa +9 Vilovi, 7 Cirhóz −21, teda asi −30 špakov za 2 poldeci. Fero mal 8 kariet v ruke a neodpovedal, lebo hrozbu nevidel. Partia 2, K2: jedno NA EX dalo Eve 3 Cirhózy (−9). Nepriznané Cirhózy spolu −45, cieľ návrhu #33 bol −25.</p>
+<p>To isté navrhlo 5 zo 6 hráčov. Problém sa opakuje od 20261019-055945 (Jano po 2. kole 9 Dlhov a 6 Cirhóz) a v 20261027-161907 (#108), vtedy ho stratég bez merania odporučil zamietnuť.</p>
+<details><summary>Dôkazy (5)</summary><ul><li>playtest 20261028-090549-1, Vilo (#126): „rozsah (−30 špakov za 2 poldeci) zjavne nepatrí do hry“; Fero (#124): „Cigarety ani Povera proti tomu nemajú čo robiť“, hrozbu klient neukázal</li><li>web #108 (Jano, 3 cigarety) s potvrdeniami #100 (Šimon) a #105 (Jano), ďalej #106 (Eva), #122 (Hela): kliatby z NA EX len v Pitke odkrytia</li><li>návrh #33 nezabral: Cirhóza z cudzieho NA EX prekvapila 4 zo 6 hráčov, Cirhózy spolu −45</li><li>stratég: kliatby z cudzieho NA EX sú v mape náhody „vysoká závažnosť, prichádzajú po rozhodnutí“; boti takéto NA EX cielene nestavajú (rozdiel 26,7 → 26,8), statický prepočet partie 1 73 → asi 55</li><li>stratég, statický prepočet (posudok): Ferovo zadĺženie / pečeň v partii 1 dnes 38 / 24, s B 18 / 16, s C 22 / 16, s B aj C 12 / 12; partia 2 Jano 30 → 24, partia 3 Šimon 16 → 12</li></ul></details>
+<h4>Možnosti riešenia</h4>
+<div class="moznosti">
+<div class="moznost">
+<h4>A · Pravidlo nemeniť, len ukázať hrozbu </h4>
+<p>HROZBA NA STOLE ukáže pri každej karte, na ktorú súper ešte môže dať NA EX, aj kliatby do konca kola: Dlhy, Cirhózy, exekúciu a Herňu v špakoch. Je to časť A bodu Náhľady; vyber ju tu, ak nechceš meniť pravidlo.</p>
+<h5>Čo to spraví</h5>
+<p>Obeť vidí bombu a môže inak postaviť líniu. Samotná zmena nezmenší −30, keď sa karta už nedá chrániť. Stratég: „viac informácie o bombe, ktorú nemožno zastaviť“.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost odporucana">
+<h4>B · Kliatby z NA EX len v Pitke odkrytia, k tomu hrozba <span class="stitok">odporúčam</span></h4>
+<p>§7: NA EX zdvojí neaktívne Dlh, Poškodenie pečene a Poldeci len v Pitke, v ktorej sa odkrylo. V ďalších Pitkách kola karta s NA EX kliatby nepridáva: aktívne ostávajú zrušené, neaktívne sú len neaktívne. Cigareta, Obmedzenie a Vízia zo zdvojených akcií platia v každej Pitke ako dnes (NA EX na vlastnú kartu je plán, nie bomba). Tuhé (zdvojené Rany, Pecky) platí v bitke ako dnes. Pečeň +1 tomu, kto NA EX dal, a efekty pri odkrytí (Výpalné, Kar) ostávajú. K tomu hrozba z možnosti A.</p>
+<p>V jadre: značka Pitky odkrytia na karte, vyhodnotenie Pitky, výhľad Pitky, náhľad NA EX a hrozba. Prepísať §7, ťahák a skúsenosti spolocne-17 a spolocne-22.</p>
+<h5>Čo to spraví</h5>
+<p>Hráč volí, v ktorej Pitke NA EX dá, a obeť vie, čo ju to bude stáť. Stratég (statický prepočet): Ferovo zadĺženie / pečeň v partii 1 38 / 24 → 18 / 16, teda asi o 10 Dlhov a 2–3 Cirhózy menej, rozdiel 73 → asi 55; v partiách 2 a 3 o 2–6 zadĺžení a 2–4 pečene na hráča menej. Boti: rozdiel bez zmeny (bomby cielene nestavajú), najviac Cirhóz u hráča 3,4 → 2,8, rebrík v šume. Rozšírenie na Cigaretu, Obmedzenie a Víziu stratég neodporúča: vzalo by Janovi 8 cigariet a Šimonovi 4 Obmedzenia z NA EX na vlastnú kartu. Cena: slabšie kombo NA EX × Silná.</p>
+<p class="narocnost">Náročnosť: stredná</p>
+</div>
+<div class="moznost">
+<h4>C · B a k tomu Silná žena nezdvojuje zdvojenie z NA EX </h4>
+<p>Všetko z B. Navyše Silná, nezávislá žena zdvojí len akcie, ktoré sú aktívne, ako hovorí jej text; neaktívne akcie zdvojené cez NA EX ostanú ×2. Najvyšší násobok kliatby bude ×2 namiesto ×4. Upraviť §7 (veta o ×4).</p>
+<h5>Čo to spraví</h5>
+<p>Odstráni rozpor medzi textom karty a hrou. Stratég (statický prepočet): sama uberie Ferovi v partii 1 16 zadĺžení (38 → 22), s B spolu 38 / 24 → 12 / 12; v partiách 2 a 3 Silná vedľa NA EX nebola, bez zmeny. Dotkne sa aj tuhého: neaktívne Pecky a Rany zdvojené cez NA EX vedľa Silnej dajú ×2 namiesto ×4. Silná ostáva silná na aktívne akcie (Eva K5: Robota ×2).</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+</div>
+<div class="odporucanie"><h4>Odporúčanie</h4>
+<p>B, najprv v playteste (boti tieto bomby nestavajú, preto meranie účinok neukáže). V ďalších Pitkách kola karta kliatby nepridáva vôbec, nie ×1: pri ×1 by sa vrátili aj aktívne kliatby, ktoré NA EX zrušilo (partia 1 K3: Vilovi +4 zadĺženia), a NA EX na súperovu kartu s aktívnym Dlhom by stratilo zmysel. Hrozba s kliatbami (bod Náhľady) je podmienka, nie riešenie.</p>
+<p>Prečo B zaberie tam, kde #33 nie: #33 znížil cenu jednej Cirhózy (−5 → −3), počet kliatob však ostal. Problém je počet Pitiek krát násobok a ten B rieši priamo. C pridať, ak Michal chce, aby text Silnej ženy platil doslova; stratég ho podporuje ako voliteľný doplnok.</p></div>
+<p class="strateg"><strong>Stratég:</strong> Podporuje B (v ďalších Pitkách nič, nie ×1), C ako voliteľný doplnok; rozšírenie na Cigaretu, Obmedzenie a Víziu neodporúča. Partia 1: zadĺženie / pečeň 38 / 24 → 18 / 16.</p>
+<h4>Čo musí Michal rozhodnúť</h4>
+<ul class="otazky"><li>Kliatby z NA EX len v Pitke odkrytia (B)? áno / nie</li><li>V ďalších Pitkách kola karta s NA EX kliatby nepridáva vôbec (odporúčané, zmerané), alebo sa ráta ×1 ako bez NA EX?</li><li>Má Silná, nezávislá žena zdvojovať aj akcie zdvojené cez NA EX (dnes áno, text karty hovorí „aktívne akcie“)? áno / nie</li></ul>
+<h4>Ako overiť v ďalšom playteste</h4>
+<ul><li>Nepriznané Cirhózy spolu za tri partie stoja najviac −25 špakov.</li><li>Žiadne jedno NA EX nezmení rozdiel v partii o viac ako 15 špakov (spisovateľ prepočíta Dlhy, Exekútora, Herňu a Cirhózy z neho).</li><li>Žiadny hráč neoznačí cudzie NA EX za ťah, ktorý nevidel vopred alebo proti ktorému sa nedalo brániť.</li></ul>
+<p class="navrat"><a href="#prehlad">↑ späť na prehľad</a></p>
+</section>
+<section class="bod" id="bod-3" aria-labelledby="h-3">
+<h3 id="h-3"><span class="cislo">3</span>Náhľady stále neukazujú celú cenu: kliatby z cudzieho NA EX, efekty Prehra a vydesenie pri prebytku <span class="krit k-vysoka">vysoká</span></h3>
+<p class="oblast">Oblasť: rozhranie · kľúč nahlady-cena-v8</p>
+<h4>Problém</h4>
+<p>Zásada „čo vidíš, to platí“ platí pre tuhé: všetci šiesti hráči prepočítali bitky vopred na bod. Neplatí však pre kliatby z cudzieho NA EX, pre efekty, ktoré prídu po bitke, a pre vydesenie pri rozdeľovaní prebytku. Kto hrozbu nevidí, prehrá na nepozornosti, nie na zlom pláne. Návrh #1 je preto po druhý raz vrátený ako nezabratý.</p>
+<h4>Čo ho spôsobuje</h4>
+<p>(1) hrozba.ts ráta najhorší prípad len v tuhom a riadok ukáže, len keď NA EX zmení víťaza alebo prebytok. NA EX, ktoré nalialo 17 Dlhov bez zmeny víťaza, neukáže vôbec. (2) Náhľad NA EX a odhad bitky na webe (core/nahlady.ts) nepoznajú efekty Prehra (Dievčina na vydaj, Farár, Podvodník). Klient AI hráčov ich od opravy 5ae0572 ráta sám v tools/playtest/texty-hraca.ts (efektyPrehry), web nie, takže sú dva výpočty. (3) Odhad Pohoršení súpera z priazne a patronátu ukazuje jeden variant. (4) Pri rozdeľovaní prebytku chýba, čo krok spraví s vydesením a so strachom víťaza.</p>
+<h4>Ako sa prejavuje</h4>
+<p>Cirhóza z cudzieho NA EX prekvapila Fera (7 Cirhóz), Evu (K2, K4), Šimona (K4, finále) a Helu (až po odkrytí); hrozbu vopred videli len Jano a Vilo. Eva: náhľad NA EX na Dievčinu na vydaj ukázal „súper Dlh +1“, po bitke dostala 3 Dlhy. Hela: odhad nadhodnotil súperove Pohoršenia o 3. Šimon v K4 šiestym povinným krokom prebytku zrušil vlastné ohlásené vydesenie: „Hra mi to nepovedala, kým sa to nestalo.“</p>
+<details><summary>Dôkazy (4)</summary><ul><li>návrh #33 nezabral: 4 zo 6 hráčov prekvapila Cirhóza z cudzieho NA EX; Fero: „HROZBA NA STOLE: … tuhé ty 2 : súper 6“, pečeň a Dlhy nie</li><li>playtest 20261028-090549-2, Eva (k #122): „náhľad NA EX na súperovu Dievčinu na vydaj ukázal súper Dlh +1, ale po jej prehre som ja ako víťaz dostala 3 Dlhy“</li><li>playtest 20261028-090549-3, Šimon (#118): pri prebytku chýba „po tomto kroku bude vydesených ty X / súper Y“</li><li>návrh #1 (dávka 20261021-143600) nezabral už v playteste 20261027-062058; Michal ho poslal do tejto dávky s novými nálezmi (hrozba len v tuhom, Prehra na webe)</li></ul></details>
+<h4>Možnosti riešenia</h4>
+<div class="moznosti">
+<div class="moznost">
+<h4>A · Hrozba ukáže aj kliatby </h4>
+<p>hrozba.ts: pre každú kartu, na ktorú súper ešte môže dať NA EX (len z verejného stavu, ruka sa nepočíta), spočítať aj kliatby do konca kola: nové Dlhy a Cirhózy oboch, exekúciu a Herňu v špakoch. Ten istý výpočet ako výhľad Pitky a výhľad Dlhov (nahladPitky, vyhladDlhov), nie nový vzorec. Riadok ukázať aj vtedy, keď sa víťaz bitky nezmení, ak NA EX pridá aspoň 1 Cirhózu alebo 1 Dlh. Na webe pri karte červená značka „ak súper dá NA EX: Dlh +k, Cirhóza +m, −s špakov“, v klientovi AI hráčov rovnaký riadok.</p>
+<h5>Čo to spraví</h5>
+<p>Odstráni hlavný dôvod nezabratia #33. Hráč stavia líniu podľa ceny. Nepomôže pri efektoch Prehra a pri prebytku.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost odporucana">
+<h4>B · A a k tomu efekty Prehra a prebytok v jednom výpočte jadra <span class="stitok">odporúčam</span></h4>
+<p>Všetko z A a k tomu:</p>
+<p>(1) Efekty Prehra (Dievčina na vydaj, Farár, Podvodník) presunúť z tools/playtest/texty-hraca.ts do core/nahlady.ts. Odhad bitky aj náhľad NA EX na webe ukážu riadok „po bitke: súper získa 3 Dlhy (Dievčina na vydaj)“; klient AI hráčov použije ten istý výpočet.</p>
+<p>(2) Pri rozdeľovaní prebytku pri každom staršom: „po tomto kroku vydesených ty X / súper Y; víťaz dostane za nové zóny +Z špakov“.</p>
+<p>(3) Odhad Pohoršení súpera ako rozsah (najmenej – najviac), nie jeden variant.</p>
+<p>Pravidlá sa nemenia.</p>
+<h5>Čo to spraví</h5>
+<p>Zavrie všetky nálezy tohto turnusu k náhľadom a odstráni druhý výpočet v klientovi AI. Je podmienkou bodu NA EX (možnosť B tam ráta s hrozbou s kliatbami).</p>
+<p class="narocnost">Náročnosť: stredná</p>
+</div>
+</div>
+<div class="odporucanie"><h4>Odporúčanie</h4>
+<p>B, implementovať hneď; pravidlá sa nemenia. Prečo by to zabralo tam, kde #1 nie: minulé B opravilo náhľad vlastného NA EX a Dlh po pálení, a to sedelo (bitky prepočítali všetci). Nezabralo na troch miestach, ktoré vtedy nik nemal v zozname: hrozba od súpera, efekty po bitke a novinky v8 (exekúcia bez prahu, prebytok porazeného). B mieri presne na ne a výpočet drží na jednom mieste v jadre.</p>
+<p>Prah: ukázať vždy, keď cudzie NA EX pridá aspoň 1 Cirhózu alebo 1 Dlh (stratég: Cirhóza sú 3 špaky, Dlh od v8 1–2; prah 3 špaky by skryl práve jednotlivé Dlhy, z ktorých sa bomba skladá). Riadok pri prebytku zaviesť spolu s bodom Finále, lebo porazený bude vo finále vyberať zóny víťazovi. Aby sa nepredĺžil výpis (tempo 5,8), ukázať hrozbu len pri kartách s nenulovou cenou.</p></div>
+<p class="strateg"><strong>Stratég:</strong> Podporuje B; hrozbu ukazovať od 1 Cirhózy alebo 1 Dlhu a riadok pri prebytku zaviesť spolu so zmenou finále.</p>
+<h4>Čo musí Michal rozhodnúť</h4>
+<ul class="otazky"><li>Hrozbu kliatob ukázať od 1 Cirhózy alebo 1 Dlhu (odporúčané), alebo až od ceny 3 špaky?</li></ul>
+<h4>Ako overiť v ďalšom playteste</h4>
+<ul><li>Žiadny hráč nenapíše, že ho Cirhóza alebo Dlh z cudzieho NA EX prekvapil.</li><li>Náhľad NA EX na kartu s efektom Prehra ukáže rovnaký počet Dlhov, aký potom zapíše log (spisovateľ porovná).</li><li>Nikto si pri rozdeľovaní prebytku omylom nezruší vlastné ohlásené vydesenie.</li></ul>
+<p class="navrat"><a href="#prehlad">↑ späť na prehľad</a></p>
+</section>
+<section class="bod" id="bod-4" aria-labelledby="h-4">
+<h3 id="h-4"><span class="cislo">4</span>Útočník vyhrá tri bitky zo štyroch: vedenie sa nedá postaviť ani udržať <span class="krit k-vysoka">vysoká</span></h3>
+<p class="oblast">Oblasť: pravidlá · kľúč ping-pong-utocnik</p>
+<h4>Problém</h4>
+<p>Porazený z minulej bitky ako útočník berie zo šenku prvý, kladie prvú kartu pri lokalite, z prebytku si vyberie priazne, víťazove vráti do stredu a za každého posunutého staršieho dostane cigaretu. Bitky sa preto striedajú ako ping-pong a vedenie po ktoromkoľvek kole o víťazovi skoro nič nepovie. Michal chce, aby hra pomáhala zaostávajúcemu; dnes však pomáha viac, ako treba, a rovnováha je dlhodobo najhoršie hodnotené kritérium.</p>
+<h4>Čo ho spôsobuje</h4>
+<p>§4 a §5: útočník berie zo šenku prvý; §6: pri rovnosti tiel v kraji má prevahu prvá karta pri lokalite; §9.4 v8: prebytok rozdeľuje porazený a za každého posunutého staršieho dostane cigaretu. Michal už zamietol remízu prevahy pre obrancu, strop cigariet za prebytok (#30) aj „Stačí“ pri prebytku (#35).</p>
+<h4>Ako sa prejavuje</h4>
+<p>AI hráči: útočník vyhral 10 z 15 bitiek K2 až finále (v7 5 z 15). Vilo vyhral K3 6 : 0 a Fero ako porazený vrátil všetkých 6 jeho priazní do stredu a dostal 6 cigariet; Eva urobila to isté Janovi. Hela viedla 31 : 7 a prehrala 32 : 43: „vedúci prakticky nemôže zamknúť výhru“. Rovnováha 5,5 (minule 4,3, dlhodobo 4–5,5).</p>
+<details><summary>Dôkazy (5)</summary><ul><li>stratég: útočník vyhrá 77 % bitiek (v7 64 %), otočky 47 % (cieľ 20–40 %), vedúci po K1–K5 vyhrá partiu v 49 · 56 · 53 · 64 · 52 %</li><li>web #128 (Vilo): „Priazne z prebytku tak vydržia jedno kolo a plánovať sa na nich nedá“; komentár #107 (Eva): „prehra s veľkým rozdielom je tu výhodnejšia než remíza“</li><li>playtest 20261028-090549-2, Eva: „Útočník kladie prvý a podstrčí prvú kartu k lokalite, obranca nemá protiťah“ (3 zo 6 bitiek)</li><li>vyvoj-znamok: rovnováha a férovosť nebola v žiadnom z 19 reportov vyššie ako 5,5 a spolu so zrozumiteľnosťou je dlhodobo najnižšia</li><li>stratég, posudok: s balíkom C z bodu Finále útočník vyhrá ďalej 77 %; s cigaretou za prvú podstrčenú kartu 68 %, stompy 37 %, víťaz finále 64 %, vedúci pred finále 74 %; s ochranou priazne sa partie končia vydesením v 10–15 %</li></ul></details>
+<h4>Možnosti riešenia</h4>
+<div class="moznosti">
+<div class="moznost">
+<h4>A · Najprv balík z bodu Finále, potom zmerať </h4>
+<p>Pravidlá teraz nemeniť. Stratég po zavedení bodu Finále a strach zmeria podiel výhier útočníka, otočky a vedenie po kole, a k tomu varianty B a C, aby Michal rozhodoval s číslami.</p>
+<h5>Čo to spraví</h5>
+<p>Stratég (master b3f8dce): s balíkom C z bodu Finále útočník ďalej vyhrá 77 % bitiek (dnes 76 %), otočky 29 %. Ping-pong sa teda nezmení, len jednotlivá bitka menej váži. Overenie „útočník najviac 2 z 3 bitiek“ by A nesplnila.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost odporucana">
+<h4>C · Prvá podstrčená karta do prázdneho kraja stojí 1 cigaretu <span class="stitok">odporúčam</span></h4>
+<p>Kto podstrčí kartu ako prvú do súperovho kraja, v ktorom ešte nič neleží, zaplatí 1 cigaretu. Bez cigarety ju ako prvú podstrčiť nesmie (kraj musí najprv otvoriť jeho majiteľ). Ďalšie podstrčené karty do toho kraja a odpoveď na NA EX nestoja nič. Je to výdaj cigariet, nie strop. Zmena v §6 a §13 (Podstrčenie), v engine.ts pri vykladaní, v náhľade ťahu („stojí 1 cigaretu“), v bote, ťaháku a výučbe.</p>
+<h5>Čo to spraví</h5>
+<p>Stratég (spolu s balíkom C z bodu Finále, master b3f8dce): útočník vyhrá 77 → 68 % bitiek, rozdiel 19,0 → 15,2 (mix 17,4), stompy 53 → 37 %, víťaz finále vyhrá partiu 76 → 64 %, vedúci pred finále 74 % (mix 68 %), vedenie rastie postupne (vedúci po K1–K5: 57 · 56 · 65 · 68 · 74 %), otočky 35 % (v pásme), slabší bot rozdrví silnejšieho 22 → 7 %, rebrík 52 / 72 % (v šume). Najlepší zmeraný variant. Cigarety porazeného z prebytku (3–7) dostanú výdaj v bitke; útočník za otvorenie kraja platí 1, takže pomoc zaostávajúcemu ostáva.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost">
+<h4>B · Priazeň z prebytku vydrží jednu bitku </h4>
+<p>Marker, ktorý posunul prebytok, sa v nasledujúcej bitke nesmie prebytkom posunúť späť (Pohoršením, patronátom, Kšeftom a Kapybarou áno). Stupnica ukáže pri markeri značku „chránený prebytkom do konca ďalšej bitky“. Cigareta za posunutého staršieho ostáva.</p>
+<h5>Čo to spraví</h5>
+<p>Stratég (s balíkom C): útočník 70 %, otočky 20 %, rebrík 62 / 73 %, ale chránené markery dozrejú na vydesenie: partia skončí vydesením v 10 % (mix 15 %) a vedúci po K3 vyhrá 80 %. Hra by sa rozhodovala priskoro. Stratég nesúhlasí.</p>
+<p class="narocnost">Náročnosť: stredná</p>
+</div>
+</div>
+<div class="odporucanie"><h4>Odporúčanie</h4>
+<p>C spolu s balíkom C z bodu Finále. Stratég ho zmeral a je to najlepší variant zo všetkých: útočník 68 % namiesto 77 %, stompy 37 %, vedenie pred finále má váhu (74 %) a zručnosť ostáva. Samotné čakanie (A) ping-pong nezmení, s finále C ostane útočník na 77 %. B neodporúčam: chránené priazne dozrejú na vydesenie a 10–15 % partií by sa skončilo predčasne.</p>
+<p>C nie je strop: je to výdaj cigariet, ktoré porazený dostáva z prebytku, a pridá rozhodnutie, či a kam otvoriť súperov kraj.</p></div>
+<p class="strateg"><strong>Stratég:</strong> A nesplní overenie (útočník ďalej 77 %); C s balíkom z bodu Finále je najlepší zmeraný variant (útočník 68 %, stompy 37 %); B zamietnuť (vydesenie v 10–15 % partií).</p>
+<h4>Čo musí Michal rozhodnúť</h4>
+<ul class="otazky"><li>Prvá podstrčená karta do prázdneho súperovho kraja stojí 1 cigaretu (C)? áno / nie</li><li>Ak nie: počkať na playtest po balíku z bodu Finále (A)? áno / nie</li></ul>
+<h4>Ako overiť v ďalšom playteste</h4>
+<ul><li>Útočník vyhrá najviac 2 z 3 bitiek K2 až finále v troch partiách spolu.</li><li>Aspoň dvaja hráči zapíšu do denníka, že vedenie z jednej bitky udržali plánom do ďalšej.</li></ul>
+<p class="navrat"><a href="#prehlad">↑ späť na prehľad</a></p>
+</section>
+<section class="bod" id="bod-5" aria-labelledby="h-5">
+<h3 id="h-5"><span class="cislo">5</span>Noviny za 2 cigarety otočia bitku o 20 špakov <span class="krit k-stredna">stredná</span></h3>
+<p class="oblast">Oblasť: karty · kľúč noviny-otocka</p>
+<h4>Problém</h4>
+<p>Noviny v Dedičstve presunú všetky špaky za bitku od víťaza k porazenému, keď má víťaz viac priznaných Dlhov. Z výhry sa tak stane prehra o dvojnásobok stávky. Za príliš silné ich označili obaja hráči partie 2, ten, kto ich zahral, aj ten, koho zasiahli.</p>
+<h4>Čo ho spôsobuje</h4>
+<p>Text karty (sada v26): „Dedičstvo: Prehra: Ak má víťaz viac priznaných Dlhov ako ty, špaky za túto bitku dostaneš ty.“ §14 krok 4a. Od v8 je stávka bitky 1 špak za kartu v línii (finále 10–12 kariet), takže presun váži viac ako vo v7.</p>
+<h4>Ako sa prejavuje</h4>
+<p>Partia 2, finále: Jano vyhral tuhé 6 : 6 na Absťáky, ale mal 8 priznaných Dlhov proti Evinej nule. 10 špakov šlo Eve a partia skončila 12 : 24 namiesto 22 : 14. Plán Dlhov (Finančná poradkyňa, dva Liberály) Eva spočítala vopred, čo je zručnosť; problém je veľkosť presunu.</p>
+<details><summary>Dôkazy (3)</summary><ul><li>web #130 (Jano): „vyhral som bitku a prehral hru 12 : 24“; komentár #106 (Eva): „za 2 cigarety som z prehraných 10 špakov spravila výhru“, súhlasí so zmiernením</li><li>playtest 20261028-090549-2, Eva, návrh 6: „Až príliš silné“</li><li>stratég, posudok: statický prepočet partie 2 dnes 24 : 12, B 14 : 12, C 19 : 17; boti Noviny nehrajú (0 spustení na 150 partií)</li></ul></details>
+<h4>Možnosti riešenia</h4>
+<div class="moznosti">
+<div class="moznost">
+<h4>A · Kartu nemeniť, len výraznejšie ukázať </h4>
+<p>Odhad bitky na webe Noviny už ráta (stávka bitky). Doplniť výrazný riadok do odhadu a do hrozby: „Noviny súpera: keď vyhráš, tvojich N špakov za bitku dostane on“, a pri každom priznaní Dlhu pripomenúť porovnanie Dlhov oboch.</p>
+<h5>Čo to spraví</h5>
+<p>Odstráni prekvapenie, nie veľkosť presunu (20 špakov za 2 cigarety).</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost odporucana">
+<h4>B · Víťaz nedostane špaky za bitku <span class="stitok">odporúčam</span></h4>
+<p>Nový text: „Dedičstvo: Prehra: Ak má víťaz viac priznaných Dlhov ako ty, nedostane špaky za túto bitku.“ Špaky za bitku (aj zo sekery a z Herne) prepadnú, porazený nedostane nič navyše. Špaky za starších sa nemenia. Zmena v texte karty, v §14, §16 a vo výpočte špakov za bitku.</p>
+<h5>Čo to spraví</h5>
+<p>Presun sa zmenší na polovicu (z 20 na 10 špakov v partii 2), karta ostane silnou poistkou plánu Dlhov, bez delenia a bez stropu. Stratég (statický prepočet): partia 2 14 : 12, vyhráva ďalej Eva. Boti Noviny nespustili ani raz zo 150 partií, merať sa nedá.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost">
+<h4>C · Porazený dostane polovicu </h4>
+<p>Nový text: „Dedičstvo: Prehra: Ak má víťaz viac priznaných Dlhov ako ty, polovicu špakov za túto bitku (nahor) dostaneš ty, zvyšok víťaz.“</p>
+<h5>Čo to spraví</h5>
+<p>Stratég (statický prepočet partie 2): 19 : 17, Eva ďalej vyhrá o 2; zmena bitky klesne z 20 na 0 (5 : 5). Pri nepárnom počte je rozdiel 1 špak, Noviny by skoro nič neurobili a plán Dlhov by stratil zmysel.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+</div>
+<div class="odporucanie"><h4>Odporúčanie</h4>
+<p>B ako zmena karty (Michal ladí karty po jednej). Je to najjednoduchší text, zmenší presun na polovicu a nechá plán Dlhov cenný. Spolu s riadkom z možnosti A, ktorý patrí do bodu Náhľady.</p></div>
+<p class="strateg"><strong>Stratég:</strong> Podporuje B: jednoduchší text a plán Dlhov ostane cenný; C by Noviny prakticky vypol. Merať sa nedá, boti ich nehrajú.</p>
+<h4>Čo musí Michal rozhodnúť</h4>
+<ul class="otazky"><li>Noviny: víťaz nedostane špaky (B), polovica porazenému (C), alebo nechať?</li></ul>
+<h4>Ako overiť v ďalšom playteste</h4>
+<ul><li>Ak sa Noviny zahrajú, hráč, proti ktorému platili, ich mal vopred v odhade bitky a zapíše to do denníka.</li><li>Žiadny hráč neoznačí Noviny za kartu, ktorá sama rozhodla partiu.</li></ul>
+<p class="navrat"><a href="#prehlad">↑ späť na prehľad</a></p>
+</section>
+<section class="bod" id="bod-6" aria-labelledby="h-6">
+<h3 id="h-6"><span class="cislo">6</span>Medzery v pravidlách v8: Pes, vydesenie vo finále, partner zrušenej akcie, Praudovravec, Kapybara <span class="krit k-stredna">stredná</span></h3>
+<p class="oblast">Oblasť: pravidlá · kľúč medzery-v8</p>
+<h4>Problém</h4>
+<p>Hra sa vo všetkých prípadoch správa konzistentne, ale pravidlá ich nepopisujú alebo si odporujú, a hráči ich preto hlásia ako chyby. Jeden prípad mení výsledok: vydesenie ohlásené v poslednej bitke o lokalitu rozhodne na konci finále ešte pred špakmi, kým vydesenie ohlásené vo finále nerozhodne nikdy. Pravidlá o tom mlčia a Hela kvôli tomu musela použiť patronát.</p>
+<h4>Čo ho spôsobuje</h4>
+<p>(1) §13 (PRAVIDLA r. 1160) „Podstrčený Pes nedá nič“ odporuje §16 Pes „Platí aj podstrčený“; kód (partia.ts) zdvojuje aj podstrčeného Psa, zastaraná je veta v §13.</p>
+<p>(2) Vydesenie vo finále: §1 a §14b mlčia. engine.ts koniecBitky volá kontrolu vydesenia na konci kola pred konečným bodovaním, preto vydesenie ohlásené v K5 vyhrá hru na konci finále; ohlásené vo finále už nedozreje.</p>
+<p>(3) Po finále sa ešte udelí Absťák a dobratie karty (koniecBitky pred zaverecneBodovanie), na výsledok to nevplýva. Prestavba Absťáku (Nervák) je hotová vo vetve pravidla/abstak-nervak; túto opravu urobiť až nad ňou.</p>
+<p>(4) §7 hovorí, čo sa stane s partnerom zrušeného Posilnenia, nie s partnerom inej zrušenej akcie; hra ho nechá aktívny ×1.</p>
+<p>(5) Praudovravec: „Odpor na jeho spojoch neruší, ale posilní“ zdvojí podľa §6 aj súperovu akciu na spoji; text karty to nenaznačuje.</p>
+<p>(6) Kapybara: Nástup je povinný, aj keď ponúka len markery majiteľa.</p>
+<p>(7) §11: Robota a Exekútor bežia po hráčoch (obranca: Robota, Exekútor; potom útočník), text hovorí „najprv Robota, potom Exekútor“.</p>
+<h4>Ako sa prejavuje</h4>
+<p>Pes: Jano (rozpor v texte), Šimon (K1 a K3 Rana ×4 z podstrčeného Psa). Vydesenie: Hela (#121) vzala vo finále patronát, lebo Šimonovo vydesenie z K5 by inak vyhralo hru pred špakmi; Šimon aj Hela videli „vyhrá na konci kola 7“. Praudovravec: Vilo (K4 0 : 6), Fero, Šimon a Hela ho nazvali pascou. Partner: Hela (K3, 13 : 4). Kapybara: Šimon (K2). Robota/Exekútor: Fero. Absťák po finále: Vilo.</p>
+<details><summary>Dôkazy (4)</summary><ul><li>report 20261028-090549, nezrovnalosti 4, 5, 6, 8, 9, 10, 11 (spisovateľ overil v PRAVIDLA.md a v jadre)</li><li>web #121 (Hela): „Ohlásené vydesenie vo finále ma prinútilo vziať patronát, ktorý súperovi dal 3 Pohoršenia navyše“</li><li>playtest 20261028-090549-1, Vilo, N-B: „Praudovravec teda pomáha súperovi, ktorý položí kartu vedľa neho … text na karte to nenaznačuje“</li><li>návrh #7 nezabral (playtest 20261027-062058); Michal ho poslal do tejto dávky s týmito nálezmi</li></ul></details>
+<h4>Možnosti riešenia</h4>
+<div class="moznosti">
+<div class="moznost odporucana">
+<h4>A · Dopísať dnešné správanie, vydesenie rozhodne aj vo finále <span class="stitok">odporúčam</span></h4>
+<p>Do PRAVIDLA.md, na stránku Pravidlá a do ťaháku: (1) §13 opraviť: podstrčený Pes platí (§16). (2) §1 a §14b: vydesenie ohlásené v poslednej bitke o lokalitu sa skontroluje na konci finále ešte pred konečnými špakmi a môže vyhrať hru; vydesenie ohlásené vo finále už nič nerozhoduje. (3) §7: partner akcie, ktorú NA EX zrušil, ostáva aktívny ×1. (4) Text Praudovravca: „Furt: Odpor na jeho spojoch neruší, ale ráta sa ako Posilnenie — zdvojí aj súperovu akciu na spoji.“ (5) Kapybara: „Nástup: Môžeš posunúť marker jedného staršieho o 1 pole k stredu.“ (voliteľné). (6) §11: „vždy po hráčoch: obranca Robota a Exekútor, potom útočník“. Kód: po finále neudeľovať Absťák ani dobratie (s prestavbou Absťáku).</p>
+<h5>Čo to spraví</h5>
+<p>Zavrie 7 nálezov. Hra sa mení len pri Kapybare (smie sa nepohnúť) a v logu po finále. Vydesenie ostáva hrozbou aj pred finále, patronát ostáva obranou.</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+<div class="moznost">
+<h4>B · Ako A, ale vo finále vydesenie nerozhoduje </h4>
+<p>Všetko z A okrem bodu (2). Namiesto neho: vydesenie sa po poslednej bitke o lokalitu už nekontroluje; ohlásené vydesenie po nej zanikne a finále rozhodujú len špaky. §1 a §14b o tom jedna veta, v engine.ts kontrola vydesenia vo finále vypnutá, výpis a výučba bez upozornenia na vydesenie vo finále.</p>
+<h5>Čo to spraví</h5>
+<p>Patronát vo finále prestane byť vynútenou obranou (Hela #121). Cena: vydesenie v poslednej bitke o lokalitu stratí hrozbu a s ním časť politiky pred finále (Šimonov plán).</p>
+<p class="narocnost">Náročnosť: malá</p>
+</div>
+</div>
+<div class="odporucanie"><h4>Odporúčanie</h4>
+<p>A. Dnešné správanie je v súlade s §1 (vydesenie treba udržať do konca nasledujúceho kola a finále je kolo) a dáva politike váhu až do konca; stačí ho napísať. B má zmysel, ak Michal chce, aby o víťazovi rozhodovali len špaky. Praudovravca radšej doplniť textom než meniť §6: zdvojenie súperovej akcie cez podstrčenie je jedna z najlepšie hodnotených mechaník (interakcia 8,5).</p>
+<p>Kapybaru urobiť voliteľnou („Môžeš posunúť“): vynútený ťah proti sebe nie je rozhodnutie. Vydesenie vo finále u botov ukončí len 0–3 % partií, takže A a B sa líšia hlavne pre ľudí.</p></div>
+<p class="strateg"><strong>Stratég:</strong> Podporuje A, Kapybaru „Môžeš posunúť“ a doplnený text Praudovravca (§6 nemeniť); vydesenie vo finále u botov 0–3 % partií.</p>
+<h4>Čo musí Michal rozhodnúť</h4>
+<ul class="otazky"><li>Vydesenie ohlásené v poslednej bitke o lokalitu: rozhodne na konci finále ešte pred špakmi (A, dnes), alebo vo finále zanikne (B)?</li><li>Praudovravec: zdvojuje aj súperovu akciu na spoji (dnes áno, doplniť text), alebo len akcie majiteľa (zmena karty)?</li><li>Kapybara: Nástup voliteľný („Môžeš posunúť“)? áno / nie</li></ul>
+<h4>Ako overiť v ďalšom playteste</h4>
+<ul><li>V ďalšom playteste nikto nehlási nezrovnalosť k Psovi, k partnerovi akcie zrušenej NA EX, k Praudovravcovi ani k vydeseniu vo finále.</li><li>Po finále log neukazuje Absťák ani dobratie karty.</li></ul>
+<p class="navrat"><a href="#prehlad">↑ späť na prehľad</a></p>
+</section>
+
+</section>
+
+<section aria-labelledby="h-dalsie">
+<h2 id="h-dalsie">Ďalšie témy</h2>
+<p class="tlmene">Podľa kritickosti; pri každej, prečo nie je medzi hlavnými.</p>
+<ul><li><strong>Pas s plnou rukou.</strong> P1 12 pasov s aspoň 3 kartami a 56 cigariet (Fero #102, Vilo #103). Michal zamietol „pas len po vyloženej karte“ a hromadenie cigariet pokladá za správanie AI (#30). Stratég: koreň je stávka bitky. Sledovať po bode 1 a 4 (cigareta za prvú podstrčenú kartu cigaretám dá výdaj).</li>
+<li><strong>Stávka bitky = karty v línii (3–17 špakov).</strong> Jano #129 navrhol strop (v rozpore so zásadou bez stropov), Vilo a Eva „víťaz len za vlastné karty“ — Michal zamietol, stratég: zručnosť by klesla (rebrík 48 → 47 %).</li>
+<li><strong>Povinný prebytok zruší vlastné vydesenie.</strong> Šimon #118, K4. Michal zamietol „Stačí“ (#35); rieši to náhľad v bode 3 (riadok vydesenia pri prebytku).</li>
+<li><strong>Patronát príliš lacný / dá súperovi Pohoršenia.</strong> Šimon, Hela #121 a #113. Michal zamietol zmenu (#31); súvisí s vydesením vo finále v bode 6.</li>
+<li><strong>Bzdocha.</strong> Eva #133, Jano: majitelia ju hrali naslepo, lebo klient AI hráčov súperovo NA EX neukázal. Klient je opravený (5ae0572), posúdiť po ďalšom playteste.</li>
+<li><strong>Remíza v tuhom.</strong> Jano #131: v P2 3 zo 6 bitiek. Stratég: u botov 4 % bitiek a tie-break Dlhov je spočítateľný (Eva ho vyhrala plánom).</li>
+<li><strong>Svätý text + priazeň Veriaci (−6 tuhé).</strong> Hela, Šimon (P3 finále). Karta, jedna partia — sledovať.</li>
+<li><strong>Šenok: obranca ponúka odpad.</strong> Fero, Vilo, Jano, Eva, Hela #109. Nevzaté karty už idú naspodok spoločného balíčka; sledovať.</li>
+<li><strong>Tempo 5,8.</strong> Eva, Jano, Hela: 3 Pitky a dlhé výpisy, P2 asi 71 minút. Výpisy sú v klientovi AI hráčov, pravidlo sa nemení.</li>
+<li><strong>Slabé karty.</strong> Degustátorka, Čierna mačka, Nealko, Pasca, Krabička, Kôň, Šarlatán, Kmotor bez Dlhov u súpera. Michal ladí karty po jednej.</li>
+<li><strong>Absťák a Vínko.</strong> Absťák (Eva #132, Šimon, Fero) rieši hotová prestavba Nervák; Vínko limit hneď (#26) je už v master. Overí ďalší playtest.</li></ul>
+<h3>Omyly hráčov a chyby klienta AI hráčov</h3>
+<ul><li>Jano: „po skrytom NA EX už nemáš čo urobiť“ — hra ukončí časť Pitky len vtedy, keď niet iného ťahu; v K5 smel fajčiť. Správne.</li>
+<li>Šimon: neponúknutá odpoveď na NA EX — zakázala ju prebudená Krčmárka. Hra správna, chýbal riadok „Krčmárka: odpoveď zakázaná“ v logu (patrí k bodu 3).</li>
+<li>Vilo: Zastávka „tebe 4, súperovi 4“ (spoločný limit ukázaný dvakrát) a oltár Kostola — výpis klienta, pravidlá jasné.</li>
+<li>Vilo, Šimon, Hela: zoznam patronátu 40+ riadkov — výpis klienta AI hráčov.</li>
+<li>Klient AI hráčov: −5 za Cirhózu, Bzdocha naslepo, Noviny v odhade, „kolo 7“ — chyby textového klienta, opravené (5ae0572); hra počítala správne.</li></ul>
+</section>
+
+<section aria-labelledby="h-rozh">
+<h2 id="h-rozh">Rozhodnutia pre Michala</h2>
+<ol class="rozhodnutia">
+<li><a href="#bod-1">Bod 1 (Finále a strach rozhodujú partiu)</a>: Vo finále rozdeľuje prebytok porazený ako v každej inej bitke? áno / nie</li>
+<li><a href="#bod-1">Bod 1 (Finále a strach rozhodujú partiu)</a>: Strach za novú zónu: 1 · 1 · 1 (odporúčané), 1 · 1 · 2 (ústupok, pri malej chybe trestá horšie), alebo ponechať 1 · 2 · 3?</li>
+<li><a href="#bod-1">Bod 1 (Finále a strach rozhodujú partiu)</a>: Ak ani C nestačí: skúsiť konečné zúčtovanie strachu obom (D)? áno / nie</li>
+<li><a href="#bod-2">Bod 2 (NA EX: kliatby v každej Pitke)</a>: Kliatby z NA EX len v Pitke odkrytia (B)? áno / nie</li>
+<li><a href="#bod-2">Bod 2 (NA EX: kliatby v každej Pitke)</a>: V ďalších Pitkách kola karta s NA EX kliatby nepridáva vôbec (odporúčané, zmerané), alebo sa ráta ×1 ako bez NA EX?</li>
+<li><a href="#bod-2">Bod 2 (NA EX: kliatby v každej Pitke)</a>: Má Silná, nezávislá žena zdvojovať aj akcie zdvojené cez NA EX (dnes áno, text karty hovorí „aktívne akcie“)? áno / nie</li>
+<li><a href="#bod-3">Bod 3 (Náhľady nevidia celú cenu)</a>: Hrozbu kliatob ukázať od 1 Cirhózy alebo 1 Dlhu (odporúčané), alebo až od ceny 3 špaky?</li>
+<li><a href="#bod-4">Bod 4 (Ping-pong: útočník vyhrá 3 zo 4)</a>: Prvá podstrčená karta do prázdneho súperovho kraja stojí 1 cigaretu (C)? áno / nie</li>
+<li><a href="#bod-4">Bod 4 (Ping-pong: útočník vyhrá 3 zo 4)</a>: Ak nie: počkať na playtest po balíku z bodu Finále (A)? áno / nie</li>
+<li><a href="#bod-5">Bod 5 (Noviny otočia bitku o 20)</a>: Noviny: víťaz nedostane špaky (B), polovica porazenému (C), alebo nechať?</li>
+<li><a href="#bod-6">Bod 6 (Medzery v pravidlách v8)</a>: Vydesenie ohlásené v poslednej bitke o lokalitu: rozhodne na konci finále ešte pred špakmi (A, dnes), alebo vo finále zanikne (B)?</li>
+<li><a href="#bod-6">Bod 6 (Medzery v pravidlách v8)</a>: Praudovravec: zdvojuje aj súperovu akciu na spoji (dnes áno, doplniť text), alebo len akcie majiteľa (zmena karty)?</li>
+<li><a href="#bod-6">Bod 6 (Medzery v pravidlách v8)</a>: Kapybara: Nástup voliteľný („Môžeš posunúť“)? áno / nie</li>
+</ol>
+</section>
+
+<footer>
+<p><strong>Podklady:</strong> relácie playtest/20261028-090549-1 (Fero – Vilo), -2 (Jano – Eva), -3 (Šimon – Hela); report 20261028-090549.html; rozbor strategia-20261028-090549.html (vrátane doplnkových meraní na masteri b3f8dce) a posudok stratéga ku konceptu; názory z webu #117–#133 a komentáre #100–#108 (17 názorov, všetko AI); stavy návrhov #1, #7, #28, #33 (nezabralo), #30, #31, #35 (zamietnuté), #26, #27 (implementované); zmeny-pravidiel.html, vyvoj-znamok.html, PRAVIDLA.md, packages/core/src (engine.ts, hrozba.ts, nahlady.ts, view.ts), tools/playtest/texty-hraca.ts.</p>
+<p>Čísla botov sú náznak smeru: bot sa variantom neprispôsobuje. Statické prepočty zachovávajú ťahy hráčov z playtestu.</p>
+</footer>
+</main>
+<script>
+(function () {
+  document.querySelectorAll("tr[data-ciel]").forEach(function (tr) {
+    function choď() { var c = document.getElementById(tr.getAttribute("data-ciel")); if (c) { c.scrollIntoView({ behavior: "smooth", block: "start" }); c.setAttribute("tabindex", "-1"); c.focus({ preventScroll: true }); } }
+    tr.addEventListener("click", function (e) { if (e.target.tagName !== "A") choď(); });
+    tr.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choď(); } });
+  });
+})();
+</script>
+</body>
+</html>
