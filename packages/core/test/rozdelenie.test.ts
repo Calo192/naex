@@ -127,7 +127,7 @@ describe("plán rozdelenia = to, čo server urobí s ťahom", () => {
     expect(plan2.nevyslo).toEqual([{ elderId: id(s, 0) }]);
   });
 
-  it("prebytok: jeden smer k súperovi držiteľa, klient z verejného pohľadu plánuje to isté ako server", () => {
+  it("Nakladačka: jeden smer k súperovi držiteľa, klient z verejného pohľadu plánuje to isté ako server", () => {
     const s = stav({ krok: "prebytok", caka: 0, prebytokDrzi: 1, prebytokZostava: 3 }, [3, 2]);
     const view = viewFor(data, s, 0);
     const plan = planRozdelenia(view, 0, [{ elderId: id(s, 1) }, { elderId: id(s, 0) }]);

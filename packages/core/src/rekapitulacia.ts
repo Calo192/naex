@@ -125,13 +125,10 @@ export interface RekapitulaciaBitky {
   readonly zrusenaPovera: Dvojica;
   /** Tuhé, ktoré súperovi uberie moja zvyšná Viera (× hodnota Viery). */
   readonly vieraUbera: Dvojica;
-  /** Moje priznané Dlhy pri vyhodnotení — strop pre súperove zvyšné Povery. */
+  /** Moje priznané Dlhy pri vyhodnotení (remíza v tuhom). */
   readonly priznaneDlhy: Dvojica;
-  /** Moje Povery bez stropu (Čierna mačka); inak strop = súperove priznané Dlhy + priazeň. */
-  readonly bezStropu: readonly [boolean, boolean];
-  readonly makkeStrop: Dvojica;
-  /** Povery, ktoré zabrali — mäkké poškodenie. */
-  readonly makke: Dvojica;
+  /** Zvyšné Povery po vyrušení s Vierou — v8.3 posunuli silu priazní (klebety), nie poškodenie. */
+  readonly zvysnaPovera: Dvojica;
   /** Povery, ktoré súperov Farár ignoruje (do rušenia nejdú). */
   readonly poveraIgnorovana: Dvojica;
   readonly pohorsenie: { readonly polozky: readonly PolozkaRekapitulacie[]; readonly spolu: Dvojica };
@@ -286,10 +283,7 @@ export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): 
     zrusenaPovera: dvojica((p) => rozpis[p].zrusenaPovera),
     vieraUbera: dvojica((p) => damage.zvysnaViera[p] * rozpis[p].hodnotaViery),
     priznaneDlhy: v.priznaneDlhy,
-    bezStropu: [!Number.isFinite(rozpis[0].makkeStrop), !Number.isFinite(rozpis[1].makkeStrop)],
-    // JSON nevie Infinity — bez stropu nesie strop počet zvyšných Povier.
-    makkeStrop: dvojica((p) => (Number.isFinite(rozpis[p].makkeStrop) ? rozpis[p].makkeStrop : damage.zvysnaPovera[p])),
-    makke: [damage.makke[0], damage.makke[1]],
+    zvysnaPovera: dvojica((p) => rozpis[p].zvysnaPovera),
     poveraIgnorovana: dvojica((p) => rozpis[p].poveraIgnorovana),
     pohorsenie: { polozky: pohorsenie, spolu: v.pohorsenia },
     naex: ucinokNaex(data, v.line, linia),

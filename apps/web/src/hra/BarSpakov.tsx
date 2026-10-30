@@ -41,8 +41,8 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       nazov: "Starší",
       hodnota: zn(rozpis.zaStarsich),
       trieda: rozpis.zaStarsich > 0 ? "plus" : "",
-      pod: `+${body.zaStarsich[p]} za nové zóny, ak ${ja ? "vyhráš" : "vyhrá"}`,
-      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke, ktorú ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} dajú ${body.zaStarsich[p]}: každý, kto sa ${ja ? "ťa" : "ho"} bojí, zaplatí len zóny, ktoré ešte nezaplatil (žltá 1, oranžová 2, červená 3) — zaparkovaný marker druhýkrát nič nedá, kým neustúpi k stredu. Porazený od starších nedostane nič, pri sekere dostanú obaja.`,
+      pod: `+${body.zaStarsich[p]} na konci kola${body.naUdrzanie[p] > 0 ? ` · +${body.naUdrzanie[p]} čaká` : ""}`,
+      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Na konci kola ${ja ? "ti" : "mu"} dajú ${body.zaStarsich[p]} za stupne udržané od minulého kola a ${body.naUdrzanie[p]} čaká na udržanie do konca ďalšieho kola (žltá 1, oranžová 2, červená 3; každý stupeň raz, odtlačený nič, vo finále nové nič). Nezáleží, kto bitku vyhrá.`,
     },
     {
       kluc: "finale",
@@ -51,12 +51,12 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       trieda: zaFinale > 0 ? "plus" : "",
       pod: [
         finale === null ? "finále: ako každá bitka" : `finále ${zn(finale.zaBitku[p])}`,
-        rozpis.prebytok > 0 ? `prebytok +${rozpis.prebytok}` : null,
+        rozpis.prebytok > 0 ? `Nakladačka +${rozpis.prebytok}` : null,
         view.spakyNaSekere > 0 ? `na sekere ${view.spakyNaSekere}` : null,
       ]
         .filter((t): t is string => t !== null)
         .join(" · "),
-      popis: `Finále je posledná bitka, o vrcholovú lokalitu, a boduje sa ako každá (víťaz 1 špak za každú kartu v línii); prebytok v ňom rozdelí jeho držiteľ a nové zóny strachu sa vyplatia hneď. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
+      popis: `Finále je posledná bitka, o vrcholovú lokalitu, a boduje sa ako každá (víťaz 1 špak za každú kartu v línii); Nakladačka sa v ňom nerozdeľuje; starší po ňom zaplatia stupne udržané z posledného kola, nové stupne z finále nič. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
     },
     {
       kluc: "exekutor",

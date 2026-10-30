@@ -138,7 +138,7 @@
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },
-      "melichar": "Špaky v bare rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší dá po bitke, ak ju vyhráš, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
+      "melichar": "Špaky v bare rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí na konci kola, keď sa jeho strach udrží, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
       "zvyraznit": ["bar:body", "bar:starsi"]
     },
     {
@@ -152,7 +152,7 @@
         "jadro": ["packages/core/src/engine.ts:188 BitkaKrok pohorsenie", "packages/core/src/engine.ts:2860 pohorseniaVBitke", "docs/PRAVIDLA.md §9.2 Pohoršenie"]
       },
       "melichar": {
-        "moje": "Tvoje Pohoršenie posúva staršieho k súperovi alebo k sebe, aj keď bitku prehráš. A to sa ti zíde. Políčko von zo stredu stojí jedno Pohoršenie, ďalšie dve a tretie tri, späť k stredu o jedno viac. Vyberieš staršieho a smer a marker ide, kým Pohoršenia stačia. K sebe si vezmeš jeho priazeň hneď, platí už v tejto bitke.",
+        "moje": "Tvoje Pohoršenie posúva staršieho od seba alebo k sebe, aj keď bitku prehráš. A to sa ti zíde. Políčko von zo stredu stojí jedno Pohoršenie, ďalšie dve a tretie tri, späť k stredu o jedno viac. Vyberieš staršieho a smer a marker ide, kým Pohoršenia stačia. K sebe si vezmeš jeho priazeň hneď, platí už v tejto bitke.",
         "superove": "Súperovo Pohoršenie posúva staršieho k tebe alebo k nemu, aj keď bitku prehrá, a každé políčko ho stojí podľa zóny. Priazeň sa mení hneď, ešte v tejto bitke. Nepozeraj tak na mňa, ja som ho nevyložil."
       },
       "zvyraznit": ["linia-starsich"]
@@ -191,7 +191,7 @@
         "doplnit": "{starsi} = meno staršieho, {elderId}",
         "jadro": ["packages/core/src/engine.ts:449 priazen", "docs/PRAVIDLA.md §10 Dvojaká úloha markera"]
       },
-      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus, ten vidíš pri ňom. Bojí sa zato súpera a po bitke, ktorú súper vyhrá, mu dá špaky. Niekto ťa má rád, to by som nečakal.",
+      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus, ten vidíš pri ňom. Bojí sa zato súpera, a keď sa to udrží do konca ďalšieho kola, dá mu špaky. Niekto ťa má rád, to by som nečakal.",
       "zvyraznit": ["starsi:{elderId}"]
     },
     {

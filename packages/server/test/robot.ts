@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, lineState, naexCieleVLinii, pohorsenieMozne, posunZaBody, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, lineState, naexCieleVLinii, pohorsenieMozne, posunZaBody, poveraMozna, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -179,6 +179,12 @@ export class Robot {
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
         // v6: Exekútor sa pýta len na Záhradkára — robot ho zahodí.
         if (b.krok === "exekutor") return { type: "zahradkar", zahodit: true };
+        // v8.3: Povery — robot ich dá na prvého staršieho, kam smú (klient z verejného pohľadu).
+        if (b.krok === "povery") {
+          const elder = view.starsi.find((e) => poveraMozna(e, ja, b.klebety));
+          if (elder === undefined) throw new Error("povery: žiadny cieľ");
+          return { type: "povera", elderId: elder.elderId };
+        }
         if (b.krok === "pohorsenie" || b.krok === "prebytok") {
           // Prebytok ide k súperovi držiteľa — od v8 ho rozdeľuje spravidla porazený, teda k nemu.
           const smerK = b.krok === "prebytok" && b.prebytokDrzi !== null ? (b.prebytokDrzi === 0 ? 1 : 0) : ja === 0 ? 1 : 0;

@@ -9,7 +9,7 @@ import { IkonaSpaku, sMinusom } from "./Spaky.tsx";
 const RIADKY: readonly { readonly kluc: keyof RozpisSpakov; readonly nazov: string }[] = [
   { kluc: "zaBitky", nazov: "vyhraté bitky" },
   { kluc: "zaStarsich", nazov: "starší, ktorí sa boja" },
-  { kluc: "prebytok", nazov: "prebytok (partie do v7)" },
+  { kluc: "prebytok", nazov: "Nakladačka (partie do v7)" },
   { kluc: "exekutor", nazov: "Exekútor" },
   { kluc: "vykupne", nazov: "výkupné (poldeci, cigarety)" },
   { kluc: "cirhoza", nazov: "nepriznaná Cirhóza" },

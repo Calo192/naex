@@ -106,6 +106,7 @@ import {
   moznostiNaexVPohlade,
   zablokovaneStrany,
   posunMarker,
+  poveraMozna,
   bitkaPoPlane,
   cenaPosunuOPoli,
   krokRozdelenia,
@@ -137,7 +138,7 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
-import { NAZOV_DELENIA } from "./textyStarsich.ts";
+import { NAZOV_DELENIA, textPovery } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
@@ -1252,7 +1253,7 @@ export function HernaPlocha({
     };
     const rovnaky = a.drzi === b.drzi && a.prebytok === b.prebytok && a.posuny === b.posuny;
     if (rovnaky && b.naRozdelenie === b.prebytok && b.cenaPosunu === 1) return null;
-    return rovnaky ? `prebytok ${t(b)}` : `prebytok ${t(a)} → ${t(b)}`;
+    return rovnaky ? `Nakladačka ${t(b)}` : `Nakladačka ${t(a)} → ${t(b)}`;
   };
   /**
    * Cena NA EX skrátene pre jeden riadok pokynu (UI inšpekcia 20261024-nahlad, N3):
@@ -3230,8 +3231,8 @@ export function HernaPlocha({
               <>
                 {bsCak.prebytokDrzi === ja ? (
                   <>
-                    <strong>{menoHraca(super_)}</strong> rozdeľuje tvoj prebytok: vyberá, ktorí starší pôjdu k nemu — on dostane ich priazeň, teba sa
-                    začnú báť (nové zóny ti zaplatia po najbližšej výhre). Za každého staršieho dostane cigaretu.
+                    <strong>{menoHraca(super_)}</strong> rozdeľuje tvoju Nakladačku: vyberá, ktorí starší pôjdu k nemu — on dostane ich priazeň, teba sa
+                    začnú báť (nový stupeň ti zaplatí koniec ďalšieho kola, ak sa udrží). Za každého staršieho dostane cigaretu.
                   </>
                 ) : (
                   <>
@@ -3437,7 +3438,7 @@ export function HernaPlocha({
             nadpis: "Patronát",
             text: (
               <>
-                Starší, ktorý ti prejavuje priazeň (aspoň Znepokojenie), ti môže prísť na pomoc: vezmeš si ho do ruky, na jeho miesto dáš
+                Starší, ktorý ti prejavuje priazeň (aspoň stupeň 1, žltá), ti môže prísť na pomoc: vezmeš si ho do ruky, na jeho miesto dáš
                 lícom dole Občana či Zviera z ruky a marker pôjde do stredu. Platíš cigarety podľa zóny (červená 1, oranžová 2, žltá 3), súper dostane v bitke toľko
                 Pohoršení, o koľko marker išiel do stredu. <strong>Vyhráš bitku — starší je tvoj; prehráš — odhodíš poldeci.</strong>
               </>
@@ -4161,6 +4162,22 @@ export function HernaPlocha({
             ),
           };
         }
+        // Povery (v8.3 „Výpožička priazne“): klik na staršieho posunie silu jeho priazne k tebe na toto kolo.
+        if (b.krok === "povery") {
+          return {
+            nadpis: (
+              <>
+                Povery <small>zostáva {b.poveryZostava[ja]}</small>
+              </>
+            ),
+            text: (
+              <>
+                Klikni na staršieho — jeho priazeň sa v tomto kole posunie o stupeň k tebe: súperovu zníži či preklopí, zo stredu
+                ti ju požičia, tvoju zosilní (najviac na 3). Marker sa nehýbe, strach ostáva.
+              </>
+            ),
+          };
+        }
         // Bublina rozdeľovania (mock C · Pečať): jedno písmo a jedna veľkosť — názov, žetóny,
         // zvyšok a pre koľkých starších ešte stačí. Dlhý pokyn je preč; smer a cenu ukáže karta.
         if ((b.krok === "pohorsenie" || b.krok === "prebytok") && planDelenia !== null && krokDelenia !== null) {
@@ -4242,6 +4259,12 @@ export function HernaPlocha({
   // Pohoršenie a prebytok rozdeľuje hráč šípkami pri staršom (rozdelenieStarsieho, mock C · Pečať).
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
     if (!somNaTahu) return undefined;
+    // Povery (v8.3 „Výpožička priazne“): klik posunie silu priazne staršieho o stupeň k tebe na toto kolo.
+    const bk = view.bitkaStav;
+    if (view.faza === "bitka" && bk !== null && bk.caka === ja && bk.krok === "povery") {
+      if (!poveraMozna(elder, ja, bk.klebety)) return undefined;
+      return { akcia: textPovery(elder, ja, bk.klebety, menoHraca(super_)), klik: () => cmd({ type: "povera", elderId: elder.elderId }) };
+    }
     // Patronát (Michal 2026-10-20): staršieho, ktorý mi prejavuje priazeň, si vezmem do ruky.
     if (mozniPatronati.some((e) => e.elderId === elder.elderId)) {
       const c = cenaPatronatu(elder);
@@ -4256,11 +4279,13 @@ export function HernaPlocha({
   // ---- línia starších na mieste línie kariet (Michal 2026-10-23, #68 + #69 variant A) ----
   // Krok na staršom ukáže líniu obom hráčom; čakajúci si smie nahliadnuť na stôl.
   const bs = view.bitkaStav;
-  const krokStarsich: { readonly nazov: string; readonly kto: PlayerId; readonly typ: "pohorsenie" | "prebytok" | "patronat" } | null =
+  const krokStarsich: { readonly nazov: string; readonly kto: PlayerId; readonly typ: "povery" | "pohorsenie" | "prebytok" | "patronat" } | null =
     view.koniec !== null
       ? null
       : view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok")
         ? { nazov: NAZOV_DELENIA[bs.krok], kto: bs.caka, typ: bs.krok }
+        : view.faza === "bitka" && bs !== null && bs.caka !== null && bs.krok === "povery"
+          ? { nazov: `Povery (${bs.poveryZostava[bs.caka]})`, kto: bs.caka, typ: "povery" }
         : view.faza === "draft" && draft?.krok === "patronat"
           ? { nazov: "Patronát", kto: draft.naTahu, typ: "patronat" }
           : null;
@@ -4389,6 +4414,7 @@ export function HernaPlocha({
       if (hJa.cigarety < cenaPatronatu(e).cigarety) return "málo cigariet";
       return kandidatiPatronatu.length === 0 ? "nemáš v ruke Občana ani Zviera" : "nedá sa vziať";
     }
+    if (krokStarsich.typ === "povery" && !poveraMozna(e, ja, view.bitkaStav?.klebety)) return "priazeň už tvoja v sile 3";
     // Pohoršenie a prebytok: kto už nič nedostane, je tlmený na karte (rozdelenieStarsieho).
     return undefined;
   };
@@ -4511,14 +4537,14 @@ export function HernaPlocha({
     const karta = pl === undefined ? "kartu" : `${pl.playedBy === h.hrac ? (kto === "ja" ? "svoju" : "jeho") : kto === "ja" ? "jeho" : "tvoju"} kartu ${menoKarty(pl.card.defId)}`;
     const tuhe = `tuhé ${h.damage.tuhe[ja]} : ${h.damage.tuhe[super_]}`;
     const v = h.vysledok;
-    const prebytok = v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`;
+    const prebytok = v.prebytokDrzi === null ? "" : ` · Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`;
     const kdo = kto === "ja" ? "Ty ešte môžeš" : `${menoHraca(super_)} ešte môže`;
-    const kratkyPrebytok = v.prebytokDrzi === null ? "" : ` (prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"})`;
+    const kratkyPrebytok = v.prebytokDrzi === null ? "" : ` (Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"})`;
     return {
       kto,
       uid: h.uid,
       mini: `${kto === "ja" ? "ty" : "súper"} až ${h.damage.tuhe[ja]} : ${h.damage.tuhe[super_]}${kratkyPrebytok}`,
-      kratko: `${kto === "ja" ? "Ty ešte môžeš" : "Súper ešte môže"}: ${tuhe}${v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"}`}`,
+      kratko: `${kto === "ja" ? "Ty ešte môžeš" : "Súper ešte môže"}: ${tuhe}${v.prebytokDrzi === null ? "" : ` · Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"}`}`,
       cele: `${kdo} dať NA EX na ${karta}: ${tuhe}${prebytok} (z kariet na stole, ruka sa neráta).`,
     };
   };
@@ -4554,7 +4580,7 @@ export function HernaPlocha({
       // aby ho pri 1366 px neodrezalo (snímka 1366 × 650).
       mini: `${kto === "ja" ? "ty" : "súper"} až ${r.damage.tuhe[ja]} : ${r.damage.tuhe[super_]} Pohoršeniami`,
       kratko: `${kto === "ja" ? "Ty" : "Súper"} Pohoršeniami (${r.pocet}) až: ${tuhe}`,
-      cele: `${kto === "ja" ? `Máš ${pohorseni}` : `${menoHraca(super_)} má ${pohorseni}`}, ktoré sa rozdelia až v bitke — priazeň platí hneď (Bitkár, Veriaci): najviac ${tuhe}${v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`}.`,
+      cele: `${kto === "ja" ? `Máš ${pohorseni}` : `${menoHraca(super_)} má ${pohorseni}`}, ktoré sa rozdelia až v bitke — priazeň platí hneď (Bitkár, Veriaci): najviac ${tuhe}${v.prebytokDrzi === null ? "" : ` · Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`}.`,
     };
   };
   // Pohoršenia prídu v bitke isto, NA EX len možno — idú prvé; pri viacerých položkách bez prebytku
@@ -6164,7 +6190,7 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
             {view.starsi
               .filter((e) => e.elderId !== chraneny)
               .flatMap((e) => [
-                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${meno(e.karta.defId)} k súperovi`}</option>,
+                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${meno(e.karta.defId)} od seba`}</option>,
                 <option key={`${e.elderId}-j`} value={`${e.elderId}|1`}>{`${meno(e.karta.defId)} k sebe`}</option>,
               ])}
           </select>

@@ -186,7 +186,7 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
     }
   }, 30_000);
 
-  it("v8: prebytok rozdeľuje porazený — vezme víťazovi Bitkára, ktorý mu v bitke škodí", () => {
+  it("v8: Nakladačku rozdeľuje porazený — vezme víťazovi Bitkára, ktorý mu v bitke škodí", () => {
     for (const seed of [81, 82, 83]) {
       // Po výhre Rana + Bitkár (k sebe) drží hráč 0 prebytok 2; rozdeľuje ho porazený hráč 1.
       // Žltá → stred stojí od v8.2 dva body (Michal 2026-10-30), preto Rana navyše.

@@ -162,7 +162,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
                   <th>Útočník</th>
                   <th>Tuhé</th>
                   <th>Víťaz</th>
-                  <th>Prebytok</th>
+                  <th>Nakladačka</th>
                   <th>NA EX</th>
                   <th>Pas</th>
                   <th>Šenok</th>

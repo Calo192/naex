@@ -108,7 +108,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Konflikt (v7): jeho Dlhy sú Viera a Povery Rana do konca kola (partia.ts)
   podvodnik: "impl", // Prehra (v7): jeden tvoj priznaný Dlh prejde k súperovi
-  cierna_macka: "impl", // Furt: tvoje Povery dávajú mäkké poškodenie aj bez súperových priznaných Dlhov
+  cierna_macka: "impl", // Furt (v8.3, návrh): tvoje Povery sa Vierou nerušia
   anonymny_alkoholik: "impl", // Nástup (v7): prizná nepriznané Cirhózy z odhadzovacieho balíčka
   // Roadmapa #71 (2026-10-23).
   sofer: "impl", // Bitka (v7): bez NA EX v kole Pecka navyše (bitkaMody)

@@ -178,7 +178,7 @@ rozhodnutie hráča (Pohoršenie, Pohreb) — tie motor len **pripraví**.
 - Viera a Povera sa vyrušia 1:1 a zrušená Povera neudelí nič,
 - mäkké poškodenie je zastropené súperovým **priznaným** dlhom,
 - pri remíze v tuhom poškodení o lokalitu rozhodne **celkové** a potom **obranca**, o staršieho nevyhrá nikto (Michal 2026-10-19; predtým útočník),
-- pri remíze v celkovom poškodení **nikto nezíska prebytok**.
+- pri remíze v celkovom poškodení **nikto nezíska Nakladačku**.
 
 ---
 

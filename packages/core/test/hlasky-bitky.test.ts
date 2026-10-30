@@ -59,7 +59,7 @@ function poPohorseni(s: GameState) {
   return apply(data, s, { type: "pohorsenie", elderId: s.starsi[0]!.elderId }, 0);
 }
 
-describe("bitka hlási, čo zmenší či zruší prebytok a Pohoršenia", () => {
+describe("bitka hlási, čo zmenší či zruší Nakladačka a Pohoršenia", () => {
 
 
   it("Policajtka (Michal 2026-10-26) Pohoršenia neruší — bitka o nej mlčí a Pohoršenia z patronátu platia", () => {

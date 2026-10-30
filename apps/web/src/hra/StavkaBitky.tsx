@@ -1,6 +1,6 @@
 // Stávka bitky (Michal 2026-10-22, návrh 3 A z playtestu 20261021-143600; v6
 // v špakoch): koľko špakov dostane víťaz tejto bitky — ja, keď vyhrám, a súper,
-// keď vyhrá on — od v6.1 aj so staršími. Čísla ráta jadro (stavkaBitky), klient ich len píše.
+// keď vyhrá on; strach starších od v8.3 v stávke nie je. Čísla ráta jadro (stavkaBitky), klient ich len píše.
 
 import type { StavkaBitky as Stavka } from "@naex/core";
 import { pocet } from "@naex/core";
@@ -8,14 +8,13 @@ import { IkonaSpaku } from "./Spaky.tsx";
 
 const VYSVETLENIE =
   "Víťaz bitky dostane 1 špak za každú kartu v línii (na oboch stranách, v čase bitky), aspoň 1, " +
-  "a k tomu špaky zo sekery a od starších, ktorí sa ho boja — len za zóny, ktoré mu ešte nezaplatili. Porazený od starších nedostane nič, pri sekere dostanú obaja. " +
+  "a k tomu špaky zo sekery. Starší platia za strach až na konci kola za stupeň udržaný od minulého kola — tomu, koho sa boja, nech bitku vyhrá ktokoľvek. " +
   "Každá ďalšia karta v línii zvýši stávku o 1.";
 
 export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavka; readonly kratko?: boolean }) {
   const casti = [
     stavka.naSekere > 0 ? `${stavka.naSekere} zo sekery` : null,
     stavka.herna[0] > 0 ? `${stavka.herna[0]} z Herne` : null,
-    stavka.starsi[0] > 0 ? `${stavka.starsi[0]} od starších` : null,
   ].filter((x) => x !== null);
   const sekera = casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
   // Noviny (Titulka): porazený majiteľ dostane špak za každý Dlh víťaza navyše.

@@ -21,13 +21,13 @@ import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Action, ElderState, Favour, GameData, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, scorecardStarsieho, strachNaVyplatu, type MarkerPos } from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, scorecardStarsieho, strachNaUdrzanie, strachNaVyplatu, type MarkerPos } from "@naex/core";
 import type { IkonaBodovania } from "@naex/tvorba";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
-import { CENA_POLA, PRAVIDLO_STRACHU, plnaPriazen, prikladStrachu, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textVydesenia } from "./textyStarsich.ts";
+import { CENA_POLA, PRAVIDLO_STRACHU, plnaPriazen, prikladStrachu, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textStupna, textVydesenia } from "./textyStarsich.ts";
 
 /** Šípka smeru pri rozdeľovaní: kam marker pôjde a za koľko (null = tým smerom sa teraz nedá). */
 export interface SipkaRozdelenia {
@@ -230,7 +230,7 @@ function LegendaStupnice({
   const priklad = starsi.find((s) => obavanyHrac(s.elder) !== null);
   let prikladText: ReactNode;
   if (priklad === undefined) {
-    prikladText = "Teraz sú všetci starší v strede (Neutralita): nikto nemá ich priazeň a nikoho sa neboja.";
+    prikladText = "Teraz sú všetci starší v strede (stupeň 0, pokojní): nikto nemá ich priazeň a nikoho sa neboja.";
   } else {
     const v = vztah(priklad.elder, priklad.elder.marker);
     const fav = favourStarsieho(data, priklad.elder);
@@ -245,6 +245,7 @@ function LegendaStupnice({
           sila: v.sila,
           ucinok: UCINOK_KRATKO[fav](v.sila),
           spaky: strachNaVyplatu(priklad.elder, v.obavany === ja ? ja : su),
+          naUdrzanie: strachNaUdrzanie(priklad.elder, v.obavany === ja ? ja : su),
         })}
       </>
     );
@@ -252,21 +253,21 @@ function LegendaStupnice({
   return (
     <div className="ls-legenda" id="ls-legenda" role="dialog" aria-label="Ako čítať stupnicu" ref={ref}>
       <p>
-        <b>Tvoja polovica je vždy vľavo</b> (◀ ty), {mena[su]} vpravo. Zóny od stredu: sivá Neutralita, žltá Znepokojenie, oranžová Strach, červená
-        Vydesenie.
+        <b>Tvoja polovica je vždy vľavo</b> (◀ ty), {mena[su]} vpravo. Stupne od stredu: 0 sivý stred (pokojný), 1 žltá (znepokojený), 2 oranžová
+        (vystrašený), 3 červená (vydesený).
       </p>
       <p>
-        <b>Výkričníky</b> ukazujú, koho sa starší bojí — sú v jeho farbe: <ZnackaStrachu uroven={1} trieda="moje" /> Znepokojenie,{" "}
-        <ZnackaStrachu uroven={2} trieda="moje" /> Strach, <ZnackaStrachu uroven={3} trieda="moje" /> Vydesenie (tu sa bojí teba). Na druhom konci
+        <b>Výkričníky</b> ukazujú, koho sa starší bojí — sú v jeho farbe: <ZnackaStrachu uroven={1} trieda="moje" /> stupeň 1,{" "}
+        <ZnackaStrachu uroven={2} trieda="moje" /> stupeň 2, <ZnackaStrachu uroven={3} trieda="moje" /> stupeň 3 (tu sa bojí teba). Na druhom konci
         stupnice je ♥ toho, komu prejavuje priazeň.
       </p>
       <p>
-        <b>♥ Priazeň</b> má ten, na koho polovici marker leží — bonus počas hry, sila +1 / +2 / +3 podľa zóny.
+        <b>♥ Priazeň</b> má ten, na koho polovici marker leží — bonus počas hry, sila = stupeň (+1 / +2 / +3).
       </p>
       <p>{PRAVIDLO_STRACHU}</p>
       <p>{prikladText}</p>
       <p className="ls-tlmene">
-        Posúva ho prebytok po bitke (k súperovi toho, kto ho drží) a Pohoršenie — k súperovi alebo k sebe, aj na červenú a z nej späť; {CENA_POLA}.
+        Posúva ho Nakladačka po bitke (k súperovi toho, kto ju drží) a Pohoršenie — od seba (desíš) alebo k sebe (upokojuješ), aj na červenú a z nej späť; {CENA_POLA}.
         Vyberáš len staršieho, marker ide, kým body stačia. Nič sa nezamyká.
       </p>
       <button type="button" className="ls-tlacidlo" onClick={zavri}>
@@ -322,16 +323,22 @@ function ScorecardVLinii({
   const zobraz = poPosune === null ? teraz : vztah(elder, poPosune);
   const vydeseny = teraz.uroven === 3;
 
-  // Špaky za strach pri najbližšej výhre (v8: len nezaplatené zóny): teraz z jadra
-  // (spakyTeraz), po posune s vyplatenými zónami tak, ako ich posun nechá (sPosunutymMarkerom).
+  // Špaky za strach na konci kola a čo čaká na udržanie (v8.3): teraz z jadra (spakyTeraz),
+  // po posune so zaplatenými a držanými stupňami tak, ako ich posun nechá (sPosunutymMarkerom).
   const spaky = (v: ReturnType<typeof vztah>, poPosune: boolean): number =>
     v.obavany === null
       ? 0
       : !poPosune
         ? (body?.spaky[v.obavany] ?? strachNaVyplatu(elder, v.obavany))
         : strachNaVyplatu(sPosunutymMarkerom(elder, cielKroku ?? elder.marker), v.obavany);
+  const naUdrzanie = (v: ReturnType<typeof vztah>, poPosune: boolean): number =>
+    v.obavany === null
+      ? 0
+      : !poPosune
+        ? (body?.naUdrzanie[v.obavany] ?? strachNaUdrzanie(elder, v.obavany))
+        : strachNaUdrzanie(sPosunutymMarkerom(elder, cielKroku ?? elder.marker), v.obavany);
   const priazenText = (v: ReturnType<typeof vztah>): string => riadokPriazne(fav, v.priazen === null ? null : kto(v.priazen), v.sila);
-  const strachText = (v: ReturnType<typeof vztah>, po: boolean): string => riadokStrachu(v.obavany === null ? null : mena[v.obavany], v.obavany === ja, spaky(v, po));
+  const strachText = (v: ReturnType<typeof vztah>, po: boolean): string => riadokStrachu(v.obavany === null ? null : mena[v.obavany], v.obavany === ja, spaky(v, po), naUdrzanie(v, po));
   const priazenTeraz = priazenText(teraz);
   const priazenPo = priazenText(zobraz);
   const strachTeraz = strachText(teraz, false);
@@ -814,7 +821,7 @@ export function LupaStarsieho({
           {stopa !== undefined && (
             <p className="lst-stopa">
               <b>Od bitky:</b> {textStopy(stopa.zdroje, kto)}
-              {stopa.z === elder.marker ? " — marker je späť, kde bol." : ` (${NAZVY_ZON[STUPNICA_ZONY[stopa.z]]} → ${NAZVY_ZON[STUPNICA_ZONY[elder.marker]]}).`}
+              {stopa.z === elder.marker ? " — marker je späť, kde bol." : ` (${textStupna(STUPNICA_ZONY[stopa.z])} → ${textStupna(STUPNICA_ZONY[elder.marker])}).`}
             </p>
           )}
           <p className="lst-tlmene">{PRAVIDLO_STRACHU}</p>

@@ -35,8 +35,8 @@ describe("stopa posunu", () => {
 
   it("štítok na portréte nesie len zdroj a počet, lupa aj kto posúval", () => {
     const stopa = stopaStarsieho(posuny, id)!;
-    expect(stitokStopy(stopa.zdroje)).toBe("Pohoršenie · Prebytok ×2");
-    expect(textStopy(stopa.zdroje, (p) => (p === 0 ? "ty" : "Fero"))).toBe("Pohoršenie · ty · Prebytok · ty ×2");
+    expect(stitokStopy(stopa.zdroje)).toBe("Pohoršenie · Nakladačka ×2");
+    expect(textStopy(stopa.zdroje, (p) => (p === 0 ? "ty" : "Fero"))).toBe("Pohoršenie · ty · Nakladačka · ty ×2");
   });
 });
 
@@ -46,19 +46,23 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
     expect(riadokPriazne("BITKAR", null, 0)).toBe("nikomu · pri +1: +1 tuhé v bitke");
   });
 
-  it("strach (v8): koho sa bojí a koľko zaplatí za ďalšiu výhru — len nezaplatené zóny", () => {
-    expect(riadokStrachu("Fero", false, 2)).toBe("bojí sa Fero · +2 š za ďalšiu výhru");
-    expect(riadokStrachu("Jano", true, 6)).toBe("bojí sa teba · +6 š za ďalšiu výhru");
-    expect(riadokStrachu("Fero", false, 0)).toBe("bojí sa Fero · zóny zaplatené");
+  it("strach (v8.3): koho sa bojí, koľko zaplatí koniec kola a koľko čaká na udržanie", () => {
+    expect(riadokStrachu("Fero", false, 2)).toBe("bojí sa Fero · +2 š na konci kola");
+    expect(riadokStrachu("Jano", true, 6)).toBe("bojí sa teba · +6 š na konci kola");
+    expect(riadokStrachu("Jano", true, 1, 5)).toBe("bojí sa teba · +1 š na konci kola +5 čaká");
+    expect(riadokStrachu("Fero", false, 0, 3)).toBe("bojí sa Fero · +3 š čaká na udržanie");
+    expect(riadokStrachu("Fero", false, 0)).toBe("bojí sa Fero · stupne zaplatené");
     expect(riadokStrachu(null, false, 0)).toBe("nikoho sa nebojí");
   });
 
-  it("náhľad posunu (v8) hovorí o najbližšej výhre, nie o každej", () => {
-    expect(nahladStrachu(3, 0, "Fero")).toBe("za strach pri ďalšej výhre ty +3");
-    expect(nahladStrachu(0, 1, "Fero")).toBe("za strach pri ďalšej výhre Fero +1");
+  it("náhľad posunu (v8.3) hovorí o konci kola a o udržaní, nie o výhre", () => {
+    expect(nahladStrachu(3, 0, "Fero")).toBe("za strach na konci kola ty +3");
+    expect(nahladStrachu(0, 1, "Fero")).toBe("za strach na konci kola Fero +1");
+    expect(nahladStrachu(0, 0, "Fero", 2, 0)).toBe("čaká na udržanie ty +2");
     expect(nahladStrachu(0, 0, "Fero")).toBe("za strach nič nové");
-    expect(PRAVIDLO_STRACHU).toMatch(/každú zónu raz/);
-    expect(PRAVIDLO_STRACHU).not.toMatch(/po každej/);
+    expect(PRAVIDLO_STRACHU).toMatch(/Každý stupeň raz/);
+    expect(PRAVIDLO_STRACHU).toMatch(/udrží do konca nasledujúceho kola/);
+    expect(PRAVIDLO_STRACHU).not.toMatch(/vyhrá (aj finále)/);
   });
 
   it("riadky sú krátke — pri bežnom mene najviac dva riadky karty, bez „…“", () => {
@@ -66,16 +70,18 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
       for (const sila of [0, 1, 2, 3]) expect(riadokPriazne(fav, sila === 0 ? null : "Michal", sila).length).toBeLessThanOrEqual(44);
     }
     expect(riadokStrachu("Michal", false, 3).length).toBeLessThanOrEqual(44);
+    expect(riadokStrachu("Michal", false, 3, 5).length).toBeLessThanOrEqual(44);
   });
 
   it("dlaždica v bare len slovo — účinok je v línii", () => {
     expect(riadokDlazdice("hore", true)).toBe("pomáha ti");
-    expect(riadokDlazdice("dole", false)).toBe("ak vyhrá");
+    expect(riadokDlazdice("dole", false)).toBe("na konci kola");
+    expect(riadokDlazdice("dole", false, 0, 2)).toBe("čaká na udržanie");
     expect(riadokDlazdice("dole", true, 0)).toBe("zaplatené");
     expect(riadokDlazdice("nic", true)).toBe("neutrálny");
   });
 
-  it("cena poľa podľa zóny v legende stupnice (v8.2); pokyn prebytku nahradila bublina rozdeľovania (mock C)", () => {
+  it("cena poľa podľa zóny v legende stupnice (v8.2); pokyn Nakladačky nahradila bublina rozdeľovania (mock C)", () => {
     expect(CENA_POLA).toBe("pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4");
   });
 });

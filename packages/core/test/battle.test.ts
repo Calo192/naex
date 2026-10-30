@@ -15,7 +15,6 @@ function side(overrides: Partial<BattleSide> = {}): BattleSide {
     cirhozaBonus: 0,
     tuheBonus: 0,
     abstaky: 0,
-    priznaneDlhy: 0,
     priazenBitkara: 0,
     hodnotaViery: 1,
     ...overrides,
@@ -33,25 +32,18 @@ describe("M4 — poškodenie", () => {
     expect(damage.tuhe[1]).toBe(0);
   });
 
-  it("Viera a Povera sa vyrušia 1:1 a zrušená Povera neudelí nič", () => {
-    // Hráč 0: 2 Povery. Hráč 1: 2 Viery + priznané dlhy hráča 1 sú 3.
-    const damage = computeDamage([
-      side({ sums: { Povera: 2 } }),
-      side({ sums: { Viera: 2 }, priznaneDlhy: 3 }),
-    ]);
-    // Obe Povery zrušené Vierami → žiadne mäkké poškodenie.
-    expect(damage.zvysnaPovera[0]).toBe(0);
+  it("Viera a Povera sa vyrušia 1:1 — zvyšné Povery idú na klebety, nie do poškodenia (v8.3)", () => {
+    const damage = computeDamage([side({ sums: { Povera: 3 } }), side({ sums: { Viera: 2 } })]);
+    expect(damage.zvysnaPovera[0]).toBe(1);
     expect(damage.zvysnaViera[1]).toBe(0);
-    expect(damage.makke[0]).toBe(0);
+    expect(damage.makke).toEqual([0, 0]);
+    expect(damage.celkove).toEqual(damage.tuhe);
   });
 
-  it("mäkké poškodenie je zastropené súperovým priznaným dlhom", () => {
-    const damage = computeDamage([
-      side({ sums: { Povera: 4 } }),
-      side({ priznaneDlhy: 2 }),
-    ]);
-    expect(damage.makke[0]).toBe(2);
-    expect(damage.celkove[0]).toBe(2);
+  it("Čierna mačka (v8.3, návrh): moje Povery sa Vierou nerušia — Viera ostáva na tuhé", () => {
+    const damage = computeDamage([side({ sums: { Povera: 2 }, poveryBezViery: true }), side({ sums: { Viera: 2, Rana: 0 } })]);
+    expect(damage.zvysnaPovera[0]).toBe(2);
+    expect(damage.zvysnaViera[1]).toBe(2);
   });
 
   it("tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé", () => {
@@ -86,15 +78,15 @@ describe("M4 — výsledok", () => {
     expect(battleOutcome(damage).vitaz).toBeNull();
   });
 
-  it("pri remíze v tuhom nevyhrá nikto, prebytok drží vyššie celkové", () => {
-    const d = { tuhe: [2, 2], makke: [0, 1], celkove: [2, 3], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
-    const o = battleOutcome(d);
-    expect(o.vitaz).toBeNull();
-    expect(o.prebytokDrzi).toBe(1);
-    expect(o.prebytok).toBe(1);
+  it("pri remíze v tuhom nevyhrá nikto a Nakladačku nedrží nikto (v8.3: Nakladačka = rozdiel tuhého)", () => {
+    const d = { tuhe: [2, 2], makke: [0, 0], celkove: [2, 2], zvysnaViera: [0, 0], zvysnaPovera: [0, 3] } as const;
+    const o = battleOutcome(d, { abstaky: [1, 0], dlhy: [0, 0] });
+    expect(o.vitaz).toBe(1);
+    expect(o.prebytokDrzi).toBeNull();
+    expect(o.prebytok).toBe(0);
   });
 
-  it("pri remíze v celkovom poškodení nikto nezíska prebytok", () => {
+  it("pri remíze v celkovom poškodení nikto nezíska Nakladačku", () => {
     const damage = computeDamage([side({ sums: { Rana: 2 } }), side({ sums: { Pecka: 1 } })]);
     expect(damage.celkove).toEqual([2, 2]);
     const outcome = battleOutcome(damage);
@@ -102,18 +94,13 @@ describe("M4 — výsledok", () => {
     expect(outcome.prebytok).toBe(0);
   });
 
-  it("prebytok drží hráč s vyšším celkovým, aj keď bitku prehral", () => {
-    // Hráč 0 vyhrá na tuhom, ale hráč 1 má vyššie celkové vďaka mäkkému.
-    const damage = computeDamage([
-      side({ sums: { Pecka: 2 }, priznaneDlhy: 5 }),
-      side({ sums: { Rana: 3, Povera: 3 } }),
-    ]);
+  it("Nakladačku drží víťaz — rozdiel tuhého; Povery ju nemenia (v8.3)", () => {
+    const damage = computeDamage([side({ sums: { Pecka: 2 } }), side({ sums: { Rana: 3, Povera: 3 } })]);
     expect(damage.tuhe).toEqual([4, 3]);
-    expect(damage.celkove).toEqual([4, 6]);
     const outcome = battleOutcome(damage);
     expect(outcome.vitaz).toBe(0);
-    expect(outcome.prebytokDrzi).toBe(1);
-    expect(outcome.prebytok).toBe(2);
+    expect(outcome.prebytokDrzi).toBe(0);
+    expect(outcome.prebytok).toBe(1);
   });
 });
 
@@ -138,7 +125,7 @@ describe("v6 — výsledok bitky a špaky za bitku (Michal 2026-10-26)", () => {
   const remiza = { tuhe: [3, 3], makke: [0, 2], celkove: [3, 5], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
 
   it("remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera", () => {
-    expect(battleOutcome(remiza, { abstaky: [1, 0], dlhy: [0, 0] })).toMatchObject({ vitaz: 1, rozhodlo: "abstak", prebytokDrzi: 1 });
+    expect(battleOutcome(remiza, { abstaky: [1, 0], dlhy: [0, 0] })).toMatchObject({ vitaz: 1, rozhodlo: "abstak", prebytokDrzi: null });
     expect(battleOutcome(remiza, { abstaky: [1, 1], dlhy: [2, 3] })).toMatchObject({ vitaz: 0, rozhodlo: "dlhy" });
     expect(battleOutcome(remiza, { abstaky: [0, 0], dlhy: [1, 1] })).toMatchObject({ vitaz: null, rozhodlo: "sekera" });
     // Rozhoduje tuhé — Absťáky ani Dlhy nič nemenia.

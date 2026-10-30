@@ -11,7 +11,7 @@ import { apply, autoKoniecPitky, legalCommands, loadGameData, navrhPrebytku, naT
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 describe("menej klikov (roadmapa #9 B)", () => {
-  it("návrh prebytku prejde ako jeden „tah“ a rozdelí celý prebytok", () => {
+  it("návrh Nakladačky prejde ako jeden „tah“ a rozdelí celú Nakladačku", () => {
     let navrhov = 0;
     for (const seed of [2, 3, 5, 7, 11, 13]) {
       let s: GameState = setupGame(data, seed);

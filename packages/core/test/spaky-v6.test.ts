@@ -1,7 +1,7 @@
 // Pravidlá v6 „Špaky“ (Michal 2026-10-26, docs/napady/spaky.html) v znení v8
-// (Michal 2026-10-28): víťazné body sú špaky — za bitku (karty v línii), za
-// starších nové zóny po vyhratej bitke, Exekútor, Cirhóza na konci; Kultúrny dom
-// „Obaja bodujú“. Očakávané hodnoty sú z pravidla, nie z kódu.
+// (Michal 2026-10-28): víťazné body sú špaky — za bitku (karty v línii), Exekútor,
+// Cirhóza na konci; Kultúrny dom „Obaja bodujú“. Strach starších až po udržaní
+// (v8.3) stráži strach-udrzanie.test.ts. Očakávané hodnoty sú z pravidla, nie z kódu.
 
 import { describe, expect, it } from "vitest";
 // Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
@@ -89,15 +89,15 @@ const pohorsenie = (s: GameState) => apply(data, s, { type: "pohorsenie", elderI
 describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
   const s0 = setupGame(data, 5);
 
-  it("víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie", () => {
+  it("víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; strach za Pohoršenie v bitke nič (v8.3); lokalitu si neberie", () => {
     const s = predPoskodenim({ ciel: lokalita(s0, "krcma"), sums: [{ Rana: 5 }, {}], pitky: 4, karty: [1, 1] });
     const { state, events } = pohorsenie(s);
     const zaznam = state.nastenka.at(-1)!;
-    expect(zaznam).toMatchObject({ vitaz: 0, rozhodlo: "tuhe", pitky: 4, karty: 2, zaBitku: [2, 0], zaStarsich: [1, 0], zoSekery: 0 });
+    expect(zaznam).toMatchObject({ vitaz: 0, rozhodlo: "tuhe", pitky: 4, karty: 2, zaBitku: [2, 0], zaStarsich: [0, 0], zoSekery: 0 });
     expect(zaznam.lokalita?.defId).toBe("krcma");
     // Prebytok 5 posunie markery až po špakoch — v tejto bitke už nič nedá.
     expect(state.bitkaStav?.krok).toBe("prebytok");
-    expect(state.spaky).toEqual([3, 0]);
+    expect(state.spaky).toEqual([2, 0]);
     // Rekapitulácia bitky nesie špaky (v6).
     const v = events.find((e) => e.type === "bitkaVysledok");
     expect(v?.type === "bitkaVysledok" ? v.rekap?.spaky?.zaBitku : null).toEqual([2, 0]);
@@ -123,31 +123,16 @@ describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
     expect(vyhra.spakyNaSekere).toBe(0);
   });
 
-  it("bod 4: starší dá obávanému nevyplatené zóny (v8: oranžová = 1 + 2); sivý nikomu — v6.1 len víťazovi", () => {
-    const s = predPoskodenim({
-      ciel: lokalita(s0, "krcma"),
-      sums: [{}, { Rana: 1 }],
-      uprav: (t) => ({ ...t, starsi: t.starsi.map((e, i) => ({ ...e, marker: ([3, 5, 6, 1, 3, 3, 3, 3] as const)[i] as MarkerPos })) }),
-    });
-    // Pohoršenie hráča 0 posunie prvého staršieho 3 → 4 (žltá, strach z hráča 0).
-    // Bitku vyhral hráč 1 — porazený hráč 0 za svojich nedostane nič (v6.1). Hráčovi 1
-    // ešte nikto nič nezaplatil: oranžová = žltá 1 + oranžová 2 (v8).
-    const st = pohorsenie(s).state;
-    expect(st.nastenka.at(-1)!.zaStarsich).toEqual([0, 3]);
-    expect(st.starsi[3]?.vyplatene).toBe(2);
-    // Porazený nič nedostal, preto mu ani nič nie je vyplatené.
-    expect(st.starsi[2]?.vyplatene).toBeUndefined();
-  });
 });
 
 describe("v8: Kultúrny dom „Obaja bodujú“ (návrh #29)", () => {
   const s0 = setupGame(data, 5);
 
-  it("víťaz dostane špaky za všetky karty v línii, porazený za svoje; prebytok sa rozdeľuje ako inde (porazený)", () => {
+  it("víťaz dostane špaky za všetky karty v línii, porazený za svoje; Nakladačka sa rozdeľuje ako inde (porazený)", () => {
     const s = predPoskodenim({ ciel: lokalita(s0, "kulturny_dom"), sums: [{ Rana: 5 }, {}], karty: [2, 3] });
     const { state: st, events } = pohorsenie(s);
-    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: 0, karty: 5, zaBitku: [5, 3], zaStarsich: [1, 0], prebytok: [0, 0] });
-    expect(st.spaky).toEqual([6, 3]);
+    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: 0, karty: 5, zaBitku: [5, 3], zaStarsich: [0, 0], prebytok: [0, 0] });
+    expect(st.spaky).toEqual([5, 3]);
     expect(events.some((e) => e.type === "log" && e.text.startsWith("Kultúrny dom: aj porazený hráč 2 dostáva 3 špaky"))).toBe(true);
     // Prebytok 5 sa nemení na špaky — rozdeľuje ho porazený.
     expect(st.bitkaStav).toMatchObject({ krok: "prebytok", caka: 1, prebytokDrzi: 0, prebytokZostava: 5 });
@@ -160,86 +145,13 @@ describe("v8: Kultúrny dom „Obaja bodujú“ (návrh #29)", () => {
   });
 });
 
-describe("finále (v8): karty v línii, prebytok rozdelí držiteľ a strach za nové zóny sa vyplatí hneď", () => {
-  it("po finále: špaky za karty a za starších; prebytok rozdelí držiteľ, nové zóny sa vyplatia ešte po finále; potom koniec", () => {
-    const s = predPoskodenim({ ciel: FINALE, lokalityVHre: [], sums: [{ Rana: 5 }, {}], karty: [2, 1] });
-    expect(vyplatZaStarsich(s)).toBe(1);
-    let st = pohorsenie(s).state;
-    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: 0, finale: true, zaBitku: [3, 0], zaStarsich: [1, 0], prebytok: [0, 0] });
-    // Vo finále rozdeľuje držiteľ prebytku (porazenému sú priazne na nič) a doplatok strachu ešte príde.
-    expect(st.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0, prebytokZostava: 5 });
-    expect(vyplatZaStarsich(st)).toBe(1);
-    // Prvý starší (žltá, vyplatená) ďalej: oranžová 2 a červená 3 — v8.2 stojí presne 2 + 3 = 5.
-    st = apply(data, st, { type: "prebytok", elderId: st.starsi[0]!.elderId }, 0).state;
-    expect(st.starsi[0]!.marker).toBe(6);
-    expect(st.nastenka.at(-1)).toMatchObject({ zaStarsich: [1 + 2 + 3, 0], prebytok: [0, 0] });
-    // 4 + 5 špakov; výkupné: 2 poldeci každému, hráč 2 má 3 + 1 cigaretu za posunutého staršieho (0 špakov).
-    expect(st.koniec).toMatchObject({ vitaz: 0, body: [9 + 2, 0 + 2] });
-    expect(spakyTeraz(viewFor(data, st, 1)).spolu).toEqual([11, 2]);
-  });
-
+describe("finále (v8): karty v línii", () => {
   it("sekera vo finále: špaky kola aj zo sekery prepadnú", () => {
     const s = predPoskodenim({ ciel: FINALE, lokalityVHre: [], sums: [{}, {}], karty: [2, 1], uprav: (t) => ({ ...t, spakyNaSekere: 2, spaky: [4, 4] }) });
     const st = pohorsenie(s).state;
-    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, prepadlo: 5, zaBitku: [0, 0] });
-    expect(st.koniec).toMatchObject({ vitaz: 0, body: [5 + 2, 4 + 2] });
-  });
-});
-
-describe("v6.1 (Michal 2026-10-27): strach platí len víťazovi bitky", () => {
-  const s0 = setupGame(data, 5);
-  // Prvý starší po Pohoršení hráča 0 v žltej (bojí sa hráča 0), druhý v oranžovej na polovici
-  // hráča 1 (bojí sa hráča 0), tretí v oranžovej na polovici hráča 0 (bojí sa hráča 1).
-  const markery = (t: GameState): GameState => ({ ...t, starsi: t.starsi.map((e, i) => ({ ...e, marker: ([3, 5, 1, 3, 3, 3, 3, 3] as const)[i] as MarkerPos })) });
-  const po = (ciel: GameState["ciel"], sums: BitkaStav["sums"], lokalityVHre?: readonly CardInstance[]) =>
-    pohorsenie(predPoskodenim({ ciel, sums, uprav: markery, ...(lokalityVHre === undefined ? {} : { lokalityVHre, karty: [2, 1] as const }) })).state;
-
-  it("víťaz dostane svojich starších (v8 nevyplatené zóny), porazený za starších nič", () => {
-    expect(po(lokalita(s0, "krcma"), [{ Rana: 5 }, {}]).nastenka.at(-1)).toMatchObject({ vitaz: 0, zaBitku: [2, 0], zaStarsich: [1 + 3, 0] });
-    expect(po(lokalita(s0, "krcma"), [{}, { Rana: 5 }]).nastenka.at(-1)).toMatchObject({ vitaz: 1, zaBitku: [0, 2], zaStarsich: [0, 3] });
-  });
-
-  it("pri sekere (špaky za bitku idú na sekeru) dostanú za starších obaja", () => {
-    const st = po(lokalita(s0, "krcma"), [{}, {}]);
-    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, rozhodlo: "sekera", zaStarsich: [4, 3] });
-    expect(st.spaky).toEqual([4, 3]);
-  });
-
-  it("rozpis za starších (Michal 2026-10-27): koľko dal ktorý starší, súčet = zaStarsich; pri sekere obom", () => {
-    const s = setupGame(data, 5);
-    const id = (i: number) => s.starsi[i]!.elderId;
-    const def = (i: number) => s.starsi[i]!.karta.defId;
-    const vyhra = po(lokalita(s0, "krcma"), [{ Rana: 5 }, {}]).nastenka.at(-1)!;
-    expect(vyhra.zaStarsichRozpis).toEqual([
-      [
-        { elderId: id(0), defId: def(0), spaky: 1 },
-        { elderId: id(1), defId: def(1), spaky: 3 },
-      ],
-      [],
-    ]);
-    const sekera = po(lokalita(s0, "krcma"), [{}, {}]).nastenka.at(-1)!;
-    expect(sekera.zaStarsichRozpis?.[1]).toEqual([{ elderId: id(2), defId: def(2), spaky: 3 }]);
-    for (const p of [0, 1] as const) expect(sekera.zaStarsichRozpis?.[p].reduce((a, x) => a + x.spaky, 0)).toBe(sekera.zaStarsich[p]);
-  });
-
-  it("rozpis za starších je v udalosti bitky aj na nástenke a obaja hráči ho vidia rovnako", () => {
-    const { state, events } = pohorsenie(predPoskodenim({ ciel: lokalita(s0, "krcma"), sums: [{}, {}], uprav: markery }));
-    const zaznam = state.nastenka.at(-1)!;
-    for (const p of [0, 1] as const) {
-      const bitka = eventsFor(events, p).find((e) => e.type === "bitkaVysledok");
-      expect(bitka?.type === "bitkaVysledok" ? bitka.rekap?.spaky?.zaStarsichRozpis : undefined).toEqual(zaznam.zaStarsichRozpis);
-      expect(viewFor(data, state, p).nastenka.at(-1)?.zaStarsichRozpis).toEqual(zaznam.zaStarsichRozpis);
-    }
-    // Rozpis nesie len id staršieho, kartu na ukazovateli (verejná) a číslo — nič zo skrytých zón.
-    const kluce = new Set(zaznam.zaStarsichRozpis!.flat().flatMap((x) => Object.keys(x)));
-    expect([...kluce].sort()).toEqual(["defId", "elderId", "spaky"]);
-    const verejneKarty = new Set(state.starsi.map((e) => e.karta.defId));
-    for (const x of zaznam.zaStarsichRozpis!.flat()) expect(verejneKarty.has(x.defId)).toBe(true);
-  });
-
-  it("finále: strach len víťazovi, pri sekere obom", () => {
-    expect(po(FINALE, [{}, { Rana: 5 }], []).nastenka.at(-1)).toMatchObject({ vitaz: 1, zaBitku: [0, 3], zaStarsich: [0, 3] });
-    expect(po(FINALE, [{}, {}], []).nastenka.at(-1)).toMatchObject({ vitaz: null, zaStarsich: [4, 3] });
+    expect(st.nastenka.at(-1)).toMatchObject({ vitaz: null, prepadlo: 5, zaBitku: [0, 0], zaStarsich: [0, 0] });
+    // Nový stupeň z Pohoršenia vo finále nič nedá (v8.3) — remíza 4 + 2 : 4 + 2.
+    expect(st.koniec).toMatchObject({ vitaz: null, body: [4 + 2, 4 + 2] });
   });
 });
 
@@ -292,13 +204,18 @@ describe("v6: špaky sú verejné", () => {
     expect(spakyTeraz(viewFor(data, s, 1)).vykupne[0]).toEqual({ poldeci: 2, cigarety: 3, spaky: 2 });
   });
 
-  it("odhad špakov (v8): každá nevyplatená zóna raz, kým ešte nejaká výplata príde", () => {
+  it("odhad špakov (v8.3): udržané stupne zaplatí koniec tohto kola, nové koniec ďalšieho — kým ešte príde", () => {
     const s0 = setupGame(data, 5, { lokalit: 3 });
     const starsi: ElderState[] = s0.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 6 : 3) as MarkerPos }));
     const t = spakyTeraz(viewFor(data, { ...s0, starsi }, 0));
-    // Testovacia sada v6 nemá pinnacle lokality — finále nie je, výplaty sú 3 bitky.
+    // Testovacia sada v6 nemá pinnacle lokality — finále nie je, konce kola sú 3.
     expect(t.vyplat).toBe(3);
-    expect(t.zaStarsich).toEqual([1 + 2 + 3, 0]);
+    // Červená bez udržania čaká — koniec tohto kola ju nezaplatí, ďalší áno.
+    expect(t.zaStarsich).toEqual([0, 0]);
+    expect(t.naUdrzanie).toEqual([1 + 2 + 3, 0]);
+    const drzi = spakyTeraz(viewFor(data, { ...s0, starsi: starsi.map((e, i) => (i === 0 ? { ...e, drzane: 3 } : e)) }, 0));
+    expect(drzi.zaStarsich).toEqual([1 + 2 + 3, 0]);
+    expect(drzi.naUdrzanie).toEqual([0, 0]);
     // Odhad aj s výkupným zo začiatku hry: 2 plné poldeci, 3 cigarety = 2 špaky.
     expect(t.vykupne).toEqual([
       { poldeci: 2, cigarety: 3, spaky: 2 },
@@ -306,7 +223,8 @@ describe("v6: špaky sú verejné", () => {
     ]);
     expect(t.odhad).toEqual([6 + 2, 0 + 2]);
     // Po výplate červenej už starší nedá nič, kým sa marker nepohne.
-    const vyplateny = spakyTeraz(viewFor(data, { ...s0, starsi: starsi.map((e, i) => (i === 0 ? { ...e, vyplatene: 3 } : e)) }, 0));
+    const vyplateny = spakyTeraz(viewFor(data, { ...s0, starsi: starsi.map((e, i) => (i === 0 ? { ...e, vyplatene: 3, drzane: 3 } : e)) }, 0));
     expect(vyplateny.zaStarsich).toEqual([0, 0]);
+    expect(vyplateny.naUdrzanie).toEqual([0, 0]);
   });
 });

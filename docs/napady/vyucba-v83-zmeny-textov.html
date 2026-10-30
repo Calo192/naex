@@ -1,0 +1,169 @@
+<!doctype html><html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Výučba Prvá hra na pravidlách v8.3 — zmeny textov</title>
+<style>
+body{font:16px/1.45 system-ui,sans-serif;max-width:860px;margin:0 auto;padding:12px;background:#faf7f2;color:#222}
+h1{font-size:1.35em}h2{margin-top:1.6em;border-bottom:2px solid #c9b48a}
+.z{background:#fff;border:1px solid #e3d9c6;border-radius:8px;padding:8px 10px;margin:8px 0}
+.z.nov{border-left:5px solid #3a8a3a}.z.zrus{border-left:5px solid #a33}.z.tah{border-left:5px solid #c9a227}
+.h{font-size:.85em;color:#665}.p{font-size:.78em;color:#887;margin-top:6px}.t{font-size:.8em;color:#665;word-break:break-all}
+.o{color:#8a2b2b;text-decoration:line-through;margin:2px 0}.n{color:#1d5a1d}
+.box{background:#fff8e6;border:1px solid #e8cf8f;border-radius:8px;padding:8px 12px}
+</style></head><body>
+<h1>Výučba „Prvá hra“ na pravidlách v8.3 — zmeny textov Melichara</h1>
+<div class="box">
+<p><b>Prečo:</b> pravidlá v8.3 (revízia starších, krok 1): <b>Povery = výpožička priazne</b> — nový krok bitky pred Pohoršením, zvyšná Povera posunie silu priazne staršieho o stupeň k majiteľovi len na kolo, mäkké poškodenie zaniklo, Nakladačka je rozdiel tuhého a drží ju víťaz; <b>strach platí až po udržaní</b> do konca nasledujúceho kola, aj porazenému, ústup ho zmaže; vo finále sa Nakladačka nerozdeľuje a nové stupne nedajú nič; pojmy stupeň 0–3 a „od seba / k sebe“. K tomu oprava kroku i-fazy (Pohoršenie nie je poškodenie).</p>
+<p><b>Príbeh:</b> 1. bitka: hráč dve Povery na Farára, Štamgast jednu späť (nové kroky i-povery, k-povera1, k-povera2, k-povera-bot; exekútor až po nich). 2. kolo: remíza 5 : 5 na Dlhy ostáva, hráč predtým ohovorí Hrobára (Na zdravie mu vráti poldeci z NA EX); Nakladačka 0, kroky k-prebytok-bot2/3 odpadli; Farár zaplatí 3 na konci kola (udržaný). 3. kolo: patronát vráti Starostu do stredu a zmaže jeho 3 špaky; Nakladačka 3 ide celá Veterinárovi. Finále: Kšeft zmaže Starostov žltý stupeň, patronát Poštárky zmaže Štamgastove 3 špaky, po finále zaplatí Veterinár 3; i-prebytok-finale a k-prebytok-finale1 odpadli. Koniec 23 : 0.</p>
+<p>Zelený okraj = nový krok, červený = zrušený, žltý = iný ťah. Prečiarknuté pôvodné (stav po v8.2), zelené nové.</p></div>
+<h2>1. časť — Základy <small>(15 krokov)</small></h2><div class="z ">
+  <div class="h"><b>i-lokalita</b> · krok 1</div>
+  
+  <div class="p">text</div><div class="o">Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najviac po papuli. Ak mu naložíš viac ako on tebe, bitku vyhráš. Slovo sa tu šíri rýchlo a o týchto bitkách sa dozvedia miestne starešiny… Ty im musíš ukázať, kto je tu pán… Ich strach ti po vyhratej bitke prinesie špaky, ALEBO aj nie, a čo ja viem…</div><div class="n">Hrá sa na viacero kôl – každé kolo je bitka na inom mieste. Snažíš sa dať súperovi čo najviac po papuli. Ak mu naložíš viac ako on tebe, bitku vyhráš. Slovo sa tu šíri rýchlo a o týchto bitkách sa dozvedia miestne starešiny… Ty im musíš ukázať, kto je tu pán… Ich strach ti prinesie špaky, keď ho udržíš, ALEBO aj nie, a čo ja viem…</div></div>
+<div class="z ">
+  <div class="h"><b>i-fazy</b> · krok 5</div>
+  
+  <div class="p">text</div><div class="o">Kolo ide zľava doprava: Voľba cieľa, Draft, Zhromaždenie, Pitka, Bitka. Voľbu cieľa máš za sebou, gratulujem. V Drafte si zo šenku kúpiš karty, v Zhromaždení ich hráš k Lesnej ceste, v Pitke sa pije a fajčí a v Bitke sa ráta Poškodenie ([Pohoršenie] [Rana] [Pecka] [Petelica] [Povera]).</div><div class="n">Kolo ide zľava doprava: Voľba cieľa, Draft, Zhromaždenie, Pitka, Bitka. Voľbu cieľa máš za sebou, gratulujem. V Drafte si zo šenku kúpiš karty, v Zhromaždení ich hráš k Lesnej ceste, v Pitke sa pije a fajčí a v Bitke sa najprv ohovára a pohoršuje ([Povera] [Pohoršenie]) a potom ráta Poškodenie ([Rana] [Pecka] [Petelica]).</div></div>
+<div class="z ">
+  <div class="h"><b>i-pecka-povera</b> · krok 22</div>
+  
+  <div class="p">text</div><div class="o">[Pecka] Pecka sú 2 tuhé. [Povera] Povera poškodzuje za Dlhy: za každý tvoj Dlh ti v bitke pridá 1 mäkké poškodenie. Poškodenie je teda tuhé a mäkké, bitku vyhráva tuhé. Ty zatiaľ žiadny Dlh nemáš. Zatiaľ. Odhad bitky: 0 : 2.</div><div class="n">[Pecka] Pecka sú 2 tuhé. [Povera] Povera poškodenie nerobí, tá ohovára. Čo dokáže, ti ukážem v bitke. Odhad bitky: 0 : 2.</div></div>
+<div class="z ">
+  <div class="h"><b>q-povera</b> · krok 23</div>
+  
+  <div class="p">text</div><div class="o">Štamgast má spojenú Poveru. Čo ti urobí v bitke, kým nemáš žiadny Dlh?</div><div class="n">Štamgast má spojenú Poveru. Uberie ti v bitke tuhé?</div><div class="p">možnosť 1</div><div class="o">Nič, Povera poškodzuje len za Dlhy.</div><div class="n">Nie, Povera poškodenie nerobí.</div><div class="p">vysvetlenie 1</div><div class="o">Áno. Kým nemáš Dlhy, Povera ťa len straší. Ako ja.</div><div class="n">Áno. Povera len ohovára, ukážem ti v bitke. Zatiaľ ťa len straší. Ako ja.</div><div class="p">možnosť 2</div><div class="o">Uberie mi 1 tuhé.</div><div class="n">Áno, 1 tuhé.</div><div class="p">vysvetlenie 2</div><div class="o">Nie, Povera poškodzuje za tvoje Dlhy a tie nemáš. Hovoril som to pred chvíľou, ale nevadí.</div><div class="n">Nie, Povera tuhé nerobí, to robia Rana, Pecka a Petelica. Hovoril som to pred chvíľou, ale nevadí.</div></div>
+<div class="z ">
+  <div class="h"><b>k-dievcina</b> · krok 46</div>
+  
+  <div class="p">text</div><div class="o">Teraz polož Dievčinu na vydaj za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí jej [Povera] Poveru. Štamgast bude mať po Pitke Dlh a tvoja Povera mu zaň v bitke pridá poškodenie, tak ako jeho tebe.</div><div class="n">Teraz polož Dievčinu na vydaj za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí jej [Povera] Poveru: v bitke budeš mať dve Povery, Štamgast jednu.</div></div>
+<div class="z ">
+  <div class="h"><b>k-hotovo-bot2</b> · krok 51</div>
+  
+  <div class="p">text</div><div class="o">Zadĺženie 2 z 2: dostal si Dlh, hneď priznaný. Po bitke prišiel exekútor: chodí v každej bitke ku každému, kto má priznaný Dlh, a zhorí mu polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Tvoj jediný Dlh zhorel aj s jedným špakom. Ja o tom niečo viem. Štamgastovi rovnako. A ak ti práve pribudli ŠPAKY, to je za bitku. Špaky ti vysvetlím po bitke.</div><div class="n">Zadĺženie 2 z 2: dostal si Dlh, hneď priznaný. Štamgast tiež, jeho Pijan robil to isté. Pitky sú za nami, teraz bitka.</div></div>
+<div class="z ">
+  <div class="h"><b>i-bitka</b> · krok 52</div>
+  
+  <div class="p">text</div><div class="o">Bitka! Tvoje tuhé: Rana, Pecka Lesnej cesty, Rana a Petelica Hasiča, 1 + 2 + 1 + 3 = 7. Štamgast: Pecka 2 a dve Rany, 4. Povery sa vyrovnali: jeho ti za tvoj Dlh dala 1 mäkké, tvoja jemu za jeho tiež 1. Bitka o Lesnú cestu je tvoja.</div><div class="n">Bitka! Tvoje tuhé: Rana, Pecka Lesnej cesty, Rana a Petelica Hasiča, 1 + 2 + 1 + 3 = 7. Štamgast: Pecka 2 a dve Rany, 4. Bitka o Lesnú cestu bude tvoja, ale najprv sa ohovára.</div></div>
+<div class="z ">
+  <div class="h"><b>i-starsi</b> · krok 54</div>
+  
+  <div class="p">text</div><div class="o">Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a za ten strach ti po vyhratej bitke dávajú špaky. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.</div><div class="n">Teraz starší: osem dedinských autorít. Bitky v nich vzbudzujú respekt a strach a za strach, ktorý udržíš, ti dávajú špaky. Ja sa s nimi momentálne nestretávam, ale to sem nepatrí.</div></div>
+<div class="z ">
+  <div class="h"><b>i-strach</b> · krok 55</div>
+  
+  <div class="p">text</div><div class="o">Každý starší má stupnicu: v strede sivá, potom žltá, oranžová a červená. Staršieho tlačíš k Štamgastovi a čím ďalej je, tým viac sa ťa bojí. ALE POZOR! Čím viac sa ťa bojí, tým viac pomáha druhému! Inak, nemáš ešte cigaretku?</div><div class="n">Každý starší má stupnicu: v strede sivá, stupeň 0, potom žltá 1, oranžová 2 a červená 3. Staršieho tlačíš od seba, k Štamgastovi, a čím ďalej je, tým viac sa ťa bojí. ALE POZOR! Čím viac sa ťa bojí, tým viac pomáha druhému! Inak, nemáš ešte cigaretku?</div></div>
+<div class="z nov">
+  <div class="h"><b>i-povery</b> · krok 56 · nový krok</div>
+  
+  <div class="p">text</div><div class="n">Najprv Povery. Každá [Povera] Povera ohovorí jedného staršieho: jeho priazeň sa len na toto kolo posunie o stupeň k tebe. Marker sa nehýbe, strach ostáva, sú to len reči. Ty máš dve, Štamgast jednu. Začínaš ty.</div></div>
+<div class="z nov">
+  <div class="h"><b>k-povera1</b> · krok 57 · nový krok</div>
+  
+  <div class="p">text</div><div class="n">Klikni na Farára a ohovor ho. Marker ostane v strede, ale dnes ti požičia priazeň sily 1.</div></div>
+<div class="z nov">
+  <div class="h"><b>k-povera2</b> · krok 58 · nový krok</div>
+  
+  <div class="p">text</div><div class="n">Druhú Poveru tiež Farárovi: priazeň sily 2, len na dnes. Klebety sa držia, kým sa kolo neskončí.</div></div>
+<div class="z nov">
+  <div class="h"><b>k-povera-bot</b> · krok 59 · nový krok</div>
+  
+  <div class="p">text</div><div class="n">Štamgast ohovoril Farára späť: Povera proti Povere, ostala ti sila 1. A bitka je tvoja. Po nej prišiel exekútor: chodí v každej bitke ku každému, kto má priznaný Dlh, a zhorí mu polovicu Dlhov, zaokrúhlene nahor, a rovnako veľa špakov. Tvoj jediný Dlh zhorel aj s jedným špakom. Ja o tom niečo viem. Štamgastovi rovnako. A ak ti práve pribudli ŠPAKY, to je za bitku. Špaky ti vysvetlím po bitke.</div></div>
+<div class="z ">
+  <div class="h"><b>q-starsi</b> · krok 63</div>
+  
+  <div class="p">možnosť 2</div><div class="o">Jeho strach mi po vyhratej bitke dá špaky.</div><div class="n">Jeho strach mi dá špaky, keď sa udrží.</div><div class="p">vysvetlenie 2</div><div class="o">Áno, po najbližšej bitke, ktorú vyhráš, ti zaplatí každú novú zónu raz: žltá 1 a oranžová 2, spolu 3. Potom už nič, kým sa nepohne. Konečne sa ťa niekto bojí.</div><div class="n">Áno. Keď bude Farár na konci budúceho kola ešte v oranžovej, zaplatí ti každý stupeň raz: žltý 1 a oranžový 2, spolu 3. Aj keby si tú bitku prehral. Potom už nič, kým sa nepohne. Konečne sa ťa niekto bojí.</div></div>
+<div class="z ">
+  <div class="h"><b>i-body</b> · krok 66</div>
+  
+  <div class="p">text</div><div class="o">Špaky v bare: 5 : −1. Šesť za bitku, ale exekútor vám obom zobral po jednom. Ďalšie ti dajú starší: keď vyhráš bitku, každý, kto sa ťa bojí, ti zaplatí za zóny, ktoré ti ešte nezaplatil: 1 špak za žltú, 2 za oranžovú a 3 za červenú. Kto prehrá, od starších nedostane nič. Farár ti po ďalšej vyhratej bitke dá 3, ak ho Štamgast dovtedy neodtlačí, a potom už nič, kým sa nepohne.</div><div class="n">Špaky v bare: 5 : −1. Šesť za bitku, ale exekútor vám obom zobral po jednom. Ďalšie ti dajú starší: každý, kto sa ťa bojí, ti na konci kola zaplatí stupne, na ktorých sa udržal od konca minulého kola: 1 špak za žltý, 2 za oranžový a 3 za červený. Je jedno, kto bitku vyhrá. Farár ti na konci budúceho kola dá 3, ak ho Štamgast dovtedy neodtlačí, a potom už nič, kým sa nepohne.</div></div>
+<h2>2. časť — NA EX a podlosti <small>(11 krokov)</small></h2><div class="z ">
+  <div class="h"><b>i-exekutor2</b> · krok 117</div>
+  
+  <div class="p">text</div><div class="o">Bitka. Najprv [Pohoršenie] Pohoršenia: posúvajú starších k súperovi alebo k sebe a políčko stojí ako pri Nakladačke, von zo stredu 1, potom 2 a 3. Štamgast ich má tri, dve zo zdvojenej Dievčiny a jedno zo Silnej ženy. Exekútor príde ako minule, až po bitke.</div><div class="n">Bitka. Najprv Povery, potom [Pohoršenie] Pohoršenia. Pohoršenie posúva staršieho od seba alebo k sebe a políčko stojí ako pri Nakladačke, von zo stredu 1, potom 2 a 3. Štamgast ich má tri, dve zo zdvojenej Dievčiny a jedno zo Silnej ženy. Exekútor príde ako minule, až po bitke.</div></div>
+<div class="z nov">
+  <div class="h"><b>i-povery2</b> · krok 118 · nový krok</div>
+  
+  <div class="p">text</div><div class="n">Ty máš dve [Povera] Povery. Štamgastovu jedinú zrušila tvoja [Viera] Viera, jedna proti jednej. Si obranca, ohováraš prvý.</div></div>
+<div class="z nov">
+  <div class="h"><b>k-povera3</b> · krok 119 · nový krok</div>
+  
+  <div class="p">text</div><div class="n">Ohovor Hrobára. Jeho priazeň Alkoholik ti po bitke vráti poldeci z NA EX plný. Starostu nechaj, toho by ti Štamgast troma Pohoršeniami aj tak vyrovnal.</div></div>
+<div class="z nov">
+  <div class="h"><b>k-povera4</b> · krok 120 · nový krok</div>
+  
+  <div class="p">text</div><div class="n">Aj druhú Hrobárovi. Povery treba rozdať všetky.</div></div>
+<div class="z zrus">
+  <div class="h"><b>k-prebytok-bot2</b> · zrušený krok</div>
+  
+  <div class="p">text</div><div class="n">(krok zrušený)</div></div>
+<div class="z zrus">
+  <div class="h"><b>k-prebytok-bot3</b> · zrušený krok</div>
+  
+  <div class="p">text</div><div class="o">Nakladačku rozdeľuje ten, proti komu sa ráta, teda Štamgast. Hrobára posunul do žltej, to stálo 1. Do oranžovej by stálo 2 a toľko už nemal, tak zvyšok dal Veterinárovi. Obaja sa začnú báť teba a Štamgastovi dajú priazeň, Alkoholik a Výpalník. Za každého posunutého staršieho dostal cigaretu, teda dve.</div><div class="n">(krok zrušený)</div></div>
+<div class="z ">
+  <div class="h"><b>q-remiza2</b> · krok 123</div>
+  
+  <div class="p">vysvetlenie 1</div><div class="o">Áno. Remízu v tuhom rozhodujú Dlhy, nie mäkké. Jeho NA EX mu pridalo Pohoršenie a zároveň ho potopilo.</div><div class="n">Áno. Remízu v tuhom rozhodujú Dlhy, nie Povery. Jeho NA EX mu pridalo Pohoršenie a zároveň ho potopilo.</div><div class="p">možnosť 2</div><div class="o">Mal som viac mäkkého.</div><div class="n">Mal som viac Povier.</div><div class="p">vysvetlenie 2</div><div class="o">Mäkké bitku nerozhoduje, to ide do Nakladačky. Rozhodli Dlhy.</div><div class="n">Povery tuhé nerobia, len požičiavajú priazne. Rozhodli Dlhy.</div></div>
+<div class="z ">
+  <div class="h"><b>i-strach-starosta</b> · krok 124</div>
+  
+  <div class="p">text</div><div class="o">A pozri, koho sa Starosta bojí: teba, v oranžovej. Priazeň a strach nikdy nepatria tomu istému. Štamgast si chcel kúpiť bitku a zaplatil strachom: bitku si vyhral ty, tak ti Starosta zaplatí hneď, za žltú a oranžovú.</div><div class="n">A pozri, koho sa Starosta bojí: teba, v oranžovej. Priazeň a strach nikdy nepatria tomu istému. Štamgast si chcel kúpiť bitku a zaplatil strachom: keď sa Starosta v oranžovej udrží do konca budúceho kola, zaplatí ti žltý aj oranžový stupeň, 3 špaky.</div></div>
+<div class="z ">
+  <div class="h"><b>i-makke2</b> · krok 127</div>
+  
+  <div class="p">text</div><div class="o">A Nakladačka? Tvoje dve [Povera] Povery dali 2 mäkké: Povera poškodzuje za súperove priznané Dlhy a Štamgast ich mal tri, exekútor ich spáli až po bitke. Bitku rozhoduje tuhé, Nakladačku celkové, teda tuhé plus mäkké: 7 : 5. Nakladačka 2 je tvoja.</div><div class="n">A Nakladačka? Je to rozdiel tuhého a drží ju víťaz. Pri 5 : 5 je nula, takže sa po tejto bitke žiadny starší nepohne.</div></div>
+<div class="z ">
+  <div class="h"><b>q-makke</b> · krok 128</div>
+  
+  <div class="p">text</div><div class="o">Keby si bitku prehral 5 : 6 v tuhom a mal 2 mäkké, Štamgast nič, kto by mal Nakladačku?</div><div class="n">Keby si bitku prehral 5 : 6, kto by mal Nakladačku?</div><div class="p">možnosť 1</div><div class="o">Ja, 7 : 6 v celkovom.</div><div class="n">Štamgast, vyhral by.</div><div class="p">vysvetlenie 1</div><div class="o">Áno. Nakladačku drží, kto má viac celkového, aj keď bitku prehral. Rozdeľuje ju potom ten druhý.</div><div class="n">Áno. Nakladačku drží víťaz a rozdeľuje ju porazený.</div><div class="p">možnosť 2</div><div class="o">Štamgast, vyhral by bitku.</div><div class="n">Ja, mám viac Povier.</div><div class="p">vysvetlenie 2</div><div class="o">Bitku by vyhral, ale Nakladačka sa ráta z celkového: 7 : 6 pre teba.</div><div class="n">Povery Nakladačku nerobia. Je to rozdiel tuhého a drží ju víťaz.</div></div>
+<div class="z ">
+  <div class="h"><b>i-spaky2</b> · krok 129</div>
+  
+  <div class="p">text</div><div class="o">Špaky: dostal si 9, jeden za každú kartu v línii, aj za jeho. Farár a Starosta ti zaplatili za žltú a oranžovú, každý 3. Potom exekútor: tebe zhorel Dlh aj so špakom, Štamgastovi dva. 19 : −3. Na krčmovej nástenke pribudlo Ihrisko s tvojím menom. A Štamgast po prehre zahodil Dievčinu na vydaj, jej efekt ti na rozlúčku dal Dlh.</div><div class="n">Špaky: dostal si 9, jeden za každú kartu v línii, aj za jeho. Potom exekútor: tebe zhorel Dlh aj so špakom, Štamgastovi dva. A na konci kola ti Farár zaplatil 3, v oranžovej sa udržal od minulého kola. 16 : −3. Hrobárova priazeň ti vrátila poldeci z NA EX plný, to boli tvoje klebety. Na krčmovej nástenke pribudlo Ihrisko s tvojím menom. A Štamgast po prehre zahodil Dievčinu na vydaj, jej efekt ti na rozlúčku dal Dlh.</div></div>
+<h2>3. časť — Celá hra <small>(11 krokov)</small></h2><div class="z ">
+  <div class="h"><b>k-patronat-bot</b> · krok 144</div>
+  
+  <div class="p">text</div><div class="o">Štamgast si vzal Starostu. Starosta sa bál teba, v oranžovej, a teraz je jeho marker v strede. Žltú a oranžovú ti už zaplatil, ale keď ho raz znova vytlačíš, zaplatí ti ich ešte raz. Za náhradu dal Štamgast lícom dole kartu z ruky.</div><div class="n">Štamgast si vzal Starostu. Starosta sa bál teba, v oranžovej, a teraz je jeho marker v strede. Ústup zmaže, čo sa udržiavalo: tie 3 špaky, čo ti mal Starosta zaplatiť na konci kola, sú preč. Za náhradu dal Štamgast lícom dole kartu z ruky.</div></div>
+<div class="z zrus">
+  <div class="h"><b>k-prebytok3-bot2</b> · zrušený krok</div>
+  
+  <div class="p">text</div><div class="o">Nakladačka 3 je tvoja, rozdeľuje Štamgast: Veterinára zo žltej do oranžovej za 2 a zvyšok, 1, Autobusárovi do žltej. Priazne dostane on, ale oba sa boja teba. Za dvoch posunutých starších dostal Štamgast dve cigarety.</div><div class="n">(krok zrušený)</div></div>
+<div class="z ">
+  <div class="h"><b>i-vyhra3</b> · krok 179</div>
+  
+  <div class="p">text</div><div class="o">Vyhral si, 7 : 4. Špaky: päť za karty v línii a od starších tri. Hrobár a Veterinár ti zaplatili žltú a Starosta tiež, vytlačil ho síce Štamgast, ale bojí sa teba. Exekútor ti potom zobral jeden. Máš 26.</div><div class="n">Vyhral si, 7 : 4. Špaky: päť za karty v línii a exekútor ti potom zobral jeden. Máš 20. Od starších dnes nič: Farár ti už zaplatil a Starostu ti Štamgast patronátom stiahol do stredu.</div></div>
+<div class="z ">
+  <div class="h"><b>q-strach</b> · krok 181</div>
+  
+  <div class="p">možnosť 1</div><div class="o">Nič, tie zóny už zaplatil.</div><div class="n">Nič, tie stupne už zaplatil.</div><div class="p">vysvetlenie 1</div><div class="o">Áno. Starší platí každú zónu raz. Znova až keď ustúpi a vráti sa.</div><div class="n">Áno. Starší platí každý stupeň raz. Znova až keď ustúpi, vráti sa a udrží sa.</div><div class="p">vysvetlenie 2</div><div class="o">To by bolo pekné. Platí len zóny, ktoré ti ešte nezaplatil, a nové nemá.</div><div class="n">To by bolo pekné. Platí len stupne, ktoré ti ešte nezaplatil, a nové nemá.</div></div>
+<div class="z ">
+  <div class="h"><b>k-prebytok3-bot</b> · krok 182</div>
+  
+  <div class="p">text</div><div class="n">Nakladačka 3 je tvoja, rozdeľuje ju Štamgast: Veterinára zo stredu do oranžovej, 1 + 2. Priazeň Výpalník dostane on, ale bojí sa teba. Za posunutého staršieho dostal Štamgast cigaretu.</div></div>
+<div class="z ">
+  <div class="h"><b>i-patronat-ty</b> · krok 197</div>
+  
+  <div class="p">text</div><div class="o">Poštárka je na tvojej polovici v oranžovej a prejavuje ti priazeň. Vezmi si ju: z oranžovej to stojí dve [Cigareta] cigarety a Štamgast dostane v bitke dve [Pohoršenie] Pohoršenia navyše, ktoré na Poštárku nesmú. Ako náhradu jej daj lícom dole Miňištranta.</div><div class="n">Poštárka je na tvojej polovici v oranžovej a prejavuje ti priazeň. Bojí sa Štamgasta a po finále by mu zaplatila 3, lebo sa tam udržala od 3. kola. Vezmi si ju: z oranžovej to stojí dve [Cigareta] cigarety a Štamgast dostane v bitke dve [Pohoršenie] Pohoršenia navyše, ktoré na Poštárku nesmú. Marker ide do stredu a jeho 3 špaky sú preč. Ako náhradu jej daj lícom dole Miňištranta.</div></div>
+<div class="z ">
+  <div class="h"><b>k-kseft</b> · krok 203</div>
+  
+  <div class="p">text</div><div class="o">Kšeft vily: za 2 [Cigareta] cigarety posuň Starostu o políčko k sebe, zo žltej do stredu. Štamgast príde o jeho priazeň Bitkár hneď: 2 : 5. Kšeft posúva o políčko bez ohľadu na cenu poľa, nie je to ťah a každý ho smie raz za Pitku.</div><div class="n">Kšeft vily: za 2 [Cigareta] cigarety posuň Starostu o políčko k sebe, zo žltej do stredu. Štamgast príde o jeho priazeň Bitkár hneď: 2 : 5. Žltý stupeň, ktorý by ti Starosta po finále zaplatil, tým zmizne, ale bitka je viac. Kšeft posúva o políčko bez ohľadu na cenu poľa, nie je to ťah a každý ho smie raz za Pitku.</div></div>
+<div class="z zrus">
+  <div class="h"><b>i-prebytok-finale</b> · zrušený krok</div>
+  
+  <div class="p">text</div><div class="o">Nakladačka 1 je tvoja a vo finále ju rozdeľuje ten, kto ju drží: ty. Porazenému by priazne už nepomohli. A za nové zóny, ktoré tým vzniknú, ti starší zaplatia ešte teraz, po finále.</div><div class="n">(krok zrušený)</div></div>
+<div class="z zrus">
+  <div class="h"><b>k-prebytok-finale1</b> · zrušený krok</div>
+  
+  <div class="p">text</div><div class="o">Krčmárku zo stredu do žltej: 1 špak.</div><div class="n">(krok zrušený)</div></div>
+<div class="z ">
+  <div class="h"><b>i-bitka-finale</b> · krok 222</div>
+  
+  <div class="p">text</div><div class="o">Bitka finále 6 : 5, vyhral si a Poštárka ti ostáva, patronát vyšiel. Špaky: päť za karty v línii a tri od starších, Veterinár za oranžovú a Autobusár za žltú. Po bitke exekútor: tebe aj Štamgastovi zhorel Dlh aj so špakom.</div><div class="n">Bitka finále 6 : 5, vyhral si a Poštárka ti ostáva, patronát vyšiel. Špaky: päť za karty v línii. Po bitke exekútor: tebe aj Štamgastovi zhorel Dlh aj so špakom. Nakladačka 1 je tvoja, ale vo finále sa nerozdeľuje, priazne by už nikomu nepomohli. A koniec finále je posledný koniec kola: Veterinár sa v oranžovej udržal od 3. kola, tak ti zaplatil 3. Stupne, kam sa starší dostali až vo finále, by už nedali nič.</div></div>
+<div class="z ">
+  <div class="h"><b>i-koniec</b> · krok 223</div>
+  
+  <div class="p">text</div><div class="o">Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. Štamgast si za poldeci a kôpku cigariet pripísal päť. A v Pitkách finále ti dvakrát pretiekla pečeň: dve Cirhózy ležia v balíčku nepriznané a stoja ťa 3 špaky za kus. 30 : 2, aj tak si vyhral.</div><div class="n">Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. Štamgast si za kôpku cigariet pripísal tri. A v Pitkách finále ti dvakrát pretiekla pečeň: dve Cirhózy ležia v balíčku nepriznané a stoja ťa 3 špaky za kus. 23 : 0, aj tak si vyhral.</div></div>
+<h2>Nápovedy prvej partie (napovedy.json) <small>(3)</small></h2>
+<div class="z"><div class="h"><b>body</b></div><div class="o">Koľko ti ktorý starší dá po bitke, ak ju vyhráš, ukáže dlaždica Starší.</div><div class="n">Koľko ti ktorý starší zaplatí na konci kola, keď sa jeho strach udrží, ukáže dlaždica Starší.</div></div>
+<div class="z"><div class="h"><b>pohorsenie (moje)</b></div><div class="o">Tvoje Pohoršenie posúva staršieho k súperovi alebo k sebe, aj keď bitku prehráš.</div><div class="n">Tvoje Pohoršenie posúva staršieho od seba alebo k sebe, aj keď bitku prehráš.</div></div>
+<div class="z"><div class="h"><b>priazen</b></div><div class="o">Bojí sa zato súpera a po bitke, ktorú súper vyhrá, mu dá špaky.</div><div class="n">Bojí sa zato súpera, a keď sa to udrží do konca ďalšieho kola, dá mu špaky.</div></div>
+</body></html>

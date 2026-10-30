@@ -203,7 +203,7 @@ export function UkazkaBitky() {
       </div>
       <div className="ukazka-bitka-vysledok">
         <div>
-          <span className="tlmene">Zvyšná Viera / Povera po vyrušení</span>
+          <span className="tlmene">Zvyšná Viera / Povera po vyrušení (Povery posúvajú priazne)</span>
           <strong>
             {d.zvysnaViera[0]}/{d.zvysnaPovera[0]} : {d.zvysnaViera[1]}/{d.zvysnaPovera[1]}
           </strong>
@@ -212,18 +212,6 @@ export function UkazkaBitky() {
           <span className="tlmene">Tuhé poškodenie</span>
           <strong>
             {d.tuhe[0]} : {d.tuhe[1]}
-          </strong>
-        </div>
-        <div>
-          <span className="tlmene">Mäkké (strop = súperov priznaný dlh)</span>
-          <strong>
-            {d.makke[0]} : {d.makke[1]}
-          </strong>
-        </div>
-        <div>
-          <span className="tlmene">Celkové</span>
-          <strong>
-            {d.celkove[0]} : {d.celkove[1]}
           </strong>
         </div>
       </div>
@@ -240,15 +228,16 @@ export function UkazkaBitky() {
           </>
         )}{" "}
         {o.prebytokDrzi === null
-          ? "Celkové poškodenie je vyrovnané — prebytok nezíska nikto."
-          : `${MENA[o.prebytokDrzi]} rozdelí prebytok ${o.prebytok} medzi starších.`}
+          ? "Celkové poškodenie je vyrovnané — Nakladačku nezíska nikto."
+          : `${MENA[o.prebytokDrzi]} rozdelí Nakladačku ${o.prebytok} medzi starších.`}
       </div>
     </div>
   );
 }
 
-// v6: 7 polí, jediné sivé v strede (index 3).
-const ZONY = ["Vydesenie", "Strach", "Znepokojenie", "Neutralita", "Znepokojenie", "Strach", "Vydesenie"];
+// v6: 7 polí, jediné sivé v strede (index 3); pojmy v8.3: farba a stav staršieho.
+const ZONY = ["červená", "oranžová", "žltá", "stred", "žltá", "oranžová", "červená"];
+const STAV = ["pokojný", "znepokojený", "vystrašený", "vydesený"];
 const ZONA_TRIEDA = ["cervena", "oranzova", "zlta", "siva", "zlta", "oranzova", "cervena"];
 
 /** Stupnica strachu: kto má priazeň a koho sa starší bojí. */
@@ -262,7 +251,7 @@ export function UkazkaStupnice() {
       <div className="ukazka-hlava">Posúvaj marker po stupnici staršieho.</div>
       <div className="stupnica-velka" role="group" aria-label="Stupnica strachu">
         {ZONY.map((z, i) => (
-          <button key={i} className={`stupnica-bod ${ZONA_TRIEDA[i]} ${m === i ? "marker" : ""}`} onClick={() => setM(i)} aria-label={`Pozícia ${i}: ${z}`}>
+          <button key={i} className={`stupnica-bod ${ZONA_TRIEDA[i]} ${m === i ? "marker" : ""}`} onClick={() => setM(i)} aria-label={`Pozícia ${i}: stupeň ${STUPNICA_ZONY[i]}, ${z}`}>
             <span>{STUPNICA_ZONY[i]}</span>
           </button>
         ))}
@@ -278,13 +267,13 @@ export function UkazkaStupnice() {
       </div>
       <div className="ukazka-vysledok" aria-live="polite">
         {strana === null ? (
-          <>Marker je v sivej zóne (<strong>Neutralita</strong>) — starší nikomu nedáva priazeň a nikoho sa nebojí.</>
+          <>Marker je v sivom strede (stupeň 0, starší je <strong>pokojný</strong>) — nikomu nedáva priazeň a nikoho sa nebojí.</>
         ) : (
           <>
-            Marker leží na {strana} polovici v zóne <strong>{ZONY[m]}</strong>: priazeň s hodnotou <strong>{hodnota}</strong>{" "}
-            má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na úrovni{" "}
-            <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — po najbližšej bitke, ktorú {strana === "tvojej" ? "súper vyhrá, mu" : "vyhráš, ti"} zaplatí zóny, ktoré ešte nezaplatil (táto{" "}
-            {uroven === 1 ? "1 špak" : `${uroven} špaky`}, spolu so zónami pod ňou {(uroven * (uroven + 1)) / 2}); zaparkovaný marker druhýkrát nič nedá.
+            Marker leží na {strana} polovici na stupni <strong>{uroven}</strong> ({ZONY[m]}, starší je <strong>{STAV[uroven]}</strong>): priazeň sily <strong>{hodnota}</strong>{" "}
+            má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na stupni{" "}
+            <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — keď sa tu marker udrží do konca nasledujúceho kola, {strana === "tvojej" ? "súperovi" : "tebe"} zaplatí stupne, ktoré ešte nezaplatil (tento{" "}
+            {uroven === 1 ? "1 špak" : `${uroven} špaky`}, spolu so stupňami pod ním {(uroven * (uroven + 1)) / 2}), nech bitku vyhrá ktokoľvek; zaparkovaný marker druhýkrát nič nedá.
             {(m === 0 || m === 6) && " Na krajnej pozícii sa starší prebudí pre vydesujúceho hráča a ráta sa do vydesenia."}
           </>
         )}

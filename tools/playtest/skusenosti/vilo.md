@@ -42,4 +42,4 @@ vo feedback.md.
 - vyvrátenia: 0
 - dátum: 2026-10-28
 - partie: 20261028-090549-1
-- prečo: PRAVIDLA §9.2, §10, §14 v8 (strach = nové zóny). P1 K5 Vilove dve Pohoršenia na Vychovávateľku (zóna 2) = +3 špaky pred prebytkom; K3 Pohoršenie na Starostu +1; vo finále Krčmárka a Hrobár po +3.
+- prečo: PRAVIDLA §9.2, §10, §14 v8 (strach = nové zóny). P1 K5 Vilove dve Pohoršenia na Vychovávateľku (zóna 2) = +3 špaky pred Nakladačkou; K3 Pohoršenie na Starostu +1; vo finále Krčmárka a Hrobár po +3.

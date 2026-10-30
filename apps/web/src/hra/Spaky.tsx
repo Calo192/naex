@@ -68,7 +68,7 @@ export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string):
   if (b.zoSekery > 0) out.push(`+${b.zoSekery} zo sekery`);
   if (b.prepadlo > 0) out.push(`${spakov(b.prepadlo)} prepadlo`);
   for (const p of [0, 1] as const) if (b.exekutor[p] > 0) out.push(`Exekútor: ${kto(p)} −${b.exekutor[p]}`);
-  for (const p of [0, 1] as const) if (b.prebytok[p] > 0) out.push(`prebytok: ${kto(p)} +${b.prebytok[p]}`);
+  for (const p of [0, 1] as const) if (b.prebytok[p] > 0) out.push(`Nakladačka: ${kto(p)} +${b.prebytok[p]}`);
   return out;
 }
 
@@ -254,7 +254,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
           const casti = [
             `bitky ${zn(r.zaBitky)}`,
             `starší ${zn(r.zaStarsich)}`,
-            ...(r.prebytok > 0 ? [`prebytok +${r.prebytok}`] : []),
+            ...(r.prebytok > 0 ? [`Nakladačka +${r.prebytok}`] : []),
             ...(r.exekutor < 0 ? [`Exekútor ${zn(r.exekutor)}`] : []),
           ];
           return (
@@ -333,7 +333,7 @@ function Uctenka({
   return (
     <span
       className="nastenka-uctenka"
-      title={`Po bitke (${kto}): starší, ktorí sa hráča boja (${b.vitaz === null ? "pri sekere obom" : "len víťazovi"}), Exekútor, prebytok a stav popolníkov.`}
+      title={`Po bitke (${kto}): starší, ktorí sa hráča boja (${b.vitaz === null ? "pri sekere obom" : "len víťazovi"}), Exekútor, Nakladačka a stav popolníkov.`}
     >
       <span>starší {riadok(b.zaStarsich, plus)}</span>
       {rozpis.map((p) => (
@@ -342,7 +342,7 @@ function Uctenka({
         </span>
       ))}
       {b.exekutor[0] + b.exekutor[1] > 0 && <span className="minus">Exekútor {riadok(b.exekutor, (n) => (n > 0 ? `−${n}` : "0"))}</span>}
-      {b.prebytok[0] + b.prebytok[1] > 0 && <span>prebytok {riadok(b.prebytok, plus)}</span>}
+      {b.prebytok[0] + b.prebytok[1] > 0 && <span>Nakladačka {riadok(b.prebytok, plus)}</span>}
       <b>stav {riadok(b.spakyPo, sMinusom)}</b>
     </span>
   );
@@ -388,9 +388,9 @@ export function SpakyBitky({
     readonly pod?: boolean;
   }[] = [
     { kluc: "bitka", nazov: "za bitku", h: b.zaBitku, pozn: zaBitku },
-    // v6.1: starší platia len víťazovi, pri sekere obom — porazený má v riadku „—“.
-    { kluc: "starsi", nazov: b.vitaz === null ? "za starších — nové zóny (sekera — obom)" : "za starších — nové zóny (len víťaz)", h: b.zaStarsich, pozn: zaStarsich, pod: true },
-    ...(b.prebytok[0] + b.prebytok[1] > 0 ? [{ kluc: "prebytok", nazov: jeFinaleNaNastenke(b) ? "prebytok (finále)" : "prebytok", h: b.prebytok }] : []),
+    // v8.3: starší platia na konci kola za udržané stupne — obom, nech bitku vyhral ktokoľvek.
+    { kluc: "starsi", nazov: "za starších — udržaný strach (koniec kola)", h: b.zaStarsich, pozn: zaStarsich, pod: true },
+    ...(b.prebytok[0] + b.prebytok[1] > 0 ? [{ kluc: "prebytok", nazov: jeFinaleNaNastenke(b) ? "Nakladačka (finále)" : "prebytok", h: b.prebytok }] : []),
     ...(b.exekutor[0] + b.exekutor[1] > 0 ? [{ kluc: "exekutor", nazov: "Exekútor", h: [-b.exekutor[0], -b.exekutor[1]] as const }] : []),
   ];
   return (
@@ -448,7 +448,7 @@ export function textSpakovBitky(b: BitkaNaNastenke, pred: readonly [number, numb
     const casti: string[] = [];
     if (b.zaBitku[p] > 0) casti.push(`+${b.zaBitku[p]} bitka${b.zoSekery > 0 ? ` (z toho ${b.zoSekery} zo sekery)` : ""}`);
     if (b.zaStarsich[p] > 0) casti.push(`+${b.zaStarsich[p]} starší`);
-    if (b.prebytok[p] > 0) casti.push(`+${b.prebytok[p]} prebytok`);
+    if (b.prebytok[p] > 0) casti.push(`+${b.prebytok[p]} Nakladačka`);
     if (b.exekutor[p] > 0) casti.push(`−${b.exekutor[p]} Exekútor`);
     return casti.length === 0 ? "" : ` (${casti.join(", ")})`;
   };
