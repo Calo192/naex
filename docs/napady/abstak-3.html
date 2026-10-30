@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absťák ako závislosť — Smäd</title>
+<meta name="description" content="Prestavba Absťáku podľa Michalovej myšlienky z 30. 10. 2026: verejné počítadlo Smäd, karta Absťák v balíčku, liečba zapitím; čísla zo stola, varianty, simulátor kôl a otázky na rozhodnutie.">
+<style>
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --dobre: #7fbf7a; --zle: #d8705f; --neutral: #9a8f80;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --dobre: #2f7a2b; --zle: #a8402f; --neutral: #6e6355;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --dobre: #2f7a2b; --zle: #a8402f; --neutral: #6e6355;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --dobre: #7fbf7a; --zle: #d8705f; --neutral: #9a8f80;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 980px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3, h4 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0 0 8px; }
+h2 { font-size: 1.4rem; margin: 44px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.12rem; margin: 22px 0 6px; }
+h4 { font-size: .95rem; margin: 14px 0 4px; color: var(--tlmeny); text-transform: uppercase; letter-spacing: .04em; }
+p { margin: 0 0 10px; max-width: 74ch; }
+ul, ol { max-width: 74ch; padding-left: 20px; margin: 0 0 10px; }
+li { margin-bottom: 5px; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+code { font-family: var(--mono); font-size: .86em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.uvod { color: var(--tlmeny); }
+.citat { font-family: var(--serif); font-style: italic; color: var(--tlmeny); border-left: 3px solid var(--okraj); padding: 4px 0 4px 12px; margin: 10px 0 16px; max-width: 74ch; }
+.skratka { background: var(--plocha); border: 1px solid var(--akcent); border-radius: 12px; padding: 14px 16px; margin: 18px 0; }
+.skratka h2 { margin: 0 0 8px; border: 0; padding: 0; font-size: 1.2rem; }
+.karta { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 16px; margin: 0 0 14px; }
+.karta.odpor { border-color: var(--akcent); }
+.pravidlo { font-family: var(--serif); font-size: 1.1rem; border-left: 3px solid var(--akcent); padding: 4px 0 4px 12px; margin: 8px 0 14px; max-width: 74ch; }
+.stitky { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.stitok { font-size: .78rem; border-radius: 999px; padding: 1px 9px; border: 1px solid var(--okraj); color: var(--tlmeny); }
+.stitok.odpor { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.mriezka { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px 22px; }
+.mriezka ul { margin: 0; }
+.tab-obal { overflow-x: auto; margin: 0 0 12px; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 7px 8px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--okraj); }
+thead th { border-bottom: 2px solid var(--okraj); font-size: .85rem; color: var(--tlmeny); font-weight: 600; }
+td.c, th.c { text-align: center; }
+.plus { color: var(--dobre); font-weight: 600; } .minus { color: var(--zle); font-weight: 600; } .nula { color: var(--neutral); }
+.pozn { font-size: .9rem; color: var(--tlmeny); }
+.odpor-riadok td { background: color-mix(in srgb, var(--akcent) 10%, transparent); }
+/* simulátor */
+.sim { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 14px; }
+.sim table td, .sim table th { text-align: center; }
+.sim table td:first-child, .sim table th:first-child { text-align: left; }
+.krok { display: inline-flex; align-items: center; gap: 2px; }
+.krok button { appearance: none; width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--okraj);
+  background: var(--plocha-2); color: var(--text); font: inherit; cursor: pointer; }
+.krok output { min-width: 1.5em; display: inline-block; font-weight: 600; }
+.preset, .prepinac { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.preset button, .prepinac button { appearance: none; font: inherit; font-size: .86rem; padding: 6px 11px; border-radius: 8px;
+  border: 1px solid var(--okraj); background: var(--plocha-2); color: var(--text); cursor: pointer; }
+.prepinac button[aria-pressed="true"] { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+.abs { display: inline-block; min-width: 1.6em; padding: 1px 6px; border-radius: 6px; background: var(--plocha-2); font-weight: 600; }
+.abs.karta-ano { color: var(--zle); }
+.suhrn { margin-top: 10px; font-weight: 600; }
+.otazka { display: grid; grid-template-columns: 2.2em 1fr; gap: 0 10px; padding: 10px 0; border-bottom: 1px solid var(--okraj); }
+.otazka .c { font-family: var(--serif); font-size: 1.3rem; color: var(--akcent); }
+.otazka p { margin: 0 0 4px; }
+@media (max-width: 560px) { .otazka { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Absťák ako závislosť — Smäd</h1>
+<p class="uvod">Návrh na rozhodnutie · roadmapa #113 · 30. 10. 2026 · tretie kolo po <a href="abstak.html">smeroch z 26. 10.</a> a <a href="abstak-2.html">šiestich návrhoch z 28. 10.</a> · meranie stratéga <a href="../playtesty/abstak-meranie-20261028.html">28. 10.</a></p>
+<p class="citat">Michal, 30. 10.: „Absťák má reprezentovať abstinenčné príznaky od vecí, ktoré spôsobujú závislosť — trest pre hráča, ktorý sa priveľa venuje nerestiam. Bude to karta ako Cirhóza, nedá sa len tak dobrovoľne priznať. Ak hráč v ďalšom kole nenazbiera toľko nerestí, ako má hodnotu absťáku, dostane kartu Absťák do odhadzovacieho balíčka. Počet kariet Absťák v celom balíčku je hodnota absťáku: 2 absťáky = o 2 tuhé menej. Miera absťáku postupom času klesá.“</p>
+
+<section class="skratka">
+  <h2>Skratka</h2>
+  <p><strong>Michalov model stojí za to a odporúčam ho.</strong> Absťák prestane byť o súperovi (dnešný Krok so stolom) a začne byť o vlastnom tele: kto si zvykne piť a fajčiť, musí v tom pokračovať, inak sa trasie. Jadro je verejné počítadlo <strong>Smäd</strong> (Michalova „miera absťáku“): kto v kole skonzumuje menej nerestí, než je jeho Smäd, dostane kartu <strong>Absťák</strong> do odhadzovacieho balíčka; Smäd sa potom nastaví na väčšie z (Smäd, neresti kola) a klesne o 1.</p>
+  <p>Tri veci, ktoré z toho vyplývajú a treba ich vedieť pred rozhodnutím:</p>
+  <ul>
+    <li><strong>Postupné odvykanie o 1 za kolo je zadarmo.</strong> Trestá sa len flám, po ktorom spotreba klesne o 2 a viac. Studený absťák po veľkom fláme dá kariet viac (4 → 0 = tri karty za sebou). To je tematicky presné a mechanicky je to voľba hráča.</li>
+    <li><strong>Mierka je menšia, než naznačuje príklad s deviatkou.</strong> V dnešnej ekonomike má hráč 0–4 neresti za kolo (boti ⌀ 1,4; ľudia v jedinej dohratej partii dvoch ľudí 2,5). Preto odporúčam, aby <strong>NA EX rátal 2</strong> a do Smädu išla len <strong>konzumácia</strong> (vypité a vyfajčené), nie platby za doliatie a barter. Bez toho Absťák polovica hráčov nikdy nedostane (variant A: 0,64 karty na hráča, 49 % hráčov bez); s NA EX za 2 je frekvencia ako dnes (1,21 na hráča, 24 % bez).</li>
+    <li><strong>Karta potrebuje východ.</strong> Michal priznanie zakázal; navrhujem <strong>zapiť alebo zafajčiť</strong>: Absťák v ruke hráč počas Pitky zaplatí plným poldeci alebo cigaretou, karta odíde z hry a je to nerest. Liek na absťák je ďalší pohárik — presne tak, ako to v krčme chodí.</li>
+  </ul>
+  <p>Účinok karty nechať čistý: <strong>−1 tuhé za každú kartu Absťák v celom balíčku</strong> (verejné číslo ako pri Cirhóze), remízu prehráva, kto ich má viac. Nervákovo Pohoršenie zrušiť, koniec hry bez pokuty. Ďalej: Michal odpovie na otázky v závere, stratég zmeria variant s botmi, ktorí pravidlo poznajú, potom implementácia a playtest.</p>
+</section>
+
+<section class="skratka" id="rozhodnutia">
+  <h2>Rozhodnutia Michala — interview 30. 10. 2026 večer</h2>
+  <ol>
+    <li><strong>Počítadlo sa volá Chuť</strong> (chuť na alkohol aj cigaretu; „Smäd“ by sa netýkal cigariet). Verejné, na začiatku 0.</li>
+    <li><strong>Vznik:</strong> na konci kola, kto mal menej nerestí než Chuť, dostane kartu Absťák do odhadzovacieho balíčka. Potom <strong>Chuť = väčšie z (Chuť, neresti kola) − 1</strong>, nie pod 0 — úbytok 1 každé kolo, aj po karte (variant A).</li>
+    <li><strong>Nerest je len konzumácia:</strong> Vypiť 1, <strong>NA EX 2</strong>, vyfajčená cigareta 1 (aj drahšie fajčenie). Doliatie, barter, šenok, Záverečná a cigarety za Kšefty lokalít nie sú nerest.</li>
+    <li><strong>Karta Absťák sa nikdy neodstráni</strong> — ani priznaním, ani zapitím (zatiaľ žiadne zapitie). Je to odpad, ktorý špiní balíček: po bitke ide z ruky do odhadzovacieho balíčka (ako nepriznaná Cirhóza), hráč si ju ťahá znova namiesto užitočnej karty. Jediný vzácny východ: <strong>Vízia a Kar ju smú zahodiť ako Cirhózu</strong>; Hasič ju vytiahne a hráč ju vráti alebo si ju nechá.</li>
+    <li><strong>Účinok:</strong> −1 tuhé za každú kartu Absťák kdekoľvek v balíčku (ruka, doberací, odhadzovací); remízu v tuhom prehráva, kto ich má viac. <strong>Nervák zrušený</strong> (žiadne Pohoršenie za Absťák). Na konci hry Absťák <strong>nestojí nič</strong>.</li>
+    <li><strong>Mierka ostáva</strong> (0–4 neresti za kolo, s NA EX za 2 Chuť 0–6); ekonomika sa nemení.</li>
+    <li><strong>Postup: rovno implementovať → nasadiť → playtest max</strong> (bez merania stratéga vopred).</li>
+    <li><strong>Výučba:</strong> Chuť a Absťák <strong>odložiť do 2. časti</strong>. V 1. časti (Prvá hra) sa pravidlo neuplatní a texty o Absťáku z nej vypadnú.</li>
+    <li><strong>Ilustrácia karty:</strong> stará zo seedu (<code>seed/karty/abstak.jpg</code>).</li>
+    <li><strong>Opatrovateľka v2</strong> („latka Absťáku −2“): znenie navrhne Admin pri zakladaní karty.</li>
+  </ol>
+</section>
+
+<h2>Čo platí dnes (v8.1 + v8.2)</h2>
+<ul>
+  <li><strong>Vznik:</strong> na konci kola sa porovnajú neresti oboch hráčov; kto mal menej, dostane Absťák (počítadlo), kto viac, jedného sa zbaví. Rovnosť nič.</li>
+  <li><strong>Účinok:</strong> −1 tuhé za každý Absťák, +1 Pohoršenie za každý (Nervák), remízu v tuhom prehráva, kto ich má viac. Špaky neuberá.</li>
+  <li><strong>Nerest</strong> (§8): vypitý poldeci, NA EX (1), vyfajčená cigareta (aj drahšie fajčenie), doliatie (2), barter (5), cigareta na Zbernom dvore a podobných lokalitách.</li>
+  <li><strong>Čo o tom vieme:</strong> stratég nameral, že na výsledok partie má Absťák malý vplyv (bot, ktorý ho ignoruje, vyhráva 48 %). Nováčikovia vo výučbe Absťák nepochopili (3/3). Michal s mechanikou nie je spokojný, lebo závisí od súpera, nie od vlastnej závislosti.</li>
+  <li><strong>Čo naň nadväzuje v kóde:</strong> <code>engine.ts</code> koniec kola, <code>zavislost.ts</code> výhľad v bare, <code>bot.ts</code> (dorovnávanie súpera), ťahák AI hráčov, výučba (19 miest v scenári, 6 nápoved Melichara), achievement za Absťáky. V sade kariet dnes žiadna karta Absťák nespomína; ilustrácia karty Absťák zo starších verzií v seede ostala (<code>seed/karty/abstak.jpg</code>).</li>
+</ul>
+
+<h2>Michalove myšlienky, ako som ich pochopil</h2>
+<p>Prepísané do pravidiel, aby sa dalo povedať „áno, presne“ alebo „nie, takto“:</p>
+<ol>
+  <li>Absťák je <strong>karta</strong> s tagom Kliatba, ako Cirhóza. Nedá sa priznať.</li>
+  <li>Hráč má verejné číslo <strong>Smäd</strong> (Michalova „miera absťáku“, na začiatku 0).</li>
+  <li>Na konci kola: ak mal hráč v kole <strong>menej nerestí než Smäd</strong>, dostane kartu Absťák do odhadzovacieho balíčka.</li>
+  <li>Potom <strong>Smäd = väčšie z (Smäd, neresti kola) − 1</strong>, nie pod 0. Príklad Michala: 9 nerestí → Smäd 9; ďalšie kolo 7 → Absťák, Smäd ostáva pri 9 („vyššia z tých dvoch“) a klesne o úbytok.</li>
+  <li><strong>Hodnota absťáku</strong> = počet kariet Absťák v ruke, doberacom aj odhadzovacom balíčku. Každá uberie hráčovi v bitke 1 tuhé.</li>
+</ol>
+<p>Tri miesta ostali otvorené, navrhujem ich takto (sú aj v otázkach na konci):</p>
+<ul>
+  <li><strong>„Úbytok … defaultne 1 a NA EX by k tomu pridával.“</strong> Čítam to tak, že NA EX dvíha Smäd viac než obyčajný poldeci — poldeci na ex je väčšia dávka. Preto <strong>NA EX ráta 2</strong>. Druhé čítanie (NA EX zrýchľuje úbytok) by znamenalo, že pitie na ex odvyká, čo tematicky nesedí.</li>
+  <li><strong>Čo je nerest.</strong> Dnes sa rátajú aj platby cigaretami (doliatie 2, barter 5, Zberný dvor). Pre závislosť tela dáva zmysel len to, čo hráč <strong>vypije a vyfajčí</strong>. Platby za poldeci alebo efekt lokality nie.</li>
+  <li><strong>Ako karta odchádza.</strong> Michal to neurčil. Bez východu by bol Absťák jediná kliatba bez protiťahu; navrhujem zapiť alebo zafajčiť z ruky (nižšie).</li>
+</ul>
+
+<h2>Čísla zo stola</h2>
+<p>Zdroj: 100 partií botov (zmes povahy Štamgast, Rapavý Fero a Teta Gizka, stredná hra, 6 kôl) nad dnešným jadrom, skript v scratchpade session. Ľudia: živý web má 9 partií ľudí, väčšinou nedohraté a na pravidlách v6–v7; jediná dohratá partia dvoch ľudí (Michal, v7) mala 2,5 neresti na kolo, partie Michala proti botovi 0–1.</p>
+<div class="tab-obal">
+<table>
+  <thead><tr><th>Meranie (boti, dnešné pravidlá)</th><th class="c">Hodnota</th><th>Čo z toho plynie</th></tr></thead>
+  <tbody>
+    <tr><td>Neresti na hráča a kolo</td><td class="c">⌀ 1,38</td><td>Smäd sa bude hýbať medzi 0 a 4. Úbytok 1 za kolo je veľký krok.</td></tr>
+    <tr><td>Rozdelenie nerestí v kole</td><td class="c">0: 25 % · 1: 40 % · 2: 21 % · 3: 9 % · 4+: 5 %</td><td>Štvrtina kôl je suchých. Kolo s 3 a viac nerestami je „flám“ (14 %).</td></tr>
+    <tr><td>Z toho konzumácia (Vypiť, fajčenie) a NA EX</td><td class="c" id="konz-cislo">0,39 + NA EX 0,85</td><td>Boti takmer nefajčia a nepijú do dna; ich nerest je NA EX. Zvyšok (0,14) sú platby: doliatie, barter, cigarety na lokalitách. Ľudia fajčia viac — Michal končí partie s 0 cigaretami.</td></tr>
+    <tr><td>Priemer podľa kola 1 → 6</td><td class="c">0,9 · 1,2 · 1,6 · 1,7 · 1,6 · 1,4</td><td>Spotreba rastie do stredu hry a pred finále mierne klesá — tam Smäd zahryzne.</td></tr>
+    <tr><td>Medzi kolami: nárast o ≥ 2 / pokles o ≥ 2</td><td class="c">20 % / 15 %</td><td>Len pokles o 2 a viac dáva v Michalovom modeli kartu; postupné odvykanie nie.</td></tr>
+    <tr><td>Balíček hráča (ruka + doberací + odhadzovací) na začiatku kola 1 → 6</td><td class="c">4 · 6 · 8 · 9 · 11 · 13</td><td>Karta v odhadzovacom balíčku sa do ruky vráti zhruba o 2–4 kolá; z karty získanej po 3. kole ju hráč do konca hry vytiahne asi v polovici partií.</td></tr>
+    <tr><td>Absťáky za partiu dnes (stratég 28. 10., oba hráči)</td><td class="c">3,9</td><td>Latka, s ktorou porovnávame nové varianty: dnes má Absťák skoro každý.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Návrh pravidla v plnom znení</h2>
+<div class="karta odpor">
+  <div class="stitky"><span class="stitok odpor">odporúčam</span><span class="stitok">§8 Nerest a Smäd</span><span class="stitok">§11 Kliatby</span><span class="stitok">§9.3, §9.4</span></div>
+  <p class="pravidlo">Kto si zvykne, musí pokračovať. Smäd ti povie, koľko musíš dnes vypiť a vyfajčiť, aby ťa nechytil Absťák.</p>
+  <h3>Nerest</h3>
+  <p>Nerest je to, čo hráč <strong>skonzumuje</strong>: každý vypitý poldeci (Vypiť v Zhromaždení 1, <strong>NA EX 2</strong>) a každá vyfajčená cigareta (fajčenie v Pitke, aj druhé a tretie drahšie). Platby cigaretami (doliatie, barter, šenok, Záverečná, Kšefty lokalít) nie sú nerest.</p>
+  <h3>Smäd</h3>
+  <p>Každý hráč má verejné počítadlo <strong>Smäd</strong>, na začiatku hry 0. Klient ho ukazuje v bare vedľa Pečene a Zadĺženia: „Smäd 3 · dnes 1 · chýbajú 2“.</p>
+  <p><strong>Koniec kola</strong> (po bitke a návrate kariet, pred udržaným strachom):</p>
+  <ol>
+    <li>Ak mal hráč v kole <strong>menej nerestí než Smäd</strong>, dostane kartu <strong>Absťák</strong> do odhadzovacieho balíčka. Log: „Hráč 1 dostáva Absťák: Smäd 3, v kole vypil a vyfajčil 1.“</li>
+    <li>Potom <strong>Smäd = väčšie z (Smäd, neresti kola) − 1</strong>, nie pod 0.</li>
+  </ol>
+  <p>Po poslednej bitke hry (finále) Absťák nevzniká — ako dnes.</p>
+  <h3>Karta Absťák</h3>
+  <ul>
+    <li>Kliatba. <strong>Nedá sa priznať</strong> ani vyložiť do línie. Ostáva v balíčku hráča a koluje s ním.</li>
+    <li>V bitke uberie hráčovi <strong>1 tuhé za každú kartu Absťák</strong>, ktorú má kdekoľvek vo svojom balíčku (ruka, doberací, odhadzovací). Počet je verejný ako pri Cirhóze (každý vznik aj odchod je v logu), kde karta leží, nie.</li>
+    <li><strong>Remízu v tuhom</strong> prehráva, kto má viac Absťákov (ako dnes), potom Dlhy, inak sekera.</li>
+    <li><strong>Zapiť alebo zafajčiť:</strong> keď má hráč Absťák v ruke, smie ho počas svojej časti Pitky zapiť <strong>jedným plným poldeci</strong> (poldeci sa vypije) alebo zafajčiť <strong>jednou cigaretou</strong> (bez karty navyše a bez zdražovania fajčenia). Karta ide <strong>z hry</strong> a hráč si zaň dobere kartu? <em>Nie</em> — žiadna karta navyše, inak by bol Absťák výhodný. Zapitie <strong>je nerest</strong> (1): pomôže dnešnému kolu a zdvihne Smäd. Ťah neskončí.</li>
+    <li>Čo platí pre Cirhózu v balíčku, platí aj pre Absťák: Vízia ho smie zahodiť z vrchu balíčka, Hasič ho vytiahne a vráti, Kar ho smie zahodiť z ruky (rozšírenie textu Karu), Anonymný alkoholik sa ho netýka (ten priznáva).</li>
+    <li>Na konci hry Absťák <strong>nestojí nič</strong> — trestom boli bitky.</li>
+  </ul>
+  <h3>Čo zaniká</h3>
+  <ul>
+    <li>Krok so stolom (porovnanie so súperom) a zbavovanie sa Absťáku za viac nerestí než súper.</li>
+    <li>Nervák: Pohoršenie za Absťák. Absťák je čistý trest a bitka má o jeden výpočet menej. (Variant: nechať — pozri otázku 5.)</li>
+    <li>Počítadlo Absťákov; nahradí ho počet kariet Absťák v balíčku a nové počítadlo Smäd.</li>
+  </ul>
+</div>
+
+<h2>Varianty a čo ukazujú čísla</h2>
+<p>Statický prepočet nad tými istými 100 partiami: boti hrali podľa dnešných pravidiel a <strong>neprispôsobili sa</strong>, takže skutočné čísla budú nižšie (hráč, ktorý Smäd vidí, ho kŕmi alebo odvyká postupne). Hodí sa na porovnanie variantov medzi sebou, nie ako predpoveď. Posledné kolo bez Absťáku.</p>
+<div class="tab-obal">
+<table id="tab-varianty">
+  <thead><tr><th>Variant</th><th class="c">Absťákov na hráča a partiu</th><th class="c">Kôl s kartou</th><th class="c">Víťaz / porazený</th><th class="c">Hráčov bez Absťáku</th><th>Poznámka</th></tr></thead>
+  <tbody>
+    <tr><td>Stará latka (menej než minulé kolo, bez úbytku)</td><td class="c">1,35</td><td class="c">27 %</td><td class="c">1,16 / 1,38</td><td class="c">9 %</td><td>Pravidlo do v8.0 — špirála, ktorú hráči kritizovali.</td></tr>
+    <tr><td><strong>A</strong> Michal: Smäd = max(Smäd, n) − 1, neresti ako dnes</td><td class="c">0,64</td><td class="c">13 %</td><td class="c">0,54 / 0,65</td><td class="c">49 %</td><td>Polovica hráčov Absťák nikdy nedostane. Trestá len flám s poklesom o 2+.</td></tr>
+    <tr><td>A2 úbytok 2</td><td class="c">0,24</td><td class="c">5 %</td><td class="c">0,23 / 0,22</td><td class="c">77 %</td><td>Príliš zriedkavý, hráči by pravidlo zabudli.</td></tr>
+    <tr><td>A3 úbytok 1 len každé druhé kolo</td><td class="c">1,22</td><td class="c">24 %</td><td class="c">1,10 / 1,18</td><td class="c">25 %</td><td>Častejší, ale „párne kolo“ je umelé a ťažko sa vysvetľuje.</td></tr>
+    <tr><td>A4 karta až pri n ≤ Smäd − 2</td><td class="c">0,29</td><td class="c">6 %</td><td class="c">0,25 / 0,28</td><td class="c">77 %</td><td>Vôľa navyše robí z Absťáku raritu.</td></tr>
+    <tr><td>A5 NA EX ráta 2, inak A</td><td class="c">1,27</td><td class="c">25 %</td><td class="c">1,13 / 1,27</td><td class="c">22 %</td><td>NA EX ako hlavný zdroj závislosti. Frekvencia ako dnes.</td></tr>
+    <tr><td><strong>B</strong> odvykačka: karta zhodí Smäd na neresti kola</td><td class="c">0,57</td><td class="c">12 %</td><td class="c">0,48 / 0,60</td><td class="c">49 %</td><td>Najviac 1 karta za flám (max 2 za partiu). Miernejšie pre studený absťák.</td></tr>
+    <tr><td>C Smäd = ⌊max(Smäd, n) / 2⌋</td><td class="c">0,42</td><td class="c">9 %</td><td class="c">0,39 / 0,41</td><td class="c">60 %</td><td>Polovičný úbytok robí flám lacným.</td></tr>
+    <tr id="riadok-d"><td><strong>D</strong> len konzumácia (Vypiť, fajčenie, NA EX 1), A</td><td class="c">0,50</td><td class="c">10 %</td><td class="c">0,45 / 0,49</td><td class="c">56 %</td><td>Bez platieb za doliatie a barter je Absťák ešte zriedkavejší než v A.</td></tr>
+    <tr id="riadok-d2" class="odpor-riadok"><td><strong>D2 odporúčam</strong> len konzumácia, NA EX ráta 2, A</td><td class="c">1,21</td><td class="c">24 %</td><td class="c">1,10 / 1,18</td><td class="c">24 %</td><td>Nerest je, čo vypiješ a vyfajčíš; NA EX dvojnásobne. Frekvencia ako dnes, bez súpera v rovnici.</td></tr>
+    <tr id="riadok-d3"><td>D3 ako D2, úbytok len každé druhé kolo</td><td class="c">1,63</td><td class="c">33 %</td><td class="c">1,48 / 1,61</td><td class="c">12 %</td><td>Záloha, keby D2 vyšlo v dynamike priveľmi zriedkavé.</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="pozn">Víťaz / porazený = priemer Absťákov toho, kto partiu vyhral, a toho, kto prehral. Vo všetkých variantoch padá Absťák rovnomerne, netlačí zaostávajúceho nižšie — zásada „odmena za väčšiu výzvu“ nie je porušená, ale ani využitá (Absťák je čistý trest flámu).</p>
+
+<h2>Simulátor kôl</h2>
+<p>Naklikaj, koľko hráč v kolách vypije a vyfajčí a koľko dá NA EX; simulátor ukáže Smäd a kedy príde karta. Michalov príklad s deviatkou je medzi predvoľbami, aby bolo vidno, ako sa správa aj mimo mierky hry.</p>
+<div class="sim">
+  <div class="preset" id="presety"></div>
+  <div class="prepinac" id="varianty" role="group" aria-label="Variant pravidla"></div>
+  <div class="tab-obal"><table id="sim-tab"></table></div>
+  <p class="suhrn" id="sim-suhrn"></p>
+  <p class="pozn">Posledné kolo (finále) Absťák nedáva. Tuhé v bitke kola = o toľko menej, koľko kariet Absťák má hráč pred bitkou toho kola (karty z koncov predošlých kôl). Zapitie z ruky simulátor neráta — závisí od toho, kedy kartu vytiahne.</p>
+</div>
+
+<h2>Prečo karta a nie počítadlo</h2>
+<div class="mriezka">
+  <div>
+    <h4>Čo karta dáva navyše</h4>
+    <ul>
+      <li><strong>Mŕtvy ťah.</strong> Absťák v ruke zaberá miesto karte do línie, teda špakom a tuhému. Pri balíčku 8–13 kariet je to citeľné a rastie s počtom kariet.</li>
+      <li><strong>Východ v rukách hráča.</strong> Zapiť či zafajčiť je rozhodnutie s cenou (poldeci alebo cigareta), nie úradný krok. Cigarety dostanú ďalší výdaj — AI hráči ich hromadia (26 / 12 / 13 na konci partie).</li>
+      <li><strong>Súhra s kartami balíčka</strong> — Vízia, Hasič, Kar, Krištáľová guľa, Veštica — bez nového kódu: kliatba v balíčku už existuje (Cirhóza).</li>
+      <li><strong>Čitateľnosť.</strong> Hráč drží v ruke kartu „Absťák“ a vidí, prečo má o ranu menej. Počítadlo bolo pre nováčikov neviditeľné.</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Čo karta stojí</h4>
+    <ul>
+      <li><strong>Náhoda v čase liečby.</strong> Kedy kartu vytiahneš, rozhodne balíček. Trest (−1 tuhé) však platí hneď, kým karta kdekoľvek v balíčku je — náhodný je len okamih, keď ju smieš zapiť.</li>
+      <li><strong>Dve kliatby v balíčku.</strong> S Cirhózou sa môže balíček zapchať. Cirhózu hráč prizná, Absťák zapije — obe majú východ, ale hráč v zlej partii bude riešiť obe. Zmerať.</li>
+      <li><strong>Admin a kód.</strong> Karta Absťák sa vráti do tvorcu (ilustrácia v seede ostala), jadro dostane späť kartu „abstak“ a nový ťah „zapiť“.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Dopad</h2>
+<div class="mriezka">
+  <div>
+    <h4>Pravidlá a texty</h4>
+    <ul>
+      <li>PRAVIDLA.md §4 (koniec kola), §8 Nerest a Smäd, §9.3, §9.4, §11 Kliatby a priznanie, §17 Slovník; poznámka v9.</li>
+      <li>Ťahák AI hráčov (<code>tools/playtest/tahak.md</code>), výučba Prvá hra (19 miest), nápovedy Melichara (6), text karty Absťák (Admin), Kar (zahodiť aj Absťák).</li>
+      <li>Novinka po nasadení: „Absťák je o tvojom smäde, nie o súperovi.“</li>
+    </ul>
+    <h4>2 na 2</h4>
+    <ul>
+      <li>Rozhodnuté: neresti a Absťák tímové. Smäd je tímové počítadlo, karta ide do tímového odhadzovacieho balíčka, zapiť smie ktorýkoľvek člen z ruky.</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Jadro, klient, bot</h4>
+    <ul>
+      <li><code>engine.ts</code>: koniec kola (Smäd, karta do odhadzovacieho), nový príkaz <code>zapitAbstak</code> v Pitke, tuhé podľa počtu kariet v balíčku; <code>player.ts</code> pole <code>smad</code>, karta „abstak“ späť v sade.</li>
+      <li><code>zavislost.ts</code>: výhľad „Smäd 3 · dnes 1 · chýbajú 2“; bar v klientovi; log s dôvodom; rekapitulácia bitky.</li>
+      <li><code>bot.ts</code>: kŕmiť Smäd, keď je lacný (cigareta, poldeci navyše), neflámovať bez zdrojov na ďalšie kolo, zapiť Absťák z ruky, keď má poldeci navyše; hodnota NA EX ráta budúci Smäd.</li>
+      <li>Štatistiky a achievement za Absťáky ostávajú (počet získaných kariet).</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Riziká a čo zmerať</h2>
+<ul>
+  <li><strong>NA EX zdražie.</strong> Keď NA EX ráta 2, flám cez NA EX zaviaže na ďalšie kolo. Zmerať počet NA EX za partiu — nesmie klesnúť o viac než pätinu, NA EX je srdce Pitky.</li>
+  <li><strong>Kŕmenie Smädu stojí zdroje</strong> (poldeci = limit, cigarety = karty), takže bohatý hráč odvyká ľahšie než chudobný. Zmerať Absťáky vedúceho a zaostávajúceho; ak padá na zaostávajúceho, zapojiť priazeň staršieho (Abstinent) alebo Nervák vrátiť.</li>
+  <li><strong>Pečeň proti Smädu.</strong> Kŕmenie pitím dvíha pečeň → Cirhóza. To je želaná polarita (piješ málo: Absťák; piješ veľa: Cirhóza). Zmerať Cirhózy za partiu; dnes 6,8.</li>
+  <li><strong>Zriedkavosť.</strong> Ak dynamické meranie ukáže pod 0,5 Absťáku na hráča, mechanika bude pre hráča neviditeľná — vtedy D3 alebo Smäd klesá len vtedy, keď hráč nedostal kartu.</li>
+  <li><strong>Studený absťák po veľkom fláme</strong> dá 2–3 karty; ak to playtest ukáže ako frustrujúce, variant B (karta zhodí Smäd).</li>
+  <li><strong>Meranie stratéga:</strong> vo worktree varianty D2, A, B a D3 s botom, ktorý pravidlo pozná; rebrík zručnosti, stompy, Absťáky víťaza a porazeného, NA EX a Cirhózy za partiu, podiel zapití. Potom playtest max.</li>
+</ul>
+
+<h2>Otázky na rozhodnutie</h2>
+<div class="otazka"><div class="c">1</div><div><p><strong>Smäd po karte:</strong> ostáva pri maxime a klesá o 1 (A, Michalov popis), alebo karta zhodí Smäd na neresti kola (B)?</p><p class="pozn">Odporúčam A — flám má mať chvost. B až keby playtest ukázal 3 karty za sebou ako bežné.</p></div></div>
+<div class="otazka"><div class="c">2</div><div><p><strong>Čo je nerest:</strong> len konzumácia (vypité, vyfajčené), alebo aj platby ako dnes (doliatie 2, barter 5, cigarety na lokalitách)?</p><p class="pozn">Odporúčam len konzumáciu — závislosť je z toho, čo ide do tela, a hráč to ľahšie spočíta.</p></div></div>
+<div class="otazka"><div class="c">3</div><div><p><strong>NA EX ráta 2?</strong></p><p class="pozn">Odporúčam áno — je to Michalova poznámka „NA EX by pridával“ a bez toho dostane Absťák polovica hráčov nikdy.</p></div></div>
+<div class="otazka"><div class="c">4</div><div><p><strong>Východ karty:</strong> zapiť plným poldeci alebo zafajčiť cigaretou z ruky (nerest 1, bez karty navyše), alebo žiadny — Absťák ostáva v balíčku do konca hry?</p><p class="pozn">Odporúčam zapiť alebo zafajčiť. Bez východu by bol Absťák jediná kliatba bez protiťahu a balíčky by sa zapchali.</p></div></div>
+<div class="otazka"><div class="c">5</div><div><p><strong>Nervák:</strong> zrušiť Pohoršenie za Absťák (čistý trest), alebo nechať?</p><p class="pozn">Odporúčam zrušiť — Absťák bude zriedkavejší a bitka jednoduchšia. Remíza v tuhom ostáva na Absťákoch.</p></div></div>
+<div class="otazka"><div class="c">6</div><div><p><strong>Koniec hry:</strong> Absťák v balíčku 0 špakov, alebo −1 za kus ako slabšia Cirhóza?</p><p class="pozn">Odporúčam 0 — trestom boli bitky a hráč nemal ako kartu „priznať“.</p></div></div>
+<div class="otazka"><div class="c">7</div><div><p><strong>Názov počítadla:</strong> Smäd, Miera alebo Latka?</p><p class="pozn">Odporúčam Smäd — hráč hneď vie, že je to „koľko dnes potrebujem“; Melichar má o čom hovoriť.</p></div></div>
+<div class="otazka"><div class="c">8</div><div><p><strong>Posledné kolo:</strong> po finále Absťák nevzniká (ako dnes) — potvrdiť?</p><p class="pozn">Odporúčam potvrdiť; Smäd sa ale vo finále ešte ráta pre zapitie.</p></div></div>
+
+<script>
+(function () {
+  const KOL = 6;
+  const presety = [
+    { meno: "Jeden flám", konz: [4, 0, 0, 0, 0, 0], naex: [0, 0, 0, 0, 0, 0] },
+    { meno: "Stály pijan", konz: [2, 2, 2, 2, 2, 2], naex: [0, 0, 0, 0, 0, 0] },
+    { meno: "Postupné odvykanie", konz: [4, 3, 2, 1, 0, 0], naex: [0, 0, 0, 0, 0, 0] },
+    { meno: "NA EX každé kolo", konz: [0, 0, 0, 0, 0, 0], naex: [1, 1, 1, 1, 1, 1] },
+    { meno: "NA EX a potom sucho", konz: [1, 1, 0, 0, 0, 0], naex: [2, 1, 0, 0, 0, 0] },
+    { meno: "Typický bot", konz: [1, 1, 2, 2, 1, 1], naex: [0, 1, 0, 1, 1, 0] },
+    { meno: "Michalov príklad (9, 7…)", konz: [9, 7, 5, 4, 2, 0], naex: [0, 0, 0, 0, 0, 0] },
+  ];
+  const varianty = [
+    { id: "D2", meno: "D2 odporúčam: konzumácia, NA EX 2, Smäd = max − 1", n: (k, x) => k + 2 * x, krok: (s, n) => ({ karta: n < s, s: Math.max(0, Math.max(s, n) - 1) }) },
+    { id: "A", meno: "A Michal: NA EX 1, Smäd = max − 1", n: (k, x) => k + x, krok: (s, n) => ({ karta: n < s, s: Math.max(0, Math.max(s, n) - 1) }) },
+    { id: "B", meno: "B odvykačka: karta zhodí Smäd na neresti kola (NA EX 2)", n: (k, x) => k + 2 * x, krok: (s, n) => (n < s ? { karta: true, s: n } : { karta: false, s: Math.max(0, n - 1) }) },
+    { id: "D3", meno: "D3: ako D2, úbytok len v párnom kole", n: (k, x) => k + 2 * x, krok: (s, n, kolo) => ({ karta: n < s, s: Math.max(0, Math.max(s, n) - (kolo % 2 === 0 ? 1 : 0)) }) },
+    { id: "stara", meno: "Stará latka (menej než minulé kolo)", n: (k, x) => k + x, krok: (s, n) => ({ karta: n < s, s: n }) },
+  ];
+  let konz = presety[0].konz.slice();
+  let naex = presety[0].naex.slice();
+  let variant = varianty[0];
+
+  const elPresety = document.getElementById("presety");
+  for (const p of presety) {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = p.meno;
+    b.addEventListener("click", () => { konz = p.konz.slice(); naex = p.naex.slice(); kresli(); });
+    elPresety.appendChild(b);
+  }
+  const elVar = document.getElementById("varianty");
+  for (const v of varianty) {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = v.meno; b.dataset.id = v.id;
+    b.addEventListener("click", () => { variant = v; kresli(); });
+    elVar.appendChild(b);
+  }
+
+  function krokTlacidla(pole, i, min, max) {
+    const td = document.createElement("td");
+    const wrap = document.createElement("span"); wrap.className = "krok";
+    const minus = document.createElement("button"); minus.type = "button"; minus.textContent = "−"; minus.setAttribute("aria-label", "menej");
+    const out = document.createElement("output"); out.textContent = String(pole[i]);
+    const plus = document.createElement("button"); plus.type = "button"; plus.textContent = "+"; plus.setAttribute("aria-label", "viac");
+    minus.addEventListener("click", () => { pole[i] = Math.max(min, pole[i] - 1); kresli(); });
+    plus.addEventListener("click", () => { pole[i] = Math.min(max, pole[i] + 1); kresli(); });
+    wrap.append(minus, out, plus); td.appendChild(wrap);
+    return td;
+  }
+
+  function kresli() {
+    for (const b of elVar.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.id === variant.id));
+    const tab = document.getElementById("sim-tab");
+    tab.replaceChildren();
+    const thead = document.createElement("thead");
+    const hr = document.createElement("tr");
+    hr.appendChild(Object.assign(document.createElement("th"), { textContent: "" }));
+    for (let i = 0; i < KOL; i++) hr.appendChild(Object.assign(document.createElement("th"), { textContent: i === KOL - 1 ? "finále" : `kolo ${i + 1}` }));
+    thead.appendChild(hr); tab.appendChild(thead);
+    const tb = document.createElement("tbody");
+    const r1 = document.createElement("tr"); r1.appendChild(Object.assign(document.createElement("td"), { textContent: "Vypité a vyfajčené" }));
+    for (let i = 0; i < KOL; i++) r1.appendChild(krokTlacidla(konz, i, 0, 9));
+    const r2 = document.createElement("tr"); r2.appendChild(Object.assign(document.createElement("td"), { textContent: "NA EX" }));
+    for (let i = 0; i < KOL; i++) r2.appendChild(krokTlacidla(naex, i, 0, 5));
+    tb.append(r1, r2);
+
+    let s = 0, karty = 0;
+    const riadky = { neresti: [], smadPred: [], karta: [], smadPo: [], tuhe: [] };
+    for (let i = 0; i < KOL; i++) {
+      const n = variant.n(konz[i], naex[i]);
+      riadky.neresti.push(n); riadky.smadPred.push(s); riadky.tuhe.push(karty);
+      if (i === KOL - 1) { riadky.karta.push(null); riadky.smadPo.push(s); break; }
+      const r = variant.krok(s, n, i + 1);
+      if (r.karta) karty++;
+      riadky.karta.push(r.karta); riadky.smadPo.push(r.s); s = r.s;
+    }
+    const riadok = (meno, hodnoty, fmt) => {
+      const tr = document.createElement("tr");
+      tr.appendChild(Object.assign(document.createElement("td"), { textContent: meno }));
+      hodnoty.forEach((h) => { const td = document.createElement("td"); td.innerHTML = fmt(h); tr.appendChild(td); });
+      return tr;
+    };
+    tb.appendChild(riadok("Neresti pre Smäd", riadky.neresti, (h) => String(h)));
+    tb.appendChild(riadok("Smäd na začiatku kola (treba aspoň)", riadky.smadPred, (h) => `<span class="abs">${h}</span>`));
+    tb.appendChild(riadok("Absťák na konci kola", riadky.karta, (h) => h === null ? '<span class="nula">—</span>' : h ? '<span class="abs karta-ano">karta</span>' : '<span class="nula">nie</span>'));
+    tb.appendChild(riadok("Smäd po kole", riadky.smadPo, (h) => String(h)));
+    tb.appendChild(riadok("Tuhé v bitke kola", riadky.tuhe, (h) => h > 0 ? `<span class="minus">−${h}</span>` : '<span class="nula">0</span>'));
+    tab.appendChild(tb);
+    const spoluNeresti = riadky.neresti.reduce((a, b) => a + b, 0);
+    document.getElementById("sim-suhrn").textContent = `Spolu ${karty} ${karty === 1 ? "karta Absťák" : karty >= 2 && karty <= 4 ? "karty Absťák" : "kariet Absťák"}, ${spoluNeresti} nerestí za partiu; v poslednej bitke o ${riadky.tuhe[KOL - 1]} tuhé menej.`;
+  }
+  kresli();
+})();
+</script>
+</main>
+</body>
+</html>
