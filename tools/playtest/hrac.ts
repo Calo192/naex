@@ -75,6 +75,7 @@ import {
   obavanyHrac,
   posunMarker,
   posunZaBody,
+  telefonHraca,
   bodyNaPohorsenie,
   hrozbaKliatob,
   mozeEsteNaex,
@@ -1051,7 +1052,8 @@ function moznosti(v: ClientState): string[] {
         // Ten istý výpočet ako web (nahladPosunuMarkera, nahladPosunuPrebytkom).
         const body = cezPohorsenie ? bodyNaPohorsenie(v, ja, e) : (b?.prebytokZostava ?? 0);
         const n = cezPohorsenie ? nahladPosunuMarkera(DATA, v, e.elderId, k, body) : nahladPosunuPrebytkom(DATA, v, e.elderId);
-        const posun = posunZaBody(e, k, body);
+        // Ten istý smer a Telefón ako web — Nakladačka ide k tomu, kto ju rozdeľuje (ULTRA 20261030, mocky QW 1·1).
+        const posun = posunZaBody(e, k, body, cezPohorsenie && telefonHraca(v, ja));
         if (n === null || posun === null) return "";
         const zn = (x: number): string => (x > 0 ? `+${x}` : x < 0 ? `${x}` : "±0");
         // Priazeň z Pohoršenia platí hneď — zmena bitky (playtest 20261026-181227-1 N2).
@@ -1097,8 +1099,8 @@ function moznosti(v: ClientState): string[] {
           c(
             { type: "prebytok", elderId: e.elderId },
             drzim
-              ? `Nakladačka: posuň marker ${meno(e.karta.defId)} k súperovi (súper dostane priazeň, starší sa začne báť teba)${nahlad(e, false)}`
-              : `Nakladačka: posuň marker ${meno(e.karta.defId)} k sebe (dostaneš jeho priazeň, starší sa začne báť súpera)${nahlad(e, false)}`,
+              ? `Nakladačka: posuň marker ${meno(e.karta.defId)} k súperovi (súper dostane priazeň, starší sa začne báť teba)${nahlad(e, false, k)}`
+              : `Nakladačka: posuň marker ${meno(e.karta.defId)} k sebe (dostaneš jeho priazeň, starší sa začne báť súpera)${nahlad(e, false, k)}`,
           );
         }
       }
