@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náradie pre akcie — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 16px 12px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.v2 { color: var(--oranzova); } .chip.v3 { color: var(--slaby); } .chip.r { color: var(--cervena); } .chip.m { color: var(--modra); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a, .ovl button { flex: none; font: inherit; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .8rem; }
+tbody th { font-family: Georgia, serif; width: 28%; font-weight: 600; }
+.tab { overflow-x: auto; }
+@media (max-width: 560px) { .tab.stack tr { display: block; border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  .tab.stack th, .tab.stack td { display: block; border: 0; padding: 2px 4px; width: auto; }
+  .tab.stack thead { display: none; }
+  .tab.stack td::before { content: attr(data-l); display: block; font-size: .72rem; color: var(--slaby); } }
+section.akcia { scroll-margin-top: 52px; }
+.hl { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.nr { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px 12px; margin: 0 0 10px; }
+.nr.rec { border-color: var(--zelena); }
+.nr .n { font-family: Georgia, serif; font-size: 1.05rem; font-weight: 700; }
+.nr .ef { margin: 6px 0; padding: 6px 10px; border-left: 3px solid var(--akcent); background: var(--plocha-2); border-radius: 0 8px 8px 0; font-style: italic; }
+.nr dl { display: grid; grid-template-columns: 5.6em 1fr; gap: 2px 8px; margin: 6px 0 0; font-size: .88rem; }
+.nr dt { color: var(--slaby); } .nr dd { margin: 0; color: var(--tlmeny); }
+.nr dd.r { color: var(--cervena); }
+.nr label.v { display: block; margin-top: 8px; font-size: .9rem; cursor: pointer; }
+.nr input { accent-color: var(--akcent); }
+.ine { font-size: .85rem; color: var(--slaby); margin: 2px 0 14px; }
+.ine input[type=radio] { accent-color: var(--akcent); }
+.ine input[type=text] { width: 60%; font: inherit; font-size: .85rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 6px; padding: 2px 6px; }
+#vystup { width: 100%; min-height: 160px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+.ok { color: var(--zelena); } .zle { color: var(--cervena); }
+</style>
+</head>
+<body>
+<main>
+<h1>Náradie pre každú akciu</h1>
+<p class="mini">brainstorming · verzia 1 · 2026-10-30 · zadanie Michala cez Leadera · pravidlá ani kód sa nemenia · vetva <code>napady/naradie-akcie</code> · podklady: §2 akcie, §12 Nástroje a Dedičstvo, nástroje sady v26 (<code>cards.json</code>), rozhodnutia o starších a Poverách z 30. 10.</p>
+
+<div class="box zv">
+  <p><b>Zadanie.</b> Nápady na náradie (Nástroj) pre každú akciu v hre. Akcie, ktoré náradie už majú, netreba: Petelica (Puška +1), Rana (Vidly +1), Viera (Svätý text +1). Ostáva <b>13 akcií</b>, ku každej 2 až 3 nápady: názov predmetu, text efektu v štýle sady, čo presne posilní, odhad sily, riziko a námet ilustrácie. Na konci tabuľka akcia → odporúčaný nástroj s voľbami pre interview.</p>
+  <p><b>Zásady.</b> Nástroje sú len v Dedičstve (E1, Michal 2026-10-28), cena rastie spoločne (1, 2, 3 … cigariet). Popis karty nespomína iné karty. Žiadne umelé stropy. Posilnená akcia sa na stole ukáže <b>žeravou ikonou</b>, preto sú najlepšie efekty „tvoje X … o 1 viac / silnejšie“, ktoré sa dajú na ikone ukázať; nápady s iným tvarom sú označené <span class="chip m">iný tvar</span>. Každý nástroj má aj návrh dvoch vlastných akcií (ako Puška: Pecka, Petelica), lebo Nástroj v Dedičstve síce akcie nehrá, ale v šenku a v ruke je kartou ako každá iná.</p>
+  <p><b>Pravidlá v8.2:</b> Dlh sa hráčom volá Hazard a je počítadlo (karty Dlh a Absťák zanikli); cena posunu markera 1 / 2 / 3 von, 2 / 3 / 4 k stredu; Povery sú od 30. 10. <b>výpožička priazne</b> (každá posunie silu priazne jedného staršieho o stupeň k majiteľovi, marker sa nehýbe) — náradie pre Povery je pre túto podobu, pri starej podobe (mäkké poškodenie) je poznámka.</p>
+</div>
+
+<div class="tab stack box"><table>
+<thead><tr><th>Nástroj v sade</th><th>Akcie na karte</th><th>Čo robí v Dedičstve</th><th>Akciu posilňuje</th></tr></thead>
+<tbody>
+<tr><th>Puška</th><td data-l="Akcie">Pecka, Petelica</td><td data-l="Dedičstvo">Petelice o 1 viac</td><td data-l="Posilňuje" class="ok">Petelica — priamo</td></tr>
+<tr><th>Vidly</th><td data-l="Akcie">Pecka, Pohoršenie</td><td data-l="Dedičstvo">Rany o 1 viac</td><td data-l="Posilňuje" class="ok">Rana — priamo</td></tr>
+<tr><th>Svätý text</th><td data-l="Akcie">Viera, Viera</td><td data-l="Dedičstvo">hodnota Viery +1</td><td data-l="Posilňuje" class="ok">Viera — priamo</td></tr>
+<tr><th>Krabička cigariet</th><td data-l="Akcie">Cigareta, Cigareta</td><td data-l="Dedičstvo">za 2 súperove vyfajčené 1 karta</td><td data-l="Posilňuje">Cigareta — nepriamo</td></tr>
+<tr><th>Vínko</th><td data-l="Akcie">Poldeci ×2, Pečeň ×4</td><td data-l="Dedičstvo">limit +1, bez dolievania</td><td data-l="Posilňuje">Poldeci — nepriamo</td></tr>
+<tr><th>Lievik</th><td data-l="Akcie">Poldeci, Pečeň ×2</td><td data-l="Dedičstvo">NA EX aj na Zviera</td><td data-l="Posilňuje">— (NA EX)</td></tr>
+<tr><th>Nealko</th><td data-l="Akcie">Pohoršenie ×2</td><td data-l="Dedičstvo">prah Cirhózy +2</td><td data-l="Posilňuje">Pečeň — nepriamo</td></tr>
+<tr><th>Výherný automat</th><td data-l="Akcie">Robota, Hazard ×4</td><td data-l="Dedičstvo">prah Dlhu +1, v poslednej Pitke 1 Dlh</td><td data-l="Posilňuje">Hazard — nepriamo</td></tr>
+<tr><th>Noviny</th><td data-l="Akcie">Pohoršenie, Povera</td><td data-l="Dedičstvo">Titulka: špak za Dlh víťaza navyše</td><td data-l="Posilňuje">— (Dlhy)</td></tr>
+<tr><th>Pasca</th><td data-l="Akcie">Obmedzenie, Odpor</td><td data-l="Dedičstvo">Pecka navyše za priloženú kartu</td><td data-l="Posilňuje">— (Konflikt)</td></tr>
+</tbody></table></div>
+
+<nav class="skupiny" aria-label="Akcie">
+  <a href="#cigareta">Cigareta</a><a href="#hazard">Hazard</a><a href="#obmedzenie">Obmedzenie</a><a href="#odpor">Odpor</a><a href="#pakt">Pakt</a><a href="#pecka">Pecka</a><a href="#pohorsenie">Pohoršenie</a><a href="#poldeci">Poldeci</a><a href="#posilnenie">Posilnenie</a><a href="#povera">Povera</a><a href="#pecen">Pečeň</a><a href="#robota">Robota</a><a href="#vizia">Vízia</a><a href="#tabulka">Tabuľka</a><a href="#volby">Voľby</a>
+</nav>
+
+<!-- ========================================================= -->
+<section class="akcia" id="cigareta">
+<h2>Cigareta</h2>
+<p class="mini">Dnes: +1 cigareta v Pitke; súperovo Obmedzenie ju uberá. Nepriamo: Krabička cigariet. Cigarety sú hojné (AI hráči končili s 12–26), ale výkupné 5 = 1 špak ich zužitkuje.</p>
+<div class="nr rec"><div class="hl"><span class="n">Tabatierka</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Cigarety dávajú o 1 cigaretu viac.</p>
+<dl><dt>Akcie</dt><dd>Cigareta, Cigareta</dd><dt>Posilní</dt><dd>každá aktívna Cigareta +1 (pri jednej na karte dvojnásobok); ikona žeravá</dd><dt>Riziko</dt><dd class="r">s Posilnením 4 cigarety z jednej akcie; hromadenie cigariet rastie, tlmí ho len súperovo Obmedzenie a výkupné</dd><dt>Ilustrácia</dt><dd>strieborná tabatierka s vyrytým erbom JRD, otvorená, plná cigariet</dd></dl>
+<label class="v"><input type="radio" name="cigareta" value="Tabatierka"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Zapaľovač</span><span><span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Cigarety nemožno Obmedziť.</p>
+<dl><dt>Akcie</dt><dd>Cigareta, Odpor</dd><dt>Posilní</dt><dd>imunita proti Obmedzeniu (v sade 7 kariet s Obmedzením)</dd><dt>Riziko</dt><dd class="r">bez súperových Obmedzení hluchý; situačný</dd><dt>Ilustrácia</dt><dd>benzínový zapaľovač s nálepkou dedinského futbalového klubu, plamienok</dd></dl>
+<label class="v"><input type="radio" name="cigareta" value="Zapaľovač"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Fajka</span><span><span class="chip m">iný tvar</span> <span class="chip v2">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Cigarety sú aktívne aj bez partnera na spoji.</p>
+<dl><dt>Akcie</dt><dd>Cigareta, Vízia</dd><dt>Posilní</dt><dd>nespárované Cigarety na okraji línie</dd><dt>Riziko</dt><dd class="r">jediná výnimka zo zásady „akcia bez partnera nerobí nič“; pre NA EX treba povedať, že je aktívna (nezdvojí sa)</dd><dt>Ilustrácia</dt><dd>drevená fajka s vyrezávanou hlavou farára, bez dymu, na obrúsku</dd></dl>
+<label class="v"><input type="radio" name="cigareta" value="Fajka"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="cigareta" value="žiadne"> žiadne</label> · <label><input type="radio" name="cigareta" value="iné"> iné:</label> <input type="text" data-ine="cigareta" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="hazard">
+<h2>Hazard (Dlh)</h2>
+<p class="mini">Dnes: +1 zadĺženie majiteľovi, každé 2 = 1 Dlh (počítadlo), Exekútor v každej bitke. Nepriamo: Výherný automat (prah +1), Noviny (Titulka), Herňa. Negatívna akcia — „posilniť“ znamená obrátiť ju v prospech majiteľa.</p>
+<div class="nr rec"><div class="hl"><span class="n">Zmenka</span><span><span class="chip ok">odporúčam</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Za každé 2 tvoje aktívne Hazardy udelíš v bitke súperovi 1 Ranu.</p>
+<dl><dt>Akcie</dt><dd>Hazard, Rana</dd><dt>Posilní</dt><dd>dlh sa mení na úder; Hazard ostáva tvoj dlh (dvojsečné, preto bezpečné)</dd><dt>Riziko</dt><dd class="r">na kartách s 2 Hazardmi je to Rana zadarmo; s efektmi „za 2 Dlhy Rana“ sa sčíta</dd><dt>Ilustrácia</dt><dd>papierová zmenka s odtlačkom palca namiesto podpisu a kruhom od pohára piva</dd></dl>
+<label class="v"><input type="radio" name="hazard" value="Zmenka"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Falošné kocky</span><span><span class="chip m">iný tvar</span> <span class="chip r">sila veľmi vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Hazardy zadlžujú súpera namiesto teba.</p>
+<dl><dt>Akcie</dt><dd>Hazard, Hazard</dd><dt>Posilní</dt><dd>preklopí negatívum na útok (po 2 Hazardoch majú Kulturista, Recidivista, Dvojčatá, Vymáhač…)</dd><dt>Riziko</dt><dd class="r">NA EX na vlastnú kartu zdvojí Hazard = 2 zadĺženia súperovi; Exekútor každé kolo → rýchla strata špakov súpera; miernejšie: „tvoj prvý Hazard v Pitke“</dd><dt>Ilustrácia</dt><dd>dve kocky s vyvŕtanou dierkou a olovom na krčmovom stole, vedľa lupa</dd></dl>
+<label class="v"><input type="radio" name="hazard" value="Falošné kocky"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Pokladnička</span><span><span class="chip v3">sila nízka</span></span></div>
+<p class="ef">Dedičstvo: Každý tvoj aktívny Hazard ti dá 1 cigaretu.</p>
+<dl><dt>Akcie</dt><dd>Hazard, Cigareta</dd><dt>Posilní</dt><dd>dlh s odmenou (zadĺženie ostáva)</dd><dt>Riziko</dt><dd class="r">cigarety sú hojné, slabý efekt</dd><dt>Ilustrácia</dt><dd>plechová pokladnička v tvare kostola s vylomeným zámkom</dd></dl>
+<label class="v"><input type="radio" name="hazard" value="Pokladnička"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="hazard" value="žiadne"> žiadne</label> · <label><input type="radio" name="hazard" value="iné"> iné:</label> <input type="text" data-ine="hazard" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="obmedzenie">
+<h2>Obmedzenie</h2>
+<p class="mini">Dnes: súper dostane v Pitke o 1 cigaretu menej (len z akcií Cigareta, najmenej 0).</p>
+<div class="nr rec"><div class="hl"><span class="n">Tabuľka ZÁKAZ FAJČENIA</span><span><span class="chip ok">odporúčam</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Obmedzenia uberajú súperovi o 1 cigaretu viac.</p>
+<dl><dt>Akcie</dt><dd>Obmedzenie, Obmedzenie</dd><dt>Posilní</dt><dd>každé Obmedzenie −2; ikona žeravá</dd><dt>Riziko</dt><dd class="r">proti súperovi bez Cigariet naprázdno (ako dnes)</dd><dt>Ilustrácia</dt><dd>smaltovaná tabuľka „Zákaz fajčenia“ prestrelená brokmi, pod ňou ohorky</dd></dl>
+<label class="v"><input type="radio" name="obmedzenie" value="Tabuľka ZÁKAZ FAJČENIA"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Pokutový blok</span><span><span class="chip m">iný tvar</span> <span class="chip v2">sila stredná až vysoká</span></span></div>
+<p class="ef">Dedičstvo: Cigarety, ktoré súperovi vezmú tvoje Obmedzenia, dostaneš ty.</p>
+<dl><dt>Akcie</dt><dd>Obmedzenie, Cigareta</dd><dt>Posilní</dt><dd>výmena 2 za 1 (súper −1, ty +1)</dd><dt>Riziko</dt><dd class="r">s Posilnením ×2; bez súperových Cigariet nič</dd><dt>Ilustrácia</dt><dd>policajný pokutový blok s prepisovacím papierom a ohryzenou ceruzkou na šnúrke</dd></dl>
+<label class="v"><input type="radio" name="obmedzenie" value="Pokutový blok"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Píšťalka</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas.</p>
+<dl><dt>Akcie</dt><dd>Obmedzenie, Rana</dd><dt>Posilní</dt><dd>trestá vzorec „pas + prebytok“ (Fero), ktorý sa v playtestoch opakuje</dd><dt>Riziko</dt><dd class="r">pas za cigarety je už znížený (najviac podľa ruky); UI musí ukázať zníženie pri pase</dd><dt>Ilustrácia</dt><dd>rozhodcovská píšťalka na šnúrke, zahryznutá, s kúskom trávy</dd></dl>
+<label class="v"><input type="radio" name="obmedzenie" value="Píšťalka"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="obmedzenie" value="žiadne"> žiadne</label> · <label><input type="radio" name="obmedzenie" value="iné"> iné:</label> <input type="text" data-ine="obmedzenie" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="odpor">
+<h2>Odpor</h2>
+<p class="mini">Dnes: zruší prepojenú akciu; Odpor + Odpor = Vzbura; Posilnenie + Odpor aktivuje len kartu s Odporom.</p>
+<div class="nr rec"><div class="hl"><span class="n">Transparent</span><span><span class="chip ok">odporúčam</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Keď tvoj Odpor zruší akciu, udelíš súperovi v bitke 1 Ranu navyše.</p>
+<dl><dt>Akcie</dt><dd>Odpor, Rana</dd><dt>Posilní</dt><dd>zrušenie + úder; pri Vzbure (nič nezrušil) nič</dd><dt>Riziko</dt><dd class="r">malé; treba povedať, že zrušenie vlastnej nepriaznivej akcie tiež dá Ranu (áno — Odpor na vlastný Hazard je legitímny ťah)</dd><dt>Ilustrácia</dt><dd>ručne maľovaný transparent „NIE!“ na dvoch metlách, jedno písmeno naopak</dd></dl>
+<label class="v"><input type="radio" name="odpor" value="Transparent"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Petícia</span><span><span class="chip m">iný tvar</span> <span class="chip r">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja.</p>
+<dl><dt>Akcie</dt><dd>Odpor, Povera</dd><dt>Posilní</dt><dd>ukradne súperovu Petelicu či Cigaretu</dd><dt>Riziko</dt><dd class="r">zrušený Hazard alebo Pečeň by bol tvoj — hráč si spoj vyberá, ale podstrčené karty to otáčajú; zrušená akcia dnes „nie je ani aktívna, ani neaktívna“, Petícia by to menila</dd><dt>Ilustrácia</dt><dd>hárok petície s desiatkami podpisov tým istým perom a rovnakým rukopisom</dd></dl>
+<label class="v"><input type="radio" name="odpor" value="Petícia"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Hrable</span><span><span class="chip v3">sila nízka až stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Odpory sa navyše rátajú ako Pohoršenie.</p>
+<dl><dt>Akcie</dt><dd>Odpor, Pohoršenie</dd><dt>Posilní</dt><dd>1 bod posunu za každý aktívny Odpor</dd><dt>Riziko</dt><dd class="r">malé; s novou cenou posunu je 1 bod zo stredu len žltá</dd><dt>Ilustrácia</dt><dd>drevené hrable opreté o plot, na nich zavesený slamený klobúk</dd></dl>
+<label class="v"><input type="radio" name="odpor" value="Hrable"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="odpor" value="žiadne"> žiadne</label> · <label><input type="radio" name="odpor" value="iné"> iné:</label> <input type="text" data-ine="odpor" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="pakt">
+<h2>Pakt</h2>
+<p class="mini">Dnes: na spoji sa správa ako akcia, s ktorou je v páre — aj zlá (Hazard, Pečeň); Pakt + Pakt nič; Odpor ho zruší.</p>
+<div class="nr rec"><div class="hl"><span class="n">Notárska pečať</span><span><span class="chip ok">odporúčam</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoj Pakt nekopíruje Hazard ani Poškodenie pečene — namiesto nich sa ráta ako Rana.</p>
+<dl><dt>Akcie</dt><dd>Pakt, Rana</dd><dt>Posilní</dt><dd>zruší slabinu Paktu (kopírovanie zlých akcií)</dd><dt>Riziko</dt><dd class="r">dve vety v texte; Rana ako náhrada je mierna</dd><dt>Ilustrácia</dt><dd>mosadzná pečať s erbom obce a kalamár s vylomeným vrchnákom</dd></dl>
+<label class="v"><input type="radio" name="pakt" value="Notárska pečať"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Zmluva na obrúsku</span><span><span class="chip r">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát.</p>
+<dl><dt>Akcie</dt><dd>Pakt, Pakt</dd><dt>Posilní</dt><dd>Pakt + Petelica = tri Petelice (9 tuhého)</dd><dt>Riziko</dt><dd class="r">strmé; pri Posilnení nič navyše (Pakt + Posilnenie ostáva dve Posilnenia); kopíruje dvakrát aj zlé</dd><dt>Ilustrácia</dt><dd>zmluva napísaná na krčmovom obrúsku, podpísaná pivovou penou</dd></dl>
+<label class="v"><input type="radio" name="pakt" value="Zmluva na obrúsku"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Slivovica</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila nízka</span></span></div>
+<p class="ef">Dedičstvo: Tvoj Pakt bez partnera sa ráta ako Rana.</p>
+<dl><dt>Akcie</dt><dd>Pakt, Poldeci</dd><dt>Posilní</dt><dd>Pakt na okraji línie nie je prázdny slot</dd><dt>Riziko</dt><dd class="r">výnimka z „bez partnera nič“; NA EX: nespárovaný Pakt je dnes neaktívny a „nemá čo kopírovať“ — so Slivovicou by sa zdvojil na 2 Rany</dd><dt>Ilustrácia</dt><dd>fľaša domácej slivovice s ručne písaným štítkom „na zmierenie“, dva štamperlíky</dd></dl>
+<label class="v"><input type="radio" name="pakt" value="Slivovica"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="pakt" value="žiadne"> žiadne</label> · <label><input type="radio" name="pakt" value="iné"> iné:</label> <input type="text" data-ine="pakt" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="pecka">
+<h2>Pecka</h2>
+<p class="mini">Dnes: 2 tuhé. Najčastejší úder v sade (vyše 20 kariet), preto je +1 silnejšie než Puška alebo Vidly.</p>
+<div class="nr rec"><div class="hl"><span class="n">Kyjak</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac.</p>
+<dl><dt>Akcie</dt><dd>Pecka, Pecka</dd><dt>Posilní</dt><dd>Pecka = 3; rovnaký vzor ako Puška a Vidly, ikona žeravá</dd><dt>Riziko</dt><dd class="r">Posilnenie ×2 → 6; bossovia majú Pecky (Starosta, Autobusár, Vychovávateľka, Krčmárka)</dd><dt>Ilustrácia</dt><dd>sukovitý kyjak s klincami a stužkou z hasičského plesu</dd></dl>
+<label class="v"><input type="radio" name="pecka" value="Kyjak"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Boxer</span><span><span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Pecky nemožno zmierniť Vierou.</p>
+<dl><dt>Akcie</dt><dd>Pecka, Odpor</dd><dt>Posilní</dt><dd>proti Viere (Farár boss, Veriaci, Svätý text)</dd><dt>Riziko</dt><dd class="r">situačné; výpočet poškodenia potrebuje „Viera tlmí len ostatné tuhé“</dd><dt>Ilustrácia</dt><dd>mosadzný boxer s vyrytým nápisom MAMA, na háčkovanej dečke</dd></dl>
+<label class="v"><input type="radio" name="pecka" value="Boxer"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Bakuľa</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila nízka až stredná</span></span></div>
+<p class="ef">Dedičstvo: Za každé 2 tvoje aktívne Pecky máš v bitke 1 bod posunu navyše.</p>
+<dl><dt>Akcie</dt><dd>Pecka, Pohoršenie</dd><dt>Posilní</dt><dd>úder prináša politiku</dd><dt>Riziko</dt><dd class="r">malé</dd><dt>Ilustrácia</dt><dd>dedkova bakuľa s gumovou pätou a vyrezávanou hlavou psa</dd></dl>
+<label class="v"><input type="radio" name="pecka" value="Bakuľa"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="pecka" value="žiadne"> žiadne</label> · <label><input type="radio" name="pecka" value="iné"> iné:</label> <input type="text" data-ine="pecka" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="pohorsenie">
+<h2>Pohoršenie</h2>
+<p class="mini">Dnes (v8.2): 1 bod posunu markera, von zo stredu za 1 / 2 / 3, k stredu za 2 / 3 / 4; hráč vyberie staršieho a smer. Nepriamo: Nealko (2 Pohoršenia v akciách), Vidly, Noviny.</p>
+<div class="nr rec"><div class="hl"><span class="n">Obecný rozhlas</span><span><span class="chip ok">odporúčam</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Pohoršenia dávajú o 1 bod posunu viac.</p>
+<dl><dt>Akcie</dt><dd>Pohoršenie, Pohoršenie</dd><dt>Posilní</dt><dd>2 body za každé Pohoršenie: zo žltej rovno do oranžovej, zo stredu žltá a zvyšný bod ide ďalšiemu staršiemu; z červenej k stredu polovica prirážky; ikona žeravá</dd><dt>Riziko</dt><dd class="r">s Abstinentom sily 3 až 6 bodov navyše; viac zón na udržanie</dd><dt>Ilustrácia</dt><dd>plechový amplión na betónovom stĺpe, v ňom hniezdo lastovičiek</dd></dl>
+<label class="v"><input type="radio" name="pohorsenie" value="Obecný rozhlas"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Zvon</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Pohoršenia k stredu stoja toľko ako von.</p>
+<dl><dt>Akcie</dt><dd>Pohoršenie, Viera</dd><dt>Posilní</dt><dd>lacnejšie odtlačenie (z červenej 3 namiesto 4) — voliteľná protihra proti udržaniu, ktorú rozhodnutie 2.5 nechalo drahú</dd><dt>Riziko</dt><dd class="r">oslabuje udržanie súpera; ak sa ukáže, že udržanie je príliš isté, Zvon je presne ten ventil</dd><dt>Ilustrácia</dt><dd>kostolný zvon s prasklinou zalepenou lepiacou páskou, povraz uviazaný na bicykel</dd></dl>
+<label class="v"><input type="radio" name="pohorsenie" value="Zvon"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Spovednica</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila nízka až stredná</span></span></div>
+<p class="ef">Dedičstvo: Svoje Pohoršenia rozdeľuješ až po súperových.</p>
+<dl><dt>Akcie</dt><dd>Pohoršenie, Povera</dd><dt>Posilní</dt><dd>posledné slovo pri posunoch (obranca ho dnes nemá)</dd><dt>Riziko</dt><dd class="r">pri Spovednici u oboch platí pôvodné poradie; UI musí ukázať, kto rozdeľuje</dd><dt>Ilustrácia</dt><dd>drevená spovednica s mriežkou, cez ktorú vidno fľašu a dva poháre</dd></dl>
+<label class="v"><input type="radio" name="pohorsenie" value="Spovednica"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="pohorsenie" value="žiadne"> žiadne</label> · <label><input type="radio" name="pohorsenie" value="iné"> iné:</label> <input type="text" data-ine="pohorsenie" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="poldeci">
+<h2>Poldeci</h2>
+<p class="mini">Dnes: v bitke otočí vypitý poldeci na plný (prejaví sa o kolo neskôr); v Pitke pridá pečeň; naprázdno bez vypitého. Nepriamo: Vínko (limit +1), Lievik, dolievanie 2 cigarety, barter 5.</p>
+<div class="nr rec"><div class="hl"><span class="n">Štamperlík</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke.</p>
+<dl><dt>Akcie</dt><dd>Poldeci, Cigareta</dd><dt>Posilní</dt><dd>poldeci o kolo skôr → limit v ďalšom Zhromaždení toho istého kola, NA EX v ďalšej Pitke</dd><dt>Riziko</dt><dd class="r">mení načasovanie, ktoré §6 zdôrazňuje; pečeň z Poldeci ostáva</dd><dt>Ilustrácia</dt><dd>brúsený štamperlík s odtlačkom rúžu, na podložke z pivovaru</dd></dl>
+<label class="v"><input type="radio" name="poldeci" value="Štamperlík"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Demižón</span><span><span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Poldeci nepridávajú poškodenie pečene.</p>
+<dl><dt>Akcie</dt><dd>Poldeci, Poldeci</dd><dt>Posilní</dt><dd>Poldeci bez ceny (Cirhóza)</dd><dt>Riziko</dt><dd class="r">malé; prekrýva sa s dnešným efektom Veterinára, ktorý ale zaniká (boss)</dd><dt>Ilustrácia</dt><dd>opletený demižón s hadičkou a štipcom na bielizeň</dd></dl>
+<label class="v"><input type="radio" name="poldeci" value="Demižón"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Súdok</span><span><span class="chip m">iný tvar</span> <span class="chip r">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Ak tvoje Poldeci nemá čo otočiť, dostaneš nový plný poldeci.</p>
+<dl><dt>Akcie</dt><dd>Poldeci, Poškodenie pečene</dd><dt>Posilní</dt><dd>zásoba rastie (limit vykladania, NA EX, výkupné 1 špak za plný); zásada bez stropov sedí</dd><dt>Riziko</dt><dd class="r">barter za 5 cigariet stráca zmysel; dlhá hra = veľa poldeci</dd><dt>Ilustrácia</dt><dd>dubový súdok s pípou na kozlíku, pod ním kaluž a pes</dd></dl>
+<label class="v"><input type="radio" name="poldeci" value="Súdok"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="poldeci" value="žiadne"> žiadne</label> · <label><input type="radio" name="poldeci" value="iné"> iné:</label> <input type="text" data-ine="poldeci" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="posilnenie">
+<h2>Posilnenie</h2>
+<p class="mini">Dnes: zdvojnásobí prepojenú akciu, priaznivú aj nepriaznivú; NA EX ho zruší aj s ×2; Pes + Posilnenie na podstrčenej karte štyria hráči nazvali pascou.</p>
+<div class="nr rec"><div class="hl"><span class="n">Činka</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Útočná akcia, ktorú zdvojí tvoje Posilnenie, udeľuje navyše o 1 viac.</p>
+<dl><dt>Akcie</dt><dd>Posilnenie, Pecka</dd><dt>Posilní</dt><dd>Pecka ×2 + 1 = 5, Petelica ×2 + 1 = 7; ikona žeravá na posilnenej akcii</dd><dt>Riziko</dt><dd class="r">strmé s Psom (×2 ×2 + 1); s Kyjakom alebo Puškou sa sčíta</dd><dt>Ilustrácia</dt><dd>betónová činka z dvoch plechoviek od farby na železnej tyči</dd></dl>
+<label class="v"><input type="radio" name="posilnenie" value="Činka"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Kováčske mechy</span><span><span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Posilnenie nezdvojuje Hazard ani Poškodenie pečene.</p>
+<dl><dt>Akcie</dt><dd>Posilnenie, Rana</dd><dt>Posilní</dt><dd>zruší pascu „zdvojí aj zlé“</dd><dt>Riziko</dt><dd class="r">ak Michal prijme návrh z playtestu „Posilnenie zdvojuje len priaznivé“, nástroj stratí zmysel</dd><dt>Ilustrácia</dt><dd>kožené kováčske mechy s dierou zalepenou leukoplastom</dd></dl>
+<label class="v"><input type="radio" name="posilnenie" value="Kováčske mechy"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Energeťák</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX.</p>
+<dl><dt>Akcie</dt><dd>Posilnenie, Poldeci</dd><dt>Posilní</dt><dd>×2 prežije súperovo NA EX</dd><dt>Riziko</dt><dd class="r">mechanika rovnaká ako efekt jednej karty sady (Veterán); text ju nespomína, ale hráč si to všimne</dd><dt>Ilustrácia</dt><dd>plechovka energetického nápoja „Býk“ s odtrhnutým uškom, vedľa vodka</dd></dl>
+<label class="v"><input type="radio" name="posilnenie" value="Energeťák"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="posilnenie" value="žiadne"> žiadne</label> · <label><input type="radio" name="posilnenie" value="iné"> iné:</label> <input type="text" data-ine="posilnenie" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="povera">
+<h2>Povera</h2>
+<p class="mini">Rozhodnuté 30. 10. (výpožička priazne): každá zvyšná Povera posunie silu priazne jedného staršieho o stupeň k majiteľovi, bez prahov zón, marker sa nehýbe; Viera ruší Povery 1 : 1. <b>Stará podoba</b> (mäkké poškodenie do výšky Dlhov): Podkova by bola „bez stropu Dlhov“, Kyvadlo rovnako, Horoskop „Povery sa rátajú ako tuhé“.</p>
+<div class="nr rec"><div class="hl"><span class="n">Podkova</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Povery posúvajú silu priazne o 2 stupne.</p>
+<dl><dt>Akcie</dt><dd>Povera, Povera</dd><dt>Posilní</dt><dd>dve Povery preklopia Bitkára 2 súpera na tvojho 2; ikona žeravá</dd><dt>Riziko</dt><dd class="r">ak Čierna mačka dostane text „o 2“, duplicita — potom mačke „Vierou sa nerušia“</dd><dt>Ilustrácia</dt><dd>hrdzavá podkova nad dverami krčmy, pribitá naopak</dd></dl>
+<label class="v"><input type="radio" name="povera" value="Podkova"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Kyvadlo</span><span><span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Povery nemožno zrušiť Vierou.</p>
+<dl><dt>Akcie</dt><dd>Povera, Vízia</dd><dt>Posilní</dt><dd>klebety prejdú cez súperovu Vieru</dd><dt>Riziko</dt><dd class="r">to isté, čo navrhujem Čiernej mačke — vybrať len jedno miesto</dd><dt>Ilustrácia</dt><dd>mosadzné kyvadlo na retiazke nad mapou dediny, ruka s prsteňmi</dd></dl>
+<label class="v"><input type="radio" name="povera" value="Kyvadlo"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Horoskop</span><span><span class="chip m">iný tvar</span> <span class="chip v2">sila stredná až vysoká</span></span></div>
+<p class="ef">Dedičstvo: Klebety z tvojich Povier platia aj v nasledujúcom kole.</p>
+<dl><dt>Akcie</dt><dd>Povera, Cigareta</dd><dt>Posilní</dt><dd>výpožička na dve kolá</dd><dt>Riziko</dt><dd class="r">nový stav na stupnici (klebety sa sčítajú s novými); UI</dd><dt>Ilustrácia</dt><dd>vystrihnutý horoskop z bulváru pripnutý magnetkou na chladničke</dd></dl>
+<label class="v"><input type="radio" name="povera" value="Horoskop"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="povera" value="žiadne"> žiadne</label> · <label><input type="radio" name="povera" value="iné"> iné:</label> <input type="text" data-ine="povera" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="pecen">
+<h2>Poškodenie pečene</h2>
+<p class="mini">Dnes: +1 pečeň majiteľovi v Pitke, každé 3 = Cirhóza do odhadzovacieho balíčka (nepriznaná −3 špaky, priznaná +1 tuhé súperovi). Nepriamo: Nealko (prah +2), Vínko, Lievik, Krčma (+2 prah). Negatívna akcia — „posilniť“ = obrátiť v prospech majiteľa.</p>
+<div class="nr rec"><div class="hl"><span class="n">Oškvarky</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Poškodenia pečene sa rátajú aj ako Rany.</p>
+<dl><dt>Akcie</dt><dd>Poškodenie pečene, Rana</dd><dt>Posilní</dt><dd>pečeň ostáva, k nej 1 tuhé za každú (Kočovník, Pijan, Mäsiar po 2); ikona žeravá</dd><dt>Riziko</dt><dd class="r">NA EX na vlastnú kartu s neaktívnou Pečeňou = 2 Rany + 2 pečeň; podobný prevod má Konflikt jednej karty sady (Šarlatán), ten je však dočasný</dd><dt>Ilustrácia</dt><dd>miska oškvarkov s cibuľou na rozložených novinách, mastné prsty</dd></dl>
+<label class="v"><input type="radio" name="pecen" value="Oškvarky"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Kapustnica</span><span><span class="chip m">iný tvar</span> <span class="chip r">sila veľmi vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Poškodenia pečene idú súperovi.</p>
+<dl><dt>Akcie</dt><dd>Poškodenie pečene, Poldeci</dd><dt>Posilní</dt><dd>preklopí všetky Pečene na útok na súperovu Cirhózu</dd><dt>Riziko</dt><dd class="r">NA EX na vlastnú kartu zdvojí pečeň súperovi; na Krčme (NA EX povinné) brutálne; miernejšie: „tvoja prvá Pečeň v Pitke“</dd><dt>Ilustrácia</dt><dd>hrniec kapustnice s klobásou a naberačkou, para (nie dym)</dd></dl>
+<label class="v"><input type="radio" name="pecen" value="Kapustnica"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Kvapky od babky</span><span><span class="chip v3">sila nízka až stredná</span></span></div>
+<p class="ef">Dedičstvo: Každé tvoje Poškodenie pečene ti dá 1 cigaretu.</p>
+<dl><dt>Akcie</dt><dd>Poškodenie pečene, Cigareta</dd><dt>Posilní</dt><dd>pečeň s odmenou</dd><dt>Riziko</dt><dd class="r">slabé, cigarety hojné</dd><dt>Ilustrácia</dt><dd>fľaštička s rukou písaným štítkom „na pečeň, 3× denne, po poldeci“</dd></dl>
+<label class="v"><input type="radio" name="pecen" value="Kvapky od babky"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="pecen" value="žiadne"> žiadne</label> · <label><input type="radio" name="pecen" value="iné"> iné:</label> <input type="text" data-ine="pecen" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="robota">
+<h2>Robota</h2>
+<p class="mini">Dnes: v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh. Bez Dlhu naprázdno.</p>
+<div class="nr rec"><div class="hl"><span class="n">Fúrik</span><span><span class="chip ok">odporúčam</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Roboty pália o 1 Dlh viac.</p>
+<dl><dt>Akcie</dt><dd>Robota, Robota</dd><dt>Posilní</dt><dd>2 Dlhy za Robotu → menšia exekúcia, Povery, remíza; ikona žeravá</dd><dt>Riziko</dt><dd class="r">bez Dlhov hluchý (ako dnes)</dd><dt>Ilustrácia</dt><dd>hrdzavý fúrik s jedným kolesom a vyblednutým nápisom JRD, v ňom tehly</dd></dl>
+<label class="v"><input type="radio" name="robota" value="Fúrik"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Montérky</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila nízka</span></span></div>
+<p class="ef">Dedičstvo: Tvoja Robota, ktorá nemá čo spáliť, ti dá 1 cigaretu.</p>
+<dl><dt>Akcie</dt><dd>Robota, Cigareta</dd><dt>Posilní</dt><dd>Robota nikdy nie je hluchá</dd><dt>Riziko</dt><dd class="r">malé</dd><dt>Ilustrácia</dt><dd>modré montérky s trakmi, vrecko plné klincov a jedna cigareta</dd></dl>
+<label class="v"><input type="radio" name="robota" value="Montérky"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Pracovná knižka</span><span><span class="chip m">iný tvar</span> <span class="chip r">sila vysoká</span></span></div>
+<p class="ef">Dedičstvo: Za každý Dlh, ktorý spáli tvoja Robota, dostaneš 1 špak.</p>
+<dl><dt>Akcie</dt><dd>Robota, Hazard</dd><dt>Posilní</dt><dd>motor Hazard → Robota → špaky</dd><dt>Riziko</dt><dd class="r">karty s Hazardom aj Robotou (Živnostník, Anonymný alkoholik, Záhradkár, Snúbenica) by dávali špaky zadarmo; body mimo bitky a starších</dd><dt>Ilustrácia</dt><dd>socialistická pracovná knižka s pečiatkami a vlepenou fotkou, jeden rok preškrtnutý</dd></dl>
+<label class="v"><input type="radio" name="robota" value="Pracovná knižka"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="robota" value="žiadne"> žiadne</label> · <label><input type="radio" name="robota" value="iné"> iné:</label> <input type="text" data-ine="robota" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="vizia">
+<h2>Vízia</h2>
+<p class="mini">Dnes: na konci Pitky sa pozrieš na vrchnú kartu svojho balíčka a vezmeš si ju alebo zahodíš.</p>
+<div class="nr rec"><div class="hl"><span class="n">Okuliare</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila stredná až vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo zahoď, druhú vráť navrch.</p>
+<dl><dt>Akcie</dt><dd>Vízia, Vízia</dd><dt>Posilní</dt><dd>výber z dvoch namiesto jednej; ikona žeravá</dd><dt>Riziko</dt><dd class="r">UI výber z dvoch; pri jednej karte v balíčku ako dnes</dd><dt>Ilustrácia</dt><dd>okuliare s jedným sklom zalepeným izolepou na stole plnom kariet</dd></dl>
+<label class="v"><input type="radio" name="vizia" value="Okuliare"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Kľúčová dierka</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoja Vízia sa smie namiesto tvojho balíčka pozrieť na vrchnú kartu súperovho a zahodiť ju.</p>
+<dl><dt>Akcie</dt><dd>Vízia, Obmedzenie</dd><dt>Posilní</dt><dd>informácia a disrupcia</dd><dt>Riziko</dt><dd class="r">zahodenie z hry proti malým balíčkom bolí; súper nevidí, čo si videl (viewFor)</dd><dt>Ilustrácia</dt><dd>staré dvere s kľúčovou dierkou, za ňou oko a kus čipkovanej záclony</dd></dl>
+<label class="v"><input type="radio" name="vizia" value="Kľúčová dierka"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Krištáľová guľa</span><span><span class="chip m">iný tvar</span> <span class="chip v2">sila stredná až vysoká</span></span></div>
+<p class="ef">Dedičstvo: Tvoja Vízia smie vziať kartu z tvojho odhadzovacieho balíčka namiesto vrchnej.</p>
+<dl><dt>Akcie</dt><dd>Vízia, Povera</dd><dt>Posilní</dt><dd>Kšeft Zberného dvora zadarmo každú Pitku</dd><dt>Riziko</dt><dd class="r">opakované hranie najlepšej karty; nerest sa neráta (nie je to cigareta)</dd><dt>Ilustrácia</dt><dd>sklenená guľa na háčkovanej dečke, v nej odraz televízora s futbalom</dd></dl>
+<label class="v"><input type="radio" name="vizia" value="Krištáľová guľa"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="vizia" value="žiadne"> žiadne</label> · <label><input type="radio" name="vizia" value="iné"> iné:</label> <input type="text" data-ine="vizia" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
+<h2 id="tabulka">Tabuľka: akcia → odporúčaný nástroj</h2>
+<div class="tab stack box"><table>
+<thead><tr><th>Akcia</th><th>Odporúčam</th><th>Text</th><th>Alternatívy</th></tr></thead>
+<tbody>
+<tr><th>Cigareta</th><td data-l="Odporúčam">Tabatierka</td><td data-l="Text">Tvoje Cigarety dávajú o 1 cigaretu viac.</td><td data-l="Alternatívy">Zapaľovač (bez Obmedzenia), Fajka (aktívne bez partnera)</td></tr>
+<tr><th>Hazard</th><td data-l="Odporúčam">Zmenka</td><td data-l="Text">Za každé 2 tvoje aktívne Hazardy udelíš súperovi 1 Ranu.</td><td data-l="Alternatívy">Falošné kocky (zadlžujú súpera), Pokladnička (cigareta)</td></tr>
+<tr><th>Obmedzenie</th><td data-l="Odporúčam">Tabuľka Zákaz fajčenia</td><td data-l="Text">Tvoje Obmedzenia uberajú o 1 cigaretu viac.</td><td data-l="Alternatívy">Pokutový blok (cigarety tebe), Píšťalka (aj pas)</td></tr>
+<tr><th>Odpor</th><td data-l="Odporúčam">Transparent</td><td data-l="Text">Keď tvoj Odpor zruší akciu, 1 Rana navyše.</td><td data-l="Alternatívy">Petícia (zrušená akcia je tvoja), Hrable (aj Pohoršenie)</td></tr>
+<tr><th>Pakt</th><td data-l="Odporúčam">Notárska pečať</td><td data-l="Text">Pakt nekopíruje Hazard ani Pečeň, namiesto nich Rana.</td><td data-l="Alternatívy">Zmluva na obrúsku (kopíruje dvakrát), Slivovica (bez partnera Rana)</td></tr>
+<tr><th>Pecka</th><td data-l="Odporúčam">Kyjak</td><td data-l="Text">Tvoje Pecky udeľujú o 1 viac.</td><td data-l="Alternatívy">Boxer (Viera ich netlmí), Bakuľa (2 Pecky = bod posunu)</td></tr>
+<tr><th>Pohoršenie</th><td data-l="Odporúčam">Obecný rozhlas</td><td data-l="Text">Tvoje Pohoršenia dávajú o 1 bod posunu viac.</td><td data-l="Alternatívy">Zvon (k stredu bez prirážky), Spovednica (rozdeľuješ posledný)</td></tr>
+<tr><th>Poldeci</th><td data-l="Odporúčam">Štamperlík</td><td data-l="Text">Tvoje Poldeci otáčajú hneď v Pitke.</td><td data-l="Alternatívy">Demižón (bez pečene), Súdok (nový poldeci, keď niet čo otočiť)</td></tr>
+<tr><th>Posilnenie</th><td data-l="Odporúčam">Činka</td><td data-l="Text">Zdvojená útočná akcia udeľuje navyše o 1 viac.</td><td data-l="Alternatívy">Kováčske mechy (nezdvojuje zlé), Energeťák (NA EX ho nezruší)</td></tr>
+<tr><th>Povera</th><td data-l="Odporúčam">Podkova</td><td data-l="Text">Tvoje Povery posúvajú silu priazne o 2 stupne.</td><td data-l="Alternatívy">Kyvadlo (Viera ich neruší), Horoskop (aj ďalšie kolo)</td></tr>
+<tr><th>Poškodenie pečene</th><td data-l="Odporúčam">Oškvarky</td><td data-l="Text">Tvoje Poškodenia pečene sa rátajú aj ako Rany.</td><td data-l="Alternatívy">Kapustnica (idú súperovi), Kvapky od babky (cigareta)</td></tr>
+<tr><th>Robota</th><td data-l="Odporúčam">Fúrik</td><td data-l="Text">Tvoje Roboty pália o 1 Dlh viac.</td><td data-l="Alternatívy">Montérky (bez Dlhu cigareta), Pracovná knižka (špak za spálený Dlh)</td></tr>
+<tr><th>Vízia</th><td data-l="Odporúčam">Okuliare</td><td data-l="Text">Tvoje Vízie ukážu 2 karty, jednu si vezmi.</td><td data-l="Alternatívy">Kľúčová dierka (súperov balíček), Krištáľová guľa (z odhadzovacieho)</td></tr>
+</tbody></table></div>
+<div class="box riz"><p><b>Spoločné riziká.</b> Nástrojov je v sade 10, pribudlo by 13 — šenok by bol z pätiny náradie a cena Dedičstva rastie spoločne (1, 2, 3 …), takže piaty nástroj v hre stojí 5 cigariet; to je prirodzená brzda, nie strop. Nástroje „+1“ sa sčítavajú (Kyjak + Činka + Puška = Petelica ×2 + 1 + 1), preto odporúčam zaviesť max jeden z každej dvojice do sady naraz a merať. Ilustrácie: dym len z cigarety, popolníka alebo úst (fajka bez dymu, kapustnica s parou).</p></div>
+
+<h2 id="volby">Moje voľby</h2>
+<p class="mini">Voľby sa ukladajú v tomto prehliadači. Skopíruj a pošli Leaderovi.</p>
+<textarea id="vystup" readonly></textarea>
+<div class="ovl"><button type="button" id="kopiruj">Kopírovať</button><button type="button" id="vymaz">Vymazať voľby</button></div>
+</main>
+<script>
+(function () {
+  var KLUC = "naex-naradie-akcie-v1";
+  var AKCIE = ["cigareta","hazard","obmedzenie","odpor","pakt","pecka","pohorsenie","poldeci","posilnenie","povera","pecen","robota","vizia"];
+  var ulozene = {};
+  try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) {}
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) {} vypis(); }
+  function vypis() {
+    var riadky = [];
+    AKCIE.forEach(function (a) {
+      var v = ulozene[a], p = ulozene[a + "_p"];
+      var h = document.querySelector("#" + a + " h2");
+      if (v || p) riadky.push((h ? h.textContent : a) + ": " + (v || "?") + (p ? " — " + p : ""));
+    });
+    document.getElementById("vystup").value = riadky.length ? riadky.join("\n") : "(zatiaľ nič nevybrané)";
+  }
+  document.querySelectorAll("input[type=radio]").forEach(function (i) {
+    if (ulozene[i.name] === i.value) i.checked = true;
+    i.addEventListener("change", function () { ulozene[i.name] = i.value; uloz(); });
+  });
+  document.querySelectorAll("input[data-ine]").forEach(function (t) {
+    var k = t.getAttribute("data-ine") + "_p"; t.value = ulozene[k] || "";
+    t.addEventListener("input", function () { ulozene[k] = t.value.trim(); uloz(); });
+  });
+  document.getElementById("kopiruj").onclick = function () {
+    var t = document.getElementById("vystup"); t.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value); else document.execCommand("copy");
+  };
+  document.getElementById("vymaz").onclick = function () {
+    if (!confirm("Vymazať všetky voľby?")) return;
+    ulozene = {}; uloz();
+    document.querySelectorAll("input[type=radio]").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll("input[data-ine]").forEach(function (t) { t.value = ""; });
+  };
+  vypis();
+})();
+</script>
+</body>
+</html>
