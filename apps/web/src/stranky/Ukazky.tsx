@@ -9,6 +9,7 @@ import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
 import { variant, variantyKarty } from "@naex/tvorba";
 import { ZnackaStrachu } from "../hra/IkonaStrachu.tsx";
+import { IkonaPriazne } from "../hra/IkonaPriazne.tsx";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 
@@ -256,13 +257,13 @@ export function UkazkaStupnice() {
           </button>
         ))}
       </div>
-      {/* Ako v hre: na konci zvýhodneného ♥, na konci obávaného výkričníky v jeho farbe. */}
+      {/* Ako v hre: na konci zvýhodneného krígeľ, na konci obávaného výkričníky v jeho farbe. */}
       <div className="stupnica-popis">
         <span>
-          ← {strana === "tvojej" ? <b className="stupnica-priazen moje">♥</b> : strana === "súperovej" && <ZnackaStrachu uroven={uroven} trieda="moje" />} tvoja polovica
+          ← {strana === "tvojej" ? <b className="stupnica-priazen moje"><IkonaPriazne /></b> : strana === "súperovej" && <ZnackaStrachu uroven={uroven} trieda="moje" />} tvoja polovica
         </span>
         <span>
-          súperova polovica {strana === "súperovej" ? <b className="stupnica-priazen superove">♥</b> : strana === "tvojej" && <ZnackaStrachu uroven={uroven} trieda="superove" />} →
+          súperova polovica {strana === "súperovej" ? <b className="stupnica-priazen superove"><IkonaPriazne /></b> : strana === "tvojej" && <ZnackaStrachu uroven={uroven} trieda="superove" />} →
         </span>
       </div>
       <div className="ukazka-vysledok" aria-live="polite">

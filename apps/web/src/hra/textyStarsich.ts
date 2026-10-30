@@ -82,7 +82,7 @@ export const PRAVIDLO_STRACHU =
 
 /** Čo prinesie vydesenie (stupeň 3, červená) — lupa staršieho. */
 export function textVydesenia(fav: Favour): string {
-  return `Vydesíš ho (červená) → keď sa tam marker udrží do konca ďalšieho kola, zaplatí ti ju (+3 š), ale súper ♥ +3 (${UCINOK_KRATKO[fav](3)}). Vydesí ho súper → ty ♥ +3.`;
+  return `Vydesíš ho (červená) → keď sa tam marker udrží do konca ďalšieho kola, zaplatí ti ju (+3 š), ale súper dostane priazeň +3 (${UCINOK_KRATKO[fav](3)}). Vydesí ho súper → ty priazeň +3.`;
 }
 
 /** Zdroje posunov od poslednej bitky: „Prebytok · Michal ×3“. */
@@ -135,6 +135,6 @@ export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 
  */
 export const POPIS_STUPNICE =
   "Tvoja polovica stupnice je vždy vľavo, súperova vpravo. Stupne od stredu: 0 sivý stred (pokojný), 1 žltá (znepokojený), 2 oranžová (vystrašený), 3 červená (vydesený). " +
-  "♥ Priazeň má ten, na koho polovici marker leží — sila = stupeň (+1 / +2 / +3). " +
+  "Priazeň má ten, na koho polovici marker leží — sila = stupeň (+1 / +2 / +3). " +
   PRAVIDLO_STRACHU +
   ` Posúva ho Nakladačka po bitke a Pohoršenie — od seba (desíš) alebo k sebe (upokojuješ); ${CENA_POLA}.`;

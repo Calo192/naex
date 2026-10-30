@@ -140,6 +140,7 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
+import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
 import { NAZOV_DELENIA, textPovery } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
@@ -153,7 +154,9 @@ import { HlavickaPartie } from "./HlavickaPartie.tsx";
 import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
-import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky } from "./rozlozenieNastenky.ts";
+import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
+import { ListokLokality } from "./ListokLokality.tsx";
+import { vzhladSady } from "../lib/sada.tsx";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
@@ -1802,6 +1805,19 @@ export function HernaPlocha({
       setPresahPilulky(0);
     };
   }, []);
+  // Vrstva nástenky na stole — lístky na výber pri voľbe cieľa sa rátajú z jej skutočnej plochy.
+  const [rozmerVrstvyNastenky, setRozmerVrstvyNastenky] = useState<{ readonly w: number; readonly h: number } | null>(null);
+  const vrstvaNastenkyRef = useCallback((el: HTMLDivElement | null) => {
+    if (el === null) return;
+    const ro = new ResizeObserver(() =>
+      setRozmerVrstvyNastenky((x) => (x !== null && x.w === el.clientWidth && x.h === el.clientHeight ? x : { w: el.clientWidth, h: el.clientHeight })),
+    );
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      setRozmerVrstvyNastenky(null);
+    };
+  }, []);
   const posledneRolovanie = useRef(0);
   useEffect(() => {
     const zaznamenaj = (): void => {
@@ -2271,6 +2287,7 @@ export function HernaPlocha({
     kompaktna = !sKartami,
     mierka = 1,
     sirkaVyberu = sirkaKarty,
+    listokVyberu: ListokNaVyber | null = null,
   ): ReactNode => (
     <Nastenka
       nastenka={view.nastenka}
@@ -2288,6 +2305,7 @@ export function HernaPlocha({
       vyber={vyber}
       mierka={mierka}
       sirkaVyberu={sirkaVyberu}
+      listokVyberu={listokVyberu}
     />
   );
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
@@ -4718,7 +4736,7 @@ export function HernaPlocha({
         onClick={() => ukazToast(null)}
         onContextMenu={pravyKlik(() => ukazToast(null))}
       >
-        <span aria-hidden="true">♥</span> {toastPriazne.zaklad}
+        <span aria-hidden="true"><IkonaPriazne /></span> {toastPriazne.zaklad}
         {toastPriazne.pocet > 1 && ` (+${toastPriazne.pocet - 1})`}
       </button>
     );
@@ -5090,7 +5108,12 @@ export function HernaPlocha({
     view.lokalityVHre.length +
     (view.nastenka.some((b) => jeFinaleNaNastenke(b)) || view.ciel?.typ === "finale" ? 0 : 1) +
     1;
-  const nastenkaRozmer = rozmerNastenky(vnutroPlste.w - 20, vnutroPlste.h - 26 - 48 - presahPilulky, listkovNastenky, volbaNaStole ? view.lokalityVHre.length : 0);
+  // Pri voľbe cieľa podľa skutočnej vrstvy — odhad počíta s hranou stola, aj keď na nej nič nie je,
+  // a lístkom na výber by chýbalo ~40 px výšky.
+  const nastenkaRozmer =
+    volbaNaStole && rozmerVrstvyNastenky !== null
+      ? rozmerNastenky(rozmerVrstvyNastenky.w, rozmerVrstvyNastenky.h, listkovNastenky, view.lokalityVHre.length, view.nastenka.length)
+      : rozmerNastenky(vnutroPlste.w - 20, vnutroPlste.h - 26 - 48 - presahPilulky, listkovNastenky, volbaNaStole ? view.lokalityVHre.length : 0, view.nastenka.length);
   const sirkaNastenky = nastenkaRozmer.sirkaKarty;
   const sirkaVolby = nastenkaRozmer.sirkaVyberu;
   // Voľba cieľa na nástenke: lokalita, o ktorú sa ešte nehralo, je karta na výber — klik ju dá
@@ -5107,7 +5130,13 @@ export function HernaPlocha({
           }
         : undefined,
     };
-    return volimLokalitu ? sLupou(props, { obsah: tahatelna(z, karta(props)), zdroj: z }) : sLupou(props);
+    const obsah =
+      nastenkaRozmer.vyber === null ? (
+        karta(props)
+      ) : (
+        <ListokLokality karta={karta(props)} vzhladKarty={vzhladKarty(sada, data, k.defId)} vzhlad={vzhladSady(sada)} onClick={props.onClick} />
+      );
+    return volimLokalitu ? sLupou(props, { obsah: tahatelna(z, obsah), zdroj: z }) : sLupou(props, { obsah });
   };
 
   // ---- jednotný bar: strany, odhad a os kola (Michal 2026-10-25, mock V2) -------------
@@ -5574,6 +5603,7 @@ export function HernaPlocha({
             </div>
             {nastenkaNaStole && (
               <div
+                ref={vrstvaNastenkyRef}
                 className={`vrstva-nastenky${nastenkaRozmer.sirkaKarty >= NASTENKA_KARTA_MIN ? "" : " bez-kariet"}`}
                 data-vyucba="nastenka"
                 style={{ "--nk": nastenkaRozmer.nk, "--nk-sirka": `${nastenkaRozmer.sirkaKarty}px`, "--nk-stlpcov": nastenkaRozmer.rady === 2 ? nastenkaRozmer.stlpcov : 99 } as CSSProperties}
@@ -5591,7 +5621,7 @@ export function HernaPlocha({
                   </button>
                 )}
                 {volbaNaStole
-                  ? nastenkaEl(sirkaNastenky >= NASTENKA_KARTA_MIN, sirkaNastenky, true, vyberNaNastenke, false, nastenkaRozmer.nk, sirkaVolby)
+                  ? nastenkaEl(sirkaNastenky >= NASTENKA_KARTA_MIN, sirkaNastenky, true, vyberNaNastenke, false, nastenkaRozmer.nk, sirkaVolby, nastenkaRozmer.vyber)
                   : nastenkaEl(sirkaNastenky >= NASTENKA_KARTA_MIN, sirkaNastenky, true, undefined, false, nastenkaRozmer.nk)}
               </div>
             )}
@@ -5820,11 +5850,18 @@ export function HernaPlocha({
         <VrstvaPanel nazov="Log" skryta={tahanie !== null} onZavri={() => setVrstva(null)}>
           <div className="log">
             {log.length === 0 && <span className="popis">Zatiaľ žiadne záznamy — log sa zbiera od pripojenia.</span>}
-            {log.map((riadok, i) => (
-              <div key={i} className={riadok.startsWith("⚠") ? "manual" : riadok.startsWith("♥") ? "log-priazen" : ""}>
-                {riadok}
-              </div>
-            ))}
+            {log.map((riadok, i) => {
+              const priazen = riadokPriazneLogu(riadok);
+              return (
+                <div key={i} className={riadok.startsWith("⚠") ? "manual" : priazen !== null ? "log-priazen" : ""}>
+                  {priazen === null ? riadok : (
+                    <>
+                      <IkonaPriazne /> {priazen}
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </VrstvaPanel>
       )}

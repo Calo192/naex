@@ -23,4 +23,11 @@ describe("nástenka na stole", () => {
     const bloky = [...css.matchAll(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/g)].map((m) => m[1] ?? "");
     expect(bloky.some((b) => /\.vrstva-nastenky,\s*\.vrstva-nastenky \.nastenka-listok \{\s*animation: none;/.test(b))).toBe(true);
   });
+
+  it("lístky na výber: efekt písmom stola aspoň 11,5 px, nie zmenšenou kartou (Leader 2026-10-30)", () => {
+    const pismo = /font: 400 calc\(clamp\(([\d.]+)px,/.exec(telo(".ll-efekt"))?.[1];
+    expect(Number(pismo)).toBeGreaterThanOrEqual(11.5);
+    // Lístok na výber má šírku z rozmerNastenky aj na nízkom stole bez kariet (bez-kariet).
+    expect(telo(".vrstva-nastenky .nastenka-listok.na-vyber.citatelny")).toMatch(/width: var\(--lc-sirka\);[\s\S]*max-width: none;/);
+  });
 });

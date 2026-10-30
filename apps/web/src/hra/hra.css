@@ -5677,7 +5677,7 @@ button.auto-hotovo-odkaz {
   white-space: nowrap;
 }
 
-/* Skráti sa len meno — ♥ a výkričníky na konci stupnice ostanú celé. */
+/* Skráti sa len meno — krígeľ a výkričníky na konci stupnice ostanú celé. */
 .ls-strany-meno {
   min-width: 0;
   overflow: hidden;
@@ -5735,7 +5735,7 @@ button.auto-hotovo-odkaz {
   color: var(--tlmeny);
 }
 
-/* Farba = hráč, o ktorom čip hovorí (♥ komu, bojí sa koho) — vždy dvaja rôzni. */
+/* Farba = hráč, o ktorom čip hovorí (krígeľ komu, bojí sa koho) — vždy dvaja rôzni. */
 .ls-cip.priazen.moja,
 .ls-cip.strach.moj {
   color: var(--ja);
@@ -6642,7 +6642,7 @@ button.lsr-pole.ciel:focus-visible {
   box-shadow: 0 0 0 1px var(--akcent);
 }
 
-/* Dlaždica staršieho: meno, číslo (priazeň ♥ alebo špaky za strach) a krátke slovo pod ním
+/* Dlaždica staršieho: meno, číslo (priazeň s krígľom alebo špaky za strach) a krátke slovo pod ním
    s výkričníkmi a značkou posunu. Nič nesmie siahať za okraj (Michal 2026-10-28) — meno
    sa zmenší podľa počtu znakov (--znakov), aby sa zmestilo celé aj pri 1366 px. */
 .starsi-dlazdica {
@@ -6704,8 +6704,9 @@ button.lsr-pole.ciel:focus-visible {
   gap: 2px;
 }
 
+/* Priazeň v pivnom jantári ako poldeci — ladí s krígľom (Michal 2026-10-30). */
 .starsi-dlazdica.hore .velke-cislo {
-  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+  color: var(--akcent);
 }
 
 .starsi-dlazdica.dole .velke-cislo {
@@ -6729,7 +6730,7 @@ button.lsr-pole.ciel:focus-visible {
 }
 
 .zdroj-starsi .starsi-priazen {
-  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+  color: var(--akcent);
 }
 
 .stupienky {

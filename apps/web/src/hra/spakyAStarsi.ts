@@ -44,7 +44,7 @@ export function spakyPodlaZdroja(view: Pick<ClientState, "nastenka">, p: PlayerI
 
 export type SmerStarsieho = "hore" | "dole" | "nic";
 
-/** Ako starší stojí k hráčovi: hore = dáva mu priazeň ♥, dole = bojí sa ho (špaky po bitke), nic = stred. */
+/** Ako starší stojí k hráčovi: hore = dáva mu priazeň (krígeľ), dole = bojí sa ho (špaky po bitke), nic = stred. */
 export function smerStarsieho(e: Pick<ElderState, "marker">, p: PlayerId): SmerStarsieho {
   return priazenHraca(e) === p ? "hore" : obavanyHrac(e) === p ? "dole" : "nic";
 }

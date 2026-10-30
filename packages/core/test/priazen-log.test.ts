@@ -24,7 +24,7 @@ describe("záznam priazne v logu", () => {
     const zaznam = zaznamyPriazne(data, s, k0);
     expect(zaznam).toHaveLength(1);
     expect(zaznam[0]).toMatchObject({ type: "log" });
-    expect(zaznam[0]!.type === "log" && zaznam[0]!.text).toMatch(/^♥ Hráč 1 dostáva priazeň .+ \(.+\) sily \d+\.$/);
+    expect(zaznam[0]!.type === "log" && zaznam[0]!.text).toMatch(/^Priazeň .+ \(.+\) sily \d+ dostáva Hráč 1\.$/);
     expect(zaznamyPriazne(data, k0, sMarkerom(s, 0, 1))).toHaveLength(1);
     expect(zaznamyPriazne(data, sMarkerom(s, 0, 1), k0)).toHaveLength(0);
     expect(zaznamyPriazne(data, k0, k0)).toHaveLength(0);
@@ -34,6 +34,6 @@ describe("záznam priazne v logu", () => {
   it("preklopenie k súperovi je nová priazeň druhého hráča", () => {
     const zaznam = zaznamyPriazne(data, sMarkerom(s, 0, 2), sMarkerom(s, 0, 4));
     expect(zaznam).toHaveLength(1);
-    expect(zaznam[0]!.type === "log" && zaznam[0]!.text).toMatch(/^♥ Hráč 2 /);
+    expect(zaznam[0]!.type === "log" && zaznam[0]!.text).toMatch(/ dostáva Hráč 2\.$/);
   });
 });

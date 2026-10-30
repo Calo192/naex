@@ -62,13 +62,9 @@
   margin: 0;
   padding: 14px 12px 10px;
   list-style: none;
-  border-radius: 12px;
-  /* Korková doska: teplá plocha s jemným zrnom z dvoch prechodov. */
-  background:
-    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--akcent-tmavy) 16%, transparent) 0 2px, transparent 3px) 0 0 / 23px 19px,
-    radial-gradient(circle at 70% 60%, color-mix(in srgb, var(--pozadie) 40%, transparent) 0 1.5px, transparent 2.5px) 0 0 / 17px 21px,
-    color-mix(in srgb, var(--akcent-tmavy) 26%, var(--plocha-2));
-  border: 3px solid color-mix(in srgb, var(--akcent-tmavy) 45%, var(--okraj));
+  /* Lístky ležia priamo na stole — korkovú dosku za nimi Michal nechcel (2026-10-30). */
+  background: none;
+  border: 0;
 }
 
 .nastenka-listok {
@@ -742,6 +738,142 @@
 
 .nastenka-listok.na-vyber .nastenka-karta .kl {
   box-shadow: 0 10px 22px color-mix(in srgb, var(--pozadie) 55%, transparent);
+}
+
+/* Lístky lokalít na výber s čitateľným efektom (Leader 2026-10-30, ListokLokality): rozmery
+   (--lc-sirka, --lc-vyska, --lc-obraz) ráta rozmerNastenky. Lístky v rade majú rovnakú výšku
+   (stretch); finále a Koniec ostanú v strede. */
+.vrstva-nastenky .nastenka.volba.citatelna {
+  align-items: stretch;
+  gap: 14px;
+}
+
+.nastenka.citatelna > .nastenka-listok:not(.citatelny) {
+  align-self: center;
+}
+
+/* Aj na nízkom stole bez kariet (bez-kariet) — lístok na výber má svoju šírku. Nie je tlmený
+   ako ostatné čakajúce lístky: je to práve to, o čom sa rozhoduje. */
+.vrstva-nastenky .nastenka-listok.na-vyber.citatelny {
+  display: flex;
+  flex-direction: column;
+  width: var(--lc-sirka);
+  max-width: none;
+  max-height: var(--lc-vyska);
+  opacity: 1;
+}
+
+/* Reťaz obalov (lupa, ťahanie) prenesie výšku lístka až na ListokLokality. */
+.vrstva-nastenky .nastenka-listok.citatelny :is(.nastenka-karta, .s-lupou, .tahatelna) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.listok-lokality {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--pozadie) 55%, transparent);
+}
+
+/* Ilustrácia karty: štvorec, ktorý pri dlhom texte ustúpi až na 60 % šírky (OREZ_MIN, pri
+   veľmi dlhom efekte ešte nižšie — --ll-orez nastaví ListokLokality) — karta sa oreže zhora
+   a zdola, akcie na hranách sú v jej strede. */
+.ll-obraz {
+  position: relative;
+  flex: 0 1 auto;
+  aspect-ratio: 1;
+  min-height: calc(var(--lc-obraz) * var(--ll-orez, 0.6));
+  overflow: hidden;
+}
+
+/* Stred okna = stred ilustrácie (horný štvorec karty), nie stred celej karty. */
+.ll-obraz > * {
+  position: absolute;
+  left: 0;
+  top: calc(50% - var(--lc-obraz) / 2);
+}
+
+/* Tieň má celý lístok, nie karta v ňom. */
+.nastenka-listok.na-vyber .ll-obraz .kl {
+  box-shadow: none;
+}
+
+.ll-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  container-type: inline-size;
+}
+
+.ll-nazov {
+  padding: 3px 6px;
+  background: var(--lc-farba);
+  color: #fff;
+  font: 700 calc(clamp(13px, 7.4cqi, 17px) * var(--m, 1)) / 1.15 Roboto, "Segoe UI", system-ui, sans-serif;
+  text-align: center;
+}
+
+.ll-efekt {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4px 7px 6px;
+  color: color-mix(in srgb, var(--lc-farba) 74%, #000);
+  font: 400 calc(clamp(11.5px, 6.4cqi, 15px) * var(--m, 1)) / 1.22 Roboto, "Segoe UI", system-ui, sans-serif;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.ll-riadok {
+  display: block;
+}
+
+/* Krátke odohrané bitky (finále dlhej hry): bez karty a účtenky, v dvoch radoch nad sebou. */
+.nastenka-historia {
+  align-self: center;
+}
+
+.nastenka-historia > ol {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vrstva-nastenky .nastenka-historia .nastenka-listok {
+  width: 84px;
+  max-width: none;
+}
+
+/* Široký a nízky lístok: štvorec ilustrácie vo výške lístka a text vedľa neho. */
+.nastenka-listok.citatelny.vedla .listok-lokality {
+  flex-direction: row;
+  height: var(--lc-obraz);
+}
+
+.nastenka-listok.citatelny.vedla .ll-obraz {
+  flex: none;
+  width: var(--lc-obraz);
+  height: var(--lc-obraz);
+  min-height: 0;
+}
+
+.nastenka-listok.citatelny.vedla .ll-text {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* Nízka plsť (1366 × 650): lístky bez kariet a hustejšie, nech sa nástenka zmestí bez posúvania. */
