@@ -137,6 +137,7 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
+import { NAZOV_DELENIA } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
@@ -3217,7 +3218,7 @@ export function HernaPlocha({
       return {
         nadpis: (
           <>
-            {prebytok ? "Prebytok súpera" : "Pohoršenie súpera"} <small>zostáva {prebytok ? bsCak.prebytokZostava : bsCak.pohorsenieZostava[super_]}</small>
+            {prebytok ? NAZOV_DELENIA.prebytok : NAZOV_DELENIA.pohorsenie} súpera <small>zostáva {prebytok ? bsCak.prebytokZostava : bsCak.pohorsenieZostava[super_]}</small>
           </>
         ),
         text: (
@@ -4174,7 +4175,7 @@ export function HernaPlocha({
             nadpis: (
               <>
                 <span className="pil-nazov">
-                  <IkonaDelenia krok={krokDelenia} /> {krokDelenia === "pohorsenie" ? "Pohoršenie" : "Prebytok"}
+                  <IkonaDelenia krok={krokDelenia} /> {NAZOV_DELENIA[krokDelenia]}
                 </span>
                 <span className="zetony" aria-hidden="true">
                   {Array.from({ length: minute + ide + zvysok }, (_, i) => (
@@ -4256,7 +4257,7 @@ export function HernaPlocha({
     view.koniec !== null
       ? null
       : view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok")
-        ? { nazov: bs.krok === "pohorsenie" ? "Pohoršenie" : "Prebytok", kto: bs.caka, typ: bs.krok }
+        ? { nazov: NAZOV_DELENIA[bs.krok], kto: bs.caka, typ: bs.krok }
         : view.faza === "draft" && draft?.krok === "patronat"
           ? { nazov: "Patronát", kto: draft.naTahu, typ: "patronat" }
           : null;

@@ -6035,12 +6035,6 @@ button.lsr-pole.ciel:focus-visible {
   visibility: hidden;
 }
 
-.ls-sc.rozdel > .ls-cip.strach {
-  flex: none;
-  font-size: clamp(0.7rem, 1cqw, 0.82rem);
-  line-height: 1.25;
-}
-
 /* Pečať priazne vpravo dole na portréte: ikona akcie a sila vo farbe toho, komu priazeň patrí. */
 .ls-pecat-pr {
   position: absolute;
@@ -6165,6 +6159,12 @@ button.lsr-pole.ciel:focus-visible {
   font-weight: 800;
 }
 
+.ls-pecat-tip .strach {
+  display: block;
+  margin-top: 4px;
+  color: var(--tlmeny);
+}
+
 .ls-pecat-tip .po {
   display: block;
   margin-top: 6px;
@@ -6244,6 +6244,8 @@ button.lsr-pole.ciel:focus-visible {
   flex-wrap: wrap;
   gap: 3px;
   align-items: center;
+  align-self: center;
+  line-height: 1;
 }
 
 .linia-stav .zeton {
@@ -6255,7 +6257,7 @@ button.lsr-pole.ciel:focus-visible {
   border: 2px solid var(--akcent);
   background: var(--plocha-2);
   color: var(--akcent-svetly);
-  transition: translate 0.2s, opacity 0.2s;
+  transition: background-color 0.2s, opacity 0.2s;
 }
 
 .linia-stav .zeton .ikona-delenia {
@@ -6268,9 +6270,8 @@ button.lsr-pole.ciel:focus-visible {
   border-style: dashed;
 }
 
-/* Nepotvrdené: zdvihnuté jantárové. */
+/* Nepotvrdené: plné jantárové — na tej istej línii ako ostatné (Michal 2026-10-30). */
 .linia-stav .zeton.ide {
-  translate: 0 -3px;
   color: var(--na-akcente);
   background: var(--akcent);
 }

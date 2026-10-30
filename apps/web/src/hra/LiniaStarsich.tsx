@@ -422,18 +422,18 @@ export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
   LAKOMEC: "Pohoršenie",
 };
 
-/** Ikona kroku v bubline a na žetónoch: Pohoršenie z karty, prebytok ako pretekajúci krčah (mock C). */
+/**
+ * Ikona kroku v bubline a na žetónoch — piktogram akcie: Pohoršenie, prebytok je prebytok
+ * poškodenia, preto Rana (Michal 2026-10-30).
+ */
+const AKCIA_DELENIA: Readonly<Record<"pohorsenie" | "prebytok", Action>> = { pohorsenie: "Pohoršenie", prebytok: "Rana" };
+
 export function IkonaDelenia({ krok }: { readonly krok: "pohorsenie" | "prebytok" }) {
   return (
     <svg className="ikona-delenia" viewBox="0 0 100 100" aria-hidden="true">
-      {krok === "pohorsenie" ? (
-        IKONY["Pohoršenie"].map((c, i) => <path key={i} d={c.d} fillRule={c.evenOdd ? "evenodd" : "nonzero"} />)
-      ) : (
-        <path
-          fillRule="evenodd"
-          d="M22 30h48v54a8 8 0 0 1-8 8H30a8 8 0 0 1-8-8z M70 40h8a12 12 0 0 1 12 12v10a12 12 0 0 1-12 12h-8v-9h7a4 4 0 0 0 4-4V53a4 4 0 0 0-4-4h-7z M18 14c4-8 14-10 20-5 5-6 16-6 21 1 6-4 15-1 16 7 7 2 8 12 1 14l-4 1c-2 6-8 7-11 2v14a5 5 0 0 1-10 0V40c-4 3-10 2-12-2-5 3-12 0-12-6-6-1-9-6-9-11z"
-        />
-      )}
+      {IKONY[AKCIA_DELENIA[krok]].map((c, i) => (
+        <path key={i} d={c.d} fillRule={c.evenOdd ? "evenodd" : "nonzero"} />
+      ))}
     </svg>
   );
 }
@@ -517,7 +517,7 @@ function KartaRozdelenia({
       className={`ls-sc rozdel${navrh !== null ? " s-posunom" : ""}${r.mrtvy ? " mrtvy" : ""}${zmeneny ? " zmena" : ""}`}
       data-vyucba={`starsi:${elder.elderId}`}
       role="group"
-      aria-label={`${s.meno}: ${strachTeraz}${navrh !== null ? ` — posun na ${zona(navrh.na)} za ${navrh.cena}` : ""}`}
+      aria-label={`${s.meno}: ${strachPo}${navrh !== null ? ` — posun na ${zona(navrh.na)} za ${navrh.cena}` : ""}`}
     >
       <b className="ls-meno ls-meno-stred">{s.meno}</b>
       <div className="ls-telo">
@@ -534,17 +534,13 @@ function KartaRozdelenia({
             </span>
           )}
           {navrh !== null && <span className="ls-cena-navrhu">−{navrh.cena}</span>}
-          <PecatPriazne elder={elder} meno={s.meno} data={data} ja={ja} mena={mena} na={navrh?.na ?? null} />
+          <PecatPriazne elder={elder} meno={s.meno} data={data} ja={ja} mena={mena} na={navrh?.na ?? null} strach={{ teraz: strachTeraz, po: strachPo }} />
         </span>
       </div>
       <StupnicaRozdelenia r={r} marker={elder.marker} priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"} ja={ja} meno={s.meno} />
       <span className="ls-sipky">
         {sipka("ja")}
         {sipka("su")}
-      </span>
-      <span className={`ls-cip strach${zobraz.obavany === null ? " nikoho" : zobraz.obavany === ja ? " moj" : " superov"}${strachPo !== strachTeraz ? " po-posune" : ""}`}>
-        <ZnackaStrachu uroven={zobraz.obavany === null ? 0 : zobraz.uroven} />
-        {strachPo}
       </span>
     </div>
   );
@@ -610,6 +606,7 @@ function PecatPriazne({
   ja,
   mena,
   na,
+  strach,
 }: {
   readonly elder: ElderState;
   readonly meno: string;
@@ -617,6 +614,8 @@ function PecatPriazne({
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly na: MarkerPos | null;
+  /** Koho sa starší bojí teraz a po posune (riadok strachu, pod kartou už nie je). */
+  readonly strach: { readonly teraz: string; readonly po: string };
 }) {
   const fav = favourStarsieho(data, elder);
   const a = vztah(elder, elder.marker);
@@ -693,10 +692,17 @@ function PecatPriazne({
                 {kto(a)}: {UCINOK_PRIAZNE[fav](a.sila)}
               </>
             )}
+            <span className="strach">{strach.teraz}</span>
             {b !== null && (
               <span className="po">
                 po posune: {kto(b)}
                 {b.priazen !== null ? ` +${b.sila}` : ""}
+                {strach.po !== strach.teraz && (
+                  <>
+                    <br />
+                    {strach.po}
+                  </>
+                )}
               </span>
             )}
           </span>,

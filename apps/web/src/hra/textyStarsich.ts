@@ -108,5 +108,11 @@ export function nahladStrachu(ty: number, su: number, menoSupera: string): strin
   return `za strach pri ďalšej výhre ${ty > 0 ? `ty +${ty}` : `${menoSupera} +${su}`}`;
 }
 
+/**
+ * Názov kroku rozdeľovania na stole (bublina, línia starších) — na jednom mieste. Prebytok
+ * poškodenia sa hráčovi volá Nakladačka (Michal 2026-10-30); v kóde ostáva „prebytok“.
+ */
+export const NAZOV_DELENIA = { pohorsenie: "Pohoršenie", prebytok: "Nakladačka" } as const;
+
 /** Cena posunu markera o pole (v8.2, Michal 2026-10-30) — Pohoršenie aj prebytok. */
 export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4";
