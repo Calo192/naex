@@ -10,7 +10,8 @@ export interface PojemSlovnika {
 }
 
 export const SLOVNIK: readonly PojemSlovnika[] = [
-  { id: "abstak", pojem: "Absťák", popis: "Kliatba za menej nerestí než súper v tom istom kole — počítadlo, nie karta: príde rovno priznaný, kartu zaň nedobereš; v bitke ti uberie 1 tuhé a dá 1 Pohoršenie navyše. Rozhoduje remízu v tuhom." },
+  { id: "abstak", pojem: "Absťák", popis: "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Zahodí ho Vízia." },
+  { id: "chut", pojem: "Chuť", popis: "Tvoja verejná latka nerestí, na začiatku 0. Na konci kola: menej nerestí než Chuť = karta Absťák; potom Chuť = väčšie z (Chuť, neresti kola) − 1." },
   { id: "akcia", pojem: "Akcia", popis: "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške." },
   { id: "barter", pojem: "Stokársky barter", popis: "Počas Pitky za 5 cigariet nový plný poldeci (na Jednote o 1 menej)." },
   { id: "bitka", pojem: "Bitka", popis: "Koniec kola: viac tuhého poškodenia vyhráva a dostane špaky, Nakladačka posúva markery starších." },
@@ -30,7 +31,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "uplatok", pojem: "Úplatok", popis: "Spúšťač (v7): súper smie raz za Pitku dať na kartu cigaretu a oslabiť ju; cigareta prepadne." },
   { id: "kseft", pojem: "Kšeft", popis: "Aktívny efekt (v7): za cenu ho spustíš sám v Pitke, kým ju neskončíš, každú kartu raz za Pitku; Kšeft lokality smie každý hráč." },
   { id: "fajcenie", pojem: "Fajčenie", popis: "Karta z balíčka hneď; smieš len v Pitke, kým ju neskončíš. Prvé fajčenie v Pitke stojí 1 cigaretu, druhé 2, tretie 3… a každá Pitka začína od 1." },
-  { id: "kliatba", pojem: "Kliatba", popis: "Čo škodí majiteľovi: karty Cirhóza a Milujúca manželka a počítadlá Dlh a Absťák (tie sú hneď priznané)." },
+  { id: "kliatba", pojem: "Kliatba", popis: "Čo škodí majiteľovi: karty Cirhóza, Absťák a Milujúca manželka a počítadlo Dlh (hneď priznaný)." },
   { id: "kolo", pojem: "Kolo", popis: "Cieľ, šenok, potom Zhromaždenie s Pitkou 1- až 4-krát (na pinnacle vo finále až 5-krát) a nakoniec bitka o lokalitu." },
   { id: "kraj", pojem: "Kraj", popis: "Polovica línie podľa hrany lokality; každá lokalita má vlastné mená krajov (Krčma: pri výčape a pri dverách)." },
   { id: "limit", pojem: "Limit vykladania", popis: "Koľko kariet vyložíš v jednom Zhromaždení: plné poldeci + 1." },
@@ -42,7 +43,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "nastenka", pojem: "Krčmová nástenka", popis: "Odohrané bitky: lokalita, víťaz a jeho špaky za bitku; lokalitu si víťaz neberie." },
   { id: "nastroj", pojem: "Nástroj", popis: "Karta s tagom Nástroj; v línii funguje len pri Občanovi či Starešinovi, inak ide do Dedičstva." },
   { id: "natocenie", pojem: "Natočenie", popis: "Ako obranca otočí lokalitu — určuje, ktorá jej hrana patrí ktorému kraju." },
-  { id: "nerest", pojem: "Nerest", popis: "Vypitie, NA EX, vyfajčená cigareta, doliatie a barter; počet sa porovnáva kolo s kolom." },
+  { id: "nerest", pojem: "Nerest", popis: "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1. Na konci kola sa porovnáva s tvojou Chuťou." },
   { id: "obcania", pojem: "Občania", popis: "Balíček všetkých ostatných kariet šenku (Občania, Zvieratá…) lícom dole; pri stavbe šenku z neho dostaneš 6 kariet." },
   { id: "odpoved", pojem: "Odpoveď na NA EX", popis: "Po odkrytí jedna karta za každé súperovo NA EX, mimo limitu; najprv odpovedá obranca, potom útočník." },
   { id: "partia", pojem: "Partia", popis: "Všetky tvoje karty v línii, nech ležia na ktorejkoľvek strane; ich akcie sa rátajú tebe." },

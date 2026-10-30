@@ -473,7 +473,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Pečeň sa počíta len v Pitke a potom sa vynuluje; zvyšok zadĺženia ostáva na účte.",
       "Za každý celý prah pečene Cirhóza, za každý celý prah zadĺženia (z akcie Hazard) Dlh.",
-      "Menej nerestí než súper v tom istom kole = Absťák.",
+      "Menej nerestí v kole, než je tvoja Chuť = karta Absťák do balíčka.",
     ],
     obsah: () => (
       <>
@@ -492,24 +492,29 @@ export const KAPITOLY: readonly Kapitola[] = [
           priamo karta (napríklad Poštárka), idú rovno. Viac Pitiek v bitke teda znamená viac pečene aj Dlhov. Doska ti vopred
           ukazuje, čo karty na stole pripíšu a koľko kliatob z toho bude.
         </p>
-        <H3 id="cena-abstak">Neresti a Absťák</H3>
+        <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
         <p>
-          <P k="nerest">Nerest</P> je každý poldeci vypitý v Zhromaždení, každé NA EX, každá vyfajčená cigareta, doliatie a barter
-          (za každú cigaretu). Platba za šenok, Dedičstvo a Starostu sa nepočíta. Na konci kola sa porovnajú neresti{" "}
-          <strong>oboch hráčov v tomto kole</strong> — kto nedrží krok so stolom, toho to chytí:
+          <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, každé <strong>NA EX 2</strong>{" "}
+          (je to väčšia dávka), každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2). Doliatie, barter, šenok,
+          Dedičstvo ani cigarety za Kšefty lokalít nerest nie sú.
+        </p>
+        <p>
+          <P k="chut">Chuť</P> je tvoje verejné číslo, na začiatku 0 — kto si zvykne, musí pokračovať. Na konci kola:
         </p>
         <ul>
           <li>
-            <strong>Menej ako súper</strong> → <P k="abstak">Absťák</P> navyše — je to počítadlo, nie karta; kartu zaň nedoberáš.
+            <strong>Menej nerestí, než je tvoja Chuť</strong> → dostaneš kartu <P k="abstak">Absťák</P> do odhadzovacieho balíčka.
           </li>
           <li>
-            <strong>Viac ako súper</strong> → jeden tvoj Absťák odíde. <strong>Rovnako</strong> → nič.
+            Potom <strong>Chuť = väčšie z (Chuť, neresti kola) − 1</strong>. Flám ju zdvihne, každé ďalšie kolo klesne o 1.
           </li>
         </ul>
         <p>
-          Každý Absťák ti v bitke zníži tuhé poškodenie o 1 — trasú sa ti ruky —, ale dá ti <strong>1 Pohoršenie navyše</strong>:
-          kto je na suchu, robí scény. Absťáky, ktoré práve máš, rozhodujú aj remízu v bitke (prehrá, kto ich má viac). Hra si
-          pamätá, koľko Absťákov si <strong>získal za hru</strong> (štatistika).
+          Súper ti latku neurčuje. Absťák sa <strong>nedá priznať</strong> ani vyložiť; po bitke sa z ruky vráti do odhadzovacieho
+          balíčka a ťaháš ho znova. Každý Absťák v tvojom balíčku (ruka, doberací, odhadzovací) ti v bitke uberie{" "}
+          <strong>1 tuhé</strong> — trasú sa ti ruky — a pri remíze v tuhom prehráva, kto ich má viac. Zahodiť ho smie len Vízia.
+          Po finále sa nerieši nič a na konci hry Absťák nestojí nič. Hra si pamätá, koľko Absťákov si <strong>získal za hru</strong>{" "}
+          (štatistika).
         </p>
       </>
     ),
@@ -578,21 +583,21 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Povery</strong> — po vyrušení s Vierou posunú silu priazní starších o stupeň k svojmu majiteľovi (obranca prvý).
           </li>
           <li>
-            <strong>Pohoršenie</strong> (aj 1 za každý tvoj Absťák) — posúva markery starších od seba alebo k sebe (kapitola{" "}
+            <strong>Pohoršenie</strong> — posúva markery starších od seba alebo k sebe (kapitola{" "}
             <a href="#starsi">Starší a Nakladačka</a>).
           </li>
           <li>
-            <strong>Poškodenie</strong> — tuhé znižuje zvyšná Viera a Absťáky.
+            <strong>Poškodenie</strong> — tuhé znižuje zvyšná Viera a každý Absťák v tvojom balíčku.
           </li>
           <li>
             <strong>Výsledok</strong> — víťaz (pri remíze rozhodnú Absťáky, potom Dlhy), inak sekera.
           </li>
           <li>
-            <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje); lokalita ide na nástenku.
+            <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje), vo finále aj špak za každý bod Nakladačky; lokalita ide na nástenku.
           </li>
           <li>
             <strong>Nakladačka</strong> — markery starších sa posunú k súperovi víťaza (rozdiel tuhého); ktorých starších,
-            vyberá ten súper (spravidla porazený si vyberie priazne). Prejaví sa až v ďalšej bitke. Vo finále sa Nakladačka nerozdeľuje.
+            vyberá ten súper (spravidla porazený si vyberie priazne). Prejaví sa až v ďalšej bitke. Vo finále sa Nakladačka nerozdeľuje — víťaz za ňu dostane 1 špak za každý bod.
           </li>
           <li>
             <strong>Poldeci</strong> — poldeci z NA EX sa vypijú (s priazňou Alkoholika sa niektoré vrátia plné); aktívna akcia
@@ -615,15 +620,15 @@ export const KAPITOLY: readonly Kapitola[] = [
             ustúpi o stupeň. Tretí väzeň končí hru.
           </li>
           <li>
-            <strong>Návrat kariet</strong> do odhadzovacieho balíčka hráča, ktorý ich zahral. Nepriznaná Cirhóza z ruky ide tiež
-            do odhadzovacieho balíčka.
+            <strong>Návrat kariet</strong> do odhadzovacieho balíčka hráča, ktorý ich zahral. Nepriznaná Cirhóza a Absťák z ruky
+            idú tiež do odhadzovacieho balíčka.
           </li>
           <li>
             <strong>Špaky za starších</strong> — každý starší zaplatí tomu, koho sa bojí, stupne, na ktorých sa marker udržal od konca
             minulého kola a ešte ich nezaplatil — nech bitku vyhral ktokoľvek.
           </li>
           <li>
-            <strong>Absťák</strong> — porovnanie nerestí oboch v tomto kole (po finále už nie).
+            <strong>Chuť a Absťák</strong> — menej nerestí, než je tvoja Chuť, = karta Absťák; potom Chuť klesne o 1 od väčšieho z Chuti a nerestí (po finále už nie).
           </li>
           <li>
             <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 1 kartu.
@@ -665,14 +670,31 @@ export const KAPITOLY: readonly Kapitola[] = [
         <UkazkaStupnice />
         <H3 id="starsi-prebytok">Nakladačka a Pohoršenie</H3>
         <p>
-          <P k="prebytok">Nakladačka</P> je rozdiel v tuhom poškodení. Markery starších idú k súperovi hráča, ktorý ju drží (víťaza),
-          aj na krajnú pozíciu a z nej von. <strong>Pole stojí podľa zóny</strong>, do ktorej marker vstupuje: von zo stredu žltá 1,
-          oranžová 2, červená 3 (zo stredu na červenú 6); k stredu o 1 viac — z červenej 4, z oranžovej 3, zo žltej 2. Ktorých
-          starších, <strong> vyberá ten súper</strong> — spravidla porazený si sám vyberie, ktoré priazne dostane. Vyberá len staršieho:
-          marker ide, kým zvyšok stačí, a čo ostane, ide ďalším; rozdeliť treba celú Nakladačku, len zvyšok, ktorý už na žiadne pole
-          nestačí, prepadne.
-          Nový stupeň z Nakladačky sa začne udržiavať na konci kola a zaplatí sa na konci ďalšieho. Vo finále sa Nakladačka nerozdeľuje.
-          Kto starších dostal, za každého posunutého dostane 1 cigaretu.
+          <P k="prebytok">Nakladačka</P> je rozdiel v tuhom poškodení. Krok za krokom:
+        </p>
+        <ol>
+          <li>
+            <strong>Drží ju víťaz</strong> (vyššie tuhé). Pri remíze v tuhom Nakladačka nie je.
+          </li>
+          <li>
+            <strong>Rozdeľuje ju porazený</strong> (ten, proti komu sa ráta) — sám si vyberá, ktoré priazne dostane.
+          </li>
+          <li>
+            Vyberá <strong>len staršieho</strong> — smer je pevný: marker ide k porazenému, starší sa začne báť víťaza a porazený
+            dostane jeho priazeň. Aj na krajnú pozíciu a z nej von.
+          </li>
+          <li>
+            Marker ide <strong>pole po poli, kým zvyšok stačí</strong>. Pole stojí podľa zóny, do ktorej marker vstupuje: von zo stredu
+            žltá 1, oranžová 2, červená 3 (zo stredu na červenú 6); k stredu o 1 viac — z červenej 4, z oranžovej 3, zo žltej 2. Čo
+            ostane, dá porazený ďalšiemu staršiemu.
+          </li>
+          <li>
+            <strong>Prestať sa nedá</strong> — kým zvyšok stačí na niektorý posun. Zvyšok, ktorý už na žiadne pole nestačí, prepadne.
+          </li>
+        </ol>
+        <p>
+          Nový stupeň z Nakladačky sa začne udržiavať na konci kola a zaplatí sa na konci ďalšieho. Kto starších dostal, za každého
+          posunutého dostane 1 cigaretu. <strong>Vo finále sa Nakladačka nerozdeľuje — víťaz finále za ňu dostane 1 špak za každý bod.</strong>
         </p>
         <p>
           Každé <P k="pohorsenie">Pohoršenie</P> je bod na posun markera — <strong>od seba (desíš), alebo k sebe (upokojuješ)</strong>; vyberáš ty
@@ -736,9 +758,9 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Kliatby a priznanie",
     obrazok: "11-kliatby",
     vSkratke: [
-      "Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka. Dlh a Absťák sú počítadlá, nie karty — sú hneď priznané.",
+      "Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka. Dlh je počítadlo, nie karta — je hneď priznaný. Absťák sa priznať nedá.",
       "Priznanie vyloží kliatbu natrvalo mimo línie; limit nemíňa.",
-      "Za priznanie Milujúcej manželky dobereš kartu — za Cirhózu nie, za Dlh ani Absťák tiež nie.",
+      "Za priznanie Milujúcej manželky dobereš kartu — za Cirhózu nie.",
       "Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov nahor a rovnako veľa špakov.",
       "Nepriznaná Cirhóza ťa na konci hry stojí 3 špaky.",
     ],
@@ -764,8 +786,9 @@ export const KAPITOLY: readonly Kapitola[] = [
             riskuješ, že sa ti do konca hry nevráti do ruky.
           </li>
           <li>
-            <strong>Absťák</strong> — tiež počítadlo, nie karta: príde rovno priznaný a kartu zaň <strong>nedobereš</strong>. V bitke
-            o ranu menej a 1 Pohoršenie navyše; remízu v bitke prehrá, kto ich má viac.
+            <strong>Absťák</strong> — karta, ktorá sa <strong>nedá priznať</strong> ani vyložiť (kapitola Cena pitia). Po bitke sa
+            z ruky vráti do odhadzovacieho balíčka; každý v tvojom balíčku ti v bitke uberie 1 tuhé a remízu prehrá, kto ich má viac.
+            Zahodiť ho smie len Vízia.
           </li>
           <li>
             <strong>Milujúca manželka</strong> — za priznanie si dobereš kartu.
@@ -989,7 +1012,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             v línii (na Herni navyše za Dlhy porazeného). Pri sekere vo finále špaky kola aj zo sekery prepadnú.
           </li>
           <li>
-            Vo finále sa rozdeľuje len Pohoršenie, Nakladačka už nie. Po finále starší zaplatia stupne udržané z posledného kola
+            Vo finále sa rozdeľuje len Pohoršenie, Nakladačka už nie — víťaz finále za ňu dostane 1 špak za každý bod. Po finále starší zaplatia stupne udržané z posledného kola
             (každému, koho sa boja); stupne, kam sa marker dostal až vo finále, nič. Potom sa vykúpia zvyšné plné poldeci a cigarety (poldeci 1 špak, 5 cigariet 1 špak), odpočíta sa
             nepriznaná Cirhóza a vyhrá hráč s viac špakmi.
           </li>

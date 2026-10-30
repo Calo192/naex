@@ -14,8 +14,11 @@ export interface PlayerState {
    * hneď priznaný, netreba ho ťahať ani s ním inak manipulovať. Verejné.
    */
   readonly dlhy: number;
-  /** Absťáky, ktoré hráč práve má — od v8.2 počítadlo, bez karty a bez dobratia. Verejné. */
-  readonly abstaky: number;
+  /**
+   * Chuť (v9.1, Michal 2026-10-30): latka nerestí — kto v kole vypije a vyfajčí menej,
+   * dostane kartu Absťák. Verejná, na začiatku 0. Absťáky sú karty v balíčku (pocetAbstakov).
+   */
+  readonly chut: number;
   /** Nástroje vyložené ako Dedičstvo. */
   readonly dedicstvo: readonly CardInstance[];
   readonly poldeciPlne: number;
@@ -30,11 +33,11 @@ export interface PlayerState {
   readonly pecen: number;
   /** Zadĺženie z akcií Hazard (kľúč Dlh): pri prahu vzniká Dlh, zvyšok ostáva (v7). */
   readonly zadlzenie: number;
-  /** Neresti v tomto kole — na konci kola ich porovnanie so súperovými dáva Absťák (v8.1). */
+  /** Neresti v tomto kole — na konci kola ich porovnanie s Chuťou dáva Absťák (v9.1). */
   readonly nerestiTotoKolo: number;
   /**
    * Absťáky získané za celú hru (v5, podmienka Absťák — Michal 2026-10-25):
-   * zbavením sa Absťáku neklesne. Chýba v stavoch spred v5 (= 0).
+   * zahodením karty neklesne. Chýba v stavoch spred v5 (= 0).
    */
   readonly abstakyZiskane?: number;
   /** Dlhy získané za celú hru (štatistika, v8.2) — presun ani pálenie ich neubera. */
@@ -53,7 +56,7 @@ export function freshPlayer(): PlayerState {
     odhadzovaci: [],
     priznane: [],
     dlhy: 0,
-    abstaky: 0,
+    chut: 0,
     dedicstvo: [],
     poldeciPlne: KONSTANTY.START_POLDECI,
     poldeciVypite: 0,
@@ -63,6 +66,16 @@ export function freshPlayer(): PlayerState {
     nerestiTotoKolo: 0,
     abstakyZiskane: 0,
   };
+}
+
+/**
+ * Karty Absťák v balíčku hráča — ruka, doberací aj odhadzovací (v9.1). Každá mu v bitke
+ * uberie 1 tuhé. Poloha je skrytá, počet verejný (viewFor).
+ */
+export function pocetAbstakov(player: Pick<PlayerState, "ruka" | "doberaci" | "odhadzovaci">): number {
+  let n = 0;
+  for (const k of [...player.ruka, ...player.doberaci, ...player.odhadzovaci]) if (k.defId === "abstak") n++;
+  return n;
 }
 
 /**

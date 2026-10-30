@@ -429,25 +429,6 @@ describe("§2, §6 a §7 — doplnky prvého prechodu", () => {
     expect(s.zhromazdenieStav?.naTahu).toBe(0);
   });
 
-  it("§13/§15 Zastávka: Vypiť znižuje spoločný limit obom", () => {
-    const s0 = setupSBalickom(data, 18);
-    const s = sHracom(
-      {
-        ...s0,
-        faza: "zhromazdenie",
-        utocnik: 0,
-        ciel: { typ: "lokalita", lokalita: inst("zastavka") },
-        pitkyCelkom: 1,
-        pitkaCislo: 0,
-        zhromazdenieStav: { naTahu: 0, zostavaLimit: [5, 5], pasoval: [false, false], navyse: [0, 0], spolocny: true, vlastny: [3, 2] },
-      },
-      0,
-      { poldeciPlne: 2, ruka: [inst("pijan"), inst("pijan")] },
-    );
-    const po = apply(data, s, { type: "vypit" }, 0).state;
-    expect(po.zhromazdenieStav?.zostavaLimit).toEqual([4, 4]);
-  });
-
   it("§7: násobky sa násobia — NA EX × Silná nezávislá žena = ×4", () => {
     const R: Layout4 = ["Rana", null, null, null];
     const karta = makeDef("r_nasob", EMPTY, R);

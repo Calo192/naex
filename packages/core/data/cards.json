@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet 2026-10-30T14:51:49.176Z",
+  "source": "tvorca kariet 2026-10-30T16:48:30.894Z",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -1765,9 +1765,9 @@
       "tags": [
         "Lokalita"
       ],
-      "effect_text": "Zhromaždenie: Obaja hráči majú spoločný limit vykladania — súčet ich limitov.",
+      "effect_text": "Pitka: Po prvej Pitke kola si každý hráč vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca. Z prázdneho šenku sa neberie nič.",
       "triggers": [
-        "Zhromaždenie"
+        "Pitka"
       ],
       "left": {
         "blocked": [
@@ -1868,7 +1868,7 @@
       "tags": [
         "Zviera"
       ],
-      "effect_text": "Furt: Tvoje Povery poškodzujú aj bez súperových priznaných Dlhov.",
+      "effect_text": "Furt: Tvoje Povery sa Vierou nerušia.",
       "triggers": [
         "Furt"
       ],
@@ -3506,7 +3506,7 @@
       "tags": [
         "Lokalita"
       ],
-      "effect_text": "Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe. Marker staršieho, ktorého si súper v tomto kole vzal do patronátu, takto posunúť nesmieš.",
+      "effect_text": "Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole od seba alebo k sebe. Marker staršieho v ohrození takto posunúť nesmieš.",
       "triggers": [
         "Kšeft"
       ],
@@ -4097,6 +4097,81 @@
         "total": 2,
         "left": 2,
         "right": 1
+      }
+    },
+    {
+      "id": "abstak",
+      "index": 94,
+      "name": "Absťák",
+      "tags": [
+        "Kliatba"
+      ],
+      "effect_text": "Bitka: Každý Absťák v tvojom balíčku (ruka, doberací aj odhadzovací) ti uberie 1 tuhé; pri remíze v tuhom prehráva, kto ich má viac. Nedá sa priznať; po bitke ide z ruky do odhadzovacieho balíčka. Zahodiť ju smie len Vízia alebo efekt, ktorý to výslovne povie.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "actions": {}
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "actions": {}
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "opatrovatelka",
+      "index": 95,
+      "name": "Opatrovateľka",
+      "tags": [
+        "Občan",
+        "Zahraničný",
+        "Pracujúci",
+        "Žena"
+      ],
+      "effect_text": "Furt: Na konci kola sa tvoja Chuť porovnáva, akoby bola o 2 nižšia.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Robota": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Posilnenie": 1,
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
       }
     }
   ]

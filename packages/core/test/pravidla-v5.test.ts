@@ -195,18 +195,16 @@ describe("v5 bod 5 a v6: scorecardy nesú len priazeň", () => {
     expect(priazenZKluca("EXEKUTOR")).toBe("ADVOKAT");
   });
 
-  it("Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne", () => {
-    // Menej nerestí než súper v kole → Absťák a počítadlo +1.
-    const s = predKoncomBitky(81, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 2 }), 0, { nerestiTotoKolo: 1, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
+  it("Absťák = Absťáky získané za hru: zahodením karty Absťák počítadlo neklesne", () => {
+    // v9.1: menej nerestí než Chuť → karta Absťák a počítadlo +1.
+    const s = predKoncomBitky(81, (x) => sHracom(x, 0, { nerestiTotoKolo: 1, chut: 2, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].abstakyZiskane).toBe(2);
-    // Viac nerestí → Absťák späť do zásoby, získané ostávajú.
-    const s2 = predKoncomBitky(82, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 1 }), 0, { nerestiTotoKolo: 3, abstakyZiskane: 2, abstaky: 1, doberaci: kusy(4, "pijan") }));
-    const po2 = apply(data, s2, { type: "cintorin", uid: null }, 0).state;
-    expect(po2.hraci[0].abstaky).toBe(0);
-    expect(po2.hraci[0].abstakyZiskane).toBe(2);
-    // Klient vidí počítadlo oboch (Absťák sa priznáva verejne).
-    expect(viewFor(data, po2, 1).hraci[0].abstakyZiskane).toBe(2);
+    // Karta z balíčka zmizne (Vízia), získané ostávajú.
+    const bez: GameState = { ...po, hraci: [{ ...po.hraci[0], odhadzovaci: po.hraci[0].odhadzovaci.filter((k) => k.defId !== "abstak") }, po.hraci[1]] };
+    expect(bez.hraci[0].abstakyZiskane).toBe(2);
+    // Klient vidí počítadlo oboch (karta pribúda pred očami oboch).
+    expect(viewFor(data, bez, 1).hraci[0].abstakyZiskane).toBe(2);
   });
 });
 

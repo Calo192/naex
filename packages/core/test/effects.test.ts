@@ -15,7 +15,6 @@ import {
   jeEfektManual,
   legalCommands,
   limitBonus,
-  spolocnyLimit,
   loadGameData,
   naTahu,
   prahCirhozyBonus,
@@ -80,8 +79,6 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     expect(limitBonus(sVinkom, 0)).toBe(1);
     expect(limitBonus(sVinkom, 1)).toBe(0);
 
-    expect(spolocnyLimit(fakeState({ ciel: { typ: "lokalita", lokalita: inst("zastavka") } }))).toBe(true);
-    expect(spolocnyLimit(fakeState({}))).toBe(false);
   });
 
   it("čierna mačka už nepridáva ranu (nový text: len Vízie)", () => {

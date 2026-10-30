@@ -56,7 +56,7 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       ]
         .filter((t): t is string => t !== null)
         .join(" · "),
-      popis: `Finále je posledná bitka, o vrcholovú lokalitu, a boduje sa ako každá (víťaz 1 špak za každú kartu v línii); Nakladačka sa v ňom nerozdeľuje; starší po ňom zaplatia stupne udržané z posledného kola, nové stupne z finále nič. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
+      popis: `Finále je posledná bitka, o vrcholovú lokalitu, a boduje sa ako každá (víťaz 1 špak za každú kartu v línii); Nakladačka sa v ňom nerozdeľuje — víťaz za ňu dostane 1 špak za každý bod; starší po ňom zaplatia stupne udržané z posledného kola, nové stupne z finále nič. Remíza dá špaky bitky na sekeru — vezme ich víťaz ďalšej bitky, vo finále prepadnú.${view.spakyNaSekere > 0 ? ` Teraz na nej čaká ${view.spakyNaSekere}.` : ""}`,
     },
     {
       kluc: "exekutor",

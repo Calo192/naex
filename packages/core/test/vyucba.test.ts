@@ -10,6 +10,7 @@ import scenarJson from "../data/vyucba/prva-hra.json";
 import type { CardInstance, Command, GameState, Rozdanie, ScenarVyucby, VolbaKroku } from "../src/index.ts";
 import {
   apply,
+  pocetAbstakov,
   spakyTeraz,
   defOf,
   evaluateLine,
@@ -706,9 +707,9 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(kolo3.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
     // Dievčina na vydaj (Prehra) dala hráčovi po prehre Štamgasta Dlh (i-spaky2).
     expect(kolo3.hraci[0].dlhy).toBe(1);
-    // Absťák Nervák (v8.1): Štamgast mal v 2. kole menej nerestí (1 : 3) — Absťák dostal on (i-neresti).
-    expect(kolo3.hraci[1].abstaky).toBe(1);
-    expect(kolo3.hraci[0].abstaky).toBe(0);
+    // v9.1: výučba Prvá hra je bez Chuti (Michal 2026-10-30) — Absťák nedostane nikto; texty i-neresti čakajú na úpravu.
+    expect(pocetAbstakov(kolo3.hraci[1])).toBe(0);
+    expect(pocetAbstakov(kolo3.hraci[0])).toBe(0);
   });
 
   it("3. časť (v9): zajatie len vysvetlené, Dedičstvo, Exekútor s Advokátom, Kultúrny dom, Absťák, Farár na červenej", () => {
@@ -738,9 +739,9 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(kolo4.starsi.find((e) => e.elderId === "autobusar")?.marker).toBe(4);
     // Koniec 3. kola: Starosta udržaný v oranžovej zaplatí 3 — 23 : 0.
     expect(body(kolo4)).toEqual([23, 0]);
-    // Koniec 3. kola: hráč 0 nerestí, Štamgast 1 (fajčil) — Absťák dostane hráč, Štamgast sa svojho zbaví (i-abstak).
-    expect(kolo4.hraci[0].abstaky).toBe(1);
-    expect(kolo4.hraci[1].abstaky).toBe(0);
+    // v9.1: výučba Prvá hra je bez Chuti — Absťák nedostane nikto; texty i-abstak čakajú na úpravu.
+    expect(pocetAbstakov(kolo4.hraci[0])).toBe(0);
+    expect(pocetAbstakov(kolo4.hraci[1])).toBe(0);
   });
 
   it("finále (v9): pokus o zajatie Farára, Kšeft vily, doliatie, zrážka NA EX na hráčovom Pijanovi, väzeň", () => {

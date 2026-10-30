@@ -149,7 +149,7 @@ export function spakyPriExekucii(priznaneDlhy: number, silaAdvokata = 0): number
 
 /**
  * Špaky víťaza za bitku (v8): karty v línii, vždy aspoň 1. Zrážka za Absťáky
- * zanikla v8.1 (Nervák, Michal 2026-10-28) — Absťák dáva Pohoršenie navyše.
+ * zanikla v8.1 (Michal 2026-10-28) — Absťák od v9.1 berie tuhé (karta v balíčku).
  */
 export function spakyZaBitku(karty: number): number {
   return Math.max(KONSTANTY.SPAKY_ZA_BITKU_MIN, karty);

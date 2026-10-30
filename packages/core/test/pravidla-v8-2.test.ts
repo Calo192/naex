@@ -75,12 +75,12 @@ describe("§9.2 Pohoršenia, ktoré na žiadny posun nestačia, prepadnú (v8.2)
   });
 });
 
-describe("§8, §11 Dlh a Absťák sú počítadlá — jadro sa na karty dlh a abstak nespolieha (v8.2)", () => {
-  // Admin karty Dlh a Absťák zo sady vyradí; hra musí bežať aj bez nich.
+describe("§11 Dlh je počítadlo — jadro sa na kartu dlh nespolieha (v8.2); Absťák je od v9.1 karta", () => {
+  // Admin kartu Dlh zo sady vyradil; hra musí bežať aj bez nej — aj bez karty Absťák (staršia sada).
   const bez = { ...cardsJson, cards: cardsJson.cards.filter((c) => c.id !== "dlh" && c.id !== "abstak") };
   const sada = loadGameData(bez, eldersJson, scorecardsJson);
 
-  it("náhodné partie dobehnú, Dlhy aj Absťáky pribúdajú len do počítadiel a nikde sa neobjaví ich karta", () => {
+  it("náhodné partie dobehnú, Dlhy pribúdajú len do počítadla; sada bez karty Absťák ho nedáva", () => {
     let dlhy = 0;
     let abstaky = 0;
     for (const seed of [1, 2, 3, 4]) {
@@ -103,12 +103,13 @@ describe("§8, §11 Dlh a Absťák sú počítadlá — jadro sa na karty dlh a 
       abstaky += (st.hraci[0].abstakyZiskane ?? 0) + (st.hraci[1].abstakyZiskane ?? 0);
     }
     expect(dlhy).toBeGreaterThan(0);
-    expect(abstaky).toBeGreaterThan(0);
+    expect(abstaky).toBe(0);
   });
 
-  it("počítadlá sú verejné — viewFor ich posiela obom hráčom", () => {
+  it("Dlhy a počet Absťákov sú verejné — viewFor ich posiela obom hráčom", () => {
     const s0 = setupGame(sada, 9);
-    const s: GameState = { ...s0, hraci: [{ ...s0.hraci[0], dlhy: 3, abstaky: 2 }, s0.hraci[1]] };
+    const abstak = (uid: number) => ({ uid, defId: "abstak", leftLayout: 0, rightLayout: 0 });
+    const s: GameState = { ...s0, hraci: [{ ...s0.hraci[0], dlhy: 3, doberaci: [...s0.hraci[0].doberaci, abstak(990101)], ruka: [...s0.hraci[0].ruka, abstak(990102)] }, s0.hraci[1]] };
     for (const ja of [0, 1] as const) {
       expect(viewFor(sada, s, ja).hraci[0]).toMatchObject({ dlhy: 3, abstaky: 2 });
     }

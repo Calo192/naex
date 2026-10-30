@@ -1862,3 +1862,87 @@ Staré znenie §10 Patronát (v6.1–v8):
 > Patronát vráti marker z krajnej pozície naraz do stredu — preto je odpoveďou
 > na ohlásené vydesenie (§1). Bot ho vyhodnocuje z odhadu špakov (`bot.ts`,
 > `patronat`).
+
+## v9.1 — Chuť, Nakladačka vo finále, quick wins (Michal 2026-10-30)
+
+Dávka nad v9 (vetva `pravidla/v91`): Absťák v3 „Chuť“ podľa `docs/napady/abstak-3-zadanie.md`
+(interview 2026-10-30 večer, `docs/napady/abstak-3.html`), Nakladačka vo finále → špaky 1 : 1
+(cieľ: vedúci pred finále vyhráva okolo polovice partií, nie ~81 %) a quick wins z ULTRA
+playtestu 20261030-115654 (Zastávka, Pasca, Valaška, popisy Robota a Exekúcia, spresnenie
+Nakladačky). Značka partií ostáva `v9` (v9 ešte nebola nasadená).
+
+### Absťák „Nervák“ → Chuť (§8, §9.2, §9.3, §9.4, §9.7, §11, §14, §17)
+
+Absťák sa už neporovnáva so súperom: kto v kole skonzumuje menej, než je jeho Chuť,
+dostane kartu Absťák do odhadzovacieho balíčka (nedá sa priznať, −1 tuhé za každú
+v balíčku). Nerest je len konzumácia (NA EX 2); doliatie, barter a Kšefty lokalít nie.
+Pohoršenie za Absťák (Nervák) zaniká.
+
+Staré znenie §8:
+
+> ### Nerest a Absťák
+>
+> **Nerest** je každý poldeci vypitý v Zhromaždení (ďalšia karta v ťahu), NA EX
+> (poldeci sa vypije v bitke), každá vyfajčená cigareta (aj tie, o ktoré je
+> ďalšie fajčenie v Pitke drahšie), doliatie poldeci (2)
+> a stokársky barter (za každú cigaretu); aj cigareta na Zbernom dvore. Platba za
+> šenok, Dedičstvo a Starostu sa nepočíta, akcie Cigareta a Poldeci tiež nie.
+>
+> **Absťák — Krok so stolom (v8.1, Michal 2026-10-28):** na konci kola (po bitke)
+> sa porovnajú neresti **oboch hráčov v tomto kole** (aj v prvom kole):
+>
+> - **menej nerestí ako súper** → hráč dostane **Absťák** (v8.2 počítadlo, bez
+>   dobratia karty),
+> - **viac nerestí ako súper** → hráč sa jedného Absťáku zbaví,
+> - **rovnako** → nič (ani keď obaja nemali žiadnu).
+>
+> Latku teda určuje súperova hra v tom istom kole, nie vlastná minulosť: kto
+> chce Absťáku ujsť, dorovná súperove neresti (pečeňou alebo cigaretami); kto
+> pije viac, súperovi Absťák podstrčí.
+>
+> Hra si pamätá, koľko Absťákov hráč **získal za hru** (štatistika); keď sa
+> Absťáku zbaví, toto číslo neklesne.
+>
+> **Nervák:** každý Absťák hráča znižuje **jeho** tuhé poškodenie v bitke o 1
+> (§9.3) a dá mu **1 Pohoršenie navyše** v kroku Pohoršenie (§9.2) — kto je na
+> suchu, robí scény. Absťáky, ktoré hráč **práve má** (počítadlo, verejné),
+> rozhodujú remízu v tuhom (§9.4). Špaky za bitku od v8.1 **neuberajú**. Klient
+> ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`: „súper 3 · ty 1 →
+> hrozí Absťák“).
+
+Staré znenie §9.2 (Pohoršenia navyše):
+
+> **Pohoršenia navyše:** z priazne Abstinenta (+1 / +2 / +3)
+> a **1 za každý Absťák** hráča (v8.1 Nervák, §8; v8.2 z počítadla — všetko
+> verejné).
+
+Starý riadok §11 Kliatby:
+
+> | **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než súper v tom istom kole (§8, v8.1) — **rovno priznaný**; od v8.2 **počítadlo**, nie karta (kartu zaň nedobereš) | znižuje **tvoje** tuhé poškodenie o 1 za kus a dá ti 1 Pohoršenie navyše (§9.2); remízu v bitke prehráva, kto má viac Absťákov (§9.4) |
+
+### Nakladačka vo finále (§9.4, §14b)
+
+Víťaz finále dostane za každý bod Nakladačky 1 špak (krok 4a, pred exekúciou).
+
+Staré znenie §9.4:
+
+> **Nakladačka vo finále sa nerozdeľuje** (v8.3, Michal 2026-10-30): priazne by už
+> nepomohli a nové stupne strachu vo finále nič nedajú (§14b). Log oznámi, koľko
+> Nakladačky bolo. Na špaky 1 : 1 sa Nakladačka nemení nikde (do v7 po finále a na
+> Kultúrnom dome).
+
+Odsek §9.4 o Nakladačke sa prepísal do bodov (kto drží, kto rozdeľuje, čo sa vyberá,
+pole po poli, nedá sa prestať, zvyšok prepadne) — pravidlo sa nezmenilo.
+
+### Zastávka (§15)
+
+Starý riadok (spoločný limit vykladania zanikol):
+
+> | Zastávka | Zhromaždenie | Spoločný limit vykladania pre oboch = súčet limitov oboch hráčov; každé vyloženie a Vypiť ho míňa obom. **Pas** dá cigarety najviac za **vlastný** limit hráča mínus to, čo v tomto Zhromaždení sám vyložil a vypil — nie za spoločnú zásobu. |
+
+### Pasca a Valaška (§12, §16)
+
+Pasca dáva Ranu (text karty v tvorcovi od sady v36), nie Pecku. Boxer sa v sade volá
+Valaška (id karty `boxer` ostáva).
+
+> | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, udelíš mu Pecku navyše. |

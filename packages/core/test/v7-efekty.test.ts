@@ -469,11 +469,11 @@ describe("Bitka a po bitke (v7)", () => {
     expect(poskodenieBitky(data, s, [{ Rana: 2, Petelica: 1 }, {}]).tuhe[0]).toBe(bez + 2);
   });
 
-  it("Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX", () => {
+  it("Pasca: súper v kole priložil kartu k tvojej → Rana navyše (v9.1, predtým Pecka); Pijan: Rana za každé svoje NA EX", () => {
     const s = sHracom(vPitke("zastavka", [[lezi(inst("pijan"), 0, { naexBy: 0 }), lezi(inst("vandal"), 0, { naexBy: 0 })], []]), 0, { dedicstvo: [inst("pasca")] });
     expect(bitkaMody(data, s, 0).tuheZdroje).toContainEqual({ zdroj: "pijan", tuhe: 2 });
     expect(bitkaMody(data, s, 0).tuheZdroje.some((z) => z.zdroj === "pasca")).toBe(false);
-    expect(bitkaMody(data, { ...s, prilozeniaKu: [1, 0] }, 0).tuheZdroje).toContainEqual({ zdroj: "pasca", tuhe: 2 });
+    expect(bitkaMody(data, { ...s, prilozeniaKu: [1, 0] }, 0).tuheZdroje).toContainEqual({ zdroj: "pasca", tuhe: 1 });
   });
 
   it("Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie", () => {
@@ -524,7 +524,7 @@ describe("Bitka a po bitke (v7)", () => {
   });
 
   it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {
-    const s = sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
+    const s = sHracom(vPitke("most", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
     const t = skonciPitku(s);
     expect(dlhyAjZhorene(t, 0)).toBe(dlhy(s, 0) + 1);
     // Rekapitulácia Pitky delí zadĺženie prahom hráča, nie základným (kontrola kódu v7, bod 8).
@@ -546,7 +546,7 @@ describe("Bitka a po bitke (v7)", () => {
 
   it("Záhradkár (Exekúcia, Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde — Dlhy ani špaky nezhoria", () => {
     const zah = inst("zahradkar");
-    const s = sHracom(vPitke("zastavka", [[lezi(zah, 0), lezi(inst("vandal"), 1)], []]), 0, { dlhy: 8 });
+    const s = sHracom(vPitke("most", [[lezi(zah, 0), lezi(inst("vandal"), 1)], []]), 0, { dlhy: 8 });
     const t = skonciPitku(s);
     expect(t.bitkaStav?.krok === "exekutor" && t.bitkaStav.caka !== null).toBe(false);
     const zaznam = t.nastenka.at(-1);
@@ -555,7 +555,7 @@ describe("Bitka a po bitke (v7)", () => {
     // Záhradkár sa nezahadzuje.
     expect(t.bitkaStav?.spalit ?? []).not.toContain(zah.uid);
     // Súperov Záhradkár (podstrčený do mojej strany) ma nechráni — rozhoduje partia.
-    const cudzi = skonciPitku(sHracom(vPitke("zastavka", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { dlhy: 8 }));
+    const cudzi = skonciPitku(sHracom(vPitke("most", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { dlhy: 8 }));
     expect(dlhy(cudzi, 0)).toBe(4);
   });
 });

@@ -59,11 +59,11 @@ describe("počítadlo bitky", () => {
     expect(sKartami).toBeGreaterThan(20);
   });
 
-  it("Absťáky sú od v8.2 verejné (počítadlo) — počítadlo ich zrazí samo, krok „spolu“ netreba", () => {
+  it("Absťáky sú verejné (v9.1 počet kariet v balíčku) — počítadlo ich zrazí samo, krok „spolu“ netreba", () => {
     let zrazene = 0;
     for (let seed = 1; seed <= 200; seed++) {
       const s0 = stol(seed);
-      const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], abstaky: 1 }] };
+      const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], odhadzovaci: [...s0.hraci[1].odhadzovaci, { uid: 990201, defId: "abstak", leftLayout: 0, rightLayout: 0 }] }] };
       const linia = evaluateLine(data, lineState(s));
       // Len tam, kde Absťák hráča 1 naozaj uberie (jeho tuhé bez neho nie je 0).
       if (poskodenieBitky(data, s0, linia.sums).tuhe[1] === 0) continue;

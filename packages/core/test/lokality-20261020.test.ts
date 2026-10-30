@@ -173,8 +173,8 @@ describe("Lesná cesta a Ihrisko: tuhé za karty na stranách", () => {
     const tri: GameState = { ...s, strany: [[], [na(inst("pes"), 0), na(inst("cierna_macka"), 0), na(inst("pes"), 0)]] };
     expect(bitkaMody(data, tri, 0).tuheBonus).toBe(3);
     expect(bitkaMody(data, tri, 1).tuheBonus).toBe(0);
-    // Rozpis pre panel bitky menuje zdroj bonusu a zrážku za Absťáky (počítadlo, v8.2).
-    const [r0] = rozpisPoskodenia(data, sHracom(tri, 0, { abstaky: 1 }), [{}, {}]);
+    // Rozpis pre panel bitky menuje zdroj bonusu a zrážku za Absťáky (karty v balíčku, v9.1).
+    const [r0] = rozpisPoskodenia(data, sHracom(tri, 0, { odhadzovaci: [inst("abstak")] }), [{}, {}]);
     expect(r0.bonusy).toContainEqual({ zdroj: "lesna_cesta", hodnota: 3 });
     expect(r0.zrazky).toContainEqual({ zdroj: "abstak", hodnota: 1 });
   });

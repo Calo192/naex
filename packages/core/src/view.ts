@@ -34,6 +34,7 @@ import type {
 } from "./engine.ts";
 import { cenaDedicstva, cirhozyPreVeterinara, lokalityNaVyber, vykupneHraca, spakyZaVaznov, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
+import { pocetAbstakov } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
 import {
@@ -58,9 +59,15 @@ export interface HracVerejne {
   /** Odhadzovací balíček je verejný — karty doň padajú lícom nahor. */
   readonly odhadzovaci: readonly CardInstance[];
   readonly priznane: readonly CardInstance[];
-  /** Priznané Dlhy a Absťáky — počítadlá (v8.2, Michal 2026-10-30), verejné. */
+  /** Priznané Dlhy — počítadlo (v8.2, Michal 2026-10-30), verejné. */
   readonly dlhy: number;
+  /**
+   * Karty Absťák v balíčku hráča (ruka, doberací, odhadzovací; v9.1) — len počet, poloha
+   * je skrytá ako ostatné karty v ruke a doberacom balíčku. Verejné ako nepriznané Cirhózy.
+   */
   readonly abstaky: number;
+  /** Chuť (v9.1) — latka nerestí na konci kola, verejná. */
+  readonly chut: number;
   readonly dedicstvo: readonly CardInstance[];
   readonly poldeciPlne: number;
   readonly poldeciVypite: number;
@@ -68,11 +75,11 @@ export interface HracVerejne {
   readonly pecen: number;
   readonly zadlzenie: number;
   /**
-   * Neresti tohto kola (Absťák: porovnanie so súperom, v8.1). Verejné — pitie,
+   * Neresti tohto kola (v9.1: porovnajú sa s Chuťou). Verejné — pitie,
    * fajčenie aj NA EX vidí každý pri stole.
    */
   readonly nerestiTotoKolo: number;
-  /** Absťáky získané za hru — verejné, Absťák je počítadlo. */
+  /** Absťáky získané za hru — verejné, karta Absťák pribúda pred očami oboch. */
   readonly abstakyZiskane: number;
 }
 
@@ -148,6 +155,8 @@ export interface StarsiVerejne extends ElderState {
 export interface ClientState {
   readonly ja: PlayerId;
   readonly faza: Phase;
+  /** Partia bez Chuti a Absťáku (výučba Prvá hra, v9.1). */
+  readonly bezChuti?: true;
   readonly kolo: number;
   readonly utocnik: PlayerId;
   readonly naTahu: PlayerId | null;
@@ -304,7 +313,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       odhadzovaci: hrac.odhadzovaci,
       priznane: hrac.priznane,
       dlhy: hrac.dlhy,
-      abstaky: hrac.abstaky,
+      abstaky: pocetAbstakov(hrac),
+      chut: hrac.chut,
       dedicstvo: hrac.dedicstvo,
       poldeciPlne: hrac.poldeciPlne,
       poldeciVypite: hrac.poldeciVypite,
@@ -358,6 +368,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     spakyNaSekere: state.spakyNaSekere,
     nastenka: state.nastenka,
     naexVKole: state.naexVKole,
+    ...(state.bezChuti === true ? { bezChuti: true as const } : {}),
     starsi: state.starsi.map((e) => ({ ...e, priazen: favourStarsieho(data, e) })),
     ciel: state.ciel,
     lokalitaOtocena: state.lokalitaOtocena,

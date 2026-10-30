@@ -193,8 +193,8 @@ describe("§9.5 Poldeci v bitke", () => {
     expect(st.bitkaStav).toBeNull();
     expect([st.hraci[0].poldeciPlne, st.hraci[0].poldeciVypite]).toEqual([1, 0]);
     expect([st.hraci[1].poldeciPlne, st.hraci[1].poldeciVypite]).toEqual([1, 0]);
-    // §8: NA EX je nerest (poldeci sa vypije v bitke) — ráta sa do porovnania na konci kola.
-    expect(doBitky(sada, s).events.some((e) => e.type === "log" && /^Neresti v kole: hráč 1 1,/.test(e.text))).toBe(true);
+    // §8 (v9.1): NA EX je nerest za 2 (poldeci sa vypije v bitke) — Chuť 0 → 2 − 1 = 1.
+    expect(st.hraci[0].chut).toBe(KONSTANTY.NEREST_NAEX - KONSTANTY.CHUT_UBYTOK);
     expect(st.hraci[0].nerestiTotoKolo).toBe(0);
   });
 });
@@ -278,70 +278,7 @@ describe("§14 Koniec hry po finále (v6)", () => {
   });
 });
 
-describe("§8 Absťák a neresti — Krok so stolom (v8.1)", () => {
-  /** Hráč 0 má v kole `ja` nerestí, súper `on`. */
-  const sNerestami = (on: number, ja: number, abstaky = 0) =>
-    predKoncomBitky(50, (s) =>
-      sHracom(sHracom(s, 1, { nerestiTotoKolo: on }), 0, { nerestiTotoKolo: ja, abstaky, doberaci: [...s.hraci[0].doberaci, ...kusy(5, "pijan")] }),
-    );
-
-  it("§8: menej nerestí než súper v tomto kole → Absťák (počítadlo, v8.2) bez dobratia karty", () => {
-    const s = sNerestami(2, 1);
-    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
-    expect(po.hraci[0].abstaky).toBe(1);
-    expect(po.hraci[1].abstaky).toBe(0);
-    // Len KARTY_PO_BITKE (od 2026-10-27 jedna) — za Absťák sa od v8.2 nedoberá (Michal 2026-10-30).
-    expect(po.hraci[0].ruka).toHaveLength(s.hraci[0].ruka.length + KONSTANTY.KARTY_PO_BITKE);
-    expect(po.hraci[0].nerestiTotoKolo).toBe(0);
-  });
-
-  it("§8: rovnako ako súper → nič (aj keď obaja nič); viac → jeden Absťák späť do zásoby", () => {
-    const rovnako = apply(data, sNerestami(2, 2), { type: "cintorin", uid: null }, 0).state;
-    expect(rovnako.hraci[0].abstaky).toBe(0);
-    const nic = apply(data, sNerestami(0, 0), { type: "cintorin", uid: null }, 0).state;
-    expect(nic.hraci.every((h) => h.abstaky === 0)).toBe(true);
-    const viac = apply(data, sNerestami(2, 3, 2), { type: "cintorin", uid: null }, 0).state;
-    expect(viac.hraci[0].abstaky).toBe(1);
-    // Súper s menej nerestiami Absťák dostane.
-    expect(viac.hraci[1].abstaky).toBe(1);
-  });
-
-  it("§8: platí už v prvom kole — základ z minulého kola nie je", () => {
-    const s: GameState = { ...sNerestami(1, 0), kolo: 1 };
-    const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
-    expect(po.hraci[0].abstaky).toBe(1);
-  });
-
-  it("§8 nerest: doliatie poldeci 2, barter za každú cigaretu, fajčenie 1; Dedičstvo ani šenok nie", () => {
-    const s0 = setupSBalickom(data, 51);
-    let s: GameState = sHracom({ ...s0, faza: "pitka", utocnik: 0, pitkyCelkom: 1, pitkaCislo: 1, pitkaStav: pitkaStav(0) }, 0, { cigarety: 10, poldeciVypite: 1, nerestiTotoKolo: 0 });
-    s = apply(data, s, { type: "refillPoldeci" }, 0).state;
-    expect(s.hraci[0].nerestiTotoKolo).toBe(2);
-    s = apply(data, s, { type: "barter" }, 0).state;
-    expect(s.hraci[0].cigarety).toBe(10 - 2 - 5);
-    expect(s.hraci[0].nerestiTotoKolo).toBe(2 + 5);
-    s = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
-    expect(s.hraci[0].nerestiTotoKolo).toBe(2 + 5 + 1);
-
-    const noviny = inst("noviny");
-    const z = sHracom(
-      { ...s0, faza: "zhromazdenie", utocnik: 0, pitkyCelkom: 1, pitkaCislo: 0, zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] } },
-      0,
-      { ruka: [noviny], cigarety: 3, nerestiTotoKolo: 0 },
-    );
-    expect(apply(data, z, { type: "place", uid: noviny.uid, target: "dedicstvo" }, 0).state.hraci[0].nerestiTotoKolo).toBe(0);
-
-    const a = inst("pijan");
-    const d = sHracom(
-      { ...s0, faza: "draft", senok: [a, inst("pijan")], draftStav: { krok: "beranie", balicky: [[], []], vyber: [null, null], naTahu: 0, hotovo: [false, false], noveKarty: [0, 0] } },
-      0,
-      { cigarety: 3, nerestiTotoKolo: 0 },
-    );
-    const poBrani = apply(data, d, { type: "draftBer", uids: [a.uid] }, 0).state;
-    expect(poBrani.hraci[0].cigarety).toBe(2);
-    expect(poBrani.hraci[0].nerestiTotoKolo).toBe(0);
-  });
-});
+// §8 Chuť a Absťák (v9.1) stráži abstak-chut.test.ts.
 
 // --- §16 Výklad kariet ------------------------------------------------------------------------
 

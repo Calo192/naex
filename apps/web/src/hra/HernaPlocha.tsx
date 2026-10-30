@@ -5777,7 +5777,7 @@ export function HernaPlocha({
           const zal: ZalozkaKariet = moje || kartyZalozka === "priznane" || kartyZalozka === "dedicstvo" ? kartyZalozka : "priznane";
           const k = view.nepriznaneKliatby[kartyHrac];
           const nepriznane = k.cirhoza > 0 ? `Cirhóza ×${k.cirhoza}` : "";
-          // Dlh a Absťák sú od v8.2 počítadlá, nie karty — v záložke ich ukáže riadok, nie karty.
+          // Dlh je od v8.2 počítadlo; Absťák (v9.1) karta, ktorej poloha je skrytá — v záložke ich ukáže riadok s počtom.
           const pocitadla = [h.dlhy > 0 ? `Dlhy ${h.dlhy}` : "", h.abstaky > 0 ? `Absťáky ${h.abstaky}` : ""].filter((x) => x !== "").join(" · ");
           const POZN: Record<ZalozkaKariet, string> = {
             balicek: "tvoje karty zoskupené podľa typu a mena — poradie v balíčku je tajné",

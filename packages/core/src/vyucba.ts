@@ -57,6 +57,8 @@ export interface Rozdanie {
    * Náradie a Občanov, poradie v každom ostáva. Naradie/obcania ho prepíšu.
    */
   readonly spolocnyBalicek?: readonly KartaRozdania[];
+  /** Chuť a Absťák (v9.1); chýba = bez nich — Prvá hra ich neučí (Michal 2026-10-30). */
+  readonly bezChuti?: boolean;
 }
 
 /**

@@ -43,6 +43,9 @@ export interface KoloKroniky {
   readonly cirhozy: readonly [number, number];
   /** Špaky oboch po kole (v6); pri konci hry konečné špaky. */
   readonly bodyPo: readonly [number, number] | null;
+  /** Chuť a karty Absťák v balíčku oboch po kole (v9.1); chýba v kronikách spred v9.1. */
+  readonly chut?: readonly [number, number];
+  readonly abstaky?: readonly [number, number];
 }
 
 export interface StavKroniky {
@@ -150,7 +153,12 @@ export function zapisDoKroniky(
   // Koniec kola (nové kolo alebo koniec hry): špaky po kole a ďalšie kolo.
   if (po.kolo !== pred.kolo || (po.koniec !== null && pred.koniec === null)) {
     const body = po.koniec?.body ?? po.spaky;
-    const hotove: KoloKroniky = { ...kolo, bodyPo: [body[0], body[1]] };
+    const hotove: KoloKroniky = {
+      ...kolo,
+      bodyPo: [body[0], body[1]],
+      chut: [po.hraci[0].chut, po.hraci[1].chut],
+      abstaky: [pocet(po, 0, "abstak"), pocet(po, 1, "abstak")],
+    };
     return { kola: [...k.kola, hotove], kolo: prazdneKolo(po), caka: null };
   }
   return { kola: k.kola, kolo, caka };

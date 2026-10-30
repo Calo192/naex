@@ -503,12 +503,15 @@
     },
     {
       "id": "13.vypit.zastavka",
-      "paragraf": "13. Pokročilé ťahy › Vypiť — viac kariet v jednom ťahu",
-      "pravidlo": "Na Zastávke vypitie znižuje spoločný limit oboch.",
+      "paragraf": "15. Lokality",
+      "pravidlo": "Zastávka (v9.1): po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku, najprv útočník, potom obranca; šenok sa medzi nimi nedopĺňa; z prázdneho nič. Spoločný limit vykladania zanikol.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §13/§15 Zastávka: Vypiť znižuje spoločný limit obom"
-      ]
+        "packages/core/test/zastavka-v91.test.ts › limit vykladania nie je spoločný — každý má svoj",
+        "packages/core/test/zastavka-v91.test.ts › najprv útočník, potom obranca; každý 1 kartu zadarmo, šenok sa medzi nimi nedopĺňa",
+        "packages/core/test/zastavka-v91.test.ts › jediná karta v šenku patrí útočníkovi, obranca nedostane nič; prázdny šenok nič"
+      ],
+      "poznamka": "v9.1 (Michal 2026-10-30, ULTRA 20261030-115654): nový efekt Zastávky; staré znenie v docs/pravidla-historia.md, sekcia v9.1."
     },
     {
       "id": "7.doplnenie.cigarety",
@@ -516,7 +519,7 @@
       "pravidlo": "V Pitke za 2 cigarety otočíš vypitý poldeci na plný (s Vínkom v Dedičstve nie).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §8 nerest: doliatie poldeci 2, barter za každú cigaretu, fajčenie 1; Dedičstvo ani šenok nie",
+        "packages/core/test/abstak-chut.test.ts › fajčenie 1 za každú cigaretu; doliatie, barter, Dedičstvo ani šenok nie",
         "packages/core/test/effects.test.ts › nealko: prah Cirhózy +2; vinko doliatie aj +1 limit, zastávka spoločný limit"
       ]
     },
@@ -542,12 +545,13 @@
     {
       "id": "11.priznanie.karta",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
-      "pravidlo": "Za priznanú Milujúcu manželku si hráč hneď dobere kartu; za Cirhózu nie. Dlh a Absťák sú od v8.2 počítadlá — vznikajú priznané, bez karty.",
+      "pravidlo": "Za priznanú Milujúcu manželku si hráč hneď dobere kartu; za Cirhózu nie. Dlh je od v8.2 počítadlo — vzniká priznaný, bez karty. Absťák (v9.1) sa priznať nedá.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › priznaná Cirhóza kartu nedá, Milujúca manželka áno",
         "packages/core/test/michal-20261018.test.ts › z doberacieho balíčka",
-        "packages/core/test/michal-20261018.test.ts › aj keď je doberací prázdny — zamieša sa odhadzovací"
+        "packages/core/test/michal-20261018.test.ts › aj keď je doberací prázdny — zamieša sa odhadzovací",
+        "packages/core/test/abstak-chut.test.ts › §11: Absťák sa nedá priznať ani vyložiť"
       ],
       "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
@@ -855,7 +859,7 @@
     },
     {
       "id": "8.dlh.prah",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Zadĺženie a Dlh",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Zadĺženie a Dlh",
       "pravidlo": "Za každý celý prah zadĺženia (2) hráč získa Dlh.",
       "stav": "na-overenie",
       "testy": [],
@@ -863,7 +867,7 @@
     },
     {
       "id": "8.pecen.prah",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Pečeň a Cirhóza",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Pečeň a Cirhóza",
       "pravidlo": "Pečeň z Poškodenia pečene, Poldeci, NA EX (pri odkrytí) a predošlého Vypiť; za každý celý prah (3, +2 Nealko, +2 Krčma) Cirhóza.",
       "stav": "na-overenie",
       "testy": [],
@@ -1038,11 +1042,12 @@
     {
       "id": "9.vysledok.vitaz",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (práve teraz), potom menej priznaných Dlhov, inak sekera.",
+      "pravidlo": "Víťaz má vyššie tuhé; pri remíze v tuhom vyhrá menej Absťákov (kariet v balíčku, v9.1), potom menej priznaných Dlhov, inak sekera.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › remízu v tuhom vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera",
-        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky"
+        "packages/core/test/pravidla-20261021.test.ts › remízu v tuhom rozhodnú Absťáky, potom Dlhy; sekera odloží špaky kola víťazovi ďalšej bitky",
+        "packages/core/test/abstak-chut.test.ts › remízu v tuhom prehráva, kto má viac Absťákov — v partii z kariet v balíčku"
       ]
     },
     {
@@ -1059,7 +1064,7 @@
     {
       "id": "9.vysledok.prebytok-drzi",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Nakladačka = rozdiel tuhého, drží ju víťaz (v8.3; pri remíze v tuhom nikto); rozdelí sa až po špakoch za bitku — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje porazený; vo finále sa nerozdeľuje (v8.3); rozdeliť treba celú.",
+      "pravidlo": "Nakladačka = rozdiel tuhého, drží ju víťaz (v8.3; pri remíze v tuhom nikto); rozdelí sa až po špakoch za bitku — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje porazený; vo finále sa nerozdeľuje (v8.3) — víťaz za ňu dostane 1 špak za každý bod (v9.1); rozdeliť treba celú.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › Nakladačku drží víťaz — rozdiel tuhého; Povery ju nemenia (v8.3)",
@@ -1067,9 +1072,19 @@
         "packages/core/test/battle.test.ts › pri remíze v celkovom poškodení nikto nezíska Nakladačku",
         "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1",
         "packages/core/test/pravidla-v8.test.ts › víťaz drží Nakladačku, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on",
-        "packages/core/test/pravidla-v8.test.ts › pri sekere Nakladačku nedrží nikto — Povery už poškodenie nedávajú (v8.3)"
+        "packages/core/test/pravidla-v8.test.ts › pri sekere Nakladačku nedrží nikto — Povery už poškodenie nedávajú (v8.3)",
+        "packages/core/test/strach-udrzanie.test.ts › udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; Nakladačka sa nerozdeľuje — v9.1 víťaz dostane za ňu špaky 1 : 1"
       ],
       "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+    },
+    {
+      "id": "9.vysledok.prebytok-finale",
+      "paragraf": "9. Bitka › 9.4 Výsledok",
+      "pravidlo": "Nakladačka vo finále → špaky 1 : 1 víťazovi (v9.1, krok 4a, pred exekúciou); záznam na nástenke (prebytok).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/strach-udrzanie.test.ts › udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; Nakladačka sa nerozdeľuje — v9.1 víťaz dostane za ňu špaky 1 : 1"
+      ]
     },
     {
       "id": "9.vysledok.minstrant",
@@ -1260,24 +1275,24 @@
     {
       "id": "11.kliatby.verejny-dlh",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
-      "pravidlo": "Nový Dlh je hneď priznaný — od v8.2 počítadlo, nie karta (rovnako Absťák); nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25, predtým navrch doberacieho).",
+      "pravidlo": "Nový Dlh je hneď priznaný — od v8.2 počítadlo, nie karta; nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25, predtým navrch doberacieho); Absťák (v9.1) je karta do odhadzovacieho balíčka.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261021.test.ts › nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide do odhadzovacieho balíčka",
         "packages/core/test/pravidla-20261025.test.ts › Cirhóza nejde navrch doberacieho — Vízia vidí jeho pôvodnú vrchnú kartu",
         "packages/core/test/pravidla-20261025.test.ts › pri prázdnom doberacom sa odhadzovací zamieša a nová Cirhóza príde do ruky (Vízia: vziať)",
-        "packages/core/test/pravidla-v8-2.test.ts › náhodné partie dobehnú, Dlhy aj Absťáky pribúdajú len do počítadiel a nikde sa neobjaví ich karta"
+        "packages/core/test/pravidla-v8-2.test.ts › náhodné partie dobehnú, Dlhy pribúdajú len do počítadla; sada bez karty Absťák ho nedáva"
       ],
       "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "11.kliatby.verejny-pocet",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
-      "pravidlo": "Počet súperových nepriznaných Cirhóz je verejný — každá zmena je vo verejnom logu, ktoré karty sa neposiela; počítadlá Dlhov a Absťákov sú verejné (v8.2).",
+      "pravidlo": "Počet súperových nepriznaných Cirhóz je verejný — každá zmena je vo verejnom logu, ktoré karty sa neposiela; počítadlo Dlhov a počet Absťákov sú verejné.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261021.test.ts › každá zmena počtu súperových kliatob má v jeho logu zmienku o kliatbe",
-        "packages/core/test/pravidla-v8-2.test.ts › počítadlá sú verejné — viewFor ich posiela obom hráčom"
+        "packages/core/test/pravidla-v8-2.test.ts › Dlhy a počet Absťákov sú verejné — viewFor ich posiela obom hráčom"
       ],
       "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
@@ -1291,30 +1306,32 @@
     },
     {
       "id": "8.abstak.vznik",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Na konci kola menej nerestí než súper v tom istom kole → +1 Absťák (počítadlo, v8.2 bez dobratia karty) a +1 k Absťákom získaným za hru; platí aj v prvom kole (v8.1 Krok so stolom).",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "pravidlo": "Na konci kola menej nerestí než Chuť → karta Absťák do odhadzovacieho balíčka a +1 k Absťákom získaným za hru; potom Chuť = väčšie z (Chuť, neresti) − 1, nie pod 0 (v9.1).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §8: menej nerestí než súper v tomto kole → Absťák (počítadlo, v8.2) bez dobratia karty",
-        "packages/core/test/pravidla-bitka.test.ts › §8: platí už v prvom kole — základ z minulého kola nie je",
-        "packages/core/test/pravidla-v5.test.ts › Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne"
+        "packages/core/test/abstak-chut.test.ts › menej nerestí než Chuť → karta Absťák do odhadzovacieho balíčka; Chuť = väčšie z (Chuť, neresti) − 1",
+        "packages/core/test/abstak-chut.test.ts › rovnako ako Chuť → nič; viac → Chuť rastie (Michalov príklad: 9 nerestí → 8, potom 7 → Absťák a 8 − 1)",
+        "packages/core/test/abstak-chut.test.ts › súper latku neurčuje — kolo bez nerestí s Chuťou 0 nič nedá, aj keď súper flámoval",
+        "packages/core/test/pravidla-v5.test.ts › Absťák = Absťáky získané za hru: zahodením karty Absťák počítadlo neklesne"
       ],
-      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+      "poznamka": "v9.1 (Michal 2026-10-30, docs/napady/abstak-3-zadanie.md): Chuť namiesto Kroku so stolom."
     },
     {
       "id": "8.abstak.zbavenie",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Viac nerestí než súper v tom istom kole → hráč sa zbaví jedného Absťáku (počítadlo); rovnako (aj 0 : 0) nič.",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "pravidlo": "Absťák sa (v9.1) nezbavuje nerestami — karta ostáva v balíčku; zahodí ju Vízia (v starej sade aj Kar). Hasič ju vytiahne ako každú kartu.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §8: rovnako ako súper → nič (aj keď obaja nič); viac → jeden Absťák späť do zásoby"
+        "packages/core/test/abstak-chut.test.ts › §11: Vízia ho smie zahodiť z hry; Kar zahodí Absťák z ruky ako Cirhózu",
+        "packages/core/test/abstak-chut.test.ts › §9.7: Absťák z ruky ide po bitke do odhadzovacieho balíčka"
       ],
       "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "8.abstak.manzelka",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Milujúca manželka (v7) latku Absťáku neposúva — Absťák pri rovnakom počte nerestí ako súper nevznikne ani s ňou.",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "pravidlo": "Milujúca manželka (v7) latku Absťáku (Chuť) neposúva — pri nerestiach rovných Chuti Absťák nevznikne ani s ňou.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › s priznanou Manželkou ani bez nej Absťák pri rovnosti nerestí nedostane",
@@ -1324,28 +1341,27 @@
     },
     {
       "id": "8.abstak.tuhe",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Každý Absťák znižuje vlastné tuhé o 1.",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "pravidlo": "Každá karta Absťák kdekoľvek v balíčku (ruka, doberací, odhadzovací) znižuje vlastné tuhé o 1 (v9.1).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé"
+        "packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé",
+        "packages/core/test/abstak-chut.test.ts › −1 tuhé za každú kartu Absťák kdekoľvek v balíčku (ruka, doberací, odhadzovací); Pohoršenie nedáva"
       ]
     },
     {
       "id": "9.pohorsenie.abstak",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Nervák (v8.1): každý Absťák hráča (v8.2 počítadlo, verejné) mu dá v bitke 1 Pohoršenie navyše.",
+      "pravidlo": "Nervák zanikol (v9.1): Absťák Pohoršenie nedáva.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/abstak-nervak.test.ts › každý priznaný Absťák pridá hráčovi 1 Pohoršenie, súperovi nič",
-        "packages/core/test/abstak-nervak.test.ts › Absťák je od v8.2 verejné počítadlo (nie karta v ruke) — súper ráta rovnaké Pohoršenia ako server",
-        "packages/core/test/abstak-nervak.test.ts › v partii hráč s Absťákmi dostane v kroku Pohoršenie aspoň toľko Pohoršení, koľko má Absťákov"
+        "packages/core/test/abstak-chut.test.ts › −1 tuhé za každú kartu Absťák kdekoľvek v balíčku (ruka, doberací, odhadzovací); Pohoršenie nedáva"
       ],
       "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "8.abstak.autobusar",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
       "pravidlo": "Autobusár jeden Absťák majiteľa ignoruje všade, kde sa v bitke rátajú: v tuhom poškodení, pri remíze v tuhom aj v špakoch víťaza (min 0).",
       "stav": "netestovatelne",
       "testy": [],
@@ -1353,13 +1369,41 @@
     },
     {
       "id": "8.nerest",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Neresti: Vypiť, NA EX, každá vyfajčená cigareta, doliatie (2) a barter (za cigaretu); šenok, Dedičstvo, Starosta a akcie nie.",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "pravidlo": "Nerest je len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1 (za každú zaplatenú), Kšeft väzňa 1; doliatie, barter, šenok, Dedičstvo, Starosta a Kšefty lokalít nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §8 nerest: doliatie poldeci 2, barter za každú cigaretu, fajčenie 1; Dedičstvo ani šenok nie",
+        "packages/core/test/abstak-chut.test.ts › fajčenie 1 za každú cigaretu; doliatie, barter, Dedičstvo ani šenok nie",
+        "packages/core/test/abstak-chut.test.ts › Vypiť v Zhromaždení 1, NA EX 2 (vypije sa v bitke) — výhľad v bare ráta NA EX na stole za 2",
         "packages/core/test/pravidla-bitka.test.ts › §9.5: NA EX poldeci sa najprv vypijú, potom akcia Poldeci otočí vypitý na plný; bez vypitého vyjde naprázdno; platí pre majiteľa karty aj na súperovej strane",
         "packages/core/test/pravidla-v3.test.ts › limit klesne o 1, ďalšou kartou ťah nekončí, pečeň +1 a nerest"
+      ]
+    },
+    {
+      "id": "8.chut.vyucba",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
+      "pravidlo": "Výučba Prvá hra je bez Chuti a Absťáku (prepínač partie bezChuti); viewFor ho posiela.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/abstak-chut.test.ts › partia bez Chuti (výučba Prvá hra): koniec kola Absťák nedá; rozdanie výučby ju zakladá bez Chuti"
+      ]
+    },
+    {
+      "id": "8.chut.opatrovatelka",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Opatrovateľka (Furt, v9.1): v línii porovná Chuť majiteľa na konci kola o 2 nižšiu; Chuť ubúda normálne; súperova nepomáha.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/abstak-chut.test.ts › Opatrovateľka v línii (Furt): Chuť sa porovnáva o 2 nižšia — ubúda normálne"
+      ]
+    },
+    {
+      "id": "11.abstak.verejny-pocet",
+      "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
+      "pravidlo": "Počet kariet Absťák oboch hráčov a ich Chuť sú verejné (viewFor), poloha karty v ruke a doberacom balíčku nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/abstak-chut.test.ts › viewFor: počet Absťákov oboch je verejný, poloha karty v ruke a doberacom balíčku nie"
       ]
     },
     {
@@ -1385,17 +1429,6 @@
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › Benzínka: nikto nesmie fajčiť; Krčmárka po bitke otočí vypitý poldeci (Michal 2026-10-20); packages/core/test/hodnota-lokality.test.ts › Benzínka má rovnakú hodnotu ako iné lokality (od 2026-10-20 už neprepadá)."
-    },
-    {
-      "id": "15.lokalita.zastavka",
-      "paragraf": "15. Lokality",
-      "pravidlo": "Zastávka: spoločný limit = súčet limitov; pas dá cigarety najviac za vlastný limit.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/poldeci.test.ts › Zastávka: spoločný limit = súčet limitov oboch; Vínko v Dedičstve pridá 1",
-        "packages/core/test/medzery-20261022.test.ts › spoločný limit je súčet, pas dá cigarety len za vlastný limit hráča",
-        "packages/core/test/medzery-20261022.test.ts › kartyZaPas: menšie zo spoločného zvyšku a vlastného zvyšku; mimo Zastávky zvyšok limitu"
-      ]
     },
     {
       "id": "15.lokalita.lesna-cesta-ihrisko",
@@ -1527,9 +1560,11 @@
     {
       "id": "16.karta.pasca",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Pasca v Dedičstve: každé súperovo Zviera v línii mu uberie 1 tuhé.",
-      "stav": "na-overenie",
-      "testy": [],
+      "pravidlo": "Pasca (Dedičstvo: Bitka): ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Ranu navyše (v9.1, text karty od sady v36; predtým Pecka).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Rana navyše (v9.1, predtým Pecka); Pijan: Rana za každé svoje NA EX"
+      ],
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
@@ -1658,10 +1693,13 @@
     {
       "id": "16.karta.sarlatan",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Šarlatán: Viera v okolí sa ráta ako Vízia.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "pravidlo": "Šarlatán (Konflikt): do konca kola jeho Hazard = Viera a Povera = Rana, aj akcie zdvojené NA EX; akcie, ktoré karta odpovede na NA EX aktivuje spojom, NA EX zruší (aj premenené).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/sarlatan-naex.test.ts › bez odpovede: NA EX zdvojí neaktívne — Hazard ×2 je Viera, Povera ×2 je Rana; žiadny Dlh",
+        "packages/core/test/sarlatan-naex.test.ts › s kartou odpovede: Povery na spoji sú aktívne, NA EX ich zruší (zrušené ako Rany); Hazard ďalej Viera bez zadĺženia"
+      ],
+      "poznamka": "ULTRA 20261030-115654 (Fero N10, Vilo N14): prehratie partie ukázalo, že jadro Konflikt uplatňuje celý; Dlh 1 vo výpise bol z Anonymného alkoholika."
     },
     {
       "id": "16.karta.vestica",
@@ -1884,10 +1922,11 @@
     {
       "id": "14b.finale.bez-abstaku",
       "paragraf": "14b. Finále",
-      "pravidlo": "Po finále sa Absťák ani karta zaň neudeľujú.",
+      "pravidlo": "Po finále sa Chuť ani Absťák nerieši; na konci hry Absťák nestojí nič (v9.1).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/abstak-nervak.test.ts › v ťahu, ktorý odohrá finále, nepribudne ani neodíde Absťák a nikto si nedoberie kartu"
+        "packages/core/test/abstak-chut.test.ts › po poslednej bitke hry (finále) sa Chuť ani Absťák nerieši",
+        "packages/core/test/abstak-chut.test.ts › karta Absťák v balíčku na konci hry špaky neuberá"
       ],
       "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
     },
@@ -1924,7 +1963,7 @@
     },
     {
       "id": "8.pecen.poldeci-akcia",
-      "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Pečeň a Cirhóza",
+      "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Pečeň a Cirhóza",
       "pravidlo": "Každá aktívna akcia Poldeci pridá v Pitke majiteľovi karty pečeň +1 (popri otočení poldeci v bitke); za každý celý prah 3 Cirhóza.",
       "stav": "pokryte",
       "testy": [
@@ -1953,12 +1992,11 @@
     {
       "id": "16.karta.vinko.uprostred",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Vínko vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď o 1 (na Zastávke spoločný obom aj vlastný majiteľovi); druhé Vínko nič.",
+      "pravidlo": "Vínko vyložené do Dedičstva v Zhromaždení zvýši zostávajúci limit hneď o 1; druhé Vínko nič.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/vinko-limit-hned.test.ts › zostávajúci limit stúpne hneď o 1, limit ďalšieho Zhromaždenia tiež",
         "packages/core/test/vinko-limit-hned.test.ts › druhé Vínko limit nezvýši — bonus je len jeden, ako na začiatku Zhromaždenia",
-        "packages/core/test/vinko-limit-hned.test.ts › Zastávka: spoločný limit stúpne obom, vlastný len majiteľovi Vínka",
         "packages/core/test/vinko-limit-hned.test.ts › plán ťahu (náhľad limitu) ráta Vínko do Dedičstva ako +1 aj pre ďalšiu kartu ťahu"
       ],
       "poznamka": "Návrh #26 B, Michal 2026-10-28: hneď (predtým hra dávala +1 až od ďalšieho Zhromaždenia)."
@@ -2081,7 +2119,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Puška a Vidly: Petelice a Rany o 1 poškodenie viac — aj Rany navyše z efektov",
-        "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX",
+        "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Rana navyše (v9.1, predtým Pecka); Pijan: Rana za každé svoje NA EX",
         "packages/core/test/v7-efekty.test.ts › Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie",
         "packages/core/test/v7-efekty.test.ts › Noviny — Titulka (návrh #40): porazený majiteľ dostane 1 špak za každý Dlh víťaza navyše, víťaz špaky za bitku celé",
         "packages/core/test/v7-efekty.test.ts › Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh"
