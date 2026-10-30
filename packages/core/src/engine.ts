@@ -1493,9 +1493,11 @@ function applyPrikaz(
 
   if (cmd.type === "tah") {
     // Atomicky: pri chybe ktoréhokoľvek kroku sa nevykoná nič. Okrem Zhromaždenia
-    // aj celý prebytok jedným klikom (roadmapa #9 B, Michal 2026-10-22).
+    // aj celý prebytok jedným klikom (roadmapa #9 B, Michal 2026-10-22) a od mocku C · Pečať
+    // (Michal 2026-10-30) aj Pohoršenie — Potvrdiť pošle všetky nepotvrdené posuny (rozdelenie.ts).
     const prebytok = state.faza === "bitka" && state.bitkaStav?.krok === "prebytok";
-    need(state.faza === "zhromazdenie" || prebytok, "Celý ťah naraz sa hrá len v Zhromaždení alebo pri prebytku.");
+    const pohorsenie = state.faza === "bitka" && state.bitkaStav?.krok === "pohorsenie";
+    need(state.faza === "zhromazdenie" || prebytok || pohorsenie, "Celý ťah naraz sa hrá len v Zhromaždení, pri Pohoršení alebo pri prebytku.");
     need(!cakaHasic(state), HASIC_NAJPRV);
     need(cmd.kroky.length > 0, "Ťah je prázdny.");
     let st = state;
@@ -1504,6 +1506,9 @@ function applyPrikaz(
       if (prebytok) {
         need(k.type === "prebytok", "Pri prebytku smú byť v ťahu len posuny markerov.");
         need(st.faza === "bitka" && st.bitkaStav?.krok === "prebytok" && st.bitkaStav.caka === hracId, "Prebytok sa minul skôr, než si posunul všetky markery.");
+      } else if (pohorsenie) {
+        need(k.type === "pohorsenie", "Pri Pohoršení smú byť v ťahu len posuny markerov.");
+        need(st.faza === "bitka" && st.bitkaStav?.krok === "pohorsenie" && st.bitkaStav.caka === hracId, "Pohoršenia sa minuli skôr, než si posunul všetky markery.");
       } else {
         need(k.type === "place" || k.type === "vypit" || k.type === "zaverecna", "V ťahu smú byť len vyloženia, Vypiť a Záverečná.");
         // O vytiahnutej karte Hasiča hráč rozhodne po zvyšku ťahu (ten poslal skôr, než ju videl);

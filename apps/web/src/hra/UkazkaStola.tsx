@@ -11,6 +11,7 @@
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
 //                  z prebytku (stopa v línii starších)
 //   &stop=prebytok krok Prebytok po bitke, keď posúva hráč ?ja (náhľad posunu v línii starších)
+//   &stop=pohorsenie krok Pohoršenie v bitke, keď rozdeľuje hráč ?ja (&i=k: k-té také, od 0)
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
 //                  odpovie a bitka sa vyhodnotí v jeho ťahu
 //   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
@@ -125,6 +126,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let s = setupGame(data, seed, { lokalit: Number(p.get("lokalit") ?? "3") });
   let rng = rngSeed(seed ^ 0x5a);
   let bitiek = 0;
+  let pohorseni = 0;
   const exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1";
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
@@ -156,6 +158,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: { ...s, hraci: ja === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] }, dohraj: [] });
     }
     if (stop === "prebytok" && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "pohorsenie" && s.faza === "bitka" && s.bitkaStav?.krok === "pohorsenie" && s.bitkaStav.caka === ja && (s.bitkaStav.pohorsenieZostava[ja] ?? 0) > 0) {
+      if (pohorseni++ === i) return najdene({ zaciatok: s, dohraj: [] });
+    }
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[ja === 0 ? 1 : 0] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";

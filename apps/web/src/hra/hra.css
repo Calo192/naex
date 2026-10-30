@@ -5821,63 +5821,571 @@ button.auto-hotovo-odkaz {
   color: var(--tlmeny);
 }
 
-/* Pohoršenie oboma smermi (v5): smer vyberá tlačidlo, nie klik na celý scorecard. */
-.ls-sc.klik.smery {
-  cursor: default;
-}
-
-.ls-smery {
-  display: flex;
-  gap: 4px;
-}
-
-.ls-smer {
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 1px 4px;
-  border-radius: 6px;
-  border: 1px solid var(--okraj);
-  background: var(--pozadie);
-  color: var(--text);
-  font: inherit;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
-
-.ls-smer.ja {
-  border-color: var(--ja);
-}
-
-.ls-smer.su {
-  border-color: var(--su);
-}
-
-.ls-smer.ja:hover,
-.ls-smer.ja.nahl,
-.ls-smer.ja:focus-visible {
-  outline: none;
-  background: color-mix(in srgb, var(--ja) 28%, var(--pozadie));
-}
-
-.ls-smer.su:hover,
-.ls-smer.su.nahl,
-.ls-smer.su:focus-visible {
-  outline: none;
-  background: color-mix(in srgb, var(--su) 28%, var(--pozadie));
-}
-
-.ls-smer:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  background: none;
-}
-
 .ls-dovod {
   font-style: italic;
   color: var(--akcent-svetly);
+}
+
+/* ---- Rozdeľovanie Pohoršenia a prebytku (mock C · Pečať, Michal 2026-10-30) ----
+   Meno na stred, pečať priazne na portréte, plochá stupnica s cenami a pod ňou šípky
+   rovnako vysoké ako stupnica. Nepotvrdený posun: jantárový rám, cena v rohu portrétu,
+   duch markera v cieli. Kto už nič nedostane, je tlmený. */
+.ls-sc.rozdel {
+  gap: 5px;
+  border: 2px solid var(--okraj-svetly);
+}
+
+.ls-sc.rozdel.s-posunom {
+  border-color: var(--akcent-svetly);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--akcent) 30%, transparent);
+}
+
+.ls-sc.rozdel.mrtvy .ls-portret img,
+.ls-sc.rozdel.mrtvy .ls-stupnica-r,
+.ls-sc.rozdel.mrtvy .ls-sipky {
+  opacity: 0.4;
+  filter: grayscale(0.5);
+}
+
+.ls-meno.ls-meno-stred {
+  flex: none;
+  text-align: center;
+  font-size: clamp(0.85rem, 1.3cqw, 1.08rem);
+}
+
+.ls-cena-navrhu {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 3;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font: 800 0.8rem/1.2 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  color: var(--na-akcente);
+  background: var(--akcent);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.5);
+}
+
+.ls-stupnica-r {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.lsr-pole {
+  position: relative;
+  min-width: 0;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.lsr-pole.dosah {
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.3);
+}
+
+/* Drahšie polia, na ktoré zvyšok nestačí — tlmené. */
+.lsr-pole.mimo {
+  opacity: 0.3;
+}
+
+button.lsr-pole.ciel {
+  z-index: 1;
+  cursor: pointer;
+  outline: 3px solid var(--text);
+  outline-offset: -1px;
+}
+
+button.lsr-pole.ciel:hover,
+button.lsr-pole.ciel:focus-visible {
+  outline-color: var(--akcent-svetly);
+}
+
+.lsr-cena {
+  position: relative;
+  z-index: 3;
+  font: normal 800 12px/1 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  color: #2b2116;
+}
+
+/* Červená zóna je tmavá — číslo na nej svetlé. */
+.lsr-pole.z3 .lsr-cena {
+  color: var(--lesk);
+}
+
+.lsr-mk {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--pozadie);
+  border: 3px solid var(--slaby-text);
+  box-shadow: 0 0 0 1px var(--text);
+}
+
+.lsr-mk.ja {
+  border-color: var(--ja);
+}
+
+.lsr-mk.su {
+  border-color: var(--su);
+}
+
+.lsr-mk.stare {
+  opacity: 0.4;
+}
+
+.lsr-mk.duch {
+  background: transparent;
+  border: 3px dashed var(--lesk);
+  box-shadow: 0 0 0 2px var(--pozadie), 0 0 10px 3px color-mix(in srgb, var(--akcent-svetly) 90%, transparent);
+  animation: lsr-duch 1s ease-in-out infinite alternate;
+}
+
+@keyframes lsr-duch {
+  from {
+    scale: 0.9;
+  }
+
+  to {
+    scale: 1.1;
+  }
+}
+
+/* Šípky smerov pod stupnicou, rovnako vysoké ako stupnica (Michal 2026-10-30: tlačidlá boli
+   neúmerne veľké); dotyková plocha ostáva 44 px — neviditeľný presah, nie väčšie tlačidlo. */
+.ls-sipky {
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.ls-sip {
+  position: relative;
+  min-width: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 4px;
+  border-radius: 4px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  color: var(--text);
+  font: 800 11px/1 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.ls-sip::before {
+  content: "";
+  position: absolute;
+  inset: -4px -2px -16px;
+}
+
+.ls-sip small {
+  font: inherit;
+}
+
+/* Rodič v selektore: globálne button:hover by inak prepísalo podklad. */
+.ls-sipky > button.ls-sip.ja {
+  border-color: var(--ja);
+  color: var(--ja);
+  background: color-mix(in srgb, var(--ja) 12%, transparent);
+}
+
+.ls-sipky > button.ls-sip.su {
+  border-color: var(--su);
+  color: var(--su);
+  background: color-mix(in srgb, var(--su) 12%, transparent);
+}
+
+.ls-sip:hover:not(:disabled),
+.ls-sip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--akcent-svetly);
+}
+
+.ls-sipky > button.ls-sip.aktivna {
+  color: var(--na-akcente);
+  background: var(--akcent);
+  border-color: var(--akcent-svetly);
+}
+
+.ls-sipky > button.ls-sip:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  border-style: dashed;
+  background: transparent;
+}
+
+.ls-sip.bez-smeru {
+  visibility: hidden;
+}
+
+/* Pečať priazne vpravo dole na portréte: ikona akcie a sila vo farbe toho, komu priazeň patrí. */
+.ls-pecat-pr {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  z-index: 4;
+}
+
+.ls-pecat {
+  --d: clamp(36px, 30cqw, 54px);
+  width: var(--d);
+  height: var(--d);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px double;
+  font: 900 clamp(0.8rem, 8cqw, 0.95rem) / 1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  rotate: -10deg;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.55);
+  cursor: help;
+}
+
+.ls-pecat-ikona {
+  width: calc(var(--d) * 0.4);
+  height: calc(var(--d) * 0.4);
+  fill: currentColor;
+}
+
+.ls-pecat-pr > button.ls-pecat.ja {
+  color: var(--na-farbe-hraca);
+  background: var(--ja);
+  border-color: var(--na-farbe-hraca);
+}
+
+.ls-pecat-pr > button.ls-pecat.su {
+  color: var(--na-farbe-hraca);
+  background: var(--su);
+  border-color: var(--na-farbe-hraca);
+}
+
+.ls-pecat-pr > button.ls-pecat.nikto {
+  --d: clamp(30px, 24cqw, 44px);
+  color: var(--slaby-text);
+  background: var(--plocha);
+  border: 2px dashed var(--okraj-svetly);
+  box-shadow: none;
+  rotate: 0deg;
+}
+
+.ls-pecat-zmena {
+  position: absolute;
+  top: -8px;
+  left: -12px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  font: 800 11px/1 var(--pismo);
+}
+
+.ls-pecat-zmena.hore {
+  color: var(--pozadie);
+  background: var(--zelena);
+}
+
+.ls-pecat-zmena.dole {
+  color: var(--pozadie);
+  background: var(--cervena-text);
+}
+
+.ls-pecat-zmena.prechod {
+  color: var(--na-akcente);
+  background: var(--akcent);
+}
+
+.ls-pecat-bolo {
+  position: absolute;
+  top: -8px;
+  right: -4px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj-svetly);
+  font: 800 11px/1 var(--pismo);
+  color: var(--tlmeny);
+  background: var(--plocha);
+}
+
+/* Popis pečate leží nad stolom (portál) — karta orezáva obsah. */
+.ls-pecat-tip {
+  position: fixed;
+  z-index: 200;
+  translate: -50% 0;
+  width: max-content;
+  max-width: 240px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--okraj-svetly);
+  background: var(--plocha);
+  color: var(--text);
+  font: 400 0.875rem/1.35 var(--pismo);
+  text-align: left;
+  box-shadow: 0 12px 26px rgb(0 0 0 / 0.45);
+  pointer-events: none;
+}
+
+.ls-pecat-tip.hore {
+  translate: -50% -100%;
+}
+
+.ls-pecat-tip b {
+  font-family: var(--nadpis);
+}
+
+.ls-pecat-tip .kto-ja {
+  color: var(--ja);
+  font-weight: 800;
+}
+
+.ls-pecat-tip .kto-su {
+  color: var(--su);
+  font-weight: 800;
+}
+
+.ls-pecat-tip .strach {
+  display: block;
+  margin-top: 4px;
+  color: var(--tlmeny);
+}
+
+.ls-pecat-tip .po {
+  display: block;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--okraj-svetly);
+  color: var(--akcent-svetly);
+}
+
+/* Bublina rozdeľovania (mock C): jedno písmo, jedna veľkosť a váha — čísla len tučné a vo farbe. */
+.linia-stav.jednotna {
+  align-items: center;
+  gap: 4px 10px;
+  font: 400 0.95rem/1.4 var(--pismo);
+  color: var(--tlmeny);
+}
+
+.linia-stav.jednotna > .pilulka-nadpis {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px 10px;
+  font: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--tlmeny);
+}
+
+.linia-stav.jednotna > .pilulka-text {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+.linia-stav.jednotna .pil-nazov {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--stol-stav);
+}
+
+.linia-stav.jednotna b.cislo {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--akcent-svetly);
+}
+
+.linia-stav.jednotna .pil-sep {
+  color: var(--okraj-svetly);
+}
+
+.linia-stav.jednotna .prepadne {
+  color: var(--cervena-text);
+}
+
+.linia-stav.jednotna .pil-cig {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--zelena);
+}
+
+.linia-stav.jednotna .pil-cig .ikona-cigareta {
+  width: 1.1em;
+  height: 1.1em;
+  fill: currentColor;
+}
+
+.ikona-delenia {
+  width: 1.1em;
+  height: 1.1em;
+  fill: currentColor;
+  flex: none;
+}
+
+.linia-stav .zetony {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+  align-self: center;
+  line-height: 1;
+}
+
+.linia-stav .zeton {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--akcent);
+  background: var(--plocha-2);
+  color: var(--akcent-svetly);
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.linia-stav .zeton .ikona-delenia {
+  width: 14px;
+  height: 14px;
+}
+
+.linia-stav .zeton.minute {
+  opacity: 0.25;
+  border-style: dashed;
+}
+
+/* Nepotvrdené: plné jantárové — na tej istej línii ako ostatné (Michal 2026-10-30). */
+.linia-stav .zeton.ide {
+  color: var(--na-akcente);
+  background: var(--akcent);
+}
+
+/* Spodná hrana: Potvrdiť s počtom posunov, ↺ Reset v jeho rohu (vzor pecat-zrusit, 40 px). */
+.pecat-delenia .poc {
+  padding: 1px 7px;
+  border-radius: 999px;
+  font: 700 0.75rem/1.3 var(--pismo);
+  letter-spacing: 0;
+  color: var(--akcent-svetly);
+  background: var(--na-akcente);
+}
+
+.pecat-delenia > button.pecat-reset {
+  position: absolute;
+  top: -14px;
+  right: -16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  font: 800 1.05rem/1 var(--pismo);
+  color: var(--text);
+  background: var(--plocha);
+  border: 2px solid var(--okraj-svetly);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.4);
+  cursor: pointer;
+}
+
+.pecat-delenia > button.pecat-reset:hover:not(:disabled),
+.pecat-delenia > button.pecat-reset:focus-visible {
+  background: var(--plocha);
+  border-color: var(--akcent);
+  color: var(--akcent-svetly);
+}
+
+.pecat-delenia > button.pecat-reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Zvyšok už nič nekúpi — Potvrdiť pulzuje. */
+.pecat-delenia > button.pecat-potvrd.vyzva {
+  animation: pecat-vyzva 1s ease-in-out infinite alternate;
+}
+
+@keyframes pecat-vyzva {
+  to {
+    box-shadow:
+      0 3px 0 color-mix(in oklab, var(--akcent-tmavy) 55%, #000),
+      0 0 0 8px color-mix(in srgb, var(--akcent) 35%, transparent),
+      0 10px 24px rgb(0 0 0 / 0.5);
+  }
+}
+
+/* Telefón (mock C): dva stĺpce kariet, portrét štvorec, bez vodorovného posunu; bublina sa
+   prilepí hore (číslo a žetóny, text pokynu sa skryje), hrana s Potvrdiť je prilepená ako vždy. */
+@media (max-width: 640px) {
+  .vrstva-starsich:has(.ls-sc.rozdel),
+  .linia-starsich:has(.ls-sc.rozdel) {
+    height: auto;
+  }
+
+  /* Kontajner podľa výšky by mal výšku 0 — karty v dvoch stĺpcoch určujú výšku samy. */
+  .vrstva-starsich:has(.ls-sc.rozdel) {
+    container-type: inline-size;
+  }
+
+  .linia-starsich:has(.ls-sc.rozdel) .ls-rad {
+    flex: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    overflow: visible;
+  }
+
+  .ls-rad > .ls-sc.rozdel {
+    width: auto;
+  }
+
+  .ls-sc.rozdel > .ls-telo {
+    flex: none;
+  }
+
+  .ls-sc.rozdel .ls-portret {
+    aspect-ratio: 1;
+  }
+
+  .linia-stav.jednotna {
+    position: sticky;
+    top: 4px;
+    z-index: 27;
+    padding: 6px 10px;
+    gap: 4px 8px;
+  }
+
+  .linia-stav.jednotna > .pilulka-text {
+    display: none;
+  }
+
+  .linia-stav.jednotna .zeton {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lsr-mk.duch,
+  .pecat-delenia > button.pecat-potvrd.vyzva {
+    animation: none;
+  }
 }
 
 /* Nízky stôl (malé okno, veľa panelov nad ním): riadky pod stupnicou hustejšie, nech ostane portrét. */

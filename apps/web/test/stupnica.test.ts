@@ -8,7 +8,7 @@ import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { PosunMarkera } from "@naex/core";
 import { loadGameData, setupGame } from "@naex/core";
 import { stopaStarsieho } from "../src/hra/LiniaStarsich.tsx";
-import { CENA_POLA, PRAVIDLO_STRACHU, nahladStrachu, pokynPrebytku, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
+import { CENA_POLA, PRAVIDLO_STRACHU, nahladStrachu, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
@@ -75,9 +75,7 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
     expect(riadokDlazdice("nic", true)).toBe("neutrálny");
   });
 
-  it("pokyn prebytku: vyberá sa starší, marker ide, kým zvyšok stačí, a cena poľa podľa zóny (v8.2)", () => {
-    expect(pokynPrebytku(3)).toMatch(/^Prebytok 3 — vyber staršieho, marker pôjde tak ďaleko, ako zvyšok stačí/);
-    expect(pokynPrebytku(3)).toContain(CENA_POLA);
+  it("cena poľa podľa zóny v legende stupnice (v8.2); pokyn prebytku nahradila bublina rozdeľovania (mock C)", () => {
     expect(CENA_POLA).toBe("pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4");
   });
 });
