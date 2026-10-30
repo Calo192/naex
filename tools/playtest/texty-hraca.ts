@@ -6,19 +6,19 @@
 import type { ClientState, GameData, PlayerId } from "@naex/core";
 import {
   dalsiePitkyKola,
-  efektHraca,
-  efektPotlaceny,
-  evaluateLine,
-  lineState,
+  efektyPrehry,
   opponentOf,
-  partiaHraca,
   poOdkrytiNaex,
   sMojimiSkrytymiNaex,
   spakov,
   stavkaBitky,
   stolPriPoskodeni,
+  textyEfektovPrehry,
   vidiVolbuSupera,
 } from "@naex/core";
+
+// Efekty Prehra ráta jadro (návrh #38 B) — test klienta ich berie odtiaľto.
+export { efektyPrehry } from "@naex/core";
 
 /** Súperove skryté NA EX, ktoré hráč vidí — server ich pošle len majiteľovi Bzdochy (vidiVolbuSupera). */
 export function superoveSkryteNaex(v: ClientState): readonly { readonly hrac: PlayerId; readonly uid: number }[] {
@@ -108,59 +108,8 @@ export function kedyRozhodneVydesenie(v: Pick<ClientState, "lokalitCelkom" | "ro
   return `na konci kola ${ohlasene + 1}`;
 }
 
-/** Efekty Prehra kariet v línii — index = porazený, čísla dostane víťaz. */
-export interface EfektyPrehry {
-  /** Dievčina na vydaj: víťaz získa toľko Dlhov, koľko mala aktívnych akcií. */
-  readonly dievcina: readonly [number, number];
-  /** Farár: víťaz získa zadĺženie za každú svoju aktívnu Poveru. */
-  readonly farar: readonly [number, number];
-  /** Podvodník: toľko priznaných Dlhov porazeného prejde k víťazovi. */
-  readonly podvodnik: readonly [number, number];
-}
-
-/**
- * Efekty Prehra podľa stola teraz — ten istý výber kariet ako koniecBitky
- * (odkrytá karta v partii porazeného, nie spálená Benzínkou ani umlčaná) a tie
- * isté aktívne akcie (evaluateLine). Motor ich ráta až po tom, čo sa poldeci
- * z NA EX vypijú a zmiznú z kariet — NA EX ich teda nemení, Výtržník áno.
- */
-export function efektyPrehry(data: GameData, v: ClientState): EfektyPrehry {
-  const bezNaex = (pl: ClientState["strany"][0][number]): ClientState["strany"][0][number] => {
-    if (pl.naexBy === undefined && pl.naexBy2 === undefined) return pl;
-    const { naexBy: _a, naexBy2: _b, ...zvysok } = pl;
-    return zvysok;
-  };
-  const linia = evaluateLine(data, lineState({ ...v, strany: [v.strany[0].map(bezNaex), v.strany[1].map(bezNaex)] }));
-  const spalit = new Set(v.bitkaStav?.spalit ?? []);
-  const aktivne = (uid: number): number => {
-    const ev = linia.cards.get(uid);
-    return ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
-  };
-  const pre = (porazeny: PlayerId): [number, number, number] => {
-    const vitaz = opponentOf(porazeny);
-    const partia = partiaHraca(v, porazeny).filter((pl) => pl.zaverecna !== true);
-    const dievcina = partia
-      .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
-      .reduce((a, pl) => a + aktivne(pl.card.uid), 0);
-    const farar = efektHraca(v, porazeny, "farar") && !efektPotlaceny(data, v, porazeny, "farar") ? (linia.sums[vitaz].Povera ?? 0) : 0;
-    const dlhy = v.hraci[porazeny].dlhy;
-    const podvodnik = Math.min(dlhy, partia.filter((pl) => pl.card.defId === "podvodnik").length);
-    return [dievcina, farar, podvodnik];
-  };
-  const [a, b] = [pre(0), pre(1)];
-  return { dievcina: [a[0], b[0]], farar: [a[1], b[1]], podvodnik: [a[2], b[2]] };
-}
-
-/** Efekty Prehra porazeného `porazeny` slovami z pohľadu v.ja; prázdne pole, keď nič. */
-function textyPrehry(e: EfektyPrehry, porazeny: PlayerId, ja: PlayerId): string[] {
-  const vitaz = porazeny === ja ? "súper" : "ty";
-  const ziska = porazeny === ja ? "získa" : "získaš";
-  return [
-    e.dievcina[porazeny] > 0 ? `Dievčina na vydaj: ${vitaz} ${ziska} ${e.dievcina[porazeny]} Dlh${e.dievcina[porazeny] === 1 ? "" : e.dievcina[porazeny] <= 4 ? "y" : "ov"}` : "",
-    e.farar[porazeny] > 0 ? `Farár: ${vitaz} ${ziska} zadĺženie ${e.farar[porazeny]}` : "",
-    e.podvodnik[porazeny] > 0 ? `Podvodník: ${e.podvodnik[porazeny]} priznaný Dlh ${porazeny === ja ? "tvoj prejde k súperovi" : "súpera prejde k tebe"}` : "",
-  ].filter((x) => x !== "");
-}
+/** Efekty Prehra porazeného slovami — ten istý text ako web (jadro, návrh #38 B). */
+const textyPrehry = textyEfektovPrehry;
 
 /** Riadok „PO BITKE (efekty Prehra)“ pod odhadom bitky; null, keď na stole nič také nie je. */
 export function prehraText(data: GameData, v: ClientState): string | null {

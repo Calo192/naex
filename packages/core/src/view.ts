@@ -29,7 +29,7 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
+import { cenaDedicstva, lokalityNaVyber, prahVydesenia, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
 import { efektHraca, efektPotlaceny } from "./effects.ts";
 import type { VerejnyStav } from "./effects.ts";
@@ -587,6 +587,12 @@ export interface NahladPosunu {
   /** Komu patrí priazeň staršieho po posune a s akou silou. */
   readonly priazen: PlayerId | null;
   readonly sila: number;
+  /**
+   * Vydesení starší po posune [vydesil hráč 0, hráč 1] a koľko ich treba na výhru
+   * (#38 B, Michal 2026-10-28) — aby si nikto omylom nezrušil vlastné ohlásené vydesenie.
+   */
+  readonly vydeseni: readonly [number, number];
+  readonly prahVydesenia: number;
 }
 
 /**
@@ -601,13 +607,17 @@ export function nahladPosunuMarkera(_data: GameData, view: ClientState, elderId:
   if (marker === null) return null;
   const posunuty = sPosunutymMarkerom(elder, marker);
   const pred = spakyTeraz(view).odhad;
-  const po = spakyTeraz(sMarkerom(view, elderId, marker)).odhad;
+  const poPosune = sMarkerom(view, elderId, marker);
+  const po = spakyTeraz(poPosune).odhad;
+  const vydeseni = (p: PlayerId): number => poPosune.starsi.filter((e) => vydesil(e, p)).length;
   return {
     odhad: po,
     zmena: [po[0] - pred[0], po[1] - pred[1]],
     spakyZaStarsieho: [strachNaVyplatu(posunuty, 0), strachNaVyplatu(posunuty, 1)],
     priazen: priazenHraca(posunuty),
     sila: priazenSila(posunuty),
+    vydeseni: [vydeseni(0), vydeseni(1)],
+    prahVydesenia: prahVydesenia(poPosune),
   };
 }
 

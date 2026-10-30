@@ -61,6 +61,11 @@ import {
   cenaKroku,
   pohorsenieMozne,
   posunZaBody,
+  efektyPrehry,
+  hrozbaKliatob,
+  mozeEsteNaex,
+  textHrozbyKliatob,
+  textyEfektovPrehry,
   cenaKliatby,
   battleOutcome,
   prebytokNaRozdelenie,
@@ -1009,7 +1014,7 @@ export function HernaPlocha({
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
   // zvýraznenie spojov aj odhad bitky. Moje skryté NA EX v ňom ležia na kartách
   // (pre mňa sú dané), súperove nie — tie sa ukážu až pri odkrytí.
-  const { stol, lineEval, odhad, rozpis, hrozby, rozsahy, presunute } = useMemo(() => {
+  const { stol, lineEval, odhad, rozpis, hrozby, hrozbyKliatob, rozsahy, presunute } = useMemo(() => {
     let strany: ClientState["strany"] = zaklad.strany;
     let hraci = zaklad.hraci;
     let prilozeniaKu = zaklad.prilozeniaKu;
@@ -1063,6 +1068,11 @@ export function HernaPlocha({
       ciel === null || view.bitkaStav !== null
         ? ([null, null] as const)
         : ([hrozbaNaex(data, stolBitky, priebeh, 0), hrozbaNaex(data, stolBitky, priebeh, 1)] as const);
+    // Kliatby z cudzieho NA EX (#38 B) — z pohľadu s mojimi skrytými NA EX, ruka sa neráta.
+    const hrozbyKliatob =
+      ciel === null || view.bitkaStav !== null || vylozenia.length > 0
+        ? ([null, null] as const)
+        : ([hrozbaKliatob(data, zaklad, 0, mozeEsteNaex(stolBitky, priebeh, 0)), hrozbaKliatob(data, zaklad, 1, mozeEsteNaex(stolBitky, priebeh, 1))] as const);
     // Nepridelené Pohoršenia (Michal 2026-10-27 „ukázať rozsah“): kam až ich hráč bitku dotiahne.
     const stolPohorseni = { ...stolBitky, patronat: view.patronat, bitkaStav: view.bitkaStav };
     const nepridelene = nepridelenePohorsenia(data, stolPohorseni, lineEval.sums);
@@ -1073,7 +1083,7 @@ export function HernaPlocha({
             rozsahPohorseni(data, stolPohorseni, lineEval.sums, nepridelene, 0),
             rozsahPohorseni(data, stolPohorseni, lineEval.sums, nepridelene, 1),
           ] as const);
-    return { stol, lineEval, odhad, rozpis, hrozby, rozsahy, presunute };
+    return { stol, lineEval, odhad, rozpis, hrozby, hrozbyKliatob, rozsahy, presunute };
     // vylozene a lokalitaNavrh sú odvodené len z navrh a view.
   }, [data, view, navrh, somNaTahu, zaklad]);
 
@@ -1198,6 +1208,25 @@ export function HernaPlocha({
     const makke = hraci.filter((p) => d[p].makke !== 0).map((p) => `${kto(p)} ${znak(d[p].makke)}`);
     if (makke.length > 0) casti.push(`mäkké: ${makke.join(", ")}`);
     return casti.length === 0 ? null : casti.join(" · ");
+  };
+  /**
+   * Efekty Prehra po bitke podľa stola (návrh #38 B) — jadro ich ráta (efektyPrehry), tie isté
+   * slová ako klient AI hráčov; null, keď na stole nie sú.
+   */
+  const efektyPoBitke = (s: ClientState): string | null => {
+    const e = efektyPrehry(data, s);
+    const casti = ([ja, super_] as const).flatMap((p) => {
+      const t = textyEfektovPrehry(e, p, ja);
+      return t.length === 0 ? [] : [`${p === ja ? "keď prehráš" : `keď prehrá ${menoHraca(super_)}`}: ${t.join(", ")}`];
+    });
+    return casti.length === 0 ? null : casti.join("; ");
+  };
+  /** Efekty Prehra po NA EX na kartu `uid` — keď ich NA EX zmení, alebo mieri na kartu s Prehrou (Dievčina, Farár, Podvodník). */
+  const poBitkeNaex = (po: ClientState, uid: number | null): string | null => {
+    const text = efektyPoBitke(po);
+    const defId = uid === null ? undefined : zaklad.strany.flat().find((pl) => pl.card.uid === uid)?.card.defId;
+    const sPrehrou = defId === "dievcina_na_vydaj" || defId === "farar" || defId === "podvodnik";
+    return text !== efektyPoBitke(zaklad) || sPrehrou ? (text ?? "nič") : null;
   };
   /**
    * Prebytok bitky pred ťahom a po ňom, keď sa mení alebo ho kráti Puška či Miňištrant
@@ -3819,6 +3848,7 @@ export function HernaPlocha({
                   </>
                 )}
                 {vybrana.odkrytie.doDna && <> · Na zdravie: poldeci sa ti po bitke vráti plný</>}
+                {poBitkeNaex(vybrana.odkrytie.view, vybranaUid) !== null && <> · po bitke (efekty Prehra): {poBitkeNaex(vybrana.odkrytie.view, vybranaUid)}</>}
                 {view.zaverecne.some((z) => z.majitel === super_) && <> · bez súperovej Záverečnej lícom dole</>} · v ďalšom kole limit{" "}
                 {limitPoVybranej === limitBez ? `ostane ${limitBez}` : `${limitPoVybranej} namiesto ${limitBez}`} · skryto do konca Pitky; ak {menoHraca(super_)} dá NA EX
                 na tú istú kartu, je z nej Výtržník (všetky akcie Rany pre majiteľa) · platí, ak {menoHraca(super_)} neodpovie (v ruke má{" "}
@@ -4111,7 +4141,9 @@ export function HernaPlocha({
     // Priazeň sa mení hneď — keď to pohne poškodením (Bitkár, Veriaci), náhľad ukáže bitku pred a po (playtest 20261026-181227-1).
     const zmenaBitky = cezPohorsenie ? bitkaPoPohorseni(data, view, elder.elderId, ja, k === ja) : null;
     const bitka = zmenaBitky === null ? "" : ` · bitka ${zmenaBitky.pred.tuhe[ja]} : ${zmenaBitky.pred.tuhe[super_]} → ${zmenaBitky.po.tuhe[ja]} : ${zmenaBitky.po.tuhe[super_]}`;
-    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`} za ${cena}: ${zonaPred} → ${zonaPo} · ${nahladStrachu(n.spakyZaStarsieho[ja], n.spakyZaStarsieho[super_], menoHraca(super_))}${doZony} · ${priazen}${hned}${bitka}`;
+    // Vydesenie po posune (návrh #38 B): nech si nikto omylom nezruší vlastné ohlásené vydesenie.
+    const vydeseni = ` · vydesených ty ${n.vydeseni[ja]} / ${menoHraca(super_)} ${n.vydeseni[super_]} (na výhru ${n.prahVydesenia})`;
+    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`} za ${cena}: ${zonaPred} → ${zonaPo} · ${nahladStrachu(n.spakyZaStarsieho[ja], n.spakyZaStarsieho[super_], menoHraca(super_))}${doZony} · ${priazen}${hned}${bitka}${vydeseni}`;
   };
   /**
    * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba k súperovi alebo
@@ -4429,6 +4461,23 @@ export function HernaPlocha({
       cele: `${kdo} dať NA EX na ${karta}: ${tuhe}${prebytok} (z kariet na stole, ruka sa neráta).`,
     };
   };
+  // Hrozba kliatob (návrh #38 B): NA EX z kariet na stole, ktoré pridá Cirhózu či Dlh, aj keď víťaza nezmení.
+  const textKliatobHrozby = (kto: "ja" | "su"): HrozbaBitky | null => {
+    const k = hrozbyKliatob[kto === "ja" ? ja : super_];
+    if (k === null) return null;
+    const pl = najdiVLinii(k.uid);
+    const karta = pl === undefined ? "kartu" : menoKarty(pl.card.defId);
+    const komu = k.obet === ja ? "tebe" : menoHraca(super_);
+    const kliatby = textHrozbyKliatob(k);
+    return {
+      kto,
+      zdroj: "kliatby",
+      uid: k.uid,
+      mini: `${kto === "ja" ? "ty" : "súper"} NA EX: ${komu} ${kliatby}`,
+      kratko: `${kto === "ja" ? "Tvoje NA EX" : "Súperovo NA EX"} na ${karta}: ${komu} ${kliatby}`,
+      cele: `${kto === "ja" ? "Ak dáš" : `Ak ${menoHraca(super_)} dá`} NA EX na ${karta}: ${komu} do konca kola ${kliatby} (z kariet na stole, ruka sa neráta).`,
+    };
+  };
   // Rozsah nepridelených Pohoršení — vedľa hrozby NA EX, rovnakým tvarom (Michal 2026-10-27).
   const textRozsahu = (kto: "ja" | "su"): HrozbaBitky | null => {
     const r = rozsahy[kto === "ja" ? ja : super_];
@@ -4449,11 +4498,11 @@ export function HernaPlocha({
   };
   // Pohoršenia prídu v bitke isto, NA EX len možno — idú prvé; pri viacerých položkách bez prebytku
   // (je v titulku a nápovede), inak by sa do riadku pri 1366 px nezmestila ani druhá.
-  const polozkyHrozby = [textRozsahu("su"), textHrozby("su"), textRozsahu("ja"), textHrozby("ja")].filter((h): h is HrozbaBitky => h !== null);
+  const polozkyHrozby = [textRozsahu("su"), textHrozby("su"), textKliatobHrozby("su"), textRozsahu("ja"), textHrozby("ja"), textKliatobHrozby("ja")].filter((h): h is HrozbaBitky => h !== null);
   const hrozbyBitky =
     polozkyHrozby.length < 2
       ? polozkyHrozby
-      : polozkyHrozby.map((h) => ({ ...h, mini: h.zdroj === "pohorsenia" ? h.mini : h.mini.replace(/ \(prebytok [^)]*\)$/, "").replace(/^(ty|súper) až/, "$1 NA EX až") }));
+      : polozkyHrozby.map((h) => ({ ...h, mini: h.zdroj === "pohorsenia" || h.zdroj === "kliatby" ? h.mini : h.mini.replace(/ \(prebytok [^)]*\)$/, "").replace(/^(ty|súper) až/, "$1 NA EX až") }));
   // Odhad bitky len keď ho hráči ovplyvnia — v Zhromaždení, Pitke a bitke;
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
   const bitkaProps: BitkaPanelProps | null =
@@ -4477,6 +4526,7 @@ export function HernaPlocha({
           skrytaSupera: b?.damage == null && view.zaverecne.some((z) => z.majitel !== ja),
           utocnik: `útočník: ${view.utocnik === ja ? "ty" : menoHraca(view.utocnik)} — ${view.kolo === 1 ? "v 1. kole náhodne" : "porazený z minulej bitky (remíza roly nemení)"}`,
           hrozby: b?.damage != null ? [] : hrozbyBitky,
+          poBitke: b?.damage != null ? null : efektyPoBitke(zaklad),
           ukazHrozbu: setUkazHrozbu,
         };
   // Strany jednotného baru (Michal 2026-10-25): aktivované akcie, alebo karty na vyloženie.

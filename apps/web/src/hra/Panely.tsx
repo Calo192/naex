@@ -1147,12 +1147,14 @@ export interface BitkaPanelProps {
   readonly ukazHrozbu?: (uid: number | null) => void;
   /** Súper má v línii Záverečnú lícom dole — jeho tuhé je neisté (roadmapa #83). */
   readonly skrytaSupera?: boolean;
+  /** Efekty Prehra po bitke podľa stola (návrh #38 B: Dievčina na vydaj, Farár, Podvodník). */
+  readonly poBitke?: string | null;
 }
 
 export interface HrozbaBitky {
   readonly kto: "ja" | "su";
-  /** NA EX z kariet na stole (predvolené), alebo rozsah nepridelených Pohoršení. */
-  readonly zdroj?: "naex" | "pohorsenia";
+  /** NA EX z kariet na stole (predvolené), rozsah nepridelených Pohoršení, alebo kliatby z NA EX (#38 B). */
+  readonly zdroj?: "naex" | "pohorsenia" | "kliatby";
   /** Krátko do riadku bitky: „Súper ešte môže: tuhé 0 : 8“. */
   readonly kratko: string;
   /** Najkratšie, keď hrozbu majú obaja a idú do jedného riadku: „súper až 0 : 8“. */
@@ -1279,6 +1281,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
           </span>
         )}
         {!vysledok && rozdiel !== 0 && <span className="tip-riadok">pri remíze: {coPriRemize}</span>}
+        {props.poBitke != null && <span className="tip-riadok">po bitke (efekty Prehra): {props.poBitke}</span>}
         {!vysledok && stavka !== null && (
           <span className="tip-riadok">
             táto bitka ({pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
@@ -1342,6 +1345,7 @@ export function BitkaPanel(props: BitkaPanelProps) {
             : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${CENA_POLA}`}
         </span>
         {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
+        {props.poBitke != null && <span className="bitka-pozn">po bitke (efekty Prehra): {props.poBitke}</span>}
         {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie</span>}
       </div>
       {strana(su, "vpravo")}

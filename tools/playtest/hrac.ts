@@ -72,6 +72,9 @@ import {
   posunMarker,
   posunZaBody,
   bodyNaPohorsenie,
+  hrozbaKliatob,
+  mozeEsteNaex,
+  textHrozbyKliatob,
   priazen,
   poskodenieBitky,
   prahyHraca,
@@ -533,7 +536,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     // Stávku ráta jadro (stavkaBitky) ako výplata — Noviny, Herňa, sekera, Kultúrny dom (playtest 20261028-090549-2, Jano).
     const stavka = stavkaText(DATA, v);
     out.push(
-      `  → ${o.vitaz === null ? "REMÍZA V TUHOM — rozhodnú Absťáky (menej vyhrá), potom priznané Dlhy (menej vyhrá), inak sekera" : o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. ${stavka === null ? "" : `${stavka} `}Špaky za bitku (v8): 1 za každú kartu v línii na oboch stranách, o rozdiel Absťákov menej, ak ich má víťaz viac, aspoň ${KONSTANTY.SPAKY_ZA_BITKU_MIN} — každá ďalšia karta v línii pridá víťazovi špak; lokalitu si nikto neberie. Sekera: špaky kola vezme víťaz ďalšej bitky${finale ? " — vo finále prepadnú" : ""}; útočník ostáva; prebytok drží vyššie celkové, rozdeľuje ho ${finale ? "vo finále držiteľ (nové zóny strachu sa vyplatia hneď)" : "ten, proti komu sa ráta — spravidla porazený si vyberá, ktoré priazne dostane"}.`,
+      `  → ${o.vitaz === null ? "REMÍZA V TUHOM — rozhodnú Absťáky (menej vyhrá), potom priznané Dlhy (menej vyhrá), inak sekera" : o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. ${stavka === null ? "" : `${stavka} `}Špaky za bitku (v8): 1 za každú kartu v línii na oboch stranách (Absťáky ich od v8.1 neuberajú), aspoň ${KONSTANTY.SPAKY_ZA_BITKU_MIN} — každá ďalšia karta v línii pridá víťazovi špak; lokalitu si nikto neberie. Sekera: špaky kola vezme víťaz ďalšej bitky${finale ? " — vo finále prepadnú" : ""}; útočník ostáva; prebytok drží vyššie celkové, rozdeľuje ho ${finale ? "vo finále držiteľ (nové zóny strachu sa vyplatia hneď)" : "ten, proti komu sa ráta — spravidla porazený si vyberá, ktoré priazne dostane"}.`,
     );
     const prehra = prehraText(DATA, vs);
     if (prehra !== null) out.push(`  ${prehra}`);
@@ -569,6 +572,13 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
         out.push(
           `  HROZBA NA STOLE: ${ktoHrozi(p)[0]} NA EX na ${meno(pl.card.defId)} [${h.uid}]${ktoHrozi(p)[1]} → tuhé ty ${h.damage.tuhe[ja]} : súper ${h.damage.tuhe[su]}, ${kto}${h.vysledok.prebytokDrzi === null ? "" : `, prebytok ${h.vysledok.prebytok} → ${h.vysledok.prebytokDrzi === ja ? "tebe" : "súperovi"}`} (ruka sa neráta).`,
         );
+      }
+      // Hrozba kliatob (návrh #38 B): NA EX, ktoré pridá Cirhózu či Dlh, aj keď víťaza bitky nezmení — to isté, čo web.
+      for (const p of [su, ja]) {
+        const k = hrozbaKliatob(DATA, vs, p, mozeEsteNaex({ ...stol, lokalitaOtocena: v.lokalitaOtocena }, p === su ? priebehSupera : priebeh, p));
+        const pl = k === null ? undefined : vs.strany.flat().find((x) => x.card.uid === k.uid);
+        if (k === null || pl === undefined) continue;
+        out.push(`  HROZBA KLIATOB: ${ktoHrozi(p)[0]} NA EX na ${meno(pl.card.defId)} [${k.uid}]${ktoHrozi(p)[1]} → ${k.obet === ja ? "tebe" : "súperovi"} do konca kola ${textHrozbyKliatob(k)} (ruka sa neráta).`);
       }
     }
     // Nepridelené Pohoršenia (Michal 2026-10-27 „ukázať rozsah“) — to isté, čo web v riadku bitky:
@@ -1037,7 +1047,7 @@ function moznosti(v: ClientState): string[] {
         // Priazeň z Pohoršenia platí hneď — zmena bitky (playtest 20261026-181227-1 N2).
         const zmena = cezPohorsenie ? bitkaPoPohorseni(DATA, v, e.elderId, ja, k === ja) : null;
         const bitka = zmena === null ? "" : `; bitka (tuhé) ${zmena.pred.tuhe[ja]}:${zmena.pred.tuhe[su]} → ${zmena.po.tuhe[ja]}:${zmena.po.tuhe[su]}`;
-        return ` — marker o ${posun.kroky} ${posun.kroky === 1 ? "pole" : posun.kroky <= 4 ? "polia" : "polí"} za ${posun.cena}${cezPohorsenie ? " Pohoršení" : " z prebytku"} (ostane ${body - posun.cena}) — NÁHĽAD: odhad špakov do konca ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[su])}; po najbližšej vyhratej bitke od tohto staršieho (nevyplatené zóny) ty +${n.spakyZaStarsieho[ja]}, súper +${n.spakyZaStarsieho[su]}; priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}${bitka}`;
+        return ` — marker o ${posun.kroky} ${posun.kroky === 1 ? "pole" : posun.kroky <= 4 ? "polia" : "polí"} za ${posun.cena}${cezPohorsenie ? " Pohoršení" : " z prebytku"} (ostane ${body - posun.cena}) — NÁHĽAD: odhad špakov do konca ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[su])}; po najbližšej vyhratej bitke od tohto staršieho (nevyplatené zóny) ty +${n.spakyZaStarsieho[ja]}, súper +${n.spakyZaStarsieho[su]}; priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}${bitka}; vydesených po posune ty ${n.vydeseni[ja]} / súper ${n.vydeseni[su]} (na výhru treba ${n.prahVydesenia})`;
       };
       if (b?.krok === "pohorsenie") {
         // v8.2: vyberáš staršieho a smer, marker ide, kým Pohoršenia stačia; strach platí už v špakoch tejto bitky.
