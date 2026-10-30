@@ -148,7 +148,11 @@ try {
   const sprava = (): Promise<SpravaVyucby | null> => js<SpravaVyucby | null>("window.__naex?.vyucba ?? null");
   const posliWs = (msg: unknown): Promise<unknown> => js(`window.__naex.ws.send(${JSON.stringify(JSON.stringify(msg))})`);
   const klik = (selektor: string): Promise<boolean> => js<boolean>(`(() => { const b = document.querySelector(${JSON.stringify(selektor)}); if (!b || b.disabled) return false; b.click(); return true; })()`);
-  /** Medziobrazovky a Počítadlá (bitka, Pitka) zatvára hráč klikom — inak výučba čaká. Vráti, či niečo zavrel. */
+  /**
+   * Medziobrazovky a Počítadlá (bitka, Pitka) zatvára hráč klikom — inak výučba čaká. Vráti, či niečo zavrel.
+   * Lokalita súpera (.medziobrazovka.lokalita-supera) má „Rozumiem“ až po 3 s — dovtedy nie je čo kliknúť
+   * a ďalšie kolo slučky ho chytí; vo výučbe ju Melichar zatiaľ neukazuje, lokalitu vyberá vždy hráč.
+   */
   const zavriVrstvy = (): Promise<boolean> =>
     js<boolean>(`(() => {
       const b = document.querySelector(".medziobrazovka button, .rk-dalej");
