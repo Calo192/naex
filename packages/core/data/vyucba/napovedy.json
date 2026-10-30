@@ -162,11 +162,11 @@
       "poradie": 12,
       "uroven": "A",
       "spustac": {
-        "kedy": "keď prvýkrát hrozí Absťák (súper má v kole viac nerestí); ak výhľad nestihne, pri prvom Absťáku",
-        "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo mi pribudol Absťák (počítadlo)",
+        "kedy": "keď prvýkrát hrozí Absťák (v kole máš menej nerestí, ako je tvoja Chuť); ak výhľad nestihne, pri prvom Absťáku",
+        "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo mám kartu Absťák",
         "jadro": ["packages/core/src/zavislost.ts:58 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
-      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako súper, dostane ho. Každý ti v bitke uberie 1 tuhé, ale dá ti Pohoršenie navyše: na suchu robíš scény. Kto pije viac, jedného sa zbaví. Ja len radím, rob si, ako chceš.",
+      "melichar": "Pozor na Absťák: telo si zvyklo. Keď v kole vypiješ [Poldeci] a vyfajčíš [Cigareta] menej, ako je tvoja Chuť, príde ti karta Absťák do balíčka. Každá ti v bitke uberie 1 tuhé a zahodí ju len Vízia. Chuť klesá o jednu za kolo. Ja len radím, rob si, ako chceš.",
       "zvyraznit": ["bar:abstak"]
     },
     {
