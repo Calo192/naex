@@ -90,7 +90,7 @@ export function medziobrazovka(
           nadpis: "Finále",
           text:
             "Bije sa o vrcholovú lokalitu ako o každú inú: Pitiek je podľa spojov s lokalitou, víťaz dostane 1 špak za každú kartu v línii. " +
-            "Prebytok rozdelí jeho držiteľ a nové zóny strachu sa vyplatia ešte po finále.",
+            "Prebytok sa nerozdeľuje; po finále starší zaplatia stupne udržané z posledného kola.",
         };
       }
       return {
@@ -126,13 +126,13 @@ export function medziobrazovka(
               }${view.pitkaStav?.bzdocha != null ? "" : obranca ? ` — na ne odpovedáš prvý, ${S} má posledné slovo.` : " — posledné slovo máš ty."}`,
       };
     case "bitka": {
-      // v8: prebytok rozdeľuje ten, proti komu sa ráta (vo finále držiteľ).
+      // v8: prebytok rozdeľuje ten, proti komu sa ráta (vo finále sa od v8.3 nerozdeľuje).
       const drzi = view.bitkaStav?.prebytokDrzi ?? null;
       const vyberam = view.bitkaStav?.caka === ja;
       const text =
         drzi === ja
           ? vyberam
-            ? "Máš vyššie celkové poškodenie. Rozdeľ prebytok medzi starších — vyber staršieho, marker pôjde k súperovi, kým zvyšok stačí; nové zóny strachu sa vyplatia ešte po finále."
+            ? "Máš vyššie celkové poškodenie. Rozdeľ prebytok medzi starších — vyber staršieho, marker pôjde k súperovi, kým zvyšok stačí; nový stupeň strachu zaplatí koniec ďalšieho kola, ak sa udrží."
             : `Máš vyššie celkové poškodenie: prebytok posunie markery k súperovi (pole stojí 1–4 podľa zóny) a starší sa začnú báť teba. Ktorých, vyberá ${S}.`
           : vyberam
             ? `${S} má vyššie celkové poškodenie: prebytok posunie markery k tebe, ale ktorých starších, vyberáš ty — vezmi si priazne, ktoré sa ti hodia. Za každého posunutého staršieho dostaneš cigaretu.`

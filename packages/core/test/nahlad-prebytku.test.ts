@@ -43,13 +43,13 @@ function vPrebytku(seed: number, zostava: number): GameState {
 }
 
 describe("náhľad posunu prebytkom (v8)", () => {
-  it("posun k porazenému pohne rozdielom odhadov o jednu zónu (nová zóna platí raz), kým ešte príde výplata; zvyšok 2 stačí len na lacné pole (v8.2)", () => {
+  it("posun k porazenému pohne rozdielom odhadov o jeden stupeň (čaká na udržanie, v8.3), kým ešte príde ďalší koniec kola; zvyšok 2 stačí len na lacné pole (v8.2)", () => {
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
       const s = vPrebytku(seed, 2);
       const v = viewFor(data, s, 1);
       const vyplat = spakyTeraz(v).vyplat;
-      // Bitka je po výsledku: ostávajú výplaty ďalších bitiek (testovacia sada v6 finále nemá).
-      expect(vyplat).toBe(s.lokalityVHre.length);
+      // Koniec tohto kola a ďalších bitiek (v8.3; testovacia sada v6 finále nemá).
+      expect(vyplat).toBe(s.lokalityVHre.length + 1);
       for (const e of v.starsi) {
         const n = nahladPosunuPrebytkom(data, v, e.elderId);
         const posun = posunZaBody(e, 1, 2);
@@ -60,7 +60,7 @@ describe("náhľad posunu prebytkom (v8)", () => {
         expect(posun?.kroky).toBe(1);
         const marker = posun!.marker;
         expect(n.odhad).toEqual(spakyTeraz({ ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) }).odhad);
-        // Žiadna zóna ešte nie je vyplatená: rozdiel sa pohne o zónu poľa ďalej od stredu.
+        // Nič nie je držané ani zaplatené: rozdiel sa pohne o stupeň poľa ďalej od stredu.
         expect(n.zmena[0] - n.zmena[1]).toBe(STUPNICA_ZONY[e.marker >= 3 ? marker : e.marker]);
         expect(n).toEqual(nahladPosunuMarkera(data, v, e.elderId, 1, 2));
       }

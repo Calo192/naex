@@ -69,18 +69,17 @@ export function bzdochaText(data: GameData, v: ClientState): string | null {
 
 /**
  * Stávka bitky z jadra (stavkaBitky — ten istý výpočet ako výplata a web):
- * Noviny, Herňa, sekera, Kultúrny dom a starší. Priznané Dlhy (Noviny, Herňa)
+ * Noviny, Herňa, sekera a Kultúrny dom (strach starších v stávke od v8.3 nie je). Priznané Dlhy (Noviny, Herňa)
  * také, aké budú pri poškodení — s Dlhmi z Pitiek kola, exekúcia príde až po
  * špakoch za bitku (stolPriPoskodeni). Bez cieľa null.
  */
 export function stavkaText(data: GameData, v: ClientState): string | null {
   const st = stavkaBitky(data, stolPriPoskodeni(data, v, dalsiePitkyKola(data, v)));
   if (st === null) return null;
-  const rozpis = (sekera: number, herna: number, starsi: number): string => {
+  const rozpis = (sekera: number, herna: number): string => {
     const casti = [
       sekera > 0 ? `${sekera} zo sekery` : "",
       herna > 0 ? `${herna} z Herne` : "",
-      starsi > 0 ? `${starsi} od starších` : "",
     ].filter((x) => x !== "");
     return casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
   };
@@ -92,7 +91,7 @@ export function stavkaText(data: GameData, v: ClientState): string | null {
     st.porazenemu[0] + st.porazenemu[1] > 0
       ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${st.porazenemu[0]}, súper pri prehre +${st.porazenemu[1]}.`
       : "";
-  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0], st.starsi[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1], st.starsi[1])}.${noviny}${kd}`;
+  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1])}.${noviny}${kd}`;
 }
 
 /**

@@ -51,7 +51,6 @@ import {
   KONSTANTY,
   MARKER_STRED,
   STUPNICA_ZONY,
-  NAZVY_ZON,
   jeCoTahat,
   jeFinaleNaNastenke,
   kartyZaPas,
@@ -149,7 +148,7 @@ import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky } from "./rozlozenieNastenky.ts";
-import { CENA_POLA, nahladStrachu } from "./textyStarsich.ts";
+import { CENA_POLA, nahladStrachu, textStupna } from "./textyStarsich.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
@@ -3145,7 +3144,7 @@ export function HernaPlocha({
                 {bsCak.prebytokDrzi === ja ? (
                   <>
                     <strong>{menoHraca(super_)}</strong> rozdeľuje tvoj prebytok: vyberá, ktorí starší pôjdu k nemu — on dostane ich priazeň, teba sa
-                    začnú báť (nové zóny ti zaplatia po najbližšej výhre). Za každého staršieho dostane cigaretu.
+                    začnú báť (nový stupeň ti zaplatí koniec ďalšieho kola, ak sa udrží). Za každého staršieho dostane cigaretu.
                   </>
                 ) : (
                   <>
@@ -3351,7 +3350,7 @@ export function HernaPlocha({
             nadpis: "Patronát",
             text: (
               <>
-                Starší, ktorý ti prejavuje priazeň (aspoň Znepokojenie), ti môže prísť na pomoc: vezmeš si ho do ruky, na jeho miesto dáš
+                Starší, ktorý ti prejavuje priazeň (aspoň stupeň 1, žltá), ti môže prísť na pomoc: vezmeš si ho do ruky, na jeho miesto dáš
                 lícom dole Občana či Zviera z ruky a marker pôjde do stredu. Platíš cigarety podľa zóny (červená 1, oranžová 2, žltá 3), súper dostane v bitke toľko
                 Pohoršení, o koľko marker išiel do stredu. <strong>Vyhráš bitku — starší je tvoj; prehráš — odhodíš poldeci.</strong>
               </>
@@ -4101,8 +4100,8 @@ export function HernaPlocha({
             text: (
               <>
                 {b.prebytokDrzi === ja
-                  ? "Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť; nová zóna ti zaplatí ešte po finále). Rozdeliť treba celý prebytok."
-                  : `Prebytok drží ${menoHraca(super_)}, ale vyberáš ty: klikni na staršieho — marker ide k tebe (ty priazeň, súpera sa začne báť a nová zóna mu zaplatí po jeho najbližšej výhre). Za každého posunutého staršieho cigareta. Rozdeliť treba celý prebytok.`}
+                  ? "Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť; nový stupeň ti zaplatí koniec ďalšieho kola, ak sa udrží). Rozdeliť treba celý prebytok."
+                  : `Prebytok drží ${menoHraca(super_)}, ale vyberáš ty: klikni na staršieho — marker ide k tebe (ty priazeň, súpera sa začne báť a nový stupeň mu zaplatí koniec ďalšieho kola, ak ho dovtedy neodtlačíš). Za každého posunutého staršieho cigareta. Rozdeliť treba celý prebytok.`}
                 {navrhRozdelenia !== null && (
                   <span className="tlmene">
                     {" "}
@@ -4132,9 +4131,9 @@ export function HernaPlocha({
 
   // ---- starší -------------------------------------------------------------
   // Náhľad posunu (Michal 2026-10-19): komu posun pomôže — body spolu a priazeň.
-  // Zóny menom z pravidiel, nie farbou (UI A4) — tie isté slová ako zónové podmienky.
-  const ZONA = NAZVY_ZON;
-  const DO_ZONY = ["Neutrality", "Znepokojenia", "Strachu", "Vydesenia"] as const;
+  // Stupeň s farbou a stavom staršieho (pojmy v8.3, R14).
+  const ZONA = (z: number): string => textStupna(z);
+  const DO_ZONY = ["stredu", "žltej", "oranžovej", "červenej"] as const;
   const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false, k: PlayerId = super_): string => {
     // Prebytok: aj cigareta porazenému za prvý posun staršieho (§9.4) — nahladPosunuPrebytkom.
     void naKraj;
@@ -4145,8 +4144,8 @@ export function HernaPlocha({
     if (n === null || posun === null) return "";
     const novy = posun.marker;
     const priazen = n.priazen === null ? "♥ nikto" : `♥ ${n.priazen === ja ? "tebe" : "súperovi"} +${n.sila}`;
-    const zonaPred = ZONA[STUPNICA_ZONY[elder.marker]];
-    const zonaPo = ZONA[STUPNICA_ZONY[novy]];
+    const zonaPred = ZONA(STUPNICA_ZONY[elder.marker]);
+    const zonaPo = ZONA(STUPNICA_ZONY[novy]);
     const cena = cezPohorsenie ? pocet(posun.cena, "Pohoršenie", "Pohoršenia", "Pohoršení") : `${posun.cena} z prebytku`;
     // Pri ±0 nech voľby nevyzerajú rovnako (UX N1, U11): koľko ešte chýba do ďalšej zóny.
     let doZony = "";
@@ -4172,10 +4171,10 @@ export function HernaPlocha({
     const bitka = zmenaBitky === null ? "" : ` · bitka ${zmenaBitky.pred.tuhe[ja]} : ${zmenaBitky.pred.tuhe[super_]} → ${zmenaBitky.po.tuhe[ja]} : ${zmenaBitky.po.tuhe[super_]}`;
     // Vydesenie po posune (návrh #38 B): nech si nikto omylom nezruší vlastné ohlásené vydesenie.
     const vydeseni = ` · vydesených ty ${n.vydeseni[ja]} / ${menoHraca(super_)} ${n.vydeseni[super_]} (na výhru ${n.prahVydesenia})`;
-    return ` · ${k === ja ? "k sebe" : `k ${menoHraca(super_)}`} za ${cena}: ${zonaPred} → ${zonaPo} · ${nahladStrachu(n.spakyZaStarsieho[ja], n.spakyZaStarsieho[super_], menoHraca(super_))}${doZony} · ${priazen}${hned}${bitka}${vydeseni}`;
+    return ` · ${k === ja ? "k sebe" : `od seba (k ${menoHraca(super_)})`} za ${cena}: ${zonaPred} → ${zonaPo} · ${nahladStrachu(n.spakyZaStarsieho[ja], n.spakyZaStarsieho[super_], menoHraca(super_), n.naUdrzanie[ja], n.naUdrzanie[super_])}${doZony} · ${priazen}${hned}${bitka}${vydeseni}`;
   };
   /**
-   * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba k súperovi alebo
+   * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba od seba alebo
    * k sebe — len smery, ktoré jadro dovolí (hranice zón, kraj, Noviny).
    */
   const volbyPohorsenia = (elder: ElderState): readonly VolbaPosunu[] | undefined => {
@@ -4190,7 +4189,7 @@ export function HernaPlocha({
       if (ciel === null) continue;
       volby.push({
         smer: kSebe ? "ja" : "su",
-        nazov: kSebe ? "k sebe" : "k súperovi",
+        nazov: kSebe ? "k sebe" : "od seba",
         akcia: `posunúť${popisPosunu(elder, true, naKraj, kSebe ? ja : super_)}`,
         ciel,
         klik: () => cmd(kSebe ? { type: "pohorsenie", elderId: elder.elderId, kSebe: true } : { type: "pohorsenie", elderId: elder.elderId }),
@@ -6112,7 +6111,7 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
             {view.starsi
               .filter((e) => e.elderId !== chraneny)
               .flatMap((e) => [
-                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${meno(e.karta.defId)} k súperovi`}</option>,
+                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${meno(e.karta.defId)} od seba`}</option>,
                 <option key={`${e.elderId}-j`} value={`${e.elderId}|1`}>{`${meno(e.karta.defId)} k sebe`}</option>,
               ])}
           </select>

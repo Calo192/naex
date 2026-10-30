@@ -834,7 +834,7 @@ export function HracDoska({
           title={
             spakyKlik.stlacene
               ? "Zavrieť nástenku (Esc)"
-              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po bitke, ak ju ${ja ? "vyhráš" : "vyhrá"}, ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú ${body.zaStarsich[p]} (dlaždica Starší).` +
+              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Na konci kola ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú za udržané stupne ${body.zaStarsich[p]}, nech bitku vyhrá ktokoľvek (dlaždica Starší).` +
                 (body.vykupne[p].spaky > 0 && view.koniec === null ? ` Výkupné poldeci a cigariet na konci hry: +${body.vykupne[p].spaky}.` : "") +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
                 " Klik ukáže nástenku: odkiaľ sú špaky po bitkách."
@@ -852,7 +852,7 @@ export function HracDoska({
             )}
           </span>
         </button>
-        <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsich[p]} starsi={starsi} />
+        <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsich[p]} naUdrzanie={body.naUdrzanie[p]} starsi={starsi} />
       </div>
 
     </section>
@@ -1285,12 +1285,6 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         {!vysledok && stavka !== null && (
           <span className="tip-riadok">
             táto bitka ({pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
-            {stavka.starsi[0] + stavka.starsi[1] > 0 && (
-              <>
-                {" "}
-                (z toho od starších {stavka.starsi[0]} / {stavka.starsi[1]})
-              </>
-            )}
             {stavka.naSekere > 0 && <> · na sekere {stavka.naSekere}</>}
           </span>
         )}
@@ -1433,7 +1427,7 @@ export function PriebehKola({
       <>
         Posledná bitka na vrcholovej lokalite (v7): útočí, kto má menej špakov (pri rovnosti porazený poslednej bitky), a vedúci
         vyberie a natočí lokalitu. Kraje, prevaha aj počet Pitiek ako na každej lokalite.
-        <span className="tip-riadok">Po finále dajú starší ešte raz špaky za nové zóny (aj z prebytku, ktorý rozdelí jeho držiteľ) a odpočíta sa nepriznaná Cirhóza.</span>
+        <span className="tip-riadok">Prebytok sa vo finále nerozdeľuje. Po finále starší zaplatia stupne udržané z posledného kola (nové stupne z finále nič) a odpočíta sa nepriznaná Cirhóza.</span>
       </>
     ),
   };

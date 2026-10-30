@@ -1042,11 +1042,11 @@
     {
       "id": "9.pohorsenie.posun",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Každé Pohoršenie je bod na posun markera staršieho k súperovi alebo k sebe (v8.2: pole podľa ceny zóny, hráč vyberá staršieho a smer, marker ide, kým body stačia; zvyšok, ktorý nestačí na žiadny posun, prepadne), bez ohľadu na výsledok bitky; priazeň aj strach sa menia hneď (strach už v špakoch tejto bitky).",
+      "pravidlo": "Každé Pohoršenie je bod na posun markera staršieho od seba alebo k sebe (v8.2: pole podľa ceny zóny, hráč vyberá staršieho a smer, marker ide, kým body stačia; zvyšok, ktorý nestačí na žiadny posun, prepadne), bez ohľadu na výsledok bitky; priazeň sa mení hneď, strach z nového stupňa až po udržaní (v8.3).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-v5.test.ts › legálne sú oba smery; k sebe posunie marker k hráčovi a priazeň platí už v poškodení tejto bitky",
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie",
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; strach za Pohoršenie v bitke nič (v8.3); lokalitu si neberie",
         "packages/core/test/pravidla-v8-2.test.ts › posunZaBody: marker ide, kým zvyšok stačí na ďalšie pole, a vráti cenu; bez jediného poľa null",
         "packages/core/test/pravidla-v8-2.test.ts › zvyšok 1 pri markeroch mimo stredu prepadne a log to povie",
         "packages/core/test/patronat-20261020.test.ts › marker ide, kým zvyšok stačí: 5 Pohoršení zo stredu = oranžová, 2 ostanú (na červenú treba 3)",
@@ -1117,7 +1117,7 @@
     {
       "id": "9.vysledok.prebytok-drzi",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Prebytok drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku a za starších — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
+      "pravidlo": "Prebytok drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › prebytok drží hráč s vyšším celkovým, aj keď bitku prehral",
@@ -1217,7 +1217,7 @@
     {
       "id": "10.nahradeny",
       "paragraf": "10. Starší",
-      "pravidlo": "Nahradený starší ostáva v hre (marker, priazeň, špaky za strach, vydesenie); náhradu si nikto nevezme do ruky.",
+      "pravidlo": "Nahradený starší ostáva v hre (marker, priazeň, špaky za udržaný strach, vydesenie); náhradu si nikto nevezme do ruky.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno"
@@ -1226,7 +1226,7 @@
     {
       "id": "10.stupnica.sila",
       "paragraf": "10. Starší › Stupnica strachu",
-      "pravidlo": "Stupnica 7 polí 3-2-1-0-1-2-3 (v6), sila priazne 1 / 2 / 3 podľa zóny.",
+      "pravidlo": "Stupnica 7 polí, stupne 3-2-1-0-1-2-3 (v6); sila priazne = stupeň; stav staršieho pokojný / znepokojený / vystrašený / vydesený (pojmy v8.3).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/elders.test.ts › 3-2-1-0-1-2-3: jedno sivé pole v strede",
@@ -1247,11 +1247,12 @@
     {
       "id": "10.marker.priazen-strach",
       "paragraf": "10. Starší › Dvojaká úloha markera",
-      "pravidlo": "Priazeň má hráč, na ktorého polovici marker leží; starší sa bojí súpera na úrovni zóny; v sivej nikto. Strach dáva obávanému po vyhratej bitke len nevyplatené zóny (v8).",
+      "pravidlo": "Priazeň má hráč, na ktorého polovici marker leží; starší sa bojí súpera na tom istom stupni; v strede nikto. Strach zaplatí obávanému stupne udržané od konca minulého kola na konci kola (v8.3), nech bitku vyhral ktokoľvek.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/elders.test.ts › posun k hráčovi 1 → priazeň má hráč 1, starší sa bojí hráča 0",
-        "packages/core/test/elders.test.ts › starší dá obávanému hráčovi žltá 1, oranžová 2, červená 3; sivý nikomu"
+        "packages/core/test/elders.test.ts › starší dá obávanému hráčovi žltá 1, oranžová 2, červená 3; sivý nikomu",
+        "packages/core/test/strach-udrzanie.test.ts › náhľad: pri staršom vidno, čo zaplatí koniec kola a čo čaká na udržanie"
       ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › marker v strede → priazeň nemá nikto; packages/core/test/elders.test.ts › posun k hráčovi 1 → priazeň má hráč 1, ale starší sa bojí hráča 0."
     },
@@ -1888,7 +1889,7 @@
       "pravidlo": "Víťaz bitky dostane 1 špak za každú kartu v línii na oboch stranách v čase bitky (v8; aj finále), aspoň 1 — od v8.1 bez zrážky za Absťáky; plus špaky zo sekery. Lokalitu si neberie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie",
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; strach za Pohoršenie v bitke nič (v8.3); lokalitu si neberie",
         "packages/core/test/spaky-v6.test.ts › Absťák (v8.1 Nervák): víťaz s viac Absťákmi dostane špaky za bitku celé — zrážka zanikla",
         "packages/core/test/battle.test.ts › víťaz dostane 1 špak za kartu v línii, aspoň 1 — Absťáky od v8.1 nič nezrážajú (Nervák)",
         "packages/core/test/finale-pinnacle.test.ts › nástenka označí finále aj s lokalitou; log píše zvlášť 1 špak za kartu v línii a Herňu za Dlhy porazeného"
@@ -1897,13 +1898,14 @@
     {
       "id": "14.spaky.za-starsich",
       "paragraf": "14. Špaky",
-      "pravidlo": "Po bitke (aj po finále) dostane víťaz bitky (v6.1; pri sekere obaja) od starších, ktorí sa ho boja, len zóny, ktoré mu ešte nezaplatili (v8): žltá 1, oranžová 2, červená 3; sivý nikomu; aj nahradený.",
+      "pravidlo": "Na konci kola (aj po finále) dostane každý hráč od starších, ktorí sa ho boja, stupne, na ktorých marker stál na konci minulého kola a odvtedy neustúpil, a ktoré mu ešte nezaplatili (v8.3): žltá 1, oranžová 2, červená 3 — nech bitku vyhral ktokoľvek.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › bod 4: starší dá obávanému nevyplatené zóny (v8: oranžová = 1 + 2); sivý nikomu — v6.1 len víťazovi",
-        "packages/core/test/elders.test.ts › súčet za všetkých starších, aj nahradeného — v8 nevyplatené zóny (zo stredu na červenú 1 + 2 + 3)",
-        "packages/core/test/spaky-v6.test.ts › pri sekere (špaky za bitku idú na sekeru) dostanú za starších obaja",
-        "packages/core/test/pravidla-v8.test.ts › zaparkovaný marker nezaplatí druhýkrát: po výplate oranžovej dá ďalšia výhra 0"
+        "packages/core/test/elders.test.ts › v8.3: súčet za všetkých starších, aj nahradeného — len udržané a nezaplatené stupne (zo stredu na červenú 1 + 2 + 3)",
+        "packages/core/test/strach-udrzanie.test.ts › nový stupeň koniec kola nezaplatí — začne sa udržiavať; bitka strach nemení",
+        "packages/core/test/strach-udrzanie.test.ts › udržaný stupeň zaplatí obávanému na konci kola, aj porazenému — každý stupeň raz",
+        "packages/core/test/strach-udrzanie.test.ts › výplatu vidia obaja rovnako — nástenka, log konca kola; rozpis nesie len verejné údaje",
+        "packages/core/test/elders.test.ts › v8.3: na konci kola sú udržané stupne zaplatené a stupeň markera sa začína udržiavať"
       ]
     },
     {
@@ -1946,10 +1948,10 @@
     {
       "id": "14b.finale.prebytok",
       "paragraf": "14b. Finále",
-      "pravidlo": "Po finále sa rozdajú špaky za starších; prebytok rozdelí jeho držiteľ (v8) a strach za nové zóny, ktoré vzniknú, sa vyplatí hneď víťazovi (pri sekere obom); potom koniec hry.",
+      "pravidlo": "Vo finále sa rozdeľuje len Pohoršenie, prebytok nie (v8.3); po finále starší zaplatia stupne udržané z posledného kola, nové stupne z finále nič; potom koniec hry.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › po finále: špaky za karty a za starších; prebytok rozdelí držiteľ, nové zóny sa vyplatia ešte po finále; potom koniec"
+        "packages/core/test/strach-udrzanie.test.ts › udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; prebytok sa nerozdeľuje"
       ]
     },
     {
@@ -2061,11 +2063,11 @@
     {
       "id": "10.marker.smer-k-superovi",
       "paragraf": "10. Starší › Dvojaká úloha markera",
-      "pravidlo": "„K súperovi / k sebe“ je smer na stupnici (k súperovmu kraju), nie polovica: posun k súperovi z tvojej polovice marker len priblíži k stredu.",
+      "pravidlo": "„Od seba / k sebe“ (pojmy v8.3; predtým „k súperovi / k sebe“) je smer na stupnici (k súperovmu kraju), nie polovica: posun od seba z tvojej polovice marker len priblíži k stredu.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/elders.test.ts › z krajnej pozície ďalej von nie, späť k súperovi áno",
-        "packages/core/test/posun-markera.test.ts › log posunu ukáže zónu pred a po aj obe strany — komu priazeň stúpla či klesla a kto ho desí (návrh #27 A)"
+        "packages/core/test/posun-markera.test.ts › log posunu ukáže stupeň pred a po, stav staršieho aj obe strany — komu priazeň stúpla či klesla a kto ho desí (návrh #27 A, pojmy v8.3)"
       ],
       "poznamka": "Návrh #27 A, Michal 2026-10-28: odsek „Smer posunu“ v §10 a log posunu so zónou pred a po a s oboma stranami."
     },
@@ -2171,12 +2173,13 @@
     {
       "id": "10.strach.vyplatene-zony",
       "paragraf": "10. Starší › Dvojaká úloha markera",
-      "pravidlo": "Vyplatené zóny (v8): ústup markera k stredu (akýkoľvek posun) zmaže zóny, z ktorých ustúpil, a pri ďalšom postupe sa platia znova; prechod cez stred platí nanovo druhému hráčovi; postup od stredu nič nemaže.",
+      "pravidlo": "Zaplatené a držané stupne (v8.3): ústup markera k stredu (akýkoľvek posun) zmaže zaplatené aj držané stupne, z ktorých ustúpil — odtlačený stupeň nezaplatí nič, pri návrate je znova nový a čaká na udržanie; prechod cez stred platí nanovo druhému hráčovi.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/elders.test.ts › v8: ústup k stredu zmaže zóny, z ktorých marker odišiel; prechod na druhú polovicu zmaže všetko",
-        "packages/core/test/pravidla-v8.test.ts › ústup k stredu zmaže vyplatenú zónu — po návrate sa platí znova",
-        "packages/core/test/pravidla-v8.test.ts › prechod cez stred: druhá polovica platí nanovo druhému hráčovi"
+        "packages/core/test/elders.test.ts › v8.3: ústup k stredu zmaže zaplatené aj držané stupne, z ktorých marker odišiel; prechod na druhú polovicu zmaže všetko",
+        "packages/core/test/strach-udrzanie.test.ts › odtlačený stupeň sa nezaplatí — Pohoršenie súpera vráti marker skôr, než koniec kola zaplatí",
+        "packages/core/test/strach-udrzanie.test.ts › ústup a návrat v tom istom kole: vrátený stupeň je znova nový a čaká ďalšie kolo",
+        "packages/core/test/strach-udrzanie.test.ts › prechod cez stred zmaže držanie — druhá polovica platí druhému hráčovi až po udržaní"
       ]
     },
     {

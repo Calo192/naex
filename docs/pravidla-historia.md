@@ -1598,3 +1598,58 @@ Staré znenie §11 (Kliatby, Priznanie):
 > | Dlh dobratý z balíčka | áno — hráč ťahá náhradu (sám sa priznal) |
 > | Dlh nový (prah zadĺženia, efekt karty) | **nie** — ide rovno medzi priznané |
 > | Absťák | áno — prichádza rovno priznaný a hráč si zaň dobere kartu |
+
+
+## v8.3 — strach až po udržaní, finále bez prebytku, pojmy stupnice (Michal 2026-10-30, revízia starších krok 1)
+
+Rozhodnutia v docs/napady/starsi-revizia.html (R2 variant 6A, R14), meranie stratéga docs/playtesty/strategia-starsi-revizia-20261030.html.
+
+Staré znenie §10 (Stupnica strachu, tabuľka):
+
+> | Index | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+> |---|---|---|---|---|---|---|---|
+> | Sila priazne / špaky za strach | 3 | 2 | 1 | 0 | 1 | 2 | 3 |
+> | Zóna | červená | oranžová | žltá | sivá | žltá | oranžová | červená |
+> | Názov | Vydesenie | Strach | Znepokojenie | Neutralita | Znepokojenie | Strach | Vydesenie |
+
+Staré znenie §10 (strach dáva špaky, vyplatené zóny):
+
+> **Strach dáva špaky — len víťazovi, za každú zónu raz** (v6.1, Michal 2026-10-27;
+> v8, Michal 2026-10-28, návrh #28 B): po bitke (aj po finále) dostane **víťaz
+> bitky** od každého staršieho, ktorý sa ho bojí, špaky len za **zóny, ktoré mu
+> tento starší ešte nezaplatil** — žltá 1, oranžová 2, červená 3 (§14). Marker,
+> ktorý prišiel zo stredu na červenú, zaplatí pri najbližšej výhre 1 + 2 + 3 = 6;
+> ďalšie výhry už nič, kým sa nepohne. **Porazený za starších nedostane nič** a nič
+> sa mu ani nezapíše ako vyplatené. Pri **sekere** (§9.4) dostanú špaky za starších
+> **obaja** (každý od tých, ktorí sa boja jeho). Okrem toho sa strach ráta do
+> vydesenia (§1) — vydesenie ráta polohu markera, nie vyplatené zóny.
+>
+> **Vyplatené zóny:** starší si pamätá, po ktorú zónu už zaplatil hráčovi, ktorého
+> sa bojí. Keď marker **ustúpi k stredu** — akýkoľvek posun k stredu: Pohoršenie,
+> prebytok, patronát, Kšeft Predsedovej vily, Kapybara —, zóny, z ktorých ustúpil,
+> sa zmažú a pri ďalšom postupe sa platia znova. Keď marker prejde cez stred na
+> druhú polovicu, platí nanovo druhému hráčovi. Postup ďalej od stredu nič nemaže.
+>
+> Príklad: marker Farára na indexe 5 (polovica hráča 1, oranžová zóna), nič
+> vyplatené — priazeň sily 2 má hráč 1; Farár sa bojí hráča 0. Keď hráč 0 vyhrá
+> bitku, dostane od Farára 1 + 2 = 3 špaky; ďalšie jeho výhry nič. Keď Farára
+> Pohoršenie vráti na index 4 (žltá) a ďalšie znova na 5, oranžová sa pri ďalšej
+> výhre hráča 0 zaplatí znova (2). Bitku, ktorú vyhrá hráč 1, mu Farár nedá nič.
+>
+> Web počas hry ukazuje pri každom staršom priazeň (komu a s akým účinkom),
+> koho sa starší bojí a koľko špakov mu dá po najbližšej bitke, ak ju vyhrá
+> (len nevyplatené zóny).
+
+Staré znenie §9.4 (prebytok vo finále):
+
+> **Prebytok vo finále:** rozdelí ho **jeho držiteľ** (porazenému by priazne už
+> nepomohli) a strach za nové zóny, ktoré tým vzniknú, sa vyplatí ešte po finále
+> rovnako ako po bitke — víťazovi finále, pri sekere obom (§14b). Na špaky 1 : 1 sa
+> prebytok nemení nikde (do v7 po finále a na Kultúrnom dome).
+
+Staré znenie §14b (po finále):
+
+> - Po finále sa ešte rozdajú **špaky za starších** (nové zóny) — ako po každej
+>   bitke len víťazovi finále, pri sekere obom (§14). Potom **prebytok** rozdelí jeho
+>   držiteľ medzi starších (§9.4) a strach za nové zóny, ktoré tým vzniknú, sa
+>   vyplatí hneď rovnako — víťazovi finále, pri sekere obom.

@@ -19,9 +19,10 @@ import {
   prebudenyPre,
   priazenHraca,
   priazenSila,
-  poVyplateStrachu,
+  poKonciKola,
   sPosunutymMarkerom,
   spakyZaStarsich,
+  strachNaUdrzanie,
   strachNaVyplatu,
   strachZ,
   vydesil,
@@ -78,25 +79,43 @@ describe("v6 — špaky za starších", () => {
     expect(strachZ(elderAt(0), 1)).toBe(3);
   });
 
-  it("súčet za všetkých starších, aj nahradeného — v8 nevyplatené zóny (zo stredu na červenú 1 + 2 + 3)", () => {
-    const starsi = [elderAt(6), elderAt(4), { ...elderAt(1), nahradeny: true }, elderAt(3)];
+  it("v8.3: súčet za všetkých starších, aj nahradeného — len udržané a nezaplatené stupne (zo stredu na červenú 1 + 2 + 3)", () => {
+    const drzi = (m: MarkerPos): ElderState => ({ ...elderAt(m), drzane: STUPNICA_ZONY[m] });
+    const starsi = [drzi(6), drzi(4), { ...drzi(1), nahradeny: true }, elderAt(3)];
     expect(spakyZaStarsich(starsi, 0)).toBe(6 + 1);
     expect(spakyZaStarsich(starsi, 1)).toBe(1 + 2);
-    // Vyplatené zóny sa už neplatia: červená vyplatená po oranžovú dá len 3.
-    expect(spakyZaStarsich([{ ...elderAt(6), vyplatene: 2 }], 0)).toBe(3);
-    expect(spakyZaStarsich([{ ...elderAt(6), vyplatene: 3 }], 0)).toBe(0);
+    // Zaplatené stupne sa už neplatia: červená zaplatená po oranžovú dá len 3.
+    expect(spakyZaStarsich([{ ...drzi(6), vyplatene: 2 }], 0)).toBe(3);
+    expect(spakyZaStarsich([{ ...drzi(6), vyplatene: 3 }], 0)).toBe(0);
+    // Nový stupeň (nedržaný od minulého kola) koniec tohto kola nezaplatí — čaká na udržanie.
+    expect(strachNaVyplatu(elderAt(6), 0)).toBe(0);
+    expect(strachNaUdrzanie(elderAt(6), 0)).toBe(6);
+    expect(strachNaVyplatu({ ...elderAt(6), drzane: 1 }, 0)).toBe(1);
+    expect(strachNaUdrzanie({ ...elderAt(6), drzane: 1 }, 0)).toBe(2 + 3);
+    expect(strachNaUdrzanie({ ...elderAt(6), drzane: 1, vyplatene: 2 }, 0)).toBe(3);
   });
 
-  it("v8: ústup k stredu zmaže zóny, z ktorých marker odišiel; prechod na druhú polovicu zmaže všetko", () => {
-    const cervena = { ...elderAt(6), vyplatene: 3 };
-    expect(sPosunutymMarkerom(cervena, 5).vyplatene).toBe(2);
-    expect(strachNaVyplatu(sPosunutymMarkerom(sPosunutymMarkerom(cervena, 5), 6), 0)).toBe(3);
-    expect(sPosunutymMarkerom(cervena, 4).vyplatene).toBe(1);
+  it("v8.3: ústup k stredu zmaže zaplatené aj držané stupne, z ktorých marker odišiel; prechod na druhú polovicu zmaže všetko", () => {
+    const cervena = { ...elderAt(6), vyplatene: 3, drzane: 3 };
+    expect(sPosunutymMarkerom(cervena, 5)).toMatchObject({ vyplatene: 2, drzane: 2 });
+    // Späť na červenú: červená je znova nová — čaká na udržanie, koniec kola ju nezaplatí.
+    const spat = sPosunutymMarkerom(sPosunutymMarkerom(cervena, 5), 6);
+    expect(strachNaVyplatu(spat, 0)).toBe(0);
+    expect(strachNaUdrzanie(spat, 0)).toBe(3);
+    expect(sPosunutymMarkerom(cervena, 4)).toMatchObject({ vyplatene: 1, drzane: 1 });
     expect(sPosunutymMarkerom(cervena, 3).vyplatene).toBeUndefined();
-    expect(sPosunutymMarkerom({ ...elderAt(4), vyplatene: 1 }, 2).vyplatene).toBeUndefined();
-    // Postup ďalej od stredu nič nezmaže.
-    expect(sPosunutymMarkerom({ ...elderAt(5), vyplatene: 2 }, 6).vyplatene).toBe(2);
-    expect(poVyplateStrachu(elderAt(5)).vyplatene).toBe(2);
+    expect(sPosunutymMarkerom(cervena, 3).drzane).toBeUndefined();
+    expect(sPosunutymMarkerom({ ...elderAt(4), vyplatene: 1, drzane: 1 }, 2).drzane).toBeUndefined();
+    // Postup ďalej od stredu nič nezmaže ani nepridá.
+    expect(sPosunutymMarkerom({ ...elderAt(5), vyplatene: 2, drzane: 2 }, 6)).toMatchObject({ vyplatene: 2, drzane: 2 });
+  });
+
+  it("v8.3: na konci kola sú udržané stupne zaplatené a stupeň markera sa začína udržiavať", () => {
+    expect(poKonciKola(elderAt(5))).toMatchObject({ drzane: 2 });
+    expect(poKonciKola(elderAt(5)).vyplatene).toBeUndefined();
+    expect(poKonciKola({ ...elderAt(6), drzane: 2 })).toMatchObject({ vyplatene: 2, drzane: 3 });
+    expect(poKonciKola({ ...elderAt(6), drzane: 3, vyplatene: 1 })).toMatchObject({ vyplatene: 3, drzane: 3 });
+    expect(poKonciKola(elderAt(3)).drzane).toBeUndefined();
   });
 });
 

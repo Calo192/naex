@@ -27,7 +27,7 @@ export function IkonaStrachu({ stupen, trieda, titul }: { readonly stupen: Stupe
   );
 }
 
-/** Ikona podľa úrovne zóny alebo špakov za strach; v Neutralite (0) nič. */
+/** Ikona podľa stupňa alebo špakov za strach; v strede (stupeň 0) nič. */
 export function ZnackaStrachu({ uroven, trieda, titul }: { readonly uroven: number; readonly trieda?: string; readonly titul?: string }) {
   const stupen = stupenStrachu(uroven);
   if (stupen === null) return null;

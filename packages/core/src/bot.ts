@@ -34,7 +34,7 @@ import { evaluateLine } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
 import { zhoriPriExekucii } from "./battle.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
-import { MARKER_STRED, cenaPatronatu, spakyZaStarsich, strachZ, vydesil } from "./elders.ts";
+import { MARKER_STRED, cenaPatronatu, spakyZaStarsich, strachNaUdrzanieSpolu, strachZ, vydesil } from "./elders.ts";
 import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import type { Command, GameState } from "./engine.ts";
@@ -57,7 +57,6 @@ import {
   jeFinale,
   kartyBitky,
   zahradkarChrani,
-  spakyZaStarsichPre,
   prahVydesenia,
   prahyHraca,
   priazen,
@@ -358,13 +357,6 @@ interface Kontext {
 }
 
 /**
- * Strach platí len víťazovi bitky (v6.1, Michal 2026-10-27): bot ráta, že zo
- * zvyšných bitiek vyhrá každý polovicu. Prebiehajúcu bitku rozhodne stávka
- * (stavkaBitky), tu je len jej stred.
- */
-const PODIEL_VYHIER = 0.5;
-
-/**
  * Odhad konečných špakov (v6), moje mínus súperove: špaky v popolníku,
  * nepriznané Cirhózy (ich počet je verejný), výkupné zdrojov a strach starších
  * (strachVOdhade). Starší sa smú nahradiť (patronát, náhľad posunu).
@@ -401,18 +393,15 @@ function exekucieDoKonca(data: GameData, s: GameState, p: PlayerId): number {
 }
 
 /**
- * Strach v odhade (v8, Michal 2026-10-28): každá zóna platí raz, pri najbližšej
- * výhre hráča, ktorého sa starší bojí. Bot ráta nevyplatené zóny × šancu, že zo
- * zvyšných výplat vyhrá aspoň jednu; doplatok po prebytku vo finále dostane
- * len víťaz finále (pri sekere obaja).
+ * Strach v odhade (v8.3, Michal 2026-10-30): stupne držané od minulého kola zaplatí
+ * koniec tohto kola naplno (súper ich ešte môže odtlačiť, to už vidí výpočet dopredu),
+ * nové stupne až koniec ďalšieho kola, ak sa udržia (VYDRZ_POSUNU); keď ďalší koniec
+ * kola nepríde (finále), nové stupne nič. Výhra bitky na strachu nič nemení.
  */
 function strachVOdhade(s: GameState, p: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
   const n = vyplatZaStarsich(s);
   if (n === 0) return 0;
-  const b = s.bitkaStav;
-  const sanca =
-    b !== null && b.damage !== null && jeFinale(s) ? (spakyZaStarsichPre(b.vitaz).includes(p) ? 1 : 0) : 1 - (1 - PODIEL_VYHIER) ** n;
-  return sanca * spakyZaStarsich(starsi, p);
+  return spakyZaStarsich(starsi, p) + (n > 1 ? VYDRZ_POSUNU * strachNaUdrzanieSpolu(starsi, p) : 0);
 }
 
 /**
@@ -456,16 +445,15 @@ function buducnostHry(s: GameState): number {
 /**
  * Čo získa víťaz prebiehajúcej bitky oproti porazenému (v špakoch) okrem kariet
  * v línii (tie ráta hodnotaBitky zo stavu, ktorý hodnotí — v8): sekera, výhra
- * oproti prehre je dvojnásobok; od v6.1 aj nevyplatené zóny starších, ktorí sa
- * ho boja: moja výhra mi ich dá, súperova jemu.
+ * oproti prehre je dvojnásobok. Strach starších od v8.3 v stávke nie je — platí
+ * za udržanie na konci kola, nech bitku vyhrá ktokoľvek.
  */
 function stavkaBitky(_data: GameData, s: GameState, _ja: PlayerId): number {
   if (s.ciel === null) return 0;
   // Patronát: porazený patrón platí poldeci (bolestné).
   let patronat = 0;
   for (const q of [0, 1] as const) if (s.patronat[q] !== null) patronat += 2;
-  const strach = s.bitkaStav !== null && s.bitkaStav.damage !== null ? 0 : spakyZaStarsich(s.starsi, 0) + spakyZaStarsich(s.starsi, 1);
-  return 2 * s.spakyNaSekere + strach + patronat;
+  return 2 * s.spakyNaSekere + patronat;
 }
 
 /**
@@ -503,7 +491,7 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   // Akcie, ktoré sa vyhodnotia až v Pitke — po nej už sú v stave.
   if (s.faza === "zhromazdenie" || s.faza === "pitka") {
     const pohorsenia = pohorseniaVBitke(data, s, sums);
-    const zaPohorsenie = cenaPosunu(s, false);
+    const zaPohorsenie = cenaPosunu(s);
     for (const p of [q, o] as const) {
       const sp = sums[p];
       const so = sums[opponentOf(p)];
@@ -512,8 +500,8 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       // Výkupné: cigareta z Pitky a poldeci otočený v bitke na plný sú na konci hry aj špaky.
       const vykupne = k.povaha.body * vahaVykupneho(s);
       w += (0.3 * k.buducnost + vykupne / KONSTANTY.CIGARIET_ZA_SPAK) * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0));
-      // Pohoršenie je bod posunu markera bez limitu — v8 nová zóna zaplatí raz, pri
-      // najbližšej výhre (aj tejto); pevných 0,5 za kus podceňovalo karty s Pohoršením.
+      // Pohoršenie je bod posunu markera bez limitu — nový stupeň zaplatí raz, keď sa
+      // udrží do konca ďalšieho kola (v8.3); pevných 0,5 za kus podceňovalo karty s Pohoršením.
       w += zaPohorsenie * Math.min(POHORSENIE_STROP, pohorsenia[p]);
       const naex = s.strany.flat().filter((pl) => pl.naexBy === p).length;
       w += (0.4 * k.buducnost + vykupne * KONSTANTY.SPAKY_ZA_POLDECI) * Math.min(sp.Poldeci ?? 0, h.poldeciVypite + naex);
@@ -690,7 +678,7 @@ function hodnotaStavu(k: Kontext, s: GameState, ostrost: number): number {
  * nevidelo, že Pohoršenie k sebe (Bitkár, Veriaci) bitku vyhrá.
  */
 function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bitkaStav"]>): number {
-  // Špaky za bitku a za starších sú po výsledku už v popolníkoch (rozdielBodov).
+  // Špaky za bitku sú po výsledku už v popolníkoch, strach na konci kola ráta rozdielBodov.
   // Nerozdelený prebytok ako v hodnotaBitky; cigarety za prebytok dostane súper držiteľa až po bitke.
   const ja = k.ja;
   const drzi = b.prebytokDrzi;
@@ -701,25 +689,25 @@ function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bit
 
 /**
  * Čo jeden bod prebytku (posun markera po špakoch tejto bitky) prinesie
- * držiteľovi v špakoch (cenaPosunu po bitke).
+ * držiteľovi v špakoch (cenaPosunu). Vo finále sa prebytok nerozdeľuje (v8.3).
  */
 function cenaBoduPrebytku(s: GameState): number {
-  return cenaPosunu(s, true);
+  return jeFinale(s) ? 0 : cenaPosunu(s);
 }
 
 /**
- * Čo prinesie jeden bod posunu markera k súperovi (bod prebytku, Pohoršenie) v špakoch,
- * v8: nová zóna zaplatí raz (ZONA_ZA_BOD — porazený pri prebytku vyberá najlacnejšie),
- * ak hráč ešte niektorú výplatu vyhrá, a súper ju môže odtlačiť. Vo finále sa strach
- * za nové zóny z prebytku vyplatí hneď víťazovi.
- * `poTejtoBitke`: prebytok sa prejaví až po výplate tejto bitky.
+ * Čo prinesie jeden bod posunu markera od seba (bod prebytku, Pohoršenie) v špakoch,
+ * v8.3: nový stupeň zaplatí raz (ZONA_ZA_BOD), až keď sa udrží do konca ďalšieho
+ * kola (VYDRZ_POSUNU). Keď ďalší koniec kola nepríde (finále), posun má len obrannú
+ * cenu — odtlačiť súperov držaný stupeň skôr, než ho koniec kola zaplatí.
  */
-function cenaPosunu(s: GameState, poTejtoBitke: boolean): number {
-  if (jeFinale(s)) return ZONA_ZA_BOD;
-  const poBitke = s.bitkaStav !== null && s.bitkaStav.damage !== null;
-  const n = vyplatZaStarsich(s) - (poTejtoBitke && !poBitke ? 1 : 0);
-  return Math.max(0.25, ZONA_ZA_BOD * (1 - (1 - PODIEL_VYHIER) ** n) * VYDRZ_POSUNU);
+function cenaPosunu(s: GameState): number {
+  const dalsichKoncovKola = vyplatZaStarsich(s) - (s.ciel === null ? 0 : 1);
+  return dalsichKoncovKola > 0 ? ZONA_ZA_BOD * VYDRZ_POSUNU : OBRANA_ZA_BOD;
 }
+
+/** Bod posunu, ktorý už nový stupeň nezaplatí — odtlačenie súperovho držaného stupňa (turnaj v8.3). */
+const OBRANA_ZA_BOD = 0.5;
 
 /**
  * Špaky zóny na jeden bod posunu (v8.2, Michal 2026-10-30): pole von zo stredu stojí
@@ -1087,7 +1075,7 @@ function patronat(v: Volba): Command | null {
     const poPrehre = hodnotaStarsich(state.starsi.map((e) => (e.elderId === elder.elderId ? { ...e, marker } : e)));
     // v6: súper dostane cena.pohorsenia Pohoršení — každé posunie iný marker o pole
     // ku mne, takže špaky za strach, ktoré návrat do stredu vzal, si väčšinou vráti.
-    const pohorseniaSupera = k.povaha.body * cena.pohorsenia * cenaPosunu(state, false);
+    const pohorseniaSupera = k.povaha.body * cena.pohorsenia * cenaPosunu(state);
     const hodnota =
       sanca * (poVyhre - teraz + 0.6 * hodnotaKarty(data, elder.karta) * k.buducnost) +
       (1 - sanca) * (poPrehre - teraz - bolestne) -
