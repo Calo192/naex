@@ -7,7 +7,8 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, LineState, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, evaluateLine, loadGameData, setupGame } from "../src/index.ts";
+import { KONSTANTY, apply, buildGameData, evaluateLine, loadGameData, parseScorecards, setupGame } from "../src/index.ts";
+import { EMPTY, makeDef } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -83,10 +84,12 @@ describe("Nástroj funguje len pri Občanovi alebo Starešinovi", () => {
   });
 });
 
-describe("priznanie Dlhu dá kartu", () => {
+describe("priznanie kliatby dá kartu (okrem Cirhózy; Dlh a Absťák sú od v8.2 počítadlá)", () => {
+  // Sada v8.2 kliatbu s kartou za priznanie nemá — pravidlo jadra stráži testovacia kliatba.
+  const sKliatbou = buildGameData(new Map([...data.cards, ["kliatba_test", makeDef("kliatba_test", EMPTY, EMPTY, { tags: ["Kliatba"] })]]), data.elders, parseScorecards(scorecardsJson));
   function sDlhom(doberaci: CardInstance[], odhadzovaci: CardInstance[]): { s: GameState; dlh: CardInstance } {
     const s0 = setupGame(data, 3);
-    const dlh = inst("dlh");
+    const dlh = inst("kliatba_test");
     const s = {
       ...s0,
       faza: "zhromazdenie",
@@ -100,15 +103,15 @@ describe("priznanie Dlhu dá kartu", () => {
   it("z doberacieho balíčka", () => {
     const vrch = inst("ministrant");
     const { s, dlh } = sDlhom([vrch], []);
-    const po = apply(data, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0);
+    const po = apply(sKliatbou, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0);
     expect(po.state.hraci[0].ruka.map((k) => k.uid)).toContain(vrch.uid);
-    expect(po.events.some((e) => e.type === "log" && e.text.includes("priznáva kartu Dlh a doberá si kartu"))).toBe(true);
+    expect(po.events.some((e) => e.type === "log" && e.text.includes("a doberá si kartu"))).toBe(true);
   });
 
   it("aj keď je doberací prázdny — zamieša sa odhadzovací", () => {
     const odhodena = inst("ministrant");
     const { s, dlh } = sDlhom([], [odhodena]);
-    const po = apply(data, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0);
+    const po = apply(sKliatbou, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0);
     expect(po.state.hraci[0].ruka.map((k) => k.uid)).toContain(odhodena.uid);
   });
 });
@@ -136,7 +139,7 @@ describe("automatický pas", () => {
   });
 
   it("kliatba v ruke auto-pas zastaví — priznanie je stále možnosť", () => {
-    const [a, dlh] = [inst("pijan"), inst("dlh")];
+    const [a, dlh] = [inst("pijan"), inst("cirhoza")];
     const s = zhromazdenie([a, dlh], 1, 0);
     const po = apply(data, s, { type: "place", uid: a.uid, target: "vlastna" }, 0 as PlayerId);
     expect(po.state.faza).toBe("zhromazdenie");

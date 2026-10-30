@@ -31,7 +31,6 @@ const cards = new Map(zaklad.cards);
 for (const d of [dlzna, robotnik]) cards.set(d.id, d);
 const data = buildGameData(cards, zaklad.elders, parseScorecards(scorecardsJson));
 
-const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
 const lezi = (card: CardInstance, playedBy: PlayerId): PlacedCard => ({ card, playedBy });
 const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].dlhy;
 
@@ -45,7 +44,7 @@ function vPitke(): GameState {
     pitkaCislo: 1,
     strany: [[lezi(instanceFor(data, "dlzna", D4, D4), 0), lezi(instanceFor(data, "dlzna", D4, D4), 0), lezi(instanceFor(data, "robotnik", R1, R1), 0)], []],
     hraci: [
-      { ...s0.hraci[0], ruka: [], priznane: [dlh(910001), dlh(910002)], poldeciPlne: 1 },
+      { ...s0.hraci[0], ruka: [], dlhy: 2, poldeciPlne: 1 },
       { ...s0.hraci[1], ruka: [], poldeciPlne: 1 },
     ],
     pitkaStav: {

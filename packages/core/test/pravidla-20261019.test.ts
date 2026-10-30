@@ -287,7 +287,7 @@ describe("Nástroj v línii: akcie dostane majiteľ karty, s ktorou tvorí spoj"
 
 describe("ťah v Zhromaždení naraz: ďalšia karta stojí poldeci (Michal 2026-10-19)", () => {
   it("dve karty = Vypiť pred prvou; server ich vykoná atomicky a ťah prejde na súpera", () => {
-    const [a, b, d] = [inst("pijan"), inst("ministrant"), inst("dlh")];
+    const [a, b, d] = [inst("pijan"), inst("ministrant"), inst("cirhoza")];
     const s = sHracom(
       { ...vZhromazdeniHrac0(60, {}), zhromazdenieStav: { naTahu: 0, zostavaLimit: [4, 4], pasoval: [false, false], navyse: [0, 0] } },
       0,
@@ -413,8 +413,8 @@ describe("pas (Michal 2026-10-20): do Pitky, cigareta za každú nevyloženú ka
 });
 
 describe("kliatba do línie nepatrí (Michal 2026-10-20)", () => {
-  it("Dlh sa dá len priznať, Milujúca manželka (Občan) smie aj do línie", () => {
-    const dlh = inst("dlh");
+  it("Cirhóza sa dá len priznať, Milujúca manželka (Občan) smie aj do línie", () => {
+    const dlh = inst("cirhoza");
     const manzelka = inst("milujuca_manzelka");
     const s = vZhromazdeniHrac0(46, { ruka: [dlh, manzelka] });
     const legal = legalCommands(data, s, 0);

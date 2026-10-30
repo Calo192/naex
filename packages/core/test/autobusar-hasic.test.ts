@@ -89,7 +89,7 @@ function vZhromazdeni(ruka: CardInstance[], odhadzovaci: CardInstance[]): GameSt
     strany: [[], []],
     hraci: [
       { ...s.hraci[0], ruka, odhadzovaci, cigarety: 3, poldeciPlne: 2 },
-      { ...s.hraci[1], ruka: [inst("pijan")], odhadzovaci: [inst("svokra"), inst("dlh")], cigarety: 3, poldeciPlne: 2 },
+      { ...s.hraci[1], ruka: [inst("pijan")], odhadzovaci: [inst("svokra"), inst("cirhoza")], cigarety: 3, poldeciPlne: 2 },
     ],
     zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
   } as GameState;

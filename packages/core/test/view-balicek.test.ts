@@ -22,16 +22,16 @@ describe("viewFor — zloženie doberacieho balíčka", () => {
   const zaklad = setupGame(data, 7);
   const karty = [
     { uid: 901, defId: "pijan", leftLayout: 0, rightLayout: 0 },
-    { uid: 902, defId: "dlh", leftLayout: 0, rightLayout: 0 },
+    { uid: 902, defId: "cirhoza", leftLayout: 0, rightLayout: 0 },
     { uid: 903, defId: "pijan", leftLayout: 0, rightLayout: 0 },
-    { uid: 904, defId: "abstak", leftLayout: 0, rightLayout: 0 },
+    { uid: 904, defId: "milujuca_manzelka", leftLayout: 0, rightLayout: 0 },
   ];
 
   it("posiela môj balíček ako zoradené defId s počtom", () => {
     const v = viewFor(data, sBalickom(zaklad, 0, karty), 0);
     expect(v.mojBalicekZlozenie).toEqual([
-      { defId: "abstak", pocet: 1 },
-      { defId: "dlh", pocet: 1 },
+      { defId: "cirhoza", pocet: 1 },
+      { defId: "milujuca_manzelka", pocet: 1 },
       { defId: "pijan", pocet: 2 },
     ]);
     expect(v.hraci[0].doberaciPocet).toBe(4);
@@ -54,7 +54,7 @@ describe("viewFor — zloženie doberacieho balíčka", () => {
     expect(preSupera.mojBalicekZlozenie).toEqual([]);
     // Ani inak: pohľad súpera je rovnaký pre akýkoľvek môj balíček s rovnakým
     // počtom kariet a kliatob (počet kliatob je verejný, view-kliatby.test.ts).
-    const ine = karty.map((k) => (k.defId === "dlh" ? k : { ...k, defId: "hasic" }));
+    const ine = karty.map((k) => (k.defId === "cirhoza" ? k : { ...k, defId: "hasic" }));
     expect(JSON.stringify(viewFor(data, sBalickom(s, 0, ine), 1))).toBe(JSON.stringify(preSupera));
   });
 });

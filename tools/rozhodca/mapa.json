@@ -581,7 +581,7 @@
       "pravidlo": "Kliatba do línie nepatrí, dá sa len priznať; výnimka je Milujúca manželka (Občan).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › Dlh sa dá len priznať, Milujúca manželka (Občan) smie aj do línie"
+        "packages/core/test/pravidla-20261019.test.ts › Cirhóza sa dá len priznať, Milujúca manželka (Občan) smie aj do línie"
       ]
     },
     {

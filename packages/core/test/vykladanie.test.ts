@@ -28,7 +28,7 @@ describe("cieleVykladania", () => {
   });
 
   it("Kliatbu možno priznať aj pri vyčerpanom limite", () => {
-    expect(cieleVykladania(data, prazdne, 0, karta("dlh"), 0)).toEqual(["priznanie"]);
+    expect(cieleVykladania(data, prazdne, 0, karta("cirhoza"), 0)).toEqual(["priznanie"]);
     expect(cieleVykladania(data, prazdne, 0, karta("milujuca_manzelka"), 1)).toEqual(["vlastna", "superova", "priznanie"]);
   });
 

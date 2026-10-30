@@ -145,8 +145,10 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
 
 
   it("priznanie kliatby", () => {
+    // Sada v8.2 kliatbu s kartou za priznanie nemá (Dlh a Absťák sú počítadlá) — testovacia kliatba.
+    const sKliatbou = buildGameData(new Map([...data.cards, ["kliatba_test", makeDef("kliatba_test", [null, null, null, null], [null, null, null, null], { tags: ["Kliatba"] })]]), data.elders, parseScorecards(scorecardsJson));
     const s0 = setupGame(data, 76);
-    const dlh = inst("dlh");
+    const dlh = inst("kliatba_test");
     const odhodena = inst("ministrant");
     const s = {
       ...sHracom(s0, 0, { ruka: [dlh, inst("pijan")], doberaci: [], odhadzovaci: [odhodena] }),
@@ -154,7 +156,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
     } as GameState;
-    const po = apply(data, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0).state;
+    const po = apply(sKliatbou, s, { type: "place", uid: dlh.uid, target: "priznanie" }, 0).state;
     expect(uids(po.hraci[0].ruka)).toContain(odhodena.uid);
     expect(po.hraci[0].odhadzovaci).toEqual([]);
   });
