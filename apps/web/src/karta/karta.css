@@ -468,7 +468,7 @@
   filter: sepia(1) saturate(7) hue-rotate(-20deg) brightness(1.05);
 }
 
-/* Znížená akcia (Úplatok): vyhasnutá, nad ňou dym. */
+/* Znížená akcia (Úplatok): len vyhasnutá (Michal 2026-10-30: bez dymu). */
 .kl-slot.kl-zar-minus .ikona-akcie {
   fill: #5e554c;
 }
@@ -510,42 +510,13 @@
   filter: drop-shadow(0 0 max(1.5px, calc(1.6 * var(--pt))) #ff7a1a) drop-shadow(0 0 1px #000);
 }
 
-.kl-dym {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  bottom: calc(100% - 2 * var(--pt));
-  width: max(8px, calc(11 * var(--pt)));
-  height: max(11px, calc(15 * var(--pt)));
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-
-.kl-dym svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  fill: none;
-  stroke: #d9d4cc;
-  stroke-width: 9;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 1px #000);
-}
-
-/* Na otočenej karte (plocha je otočená) iskra aj dym ostanú hore a dym stúpa nahor. */
+/* Na otočenej karte (plocha je otočená) iskra ostane hore. */
 .kl-otocena .kl-iskra {
   top: auto;
   bottom: calc(-4.5 * var(--pt));
 }
 
-.kl-otocena .kl-dym {
-  bottom: auto;
-  top: calc(100% - 2 * var(--pt));
-  transform: translateX(-50%) rotate(180deg);
-}
-
-/* Prvé zobrazenie: ikona vzplanie, iskra odletí, dym stúpne. */
+/* Prvé zobrazenie: ikona vzplanie, iskra odletí. */
 .kl-zar-nova.kl-zar-plus .ikona-akcie {
   animation: kl-vzplanie 0.9s ease-out 1;
 }
@@ -556,14 +527,6 @@
 
 .kl-zar-nova .kl-iskra-let {
   animation: kl-iskra-let 0.95s ease-out 1 forwards;
-}
-
-.kl-zar-nova .kl-dym {
-  animation: kl-dym-stupa 1.2s ease-out 1;
-}
-
-.kl-otocena .kl-zar-nova .kl-dym {
-  animation-name: kl-dym-stupa-otocena;
 }
 
 @keyframes kl-vzplanie {
@@ -600,28 +563,6 @@
   100% {
     transform: translate(calc(var(--smer) * 16 * var(--pt)), calc(-18 * var(--pt))) scale(0.3) rotate(160deg);
     opacity: 0;
-  }
-}
-
-@keyframes kl-dym-stupa {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 40%);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-@keyframes kl-dym-stupa-otocena {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -40%) rotate(180deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, 0) rotate(180deg);
   }
 }
 
@@ -690,8 +631,7 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl
 @media (prefers-reduced-motion: reduce) {
   .ikona-zar .ikona-zhar,
   .kl-zar-nova.kl-zar-plus .ikona-akcie,
-  .kl-zar-nova .kl-iskra,
-  .kl-zar-nova .kl-dym {
+  .kl-zar-nova .kl-iskra {
     animation: none;
   }
 

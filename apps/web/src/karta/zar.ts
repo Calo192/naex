@@ -1,5 +1,5 @@
 // Žeravá ikona (Michal 2026-10-30, mock 3): akcia posilnená Nástrojom v Dedičstve
-// majiteľa karty žhne ako uhlík, útok znížený Úplatkom je vyhasnutý s dymom.
+// majiteľa karty žhne ako uhlík, útok znížený Úplatkom je vyhasnutý.
 // Údaje dáva jadro (vplyvyNaAkcie, utokPoUplatku); tu sa len priradia slotom.
 
 import type { VplyvNaAkciu } from "@naex/core";
@@ -12,7 +12,7 @@ export interface ZarSlotu {
   readonly stitok: string;
   /** Veta do popisu akcie. */
   readonly popis: string;
-  /** Čím je zmena daná — iná príčina = nové prvé zobrazenie (iskra, dym). */
+  /** Čím je zmena daná — iná príčina = nové prvé zobrazenie (iskra). */
   readonly pricina: string;
 }
 
