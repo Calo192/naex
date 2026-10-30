@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revízia starších: strach až po udržaní (stratég, 30. 10. 2026)</title>
+<style>
+  :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016; --tlmeny:#5e4f3b;
+    --akcent:#8f5609; --cervena:#a3392c; --zelena:#2f6b3a; --modra:#22646e; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.6 system-ui,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:1000px; margin:0 auto; padding:24px max(14px, env(safe-area-inset-right, 0px)) 90px max(14px, env(safe-area-inset-left, 0px)); }
+  h1,h2,h3 { font-family:Georgia,"Times New Roman",serif; line-height:1.2; text-wrap:balance; }
+  h1 { font-size:clamp(1.5rem,5vw,2.1rem); margin:0 0 6px; }
+  h2 { font-size:1.35rem; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+  h3 { font-size:1.08rem; margin:0 0 6px; }
+  p { margin:0 0 10px; max-width:80ch; }
+  ul, ol { max-width:80ch; padding-left:22px; }
+  li { margin-bottom:5px; }
+  :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+  .pod { color:var(--tlmeny); }
+  .pozn { font-size:.9rem; color:var(--tlmeny); }
+  .verdikt { border:1px solid var(--akcent); background:var(--plocha); border-radius:14px; padding:14px 18px; margin:16px 0; }
+  .verdikt h2 { margin-top:0; border:0; padding:0; font-size:1.2rem; }
+  .dlazdice { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin:12px 0; }
+  .dlazdica { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:10px 12px; min-width:0; }
+  .dlazdica b { display:block; font-size:.82rem; color:var(--tlmeny); font-weight:600; }
+  .dlazdica .velke { display:block; font-size:1.5rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--akcent); }
+  .dlazdica p { font-size:.88rem; margin:4px 0 0; }
+  .tab { overflow-x:auto; background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; margin:10px 0; }
+  table { border-collapse:collapse; width:100%; font-size:.86rem; min-width:720px; font-variant-numeric:tabular-nums; }
+  caption { text-align:left; caption-side:bottom; padding:6px 10px; font-size:.82rem; color:var(--tlmeny); }
+  th,td { padding:7px 8px; border-bottom:1px solid var(--okraj); text-align:right; vertical-align:top; }
+  th:first-child,td:first-child { text-align:left; }
+  th { color:var(--tlmeny); font-size:.75rem; letter-spacing:.02em; }
+  thead th { cursor:default; }
+  tr.base td { background:color-mix(in srgb,var(--modra) 9%,transparent); }
+  tr.zvyr td { background:color-mix(in srgb,var(--zelena) 10%,transparent); font-weight:600; }
+  .zle { color:var(--cervena); font-weight:600; } .dobre { color:var(--zelena); font-weight:600; }
+  .graf { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 14px; margin:10px 0; }
+  .riadok { display:grid; grid-template-columns:150px 1fr 1fr; gap:8px; align-items:center; margin:6px 0; font-size:.86rem; }
+  .riadok.hlava { font-size:.78rem; color:var(--tlmeny); font-weight:600; }
+  .pruh { position:relative; height:18px; background:var(--plocha-2); border-radius:4px; }
+  .pruh i { position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:var(--akcent); }
+  .pruh.b i { background:var(--modra); }
+  .pruh em { position:absolute; right:6px; top:0; font-style:normal; font-size:.76rem; line-height:18px; }
+  .pruh .ciara { position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--text); left:50%; opacity:.5; }
+  .filter { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 14px; }
+  .filter button { font:inherit; font-size:.9rem; border:1px solid var(--okraj); background:var(--plocha); color:var(--text); border-radius:999px; padding:4px 12px; cursor:pointer; }
+  .filter button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:700; }
+  .karty { display:grid; gap:12px; }
+  .karta { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; }
+  .karta.zaviest { border-left:5px solid var(--zelena); } .karta.skusit { border-left:5px solid var(--akcent); } .karta.zamietnut { border-left:5px solid var(--cervena); }
+  .karta[hidden] { display:none; }
+  .stitok { display:inline-block; font-size:.76rem; font-weight:700; border-radius:999px; padding:1px 10px; color:#fff; margin-left:6px; vertical-align:2px; font-family:system-ui,sans-serif; }
+  .stitok.zaviest { background:var(--zelena); } .stitok.skusit { background:var(--akcent); } .stitok.zamietnut { background:var(--cervena); }
+  dl.vl { display:grid; grid-template-columns:150px 1fr; gap:4px 12px; margin:6px 0 0; font-size:.93rem; }
+  dl.vl dt { font-weight:600; } dl.vl dd { margin:0; }
+  details { background:var(--plocha); border:1px solid var(--okraj); border-radius:10px; padding:8px 12px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:600; }
+  code { font-family:ui-monospace,Consolas,monospace; font-size:.84em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+  ol.otazky li { margin-bottom:10px; }
+  footer { margin-top:44px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.86rem; }
+  @media (max-width:560px) { dl.vl, .riadok { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Revízia starších: strach až po udržaní</h1>
+<p class="pod">Rýchle meranie stratéga pre brainstorming „revízia starších“ · 30. 10. 2026 · východisko master <code>a2fa7b3</code> (pravidlá v8.1) · nadväzuje na <code>strategia-20261028-090549</code> (variant „zóna 1“)</p>
+
+<section class="verdikt" aria-labelledby="verdikt">
+<h2 id="verdikt">Verdikt</h2>
+<p>Dnešný strach je snehová guľa. U rovnako silných botov tvorí 38 % kladných špakov víťaza. Víťaz dostane za strach priemerne 22 špakov, porazený 7. Víťaz finále vyhrá partiu v 94 % a vedúci pred finále len v 54 %. <strong>V6A („vyplatí sa až udržaná zóna, bez podmienky výhry“)</strong> túto guľu skoro celú rozpustí: priemerný rozdiel klesne z 28,3 na <strong>13,3</strong>, stompy zo 71 na <strong>32 %</strong> a víťaz finále vyhrá partiu len v <strong>62 %</strong>. Vedúci pred finále teraz vyhrá v <strong>75 %</strong>, takže päť bitiek pred finále konečne niečo znamená. Otočky ostávajú v zdravom pásme (37 % / 28 %).</p>
+<p>Cena: strach prestane rozhodovať. Rozdiel víťaz − porazený v strachu klesne z 15,0 na 2,2 špaku, lebo za udržanie dostávajú obaja podobne (7,3 : 5,2). V6B je zložitejšia a nič navyše neprinesie. <strong>Odporúčam V7 + V6A do playtestu.</strong> V7 je už rozhodnutá a udržanie zjednoduší, lebo ústup do stredu je drahší. Sama V7 zmierni guľu len do polovice (rozdiel 18,0, stompy 51 %). Rebrík sa v žiadnom variante nepohol mimo šumu.</p>
+</section>
+
+<h2 id="cisla">Čísla</h2>
+<div class="dlazdice">
+  <div class="dlazdica"><b>Priemerný rozdiel (zrkadlo)</b><span class="velke">28,3 → 13,3</span><p>Východisko → V6A. Pri rovnakej sile má byť malý. V8 pred „zónou 1“ mala 26,7.</p></div>
+  <div class="dlazdica"><b>Stompy nad 15 (zrkadlo / mix)</b><span class="velke">71/72 → 32/38 %</span><p>Pri rovnakej sile ide väčšinou o snehovú guľu, nie o zručnosť.</p></div>
+  <div class="dlazdica"><b>Víťaz finále vyhrá partiu</b><span class="velke">94 → 62 %</span><p>Finále prestáva byť jediná bitka, na ktorej záleží.</p></div>
+  <div class="dlazdica"><b>Vedúci pred finále vyhrá</b><span class="velke">54 → 75 %</span><p>Náskok z piatich bitiek sa dá ubrániť, ale nie je istý.</p></div>
+  <div class="dlazdica"><b>Strach v špakoch víťaza</b><span class="velke">38 → 18 %</span><p>Pri V7 samotnej 30 %, pri V7 + V6A 23 %.</p></div>
+  <div class="dlazdica"><b>Rebrík ε = 0,1 / 0,25</b><span class="velke">57/75 → 63/65 %</span><p>V šume (±6 bodov). Pri ε = 0,25 je náznak poklesu, treba ho ďalej sledovať.</p></div>
+</div>
+
+<div class="graf" role="img" aria-label="Rebrík: výhry bezchybného bota proti botovi s náhodnými ťahmi, podľa variantu">
+  <div class="riadok hlava"><span>variant</span><span>ε = 0,1</span><span>ε = 0,25</span></div>
+  <div class="riadok"><span>východisko v8.1</span><span class="pruh"><i style="width:57%"></i><span class="ciara"></span><em>57 %</em></span><span class="pruh b"><i style="width:75%"></i><span class="ciara"></span><em>75 %</em></span></div>
+  <div class="riadok"><span>V6A</span><span class="pruh"><i style="width:63%"></i><span class="ciara"></span><em>63 %</em></span><span class="pruh b"><i style="width:65%"></i><span class="ciara"></span><em>65 %</em></span></div>
+  <div class="riadok"><span>V6B</span><span class="pruh"><i style="width:60%"></i><span class="ciara"></span><em>60 %</em></span><span class="pruh b"><i style="width:77%"></i><span class="ciara"></span><em>77 %</em></span></div>
+  <div class="riadok"><span>V7</span><span class="pruh"><i style="width:57%"></i><span class="ciara"></span><em>57 %</em></span><span class="pruh b"><i style="width:67%"></i><span class="ciara"></span><em>67 %</em></span></div>
+  <div class="riadok"><span>V7 + V6A</span><span class="pruh"><i style="width:62%"></i><span class="ciara"></span><em>62 %</em></span><span class="pruh b"><i style="width:67%"></i><span class="ciara"></span><em>67 %</em></span></div>
+  <p class="pozn">Čiara = 50 % (náhoda). Každý pruh je 30 rozdaní × 2 miesta, smerodajná chyba je asi ±6 percentných bodov.</p>
+</div>
+
+<h2 id="tabulka">Varianty</h2>
+<div class="tab">
+<table>
+<caption>Z = zrkadlo (Štamgast proti Štamgastovi, 90 partií), M = mix povah (60 partií s vymenenými miestami). Stomp = rozdiel nad 15. Udržané / odtlačené = úrovne zón (žltá 1, oranžová 2, červená 3), ktoré prežili celé ďalšie kolo, a tie, ktoré počas neho ustúpili. Merané rovnako vo všetkých variantoch, aj vo východisku. Strach V : P = špaky za strach víťazovi a porazenému partie.</caption>
+<thead><tr>
+<th scope="col">variant</th><th scope="col">rozdiel Z / M</th><th scope="col">stompy Z / M</th><th scope="col">strach % špakov víťaza Z / M</th><th scope="col">víťaz finále vyhrá Z / M</th><th scope="col">vedúci pred finále vyhrá Z / M</th><th scope="col">otočky Z / M</th><th scope="col">útočník vyhrá bitku</th><th scope="col">rebrík ε 0,1 / 0,25</th><th scope="col">vydesenie Z / M</th><th scope="col">zóny udržané / odtlačené (Z)</th><th scope="col">strach V : P (Z)</th><th scope="col">strach v rozdiele V − P (Z)</th>
+</tr></thead>
+<tbody>
+<tr class="base"><td>východisko v8.1</td><td>28,3 / 26,8</td><td class="zle">71 / 72 %</td><td>38 / 43 %</td><td class="zle">94 / 84 %</td><td>54 / 54 %</td><td>34 / 39 %</td><td>74 %</td><td>57 / 75 %</td><td>0 / 3 %</td><td>21,6 / 16,1</td><td>22,0 : 7,0</td><td>15,0</td></tr>
+<tr class="zvyr"><td>V6A udržanie</td><td class="dobre">13,3 / 13,7</td><td class="dobre">32 / 38 %</td><td>18 / 19 %</td><td class="dobre">62 / 70 %</td><td>75 / 72 %</td><td>37 / 28 %</td><td>75 %</td><td>63 / 65 %</td><td>0 / 0 %</td><td>16,1 / 19,9</td><td>7,3 : 5,2</td><td>2,2</td></tr>
+<tr><td>V6B udržanie + výhra</td><td>16,3 / 16,1</td><td>48 / 45 %</td><td>11 / 16 %</td><td>70 / 75 %</td><td>70 / 64 %</td><td>32 / 47 %</td><td>74 %</td><td>60 / 77 %</td><td>0 / 0 %</td><td>15,0 / 19,7</td><td>4,3 : 2,7</td><td>1,6</td></tr>
+<tr><td>V7 nová cena posunu</td><td>18,0 / 19,7</td><td>51 / 55 %</td><td>30 / 30 %</td><td>78 / 72 %</td><td>66 / 69 %</td><td>33 / 40 %</td><td>75 %</td><td>57 / 67 %</td><td>0 / 0 %</td><td>27,5 / 7,8</td><td>13,3 : 7,0</td><td>6,3</td></tr>
+<tr class="zvyr"><td>V7 + V6A</td><td class="dobre">14,6 / 12,8</td><td class="dobre">42 / 32 %</td><td>23 / 23 %</td><td class="dobre">61 / 68 %</td><td>76 / 71 %</td><td>32 / 31 %</td><td>76 %</td><td>62 / 67 %</td><td>0 / 0 %</td><td>26,6 / 9,6</td><td>9,1 : 6,9</td><td>2,2</td></tr>
+</tbody>
+</table>
+</div>
+<p class="pozn">Vedúci po kole k vyhrá (zrkadlo, kolá 1–5): východisko 64/49/66/59/54 %, V6A 64/59/63/70/75 %, V6B 69/66/68/70/70 %, V7 61/63/67/61/66 %, V7 + V6A 65/65/68/74/76 %. Rozdiel nad 25: východisko 49 %, V6A 12 %, V6B 19 %, V7 29 %, V7 + V6A 14 %.</p>
+
+<h2 id="vyklad">Čo to znamená</h2>
+<ol>
+<li><strong>Snehovú guľu robí podmienka výhry, nie výška zón.</strong> V6A nechá hodnoty 1/2/3 a len odpojí výplatu od výhry. Rozdiel aj stompy tým klesnú viac ako pri „zóne 1“ z 28. 10. (tam 26,7 → 17,2). Dnes víťaz bitky zinkasuje strach, ktorý mu vyrobil vlastný prebytok. Po zmene musí zónu celé kolo ubrániť.</li>
+<li><strong>Krivka „vedúci po kole k“ konečne rastie</strong>, pri V6A zo 64 na 75 % a pri V7 + V6A zo 65 na 76 %. Dnes je plochá a zlomí sa až vo finále (54 → 94 %). Pri V6A sa na hru dá plánovať, a pritom nie je rozhodnutá priskoro, lebo otočky ostávajú na 28–37 %.</li>
+<li><strong>Odtláčanie je nové rozhodnutie.</strong> Pri V6A sa odtlačí viac úrovní zón, než sa udrží (19,9 : 16,1). Porazený totiž prebytkom víťaza vracia jeho čerstvé zóny skôr, než sa vyplatia. Je to interakcia, nie náhoda. Ten istý ťah by však mohol pôsobiť ako „nikdy nič nedostanem“.</li>
+<li><strong>Strach prestane rozhodovať.</strong> Pri V6A dostane víťaz za strach 7,3 špaku a porazený 5,2, v rozdiele víťaz − porazený to sú len 2,2 špaku (dnes 15,0). O partii potom rozhodujú karty v línii (9,1) a Cirhóza (2,4). Starší ostávajú dôležití pre priazeň a vydesenie, ako zdroj bodov však skoro zmiznú. Ak Michal chce, aby starší boli ťažiskom bodov, V6A ich oslabí.</li>
+<li><strong>V7 a V6A sa dopĺňajú.</strong> Pri V7 je ústup k stredu drahší (2–4 body za krok). Odtlačených zón je preto 7,8 namiesto 16,1 a udržanie je dosiahnuteľné. V6A z udržania robí podmienku výplaty. Kombinácia drží strach na 23 % a v mixe povah má najmenej stompov (32 %).</li>
+<li><strong>V6B nič nepridá.</strong> Strach v nej klesne ešte nižšie (11 %) a v mixe skáču otočky na 47 %. Navyše potrebuje druhý stav „udržané, ale ešte nevyplatené“. Je to zložitosť bez zisku.</li>
+<li><strong>Zručnosť sa nezmenila mimo šumu.</strong> Pri ε = 0,1 má rebrík 57 % a všetky varianty 57–63 %. Pri ε = 0,25 má V6A 65 % proti 75 % vo východisku, čo je tesne nad hranicou šumu. Je to náznak, že V6A trochu tlmí to, ako strach znásobuje výhry lepšieho hráča. Bot sa však na udržiavanie nevie cielene pripraviť, preto to nie je dôkaz.</li>
+</ol>
+
+<h2 id="navrhy">Odporúčanie</h2>
+<div class="filter" role="group" aria-label="Filter podľa odporúčania">
+  <button type="button" aria-pressed="true" data-f="vsetky">Všetky</button>
+  <button type="button" aria-pressed="false" data-f="zaviest">Zaviesť</button>
+  <button type="button" aria-pressed="false" data-f="skusit">Vyskúšať v playteste</button>
+  <button type="button" aria-pressed="false" data-f="zamietnut">Zamietnuť</button>
+</div>
+<div class="karty">
+<article class="karta skusit" data-o="skusit">
+<h3>V7 + V6A: strach až po udržaní, pri novej cene posunu <span class="stitok skusit">vyskúšať v playteste</span></h3>
+<dl class="vl">
+<dt>Problém</dt><dd>Strach tvorí 38 % špakov víťaza a vypláca sa len víťazovi bitky. Víťaz finále vyhrá partiu v 94 %, vedúci pred finále len v 54 %.</dd>
+<dt>Zmena</dt><dd>Zóna, ktorá na konci kola k (po prebytku) leží na strane „bojí sa hráča P“ a do konca kola k+1 neustúpi, sa P vyplatí na konci kola k+1 (žltá 1, oranžová 2, červená 3, každá raz). Nezáleží na tom, kto vyhral bitku. Zóny, ktoré vzniknú až vo finále, neplatia nič.</dd>
+<dt>Prečo zručnosť</dt><dd>Strach sa dá naplánovať (posunúť teraz, ubrániť o kolo neskôr) a ubrániť. Prebytok porazeného dostane jasný cieľ: odtlačiť súperove čerstvé zóny.</dd>
+<dt>Čísla</dt><dd>Oproti V7 samej: rozdiel 18,0 → 14,6 (mix 19,7 → 12,8), stompy 51 → 42 % (mix 55 → 32 %), víťaz finále vyhrá 78 → 61 %, vedúci pred finále 66 → 76 %, strach 30 → 23 %. Rebrík 57/67 → 62/67 %.</dd>
+<dt>Cena a riziko</dt><dd>Každý starší si musí pamätať, kde bol marker na konci minulého kola. Na stole na to treba značku „udržiava sa“. Strach skoro prestane rozhodovať o víťazovi (v rozdiele 2,2 špaku). Porazený, ktorému súper odtláča zóny, môže mať pocit, že strach je nedosiahnuteľný.</dd>
+<dt>Náročnosť</dt><dd>Stredná: stav jednej zóny na staršieho, výplata na konci kola, zobrazenie a výučba.</dd>
+</dl>
+</article>
+<article class="karta skusit" data-o="skusit">
+<h3>V6A bez V7 <span class="stitok skusit">vyskúšať v playteste</span></h3>
+<dl class="vl">
+<dt>Čísla</dt><dd>Rozdiel 28,3 → 13,3, stompy 71 → 32 %, víťaz finále vyhrá 94 → 62 %, vedúci pred finále 54 → 75 %, otočky 34 → 37 %. Odtlačí sa viac, než sa udrží (19,9 : 16,1).</dd>
+<dt>Poznámka</dt><dd>Keďže V7 sa zavádza tak či tak, samostatná V6A slúži len na porovnanie. Pri lacnom ústupe ju súper ľahšie zmarí.</dd>
+</dl>
+</article>
+<article class="karta zaviest" data-o="zaviest">
+<h3>V7: nová cena posunu <span class="stitok zaviest">zaviesť (už rozhodnuté)</span></h3>
+<dl class="vl">
+<dt>Čísla</dt><dd>Rozdiel 28,3 → 18,0, stompy 71 → 51 %, víťaz finále vyhrá 94 → 78 %, strach 38 → 30 %, odtlačené zóny 16,1 → 7,8. Rebrík bez zmeny (57/67 %).</dd>
+<dt>Riziko</dt><dd>Sama snehovú guľu len polovičí. Vydesenie ostáva u botov na 0 % ako vo východisku. Červená stojí zo stredu 6 bodov, takže hrozba vydesenia bude ešte vzácnejšia.</dd>
+</dl>
+</article>
+<article class="karta zamietnut" data-o="zamietnut">
+<h3>V6B: udržanie + výhra <span class="stitok zamietnut">zamietnuť</span></h3>
+<dl class="vl">
+<dt>Čísla</dt><dd>Rozdiel 16,3, stompy 48 %, strach 11 % (víťaz 4,3, porazený 2,7 špaku), otočky v mixe 47 %.</dd>
+<dt>Dôvod</dt><dd>Oproti V6A slabšie tlmí guľu a potrebuje druhý stav („udržané, nevyplatené“). Strach sa v nej stráca ešte viac.</dd>
+</dl>
+</article>
+</div>
+
+<h2 id="rizika">Riziká a otvorené rozhodnutia pre Michala</h2>
+<ul>
+<li><strong>Majú byť starší zdroj bodov?</strong> Ak áno, V6A ich v bodovaní skoro zneutralizuje. Možnosťou je vyššia hodnota udržanej zóny, napríklad 2/3/4 namiesto 1/2/3. Nemeral som ju, je to len návrh a obaja hráči by dostávali viac podobne, takže rozhodovať by aj tak nezačala.</li>
+<li><strong>Porazený dostane strach.</strong> Pri V6A je to zámer (bez podmienky výhry). Sedí to so zásadou dobiehania, no ide proti v6.1 („strach len víťazovi“). Treba to povedať nahlas.</li>
+<li><strong>Zrozumiteľnosť</strong> sa merať nedá. „Zóna platí, keď ju udržíš celé ďalšie kolo“ je jedna veta, stôl však musí ukázať, ktoré zóny sú „rozbehnuté“ a kedy sa vyplatia.</li>
+<li><strong>Bot sa variantom neprispôsobuje.</strong> Udržiavanie ani odtláčanie zámerne neplánuje, takže skutočný hráč môže V6A využiť inak (napríklad brániť zóny Pohoršením k sebe).</li>
+</ul>
+
+<h2 id="otazky">Čo sledovať v ďalšom playteste</h2>
+<ol class="otazky">
+<li>Rozumel si, kedy sa ti zóna vyplatí? Plánoval si posun markera s ohľadom na to, či ho o kolo ubrániš?</li>
+<li>Použil si prebytok alebo Pohoršenie zámerne na odtlačenie súperovej zóny skôr, než sa mu vyplatila? Koľkokrát a stálo to za to?</li>
+<li>Mal si pocit, že na starších ešte záleží pri bodoch, alebo len pri priazni?</li>
+<li>Rozhodla o partii jedna bitka (finále), alebo si cítil, že náskok z predošlých kôl niečo znamená?</li>
+<li>Pôsobilo to, že strach dostane aj ten, kto bitku prehral, spravodlivo, alebo ako darček?</li>
+</ol>
+
+<footer>
+<p><strong>Ako sa meralo.</strong> Jeden worktree z <code>a2fa7b3</code>, varianty prepínal parameter prostredia, takže východisko je ten istý kód bez prepínača. Stredná hra (5 lokalít + finále). Zrkadlo: 90 partií Štamgast proti Štamgastovi. Mix: 60 partií (Štamgast, Rapavý Fero, Teta Gizka po dvojiciach, s vymenenými miestami). Rebrík: 30 rozdaní × 2 miesta pri ε = 0,1 aj 0,25. Pevné semienka sú rovnaké pre všetky varianty. Skript <code>playtest/strategia/starsi-revizia-20261030/s9.ts</code> vychádza zo <code>s8.ts</code> z 28. 10. a pridáva udržané/odtlačené zóny a strach porazeného. Diff variantov je v <code>v6-v7.diff</code>.</p>
+<p><strong>Úpravy bota (minimálne, aby priamo neklamal).</strong> V6A: stávka bitky neobsahuje strach. Odhad strachu = rozbehnuté (kandidátske) zóny naplno + nové zóny × 0,6, vo finále nové zóny 0. Cena posunu markera = 1,5 × 0,6 = 0,9 špaku, vo finále 0,5 (už len obranná). V6B: stávka = udržané nevyplatené zóny, odhad × šanca na výhru. V7: hodnota bodu Pohoršenia a prebytku × 0,5, lebo krok stojí v priemere asi 2 body. Bot sa variantom neprispôsobuje inak. Udržiavanie ani odtláčanie zámerne neplánuje, preto sú čísla variantov náznak smeru, nie dôkaz.</p>
+<p><strong>Testy jadra</strong> s prepínačmi padajú len na starých hodnotách a na skriptovaných ťahoch po jednom poli (V6A 21, V6B 20, V7 + V6A 50 z 713). Výnimky v priebehu partie nevznikli, všetkých 1 350 nameraných partií dobehlo.</p>
+</footer>
+</main>
+<script>
+(function () {
+  var tl = document.querySelectorAll(".filter button");
+  var karty = document.querySelectorAll(".karta");
+  tl.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var f = b.getAttribute("data-f");
+      tl.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      karty.forEach(function (k) { k.hidden = !(f === "vsetky" || k.getAttribute("data-o") === f); });
+    });
+  });
+})();
+</script>
+</body>
+</html>

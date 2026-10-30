@@ -12,6 +12,11 @@ describe("Odísť z partie vo výučbe", () => {
     expect(selektory).toContain(".hlavicka");
   });
 
+  it("zámok púšťa vyhodnotenie bitky a Pitky — Ďalej po Pitke ide klikom, nielen Enterom (Michal 2026-10-30)", () => {
+    const selektory = KLIKY_MIMO_ZAMKU.split(",").map((s) => s.trim());
+    expect(selektory).toContain(".pocitadlo-bitky");
+  });
+
   it("strážená partia nesie, či ide o výučbu — dialóg podľa toho nehovorí o súperovi", () => {
     expect(strazenaPartia()).toBeNull();
     const vypni = strazOdchod({ kod: "AB12", vyucba: true });

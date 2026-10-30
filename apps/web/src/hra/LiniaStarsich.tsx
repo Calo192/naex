@@ -108,13 +108,6 @@ function vztah(elder: ElderState, marker: MarkerPos) {
   return { priazen: priazenHraca(e), sila: priazenSila(e), obavany: obavanyHrac(e), uroven: STUPNICA_ZONY[marker] };
 }
 
-/** Koniec stupnice hráča p: ♥, ak mu starší prejavuje priazeň, výkričníky, ak sa ho bojí. */
-function KoniecStupnice({ v, p }: { readonly v: ReturnType<typeof vztah>; readonly p: PlayerId }) {
-  if (v.priazen === p) return <b className="ls-koniec-priazen">♥</b>;
-  if (v.obavany === p) return <ZnackaStrachu uroven={v.uroven} />;
-  return null;
-}
-
 /**
  * Farba zóny podľa úrovne 0–3 (farby stupnice sú pevné, ako na tlačenom scorecarde).
  * FARBY_STUPNICE tvorcu má 9 polí (v5); v6 má stupnica 7 polí — farba sa berie podľa zóny.
@@ -175,7 +168,6 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hra
           <ScorecardVLinii
             key={s.elder.elderId}
             s={s}
-            poradie={i + 1}
             data={data}
             ikony={ikony}
             ja={ja}
@@ -277,7 +269,6 @@ function LegendaStupnice({
 
 function ScorecardVLinii({
   s,
-  poradie,
   data,
   ja,
   mena,
@@ -290,7 +281,6 @@ function ScorecardVLinii({
   lupa,
 }: {
   readonly s: StarsiVLinii;
-  readonly poradie: number;
   readonly data: GameData;
   readonly ikony: readonly IkonaBodovania[];
   readonly ja: PlayerId;
@@ -340,7 +330,6 @@ function ScorecardVLinii({
   const popisMarkera = `${s.meno}: ♥ ${priazenTeraz}; ${strachTeraz}`;
 
   const stopa = s.stopa;
-  const lupaVKroku = krok !== null ? lupaBezKliku(lupa) : undefined;
   const pata =
     volby !== undefined ? (
       <span className="ls-smery">
@@ -395,10 +384,6 @@ function ScorecardVLinii({
             onBlur: () => onNahlad(false),
           })}
     >
-      <div className="ls-sc-hlava" {...lupaVKroku}>
-        <b className="ls-meno">{s.meno}</b>
-        <span className="ls-poradie">{poradie}</span>
-      </div>
       <div className="ls-telo">
         <span className="ls-portret">
           {s.obrazok !== null ? <img src={s.obrazok} alt="" draggable={false} /> : <span className="ls-portret-prazdny" />}
@@ -423,16 +408,10 @@ function ScorecardVLinii({
         priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"}
         hranice={hraniceZon}
       />
-      {/* Na konci stupnice zvýhodneného hráča ♥, na konci obávaného výkričníky — oboje v jeho farbe. */}
-      <span className="ls-strany" aria-hidden="true">
-        <span className="moje">
-          ◀ <KoniecStupnice v={zobraz} p={ja} /> <span className="ls-strany-meno">ty</span>
-        </span>
-        <span className="superove">
-          <span className="ls-strany-meno">{mena[su]}</span> <KoniecStupnice v={zobraz} p={su} /> ▶
-        </span>
-      </span>
+      {/* Pod staršinom meno a komu akú priazeň dáva, väčším písmom (Michal 2026-10-30: drobné
+          popisy strán a poradie nad ním nič nehovorili). */}
       <span className="ls-stav" aria-hidden="true">
+        <b className="ls-meno">{s.meno}</b>
         <span className={`ls-cip priazen${zobraz.priazen === null ? "" : zobraz.priazen === ja ? " moja" : " superova"}${priazenPo !== priazenTeraz ? " po-posune" : ""}`}>
           ♥ {priazenPo}
         </span>
@@ -446,25 +425,6 @@ function ScorecardVLinii({
       {pata !== null && <div className="ls-pata">{pata}</div>}
     </div>
   );
-}
-
-/**
- * Lupa počas kroku (UX N4): na celý scorecard sa v kroku kliká a prejdenie myšou
- * ukazuje stav po posune, preto lupu otvorí len hlavička (meno) — a ťuk na nej
- * posun nespustí.
- */
-function lupaBezKliku(lupa: HTMLAttributes<HTMLElement> | undefined): HTMLAttributes<HTMLElement> | undefined {
-  if (lupa === undefined) return undefined;
-  const { onClick, tabIndex: _tab, onFocus: _f, onBlur: _b, ...zvysok } = lupa;
-  return onClick === undefined
-    ? zvysok
-    : {
-        ...zvysok,
-        onClick: (e) => {
-          e.stopPropagation();
-          onClick(e);
-        },
-      };
 }
 
 /**

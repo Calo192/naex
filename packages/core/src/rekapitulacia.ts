@@ -43,6 +43,48 @@ export interface NaexRekapitulacie {
   readonly zrusilo: Dvojica;
 }
 
+/**
+ * Jedna akcia v podrobnom náhľade rekapitulácie (Michal 2026-10-30): zjednodušený
+ * ukáže súčet a pruh, podrobný ikony akcií vedľa seba — aktívne, zdvojené (×2)
+ * aj zrušené (sivé, dali 0) a čím. Posilnenie a Odpor sa neukazujú — sú to modifikátory.
+ */
+export interface AkciaRekapitulacie {
+  readonly kto: PlayerId;
+  /** Karta, ktorej slot akciu dal; null = mimo línie (priazeň, patronát, efekt karty). */
+  readonly uid: number | null;
+  readonly defId: string | null;
+  /** Koľko akcia dala (2 = zdvojená, 0 = zrušená); záporná = efekt karty ubral (Veterinár, Farár…). */
+  readonly n: number;
+  readonly zrusena: boolean;
+  /** Prečo je aktívna či zdvojená („Posilnenie“, „NA EX“, „Vzbura“, „karta:<defId>“), pri zrušenej čím („Odpor“, „NA EX“). */
+  readonly dovody: readonly string[];
+}
+export type AkcieRekapitulacie = Readonly<Partial<Record<Action, readonly AkciaRekapitulacie[]>>>;
+
+/**
+ * Akcie z línie po jednom slote pre podrobný náhľad. `spolu` je číslo, ktoré riadok
+ * ukazuje (súčet bitky, prírastok Pitky) — čo z línie nepochádza, dorovná položka
+ * mimo línie (uid null), aby súčet podrobného náhľadu sedel so zjednodušeným.
+ */
+export function akcieRekapitulacie(linia: LineEval, akcie: readonly Action[], spolu: (p: PlayerId, a: Action) => number = (p, a) => nula(linia.sums[p][a])): AkcieRekapitulacie {
+  const out: Partial<Record<Action, AkciaRekapitulacie[]>> = {};
+  for (const a of akcie) {
+    const xs: AkciaRekapitulacie[] = [];
+    for (const p of [0, 1] as const) {
+      const aktivne = (linia.zdroje[p][a] ?? []).filter((z) => z.hodnota > 0);
+      for (const z of aktivne) xs.push({ kto: p, uid: z.uid, defId: z.defId, n: z.hodnota, zrusena: false, dovody: z.dovody });
+      const zvysok = spolu(p, a) - aktivne.reduce((s, z) => s + z.hodnota, 0);
+      if (zvysok !== 0) xs.push({ kto: p, uid: null, defId: null, n: zvysok, zrusena: false, dovody: [] });
+      for (const z of linia.zrusene[p][a] ?? []) xs.push({ kto: p, uid: z.uid, defId: z.defId, n: 0, zrusena: true, dovody: z.dovody });
+    }
+    if (xs.length > 0) out[a] = xs;
+  }
+  return out;
+}
+
+/** Akcie, ktoré podrobný náhľad Pitky ukazuje (riadky Dlh, pečeň, cigarety, Vízia). */
+export const AKCIE_PITKY: readonly Action[] = ["Dlh", "PoškodeniePečene", "Poldeci", "Cigareta", "Obmedzenie", "Vízia"];
+
 export type AkciaTuha = "Rana" | "Pecka" | "Petelica";
 export const AKCIE_TUHE: readonly AkciaTuha[] = ["Rana", "Pecka", "Petelica"];
 
@@ -105,6 +147,8 @@ export interface RekapitulaciaBitky {
    * výsledku (prebytok vo finále a na Kultúrnom dome sa dopíše až na nástenke).
    */
   readonly spaky?: BitkaNaNastenke;
+  /** Podrobný náhľad: tuhé, Viera, Povera a Pohoršenie po slotoch (chýba v starších záznamoch). */
+  readonly akcie?: AkcieRekapitulacie;
 }
 
 export interface RekapitulaciaPitky {
@@ -141,6 +185,8 @@ export interface RekapitulaciaPitky {
   readonly vizia: Dvojica;
   /** Záverečné otočené na konci tejto Pitky (chýba, keď žiadna neležala). */
   readonly zaverecne?: readonly ZaverecnaOdhalena[];
+  /** Podrobný náhľad: akcie Pitky po slotoch (chýba v starších záznamoch). */
+  readonly akcie?: AkcieRekapitulacie;
 }
 
 const nula = (v: number | undefined): number => v ?? 0;
@@ -253,6 +299,10 @@ export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): 
     vitaz: v.vitaz,
     prebytok: v.prebytok,
     prebytokDrzi: v.prebytokDrzi,
+    // Riadky ukazujú súčty bitky (Viera s Veriacim, Povera bez ignorovaných Farárom, Pohoršenia s patronátom).
+    akcie: akcieRekapitulacie(linia, [...AKCIE_TUHE, "Viera", "Povera", "Pohoršenie"], (p, a) =>
+      a === "Viera" ? vieraSpolu[p] : a === "Povera" ? poveraSpolu[p] : a === "Pohoršenie" ? v.pohorsenia[p] : nula(v.sums[p][a]),
+    ),
   };
 }
 
@@ -342,6 +392,10 @@ export function rekapitulaciaPitky(data: GameData, v: VstupRekapitulaciePitky): 
     // Cigorky (Dedičstvo) Obmedzenie neuberie — sú to cigarety nad rámec akcií.
     cigarety: { akcie, obmedzenie, cigorky: dvojica((p) => v.cigarety[p] - (akcie[p] - obmedzenie[p])), zisk: v.cigarety },
     vizia: dvojica((p) => nula(sums[p].Vízia)),
+    // Dlh a pečeň ukazujú prírastky z kariet na stole (Liberál, Veterinár, Manželka ich menia).
+    akcie: akcieRekapitulacie(v.linia, AKCIE_PITKY, (p, a) =>
+      a === "Dlh" ? v.zadlzenieZoStola[p] : a === "PoškodeniePečene" ? v.poskodeniePecene[p] : a === "Poldeci" ? v.poldeci[p] : nula(sums[p][a]),
+    ),
   };
 }
 

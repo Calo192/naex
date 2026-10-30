@@ -16,9 +16,12 @@ export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
 
 const spakov = (n: number): string => (n === 1 ? "špak" : n < 5 ? "špaky" : "špakov");
 
-/** Riadok priazne pod stupnicou: komu a krátky účinok — bez priazne účinok pri +1 (Michal 2026-10-23). */
+/**
+ * Riadok priazne pod staršinom: komu a akú priazeň dáva — bez priazne účinok pri +1
+ * (Michal 2026-10-23). Sila je už v účinku („+2 tuhé v bitke“), druhýkrát sa nepíše (2026-10-30).
+ */
 export function riadokPriazne(fav: Favour, komu: string | null, sila: number): string {
-  return komu === null || sila <= 0 ? `nikto · pri +1: ${UCINOK_KRATKO[fav](1)}` : `${komu} +${sila} · ${UCINOK_KRATKO[fav](sila)}`;
+  return komu === null || sila <= 0 ? `nikomu · pri +1: ${UCINOK_KRATKO[fav](1)}` : `${komu}: ${UCINOK_KRATKO[fav](sila)}`;
 }
 
 /** Plné znenie priazne do lupy (na karte je len krátke). */
