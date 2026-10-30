@@ -10,7 +10,7 @@ import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyHrac, VerejnyStav } from "./effects.ts";
 import type { PlayerState } from "./player.ts";
-import { abstakyVBitke, verejneAbstaky } from "./engine.ts";
+import { verejneAbstaky } from "./engine.ts";
 
 type HracZavislosti = VerejnyHrac & Pick<PlayerState, "nerestiTotoKolo">;
 
@@ -63,7 +63,7 @@ export function stavZavislosti(data: GameData, s: StavPreZavislost, p: PlayerId)
   const vyhlad: VyhladZavislosti = teraz < on ? "ziska" : teraz > on && abstaky > 0 ? "zbavi" : "nic";
   return {
     abstaky,
-    ubera: abstakyVBitke(data, s, p, 0),
+    ubera: abstaky,
     pohorsenia: abstaky,
     teraz,
     naexNaStole: ja.naex,

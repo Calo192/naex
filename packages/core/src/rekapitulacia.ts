@@ -4,7 +4,7 @@
 // pre Dlh, pečeň a cigarety. Čísla skladá motor pri vyhodnotení z tých istých
 // výpočtov, ktorými účtuje (rozpisPoskodenia, prirastkyPitky, cigaretyZPitky),
 // a posiela ich v udalosti — klient ich len kreslí. Všetko je verejné: línia,
-// priznané karty a pečeň vidia obaja, súperove Absťáky v ruke sa sem nedostanú.
+// priznané kliatby, Dlhy, Absťáky a pečeň vidia obaja.
 
 import type { DamageResult } from "./battle.ts";
 import type { GameData } from "./data.ts";

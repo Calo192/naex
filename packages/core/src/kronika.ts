@@ -81,8 +81,7 @@ const pocet = (s: GameState, p: PlayerId, defId: string): number => {
 };
 /** Rozdiel tuhého poškodenia (p − súper) v línii tak, ako by sa bitka vyhodnotila teraz. */
 function rozdiel(data: GameData, s: GameState, p: PlayerId): number {
-  const abstaky = (q: PlayerId): number => s.hraci[q].ruka.filter((k) => k.defId === "abstak").length;
-  const d = poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [abstaky(0), abstaky(1)]);
+  const d = poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums);
   return d.tuhe[p] - d.tuhe[opponentOf(p)];
 }
 const dvojica = (x: readonly [number, number], p: PlayerId, o: number): [number, number] =>
@@ -128,7 +127,7 @@ export function zapisDoKroniky(
   }
 
   for (const p of [0, 1] as const) {
-    const noveDlhy = pocet(po, p, "dlh") - pocet(pred, p, "dlh");
+    const noveDlhy = (po.hraci[p].dlhyZiskane ?? 0) - (pred.hraci[p].dlhyZiskane ?? 0);
     const noveCirhozy = pocet(po, p, "cirhoza") - pocet(pred, p, "cirhoza");
     if (noveDlhy > 0) kolo = { ...kolo, dlhy: dvojica(kolo.dlhy, p, noveDlhy) };
     if (noveCirhozy > 0) kolo = { ...kolo, cirhozy: dvojica(kolo.cirhozy, p, noveCirhozy) };

@@ -43,8 +43,8 @@ export const KONSTANTY = {
    */
   PRAH_CIRHOZY_ZAKLAD: 3,
   /**
-   * Prah Dlhu (+ sila Úžerníka): akcie Dlh plnia zadĺženie a kartu Dlh hráč
-   * dostane pri tomto prahu. Michal 2026-10-18 znížil z 2 na 1 (Dlh v playteste
+   * Prah Dlhu (+ sila Úžerníka): akcie Hazard (kľúč Dlh, v8.2) plnia zadĺženie
+   * a Dlh (od v8.2 počítadlo) hráč dostane pri tomto prahu. Michal 2026-10-18 znížil z 2 na 1 (Dlh v playteste
    * nevznikol), 2026-10-20 vrátil na 2 s priazňou Úžerníka. Úžerník pridáva
    * silu, nie 2 × silu — zadĺženie sa po Pitke nuluje a vyšší prah by Dlh vypol.
    */
@@ -157,6 +157,8 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // rozdeľuje porazený, Kultúrny dom „Obaja bodujú“, Cirhóza −3, Exekútor bez prahu (Záhradkár ho obíde), Kmotor presúva Dlhy.
 // v8.1 (Michal 2026-10-28, roadmapa #113) bez novej značky — test drží tvar „vN“: Absťák Nervák
 // (porovnanie nerestí so súperom, +1 Pohoršenie, bez zrážky špakov).
+// v8.2 (Michal 2026-10-30) tiež bez novej značky: akcia Dlh sa volá Hazard, Dlh a Absťák sú
+// počítadlá (nie karty, Absťák bez dobratia), posun markera Pohoršením a prebytkom stojí podľa zóny.
 export const VERZIA_PRAVIDIEL = "v8";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-10-28";

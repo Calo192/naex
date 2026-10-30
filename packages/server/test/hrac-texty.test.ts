@@ -90,11 +90,10 @@ describe("klient AI hráčov: Bzdocha (playtest 20261028-090549, nezrovnalosť 2
 
 describe("klient AI hráčov: stávka bitky z jadra (nezrovnalosť 3, Noviny)", () => {
   it("Noviny porazeného (Titulka): pri prehre +1 špak za každý Dlh, ktorý má víťaz navyše", () => {
-    const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
     const { s } = doPitky(304, [], (x) => ({
       ...x,
       hraci: [
-        { ...x.hraci[0], priznane: [dlh(891001), dlh(891002)] },
+        { ...x.hraci[0], dlhy: 2 },
         { ...x.hraci[1], dedicstvo: [{ uid: 891003, defId: "noviny", leftLayout: 0, rightLayout: 0 }] },
       ],
     }));

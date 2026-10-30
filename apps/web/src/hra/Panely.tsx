@@ -32,6 +32,7 @@ import { BarStarsich, DlazdicaStarsich } from "./Starsi.tsx";
 import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
+import { CENA_POLA } from "./textyStarsich.ts";
 
 // ---- ikony zdrojov -----------------------------------------------------------
 
@@ -638,7 +639,7 @@ export function HracDoska({
           />
           {spojenie !== undefined && !spojenie.pripojeny && <span className="doska-odpojeny">○ odpojený {minSek(odpojenyMs)}</span>}
           {/* Nepriznané kliatby pod menom; priznané a Dedičstvo sú v dlaždici KARTY (Michal 2026-10-23, #76). */}
-          {kliatby.dlh + kliatby.cirhoza > 0 && (
+          {kliatby.cirhoza > 0 && (
             <span className="doska-oblast">
               <span
                 className="cip kliatba"
@@ -648,8 +649,7 @@ export function HracDoska({
                     : `Súperove nepriznané kliatby podľa toho, čo bolo vidno na stole. Každá Cirhóza mu na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`
                 }
               >
-                nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
-                {kliatby.dlh > 0 && ` · Dlh ×${kliatby.dlh}`}
+                nepriznané · Cirhóza ×{kliatby.cirhoza}
               </span>
             </span>
           )}
@@ -1147,12 +1147,14 @@ export interface BitkaPanelProps {
   readonly ukazHrozbu?: (uid: number | null) => void;
   /** Súper má v línii Záverečnú lícom dole — jeho tuhé je neisté (roadmapa #83). */
   readonly skrytaSupera?: boolean;
+  /** Efekty Prehra po bitke podľa stola (návrh #38 B: Dievčina na vydaj, Farár, Podvodník). */
+  readonly poBitke?: string | null;
 }
 
 export interface HrozbaBitky {
   readonly kto: "ja" | "su";
-  /** NA EX z kariet na stole (predvolené), alebo rozsah nepridelených Pohoršení. */
-  readonly zdroj?: "naex" | "pohorsenia";
+  /** NA EX z kariet na stole (predvolené), rozsah nepridelených Pohoršení, alebo kliatby z NA EX (#38 B). */
+  readonly zdroj?: "naex" | "pohorsenia" | "kliatby";
   /** Krátko do riadku bitky: „Súper ešte môže: tuhé 0 : 8“. */
   readonly kratko: string;
   /** Najkratšie, keď hrozbu majú obaja a idú do jedného riadku: „súper až 0 : 8“. */
@@ -1225,11 +1227,9 @@ function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, prebytokN
         : vyhravam
           ? `Vyhrávaš o ${rozdiel}`
           : `Prehrávaš o ${rozdiel}`;
-  // Prebytok: každý posun stojí 1.
-  const posunov = prebytokNaRozdelenie;
   // V bare je na verdikt jeden krátky riadok — čo prinesie remíza, povie nápoveda.
   const kratko = rozdiel === 0 ? "Remíza" : verdikt;
-  return { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, coPriRemize, verdikt, kratko, posunov };
+  return { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, coPriRemize, verdikt, kratko };
 }
 
 /**
@@ -1259,8 +1259,7 @@ export function OdhadBaru(props: BitkaPanelProps) {
 /** Nápoveda odhadu v bare: čo býval celý panel bitky, a stávka (Michal 2026-10-25: len v nápovede). */
 export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | null, prepnutNa: string): TipObsah {
   const { damage, ja, vysledok, mena, ciel, naSekeru, prebytokNaRozdelenie, utocnik } = props;
-  const { su, prebytok, prebytokDrzi, rozdiel, coPriRemize, verdikt, posunov } = verdiktBitky(props);
-  const posunyText = posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov";
+  const { su, prebytok, prebytokDrzi, rozdiel, coPriRemize, verdikt } = verdiktBitky(props);
   return {
     nadpis: `${vysledok ? "Výsledok bitky" : "Odhad bitky"}${ciel === "" ? "" : ` · ${ciel}`}`,
     text: (
@@ -1269,7 +1268,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         <span className="tip-riadok">
           {prebytokDrzi === null
             ? "prebytok: nikto"
-            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunyText} (posun stojí 1)`}
+            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${CENA_POLA}`}
         </span>
         {(props.hrozby ?? []).map((h) => (
           <span key={klucHrozby(h)} className="tip-riadok">
@@ -1282,6 +1281,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
           </span>
         )}
         {!vysledok && rozdiel !== 0 && <span className="tip-riadok">pri remíze: {coPriRemize}</span>}
+        {props.poBitke != null && <span className="tip-riadok">po bitke (efekty Prehra): {props.poBitke}</span>}
         {!vysledok && stavka !== null && (
           <span className="tip-riadok">
             táto bitka ({pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
@@ -1296,7 +1296,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         )}
         {utocnik !== undefined && <span className="tip-riadok">{utocnik}</span>}
         <span className="tip-stav">
-          {vysledok ? "" : "Podľa aktuálnej línie; súperove Absťáky v ruke nevidno. "}Klik ukáže na stranách baru {prepnutNa}.
+          {vysledok ? "" : "Podľa aktuálnej línie. "}Klik ukáže na stranách baru {prepnutNa}.
         </span>
       </>
     ),
@@ -1305,7 +1305,7 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
 
 export function BitkaPanel(props: BitkaPanelProps) {
   const { damage, sums, zdroje, rozpis, ja, vysledok, mena, sada, ciel, menoKarty, naSekeru, prebytokNaRozdelenie, utocnik } = props;
-  const { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, coPriRemize, verdikt, posunov } = verdiktBitky(props);
+  const { su, vitaz, prebytok, prebytokDrzi, rozdiel, vyhravam, coPriRemize, verdikt } = verdiktBitky(props);
 
   const strana = (p: PlayerId, zarovnanie: "vlavo" | "vpravo") => (
     <StranaBitky
@@ -1342,10 +1342,11 @@ export function BitkaPanel(props: BitkaPanelProps) {
         <span className="bitka-pozn">
           {prebytokDrzi === null
             ? "prebytok: nikto"
-            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${posunov} ${posunov === 1 ? "posun" : posunov >= 2 && posunov <= 4 ? "posuny" : "posunov"} (posun stojí 1)`}
+            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${CENA_POLA}`}
         </span>
         {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
-        {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie; súperove Absťáky v ruke nevidno</span>}
+        {props.poBitke != null && <span className="bitka-pozn">po bitke (efekty Prehra): {props.poBitke}</span>}
+        {!vysledok && <span className="bitka-pozn tlmene">podľa aktuálnej línie</span>}
       </div>
       {strana(su, "vpravo")}
     </section>

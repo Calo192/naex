@@ -141,7 +141,7 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
 });
 
 describe("ohlásené vydesenie", () => {
-  /** Hráč 0 má 3 vydesených starších a štvrtého na hrane; prebytok 1. */
+  /** Hráč 0 má 3 vydesených starších a štvrtého na hrane; prebytok 3 (oranžová → červená stojí 3, v8.2). */
   function predVydesenim(seed: number): GameState {
     const s0 = setupSBalickom(data, seed);
     const starsi = s0.starsi.map((e, i) => (i < 3 ? sMarkerom(e, 6) : i === 3 ? sMarkerom(e, 5) : e));
@@ -150,7 +150,7 @@ describe("ohlásené vydesenie", () => {
       faza: "bitka",
       starsi,
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
+      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 3 }),
     } as GameState;
   }
 

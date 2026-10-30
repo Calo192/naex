@@ -90,13 +90,11 @@ function sNastrojom(s: GameState, p: PlayerId): GameState {
   return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
-/** Hráčovi p pridá Záhradkára do ruky a priznané Dlhy — exekúcia v najbližšej bitke. */
+/** Hráčovi p pridá priznané Dlhy — exekúcia v najbližšej bitke. */
 function sExekuciou(s: GameState, p: PlayerId): GameState {
-  let uid = s.nextUid;
-  const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
   const h = s.hraci[p];
-  const novy = { ...h, priznane: [...h.priznane, ...Array.from({ length: 10 }, () => karta("dlh"))] };
-  return { ...s, nextUid: uid, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+  const novy = { ...h, dlhy: h.dlhy + 10 };
+  return { ...s, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
 function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: number): { cmd: Command; kto: PlayerId; rng: ReturnType<typeof rngSeed> } | null {

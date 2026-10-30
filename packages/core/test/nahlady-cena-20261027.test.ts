@@ -57,8 +57,6 @@ function hodnota(v: BattleOutcome, p: PlayerId): number {
   return vitaz * 1000 + prebytok;
 }
 
-const abstakyVRuke = (s: GameState): [number, number] => [0, 1].map((q) => s.hraci[q as PlayerId].ruka.filter((k) => k.defId === "abstak").length) as [number, number];
-
 /** Partie náhodnými legálnymi ťahmi; `vezmi` vyberie stavy na porovnanie (z rozdania najviac `naRozdanie`). */
 function stavy(seedy: readonly number[], vezmi: (s: GameState) => boolean, naRozdanie: number): { s: GameState; seed: number }[] {
   const out: { s: GameState; seed: number }[] = [];
@@ -88,10 +86,10 @@ const markery = (s: GameState): string => s.starsi.map((e) => e.marker).join("")
  * Pohoršenie v motore a poškodenie bitky po ňom: keď bolo posledné, bitka sa môže
  * dohrať celá (aj do ďalšieho kola) — poškodenie je potom v udalosti bitkaVysledok.
  */
-function poPohorseni(t: GameState, c: Command, p: PlayerId, sums: BitkaStav["sums"], abstaky: readonly [number, number]): { readonly u: GameState; readonly damage: DamageResult } {
+function poPohorseni(t: GameState, c: Command, p: PlayerId, sums: BitkaStav["sums"]): { readonly u: GameState; readonly damage: DamageResult } {
   const { state: u, events } = apply(data, t, c, p);
   const vysledok = events.find((e) => e.type === "bitkaVysledok");
-  const damage = vysledok?.type === "bitkaVysledok" ? vysledok.damage : (u.bitkaStav?.damage ?? poskodenieBitky(data, u, sums, abstaky));
+  const damage = vysledok?.type === "bitkaVysledok" ? vysledok.damage : (u.bitkaStav?.damage ?? poskodenieBitky(data, u, sums));
   return { u, damage };
 }
 
@@ -115,8 +113,7 @@ describe("rozsah nepridelených Pohoršení = najlepšie, čo hráč v bitke dos
     for (const { s, seed } of vzorky) {
       const b = s.bitkaStav as BitkaStav;
       const p = b.caka as PlayerId;
-      const abstaky = abstakyVRuke(s);
-      const teraz = hodnota(battleOutcome(poskodenieBitky(data, s, b.sums, abstaky)), p);
+      const teraz = hodnota(battleOutcome(poskodenieBitky(data, s, b.sums)), p);
       // Všetky poradia Pohoršení hráča p (rovnaké markery sa skúmajú raz).
       let najlepsie = Number.NEGATIVE_INFINITY;
       let videne = new Map<string, GameState>([[markery(s), s]]);
@@ -124,7 +121,7 @@ describe("rozsah nepridelených Pohoršení = najlepšie, čo hráč v bitke dos
         const dalsie = new Map<string, GameState>();
         for (const t of videne.values()) {
           for (const c of legalCommands(data, t, p).filter((x) => x.type === "pohorsenie")) {
-            const { u, damage } = poPohorseni(t, c, p, b.sums, abstaky);
+            const { u, damage } = poPohorseni(t, c, p, b.sums);
             if (u.koniec !== null) continue; // vydesenie ukončí hru — o bitke sa nerozhoduje
             const posledne = u.bitkaStav === null || u.bitkaStav.caka !== p || u.bitkaStav.krok !== "pohorsenie";
             if (posledne) najlepsie = Math.max(najlepsie, hodnota(battleOutcome(damage), p));
@@ -138,7 +135,7 @@ describe("rozsah nepridelených Pohoršení = najlepšie, čo hráč v bitke dos
       const stol = { ...view, lokalitaOtocena: view.lokalitaOtocena };
       const nepridelene = nepridelenePohorsenia(data, stol, b.sums);
       expect(nepridelene.pocet, `seed ${seed}: počet Pohoršení`).toEqual(b.pohorsenieZostava);
-      const r = rozsahPohorseni(data, stol, b.sums, nepridelene, p, abstaky);
+      const r = rozsahPohorseni(data, stol, b.sums, nepridelene, p);
       const kde = `seed ${seed} kolo ${s.kolo}, hráč ${p}, Pohoršení ${b.pohorsenieZostava[p]}`;
       if (r === null) {
         expect(najlepsie, `${kde}: rozsah tvrdí, že bitku nepohnú`).toBeLessThanOrEqual(teraz);
@@ -175,14 +172,13 @@ describe("Pohoršenie „k sebe“ aj „k súperovi“: náhľad bitky = poško
     for (const { s, seed } of vzorky) {
       const b = s.bitkaStav as BitkaStav;
       const p = b.caka as PlayerId;
-      const abstaky = abstakyVRuke(s);
       const view = viewFor(data, s, p);
       for (const c of legalCommands(data, s, p)) {
         if (c.type !== "pohorsenie") continue;
-        const { u, damage: po } = poPohorseni(s, c, p, b.sums, abstaky);
+        const { u, damage: po } = poPohorseni(s, c, p, b.sums);
         if (u.koniec !== null) continue;
-        const pred = poskodenieBitky(data, s, b.sums, abstaky);
-        const n = bitkaPoPohorseni(data, view, c.elderId, p, c.kSebe === true, abstaky);
+        const pred = poskodenieBitky(data, s, b.sums);
+        const n = bitkaPoPohorseni(data, view, c.elderId, p, c.kSebe === true);
         const kde = `seed ${seed}: ${c.elderId} ${c.kSebe === true ? "k sebe" : "k súperovi"}`;
         porovnane++;
         if (n === null) {
@@ -249,8 +245,6 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
         const r = naOdpoved(s, p, uid);
         if (r === null) continue;
         const najhorsia = najhorsiaOdpovedNaNaex(data, view, n);
-        const abst = abstakyVRuke(s);
-        const mojeAbst: [number, number] = p === 0 ? [abst[0], 0] : [0, abst[1]];
         const hranica = najhorsia === null ? hodnota(battleOutcome(n.po), p) : hodnota(najhorsia.vysledok, p);
         for (const c of legalCommands(data, r, su)) {
           // Odpoveď je bežné vyloženie (place) do línie.
@@ -260,7 +254,7 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
           if (karta === undefined || karta.defId === "snubenica") continue;
           const t = apply(data, r, c, su).state;
           const v = viewFor(data, t, p);
-          const d = poskodenieBitky(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]), evaluateLine(data, lineState(v)).sums, mojeAbst);
+          const d = poskodenieBitky(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]), evaluateLine(data, lineState(v)).sums);
           const h = hodnota(battleOutcome(d), p);
           odpovede++;
           expect(h, `seed ${seed}: NA EX na ${uid}, odpoveď ${karta.defId} → ${c.target}`).toBeGreaterThanOrEqual(hranica);
@@ -391,7 +385,7 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
         if (silaPriazne(data, s, "EXEKUTOR", p === 0 ? 1 : 0) !== silaPriazne(data, t, "EXEKUTOR", p === 0 ? 1 : 0)) continue;
         const view = viewFor(data, s, p);
         const vyhlad = vyhladDlhov(data, view, s.pitkyCelkom - s.pitkaCislo)[p];
-        const dlhy = t.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+        const dlhy = t.hraci[p].dlhy;
         expect(vyhlad.poBitke, `seed ${seed} kolo ${s.kolo}, hráč ${p}`).toBe(dlhy);
         porovnane++;
         if (vyhlad.nove >= 2) viacDlhov++;

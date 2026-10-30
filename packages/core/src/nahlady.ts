@@ -11,6 +11,7 @@ import {
   cieleVykladania,
   cigaretyZPitky,
   lineState,
+  naexCieleVLinii,
   nahladPitky,
   paleneDlhyVBitke,
   pocetPitiek,
@@ -19,7 +20,7 @@ import {
   prebytokNaRozdelenie,
   sPrilozenou,
   silaPriazne,
-  verejneAbstaky,
+  bodyNaPohorsenie,
   zablokovaneStrany,
 } from "./engine.ts";
 import { efektHraca, efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
@@ -29,9 +30,10 @@ import { evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, zhoriPriExekucii } from "./battle.ts";
 import { zahradkarChrani } from "./engine.ts";
-import { cenaPatronatu, MARKER_STRED, posunMarker } from "./elders.ts";
+import { cenaPatronatu, MARKER_STRED, posunZaBody } from "./elders.ts";
 import type { ClientState } from "./view.ts";
-import { hodnotaPohorseni } from "./view.ts";
+import { cenaKliatby, hodnotaPohorseni } from "./view.ts";
+import { pocet } from "./jazyk.ts";
 
 /** Stôl pre náhľad — línia a pečeň po zamýšľanom ťahu (ako pre nahladPitky). */
 export type StolNahladu = Parameters<typeof nahladPitky>[1];
@@ -65,7 +67,7 @@ export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: numb
   const kapacita = paleneDlhyVBitke(data, stol);
   const pre = (p: PlayerId): DlhyDoBitky => {
     const nove = noveDlhy[p];
-    const teraz = stol.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+    const teraz = stol.hraci[p].dlhy;
     const poPaleni = Math.max(0, teraz + nove - kapacita[p]);
     // Exekúcia bez prahu (Michal 2026-10-28); Záhradkár v partii ju obíde.
     const exekucia = zahradkarChrani(data, stol, p) ? 0 : zhoriPriExekucii(poPaleni, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p)));
@@ -169,7 +171,7 @@ export function dopadyNahladu(
       cigarety: s.hraci[p].cigarety + tato + dalej,
       pohorsenia,
       pohorseniaBody: hodnotaPohorseni(data, s, p, pohorsenia),
-      makke: poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums, [0, 0]).makke[p],
+      makke: poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums).makke[p],
     };
   };
   const pre = (p: PlayerId): DopadyNahladu => {
@@ -199,11 +201,7 @@ export function stolPriPoskodeni(data: GameData, s: ClientState, dalsiePitky: nu
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [s.hraci[0], s.hraci[1]];
   for (const p of [0, 1] as const) {
     const d = vyhlad[p].priPoskodeni;
-    const h = hraci[p];
-    const stare = h.priznane.filter((k) => k.defId === "dlh");
-    if (stare.length === d) continue;
-    const nove: CardInstance[] = Array.from({ length: Math.max(0, d - stare.length) }, (_, i) => ({ uid: -1000 - 100 * p - i, defId: "dlh", leftLayout: 0, rightLayout: 0 }));
-    hraci[p] = { ...h, priznane: [...h.priznane.filter((k) => k.defId !== "dlh"), ...stare.slice(0, d), ...nove] };
+    if (hraci[p].dlhy !== d) hraci[p] = { ...hraci[p], dlhy: d };
   }
   return { ...s, hraci };
 }
@@ -240,7 +238,7 @@ export function prebytokNahladu(s: ClientState, damage: DamageResult): PrebytokN
  * Celá cena ťahu (návrh #49, Michal 2026-10-26 „áno, celá cena“): bitka pred
  * a po (tuhé, mäkké, prebytok), kliatby a ostatné dopady oboch hráčov. Klient
  * aj konzolový klient ju berú odtiaľto, aby sa stôl „po ťahu“ neskladal na
- * dvoch miestach inak. Moje Absťáky v ruke poznám, súperove nie.
+ * dvoch miestach inak.
  */
 export interface CenaTahu {
   readonly pred: DamageResult;
@@ -256,12 +254,6 @@ export interface CenaTahu {
 }
 
 export function cenaTahu(data: GameData, pred: ClientState, po: ClientState, ceny: readonly [CenyKliatob, CenyKliatob]): CenaTahu {
-  const ja = pred.ja;
-  const abstaky = (s: ClientState): readonly [number, number] => {
-    const naStole = new Set(s.strany.flat().map((pl) => pl.card.uid));
-    const n = s.ruka.filter((k) => k.defId === "abstak" && !naStole.has(k.uid)).length;
-    return ja === 0 ? [n, 0] : [0, n];
-  };
   const liniaPred = evaluateLine(data, lineState(pred));
   const liniaPo = evaluateLine(data, lineState(po));
   // Pred ťahom platí počet Pitiek zo servera — súperovu Záverečnú lícom dole pohľad v línii nemá.
@@ -271,8 +263,8 @@ export function cenaTahu(data: GameData, pred: ClientState, po: ClientState, cen
   const dalsie: DalsiePitky = [dPred, Math.max(0, dPred + dalsiePitkyKola(data, po) - dalsiePitkyKola(data, pred))];
   const bitkaPred = stolPriPoskodeni(data, pred, dalsie[0]);
   const bitkaPo = stolPriPoskodeni(data, po, dalsie[1]);
-  const poskPred = poskodenieBitky(data, bitkaPred, liniaPred.sums, abstaky(pred));
-  const poskPo = poskodenieBitky(data, bitkaPo, liniaPo.sums, abstaky(po));
+  const poskPred = poskodenieBitky(data, bitkaPred, liniaPred.sums);
+  const poskPo = poskodenieBitky(data, bitkaPo, liniaPo.sums);
   return {
     pred: poskPred,
     po: poskPo,
@@ -374,8 +366,7 @@ export interface NahladNaexNaKartu extends CenaTahu {
  * lebo skúša celú sadu (≈ 7 ms na kartu): klient ju ráta len pre vybranú kartu.
  */
 export function najhorsiaOdpovedNaNaex(data: GameData, view: ClientState, n: NahladNaexNaKartu): NajhorsiaOdpoved | null {
-  const mojeAbstaky = view.ruka.filter((k) => k.defId === "abstak").length;
-  return najhorsiaOdpoved(data, n.odkrytie.view, n.dalsiePitky[1], view.ja === 0 ? [mojeAbstaky, 0] : [0, mojeAbstaky]);
+  return najhorsiaOdpoved(data, n.odkrytie.view, n.dalsiePitky[1]);
 }
 
 /** Odpoveď súpera, ktorá by hráčovi `ja` dopadla najhoršie. */
@@ -401,14 +392,13 @@ export function najhorsiaOdpoved(
   data: GameData,
   po: ClientState,
   dalsiePitky: number,
-  abstakyVRuke: readonly [number, number],
 ): NajhorsiaOdpoved | null {
   const ja = po.ja;
   const su = opponentOf(ja);
   if (po.ciel === null || po.hraci[su].rukaPocet <= 0) return null;
   const hodnotaPreMna = (v: BattleOutcome): number =>
     (v.vitaz === null ? 0 : v.vitaz === ja ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === ja ? v.prebytok : -v.prebytok);
-  const bitka = (s: ClientState): DamageResult => poskodenieBitky(data, stolPriPoskodeni(data, s, dalsiePitky), evaluateLine(data, lineState(s)).sums, abstakyVRuke);
+  const bitka = (s: ClientState): DamageResult => poskodenieBitky(data, stolPriPoskodeni(data, s, dalsiePitky), evaluateLine(data, lineState(s)).sums);
   let najhorsia: NajhorsiaOdpoved | null = null;
   let najhorsiaHodnota = hodnotaPreMna(battleOutcome(bitka(po)));
   const lokalita = cielLokalitaId(po);
@@ -443,8 +433,9 @@ export function najhorsiaOdpoved(
 }
 
 /**
- * Bitka pred a po jednom Pohoršení hráča `p` na staršieho (k sebe či k súperovi,
- * playtest 20261026-181227-1 N2: priazeň Bitkára otočí bitku 4 : 4 → 5 : 4).
+ * Bitka pred a po Pohoršeniach hráča `p` na staršieho (k sebe či k súperovi,
+ * playtest 20261026-181227-1 N2: priazeň Bitkára otočí bitku 4 : 4 → 5 : 4);
+ * v8.2 marker ide, kým hráčove Pohoršenia stačia (posunZaBody).
  * Ten istý výpočet ako vyhodnotPoskodenie — súčty línie, nová priazeň. Null mimo
  * bitky pred poškodením alebo keď posun poškodenie nezmení.
  */
@@ -454,15 +445,14 @@ export function bitkaPoPohorseni(
   elderId: string,
   p: PlayerId,
   kSebe: boolean,
-  abstakyVRuke: readonly [number, number],
 ): { readonly pred: DamageResult; readonly po: DamageResult } | null {
   if (view.ciel === null || view.bitkaStav === null || view.bitkaStav.damage !== null) return null;
   const elder = view.starsi.find((e) => e.elderId === elderId);
-  const marker = elder === undefined ? null : posunMarker(elder, kSebe ? p : opponentOf(p));
+  const marker = elder === undefined ? null : (posunZaBody(elder, kSebe ? p : opponentOf(p), bodyNaPohorsenie(view, p, elder))?.marker ?? null);
   if (marker === null) return null;
   const sums = evaluateLine(data, lineState(view)).sums;
-  const pred = poskodenieBitky(data, view, sums, abstakyVRuke);
-  const po = poskodenieBitky(data, { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) }, sums, abstakyVRuke);
+  const pred = poskodenieBitky(data, view, sums);
+  const po = poskodenieBitky(data, { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) }, sums);
   const rovnake = pred.tuhe[0] === po.tuhe[0] && pred.tuhe[1] === po.tuhe[1] && pred.celkove[0] === po.celkove[0] && pred.celkove[1] === po.celkove[1];
   return rovnake ? null : { pred, po };
 }
@@ -500,4 +490,124 @@ export function stavPoPatronate(view: ClientState, elderId: string): ClientState
     patronat,
     starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker: MARKER_STRED } : e)),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Návrh #38 B (Michal 2026-10-28): náhľady ukážu celú cenu — kliatby z cudzieho
+// NA EX a efekty Prehra. Jeden výpočet pre web aj klienta AI hráčov.
+
+/** Efekty Prehra kariet v línii — index = porazený, čísla dostane víťaz. */
+export interface EfektyPrehry {
+  /** Dievčina na vydaj: víťaz získa toľko Dlhov, koľko mala aktívnych akcií. */
+  readonly dievcina: readonly [number, number];
+  /** Farár: víťaz získa zadĺženie za každú svoju aktívnu Poveru. */
+  readonly farar: readonly [number, number];
+  /** Podvodník: toľko priznaných Dlhov porazeného prejde k víťazovi. */
+  readonly podvodnik: readonly [number, number];
+}
+
+/**
+ * Efekty Prehra podľa stola teraz — ten istý výber kariet ako koniecBitky
+ * (odkrytá karta v partii porazeného, nie spálená Benzínkou ani umlčaná) a tie
+ * isté aktívne akcie (evaluateLine). Motor ich ráta až po tom, čo sa poldeci
+ * z NA EX vypijú a zmiznú z kariet — NA EX ich teda nemení, Výtržník áno.
+ */
+export function efektyPrehry(data: GameData, v: ClientState): EfektyPrehry {
+  const bezNaex = (pl: ClientState["strany"][0][number]): ClientState["strany"][0][number] => {
+    if (pl.naexBy === undefined && pl.naexBy2 === undefined) return pl;
+    const { naexBy: _a, naexBy2: _b, ...zvysok } = pl;
+    return zvysok;
+  };
+  const linia = evaluateLine(data, lineState({ ...v, strany: [v.strany[0].map(bezNaex), v.strany[1].map(bezNaex)] }));
+  const spalit = new Set(v.bitkaStav?.spalit ?? []);
+  const aktivne = (uid: number): number => {
+    const ev = linia.cards.get(uid);
+    return ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
+  };
+  const pre = (porazeny: PlayerId): [number, number, number] => {
+    const vitaz = opponentOf(porazeny);
+    const partia = partiaHraca(v, porazeny).filter((pl) => pl.zaverecna !== true);
+    const dievcina = partia
+      .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
+      .reduce((a, pl) => a + aktivne(pl.card.uid), 0);
+    const farar = efektHraca(v, porazeny, "farar") && !efektPotlaceny(data, v, porazeny, "farar") ? (linia.sums[vitaz].Povera ?? 0) : 0;
+    const podvodnik = Math.min(v.hraci[porazeny].dlhy, partia.filter((pl) => pl.card.defId === "podvodnik").length);
+    return [dievcina, farar, podvodnik];
+  };
+  const [a, b] = [pre(0), pre(1)];
+  return { dievcina: [a[0], b[0]], farar: [a[1], b[1]], podvodnik: [a[2], b[2]] };
+}
+
+/** Efekty Prehra porazeného `porazeny` slovami z pohľadu hráča `ja`; prázdne pole, keď nič. */
+export function textyEfektovPrehry(e: EfektyPrehry, porazeny: PlayerId, ja: PlayerId): string[] {
+  const vitaz = porazeny === ja ? "súper" : "ty";
+  const ziska = porazeny === ja ? "získa" : "získaš";
+  return [
+    e.dievcina[porazeny] > 0 ? `Dievčina na vydaj: ${vitaz} ${ziska} ${pocet(e.dievcina[porazeny], "Dlh", "Dlhy", "Dlhov")}` : "",
+    e.farar[porazeny] > 0 ? `Farár: ${vitaz} ${ziska} zadĺženie ${e.farar[porazeny]}` : "",
+    e.podvodnik[porazeny] > 0 ? `Podvodník: ${pocet(e.podvodnik[porazeny], "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} ${porazeny === ja ? "tvoj prejde k súperovi" : "súpera prejde k tebe"}` : "",
+  ].filter((x) => x !== "");
+}
+
+/** Kliatby, ktoré by hráčovi `obet` pridalo NA EX hráča `hrac` z kariet na stole. */
+export interface HrozbaKliatob {
+  readonly hrac: PlayerId;
+  readonly obet: PlayerId;
+  /** Karta v línii (alebo náhradné uid skrytej Záverečnej), na ktorú by NA EX dal. */
+  readonly uid: number;
+  /** Cirhózy a Dlhy obete navyše do konca kola (táto aj ďalšie Pitky). */
+  readonly cirhozy: number;
+  readonly dlhy: number;
+  /** Špaky obete (záporné): nepriznané Cirhózy na konci, exekúcia v bitke, Herňa súperovi. */
+  readonly spaky: number;
+}
+
+/**
+ * Hrozba kliatob na stole (#38 A, Michal 2026-10-28 „od 1 Cirhózy alebo 1 Dlhu“): NA EX
+ * hráča `hrac` na kartu z verejnej línie, ktoré by jeho súperovi pridalo najviac kliatob
+ * do konca kola — aj keď víťaza bitky nezmení. Ten istý výpočet ako náhľad NA EX
+ * (kliatbyNahladu, vyhladDlhov); ruka sa neráta. Null, keď také NA EX nie je.
+ * `smie` = hráč ešte smie pred bitkou dať NA EX (mozeEsteNaex).
+ */
+export function hrozbaKliatob(data: GameData, view: ClientState, hrac: PlayerId, smie: boolean): HrozbaKliatob | null {
+  if (!smie || view.ciel === null || (view.faza !== "zhromazdenie" && view.faza !== "pitka")) return null;
+  const obet = opponentOf(hrac);
+  const ceny = ([0, 1] as const).map((q) => ({ cirhoza: cenaKliatby(data, view, q, "cirhoza"), dlh: cenaKliatby(data, view, q, "dlh") })) as [CenyKliatob, CenyKliatob];
+  const zacate = view.faza === "pitka" ? view.pitkaCislo : view.pitkaCislo + 1;
+  const dPred = Math.max(0, view.pitkyCelkom - zacate);
+  const dlhyPred = vyhladDlhov(data, view, dPred);
+  // Odkrytie NA EX hráča `hrac` tým istým kódom ako jeho náhľad (poOdkrytiNaex) — z verejného stavu.
+  const zaHraca: ClientState = { ...view, ja: hrac };
+  let najhorsia: HrozbaKliatob | null = null;
+  for (const uid of naexCieleVLinii(data, lineState(view), hrac)) {
+    const odkryte = poOdkrytiNaex(data, zaHraca, uid);
+    if (odkryte === null) continue;
+    const po: ClientState = { ...odkryte.view, ja: view.ja };
+    const dPo = Math.max(0, dPred + dalsiePitkyKola(data, po) - dalsiePitkyKola(data, view));
+    const k = kliatbyNahladu(data, view, po, [dPred, dPo], ceny)[obet];
+    const cirhozy = k.cirhozy + k.dalejCirhozy;
+    const dlhy = k.dlhy + k.dalejDlhy;
+    if (cirhozy < 1 && dlhy < 1) continue;
+    const dlhyPo = vyhladDlhov(data, po, dPo);
+    let spaky = k.body - (dlhyPo[obet].exekucia - dlhyPred[obet].exekucia);
+    // Herňa (Bitka, v7): víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.
+    if (view.ciel.lokalita?.defId === "herna") {
+      const vitaz = battleOutcome(poskodenieBitky(data, stolPriPoskodeni(data, po, dPo), evaluateLine(data, lineState(po)).sums)).vitaz;
+      if (vitaz === hrac) spaky -= dlhyPo[obet].priPoskodeni - dlhyPred[obet].priPoskodeni;
+    }
+    const h: HrozbaKliatob = { hrac, obet, uid, cirhozy, dlhy, spaky };
+    if (najhorsia === null || cirhozy + dlhy > najhorsia.cirhozy + najhorsia.dlhy || (cirhozy + dlhy === najhorsia.cirhozy + najhorsia.dlhy && spaky < najhorsia.spaky)) najhorsia = h;
+  }
+  return najhorsia;
+}
+
+/** „Cirhóza +1, Dlh +2, −3 špaky“ — ten istý text hrozby kliatob pre web aj klienta AI hráčov. */
+export function textHrozbyKliatob(h: Pick<HrozbaKliatob, "cirhozy" | "dlhy" | "spaky">): string {
+  return [
+    h.cirhozy > 0 ? `Cirhóza +${h.cirhozy}` : "",
+    h.dlhy > 0 ? `Dlh +${h.dlhy}` : "",
+    h.spaky < 0 ? `−${pocet(-h.spaky, "špak", "špaky", "špakov")}` : "",
+  ]
+    .filter((x) => x !== "")
+    .join(", ");
 }

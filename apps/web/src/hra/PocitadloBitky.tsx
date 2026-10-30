@@ -81,8 +81,8 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
   const popis = (k: KrokPocitadla): string => {
     const z = k.zmena > 0 ? `+${k.zmena}` : `−${-k.zmena}`;
     if (k.druh === "karta") return `${z}${k.nasobok > 1 ? ` ×${k.nasobok}` : ""}`;
-    // „spolu“ dorovná, čo klient nevidí — súperove Absťáky v ruke.
-    if (k.druh === "spolu") return `${k.zmena < 0 ? "Absťáky v ruke" : "ostatné"} ${z}`;
+    // „spolu“ dorovná rozdiel oproti výsledku zo servera (Absťáky sú od v8.2 verejné).
+    if (k.druh === "spolu") return `ostatné ${z}`;
     const meno = k.zdroj === null ? "" : (ZDROJ[k.zdroj] ?? menoKarty(k.zdroj));
     // Štít len pri Viere súpera (obrana); Absťáky a pasca sú trest, nie obrana (UI inšpekcia).
     const znak = k.druh !== "zrazka" ? "" : k.zdroj === "Viera" ? "🛡 " : "↓ ";

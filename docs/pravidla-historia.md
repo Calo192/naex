@@ -1538,3 +1538,63 @@ Staré znenie (§14, §16):
 
 > | Noviny v Dedičstve (v7) | špaky za bitku dostane porazený, keď má víťaz viac priznaných Dlhov | krok 4a |
 > | Noviny | Dedičstvo: Prehra: keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za túto bitku (aj zo sekery a z Herne) dostaneš ty. Špaky za starších nie. |
+
+## v8.2 — Hazard, Dlh a Absťák ako počítadlá, cena posunu markera (Michal 2026-10-30)
+
+Z Michalovej partie a výučby. Značka `VERZIA_PRAVIDIEL` ostáva „v8“ (ako v8.1).
+
+Staré znenie §2 (Akcie):
+
+> | Povera | `Povera` | mäkké poškodenie do výšky súperových **priznaných** Dlhov; ruší sa s Vierou 1:1 (§9.3) |
+> | Pohoršenie | `Pohoršenie` | v bitke posunie marker ľubovoľného staršieho o 1 k súperovi alebo k sebe (§9.2) |
+> | Dlh | `Dlh` | zvýši **zadĺženie** o 1; každé 2 zadĺženia = 1 karta Dlh, hneď priznaná (§8; v7 zvyšok neprepadá); za priznané Dlhy príde v každej bitke Exekútor (§11) |
+>
+> Akcia sa volá ako karta či zdroj, ktorý dáva: `Dlh` → Dlh, …
+
+Staré znenie §8 (Absťák — Krok so stolom):
+
+> - **menej nerestí ako súper** → hráč dostane **Absťák rovno priznaný** a dobere
+>   si zaň kartu,
+> - **viac nerestí ako súper** → jeden jeho priznaný Absťák sa vráti do zásoby,
+>
+> … Absťáky, ktoré hráč **práve má** (priznané, jeho karty v línii aj v ruke),
+> rozhodujú remízu v tuhom (§9.4).
+
+Staré znenie §9.2:
+
+> Každé aktivované Pohoršenie posunie marker jedného staršieho o 1 — **k súperovi,
+> alebo k sebe** — **bez ohľadu na výsledok bitky**. …
+>
+> **Pohoršenia navyše:** … **1 za každý Absťák** hráča (v8.1 Nervák, §8) — rátajú sa
+> jeho priznané Absťáky a jeho Absťáky v línii (verejné; Absťák v ruke nie, počet
+> Pohoršení by ruku prezradil).
+>
+> - Pohoršenie funguje ako prebytok: **každé posunie marker o jedno pole**, ten
+>   istý marker smie ísť aj viackrát, **bez limitu** a **aj na krajnú pozíciu**
+>   (zo stredu na červenú tri Pohoršenia). Ďalej von ako na kraj sa nedá.
+
+Staré znenie §9.4 (prebytok):
+
+> Každý bod posunie marker o **jedno pole** smerom k súperovi držiteľa (aj na
+> červenú a aj z červenej von, zamknutie sa ruší, §10): … Ten istý starší smie
+> dostať aj viac bodov. … Rozdeliť treba **celý prebytok** — kým sa niektorý
+> marker dá posunúť, nedá sa prestať; keď sa už nedá žiadny, zvyšok prepadne.
+
+Staré znenie §10 (Konvencia strán):
+
+> Každý posun (prebytok, Pohoršenie, §9) je **jedno pole**: zo stredu do žltej 1,
+> do oranžovej 2, na červenú 3 — a rovnako späť.
+
+Staré znenie §11 (Kliatby, Priznanie):
+
+> **Verejný dlh:** nový **Dlh sa hneď prizná** — ide medzi priznané karty
+> a kartu zaň hráč nedobere. Dlh, ktorý sa do balíčka dostane inak, sa pri
+> dobratí prizná sám (nižšie). …
+>
+> - **Dlh sa prizná sám:** keď si ho hráč dobere (ťahanie, fajčenie, Vízia,
+>   Zberný dvor…), hneď ide do priznaných a hráč ťahá **ďalšiu kartu** — aj tá
+>   môže byť Dlh a prizná sa tiež.
+>
+> | Dlh dobratý z balíčka | áno — hráč ťahá náhradu (sám sa priznal) |
+> | Dlh nový (prah zadĺženia, efekt karty) | **nie** — ide rovno medzi priznané |
+> | Absťák | áno — prichádza rovno priznaný a hráč si zaň dobere kartu |

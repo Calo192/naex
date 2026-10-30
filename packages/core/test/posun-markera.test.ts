@@ -64,7 +64,8 @@ describe("posun markera", () => {
         expect(posun.kto).toBe(k.cmd.type === "prebytok" ? k.pred.bitkaStav?.prebytokDrzi : k.hrac);
         const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "patronat" ? "patronat" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
         expect(posun.zdroj).toBe(zdroj);
-        if (posun.zdroj === "prebytok") expect(Math.abs(posun.na - posun.z)).toBe(1);
+        // v8.2: Pohoršenie aj prebytok posunú marker naraz o toľko polí, na koľko stačia body.
+        if (posun.zdroj === "kseft" || posun.zdroj === "nastup") expect(Math.abs(posun.na - posun.z)).toBe(1);
       }
     }
     // kseft = Predsedova vila (v7, len finále na nej).
@@ -79,7 +80,8 @@ describe("posun markera", () => {
       const nove = k.events.slice(zaciatokPitky + 1).filter((e) => e.type === "posunMarkera").length;
       const ocakavane = zaciatokPitky === -1 ? k.pred.posunyMarkerov.length + nove : nove;
       expect(k.po.posunyMarkerov).toHaveLength(ocakavane);
-      if (k.po.faza === "pitka") expect(k.po.posunyMarkerov).toEqual([]);
+      // V Pitke pribudne stopa len z Kšeftu Predsedovej vily (posun v Pitke, v7).
+      if (k.po.faza === "pitka") expect(k.po.posunyMarkerov.filter((x) => x.zdroj !== "kseft")).toEqual([]);
       if (k.po.faza === "zhromazdenie" && k.po.posunyMarkerov.length > 0) videlStopuVZhromazdeni = true;
       for (const p of [0, 1] as const) expect(viewFor(data, k.po, p).posunyMarkerov).toEqual(k.po.posunyMarkerov);
     }
@@ -91,7 +93,7 @@ describe("posun markera", () => {
     for (const k of partie(SEEDY.slice(0, 3))) {
       if (k.cmd.type !== "pohorsenie" && k.cmd.type !== "prebytok") continue;
       const id = k.cmd.elderId;
-      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Prebytok) \(hráč [12]\): /.test(e.text) ? [e.text] : []));
+      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Prebytok) \(hráč [12], [^)]+\): /.test(e.text) ? [e.text] : []));
       expect(log).toHaveLength(1);
       expect(log[0]).not.toContain(id);
       expect(log[0]).toMatch(/→ (Neutralita|Znepokojenie|Strach|Vydesenie)/);
@@ -108,7 +110,7 @@ describe("posun markera", () => {
       const id = k.cmd.elderId;
       const z = k.pred.starsi.find((e) => e.elderId === id)?.marker as number;
       const na = k.po.starsi.find((e) => e.elderId === id)?.marker as number;
-      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Prebytok) \(hráč [12]\): /.test(e.text) ? [e.text] : []))[0] as string;
+      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Prebytok) \(hráč [12], [^)]+\): /.test(e.text) ? [e.text] : []))[0] as string;
       expect(log).toContain(`— ${zona[z]} → ${zona[na]}: `);
       if (na === 3) {
         expect(log).toMatch(z === 3 ? /nikto nemá priazeň/ : new RegExp(`hráč ${z < 3 ? 1 : 2} prišiel o priazeň, nikto ho nedesí`));

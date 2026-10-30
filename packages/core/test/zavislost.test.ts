@@ -18,7 +18,7 @@ function stav(teraz: number, super_: number, abstaky = 0): GameState {
   const h0 = {
     ...s.hraci[0],
     nerestiTotoKolo: teraz,
-    priznane: Array.from({ length: abstaky }, () => inst("abstak")),
+    abstaky: abstaky,
   };
   const h1 = { ...s.hraci[1], nerestiTotoKolo: super_ };
   return { ...s, kolo: 3, hraci: [h0, h1] } as GameState;

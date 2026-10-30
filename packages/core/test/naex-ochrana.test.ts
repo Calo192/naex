@@ -91,7 +91,7 @@ function odohraj(s: GameState, naex: readonly [readonly number[], readonly numbe
   return { state: t, logy };
 }
 
-const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].dlhy;
 
 
 describe("Svokra (Bitka: Rana za každú tvoju kartu so súperovým NA EX)", () => {
@@ -106,7 +106,7 @@ describe("Svokra (Bitka: Rana za každú tvoju kartu so súperovým NA EX)", () 
     // Súper Svokru nemá — jeho karta so súperovým NA EX mu nič nedá.
     expect(svokraRany(data, s, 1)).toBe(0);
     const sums = evaluateLine(data, lineState(s)).sums;
-    expect(rozpisPoskodenia(data, s, sums, [0, 0])[0].bonusy).toContainEqual({ zdroj: "svokra", hodnota: 3 });
+    expect(rozpisPoskodenia(data, s, sums)[0].bonusy).toContainEqual({ zdroj: "svokra", hodnota: 3 });
   });
 
   it("zrážka (Výtržník) sa ráta — na karte leží aj súperov poldeci", () => {
@@ -116,7 +116,7 @@ describe("Svokra (Bitka: Rana za každú tvoju kartu so súperovým NA EX)", () 
 
   it("v bitke je Rana navyše v tuhom: to isté NA EX od súpera dá o 1 tuhé viac ako vlastné", () => {
     const stol = (kto: PlayerId): GameState => vPitke([[lezi("zamocnik", 0, { naexBy: kto }), lezi("zamocnik", 0), lezi("svokra", 0)], []]);
-    const tuhe = (s: GameState): number => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).tuhe[0];
+    const tuhe = (s: GameState): number => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums).tuhe[0];
     expect(tuhe(stol(1)) - tuhe(stol(0))).toBe(1);
   });
 

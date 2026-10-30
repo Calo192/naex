@@ -39,7 +39,6 @@ import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, partiaHr
 import { stranyLokality } from "./hrany.ts";
 import type { Command, GameState } from "./engine.ts";
 import {
-  abstakyVBitke,
   apply,
   barterCena,
   cieleVykladania,
@@ -269,9 +268,7 @@ const NAEX_ZA_BITKU = 0.35;
 
 /** Hodnota karty v balíčku — čím vyššia, tým radšej ju bot má. */
 export function hodnotaKarty(data: GameData, karta: CardInstance): number {
-  if (karta.defId === "dlh") return -2.5;
   if (karta.defId === "cirhoza") return -3;
-  if (karta.defId === "abstak") return -2;
   const def = defOf(data, karta);
   const strany = printedSides(data, karta);
   let akcie = 0;
@@ -390,7 +387,7 @@ function rozdielBodov(_data: GameData, s: GameState, ja: PlayerId, starsi: reado
  * Robotu ani Kmotra odhad nepredvída.
  */
 function exekucieDoKonca(data: GameData, s: GameState, p: PlayerId): number {
-  let dlhy = s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+  let dlhy = s.hraci[p].dlhy;
   if (dlhy === 0) return 0;
   const sila = silaPriazne(data, s, "EXEKUTOR", opponentOf(p));
   const tato = s.ciel !== null && (s.bitkaStav === null || !s.bitkaStav.exekutorHotovy[p]) && !zahradkarChrani(data, s, p) ? 1 : 0;
@@ -492,11 +489,9 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const data = k.data;
   const o = opponentOf(q);
   const sums = evaluateLine(data, lineState(s)).sums;
-  const abstaky: [number, number] = [0, 0];
-  abstaky[k.ja] = s.hraci[k.ja].ruka.filter((x) => x.defId === "abstak").length;
-  const dmg = poskodenieBitky(data, s, sums, abstaky);
+  const dmg = poskodenieBitky(data, s, sums);
   // Remíza v tuhom (v6): vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera (šanca ½).
-  const remiza = (p: PlayerId): [number, number] => [abstakyVBitke(data, s, p, abstaky[p]), prahyHraca(data, s, p).priznaneDlhy];
+  const remiza = (p: PlayerId): [number, number] => [verejneAbstaky(s, p), prahyHraca(data, s, p).priznaneDlhy];
   const [aq, dq] = remiza(q);
   const [ao, dO] = remiza(o);
   const tuhe = dmg.tuhe[q] - dmg.tuhe[o];
@@ -517,7 +512,7 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       // Výkupné: cigareta z Pitky a poldeci otočený v bitke na plný sú na konci hry aj špaky.
       const vykupne = k.povaha.body * vahaVykupneho(s);
       w += (0.3 * k.buducnost + vykupne / KONSTANTY.CIGARIET_ZA_SPAK) * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0));
-      // Pohoršenie posunie marker o pole bez limitu — v8 nová zóna zaplatí raz, pri
+      // Pohoršenie je bod posunu markera bez limitu — v8 nová zóna zaplatí raz, pri
       // najbližšej výhre (aj tejto); pevných 0,5 za kus podceňovalo karty s Pohoršením.
       w += zaPohorsenie * Math.min(POHORSENIE_STROP, pohorsenia[p]);
       const naex = s.strany.flat().filter((pl) => pl.naexBy === p).length;
@@ -705,7 +700,7 @@ function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bit
 }
 
 /**
- * Čo jeden bod prebytku (posun markera o pole po špakoch tejto bitky) prinesie
+ * Čo jeden bod prebytku (posun markera po špakoch tejto bitky) prinesie
  * držiteľovi v špakoch (cenaPosunu po bitke).
  */
 function cenaBoduPrebytku(s: GameState): number {
@@ -713,21 +708,25 @@ function cenaBoduPrebytku(s: GameState): number {
 }
 
 /**
- * Čo prinesie posun markera o pole k súperovi (prebytok, Pohoršenie) v špakoch,
- * v8: nová zóna zaplatí raz (v priemere PRIEMER_NOVEJ_ZONY — porazený pri prebytku
- * vyberá najlacnejšie), ak hráč ešte niektorú výplatu vyhrá, a súper ju môže
- * odtlačiť. Vo finále sa strach za nové zóny z prebytku vyplatí hneď víťazovi.
+ * Čo prinesie jeden bod posunu markera k súperovi (bod prebytku, Pohoršenie) v špakoch,
+ * v8: nová zóna zaplatí raz (ZONA_ZA_BOD — porazený pri prebytku vyberá najlacnejšie),
+ * ak hráč ešte niektorú výplatu vyhrá, a súper ju môže odtlačiť. Vo finále sa strach
+ * za nové zóny z prebytku vyplatí hneď víťazovi.
  * `poTejtoBitke`: prebytok sa prejaví až po výplate tejto bitky.
  */
 function cenaPosunu(s: GameState, poTejtoBitke: boolean): number {
-  if (jeFinale(s)) return PRIEMER_NOVEJ_ZONY;
+  if (jeFinale(s)) return ZONA_ZA_BOD;
   const poBitke = s.bitkaStav !== null && s.bitkaStav.damage !== null;
   const n = vyplatZaStarsich(s) - (poTejtoBitke && !poBitke ? 1 : 0);
-  return Math.max(0.35, PRIEMER_NOVEJ_ZONY * (1 - (1 - PODIEL_VYHIER) ** n) * VYDRZ_POSUNU);
+  return Math.max(0.25, ZONA_ZA_BOD * (1 - (1 - PODIEL_VYHIER) ** n) * VYDRZ_POSUNU);
 }
 
-/** Priemerná hodnota novej zóny pri posune (žltá 1, oranžová 2, červená 3; ústupy nič). */
-const PRIEMER_NOVEJ_ZONY = 1.5;
+/**
+ * Špaky zóny na jeden bod posunu (v8.2, Michal 2026-10-30): pole von zo stredu stojí
+ * toľko bodov, koľko zóna zaplatí (žltá 1, oranžová 2, červená 3), ústup k stredu je
+ * drahší a nezaplatí nič — bod teda vynesie najviac 1. Do v8.1 bolo pole za bod (1,5).
+ */
+const ZONA_ZA_BOD = 1;
 
 /**
  * Cirhóza, ktorá z Pitky ešte len príde (v špakoch). Nepriznaná stojí na konci
@@ -1112,7 +1111,7 @@ function zhromazdenie(v: Volba): Command | null {
   const z = state.zhromazdenieStav;
   if (z === null) return null;
 
-  // Priznanie neodovzdá ťah. Dlh sa prizná sám pri dobratí; Cirhóza priznaná
+  // Priznanie neodovzdá ťah. Cirhóza priznaná
   // dá súperovi +1 tuhé v každej zvyšnej bitke (Michal 2026-10-20), nepriznaná
   // −2 za každú aktívnu podmienku pečeň na konci. Cena priznania teda rastie
   // s počtom zvyšných bitiek, nie s dĺžkou hry — v krátkej hre (3 lokality)
@@ -1121,7 +1120,6 @@ function zhromazdenie(v: Volba): Command | null {
     if (cmd.type !== "place" || cmd.target !== "priznanie") continue;
     const karta = h.ruka.find((x) => x.uid === cmd.uid);
     if (karta?.defId === "cirhoza" && ziskPriznaniaCirhozy(v, karta) > 0) return cmd;
-    if (karta?.defId === "dlh") return cmd;
   }
 
   // Dedičstvo: dobrý Nástroj natrvalo, keď na to sú cigarety a balíček to znesie.

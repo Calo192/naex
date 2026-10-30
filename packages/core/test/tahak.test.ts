@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { DLZKY_HRY, KONSTANTY } from "../src/constants.ts";
-import { cenaPatronatu } from "../src/elders.ts";
+import { cenaKroku, cenaPatronatu } from "../src/elders.ts";
 import { cenaFajcenia } from "../src/engine.ts";
 import { pocet } from "../src/jazyk.ts";
 
@@ -39,6 +39,11 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
       "cena patronátu (v6.1)",
       `červená ${cenaPatronatu({ marker: 0 }).cigarety}, oranžová ${cenaPatronatu({ marker: 1 }).cigarety}, žltá ${cenaPatronatu({ marker: 2 }).cigarety}`,
     ],
+    [
+      "cena posunu markera (v8.2)",
+      `pole von zo stredu stojí ${cenaKroku(3, 4)} / ${cenaKroku(4, 5)} / ${cenaKroku(5, 6)}, k stredu ${cenaKroku(6, 5)} / ${cenaKroku(5, 4)} / ${cenaKroku(4, 3)} (z červenej, z oranžovej, zo žltej); zo stredu na červenú ${cenaKroku(3, 4) + cenaKroku(4, 5) + cenaKroku(5, 6)}`,
+    ],
+    ["Dlh a Absťák ako počítadlá (v8.2)", "**Dlh a Absťák sú počítadlá, nie karty**"],
     ["Autobusár (v7)", "Autobusár: súper, ktorý pasuje po jeho majiteľovi, cigarety za pas nedostane"],
     ["Strýko (v7)", `(${KONSTANTY.EFEKT.STRYKO_CENA} cigarety → v bitke kola +1 Rana)`],
     ["Vychovávateľka (v7)", `Vychovávateľka (${KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA} cigarety → v bitke`],

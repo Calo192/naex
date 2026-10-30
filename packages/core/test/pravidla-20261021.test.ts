@@ -141,7 +141,6 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
     const priznaneDlhy = events.filter((e) => e.type === "log" && e.text.startsWith("Hráč 1 získava Dlh — hneď sa priznáva")).length;
     expect(nahlad[0].dlhy).toBeGreaterThan(0);
     expect(priznaneDlhy).toBe(nahlad[0].dlhy);
-    expect(state.hraci[0].odhadzovaci.some((k) => k.defId === "dlh")).toBe(false);
     expect(nahlad[0].cirhozy).toBeGreaterThan(0);
     // Cirhózy idú do odhadzovacieho balíčka — dobratie po bitke ich do ruky nedá.
     expect(events.filter((e) => e.type === "log" && e.text === "Hráč 1 získava Cirhózu — ide do jeho odhadzovacieho balíčka.")).toHaveLength(nahlad[0].cirhozy);
@@ -153,17 +152,13 @@ describe("verejný dlh (Michal 2026-10-21) a nová Cirhóza do odhadzovacieho ba
 
   it("exekúcia bez prahu (Michal 2026-10-28): už pri 2 priznaných Dlhoch zhorí polovica nahor — 1 Dlh a 1 špak", () => {
     const s0 = setupSBalickom(sada, 77);
-    const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
-    const sDlhmi: GameState = {
-      ...s0,
-      hraci: [{ ...s0.hraci[0], priznane: [dlh(900001), dlh(900002)] }, s0.hraci[1]],
-    };
+    const sDlhmi: GameState = { ...s0, hraci: [{ ...s0.hraci[0], dlhy: 2 }, s0.hraci[1]] };
     let s = vPitke(sDlhmi, [[{ card: instanceFor(sada, "piticka", P4, P4), playedBy: 0 }], []]);
     s = apply(sada, s, { type: "skipNaex" }, naTahu(s)!).state;
     const spaky = s.spaky[0];
     const { state, events } = apply(sada, s, { type: "skipNaex" }, naTahu(s)!);
     expect(events.some((e) => e.type === "log" && e.text.startsWith("Exekútor: hráčovi 1 zhorí 1 priznaný Dlh a 1 špak"))).toBe(true);
-    expect(state.hraci[0].priznane.filter((k) => k.defId === "dlh").map((k) => k.uid)).toEqual([900002]);
+    expect(state.hraci[0].dlhy).toBe(1);
     expect(state.nastenka.at(-1)?.exekutor).toEqual([1, 0]);
     expect(state.spaky[0] - spaky).toBe((state.nastenka.at(-1)?.zaBitku[0] ?? 0) + (state.nastenka.at(-1)?.zaStarsich[0] ?? 0) - 1);
   });
@@ -238,11 +233,11 @@ describe("viewFor: počet nepriznaných kliatob je odvoditeľný z verejného lo
         for (const q of [0, 1] as const) {
           const a = nepriznaneKliatbyHraca(pred.hraci[q]);
           const b = nepriznaneKliatbyHraca(po.hraci[q]);
-          if (a.dlh === b.dlh && a.cirhoza === b.cirhoza) continue;
+          if (a.cirhoza === b.cirhoza) continue;
           zmien++;
           const su: PlayerId = q === 0 ? 1 : 0;
           const verejne = eventsFor(events, su).filter((e) => e.type === "log").map((e) => (e.type === "log" ? e.text : ""));
-          const zmienka = verejne.some((t) => (a.dlh !== b.dlh && /Dlh/.test(t)) || (a.cirhoza !== b.cirhoza && /Cirhóz/.test(t)));
+          const zmienka = verejne.some((t) => /Cirhóz/.test(t));
           expect(zmienka, `kliatby hráča ${q + 1}: ${JSON.stringify(a)} → ${JSON.stringify(b)}, log: ${verejne.join(" | ")}`).toBe(true);
         }
         // A view ich posiela presne.

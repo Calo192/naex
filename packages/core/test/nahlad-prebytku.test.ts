@@ -7,7 +7,7 @@ import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { ClientState, ElderState, GameState, MarkerPos } from "../src/index.ts";
-import { STUPNICA_ZONY, apply, spakyTeraz, loadGameData, nahladPosunuMarkera, nahladPosunuPrebytkom, posunMarker, setupGame, viewFor } from "../src/index.ts";
+import { STUPNICA_ZONY, apply, spakyTeraz, loadGameData, nahladPosunuMarkera, nahladPosunuPrebytkom, posunZaBody, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -43,7 +43,7 @@ function vPrebytku(seed: number, zostava: number): GameState {
 }
 
 describe("náhľad posunu prebytkom (v8)", () => {
-  it("posun k porazenému pohne rozdielom odhadov o jednu zónu (nová zóna platí raz), kým ešte príde výplata", () => {
+  it("posun k porazenému pohne rozdielom odhadov o jednu zónu (nová zóna platí raz), kým ešte príde výplata; zvyšok 2 stačí len na lacné pole (v8.2)", () => {
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
       const s = vPrebytku(seed, 2);
       const v = viewFor(data, s, 1);
@@ -52,19 +52,23 @@ describe("náhľad posunu prebytkom (v8)", () => {
       expect(vyplat).toBe(s.lokalityVHre.length);
       for (const e of v.starsi) {
         const n = nahladPosunuPrebytkom(data, v, e.elderId);
+        const posun = posunZaBody(e, 1, 2);
         if (n === null) {
-          expect(posunMarker(e, 1)).toBeNull();
+          expect(posun).toBeNull();
           continue;
         }
-        const marker = posunMarker(e, 1)!;
+        expect(posun?.kroky).toBe(1);
+        const marker = posun!.marker;
         expect(n.odhad).toEqual(spakyTeraz({ ...v, starsi: v.starsi.map((x) => (x.elderId === e.elderId ? { ...x, marker } : x)) }).odhad);
         // Žiadna zóna ešte nie je vyplatená: rozdiel sa pohne o zónu poľa ďalej od stredu.
         expect(n.zmena[0] - n.zmena[1]).toBe(STUPNICA_ZONY[e.marker >= 3 ? marker : e.marker]);
-        expect(n).toEqual(nahladPosunuMarkera(data, v, e.elderId, 1));
+        expect(n).toEqual(nahladPosunuMarkera(data, v, e.elderId, 1, 2));
       }
-      const elderId = v.starsi.find((e) => posunMarker(e, 1) !== null)!.elderId;
-      expect(() => apply(data, s, { type: "prebytok", elderId }, 0)).toThrow();
-      const po = viewFor(data, apply(data, s, { type: "prebytok", elderId }, 1).state, 1);
+      // Väčší prebytok, aby po prvom posune ešte ostal na ďalší (inak bitka ide ďalej).
+      const velky = vPrebytku(seed, 9);
+      const elderId = velky.starsi.find((e) => posunZaBody(e, 1, 9) !== null)!.elderId;
+      expect(() => apply(data, velky, { type: "prebytok", elderId }, 0)).toThrow();
+      const po = viewFor(data, apply(data, velky, { type: "prebytok", elderId }, 1).state, 1);
       expect(po.bitkaStav?.prebytokPosunute).toEqual([elderId]);
     }
   });

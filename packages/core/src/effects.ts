@@ -42,6 +42,9 @@ export interface VerejnyStav {
 
 export interface VerejnyHrac {
   readonly priznane: readonly CardInstance[];
+  /** Priznané Dlhy a Absťáky — počítadlá (v8.2), nie karty. */
+  readonly dlhy: number;
+  readonly abstaky: number;
   readonly dedicstvo: readonly CardInstance[];
 }
 
@@ -328,8 +331,7 @@ export function dovodZakazuFajcit(data: GameData, state: VerejnyStav, p: PlayerI
 /** Jednota (Pitka, v7): hráč s viac priznanými Dlhmi ako súper nesmie fajčiť ani dolievať. */
 export function jednotaZakazuje(state: VerejnyStav, p: PlayerId): boolean {
   if (!jeCielLokalita(state, "jednota")) return false;
-  const dlhy = (q: PlayerId): number => state.hraci[q].priznane.filter((k) => k.defId === "dlh").length;
-  return dlhy(p) > dlhy(opponentOf(p));
+  return state.hraci[p].dlhy > state.hraci[opponentOf(p)].dlhy;
 }
 
 /** most: karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX). */
@@ -501,8 +503,7 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   // traktoristka (v7, Na leasing): s prevahou v jej kraji Pecka navyše; bez nej Dlh (engine, začiatok bitky).
   pridaj("traktoristka", 2 * traktoristkySPrevahou(data, state, p));
   // vymahac (v7): za každé 2 priznané Dlhy majiteľa 1 Rana navyše.
-  const dlhy = state.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
-  pridaj("vymahac", pocetKariet("vymahac") * Math.floor(dlhy / 2));
+  pridaj("vymahac", pocetKariet("vymahac") * Math.floor(state.hraci[p].dlhy / 2));
   // pasca (Dedičstvo: Bitka, v7): súper v tomto kole priložil kartu k tvojej → Pecka navyše.
   if (vDedicstve(state, p, "pasca") && (state.prilozeniaKu?.[p] ?? 0) > 0) pridaj("pasca", 2 * state.hraci[p].dedicstvo.filter((k) => k.defId === "pasca").length);
   // stryko_z_ameriky (Kšeft, v7): Rany kúpené v Pitkách tohto kola.

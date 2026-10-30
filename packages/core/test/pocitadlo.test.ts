@@ -30,7 +30,7 @@ describe("počítadlo bitky", () => {
     for (let seed = 1; seed <= 60; seed++) {
       const s = stol(seed);
       const linia = evaluateLine(data, lineState(s));
-      const damage = poskodenieBitky(data, s, linia.sums, [0, 0]);
+      const damage = poskodenieBitky(data, s, linia.sums);
       const p = pocitadloBitky(data, s, linia, damage.tuhe);
       expect(stavPocitadla(p, p.vln)).toEqual(damage.tuhe);
       // Bez skrytých Absťákov netreba dorovnávať — zrážky rešpektujú dno 0 samy.
@@ -59,21 +59,21 @@ describe("počítadlo bitky", () => {
     expect(sKartami).toBeGreaterThan(20);
   });
 
-  it("skryté Absťáky súpera dorovná posledný krok „spolu“", () => {
-    let dorovnane = 0;
+  it("Absťáky sú od v8.2 verejné (počítadlo) — počítadlo ich zrazí samo, krok „spolu“ netreba", () => {
+    let zrazene = 0;
     for (let seed = 1; seed <= 200; seed++) {
-      const s = stol(seed);
+      const s0 = stol(seed);
+      const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], abstaky: 1 }] };
       const linia = evaluateLine(data, lineState(s));
-      // Len tam, kde Absťák v ruke hráča 1 naozaj uberie (jeho tuhé nie je 0).
-      if (poskodenieBitky(data, s, linia.sums, [0, 0]).tuhe[1] === 0) continue;
-      // Server pozná Absťák v ruke hráča 1, klient nie.
-      const server = poskodenieBitky(data, s, linia.sums, [0, 1]);
+      // Len tam, kde Absťák hráča 1 naozaj uberie (jeho tuhé bez neho nie je 0).
+      if (poskodenieBitky(data, s0, linia.sums).tuhe[1] === 0) continue;
+      const server = poskodenieBitky(data, s, linia.sums);
       const p = pocitadloBitky(data, s, linia, server.tuhe);
       expect(stavPocitadla(p, p.vln)).toEqual(server.tuhe);
-      const spolu = p.kroky.filter((k) => k.druh === "spolu");
-      expect(spolu).toEqual([expect.objectContaining({ kto: 1, zmena: -1 })]);
-      dorovnane++;
+      expect(p.kroky.some((k) => k.druh === "spolu")).toBe(false);
+      expect(p.kroky).toContainEqual(expect.objectContaining({ kto: 1, druh: "zrazka", zdroj: "abstak" }));
+      zrazene++;
     }
-    expect(dorovnane).toBeGreaterThan(0);
+    expect(zrazene).toBeGreaterThan(0);
   });
 });

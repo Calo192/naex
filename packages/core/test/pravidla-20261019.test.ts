@@ -227,7 +227,7 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
           priznane: Array.from({ length: manzelky }, () => inst("milujuca_manzelka")),
         }),
       );
-    const abstaky = (st: GameState): number => st.hraci[0].priznane.filter((k) => k.defId === "abstak").length;
+    const abstaky = (st: GameState): number => st.hraci[0].abstaky;
     expect(abstaky(apply(data, zaklad(0), { type: "cintorin", uid: null }, 0).state)).toBe(0);
     const s1 = apply(data, zaklad(1), { type: "cintorin", uid: null }, 0).state;
     expect(abstaky(s1)).toBe(0);
@@ -240,7 +240,7 @@ describe("Milujúca manželka v7 (M2): latku Absťáku už neposúva", () => {
       strany: [[{ card: inst("milujuca_manzelka"), playedBy: 0 }], []],
     }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
-    expect(po.hraci[0].priznane.filter((k) => k.defId === "abstak")).toHaveLength(0);
+    expect(po.hraci[0].abstaky).toBe(0);
   });
 
 });
@@ -287,7 +287,7 @@ describe("Nástroj v línii: akcie dostane majiteľ karty, s ktorou tvorí spoj"
 
 describe("ťah v Zhromaždení naraz: ďalšia karta stojí poldeci (Michal 2026-10-19)", () => {
   it("dve karty = Vypiť pred prvou; server ich vykoná atomicky a ťah prejde na súpera", () => {
-    const [a, b, d] = [inst("pijan"), inst("ministrant"), inst("dlh")];
+    const [a, b, d] = [inst("pijan"), inst("ministrant"), inst("cirhoza")];
     const s = sHracom(
       { ...vZhromazdeniHrac0(60, {}), zhromazdenieStav: { naTahu: 0, zostavaLimit: [4, 4], pasoval: [false, false], navyse: [0, 0] } },
       0,
@@ -413,8 +413,8 @@ describe("pas (Michal 2026-10-20): do Pitky, cigareta za každú nevyloženú ka
 });
 
 describe("kliatba do línie nepatrí (Michal 2026-10-20)", () => {
-  it("Dlh sa dá len priznať, Milujúca manželka (Občan) smie aj do línie", () => {
-    const dlh = inst("dlh");
+  it("Cirhóza sa dá len priznať, Milujúca manželka (Občan) smie aj do línie", () => {
+    const dlh = inst("cirhoza");
     const manzelka = inst("milujuca_manzelka");
     const s = vZhromazdeniHrac0(46, { ruka: [dlh, manzelka] });
     const legal = legalCommands(data, s, 0);
@@ -424,24 +424,7 @@ describe("kliatba do línie nepatrí (Michal 2026-10-20)", () => {
   });
 });
 
-describe("Dlhy sa priznávajú samy, Cirhóza bez dobratia (Michal 2026-10-20)", () => {
-  it("dobratý Dlh sa hneď prizná a hráč ťahá ďalšiu kartu, aj v reťazi", () => {
-    const [d1, d2, p1] = [inst("dlh"), inst("dlh"), inst("pijan")];
-    const z = vZhromazdeniHrac0(47, { ruka: [], doberaci: [d1, d2, p1], odhadzovaci: [], cigarety: 1, priznane: [] });
-    // Fajčí sa len v Pitke (v5).
-    let s: GameState = {
-      ...z,
-      faza: "pitka",
-      zhromazdenieStav: null,
-      pitkyCelkom: 1,
-      pitkaCislo: 1,
-      pitkaStav: { naTahu: 0, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false] },
-    };
-    s = apply(data, s, { type: "smoke", pocet: 1 }, 0).state;
-    expect(s.hraci[0].ruka.map((k) => k.uid)).toEqual([p1.uid]);
-    expect(s.hraci[0].priznane.map((k) => k.uid)).toEqual([d1.uid, d2.uid]);
-  });
-
+describe("Cirhóza bez dobratia (Michal 2026-10-20; Dlh od v8.2 len počítadlo)", () => {
   it("priznaná Cirhóza kartu nedá, Milujúca manželka áno", () => {
     const cirhoza = inst("cirhoza");
     const manzelka = inst("milujuca_manzelka");
@@ -461,7 +444,7 @@ describe("Veriaci (Michal 2026-10-20): Viera navyše rovná sile", () => {
     const veriaci = s0.starsi.find((e) => favourStarsieho(data, e) === "VERIACI")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
     const s: GameState = { ...s0, strany: [[], []], starsi: s0.starsi.map((e) => (e === veriaci ? { ...e, marker: 1} : e)) };
-    const dmg = poskodenieBitky(data, s, [{ Viera: 2 }, { Petelica: 4 }], [0, 0]);
+    const dmg = poskodenieBitky(data, s, [{ Viera: 2 }, { Petelica: 4 }]);
     expect(dmg.zvysnaViera[0]).toBe(4);
     expect(dmg.tuhe[1]).toBe(12 - 4);
   });
@@ -471,7 +454,7 @@ describe("Cirhóza v bitke (Michal 2026-10-20): škodí tomu, kto ju priznal", (
   it("za každú priznanú Cirhózu dá súper +1 tuhé", () => {
     const s0 = setupSBalickom(data, 50);
     const s = sHracom({ ...s0, strany: [[], []] }, 0, { priznane: [inst("cirhoza"), inst("cirhoza")] });
-    const dmg = poskodenieBitky(data, s, [{}, {}], [0, 0]);
+    const dmg = poskodenieBitky(data, s, [{}, {}]);
     expect(dmg.tuhe[1]).toBe(2);
     expect(dmg.tuhe[0]).toBe(0);
   });

@@ -273,7 +273,6 @@ function zapisJedneho(
         case "place": {
           const karta = kartaVRuke(pred, p, c.uid);
           if (c.target === "priznanie") {
-            if (karta?.defId === "dlh") s.dlhyPriznane += 1;
             if (karta?.defId === "cirhoza") s.cirhozyPriznane += 1;
           } else if (c.target === "dedicstvo") {
             s.dedicstvo += 1;
@@ -352,10 +351,11 @@ function zapisJedneho(
   const ziskani = (st: GameState): number => st.starsi.filter((e) => e.ziskal === p).length;
   s.starsiZiskani += Math.max(0, ziskani(po) - ziskani(pred));
   s.cirhozyZiskane += noveKliatby(pred, po, p, "cirhoza");
-  const noveDlhy = noveKliatby(pred, po, p, "dlh");
+  // Dlh a Absťák sú od v8.2 počítadlá — nové ráta stav hráča (získané za hru).
+  const noveDlhy = (hPo.dlhyZiskane ?? 0) - (hPred.dlhyZiskane ?? 0);
   s.dlhyZiskane += noveDlhy;
-  s.dlhyZbavene += Math.max(0, vlastnene(pred, p, "dlh").length + noveDlhy - vlastnene(po, p, "dlh").length);
-  s.abstakyZiskane += noveKliatby(pred, po, p, "abstak");
+  s.dlhyZbavene += Math.max(0, hPred.dlhy + noveDlhy - hPo.dlhy);
+  s.abstakyZiskane += (hPo.abstakyZiskane ?? 0) - (hPred.abstakyZiskane ?? 0);
   s.poldeciVypite += Math.max(0, hPo.poldeciVypite - hPred.poldeciVypite);
   const dCig = hPo.cigarety - hPred.cigarety;
   if (dCig > 0) s.cigaretyZiskane += dCig;
@@ -387,7 +387,7 @@ export function uzavriStatistiky(data: GameData, stat: DvojicaStatistik, koniec:
     s.zvysneCigarety = koniec.hraci[p].cigarety;
     {
       const h = koniec.hraci[p];
-      s.dlhyNaKonci = [...h.ruka, ...h.doberaci, ...h.odhadzovaci, ...h.priznane].filter((k) => k.defId === "dlh").length;
+      s.dlhyNaKonci = h.dlhy;
     }
     // v6: lokalitu si víťaz neberie — ráta sa, koľko bitiek o lokalitu hráč vyhral.
     s.lokalityOvladnute = koniec.nastenka.filter((b) => b.vitaz === p && b.lokalita !== null).length;

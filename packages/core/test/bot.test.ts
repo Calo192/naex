@@ -188,9 +188,11 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
 
   it("v8: prebytok rozdeľuje porazený — vezme víťazovi Bitkára, ktorý mu v bitke škodí", () => {
     for (const seed of [81, 82, 83]) {
-      // Po výhre Bitkárom (k sebe) drží hráč 0 prebytok 1; rozdeľuje ho porazený hráč 1.
+      // Po výhre Rana + Bitkár (k sebe) drží hráč 0 prebytok 2; rozdeľuje ho porazený hráč 1.
+      // Žltá → stred stojí od v8.2 dva body (Michal 2026-10-30), preto Rana navyše.
       const bitkar = (e: ElderState): boolean => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR";
-      const s = vPohorseni(seed, () => 3);
+      const s0 = vPohorseni(seed, () => 3);
+      const s: GameState = { ...s0, bitkaStav: { ...s0.bitkaStav!, sums: [{ Rana: 1 }, {}] } };
       const id = s.starsi.find(bitkar)?.elderId as string;
       const po = apply(data, s, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
       expect(po.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1 });

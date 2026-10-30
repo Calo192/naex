@@ -51,8 +51,8 @@ describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplat
     const mackaSama = stol([[lezi(inst("cierna_macka"), 0)], []]);
     const mackaPriMasiarovi = stol([[lezi(inst("cierna_macka"), 0), lezi(inst("masiar"), 1)], []]);
     const sums = [{ Povera: 2 }, {}] as const;
-    expect(poskodenieBitky(data, mackaSama, sums, [0, 0]).makke[0]).toBe(2);
-    expect(poskodenieBitky(data, mackaPriMasiarovi, sums, [0, 0]).makke[0]).toBe(0);
+    expect(poskodenieBitky(data, mackaSama, sums).makke[0]).toBe(2);
+    expect(poskodenieBitky(data, mackaPriMasiarovi, sums).makke[0]).toBe(0);
     const s = stol([[lezi(inst("kohut"), 0), lezi(inst("masiar"), 1), lezi(inst("krokodil"), 1)], []]);
     expect(zvieraPlati(data, s, 0, "kohut")).toBe(false);
     expect(zvieraPlati(data, s, 1, "krokodil")).toBe(false);

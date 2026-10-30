@@ -89,7 +89,7 @@ function vZhromazdeni(ruka: CardInstance[], odhadzovaci: CardInstance[]): GameSt
     strany: [[], []],
     hraci: [
       { ...s.hraci[0], ruka, odhadzovaci, cigarety: 3, poldeciPlne: 2 },
-      { ...s.hraci[1], ruka: [inst("pijan")], odhadzovaci: [inst("svokra"), inst("dlh")], cigarety: 3, poldeciPlne: 2 },
+      { ...s.hraci[1], ruka: [inst("pijan")], odhadzovaci: [inst("svokra"), inst("cirhoza")], cigarety: 3, poldeciPlne: 2 },
     ],
     zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
   } as GameState;
@@ -153,18 +153,6 @@ describe("Hasič: náhodná karta z vlastného odhadzovacieho balíčka, hráč 
     expect(state.hraci[0].ruka).toEqual([]);
     expect(uids(state.hraci[0].odhadzovaci)).toEqual([cirhoza.uid]);
     expect(naTahu(state)).toBe(1);
-  });
-
-  it("§16 Hasič: nechaný Dlh sa sám prizná a hráč ťahá kartu (ako Zberný dvor)", () => {
-    const hasic = inst("hasic");
-    const dlh = inst("dlh");
-    const zBalicka = inst("pijan");
-    const s0 = vZhromazdeni([hasic], [dlh]);
-    const s: GameState = { ...s0, hraci: [{ ...s0.hraci[0], doberaci: [zBalicka] }, s0.hraci[1]] };
-    const po = apply(data, s, { type: "place", uid: hasic.uid, target: "vlastna" }, 0).state;
-    const state = apply(data, po, { type: "hasic", nechat: true }, 0).state;
-    expect(uids(state.hraci[0].priznane)).toContain(dlh.uid);
-    expect(uids(state.hraci[0].ruka)).toEqual([zBalicka.uid]);
   });
 
   it("§16 Hasič: s prázdnym odhadzovacím balíčkom sa nič nestane a ťah ide ďalej", () => {

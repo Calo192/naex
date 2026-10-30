@@ -132,8 +132,8 @@ export function medziobrazovka(
       const text =
         drzi === ja
           ? vyberam
-            ? "Máš vyššie celkové poškodenie. Rozdeľ prebytok medzi starších — každý bod posunie marker o pole k súperovi; nové zóny strachu sa vyplatia ešte po finále."
-            : `Máš vyššie celkové poškodenie: každý bod prebytku posunie marker o pole k súperovi a starší sa začnú báť teba. Ktorých, vyberá ${S}.`
+            ? "Máš vyššie celkové poškodenie. Rozdeľ prebytok medzi starších — vyber staršieho, marker pôjde k súperovi, kým zvyšok stačí; nové zóny strachu sa vyplatia ešte po finále."
+            : `Máš vyššie celkové poškodenie: prebytok posunie markery k súperovi (pole stojí 1–4 podľa zóny) a starší sa začnú báť teba. Ktorých, vyberá ${S}.`
           : vyberam
             ? `${S} má vyššie celkové poškodenie: prebytok posunie markery k tebe, ale ktorých starších, vyberáš ty — vezmi si priazne, ktoré sa ti hodia. Za každého posunutého staršieho dostaneš cigaretu.`
             : `${S} má vyššie celkové poškodenie a rozdeľuje prebytok medzi starších — ich markery pôjdu k tebe.`;

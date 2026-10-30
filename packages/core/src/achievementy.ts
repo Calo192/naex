@@ -241,7 +241,7 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   },
   najvacsiaRuka: { druh: "max", popis: "najviac kariet v ruke naraz", zmer: (k) => pre((p) => k.po.hraci[p].ruka.length) },
   najviacCigariet: { druh: "max", popis: "najviac cigariet naraz", zmer: (k) => pre((p) => k.po.hraci[p].cigarety) },
-  najviacDlhov: { druh: "max", popis: "najviac priznaných Dlhov naraz", zmer: (k) => pre((p) => k.po.hraci[p].priznane.filter((x) => x.defId === "dlh").length) },
+  najviacDlhov: { druh: "max", popis: "najviac priznaných Dlhov naraz", zmer: (k) => pre((p) => k.po.hraci[p].dlhy) },
   priazneNaraz: { druh: "max", popis: "koľko starších naraz prejavuje hráčovi priazeň", zmer: (k) => pre((p) => k.po.starsi.filter((e) => priazenHraca(e) === p).length) },
   // ---- len kariéra
   seriaVyhier: {

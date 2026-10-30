@@ -34,8 +34,6 @@ describe("stavkaBitky", () => {
     prejdiZhromazdenia((state) => {
       // So skrytou Záverečnou vidí každý inú líniu — stávka sa líšiť smie.
       if (state.strany.some((strana) => strana.some((pl) => pl.zaverecna === true))) return;
-      // Absťák v ruke pozná len jeho majiteľ.
-      if (state.hraci.some((h) => h.ruka.some((k) => k.defId === "abstak"))) return;
       const s0 = stavkaBitky(data, viewFor(data, state, 0));
       const s1 = stavkaBitky(data, viewFor(data, state, 1));
       expect(s0).not.toBeNull();

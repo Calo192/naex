@@ -3,7 +3,7 @@
 // stôl to povie nahlas: pečiatka na hrane stola a Melicharova hláška.
 //
 // momenty(pred, po, udalosti) je čistá a počíta len z VEREJNÝCH vecí: línia
-// bez skrytých Záverečných, výhľad bitky bez Absťákov v ruke, markery, sekera,
+// bez skrytých Záverečných, výhľad bitky, markery, sekera,
 // výsledok bitky. Ruka, balíčky ani skrytá karta do nej nevstupujú (pravidlo 2)
 // — moment je preto rovnaký pre oboch hráčov a server ho smie poslať obom.
 // Strop (najviac 1 pečiatka za úsek kola, zlato najviac 2 za partiu) stráži
@@ -102,10 +102,10 @@ function skrytych(s: GameState): number {
   return s.strany.reduce((a, strana) => a + strana.filter((pl) => pl.zaverecna === true).length, 0);
 }
 
-/** Víťaz výhľadu bitky z verejnej línie (Absťáky v ruke sú tajné, rátajú sa 0); null = remíza či niet cieľa. */
+/** Víťaz výhľadu bitky z verejnej línie; null = remíza či niet cieľa. */
 function vyhlad(data: GameData, s: GameState, ev: LineEval): PlayerId | null {
   if (s.ciel === null) return null;
-  const damage = poskodenieBitky(data, { ...s, strany: verejnaLinia(s).strany }, ev.sums, [0, 0]);
+  const damage = poskodenieBitky(data, { ...s, strany: verejnaLinia(s).strany }, ev.sums);
   return damage.tuhe[0] === damage.tuhe[1] ? null : damage.tuhe[0] > damage.tuhe[1] ? 0 : 1;
 }
 

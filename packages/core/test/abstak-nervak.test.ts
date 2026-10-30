@@ -5,39 +5,26 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, GameState } from "../src/index.ts";
+import type { GameState } from "../src/index.ts";
 import { apply, evaluateLine, legalCommands, lineState, loadGameData, naTahu, pohorseniaVBitke, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
-let uid = 97000;
-const inst = (defId: string): CardInstance => ({ uid: ++uid, defId, leftLayout: 0, rightLayout: 0 });
 
 describe("§9.2 Nervák: Absťák = Pohoršenie navyše", () => {
   const s0 = setupGame(data, 7);
   const sums = evaluateLine(data, lineState(s0)).sums;
-  const s = (priznane: number, vRuke: number): GameState => ({
-    ...s0,
-    hraci: [
-      {
-        ...s0.hraci[0],
-        priznane: Array.from({ length: priznane }, () => inst("abstak")),
-        ruka: [...s0.hraci[0].ruka, ...Array.from({ length: vRuke }, () => inst("abstak"))],
-      },
-      s0.hraci[1],
-    ],
-  });
+  const s = (abstaky: number): GameState => ({ ...s0, hraci: [{ ...s0.hraci[0], abstaky }, s0.hraci[1]] });
 
   it("každý priznaný Absťák pridá hráčovi 1 Pohoršenie, súperovi nič", () => {
-    const [bez0, bez1] = pohorseniaVBitke(data, s(0, 0), sums);
-    const [s2, s2super] = pohorseniaVBitke(data, s(2, 0), sums);
+    const [bez0, bez1] = pohorseniaVBitke(data, s(0), sums);
+    const [s2, s2super] = pohorseniaVBitke(data, s(2), sums);
     expect(s2).toBe(bez0 + 2);
     expect(s2super).toBe(bez1);
   });
 
-  it("Absťák v ruke sa do Pohoršení neráta — počet Pohoršení by prezradil ruku", () => {
-    expect(pohorseniaVBitke(data, s(1, 2), sums)[0]).toBe(pohorseniaVBitke(data, s(1, 0), sums)[0]);
-    // Rovnaký výsledok z pohľadu súpera (ten ruku nevidí).
-    expect(pohorseniaVBitke(data, viewFor(data, s(1, 2), 1), sums)[0]).toBe(pohorseniaVBitke(data, s(1, 2), sums)[0]);
+  it("Absťák je od v8.2 verejné počítadlo (nie karta v ruke) — súper ráta rovnaké Pohoršenia ako server", () => {
+    expect(viewFor(data, s(2), 1).hraci[0].abstaky).toBe(2);
+    expect(pohorseniaVBitke(data, viewFor(data, s(2), 1), sums)[0]).toBe(pohorseniaVBitke(data, s(2), sums)[0]);
   });
 
   it("v partii hráč s Absťákmi dostane v kroku Pohoršenie aspoň toľko Pohoršení, koľko má Absťákov", () => {
@@ -56,7 +43,7 @@ describe("§9.2 Nervák: Absťák = Pohoršenie navyše", () => {
         const b = st.bitkaStav;
         if (b !== null && pred.bitkaStav?.krok !== "pohorsenie" && b.krok === "pohorsenie") {
           for (const q of [0, 1] as const) {
-            const abst = st.hraci[q].priznane.filter((k) => k.defId === "abstak").length;
+            const abst = st.hraci[q].abstaky;
             if (abst === 0) continue;
             expect(b.pohorseniaSpolu?.[q] ?? b.pohorsenieZostava[q]).toBeGreaterThanOrEqual(abst);
             videl++;
@@ -68,7 +55,7 @@ describe("§9.2 Nervák: Absťák = Pohoršenie navyše", () => {
   });
 });
 
-describe("§14b po finále sa Absťák ani karta zaň neudeľujú (návrh #41 A)", () => {
+describe("§14b po finále sa Absťák neudeľuje (návrh #41 A)", () => {
   it("v ťahu, ktorý odohrá finále, nepribudne ani neodíde Absťák a nikto si nedoberie kartu", () => {
     let videl = 0;
     for (const seed of [2, 5, 8, 11, 14]) {
@@ -85,7 +72,7 @@ describe("§14b po finále sa Absťák ani karta zaň neudeľujú (návrh #41 A)
           const texty = res.events.flatMap((e) => (e.type === "log" ? [e.text] : []));
           expect(texty.some((x) => /získava Absťák|zbavuje sa Absťáku|doberá/.test(x))).toBe(false);
           for (const q of [0, 1] as const) {
-            const pocet = (s: GameState): number => s.hraci[q].priznane.filter((k) => k.defId === "abstak").length;
+            const pocet = (s: GameState): number => s.hraci[q].abstaky;
             expect(pocet(res.state)).toBe(pocet(st));
           }
           videl++;
