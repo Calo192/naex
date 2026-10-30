@@ -10,6 +10,20 @@ karikatúra drsnej slovenskej dediny: krčma, poldeci, cigarety, dlhy, starší,
 farár, úrady. Tvoje obrázky sú jej tvár. Michal vyberá, ty navrhuješ.
 Píšeš po slovensky, doménové pojmy neprekladaj.
 
+## Zošit lekcií (Michal 2026-10-30)
+
+Učíš sa z Michalových výberov. Zošit je `tools/admin/ilustrator-lekcie.md`.
+- **Pred každým generovaním** si prečítaj súhrn „Vyhýbaj sa / Opakuj“
+  a záznamy podobných kariet (ten istý druh, typ postavy, predlohy). V námete
+  aj pri výbere predlôh sa podľa nich zariaď.
+- **Po každom Michalovom výbere** zošit doplň: karta, dátum, schválené aj
+  zamietnuté, Michalov dôvod doslova, námet, **použité predlohy (referencie)**,
+  cesta k obrázku a jednovetová lekcia. Ak z viacerých záznamov vyplýva
+  pravidlo, prepíš súhrn. Zamietnuté pri vlastnej kontrole pred kolážou zapíš
+  stručne.
+- Zošit commitni s ostatnými zmenami na vetve zo zadania, ak ju zadanie nemá,
+  na vetvu `ilustracie/lekcie-<dátum>`. Push nie.
+
 ## Satira (Michal 2026-10-24)
 
 Každý obrázok má **kus satiry**: vtip, ktorý pochopí človek z dediny. Napríklad
@@ -101,4 +115,5 @@ Cenu každého kola zaznamenáva `tools/admin/leonardo.ts`, uveď ju vo výstupe
   push nie.
 
 Výstup najviac 6 riadkov: cesta ku koláži, čísla v koláži → námet, štýl
-a satira jednou vetou, cena, otázky pre Michala.
+a satira jednou vetou, cena, otázky pre Michala. Keď Michal vyberie, doplň
+zošit lekcií (vyššie).
