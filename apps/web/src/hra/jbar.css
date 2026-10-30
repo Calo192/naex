@@ -1014,6 +1014,34 @@ button.jbar-odhad::before {
   gap: 10px;
 }
 
+/* NaJednomMieste (MelicharBar.tsx): obe podoby v jednej bunke mriežky — miesto je široké ako
+   širšia z nich na každej strane textu, inak by sa strany prepínali dookola. */
+.mel-jedno-miesto {
+  display: inline-grid;
+  justify-items: end;
+  align-items: center;
+  gap: inherit;
+  flex-wrap: inherit;
+}
+
+.mel-jedno-miesto > * {
+  display: flex;
+  grid-area: 1 / 1;
+  flex-wrap: inherit;
+  justify-content: flex-end;
+  align-items: center;
+  gap: inherit;
+}
+
+.mel-jedno-miesto > [inert] {
+  visibility: hidden;
+}
+
+/* Nápis v tlačidle („ďalej“ / „Dať cigaretu“) ostáva v strede. */
+.mel-dalej .mel-jedno-miesto {
+  justify-items: center;
+}
+
 .mel-dalej {
   white-space: nowrap;
 }

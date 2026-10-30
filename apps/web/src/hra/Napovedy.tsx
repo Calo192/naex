@@ -17,7 +17,7 @@ import { api } from "../lib/api.ts";
 import { useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import type { Sada } from "@naex/tvorba";
 import { rezimMelichara } from "./bar.ts";
-import { CisloStrany, MelicharVBare, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
+import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, kusyVety, useStrany } from "./MelicharBar.tsx";
 import { prvkyKluca } from "./Vyucba.tsx";
 import "./vyucba.css";
 
@@ -217,15 +217,20 @@ export function NapovedaMelichara({
               ‹
             </button>
           )}
-          {strany.dalsiaJe ? (
-            <button type="button" className="tlacidlo-hlavne mel-dalej" onClick={strany.dalsia} title="Ďalšia strana nápovedy">
-              ďalej
-            </button>
-          ) : (
-            <button type="button" className="tlacidlo-hlavne mel-dalej" onClick={zavri} title="Nápoveda zmizne (aj Esc).">
-              rozumiem
-            </button>
-          )}
+          {/* „ďalej“ aj „rozumiem“ na jednom mieste — šírka vety sa so stranou nemení, strany sa neprepínajú dookola. */}
+          <NaJednomMieste
+            ukaz={strany.dalsiaJe ? "a" : "b"}
+            a={(ziva) => (
+              <button type="button" className="tlacidlo-hlavne mel-dalej" tabIndex={ziva ? undefined : -1} onClick={ziva ? strany.dalsia : undefined} title="Ďalšia strana nápovedy">
+                ďalej
+              </button>
+            )}
+            b={(ziva) => (
+              <button type="button" className="tlacidlo-hlavne mel-dalej" tabIndex={ziva ? undefined : -1} onClick={ziva ? zavri : undefined} title="Nápoveda zmizne (aj Esc).">
+                rozumiem
+              </button>
+            )}
+          />
           <button
             type="button"
             className="tlacidlo-jemne napoveda-vypnut"
