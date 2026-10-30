@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { NaexRekapitulacie, RekapitulaciaPitky } from "@naex/core";
-import { akcieNaex, rezimZoZaznamu, riadkyTextuPitky } from "../src/hra/Rekapitulacia.tsx";
+import { akcieNaex, rezimZoZaznamu, riadkyTextuPitky, type CastTextu } from "../src/hra/Rekapitulacia.tsx";
 
 const NAEX: NaexRekapitulacie = {
   karty: [
@@ -75,6 +75,13 @@ describe("textový režim Pitky", () => {
       { t: "text", s: "✕" },
       { t: "akcie", akcie: [["Pecka", 1]], zrusene: true, kto: 1 },
     ]);
+    // Odpoveď na NA EX — na ktorú stranu z pohľadu hráča (Michal 2026-10-28: „neviem, ako súper zareagoval“).
+    const strana = (hrac: 0 | 1, ciel: "vlastna" | "superova"): CastTextu | undefined =>
+      riadkyTextuPitky(r, [{ hrac, defId: "pijan", ciel }], 0).find((x) => x.druh === "odpoved")?.casti[2];
+    expect(strana(0, "vlastna")).toEqual({ t: "text", s: "na tvoju stranu" });
+    expect(strana(0, "superova")).toEqual({ t: "text", s: "na súperovu stranu" });
+    expect(strana(1, "vlastna")).toEqual({ t: "text", s: "na svoju stranu" });
+    expect(strana(1, "superova")).toEqual({ t: "text", s: "na tvoju stranu" });
     // Zadĺženie 5 pri prahu 2: dva Dlhy, 1 ostáva na účte.
     expect(riadky[4]?.casti).toContainEqual({ t: "b", s: "5" });
     expect(riadky[4]?.casti).toContainEqual({ t: "text", s: "· 1 ostáva na účte" });

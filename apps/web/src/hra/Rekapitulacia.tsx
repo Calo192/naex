@@ -25,44 +25,6 @@ export interface OdpovedNaNaex {
   readonly ciel: CielVykladania | null;
 }
 
-/**
- * Čo sa stalo s NA EX v Pitke, slovami (Michal 2026-10-28: „neviem, ako súper zareagoval na
- * moje NA EX“): kto dal NA EX na ktorú kartu a čo spravilo, potom odpovede. Prvé v rekapitulácii.
- */
-export function vetyNaex(
-  naex: NaexRekapitulacie,
-  odpovede: readonly OdpovedNaNaex[],
-  ja: PlayerId,
-  mena: readonly [string, string],
-  menoKarty: (defId: string) => string,
-): string[] {
-  const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
-  const vety = naex.karty.map((x) => {
-    const ucinok = [x.zdvojilo > 0 ? `zdvojilo ${x.zdvojilo}` : "", x.zrusilo > 0 ? `zrušilo ${x.zrusilo}` : ""].filter(Boolean).join(", ");
-    return `NA EX — ${kto(x.dal)}: na ${x.majitel === x.dal ? "svoju" : x.majitel === ja ? "tvoju" : "súperovu"} kartu ${menoKarty(x.defId)}${ucinok === "" ? " (bez aktívnych akcií)" : ` → ${ucinok}`}`;
-  });
-  for (const o of odpovede) {
-    vety.push(
-      o.defId === null
-        ? `Odpoveď na NA EX — ${kto(o.hrac)}: žiadna`
-        : `Odpoveď na NA EX — ${kto(o.hrac)}: ${menoKarty(o.defId)} ${o.ciel === "vlastna" ? (o.hrac === ja ? "na tvoju stranu" : "na svoju stranu") : o.hrac === ja ? "na súperovu stranu" : "na tvoju stranu"}`,
-    );
-  }
-  return vety;
-}
-
-/** Vety o NA EX a odpovediach na začiatku rekapitulácie — čitateľne, nie len v titulkoch pruhov. */
-function NaexSlovami({ vety }: { readonly vety: readonly string[] }) {
-  if (vety.length === 0) return null;
-  return (
-    <div className="rk-naex-vety" role="row">
-      {vety.map((v) => (
-        <span key={v}>{v}</span>
-      ))}
-    </div>
-  );
-}
-
 /** Číslo a pruh od stredu; „+n“ vyletí, keď hodnota v tejto vlne narástla. */
 function Hodnota({
   strana,
@@ -612,16 +574,23 @@ function ZaverecneRiadky({
   );
 }
 
-/** Koľko riadkov tabuľka bitky na konci má — HernaPlocha podľa toho zmenší karty línie. */
-export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky): number {
-  let n = 2; // hlavička a súčet
+/** Riadky bloku pod tabuľkou bitky: súčet tuhého a špaky. */
+export function riadkovSpakovBitky(r: RekapitulaciaBitky): number {
+  return 1 + (r.spaky === undefined ? 0 : 3 + riadkovRozpisuStarsich(r.spaky));
+}
+
+/**
+ * Koľko riadkov rekapitulácia bitky na konci má (tabuľka aj blok súčtu a špakov) — PocitadloSLiniou
+ * podľa toho zmenší karty línie. Na nízkom širokom okne je blok vedľa tabuľky, vtedy bezSpakov.
+ */
+export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = false): number {
+  let n = 1; // hlavička
   for (const a of AKCIE_TUHE) if (r.tuhe[a].length > 0) n++;
   if (r.viera.length + r.povera.length > 0) n += 2.6;
   if (r.pohorsenie.polozky.length > 0) n++;
   if (r.naex.karty.length > 0) n += 2;
   if (r.pitkyKola !== null) n += 2.5 + 1.4 * (r.pitkyKola.zaverecne?.length ?? 0);
-  if (r.spaky !== undefined) n += 3 + riadkovRozpisuStarsich(r.spaky);
-  return n;
+  return bezSpakov ? n : n + riadkovSpakovBitky(r);
 }
 
 export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [] }: RekapBitkyProps) {
@@ -673,73 +642,77 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
   const tabulka = rezim !== "text";
 
   return (
-    // Miesto pre všetky riadky od začiatku — línia nad tabuľkou neposkakuje, keď riadky nabiehajú.
-    <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia bitky" style={{ "--rk-riadkov": riadkovRekapitulacieBitky(r) } as CSSProperties}>
-      <HlavickaRekapitulacie menoSupera={menoSupera} rezim={rezim} onRezim={setRezim} />
-      {rezim === "text" && !hotovo && (
-        <div className="rk-text-caka" role="row">
-          počíta sa…
-        </div>
-      )}
-      {rezim === "text" && hotovo && <TextRekapitulacie riadky={riadkyTextuBitky(r, odpovede, ja)} ja={ja} mena={menaBitky} menoKarty={menoKarty} piktogramy={piktogramy} />}
-      {tabulka && tuhe}
-      {tabulka && (
-        <VieraPovera
-          r={r}
-          ja={ja}
-          menoSupera={menoSupera}
-          menoKarty={menoKarty}
-          piktogramy={piktogramy}
-          vid={vid}
-          max={max}
-          rusi={hotovo || vlna >= vlnaRusenia}
-          ucinkuje={hotovo || vlna >= vlnaUcinku}
-        />
-      )}
-      {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} />, true, undefined, "Pohoršenie")}
-      {hotovo && rezim === "suhrn" && <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, menaBitky, menoKarty)} />}
-      {tabulka && riadok("naex-x2", naexX2, <Stred ikona={<ZnakNaex znak="×2" ikona={poldeci} />} nazov="NA EX" pod="zdvojilo" />, true, (kto) => titulNaex("zdvojilo", kto), undefined, (kto) => detailNaex(r.naex, "zdvojilo", kto, ja, piktogramy))}
-      {tabulka && riadok("naex-zrus", naexZrus, <Stred ikona={<ZnakNaex znak="✕" ikona={poldeci} />} nazov="NA EX" pod="zrušilo" />, naexX2.length === 0, (kto) => titulNaex("zrusilo", kto), undefined, (kto) => detailNaex(r.naex, "zrusilo", kto, ja, piktogramy))}
-      {tabulka && hotovo && pitky !== null && (
-        <>
-          <div className="rk-sekcia" role="row">
-            z Pitiek kola · {pitky.pocet} {pitky.pocet === 1 ? "Pitka" : pitky.pocet < 5 ? "Pitky" : "Pitiek"}
+    <>
+      {/* Miesto pre všetky riadky od začiatku — línia nad tabuľkou neposkakuje, keď riadky nabiehajú. */}
+      <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia bitky" style={{ "--rk-riadkov": riadkovRekapitulacieBitky(r, true) } as CSSProperties}>
+        <HlavickaRekapitulacie menoSupera={menoSupera} rezim={rezim} onRezim={setRezim} />
+        {rezim === "text" && !hotovo && (
+          <div className="rk-text-caka" role="row">
+            počíta sa…
           </div>
-          {(
-            [
-              ["dlh", "Dlh", nazov("Dlh"), "zadĺženie", pitky.zadlzenie, pitky.dlhy, "Dlhov"],
-              ["pecen", "PoškodeniePečene", "pečeň", "poškodenie", pitky.pecen, pitky.cirhozy, "Cirhóz"],
-            ] as const
-          ).map(([kluc, akcia, meno, pod, hodnoty, karty, coKarty]) => {
-            const m = Math.max(1, hodnoty[0], hodnoty[1]);
-            const strana = (s: Strana, kto: PlayerId): ReactNode => (
-              <Hodnota strana={s} n={hodnoty[kto]} max={m}>
-                <Cip trieda={karty[kto] > 0 ? "zisk" : "nic"} title={`${karty[kto]} ${coKarty} za kolo`}>
-                  → {karty[kto]} <KartaKliatby ikona={ikona(akcia)} />
-                </Cip>
-              </Hodnota>
-            );
-            return (
-              <div key={kluc} className="rk-riadok" role="row">
-                {strana("l", ja)}
-                <Stred ikona={ikona(akcia)} nazov={meno} pod={pod} />
-                {strana("r", su)}
-              </div>
-            );
-          })}
-          {(pitky.zaverecne?.length ?? 0) > 0 && (
-            <ZaverecneRiadky zaverecne={pitky.zaverecne ?? []} ja={ja} mena={menaBitky} menoKarty={menoKarty} piktogramy={piktogramy} bezTextu={rezim === "podrobne"} />
-          )}
-        </>
-      )}
-      {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} ikonaPovery={ikona("Povera")} />}
-      {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
-      {hotovo && r.spaky !== undefined && (
-        <div className="rk-spaky" role="row">
-          <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} menoKarty={menoKarty} />
-        </div>
-      )}
-    </div>
+        )}
+        {rezim === "text" && hotovo && <TextRekapitulacie riadky={riadkyTextuBitky(r, odpovede, ja)} ja={ja} mena={menaBitky} menoKarty={menoKarty} piktogramy={piktogramy} />}
+        {tabulka && tuhe}
+        {tabulka && (
+          <VieraPovera
+            r={r}
+            ja={ja}
+            menoSupera={menoSupera}
+            menoKarty={menoKarty}
+            piktogramy={piktogramy}
+            vid={vid}
+            max={max}
+            rusi={hotovo || vlna >= vlnaRusenia}
+            ucinkuje={hotovo || vlna >= vlnaUcinku}
+          />
+        )}
+        {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} />, true, undefined, "Pohoršenie")}
+        {tabulka && riadok("naex-x2", naexX2, <Stred ikona={<ZnakNaex znak="×2" ikona={poldeci} />} nazov="NA EX" pod="zdvojilo" />, true, (kto) => titulNaex("zdvojilo", kto), undefined, (kto) => detailNaex(r.naex, "zdvojilo", kto, ja, piktogramy))}
+        {tabulka && riadok("naex-zrus", naexZrus, <Stred ikona={<ZnakNaex znak="✕" ikona={poldeci} />} nazov="NA EX" pod="zrušilo" />, naexX2.length === 0, (kto) => titulNaex("zrusilo", kto), undefined, (kto) => detailNaex(r.naex, "zrusilo", kto, ja, piktogramy))}
+        {tabulka && hotovo && pitky !== null && (
+          <>
+            <div className="rk-sekcia" role="row">
+              z Pitiek kola · {pitky.pocet} {pitky.pocet === 1 ? "Pitka" : pitky.pocet < 5 ? "Pitky" : "Pitiek"}
+            </div>
+            {(
+              [
+                ["dlh", "Dlh", nazov("Dlh"), "zadĺženie", pitky.zadlzenie, pitky.dlhy, "Dlhov"],
+                ["pecen", "PoškodeniePečene", "pečeň", "poškodenie", pitky.pecen, pitky.cirhozy, "Cirhóz"],
+              ] as const
+            ).map(([kluc, akcia, meno, pod, hodnoty, karty, coKarty]) => {
+              const m = Math.max(1, hodnoty[0], hodnoty[1]);
+              const strana = (s: Strana, kto: PlayerId): ReactNode => (
+                <Hodnota strana={s} n={hodnoty[kto]} max={m}>
+                  <Cip trieda={karty[kto] > 0 ? "zisk" : "nic"} title={`${karty[kto]} ${coKarty} za kolo`}>
+                    → {karty[kto]} <KartaKliatby ikona={ikona(akcia)} />
+                  </Cip>
+                </Hodnota>
+              );
+              return (
+                <div key={kluc} className="rk-riadok" role="row">
+                  {strana("l", ja)}
+                  <Stred ikona={ikona(akcia)} nazov={meno} pod={pod} />
+                  {strana("r", su)}
+                </div>
+              );
+            })}
+            {(pitky.zaverecne?.length ?? 0) > 0 && (
+              <ZaverecneRiadky zaverecne={pitky.zaverecne ?? []} ja={ja} mena={menaBitky} menoKarty={menoKarty} piktogramy={piktogramy} bezTextu={rezim === "podrobne"} />
+            )}
+          </>
+        )}
+      </div>
+      {/* Súčet a špaky samostatne: na nízkom širokom okne idú vedľa tabuľky pod skóre (hra.css), inak pod ňu. */}
+      <div className="rk-spaky-blok" style={{ "--rk-riadkov": riadkovSpakovBitky(r) } as CSSProperties}>
+        {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} ikonaPovery={ikona("Povera")} />}
+        {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
+        {hotovo && r.spaky !== undefined && (
+          <div className="rk-spaky">
+            <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} menoKarty={menoKarty} />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -752,7 +725,7 @@ function SucetBitky({ r, ja, menoSupera, ikonaPovery }: { readonly r: Rekapitula
     </span>
   );
   return (
-    <div className="rk-sucet" role="row">
+    <div className="rk-sucet">
       tuhé {cast(ja)} : {cast(su)}
       <span>
         {r.prebytokDrzi === null ? " · Nakladačka nikto" : ` · Nakladačka ${r.prebytok} → ${r.prebytokDrzi === ja ? "ty" : menoSupera}`}
@@ -1106,8 +1079,6 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
         <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia Pitky">
           <HlavickaRekapitulacie menoSupera={mena[su]} rezim={rezim} onRezim={setRezim} />
           {!tabulka && <TextRekapitulacie riadky={riadkyTextuPitky(r, odpovede, ja).filter((x) => vid(x.krok))} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} />}
-          {/* Súhrn: čo sa stalo s NA EX — prvé a slovami, ešte pred číslami. */}
-          {rezim === "suhrn" && <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, mena, menoKarty)} />}
           {tabulka && naex && vid(0) && (
             <>
               {(

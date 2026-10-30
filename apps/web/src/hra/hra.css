@@ -8044,25 +8044,6 @@ button.lsr-pole.ciel:focus-visible {
   height: 1.1em;
 }
 
-/* NA EX a odpovede slovami (Michal 2026-10-28) — prvé v rekapitulácii, čitateľné bez titulkov. */
-.rk-naex-vety {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  margin: 4px 0;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid color-mix(in srgb, var(--akcent) 45%, var(--okraj));
-  background: color-mix(in srgb, var(--akcent) 8%, transparent);
-  font-size: 0.86rem;
-  font-weight: 600;
-  line-height: 1.35;
-  text-align: center;
-  color: var(--text);
-}
-
 .rk-sekcia {
   grid-column: 1 / -1;
   margin-top: 6px;
@@ -8202,6 +8183,27 @@ button.lsr-pole.ciel:focus-visible {
 .rk-hod.r .rk-plus {
   left: -2px;
   color: var(--su);
+}
+
+/* Súčet tuhého a špaky bitky pod tabuľkou; miesto je vyhradené od začiatku, nech nič neposkakuje. */
+.rk-spaky-blok {
+  width: min(100%, 600px);
+  min-height: calc(var(--rk-riadkov, 0) * var(--rk-riadok, 2.1rem));
+  padding: 2px 14px 8px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--plocha) 90%, transparent);
+  border: 1px solid var(--okraj);
+  cursor: auto;
+}
+
+.rk-spaky-blok:empty {
+  background: none;
+  border-color: transparent;
+}
+
+.rk-spaky-blok > .rk-sucet:first-child {
+  margin-top: 0;
+  border-top: 0;
 }
 
 .rk-sucet {
@@ -8996,10 +8998,6 @@ button.lsr-pole.ciel:focus-visible {
   height: 24px;
 }
 
-.rekap-pitky .rk-naex-vety {
-  font-size: 1rem;
-}
-
 .rekap-pitky .rk-legenda {
   max-width: 760px;
   font-size: 0.82rem;
@@ -9090,7 +9088,8 @@ button.lsr-pole.ciel:focus-visible {
     padding-top: 0;
   }
 
-  .rekap {
+  .rekap,
+  .rk-spaky-blok {
     padding: 4px 12px 6px;
     --rk-riadok: 1.72rem;
   }
@@ -9143,12 +9142,13 @@ button.lsr-pole.ciel:focus-visible {
   .pocitadlo-scena.s-rekapom {
     display: grid;
     /* Krajné stĺpce vyrovnajú dvojicu tabuľka + skóre na stred, nech línia určuje len šírku. */
-    grid-template-columns: 1fr auto minmax(220px, 320px) 1fr;
+    grid-template-columns: 1fr auto minmax(220px, 400px) 1fr;
     grid-template-areas:
       "rad rad rad rad"
       ". rekap panel ."
-      ". rekap pata .";
-    grid-template-rows: auto 1fr 1fr;
+      ". rekap pata ."
+      ". rekap spaky .";
+    grid-template-rows: auto auto auto 1fr;
     column-gap: 18px;
     row-gap: 8px;
     justify-content: center;
@@ -9167,12 +9167,29 @@ button.lsr-pole.ciel:focus-visible {
   .s-rekapom > .rekap {
     grid-area: rekap;
     width: 600px;
-    max-width: calc(100vw - 420px);
+    max-width: calc(100vw - 480px);
   }
 
   .s-rekapom > .pocitadlo-pata {
     grid-area: pata;
     align-self: start;
+  }
+
+  /* Súčet a špaky pod skóre — tabuľka vľavo tak vojde na 1366×650 bez posúvania. */
+  .s-rekapom > .rk-spaky-blok {
+    grid-area: spaky;
+    align-self: start;
+    width: 100%;
+    min-height: 0;
+    padding: 2px 8px 6px;
+  }
+
+  /* Úzky stĺpec: popisy sa zalomia, čísla nie. */
+  .s-rekapom .rk-spaky .spaky-bitky {
+    min-width: 0;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    font-size: 0.8rem;
   }
 
   .s-rekapom .pocitadlo-zoznam {
