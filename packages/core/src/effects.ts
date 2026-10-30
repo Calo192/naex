@@ -5,7 +5,7 @@
 // MANUAL — motor ju v správnej fáze pripomenie v logu a hráči ju vyhodnotia
 // sami. Register MUSÍ pokrývať všetkých 51 id (kontroluje to test).
 
-import type { PlayerId, Tag } from "./types.ts";
+import type { Action, PlayerId, Tag } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
@@ -522,6 +522,30 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   };
 }
 
+/** Ako Nástroj v Dedičstve mení akciu hráča — verejné, Dedičstvo leží na stole. */
+export interface VplyvNaAkciu {
+  readonly akcia: Action;
+  /** defId Nástroja v Dedičstve. */
+  readonly zdroj: string;
+  /** O koľko viac dá jedna taká akcia: poškodenie Petelice či Rany, hodnota Viery. */
+  readonly o: number;
+}
+
+/**
+ * Akcie hráča p posilnené Nástrojmi v jeho Dedičstve (§12): Puška Petelice,
+ * Vidly Rany (každý kus o 1 poškodenie), Svätý text Vieru. Jeden zdroj pre
+ * bitku (nastrojeTuhe) aj pre žeravé ikony akcií na stole.
+ */
+export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci">, p: PlayerId): readonly VplyvNaAkciu[] {
+  const kusov = (defId: string): number => state.hraci[p].dedicstvo.filter((k) => k.defId === defId).length;
+  const out: VplyvNaAkciu[] = [];
+  if (kusov("puska") > 0) out.push({ akcia: "Petelica", zdroj: "puska", o: kusov("puska") });
+  if (kusov("vidly") > 0) out.push({ akcia: "Rana", zdroj: "vidly", o: kusov("vidly") });
+  // Rovnako ako hodnotaViery v bitke (engine): druhý Svätý text Vieru nezvýši.
+  if (kusov("svaty_text") > 0) out.push({ akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA });
+  return out;
+}
+
 /**
  * Puška a Vidly (Dedičstvo, v7): každá aktívna Petelica, resp. Rana hráča p
  * z vyložených akcií udelí o 1 poškodenie viac; Rany navyše z efektov kariet
@@ -530,10 +554,10 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
  */
 export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Petelica?: number }): readonly { readonly zdroj: string; readonly tuhe: number }[] {
   const out: { zdroj: string; tuhe: number }[] = [];
-  const kusov = (defId: string): number => state.hraci[p].dedicstvo.filter((k) => k.defId === defId).length;
-  const puska = kusov("puska") * (sums.Petelica ?? 0);
-  if (puska > 0) out.push({ zdroj: "puska", tuhe: puska });
-  const vidly = kusov("vidly") * (sums.Rana ?? 0);
-  if (vidly > 0) out.push({ zdroj: "vidly", tuhe: vidly });
+  for (const v of vplyvyNaAkcie(state, p)) {
+    if (v.akcia !== "Rana" && v.akcia !== "Petelica") continue;
+    const tuhe = v.o * (sums[v.akcia] ?? 0);
+    if (tuhe > 0) out.push({ zdroj: v.zdroj, tuhe });
+  }
   return out;
 }

@@ -442,3 +442,260 @@
     transform: scale(1.16);
   }
 }
+
+/* Žeravá ikona (Michal 2026-10-30, mock 3): akcia posilnená Nástrojom v Dedičstve
+   majiteľa karty žhne ako uhlík. Žiara aktívnej akcie je žltý prstenec okolo rámu;
+   uhlík ostáva vnútri čierneho poľa (žeravý piktogram, tmavočervený okraj pahreby,
+   vlastné tlenie) a pri ňom stojí iskra s tmavým obrysom, ktorú žltý žiar nezleje. */
+.ikona-zar .ikona-zhar {
+  fill: #ff7a1a;
+  opacity: 0.9;
+  animation: kl-tlenie 2.6s ease-in-out infinite;
+}
+
+@keyframes kl-tlenie {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.kl-slot.kl-zar-plus .ikona-akcie {
+  box-shadow: inset 0 0 0 max(1px, calc(0.7 * var(--pt))) #c2320c;
+}
+
+/* Nahraté SVG ikony: zafarbiť do žeravej. */
+.kl-slot.kl-zar-plus .ikona-svg {
+  filter: sepia(1) saturate(7) hue-rotate(-20deg) brightness(1.05);
+}
+
+/* Znížená akcia (Úplatok): vyhasnutá, nad ňou dym. */
+.kl-slot.kl-zar-minus .ikona-akcie {
+  fill: #5e554c;
+}
+
+.kl-slot.kl-zar-minus .ikona-svg {
+  filter: grayscale(1) brightness(0.45);
+}
+
+.kl-iskra {
+  position: absolute;
+  z-index: 3;
+  top: calc(-4.5 * var(--pt));
+  width: max(7px, calc(10 * var(--pt)));
+  height: max(7px, calc(10 * var(--pt)));
+  pointer-events: none;
+  --smer: 1;
+}
+
+/* Iskra na vnútornom rohu (k stredu ilustrácie). */
+.kl-zar-lava .kl-iskra {
+  right: calc(-4.5 * var(--pt));
+}
+
+.kl-zar-prava .kl-iskra {
+  left: calc(-4.5 * var(--pt));
+  --smer: -1;
+}
+
+.kl-iskra svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: #fff3c2;
+  stroke: #5a1800;
+  stroke-width: 1.4;
+  paint-order: stroke;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 max(1.5px, calc(1.6 * var(--pt))) #ff7a1a) drop-shadow(0 0 1px #000);
+}
+
+.kl-dym {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: calc(100% - 2 * var(--pt));
+  width: max(8px, calc(11 * var(--pt)));
+  height: max(11px, calc(15 * var(--pt)));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.kl-dym svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: #d9d4cc;
+  stroke-width: 9;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 1px #000);
+}
+
+/* Na otočenej karte (plocha je otočená) iskra aj dym ostanú hore a dym stúpa nahor. */
+.kl-otocena .kl-iskra {
+  top: auto;
+  bottom: calc(-4.5 * var(--pt));
+}
+
+.kl-otocena .kl-dym {
+  bottom: auto;
+  top: calc(100% - 2 * var(--pt));
+  transform: translateX(-50%) rotate(180deg);
+}
+
+/* Prvé zobrazenie: ikona vzplanie, iskra odletí, dym stúpne. */
+.kl-zar-nova.kl-zar-plus .ikona-akcie {
+  animation: kl-vzplanie 0.9s ease-out 1;
+}
+
+.kl-zar-nova .kl-iskra {
+  animation: kl-iskra-zjav 0.9s ease-out 1;
+}
+
+.kl-zar-nova .kl-iskra-let {
+  animation: kl-iskra-let 0.95s ease-out 1 forwards;
+}
+
+.kl-zar-nova .kl-dym {
+  animation: kl-dym-stupa 1.2s ease-out 1;
+}
+
+.kl-otocena .kl-zar-nova .kl-dym {
+  animation-name: kl-dym-stupa-otocena;
+}
+
+@keyframes kl-vzplanie {
+  0% {
+    filter: brightness(1) saturate(0);
+  }
+  35% {
+    filter: brightness(2.4);
+  }
+  100% {
+    filter: none;
+  }
+}
+
+@keyframes kl-iskra-zjav {
+  0% {
+    transform: scale(0) rotate(-90deg);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1.9) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes kl-iskra-let {
+  0% {
+    transform: translate(0, 0) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--smer) * 16 * var(--pt)), calc(-18 * var(--pt))) scale(0.3) rotate(160deg);
+    opacity: 0;
+  }
+}
+
+@keyframes kl-dym-stupa {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 40%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes kl-dym-stupa-otocena {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) rotate(180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) rotate(180deg);
+  }
+}
+
+/* Štítok v lupe: ktorý Nástroj a o koľko. Na karte v ruke a línii by zakryl ilustráciu. */
+.kl-zar-stitok {
+  display: none;
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: calc(0.9 * var(--pt)) calc(2.4 * var(--pt));
+  border-radius: calc(1.6 * var(--pt));
+  white-space: nowrap;
+  font: 800 calc(5.4 * var(--pt)) / 1 Roboto, "Segoe UI", system-ui, sans-serif;
+  color: #ffd98a;
+  background: linear-gradient(180deg, #4a1a08, #250b03);
+  box-shadow:
+    0 0 0 max(0.6px, calc(0.45 * var(--pt))) #e2470f,
+    0 1px 3px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+/* Lupa nad stolom a zväčšená karta v ruke (hra.css, ruka-rad: hover 2×). */
+.lupa .kl-zar-stitok {
+  display: block;
+  font-size: max(9px, calc(5.4 * var(--pt)));
+}
+
+body:not(.tahanie-aktivne) .ruka-rad > .tahatelna:is(:hover, :focus-visible) .kl-zar-stitok {
+  display: block;
+  font-size: max(5px, calc(5.4 * var(--pt)));
+}
+
+.kl-zar-lava .kl-zar-stitok {
+  left: calc(100% + 2.5 * var(--pt));
+}
+
+.kl-zar-prava .kl-zar-stitok {
+  right: calc(100% + 2.5 * var(--pt));
+}
+
+.kl-zar-minus .kl-zar-stitok {
+  color: #e3ddd4;
+  background: linear-gradient(180deg, #4a4540, #26231f);
+  box-shadow:
+    0 0 0 max(0.6px, calc(0.45 * var(--pt))) #8e8479,
+    0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.kl-otocena .kl-zar-stitok {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.tip-zar {
+  display: block;
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #b23a0a;
+}
+
+.tip-zar-minus {
+  color: #5e554c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ikona-zar .ikona-zhar,
+  .kl-zar-nova.kl-zar-plus .ikona-akcie,
+  .kl-zar-nova .kl-iskra,
+  .kl-zar-nova .kl-dym {
+    animation: none;
+  }
+
+  .kl-iskra-let {
+    display: none;
+  }
+}

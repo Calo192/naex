@@ -27,6 +27,9 @@
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
 //   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
+//   &zerava=1      žeravé ikony (Michal 2026-10-30): hráč ?ja má v Dedičstve Pušku a Vidly, súper
+//                  Svätý text a Vidly; do ruky Hasič, Recidivista, Policajtka, Kulturista, do línie
+//                  súperova Milujúca manželka a Pes a hráčov Kulturista s Úplatkom
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 
@@ -97,6 +100,19 @@ function sExekuciou(s: GameState, p: PlayerId): GameState {
   const h = s.hraci[p];
   const novy = { ...h, priznane: [...h.priznane, ...Array.from({ length: 10 }, () => karta("dlh"))] };
   return { ...s, nextUid: uid, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+}
+
+/** Žeravé ikony: Nástroje v Dedičstve oboch, karty s posilnenými akciami v ruke a línii, Úplatok. */
+function sZeravou(s: GameState, p: PlayerId): GameState {
+  let uid = s.nextUid;
+  const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
+  const su: PlayerId = p === 0 ? 1 : 0;
+  const ja = { ...s.hraci[p], dedicstvo: [...s.hraci[p].dedicstvo, karta("puska"), karta("vidly")], ruka: [...s.hraci[p].ruka, karta("hasic"), karta("recidivista"), karta("policajtka"), karta("kulturista")] };
+  const on = { ...s.hraci[su], dedicstvo: [...s.hraci[su].dedicstvo, karta("svaty_text"), karta("vidly")] };
+  const strany: [GameState["strany"][0], GameState["strany"][1]] = [[...s.strany[0]], [...s.strany[1]]];
+  strany[su] = [...strany[su], { card: karta("milujuca_manzelka"), playedBy: su }, { card: karta("pes"), playedBy: su }];
+  strany[p] = [...strany[p], { card: karta("kulturista"), playedBy: p, uplatky: 1 }];
+  return { ...s, nextUid: uid, strany, hraci: p === 0 ? [ja, on] : [on, ja] };
 }
 
 function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: number): { cmd: Command; kto: PlayerId; rng: ReturnType<typeof rngSeed> } | null {
@@ -203,7 +219,10 @@ export function UkazkaStola() {
 function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada>["sada"]> }) {
   const data = useHerneData(sada);
   const ja = (q().get("ja") === "1" ? 1 : 0) as PlayerId;
-  const odohrane = useMemo(() => odohraj(data), [data]);
+  const odohrane = useMemo(() => {
+    const o = odohraj(data);
+    return q().get("zerava") === "1" ? { ...o, zaciatok: sZeravou(o.zaciatok, ja) } : o;
+  }, [data]);
   const [stav, setStav] = useState<GameState>(odohrane.zaciatok);
   const [udalosti, setUdalosti] = useState<{ readonly id: number; readonly events: readonly Event[] }>({ id: 0, events: [] });
   const rng = useRef(rngSeed(Number(q().get("seed") ?? "8") ^ 0x77));
