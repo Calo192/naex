@@ -136,7 +136,7 @@ describe("výučba „Prvá hra“", () => {
   it("postup sa ukladá — po odchode výučba pokračuje od toho istého kroku; preskočiť a znova", async () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
-    // 4 správy: i-vitaj, i-lokalita, i-lokality, i-hrany — ďalej čaká výber Lesnej cesty.
+    // 4 kroky: i-vitaj, i-lokalita, i-lokality a výber Lesnej cesty (k-ciel).
     const po = await hraj(k, prvy, 4);
     const index = (po.krok as KrokMsg).index;
     expect(index).toBeGreaterThanOrEqual(3);
@@ -354,12 +354,12 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
     znova.k.zavri();
   });
 
-  it("i-strach má tlačidlo „Odovzdať cigaretu“ a uberie ďalšiu; i-senok je nanečisto", async () => {
+  it("starší už cigaretu nepýtajú — Melichar ju chce len v úvode (prerobenie 2026-10-30); i-senok je nanečisto", async () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
     let msg = prvy;
     let senok: KrokMsg | null = null;
-    while ((msg.krok as KrokMsg & { id: string }).id !== "i-strach") {
+    while ((msg.krok as KrokMsg & { id: string }).id !== "i-starsi") {
       const krok = msg.krok as KrokMsg & { id: string };
       if (krok.id === "i-senok") senok = krok;
       if (krok.kto === "hrac") k.posli({ type: "cmd", cmd: krok.ocakava });
@@ -367,18 +367,17 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
       msg = await k.cakaj("vyucba");
     }
     expect(senok).toMatchObject({ kto: "info", naneisto: true });
-    expect(msg.krok).toMatchObject({ kto: "info", tlacidlo: "Odovzdať cigaretu", odovzdaCigaretu: true });
-    // Posledný stav pred odovzdaním: z fronty po jednom, kým tam niečo je.
+    expect(msg.krok).toMatchObject({ kto: "info", tlacidlo: null, odovzdaCigaretu: false });
+    // Posledný stav pri starších: z fronty po jednom, kým tam niečo je.
     let pred: StavMsg | null = null;
     for (;;) {
       const st = await Promise.race([k.cakaj("state"), new Promise<null>((r) => setTimeout(() => r(null), 100))]);
       if (st === null) break;
       pred = st as unknown as StavMsg;
     }
-    const mal = pred?.view.hraci[0]?.cigarety ?? -1;
-    expect(mal).toBe(6);
+    expect(pred?.view.hraci[0]?.cigarety ?? -1).toBe(6);
     k.posli({ type: "vyucbaDalej" });
-    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(5);
+    expect((await k.cakaj("vyucba")).krok).toMatchObject({ id: "k-povera1" });
     k.zavri();
   });
 });
