@@ -106,7 +106,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
     [0, 1, 2, 3].map((k) => {
       const a = roz[k] ?? null;
       if (stol === null || kde === null || a === null) return null;
-      const z = zarSlotu(a, stol.view.vplyvyAkcii?.[kde.majitel] ?? [], kde.uplatky, (id) => data.cards.get(id)?.name ?? id);
+      const z = zarSlotu(a, stol.view.vplyvyAkcii?.[kde.majitel] ?? [], kde.uplatky, (id) => data.cards.get(id)?.name ?? id, karta.uid);
       if (z === null) return null;
       const kluc = `${karta.uid}:${kde.miesto}:${ps}${k}:${z.pricina}`;
       const prvy = stol.videne.get(kluc) ?? teraz;

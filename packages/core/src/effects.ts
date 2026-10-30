@@ -8,7 +8,7 @@
 import type { Action, PlayerId, Tag } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
-import { defOf } from "./data.ts";
+import { defOf, printedSides } from "./data.ts";
 import type { GameState } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
 import { favourStarsieho, prebudenyPre, priazenHraca, priazenSila } from "./elders.ts";
@@ -546,6 +546,29 @@ export interface VplyvNaAkciu {
   readonly o: number;
   /** Zmena, ktorá nie je číslom (Zapaľovač: nemožno zrušiť NA EX) — veta do popisu ikony. */
   readonly popis?: string;
+  /** Len na tejto karte v línii (Zámočník: Nástroje v jeho okolí); chýba = všetky karty hráča. */
+  readonly uid?: number;
+}
+
+/**
+ * Zámočník (Furt): aktívne akcie Nástrojov v jeho okolí (sused vľavo a vpravo v línii)
+ * sa rátajú dvakrát (partia.ts kartoveEfekty) — žeravá ikona na tých Nástrojoch, aj na
+ * súperových (Náradie 2026-10-30). Vplyv patrí majiteľovi Nástroja, len na jeho karte.
+ */
+function vplyvyZamocnika(data: GameData, state: Pick<VerejnyStav, "strany">, p: PlayerId): VplyvNaAkciu[] {
+  const out: VplyvNaAkciu[] = [];
+  for (const strana of state.strany) {
+    strana.forEach((pl, i) => {
+      if (pl.card.defId !== "zamocnik") return;
+      for (const sused of [strana[i - 1], strana[i + 1]]) {
+        if (sused === undefined || sused.playedBy !== p || !defOf(data, sused.card).tags.includes("Nástroj")) continue;
+        const strany = printedSides(data, sused.card);
+        const akcie = new Set([...strany.left, ...strany.right].filter((a): a is Action => a !== null));
+        for (const akcia of akcie) out.push({ akcia, zdroj: "zamocnik", o: 0, popis: "Zámočník vedľa: aktívna akcia Nástroja sa ráta dvakrát", uid: sused.card.uid });
+      }
+    });
+  }
+  return out;
 }
 
 /** Nástroje, ktoré akciu menia inak než číslom (Náradie 2026-10-30) — žeravá ikona s vetou. */
@@ -569,13 +592,14 @@ const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Actio
  * menia akciu inak než číslom (popis). Jeden zdroj pre
  * bitku (nastrojeTuhe) aj pre žeravé ikony akcií na stole.
  */
-export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci">, p: PlayerId): readonly VplyvNaAkciu[] {
+export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci"> & Partial<Pick<VerejnyStav, "strany">>, p: PlayerId, data?: GameData): readonly VplyvNaAkciu[] {
   const kusov = (defId: string): number => state.hraci[p].dedicstvo.filter((k) => k.defId === defId).length;
   const out: VplyvNaAkciu[] = [];
   if (kusov("boxer") > 0) out.push({ akcia: "Pecka", zdroj: "boxer", o: kusov("boxer") });
   if (kusov("vidly") > 0) out.push({ akcia: "Rana", zdroj: "vidly", o: kusov("vidly") });
   if (kusov("furik") > 0) out.push({ akcia: "Robota", zdroj: "furik", o: kusov("furik"), popis: `Robota spáli o ${kusov("furik")} Dlh viac (bez Dlhu špak)` });
   for (const v of VPLYVY_BEZ_CISLA) if (kusov(v.zdroj) > 0) out.push({ akcia: v.akcia, zdroj: v.zdroj, o: 0, popis: v.popis });
+  if (data !== undefined && state.strany !== undefined) out.push(...vplyvyZamocnika(data, { strany: state.strany }, p));
   // Rovnako ako hodnotaViery v bitke (engine): druhý Svätý text Vieru nezvýši.
   if (kusov("svaty_text") > 0) out.push({ akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA });
   return out;
@@ -590,6 +614,7 @@ export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci">, p: PlayerId): r
 export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Pecka?: number; readonly Petelica?: number }): readonly { readonly zdroj: string; readonly tuhe: number }[] {
   const out: { zdroj: string; tuhe: number }[] = [];
   for (const v of vplyvyNaAkcie(state, p)) {
+    if (v.uid !== undefined) continue;
     // Boxer (Náradie 2026-10-30): Pecky o 1 poškodenie viac, ako Puška pri Petelici.
     if (v.akcia !== "Rana" && v.akcia !== "Pecka" && v.akcia !== "Petelica") continue;
     const tuhe = v.o * (sums[v.akcia] ?? 0);

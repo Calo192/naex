@@ -350,7 +350,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     dedicstvaVylozene: state.dedicstvaVylozene,
     ruka: state.hraci[ja].ruka,
     hraci: [publicPlayer(0), publicPlayer(1)],
-    vplyvyAkcii: [vplyvyNaAkcie(state, 0), vplyvyNaAkcie(state, 1)],
+    vplyvyAkcii: [vplyvyNaAkcie(state, 0, data), vplyvyNaAkcie(state, 1, data)],
     spolocnyBalicekPocet: state.spolocnyBalicek.length,
     senok: state.senok,
     lokalityVHre: lokalityNaVyber(data, state),

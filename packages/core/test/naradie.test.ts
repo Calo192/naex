@@ -159,6 +159,21 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(vplyvyNaAkcie(s, 0)).toContainEqual({ akcia: "Pecka", zdroj: "boxer", o: 1 });
   });
 
+  it("Zámočník: žeravá ikona na akciách Nástroja v jeho okolí — len na tej karte, aj súperovej", () => {
+    const s0 = setupGame(data, 3);
+    const zam = nastroj("zamocnik");
+    const boxer = nastroj("boxer");
+    const iny = nastroj("telefon");
+    // Hráč 0 zahral Zámočníka, hráč 1 vedľa neho Nástroj (podstrčený do partie hráča 0); ďalší Nástroj ďalej.
+    const s = { ...s0, strany: [[{ card: zam, playedBy: 0 }, { card: boxer, playedBy: 1 }, { card: iny, playedBy: 1 }], []] } as GameState;
+    const v1 = vplyvyNaAkcie(s, 1, data);
+    expect(v1).toContainEqual(expect.objectContaining({ akcia: "Rana", zdroj: "zamocnik", uid: boxer.uid }));
+    expect(v1.some((v) => v.uid === iny.uid)).toBe(false);
+    expect(vplyvyNaAkcie(s, 0, data).some((v) => v.zdroj === "zamocnik")).toBe(false);
+    // Do poškodenia sa nepripočíta druhýkrát (zdvojenie rieši línia).
+    expect(nastrojeTuhe(s, 1, { Rana: 2 })).toEqual([]);
+  });
+
   it("Telefón: Pohoršenie k stredu stojí toľko ako von (z červenej 3, nie 4)", () => {
     expect(cenaKroku(0, 1)).toBe(4);
     expect(cenaKroku(0, 1, true)).toBe(3);
