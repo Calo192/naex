@@ -313,8 +313,8 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
     let sAkciou = 0;
     for (const { s, seed } of vzorky) {
       const p = naTahu(s) as PlayerId;
-      // Krčmárka a patronát menia poldeci v bitke podľa výsledku — náhľad ich nepredvída (napísané v limitBuduceKolo).
-      if (s.patronat.some((x) => x !== null) || s.strany.flat().some((pl) => pl.card.defId === "krcmarka")) continue;
+      // Kšeft väzňa (v9) stojí poldeci podľa voľby hráča — náhľad ho nepredvída.
+      if (s.vazni.length > 0) continue;
       const view = viewFor(data, s, p);
       for (const uid of moznostiNaex(data, s, p)) {
         const n = nahladNaexNaKartu(data, view, uid, cenyKliatob(view));
@@ -384,7 +384,8 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
       // 2026-10-28 pred exekúciou a smú pohnúť priazňou Exekútora — ani to výhľad nevie.
       if (s.ciel?.lokalita?.defId === "benzinka") continue;
       for (const p of [0, 1] as const) {
-        if (silaPriazne(data, s, "EXEKUTOR", p === 0 ? 1 : 0) !== silaPriazne(data, t, "EXEKUTOR", p === 0 ? 1 : 0)) continue;
+        // Priazne Robota a Advokát (v9) sa smú v bitke pohnúť Poverami a Pohoršeniami — to výhľad nevie.
+        if (silaPriazne(data, s, "ROBOTA", p) !== silaPriazne(data, t, "ROBOTA", p)) continue;
         const view = viewFor(data, s, p);
         const vyhlad = vyhladDlhov(data, view, s.pitkyCelkom - s.pitkaCislo)[p];
         const dlhy = t.hraci[p].dlhy;

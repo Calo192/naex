@@ -39,20 +39,6 @@ describe("§16 Vínko vyložené v Zhromaždení: limit +1 hneď (návrh #26 B)"
     expect(s2.zhromazdenieStav?.zostavaLimit[0]).toBe(3);
   });
 
-  it("Zastávka: spoločný limit stúpne obom, vlastný len majiteľovi Vínka", () => {
-    const pred = vZhromazdeni("zastavka", {
-      naTahu: 0,
-      zostavaLimit: [4, 4],
-      pasoval: [false, false],
-      navyse: [0, 0],
-      spolocny: true,
-      vlastny: [2, 2],
-    });
-    const po = apply(data, pred, { type: "place", uid: vinko.uid, target: "dedicstvo" }, 0).state;
-    expect(po.zhromazdenieStav?.zostavaLimit).toEqual([5, 5]);
-    expect(po.zhromazdenieStav?.vlastny).toEqual([3, 2]);
-  });
-
   it("plán ťahu (náhľad limitu) ráta Vínko do Dedičstva ako +1 aj pre ďalšiu kartu ťahu", () => {
     const s = vZhromazdeni("krcma", { naTahu: 0, zostavaLimit: [1, 2], pasoval: [false, false], navyse: [0, 0] });
     const iny = s.hraci[0].ruka.find((k) => !data.cards.get(k.defId)?.tags.includes("Nástroj") && !data.cards.get(k.defId)?.tags.includes("Kliatba"));

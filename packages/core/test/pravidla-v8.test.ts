@@ -120,9 +120,9 @@ describe("v8: Kmotor presúva Dlhy súperovi (návrh #34 B)", () => {
   }
   const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].dlhy;
 
-  it("sila 2: dva tvoje priznané Dlhy prejdú medzi súperove priznané", () => {
-    const s = poBitke(2, 3);
-    expect([dlhy(s, 0), dlhy(s, 1)]).toEqual([1, 2]);
+  it("v9: sila 2 → tri tvoje priznané Dlhy prejdú medzi súperove priznané (2 / 3 / 4)", () => {
+    const s = poBitke(2, 4);
+    expect([dlhy(s, 0), dlhy(s, 1)]).toEqual([1, 3]);
   });
 
   it("menej Dlhov, ako je sila: presunie, koľko máš; bez Dlhu nič", () => {

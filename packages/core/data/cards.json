@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet 2026-10-30T11:45:55.948Z",
+  "source": "tvorca kariet 2026-10-30T16:48:30.894Z",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -44,34 +44,49 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Pitka: Karty v jeho okolí nepridávajú poškodenie pečene.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci zahoď z hry 1 Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta poškodenie pečene.",
       "triggers": [
-        "Pitka"
+        "Väzeň"
       ],
       "left": {
         "blocked": [
-          0,
-          3
+          0
         ],
         "actions": {
-          "Posilnenie": 2
+          "Poldeci": 1,
+          "Posilnenie": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "1": [
+            "Posilnenie"
+          ],
+          "2": [
+            "Viera"
+          ],
+          "3": [
+            "Poldeci"
+          ]
         }
       },
       "right": {
         "blocked": [
-          0,
           3
         ],
         "actions": {
-          "Cigareta": 1,
-          "Poldeci": 1
+          "Dlh": 1,
+          "Posilnenie": 1,
+          "Rana": 1
         },
         "allowed": {
+          "0": [
+            "Posilnenie"
+          ],
           "1": [
-            "Poldeci"
+            "Rana"
           ],
           "2": [
-            "Cigareta"
+            "Dlh"
           ]
         }
       },
@@ -89,18 +104,39 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Zhromaždenie: Ak súper pasuje po tebe, nedostane cigarety za pas.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.",
       "triggers": [
-        "Zhromaždenie"
+        "Väzeň"
       ],
       "left": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pecka": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ],
+          "1": [
+            "Cigareta"
+          ],
+          "2": [
+            "Robota"
+          ]
+        }
+      },
+      "right": {
         "blocked": [
           0
         ],
         "actions": {
           "Cigareta": 1,
           "Pecka": 1,
-          "Poldeci": 1
+          "PoškodeniePečene": 1
         },
         "allowed": {
           "1": [
@@ -110,18 +146,8 @@
             "Cigareta"
           ],
           "3": [
-            "Poldeci"
+            "PoškodeniePečene"
           ]
-        }
-      },
-      "right": {
-        "blocked": [
-          0,
-          1,
-          3
-        ],
-        "actions": {
-          "Robota": 1
         }
       },
       "permutations": {
@@ -1150,43 +1176,49 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Nástup: Vezmi si 1 kartu zo šenku.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci sú do konca kola všetky aktívne akcie hrán lokality posilnené.",
       "triggers": [
-        "Nástup"
+        "Väzeň"
       ],
       "left": {
         "blocked": [
-          1,
           3
         ],
         "actions": {
-          "Pecka": 1,
-          "Poldeci": 1
+          "Cigareta": 1,
+          "Petelica": 1,
+          "Posilnenie": 1
         },
         "allowed": {
           "0": [
-            "Pecka"
+            "Petelica"
+          ],
+          "1": [
+            "Cigareta"
           ],
           "2": [
-            "Poldeci"
+            "Posilnenie"
           ]
         }
       },
       "right": {
         "blocked": [
-          0,
-          2
+          0
         ],
         "actions": {
           "Cigareta": 1,
+          "Dlh": 1,
           "Pecka": 1
         },
         "allowed": {
           "1": [
+            "Pecka"
+          ],
+          "2": [
             "Cigareta"
           ],
           "3": [
-            "Pecka"
+            "Dlh"
           ]
         }
       },
@@ -1204,26 +1236,49 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Prehra: Víťaz získa 1 zadĺženie za každú svoju aktívnu Poveru.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci sa do konca kola každá súperova aktívna Viera ráta ako posilnený Hazard.",
       "triggers": [
-        "Prehra"
+        "Väzeň"
       ],
       "left": {
         "blocked": [
-          0,
-          2
+          0
         ],
         "actions": {
-          "Posilnenie": 2
+          "Posilnenie": 1,
+          "Viera": 2
+        },
+        "allowed": {
+          "1": [
+            "Posilnenie"
+          ],
+          "2": [
+            "Viera"
+          ],
+          "3": [
+            "Viera"
+          ]
         }
       },
       "right": {
         "blocked": [
-          1,
           3
         ],
         "actions": {
-          "Viera": 2
+          "Pohoršenie": 1,
+          "Posilnenie": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "0": [
+            "Pohoršenie"
+          ],
+          "1": [
+            "Posilnenie"
+          ],
+          "2": [
+            "PoškodeniePečene"
+          ]
         }
       },
       "permutations": {
@@ -1240,18 +1295,29 @@
         "Starešina",
         "Žena"
       ],
-      "effect_text": "Kšeft: Za 1 Dlh si dober 1 kartu.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci prepíš 1 svoj priznaný Dlh na súpera.",
       "triggers": [
-        "Kšeft"
+        "Väzeň"
       ],
       "left": {
         "blocked": [
-          0,
-          2,
-          3
+          0
         ],
         "actions": {
+          "Povera": 1,
+          "Rana": 1,
           "Vízia": 1
+        },
+        "allowed": {
+          "1": [
+            "Vízia"
+          ],
+          "2": [
+            "Povera"
+          ],
+          "3": [
+            "Rana"
+          ]
         }
       },
       "right": {
@@ -1259,19 +1325,19 @@
           3
         ],
         "actions": {
-          "Cigareta": 1,
+          "Dlh": 1,
           "Povera": 1,
           "Vízia": 1
         },
         "allowed": {
           "0": [
-            "Cigareta"
+            "Vízia"
           ],
           "1": [
             "Povera"
           ],
           "2": [
-            "Vízia"
+            "Dlh"
           ]
         }
       },
@@ -1289,43 +1355,49 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Konflikt: Priložená karta je posledná na svojej strane. Po bitke ide z hry.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci súper odhodí náhodnú kartu z ruky.",
       "triggers": [
-        "Konflikt"
+        "Väzeň"
       ],
       "left": {
         "blocked": [
-          2,
           3
         ],
         "actions": {
-          "Viera": 1,
+          "Petelica": 1,
+          "Pohoršenie": 1,
           "Vízia": 1
         },
         "allowed": {
           "0": [
-            "Viera"
+            "Petelica"
           ],
           "1": [
+            "Pohoršenie"
+          ],
+          "2": [
             "Vízia"
           ]
         }
       },
       "right": {
         "blocked": [
-          0,
-          1
+          0
         ],
         "actions": {
+          "Dlh": 1,
           "Pohoršenie": 1,
-          "Robota": 1
+          "Rana": 1
         },
         "allowed": {
+          "1": [
+            "Pohoršenie"
+          ],
           "2": [
-            "Robota"
+            "Rana"
           ],
           "3": [
-            "Pohoršenie"
+            "Dlh"
           ]
         }
       },
@@ -1343,43 +1415,49 @@
         "Starešina",
         "Žena"
       ],
-      "effect_text": "Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci dostane súper v bitke Petelicu, ak v tejto Pitke dá NA EX.",
       "triggers": [
-        "Kšeft"
+        "Väzeň"
       ],
       "left": {
         "blocked": [
-          1,
-          2
+          3
         ],
         "actions": {
-          "Cigareta": 1,
-          "Obmedzenie": 1
+          "Obmedzenie": 1,
+          "Pecka": 1,
+          "Povera": 1
         },
         "allowed": {
           "0": [
+            "Pecka"
+          ],
+          "1": [
             "Obmedzenie"
           ],
-          "3": [
-            "Cigareta"
+          "2": [
+            "Povera"
           ]
         }
       },
       "right": {
         "blocked": [
-          1,
-          2
+          0
         ],
         "actions": {
-          "Poldeci": 1,
-          "Povera": 1
+          "Obmedzenie": 1,
+          "PoškodeniePečene": 1,
+          "Rana": 1
         },
         "allowed": {
-          "0": [
-            "Poldeci"
+          "1": [
+            "Obmedzenie"
+          ],
+          "2": [
+            "Rana"
           ],
           "3": [
-            "Povera"
+            "PoškodeniePečene"
           ]
         }
       },
@@ -1519,43 +1597,49 @@
         "Starešina",
         "Žena"
       ],
-      "effect_text": "Pitka: Na tvoje NA EX súper nesmie odpovedať kartou.",
+      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci súper v tejto Pitke NA EX nedá.",
       "triggers": [
-        "Pitka"
+        "Väzeň"
       ],
       "left": {
         "blocked": [
-          0,
-          1
+          0
         ],
         "actions": {
+          "Cigareta": 1,
           "Obmedzenie": 1,
           "Poldeci": 1
         },
         "allowed": {
+          "1": [
+            "Poldeci"
+          ],
           "2": [
             "Obmedzenie"
           ],
           "3": [
-            "Poldeci"
+            "Cigareta"
           ]
         }
       },
       "right": {
         "blocked": [
-          2,
           3
         ],
         "actions": {
-          "Cigareta": 1,
-          "Povera": 1
+          "Pecka": 1,
+          "Poldeci": 1,
+          "PoškodeniePečene": 1
         },
         "allowed": {
           "0": [
-            "Povera"
+            "Poldeci"
           ],
           "1": [
-            "Cigareta"
+            "Pecka"
+          ],
+          "2": [
+            "PoškodeniePečene"
           ]
         }
       },
@@ -1681,9 +1765,9 @@
       "tags": [
         "Lokalita"
       ],
-      "effect_text": "Zhromaždenie: Obaja hráči majú spoločný limit vykladania — súčet ich limitov.",
+      "effect_text": "Pitka: Po prvej Pitke kola si každý hráč vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca. Z prázdneho šenku sa neberie nič.",
       "triggers": [
-        "Zhromaždenie"
+        "Pitka"
       ],
       "left": {
         "blocked": [
@@ -1784,7 +1868,7 @@
       "tags": [
         "Zviera"
       ],
-      "effect_text": "Furt: Tvoje Povery poškodzujú aj bez súperových priznaných Dlhov.",
+      "effect_text": "Furt: Tvoje Povery sa Vierou nerušia.",
       "triggers": [
         "Furt"
       ],
@@ -3422,7 +3506,7 @@
       "tags": [
         "Lokalita"
       ],
-      "effect_text": "Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe. Marker staršieho, ktorého si súper v tomto kole vzal do patronátu, takto posunúť nesmieš.",
+      "effect_text": "Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole od seba alebo k sebe. Marker staršieho v ohrození takto posunúť nesmieš.",
       "triggers": [
         "Kšeft"
       ],
@@ -4013,6 +4097,81 @@
         "total": 2,
         "left": 2,
         "right": 1
+      }
+    },
+    {
+      "id": "abstak",
+      "index": 94,
+      "name": "Absťák",
+      "tags": [
+        "Kliatba"
+      ],
+      "effect_text": "Bitka: Každý Absťák v tvojom balíčku (ruka, doberací aj odhadzovací) ti uberie 1 tuhé; pri remíze v tuhom prehráva, kto ich má viac. Nedá sa priznať; po bitke ide z ruky do odhadzovacieho balíčka. Zahodiť ju smie len Vízia alebo efekt, ktorý to výslovne povie.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "actions": {}
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "actions": {}
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "opatrovatelka",
+      "index": 95,
+      "name": "Opatrovateľka",
+      "tags": [
+        "Občan",
+        "Zahraničný",
+        "Pracujúci",
+        "Žena"
+      ],
+      "effect_text": "Furt: Na konci kola sa tvoja Chuť porovnáva, akoby bola o 2 nižšia.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Robota": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Posilnenie": 1,
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
       }
     }
   ]

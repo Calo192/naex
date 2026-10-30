@@ -72,13 +72,13 @@ describe("scorecardy v5 na serveri", () => {
     db.close();
   });
 
-  it("tvorca prijme Kmotra, Abstinenta, Výpalníka a ikony Absťák a Rezerva — sada v5 sa dá zverejniť", () => {
+  it("tvorca prijme Kmotra, Abstinenta, Robotu (v9) a ikony Absťák a Rezerva — sada sa dá zverejniť", () => {
     const db = otvorDb(join(dir, "zverejnenie.sqlite"));
     const obsah = new Obsah(db, new Media(db, dir));
     start(obsah, 1);
     const { json, problemy } = doScorecardsJson(obsah.bodovacie.vsetky(), obsah.ikonyBodovania.vsetky(), jadro.body);
     expect(problemy).toEqual([]);
-    expect((json as { scorecards: { favour: string; nazov: string }[] }).scorecards.filter((sc) => ["Kmotor", "Abstinent", "Výpalník"].includes(sc.nazov)).map((sc) => sc.favour).sort()).toEqual(["LAKOMEC", "NEPRAJNIK", "UZERNIK"]);
+    expect((json as { scorecards: { favour: string; nazov: string }[] }).scorecards.filter((sc) => ["Kmotor", "Abstinent", "Robota"].includes(sc.nazov)).map((sc) => sc.favour).sort()).toEqual(["LAKOMEC", "ROBOTA", "UZERNIK"]);
     const sada = obsah.zverejni(null, 2);
     expect(sada.verzia).toBeGreaterThan(0);
     db.close();

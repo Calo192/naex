@@ -23,24 +23,23 @@ import {
   cenaBarteru,
   freshPlayer,
   hodnotaViery,
+  pocetAbstakov,
   prahCirhozy,
   prahDlhu,
   textNeresti,
 } from "./player.ts";
 import type { BattleOutcome, BattleSide, DamageResult, RozhodnutieBitky } from "./battle.ts";
-import { battleOutcome, computeDamage, spakyZaBitku, zhoriPriExekucii } from "./battle.ts";
-import type { ElderState, Klebety, MarkerPos, PosunMarkera } from "./elders.ts";
+import { battleOutcome, computeDamage, spakyPriExekucii, spakyZaBitku, zhoriPriExekucii } from "./battle.ts";
+import type { ElderState, Klebety, MarkerPos, PosunMarkera, Vazen } from "./elders.ts";
 import {
   MARKER_STRED,
   NAZVY_ZON,
   STAV_STARSIEHO,
   STUPNICA_ZONY,
-  cenaPatronatu,
   freshElder,
-  patronatMozny,
+  pokusMozny,
   posunMarker,
   posunZaBody,
-  prebudenyPre,
   priazenHraca,
   priazenSila,
   poveraMozna,
@@ -52,7 +51,6 @@ import {
   sPosunutymMarkerom,
   spakyZaStarsich,
   strachNaVyplatu,
-  vydesil,
   favourStarsieho,
   scorecardStarsieho,
 } from "./elders.ts";
@@ -80,10 +78,8 @@ import {
   lenVlastnaStrana,
   limitBonusDedicstva,
   limitZhromazdenia,
-  vlastnyLimitZhromazdenia,
   naexZaPitku,
   prahCirhozyBonus,
-  spolocnyLimit,
   zakazVypit,
   zadlzenieZLinie,
   vDedicstve,
@@ -101,7 +97,7 @@ import type { Favour } from "./types.ts";
 // Stav
 
 /**
- * Cieľ kola je lokalita — bitku o staršieho nahradil patronát (Michal
+ * Cieľ kola je lokalita — bitku o staršieho nahradil patronát a od v9 pokus o zajatie (Michal
  * 2026-10-20). Posledná bitka je finále na pinnacle lokalite (v7).
  */
 export type CielKola =
@@ -114,17 +110,23 @@ export type CielKola =
   | { readonly typ: "finale"; readonly lokalita: CardInstance };
 
 /**
- * Patronát (Michal 2026-10-20): hráč, ktorému starší prejavuje priazeň, si
- * ho po šenku vezme do ruky; na scorecard dá lícom dole kartu z ruky a marker
- * ide do stredu. Vyhrá bitku → staršieho si nechá a náhrada sa otočí; prehrá
- * → starší sa vracia na scorecard a hráč odhodí poldeci.
+ * Pokus o zajatie (v9, Michal 2026-10-30, §10 „Zajatie a väzeň“): hráč zaplatil
+ * cigaretu, karta staršieho je v súperovej ruke (boss) a starší je „v ohrození“ —
+ * jeho markerom v tomto kole nič nehýbe. Verejné.
  */
-export interface Patronat {
+export interface PokusOZajatie {
   readonly elderId: string;
-  /** Karta lícom dole na scorecarde — TAJNÁ, súperovi ju viewFor neposiela. */
-  readonly nahrada: CardInstance;
-  /** Pohoršenia, ktoré súper dostane v bitke (o koľko sa marker posunul do stredu). */
-  readonly pohorsenia: number;
+}
+
+/**
+ * Kšefty väzňov s účinkom do konca kola (v9, §7): Starosta (hrany posilnené),
+ * Farár (Viera súpera je posilnený Hazard, index = hráč, ktorého Viera), Vychovávateľka
+ * (Petelice = +3 tuhé držiteľovi v bitke za každú splnenú hrozbu). Verejné.
+ */
+export interface KseftyKola {
+  readonly hranyPosilnene?: boolean;
+  readonly vieraAkoHazard?: readonly [boolean, boolean];
+  readonly petelice?: readonly [number, number];
 }
 
 /** Výber hráča v jednom kroku stavby šenku (uid z jeho balíčka stavby). */
@@ -141,8 +143,8 @@ export interface VyberStavby {
  * z neho striedavo berú, začína útočník.
  */
 export interface DraftStav {
-  /** Po braní nasleduje patronát: rozhoduje útočník, potom obranca. */
-  readonly krok: "stavba" | "beranie" | "patronat";
+  /** Po braní nasleduje pokus o zajatie (v9): rozhoduje útočník, potom obranca. */
+  readonly krok: "stavba" | "beranie" | "zajatie";
   /** Balíčky stavby v rukách hráčov — TAJNÉ, každý vidí len svoj (viewFor). */
   readonly balicky: readonly [readonly CardInstance[], readonly CardInstance[]];
   /** Výbery v aktuálnom kroku stavby — TAJNÉ, kým nevyberú obaja. */
@@ -174,53 +176,36 @@ export interface ZhromazdenieStav {
   readonly pasoval: readonly [boolean, boolean];
   /** Koľko ďalších vyložení hráč ešte zahrá bez odovzdania ťahu (Vypiť). */
   readonly navyse: readonly [number, number];
-  /** Zastávka: limit je spoločný — každé vyloženie či vypitie ho uberie obom. */
-  readonly spolocny?: boolean;
-  /**
-   * Zastávka: zvyšok vlastného limitu hráča (jeho limit mínus čo sám vyložil
-   * a vypil). Pas platí cigarety najviac z neho, nie zo spoločnej zásoby.
-   */
-  readonly vlastny?: readonly [number, number];
 }
 
 /**
- * Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6; Zastávka §15):
+ * Za koľko kariet dostane hráč cigarety, keď teraz pasuje (§6):
  * zvyšok limitu, najviac toľko, koľko má kariet v ruke (v6.1, Michal 2026-10-27 —
  * s prázdnou rukou pas nič nedá).
  */
-export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit" | "vlastny">, p: PlayerId, vRuke: number): number {
-  return Math.max(0, Math.min(z.zostavaLimit[p], z.vlastny?.[p] ?? z.zostavaLimit[p], vRuke));
+export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit">, p: PlayerId, vRuke: number): number {
+  return Math.max(0, Math.min(z.zostavaLimit[p], vRuke));
 }
 
 /**
  * Cigarety, ktoré hráč p dostane, keď teraz pasuje — jeden výpočet pre motor aj
- * náhľad pasu: karty za pas (kartyZaPas), Autobusár (nič) a Píšťalka v súperovom
+ * náhľad pasu: karty za pas (kartyZaPas) a Píšťalka v súperovom
  * Dedičstve (Náradie 2026-10-30): súperove aktívne Obmedzenia v línii ich uberajú, najmenej 0.
  */
 export function cigaretyZaPas(
   data: GameData,
-  s: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval" | "zostavaLimit" | "vlastny"> | null },
+  s: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval" | "zostavaLimit"> | null },
   p: PlayerId,
   vRuke: number,
 ): number {
   const z = s.zhromazdenieStav;
   if (z === null) return 0;
   const karty = kartyZaPas(z, p, vRuke);
-  if (karty > 0 && pasBezCigariet(data, s, p)) return 0;
   const zaPas = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
   const q = opponentOf(p);
   if (zaPas === 0 || !vDedicstve(s, q, "pistalka")) return zaPas;
   const obmedzenia = evaluateLine(data, lineState(s)).sums[q].Obmedzenie ?? 0;
   return Math.max(0, zaPas - obmedzenia);
-}
-
-/**
- * Autobusár (Zhromaždenie, v7): hráč p by pasoval po súperovi, ktorý má
- * Autobusára — cigarety za pas nedostane. Pre motor aj náhľad pasu.
- */
-export function pasBezCigariet(data: GameData, s: VerejnyStav & { readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval"> | null }, p: PlayerId): boolean {
-  const opp = opponentOf(p);
-  return s.zhromazdenieStav?.pasoval[opp] === true && efektHraca(s, opp, "autobusar") && !efektPotlaceny(data, s, opp, "autobusar");
 }
 
 export interface PitkaStav {
@@ -239,9 +224,15 @@ export interface PitkaStav {
    * ten, kto NA EX dal.
    */
   readonly reakcia: PlayerId | null;
-  /** Poštárka a Starosta sa smú použiť raz za Pitku. */
+  /** Poštárka a Starosta sa smú použiť raz za Pitku (do v7; od v9 sa nepoužíva). */
   readonly postarka: readonly [boolean, boolean];
   readonly starosta: readonly [boolean, boolean];
+  /** Väzeň Krčmárka (v9): hráč v tejto Pitke NA EX nedá. Verejné. */
+  readonly zakazNaex?: readonly [boolean, boolean];
+  /** Väzeň Vychovávateľka (v9): koľko hrozieb Petelicou má hráč na súperovo NA EX v tejto Pitke. */
+  readonly hrozbaPetelice?: readonly [number, number];
+  /** Väzeň Veterinár (v9): hráčovi sa v tejto Pitke nepočíta poškodenie pečene. */
+  readonly bezPecene?: readonly [boolean, boolean];
   /** Koľko NA EX hráč v tejto Pitke dal (odkrytých). */
   readonly naexPocet?: readonly [number, number];
   /** Zberný dvor: výkup karty z odhadzovacieho balíčka už v tejto Pitke použitý. */
@@ -305,12 +296,6 @@ export interface BitkaStav {
   /** Robota už v tejto bitke spálila Dlhy a dala špaky (exekucieBitky sa smie volať znova). */
   readonly robotaHotova?: readonly [boolean, boolean];
   readonly pohorseniaSpolu?: readonly [number, number];
-  /**
-   * Koľko z pohorsenieZostava sú ešte Pohoršenia zo súperovho patronátu (v6,
-   * Michal 2026-10-26) — tie nesmú na staršieho, ktorého si súper vzal za patróna.
-   * Chýba = 0.
-   */
-  readonly pohorseniaPatronatu?: readonly [number, number];
   readonly damage: DamageResult | null;
   readonly vitaz: PlayerId | null;
   readonly prebytokDrzi: PlayerId | null;
@@ -370,7 +355,7 @@ export interface BitkaNaNastenke {
   readonly zaStarsichRozpis?: readonly [readonly SpakyOdStarsieho[], readonly SpakyOdStarsieho[]];
   /** Špaky, ktoré hráčom zhoreli pri exekúcii. */
   readonly exekutor: readonly [number, number];
-  /** Prebytok zmenený na špaky (do v7 po finále a na Kultúrnom dome); od v8 vždy 0. */
+  /** Nakladačka zmenená na špaky: do v7 po finále a na Kultúrnom dome, v8–v9 vždy 0, od v9.1 vo finále 1 : 1. */
   readonly prebytok: readonly [number, number];
   /** Špaky oboch po bitke (pred záverečnou Cirhózou a výkupným). */
   readonly spakyPo: readonly [number, number];
@@ -388,8 +373,10 @@ export interface SpakyOdStarsieho {
 export interface KoniecHry {
   readonly vitaz: PlayerId | null;
   readonly dovod: string;
-  /** Konečné špaky — null, keď sa hra skončila inak než po finále (vydesenie, vzdanie). */
+  /** Konečné špaky — null, keď sa hra skončila inak než po finále (tretí väzeň, vzdanie). */
   readonly body: readonly [number, number] | null;
+  /** Špaky za väzňov po finále (v9, podľa poradia zajatia v partii). */
+  readonly vazni?: readonly [number, number];
   /** Nepriznané Cirhózy na konci hry (ruka aj oba balíčky) — za každú SPAKY_ZA_CIRHOZU menej. */
   readonly cirhozy?: readonly [number, number];
   /** Výkupné zvyšných plných poldeci a cigariet po finále (vykupne). */
@@ -436,6 +423,8 @@ export interface GameState {
   readonly nastenka: readonly BitkaNaNastenke[];
   /** Hráč dal v tomto kole NA EX (Krčmárka). */
   readonly naexVKole: readonly [boolean, boolean];
+  /** Partia bez Chuti a Absťáku (výučba Prvá hra, v9.1) — koniec kola ich nerieši. */
+  readonly bezChuti?: true;
   readonly starsi: readonly ElderState[];
   readonly ciel: CielKola | null;
   readonly lokalitaOtocena: boolean;
@@ -461,15 +450,14 @@ export interface GameState {
    * prezrie a rozhodne, či si ich vezme do ruky, alebo zahodí. null = nič.
    */
   readonly vizia: { readonly zostava: readonly [number, number] } | null;
+  /** Pokus o zajatie hráča v tomto kole (v9, každý najviac jeden). Verejné. */
+  readonly pokusy: readonly [PokusOZajatie | null, PokusOZajatie | null];
+  /** Väzni oboch hráčov v poradí zajatia (v9). Verejné. */
+  readonly vazni: readonly Vazen[];
+  /** Kšefty väzňov s účinkom do konca kola (v9). Verejné. */
+  readonly kseftyKola?: KseftyKola;
   /**
-   * Ohlásené vydesenie (Michal 2026-10-16): kolo, v ktorom hráč vydesil
-   * polovicu starších. Vyhrá, ak ich udrží do konca nasledujúceho kola.
-   */
-  readonly ohlaseneVydesenie: readonly [number | null, number | null];
-  /** Patronát hráča v tomto kole (každý najviac jeden starší). */
-  readonly patronat: readonly [Patronat | null, Patronat | null];
-  /**
-   * Posuny markerov (Pohoršenie, prebytok, patronát) od poslednej bitky do
+   * Posuny markerov (Pohoršenie, prebytok, zajatie) od poslednej bitky do
    * konca nasledujúceho Zhromaždenia — stopa na stupnici a účtenka (#95).
    * Verejné; pravidlá z nich nič nerátajú.
    */
@@ -490,8 +478,6 @@ export interface GameState {
   readonly hasicVolby?: readonly HasicVolba[];
   /** Rany navyše kúpené Kšeftom Strýka z Ameriky v tomto kole (v7); verejné. */
   readonly kseftRany?: readonly [number, number];
-  /** Povery navyše kúpené Kšeftom Vychovávateľky v tomto kole (v7); verejné. */
-  readonly kseftPovery?: readonly [number, number];
   /** Koľkokrát súper v tomto kole priložil kartu ku karte hráča (Pasca v7); verejné. */
   readonly prilozeniaKu?: readonly [number, number];
   /** Poldeci, ktoré akcie Poldeci v tomto kole už otočili v Pitke (Jogurt, Náradie 2026-10-30). */
@@ -507,7 +493,7 @@ export interface GameState {
 export interface HasicVolba {
   readonly hrac: PlayerId;
   /**
-   * Voľba, ktorá čaká ako Hasič (v7): karta zo šenku (Starosta, Dohadzovačka),
+   * Voľba, ktorá čaká ako Hasič (v7): karta zo šenku (Starosta, Dohadzovačka, Zastávka),
    * Nástroj za Živnostníka, starší pre Kapybaru. Klebetnica a Dohadzovačka
    * s pôvodnými efektmi ostávajú pre staré uloženia. Chýba = Hasič.
    */
@@ -517,7 +503,7 @@ export interface HasicVolba {
    * Čo hra odložila do rozhodnutia: odpoveď na NA EX by hneď vyhodnotila
    * Pitku a otočená Záverečná by ju ukončila — s kartou ešte nerozhodnutou.
    */
-  readonly potom: "reakcia" | "koniecPitky" | "bitka" | null;
+  readonly potom: "reakcia" | "koniecPitky" | "bitka" | "zastavka" | null;
   /** Živnostník: strana, na ktorej leží — Nástroj sa priloží za neho. */
   readonly strana?: PlayerId;
 }
@@ -530,9 +516,11 @@ type MutState = DeepMutable<GameState>;
 
 export type Command =
   | { readonly type: "chooseLocation"; readonly uid: number; readonly otocena: boolean }
-  // Patronát po šenku: staršieho do ruky, kartu z ruky (uid) lícom dole na scorecard.
-  | { readonly type: "patronat"; readonly elderId: string; readonly uid: number }
-  | { readonly type: "bezPatronatu" }
+  // Pokus o zajatie po šenku (v9): starší, ktorý sa ťa bojí na stupni 3, za cigaretu.
+  | { readonly type: "pokus"; readonly elderId: string }
+  | { readonly type: "bezPokusu" }
+  // Kšeft väzňa (v9): za vypitý poldeci; kartaUid = karta zo šenku (Autobusár) či Cirhóza (Veterinár).
+  | { readonly type: "kseftVazna"; readonly elderId: string; readonly kartaUid?: number }
   // Stavba šenku: z vlastného balíčka stavby karty do šenku a karty naspodok (po dvoch).
   | { readonly type: "stavbaSenku"; readonly doSenku: readonly number[]; readonly odhod: readonly number[] }
   // Branie zo šenku: 1 karta za cigaretu, 2 karty za 3 cigarety (KONSTANTY.CENA_SENKU), alebo koniec brania.
@@ -840,6 +828,9 @@ export function lineState(s: VerejnyStav & { readonly lokalitaOtocena: boolean }
     strany: s.strany,
     // Náradie (2026-10-30): Nástroje v Dedičstve, ktoré menia vyhodnotenie línie — verejné.
     nastroje: [s.hraci[0].dedicstvo.map((k) => k.defId), s.hraci[1].dedicstvo.map((k) => k.defId)],
+    // Kšefty väzňov Starosta a Farár (v9) platia do konca kola.
+    ...(s.kseftyKola?.hranyPosilnene === true ? { hranyPosilnene: true } : {}),
+    ...(s.kseftyKola?.vieraAkoHazard !== undefined ? { vieraAkoHazard: s.kseftyKola.vieraAkoHazard } : {}),
   };
 }
 
@@ -878,6 +869,11 @@ export function vyplatZaStarsich(
   // pinnacle lokalít (bez rozpisu, testy) finále nemá.
   const finaleUz = s.ciel?.typ === "finale" || s.rozpis === undefined;
   return lokalitNevybranych(s) + (finaleUz ? 0 : 1) + tato;
+}
+
+/** Karta staršieho (v9): v línii má len akcie, efekt platí len ako Kšeft väzňa. */
+export function jeStarsi(data: GameData, defId: string): boolean {
+  return data.elders.has(defId);
 }
 
 /** Efekt karty defId patrí hráčovi p a nie je umlčaný (Praudovravec). */
@@ -981,6 +977,8 @@ function pridajPecen(
   events: Event[],
 ): void {
   if (mnozstvo <= 0) return;
+  // Väzeň Veterinár (v9): v tejto Pitke sa hráčovi pečeň nepočíta — ani z NA EX a ceny Kšeftu.
+  if (s.pitkaStav?.bezPecene?.[p] === true) return;
   hrac(s, p).pecen += mnozstvo;
   events.push({ type: "pecen", hrac: p, mnozstvo });
   skontrolujPrahPecene(s, data, p, events);
@@ -1034,18 +1032,10 @@ export function prirastkyPitky(
 ): PrirastkyPitky {
   const sums = vyhodnotenie.sums;
   const line = lineState(s);
-  // Veterinár (Pitka, v7): karty v jeho okolí (aj lokalita) nepridávajú poškodenie pečene.
-  const bezPecene = new Set<number>();
-  for (const pl of [...s.strany[0], ...s.strany[1]]) {
-    if (pl.card.defId !== "veterinar" || pl.zaverecna === true || efektPotlaceny(data, s, pl.playedBy, "veterinar")) continue;
-    for (const sused of okolieVLinii(line, pl.card.uid)) bezPecene.add(sused === null ? (line.lokalita?.uid ?? -1) : sused.card.uid);
-  }
-  const zoZdrojov = (p: PlayerId, a: "PoškodeniePečene" | "Poldeci"): number =>
-    (vyhodnotenie.zdroje[p][a] ?? []).reduce((n, z) => n + (bezPecene.has(z.uid) ? 0 : z.hodnota), 0);
   // Milujúca manželka (Pitka, v7 M2): poškodenie pečene majiteľa v Pitke −1 za kus,
   // najprv z akcií Poškodenie pečene, potom z Poldeci.
-  const pecen: [number, number] = bezPecene.size === 0 ? [sums[0].PoškodeniePečene ?? 0, sums[1].PoškodeniePečene ?? 0] : [zoZdrojov(0, "PoškodeniePečene"), zoZdrojov(1, "PoškodeniePečene")];
-  const poldeci: [number, number] = bezPecene.size === 0 ? [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0] : [zoZdrojov(0, "Poldeci"), zoZdrojov(1, "Poldeci")];
+  const pecen: [number, number] = [sums[0].PoškodeniePečene ?? 0, sums[1].PoškodeniePečene ?? 0];
+  const poldeci: [number, number] = [sums[0].Poldeci ?? 0, sums[1].Poldeci ?? 0];
   // Stryná (Pitka, v7): každá dá hráčovi bez NA EX v tejto Pitke 1 pečeň.
   const stryne = [...s.strany[0], ...s.strany[1]].filter((pl) => pl.card.defId === "niekoho_stryna" && pl.zaverecna !== true && !efektPotlaceny(data, s, pl.playedBy, "niekoho_stryna")).length;
   if (naexDal !== undefined) for (const p of [0, 1] as const) if (!naexDal[p]) pecen[p] += stryne;
@@ -1055,6 +1045,13 @@ export function prirastkyPitky(
     pecen[p] -= zPecene;
     ubrat -= zPecene;
     poldeci[p] -= Math.min(ubrat, poldeci[p]);
+  }
+  // Väzeň Veterinár (Kšeft, v9): držiteľovi sa v tejto Pitke poškodenie pečene nepočíta.
+  const bezPecene = (s as { readonly pitkaStav?: Pick<PitkaStav, "bezPecene"> | null }).pitkaStav?.bezPecene;
+  for (const p of [0, 1] as const) {
+    if (bezPecene?.[p] !== true) continue;
+    pecen[p] = 0;
+    poldeci[p] = 0;
   }
   // Liberál (Pitka, v7): súper, ktorého partia nemá rovnako žien a chlapov, získa 1 zadĺženie.
   const zLinie = zadlzenieZLinie(data, s, vyhodnotenie);
@@ -1135,11 +1132,13 @@ function pocetKariet(player: VerejnyHrac, defId: string, kde: "priznane"): numbe
 }
 
 /**
- * Absťáky hráča (v8.2 počítadlo, Michal 2026-10-30) — všetky verejné: v bitke mu
- * znížia tuhé poškodenie, dajú Pohoršenia navyše a rozhodujú remízu v tuhom.
+ * Karty Absťák v balíčku hráča (v9.1, Michal 2026-10-30) — ruka, doberací aj odhadzovací.
+ * Počet je verejný (klient ho má v pohľade, poloha nie): v bitke každá uberie 1 tuhé
+ * a rozhoduje remízu v tuhom.
  */
 export function verejneAbstaky(s: VerejnyStav, p: PlayerId): number {
-  return s.hraci[p].abstaky;
+  const h = s.hraci[p];
+  return "abstaky" in h ? h.abstaky : pocetAbstakov(h);
 }
 
 /** Cirhózy hráča p vyložené v línii (jeho karty = jeho postihy). */
@@ -1166,15 +1165,15 @@ export function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [Acti
   const mody = ([0, 1] as const).map((p) => bitkaMody(data, s, p));
   const strana = (p: PlayerId): BattleSide => {
     const opp = opponentOf(p);
-    // Vychovávateľka (Kšeft, v7): Povery kúpené v Pitkách tohto kola.
-    const povera = (sums[p].Povera ?? 0) + (s.kseftPovery?.[p] ?? 0);
+    const povera = sums[p].Povera ?? 0;
     // Veriaci (Michal 2026-10-20): Viera navyše rovná sile priazne, nie vyššia
     // hodnota každej Viery — dve Viery s priazňou 2 dávali štít 10.
     const vieraNavyse = priazen(data, s, "VERIACI", p) / KONSTANTY.NASOBOK_PRIAZNE;
     return {
       sums: { ...sums[p], Povera: povera, ...(vieraNavyse > 0 ? { Viera: (sums[p].Viera ?? 0) + vieraNavyse } : {}) },
       cirhozaBonus: cirhozyPriznane(s, opp),
-      tuheBonus: mody[p]!.tuheBonus + nastrojeTuhe(s, p, sums[p]).reduce((a, z) => a + z.tuhe, 0),
+      // Väzeň Vychovávateľka (v9): Petelica navyše = +3 tuhé, Viera ju tlmí ako každé tuhé.
+      tuheBonus: mody[p]!.tuheBonus + nastrojeTuhe(s, p, sums[p]).reduce((a, z) => a + z.tuhe, 0) + peteliceVychovavatelky(s, p),
       // Čierna mačka (v8.3, návrh docs/napady/povery.html — otvorené P5): tvoje Povery sa Vierou nerušia.
       poveryBezViery: zvieraPlati(data, s, p, "cierna_macka"),
       abstaky: verejneAbstaky(s, p),
@@ -1185,6 +1184,11 @@ export function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [Acti
     };
   };
   return [strana(0), strana(1)];
+}
+
+/** Tuhé navyše z Kšeftu väzňa Vychovávateľky (v9): +3 za každú splnenú hrozbu v tomto kole. */
+export function peteliceVychovavatelky(s: Pick<VerejnyStav, "kseftyKola">, p: PlayerId): number {
+  return (s.kseftyKola?.petelice?.[p] ?? 0) * KONSTANTY.VYCHOVAVATELKA_TUHE;
 }
 
 /** Položka rozpisu poškodenia: zdroj (id karty, priazne či pojmu) a o koľko mení hodnotu. */
@@ -1226,6 +1230,7 @@ export function rozpisPoskodenia(data: GameData, s: VerejnyStav, sums: readonly 
     const bonusy: PolozkaRozpisu[] = [...mody.tuheZdroje, ...nastrojeTuhe(s, p, sums[p])].map((z) => ({ zdroj: z.zdroj, hodnota: z.tuhe }));
     if (ja.cirhozaBonus > 0) bonusy.push({ zdroj: "cirhoza", hodnota: ja.cirhozaBonus });
     if (ja.priazenBitkara > 0) bonusy.push({ zdroj: "BITKAR", hodnota: ja.priazenBitkara });
+    if (peteliceVychovavatelky(s, p) > 0) bonusy.push({ zdroj: "karta:vychovavatelka", hodnota: peteliceVychovavatelky(s, p) });
     const zrazky: PolozkaRozpisu[] = [];
     if (dmg.zvysnaViera[q] > 0) zrazky.push({ zdroj: "Viera", hodnota: dmg.zvysnaViera[q] * su.hodnotaViery });
     if (ja.abstaky > 0) zrazky.push({ zdroj: "abstak", hodnota: ja.abstaky });
@@ -1256,7 +1261,7 @@ export function prahyHraca(
     dlh: prahDlhu() + prahDlhuBonus(s, p),
     // Exekúcia bez prahu (Michal 2026-10-28): koľko Dlhov a špakov by v bitke zhorelo teraz
     // (pred Robotou); Záhradkár v partii ju obíde.
-    exekucia: zahradkarChrani(data, s, p) ? 0 : zhoriPriExekucii(priznaneDlhy, silaPriazne(data, s, "EXEKUTOR", opponentOf(p))),
+    exekucia: zahradkarChrani(data, s, p) ? 0 : zhoriPriExekucii(priznaneDlhy),
     priznaneDlhy,
   };
 }
@@ -1265,6 +1270,7 @@ export function prahyHraca(
 function manualEfekty(s: MutState, data: GameData, trigger: string, events: Event[]): void {
   const pripomen = (card: CardInstance, hracEfektu: PlayerId | null): void => {
     const def = defOf(data, card);
+    if (jeStarsi(data, def.id)) return;
     if (!def.triggers.includes(trigger as CardDef["triggers"][number])) return;
     if (!jeEfektManual(def.id)) return;
     // Praudovravec: Autority v tej istej partii efekt neuplatňujú.
@@ -1284,10 +1290,6 @@ function manualEfekty(s: MutState, data: GameData, trigger: string, events: Even
   }
   const lok = cielLokalita(s);
   if (lok !== null) pripomen(lok, null);
-  for (const elder of s.starsi) {
-    const pre = prebudenyPre(elder as ElderState);
-    if (pre !== null) pripomen(elder.karta as CardInstance, pre);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1296,6 +1298,8 @@ function manualEfekty(s: MutState, data: GameData, trigger: string, events: Even
 export interface SetupOptions {
   /** Počet lokalít v hre — dĺžka hry (DLZKY_HRY); predvolene stredná. */
   readonly lokalit?: number;
+  /** Bez Chuti a Absťáku (výučba Prvá hra, v9.1). */
+  readonly bezChuti?: boolean;
 }
 
 /** Dĺžky hry, na ktoré má sada dosť lokalít. */
@@ -1344,11 +1348,12 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     bitkaStav: null,
     koniec: null,
     vizia: null,
-    ohlaseneVydesenie: [null, null],
-    patronat: [null, null],
+    pokusy: [null, null],
+    vazni: [],
     posunyMarkerov: [],
     pitkyKola: [],
     zaciatokPitky: null,
+    ...(opts?.bezChuti === true ? { bezChuti: true as const } : {}),
   };
 
   // Náhodný útočník prvého kola (PRAVIDLA §3, §4).
@@ -1425,7 +1430,8 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
   if (r.lokality.length === 0) throw new Error("Rozdanie nemá žiadnu lokalitu.");
   if (r.rozpis !== undefined && r.rozpis.length < 2) throw new Error("Rozdanie: rozpis úrovní potrebuje aspoň jedno kolo a finále.");
   const kolLokalit = r.rozpis !== undefined ? r.rozpis.length - 1 : r.lokality.length;
-  const s = structuredClone(setupGame(data, r.seed, { lokalit: kolLokalit })) as MutState;
+  // Výučba Prvá hra Chuť neučí (Michal 2026-10-30) — tá patrí do jej 2. časti.
+  const s = structuredClone(setupGame(data, r.seed, { lokalit: kolLokalit, bezChuti: r.bezChuti ?? true })) as MutState;
   const karta = (ref: string): DeepMutable<CardInstance> => {
     const [defId = "", l = "0", p = "0"] = ref.split("/");
     const variants = data.variants.get(defId);
@@ -1629,11 +1635,14 @@ function applyPrikaz(
     case "chooseLocation":
       cmdChooseLocation(s, data, cmd, hracId, events);
       break;
-    case "patronat":
-      cmdPatronat(s, data, cmd, hracId, events);
+    case "pokus":
+      cmdPokus(s, data, cmd, hracId, events);
       break;
-    case "bezPatronatu":
-      cmdBezPatronatu(s, data, hracId, events);
+    case "bezPokusu":
+      cmdBezPokusu(s, data, hracId, events);
+      break;
+    case "kseftVazna":
+      cmdKseftVazna(s, data, cmd, hracId, events);
       break;
     case "stavbaSenku":
       cmdStavbaSenku(s, data, cmd, hracId, events);
@@ -1818,10 +1827,10 @@ function nevyhnutnyTah(data: GameData, s: MutState, p: PlayerId, events: Event[]
     } else if (jedina?.type === "draftStop") {
       if (s.senok.length > 0) events.push({ type: "log", text: `Hráč ${p + 1} nemá cigaretu na kartu zo šenku.` });
       cmdDraftStop(s, data, p, events);
-    } else if (jedina?.type === "bezPatronatu") {
-      const dovod = dovodBezPatronatu(data, s as GameState, p);
+    } else if (jedina?.type === "bezPokusu") {
+      const dovod = dovodBezPokusu(data, s as GameState, p);
       if (dovod !== null) events.push({ type: "log", pre: p, text: dovod });
-      cmdBezPatronatu(s, data, p, events, true);
+      cmdBezPokusu(s, data, p, events, true);
     } else {
       return false;
     }
@@ -2064,124 +2073,84 @@ function dalsiVBerani(s: MutState, data: GameData, p: PlayerId, events: Event[])
     s.senok.push(...doplnene);
     events.push({ type: "log", text: `Šenok sa dopĺňa z vrchu Náradia a Občanov na ${s.senok.length} kariet (+${doplnene.length}).` });
   }
-  // Fajčiar v5 (Michal 2026-10-24): +1 / +2 / +3 cigarety po výbere zo šenku —
-  // súperovo Obmedzenie ich neuberá (nie sú z Pitky).
-  for (const p of [s.utocnik, obranca(s)] as const) {
-    const sila = silaPriazne(data, s as GameState, "FAJCIAR", p);
-    if (sila <= 0) continue;
-    hrac(s, p).cigarety += sila;
-    events.push({ type: "log", text: `Priazeň Fajčiara: hráč ${p + 1} dostáva po šenku ${cigariet(sila)}.` });
-  }
-  // Patronát: rozhoduje útočník, potom obranca — druhý už vidí voľbu prvého.
-  d.krok = "patronat";
+  // Pokus o zajatie (v9): rozhoduje útočník, potom obranca — druhý už vidí voľbu prvého.
+  // Fajčiar dáva cigarety od v9 po bitke (koniecBitky), nie po šenku.
+  d.krok = "zajatie";
   d.naTahu = s.utocnik;
   d.hotovo = [false, false];
 }
 
 // ---------------------------------------------------------------------------
-// Patronát (Michal 2026-10-20 — nahradil bitku o staršieho)
+// Zajatie a väzeň (v9, Michal 2026-10-30, §10 — nahradilo patronát a vydesenie)
 
-/** Karty z ruky hráča p, ktoré smú ísť lícom dole na scorecard: Občan alebo Zviera. */
-export function kandidatiNaNahradu(data: GameData, ruka: readonly CardInstance[]): CardInstance[] {
-  return ruka.filter((k) => {
-    const tags = defOf(data, k).tags;
-    return (tags.includes("Občan") || tags.includes("Zviera")) && !tags.includes("Nástroj") && !tags.includes("Kliatba");
-  });
+/** Väzni hráča p v poradí zajatia. */
+export function vazniHraca(state: { readonly vazni: readonly Vazen[] }, p: PlayerId): Vazen[] {
+  return state.vazni.filter((v) => v.hrac === p);
 }
 
-/**
- * Starší, ktorých si hráč p teraz smie vziať: prejavujú mu priazeň (aspoň žltá),
- * zaplatí cigarety, má poldeci na bolestné a kartu na náhradu. Kartu staršieho,
- * ktorú už drží iný patronát, si vziať nemožno.
- */
-export function moznyPatronat(data: GameData, state: GameState, p: PlayerId): ElderState[] {
-  const d = state.draftStav;
-  if (state.faza !== "draft" || d === null || d.krok !== "patronat" || d.hotovo[p]) return [];
-  if (state.patronat[p] !== null) return [];
-  const h = state.hraci[p];
-  if (h.poldeciPlne + h.poldeciVypite < 1) return [];
-  if (kandidatiNaNahradu(data, h.ruka).length === 0) return [];
-  return state.starsi.filter(
-    (e) =>
-      patronatMozny(e, p) &&
-      h.cigarety >= cenaPatronatu(e).cigarety &&
-      !state.patronat.some((x) => x?.elderId === e.elderId),
-  );
+/** Je starší práve „v ohrození“ — niekto sa ho v tomto kole pokúša zajať (jeho markerom nič nehýbe)? */
+export function vOhrozeni(state: { readonly pokusy: readonly (PokusOZajatie | null)[] }, elderId: string): boolean {
+  return state.pokusy.some((x) => x?.elderId === elderId);
 }
 
-/**
- * Prečo hra patronát preskočila, hoci hráčovi niektorý starší prejavuje priazeň
- * (playtest 20261026-173610-3: preskočil sa ticho). Len pre hráča — dôvod môže
- * prezradiť ruku (nemá Občana ani Zviera). Null, keď patronát ani neprichádzal do úvahy.
- */
-function dovodBezPatronatu(data: GameData, state: GameState, p: PlayerId): string | null {
-  const starsi = state.starsi.filter((e) => patronatMozny(e, p) && !state.patronat.some((x) => x?.elderId === e.elderId));
-  if (starsi.length === 0 || state.patronat[p] !== null) return null;
-  const h = state.hraci[p];
-  const kto = starsi.map((e) => `${defOf(data, e.karta).name} (${cigariet(cenaPatronatu(e).cigarety)})`).join(", ");
-  const dovod =
-    h.poldeciPlne + h.poldeciVypite < 1
-      ? "nemáš poldeci na bolestné"
-      : kandidatiNaNahradu(data, h.ruka).length === 0
-        ? "nemáš v ruke Občana ani Zviera, ktorého by si dal na scorecard"
-        : `máš len ${cigariet(h.cigarety)}`;
-  return `Patronát preskočený: priazeň ti prejavuje ${kto}, ale ${dovod}.`;
-}
-
-/** Je karta s týmto uid práve karta staršieho, ktorého má niekto v patronáte? */
+/** Je karta s týmto uid karta staršieho, o ktorého zajatie sa v tomto kole hrá (boss)? */
 // Štruktúrny typ: rovnako sa pýta server (GameState) aj klient agentov (ClientState).
-export function jeKartaPatronatu(
-  state: { readonly patronat: readonly ({ readonly elderId: string } | null)[]; readonly starsi: readonly ElderState[] },
+export function jeKartaBossa(
+  state: { readonly pokusy: readonly (PokusOZajatie | null)[]; readonly starsi: readonly Pick<ElderState, "elderId" | "karta">[] },
   uid: number,
 ): boolean {
-  return state.patronat.some((x) => x !== null && state.starsi.find((e) => e.elderId === x.elderId)?.karta.uid === uid);
+  return state.pokusy.some((x) => x !== null && state.starsi.find((e) => e.elderId === x.elderId)?.karta.uid === uid);
 }
 
-function cmdPatronat(
-  s: MutState,
-  data: GameData,
-  cmd: { elderId: string; uid: number },
-  p: PlayerId,
-  events: Event[],
-): void {
-  const d = s.draftStav;
-  need(s.faza === "draft" && d !== null && d.krok === "patronat" && d.naTahu === p && !d.hotovo[p], "Teraz sa staršieho do ruky neberie.");
-  const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
-  need(elder !== undefined, "Taký starší nie je.");
-  need(s.patronat[p] === null, "Staršieho si v tomto kole už vzal.");
-  need(!elder.nahradeny, "Náhradu staršieho si do ruky vziať nemožno.");
-  need(patronatMozny(elder as ElderState, p), "Starší ti neprejavuje priazeň aspoň v žltej zóne.");
-  const h = s.hraci[p];
-  need(h.poldeciPlne + h.poldeciVypite >= 1, "Na patronát treba mať poldeci (bolestné pri prehre).");
-  const cena = cenaPatronatu(elder as ElderState);
-  need(h.cigarety >= cena.cigarety, `Patronát stojí ${cena.cigarety} ${cena.cigarety === 1 ? "cigaretu" : "cigarety"}.`);
-  const karta = h.ruka.find((k) => k.uid === cmd.uid);
-  need(karta !== undefined && kandidatiNaNahradu(data, [karta as CardInstance]).length === 1, "Lícom dole na scorecard smie ísť len Občan alebo Zviera z ruky.");
+/**
+ * Starší, ktorých sa hráč p teraz smie pokúsiť zajať: bojí sa ho na stupni 3, nikto
+ * sa ho v tomto kole nepokúša zajať a hráč má cigaretu. Každý hráč najviac jeden pokus za kolo.
+ */
+export function moznePokusy(state: GameState, p: PlayerId): ElderState[] {
+  const d = state.draftStav;
+  if (state.faza !== "draft" || d === null || d.krok !== "zajatie" || d.hotovo[p]) return [];
+  if (state.pokusy[p] !== null || state.hraci[p].cigarety < KONSTANTY.CENA_POKUSU) return [];
+  return state.starsi.filter((e) => pokusMozny(e, p) && !vOhrozeni(state, e.elderId));
+}
 
-  vezmiZRuky(s, p, cmd.uid);
-  hrac(s, p).cigarety -= cena.cigarety;
-  hrac(s, p).ruka.push(elder.karta);
-  s.patronat[p] = { elderId: elder.elderId, nahrada: karta, pohorsenia: cena.pohorsenia };
-  presunMarker(s, events, elder, MARKER_STRED, "patronat", p);
+/** Prečo hra pokus preskočila, hoci sa hráča niektorý starší bojí na stupni 3 (len pre hráča). */
+function dovodBezPokusu(data: GameData, state: GameState, p: PlayerId): string | null {
+  const starsi = state.starsi.filter((e) => pokusMozny(e, p) && !vOhrozeni(state, e.elderId));
+  if (starsi.length === 0 || state.pokusy[p] !== null) return null;
+  const kto = starsi.map((e) => defOf(data, e.karta).name).join(", ");
+  return `Pokus o zajatie preskočený: na stupni 3 sa ťa bojí ${kto}, ale nemáš cigaretu.`;
+}
+
+function cmdPokus(s: MutState, data: GameData, cmd: { elderId: string }, p: PlayerId, events: Event[]): void {
+  const d = s.draftStav;
+  need(s.faza === "draft" && d !== null && d.krok === "zajatie" && d.naTahu === p && !d.hotovo[p], "Teraz sa o zajatí nerozhoduje.");
+  need(s.pokusy[p] === null, "V tomto kole si sa o zajatie už pokúsil.");
+  const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
+  need(elder !== undefined, "Taký starší na stupnici nie je.");
+  need(pokusMozny(elder as ElderState, p), "Zajať sa dá len staršieho, ktorý sa ťa bojí na stupni 3.");
+  need(!vOhrozeni(s as GameState, elder.elderId), "O tohto staršieho sa už v tomto kole hrá.");
+  need(s.hraci[p].cigarety >= KONSTANTY.CENA_POKUSU, `Pokus o zajatie stojí ${cigariet(KONSTANTY.CENA_POKUSU)}.`);
+  const opp = opponentOf(p);
+  // Cigareta prepadne do banky bez ohľadu na výsledok; boss ide súperovi do ruky.
+  hrac(s, p).cigarety -= KONSTANTY.CENA_POKUSU;
+  hrac(s, opp).ruka.push(elder.karta);
+  s.pokusy[p] = { elderId: elder.elderId };
   events.push({
     type: "log",
-    text: `Patronát: hráč ${p + 1} si berie do ruky staršieho ${defOf(data, elder.karta as CardInstance).name}, na scorecard kladie kartu lícom dole a marker dáva do stredu${cena.cigarety > 0 ? ` (platí ${cena.cigarety} ${cena.cigarety === 1 ? "cigaretu" : "cigarety"})` : ""}. Súper dostane v bitke ${cena.pohorsenia} Pohoršenia.`,
+    text: `Pokus o zajatie: hráč ${p + 1} platí ${cigariet(KONSTANTY.CENA_POKUSU)} a ${defOf(data, elder.karta as CardInstance).name} ide hráčovi ${opp + 1} do ruky. Vyhrá hráč ${p + 1} bitku → väzeň; inak sa starší vráti a marker ustúpi o stupeň.`,
   });
-  // Patronát z červenej môže súperovi zobrať polovicu vydesených — ohlásenie
-  // padá hneď, nie až na konci kola (Michal 2026-10-26).
-  skontrolujVydesenie(s, data, events);
-  dalsiVPatronate(s, data, p, events);
+  dalsiVZajati(s, data, p, events);
 }
 
-function cmdBezPatronatu(s: MutState, data: GameData, p: PlayerId, events: Event[], samo = false): void {
+function cmdBezPokusu(s: MutState, data: GameData, p: PlayerId, events: Event[], samo = false): void {
   const d = s.draftStav;
-  need(s.faza === "draft" && d !== null && d.krok === "patronat" && d.naTahu === p && !d.hotovo[p], "Teraz sa o patronáte nerozhoduje.");
-  if (!samo) events.push({ type: "log", text: `Hráč ${p + 1} si staršieho do ruky neberie.` });
-  dalsiVPatronate(s, data, p, events);
+  need(s.faza === "draft" && d !== null && d.krok === "zajatie" && d.naTahu === p && !d.hotovo[p], "Teraz sa o zajatí nerozhoduje.");
+  if (!samo) events.push({ type: "log", text: `Hráč ${p + 1} sa o zajatie nepokúša.` });
+  dalsiVZajati(s, data, p, events);
 }
 
 /** Po rozhodnutí útočníka rozhoduje obranca; potom začína Zhromaždenie. */
-function dalsiVPatronate(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
+function dalsiVZajati(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
   const d = s.draftStav;
   if (d === null) return;
   d.hotovo[p] = true;
@@ -2195,45 +2164,87 @@ function dalsiVPatronate(s: MutState, data: GameData, p: PlayerId, events: Event
 }
 
 /**
- * Patronát po bitke: víťaz-patrón si staršieho nechá (náhrada sa otočí lícom
- * hore), porazený-patrón ho vracia na scorecard, náhradu berie späť do ruky
- * a ODHADZUJE jeden poldeci — vypitý, ak ho má, inak plný (Michal 2026-10-20).
- * Volá sa pred návratom kariet z línie.
+ * Vytiahne kartu s uid odkiaľkoľvek (ruka, balíčky, priznané, Dedičstvo, línia) —
+ * boss sa po bitke vracia vždy, aj keby ho efekt poslal do balíčka (v9). Nenájdená = nič.
  */
-function vyriesPatronat(s: MutState, data: GameData, vitaz: PlayerId | null, events: Event[]): void {
-  for (const p of [0, 1] as const) {
-    const pat = s.patronat[p];
-    if (pat === null) continue;
-    const elder = s.starsi.find((e) => e.elderId === pat.elderId);
+function vytiahniKartu(s: MutState, uid: number): void {
+  for (const q of [0, 1] as const) {
+    const h = hrac(s, q);
+    for (const kopa of [h.ruka, h.doberaci, h.odhadzovaci, h.priznane, h.dedicstvo]) {
+      const i = kopa.findIndex((k) => k.uid === uid);
+      if (i !== -1) {
+        kopa.splice(i, 1);
+        return;
+      }
+    }
+  }
+  const kde = najdiVLinii(s, uid);
+  if (kde !== null) s.strany[kde.strana].splice(kde.index, 1);
+}
+
+/**
+ * Výsledok pokusov o zajatie (v9, krok 6d): kto vyhral bitku, zajme — starší ide medzi jeho
+ * priznané karty ako väzeň a zo stupnice zmizne (udržaný strach mu ešte zaplatí); kto
+ * prehral alebo pri sekere, starší sa vráti na ukazovateľ a marker ustúpi o stupeň k stredu
+ * (ústup zmaže nezaplatený stupeň, O9). Tretí väzeň jedného hráča končí hru. Volá sa pred
+ * návratom kariet z línie.
+ */
+function vyriesZajatie(s: MutState, data: GameData, vitaz: PlayerId | null, events: Event[]): void {
+  const poradieStarsich = [...data.elders.keys()];
+  for (const p of [s.utocnik, obranca(s)] as const) {
+    const pokus = s.pokusy[p];
+    if (pokus === null) continue;
+    const elder = s.starsi.find((e) => e.elderId === pokus.elderId);
     if (elder === undefined) continue;
     const meno = defOf(data, elder.karta as CardInstance).name;
+    vytiahniKartu(s, elder.karta.uid);
     if (vitaz === p) {
-      // Karta staršieho je teraz hráčova — z línie sa vráti s ostatnými, v ruke ostáva.
-      elder.karta = pat.nahrada;
-      elder.nahradeny = true;
-      elder.ziskal = p;
+      // Udržaný strach z tohto kola sa platí normálne (O8) — väzeň už potom nič nedá.
+      const strach = strachNaVyplatu(elder as ElderState, p);
+      if (strach > 0) {
+        s.spaky[p] += strach;
+        const zaznam = s.nastenka[s.nastenka.length - 1];
+        if (zaznam !== undefined) {
+          zaznam.zaStarsich[p] += strach;
+          const rozpis = zaznam.zaStarsichRozpis ?? [[], []];
+          rozpis[p] = [...rozpis[p], { elderId: elder.elderId, defId: elder.karta.defId, spaky: strach }];
+          zaznam.zaStarsichRozpis = rozpis;
+          zaznam.spakyPo = [s.spaky[0], s.spaky[1]];
+        }
+        events.push({ type: "log", text: `Udržaný strach: ${meno} ešte platí hráčovi ${p + 1} ${spakov(strach)}.` });
+      }
+      const vazen: Vazen = {
+        elderId: elder.elderId,
+        hrac: p,
+        poradie: s.vazni.length + 1,
+        karta: elder.karta as CardInstance,
+        scorecard: elder.scorecard,
+        miesto: Math.max(0, poradieStarsich.indexOf(elder.elderId)),
+      };
+      s.vazni.push(vazen as DeepMutable<Vazen>);
+      s.starsi = s.starsi.filter((e) => e.elderId !== elder.elderId);
+      const hodnota = KONSTANTY.SPAKY_ZA_VAZNOV[vazen.poradie - 1] ?? 0;
       events.push({
         type: "log",
-        text: `Patronát: hráč ${p + 1} ${rodovo(p, "vyhral", "vyhrala", "vyhráva")} a nechá si staršieho ${meno}; na scorecarde sa otáča ${defOf(data, pat.nahrada as CardInstance).name}.`,
+        text: `Zajatie: hráč ${p + 1} ${rodovo(p, "vyhral", "vyhrala", "vyhráva")} bitku — ${meno} je jeho väzeň (${vazen.poradie}. zajatý v partii, po finále ${spakov(hodnota)}). Priazeň zaniká, na ukazovateli ostáva prázdne miesto.`,
       });
     } else {
-      const uid = elder.karta.uid;
-      const vRuke = s.hraci[p].ruka.findIndex((k) => k.uid === uid);
-      if (vRuke !== -1) hrac(s, p).ruka.splice(vRuke, 1);
-      const kde = najdiVLinii(s, uid);
-      if (kde !== null) s.strany[kde.strana].splice(kde.index, 1);
-      hrac(s, p).ruka.push(pat.nahrada);
-      const h = hrac(s, p);
-      const vypity = h.poldeciVypite > 0;
-      if (vypity) h.poldeciVypite -= 1;
-      else if (h.poldeciPlne > 0) h.poldeciPlne -= 1;
+      const na = (elder.marker < MARKER_STRED ? elder.marker + 1 : elder.marker - 1) as MarkerPos;
+      presunMarker(s, events, elder, na, "zajatie", p);
       events.push({
         type: "log",
-        text: `Patronát: hráč ${p + 1} ${rodovo(p, "prehral", "prehrala", "prehráva")} — ${meno} sa vracia na scorecard, karta lícom dole späť do ruky a hráč odhadzuje ${vypity ? "vypitý" : "plný"} poldeci (bolestné).`,
+        text: `Zajatie zlyhalo: hráč ${p + 1} bitku ${vitaz === null ? "nevyhral (sekera)" : rodovo(p, "prehral", "prehrala", "prehráva")} — ${meno} sa vracia na ukazovateľ a marker ustupuje o stupeň; cigareta prepadla.`,
       });
     }
   }
-  s.patronat = [null, null];
+  s.pokusy = [null, null];
+  for (const p of [0, 1] as const) {
+    const vazni = vazniHraca(s as GameState, p).length;
+    if (vazni >= KONSTANTY.VAZNI_NA_VYHRU) {
+      ukonciHru(s, data, p, `Hráč ${p + 1} ${rodovo(p, "zajal", "zajala", "zajíma")} tretieho staršieho.`, events);
+      return;
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -2246,18 +2257,12 @@ function vyriesPatronat(s: MutState, data: GameData, vitaz: PlayerId | null, eve
 function zacniZhromazdenie(s: MutState, data: GameData, events: Event[], zacina: PlayerId = s.utocnik): void {
   s.faza = "zhromazdenie";
   events.push({ type: "faza", faza: "zhromazdenie" });
-  // Limit sa počíta nanovo na začiatku každého Zhromaždenia (PRAVIDLA §6).
-  // zastavka ho prepíše na 2; vinko pridáva poldeci navyše.
+  // Limit sa počíta nanovo na začiatku každého Zhromaždenia (PRAVIDLA §6); vinko pridáva poldeci navyše.
   s.zhromazdenieStav = {
     naTahu: zacina,
     zostavaLimit: [limitZhromazdenia(s as GameState, 0), limitZhromazdenia(s as GameState, 1)],
     pasoval: [false, false],
     navyse: [0, 0],
-    // Zastávka: obaja čerpajú zo spoločného limitu (súčet ich limitov).
-    spolocny: spolocnyLimit(s as GameState),
-    ...(spolocnyLimit(s as GameState)
-      ? { vlastny: [vlastnyLimitZhromazdenia(s as GameState, 0), vlastnyLimitZhromazdenia(s as GameState, 1)] as [number, number] }
-      : {}),
   };
   manualEfekty(s, data, "Zhromaždenie", events);
 }
@@ -2292,6 +2297,7 @@ function cmdPlace(
 
   if (cmd.target === "priznanie") {
     need(def.tags.includes("Kliatba"), "Priznať možno len kartu s tagom Kliatba.");
+    need(def.id !== "abstak", "Absťák sa nedá priznať — po bitke ide z ruky do odhadzovacieho balíčka.");
     const karta = vezmiZRuky(s, p, cmd.uid);
     hrac(s, p).priznane.push(karta as DeepMutable<CardInstance>);
     // Pri priznaní kliatby si hráč okamžite doberie kartu (Michal 2026-10-19),
@@ -2509,7 +2515,8 @@ function susedPrilozenej(s: MutState, strana: PlayerId): DeepMutable<PlacedCard>
 /** Vyvolá ležiaca karta Konflikt, keď sa k nej priloží `prilozena`? (plan.md 13.1) */
 export function vyvolaKonflikt(data: GameData, lezi: PlacedCard, prilozena: Pick<PlacedCard, "card" | "playedBy">): boolean {
   if (lezi.zaverecna === true || lezi.playedBy === prilozena.playedBy) return false;
-  if (!defOf(data, lezi.card).triggers.includes("Konflikt")) return false;
+  // Starší má v línii len akcie (v9) — jeho efekt je Kšeft väzňa.
+  if (!defOf(data, lezi.card).triggers.includes("Konflikt") || jeStarsi(data, lezi.card.defId)) return false;
   // Priložený Nástroj Konflikt nevyvolá.
   return !defOf(data, prilozena.card).tags.includes("Nástroj");
 }
@@ -2543,9 +2550,6 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
         break;
       case "snubenica":
         if (jeho.includes("Chlap")) nova = { ...nova, poBitkeK: sused.playedBy };
-        break;
-      case "hrobar":
-        nova = { ...nova, posledna: true, poBitkeZHry: true };
         break;
     }
   }
@@ -2601,11 +2605,6 @@ function konflikt(s: MutState, data: GameData, lezi: DeepMutable<PlacedCard>, pr
       prilozena.poBitkeK = p;
       events.push({ type: "log", text: `Konflikt — Snúbenica: ${jeho.name} ide po bitke do odhadzovacieho balíčka hráča ${p + 1} a je jeho.` });
       break;
-    case "hrobar":
-      prilozena.posledna = true;
-      prilozena.poBitkeZHry = true;
-      events.push({ type: "log", text: `Konflikt — Hrobár: ${jeho.name} je posledná karta na svojej strane a po bitke ide z hry.` });
-      break;
     default:
       events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
   }
@@ -2643,7 +2642,8 @@ function nastupEfekt(
   events: Event[],
 ): void {
   const def = data.cards.get(defId);
-  if (def === undefined) return;
+  // Starší má v línii len akcie (v9) — Nástup nemá.
+  if (def === undefined || jeStarsi(data, defId)) return;
   if (efektPotlaceny(data, s as GameState, p, defId)) {
     events.push({ type: "log", text: `Praudovravec: efekt karty ${def.name} sa neuplatní.` });
     return;
@@ -2677,15 +2677,6 @@ function nastupEfekt(
       if (!s.hraci[p].ruka.some((k) => defOf(data, k as CardInstance).tags.includes("Nástroj"))) break;
       s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "nastroj", uid: 0, potom: null, strana }];
       events.push({ type: "log", text: `Živnostník: hráč ${p + 1} smie za neho priložiť Nástroj z ruky.` });
-      break;
-    }
-    case "starosta": {
-      if (s.senok.length === 0) {
-        events.push({ type: "log", text: "Starosta: šenok je prázdny — nič sa nestane." });
-        break;
-      }
-      s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: 0, potom: null }];
-      events.push({ type: "log", text: `Starosta: hráč ${p + 1} si vezme kartu zo šenku.` });
       break;
     }
     case "kapybara": {
@@ -2763,19 +2754,14 @@ function nastupEfekt(
 
 /**
  * Vínko vyložené do Dedičstva v Zhromaždení (návrh #26 B, Michal 2026-10-28):
- * zostávajúci limit stúpne hneď; na Zastávke spoločný obom aj vlastný hráčovi,
- * ako keby bol v limite od začiatku Zhromaždenia.
+ * zostávajúci limit stúpne hneď, ako keby bol v limite od začiatku Zhromaždenia.
  */
 function pridajLimit(z: DeepMutable<ZhromazdenieStav>, p: PlayerId, n: number): void {
-  if (n === 0) return;
-  for (const q of z.spolocny === true ? ([0, 1] as const) : [p]) z.zostavaLimit[q] += n;
-  if (z.vlastny !== undefined) z.vlastny[p] += n;
+  z.zostavaLimit[p] += n;
 }
 
-/** Uberie z limitu vykladania; na Zastávke zo spoločného limitu obom. */
 function uberLimit(z: DeepMutable<ZhromazdenieStav>, p: PlayerId, n: number): void {
-  for (const q of z.spolocny === true ? ([0, 1] as const) : [p]) z.zostavaLimit[q] = Math.max(0, z.zostavaLimit[q] - n);
-  if (z.vlastny !== undefined) z.vlastny[p] = Math.max(0, z.vlastny[p] - n);
+  z.zostavaLimit[p] = Math.max(0, z.zostavaLimit[p] - n);
 }
 
 function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
@@ -2788,12 +2774,10 @@ function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): voi
   // vyložiť a má ju v ruke — aj keď pasuje hra za neho. Do Pitky už nehrá,
   // súper vykladá sám.
   const karty = kartyZaPas(z, p, s.hraci[p].ruka.length);
-  const autobus = karty > 0 && pasBezCigariet(data, s as GameState, p);
   const ziska = cigaretyZaPas(data, s as GameState, p, s.hraci[p].ruka.length);
-  const pistalka = !autobus ? karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska : 0;
+  const pistalka = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska;
   if (pistalka > 0) events.push({ type: "log", text: `Píšťalka: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
   hrac(s, p).cigarety += ziska;
-  if (autobus) events.push({ type: "log", text: `Autobusár: hráč ${p + 1} pasuje po súperovi — cigarety za pas nedostane.` });
   events.push({
     type: "log",
     text:
@@ -2900,6 +2884,7 @@ function cmdNaex(
   need(s.faza === "pitka" && pitka !== null, "Teraz nie je Pitka.");
   need(pitka.reakcia === null, "Najprv odpovedz na NA EX.");
   need(!pitka.hotovy[p], "Svoju časť Pitky si už skončil.");
+  need(pitka.zakazNaex?.[p] !== true, "Krčmárka: v tejto Pitke NA EX nedáš.");
   const moje = skryteHraca(pitka, p);
   // Skrytú Záverečnú súper cieli náhradným uid (uidZaverecnej) — skutočné nepozná.
   const skryta = skryteZaverecne(s as GameState).find((x) => uidZaverecnej(x.strana) === cmd.uid);
@@ -2944,7 +2929,7 @@ function cmdNaex(
 /**
  * Odkrytie NA EX naraz (v5): keď obaja skončia svoju časť Pitky. Najprv NA EX
  * obrancu, potom útočníka — poldeci, pečeň (pije ten, kto NA EX dal),
- * Výpalné, Vychovávateľka. Tú istú kartu oboch = zrážka, z karty je Výtržník.
+ * hrozba Kšeftu Vychovávateľky (v9). Tú istú kartu oboch = zrážka, z karty je Výtržník.
  * Odpovede (jedna karta za každé súperovo NA EX): najprv obranca, útočník má
  * posledné slovo (Michal 2026-10-25, interview 4). Vracia true, keď sa čaká
  * na odpoveď.
@@ -2987,22 +2972,26 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
         events.push({ type: "log", text: `Kar: pečeň za NA EX hráča ${p + 1} dostáva hráč ${opp + 1}.` });
         pridajPecen(s, data, opp, 1, events);
       } else pridajPecen(s, data, p, 1, events);
-      vypalne(s, data, p, events);
     }
   }
   pitka.naexPocet = [(pitka.naexPocet?.[0] ?? 0) + pocty[0], (pitka.naexPocet?.[1] ?? 0) + pocty[1]];
   for (const p of [0, 1] as const) pitka.naexPouzity[p] = pitka.naexPouzity[p] || pocty[p] >= naexZaPitku(s as GameState);
+  // Väzeň Vychovávateľka (v9): súperovo NA EX v tejto Pitke → držiteľ má v bitke Petelicu za každý Kšeft.
+  for (const p of [0, 1] as const) {
+    const hrozby = pitka.hrozbaPetelice?.[p] ?? 0;
+    if (hrozby <= 0 || pocty[opponentOf(p)] === 0) continue;
+    const petelice: [number, number] = [s.kseftyKola?.petelice?.[0] ?? 0, s.kseftyKola?.petelice?.[1] ?? 0];
+    petelice[p] += hrozby;
+    s.kseftyKola = { ...(s.kseftyKola ?? {}), petelice };
+    events.push({ type: "log", text: `Vychovávateľka: hráč ${opponentOf(p) + 1} dal NA EX — hráč ${p + 1} má v bitke Petelicu navyše (+${hrozby * KONSTANTY.VYCHOVAVATELKA_TUHE} tuhé).` });
+  }
   // Odpovede: obranca na NA EX útočníka, potom útočník na NA EX obrancu — posledné
   // slovo má útočník; Kohút (Pitka, v7) ho dá obrancovi, keď ho má len on.
-  // Krčmárka (Pitka, v7): na NA EX jej majiteľa súper kartou neodpovedá.
   // Kohút je Zviera — vedľa Mäsiara posledné slovo nedá (Michal 2026-10-28).
   const kohut = (q: PlayerId): boolean => zvieraPlati(data, s as GameState, q, "kohut");
   const posledny: PlayerId = kohut(obr) && !kohut(s.utocnik) ? obr : s.utocnik;
   const prvy = opponentOf(posledny);
-  const odpovede = (na: PlayerId): number => (maEfekt(s, data, na, "krcmarka") ? 0 : pocty[na]);
-  if (pocty[obr] + pocty[s.utocnik] > odpovede(obr) + odpovede(s.utocnik)) {
-    events.push({ type: "log", text: "Krčmárka: na NA EX jej majiteľa súper kartou neodpovedá." });
-  }
+  const odpovede = (na: PlayerId): number => pocty[na];
   pitka.frontaReakcii = [...Array<PlayerId>(odpovede(posledny)).fill(prvy), ...Array<PlayerId>(odpovede(prvy)).fill(posledny)];
   return dalsiaReakcia(s, data, events);
 }
@@ -3027,26 +3016,12 @@ function dalsiaReakcia(s: MutState, data: GameData, events: Event[]): boolean {
 }
 
 /**
- * Výpalné (priazeň Výpalníka, predtým Neprajník — v5, Michal 2026-10-25): za
- * KAŽDÉ NA EX hráča `dal` mu súper s touto priazňou vezme 1 / 2 / 3 cigarety (koľko má).
- */
-function vypalne(s: MutState, data: GameData, dal: PlayerId, events: Event[]): void {
-  const komu = opponentOf(dal);
-  const n = Math.min(silaPriazne(data, s as GameState, "NEPRAJNIK", komu), s.hraci[dal].cigarety);
-  if (n <= 0) return;
-  hrac(s, dal).cigarety -= n;
-  hrac(s, komu).cigarety += n;
-  events.push({ type: "log", text: `Výpalné (priazeň Výpalníka): hráč ${dal + 1} platí za NA EX hráčovi ${komu + 1} ${cigariet(n)}.` });
-}
-
-
-/**
  * NA EX hráča p — Občania a Starešinovia v línii (vlastní aj súperovi) bez
  * poldeci. Po minutom limite žiadne (v7 bez výnimky pre Anonymného alkoholika).
  */
 export function moznostiNaex(data: GameData, state: GameState, p: PlayerId): number[] {
   const pitka = state.pitkaStav;
-  if (pitka === null || pitka.reakcia !== null || pitka.hotovy[p]) return [];
+  if (pitka === null || pitka.reakcia !== null || pitka.hotovy[p] || pitka.zakazNaex?.[p] === true) return [];
   // NA EX naraz (v5): vlastné skryté NA EX sa rátajú do limitu, poldeci aj cieľov.
   const moje = skryteHraca(pitka, p);
   if (state.hraci[p].poldeciPlne - moje.length <= 0) return [];
@@ -3093,7 +3068,7 @@ export function moznostiNaexVPohlade(data: GameData, view: PohladNaNaex): number
   const pitka = view.pitkaStav;
   const ja = view.ja;
   if (!view.mozemHrat || view.faza !== "pitka" || view.vizia !== null || pitka === null) return [];
-  if (pitka.reakcia !== null || pitka.hotovy[ja]) return [];
+  if (pitka.reakcia !== null || pitka.hotovy[ja] || pitka.zakazNaex?.[ja] === true) return [];
   const moje = skryteHraca(pitka, ja);
   if (view.hraci[ja].poldeciPlne - moje.length <= 0) return [];
   const minuty = naexLimitMinuty(data, view, ja);
@@ -3160,6 +3135,7 @@ export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<numbe
 export function krcmaVyzaduje(data: GameData, state: GameState, p: PlayerId): boolean {
   const pitka = state.pitkaStav;
   const dal = skryteHraca(pitka, p).length + (pitka?.naexPocet?.[p] ?? 0) > 0;
+  // Väzeň Krčmárka (v9) povinnosť ruší — moznostiNaex je pri zákaze prázdne.
   return jeCielLokalita(state, "krcma") && !dal && moznostiNaex(data, state, p).length > 0;
 }
 
@@ -3261,7 +3237,8 @@ function cmdSmoke(s: MutState, data: GameData, cmd: { pocet?: number }, p: Playe
   need(s.hraci[p].cigarety >= cena, `Fajčiť teraz stojí ${cigariet(cena)}, máš ${s.hraci[p].cigarety}.`);
   need(jeCoTahat(s.hraci[p].doberaci.length, s.hraci[p].odhadzovaci.length), "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne.");
   hrac(s, p).cigarety -= cena;
-  // Nerest je každá vyfajčená cigareta (§8) — aj tie, o ktoré je ďalšie fajčenie drahšie.
+  // Nerest je každá vyfajčená cigareta (§8) — aj tie, o ktoré je ďalšie fajčenie drahšie;
+  // platby cigaretami za iné veci (doliatie, barter, Kšefty) od v9.1 nerest nie sú.
   hrac(s, p).nerestiTotoKolo += cena;
   const tahane = tahaj(s, p, kolko, events);
   pitka.fajcenie[p] += kolko;
@@ -3292,7 +3269,6 @@ function cmdBarter(s: MutState, data: GameData, p: PlayerId, events: Event[]): v
   const cena = barterCena(data, s as GameState, p);
   need(s.hraci[p].cigarety >= cena, `Na barter treba ${cigariet(cena)}.`);
   hrac(s, p).cigarety -= cena;
-  hrac(s, p).nerestiTotoKolo += cena;
   hrac(s, p).poldeciPlne += 1;
   events.push({ type: "log", text: `Hráč ${p + 1} robí stokársky barter za ${cigariet(cena)} — nový plný poldeci.` });
 }
@@ -3304,7 +3280,6 @@ function cmdRefill(s: MutState, data: GameData, p: PlayerId, events: Event[]): v
   need(s.hraci[p].cigarety >= KONSTANTY.REFILL_CENA, `Treba ${KONSTANTY.REFILL_CENA} cigarety.`);
   need(s.hraci[p].poldeciVypite > 0, "Nemáš vypitý poldeci.");
   hrac(s, p).cigarety -= KONSTANTY.REFILL_CENA;
-  hrac(s, p).nerestiTotoKolo += KONSTANTY.REFILL_CENA;
   hrac(s, p).poldeciVypite -= 1;
   hrac(s, p).poldeciPlne += 1;
   events.push({ type: "log", text: `Hráč ${p + 1} otáča poldeci za 2 cigarety.` });
@@ -3564,6 +3539,10 @@ function dokonciPoVolbe(s: MutState, data: GameData, volba: HasicVolba, events: 
   if (volba.potom === "reakcia") ukonciReakciu(s, data, events);
   else if (volba.potom === "koniecPitky") dokonciPitku(s, data, events);
   else if (volba.potom === "bitka") pokracujBitku(s, data, events);
+  else if (volba.potom === "zastavka") {
+    if (volba.hrac === s.utocnik && zastavkaVolba(s, data, opponentOf(s.utocnik), events)) return;
+    pokracujPoPitke(s, data, events);
+  }
 }
 
 /** Príkazy, ktoré čakajúca voľba (Hasič, šenok, Živnostník, Kapybara…) dovoľuje. */
@@ -3571,7 +3550,7 @@ function volbyNastupu(data: GameData, state: GameState): Command[] {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return [];
   if (volba.typ === "senok") return state.senok.map((k) => ({ type: "senok", uid: k.uid }) as Command);
-  if (volba.typ === "kapybara") return state.starsi.filter((e) => e.marker !== MARKER_STRED).map((e) => ({ type: "kapybara", elderId: e.elderId }) as Command);
+  if (volba.typ === "kapybara") return state.starsi.filter((e) => e.marker !== MARKER_STRED && !vOhrozeni(state, e.elderId)).map((e) => ({ type: "kapybara", elderId: e.elderId }) as Command);
   if (volba.typ === "nastroj") {
     const strana = state.strany[volba.strana ?? volba.hrac];
     const posledna = strana[strana.length - 1];
@@ -3627,8 +3606,6 @@ function pitieVPitke(s: MutState, p: PlayerId, n: number): void {
 
 /** Karty s Kšeftom v línii (Oslávenec a Smetiarka sú mimo sady v7, efekt ostáva rozhodnutý). */
 const KSEFTY_KARIET: readonly string[] = ["stryko_z_ameriky", "oslavenec", "smetiarka"];
-/** Starší s Kšeftom (v7) — v línii aj prebudení na scorecarde (efektHraca). */
-const KSEFTY_STARSICH: readonly string[] = ["postarka", "vychovavatelka"];
 const KSEFTY_LOKALIT: readonly string[] = ["zberny_dvor", "sklad", "obecny_urad", "predsedova_vila"];
 const OSLAVENEC_PECEN = 2;
 const SKLAD_CENA = 1;
@@ -3639,19 +3616,11 @@ function kseftPouzity(s: Pick<GameState, "pitkaStav">, p: PlayerId, uid: number)
   return s.pitkaStav?.kseft?.[p].includes(uid) === true;
 }
 
-/** Uid karty staršieho s Kšeftom, ktorého efekt má hráč p (v línii alebo prebudený); null = nemá. */
-function kseftStarsieho(data: GameData, state: GameState, p: PlayerId, defId: string): number | null {
-  if (!efektHraca(state, p, defId) || efektPotlaceny(data, state, p, defId)) return null;
-  const vLinii = partiaHraca(state, p).find((pl) => pl.card.defId === defId && pl.zaverecna !== true);
-  if (vLinii !== undefined) return vLinii.card.uid;
-  return state.starsi.find((e) => e.karta.defId === defId)?.karta.uid ?? null;
-}
-
 /**
  * Kšefty, ktoré hráč p teraz smie spustiť (v7, plan.md 14.7): v Pitke na svojom
  * ťahu, nie počas odpovede na NA EX, každú kartu raz za Pitku; karta v jeho
- * partii (nie skrytá Záverečná), starší s Kšeftom (Poštárka, Vychovávateľka),
- * Kšeft lokality obaja.
+ * partii (nie skrytá Záverečná), Kšeft lokality obaja. Kšeft väzňa (v9) ponúka
+ * moznostiKseftuVazna.
  */
 export function moznostiKseftu(data: GameData, state: GameState, p: PlayerId): Command[] {
   const pitka = state.pitkaStav;
@@ -3671,15 +3640,9 @@ export function moznostiKseftu(data: GameData, state: GameState, p: PlayerId): C
         if (h.poldeciPlne - skryteHraca(pitka, p).length > 0 && !zakazVypit(state)) out.push({ type: "kseft", uid });
         break;
       case "smetiarka":
-        for (const k of h.ruka) if (!defOf(data, k).tags.includes("Kliatba") && !jeKartaPatronatu(state, k.uid)) out.push({ type: "kseft", uid, kartaUid: k.uid });
+        for (const k of h.ruka) if (!defOf(data, k).tags.includes("Kliatba") && !jeKartaBossa(state, k.uid)) out.push({ type: "kseft", uid, kartaUid: k.uid });
         break;
     }
-  }
-  for (const defId of KSEFTY_STARSICH) {
-    const uid = kseftStarsieho(data, state, p, defId);
-    if (uid === null || kseftPouzity(state, p, uid)) continue;
-    if (defId === "postarka" && jeCoTahat(h.doberaci.length, h.odhadzovaci.length)) out.push({ type: "kseft", uid });
-    if (defId === "vychovavatelka" && h.cigarety >= KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA) out.push({ type: "kseft", uid });
   }
   const lok = state.ciel?.lokalita ?? null;
   if (lok !== null && KSEFTY_LOKALIT.includes(lok.defId) && !kseftPouzity(state, p, lok.uid)) {
@@ -3688,9 +3651,8 @@ export function moznostiKseftu(data: GameData, state: GameState, p: PlayerId): C
     if (lok.defId === "sklad" && h.cigarety >= SKLAD_CENA && state.hraci[opp].odhadzovaci.length > 0) out.push({ type: "kseft", uid });
     if (lok.defId === "obecny_urad" && h.cigarety >= KONSTANTY.EFEKT.URAD_CENA && h.dlhy > 0) out.push({ type: "kseft", uid });
     if (lok.defId === "predsedova_vila" && h.cigarety >= VILA_CENA) {
-      const chraneny = state.patronat[opp]?.elderId;
       for (const e of state.starsi) {
-        if (e.elderId === chraneny) continue;
+        if (vOhrozeni(state, e.elderId)) continue;
         for (const kSebe of [false, true]) if (posunMarker(e, kSebe ? p : opp) !== null) out.push({ type: "kseft", uid, elderId: e.elderId, kSebe });
       }
     }
@@ -3706,9 +3668,8 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
   const h = hrac(s, p);
   const lok = s.ciel?.lokalita ?? null;
   const vLinii = partiaHraca(s as GameState, p).find((pl) => pl.card.uid === cmd.uid && pl.zaverecna !== true);
-  const starsi = KSEFTY_STARSICH.find((id) => kseftStarsieho(data, s as GameState, p, id) === cmd.uid);
-  const defId = lok?.uid === cmd.uid ? lok.defId : (starsi ?? vLinii?.card.defId);
-  need(defId !== undefined && (KSEFTY_KARIET.includes(defId) || KSEFTY_LOKALIT.includes(defId) || KSEFTY_STARSICH.includes(defId)), "Taký Kšeft teraz nemáš.");
+  const defId = lok?.uid === cmd.uid ? lok.defId : vLinii?.card.defId;
+  need(defId !== undefined && (KSEFTY_KARIET.includes(defId) || KSEFTY_LOKALIT.includes(defId)), "Taký Kšeft teraz nemáš.");
   switch (defId) {
     case "stryko_z_ameriky": {
       need(h.cigarety >= KONSTANTY.EFEKT.STRYKO_CENA, `Strýko chce ${cigariet(KONSTANTY.EFEKT.STRYKO_CENA)}.`);
@@ -3734,28 +3695,11 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       need(idx !== -1, "Vyber kartu z ruky.");
       const karta = h.ruka[idx] as CardInstance;
       need(!defOf(data, karta).tags.includes("Kliatba"), "Kliatbu Smetiarka nezoberie.");
-      need(!jeKartaPatronatu(s as GameState, karta.uid), "Staršieho z patronátu Smetiarka nezoberie.");
+      need(!jeKartaBossa(s as GameState, karta.uid), "Staršieho, o ktorého zajatie sa hrá, Smetiarka nezoberie.");
       h.ruka.splice(idx, 1);
       h.odhadzovaci.push(karta as DeepMutable<CardInstance>);
       h.cigarety += 1;
       events.push({ type: "log", text: `Smetiarka: hráč ${p + 1} odhadzuje ${defOf(data, karta).name} a dostáva cigaretu.` });
-      break;
-    }
-    case "postarka": {
-      // Rozhodca #8 (Michal 2026-10-22): Dlh len za naozaj dobratú kartu — naprázdno sa Poštárka nepoužije.
-      need(jeCoTahat(h.doberaci.length, h.odhadzovaci.length), "Nemáš z čoho ťahať — doberací aj odhadzovací balíček sú prázdne.");
-      const dobrate = tahaj(s, p, 1, events);
-      if (dobrate.length > 0) pridajDlh(s, p, events);
-      events.push({ type: "log", text: `Poštárka: hráč ${p + 1} ${rodovo(p, "dobral", "dobrala", "doberá")} ${kariet(dobrate.length)}${dobrate.length > 0 ? " za Dlh" : ""}.` });
-      break;
-    }
-    case "vychovavatelka": {
-      need(h.cigarety >= KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA, `Vychovávateľka chce ${cigariet(KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA)}.`);
-      h.cigarety -= KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA;
-      const pov: [number, number] = [s.kseftPovery?.[0] ?? 0, s.kseftPovery?.[1] ?? 0];
-      pov[p] += 1;
-      s.kseftPovery = pov;
-      events.push({ type: "log", text: `Vychovávateľka: hráč ${p + 1} má v tejto bitke 1 Poveru navyše.` });
       break;
     }
     case "zberny_dvor": {
@@ -3764,7 +3708,6 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       need(idx !== -1, "Karta nie je v tvojom odhadzovacom balíčku.");
       const karta = h.odhadzovaci.splice(idx, 1)[0] as DeepMutable<CardInstance>;
       h.cigarety -= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA;
-      h.nerestiTotoKolo += KONSTANTY.EFEKT.ZBERNY_DVOR_CENA;
       events.push({ type: "log", text: `Zberný dvor: hráč ${p + 1} vykupuje zo šrotu ${defOf(data, karta as CardInstance).name} za cigaretu.` });
       doRuky(s, p, karta);
       break;
@@ -3774,8 +3717,6 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       const karta = hrac(s, opp).odhadzovaci.pop();
       need(karta !== undefined, "Súperov odhadzovací balíček je prázdny.");
       h.cigarety -= SKLAD_CENA;
-      // Cigareta za Kšeft lokality je nerest ako pri Zbernom dvore (plan.md 7.5 bod 7d).
-      h.nerestiTotoKolo += SKLAD_CENA;
       events.push({ type: "log", text: `Sklad: hráč ${p + 1} si za cigaretu berie zo súperovho odhadzovacieho balíčka ${defOf(data, karta as CardInstance).name}.` });
       // Karta odteraz patrí novému majiteľovi (7.5 bod 7c).
       doRuky(s, p, karta);
@@ -3785,7 +3726,6 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       need(h.cigarety >= KONSTANTY.EFEKT.URAD_CENA, `Obecný úrad chce ${cigariet(KONSTANTY.EFEKT.URAD_CENA)}.`);
       need(h.dlhy > 0, "Nemáš priznaný Dlh.");
       h.cigarety -= KONSTANTY.EFEKT.URAD_CENA;
-      h.nerestiTotoKolo += KONSTANTY.EFEKT.URAD_CENA;
       presunDlhy(s, p, opp, 1);
       events.push({ type: "log", text: `Obecný úrad: hráč ${p + 1} platí ${cigariet(KONSTANTY.EFEKT.URAD_CENA)} a jeho priznaný Dlh prechádza na hráča ${opp + 1}.` });
       break;
@@ -3794,7 +3734,7 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       need(h.cigarety >= VILA_CENA, `Vila chce ${cigariet(VILA_CENA)}.`);
       const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
       need(elder !== undefined, "Vyber staršieho.");
-      need(elder.elderId !== s.patronat[opp]?.elderId, "Staršieho zo súperovho patronátu tohto kola posunúť nesmieš.");
+      need(!vOhrozeni(s as GameState, elder.elderId), "O tohto staršieho sa hrá (pokus o zajatie) — v tomto kole sa nehýbe.");
       const kSebe = cmd.kSebe === true;
       const nova = posunMarker(elder, kSebe ? p : opp);
       need(nova !== null, "Marker je na kraji stupnice.");
@@ -3802,12 +3742,212 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       const z = elder.marker;
       presunMarker(s, events, elder, nova, "kseft", p);
       events.push({ type: "log", text: `Predsedova vila: hráč ${p + 1} platí ${cigariet(VILA_CENA)} — ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "od seba", z)}` });
-      skontrolujVydesenie(s, data, events);
       break;
     }
   }
   const pouzite: [number[], number[]] = [[...(pitka.kseft?.[0] ?? [])], [...(pitka.kseft?.[1] ?? [])]];
   pouzite[p].push(cmd.uid);
+  pitka.kseft = pouzite;
+}
+
+// ---------------------------------------------------------------------------
+// Kšeft väzňa (v9, Michal 2026-10-30, §7): výhradne držiteľ väzňa, za vypitý plný
+// poldeci zo svojej zásoby, raz za Pitku na väzňa, v Pitke kým ju hráč neskončil.
+// Kšeft, ktorý nemá čo urobiť, sa neponúka (Veterinár má aspoň časť o pečeni).
+
+/** Starší, ktorých Kšeft väzňa hra pozná (v9, texty kariet v sekcii 3 zadania kroku 2). */
+export const KSEFTY_VAZNOV: readonly string[] = ["hrobar", "farar", "autobusar", "starosta", "postarka", "krcmarka", "vychovavatelka", "veterinar"];
+
+/** Cirhózy hráča p, ktoré smie zahodiť Veterinárov Kšeft: z ruky alebo priznané (O3), nie z balíčkov. */
+export function cirhozyPreVeterinara(h: Pick<PlayerState, "ruka" | "priznane">): CardInstance[] {
+  return [...h.ruka, ...h.priznane].filter((k) => k.defId === "cirhoza");
+}
+
+/**
+ * Čo treba na ponuku Kšeftu väzňa — z verejného stavu a vlastnej ruky, aby rovnako
+ * počítal server (GameState) aj klient (pohľad). Súperova ruka len počtom.
+ */
+export interface StavKseftuVazna {
+  readonly faza: Phase;
+  readonly vizia: GameState["vizia"];
+  readonly pitkaStav: Pick<PitkaStav, "reakcia" | "hotovy" | "kseft" | "skryteNaex" | "zakazNaex"> | null;
+  readonly ciel: CielKola | null;
+  readonly senok: readonly CardInstance[];
+  readonly vazni: readonly Vazen[];
+  readonly kseftyKola?: KseftyKola;
+  readonly poldeciPlne: readonly [number, number];
+  readonly dlhy: readonly [number, number];
+  readonly rukaPocet: readonly [number, number];
+  /** Cirhózy hráča, ktorý sa pýta: v ruke a priznané (Veterinár, O3). */
+  readonly cirhozy: readonly CardInstance[];
+}
+
+/** StavKseftuVazna zo stavu hry pre hráča p. */
+export function stavKseftuVazna(state: GameState, p: PlayerId): StavKseftuVazna {
+  return {
+    faza: state.faza,
+    vizia: state.vizia,
+    pitkaStav: state.pitkaStav,
+    ciel: state.ciel,
+    senok: state.senok,
+    vazni: state.vazni,
+    ...(state.kseftyKola !== undefined ? { kseftyKola: state.kseftyKola } : {}),
+    poldeciPlne: [state.hraci[0].poldeciPlne, state.hraci[1].poldeciPlne],
+    dlhy: [state.hraci[0].dlhy, state.hraci[1].dlhy],
+    rukaPocet: [state.hraci[0].ruka.length, state.hraci[1].ruka.length],
+    cirhozy: cirhozyPreVeterinara(state.hraci[p]),
+  };
+}
+
+/** Kšefty väzňov, ktoré hráč p teraz smie spustiť. */
+export function moznostiKseftuVazna(data: GameData, state: GameState, p: PlayerId): Command[] {
+  return ponukaKseftuVazna(stavKseftuVazna(state, p), p);
+}
+
+/** Ponuka Kšeftu väzňa zo StavKseftuVazna — jeden výpočet pre server aj klienta. */
+export function ponukaKseftuVazna(state: StavKseftuVazna, p: PlayerId): Command[] {
+  const pitka = state.pitkaStav;
+  if (state.faza !== "pitka" || pitka === null || pitka.reakcia !== null || state.vizia !== null || pitka.hotovy[p]) return [];
+  // Platí sa plným poldeci zo zásoby — nie tým, ktorý leží na skrytom NA EX. Kostol: nikto nevypije.
+  if (state.poldeciPlne[p] - skryteHraca(pitka, p).length <= 0 || zakazVypit(state)) return [];
+  const opp = opponentOf(p);
+  const kola = state.kseftyKola;
+  const out: Command[] = [];
+  for (const v of vazniHraca(state, p)) {
+    if (pitka.kseft?.[p].includes(v.karta.uid) === true) continue;
+    const elderId = v.elderId;
+    switch (v.karta.defId) {
+      case "hrobar":
+        if (state.rukaPocet[opp] > 0) out.push({ type: "kseftVazna", elderId });
+        break;
+      case "farar":
+        // Ponúka sa aj súperovi bez Viery (hádže sa na ďalšie Pitky), nie však, keď už platí.
+        if (kola?.vieraAkoHazard?.[opp] !== true) out.push({ type: "kseftVazna", elderId });
+        break;
+      case "autobusar":
+        for (const k of state.senok) out.push({ type: "kseftVazna", elderId, kartaUid: k.uid });
+        break;
+      case "starosta":
+        if (state.ciel?.lokalita != null && kola?.hranyPosilnene !== true) out.push({ type: "kseftVazna", elderId });
+        break;
+      case "postarka":
+        if (state.dlhy[p] > 0) out.push({ type: "kseftVazna", elderId });
+        break;
+      case "krcmarka":
+        // Len z verejného stavu — či súper skryto dal NA EX, sa tu prezradiť nesmie.
+        if (pitka.zakazNaex?.[opp] !== true && state.poldeciPlne[opp] > 0) out.push({ type: "kseftVazna", elderId });
+        break;
+      case "vychovavatelka":
+        // Na Krčme (NA EX povinné) sa neponúka (R16 B); súper bez plného poldeci NA EX nedá.
+        if (!jeCielLokalita(state, "krcma") && pitka.zakazNaex?.[opp] !== true && state.poldeciPlne[opp] > 0) out.push({ type: "kseftVazna", elderId });
+        break;
+      case "veterinar":
+        if (state.cirhozy.length === 0) out.push({ type: "kseftVazna", elderId });
+        for (const k of state.cirhozy) out.push({ type: "kseftVazna", elderId, kartaUid: k.uid });
+        break;
+    }
+  }
+  return out;
+}
+
+function cmdKseftVazna(s: MutState, data: GameData, cmd: { elderId: string; kartaUid?: number }, p: PlayerId, events: Event[]): void {
+  const moznosti = moznostiKseftuVazna(data, s as GameState, p);
+  need(
+    moznosti.some((c) => c.type === "kseftVazna" && c.elderId === cmd.elderId && c.kartaUid === cmd.kartaUid),
+    "Taký Kšeft väzňa teraz nemáš (väzeň, plný poldeci, raz za Pitku, nie naprázdno).",
+  );
+  const pitka = s.pitkaStav as DeepMutable<PitkaStav>;
+  const vazen = vazniHraca(s as GameState, p).find((v) => v.elderId === cmd.elderId) as Vazen;
+  const meno = defOf(data, vazen.karta).name;
+  const opp = opponentOf(p);
+  const h = hrac(s, p);
+  // Veterinár: pečeň držiteľa je v tejto Pitke 0 vrátane ceny Kšeftu — platí pred zaplatením.
+  if (vazen.karta.defId === "veterinar") {
+    const bez: [boolean, boolean] = [pitka.bezPecene?.[0] ?? false, pitka.bezPecene?.[1] ?? false];
+    bez[p] = true;
+    pitka.bezPecene = bez;
+    h.pecen = 0;
+  }
+  // Cena: vypitý plný poldeci — nerest, +1 pečeň v tejto Pitke, limit ďalšieho Zhromaždenia o 1 nižší.
+  h.poldeciPlne -= 1;
+  h.poldeciVypite += 1;
+  h.nerestiTotoKolo += 1;
+  pitieVPitke(s, p, 1);
+  pridajPecen(s, data, p, 1, events);
+  const zaPoldeci = `Kšeft väzňa ${meno}: hráč ${p + 1} vypíja poldeci`;
+  switch (vazen.karta.defId) {
+    case "hrobar": {
+      const ruka = s.hraci[opp].ruka;
+      const [i, rng] = rngInt(s.rng, ruka.length);
+      s.rng = rng;
+      const karta = hrac(s, opp).ruka.splice(i, 1)[0] as DeepMutable<CardInstance>;
+      hrac(s, opp).odhadzovaci.push(karta);
+      events.push({ type: "log", text: `${zaPoldeci} — hráč ${opp + 1} odhadzuje náhodnú kartu z ruky.` });
+      events.push({ type: "log", pre: opp, text: `Hrobár ti z ruky odhodil ${defOf(data, karta as CardInstance).name}.` });
+      break;
+    }
+    case "farar": {
+      const viera: [boolean, boolean] = [s.kseftyKola?.vieraAkoHazard?.[0] ?? false, s.kseftyKola?.vieraAkoHazard?.[1] ?? false];
+      viera[opp] = true;
+      s.kseftyKola = { ...(s.kseftyKola ?? {}), vieraAkoHazard: viera };
+      events.push({ type: "log", text: `${zaPoldeci} — do konca kola je každá aktívna Viera hráča ${opp + 1} posilnený Hazard; v bitke mu Viera chýba.` });
+      break;
+    }
+    case "autobusar": {
+      const idx = s.senok.findIndex((k) => k.uid === cmd.kartaUid);
+      const karta = s.senok.splice(idx, 1)[0] as DeepMutable<CardInstance>;
+      doRuky(s, p, karta);
+      events.push({ type: "log", text: `${zaPoldeci} a berie si zo šenku ${defOf(data, karta as CardInstance).name}.` });
+      break;
+    }
+    case "starosta":
+      s.kseftyKola = { ...(s.kseftyKola ?? {}), hranyPosilnene: true };
+      events.push({ type: "log", text: `${zaPoldeci} — do konca kola sú všetky aktívne akcie hrán lokality posilnené (pre oboch).` });
+      break;
+    case "postarka":
+      presunDlhy(s, p, opp, 1);
+      events.push({ type: "log", text: `${zaPoldeci} a prepisuje svoj priznaný Dlh na hráča ${opp + 1}.` });
+      break;
+    case "krcmarka": {
+      const zakaz: [boolean, boolean] = [pitka.zakazNaex?.[0] ?? false, pitka.zakazNaex?.[1] ?? false];
+      zakaz[opp] = true;
+      pitka.zakazNaex = zakaz;
+      // Už dané skryté NA EX sa vráti (O4) — poldeci ešte nebol odpísaný, pečeň ani nerest nepribudli.
+      const vratene = skryteHraca(pitka, opp).length;
+      pitka.skryteNaex = (pitka.skryteNaex ?? []).filter((x) => x.hrac !== opp);
+      events.push({
+        type: "log",
+        text: `${zaPoldeci} — hráč ${opp + 1} v tejto Pitke NA EX nedá${vratene > 0 ? "; jeho skryté NA EX sa mu vracia (poldeci ostáva plný)" : ""}.`,
+      });
+      break;
+    }
+    case "vychovavatelka": {
+      const hrozby: [number, number] = [pitka.hrozbaPetelice?.[0] ?? 0, pitka.hrozbaPetelice?.[1] ?? 0];
+      hrozby[p] += 1;
+      pitka.hrozbaPetelice = hrozby;
+      events.push({ type: "log", text: `${zaPoldeci} — ak hráč ${opp + 1} v tejto Pitke dá NA EX, hráč ${p + 1} má v bitke Petelicu navyše (+${KONSTANTY.VYCHOVAVATELKA_TUHE} tuhé).` });
+      break;
+    }
+    case "veterinar": {
+      let zahodena: string | null = null;
+      if (cmd.kartaUid !== undefined) {
+        for (const kopa of [h.ruka, h.priznane]) {
+          const i = kopa.findIndex((k) => k.uid === cmd.kartaUid);
+          if (i === -1) continue;
+          kopa.splice(i, 1);
+          zahodena = kopa === h.ruka ? "z ruky" : "priznanú";
+          break;
+        }
+      }
+      events.push({
+        type: "log",
+        text: `${zaPoldeci}${zahodena === null ? "" : ` a zahadzuje z hry Cirhózu ${zahodena}`} — v tejto Pitke sa mu poškodenie pečene nepočíta.`,
+      });
+      break;
+    }
+  }
+  const pouzite: [number[], number[]] = [[...(pitka.kseft?.[0] ?? [])], [...(pitka.kseft?.[1] ?? [])]];
+  pouzite[p].push(vazen.karta.uid);
   pitka.kseft = pouzite;
 }
 
@@ -3874,11 +4014,11 @@ function cmdKapybara(s: MutState, data: GameData, cmd: { elderId: string }, p: P
   need(volba !== undefined && volba.hrac === p && volba.typ === "kapybara", "Teraz nerozhoduješ za Kapybaru.");
   const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
   need(elder !== undefined && elder.marker !== MARKER_STRED, "Vyber staršieho, ktorého marker nie je v strede.");
+  need(!vOhrozeni(s as GameState, elder.elderId), "O tohto staršieho sa hrá (pokus o zajatie) — v tomto kole sa nehýbe.");
   s.hasicVolby = dalsie;
   const nova = (elder.marker < MARKER_STRED ? elder.marker + 1 : elder.marker - 1) as MarkerPos;
   presunMarker(s, events, elder, nova, "nastup", p);
   events.push({ type: "log", text: `Kapybara (hráč ${p + 1}): ${defOf(data, elder.karta as CardInstance).name} o pole k stredu.` });
-  skontrolujVydesenie(s, data, events);
   dokonciPoVolbe(s, data, volba, events);
 }
 
@@ -3903,6 +4043,28 @@ function dokonciPitku(s: MutState, data: GameData, events: Event[]): void {
   s.vizia = null;
   s.pitkaStav = null;
 
+  if (s.pitkaCislo === 1 && zastavkaVolba(s, data, s.utocnik, events)) return;
+  pokracujPoPitke(s, data, events);
+}
+
+/**
+ * Zastávka (Pitka, v9.1 — nahrádza spoločný limit vykladania): po prvej Pitke kola si
+ * každý hráč vezme zadarmo 1 kartu zo šenku, najprv útočník, potom obranca. Šenok sa
+ * medzi nimi nedopĺňa; z prázdneho sa neberie nič. Zaradí voľbu hráča p; false = nie je čo brať.
+ */
+function zastavkaVolba(s: MutState, data: GameData, p: PlayerId, events: Event[]): boolean {
+  if (!jeCielLokalita(s as GameState, "zastavka")) return false;
+  if (s.senok.length === 0) {
+    events.push({ type: "log", text: `Zastávka: šenok je prázdny — hráč ${p + 1} si nič neberie.` });
+    return false;
+  }
+  s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "senok", uid: 0, potom: "zastavka" }];
+  events.push({ type: "log", text: `Zastávka: hráč ${p + 1} si po prvej Pitke berie zadarmo 1 kartu zo šenku.` });
+  return true;
+}
+
+/** Po Pitke (a voľbách Zastávky): ďalšia Pitka, alebo bitka. */
+function pokracujPoPitke(s: MutState, data: GameData, events: Event[]): void {
   // Ďalšia Pitka (Michal 2026-10-19): toľko, koľko dovolia aktivované akcie
   // karty v strede — línia sa medzitým mohla zmeniť.
   s.pitkyCelkom = Math.max(s.pitkaCislo, pocetPitiek(data, s as GameState));
@@ -3934,8 +4096,9 @@ function aktivneAkcieKarty(vyhodnotenie: LineEval, uid: number): number {
  * v Dedičstve o 1 viac za kus (Náradie 2026-10-30). Za každý, ktorý nemá čo spáliť,
  * dá 1 špak (zmena pravidla Robota, §2, §11).
  */
-function robotaPali(sums: ActionSums, furikov = 0): number {
-  return (sums.Robota ?? 0) * (1 + furikov);
+function robotaPali(sums: ActionSums, furikov = 0, priazen = 0): number {
+  // Priazeň Robota (v9, O5): akcie Robota navyše — aj na ne platí Fúrik.
+  return ((sums.Robota ?? 0) + priazen) * (1 + furikov);
 }
 
 /** Fúriky v Dedičstve hráča p. */
@@ -3955,7 +4118,7 @@ export function paleneDlhyVBitke(
   s: VerejnyStav & { readonly lokalitaOtocena: boolean },
   vyhodnotenie: LineEval = evaluateLine(data, lineState(s)),
 ): readonly [number, number] {
-  return [robotaPali(vyhodnotenie.sums[0], furikov(s, 0)), robotaPali(vyhodnotenie.sums[1], furikov(s, 1))];
+  return [robotaPali(vyhodnotenie.sums[0], furikov(s, 0), silaPriazne(data, s, "ROBOTA", 0)), robotaPali(vyhodnotenie.sums[1], furikov(s, 1), silaPriazne(data, s, "ROBOTA", 1))];
 }
 
 function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
@@ -4066,37 +4229,28 @@ function nastavSumy(s: MutState, data: GameData): void {
   if (b === null) return;
   const sums = evaluateLine(data, lineState(s as GameState)).sums;
   b.sums = sums as DeepMutable<BitkaStav["sums"]>;
-  const zPatronatu: [number, number] = [0, 0];
-  const pohorsenie = (p: PlayerId): number => {
-    const r = rozpisPohorseni(data, s as GameState, sums, p);
-    zPatronatu[p] = r.zPatronatu;
-    return r.spolu;
-  };
-  b.pohorsenieZostava = [pohorsenie(0), pohorsenie(1)];
+  b.pohorsenieZostava = [rozpisPohorseni(data, s as GameState, sums, 0), rozpisPohorseni(data, s as GameState, sums, 1)];
   b.pohorseniaSpolu = [b.pohorsenieZostava[0], b.pohorsenieZostava[1]];
-  b.pohorseniaPatronatu = zPatronatu;
 }
 
 /** Stav, z ktorého sa rátajú body Pohoršení (GameState aj ClientState). */
 export interface StavBodovPohorseni {
-  readonly patronat: readonly ({ readonly elderId: string } | null)[];
+  /** Pokusy o zajatie tohto kola (v9) — starší v ohrození sa nehýbe. Chýba v syntetických stavoch. */
+  readonly pokusy?: readonly (PokusOZajatie | null)[];
   /** Dedičstvo hráčov — Telefón mení cenu Pohoršenia k stredu (chýba v syntetických stavoch). */
   readonly hraci?: readonly { readonly dedicstvo: readonly { readonly defId: string }[] }[];
-  readonly bitkaStav: { readonly pohorsenieZostava: readonly [number, number]; readonly pohorseniaPatronatu?: readonly [number, number] } | null;
+  readonly bitkaStav: { readonly pohorsenieZostava: readonly [number, number] } | null;
 }
 
 /**
- * Koľko Pohoršení smie hráč p minúť na staršieho. Pohoršenia zo súperovho patronátu
- * (Michal 2026-10-26) nesmú na staršieho, ktorého si súper vzal za patróna — inak by
- * mu marker hneď vrátili a patronát by nezastavil vydesenie. Ostatné naňho smú;
- * hra minie najprv tie z patronátu.
+ * Koľko Pohoršení smie hráč p minúť na staršieho. Starší v ohrození (pokus o zajatie v9,
+ * O8) sa v kole pokusu nehýbe — naňho nič.
  */
 export function bodyNaPohorsenie(state: StavBodovPohorseni, p: PlayerId, elder: Pick<ElderState, "elderId">): number {
   const b = state.bitkaStav;
   if (b === null) return 0;
-  const zostava = b.pohorsenieZostava[p];
-  if (elder.elderId !== state.patronat[opponentOf(p)]?.elderId) return zostava;
-  return Math.max(0, zostava - (b.pohorseniaPatronatu?.[p] ?? 0));
+  if (state.pokusy !== undefined && vOhrozeni({ pokusy: state.pokusy }, elder.elderId)) return 0;
+  return b.pohorsenieZostava[p];
 }
 
 /**
@@ -4109,34 +4263,34 @@ export function pohorsenieMozne(state: StavBodovPohorseni, p: PlayerId, elder: P
   return body > 0 && posunZaBody(elder, kSebe ? p : opponentOf(p), body, telefonHraca(state, p)) !== null;
 }
 
-/** Stav pre Pohoršenia bitky — línia a verejný patronát (GameState aj ClientState). */
-export type StavPohorseni = VerejnyStav & { readonly patronat: readonly ({ readonly pohorsenia: number } | null)[] };
+/** Stav pre Pohoršenia bitky — línia (GameState aj ClientState). */
+export type StavPohorseni = VerejnyStav;
 
-function rozpisPohorseni(
-  data: GameData,
-  s: StavPohorseni,
-  sums: readonly [ActionSums, ActionSums],
-  p: PlayerId,
-): { readonly spolu: number; readonly zPatronatu: number } {
-  // Patronát: súper patróna dostane Pohoršenia navyše (o koľko marker išiel do
-  // stredu) — strach, ktorý spôsobil, mu tak neprepadne (Michal 2026-10-20).
-  const zPatronatu = s.patronat[opponentOf(p)]?.pohorsenia ?? 0;
-  // Abstinent v5 (Michal 2026-10-25): v bitke +1 / +2 / +3 Pohoršenia.
+function rozpisPohorseni(data: GameData, s: StavPohorseni, sums: readonly [ActionSums, ActionSums], p: PlayerId): number {
+  // Abstinent v5 (Michal 2026-10-25): v bitke +1 / +2 / +3 Pohoršenia. Nervák (Pohoršenie
+  // za Absťák) zanikol v9.1. Policajtka ich od 2026-10-26 neruší — jej efekt je Dlh za NA EX v Pitke.
   const abstinent = silaPriazne(data, s, "LAKOMEC", p);
-  // Nervák (v8.1, Michal 2026-10-28): každý Absťák +1 Pohoršenie — rátajú sa verejné
-  // (priznané a v línii), aby počet Pohoršení neprezradil ruku.
-  const nervak = verejneAbstaky(s, p);
-  // Policajtka ich od 2026-10-26 neruší — jej efekt je Dlh za NA EX v Pitke.
-  return { spolu: (sums[p].Pohoršenie ?? 0) + zPatronatu + abstinent + nervak, zPatronatu };
+  return (sums[p].Pohoršenie ?? 0) + abstinent;
 }
 
 /**
- * Pohoršenia, ktoré hráči dostanú v bitke (PRAVIDLA §9.2) zo súčtov línie
- * a patronátu — ten istý výpočet ako nastavSumy, pre náhľad ceny NA EX
- * a patronátu (návrh #1, playtest 20261024-075830).
+ * Pohoršenia, ktoré hráči dostanú v bitke (PRAVIDLA §9.2) zo súčtov línie — ten istý
+ * výpočet ako nastavSumy, pre náhľad ceny NA EX (návrh #1, playtest 20261024-075830).
  */
 export function pohorseniaVBitke(data: GameData, s: StavPohorseni, sums: readonly [ActionSums, ActionSums]): readonly [number, number] {
-  return [rozpisPohorseni(data, s, sums, 0).spolu, rozpisPohorseni(data, s, sums, 1).spolu];
+  return [rozpisPohorseni(data, s, sums, 0), rozpisPohorseni(data, s, sums, 1)];
+}
+
+/** Smie Povera hráča p posunúť silu priazne tohto staršieho (v8.3; v ohrození nie, v9 O8)? */
+export function poveraNaStarsieho(state: { readonly pokusy?: readonly (PokusOZajatie | null)[] } & StavKlebiet, elder: Pick<ElderState, "marker" | "elderId">, p: PlayerId): boolean {
+  if (state.pokusy !== undefined && vOhrozeni({ pokusy: state.pokusy }, elder.elderId)) return false;
+  return poveraMozna(elder, p, klebetyKola(state));
+}
+
+/** Smie prebytok hráča `drzi` (zvyšok `body`) posunúť marker tohto staršieho? (v ohrození nie, v9 O8) */
+export function prebytokNaStarsieho(state: { readonly pokusy?: readonly (PokusOZajatie | null)[] }, elder: Pick<ElderState, "marker" | "elderId">, drzi: PlayerId, body: number): boolean {
+  if (state.pokusy !== undefined && vOhrozeni({ pokusy: state.pokusy }, elder.elderId)) return false;
+  return posunZaBody(elder, opponentOf(drzi), body) !== null;
 }
 
 /** Ženie bitku dopredu, kým nenarazí na rozhodnutie hráča alebo koniec. */
@@ -4192,7 +4346,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
     const zostava = b.poveryZostava;
     for (const p of [obranca(s), s.utocnik]) {
       if (zostava[p] <= 0) continue;
-      if (!s.starsi.some((e) => poveraMozna(e as ElderState, p, klebetyKola(s as GameState)))) {
+      if (!s.starsi.some((e) => poveraNaStarsieho(s as GameState, e as ElderState, p))) {
         events.push({ type: "log", text: `Hráč ${p + 1} stráca ${pocet(zostava[p], "Poveru", "Povery", "Povier")} — všetky priazne sú už jeho v sile 3.` });
         zostava[p] = 0;
         continue;
@@ -4337,9 +4491,10 @@ function cmdKar(s: MutState, data: GameData, cmd: { uid: number | null }, p: Pla
   need(s.faza === "bitka" && b !== null && b.krok === "kar" && b.caka === p, "Nečaká sa na Kar.");
   if (cmd.uid !== null) {
     const karta = s.hraci[p].ruka.find((k) => k.uid === cmd.uid);
-    need(karta !== undefined && karta.defId === "cirhoza", "Na Kare smieš zahodiť len nepriznanú Cirhózu z ruky.");
+    // Absťák (v9.1) smie Kar zahodiť ako Cirhózu.
+    need(karta !== undefined && (karta.defId === "cirhoza" || karta.defId === "abstak"), "Na Kare smieš zahodiť len nepriznanú Cirhózu alebo Absťák z ruky.");
     vezmiZRuky(s, p, cmd.uid);
-    events.push({ type: "log", text: `Kar: hráč ${p + 1} ${rodovo(p, "zahodil", "zahodila", "zahadzuje")} nepriznanú Cirhózu z ruky.` });
+    events.push({ type: "log", text: `Kar: hráč ${p + 1} ${rodovo(p, "zahodil", "zahodila", "zahadzuje")} ${karta.defId === "abstak" ? "Absťák" : "nepriznanú Cirhózu"} z ruky.` });
   }
   b.karHotovy[p] = true;
   pokracujBitku(s, data, events);
@@ -4539,7 +4694,8 @@ export function cieleVykladania(
 ): CielVykladania[] {
   const def = defOf(data, karta);
   // Kliatba sa dá len priznať (Michal 2026-10-20) — do línie smie len kliatba,
-  // ktorá je zároveň Občan s akciami (Milujúca manželka).
+  // ktorá je zároveň Občan s akciami (Milujúca manželka). Absťák (v9.1) ani to.
+  if (def.id === "abstak") return [];
   if (def.tags.includes("Kliatba") && !def.tags.includes("Občan")) return ["priznanie"];
   const jeNastroj = def.tags.includes("Nástroj");
   const doDedicstva = jeNastroj && naDedicstvo;
@@ -4576,7 +4732,7 @@ function exekucieBitky(s: MutState, data: GameData, events: Event[]): void {
     if (b.exekutorHotovy[p]) continue;
     // Robota (Náradie 2026-10-30): spáli 1 priznaný Dlh za kus (s Fúrikom viac); za každý,
     // ktorý nemá čo spáliť, 1 špak. Robota sa ráta raz za bitku (exekutorHotovy).
-    const chce = b.robotaHotova?.[p] === true ? 0 : robotaPali(b.sums[p] as ActionSums, furikov(s as GameState, p));
+    const chce = b.robotaHotova?.[p] === true ? 0 : robotaPali(b.sums[p] as ActionSums, furikov(s as GameState, p), silaPriazne(data, s as GameState, "ROBOTA", p));
     const spalene = odoberDlhy(s, p, chce);
     if (spalene > 0) events.push({ type: "log", text: `Robota: hráč ${p + 1} páli ${pocet(spalene, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")}.` });
     if (chce - spalene > 0) {
@@ -4621,19 +4777,23 @@ export function zahradkarChrani(data: GameData, s: Pick<VerejnyStav, "strany">, 
 
 /**
  * Exekúcia bez prahu (Michal 2026-10-28): zhorí polovica priznaných Dlhov
- * zaokrúhlene nahor, navyše sila súperovej priazne Exekútora, a rovnaký počet
- * špakov — smú ísť do mínusu, súper ich nedostane.
+ * zaokrúhlene nahor a rovnaký počet špakov — smú ísť do mínusu, súper ich nedostane.
+ * Priazeň Advokát (v9) odpočíta o svoju silu menej špakov, najmenej 0; Dlhy zhoria ako vždy.
  */
 function exekucia(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
   const dlhy = s.hraci[p].dlhy;
-  // Polovica nahor a navyše sila súperovej priazne Exekútora (Michal 2026-10-28).
-  const zhori = zhoriPriExekucii(dlhy, silaPriazne(data, s as GameState, "EXEKUTOR", opponentOf(p)));
+  const zhori = zhoriPriExekucii(dlhy);
+  const advokat = silaPriazne(data, s as GameState, "ADVOKAT", p);
+  const spaky = spakyPriExekucii(dlhy, advokat);
   odoberDlhy(s, p, zhori);
-  s.spaky[p] -= zhori;
-  b.exekutor[p] += zhori;
-  events.push({ type: "log", text: `Exekútor: hráčovi ${p + 1} zhorí ${pocet(zhori, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} a ${spakov(zhori)}.` });
+  s.spaky[p] -= spaky;
+  b.exekutor[p] += spaky;
+  events.push({
+    type: "log",
+    text: `Exekútor: hráčovi ${p + 1} zhorí ${pocet(zhori, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} a ${spakov(spaky)}${advokat > 0 ? ` (Advokát ušetril ${spakov(zhori - spaky)})` : ""}.`,
+  });
   b.exekutorHotovy[p] = true;
 }
 
@@ -4646,7 +4806,7 @@ export function spakov(n: number): string {
 function existujeLegalnyPrebytok(s: MutState, drzi: PlayerId): boolean {
   const body = s.bitkaStav?.prebytokZostava ?? 0;
   if (body < 1) return false;
-  return s.starsi.some((e) => posunZaBody(e, opponentOf(drzi), body) !== null);
+  return s.starsi.some((e) => prebytokNaStarsieho(s as GameState, e as ElderState, drzi, body));
 }
 
 /**
@@ -4701,6 +4861,7 @@ function cmdPovera(s: MutState, data: GameData, cmd: { elderId: string }, p: Pla
   need((b.poveryZostava?.[p] ?? 0) > 0, "Nemáš zvyšnú Poveru.");
   const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
   need(elder !== undefined, "Taký starší nie je.");
+  need(!vOhrozeni(s as GameState, elder.elderId), "O tohto staršieho sa hrá (pokus o zajatie) — v tomto kole sa nehýbe.");
   need(poveraMozna(elder as ElderState, p, klebetyKola(s as GameState)), "Priazeň tohto staršieho je už tvoja v sile 3.");
   const pred = ucinnaPriazen(elder as ElderState, klebetyKola(s as GameState));
   const posun = p === 0 ? 1 : -1;
@@ -4737,32 +4898,25 @@ function cmdPohorsenie(
   const smer = kSebe ? p : opponentOf(p);
   need(posunMarker(elder, smer) !== null, "Marker je na kraji stupnice.");
   const body = bodyNaPohorsenie(s as GameState, p, elder);
-  need(body > 0, "Pohoršenia z patronátu nesmú na staršieho, ktorého si súper vzal za patróna.");
+  need(body > 0, "O tohto staršieho sa hrá (pokus o zajatie) — v tomto kole sa nehýbe.");
   // v8.2: hráč vyberá staršieho a smer, nie počet polí — marker ide, kým Pohoršenia stačia.
   const posun = posunZaBody(elder, smer, body, telefonHraca(s, p));
   need(posun !== null, "Na posun tohto markera tvoje Pohoršenia nestačia.");
   // Priazeň aj strach sa menia hneď — platia už v poškodení a v špakoch tejto bitky.
   const z = elder.marker;
   presunMarker(s, events, elder, posun.marker, "pohorsenie", p);
-  // Najprv sa míňajú Pohoršenia z patronátu — na patróna smú len ostatné.
-  const zPatronatu = b.pohorseniaPatronatu?.[p] ?? 0;
-  if (zPatronatu > 0 && cmd.elderId !== s.patronat[opponentOf(p)]?.elderId) {
-    const nove: [number, number] = [b.pohorseniaPatronatu?.[0] ?? 0, b.pohorseniaPatronatu?.[1] ?? 0];
-    nove[p] = zPatronatu - Math.min(zPatronatu, posun.cena);
-    b.pohorseniaPatronatu = nove;
-  }
   b.pohorsenieZostava[p] -= posun.cena;
   events.push({
     type: "log",
     text: `Pohoršenie (hráč ${p + 1}, ${pocet(posun.cena, "Pohoršenie", "Pohoršenia", "Pohoršení")}): ${textPosunu(data, elder as ElderState, kSebe ? "k sebe" : "od seba", z)}`,
   });
-  skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
 }
 
 /**
  * Prebytok, ktorý sa naozaj rozdelí — jeden výpočet pre bitku aj odhad bitky v klientovi.
- * Vo finále sa prebytok nerozdeľuje (v8.3, Michal 2026-10-30): nové stupne by nič nedali.
+ * Vo finále sa prebytok nerozdeľuje (v8.3, Michal 2026-10-30): nové stupne by nič nedali —
+ * od v9.1 ho víťaz dostane v špakoch 1 : 1 (vyplatSpaky).
  */
 export function prebytokNaRozdelenie(s: VerejnyStav, outcome: BattleOutcome): number {
   return outcome.prebytokDrzi === null || jeFinale(s) ? 0 : outcome.prebytok;
@@ -4818,9 +4972,8 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
     rekap: spaky === undefined ? rekap : { ...rekap, spaky },
   });
   events.push(...logy);
-  if (outcome.prebytokDrzi !== null && outcome.prebytok > 0 && jeFinale(s)) {
-    events.push({ type: "log", text: `Nakladačka ${outcome.prebytok} sa vo finále nerozdeľuje — nové stupne strachu by už nič nedali.` });
-  } else if (outcome.prebytokDrzi !== null && b.prebytokZostava < outcome.prebytok) {
+  // Vo finále sa Nakladačka nerozdeľuje — víťaz ju dostal v špakoch (vyplatSpaky).
+  if (outcome.prebytokDrzi !== null && !jeFinale(s) && b.prebytokZostava < outcome.prebytok) {
     events.push({
       type: "log",
       text: `Puška hráča ${opponentOf(outcome.prebytokDrzi) + 1}: Nakladačka ${outcome.prebytok} → ${b.prebytokZostava}.`,
@@ -4830,7 +4983,44 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   manualEfekty(s, data, "Prehra", events);
 }
 
-/** Absťáky, ktoré hráč práve má (v8.2 počítadlo) — rozhodujú remízu v tuhom. */
+/**
+ * Latka Absťáku na konci kola: Chuť, s Opatrovateľkou v línii o OPATROVATELKA_CHUT nižšia
+ * za kus (Furt, v9.1). Jeden výpočet pre motor aj výhľad v bare (stavZavislosti).
+ */
+export function latkaChuti(chut: number, opatrovatelky: number): number {
+  return chut - opatrovatelky * KONSTANTY.OPATROVATELKA_CHUT;
+}
+
+/** Chuť po konci kola: väčšie z (Chuť, neresti kola) − CHUT_UBYTOK, nie pod 0. */
+export function chutPoKole(chut: number, neresti: number): number {
+  return Math.max(0, Math.max(chut, neresti) - KONSTANTY.CHUT_UBYTOK);
+}
+
+/** Opatrovateľky hráča p odhalené v línii (Furt) — Záverečná lícom dole nie. */
+export function opatrovatelkyHraca(data: GameData, s: VerejnyStav, p: PlayerId): number {
+  return partiaHraca(s, p).filter((pl) => pl.card.defId === "opatrovatelka" && pl.zaverecna !== true && !efektPotlaceny(data, s, p, "opatrovatelka")).length;
+}
+
+function koniecKolaChut(s: MutState, data: GameData, p: PlayerId, opatrovatelky: number, events: Event[]): void {
+  const h = hrac(s, p);
+  const neresti = h.nerestiTotoKolo;
+  const latka = latkaChuti(h.chut, opatrovatelky);
+  // Sada spred v9.1 kartu Absťák nemá — Chuť sa vedie, karta nepríde.
+  if (neresti < latka && data.cards.has("abstak")) {
+    h.odhadzovaci.push(novaInstancia(s, data, "abstak") as DeepMutable<CardInstance>);
+    h.abstakyZiskane = (h.abstakyZiskane ?? 0) + 1;
+    const opatr = opatrovatelky > 0 ? ` (Opatrovateľka: porovnáva sa ${latka})` : "";
+    events.push({
+      type: "log",
+      text: `Hráč ${p + 1} dostáva Absťák do odhadzovacieho balíčka: Chuť ${h.chut}${opatr}, v kole ${rodovo(p, "vypil a vyfajčil", "vypila a vyfajčila", "vypije a vyfajčí")} ${textNeresti(neresti)}.`,
+    });
+  }
+  const po = chutPoKole(h.chut, neresti);
+  if (po !== h.chut) events.push({ type: "log", text: `Chuť hráča ${p + 1}: ${h.chut} → ${po}.` });
+  h.chut = po;
+}
+
+/** Karty Absťák v balíčku hráča (v9.1) — rozhodujú remízu v tuhom. */
 export function aktualneAbstaky(_data: GameData, s: VerejnyStav, p: PlayerId): number {
   return verejneAbstaky(s, p);
 }
@@ -4967,6 +5157,7 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events
   let noviny = 0;
   const abstakZrazka = 0;
   let prepadlo = 0;
+  const nakladacka: [number, number] = [0, 0];
   const vitaz = outcome.vitaz;
   if (vitaz !== null) {
     const porazeny = opponentOf(vitaz);
@@ -4990,6 +5181,13 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events
     }
     if (noviny > 0) {
       events.push({ type: "log", text: `Noviny: porazený hráč ${porazeny + 1} dostáva ${spakov(noviny)} — víťaz má o ${pocet(noviny, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} viac.` });
+    }
+    // Nakladačka vo finále (v9.1, Michal 2026-10-30): markery sa už nehýbu — víťaz dostane
+    // za každý jej bod 1 špak (predtým prepadla), aby zaostávajúci mohol finále dobehnúť.
+    if (finale && outcome.prebytokDrzi === vitaz && outcome.prebytok > 0) {
+      nakladacka[vitaz] = outcome.prebytok * KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE;
+      s.spaky[vitaz] += nakladacka[vitaz];
+      events.push({ type: "log", text: `Nakladačka ${outcome.prebytok} vo finále: hráč ${vitaz + 1} dostáva ${spakov(nakladacka[vitaz])} — 1 za každý bod.` });
     }
   } else if (finale) {
     prepadlo = karty.spolu + s.spakyNaSekere;
@@ -5016,7 +5214,7 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events
     zaStarsich: [0, 0],
     zaStarsichRozpis: [[], []],
     exekutor: [b.exekutor[0], b.exekutor[1]],
-    prebytok: [0, 0],
+    prebytok: nakladacka,
     spakyPo: [s.spaky[0], s.spaky[1]],
   });
 }
@@ -5047,6 +5245,7 @@ function cmdPrebytok(
   // ktorý od v8 sám vyberá, ktorých starších (priazne) chce. Od v8.2 len staršieho:
   // marker ide, kým zvyšok prebytku stačí na ďalšie pole (cenaKroku).
   const drzi = b.prebytokDrzi as PlayerId;
+  need(!vOhrozeni(s as GameState, elder.elderId), "O tohto staršieho sa hrá (pokus o zajatie) — v tomto kole sa nehýbe.");
   const posun = posunZaBody(elder, opponentOf(drzi), b.prebytokZostava);
   need(posun !== null, "Na posun tohto markera zvyšok Nakladačky nestačí.");
   const z = elder.marker;
@@ -5054,7 +5253,6 @@ function cmdPrebytok(
   if (!b.prebytokPosunute.includes(cmd.elderId)) b.prebytokPosunute.push(cmd.elderId);
   b.prebytokZostava -= posun.cena;
   events.push({ type: "log", text: `Nakladačka (hráč ${p + 1}, ${posun.cena} z Nakladačky): ${textPosunu(data, elder as ElderState, p === drzi ? "od seba" : "k sebe", z)}` });
-  skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
 }
 
@@ -5071,7 +5269,7 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
       hrac(s, q).poldeciPlne += 1;
       vratene[q] += 1;
     } else hrac(s, q).poldeciVypite += 1;
-    hrac(s, q).nerestiTotoKolo += 1;
+    hrac(s, q).nerestiTotoKolo += KONSTANTY.NEREST_NAEX;
   };
   for (const partia of s.strany) {
     for (const placed of partia) {
@@ -5120,14 +5318,24 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     });
   }
 
-  // Kmotor (v8, Michal 2026-10-28, návrh #34 B): po bitke presunie toľko tvojich
-  // priznaných Dlhov medzi súperove priznané, aká je sila priazne (1 / 2 / 3).
+  // 6c. Kmotor (v9, Michal 2026-10-30): po bitke presunie tvoje priznané Dlhy medzi súperove —
+  // pri sile 1 / 2 / 3 až 2 / 3 / 4; ak ich máš menej, toľko, koľko máš.
   for (const p of [0, 1] as const) {
     const su = opponentOf(p);
-    const presunute = presunDlhy(s, p, su, silaPriazne(data, s as GameState, "UZERNIK", p));
+    const sila = silaPriazne(data, s as GameState, "UZERNIK", p);
+    const presunute = presunDlhy(s, p, su, sila > 0 ? sila + 1 : 0);
     if (presunute > 0) {
       events.push({ type: "log", text: `Priazeň Kmotra: hráč ${p + 1} prepisuje ${pocet(presunute, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} na hráča ${su + 1}.` });
     }
+  }
+
+  // 6c. Fajčiar (v9, Michal 2026-10-30): +1 / +2 / +3 cigarety po bitke (predtým po šenku) —
+  // Obmedzenie ich neuberá; cigarety za prebytok porazenému ostávajú.
+  for (const p of [s.utocnik, obranca(s)] as const) {
+    const sila = silaPriazne(data, s as GameState, "FAJCIAR", p);
+    if (sila <= 0) continue;
+    hrac(s, p).cigarety += sila;
+    events.push({ type: "log", text: `Priazeň Fajčiara: hráč ${p + 1} dostáva po bitke ${cigariet(sila)}.` });
   }
 
   // Efekty Výhra/Prehra — ešte kým karty ležia v partiách. Zvieratá vedľa Mäsiara
@@ -5149,14 +5357,6 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
         b.spalit.push(pl.card.uid);
         events.push({ type: "log", text: `Dievčina na vydaj: hráč ${porazeny + 1} ju zahadzuje — hráč ${vitaz + 1} získava ${pocet(dlhy, "Dlh", "Dlhy", "Dlhov")}.` });
         for (let i = 0; i < dlhy; i++) pridajDlh(s, vitaz, events);
-      }
-    }
-    // Farár (Prehra, v7): víťaz získa zadĺženie za každú svoju aktívnu Poveru.
-    if (maEfekt(s, data, porazeny, "farar")) {
-      const povery = linia.sums[vitaz].Povera ?? 0;
-      if (povery > 0) {
-        events.push({ type: "log", text: `Farár: hráč ${vitaz + 1} má ${pocet(povery, "aktívnu Poveru", "aktívne Povery", "aktívnych Povier")} — toľko zadĺženia.` });
-        pridajZadlzenie(s, data, vitaz, povery, events);
       }
     }
   }
@@ -5183,9 +5383,12 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     }
   }
 
-  // Patronát: víťaz si staršieho nechá, porazený ho vracia na scorecard
-  // (kartu staršieho z línie aj z ruky) a platí bolestné.
-  vyriesPatronat(s, data, vitaz, events);
+  // 6d. Zajatie (v9): víťazov pokus uspeje, ostatné zlyhajú; tretí väzeň končí hru.
+  vyriesZajatie(s, data, vitaz, events);
+  if (s.koniec !== null) return;
+
+  // Opatrovateľka (Furt, v9.1) platí, kým leží v línii — po návrate kariet by tam už nebola.
+  const opatrovatelky = ([0, 1] as const).map((p) => opatrovatelkyHraca(data, s as GameState, p));
 
   // 7. Návrat kariet — do odhadzovacieho balíčka hráča, ktorý ich zahral.
   //    Zahodené (Dievčina na vydaj) sa spália. Výtržník je výtržníkom len počas
@@ -5209,44 +5412,33 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   // Nepriznaná Cirhóza v ruke ide po bitke do odhadzovacieho balíčka (v5 bod 8,
   // Michal 2026-10-25): kto ju neprizná hneď, riskuje, že sa mu do konca hry
   // nevráti do ruky a na konci ho bude stáť body (ráta sa aj v balíčkoch).
+  // Absťák (v9.1) tiež — priznať sa nedá, ostáva v balíčku a ťahá sa znova.
   for (const p of [0, 1] as const) {
     const cirhozy = s.hraci[p].ruka.filter((k) => k.defId === "cirhoza");
-    if (cirhozy.length === 0) continue;
-    hrac(s, p).ruka = s.hraci[p].ruka.filter((k) => k.defId !== "cirhoza");
-    hrac(s, p).odhadzovaci.push(...cirhozy);
-    events.push({
-      type: "log",
-      text: `Hráč ${p + 1}: ${cirhozy.length === 1 ? "nepriznaná Cirhóza z ruky ide" : `${cirhozy.length} nepriznané Cirhózy z ruky idú`} do odhadzovacieho balíčka.`,
-    });
+    const abstaky = s.hraci[p].ruka.filter((k) => k.defId === "abstak");
+    if (cirhozy.length + abstaky.length === 0) continue;
+    hrac(s, p).ruka = s.hraci[p].ruka.filter((k) => k.defId !== "cirhoza" && k.defId !== "abstak");
+    hrac(s, p).odhadzovaci.push(...cirhozy, ...abstaky);
+    if (cirhozy.length > 0) {
+      events.push({
+        type: "log",
+        text: `Hráč ${p + 1}: ${cirhozy.length === 1 ? "nepriznaná Cirhóza z ruky ide" : `${cirhozy.length} nepriznané Cirhózy z ruky idú`} do odhadzovacieho balíčka.`,
+      });
+    }
+    if (abstaky.length > 0) {
+      events.push({ type: "log", text: `Hráč ${p + 1}: ${abstaky.length === 1 ? "Absťák z ruky ide" : `${abstaky.length} Absťáky z ruky idú`} do odhadzovacieho balíčka.` });
+    }
   }
 
   // Víťaz si lokalitu neberie (v6) — karta je už na nástenke (vyplatSpaky).
 
-  // Absťák (v8.1 Krok so stolom, Michal 2026-10-28): neresti oboch v tomto kole sa
-  // porovnajú — kto mal menej, dostane Absťák (v8.2 počítadlo, bez dobratia karty), kto
-  // viac, zbaví sa jedného; rovnosť nič. Latku určuje súper, nie minulé kolo.
-  // Log uvádza počty — playtest 20261019-055945: hráči nevedeli, odkiaľ sa Absťák berie.
-  const neresti: [number, number] = [s.hraci[0].nerestiTotoKolo, s.hraci[1].nerestiTotoKolo];
-  events.push({ type: "log", text: `Neresti v kole: hráč 1 ${neresti[0]}, hráč 2 ${neresti[1]}.` });
-  // Po poslednej bitke hry (finále, sada bez finále po poslednej lokalite) Absťák ani
-  // nič neznamená — neudeľuje sa (návrh #41 A, Michal 2026-10-28).
+  // Chuť a Absťák (v9.1, Michal 2026-10-30, §8): kto mal v kole menej nerestí, než je
+  // jeho Chuť, dostane kartu Absťák do odhadzovacieho balíčka; potom Chuť = väčšie
+  // z (Chuť, neresti kola) − 1, nie pod 0. Súper latku neurčuje. Po poslednej bitke hry
+  // nič (návrh #41 A) a výučba Prvá hra Chuť neučí (bezChuti).
   const poslednaBitka = jeFinale(s) || (s.rozpis === undefined && s.lokalityVHre.length === 0);
-  for (const p of poslednaBitka ? [] : ([0, 1] as const)) {
-    const ja = neresti[p];
-    const on = neresti[opponentOf(p)];
-    if (ja < on) {
-      hrac(s, p).abstaky += 1;
-      hrac(s, p).abstakyZiskane = (s.hraci[p].abstakyZiskane ?? 0) + 1;
-      events.push({
-        type: "log",
-        text: `Hráč ${p + 1} získava Absťák: v kole mal ${textNeresti(ja)}, súper ${textNeresti(on)}. Každý Absťák mu v bitke uberie 1 tuhé a dá 1 Pohoršenie navyše.`,
-      });
-    } else if (ja > on) {
-      if (s.hraci[p].abstaky > 0) {
-        hrac(s, p).abstaky -= 1;
-        events.push({ type: "log", text: `Hráč ${p + 1} sa zbavuje Absťáku: v kole mal ${textNeresti(ja)}, súper ${textNeresti(on)}.` });
-      }
-    }
+  if (!poslednaBitka && s.bezChuti !== true) {
+    for (const p of [0, 1] as const) koniecKolaChut(s, data, p, opatrovatelky[p] ?? 0, events);
   }
   for (const p of [0, 1] as const) hrac(s, p).nerestiTotoKolo = 0;
 
@@ -5264,14 +5456,10 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   s.cirhozyVKole = [0, 0];
   s.naexVKole = [false, false];
   delete s.kseftRany;
-  delete s.kseftPovery;
+  delete s.kseftyKola;
   delete s.poldeciOtoceneVKole;
   delete s.prilozeniaKu;
   s.pitkyKola = [];
-
-  // Prehra balíčkom pod 5 kariet sa vo v5 ruší (Michal 2026-10-24), vydesenie ostáva.
-  skontrolujVydesenie(s, data, events, true);
-  if (s.koniec !== null) return;
 
   // Po finále → konečné špaky. Sada bez pinnacle lokalít (testovacia sada do v6,
   // bez rozpisu úrovní) finále nemá — hra skončí po poslednej lokalite.
@@ -5353,45 +5541,9 @@ function ukonciHru(
   events.push({ type: "koniec", vitaz, dovod, body: null });
 }
 
-/** Koľko starších musí hráč vydesiť na výhru — polovica (PRAVIDLA §1). */
-export function prahVydesenia(state: { readonly starsi: readonly ElderState[] }): number {
-  return Math.ceil(state.starsi.length / 2);
-}
-
-/**
- * Vydesenie aspoň polovice starších → výhra (PRAVIDLA §1). Rátajú sa aj
- * nahradení — ostávajú v hre (Michal 2026-10-12). Ohlásené vydesenie
- * (Michal 2026-10-16): kto dosiahne prah, vyhrá, až keď ho udrží do konca
- * NASLEDUJÚCEHO kola — súper má kolo na odpoveď (patronát, Pohoršenie, prebytok).
- * Volá sa po KAŽDOM posune markera (Michal 2026-10-26): pokles pod prah zruší
- * ohlásenie hneď a opätovné doplnenie v tom istom kole ohlási vydesenie odznova.
- */
-function skontrolujVydesenie(s: MutState, data: GameData, events: Event[], koniecKola = false): void {
-  if (s.koniec !== null) return;
-  const vHre = s.starsi;
-  if (vHre.length === 0) return;
-  const prah = prahVydesenia(s as GameState);
-  for (const p of [0, 1] as const) {
-    const vydeseni = vHre.filter((e) => vydesil(e as ElderState, p)).length;
-    const ohlasene = s.ohlaseneVydesenie[p];
-    if (vydeseni < prah) {
-      if (ohlasene !== null) {
-        s.ohlaseneVydesenie[p] = null;
-        events.push({ type: "log", text: `Hráč ${p + 1} už nemá vydesenú polovicu starších (${vydeseni}/${prah}) — hrozba vydesenia padla.` });
-      }
-      continue;
-    }
-    if (ohlasene === null) {
-      s.ohlaseneVydesenie[p] = s.kolo;
-      events.push({
-        type: "log",
-        text: `Hráč ${p + 1} ${rodovo(p, "vydesil", "vydesila", "desí")} ${vydeseni} z ${vHre.length} starších! Ak ich udrží do konca ďalšieho kola, vyhrá.`,
-      });
-    } else if (koniecKola && s.kolo > ohlasene) {
-      ukonciHru(s, data, p, `Hráč ${p + 1} ${rodovo(p, "udržal", "udržala", "udržiava")} vydesených ${vydeseni} z ${vHre.length} starších.`, events);
-      return;
-    }
-  }
+/** Špaky za väzňov hráča p po finále (v9): podľa poradia zajatia v celej partii. */
+export function spakyZaVaznov(state: { readonly vazni: readonly Vazen[] }, p: PlayerId): number {
+  return vazniHraca(state, p).reduce((a, v) => a + (KONSTANTY.SPAKY_ZA_VAZNOV[v.poradie - 1] ?? 0), 0);
 }
 
 /** Nepriznané Cirhózy hráča — v ruke a v oboch balíčkoch (§11, koniec hry v6). */
@@ -5419,7 +5571,14 @@ export function vykupneHraca(h: Pick<PlayerState, "poldeciPlne" | "cigarety">, s
 function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[], poFinale: boolean): void {
   const cirhozy: [number, number] = [nepriznaneCirhozy(s.hraci[0] as PlayerState), nepriznaneCirhozy(s.hraci[1] as PlayerState)];
   const vykupne: [Vykupne, Vykupne] = [vykupneHraca(s.hraci[0]), vykupneHraca(s.hraci[1])];
+  // Väzni (v9): špaky podľa poradia zajatia v celej partii — 8 / 6 / 4 / 2.
+  const zaVaznov: [number, number] = [spakyZaVaznov(s as GameState, 0), spakyZaVaznov(s as GameState, 1)];
   for (const p of [0, 1] as const) {
+    if (zaVaznov[p] > 0) {
+      s.spaky[p] += zaVaznov[p];
+      const mena = vazniHraca(s as GameState, p).map((v) => `${defOf(_data, v.karta).name} ${KONSTANTY.SPAKY_ZA_VAZNOV[v.poradie - 1] ?? 0}`).join(", ");
+      events.push({ type: "log", text: `Hráč ${p + 1}: väzni — plus ${spakov(zaVaznov[p])} (${mena}).` });
+    }
     const v = vykupne[p];
     if (v.spaky > 0) {
       s.spaky[p] += v.spaky;
@@ -5438,7 +5597,7 @@ function zaverecneBodovanie(s: MutState, _data: GameData, events: Event[], poFin
   // Záporné špaky (Exekútor, Cirhóza) so znamienkom mínus, nie spojovníkom — vedľa pomlčky pôsobil ako preklep (UI-7).
   const sk = (n: number): string => (n < 0 ? `−${-n}` : String(n));
   const co = poFinale ? "Odohralo sa finále" : "Odohrali sa všetky lokality";
-  s.koniec = { vitaz, dovod: `${co}, špaky ${sk(body[0])} : ${sk(body[1])}.`, body, cirhozy, vykupne };
+  s.koniec = { vitaz, dovod: `${co}, špaky ${sk(body[0])} : ${sk(body[1])}.`, body, cirhozy, vykupne, vazni: zaVaznov };
   s.faza = "koniec";
   events.push({ type: "koniec", vitaz, dovod: s.koniec.dovod, body });
 }
@@ -5478,13 +5637,10 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
           out.push({ type: "stavbaSenku", doSenku: okno.slice(0, krok.doSenku), odhod: okno.slice(krok.doSenku) });
           if (krok.odhod > 0) out.push({ type: "stavbaSenku", doSenku: okno.slice(krok.odhod), odhod: okno.slice(0, krok.odhod) });
         }
-      } else if (d.krok === "patronat") {
+      } else if (d.krok === "zajatie") {
         if (d.naTahu !== p || d.hotovo[p]) break;
-        out.push({ type: "bezPatronatu" });
-        const kandidati = kandidatiNaNahradu(data, state.hraci[p].ruka);
-        for (const elder of moznyPatronat(data, state, p)) {
-          for (const k of kandidati) out.push({ type: "patronat", elderId: elder.elderId, uid: k.uid });
-        }
+        out.push({ type: "bezPokusu" });
+        for (const elder of moznePokusy(state, p)) out.push({ type: "pokus", elderId: elder.elderId });
       } else if (!d.hotovo[p]) {
         out.push({ type: "draftStop" });
         const senok = state.senok.map((k) => k.uid);
@@ -5552,7 +5708,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       ) {
         out.push({ type: "refillPoldeci" });
       }
-      out.push(...moznostiKseftu(data, state, p), ...moznostiUplatku(data, state, p));
+      out.push(...moznostiKseftu(data, state, p), ...moznostiKseftuVazna(data, state, p), ...moznostiUplatku(data, state, p));
       break;
     }
     case "bitka": {
@@ -5564,8 +5720,10 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         k <= 0 ? [[]] : Array.from({ length: Math.max(0, uids.length - k + 1) }, (_, i) => uids.slice(i, i + k));
       if (b.krok === "kar") {
         out.push({ type: "kar", uid: null });
-        const cirhoza = state.hraci[p].ruka.find((k) => k.defId === "cirhoza");
-        if (cirhoza !== undefined) out.push({ type: "kar", uid: cirhoza.uid });
+        for (const id of ["cirhoza", "abstak"]) {
+          const karta = state.hraci[p].ruka.find((k) => k.defId === id);
+          if (karta !== undefined) out.push({ type: "kar", uid: karta.uid });
+        }
       } else if (b.krok === "benzinka") {
         const obcania = obcaniaVLinii(state, data, p).map((o) => o.card.uid);
         for (const uids of okna(obcania, b.benzinkaZostava[p])) out.push({ type: "benzinka", uids });
@@ -5590,7 +5748,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         }
       } else if (b.krok === "povery") {
         if ((b.poveryZostava?.[p] ?? 0) > 0) {
-          for (const elder of state.starsi) if (poveraMozna(elder, p, klebetyKola(state))) out.push({ type: "povera", elderId: elder.elderId });
+          for (const elder of state.starsi) if (poveraNaStarsieho(state, elder, p)) out.push({ type: "povera", elderId: elder.elderId });
         }
       } else if (b.krok === "pohorsenie") {
         for (const elder of state.starsi) {
@@ -5600,9 +5758,8 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       } else if (b.krok === "prebytok") {
         if (b.prebytokZostava < 1 || b.prebytokDrzi === null) break;
         // Markery idú k súperovi držiteľa, aj keď rozdeľuje porazený (v8).
-        const k = opponentOf(b.prebytokDrzi);
         for (const elder of state.starsi) {
-          if (posunZaBody(elder, k, b.prebytokZostava) !== null) {
+          if (prebytokNaStarsieho(state, elder, b.prebytokDrzi, b.prebytokZostava)) {
             out.push({ type: "prebytok", elderId: elder.elderId });
           }
         }

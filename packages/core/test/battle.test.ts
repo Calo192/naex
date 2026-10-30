@@ -6,6 +6,7 @@ import {
   battleOutcome,
   computeDamage,
   spakyZaBitku,
+  spakyPriExekucii,
   zhoriPriExekucii,
 } from "../src/index.ts";
 
@@ -113,11 +114,13 @@ describe("M4 — Exekútor", () => {
     expect(zhoriPriExekucii(10)).toBe(5);
   });
 
-  it("súperova priazeň Exekútora zhorí navyše 1 / 2 / 3 Dlhy, najviac všetky", () => {
-    expect(zhoriPriExekucii(5, 1)).toBe(4);
-    expect(zhoriPriExekucii(5, 3)).toBe(5);
-    expect(zhoriPriExekucii(2, 3)).toBe(2);
-    expect(zhoriPriExekucii(0, 3)).toBe(0);
+  it("v9: priazeň Advokát odpočíta o 1 / 2 / 3 špaky menej, najmenej 0; Dlhy zhoria ako vždy", () => {
+    expect(spakyPriExekucii(5)).toBe(3);
+    expect(spakyPriExekucii(5, 1)).toBe(2);
+    expect(spakyPriExekucii(5, 3)).toBe(0);
+    expect(spakyPriExekucii(2, 3)).toBe(0);
+    expect(spakyPriExekucii(0, 3)).toBe(0);
+    expect(zhoriPriExekucii(5)).toBe(3);
   });
 });
 

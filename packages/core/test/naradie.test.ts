@@ -10,6 +10,7 @@ import type { BitkaStav, CardInstance, GameState, LineState, MarkerPos, PlacedCa
 import {
   apply,
   cenaKroku,
+  favourStarsieho,
   cigaretyZaPas,
   evaluateLine,
   legalCommands,
@@ -213,7 +214,7 @@ describe("Náradie mimo línie (§11, §12)", () => {
       };
       return sDedicstvom(s, 0, nastroje);
     };
-    const po = (s: GameState): GameState => apply(data, s, { type: "pohorsenie", elderId: s.starsi[7]!.elderId }, 0).state;
+    const po = (s: GameState): GameState => apply(data, s, { type: "pohorsenie", elderId: s.starsi.filter((e) => favourStarsieho(data, e) !== "ROBOTA").at(-1)!.elderId }, 0).state;
     // Bez Fúrika: 3 Dlhy → spáli 1; 0 Dlhov → 1 špak.
     const a = po(zaklad(3, []));
     expect(a.hraci[0].dlhy).toBeLessThanOrEqual(2);

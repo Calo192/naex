@@ -3,11 +3,11 @@
 // (stĺpček hore) a koľko sa ho bojí (stĺpček dole, špaky po vyhratej bitke); výška stĺpčeka
 // je zóna, aby sa dala prečítať aj bez farieb. Klik prepne stôl na líniu starších
 // a oba bary na bar starších — po dlaždici na každého staršieho: priazeň (účinok je v línii),
-// alebo strach so špakmi, patronát a posun od poslednej bitky.
+// alebo strach so špakmi, pokus o zajatie a posun od poslednej bitky. Odznak počíta väzňov (v9).
 
 import type { CSSProperties } from "react";
 import type { ClientState, GameData, PlayerId } from "@naex/core";
-import { STUPNICA_ZONY, priazenSila, strachNaUdrzanie, strachNaVyplatu, prahVydesenia, vydesil } from "@naex/core";
+import { KONSTANTY, STUPNICA_ZONY, priazenSila, strachNaUdrzanie, strachNaVyplatu, vydesil } from "@naex/core";
 import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
@@ -31,15 +31,14 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
   // Výkričníky pred špakmi za strach: najvyšší stupeň, v akom sa hráča niekto bojí (ako v línii).
   const najStrach = Math.max(0, ...stlpce.filter((s) => s.smer === "dole").map((s) => s.zona));
   const posuny = starsi.posuny ?? 0;
-  // Vydesení (Michal 2026-10-27, dizajn timeline-lista A): z osi do dlaždice — každému jeho číslo.
-  const vyd = view.starsi.filter((e) => vydesil(e, p)).length;
-  const prah = prahVydesenia(view);
+  // Väzni (v9): tretí vyhráva. Vydesení starší (stupeň 3) sú ciele pokusu o zajatie.
+  const vyd = view.vazni.filter((v) => v.hrac === p).length;
+  const prah = KONSTANTY.VAZNI_NA_VYHRU;
+  const ciele = view.starsi.filter((e) => vydesil(e, p)).length;
   const desiHrozi = vyd >= prah - 1;
-  // Ohlásené vydesenie (toast na stole zmizne) drží odznak: svieti a titulok povie, do kedy.
-  const ohlasene = view.koniec === null ? view.ohlaseneVydesenie[p] : null;
   const desiTitul =
-    `Vydesení starší: ${vyd} z ${prah}. Kto vydesí ${prah} starších (stupeň 3, krajná červená) a udrží ich do konca ďalšieho kola, vyhrá.` +
-    (ohlasene === null ? "" : ` Ohlásené: ak ich ${ja ? "udržíš" : "udrží"} do konca kola ${ohlasene + 1}, ${ja ? "vyhráš" : "vyhrá"}.`);
+    `Väzni: ${vyd} z ${prah}. Kto zajme tretieho staršieho, vyhrá.` +
+    (ciele > 0 ? ` Na stupni 3 sa ${ja ? "ťa" : "ho"} bojí ${ciele} — ${ciele === 1 ? "toho" : "tých"} sa dá po šenku skúsiť zajať.` : "");
   return (
     <button
       type="button"
@@ -89,7 +88,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
           {strach > 0 && zaStarsich > 0 && <IkonaSpaku />}
         </span>
         <span className={`starsi-desi-riadok${desiHrozi ? " hrozi" : ""}`} title={desiTitul}>
-          vydesení {vyd}/{prah}
+          väzni {vyd}/{prah}
         </span>
       </span>
     </button>
@@ -117,7 +116,7 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
         // v8.3: udržané nezaplatené stupne (koniec kola) a nové, ktoré čakajú na udržanie.
         const strach = strachNaVyplatu(e, p);
         const caka = strachNaUdrzanie(e, p);
-        const patron = view.patronat[p]?.elderId === e.elderId ? p : view.patronat[su]?.elderId === e.elderId ? su : null;
+        const patron = view.pokusy[p]?.elderId === e.elderId ? p : view.pokusy[su]?.elderId === e.elderId ? su : null;
         const posuny = (view.posunyMarkerov ?? []).filter((x) => x.elderId === e.elderId);
         const hodnota =
           smer === "hore" ? (
@@ -133,8 +132,8 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
             <span className="velke-cislo nic">—</span>
           );
         // Účinok priazne a koho sa bojí ukazuje línia nad barom (Michal 2026-10-28: dlaždica
-        // nemusí opakovať panel) — tu len krátke slovo; patrón a posun ako značky v tom istom riadku.
-        const riadok = patron !== null ? `patrón${patron === p ? "" : " súpera"}` : riadokDlazdice(smer, ja, strach, caka);
+        // nemusí opakovať panel) — tu len krátke slovo; pokus o zajatie a posun ako značky v tom istom riadku.
+        const riadok = patron !== null ? `v ohrození${patron === p ? "" : " (súper)"}` : riadokDlazdice(smer, ja, strach, caka);
         const popis =
           smer === "hore"
             ? `${meno}: ${ucinok.cely}. ${textStupna(zona)}.`
@@ -150,7 +149,7 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
             style={{ "--znakov": meno.length } as CSSProperties}
             title={
               popis +
-              (patron === null ? "" : ` Patrón: ${patron === view.ja ? "ty" : "súper"}.`) +
+              (patron === null ? "" : ` V ohrození — zajať ho skúša ${patron === view.ja ? "ty" : "súper"}; v tomto kole sa nehýbe.`) +
               (posuny.length === 0 ? "" : ` Od bitky sa pohol ${posuny.length}× (${[...new Set(posuny.map((x) => NAZOV_ZDROJA[x.zdroj]))].join(", ")}).`)
             }
           >

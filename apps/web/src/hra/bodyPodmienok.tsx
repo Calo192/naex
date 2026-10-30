@@ -53,7 +53,7 @@ export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "c
 /** Čo sa v súboji podmienky porovnáva — prvý riadok nápovedy. */
 export const ZA_CO: Readonly<Record<Podmienka, string>> = {
   lokality: "Vyhrá, kto ovláda viac lokalít (vyhraté bitky o lokalitu).",
-  starsi: "Vyhrá, kto má viac starších získaných patronátom.",
+  starsi: "Vyhrá, kto má viac väzňov.",
   cigarety: "Vyhrá, kto má na konci viac cigariet.",
   znepokojenie: "Vyhrá, koho sa aspoň v žltej zóne bojí viac OSTATNÝCH starších (tento sa neráta).",
   strach: "Vyhrá, koho sa aspoň v oranžovej zóne bojí viac OSTATNÝCH starších (tento sa neráta).",

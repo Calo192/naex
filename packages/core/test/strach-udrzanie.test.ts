@@ -201,16 +201,18 @@ describe("v8.3: strach až po udržaní (§10)", () => {
 });
 
 describe("v8.3: finále (§14b)", () => {
-  it("udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; Nakladačka sa nerozdeľuje", () => {
+  it("udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; Nakladačka sa nerozdeľuje — v9.1 víťaz dostane za ňu špaky 1 : 1", () => {
     // Prvý starší na oranžovej pri hráčovi 1, držaný (bojí sa hráča 0). Hráč 0 Pohoršením
     // posunie druhého zo stredu na žltú — nový stupeň vo finále nič. Bitku vyhrá hráč 1 s prebytkom 5.
     const s = predPoskodenim({ finale: true, sums: [{}, { Rana: 5 }], markery: [[1, 5, 2]] });
     expect(vyplatZaStarsich(s)).toBe(1);
     const r = apply(data, s, { type: "pohorsenie", elderId: id(s, 2) }, 0);
     const t = dohrajKolo(r.state);
-    expect(r.events.some((e) => e.type === "log" && e.text.startsWith("Nakladačka 5 sa vo finále nerozdeľuje"))).toBe(true);
+    expect(r.events.some((e) => e.type === "log" && e.text.startsWith("Nakladačka 5 vo finále: hráč 2 dostáva 5 špakov"))).toBe(true);
     expect(t.posunyMarkerov.filter((x) => x.zdroj === "prebytok")).toEqual([]);
-    expect(t.nastenka.at(-1)).toMatchObject({ vitaz: 1, finale: true, zaStarsich: [1 + 2, 0] });
+    expect(t.nastenka.at(-1)).toMatchObject({ vitaz: 1, finale: true, zaStarsich: [1 + 2, 0], prebytok: [0, 5] });
+    const bezNakladacky = t.nastenka.at(-1)!;
+    expect(bezNakladacky.spakyPo[1] - s.spaky[1]).toBe(bezNakladacky.zaBitku[1] + 5 - bezNakladacky.exekutor[1]);
     expect(t.koniec).not.toBeNull();
   });
 });

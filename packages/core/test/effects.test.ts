@@ -15,7 +15,6 @@ import {
   jeEfektManual,
   legalCommands,
   limitBonus,
-  spolocnyLimit,
   loadGameData,
   naTahu,
   prahCirhozyBonus,
@@ -80,8 +79,6 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     expect(limitBonus(sVinkom, 0)).toBe(1);
     expect(limitBonus(sVinkom, 1)).toBe(0);
 
-    expect(spolocnyLimit(fakeState({ ciel: { typ: "lokalita", lokalita: inst("zastavka") } }))).toBe(true);
-    expect(spolocnyLimit(fakeState({}))).toBe(false);
   });
 
   it("čierna mačka už nepridáva ranu (nový text: len Vízie)", () => {
@@ -130,7 +127,8 @@ function zhrom(s: GameState): GameState {
 
 describe("pravidlá v2 a nová tlačová sada", () => {
   it("Robota je akcia a Záhradkár má spúšťač Exekúcia (v7)", () => {
-    expect(data.cards.get("autobusar")?.right.actions.Robota).toBe(1);
+    // v9: Autobusár je boss — Robota je na ľavej strane (silueta A).
+    expect(data.cards.get("autobusar")?.left.actions.Robota).toBe(1);
     expect(data.cards.get("zahradkar")?.triggers).toEqual(["Exekúcia"]);
   });
 

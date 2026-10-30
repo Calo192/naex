@@ -61,7 +61,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
-  A("Robota", "Robota", "Pred kontrolou prahu Exekútora zahodí 1 priznaný Dlh (spáli ho, z hry). Funguje aj bez exekúcie."),
+  A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."),
   A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
 ].map((a, poradie) => ({ ...a, poradie }));
 
@@ -100,7 +100,7 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   // Konflikt, Úplatok a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14).
   S("Konflikt", "Spustí sa, keď táto karta leží v línii a súper k nej priloží svoju kartu. Keď prikladáš ty, Konflikt nevyvoláš; priložený Nástroj, NA EX ani zrážka ho nespúšťajú."),
   S("Úplatok", "Súper smie v Pitke na svojom ťahu dať na túto kartu cigaretu, raz za Pitku; cigareta prepadne."),
-  S("Exekúcia", "Uplatní sa, keď ti v bitke hrozí exekúcia (priznané Dlhy na prahu Exekútora)."),
+  S("Exekúcia", "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
   P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet, potom ich vráť."),

@@ -80,7 +80,9 @@ export type Trigger =
   // Úplatok (v7, Kulturista): opak Kšeftu — platí súper, aby kartu oslabil.
   | "Úplatok"
   // Exekúcia (Záhradkár, Michal 2026-10-28): exekúcia v tomto kole pre majiteľa neplatí.
-  | "Exekúcia";
+  | "Exekúcia"
+  // Väzeň (krok 2 revízie starších, Michal 2026-10-30): Kšeft karty staršieho platí len držiteľovi väzňa.
+  | "Väzeň";
 
 export const ALL_TRIGGERS: readonly Trigger[] = [
   "Nástup",
@@ -95,6 +97,7 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Konflikt",
   "Úplatok",
   "Exekúcia",
+  "Väzeň",
 ];
 
 /** Fázy kola — stavový automat motora (M6). */
@@ -160,22 +163,22 @@ export interface CardInstance {
 export type Favour =
   | "UZERNIK"
   | "LAKOMEC"
-  | "NEPRAJNIK"
+  | "ROBOTA"
   | "BITKAR"
   | "VERIACI"
   | "FAJCIAR"
   | "ALKOHOLIK"
-  | "EXEKUTOR";
+  | "ADVOKAT";
 
 export const ALL_FAVOURS: readonly Favour[] = [
   "UZERNIK",
   "LAKOMEC",
-  "NEPRAJNIK",
+  "ROBOTA",
   "BITKAR",
   "VERIACI",
   "FAJCIAR",
   "ALKOHOLIK",
-  "EXEKUTOR",
+  "ADVOKAT",
 ];
 
 /**
@@ -184,9 +187,19 @@ export const ALL_FAVOURS: readonly Favour[] = [
  * (Michal 2026-10-12) a Zberateľa Úžerník s prahom Dlhu (Michal 2026-10-20).
  * Pravidlá v5 (Michal 2026-10-24/25) premenovali Úžerníka na Kmotra, Lakomca
  * na Abstinenta a Neprajníka na Výpalníka (priazeň Výpalné) — kľúč priazne
- * v hre ostáva, bodovacia karta v tvorcovi smie niesť nové meno.
+ * v hre ostáva, bodovacia karta v tvorcovi smie niesť nové meno. Krok 2 revízie
+ * starších (Michal 2026-10-30) vyradil Exekútora a Výpalníka — staré sady
+ * dostanú na ich mieste Advokáta a Robotu.
  */
-const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = { OCUMOVATEL: "UZERNIK", ZBERATEL: "UZERNIK", KMOTOR: "UZERNIK", ABSTINENT: "LAKOMEC", VYPALNIK: "NEPRAJNIK" };
+const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = {
+  OCUMOVATEL: "UZERNIK",
+  ZBERATEL: "UZERNIK",
+  KMOTOR: "UZERNIK",
+  ABSTINENT: "LAKOMEC",
+  VYPALNIK: "ROBOTA",
+  NEPRAJNIK: "ROBOTA",
+  EXEKUTOR: "ADVOKAT",
+};
 
 /** Priazeň z kľúča (aj zrušeného), alebo null, ak taká nie je. */
 export function priazenZKluca(kluc: string): Favour | null {

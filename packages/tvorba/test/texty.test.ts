@@ -3,7 +3,8 @@
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../core/data/cards.json";
 import type { KartaNavrh, StranaNavrhu } from "../src/index.ts";
-import { PREDVOLENE_AKCIE, PREDVOLENE_KLUCOVE_SLOVA, kontrolaTextov } from "../src/index.ts";
+import { ALL_TRIGGERS } from "@naex/core";
+import { PREDVOLENE_AKCIE, PREDVOLENE_KLUCOVE_SLOVA, kontrolaTextov, spustaceVTexte } from "../src/index.ts";
 
 type Raw = { id: string; name: string; tags: string[]; effect_text: string; left: RawSide; right: RawSide };
 type RawSide = { blocked: number[]; actions: Record<string, number>; allowed?: Record<string, string[]> };
@@ -56,5 +57,21 @@ describe("kontrola textov efektov", () => {
   it("nová karta s efektom je manual", () => {
     const p = kontrolaTextov([karta("Bitka: Udelí ranu.", "nova_karta")], { ...podklady, zverejnene: [] });
     expect(p.map((x) => x.text).join(" ")).toContain("manual");
+  });
+});
+
+describe("Kšeft väzňa (v9): „Väzeň — Kšeft:“ je spúšťač Väzeň", () => {
+  const podklady = { klucoveSlova: PREDVOLENE_KLUCOVE_SLOVA, akcie: PREDVOLENE_AKCIE };
+  const text = "Väzeň — Kšeft: Za vypitý poldeci súper odhodí náhodnú kartu z ruky.";
+  it("spustaceVTexte dá Väzeň (nie Kšeft) — aj s krátkou pomlčkou či spojovníkom", () => {
+    expect(spustaceVTexte(text, ALL_TRIGGERS)).toEqual(["Väzeň"]);
+    expect(spustaceVTexte("Väzeň – Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
+    expect(spustaceVTexte("Väzeň - Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
+    // Kšeft karty v línii ostáva Kšeftom.
+    expect(spustaceVTexte("Kšeft: Za 2 cigarety udelíš v bitke Ranu navyše.", ALL_TRIGGERS)).toEqual(["Kšeft"]);
+  });
+  it("kontrola textov text so spúšťačom Väzeň prijme bez chyby", () => {
+    const karta: KartaNavrh = { ...navrhy.find((k) => k.id === "hrobar")!, efekt: text };
+    expect(kontrolaTextov([karta], podklady).filter((p) => p.uroven === "chyba")).toEqual([]);
   });
 });

@@ -16,7 +16,6 @@ import type { Event, GameState } from "./engine.ts";
 import { bitkyNaSekere, lineState, poskodenieBitky } from "./engine.ts";
 import type { LineEval, LineState } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
-import { prebudenyPre } from "./elders.ts";
 
 export type StupenMomentu = "bronz" | "striebro" | "zlato";
 
@@ -25,8 +24,10 @@ export type TypMomentu =
   | "bomba"
   | "zaverecna"
   | "vzbura"
+  // prebudenie a zachranene len v partiách do v8 (prebudenie a vydesenie zanikli v9).
   | "prebudenie"
   | "zachranene"
+  | "zajatie"
   | "bitkaOVsetko"
   | "vyprask";
 
@@ -49,6 +50,7 @@ export const MOMENTY: Readonly<Record<TypMomentu, { readonly stupen: StupenMomen
   vzbura: { stupen: "bronz", nazov: "VZBURA!" },
   prebudenie: { stupen: "striebro", nazov: "PREBUDENIE" },
   zachranene: { stupen: "zlato", nazov: "ZACHRÁNENÉ" },
+  zajatie: { stupen: "zlato", nazov: "ZAJATIE" },
   bitkaOVsetko: { stupen: "striebro", nazov: "BITKA O VŠETKO" },
   vyprask: { stupen: "bronz", nazov: "VÝPRASK" },
 };
@@ -73,6 +75,7 @@ export const NALADY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: Nalada
   vzbura: { pre: "udiv", proti: "udiv" },
   prebudenie: { pre: "pohoda", proti: "smola" },
   zachranene: { pre: "pohoda", proti: "smola" },
+  zajatie: { pre: "pohoda", proti: "smola" },
   bitkaOVsetko: { pre: "udiv", proti: "udiv" },
   vyprask: { pre: "pohoda", proti: "smola" },
 };
@@ -178,21 +181,11 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
     out.push({ typ: "vzbura", ...MOMENTY.vzbura, hrac: null, popis: "Vzbura — Odpor narazil na Odpor a obe karty sa rozbehli naplno." });
   }
 
-  // Prebudenie: marker staršieho dorazil na krajnú pozíciu.
-  for (const e of po.starsi) {
-    const predtym = pred.starsi.find((x) => x.elderId === e.elderId);
-    const kto = prebudenyPre(e);
-    if (kto === null || predtym === undefined || prebudenyPre(predtym) === kto) continue;
-    out.push({ typ: "prebudenie", ...MOMENTY.prebudenie, hrac: kto, popis: `Prebudenie — starší sa zobudil, jeho efekt teraz využíva Hráč ${kto + 1}.` });
-    break;
-  }
-
-  // Zachránené: ohlásené vydesenie zmarené (patronát, odpoveď súpera) a hra beží ďalej.
+  // Zajatie (v9): hráčovi pribudol väzeň.
   for (const p of [0, 1] as const) {
-    if (pred.ohlaseneVydesenie[p] !== null && po.ohlaseneVydesenie[p] === null && po.koniec === null) {
-      const zachranca = opponentOf(p);
-      out.push({ typ: "zachranene", ...MOMENTY.zachranene, hrac: zachranca, popis: `Zachránené — Hráč ${zachranca + 1} zmaril ohlásené vydesenie na poslednú chvíľu.` });
-    }
+    const pocet = (st: GameState): number => (st.vazni ?? []).filter((v) => v.hrac === p).length;
+    if (pocet(po) <= pocet(pred)) continue;
+    out.push({ typ: "zajatie", ...MOMENTY.zajatie, hrac: p, popis: `Zajatie — Hráč ${p + 1} má v pivnici ${pocet(po)}. väzňa.` });
   }
 
   // Bitka o všetko: na sekere sú špaky aspoň z dvoch bitiek, keď sa začína bitka.

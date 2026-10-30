@@ -11,7 +11,6 @@ import {
   apply,
   battleOutcome,
   buildGameData,
-  cenaPatronatu,
   dopadyNahladu,
   evaluateLine,
   hodnotaPohorseni,
@@ -26,7 +25,7 @@ import {
   prebytokNahladu,
   prebytokNaRozdelenie,
   setupGame,
-  stavPoPatronate,
+  stavPoPokuse,
   sNaexNaKartach,
   viewFor,
 } from "../src/index.ts";
@@ -174,51 +173,27 @@ describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním
 
 });
 
-describe("náhľad patronátu: cigarety a Pohoršenia súpera", () => {
-  /** Krok patronátu: útočník u, starší[0] mu prejavuje priazeň v oranžovej zóne. */
-  function vPatronate(): { s: GameState; u: PlayerId; obcan: CardInstance } {
+describe("náhľad pokusu o zajatie (v9)", () => {
+  it("pokúšajúci zaplatí cigaretu ako v hre, starší je v ohrození", () => {
     const s0 = setupSBalickom(data, 31);
     const u = s0.utocnik;
-    const obcan: CardInstance = { uid: 930001, defId: "pijan", leftLayout: 0, rightLayout: 0 };
-    const marker = (u === 0 ? 1 : 5) as MarkerPos;
-    const pijan = (uid: number): CardInstance => ({ uid, defId: "pijan", leftLayout: 0, rightLayout: 0 });
-    const hraci = s0.hraci.map((h, i) =>
-      i === u
-        ? { ...h, ruka: [obcan], cigarety: 3, doberaci: [...h.doberaci, pijan(930011), pijan(930012), pijan(930013)] }
-        : { ...h, ruka: [pijan(930002)], doberaci: [...h.doberaci, pijan(930021), pijan(930022), pijan(930023)] },
-    ) as unknown as GameState["hraci"];
+    const marker = (u === 0 ? 6 : 0) as MarkerPos;
     const s: GameState = {
       ...s0,
       faza: "draft",
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker} : e)),
-      hraci,
-      draftStav: { krok: "patronat", balicky: [[], []], vyber: [null, null], naTahu: u, hotovo: [false, false], noveKarty: [0, 0] },
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker } : e)),
+      draftStav: { krok: "zajatie", balicky: [[], []], vyber: [null, null], naTahu: u, hotovo: [false, false], noveKarty: [0, 0] },
     };
-    return { s, u, obcan };
-  }
-
-  it("patrón zaplatí cigarety, súper dostane Pohoršenia ako v hre", () => {
-    const { s, u, obcan } = vPatronate();
-    const su: PlayerId = u === 0 ? 1 : 0;
     const elder = s.starsi[0]!;
-    const cena = cenaPatronatu(elder);
     const pred = viewFor(data, s, u);
-    const po = stavPoPatronate(pred, elder.elderId);
+    const po = stavPoPokuse(pred, elder.elderId);
     const d = dopadyNahladu(data, pred, po, 0);
-    const t = apply(data, s, { type: "patronat", elderId: elder.elderId, uid: obcan.uid }, u).state;
-
+    const t = apply(data, s, { type: "pokus", elderId: elder.elderId }, u).state;
     expect(d[u].cigarety).toBe(t.hraci[u].cigarety - s.hraci[u].cigarety);
-    expect(d[u].cigarety).toBe(-cena.cigarety);
-    // Bitka pridelí Pohoršenia tým istým výpočtom (nastavSumy → pohorseniaVBitke).
-    const sums = evaluateLine(data, lineState(t)).sums;
-    expect(d[su].pohorsenia).toBe(pohorseniaVBitke(data, t, sums)[su] - pohorseniaVBitke(data, s, sums)[su]);
-    expect(d[su].pohorsenia).toBe(cena.pohorsenia);
-    // Súper nimi strach vráti — pre neho kladné body, nie viac než bez obmedzení zón.
-    expect(d[su].pohorseniaBody).toBe(hodnotaPohorseni(data, po, su, cena.pohorsenia));
-    expect(d[su].pohorseniaBody).toBeGreaterThan(0);
-    expect(d[u].makke).toBe(0);
+    expect(d[u].cigarety).toBe(-1);
+    expect(viewFor(data, t, u).pokusy).toEqual(po.pokusy);
   });
 });
 

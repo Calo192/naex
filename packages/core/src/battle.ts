@@ -132,17 +132,24 @@ export function battleOutcome(damage: DamageResult, remiza?: RemizaBitky): Battl
 /**
  * Exekúcia bez prahu (Michal 2026-10-28): Exekútor príde v každej bitke ku každému
  * hráčovi s aspoň 1 priznaným Dlhom a zhorí polovica jeho priznaných Dlhov
- * zaokrúhlene NAHOR a rovnaký počet špakov. Súperova priazeň Exekútora zhorí
- * navyše toľko Dlhov (a špakov), aká je jej sila — najviac všetky Dlhy.
+ * zaokrúhlene NAHOR a rovnaký počet špakov. Priazeň Exekútora zanikla v9.
  */
-export function zhoriPriExekucii(priznaneDlhy: number, silaExekutora = 0): number {
+export function zhoriPriExekucii(priznaneDlhy: number): number {
   if (priznaneDlhy <= 0) return 0;
-  return Math.min(priznaneDlhy, Math.ceil(priznaneDlhy / 2) + silaExekutora);
+  return Math.ceil(priznaneDlhy / 2);
+}
+
+/**
+ * Špaky, o ktoré hráča exekúcia pripraví (v9, priazeň Advokát, Michal 2026-10-30):
+ * zhorené Dlhy mínus sila jeho priazne Advokáta, najmenej 0.
+ */
+export function spakyPriExekucii(priznaneDlhy: number, silaAdvokata = 0): number {
+  return Math.max(0, zhoriPriExekucii(priznaneDlhy) - silaAdvokata);
 }
 
 /**
  * Špaky víťaza za bitku (v8): karty v línii, vždy aspoň 1. Zrážka za Absťáky
- * zanikla v8.1 (Nervák, Michal 2026-10-28) — Absťák dáva Pohoršenie navyše.
+ * zanikla v8.1 (Michal 2026-10-28) — Absťák od v9.1 berie tuhé (karta v balíčku).
  */
 export function spakyZaBitku(karty: number): number {
   return Math.max(KONSTANTY.SPAKY_ZA_BITKU_MIN, karty);

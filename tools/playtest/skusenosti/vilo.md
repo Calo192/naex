@@ -17,7 +17,7 @@ vo feedback.md.
 - oprava: 2026-10-30 20261030-115654-1: pôvodné znenie stálo na Kšefte Jednoty (1 Dlh → 2 cigarety), ktorý §15 v7 nemá (Jednota: kto má viac Dlhov, nesmie fajčiť ani dolievať) — Vilo to v partii overil a skúsenosť nepoužil; jadro (Dlh rozhoduje remízu) platí: 20261030-115654-2 K1 Hela prehrala 7 : 7 na Dlhy 1 : 0 po vlastnom Dlhovom NA EX (−8 špakov); prepísané bez Jednoty.
 
 ### vilo-2 · Keď mám priznané Dlhy, počítam s Exekútorom v každej bitke (polovica Dlhov nahor + súperova priazeň Exekútora, rovnako špakov, aj pri jedinom Dlhu), preto Dlhy nenarábam (Poštárka, NA EX zdvojujúci moje neaktívne Dlh, Silná vedľa Dlhu), držím Záhradkára a pri tesnej remíze si Dlhy spočítam, lebo menej Dlhov vyhráva; na Poveru proti jedinému Dlhu sa nespolieham — Exekútor ho zhorí skôr.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 2
 - vyvrátenia: 0

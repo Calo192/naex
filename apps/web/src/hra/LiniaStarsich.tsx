@@ -1,6 +1,6 @@
 // Línia starších (Michal 2026-10-23, roadmapa #68 + #69 variant A): osem
 // starších v rade na mieste línie kariet. Ukáže sa po kliku na dlaždicu Starší
-// a sama pri krokoch na staršom (Pohoršenie, prebytok, patronát).
+// a sama pri krokoch na staršom (Pohoršenie, prebytok, pokus o zajatie).
 // Pri staršom je len portrét, priazeň a stupnica 7 polí so zrkadlením (tvoja
 // polovica vľavo) — bodovacie podmienky scorecardov v6 nie sú (Michal 2026-10-26:
 // „Ostala len priazeň a na tú scorecard netreba“).
@@ -86,7 +86,7 @@ export interface StarsiVLinii {
   readonly obrazok: string | null;
   /** Špaky, ktoré starší dá po bitke [hráč 0, hráč 1] (v6). */
   readonly body: SpakyStarsieho | undefined;
-  /** Klik v kroku (Pohoršenie, prebytok, patronát) a čo urobí. */
+  /** Klik v kroku (Pohoršenie, prebytok, pokus o zajatie) a čo urobí. */
   readonly klik?: { readonly akcia: string; readonly klik: () => void } | undefined;
   /** Kam by sa marker posunul (duch markera v kroku). */
   readonly ciel?: MarkerPos | null | undefined;
@@ -94,8 +94,9 @@ export interface StarsiVLinii {
   readonly dovod?: string | undefined;
   /** Prejdené hranice zón v tejto bitke — ukazujú sa pri Pohoršení. */
   readonly hranice?: number | undefined;
-  readonly patron: { readonly kto: PlayerId; readonly pohorsenia: number } | null;
-  /** Vybraný v patronáte (čaká sa na kartu z ruky). */
+  /** Pokus o zajatie (v9): kto skúša staršieho zajať — starší je v ohrození, karta v súperovej ruke. */
+  readonly patron: { readonly kto: PlayerId } | null;
+  /** Vybraný pri pokuse o zajatie (čaká sa na potvrdenie). */
   readonly vybrany?: boolean;
   /** Posuny od poslednej bitky — duch na starom mieste a štítok so zdrojom. */
   readonly stopa?: StopaStarsieho | undefined;
@@ -302,7 +303,7 @@ function ScorecardVLinii({
           )}
           {s.patron !== null && (
             <span className="ls-patron">
-              {s.patron.kto === ja ? "v tvojej ruke" : `v ruke: ${kto(s.patron.kto)}`} · {s.patron.kto === ja ? "súper" : "ty"} +{s.patron.pohorsenia} Pohoršenia
+              v ohrození · zajať skúša {s.patron.kto === ja ? "ty" : kto(s.patron.kto)} · karta v ruke: {s.patron.kto === ja ? "súper" : "ty"}
             </span>
           )}
           {stopa !== undefined && s.patron === null && <StitokPosunu stopa={stopa} ja={ja} />}
@@ -339,8 +340,8 @@ export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
   BITKAR: "Rana",
   VERIACI: "Viera",
   UZERNIK: "Dlh",
-  EXEKUTOR: "Dlh",
-  NEPRAJNIK: "Cigareta",
+  ADVOKAT: "Dlh",
+  ROBOTA: "Robota",
   FAJCIAR: "Cigareta",
   ALKOHOLIK: "Poldeci",
   LAKOMEC: "Pohoršenie",
@@ -461,7 +462,7 @@ function KartaRozdelenia({
           )}
           {s.patron !== null && (
             <span className="ls-patron">
-              {s.patron.kto === ja ? "v tvojej ruke" : `v ruke: ${mena[s.patron.kto]}`} · {s.patron.kto === ja ? "súper" : "ty"} +{s.patron.pohorsenia} Pohoršenia
+              v ohrození · zajať skúša {s.patron.kto === ja ? "ty" : mena[s.patron.kto]}
             </span>
           )}
           {navrh !== null && <span className="ls-cena-navrhu">−{navrh.cena}</span>}

@@ -28,7 +28,6 @@ import {
   naTahu,
   parseScorecards,
   poskodenieBitky,
-  patronatMozny,
   priazen,
   setupGame,
   viewFor,
@@ -152,30 +151,6 @@ describe("Krčma vynúti NA EX", () => {
     // Bez poldeci povinnosť zaniká.
     const bez = { ...s, hraci: [{ ...s.hraci[0], poldeciPlne: 0 }, s.hraci[1]] as GameState["hraci"] };
     expect(legalCommands(data, bez, 0)).toContainEqual({ type: "skipNaex" });
-  });
-});
-
-describe("nahradený starší ostáva v hre", () => {
-  it("dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno", () => {
-    const s0 = setupSBalickom(data, 15);
-    const e0 = s0.starsi[0]!;
-    const nahradeny = { ...e0, nahradeny: true, ziskal: 0 as PlayerId, marker: 5 as const };
-    const starsi = [nahradeny, ...s0.starsi.slice(1)];
-    const s: GameState = {
-      ...s0,
-      faza: "bitka",
-      starsi,
-      // Oranžová → žltá (k stredu) stojí od v8.2 tri Pohoršenia.
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 1, pohorsenieZostava: [0, 3], vitaz: null }),
-    };
-    const favour = data.scorecards.find((sc) => sc.id === e0.scorecard)!.favour;
-    // Marker na 5 = sila 2, účinok dvojnásobný (Michal 2026-10-16) → bonus 4.
-    expect(priazen(data, s, favour, 1)).toBe(4);
-    expect(legalCommands(data, s, 1)).toContainEqual({ type: "pohorsenie", elderId: e0.elderId });
-    const po = apply(data, s, { type: "pohorsenie", elderId: e0.elderId }, 1).state;
-    expect(po.starsi[0]!.marker).toBe(4);
-    // Patronát nad náhradou nie je v ponuke.
-    expect(patronatMozny(nahradeny, 1)).toBe(false);
   });
 });
 

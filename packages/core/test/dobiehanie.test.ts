@@ -140,63 +140,25 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
   });
 });
 
-describe("ohlásené vydesenie", () => {
-  /** Hráč 0 má 3 vydesených starších a štvrtého na hrane; prebytok 3 (oranžová → červená stojí 3, v8.2). */
-  function predVydesenim(seed: number): GameState {
-    const s0 = setupSBalickom(data, seed);
-    const starsi = s0.starsi.map((e, i) => (i < 3 ? sMarkerom(e, 6) : i === 3 ? sMarkerom(e, 5) : e));
-    return {
+describe("vydesenie (v9)", () => {
+  it("polovica starších na stupni 3 hru neukončí ani na konci kola — vyhráva sa tretím väzňom", () => {
+    const s0 = setupSBalickom(data, 7);
+    const starsi = s0.starsi.map((e, i) => (i < 4 ? sMarkerom(e, 6) : e));
+    const s = {
       ...s0,
       faza: "bitka",
       starsi,
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 3 }),
+      bitkaStav: bitka({ krok: "prebytok", caka: 1, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
     } as GameState;
-  }
-
-  it("polovica vydesených starších hru neukončí hneď — vydesenie sa ohlási", () => {
-    const s = predVydesenim(7);
-    const po = apply(data, s, { type: "prebytok", elderId: s.starsi[3]!.elderId }, 0);
-    expect(po.state.ohlaseneVydesenie[0]).toBe(s.kolo);
-    expect(po.state.koniec).toBeNull();
-    expect(po.events.some((e) => e.type === "log" && e.text.includes("Ak ich udrží do konca ďalšieho kola"))).toBe(true);
-  });
-
-  it("finále: vydesenie ohlásené v poslednej bitke o lokalitu vyhrá na konci finále pred špakmi; ohlásené vo finále nie (§1, §14b, návrh #41 A)", () => {
-    const dohraj = (st: GameState): GameState => {
-      let po = apply(data, st, { type: "prebytok", elderId: st.starsi[3]!.elderId }, 0).state;
-      for (let i = 0; i < 20 && po.koniec === null && po.faza === "bitka"; i++) {
-        const p = naTahu(po) as PlayerId;
-        const c = legalCommands(data, po, p)[0];
-        if (c === undefined) break;
-        po = apply(data, po, c, p).state;
-      }
-      return po;
-    };
-    const s0 = predVydesenim(9);
-    const finale: GameState = { ...s0, kolo: s0.kolo + 1, ciel: { typ: "finale", lokalita: s0.lokalityVHre[0]! } };
-    const udrzal = dohraj({ ...finale, ohlaseneVydesenie: [s0.kolo, null] });
-    expect(udrzal.koniec?.vitaz).toBe(0);
-    expect(udrzal.koniec?.dovod).toMatch(/udržal/);
-    const neskoro = dohraj(finale);
-    expect(neskoro.koniec).not.toBeNull();
-    expect(neskoro.koniec?.dovod).toMatch(/finále/);
-  });
-
-  it("kto vydesenie udrží do konca nasledujúceho kola, vyhrá", () => {
-    const s0 = predVydesenim(8);
-    // Ohlásené už v minulom kole — na konci tohto kola rozhoduje.
-    const s: GameState = { ...s0, kolo: s0.kolo + 1, ohlaseneVydesenie: [s0.kolo, null] };
-    let po = apply(data, s, { type: "prebytok", elderId: s.starsi[3]!.elderId }, 0).state;
-    // Zvyšok bitky (limit ruky a pod.) dohrajú hráči podľa legálnych ťahov.
+    let po = apply(data, s, { type: "prebytok", elderId: s.starsi[6]!.elderId }, 1).state;
     for (let i = 0; i < 20 && po.koniec === null && po.faza === "bitka"; i++) {
       const p = naTahu(po) as PlayerId;
       const c = legalCommands(data, po, p)[0];
       if (c === undefined) break;
       po = apply(data, po, c, p).state;
     }
-    expect(po.koniec?.vitaz).toBe(0);
-    expect(po.koniec?.dovod).toMatch(/udržal/);
+    expect(po.koniec).toBeNull();
   });
 });
 

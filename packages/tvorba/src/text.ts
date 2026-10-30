@@ -76,8 +76,21 @@ export function formatujEfekt(text: string, pravidla: readonly KlucoveSlovo[]): 
   return riadky.filter((r) => r.length > 0);
 }
 
+/**
+ * Predpona Kšeftu väzňa (v9, Michal 2026-10-30): „Väzeň — Kšeft:“ je jeden spúšťač
+ * Väzeň — jadro tak odlíši efekt staršieho od Kšeftu karty v línii. Pomlčka smie byť
+ * dlhá, krátka aj spojovník.
+ */
+const PREDPONA_VAZNA = /(^|[\s.!?])Väzeň\s*[—–-]\s*Kšeft:/gu;
+
+/** Text, v ktorom je „Väzeň — Kšeft:“ zapísané ako spúšťač „Väzeň:“ (pre spustaceVTexte a kontrolu textov). */
+export function sPredponouVazna(text: string): string {
+  return text.replace(PREDPONA_VAZNA, "$1Väzeň:");
+}
+
 /** Spúšťače efektov nájdené v texte (slovo s dvojbodkou), v poradí výskytu. */
-export function spustaceVTexte(text: string, spustace: readonly string[]): string[] {
+export function spustaceVTexte(povodny: string, spustace: readonly string[]): string[] {
+  const text = sPredponouVazna(povodny);
   const out: string[] = [];
   for (const s of spustace) {
     const re = new RegExp(`(^|[\\s.!?])${s}:`, "u");

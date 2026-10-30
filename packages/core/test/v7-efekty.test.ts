@@ -141,7 +141,7 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     }
   });
 
-  it("Vdova a Hrobár: priložená karta ide po bitke z hry; za Hrobárom sa už nepriloží", () => {
+  it("Vdova: priložená karta ide po bitke z hry; Hrobár v línii od v9 Konflikt nemá (len akcie)", () => {
     const vdova = inst("velmi_smutiaca_vdova");
     const chlap = inst("masiar");
     const s = vZhromazdeni("zastavka", [[lezi(vdova, 1)], []], [chlap]);
@@ -152,12 +152,8 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     const dalsia = inst("vandal");
     const s2 = vZhromazdeni("zastavka", [[lezi(hrobar, 1)], []], [karta, dalsia]);
     const po2 = apply(data, s2, { type: "place", uid: karta.uid, target: "vlastna" }, 0).state;
-    expect(po2.strany[0].at(-1)?.posledna).toBe(true);
-    const s3 = { ...po2, zhromazdenieStav: { ...po2.zhromazdenieStav!, naTahu: 0 as PlayerId } };
-    expect(legalCommands(data, s3, 0).some((c) => c.type === "place" && c.uid === dalsia.uid && c.target === "vlastna")).toBe(false);
-    const koniec = dohrajKolo(po2);
-    const vsetky = [...koniec.hraci[0].ruka, ...koniec.hraci[0].doberaci, ...koniec.hraci[0].odhadzovaci];
-    expect(vsetky.some((k) => k.uid === karta.uid)).toBe(false);
+    expect(po2.strany[0].at(-1)?.posledna).toBeUndefined();
+    expect(po2.strany[0].at(-1)?.poBitkeZHry).toBeUndefined();
   });
 
   it("Snúbenica: priložený Chlap ide po bitke do odhadzovacieho balíčka jej majiteľa", () => {
@@ -314,11 +310,10 @@ describe("Pitka (v7)", () => {
     expect(so.zadlzenie[1] - bez.zadlzenie[1]).toBe(1);
   });
 
-  it("Veterinár: karty v jeho okolí nepridávajú poškodenie pečene", () => {
+  it("Veterinár v línii od v9 pečeň okolia nemaže — jeho efekt je len Kšeft väzňa", () => {
     const sused = lezi(inst("zivnostnik"), 0); // má Poškodenie pečene
-    const bez = prirastkyPitky(data, vPitke("zastavka", [[lezi(inst("zamocnik"), 0), sused], []]));
-    const so = prirastkyPitky(data, vPitke("zastavka", [[lezi(inst("veterinar"), 0), sused], []]));
-    expect(so.poskodeniePecene[0]).toBeLessThanOrEqual(bez.poskodeniePecene[0]);
+    const s = vPitke("zastavka", [[lezi(inst("veterinar"), 0), sused], []]);
+    expect(prirastkyPitky(data, s).poskodeniePecene[0]).toBe(evaluateLine(data, lineState(s)).sums[0].PoškodeniePečene ?? 0);
   });
 
   it("Kar: pečeň za NA EX dostane súper toho, kto ho dal", () => {
@@ -333,7 +328,7 @@ describe("Pitka (v7)", () => {
     expect(events.some((e) => e.type === "pecen" && e.hrac === 0)).toBe(false);
   });
 
-  it("Krčmárka: na NA EX majiteľa súper kartou neodpovedá; Kohút: posledné slovo má obranca", () => {
+  it("Krčmárka v línii od v9 odpoveď na NA EX nezakazuje (jej efekt je Kšeft väzňa)", () => {
     const strany: GameState["strany"] = [[lezi(inst("zamocnik"), 0), lezi(inst("vandal"), 0)], [lezi(inst("masiar"), 1), lezi(inst("hasic"), 1)]];
     const base = sHracom(vPitke("zastavka", strany), 1, { ruka: [inst("degustatorka")] });
     const naex = (s: GameState): GameState => {
@@ -343,7 +338,7 @@ describe("Pitka (v7)", () => {
     };
     expect(naex(base).pitkaStav?.reakcia).toBe(1);
     const krcmarka = { ...base, strany: [[...strany[0], lezi(inst("krcmarka"), 0)], strany[1]] } as GameState;
-    expect(naex(krcmarka).pitkaStav?.reakcia ?? null).toBeNull();
+    expect(naex(krcmarka).pitkaStav?.reakcia).toBe(1);
   });
 
   it("Cintorín (Pozostalosť, Michal 2026-10-27): nová Cirhóza sa už sama nepriznáva", () => {
@@ -399,21 +394,18 @@ describe("Pitka (v7)", () => {
 });
 
 describe("Zhromaždenie a Nástup (v7)", () => {
-  it("Autobusár: súper, ktorý pasuje po majiteľovi, cigarety za pas nedostane", () => {
+  it("Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)", () => {
     const s = vZhromazdeni("zastavka", [[], [lezi(inst("autobusar"), 1)]], [inst("masiar"), inst("vandal")]);
     const z = { ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, pasoval: [false, true] as [boolean, boolean] } };
     const po = apply(data, z, { type: "pass" }, 0).state;
-    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
+    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 2);
   });
 
-  it("Starosta (karta zo šenku), Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)", () => {
+  it("Starosta v línii od v9 Nástup nemá; Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)", () => {
     const starosta = inst("starosta");
     const s = vZhromazdeni("zastavka", [[], []], [starosta]);
     const po = apply(data, s, { type: "place", uid: starosta.uid, target: "vlastna" }, 0).state;
-    const volby = legalCommands(data, po, 0);
-    expect(volby.every((c) => c.type === "senok")).toBe(true);
-    const c = volby[0] as Extract<Command, { type: "senok" }>;
-    expect(apply(data, po, c, 0).state.hraci[0].ruka.some((k) => k.uid === c.uid)).toBe(true);
+    expect(legalCommands(data, po, 0).some((c) => c.type === "senok")).toBe(false);
 
     const kapy = inst("kapybara");
     const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
@@ -440,18 +432,11 @@ describe("Zhromaždenie a Nástup (v7)", () => {
 });
 
 describe("Kšeft (v7)", () => {
-  it("Poštárka (1 Dlh → 1 karta), Vychovávateľka (2 cigarety → Povera), Obecný úrad, Zberný dvor", () => {
+  it("Poštárka a Vychovávateľka v línii od v9 Kšeft nemajú (len väzeň); Obecný úrad, Zberný dvor", () => {
     const post = inst("postarka");
-    const s = sHracom(vPitke("zastavka", [[lezi(post, 0)], []]), 0, { doberaci: [inst("masiar"), inst("vandal")] });
-    const po = apply(data, s, { type: "kseft", uid: post.uid }, 0).state;
-    expect(po.hraci[0].ruka.length).toBe(s.hraci[0].ruka.length + 1);
-    expect(dlhy(po, 0)).toBe(dlhy(s, 0) + 1);
-
     const vych = inst("vychovavatelka");
-    const sv = sHracom(vPitke("zastavka", [[lezi(vych, 0)], []]), 0, { cigarety: 4 });
-    const pv = apply(data, sv, { type: "kseft", uid: vych.uid }, 0).state;
-    expect(pv.kseftPovery).toEqual([1, 0]);
-    expect(pv.hraci[0].cigarety).toBe(2);
+    const s = sHracom(vPitke("zastavka", [[lezi(post, 0), lezi(vych, 0)], []]), 0, { doberaci: [inst("masiar"), inst("vandal")], cigarety: 4 });
+    expect(legalCommands(data, s, 0).some((c) => c.type === "kseft")).toBe(false);
 
     const su = sHracom(vPitke("obecny_urad", [[], []]), 0, { cigarety: 3, dlhy: 1 });
     const lok = su.ciel!.lokalita!;
@@ -465,13 +450,13 @@ describe("Kšeft (v7)", () => {
     expect(pz.hraci[0].ruka.some((k) => k.uid === karta.uid)).toBe(true);
   });
 
-  it("prebudená Poštárka (marker na kraji) dáva Kšeft vydesujúcemu hráčovi", () => {
+  it("v9: prebudenie zaniklo — Poštárka na kraji stupnice Kšeft nedáva", () => {
     const s0 = vPitke("zastavka", [[], []]);
     const i = s0.starsi.findIndex((e) => e.karta.defId === "postarka");
     if (i === -1) return;
     const starsi = s0.starsi.map((e, j) => (j === i ? { ...e, marker: 6 as const } : e));
     const s = sHracom({ ...s0, starsi }, 0, { doberaci: [inst("masiar")] });
-    expect(legalCommands(data, s, 0)).toContainEqual({ type: "kseft", uid: s.starsi[i]!.karta.uid });
+    expect(legalCommands(data, s, 0).some((c) => c.type === "kseft")).toBe(false);
   });
 });
 
@@ -484,11 +469,11 @@ describe("Bitka a po bitke (v7)", () => {
     expect(poskodenieBitky(data, s, [{ Rana: 2, Petelica: 1 }, {}]).tuhe[0]).toBe(bez + 2);
   });
 
-  it("Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX", () => {
+  it("Pasca: súper v kole priložil kartu k tvojej → Rana navyše (v9.1, predtým Pecka); Pijan: Rana za každé svoje NA EX", () => {
     const s = sHracom(vPitke("zastavka", [[lezi(inst("pijan"), 0, { naexBy: 0 }), lezi(inst("vandal"), 0, { naexBy: 0 })], []]), 0, { dedicstvo: [inst("pasca")] });
     expect(bitkaMody(data, s, 0).tuheZdroje).toContainEqual({ zdroj: "pijan", tuhe: 2 });
     expect(bitkaMody(data, s, 0).tuheZdroje.some((z) => z.zdroj === "pasca")).toBe(false);
-    expect(bitkaMody(data, { ...s, prilozeniaKu: [1, 0] }, 0).tuheZdroje).toContainEqual({ zdroj: "pasca", tuhe: 2 });
+    expect(bitkaMody(data, { ...s, prilozeniaKu: [1, 0] }, 0).tuheZdroje).toContainEqual({ zdroj: "pasca", tuhe: 1 });
   });
 
   it("Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie", () => {
@@ -539,7 +524,7 @@ describe("Bitka a po bitke (v7)", () => {
   });
 
   it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {
-    const s = sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
+    const s = sHracom(vPitke("most", [[], []]), 0, { dedicstvo: [inst("vyherny_automat")] });
     const t = skonciPitku(s);
     expect(dlhyAjZhorene(t, 0)).toBe(dlhy(s, 0) + 1);
     // Rekapitulácia Pitky delí zadĺženie prahom hráča, nie základným (kontrola kódu v7, bod 8).
@@ -561,7 +546,7 @@ describe("Bitka a po bitke (v7)", () => {
 
   it("Záhradkár (Exekúcia, Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde — Dlhy ani špaky nezhoria", () => {
     const zah = inst("zahradkar");
-    const s = sHracom(vPitke("zastavka", [[lezi(zah, 0), lezi(inst("vandal"), 1)], []]), 0, { dlhy: 8 });
+    const s = sHracom(vPitke("most", [[lezi(zah, 0), lezi(inst("vandal"), 1)], []]), 0, { dlhy: 8 });
     const t = skonciPitku(s);
     expect(t.bitkaStav?.krok === "exekutor" && t.bitkaStav.caka !== null).toBe(false);
     const zaznam = t.nastenka.at(-1);
@@ -570,7 +555,7 @@ describe("Bitka a po bitke (v7)", () => {
     // Záhradkár sa nezahadzuje.
     expect(t.bitkaStav?.spalit ?? []).not.toContain(zah.uid);
     // Súperov Záhradkár (podstrčený do mojej strany) ma nechráni — rozhoduje partia.
-    const cudzi = skonciPitku(sHracom(vPitke("zastavka", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { dlhy: 8 }));
+    const cudzi = skonciPitku(sHracom(vPitke("most", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { dlhy: 8 }));
     expect(dlhy(cudzi, 0)).toBe(4);
   });
 });

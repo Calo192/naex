@@ -6,10 +6,10 @@ import type { ClientState, PlayerId } from "@naex/core";
 
 /**
  * Kľúč fázy stola: mení sa pri každom prechode, ktorý hráča posúva k ďalšej práci —
- * nové kolo, výber lokality, šenok, patronát, Zhromaždenie, Pitka, bitka.
+ * nové kolo, výber lokality, šenok, pokus o zajatie, Zhromaždenie, Pitka, bitka.
  */
 export function klucPrechodu(view: Pick<ClientState, "kolo" | "faza" | "draftStav" | "pitkaCislo">): string {
-  const krok = view.faza === "draft" ? (view.draftStav?.krok === "patronat" ? "patronat" : "senok") : "";
+  const krok = view.faza === "draft" ? (view.draftStav?.krok === "zajatie" ? "zajatie" : "senok") : "";
   return `${view.kolo}|${view.faza}|${krok}|${view.faza === "pitka" ? view.pitkaCislo : ""}`;
 }
 
@@ -146,7 +146,7 @@ export function medziobrazovka(
 
 /** Krok, ktorý sa robí na staršom (rozdeľovanie, Povery, patronát) — vtedy stôl ukazuje líniu starších. */
 export interface KrokNaStarsich {
-  readonly typ: "povery" | "pohorsenie" | "prebytok" | "patronat";
+  readonly typ: "povery" | "pohorsenie" | "prebytok" | "zajatie";
   readonly kto: PlayerId;
 }
 
@@ -156,7 +156,7 @@ export function krokNaStarsich(view: Pick<ClientState, "koniec" | "faza" | "bitk
   if (view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok" || bs.krok === "povery")) {
     return { typ: bs.krok, kto: bs.caka };
   }
-  if (view.faza === "draft" && view.draftStav?.krok === "patronat") return { typ: "patronat", kto: view.draftStav.naTahu };
+  if (view.faza === "draft" && view.draftStav?.krok === "zajatie") return { typ: "zajatie", kto: view.draftStav.naTahu };
   return null;
 }
 

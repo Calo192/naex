@@ -260,6 +260,12 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
                 {kto(p)} <b className={ucet.body.vykupne[p].spaky > 0 ? "plus" : ""}>{ucet.body.vykupne[p].spaky > 0 ? `+${ucet.body.vykupne[p].spaky}` : "0"}</b>
               </span>
             ))}
+            <span className="nk-nadpis">väzni</span>
+            {poradie.map((p) => (
+              <span key={`z${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
+                {kto(p)} <b className={ucet.body.vazni[p] > 0 ? "plus" : ""}>{ucet.body.vazni[p] > 0 ? `+${ucet.body.vazni[p]}` : "0"}</b>
+              </span>
+            ))}
             <span className="nk-nadpis">nepriznaná Cirhóza</span>
             {poradie.map((p) => (
               <span key={`c${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>

@@ -39,8 +39,6 @@ export interface PlanRozdelenia {
   readonly nevyslo: readonly VolbaRozdelenia[];
   /** Body, ktoré po pláne ostanú. */
   readonly zvysok: number;
-  /** Z toho Pohoršenia zo súperovho patronátu (nesmú na jeho patróna). */
-  readonly zvysokPatronatu: number;
   /** Ťah pre server; null, keď v pláne nie je nič. */
   readonly prikaz: Command | null;
 }
@@ -76,27 +74,22 @@ export function smeryRozdelenia(state: StavRozdelenia, p: PlayerId): readonly { 
   return [];
 }
 
-/** Body pre posun staršieho pri danom zvyšku — pri Pohoršení bez tých zo súperovho patronátu na jeho patróna. */
-function bodyPre(state: StavRozdelenia, p: PlayerId, krok: "pohorsenie" | "prebytok", zvysok: number, zvysokPatronatu: number, elderId: string): number {
-  if (krok === "prebytok") return zvysok;
+/** Body pre posun staršieho pri danom zvyšku — starší v ohrození (pokus o zajatie, v9) sa nehýbe. */
+function bodyPre(state: StavRozdelenia, p: PlayerId, _krok: "pohorsenie" | "prebytok", zvysok: number, elderId: string): number {
   const zost: [number, number] = [0, 0];
-  const pat: [number, number] = [0, 0];
   zost[p] = zvysok;
-  pat[p] = zvysokPatronatu;
-  return bodyNaPohorsenie({ patronat: state.patronat, bitkaStav: { pohorsenieZostava: zost, pohorseniaPatronatu: pat } }, p, { elderId });
+  return bodyNaPohorsenie({ ...(state.pokusy !== undefined ? { pokusy: state.pokusy } : {}), bitkaStav: { pohorsenieZostava: zost } }, p, { elderId });
 }
 
 /**
  * Plán rozdelenia: voľby v poradí, každá zo zvyšku po predošlých (ako server pri ťahu).
- * Pohoršenia zo súperovho patronátu sa míňajú prvé — rovnako ako cmdPohorsenie.
+ * Starší v ohrození (pokus o zajatie, v9) sa nehýbe — rovnako ako cmdPohorsenie.
  */
 export function planRozdelenia(state: StavRozdelenia, p: PlayerId, volby: readonly VolbaRozdelenia[]): PlanRozdelenia {
   const krok = krokRozdelenia(state, p);
   const b = state.bitkaStav;
-  if (krok === null || b === null) return { kroky: [], nevyslo: [...volby], zvysok: 0, zvysokPatronatu: 0, prikaz: null };
+  if (krok === null || b === null) return { kroky: [], nevyslo: [...volby], zvysok: 0, prikaz: null };
   let zvysok = krok === "pohorsenie" ? b.pohorsenieZostava[p] : b.prebytokZostava;
-  let zvysokPatronatu = krok === "pohorsenie" ? (b.pohorseniaPatronatu?.[p] ?? 0) : 0;
-  const patronSupera = state.patronat[opponentOf(p)]?.elderId;
   const markery = new Map(state.starsi.map((e) => [e.elderId, e.marker]));
   const kroky: KrokRozdelenia[] = [];
   const nevyslo: VolbaRozdelenia[] = [];
@@ -104,7 +97,7 @@ export function planRozdelenia(state: StavRozdelenia, p: PlayerId, volby: readon
     const z = markery.get(v.elderId);
     const kSebe = krok === "pohorsenie" && v.kSebe === true;
     const smer = krok === "pohorsenie" ? (kSebe ? p : opponentOf(p)) : opponentOf(b.prebytokDrzi as PlayerId);
-    const body = z === undefined || zvysok <= 0 ? 0 : bodyPre(state, p, krok, zvysok, zvysokPatronatu, v.elderId);
+    const body = z === undefined || zvysok <= 0 ? 0 : bodyPre(state, p, krok, zvysok, v.elderId);
     const posun = z === undefined || body <= 0 ? null : posunZaBody({ marker: z }, smer, body, krok === "pohorsenie" && telefonHraca(state, p));
     if (z === undefined || posun === null) {
       nevyslo.push(v);
@@ -112,20 +105,19 @@ export function planRozdelenia(state: StavRozdelenia, p: PlayerId, volby: readon
     }
     kroky.push({ elderId: v.elderId, kSebe, smer, z, na: posun.marker, cena: posun.cena, body });
     markery.set(v.elderId, posun.marker);
-    if (zvysokPatronatu > 0 && v.elderId !== patronSupera) zvysokPatronatu -= Math.min(zvysokPatronatu, posun.cena);
     zvysok -= posun.cena;
   }
   const prikazy: Command[] = kroky.map((k) =>
     krok === "prebytok" ? { type: "prebytok", elderId: k.elderId } : k.kSebe ? { type: "pohorsenie", elderId: k.elderId, kSebe: true } : { type: "pohorsenie", elderId: k.elderId },
   );
-  return { kroky, nevyslo, zvysok, zvysokPatronatu, prikaz: prikazy.length === 0 ? null : { type: "tah", kroky: prikazy } };
+  return { kroky, nevyslo, zvysok, prikaz: prikazy.length === 0 ? null : { type: "tah", kroky: prikazy } };
 }
 
 /** Koľko bodov by mal po pláne ďalší posun tohto staršieho. */
 export function rozpocetPoPlane(state: StavRozdelenia, p: PlayerId, plan: PlanRozdelenia, elderId: string): number {
   const krok = krokRozdelenia(state, p);
   if (krok === null || plan.zvysok <= 0) return 0;
-  return bodyPre(state, p, krok, plan.zvysok, plan.zvysokPatronatu, elderId);
+  return bodyPre(state, p, krok, plan.zvysok, elderId);
 }
 
 /**

@@ -23,6 +23,7 @@ import {
   pohorseniaVBitke,
   poskodenieBitky,
   prahyHraca,
+  paleneDlhyVBitke,
   priazenZKluca,
   rozpisPoskodenia,
   setupGame,
@@ -177,31 +178,33 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
 });
 
 describe("v5 bod 5 a v6: scorecardy nesú len priazeň", () => {
-  it("východisková sada má 8 scorecardov bez podmienok (v6) a mená Kmotor, Abstinent a Výpalník", () => {
+  it("východisková sada má 8 scorecardov bez podmienok (v6) a mená Kmotor, Abstinent, Robota a Advokát (v9)", () => {
     expect(data.scorecards).toHaveLength(8);
     const vsetky = data.scorecards.flatMap((sc) => [...sc.lava, ...sc.prava]);
     expect(vsetky.every((x) => x === null)).toBe(true);
     expect(data.scorecards.find((sc) => sc.favour === "UZERNIK")?.nazov).toBe("Kmotor");
     expect(data.scorecards.find((sc) => sc.favour === "LAKOMEC")?.nazov).toBe("Abstinent");
-    expect(data.scorecards.find((sc) => sc.favour === "NEPRAJNIK")?.nazov).toBe("Výpalník");
+    expect(data.scorecards.find((sc) => sc.favour === "ROBOTA")?.nazov).toBe("Robota");
+    expect(data.scorecards.find((sc) => sc.favour === "ADVOKAT")?.nazov).toBe("Advokát");
     // Bodovacia karta v tvorcovi smie niesť nové meno.
     expect(priazenZKluca("KMOTOR")).toBe("UZERNIK");
     expect(priazenZKluca("ABSTINENT")).toBe("LAKOMEC");
-    expect(priazenZKluca("VYPALNIK")).toBe("NEPRAJNIK");
+    // Staré sady (v9): Výpalník → Robota, Exekútor → Advokát.
+    expect(priazenZKluca("VYPALNIK")).toBe("ROBOTA");
+    expect(priazenZKluca("NEPRAJNIK")).toBe("ROBOTA");
+    expect(priazenZKluca("EXEKUTOR")).toBe("ADVOKAT");
   });
 
-  it("Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne", () => {
-    // Menej nerestí než súper v kole → Absťák a počítadlo +1.
-    const s = predKoncomBitky(81, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 2 }), 0, { nerestiTotoKolo: 1, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
+  it("Absťák = Absťáky získané za hru: zahodením karty Absťák počítadlo neklesne", () => {
+    // v9.1: menej nerestí než Chuť → karta Absťák a počítadlo +1.
+    const s = predKoncomBitky(81, (x) => sHracom(x, 0, { nerestiTotoKolo: 1, chut: 2, abstakyZiskane: 1, doberaci: kusy(4, "pijan") }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].abstakyZiskane).toBe(2);
-    // Viac nerestí → Absťák späť do zásoby, získané ostávajú.
-    const s2 = predKoncomBitky(82, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 1 }), 0, { nerestiTotoKolo: 3, abstakyZiskane: 2, abstaky: 1, doberaci: kusy(4, "pijan") }));
-    const po2 = apply(data, s2, { type: "cintorin", uid: null }, 0).state;
-    expect(po2.hraci[0].abstaky).toBe(0);
-    expect(po2.hraci[0].abstakyZiskane).toBe(2);
-    // Klient vidí počítadlo oboch (Absťák sa priznáva verejne).
-    expect(viewFor(data, po2, 1).hraci[0].abstakyZiskane).toBe(2);
+    // Karta z balíčka zmizne (Vízia), získané ostávajú.
+    const bez: GameState = { ...po, hraci: [{ ...po.hraci[0], odhadzovaci: po.hraci[0].odhadzovaci.filter((k) => k.defId !== "abstak") }, po.hraci[1]] };
+    expect(bez.hraci[0].abstakyZiskane).toBe(2);
+    // Klient vidí počítadlo oboch (karta pribúda pred očami oboch).
+    expect(viewFor(data, bez, 1).hraci[0].abstakyZiskane).toBe(2);
   });
 });
 
@@ -268,31 +271,41 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(barterCena(data, sPriaznou(s0, "LAKOMEC", 1, 3), 1)).toBe(KONSTANTY.BARTER_CENA);
   });
 
-  it("Exekútor (Michal 2026-10-28): súperova priazeň zhorí pri exekúcii navyše toľko Dlhov, aká je sila", () => {
-    const s0 = sPriaznou(setupSBalickom(data, 93), "EXEKUTOR", 1, 2);
-    const s = { ...s0, hraci: [{ ...s0.hraci[0], dlhy: 4 }, { ...s0.hraci[1], dlhy: 4 }] } as typeof s0;
-    // Hráč 0 (súper má priazeň sily 2): 2 + 2; hráč 1: polovica nahor.
-    expect(prahyHraca(data, s, 0).exekucia).toBe(4);
-    expect(prahyHraca(data, s, 1).exekucia).toBe(2);
+  it("Advokát (v9): exekúcia ti odpočíta o silu priazne menej špakov, Dlhy zhoria ako doteraz", () => {
+    const s0 = sPriaznou(setupSBalickom(data, 93), "ADVOKAT", 0, 2);
+    const s: GameState = {
+      ...s0,
+      faza: "bitka",
+      kolo: 2,
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
+      lokalityVHre: s0.lokalityVHre.slice(1),
+      hraci: [{ ...s0.hraci[0], dlhy: 5 }, { ...s0.hraci[1], dlhy: 5 }],
+      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0], exekutorHotovy: [false, false] }),
+    };
+    const iny = s.starsi.find((e) => e.marker === 3 && !["ADVOKAT", "ROBOTA"].includes(favourStarsieho(data, e)))!;
+    const po = apply(data, s, { type: "pohorsenie", elderId: iny.elderId }, 0).state;
+    expect([po.hraci[0].dlhy, po.hraci[1].dlhy]).toEqual([2, 2]);
+    expect(po.nastenka.at(-1)?.exekutor).toEqual([1, 3]);
+    expect(prahyHraca(data, s, 0).exekucia).toBe(3);
   });
 
-  it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Výpalník (Neprajník) Povery nemení", () => {
+  it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Robota Povery nemení", () => {
     let s = setupSBalickom(data, 94);
-    s = sPriaznou(sPriaznou(sPriaznou(s, "ALKOHOLIK", 0, 3), "UZERNIK", 0, 3), "NEPRAJNIK", 0, 3);
+    s = sPriaznou(sPriaznou(sPriaznou(s, "ALKOHOLIK", 0, 3), "UZERNIK", 0, 3), "ROBOTA", 0, 3);
     expect(prahyHraca(data, s, 0).cirhoza).toBe(KONSTANTY.PRAH_CIRHOZY_ZAKLAD);
     expect(prahyHraca(data, s, 0).dlh).toBe(KONSTANTY.PRAH_DLHU_ZAKLAD);
     expect(rozpisPoskodenia(data, s, [{}, {}])[0].zvysnaPovera).toBe(0);
   });
 
-  it("Kmotor (Úžerník): po bitke zmizne 1 / 2 / 3 priznaných Dlhov, bez Dlhu nič", () => {
-    const s = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { dlhy: 3, doberaci: kusy(4, "pijan") }));
+  it("Kmotor (v9): po bitke presunie 2 / 3 / 4 priznané Dlhy, bez Dlhu nič", () => {
+    const s = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { dlhy: 4, doberaci: kusy(4, "pijan") }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].dlhy).toBe(1);
     const bez = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { dlhy: 0, doberaci: kusy(4, "pijan") }));
     expect(apply(data, bez, { type: "cintorin", uid: null }, 0).state.hraci[0].dlhy).toBe(0);
   });
 
-  it("Fajčiar: +1 / +2 / +3 cigarety po výbere zo šenku", () => {
+  it("Fajčiar (v9): +1 / +2 / +3 cigarety po bitke (nie po šenku)", () => {
     const s0 = setupSBalickom(data, 96);
     const s: GameState = {
       ...sPriaznou(s0, "FAJCIAR", 0, 2),
@@ -303,19 +316,17 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
       draftStav: { krok: "beranie", balicky: [[], []], vyber: [null, null], naTahu: 1, hotovo: [true, false], noveKarty: [0, 0] },
     };
     const po = apply(data, s, { type: "draftStop" }, 1).state;
-    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 2);
-    expect(po.hraci[1].cigarety).toBe(s.hraci[1].cigarety);
+    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety);
+    const b = predKoncomBitky(96, (x) => sPriaznou(x, "FAJCIAR", 0, 2));
+    const pb = apply(data, b, { type: "cintorin", uid: null }, 0).state;
+    const bez = apply(data, predKoncomBitky(96, (x) => x), { type: "cintorin", uid: null }, 0).state;
+    expect(pb.hraci[0].cigarety - bez.hraci[0].cigarety).toBe(2);
   });
 
-  it("Výpalné (Výpalník, predtým Neprajník): za každé súperovo NA EX mu prejde 1 / 2 / 3 cigariet", () => {
-    const { s, ciel } = pitkaSNaex(97);
-    const sNeprajnikom = sPriaznou(s, "NEPRAJNIK", 0, 2);
-    const po = dohraj(apply(sada, sNeprajnikom, { type: "naex", uid: ciel }, 1).state);
-    // Bez priazne sa nič neplatí (cigarety za prebytok sú v oboch partiách rovnaké).
-    const bez = dohraj(apply(sada, s, { type: "naex", uid: ciel }, 1).state);
-    expect(bez.hraci[1].cigarety).toBe(5);
-    expect(po.hraci[1].cigarety - bez.hraci[1].cigarety).toBe(-2);
-    expect(po.hraci[0].cigarety - bez.hraci[0].cigarety).toBe(2);
+  it("Robota (v9, O5): priazeň = akcie Robota navyše, pália Dlhy pred Exekútorom", () => {
+    const s0 = setupSBalickom(data, 99);
+    const s = { ...sPriaznou(s0, "ROBOTA", 0, 2), ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } } as GameState;
+    expect(paleneDlhyVBitke(data, s)).toEqual([2, 0]);
   });
 
   it("Na zdravie „do dna“ (Alkoholik): poldeci z tvojho NA EX sa po bitke vráti plný", () => {

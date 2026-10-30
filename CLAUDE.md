@@ -30,9 +30,9 @@ Kým nie je § Formát 2 na 2 v PRAVIDLA.md, platí všetko pre 1 na 1.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
 5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy — kópia sady v31 živého webu (lokálne v43) bez Presbitera (2026-10-30,
-   pravidlá v8.4: náradie, Valaška, druhé tagy Šoféra, Dvojčiat a Snúbenice; `cardsJson`
-   z `/api/sada` — lokálne a živé číslovanie sád sa líši, číslo živého webu dostane po nasadení;
+   pre prvé spustenie a testy — kópia lokálnej sady v45 bez Presbitera (2026-10-30, pravidlá v9:
+   bossovia — 8 starších so 6 akciami a spúšťačom Väzeň; predtým v31 živého webu / lokálne v43
+   s náradím; `cardsJson` z `/api/sada` — lokálne a živé číslovanie sád sa líši, číslo živého webu dostane po nasadení;
    produkcia ho prevezme pri štarte cez novú značku v `dorovnajSoSeedom`, zmeny vzhľadu
    a ilustrácií navyše `tools/admin/do-seedu.ts`, viď docs/NASADENIE.md). Značku meň až
    po skopírovaní cards.json, inak bežiaci dev server preseeduje tvorcu starou sadou.
@@ -115,7 +115,7 @@ naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      92 kariet — kópia sady v31 živého webu (lokálne v43) bez Presbitera (neupravuj ručne)
+  data/cards.json      92 kariet — kópia lokálnej sady v45 (bossovia, v9) bez Presbitera (neupravuj ručne)
   data/elders.json     8 starších; priazeň a body nesie scorecard (scorecards.json)
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
