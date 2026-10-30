@@ -326,18 +326,37 @@
   opacity: 0.85;
 }
 
-.nastenka-paticka {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px 18px;
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--tlmeny);
+/* Koniec po finále: výkupné a Cirhóza po menách, farba hráča (Michal 2026-10-30). */
+.nastenka-koniec .nk-nadpis {
+  margin-top: 2px;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slaby-text);
 }
 
-.nastenka-paticka b {
-  color: var(--text);
+.nastenka-koniec .nk-hrac {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.nastenka-koniec .nk-hrac.moje {
+  color: color-mix(in srgb, var(--ja) 75%, var(--text));
+}
+
+.nastenka-koniec .nk-hrac.superove {
+  color: color-mix(in srgb, var(--su) 75%, var(--text));
+}
+
+.nastenka-koniec .nk-hrac b.plus {
+  color: var(--zelena);
+}
+
+.nastenka-koniec .nk-hrac b.minus {
+  color: var(--cervena-svetla);
 }
 
 /* Kompaktná nástenka (voľba cieľa): účtenka v jednom stĺpci vedľa lístka. */
@@ -695,10 +714,6 @@
   height: calc(26px * var(--nk, 1));
 }
 
-.vrstva-nastenky .nastenka-paticka {
-  font-size: calc(0.82rem * var(--nk, 1));
-}
-
 /* Pripináčik patrí ku korku — na stole nie je. */
 .vrstva-nastenky .nastenka-listok::before {
   display: none;
@@ -771,10 +786,6 @@
   .vrstva-nastenky .nastenka-uctenka {
     padding: 2px 2px 0;
     line-height: 1.12;
-  }
-
-  .nastenka-paticka {
-    font-size: 0.78rem;
   }
 }
 

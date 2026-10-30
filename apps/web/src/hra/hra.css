@@ -4593,16 +4593,22 @@ button.auto-hotovo-odkaz {
 .doska .zdroj {
   gap: 1px;
   padding: 6px 9px;
+  /* Všetky dlaždice na stred ako Starší a Špaky (Michal 2026-10-30: zarovnanie nerovnomerné). */
+  align-items: center;
+  text-align: center;
 }
 
 .doska .zdroj-hodnota {
   min-height: 0;
   flex-wrap: nowrap;
+  justify-content: center;
 }
 
 .doska .zdroj-pod {
+  align-items: center;
   line-height: 1.25;
   min-width: 0;
+  max-width: 100%;
   min-height: 0;
   overflow: hidden;
 }
@@ -5678,10 +5684,20 @@ button.auto-hotovo-odkaz {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  /* Miesto na dva riadky priazne a dva strachu — stupnice ôsmich kariet stoja v jednom rade. */
-  min-height: calc(4 * 1.25em + 2px);
-  font-size: 0.68rem;
+  /* Miesto na meno, dva riadky priazne a dva strachu — stupnice ôsmich kariet stoja v jednom rade.
+     Väčším písmom a s menom staršieho (Michal 2026-10-30: drobné popisy nič nehovorili). */
+  min-height: calc(1.3em + 4 * 1.25em + 4px);
+  font-size: clamp(0.72rem, 1.05cqw, 0.86rem);
   line-height: 1.25;
+}
+
+.ls-stav > .ls-meno {
+  flex: none;
+  font-size: clamp(0.85rem, 1.3cqw, 1.08rem);
+}
+
+.ls-stav > .ls-cip.priazen {
+  font-weight: 700;
 }
 
 .ls-cip {
@@ -5872,8 +5888,8 @@ button.auto-hotovo-odkaz {
 
   .ls-stav {
     gap: 0;
-    min-height: calc(4 * 1.2em);
-    font-size: 0.62rem;
+    min-height: calc(1.2em + 4 * 1.2em);
+    font-size: 0.7rem;
     line-height: 1.2;
   }
 
@@ -6526,10 +6542,10 @@ button.auto-hotovo-odkaz {
   align-content: center;
 }
 
-.vrstva-fazy > .draft-panel.branie > .draft-karty {
+.vrstva-fazy > .draft-panel.branie > .draft-karty,
+.vrstva-fazy > .draft-panel.branie > .branie-rad {
   grid-column: 1 / -1;
 }
-
 /* Popis Smetiska hovorí pilulka nad stolom. */
 .vrstva-fazy .stavba-zona-pozn {
   display: none;
@@ -7022,6 +7038,52 @@ button.auto-hotovo-odkaz {
   }
   80% {
     translate: 2px -1px;
+  }
+}
+
+/* Malá pečiatka kroku (Michal 2026-10-30): pas v Zhromaždení, koniec brania zo šenku — ako
+   pečiatka momentu, len menšia, vo farbe hráča, a sama odíde (HernaPlocha, PECIATKA_KROKU_MS). */
+.peciatky-krokov .moment-stoh {
+  top: 42%;
+  gap: 8px;
+}
+
+.moment-pecat.moment-maly {
+  --moment: var(--text);
+  gap: 2px;
+  padding: 8px 20px 6px;
+  border-width: 4px;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 0 2px color-mix(in oklab, var(--plocha) 84%, var(--moment)),
+    inset 0 0 0 4px var(--moment),
+    0 3px 0 rgba(0, 0, 0, calc(0.5 * var(--tma))),
+    0 12px 30px rgba(0, 0, 0, calc(0.6 * var(--tma)));
+  animation:
+    moment-dopad 0.36s cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--poradie, 0) * 0.25s) both,
+    peciatka-kroku-odchod 0.4s ease-in 1.55s forwards;
+}
+
+.moment-pecat.moment-maly.moja {
+  --moment: var(--ja);
+}
+
+.moment-pecat.moment-maly.superova {
+  --moment: var(--su);
+}
+
+.moment-maly .moment-nazov {
+  font-size: 1.9rem;
+}
+
+.moment-maly .moment-popis {
+  font-size: 0.82rem;
+}
+
+@keyframes peciatka-kroku-odchod {
+  to {
+    opacity: 0;
+    scale: 0.85;
   }
 }
 
@@ -7972,6 +8034,283 @@ button.auto-hotovo-odkaz {
 .rk-legenda .rk-bk {
   vertical-align: -2px;
   animation: none;
+}
+
+/* Podrobný náhľad rekapitulácie (Michal 2026-10-30): zjednodušene súčet a pruh, podrobne
+   (prepínač v hlavičke alebo myš nad riadkom) ikony akcií za sebou — zdvojené ×2, zrušené sivé. */
+/* V pravom rohu tabuľky — stĺpec akcie je úzky a hlavička nesie jeho názov. */
+.rk-prepni {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  z-index: 1;
+  padding: 1px 10px;
+  border-radius: 99px;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+  background: var(--plocha-2);
+  border: 1px solid var(--okraj-svetly);
+  cursor: pointer;
+}
+
+.rk-prepni:hover,
+.rk-prepni[aria-pressed="true"] {
+  color: var(--akcent-svetly);
+  border-color: var(--akcent);
+}
+
+.rk-prepni:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 1px;
+}
+
+.rk-detail {
+  display: none;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  min-width: 0;
+}
+
+.rk-hod.l .rk-detail,
+.rk-hod.l .rk-ikony {
+  flex-direction: row-reverse;
+}
+
+.rekap.podrobne .rk-hod.ma-detail > .rk-detail,
+.rk-riadok:hover .rk-hod.ma-detail > .rk-detail {
+  display: flex;
+}
+
+.rekap.podrobne .rk-hod.ma-detail > .rk-pruh,
+.rekap.podrobne .rk-hod.ma-detail > .rk-mer,
+.rekap.podrobne .rk-hod.ma-detail > .rk-obm,
+.rk-riadok:hover .rk-hod.ma-detail > .rk-pruh,
+.rk-riadok:hover .rk-hod.ma-detail > .rk-mer,
+.rk-riadok:hover .rk-hod.ma-detail > .rk-obm {
+  display: none;
+}
+
+.rk-riadok:hover,
+.vp-riadok:hover {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.rk-ikony {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+}
+
+.rk-ik {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #000;
+  border: 2px solid;
+  animation: rk-nabeh 0.3s ease-out both;
+}
+
+.rk-ik.ja {
+  border-color: var(--ja);
+}
+
+.rk-ik.su {
+  border-color: var(--su);
+}
+
+.rk-ik .ikona-akcie,
+.rk-ik .ikona-svg {
+  width: 18px;
+  height: 18px;
+  background: none;
+}
+
+/* Zdvojená akcia: ×2 v rohu ikony — počíta sa za dve. */
+.rk-ik > i,
+.vp-zeton > i {
+  position: absolute;
+  right: -7px;
+  top: -8px;
+  padding: 0 3px;
+  border-radius: 99px;
+  font: 800 0.62rem/1.35 var(--nadpis);
+  font-style: normal;
+  color: var(--na-akcente);
+  background: var(--akcent);
+  pointer-events: none;
+}
+
+.rk-ik.zrusena,
+.vp-zeton.zrusena-slot {
+  opacity: 0.4;
+  filter: grayscale(1);
+  border-style: dashed;
+}
+
+.rk-ik.mimo {
+  border-style: dotted;
+}
+
+.rk-ik-ubral,
+.rk-ik-ucet {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font: 700 0.72rem/1 var(--nadpis);
+  color: var(--slaby-text);
+  white-space: nowrap;
+}
+
+.rk-ik-ucet .ikona-akcie,
+.rk-ik-ucet .ikona-svg {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+/* Viera × Povera: zjednodušene súčet a pruh, žetóny len podrobne. */
+.vp-suhrn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vp-strana.l .vp-suhrn {
+  flex-direction: row-reverse;
+}
+
+.vp-pocet {
+  font: 800 1.25rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  min-width: 1.2ch;
+  text-align: center;
+}
+
+.vp-pocet.ja {
+  color: var(--ja);
+}
+
+.vp-pocet.su {
+  color: var(--su);
+}
+
+.vp-pocet.nula {
+  color: var(--slaby);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.vp-strana.l .rk-pruh {
+  background: linear-gradient(270deg, color-mix(in srgb, var(--ja) 75%, transparent), color-mix(in srgb, var(--ja) 30%, transparent));
+}
+
+.vp-strana.r .rk-pruh {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--su) 75%, transparent), color-mix(in srgb, var(--su) 30%, transparent));
+}
+
+.vp-strana .vp-zetony {
+  display: none;
+}
+
+.rekap.podrobne .vp-strana .vp-zetony,
+.vp-riadok:hover .vp-strana .vp-zetony {
+  display: flex;
+}
+
+.rekap.podrobne .vp-strana .vp-suhrn .rk-pruh,
+.vp-riadok:hover .vp-strana .vp-suhrn .rk-pruh {
+  display: none;
+}
+
+/* Zadĺženie pod prahom ostáva na účte do ďalšej Pitky (v7) — plná tenká čiara, nie prerušovaná. */
+.rk-prah.ostava {
+  border: 1px solid var(--okraj-svetly);
+}
+
+/* Vyhodnotenie Pitky (Michal 2026-10-30): riadkov je málo — ikony, čísla a dieliky väčšie,
+   popisy spod ikon sú len v tooltipe. */
+.rekap-pitky .rekap {
+  width: min(100%, 760px);
+}
+
+.rekap-pitky .rk-hlava > span {
+  font-size: 0.85rem;
+}
+
+.rekap-pitky .rk-stred {
+  min-width: 84px;
+}
+
+.rekap-pitky .rk-stred > .ikona-akcie,
+.rekap-pitky .rk-stred > .ikona-svg {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+}
+
+.rekap-pitky .rk-naex {
+  height: 34px;
+  font-size: 1rem;
+}
+
+.rekap-pitky .rk-naex .ikona-akcie {
+  width: 26px;
+  height: 26px;
+}
+
+.rekap-pitky .rk-hod {
+  min-height: 46px;
+  gap: 8px;
+}
+
+.rekap-pitky .rk-hod > b {
+  font-size: 1.7rem;
+}
+
+.rekap-pitky .rk-bk {
+  width: 14px;
+  height: 20px;
+}
+
+.rekap-pitky .rk-cip {
+  font-size: 1.05rem;
+}
+
+.rekap-pitky .rk-cip > .ikona-akcie,
+.rekap-pitky .rk-cip > .ikona-svg {
+  width: 20px;
+  height: 20px;
+}
+
+.rekap-pitky .rk-ik {
+  width: 32px;
+  height: 32px;
+}
+
+.rekap-pitky .rk-ik .ikona-akcie,
+.rekap-pitky .rk-ik .ikona-svg {
+  width: 24px;
+  height: 24px;
+}
+
+.rekap-pitky .rk-naex-vety {
+  font-size: 1rem;
+}
+
+.rekap-pitky .rk-legenda {
+  max-width: 760px;
+  font-size: 0.82rem;
 }
 
 .rk-citacka {

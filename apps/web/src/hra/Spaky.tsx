@@ -140,8 +140,9 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
   ];
   const finaleHotove = listky.some((l) => l.finale);
   if (!finaleHotove && !koniec) listky.push({ kluc: "finale", lokalita: null, finale: true, stav: "caka" });
-  // Finále na pinnacle: 1 špak za každú kartu v línii (v8), ako o každú lokalitu.
-  const finaleText = "vrcholová lokalita · 1 špak za kartu v línii";
+  // Finále sa boduje ako každá bitka (Michal 2026-10-30: „1 špak za kartu v línii — a normálne
+  // to neplatí?“) — lístok to tak aj hovorí, pravidlo bodovania sa neopakuje len pri ňom.
+  const finaleText = "posledná bitka, boduje sa ako každá";
   const dvojica = (h: readonly [number, number], f: (n: number) => string): string => poradie.map((p) => `${kto(p)} ${f(h[p])}`).join(" · ");
   // Účtenka je úzka: čísla oboch v poradí popolníkov nad nástenkou („ty : súper“), bez mien.
   const pomer = (h: readonly [number, number], f: (n: number) => string): string => poradie.map((p) => f(h[p])).join(" : ");
@@ -162,7 +163,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
             ? l.stav === "teraz"
               ? `${nazov}: bije sa teraz`
               : l.finale
-                ? `Finále: posledná bitka, ${finaleText}`
+                ? `Finále: ${finaleText} — o vrcholovú lokalitu; po ňom výkupné a Cirhóza (Koniec)`
                 : `${nazov}: ešte sa o ňu nehralo`
             : vitaz === null
               ? `${nazov} (kolo ${b.kolo}): sekera — ${b.prepadlo > 0 ? `${spakov(b.prepadlo)} prepadlo` : vzal !== null ? `${spakov(zaklad)} vzal víťaz ďalšej bitky (${kto(vzal)})` : `${spakov(zaklad)} čaká na víťaza ďalšej bitky`}`
@@ -222,14 +223,21 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
           <span className="nastenka-vitaz">
             <span className="nastenka-otaznik">koniec</span>
           </span>
-          <span className="nastenka-nazov">Koniec</span>
-          <span className="nastenka-uctenka">
-            <span className={ucet.body.vykupne[0].spaky + ucet.body.vykupne[1].spaky > 0 ? "plus" : ""}>
-              výkupné {pomer([ucet.body.vykupne[0].spaky, ucet.body.vykupne[1].spaky], (n) => (n > 0 ? `+${n}` : "0"))}
-            </span>
-            <span className={ucet.body.cirhozy[0] + ucet.body.cirhozy[1] > 0 ? "minus" : ""}>
-              Cirhóza {pomer(ucet.body.cirhozy, (n) => (n > 0 ? `−${n * KONSTANTY.SPAKY_ZA_CIRHOZU}` : "0"))}
-            </span>
+          <span className="nastenka-nazov">Koniec · po finále</span>
+          {/* Komu čo, menami (Michal 2026-10-30: „výkupné +2 : +2“ nebolo jasné komu). */}
+          <span className="nastenka-uctenka nastenka-koniec">
+            <span className="nk-nadpis">výkupné zdrojov</span>
+            {poradie.map((p) => (
+              <span key={`v${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
+                {kto(p)} <b className={ucet.body.vykupne[p].spaky > 0 ? "plus" : ""}>{ucet.body.vykupne[p].spaky > 0 ? `+${ucet.body.vykupne[p].spaky}` : "0"}</b>
+              </span>
+            ))}
+            <span className="nk-nadpis">nepriznaná Cirhóza</span>
+            {poradie.map((p) => (
+              <span key={`c${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
+                {kto(p)} <b className={ucet.body.cirhozy[p] > 0 ? "minus" : ""}>{ucet.body.cirhozy[p] > 0 ? `−${ucet.body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}` : "0"}</b>
+              </span>
+            ))}
           </span>
         </li>
       )}
@@ -260,14 +268,6 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
         })}
       </div>
       {zoznam}
-      <p className="nastenka-paticka">
-        <span>
-          Keby partia skončila teraz (s výkupným): <b>{dvojica(body.spolu, sMinusom)}</b>
-        </span>
-        <span>
-          Starší víťazovi ešte {body.vyplat}× po bitke: <b>{dvojica(body.zaStarsich, (n) => `+${n}`)}</b>
-        </span>
-      </p>
     </div>
   );
 }

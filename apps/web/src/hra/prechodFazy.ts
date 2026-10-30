@@ -48,7 +48,7 @@ export function medziobrazovka(
       kluc: `${bitkaKola ?? view.kolo}|bitka`,
       nadnadpis: `Kolo ${bitkaKola ?? view.kolo}`,
       nadpis: "Bitka",
-      text: "Spočíta sa poškodenie z línie: vyššie tuhé vyhráva bitku a špaky, vyššie celkové dáva prebytok na posun starších. Sleduj počítadlo — rozhoduješ až pri Pohoršení či prebytku.",
+      text: "Spočíta sa poškodenie z línie. Delí sa na tuhé (Rana, Pecka, Petelica) a mäkké (Povera): viac tuhého vyhráva bitku a špaky, viac celkového dáva prebytok na posun starších. Sleduj počítadlo — rozhoduješ až pri Pohoršení či prebytku.",
     };
   }
   const obranca = view.utocnik !== ja;

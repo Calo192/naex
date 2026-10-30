@@ -15,6 +15,7 @@
 // --par w9 [--prehod] odfotí web s párom farieb hráča (apps/web/src/lib/paryHraca.ts);
 // pár uložený v účte má prednosť, preto len pre účty, ktoré si ho v profile nevybrali.
 // --miestnost KÓD uloží v režime „web“ kód miestnosti do prehliadača (návrat do partie po načítaní).
+// --cakaj MS počká po načítaní ešte MS milisekúnd (ukážky, ktoré najprv odohrajú partiu v prehliadači).
 //
 // Režim „web“ nepotrebuje partiu: prihlási sa na web (predvolene vývojový server
 // :8787, inak --url / NAEX_WEB_URL) AI účtom „<--ako> (AI)“ — hráč, s --tvorba
@@ -168,7 +169,7 @@ try {
     `fetch('/api/prihlasenie',{method:'POST',headers:{'content-type':'application/json','x-naex':'1'},body:JSON.stringify(${JSON.stringify({ login: ucet.login, heslo: ucet.heslo })})}).then(r=>r.status).then(s=>{${miestnost}return s})`,
   );
   await posli("Page.navigate", { url: `${zaklad}${cesta}` });
-  await pockaj(3500);
+  await pockaj(3500 + Number(volba("--cakaj") ?? "0"));
 
   const cas = new Date().toISOString().slice(11, 19).replace(/:/g, "");
   const subory: string[] = [];

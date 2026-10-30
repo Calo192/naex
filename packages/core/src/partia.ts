@@ -136,6 +136,11 @@ export interface LineEval {
   readonly aktivneStredu: readonly [number, number];
   /** Rozpis súčtov — ktoré karty a prečo ich dali (sums sú ich súčty). */
   readonly zdroje: readonly [ZdrojeAkcii, ZdrojeAkcii];
+  /**
+   * Zrušené akcie po hráčoch, ktorým by inak patrili — hodnota 0, dovody = čím
+   * („Odpor“, „NA EX“). Podrobná rekapitulácia ich ukáže sivé (Michal 2026-10-30).
+   */
+  readonly zrusene: readonly [ZdrojeAkcii, ZdrojeAkcii];
 }
 
 /**
@@ -180,6 +185,8 @@ interface Elem {
   readonly uplatky: number;
   /** dovody[side][k]: čo akciu aktivovalo či zdvojilo (ZdrojAkcie.dovody). */
   readonly dovody: string[][][];
+  /** zrusil[side][k]: čím je akcia zrušená („Odpor“, „NA EX“) — LineEval.zrusene. */
+  readonly zrusil: (string | null)[][];
   /** Akcie susedov, ktoré Posilnenie tejto karty zdvojilo — NA EX ich zdvojenie zruší. */
   readonly posilnene: { readonly elem: Elem; readonly side: 0 | 1; readonly k: number }[];
 }
@@ -335,6 +342,7 @@ function makeElem(
     premena: pl?.premena,
     uplatky: pl?.uplatky ?? 0,
     dovody: [0, 1].map(() => [[], [], [], []]),
+    zrusil: [0, 1].map(() => [null, null, null, null]),
     posilnene: [],
   };
 }
@@ -416,6 +424,7 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>): void {
         : ([b, 0, a, 1, actA] as const);
       odporElem.stav[odporSide]![k] = "aktivna";
       otherElem.stav[otherSide]![k] = "zrusena";
+      otherElem.zrusil[otherSide]![k] = "Odpor";
       // Posilnenie + Odpor: neprepojené akcie aktivuje IBA karta s Odporom.
       if (otherAct === "Posilnenie") markVzbura(odporElem, odporSide, false);
     } else if (posilA && posilB) {
@@ -490,6 +499,7 @@ function applyNaex(elem: Elem): void {
       if (stav === "aktivna") {
         elem.stav[side]![k] = "zrusena";
         elem.nasobok[side]![k] = 0;
+        elem.zrusil[side]![k] = "NA EX";
       } else if (stav === "neaktivna" && actions[k] !== "Pakt") {
         // Neaktívny Pakt nemá čo zdvojiť (12.3 bod 6).
         elem.stav[side]![k] = "aktivna";
@@ -689,6 +699,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   const sums: [Partial<Record<Action, number>>, Partial<Record<Action, number>>] = [{}, {}];
   const zdroje: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
+  const zrusene: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
   const pridajZdroj = (p: PlayerId, a: Action, z: ZdrojAkcie): void => {
     (zdroje[p][a] ??= []).push(z);
   };
@@ -698,18 +709,24 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
       for (let k = 0; k < 4; k++) {
         const action = actions[k];
         if (action == null || MODIFIERS.includes(action)) continue;
-        if (elem.stav[side]![k] !== "aktivna") continue;
+        const stav = elem.stav[side]![k];
         const nasobok = elem.nasobok[side]![k] as number;
-        if (nasobok === 0) continue;
+        const zrusil = stav === "zrusena" ? elem.zrusil[side]![k] : null;
+        if (zrusil == null && (stav !== "aktivna" || nasobok === 0)) continue;
         // Akcia lokality patrí majiteľovi karty, s ktorou tvorí spoj (bez suseda
         // nie je aktívna); akcia karty jej majiteľovi, nech leží kdekoľvek.
         // Kočovník (Furt, Michal 2026-10-24): všetky jeho akcie dostane hráč
         // s prevahou v jeho kraji — súper, ktorý tam prevládne, berie aj škodlivé.
+        // Zrušená akcia sa zapíše tomu, komu by inak patrila.
         const kocovnik = elem.defId === "kocovnik" && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
         const nastroj = susedNastroja.get(elem)?.[side] ?? null;
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
         const ako = akciaPoPremene(elem, action);
         if (ako === null) continue;
+        if (zrusil != null) {
+          (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
+          continue;
+        }
         // Poľovnícka chata (Furt, v7): aktívne Rany, Pecky a Petelice z jej hrán sa rátajú dvakrát.
         const hodnota = elem.isLokalita && elem.defId === "polovnicka_chata" && TUHE[ako] !== undefined ? nasobok * 2 : nasobok;
         sums[target][ako] = (sums[target][ako] ?? 0) + hodnota;
@@ -729,7 +746,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   presbiter([partia0, partia1], susedLokality, elems, sums, zdroje);
 
-  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje };
+  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene };
 }
 
 /** Príspevok karty v línii k bitke — štatistiky partií a simulácia sily kariet v tvorcovi. */
