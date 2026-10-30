@@ -28,7 +28,7 @@ import { useHlaskyVyucby } from "./Melichar.tsx";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
 import { moznostiKvizu, rezimMelichara } from "./bar.ts";
-import { CisloStrany, MelicharVBare, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
+import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
 import "./vyucba.css";
 
 /**
@@ -652,17 +652,45 @@ export function VyucbaStol({
   }, [hlaskaChyby?.n]);
 
   // Vlastný nápis (Dať cigaretu, Odovzdať cigaretu) až na poslednej strane textu — dovtedy tlačidlo listuje.
-  const napisDalej = krok !== null && krok.tlacidlo !== null && jeInfo && !strany.dalsiaJe ? krok.tlacidlo : "ďalej";
-  const tlacidloDalej = (
+  // Oba nápisy ležia v tlačidle na jednom mieste, šírka tlačidla sa so stranou nemení (NaJednomMieste).
+  const vlastnyNapis = krok !== null && krok.tlacidlo !== null && jeInfo ? krok.tlacidlo : null;
+  const napisDalej = vlastnyNapis !== null && !strany.dalsiaJe ? vlastnyNapis : "ďalej";
+  const tlacidloDalej = (ziva: boolean) => (
     <button
-      ref={spatHlavne ? undefined : dalejRef}
+      ref={ziva && !spatHlavne ? dalejRef : undefined}
       className="tlacidlo-hlavne mel-dalej vyucba-dalej"
-      onClick={() => enter?.()}
-      data-vyucba-dalej=""
-      {...(krok?.odovzdaCigaretu === true && napisDalej !== "ďalej" ? { "data-vyucba-cigareta": "" } : {})}
+      {...(ziva ? { onClick: () => enter?.(), "data-vyucba-dalej": "" } : { type: "button" as const, tabIndex: -1 })}
+      {...(ziva && krok?.odovzdaCigaretu === true && napisDalej !== "ďalej" ? { "data-vyucba-cigareta": "" } : {})}
     >
-      {napisDalej} <kbd>Enter</kbd>
+      {vlastnyNapis === null ? "ďalej" : <NaJednomMieste ukaz={strany.dalsiaJe ? "a" : "b"} a={() => "ďalej"} b={() => vlastnyNapis} />} <kbd>Enter</kbd>
     </button>
+  );
+  // Koniec časti: ponuka až na poslednej strane textu, dovtedy „ďalej“ — obe na jednom mieste.
+  const ponukaKonca = (ziva: boolean) => (
+    <>
+      {stav.dalsiaCast !== null && (
+        <button
+          className="tlacidlo-hlavne"
+          {...(ziva ? { onClick: pokracovat, "data-vyucba-dalsia-cast": "" } : { type: "button" as const, tabIndex: -1 })}
+          title={`${stav.dalsiaCast.cast}. časť: ${stav.dalsiaCast.nazov} (asi ${stav.dalsiaCast.minuty} minút)`}
+        >
+          Pokračovať {stav.dalsiaCast.cast}. časťou
+        </button>
+      )}
+      {/* Ďalšia časť ešte nie je hotová — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
+      {stav.pripravujeme !== null && (
+        <button type="button" disabled {...(ziva ? { "data-vyucba-dalsia-cast": "" } : {})} title={`${stav.pripravujeme.cast}. časť výučby (${stav.pripravujeme.nazov}) pripravujeme.`}>
+          {stav.pripravujeme.cast}. časť pripravujeme
+        </button>
+      )}
+      <button
+        className={stav.dalsiaCast === null ? "tlacidlo-hlavne" : undefined}
+        {...(ziva ? { onClick: hratProtiPocitacu, "data-vyucba-koniec": "" } : { type: "button" as const, tabIndex: -1 })}
+      >
+        Hrať proti počítaču
+      </button>
+      <button {...(ziva ? { onClick: prerusit } : { type: "button" as const, tabIndex: -1 })}>Do lobby</button>
+    </>
   );
   // Úvod: „Dať cigaretu“ alebo „Preskočiť výučbu“ — dve tlačidlá, prerušenie by bolo tretie (Michal 2026-10-25).
   const preskocenie = krok !== null && krok.preskocenie && !vOdpovedi;
@@ -735,32 +763,7 @@ export function VyucbaStol({
             krok === null ? (
               <>
                 {predoslaStrana}
-                {strany.dalsiaJe ? (
-                  tlacidloDalej
-                ) : (
-                  <>
-                    {stav.dalsiaCast !== null && (
-                      <button
-                                                className="tlacidlo-hlavne"
-                        onClick={pokracovat}
-                        data-vyucba-dalsia-cast=""
-                        title={`${stav.dalsiaCast.cast}. časť: ${stav.dalsiaCast.nazov} (asi ${stav.dalsiaCast.minuty} minút)`}
-                      >
-                        Pokračovať {stav.dalsiaCast.cast}. časťou
-                      </button>
-                    )}
-                    {/* Ďalšia časť ešte nie je hotová — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
-                    {stav.pripravujeme !== null && (
-                      <button type="button" disabled data-vyucba-dalsia-cast="" title={`${stav.pripravujeme.cast}. časť výučby (${stav.pripravujeme.nazov}) pripravujeme.`}>
-                        {stav.pripravujeme.cast}. časť pripravujeme
-                      </button>
-                    )}
-                    <button className={stav.dalsiaCast === null ? "tlacidlo-hlavne" : undefined} onClick={hratProtiPocitacu} data-vyucba-koniec="">
-                      Hrať proti počítaču
-                    </button>
-                    <button onClick={prerusit}>Do lobby</button>
-                  </>
-                )}
+                <NaJednomMieste ukaz={strany.dalsiaJe ? "a" : "b"} a={tlacidloDalej} b={ponukaKonca} />
               </>
             ) : (
               <>
@@ -780,7 +783,7 @@ export function VyucbaStol({
                     späť na otázku{spatHlavne && <kbd>Enter</kbd>}
                   </button>
                 )}
-                {(strany.dalsiaJe || (jeInfo && !spatHlavne)) && tlacidloDalej}
+                {(strany.dalsiaJe || (jeInfo && !spatHlavne)) && tlacidloDalej(true)}
                 {preskocenie ? (
                   <button type="button" className="mel-dalej vyucba-preskocit" onClick={preskocit} data-vyucba-preskocit="" title="Výučbu preskočíš — nájdeš ju kedykoľvek na stránke Hrať.">
                     Preskočiť výučbu

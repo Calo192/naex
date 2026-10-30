@@ -118,6 +118,32 @@ export interface Strany {
   readonly setPocet: (n: number) => void;
 }
 
+const SKRYTA_PODOBA = { inert: true, "aria-hidden": true } as const;
+
+/**
+ * Dve podoby toho istého miesta v bare (napr. „ďalej“ na strane textu a ponuka na poslednej):
+ * ukáže sa jedna, druhá leží neviditeľná pod ňou a drží šírku. Keby tlačidlá menili šírku vety
+ * podľa strany, užšia veta pridá stranu, širšia ju uberie a bar sa prepína dookola — „vibroval“
+ * a nedal sa kliknúť (koniec 1. časti výučby, Firefox, Michal 2026-10-30). Skrytá podoba dostane
+ * ziva = false: bez kliknutia a bez značiek, ktoré hľadajú nástroje.
+ */
+export function NaJednomMieste({
+  ukaz,
+  a,
+  b,
+}: {
+  readonly ukaz: "a" | "b";
+  readonly a: (ziva: boolean) => ReactNode;
+  readonly b: (ziva: boolean) => ReactNode;
+}) {
+  return (
+    <span className="mel-jedno-miesto">
+      <span {...(ukaz === "a" ? {} : SKRYTA_PODOBA)}>{a(ukaz === "a")}</span>
+      <span {...(ukaz === "b" ? {} : SKRYTA_PODOBA)}>{b(ukaz === "b")}</span>
+    </span>
+  );
+}
+
 /** Ktorá strana textu sa ukazuje; nový text (kľúč) začne od prvej. */
 export function useStrany(kluc: string): Strany {
   const [s, setS] = useState({ kluc, strana: 0 });
