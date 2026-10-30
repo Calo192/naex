@@ -27,7 +27,7 @@ import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
-import { CENA_POLA, PRAVIDLO_STRACHU, plnaPriazen, prikladStrachu, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textStupna, textVydesenia } from "./textyStarsich.ts";
+import { POPIS_STUPNICE, PRAVIDLO_STRACHU, plnaPriazen, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textStupna, textVydesenia } from "./textyStarsich.ts";
 
 /** Šípka smeru pri rozdeľovaní: kam marker pôjde a za koľko (null = tým smerom sa teraz nedá). */
 export interface SipkaRozdelenia {
@@ -132,7 +132,6 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hra
   const su: PlayerId = ja === 0 ? 1 : 0;
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<string | null>(null);
-  const [legenda, setLegenda] = useState(false);
   const nahladovany = starsi.find((s) => s.elder.elderId === nahlad);
   const akciaNahladu = nahladovany?.klik?.akcia;
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
@@ -157,21 +156,14 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hra
 
   return (
     <div className={`linia-starsich${pohlad === su ? " pohlad-su" : ""}${krok !== null ? " v-kroku" : ""}`}>
-      <div className="ls-hlava">
-        {tlacidlo}
-        <button
-          type="button"
-          className={`ls-otaznik${legenda ? " otvorena" : ""}`}
-          aria-expanded={legenda}
-          aria-controls="ls-legenda"
-          title="Ako čítať stupnicu starších"
-          onClick={() => setLegenda((x) => !x)}
-        >
-          ? stupnica
-        </button>
-        {stred}
-      </div>
-      {legenda && <LegendaStupnice starsi={starsi} data={data} ja={ja} mena={mena} zavri={() => setLegenda(false)} />}
+      {/* Prázdna hlavička nezaberá riadok — miesto patrí starším (Michal 2026-10-30: bez „← Späť
+          na stôl“ a „? stupnica“; ako čítať stupnicu povie titulok na stupnici). */}
+      {(tlacidlo != null || stred !== null) && (
+        <div className="ls-hlava">
+          {tlacidlo}
+          {stred}
+        </div>
+      )}
       <div className="ls-rad">
         {starsi.map((s, i) => (
           <ScorecardVLinii
@@ -191,88 +183,6 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hra
           />
         ))}
       </div>
-    </div>
-  );
-}
-
-/**
- * Legenda stupnice (UX N1): tri vety a príklad z tejto partie — prvý starší
- * mimo stredu, inak všeobecný. Esc a „Rozumiem“ zavrú, fokus sa vráti na „?“.
- */
-function LegendaStupnice({
-  starsi,
-  data,
-  ja,
-  mena,
-  zavri,
-}: {
-  readonly starsi: readonly StarsiVLinii[];
-  readonly data: GameData;
-  readonly ja: PlayerId;
-  readonly mena: readonly [string, string];
-  readonly zavri: () => void;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    ref.current?.querySelector("button")?.focus();
-    const klaves = (e: KeyboardEvent): void => {
-      if (e.key !== "Escape") return;
-      e.stopPropagation();
-      zavri();
-    };
-    window.addEventListener("keydown", klaves, true);
-    return () => {
-      window.removeEventListener("keydown", klaves, true);
-      document.querySelector<HTMLElement>(".ls-otaznik")?.focus();
-    };
-  }, [zavri]);
-  const su: PlayerId = ja === 0 ? 1 : 0;
-  const priklad = starsi.find((s) => obavanyHrac(s.elder) !== null);
-  let prikladText: ReactNode;
-  if (priklad === undefined) {
-    prikladText = "Teraz sú všetci starší v strede (stupeň 0, pokojní): nikto nemá ich priazeň a nikoho sa neboja.";
-  } else {
-    const v = vztah(priklad.elder, priklad.elder.marker);
-    const fav = favourStarsieho(data, priklad.elder);
-    prikladText = (
-      <>
-        <b>Teraz:</b>{" "}
-        {prikladStrachu({
-          meno: priklad.meno,
-          zona: v.uroven,
-          ty: v.obavany === ja,
-          super: mena[su],
-          sila: v.sila,
-          ucinok: UCINOK_KRATKO[fav](v.sila),
-          spaky: strachNaVyplatu(priklad.elder, v.obavany === ja ? ja : su),
-          naUdrzanie: strachNaUdrzanie(priklad.elder, v.obavany === ja ? ja : su),
-        })}
-      </>
-    );
-  }
-  return (
-    <div className="ls-legenda" id="ls-legenda" role="dialog" aria-label="Ako čítať stupnicu" ref={ref}>
-      <p>
-        <b>Tvoja polovica je vždy vľavo</b> (◀ ty), {mena[su]} vpravo. Stupne od stredu: 0 sivý stred (pokojný), 1 žltá (znepokojený), 2 oranžová
-        (vystrašený), 3 červená (vydesený).
-      </p>
-      <p>
-        <b>Výkričníky</b> ukazujú, koho sa starší bojí — sú v jeho farbe: <ZnackaStrachu uroven={1} trieda="moje" /> stupeň 1,{" "}
-        <ZnackaStrachu uroven={2} trieda="moje" /> stupeň 2, <ZnackaStrachu uroven={3} trieda="moje" /> stupeň 3 (tu sa bojí teba). Na druhom konci
-        stupnice je ♥ toho, komu prejavuje priazeň.
-      </p>
-      <p>
-        <b>♥ Priazeň</b> má ten, na koho polovici marker leží — bonus počas hry, sila = stupeň (+1 / +2 / +3).
-      </p>
-      <p>{PRAVIDLO_STRACHU}</p>
-      <p>{prikladText}</p>
-      <p className="ls-tlmene">
-        Posúva ho Nakladačka po bitke (k súperovi toho, kto ju drží) a Pohoršenie — od seba (desíš) alebo k sebe (upokojuješ), aj na červenú a z nej späť; {CENA_POLA}.
-        Vyberáš len staršieho, marker ide, kým body stačia. Nič sa nezamyká.
-      </p>
-      <button type="button" className="ls-tlacidlo" onClick={zavri}>
-        Rozumiem <kbd>Esc</kbd>
-      </button>
     </div>
   );
 }
@@ -745,7 +655,7 @@ function Stupnica({
   readonly hranice: boolean;
 }) {
   return (
-    <span className="ls-stupnica" aria-hidden="true" data-vyucba="starsi-stupnica">
+    <span className="ls-stupnica" aria-hidden="true" title={POPIS_STUPNICE} data-vyucba="starsi-stupnica">
       {/* 7 polí (v6): červená, oranžová, žltá, sivá, žltá, oranžová, červená — číslo = sila priazne aj špaky za strach. */}
       {STUPNICA_ZONY.map((z, k) => (
         <i key={k} style={{ background: farbaZony(z), "--z": z } as CSSProperties}>

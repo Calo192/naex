@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { ClientState } from "@naex/core";
-import { klucPrechodu, medziobrazovka } from "../src/hra/prechodFazy.ts";
+import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole } from "../src/hra/prechodFazy.ts";
 
 type Faza = Pick<ClientState, "kolo" | "faza" | "draftStav" | "pitkaCislo">;
 const draft = (krok: "stavba" | "beranie" | "patronat") => ({ krok }) as unknown as ClientState["draftStav"];
@@ -122,5 +122,56 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     const patronat = { krok: "patronat" } as unknown as ClientState["draftStav"];
     expect(medziobrazovka({ ...p({ faza: "draft" }), draftStav: patronat } as Pohlad, 0, "Eva", null)?.kluc).toBe("2|senok");
     expect(medziobrazovka(p({ koniec: { vitaz: 0 } as unknown as Pohlad["koniec"] }), 0, "Eva", null)).toBeNull();
+  });
+});
+
+type Tah = Parameters<typeof tahNaStole>[0];
+const t = (faza: ClientState["faza"], ine: Partial<Tah> = {}): Tah => ({ koniec: null, faza, bitkaStav: null, draftStav: null, ...ine });
+const krokBitky = (krok: string, caka: 0 | 1 = 0) => ({ krok, caka, poveryZostava: [1, 0] }) as unknown as ClientState["bitkaStav"];
+const draftNa = (krok: "stavba" | "beranie" | "patronat", naTahu: 0 | 1 = 0) => ({ krok, naTahu }) as unknown as ClientState["draftStav"];
+
+describe("tahNaStole — línia starších nezakryje ťah (Michal 2026-10-30: pred stavbou šenku)", () => {
+  it("stavba a branie šenku, voľba cieľa, Zhromaždenie, Pitka aj kroky bitky na kartách sú ťah na stole", () => {
+    for (const v of [
+      t("draft", { draftStav: draftNa("stavba") }),
+      t("draft", { draftStav: draftNa("beranie") }),
+      t("volbaCiela"),
+      t("zhromazdenie"),
+      t("pitka"),
+      t("bitka", { bitkaStav: krokBitky("kar") }),
+    ]) {
+      expect(tahNaStole(v, true)).toBe(true);
+      expect(tahNaStole(v, false)).toBe(false);
+    }
+  });
+
+  it("Pohoršenie, Nakladačka, Povery a patronát sa robia na staršom", () => {
+    for (const krok of ["pohorsenie", "prebytok", "povery"]) {
+      expect(krokNaStarsich(t("bitka", { bitkaStav: krokBitky(krok, 1) }))).toEqual({ typ: krok, kto: 1 });
+      expect(tahNaStole(t("bitka", { bitkaStav: krokBitky(krok) }), true)).toBe(false);
+    }
+    expect(krokNaStarsich(t("draft", { draftStav: draftNa("patronat", 1) }))).toEqual({ typ: "patronat", kto: 1 });
+    expect(tahNaStole(t("draft", { draftStav: draftNa("patronat") }), true)).toBe(false);
+  });
+
+  it("po konci hry nie je ťah ani krok", () => {
+    const koniec = { koniec: {} as ClientState["koniec"] };
+    expect(tahNaStole(t("draft", { draftStav: draftNa("stavba"), ...koniec }), true)).toBe(false);
+    expect(krokNaStarsich(t("bitka", { bitkaStav: krokBitky("pohorsenie"), ...koniec }))).toBeNull();
+  });
+});
+
+describe("starsiNaStole — kedy stôl ukazuje starších", () => {
+  const nic = { krok: false, nahliadnutie: false, rucne: false, vyucba: false };
+
+  it("mimo kroku len ručne (Starší) a vo výučbe — po súperovom posune markerov sa sama neotvorí (Michal 2026-10-30)", () => {
+    expect(starsiNaStole(nic)).toBe(false);
+    expect(starsiNaStole({ ...nic, rucne: true })).toBe(true);
+    expect(starsiNaStole({ ...nic, vyucba: true })).toBe(true);
+  });
+
+  it("krok na staršom ukáže starších, kým si čakajúci nenahliadne na stôl", () => {
+    expect(starsiNaStole({ ...nic, krok: true })).toBe(true);
+    expect(starsiNaStole({ ...nic, krok: true, nahliadnutie: true, rucne: true })).toBe(false);
   });
 });

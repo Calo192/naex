@@ -158,7 +158,7 @@ import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
 import { polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
-import { klucPrechodu, medziobrazovka } from "./prechodFazy.ts";
+import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole, type KrokNaStarsich } from "./prechodFazy.ts";
 import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatkyKrokov.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
@@ -1713,14 +1713,6 @@ export function HernaPlocha({
   useEffect(() => {
     if (zadrzanyView !== null && !cakaOdhalenie && frontaVrstiev.length === 0) setZadrzanyView(null);
   }, [zadrzanyView, cakaOdhalenie, frontaVrstiev]);
-  // Súper hýbal staršími po bitke (Pohoršenie, prebytok) — server to posiela aj počas zadržaného
-  // stola; po ňom línia starších ukáže, kam markery posunul, a čaká na Ďalej (Michal 2026-10-30).
-  const superHybalStarsimi = useRef<number | null>(null);
-  useEffect(() => {
-    const b = viewZoServera.bitkaStav;
-    if (viewZoServera.faza === "bitka" && b !== null && b.caka === super_ && (b.krok === "pohorsenie" || b.krok === "prebytok")) superHybalStarsimi.current = viewZoServera.kolo;
-  }, [viewZoServera, super_]);
-  const [starsiPoBitke, setStarsiPoBitke] = useState<number | null>(null);
   const [ucetBitky, setUcetBitky] = useState<UcetBitky | null>(null);
   const [ucetBitkyZavrety, setUcetBitkyZavrety] = useState(false);
   const predoslyView = useRef<ClientState | null>(null);
@@ -1759,7 +1751,6 @@ export function HernaPlocha({
       spakyPred: bitka === null ? [zaklad.spaky[0], zaklad.spaky[1]] : spakyPredBitkou(bitka),
     });
     setUcetBitkyZavrety(false);
-    if (vyucba !== true && prehravanie === undefined && posuny.length > 0 && superHybalStarsimi.current === pred.kolo) setStarsiPoBitke(pred.kolo);
     // Porovnáva sa len predošlý a nový pohľad.
   }, [view]);
   // Výsledok bitky je toast na stole (Michal 2026-10-28: pás nad stolom zmenšoval plochu) —
@@ -4305,58 +4296,48 @@ export function HernaPlocha({
 
   // ---- línia starších na mieste línie kariet (Michal 2026-10-23, #68 + #69 variant A) ----
   // Krok na staršom ukáže líniu obom hráčom; čakajúci si smie nahliadnuť na stôl.
-  const bs = view.bitkaStav;
-  const krokStarsich: { readonly nazov: string; readonly kto: PlayerId; readonly typ: "povery" | "pohorsenie" | "prebytok" | "patronat" } | null =
-    view.koniec !== null
+  const krokNa = krokNaStarsich(view);
+  const krokStarsich: (KrokNaStarsich & { readonly nazov: string }) | null =
+    krokNa === null
       ? null
-      : view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok")
-        ? { nazov: NAZOV_DELENIA[bs.krok], kto: bs.caka, typ: bs.krok }
-        : view.faza === "bitka" && bs !== null && bs.caka !== null && bs.krok === "povery"
-          ? { nazov: `Povery (${bs.poveryZostava[bs.caka]})`, kto: bs.caka, typ: "povery" }
-        : view.faza === "draft" && draft?.krok === "patronat"
-          ? { nazov: "Patronát", kto: draft.naTahu, typ: "patronat" }
-          : null;
+      : {
+          ...krokNa,
+          nazov:
+            krokNa.typ === "patronat"
+              ? "Patronát"
+              : krokNa.typ === "povery"
+                ? `Povery (${view.bitkaStav?.poveryZostava[krokNa.kto] ?? 0})`
+                : NAZOV_DELENIA[krokNa.typ],
+        };
   const klucKroku = krokStarsich === null ? null : `${view.kolo}-${krokStarsich.typ}-${krokStarsich.kto}`;
   /** Čie čísla línia zvýrazní (Body hráča alebo súpera); null = línia kariet. */
   const [pohladStarsich, setPohladStarsich] = useState<PlayerId | null>(null);
   const [nahliadnutie, setNahliadnutie] = useState(false);
-  // Výsledok kroku ostane na stole, kým ho hráč nezavrie alebo nepotrebuje líniu kariet — bez časovača (UX, Michal 2026-10-23).
-  const [vysledokKroku, setVysledokKroku] = useState(false);
-  const predoslyKrok = useRef<string | null>(null);
+  useEffect(() => setNahliadnutie(false), [klucKroku]);
+  // Ťah na stole — aj stavba a branie šenku (Michal 2026-10-30) — zavrie ručne otvorených
+  // starších; počas neho si ich hráč smie otvoriť znova.
+  const mamTahNaStole = tahNaStole(view, somNaTahu);
   useEffect(() => {
-    setVysledokKroku(predoslyKrok.current !== null && klucKroku === null);
-    setNahliadnutie(false);
-    predoslyKrok.current = klucKroku;
-  }, [klucKroku]);
-  const potrebujemLiniu = somNaTahu && (vykladam || view.faza === "zhromazdenie" || view.faza === "pitka" || view.faza === "volbaCiela");
-  useEffect(() => {
-    if (!potrebujemLiniu) return;
-    setVysledokKroku(false);
-    setPohladStarsich(null);
-  }, [potrebujemLiniu]);
+    if (mamTahNaStole) setPohladStarsich(null);
+  }, [mamTahNaStole]);
   // Línia starších zmizne, hneď ako prestane byť aktuálna (Michal 2026-10-27): koniec bitky či
-  // patronátu, výber lokality, šenok, Zhromaždenie, Pitka — aj keď je na ťahu súper. Inak
-  // ostala ukázaná, kým hráč sám nepotreboval líniu kariet. Až po efekte kroku vyššie, aby
-  // koniec patronátu (krok aj fáza naraz) nenechal výsledok kroku na stole.
+  // patronátu, výber lokality, šenok, Zhromaždenie, Pitka — aj keď je na ťahu súper.
   const fazaStola = klucPrechodu(view);
   const predoslaFazaStola = useRef(fazaStola);
   useEffect(() => {
     if (predoslaFazaStola.current === fazaStola) return;
     predoslaFazaStola.current = fazaStola;
-    setVysledokKroku(false);
     setPohladStarsich(null);
   }, [fazaStola]);
   // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
   // Pauza po súperovej voľbe cieľa líniu starších na chvíľu skryje — rámik pauzy by inak svietil
   // na medzeru medzi staršími a vybranú lokalitu by nebolo vidno (Michal 2026-10-26). Po pauze
-  // sa línia vráti sama: stav, ktorý ju otvoril (výsledok kroku, patronát, Body), sa nemení.
-  // Súperove posuny starších po bitke ostanú na stole do Ďalej (Michal 2026-10-30).
-  const posunyPoBitke = starsiPoBitke !== null && view.kolo === starsiPoBitke + 1 && view.koniec === null && krokStarsich === null;
+  // sa línia vráti sama: stav, ktorý ju otvoril (patronát, Starší), sa nemení.
   const starsiViditelni =
     !pauzaBezi &&
     tahanie === null &&
     pocitadlo === null &&
-    (krokStarsich !== null ? !nahliadnutie : vysledokKroku || pohladStarsich !== null || ukazStarsich || posunyPoBitke);
+    starsiNaStole({ krok: krokStarsich !== null, nahliadnutie, rucne: pohladStarsich !== null, vyucba: ukazStarsich });
   const pohladLinie = pohladStarsich ?? ja;
   // Krčmová nástenka leží na mieste hracej plochy (Michal 2026-10-27), nie v okne nad stolom.
   // Pri voľbe cieľa sa ukáže sama a vyberá sa v nej lokalita (obranca klikne, útočník čaká).
@@ -4367,11 +4348,7 @@ export function HernaPlocha({
   // späť sa prepnú spolu so stolom. Nástenka (Špaky) prepne bary na dlaždice špakov (rezimBaru).
   const bodovyRezim = starsiViditelni && pohladStarsich !== null;
 
-  const zavriStarsich = (): void => {
-    setPohladStarsich(null);
-    setVysledokKroku(false);
-    setStarsiPoBitke(null);
-  };
+  const zavriStarsich = (): void => setPohladStarsich(null);
   const prepniStarsich = (p: PlayerId): void => {
     // Nástenka (Špaky) a línia starších (Starší) sa navzájom vylučujú (Michal 2026-10-27).
     setVrstva((v) => (v === "lokality" ? null : v));
@@ -4381,10 +4358,7 @@ export function HernaPlocha({
     }
     setNahliadnutie(false);
     if (starsiViditelni && pohladLinie === p) zavriStarsich();
-    else {
-      setVysledokKroku(false);
-      setPohladStarsich(p);
-    }
+    else setPohladStarsich(p);
   };
   const otvorNastenku = (p: PlayerId): void => {
     if (vrstva === "lokality" && nastenkaPre === p) {
@@ -4525,6 +4499,8 @@ export function HernaPlocha({
           };
         })
       : null;
+  // Mimo kroku tlačidlo nie je — na stôl sa vracia Esc a dlaždicou Starší; „← Späť na stôl“
+  // zaberal miesto starším (Michal 2026-10-30).
   const tlacidloLinieStarsich: ReactNode =
     krokStarsich !== null ? (
       vyberPatronatu ? (
@@ -4543,12 +4519,7 @@ export function HernaPlocha({
           pozrieť stôl
         </button>
       )
-    ) : vyucba === true ? null : (
-      // Vo výučbe prepína stôl a starších Melichar podľa kroku.
-      <button type="button" className="ls-tlacidlo" onClick={zavriStarsich}>
-        {posunyPoBitke && pohladStarsich === null ? "Ďalej" : vysledokKroku && pohladStarsich === null ? "← ďalej na stôl" : "← Späť na stôl"} <kbd>Esc</kbd>
-      </button>
-    );
+    ) : null;
   const prahy = (p: PlayerId) => prahyHraca(data, stol, p);
   const zavislost = (p: PlayerId) => stavZavislosti(data, { ...stol, kolo: view.kolo, hraci: view.hraci }, p);
   const popisKarty = (defId: string): string => {
