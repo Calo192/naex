@@ -9,12 +9,13 @@ import type { Action, PlayerId, Tag } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
-import type { GameState } from "./engine.ts";
+import type { GameState, KseftyKola } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
-import { favourStarsieho, prebudenyPre, priazenHraca, priazenSila } from "./elders.ts";
+import { favourStarsieho, priazenHraca, priazenSila } from "./elders.ts";
 import type { CardInstance } from "./types.ts";
 import type { LineEval, PlacedCard } from "./partia.ts";
 import { evaluateLine, prevahaStran, rataSaDoPrevahy, silaVKraji, zvieratAUmlcane } from "./partia.ts";
+import type { PlayerState } from "./player.ts";
 import { limitVykladania } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
 
@@ -34,19 +35,23 @@ export interface VerejnyStav {
   readonly naexVKole?: readonly [boolean, boolean];
   /** Rany navyše kúpené Kšeftom v tomto kole (Strýko z Ameriky v7). */
   readonly kseftRany?: readonly [number, number];
-  /** Povery navyše kúpené Kšeftom v tomto kole (Vychovávateľka v7). */
-  readonly kseftPovery?: readonly [number, number];
+  /** Kšefty väzňov, ktoré platia do konca kola (v9: Starosta, Farár, Vychovávateľka). */
+  readonly kseftyKola?: KseftyKola;
   /** Koľkokrát súper v tomto kole priložil kartu ku karte hráča (Pasca v7). */
   readonly prilozeniaKu?: readonly [number, number];
 }
 
-export interface VerejnyHrac {
+export type VerejnyHrac = {
   readonly priznane: readonly CardInstance[];
-  /** Priznané Dlhy a Absťáky — počítadlá (v8.2), nie karty. */
+  /** Priznané Dlhy — počítadlo (v8.2), nie karty. */
   readonly dlhy: number;
-  readonly abstaky: number;
   readonly dedicstvo: readonly CardInstance[];
-}
+} & (
+  /** Pohľad klienta: počet kariet Absťák v balíčku — poloha je skrytá (v9.1). */
+  | { readonly abstaky: number }
+  /** Stav na serveri: Absťáky sa rátajú z kariet (pocetAbstakov). */
+  | Pick<PlayerState, "ruka" | "doberaci" | "odhadzovaci">
+);
 
 /**
  * native — pravidlo zabudované priamo v motore (nie je čo pripomínať)
@@ -58,19 +63,22 @@ export type EfektStatus = "native" | "impl" | "manual";
 export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Texty podľa tlačovej sady (docs/KartyAI_PrintFile_20260716). Zmenený text
   // karty v tvorcovi → skontroluj, či implementácia ešte sedí.
-  autobusar: "impl", // Zhromaždenie (v7): súper, ktorý pasuje po majiteľovi, nedostane cigarety za pas (cmdPass)
+  // Starší (v9, krok 2 revízie): v línii len akcie, efekt je Kšeft väzňa (engine.ts cmdKseftVazna).
+  autobusar: "impl", // Väzeň — Kšeft: za vypitý poldeci 1 karta zo šenku
   benzinka: "impl", // Pitka (v7): fajčí len hráč, ktorého Občan či Starešina leží najďalej od lokality (dovodZakazuFajcit)
   cigorky: "impl", // Dedičstvo: Pitka (v7): za každé 2 cigarety, ktoré súper vyfajčí, karta (cmdSmoke)
   kocovnik: "native", // Furt: jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (Michal 2026-10-24; evaluateLine)
   cirhoza: "native", // Bitka: dodatočná rana od súpera (cirhozaBonus)
+  abstak: "native", // Bitka (v9.1): −1 tuhé za každý Absťák v balíčku, remíza v tuhom (stranyBitky); nedá sa priznať (cieleVykladania)
+  opatrovatelka: "impl", // Furt (v9.1): na konci kola sa Chuť majiteľa porovnáva o 2 nižšia (engine latkaChuti)
   dievcina_na_vydaj: "impl", // Prehra (v7): zahodí sa, súper získa Dlhy podľa jej aktívnych akcií (koniecBitky)
-  farar: "impl", // Prehra (v7): víťaz získa zadĺženie za každú svoju aktívnu Poveru (koniecBitky)
+  farar: "impl", // Väzeň — Kšeft: súperova aktívna Viera do konca kola posilnený Hazard (partia.ts vieraAkoHazard)
   financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
   hasic: "impl", // Nástup: náhodná karta z odhadzovacieho — nechať v ruke, alebo vrátiť (príkaz hasic)
-  hrobar: "impl", // Konflikt (v7): priložená karta je posledná na strane, po bitke z hry (konflikt)
+  hrobar: "impl", // Väzeň — Kšeft: súper odhodí náhodnú kartu z ruky
   ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20; Dvojčatá za dve, v8)
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2
-  krcmarka: "impl", // Pitka (v7): na NA EX majiteľa súper neodpovedá kartou (odhalNaex)
+  krcmarka: "impl", // Väzeň — Kšeft: súper v tejto Pitke NA EX nedá (zakazNaex)
   lesna_cesta: "impl", // Bitka (v7): +1 tuhé za každé svoje Zviera v súperovom kraji
   liberal: "impl", // Pitka (v7): súper bez rovnováhy žien a chlapov získa 1 zadĺženie (prirastkyPitky)
   milujuca_manzelka: "impl", // Pitka (v7, M2): tvoje poškodenie pečene v Pitke −1 (prirastkyPitky)
@@ -78,25 +86,25 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   nealko: "impl", // Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (prahCirhozyBonus)
   niekoho_stryna: "impl", // Pitka (v7, Stryná): kto v Pitke nedal NA EX, +1 pečeň (prirastkyPitky)
   noviny: "impl", // Dedičstvo: Prehra (Titulka, 2026-10-28): porazený +1 špak za každý Dlh víťaza navyše (spakyZaVyhru)
-  pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Pecka navyše (bitkaMody)
+  pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody)
   pijan: "impl", // Bitka (v7): Rana navyše za každé vlastné NA EX v kole (bitkaMody)
   policajtka: "impl", // Konflikt (v7): súper Dlh, za Kriminála namiesto toho 2 cigarety (konflikt)
-  postarka: "impl", // Kšeft (v7): za 1 Dlh 1 karta
+  postarka: "impl", // Väzeň — Kšeft: 1 tvoj priznaný Dlh na súpera
   praudovravec: "impl", // Furt (v7, Dezinformátor): Odpor na jeho spojoch posilní (partia.ts)
   dvojcata: "impl", // Furt: do prevahy sa rátajú za dvoch (partia.ts, Michal 2026-10-20)
   puska: "impl", // Dedičstvo (Náradie 2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2 (partia.ts puskaChrani)
   recidivista: "impl", // Prehra (v7): po bitke sa vráti do ruky (koniecBitky)
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
-  starosta: "impl", // Nástup (v7): karta zo šenku (voľba senok)
+  starosta: "impl", // Väzeň — Kšeft: do konca kola hrany lokality posilnené (partia.ts hranyPosilnene)
   svaty_text: "impl", // Dedičstvo: Viera chráni pred mäkkým
-  veterinar: "impl", // Pitka (v7): karty v jeho okolí nepridávajú pečeň (prirastkyPitky)
+  veterinar: "impl", // Väzeň — Kšeft: Cirhóza z ruky či priznaná z hry, v tejto Pitke pečeň 0 (bezPecene)
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt (v7): priložený Chlap ide po bitke z hry (konflikt)
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
-  vychovavatelka: "impl", // Kšeft (v7): za 2 cigarety Povera navyše v bitke
+  vychovavatelka: "impl", // Väzeň — Kšeft: súperovo NA EX v tejto Pitke → držiteľ +3 tuhé v bitke
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
   vyherny_automat: "impl", // Dedičstvo (v7): prah Dlhu +1, v poslednej Pitke kola 1 Dlh
-  zastavka: "impl", // Zhromaždenie: spoločný limit vykladania — súčet limitov oboch (Michal 2026-10-20)
+  zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta zo šenku zadarmo, najprv útočník (engine dokonciPitku)
   // Náradie (Michal 2026-10-30, docs/napady/naradie-akcie.html): Nástroje do Dedičstva a Tipér.
   zapalovac: "impl", // Dedičstvo: tvoje aktívne Cigarety nemožno zrušiť NA EX (partia.ts applyNaex)
   vyherne_zreby: "impl", // Dedičstvo: Hazardy aktívne nespojené, spojené neaktívne; NA EX potom ako vždy (partia.ts)
@@ -201,12 +209,11 @@ export function vDedicstve(state: VerejnyStav, p: PlayerId, defId: string): bool
 }
 
 /**
- * Efekt „patrí“ hráčovi p: je to jeho karta v línii, v jeho Dedičstve,
- * alebo je to prebudený starší vydesený hráčom p.
+ * Efekt „patrí“ hráčovi p: je to jeho karta v línii alebo v jeho Dedičstve.
+ * Prebudenie starších zaniklo (v9) — ich efekt je Kšeft väzňa.
  */
 export function efektHraca(state: VerejnyStav, p: PlayerId, defId: string): boolean {
-  if (vPartii(state, p, defId) || vDedicstve(state, p, defId)) return true;
-  return state.starsi.some((e) => e.karta.defId === defId && prebudenyPre(e) === p);
+  return vPartii(state, p, defId) || vDedicstve(state, p, defId);
 }
 
 /**
@@ -290,11 +297,6 @@ export function limitBonus(state: VerejnyStav, p: PlayerId): number {
  */
 export function limitBonusDedicstva(dedicstvo: readonly { readonly defId: string }[]): number {
   return dedicstvo.some((k) => k.defId === "vinko") ? 1 : 0;
-}
-
-/** zastavka (Michal 2026-10-20): obaja hráči majú spoločný limit vykladania — súčet ich limitov. */
-export function spolocnyLimit(state: VerejnyStav): boolean {
-  return jeCielLokalita(state, "zastavka");
 }
 
 /** kostol: nikto nesmie vypiť (v Zhromaždení teda len jedna karta za ťah). */
@@ -386,15 +388,6 @@ interface PoldeciHraca {
  * kartu zo šenku).
  */
 export function limitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
-  // Zastávka: spoločný limit oboch — súčet ich limitov.
-  if (spolocnyLimit(state)) {
-    return vlastnyLimitZhromazdenia(state, 0, p === 0 ? zmenaPoldeci : 0) + vlastnyLimitZhromazdenia(state, 1, p === 1 ? zmenaPoldeci : 0);
-  }
-  return vlastnyLimitZhromazdenia(state, p, zmenaPoldeci);
-}
-
-/** Limit hráča bez Zastávky — na Zastávke z neho platí pas (Michal 2026-10-22). */
-export function vlastnyLimitZhromazdenia(state: StavPoldeci, p: PlayerId, zmenaPoldeci = 0): number {
   return limitVykladania({ poldeciPlne: Math.max(0, state.hraci[p].poldeciPlne + zmenaPoldeci) }) + limitBonus(state, p);
 }
 
@@ -516,8 +509,9 @@ export function bitkaMody(data: GameData, state: VerejnyStav, p: PlayerId): Bitk
   pridaj("traktoristka", 2 * traktoristkySPrevahou(data, state, p));
   // vymahac (v7): za každé 2 priznané Dlhy majiteľa 1 Rana navyše.
   pridaj("vymahac", pocetKariet("vymahac") * Math.floor(state.hraci[p].dlhy / 2));
-  // pasca (Dedičstvo: Bitka, v7): súper v tomto kole priložil kartu k tvojej → Pecka navyše.
-  if (vDedicstve(state, p, "pasca") && (state.prilozeniaKu?.[p] ?? 0) > 0) pridaj("pasca", 2 * state.hraci[p].dedicstvo.filter((k) => k.defId === "pasca").length);
+  // pasca (Dedičstvo: Bitka, v7): súper v tomto kole priložil kartu k tvojej → Rana navyše
+  // (v9.1 podľa textu karty v tvorcovi od sady v36; predtým Pecka).
+  if (vDedicstve(state, p, "pasca") && (state.prilozeniaKu?.[p] ?? 0) > 0) pridaj("pasca", state.hraci[p].dedicstvo.filter((k) => k.defId === "pasca").length);
   // stryko_z_ameriky (Kšeft, v7): Rany kúpené v Pitkách tohto kola.
   pridaj("stryko_z_ameriky", state.kseftRany?.[p] ?? 0);
   // ihrisko (Michal 2026-10-20): v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat

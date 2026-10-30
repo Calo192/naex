@@ -17,7 +17,7 @@ vo feedback.md.
 - oprava: 2026-10-28 20261028-090549-2: pôvodné znenie z v6/v7 („nepasujem“) neplatí bezpodmienečne — od v8 víťaz berie 1 špak za každú kartu v línii na oboch stranách (§9.4). Eva K3 spasovala s 2 kartami, prehrala 0 : 6 a súperovi nedala špaky za vlastné karty; vyvrátenie +1. Neoverená, kým ju nepotvrdí partia s doložením.
 
 ### eva-2 · Keď dávam NA EX, prečítam celý riadok nákladov v ponuke (Dlh, Cirhóza, špaky), lebo NA EX zdvojí aj Dlh a Pečeň na karte a exekúcia či Cirhóza môžu zjesť zisk z tuhých.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 3
 - vyvrátenia: 0
@@ -27,7 +27,7 @@ vo feedback.md.
 
 
 ### eva-4 · Keď mám cigarety a súper nie, vezmem v šenku 2 karty za 3 cigarety v prvom ťahu aj v poslednej šanci, lebo po jeho „stop“ mám už len jeden ťah.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -36,7 +36,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §5 (2 karty za 3 cigarety; po prestaní súpera jedna posledná šanca). 161907 K5: Eva vzala po jednej karte (Dvojčatá, Veterán) a po Janovom stope jej ďalší ťah odmietli — mohla 2 + 2 za 6 cigariet; vo finále už 2 + 2. 090549: P2 Eva v šenku K2–finále päťkrát 2 karty za 3 cigarety (Bzdocha + Dvojčatá, Záhradkár + Silná, Finančná poradkyňa + Policajtka, Veštica + Čierna mačka, Liberál + Liberál).
 
 ### eva-5 · Keď môžem, tlačím súperovi Dlhy (Finančná poradkyňa, Liberál) a kladiem Noviny do Dedičstva, lebo Exekútor mu v každej bitke zhorí polovicu Dlhov a rovnako špakov a pri remíze v tuhom vyhrá ten s menej Dlhmi; Noviny ma poistia aj po prehre v tuhom.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0

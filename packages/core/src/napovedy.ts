@@ -13,10 +13,11 @@ import type { PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
-import { cenaPatronatu, patronatMozny, priazenHraca, priazenSila, prebudenyPre, vydesil } from "./elders.ts";
-import { kandidatiNaNahradu, kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
+import { pokusMozny, priazenHraca, priazenSila, vydesil } from "./elders.ts";
+import { kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
+import { KONSTANTY } from "./constants.ts";
 
 /** Jedna nápoveda v katalógu (napovedy.json). Text je jeden, alebo podľa variantu spúšťača. */
 export interface NapovedaDef {
@@ -114,7 +115,7 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
   cirhoza: (_d, v) => (v.ruka.some((k) => k.defId === "cirhoza") ? ANO : null),
 
   priazen: (d, v, ja) => {
-    const e = v.starsi.find((x) => !x.nahradeny && priazenHraca(x) === ja && priazenSila(x) > 0);
+    const e = v.starsi.find((x) => priazenHraca(x) === ja && priazenSila(x) > 0);
     return e === undefined ? null : { text: { starsi: defOf(d, e.karta).name }, kluce: { elderId: e.elderId } };
   },
 
@@ -125,18 +126,18 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
     return ([0, 1] as const).some((i) => zmiesana(i) && stred[i] > 0) ? ANO : null;
   },
 
-  // Tie isté podmienky ako moznyPatronat v jadre, len z pohľadu hráča (vlastná ruka je v ňom).
-  patronat: (d, v, ja) => {
+  // Kľúč „patronat“ ostáva pre texty nápovied; od v9 je to pokus o zajatie (tie isté podmienky ako moznePokusy v jadre).
+  patronat: (_d, v, ja) => {
     const ds = v.draftStav;
-    if (v.faza !== "draft" || ds === null || ds.krok !== "patronat" || ds.hotovo[ja] || v.patronat[ja] !== null) return null;
-    const h = v.hraci[ja];
-    if (h.poldeciPlne + h.poldeciVypite < 1 || kandidatiNaNahradu(d, v.ruka).length === 0) return null;
-    const zabrate = new Set(v.patronat.flatMap((x) => (x === null ? [] : [x.elderId])));
-    return v.starsi.some((e) => patronatMozny(e, ja) && h.cigarety >= cenaPatronatu(e).cigarety && !zabrate.has(e.elderId)) ? ANO : null;
+    if (v.faza !== "draft" || ds === null || ds.krok !== "zajatie" || ds.hotovo[ja] || v.pokusy[ja] !== null) return null;
+    if (v.hraci[ja].cigarety < KONSTANTY.CENA_POKUSU) return null;
+    const zabrate = new Set(v.pokusy.flatMap((x) => (x === null ? [] : [x.elderId])));
+    return v.starsi.some((e) => pokusMozny(e, ja) && !zabrate.has(e.elderId)) ? ANO : null;
   },
 
   vydesenie: (_d, v, ja) => {
-    const e = v.starsi.find((x) => prebudenyPre(x) !== null);
+    // Od v9 stav „vydesený“ (stupeň 3) — taký starší sa dá zajať.
+    const e = v.starsi.find((x) => vydesil(x, 0) || vydesil(x, 1));
     return e === undefined ? null : { variant: vydesil(e, ja) ? "moje" : "superove" };
   },
 

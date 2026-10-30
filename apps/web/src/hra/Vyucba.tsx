@@ -306,7 +306,7 @@ export function krokSoStarsimi(krok: KrokVyucby | null): boolean {
   if (krok === null) return false;
   return (
     krok.zvyraznit.some((k) => k === "bar:body" || k === "linia-starsich" || k === "starsi-stupnica" || k.startsWith("starsi:")) ||
-    ["prebytok", "pohorsenie", "patronat", "bezPatronatu"].includes(krok.ocakava?.type ?? "")
+    ["prebytok", "pohorsenie", "pokus", "bezPokusu"].includes(krok.ocakava?.type ?? "")
   );
 }
 
@@ -401,7 +401,7 @@ export function VyucbaStol({
       const spaky = document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="body"]');
       if (nastenka && document.querySelector('[data-vyucba="nastenka"]') === null) spaky?.click();
       else if (!nastenka && spaky?.classList.contains("stlacene") === true) spaky.click();
-      const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "patronat";
+      const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "pokus";
       if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
     }, 350);
     return () => clearTimeout(t);

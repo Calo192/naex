@@ -17,7 +17,7 @@ vo feedback.md.
 
 
 ### vilo-2 · Keď mám priznané Dlhy, počítam s Exekútorom v každej bitke (polovica Dlhov nahor + súperova priazeň Exekútora, rovnako špakov, aj pri jedinom Dlhu), preto Dlhy nenarábam (Poštárka, NA EX zdvojujúci moje neaktívne Dlh, Silná vedľa Dlhu), držím Záhradkára a pri tesnej remíze si Dlhy spočítam, lebo menej Dlhov vyhráva; na Poveru proti jedinému Dlhu sa nespolieham — Exekútor ho zhorí skôr.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -36,7 +36,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §Úplatok (1 cigareta raz za Pitku na kartu), §7. 161907 K5: Kulturista 6 → 4 → 2 tuhé za 2 cigarety, bitka 6 : 4 (Hela: „Vilo ho zmiernil Úplatkom“).
 
 ### vilo-4 · Keď vyhrávam bitku a mám Pohoršenia z dvoch zdrojov, posuniem nimi čerstvého staršieho (priazeň neškodná: Kmotor, Exekútor, Alkoholik) dvakrát k súperovi — z nuly na žltú a oranžovú — lebo strach platí za nové zóny hneď: 2 Pohoršenia = 3 špaky, 3 = 6.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0

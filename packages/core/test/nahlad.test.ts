@@ -17,6 +17,7 @@ import {
   rngInt,
   rngSeed,
   setupGame,
+  silaPriazne,
   viewFor,
 } from "../src/index.ts";
 
@@ -36,7 +37,11 @@ describe("poskodenieBitky z verejného pohľadu", () => {
         const prave = predtymBezPoskodenia && b !== null && b.damage !== null;
         predtymBezPoskodenia = b === null || b.damage === null;
         // Exekúcia (od 2026-10-28 po poškodení) už Dlhy spálila — vrátia sa do pohľadu; bitky s Robotou sa vynechajú.
-        const bezRoboty = b !== null && (b.sums[0].Robota ?? 0) + (b.sums[1].Robota ?? 0) === 0;
+        // Priazne Robota a Advokát (v9) tiež pália Dlhy či menia zhorené špaky — vynechajú sa.
+        const bezRoboty =
+          b !== null &&
+          (b.sums[0].Robota ?? 0) + (b.sums[1].Robota ?? 0) === 0 &&
+          ([0, 1] as const).every((q) => silaPriazne(data, state, "ROBOTA", q) === 0 && silaPriazne(data, state, "ADVOKAT", q) === 0);
         if (prave && bezRoboty && b !== null && b.krok === "prebytok" && b.damage !== null) {
           const v0 = viewFor(data, state, 0);
           const sDlhmi = (p: PlayerId) => ({ ...v0.hraci[p], dlhy: v0.hraci[p].dlhy + b.exekutor[p] });

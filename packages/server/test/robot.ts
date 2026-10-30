@@ -124,8 +124,8 @@ export class Robot {
           const krok = krokStavby(uids.length);
           return { type: "stavbaSenku", doSenku: uids.slice(0, krok.doSenku), odhod: uids.slice(krok.doSenku, krok.doSenku + krok.odhod) };
         }
-        // Patronát robot nevyužíva.
-        if (d?.krok === "patronat") return { type: "bezPatronatu" };
+        // Pokus o zajatie (v9) robot nevyužíva.
+        if (d?.krok === "zajatie") return { type: "bezPokusu" };
         // Najviac dve karty zo šenku, po jednej za cigaretu.
         const karta = view.senok[0];
         if (karta === undefined || d === null || d.noveKarty[ja] >= 2) return { type: "draftStop" };

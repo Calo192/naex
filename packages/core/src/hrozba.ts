@@ -95,23 +95,20 @@ export function hrozbaNaex(
 /**
  * Rozsah nepridelených Pohoršení (Michal 2026-10-27 „ukázať rozsah“, playtest
  * 20261027-105422): odhad bitky ráta s markermi, ako stoja, no Pohoršenia sa
- * prideľujú až v bitke a priazeň (Bitkár, Veriaci, prebudený starší) mení
+ * prideľujú až v bitke a priazeň (Bitkár, Veriaci) mení
  * poškodenie hneď. Všetko z verejného: počty Pohoršení vidia obaja.
  */
 export interface NepridelenePohorsenia {
   readonly pocet: readonly [number, number];
-  /** Z toho zo súperovho patronátu — nesmú na jeho patróna (pohorsenieMozne). */
-  readonly zPatronatu: readonly [number, number];
 }
 
-/** Stôl pre Pohoršenia: verejný patronát a stav bitky (GameState aj ClientState). */
+/** Stôl pre Pohoršenia: verejné pokusy o zajatie (v9) a stav bitky (GameState aj ClientState). */
 export type StolPohorseni = StolBitky & {
-  readonly patronat: readonly ({ readonly elderId: string; readonly pohorsenia: number } | null)[];
+  readonly pokusy: readonly ({ readonly elderId: string } | null)[];
   readonly bitkaStav: {
     readonly krok: BitkaKrok | null;
     readonly damage: DamageResult | null;
     readonly pohorsenieZostava: readonly [number, number];
-    readonly pohorseniaPatronatu?: readonly [number, number];
   } | null;
 };
 
@@ -122,13 +119,9 @@ export type StolPohorseni = StolBitky & {
  */
 export function nepridelenePohorsenia(data: GameData, stol: StolPohorseni, sums: readonly [ActionSums, ActionSums]): NepridelenePohorsenia {
   const b = stol.bitkaStav;
-  if (b !== null && b.damage !== null) return { pocet: [0, 0], zPatronatu: [0, 0] };
-  if (b === null || b.krok === "benzinka") {
-    const pocet = pohorseniaVBitke(data, stol, sums);
-    const z = (p: PlayerId): number => Math.min(pocet[p], stol.patronat[opponentOf(p)]?.pohorsenia ?? 0);
-    return { pocet, zPatronatu: [z(0), z(1)] };
-  }
-  return { pocet: b.pohorsenieZostava, zPatronatu: b.pohorseniaPatronatu ?? [0, 0] };
+  if (b !== null && b.damage !== null) return { pocet: [0, 0] };
+  if (b === null || b.krok === "benzinka") return { pocet: pohorseniaVBitke(data, stol, sums) };
+  return { pocet: b.pohorsenieZostava };
 }
 
 export interface RozsahPohorseni {
@@ -164,14 +157,13 @@ export function rozsahPohorseni(
   // (tuhé orezané na 0) poškodenie sama nezmení, s posunom iného staršieho však áno.
   const strany = (starsi: readonly ElderState[]): string => JSON.stringify(stranyBitky(data, { ...stol, starsi }, sums));
   const zakladStrany = strany(stol.starsi);
-  // Pohoršenia zo súperovho patronátu nesmú na jeho patróna.
-  const patron = stol.patronat[opponentOf(p)]?.elderId ?? null;
-  const naPatrona = Math.max(0, n - nepridelene.zPatronatu[p]);
+  // Starší v ohrození (pokus o zajatie, v9) sa v kole pokusu nehýbe.
+  const vOhrozeni = new Set(stol.pokusy.flatMap((x) => (x === null ? [] : [x.elderId])));
   const posun = (e: ElderState, d: number): ElderState => ({ ...e, marker: (e.marker + d) as MarkerPos });
   // Posuny d každého staršieho: záporné k hráčovi 0, kladné k hráčovi 1.
   const kandidati = stol.starsi
     .map((e, i) => {
-      const max = e.elderId === patron ? naPatrona : n;
+      const max = vOhrozeni.has(e.elderId) ? 0 : n;
       const od = -Math.min(max, e.marker - MARKER_KRAJ[0]);
       const po = Math.min(max, MARKER_KRAJ[1] - e.marker);
       const meni = Array.from({ length: po - od + 1 }, (_, k) => od + k).some(

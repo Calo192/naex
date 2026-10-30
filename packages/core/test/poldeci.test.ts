@@ -94,12 +94,12 @@ describe("E1: limit vykladania pred a po ťahu", () => {
     expect(limitZhromazdenia(s, 0, -5)).toBe(1);
   });
 
-  it("Zastávka: spoločný limit = súčet limitov oboch; Vínko v Dedičstve pridá 1", () => {
+  it("Zastávka limit nemení (v9.1, spoločný limit zanikol); Vínko v Dedičstve pridá 1", () => {
     const s0 = setupGame(data, 23);
     const zastavka: GameState = { ...s0, ciel: { typ: "lokalita", lokalita: inst("zastavka") } };
     const jeden = KONSTANTY.START_POLDECI + 1;
-    expect(limitZhromazdenia(zastavka, 0)).toBe(2 * jeden);
-    expect(limitZhromazdenia(zastavka, 0, -1)).toBe(2 * jeden - 1);
+    expect(limitZhromazdenia(zastavka, 0)).toBe(jeden);
+    expect(limitZhromazdenia(zastavka, 0, -1)).toBe(jeden - 1);
     const vinko: GameState = { ...s0, hraci: [{ ...s0.hraci[0], dedicstvo: [inst("vinko")] }, s0.hraci[1]] };
     expect(limitZhromazdenia(vinko, 0)).toBe(KONSTANTY.START_POLDECI + 2);
   });

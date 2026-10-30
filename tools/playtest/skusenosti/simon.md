@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### simon-1 · Keď ide posledná bitka partie a starší mi prejavuje priazeň, zvažujem patronát: bolestné (poldeci natrvalo) po poslednej bitke nič nestojí, ale súper dostane Pohoršenia navyše (1/2/3 podľa zóny) a použije ich na posun markerov a na vlastný strach.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 5
 - vyvrátenia: 1
@@ -17,7 +17,7 @@ vo feedback.md.
 - oprava: 2026-10-27 20261027-131033-2: pôvodné pravidlo správania „beriem patronát v poslednej bitke“ ignorovalo Pohoršenia navyše pre súpera (v6.1); Šimon ho v partii nepoužil a vyvrátil ho podľa §10 a dvoch cudzích patronátov.
 
 ### simon-2 · Keď prehrám bitku a mám 6 a viac Pohoršení (Abstinent 3 + hrana lokality), posuniem nimi starších zo stredu aj z polovice súpera o dve zóny k súperovi, lebo strach za nové zóny mi zaplatí moja ďalšia výhra — a vyhnem sa tomu, aby naňho vznikli štyria červení na jeho strane.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0

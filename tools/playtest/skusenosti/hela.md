@@ -18,7 +18,7 @@ vo feedback.md.
 - oprava: 2026-10-28 20261028-090549-3: číslo −5 bolo zo starého znenia, PRAVIDLA §14 v8 dávajú −3 za kus (výsledok 43 : 32 sedel na −3). Neoverená, kým ju nepotvrdí partia.
 
 ### hela-2 · Keď dávam Pohoršenie k sebe na Veriaceho (Viera +1), najprv skontrolujem súperove Povery, lebo Viera najprv ruší Poveru 1 : 1 a tuhé sa nemusí zmeniť; Bitkár zvýši tuhé vždy.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 2
 - vyvrátenia: 0

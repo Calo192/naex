@@ -116,19 +116,20 @@ export function IkonaAbstak() {
 // ---- doska hráča --------------------------------------------------------------
 
 /**
- * Neresti kola proti súperovým (v8.1 Krok so stolom): dieliky po čiaru súpera
- * treba zaplniť, aby Absťák nepribudol; dielik za čiarou jeden Absťák zoberie.
+ * Neresti kola proti latke Chuti (v9.1): dieliky po čiaru treba zaplniť, aby na konci
+ * kola nepribudla karta Absťák; neresti za čiarou Chuť zvýšia.
  */
 function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
-  const dieliky = Math.max(z.super + 1, z.teraz);
+  const latka = Math.max(0, z.latka);
+  const dieliky = Math.max(latka, z.teraz, 1);
   return (
     <span className="neresti-pruh" aria-hidden="true">
       {Array.from({ length: dieliky }, (_, i) => {
         const plny = i < z.teraz;
-        const trieda = i < z.super ? (plny ? "plny" : "chyba") : plny ? "plny nad" : "nad";
+        const trieda = i < latka ? (plny ? "plny" : "chyba") : plny ? "plny" : "";
         return (
           <span key={i} className={trieda}>
-            {i === z.super && <i className="ciara" />}
+            {i === latka && latka > 0 && <i className="ciara" />}
           </span>
         );
       })}
@@ -137,32 +138,29 @@ function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
 }
 
 /** Krátky výhľad pod počítadlom a jeho trieda (farba). */
-function vyhladAbstaku(z: StavZavislosti, ja: boolean): { text: string; trieda: string } {
-  switch (z.vyhlad) {
-    case "ziska":
-      return { text: `hrozí +1 · chýba ${z.doBezpecia}`, trieda: "zly" };
-    case "zbavi":
-      return { text: `${ja ? "zbavíš" : "zbaví"} sa 1`, trieda: "dobry" };
-    case "nic":
-      return z.doZbavenia > 0
-        ? { text: `bez zmeny · +${z.doZbavenia} = −1`, trieda: "" }
-        : { text: "bez zmeny", trieda: "" };
-  }
+function vyhladChuti(z: StavZavislosti): { text: string; trieda: string } {
+  return z.vyhlad === "ziska"
+    ? { text: `chýba ${z.doBezpecia} · inak +1 Absťák`, trieda: "zly" }
+    : { text: `po kole Chuť ${z.chutPo}`, trieda: "" };
 }
 
-/** Absťák na doske: koľko ich má, čo robia, neresti kola a čo bude na konci kola. */
-function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean }) {
-  const vyhlad = vyhladAbstaku(z, ja);
+/**
+ * Chuť na doske (v9.1): latka nerestí, neresti kola, čo bude na konci kola a koľko
+ * kariet Absťák má hráč v balíčku (každá −1 tuhé v bitke).
+ */
+function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean }) {
+  const vyhlad = vyhladChuti(z);
+  const opatrovatelka = z.latka < z.chut ? ` (Opatrovateľka: porovnáva sa ${Math.max(0, z.latka)})` : "";
   return (
     <Zdroj
-      nazov="Absťák"
+      nazov="Chuť"
       trieda={`zdroj-abstak ${z.vyhlad === "ziska" ? "varovanie" : ""} ${z.abstaky > 0 ? "ma-abstak" : ""}`}
       ikona={<IkonaAbstak />}
       hodnota={
         <>
           <span className="velke-cislo">
-            {z.abstaky}
-            {z.ubera > 0 && <small className="abstak-ubera"> −{z.ubera} tuhé</small>}
+            {z.chut}
+            {z.abstaky > 0 && <small className="abstak-ubera"> Absťák ×{z.abstaky}</small>}
           </span>
           {/* Prúžok vedľa čísla — bar má pevnú výšku, pod číslom sú len dva krátke riadky. */}
           <NerestiPruh z={z} />
@@ -170,22 +168,21 @@ function ZdrojAbstak({ z, ja }: { readonly z: StavZavislosti; readonly ja: boole
       }
       pod={
         <>
-          <span className="neresti-pocet">
-            {ja ? `súper ${z.super} · ty ${z.teraz}` : `ty ${z.super} · on ${z.teraz}`}
-          </span>
+          <span className="neresti-pocet">dnes {z.teraz}</span>
           <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.text}</span>
         </>
       }
       tip={{
-        nadpis: "Absťák",
+        nadpis: "Chuť a Absťák",
         text: (
           <>
             <span className="tip-stav">
-              {ja ? "Máš" : "Má"} {z.abstaky}
-              {z.abstaky > 0 && ` · v bitke −${z.ubera} tuhé, +${z.pohorsenia} Pohoršenie`} · neresti {z.teraz}, súper {z.super} · {vyhlad.text}
+              Chuť {z.chut}{opatrovatelka} · dnes {z.teraz} · {vyhlad.text}
+              {z.abstaky > 0 && ` · ${ja ? "máš" : "má"} ${z.abstaky} Absťák${z.abstaky === 1 ? "" : z.abstaky < 5 ? "y" : "ov"} v balíčku, v bitke −${z.ubera} tuhé`}
             </span>
-            Na konci kola sa porovnajú neresti oboch: menej ako súper = +1 Absťák, viac = jeden odíde, rovnako nič. Každý Absťák v bitke o ranu
-            menej a 1 Pohoršenie navyše. Nerest je poldeci navyše, NA EX, cigareta, doliatie aj barter.
+            Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, NA EX {KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1 (doliatie, barter ani platby nie). Na konci kola:
+            menej nerestí než Chuť = karta Absťák do odhadzovacieho balíčka; potom Chuť = väčšie z (Chuť, neresti) − {KONSTANTY.CHUT_UBYTOK}. Absťák sa nedá
+            priznať, po bitke ide z ruky späť do odhadzovacieho a každý v balíčku ti v bitke uberie 1 tuhé. Zahodiť ho smie Vízia. Po finále sa nič nerieši.
           </>
         ),
       }}
@@ -639,17 +636,19 @@ export function HracDoska({
           />
           {spojenie !== undefined && !spojenie.pripojeny && <span className="doska-odpojeny">○ odpojený {minSek(odpojenyMs)}</span>}
           {/* Nepriznané kliatby pod menom; priznané a Dedičstvo sú v dlaždici KARTY (Michal 2026-10-23, #76). */}
-          {kliatby.cirhoza > 0 && (
+          {(kliatby.cirhoza > 0 || zavislost.abstaky > 0) && (
             <span className="doska-oblast">
               <span
                 className="cip kliatba"
                 title={
-                  ja
+                  (ja
                     ? `Tvoje nepriznané kliatby v ruke a v balíčkoch. Každá Cirhóza ti na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`
-                    : `Súperove nepriznané kliatby podľa toho, čo bolo vidno na stole. Každá Cirhóza mu na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`
+                    : `Súperove nepriznané kliatby podľa toho, čo bolo vidno na stole. Každá Cirhóza mu na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`) +
+                  (zavislost.abstaky > 0 ? " Absťák sa nedá priznať — každý v balíčku uberie v bitke 1 tuhé." : "")
                 }
               >
-                nepriznané · Cirhóza ×{kliatby.cirhoza}
+                nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
+                {zavislost.abstaky > 0 && ` · Absťák ×${zavislost.abstaky}`}
               </span>
             </span>
           )}
@@ -747,7 +746,7 @@ export function HracDoska({
             ),
           }}
         />
-        <ZdrojAbstak z={zavislost} ja={ja} />
+        {view.bezChuti !== true && <ZdrojChut z={zavislost} ja={ja} />}
         <Zdroj
           nazov="Pečeň"
           trieda={`zdroj-pecen ${(v?.cirhozy ?? 0) > 0 ? "hrozi" : pecenPo >= prahy.cirhoza - 1 ? "varovanie" : ""}`}
@@ -836,6 +835,7 @@ export function HracDoska({
               ? "Zavrieť nástenku (Esc)"
               : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Na konci kola ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú za udržané stupne ${body.zaStarsich[p]}, nech bitku vyhrá ktokoľvek (dlaždica Starší).` +
                 (body.vykupne[p].spaky > 0 && view.koniec === null ? ` Výkupné poldeci a cigariet na konci hry: +${body.vykupne[p].spaky}.` : "") +
+                (body.vazni[p] > 0 && view.koniec === null ? ` Väzni po finále: +${body.vazni[p]}.` : "") +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
                 " Klik ukáže nástenku: odkiaľ sú špaky po bitkách."
           }
@@ -1426,7 +1426,7 @@ export function PriebehKola({
       <>
         Posledná bitka na vrcholovej lokalite (v7): útočí, kto má menej špakov (pri rovnosti porazený poslednej bitky), a vedúci
         vyberie a natočí lokalitu. Kraje, prevaha aj počet Pitiek ako na každej lokalite.
-        <span className="tip-riadok">Nakladačka sa vo finále nerozdeľuje. Po finále starší zaplatia stupne udržané z posledného kola (nové stupne z finále nič) a odpočíta sa nepriznaná Cirhóza.</span>
+        <span className="tip-riadok">Nakladačka sa vo finále nerozdeľuje — víťaz za ňu dostane 1 špak za každý bod. Po finále starší zaplatia stupne udržané z posledného kola (nové stupne z finále nič) a odpočíta sa nepriznaná Cirhóza.</span>
       </>
     ),
   };
@@ -1453,7 +1453,7 @@ export function PriebehKola({
       id: "draft",
       nazov: "Draft",
       tip: {
-        nadpis: "Draft — šenok a patronát",
+        nadpis: "Draft — šenok a pokus o zajatie",
         text: (
           <>
             <b>Stavba šenku:</b> každý dostane {KONSTANTY.STAVBA_NARADIE} karty z Náradia a {KONSTANTY.STAVBA_OBCANIA} z Občanov; obaja
@@ -1463,10 +1463,9 @@ export function PriebehKola({
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
             </span>
             <span className="tip-riadok">
-              <b>Patronát:</b> komu starší prejavuje priazeň (aspoň žltá), smie si ho vziať do ruky — najprv útočník, potom obranca.
-              Na jeho miesto dá lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety podľa zóny (červená 1, oranžová 2,
-              žltá 3), súper dostane
-              v bitke Pohoršenia (o koľko marker išiel do stredu). Výhra = starší je jeho; prehra = odhodí poldeci.
+              <b>Pokus o zajatie:</b> staršieho, ktorý sa hráča bojí na stupni 3, smie skúsiť zajať — najprv útočník, potom obranca.
+              Stojí {KONSTANTY.CENA_POKUSU} cigaretu (prepadne), karta staršieho ide súperovi do ruky a marker sa v kole nehýbe. Vyhrá bitku = väzeň
+              (tretí vyhráva); prehrá = starší sa vráti a marker ustúpi o stupeň.
             </span>
             {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v šenku ({view.senok.length}).</span>}
           </>
@@ -1530,7 +1529,7 @@ export function PriebehKola({
           Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky). Pri rovnakom tuhom vyhrá, kto
           má menej Absťákov, potom menej priznaných Dlhov; inak sekera — špaky kola čakajú na víťaza ďalšej bitky (vo finále prepadnú).
           Víťaz dostane toľko špakov, koľko Pitiek sa odohralo (mínus rozdiel Absťákov, aspoň 1) a lokalita ide na krčmovú nástenku.
-          Rozdiel tuhého je Nakladačka: drží ju víťaz, starších vyberá porazený (vo finále sa nerozdeľuje). Strach starších platí na
+          Rozdiel tuhého je Nakladačka: drží ju víťaz, starších vyberá porazený (vo finále sa nerozdeľuje, víťaz za ňu dostane špaky 1 : 1). Strach starších platí na
           konci kola za stupne udržané od minulého kola — každému, koho sa boja.
           <span className="tip-riadok">
             Potom Exekútor, Pohoršenie, Nakladačka… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole

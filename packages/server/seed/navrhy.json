@@ -928,5 +928,25 @@
   "mierkaIkon": 1.3,
   "kopie": 1,
   "obrazok": "zrkadlo.jpg"
+ },
+ {
+  "id": "abstak",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 10,
+  "obrazok": "abstak.jpg"
+ },
+ {
+  "id": "opatrovatelka",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "opatrovatelka.jpg"
  }
 ]

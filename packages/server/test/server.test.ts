@@ -240,8 +240,8 @@ describe("M12 — účty, profil a admin API", () => {
     expect((await api("/admin/obsah", { cookie })).status).toBe(403);
     expect((await api("/admin/obsah")).status).toBe(401);
     const sada = await api("/sada");
-    // Sada v7 (revízia a efekty, Michal 2026-10-27): 81 kariet.
-    expect((sada.telo?.karty as unknown[]).length).toBe(92);
+    // Sada v50 bez Presbitera (v9.1, Absťák a Opatrovateľka): 94 kariet.
+    expect((sada.telo?.karty as unknown[]).length).toBe(94);
     expect(sada.telo?.verzia).toBe(1);
     // Scorecardy z KartyAI sú v sade od prvého spustenia, ikony s významom v hre.
     expect((sada.telo?.bodovacie as unknown[]).length).toBe(8);

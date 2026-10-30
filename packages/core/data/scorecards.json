@@ -6,7 +6,10 @@
   "Pravidlá v6 (Michal 2026-10-26, docs/napady/spaky.html): scorecard nesie už len priazeň",
   "staršieho. Bodovacie podmienky sa rušia — víťazné body sú špaky (po vyhratej bitke dá starší",
   "obávanému hráčovi zóny, ktoré mu ešte nezaplatil: 1 / 2 / 3 — v8). lava/prava a body ostávajú len ako formát",
-  "bodovacích kariet tvorcu; hra ich nečíta. Rozloženie v5 je v histórii gitu."
+  "bodovacích kariet tvorcu; hra ich nečíta. Rozloženie v5 je v histórii gitu.",
+  "",
+  "Pravidlá v9 (krok 2 revízie starších, Michal 2026-10-30): Exekútor → Advokát (ADVOKAT), Výpalník → Robota (ROBOTA).",
+  "TODO(Admin): bodovacie karty Advokát a Robota zadať v tvorcovi, zverejniť a tento súbor dorovnať z /api/sada."
  ],
  "body": {
   "znepokojenie": 0,
@@ -124,9 +127,9 @@
    ]
   },
   {
-   "id": "neprajnik",
-   "nazov": "Výpalník",
-   "favour": "NEPRAJNIK",
+   "id": "robota",
+   "nazov": "Robota",
+   "favour": "ROBOTA",
    "lava": [
     null,
     null,
@@ -141,9 +144,9 @@
    ]
   },
   {
-   "id": "exekutor",
-   "nazov": "Exekútor",
-   "favour": "EXEKUTOR",
+   "id": "advokat",
+   "nazov": "Advokát",
+   "favour": "ADVOKAT",
    "lava": [
     null,
     null,

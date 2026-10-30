@@ -105,14 +105,13 @@ describe("v8.3: Povery — výpožička priazne (§9.1)", () => {
 
   it("klebety pôsobia v poškodení (Bitkár) aj na Pohoršenia z Abstinenta — a po kole zaniknú", () => {
     // Abstinent hráča 1 v sile 1; hráč 0 ho jednou Poverou preklopí k sebe → Pohoršenie navyše má on.
-    // Hráč 1 má Absťák (Nervák: +1 Pohoršenie) — bitka na ňom počká.
-    const s0 = vPoverach({ povery: [1, 0], markery: { LAKOMEC: 4, BITKAR: 3 } });
-    const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], abstaky: 1 }] };
+    // Abstinent hráča 1 v sile 2 (do v9.1 sila 1 + Absťák, Nervák); Povera mu ju zníži na 1 — bitka na ňom počká.
+    const s = vPoverach({ povery: [1, 0], markery: { LAKOMEC: 5, BITKAR: 3 } });
     const abstinent = idPriazne(s, "LAKOMEC");
     const t = apply(data, s, { type: "povera", elderId: abstinent }, 0).state;
     expect(t.bitkaStav).toMatchObject({ krok: "pohorsenie", caka: 1 });
-    expect(silaPriazne(data, t, "LAKOMEC", 1)).toBe(0);
-    // Bez Povery by mal 1 z Absťáku + 1 z Abstinenta; Povera mu Abstinenta zobrala.
+    expect(silaPriazne(data, t, "LAKOMEC", 1)).toBe(1);
+    // Bez Povery by mal 2 z Abstinenta; Povera mu jedno zobrala.
     expect(t.bitkaStav?.pohorsenieZostava[1]).toBe(1);
     // Bitkár zo stredu požičaný hráčovi 0: +1 tuhé rozhodne remízu 2 : 2.
     const s2 = vPoverach({ povery: [1, 0], markery: { BITKAR: 3 }, sums: [{ Rana: 2 }, { Rana: 2 }] });

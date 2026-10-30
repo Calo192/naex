@@ -663,10 +663,10 @@
     },
     {
       "id": "budicek",
-      "nazov": "Budíček",
+      "nazov": "Prvý väzeň",
       "kategoria": "starsi",
-      "popis": "Prebuď staršieho (marker na krajnej pozícii) — spolu {prah}×.",
-      "metrika": "moment.prebudenie",
+      "popis": "Zajmi prvého staršieho v partii — spolu {prah}×.",
+      "metrika": "prvyVazen",
       "rozsah": "kariera",
       "prahy": [
         1,
@@ -682,13 +682,13 @@
         "vzacne",
         "legendarne"
       ],
-      "zdroj": "udalosť moment (prebudenie)"
+      "zdroj": "prvý väzeň partie (v9); do v9 Budíček za prebudenie — kto ho má, ponechá si ho"
     },
     {
       "id": "patron",
       "nazov": "Patrón",
       "kategoria": "starsi",
-      "popis": "Vezmi staršieho do ruky patronátom — spolu {prah}×.",
+      "popis": "Skús zajať staršieho (pokus o zajatie) — spolu {prah}×.",
       "metrika": "stat.bitkyOStarsich",
       "rozsah": "kariera",
       "prahy": [
@@ -705,13 +705,13 @@
         "nezvycajne",
         "vzacne"
       ],
-      "zdroj": "príkaz patronat"
+      "zdroj": "príkaz pokus (v9; do v9 patronát)"
     },
     {
       "id": "vazen-v-pivnici",
       "nazov": "Väzeň v pivnici",
       "kategoria": "starsi",
-      "popis": "Získaj staršieho patronátom (vyhraj s ním bitku) — spolu {prah}×.",
+      "popis": "Zajmi staršieho (vyhraj bitku pri pokuse o zajatie) — spolu {prah}×.",
       "metrika": "stat.starsiZiskani",
       "rozsah": "kariera",
       "prahy": [
@@ -728,7 +728,7 @@
         "nezvycajne",
         "vzacne"
       ],
-      "zdroj": "patronát a bitkaVysledok.vitaz"
+      "zdroj": "väzni (v9; do v9 patronát s výhrou)"
     },
     {
       "id": "pohorsenie",
@@ -780,8 +780,8 @@
       "id": "zachranene",
       "nazov": "Zachránené",
       "kategoria": "starsi",
-      "popis": "Zmar súperovo ohlásené vydesenie patronátom — spolu {prah}×.",
-      "metrika": "moment.zachranene",
+      "popis": "Vyhraj bitku, v ktorej sa ťa súper pokúša zajať staršieho — spolu {prah}×.",
+      "metrika": "zmarenyPokus",
       "rozsah": "kariera",
       "prahy": [
         1,
@@ -797,13 +797,13 @@
         "legendarne",
         "legendarne"
       ],
-      "zdroj": "udalosť moment (zachranene)"
+      "zdroj": "pokus o zajatie súpera zlyhal tvojou výhrou (v9); do v9 zmarené ohlásené vydesenie — kto ho má, ponechá si ho"
     },
     {
       "id": "hroza-a-des",
       "nazov": "Hrôza a des",
       "kategoria": "starsi",
-      "popis": "Vyhraj partiu ohláseným vydesením — spolu {prah}×.",
+      "popis": "Vyhraj partiu tretím väzňom — spolu {prah}×.",
       "metrika": "vyhraVydesenim",
       "rozsah": "kariera",
       "prahy": [
@@ -820,7 +820,7 @@
         "legendarne",
         "legendarne"
       ],
-      "zdroj": "koniec.dovod (vydesenie)"
+      "zdroj": "koniec.dovod (tretí väzeň, v9; do v9 ohlásené vydesenie)"
     },
     {
       "id": "bohac",
@@ -1577,9 +1577,19 @@
       "popis": "výhra v Prvej lige — dlhej partii (aj vyhra.kratka, vyhra.stredna)"
     },
     {
+      "id": "prvyVazen",
+      "typ": "počítadlo",
+      "popis": "zajatie prvého staršieho v partii (v9)"
+    },
+    {
+      "id": "zmarenyPokus",
+      "typ": "počítadlo",
+      "popis": "súperov pokus o zajatie zlyhal, lebo si vyhral bitku (v9)"
+    },
+    {
       "id": "vyhraVydesenim",
       "typ": "počítadlo",
-      "popis": "výhra ohláseným vydesením"
+      "popis": "výhra tretím väzňom (do v9 ohláseným vydesením)"
     },
     {
       "id": "vyhraSMenejBitkami",

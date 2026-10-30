@@ -1742,3 +1742,207 @@ Staré znenie §5 (Branie zo šenku, posledný odsek):
 > spoločného balíčka (Stavba šenku, vyššie); medzitým z neho berú Starosta a Cintorín. Po braní sa šenok **doplní z vrchu spoločného
 > balíčka na 8 kariet**. Keď sa spoločný balíček minie, šenok sa už nedopĺňa
 > a stavba sa zmenšuje až na nulu — hra beží ďalej bez trestu.
+
+## v9 — väzeň, Kšeft väzňa, bossovia a priazne (Michal 2026-10-30, revízia starších krok 2)
+
+Zadanie: `docs/napady/starsi-krok2-zadanie.html` (verzia 1.1, rozhodnutia O1–O10).
+Patronát a vydesenie ako výhra nahradil väzeň (§1, §10), efekty starších Kšeft väzňa
+(§7), priazne Exekútor a Výpalník Advokát a Robota, Fajčiar sa presunul za bitku
+a Kmotor presúva 2 / 3 / 4 Dlhy. Staré znenia:
+
+Staré znenie §1 Podmienky konca (v8):
+
+> ### Podmienky konca
+>
+> | Udalosť | Výsledok |
+> |---|---|
+> | Hráč vydesí aspoň polovicu starších (aj nahradených) a **udrží ich do konca nasledujúceho kola** — ohlásené vydesenie; súper má kolo na odpoveď, napr. patronát nad vydeseným starším vráti marker do stredu (§10) | **vyhráva** |
+> | Odohrá sa finále (po 3 / 5 / 7 bitkách o lokality podľa dĺžky hry) | vykúpia sa zvyšné plné poldeci a cigarety, odpočíta sa nepriznaná Cirhóza a vyhrá viac špakov (§14) |
+>
+> Exekúcia prehru nespôsobí — stojí Dlhy a špaky (§11).
+>
+> Vydesenie sa kontroluje na konci kola (§4) a po každom posune markera:
+> keď hráčovi klesne počet vydesených starších pod polovicu (patronát, Pohoršenie,
+> Nakladačka), ohlásenie **padá hneď** — ak ich v tom istom kole znova doplní,
+> ohlasuje odznova a musí ich udržať do konca nasledujúceho kola (Michal 2026-10-26).
+> **Vo finále:** vydesenie ohlásené v poslednej bitke o lokalitu sa skontroluje
+> na konci finále **ešte pred konečnými špakmi** (§14b) — keď ho hráč udržal,
+> vyhráva hru. Vydesenie ohlásené až vo finále už nič nerozhoduje (ďalšie kolo
+> nepríde).
+> Malý balíček prehru nespôsobí:
+> keď sa doberací aj odhadzovací balíček minú, hráč len nemá čo ťahať (a fajčiť
+> sa vtedy nedá, §7).
+
+Staré znenie §10 Prebudenie (v8):
+
+> ### Prebudenie
+>
+> Keď hráč vytlačí marker na krajnú červenú pozíciu, **prebudí staršieho**: od
+> tej chvíle sa efekt karty staršieho uplatňuje **pre vydesujúceho hráča**, hoci
+> karta leží na ukazovateli. Priazeň pritom ostáva súperovi.
+>
+> Spúšťač pri prebudení: **Nástup sa neuplatní** (karta nie je v línii). Furt,
+> Bitka, Pitka, Prehra, Výhra a Zhromaždenie fungujú normálne a vzťahujú sa na
+> vydesujúceho hráča.
+
+Staré znenie §10 Priazne (v8):
+
+> ### Priazne
+>
+> **Priazeň** pôsobí **silou** 1 / 2 / 3 podľa zóny markera (žltá, oranžová,
+> červená). Priazeň staršieho určuje scorecard, na ktorom leží (rozdáva sa
+> náhodne, §3; názov scorecardu = priazeň).
+>
+> <!-- Stupnice síl sa ešte dolaďujú (docs/pravidla-v5/davka.md) — mení sa len stĺpec „sila 1 / 2 / 3“. -->
+>
+> | Priazeň | Uplatňuje sa pri | Účinok | sila 1 / 2 / 3 |
+> |---|---|---|---|
+> | Bitkár | Poškodenie v bitke (§9.3) | tuhé poškodenie navyše | +1 / +2 / +3 |
+> | Kmotor | Po bitke (§9, krok 6c) | tvoje priznané Dlhy prejdú medzi súperove priznané (v8); ak ich máš menej, presunie, koľko máš; bez priznaného Dlhu nerobí nič | 1 / 2 / 3 Dlhy |
+> | Abstinent | Pohoršenie v bitke (§9.2) | Pohoršenia navyše, hrá ich ako svoje | +1 / +2 / +3 |
+> | Exekútor | Exekútor v bitke (§11) | exekúcia **súperovi** zhorí navyše toľko priznaných Dlhov a špakov (najviac všetky jeho Dlhy) | +1 / +2 / +3 |
+> | Výpalník — Výpalné | Súperovo NA EX (§7) | za **každé** súperovo NA EX ti súper dá cigarety (koľko má) | 1 / 2 / 3 cigarety |
+> | Fajčiar | Po braní zo šenku (§5) | cigarety navyše; súperovo Obmedzenie ich neuberá | +1 / +2 / +3 |
+> | Alkoholik — Na zdravie „do dna“ | Poldeci v bitke (§9.5) | poldeci z tvojho NA EX sa vráti plný | 1 / 2 / 3 za kolo |
+> | Veriaci | Viera v bitke (§9.3) | Viera navyše; hodnota Viery ostáva 1 | +1 / +2 / +3 |
+>
+> Kľúče priazní v dátach ostávajú: Kmotor je `UZERNIK` (predtým Úžerník),
+> Abstinent `LAKOMEC` (predtým Lakomec), Výpalník `NEPRAJNIK` (predtým
+> Neprajník). Staré sady so Zberateľom či
+> Očumovateľom sa načítajú ako Kmotor. Preskúmanie (Policajtka, Veštica) je
+> pevne 5 kariet.
+>
+> Efekty kariet uvádzajú pevné čísla (Farár „ignoruj 2 súperove Povery“,
+> Poštárka „až 2 karty a s nimi 1 Dlh“…) — číslo
+> nezávisí od iného staršieho. Čísla sú v kóde v `KONSTANTY.EFEKT`.
+
+Staré znenie §10 Patronát (v6.1–v8):
+
+> ### Patronát
+>
+> Po braní zo šenku (§5) sa rozhoduje **útočník, potom obranca** (druhý už vidí
+> voľbu prvého); každý smie vziať najviac jedného staršieho za kolo. Hráč,
+> ktorému starší **prejavuje priazeň** — marker aspoň v **žltej** zóne na jeho
+> polovici, na ukazovateli ešte pôvodný starší (nie náhrada) — smie:
+>
+> 1. vziať **kartu staršieho do ruky** — v tomto kole ju smie vyložiť ako
+>    ktorúkoľvek kartu (Starešina: ráta sa do prevahy, smie naň dať NA EX),
+> 2. na jeho scorecard dať **lícom dole** jedného **Občana alebo Zviera** z ruky
+>    (nie Nástroj, nie Kliatbu) — súper nevie, ktorého (`viewFor` mu ho
+>    nepošle),
+> 3. posunúť **marker do stredu** (index 3).
+>
+> Náhradu volí hráč z kariet s viditeľným variantom akcií. Patronát platí aj
+> vo finále.
+>
+> Cena:
+>
+> - **cigarety** podľa zóny markera (v6.1, Michal 2026-10-27): červená **1**,
+>   oranžová **2**, žltá **3**,
+> - súper dostane v tejto bitke toľko **Pohoršení navyše**, o koľko polí sa
+>   marker vrátil do stredu (podľa vzdialenosti od stredu): žltá **1**, oranžová
+>   **2**, červená **3**. Hrá ich
+>   ako svoje (§9.2), ale **nie na staršieho, ktorého si patrón vzal** (v6,
+>   Michal 2026-10-26) — inak by mu marker hneď vrátil a patronát by nezastavil
+>   vydesenie. Ostatné súperove Pohoršenia (zo stola, z priazne) na patróna smú;
+>   hra minie najprv tie z patronátu,
+> - hráč musí mať aspoň **jeden poldeci** (plný či vypitý) — na bolestné.
+>
+> Po bitke (krok 6d, pred návratom kariet):
+>
+> - **patrón vyhral** → nechá si staršieho (karta je jeho — z línie sa vráti do
+>   jeho odhadzovacieho balíčka, v ruke ostáva), karta lícom dole sa otočí
+>   a ostáva na ukazovateli ako **náhrada**, marker ostáva, kde je,
+> - **patrón prehral** (aj pri sekere, §9.4) → karta staršieho sa vráti na
+>   scorecard (z ruky aj z línie), náhrada mu ide späť do ruky a ako
+>   **bolestné odhodí jeden poldeci** natrvalo — vypitý, ak ho má, inak plný
+>   (nový stojí barter). Smie klesnúť aj na 0 poldeci. Marker ostáva, kde je.
+>
+> Kartu staršieho z patronátu nemožno vymeniť Starostom.
+> Patronát vráti marker z krajnej pozície naraz do stredu — preto je odpoveďou
+> na ohlásené vydesenie (§1). Bot ho vyhodnocuje z odhadu špakov (`bot.ts`,
+> `patronat`).
+
+## v9.1 — Chuť, Nakladačka vo finále, quick wins (Michal 2026-10-30)
+
+Dávka nad v9 (vetva `pravidla/v91`): Absťák v3 „Chuť“ podľa `docs/napady/abstak-3-zadanie.md`
+(interview 2026-10-30 večer, `docs/napady/abstak-3.html`), Nakladačka vo finále → špaky 1 : 1
+(cieľ: vedúci pred finále vyhráva okolo polovice partií, nie ~81 %) a quick wins z ULTRA
+playtestu 20261030-115654 (Zastávka, Pasca, Valaška, popisy Robota a Exekúcia, spresnenie
+Nakladačky). Značka partií ostáva `v9` (v9 ešte nebola nasadená).
+
+### Absťák „Nervák“ → Chuť (§8, §9.2, §9.3, §9.4, §9.7, §11, §14, §17)
+
+Absťák sa už neporovnáva so súperom: kto v kole skonzumuje menej, než je jeho Chuť,
+dostane kartu Absťák do odhadzovacieho balíčka (nedá sa priznať, −1 tuhé za každú
+v balíčku). Nerest je len konzumácia (NA EX 2); doliatie, barter a Kšefty lokalít nie.
+Pohoršenie za Absťák (Nervák) zaniká.
+
+Staré znenie §8:
+
+> ### Nerest a Absťák
+>
+> **Nerest** je každý poldeci vypitý v Zhromaždení (ďalšia karta v ťahu), NA EX
+> (poldeci sa vypije v bitke), každá vyfajčená cigareta (aj tie, o ktoré je
+> ďalšie fajčenie v Pitke drahšie), doliatie poldeci (2)
+> a stokársky barter (za každú cigaretu); aj cigareta na Zbernom dvore. Platba za
+> šenok, Dedičstvo a Starostu sa nepočíta, akcie Cigareta a Poldeci tiež nie.
+>
+> **Absťák — Krok so stolom (v8.1, Michal 2026-10-28):** na konci kola (po bitke)
+> sa porovnajú neresti **oboch hráčov v tomto kole** (aj v prvom kole):
+>
+> - **menej nerestí ako súper** → hráč dostane **Absťák** (v8.2 počítadlo, bez
+>   dobratia karty),
+> - **viac nerestí ako súper** → hráč sa jedného Absťáku zbaví,
+> - **rovnako** → nič (ani keď obaja nemali žiadnu).
+>
+> Latku teda určuje súperova hra v tom istom kole, nie vlastná minulosť: kto
+> chce Absťáku ujsť, dorovná súperove neresti (pečeňou alebo cigaretami); kto
+> pije viac, súperovi Absťák podstrčí.
+>
+> Hra si pamätá, koľko Absťákov hráč **získal za hru** (štatistika); keď sa
+> Absťáku zbaví, toto číslo neklesne.
+>
+> **Nervák:** každý Absťák hráča znižuje **jeho** tuhé poškodenie v bitke o 1
+> (§9.3) a dá mu **1 Pohoršenie navyše** v kroku Pohoršenie (§9.2) — kto je na
+> suchu, robí scény. Absťáky, ktoré hráč **práve má** (počítadlo, verejné),
+> rozhodujú remízu v tuhom (§9.4). Špaky za bitku od v8.1 **neuberajú**. Klient
+> ukazuje neresti oboch hráčov a výhľad (`stavZavislosti`: „súper 3 · ty 1 →
+> hrozí Absťák“).
+
+Staré znenie §9.2 (Pohoršenia navyše):
+
+> **Pohoršenia navyše:** z priazne Abstinenta (+1 / +2 / +3)
+> a **1 za každý Absťák** hráča (v8.1 Nervák, §8; v8.2 z počítadla — všetko
+> verejné).
+
+Starý riadok §11 Kliatby:
+
+> | **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než súper v tom istom kole (§8, v8.1) — **rovno priznaný**; od v8.2 **počítadlo**, nie karta (kartu zaň nedobereš) | znižuje **tvoje** tuhé poškodenie o 1 za kus a dá ti 1 Pohoršenie navyše (§9.2); remízu v bitke prehráva, kto má viac Absťákov (§9.4) |
+
+### Nakladačka vo finále (§9.4, §14b)
+
+Víťaz finále dostane za každý bod Nakladačky 1 špak (krok 4a, pred exekúciou).
+
+Staré znenie §9.4:
+
+> **Nakladačka vo finále sa nerozdeľuje** (v8.3, Michal 2026-10-30): priazne by už
+> nepomohli a nové stupne strachu vo finále nič nedajú (§14b). Log oznámi, koľko
+> Nakladačky bolo. Na špaky 1 : 1 sa Nakladačka nemení nikde (do v7 po finále a na
+> Kultúrnom dome).
+
+Odsek §9.4 o Nakladačke sa prepísal do bodov (kto drží, kto rozdeľuje, čo sa vyberá,
+pole po poli, nedá sa prestať, zvyšok prepadne) — pravidlo sa nezmenilo.
+
+### Zastávka (§15)
+
+Starý riadok (spoločný limit vykladania zanikol):
+
+> | Zastávka | Zhromaždenie | Spoločný limit vykladania pre oboch = súčet limitov oboch hráčov; každé vyloženie a Vypiť ho míňa obom. **Pas** dá cigarety najviac za **vlastný** limit hráča mínus to, čo v tomto Zhromaždení sám vyložil a vypil — nie za spoločnú zásobu. |
+
+### Pasca a Valaška (§12, §16)
+
+Pasca dáva Ranu (text karty v tvorcovi od sady v36), nie Pecku. Boxer sa v sade volá
+Valaška (id karty `boxer` ostáva).
+
+> | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, udelíš mu Pecku navyše. |

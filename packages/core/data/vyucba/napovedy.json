@@ -162,11 +162,11 @@
       "poradie": 12,
       "uroven": "A",
       "spustac": {
-        "kedy": "keď prvýkrát hrozí Absťák (súper má v kole viac nerestí); ak výhľad nestihne, pri prvom Absťáku",
-        "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo mi pribudol Absťák (počítadlo)",
+        "kedy": "keď prvýkrát hrozí Absťák (v kole máš menej nerestí, ako je tvoja Chuť); ak výhľad nestihne, pri prvom Absťáku",
+        "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo mám kartu Absťák",
         "jadro": ["packages/core/src/zavislost.ts:58 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
-      "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako súper, dostane ho. Každý ti v bitke uberie 1 tuhé, ale dá ti Pohoršenie navyše: na suchu robíš scény. Kto pije viac, jedného sa zbaví. Ja len radím, rob si, ako chceš.",
+      "melichar": "Pozor na Absťák: telo si zvyklo. Keď v kole vypiješ [Poldeci] a vyfajčíš [Cigareta] menej, ako je tvoja Chuť, príde ti karta Absťák do balíčka. Každá ti v bitke uberie 1 tuhé a zahodí ju len Vízia. Chuť klesá o jednu za kolo. Ja len radím, rob si, ako chceš.",
       "zvyraznit": ["bar:abstak"]
     },
     {
@@ -211,11 +211,11 @@
       "poradie": 16,
       "uroven": "B",
       "spustac": {
-        "kedy": "hráč smie prvýkrát vziať staršieho do patronátu",
+        "kedy": "hráč smie prvýkrát skúsiť zajať staršieho (v9; kľúč patronat ostáva)",
         "podmienka": "view.draftStav.krok === \"patronat\" && hráč má aspoň jedného staršieho, ktorého smie vziať (moznyPatronat)",
         "jadro": ["packages/core/src/engine.ts:1555 moznyPatronat", "packages/core/src/view.ts:409 nahladPatronatu", "docs/PRAVIDLA.md §10 Patronát"]
       },
-      "melichar": "Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za [Cigareta] cigarety si ho vezmeš do ruky. Jemu ich dáš hneď, mne nie. Keď bitku prehráš, vráti sa a stratíš [Poldeci] poldeci.",
+      "melichar": "Tento starší sa ťa bojí na trojke, tak ho smieš skúsiť zajať: stojí to [Cigareta] cigaretu a tú ti nikto nevráti. Jeho karta ide súperovi do ruky. Vyhráš bitku a je to tvoj väzeň, prehráš a ustúpi ti o stupeň.",
       "zvyraznit": ["linia-starsich"]
     },
     {
@@ -229,8 +229,8 @@
         "jadro": ["packages/core/src/engine.ts:3711 prahVydesenia", "packages/core/src/engine.ts:286 ohlaseneVydesenie", "docs/PRAVIDLA.md §1 Podmienky konca"]
       },
       "melichar": {
-        "moje": "Vydesený starší! Kto vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď. Jeden už máš, chýbajú len traja. Len.",
-        "superove": "Súper ti vydesil staršieho. Keď ich vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď. Ale to sa určite nestane. Však?"
+        "moje": "Vydesený starší! Bojí sa ťa na trojke, takého smieš po šenku skúsiť zajať. Traja väzni a vyhral si hneď. Len.",
+        "superove": "Súper ti vydesil staršieho. Bojí sa ho na trojke, a tak ho súper smie po šenku skúsiť zajať. Traja väzni a vyhral. Ale to sa určite nestane. Však?"
       },
       "zvyraznit": ["linia-starsich"]
     },

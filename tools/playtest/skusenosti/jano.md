@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### jano-1 · Keď súper v Zhromaždení spasuje a ja ešte mám karty, položím všetko v poradí, ktoré chráni koniec línie, lebo po pase už nemôže zablokovať hranu ani doložiť telo.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 3
 - vyvrátenia: 0
@@ -36,7 +36,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §5 (šenok 1 karta = 1 cigareta, bez cigarety sa neberie). 161907 K5 a K6: Jano 0 cigariet, nevzal ani kartu; Eva s 19 vzala 4 (obaja hráči to potvrdili).
 
 ### jano-4 · Keď sa blíži finále alebo tesná bitka, pozriem súperovo Dedičstvo (Noviny) a priznané Dlhy oboch, lebo Noviny dajú porazenému všetky špaky za bitku, ak má víťaz viac priznaných Dlhov, a Exekútor s Robotou idú pred porovnaním Dlhov.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0

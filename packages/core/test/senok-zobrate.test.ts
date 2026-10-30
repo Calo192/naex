@@ -63,7 +63,7 @@ describe("tieň karty vzatej zo šenku (#111)", () => {
     // Ďalej hrajú obaja prvý legálny príkaz bez brania, kým draft neskončí.
     for (let i = 0; i < 20 && s.faza === "draft"; i++) {
       const p = ([0, 1] as const).find((x) => mozeHrat(s, x))!;
-      const cmd = legalCommands(data, s, p).find((c) => c.type === "draftStop" || c.type === "bezPatronatu") ?? legalCommands(data, s, p)[0]!;
+      const cmd = legalCommands(data, s, p).find((c) => c.type === "draftStop" || c.type === "bezPokusu") ?? legalCommands(data, s, p)[0]!;
       s = apply(data, s, cmd, p).state;
       if (s.faza === "draft") expect(viewFor(data, s, p).draftStav?.zobrate).toHaveLength(1);
     }

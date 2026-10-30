@@ -135,7 +135,7 @@
   },
   {
    "id": "neprajnik",
-   "nazov": "Výpalník",
+   "nazov": "Robota",
    "sirkaMm": 54,
    "vyskaMm": 80,
    "mierkaIkon": 1.249,
@@ -155,7 +155,7 @@
   },
   {
    "id": "exekutor",
-   "nazov": "Exekútor",
+   "nazov": "Advokát",
    "sirkaMm": 54,
    "vyskaMm": 80,
    "mierkaIkon": 1.249,

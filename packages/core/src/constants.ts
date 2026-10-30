@@ -94,6 +94,12 @@ export const KONSTANTY = {
   SPAKY_ZA_BITKU_MIN: 1,
   SPAKY_ZA_CIRHOZU: 3,
   /**
+   * Nakladačka vo finále (v9.1, Michal 2026-10-30): markery sa po finále už nehýbu,
+   * víťaz dostane toľkoto špakov za každý jej bod. Cieľ: vedúci pred finále má vyhrať
+   * okolo polovice partií (predtým ~81 %, Nakladačka vo finále prepadla).
+   */
+  SPAKY_ZA_NAKLADACKU_VO_FINALE: 1,
+  /**
    * Výkupné zvyšných zdrojov na konci hry (Michal 2026-10-27): každý plný
    * poldeci dá toľkoto špakov a každých CIGARIET_ZA_SPAK cigariet 1 špak.
    * Bez stropu — prebytok zdrojov sa má dať zúžitkovať, nie prepadnúť.
@@ -120,11 +126,21 @@ export const KONSTANTY = {
     POLICAJTKA_CIGARETY: 2,
     /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
     CIGORKY_ZA_KARTU: 2,
-    /** Kšefty v7 (plan.md 14.0): Strýko, Vychovávateľka, Obecný úrad. */
+    /** Kšefty v7 (plan.md 14.0): Strýko, Obecný úrad (Kšeft Vychovávateľky od v9 len ako väzeň). */
     STRYKO_CENA: 2,
-    VYCHOVAVATELKA_CENA: 2,
     URAD_CENA: 3,
   },
+
+  /**
+   * Väzeň (krok 2 revízie starších, Michal 2026-10-30, PRAVIDLA §10): pokus o zajatie
+   * stojí cigaretu, tretí väzeň jedného hráča vyhráva, väzni bez výhry dajú po finále
+   * špaky podľa poradia zajatia v celej partii (1. väzeň 8, 2. 6, 3. 4, 4. 2).
+   */
+  CENA_POKUSU: 1,
+  VAZNI_NA_VYHRU: 3,
+  SPAKY_ZA_VAZNOV: [8, 6, 4, 2] as readonly number[],
+  /** Vychovávateľka (Väzeň — Kšeft): „Petelica“ navyše = toľko tuhého držiteľovi v bitke. */
+  VYCHOVAVATELKA_TUHE: 3,
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */
   BARTER_CENA: 5,
@@ -135,6 +151,16 @@ export const KONSTANTY = {
    * istej Pitke stojí ZAKLAD + (k − 1) × PRIRASTOK cigariet — 1, 2, 3…; každá Pitka
    * začína znova od prvého. Nie je to strop: fajčiť sa dá stále, len drahšie.
    */
+  /**
+   * Chuť a Absťák (v9.1, Michal 2026-10-30, docs/napady/abstak-3.html): NA EX je väčšia
+   * dávka než vypitý poldeci, preto ráta za 2 neresti (Vypiť a vyfajčená cigareta po 1).
+   * Na konci kola Chuť klesne o CHUT_UBYTOK (od väčšieho z Chuti a nerestí kola) —
+   * kto prestane piť, odvyká postupne, nie naraz.
+   */
+  NEREST_NAEX: 2,
+  CHUT_UBYTOK: 1,
+  /** Opatrovateľka (Furt, v9.1): na konci kola sa Chuť majiteľa porovnáva o toľkoto nižšia. */
+  OPATROVATELKA_CHUT: 2,
   CENA_FAJCENIA_ZAKLAD: 1,
   CENA_FAJCENIA_PRIRASTOK: 1,
   /**
@@ -168,9 +194,13 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // počítadlá (nie karty, Absťák bez dobratia), posun markera Pohoršením a prebytkom stojí podľa zóny.
 // v8.5 (Michal 2026-10-30) bez novej značky: spoločný balíček sa delí na Náradie a Občanov,
 // stavba šenku vždy 2 + 6 kariet.
-export const VERZIA_PRAVIDIEL = "v8";
+// v9 (Michal 2026-10-30, krok 2 revízie starších): väzeň namiesto patronátu a vydesenia
+// (tretí väzeň vyhráva), Kšeft väzňa namiesto efektov starších, bossovia, nové priazne.
+// v9.1 (Michal 2026-10-30) bez novej značky — v9 ešte nebola nasadená: Chuť a karta Absťák
+// (Nervák zanikol), Nakladačka vo finále → špaky 1 : 1, Zastávka (karta zo šenku po 1. Pitke), Pasca Rana.
+export const VERZIA_PRAVIDIEL = "v9";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-28";
+export const PRAVIDLA_PLATNE_OD = "2026-10-30";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

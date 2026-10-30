@@ -4,6 +4,7 @@
 
 import { ALL_TRIGGERS, REGISTER } from "@naex/core";
 import type { AkciaDef, KartaNavrh, KlucoveSlovo } from "./typy.ts";
+import { sPredponouVazna } from "./text.ts";
 
 export interface ProblemTextu {
   readonly id: string;
@@ -52,7 +53,8 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
   const out: ProblemTextu[] = [];
   const mapa = slovnik(podklady, karty);
   for (const k of karty) {
-    const t = k.efekt;
+    // „Väzeň — Kšeft:“ (v9) je jeden spúšťač Väzeň — kontroluje sa ako „Väzeň:“.
+    const t = sPredponouVazna(k.efekt);
     const problem = (uroven: ProblemTextu["uroven"], text: string): void => {
       out.push({ id: k.id, nazov: k.nazov, uroven, text });
     };
@@ -79,7 +81,7 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
 
     const stav = REGISTER[k.id];
     const zverejneny = podklady.zverejnene?.find((z) => z.id === k.id);
-    if (zverejneny !== undefined && zverejneny.efekt.trim() !== t.trim() && (stav === "impl" || stav === "native")) {
+    if (zverejneny !== undefined && zverejneny.efekt.trim() !== k.efekt.trim() && (stav === "impl" || stav === "native")) {
       problem("chyba", "Zmenený text efektu, ktorý hra vyhodnocuje kódom — správanie sa nezmení, kým sa neupraví jadro (effects.ts).");
     }
     if (zverejneny === undefined && stav === undefined) {
