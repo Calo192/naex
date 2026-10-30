@@ -55,7 +55,7 @@ describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
     expect(kluce).toContain("bar-supera:karty");
   });
 
-  it("posun markera za prebytok rozsvieti staršieho", () => {
+  it("posun markera za Nakladačku rozsvieti staršieho", () => {
     expect(tah("k-prebytok1").kluce).toContain("starsi:farar");
   });
 

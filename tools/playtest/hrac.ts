@@ -354,7 +354,7 @@ function cenaNaexText(v: ClientState, uid: number): string {
   const limit = `; v ďalšom kole limit ${limitPo === limitBez ? `ostane ${limitBez}` : `${limitPo} namiesto ${limitBez}`}`;
   // Efekty Prehra (Dievčina na vydaj) náhľad jadra nemodeluje — playtest 20261028-090549-2, Eva.
   const prehra = prehraNaexText(DATA, sVidenymiSkrytymiNaex(DATA, v), sVidenymiSkrytymiNaex(DATA, n.odkrytie.view), uid);
-  return `; bitka (tuhé) ${n.pred.tuhe[ja]}:${n.pred.tuhe[su]} → ${n.po.tuhe[ja]}:${n.po.tuhe[su]}${odpoved}${limit}, prebytok ${prebytok(n.prebytokPred)} → ${prebytok(n.prebytokPo)}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${prehra}${navyse.length > 0 ? `; ${navyse.join("; ")}` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
+  return `; bitka (tuhé) ${n.pred.tuhe[ja]}:${n.pred.tuhe[su]} → ${n.po.tuhe[ja]}:${n.po.tuhe[su]}${odpoved}${limit}, Nakladačka ${prebytok(n.prebytokPred)} → ${prebytok(n.prebytokPo)}; kliatby z tejto a ďalších Pitiek kola (NA EX leží do bitky): ty ${pre(ja)}, súper ${pre(su)}${dopady}${prehra}${navyse.length > 0 ? `; ${navyse.join("; ")}` : ""}; súper má v ruke ${kariet(v.hraci[su].rukaPocet)} a smie odpovedať jednou`;
 }
 
 function vykresli(v: ClientState, mena: readonly string[]): string {
@@ -537,7 +537,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     // Stávku ráta jadro (stavkaBitky) ako výplata — Noviny, Herňa, sekera, Kultúrny dom (playtest 20261028-090549-2, Jano).
     const stavka = stavkaText(DATA, v);
     out.push(
-      `  → ${o.vitaz === null ? "REMÍZA V TUHOM — rozhodnú Absťáky (menej vyhrá), potom priznané Dlhy (menej vyhrá), inak sekera" : o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. ${stavka === null ? "" : `${stavka} `}Špaky za bitku (v8): 1 za každú kartu v línii na oboch stranách (Absťáky ich od v8.1 neuberajú), aspoň ${KONSTANTY.SPAKY_ZA_BITKU_MIN} — každá ďalšia karta v línii pridá víťazovi špak; lokalitu si nikto neberie. Sekera: špaky kola vezme víťaz ďalšej bitky${finale ? " — vo finále prepadnú" : ""}; útočník ostáva; prebytok drží vyššie celkové, ${finale ? "vo finále sa nerozdeľuje" : "rozdeľuje ho ten, proti komu sa ráta — spravidla porazený si vyberá, ktoré priazne dostane"}. Strach starších v stávke nie je — platí na konci kola za udržanie.`,
+      `  → ${o.vitaz === null ? "REMÍZA V TUHOM — rozhodnú Absťáky (menej vyhrá), potom priznané Dlhy (menej vyhrá), inak sekera" : o.vitaz === ja ? "vyhrávaš" : "prehrávaš"}. ${stavka === null ? "" : `${stavka} `}Špaky za bitku (v8): 1 za každú kartu v línii na oboch stranách (Absťáky ich od v8.1 neuberajú), aspoň ${KONSTANTY.SPAKY_ZA_BITKU_MIN} — každá ďalšia karta v línii pridá víťazovi špak; lokalitu si nikto neberie. Sekera: špaky kola vezme víťaz ďalšej bitky${finale ? " — vo finále prepadnú" : ""}; útočník ostáva; Nakladačku drží vyššie celkové, ${finale ? "vo finále sa nerozdeľuje" : "rozdeľuje ho ten, proti komu sa ráta — spravidla porazený si vyberá, ktoré priazne dostane"}. Strach starších v stávke nie je — platí na konci kola za udržanie.`,
     );
     const prehra = prehraText(DATA, vs);
     if (prehra !== null) out.push(`  ${prehra}`);
@@ -571,7 +571,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
         if (h === null || pl === undefined) continue;
         const kto = h.vysledok.vitaz === null ? "remíza" : h.vysledok.vitaz === ja ? "vyhrávaš" : "prehrávaš";
         out.push(
-          `  HROZBA NA STOLE: ${ktoHrozi(p)[0]} NA EX na ${meno(pl.card.defId)} [${h.uid}]${ktoHrozi(p)[1]} → tuhé ty ${h.damage.tuhe[ja]} : súper ${h.damage.tuhe[su]}, ${kto}${h.vysledok.prebytokDrzi === null ? "" : `, prebytok ${h.vysledok.prebytok} → ${h.vysledok.prebytokDrzi === ja ? "tebe" : "súperovi"}`} (ruka sa neráta).`,
+          `  HROZBA NA STOLE: ${ktoHrozi(p)[0]} NA EX na ${meno(pl.card.defId)} [${h.uid}]${ktoHrozi(p)[1]} → tuhé ty ${h.damage.tuhe[ja]} : súper ${h.damage.tuhe[su]}, ${kto}${h.vysledok.prebytokDrzi === null ? "" : `, Nakladačka ${h.vysledok.prebytok} → ${h.vysledok.prebytokDrzi === ja ? "tebe" : "súperovi"}`} (ruka sa neráta).`,
         );
       }
       // Hrozba kliatob (návrh #38 B): NA EX, ktoré pridá Cirhózu či Dlh, aj keď víťaza bitky nezmení — to isté, čo web.
@@ -598,7 +598,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
           `  POHORŠENIA: ${p === ja ? "máš" : "súper má"} ${nep.pocet[p]} nepridelených (rozdelia sa v bitke, priazeň Bitkára či Veriaceho platí hneď) → ${
             r === null
               ? `bitku v ${p === ja ? "tvoj" : "jeho"} prospech nepohnú`
-              : `${p === ja ? "ty" : "súper"} nimi v najlepšom prípade pre ${p === ja ? "teba" : "neho"} až tuhé ty ${r.damage.tuhe[ja]} : súper ${r.damage.tuhe[su]}, ${kto}${r.vysledok.prebytokDrzi === null ? "" : `, prebytok ${r.vysledok.prebytok} → ${r.vysledok.prebytokDrzi === ja ? "tebe" : "súperovi"}`} (horná hranica, nie predpoveď — ${p === ja ? "Pohoršenia môžeš" : "súper ich môže"} dať aj pre špaky za strach${druhy})`
+              : `${p === ja ? "ty" : "súper"} nimi v najlepšom prípade pre ${p === ja ? "teba" : "neho"} až tuhé ty ${r.damage.tuhe[ja]} : súper ${r.damage.tuhe[su]}, ${kto}${r.vysledok.prebytokDrzi === null ? "" : `, Nakladačka ${r.vysledok.prebytok} → ${r.vysledok.prebytokDrzi === ja ? "tebe" : "súperovi"}`} (horná hranica, nie predpoveď — ${p === ja ? "Pohoršenia môžeš" : "súper ich môže"} dať aj pre špaky za strach${druhy})`
           }.`,
         );
       }
@@ -620,7 +620,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   out.push(
     `  STUPEŇ 0–3 od stredu (0 sivý stred pokojný, 1 žltá znepokojený, 2 oranžová vystrašený, 3 červená vydesený). PRIAZEŇ má hráč, ku ktorému je marker posunutý — sila = stupeň; starší sa bojí toho DRUHÉHO na tom istom stupni. ` +
       `ŠPAKY ZA STRACH (v8.3): stupeň, kam sa marker dostal, zaplatí hráčovi, ktorého sa starší bojí, AŽ NA KONCI NASLEDUJÚCEHO KOLA, ak sa na ňom marker dovtedy udrží (${ZONY_STRACHU}) — NECH BITKU VYHRAL KTOKOĽVEK, aj porazenému. Odtlačený stupeň nič; zaparkovaný marker druhýkrát nič nedá; ústup k stredu zaplatené stupne zmaže. Vo finále nové stupne nič, udržané z posledného kola sa vyplatia po finále. ` +
-      "Pohoršenie (od seba = desíš, k sebe = upokojuješ) a prebytok posúvajú marker, pole stojí podľa zóny (von 1 / 2 / 3, k stredu 2 / 3 / 4), bez limitu, aj na červenú a z nej späť. Scorecard nesie len priazeň.",
+      "Pohoršenie (od seba = desíš, k sebe = upokojuješ) a Nakladačka posúvajú marker, pole stojí podľa zóny (von 1 / 2 / 3, k stredu 2 / 3 / 4), bez limitu, aj na červenú a z nej späť. Scorecard nesie len priazeň.",
   );
   out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; na konci tohto kola od starších za udržané stupne: ty +${body.zaStarsich[ja]}, súper +${body.zaStarsich[su]} (nech bitku vyhrá ktokoľvek); čaká na udržanie do konca ďalšieho kola: ty +${body.naUdrzanie[ja]}, súper +${body.naUdrzanie[su]}; nepriznaná Cirhóza na konci −${KONSTANTY.SPAKY_ZA_CIRHOZU} za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); výkupné na konci (plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI}, každých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1): ty +${body.vykupne[ja].spaky}, súper +${body.vykupne[su].spaky}; keby skončila teraz ty ${body.spolu[ja]}, súper ${body.spolu[su]}; odhad do konca (markery stoja) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
   // Ohlásené vydesenie (Michal 2026-10-16): výhra až po udržaní do konca ďalšieho kola.
@@ -1048,7 +1048,7 @@ function moznosti(v: ClientState): string[] {
         // Priazeň z Pohoršenia platí hneď — zmena bitky (playtest 20261026-181227-1 N2).
         const zmena = cezPohorsenie ? bitkaPoPohorseni(DATA, v, e.elderId, ja, k === ja) : null;
         const bitka = zmena === null ? "" : `; bitka (tuhé) ${zmena.pred.tuhe[ja]}:${zmena.pred.tuhe[su]} → ${zmena.po.tuhe[ja]}:${zmena.po.tuhe[su]}`;
-        return ` — marker o ${posun.kroky} ${posun.kroky === 1 ? "pole" : posun.kroky <= 4 ? "polia" : "polí"} za ${posun.cena}${cezPohorsenie ? " Pohoršení" : " z prebytku"} (ostane ${body - posun.cena}) — NÁHĽAD: odhad špakov do konca ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[su])}; od tohto staršieho na konci kola ty +${n.spakyZaStarsieho[ja]}, súper +${n.spakyZaStarsieho[su]}, čaká na udržanie ty +${n.naUdrzanie[ja]}, súper +${n.naUdrzanie[su]}; priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}${bitka}; vydesených po posune ty ${n.vydeseni[ja]} / súper ${n.vydeseni[su]} (na výhru treba ${n.prahVydesenia})`;
+        return ` — marker o ${posun.kroky} ${posun.kroky === 1 ? "pole" : posun.kroky <= 4 ? "polia" : "polí"} za ${posun.cena}${cezPohorsenie ? " Pohoršení" : " z Nakladačky"} (ostane ${body - posun.cena}) — NÁHĽAD: odhad špakov do konca ty ${zn(n.zmena[ja])}, súper ${zn(n.zmena[su])}; od tohto staršieho na konci kola ty +${n.spakyZaStarsieho[ja]}, súper +${n.spakyZaStarsieho[su]}, čaká na udržanie ty +${n.naUdrzanie[ja]}, súper +${n.naUdrzanie[su]}; priazeň po posune: ${n.priazen === null ? "nikto" : `${n.priazen === ja ? "ty" : "súper"} sila ${n.sila}`}${bitka}; vydesených po posune ty ${n.vydeseni[ja]} / súper ${n.vydeseni[su]} (na výhru treba ${n.prahVydesenia})`;
       };
       if (b?.krok === "pohorsenie") {
         // v8.2: vyberáš staršieho a smer, marker ide, kým Pohoršenia stačia; nový stupeň platí až po udržaní (v8.3).
@@ -1068,16 +1068,16 @@ function moznosti(v: ClientState): string[] {
         const k: PlayerId = drzim ? su : ja;
         out.push(
           drzim
-            ? `(Tvoj prebytok ${b.prebytokZostava} rozdeľuješ ty; markery idú k súperovi. Vyberáš len staršieho, marker ide, kým zvyšok stačí (pole von zo stredu 1 / 2 / 3, k stredu 4 / 3 / 2); čo nevyjde na žiadny posun, prepadne.)`
-            : `(Prebytok súpera ${b.prebytokZostava} rozdeľuješ TY: markery idú k tebe — vyber si priazne, ktoré chceš; súpera sa tí starší začnú báť. Vyberáš len staršieho, marker ide, kým zvyšok stačí (pole von zo stredu 1 / 2 / 3, k stredu 4 / 3 / 2); čo nevyjde na žiadny posun, prepadne. Za každého posunutého staršieho cigareta.)`,
+            ? `(Tvoju Nakladačku ${b.prebytokZostava} rozdeľuješ ty; markery idú k súperovi. Vyberáš len staršieho, marker ide, kým zvyšok stačí (pole von zo stredu 1 / 2 / 3, k stredu 4 / 3 / 2); čo nevyjde na žiadny posun, prepadne.)`
+            : `(Nakladačku súpera ${b.prebytokZostava} rozdeľuješ TY: markery idú k tebe — vyber si priazne, ktoré chceš; súpera sa tí starší začnú báť. Vyberáš len staršieho, marker ide, kým zvyšok stačí (pole von zo stredu 1 / 2 / 3, k stredu 4 / 3 / 2); čo nevyjde na žiadny posun, prepadne. Za každého posunutého staršieho cigareta.)`,
         );
         for (const e of v.starsi) {
           if (posunZaBody(e, k, b.prebytokZostava) === null) continue;
           c(
             { type: "prebytok", elderId: e.elderId },
             drzim
-              ? `prebytok: posuň marker ${meno(e.karta.defId)} k súperovi (súper dostane priazeň, starší sa začne báť teba)${nahlad(e, false)}`
-              : `prebytok: posuň marker ${meno(e.karta.defId)} k sebe (dostaneš jeho priazeň, starší sa začne báť súpera)${nahlad(e, false)}`,
+              ? `Nakladačka: posuň marker ${meno(e.karta.defId)} k súperovi (súper dostane priazeň, starší sa začne báť teba)${nahlad(e, false)}`
+              : `Nakladačka: posuň marker ${meno(e.karta.defId)} k sebe (dostaneš jeho priazeň, starší sa začne báť súpera)${nahlad(e, false)}`,
           );
         }
       }
@@ -1108,7 +1108,7 @@ function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string |
     case "manualEfekt":
       return `⚠ EFEKT, ktorý hra nevyhodnocuje automaticky: ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, prebytok ${e.prebytok}${e.prebytokNaRozdelenie < e.prebytok ? ` (po Puške ${e.prebytokNaRozdelenie})` : ""}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper), celkové ${e.damage.celkove[ja]}:${e.damage.celkove[ja === 0 ? 1 : 0]} — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, Nakladačka ${e.prebytok}${e.prebytokNaRozdelenie < e.prebytok ? ` (po Puške ${e.prebytokNaRozdelenie})` : ""}` : ""}.`;
     case "pitkaRekap": {
       // Odhalená Záverečná (Michal 2026-10-27) — karta a čo v Pitke dala; efekty pri otočení sú v logu.
       const z = e.rekap.zaverecne ?? [];

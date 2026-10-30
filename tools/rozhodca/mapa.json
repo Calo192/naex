@@ -13,7 +13,7 @@
     {
       "id": "1.koniec.vydesenie-ohlasene",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Kto vydesí aspoň polovicu starších (aj nahradených), vyhrá, až keď ich udrží do konca nasledujúceho kola; keď klesne pod polovicu (patronát, Pohoršenie, prebytok), hrozba padá hneď a opätovné doplnenie v tom istom kole ohlasuje odznova.",
+      "pravidlo": "Kto vydesí aspoň polovicu starších (aj nahradených), vyhrá, až keď ich udrží do konca nasledujúceho kola; keď klesne pod polovicu (patronát, Pohoršenie, Nakladačka), hrozba padá hneď a opätovné doplnenie v tom istom kole ohlasuje odznova.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/dobiehanie.test.ts › polovica vydesených starších hru neukončí hneď — vydesenie sa ohlási",
@@ -1011,7 +1011,7 @@
     {
       "id": "11.exekutor.prah",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Exekútor bez prahu (Michal 2026-10-28): v kroku 4c bitky — po poškodení, výsledku a špakoch za bitku a za starších, pred prebytkom (aj vo finále, po Robote) ku každému s aspoň 1 priznaným Dlhom — zhorí polovica priznaných Dlhov nahor + sila súperovej priazne Exekútora (najviac všetky) a rovnako špakov, aj do mínusu; zvyšné Dlhy na konci hry nič.",
+      "pravidlo": "Exekútor bez prahu (Michal 2026-10-28): v kroku 4c bitky — po poškodení, výsledku a špakoch za bitku a za starších, pred Nakladačkou (aj vo finále, po Robote) ku každému s aspoň 1 priznaným Dlhom — zhorí polovica priznaných Dlhov nahor + sila súperovej priazne Exekútora (najviac všetky) a rovnako špakov, aj do mínusu; zvyšné Dlhy na konci hry nič.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › bez prahu (Michal 2026-10-28): zhorí polovica priznaných Dlhov NAHOR — aj z jedného Dlhu",
@@ -1117,13 +1117,13 @@
     {
       "id": "9.vysledok.prebytok-drzi",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Prebytok drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
+      "pravidlo": "Nakladačku drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › prebytok drží hráč s vyšším celkovým, aj keď bitku prehral",
-        "packages/core/test/battle.test.ts › pri remíze v celkovom poškodení nikto nezíska prebytok",
+        "packages/core/test/battle.test.ts › Nakladačku drží hráč s vyšším celkovým, aj keď bitku prehral",
+        "packages/core/test/battle.test.ts › pri remíze v celkovom poškodení nikto nezíska Nakladačku",
         "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1",
-        "packages/core/test/pravidla-v8.test.ts › víťaz drží prebytok, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on",
+        "packages/core/test/pravidla-v8.test.ts › víťaz drží Nakladačku, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on",
         "packages/core/test/pravidla-v8.test.ts › pri sekere rozdeľuje ten s nižším celkovým poškodením"
       ],
       "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
@@ -1131,7 +1131,7 @@
     {
       "id": "9.vysledok.minstrant",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Miňištrant vo víťazovej partii zdraží každý posun o 1; posun drahší než zvyšok prebytku prepadne.",
+      "pravidlo": "Miňištrant vo víťazovej partii zdraží každý posun o 1; posun drahší než zvyšok Nakladačky prepadne.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
@@ -1139,7 +1139,7 @@
     {
       "id": "9.vysledok.cigarety",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Proti komu sa prebytok rozdeľoval, dostane 1 cigaretu za každého posunutého staršieho (Pohoršenie sa neráta).",
+      "pravidlo": "Proti komu sa Nakladačka rozdeľovala, dostane 1 cigaretu za každého posunutého staršieho (Pohoršenie sa neráta).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1"
@@ -1513,7 +1513,7 @@
     {
       "id": "15.lokalita.urad-jednota-pivnica-dom",
       "paragraf": "15. Lokality",
-      "pravidlo": "Obecný úrad (prah −4, Robota 2), Jednota (barter −1), Vínna pivnica (2× skryté NA EX na rôzne karty), Kultúrny dom (v6: prebytok sa nerozdeľuje, držiteľ dostane špaky).",
+      "pravidlo": "Obecný úrad (prah −4, Robota 2), Jednota (barter −1), Vínna pivnica (2× skryté NA EX na rôzne karty), Kultúrny dom (v6: Nakladačka sa nerozdeľuje, držiteľ dostane špaky).",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/lokality-20261020.test.ts › Obecný úrad: prah Exekútora −4 a Robota odhodí 2 Dlhy; packages/core/test/lokality-20261020.test.ts › Jednota: stokársky barter o 1 cigaretu lacnejší; packages/core/test/lokality-20261020.test.ts › Vínna pivnica: dve NA EX za Pitku; packages/core/test/lokality-20261020.test.ts › Kultúrny dom: Pohoršenie bez limitu hraníc zón (Michal 2026-10-20)."
@@ -1948,10 +1948,10 @@
     {
       "id": "14b.finale.prebytok",
       "paragraf": "14b. Finále",
-      "pravidlo": "Vo finále sa rozdeľuje len Pohoršenie, prebytok nie (v8.3); po finále starší zaplatia stupne udržané z posledného kola, nové stupne z finále nič; potom koniec hry.",
+      "pravidlo": "Vo finále sa rozdeľuje len Pohoršenie, Nakladačka nie (v8.3); po finále starší zaplatia stupne udržané z posledného kola, nové stupne z finále nič; potom koniec hry.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/strach-udrzanie.test.ts › udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; prebytok sa nerozdeľuje"
+        "packages/core/test/strach-udrzanie.test.ts › udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; Nakladačka sa nerozdeľuje"
       ]
     },
     {
@@ -1967,12 +1967,12 @@
     {
       "id": "15.lokalita.kulturny-dom",
       "paragraf": "15. Lokality",
-      "pravidlo": "Kultúrny dom (v8, Obaja bodujú): víťaz špaky za všetky karty v línii, porazený 1 špak za každú svoju kartu v línii; prebytok sa rozdeľuje ako inde.",
+      "pravidlo": "Kultúrny dom (v8, Obaja bodujú): víťaz špaky za všetky karty v línii, porazený 1 špak za každú svoju kartu v línii; Nakladačka sa rozdeľuje ako inde.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane špaky za všetky karty v línii, porazený za svoje; prebytok sa rozdeľuje ako inde (porazený)",
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane špaky za všetky karty v línii, porazený za svoje; Nakladačka sa rozdeľuje ako inde (porazený)",
         "packages/core/test/spaky-v6.test.ts › pri sekere na Kultúrnom dome nikto nie je porazený — karty idú na sekeru ako inde",
-        "packages/core/test/lokality-20261020.test.ts › Kultúrny dom (v8): prebytok sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)"
+        "packages/core/test/lokality-20261020.test.ts › Kultúrny dom (v8): Nakladačka sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)"
       ]
     },
     {

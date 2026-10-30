@@ -35,8 +35,8 @@ describe("stopa posunu", () => {
 
   it("štítok na portréte nesie len zdroj a počet, lupa aj kto posúval", () => {
     const stopa = stopaStarsieho(posuny, id)!;
-    expect(stitokStopy(stopa.zdroje)).toBe("Pohoršenie · Prebytok ×2");
-    expect(textStopy(stopa.zdroje, (p) => (p === 0 ? "ty" : "Fero"))).toBe("Pohoršenie · ty · Prebytok · ty ×2");
+    expect(stitokStopy(stopa.zdroje)).toBe("Pohoršenie · Nakladačka ×2");
+    expect(textStopy(stopa.zdroje, (p) => (p === 0 ? "ty" : "Fero"))).toBe("Pohoršenie · ty · Nakladačka · ty ×2");
   });
 });
 
@@ -81,7 +81,7 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
     expect(riadokDlazdice("nic", true)).toBe("neutrálny");
   });
 
-  it("cena poľa podľa zóny v legende stupnice (v8.2); pokyn prebytku nahradila bublina rozdeľovania (mock C)", () => {
+  it("cena poľa podľa zóny v legende stupnice (v8.2); pokyn Nakladačky nahradila bublina rozdeľovania (mock C)", () => {
     expect(CENA_POLA).toBe("pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4");
   });
 });

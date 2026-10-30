@@ -194,7 +194,7 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   // ---- bitka
   prebytokBitky: {
     druh: "max",
-    popis: "prebytok bitky, ktorú hráč vyhral",
+    popis: "Nakladačka bitky, ktorú hráč vyhral",
     zmer: (k) => pre((p) => bitky(k).reduce<number | null>((n, e) => (e.vitaz === p ? Math.max(n ?? 0, e.prebytok) : n), null)),
   },
   kartyVLinii: {

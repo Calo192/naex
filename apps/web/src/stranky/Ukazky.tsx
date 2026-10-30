@@ -240,8 +240,8 @@ export function UkazkaBitky() {
           </>
         )}{" "}
         {o.prebytokDrzi === null
-          ? "Celkové poškodenie je vyrovnané — prebytok nezíska nikto."
-          : `${MENA[o.prebytokDrzi]} rozdelí prebytok ${o.prebytok} medzi starších.`}
+          ? "Celkové poškodenie je vyrovnané — Nakladačku nezíska nikto."
+          : `${MENA[o.prebytokDrzi]} rozdelí Nakladačku ${o.prebytok} medzi starších.`}
       </div>
     </div>
   );

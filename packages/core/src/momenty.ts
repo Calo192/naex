@@ -203,7 +203,7 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
   // Výprask: prebytok aspoň 8.
   for (const e of udalosti) {
     if (e.type !== "bitkaVysledok" || e.prebytok < VYPRASK_OD || e.prebytokDrzi === null) continue;
-    out.push({ typ: "vyprask", ...MOMENTY.vyprask, hrac: e.prebytokDrzi, popis: `Výprask — prebytok ${e.prebytok}, rozdeľuje ho Hráč ${e.prebytokDrzi + 1}.` });
+    out.push({ typ: "vyprask", ...MOMENTY.vyprask, hrac: e.prebytokDrzi, popis: `Výprask — Nakladačka ${e.prebytok}, rozdeľuje ju Hráč ${e.prebytokDrzi + 1}.` });
   }
   return out;
 }

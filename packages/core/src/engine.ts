@@ -1496,15 +1496,15 @@ function applyPrikaz(
     // (Michal 2026-10-30) aj Pohoršenie — Potvrdiť pošle všetky nepotvrdené posuny (rozdelenie.ts).
     const prebytok = state.faza === "bitka" && state.bitkaStav?.krok === "prebytok";
     const pohorsenie = state.faza === "bitka" && state.bitkaStav?.krok === "pohorsenie";
-    need(state.faza === "zhromazdenie" || prebytok || pohorsenie, "Celý ťah naraz sa hrá len v Zhromaždení, pri Pohoršení alebo pri prebytku.");
+    need(state.faza === "zhromazdenie" || prebytok || pohorsenie, "Celý ťah naraz sa hrá len v Zhromaždení, pri Pohoršení alebo pri Nakladačke.");
     need(!cakaHasic(state), HASIC_NAJPRV);
     need(cmd.kroky.length > 0, "Ťah je prázdny.");
     let st = state;
     const vsetky: Event[] = [];
     for (const k of cmd.kroky) {
       if (prebytok) {
-        need(k.type === "prebytok", "Pri prebytku smú byť v ťahu len posuny markerov.");
-        need(st.faza === "bitka" && st.bitkaStav?.krok === "prebytok" && st.bitkaStav.caka === hracId, "Prebytok sa minul skôr, než si posunul všetky markery.");
+        need(k.type === "prebytok", "Pri Nakladačke smú byť v ťahu len posuny markerov.");
+        need(st.faza === "bitka" && st.bitkaStav?.krok === "prebytok" && st.bitkaStav.caka === hracId, "Nakladačka sa minula skôr, než si posunula všetky markery.");
       } else if (pohorsenie) {
         need(k.type === "pohorsenie", "Pri Pohoršení smú byť v ťahu len posuny markerov.");
         need(st.faza === "bitka" && st.bitkaStav?.krok === "pohorsenie" && st.bitkaStav.caka === hracId, "Pohoršenia sa minuli skôr, než si posunul všetky markery.");
@@ -4051,7 +4051,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
         // Hlásiť, inak hráči tiché prepadnutie považovali za chybu (playtest 20261021-143600).
         events.push({
           type: "log",
-          text: `Prebytok ${b.prebytokZostava} prepadol — nestačí na posun žiadneho markera k hráčovi ${opponentOf(b.prebytokDrzi) + 1}.`,
+          text: `Nakladačka ${b.prebytokZostava} prepadla — nestačí na posun žiadneho markera k hráčovi ${opponentOf(b.prebytokDrzi) + 1}.`,
         });
         b.prebytokZostava = 0;
         break;
@@ -4597,11 +4597,11 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   });
   events.push(...logy);
   if (outcome.prebytokDrzi !== null && outcome.prebytok > 0 && jeFinale(s)) {
-    events.push({ type: "log", text: `Prebytok ${outcome.prebytok} sa vo finále nerozdeľuje — nové stupne strachu by už nič nedali.` });
+    events.push({ type: "log", text: `Nakladačka ${outcome.prebytok} sa vo finále nerozdeľuje — nové stupne strachu by už nič nedali.` });
   } else if (outcome.prebytokDrzi !== null && b.prebytokZostava < outcome.prebytok) {
     events.push({
       type: "log",
-      text: `Puška hráča ${opponentOf(outcome.prebytokDrzi) + 1}: prebytok ${outcome.prebytok} → ${b.prebytokZostava}.`,
+      text: `Puška hráča ${opponentOf(outcome.prebytokDrzi) + 1}: Nakladačka ${outcome.prebytok} → ${b.prebytokZostava}.`,
     });
   }
   manualEfekty(s, data, "Výhra", events);
@@ -4817,8 +4817,8 @@ function cmdPrebytok(
   events: Event[],
 ): void {
   const b = s.bitkaStav;
-  need(s.faza === "bitka" && b !== null && b.krok === "prebytok" && b.caka === p && b.prebytokDrzi !== null, "Nečaká sa na prebytok.");
-  need(b.prebytokZostava > 0, "Prebytok je rozdelený.");
+  need(s.faza === "bitka" && b !== null && b.krok === "prebytok" && b.caka === p && b.prebytokDrzi !== null, "Nečaká sa na Nakladačku.");
+  need(b.prebytokZostava > 0, "Nakladačka je rozdelená.");
   const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
   need(elder !== undefined, "Taký starší nie je.");
   // Prebytok posúva marker k súperovi držiteľa [R8.4] — pri víťazovi k porazenému,
@@ -4826,12 +4826,12 @@ function cmdPrebytok(
   // marker ide, kým zvyšok prebytku stačí na ďalšie pole (cenaKroku).
   const drzi = b.prebytokDrzi as PlayerId;
   const posun = posunZaBody(elder, opponentOf(drzi), b.prebytokZostava);
-  need(posun !== null, "Na posun tohto markera zvyšok prebytku nestačí.");
+  need(posun !== null, "Na posun tohto markera zvyšok Nakladačky nestačí.");
   const z = elder.marker;
   presunMarker(s, events, elder, posun.marker, "prebytok", drzi);
   if (!b.prebytokPosunute.includes(cmd.elderId)) b.prebytokPosunute.push(cmd.elderId);
   b.prebytokZostava -= posun.cena;
-  events.push({ type: "log", text: `Prebytok (hráč ${p + 1}, ${posun.cena} z prebytku): ${textPosunu(data, elder as ElderState, p === drzi ? "od seba" : "k sebe", z)}` });
+  events.push({ type: "log", text: `Nakladačka (hráč ${p + 1}, ${posun.cena} z Nakladačky): ${textPosunu(data, elder as ElderState, p === drzi ? "od seba" : "k sebe", z)}` });
   skontrolujVydesenie(s, data, events);
   pokracujBitku(s, data, events);
 }

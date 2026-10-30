@@ -267,7 +267,7 @@ function LegendaStupnice({
       <p>{PRAVIDLO_STRACHU}</p>
       <p>{prikladText}</p>
       <p className="ls-tlmene">
-        Posúva ho prebytok po bitke (k súperovi toho, kto ho drží) a Pohoršenie — od seba (desíš) alebo k sebe (upokojuješ), aj na červenú a z nej späť; {CENA_POLA}.
+        Posúva ho Nakladačka po bitke (k súperovi toho, kto ju drží) a Pohoršenie — od seba (desíš) alebo k sebe (upokojuješ), aj na červenú a z nej späť; {CENA_POLA}.
         Vyberáš len staršieho, marker ide, kým body stačia. Nič sa nezamyká.
       </p>
       <button type="button" className="ls-tlacidlo" onClick={zavri}>

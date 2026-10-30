@@ -36,7 +36,7 @@ const DLHO = 60_000;
 
 describe("bar špakov", () => {
   for (const seed of [8, 21]) {
-    it(`lokality + starší + finále a prebytok − Exekútor = popolník (seed ${seed})`, () => {
+    it(`lokality + starší + finále a Nakladačka − Exekútor = popolník (seed ${seed})`, () => {
       const pohlady = poBitkach(seed);
       expect(pohlady.length).toBeGreaterThan(1);
       for (const v of pohlady) {

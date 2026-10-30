@@ -67,8 +67,8 @@ function predPoskodenim(o: {
 
 const elder = (s: GameState, i: number): string => s.starsi[i]!.elderId;
 
-describe("v8: prebytok rozdeľuje porazený", () => {
-  it("víťaz drží prebytok, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on", () => {
+describe("v8: Nakladačku rozdeľuje porazený", () => {
+  it("víťaz drží Nakladačku, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on", () => {
     const s = predPoskodenim({ sums: [{ Rana: 5 }, {}] });
     const st = apply(data, s, { type: "pohorsenie", elderId: elder(s, 0) }, 0).state;
     expect(st.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1, prebytokZostava: 5 });

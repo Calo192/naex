@@ -13,9 +13,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **neberie** (ide na nástenku). Počet Pitiek už špaky neurčuje.
   **Strach až po udržaní (v8.3, 2026-10-30):** stupeň, kam sa marker dostal, zaplatí hráčovi, ktorého
   sa starší bojí, **až na konci nasledujúceho kola, ak sa na ňom marker dovtedy udrží** — po bitke,
-  Pohoršeniach aj prebytku; **nech bitku vyhral ktokoľvek, aj porazenému**. Každý stupeň raz: **žltá 1,
+  Pohoršeniach aj Nakladačke; **nech bitku vyhral ktokoľvek, aj porazenému**. Každý stupeň raz: **žltá 1,
   oranžová 2, červená 3 (zo stredu na červenú spolu 6)**. Odtlačený stupeň nič; zaparkovaný marker druhýkrát
-  nič nedá. Keď marker ustúpi k stredu (Pohoršenie, prebytok, patronát, Kšeft, Kapybara), stupne, z ktorých
+  nič nedá. Keď marker ustúpi k stredu (Pohoršenie, Nakladačka, patronát, Kšeft, Kapybara), stupne, z ktorých
   ustúpil, sa pri ďalšom postupe platia znova (zas až po udržaní); na druhej polovici platí nanovo druhému
   hráčovi. V stávke bitky strach nie je. Nepriznaná Cirhóza na konci **−3 špaky za kus** (v8; ruka aj oba balíčky).
   Exekútor berie špaky (nižšie). Špaky smú ísť do mínusu; výpis ich ukazuje pri oboch hráčoch aj
@@ -39,9 +39,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   útočí **zaostávajúci — kto má menej špakov** (pri rovnosti porazený poslednej bitky, po sekere ostáva
   útočník); **obranca (vedúci) vyberie a natočí pinnacle lokalitu** (jednu z troch), potom šenok
   a patronát ako v každom kole. Kraje a prevaha platia, počet Pitiek podľa spojov s lokalitou (1–5),
-  víťaz 1 špak za kartu v línii. **Vo finále sa rozdeľuje len Pohoršenie, prebytok nie (v8.3).**
+  víťaz 1 špak za kartu v línii. **Vo finále sa rozdeľuje len Pohoršenie, Nakladačka nie (v8.3).**
   Po finále starší zaplatia stupne udržané z posledného kola (aj porazenému); stupne, kam sa marker
-  dostal až vo finále, nič. Na špaky 1 : 1 sa prebytok nemení nikde.
+  dostal až vo finále, nič. Na špaky 1 : 1 sa Nakladačka nemení nikde.
 - **Každú kartu** môžeš vyložiť na koniec **svojej aj súperovej strany**
   (`target` `vlastna` / `superova`). Karta **patrí tomu, kto ju zahral** — akcie
   aj efekty sa rátajú majiteľovi, nech leží kdekoľvek (výnimky: Nástroj, Kočovník — nižšie). Podstrčený „sabotér"
@@ -103,7 +103,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (Kšeft: 2 cigarety → marker o 1 od seba alebo k sebe, nie staršieho zo súperovho patronátu),
   Herňa (víťaz + toľko špakov, koľko má porazený priznaných Dlhov), Kultúrny dom (v8 „Obaja získajú
   špaky“: víťaz 1 špak za každú kartu v línii, **porazený 1 špak za každú svoju kartu v línii**;
-  prebytok sa rozdeľuje ako inde), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
+  Nakladačka sa rozdeľuje ako inde), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
   nemíňajú limit).
 - **Kšeft (v7):** aktívny efekt za cenu `{"type":"kseft","uid":…}` (uid karty v línii, staršieho alebo
   lokality; Zberný dvor s `kartaUid`, Vila s `elderId` a `kSebe`) — v Pitke na svojom ťahu, nie pri
@@ -253,7 +253,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   stupnici, nie polovica — z tvojej polovice posun od seba marker len priblíži k stredu (tvoja priazeň −1,
   súpera sa bojí menej). Log posunu píše stupeň pred → po s farbou a stavom staršieho, komu priazeň
   stúpla/klesla a kto staršieho desí.
-- **Cena posunu markera (v8.2, 2026-10-30)** — Pohoršenie aj prebytok: pole von zo stredu stojí 1 / 2 / 3,
+- **Cena posunu markera (v8.2, 2026-10-30)** — Pohoršenie aj Nakladačka: pole von zo stredu stojí 1 / 2 / 3,
   k stredu 4 / 3 / 2 (z červenej, z oranžovej, zo žltej); zo stredu na červenú 6. Vyberáš **len staršieho**
   (pri Pohoršení aj smer), marker ide, kým body stačia; zvyšok dáš ďalším starším. Čo už na žiadny posun
   nestačí, prepadne. Kšeft Predsedovej vily a Kapybara posúvajú o jedno pole bez ceny.
@@ -265,20 +265,20 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   zaplatil koniec tohto kola. Ten istý
   marker smieš posúvať **bez limitu, aj na červenú** (zo stredu 6 Pohoršení).
 - **Poradie bitky:** Pohoršenie → poškodenie → výsledok → špaky za bitku
-  → exekúcia (Robota, Exekútor) → prebytok (posunie markery k súperovi držiteľa podľa ceny poľa, aj na
+  → exekúcia (Robota, Exekútor) → Nakladačka (posunie markery k súperovi držiteľa podľa ceny poľa, aj na
   červenú a z nej von — zamknutie sa ruší; prejaví sa až v ďalšej bitke; vo finále sa nerozdeľuje) → … →
   **koniec kola: špaky za udržaný strach** (každému, koho sa starší boja) → Absťák → vydesenie.
-  **Prebytok rozdeľuje porazený (v8):** markery idú ako doteraz (starší sa začnú báť víťaza), ale
-  **ktorých starších posunie, vyberá ten, proti komu sa prebytok ráta** — spravidla porazený si sám
-  vyberie, ktoré priazne dostane (pri sekere ten s nižším celkovým). Rozdeliť treba celý prebytok (zvyšok,
+  **Nakladačku rozdeľuje porazený (v8):** markery idú ako doteraz (starší sa začnú báť víťaza), ale
+  **ktorých starších posunie, vyberá ten, proti komu sa Nakladačka ráta** — spravidla porazený si sám
+  vyberie, ktoré priazne dostane (pri sekere ten s nižším celkovým). Rozdeliť treba celú Nakladačku (zvyšok,
   ktorý na žiadne pole nestačí, prepadne);
-  `{"type":"prebytok","elderId":…}` posiela on. Vo finále sa prebytok nerozdeľuje.
+  `{"type":"prebytok","elderId":…}` posiela on. Vo finále sa Nakladačka nerozdeľuje.
 - **Povera poškodzuje (v8.2 znenie):** mäkké poškodenie proti súperovým priznaným Dlhom (najviac toľko,
-  koľko ich má); so súperovou Vierou sa ruší 1 : 1. Víťaza určuje tuhé, prebytok celkové (tuhé + mäkké).
+  koľko ich má); so súperovou Vierou sa ruší 1 : 1. Víťaza určuje tuhé, Nakladačka celkové (tuhé + mäkké).
 - **Remíza (v6):** pri rovnakom tuhom vyhrá, kto má **menej Absťákov**, potom **menej
   priznaných Dlhov**; inak **sekera** — špaky kola (karty v línii) vezme víťaz najbližšej bitky,
-  vo finále prepadnú; strach starších platí ako vždy (udržanie); útočník ostáva, patronát = prehra. Celkové určuje len prebytok.
+  vo finále prepadnú; strach starších platí ako vždy (udržanie); útočník ostáva, patronát = prehra. Celkové určuje len Nakladačka.
   **Ohlásené vydesenie:** polovicu starších treba udržať do konca ďalšieho kola; keď
   klesne pod polovicu (aj patronátom), padá hneď a nové doplnenie ohlasuje odznova. Ohlásené
   v poslednej bitke o lokalitu rozhodne na konci finále (pred konečnými špakmi); ohlásené vo finále nie.
-  **Cigarety za prebytok** dostane ten, proti komu sa prebytok delil.
+  **Cigarety za Nakladačku** dostane ten, proti komu sa Nakladačka delila.

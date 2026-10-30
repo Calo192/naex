@@ -1249,7 +1249,7 @@ export function HernaPlocha({
     };
     const rovnaky = a.drzi === b.drzi && a.prebytok === b.prebytok && a.posuny === b.posuny;
     if (rovnaky && b.naRozdelenie === b.prebytok && b.cenaPosunu === 1) return null;
-    return rovnaky ? `prebytok ${t(b)}` : `prebytok ${t(a)} → ${t(b)}`;
+    return rovnaky ? `Nakladačka ${t(b)}` : `Nakladačka ${t(a)} → ${t(b)}`;
   };
   /**
    * Cena NA EX skrátene pre jeden riadok pokynu (UI inšpekcia 20261024-nahlad, N3):
@@ -3227,7 +3227,7 @@ export function HernaPlocha({
               <>
                 {bsCak.prebytokDrzi === ja ? (
                   <>
-                    <strong>{menoHraca(super_)}</strong> rozdeľuje tvoj prebytok: vyberá, ktorí starší pôjdu k nemu — on dostane ich priazeň, teba sa
+                    <strong>{menoHraca(super_)}</strong> rozdeľuje tvoju Nakladačku: vyberá, ktorí starší pôjdu k nemu — on dostane ich priazeň, teba sa
                     začnú báť (nový stupeň ti zaplatí koniec ďalšieho kola, ak sa udrží). Za každého staršieho dostane cigaretu.
                   </>
                 ) : (
@@ -4508,14 +4508,14 @@ export function HernaPlocha({
     const karta = pl === undefined ? "kartu" : `${pl.playedBy === h.hrac ? (kto === "ja" ? "svoju" : "jeho") : kto === "ja" ? "jeho" : "tvoju"} kartu ${menoKarty(pl.card.defId)}`;
     const tuhe = `tuhé ${h.damage.tuhe[ja]} : ${h.damage.tuhe[super_]}`;
     const v = h.vysledok;
-    const prebytok = v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`;
+    const prebytok = v.prebytokDrzi === null ? "" : ` · Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`;
     const kdo = kto === "ja" ? "Ty ešte môžeš" : `${menoHraca(super_)} ešte môže`;
-    const kratkyPrebytok = v.prebytokDrzi === null ? "" : ` (prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"})`;
+    const kratkyPrebytok = v.prebytokDrzi === null ? "" : ` (Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"})`;
     return {
       kto,
       uid: h.uid,
       mini: `${kto === "ja" ? "ty" : "súper"} až ${h.damage.tuhe[ja]} : ${h.damage.tuhe[super_]}${kratkyPrebytok}`,
-      kratko: `${kto === "ja" ? "Ty ešte môžeš" : "Súper ešte môže"}: ${tuhe}${v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"}`}`,
+      kratko: `${kto === "ja" ? "Ty ešte môžeš" : "Súper ešte môže"}: ${tuhe}${v.prebytokDrzi === null ? "" : ` · Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "ty" : "súper"}`}`,
       cele: `${kdo} dať NA EX na ${karta}: ${tuhe}${prebytok} (z kariet na stole, ruka sa neráta).`,
     };
   };
@@ -4551,7 +4551,7 @@ export function HernaPlocha({
       // aby ho pri 1366 px neodrezalo (snímka 1366 × 650).
       mini: `${kto === "ja" ? "ty" : "súper"} až ${r.damage.tuhe[ja]} : ${r.damage.tuhe[super_]} Pohoršeniami`,
       kratko: `${kto === "ja" ? "Ty" : "Súper"} Pohoršeniami (${r.pocet}) až: ${tuhe}`,
-      cele: `${kto === "ja" ? `Máš ${pohorseni}` : `${menoHraca(super_)} má ${pohorseni}`}, ktoré sa rozdelia až v bitke — priazeň platí hneď (Bitkár, Veriaci): najviac ${tuhe}${v.prebytokDrzi === null ? "" : ` · prebytok ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`}.`,
+      cele: `${kto === "ja" ? `Máš ${pohorseni}` : `${menoHraca(super_)} má ${pohorseni}`}, ktoré sa rozdelia až v bitke — priazeň platí hneď (Bitkár, Veriaci): najviac ${tuhe}${v.prebytokDrzi === null ? "" : ` · Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`}.`,
     };
   };
   // Pohoršenia prídu v bitke isto, NA EX len možno — idú prvé; pri viacerých položkách bez prebytku

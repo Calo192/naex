@@ -193,7 +193,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             1- až 4-krát podľa línie.
           </li>
           <li>
-            <strong>Bitka.</strong> Viac tuhého poškodenia vyhráva a dostane špak za každú kartu v línii. Prebytok posúva
+            <strong>Bitka.</strong> Viac tuhého poškodenia vyhráva a dostane špak za každú kartu v línii. Nakladačka posúva
             starších — ktorých, vyberá porazený. Na konci kola starší zaplatia za udržaný strach tomu, koho sa boja.
           </li>
           <li>
@@ -501,7 +501,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Povera poškodzuje (mäkké) proti súperovým priznaným Dlhom — najviac toľko, koľko ich má.",
       "Viac tuhého vyhráva: víťaz dostane 1 špak za každú kartu v línii, lokalita ide na nástenku.",
       "Remízu rozhodne menej Absťákov, potom menej Dlhov, inak sekera.",
-      "Prebytok drží hráč s vyšším celkovým poškodením, rozdeľuje ho súper (spravidla porazený).",
+      "Nakladačku drží hráč s vyšším celkovým poškodením, rozdeľuje ju súper (spravidla porazený).",
     ],
     obsah: () => (
       <>
@@ -533,7 +533,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           Víťaz dostane 1 <P k="spak">špak</P> za každú kartu, ktorá pri bitke leží v línii — na oboch stranách, aj odkrytá
           Záverečná, aj vo finále; priznané karty, Dedičstvo a karty, ktoré z línie počas kola zmizli, sa nerátajú. Ak má viac
           Absťáky špaky nezrážajú. Lokalitu si neberie — ide na krčmovú{" "}
-          <P k="nastenka">nástenku</P> s jeho menom a špakmi. Prebytok drží hráč s vyšším <strong>celkovým</strong>{" "}
+          <P k="nastenka">nástenku</P> s jeho menom a špakmi. Nakladačku drží hráč s vyšším <strong>celkovým</strong>{" "}
           poškodením — aj pri remíze v tuhom —, ale rozdeľuje ho jeho súper.
         </p>
         <H3 id="bitka-kroky">Kroky bitky v poradí</H3>
@@ -549,7 +549,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             <strong>Pohoršenie</strong> (aj 1 za každý tvoj Absťák) — posúva markery starších od seba alebo k sebe (kapitola{" "}
-            <a href="#starsi">Starší a prebytok</a>).
+            <a href="#starsi">Starší a Nakladačka</a>).
           </li>
           <li>
             <strong>Poškodenie</strong> — Viera a Povera sa vyrušia, tuhé znižuje Viera a Absťáky, mäkké po strop Dlhov.
@@ -561,8 +561,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje); lokalita ide na nástenku.
           </li>
           <li>
-            <strong>Prebytok</strong> — markery starších sa posunú k súperovi hráča s vyšším celkovým poškodením; ktorých starších,
-            vyberá ten súper (spravidla porazený si vyberie priazne). Prejaví sa až v ďalšej bitke. Vo finále sa prebytok nerozdeľuje.
+            <strong>Nakladačka</strong> — markery starších sa posunú k súperovi hráča s vyšším celkovým poškodením; ktorých starších,
+            vyberá ten súper (spravidla porazený si vyberie priazne). Prejaví sa až v ďalšej bitke. Vo finále sa Nakladačka nerozdeľuje.
           </li>
           <li>
             <strong>Poldeci</strong> — poldeci z NA EX sa vypijú (s priazňou Alkoholika sa niektoré vrátia plné); aktívna akcia
@@ -575,8 +575,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Cintorín</strong> — porazený v bitke o Cintorín smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
           </li>
           <li>
-            <strong>Výhra a Prehra</strong> — Živnostník, cigarety za prebytok (súper dostane 1 cigaretu za každého staršieho,
-            ktorého marker sa prebytkom posunul), Kmotor (kto má jeho priazeň, tomu prejdú priznané Dlhy podľa sily k súperovi) a ostatné
+            <strong>Výhra a Prehra</strong> — Živnostník, cigarety za Nakladačku (súper dostane 1 cigaretu za každého staršieho,
+            ktorého marker sa Nakladačkou posunul), Kmotor (kto má jeho priazeň, tomu prejdú priznané Dlhy podľa sily k súperovi) a ostatné
             efekty Výhra a Prehra.
           </li>
           <li>
@@ -603,13 +603,13 @@ export const KAPITOLY: readonly Kapitola[] = [
   {
     id: "starsi",
     cast: "B",
-    nazov: "Starší a prebytok",
+    nazov: "Starší a Nakladačka",
     obrazok: "10-starsi-a-prebytok",
     vSkratke: [
       "Marker staršieho posunutý od seba = súper má priazeň, starší sa bojí teba — desíš ho; k sebe ho upokojuješ.",
       "Stupnica má 7 polí: stupne 3-2-1-0-1-2-3 (červená, oranžová, žltá, sivý stred…); starší je pokojný, znepokojený, vystrašený alebo vydesený.",
       "Stupeň zaplatí (1 / 2 / 3) až keď sa na ňom marker udrží do konca ďalšieho kola — tomu, koho sa bojí, aj porazenému.",
-      "Prebytok aj Pohoršenie platia za pole podľa zóny: von zo stredu 1 / 2 / 3, k stredu 2 / 3 / 4 — bez limitu, aj na krajnú pozíciu.",
+      "Nakladačka aj Pohoršenie platia za pole podľa zóny: von zo stredu 1 / 2 / 3, k stredu 2 / 3 / 4 — bez limitu, aj na krajnú pozíciu.",
       "Krajná červená: starší sa prebudí pre teba; súper ho smie odtlačiť späť.",
     ],
     obsah: () => (
@@ -631,20 +631,20 @@ export const KAPITOLY: readonly Kapitola[] = [
           k stredu, stupne, z ktorých ustúpil, sa pri ďalšom postupe platia znova (a znova až po udržaní).
         </p>
         <UkazkaStupnice />
-        <H3 id="starsi-prebytok">Prebytok a Pohoršenie</H3>
+        <H3 id="starsi-prebytok">Nakladačka a Pohoršenie</H3>
         <p>
-          <P k="prebytok">Prebytok</P> je rozdiel v celkovom poškodení. Markery starších idú k súperovi hráča, ktorý ho drží,
+          <P k="prebytok">Nakladačka</P> je rozdiel v celkovom poškodení. Markery starších idú k súperovi hráča, ktorý ho drží,
           aj na krajnú pozíciu a z nej von. <strong>Pole stojí podľa zóny</strong>, do ktorej marker vstupuje: von zo stredu žltá 1,
           oranžová 2, červená 3 (zo stredu na červenú 6); k stredu o 1 viac — z červenej 4, z oranžovej 3, zo žltej 2. Ktorých
           starších, <strong> vyberá ten súper</strong> — spravidla porazený si sám vyberie, ktoré priazne dostane. Vyberá len staršieho:
-          marker ide, kým zvyšok stačí, a čo ostane, ide ďalším; rozdeliť treba celý prebytok, len zvyšok, ktorý už na žiadne pole
+          marker ide, kým zvyšok stačí, a čo ostane, ide ďalším; rozdeliť treba celú Nakladačku, len zvyšok, ktorý už na žiadne pole
           nestačí, prepadne.
-          Nový stupeň z prebytku sa začne udržiavať na konci kola a zaplatí sa na konci ďalšieho. Vo finále sa prebytok nerozdeľuje.
+          Nový stupeň z Nakladačky sa začne udržiavať na konci kola a zaplatí sa na konci ďalšieho. Vo finále sa Nakladačka nerozdeľuje.
           Kto starších dostal, za každého posunutého dostane 1 cigaretu.
         </p>
         <p>
           Každé <P k="pohorsenie">Pohoršenie</P> je bod na posun markera — <strong>od seba (desíš), alebo k sebe (upokojuješ)</strong>; vyberáš ty
-          staršieho a smer, pole stojí ako pri prebytku a marker ide, kým tvoje Pohoršenia stačia (zvyšok dáš inému staršiemu).
+          staršieho a smer, pole stojí ako pri Nakladačke a marker ide, kým tvoje Pohoršenia stačia (zvyšok dáš inému staršiemu).
           K sebe si priazeň toho staršieho vezmeš (alebo ju súperovi uberieš). Priazeň sa mení <strong>hneď</strong> — platí už
           v poškodení tej istej bitky, takže ju môže rozhodnúť. Ten istý marker smieš posunúť aj viackrát,{" "}
           <strong>bez limitu</strong> a aj na krajnú pozíciu (zo stredu na červenú šesť Pohoršení). Strach z nového stupňa sa
@@ -677,7 +677,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="starsi-vydesenie">Vydesenie, krajná pozícia a prebudenie</H3>
         <ul>
           <li>
-            <strong>Krajná pozícia:</strong> na červenú sa marker smie dostať aj viacerými posunmi v jednom kole, prebytkom aj
+            <strong>Krajná pozícia:</strong> na červenú sa marker smie dostať aj viacerými posunmi v jednom kole, Nakladačkou aj
             Pohoršením. Súper ho z nej smie odtlačiť späť alebo ho <a href="#patronat">patronátom</a> vrátiť naraz do stredu.
           </li>
           <li>
@@ -960,7 +960,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             v línii (na Herni navyše za Dlhy porazeného). Pri sekere vo finále špaky kola aj zo sekery prepadnú.
           </li>
           <li>
-            Vo finále sa rozdeľuje len Pohoršenie, prebytok už nie. Po finále starší zaplatia stupne udržané z posledného kola
+            Vo finále sa rozdeľuje len Pohoršenie, Nakladačka už nie. Po finále starší zaplatia stupne udržané z posledného kola
             (každému, koho sa boja); stupne, kam sa marker dostal až vo finále, nič. Potom sa vykúpia zvyšné plné poldeci a cigarety (poldeci 1 špak, 5 cigariet 1 špak), odpočíta sa
             nepriznaná Cirhóza a vyhrá hráč s viac špakmi.
           </li>

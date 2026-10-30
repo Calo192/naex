@@ -86,7 +86,7 @@ describe("M4 — výsledok", () => {
     expect(battleOutcome(damage).vitaz).toBeNull();
   });
 
-  it("pri remíze v tuhom nevyhrá nikto, prebytok drží vyššie celkové", () => {
+  it("pri remíze v tuhom nevyhrá nikto, Nakladačku drží vyššie celkové", () => {
     const d = { tuhe: [2, 2], makke: [0, 1], celkove: [2, 3], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] } as const;
     const o = battleOutcome(d);
     expect(o.vitaz).toBeNull();
@@ -94,7 +94,7 @@ describe("M4 — výsledok", () => {
     expect(o.prebytok).toBe(1);
   });
 
-  it("pri remíze v celkovom poškodení nikto nezíska prebytok", () => {
+  it("pri remíze v celkovom poškodení nikto nezíska Nakladačku", () => {
     const damage = computeDamage([side({ sums: { Rana: 2 } }), side({ sums: { Pecka: 1 } })]);
     expect(damage.celkove).toEqual([2, 2]);
     const outcome = battleOutcome(damage);
@@ -102,7 +102,7 @@ describe("M4 — výsledok", () => {
     expect(outcome.prebytok).toBe(0);
   });
 
-  it("prebytok drží hráč s vyšším celkovým, aj keď bitku prehral", () => {
+  it("Nakladačku drží hráč s vyšším celkovým, aj keď bitku prehral", () => {
     // Hráč 0 vyhrá na tuhom, ale hráč 1 má vyššie celkové vďaka mäkkému.
     const damage = computeDamage([
       side({ sums: { Pecka: 2 }, priznaneDlhy: 5 }),

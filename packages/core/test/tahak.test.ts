@@ -22,7 +22,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["špaky za bitku (v8)", "1 špak za každú kartu v línii"],
     ["strach až po udržaní (v8.3)", "až na konci nasledujúceho kola, ak sa na ňom marker dovtedy udrží"],
     ["strach každý stupeň raz (v8.3)", "Každý stupeň raz: **žltá 1, oranžová 2, červená 3 (zo stredu na červenú spolu 6)**"],
-    ["prebytok vo finále (v8.3)", "**Vo finále sa rozdeľuje len Pohoršenie, prebytok nie (v8.3).**"],
+    ["Nakladačka vo finále (v8.3)", "**Vo finále sa rozdeľuje len Pohoršenie, Nakladačka nie (v8.3).**"],
     ["pojmy stupnice (v8.3)", "**pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**"],
     ["Kmotor (v8)", "Kmotor: po bitke presunie 1 / 2 / 3 tvoje priznané Dlhy medzi súperove"],
     ["Exekútor bez prahu (2026-10-28)", "Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor"],

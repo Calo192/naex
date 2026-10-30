@@ -430,7 +430,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
             pomoc={`Vyhral ${s.bitkyVyhrane - s.bitkyAkoUtocnikVyhrane} z ${s.bitky - s.bitkyAkoUtocnik} bitiek, v ktorých sa bránil.`}
           />
           <Udaj nazov="patronáty (starší v ruke)" hodnota={cislo(s.bitkyOStarsich)} />
-          <Udaj nazov="prebytku získaného" hodnota={cislo(s.prebytokZiskany)} pomoc="Rozdiel celkového poškodenia, ktorý hráč rozdelil na posuny markerov." />
+          <Udaj nazov="získanej Nakladačky" hodnota={cislo(s.prebytokZiskany)} pomoc="Rozdiel celkového poškodenia, ktorý hráč rozdelil na posuny markerov." />
         </Sekcia>
 
         <Sekcia nazov="Poškodenie" ikona={<Akcia kluc="Petelica" />}>
@@ -480,7 +480,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
           <Udaj nazov="lokalít ovládnutých" hodnota={cislo(s.lokalityOvladnute)} vyrazny />
           <Udaj nazov="starších získaných" hodnota={cislo(s.starsiZiskani)} />
           <Udaj nazov="starších vydesených" hodnota={cislo(s.starsiVydeseni)} pomoc="Starší, ktorých marker skončil na krajnej pozícii súperovej polovice." />
-          <Udaj nazov="posunov prebytkom" hodnota={cislo(s.posunyPrebytkom)} />
+          <Udaj nazov="posunov Nakladačkou" hodnota={cislo(s.posunyPrebytkom)} />
         </Sekcia>
 
         <Sekcia nazov="Partie" ikona={<Akcia kluc="Robota" />}>

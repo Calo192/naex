@@ -320,13 +320,13 @@ describe("výučba — kľúče zvýraznenia „zóna:defId#n“ idú klientovi 
 });
 
 describe("výučba — zlý ťah pri staršom pomenuje staršieho (U3)", () => {
-  it("prebytok, Pohoršenie a patronát na zlého staršieho: text povie meno správneho", () => {
+  it("Nakladačka, Pohoršenie a patronát na zlého staršieho: text povie meno správneho", () => {
     const state = setupGame(data, 7);
     const [a, b] = state.starsi;
     if (a === undefined || b === undefined) throw new Error("starší");
     const meno = defOf(data, a.karta).name;
     const p = porovnajSKrokom(data, state, { type: "prebytok", elderId: b.elderId }, { type: "prebytok", elderId: a.elderId });
-    expect(p.chybajuce.map((x) => x.popis)).toEqual([`posuň prebytkom staršieho „${meno}“`]);
+    expect(p.chybajuce.map((x) => x.popis)).toEqual([`posuň Nakladačkou staršieho „${meno}“`]);
     expect(textChybyKroku(p)).toContain(meno);
   });
 });

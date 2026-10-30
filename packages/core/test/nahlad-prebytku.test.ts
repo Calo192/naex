@@ -42,7 +42,7 @@ function vPrebytku(seed: number, zostava: number): GameState {
   } as GameState;
 }
 
-describe("náhľad posunu prebytkom (v8)", () => {
+describe("náhľad posunu Nakladačkou (v8)", () => {
   it("posun k porazenému pohne rozdielom odhadov o jeden stupeň (čaká na udržanie, v8.3), kým ešte príde ďalší koniec kola; zvyšok 2 stačí len na lacné pole (v8.2)", () => {
     for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
       const s = vPrebytku(seed, 2);

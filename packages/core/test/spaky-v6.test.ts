@@ -128,7 +128,7 @@ describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
 describe("v8: Kultúrny dom „Obaja bodujú“ (návrh #29)", () => {
   const s0 = setupGame(data, 5);
 
-  it("víťaz dostane špaky za všetky karty v línii, porazený za svoje; prebytok sa rozdeľuje ako inde (porazený)", () => {
+  it("víťaz dostane špaky za všetky karty v línii, porazený za svoje; Nakladačka sa rozdeľuje ako inde (porazený)", () => {
     const s = predPoskodenim({ ciel: lokalita(s0, "kulturny_dom"), sums: [{ Rana: 5 }, {}], karty: [2, 3] });
     const { state: st, events } = pohorsenie(s);
     expect(st.nastenka.at(-1)).toMatchObject({ vitaz: 0, karty: 5, zaBitku: [5, 3], zaStarsich: [0, 0], prebytok: [0, 0] });

@@ -134,7 +134,7 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
     expect(stavy.length).toBeGreaterThanOrEqual(100);
   });
 
-  it("cigarety, Cirhózy, Dlhy, Pohoršenia, tuhé, mäkké a prebytok sedia", () => {
+  it("cigarety, Cirhózy, Dlhy, Pohoršenia, tuhé, mäkké a Nakladačka sedia", () => {
     let porovnane = 0;
     let bitky = 0;
     for (const { s, p, seed } of stavy) {
@@ -197,10 +197,10 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         expect(n.pred.makke, `${kde}: mäkké bez NA EX`).toEqual(pB.makke);
         for (const q of [0, 1] as const) expect(n.dopady[q].makke, `${kde}: mäkké navyše, hráč ${q}`).toBe(pA.makke[q] - pB.makke[q]);
         const vysledok = battleOutcome(pA);
-        expect(n.prebytokPo.drzi, `${kde}: prebytok drží`).toBe(vysledok.prebytokDrzi);
-        expect(n.prebytokPo.naRozdelenie, `${kde}: prebytok na rozdelenie (Puška)`).toBe(prebytokNaRozdelenie(sNaex.s, vysledok));
+        expect(n.prebytokPo.drzi, `${kde}: Nakladačku drží`).toBe(vysledok.prebytokDrzi);
+        expect(n.prebytokPo.naRozdelenie, `${kde}: Nakladačka na rozdelenie (Puška)`).toBe(prebytokNaRozdelenie(sNaex.s, vysledok));
         if (dA.damage !== null && dA.krok === "prebytok" && dA.prebytokPosunute.length === 0 && dA.caka !== null) {
-          expect(n.prebytokPo.naRozdelenie, `${kde}: prebytok v bitke`).toBe(dA.prebytokZostava);
+          expect(n.prebytokPo.naRozdelenie, `${kde}: Nakladačka v bitke`).toBe(dA.prebytokZostava);
         }
         bitky++;
       }

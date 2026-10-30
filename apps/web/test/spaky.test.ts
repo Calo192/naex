@@ -36,14 +36,14 @@ describe("poznámka bitky na nástenke", () => {
     expect(poznamkaBitky(bitka({ rozhodlo: "abstak", abstakZrazka: 1 }), kto)).toEqual(["remíza → menej Absťákov", "−1 za Absťák"]);
   });
 
-  it("sekera, Exekútor a prebytok po finále", () => {
+  it("sekera, Exekútor a Nakladačka po finále", () => {
     expect(poznamkaBitky(bitka({ vitaz: null, rozhodlo: "sekera", zaBitku: [0, 0], prepadlo: 3 }), kto)).toEqual(["3 špaky prepadlo"]);
-    expect(poznamkaBitky(bitka({ zoSekery: 2, exekutor: [0, 4], prebytok: [3, 0] }), kto)).toEqual(["+2 zo sekery", "Exekútor: Fero −4", "prebytok: ty +3"]);
+    expect(poznamkaBitky(bitka({ zoSekery: 2, exekutor: [0, 4], prebytok: [3, 0] }), kto)).toEqual(["+2 zo sekery", "Exekútor: Fero −4", "Nakladačka: ty +3"]);
   });
 });
 
 describe("špaky pred bitkou", () => {
-  it("po bitke mínus bitka, starší a prebytok, plus to, čo zhorelo pri exekúcii", () => {
+  it("po bitke mínus bitka, starší a Nakladačka, plus to, čo zhorelo pri exekúcii", () => {
     const b = bitka({ zaBitku: [3, 0], zaStarsich: [1, 2], exekutor: [0, 2], prebytok: [2, 0], spakyPo: [10, 4] });
     expect(spakyPredBitkou(b)).toEqual([4, 4]);
   });

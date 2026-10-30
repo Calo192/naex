@@ -93,7 +93,7 @@ describe("posun markera", () => {
     for (const k of partie(SEEDY.slice(0, 3))) {
       if (k.cmd.type !== "pohorsenie" && k.cmd.type !== "prebytok") continue;
       const id = k.cmd.elderId;
-      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Prebytok) \(hráč [12], [^)]+\): /.test(e.text) ? [e.text] : []));
+      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Nakladačka) \(hráč [12], [^)]+\): /.test(e.text) ? [e.text] : []));
       expect(log).toHaveLength(1);
       expect(log[0]).not.toContain(id);
       expect(log[0]).toMatch(/stupeň [0-3] → [0-3] \((stred|žltá|oranžová|červená) → (stred|žltá|oranžová|červená)\), (pokojný|znepokojený|vystrašený|vydesený)/);
@@ -112,7 +112,7 @@ describe("posun markera", () => {
       const id = k.cmd.elderId;
       const z = k.pred.starsi.find((e) => e.elderId === id)?.marker as number;
       const na = k.po.starsi.find((e) => e.elderId === id)?.marker as number;
-      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Prebytok) \(hráč [12], [^)]+\): /.test(e.text) ? [e.text] : []))[0] as string;
+      const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Nakladačka) \(hráč [12], [^)]+\): /.test(e.text) ? [e.text] : []))[0] as string;
       const st = (m: number): number => Math.abs(m - 3);
       expect(log).toContain(`— stupeň ${st(z)} → ${st(na)} (${farba[z]} → ${farba[na]}), ${stav[st(na)]}: `);
       if (na === 3) {

@@ -1081,7 +1081,7 @@ function StranaBitky({
           </span>
         ))}
         <span className="tip-stav">
-          {makke > 0 ? `+ ${makke} mäkké (Povera) = celkom ${celkove}` : `celkom ${celkove}`} — celkové určí, kto rozdelí prebytok. Pri
+          {makke > 0 ? `+ ${makke} mäkké (Povera) = celkom ${celkove}` : `celkom ${celkove}`} — celkové určí, kto rozdelí Nakladačku. Pri
           rovnakom tuhom vyhrá, kto má menej Absťákov, potom menej priznaných Dlhov; inak idú špaky na sekeru.
         </span>
       </>
@@ -1267,8 +1267,8 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         <b>{verdikt}</b> · tuhé {damage.tuhe[ja]} : {damage.tuhe[su]}
         <span className="tip-riadok">
           {prebytokDrzi === null
-            ? "prebytok: nikto"
-            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${CENA_POLA}`}
+            ? "Nakladačka: nikto"
+            : `Nakladačka ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${CENA_POLA}`}
         </span>
         {(props.hrozby ?? []).map((h) => (
           <span key={klucHrozby(h)} className="tip-riadok">
@@ -1335,8 +1335,8 @@ export function BitkaPanel(props: BitkaPanelProps) {
         <RiadkyHrozby hrozby={props.hrozby} ukazHrozbu={props.ukazHrozbu} />
         <span className="bitka-pozn">
           {prebytokDrzi === null
-            ? "prebytok: nikto"
-            : `prebytok ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${CENA_POLA}`}
+            ? "Nakladačka: nikto"
+            : `Nakladačka ${prebytok}${prebytokNaRozdelenie < prebytok ? ` − Puška = ${prebytokNaRozdelenie}` : ""} → ${prebytokDrzi === ja ? "tebe" : mena[su]} · ${CENA_POLA}`}
         </span>
         {!vysledok && rozdiel !== 0 && <span className="bitka-pozn tlmene">pri remíze: {coPriRemize}</span>}
         {props.poBitke != null && <span className="bitka-pozn">po bitke (efekty Prehra): {props.poBitke}</span>}
@@ -1427,7 +1427,7 @@ export function PriebehKola({
       <>
         Posledná bitka na vrcholovej lokalite (v7): útočí, kto má menej špakov (pri rovnosti porazený poslednej bitky), a vedúci
         vyberie a natočí lokalitu. Kraje, prevaha aj počet Pitiek ako na každej lokalite.
-        <span className="tip-riadok">Prebytok sa vo finále nerozdeľuje. Po finále starší zaplatia stupne udržané z posledného kola (nové stupne z finále nič) a odpočíta sa nepriznaná Cirhóza.</span>
+        <span className="tip-riadok">Nakladačka sa vo finále nerozdeľuje. Po finále starší zaplatia stupne udržané z posledného kola (nové stupne z finále nič) a odpočíta sa nepriznaná Cirhóza.</span>
       </>
     ),
   };
@@ -1532,10 +1532,10 @@ export function PriebehKola({
           má menej Absťákov, potom menej priznaných Dlhov; inak sekera — špaky kola čakajú na víťaza ďalšej bitky (vo finále prepadnú).
           Víťaz dostane toľko špakov, koľko Pitiek sa odohralo (mínus rozdiel Absťákov, aspoň 1) a lokalita ide na krčmovú nástenku.
           Potom víťazovi dajú špaky starší, ktorí sa ho boja (žltá 1, oranžová 2, červená 3); porazený od nich nič, pri sekere dostanú
-          obaja. Kto má vyššie celkové, rozdelí prebytok —
+          obaja. Kto má vyššie celkové, rozdelí Nakladačku —
           posúva markery starších; po finále ho dostane ako špaky.
           <span className="tip-riadok">
-            Potom Exekútor, Pohoršenie, prebytok… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole
+            Potom Exekútor, Pohoršenie, Nakladačka… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole
             útočník.
           </span>
         </>

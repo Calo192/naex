@@ -535,7 +535,7 @@ export function Profil() {
         <label className="skratky-volba">
           <input type="checkbox" checked={medziobrazovky} onChange={(e) => prepniMedziobrazovky(e.target.checked)} />
           <span>
-            <b>Medziobrazovky pri prechode fáz</b> — pri výbere lokality, šenku, Zhromaždení, Pitke, bitke, prebytku a vo finále sa ukáže názov fázy a čo máš
+            <b>Medziobrazovky pri prechode fáz</b> — pri výbere lokality, šenku, Zhromaždení, Pitke, bitke, Nakladačky a vo finále sa ukáže názov fázy a čo máš
             robiť. Ostane, kým neklikneš „Rozumiem“.
           </span>
         </label>

@@ -53,7 +53,7 @@ describe("momenty — rozpoznanie", () => {
     expect(m).toContainEqual(expect.objectContaining({ typ: "zvrat", stupen: "striebro", hrac: 0 }));
   });
 
-  it("Výprask: prebytok aspoň 8 je bronzová pečiatka držiteľa; 7 ešte nie", () => {
+  it("Výprask: Nakladačka aspoň 8 je bronzová pečiatka držiteľa; 7 ešte nie", () => {
     const s = setupGame(zaklad, 42);
     const bitka = (prebytok: number): Event => ({ type: "bitkaVysledok", damage: { tuhe: [9, 1], makke: [0, 0], celkove: [9, 1], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] }, sums: [{}, {}], vitaz: 0, rozhodlo: "tuhe", prebytok, prebytokNaRozdelenie: prebytok, prebytokDrzi: 0, karty: [] });
     expect(momenty(zaklad, s, s, [bitka(8)])).toEqual([expect.objectContaining({ typ: "vyprask", stupen: "bronz", hrac: 0 })]);

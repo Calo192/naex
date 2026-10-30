@@ -8,7 +8,7 @@ import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 
 export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
   pohorsenie: "Pohoršenie",
-  prebytok: "Prebytok",
+  prebytok: "Nakladačka",
   patronat: "Patronát",
   kseft: "Predsedova vila",
   nastup: "Kapybara",

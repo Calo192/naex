@@ -452,7 +452,7 @@ function SucetBitky({ r, ja, menoSupera, ikonaPovery }: { readonly r: Rekapitula
     <div className="rk-sucet" role="row">
       celkové {cast(ja)} : {cast(su)}
       <span>
-        {r.prebytokDrzi === null ? " · prebytok nikto" : ` · prebytok ${r.prebytok} → ${r.prebytokDrzi === ja ? "ty" : menoSupera}`}
+        {r.prebytokDrzi === null ? " · Nakladačka nikto" : ` · Nakladačka ${r.prebytok} → ${r.prebytokDrzi === ja ? "ty" : menoSupera}`}
       </span>
     </div>
   );
@@ -531,7 +531,7 @@ function VieraPovera({
               <KartaKliatby key={i} ikona={ikona("Dlh")} kto={proti === ja ? "ja" : "su"} svieti={i < r.makke[kto]} />
             ))}
           </span>
-          <Cip trieda={r.makke[kto] > 0 ? "zisk" : "nic"} title={`${r.makke[kto]} z ${z.length - zrusenych} zabrali (do celkového, prebytok)`}>
+          <Cip trieda={r.makke[kto] > 0 ? "zisk" : "nic"} title={`${r.makke[kto]} z ${z.length - zrusenych} zabrali (do celkového, Nakladačka)`}>
             {r.makke[kto] > 0 ? `+${r.makke[kto]}` : "0"}
           </Cip>
         </>

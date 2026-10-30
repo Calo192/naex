@@ -63,7 +63,7 @@ const NAZOV_TAHU: Readonly<Record<string, string>> = {
   refillPoldeci: "dolieva poldeci",
   hasic: "Hasič",
   pohorsenie: "Pohoršenie",
-  prebytok: "rozdeľuje prebytok",
+  prebytok: "rozdeľuje Nakladačku",
   kar: "Kar",
 };
 

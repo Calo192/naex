@@ -157,7 +157,7 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(naex("krcma")).toBe(false);
   });
 
-  it("Kultúrny dom (v8): prebytok sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)", () => {
+  it("Kultúrny dom (v8): Nakladačka sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)", () => {
     expect(rozdelujePrebytok(vKole("kulturny_dom"), 0)).toBe(1);
     expect(rozdelujePrebytok(vKole("krcma"), 1)).toBe(0);
   });

@@ -143,7 +143,7 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
 });
 
 // Michal 2026-10-18 (po revízii): Pitky podľa lokality, cigarety za prebytok.
-describe("cigarety porazenému za prebytok", () => {
+describe("cigarety porazenému za Nakladačku", () => {
   it("1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1", () => {
     const s0 = setupGame(data, 12);
     const [e1, e2] = s0.starsi;
