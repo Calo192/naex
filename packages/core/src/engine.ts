@@ -1753,7 +1753,7 @@ export function zaznamyPriazne(data: GameData, pred: GameState, po: GameState): 
     const a = pred.starsi.find((x) => x.elderId === e.elderId);
     const sila = priazenSila(e);
     if (a !== undefined && priazenHraca(a) === komu && priazenSila(a) >= sila) continue;
-    out.push({ type: "log", text: `♥ Hráč ${komu + 1} dostáva priazeň ${defOf(data, e.karta).name} (${scorecardStarsieho(data, e).nazov}) sily ${sila}.` });
+    out.push({ type: "log", text: `Priazeň ${defOf(data, e.karta).name} (${scorecardStarsieho(data, e).nazov}) sily ${sila} dostáva Hráč ${komu + 1}.` });
   }
   return out;
 }

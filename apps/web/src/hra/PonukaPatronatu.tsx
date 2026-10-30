@@ -6,6 +6,7 @@
 import type { ReactNode } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { CenaCigariet } from "./Panely.tsx";
+import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { rozlozeniePonuky } from "./rozlozeniePonuky.ts";
 
 export interface MoznostPatronatu {
@@ -57,7 +58,7 @@ export function PonukaPatronatu({
               <div className="pp-text" style={textPod ? { width: sirka } : undefined}>
                 <b className="pp-meno">{m.meno}</b>
                 <span className="pp-priazen" title={m.priazen.cely}>
-                  ♥ ty +{m.priazen.sila} · {m.priazen.nazov}: {m.priazen.kratko}
+                  <IkonaPriazne /> ty +{m.priazen.sila} · {m.priazen.nazov}: {m.priazen.kratko}
                 </span>
                 <span className="pp-cena">
                   {m.cigarety > 0 ? (

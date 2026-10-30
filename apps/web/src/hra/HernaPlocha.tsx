@@ -140,6 +140,7 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
+import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
 import { NAZOV_DELENIA, textPovery } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
@@ -4754,7 +4755,7 @@ export function HernaPlocha({
         onClick={() => ukazToast(null)}
         onContextMenu={pravyKlik(() => ukazToast(null))}
       >
-        <span aria-hidden="true">♥</span> {toastPriazne.zaklad}
+        <span aria-hidden="true"><IkonaPriazne /></span> {toastPriazne.zaklad}
         {toastPriazne.pocet > 1 && ` (+${toastPriazne.pocet - 1})`}
       </button>
     );
@@ -5836,11 +5837,18 @@ export function HernaPlocha({
         <VrstvaPanel nazov="Log" skryta={tahanie !== null} onZavri={() => setVrstva(null)}>
           <div className="log">
             {log.length === 0 && <span className="popis">Zatiaľ žiadne záznamy — log sa zbiera od pripojenia.</span>}
-            {log.map((riadok, i) => (
-              <div key={i} className={riadok.startsWith("⚠") ? "manual" : riadok.startsWith("♥") ? "log-priazen" : ""}>
-                {riadok}
-              </div>
-            ))}
+            {log.map((riadok, i) => {
+              const priazen = riadokPriazneLogu(riadok);
+              return (
+                <div key={i} className={riadok.startsWith("⚠") ? "manual" : priazen !== null ? "log-priazen" : ""}>
+                  {priazen === null ? riadok : (
+                    <>
+                      <IkonaPriazne /> {priazen}
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </VrstvaPanel>
       )}

@@ -83,7 +83,7 @@ tools/             import z tlačového PDF, piktogramy akcií
   kliatby idú do odhadzovacieho balíčka. V simulácii klesla priemerná ruka
   z 12–15 na ~7 kariet.
 - **Starší a body počas hry:** rad starších je nad stolom (lupa sa nebije s rukou,
-  dá sa zmenšiť). Pri každom staršom je ♥ priazeň (komu, s akým účinkom) a ★
+  dá sa zmenšiť). Pri každom staršom je priazeň (krígeľ) (komu, s akým účinkom) a ★
   koho sa bojí a koľko bodov by dal teraz; súčet „body teraz" je pri hráčoch.
   Počíta to `bodyTeraz` v jadre z pohľadu hráča — vlastné skryté kliatby pozná
   cez `mojeKliatbyVBalicku`, súperove nevidí (odhad je potom označený „?").
