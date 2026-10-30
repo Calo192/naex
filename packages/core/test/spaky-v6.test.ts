@@ -108,7 +108,7 @@ describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
       ciel: lokalita(s0, "krcma"),
       sums: [{ Rana: 9 }, {}],
       karty: [2, 1],
-      uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], priznane: [inst("abstak"), inst("abstak")] }, t.hraci[1]] }),
+      uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], abstaky: 2 }, t.hraci[1]] }),
     });
     const zaznam = pohorsenie(s).state.nastenka.at(-1)!;
     expect(zaznam).toMatchObject({ vitaz: 0, zaBitku: [3, 0], abstakZrazka: 0 });
@@ -169,12 +169,13 @@ describe("finále (v8): karty v línii, prebytok rozdelí držiteľ a strach za 
     // Vo finále rozdeľuje držiteľ prebytku (porazenému sú priazne na nič) a doplatok strachu ešte príde.
     expect(st.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0, prebytokZostava: 5 });
     expect(vyplatZaStarsich(st)).toBe(1);
-    // Prvý starší (žltá, vyplatená) ďalej: oranžová 2 a červená 3; traja ďalší do žltej po 1.
-    for (const i of [0, 0, 1, 2, 3]) st = apply(data, st, { type: "prebytok", elderId: st.starsi[i]!.elderId }, 0).state;
-    expect(st.nastenka.at(-1)).toMatchObject({ zaStarsich: [1 + 2 + 3 + 1 + 1 + 1, 0], prebytok: [0, 0] });
-    // 4 + 8 špakov; výkupné: 2 poldeci každému, hráč 2 má 3 + 4 cigarety za posunutých starších (1 špak).
-    expect(st.koniec).toMatchObject({ vitaz: 0, body: [12 + 2, 0 + 3] });
-    expect(spakyTeraz(viewFor(data, st, 1)).spolu).toEqual([14, 3]);
+    // Prvý starší (žltá, vyplatená) ďalej: oranžová 2 a červená 3 — v8.2 stojí presne 2 + 3 = 5.
+    st = apply(data, st, { type: "prebytok", elderId: st.starsi[0]!.elderId }, 0).state;
+    expect(st.starsi[0]!.marker).toBe(6);
+    expect(st.nastenka.at(-1)).toMatchObject({ zaStarsich: [1 + 2 + 3, 0], prebytok: [0, 0] });
+    // 4 + 5 špakov; výkupné: 2 poldeci každému, hráč 2 má 3 + 1 cigaretu za posunutého staršieho (0 špakov).
+    expect(st.koniec).toMatchObject({ vitaz: 0, body: [9 + 2, 0 + 2] });
+    expect(spakyTeraz(viewFor(data, st, 1)).spolu).toEqual([11, 2]);
   });
 
   it("sekera vo finále: špaky kola aj zo sekery prepadnú", () => {

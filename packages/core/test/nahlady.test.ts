@@ -33,7 +33,7 @@ const data = buildGameData(cards, zaklad.elders, parseScorecards(scorecardsJson)
 
 const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
 const lezi = (card: CardInstance, playedBy: PlayerId): PlacedCard => ({ card, playedBy });
-const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].dlhy;
 
 /** Posledná Pitka kola, obaja s plným poldeci, bez kariet v ruke (na NA EX sa neodpovedá). */
 function vPitke(): GameState {

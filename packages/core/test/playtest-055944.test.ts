@@ -165,7 +165,8 @@ describe("nahradený starší ostáva v hre", () => {
       ...s0,
       faza: "bitka",
       starsi,
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 1, pohorsenieZostava: [0, 1], vitaz: null }),
+      // Oranžová → žltá (k stredu) stojí od v8.2 tri Pohoršenia.
+      bitkaStav: bitka({ krok: "pohorsenie", caka: 1, pohorsenieZostava: [0, 3], vitaz: null }),
     };
     const favour = data.scorecards.find((sc) => sc.id === e0.scorecard)!.favour;
     // Marker na 5 = sila 2, účinok dvojnásobný (Michal 2026-10-16) → bonus 4.
@@ -323,8 +324,8 @@ describe("Svätý text a Puška (Nástroje 2026-10-18)", () => {
     const s = setupSBalickom(data, 23);
     const stav = { ...s, hraci: [s.hraci[0], { ...s.hraci[1], dedicstvo: [inst("svaty_text")] }] as GameState["hraci"] };
     // 3 Rany proti 1 Viere: bez Svätého textu 3 − 1 = 2, so Svätým textom 3 − 2 = 1.
-    expect(poskodenieBitky(data, s, [{ Rana: 3 }, { Viera: 1 }], [0, 0]).tuhe[0]).toBe(2);
-    expect(poskodenieBitky(data, stav, [{ Rana: 3 }, { Viera: 1 }], [0, 0]).tuhe[0]).toBe(1);
+    expect(poskodenieBitky(data, s, [{ Rana: 3 }, { Viera: 1 }]).tuhe[0]).toBe(2);
+    expect(poskodenieBitky(data, stav, [{ Rana: 3 }, { Viera: 1 }]).tuhe[0]).toBe(1);
   });
 });
 

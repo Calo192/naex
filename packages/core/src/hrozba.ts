@@ -12,7 +12,7 @@ import { naexZaPitku } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
 import { lineState, naexCieleVLinii, pohorseniaVBitke, poskodenieBitky } from "./engine.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
-import { MARKER_KRAJ } from "./elders.ts";
+import { MARKER_KRAJ, MARKER_STRED, cenaPosunuOPoli } from "./elders.ts";
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
@@ -73,10 +73,9 @@ export function hrozbaNaex(
   stol: StolBitky,
   priebeh: PriebehNaex,
   p: PlayerId,
-  abstakyVRuke: readonly [number, number],
 ): HrozbaNaex | null {
   if (stol.ciel === null || !mozeEsteNaex(stol, priebeh, p)) return null;
-  const bitka = (s: StolBitky): DamageResult => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, abstakyVRuke);
+  const bitka = (s: StolBitky): DamageResult => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums);
   const teraz = hodnota(battleOutcome(bitka(stol)), p);
   let najlepsia: HrozbaNaex | null = null;
   for (const uid of naexCieleVLinii(data, lineState(stol), p)) {
@@ -148,11 +147,12 @@ function rovnake(a: DamageResult, b: DamageResult): boolean {
 
 /**
  * Najlepšia bitka, akú hráč p dosiahne svojimi nepridelenými Pohoršeniami
- * (o pole k sebe aj k súperovi, súperove Pohoršenia stoja) — len ak zmení
- * víťaza alebo prebytok v jeho prospech, inak null. Ten istý výpočet ako
- * vyhodnotPoskodenie: súčty línie stoja, poškodenie sa ráta s novou priazňou.
- * Prehľadáva len starších, ktorých posun poškodenie mení; zvyšné Pohoršenia
- * pohltí ktorýkoľvek iný starší.
+ * (k sebe aj k súperovi, súperove Pohoršenia stoja) — len ak zmení víťaza alebo
+ * prebytok v jeho prospech, inak null. Ten istý výpočet ako vyhodnotPoskodenie:
+ * súčty línie stoja, poškodenie sa ráta s novou priazňou. Posun stojí podľa zóny
+ * (v8.2, cenaPosunuOPoli); že marker ide, kým body stačia, odhad zanedbá — zvyšok
+ * hráč spravidla minie najprv na iného staršieho. Prehľadáva len starších, ktorých
+ * posun poškodenie mení.
  */
 export function rozsahPohorseni(
   data: GameData,
@@ -160,11 +160,10 @@ export function rozsahPohorseni(
   sums: readonly [ActionSums, ActionSums],
   nepridelene: NepridelenePohorsenia,
   p: PlayerId,
-  abstakyVRuke: readonly [number, number],
 ): RozsahPohorseni | null {
   const n = nepridelene.pocet[p];
   if (stol.ciel === null || n <= 0) return null;
-  const bitka = (starsi: readonly ElderState[]): DamageResult => poskodenieBitky(data, { ...stol, starsi }, sums, abstakyVRuke);
+  const bitka = (starsi: readonly ElderState[]): DamageResult => poskodenieBitky(data, { ...stol, starsi }, sums);
   const zaklad = bitka(stol.starsi);
   const teraz = hodnota(battleOutcome(zaklad), p);
   // Pohoršenia zo súperovho patronátu nesmú na jeho patróna.
@@ -180,7 +179,7 @@ export function rozsahPohorseni(
       const meni = Array.from({ length: po - od + 1 }, (_, k) => od + k).some(
         (d) => d !== 0 && !rovnake(bitka(stol.starsi.map((x, j) => (j === i ? posun(x, d) : x))), zaklad),
       );
-      return { i, od, po, meni };
+      return { i, od, po, meni, max };
     })
     .filter((k) => k.meni);
   let najlepsia: RozsahPohorseni | null = null;
@@ -197,8 +196,11 @@ export function rozsahPohorseni(
       }
       return;
     }
+    const z = stol.starsi[kand.i]?.marker ?? MARKER_STRED;
     for (let d = Math.max(kand.od, -zostava); d <= Math.min(kand.po, zostava); d++) {
-      skus(k + 1, zostava - Math.abs(d), d === 0 ? starsi : starsi.map((x, j) => (j === kand.i ? posun(x, d) : x)));
+      const cena = cenaPosunuOPoli(z, d);
+      if (cena > Math.min(zostava, kand.max)) continue;
+      skus(k + 1, zostava - cena, d === 0 ? starsi : starsi.map((x, j) => (j === kand.i ? posun(x, d) : x)));
     }
   };
   skus(0, n, stol.starsi);

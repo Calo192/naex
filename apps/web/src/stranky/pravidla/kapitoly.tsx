@@ -362,7 +362,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ol>
           <li>NA EX — odkrytie a odpovede.</li>
-          <li>Dlh — za každý celý prah zadĺženia karta Dlh.</li>
+          <li>Dlh — za každý celý prah zadĺženia jeden Dlh (počítadlo, hneď priznaný).</li>
           <li>Poškodenie pečene — za každý celý prah Cirhóza.</li>
           <li>Obmedzenie.</li>
           <li>Cigarety — za akcie Cigareta (mínus súperove Obmedzenia).</li>
@@ -382,8 +382,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p className="zvyraznene">
           NA EX karte <strong>zruší aktívne akcie a zdvojí neaktívne</strong>. Akcie sa rátajú majiteľovi karty: na svojej si
-          zdvojíš Petelicu alebo zrušíš vlastný Dlh, na súperovej mu zrušíš, čo potreboval, ale jeho neaktívne mu zdvojíš.
-          Násobky sa násobia — NA EX vedľa Silnej ženy dá ×4, aj Dlhu a Poškodeniu pečene. Poldeci leží na karte do bitky,
+          zdvojíš Petelicu alebo zrušíš vlastný Hazard, na súperovej mu zrušíš, čo potreboval, ale jeho neaktívne mu zdvojíš.
+          Násobky sa násobia — NA EX vedľa Silnej ženy dá ×4, aj Hazardu a Poškodeniu pečene. Poldeci leží na karte do bitky,
           takže NA EX sa vyhodnotí v každej Pitke kola; pečeň +1 je tvoja (pripíše sa pri odkrytí) a v bitke sa poldeci vypije.
           Pred potvrdením ti hra ukáže bitku pred a po aj kliatby, ktoré z toho budú.
         </p>
@@ -449,8 +449,8 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "08-cena-pitia",
     vSkratke: [
       "Pečeň sa počíta len v Pitke a potom sa vynuluje; zvyšok zadĺženia ostáva na účte.",
-      "Za každý celý prah pečene Cirhóza, za každý celý prah zadĺženia Dlh.",
-      "Menej nerestí než minulé kolo = Absťák.",
+      "Za každý celý prah pečene Cirhóza, za každý celý prah zadĺženia (z akcie Hazard) Dlh.",
+      "Menej nerestí než súper v tom istom kole = Absťák.",
     ],
     obsah: () => (
       <>
@@ -463,8 +463,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="cena-dlh">Zadĺženie a Dlh</H3>
         <p>
-          Každá akcia <strong>Dlh</strong> v Pitke zvýši zadĺženie o 1. Každé 2 zadĺženia ti dajú kartu{" "}
-          <P k="dlh">Dlh</P> — prizná sa hneď sama a kartu za ňu nedoberáš. Zvyšok zadĺženia sa po Pitke nemaže — krčmár píše čiarky
+          Každá akcia <strong>Hazard</strong> v Pitke zvýši zadĺženie o 1. Každé 2 zadĺženia ti dajú jeden{" "}
+          <P k="dlh">Dlh</P> — nie je to karta, ale počítadlo: je hneď priznaný, neťaháš ho a kartu zaň nedoberáš. Zvyšok zadĺženia sa po Pitke nemaže — krčmár píše čiarky
           a ostávajú ti na účte do ďalšej Pitky aj kola. Dlhy, ktoré dáva
           priamo karta (napríklad Poštárka), idú rovno. Viac Pitiek v bitke teda znamená viac pečene aj Dlhov. Doska ti vopred
           ukazuje, čo karty na stole pripíšu a koľko kliatob z toho bude.
@@ -477,7 +477,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ul>
           <li>
-            <strong>Menej ako súper</strong> → <P k="abstak">Absťák</P> rovno priznaný do hracej oblasti; za priznanie si dobereš kartu.
+            <strong>Menej ako súper</strong> → <P k="abstak">Absťák</P> navyše — je to počítadlo, nie karta; kartu zaň nedoberáš.
           </li>
           <li>
             <strong>Viac ako súper</strong> → jeden tvoj Absťák odíde. <strong>Rovnako</strong> → nič.
@@ -498,7 +498,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "09-bitka",
     vSkratke: [
       "Tuhé: Rana 1, Pecka 2, Petelica 3. Viera ho znižuje.",
-      "Mäkké z Povier najviac do výšky súperových priznaných Dlhov.",
+      "Povera poškodzuje (mäkké) proti súperovým priznaným Dlhom — najviac toľko, koľko ich má.",
       "Viac tuhého vyhráva: víťaz dostane 1 špak za každú kartu v línii, lokalita ide na nástenku.",
       "Remízu rozhodne menej Absťákov, potom menej Dlhov, inak sekera.",
       "Prebytok drží hráč s vyšším celkovým poškodením, rozdeľuje ho súper (spravidla porazený).",
@@ -507,14 +507,14 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <H3 id="bitka-poskodenie">Tuhé a mäkké poškodenie</H3>
         <p>
-          <P k="tuhe">Tuhé</P> poškodenie (Rana 1, Pecka 2, Petelica 3) rozhoduje o víťazovi. <P k="makke">Mäkké</P> (Povera) sa
-          udeľuje najviac do výšky súperových priznaných Dlhov. Každá tvoja priznaná Cirhóza dá súperovi +1 tuhé.
+          <P k="tuhe">Tuhé</P> poškodenie (Rana 1, Pecka 2, Petelica 3) rozhoduje o víťazovi. <P k="makke">Mäkké</P> poškodenie dáva Povera —{" "}
+          <strong>poškodzuje</strong> proti súperovým priznaným Dlhom — najviac toľko, koľko ich má. Každá tvoja priznaná Cirhóza dá súperovi +1 tuhé.
         </p>
         <ol>
           <li>
             <P k="viera">Viera</P> a Povery sa vyrušia 1 : 1 — tvoja Viera ruší súperove Povery a naopak.
           </li>
-          <li>Zvyšné Povery udelia mäkké poškodenie, najviac do výšky súperových priznaných Dlhov.</li>
+          <li>Zvyšné Povery poškodzujú (mäkké) proti súperovým priznaným Dlhom — najviac toľko, koľko ich má.</li>
           <li>
             Zvyšná Viera zníži súperovo tuhé poškodenie, pod 0 neklesne. Veriaci (priazeň) ti pridá Vieru navyše; hodnotu jednej
             Viery mení len Svätý text v Dedičstve.
@@ -609,7 +609,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Marker staršieho posunutý k súperovi = súper má priazeň, starší sa bojí teba (za každú novú zónu raz špaky, keď vyhráš).",
       "Stupnica má 7 polí: červená, oranžová, žltá, sivý stred, žltá, oranžová, červená.",
-      "Prebytok aj Pohoršenie posúvajú marker o pole, bez limitu a aj na krajnú pozíciu.",
+      "Prebytok aj Pohoršenie platia za pole podľa zóny: von zo stredu 1 / 2 / 3, k stredu 2 / 3 / 4 — bez limitu, aj na krajnú pozíciu.",
       "Krajná červená: starší sa prebudí pre teba; súper ho smie odtlačiť späť.",
     ],
     obsah: () => (
@@ -630,17 +630,21 @@ export const KAPITOLY: readonly Kapitola[] = [
         <UkazkaStupnice />
         <H3 id="starsi-prebytok">Prebytok a Pohoršenie</H3>
         <p>
-          <P k="prebytok">Prebytok</P> je rozdiel v celkovom poškodení. Markery starších idú k súperovi hráča, ktorý ho drží —
-          každý bod o jedno pole (zo stredu do žltej 1, na červenú 3), aj na krajnú pozíciu a z nej von. Ktorých starších,
-          <strong> vyberá ten súper</strong> — spravidla porazený si sám vyberie, ktoré priazne dostane; rozdeliť treba celý prebytok.
+          <P k="prebytok">Prebytok</P> je rozdiel v celkovom poškodení. Markery starších idú k súperovi hráča, ktorý ho drží,
+          aj na krajnú pozíciu a z nej von. <strong>Pole stojí podľa zóny</strong>, do ktorej marker vstupuje: von zo stredu žltá 1,
+          oranžová 2, červená 3 (zo stredu na červenú 6); k stredu o 1 viac — z červenej 4, z oranžovej 3, zo žltej 2. Ktorých
+          starších, <strong> vyberá ten súper</strong> — spravidla porazený si sám vyberie, ktoré priazne dostane. Vyberá len staršieho:
+          marker ide, kým zvyšok stačí, a čo ostane, ide ďalším; rozdeliť treba celý prebytok, len zvyšok, ktorý už na žiadne pole
+          nestačí, prepadne.
           Špaky za starších sa rozdávajú ešte pred prebytkom, takže sa prejaví až v ďalšej bitke (vo finále rozdelí prebytok držiteľ
           a nové zóny sa vyplatia hneď). Kto starších dostal, za každého posunutého dostane 1 cigaretu.
         </p>
         <p>
-          Každé <P k="pohorsenie">Pohoršenie</P> posunie marker o 1 — <strong>k súperovi, alebo k sebe</strong>; vyberáš ty.
+          Každé <P k="pohorsenie">Pohoršenie</P> je bod na posun markera — <strong>k súperovi, alebo k sebe</strong>; vyberáš ty
+          staršieho a smer, pole stojí ako pri prebytku a marker ide, kým tvoje Pohoršenia stačia (zvyšok dáš inému staršiemu).
           K sebe si priazeň toho staršieho vezmeš (alebo ju súperovi uberieš). Priazeň sa mení <strong>hneď</strong> — platí už
           v poškodení tej istej bitky, takže ju môže rozhodnúť. Ten istý marker smieš posunúť aj viackrát,{" "}
-          <strong>bez limitu</strong> a aj na krajnú pozíciu (zo stredu na červenú tri Pohoršenia). Pohoršenie mení aj strach
+          <strong>bez limitu</strong> a aj na krajnú pozíciu (zo stredu na červenú šesť Pohoršení). Pohoršenie mení aj strach
           hneď — ráta sa už do špakov za starších tej istej bitky.
         </p>
         <H3 id="starsi-priazne">Priazne</H3>
@@ -699,9 +703,9 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Kliatby a priznanie",
     obrazok: "11-kliatby",
     vSkratke: [
-      "Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka.",
+      "Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka. Dlh a Absťák sú počítadlá, nie karty — sú hneď priznané.",
       "Priznanie vyloží kliatbu natrvalo mimo línie; limit nemíňa.",
-      "Za priznanie dobereš kartu — nie za Cirhózu a nie za nový Dlh z prahu.",
+      "Za priznanie Milujúcej manželky dobereš kartu — za Cirhózu nie, za Dlh ani Absťák tiež nie.",
       "Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov nahor a rovnako veľa špakov.",
       "Nepriznaná Cirhóza ťa na konci hry stojí 3 špaky.",
     ],
@@ -715,9 +719,9 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ul>
           <li>
-            <strong>Dlh</strong> — nový Dlh z prahu zadĺženia sa prizná sám a kartu zaň <strong>nedobereš</strong>. Dlh, ktorý
-            ti súper podstrčí do balíčka (Vychovávateľka), sa pri dobratí prizná sám a ťaháš ďalšiu kartu. Za priznané Dlhy
-            príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac.
+            <strong>Dlh</strong> — nie je karta, ale počítadlo priznaných Dlhov: nový Dlh (prah zadĺženia, efekt karty) je hneď
+            priznaný a kartu zaň <strong>nedobereš</strong>; neťahá sa a nedá sa s ním inak manipulovať. Za priznané Dlhy
+            príde v každej bitke Exekútor, súperove Povery proti nim poškodzujú a pri remíze v bitke prehrá, kto ich má viac.
           </li>
           <li>
             <strong>Cirhóza</strong> — ide do odhadzovacieho balíčka; do ruky príde, až keď sa doberací balíček minie
@@ -727,8 +731,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             riskuješ, že sa ti do konca hry nevráti do ruky.
           </li>
           <li>
-            <strong>Absťák</strong> — príde rovno priznaný a za neho si dobereš kartu. V bitke o ranu menej a 1 Pohoršenie navyše;
-            remízu v bitke prehrá, kto ich má viac.
+            <strong>Absťák</strong> — tiež počítadlo, nie karta: príde rovno priznaný a kartu zaň <strong>nedobereš</strong>. V bitke
+            o ranu menej a 1 Pohoršenie navyše; remízu v bitke prehrá, kto ich má viac.
           </li>
           <li>
             <strong>Milujúca manželka</strong> — za priznanie si dobereš kartu.
@@ -830,7 +834,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p>
           <strong>Kočovník</strong> je výnimka: „Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.“ Všetky
-          jeho akcie — aj Rana, Dlh či Poškodenie pečene — dostane ten, kto v kraji prevláda. Do prevahy sa Kočovník ráta
+          jeho akcie — aj Rana, Hazard či Poškodenie pečene — dostane ten, kto v kraji prevláda. Do prevahy sa Kočovník ráta
           svojmu majiteľovi, pri rovnosti rozhoduje karta hneď pri lokalite. Škodlivé akcie sa súperovi dajú podhodiť, ale
           súper to vie ovplyvniť kartami, ktoré do kraja vyloží.
         </p>

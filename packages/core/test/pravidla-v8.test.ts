@@ -78,21 +78,26 @@ describe("v8: strach za novú zónu (návrh #28 B)", () => {
   });
 
   it("ústup k stredu zmaže vyplatenú zónu — po návrate sa platí znova", () => {
-    const s = predPoskodenim({ sums: [{ Rana: 5 }, {}], markery: [[1, 5, 2]], pohorsenia: 2 });
-    // Hráč 0 vráti staršieho k sebe (oranžová → žltá: oranžová sa zmaže) a znova k súperovi.
+    // v8.2: oranžová → žltá stojí 3, žltá → oranžová 2. Marker ide, kým body stačia, preto
+    // ho vráti hráč 0 (3 Pohoršenia) a späť ho posunie hráč 1 (2 Pohoršenia k sebe).
+    const s = predPoskodenim({
+      sums: [{ Rana: 5 }, {}],
+      markery: [[1, 5, 2]],
+      uprav: (t) => ({ ...t, bitkaStav: { ...t.bitkaStav!, pohorsenieZostava: [3, 2] } }),
+    });
     const s1 = apply(data, s, { type: "pohorsenie", elderId: elder(s, 1), kSebe: true }, 0).state;
     expect(s1.starsi[1]).toMatchObject({ marker: 4, vyplatene: 1 });
-    const s2 = apply(data, s1, { type: "pohorsenie", elderId: elder(s, 1) }, 0).state;
+    const s2 = apply(data, s1, { type: "pohorsenie", elderId: elder(s, 1), kSebe: true }, 1).state;
     expect(s2.nastenka.at(-1)).toMatchObject({ vitaz: 0, zaStarsich: [2, 0] });
     expect(s2.starsi[1]?.vyplatene).toBe(2);
   });
 
   it("prechod cez stred: druhá polovica platí nanovo druhému hráčovi", () => {
-    // Starší na indexe 4 (žltá, bojí sa hráča 0, vyplatená); dve Pohoršenia k sebe → index 2 (žltá, bojí sa hráča 1).
-    const s = predPoskodenim({ sums: [{}, { Rana: 5 }], markery: [[1, 4, 1]], pohorsenia: 2 });
-    let t = apply(data, s, { type: "pohorsenie", elderId: elder(s, 1), kSebe: true }, 0).state;
-    expect(t.starsi[1]?.vyplatene).toBeUndefined();
-    t = apply(data, t, { type: "pohorsenie", elderId: elder(s, 1), kSebe: true }, 0).state;
+    // Starší na indexe 4 (žltá, bojí sa hráča 0, vyplatená); tri Pohoršenia k sebe (žltá → stred 2,
+    // stred → žltá 1, v8.2) → index 2 (žltá, bojí sa hráča 1).
+    const s = predPoskodenim({ sums: [{}, { Rana: 5 }], markery: [[1, 4, 1]], pohorsenia: 3 });
+    const t = apply(data, s, { type: "pohorsenie", elderId: elder(s, 1), kSebe: true }, 0).state;
+    expect(t.starsi[1]?.marker).toBe(2);
     // Bitku vyhral hráč 1 — žltá od staršieho na polovici hráča 0 mu zaplatí 1.
     expect(t.nastenka.at(-1)).toMatchObject({ vitaz: 1, zaStarsich: [0, 1] });
   });
@@ -107,10 +112,14 @@ describe("v8: prebytok rozdeľuje porazený", () => {
     expect(() => apply(data, st, { type: "prebytok", elderId: elder(s, 3) }, 0)).toThrow();
     let t = st;
     const cig = st.hraci[1].cigarety;
-    for (const i of [3, 3, 4, 4, 4]) t = apply(data, t, { type: "prebytok", elderId: elder(s, i) }, 1).state;
-    // Markery k porazenému (index rastie): starší 3 v oranžovej, 4 v červenej — boja sa víťaza.
-    expect([t.starsi[3]?.marker, t.starsi[4]?.marker]).toEqual([5, 6]);
-    expect(t.hraci[1].cigarety - cig).toBe(2);
+    // v8.2: porazený vyberá len staršieho — 5 vyjde zo stredu na oranžovú (1 + 2), zvyšok 2
+    // na žltú ďalšieho (na oranžovú by treba 2 navyše) a posledný bod na žltú tretieho.
+    t = apply(data, t, { type: "prebytok", elderId: elder(s, 3) }, 1).state;
+    expect(t.bitkaStav?.prebytokZostava).toBe(2);
+    for (const i of [4, 5]) t = apply(data, t, { type: "prebytok", elderId: elder(s, i) }, 1).state;
+    // Markery k porazenému (index rastie) — boja sa víťaza.
+    expect([t.starsi[3]?.marker, t.starsi[4]?.marker, t.starsi[5]?.marker]).toEqual([5, 4, 4]);
+    expect(t.hraci[1].cigarety - cig).toBe(3);
     expect(t.posunyMarkerov.filter((x) => x.zdroj === "prebytok").every((x) => x.kto === 0)).toBe(true);
   });
 
@@ -118,7 +127,7 @@ describe("v8: prebytok rozdeľuje porazený", () => {
     // Tuhé 2 : 2, Povera hráča 1 proti Dlhu hráča 0 → celkové 2 : 3; prebytok drží hráč 1.
     const s = predPoskodenim({
       sums: [{ Rana: 2 }, { Rana: 2, Povera: 1 }],
-      uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], priznane: [inst("dlh")] }, { ...t.hraci[1], priznane: [inst("dlh")] }] }),
+      uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], dlhy: 1 }, { ...t.hraci[1], dlhy: 1 }] }),
     });
     const st = apply(data, s, { type: "pohorsenie", elderId: elder(s, 0) }, 0).state;
     expect(st.nastenka.at(-1)?.vitaz).toBeNull();
@@ -139,12 +148,12 @@ describe("v8: Kmotor presúva Dlhy súperovi (návrh #34 B)", () => {
       lokalityVHre: s0.lokalityVHre.slice(1),
       // Priazeň Kmotra má hráč 0 (marker na jeho polovici).
       starsi: s0.starsi.map((e, i) => ({ ...e, marker: (i === kmotor ? 3 - silaKmotra : 3) as MarkerPos })),
-      hraci: [{ ...s0.hraci[0], priznane: Array.from({ length: dlhy }, () => inst("dlh")) }, s0.hraci[1]],
+      hraci: [{ ...s0.hraci[0], dlhy: dlhy }, s0.hraci[1]],
       bitkaStav: bitka({ krok: "cintorin", caka: 0, vitaz: 0 }),
     };
     return apply(data, s, { type: "cintorin", uid: null }, 0).state;
   }
-  const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+  const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].dlhy;
 
   it("sila 2: dva tvoje priznané Dlhy prejdú medzi súperove priznané", () => {
     const s = poBitke(2, 3);

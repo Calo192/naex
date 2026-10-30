@@ -32,7 +32,7 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 let uidSeq = 980000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
 const lezi = (card: CardInstance, playedBy: PlayerId, x: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...x });
-const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].priznane.filter((k) => k.defId === "dlh").length;
+const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].dlhy;
 /** Priznané Dlhy aj tie, ktoré v bitke zhoreli pri exekúcii (bez prahu, Michal 2026-10-28). */
 const dlhyAjZhorene = (s: GameState, p: PlayerId): number => dlhy(s, p) + s.nastenka.reduce((a, b) => a + b.exekutor[p], 0);
 
@@ -355,7 +355,7 @@ describe("Pitka (v7)", () => {
   });
 
   it("Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka: fajčí len najďalej", () => {
-    const s = sHracom(sHracom(vPitke("jednota", [[], []]), 0, { priznane: [inst("dlh"), inst("dlh")], cigarety: 9, poldeciVypite: 1 }), 1, { priznane: [inst("dlh")] });
+    const s = sHracom(sHracom(vPitke("jednota", [[], []]), 0, { dlhy: 2, cigarety: 9, poldeciVypite: 1 }), 1, { dlhy: 1 });
     const legal = legalCommands(data, s, 0);
     expect(legal.some((c) => c.type === "smoke" || c.type === "refillPoldeci")).toBe(false);
     const b = sHracom(vPitke("benzinka", [[lezi(inst("zamocnik"), 0), lezi(inst("vandal"), 0)], [lezi(inst("masiar"), 1)]]), 0, { cigarety: 5 });
@@ -453,7 +453,7 @@ describe("Kšeft (v7)", () => {
     expect(pv.kseftPovery).toEqual([1, 0]);
     expect(pv.hraci[0].cigarety).toBe(2);
 
-    const su = sHracom(vPitke("obecny_urad", [[], []]), 0, { cigarety: 3, priznane: [inst("dlh")] });
+    const su = sHracom(vPitke("obecny_urad", [[], []]), 0, { cigarety: 3, dlhy: 1 });
     const lok = su.ciel!.lokalita!;
     const pu = apply(data, su, { type: "kseft", uid: lok.uid }, 0).state;
     expect([dlhy(pu, 0), dlhy(pu, 1)]).toEqual([0, dlhy(su, 1) + 1]);
@@ -483,8 +483,8 @@ describe("Bitka a po bitke (v7)", () => {
       { zdroj: "puska", tuhe: 1 },
       { zdroj: "vidly", tuhe: 2 },
     ]);
-    const bez = poskodenieBitky(data, { ...s, hraci: [{ ...s.hraci[0], dedicstvo: [] }, s.hraci[1]] }, [{ Rana: 2, Petelica: 1 }, {}], [0, 0]).tuhe[0];
-    expect(poskodenieBitky(data, s, [{ Rana: 2, Petelica: 1 }, {}], [0, 0]).tuhe[0]).toBe(bez + 3);
+    const bez = poskodenieBitky(data, { ...s, hraci: [{ ...s.hraci[0], dedicstvo: [] }, s.hraci[1]] }, [{ Rana: 2, Petelica: 1 }, {}]).tuhe[0];
+    expect(poskodenieBitky(data, s, [{ Rana: 2, Petelica: 1 }, {}]).tuhe[0]).toBe(bez + 3);
   });
 
   it("Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX", () => {
@@ -510,7 +510,7 @@ describe("Bitka a po bitke (v7)", () => {
 
   it("Noviny — Titulka (návrh #40): porazený majiteľ dostane 1 špak za každý Dlh víťaza navyše, víťaz špaky za bitku celé", () => {
     const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
-    const s = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")], priznane: [inst("dlh")] }), 1, { priznane: [inst("dlh"), inst("dlh"), inst("dlh")] });
+    const s = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")], dlhy: 1 }), 1, { dlhy: 3 });
     const po = dohrajKolo(s);
     const bitka = po.nastenka.at(-1)!;
     expect(bitka.vitaz).toBe(1);
@@ -523,14 +523,14 @@ describe("Bitka a po bitke (v7)", () => {
   it("stávka bitky ráta Herňu a Noviny ako výplata (vyplatSpaky)", () => {
     const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
     // Herňa: hráč 1 vyhrá, hráč 0 má 3 priznané Dlhy → víťaz +3.
-    const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { priznane: [inst("dlh"), inst("dlh"), inst("dlh")] });
+    const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dlhy: 3 });
     const stavkaH = stavkaBitky(data, viewFor(data, h, 1))!;
     expect(stavkaH.herna).toEqual([3, 0]);
     // 4 karty v línii (v8) + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
     expect(stavkaH.vyhra).toBe(4 + 3 + stavkaH.starsi[0]);
     expect(-stavkaBitky(data, viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
     // Noviny porazeného (Titulka): víťaz (hráč 1) má o 2 Dlhy viac — výhra celá, porazený +2.
-    const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { priznane: [inst("dlh"), inst("dlh")] });
+    const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { dlhy: 2 });
     const stavkaN = stavkaBitky(data, viewFor(data, n, 1))!;
     expect(stavkaN.vyhra).toBe(4 + stavkaN.starsi[0]);
     expect(stavkaN.noviny).toEqual([0, 2]);
@@ -564,7 +564,7 @@ describe("Bitka a po bitke (v7)", () => {
 
   it("Záhradkár (Exekúcia, Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde — Dlhy ani špaky nezhoria", () => {
     const zah = inst("zahradkar");
-    const s = sHracom(vPitke("zastavka", [[lezi(zah, 0), lezi(inst("vandal"), 1)], []]), 0, { priznane: Array.from({ length: 8 }, () => inst("dlh")) });
+    const s = sHracom(vPitke("zastavka", [[lezi(zah, 0), lezi(inst("vandal"), 1)], []]), 0, { dlhy: 8 });
     const t = skonciPitku(s);
     expect(t.bitkaStav?.krok === "exekutor" && t.bitkaStav.caka !== null).toBe(false);
     const zaznam = t.nastenka.at(-1);
@@ -573,7 +573,7 @@ describe("Bitka a po bitke (v7)", () => {
     // Záhradkár sa nezahadzuje.
     expect(t.bitkaStav?.spalit ?? []).not.toContain(zah.uid);
     // Súperov Záhradkár (podstrčený do mojej strany) ma nechráni — rozhoduje partia.
-    const cudzi = skonciPitku(sHracom(vPitke("zastavka", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { priznane: Array.from({ length: 8 }, () => inst("dlh")) }));
+    const cudzi = skonciPitku(sHracom(vPitke("zastavka", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { dlhy: 8 }));
     expect(dlhy(cudzi, 0)).toBe(4);
   });
 });

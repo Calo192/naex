@@ -20,7 +20,7 @@ import type { IkonaBodovania } from "@naex/tvorba";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
-import { PRAVIDLO_STRACHU, plnaPriazen, pokynPrebytku, prikladStrachu, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textVydesenia } from "./textyStarsich.ts";
+import { CENA_POLA, PRAVIDLO_STRACHU, plnaPriazen, pokynPrebytku, prikladStrachu, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textVydesenia } from "./textyStarsich.ts";
 
 /** Jeden smer posunu markera v kroku (Pohoršenie v5: k súperovi alebo k sebe). */
 export interface VolbaPosunu {
@@ -98,8 +98,8 @@ export interface LiniaStarsichProps {
   readonly tlacidlo?: ReactNode;
   /** Lupa staršieho (prejdenie myšou, ťuk) — udalosti a data-lupa z HernaPlocha. */
   readonly lupa?: ((s: StarsiVLinii) => HTMLAttributes<HTMLElement>) | undefined;
-  /** Prebytok v mojom kroku: koľko zostáva a koľko stojí posun (Miňištrant) — náhľad počtu posunov. */
-  readonly prebytok?: { readonly zostava: number; readonly cena: number } | undefined;
+  /** Prebytok v mojom kroku: koľko zostáva (v8.2 marker ide, kým zvyšok stačí). */
+  readonly prebytok?: { readonly zostava: number } | undefined;
 }
 
 /** Vzťah staršieho k hráčom pri danej polohe markera. */
@@ -146,7 +146,7 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hra
             {starsi.some((s) => s.volby !== undefined)
               ? "Pri staršom vyber smer: k súperovi, alebo k sebe — priazeň sa zmení hneď a platí už v tejto bitke."
               : prebytok !== undefined
-                ? pokynPrebytku(prebytok.zostava, prebytok.cena)
+                ? pokynPrebytku(prebytok.zostava)
                 : "Prejdi myšou alebo Tabom na staršieho — riadky pod stupnicou ukážu stav po posune."}
           </span>
         )}
@@ -265,8 +265,8 @@ function LegendaStupnice({
       <p>{PRAVIDLO_STRACHU}</p>
       <p>{prikladText}</p>
       <p className="ls-tlmene">
-        Posúva ho prebytok po bitke (k súperovi toho, kto ho drží) a Pohoršenie — každé o jedno pole k súperovi alebo k sebe, aj na červenú a z nej
-        späť. Nič sa nezamyká.
+        Posúva ho prebytok po bitke (k súperovi toho, kto ho drží) a Pohoršenie — k súperovi alebo k sebe, aj na červenú a z nej späť; {CENA_POLA}.
+        Vyberáš len staršieho, marker ide, kým body stačia. Nič sa nezamyká.
       </p>
       <button type="button" className="ls-tlacidlo" onClick={zavri}>
         Rozumiem <kbd>Esc</kbd>

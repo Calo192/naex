@@ -57,7 +57,7 @@ const priebeh = (s: GameState): PriebehNaex => ({
   poldeciPlne: [s.hraci[0].poldeciPlne, s.hraci[1].poldeciPlne],
 });
 
-const vysledok = (s: GameState): BattleOutcome => battleOutcome(poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]));
+const vysledok = (s: GameState): BattleOutcome => battleOutcome(poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums));
 const hodnota = (v: BattleOutcome, p: PlayerId): number =>
   (v.vitaz === null ? 0 : v.vitaz === p ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === p ? v.prebytok : -v.prebytok);
 
@@ -74,7 +74,7 @@ describe("hrozba na stole", () => {
           .flatMap((c) => (c.type === "naex" ? [c.uid] : []))
           .map((uid) => hodnota(vysledok(sNaexNaKartach(apply(data, na, { type: "naex", uid }, p).state)), p));
         const best = Math.max(teraz, ...najlepsie);
-        const h = hrozbaNaex(data, na, priebeh(na), p, [0, 0]);
+        const h = hrozbaNaex(data, na, priebeh(na), p);
         if (best > teraz) {
           expect(h).not.toBeNull();
           expect(hodnota(h!.vysledok, p)).toBe(best);
@@ -95,8 +95,8 @@ describe("hrozba na stole", () => {
       const ina = { ...s, hraci: [s.hraci[0], { ...s.hraci[1], ruka: [...s.hraci[1].ruka].reverse().slice(1) }] } as GameState;
       for (const ja of [0, 1] as const) {
         const v = viewFor(data, ina, ja);
-        const zView = hrozbaNaex(data, v, { ...priebeh(s), poldeciPlne: [v.hraci[0].poldeciPlne, v.hraci[1].poldeciPlne] }, ja === 0 ? 1 : 0, [0, 0]);
-        expect(zView?.uid).toBe(hrozbaNaex(data, s, priebeh(s), ja === 0 ? 1 : 0, [0, 0])?.uid);
+        const zView = hrozbaNaex(data, v, { ...priebeh(s), poldeciPlne: [v.hraci[0].poldeciPlne, v.hraci[1].poldeciPlne] }, ja === 0 ? 1 : 0);
+        expect(zView?.uid).toBe(hrozbaNaex(data, s, priebeh(s), ja === 0 ? 1 : 0)?.uid);
       }
     }
   });

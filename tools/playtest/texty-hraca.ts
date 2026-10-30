@@ -143,7 +143,7 @@ export function efektyPrehry(data: GameData, v: ClientState): EfektyPrehry {
       .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
       .reduce((a, pl) => a + aktivne(pl.card.uid), 0);
     const farar = efektHraca(v, porazeny, "farar") && !efektPotlaceny(data, v, porazeny, "farar") ? (linia.sums[vitaz].Povera ?? 0) : 0;
-    const dlhy = v.hraci[porazeny].priznane.filter((k) => k.defId === "dlh").length;
+    const dlhy = v.hraci[porazeny].dlhy;
     const podvodnik = Math.min(dlhy, partia.filter((pl) => pl.card.defId === "podvodnik").length);
     return [dievcina, farar, podvodnik];
   };

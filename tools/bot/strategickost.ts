@@ -75,7 +75,7 @@ function chamtivyTah(s: GameState, p: PlayerId, seed: number): Command {
   if (s.faza === "zhromazdenie" || (s.faza === "pitka" && s.pitkaStav?.reakcia === p)) {
     const o: PlayerId = p === 0 ? 1 : 0;
     const rozdiel = (st: GameState): number => {
-      const d = poskodenieBitky(data, st, evaluateLine(data, lineState(st)).sums, [0, 0]);
+      const d = poskodenieBitky(data, st, evaluateLine(data, lineState(st)).sums);
       return d.tuhe[p] - d.tuhe[o];
     };
     let best: Command | null = null;

@@ -7,8 +7,15 @@ export interface PlayerState {
   readonly ruka: readonly CardInstance[];
   readonly doberaci: readonly CardInstance[];
   readonly odhadzovaci: readonly CardInstance[];
-  /** Priznané kliatby — mimo partie, mimo balíčka. */
+  /** Priznané kliatby (Cirhóza, Milujúca manželka) — mimo partie, mimo balíčka. */
   readonly priznane: readonly CardInstance[];
+  /**
+   * Priznané Dlhy — od v8.2 počítadlo, nie karty (Michal 2026-10-30): Dlh je
+   * hneď priznaný, netreba ho ťahať ani s ním inak manipulovať. Verejné.
+   */
+  readonly dlhy: number;
+  /** Absťáky, ktoré hráč práve má — od v8.2 počítadlo, bez karty a bez dobratia. Verejné. */
+  readonly abstaky: number;
   /** Nástroje vyložené ako Dedičstvo. */
   readonly dedicstvo: readonly CardInstance[];
   readonly poldeciPlne: number;
@@ -21,7 +28,7 @@ export interface PlayerState {
    * pripíše pečeň dopredu a vyhodnotí sa v najbližšej Pitke.
    */
   readonly pecen: number;
-  /** Zadĺženie z akcií Dlh v tejto Pitke (pri prahu vzniká Dlh); po Pitke sa vynuluje. */
+  /** Zadĺženie z akcií Hazard (kľúč Dlh): pri prahu vzniká Dlh, zvyšok ostáva (v7). */
   readonly zadlzenie: number;
   /** Neresti v tomto kole — na konci kola ich porovnanie so súperovými dáva Absťák (v8.1). */
   readonly nerestiTotoKolo: number;
@@ -30,6 +37,8 @@ export interface PlayerState {
    * zbavením sa Absťáku neklesne. Chýba v stavoch spred v5 (= 0).
    */
   readonly abstakyZiskane?: number;
+  /** Dlhy získané za celú hru (štatistika, v8.2) — presun ani pálenie ich neubera. */
+  readonly dlhyZiskane?: number;
 }
 
 /** „1 nerest“, „3 neresti“, „5 nerestí“ — pre log a rozhranie. */
@@ -43,6 +52,8 @@ export function freshPlayer(): PlayerState {
     doberaci: [],
     odhadzovaci: [],
     priznane: [],
+    dlhy: 0,
+    abstaky: 0,
     dedicstvo: [],
     poldeciPlne: KONSTANTY.START_POLDECI,
     poldeciVypite: 0,

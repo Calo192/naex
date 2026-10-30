@@ -101,15 +101,15 @@ describe("finále na pinnacle lokalite sa hrá ako bežné kolo (Michal 2026-10-
     const strany: GameState["strany"] = [[], [lezi(inst("masiar"), 1, { posledna: true })]];
     const finale = viewFor(data, vPitkeFinale("herna", strany), 0);
     const bezne = viewFor(data, vPitkeFinale("herna", strany, "lokalita"), 0);
-    const o = najhorsiaOdpoved(data, finale, 0, [0, 0]);
+    const o = najhorsiaOdpoved(data, finale, 0);
     expect(o).not.toBeNull();
     expect(o?.strana).toBe(0);
-    expect(o).toEqual(najhorsiaOdpoved(data, bezne, 0, [0, 0]));
+    expect(o).toEqual(najhorsiaOdpoved(data, bezne, 0));
   });
 
   it("nástenka označí finále aj s lokalitou; log píše zvlášť 1 špak za kartu v línii a Herňu za Dlhy porazeného", () => {
     const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
-    const s = sHracom(vPitkeFinale("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { priznane: [inst("dlh"), inst("dlh")] });
+    const s = sHracom(vPitkeFinale("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dlhy: 2 });
     const { s: po, logy } = dohraj(s);
     expect(po.koniec).not.toBeNull();
     const b = po.nastenka.at(-1)!;

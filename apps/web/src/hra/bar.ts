@@ -80,7 +80,8 @@ export const TVARY_AKCII: Readonly<Record<string, readonly string[]>> = {
   Obmedzenie: podlaVysvedcenie("Obmedzen"),
   Posilnenie: podlaVysvedcenie("Posilnen"),
   PoškodeniePečene: podlaVysvedcenie("Poškoden").map((t) => `${t} pečene`),
-  Dlh: tvary("Dlh", "Dlhu", "Dlhom", "Dlhy", "Dlhov", "Dlhmi", "Dlhoch"),
+  // Akcia s kľúčom Dlh sa od v8.2 volá Hazard; Dlh (počítadlo, ktoré dáva) má ten istý piktogram.
+  Dlh: tvary("Hazard", "Hazardu", "Hazarde", "Hazardom", "Hazardy", "Hazardov", "Hazardmi", "Hazardoch", "Dlh", "Dlhu", "Dlhom", "Dlhy", "Dlhov", "Dlhmi", "Dlhoch"),
   Odpor: tvary("Odpor", "Odporu", "Odpore", "Odporom", "Odpory", "Odporov", "Odporoch"),
   Poldeci: tvary("Poldeci"),
 };

@@ -47,7 +47,7 @@ describe("poskodenieBitky z verejného pohľadu", () => {
           const view = { ...v0, hraci: [sDlhmi(0), sDlhmi(1)] as typeof v0.hraci };
           // lineState ako klient: karta v strede (aj starší) a Pasca v Dedičstve.
           const linia = evaluateLine(data, lineState(view));
-          const odhad = poskodenieBitky(data, view, linia.sums, [abstakyVRuke(state, 0), abstakyVRuke(state, 1)]);
+          const odhad = poskodenieBitky(data, view, linia.sums);
           expect(odhad).toEqual(b.damage);
           porovnane++;
         }

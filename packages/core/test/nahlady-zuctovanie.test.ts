@@ -125,7 +125,7 @@ function doPoskodenia(s0: GameState): { readonly s: GameState; readonly rozhodnu
   return { s, rozhodnutia };
 }
 
-const dlhy = (s: { readonly hraci: GameState["hraci"] | ClientState["hraci"] }, q: PlayerId): number => s.hraci[q].priznane.filter((k) => k.defId === "dlh").length;
+const dlhy = (s: { readonly hraci: GameState["hraci"] | ClientState["hraci"] }, q: PlayerId): number => s.hraci[q].dlhy;
 
 describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
   const stavy = vzorky(Array.from({ length: 100 }, (_, i) => 1000 + i));
@@ -187,11 +187,8 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         for (const q of [0, 1] as const) {
           if (dA.damage === null && dA.pohorsenieZostava[q] > 0) expect(n.dopady[q].pohorseniaSpolu, `${kde}: Pohoršenia v bitke, hráč ${q}`).toBe(dA.pohorsenieZostava[q]);
         }
-        // Súperove Absťáky v ruke náhľad nepozná.
-        if (s.hraci[su].ruka.some((k) => k.defId === "abstak")) continue;
-        const abstaky = (t: GameState): [number, number] => [0, 1].map((q) => t.hraci[q as PlayerId].ruka.filter((k) => k.defId === "abstak").length) as [number, number];
         // Poškodenie: hotové z bitky, alebo pred Pohoršeniami tým istým výpočtom ako vyhodnotPoskodenie.
-        const poskodenie = (t: GameState): DamageResult => t.bitkaStav?.damage ?? poskodenieBitky(data, t, t.bitkaStav!.sums, abstaky(t));
+        const poskodenie = (t: GameState): DamageResult => t.bitkaStav?.damage ?? poskodenieBitky(data, t, t.bitkaStav!.sums);
         const pA = poskodenie(sNaex.s);
         const pB = poskodenie(bezBitka.s);
         expect(n.po.tuhe, `${kde}: tuhé`).toEqual(pA.tuhe);

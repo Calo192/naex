@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, lineState, naexCieleVLinii, pohorsenieMozne, posunMarker, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, lineState, naexCieleVLinii, pohorsenieMozne, posunZaBody, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -135,7 +135,7 @@ export class Robot {
         const zostava = view.zhromazdenieStav?.zostavaLimit[ja] ?? 0;
         // Priznaj kliatbu, ak nejakú máš — zbavuje ruku balastu.
         const kliatba = view.ruka.find((k) =>
-          ["dlh", "cirhoza", "abstak"].includes(k.defId),
+          k.defId === "cirhoza",
         );
         if (kliatba !== undefined) return { type: "place", uid: kliatba.uid, target: "priznanie" };
         if (zostava > 0) {
@@ -183,7 +183,7 @@ export class Robot {
           // Prebytok ide k súperovi držiteľa — od v8 ho rozdeľuje spravidla porazený, teda k nemu.
           const smerK = b.krok === "prebytok" && b.prebytokDrzi !== null ? (b.prebytokDrzi === 0 ? 1 : 0) : ja === 0 ? 1 : 0;
           const elder = view.starsi.find((e) =>
-            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunMarker(e, smerK) !== null,
+            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunZaBody(e, smerK, b.prebytokZostava) !== null,
           );
           // v5: Pohoršenie smie aj k sebe — keď k súperovi nejde nič.
           const kSebe = b.krok === "pohorsenie" && elder === undefined ? view.starsi.find((e) => pohorsenieMozne(view, ja, e, true)) : undefined;

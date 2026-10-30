@@ -46,7 +46,6 @@ for (const d of [fajciar, pohorsujuci, poverciva]) cards.set(d.id, d);
 const data = buildGameData(cards, zaklad.elders, parseScorecards(scorecardsJson));
 
 const lezi = (card: CardInstance, playedBy: PlayerId): PlacedCard => ({ card, playedBy });
-const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
 
 /** Posledná Pitka kola, obaja s plným poldeci a bez kariet v ruke (na NA EX sa neodpovedá). */
 function vPitke(strana0: readonly PlacedCard[]): GameState {
@@ -60,7 +59,7 @@ function vPitke(strana0: readonly PlacedCard[]): GameState {
     hraci: [
       { ...s0.hraci[0], ruka: [], poldeciPlne: 1 },
       // Priznané Dlhy hráča 1 = strop pre mäkké hráča 0.
-      { ...s0.hraci[1], ruka: [], poldeciPlne: 1, priznane: [dlh(920001), dlh(920002), dlh(920003)] },
+      { ...s0.hraci[1], ruka: [], poldeciPlne: 1, dlhy: 3 },
     ],
     pitkaStav: {
       naTahu: s0.utocnik === 0 ? 1 : 0,
@@ -180,7 +179,7 @@ describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním
       lezi(instanceFor(data, "poverciva_test", V4, V4), 0),
     ]);
     // Strop mäkkého vysoko, aby NA EX mäkké naozaj zmenilo.
-    const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], priznane: Array.from({ length: 20 }, (_, i) => dlh(921000 + i)) }] };
+    const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], dlhy: 20 }] };
     const p: PlayerId = 1;
     let zmeny = 0;
     for (const uid of ciele(s)) {
@@ -189,7 +188,7 @@ describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním
       // NA EX naraz (v5): skryté NA EX sa do línie dostane až pri odkrytí.
       const t = sNaexNaKartach(naex(s, p, uid));
       // Bitka ráta poškodenie poskodenieBitky (vyhodnotPoskodenie).
-      const makke = (x: GameState): number => poskodenieBitky(data, x, evaluateLine(data, lineState(x)).sums, [0, 0]).makke[0];
+      const makke = (x: GameState): number => poskodenieBitky(data, x, evaluateLine(data, lineState(x)).sums).makke[0];
       expect(d0.makke).toBe(makke(t) - makke(s));
       if (d0.makke !== 0) zmeny++;
     }

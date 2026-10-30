@@ -104,7 +104,7 @@ describe("ohlásené vydesenie sa ruší hneď (Michal 2026-10-26)", () => {
       draftStav: null,
       zhromazdenieStav: null,
       strany: [[], []],
-      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
+      bitkaStav: bitka({ krok: "prebytok", caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 3 }),
     };
     const r = apply(data, vBitke, { type: "prebytok", elderId: s.starsi[4]!.elderId }, 0);
     expect(r.events.some((e) => e.type === "log" && e.text.includes("Ak ich udrží do konca ďalšieho kola"))).toBe(true);
@@ -120,8 +120,11 @@ describe("ohlásené vydesenie sa ruší hneď (Michal 2026-10-26)", () => {
     // 294 a 69: ohlásenie v náhodnej partii pravidiel v6.1 (294) a s dobratím 1 karty po bitke (69, 2026-10-27);
     // 130: pravidlá v7 (prah Exekútora 7, D6); 56, 108, 143: pravidlá v8 (bez finále v testovacej sade);
     // 133, 145: exekúcia bez prahu (2026-10-28).
+    // v8.2 (posun podľa ceny zóny): náhodná hra z rozdania na polovicu vydesených sotva dôjde —
+    // traja starší začínajú na červenej u každého hráča, aby sa ohlasovalo a rušilo.
     for (const seed of [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 294, 69, 130, 56, 108, 143, 133, 145]) {
-      let state: GameState = setupGame(data, seed);
+      const s0 = setupGame(data, seed);
+      let state: GameState = { ...s0, starsi: s0.starsi.map((e, i) => (i < 3 ? { ...e, marker: 6 as const } : i < 6 ? { ...e, marker: 0 as const } : e)) };
       let rng = rngSeed(seed ^ 0x1d);
       for (let i = 0; state.koniec === null && i < 20000; i++) {
         const hrac = naTahu(state);

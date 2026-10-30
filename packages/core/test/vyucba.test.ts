@@ -380,7 +380,7 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
   const pri = (id: string): GameState => prehrajVyucbu(data, scenar, i(id));
   /** Stav po príkaze kroku `id`. */
   const po = (id: string): GameState => prehrajVyucbu(data, scenar, i(id) + 1);
-  const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).celkove;
+  const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums).celkove;
   // Špaky v popolníku. Nie „keby skončila teraz“ — to od 2026-10-27 pridáva výkupné poldeci a cigariet.
   const body = (s: GameState): readonly number[] => spakyTeraz(viewFor(data, s, 0)).spaky;
 
@@ -625,7 +625,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
   };
   const pri = (id: string): GameState => prehrajVyucbu(data, cela, i(id));
   const po = (id: string): GameState => prehrajVyucbu(data, cela, i(id) + 1);
-  const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums, [0, 0]).tuhe;
+  const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums).tuhe;
   const body = (s: GameState): readonly number[] => s.spaky;
 
   it("celá partia (1. + 2. + 3. časť) prejde v jadre od začiatku do konca hry", () => {
@@ -678,8 +678,8 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(kolo3.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
     expect(kolo3.starsi.find((e) => e.elderId === "hrobar")?.marker).toBe(4);
     // Absťák Nervák (v8.1): Štamgast mal v 2. kole menej nerestí (1 : 3) — Absťák dostal on (i-neresti).
-    expect(kolo3.hraci[1].priznane.filter((k) => k.defId === "abstak")).toHaveLength(1);
-    expect(kolo3.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
+    expect(kolo3.hraci[1].abstaky).toBe(1);
+    expect(kolo3.hraci[0].abstaky).toBe(0);
   });
 
   it("3. časť: patronát Štamgasta (ukážka), Dedičstvo, Exekútor, Kultúrny dom, Absťák a finále na Predsedovej vile", () => {
@@ -698,7 +698,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(kolo4.hraci[1].poldeciPlne + kolo4.hraci[1].poldeciVypite).toBe(1);
     // Koniec 3. kola: hráč 0 nerestí, Štamgast 1 (fajčil) — Absťák dostane hráč, Štamgast sa svojho zbaví (i-abstak).
     expect(kolo4.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(true);
-    expect(kolo4.hraci[1].priznane.some((k) => k.defId === "abstak")).toBe(false);
+    expect(kolo4.hraci[1].abstaky).toBe(0);
     expect(odhad(po("k-pijan-finale"))).toEqual([2, 5]);
     expect(po("k-kseft").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(2);
     expect(odhad(po("k-kseft"))).toEqual([3, 5]);

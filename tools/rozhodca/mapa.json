@@ -1,6 +1,6 @@
 {
   "pravidlaCommit": "e832dad38119bd7cf966223c11d09046e478333e",
-  "aktualizovane": "2026-10-28",
+  "aktualizovane": "2026-10-30",
   "pravidla": [
     {
       "id": "1.zaklad.dvaja-hraci",
@@ -100,12 +100,13 @@
     {
       "id": "2.akcie.povera",
       "paragraf": "2. Karta, akcie, tagy, varianty › Akcie",
-      "pravidlo": "Povera dáva mäkké poškodenie do výšky súperovho priznaného Dlhu a ruší sa s Vierou 1:1.",
+      "pravidlo": "Povera poškodzuje: mäkké poškodenie proti súperovým priznaným Dlhom (najviac toľko, koľko ich má); ruší sa s Vierou 1:1.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › mäkké poškodenie je zastropené súperovým priznaným dlhom",
         "packages/core/test/battle.test.ts › Viera a Povera sa vyrušia 1:1 a zrušená Povera neudelí nič"
-      ]
+      ],
+      "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "2.akcie.viera-hodnota",
@@ -121,10 +122,10 @@
     {
       "id": "2.akcie.dlh-prah",
       "paragraf": "2. Karta, akcie, tagy, varianty › Akcie",
-      "pravidlo": "Akcia Dlh zvýši zadĺženie; za každý celý prah (2) vznikne karta Dlh.",
+      "pravidlo": "Akcia Hazard (kľúč Dlh, v8.2) zvýši zadĺženie; za každý celý prah (2) vznikne Dlh (počítadlo, nie karta).",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/tempo.test.ts › dve akcie Dlh dajú jednu kartu Dlh a zadĺženie klesne na 0; packages/core/test/pravidla-20261019.test.ts › priazeň Úžerníka zvýši prah Dlhu o silu; súper má prah 2."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/tempo.test.ts › dve akcie Dlh dajú jednu kartu Dlh a zadĺženie klesne na 0; packages/core/test/pravidla-20261019.test.ts › priazeň Úžerníka zvýši prah Dlhu o silu; súper má prah 2. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "2.akcie.obmedzenie-cigareta",
@@ -565,22 +566,14 @@
     {
       "id": "11.priznanie.karta",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
-      "pravidlo": "Za priznanú kliatbu si hráč hneď dobere kartu (Dlh, Milujúca manželka, Absťák); za Cirhózu nie.",
+      "pravidlo": "Za priznanú Milujúcu manželku si hráč hneď dobere kartu; za Cirhózu nie. Dlh a Absťák sú od v8.2 počítadlá — vznikajú priznané, bez karty.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › priznaná Cirhóza kartu nedá, Milujúca manželka áno",
         "packages/core/test/michal-20261018.test.ts › z doberacieho balíčka",
         "packages/core/test/michal-20261018.test.ts › aj keď je doberací prázdny — zamieša sa odhadzovací"
-      ]
-    },
-    {
-      "id": "11.priznanie.dlh-sam",
-      "paragraf": "11. Kliatby, priznanie, Exekútor › Priznanie",
-      "pravidlo": "Dobratý Dlh sa hneď sám prizná a hráč ťahá ďalšiu kartu (aj v reťazi).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-20261019.test.ts › dobratý Dlh sa hneď prizná a hráč ťahá ďalšiu kartu, aj v reťazi"
-      ]
+      ],
+      "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "11.priznanie.mimo-linie",
@@ -1049,35 +1042,39 @@
     {
       "id": "9.pohorsenie.posun",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Každé Pohoršenie posunie marker staršieho o jedno pole k súperovi alebo k sebe, bez ohľadu na výsledok bitky; priazeň aj strach sa menia hneď (strach už v špakoch tejto bitky).",
+      "pravidlo": "Každé Pohoršenie je bod na posun markera staršieho k súperovi alebo k sebe (v8.2: pole podľa ceny zóny, hráč vyberá staršieho a smer, marker ide, kým body stačia; zvyšok, ktorý nestačí na žiadny posun, prepadne), bez ohľadu na výsledok bitky; priazeň aj strach sa menia hneď (strach už v špakoch tejto bitky).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-v5.test.ts › legálne sú oba smery; k sebe posunie marker k hráčovi a priazeň platí už v poškodení tejto bitky",
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie"
+        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; Pohoršenie sa ráta už do špakov za starších tejto bitky; lokalitu si neberie",
+        "packages/core/test/pravidla-v8-2.test.ts › posunZaBody: marker ide, kým zvyšok stačí na ďalšie pole, a vráti cenu; bez jediného poľa null",
+        "packages/core/test/pravidla-v8-2.test.ts › zvyšok 1 pri markeroch mimo stredu prepadne a log to povie",
+        "packages/core/test/patronat-20261020.test.ts › marker ide, kým zvyšok stačí: 5 Pohoršení zo stredu = oranžová, 2 ostanú (na červenú treba 3)",
+        "packages/core/test/patronat-20261020.test.ts › k sebe platí to isté: z ľavej červenej k stredu 4, potom 3"
       ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "9.pohorsenie.hranice",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "V6: Pohoršenie nemá limit hraníc zón — ten istý marker smie ísť viackrát (oba smery).",
+      "pravidlo": "Pohoršenie nemá limit hraníc zón — ten istý marker smie ísť viackrát (oba smery); každé pole stojí podľa zóny (v8.2).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v5.test.ts › v6: limit hraníc zón sa ruší — 6 Pohoršení prejde celú stupnicu oboma smermi",
-        "packages/core/test/patronat-20261020.test.ts › z pravej oranžovej až na ľavú červenú — limit hraníc zón ani zákaz kraja nie sú"
+        "packages/core/test/pravidla-v5.test.ts › v8.2: limit hraníc zón nie je — zo stredu na kraj 1 + 2 + 3 = 6 jedným výberom, späť do stredu 4 + 3 + 2 = 9",
+        "packages/core/test/patronat-20261020.test.ts › k stredu je pole o 1 drahšie: z pravej oranžovej na ľavú červenú 3 + 2 + 1 + 2 + 3 = 11"
       ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/patronat-20261020.test.ts › z pravej oranžovej len po ľavú sivú — tretia hranica nie; packages/core/test/patronat-20261020.test.ts › Kultúrny dom limit ruší, na krajnú však Pohoršenie nesmie; packages/core/test/elders.test.ts › hranice zón: v sivej sa nič neprekračuje."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/patronat-20261020.test.ts › z pravej oranžovej len po ľavú sivú — tretia hranica nie; packages/core/test/patronat-20261020.test.ts › Kultúrny dom limit ruší, na krajnú však Pohoršenie nesmie; packages/core/test/elders.test.ts › hranice zón: v sivej sa nič neprekračuje. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "9.pohorsenie.kraj",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "V6: Pohoršenie smie na krajnú pozíciu (zo stredu na červenú tri), ďalej von nie.",
+      "pravidlo": "Pohoršenie smie na krajnú pozíciu (v8.2 zo stredu na červenú 1 + 2 + 3 = 6), ďalej von nie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v5.test.ts › v6: aj k sebe smie na krajnú pozíciu, ďalej von nie",
-        "packages/core/test/patronat-20261020.test.ts › zo stredu na červenú tri Pohoršenia, ďalej už nie"
+        "packages/core/test/pravidla-v5.test.ts › v6: aj k sebe smie na krajnú pozíciu, ďalej von nie (oranžová → červená stojí 3, v8.2)",
+        "packages/core/test/patronat-20261020.test.ts › zo stredu na červenú 6 Pohoršení jedným výberom: žltá 1 + oranžová 2 + červená 3"
       ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › Pohoršenie nikdy nedostane marker na krajnú pozíciu; packages/core/test/revizia-kariet.test.ts › Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola."
+      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › Pohoršenie nikdy nedostane marker na krajnú pozíciu; packages/core/test/revizia-kariet.test.ts › Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "9.poskodenie.vzorec",
@@ -1120,7 +1117,7 @@
     {
       "id": "9.vysledok.prebytok-drzi",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Prebytok drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku a za starších — o pole za bod k súperovi držiteľa. Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
+      "pravidlo": "Prebytok drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku a za starších — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › prebytok drží hráč s vyšším celkovým, aj keď bitku prehral",
@@ -1129,7 +1126,7 @@
         "packages/core/test/pravidla-v8.test.ts › víťaz drží prebytok, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on",
         "packages/core/test/pravidla-v8.test.ts › pri sekere rozdeľuje ten s nižším celkovým poškodením"
       ],
-      "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23)."
+      "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "9.vysledok.minstrant",
@@ -1233,7 +1230,8 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/elders.test.ts › 3-2-1-0-1-2-3: jedno sivé pole v strede",
-        "packages/core/test/elders.test.ts › sila priazne 1 / 2 / 3 podľa zóny"
+        "packages/core/test/elders.test.ts › sila priazne 1 / 2 / 3 podľa zóny",
+        "packages/core/test/pravidla-v8-2.test.ts › von zo stredu podľa cieľovej zóny 1 / 2 / 3, k stredu o 1 viac 4 / 3 / 2 — na oboch polovicach rovnako"
       ]
     },
     {
@@ -1346,22 +1344,26 @@
     {
       "id": "11.kliatby.verejny-dlh",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
-      "pravidlo": "Nový Dlh sa hneď prizná (bez karty); nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25, predtým navrch doberacieho).",
+      "pravidlo": "Nový Dlh je hneď priznaný — od v8.2 počítadlo, nie karta (rovnako Absťák); nová Cirhóza ide do odhadzovacieho balíčka (Michal 2026-10-25, predtým navrch doberacieho).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-20261021.test.ts › nový Dlh sa hneď prizná a ráta sa na konci; nová Cirhóza ide do odhadzovacieho balíčka",
         "packages/core/test/pravidla-20261025.test.ts › Cirhóza nejde navrch doberacieho — Vízia vidí jeho pôvodnú vrchnú kartu",
-        "packages/core/test/pravidla-20261025.test.ts › pri prázdnom doberacom sa odhadzovací zamieša a nová Cirhóza príde do ruky (Vízia: vziať)"
-      ]
+        "packages/core/test/pravidla-20261025.test.ts › pri prázdnom doberacom sa odhadzovací zamieša a nová Cirhóza príde do ruky (Vízia: vziať)",
+        "packages/core/test/pravidla-v8-2.test.ts › náhodné partie dobehnú, Dlhy aj Absťáky pribúdajú len do počítadiel a nikde sa neobjaví ich karta"
+      ],
+      "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "11.kliatby.verejny-pocet",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Kliatby",
-      "pravidlo": "Počet súperových nepriznaných Dlhov a Cirhóz je verejný — každá zmena je vo verejnom logu, ktoré karty sa neposiela.",
+      "pravidlo": "Počet súperových nepriznaných Cirhóz je verejný — každá zmena je vo verejnom logu, ktoré karty sa neposiela; počítadlá Dlhov a Absťákov sú verejné (v8.2).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-20261021.test.ts › každá zmena počtu súperových kliatob má v jeho logu zmienku o kliatbe"
-      ]
+        "packages/core/test/pravidla-20261021.test.ts › každá zmena počtu súperových kliatob má v jeho logu zmienku o kliatbe",
+        "packages/core/test/pravidla-v8-2.test.ts › počítadlá sú verejné — viewFor ich posiela obom hráčom"
+      ],
+      "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "11.kliatby.cirhoza-drzanie",
@@ -1374,24 +1376,24 @@
     {
       "id": "8.abstak.vznik",
       "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Na konci kola menej nerestí než súper v tom istom kole → Absťák rovno priznaný, karta za neho a +1 k Absťákom získaným za hru; platí aj v prvom kole (v8.1 Krok so stolom).",
+      "pravidlo": "Na konci kola menej nerestí než súper v tom istom kole → +1 Absťák (počítadlo, v8.2 bez dobratia karty) a +1 k Absťákom získaným za hru; platí aj v prvom kole (v8.1 Krok so stolom).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §8: menej nerestí než súper v tomto kole → Absťák rovno priznaný a hráč si zaň dobere kartu",
+        "packages/core/test/pravidla-bitka.test.ts › §8: menej nerestí než súper v tomto kole → Absťák (počítadlo, v8.2) bez dobratia karty",
         "packages/core/test/pravidla-bitka.test.ts › §8: platí už v prvom kole — základ z minulého kola nie je",
         "packages/core/test/pravidla-v5.test.ts › Absťák = Absťáky získané za hru: zbavením sa Absťáku počítadlo neklesne"
       ],
-      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
+      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "8.abstak.zbavenie",
       "paragraf": "8. Pečeň, zadĺženie, nerest a Absťák › Nerest a Absťák",
-      "pravidlo": "Viac nerestí než súper v tom istom kole → jeden Absťák späť do zásoby; rovnako (aj 0 : 0) nič.",
+      "pravidlo": "Viac nerestí než súper v tom istom kole → hráč sa zbaví jedného Absťáku (počítadlo); rovnako (aj 0 : 0) nič.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-bitka.test.ts › §8: rovnako ako súper → nič (aj keď obaja nič); viac → jeden Absťák späť do zásoby"
       ],
-      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
+      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "8.abstak.manzelka",
@@ -1416,14 +1418,14 @@
     {
       "id": "9.pohorsenie.abstak",
       "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Nervák (v8.1): každý Absťák hráča (priznaný a v línii, nie v ruke) mu dá v bitke 1 Pohoršenie navyše.",
+      "pravidlo": "Nervák (v8.1): každý Absťák hráča (v8.2 počítadlo, verejné) mu dá v bitke 1 Pohoršenie navyše.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/abstak-nervak.test.ts › každý priznaný Absťák pridá hráčovi 1 Pohoršenie, súperovi nič",
-        "packages/core/test/abstak-nervak.test.ts › Absťák v ruke sa do Pohoršení neráta — počet Pohoršení by prezradil ruku",
+        "packages/core/test/abstak-nervak.test.ts › Absťák je od v8.2 verejné počítadlo (nie karta v ruke) — súper ráta rovnaké Pohoršenia ako server",
         "packages/core/test/abstak-nervak.test.ts › v partii hráč s Absťákmi dostane v kroku Pohoršenie aspoň toľko Pohoršení, koľko má Absťákov"
       ],
-      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113)."
+      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "8.abstak.autobusar",
@@ -1777,21 +1779,20 @@
     {
       "id": "16.karta.hasic",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Hasič (Nástup): náhodná karta z majiteľovho odhadzovacieho balíčka, aj kliatba; majiteľ ju nechá v ruke (Dlh sa prizná a ťahá kartu), alebo vráti. Kým nerozhodne, hra čaká (ťah naraz dobehne, odpoveď na NA EX a otočená Záverečná čakajú); prázdny odhadzovací = nič; karta je verejná.",
+      "pravidlo": "Hasič (Nástup): náhodná karta z majiteľovho odhadzovacieho balíčka, aj kliatba; majiteľ ju nechá v ruke, alebo vráti. Kým nerozhodne, hra čaká (ťah naraz dobehne, odpoveď na NA EX a otočená Záverečná čakajú); prázdny odhadzovací = nič; karta je verejná.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: vytiahne kartu z VLASTNÉHO odhadzovacieho balíčka deterministicky zo semienka hry; aj kliatbu",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: kým hráč nerozhodne, hrá len on a len túto voľbu; karta zatiaľ leží v odhadzovacom",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: nechať — karta ide z odhadzovacieho do ruky, potom je na ťahu súper",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: vrátiť — karta ostáva v odhadzovacom balíčku, ruka sa nemení",
-        "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: nechaný Dlh sa sám prizná a hráč ťahá kartu (ako Zberný dvor)",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: s prázdnym odhadzovacím balíčkom sa nič nestane a ťah ide ďalej",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič v ťahu naraz: zvyšok ťahu sa zahrá, o karte hráč rozhodne potom; ťah bez Vypiť po Hasičovi neprejde",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič: súper vidí len verejné — kartu z odhadzovacieho (ten je verejný), nie ruku",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako odpoveď na NA EX: Pitka sa vyhodnotí až po voľbe",
         "packages/core/test/autobusar-hasic.test.ts › §16 Hasič ako Záverečná: otočí sa na konci Pitky a Pitka sa dokončí až po voľbe"
       ],
-      "poznamka": "Michal 2026-10-26: predtým bez voľby prvý Pracujúci z odhadzovacieho balíčka."
+      "poznamka": "Michal 2026-10-26: predtým bez voľby prvý Pracujúci z odhadzovacieho balíčka. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "16.karta.manzelka",

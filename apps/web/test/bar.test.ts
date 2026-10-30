@@ -60,6 +60,8 @@ describe("Melichar v bare", () => {
       ["Dlhy", "Dlh"],
       ["dlhov", "Dlh"],
       ["Dlhu", "Dlh"],
+      ["Hazard", "Dlh"],
+      ["hazardu", "Dlh"],
       ["cigariet", "Cigareta"],
       ["Cigaretu", "Cigareta"],
       ["poldeci", "Poldeci"],

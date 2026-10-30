@@ -192,7 +192,7 @@ describe("Kšeft (v7)", () => {
 describe("efekty v bitke (v7)", () => {
   it("Vymáhač: za každé 2 priznané Dlhy Rana navyše; Šofér bez NA EX Pecku", () => {
     const s0 = vPitke("zastavka", [[lezi(inst("vymahac"), 0), lezi(inst("sofer"), 0)], []]);
-    const s = { ...sHracom(s0, 0, { priznane: [inst("dlh"), inst("dlh"), inst("dlh"), inst("dlh"), inst("dlh")]}), spaky: [1, 4] as [number, number] };
+    const s = { ...sHracom(s0, 0, { dlhy: 5}), spaky: [1, 4] as [number, number] };
     const zdroje = bitkaMody(data, s, 0).tuheZdroje;
     expect(zdroje).toContainEqual({ zdroj: "vymahac", tuhe: 2 });
     expect(zdroje).toContainEqual({ zdroj: "sofer", tuhe: 2 });
@@ -209,7 +209,7 @@ describe("efekty v bitke (v7)", () => {
     let st = bez;
     for (let i = 0; i < 2 && st.faza === "pitka"; i++) st = apply(data, st, { type: "skipNaex" }, st.pitkaStav!.naTahu).state;
     // Dlh z Traktoristky príde pred Exekútorom — ten ho hneď zhorí (bez prahu, 2026-10-28).
-    expect(st.hraci[0].priznane.filter((k) => k.defId === "dlh").length + (st.nastenka.at(-1)?.exekutor[0] ?? 0)).toBeGreaterThanOrEqual(1);
+    expect(st.hraci[0].dlhy + (st.nastenka.at(-1)?.exekutor[0] ?? 0)).toBeGreaterThanOrEqual(1);
   });
 
   it("Milujúca manželka: pečeň majiteľa v Pitke o 1 menšia", () => {
@@ -258,7 +258,7 @@ describe("bot v7: Kšeft Poštárky blízko Exekútora", () => {
   it("strážca bota spozná Kšeft Poštárky v línii aj na scorecarde — jadro dá najprv uid z línie", () => {
     const p = inst("postarka");
     const s0 = vPitke("zastavka", [[lezi(p, 0), lezi(inst("pijan"), 0)], [lezi(inst("vandal"), 1)]]);
-    const s = sHracom(s0, 0, { ruka: [inst("masiar")], doberaci: [inst("vandal")], priznane: [inst("dlh")] });
+    const s = sHracom(s0, 0, { ruka: [inst("masiar")], doberaci: [inst("vandal")], dlhy: 1 });
     const kseft = moznostiKseftu(data, s, 0).find((c) => c.type === "kseft" && c.uid === p.uid);
     expect(kseft).toBeDefined();
     expect(kseftPostarky(s, p.uid)).toBe(true);

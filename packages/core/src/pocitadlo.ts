@@ -2,8 +2,8 @@
 // výsledok bitky nerastie naraz, ale po vlnách od lokality von — každá karta
 // prispeje svojimi Ranami, Peckami a Petelicami (aj zdvojenými NA EX), potom
 // bonusy (Bitkár, Cirhóza, karty) a nakoniec zrážky (Viera súpera ako štít).
-// Ten istý výpočet ako vyhodnotenie (zdroje línie a rozpisPoskodenia); čo klient
-// nevidí (súperove Absťáky v ruke), dorovná posledný krok „spolu“ na výsledok
+// Ten istý výpočet ako vyhodnotenie (zdroje línie a rozpisPoskodenia); rozdiel
+// (dno 0) dorovná posledný krok „spolu“ na výsledok
 // zo servera — počítadlo vždy skončí na čísle z Účtu bitky. Počíta sa z verejnej
 // línie, takže ho môžu dostať obaja.
 
@@ -56,7 +56,7 @@ export function vlnyKariet(stol: StolBitky): ReadonlyMap<number, number> {
 
 /**
  * Kroky počítadla pre stôl v okamihu bitky. `tuhe` je výsledok zo servera
- * (bitkaVysledok) — rozdiel oproti súčtu krokov (skryté Absťáky, dno 0) dorovná
+ * (bitkaVysledok) — rozdiel oproti súčtu krokov (dno 0) dorovná
  * krok „spolu“.
  */
 export function pocitadloBitky(data: GameData, stol: StolBitky, linia: LineEval, tuhe: readonly [number, number]): PocitadloBitky {
@@ -77,8 +77,7 @@ export function pocitadloBitky(data: GameData, stol: StolBitky, linia: LineEval,
       if (x.zmena !== 0) kroky.push({ vlna: vlnaKarty.get(uid) ?? 0, kto, druh: "karta", uid, zdroj: null, zmena: x.zmena, nasobok: x.nasobok });
     }
   }
-  // Súperove Absťáky v ruke klient nepozná — rozdiel dorovná „spolu“.
-  const rozpis = rozpisPoskodenia(data, stol, linia.sums, [0, 0]);
+  const rozpis = rozpisPoskodenia(data, stol, linia.sums);
   for (const kto of [0, 1] as const) {
     for (const b of rozpis[kto].bonusy) kroky.push({ vlna: kartyVln + 1, kto, druh: "bonus", uid: null, zdroj: b.zdroj, zmena: b.hodnota, nasobok: 1 });
     // Vyhodnotenie zrazí tuhé najviac na 0 — zrážka uberie len to, čo ešte zostalo

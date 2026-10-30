@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v8, 2026-10-28)
+# Ťahák — platné pravidlá NA EX! (v8.2, 2026-10-30)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -52,8 +52,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   rukou nič.
 - **Názvoslovie:** línia = celý rad; lokalita ju delí na dve **strany** (tvoja,
   súperova). **Tvoja partia** = všetky tvoje karty, na ktorejkoľvek strane.
-  Akcie: Dlh, Poškodenie pečene, Poldeci, Cigareta (nie Hazard, Pečeň,
-  Poldecko, Cigaretka).
+  Akcie: Hazard (v8.2, kľúč v príkazoch a súčtoch ostáva `Dlh`; zvyšuje zadĺženie, z neho sú Dlhy),
+  Poškodenie pečene, Poldeci, Cigareta (nie Pečeň, Poldecko, Cigaretka).
 - **Viac kariet v jednom ťahu Zhromaždenia:** prvá je zadarmo, **každá ďalšia
   stojí plný poldeci** (Vypiť: limit −1, pečeň +1, nerest) — dve karty za sebou
   potrebujú limit aspoň 3, tri karty limit 5 (každé Vypiť limit zníži, preto pri limite 3 najviac
@@ -75,7 +75,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   aktivujú (dostane ich hráč s prevahou). Kraje
   majú mená podľa lokality (Krčma: pri výčape / pri dverách).
   **Dvojčatá** — do prevahy sa rátajú za dvoch; **Kočovník** — Furt: jeho akcie
-  (aj Rana, Dlh, Poškodenie pečene) sa počítajú hráčovi, ktorý má v jeho kraji
+  (aj Rana, Hazard, Poškodenie pečene) sa počítajú hráčovi, ktorý má v jeho kraji
   prevahu; do prevahy sa ráta majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
 - **Poradie (2026-10-20):** cieľ kola vyberá a natáča **obranca** (víťaz
   poslednej bitky); **útočník** (porazený) berie zo šenku prvý a **vykladá
@@ -115,11 +115,11 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Konflikt (v7):** efekt **ležiacej** karty, keď k nej **súper** priloží svoju (aj odpoveďou na NA EX;
   Záverečná až pri otočení). Keď prikladáš ty k svojej, nič; priložený Nástroj nič; NA EX ani zrážka nič.
   Najprv Nástup priloženej karty, potom Konflikt. Veľmi smútiaca vdova (priložený Chlap po bitke z hry),
-  Policajtka (súper Dlh; za Kriminála ti dá 2 cigarety), Šarlatán (do konca kola jeho Dlhy = Viera,
+  Policajtka (súper Dlh; za Kriminála ti dá 2 cigarety), Šarlatán (do konca kola jeho Hazardy = Viera,
   Povery = Rana), Snúbenica (priložený Chlap po bitke do tvojho odhadzovacieho balíčka — je tvoj),
   Hrobár (za priloženú kartu sa už nič nepriloží, po bitke z hry). Miňištrant (Nástup): ak vyvolá
   Konflikt, jeho Viera sa ráta ako Pecka.
-- **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Dlh, Pečeň).
+- **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
   Pakt s Paktom nerobí nič, s Posilnením nič nezdvojí, Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
 - **Draft:** stavba šenku naraz, bez podávania: z N kariet dáš **polovicu do šenku
   a polovicu naspodok** (`{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`, pri 8 kartách 4 + 4)
@@ -133,17 +133,18 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nedá), priznanie kliatby, Vízia, efekty. Malý balíček prehru nespôsobí (v5).
   Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
   doberací balíček (pri každom ťahaní).
-- **Kliatby (verejný dlh, 2026-10-21):** nový **Dlh sa hneď prizná** (kartu zaň
-  nedobereš); priznané Dlhy idú k Exekútorovi a pri remíze v bitke prehráva viac Dlhov; Dlh v balíčku sa
-  pri dobratí prizná sám. Nová **Cirhóza ide do tvojho
+- **Kliatby (v8.2, 2026-10-30):** **Dlh a Absťák sú počítadlá, nie karty** — vznikajú rovno priznané,
+  neťaháš ich, kartu za ne nedobereš a nedá sa s nimi inak manipulovať (stav ukazuje „priznané dlhy N“
+  a „Absťáky N“, obe verejné). Priznané Dlhy idú k Exekútorovi a pri remíze v bitke prehráva viac Dlhov.
+  Kartou ostáva len **Cirhóza** (a Milujúca manželka). Nová **Cirhóza ide do tvojho
   odhadzovacieho balíčka** (2026-10-25) — do ruky príde, až keď sa doberací balíček minie a odhadzovací
   sa zamieša; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
   priznanú dostane v bitke +1 tuhé (nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry −3 špaky za kus)
   — prizná ju hneď, alebo riskuješ, že sa ti do konca nevráti do ruky. Kým ju nepriznáš, súper za ňu tuhé
   nedostáva. Počet súperových
-  nepriznaných kliatob je verejný (stav ho ukazuje). Dlh pália Robota (1 Dlh za aktívnu Robotu) a Exekútor
+  nepriznaných Cirhóz je verejný (stav ho ukazuje). Dlh pália Robota (1 Dlh za aktívnu Robotu) a Exekútor
   (v každej bitke); Obecný úrad, Podvodník a Kmotor ho presunú súperovi. Anonymný
-  alkoholik (Nástup, v7) prizná všetky Cirhózy z tvojho odhadzovacieho balíčka. Absťák kartu dá. Milujúca manželka už nie je Kliatba (v7). Kliatba do línie nepatrí. Priznanie nemíňa
+  alkoholik (Nástup, v7) prizná všetky Cirhózy z tvojho odhadzovacieho balíčka. Absťák kartu nedá (v8.2). Milujúca manželka už nie je Kliatba (v7). Kliatba do línie nepatrí. Priznanie nemíňa
   limit ani neodovzdá ťah. Za priznané Dlhy príde v každej bitke Exekútor.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
@@ -160,7 +161,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (navždy z hry).
 - **Hasič (Nástup, 2026-10-26):** vytiahne náhodnú kartu z tvojho odhadzovacieho
   balíčka (aj kliatbu; súper ju vidí, odhadzovací je verejný) —
-  `{"type":"hasic","nechat":true}` do ruky (Dlh sa sám prizná a ťaháš kartu),
+  `{"type":"hasic","nechat":true}` do ruky,
   alebo `false` = vráti sa do odhadzovacieho. Kým nerozhodneš, hra čaká; v ťahu
   naraz rozhoduješ po zvyšku ťahu. Prázdny odhadzovací = nič.
 - **Starší v7:** Autobusár: súper, ktorý pasuje po jeho majiteľovi, cigarety za pas nedostane.
@@ -193,7 +194,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   najprv obranca, potom útočník. **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa
   spáruje so susedmi s pôvodnými akciami, potom sú všetky jej akcie aktívne Rany pre majiteľa,
   do konca bitky — aj jej Posilnenie a Odpor sú už len Rany, suseda nezdvojujú ani nerušia (v6.1); pečeň, poldeci aj Výpalné platí každý za svoje NA EX.
-  Krčma vynúti jedno NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Dlh
+  Krčma vynúti jedno NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Hazard
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po
   a kliatby (Cirhóza, Dlh) aj so špakmi pre oboch.
@@ -205,7 +206,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (zadĺženie 8 pri prahu 2 = 4 Dlhy). Milujúca manželka (v7) v línii: tvoja pečeň v Pitke −1.
   Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
 - **Absťák (v8.1 Nervák, 2026-10-28):** na konci kola sa porovnajú neresti **oboch v tomto kole** —
-  menej ako súper → Absťák (rovno priznaný, +1 karta); viac → jeden tvoj Absťák odíde; rovnako nič.
+  menej ako súper → +1 Absťák (počítadlo, v8.2 bez karty navyše); viac → jeden tvoj Absťák odíde; rovnako nič.
   Každý Absťák: v bitke o ranu menej a **+1 Pohoršenie**; pri remíze v tuhom prehráva, kto ich má viac.
   Špaky za bitku neuberá. Výpis ukazuje „neresti v kole X, súper Y“.
 - **Stupnica (v6):** 7 polí 3-2-1-0-1-2-3, jedno sivé. Marker určuje **priazeň**
@@ -248,19 +249,26 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Smer posunu** (2026-10-28): „k súperovi / k sebe“ je smer na stupnici, nie polovica — z tvojej
   polovice posun k súperovi marker len priblíži k stredu (tvoja priazeň −1, súpera sa bojí menej).
   Log posunu píše zónu pred → po, komu priazeň stúpla/klesla a kto staršieho desí.
+- **Cena posunu markera (v8.2, 2026-10-30)** — Pohoršenie aj prebytok: pole von zo stredu stojí 1 / 2 / 3,
+  k stredu 4 / 3 / 2 (z červenej, z oranžovej, zo žltej); zo stredu na červenú 6. Vyberáš **len staršieho**
+  (pri Pohoršení aj smer), marker ide, kým body stačia; zvyšok dáš ďalším starším. Čo už na žiadny posun
+  nestačí, prepadne. Kšeft Predsedovej vily a Kapybara posúvajú o jedno pole bez ceny.
 - **Pohoršenie (v5 oboma smermi):** z akcií, patronátu, priazne Abstinenta a 1 za každý tvoj Absťák;
-  každé posunie marker o 1 **k súperovi alebo
+  každé je bod na posun **k súperovi alebo
   k sebe** (`{"type":"pohorsenie","elderId":…}`, k sebe s `"kSebe":true`);
   k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Pohoršenie
-  ide pred špakmi za starších, takže nová zóna z neho platí už v tejto bitke (ak ju vyhráš). V6: ten istý
-  marker smieš posúvať **bez limitu, o pole za Pohoršenie, aj na červenú** (zo stredu 3).
+  ide pred špakmi za starších, takže nová zóna z neho platí už v tejto bitke (ak ju vyhráš). Ten istý
+  marker smieš posúvať **bez limitu, aj na červenú** (zo stredu 6 Pohoršení).
 - **Poradie bitky:** Pohoršenie → poškodenie → výsledok → špaky za bitku
-  → špaky za starších (víťazovi, pri sekere obom) → exekúcia (Robota, Exekútor) → prebytok (posunie markery o pole za bod k súperovi
-  držiteľa, aj na červenú a z nej von — zamknutie sa ruší; prejaví sa až v ďalšej bitke, vo finále hneď).
+  → špaky za starších (víťazovi, pri sekere obom) → exekúcia (Robota, Exekútor) → prebytok (posunie markery k súperovi
+  držiteľa podľa ceny poľa, aj na červenú a z nej von — zamknutie sa ruší; prejaví sa až v ďalšej bitke, vo finále hneď).
   **Prebytok rozdeľuje porazený (v8):** markery idú ako doteraz (starší sa začnú báť víťaza), ale
   **ktorých starších posunie, vyberá ten, proti komu sa prebytok ráta** — spravidla porazený si sám
-  vyberie, ktoré priazne dostane (pri sekere ten s nižším celkovým). Rozdeliť treba celý prebytok;
+  vyberie, ktoré priazne dostane (pri sekere ten s nižším celkovým). Rozdeliť treba celý prebytok (zvyšok,
+  ktorý na žiadne pole nestačí, prepadne);
   `{"type":"prebytok","elderId":…}` posiela on. Vo finále rozdeľuje držiteľ.
+- **Povera poškodzuje (v8.2 znenie):** mäkké poškodenie proti súperovým priznaným Dlhom (najviac toľko,
+  koľko ich má); so súperovou Vierou sa ruší 1 : 1. Víťaza určuje tuhé, prebytok celkové (tuhé + mäkké).
 - **Remíza (v6):** pri rovnakom tuhom vyhrá, kto má **menej Absťákov**, potom **menej
   priznaných Dlhov**; inak **sekera** — špaky kola (karty v línii) vezme víťaz najbližšej bitky,
   vo finále prepadnú; za starších dostanú špaky obaja; útočník ostáva, patronát = prehra. Celkové určuje len prebytok.

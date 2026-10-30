@@ -152,8 +152,8 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
     expect(vysledok?.type === "bitkaVysledok" ? vysledok.damage.tuhe[0] : -1).toBe(0);
   });
 
-  it("v6: aj k sebe smie na krajnú pozíciu, ďalej von nie", () => {
-    const s = vPohorseni(72);
+  it("v6: aj k sebe smie na krajnú pozíciu, ďalej von nie (oranžová → červená stojí 3, v8.2)", () => {
+    const s = vPohorseni(72, (x) => x, 3);
     const id = s.starsi[0]!.elderId;
     const st = sMarkerom(s, id, 1);
     expect(legalCommands(data, st, 0)).toContainEqual({ type: "pohorsenie", elderId: id, kSebe: true });
@@ -164,13 +164,14 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
     expect(() => apply(data, naKraji, { type: "pohorsenie", elderId: id, kSebe: true }, 0)).toThrow(IllegalCommandError);
   });
 
-  it("v6: limit hraníc zón sa ruší — 6 Pohoršení prejde celú stupnicu oboma smermi", () => {
-    const s = vPohorseni(73, (x) => x, 6);
+  it("v8.2: limit hraníc zón nie je — zo stredu na kraj 1 + 2 + 3 = 6 jedným výberom, späť do stredu 4 + 3 + 2 = 9", () => {
+    const s = vPohorseni(73, (x) => x, 15);
     const id = s.starsi[0]!.elderId;
     let st = sMarkerom(s, id, 3);
-    for (let i = 0; i < 3; i++) st = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state; // 3 → 0
+    st = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state; // 3 → 0
     expect(st.starsi.find((x) => x.elderId === id)?.marker).toBe(0);
-    for (let i = 0; i < 3; i++) st = apply(data, st, { type: "pohorsenie", elderId: id }, 0).state; // 0 → 3
+    expect(st.bitkaStav?.pohorsenieZostava[0]).toBe(9);
+    st = apply(data, st, { type: "pohorsenie", elderId: id }, 0).state; // 0 → 3, na žltú súpera už nič neostane
     expect(st.starsi.find((x) => x.elderId === id)?.marker).toBe(3);
   });
 });
@@ -195,9 +196,9 @@ describe("v5 bod 5 a v6: scorecardy nesú len priazeň", () => {
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].abstakyZiskane).toBe(2);
     // Viac nerestí → Absťák späť do zásoby, získané ostávajú.
-    const s2 = predKoncomBitky(82, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 1 }), 0, { nerestiTotoKolo: 3, abstakyZiskane: 2, priznane: [inst("abstak")], doberaci: kusy(4, "pijan") }));
+    const s2 = predKoncomBitky(82, (x) => sHracom(sHracom(x, 1, { nerestiTotoKolo: 1 }), 0, { nerestiTotoKolo: 3, abstakyZiskane: 2, abstaky: 1, doberaci: kusy(4, "pijan") }));
     const po2 = apply(data, s2, { type: "cintorin", uid: null }, 0).state;
-    expect(po2.hraci[0].priznane.some((k) => k.defId === "abstak")).toBe(false);
+    expect(po2.hraci[0].abstaky).toBe(0);
     expect(po2.hraci[0].abstakyZiskane).toBe(2);
     // Klient vidí počítadlo oboch (Absťák sa priznáva verejne).
     expect(viewFor(data, po2, 1).hraci[0].abstakyZiskane).toBe(2);
@@ -257,7 +258,7 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
   it("Bitkár: +1 / +2 / +3 tuhého (nie dvojnásobok)", () => {
     const s0 = setupSBalickom(data, 91);
     for (const sila of [1, 2, 3] as const) {
-      expect(poskodenieBitky(data, sPriaznou(s0, "BITKAR", 0, sila), [{}, {}], [0, 0]).tuhe).toEqual([sila, 0]);
+      expect(poskodenieBitky(data, sPriaznou(s0, "BITKAR", 0, sila), [{}, {}]).tuhe).toEqual([sila, 0]);
     }
   });
 
@@ -269,8 +270,7 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
 
   it("Exekútor (Michal 2026-10-28): súperova priazeň zhorí pri exekúcii navyše toľko Dlhov, aká je sila", () => {
     const s0 = sPriaznou(setupSBalickom(data, 93), "EXEKUTOR", 1, 2);
-    const dlhy = (n: number) => Array.from({ length: n }, (_, i) => ({ uid: 930000 + i, defId: "dlh", leftLayout: 0, rightLayout: 0 }));
-    const s = { ...s0, hraci: [{ ...s0.hraci[0], priznane: dlhy(4) }, { ...s0.hraci[1], priznane: dlhy(4) }] } as typeof s0;
+    const s = { ...s0, hraci: [{ ...s0.hraci[0], dlhy: 4 }, { ...s0.hraci[1], dlhy: 4 }] } as typeof s0;
     // Hráč 0 (súper má priazeň sily 2): 2 + 2; hráč 1: polovica nahor.
     expect(prahyHraca(data, s, 0).exekucia).toBe(4);
     expect(prahyHraca(data, s, 1).exekucia).toBe(2);
@@ -281,15 +281,15 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     s = sPriaznou(sPriaznou(sPriaznou(s, "ALKOHOLIK", 0, 3), "UZERNIK", 0, 3), "NEPRAJNIK", 0, 3);
     expect(prahyHraca(data, s, 0).cirhoza).toBe(KONSTANTY.PRAH_CIRHOZY_ZAKLAD);
     expect(prahyHraca(data, s, 0).dlh).toBe(KONSTANTY.PRAH_DLHU_ZAKLAD);
-    expect(rozpisPoskodenia(data, s, [{}, {}], [0, 0])[0].makkeStrop).toBe(0);
+    expect(rozpisPoskodenia(data, s, [{}, {}])[0].makkeStrop).toBe(0);
   });
 
   it("Kmotor (Úžerník): po bitke zmizne 1 / 2 / 3 priznaných Dlhov, bez Dlhu nič", () => {
-    const s = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { priznane: kusy(3, "dlh"), doberaci: kusy(4, "pijan") }));
+    const s = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { dlhy: 3, doberaci: kusy(4, "pijan") }));
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
-    expect(po.hraci[0].priznane.filter((k) => k.defId === "dlh")).toHaveLength(1);
-    const bez = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { priznane: [], doberaci: kusy(4, "pijan") }));
-    expect(apply(data, bez, { type: "cintorin", uid: null }, 0).state.hraci[0].priznane).toHaveLength(0);
+    expect(po.hraci[0].dlhy).toBe(1);
+    const bez = predKoncomBitky(95, (x) => sHracom(sPriaznou(x, "UZERNIK", 0, 2), 0, { dlhy: 0, doberaci: kusy(4, "pijan") }));
+    expect(apply(data, bez, { type: "cintorin", uid: null }, 0).state.hraci[0].dlhy).toBe(0);
   });
 
   it("Fajčiar: +1 / +2 / +3 cigarety po výbere zo šenku", () => {

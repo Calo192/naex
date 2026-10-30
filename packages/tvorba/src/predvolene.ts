@@ -12,14 +12,16 @@ import type { AkciaDef, Kategoria, KlucoveSlovo } from "./typy.ts";
  * Vízia. Server nimi pri štarte prepíše staré databázy (zjednotNazvyAkcii).
  * Popisy Dlhu a Poškodenia pečene sú už podľa M23 (verejný dlh, 2026-10-21),
  * Dlh podľa pravidiel v6 s číslami z jadra (Michal 2026-10-26) — staré
- * databázy ich dostanú z dorovnajSoSeedom (len s novou značkou).
+ * databázy ich dostanú z dorovnajSoSeedom (len s novou značkou). Akcia s kľúčom
+ * Dlh sa od v8.2 volá Hazard (Michal 2026-10-30) — názov v starej databáze
+ * dorovnajSoSeedom nemení (len popis), premenuje ho admin v tvorcovi.
  */
 export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: string; readonly popis: string }[] = [
   {
     kluc: "Dlh",
-    nazov: "Dlh",
+    nazov: "Hazard",
     popis:
-      `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — hneď sa prizná. ` +
+      `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — je hneď priznaný (počítadlo, nie karta). ` +
       "Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov, " +
       "so súperovou priazňou Exekútora o 1 / 2 / 3 viac; pri remíze v bitke prehráva, kto má viac priznaných Dlhov.",
   },
@@ -53,9 +55,9 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Rana", "Rana", "1 tuhé poškodenie."),
   A("Pecka", "Pecka", "2 tuhé poškodenia."),
   A("Petelica", "Petelica", "3 tuhé poškodenia."),
-  A("Povera", "Povera", "Mäkké poškodenie do výšky súperovho priznaného dlhu. So súperovou Vierou sa ruší 1 : 1."),
+  A("Povera", "Povera", "Poškodzuje: mäkké poškodenie proti súperovým priznaným Dlhom (najviac toľko, koľko ich má). So súperovou Vierou sa ruší 1 : 1."),
   A("Viera", "Viera", "Znižuje súperovo tuhé poškodenie o 1 za kus; Veriaci pridá Vieru navyše +1 / +2 / +3. So súperovou Poverou sa ruší 1 : 1."),
-  A("Pohoršenie", "Pohoršenie", "Posunie marker ľubovoľného staršieho o 1 k súperovi alebo k sebe — priazeň sa mení hneď, vyhodnocuje sa ako prvé, bez ohľadu na výsledok bitky."),
+  A("Pohoršenie", "Pohoršenie", "Bod na posun markera ľubovoľného staršieho k súperovi alebo k sebe: pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4. Vyberieš staršieho a smer, marker ide, kým Pohoršenia stačia — priazeň sa mení hneď, vyhodnocuje sa ako prvé, bez ohľadu na výsledok bitky."),
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),

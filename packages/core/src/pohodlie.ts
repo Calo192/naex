@@ -18,10 +18,8 @@ export function navrhPrebytku(data: GameData, view: ClientState): { readonly kro
   const b = view.bitkaStav;
   const ja = view.ja;
   if (view.faza !== "bitka" || b === null || b.krok !== "prebytok" || b.caka !== ja || !view.mozemHrat) return null;
-  // Od v7 stojí posun markera vždy 1 (Miňištrant ho už nezdražuje).
-  const cena = 1;
   if (b.prebytokDrzi === null) return null;
-  const { kroky } = hltavyPrebytok(data, view, b.prebytokDrzi, ja, b.prebytokZostava, cena);
+  const { kroky } = hltavyPrebytok(data, view, b.prebytokDrzi, ja, b.prebytokZostava);
   if (kroky.length === 0) return null;
   return { kroky, prikaz: { type: "tah", kroky: kroky.map((elderId) => ({ type: "prebytok", elderId })) } };
 }

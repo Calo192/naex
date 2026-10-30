@@ -163,7 +163,7 @@ describe("cigarety porazenému za prebytok", () => {
         damage: { tuhe: [5, 0], makke: [0, 0], celkove: [5, 0], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] },
         vitaz: 0,
         prebytokDrzi: 0,
-        prebytokZostava: 3,
+        prebytokZostava: 4,
         prebytokPosunute: [],
         benzinkaZostava: [0, 0],
 
@@ -174,8 +174,9 @@ describe("cigarety porazenému za prebytok", () => {
     } as GameState;
     const cig = s.hraci[1].cigarety;
     // v8: prebytok víťaza rozdeľuje porazený (hráč 2).
+    // v8.2: prvý starší ide zo stredu o dve polia (1 + 2), zvyšok 1 na druhého.
     let t = apply(data, { ...s, bitkaStav: { ...s.bitkaStav!, caka: 1 } }, { type: "prebytok", elderId: e1!.elderId }, 1).state;
-    t = apply(data, t, { type: "prebytok", elderId: e1!.elderId }, 1).state;
+    expect(t.starsi[0]!.marker).toBe(5);
     t = apply(data, t, { type: "prebytok", elderId: e2!.elderId }, 1).state;
     // Bitka sa dohrá sama (ostatné kroky sú hotové) — porazený dostane 2 cigarety.
     expect(t.hraci[1].cigarety - cig).toBe(2);

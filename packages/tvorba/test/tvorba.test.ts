@@ -106,7 +106,7 @@ describe("tvorba — export a import TXT", () => {
   it("export → import zachová karty", () => {
     const txt = exportTxt(navrhy, PREDVOLENE_AKCIE, new Date(2026, 9, 10, 12, 0));
     expect(txt).toContain("CARD 1: ");
-    expect(txt).toContain("Actions: Dlh x2");
+    expect(txt).toContain("Actions: Hazard x2");
     const { karty, nezname } = importTxt(txt, PREDVOLENE_AKCIE);
     expect(nezname).toEqual([]);
     expect(karty.length).toBe(navrhy.length);

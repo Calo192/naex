@@ -82,8 +82,8 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
     return n.zadlzenie + n.zadlzenieZoStola > 0 ? ANO : null;
   },
 
-  // Dlh sa hneď prizná — prvý v priznaných je prvý Dlh hráča.
-  dlh: (_d, v, ja) => (v.hraci[ja].priznane.some((k) => k.defId === "dlh") ? ANO : null),
+  // Dlh je hneď priznaný (počítadlo) — prvý je prvý Dlh hráča.
+  dlh: (_d, v, ja) => (v.hraci[ja].dlhy > 0 ? ANO : null),
 
   "pas-cigarety": (_d, v, ja) => {
     if (!naMojomTahuVZhromazdeni(v, ja) || v.zhromazdenieStav === null) return null;

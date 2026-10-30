@@ -15,7 +15,6 @@ export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
 };
 
 const spakov = (n: number): string => (n === 1 ? "špak" : n < 5 ? "špaky" : "špakov");
-const posunov = (n: number): string => (n === 1 ? "posun" : n < 5 ? "posuny" : "posunov");
 
 /** Riadok priazne pod stupnicou: komu a krátky účinok — bez priazne účinok pri +1 (Michal 2026-10-23). */
 export function riadokPriazne(fav: Favour, komu: string | null, sila: number): string {
@@ -106,9 +105,10 @@ export function nahladStrachu(ty: number, su: number, menoSupera: string): strin
   return `za strach pri ďalšej výhre ${ty > 0 ? `ty +${ty}` : `${menoSupera} +${su}`}`;
 }
 
-/** Pokyn v hlavičke línie počas Prebytku: koľko posunov ešte zostáva. */
-export function pokynPrebytku(zostava: number, cena: number): string {
-  const n = cena > 0 ? Math.floor(zostava / cena) : 0;
-  const cenaText = cena > 1 ? `, posun stojí ${cena} (Miňištrant)` : "";
-  return `Prebytok ${zostava}${cenaText} — vystačí na ${n} ${posunov(n)}. Prejdi myšou na staršieho: riadky pod stupnicou ukážu stav po posune.`;
+/** Cena posunu markera o pole (v8.2, Michal 2026-10-30) — Pohoršenie aj prebytok. */
+export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4";
+
+/** Pokyn v hlavičke línie počas Prebytku (v8.2): vyberá sa len starší, marker ide, kým zvyšok stačí. */
+export function pokynPrebytku(zostava: number): string {
+  return `Prebytok ${zostava} — vyber staršieho, marker pôjde tak ďaleko, ako zvyšok stačí (${CENA_POLA}). Prejdi myšou na staršieho: riadky pod stupnicou ukážu stav po posune.`;
 }

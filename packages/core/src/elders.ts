@@ -165,7 +165,8 @@ export function cenaPatronatu(elder: Pick<ElderState, "marker">): { readonly cig
 }
 
 /**
- * Posun markera o jedno pole k hráčovi `smerK` (prebytok aj Pohoršenie, v6).
+ * Posun markera o jedno pole k hráčovi `smerK` (Kšeft Predsedovej vily, Kapybara;
+ * Pohoršenie a prebytok od v8.2 cez posunZaBody).
  * Zamknutie krajnej pozície sa ruší (Michal 2026-10-26): na červenú smie marker
  * aj viac posunmi v jednom kole a z červenej ho smie súper odtlačiť. Vracia
  * novú pozíciu, alebo null, keď je marker už na kraji v tom smere.
@@ -174,6 +175,55 @@ export function posunMarker(elder: Pick<ElderState, "marker">, smerK: PlayerId):
   const pos = elder.marker;
   if (pos === MARKER_KRAJ[smerK]) return null;
   return (smerK === 0 ? pos - 1 : pos + 1) as MarkerPos;
+}
+
+/**
+ * Cena posunu markera o jedno pole z `z` na susedné `na` za Pohoršenie či prebytok
+ * (v8.2, Michal 2026-10-30): smerom von zo stredu toľko, aká je cieľová zóna —
+ * stred → žltá 1, žltá → oranžová 2, oranžová → červená 3 (zo stredu na červenú 6);
+ * smerom k stredu o 1 viac — červená → oranžová 4, oranžová → žltá 3, žltá → stred 2.
+ */
+export function cenaKroku(z: MarkerPos, na: MarkerPos): number {
+  const zo = STUPNICA_ZONY[z];
+  const doZony = STUPNICA_ZONY[na];
+  return doZony > zo ? doZony : zo + 1;
+}
+
+/** Kam sa marker dostane za body a koľko to stojí (posunZaBody). */
+export interface PosunZaBody {
+  readonly marker: MarkerPos;
+  readonly cena: number;
+  readonly kroky: number;
+}
+
+/**
+ * Posun za body (v8.2): hráč vyberá len staršieho a smer, nie počet polí —
+ * marker ide k hráčovi `smerK`, kým zvyšok bodov stačí na ďalší krok (cenaKroku)
+ * a kým nie je na kraji. null, keď nevyjde ani jeden krok.
+ */
+export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, body: number): PosunZaBody | null {
+  let marker = elder.marker;
+  let cena = 0;
+  let kroky = 0;
+  for (let dalsi = posunMarker({ marker }, smerK); dalsi !== null; dalsi = posunMarker({ marker }, smerK)) {
+    const c = cenaKroku(marker, dalsi);
+    if (cena + c > body) break;
+    cena += c;
+    marker = dalsi;
+    kroky++;
+  }
+  return kroky === 0 ? null : { marker, cena, kroky };
+}
+
+/** Cena posunu markera z pozície `z` o `d` polí (záporné k hráčovi 0, kladné k hráčovi 1). */
+export function cenaPosunuOPoli(z: MarkerPos, d: number): number {
+  let cena = 0;
+  for (let m = z, i = 0; i < Math.abs(d); i++) {
+    const na = (d < 0 ? m - 1 : m + 1) as MarkerPos;
+    cena += cenaKroku(m, na);
+    m = na;
+  }
+  return cena;
 }
 
 /** Scorecard, na ktorom starší leží; chýbajúci je chyba dát, nie hry. */
