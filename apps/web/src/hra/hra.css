@@ -6704,8 +6704,9 @@ button.lsr-pole.ciel:focus-visible {
   gap: 2px;
 }
 
+/* Priazeň v pivnom jantári ako poldeci — ladí s krígľom (Michal 2026-10-30). */
 .starsi-dlazdica.hore .velke-cislo {
-  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+  color: var(--akcent);
 }
 
 .starsi-dlazdica.dole .velke-cislo {
@@ -6729,7 +6730,7 @@ button.lsr-pole.ciel:focus-visible {
 }
 
 .zdroj-starsi .starsi-priazen {
-  color: color-mix(in oklab, var(--cervena-svetla) 70%, var(--text));
+  color: var(--akcent);
 }
 
 .stupienky {
