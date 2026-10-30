@@ -102,7 +102,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
       aria-modal="true"
       aria-label={`Bitka: ty ${cislo[ja]}, ${mena[su]} ${cislo[su]}`}
       onClick={(e) => {
-        if (!(e.target as HTMLElement).closest(".rk-dalej")) dobehni();
+        if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-rezim")) dobehni();
       }}
       onContextMenu={(e) => {
         e.preventDefault();

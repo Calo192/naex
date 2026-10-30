@@ -137,51 +137,347 @@ function Cip({ trieda, title, children }: { readonly trieda: string; readonly ti
 }
 
 // ---------------------------------------------------------------------------
-// Podrobný náhľad (Michal 2026-10-30): zjednodušený ukáže súčet a pruh, podrobný (prepínač
-// v hlavičke alebo prejdenie myšou nad riadok) ikony akcií za sebou — aktívne, zdvojené ×2
-// aj zrušené (sivé, dali 0). Posilnenie a Odpor sa neukazujú, sú to modifikátory.
+// Režimy rekapitulácie (Michal 2026-10-30): súhrn (súčet a pruh), podrobne (ikony akcií za
+// sebou — aktívne, zdvojené ×2 aj zrušené sivé; bez viet) a text (čo sa stalo, jedna
+// udalosť na riadok, s ikonami namiesto slov). Posilnenie a Odpor sa v podrobnom
+// neukazujú, sú to modifikátory. Prejdenie myšou nad riadok ukáže ikony aj v súhrne.
 
+export type RezimRekapitulacie = "suhrn" | "podrobne" | "text";
+
+const KLUC_REZIM = "naex-rekap-rezim";
+/** Prepínač podrobne/súčty spred troch režimov — „1“ znamená podrobne. */
 const KLUC_PODROBNE = "naex-rekap-podrobne";
 
-/** Prepínač náhľadu — prehliadač si ho pamätá aj pre ďalšie rekapitulácie. */
-function usePodrobne(): readonly [boolean, () => void] {
-  const [podrobne, setPodrobne] = useState(() => localStorage.getItem(KLUC_PODROBNE) === "1");
-  const prepni = (): void => {
-    localStorage.setItem(KLUC_PODROBNE, podrobne ? "0" : "1");
-    setPodrobne(!podrobne);
-  };
-  return [podrobne, prepni];
+const REZIMY: readonly { readonly id: RezimRekapitulacie; readonly nazov: string; readonly title: string }[] = [
+  { id: "suhrn", nazov: "súhrn", title: "Súčty a pruhy" },
+  { id: "podrobne", nazov: "podrobne", title: "Ikony jednotlivých akcií: zdvojené ×2, zrušené sivé" },
+  { id: "text", nazov: "text", title: "Čo sa stalo, udalosť po udalosti" },
+];
+
+/** Uložený režim; bez neho platí starý prepínač podrobne. */
+export function rezimZoZaznamu(rezim: string | null, starePodrobne: string | null): RezimRekapitulacie {
+  if (rezim === "suhrn" || rezim === "podrobne" || rezim === "text") return rezim;
+  return starePodrobne === "1" ? "podrobne" : "suhrn";
 }
 
-function PrepinacNahladu({ podrobne, onPrepni }: { readonly podrobne: boolean; readonly onPrepni: () => void }) {
+// Súkromné okno prehliadača či plný disk localStorage odmietne — režim potom platí len do zavretia.
+function citajUlozene(kluc: string): string | null {
+  try {
+    return localStorage.getItem(kluc);
+  } catch {
+    return null;
+  }
+}
+
+/** Režim rekapitulácie — prehliadač si ho pamätá aj pre ďalšie bitky a Pitky. */
+function useRezim(): readonly [RezimRekapitulacie, (r: RezimRekapitulacie) => void] {
+  const [rezim, setRezim] = useState(() => rezimZoZaznamu(citajUlozene(KLUC_REZIM), citajUlozene(KLUC_PODROBNE)));
+  const nastav = (r: RezimRekapitulacie): void => {
+    try {
+      localStorage.setItem(KLUC_REZIM, r);
+    } catch {
+      // pamätá sa len v tejto rekapitulácii
+    }
+    setRezim(r);
+  };
+  return [rezim, nastav];
+}
+
+function PrepinacRezimu({ rezim, onRezim }: { readonly rezim: RezimRekapitulacie; readonly onRezim: (r: RezimRekapitulacie) => void }) {
   return (
-    <button
-      type="button"
-      className="rk-prepni"
-      aria-pressed={podrobne}
-      onClick={onPrepni}
-      title={podrobne ? "Späť na súčty a pruhy" : "Ikony jednotlivých akcií: zdvojené ×2, zrušené sivé (jeden riadok ukáže aj prejdenie myšou)"}
-    >
-      {podrobne ? "súčty" : "podrobne"}
-    </button>
+    <span className="rk-rezim" role="group" aria-label="Režim rekapitulácie">
+      {REZIMY.map((x) => (
+        <button key={x.id} type="button" aria-pressed={rezim === x.id} onClick={() => onRezim(x.id)} title={x.title}>
+          {x.nazov}
+        </button>
+      ))}
+    </span>
   );
 }
 
-/** Hlavička tabuľky: ty · akcia · súper; prepínač náhľadu v pravom rohu tabuľky. */
-function HlavickaRekapitulacie({ menoSupera, podrobne, onPrepni }: { readonly menoSupera: string; readonly podrobne: boolean; readonly onPrepni: () => void }) {
+/** Hlavička tabuľky: ty · akcia · súper; prepínač režimu v pravom rohu tabuľky. */
+function HlavickaRekapitulacie({ menoSupera, rezim, onRezim }: { readonly menoSupera: string; readonly rezim: RezimRekapitulacie; readonly onRezim: (r: RezimRekapitulacie) => void }) {
   return (
     <div className="rk-hlava" role="row">
+      {/* Text nemá stĺpce — kto čo urobil, hovorí každý riadok. */}
       <span className="l" role="columnheader">
-        ty
+        {rezim === "text" ? "" : "ty"}
       </span>
       <span className="s" role="columnheader">
-        akcia
+        {rezim === "text" ? "čo sa stalo" : "akcia"}
       </span>
       <span className="r" role="columnheader">
-        {menoSupera}
+        {rezim === "text" ? "" : menoSupera}
       </span>
-      <PrepinacNahladu podrobne={podrobne} onPrepni={onPrepni} />
+      <PrepinacRezimu rezim={rezim} onRezim={onRezim} />
     </div>
+  );
+}
+
+/** Akcie, ktoré NA EX na kartách hráča zdvojilo či zrušilo, a koľko z každej (v poradí kariet). */
+export function akcieNaex(naex: NaexRekapitulacie, kto: PlayerId, co: "akcieZdvojene" | "akcieZrusene"): [Action, number][] {
+  const out = new Map<Action, number>();
+  for (const x of naex.karty) {
+    if (x.majitel !== kto) continue;
+    for (const [a, n] of Object.entries(x[co] ?? {}) as [Action, number][]) out.set(a, (out.get(a) ?? 0) + n);
+  }
+  return [...out];
+}
+
+/** Ikony akcií s počtom (Rana ×1, Poldeci ×1) — riadky NA EX ×2 a ✕ a textový režim. */
+function IkonyPoctu({
+  akcie,
+  kto,
+  ja,
+  zrusene = false,
+  piktogramy,
+}: {
+  readonly akcie: readonly (readonly [Action, number])[];
+  readonly kto: PlayerId;
+  readonly ja: PlayerId;
+  readonly zrusene?: boolean;
+  readonly piktogramy: PiktogramyRekapitulacie;
+}) {
+  return (
+    <span className="rk-ikony">
+      {akcie.map(([a, n]) => (
+        <span key={a} className="rk-ik-pocet" title={`${piktogramy.nazov(a)} ×${n}`}>
+          <span className={`rk-ik ${kto === ja ? "ja" : "su"}${zrusene ? " zrusena" : ""}`}>{piktogramy.ikona(a)}</span>
+          <small>×{n}</small>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** Detail riadku NA EX v podrobnom náhľade; undefined pri starších záznamoch bez akcií. */
+function detailNaex(naex: NaexRekapitulacie, k: "zdvojilo" | "zrusilo", kto: PlayerId, ja: PlayerId, piktogramy: PiktogramyRekapitulacie): ReactNode {
+  const akcie = akcieNaex(naex, kto, k === "zdvojilo" ? "akcieZdvojene" : "akcieZrusene");
+  return akcie.length === 0 ? undefined : <IkonyPoctu akcie={akcie} kto={kto} ja={ja} zrusene={k === "zrusilo"} piktogramy={piktogramy} />;
+}
+
+// ---------------------------------------------------------------------------
+// Textový režim: jedna udalosť = jeden riadok — ikona druhu, kto (vo farbe hráča) a čo,
+// ikonami akcií a zvýraznenými menami kariet. Model je čistý, aby sa dal otestovať.
+
+/** Kus riadku textu: slovo, tučné číslo, karta (vo farbe majiteľa), akcie s počtom. */
+export type CastTextu =
+  | { readonly t: "text"; readonly s: string }
+  | { readonly t: "b"; readonly s: string }
+  | { readonly t: "karta"; readonly defId: string; readonly majitel: PlayerId }
+  | { readonly t: "akcie"; readonly akcie: readonly (readonly [Action, number])[]; readonly zrusene?: boolean; readonly kto?: PlayerId }
+  | { readonly t: "kliatba"; readonly akcia: Action }
+  | { readonly t: "hlaska"; readonly s: string };
+
+export type DruhRiadkuTextu = "naex" | "odpoved" | "tuhe" | "viera" | "povera" | "pohorsenie" | "dlh" | "pecen" | "cigarety" | "vizia" | "zaverecna";
+
+export interface RiadokTextu {
+  readonly druh: DruhRiadkuTextu;
+  readonly kto: PlayerId;
+  readonly casti: readonly CastTextu[];
+  /** Krok vyhodnotenia Pitky, v ktorom riadok nabehne (bitka: vždy 0). */
+  readonly krok: number;
+}
+
+const text = (s: string): CastTextu => ({ t: "text", s });
+const tucne = (n: number | string): CastTextu => ({ t: "b", s: `${n}` });
+const akcieZMapy = (m: Readonly<Partial<Record<Action, number>>>): [Action, number][] => (Object.entries(m) as [Action, number][]).filter(([, n]) => n > 0);
+
+/** NA EX a odpovede na neho — prvé v oboch rekapituláciách. */
+function riadkyNaex(naex: NaexRekapitulacie, odpovede: readonly OdpovedNaNaex[], ja: PlayerId): RiadokTextu[] {
+  const out: RiadokTextu[] = naex.karty.map((x) => {
+    const zdvojene = akcieZMapy(x.akcieZdvojene ?? {});
+    const zrusene = akcieZMapy(x.akcieZrusene ?? {});
+    const casti: CastTextu[] = [{ t: "karta", defId: x.defId, majitel: x.majitel }];
+    // Starší záznam bez rozpisu akcií: aspoň počty.
+    if (x.akcieZdvojene === undefined && x.zdvojilo > 0) casti.push(text("×2"), tucne(x.zdvojilo));
+    if (x.akcieZrusene === undefined && x.zrusilo > 0) casti.push(text("✕"), tucne(x.zrusilo));
+    if (zdvojene.length > 0) casti.push(text("×2"), { t: "akcie", akcie: zdvojene, kto: x.majitel });
+    if (zrusene.length > 0) casti.push(text("✕"), { t: "akcie", akcie: zrusene, zrusene: true, kto: x.majitel });
+    if (x.zdvojilo + x.zrusilo === 0) casti.push(text("bez aktívnych akcií"));
+    return { druh: "naex", kto: x.dal, casti, krok: 0 };
+  });
+  for (const o of odpovede) {
+    const su: PlayerId = o.hrac === 0 ? 1 : 0;
+    const strana = o.ciel === "vlastna" ? o.hrac : su;
+    out.push({
+      druh: "odpoved",
+      kto: o.hrac,
+      casti: o.defId === null ? [text("odpoveď: žiadna")] : [text("odpoveď"), { t: "karta", defId: o.defId, majitel: o.hrac }, text(strana === ja ? "na tvoju stranu" : o.hrac === ja ? "na súperovu stranu" : "na svoju stranu")],
+      krok: 0,
+    });
+  }
+  return out;
+}
+
+function riadkyZaverecnych(zaverecne: readonly ZaverecnaOdhalena[], krok: number): RiadokTextu[] {
+  return zaverecne.map((z) => {
+    const akcie = akcieZMapy(z.akcie);
+    const casti: CastTextu[] = [text("Záverečná"), { t: "karta", defId: z.defId, majitel: z.majitel }];
+    if (akcie.length > 0) casti.push(text("dala"), { t: "akcie", akcie });
+    for (const e of z.efekty) casti.push({ t: "hlaska", s: e });
+    if (akcie.length === 0 && z.efekty.length === 0) casti.push(text("bez aktívnych akcií a efektu"));
+    return { druh: "zaverecna", kto: z.majitel, casti, krok };
+  });
+}
+
+/** Riadky textového režimu Pitky v poradí vyhodnotenia (PRAVIDLA §7): NA EX, Dlh, pečeň, cigarety, Vízia, Záverečné. */
+export function riadkyTextuPitky(r: RekapitulaciaPitky, odpovede: readonly OdpovedNaNaex[], ja: PlayerId): RiadokTextu[] {
+  const su: PlayerId = ja === 0 ? 1 : 0;
+  const out = riadkyNaex(r.naex, odpovede, ja);
+  for (const p of [ja, su]) {
+    const n = zadlzeniePitky(r, p);
+    if (n === 0) continue;
+    const prah = prahDlhuPitky(r, p);
+    const dlhy = r.zadlzenie.dlhy[p];
+    const zvysok = n - dlhy * prah;
+    out.push({
+      druh: "dlh",
+      kto: p,
+      casti: [text("zadĺženie"), tucne(n), text(`/ ${prah} →`), tucne(`+${dlhy}`), { t: "kliatba", akcia: "Dlh" }, ...(zvysok > 0 ? [text(`· ${zvysok} ostáva na účte`)] : [])],
+      krok: 1,
+    });
+  }
+  for (const p of [ja, su]) {
+    const n = pecenPitky(r, p);
+    if (n === 0) continue;
+    const cir = r.pecen.cirhozy[p];
+    const zvysok = n - cir * r.pecen.prah[p];
+    out.push({
+      druh: "pecen",
+      kto: p,
+      casti: [text("pečeň"), tucne(n), text(`/ ${r.pecen.prah[p]} →`), tucne(`+${cir}`), { t: "kliatba", akcia: "PoškodeniePečene" }, ...(zvysok > 0 ? [text(`· ${zvysok} prepadne`)] : [])],
+      krok: 2,
+    });
+  }
+  for (const p of [ja, su]) {
+    const c = r.cigarety;
+    if (c.akcie[p] + c.cigorky[p] === 0) continue;
+    const casti: CastTextu[] = [tucne(`+${c.zisk[p]}`), { t: "akcie", akcie: [["Cigareta", c.akcie[p]]] }];
+    if (c.obmedzenie[p] > 0) casti.push(text("−"), { t: "akcie", akcie: [["Obmedzenie", c.obmedzenie[p]]], zrusene: true });
+    if (c.cigorky[p] > 0) casti.push(text(`+ ${c.cigorky[p]} Cigorky`));
+    out.push({ druh: "cigarety", kto: p, casti, krok: 3 });
+  }
+  for (const p of [ja, su]) {
+    if (r.vizia[p] === 0) continue;
+    out.push({ druh: "vizia", kto: p, casti: [text(p === ja ? "prezrieš" : "prezrie"), tucne(r.vizia[p]), text(r.vizia[p] === 1 ? "vrchnú kartu" : r.vizia[p] < 5 ? "vrchné karty" : "vrchných kariet")], krok: 3 });
+  }
+  return [...out, ...riadkyZaverecnych(r.zaverecne ?? [], 4)];
+}
+
+/** Riadky textového režimu bitky: tuhé, Viera a Povera, Pohoršenie, NA EX, Pitky kola, Záverečné. */
+export function riadkyTextuBitky(r: RekapitulaciaBitky, odpovede: readonly OdpovedNaNaex[], ja: PlayerId): RiadokTextu[] {
+  const su: PlayerId = ja === 0 ? 1 : 0;
+  const spolu = (xs: readonly PolozkaRekapitulacie[], p: PlayerId): number => xs.filter((x) => x.kto === p).reduce((a, x) => a + x.n, 0);
+  const out: RiadokTextu[] = [];
+  for (const p of [ja, su]) {
+    const akcie = AKCIE_TUHE.map((a): [Action, number] => [a, spolu(r.tuhe[a], p)]).filter(([, n]) => n > 0);
+    if (akcie.length > 0) out.push({ druh: "tuhe", kto: p, casti: [{ t: "akcie", akcie }, text("="), tucne(r.tuheSpolu[p]), text("tuhé")], krok: 0 });
+  }
+  for (const p of [ja, su]) {
+    const n = spolu(r.viera, p);
+    if (n === 0) continue;
+    const casti: CastTextu[] = [{ t: "akcie", akcie: [["Viera", n]] }];
+    if (r.zrusenaViera[p] > 0) casti.push(text("✕"), tucne(r.zrusenaViera[p]), text("s Poverou súpera"));
+    if (r.vieraUbera[p] > 0) casti.push(text("· zvyšná uberá"), tucne(r.vieraUbera[p]), text("tuhé"));
+    out.push({ druh: "viera", kto: p, casti, krok: 0 });
+  }
+  for (const p of [ja, su]) {
+    const n = spolu(r.povera, p);
+    if (n === 0) continue;
+    const casti: CastTextu[] = [{ t: "akcie", akcie: [["Povera", n]] }];
+    if (r.zrusenaPovera[p] > 0) casti.push(text("✕"), tucne(r.zrusenaPovera[p]), text("s Vierou súpera"));
+    if ((r.zvysnaPovera?.[p] ?? 0) > 0) casti.push(text("· zvyšné posunuli priazeň o"), tucne(r.zvysnaPovera[p]));
+    out.push({ druh: "povera", kto: p, casti, krok: 0 });
+  }
+  for (const p of [ja, su]) {
+    if (r.pohorsenie.spolu[p] > 0) out.push({ druh: "pohorsenie", kto: p, casti: [{ t: "akcie", akcie: [["Pohoršenie", r.pohorsenie.spolu[p]]] }], krok: 0 });
+  }
+  out.push(...riadkyNaex(r.naex, odpovede, ja));
+  const pk = r.pitkyKola;
+  if (pk !== null) {
+    for (const p of [ja, su]) {
+      const casti: CastTextu[] = [];
+      if (pk.dlhy[p] > 0) casti.push(tucne(`+${pk.dlhy[p]}`), { t: "kliatba", akcia: "Dlh" });
+      if (pk.cirhozy[p] > 0) casti.push(tucne(`+${pk.cirhozy[p]}`), { t: "kliatba", akcia: "PoškodeniePečene" });
+      if (casti.length > 0) out.push({ druh: "dlh", kto: p, casti: [text(`z ${pk.pocet === 1 ? "Pitky" : "Pitiek"} kola`), ...casti], krok: 0 });
+    }
+    out.push(...riadkyZaverecnych(pk.zaverecne ?? [], 0));
+  }
+  return out;
+}
+
+/** Ikona druhu udalosti na začiatku riadku. */
+const IKONA_DRUHU: Readonly<Record<DruhRiadkuTextu, Action | null>> = {
+  naex: "Poldeci",
+  odpoved: "Poldeci",
+  tuhe: "Rana",
+  viera: "Viera",
+  povera: "Povera",
+  pohorsenie: "Pohoršenie",
+  dlh: "Dlh",
+  pecen: "PoškodeniePečene",
+  cigarety: "Cigareta",
+  vizia: "Vízia",
+  zaverecna: null,
+};
+
+function TextRekapitulacie({
+  riadky,
+  ja,
+  mena,
+  menoKarty,
+  piktogramy,
+}: {
+  readonly riadky: readonly RiadokTextu[];
+  readonly ja: PlayerId;
+  readonly mena: readonly [string, string];
+  readonly menoKarty: (defId: string) => string;
+  readonly piktogramy: PiktogramyRekapitulacie;
+}) {
+  const hlaska = (s: string): string => rozlozRod(s, [null, null]).replace(/[Hh]ráč ([12])/g, (_, n: string) => (Number(n) - 1 === ja ? "ty" : (mena[Number(n) - 1] ?? `Hráč ${n}`)));
+  const kus = (c: CastTextu, i: number, kto: PlayerId): ReactNode => {
+    switch (c.t) {
+      case "text":
+        return <span key={i}>{c.s}</span>;
+      case "b":
+        return <b key={i}>{c.s}</b>;
+      case "karta":
+        return (
+          <span key={i} className={`rk-tr-karta ${c.majitel === ja ? "ja" : "su"}`} title={c.majitel === ja ? "tvoja karta" : `karta: ${mena[c.majitel]}`}>
+            {menoKarty(c.defId)}
+          </span>
+        );
+      case "akcie":
+        return <IkonyPoctu key={i} akcie={c.akcie} kto={c.kto ?? kto} ja={ja} zrusene={c.zrusene ?? false} piktogramy={piktogramy} />;
+      case "kliatba":
+        return <KartaKliatby key={i} ikona={piktogramy.ikona(c.akcia)} kto={kto === ja ? "ja" : "su"} />;
+      case "hlaska":
+        return (
+          <span key={i} className="rk-tr-hlaska">
+            {hlaska(c.s)}
+          </span>
+        );
+    }
+  };
+  if (riadky.length === 0) return null;
+  return (
+    <ol className="rk-text" role="row">
+      {riadky.map((x, i) => {
+        const ik = IKONA_DRUHU[x.druh];
+        const kto = x.kto === ja ? "ja" : "su";
+        return (
+          <li key={i} className={`rk-tr ${kto}`}>
+            <span className="rk-tr-druh" aria-hidden="true">
+              {ik === null ? <span className={`rk-tr-karticka ${kto}`} /> : piktogramy.ikona(ik)}
+              {x.druh === "odpoved" && <i>↩</i>}
+            </span>
+            <span className={`rk-tr-kto ${kto}`}>{x.kto === ja ? "ty" : mena[x.kto]}</span>
+            <span className="rk-tr-co">{x.casti.map((c, j) => kus(c, j, x.kto))}</span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -275,12 +571,15 @@ function ZaverecneRiadky({
   mena,
   menoKarty,
   piktogramy,
+  bezTextu = false,
 }: {
   readonly zaverecne: readonly ZaverecnaOdhalena[];
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly menoKarty: (defId: string) => string;
   readonly piktogramy: PiktogramyRekapitulacie;
+  /** Podrobný režim: karta a ikony, hlášky efektov len v tooltipe (vety patria textovému režimu). */
+  readonly bezTextu?: boolean;
 }) {
   const hlaska = (text: string): string => rozlozRod(text, [null, null]).replace(/[Hh]ráč ([12])/g, (_, n: string) => mena[Number(n) - 1] ?? `Hráč ${n}`);
   return (
@@ -290,7 +589,7 @@ function ZaverecneRiadky({
         const efekty = z.efekty.map(hlaska);
         return (
           <div key={z.uid} className={`rk-riadok rk-zaverecna${i === 0 ? " nova-skupina" : ""}`} role="row">
-            <span className="rk-zaverecna-text" role="cell">
+            <span className="rk-zaverecna-text" role="cell" title={bezTextu && efekty.length > 0 ? efekty.join(" ") : undefined}>
               <span className="rk-zaverecna-kto">Záverečná · {z.majitel === ja ? "tvoja" : mena[z.majitel]}:</span> <b>{menoKarty(z.defId)}</b> —{" "}
               {akcie.length > 0 && (
                 <span className="rk-zaverecna-akcie" title={akcie.map(([a, n]) => `${piktogramy.nazov(a)} ${n}`).join(" · ")}>
@@ -303,8 +602,8 @@ function ZaverecneRiadky({
                   ))}
                 </span>
               )}
-              {akcie.length > 0 && efekty.length > 0 && " · "}
-              {efekty.length > 0 ? efekty.join(" ") : akcie.length === 0 ? "žiadna jej akcia nebola aktívna, pri otočení bez efektu" : ""}
+              {!bezTextu && akcie.length > 0 && efekty.length > 0 && " · "}
+              {bezTextu ? null : efekty.length > 0 ? efekty.join(" ") : akcie.length === 0 ? "žiadna jej akcia nebola aktívna, pri otočení bez efektu" : ""}
             </span>
           </div>
         );
@@ -328,7 +627,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky): number {
 export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [] }: RekapBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
-  const [podrobne, prepni] = usePodrobne();
+  const [rezim, setRezim] = useRezim();
   const vid = (uid: number | null, w = vlna): boolean => hotovo || vlnaKarty(uid) <= w;
   const sucet = (xs: readonly PolozkaRekapitulacie[], kto: PlayerId, w = vlna): number => xs.filter((x) => x.kto === kto && vid(x.uid, w)).reduce((a, x) => a + x.n, 0);
   const konecne = (xs: readonly PolozkaRekapitulacie[], kto: PlayerId): number => xs.filter((x) => x.kto === kto).reduce((a, x) => a + x.n, 0);
@@ -344,12 +643,20 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
       .map((x) => `${x.dal === ja ? "tvoje" : "súperovo"} NA EX na ${kto === ja ? "tvojej karte" : "jeho karte"} ${menoKarty(x.defId)}: ${x[k]}`)
       .join(" · ");
 
-  const riadok = (kluc: string, xs: readonly PolozkaRekapitulacie[], stred: ReactNode, novaSkupina: boolean, title?: (kto: PlayerId) => string, akcia?: Action): ReactNode => {
+  const riadok = (
+    kluc: string,
+    xs: readonly PolozkaRekapitulacie[],
+    stred: ReactNode,
+    novaSkupina: boolean,
+    title?: (kto: PlayerId) => string,
+    akcia?: Action,
+    vlastnyDetail?: (kto: PlayerId) => ReactNode,
+  ): ReactNode => {
     // Riadok ukáže aj akcia, ktorú celú zrušili — v podrobnom náhľade sivé ikony, súčet „–“.
     const ikony = akcia === undefined ? undefined : r.akcie?.[akcia];
     if (!xs.some((x) => vid(x.uid)) && !(ikony ?? []).some((x) => vid(x.uid))) return null;
     const detail = (kto: PlayerId): ReactNode =>
-      ikony === undefined || akcia === undefined ? undefined : <IkonyAkcie akcia={akcia} xs={ikony} kto={kto} ja={ja} piktogramy={piktogramy} menoKarty={menoKarty} vid={(uid) => vid(uid)} />;
+      vlastnyDetail !== undefined ? vlastnyDetail(kto) : ikony === undefined || akcia === undefined ? undefined : <IkonyAkcie akcia={akcia} xs={ikony} kto={kto} ja={ja} piktogramy={piktogramy} menoKarty={menoKarty} vid={(uid) => vid(uid)} />;
     return (
       <div key={kluc} className={`rk-riadok${novaSkupina ? " nova-skupina" : ""}`} role="row">
         <Hodnota strana="l" n={sucet(xs, ja)} max={max} prirastok={prirastok(xs, ja)} title={title?.(ja)} detail={detail(ja)} />
@@ -361,28 +668,39 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
   const tuhe = AKCIE_TUHE.map((a: AkciaTuha, i) => riadok(a, r.tuhe[a], <Stred ikona={ikona(a)} nazov={nazov(a)} pod={`${i + 1} tuhé`} />, false, undefined, a));
   const poldeci = ikona("Poldeci");
   const pitky = r.pitkyKola;
+  const menaBitky = mena ?? (ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]);
+  // Textový režim nahradí riadky tabuľky vetami až po dobehnutí počítadla; súčet a špaky ostanú.
+  const tabulka = rezim !== "text";
 
   return (
     // Miesto pre všetky riadky od začiatku — línia nad tabuľkou neposkakuje, keď riadky nabiehajú.
-    <div className={`rekap${podrobne ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia bitky" style={{ "--rk-riadkov": riadkovRekapitulacieBitky(r) } as CSSProperties}>
-      <HlavickaRekapitulacie menoSupera={menoSupera} podrobne={podrobne} onPrepni={prepni} />
-      {tuhe}
-      <VieraPovera
-        r={r}
-        ja={ja}
-        menoSupera={menoSupera}
-        menoKarty={menoKarty}
-        piktogramy={piktogramy}
-        vid={vid}
-        max={max}
-        rusi={hotovo || vlna >= vlnaRusenia}
-        ucinkuje={hotovo || vlna >= vlnaUcinku}
-      />
-      {riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} />, true, undefined, "Pohoršenie")}
-      {hotovo && <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, mena ?? (ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]), menoKarty)} />}
-      {riadok("naex-x2", naexX2, <Stred ikona={<ZnakNaex znak="×2" ikona={poldeci} />} nazov="NA EX" pod="zdvojilo" />, true, (kto) => titulNaex("zdvojilo", kto))}
-      {riadok("naex-zrus", naexZrus, <Stred ikona={<ZnakNaex znak="✕" ikona={poldeci} />} nazov="NA EX" pod="zrušilo" />, naexX2.length === 0, (kto) => titulNaex("zrusilo", kto))}
-      {hotovo && pitky !== null && (
+    <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia bitky" style={{ "--rk-riadkov": riadkovRekapitulacieBitky(r) } as CSSProperties}>
+      <HlavickaRekapitulacie menoSupera={menoSupera} rezim={rezim} onRezim={setRezim} />
+      {rezim === "text" && !hotovo && (
+        <div className="rk-text-caka" role="row">
+          počíta sa…
+        </div>
+      )}
+      {rezim === "text" && hotovo && <TextRekapitulacie riadky={riadkyTextuBitky(r, odpovede, ja)} ja={ja} mena={menaBitky} menoKarty={menoKarty} piktogramy={piktogramy} />}
+      {tabulka && tuhe}
+      {tabulka && (
+        <VieraPovera
+          r={r}
+          ja={ja}
+          menoSupera={menoSupera}
+          menoKarty={menoKarty}
+          piktogramy={piktogramy}
+          vid={vid}
+          max={max}
+          rusi={hotovo || vlna >= vlnaRusenia}
+          ucinkuje={hotovo || vlna >= vlnaUcinku}
+        />
+      )}
+      {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} />, true, undefined, "Pohoršenie")}
+      {hotovo && rezim === "suhrn" && <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, menaBitky, menoKarty)} />}
+      {tabulka && riadok("naex-x2", naexX2, <Stred ikona={<ZnakNaex znak="×2" ikona={poldeci} />} nazov="NA EX" pod="zdvojilo" />, true, (kto) => titulNaex("zdvojilo", kto), undefined, (kto) => detailNaex(r.naex, "zdvojilo", kto, ja, piktogramy))}
+      {tabulka && riadok("naex-zrus", naexZrus, <Stred ikona={<ZnakNaex znak="✕" ikona={poldeci} />} nazov="NA EX" pod="zrušilo" />, naexX2.length === 0, (kto) => titulNaex("zrusilo", kto), undefined, (kto) => detailNaex(r.naex, "zrusilo", kto, ja, piktogramy))}
+      {tabulka && hotovo && pitky !== null && (
         <>
           <div className="rk-sekcia" role="row">
             z Pitiek kola · {pitky.pocet} {pitky.pocet === 1 ? "Pitka" : pitky.pocet < 5 ? "Pitky" : "Pitiek"}
@@ -410,13 +728,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
             );
           })}
           {(pitky.zaverecne?.length ?? 0) > 0 && (
-            <ZaverecneRiadky
-              zaverecne={pitky.zaverecne ?? []}
-              ja={ja}
-              mena={mena ?? (ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"])}
-              menoKarty={menoKarty}
-              piktogramy={piktogramy}
-            />
+            <ZaverecneRiadky zaverecne={pitky.zaverecne ?? []} ja={ja} mena={menaBitky} menoKarty={menoKarty} piktogramy={piktogramy} bezTextu={rezim === "podrobne"} />
           )}
         </>
       )}
@@ -639,7 +951,7 @@ function StredPitky({ ikona, title }: { readonly ikona: ReactNode; readonly titl
 export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [] }: RekapitulaciaPitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
-  const [podrobne, prepni] = usePodrobne();
+  const [rezim, setRezim] = useRezim();
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   const zaverecne = r.zaverecne ?? [];
   // Krok: 0 NA EX, 1 Dlh, 2 pečeň, 3 cigarety a Vízia, 4 odhalené Záverečné (PRAVIDLA §7 Vyhodnotenie Pitky).
@@ -665,6 +977,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
   });
 
   const vid = (k: number): boolean => hotovo || krok >= k;
+  const tabulka = rezim !== "text";
   const naex = r.naex.karty.length > 0;
   const maxNaex = Math.max(1, ...r.naex.zdvojilo, ...r.naex.zrusilo);
   const titulNaex = (k: "zdvojilo" | "zrusilo", kto: PlayerId): string =>
@@ -781,7 +1094,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
       aria-modal="true"
       aria-label={`${nadpis}: rekapitulácia`}
       onClick={(e) => {
-        if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-prepni")) dobehni();
+        if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-rezim")) dobehni();
       }}
     >
       <div className="pocitadlo-scena">
@@ -790,11 +1103,12 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
           <span className="pocitadlo-vyhodnotena">vyhodnotená</span>
           <span className="pocitadlo-mena">ty · {mena[su]}</span>
         </div>
-        <div className={`rekap${podrobne ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia Pitky">
-          <HlavickaRekapitulacie menoSupera={mena[su]} podrobne={podrobne} onPrepni={prepni} />
-          {/* Čo sa stalo s NA EX — prvé a slovami, ešte pred číslami. */}
-          <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, mena, menoKarty)} />
-          {naex && vid(0) && (
+        <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia Pitky">
+          <HlavickaRekapitulacie menoSupera={mena[su]} rezim={rezim} onRezim={setRezim} />
+          {!tabulka && <TextRekapitulacie riadky={riadkyTextuPitky(r, odpovede, ja).filter((x) => vid(x.krok))} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} />}
+          {/* Súhrn: čo sa stalo s NA EX — prvé a slovami, ešte pred číslami. */}
+          {rezim === "suhrn" && <NaexSlovami vety={vetyNaex(r.naex, odpovede, ja, mena, menoKarty)} />}
+          {tabulka && naex && vid(0) && (
             <>
               {(
                 [
@@ -803,44 +1117,44 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
                 ] as const
               ).map(([k, znak, popis]) => (
                 <div key={k} className="rk-riadok" role="row">
-                  <Hodnota strana="l" n={r.naex[k][ja]} max={maxNaex} prirastok={krok === 0 ? r.naex[k][ja] : 0} title={titulNaex(k, ja)} />
+                  <Hodnota strana="l" n={r.naex[k][ja]} max={maxNaex} prirastok={krok === 0 ? r.naex[k][ja] : 0} title={titulNaex(k, ja)} detail={detailNaex(r.naex, k, ja, ja, piktogramy)} />
                   <StredPitky ikona={<ZnakNaex znak={znak} ikona={ikona("Poldeci")} />} title={popis} />
-                  <Hodnota strana="r" n={r.naex[k][su]} max={maxNaex} prirastok={krok === 0 ? r.naex[k][su] : 0} title={titulNaex(k, su)} />
+                  <Hodnota strana="r" n={r.naex[k][su]} max={maxNaex} prirastok={krok === 0 ? r.naex[k][su] : 0} title={titulNaex(k, su)} detail={detailNaex(r.naex, k, su, ja, piktogramy)} />
                 </div>
               ))}
             </>
           )}
-          {vid(1) && (
+          {tabulka && vid(1) && (
             <div className={`rk-riadok${naex ? " nova-skupina" : ""}`} role="row">
               {dlh("l", ja)}
               <StredPitky ikona={ikona("Dlh")} title={`${nazov("Dlh")}: zadĺženie, za každé ${prah(prahDlhu)} karta Dlh; zvyšok ostáva na účte`} />
               {dlh("r", su)}
             </div>
           )}
-          {vid(2) && (
+          {tabulka && vid(2) && (
             <div className="rk-riadok" role="row">
               {pecen("l", ja)}
               <StredPitky ikona={ikona("PoškodeniePečene")} title={`pečeň: za každých ${prah(r.pecen.prah)} Cirhóza; zvyšok po Pitke prepadne`} />
               {pecen("r", su)}
             </div>
           )}
-          {vid(3) && (
+          {tabulka && vid(3) && (
             <div className="rk-riadok nova-skupina" role="row">
               {cigarety("l", ja)}
               <StredPitky ikona={ikona("Cigareta")} title={`cigarety: ${nazov("Cigareta")} mínus súperovo ${nazov("Obmedzenie")}`} />
               {cigarety("r", su)}
             </div>
           )}
-          {vid(3) && vizia && (
+          {tabulka && vid(3) && vizia && (
             <div className="rk-riadok" role="row">
               <Hodnota strana="l" n={r.vizia[ja]} max={Math.max(1, ...r.vizia)} title="vrchné karty, ktoré prezrieš" detail={ikony("Vízia", ja)} />
               <StredPitky ikona={ikona("Vízia")} title={`${nazov("Vízia")}: koľko vrchných kariet prezrieš`} />
               <Hodnota strana="r" n={r.vizia[su]} max={Math.max(1, ...r.vizia)} detail={ikony("Vízia", su)} />
             </div>
           )}
-          {vid(4) && zaverecne.length > 0 && <ZaverecneRiadky zaverecne={zaverecne} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} />}
+          {tabulka && vid(4) && zaverecne.length > 0 && <ZaverecneRiadky zaverecne={zaverecne} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} bezTextu={rezim === "podrobne"} />}
         </div>
-        <div className="rk-legenda" aria-hidden="true">
+        <div className={`rk-legenda${rezim === "text" ? " skryta" : ""}`} aria-hidden="true">
           <span>
             <span className="rk-bk z-pitia" /> pitie a NA EX
           </span>

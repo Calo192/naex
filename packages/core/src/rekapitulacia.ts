@@ -34,6 +34,12 @@ export interface NaexNaKarte {
   readonly zdvojilo: number;
   /** Akcie, ktoré NA EX zrušilo (aktívna → zrušená). */
   readonly zrusilo: number;
+  /**
+   * Ktoré akcie to boli a koľko ich (Michal 2026-10-30: ikony vedľa riadkov ×2 a ✕);
+   * súčty sedia so zdvojilo a zrusilo. Chýba v starších záznamoch.
+   */
+  readonly akcieZdvojene?: Readonly<Partial<Record<Action, number>>>;
+  readonly akcieZrusene?: Readonly<Partial<Record<Action, number>>>;
 }
 
 export interface NaexRekapitulacie {
@@ -207,15 +213,24 @@ export function ucinokNaex(data: GameData, line: LineState, ev: LineEval = evalu
     if (s === undefined || s0 === undefined) continue;
     let zdvojilo = 0;
     let zrusilo = 0;
+    const akcieZdvojene: Partial<Record<Action, number>> = {};
+    const akcieZrusene: Partial<Record<Action, number>> = {};
     const sloty = [...s.left, ...s.right];
     const sloty0 = [...s0.left, ...s0.right];
     sloty.forEach((x, i) => {
       const x0 = sloty0[i];
       if (x === null || x0 === null || x0 === undefined) return;
-      if (x0.stav === "aktivna" && x.stav === "zrusena") zrusilo++;
-      else if (x.stav === "aktivna" && (x0.stav !== "aktivna" || x.nasobok > x0.nasobok)) zdvojilo++;
+      if (x0.stav === "aktivna" && x.stav === "zrusena") {
+        zrusilo++;
+        const a = x0.action;
+        akcieZrusene[a] = nula(akcieZrusene[a]) + 1;
+      } else if (x.stav === "aktivna" && (x0.stav !== "aktivna" || x.nasobok > x0.nasobok)) {
+        zdvojilo++;
+        const a = x.action;
+        akcieZdvojene[a] = nula(akcieZdvojene[a]) + 1;
+      }
     });
-    karty.push({ uid: pl.card.uid, defId: pl.card.defId, majitel: pl.playedBy, dal: pl.naexBy as PlayerId, zdvojilo, zrusilo });
+    karty.push({ uid: pl.card.uid, defId: pl.card.defId, majitel: pl.playedBy, dal: pl.naexBy as PlayerId, zdvojilo, zrusilo, akcieZdvojene, akcieZrusene });
   }
   const suma = (k: "zdvojilo" | "zrusilo"): Dvojica => dvojica((p) => karty.filter((x) => x.majitel === p).reduce((a, x) => a + x[k], 0));
   return { karty, zdvojilo: suma("zdvojilo"), zrusilo: suma("zrusilo") };
@@ -320,7 +335,7 @@ export function akcieKartyVLinii(linia: LineEval, uid: number): Partial<Record<A
   const ev = linia.cards.get(uid);
   for (const x of ev === undefined ? [] : [...ev.left, ...ev.right]) {
     if (x === null || x.stav !== "aktivna") continue;
-    const a = x.ako ?? x.action;
+    const a = x.action;
     out[a] = (out[a] ?? 0) + x.nasobok;
   }
   return out;

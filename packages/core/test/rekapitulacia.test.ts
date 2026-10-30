@@ -15,6 +15,7 @@ import {
   AKCIE_PITKY,
   AKCIE_TUHE,
   evaluateLine,
+  eventsFor,
   loadGameData,
   naTahu,
   pitkaPredBitkou,
@@ -304,9 +305,34 @@ describe("NA EX v rekapitulácii (Michal 2026-10-26: majiteľovi karty)", () => 
     const posil = instanceFor(s, "posil", EMPTY, POSIL);
     const line = { lokalita: null, lokalitaOtocena: false, strany: [[lezi(partner, 0, 1), lezi(posil, 0)], []] as const };
     const r = ucinokNaex(s, line, evaluateLine(s, line));
-    expect(r.karty).toEqual([{ uid: partner.uid, defId: "partner", majitel: 0, dal: 1, zdvojilo: 1, zrusilo: 1 }]);
+    expect(r.karty).toEqual([{ uid: partner.uid, defId: "partner", majitel: 0, dal: 1, zdvojilo: 1, zrusilo: 1, akcieZdvojene: { Cigareta: 1 }, akcieZrusene: { Pecka: 1 } }]);
     expect(r.zdvojilo).toEqual([1, 0]);
     expect(r.zrusilo).toEqual([1, 0]);
+  });
+
+  it("akcie pri ×2 a ✕ (Michal 2026-10-30) sedia so súčtami, sú z karty a oba pohľady ich majú rovnaké", () => {
+    let kariet = 0;
+    for (const zaznamy of PARTIE) {
+      for (const z of zaznamy) {
+        for (const e of z.events) {
+          if (e.type !== "pitkaRekap") continue;
+          for (const x of e.rekap.naex.karty) {
+            kariet++;
+            const spolu = (m: Readonly<Partial<Record<string, number>>> | undefined): number => Object.values(m ?? {}).reduce((a: number, n) => a + (n ?? 0), 0);
+            expect(spolu(x.akcieZdvojene)).toBe(x.zdvojilo);
+            expect(spolu(x.akcieZrusene)).toBe(x.zrusilo);
+            // Len akcie vytlačené na karte (verejná definícia), nič zo skrytých kariet.
+            const def = data.cards.get(x.defId);
+            const naKarte = new Set([...Object.keys(def?.left.actions ?? {}), ...Object.keys(def?.right.actions ?? {})]);
+            for (const a of [...Object.keys(x.akcieZdvojene ?? {}), ...Object.keys(x.akcieZrusene ?? {})]) expect(naKarte.has(a)).toBe(true);
+          }
+          // Rekapitulácia je verejná: obaja hráči dostanú tú istú.
+          const pre = (p: PlayerId) => eventsFor(z.events, p).filter((u) => u.type === "pitkaRekap");
+          expect(pre(0)).toEqual(pre(1));
+        }
+      }
+    }
+    expect(kariet).toBeGreaterThan(0);
   });
 
   it("NA EX na Posilnení zruší Posilnenie a zdvojí neaktívnu Ranu", () => {
@@ -314,7 +340,7 @@ describe("NA EX v rekapitulácii (Michal 2026-10-26: majiteľovi karty)", () => 
     const posil = instanceFor(s, "posil", EMPTY, POSIL);
     const line = { lokalita: null, lokalitaOtocena: false, strany: [[lezi(partner, 0), lezi(posil, 0, 0)], []] as const };
     const r = ucinokNaex(s, line);
-    expect(r.karty).toEqual([{ uid: posil.uid, defId: "posil", majitel: 0, dal: 0, zdvojilo: 1, zrusilo: 1 }]);
+    expect(r.karty).toEqual([{ uid: posil.uid, defId: "posil", majitel: 0, dal: 0, zdvojilo: 1, zrusilo: 1, akcieZdvojene: { Rana: 1 }, akcieZrusene: { Posilnenie: 1 } }]);
     // Bez NA EX nič.
     expect(ucinokNaex(s, { ...line, strany: [[lezi(partner, 0), lezi(posil, 0)], []] }).karty).toEqual([]);
   });

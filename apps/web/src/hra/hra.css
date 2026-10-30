@@ -8544,37 +8544,221 @@ button.lsr-pole.ciel:focus-visible {
   animation: none;
 }
 
-/* Podrobný náhľad rekapitulácie (Michal 2026-10-30): zjednodušene súčet a pruh, podrobne
-   (prepínač v hlavičke alebo myš nad riadkom) ikony akcií za sebou — zdvojené ×2, zrušené sivé. */
-/* V pravom rohu tabuľky — stĺpec akcie je úzky a hlavička nesie jeho názov. */
-.rk-prepni {
+/* Režimy rekapitulácie (Michal 2026-10-30): súhrn = súčet a pruh, podrobne = ikony akcií
+   za sebou (zdvojené ×2, zrušené sivé; myš nad riadkom ich ukáže aj v súhrne), text = udalosti
+   po riadkoch. Prepínač v ľavom rohu tabuľky — vľavo je len krátke „ty“, vpravo meno súpera. */
+.rk-rezim {
   position: absolute;
   top: 5px;
-  right: 10px;
+  left: 10px;
   z-index: 1;
-  padding: 1px 10px;
+  display: inline-flex;
   border-radius: 99px;
-  font-family: inherit;
-  font-size: 0.68rem;
-  font-weight: 700;
-  line-height: 1.5;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--tlmeny);
   background: var(--plocha-2);
   border: 1px solid var(--okraj-svetly);
+  overflow: hidden;
+}
+
+.rk-rezim > button {
+  padding: 1px 8px;
+  font-family: inherit;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+  background: none;
+  border: 0;
   cursor: pointer;
 }
 
-.rk-prepni:hover,
-.rk-prepni[aria-pressed="true"] {
-  color: var(--akcent-svetly);
-  border-color: var(--akcent);
+.rk-rezim > button + button {
+  border-left: 1px solid var(--okraj-svetly);
 }
 
-.rk-prepni:focus-visible {
+.rk-rezim > button:hover {
+  color: var(--akcent-svetly);
+}
+
+.rk-rezim > button[aria-pressed="true"] {
+  color: var(--na-akcente);
+  background: var(--akcent);
+}
+
+.rk-rezim > button:focus-visible {
   outline: 2px solid var(--akcent-svetly);
-  outline-offset: 1px;
+  outline-offset: -2px;
+}
+
+/* Ikona akcie s počtom (riadky NA EX ×2 a ✕, text): Rana ×1 Poldeci ×1. */
+.rk-ik-pocet {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  white-space: nowrap;
+}
+
+.rk-ik-pocet > small {
+  font: 800 0.82rem/1 var(--nadpis);
+  color: var(--slaby-text);
+}
+
+/* Textový režim: jedna udalosť = jeden riadok — ikona druhu, kto vo svojej farbe, čo. */
+.rk-text {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 6px 0 2px;
+  padding: 0;
+  list-style: none;
+}
+
+.rk-tr {
+  display: grid;
+  grid-template-columns: 26px 6.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  border-left: 3px solid;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  animation: rk-nabeh 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.rk-tr.ja {
+  border-left-color: var(--ja);
+}
+
+.rk-tr.su {
+  border-left-color: var(--su);
+}
+
+.rk-tr-druh {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+.rk-tr-druh .ikona-akcie,
+.rk-tr-druh .ikona-svg {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+}
+
+/* Záverečná: malá karta vo farbe majiteľa. */
+.rk-tr-karticka {
+  display: block;
+  width: 15px;
+  height: 21px;
+  border-radius: 3px;
+  border: 2px solid;
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.rk-tr-karticka.ja {
+  color: var(--ja);
+}
+
+.rk-tr-karticka.su {
+  color: var(--su);
+}
+
+/* Odpoveď na NA EX: poldeci so šípkou späť. */
+.rk-tr-druh > i {
+  position: absolute;
+  right: -6px;
+  bottom: -5px;
+  font: 800 0.72rem/1 var(--nadpis);
+  font-style: normal;
+  color: var(--akcent-svetly);
+}
+
+.rk-tr-kto {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rk-tr-kto.ja,
+.rk-tr-karta.ja {
+  color: var(--ja);
+}
+
+.rk-tr-kto.su,
+.rk-tr-karta.su {
+  color: var(--su);
+}
+
+.rk-tr-co {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  min-width: 0;
+  color: var(--slaby-text);
+}
+
+.rk-tr-co > b {
+  font: 800 1rem/1 var(--nadpis);
+  color: var(--text);
+}
+
+.rk-tr-karta {
+  font-weight: 800;
+  text-decoration: underline 2px color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}
+
+.rk-tr-hlaska {
+  font-style: italic;
+  color: var(--text);
+}
+
+.rk-tr .rk-ik {
+  width: 24px;
+  height: 24px;
+}
+
+.rk-tr .rk-ik .ikona-akcie,
+.rk-tr .rk-ik .ikona-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rk-text-caka {
+  grid-column: 1 / -1;
+  padding: 10px;
+  text-align: center;
+  color: var(--tlmeny);
+}
+
+.rk-legenda.skryta {
+  visibility: hidden;
+}
+
+/* Nízke okno: textové riadky hustejšie, nech vojde aj viac NA EX bez posúvania. */
+@media (max-height: 859px) {
+  .rk-tr {
+    padding: 1px 8px;
+    font-size: 0.8rem;
+  }
+
+  .rk-text {
+    gap: 2px;
+    margin-top: 4px;
+  }
 }
 
 .rk-detail {
@@ -9071,6 +9255,21 @@ button.lsr-pole.ciel:focus-visible {
 
   .rk-legenda {
     font-size: 0.66rem;
+  }
+
+  .rk-rezim {
+    position: static;
+    grid-column: 1 / -1;
+    justify-self: end;
+    order: -1;
+    margin-bottom: 4px;
+  }
+
+  .rk-tr {
+    grid-template-columns: 22px 4.2rem minmax(0, 1fr);
+    gap: 5px;
+    padding: 2px 5px;
+    font-size: 0.78rem;
   }
 
   /* Na malej karte len poldeci, nápis by zakryl susedov. */
