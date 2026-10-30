@@ -211,11 +211,11 @@
       "poradie": 16,
       "uroven": "B",
       "spustac": {
-        "kedy": "hráč smie prvýkrát vziať staršieho do patronátu",
+        "kedy": "hráč smie prvýkrát skúsiť zajať staršieho (v9; kľúč patronat ostáva)",
         "podmienka": "view.draftStav.krok === \"patronat\" && hráč má aspoň jedného staršieho, ktorého smie vziať (moznyPatronat)",
         "jadro": ["packages/core/src/engine.ts:1555 moznyPatronat", "packages/core/src/view.ts:409 nahladPatronatu", "docs/PRAVIDLA.md §10 Patronát"]
       },
-      "melichar": "Starší, ktorý ti prejavuje priazeň, smie ísť s tebou do bitky: za [Cigareta] cigarety si ho vezmeš do ruky. Jemu ich dáš hneď, mne nie. Keď bitku prehráš, vráti sa a stratíš [Poldeci] poldeci.",
+      "melichar": "Tento starší sa ťa bojí na trojke, tak ho smieš skúsiť zajať: stojí to [Cigareta] cigaretu a tú ti nikto nevráti. Jeho karta ide súperovi do ruky. Vyhráš bitku a je to tvoj väzeň, prehráš a ustúpi ti o stupeň.",
       "zvyraznit": ["linia-starsich"]
     },
     {
@@ -229,8 +229,8 @@
         "jadro": ["packages/core/src/engine.ts:3711 prahVydesenia", "packages/core/src/engine.ts:286 ohlaseneVydesenie", "docs/PRAVIDLA.md §1 Podmienky konca"]
       },
       "melichar": {
-        "moje": "Vydesený starší! Kto vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď. Jeden už máš, chýbajú len traja. Len.",
-        "superove": "Súper ti vydesil staršieho. Keď ich vydesí štyroch a udrží ich do konca ďalšieho kola, vyhrá hneď. Ale to sa určite nestane. Však?"
+        "moje": "Vydesený starší! Bojí sa ťa na trojke, takého smieš po šenku skúsiť zajať. Traja väzni a vyhral si hneď. Len.",
+        "superove": "Súper ti vydesil staršieho. Bojí sa ho na trojke, a tak ho súper smie po šenku skúsiť zajať. Traja väzni a vyhral. Ale to sa určite nestane. Však?"
       },
       "zvyraznit": ["linia-starsich"]
     },
