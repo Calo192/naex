@@ -3,12 +3,13 @@
 // aby sa výpis nerozišiel s pravidlami, keď sa jadro zmení (playtest
 // 20261028-090549: −5 za Cirhózu, Bzdocha naslepo, Noviny v odhade, „kolo 7“).
 
-import type { ClientState, GameData, PlayerId } from "@naex/core";
+import type { ClientState, ElderState, GameData, PlayerId } from "@naex/core";
 import {
   dalsiePitkyKola,
   efektyPrehry,
   opponentOf,
   poOdkrytiNaex,
+  prebytokNaStarsieho,
   sMojimiSkrytymiNaex,
   spakov,
   stavkaBitky,
@@ -26,9 +27,22 @@ export function superoveSkryteNaex(v: ClientState): readonly { readonly hrac: Pl
 }
 
 /**
+ * Starší, ktorých marker smie Nakladačka teraz posunúť — ten istý filter ako ponuka
+ * servera (prebytokNaStarsieho): starší v ohrození (pokus o zajatie, §9.4 bod 7, §10)
+ * nie (playtest 20261030-184957: výpis ho ponúkal). Mimo kroku Nakladačky prázdne.
+ */
+export function starsiNaNakladacku(v: ClientState): readonly ElderState[] {
+  const b = v.bitkaStav;
+  if (b === null || b.krok !== "prebytok" || b.prebytokDrzi === null || b.prebytokZostava < 1) return [];
+  const drzi = b.prebytokDrzi;
+  return v.starsi.filter((e) => prebytokNaStarsieho(v, e, drzi, b.prebytokZostava));
+}
+
+/**
  * Stôl tak, ako ho motor zúčtuje pri odkrytí: moje skryté NA EX (ako web)
  * a s Bzdochou aj súperove, ktoré mi server poslal. Zrážku (obaja na tej istej
- * karte) náhľad nemodeluje — poOdkrytiNaex na kartu s NA EX vráti null.
+ * karte) skladá poOdkrytiNaex už pri mojom NA EX — súperovo na tú kartu sa
+ * potom preskočí (karta už NA EX nesie).
  */
 export function sVidenymiSkrytymiNaex(data: GameData, v: ClientState): ClientState {
   let s = sMojimiSkrytymiNaex(data, v);

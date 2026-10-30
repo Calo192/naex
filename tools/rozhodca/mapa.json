@@ -1805,7 +1805,9 @@
       "paragraf": "7. Pitka › Odkrytie NA EX a Výtržník",
       "pravidlo": "Po bitke Výtržník vytriezvie — karta má znova pôvodné akcie; Výtržníkom je len počas jednej bitky.",
       "stav": "na-overenie",
-      "testy": [],
+      "testy": [
+        "packages/core/test/pravidla-v5.test.ts › zrážka v 1. Pitke platí cez ďalšiu Pitku až do bitky (playtest 20261030-184957, Šimon K3)"
+      ],
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
     },
     {
@@ -2212,7 +2214,8 @@
       "testy": [
         "packages/core/test/vazen.test.ts › O8: starší v ohrození sa v kole pokusu nehýbe — Pohoršenie, prebytok ani Povera naňho nesmú",
         "packages/core/test/rozdelenie.test.ts › starší v ohrození (pokus o zajatie, v9) sa nehýbe — plán aj server rovnako",
-        "packages/core/test/v7-karty.test.ts › Predsedova vila: za 2 cigarety posun markera, nie staršieho v ohrození (pokus o zajatie, v9)"
+        "packages/core/test/v7-karty.test.ts › Predsedova vila: za 2 cigarety posun markera, nie staršieho v ohrození (pokus o zajatie, v9)",
+        "packages/server/test/hrac-texty.test.ts › staršieho v ohrození výpis neponúkne — rovnako ako server"
       ],
       "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
     },

@@ -97,7 +97,7 @@ import {
   vidiVolbuSupera,
   zablokovaneStrany,
 } from "@naex/core";
-import { bzdochaText, prehraNaexText, prehraText, stavkaText, superoveSkryteNaex, sVidenymiSkrytymiNaex } from "./texty-hraca.ts";
+import { bzdochaText, prehraNaexText, prehraText, starsiNaNakladacku, stavkaText, superoveSkryteNaex, sVidenymiSkrytymiNaex } from "./texty-hraca.ts";
 
 interface Relacia {
   /** Server dočasnej partie (playtest dvoch agentov). */
@@ -496,10 +496,13 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       ? ""
       : `, NA EX: ${kto(pl.naexBy)}${pl.naexBy2 !== undefined ? ` aj ${kto(pl.naexBy2)} — zrážka${pl.vytrznik === true ? ", z karty je Výtržník" : ""}` : ""}${skryteText(pl.card.uid)}`;
   const zaverecnaText = (pl: PlacedCard): string => (pl.zaverecna === true ? ", TVOJA ZÁVEREČNÁ lícom dole — súper ju nevidí" : "");
+  // Úplatok na karte (playtest 20261030-184957: Rany Výtržníka zmizli zo súčtov a na karte nebolo prečo).
+  const uplatokText = (pl: PlacedCard): string =>
+    (pl.uplatky ?? 0) > 0 ? `, ÚPLATOK ×${pl.uplatky}: útoky karty do konca kola o ${pl.uplatky} ${pl.uplatky === 1 ? "stupeň" : "stupne"} slabšie (Petelica → Pecka → Rana → nič)` : "";
   const moja = [...vs.strany[ja]].reverse();
   for (const pl of moja)
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na tvojej strane${zaverecnaText(pl)}${naexText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na tvojej strane${zaverecnaText(pl)}${naexText(pl)}${uplatokText(pl)}]`, [
         "vonkajšia hrana",
         "vnútorná hrana (k lokalite)",
       ]),
@@ -510,7 +513,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   } else out.push("  (stred línie — ešte nič)");
   for (const pl of vs.strany[su])
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na súperovej strane${zaverecnaText(pl)}${naexText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na súperovej strane${zaverecnaText(pl)}${naexText(pl)}${uplatokText(pl)}]`, [
         "vnútorná hrana (k lokalite)",
         "vonkajšia hrana",
       ]),
@@ -704,7 +707,7 @@ function popisStranLokality(v: ClientState, k: CardInstance, otocena: boolean): 
 function popisVylozenia(v: ClientState, k: CardInstance, kam: "vlastna" | "superova"): string {
   const su = (v.ja === 0 ? 1 : 0) as PlayerId;
   const line = lineState(v);
-  const n = nahladVylozenia(DATA, line, v.ja, k, kam);
+  const n = nahladVylozenia(DATA, line, v.ja, k, kam, v.naexVKole);
   const s = n.sused;
   const spoj =
     s === null
@@ -1059,8 +1062,7 @@ function moznosti(v: ClientState): string[] {
             ? `(Tvoju Nakladačku ${b.prebytokZostava} rozdeľuješ ty; markery idú k súperovi. Vyberáš len staršieho, marker ide, kým zvyšok stačí (pole von zo stredu 1 / 2 / 3, k stredu 4 / 3 / 2); čo nevyjde na žiadny posun, prepadne.)`
             : `(Nakladačku súpera ${b.prebytokZostava} rozdeľuješ TY: markery idú k tebe — vyber si priazne, ktoré chceš; súpera sa tí starší začnú báť. Vyberáš len staršieho, marker ide, kým zvyšok stačí (pole von zo stredu 1 / 2 / 3, k stredu 4 / 3 / 2); čo nevyjde na žiadny posun, prepadne. Za každého posunutého staršieho cigareta.)`,
         );
-        for (const e of v.starsi) {
-          if (posunZaBody(e, k, b.prebytokZostava) === null) continue;
+        for (const e of starsiNaNakladacku(v)) {
           c(
             { type: "prebytok", elderId: e.elderId },
             drzim

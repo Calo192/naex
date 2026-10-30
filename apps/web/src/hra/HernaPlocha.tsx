@@ -1344,7 +1344,7 @@ export function HernaPlocha({
   // Náhľad vyloženia na koniec strany (playtest 20261017-164450: ktorá hrana
   // sa spáruje, hráči zisťovali skúškou) — počas ťahania aj v návrhu.
   const nahladVylozeniaNa = (k: CardInstance, kam: "vlastna" | "superova"): NahladVylozenia =>
-    nahladVylozenia(data, { ...lineState(view), strany: stol.strany }, ja, k, kam);
+    nahladVylozenia(data, { ...lineState(view), strany: stol.strany }, ja, k, kam, view.naexVKole);
   const nazovAkcie = (k: string): string => sada.akcie.find((a) => a.kluc === k)?.nazov ?? k;
   const piktogramyRekapitulacie: PiktogramyRekapitulacie = {
     ikona: (k) => <IkonaAkcie kluc={k} akcia={sada.akcie.find((a) => a.kluc === k)} />,
@@ -1393,7 +1393,7 @@ export function HernaPlocha({
       const nova: readonly PlacedCard[] = [...strany[kam], { card: x.karta, playedBy: ja }];
       strany = kam === 0 ? [nova, strany[1]] : [strany[0], nova];
     }
-    const n = nahladVylozenia(data, { ...lineState(view), strany }, ja, posledna.karta, posledna.ciel === "vlastna" ? "vlastna" : "superova");
+    const n = nahladVylozenia(data, { ...lineState(view), strany }, ja, posledna.karta, posledna.ciel === "vlastna" ? "vlastna" : "superova", view.naexVKole);
     return { n, uid: posledna.karta.uid, spoj: textSpoja(n), ja: textZmienVylozenia(n, ja), su: textZmienVylozenia(n, super_) };
     // vylozenia sú odvodené z navrh a view.
   }, [data, view, navrh, ja, super_, sada]);
@@ -1432,7 +1432,7 @@ export function HernaPlocha({
           dovod ??= chyba;
           continue;
         }
-        karty.set(k.uid, reagujem ? nahladVylozenia(data, lineState(view), ja, k, c) : nahladVylozeniaNa(k, c));
+        karty.set(k.uid, reagujem ? nahladVylozenia(data, lineState(view), ja, k, c, view.naexVKole) : nahladVylozeniaNa(k, c));
       }
       out.set(c, { karty, dovod: karty.size > 0 ? null : (dovod ?? "Nemáš kartu, ktorú by si sem mohol vyložiť.") });
     }

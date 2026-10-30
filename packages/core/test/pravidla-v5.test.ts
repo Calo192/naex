@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, ElderState, Favour, GameState, PlayerId, PlayerState } from "../src/index.ts";
+import type { BitkaStav, CardInstance, ElderState, Event, Favour, GameState, PlayerId, PlayerState } from "../src/index.ts";
 import {
   IllegalCommandError,
   KONSTANTY,
@@ -343,8 +343,9 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
   const R2: Layout4 = ["Rana", "Rana", null, null];
   const R1: Layout4 = ["Rana", null, null, null];
   const VP: Layout4 = ["Viera", "Pohoršenie", null, null];
+  const R4: Layout4 = ["Rana", "Rana", "Rana", "Rana"];
   const sada = buildGameData(
-    new Map([...data.cards, ["v5n_lavy", makeDef("v5n_lavy", EMPTY, R2)], ["v5n_pol", makeDef("v5n_pol", R1, R1)], ["v5n_vp", makeDef("v5n_vp", EMPTY, VP)]]),
+    new Map([...data.cards, ["v5n_lavy", makeDef("v5n_lavy", EMPTY, R2)], ["v5n_pol", makeDef("v5n_pol", R1, R1)], ["v5n_vp", makeDef("v5n_vp", EMPTY, VP)], ["v5n_lok", makeDef("v5n_lok", R4, R4)]]),
     data.elders,
     parseScorecards(scorecardsJson),
   );
@@ -432,6 +433,44 @@ describe("v5 bod 2: NA EX naraz + Výtržník", () => {
     expect(vysledok?.type === "bitkaVysledok" ? vysledok.sums[1].Rana : -1).toBe(3);
     // Pri odkrytí obaja položili svoj plný poldeci na kartu.
     expect([state.hraci[0].poldeciPlne, state.hraci[1].poldeciPlne]).toEqual([0, 0]);
+  });
+
+  it("zrážka v 1. Pitke platí cez ďalšiu Pitku až do bitky (playtest 20261030-184957, Šimon K3)", () => {
+    const { s: s0, lavy } = pitka(105);
+    // Lokalita s Ranami na oboch hranách, spárovaná na oboch stranách → 2 Pitky.
+    const lokalita = instanceFor(sada, "v5n_lok", R4, R4);
+    const pol0 = instanceFor(sada, "v5n_pol", R1, R1);
+    const s1: GameState = { ...s0, ciel: { typ: "lokalita", lokalita }, strany: [[{ card: pol0, playedBy: 0 }], s0.strany[1]], pitkyCelkom: 2 };
+    let st = apply(sada, s1, { type: "naex", uid: lavy }, 1).state;
+    st = apply(sada, st, { type: "skipNaex" }, 1).state;
+    st = apply(sada, st, { type: "naex", uid: lavy }, 0).state;
+    let r = apply(sada, st, { type: "skipNaex" }, 0);
+    let vPitke2 = false;
+    let vysledok: Event | undefined;
+    for (let i = 0; vysledok === undefined; i++) {
+      st = r.state;
+      vysledok = r.events.find((e) => e.type === "bitkaVysledok");
+      if (st.faza === "pitka" && st.pitkaCislo === 2) {
+        vPitke2 = true;
+        expect(st.strany[1].find((pl) => pl.card.uid === lavy)?.vytrznik).toBe(true);
+      }
+      if (vysledok !== undefined) break;
+      const p = naTahu(st);
+      if (p === null || i > 30) throw new Error("bitka sa nedohrala");
+      // Bez ďalšieho NA EX — Výtržníka mení len zrážka z 1. Pitky.
+      const moznosti = legalCommands(sada, st, p);
+      r = apply(sada, st, moznosti.find((c) => c.type === "skipNaex" || c.type === "pass") ?? moznosti[0]!, p);
+    }
+    expect(vPitke2).toBe(true);
+    // V bitke je karta stále Výtržník — súčty ako so zrážkou, nie ako bez nej.
+    const linia = (vytrznik: boolean) =>
+      evaluateLine(sada, {
+        lokalita,
+        lokalitaOtocena: false,
+        strany: [s1.strany[0], s1.strany[1].map((pl) => (pl.card.uid === lavy && vytrznik ? { ...pl, naexBy: 1 as PlayerId, naexBy2: 0 as PlayerId, vytrznik: true as const } : pl))],
+      }).sums[1].Rana;
+    expect(linia(true)).not.toBe(linia(false));
+    expect(vysledok?.type === "bitkaVysledok" ? vysledok.sums[1].Rana : -1).toBe(linia(true));
   });
 
   it("Výtržník je výtržníkom len počas jednej bitky — po bitke vytriezvie (pôvodné akcie, bez príznaku, aj v pohľade a logu)", () => {

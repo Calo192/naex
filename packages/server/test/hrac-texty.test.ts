@@ -9,14 +9,31 @@ import {
   efektyPrehry,
   kedyRozhodneVydesenie,
   prehraNaexText,
+  starsiNaNakladacku,
   stavkaText,
   sVidenymiSkrytymiNaex,
 } from "../../../tools/playtest/texty-hraca.ts";
 import cardsJson from "../../core/data/cards.json";
 import eldersJson from "../../core/data/elders.json";
 import scorecardsJson from "../../core/data/scorecards.json";
-import type { CardInstance, Command, GameState, PlacedCard, PlayerId } from "../../core/src/index.ts";
-import { apply, buildGameData, legalCommands, loadGameData, naTahu, parseScorecards, poOdkrytiNaex, rngInt, rngSeed, setupGame, stavkaBitky, viewFor } from "../../core/src/index.ts";
+import type { BitkaStav, CardInstance, Command, GameState, PlacedCard, PlayerId } from "../../core/src/index.ts";
+import {
+  apply,
+  buildGameData,
+  evaluateLine,
+  legalCommands,
+  lineState,
+  loadGameData,
+  nahladVylozenia,
+  naTahu,
+  parseScorecards,
+  poOdkrytiNaex,
+  rngInt,
+  rngSeed,
+  setupGame,
+  stavkaBitky,
+  viewFor,
+} from "../../core/src/index.ts";
 import type { Layout4 } from "../../core/test/helpers.ts";
 import { EMPTY, instanceFor, makeDef, setupSBalickom } from "../../core/test/helpers.ts";
 
@@ -71,6 +88,24 @@ describe("klient AI hráčov: Bzdocha (playtest 20261028-090549, nezrovnalosť 2
     expect(vs.hraci[0].poldeciPlne).toBe(v.hraci[0].poldeciPlne - 1);
     // Súper bez Bzdochy nič také nevidí.
     expect(bzdochaText(sada, viewFor(sada, t, 0))).toBeNull();
+  });
+
+  it("náhľad NA EX na kartu, kam súper dal NA EX (Bzdocha), ráta zrážku ako motor (playtest 20261030-184957, Šimon)", () => {
+    const { s, lavy } = doPitky(306, [1]);
+    let t = apply(sada, s, { type: "naex", uid: lavy }, 0).state;
+    t = apply(sada, t, { type: "skipNaex" }, 0).state;
+    const po = poOdkrytiNaex(sada, viewFor(sada, t, 1), lavy);
+    expect(po?.view.strany[1].find((pl) => pl.card.uid === lavy)?.vytrznik).toBe(true);
+    // Motor po odkrytí: tá istá karta je Výtržník a súčty línie sedia s náhľadom.
+    let m = apply(sada, t, { type: "naex", uid: lavy }, 1).state;
+    m = apply(sada, m, { type: "skipNaex" }, 1).state;
+    expect(m.strany[1].find((pl) => pl.card.uid === lavy)?.vytrznik).toBe(true);
+    expect(evaluateLine(sada, lineState(po!.view)).sums).toEqual(evaluateLine(sada, lineState(m)).sums);
+    // Bez Bzdochy súperovo NA EX nevidno — náhľad zrážku nesľubuje.
+    const bez = doPitky(307, []);
+    let u = apply(sada, bez.s, { type: "naex", uid: bez.lavy }, 0).state;
+    u = apply(sada, u, { type: "skipNaex" }, 0).state;
+    expect(poOdkrytiNaex(sada, viewFor(sada, u, 1), bez.lavy)?.view.strany[1].find((pl) => pl.card.uid === bez.lavy)?.vytrznik).toBeUndefined();
   });
 
   it("súper skončil bez NA EX — majiteľ Bzdochy to vie", () => {
@@ -190,5 +225,46 @@ describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj
       }
     }
     expect(videne).toBeGreaterThan(0);
+  });
+});
+
+describe("klient AI hráčov: Nakladačka a starší v ohrození (playtest 20261030-184957, Eva N1, Šimon 5)", () => {
+  it("staršieho v ohrození výpis neponúkne — rovnako ako server", () => {
+    const s0 = setupGame(data, 308);
+    const id = s0.starsi[0]!.elderId;
+    const bitkaStav: BitkaStav = {
+      krok: "prebytok",
+      caka: 0,
+      sums: [{}, {}],
+      exekutorHotovy: [true, true],
+      pohorsenieZostava: [0, 0],
+      exekutor: [0, 0],
+      damage: null,
+      vitaz: 1,
+      prebytokDrzi: 1,
+      prebytokZostava: 4,
+      prebytokPosunute: [],
+      benzinkaZostava: [0, 0],
+      karHotovy: [true, true],
+      spalit: [],
+      vesticaHotova: true,
+    };
+    const s: GameState = { ...s0, faza: "bitka", draftStav: null, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, pokusy: [{ elderId: id }, null], bitkaStav };
+    const ponuka = starsiNaNakladacku(viewFor(data, s, 0)).map((e) => e.elderId);
+    expect(ponuka).not.toContain(id);
+    expect(ponuka.length).toBeGreaterThan(0);
+    expect(ponuka).toEqual(legalCommands(data, s, 0).flatMap((c) => (c.type === "prebytok" ? [c.elderId] : [])));
+    expect(() => apply(data, s, { type: "prebytok", elderId: id }, 0)).toThrow();
+  });
+});
+
+describe("náhľad vyloženia: Šofér po NA EX (playtest 20261030-184957, Šimon 1)", () => {
+  it("kto už v kole dal NA EX, tomu Šofér Pecku navyše nedá ani v náhľade", () => {
+    const s0 = setupGame(data, 309);
+    const sofer: CardInstance = { uid: 891100, defId: "sofer", leftLayout: 0, rightLayout: 0 };
+    const line = lineState({ ...s0, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! } });
+    expect(nahladVylozenia(data, line, 0, sofer, "superova").tuhe[0]).toBe(2);
+    expect(nahladVylozenia(data, line, 0, sofer, "superova", [false, false]).tuhe[0]).toBe(2);
+    expect(nahladVylozenia(data, line, 0, sofer, "superova", [true, false]).tuhe[0]).toBe(0);
   });
 });

@@ -78,10 +78,19 @@ export interface NahladVylozenia {
   readonly tuhe: readonly [number, number];
 }
 
-/** Tuhé navyše z kariet v línii — ten istý výpočet ako bitka (bitkaMody), bez Dedičstva a starších. */
-function tuheZLinie(data: GameData, line: LineState, strany: LineState["strany"]): readonly [number, number] {
+/**
+ * Tuhé navyše z kariet v línii — ten istý výpočet ako bitka (bitkaMody), bez Dedičstva a starších.
+ * `naexVKole`: kto už v kole dal NA EX — Šofér potom Pecku navyše nedá (playtest 20261030-184957).
+ */
+function tuheZLinie(data: GameData, line: LineState, strany: LineState["strany"], naexVKole?: readonly [boolean, boolean]): readonly [number, number] {
   const ciel: VerejnyStav["ciel"] = line.lokalita === null ? null : { typ: "lokalita", lokalita: line.lokalita };
-  const stav: VerejnyStav = { ciel, strany, starsi: [], hraci: [{ priznane: [], dlhy: 0, abstaky: 0, dedicstvo: [] }, { priznane: [], dlhy: 0, abstaky: 0, dedicstvo: [] }] };
+  const stav: VerejnyStav = {
+    ciel,
+    strany,
+    starsi: [],
+    hraci: [{ priznane: [], dlhy: 0, abstaky: 0, dedicstvo: [] }, { priznane: [], dlhy: 0, abstaky: 0, dedicstvo: [] }],
+    ...(naexVKole !== undefined ? { naexVKole } : {}),
+  };
   return [bitkaMody(data, stav, 0).tuheBonus, bitkaMody(data, stav, 1).tuheBonus];
 }
 
@@ -95,13 +104,17 @@ function rozdiel(pred: ActionSums, po: ActionSums): ActionSums {
   return out;
 }
 
-/** Čo spraví karta hráča `ja` vyložená na koniec strany `kam` — pred potvrdením. */
+/**
+ * Čo spraví karta hráča `ja` vyložená na koniec strany `kam` — pred potvrdením.
+ * `naexVKole` zo stavu (view.naexVKole); bez neho náhľad ráta, že v kole ešte nikto NA EX nedal.
+ */
 export function nahladVylozenia(
   data: GameData,
   line: LineState,
   ja: PlayerId,
   karta: CardInstance,
   kam: StranaLinie,
+  naexVKole?: readonly [boolean, boolean],
 ): NahladVylozenia {
   const p = kam === "vlastna" ? ja : opponentOf(ja);
   const naMojej = kam === "vlastna";
@@ -147,8 +160,8 @@ export function nahladVylozenia(
   };
   const pred = sumy(line.strany, evaluateLine(data, line));
   const po = sumy(strany, evaluateLine(data, { ...line, strany }));
-  const tuhePred = tuheZLinie(data, line, line.strany);
-  const tuhePo = tuheZLinie(data, line, strany);
+  const tuhePred = tuheZLinie(data, line, line.strany, naexVKole);
+  const tuhePo = tuheZLinie(data, line, strany, naexVKole);
 
   return {
     vnutorna,
