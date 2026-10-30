@@ -5824,6 +5824,7 @@ button.auto-hotovo-odkaz {
 
 .ls-sc.rozdel.mrtvy .ls-portret img,
 .ls-sc.rozdel.mrtvy .ls-stupnica-r,
+.ls-sc.rozdel.mrtvy .lsp-rad,
 .ls-sc.rozdel.mrtvy .ls-sipky {
   opacity: 0.4;
   filter: grayscale(0.5);
@@ -6023,6 +6024,112 @@ button.lsr-pole.ciel:focus-visible {
 
 .ls-sip.bez-smeru {
   visibility: hidden;
+}
+
+/* Pravítko posunu (mock 2 B, Michal 2026-10-30): šírka dielika = cena poľa, farba = zóna, svetlá
+   čiara = rozpočet, za ňou šrafované pole so zámkom. Pohoršenie má dve pravítka nad tlačidlami
+   smerov (rovnaká mriežka ako .ls-sipky), Nakladačka jedno cez celú šírku. */
+.lsp-rad {
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.lsp-rad.jeden {
+  grid-template-columns: 1fr;
+}
+
+.lsp {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.lsp-os {
+  position: relative;
+}
+
+.lsp-dieliky {
+  display: flex;
+  height: 18px;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--pozadie);
+}
+
+.lsp-dielik {
+  min-width: 0;
+  flex-basis: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-right: 2px solid var(--pozadie);
+  font: normal 800 11px/1 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  color: #2b2116;
+}
+
+.lsp-dielik:last-child {
+  border-right: 0;
+}
+
+/* Červená zóna je tmavá — číslo na nej svetlé (ako .lsr-cena). */
+.lsp-dielik.z3 {
+  color: var(--lesk);
+}
+
+.lsp-dielik.za {
+  background-image: repeating-linear-gradient(45deg, rgb(0 0 0 / 0.35) 0 3px, transparent 3px 7px);
+  opacity: 0.55;
+}
+
+.lsp-dielik.volne {
+  background: transparent;
+}
+
+.lsp-zamok {
+  width: 11px;
+  height: 11px;
+  fill: currentColor;
+}
+
+.lsp-ciara {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  translate: -1px 0;
+  background: var(--akcent-svetly);
+  box-shadow: 0 0 0 1px var(--pozadie);
+}
+
+.lsp-rozp {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+  font-size: 0.68rem;
+  line-height: 1.15;
+  color: var(--tlmeny);
+  white-space: nowrap;
+}
+
+.lsp.su .lsp-rozp {
+  justify-content: flex-end;
+}
+
+.lsp-body {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lsp-body .ikona-delenia {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
 }
 
 /* Pečať priazne vpravo dole na portréte: ikona akcie a sila vo farbe toho, komu priazeň patrí. */

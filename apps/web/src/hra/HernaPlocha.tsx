@@ -157,6 +157,7 @@ import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.t
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
 import { ListokLokality } from "./ListokLokality.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
+import { pravitkoPosunu } from "./pravitko.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
@@ -4426,7 +4427,7 @@ export function HernaPlocha({
     return undefined;
   };
   /**
-   * Starší pri rozdeľovaní (mock C · Pečať): smery (krígeľ, päsť), ceny polí a nepotvrdený posun z plánu
+   * Starší pri rozdeľovaní (mock C · Pečať): smery (krígeľ, päsť) s pravítkom, ceny polí a nepotvrdený posun z plánu
    * jadra. Starší v pláne má body zo svojho miesta v poradí (prehodenie smeru ho nechá na mieste),
    * ostatní zo zvyšku po pláne (nový posun ide na koniec) — ako prepniVolbu a server.
    */
@@ -4448,6 +4449,7 @@ export function HernaPlocha({
         posun: posun === null ? null : { na: posun.marker, cena: posun.cena },
         aktivna: krok !== undefined && krok.kSebe === sm.kSebe,
         klik: () => prepniDelenie(sm.kSebe ? { elderId: e.elderId, kSebe: true } : { elderId: e.elderId }),
+        pravitko: pravitkoPosunu(e.marker, sm.smer, body, telefon),
       };
     }
     return {

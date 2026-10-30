@@ -16,6 +16,8 @@
 // karta meno na stred, pečať priazne na portréte, plochú stupnicu s cenou na každom
 // dosiahnuteľnom poli a pod ňou tlačidlá smerov (krígeľ k sebe, päsť k súperovi) rovnako vysoké ako stupnica. Posuny sú
 // nepotvrdené, kým ich Potvrdiť na hrane stola nepošle — plán ráta jadro (rozdelenie.ts).
+// Medzi stupnicou a tlačidlami je pravítko posunu (mock 2 B, Michal 2026-10-30): pole po poli,
+// kým body stačia, a za čiarou rozpočtu zámok (pravitko.ts).
 
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -29,6 +31,7 @@ import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { IkonaPaste } from "./IkonaPaste.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
+import type { Pravitko } from "./pravitko.ts";
 import { POPIS_STUPNICE, PRAVIDLO_STRACHU, plnaPriazen, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textStupna, textVydesenia } from "./textyStarsich.ts";
 
 /** Šípka smeru pri rozdeľovaní: kam marker pôjde a za koľko (null = tým smerom sa teraz nedá). */
@@ -37,6 +40,8 @@ export interface SipkaRozdelenia {
   /** Tento smer je už v nepotvrdených posunoch — ťuk ho zruší. */
   readonly aktivna: boolean;
   readonly klik: () => void;
+  /** Cesta markera týmto smerom za body, ktoré staršiemu ostali (pravítko pod stupnicou). */
+  readonly pravitko: Pravitko;
 }
 
 /** Starší pri rozdeľovaní Pohoršenia či prebytku (mock C · Pečať) — dáta z plánu jadra. */
@@ -464,11 +469,91 @@ function KartaRozdelenia({
         </span>
       </div>
       <StupnicaRozdelenia r={r} marker={elder.marker} priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"} ja={ja} meno={s.meno} />
+      <PravitkaRozdelenia r={r} meno={s.meno} />
       <span className="ls-sipky">
         {sipka("ja")}
         {sipka("su")}
       </span>
     </div>
+  );
+}
+
+/**
+ * Pravítka posunu pod stupnicou (mock 2 B): Nakladačka má jeden smer, preto jedno pravítko cez
+ * celú šírku; Pohoršenie dva, každé nad svojím tlačidlom (krígeľ vľavo, päsť vpravo).
+ */
+function PravitkaRozdelenia({ r, meno }: { readonly r: RozdelenieStarsieho; readonly meno: string }) {
+  const { ja, su } = r.sipky;
+  if (ja !== undefined && su !== undefined) {
+    return (
+      <span className="lsp-rad">
+        <PravitkoPosunu p={ja.pravitko} smer="ja" meno={meno} plne={false} />
+        <PravitkoPosunu p={su.pravitko} smer="su" meno={meno} plne={false} />
+      </span>
+    );
+  }
+  const jediny = ja ?? su;
+  if (jediny === undefined) return null;
+  return (
+    <span className="lsp-rad jeden">
+      <PravitkoPosunu p={jediny.pravitko} smer={ja === undefined ? "su" : "ja"} meno={meno} plne />
+    </span>
+  );
+}
+
+/** Zámok za čiarou rozpočtu — pole, na ktoré body už nestačia. */
+function IkonaZamku() {
+  return (
+    <svg className="lsp-zamok" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 10V7a5 5 0 0 1 10 0v3h1.5c.8 0 1.5.7 1.5 1.5v9c0 .8-.7 1.5-1.5 1.5h-13C4.7 22 4 21.3 4 20.5v-9C4 10.7 4.7 10 5.5 10zm2.5 0h5V7a2.5 2.5 0 0 0-5 0z" />
+    </svg>
+  );
+}
+
+/**
+ * Jedno pravítko: šírka dielika = cena poľa, farba = zóna, do ktorej marker vojde; svetlá čiara
+ * = koľko bodov posun má, za ňou zámok. Pod ním „3 z 5“ (len cez celú šírku) a o koľko polí.
+ */
+function PravitkoPosunu({ p, smer, meno, plne }: { readonly p: Pravitko; readonly smer: "ja" | "su"; readonly meno: string; readonly plne: boolean }) {
+  // Zvyšok je celý rozdaný — zámok s „0 z 0“ by len rušil, karta je aj tak tlmená.
+  const rozdane = p.body === 0;
+  const zamok = p.dieliky.find((d) => d.zamok);
+  // Na kraji stupnice časť rozpočtu ostane — prázdny úsek až po čiaru.
+  const volne = zamok === undefined ? p.body - p.cena : 0;
+  const spolu = Math.max(p.body, p.cena + (zamok?.cena ?? 0), 1);
+  const polia = p.polia === 0 ? (zamok === undefined ? "na kraji" : "nestačí") : `${p.polia} ${p.polia === 1 ? "pole" : p.polia < 5 ? "polia" : "polí"}`;
+  const popis = rozdane
+    ? `${meno}: zvyšok je rozdaný`
+    : p.polia > 0
+      ? `${meno}: o ${polia} za ${p.cena} z ${p.body}${zamok === undefined ? ", ďalej je kraj" : `, ďalšie pole stojí ${zamok.cena}`}`
+      : zamok === undefined
+        ? `${meno}: marker je na kraji`
+        : `${meno}: ${p.body} nestačí ani na jedno pole (stojí ${zamok.cena})`;
+  return (
+    <span className={`lsp ${smer}`} role="img" aria-label={popis} title={popis}>
+      <span className="lsp-os">
+        <span className="lsp-dieliky">
+          {!rozdane &&
+            p.dieliky.map((d) => (
+              <i key={d.na} className={`lsp-dielik z${d.zona}${d.zamok ? " za" : ""}`} style={{ flexGrow: d.cena, backgroundColor: farbaZony(d.zona) }}>
+                {d.zamok ? <IkonaZamku /> : d.cena}
+              </i>
+            ))}
+          {volne > 0 && <i className="lsp-dielik volne" style={{ flexGrow: volne }} />}
+        </span>
+        {!rozdane && <i className="lsp-ciara" style={{ left: `${((p.body / spolu) * 100).toFixed(2)}%` }} />}
+      </span>
+      <span className="lsp-rozp">
+        {plne && !rozdane && (
+          <span className="lsp-body">
+            <IkonaDelenia krok="prebytok" />
+            {p.cena} z {p.body}
+          </span>
+        )}
+        {/* Bez ◀ ▶ z mocku — smer nesie krígeľ a päsť pod pravítkom (Michal 2026-10-30: šípky preč). */}
+        <span className="lsp-polia">{rozdane ? "rozdané" : polia}</span>
+      </span>
+    </span>
   );
 }
 

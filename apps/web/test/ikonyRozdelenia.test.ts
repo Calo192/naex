@@ -15,7 +15,8 @@ import { CESTY_PASTE } from "../src/hra/tvarPaste.ts";
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const elder = setupGame(data, 5).starsi[0]!;
 
-const smer = (na: 2 | 4, aktivna = false): SipkaRozdelenia => ({ posun: { na, cena: 1 }, aktivna, klik: () => {} });
+const pravitko = { body: 1, dieliky: [], cena: 0, polia: 0 };
+const smer = (na: 2 | 4, aktivna = false): SipkaRozdelenia => ({ posun: { na, cena: 1 }, aktivna, klik: () => {}, pravitko });
 
 function linia(r: RozdelenieStarsieho): string {
   return renderToStaticMarkup(
@@ -66,7 +67,7 @@ describe("ikony smerov pri rozdeľovaní", () => {
   });
 
   it("smer, ktorým sa nedá, povie čo sa nedá", () => {
-    const html = linia({ sipky: { ja: { posun: null, aktivna: false, klik: () => {} } }, ceny, navrh: null, mrtvy: true });
+    const html = linia({ sipky: { ja: { posun: null, aktivna: false, klik: () => {}, pravitko } }, ceny, navrh: null, mrtvy: true });
     expect(html).toContain('aria-label="Farár: udobriť sa teraz nedá"');
   });
 });
