@@ -118,7 +118,7 @@ describe("fajčenie zdražie v Pitke (Michal 2026-10-27)", () => {
   });
 
   it("každá Pitka začína fajčenie znova od 1 cigarety (náhodné partie, fajčí sa, kedy sa dá)", () => {
-    let s = setupGame(data, 21, { lokalit: 3 });
+    let s = setupGame(data, 22, { lokalit: 3 });
     let rng = rngSeed(5);
     let novychPitiek = 0;
     let poFajceni = 0;

@@ -112,7 +112,7 @@ function poPitke(s0: GameState): GameState {
 function doPoskodenia(s0: GameState): { readonly s: GameState; readonly rozhodnutia: ReadonlySet<string> } {
   let s = s0;
   const rozhodnutia = new Set<string>();
-  const caka = (t: GameState): boolean => t.bitkaStav?.krok === "pohorsenie" && t.bitkaStav.caka !== null;
+  const caka = (t: GameState): boolean => (t.bitkaStav?.krok === "pohorsenie" || t.bitkaStav?.krok === "povery") && t.bitkaStav.caka !== null;
   for (let i = 0; i < 80 && s.faza === "bitka" && s.bitkaStav?.damage == null && !caka(s) && s.koniec === null; i++) {
     const q = naTahu(s);
     if (q === null) break;

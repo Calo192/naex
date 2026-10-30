@@ -299,7 +299,9 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
       const q = kto(s);
       if (q === null) break;
       const legal = legalCommands(data, s, q).filter((c) => c.type !== "vzdat");
-      const cmd = legal.find((c) => c.type === "skipNaex") ?? legal.find((c) => c.type === "bezReakcie") ?? legal.find((c) => c.type === "kar" && c.uid === null) ?? legal[0];
+      // Povery (v8.3) nie na Alkoholika — jeho „do dna“ by sa v bitke zmenilo, to náhľad nevie.
+      const povera = legal.find((c) => c.type === "povera" && favourStarsieho(data, s.starsi.find((e) => e.elderId === c.elderId)!) !== "ALKOHOLIK");
+      const cmd = legal.find((c) => c.type === "skipNaex") ?? legal.find((c) => c.type === "bezReakcie") ?? legal.find((c) => c.type === "kar" && c.uid === null) ?? povera ?? legal[0];
       if (cmd === undefined) break;
       s = apply(data, s, cmd, q).state;
     }

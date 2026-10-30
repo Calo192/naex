@@ -2,8 +2,8 @@
 // Línia starších, lupa, dlaždice v baroch aj legenda skladajú vety o priazni, strachu
 // a posunoch odtiaľto — keď sa zmení, kedy a koľko starší platí za strach, mení sa len tu.
 
-import type { Favour, PlayerId, PosunMarkera } from "@naex/core";
-import { NAZVY_ZON, STAV_STARSIEHO } from "@naex/core";
+import type { ElderState, Favour, Klebety, PlayerId, PosunMarkera } from "@naex/core";
+import { NAZVY_ZON, STAV_STARSIEHO, ucinnaPriazen } from "@naex/core";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 
 export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
@@ -133,6 +133,17 @@ export function nahladStrachu(ty: number, su: number, menoSupera: string, cakaTy
  * poškodenia sa hráčovi volá Nakladačka (Michal 2026-10-30); v kóde ostáva „prebytok“.
  */
 export const NAZOV_DELENIA = { pohorsenie: "Pohoršenie", prebytok: "Nakladačka" } as const;
+
+/**
+ * Náhľad Povery na staršom (v8.3 „Výpožička priazne“): priazeň v tomto kole pred a po —
+ * marker sa nehýbe, strach ani udržanie sa nemenia.
+ */
+export function textPovery(elder: Pick<ElderState, "marker" | "elderId">, ja: PlayerId, klebety: Klebety | undefined, menoSupera: string): string {
+  const kto = (u: { readonly hrac: PlayerId | null; readonly sila: number }): string => (u.hrac === null ? "nikto" : `${u.hrac === ja ? "ty" : menoSupera} +${u.sila}`);
+  const pred = ucinnaPriazen(elder, klebety);
+  const po = ucinnaPriazen(elder, { ...klebety, [elder.elderId]: (klebety?.[elder.elderId] ?? 0) + (ja === 0 ? 1 : -1) });
+  return `Povera: priazeň v tomto kole ${kto(pred)} → ${kto(po)} (marker sa nehýbe)`;
+}
 
 /** Cena posunu markera o pole (v8.2, Michal 2026-10-30) — Pohoršenie aj prebytok. */
 export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4";

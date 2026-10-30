@@ -1,7 +1,7 @@
 // Vyhodnotenie bitky — presné poradie z PRAVIDLA.md §9 (M4).
 //
 // Tu sú len ČISTÉ funkcie (Exekútor / poškodenie / výsledok). Kroky, ktoré
-// vyžadujú rozhodnutie hráča (Pohoršenie, rozdelenie prebytku,
+// vyžadujú rozhodnutie hráča (Povery, Pohoršenie, rozdelenie Nakladačky,
 // Pohreb), motor v M6 len pripraví ako čakajúce rozhodnutia.
 
 import type { ActionSums } from "./partia.ts";
@@ -25,13 +25,11 @@ export interface BattleSide {
   readonly abstaky: number;
   /** Tuhé menej z efektov súpera (Pasca: −1 za každé moje Zviera v línii). Chýba = 0. */
   readonly tuheZlava?: number;
-  /** Moje priznané Dlhy — strop pre súperove mäkké poškodenie. */
-  readonly priznaneDlhy: number;
   /**
-   * O koľko smú MOJE Povery prekročiť súperove priznané Dlhy (priazeň
-   * Neprajníka; Čierna mačka = bez stropu). Chýba = 0.
+   * Moje Povery sa súperovou Vierou nerušia (Čierna mačka, v8.3 — návrh
+   * docs/napady/povery.html, text karty zmení Admin). Chýba = false.
    */
-  readonly makkeNadDlhy?: number;
+  readonly poveryBezViery?: boolean;
   /** Priazeň Bitkára, ak ju mám (inak 0) — tuhé poškodenie navyše. */
   readonly priazenBitkara: number;
   /** Hodnota jednej MOJEJ Viery = 1 + Svätý text (priazeň Veriaceho pridáva Vieru navyše, nie hodnotu). */
@@ -40,7 +38,12 @@ export interface BattleSide {
 
 export interface DamageResult {
   readonly tuhe: readonly [number, number];
+  /**
+   * Mäkké poškodenie zaniklo vo v8.3 (Povery „Výpožička priazne“, Michal 2026-10-30) —
+   * vždy 0; pole ostáva pre archív partií a štatistiky.
+   */
   readonly makke: readonly [number, number];
+  /** Od v8.3 rovné tuhému (mäkké nie je); pole ostáva pre archív. */
   readonly celkove: readonly [number, number];
   readonly zvysnaViera: readonly [number, number];
   readonly zvysnaPovera: readonly [number, number];
@@ -52,11 +55,12 @@ function n(v: number | undefined): number {
 
 export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageResult {
   // 1. Viera a Povera sa vyrušia 1:1 — moja Viera ruší súperove Povery,
-  //    moje Povery rušia súperovu Vieru. Zrušená Povera neudelí nič.
+  //    moje Povery rušia súperovu Vieru. Zvyšné Povery posúvajú silu priazní
+  //    (v8.3, krok Povery v engine.ts); Čierna mačka: tie páry sa nerušia.
   const viera = [n(sides[0].sums.Viera), n(sides[1].sums.Viera)] as const;
   const povera = [n(sides[0].sums.Povera), n(sides[1].sums.Povera)] as const;
-  const cancel0 = Math.min(povera[0], viera[1]);
-  const cancel1 = Math.min(povera[1], viera[0]);
+  const cancel0 = sides[0].poveryBezViery === true ? 0 : Math.min(povera[0], viera[1]);
+  const cancel1 = sides[1].poveryBezViery === true ? 0 : Math.min(povera[1], viera[0]);
   const zvysnaViera = [viera[0] - cancel1, viera[1] - cancel0] as const;
   const zvysnaPovera = [povera[0] - cancel0, povera[1] - cancel1] as const;
 
@@ -74,19 +78,10 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
     return Math.max(0, base - oppViera * opp.hodnotaViery - me.abstaky - (me.tuheZlava ?? 0));
   }) as [number, number];
 
-  // 3. Mäkké poškodenie je zastropené súperovým PRIZNANÝM dlhom (+ priazeň
-  //    Neprajníka, Čierna mačka strop ruší).
-  const makke = ([0, 1] as const).map((p) => {
-    const q = opponentOf(p);
-    const strop = sides[q].priznaneDlhy + (sides[p].makkeNadDlhy ?? 0);
-    return Math.max(0, Math.min(zvysnaPovera[p], strop));
-  }) as [number, number];
-
-  const celkove = [tuhe[0] + makke[0], tuhe[1] + makke[1]] as [number, number];
   return {
     tuhe,
-    makke,
-    celkove,
+    makke: [0, 0],
+    celkove: [tuhe[0], tuhe[1]],
     zvysnaViera: [...zvysnaViera] as [number, number],
     zvysnaPovera: [...zvysnaPovera] as [number, number],
   };
@@ -104,7 +99,10 @@ export interface BattleOutcome {
    */
   readonly vitaz: PlayerId | null;
   readonly rozhodlo: RozhodnutieBitky;
-  /** Vyššie CELKOVÉ poškodenie — aj pri remíze v tuhom; pri rovnosti nikto. */
+  /**
+   * Nakladačka (v8.3): rozdiel tuhého, drží ju hráč s vyšším tuhým (víťaz);
+   * pri remíze v tuhom nikto — aj keď remízu rozhodnú Absťáky či Dlhy.
+   */
   readonly prebytokDrzi: PlayerId | null;
   readonly prebytok: number;
 }
@@ -121,9 +119,8 @@ function menej(x: readonly [number, number]): PlayerId | null {
 }
 
 export function battleOutcome(damage: DamageResult, remiza?: RemizaBitky): BattleOutcome {
-  const prebytokDrzi: PlayerId | null =
-    damage.celkove[0] === damage.celkove[1] ? null : damage.celkove[0] > damage.celkove[1] ? 0 : 1;
-  const prebytok = Math.abs(damage.celkove[0] - damage.celkove[1]);
+  const prebytokDrzi: PlayerId | null = damage.tuhe[0] === damage.tuhe[1] ? null : damage.tuhe[0] > damage.tuhe[1] ? 0 : 1;
+  const prebytok = Math.abs(damage.tuhe[0] - damage.tuhe[1]);
   if (damage.tuhe[0] !== damage.tuhe[1]) return { vitaz: damage.tuhe[0] > damage.tuhe[1] ? 0 : 1, rozhodlo: "tuhe", prebytokDrzi, prebytok };
   const zAbstakov = remiza === undefined ? null : menej(remiza.abstaky);
   if (zAbstakov !== null) return { vitaz: zAbstakov, rozhodlo: "abstak", prebytokDrzi, prebytok };

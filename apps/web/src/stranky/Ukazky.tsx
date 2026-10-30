@@ -203,7 +203,7 @@ export function UkazkaBitky() {
       </div>
       <div className="ukazka-bitka-vysledok">
         <div>
-          <span className="tlmene">Zvyšná Viera / Povera po vyrušení</span>
+          <span className="tlmene">Zvyšná Viera / Povera po vyrušení (Povery posúvajú priazne)</span>
           <strong>
             {d.zvysnaViera[0]}/{d.zvysnaPovera[0]} : {d.zvysnaViera[1]}/{d.zvysnaPovera[1]}
           </strong>
@@ -212,18 +212,6 @@ export function UkazkaBitky() {
           <span className="tlmene">Tuhé poškodenie</span>
           <strong>
             {d.tuhe[0]} : {d.tuhe[1]}
-          </strong>
-        </div>
-        <div>
-          <span className="tlmene">Mäkké (strop = súperov priznaný dlh)</span>
-          <strong>
-            {d.makke[0]} : {d.makke[1]}
-          </strong>
-        </div>
-        <div>
-          <span className="tlmene">Celkové</span>
-          <strong>
-            {d.celkove[0]} : {d.celkove[1]}
           </strong>
         </div>
       </div>

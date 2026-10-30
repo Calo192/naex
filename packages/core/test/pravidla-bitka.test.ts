@@ -172,7 +172,7 @@ describe("§1 Podmienky konca", () => {
 
 describe("§2 Akcie — tuhé poškodenie", () => {
   it("§2: Rana 1, Pecka 2, Petelica 3 tuhé", () => {
-    const strana = (sums: BattleSide["sums"]): BattleSide => ({ sums, cirhozaBonus: 0, tuheBonus: 0, abstaky: 0, priznaneDlhy: 0, priazenBitkara: 0, hodnotaViery: 1 });
+    const strana = (sums: BattleSide["sums"]): BattleSide => ({ sums, cirhozaBonus: 0, tuheBonus: 0, abstaky: 0, priazenBitkara: 0, hodnotaViery: 1 });
     expect(computeDamage([strana({ Rana: 1, Pecka: 1, Petelica: 1 }), strana({})]).tuhe).toEqual([6, 0]);
     expect(computeDamage([strana({ Petelica: 2 }), strana({ Pecka: 3 })]).tuhe).toEqual([6, 6]);
   });

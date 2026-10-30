@@ -56,6 +56,12 @@ function partia(seed: number): Zaznam[] {
   return out;
 }
 
+/** Index ďalšej rekapitulácie Pitky v udalostiach príkazu (inak koniec zoznamu). */
+function nasledujuca(events: readonly Event[], i: number): number {
+  const j = events.findIndex((x, k) => k > i && x.type === "pitkaRekap");
+  return j === -1 ? events.length : j;
+}
+
 const SEMIENKA = [3, 8, 21];
 const PARTIE = SEMIENKA.map(partia);
 
@@ -68,7 +74,7 @@ describe("rekapitulácia Pitky", () => {
       // Cirhózy od začiatku Pitky podľa logu motora (aj tie z odkrytia NA EX).
       let cirhozy: [number, number] = [0, 0];
       for (const z of zaznamy) {
-        for (const e of z.events) {
+        for (const [ie, e] of z.events.entries()) {
           if (e.type === "faza" && e.faza === "pitka") cirhozy = [0, 0];
           if (e.type === "log") {
             const m = /^Hráč (\d) získava Cirhózu/.exec(e.text);
@@ -100,10 +106,12 @@ describe("rekapitulácia Pitky", () => {
           // Zvyšok pečene pod prahom motor po Pitke vynuluje (log dokonciPitku); zadĺženie
           // od v7 ostáva na účte (D6) — v rekapitulácii je ako zvyšok.
           for (const p of [0, 1] as const) {
-            const riadok = z.events.find((x) => x.type === "log" && x.text.startsWith(`Hráč ${p + 1}: po Pitke sa pečeň`));
+            // Jeden príkaz smie dohrať aj viac Pitiek (nevyhnutné ťahy) — log patrí tejto, nie prvej.
+            const poTejto = z.events.slice(ie + 1, nasledujuca(z.events, ie));
+            const riadok = poTejto.find((x) => x.type === "log" && x.text.startsWith(`Hráč ${p + 1}: po Pitke sa pečeň`));
             const m = riadok?.type === "log" ? /pečeň \((\d+)\)/.exec(riadok.text) : null;
             expect(Number(m?.[1] ?? 0)).toBe(pecenPitky(r, p) - r.pecen.cirhozy[p] * r.pecen.prah[p]);
-            const ucet = z.events.find((x) => x.type === "log" && x.text.startsWith(`Hráč ${p + 1}: zadĺženie `));
+            const ucet = poTejto.find((x) => x.type === "log" && x.text.startsWith(`Hráč ${p + 1}: zadĺženie `));
             const u = ucet?.type === "log" ? /zadĺženie (\d+) ostáva/.exec(ucet.text) : null;
             expect(Number(u?.[1] ?? 0)).toBe(zadlzeniePitky(r, p) - r.zadlzenie.dlhy[p] * r.zadlzenie.prah[p]);
           }
@@ -132,6 +140,8 @@ describe("rekapitulácia Pitky", () => {
               expect(z.po.faza === "bitka" || z.po.kolo > z.pred.kolo || z.po.koniec !== null).toBe(true);
             } else {
               dalej++;
+              // Po príkaze, ktorý dohral aj ďalšie Pitky, je stav až po poslednej z nich.
+              if (nasledujuca(z.events, i) < z.events.length) continue;
               expect(z.po.faza === "zhromazdenie" || z.po.faza === "pitka").toBe(true);
               expect(z.po.kolo).toBe(z.pred.kolo);
             }
@@ -169,7 +179,7 @@ describe("rekapitulácia Pitky", () => {
 });
 
 describe("rekapitulácia bitky", () => {
-  it("tuhé, Viera × Povera, mäkké a blok z Pitiek kola sedia s poškodením bitky", () => {
+  it("tuhé, Viera × Povera, zvyšné Povery a blok z Pitiek kola sedia s poškodením bitky", () => {
     let bitiek = 0;
     let sPoverou = 0;
     let zrusenych = 0;
@@ -186,7 +196,6 @@ describe("rekapitulácia bitky", () => {
           bitiek++;
           const d = e.damage;
           expect(r.tuheSpolu).toEqual([d.tuhe[0], d.tuhe[1]]);
-          expect(r.makke).toEqual([d.makke[0], d.makke[1]]);
           expect(r.celkove).toEqual([d.celkove[0], d.celkove[1]]);
           expect(r.vitaz).toBe(e.vitaz);
           expect(r.prebytok).toBe(e.prebytok);
@@ -200,9 +209,9 @@ describe("rekapitulácia bitky", () => {
             expect(sucet(r.povera, p) - r.zrusenaPovera[p]).toBe(d.zvysnaPovera[p]);
             expect(r.zrusenaViera[p]).toBe(r.zrusenaPovera[q]);
             expect(r.zrusenaViera[p]).toBe(Math.min(sucet(r.viera, p), sucet(r.povera, q)));
-            // Zvyšná Povera zaberie najviac na súperove priznané Dlhy.
-            expect(r.makke[p]).toBe(Math.min(d.zvysnaPovera[p], r.makkeStrop[p]));
-            if (!r.bezStropu[p]) expect(r.makkeStrop[p]).toBeGreaterThanOrEqual(r.priznaneDlhy[q]);
+            // Zvyšné Povery (v8.3) idú na klebety, nie do poškodenia; celkové = tuhé.
+            expect(r.zvysnaPovera[p]).toBe(d.zvysnaPovera[p]);
+            expect(r.celkove[p]).toBe(r.tuheSpolu[p]);
             expect(sucet(r.pohorsenie.polozky, p)).toBe(r.pohorsenie.spolu[p]);
             if (sucet(r.povera, p) > 0) sPoverou++;
             // Podrobný náhľad: súčet ikon = číslo riadku; zrušené dali 0 a vedia čím.

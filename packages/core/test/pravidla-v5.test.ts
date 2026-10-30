@@ -276,12 +276,12 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     expect(prahyHraca(data, s, 1).exekucia).toBe(2);
   });
 
-  it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Výpalník (Neprajník) strop mäkkého nezdvíha", () => {
+  it("Alkoholik a Kmotor prahy Cirhózy a Dlhu nemenia, Výpalník (Neprajník) Povery nemení", () => {
     let s = setupSBalickom(data, 94);
     s = sPriaznou(sPriaznou(sPriaznou(s, "ALKOHOLIK", 0, 3), "UZERNIK", 0, 3), "NEPRAJNIK", 0, 3);
     expect(prahyHraca(data, s, 0).cirhoza).toBe(KONSTANTY.PRAH_CIRHOZY_ZAKLAD);
     expect(prahyHraca(data, s, 0).dlh).toBe(KONSTANTY.PRAH_DLHU_ZAKLAD);
-    expect(rozpisPoskodenia(data, s, [{}, {}])[0].makkeStrop).toBe(0);
+    expect(rozpisPoskodenia(data, s, [{}, {}])[0].zvysnaPovera).toBe(0);
   });
 
   it("Kmotor (Úžerník): po bitke zmizne 1 / 2 / 3 priznaných Dlhov, bez Dlhu nič", () => {

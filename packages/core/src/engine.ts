@@ -29,7 +29,7 @@ import {
 } from "./player.ts";
 import type { BattleOutcome, BattleSide, DamageResult, RozhodnutieBitky } from "./battle.ts";
 import { battleOutcome, computeDamage, spakyZaBitku, zhoriPriExekucii } from "./battle.ts";
-import type { ElderState, MarkerPos, PosunMarkera } from "./elders.ts";
+import type { ElderState, Klebety, MarkerPos, PosunMarkera } from "./elders.ts";
 import {
   MARKER_STRED,
   NAZVY_ZON,
@@ -43,6 +43,8 @@ import {
   prebudenyPre,
   priazenHraca,
   priazenSila,
+  poveraMozna,
+  ucinnaPriazen,
   obavanyHrac,
   poKonciKola,
   sPosunutymMarkerom,
@@ -249,6 +251,7 @@ export interface SkryteNaex {
 export type BitkaKrok =
   | "benzinka"
   | "kar"
+  | "povery"
   | "exekutor"
   | "pohorsenie"
   | "prebytok"
@@ -265,7 +268,13 @@ export interface BitkaStav {
   /** Špaky, ktoré hráčom zhoreli pri exekúcii v tejto bitke (v6) — idú na nástenku. */
   readonly exekutor: readonly [number, number];
   readonly pohorsenieZostava: readonly [number, number];
-  /** Pohoršenia, ktoré hráči v bitke dostali (pred použitím) — rekapitulácia bitky. */
+  /**
+   * Povery, ktoré hráč ešte rozdelí medzi starších (v8.3 „Výpožička priazne“) —
+   * zvyšné po vyrušení s Vierou; nastaví sa pri vstupe do kroku Povery.
+   */
+  readonly poveryZostava?: readonly [number, number];
+  /** Klebety tohto kola: o koľko stupňov Povery posunuli silu priazne starších (elders.ts). */
+  readonly klebety?: Klebety;
   readonly pohorseniaSpolu?: readonly [number, number];
   /**
    * Koľko z pohorsenieZostava sú ešte Pohoršenia zo súperovho patronátu (v6,
@@ -534,6 +543,8 @@ export type Command =
   | { readonly type: "refillPoldeci" }
   // Pohoršenie (v5 bod 7): marker o 1 k súperovi (bez kSebe), alebo k sebe (kSebe: true).
   | { readonly type: "pohorsenie"; readonly elderId: string; readonly kSebe?: boolean }
+  // Povera (v8.3): sila priazne staršieho o stupeň k hráčovi, len na toto kolo.
+  | { readonly type: "povera"; readonly elderId: string }
   | { readonly type: "prebytok"; readonly elderId: string }
   // Vypiť (pravidlá v3): v Zhromaždení otoč plný poldeci na vypitý — limit
   // klesne o 1, ale ďalšou kartou ťah nekončí (zahráš dve za sebou).
@@ -651,14 +662,17 @@ function obranca(s: { utocnik: PlayerId }): PlayerId {
  */
 export function priazen(
   data: GameData,
-  state: { readonly starsi: readonly ElderState[] },
+  state: { readonly starsi: readonly ElderState[]; readonly bitkaStav?: { readonly klebety?: Klebety } | null },
   favour: Favour,
   p: PlayerId,
 ): number {
+  const klebety = state.bitkaStav?.klebety;
   for (const elder of state.starsi) {
     // Priazeň dáva ukazovateľ (scorecard), nie karta, ktorá na ňom leží —
-    // aj po náhrade staršieho.
-    if (favourStarsieho(data, elder) === favour && priazenHraca(elder) === p) return KONSTANTY.NASOBOK_PRIAZNE * priazenSila(elder);
+    // aj po náhrade staršieho. Klebety z Povier (v8.3) ju v tomto kole posúvajú.
+    if (favourStarsieho(data, elder) !== favour) continue;
+    const u = ucinnaPriazen(elder, klebety);
+    if (u.hrac === p) return KONSTANTY.NASOBOK_PRIAZNE * u.sila;
   }
   return 0;
 }
@@ -668,7 +682,12 @@ export function priazen(
  * (Michal 2026-10-24/25, miera sily: 1 bod ≈ 1 cigareta za kolo) pôsobia silou,
  * nie dvojnásobkom.
  */
-export function silaPriazne(data: GameData, state: { readonly starsi: readonly ElderState[] }, favour: Favour, p: PlayerId): number {
+export function silaPriazne(
+  data: GameData,
+  state: { readonly starsi: readonly ElderState[]; readonly bitkaStav?: { readonly klebety?: Klebety } | null },
+  favour: Favour,
+  p: PlayerId,
+): number {
   return priazen(data, state, favour, p) / KONSTANTY.NASOBOK_PRIAZNE;
 }
 
@@ -1100,10 +1119,9 @@ function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [ActionSums,
       sums: { ...sums[p], Povera: povera, ...(vieraNavyse > 0 ? { Viera: (sums[p].Viera ?? 0) + vieraNavyse } : {}) },
       cirhozaBonus: cirhozyPriznane(s, opp),
       tuheBonus: mody[p]!.tuheBonus + nastrojeTuhe(s, p, sums[p]).reduce((a, z) => a + z.tuhe, 0),
-      // Čierna mačka: Povery bez stropu (Výpalník, predtým Neprajník, vo v5 strop nezdvíha — má Výpalné).
-      makkeNadDlhy: zvieraPlati(data, s, p, "cierna_macka") ? Number.POSITIVE_INFINITY : 0,
+      // Čierna mačka (v8.3, návrh docs/napady/povery.html — otvorené P5): tvoje Povery sa Vierou nerušia.
+      poveryBezViery: zvieraPlati(data, s, p, "cierna_macka"),
       abstaky: verejneAbstaky(s, p),
-      priznaneDlhy: s.hraci[p].dlhy,
       // Bitkár v5 (Michal 2026-10-24): +1 / +2 / +3 tuhého, nie dvojnásobok.
       priazenBitkara: silaPriazne(data, s, "BITKAR", p),
       // svaty_text (Dedičstvo): hodnota tvojej Viery je vyššia.
@@ -1137,8 +1155,8 @@ export interface RozpisPoskodenia {
   readonly zrusenaPovera: number;
   /** Koľko mojich Povier súperov Farár ignoruje. */
   readonly poveraIgnorovana: number;
-  /** Strop mäkkého poškodenia (súperove priznané Dlhy + priazeň Neprajníka); Infinity = bez stropu. */
-  readonly makkeStrop: number;
+  /** Zvyšné Povery po vyrušení s Vierou — v8.3 posúvajú silu priazní (krok Povery). */
+  readonly zvysnaPovera: number;
 }
 
 export function rozpisPoskodenia(data: GameData, s: VerejnyStav, sums: readonly [ActionSums, ActionSums]): readonly [RozpisPoskodenia, RozpisPoskodenia] {
@@ -1163,7 +1181,7 @@ export function rozpisPoskodenia(data: GameData, s: VerejnyStav, sums: readonly 
       zrusenaViera: (ja.sums.Viera ?? 0) - dmg.zvysnaViera[p],
       zrusenaPovera: (ja.sums.Povera ?? 0) - dmg.zvysnaPovera[p],
       poveraIgnorovana: (sums[p].Povera ?? 0) - (ja.sums.Povera ?? 0),
-      makkeStrop: su.priznaneDlhy + (ja.makkeNadDlhy ?? 0),
+      zvysnaPovera: dmg.zvysnaPovera[p],
     };
   };
   return [rozpis(0), rozpis(1)];
@@ -1626,6 +1644,9 @@ function applyPrikaz(
       break;
     case "dohadzovacka":
       cmdDohadzovacka(s, data, cmd, hracId, events);
+      break;
+    case "povera":
+      cmdPovera(s, data, cmd, hracId, events);
       break;
     case "pohorsenie":
       cmdPohorsenie(s, data, cmd, hracId, events);
@@ -4021,6 +4042,30 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       }
     }
     // Exekúcia (Robota, Exekútor) ide od 2026-10-28 až po poškodení a špakoch za bitku (exekucieBitky).
+    b.krok = "povery";
+  }
+
+  // 1. Povery (v8.3 „Výpožička priazne“, Michal 2026-10-30): Viera a Povery sa vyrušia
+  // 1 : 1, každá zvyšná Povera posunie silu priazne jedného staršieho o stupeň k svojmu
+  // majiteľovi (marker sa nehýbe) — obranca rozdeľuje prvý, útočník vidí. Potom sa
+  // Pohoršenia prepočítajú (Abstinent už s klebetami).
+  if (b.krok === "povery") {
+    if (b.poveryZostava === undefined) {
+      const zvysne = poskodenieBitky(data, s as GameState, b.sums as readonly [ActionSums, ActionSums]).zvysnaPovera;
+      b.poveryZostava = [zvysne[0], zvysne[1]];
+    }
+    const zostava = b.poveryZostava;
+    for (const p of [obranca(s), s.utocnik]) {
+      if (zostava[p] <= 0) continue;
+      if (!s.starsi.some((e) => poveraMozna(e as ElderState, p, b.klebety as Klebety | undefined))) {
+        events.push({ type: "log", text: `Hráč ${p + 1} stráca ${pocet(zostava[p], "Poveru", "Povery", "Povier")} — všetky priazne sú už jeho v sile 3.` });
+        zostava[p] = 0;
+        continue;
+      }
+      b.caka = p;
+      return;
+    }
+    nastavSumy(s, data);
     b.krok = "pohorsenie";
   }
 
@@ -4497,6 +4542,28 @@ function textPosunu(data: GameData, elder: ElderState, smer: "k sebe" | "od seba
     strany = `hráč ${komu + 1} má priazeň +${sila} (${zmena}), hráč ${opponentOf(komu) + 1} ho ${strach}`;
   }
   return `${defOf(data, elder.karta).name} ${oKolko} ${smer} — ${stupne}: ${strany}.`;
+}
+
+/** Povera (v8.3): posunie silu priazne staršieho o stupeň k hráčovi p — len na toto kolo. */
+function cmdPovera(s: MutState, data: GameData, cmd: { elderId: string }, p: PlayerId, events: Event[]): void {
+  const b = s.bitkaStav;
+  need(s.faza === "bitka" && b !== null && b.krok === "povery" && b.caka === p, "Nečaká sa na Povery.");
+  need((b.poveryZostava?.[p] ?? 0) > 0, "Nemáš zvyšnú Poveru.");
+  const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
+  need(elder !== undefined, "Taký starší nie je.");
+  const klebety = (b.klebety ?? {}) as Klebety;
+  need(poveraMozna(elder as ElderState, p, klebety), "Priazeň tohto staršieho je už tvoja v sile 3.");
+  const pred = ucinnaPriazen(elder as ElderState, klebety);
+  b.klebety = { ...klebety, [elder.elderId]: (klebety[elder.elderId] ?? 0) + (p === 0 ? 1 : -1) };
+  const po = ucinnaPriazen(elder as ElderState, b.klebety as Klebety);
+  const zostava = b.poveryZostava as [number, number];
+  zostava[p] -= 1;
+  const text = (u: { hrac: PlayerId | null; sila: number }): string => (u.hrac === null ? "nikto" : `hráč ${u.hrac + 1} +${u.sila}`);
+  events.push({
+    type: "log",
+    text: `Povera (hráč ${p + 1}): ${defOf(data, elder.karta as CardInstance).name} — priazeň v tomto kole ${text(pred)} → ${text(po)}; marker sa nehýbe.`,
+  });
+  pokracujBitku(s, data, events);
 }
 
 function cmdPohorsenie(
@@ -5354,6 +5421,10 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         };
         for (const moja of prve(state.hraci[p].doberaci)) {
           for (const jeho of prve(state.hraci[opp].doberaci)) out.push({ type: "vestica", moja, jeho });
+        }
+      } else if (b.krok === "povery") {
+        if ((b.poveryZostava?.[p] ?? 0) > 0) {
+          for (const elder of state.starsi) if (poveraMozna(elder, p, b.klebety)) out.push({ type: "povera", elderId: elder.elderId });
         }
       } else if (b.krok === "pohorsenie") {
         for (const elder of state.starsi) {

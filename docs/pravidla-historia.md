@@ -1653,3 +1653,45 @@ Staré znenie §14b (po finále):
 >   bitke len víťazovi finále, pri sekere obom (§14). Potom **Nakladačku** rozdelí jej
 >   držiteľ medzi starších (§9.4) a strach za nové zóny, ktoré tým vzniknú, sa
 >   vyplatí hneď rovnako — víťazovi finále, pri sekere obom.
+
+
+## v8.3 — Povery „Výpožička priazne“ (Michal 2026-10-30, docs/napady/povery.html)
+
+Staré znenie §9.3 (poškodenie):
+
+> ### 9.3 Poškodenie
+>
+> ```
+> 1. Viera a Povera sa vyrušia 1:1
+>      moja Viera ruší súperove Povery
+>      moje Povery rušia súperovu Vieru
+>      cancel = min(viera[ja], povera[súper]);  obom sa odpočíta
+>
+> 2. tuhé[ja] = (Rana×1 + Pecka×2 + Petelica×3 + súperove priznané Cirhózy + sila Bitkára)
+>              − zvyšná_viera[súper] × hodnota_viery(súper)
+>              − počet_mojich_absťákov
+>      minimum 0
+>
+> 3. mäkké[ja] = min(zvyšná_povera[ja], priznané_dlhy[súper])   # Povera poškodzuje proti priznaným Dlhom
+>
+> 4. celkové[ja] = tuhé[ja] + mäkké[ja]
+> ```
+>
+> **Priznaná Cirhóza škodí tomu, kto ju priznal:** za každú priznanú Cirhózu
+> hráča dostane súper v každej bitke +1 tuhé (Veterinár to znižuje). Ráta sa ako
+> tuhé, takže ju zvyšná Viera tiež znižuje. Priazeň Bitkára pridá tuhé rovné
+> sile (+1 / +2 / +3), priazeň Veriaceho Vieru navyše (§10). Strop mäkkého
+> poškodenia ruší len Čierna mačka (§16). Tuhé ďalej menia efekty
+> kariet a lokalít (Pes, Pijan, Svokra, Pasca, Lesná cesta, Ihrisko…, §15, §16).
+
+Staré znenie §9.4 (kto drží Nakladačku):
+
+> Nakladačku drží  = vyššie CELKOVÉ poškodenie (aj pri remíze v tuhom)
+> Nakladačka       = |rozdiel celkových|      (pri rovnakom celkovom ju nikto nezíska)
+
+> **Nakladačka (krok 4c)** drží hráč s vyšším celkovým poškodením (spravidla víťaz,
+> no aj porazený či pri remíze v tuhom).
+
+Staré znenie §16 (Čierna mačka):
+
+> | Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov. |

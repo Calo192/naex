@@ -100,13 +100,13 @@
     {
       "id": "2.akcie.povera",
       "paragraf": "2. Karta, akcie, tagy, varianty › Akcie",
-      "pravidlo": "Povera poškodzuje: mäkké poškodenie proti súperovým priznaným Dlhom (najviac toľko, koľko ich má); ruší sa s Vierou 1:1.",
+      "pravidlo": "Povera (v8.3 „Výpožička priazne“): nepoškodzuje — ruší sa s Vierou 1:1, každá zvyšná v bitke posunie silu priazne jedného staršieho o stupeň k majiteľovi, len na toto kolo (§9.1).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › mäkké poškodenie je zastropené súperovým priznaným dlhom",
-        "packages/core/test/battle.test.ts › Viera a Povera sa vyrušia 1:1 a zrušená Povera neudelí nič"
+        "packages/core/test/battle.test.ts › Viera a Povera sa vyrušia 1:1 — zvyšné Povery idú na klebety, nie do poškodenia (v8.3)",
+        "packages/core/test/povery-v83.test.ts › Povera posunie silu priazne o stupeň k majiteľovi — marker sa nehýbe; obranca prvý, potom útočník"
       ],
-      "poznamka": "v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+      "poznamka": "v8.3 (Michal 2026-10-30, docs/napady/povery.html): mäkké poškodenie zaniklo."
     },
     {
       "id": "2.akcie.viera-hodnota",
@@ -1077,11 +1077,29 @@
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › Pohoršenie nikdy nedostane marker na krajnú pozíciu; packages/core/test/revizia-kariet.test.ts › Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
+      "id": "9.povery.vypozicka",
+      "paragraf": "9. Bitka › 9.1 Povery",
+      "pravidlo": "Krok Povery pred Pohoršením (v8.3): zvyšné Povery po Viere posunú silu priazne staršieho o stupeň k majiteľovi (zníženie, preklopenie, požičanie zo stredu, zosilnenie; strop 3), marker sa nehýbe, platí do konca kola (aj Abstinent, Bitkár, Kmotor); obranca rozdeľuje prvý; klebety sú verejné.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/povery-v83.test.ts › Povera posunie silu priazne o stupeň k majiteľovi — marker sa nehýbe; obranca prvý, potom útočník",
+        "packages/core/test/povery-v83.test.ts › požičať priazeň staršieho v strede (0 → moja 1), preklopiť a zosilniť vlastnú — najviac 3",
+        "packages/core/test/povery-v83.test.ts › klebety pôsobia v poškodení (Bitkár) aj na Pohoršenia z Abstinenta — a po kole zaniknú",
+        "packages/core/test/povery-v83.test.ts › klebety a zvyšné Povery sú verejné — obaja hráči ich vidia rovnako",
+        "packages/core/test/povery-v83.test.ts › bot Povery rozdeľuje (a celá partia botov dobehne)"
+      ],
+      "poznamka": "Michal 2026-10-30, docs/napady/povery.html (Rozhodnuté: Výpožička priazne)."
+    },
+    {
       "id": "9.poskodenie.vzorec",
       "paragraf": "9. Bitka › 9.3 Poškodenie",
-      "pravidlo": "Viera a Povera sa rušia 1:1; tuhé = akcie + súperove priznané Cirhózy + sila Bitkára − zvyšná súperova Viera × hodnota − vlastné Absťáky (min 0); mäkké = min(zvyšná Povera, súperove priznané Dlhy), strop ruší len Čierna mačka.",
-      "stav": "na-overenie",
-      "testy": [],
+      "pravidlo": "Viera a Povera sa rušia 1:1 (Čierna mačka nie); tuhé = akcie + súperove priznané Cirhózy + sila Bitkára (po klebetách) − zvyšná súperova Viera × hodnota − vlastné Absťáky (min 0). Mäkké a celkové poškodenie od v8.3 nie sú.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé",
+        "packages/core/test/battle.test.ts › priazeň Bitkára pridáva tuhé navyše",
+        "packages/core/test/povery-v83.test.ts › mäkké a celkové poškodenie zaniklo: Nakladačka = rozdiel tuhého, drží ju víťaz"
+      ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/battle.test.ts › Viera a Povera sa vyrušia 1:1 a zrušená Povera neudelí nič; packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé; packages/core/test/battle.test.ts › priazeň Bitkára pridáva tuhé navyše; packages/core/test/battle.test.ts › mäkké poškodenie je zastropené súperovým priznaným dlhom; packages/core/test/nahlad.test.ts › odhad sa rovná poškodeniu, ktoré vyrátal motor."
     },
     {
@@ -1117,14 +1135,15 @@
     {
       "id": "9.vysledok.prebytok-drzi",
       "paragraf": "9. Bitka › 9.4 Výsledok",
-      "pravidlo": "Nakladačku drží hráč s vyšším celkovým; rozdelí sa až po špakoch za bitku — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje ten, proti komu sa ráta (v8, spravidla porazený; pri sekere nižšie celkové), vo finále držiteľ; rozdeliť treba celý.",
+      "pravidlo": "Nakladačka = rozdiel tuhého, drží ju víťaz (v8.3; pri remíze v tuhom nikto); rozdelí sa až po špakoch za bitku — k súperovi držiteľa, pole podľa ceny zóny (v8.2: vyberá sa len starší, marker ide, kým zvyšok stačí; zvyšok, ktorý nestačí na žiadny posun, prepadne). Rozdeľuje porazený; vo finále sa nerozdeľuje (v8.3); rozdeliť treba celú.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › Nakladačku drží hráč s vyšším celkovým, aj keď bitku prehral",
+        "packages/core/test/battle.test.ts › Nakladačku drží víťaz — rozdiel tuhého; Povery ju nemenia (v8.3)",
+        "packages/core/test/battle.test.ts › pri remíze v tuhom nevyhrá nikto a Nakladačku nedrží nikto (v8.3: Nakladačka = rozdiel tuhého)",
         "packages/core/test/battle.test.ts › pri remíze v celkovom poškodení nikto nezíska Nakladačku",
         "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1",
         "packages/core/test/pravidla-v8.test.ts › víťaz drží Nakladačku, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on",
-        "packages/core/test/pravidla-v8.test.ts › pri sekere rozdeľuje ten s nižším celkovým poškodením"
+        "packages/core/test/pravidla-v8.test.ts › pri sekere Nakladačku nedrží nikto — Povery už poškodenie nedávajú (v8.3)"
       ],
       "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
@@ -1707,11 +1726,12 @@
     {
       "id": "16.karta.poradkyna-macka",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Finančná poradkyňa: Dlh z jej akcií dostáva súper; Čierna mačka: Povery bez stropu súperových Dlhov.",
+      "pravidlo": "Finančná poradkyňa: Dlh z jej akcií dostáva súper; Čierna mačka (v8.3, návrh — otvorené P5): majiteľove Povery sa Vierou nerušia.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/poradkyna-nahlad.test.ts › Dlh z jej akcií náhľad pripíše súperovi rovnako ako Pitka",
-        "packages/core/test/effects.test.ts › Neprajník a Čierna mačka: Povery nad súperove priznané Dlhy"
+        "packages/core/test/effects.test.ts › Čierna mačka (v8.3, návrh P5): Povery sa Vierou nerušia — mäkké poškodenie nie je",
+        "packages/core/test/battle.test.ts › Čierna mačka (v8.3, návrh): moje Povery sa Vierou nerušia — Viera ostáva na tuhé"
       ]
     },
     {

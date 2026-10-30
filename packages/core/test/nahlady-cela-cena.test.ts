@@ -172,28 +172,6 @@ describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním
     expect(zmeny).toBeGreaterThan(0);
   });
 
-  it("mäkké: zmena Povier pod stropom súperových priznaných Dlhov", () => {
-    const s0 = vPitke([
-      lezi(instanceFor(data, "poverciva_test", V4, V4), 0),
-      lezi(instanceFor(data, "poverciva_test", V4, V4), 0),
-      lezi(instanceFor(data, "poverciva_test", V4, V4), 0),
-    ]);
-    // Strop mäkkého vysoko, aby NA EX mäkké naozaj zmenilo.
-    const s: GameState = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], dlhy: 20 }] };
-    const p: PlayerId = 1;
-    let zmeny = 0;
-    for (const uid of ciele(s)) {
-      const pred = viewFor(data, s, p);
-      const [d0] = dopadyNahladu(data, pred, poNaex(pred, p, uid), 0);
-      // NA EX naraz (v5): skryté NA EX sa do línie dostane až pri odkrytí.
-      const t = sNaexNaKartach(naex(s, p, uid));
-      // Bitka ráta poškodenie poskodenieBitky (vyhodnotPoskodenie).
-      const makke = (x: GameState): number => poskodenieBitky(data, x, evaluateLine(data, lineState(x)).sums).makke[0];
-      expect(d0.makke).toBe(makke(t) - makke(s));
-      if (d0.makke !== 0) zmeny++;
-    }
-    expect(zmeny).toBeGreaterThan(0);
-  });
 });
 
 describe("náhľad patronátu: cigarety a Pohoršenia súpera", () => {

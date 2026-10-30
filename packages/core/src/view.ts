@@ -16,7 +16,7 @@ import type { CardInstance, Favour, Phase, PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
-import type { ElderState, MarkerPos, PosunMarkera } from "./elders.ts";
+import type { ElderState, Klebety, MarkerPos, PosunMarkera } from "./elders.ts";
 import type {
   BitkaKrok,
   BitkaNaNastenke,
@@ -82,6 +82,9 @@ export interface BitkaVerejne {
   /** Starší, ktorých prebytok už posunul — za každého porazený raz dostane cigaretu (verejné). */
   readonly prebytokPosunute: readonly string[];
   readonly pohorsenieZostava: readonly [number, number];
+  /** Povery, ktoré hráči ešte rozdelia (v8.3), a klebety tohto kola — verejné. */
+  readonly poveryZostava: readonly [number, number];
+  readonly klebety: Klebety;
   /** Z toho Pohoršenia zo súperovho patronátu — nesmú na jeho patróna (pohorsenieMozne, v6). */
   readonly pohorseniaPatronatu: readonly [number, number];
   /** Špaky, ktoré hráčom v tejto bitke zhoreli pri exekúcii (v6). */
@@ -406,6 +409,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             prebytokZostava: bitka.prebytokZostava,
             prebytokPosunute: bitka.prebytokPosunute,
             pohorsenieZostava: bitka.pohorsenieZostava,
+            poveryZostava: bitka.poveryZostava ?? [0, 0],
+            klebety: bitka.klebety ?? {},
             pohorseniaPatronatu: bitka.pohorseniaPatronatu ?? [0, 0],
             exekutor: bitka.exekutor,
             benzinkaZostava: bitka.benzinkaZostava,

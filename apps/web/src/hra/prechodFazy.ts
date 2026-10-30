@@ -48,7 +48,7 @@ export function medziobrazovka(
       kluc: `${bitkaKola ?? view.kolo}|bitka`,
       nadnadpis: `Kolo ${bitkaKola ?? view.kolo}`,
       nadpis: "Bitka",
-      text: "Spočíta sa poškodenie z línie. Delí sa na tuhé (Rana, Pecka, Petelica) a mäkké (Povera): viac tuhého vyhráva bitku a špaky, viac celkového dáva Nakladačka na posun starších. Sleduj počítadlo — rozhoduješ až pri Pohoršení či Nakladačky.",
+      text: "Najprv Povery: každá, ktorú nezruší Viera, posunie silu priazne jedného staršieho o stupeň k svojmu majiteľovi — len na toto kolo, marker sa nehýbe. Potom Pohoršenie a poškodenie: viac tuhého (Rana, Pecka, Petelica) vyhráva bitku a špaky, rozdiel tuhého je Nakladačka na posun starších.",
     };
   }
   const obranca = view.utocnik !== ja;
@@ -132,11 +132,11 @@ export function medziobrazovka(
       const text =
         drzi === ja
           ? vyberam
-            ? "Máš vyššie celkové poškodenie. Rozdeľ Nakladačku medzi starších — vyber staršieho, marker pôjde k súperovi, kým zvyšok stačí; nový stupeň strachu zaplatí koniec ďalšieho kola, ak sa udrží."
-            : `Máš vyššie celkové poškodenie: Nakladačka posunie markery k súperovi (pole stojí 1–4 podľa zóny) a starší sa začnú báť teba. Ktorých, vyberá ${S}.`
+            ? "Máš vyššie tuhé poškodenie. Rozdeľ Nakladačku medzi starších — vyber staršieho, marker pôjde k súperovi, kým zvyšok stačí; nový stupeň strachu zaplatí koniec ďalšieho kola, ak sa udrží."
+            : `Máš vyššie tuhé poškodenie: Nakladačka posunie markery k súperovi (pole stojí 1–4 podľa zóny) a starší sa začnú báť teba. Ktorých, vyberá ${S}.`
           : vyberam
-            ? `${S} má vyššie celkové poškodenie: Nakladačka posunie markery k tebe, ale ktorých starších, vyberáš ty — vezmi si priazne, ktoré sa ti hodia. Za každého posunutého staršieho dostaneš cigaretu.`
-            : `${S} má vyššie celkové poškodenie a rozdeľuje Nakladačku medzi starších — ich markery pôjdu k tebe.`;
+            ? `${S} má vyššie tuhé poškodenie: Nakladačka posunie markery k tebe, ale ktorých starších, vyberáš ty — vezmi si priazne, ktoré sa ti hodia. Za každého posunutého staršieho dostaneš cigaretu.`
+            : `${S} má vyššie tuhé poškodenie a rozdeľuje Nakladačku medzi starších — ich markery pôjdu k tebe.`;
       return { kluc: `${view.kolo}|Nakladačka`, nadnadpis: kolo, nadpis: "Nakladačka", text };
     }
     default:

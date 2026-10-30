@@ -47,12 +47,12 @@ describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplat
     expect(spojVznikne(nastroj, { ...kon, umlcany: true })).toBe(false);
   });
 
-  it("Čierna mačka vedľa Mäsiara nezruší strop mäkkého; Kohút a Krokodíl neplatia", () => {
+  it("Čierna mačka vedľa Mäsiara neplatí — Viera jej Povery ruší (v8.3); Kohút a Krokodíl neplatia", () => {
     const mackaSama = stol([[lezi(inst("cierna_macka"), 0)], []]);
     const mackaPriMasiarovi = stol([[lezi(inst("cierna_macka"), 0), lezi(inst("masiar"), 1)], []]);
-    const sums = [{ Povera: 2 }, {}] as const;
-    expect(poskodenieBitky(data, mackaSama, sums).makke[0]).toBe(2);
-    expect(poskodenieBitky(data, mackaPriMasiarovi, sums).makke[0]).toBe(0);
+    const sums = [{ Povera: 2 }, { Viera: 2 }] as const;
+    expect(poskodenieBitky(data, mackaSama, sums).zvysnaPovera[0]).toBe(2);
+    expect(poskodenieBitky(data, mackaPriMasiarovi, sums).zvysnaPovera[0]).toBe(0);
     const s = stol([[lezi(inst("kohut"), 0), lezi(inst("masiar"), 1), lezi(inst("krokodil"), 1)], []]);
     expect(zvieraPlati(data, s, 0, "kohut")).toBe(false);
     expect(zvieraPlati(data, s, 1, "krokodil")).toBe(false);

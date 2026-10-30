@@ -260,7 +260,7 @@ export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [
     case "moment":
       return `★ ${textHlasky(e.moment.popis, mena, rody)}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]}, celkové ${e.damage.celkove[0]}:${e.damage.celkove[1]} — ${
+      return `Bitka: tuhé ${e.damage.tuhe[0]}:${e.damage.tuhe[1]} — ${
         e.vitaz === null
           ? "sekera, špaky za bitku čakajú na víťaza ďalšej bitky"
           : `vyhráva ${meno(e.vitaz)}${e.rozhodlo === "abstak" ? " (remíza, menej Absťákov)" : e.rozhodlo === "dlhy" ? " (remíza, menej priznaných Dlhov)" : ""}`

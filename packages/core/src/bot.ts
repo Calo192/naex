@@ -503,6 +503,8 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       // Pohoršenie je bod posunu markera bez limitu — nový stupeň zaplatí raz, keď sa
       // udrží do konca ďalšieho kola (v8.3); pevných 0,5 za kus podceňovalo karty s Pohoršením.
       w += zaPohorsenie * Math.min(POHORSENIE_STROP, pohorsenia[p]);
+      // Povera (v8.3): zvyšná po Viere posunie silu priazne o stupeň na toto kolo — nikdy hluchá.
+      w += ZA_POVERU * Math.min(POHORSENIE_STROP, dmg.zvysnaPovera[p]);
       const naex = s.strany.flat().filter((pl) => pl.naexBy === p).length;
       w += (0.4 * k.buducnost + vykupne * KONSTANTY.SPAKY_ZA_POLDECI) * Math.min(sp.Poldeci ?? 0, h.poldeciVypite + naex);
       // Akcia Dlh zadlžuje (karta Dlh za každý celý prah). Pečeň pod prahom sa po Pitke
@@ -729,6 +731,8 @@ function cenaNovejCirhozy(k: Kontext, s: GameState): number {
 
 /** Koľko z hodnoty posunu markera ostane, keď ho súper môže odtlačiť späť (turnaj v6). */
 const VYDRZ_POSUNU = 0.6;
+/** Stupeň priazne na jedno kolo z jednej Povery (v8.3) — v bitke ho bot ráta presne (najlepsi). */
+const ZA_POVERU = 0.5;
 /** Strop prebytku a Pohoršení v odhade bitky — markerov a polí je konečne veľa. */
 const PREBYTOK_STROP = 8;
 const POHORSENIE_STROP = 6;
@@ -1331,6 +1335,7 @@ function bitka(v: Volba): Command | null {
   const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 3);
 
   switch (b.krok) {
+    case "povery":
     case "pohorsenie":
     case "prebytok":
       return najlepsi(v, v.legal, ohodnot);

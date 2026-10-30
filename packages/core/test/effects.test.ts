@@ -92,23 +92,23 @@ describe("M10 — vzorové efekty (háčiky)", () => {
   });
 
 
-  it("Neprajník a Čierna mačka: Povery nad súperove priznané Dlhy", () => {
-    const strana = (sums: Record<string, number>, dlhy: number, nad?: number) => ({
+  it("Čierna mačka (v8.3, návrh P5): Povery sa Vierou nerušia — mäkké poškodenie nie je", () => {
+    const strana = (sums: Record<string, number>, bezViery = false) => ({
       sums,
       cirhozaBonus: 0,
       tuheBonus: 0,
       abstaky: 0,
-      priznaneDlhy: dlhy,
       priazenBitkara: 0,
       hodnotaViery: 1,
-      ...(nad === undefined ? {} : { makkeNadDlhy: nad }),
+      ...(bezViery ? { poveryBezViery: true } : {}),
     });
-    // Bez priazne: mäkké je zastropené súperovými priznanými Dlhmi (1).
-    expect(computeDamage([strana({ Povera: 4 }, 0), strana({}, 1)]).makke[0]).toBe(1);
-    // Neprajník so silou 1 (priazeň 2): o 2 viac.
-    expect(computeDamage([strana({ Povera: 4 }, 0, 2), strana({}, 1)]).makke[0]).toBe(3);
-    // Čierna mačka: bez stropu.
-    expect(computeDamage([strana({ Povera: 4 }, 0, Number.POSITIVE_INFINITY), strana({}, 0)]).makke[0]).toBe(4);
+    // Bez mačky: 1 Viera zruší 1 Poveru, zvyšné 3 idú na klebety.
+    expect(computeDamage([strana({ Povera: 4 }), strana({ Viera: 1 })]).zvysnaPovera[0]).toBe(3);
+    // S mačkou sa nerušia — Povery aj Viera ostávajú.
+    const d = computeDamage([strana({ Povera: 4 }, true), strana({ Viera: 1 })]);
+    expect(d.zvysnaPovera[0]).toBe(4);
+    expect(d.zvysnaViera[1]).toBe(1);
+    expect(d.makke).toEqual([0, 0]);
   });
 });
 

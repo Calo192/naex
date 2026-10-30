@@ -431,26 +431,17 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
   );
 }
 
-/** Celkové = tuhé + Povery, ktoré zabrali; komu ide prebytok (PRAVIDLA §9.4). */
+/** Tuhé poškodenie a komu ide Nakladačka (PRAVIDLA §9.4; od v8.3 Povery poškodenie nedávajú). */
 function SucetBitky({ r, ja, menoSupera, ikonaPovery }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly menoSupera: string; readonly ikonaPovery: ReactNode }) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const cast = (kto: PlayerId): ReactNode => (
     <span className={kto === ja ? "ja" : "su"}>
       <b>{r.tuheSpolu[kto]}</b>
-      {r.makke[kto] > 0 && (
-        <>
-          {" + "}
-          {ikonaPovery}
-          <b>{r.makke[kto]}</b>
-          {" = "}
-          <b>{r.celkove[kto]}</b>
-        </>
-      )}
     </span>
   );
   return (
     <div className="rk-sucet" role="row">
-      celkové {cast(ja)} : {cast(su)}
+      tuhé {cast(ja)} : {cast(su)}
       <span>
         {r.prebytokDrzi === null ? " · Nakladačka nikto" : ` · Nakladačka ${r.prebytok} → ${r.prebytokDrzi === ja ? "ty" : menoSupera}`}
       </span>
@@ -519,22 +510,13 @@ function VieraPovera({
         </Cip>
       );
     }
-    if (ucinkuje && druh === "Povera" && z.length > zrusenych) {
-      // Súperove priznané Dlhy ako karty: tie, na ktoré Povera zabrala, svietia.
-      const strop = r.bezStropu[kto] ? r.makke[kto] : r.priznaneDlhy[proti];
-      const kariet = Math.min(strop, 6);
+    if (ucinkuje && druh === "Povera" && (r.zvysnaPovera?.[kto] ?? 0) > 0) {
+      // v8.3: zvyšné Povery posunuli silu priazní (klebety na toto kolo), nie poškodenie.
+      const n = r.zvysnaPovera[kto];
       ucinok = (
-        <>
-          <span className="vp-karty" title={r.bezStropu[kto] ? "Čierna mačka: bez stropu" : `${proti === ja ? "Ty máš" : `${menoSupera} má`} ${r.priznaneDlhy[proti]} priznaných Dlhov`}>
-            {kariet === 0 && <KartaKliatby prazdna />}
-            {Array.from({ length: kariet }, (_, i) => (
-              <KartaKliatby key={i} ikona={ikona("Dlh")} kto={proti === ja ? "ja" : "su"} svieti={i < r.makke[kto]} />
-            ))}
-          </span>
-          <Cip trieda={r.makke[kto] > 0 ? "zisk" : "nic"} title={`${r.makke[kto]} z ${z.length - zrusenych} zabrali (do celkového, Nakladačka)`}>
-            {r.makke[kto] > 0 ? `+${r.makke[kto]}` : "0"}
-          </Cip>
-        </>
+        <Cip trieda={kto2} title={`${n} ${n === 1 ? "Povera posunula" : "Povery posunuli"} silu priazní o stupeň k ${kto === ja ? "tebe" : menoSupera} — len na toto kolo`}>
+          priazeň ±{n}
+        </Cip>
       );
     }
     const sive = zruseneSloty(druh, kto).filter((x) => vid(x.uid));
@@ -555,7 +537,7 @@ function VieraPovera({
                 ? ""
                 : druh === "Viera"
                   ? " zostala"
-                  : zvysok < r.makke[kto]
+                  : zvysok < (r.zvysnaPovera?.[kto] ?? 0)
                     ? " zabrala"
                     : " naprazdno";
             return (

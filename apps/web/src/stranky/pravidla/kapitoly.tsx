@@ -498,23 +498,27 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "09-bitka",
     vSkratke: [
       "Tuhé: Rana 1, Pecka 2, Petelica 3. Viera ho znižuje.",
-      "Povera poškodzuje (mäkké) proti súperovým priznaným Dlhom — najviac toľko, koľko ich má.",
+      "Povera nepoškodzuje: každá, ktorú nezruší Viera, posunie silu priazne staršieho o stupeň k tebe — len na toto kolo.",
       "Viac tuhého vyhráva: víťaz dostane 1 špak za každú kartu v línii, lokalita ide na nástenku.",
       "Remízu rozhodne menej Absťákov, potom menej Dlhov, inak sekera.",
-      "Nakladačku drží hráč s vyšším celkovým poškodením, rozdeľuje ju súper (spravidla porazený).",
+      "Nakladačka je rozdiel tuhého: drží ju víťaz, rozdeľuje ju porazený.",
     ],
     obsah: () => (
       <>
-        <H3 id="bitka-poskodenie">Tuhé a mäkké poškodenie</H3>
+        <H3 id="bitka-poskodenie">Povery a tuhé poškodenie</H3>
         <p>
-          <P k="tuhe">Tuhé</P> poškodenie (Rana 1, Pecka 2, Petelica 3) rozhoduje o víťazovi. <P k="makke">Mäkké</P> poškodenie dáva Povera —{" "}
-          <strong>poškodzuje</strong> proti súperovým priznaným Dlhom — najviac toľko, koľko ich má. Každá tvoja priznaná Cirhóza dá súperovi +1 tuhé.
+          <P k="tuhe">Tuhé</P> poškodenie (Rana 1, Pecka 2, Petelica 3) rozhoduje o víťazovi. Každá tvoja priznaná Cirhóza dá súperovi +1 tuhé.{" "}
+          <P k="povera">Povera</P> nepoškodzuje — <strong>ohovára staršieho</strong>: požičia ti jeho priazeň na toto kolo.
         </p>
         <ol>
           <li>
             <P k="viera">Viera</P> a Povery sa vyrušia 1 : 1 — tvoja Viera ruší súperove Povery a naopak.
           </li>
-          <li>Zvyšné Povery poškodzujú (mäkké) proti súperovým priznaným Dlhom — najviac toľko, koľko ich má.</li>
+          <li>
+            Každá zvyšná Povera posunie <strong>silu priazne</strong> jedného staršieho o stupeň k tebe: zníži súperovu (2 → 1 → 0),
+            preklopí ju k tebe, požičia ti priazeň staršieho v strede alebo zosilní tvoju — najviac na 3. Marker sa nehýbe, strach
+            ani udržanie sa nemenia; platí do konca kola. Povery rozdeľuje najprv obranca, potom útočník.
+          </li>
           <li>
             Zvyšná Viera zníži súperovo tuhé poškodenie, pod 0 neklesne. Veriaci (priazeň) ti pridá Vieru navyše; hodnotu jednej
             Viery mení len Svätý text v Dedičstve.
@@ -533,8 +537,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           Víťaz dostane 1 <P k="spak">špak</P> za každú kartu, ktorá pri bitke leží v línii — na oboch stranách, aj odkrytá
           Záverečná, aj vo finále; priznané karty, Dedičstvo a karty, ktoré z línie počas kola zmizli, sa nerátajú. Ak má viac
           Absťáky špaky nezrážajú. Lokalitu si neberie — ide na krčmovú{" "}
-          <P k="nastenka">nástenku</P> s jeho menom a špakmi. Nakladačku drží hráč s vyšším <strong>celkovým</strong>{" "}
-          poškodením — aj pri remíze v tuhom —, ale rozdeľuje ho jeho súper.
+          <P k="nastenka">nástenku</P> s jeho menom a špakmi. <strong>Nakladačka</strong> je rozdiel tuhého poškodenia — drží ju
+          víťaz, ale rozdeľuje ju jeho súper; pri remíze v tuhom Nakladačka nie je.
         </p>
         <H3 id="bitka-kroky">Kroky bitky v poradí</H3>
         <ol className="kroky">
@@ -548,11 +552,14 @@ export const KAPITOLY: readonly Kapitola[] = [
             <a href="#kliatby">Kliatby a priznanie</a>).
           </li>
           <li>
+            <strong>Povery</strong> — po vyrušení s Vierou posunú silu priazní starších o stupeň k svojmu majiteľovi (obranca prvý).
+          </li>
+          <li>
             <strong>Pohoršenie</strong> (aj 1 za každý tvoj Absťák) — posúva markery starších od seba alebo k sebe (kapitola{" "}
             <a href="#starsi">Starší a Nakladačka</a>).
           </li>
           <li>
-            <strong>Poškodenie</strong> — Viera a Povera sa vyrušia, tuhé znižuje Viera a Absťáky, mäkké po strop Dlhov.
+            <strong>Poškodenie</strong> — tuhé znižuje zvyšná Viera a Absťáky.
           </li>
           <li>
             <strong>Výsledok</strong> — víťaz (pri remíze rozhodnú Absťáky, potom Dlhy), inak sekera.
@@ -561,7 +568,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje); lokalita ide na nástenku.
           </li>
           <li>
-            <strong>Nakladačka</strong> — markery starších sa posunú k súperovi hráča s vyšším celkovým poškodením; ktorých starších,
+            <strong>Nakladačka</strong> — markery starších sa posunú k súperovi víťaza (rozdiel tuhého); ktorých starších,
             vyberá ten súper (spravidla porazený si vyberie priazne). Prejaví sa až v ďalšej bitke. Vo finále sa Nakladačka nerozdeľuje.
           </li>
           <li>
@@ -633,7 +640,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <UkazkaStupnice />
         <H3 id="starsi-prebytok">Nakladačka a Pohoršenie</H3>
         <p>
-          <P k="prebytok">Nakladačka</P> je rozdiel v celkovom poškodení. Markery starších idú k súperovi hráča, ktorý ho drží,
+          <P k="prebytok">Nakladačka</P> je rozdiel v tuhom poškodení. Markery starších idú k súperovi hráča, ktorý ju drží (víťaza),
           aj na krajnú pozíciu a z nej von. <strong>Pole stojí podľa zóny</strong>, do ktorej marker vstupuje: von zo stredu žltá 1,
           oranžová 2, červená 3 (zo stredu na červenú 6); k stredu o 1 viac — z červenej 4, z oranžovej 3, zo žltej 2. Ktorých
           starších, <strong> vyberá ten súper</strong> — spravidla porazený si sám vyberie, ktoré priazne dostane. Vyberá len staršieho:

@@ -77,7 +77,15 @@ starších krok 1, docs/napady/starsi-revizia.html R2 variant 6A a R14; značka
   Neutralita / Znepokojenie / Strach / Vydesenie zanikli; „vydesenie“ ostáva
   pre výhru (§1). Patronát a výhra vydesením zatiaľ ostávajú (zaniknú s väzňom,
   revízia krok 2).
-- **Nakladačka** (Michal 2026-10-30): **prebytok** — rozdiel celkového poškodenia,
+- **Povery „Výpožička priazne“** (§9.1, §9.3, §9.4, Michal 2026-10-30,
+  docs/napady/povery.html): nový krok bitky **Povery** pred Pohoršením. Viera
+  a Povery sa vyrušia 1 : 1 ako doteraz; každá **zvyšná Povera posunie silu
+  priazne jedného staršieho o stupeň k svojmu majiteľovi** (marker sa nehýbe,
+  strach ani udržanie sa nemenia), strop 3, **len na toto kolo**. **Mäkké
+  a celkové poškodenie aj strop podľa Dlhov zanikajú**; Nakladačka = rozdiel
+  tuhého a drží ju víťaz. **Otvorené** (P5, P6): Čierna mačka podľa návrhu „Furt:
+  Tvoje Povery sa Vierou nerušia.“ (text karty zmení Admin); pojem ostáva Povera.
+- **Nakladačka** (Michal 2026-10-30): **prebytok** — rozdiel tuhého poškodenia,
   ktorým sa po bitke posúvajú starší — sa volá **Nakladačka** všade, kde ho číta
   človek. Kľúče v dátach a príkaz `prebytok` ostávajú.
 
@@ -172,7 +180,7 @@ len na Občana či Starešinu, priznanie len Kliatby) alebo efekt karty.
 | Rana | `Rana` | 1 tuhé poškodenie |
 | Pecka | `Pecka` | 2 tuhé poškodenie |
 | Petelica | `Petelica` | 3 tuhé poškodenie |
-| Povera | `Povera` | **poškodzuje** — mäkké poškodenie proti súperovým **priznaným** Dlhom (najviac toľko, koľko ich má); ruší sa s Vierou 1:1 (§9.3) |
+| Povera | `Povera` | **ohovára staršieho** (v8.3): zvyšná po vyrušení s Vierou 1:1 posunie v bitke silu priazne jedného staršieho o stupeň k tebe, len na toto kolo (§9.1) |
 | Pohoršenie | `Pohoršenie` | v bitke 1 bod na posun markera ľubovoľného staršieho od seba alebo k sebe; pole stojí podľa zóny (§9.2, §10) |
 | Viera | `Viera` | znižuje súperovo tuhé poškodenie o hodnotu Viery (1; Svätý text v Dedičstve +1) za kus; priazeň Veriaceho pridá Vieru navyše rovnú sile (+1 / +2 / +3); ruší sa s Poverou 1:1 |
 | Hazard | `Dlh` | zvýši **zadĺženie** o 1; každé 2 zadĺženia = 1 Dlh, hneď priznaný (počítadlo, §8; v7 zvyšok neprepadá); za priznané Dlhy príde v každej bitke Exekútor (§11) |
@@ -706,8 +714,9 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 | Krok | Čo sa deje | Kde |
 |---|---|---|
 | 0 | Efekty na začiatku bitky (Traktoristka; v starej sade Kar) | §9.0 |
-| 2 | Pohoršenie (aj z patronátu, z priazne Abstinenta a 1 za každý Absťák) — pole podľa ceny zóny | §9.2 |
-| 3 | Poškodenie — Povery proti priznaným Dlhom pred exekúciou | §9.3 |
+| 1 | Povery (v8.3) — Viera a Povery sa vyrušia, zvyšné posunú silu priazní (obranca prvý, potom útočník) | §9.1 |
+| 2 | Pohoršenie (aj z patronátu, z priazne Abstinenta — už po Poverách — a 1 za každý Absťák) — pole podľa ceny zóny | §9.2 |
+| 3 | Poškodenie — tuhé (mäkké od v8.3 nie je) | §9.3 |
 | 4 | Výsledok (pri remíze Absťáky, potom Dlhy — pred exekúciou —, inak sekera) | §9.4 |
 | 4a | Špaky za bitku (karty v línii) víťazovi, na Kultúrnom dome aj porazenému; Herňa a Noviny (porazenému za Dlhy víťaza navyše) podľa Dlhov pred exekúciou; lokalita ide na krčmovú nástenku | §9.4, §14 |
 | 4c | Exekúcia (Michal 2026-10-28): Robota, potom Exekútor každému s priznaným Dlhom — Dlhy a špaky; Záhradkár ju obíde | §11 |
@@ -724,6 +733,39 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 
 Traktoristka bez prevahy (Dlh) (§16). V starej sade (do v6) Kar: každý hráč s nepriznanou
 Cirhózou v ruke sa rozhodne (obranca, potom útočník), či jednu zahodí.
+
+### 9.1 Povery (v8.3 „Výpožička priazne“)
+
+Michal 2026-10-30 (docs/napady/povery.html, sekcia Rozhodnuté; nahrádza mäkké
+poškodenie):
+
+1. **Viera a Povery sa vyrušia 1 : 1** ako doteraz: cancel = min(moja Viera,
+   súperove Povery), obom sa odpočíta. Ráta sa raz, na začiatku kroku, s priazňami
+   pred Poverami (Veriaci). Zvyšná Viera potom tlmí tuhé v kroku 3.
+2. **Každá zvyšná Povera posunie silu priazne jedného staršieho o jeden stupeň
+   k svojmu majiteľovi** — bez ohľadu na zónu, žiadne prahy. Smie znížiť súperovu
+   priazeň (2 → 1 → 0), preklopiť ju k sebe (0 → moja 1), požičať si priazeň
+   staršieho v strede (0 → moja 1) aj zosilniť vlastnú (moja 1 → 2). **Strop 3**
+   oboma smermi — na staršieho, ktorého priazeň je už moja v sile 3, Povera nesmie.
+3. **Marker sa nehýbe** — strach, udržanie ani vydesenie sa nemenia. Klebety platia
+   **do konca kola** (poškodenie, exekúcia, priazne po bitke: Kmotor, Alkoholik),
+   potom zaniknú. Na jedno kolo tak môže mať priazeň aj hráč, ktorého sa starší
+   bojí — výnimka z „priazeň a strach nikdy tomu istému“ (§10).
+4. **Poradie:** obranca rozdá všetky svoje Povery, potom útočník, ktorý obrancove
+   vidí; Povery oboch na toho istého staršieho pôsobia proti sebe. Rozdať treba
+   všetky; čo už nemá cieľ (všetky priazne sú hráčove v sile 3), prepadne.
+5. Potom Pohoršenie (§9.2) — Pohoršenia z priazne Abstinenta sa rátajú už so
+   silou po Poverách.
+
+**Výpočet (jadro):** klebety sú na staršom uložené ako posun o n stupňov k hráčovi
+(nie pevné číslo), lebo Pohoršenie môže marker po Poverách ešte pohnúť. Účinná sila
+priazne = sila z markera ± klebety, orezaná na −3 … +3, ráta sa pri každom použití
+priazne v tomto kole (`ucinnaPriazen`, elders.ts).
+
+**Otvorené (P5, P6, Michal):** Čierna mačka zatiaľ podľa návrhu dokumentu „Furt:
+Tvoje Povery sa Vierou nerušia.“ — jej Povery a súperova Viera sa nevyrušia (Viera
+ostáva na tuhé); text karty v tvorcovi zmení Admin. Pojem ostáva **Povera**
+(„ohovára staršieho“).
 
 ### 9.2 Pohoršenie
 
@@ -760,26 +802,23 @@ verejné).
 ### 9.3 Poškodenie
 
 ```
-1. Viera a Povera sa vyrušia 1:1
-     moja Viera ruší súperove Povery
-     moje Povery rušia súperovu Vieru
+1. Viera a Povera sa vyrušia 1:1 (zvyšné Povery už rozdelil krok Povery, §9.1)
      cancel = min(viera[ja], povera[súper]);  obom sa odpočíta
+     Čierna mačka: majiteľove Povery sa s Vierou nerušia (návrh, otvorené P5)
 
 2. tuhé[ja] = (Rana×1 + Pecka×2 + Petelica×3 + súperove priznané Cirhózy + sila Bitkára)
              − zvyšná_viera[súper] × hodnota_viery(súper)
              − počet_mojich_absťákov
      minimum 0
 
-3. mäkké[ja] = min(zvyšná_povera[ja], priznané_dlhy[súper])   # Povera poškodzuje proti priznaným Dlhom
-
-4. celkové[ja] = tuhé[ja] + mäkké[ja]
+Mäkké a celkové poškodenie od v8.3 nie sú (Povery posúvajú priazne, §9.1).
 ```
 
 **Priznaná Cirhóza škodí tomu, kto ju priznal:** za každú priznanú Cirhózu
 hráča dostane súper v každej bitke +1 tuhé (Veterinár to znižuje). Ráta sa ako
 tuhé, takže ju zvyšná Viera tiež znižuje. Priazeň Bitkára pridá tuhé rovné
-sile (+1 / +2 / +3), priazeň Veriaceho Vieru navyše (§10). Strop mäkkého
-poškodenia ruší len Čierna mačka (§16). Tuhé ďalej menia efekty
+sile (+1 / +2 / +3) — po klebetách z Povier —, priazeň Veriaceho Vieru navyše
+(§10). Tuhé ďalej menia efekty
 kariet a lokalít (Pes, Pijan, Svokra, Pasca, Lesná cesta, Ihrisko…, §15, §16).
 
 ### 9.4 Výsledok
@@ -789,8 +828,8 @@ víťaz          = vyššie TUHÉ poškodenie
   remíza v tuhom: vyhrá, kto má MENEJ ABSŤÁKOV (počítadlo, práve teraz)
   aj tu rovnosť:  vyhrá, kto má MENEJ PRIZNANÝCH DLHOV
   aj tu rovnosť:  nevyhrá nikto — SEKERA
-Nakladačku drží  = vyššie CELKOVÉ poškodenie (aj pri remíze v tuhom)
-Nakladačka       = |rozdiel celkových|      (pri rovnakom celkovom ju nikto nezíska)
+Nakladačku drží  = víťaz (vyššie TUHÉ; v8.3)
+Nakladačka       = |rozdiel tuhého|        (pri remíze v tuhom ju nikto nezíska, aj keď rozhodnú Absťáky či Dlhy)
 ```
 
 **Špaky za bitku (krok 4a, v8, Michal 2026-10-28):** víťaz dostane **1 špak za
@@ -809,8 +848,8 @@ bitky navyše k svojim; viac sekier po sebe sa kopí.
 **Vo finále** špaky zo sekery **prepadnú**. Sekera nemení roly (útočník ostáva
 útočníkom), patronát sa vyrieši ako prehra (starší späť, bolestné, §10).
 
-**Nakladačka (krok 4c)** drží hráč s vyšším celkovým poškodením (spravidla víťaz,
-no aj porazený či pri remíze v tuhom). Nakladačka sa rozdelí medzi starších až
+**Nakladačka (krok 4c)** drží víťaz — hráč s vyšším tuhým poškodením (v8.3; do
+v8.2 vyššie celkové, mohol to byť aj porazený). Nakladačka sa rozdelí medzi starších až
 **po špakoch za bitku** — priazne sa prejavia až v ďalšej bitke; nové stupne
 strachu sa na konci kola začnú udržiavať (§10).
 Markery idú smerom k súperovi držiteľa (aj na červenú a aj z červenej von,
@@ -822,9 +861,8 @@ ostane, ide ďalším starším. Ten istý starší smie dostať aj viac výbero
 
 **Kto Nakladačku rozdeľuje (v8, Michal 2026-10-28):** vyberá **hráč, proti ktorému
 sa Nakladačka ráta** (súper držiteľa) — spravidla porazený si sám vyberie, ktorých
-starších posunie, teda ktoré priazne dostane. Pri **sekere** je to ten s nižším
-celkovým poškodením; keď drží Nakladačku porazený (nižšie tuhé, vyššie celkové),
-rozdeľuje víťaz. Rozdeliť treba **celú Nakladačku** — kým zvyšok stačí na posun
+starších posunie, teda ktoré priazne dostane. Pri remíze v tuhom Nakladačka nie
+je (v8.3). Rozdeliť treba **celú Nakladačku** — kým zvyšok stačí na posun
 niektorého markera, nedá sa prestať; keď už nestačí na žiadny (kraj alebo drahé
 pole), zvyšok prepadne. Prepadnutý zvyšok nie je strop zdroja: Nakladačka sa
 neprenáša, je to len nevyužiteľný zvyšok tejto bitky.
@@ -1088,7 +1126,7 @@ na ohlásené vydesenie (§1). Bot ho vyhodnocuje z odhadu špakov (`bot.ts`,
 
 | Karta | Vzniká | Účinok |
 |---|---|---|
-| **Dlh** | za každý celý prah zadĺženia (§8) a priamo z efektov kariet — **hneď priznaný**; od v8.2 **počítadlo**, nie karta | za priznané Dlhy príde v každej bitke Exekútor (zhorí polovica nahor a rovnako špakov, §11) a súperove Povery proti nim poškodzujú (mäkké); pri remíze v bitke prehráva, kto má viac priznaných Dlhov (§9.4) |
+| **Dlh** | za každý celý prah zadĺženia (§8) a priamo z efektov kariet — **hneď priznaný**; od v8.2 **počítadlo**, nie karta | za priznané Dlhy príde v každej bitke Exekútor (zhorí polovica nahor a rovnako špakov, §11); pri remíze v bitke prehráva, kto má viac priznaných Dlhov (§9.4) |
 | **Cirhóza** | za každý celý prah poškodenia pečene (§8) — ide do **odhadzovacieho balíčka** | nepriznaná ide po bitke do tvojho odhadzovacieho balíčka a na konci hry stojí **3 špaky** za kus (v8, §14); priznaná dá súperovi v každej bitke +1 tuhé (§9.3) |
 | **Absťák** | keď hráč v kole skonzumuje **menej nerestí** než súper v tom istom kole (§8, v8.1) — **rovno priznaný**; od v8.2 **počítadlo**, nie karta (kartu zaň nedobereš) | znižuje **tvoje** tuhé poškodenie o 1 za kus a dá ti 1 Pohoršenie navyše (§9.2); remízu v bitke prehráva, kto má viac Absťákov (§9.4) |
 
@@ -1140,7 +1178,7 @@ Milujúca manželka, ktorá je aj Občan a má akcie.
 
 | | Nepriznaná | Priznaná |
 |---|---|---|
-| Dlh | — (vzniká priznaný) | **v každej bitke ho páli Exekútor** (aj špaky), ráta sa do remízy v bitke; Povery proti nemu poškodzujú (mäkké) |
+| Dlh | — (vzniká priznaný) | **v každej bitke ho páli Exekútor** (aj špaky), ráta sa do remízy v bitke |
 | Cirhóza | ide po bitke do tvojho odhadzovacieho balíčka; na konci hry **−3 špaky** | na konci nestojí nič; **súper za ňu v bitke +1 tuhé**; kartu za priznanie **nedostaneš** |
 | Milujúca manželka | — | Absťáku sa netýka (v7 nie je Kliatba, §16) |
 
@@ -1152,7 +1190,7 @@ Kliatby a špaky (v6): nepriznaná Cirhóza stojí na konci 3 špaky (v8), Dlh b
 Krok 4c bitky (§9), aj vo finále — **po poškodení, výsledku a špakoch za bitku
 a za starších, pred Nakladačkou** (Michal 2026-10-28); **vždy po hráčoch: obranca
 Robota a Exekútor, potom útočník Robota a Exekútor**.
-Povery v poškodení, remíza na Dlhy, Herňa a Noviny teda rátajú priznané Dlhy
+Remíza na Dlhy, Herňa a Noviny teda rátajú priznané Dlhy
 **pred** exekúciou. Najprv **Robota**: za každú aktívnu Robotu hráč **spáli**
 1 priznaný Dlh — v tomto kroku, nie pred poškodením, aby Povere nezobrala cieľ;
 zmenší, čo zhorí Exekútorovi. Potom príde **Exekútor — bez prahu, vždy**, ku
@@ -1167,7 +1205,7 @@ zhorí = polovica priznaných Dlhov, zaokrúhlene NAHOR
 Zhorí toľko priznaných Dlhov a **rovnaký počet špakov** — zhoria, súper ich
 nedostane, a hráč smie ísť do mínusu. Exekúcia prehru nespôsobí. Príklad: 5 Dlhov
 a súperov Exekútor sily 1 → zhoria 3 + 1 = 4 Dlhy a 4 špaky. Jediný Dlh zhorí
-celý (aj s 1 špakom) — až po poškodení, takže Povera ho v tej bitke ešte spočíta.
+celý (aj s 1 špakom) — až po poškodení, takže remíza a Herňa ho v tej bitke ešte spočítajú.
 Priazeň Exekútora sa ráta v čase exekúcie (aj po Pohoršeniach tejto bitky).
 
 **Záhradkár (Exekúcia, Michal 2026-10-28):** keď leží odkrytý v línii v partii
@@ -1471,7 +1509,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Degustátorka | Nástup: ak má súper viac plných poldeci ako ty, jeden sa mu otočí na vypitý (nie nerest ani pečeň). |
 | Vandal | Nástup: lokalita sa otočí o 180° (hrany si vymenia kraje). |
 | Kôň | Furt: Nástroj vedľa neho s ním tvorí spoj ako s Občanom. |
-| Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov. |
+| Čierna mačka | (v8.3, návrh — otvorené P5, text zmení Admin) Furt: majiteľove Povery sa Vierou nerušia. |
 | Strýko z Ameriky | Kšeft: za 2 cigarety Rana navyše v bitke kola. |
 | **Starší** | Efekt staršieho platí, keď jeho kartu majiteľ vyloží do línie (patronát, §10), alebo keď je prebudený (§10) — vtedy vydesujúcemu hráčovi (Konflikt a okolie len v línii). |
 | Veterinár | Pitka: karty v jeho okolí (aj lokalita) nepridávajú poškodenie pečene — ani akciou Poškodenie pečene, ani Poldeci. NA EX na ne pečeň dáva. |
@@ -1501,7 +1539,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Pojem | Význam |
 |---|---|
 | Absťák | počítadlo (v8.2, nie karta) za menej nerestí než súper v tom istom kole (v8.1); rovno priznaný, −1 tvoje tuhé a +1 Pohoršenie za kus; rozhoduje remízu (§8, §9.2, §9.4) |
-| Dlh | počítadlo priznaných Dlhov (v8.2, nie karta) — každé 2 zadĺženia z Hazardu = 1 Dlh; páli ho Exekútor, Povera proti nemu poškodzuje (§8, §11) |
+| Dlh | počítadlo priznaných Dlhov (v8.2, nie karta) — každé 2 zadĺženia z Hazardu = 1 Dlh; páli ho Exekútor, rozhoduje remízu v tuhom (§8, §11) |
 | Hazard | akcia (kľúč `Dlh`, v8.2 premenovaná): zvýši zadĺženie o 1 (§2, §8) |
 | Finále | posledná bitka o pinnacle lokalitu, hrá sa ako o každú inú; útočí zaostávajúci (menej špakov) (§14b) |
 | Dedičstvo | Nástroj vyložený mimo línie za rastúcu cenu v cigaretách; platí jeho efekt Dedičstvo (§12) |
@@ -1522,11 +1560,12 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Odhodenie | do odhadzovacieho balíčka hráča, ktorý kartu zahral |
 | Odpoveď na NA EX | po odkrytí za každé súperovo NA EX jedna karta z ruky do línie mimo limitu; najprv obranca, potom útočník (§7) |
 | Pohoršenie | akcia: v bitke 1 bod na posun markera staršieho od seba (desí) alebo k sebe (upokojuje); pole stojí podľa zóny, vyberáš staršieho a smer; priazeň sa mení hneď (§9.2, §10) |
-| Povera | akcia: poškodzuje — mäkké poškodenie proti súperovým priznaným Dlhom; ruší sa s Vierou (§9.3) |
+| Povera | akcia (v8.3): ohovára staršieho — zvyšná po Viere posunie v bitke silu priazne jedného staršieho o stupeň k tebe, len na toto kolo (§9.1) |
+| Klebety | posun sily priazní z Povier v tomto kole; marker sa nehýbe, po kole zaniknú (§9.1) |
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane (§6) |
 | Patronát | vziatie karty staršieho, ktorý ti prejavuje priazeň, do ruky za náhradu na scorecarde (§10) |
 | Nástenka | krčmová nástenka: odohrané bitky s víťazom a špakmi (§14) |
-| Nakladačka | (predtým prebytok, v8.3) rozdiel celkového poškodenia v bitke; posúva markery starších k súperovi držiteľa, pole podľa ceny zóny — starších vyberá ten, proti komu sa ráta; vo finále sa nerozdeľuje (§9.4, §10) |
+| Nakladačka | (predtým prebytok, v8.3) rozdiel tuhého poškodenia v bitke, drží ju víťaz; posúva markery starších k súperovi držiteľa, pole podľa ceny zóny — starších vyberá ten, proti komu sa ráta; vo finále sa nerozdeľuje (§9.4, §10) |
 | Preskúmanie | zober a prezri si 5 kariet, potom ich vráť |
 | Prevaha | v kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje, Cirhóza nie); pri rovnosti hráč, ktorého karta v tom kraji leží hneď pri lokalite; dostane akcie hrany lokality v tom kraji (§6) |
 | Priznanie | vyloženie kliatby mimo línie natrvalo; nemíňa limit ani neodovzdá ťah (§11) |

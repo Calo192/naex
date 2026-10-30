@@ -225,7 +225,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Výherný automat (Dedičstvo, v7): tvoj prah Dlhu +1, ale v poslednej Pitke kola získaš 1 Dlh.
 - **Exekútor bez prahu (2026-10-28):** Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor
   (aj jediný Dlh) a rovnako veľa špakov, so súperovou priazňou Exekútora navyše 1 / 2 / 3 — **až po
-  poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže Povery, remíza, Herňa a Noviny
+  poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže remíza, Herňa a Noviny
   rátajú Dlhy pred exekúciou. Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
   keď leží v línii v tvojej partii, exekúcia ťa v tomto kole obíde (žiadny Dlh ani špak); nezahadzuje sa.
   Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktoristka: s prevahou v jej kraji Pecka navyše,
@@ -264,20 +264,25 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   zaplatí až koniec ďalšieho kola, ak sa udrží; Pohoršením však súperovi odtlačíš stupeň, ktorý by mu
   zaplatil koniec tohto kola. Ten istý
   marker smieš posúvať **bez limitu, aj na červenú** (zo stredu 6 Pohoršení).
-- **Poradie bitky:** Pohoršenie → poškodenie → výsledok → špaky za bitku
+- **Poradie bitky:** **Povery** → Pohoršenie → poškodenie → výsledok → špaky za bitku
   → exekúcia (Robota, Exekútor) → Nakladačka (posunie markery k súperovi držiteľa podľa ceny poľa, aj na
   červenú a z nej von — zamknutie sa ruší; prejaví sa až v ďalšej bitke; vo finále sa nerozdeľuje) → … →
   **koniec kola: špaky za udržaný strach** (každému, koho sa starší boja) → Absťák → vydesenie.
   **Nakladačku rozdeľuje porazený (v8):** markery idú ako doteraz (starší sa začnú báť víťaza), ale
   **ktorých starších posunie, vyberá ten, proti komu sa Nakladačka ráta** — spravidla porazený si sám
-  vyberie, ktoré priazne dostane (pri sekere ten s nižším celkovým). Rozdeliť treba celú Nakladačku (zvyšok,
+  vyberie, ktoré priazne dostane; pri remíze v tuhom Nakladačka nie je. Rozdeliť treba celú Nakladačku (zvyšok,
   ktorý na žiadne pole nestačí, prepadne);
   `{"type":"prebytok","elderId":…}` posiela on. Vo finále sa Nakladačka nerozdeľuje.
-- **Povera poškodzuje (v8.2 znenie):** mäkké poškodenie proti súperovým priznaným Dlhom (najviac toľko,
-  koľko ich má); so súperovou Vierou sa ruší 1 : 1. Víťaza určuje tuhé, Nakladačka celkové (tuhé + mäkké).
+- **Povery „Výpožička priazne“ (v8.3, 2026-10-30):** Povera **nepoškodzuje**. Na začiatku bitky sa Viera
+  a Povery vyrušia 1 : 1; **každá zvyšná Povera posunie silu priazne jedného staršieho o stupeň k tebe**
+  (`{"type":"povera","elderId":…}`) — zníži súperovu, preklopí ju, požičia priazeň staršieho v strede
+  alebo zosilní tvoju, **najviac na 3**. Marker sa nehýbe (strach ani udržanie sa nemenia), platí **do konca
+  kola** (poškodenie, exekúcia, Kmotor), potom zanikne. Obranca rozdeľuje prvý, útočník vidí. Abstinent sa
+  ráta už po Poverách. **Mäkké a celkové poškodenie nie sú** — víťaza aj Nakladačku (rozdiel tuhého, drží
+  ju víťaz) určuje tuhé. Čierna mačka (návrh): jej majiteľove Povery sa Vierou nerušia.
 - **Remíza (v6):** pri rovnakom tuhom vyhrá, kto má **menej Absťákov**, potom **menej
   priznaných Dlhov**; inak **sekera** — špaky kola (karty v línii) vezme víťaz najbližšej bitky,
-  vo finále prepadnú; strach starších platí ako vždy (udržanie); útočník ostáva, patronát = prehra. Celkové určuje len Nakladačka.
+  vo finále prepadnú; strach starších platí ako vždy (udržanie); útočník ostáva, patronát = prehra.
   **Ohlásené vydesenie:** polovicu starších treba udržať do konca ďalšieho kola; keď
   klesne pod polovicu (aj patronátom), padá hneď a nové doplnenie ohlasuje odznova. Ohlásené
   v poslednej bitke o lokalitu rozhodne na konci finále (pred konečnými špakmi); ohlásené vo finále nie.

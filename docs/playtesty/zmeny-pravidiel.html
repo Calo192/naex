@@ -86,6 +86,22 @@
   <div id="zmeny">
 
     <details class="zmena" data-oblast="pravidla">
+      <summary><h3>Pravidlá v8.3: Povery „Výpožička priazne“ — mäkké a celkové poškodenie zanikajú</h3><span class="stav">skúšobné</span>
+        <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-30</span><span class="stitok">rozhodnutie Michala</span></span></summary>
+      <div class="telo">
+        <div class="blok"><h4>Prečo</h4><p>Michal: „Povery ako mäkké poškodenie nie sú úplne intuitívne… za každú efektívnu Poveru by hráč znížil silu vybranej priazne.“ Jedna akcia niesla tri pravidlá (strop podľa Dlhov, celkové poškodenie, rušenie s Vierou) a dve slová navyše. Rozhodnuté znenie: docs/napady/povery.html, sekcia „Rozhodnuté: Výpožička priazne“.</p></div>
+        <div class="blok"><h4>Čo sa zmenilo</h4><ul>
+          <li><strong>Krok Povery</strong> (§9.1) pred Pohoršením: Viera a Povery sa vyrušia 1 : 1, každá zvyšná Povera posunie silu priazne jedného staršieho o stupeň k svojmu majiteľovi — zníži súperovu, preklopí ju, požičia zo stredu, zosilní vlastnú; strop 3. Marker sa nehýbe, strach ani udržanie sa nemenia; platí do konca kola (aj Abstinent, Bitkár, Kmotor). Obranca rozdeľuje prvý.</li>
+          <li><strong>Mäkké a celkové poškodenie zanikajú</strong> (§9.3), aj strop podľa Dlhov. <strong>Nakladačka = rozdiel tuhého, drží ju víťaz</strong> (§9.4); pri remíze v tuhom nie je.</li>
+          <li><strong>Otvorené:</strong> Čierna mačka podľa návrhu „Furt: Tvoje Povery sa Vierou nerušia.“ (v jadre; text karty zmení Admin), pojem ostáva Povera.</li>
+          <li>Stôl: v kroku Povery klik na staršieho („Povera: priazeň v tomto kole … → …“), rekapitulácia ukáže „priazeň ±N“ namiesto mäkkého; klient AI hráčov dostane príkaz <code>povera</code>. Bot Povery rozdeľuje výpočtom stavu.</li>
+          <li>Turnaj bota (20 partií Štamgast proti chamtivému, Druhá liga): výhry 19 → 20 / 20, body 698 : 52 → 793 : 53, Povera 52× za turnaj; všetky partie dohrané. Mix povah (s9, 60 partií): rozdiel 15,2 → 14,6, stompy nad 15 42 → 42 %, nad 25 15 → 20 %, víťaz finále vyhral partiu 58 → 49 %, vedúci pred finále vyhral 80 → 81 %.</li>
+        </ul></div>
+        <div class="blok sledovat"><h4>Čo sledovať</h4><p>Ako často hráči Povery požičiavajú zo stredu vs. preklápajú súperove priazne; „vedúci pred finále vyhrá“ nesmie prekročiť ~80 % (je 81 % v mixe botov); výhra hráča s viac Poverami v línii; či je jasné, že marker sa nehýbe a klebety po kole zaniknú.</p></div>
+      </div>
+    </details>
+
+    <details class="zmena" data-oblast="pravidla">
       <summary><h3>Pravidlá v8.3: strach až po udržaní, finále bez Nakladačky, stupne a stav staršieho</h3><span class="stav">skúšobné</span>
         <span class="meta"><span class="stitok pravidla">pravidlá</span><span class="stitok">2026-10-30</span><span class="stitok">rozhodnutie Michala</span></span></summary>
       <div class="telo">

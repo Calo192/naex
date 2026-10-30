@@ -109,7 +109,7 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     // Hráč 1 drží prebytok, rozdeľuje porazený hráč 0.
     const drzim = medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 0) }), 1, "Eva", null);
     expect(drzim).toMatchObject({ kluc: "2|Nakladačka", nadpis: "Nakladačka" });
-    expect(drzim?.text).toMatch(/^Máš vyššie celkové/);
+    expect(drzim?.text).toMatch(/^Máš vyššie tuhé/);
     expect(drzim?.text).toMatch(/Ktorých, vyberá Eva/);
     const vyberam = medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 0) }), 0, "Eva", null)?.text;
     expect(vyberam).toMatch(/vyberáš ty/);

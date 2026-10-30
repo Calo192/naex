@@ -1004,7 +1004,7 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
     if (a === "Povera") {
       if (ignorovana > 0) stav.push(`${ignorovana} ignoruje súperov Farár`);
       if (zrusene > 0) stav.push(`${zrusene} zrušila súperova Viera`);
-      stav.push(Number.isFinite(rozpis.makkeStrop) ? `mäkké poškodenie najviac ${rozpis.makkeStrop} (súperove priznané Dlhy)` : "mäkké poškodenie bez stropu");
+      stav.push(`zvyšné ${rozpis.zvysnaPovera} v bitke posunú silu priazní o stupeň k tebe (na toto kolo)`);
     }
     dlazdice.push(
       <Dlazdica
@@ -1081,7 +1081,7 @@ function StranaBitky({
           </span>
         ))}
         <span className="tip-stav">
-          {makke > 0 ? `+ ${makke} mäkké (Povera) = celkom ${celkove}` : `celkom ${celkove}`} — celkové určí, kto rozdelí Nakladačku. Pri
+          Rozdiel tuhého je Nakladačka, drží ju víťaz (Povery od v8.3 poškodenie nedávajú — posúvajú priazne). Pri
           rovnakom tuhom vyhrá, kto má menej Absťákov, potom menej priznaných Dlhov; inak idú špaky na sekeru.
         </span>
       </>
@@ -1108,7 +1108,6 @@ function StranaBitky({
           zmeny={[bonus, -zrazka]}
           tip={tipTuhe}
         />
-        <span className="bitka-doplnok">{makke > 0 ? `+${makke} mäkké · ` : ""}celkom {celkove}</span>
       </div>
       <div className="efekty">
         <AkcieStrany sums={sums} zdroje={zdroje} rozpis={rozpis} sada={sada} menoKarty={menoKarty} />
@@ -1531,9 +1530,8 @@ export function PriebehKola({
           Rozhoduje tuhé poškodenie (Rana 1, Pecka 2, Petelica 3; mínus súperova Viera a vlastné Absťáky). Pri rovnakom tuhom vyhrá, kto
           má menej Absťákov, potom menej priznaných Dlhov; inak sekera — špaky kola čakajú na víťaza ďalšej bitky (vo finále prepadnú).
           Víťaz dostane toľko špakov, koľko Pitiek sa odohralo (mínus rozdiel Absťákov, aspoň 1) a lokalita ide na krčmovú nástenku.
-          Potom víťazovi dajú špaky starší, ktorí sa ho boja (žltá 1, oranžová 2, červená 3); porazený od nich nič, pri sekere dostanú
-          obaja. Kto má vyššie celkové, rozdelí Nakladačku —
-          posúva markery starších; po finále ho dostane ako špaky.
+          Rozdiel tuhého je Nakladačka: drží ju víťaz, starších vyberá porazený (vo finále sa nerozdeľuje). Strach starších platí na
+          konci kola za stupne udržané od minulého kola — každému, koho sa boja.
           <span className="tip-riadok">
             Potom Exekútor, Pohoršenie, Nakladačka… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole
             útočník.

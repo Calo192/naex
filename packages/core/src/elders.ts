@@ -91,6 +91,34 @@ export function priazenSila(elder: Pick<ElderState, "marker">): number {
   return STUPNICA_HODNOTY[elder.marker];
 }
 
+/**
+ * Klebety staršieho (Povery v8.3 „Výpožička priazne“, Michal 2026-10-30): o koľko
+ * stupňov Povery tohto kola posunuli silu jeho priazne — kladne k hráčovi 0,
+ * záporne k hráčovi 1. Marker sa nehýbe; po kole klebety zaniknú.
+ */
+export type Klebety = Readonly<Record<string, number>>;
+
+/** Priazeň ako jedno číslo −3 … +3: kladná patrí hráčovi 0, záporná hráčovi 1. */
+function priazenSoZnamienkom(elder: Pick<ElderState, "marker">): number {
+  return MARKER_STRED - elder.marker;
+}
+
+/**
+ * Účinná priazeň staršieho v tomto kole: sila z markera posunutá klebetami
+ * a orezaná na −3 … +3 (v8.3). Bez klebiet je to priazeň z markera. Na jedno
+ * kolo môže mať priazeň aj hráč, ktorého sa starší bojí.
+ */
+export function ucinnaPriazen(elder: Pick<ElderState, "marker" | "elderId">, klebety?: Klebety): { readonly hrac: PlayerId | null; readonly sila: number } {
+  const v = Math.max(-3, Math.min(3, priazenSoZnamienkom(elder) + (klebety?.[elder.elderId] ?? 0)));
+  return { hrac: v > 0 ? 0 : v < 0 ? 1 : null, sila: Math.abs(v) };
+}
+
+/** Smie ďalšia Povera hráča p posunúť priazeň tohto staršieho k nemu? (strop 3) */
+export function poveraMozna(elder: Pick<ElderState, "marker" | "elderId">, p: PlayerId, klebety?: Klebety): boolean {
+  const u = ucinnaPriazen(elder, klebety);
+  return !(u.hrac === p && u.sila >= 3);
+}
+
 /** Hráč, ktorého sa starší bojí — ten na opačnej strane, než leží marker (v sivom nikto). */
 export function obavanyHrac(elder: Pick<ElderState, "marker">): PlayerId | null {
   const p = priazenHraca(elder);

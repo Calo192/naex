@@ -87,15 +87,16 @@ describe("v8: Nakladačku rozdeľuje porazený", () => {
     expect(t.posunyMarkerov.filter((x) => x.zdroj === "prebytok").every((x) => x.kto === 0)).toBe(true);
   });
 
-  it("pri sekere rozdeľuje ten s nižším celkovým poškodením", () => {
-    // Tuhé 2 : 2, Povera hráča 1 proti Dlhu hráča 0 → celkové 2 : 3; prebytok drží hráč 1.
+  it("pri sekere Nakladačku nedrží nikto — Povery už poškodenie nedávajú (v8.3)", () => {
+    // Tuhé 2 : 2; Povera hráča 1 ide na klebety, nie do celkového — Nakladačka nie je.
     const s = predPoskodenim({
       sums: [{ Rana: 2 }, { Rana: 2, Povera: 1 }],
       uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], dlhy: 1 }, { ...t.hraci[1], dlhy: 1 }] }),
     });
     const st = apply(data, s, { type: "pohorsenie", elderId: elder(s, 0) }, 0).state;
     expect(st.nastenka.at(-1)?.vitaz).toBeNull();
-    expect(st.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 1, caka: 0 });
+    expect(st.bitkaStav?.prebytokDrzi ?? null).toBeNull();
+    expect(st.posunyMarkerov.filter((x) => x.zdroj === "prebytok")).toEqual([]);
   });
 });
 
