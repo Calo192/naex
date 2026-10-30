@@ -389,7 +389,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
           </div>
           {(
             [
-              ["dlh", "Dlh", nazov("Dlh"), "zadĺženie", pitky.zadlzenie, pitky.dlhy, "kariet Dlh"],
+              ["dlh", "Dlh", nazov("Dlh"), "zadĺženie", pitky.zadlzenie, pitky.dlhy, "Dlhov"],
               ["pecen", "PoškodeniePečene", "pečeň", "poškodenie", pitky.pecen, pitky.cirhozy, "Cirhóz"],
             ] as const
           ).map(([kluc, akcia, meno, pod, hodnoty, karty, coKarty]) => {
