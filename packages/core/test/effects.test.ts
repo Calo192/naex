@@ -130,7 +130,8 @@ function zhrom(s: GameState): GameState {
 
 describe("pravidlá v2 a nová tlačová sada", () => {
   it("Robota je akcia a Záhradkár má spúšťač Exekúcia (v7)", () => {
-    expect(data.cards.get("autobusar")?.right.actions.Robota).toBe(1);
+    // v9: Autobusár je boss — Robota je na ľavej strane (silueta A).
+    expect(data.cards.get("autobusar")?.left.actions.Robota).toBe(1);
     expect(data.cards.get("zahradkar")?.triggers).toEqual(["Exekúcia"]);
   });
 

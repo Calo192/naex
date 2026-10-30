@@ -2053,7 +2053,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Stryná: hráč bez NA EX v Pitke +1 pečeň; Liberál: súper bez rovnováhy žien a chlapov +1 zadĺženie",
-        "packages/core/test/v7-efekty.test.ts › Veterinár: karty v jeho okolí nepridávajú poškodenie pečene",
+        "packages/core/test/v7-efekty.test.ts › Veterinár v línii od v9 pečeň okolia nemaže — jeho efekt je len Kšeft väzňa",
         "packages/core/test/v7-efekty.test.ts › Kar: pečeň za NA EX dostane súper toho, kto ho dal",
         "packages/core/test/v7-efekty.test.ts › Cintorín: nová Cirhóza je hneď priznaná",
         "packages/core/test/v7-efekty.test.ts › Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka: fajčí len najďalej",

@@ -310,11 +310,10 @@ describe("Pitka (v7)", () => {
     expect(so.zadlzenie[1] - bez.zadlzenie[1]).toBe(1);
   });
 
-  it("Veterinár: karty v jeho okolí nepridávajú poškodenie pečene", () => {
+  it("Veterinár v línii od v9 pečeň okolia nemaže — jeho efekt je len Kšeft väzňa", () => {
     const sused = lezi(inst("zivnostnik"), 0); // má Poškodenie pečene
-    const bez = prirastkyPitky(data, vPitke("zastavka", [[lezi(inst("zamocnik"), 0), sused], []]));
-    const so = prirastkyPitky(data, vPitke("zastavka", [[lezi(inst("veterinar"), 0), sused], []]));
-    expect(so.poskodeniePecene[0]).toBeLessThanOrEqual(bez.poskodeniePecene[0]);
+    const s = vPitke("zastavka", [[lezi(inst("veterinar"), 0), sused], []]);
+    expect(prirastkyPitky(data, s).poskodeniePecene[0]).toBe(evaluateLine(data, lineState(s)).sums[0].PoškodeniePečene ?? 0);
   });
 
   it("Kar: pečeň za NA EX dostane súper toho, kto ho dal", () => {
