@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Povery — návrhy — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 16px 12px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); } .box.mer { border-color: var(--modra); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.v2 { color: var(--oranzova); } .chip.v3 { color: var(--slaby); } .chip.m { color: var(--modra); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a, .ovl button { flex: none; font: inherit; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+details.q { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details.q[open] { padding-bottom: 10px; border-color: var(--akcent); }
+details.q summary { cursor: pointer; padding: 10px 0; list-style: none; }
+details.q summary::-webkit-details-marker { display: none; }
+.qid { font: 700 .95rem Georgia, serif; color: var(--akcent); margin-right: 4px; }
+.qt { font-weight: 600; }
+.volba { margin-left: 6px; color: var(--zelena); font-weight: 700; }
+ol.moznosti { list-style: none; padding: 0; margin: 8px 0; }
+li.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--plocha-2); }
+li.moz.rec { border-color: var(--zelena); }
+li.moz label { display: block; cursor: pointer; }
+li.moz span:not(.chip) { display: block; font-size: .9rem; color: var(--tlmeny); margin-top: 2px; }
+li.moz input { accent-color: var(--akcent); }
+.pozn { display: block; font-size: .8rem; color: var(--slaby); margin-top: 6px; }
+.pozn textarea { width: 100%; font: inherit; font-size: .9rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px; margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .8rem; }
+tbody th { font-family: Georgia, serif; width: 28%; font-weight: 600; }
+.tab { overflow-x: auto; }
+@media (max-width: 560px) { .tab.stack tr { display: block; border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  .tab.stack th, .tab.stack td { display: block; border: 0; padding: 2px 4px; width: auto; }
+  .tab.stack thead { display: none; }
+  .tab.stack td::before { content: attr(data-l); display: block; font-size: .72rem; color: var(--slaby); } }
+#vystup { width: 100%; min-height: 120px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+details.q, section, h2 { scroll-margin-top: 52px; }
+.kroky { counter-reset: k; list-style: none; padding: 0; }
+.kroky li { position: relative; padding-left: 30px; margin-bottom: 8px; }
+.kroky li::before { counter-increment: k; content: counter(k); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); color: #1a1410; font-weight: 700; font-size: .8rem; text-align: center; line-height: 22px; }
+pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; font-size: .82rem; overflow-x: auto; }
+.ok { color: var(--zelena); } .zle { color: var(--cervena); }
+</style>
+</head>
+<body>
+<main>
+<h1>Povery — lepšia integrácia</h1>
+<p class="mini">brainstorming · verzia 1 · 2026-10-30 · zadanie Michala z interview k revízii starších · pravidlá ani kód sa nemenia · vetva <code>napady/starsi-revizia</code> · nadväzuje na <code>docs/napady/starsi-revizia.html</code> (rozhodnutia o väzňovi, udržaní, priazniach)</p>
+
+<div class="box zv">
+  <p><b>Michal:</b> „Keďže sú Povery ako mäkké poškodenie nie úplne intuitívne, možno by sme ich mohli implementovať nejako lepšie… napríklad za každú efektívnu Poveru by hráč znížil silu vybranej priazne.“</p>
+  <p><b>V skratke:</b> Michalov nápad je zo všetkých variantov najkoherentnejší s novým svetom starších (udržanie, väzeň, priazne pre porazeného). Povera prestane byť „poškodením, ktoré nebije“ a stane sa <b>klebetou proti priazni</b>: marker sa nepohne (strach ostáva), len priazeň súpera v tejto bitke stratí silu. Mäkké poškodenie, strop podľa Dlhov aj „porazený drží prebytok“ zaniknú, §9.3 a §9.4 sa skrátia. Riziko je jedno: Povera bez cieľa (súper bez priazne) je hluchá, a priazne má spravidla porazený.</p>
+</div>
+
+<nav class="skupiny" aria-label="Časti">
+  <a href="#dnes">Dnes</a>
+  <a href="#preco">Prečo to nesedí</a>
+  <a href="#moznosti">Možnosti</a>
+  <a href="#odporucanie">Odporúčanie</a>
+  <a href="#karty">Karty</a>
+  <a href="#rizika">Riziká</a>
+  <a href="#rozhodnutia">Rozhodnutia</a>
+  <a href="#volby">Moje voľby</a>
+</nav>
+
+<h2 id="dnes">Dnes (§2, §9.3, §9.4)</h2>
+<div class="box">
+  <ul>
+    <li><b>Povera</b> = mäkké poškodenie <b>do výšky súperových priznaných Dlhov</b>; ruší sa s Vierou 1 : 1 (moja Viera ruší súperove Povery, moje Povery rušia súperovu Vieru).</li>
+    <li><b>Viera</b> = znižuje súperovo tuhé poškodenie o 1 za kus (Svätý text +1; priazeň Veriaceho +1 / 2 / 3).</li>
+    <li>Bitka: <code>cancel = min(moja Viera, súperove Povery)</code> → <code>tuhé = Rany − zvyšná Viera súpera − Absťáky</code> → <code>mäkké = min(zvyšné Povery, súperove priznané Dlhy)</code> → <code>celkové = tuhé + mäkké</code>. <b>Víťaz = vyššie tuhé</b>, <b>prebytok = rozdiel celkových</b>, drží ho vyššie celkové (môže aj porazený).</li>
+    <li><b>Čierna mačka:</b> tvoje Povery robia mäkké poškodenie aj bez súperových Dlhov.</li>
+    <li>Povera je na <b>15 kartách</b> sady (Praudovravec 2, Veštica 2, Šarlatán 2, Čierna mačka 2, Stryná, Finančná poradkyňa, Poštárka, Vychovávateľka, Krčmárka, Milujúca manželka, Miňištrant, Liberál, Dievčina na vydaj, Bzdocha, Noviny) a v Kšefte Vychovávateľky; Šarlatán ju Konfliktom mení na Ranu.</li>
+    <li>Z playtestu: Eva stavala plán cez Dlhy (Finančná poradkyňa, Liberál, Noviny) a vyšiel; stratég: „kto má veľké mäkké poškodenie, môže aj po prehre posunúť markery“. Nikto Poveru neoznačil za nezrozumiteľnú, ale nikto ju ani nespomenul ako páku.</li>
+  </ul>
+</div>
+
+<h2 id="preco">Prečo to nesedí</h2>
+<div class="box">
+  <p>Jedna akcia nesie <b>tri pravidlá naraz</b>:</p>
+  <ol>
+    <li>účinkuje len vtedy, keď je súper zadlžený (strop podľa Dlhov) — bez Dlhov je hluchá;</li>
+    <li>nepomáha vyhrať bitku, pridáva sa len do „celkového“ a cez prebytok posúva markery — hráč musí poznať rozdiel tuhé / mäkké / celkové;</li>
+    <li>ruší Vieru a Viera ruší ju.</li>
+  </ol>
+  <p>K tomu dve slová navyše („mäkké poškodenie“, „celkové poškodenie“) a výnimka na jednej karte (Čierna mačka). Po revízii starších sa navyše mení, čo prebytok robí (porazený vyberá staršieho, celý na jedného, strach až po udržaní), takže „Povera cez prebytok“ by bola ešte ďalej od toho, čo hráč vidí.</p>
+</div>
+
+<h2 id="moznosti">Možnosti</h2>
+<ol class="moznosti">
+  <li class="moz rec"><b>A · Klebeta proti priazni</b> <span class="chip ok">odporúčam (Michal)</span><span><b>Znenie:</b> „Povera: v bitke zníži o 1 silu jednej súperovej priazne, ktorú si vyberieš, na túto bitku.“ Nový <b>krok 1 bitky „Povery“</b> (pred Pohoršením, aby zasiahol aj Abstinenta): najprv sa Viera a Povery vyrušia 1 : 1, zvyšné Povery hráč rozdelí medzi súperove priazne (obranca prvý, potom útočník). Sila klesne najviac na 0, <b>marker sa nehýbe</b> (strach ani udržanie sa nemenia). Zasiahne každú priazeň, ktorá v tomto kole pôsobí: Bitkár, Veriaci, Abstinent, Advokát, Robota, Kmotor, Fajčiar, Alkoholik. <b>Dopad:</b> mäkké poškodenie, strop podľa Dlhov, „celkové“ a „porazený drží prebytok“ zaniknú — prebytok = rozdiel tuhého, drží ho vždy víťaz. Povera bez cieľa (súper bez priazne) nerobí nič, ako Robota bez Dlhov.</span></li>
+  <li class="moz"><b>B · Povera desí (mäkké bez stropu, premenované)</b><span><b>Znenie:</b> „Povera: 1 bod desenia — nerozhoduje, kto vyhrá, ale pripočíta sa k prebytku.“ Strop podľa Dlhov sa zruší (výnimka Čiernej mačky sa stane pravidlom), „mäkké poškodenie“ sa premenuje na „desenie“. Viera ruší Povery ako dnes. <b>Dopad:</b> najmenšia zmena kódu, veta „Rana bije, Povera desí“ je zrozumiteľná; ostáva však tretia veličina (celkové) a prípad „porazený drží prebytok“. S novou cenou posunu je 1 bod = najviac žltá, Povera bude slabá.</span></li>
+  <li class="moz"><b>C · Povera zadlžuje</b><span><b>Znenie:</b> „Povera: súper dostane 1 zadĺženie.“ (po vyrušení s Vierou). <b>Dopad:</b> jednoduché, Dlhy vznikajú (Michal: „Dlhy musia vznikať“), Exekútor každé kolo z nich robí pomalý útok na špaky: 2 Povery = 1 Dlh ≈ 1 špak pri exekúcii. Prekrýva sa s Farárovým Kšeftom (Viera → Hazard) a Kmotrom; posilní Dlhové balíčky (Evin plán); so staršími nesúvisí.</span></li>
+  <li class="moz"><b>D · Klebeta s náhradou</b><span><b>Znenie:</b> ako A, a navyše „ak súper nemá priazeň, dostane za každú zvyšnú Poveru 1 zadĺženie“ (alebo 1 bod desenia). <b>Dopad:</b> nikdy hluchá; dve vety namiesto jednej; vedúci bez priazní platí Dlhmi, čo je v duchu „odmena za výzvu“ obrátené proti nemu.</span></li>
+  <li class="moz"><b>E · Klebeta natrvalo</b><span>Ako A, ale zníženie ostáva na staršom („klebeta leží na Farárovi“), kým sa marker nepohne. <b>Dopad:</b> silnejšie, nový stav na stupnici, Viera by rušila len nové Povery; priazne porazeného by sa dali vymazať natrvalo. Neodporúčam, prebíja rubber-band.</span></li>
+  <li class="moz"><b>F · Nechať</b><span>Len premenovať („mäkké“ → „desenie“) a vysvetliť vo výučbe. Tri pravidlá ostanú.</span></li>
+</ol>
+
+<h2 id="odporucanie">Odporúčanie: A, krok 1 bitky, Viera ako štít</h2>
+<div class="box rec">
+  <p><b>Prečo A.</b> V novom svete starších sú priazne <b>rubber-band porazeného</b> (prebytok rozdeľuje porazený a vyberá si jednu silnú priazeň). Hra potrebuje protiťah, ktorý priazeň <b>oslabí, ale nezmaže strach</b> — a to je presne Michalov nápad: marker ostáva, sila klesne na jednu bitku. Pohoršenie „k sebe“ by marker vrátilo a zrušilo by vlastný strach aj udržanie; Povera nie. Viera (hojná: Farár 2, Veterinár, Miňištrant, Manželka, Snúbenica, Stryná, Liberál, Svätý text, priazeň Veriaceho) je štít porazeného proti klebetám. Dve akcie, dva jasné účely: <b>Povera útočí na priazeň, Viera ju bráni a tlmí tuhé</b>.</p>
+  <p><b>Nové poradie bitky</b> (§9) — krok 1 je dnes v tabuľke prázdny:</p>
+  <ol class="kroky">
+    <li>Efekty na začiatku bitky (Traktoristka).</li>
+    <li><b>Povery:</b> Viera a Povery sa vyrušia 1 : 1; zvyšné Povery znížia silu súperových priazní (obranca rozdeľuje prvý, potom útočník; najviac na 0; len na túto bitku).</li>
+    <li>Pohoršenie (body posunu; Abstinent už so zníženou silou).</li>
+    <li>Poškodenie: <code>tuhé = Rany − zvyšná Viera súpera − Absťáky + Cirhózy + Bitkár</code>. Mäkké a celkové nie sú.</li>
+    <li>Výsledok: víťaz = vyššie tuhé; <b>prebytok = rozdiel tuhého, drží ho víťaz</b> (remíza: nikto).</li>
+    <li>Ďalej ako dnes: špaky za karty, exekúcia (Advokát, Robota), prebytok rozdeľuje porazený, zajatie, priazne po bitke, udržanie na konci kola.</li>
+  </ol>
+  <p><b>Čierna mačka</b> dostane nový text, lebo jej výnimka zanikne: „Furt: Tvoje Povery sa Vierou nerušia.“ (mačka, ktorej sa nedá odmodliť). Alternatíva: „Tvoje Povery znižujú priazeň o 2.“</p>
+  <p><b>Pojmy:</b> „mäkké poškodenie“ a „celkové poškodenie“ z pravidiel zmiznú. Akcia sa ďalej volá Povera (ikona na kartách), v pravidlách sloveso <b>ohovárať</b>: „Povera ohovára staršieho — jeho priazeň k súperovi je v tejto bitke o 1 slabšia.“</p>
+</div>
+
+<h2 id="karty">Čo to spraví s kartami</h2>
+<div class="tab stack box"><table>
+<thead><tr><th>Karta</th><th>Dnes</th><th>Po A</th></tr></thead>
+<tbody>
+<tr><th>Čierna mačka</th><td data-l="Dnes">Povery aj bez súperových Dlhov</td><td data-l="Po A">nový text: Povery sa Vierou nerušia (alebo −2 na priazeň)</td></tr>
+<tr><th>Praudovravec, Veštica, Šarlatán (2 Povery)</th><td data-l="Dnes">mäkké 2 pri Dlhoch súpera</td><td data-l="Po A">−2 sily priazní súpera; Šarlatánov Konflikt (Povery ako Rany) bez zmeny</td></tr>
+<tr><th>Poštárka, Vychovávateľka, Krčmárka (bossovia)</th><td data-l="Dnes">Povera v akciách</td><td data-l="Po A">bez zmeny textu; Kšeft Vychovávateľky „+1 Povera“ zaniká s novým Kšeftom</td></tr>
+<tr><th>Noviny (Pohoršenie, Povera)</th><td data-l="Dnes">Dedičstvo Titulka podľa Dlhov</td><td data-l="Po A">akcia Povera funguje nanovo, Titulka bez zmeny</td></tr>
+<tr><th>Stryná, Finančná poradkyňa, Milujúca manželka, Miňištrant, Liberál, Dievčina na vydaj, Bzdocha</th><td data-l="Dnes">1 Povera</td><td data-l="Po A">bez zmeny textu</td></tr>
+<tr><th>Farár (starý efekt Prehra: zadĺženie za Povery)</th><td data-l="Dnes">viaže sa na Povery</td><td data-l="Po A">zaniká s bossom (Kšeft Viera → Hazard)</td></tr>
+<tr><th>Výučba Prvá hra, ťahák, nápovedy, bot</th><td data-l="Dnes">vysvetľujú mäkké poškodenie a strop Dlhov</td><td data-l="Po A">prepísať; bot: hodnota Povery = min(Povery, súčet síl súperových priazní v tomto kole)</td></tr>
+</tbody></table></div>
+
+<h2 id="rizika">Riziká a čo zmerať</h2>
+<div class="box riz">
+  <ul>
+    <li><b>Hluchá Povera.</b> Priazne má spravidla porazený; vedúci bez priazní je proti Poverám imúnny. Ak bude Povera bez cieľa vo viac než tretine bitiek, prejsť na D (náhrada zadĺžením).</li>
+    <li><b>Proti zaostávajúcemu.</b> Klebeta je protiťah vedúceho proti rubber-bandu. Brzdy: Viera je hojná, Povier je v sade málo (väčšinou 1 na kartu), zníženie platí jednu bitku, marker ostáva. Hranica: „vedúci pred finále vyhrá“ nesmie prekročiť ~80 % (po udržaní 76 %).</li>
+    <li><b>Načasovanie.</b> Pohoršenie v kroku 2 môže priazeň zmeniť po tom, čo ju Povera v kroku 1 znížila; zníženie sa viaže na staršieho (Farárova priazeň −1), výsledná sila = nová sila − klebety, najmenej 0.</li>
+    <li><b>Väzeň</b> nemá priazeň, Povera naň nemieri.</li>
+    <li><b>2 na 2:</b> rozdeľuje kapitán; „súperova priazeň“ = priazeň druhého tímu.</li>
+    <li><b>UI:</b> výber staršieho ako pri Pohoršení; náhľad bitky „tvoje 2 Povery: Bitkár súpera 3 → 1“.</li>
+  </ul>
+</div>
+<div class="box mer"><p><b>Čo zmerať (stratég, vo worktree s A, B a C proti dnešku):</b> rozdiel a stompy, „vedúci pred finále vyhrá“, podiel bitiek, v ktorých Povera nemala cieľ, priemerná zrazená sila priazní na bitku, výhra hráča s viac Poverami v línii, rebrík. Bot potrebuje len hodnotu Povery (A: min(Povery, súčet síl priazní), C: 0,5 špaku za zadĺženie).</p></div>
+
+<h2 id="rozhodnutia">Rozhodnutia pre Michala</h2>
+<div class="ovl"><button type="button" id="rozbal">Rozbaliť všetko</button><button type="button" id="zbal">Zbaliť</button></div>
+
+<details class="q" id="P1" open>
+  <summary><span class="qid">P1</span> <span class="qt">Čo bude Povera robiť</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="P1" value="A · klebeta proti priazni (−1 sila vybranej súperovej priazne na túto bitku)"> <b>A · Klebeta proti priazni</b> <span class="chip ok">odporúčam</span></label><span>mäkké poškodenie a strop Dlhov zaniknú</span></li>
+    <li class="moz"><label><input type="radio" name="P1" value="B · Povera desí: 1 bod prebytku bez stropu Dlhov, premenovať"> <b>B · Povera desí</b></label><span>mäkké bez stropu, premenované na desenie</span></li>
+    <li class="moz"><label><input type="radio" name="P1" value="C · Povera zadlžuje súpera o 1"> <b>C · Povera zadlžuje</b></label></li>
+    <li class="moz"><label><input type="radio" name="P1" value="D · klebeta, bez cieľa 1 zadĺženie súperovi"> <b>D · Klebeta s náhradou</b></label></li>
+    <li class="moz"><label><input type="radio" name="P1" value="E · klebeta natrvalo (kým sa marker nepohne)"> <b>E · Klebeta natrvalo</b></label></li>
+    <li class="moz"><label><input type="radio" name="P1" value="F · nechať, len premenovať"> <b>F · Nechať</b></label></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="P1" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="P2">
+  <summary><span class="qid">P2</span> <span class="qt">Kedy v bitke sa Povery rozdelia</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="P2" value="krok 1, pred Pohoršením (zasiahne aj Abstinenta)"> <b>Krok 1, pred Pohoršením</b> <span class="chip ok">odporúčam</span></label><span>zasiahne aj Abstinenta; prázdny krok 1 v tabuľke §9 sa zaplní</span></li>
+    <li class="moz"><label><input type="radio" name="P2" value="v kroku poškodenia (len Bitkár, Veriaci a priazne po bitke)"> <b>V kroku poškodenia</b></label><span>Abstinent ostane nedotknutý</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="P2" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="P3">
+  <summary><span class="qid">P3</span> <span class="qt">Povera bez cieľa (súper bez priazne)</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="P3" value="nič (ako Robota bez Dlhov); ak hluchá v > 1/3 bitiek, prejsť na náhradu"> <b>Nič</b> <span class="chip ok">odporúčam</span></label><span>ako Robota bez Dlhov; stratég zmeria, ako často</span></li>
+    <li class="moz"><label><input type="radio" name="P3" value="1 zadĺženie súperovi za každú zvyšnú Poveru"> <b>1 zadĺženie súperovi</b></label></li>
+    <li class="moz"><label><input type="radio" name="P3" value="1 bod prebytku (desenia) za každú zvyšnú Poveru"> <b>1 bod prebytku</b></label></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="P3" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="P4">
+  <summary><span class="qid">P4</span> <span class="qt">Viera a Povera</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="P4" value="Viera ruší Povery 1:1 ako dnes (štít priazní) a zvyšná tlmí tuhé"> <b>Viera ruší Povery 1 : 1 ako dnes</b> <span class="chip ok">odporúčam</span></label><span>Viera = štít priazní + tlmič tuhého</span></li>
+    <li class="moz"><label><input type="radio" name="P4" value="Viera Povery neruší, len tlmí tuhé"> <b>Viera Povery neruší</b></label><span>Povera bez protihry, Viera jednoduchšia</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="P4" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="P5">
+  <summary><span class="qid">P5</span> <span class="qt">Čierna mačka — nový text</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="P5" value="Furt: Tvoje Povery sa Vierou nerušia."> <b>„Tvoje Povery sa Vierou nerušia.“</b> <span class="chip ok">odporúčam</span></label></li>
+    <li class="moz"><label><input type="radio" name="P5" value="Furt: Tvoje Povery znižujú priazeň o 2."> <b>„Tvoje Povery znižujú priazeň o 2.“</b></label></li>
+    <li class="moz"><label><input type="radio" name="P5" value="iný text — poznámka"> <b>Iný text</b></label></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="P5" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="P6">
+  <summary><span class="qid">P6</span> <span class="qt">Pojem v pravidlách a na stole</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="P6" value="akcia Povera, sloveso ohovárať; mäkké a celkové poškodenie zaniknú"> <b>Povera „ohovára“ staršieho</b> <span class="chip ok">odporúčam</span></label><span>„mäkké“ a „celkové poškodenie“ z pravidiel zmiznú</span></li>
+    <li class="moz"><label><input type="radio" name="P6" value="premenovať akciu na Klebeta"> <b>Premenovať akciu na Klebeta</b></label><span>nová ikona a názov na 15 kartách</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="P6" rows="2"></textarea></label>
+</details>
+
+<h2 id="volby">Moje voľby</h2>
+<textarea id="vystup" readonly></textarea>
+<div class="ovl"><button type="button" id="kopiruj">Kopírovať</button><button type="button" id="vymaz">Vymazať voľby</button></div>
+</main>
+<script>
+(function () {
+  var KLUC = "naex-povery-v1";
+  var ulozene = {};
+  try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) {}
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) {} vypis(); }
+  function vypis() {
+    var riadky = [];
+    document.querySelectorAll("details.q").forEach(function (d) {
+      var v = ulozene[d.id], p = ulozene[d.id + "_p"];
+      var el = d.querySelector(".volba"); if (el) el.textContent = v ? "→ " + v.split(" · ")[0] : "";
+      if (v || p) riadky.push(d.id + ": " + (v || "?") + (p ? " — " + p : ""));
+    });
+    document.getElementById("vystup").value = riadky.length ? riadky.join("\n") : "(zatiaľ nič nevybrané)";
+  }
+  document.querySelectorAll("li.moz input").forEach(function (i) {
+    if (ulozene[i.name] === i.value) i.checked = true;
+    i.addEventListener("change", function () { ulozene[i.name] = i.value; uloz(); });
+  });
+  document.querySelectorAll("textarea[data-pozn]").forEach(function (t) {
+    var k = t.getAttribute("data-pozn") + "_p"; t.value = ulozene[k] || "";
+    t.addEventListener("input", function () { ulozene[k] = t.value.trim(); uloz(); });
+  });
+  document.getElementById("rozbal").onclick = function () { document.querySelectorAll("details.q").forEach(function (d) { d.open = true; }); };
+  document.getElementById("zbal").onclick = function () { document.querySelectorAll("details.q").forEach(function (d) { d.open = false; }); };
+  document.getElementById("kopiruj").onclick = function () {
+    var t = document.getElementById("vystup"); t.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value); else document.execCommand("copy");
+  };
+  document.getElementById("vymaz").onclick = function () {
+    if (!confirm("Vymazať všetky voľby a poznámky?")) return;
+    ulozene = {}; uloz();
+    document.querySelectorAll("li.moz input").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll("textarea[data-pozn]").forEach(function (t) { t.value = ""; });
+  };
+  function otvor(id) { var d = document.getElementById(id); if (d && d.tagName === "DETAILS") d.open = true; }
+  if (location.hash) otvor(location.hash.slice(1));
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) { a.addEventListener("click", function () { otvor(a.getAttribute("href").slice(1)); }); });
+  vypis();
+})();
+</script>
+</body>
+</html>

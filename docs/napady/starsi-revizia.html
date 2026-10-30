@@ -87,15 +87,17 @@ details.q, section, h2 { scroll-margin-top: 52px; }
 <body>
 <main>
 <h1>Starší — revízia</h1>
-<p class="mini">brainstorming · verzia 1.1 (doplnené meranie stratéga) · 2026-10-30 · zadanie Michala cez Leadera · pravidlá ani kód sa nemenia · vetva <code>napady/starsi-revizia</code> · podklady: PRAVIDLA.md v8.1 (§1, §5, §9.2, §9.4, §10, §14, §14b), <code>elders.json</code>, <code>scorecards.json</code>, <code>cards.json</code> (sada v26), playtest 20261028-090549, rozbor stratéga 20261028-090549</p>
+<p class="mini">brainstorming · verzia 1.2 (meranie stratéga, rozhodnutia Michala z interview) · 2026-10-30 · zadanie Michala cez Leadera · pravidlá ani kód sa nemenia · vetva <code>napady/starsi-revizia</code> · podklady: PRAVIDLA.md v8.1 (§1, §5, §9.2, §9.4, §10, §14, §14b), <code>elders.json</code>, <code>scorecards.json</code>, <code>cards.json</code> (sada v26), playtest 20261028-090549, rozbor stratéga 20261028-090549</p>
 
 <div class="box zv">
   <p><b>Čo je toto.</b> Sedem tém k starším (strach, väzeň namiesto patronátu, Kšefty, priazne, boss karty, strach po udržaní a daná nová cena posunu). Ku každej: ako je to dnes, čo je problém, 2–4 možnosti s dopadom, odporúčanie, riziká a čo má zmerať stratég. Na konci je <a href="#rozhodnutia">zoznam rozhodnutí</a> zoradený podľa dôležitosti — dá sa z neho spraviť interview. Zaškrtni voľby, prípadne dopíš poznámku, a výstup zo sekcie <a href="#volby">Moje voľby</a> pošli Leaderovi.</p>
+  <p><b>Stav:</b> Michal rozhodol všetky otázky 2026-10-30 (sekcia <a href="#rozhodnute">Rozhodnuté</a>); otvorené ostáva poradie hodnoty väzňa (celá hra vs. na hráča) a ôsma priazeň (Alkoholik / Výpalník).</p>
   <p><b>Päť najdôležitejších rozhodnutí:</b> <a href="#R1">R1</a> väzeň namiesto patronátu — a či nahradí aj vydesenie ako výhru · <a href="#R2">R2</a> strach až po udržaní · <a href="#R3">R3</a> hodnota väzňa (Michalov vzorec je paušál 8) · <a href="#R6">R6</a>/<a href="#R7">R7</a> Kšefty len pre držiteľa väzňa za vypitý poldeci · <a href="#R9">R9</a> sada ôsmich priazní bez hluchých.</p>
   <p class="mini">Odporúčaná možnosť má zelený rámik. Zásady, podľa ktorých posudzujem: žiadne umelé stropy zdrojov; odmena za väčšiu výzvu (pomáhať zaostávajúcemu); popis karty nespomína iné karty; náhoda zo semienka; server počíta, klient kreslí.</p>
 </div>
 
 <nav class="skupiny" aria-label="Časti">
+  <a href="#rozhodnute">Rozhodnuté</a>
   <a href="#dane">Dané</a>
   <a href="#t1">1 Pojmy</a>
   <a href="#t2">2 Väzeň</a>
@@ -108,6 +110,33 @@ details.q, section, h2 { scroll-margin-top: 52px; }
   <a href="#rozhodnutia">Rozhodnutia</a>
   <a href="#volby">Moje voľby</a>
 </nav>
+
+
+<!-- ============================================================ -->
+<h2 id="rozhodnute">Rozhodnuté (Michal 2026-10-30, interview v chate)</h2>
+<p class="mini">Zápis odpovedí z interview; otázky nižšie v sekcii Rozhodnutia ostávajú ako podklad. Poradie podľa interview.</p>
+<div class="tab stack box"><table>
+<thead><tr><th>Otázka</th><th>Rozhodnutie</th></tr></thead>
+<tbody>
+<tr><th>1 · Väzeň namiesto patronátu (R1)</th><td data-l="Rozhodnutie"><b>B</b> — väzeň nahradí patronát aj vydesenie. <b>Traja väzni</b> jedného hráča = výhra hneď (nie štyria). Ohlásené vydesenie, „udržať do konca ďalšieho kola“ a výnimky vo finále zaniknú.</td></tr>
+<tr><th>2 · Strach až po udržaní (R2)</th><td data-l="Rozhodnutie"><b>6A</b> (2.1). Platí aj porazenému, udržanie je samostatný výkon (2.2 A). Kontrola na konci kola k+1, po bitke, Pohoršeniach aj prebytku (2.3 A). Finále: zóny vzniknuté vo finále neplatia nič, udržané z posledného kola o lokalitu sa vyplatia po finále; <b>vo finále sa rozdeľuje len Pohoršenie, prebytok sa vo finále už nerozdeľuje</b> (2.4). Prebytok porazeného pri udržaní: <b>nechať</b> (2.5, rozhodnutie ponechané Brainstormingu: A; stratég sleduje pomer udržaných a odtlačených zón, pri udržaní nad 90 % zvážiť, aby držiteľ určil jedného staršieho). Implementácia <b>v dvoch krokoch</b> (2.6 A): najprv cena posunu + udržanie + pojmy, zmerať a odohrať playtest; potom väzeň + Kšefty + priazne + bossovia.</td></tr>
+<tr><th>3 · Majú starší dávať body</th><td data-l="Rozhodnutie"><b>A</b> — starší sú politika, body za strach malé, nechať 1 / 2 / 3.</td></tr>
+<tr><th>4 · Hodnota väzňa (R3)</th><td data-l="Rozhodnutie"><b>C</b>, klesá o 2: prvý zajatý v partii 8, druhý 6, tretí 4, štvrtý 2 (poradie v celej hre, nech zajal ktokoľvek — Michal potvrdí). Tretí väzeň jedného hráča hru končí, takže sa bodujú najviac dvaja na hráča.</td></tr>
+<tr><th>5 · Neúspešný pokus (R4)</th><td data-l="Rozhodnutie"><b>A</b> — starší späť na ukazovateľ, marker o stupeň späť (oranžová), cena prepadne.</td></tr>
+<tr><th>6 · Cena pokusu (R5)</th><td data-l="Rozhodnutie"><b>B</b> — 1 cigareta.</td></tr>
+<tr><th>7 · Kto má Kšeft (R6)</th><td data-l="Rozhodnutie"><b>A</b> — výhradne držiteľ väzňa; karta v línii má len akcie; prebudenie zaniká.</td></tr>
+<tr><th>8 · Cena Kšeftu (R7)</th><td data-l="Rozhodnutie"><b>A</b> — vypiť 1 plný poldeci (nerest, pečeň +1, limit −1).</td></tr>
+<tr><th>9 · Starosta (R8)</th><td data-l="Rozhodnutie"><b>A</b> — všetky aktívne akcie oboch hrán lokality, aj súperove.</td></tr>
+<tr><th>10 · Krčmárka (R9)</th><td data-l="Rozhodnutie"><b>A</b> — zákaz: súper v tejto Pitke NA EX nedá; na Krčme mu Kšeft povinnosť zruší.</td></tr>
+<tr><th>11 · Farár a Dlhová priazeň (R10)</th><td data-l="Rozhodnutie"><b>A</b> — Farárov Kšeft platí do konca kola. Dlhová priazeň Robota; otázka 12 však berie sadu doslovne aj s Advokátom, takže <b>Robota aj Advokát</b> (pozri 12).</td></tr>
+<tr><th>12 · Sada priazní (R11)</th><td data-l="Rozhodnutie"><b>A, na skúšku</b> — Michalova sada doslovne: Bitkár, Veriaci, Abstinent, Advokát (exekúcia −1/2/3 špaky), Robota 1/2/3, cigareta po bitke 1/2/3, Kmotor presúva 2/3/4 Dlhov, plus jedna stará (<b>Alkoholik alebo Výpalník — Michal určí</b>). Cigarety za prebytok porazenému ostávajú.</td></tr>
+<tr><th>13 · Bossovia (R12)</th><td data-l="Rozhodnutie"><b>A</b> — presne 1 neresť u každého: Hazard u Starostu, Hrobára, Poštárky a Veterinára; Pečeň u Autobusára, Vychovávateľky, Krčmárky a Farára.</td></tr>
+<tr><th>14 · Silueta (R13)</th><td data-l="Rozhodnutie"><b>Dve siluety, 4 + 4:</b> štyria bossovia s blokovaným Ľ3 + P0, štyria s blokovaným Ľ0 + P3. Návrh rozdelenia: úderníci a kontrola (Starosta, Autobusár, Hrobár, Vychovávateľka) Ľ3 + P0 ako je nakreslené; ekonomika a podpora (Krčmárka, Poštárka, Farár, Veterinár) zrkadlovo Ľ0 + P3 (akcie sa posunú o slot, poradie ostáva).</td></tr>
+<tr><th>15 · Pojmy (R14)</th><td data-l="Rozhodnutie"><b>A</b> (B + D) — zóny farbou a stupňom 0–3, stav staršieho (pokojný / znepokojený / vystrašený / vydesený), smer „od seba / k sebe“, slovesá desiť / upokojiť; „vydesenie“ zaniká spolu s výhrou vydesením (rozhodnutie 1).</td></tr>
+<tr><th>16 · Čítanie „na červenej pri tebe“ (R15)</th><td data-l="Rozhodnutie">Neodpovedané; všetky ostatné odpovede sedia s čítaním <b>A</b> (starší sa ťa bojí na stupni 3).</td></tr>
+<tr><th>17 · Drobnosti (R16)</th><td data-l="Rozhodnutie"><b>B</b> — šenok N = 8 vždy, Autobusárov Kšeft 1 karta, Vychovávateľka na Krčme neplatí.</td></tr>
+<tr><th>Nové: Povery</th><td data-l="Rozhodnutie">Michal: Povery ako mäkké poškodenie nie sú intuitívne; nápad: každá účinná Povera zníži silu vybranej súperovej priazne. Návrhy v <code>docs/napady/povery.html</code>.</td></tr>
+</tbody></table></div>
 
 <!-- ============================================================ -->
 <h2 id="dane">Dané: nová cena posunu markera (téma 7)</h2>
