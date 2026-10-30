@@ -19,7 +19,6 @@ import {
   favourStarsieho,
   legalCommands,
   loadGameData,
-  moznyPatronat,
   naTahu,
   naexCieleVLinii,
   opponentOf,
@@ -335,108 +334,17 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
   });
 });
 
-// --- §10 Patronát --------------------------------------------------------------------
-
-describe("§10 Patronát — obmedzenia", () => {
-  function vPatronate(): { s: GameState; u: PlayerId; obcan: CardInstance } {
-    const s0 = setupSBalickom(data, 31);
-    const u = s0.utocnik;
-    const obcan = inst("pijan");
-    const marker = (u === 0 ? 1 : 5) as 1 | 5;
-    const doplnok = [inst("pijan"), inst("pijan"), inst("pijan")];
-    const s = sHracom(
-      {
-        ...s0,
-        faza: "draft",
-        ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-        lokalityVHre: s0.lokalityVHre.slice(1),
-        starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker} : e)),
-        draftStav: { krok: "patronat", balicky: [[], []], vyber: [null, null], naTahu: u, hotovo: [false, false], noveKarty: [0, 0] },
-      },
-      u,
-      { ruka: [obcan], cigarety: 3, doberaci: [...s0.hraci[u].doberaci, ...doplnok] },
-    );
-    return { s, u, obcan };
-  }
-
-  it("§10: po patronáte marker ide do stredu (v6: zamknutie krajnej pozície sa ruší)", () => {
-    const { s, u, obcan } = vPatronate();
-    const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
-    expect(po.starsi[0]!.marker).toBe(3);
-  });
-
-  it("§10: každý smie vziať najviac jedného staršieho za kolo", () => {
-    const { s, u, obcan } = vPatronate();
-    expect(moznyPatronat(data, s, u).length).toBeGreaterThan(0);
-    const uzMa: GameState = { ...s, patronat: (u === 0 ? [{ elderId: "x", nahrada: obcan, pohorsenia: 2 }, null] : [null, { elderId: "x", nahrada: obcan, pohorsenia: 2 }]) as GameState["patronat"] };
-    expect(moznyPatronat(data, uzMa, u)).toEqual([]);
-  });
-
-  it("§10: kartu staršieho z patronátu smie hráč vyložiť ako Starešinu — ráta sa do prevahy a smie naň dať NA EX", () => {
-    const { s, u, obcan } = vPatronate();
-    const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
-    const starsi = po.starsi[0]!.karta;
-    // Vedľa Pijana, nech má starší spárovanú aj voľnú akciu (NA EX od 2026-10-23 len vtedy).
-    const strany: GameState["strany"] = u === 0 ? [[lezi(starsi, 0), lezi(inst("pijan"), 0)], []] : [[], [lezi(starsi, 1), lezi(inst("pijan"), 1)]];
-    const linia = { lokalita: null, lokalitaOtocena: false, strany };
-    expect(prevahaStran(data, strany)[u]).toBe(u);
-    expect(naexCieleVLinii(data, linia, u)).toContain(starsi.uid);
-    expect(naexCieleVLinii(data, linia, opponentOf(u))).toContain(starsi.uid);
-  });
-
-  it("§9.4: pri remíze sa patronát vyrieši ako prehra — starší späť na scorecard, náhrada do ruky, bolestné poldeci", () => {
-    const { s, u, obcan } = vPatronate();
-    const po = apply(data, s, { type: "patronat", elderId: s.starsi[0]!.elderId, uid: obcan.uid }, u).state;
-    const starsiUid = po.starsi[0]!.karta.uid;
-    const remiza: GameState = sHracom(
-      {
-        ...po,
-        faza: "bitka",
-        draftStav: null,
-        zhromazdenieStav: null,
-        kolo: 2,
-        bitkaStav: {
-          krok: "cintorin",
-          caka: 0,
-          sums: [{}, {}],
-          exekutorHotovy: [true, true],
-          pohorsenieZostava: [0, 0],
-          exekutor: [0, 0],
-          damage: null,
-          vitaz: null,
-          prebytokDrzi: null,
-          prebytokZostava: 0,
-          prebytokPosunute: [],
-          benzinkaZostava: [0, 0],
-
-          karHotovy: [true, true],
-          spalit: [],
-          vesticaHotova: true,
-        },
-      },
-      u,
-      { poldeciPlne: 2, poldeciVypite: 0 },
-    );
-    const konec = apply(data, remiza, { type: "cintorin", uid: null }, 0).state;
-    expect(konec.starsi[0]!.karta.uid).toBe(starsiUid);
-    expect(konec.starsi[0]!.nahradeny).toBe(false);
-    expect(konec.hraci[u].ruka.map((k) => k.uid)).toContain(obcan.uid);
-    // Bolestné: bez vypitého odhodí plný (2 → 1); na začiatku kola sa nemá čo doliať.
-    expect(konec.hraci[u].poldeciPlne + konec.hraci[u].poldeciVypite).toBe(1);
-  });
-
-});
-
 // --- §3 Príprava hry -----------------------------------------------------------------
 
 describe("§3 Príprava hry", () => {
-  it("§3: 8 starších s markerom v strede, nikto nič neohlásil", () => {
+  it("§3: 8 starších s markerom v strede, bez väzňov a pokusov", () => {
     const s = setupSBalickom(data, 21);
     expect(s.starsi).toHaveLength(8);
-    expect(s.starsi.every((e) => e.marker === 3 && !e.nahradeny)).toBe(true);
+    expect(s.starsi.every((e) => e.marker === 3)).toBe(true);
     expect(s.spaky).toEqual([0, 0]);
     expect(s.nastenka).toEqual([]);
-    expect(s.ohlaseneVydesenie).toEqual([null, null]);
+    expect(s.vazni).toEqual([]);
+    expect(s.pokusy).toEqual([null, null]);
     expect(s.kolo).toBe(1);
   });
 

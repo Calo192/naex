@@ -78,7 +78,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     vSkratke: [
       "Víťazné body sú špaky: za vyhratú bitku a k nej za starších, ktorí sa ťa boja.",
       "Po finále vyhrá, kto má viac špakov; rovnosť je remíza.",
-      "Okamžitá výhra: vydesíš polovicu starších a udržíš ich do konca ďalšieho kola.",
+      "Okamžitá výhra: zajmeš tretieho staršieho (tretí väzeň).",
     ],
     obsah: () => (
       <>
@@ -92,8 +92,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             viac špakov.
           </div>
           <div className="karticka karticka-ok">
-            <strong>Vyhráš hneď</strong>, ak <P k="vydesenie">vydesíš</P> aspoň polovicu starších v hre a udržíš ich do konca
-            nasledujúceho kola. Hra ohlásenie ukáže obom — súper má jedno kolo na odpoveď.
+            <strong>Vyhráš hneď</strong>, keď zajmeš <strong>tretieho staršieho</strong> — tretí <P k="vazen">väzeň</P> ukončí hru po bitke,
+            vo finále ešte pred konečnými špakmi. Inak väzni po finále pridajú špaky podľa poradia zajatia: 8 / 6 / 4 / 2.
           </div>
           <div className="karticka karticka-zle">
             <strong>O špaky prídeš</strong> pri <P k="exekutor">exekúcii</P> (v každej bitke, keď máš priznané Dlhy: zhorí polovica tvojich Dlhov nahor a rovnako veľa
@@ -186,7 +186,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Cieľ.</strong> <P k="utocnik">Obranca</P> (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
           </li>
           <li>
-            <strong>Šenok.</strong> Spolu postavíte ponuku kariet a beriete z nej za cigarety; potom smiete použiť patronát.
+            <strong>Šenok.</strong> Spolu postavíte ponuku kariet a beriete z nej za cigarety; potom smiete skúsiť zajať staršieho.
           </li>
           <li>
             <strong>Zhromaždenie a Pitka.</strong> Striedavo vykladáte karty do línie, potom sa pije a vyhodnocuje. Opakuje sa
@@ -229,7 +229,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Obranca vyberie a natočí lokalitu.",
       "Stavba šenku: polovica kariet do šenku, polovica naspodok balíčka.",
       "Branie striedavo: 1 karta za 1 cigaretu, 2 karty za 3.",
-      "Patronát: starší, ktorý ti prejavuje priazeň, ti môže prísť na pomoc.",
+      "Pokus o zajatie: staršieho, ktorý sa ťa bojí na stupni 3, skúsiš zajať za cigaretu.",
     ],
     obsah: () => (
       <>
@@ -252,29 +252,32 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Beriete striedavo, začína <strong>útočník</strong>. Na ťahu vezmeš <strong>1 kartu za 1 cigaretu</strong> alebo{" "}
           <strong>2 karty za 3 cigarety</strong>. Šenok sa poldeci neplatí. Kto prestane, druhému ostáva už len jeden ťah; kto
-          nemá cigaretu, prestane sám. Potom sa šenok doplní na 8 kariet — najprv z Náradia, kým v ňom nie sú aspoň 2 Nástroje, zvyšok z Občanov. Kto má priazeň{" "}
-          <strong>Fajčiara</strong>, dostane hneď po braní cigarety navyše (súperovo Obmedzenie ich neuberá).
+          nemá cigaretu, prestane sám. Potom sa šenok doplní na 8 kariet — najprv z Náradia, kým v ňom nie sú aspoň 2 Nástroje, zvyšok z Občanov. Väzni počet kariet
+          stavby nemenia.
         </p>
-        <H3 id="patronat">Patronát</H3>
+        <H3 id="patronat">Pokus o zajatie a väzeň</H3>
         <p>
-          Po braní sa najprv útočník, potom obranca rozhodne, či si vezme do ruky staršieho, ktorý mu{" "}
-          <P k="priazen">prejavuje priazeň</P> (marker aspoň v žltej zóne na jeho polovici). Každý najviac jedného za kolo.
+          Po braní sa najprv útočník, potom obranca rozhodne, či skúsi zajať staršieho, ktorý sa ho{" "}
+          <strong>bojí na stupni 3</strong> (marker na červenej na súperovej polovici). Každý najviac jeden pokus za kolo; smiete
+          obaja, každý iného staršieho. Platí aj vo finále.
         </p>
         <ul>
-          <li>Kartu staršieho si vezmeš do ruky a v tomto kole ju smieš vyložiť ako každú inú kartu.</li>
-          <li>Na jeho miesto dáš lícom dole Občana alebo Zviera z ruky — súper nevie, ktorého. Marker ide do stredu.</li>
+          <li>Zaplatíš <strong>1 cigaretu</strong> — prepadne, nech pokus dopadne akokoľvek.</li>
           <li>
-            Zaplatíš cigarety podľa zóny markera: červená 1, oranžová 2, žltá 3. Súper dostane v tejto
-            bitke toľko Pohoršení navyše, o koľko polí marker išiel do stredu (1 / 2 / 3) — tie však nesmú na staršieho,
-            ktorého si si vzal.
+            Karta staršieho ide <strong>súperovi do ruky</strong> (vie sa, ktorá to je). Súper ju smie v tomto kole vyložiť ako
+            Starešinu — v línii má len akcie.
           </li>
-          <li>Treba mať aspoň jeden poldeci. Patronát platí aj vo finále.</li>
+          <li>
+            Starší je <strong>v ohrození</strong>: v tomto kole jeho markerom nič nehýbe (Pohoršenie, Nakladačka, Povery). Strach,
+            ktorý ti udržal, ti zaplatí normálne.
+          </li>
         </ul>
         <p className="zvyraznene">
-          <strong>Vyhráš bitku</strong> — staršieho si necháš: náhrada sa otočí a hrá ďalej ako starší.{" "}
-          <em>Áno, aj koza smie zasadnúť do rady starších.</em> <strong>Prehráš</strong> — starší sa vráti na svoje miesto,
-          náhradu si vezmeš späť a <strong>odhodíš jeden poldeci</strong> natrvalo. Patronát vráti marker aj z krajnej pozície
-          naraz do stredu — preto je najrýchlejšou odpoveďou na ohlásené vydesenie.
+          <strong>Vyhráš bitku</strong> — starší je tvoj <P k="vazen">väzeň</P>: leží medzi tvojimi priznanými kartami, zo stupnice
+          zmizne (priazeň ani strach už nedáva) a ty máš jeho <a href="#pitka-kseft">Kšeft väzňa</a>. <strong>Tretí väzeň = výhra
+          hneď.</strong> <strong>Prehráš alebo sekera</strong> — starší sa vráti a marker ustúpi o stupeň k stredu (nezaplatená
+          červená prepadne). Po finále dajú väzni špaky podľa poradia zajatia v celej partii: prvý 8, druhý 6, tretí 4, štvrtý 2 —
+          nech ho zajal ktokoľvek.
         </p>
       </>
     ),
@@ -408,13 +411,13 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="naex-odkrytie">Odkrytie a Výtržník</H3>
         <p>
           Keď ste hotoví obaja, NA EX sa odkryjú — najprv obrancovo, potom útočníkovo. Až vtedy poldeci ľahne na kartu,
-          pripíše sa pečeň (na Kare ju dostane súper) a platia efekty ako Výpalné. Potom odpovede — Kohút dá posledné slovo
-          svojmu majiteľovi aj ako obrancovi, na NA EX majiteľa Krčmárky súper kartou neodpovedá.
+          pripíše sa pečeň (na Kare ju dostane súper) a vyhodnotí sa hrozba Kšeftu Vychovávateľky. Potom odpovede — Kohút dá
+          posledné slovo svojmu majiteľovi aj ako obrancovi.
         </p>
         <p className="zvyraznene">
           <strong>Zrážka:</strong> ak ste obaja vybrali tú istú kartu, je z nej <P k="vytrznik">Výtržník</P>. So susedmi sa
           najprv spáruje ako obvykle, potom sa <strong>všetky jej akcie zmenia na Rany</strong> pre jej majiteľa — aj tie bez
-          partnera. Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí za svoje NA EX (pečeň, poldeci, Výpalné). Po bitke Výtržník vytriezvie a karta má
+          partnera. Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí za svoje NA EX (pečeň, poldeci). Po bitke Výtržník vytriezvie a karta má
           znova pôvodné akcie.
         </p>
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
@@ -441,6 +444,23 @@ export const KAPITOLY: readonly Kapitola[] = [
           Na začiatku každého kola sa ti jeden vypitý poldeci doleje sám. Čo ti po finále ostane, sa vykúpi: plný poldeci
           1 špak, každých 5 cigariet 1 špak.
         </p>
+        <H3 id="pitka-kseft">Kšeft väzňa</H3>
+        <p>
+          Kto má <P k="vazen">väzňa</P>, smie v Pitke, kým ju neskončí, spustiť jeho <strong>Kšeft</strong> — za{" "}
+          <strong>vypitý plný poldeci</strong> zo svojej zásoby (nerest, +1 pečeň, v ďalšom Zhromaždení limit o 1 nižší). Každý
+          väzeň raz za Pitku. Karta staršieho v ruke či v línii efekt nemá — len väzeň. Kšeft, ktorý by nič neurobil, hra
+          neponúkne.
+        </p>
+        <ul>
+          <li><strong>Hrobár</strong> — súper odhodí náhodnú kartu z ruky.</li>
+          <li><strong>Farár</strong> — do konca kola je každá súperova aktívna Viera posilnený Hazard; v bitke mu Viera chýba.</li>
+          <li><strong>Autobusár</strong> — vezmi si 1 kartu zo šenku.</li>
+          <li><strong>Starosta</strong> — do konca kola sú všetky aktívne akcie hrán lokality posilnené (aj súperove).</li>
+          <li><strong>Poštárka</strong> — 1 tvoj priznaný Dlh prejde na súpera.</li>
+          <li><strong>Krčmárka</strong> — súper v tejto Pitke NA EX nedá; už dané skryté NA EX sa mu vráti.</li>
+          <li><strong>Vychovávateľka</strong> — ak súper v tejto Pitke dá NA EX, máš v bitke Petelicu navyše (+3 tuhé); na Krčme nie.</li>
+          <li><strong>Veterinár</strong> — zahoď z hry Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta pečeň.</li>
+        </ul>
       </>
     ),
   },
@@ -585,11 +605,13 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             <strong>Výhra a Prehra</strong> — Živnostník, cigarety za Nakladačku (súper dostane 1 cigaretu za každého staršieho,
-            ktorého marker sa Nakladačkou posunul), Kmotor (kto má jeho priazeň, tomu prejdú priznané Dlhy podľa sily k súperovi) a ostatné
+            ktorého marker sa Nakladačkou posunul), Kmotor (kto má jeho priazeň, tomu prejdú 2 / 3 / 4 priznané Dlhy k súperovi), Fajčiar
+            (cigarety po bitke) a ostatné
             efekty Výhra a Prehra.
           </li>
           <li>
-            <strong>Patronát</strong> — víťaz si staršieho nechá, porazený ho vráti a odhodí poldeci.
+            <strong>Zajatie</strong> — kto pri pokuse o zajatie vyhral bitku, má väzňa; neúspešný pokus vráti staršieho a marker
+            ustúpi o stupeň. Tretí väzeň končí hru.
           </li>
           <li>
             <strong>Návrat kariet</strong> do odhadzovacieho balíčka hráča, ktorý ich zahral. Nepriznaná Cirhóza z ruky ide tiež
@@ -600,7 +622,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             minulého kola a ešte ich nezaplatil — nech bitku vyhral ktokoľvek.
           </li>
           <li>
-            <strong>Absťák</strong> — porovnanie nerestí oboch v tomto kole (po finále už nie); potom sa skontroluje vydesenie.
+            <strong>Absťák</strong> — porovnanie nerestí oboch v tomto kole (po finále už nie).
           </li>
           <li>
             <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 1 kartu.
@@ -619,7 +641,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Stupnica má 7 polí: stupne 3-2-1-0-1-2-3 (červená, oranžová, žltá, sivý stred…); starší je pokojný, znepokojený, vystrašený alebo vydesený.",
       "Stupeň zaplatí (1 / 2 / 3) až keď sa na ňom marker udrží do konca ďalšieho kola — tomu, koho sa bojí, aj porazenému.",
       "Nakladačka aj Pohoršenie platia za pole podľa zóny: von zo stredu 1 / 2 / 3, k stredu 2 / 3 / 4 — bez limitu, aj na krajnú pozíciu.",
-      "Krajná červená: starší sa prebudí pre teba; súper ho smie odtlačiť späť.",
+      "Starší, ktorý sa ťa bojí na stupni 3, sa dá zajať — tretí väzeň vyhráva.",
     ],
     obsah: () => (
       <>
@@ -674,29 +696,25 @@ export const KAPITOLY: readonly Kapitola[] = [
           </thead>
           <tbody>
             <tr><td>Bitkár</td><td>Tuhé poškodenie v bitke</td><td>+1 / +2 / +3</td></tr>
-            <tr><td>Kmotor</td><td>Po bitke prejdú tvoje priznané Dlhy medzi súperove (bez Dlhu nič)</td><td>1 / 2 / 3</td></tr>
-            <tr><td>Abstinent</td><td>Pohoršenia navyše v bitke</td><td>+1 / +2 / +3</td></tr>
-            <tr><td>Exekútor</td><td>Exekúcia súperovi zhorí navyše toľko Dlhov a špakov</td><td>+1 / +2 / +3</td></tr>
-            <tr><td>Výpalník — Výpalné</td><td>Za každé súperovo NA EX ti súper dá cigarety</td><td>1 / 2 / 3</td></tr>
-            <tr><td>Fajčiar</td><td>Cigarety po braní zo šenku (Obmedzenie ich neuberá)</td><td>+1 / +2 / +3</td></tr>
-            <tr><td>Alkoholik — Na zdravie „do dna“</td><td>Poldeci z tvojho NA EX sa po bitke vráti plný (za kolo)</td><td>1 / 2 / 3</td></tr>
             <tr><td>Veriaci</td><td>Viera navyše v bitke</td><td>+1 / +2 / +3</td></tr>
+            <tr><td>Abstinent</td><td>Pohoršenia navyše v bitke</td><td>+1 / +2 / +3</td></tr>
+            <tr><td>Advokát</td><td>Exekúcia ti vezme o toľko špakov menej (Dlhy zhoria ako vždy)</td><td>−1 / −2 / −3</td></tr>
+            <tr><td>Robota</td><td>Akcie Robota navyše — spália priznaný Dlh, inak dajú špak</td><td>1 / 2 / 3</td></tr>
+            <tr><td>Fajčiar</td><td>Cigarety po bitke (Obmedzenie ich neuberá)</td><td>+1 / +2 / +3</td></tr>
+            <tr><td>Kmotor</td><td>Po bitke prejdú tvoje priznané Dlhy medzi súperove (bez Dlhu nič)</td><td>2 / 3 / 4</td></tr>
+            <tr><td>Alkoholik — Na zdravie „do dna“</td><td>Poldeci z tvojho NA EX sa po bitke vráti plný (za kolo)</td><td>1 / 2 / 3</td></tr>
           </tbody>
         </table>
-        <H3 id="starsi-vydesenie">Vydesenie, krajná pozícia a prebudenie</H3>
+        <H3 id="starsi-vydesenie">Krajná pozícia a zajatie</H3>
         <ul>
           <li>
             <strong>Krajná pozícia:</strong> na červenú sa marker smie dostať aj viacerými posunmi v jednom kole, Nakladačkou aj
-            Pohoršením. Súper ho z nej smie odtlačiť späť alebo ho <a href="#patronat">patronátom</a> vrátiť naraz do stredu.
+            Pohoršením. Súper ho z nej smie odtlačiť späť.
           </li>
           <li>
-            <P k="prebudenie">Prebudenie:</P> keď vytlačíš marker na krajnú červenú, efekt staršieho začne pôsobiť pre teba (okrem
-            Nástupu).
-          </li>
-          <li>
-            <P k="vydesenie">Vydesenie:</P> kto má polovicu starších v hre vydesených (stupeň 3) a udrží ich do konca nasledujúceho kola,
-            vyhrá. Keď ich čo i len na chvíľu klesne pod polovicu (napr. patronátom), hrozba padá a ráta sa odznova. Vydesenie
-            ohlásené v poslednej bitke o lokalitu rozhodne na konci finále, ešte pred konečnými špakmi; ohlásené vo finále už nie.
+            <P k="vydesenie">Vydesený</P> starší (stupeň 3) sa dá po šenku skúsiť <a href="#patronat">zajať</a>. Tretí{" "}
+            <P k="vazen">väzeň</P> vyhráva hru. Karta staršieho je <strong>boss</strong>: 6 akcií a jedna neresť; v línii má len
+            akcie, jeho efekt je <a href="#pitka-kseft">Kšeft väzňa</a>.
           </li>
         </ul>
         <p className="tlmene">
@@ -760,7 +778,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong> po poškodení a špakoch za bitku (Povery tvoje Dlhy ešte spočítajú), kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
             <strong>polovica priznaných Dlhov</strong> (zaokrúhlené nahor, aj jediný Dlh) a <strong>rovnako veľa špakov</strong>.
-            So súperovou priazňou Exekútora zhorí navyše 1 / 2 / 3 Dlhy a toľko špakov. Súper ich nedostane a smieš ísť do mínusu.
+            S priazňou Advokáta ti zhorí o 1 / 2 / 3 špaky menej (Dlhy zhoria ako vždy). Súper ich nedostane a smieš ísť do mínusu.
           </li>
           <li>
             <strong>Záhradkár</strong> v línii v tvojej partii: exekúcia ťa v tom kole obíde — nezhorí nič. Zvyšné Dlhy na konci hry
@@ -902,7 +920,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Jednota</td><td>Pitka</td><td>Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.</td></tr>
           <tr><td>Sklad</td><td>Kšeft</td><td>Za 1 cigaretu vrchná karta súperovho odhadzovacieho balíčka do tvojej ruky.</td></tr>
           <tr><td>Poľovnícka chata</td><td>Furt</td><td>Aktívne Rany, Pecky a Petelice z hrán sa rátajú dvakrát (len finále).</td></tr>
-          <tr><td>Predsedova vila</td><td>Kšeft</td><td>Za 2 cigarety posuň marker staršieho o 1 od seba alebo k sebe — nie patróna súpera (len finále).</td></tr>
+          <tr><td>Predsedova vila</td><td>Kšeft</td><td>Za 2 cigarety posuň marker staršieho o 1 od seba alebo k sebe — nie staršieho v ohrození (len finále).</td></tr>
           <tr><td>Herňa</td><td>Bitka</td><td>Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov (len finále).</td></tr>
           <tr><td>Kultúrny dom</td><td>Bitka</td><td>Obaja získajú špaky: víťaz dostane špak za každú kartu v línii ako inde, porazený 1 špak za každú svoju kartu v línii.</td></tr>
           <tr><td>Vínna pivnica</td><td>Pitka</td><td>NA EX až dvakrát za Pitku.</td></tr>
@@ -942,7 +960,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Prehratá bitka o Kultúrny dom</td><td>1 za každú svoju kartu v línii</td></tr>
             <tr><td>Starší, ktorí sa ťa boja</td><td>na konci kola za každý stupeň, na ktorom sa marker udržal od konca minulého kola: žltá 1, oranžová 2, červená 3 — nech bitku vyhral ktokoľvek; čo už zaplatil, druhýkrát nedá, kým marker neustúpi; odtlačený stupeň nič; sivý nikomu</td></tr>
             <tr><td>Noviny v Dedičstve</td><td>keď prehráš, 1 za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe</td></tr>
-            <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (so súperovou priazňou Exekútora o 1 / 2 / 3 viac)</td></tr>
+            <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (s priazňou Advokáta o 1 / 2 / 3 menej)</td></tr>
             <tr><td><P k="vykupne">Výkupné</P> na konci hry</td><td>každý plný poldeci 1, každých celých 5 cigariet 1 (zvyšok prepadne); bez stropu — vypitý poldeci ani poldeci pod NA EX sa nerátajú</td></tr>
             <tr><td>Nepriznaná Cirhóza</td><td>mínus 3 za kus na konci hry (ruka aj oba balíčky)</td></tr>
           </tbody>
@@ -959,7 +977,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             Po poslednej bitke o lokalitu (3 / 5 / 7) je finále — posledná bitka o pinnacle lokalitu, ktorá sa hrá ako o každú
             inú: lokalita leží v strede línie, karty sa kladú k nej a platia jej hrany aj efekt.
           </li>
-          <li>Pinnacle vyberie a natočí obranca — hráč s viac špakmi; šenok, branie aj patronát platia ako v každom kole.</li>
+          <li>Pinnacle vyberie a natočí obranca — hráč s viac špakmi; šenok, branie aj pokus o zajatie platia ako v každom kole.</li>
           <li>
             <strong>Útočí zaostávajúci — kto má menej špakov</strong> (pri rovnosti ten, kto prehral poslednú bitku; po
             sekere ostáva útočník). Vykladá prvý a v Pitke má posledné slovo.

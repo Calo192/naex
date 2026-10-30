@@ -578,10 +578,12 @@ export function popisKroku(data: GameData, state: GameState, c: Command): PopisK
         return `posuň Nakladačkou staršieho „${menoStarsieho(data, state, c.elderId)}“`;
       case "pohorsenie":
         return `posuň Pohoršením staršieho „${menoStarsieho(data, state, c.elderId)}“`;
-      case "patronat":
-        return `vezmi si staršieho „${menoStarsieho(data, state, c.elderId)}“ (patronát)`;
-      case "bezPatronatu":
-        return "patronát vynechaj";
+      case "pokus":
+        return `skús zajať staršieho „${menoStarsieho(data, state, c.elderId)}“`;
+      case "bezPokusu":
+        return "pokus o zajatie vynechaj";
+      case "kseftVazna":
+        return `spusti Kšeft väzňa „${menoStarsieho(data, state, c.elderId)}“`;
       default:
         return "urob ťah, ktorý svieti";
     }

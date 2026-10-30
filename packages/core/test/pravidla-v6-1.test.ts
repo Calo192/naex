@@ -30,7 +30,7 @@ function vZhromazdeni(seed: number): GameState {
   for (let i = 0; i < 40 && s.faza === "draft"; i++) {
     const p = naTahu(s)!;
     const legal = legalCommands(data, s, p);
-    const cmd = legal.find((c) => c.type === "draftStop" || c.type === "bezPatronatu") ?? legal[0]!;
+    const cmd = legal.find((c) => c.type === "draftStop" || c.type === "bezPokusu") ?? legal[0]!;
     s = apply(data, s, cmd, p).state;
   }
   return s;

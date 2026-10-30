@@ -42,7 +42,7 @@ describe("stopa posunu", () => {
 
 describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
   it("priazeň: komu a krátky účinok, bez priazne účinok pri +1", () => {
-    expect(riadokPriazne("NEPRAJNIK", "ty", 1)).toBe("ty: výpalné 1 cig. za NA EX");
+    expect(riadokPriazne("ROBOTA", "ty", 1)).toBe("ty: +1 Robota v bitke");
     expect(riadokPriazne("BITKAR", null, 0)).toBe("nikomu · pri +1: +1 tuhé v bitke");
   });
 
@@ -66,7 +66,7 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
   });
 
   it("riadky sú krátke — pri bežnom mene najviac dva riadky karty, bez „…“", () => {
-    for (const fav of ["UZERNIK", "LAKOMEC", "NEPRAJNIK", "BITKAR", "VERIACI", "FAJCIAR", "ALKOHOLIK", "EXEKUTOR"] as const) {
+    for (const fav of ["UZERNIK", "LAKOMEC", "ROBOTA", "BITKAR", "VERIACI", "FAJCIAR", "ALKOHOLIK", "ADVOKAT"] as const) {
       for (const sila of [0, 1, 2, 3]) expect(riadokPriazne(fav, sila === 0 ? null : "Michal", sila).length).toBeLessThanOrEqual(44);
     }
     expect(riadokStrachu("Michal", false, 3).length).toBeLessThanOrEqual(44);

@@ -83,26 +83,9 @@ function dohraj(s0: GameState): GameState {
 }
 
 describe("náhľad NA EX v5 = zúčtovanie motora", () => {
-  it("Výpalné: náhľad sľúbi toľko cigariet, koľko motor pri odkrytí prevedie — najviac, koľko hráč má", () => {
-    for (const cigarety of [0, 1, 5]) {
-      const { s, ciel } = pitka(201, cigarety, true);
-      const sV = sPriaznou(s, "NEPRAJNIK", 0, 2);
-      const nahlad = odkrytieNaex(sada, viewFor(sada, sV, 1), 1);
-      expect(nahlad.vypalne).toBe(Math.min(2, cigarety));
-      // Odkrytie sa zastaví na odpovedi hráča 0 — cigarety sa porovnajú pred vyhodnotením Pitky.
-      let st = apply(sada, sV, { type: "naex", uid: ciel }, 1).state;
-      // Bez cigarety hráč 1 nemá čo robiť — „hotovo“ za neho odohrá hra sama.
-      if (st.pitkaStav?.hotovy[1] !== true) st = apply(sada, st, { type: "skipNaex" }, 1).state;
-      st = apply(sada, st, { type: "skipNaex" }, 0).state;
-      expect(st.pitkaStav?.reakcia).toBe(0);
-      expect(sV.hraci[1].cigarety - st.hraci[1].cigarety).toBe(nahlad.vypalne);
-      expect(st.hraci[0].cigarety - sV.hraci[0].cigarety).toBe(nahlad.vypalne);
-    }
-  });
-
   it("skryté NA EX: pohľad so zúčtovaným NA EX sa zhoduje so stavom po odkrytí (poldeci, pečeň, cigarety, karta)", () => {
     const { s, ciel } = pitka(202, 3, true);
-    const sV = sPriaznou(s, "NEPRAJNIK", 0, 1);
+    const sV = sPriaznou(s, "BITKAR", 0, 1);
     const skryte = apply(sada, sV, { type: "naex", uid: ciel }, 1).state;
     const nahlad = sMojimiSkrytymiNaex(sada, viewFor(sada, skryte, 1));
     let st = apply(sada, skryte, { type: "skipNaex" }, 1).state;

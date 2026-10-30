@@ -62,15 +62,14 @@ function poPohorseni(s: GameState) {
 describe("bitka hlási, čo zmenší či zruší Nakladačka a Pohoršenia", () => {
 
 
-  it("Policajtka (Michal 2026-10-26) Pohoršenia neruší — bitka o nej mlčí a Pohoršenia z patronátu platia", () => {
+  it("Policajtka (Michal 2026-10-26) Pohoršenia neruší — bitka o nej mlčí", () => {
     // Benzínka: hráč 0 spáli jedného z dvoch Občanov, potom sa prepočítajú Pohoršenia.
     const s = vBitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], { krok: "benzinka", caka: 0, benzinkaZostava: [1, 0], exekutorHotovy: [false, false] }, (t) => ({
       ...t,
-      patronat: [null, { elderId: t.starsi[0]!.elderId, nahrada: inst("pijan"), pohorsenia: 2 }],
+      hraci: [{ ...t.hraci[0], abstaky: 2 }, t.hraci[1]],
     }));
     const { state, events } = apply(data, s, { type: "benzinka", uids: [s.strany[0][0]!.card.uid] }, 0);
     expect(logy(events).some((t) => t.startsWith("Policajtka") || t.startsWith("Praudovravec umlčal"))).toBe(false);
-    expect(state.bitkaStav?.pohorseniaPatronatu?.[0]).toBe(2);
     expect(state.bitkaStav?.pohorseniaSpolu?.[0] ?? 0).toBeGreaterThanOrEqual(2);
   });
 });

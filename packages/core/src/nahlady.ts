@@ -30,7 +30,8 @@ import { evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, zhoriPriExekucii } from "./battle.ts";
 import { zahradkarChrani } from "./engine.ts";
-import { cenaPatronatu, MARKER_STRED, posunZaBody, telefonHraca } from "./elders.ts";
+import { posunZaBody, telefonHraca } from "./elders.ts";
+import { KONSTANTY } from "./constants.ts";
 import type { ClientState } from "./view.ts";
 import { cenaKliatby, hodnotaPohorseni } from "./view.ts";
 import { pocet } from "./jazyk.ts";
@@ -70,7 +71,7 @@ export function vyhladDlhov(data: GameData, stol: StolNahladu, dalsiePitky: numb
     const teraz = stol.hraci[p].dlhy;
     const poPaleni = Math.max(0, teraz + nove - kapacita[p]);
     // Exekúcia bez prahu (Michal 2026-10-28); Záhradkár v partii ju obíde.
-    const exekucia = zahradkarChrani(data, stol, p) ? 0 : zhoriPriExekucii(poPaleni, silaPriazne(data, stol, "EXEKUTOR", opponentOf(p)));
+    const exekucia = zahradkarChrani(data, stol, p) ? 0 : zhoriPriExekucii(poPaleni);
     return { nove, priPoskodeni: teraz + nove, kapacita: kapacita[p], exekucia, poBitke: poPaleni - exekucia };
   };
   return [pre(0), pre(1)];
@@ -280,28 +281,25 @@ export function cenaTahu(data: GameData, pred: ClientState, po: ClientState, cen
 
 /**
  * Čo jedno ďalšie NA EX hráča p zúčtuje pri odkrytí (v5, NA EX naraz) — tým istým
- * poradím ako odhalNaex v motore: Výpalné z jeho cigariet. `doDna`: poldeci z neho
+ * poradím ako odhalNaex v motore. `doDna`: poldeci z neho
  * sa po bitke vráti plný (Na zdravie, Alkoholik). Súperove skryté NA EX náhľad
  * nepozná, preto zrážku (Výtržník) nesľubuje.
  */
 export interface OdkrytieNaex {
-  /** Cigarety, ktoré za toto NA EX zaplatíš súperovi (Výpalné), najviac koľko máš. */
-  readonly vypalne: number;
   readonly doDna: boolean;
 }
 
 export function odkrytieNaex(data: GameData, view: ClientState, p: PlayerId): OdkrytieNaex {
-  const vypalne = Math.min(silaPriazne(data, view, "NEPRAJNIK", opponentOf(p)), view.hraci[p].cigarety);
   const linia = view.strany.flat();
   const naStole =
     linia.filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length +
     view.zaverecne.filter((z) => z.naexBy === p && !linia.some((pl) => pl.card.uid === z.uid)).length;
-  return { vypalne: Math.max(0, vypalne), doDna: naStole < silaDoDna(data, view, p) };
+  return { doDna: naStole < silaDoDna(data, view, p) };
 }
 
 /**
  * Pohľad hráča `view.ja` s jeho skrytými NA EX (v5) tak, ako ich motor zúčtuje
- * pri odkrytí: poldeci na karte, pečeň +1, Výpalné — základ náhľadu
+ * pri odkrytí: poldeci na karte, pečeň +1 — základ náhľadu
  * ďalšieho NA EX a výhľadov Pitky. Súperove skryté NA EX klient nevidí.
  */
 export function sMojimiSkrytymiNaex(data: GameData, view: ClientState): ClientState {
@@ -326,7 +324,7 @@ export interface PoOdkrytiNaex extends OdkrytieNaex {
 /**
  * Pohľad hráča `view.ja` po odkrytí jeho NA EX na kartu `uid` — v poradí
  * odhalNaex v motore: poldeci na kartu (zo zásoby plných), pečeň +1 (na Kare
- * súperovi), Výpalné. Na kartu s poldeci či mimo línie null.
+ * súperovi). Na kartu s poldeci či mimo línie null.
  */
 export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): PoOdkrytiNaex | null {
   const ja = view.ja;
@@ -344,16 +342,15 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
   const sKartou: ClientState = { ...view, strany, zaverecne, naexVKole };
   const h = view.hraci[ja];
   const svokra = svokraRany(data, sKartou, su) - svokraRany(data, view, su);
-  const vypalne = Math.max(0, Math.min(silaPriazne(data, sKartou, "NEPRAJNIK", su), h.cigarety));
   const kar = naexPecenSuperovi(view);
   const pitka = view.pitkaStav;
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [view.hraci[0], view.hraci[1]];
-  hraci[ja] = { ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1), pecen: h.pecen + (kar ? 0 : 1), cigarety: h.cigarety - vypalne };
-  hraci[su] = { ...hraci[su], cigarety: hraci[su].cigarety + vypalne, pecen: hraci[su].pecen + (kar ? 1 : 0) };
+  hraci[ja] = { ...h, poldeciPlne: Math.max(0, h.poldeciPlne - 1), pecen: h.pecen + (kar ? 0 : 1) };
+  hraci[su] = { ...hraci[su], pecen: hraci[su].pecen + (kar ? 1 : 0) };
   const naexPocet: [number, number] = [pitka?.naexPocet?.[0] ?? 0, pitka?.naexPocet?.[1] ?? 0];
   naexPocet[ja] += 1;
   const pitkaStav = pitka === null ? null : { ...pitka, naexPocet };
-  return { view: { ...sKartou, hraci, pitkaStav }, svokra, vypalne, doDna, kar };
+  return { view: { ...sKartou, hraci, pitkaStav }, svokra, doDna, kar };
 }
 
 /** Náhľad NA EX na jednu kartu: celá cena a čo sa zúčtuje pri odkrytí. */
@@ -471,25 +468,16 @@ export function nahladNaexNaKartu(data: GameData, view: ClientState, uid: number
 }
 
 /**
- * Stôl po patronáte hráča `view.ja` (bez karty na scorecarde — tá je
- * súperovi skrytá): marker do stredu, cigarety zaplatené, súper dostane
- * v bitke Pohoršenia. Pre dopadyNahladu.
+ * Stôl po pokuse o zajatie hráča `view.ja` (v9): cigareta zaplatená, starší v ohrození
+ * (jeho markerom v tomto kole nič nehýbe). Boss v súperovej ruke pohľad nemení.
  */
-export function stavPoPatronate(view: ClientState, elderId: string): ClientState {
-  const elder = view.starsi.find((e) => e.elderId === elderId);
-  if (elder === undefined) return view;
-  const cena = cenaPatronatu(elder);
+export function stavPoPokuse(view: ClientState, elderId: string): ClientState {
   const ja = view.ja;
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [view.hraci[0], view.hraci[1]];
-  hraci[ja] = { ...hraci[ja], cigarety: hraci[ja].cigarety - cena.cigarety };
-  const patronat: [ClientState["patronat"][0], ClientState["patronat"][1]] = [view.patronat[0], view.patronat[1]];
-  patronat[ja] = { elderId, pohorsenia: cena.pohorsenia };
-  return {
-    ...view,
-    hraci,
-    patronat,
-    starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker: MARKER_STRED } : e)),
-  };
+  hraci[ja] = { ...hraci[ja], cigarety: hraci[ja].cigarety - KONSTANTY.CENA_POKUSU };
+  const pokusy: [ClientState["pokusy"][0], ClientState["pokusy"][1]] = [view.pokusy[0], view.pokusy[1]];
+  pokusy[ja] = { elderId };
+  return { ...view, hraci, pokusy };
 }
 
 // ---------------------------------------------------------------------------
@@ -501,7 +489,6 @@ export interface EfektyPrehry {
   /** Dievčina na vydaj: víťaz získa toľko Dlhov, koľko mala aktívnych akcií. */
   readonly dievcina: readonly [number, number];
   /** Farár: víťaz získa zadĺženie za každú svoju aktívnu Poveru. */
-  readonly farar: readonly [number, number];
   /** Podvodník: toľko priznaných Dlhov porazeného prejde k víťazovi. */
   readonly podvodnik: readonly [number, number];
 }
@@ -524,18 +511,17 @@ export function efektyPrehry(data: GameData, v: ClientState): EfektyPrehry {
     const ev = linia.cards.get(uid);
     return ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
   };
-  const pre = (porazeny: PlayerId): [number, number, number] => {
+  const pre = (porazeny: PlayerId): [number, number] => {
     const vitaz = opponentOf(porazeny);
     const partia = partiaHraca(v, porazeny).filter((pl) => pl.zaverecna !== true);
     const dievcina = partia
       .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
       .reduce((a, pl) => a + aktivne(pl.card.uid), 0);
-    const farar = efektHraca(v, porazeny, "farar") && !efektPotlaceny(data, v, porazeny, "farar") ? (linia.sums[vitaz].Povera ?? 0) : 0;
     const podvodnik = Math.min(v.hraci[porazeny].dlhy, partia.filter((pl) => pl.card.defId === "podvodnik").length);
-    return [dievcina, farar, podvodnik];
+    return [dievcina, podvodnik];
   };
   const [a, b] = [pre(0), pre(1)];
-  return { dievcina: [a[0], b[0]], farar: [a[1], b[1]], podvodnik: [a[2], b[2]] };
+  return { dievcina: [a[0], b[0]], podvodnik: [a[1], b[1]] };
 }
 
 /** Efekty Prehra porazeného `porazeny` slovami z pohľadu hráča `ja`; prázdne pole, keď nič. */
@@ -544,7 +530,6 @@ export function textyEfektovPrehry(e: EfektyPrehry, porazeny: PlayerId, ja: Play
   const ziska = porazeny === ja ? "získa" : "získaš";
   return [
     e.dievcina[porazeny] > 0 ? `Dievčina na vydaj: ${vitaz} ${ziska} ${pocet(e.dievcina[porazeny], "Dlh", "Dlhy", "Dlhov")}` : "",
-    e.farar[porazeny] > 0 ? `Farár: ${vitaz} ${ziska} zadĺženie ${e.farar[porazeny]}` : "",
     e.podvodnik[porazeny] > 0 ? `Podvodník: ${pocet(e.podvodnik[porazeny], "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} ${porazeny === ja ? "tvoj prejde k súperovi" : "súpera prejde k tebe"}` : "",
   ].filter((x) => x !== "");
 }

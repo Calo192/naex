@@ -8,15 +8,13 @@ import type { ElderState, MarkerPos } from "../src/index.ts";
 import {
   MARKER_STRED,
   STUPNICA_ZONY,
-  cenaPatronatu,
   favourStarsieho,
   freshElder,
   loadGameData,
   setupGame,
   obavanyHrac,
-  patronatMozny,
+  pokusMozny,
   posunMarker,
-  prebudenyPre,
   priazenHraca,
   priazenSila,
   poKonciKola,
@@ -128,7 +126,6 @@ describe("v6 — pohyb markera", () => {
       e = { ...e, marker: nova as MarkerPos };
     }
     expect(vydesil(e, 0)).toBe(true);
-    expect(prebudenyPre(e)).toBe(0);
     // Priazeň pritom ostáva súperovi.
     expect(priazenHraca(e)).toBe(1);
   });
@@ -141,23 +138,13 @@ describe("v6 — pohyb markera", () => {
   });
 });
 
-describe("v6 — patronát", () => {
-  it("patronát len patrónovi a od žltej zóny", () => {
-    expect(patronatMozny(elderAt(3), 1)).toBe(false);
-    expect(patronatMozny(elderAt(4), 1)).toBe(true);
-    expect(patronatMozny(elderAt(4), 0)).toBe(false); // hráč 0 je obávaný, nie patrón
-    expect(patronatMozny(elderAt(1), 0)).toBe(true);
-    expect(patronatMozny(elderAt(6), 1)).toBe(true);
-    expect(patronatMozny({ ...elderAt(5), nahradeny: true }, 1)).toBe(false);
-  });
-
-  it("cena (v6.1): cigarety žltá 3 / oranžová 2 / červená 1, súperove Pohoršenia 1 / 2 / 3", () => {
-    expect(cenaPatronatu(elderAt(4))).toEqual({ cigarety: 3, pohorsenia: 1 });
-    expect(cenaPatronatu(elderAt(2))).toEqual({ cigarety: 3, pohorsenia: 1 });
-    expect(cenaPatronatu(elderAt(1))).toEqual({ cigarety: 2, pohorsenia: 2 });
-    expect(cenaPatronatu(elderAt(5))).toEqual({ cigarety: 2, pohorsenia: 2 });
-    expect(cenaPatronatu(elderAt(6))).toEqual({ cigarety: 1, pohorsenia: 3 });
-    expect(cenaPatronatu(elderAt(0))).toEqual({ cigarety: 1, pohorsenia: 3 });
+describe("v9 — pokus o zajatie (§10)", () => {
+  it("zajať smie len hráč, ktorého sa starší bojí na stupni 3 (červená na súperovej polovici)", () => {
+    expect(pokusMozny(elderAt(6), 0)).toBe(true);
+    expect(pokusMozny(elderAt(0), 1)).toBe(true);
+    expect(pokusMozny(elderAt(6), 1)).toBe(false); // hráč 1 má priazeň, nie strach
+    expect(pokusMozny(elderAt(5), 0)).toBe(false); // oranžová nestačí
+    expect(pokusMozny(elderAt(3), 0)).toBe(false);
   });
 });
 

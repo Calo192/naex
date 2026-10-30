@@ -11,30 +11,6 @@
       "poznamka": "Štruktúra, nie správanie: PlayerId je 0 | 1 a stav má presne dvoch hráčov (types.ts) — strážia to typy, nie test."
     },
     {
-      "id": "1.koniec.vydesenie-ohlasene",
-      "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Kto vydesí aspoň polovicu starších (aj nahradených), vyhrá, až keď ich udrží do konca nasledujúceho kola; keď klesne pod polovicu (patronát, Pohoršenie, Nakladačka), hrozba padá hneď a opätovné doplnenie v tom istom kole ohlasuje odznova.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/dobiehanie.test.ts › polovica vydesených starších hru neukončí hneď — vydesenie sa ohlási",
-        "packages/core/test/dobiehanie.test.ts › kto vydesenie udrží do konca nasledujúceho kola, vyhrá",
-        "packages/core/test/pravidla-bitka.test.ts › §1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá",
-        "packages/core/test/vydesenie-zrusenie.test.ts › §1/§10: patronát nad vydeseným starším zruší ohlásenie v tej chvíli — aj v pohľade oboch hráčov",
-        "packages/core/test/vydesenie-zrusenie.test.ts › §1: kto po zrušení v tom istom kole znova doplní polovicu, ohlasuje odznova — na konci kola nevyhrá",
-        "packages/core/test/vydesenie-zrusenie.test.ts › §1: po žiadnom ťahu nevisí ohlásenie hráča, ktorý nemá vydesenú polovicu starších (náhodné partie)"
-      ]
-    },
-    {
-      "id": "1.koniec.vydesenie-finale",
-      "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
-      "pravidlo": "Vydesenie ohlásené v poslednej bitke o lokalitu sa skontroluje na konci finále ešte pred konečnými špakmi a môže vyhrať hru; ohlásené vo finále nerozhoduje.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/dobiehanie.test.ts › finále: vydesenie ohlásené v poslednej bitke o lokalitu vyhrá na konci finále pred špakmi; ohlásené vo finále nie (§1, §14b, návrh #41 A)"
-      ],
-      "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
-    },
-    {
       "id": "1.koniec.exekucia",
       "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
       "pravidlo": "Exekúcia prehru nespôsobí (v6): kto má priznané Dlhy na prahu, tomu zhorí polovica Dlhov a rovnako špakov.",
@@ -788,100 +764,13 @@
       ]
     },
     {
-      "id": "10.patronat.podmienka",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Patrón: marker aspoň v žltej zóne na jeho polovici, na ukazovateli pôvodný starší; náhrada je Občan či Zviera z ruky; hráč má aspoň jeden poldeci.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/elders.test.ts › patronát len patrónovi a od žltej zóny"
-      ]
-    },
-    {
-      "id": "10.patronat.poradie",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Po braní rozhoduje útočník, potom obranca; každý najviac jeden starší za kolo.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/patronat-20261020.test.ts › patrón zaplatí cigarety, starší ide do ruky, karta lícom dole, marker do stredu",
-        "packages/core/test/pravidla-kolo.test.ts › §10: každý smie vziať najviac jedného staršieho za kolo"
-      ]
-    },
-    {
-      "id": "10.patronat.cena",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Cena (v6.1): cigarety podľa zóny (žltá 3, oranžová 2, červená 1) a súperove Pohoršenia navyše o počet polí do stredu (1 / 2 / 3).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/elders.test.ts › cena (v6.1): cigarety žltá 3 / oranžová 2 / červená 1, súperove Pohoršenia 1 / 2 / 3",
-        "packages/core/test/patronat-20261020.test.ts › z červenej za 1 cigaretu (v6.1), súper dostane 3 Pohoršenia; obávaný hráč patrónom nie je"
-      ]
-    },
-    {
-      "id": "10.patronat.tajna-nahrada",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Karta lícom dole na scorecarde je tajná — súper nevie, ktorá (viewFor ju neposiela).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/patronat-20261020.test.ts › súper kartu lícom dole nevidí, patrón áno",
-        "packages/core/test/patronat-20261020.test.ts › zahmlenie nezávisí od toho, ktorá skrytá karta leží na scorecarde"
-      ]
-    },
-    {
-      "id": "10.patronat.marker-stred",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Marker ide do stredu (index 3); zamknutie krajnej pozície v6 nie je.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §10: po patronáte marker ide do stredu (v6: zamknutie krajnej pozície sa ruší)"
-      ]
-    },
-    {
-      "id": "10.patronat.starsina",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Kartu staršieho smie patrón v kole vyložiť ako Starešinu — ráta sa do prevahy a smie naň dať NA EX.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §10: kartu staršieho z patronátu smie hráč vyložiť ako Starešinu — ráta sa do prevahy a smie naň dať NA EX"
-      ]
-    },
-    {
-      "id": "10.patronat.pohorsenia",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Súper hrá Pohoršenia z patronátu ako svoje, ale nie na staršieho, ktorého si patrón vzal (v6); jeho ostatné Pohoršenia naňho smú, hra minie najprv tie z patronátu. Patrónova Policajtka ich od 2026-10-26 neruší.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/patronat-20261020.test.ts › v6: súperove Pohoršenia z patronátu nesmú na patróna — patrón z červenej zastaví vydesenie (Michal 2026-10-26)",
-        "packages/core/test/patronat-20261020.test.ts › v6: na patróna smú súperove ostatné Pohoršenia (zo stola) — z patronátu sa minú najprv",
-        "packages/core/test/patronat-20261020.test.ts › Policajtka patróna Pohoršenia z patronátu neruší (Michal 2026-10-26)"
-      ]
-    },
-    {
-      "id": "10.patronat.vysledok",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Výhra: starší ostáva patrónovi, náhrada sa otočí; prehra aj sekera: starší späť, náhrada do ruky, bolestné poldeci (vypitý, inak plný).",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/patronat-20261020.test.ts › výhra: starší ostáva patrónovi, karta lícom dole sa otáča na scorecarde",
-        "packages/core/test/patronat-20261020.test.ts › prehra: starší sa vracia na scorecard, náhrada do ruky, patrón odhodí vypitý poldeci",
-        "packages/core/test/pravidla-kolo.test.ts › §9.4: pri remíze sa patronát vyrieši ako prehra — starší späť na scorecard, náhrada do ruky, bolestné poldeci"
-      ]
-    },
-    {
-      "id": "10.patronat.starosta",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Kartu staršieho z patronátu nemožno vymeniť Starostom.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "Pohreb zrušil Michal 2026-10-27 (test „nemožno pochovať“ zanikol); test Starostu treba doplniť."
-    },
-    {
       "id": "6.zacina-utocnik",
       "paragraf": "6. Zhromaždenie",
       "pravidlo": "Vykladať začína útočník (aj v Zhromaždení pred ďalšou Pitkou).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/patronat-20261020.test.ts › patrón zaplatí cigarety, starší ide do ruky, karta lícom dole, marker do stredu",
-        "packages/core/test/pravidla-kolo.test.ts › §6: limit vykladania sa počíta nanovo na začiatku každého Zhromaždenia (aj medzi Pitkami)"
+        "packages/core/test/pravidla-kolo.test.ts › §6: limit vykladania sa počíta nanovo na začiatku každého Zhromaždenia (aj medzi Pitkami)",
+        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide súperovi do ruky"
       ]
     },
     {
@@ -1045,14 +934,14 @@
     {
       "id": "11.exekutor.prah",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Exekútor bez prahu (Michal 2026-10-28): v kroku 4c bitky — po poškodení, výsledku a špakoch za bitku a za starších, pred Nakladačkou (aj vo finále, po Robote) ku každému s aspoň 1 priznaným Dlhom — zhorí polovica priznaných Dlhov nahor + sila súperovej priazne Exekútora (najviac všetky) a rovnako špakov, aj do mínusu; zvyšné Dlhy na konci hry nič.",
+      "pravidlo": "Exekútor bez prahu (Michal 2026-10-28): v kroku 4c bitky — po poškodení, výsledku a špakoch za bitku, pred Nakladačkou (aj vo finále, po Robote) ku každému s aspoň 1 priznaným Dlhom — zhorí polovica priznaných Dlhov nahor a rovnako špakov mínus sila jeho priazne Advokáta (v9, najmenej 0), aj do mínusu; zvyšné Dlhy na konci hry nič.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › bez prahu (Michal 2026-10-28): zhorí polovica priznaných Dlhov NAHOR — aj z jedného Dlhu",
-        "packages/core/test/battle.test.ts › súperova priazeň Exekútora zhorí navyše 1 / 2 / 3 Dlhy, najviac všetky",
         "packages/core/test/pravidla-bitka.test.ts › §1/§11 (Michal 2026-10-28): exekúcia bez prahu — každý s priznaným Dlhom stratí polovicu Dlhov nahor a rovnako špakov, aj do mínusu; hráč neprehráva",
         "packages/core/test/pravidla-20261021.test.ts › exekúcia bez prahu (Michal 2026-10-28): už pri 2 priznaných Dlhoch zhorí polovica nahor — 1 Dlh a 1 špak",
-        "packages/core/test/pravidla-v5.test.ts › Exekútor (Michal 2026-10-28): súperova priazeň zhorí pri exekúcii navyše toľko Dlhov, aká je sila"
+        "packages/core/test/battle.test.ts › v9: priazeň Advokát odpočíta o 1 / 2 / 3 špaky menej, najmenej 0; Dlhy zhoria ako vždy",
+        "packages/core/test/pravidla-v5.test.ts › Advokát (v9): exekúcia ti odpočíta o silu priazne menej špakov, Dlhy zhoria ako doteraz"
       ]
     },
     {
@@ -1084,8 +973,8 @@
         "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; strach za Pohoršenie v bitke nič (v8.3); lokalitu si neberie",
         "packages/core/test/pravidla-v8-2.test.ts › posunZaBody: marker ide, kým zvyšok stačí na ďalšie pole, a vráti cenu; bez jediného poľa null",
         "packages/core/test/pravidla-v8-2.test.ts › zvyšok 1 pri markeroch mimo stredu prepadne a log to povie",
-        "packages/core/test/patronat-20261020.test.ts › marker ide, kým zvyšok stačí: 5 Pohoršení zo stredu = oranžová, 2 ostanú (na červenú treba 3)",
-        "packages/core/test/patronat-20261020.test.ts › k sebe platí to isté: z ľavej červenej k stredu 4, potom 3"
+        "packages/core/test/pohorsenie-v82.test.ts › marker ide, kým zvyšok stačí: 5 Pohoršení zo stredu = oranžová, 2 ostanú (na červenú treba 3)",
+        "packages/core/test/pohorsenie-v82.test.ts › k sebe platí to isté: z ľavej červenej k stredu 4, potom 3"
       ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
@@ -1096,7 +985,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-v5.test.ts › v8.2: limit hraníc zón nie je — zo stredu na kraj 1 + 2 + 3 = 6 jedným výberom, späť do stredu 4 + 3 + 2 = 9",
-        "packages/core/test/patronat-20261020.test.ts › k stredu je pole o 1 drahšie: z pravej oranžovej na ľavú červenú 3 + 2 + 1 + 2 + 3 = 11"
+        "packages/core/test/pohorsenie-v82.test.ts › k stredu je pole o 1 drahšie: z pravej oranžovej na ľavú červenú 3 + 2 + 1 + 2 + 3 = 11"
       ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/patronat-20261020.test.ts › z pravej oranžovej len po ľavú sivú — tretia hranica nie; packages/core/test/patronat-20261020.test.ts › Kultúrny dom limit ruší, na krajnú však Pohoršenie nesmie; packages/core/test/elders.test.ts › hranice zón: v sivej sa nič neprekračuje. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
@@ -1107,7 +996,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-v5.test.ts › v6: aj k sebe smie na krajnú pozíciu, ďalej von nie (oranžová → červená stojí 3, v8.2)",
-        "packages/core/test/patronat-20261020.test.ts › zo stredu na červenú 6 Pohoršení jedným výberom: žltá 1 + oranžová 2 + červená 3"
+        "packages/core/test/pohorsenie-v82.test.ts › zo stredu na červenú 6 Pohoršení jedným výberom: žltá 1 + oranžová 2 + červená 3"
       ],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › Pohoršenie nikdy nedostane marker na krajnú pozíciu; packages/core/test/revizia-kariet.test.ts › Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
@@ -1250,31 +1139,12 @@
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-20261019.test.ts › po bitke sa už nič neprezerá — po Pohrebe ide hra rovno do ďalšieho kola; packages/core/test/pravidla-20261019.test.ts › stará sada so Zberateľom alebo Očumovateľom sa načíta ako Úžerník."
     },
     {
-      "id": "10.patronat.po-bitke",
-      "paragraf": "10. Starší › Patronát",
-      "pravidlo": "Po bitke víťaz-patrón staršieho nechá, porazený ho vracia a odhodí poldeci.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/patronat-20261020.test.ts › výhra: starší ostáva patrónovi, karta lícom dole sa otáča na scorecarde",
-        "packages/core/test/patronat-20261020.test.ts › prehra: starší sa vracia na scorecard, náhrada do ruky, patrón odhodí vypitý poldeci"
-      ]
-    },
-    {
       "id": "9.navrat",
       "paragraf": "9. Bitka › 9.7 Návrat kariet",
       "pravidlo": "Karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral; zahodené (Dievčina) nie; lokalita ide na nástenku (v6).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-bitka.test.ts › §9.7: karty z línie sa vrátia do odhadzovacieho balíčka hráča, ktorý ich zahral — aj zo súperovej strany"
-      ]
-    },
-    {
-      "id": "10.nahradeny",
-      "paragraf": "10. Starší",
-      "pravidlo": "Nahradený starší ostáva v hre (marker, priazeň, špaky za udržaný strach, vydesenie); náhradu si nikto nevezme do ruky.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno"
       ]
     },
     {
@@ -1321,16 +1191,6 @@
       ]
     },
     {
-      "id": "10.prebudenie",
-      "paragraf": "10. Starší › Prebudenie",
-      "pravidlo": "Na krajnej červenej pozícii sa efekt staršieho (Furt, Bitka, Pitka…) uplatňuje pre vydesujúceho hráča; priazeň ostáva súperovi.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/elders.test.ts › 1 posun = 1 pole; zo stredu na červenú tri posuny v jednom kole (zamknutie sa ruší)"
-      ],
-      "poznamka": "Nástup sa pri prebudení neuplatní — karta na ukazovateli sa nevykladá, Nástup sa spúšťa len vo vylozDoLinie."
-    },
-    {
       "id": "10.priazne.hodnoty",
       "paragraf": "10. Starší › Priazne",
       "pravidlo": "Priazne pôsobia silou 1/2/3: Bitkár +1/2/3 tuhého, Kmotor −1/2/3 priznaného Dlhu po bitke, Abstinent +1/2/3 Pohoršenia, Exekútor súperov prah −1/2/3, Výpalné (Výpalník) 1/2/3 cigarety za každé súperovo NA EX, Fajčiar +1/2/3 po šenku (Obmedzenie neuberá), Na zdravie (Alkoholik) 1/2/3 poldeci z NA EX za kolo plných, Veriaci +1/2/3 Viery.",
@@ -1375,7 +1235,7 @@
       "testy": [
         "packages/core/test/pravidla-20261019.test.ts › štart: 2 poldeci (Michal 2026-10-20), 3 cigarety, 4 karty v ruke (v6)",
         "packages/core/test/engine.test.ts › hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 2, cigarety 3",
-        "packages/core/test/pravidla-kolo.test.ts › §3: 8 starších s markerom v strede, nikto nič neohlásil"
+        "packages/core/test/pravidla-kolo.test.ts › §3: 8 starších s markerom v strede, bez väzňov a pokusov"
       ]
     },
     {
@@ -1394,7 +1254,7 @@
       "pravidlo": "8 starších, markery v strede.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-kolo.test.ts › §3: 8 starších s markerom v strede, nikto nič neohlásil"
+        "packages/core/test/pravidla-kolo.test.ts › §3: 8 starších s markerom v strede, bez väzňov a pokusov"
       ]
     },
     {
@@ -1700,8 +1560,8 @@
       "pravidlo": "Kapybara: Nástup povinný — marker jedného staršieho o 1 pole k stredu, aj keď sú mimo stredu len markery na polovici majiteľa.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/v7-efekty.test.ts › Starosta (karta zo šenku), Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)",
-        "packages/core/test/v7-efekty.test.ts › Kapybara je povinná: aj keď je mimo stredu len marker na polovici majiteľa, iná voľba nie je (§16, návrh #41 A)"
+        "packages/core/test/v7-efekty.test.ts › Kapybara je povinná: aj keď je mimo stredu len marker na polovici majiteľa, iná voľba nie je (§16, návrh #41 A)",
+        "packages/core/test/v7-efekty.test.ts › Starosta v línii od v9 Nástup nemá; Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)"
       ],
       "poznamka": "Návrh #41 A (rozhodca, Michal 2026-10-28)."
     },
@@ -2156,10 +2016,10 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Policajtka: súper, ktorý k nej priloží kartu, získa Dlh; za Kriminála jej majiteľ dostane 2 cigarety",
-        "packages/core/test/v7-efekty.test.ts › Vdova a Hrobár: priložená karta ide po bitke z hry; za Hrobárom sa už nepriloží",
         "packages/core/test/v7-efekty.test.ts › Snúbenica: priložený Chlap ide po bitke do odhadzovacieho balíčka jej majiteľa",
         "packages/core/test/v7-efekty.test.ts › Šarlatán: po Konflikte sa do konca kola jeho Dlhy rátajú ako Viera a Povery ako Rana",
-        "packages/core/test/v7-efekty.test.ts › Miňištrant: Nástup — vyvolal Konflikt, jeho Viera sa ráta ako Pecka"
+        "packages/core/test/v7-efekty.test.ts › Miňištrant: Nástup — vyvolal Konflikt, jeho Viera sa ráta ako Pecka",
+        "packages/core/test/v7-efekty.test.ts › Vdova: priložená karta ide po bitke z hry; Hrobár v línii od v9 Konflikt nemá (len akcie)"
       ]
     },
     {
@@ -2195,11 +2055,11 @@
         "packages/core/test/v7-efekty.test.ts › Stryná: hráč bez NA EX v Pitke +1 pečeň; Liberál: súper bez rovnováhy žien a chlapov +1 zadĺženie",
         "packages/core/test/v7-efekty.test.ts › Veterinár: karty v jeho okolí nepridávajú poškodenie pečene",
         "packages/core/test/v7-efekty.test.ts › Kar: pečeň za NA EX dostane súper toho, kto ho dal",
-        "packages/core/test/v7-efekty.test.ts › Krčmárka: na NA EX majiteľa súper kartou neodpovedá; Kohút: posledné slovo má obranca",
         "packages/core/test/v7-efekty.test.ts › Cintorín: nová Cirhóza je hneď priznaná",
         "packages/core/test/v7-efekty.test.ts › Jednota: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať; Benzínka: fajčí len najďalej",
         "packages/core/test/v7-efekty.test.ts › Bzdocha: kto vyberá NA EX po súperovi, vidí jeho skryté NA EX — inak nie",
-        "packages/core/test/v7-efekty.test.ts › Krabička cigariet: za každé 2 cigarety, ktoré súper vyfajčí, karta navyše"
+        "packages/core/test/v7-efekty.test.ts › Krabička cigariet: za každé 2 cigarety, ktoré súper vyfajčí, karta navyše",
+        "packages/core/test/v7-efekty.test.ts › Krčmárka v línii od v9 odpoveď na NA EX nezakazuje (jej efekt je Kšeft väzňa)"
       ]
     },
     {
@@ -2208,10 +2068,10 @@
       "pravidlo": "Nástup s voľbou (Starosta, Kapybara, Živnostník, Anonymný alkoholik), Autobusár, Kšefty Poštárky, Vychovávateľky, Obecného úradu a Zberného dvora, prebudený starší s Kšeftom.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/v7-efekty.test.ts › Autobusár: súper, ktorý pasuje po majiteľovi, cigarety za pas nedostane",
-        "packages/core/test/v7-efekty.test.ts › Starosta (karta zo šenku), Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)",
-        "packages/core/test/v7-efekty.test.ts › Poštárka (1 Dlh → 1 karta), Vychovávateľka (2 cigarety → Povera), Obecný úrad, Zberný dvor",
-        "packages/core/test/v7-efekty.test.ts › prebudená Poštárka (marker na kraji) dáva Kšeft vydesujúcemu hráčovi"
+        "packages/core/test/v7-efekty.test.ts › Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)",
+        "packages/core/test/v7-efekty.test.ts › Starosta v línii od v9 Nástup nemá; Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)",
+        "packages/core/test/v7-efekty.test.ts › Poštárka a Vychovávateľka v línii od v9 Kšeft nemajú (len väzeň); Obecný úrad, Zberný dvor",
+        "packages/core/test/v7-efekty.test.ts › v9: prebudenie zaniklo — Poštárka na kraji stupnice Kšeft nedáva"
       ]
     },
     {
@@ -2255,8 +2115,8 @@
       "pravidlo": "Kmotor (v8): po bitke presunie 1 / 2 / 3 tvoje priznané Dlhy medzi súperove priznané; ak ich máš menej, presunie, koľko máš.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v8.test.ts › sila 2: dva tvoje priznané Dlhy prejdú medzi súperove priznané",
-        "packages/core/test/pravidla-v8.test.ts › menej Dlhov, ako je sila: presunie, koľko máš; bez Dlhu nič"
+        "packages/core/test/pravidla-v8.test.ts › menej Dlhov, ako je sila: presunie, koľko máš; bez Dlhu nič",
+        "packages/core/test/pravidla-v8.test.ts › v9: sila 2 → tri tvoje priznané Dlhy prejdú medzi súperove priznané (2 / 3 / 4)"
       ]
     },
     {
@@ -2280,6 +2140,136 @@
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Záhradkár (Exekúcia, Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde — Dlhy ani špaky nezhoria"
       ]
+    },
+    {
+      "id": "1.koniec.treti-vazen",
+      "paragraf": "1. Cieľ a koniec hry › Podmienky konca",
+      "pravidlo": "Tretí väzeň jedného hráča = výhra hneď (po bitke v kroku 6d, vo finále pred konečnými špakmi); vydesenie ako výhra zaniklo (v9).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › tretí väzeň jedného hráča = výhra hneď, bez konečných špakov",
+        "packages/core/test/pravidla-bitka.test.ts › §1 (v9): vydesenie ako výhra zaniklo — ani 8 z 8 starších na stupni 3 hru neukončí",
+        "packages/core/test/dobiehanie.test.ts › polovica starších na stupni 3 hru neukončí ani na konci kola — vyhráva sa tretím väzňom"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "10.zajatie.podmienka",
+      "paragraf": "10. Starší › Zajatie a väzeň",
+      "pravidlo": "Pokus o zajatie len na staršieho, ktorý sa hráča bojí na stupni 3; cena 1 cigareta prepadne; boss ide súperovi do ruky; útočník, potom obranca; najviac jeden pokus za kolo, obaja smú (každý iného).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide súperovi do ruky",
+        "packages/core/test/vazen.test.ts › každý najviac jeden pokus za kolo; obaja smú, každý iného staršieho; potom Zhromaždenie",
+        "packages/core/test/vazen.test.ts › bez cigarety pokus nie je — hra ho preskočí a dôvod povie len hráčovi",
+        "packages/core/test/elders.test.ts › zajať smie len hráč, ktorého sa starší bojí na stupni 3 (červená na súperovej polovici)"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "10.zajatie.v-ohrozeni",
+      "paragraf": "10. Starší › Zajatie a väzeň",
+      "pravidlo": "Starší v ohrození sa v kole pokusu nehýbe — Pohoršenie, Nakladačka, Povery (O8), Kšeft Predsedovej vily a Kapybara naňho nesmú.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › O8: starší v ohrození sa v kole pokusu nehýbe — Pohoršenie, prebytok ani Povera naňho nesmú",
+        "packages/core/test/rozdelenie.test.ts › starší v ohrození (pokus o zajatie, v9) sa nehýbe — plán aj server rovnako",
+        "packages/core/test/v7-karty.test.ts › Predsedova vila: za 2 cigarety posun markera, nie staršieho v ohrození (pokus o zajatie, v9)"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "10.zajatie.vysledok",
+      "paragraf": "10. Starší › Zajatie a väzeň",
+      "pravidlo": "Krok 6d: víťaz zajme (väzeň, zo stupnice preč, udržaný strach zaplatí); porazený či sekera — starší späť, marker o stupeň k stredu, nezaplatená červená sa zmaže (O9); boss sa vracia vždy.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › víťaz zajme: starší zmizne zo stupnice, je väzeň (1. v partii), karta odíde z ruky súpera; udržaný strach zaplatí",
+        "packages/core/test/vazen.test.ts › porazený: starší späť na ukazovateľ, marker o stupeň späť a nezaplatená červená sa zmaže (O9)",
+        "packages/core/test/vazen.test.ts › sekera: pokus zlyhá",
+        "packages/core/test/vazen.test.ts › boss vyložený súperom do línie sa po bitke vráti aj tak — nezostane v odhadzovacom balíčku"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "14.spaky.vazni",
+      "paragraf": "14. Špaky",
+      "pravidlo": "Po finále väzni dajú špaky podľa poradia zajatia v partii 8 / 6 / 4 / 2, nech ho zajal ktokoľvek.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › 1. väzeň 8, 2. 6, 3. 4, 4. 2 — nech ho zajal ktokoľvek"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "7.kseft-vazna.cena",
+      "paragraf": "7. Pitka › Kšeft väzňa (v9)",
+      "pravidlo": "Kšeft väzňa má len držiteľ, za vypitý plný poldeci (nerest, pečeň +1, limit −1), raz za Pitku na väzňa, nie po skončení Pitky, nie naprázdno.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › len držiteľ väzňa; cena = vypitý plný poldeci (nerest, +1 pečeň, limit nižší); raz za Pitku",
+        "packages/core/test/vazen.test.ts › bez plného poldeci (ten na skrytom NA EX sa neráta) Kšeft nie je; po skončení Pitky tiež nie",
+        "packages/core/test/vazen.test.ts › naprázdno sa neponúka: Hrobár pri prázdnej ruke súpera, Poštárka bez Dlhu, Autobusár pri prázdnom šenku"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "7.kseft-vazna.osem",
+      "paragraf": "7. Pitka › Kšeft väzňa (v9) / 16. Výklad kariet",
+      "pravidlo": "Hrobár, Farár, Autobusár, Starosta, Poštárka, Krčmárka (vrátenie skrytého NA EX, O4), Vychovávateľka (+3 tuhé, O6), Veterinár (Cirhóza z ruky či priznaná, O3).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › Hrobár: súper odhodí náhodnú kartu z ruky do odhadzovacieho balíčka; meno karty vie len on",
+        "packages/core/test/vazen.test.ts › Autobusár: karta zo šenku podľa voľby do ruky, šenok sa nedopĺňa",
+        "packages/core/test/vazen.test.ts › Poštárka: 1 priznaný Dlh prejde na súpera",
+        "packages/core/test/vazen.test.ts › Starosta a Farár platia do konca kola (O1, O2) — raz spustené sa už neponúknu",
+        "packages/core/test/vazen.test.ts › Krčmárka: súper v tejto Pitke NA EX nedá, už dané skryté NA EX sa mu vráti (O4); na Krčme mu povinnosť zruší",
+        "packages/core/test/vazen.test.ts › Vychovávateľka: súperovo NA EX v tejto Pitke → držiteľ +3 tuhé v bitke (jedna Petelica); na Krčme sa neponúkne",
+        "packages/core/test/vazen.test.ts › Veterinár: Cirhóza z ruky alebo priznaná z hry (O3, nie z balíčka); pečeň v tejto Pitke 0 vrátane ceny",
+        "packages/core/test/vazen.test.ts › Starosta: aktívne akcie hrán lokality ×2, ostatné nie",
+        "packages/core/test/vazen.test.ts › Farár: súperova aktívna Viera je posilnený Hazard (2 zadĺženia za Vieru), v bitke Viera chýba"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "16.starsi.len-akcie",
+      "paragraf": "16. Výklad kariet › Starší",
+      "pravidlo": "Karta staršieho v línii má len akcie — žiadny Konflikt, Nástup, Pitka, Kšeft ani prebudenie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/v7-efekty.test.ts › Vdova: priložená karta ide po bitke z hry; Hrobár v línii od v9 Konflikt nemá (len akcie)",
+        "packages/core/test/v7-efekty.test.ts › Krčmárka v línii od v9 odpoveď na NA EX nezakazuje (jej efekt je Kšeft väzňa)",
+        "packages/core/test/v7-efekty.test.ts › Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)",
+        "packages/core/test/v7-efekty.test.ts › v9: prebudenie zaniklo — Poštárka na kraji stupnice Kšeft nedáva"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "10.priazne.v9",
+      "paragraf": "10. Starší › Priazne",
+      "pravidlo": "Advokát (exekúcia −sila špakov), Robota (akcie Robota navyše), Fajčiar po bitke, Kmotor 2 / 3 / 4; staré kľúče EXEKUTOR → ADVOKAT, VYPALNIK/NEPRAJNIK → ROBOTA.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v5.test.ts › Advokát (v9): exekúcia ti odpočíta o silu priazne menej špakov, Dlhy zhoria ako doteraz",
+        "packages/core/test/pravidla-v5.test.ts › Robota (v9, O5): priazeň = akcie Robota navyše, pália Dlhy pred Exekútorom",
+        "packages/core/test/pravidla-v5.test.ts › Fajčiar (v9): +1 / +2 / +3 cigarety po bitke (nie po šenku)",
+        "packages/core/test/pravidla-v5.test.ts › Kmotor (v9): po bitke presunie 2 / 3 / 4 priznané Dlhy, bez Dlhu nič",
+        "packages/core/test/pravidla-v8.test.ts › v9: sila 2 → tri tvoje priznané Dlhy prejdú medzi súperove priznané (2 / 3 / 4)",
+        "packages/core/test/battle.test.ts › v9: priazeň Advokát odpočíta o 1 / 2 / 3 špaky menej, najmenej 0; Dlhy zhoria ako vždy",
+        "packages/core/test/pravidla-v5.test.ts › východisková sada má 8 scorecardov bez podmienok (v6) a mená Kmotor, Abstinent, Robota a Advokát (v9)"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "viewfor.vazen",
+      "paragraf": "Nemenné pravidlo 2 (viewFor) › pokus a väzni",
+      "pravidlo": "Pokusy, väzni a Kšefty kola sú verejné; boss v súperovej ruke je verejný, zvyšok ruky nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › pokus, väzni a Kšefty kola sú verejné; zvyšok súperovej ruky nie",
+        "packages/core/test/engine.test.ts › filtrovanie platí počas celej náhodnej hry"
+      ],
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
     }
   ]
 }

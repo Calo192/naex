@@ -88,13 +88,12 @@ describe("hrozba kliatob na stole (#38 B)", () => {
 });
 
 describe("náhľad posunu povie, koľko starších bude vydesených (#38 B)", () => {
-  it("posun na červenú pridá vydeseného tomu, koho sa starší bojí; prah je polovica", () => {
+  it("posun na červenú pridá vydeseného tomu, koho sa starší bojí (v9: toho sa dá skúsiť zajať)", () => {
     const s0 = setupGame(data, 11);
     const s: GameState = { ...s0, starsi: s0.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 5 : 3) as MarkerPos })) };
     const v = viewFor(data, s, 0);
     const n = nahladPosunuMarkera(data, v, s.starsi[0]!.elderId, 1, 3);
     // Marker 5 → 6 (oranžová → červená stojí 3): vydesil ho hráč 0.
     expect(n?.vydeseni).toEqual([1, 0]);
-    expect(n?.prahVydesenia).toBe(Math.ceil(s.starsi.length / 2));
   });
 });

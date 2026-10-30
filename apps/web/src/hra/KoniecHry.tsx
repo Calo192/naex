@@ -96,6 +96,11 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
                 {vykupneText(koniec.vykupne?.[ja])}, {mena[su]} {vykupneText(koniec.vykupne?.[su])}.
               </p>
             )}
+            {(koniec.vazni?.[0] ?? 0) + (koniec.vazni?.[1] ?? 0) > 0 && (
+              <p className="koniec-cirhozy">
+                Väzni po finále (poradie zajatia {KONSTANTY.SPAKY_ZA_VAZNOV.join(" / ")}): ty +{koniec.vazni?.[ja] ?? 0}, {mena[su]} +{koniec.vazni?.[su] ?? 0}.
+              </p>
+            )}
             {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (
               <p className="koniec-cirhozy">
                 Nepriznaná Cirhóza na konci: {pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus (ruka aj oba balíčky) — ty ×{koniec.cirhozy?.[ja] ?? 0},{" "}

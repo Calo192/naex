@@ -17,7 +17,6 @@ import {
   lokalitNevybranych,
   moznostiKseftu,
   moznostiNaex,
-  kseftPostarky,
   naexCieleVLinii,
   pocetPitiek,
   prirastkyPitky,
@@ -181,10 +180,10 @@ describe("Kšeft (v7)", () => {
     expect(po.hraci[0].cigarety).toBe(0);
   });
 
-  it("Predsedova vila: za 2 cigarety posun markera, nie staršieho zo súperovho patronátu", () => {
+  it("Predsedova vila: za 2 cigarety posun markera, nie staršieho v ohrození (pokus o zajatie, v9)", () => {
     const s0 = sHracom(vPitke("predsedova_vila", [[], []]), 0, { cigarety: 2 });
     const e = s0.starsi[0]!;
-    const s: GameState = { ...s0, patronat: [null, { elderId: s0.starsi[1]!.elderId, nahrada: inst("pijan"), pohorsenia: 1 }] };
+    const s: GameState = { ...s0, pokusy: [null, { elderId: s0.starsi[1]!.elderId }] };
     const volby = legalCommands(data, s, 0).filter((c) => c.type === "kseft");
     expect(volby.some((c) => c.type === "kseft" && c.elderId === s0.starsi[1]!.elderId)).toBe(false);
     const po = apply(data, s, { type: "kseft", uid: s.ciel!.lokalita!.uid, elderId: e.elderId, kSebe: false }, 0).state;
@@ -256,20 +255,6 @@ describe("limit NA EX v7", () => {
     expect(moznostiNaex(data, s, 0)).toContain(aa.uid);
     const minuty: GameState = { ...s, pitkaStav: { ...s.pitkaStav!, naexPouzity: [true, false] } };
     expect(moznostiNaex(data, minuty, 0)).toEqual([]);
-  });
-});
-
-describe("bot v7: Kšeft Poštárky blízko Exekútora", () => {
-  it("strážca bota spozná Kšeft Poštárky v línii aj na scorecarde — jadro dá najprv uid z línie", () => {
-    const p = inst("postarka");
-    const s0 = vPitke("zastavka", [[lezi(p, 0), lezi(inst("pijan"), 0)], [lezi(inst("vandal"), 1)]]);
-    const s = sHracom(s0, 0, { ruka: [inst("masiar")], doberaci: [inst("vandal")], dlhy: 1 });
-    const kseft = moznostiKseftu(data, s, 0).find((c) => c.type === "kseft" && c.uid === p.uid);
-    expect(kseft).toBeDefined();
-    expect(kseftPostarky(s, p.uid)).toBe(true);
-    const naScorecarde = s.starsi.find((e) => e.karta.defId === "postarka")?.karta.uid;
-    if (naScorecarde !== undefined) expect(kseftPostarky(s, naScorecarde)).toBe(true);
-    expect(kseftPostarky(s, s.strany[0][1]!.card.uid)).toBe(false);
   });
 });
 

@@ -60,17 +60,18 @@ describe("momenty — rozpoznanie", () => {
     expect(momenty(zaklad, s, s, [bitka(7)])).toEqual([]);
   });
 
-  it("Zachránené: zmarené ohlásené vydesenie je zlatá pečiatka pre toho, kto ho zmaril", () => {
+  it("Zajatie (v9): hráčovi pribudol väzeň — zlatá pečiatka pre neho", () => {
     const s = setupGame(zaklad, 43);
-    const pred: GameState = { ...s, ohlaseneVydesenie: [null, 2] };
-    expect(momenty(zaklad, pred, s, [])).toEqual([expect.objectContaining({ typ: "zachranene", stupen: "zlato", hrac: 0 })]);
+    const e = s.starsi[0]!;
+    const po: GameState = { ...s, starsi: s.starsi.slice(1), vazni: [{ elderId: e.elderId, hrac: 1, poradie: 1, karta: e.karta, scorecard: e.scorecard, miesto: 0 }] };
+    expect(momenty(zaklad, s, po, [])).toEqual([expect.objectContaining({ typ: "zajatie", stupen: "zlato", hrac: 1 })]);
   });
 
-  it("Prebudenie: marker na krajnej pozícii — pečiatka pre toho, komu starší slúži", () => {
+  it("v9: marker na krajnej pozícii už prebudenie nehlási", () => {
     const s = setupGame(zaklad, 44);
     const po: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 6 as const } : e)) };
     const pred: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 5 as const } : e)) };
-    expect(momenty(zaklad, pred, po, [])).toEqual([expect.objectContaining({ typ: "prebudenie", hrac: 0 })]);
+    expect(momenty(zaklad, pred, po, [])).toEqual([]);
   });
 
   it("Bitka o všetko (v6): bitka sa začína a na sekere sú špaky aspoň z dvoch bitiek", () => {

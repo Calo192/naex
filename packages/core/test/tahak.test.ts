@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { DLZKY_HRY, KONSTANTY } from "../src/constants.ts";
-import { cenaKroku, cenaPatronatu } from "../src/elders.ts";
+import { cenaKroku } from "../src/elders.ts";
 import { cenaFajcenia } from "../src/engine.ts";
 import { pocet } from "../src/jazyk.ts";
 
@@ -28,7 +28,12 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Povery strop (v8.3)", "**najviac na 3**"],
     ["Robota bez Dlhu (v8.4)", "**za každý Dlh, ktorý nemá čo spáliť, 1 špak**"],
     ["Telefón (v8.4)", `z červenej ${cenaKroku(6, 5, true)}, z oranžovej ${cenaKroku(5, 4, true)}, zo žltej ${cenaKroku(4, 3, true)}`],
-    ["Kmotor (v8)", "Kmotor: po bitke presunie 1 / 2 / 3 tvoje priznané Dlhy medzi súperove"],
+    ["Kmotor (v9)", "Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove"],
+    ["tretí väzeň (v9)", `kto **zajme tretieho staršieho, vyhráva hneď**`],
+    ["väzni po finále (v9)", `**1. väzeň ${KONSTANTY.SPAKY_ZA_VAZNOV[0]}, 2. ${KONSTANTY.SPAKY_ZA_VAZNOV[1]}, 3. ${KONSTANTY.SPAKY_ZA_VAZNOV[2]}, 4. ${KONSTANTY.SPAKY_ZA_VAZNOV[3]}**`],
+    ["cena pokusu (v9)", `Cena **${pocet(KONSTANTY.CENA_POKUSU, "cigareta", "cigarety", "cigariet")}**, prepadne vždy`],
+    ["Kšeft väzňa (v9)", "Cena: **vypiť 1 plný poldeci** zo zásoby"],
+    ["Vychovávateľka (v9)", `**Petelicu navyše (+${KONSTANTY.VYCHOVAVATELKA_TUHE} tuhé)**`],
     ["Exekútor bez prahu (2026-10-28)", "Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor"],
     ["rozpis úrovní (v7)", "stredná 1 · 2 · 2 · 3 · 3 · P"],
     ["Cirhóza na konci", `−${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")} za kus`],
@@ -45,17 +50,11 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["barter", `${KONSTANTY.BARTER_CENA} cigariet → nový plný poldeci`],
     [
-      "cena patronátu (v6.1)",
-      `červená ${cenaPatronatu({ marker: 0 }).cigarety}, oranžová ${cenaPatronatu({ marker: 1 }).cigarety}, žltá ${cenaPatronatu({ marker: 2 }).cigarety}`,
-    ],
-    [
       "cena posunu markera (v8.2)",
       `pole von zo stredu stojí ${cenaKroku(3, 4)} / ${cenaKroku(4, 5)} / ${cenaKroku(5, 6)}, k stredu ${cenaKroku(6, 5)} / ${cenaKroku(5, 4)} / ${cenaKroku(4, 3)} (z červenej, z oranžovej, zo žltej); zo stredu na červenú ${cenaKroku(3, 4) + cenaKroku(4, 5) + cenaKroku(5, 6)}`,
     ],
     ["Dlh a Absťák ako počítadlá (v8.2)", "**Dlh a Absťák sú počítadlá, nie karty**"],
-    ["Autobusár (v7)", "Autobusár: súper, ktorý pasuje po jeho majiteľovi, cigarety za pas nedostane"],
     ["Strýko (v7)", `(${KONSTANTY.EFEKT.STRYKO_CENA} cigarety → v bitke kola +1 Rana)`],
-    ["Vychovávateľka (v7)", `Vychovávateľka (${KONSTANTY.EFEKT.VYCHOVAVATELKA_CENA} cigarety → v bitke`],
     ["Policajtka (v7)", `Policajtka (súper Dlh; za Kriminála ti dá ${KONSTANTY.EFEKT.POLICAJTKA_CIGARETY} cigarety)`],
     ["Obecný úrad (v7)", `Obecný úrad (v7 Kšeft: ${KONSTANTY.EFEKT.URAD_CENA} cigarety`],
   ])("%s", (_, ocakavane) => {

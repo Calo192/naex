@@ -113,18 +113,13 @@ describe("plán rozdelenia = to, čo server urobí s ťahom", () => {
     expect(events.some((e) => e.type === "log" && e.text.includes("stráca 1 Pohoršenie"))).toBe(true);
   });
 
-  it("Pohoršenia zo súperovho patronátu idú prvé a na jeho patróna nesmú — plán aj server rovnako", () => {
-    const s0 = stav({ pohorsenieZostava: [3, 0], pohorseniaPatronatu: [2, 0] });
-    const nahrada = s0.hraci[1].ruka[0]!;
-    const s: GameState = { ...s0, patronat: [null, { elderId: id(s0, 0), nahrada, pohorsenia: 2 }] };
-    // Na patróna smie len 1 vlastné Pohoršenie.
-    const plan = planRozdelenia(s, 0, [{ elderId: id(s, 0) }]);
-    expect(plan.kroky[0]).toMatchObject({ body: 1, cena: 1 });
-    expect(rozpocetPoPlane(s, 0, plan, id(s, 1))).toBe(2);
-    const plan2 = planRozdelenia(s, 0, [{ elderId: id(s, 1) }, { elderId: id(s, 0) }]);
-    // Prvý posun minie všetky 3 (2 z patronátu) — na patróna nezostane nič.
-    expect(plan2.kroky.map((k) => k.cena)).toEqual([3]);
-    expect(plan2.nevyslo).toEqual([{ elderId: id(s, 0) }]);
+  it("starší v ohrození (pokus o zajatie, v9) sa nehýbe — plán aj server rovnako", () => {
+    const s0 = stav({ pohorsenieZostava: [3, 0] });
+    const s: GameState = { ...s0, pokusy: [null, { elderId: id(s0, 0) }] };
+    const plan = planRozdelenia(s, 0, [{ elderId: id(s, 0) }, { elderId: id(s, 1) }]);
+    expect(plan.nevyslo).toEqual([{ elderId: id(s, 0) }]);
+    expect(plan.kroky.map((k) => k.elderId)).toEqual([id(s, 1)]);
+    expect(() => apply(data, s, { type: "pohorsenie", elderId: id(s, 0) }, 0)).toThrow();
   });
 
   it("Nakladačka: jeden smer k súperovi držiteľa, klient z verejného pohľadu plánuje to isté ako server", () => {

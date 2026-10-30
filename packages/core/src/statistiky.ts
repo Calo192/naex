@@ -304,7 +304,7 @@ function zapisJedneho(
         case "prebytok":
           s.posunyPrebytkom += 1;
           break;
-        case "patronat":
+        case "pokus":
           s.bitkyOStarsich += 1;
           break;
         case "pass":
@@ -347,8 +347,8 @@ function zapisJedneho(
   }
 
   // ---- rozdiely stavu
-  // Starší získaný patronátom (rozhodne sa pri návrate kariet po bitke).
-  const ziskani = (st: GameState): number => st.starsi.filter((e) => e.ziskal === p).length;
+  // Väzeň (v9) — rozhodne sa po bitke.
+  const ziskani = (st: GameState): number => (st.vazni ?? []).filter((v) => v.hrac === p).length;
   s.starsiZiskani += Math.max(0, ziskani(po) - ziskani(pred));
   s.cirhozyZiskane += noveKliatby(pred, po, p, "cirhoza");
   // Dlh a Absťák sú od v8.2 počítadlá — nové ráta stav hráča (získané za hru).

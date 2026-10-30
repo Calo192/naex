@@ -154,17 +154,10 @@ describe("§1 Podmienky konca", () => {
     expect(apply(data, jedna, { type: "cintorin", uid: null }, 0).state.koniec).toBeNull();
   });
 
-  it("§1: ohlásené vydesenie — kto do konca nasledujúceho kola udrží polovicu (4 z 8) vydesených, vyhrá; kto ich stratí, nevyhrá", () => {
-    const vydes = (n: number) => (s: GameState): GameState => ({
-      ...s,
-      ohlaseneVydesenie: [1, null],
-      starsi: s.starsi.map((e, i) => (i < n ? { ...e, marker: 6 as const } : e)),
-    });
-    const udrzal = apply(data, predKoncomBitky(45, vydes(4)), { type: "cintorin", uid: null }, 0).state;
-    expect(udrzal.koniec?.vitaz).toBe(0);
-    const stratil = apply(data, predKoncomBitky(45, vydes(3)), { type: "cintorin", uid: null }, 0).state;
-    expect(stratil.koniec).toBeNull();
-    expect(stratil.ohlaseneVydesenie[0]).toBeNull();
+  it("§1 (v9): vydesenie ako výhra zaniklo — ani 8 z 8 starších na stupni 3 hru neukončí", () => {
+    const vydes = (s: GameState): GameState => ({ ...s, starsi: s.starsi.map((e) => ({ ...e, marker: 6 as const })) });
+    const po = apply(data, predKoncomBitky(45, vydes), { type: "cintorin", uid: null }, 0).state;
+    expect(po.koniec).toBeNull();
   });
 });
 

@@ -12,8 +12,9 @@
 //    udrží do konca nasledujúceho kola (v8.3, variant 6A) — obávanému hráčovi,
 //    nech bitku vyhral ktokoľvek. Ústup k stredu zmaže zaplatené aj držané
 //    stupne (sPosunutymMarkerom).
-//  - Nahradený starší (patronát) ostáva v hre celý: marker, priazeň,
-//    prebudenie aj špaky.
+//  - Väzeň (krok 2, Michal 2026-10-30): starší, ktorého sa hráč bojí na stupni 3,
+//    sa dá zajať; zajatý odchádza zo stupnice (GameState.vazni) a nedáva priazeň
+//    ani strach — na ukazovateli ostane prázdne miesto.
 
 import type { CardInstance, Favour, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
@@ -44,23 +45,22 @@ export interface PosunMarkera {
   readonly elderId: string;
   readonly z: MarkerPos;
   readonly na: MarkerPos;
-  /** kseft = Predsedova vila (v7), nastup = Kapybara (v7). */
-  readonly zdroj: "pohorsenie" | "prebytok" | "patronat" | "kseft" | "nastup";
+  /**
+   * kseft = Predsedova vila (v7), nastup = Kapybara (v7), zajatie = ústup po neúspešnom
+   * pokuse (v9); patronat len v záznamoch partií do v8.
+   */
+  readonly zdroj: "pohorsenie" | "prebytok" | "patronat" | "zajatie" | "kseft" | "nastup";
   /** Hráč, ktorého akcia marker posunula (pri prebytku držiteľ prebytku). */
   readonly kto: PlayerId;
 }
 
 export interface ElderState {
-  /** Pôvodný starší (kľúč do elders.json — ukazovateľ ostáva aj po náhrade). */
+  /** Starší (kľúč do elders.json). */
   readonly elderId: string;
-  /** Karta ležiaca na ukazovateli: starší, alebo po náhrade Občan/Zviera. */
+  /** Karta staršieho — na ukazovateli, alebo počas pokusu o zajatie v súperovej ruke či línii. */
   readonly karta: CardInstance;
   readonly marker: MarkerPos;
-  /** Na ukazovateli leží náhrada — o takého staršieho sa už bojovať nedá. */
-  readonly nahradeny: boolean;
-  /** Hráč, ktorý si vzal kartu staršieho náhradou (patronát). */
-  readonly ziskal: PlayerId | null;
-  /** Id scorecardu, na ktorom ukazovateľ leží (rozdaný pri príprave, aj po náhrade). */
+  /** Id scorecardu, na ktorom ukazovateľ leží (rozdaný pri príprave). */
   readonly scorecard: string;
   /**
    * Po ktorý stupeň (1 žltá … 3 červená) už starší zaplatil strach hráčovi, ktorého
@@ -76,7 +76,32 @@ export interface ElderState {
 }
 
 export function freshElder(elderId: string, karta: CardInstance, scorecard: string): ElderState {
-  return { elderId, karta, scorecard, marker: MARKER_STRED, nahradeny: false, ziskal: null };
+  return { elderId, karta, scorecard, marker: MARKER_STRED };
+}
+
+/**
+ * Väzeň (v9, Michal 2026-10-30, §10): zajatý starší v priznaných kartách držiteľa —
+ * „v pivnici“. Nehýbe sa, nedáva priazeň ani strach; držiteľ má jeho Kšeft a po finále
+ * špaky podľa poradia zajatia v celej partii. Verejné.
+ */
+export interface Vazen {
+  readonly elderId: string;
+  readonly hrac: PlayerId;
+  /** Poradie zajatia v celej partii (1 = prvý zajatý starší, nech ho zajal ktokoľvek). */
+  readonly poradie: number;
+  readonly karta: CardInstance;
+  /** Scorecard (otočený — priazeň zanikla). */
+  readonly scorecard: string;
+  /** Miesto ukazovateľa v rade starších (poradie elders.json) — tam ostane prázdne miesto. */
+  readonly miesto: number;
+}
+
+/**
+ * Smie hráč p skúsiť zajať staršieho (v9, §10): starší sa ho bojí na stupni 3 —
+ * marker na červenej na súperovej polovici.
+ */
+export function pokusMozny(elder: Pick<ElderState, "marker">, p: PlayerId): boolean {
+  return strachZ(elder, p) === 3;
 }
 
 /** Hráč, ktorý sa teší priazni tohto staršieho (marker na jeho polovici). */
@@ -132,14 +157,7 @@ export function obavanyHrac(elder: Pick<ElderState, "marker">): PlayerId | null 
   return p === null ? null : p === 0 ? 1 : 0;
 }
 
-/** Prebudený starší: marker na krajnej červenej pozícii; efekt platí obávanému. */
-export function prebudenyPre(elder: Pick<ElderState, "marker">): PlayerId | null {
-  if (elder.marker === MARKER_KRAJ[0]) return 1;
-  if (elder.marker === MARKER_KRAJ[1]) return 0;
-  return null;
-}
-
-/** Hráč p vydesil staršieho = marker na krajnej pozícii súperovej polovice. */
+/** Hráč p desí staršieho na stupni 3 (stav „vydesený“) = marker na krajnej pozícii súperovej polovice. */
 export function vydesil(elder: Pick<ElderState, "marker">, p: PlayerId): boolean {
   return elder.marker === MARKER_KRAJ[p === 0 ? 1 : 0];
 }
@@ -179,7 +197,7 @@ export function strachNaUdrzanie(elder: StavStrachu, p: PlayerId): number {
 
 /**
  * Špaky za starších na konci kola: každý starší, ktorý sa hráča bojí, mu zaplatí
- * udržané a ešte nezaplatené stupne (v8.3) — aj nahradený, nech bitku vyhral ktokoľvek.
+ * udržané a ešte nezaplatené stupne (v8.3), nech bitku vyhral ktokoľvek (väzeň už nie je na stupnici).
  */
 export function spakyZaStarsich(starsi: readonly StavStrachu[], p: PlayerId): number {
   return starsi.reduce((a, e) => a + strachNaVyplatu(e, p), 0);
@@ -217,26 +235,6 @@ export function poKonciKola<E extends StavStrachu>(elder: E): E {
   const zona = STUPNICA_ZONY[elder.marker];
   const vyplatene = Math.min(zona, Math.max(elder.vyplatene ?? 0, elder.drzane ?? 0));
   return { ...bez, ...(vyplatene > 0 ? { vyplatene } : {}), ...(zona > 0 ? { drzane: zona } : {}) };
-}
-
-/**
- * Patronát (Michal 2026-10-20 — nahradil bitku o staršieho): patrón je hráč,
- * ktorému starší prejavuje priazeň. Po šenku si smie vziať do ruky pôvodného
- * (nenahradeného) staršieho, ktorého marker je aspoň v žltej zóne na jeho
- * polovici.
- */
-export function patronatMozny(elder: ElderState, p: PlayerId): boolean {
-  return !elder.nahradeny && priazenHraca(elder) === p;
-}
-
-/**
- * Cena patronátu (v6.1, Michal 2026-10-27): cigarety podľa zóny — červená 1,
- * oranžová 2, žltá 3 (sivá patronát nepripúšťa). Súper dostane v bitke toľko
- * Pohoršení, o koľko polí sa marker vráti do stredu (žltá 1, oranžová 2, červená 3).
- */
-export function cenaPatronatu(elder: Pick<ElderState, "marker">): { readonly cigarety: number; readonly pohorsenia: number } {
-  const zona = STUPNICA_ZONY[elder.marker];
-  return { cigarety: zona === 0 ? 0 : 4 - zona, pohorsenia: Math.abs(elder.marker - MARKER_STRED) };
 }
 
 /**

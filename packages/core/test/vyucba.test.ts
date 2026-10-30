@@ -398,7 +398,7 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     // v7: úroveň lokality = počet akcií na hrane; prvé kolo sa bije o lokalitu úrovne 1.
     expect(lokalityNaVyber(data, pri("k-ciel")).map((k) => k.defId)).toEqual(["lesna_cesta", "jednota", "cintorin"]);
     for (const k of lokalityNaVyber(data, pri("k-ciel"))) expect(urovenLokality(data, k.defId), k.defId).toBe(1);
-    expect(scenar.rozdanie.scorecardy).toMatchObject({ farar: "EXEKUTOR", krcmarka: "LAKOMEC" });
+    expect(scenar.rozdanie.scorecardy).toMatchObject({ farar: "ADVOKAT", krcmarka: "LAKOMEC" });
   });
 
   it("schválené znenia Michala 2026-10-27 (i-fazy, q-spoj, i-fajcit, i-body)", () => {
@@ -475,11 +475,11 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
   it("Nakladačku 3 (prebytok) rozdeľuje porazený Štamgast, celú na Farára (v8.2: pole 1 + 2): jeden výber, Exekútor 0 → 2, cigareta za posunutého", () => {
     expect(scenar.kroky[i("k-prebytok1")]?.kto).toBe("bot");
     expect(naTahu(pri("k-prebytok1"))).toBe(1);
-    expect(silaPriazne(data, pri("k-prebytok1"), "EXEKUTOR", 1)).toBe(0);
+    expect(silaPriazne(data, pri("k-prebytok1"), "ADVOKAT", 1)).toBe(0);
     const s = po("k-prebytok1");
     // Zo stredu do žltej 1, do oranžovej 2 — celá Nakladačka 3 na jeden výber, ďalší výber už nie je.
     expect(s.starsi.find((e) => e.elderId === "farar")?.marker).toBe(5);
-    expect(silaPriazne(data, s, "EXEKUTOR", 1)).toBe(2);
+    expect(silaPriazne(data, s, "ADVOKAT", 1)).toBe(2);
     expect(s.bitkaStav?.krok).not.toBe("prebytok");
     expect(scenar.kroky[i("i-cena-posunu")]).toMatchObject({ kto: "info" });
     expect(s.hraci[1].cigarety).toBe(pri("k-prebytok1").hraci[1].cigarety + 1);

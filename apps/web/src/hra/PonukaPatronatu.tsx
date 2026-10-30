@@ -1,7 +1,7 @@
-// Ponuka patronátu (#110, Michal 2026-10-26): pri výbere patróna hráč nesmie
-// vyberať naslepo — každý starší, ktorého si smie vziať, leží na stole ako karta
-// v čitateľnej veľkosti s akciami po stranách, s priazňou a cenou. Bez ďalšieho
-// klikania; klik na kartu alebo na „vziať“ ho vyberie (potom náhrada z ruky).
+// Ponuka pokusu o zajatie (v9; do v8 ponuka patronátu #110, Michal 2026-10-26): hráč nesmie
+// vyberať naslepo — každý starší, ktorého smie skúsiť zajať, leží na stole ako karta
+// v čitateľnej veľkosti s akciami po stranách (boss), s priazňou súpera a cenou. Klik na kartu
+// alebo na „zajať“ ho vyberie (potom potvrdenie pečaťou).
 
 import type { ReactNode } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
@@ -16,7 +16,8 @@ export interface MoznostPatronatu {
   /** Priazeň, ktorú starší hráčovi teraz prejavuje (scorecard a jej účinok). */
   readonly priazen: { readonly sila: number; readonly nazov: string; readonly kratko: string; readonly cely: string };
   readonly cigarety: number;
-  readonly pohorsenia: number;
+  /** Čo väzeň dá: poradie zajatia v partii, špaky po finále a či je to tretí (výhra). */
+  readonly vazen: { readonly poradie: number; readonly spaky: number; readonly vyhra: boolean };
   readonly vyber: () => void;
 }
 
@@ -43,8 +44,8 @@ export function PonukaPatronatu({
   return (
     <div className="ponuka-patronatu" ref={ref} data-vyucba="ponuka-patronatu">
       <div className="pp-hlava">
-        <b>Patronát — koho si vezmeš do ruky?</b>
-        <span className="pp-tlmene">karta pôjde do ruky a marker do stredu — jeho priazeň v tomto kole stratíš; myšou na kartu ju zväčšíš</span>
+        <b>Pokus o zajatie — koho skúsiš zajať?</b>
+        <span className="pp-tlmene">karta pôjde {menoSupera} do ruky, marker sa v tomto kole nehýbe; vyhráš bitku — je tvoj väzeň; myšou na kartu ju zväčšíš</span>
         <button type="button" className="ls-tlacidlo" onClick={vsetci}>
           všetci starší →
         </button>
@@ -57,7 +58,7 @@ export function PonukaPatronatu({
               <div className="pp-text" style={textPod ? { width: sirka } : undefined}>
                 <b className="pp-meno">{m.meno}</b>
                 <span className="pp-priazen" title={m.priazen.cely}>
-                  ♥ ty +{m.priazen.sila} · {m.priazen.nazov}: {m.priazen.kratko}
+                  ♥ {menoSupera} +{m.priazen.sila} · {m.priazen.nazov}: {m.priazen.kratko}
                 </span>
                 <span className="pp-cena">
                   {m.cigarety > 0 ? (
@@ -67,10 +68,10 @@ export function PonukaPatronatu({
                   ) : (
                     "zadarmo · "
                   )}
-                  {menoSupera} +{m.pohorsenia} {m.pohorsenia === 1 ? "Pohoršenie" : m.pohorsenia <= 4 ? "Pohoršenia" : "Pohoršení"}
+                  väzeň {m.vazen.poradie}. v partii: {m.vazen.spaky} {m.vazen.spaky === 1 ? "špak" : m.vazen.spaky <= 4 ? "špaky" : "špakov"}{m.vazen.vyhra ? " · tretí = výhra" : ""}
                 </span>
                 <button type="button" className="tlacidlo-hlavne pp-vziat" onClick={m.vyber}>
-                  vziať {m.meno}
+                  zajať {m.meno}
                 </button>
               </div>
             </div>

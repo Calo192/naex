@@ -836,6 +836,7 @@ export function HracDoska({
               ? "Zavrieť nástenku (Esc)"
               : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Na konci kola ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú za udržané stupne ${body.zaStarsich[p]}, nech bitku vyhrá ktokoľvek (dlaždica Starší).` +
                 (body.vykupne[p].spaky > 0 && view.koniec === null ? ` Výkupné poldeci a cigariet na konci hry: +${body.vykupne[p].spaky}.` : "") +
+                (body.vazni[p] > 0 && view.koniec === null ? ` Väzni po finále: +${body.vazni[p]}.` : "") +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
                 " Klik ukáže nástenku: odkiaľ sú špaky po bitkách."
           }
@@ -1453,7 +1454,7 @@ export function PriebehKola({
       id: "draft",
       nazov: "Draft",
       tip: {
-        nadpis: "Draft — šenok a patronát",
+        nadpis: "Draft — šenok a pokus o zajatie",
         text: (
           <>
             <b>Stavba šenku:</b> každý dostane {KONSTANTY.STAVBA_NARADIE} karty z Náradia a {KONSTANTY.STAVBA_OBCANIA} z Občanov; obaja
@@ -1463,10 +1464,9 @@ export function PriebehKola({
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
             </span>
             <span className="tip-riadok">
-              <b>Patronát:</b> komu starší prejavuje priazeň (aspoň žltá), smie si ho vziať do ruky — najprv útočník, potom obranca.
-              Na jeho miesto dá lícom dole Občana či Zviera z ruky, marker ide do stredu. Platí cigarety podľa zóny (červená 1, oranžová 2,
-              žltá 3), súper dostane
-              v bitke Pohoršenia (o koľko marker išiel do stredu). Výhra = starší je jeho; prehra = odhodí poldeci.
+              <b>Pokus o zajatie:</b> staršieho, ktorý sa hráča bojí na stupni 3, smie skúsiť zajať — najprv útočník, potom obranca.
+              Stojí {KONSTANTY.CENA_POKUSU} cigaretu (prepadne), karta staršieho ide súperovi do ruky a marker sa v kole nehýbe. Vyhrá bitku = väzeň
+              (tretí vyhráva); prehrá = starší sa vráti a marker ustúpi o stupeň.
             </span>
             {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v šenku ({view.senok.length}).</span>}
           </>

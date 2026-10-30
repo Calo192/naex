@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### fero-1 · Keď mám pred finále 8 alebo viac cigariet, minem ich radšej za karty v šenku (1 cigareta = 1 karta), doliatie poldeci, barter (5 cigariet = plný poldeci: výkupné ostane rovnaké a pribudne limit) či fajčenie, než ich nechám na výkupné, lebo výkupné dá len 1 špak za 5 cigariet.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 2
 - vyvrátenia: 0

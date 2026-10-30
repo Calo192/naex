@@ -10,6 +10,7 @@ export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
   pohorsenie: "Pohoršenie",
   prebytok: "Nakladačka",
   patronat: "Patronát",
+  zajatie: "Zajatie zlyhalo",
   kseft: "Predsedova vila",
   nastup: "Kapybara",
 };

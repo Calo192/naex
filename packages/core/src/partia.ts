@@ -89,6 +89,13 @@ export interface LineState {
    * Chýba = žiadne (testy, ukážky).
    */
   readonly nastroje?: readonly [readonly string[], readonly string[]];
+  /** Väzeň Starosta (Kšeft, v9): do konca kola sú všetky aktívne akcie hrán lokality posilnené. */
+  readonly hranyPosilnene?: boolean;
+  /**
+   * Väzeň Farár (Kšeft, v9): do konca kola sa aktívna Viera hráča (index) ráta ako
+   * posilnený Hazard — v bitke Viera chýba.
+   */
+  readonly vieraAkoHazard?: readonly [boolean, boolean];
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -854,8 +861,11 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
         const tiper = elem.tiper[side]![k] ?? null;
         // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
-        const ako = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] ? "Pecka" : akciaPoPremene(elem, action);
-        if (ako === null) continue;
+        const akoPred = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] ? "Pecka" : akciaPoPremene(elem, action);
+        if (akoPred === null) continue;
+        // Väzeň Farár (v9): súperova Viera je do konca kola posilnený Hazard (zrušená ostáva zrušenou Vierou).
+        const farar = akoPred === "Viera" && zrusil == null && line.vieraAkoHazard?.[target] === true;
+        const ako: Action = farar ? "Dlh" : akoPred;
         if (zrusil != null) {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
           // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
@@ -867,12 +877,17 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
           continue;
         }
         // Poľovnícka chata (Furt, v7): aktívne Rany, Pecky a Petelice z jej hrán sa rátajú dvakrát.
-        const hodnota = elem.isLokalita && elem.defId === "polovnicka_chata" && TUHE[ako] !== undefined ? nasobok * 2 : nasobok;
+        const chata = elem.isLokalita && elem.defId === "polovnicka_chata" && TUHE[ako] !== undefined;
+        // Väzeň Starosta (v9): hrany lokality posilnené — ×2 sa násobí s ostatnými násobkami.
+        const starosta = elem.isLokalita && line.hranyPosilnene === true;
+        const hodnota = nasobok * (chata ? 2 : 1) * (starosta ? 2 : 1) * (farar ? 2 : 1);
         sums[target][ako] = (sums[target][ako] ?? 0) + hodnota;
         const dovody = [...(elem.dovody[side]![k] ?? [])];
-        if (hodnota !== nasobok) dovody.push("karta:polovnicka_chata");
+        if (chata) dovody.push("karta:polovnicka_chata");
+        if (starosta) dovody.push("karta:starosta");
+        if (farar) dovody.push("karta:farar");
         if (tiper !== null) dovody.push("karta:profesionalny_tiper");
-        else if (ako !== action) dovody.push(elem.uplatky > 0 && elem.premena === undefined ? "Úplatok" : `karta:${elem.premena ?? "sarlatan"}`);
+        else if (akoPred !== action) dovody.push(elem.uplatky > 0 && elem.premena === undefined ? "Úplatok" : `karta:${elem.premena ?? "sarlatan"}`);
         pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota, vStrede: elem.isLokalita, dovody });
       }
     }

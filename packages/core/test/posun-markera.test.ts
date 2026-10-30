@@ -62,14 +62,16 @@ describe("posun markera", () => {
         expect([posun.z, posun.na]).toEqual([e.marker, teraz.marker]);
         // Pri prebytku je „kto“ držiteľ — rozdeľuje ho od v8 jeho súper (spravidla porazený).
         expect(posun.kto).toBe(k.cmd.type === "prebytok" ? k.pred.bitkaStav?.prebytokDrzi : k.hrac);
-        const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "patronat" ? "patronat" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
+        // Ústup po neúspešnom pokuse o zajatie (v9) príde s príkazom, ktorý dohral bitku.
+        if (posun.zdroj === "zajatie") continue;
+        const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
         expect(posun.zdroj).toBe(zdroj);
         // v8.2: Pohoršenie aj prebytok posunú marker naraz o toľko polí, na koľko stačia body.
         if (posun.zdroj === "kseft" || posun.zdroj === "nastup") expect(Math.abs(posun.na - posun.z)).toBe(1);
       }
     }
     // kseft = Predsedova vila (v7, len finále na nej).
-    for (const z of ["patronat", "pohorsenie", "prebytok"]) expect(zdroje.has(z)).toBe(true);
+    for (const z of ["pohorsenie", "prebytok"]) expect(zdroje.has(z)).toBe(true);
   });
 
   it("stopa drží do konca Zhromaždenia po bitke a viewFor ju posiela obom", () => {
@@ -148,7 +150,7 @@ describe("špaky teraz pri staršom (v6)", () => {
         const r = rozpisSpakov(v);
         for (const h of [0, 1] as const) {
           expect(r[h].spolu).toBe(koniec.body[h]);
-          expect(r[h].zaBitky + r[h].zaStarsich + r[h].prebytok + r[h].exekutor + r[h].cirhoza + r[h].vykupne).toBe(koniec.body[h]);
+          expect(r[h].zaBitky + r[h].zaStarsich + r[h].prebytok + r[h].exekutor + r[h].cirhoza + r[h].vykupne + r[h].vazni).toBe(koniec.body[h]);
           // Výkupné na konci sedí so zdrojmi, ktoré hráčovi ostali (verejné).
           expect(r[h].vykupne).toBe(v.hraci[h].poldeciPlne + Math.floor(v.hraci[h].cigarety / 5));
         }

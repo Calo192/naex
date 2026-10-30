@@ -120,11 +120,21 @@ export const KONSTANTY = {
     POLICAJTKA_CIGARETY: 2,
     /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
     CIGORKY_ZA_KARTU: 2,
-    /** Kšefty v7 (plan.md 14.0): Strýko, Vychovávateľka, Obecný úrad. */
+    /** Kšefty v7 (plan.md 14.0): Strýko, Obecný úrad (Kšeft Vychovávateľky od v9 len ako väzeň). */
     STRYKO_CENA: 2,
-    VYCHOVAVATELKA_CENA: 2,
     URAD_CENA: 3,
   },
+
+  /**
+   * Väzeň (krok 2 revízie starších, Michal 2026-10-30, PRAVIDLA §10): pokus o zajatie
+   * stojí cigaretu, tretí väzeň jedného hráča vyhráva, väzni bez výhry dajú po finále
+   * špaky podľa poradia zajatia v celej partii (1. väzeň 8, 2. 6, 3. 4, 4. 2).
+   */
+  CENA_POKUSU: 1,
+  VAZNI_NA_VYHRU: 3,
+  SPAKY_ZA_VAZNOV: [8, 6, 4, 2] as readonly number[],
+  /** Vychovávateľka (Väzeň — Kšeft): „Petelica“ navyše = toľko tuhého držiteľovi v bitke. */
+  VYCHOVAVATELKA_TUHE: 3,
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */
   BARTER_CENA: 5,
@@ -168,9 +178,11 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // počítadlá (nie karty, Absťák bez dobratia), posun markera Pohoršením a prebytkom stojí podľa zóny.
 // v8.5 (Michal 2026-10-30) bez novej značky: spoločný balíček sa delí na Náradie a Občanov,
 // stavba šenku vždy 2 + 6 kariet.
-export const VERZIA_PRAVIDIEL = "v8";
+// v9 (Michal 2026-10-30, krok 2 revízie starších): väzeň namiesto patronátu a vydesenia
+// (tretí väzeň vyhráva), Kšeft väzňa namiesto efektov starších, bossovia, nové priazne.
+export const VERZIA_PRAVIDIEL = "v9";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-28";
+export const PRAVIDLA_PLATNE_OD = "2026-10-30";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";
