@@ -221,9 +221,24 @@ const PARTIE = [
   { id: "20261027-161907-3", report: "20261027-161907.html", dlzka: "stredná (5 + finále)", vysledok: "Vilo 46 : 6 Hela", mena: ["Hela","Vilo"],
     jano: [6,7,4,6,8,6,6,7,7,7,3,8], eva: [7,7,4,7,8,6,6,7,8,7,4,9],
     zmenyPred: [] },
+  { id: "20261028-090549-1", report: "20261028-090549.html", dlzka: "stredná (5 + finále), asi 58 min", vysledok: "Vilo 61 : −12 Fero", mena: ["Fero","Vilo"],
+    jano: [6,6,4,6,8,7,5,7,7,7,6,8], eva: [7,7,5,7,7,6,5,7,8,8,5,9],
+    zmenyPred: ["Opravy z kontroly kódu v7 (Bzdocha, stávka bitky, odhad pred finále; cc22812)", "Sada v27 s ilustráciami", "Pravidlá v8: špaky za karty v línii, strach za novú zónu, prebytok rozdeľuje porazený, Kultúrny dom, Cirhóza −3, Exekútor bez prahu, Kmotor"] },
+  { id: "20261028-090549-2", report: "20261028-090549.html", dlzka: "stredná (5 + finále), asi 71 min", vysledok: "Eva 24 : 12 Jano", mena: ["Jano","Eva"],
+    jano: [8,8,6,6,9,5,5,8,7,7,9,8], eva: [8,8,6,7,9,5,6,8,7,7,9,8],
+    zmenyPred: [] },
+  { id: "20261028-090549-3", report: "20261028-090549.html", dlzka: "stredná (5 + finále), asi 58 min", vysledok: "Šimon 43 : 32 Hela", mena: ["Šimon","Hela"],
+    jano: [8,8,6,7,9,6,6,8,8,7,9,8], eva: [8,8,6,7,9,6,6,8,8,7,9,9],
+    zmenyPred: [] },
+  { id: "20261030-115654-1", report: "20261030-115654.html", dlzka: "stredná (5 + finále), asi 170 min (ULTRA)", vysledok: "Fero 59 : 15 Vilo", mena: ["Fero","Vilo"],
+    jano: [8,8,6,7,9,6,6,6,8,8,5,9], eva: [6,6,4,7,9,6,5,6,8,8,4,9],
+    zmenyPred: ["Exekúcia až po poškodení (Povera proti jedinému Dlhu znova platí; 3ab061b)","Vínko pridá limit hneď","Log posunu markera ukazuje obe strany","Absťák Nervák (pripravený)","Opravy klienta AI hráčov (−3 Cirhóza, Bzdocha, Noviny v odhade)","Pravidlá v8.3: strach po udržaní stupňa, Povery ako výpožička priazne, Nakladačka, Hazard namiesto Dlhu, cena posunu 1/2/3","Pravidlá v8.4: 12 Nástrojov (max 2 kópie), Profesionálny tipér, Robota bez Dlhu dá špak, Puška, Valaška, Pasca (eab34e3)"] },
+  { id: "20261030-115654-2", report: "20261030-115654.html", dlzka: "stredná (5 + finále), asi 146 min (ULTRA)", vysledok: "Šimon 42 : 23 Hela", mena: ["Hela","Šimon"],
+    jano: [7,8,5,6,9,6,6,6,8,8,5,9], eva: [8,8,6,7,9,7,6,7,8,8,8,9],
+    zmenyPred: [] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = ["Exekúcia až po poškodení (Povera proti jedinému Dlhu znova platí; 3ab061b)", "Vínko pridá limit hneď", "Log posunu markera ukazuje obe strany", "Absťák Nervák (pripravený)", "Opravy klienta AI hráčov (−3 Cirhóza, Bzdocha, Noviny v odhade)"];
+const CAKAJUCE = ["Pravidlá v8.5: balíčky Náradie a Občania, šenok z dvoch kôpok (ae4964d)"];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");
@@ -367,13 +382,4 @@ kresli();
 })();
 </script>
 </body>
-</html>  { id: "20261028-090549-1", report: "20261028-090549.html", dlzka: "stredná (5 + finále), asi 58 min", vysledok: "Vilo 61 : −12 Fero", mena: ["Fero","Vilo"],
-    jano: [6,6,4,6,8,7,5,7,7,7,6,8], eva: [7,7,5,7,7,6,5,7,8,8,5,9],
-    zmenyPred: ["Opravy z kontroly kódu v7 (Bzdocha, stávka bitky, odhad pred finále; cc22812)", "Sada v27 s ilustráciami", "Pravidlá v8: špaky za karty v línii, strach za novú zónu, prebytok rozdeľuje porazený, Kultúrny dom, Cirhóza −3, Exekútor bez prahu, Kmotor"] },
-  { id: "20261028-090549-2", report: "20261028-090549.html", dlzka: "stredná (5 + finále), asi 71 min", vysledok: "Eva 24 : 12 Jano", mena: ["Jano","Eva"],
-    jano: [8,8,6,6,9,5,5,8,7,7,9,8], eva: [8,8,6,7,9,5,6,8,7,7,9,8],
-    zmenyPred: [] },
-  { id: "20261028-090549-3", report: "20261028-090549.html", dlzka: "stredná (5 + finále), asi 58 min", vysledok: "Šimon 43 : 32 Hela", mena: ["Šimon","Hela"],
-    jano: [8,8,6,7,9,6,6,8,8,7,9,8], eva: [8,8,6,7,9,6,6,8,8,7,9,9],
-    zmenyPred: [] },
-
+</html>
