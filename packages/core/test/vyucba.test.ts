@@ -35,7 +35,6 @@ import {
   prahyHraca,
   porovnajSKrokom,
   prelozKluceZvyraznenia,
-  radaKVolbe,
   radaVyucby,
   castiHlasky,
   nazovHlasky,
@@ -279,8 +278,8 @@ describe("výučba — kontrolné otázky a rozhodnutia (UX N2)", () => {
     const state = prehrajVyucbu(data, scenar, i);
     const spravny = ocakavanyPrikaz(scenar, state, i) as Command;
     const volba: VolbaKroku = { kandidati: ["ruka:pijan"], zle: [{ prikaz: { type: "pass" }, text: "Ešte nepasuj." }], inak: "Skús inú kartu." };
-    expect(radaKVolbe(state, volba, { type: "pass" })).toBe("Ešte nepasuj.");
-    expect(radaKVolbe(state, volba, { type: "skipNaex" })).toBe("Skús inú kartu.");
+    expect(radaVyucby(state, volba, { type: "pass" }).text).toBe("Ešte nepasuj.");
+    expect(radaVyucby(state, volba, { type: "skipNaex" }).text).toBe("Skús inú kartu.");
     expect(zodpovedaVzoru(state, spravny, { type: spravny.type })).toBe(true);
     // Vzor iba s typom správneho ťahu sedí aj naň — overScenar to odhalí.
     const zly: ScenarVyucby = { ...scenar, kroky: scenar.kroky.map((k, j) => (j === i ? { ...krok, volba: { ...volba, zle: [{ prikaz: { type: spravny.type }, text: "x" }] } } : k)) };
@@ -410,9 +409,9 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     const s = pri("k-ciel");
     const volba = krok?.volba as VolbaKroku;
     const uid = (id: string): number => uidZOdkazu(s, 0, `lokality:${id}`);
-    expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("lesna_cesta"), otocena: true })).toMatch(/Otoč ju/);
-    expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("jednota"), otocena: true })).toMatch(/Jednote/);
-    expect(radaKVolbe(s, volba, { type: "chooseLocation", uid: uid("cintorin"), otocena: false })).toMatch(/Cintoríne/);
+    expect(radaVyucby(s, volba, { type: "chooseLocation", uid: uid("lesna_cesta"), otocena: true }).text).toMatch(/Otoč ju/);
+    expect(radaVyucby(s, volba, { type: "chooseLocation", uid: uid("jednota"), otocena: true }).text).toMatch(/Jednote/);
+    expect(radaVyucby(s, volba, { type: "chooseLocation", uid: uid("cintorin"), otocena: false }).text).toMatch(/Cintoríne/);
   });
 
   it("zlý Pijan by s Peckou spojil Poldeci namiesto Rany — rada Melichara to povie", () => {
@@ -421,7 +420,7 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     const sums = evaluateLine(data, lineState(apply(data, s, zly, 0).state)).sums[0];
     expect(sums).toMatchObject({ Pecka: 1, Poldeci: 1 });
     expect(sums.Rana ?? 0).toBe(0);
-    expect(radaKVolbe(s, scenar.kroky[i("k-pijan")]?.volba as VolbaKroku, zly)).toMatch(/Poldeci/);
+    expect(radaVyucby(s, scenar.kroky[i("k-pijan")]?.volba as VolbaKroku, zly).text).toMatch(/Poldeci/);
   });
 
   it("čísla v hláškach sedia s jadrom: odhad bitky 0 : 2 → 3 : 2 → 3 : 3 → 7 : 3 → 7 : 4, Pitky 1 → 2, bitka 8 : 5", () => {
