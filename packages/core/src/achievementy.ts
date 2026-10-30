@@ -153,6 +153,24 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   "vyhra.kratka": { druh: "sucet", popis: "výhra v krátkej hre", zmer: (k) => pre((p) => ak(vyhral(k, p) && k.po.lokalitCelkom === DLZKY_HRY.kratka)) },
   "vyhra.stredna": { druh: "sucet", popis: "výhra v strednej hre", zmer: (k) => pre((p) => ak(vyhral(k, p) && k.po.lokalitCelkom === DLZKY_HRY.stredna)) },
   "vyhra.dlha": { druh: "sucet", popis: "výhra v dlhej hre", zmer: (k) => pre((p) => ak(vyhral(k, p) && k.po.lokalitCelkom === DLZKY_HRY.dlha)) },
+  // Prvý väzeň partie (v9, Michal 2026-10-30 — nahrádza Budíček za prebudenie): 8 špakov po finále.
+  prvyVazen: {
+    druh: "sucet",
+    popis: "zajatie prvého staršieho v partii (väzeň s poradím 1)",
+    zmer: (k) => pre((p) => ak((k.pred.vazni ?? []).length === 0 && (k.po.vazni ?? []).some((v) => v.hrac === p && v.poradie === 1))),
+  },
+  // Zmarený pokus o zajatie (v9, Michal 2026-10-30 — nahrádza Zachránené): súper sa pokúšal zajať, bitku si vyhral ty.
+  zmarenyPokus: {
+    druh: "sucet",
+    popis: "súperov pokus o zajatie, ktorý zlyhal, lebo si vyhral bitku",
+    zmer: (k) =>
+      pre((p) => {
+        const su = opponentOf(p);
+        const vazni = (s: GameState): number => (s.vazni ?? []).filter((v) => v.hrac === su).length;
+        const skoncil = (k.pred.pokusy?.[su] ?? null) !== null && (k.po.pokusy?.[su] ?? null) === null;
+        return ak(skoncil && vazni(k.po) === vazni(k.pred) && k.po.nastenka.at(-1)?.vitaz === p);
+      }),
+  },
   vyhraVydesenim: { druh: "sucet", popis: "výhra tretím väzňom (do v8 udržaným vydesením starších)", zmer: (k) => pre((p) => ak(vyhral(k, p) && vydesenim(k, p))) },
   vyhraKnockoutom: {
     druh: "sucet",

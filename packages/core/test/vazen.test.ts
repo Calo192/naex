@@ -9,12 +9,15 @@ import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, Command, ElderState, GameState, LineState, MarkerPos, PlayerId, Vazen } from "../src/index.ts";
 import {
   KONSTANTY,
+  MOMENTY,
+  naladaMomentu,
   apply,
   eventsFor,
   evaluateLine,
   krcmaVyzaduje,
   legalCommands,
   lineState,
+  metrika,
   loadGameData,
   moznostiKseftuVazna,
   moznostiNaex,
@@ -413,5 +416,36 @@ describe("viewFor (nemenné pravidlo 2) — pokus, boss a väzni", () => {
       // Boss je verejný (karta staršieho v starsi), ostatné karty súperovej ruky nesmú prejsť.
       if (!boss) expect(json.includes(`"uid":${k.uid},`)).toBe(false);
     }
+  });
+});
+
+describe("achievementy a Melichar pri zajatí (Michal 2026-10-30)", () => {
+  it("Prvý väzeň, Zachránené (zmarený pokus) a Hrôza a des (tretí väzeň) merajú zajatie; ids ostali — kto ich má, nestratí ich", async () => {
+    const katalog = (await import("../data/achievementy.json")).default as { achievementy: { id: string; metrika: string }[] };
+    const metrika = (id: string): string | undefined => katalog.achievementy.find((a) => a.id === id)?.metrika;
+    expect(metrika("budicek")).toBe("prvyVazen");
+    expect(metrika("zachranene")).toBe("zmarenyPokus");
+    expect(metrika("hroza-a-des")).toBe("vyhraVydesenim");
+    expect(katalog.achievementy.some((a) => a.metrika === "moment.prebudenie" || a.metrika === "moment.zachranene")).toBe(false);
+  });
+
+  it("Melichar: zajatie hráčom je pohoda, zajatie súperom (botom) hráčovi smola", () => {
+    const m = { typ: "zajatie", ...MOMENTY.zajatie, hrac: 1, popis: "" } as const;
+    expect(naladaMomentu(m, 1)).toBe("pohoda");
+    expect(naladaMomentu(m, 0)).toBe("smola");
+  });
+});
+
+describe("metriky zajatia (achievementy v9)", () => {
+  const krok = (pred: GameState, po: GameState) => ({ pred, po }) as unknown as Parameters<NonNullable<ReturnType<typeof metrika>>["zmer"]>[0];
+  it("prvyVazen: prvý väzeň partie; zmarenyPokus: súperov pokus zlyhal mojou výhrou", () => {
+    const s = poBitke(0, 0, 0);
+    const vyhral = dohrajBitku(s);
+    expect(metrika("prvyVazen")?.zmer(krok(s, vyhral))).toEqual([1, null]);
+    expect(metrika("zmarenyPokus")?.zmer(krok(s, vyhral))).toEqual([null, null]);
+    const s1 = poBitke(0, 0, 1);
+    const zmaril = dohrajBitku(s1);
+    expect(metrika("prvyVazen")?.zmer(krok(s1, zmaril))).toEqual([null, null]);
+    expect(metrika("zmarenyPokus")?.zmer(krok(s1, zmaril))).toEqual([null, 1]);
   });
 });

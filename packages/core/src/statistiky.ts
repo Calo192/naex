@@ -26,7 +26,7 @@ export interface StatistikyHraca {
   readonly bitkyVyhrane: number;
   readonly bitkyAkoUtocnik: number;
   readonly bitkyAkoUtocnikVyhrane: number;
-  /** Patronáty — starší vzatí do ruky (Michal 2026-10-20; kľúč ostal z bitiek o starších). */
+  /** Pokusy o zajatie (v9; do v9 patronáty, kľúč ostal z bitiek o starších). */
   readonly bitkyOStarsich: number;
 
   readonly tuheUdelene: number;
