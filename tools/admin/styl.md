@@ -52,7 +52,13 @@ Zatiaľ len poznámka, model nemeniť bez Michalovho pokynu.
   zrubová chata. Veľa drobností (fľaše, poháre, papiere, ohorky), opotrebované
   povrchy, oprýskaná omietka.
 - **Predmety** (Náradie): predmet v strede na drevenom stole alebo pri stene,
-  okolo pár súvisiacich vecí, rovnaká linka a svetlo.
+  okolo pár súvisiacich vecí, rovnaká linka a svetlo. Predmet je **hlavný
+  motív len kompozíciou** (v strede, veľký, detailný, jednoduché pozadie),
+  **žiadny kužeľ ani kruh svetla, spotlight či „pódium“** na predmete (Michal
+  2026-10-30: „highlight“ znamená stredový bod ilustrácie, nie kruhové svetlo).
+  Do námetu: „even dim ambient lighting across the whole scene, no spotlight,
+  no circle or cone of light, no pool of light on the object“. Bez rúk, fotiek
+  a postáv, ak ich zadanie výslovne nechce.
 - **Kompozícia**: štvorec 1:1, hlavný motív v strede (karta orezáva okraje),
   žiadny rám ani okraj.
 - **Bez textu**: žiadne nápisy, písmená, logá, vodoznaky. (Výnimka: Kliatby
@@ -162,6 +168,9 @@ Pred použitím si každý návrh pozri (Read na súbor) a over:
    účes, fúzy, oblečenie. Rovnaká osoba len pri výslovne prepojených kartách
    (príbuzní, pár). Pri dávke kariet ich polož vedľa seba a „jedného človeka
    v rôznych pózach“ vygeneruj znova.
+10. **Predmet bez spotlightu** (Michal 2026-10-30): Nástroj je hlavný motív
+    kompozíciou, nie kužeľom či kruhom svetla. Predmet v „pódiovom“ svetle
+    vygeneruj znova.
 
 Ak žiadny z návrhov nesedí, uprav námet (konkrétnejšie prostredie, výraz,
 svetlo) a generuj znova — nie viac ako 3 kolá na kartu bez konzultácie
