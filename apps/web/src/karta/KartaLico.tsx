@@ -19,7 +19,7 @@ export interface SlotStav {
   readonly nasobok: number;
 }
 
-/** Žeravá či vyhasnutá ikona v slote; nova = prvé zobrazenie (odletí iskra, stúpne dym). */
+/** Žeravá či vyhasnutá ikona v slote; nova = prvé zobrazenie (odletí iskra). */
 export interface ZarNaKarte extends ZarSlotu {
   readonly nova: boolean;
 }
@@ -128,7 +128,7 @@ export function KartaLico(props: KartaLicoProps) {
         })}
       >
         <IkonaAkcie kluc={kluc} akcia={akcia} zar={zar?.smer === "plus"} />
-        {zar !== null && <ZarZnak smer={zar.smer} nova={zar.nova} />}
+        {zar?.smer === "plus" && <Iskra nova={zar.nova} />}
         {zar !== null && !bezPopisov && <span className="kl-zar-stitok">{zar.stitok}</span>}
         {st !== null && st.nasobok > 1 && <span className="kl-nasobok">×{st.nasobok}</span>}
       </span>
@@ -242,18 +242,9 @@ export function KartaLico(props: KartaLicoProps) {
 
 /**
  * Iskra pri žeravej ikone (ostáva, aby ju nezlial žiar aktívnej akcie), pri prvom
- * zobrazení navyše jedna odletí; vyhasnutá ikona má nad sebou dym.
+ * zobrazení navyše jedna odletí. Vyhasnutá ikona nemá nič (Michal 2026-10-30: bez dymu).
  */
-function ZarZnak({ smer, nova }: { readonly smer: "plus" | "minus"; readonly nova: boolean }) {
-  if (smer === "minus") {
-    return (
-      <span className="kl-dym" aria-hidden="true">
-        <svg viewBox="0 0 40 60">
-          <path d="M20 58C8 48 30 40 18 28C8 18 28 12 20 2" />
-        </svg>
-      </span>
-    );
-  }
+function Iskra({ nova }: { readonly nova: boolean }) {
   const hviezda = <path d="M10 0L12 8L20 10L12 12L10 20L8 12L0 10L8 8Z" />;
   return (
     <>
