@@ -124,7 +124,8 @@ describe("výučba — pevné rozdanie", () => {
     expect(s.naradie.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["puska/0/1"]);
     expect(s.obcania.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["hasic/0/0", "svokra/0/1"]);
     // Scenár spred v8.5 s jedným spoločným balíčkom: rozdelí sa podľa druhu, poradie ostáva.
-    const stary = setupZRozdania(data, { ...r, spolocnyBalicek: ["hasic", "puska", "svokra"] });
+    // Scenár výučby už má naradie/obcania (tie by spoločný balíček prepísali) — starý tvar bez nich.
+    const stary = setupZRozdania(data, { seed: r.seed, lokality: r.lokality, utocnik: r.utocnik, hraci: r.hraci, spolocnyBalicek: ["hasic", "puska", "svokra"] });
     expect(stary.naradie.map((k) => k.defId)).toEqual(["puska"]);
     expect(stary.obcania.map((k) => k.defId)).toEqual(["hasic", "svokra"]);
     expect(s.hraci[0].ruka[0]?.leftLayout).toBe(1);
