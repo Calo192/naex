@@ -214,3 +214,39 @@ the whole scene, no spotlight, no circle or cone of light … no hands …“.
   no beard, no hat“.
 - **Zamietnuté pred kolážou:** dva klony Kočovníka (`tiper-c` kolo 1-1
   a kolo 3-2) a automat s pseudonápisom (`tiper-c` kolo 3-1).
+
+### Opatrovateľka (Občan, Zahraničný, Pracujúci, Žena) — 2026-10-30
+
+`H5` = `F:\Projects\handoff\ilustracie-2026-10-30-opatrovatelka\`, koláž `H5\kolaz.jpg`.
+Typ ženy nebol z karty jasný, preto oba: „hot chick“ (č. 1–4, 7–8) a stará
+rašpľa (č. 5–6). Michal vybral „hot chick“.
+
+- **Schválené (č. 4):** `H5\opatrovatelka-hra-4.jpg` (`opatrovatelka-b`,
+  kolo 1-2). Námet: prísna štíhla opatrovateľka okolo päťdesiatky s ostrým
+  nosom, odfarbeným platinovým pixie s tmavými odrastami, karmínovým rúžom
+  a modrými tieňmi, so zlatou reťazou s krížikom. Má bledomodrú sesterskú
+  tuniku na leopardích legínach a biele kroksy. Ruku má v bok a zabavenú fľašu
+  pálenky drží mimo dosahu krehkého starčeka na vozíku v alpskej izbe
+  (kukučkové hodiny, parohy, dečky). Nikto nefajčí.
+  Predlohy: Krčmárka, Veterinár, Poštárka. Michal dôvod neuviedol.
+  **Lekcia:** satira zo zákazu cudzej neresti (zabavená fľaša, smutný starček)
+  vyhrala. Druhá postava prešla, lebo je malá, sedí a len natŕča ruku.
+  Tmavá vineta po okrajoch Michalovi neprekážala.
+- **Nevybrané:**
+  - č. 3: ten istý námet, kolo 1-1, s podpisom vpravo dole.
+  - č. 1–2 (`opatrovatelka-a`): čierny vysoký cop, lilavé tepláky
+    a páperka s kožušinou, sedí na kufri na zastávke pred autobusom, opilci
+    na lavičke. Predlohy: Poštárka, Krčmárka, Podvodník.
+  - č. 5–6 (`opatrovatelka-c`, kolo 2): šedivá rašpľa v kardigane počíta
+    bankovky, fľaša bez etikety, kufor pri dverách. Predlohy: Niekoho stryná,
+    Veterinár, Krčmárka.
+  - č. 7–8 (`opatrovatelka-d`): karamelová blondína v leopardej blúzke
+    a gumených rukaviciach, kľúč na krku, zamknutá vitrína s alkoholom.
+    Predlohy: Krčmárka, Finančná poradkyňa, Podvodník.
+
+  **Lekcia:** Pracujúca žena = „hot chick“ pri práci, ktorá zakazuje iným.
+  Rašpľa s peniazmi bola bez pointy a čakanie na autobus bolo bez deja.
+- **Zamietnuté pred kolážou:** `opatrovatelka-c` kolo 1, kde bolo čitateľné
+  „SLIVOVICA“ na etikete, pseudotext na bankovkách a zlatý zub vyzeral ako
+  tesák. Lekcia: fľašu píš „plain glass bottle with no label at all“, zlatý
+  zub pri ženách vynechaj.
