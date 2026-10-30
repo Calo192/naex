@@ -69,6 +69,8 @@ export const KONSTANTY = {
    * 2 karty za 3 cigarety; poldeci sa v šenku neplatí. Index = počet kariet.
    */
   CENA_SENKU: [0, 1, 3] as readonly number[],
+  /** Kto berie zo šenku prvý (obranca, v9.2), vezme na prvom ťahu najviac toľko kariet — nevykradne šenok. */
+  SENOK_PRVY_TAH: 1,
   /**
    * Po braní sa šenok doplní z vrchu Náradia a Občanov na toľkoto kariet
    * (Michal 2026-10-20) — pre Pohreb Závislého, Starostu a iné efekty, ktoré z neho berú.

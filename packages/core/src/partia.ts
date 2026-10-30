@@ -58,6 +58,11 @@ export interface PlacedCard {
    */
   readonly vytrznik?: true;
   /**
+   * Odpoveď na NA EX lícom dole (v9.2, Michal 2026-10-30): leží so `zaverecna` (skrytá
+   * ako Záverečná), kým sa odpovede kola neotočia naraz — ešte pred vyhodnotením Pitky.
+   */
+  readonly odpoved?: true;
+  /**
    * Premena akcií do konca kola (v7): Šarlatán po Konflikte (Dlh → Viera,
    * Povera → Rana), Miňištrant, ktorý vyvolal Konflikt (Viera → Pecka).
    * Mení sa druh akcie, nie jej aktivita; po bitke ide karta do balíčka s pôvodnými.

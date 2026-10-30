@@ -32,7 +32,8 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 let uidSeq = 61000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
 
-const skryte = (s: GameState): number => s.strany.flat().filter((pl) => pl.zaverecna === true).length;
+// Odpovede na NA EX lícom dole (v9.2) ležia so zaverecna, ale nie sú Záverečné — otočia sa ešte v Pitke.
+const skryte = (s: GameState): number => s.strany.flat().filter((pl) => pl.zaverecna === true && pl.odpoved !== true).length;
 const maZaverecnu = (c: Command): boolean => c.type === "zaverecna" || (c.type === "tah" && c.kroky.some((k) => k.type === "zaverecna"));
 const kto = (s: GameState): PlayerId | null => ([0, 1] as const).find((q) => mozeHrat(s, q)) ?? naTahu(s);
 

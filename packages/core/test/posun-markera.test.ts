@@ -110,7 +110,7 @@ describe("posun markera", () => {
     const farba = ["červená", "oranžová", "žltá", "stred", "žltá", "oranžová", "červená"];
     const stav = ["pokojný", "znepokojený", "vystrašený", "vydesený"];
     let klesla = 0;
-    for (const k of partie(SEEDY.slice(0, 4))) {
+    for (const k of partie([...SEEDY, 55, 89, 144, 233, 377, 610])) {
       if (k.cmd.type !== "pohorsenie" && k.cmd.type !== "prebytok") continue;
       const id = k.cmd.elderId;
       const z = k.pred.starsi.find((e) => e.elderId === id)?.marker as number;

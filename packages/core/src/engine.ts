@@ -248,8 +248,15 @@ export interface PitkaStav {
    * Pitku — TAJNÉ, každý vidí len svoje (viewFor).
    */
   readonly skryteNaex?: readonly SkryteNaex[];
-  /** Po odkrytí NA EX: kto ešte odpovedá (v poradí obranca, potom útočník). */
+  /** Po odkrytí NA EX: kto ešte odpovedá v tomto kole odpovedí (v9.2: útočník, potom obranca). */
   readonly frontaReakcii?: readonly PlayerId[];
+  /** Koľko odpovedí ešte hráč smie dať — jednu za každé súperovo NA EX (v9.2). */
+  readonly odpovedeZostava?: readonly [number, number];
+  /**
+   * Na koniec ktorej strany odpovedal lícom dole prvý v tomto kole odpovedí (v9.2) —
+   * druhý smie len na druhý kraj línie. null = prvý neodpovedal (druhý na ktorýkoľvek).
+   */
+  readonly krajOdpovede?: PlayerId | null;
   /**
    * Pitka naraz (Michal 2026-10-27): obaja hrajú súčasne, len majiteľ Bzdochy
    * čaká, kým súper skončí, a potom vidí jeho NA EX. Kto čaká; null = nikto
@@ -503,7 +510,7 @@ export interface HasicVolba {
    * Čo hra odložila do rozhodnutia: odpoveď na NA EX by hneď vyhodnotila
    * Pitku a otočená Záverečná by ju ukončila — s kartou ešte nerozhodnutou.
    */
-  readonly potom: "reakcia" | "koniecPitky" | "bitka" | "zastavka" | null;
+  readonly potom: "reakcia" | "odpovede" | "koniecPitky" | "bitka" | "zastavka" | null;
   /** Živnostník: strana, na ktorej leží — Nástroj sa priloží za neho. */
   readonly strana?: PlayerId;
 }
@@ -1902,8 +1909,8 @@ function zacniDraft(s: MutState, data: GameData, events: Event[]): void {
     krok: n > 0 ? "stavba" : "beranie",
     balicky,
     vyber: [null, null],
-    // Zo šenku berie prvý útočník — porazený z minulej bitky (Michal 2026-10-16).
-    naTahu: s.utocnik,
+    // Zo šenku berie prvý obranca, útočník druhý (v9.2, Michal 2026-10-30; predtým útočník prvý).
+    naTahu: obranca(s),
     hotovo: [false, false],
     noveKarty: [0, 0],
   };
@@ -1970,12 +1977,22 @@ function cmdStavbaSenku(
   d.vyber = [null, null];
   if (d.balicky[0].length === 0 && d.balicky[1].length === 0) {
     d.krok = "beranie";
-    d.naTahu = s.utocnik;
+    d.naTahu = obranca(s);
     events.push({
       type: "log",
-      text: `Šenok je postavený (${s.senok.length} ${s.senok.length === 1 ? "karta" : s.senok.length >= 2 && s.senok.length <= 4 ? "karty" : "kariet"}). Berie sa striedavo, začína útočník: 1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety.`,
+      text: `Šenok je postavený (${s.senok.length} ${s.senok.length === 1 ? "karta" : s.senok.length >= 2 && s.senok.length <= 4 ? "karty" : "kariet"}). Berie sa striedavo, začína obranca: 1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety; obranca na prvom ťahu len 1 kartu.`,
     });
   }
+}
+
+/**
+ * Najviac kariet, ktoré si hráč p smie vziať na tomto ťahu v braní (v9.2, Michal 2026-10-30):
+ * kto berie prvý (obranca), na prvom ťahu len SENOK_PRVY_TAH; inak 1 alebo 2.
+ */
+export function maxZoSenku(state: Pick<GameState, "utocnik" | "draftStav">, p: PlayerId): number {
+  const d = state.draftStav;
+  const prvyTah = d !== null && p === obranca(state) && d.noveKarty[p] === 0;
+  return prvyTah ? KONSTANTY.SENOK_PRVY_TAH : KONSTANTY.CENA_SENKU.length - 1;
 }
 
 /**
@@ -1986,7 +2003,7 @@ export function moznostiZoSenku(state: GameState, p: PlayerId): number[] {
   const d = state.draftStav;
   if (d === null || d.krok !== "beranie" || d.hotovo[p]) return [];
   const out: number[] = [];
-  for (let pocet = 1; pocet < KONSTANTY.CENA_SENKU.length; pocet++) {
+  for (let pocet = 1; pocet <= maxZoSenku(state, p); pocet++) {
     if (pocet <= state.senok.length && state.hraci[p].cigarety >= (KONSTANTY.CENA_SENKU[pocet] ?? Number.POSITIVE_INFINITY)) out.push(pocet);
   }
   return out;
@@ -2004,6 +2021,7 @@ function cmdDraftBer(
   need(!d.hotovo[p], "Už nič neberieš.");
   const pocet = cmd.uids.length;
   need(pocet >= 1 && pocet < KONSTANTY.CENA_SENKU.length, "Zo šenku ber 1 alebo 2 karty.");
+  need(pocet <= maxZoSenku(s as GameState, p), "Kto berie zo šenku prvý, na prvom ťahu vezme len 1 kartu.");
   need(new Set(cmd.uids).size === pocet, "Každú kartu vyber len raz.");
   need(cmd.uids.every((uid) => s.senok.some((k) => k.uid === uid)), "Karta nie je v šenku.");
   const cena = KONSTANTY.CENA_SENKU[pocet] as number;
@@ -2460,6 +2478,8 @@ function vylozDoLinie(
   events: Event[],
   /** Záverečná: lícom dole, Nástup až pri otočení na konci Pitky. */
   zaverecna = false,
+  /** Odpoveď na NA EX (v9.2): lícom dole ako Záverečná, otočí sa s odpoveďou súpera. */
+  odpoved = false,
 ): void {
   need(target === "vlastna" || target === "superova", "Kartu možno vyložiť len na tvoju alebo súperovu stranu.");
   need(!(target === "superova" && lenVlastnaStrana(cielLokalita(s as GameState)?.defId ?? null)), "Most: karty sa smú vykladať len na vlastnú stranu.");
@@ -2486,6 +2506,11 @@ function vylozDoLinie(
     const n: [number, number] = [s.prilozeniaKu?.[0] ?? 0, s.prilozeniaKu?.[1] ?? 0];
     n[sused.playedBy] += 1;
     s.prilozeniaKu = n;
+  }
+  if (odpoved) {
+    partia.push({ card: karta, playedBy: p, zaverecna: true, odpoved: true } as DeepMutable<PlacedCard>);
+    events.push({ type: "log", text: `Hráč ${p + 1} odpovedá na NA EX lícom dole na koniec ${target === "vlastna" ? "svojej" : "súperovej"} strany.` });
+    return;
   }
   if (zaverecna) {
     partia.push({ card: karta, playedBy: p, zaverecna: true } as DeepMutable<PlacedCard>);
@@ -2927,12 +2952,11 @@ function cmdNaex(
 }
 
 /**
- * Odkrytie NA EX naraz (v5): keď obaja skončia svoju časť Pitky. Najprv NA EX
- * obrancu, potom útočníka — poldeci, pečeň (pije ten, kto NA EX dal),
- * hrozba Kšeftu Vychovávateľky (v9). Tú istú kartu oboch = zrážka, z karty je Výtržník.
- * Odpovede (jedna karta za každé súperovo NA EX): najprv obranca, útočník má
- * posledné slovo (Michal 2026-10-25, interview 4). Vracia true, keď sa čaká
- * na odpoveď.
+ * Odkrytie NA EX naraz (v9.2, Michal 2026-10-30): keď obaja skončia svoju časť Pitky,
+ * všetky NA EX sa odkryjú naraz — poldeci ľahnú na karty, potom pečeň (pije ten,
+ * kto NA EX dal) a hrozba Kšeftu Vychovávateľky (v9). Výsledok od poradia nezávisí;
+ * vnútorne ide obranca prvý len preto, aby pri zrážke niesol naexBy (Výtržník).
+ * Potom odpovede (zacniKoloOdpovedi). Vracia true, keď sa čaká na odpoveď.
  */
 function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
   const pitka = s.pitkaStav;
@@ -2942,13 +2966,15 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
   if (skryte.length === 0) return false;
   const obr = obranca(s);
   const pocty: [number, number] = [0, 0];
+  const odkryte: string[] = [];
+  const zrazky: string[] = [];
+  const pije: PlayerId[] = [];
   for (const p of [obr, s.utocnik] as const) {
     for (const x of skryte.filter((y) => y.hrac === p)) {
       const kde = najdiVLinii(s, x.uid);
       if (kde === null) continue;
       const placed = s.strany[kde.strana][kde.index] as DeepMutable<PlacedCard>;
-      const opp = opponentOf(p);
-      const zrazka = placed.naexBy === opp;
+      const zrazka = placed.naexBy === opponentOf(p);
       if (zrazka) {
         placed.naexBy2 = p;
         placed.vytrznik = true;
@@ -2956,23 +2982,25 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
       hrac(s, p).poldeciPlne = Math.max(0, s.hraci[p].poldeciPlne - 1);
       s.naexVKole[p] = true;
       pocty[p] += 1;
+      pije.push(p);
       const meno =
         placed.zaverecna === true
           ? "súperovu Záverečnú (lícom dole)"
           : `${placed.playedBy === p ? "svoju" : "súperovu"} kartu ${defOf(data, placed.card as CardInstance).name}`;
-      events.push({ type: "log", text: `Odkryté NA EX: hráč ${p + 1} dal NA EX na ${meno}.` });
+      odkryte.push(`hráč ${p + 1} na ${meno}`);
       if (zrazka) {
-        events.push({
-          type: "log",
-          text: `Zrážka NA EX: obaja dali poldeci na tú istú kartu — je z nej Výtržník, všetky jej akcie sú Rany pre hráča ${placed.playedBy + 1}.`,
-        });
+        zrazky.push(`Zrážka NA EX: obaja dali poldeci na tú istú kartu — je z nej Výtržník, všetky jej akcie sú Rany pre hráča ${placed.playedBy + 1}.`);
       }
-      // Pečeň z NA EX — poldeci pije ten, kto NA EX dal (PRAVIDLA §7); na Kare jeho súper (v7).
-      if (naexPecenSuperovi(s as GameState)) {
-        events.push({ type: "log", text: `Kar: pečeň za NA EX hráča ${p + 1} dostáva hráč ${opp + 1}.` });
-        pridajPecen(s, data, opp, 1, events);
-      } else pridajPecen(s, data, p, 1, events);
     }
+  }
+  if (odkryte.length > 0) events.push({ type: "log", text: `NA EX sa odkrývajú naraz: ${odkryte.join("; ")}.` });
+  for (const text of zrazky) events.push({ type: "log", text });
+  // Pečeň z NA EX — poldeci pije ten, kto NA EX dal (PRAVIDLA §7); na Kare jeho súper (v7).
+  for (const p of pije) {
+    if (naexPecenSuperovi(s as GameState)) {
+      events.push({ type: "log", text: `Kar: pečeň za NA EX hráča ${p + 1} dostáva hráč ${opponentOf(p) + 1}.` });
+      pridajPecen(s, data, opponentOf(p), 1, events);
+    } else pridajPecen(s, data, p, 1, events);
   }
   pitka.naexPocet = [(pitka.naexPocet?.[0] ?? 0) + pocty[0], (pitka.naexPocet?.[1] ?? 0) + pocty[1]];
   for (const p of [0, 1] as const) pitka.naexPouzity[p] = pitka.naexPouzity[p] || pocty[p] >= naexZaPitku(s as GameState);
@@ -2985,34 +3013,110 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
     s.kseftyKola = { ...(s.kseftyKola ?? {}), petelice };
     events.push({ type: "log", text: `Vychovávateľka: hráč ${opponentOf(p) + 1} dal NA EX — hráč ${p + 1} má v bitke Petelicu navyše (+${hrozby * KONSTANTY.VYCHOVAVATELKA_TUHE} tuhé).` });
   }
-  // Odpovede: obranca na NA EX útočníka, potom útočník na NA EX obrancu — posledné
-  // slovo má útočník; Kohút (Pitka, v7) ho dá obrancovi, keď ho má len on.
-  // Kohút je Zviera — vedľa Mäsiara posledné slovo nedá (Michal 2026-10-28).
-  const kohut = (q: PlayerId): boolean => zvieraPlati(data, s as GameState, q, "kohut");
-  const posledny: PlayerId = kohut(obr) && !kohut(s.utocnik) ? obr : s.utocnik;
-  const prvy = opponentOf(posledny);
-  const odpovede = (na: PlayerId): number => pocty[na];
-  pitka.frontaReakcii = [...Array<PlayerId>(odpovede(posledny)).fill(prvy), ...Array<PlayerId>(odpovede(prvy)).fill(posledny)];
+  // Za každé súperovo NA EX jedna odpoveď. Kohút (posledné slovo) je od v9.2 vyradený.
+  // TODO Kohút (Michal 2026-10-30): karta sa prerobí — dovtedy nemá účinok.
+  pitka.odpovedeZostava = [pocty[1], pocty[0]];
+  return zacniKoloOdpovedi(s, data, events);
+}
+
+/**
+ * Kolo odpovedí (v9.2, Michal 2026-10-30): najprv útočník vyloží odpoveď lícom dole,
+ * potom obranca — na druhý kraj línie, ak útočník odpovedal (inak na ktorýkoľvek).
+ * Pri viacerých NA EX ide po kolách: v kole najviac jedna odpoveď každého, kolo sa
+ * otočí a ďalšie začne (výklad 2026-10-30 — za lícom dole položenou kartou sa nedá priložiť).
+ */
+function zacniKoloOdpovedi(s: MutState, data: GameData, events: Event[]): boolean {
+  const pitka = s.pitkaStav;
+  if (pitka === null) return false;
+  const zostava = pitka.odpovedeZostava ?? [0, 0];
+  pitka.krajOdpovede = null;
+  pitka.frontaReakcii = [s.utocnik, obranca(s)].filter((q) => zostava[q] > 0);
   return dalsiaReakcia(s, data, events);
 }
 
-/** Ďalší v rade odpovedí na odkryté NA EX, ktorý má čím odpovedať; false = nikto. */
+/** Ďalší v kole odpovedí, ktorý má čím odpovedať; false = kolo skončilo. Kto nemá čím, už neodpovedá. */
 function dalsiaReakcia(s: MutState, data: GameData, events: Event[]): boolean {
   const pitka = s.pitkaStav;
   if (pitka === null) return false;
   const fronta = [...(pitka.frontaReakcii ?? [])];
   while (fronta.length > 0) {
     const q = fronta.shift() as PlayerId;
-    if (!mozeReagovat(s as GameState, data, q)) continue;
+    if (!mozeReagovat(s as GameState, data, q)) {
+      const zostava: [number, number] = [pitka.odpovedeZostava?.[0] ?? 0, pitka.odpovedeZostava?.[1] ?? 0];
+      zostava[q] = 0;
+      pitka.odpovedeZostava = zostava;
+      continue;
+    }
     pitka.frontaReakcii = fronta;
     pitka.reakcia = q;
     pitka.naTahu = q;
-    events.push({ type: "log", text: `Hráč ${q + 1} smie na NA EX odpovedať jednou kartou.` });
+    const kraj = pitka.krajOdpovede ?? null;
+    events.push({
+      type: "log",
+      text: `Hráč ${q + 1} smie na NA EX odpovedať jednou kartou lícom dole${kraj === null ? "" : ` — len na koniec strany hráča ${opponentOf(kraj) + 1} (druhý kraj línie)`}.`,
+    });
     return true;
   }
   pitka.frontaReakcii = [];
   pitka.reakcia = null;
   return false;
+}
+
+/**
+ * Po kole odpovedí (v9.2): odpovede lícom dole sa otočia naraz, potom ďalšie kolo,
+ * alebo sa Pitka vyhodnotí. Otočený Hasič (Nástup) počká na voľbu.
+ */
+function poKoleOdpovedi(s: MutState, data: GameData, events: Event[]): void {
+  if (otocOdpovede(s, data, events)) return;
+  const zostava = s.pitkaStav?.odpovedeZostava ?? [0, 0];
+  if ((zostava[0] > 0 || zostava[1] > 0) && zacniKoloOdpovedi(s, data, events)) return;
+  vyhodnotPitku(s, data, events);
+}
+
+/**
+ * Otočenie odpovedí lícom dole (v9.2): naraz, pred vyhodnotením Pitky — Nástup,
+ * Konflikt, ktorý odpoveď vyvolala priložením, prevaha v kraji a počet Pitiek.
+ * Vráti true, keď otočený Hasič čaká na voľbu (zvyšok dobehne dokonciPoVolbe).
+ */
+function otocOdpovede(s: MutState, data: GameData, events: Event[]): boolean {
+  const skryte = ([0, 1] as const).flatMap((strana) => s.strany[strana].filter((pl) => pl.odpoved === true).map((placed) => ({ strana, placed })));
+  if (skryte.length === 0) return false;
+  const bezSkrytych = s.strany.map((strana) => strana.filter((pl) => pl.odpoved !== true)) as unknown as GameState["strany"];
+  const prevahaPred = prevahaStran(data, bezSkrytych);
+  events.push({
+    type: "log",
+    text: `Odpovede sa otáčajú naraz: ${skryte.map(({ strana, placed }) => `hráč ${placed.playedBy + 1} ${defOf(data, placed.card as CardInstance).name} (koniec strany hráča ${strana + 1})`).join("; ")}.`,
+  });
+  let cakaNaHasica = false;
+  for (const { strana, placed } of skryte) {
+    const p = placed.playedBy as PlayerId;
+    delete (placed as { zaverecna?: true }).zaverecna;
+    delete (placed as { odpoved?: true }).odpoved;
+    const def = defOf(data, placed.card as CardInstance);
+    events.push({ type: "odpovedNaNaex", hrac: p, uid: placed.card.uid, defId: def.id, ciel: strana === p ? "vlastna" : "superova" });
+    if (def.triggers.includes("Nástup")) nastupEfekt(s, data, def.id, p, strana, events);
+    const sused = susedPrilozenej(s, strana);
+    if (sused !== null) konflikt(s, data, sused, placed as DeepMutable<PlacedCard>, events);
+    if (odlozPoHasicovi(s, "odpovede")) {
+      cakaNaHasica = true;
+      break;
+    }
+  }
+  // Odpoveď smie zmeniť prevahu v kraji aj počet Pitiek (b22d4d6) — hráč to musí vidieť (názor #27).
+  const prevahaPo = prevahaStran(data, s.strany);
+  const kraje = krajeStran(data, s.ciel?.lokalita ?? null, s.lokalitaOtocena);
+  for (const strana of [0, 1] as const) {
+    const kto = prevahaPo[strana];
+    if (kto === prevahaPred[strana]) continue;
+    const kraj = kraje[strana] === null ? `pri strane hráča ${strana + 1}` : `v kraji ${kraje[strana]}`;
+    events.push({ type: "log", text: `Odpoveď na NA EX: prevahu ${kraj} má teraz ${kto === null ? "nikto" : `hráč ${kto + 1}`}.` });
+  }
+  const pitkyPred = s.pitkyCelkom;
+  aktualizujPitky(s, data);
+  if (s.pitkyCelkom !== pitkyPred) {
+    events.push({ type: "log", text: `Odpoveď na NA EX: Pitiek v kole je ${s.pitkyCelkom} namiesto ${pitkyPred}.` });
+  }
+  return cakaNaHasica;
 }
 
 /**
@@ -3139,13 +3243,28 @@ export function krcmaVyzaduje(data: GameData, state: GameState, p: PlayerId): bo
   return jeCielLokalita(state, "krcma") && !dal && moznostiNaex(data, state, p).length > 0;
 }
 
-/** Hráč q má v ruke kartu, ktorú môže vyložiť do línie (reakcia je mimo limitu). */
-function mozeReagovat(s: GameState, data: GameData, q: PlayerId): boolean {
-  return s.hraci[q].ruka.some((k) =>
-    cieleVykladania(data, s.strany, q, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(s), [false, false]).some((c) => c === "vlastna" || c === "superova"),
+/**
+ * Kam smie hráč q odpovedať kartou `karta` (v9.2): na koniec svojej alebo súperovej
+ * strany, mimo limitu; keď prvý v kole už odpovedal, len na druhý kraj línie.
+ */
+export function cieleOdpovede(
+  data: GameData,
+  s: Pick<GameState, "strany" | "ciel" | "pitkaStav">,
+  q: PlayerId,
+  karta: CardInstance,
+): ("vlastna" | "superova")[] {
+  const kraj = s.pitkaStav?.krajOdpovede ?? null;
+  return cieleVykladania(data, s.strany, q, karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(s), [false, false]).filter(
+    (c): c is "vlastna" | "superova" => (c === "vlastna" || c === "superova") && (kraj === null || (c === "vlastna" ? q : opponentOf(q)) !== kraj),
   );
 }
 
+/** Hráč q má v ruke kartu, ktorú môže ako odpoveď vyložiť (mimo limitu, v9.2 aj s krajom). */
+function mozeReagovat(s: GameState, data: GameData, q: PlayerId): boolean {
+  return s.hraci[q].ruka.some((k) => cieleOdpovede(data, s, q, k).length > 0);
+}
+
+/** Odpoveď na NA EX (v9.2): karta lícom dole, zadarmo, mimo limitu; otočí sa až s odpoveďou súpera. */
 function cmdReakcia(
   s: MutState,
   data: GameData,
@@ -3155,26 +3274,18 @@ function cmdReakcia(
 ): void {
   const pitka = s.pitkaStav;
   need(s.faza === "pitka" && pitka !== null && pitka.reakcia === p, "Teraz nemôžeš reagovať na NA EX.");
-  const prevahaPred = prevahaStran(data, s.strany);
-  const pitkyPred = s.pitkyCelkom;
-  const defId = s.hraci[p].ruka.find((k) => k.uid === cmd.uid)?.defId ?? null;
-  vylozDoLinie(s, data, p, cmd.uid, cmd.target, events);
-  events.push({ type: "odpovedNaNaex", hrac: p, uid: cmd.uid, defId, ciel: cmd.target });
-  // Odpoveď smie zmeniť prevahu v kraji aj počet Pitiek (PRAVIDLÁ, b22d4d6) —
-  // hráč to musí vidieť (názor #27, Michal 2026-10-22).
-  const prevahaPo = prevahaStran(data, s.strany);
-  const kraje = krajeStran(data, s.ciel?.lokalita ?? null, s.lokalitaOtocena);
-  for (const strana of [0, 1] as const) {
-    const kto = prevahaPo[strana];
-    if (kto === prevahaPred[strana]) continue;
-    const kraj = kraje[strana] === null ? `pri strane hráča ${strana + 1}` : `v kraji ${kraje[strana]}`;
-    events.push({ type: "log", text: `Odpoveď na NA EX: prevahu ${kraj} má teraz ${kto === null ? "nikto" : `hráč ${kto + 1}`}.` });
-  }
-  aktualizujPitky(s, data);
-  if (s.pitkyCelkom !== pitkyPred) {
-    events.push({ type: "log", text: `Odpoveď na NA EX: Pitiek v kole je ${s.pitkyCelkom} namiesto ${pitkyPred}.` });
-  }
-  if (odlozPoHasicovi(s, "reakcia")) return;
+  const karta = s.hraci[p].ruka.find((k) => k.uid === cmd.uid);
+  need(karta !== undefined, "Karta nie je v ruke.");
+  const kraj = pitka.krajOdpovede ?? null;
+  need(
+    kraj === null || (cmd.target === "vlastna" ? p : opponentOf(p)) !== kraj,
+    "Súper odpovedal na tento kraj línie — tvoja odpoveď smie len na druhý.",
+  );
+  vylozDoLinie(s, data, p, cmd.uid, cmd.target, events, false, true);
+  const zostava: [number, number] = [pitka.odpovedeZostava?.[0] ?? 0, pitka.odpovedeZostava?.[1] ?? 0];
+  zostava[p] = Math.max(0, zostava[p] - 1);
+  pitka.odpovedeZostava = zostava;
+  if (kraj === null) pitka.krajOdpovede = cmd.target === "vlastna" ? p : opponentOf(p);
   ukonciReakciu(s, data, events);
 }
 
@@ -3183,16 +3294,20 @@ function cmdBezReakcie(s: MutState, data: GameData, p: PlayerId, events: Event[]
   need(s.faza === "pitka" && pitka !== null && pitka.reakcia === p, "Teraz nemôžeš reagovať na NA EX.");
   events.push({ type: "log", text: `Hráč ${p + 1} na NA EX neodpovedá.` });
   events.push({ type: "odpovedNaNaex", hrac: p, uid: null, defId: null, ciel: null });
+  // Kto vynechá, v tejto Pitke už neodpovedá (ani na ďalšie NA EX).
+  const zostava: [number, number] = [pitka.odpovedeZostava?.[0] ?? 0, pitka.odpovedeZostava?.[1] ?? 0];
+  zostava[p] = 0;
+  pitka.odpovedeZostava = zostava;
   ukonciReakciu(s, data, events);
 }
 
-/** Po odpovedi odpovedá ďalší v rade (v5: obranca, potom útočník); keď nikto, Pitka sa vyhodnotí. */
+/** Po odpovedi odpovedá ďalší v kole (v9.2: útočník, potom obranca); keď nikto, kolo sa otočí. */
 function ukonciReakciu(s: MutState, data: GameData, events: Event[]): void {
   const pitka = s.pitkaStav;
   if (pitka === null || pitka.reakcia === null) return;
   pitka.reakcia = null;
   if (dalsiaReakcia(s, data, events)) return;
-  vyhodnotPitku(s, data, events);
+  poKoleOdpovedi(s, data, events);
 }
 
 /**
@@ -3537,6 +3652,7 @@ function cmdHasic(s: MutState, data: GameData, cmd: { nechat: boolean }, p: Play
 /** Po voľbe Hasiča, Klebetnice či Dohadzovačky dobehne, čo hra kvôli nej odložila. */
 function dokonciPoVolbe(s: MutState, data: GameData, volba: HasicVolba, events: Event[]): void {
   if (volba.potom === "reakcia") ukonciReakciu(s, data, events);
+  else if (volba.potom === "odpovede") poKoleOdpovedi(s, data, events);
   else if (volba.potom === "koniecPitky") dokonciPitku(s, data, events);
   else if (volba.potom === "bitka") pokracujBitku(s, data, events);
   else if (volba.potom === "zastavka") {
@@ -5684,12 +5800,10 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       const pitka = state.pitkaStav;
       if (pitka === null) break;
       if (pitka.reakcia === p) {
-        // Reakcia na NA EX: jedna karta do línie mimo limitu, alebo nič.
+        // Odpoveď na NA EX (v9.2): jedna karta lícom dole mimo limitu (po súperovi len na druhý kraj), alebo nič.
         out.push({ type: "bezReakcie" });
         for (const karta of state.hraci[p].ruka) {
-          for (const target of cieleVykladania(data, state.strany, p, karta, Number.POSITIVE_INFINITY, true, cielLokalitaId(state), [false, false])) {
-            if (target === "vlastna" || target === "superova") out.push({ type: "place", uid: karta.uid, target });
-          }
+          for (const target of cieleOdpovede(data, state, p, karta)) out.push({ type: "place", uid: karta.uid, target });
         }
         break;
       }

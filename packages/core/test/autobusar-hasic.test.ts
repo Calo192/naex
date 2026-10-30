@@ -198,7 +198,7 @@ describe("Hasič: náhodná karta z vlastného odhadzovacieho balíčka, hráč 
     expect(JSON.stringify(nechal)).not.toContain(`"uid":${vRuke.uid}`);
   });
 
-  it("§16 Hasič ako odpoveď na NA EX: Pitka sa vyhodnotí až po voľbe", () => {
+  it("§16 Hasič ako odpoveď na NA EX: Nástup pri otočení odpovedí (v9.2), Pitka sa vyhodnotí až po voľbe", () => {
     const s0 = setupGame(data, 12);
     const pijan: PlacedCard = { card: inst("pijan"), playedBy: 0 };
     const hasic = inst("hasic");
@@ -219,8 +219,8 @@ describe("Hasič: náhodná karta z vlastného odhadzovacieho balíčka, hráč 
     const naex = naexOdkryte(data, s, pijan.card.uid, 0).state;
     expect(naex.pitkaStav?.reakcia).toBe(1);
     const odpoved = apply(data, naex, { type: "place", uid: hasic.uid, target: "vlastna" }, 1);
-    expect(odpoved.state.hasicVolby?.[0]).toMatchObject({ hrac: 1, uid: ministrant.uid, potom: "reakcia" });
-    expect(odpoved.state.pitkaStav?.reakcia).toBe(1);
+    expect(odpoved.state.hasicVolby?.[0]).toMatchObject({ hrac: 1, uid: ministrant.uid, potom: "odpovede" });
+    expect(odpoved.state.pitkaStav?.reakcia).toBeNull();
     expect(odpoved.events.some((e) => e.type === "pitkaVysledok")).toBe(false);
     const volba = apply(data, odpoved.state, { type: "hasic", nechat: true }, 1);
     expect(volba.events.some((e) => e.type === "pitkaVysledok")).toBe(true);

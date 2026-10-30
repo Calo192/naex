@@ -178,6 +178,8 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         const dB = bezBitka.s.bitkaStav;
         if (sNaex.s.faza !== "bitka" || bezBitka.s.faza !== "bitka" || dA == null || dB == null) continue;
         for (const q of [0, 1] as const) {
+          // Robota a Exekútor bežia hneď po poškodení v tom istom ťahu — potom už Dlhy nie sú tie „pri poškodení“.
+          if (dA.exekutorHotovy[q] || dB.exekutorHotovy[q]) continue;
           // Priznané Dlhy pri poškodení — strop súperovho mäkkého.
           expect(dlhy(stolPriPoskodeni(data, n.odkrytie.view, 0), q), `${kde}: Dlhy pri poškodení, hráč ${q}`).toBe(dlhy(sNaex.s, q));
           expect(dlhy(stolPriPoskodeni(data, zaklad, 0), q), `${kde}: Dlhy bez NA EX, hráč ${q}`).toBe(dlhy(bezBitka.s, q));

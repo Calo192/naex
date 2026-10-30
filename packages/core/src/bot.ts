@@ -1021,13 +1021,13 @@ function draft(v: Volba): Command | null {
   if (d === null) return null;
   if (d.krok === "zajatie") return pokus(v);
   if (d.krok === "stavba") {
-    // Najlepšie karty do šenku (inak ich tam dá súper). Obranca berie zo šenku
-    // druhý — ďalšie dobré radšej pošle naspodok, než by ich podal súperovi.
+    // Najlepšie karty do šenku (inak ich tam dá súper). Útočník berie zo šenku
+    // druhý (v9.2) — ďalšie dobré radšej pošle naspodok, než by ich podal súperovi.
     const zoradene = [...d.balicky[ja]].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
     const krok = krokStavby(zoradene.length);
     const doSenku = zoradene.slice(0, krok.doSenku);
     const zvysok = zoradene.slice(krok.doSenku);
-    const odhod = state.utocnik === ja ? zvysok.slice(zvysok.length - krok.odhod) : zvysok.slice(0, krok.odhod);
+    const odhod = state.utocnik !== ja ? zvysok.slice(zvysok.length - krok.odhod) : zvysok.slice(0, krok.odhod);
     return { type: "stavbaSenku", doSenku: doSenku.map((x) => x.uid), odhod: odhod.map((x) => x.uid) };
   }
   // Branie zo šenku (Michal 2026-10-19): 1 karta za cigaretu, 2 karty za 3.

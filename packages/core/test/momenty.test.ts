@@ -111,7 +111,8 @@ describe("momenty — nič neprezradia", () => {
     let porovnanych = 0;
     const inaRuka = (x: GameState): GameState => ({
       ...x,
-      hraci: x.hraci.map((h) => ({ ...h, ruka: h.ruka.map((k) => ({ ...k, defId: "hasic" })), doberaci: [...h.doberaci].reverse() })) as unknown as GameState["hraci"],
+      // Počet Absťákov je verejný (v9.1 karta, −1 tuhé za kus) — tie ostávajú.
+      hraci: x.hraci.map((h) => ({ ...h, ruka: h.ruka.map((k) => (k.defId === "abstak" ? k : { ...k, defId: "hasic" })), doberaci: [...h.doberaci].reverse() })) as unknown as GameState["hraci"],
       // Skrytá Záverečná: iná karta lícom dole.
       strany: x.strany.map((strana) => strana.map((pl) => (pl.zaverecna === true ? { ...pl, card: { ...pl.card, defId: "svokra" } } : pl))) as unknown as GameState["strany"],
     });

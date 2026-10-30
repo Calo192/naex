@@ -29,19 +29,20 @@ function doBrania(seed: number): GameState {
 describe("tieň karty vzatej zo šenku (#111)", () => {
   it("viewFor oboch hráčov nesie, kto ktorú kartu vzal a kde ležala — bez uid karty v ruke", () => {
     let s = doBrania(7);
-    const u = s.utocnik;
+    // v9.2: obranca berie prvý (na prvom ťahu 1 kartu), útočník druhý.
     const o = obrancaOf(s);
+    const u = s.utocnik;
     const senok = s.senok;
-    // Útočník berie tretiu a piatu kartu, obranca potom pôvodne štvrtú (teraz tretia v šenku).
-    s = apply(data, s, { type: "draftBer", uids: [senok[2]!.uid, senok[4]!.uid] }, u).state;
-    expect(s.senok[2]!.uid).toBe(senok[3]!.uid);
-    s = apply(data, s, { type: "draftBer", uids: [s.senok[2]!.uid] }, o).state;
+    // Obranca berie štvrtú kartu, útočník potom pôvodne tretiu a piatu (teraz tretia a štvrtá v šenku).
+    s = apply(data, s, { type: "draftBer", uids: [senok[3]!.uid] }, o).state;
+    expect(s.senok[3]!.uid).toBe(senok[4]!.uid);
+    s = apply(data, s, { type: "draftBer", uids: [s.senok[2]!.uid, s.senok[3]!.uid] }, u).state;
     for (const ja of [u, o] as const) {
       const v = viewFor(data, s, ja);
       expect(v.draftStav?.zobrate).toEqual([
+        { karta: { defId: senok[3]!.defId, leftLayout: senok[3]!.leftLayout, rightLayout: senok[3]!.rightLayout }, hrac: o, miesto: 3 },
         { karta: { defId: senok[2]!.defId, leftLayout: senok[2]!.leftLayout, rightLayout: senok[2]!.rightLayout }, hrac: u, miesto: 2 },
         { karta: { defId: senok[4]!.defId, leftLayout: senok[4]!.leftLayout, rightLayout: senok[4]!.rightLayout }, hrac: u, miesto: 4 },
-        { karta: { defId: senok[3]!.defId, leftLayout: senok[3]!.leftLayout, rightLayout: senok[3]!.rightLayout }, hrac: o, miesto: 3 },
       ]);
     }
     // Uid karty v súperovej ruke sa nepošle — ani cez tieň.
@@ -58,7 +59,7 @@ describe("tieň karty vzatej zo šenku (#111)", () => {
 
   it("tiene vydržia do konca draftu (aj v patronáte) a s jeho koncom zmiznú", () => {
     let s = doBrania(11);
-    const u = s.utocnik;
+    const u = obrancaOf(s);
     s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, u).state;
     // Ďalej hrajú obaja prvý legálny príkaz bez brania, kým draft neskončí.
     for (let i = 0; i < 20 && s.faza === "draft"; i++) {
