@@ -8,7 +8,7 @@
 // prvok s data-vyucba-prvok / data-vyucba-karta = časť za dvojbodkou.
 // Nájdený prvok dostane data-vyucba-zvyraznene="kľúč" (číta ho playtest výučby).
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { ClientState, Command, Event as UdalostHry } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { ZAVES_ODCHODU } from "../lib/odchod.ts";
@@ -28,6 +28,7 @@ import { useHlaskyVyucby } from "./Melichar.tsx";
 import { stitokTahu, zmenyStola } from "./zmenyVyucby.ts";
 import type { Sada } from "@naex/tvorba";
 import { moznostiKvizu, rezimMelichara } from "./bar.ts";
+import { klucVily } from "./volbaVily.ts";
 import { CisloStrany, MelicharVBare, NaJednomMieste, StrankovanaVeta, VetaMelichara, kusyVety, useStrany, type KusVety } from "./MelicharBar.tsx";
 import "./vyucba.css";
 
@@ -129,7 +130,11 @@ export function prvkyKluca(kluc: string): HTMLElement[] {
   const css = (x: string): string => x.replace(/["\\]/g, "");
   if (kluc === "spoje-lokality") return spojeLokality();
   if (kluc.startsWith("akcia:")) return [...document.querySelectorAll<HTMLElement>(`:is(.ruka-rad, .linia) .kl-slot[data-akcia="${css(kluc.slice(6))}"]`)];
-  const priame = [...document.querySelectorAll<HTMLElement>(`[data-vyucba="${css(kluc)}"]`)];
+  const priame = [...document.querySelectorAll<HTMLElement>(`[data-vyucba="${css(kluc)}"]`)].filter(
+    // NA EX! bez vybranej karty nesvieti — vyzeralo ako tlačidlo, ktoré treba stlačiť hneď (playtest
+    // výučby 20261030, k-naex-vytrznik). Najprv svieti karta, po jej výbere NA EX!.
+    (el) => !(kluc === "tlacidlo:naex" && el.getAttribute("aria-disabled") === "true"),
+  );
   // Účet bitky je na stole až v ďalšom kole — počas bitky je jej výsledok v odhade jednotného baru.
   if (kluc === "bitka-ucet" && priame.length === 0) return [...document.querySelectorAll<HTMLElement>(".jbar-odhad")];
   // Kým súper stavia, šenok je ešte panel stavby (výučba, 3. časť: Melichar postavil za hráča).
@@ -172,7 +177,7 @@ function spojeLokality(): HTMLElement[] {
  * Čo zvýrazniť z príkazu, ktorý krok čaká: karty (pri stavbe šenku len tie do Šenku —
  * tie hráč vyberá klikom, #148) a staršieho. Text Melichara ich nemusí vymenovať všetky.
  */
-function kluceZOcakavania(c: Command | null): string[] {
+export function kluceZOcakavania(c: Command | null): string[] {
   if (c === null) return [];
   const o = c as unknown as Readonly<Record<string, unknown>>;
   const out: string[] = [];
@@ -180,6 +185,10 @@ function kluceZOcakavania(c: Command | null): string[] {
   const zoznam = o[c.type === "stavbaSenku" ? "doSenku" : "uids"];
   if (Array.isArray(zoznam)) for (const u of zoznam) if (typeof u === "number") out.push(c.type === "stavbaSenku" ? `senok:${u}` : `uid:${u}`);
   if (typeof o.elderId === "string") out.push(`starsi:${o.elderId}`);
+  // Kšeft vily: v ponuke pečiatky svieti presne tlačidlo, ktoré krok čaká (playtest výučby 20261030, k-kseft).
+  if (c.type === "kseft" && c.elderId !== undefined) out.push(klucVily(c.elderId, c.kSebe === true));
+  // Dedičstvo a priznanie: cieľom je dlaždica Karty v bare — svieti od začiatku kroku (playtest 20261030, k-dedicstvo).
+  if (c.type === "place" && (c.target === "dedicstvo" || c.target === "priznanie")) out.push("bar:karty");
   if (c.type === "tah") for (const k of c.kroky) out.push(...kluceZOcakavania(k as Command));
   return out;
 }
@@ -530,9 +539,12 @@ export function VyucbaStol({
   // možnosť overuje klient; po zlej sa vyberá znova, po správnej sa dá ísť ďalej.
   const [odpoved, setOdpoved] = useState<number | null>(null);
   const [pohlad, setPohlad] = useState<"otazka" | "odpoved">("otazka");
+  // Koľkokrát Enter na otázke (blikne možnosťami, viď enter nižšie).
+  const [napovedKvizu, setNapovedKvizu] = useState(0);
   useEffect(() => {
     setOdpoved(null);
     setPohlad("otazka");
+    setNapovedKvizu(0);
   }, [krok?.id]);
   const moznosti = krok?.kto === "otazka" ? (krok.moznosti ?? []) : [];
   const kviz = useMemo(() => moznostiKvizu(moznosti), [moznosti]);
@@ -581,25 +593,25 @@ export function VyucbaStol({
     if (vybrana.spravna !== true) kusy.push({ kluc: "skus", obsah: " Skús inú možnosť." });
   } else {
     if (stitokText !== null) {
-      kusy.push({
-        kluc: "stitok",
-        obsah: (
+      kusy.push(
+        kusOddeleny(
+          "stitok",
           <span className="vyucba-stitok" data-vyucba-stitok="">
             {stitokText}
-          </span>
+          </span>,
         ),
-      });
+      );
     }
-    if (chyba !== null) kusy.push({ kluc: "chyba", obsah: <span className="vyucba-chyba">{chyba}</span> });
+    if (chyba !== null) kusy.push(kusOddeleny("chyba", <span className="vyucba-chyba">{chyba}</span>));
     if (radaText !== null) {
-      kusy.push({
-        kluc: "rada",
-        obsah: (
+      kusy.push(
+        kusOddeleny(
+          "rada",
           <span className="vyucba-rada">
             <VetaMelichara text={radaText} sada={sada} />
-          </span>
+          </span>,
         ),
-      });
+      );
     }
     kusy.push(...kusyVety("veta", krok.melichar, sada));
     // Ťah hry za hráča bez textu: bar nesmie zmiznúť — stôl by ostal bez slova (playtest výučby 20261025, krok 6).
@@ -613,13 +625,28 @@ export function VyucbaStol({
   // zlá odpoveď kvízu vráti otázku.
   const jeInfo = !pocitadloBezi && (krok?.kto === "info" || krok?.vykonany === true || (krok?.kto === "otazka" && vybrana?.spravna === true));
   const zlaOdpoved = vOdpovedi && vybrana.spravna !== true;
-  const enter: (() => void) | null = pocitadloBezi ? null : strany.dalsiaJe ? strany.dalsia : zlaOdpoved ? spatNaOtazku : jeInfo ? dalej : null;
+  // Koniec časti: Enter spustí hlavné tlačidlo ponuky — inde vo výučbe Enter ide ďalej, tu nerobil
+  // nič (playtest výučby 20261030, kroky 69 a 132).
+  const enterKonca = krok === null ? (enterNaKonciCasti(stav) === "pokracovat" ? pokracovat : hratProtiPocitacu) : null;
+  // Otázka kvízu: Enter odpoveď nevyberie (prvá odpoveď sa ráta), ale možnosti bliknú a povedia,
+  // čím sa vyberajú — Enter v kvíze ticho nerobil nič (playtest výučby 20261030, krok 27).
+  const otazkaKvizu = moznosti.length > 0 && !vOdpovedi;
+  const enter: (() => void) | null = pocitadloBezi
+    ? null
+    : strany.dalsiaJe
+      ? strany.dalsia
+      : zlaOdpoved
+        ? spatNaOtazku
+        : jeInfo
+          ? dalej
+          : (enterKonca ?? (otazkaKvizu ? () => setNapovedKvizu((n) => n + 1) : null));
   useEffect(() => {
     if (enter === null) return;
     const klaves = (e: KeyboardEvent): void => {
       if (e.key !== "Enter" || e.repeat) return;
       const t = e.target as HTMLElement | null;
-      if (t?.closest("input, textarea, select, [contenteditable=true]") != null) return;
+      // Možnosť kvízu s fokusom (Tab) vyberie Enter sama, ako každé tlačidlo.
+      if (t?.closest("input, textarea, select, [contenteditable=true], .vyucba-moznost") != null) return;
       e.preventDefault();
       enter();
     };
@@ -631,7 +658,7 @@ export function VyucbaStol({
   const dalejRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     // Otvorený dialóg odchodu si fokus nechá — Enter patrí jeho tlačidlu.
-    if ((jeInfo || vOdpovedi) && document.querySelector(`.${ZAVES_ODCHODU}`) === null) dalejRef.current?.focus({ preventScroll: true });
+    if ((jeInfo || vOdpovedi || krok === null) && document.querySelector(`.${ZAVES_ODCHODU}`) === null) dalejRef.current?.focus({ preventScroll: true });
   }, [krok?.id, jeInfo, vOdpovedi, strany.strana]);
 
   // Percentá časti, nie celej výučby — v 1. časti by inak skončili na tretine.
@@ -670,11 +697,12 @@ export function VyucbaStol({
     <>
       {stav.dalsiaCast !== null && (
         <button
-          className="tlacidlo-hlavne"
+          ref={ziva ? dalejRef : undefined}
+          className="tlacidlo-hlavne mel-dalej"
           {...(ziva ? { onClick: pokracovat, "data-vyucba-dalsia-cast": "" } : { type: "button" as const, tabIndex: -1 })}
           title={`${stav.dalsiaCast.cast}. časť: ${stav.dalsiaCast.nazov} (asi ${stav.dalsiaCast.minuty} minút)`}
         >
-          Pokračovať {stav.dalsiaCast.cast}. časťou
+          Pokračovať {stav.dalsiaCast.cast}. časťou <kbd>Enter</kbd>
         </button>
       )}
       {/* Ďalšia časť ešte nie je hotová — ponuka ostáva viditeľná, nech hráč vie, že príde. */}
@@ -684,10 +712,11 @@ export function VyucbaStol({
         </button>
       )}
       <button
-        className={stav.dalsiaCast === null ? "tlacidlo-hlavne" : undefined}
+        ref={ziva && stav.dalsiaCast === null ? dalejRef : undefined}
+        className={stav.dalsiaCast === null ? "tlacidlo-hlavne mel-dalej" : undefined}
         {...(ziva ? { onClick: hratProtiPocitacu, "data-vyucba-koniec": "" } : { type: "button" as const, tabIndex: -1 })}
       >
-        Hrať proti počítaču
+        Hrať proti počítaču{stav.dalsiaCast === null && <kbd>Enter</kbd>}
       </button>
       <button {...(ziva ? { onClick: prerusit } : { type: "button" as const, tabIndex: -1 })}>Do lobby</button>
     </>
@@ -736,7 +765,8 @@ export function VyucbaStol({
           }
           moznosti={
             moznosti.length > 0 && !vOdpovedi ? (
-              <div className="vyucba-moznosti" role="group" aria-label="Možnosti odpovede">
+              // Po Entere na otázke možnosti bliknú (nový key spustí animáciu znova).
+              <div key={napovedKvizu} className={`vyucba-moznosti${napovedKvizu > 0 ? " napoveda" : ""}`} role="group" aria-label="Možnosti odpovede — klikni, alebo stlač 1 či 2">
                 {kviz.zobrazene.map(({ index, moznost: m }, k) => {
                   const stav = odpoved === index ? (m.spravna === true ? " spravna" : " zla") : "";
                   return (
@@ -804,6 +834,27 @@ export function VyucbaStol({
       )}
     </>
   );
+}
+
+/**
+ * Štítok ťahu, chyba či rada pred vetou Melichara — s medzerou za sebou. Bez nej sa hlásenie
+ * a veta čítali zlepene („Čaká sa na hráča 2.Obaja ste skončili“, playtest výučby 20261030),
+ * pri kopírovaní aj v čítačke obrazovky; okraj štítku medzeru len kreslil.
+ */
+export function kusOddeleny(kluc: string, obsah: ReactNode): KusVety {
+  return {
+    kluc,
+    obsah: (
+      <>
+        {obsah}{" "}
+      </>
+    ),
+  };
+}
+
+/** Čo spustí Enter na poslednej strane konca časti — hlavné tlačidlo ponuky (playtest výučby 20261030). */
+export function enterNaKonciCasti(stav: Pick<StavVyucby, "dalsiaCast">): "pokracovat" | "hratProtiPocitacu" {
+  return stav.dalsiaCast !== null ? "pokracovat" : "hratProtiPocitacu";
 }
 
 /**

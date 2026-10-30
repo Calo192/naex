@@ -43,7 +43,7 @@ export function Domov() {
                 <img src="/melichar.jpg" alt="" width={40} height={40} />
                 <span>
                   {napisVyucby(vyucba)}
-                  <small>~15 minút pri stole proti Štamgastovi</small>
+                  <small>tri časti, spolu asi 35 minút pri stole proti Štamgastovi</small>
                 </span>
               </Odkaz>
               <Odkaz href="/hra" className="tlacidlo">

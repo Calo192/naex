@@ -16,7 +16,7 @@ export function VyzvaVyucby() {
     <aside className="panel vyucba-vyzva" aria-label="Výučba">
       <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={56} height={56} />
       <div>
-        <strong>Nauč sa hrať za ~15 minút s Majstrom Melicharom</strong>
+        <strong>Nauč sa hrať s Majstrom Melicharom — tri časti, spolu asi 35 minút</strong>
         <span className="tlmene">Zahráš si prvé kolo proti Štamgastovi a Melichar ti pri stole povie, čo a prečo. Pravidlá tu počkajú, keď si budeš chcieť niečo dohľadať.</span>
       </div>
       <Odkaz href={adresaVyucby(ja !== null)} className="tlacidlo tlacidlo-hlavne" data-vyucba-vstup="pravidla">
@@ -50,7 +50,7 @@ export function VyucbaVLobby({ vyucba, zacni }: { readonly vyucba: VyucbaUctu; r
     <section className={`panel vyucba-vstup${novacik ? " vyzva" : ""}`}>
       <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={novacik ? 88 : 64} height={novacik ? 88 : 64} />
       <div>
-        <h2>{novacik ? "Nauč sa hrať za ~15 minút s Majstrom Melicharom" : "Prvá hra — nauč sa hrať"}</h2>
+        <h2>{novacik ? "Nauč sa hrať s Majstrom Melicharom — tri časti, spolu asi 35 minút" : "Prvá hra — nauč sa hrať"}</h2>
         <p className="tlmene">{popisVyucbyVLobby(vyucba)}</p>
         {novacik && (
           <p className="tlmene vyucba-vstup-pravidla">
@@ -90,8 +90,8 @@ export function PonukaVyucby({ vyucba, zacni, preskoc }: { readonly vyucba: Vyuc
         <img className="vyucba-avatar" src="/melichar.jpg" alt="" width={96} height={96} />
         <h2 id="vyucba-ponuka-nadpis">Najprv výučba?</h2>
         <p>
-          Som majster Melichar. Za ~15 minút ťa naučím hrať NA EX! — zahráš si so Štamgastom a ja ti poviem, čo a prečo. Kedykoľvek
-          môžeš prestať a pokračovať neskôr.
+          Som majster Melichar. Za tri krátke časti ťa naučím hrať NA EX! — každá trvá asi desať minút a dá sa prerušiť. Zahráš si so
+          Štamgastom a ja ti poviem, čo a prečo.
         </p>
         <div className="riadok-tlacidiel">
           <button ref={hlavne} className="tlacidlo-hlavne" onClick={zacni} data-vyucba-vstup="ponuka">
