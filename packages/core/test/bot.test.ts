@@ -118,12 +118,14 @@ describe("offline protihráč", () => {
       const su = s.hraci[0];
       const [skryte, r1] = rngShuffle(rng, [...su.ruka, ...su.doberaci]);
       const [moj, r2] = rngShuffle(r1, s.hraci[1].doberaci);
-      const [spolocny, r3] = rngShuffle(r2, s.spolocnyBalicek);
+      const [naradie, r2b] = rngShuffle(r2, s.naradie);
+      const [obcania, r3] = rngShuffle(r2b, s.obcania);
       rng = r3;
       const inak: GameState = {
         ...s,
         rng: s.rng + 12345,
-        spolocnyBalicek: spolocny,
+        naradie,
+        obcania,
         hraci: [{ ...su, ruka: skryte.slice(0, su.ruka.length), doberaci: skryte.slice(su.ruka.length) }, { ...s.hraci[1], doberaci: moj }],
       };
       expect(tahBota(data, inak, 1, 999), `ťah ${i} vo fáze ${s.faza}`).toEqual(tahBota(data, s, 1, 999));

@@ -36,7 +36,8 @@ export class Robot {
         // Bezpečnostná kontrola pri KAŽDEJ správe: obsah balíčkov a ruka
         // súpera nesmú odísť zo servera.
         expect(text).not.toContain('"doberaci":[');
-        expect(text).not.toContain('"spolocnyBalicek":[');
+        expect(text).not.toContain('"naradie":[');
+        expect(text).not.toContain('"obcania":[');
         const view = (msg as unknown as StavMsg).view;
         for (const hrac of view.hraci) {
           expect(hrac).not.toHaveProperty("ruka");

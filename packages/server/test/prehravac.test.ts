@@ -116,7 +116,8 @@ describe("prehrávač partie", () => {
       for (const u of uidy(moj.data.view)) if (!jehoRuka.has(u)) videne.add(u);
       const text = JSON.stringify(moj.data);
       expect(text).not.toContain("\"doberaci\":");
-      expect(text).not.toContain("\"spolocnyBalicek\":");
+      expect(text).not.toContain("\"naradie\":");
+      expect(text).not.toContain("\"obcania\":");
     }
     expect((await volaj(cudzi, `/partie/${partia}/kroky`)).status).toBe(404);
     expect((await volaj(cudzi, `/partie/${partia}/krok/1`)).status).toBe(404);

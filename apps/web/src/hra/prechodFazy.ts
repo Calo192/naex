@@ -98,7 +98,7 @@ export function medziobrazovka(
         nadnadpis: kolo,
         nadpis: "Šenok",
         text:
-          "Každý dostane karty zo spoločného balíčka a tajne ich rozdelí: polovica pôjde do šenku, polovica naspodok. " +
+          `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov a tajne ich rozdelí: polovica pôjde do šenku, polovica naspodok. ` +
           `Potom beriete zo šenku striedavo, začína útočník — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
       };
     case "zhromazdenie": {

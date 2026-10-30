@@ -136,7 +136,8 @@ export interface VyberStavby {
 /**
  * Draft (Michal 2026-10-12): najprv hráči šenok postavia — z balíčkov, ktoré
  * si podávajú, naraz dávajú karty do šenku a naspodok spoločného balíčka
- * (Michal 2026-10-19: po dvoch, aby stavba mala len dva kroky) — potom
+ * (Michal 2026-10-19: po dvoch, aby stavba mala len dva kroky; od v8.5
+ * naspodok Náradia a Občanov) — potom
  * z neho striedavo berú, začína útočník.
  */
 export interface DraftStav {
@@ -410,7 +411,10 @@ export interface GameState {
   readonly kolo: number;
   readonly utocnik: PlayerId;
   readonly hraci: readonly [PlayerState, PlayerState];
-  readonly spolocnyBalicek: readonly CardInstance[];
+  /** Balíček Náradie (v8.5): karty s tagom Nástroj, zhora nadol. */
+  readonly naradie: readonly CardInstance[];
+  /** Balíček Občania (v8.5): všetky ostatné karty šenku, zhora nadol. */
+  readonly obcania: readonly CardInstance[];
   readonly senok: readonly CardInstance[];
   readonly lokalityVHre: readonly CardInstance[];
   /** Počet lokalít, o ktoré sa hrá (dĺžka hry); po nich príde finále. */
@@ -1299,6 +1303,16 @@ export function dostupneDlzky(data: GameData): DlzkaHry[] {
   return ALL_DLZKY.filter((d) => DLZKY_HRY[d] <= data.lokality.length);
 }
 
+/** Patrí karta do balíčka Náradie (tag Nástroj), alebo do Občanov (v8.5)? */
+export function jeNaradie(data: GameData, karta: CardInstance): boolean {
+  return defOf(data, karta).tags.includes("Nástroj");
+}
+
+/** Vráti karty naspodok ich balíčka — Nástroj k Náradiu, ostatné k Občanom (v8.5). */
+function naspodok(s: MutState, data: GameData, karty: readonly DeepMutable<CardInstance>[]): void {
+  for (const k of karty) (jeNaradie(data, k as CardInstance) ? s.naradie : s.obcania).push(k);
+}
+
 export function setupGame(data: GameData, seed: number, opts?: SetupOptions): GameState {
   const s: MutState = {
     rng: rngSeed(seed),
@@ -1307,7 +1321,8 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     kolo: 1,
     utocnik: 0,
     hraci: [freshPlayer(), freshPlayer()] as MutState["hraci"],
-    spolocnyBalicek: [],
+    naradie: [],
+    obcania: [],
     senok: [],
     lokalityVHre: [],
     lokalitCelkom: 0,
@@ -1370,21 +1385,23 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     }
   }
 
-  // Spoločný doberací balíček: kópie všetkých kariet okrem lokalít,
-  // starešinov, čistých kliatob (tie vznikajú akciami) a štartoviek
-  // (Michal 2026-10-18: sú výhradne v štartovacích balíčkoch).
+  // Karty šenku: kópie všetkých kariet okrem lokalít, starešinov, čistých
+  // kliatob (tie vznikajú akciami) a štartoviek (Michal 2026-10-18: sú
+  // výhradne v štartovacích balíčkoch). v8.5: Nástroje tvoria balíček
+  // Náradie, ostatné balíček Občania (Michal 2026-10-30).
   const KLIATBY = new Set(["dlh", "cirhoza", "abstak"]);
-  const spolocne: CardInstance[] = [];
+  const karty: CardInstance[] = [];
   for (const def of data.cards.values()) {
     if (def.tags.includes("Lokalita") || def.tags.includes("Starešina")) continue;
     if (KLIATBY.has(def.id) || def.id in KONSTANTY.START_RUKA) continue;
     for (let i = 0; i < KONSTANTY.KOPIE_V_SPOLOCNOM_BALICKU; i++) {
-      spolocne.push(novaInstancia(s, data, def.id));
+      karty.push(novaInstancia(s, data, def.id));
     }
   }
-  const [zamiesane, rng2] = rngShuffle(s.rng, spolocne);
+  const [zamiesane, rng2] = rngShuffle(s.rng, karty);
   s.rng = rng2;
-  s.spolocnyBalicek = zamiesane as DeepMutable<CardInstance>[];
+  s.naradie = zamiesane.filter((k) => jeNaradie(data, k)) as DeepMutable<CardInstance>[];
+  s.obcania = zamiesane.filter((k) => !jeNaradie(data, k)) as DeepMutable<CardInstance>[];
 
   // Počiatočná ruka (v6, Michal 2026-10-26): štartovacie karty idú rovno do
   // ruky, doberací balíček je prázdny — naplní ho až odhadzovací.
@@ -1401,7 +1418,7 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
 /**
  * Pevné rozdanie výučby (Michal 2026-10-23): z bežného rozdania podľa seedu
  * prepíše to, čo scenár určí — lokality v poradí, scorecardy, útočníka, ruky,
- * doberacie balíčky a spoločný balíček. Karty dostanú nové uid a variant
+ * doberacie balíčky, Náradie a Občanov. Karty dostanú nové uid a variant
  * „defId/ľavý/pravý“ (predvolene 0/0), aby scenár presne vedel, kde sú akcie.
  */
 export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
@@ -1456,7 +1473,14 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
     hrac(s, p).odhadzovaci = [];
     if (h.cigarety !== undefined) hrac(s, p).cigarety = h.cigarety;
   }
-  if (r.spolocnyBalicek !== undefined) s.spolocnyBalicek = r.spolocnyBalicek.map(karta);
+  // Scenár spred v8.5 má jeden spoločný balíček — rozdelí sa podľa druhu, poradie ostáva.
+  if (r.spolocnyBalicek !== undefined) {
+    const spolocne = r.spolocnyBalicek.map(karta);
+    s.naradie = spolocne.filter((k) => jeNaradie(data, k as CardInstance));
+    s.obcania = spolocne.filter((k) => !jeNaradie(data, k as CardInstance));
+  }
+  if (r.naradie !== undefined) s.naradie = r.naradie.map(karta);
+  if (r.obcania !== undefined) s.obcania = r.obcania.map(karta);
   // Ďalšia náhoda (zamiešanie odhodených) len zo seedu scenára — nie zo stavu
   // po bežnom rozdaní, ktorý závisí od počtu kariet v sade (sada v11 ho zmenila).
   s.rng = rngSeed(r.seed);
@@ -1828,30 +1852,43 @@ function cmdChooseLocation(
   });
   s.faza = "draft";
   events.push({ type: "faza", faza: "draft" });
-  zacniDraft(s, events);
+  zacniDraft(s, data, events);
 }
 
 /**
- * Veľkosť balíčka stavby šenku: počet nenahradených starších, nadol na párne
- * číslo (v každom kroku ubudnú z balíčka dve karty), najviac koľko spoločný
- * balíček dá obom hráčom.
+ * Veľkosť balíčka stavby šenku (v8.5, Michal 2026-10-30): 2 karty z Náradia
+ * a 6 z Občanov, bez ohľadu na počet starších. Pri nedostatku najviac toľko,
+ * koľko oba balíčky spolu dajú obom hráčom, nadol na párne číslo — polovica
+ * ide do šenku, polovica naspodok.
  */
-export function velkostStavby(state: Pick<GameState, "starsi" | "spolocnyBalicek">): number {
-  const podlaStarsich = state.starsi.filter((e) => !e.nahradeny).length;
-  const n = Math.min(podlaStarsich, Math.floor(state.spolocnyBalicek.length / 2));
+export function velkostStavby(state: Pick<GameState, "naradie" | "obcania">): number {
+  const plna = KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA;
+  const n = Math.min(plna, Math.floor((state.naradie.length + state.obcania.length) / 2));
   return n - (n % 2);
 }
 
-function zacniDraft(s: MutState, events: Event[]): void {
-  // Nevzaté karty zo starého šenku idú naspodok spoločného balíčka.
+/**
+ * Vezme z vrchu balíčkov n kariet, z toho `naradia` z Náradia a zvyšok
+ * z Občanov; čo jeden balíček nemá, doplní druhý (výklad Leadera 2026-10-30).
+ * Nástroje idú prvé — hráč ich má v balíčku stavby zoradené náradie / občania.
+ */
+function zVrchuBalickov(s: MutState, n: number, naradia: number): DeepMutable<CardInstance>[] {
+  let zNaradia = Math.min(naradia, n, s.naradie.length);
+  const zObcanov = Math.min(n - zNaradia, s.obcania.length);
+  zNaradia = Math.min(n - zObcanov, s.naradie.length);
+  return [...s.naradie.splice(0, zNaradia), ...s.obcania.splice(0, zObcanov)];
+}
+
+function zacniDraft(s: MutState, data: GameData, events: Event[]): void {
+  // Nevzaté karty zo starého šenku idú naspodok svojho balíčka (Náradie / Občania).
   if (s.senok.length > 0) {
-    s.spolocnyBalicek.push(...s.senok);
-    events.push({ type: "log", text: `Zo šenku ide naspodok balíčka ${s.senok.length} nevzatých kariet.` });
+    naspodok(s, data, s.senok);
+    events.push({ type: "log", text: `Zo šenku ide naspodok Náradia a Občanov ${s.senok.length} nevzatých kariet.` });
     s.senok = [];
   }
   const n = velkostStavby(s as GameState);
   const balicky: [DeepMutable<CardInstance>[], DeepMutable<CardInstance>[]] = [[], []];
-  for (const p of [obranca(s), s.utocnik] as const) balicky[p] = s.spolocnyBalicek.splice(0, n);
+  for (const p of [obranca(s), s.utocnik] as const) balicky[p] = zVrchuBalickov(s, n, KONSTANTY.STAVBA_NARADIE);
   s.draftStav = {
     krok: n > 0 ? "stavba" : "beranie",
     balicky,
@@ -1865,8 +1902,8 @@ function zacniDraft(s: MutState, events: Event[]): void {
     type: "log",
     text:
       n > 0
-        ? `Stavba šenku: každý hráč dostáva ${n} kariet zo spoločného balíčka.`
-        : "Spoločný balíček je prázdny — šenok sa nestavia.",
+        ? `Stavba šenku: každý hráč dostáva ${n} kariet z Náradia a Občanov.`
+        : "Náradie aj Občania sú prázdni — šenok sa nestavia.",
   });
 }
 
@@ -1918,7 +1955,7 @@ function cmdStavbaSenku(
       s.senok.push(karta);
       doSenku.push(`${defOf(data, karta as CardInstance).name} (hráč ${h + 1})`);
     }
-    for (const uid of vyber[h].odhod) s.spolocnyBalicek.push(vezmi(uid));
+    naspodok(s, data, vyber[h].odhod.map(vezmi));
   }
   events.push({ type: "log", text: `Do šenku: ${doSenku.join(", ")}.` });
   d.vyber = [null, null];
@@ -2016,12 +2053,16 @@ function dalsiVBerani(s: MutState, data: GameData, p: PlayerId, events: Event[])
   // Pitiek je podľa aktivovaných akcií lokality — prepočítava sa s líniou.
   s.pitkaCislo = 0;
   s.pitkyCelkom = pocetPitiek(data, s as GameState);
-  // Šenok sa po braní doplní z vrchu spoločného balíčka (Michal 2026-10-20) —
-  // Starosta, Cintorín a iné efekty potom majú z čoho brať.
-  const doplnit = Math.min(Math.max(0, KONSTANTY.SENOK_PO_BRANI - s.senok.length), s.spolocnyBalicek.length);
-  if (doplnit > 0) {
-    s.senok.push(...s.spolocnyBalicek.splice(0, doplnit));
-    events.push({ type: "log", text: `Šenok sa dopĺňa z vrchu spoločného balíčka na ${s.senok.length} kariet (+${doplnit}).` });
+  // Šenok sa po braní doplní na 8 (Michal 2026-10-20) — Starosta, Cintorín a iné
+  // efekty potom majú z čoho brať. v8.5: v pomere stavby — z Náradia, kým v šenku
+  // nie sú aspoň 2 Nástroje, zvyšok z Občanov.
+  const chyba = Math.max(0, KONSTANTY.SENOK_PO_BRANI - s.senok.length);
+  const naradiaVSenku = Math.round((KONSTANTY.SENOK_PO_BRANI * KONSTANTY.STAVBA_NARADIE) / (KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA));
+  const nastrojov = s.senok.filter((k) => jeNaradie(data, k as CardInstance)).length;
+  const doplnene = zVrchuBalickov(s, chyba, Math.max(0, naradiaVSenku - nastrojov));
+  if (doplnene.length > 0) {
+    s.senok.push(...doplnene);
+    events.push({ type: "log", text: `Šenok sa dopĺňa z vrchu Náradia a Občanov na ${s.senok.length} kariet (+${doplnene.length}).` });
   }
   // Fajčiar v5 (Michal 2026-10-24): +1 / +2 / +3 cigarety po výbere zo šenku —
   // súperovo Obmedzenie ich neuberá (nie sú z Pitky).

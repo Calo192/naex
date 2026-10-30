@@ -803,7 +803,7 @@ export function HernaPlocha({
     return () => window.removeEventListener("keydown", klaves);
   }, [potvrdenie, mode.typ]);
   // Stavba šenku (Michal 2026-10-28, roadmapa #147 a #148): klik vyberie kartu do Šenku
-  // (karta sa zdvihne), ďalší klik výber zruší; nevybrané idú naspodok spoločného balíčka.
+  // (karta sa zdvihne), ďalší klik výber zruší; nevybrané idú naspodok Náradia a Občanov.
   // Pri plnom výbere sú ostatné zosivené a klik na ne nič neurobí. Koľko do Šenku, určuje
   // jadro (krokStavby: polovica nahor). Server dostane celé rozdelenie. Pravidlo §5 sa nemení.
   const [senokStavby, setSenokStavby] = useState<readonly number[]>([]);
@@ -4952,7 +4952,9 @@ export function HernaPlocha({
             <div className={`stavba-balicek harmonika${plny ? " plny" : ""}`} role="group" aria-label={`Výber do Šenku: ${doSenku.length} z ${krokSt.doSenku}`}>
               <span className="stavba-balicek-nazov">
                 do Šenku <small>{doSenku.length}/{krokSt.doSenku}</small>
-                <span className="stavba-balicek-pozn">ostatné naspodok balíčka</span>
+                <span className="stavba-balicek-pozn" title="Nástroj ide naspodok Náradia, ostatné naspodok Občanov">
+                  ostatné naspodok · Náradie {view.naradiePocet} · Občania {view.obcaniaPocet}
+                </span>
               </span>
               {draft.mojBalicek.map((k) => {
                 const vybrata = doSenku.includes(k.uid);
@@ -5733,7 +5735,7 @@ export function HernaPlocha({
           pozn={
             zoSenkuLimit > 0
               ? `klikni na ${zoSenkuLimit === 1 ? "kartu" : `0–${zoSenkuLimit} kariet`} — vybrané idú do ruky`
-              : `spoločný balíček ${view.spolocnyBalicekPocet}`
+              : `Náradie ${view.naradiePocet} · Občania ${view.obcaniaPocet}`
           }
           skryta={tahanie !== null}
           onZavri={() => setVrstva(null)}

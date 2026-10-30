@@ -107,20 +107,26 @@ describe("výučba — pevné rozdanie", () => {
     expect(s.lokalitCelkom).toBe((r.rozpis?.length ?? r.lokality.length + 1) - 1);
     expect(s.utocnik).toBe(r.utocnik);
     // uid sú jedinečné aj po prepise.
-    const uids = [...s.hraci[0].ruka, ...s.hraci[1].ruka, ...s.lokalityVHre, ...s.spolocnyBalicek, ...s.starsi.map((e) => e.karta)].map((k) => k.uid);
+    const uids = [...s.hraci[0].ruka, ...s.hraci[1].ruka, ...s.lokalityVHre, ...s.naradie, ...s.obcania, ...s.starsi.map((e) => e.karta)].map((k) => k.uid);
     expect(new Set(uids).size).toBe(uids.length);
   });
 
-  it("variant karty, scorecard a spoločný balíček sa dajú zadať; neznáme hodnoty sú chyba", () => {
+  it("variant karty, scorecard a balíčky Náradie a Občania sa dajú zadať; neznáme hodnoty sú chyba", () => {
     const sc = data.scorecards[3]!.id;
     const s = setupZRozdania(data, {
       ...r,
       scorecardy: { farar: sc },
-      spolocnyBalicek: ["hasic", "svokra/0/1"],
+      naradie: ["puska/0/1"],
+      obcania: ["hasic", "svokra/0/1"],
       hraci: [{ ...r.hraci[0], ruka: ["hasic/1/0"] }, r.hraci[1]],
     });
     expect(s.starsi.find((e) => e.elderId === "farar")?.scorecard).toBe(sc);
-    expect(s.spolocnyBalicek.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["hasic/0/0", "svokra/0/1"]);
+    expect(s.naradie.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["puska/0/1"]);
+    expect(s.obcania.map((k) => `${k.defId}/${k.leftLayout}/${k.rightLayout}`)).toEqual(["hasic/0/0", "svokra/0/1"]);
+    // Scenár spred v8.5 s jedným spoločným balíčkom: rozdelí sa podľa druhu, poradie ostáva.
+    const stary = setupZRozdania(data, { ...r, spolocnyBalicek: ["hasic", "puska", "svokra"] });
+    expect(stary.naradie.map((k) => k.defId)).toEqual(["puska"]);
+    expect(stary.obcania.map((k) => k.defId)).toEqual(["hasic", "svokra"]);
     expect(s.hraci[0].ruka[0]?.leftLayout).toBe(1);
     expect(() => setupZRozdania(data, { ...r, lokality: ["pijan"] })).toThrow(/nie je lokalita/);
     expect(() => setupZRozdania(data, { ...r, hraci: [{ ...r.hraci[0], ruka: ["pijan/9/9"] }, r.hraci[1]] })).toThrow(/variantov/);

@@ -147,10 +147,11 @@ na jednom mieste v kóde (odkazy v zátvorkách). Michal ich všetky potvrdil
    `KONSTANTY.START_RUKA`).
 8. **Lokality** — dĺžka hry = počet bitiek o lokalitu: krátka 3, stredná 5,
    dlhá 7 (`DLZKY_HRY`, od 2026-10-24; predtým 5 / 7 / 11); sada má 15 lokalít.
-9. **Šenok** — v každom kole sa stavia z toľkých kariet, koľko je
-   nenahradených starších (nadol na párne, najviac polovica spoločného
-   balíčka); po braní sa doplní z balíčka na 8. Keď sa spoločný balíček
-   minie, šenok sa zmenšuje až na nulu (`engine.ts`, `velkostStavby`).
+9. **Šenok** — karty šenku sú v dvoch balíčkoch, Náradie (Nástroje)
+   a Občania (v8.5, Michal 2026-10-30); každý hráč dostane 2 + 6 kariet, po
+   braní sa šenok doplní na 8 v tom istom pomere. Keď jeden balíček nestačí,
+   doplní druhý; keď sa minú oba, šenok sa zmenšuje až na nulu (`engine.ts`,
+   `velkostStavby`).
 
 Ďalšie drobné rozhodnutia: prebytok rozdeľuje jeho **držiteľ** (vyššie
 celkové) smerom k súperovi; veľkosť balíčka sa kontroluje po drafte
@@ -215,7 +216,7 @@ a `packages/core/data/scorecards.json`. Michal ich potvrdil 2026-10-22
   udávajú len −1 za dlh); kladné za kus platia až od oranžovej zóny. Rozloženie podmienok je z KartyAI,
   scorecardy sa starším rozdávajú náhodne (rozhodnutie Michala 2026-10-11),
 - rozdelenie **štartovacej ruky** (3/2/1/1) a počet **kópií kariet**
-  v spoločnom balíčku (2).
+  v Náradí a Občanoch (2).
 
 ## Zdroje
 

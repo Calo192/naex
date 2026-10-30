@@ -36,6 +36,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["karty po bitke", `dobereš **${pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}**`],
     ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],
+    ["stavba šenku z dvoch balíčkov (v8.5)", `dostaneš **${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov**, dáš **${(KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA) / 2} do šenku**`],
+    ["doplnenie šenku v pomere (v8.5)", `najprv z Náradia, kým v ňom nie sú ${KONSTANTY.STAVBA_NARADIE} Nástroje, zvyšok z Občanov`],
     ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],
     [
       "fajčenie (2026-10-27)",

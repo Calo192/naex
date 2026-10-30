@@ -1,6 +1,7 @@
 // Draft so stavbou šenku (Michal 2026-10-12): obaja naraz dávajú karty do
 // šenku a naspodok (od 2026-10-20 polovicu a polovicu, bez podávania
 // balíčkov), potom striedavo berú — 1 karta za cigaretu, 2 karty za 3 cigarety.
+// v8.5 (Michal 2026-10-30): karty stavby z dvoch balíčkov — 2 z Náradia, 6 z Občanov.
 
 import { describe, expect, it } from "vitest";
 // Sada v6 (pred revíziou v7): test stráži pravidlá, ktoré revízia sady nemení.
@@ -12,6 +13,7 @@ import {
   apply,
   KONSTANTY,
   IllegalCommandError,
+  jeNaradie,
   legalCommands,
   loadGameData,
   mozeHrat,
@@ -58,17 +60,40 @@ function postavSenok(s: GameState): GameState {
 }
 
 describe("stavba šenku", () => {
-  it("každý dostane toľko kariet, koľko je nenahradených starších (nadol na párne)", () => {
+  it("každý dostane 2 karty z Náradia a 6 z Občanov, bez ohľadu na počet starších (v8.5)", () => {
     const s0 = setupGame(data, 1);
     expect(s0.senok).toHaveLength(0);
+    expect(s0.naradie.length).toBeGreaterThan(0);
+    expect(s0.naradie.every((k) => jeNaradie(data, k))).toBe(true);
+    expect(s0.obcania.some((k) => jeNaradie(data, k))).toBe(false);
     const s = doDraftu(1);
     expect(velkostStavby(s0)).toBe(8);
     expect(s.draftStav?.krok).toBe("stavba");
-    expect(s.draftStav?.balicky[0]).toHaveLength(8);
-    expect(s.draftStav?.balicky[1]).toHaveLength(8);
-    expect(s.spolocnyBalicek).toHaveLength(s0.spolocnyBalicek.length - 16);
+    // Zoradené náradie / občania.
+    for (const p of [0, 1] as const) expect(s.draftStav!.balicky[p].map((k) => jeNaradie(data, k))).toEqual([true, true, false, false, false, false, false, false]);
+    expect(s.naradie).toHaveLength(s0.naradie.length - 4);
+    expect(s.obcania).toHaveLength(s0.obcania.length - 12);
+    // Nahradený starší počet kariet stavby nemení (do v8.4 by bolo 6).
     const sedem = { ...s0, starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, nahradeny: true } : e)) };
-    expect(velkostStavby(sedem)).toBe(6);
+    expect(velkostStavby(sedem)).toBe(8);
+  });
+
+  it("čo jeden balíček nemá, doplní druhý; keď sa minú oba, stavba sa zmenšuje (výklad 2026-10-30)", () => {
+    const s0 = setupGame(data, 12);
+    // V Náradí jediný Nástroj: obranca ho dostane a 7 Občanov, útočník 8 Občanov.
+    const s = doDraftu(12, (s) => ({ ...s, naradie: s.naradie.slice(0, 1) }));
+    expect(s.draftStav!.balicky[obrancaOf(s)].filter((k) => jeNaradie(data, k))).toHaveLength(1);
+    expect(s.draftStav!.balicky[s.utocnik].filter((k) => jeNaradie(data, k))).toHaveLength(0);
+    expect(s.draftStav!.balicky.map((b) => b.length)).toEqual([8, 8]);
+    expect(s.naradie).toHaveLength(0);
+    // Málo Občanov: chýbajúce dá Náradie.
+    const m = doDraftu(12, (s) => ({ ...s, obcania: s.obcania.slice(0, 3) }));
+    expect(m.draftStav!.balicky.map((b) => b.length)).toEqual([8, 8]);
+    expect(m.obcania).toHaveLength(0);
+    expect(m.naradie).toHaveLength(s0.naradie.length - 13);
+    // Spolu 6 kariet: každý po 2 (nadol na párne).
+    expect(velkostStavby({ naradie: s0.naradie.slice(0, 1), obcania: s0.obcania.slice(0, 5) })).toBe(2);
+    expect(velkostStavby({ naradie: [], obcania: s0.obcania.slice(0, 1) })).toBe(0);
   });
 
   it("obaja hrajú naraz; výber sa odhalí, až keď vyberú obaja", () => {
@@ -94,13 +119,13 @@ describe("stavba šenku", () => {
     expect(JSON.stringify(pohlad)).not.toContain(`"uid":${bu[0]!.uid},`);
 
     const bo = s.draftStav!.balicky[o];
-    const predBalicek = s.spolocnyBalicek.length;
+    const predObcania = s.obcania.length;
     s = apply(data, s, vyber(bo), o).state;
     const uids = (b: readonly CardInstance[]): number[] => b.map((k) => k.uid);
     expect(uids(s.senok).sort()).toEqual([...uids(bu.slice(0, 4)), ...uids(bo.slice(0, 4))].sort());
-    // Odhodené ležia naspodok spoločného balíčka.
-    expect(s.spolocnyBalicek).toHaveLength(predBalicek + 8);
-    expect(uids(s.spolocnyBalicek.slice(-8)).sort()).toEqual([...uids(bu.slice(4)), ...uids(bo.slice(4))].sort());
+    // Odhodení Občania ležia naspodok Občanov.
+    expect(s.obcania).toHaveLength(predObcania + 8);
+    expect(uids(s.obcania.slice(-8)).sort()).toEqual([...uids(bu.slice(4)), ...uids(bo.slice(4))].sort());
     // Bez podávania balíčkov: stavba je hotová jedným výberom.
     expect(s.draftStav?.krok).toBe("beranie");
   });
@@ -121,11 +146,27 @@ describe("stavba šenku", () => {
     expect(JSON.stringify(viewFor(data, s, u))).not.toContain(`"uid":${odhod.uid},`);
   });
 
-  it("stavba má jeden krok; po nej má šenok 8 kariet a spoločný balíček stratil len tie", () => {
+  it("do šenku ľubovoľný mix; Nástroj naspodok ide k Náradiu, Občan k Občanom", () => {
+    let s = doDraftu(13);
+    const u = s.utocnik;
+    const o = obrancaOf(s);
+    const predNaradie = s.naradie.length;
+    // Útočník dá do šenku 4 Občanov a oba Nástroje naspodok, obranca oba Nástroje do šenku.
+    const bu = s.draftStav!.balicky[u];
+    s = apply(data, s, { type: "stavbaSenku", doSenku: bu.slice(2, 6).map((k) => k.uid), odhod: [...bu.slice(0, 2), ...bu.slice(6)].map((k) => k.uid) }, u).state;
+    const bo = s.draftStav!.balicky[o];
+    s = apply(data, s, vyber(bo), o).state;
+    expect(s.senok.filter((k) => jeNaradie(data, k))).toHaveLength(2);
+    expect(s.naradie).toHaveLength(predNaradie + 2);
+    expect(s.naradie.slice(-2).map((k) => k.uid)).toEqual(bu.slice(0, 2).map((k) => k.uid));
+    expect(s.obcania.slice(-6).map((k) => k.uid).sort()).toEqual([...bu.slice(6), ...bo.slice(4)].map((k) => k.uid).sort());
+  });
+
+  it("stavba má jeden krok; po nej má šenok 8 kariet a balíčky stratili len tie", () => {
     const s0 = setupGame(data, 4);
     const s = krokStavby(doDraftu(4));
     expect(s.senok).toHaveLength(8);
-    expect(s.spolocnyBalicek).toHaveLength(s0.spolocnyBalicek.length - 8);
+    expect(s.naradie.length + s.obcania.length).toBe(s0.naradie.length + s0.obcania.length - 8);
     expect(s.draftStav?.krok).toBe("beranie");
     // Zo šenku berie prvý útočník (Michal 2026-10-16).
     expect(naTahu(s)).toBe(s.utocnik);
@@ -184,31 +225,54 @@ describe("branie zo šenku (Michal 2026-10-19: 1 karta za cigaretu, 2 karty za 3
     expect(legalCommands(data, s, s.utocnik)).toEqual([{ type: "draftStop" } satisfies Command]);
   });
 
-  it("nevzaté karty idú pri ďalšom drafte naspodok spoločného balíčka", () => {
+  it("nevzaté karty idú pri ďalšom drafte naspodok svojho balíčka (Náradie / Občania)", () => {
     let s = postavSenok(doDraftu(8));
     for (let i = 0; i < 2; i++) s = apply(data, s, { type: "draftStop" }, naTahu(s)!).state;
-    const zvysok = s.senok.map((k) => k.uid);
+    const zvysok = s.senok;
     expect(zvysok).toHaveLength(8);
+    const nastroje = zvysok.filter((k) => jeNaradie(data, k)).map((k) => k.uid);
+    const obcania = zvysok.filter((k) => !jeNaradie(data, k)).map((k) => k.uid);
+    expect(nastroje.length).toBeGreaterThan(0);
     // Nasimulujeme začiatok ďalšieho kola s voľbou lokality.
     const dalsie: GameState = { ...s, faza: "volbaCiela", draftStav: null, zhromazdenieStav: null, pitkaStav: null };
     const lok = dalsie.lokalityVHre[0]!;
     const po = apply(data, dalsie, { type: "chooseLocation", uid: lok.uid, otocena: false }, (1 - dalsie.utocnik) as PlayerId).state;
     expect(po.senok).toHaveLength(0);
-    expect(po.spolocnyBalicek.slice(-8).map((k) => k.uid)).toEqual(zvysok);
+    expect(po.naradie.slice(-nastroje.length).map((k) => k.uid)).toEqual(nastroje);
+    expect(po.obcania.slice(-obcania.length).map((k) => k.uid)).toEqual(obcania);
   });
 });
 
 describe("doplnenie šenku po braní (Michal 2026-10-20)", () => {
-  it("po braní sa šenok doplní na 8 z vrchu spoločného balíčka", () => {
+  it("po braní sa šenok doplní na 8; s 2 Nástrojmi v šenku z vrchu Občanov", () => {
     let s = postavSenok(doDraftu(10));
     const u = s.utocnik;
     s = sCigaretami(s, u, 3);
+    // Zoberie dva Nástroje obrancu — v šenku ostanú dva útočníkove.
+    expect(s.senok.slice(0, 2).every((k) => jeNaradie(data, k))).toBe(true);
     s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, u).state;
     expect(s.senok).toHaveLength(6);
-    const vrch = s.spolocnyBalicek.slice(0, 2).map((k) => k.uid);
+    expect(s.senok.filter((k) => jeNaradie(data, k))).toHaveLength(2);
+    const vrch = s.obcania.slice(0, 2).map((k) => k.uid);
     while (s.faza === "draft") s = apply(data, s, { type: "draftStop" }, naTahu(s)!).state;
     expect(s.senok).toHaveLength(KONSTANTY.SENOK_PO_BRANI);
     expect(s.senok.slice(-2).map((k) => k.uid)).toEqual(vrch);
+  });
+
+  it("v pomere stavby: najprv z Náradia, kým v šenku nie sú 2 Nástroje, zvyšok z Občanov (v8.5)", () => {
+    let s = postavSenok(doDraftu(14));
+    // Šenok bez Nástrojov, 4 Občania.
+    s = { ...s, senok: s.senok.filter((k) => !jeNaradie(data, k)).slice(0, 4) };
+    const naradie = s.naradie.slice(0, 2).map((k) => k.uid);
+    const obcania = s.obcania.slice(0, 2).map((k) => k.uid);
+    while (s.faza === "draft") s = apply(data, s, { type: "draftStop" }, naTahu(s)!).state;
+    expect(s.senok.slice(-4).map((k) => k.uid)).toEqual([...naradie, ...obcania]);
+    // Bez Náradia doplnia všetko Občania.
+    let b = postavSenok(doDraftu(14));
+    b = { ...b, senok: [], naradie: [] };
+    const vrch = b.obcania.slice(0, 8).map((k) => k.uid);
+    while (b.faza === "draft") b = apply(data, b, { type: "draftStop" }, naTahu(b)!).state;
+    expect(b.senok.map((k) => k.uid)).toEqual(vrch);
   });
 });
 

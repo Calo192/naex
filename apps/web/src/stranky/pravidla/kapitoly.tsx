@@ -242,15 +242,17 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="senok-stavba">Stavba šenku</H3>
         <p>
-          Nevzaté karty zo starého šenku idú naspodok spoločného balíčka. Potom si každý zo spoločného balíčka vezme toľko kariet,
-          koľko je v hre nenahradených starších (zaokrúhlené nadol na párne číslo; na začiatku 8). Obaja naraz a tajne dáte <strong>polovicu do šenku</strong> a
-          polovicu <strong>naspodok balíčka</strong> (súper ju nevidí). Nič si nepodávate; pri 8 kartách 4 + 4 a šenok má 8 kariet.
+          Karty šenku ležia v dvoch balíčkoch lícom dole: <P k="naradie">Náradie</P> (Nástroje) a <P k="obcania">Občania</P>{" "}
+          (všetky ostatné). Nevzaté karty zo starého šenku idú naspodok svojho balíčka. Potom si každý vezme{" "}
+          <strong>2 karty z Náradia a 6 z Občanov</strong>. Obaja naraz a tajne dáte <strong>4 do šenku</strong> v ľubovoľnom mixe
+          a zvyšné 4 <strong>naspodok ich balíčka</strong> (súper ich nevidí). Nič si nepodávate; šenok má 8 kariet. Keď niektorý
+          balíček nestačí, chýbajúce karty dá druhý.
         </p>
         <H3 id="senok-branie">Branie zo šenku</H3>
         <p>
           Beriete striedavo, začína <strong>útočník</strong>. Na ťahu vezmeš <strong>1 kartu za 1 cigaretu</strong> alebo{" "}
           <strong>2 karty za 3 cigarety</strong>. Šenok sa poldeci neplatí. Kto prestane, druhému ostáva už len jeden ťah; kto
-          nemá cigaretu, prestane sám. Potom sa šenok doplní z vrchu spoločného balíčka. Kto má priazeň{" "}
+          nemá cigaretu, prestane sám. Potom sa šenok doplní na 8 kariet — najprv z Náradia, kým v ňom nie sú aspoň 2 Nástroje, zvyšok z Občanov. Kto má priazeň{" "}
           <strong>Fajčiara</strong>, dostane hneď po braní cigarety navyše (súperovo Obmedzenie ich neuberá).
         </p>
         <H3 id="patronat">Patronát</H3>
