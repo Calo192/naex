@@ -31,8 +31,8 @@ import type {
 } from "./engine.ts";
 import { cenaDedicstva, lokalityNaVyber, prahVydesenia, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
 import { KONSTANTY } from "./constants.ts";
-import { efektHraca, efektPotlaceny } from "./effects.ts";
-import type { VerejnyStav } from "./effects.ts";
+import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
+import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
 import {
   MARKER_STRED,
   favourStarsieho,
@@ -166,6 +166,11 @@ export interface ClientState {
   /** Moja ruka — jediná ruka, ktorá sa posiela celá. */
   readonly ruka: readonly CardInstance[];
   readonly hraci: readonly [HracVerejne, HracVerejne];
+  /**
+   * Akcie oboch hráčov posilnené Nástrojmi v Dedičstve (žeravé ikony). Verejné —
+   * Dedičstvo leží na stole, súperove posilnené akcie žhnú tiež.
+   */
+  readonly vplyvyAkcii: readonly [readonly VplyvNaAkciu[], readonly VplyvNaAkciu[]];
   readonly spolocnyBalicekPocet: number;
   readonly senok: readonly CardInstance[];
   /**
@@ -340,6 +345,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     dedicstvaVylozene: state.dedicstvaVylozene,
     ruka: state.hraci[ja].ruka,
     hraci: [publicPlayer(0), publicPlayer(1)],
+    vplyvyAkcii: [vplyvyNaAkcie(state, 0), vplyvyNaAkcie(state, 1)],
     spolocnyBalicekPocet: state.spolocnyBalicek.length,
     senok: state.senok,
     lokalityVHre: lokalityNaVyber(data, state),
