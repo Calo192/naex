@@ -214,3 +214,23 @@ the whole scene, no spotlight, no circle or cone of light … no hands …“.
   no beard, no hat“.
 - **Zamietnuté pred kolážou:** dva klony Kočovníka (`tiper-c` kolo 1-1
   a kolo 3-2) a automat s pseudonápisom (`tiper-c` kolo 3-1).
+
+### Opatrovateľka (Občan, Zahraničný, Pracujúci, Žena) — 2026-10-30, čaká na výber
+
+`H5` = `F:\Projects\handoff\ilustracie-2026-10-30-opatrovatelka\`, koláž `H5\kolaz.jpg`.
+Typ ženy nebol z karty jasný, preto oba: „hot chick“ (č. 1–4, 7–8) a stará rašpľa (č. 5–6).
+
+- **Kandidáti:** č. 1–2 `opatrovatelka-a` (čierny vysoký cop, lilavé tepláky,
+  páperka s kožušinou, sedí na kufri na zastávke, autobus do Rakúska, opilci
+  na lavičke; predlohy Poštárka, Krčmárka, Podvodník), č. 3–4 `opatrovatelka-b`
+  (platinový pixie, sesterská tunika na leopardích legínach, zabavená fľaša
+  nad starčekom na vozíku v alpskej izbe; Krčmárka, Veterinár, Poštárka),
+  č. 5–6 `opatrovatelka-c` kolo 2 (šedivá rašpľa v kardigane počíta bankovky,
+  fľaša bez etikety, prevrátený poldecák, kufor pri dverách; Niekoho stryná,
+  Veterinár, Krčmárka), č. 7–8 `opatrovatelka-d` (karamelová blondína
+  v leopardej blúzke a žltých gumených rukaviciach, kľúč na krku, zamknutá
+  vitrína s alkoholom, cudzie hodinky; Krčmárka, Finančná poradkyňa, Podvodník).
+- **Zamietnuté pred kolážou:** `opatrovatelka-c` kolo 1: čitateľné
+  „SLIVOVICA“ na etikete, pseudotext na bankovkách a zlatý zub vyzeral ako
+  tesák. Lekcia: fľašu píš „plain glass bottle with no label at all“, zlatý
+  zub pri ženách vynechaj.
