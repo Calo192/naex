@@ -42,7 +42,8 @@ function fakeState(overrides: Partial<GameState>): GameState {
 describe("M10 — register", () => {
   // Nové karty (Michal 2026-10-20) sú v registri skôr než vo zverejnenej sade —
   // data/cards.json je jej kópia a doplní sa po zverejnení.
-  const CAKAJU_NA_ZVEREJNENIE: string[] = []; // sofer, snubenica, kar sú vo v11
+  // Náradie (Michal 2026-10-30): Nástroje a Tipér pridá Admin do sady — dovtedy len v registri.
+  const CAKAJU_NA_ZVEREJNENIE: string[] = ["zapalovac", "vyherne_zreby", "pistalka", "hrable", "zrkadlo", "boxer", "telefon", "jogurt", "energetak", "horoskop", "furik", "kristalova_gula", "profesionalny_tiper"];
 
   it("pokrýva všetky id sady, navyše len karty čakajúce na zverejnenie", () => {
     const vRegistri = new Set(Object.keys(REGISTER));

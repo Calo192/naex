@@ -162,7 +162,8 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Poldeci: 0.5,
   Posilnenie: 0.6,
   Odpor: 0.3,
-  Robota: 0.2,
+  // v8.4: Robota bez Dlhu dá špak — nikdy nie je hluchá.
+  Robota: 0.6,
   // Pakt sa v súčtoch nikdy neobjaví — na spoji sa premení na akciu partnera.
   Pakt: 0,
 };
@@ -174,6 +175,8 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
  */
 const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   silna_nezavisla_zena: 1,
+  // Náradie (2026-10-30): premena posilnených akcií na jeho spojoch vidí odhad bitky.
+  profesionalny_tiper: 0.3,
   liberal: 0.4,
   zamocnik: 0.3,
   policajtka: 0.5,
@@ -227,8 +230,8 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   svaty_text: 0.8,
   // v7: karta za každé 2 cigarety, ktoré súper vyfajčí.
   cigorky: 0.5,
-  // v7: Petelice a Rany o 1 poškodenie viac.
-  puska: 0.6,
+  // Náradie 2026-10-30: Puška chráni prepojenú Petelicu pred zrušením (ráta za 2); Vidly Rany +1.
+  puska: 0.4,
   vidly: 1,
   // v7: špaky za prehranú bitku, keď má víťaz viac priznaných Dlhov.
   noviny: 0.5,
@@ -238,6 +241,19 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   vyherny_automat: -0.3,
   vinko: 0.8,
   lievik: 0.3,
+  // Náradie (Michal 2026-10-30) — hrubé odhady, kým ich nezmeria turnaj.
+  zapalovac: 0.4,
+  vyherne_zreby: 0.4,
+  pistalka: 0.3,
+  hrable: 0.5,
+  zrkadlo: 0.4,
+  boxer: 0.7,
+  telefon: 0.4,
+  jogurt: 0.5,
+  energetak: 0.4,
+  horoskop: 0.4,
+  furik: 0.5,
+  kristalova_gula: 0.4,
 };
 
 /**
@@ -505,6 +521,9 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       w += zaPohorsenie * Math.min(POHORSENIE_STROP, pohorsenia[p]);
       // Povera (v8.3): zvyšná po Viere posunie silu priazne o stupeň na toto kolo — nikdy hluchá.
       w += ZA_POVERU * Math.min(POHORSENIE_STROP, dmg.zvysnaPovera[p]);
+      // Robota (v8.4): za každý Dlh, ktorý nemá čo spáliť, špak (Fúrik páli viac).
+      const furik = h.dedicstvo.filter((x) => x.defId === "furik").length;
+      w += k.povaha.body * Math.max(0, (sp.Robota ?? 0) * (1 + furik) - h.dlhy);
       const naex = s.strany.flat().filter((pl) => pl.naexBy === p).length;
       w += (0.4 * k.buducnost + vykupne * KONSTANTY.SPAKY_ZA_POLDECI) * Math.min(sp.Poldeci ?? 0, h.poldeciVypite + naex);
       // Akcia Dlh zadlžuje (karta Dlh za každý celý prah). Pečeň pod prahom sa po Pitke
@@ -1198,6 +1217,16 @@ function pitka(v: Volba): Command | null {
     const zahodit =
       vrchna !== undefined &&
       (vrchna.defId === "cirhoza" || (balicek > TENKY_BALICEK && hodnotaKarty(data, vrchna) < priemernaKarta(data, state, ja) - 0.3));
+    // Krištáľová guľa (Náradie 2026-10-30): z dvoch vrchných vezme lepšiu, inak zahodí horšiu.
+    const druha = h.doberaci[1];
+    if (vrchna !== undefined && druha !== undefined && v.legal.some((c) => c.type === "vizia" && c.druha === true)) {
+      const cena = (x: CardInstance): number => (x.defId === "cirhoza" ? -99 : hodnotaKarty(data, x));
+      const lepsiaDruha = cena(druha) > cena(vrchna);
+      if (Math.max(cena(vrchna), cena(druha)) >= priemernaKarta(data, state, ja) - 0.3 || balicek <= TENKY_BALICEK) {
+        return lepsiaDruha ? { type: "vizia", vziat: true, druha: true } : { type: "vizia", vziat: true };
+      }
+      return lepsiaDruha ? { type: "vizia", vziat: false } : { type: "vizia", vziat: false, druha: true };
+    }
     return { type: "vizia", vziat: !zahodit };
   }
 

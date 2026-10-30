@@ -20,13 +20,14 @@ import {
   stavZavislosti,
   textNeresti,
   jeCoTahat,
-  kartyZaPas,
+  cigaretyZaPas,
   KONSTANTY,
   cakaSBzdochou,
   hraVPitke,
   jeFinaleNaNastenke,
   STAV_STARSIEHO,
   poveraMozna,
+  klebetyKola,
   ucinnaPriazen,
   STUPNICA_ZONY,
   cigariet,
@@ -854,7 +855,7 @@ function moznosti(v: ClientState): string[] {
     }
     case "zhromazdenie": {
       const z = v.zhromazdenieStav;
-      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${v.zhromazdenieStav === null ? 0 : kartyZaPas(v.zhromazdenieStav, ja, v.hraci[ja].rukaPocet) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, najviac toľko, koľko máš kariet v ruke; na Zastávke len z vlastného limitu)`);
+      c({ type: "pass" }, `pasovať (do Pitky už nevykladáš, súper vykladá sám; dostaneš ${cigaretyZaPas(DATA, v, ja, v.hraci[ja].rukaPocet)} cig. — cigaretu za každú kartu, ktorú si ešte smel vyložiť, najviac toľko, koľko máš kariet v ruke; na Zastávke len z vlastného limitu)`);
       // V Zhromaždení sa nefajčí (§7) — motor smoke odmietne, preto ho ani neponúkať.
       if (zakazVypit(v)) out.push("(Kostol: nikto nesmie vypiť — v ťahu len jedna karta)");
       if (v.hraci[ja].poldeciPlne > 0 && z !== null && !zakazVypit(v)) {
@@ -887,6 +888,12 @@ function moznosti(v: ClientState): string[] {
         const zostava = v.vizia.zostava[ja];
         c({ type: "vizia", vziat: true }, `VÍZIA: vrchnú kartu balíčka ${k === null ? "" : popisKarty(k)} si vezmi do ruky${zostava > 1 ? ` (ešte ${zostava - 1} Vízie)` : ""}`);
         c({ type: "vizia", vziat: false }, "VÍZIA: vrchnú kartu ZAHOĎ — je navždy preč z hry (kliatba, slabá karta)");
+        const k2 = v.volbaViziaDruha ?? null;
+        if (k2 !== null) {
+          // Krištáľová guľa (Náradie 2026-10-30): o druhej karte zhora; vrchná ostane navrchu.
+          c({ type: "vizia", vziat: true, druha: true }, `VÍZIA (Krištáľová guľa): DRUHÚ kartu zhora ${popisKarty(k2)} si vezmi do ruky — vrchná ostane navrchu`);
+          c({ type: "vizia", vziat: false, druha: true }, "VÍZIA (Krištáľová guľa): DRUHÚ kartu zhora ZAHOĎ — vrchná ostane navrchu");
+        }
         break;
       }
       const h = v.hraci[ja];
@@ -1056,9 +1063,10 @@ function moznosti(v: ClientState): string[] {
         // v8.3 „Výpožička priazne“: každá Povera posunie silu priazne staršieho o stupeň k tebe, len na toto kolo.
         out.push(`(Povery ${b.poveryZostava[ja]}: každá posunie silu priazne jedného staršieho o stupeň k tebe — zníži súperovu, preklopí ju, požičia zo stredu alebo zosilní tvoju, najviac na 3. Marker sa nehýbe, strach ani udržanie sa nemenia; platí do konca kola. Obranca rozdeľuje prvý.)`);
         for (const e of v.starsi) {
-          if (!poveraMozna(e, ja, b.klebety)) continue;
-          const pred = ucinnaPriazen(e, b.klebety);
-          const po = ucinnaPriazen(e, { ...b.klebety, [e.elderId]: (b.klebety[e.elderId] ?? 0) + (ja === 0 ? 1 : -1) });
+          const kl = klebetyKola(v) ?? {};
+          if (!poveraMozna(e, ja, kl)) continue;
+          const pred = ucinnaPriazen(e, kl);
+          const po = ucinnaPriazen(e, { ...kl, [e.elderId]: (kl[e.elderId] ?? 0) + (ja === 0 ? 1 : -1) });
           const kto = (u: { hrac: PlayerId | null; sila: number }): string => (u.hrac === null ? "nikto" : `${u.hrac === ja ? "ty" : "súper"} +${u.sila}`);
           c({ type: "povera", elderId: e.elderId }, `Povera na ${meno(e.karta.defId)} (${scorecardStarsieho(DATA, e).nazov}): priazeň v tomto kole ${kto(pred)} → ${kto(po)}`);
         }

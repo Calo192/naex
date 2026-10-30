@@ -41,6 +41,8 @@ export function zarSlotu(
   const v = vplyvy.find((x) => x.akcia === akcia);
   if (v === undefined) return null;
   const meno = menoKarty(v.zdroj);
+  // Zmena bez čísla (Náradie 2026-10-30: Zapaľovač, Žreby…) — veta z jadra.
+  if (v.popis !== undefined) return { smer: "plus", stitok: v.o > 0 ? `${meno} +${v.o}` : meno, popis: `${meno} v Dedičstve: ${v.popis}.`, pricina: `${v.zdroj}${v.o}` };
   return {
     smer: "plus",
     stitok: `${meno} +${v.o}`,

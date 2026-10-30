@@ -30,11 +30,12 @@ export function spakyPodlaZdroja(view: Pick<ClientState, "nastenka">, p: PlayerI
   const finale = view.nastenka.find((b) => jeFinaleNaNastenke(b)) ?? null;
   const prebytok = sucet((b) => b.prebytok[p]);
   return {
-    zaLokality: lokality.reduce((a, b) => a + b.zaBitku[p], 0),
+    // Robota bez Dlhov (Náradie 2026-10-30) dáva špaky v bitke — rátajú sa k bitke.
+    zaLokality: lokality.reduce((a, b) => a + b.zaBitku[p] + (b.robota?.[p] ?? 0), 0),
     vyhrate: lokality.flatMap((b) => (b.vitaz === p && b.lokalita !== null ? [b.lokalita] : [])),
     zoSekery: sucet((b) => (b.vitaz === p ? b.zoSekery : 0)),
     zaStarsich: sucet((b) => b.zaStarsich[p]),
-    zaFinale: (finale?.zaBitku[p] ?? 0) + prebytok,
+    zaFinale: (finale?.zaBitku[p] ?? 0) + (finale?.robota?.[p] ?? 0) + prebytok,
     finale,
     prebytok,
     exekutor: -sucet((b) => b.exekutor[p]),

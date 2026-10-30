@@ -11,7 +11,7 @@ import type { BitkaKrok, Command, StavBodovPohorseni } from "./engine.ts";
 import { bodyNaPohorsenie, lineState, poskodenieBitky } from "./engine.ts";
 import { evaluateLine } from "./partia.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
-import { posunZaBody } from "./elders.ts";
+import { posunZaBody, telefonHraca } from "./elders.ts";
 import { opponentOf, type PlayerId } from "./types.ts";
 
 /** Voľba hráča: starší a smer (kSebe len pri Pohoršení — prebytok má jediný smer). */
@@ -105,7 +105,7 @@ export function planRozdelenia(state: StavRozdelenia, p: PlayerId, volby: readon
     const kSebe = krok === "pohorsenie" && v.kSebe === true;
     const smer = krok === "pohorsenie" ? (kSebe ? p : opponentOf(p)) : opponentOf(b.prebytokDrzi as PlayerId);
     const body = z === undefined || zvysok <= 0 ? 0 : bodyPre(state, p, krok, zvysok, zvysokPatronatu, v.elderId);
-    const posun = z === undefined || body <= 0 ? null : posunZaBody({ marker: z }, smer, body);
+    const posun = z === undefined || body <= 0 ? null : posunZaBody({ marker: z }, smer, body, krok === "pohorsenie" && telefonHraca(state, p));
     if (z === undefined || posun === null) {
       nevyslo.push(v);
       continue;
@@ -139,7 +139,7 @@ export function starsiPreZvysok(state: StavRozdelenia, p: PlayerId, plan: PlanRo
     .filter((e) => !vPlane.has(e.elderId))
     .filter((e) => {
       const body = rozpocetPoPlane(state, p, plan, e.elderId);
-      return body > 0 && smery.some((s) => posunZaBody(e, s.smer, body) !== null);
+      return body > 0 && smery.some((s) => posunZaBody(e, s.smer, body, krokRozdelenia(state, p) === "pohorsenie" && telefonHraca(state, p)) !== null);
     })
     .map((e) => e.elderId);
 }
@@ -170,7 +170,7 @@ export function zvysokPrepadne(state: StavRozdelenia, p: PlayerId, plan: PlanRoz
   return !state.starsi.some((e) => {
     const body = rozpocetPoPlane(state, p, plan, e.elderId);
     const marker = po.get(e.elderId) ?? e.marker;
-    return body > 0 && smery.some((s) => posunZaBody({ marker }, s.smer, body) !== null);
+    return body > 0 && smery.some((s) => posunZaBody({ marker }, s.smer, body, krokRozdelenia(state, p) === "pohorsenie" && telefonHraca(state, p)) !== null);
   });
 }
 

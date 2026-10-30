@@ -1695,3 +1695,26 @@ Staré znenie §9.4 (kto drží Nakladačku):
 Staré znenie §16 (Čierna mačka):
 
 > | Čierna mačka | Majiteľove Povery spôsobujú mäkké poškodenie aj bez súperových priznaných Dlhov. |
+
+
+## v8.4 — Náradie: zmena Roboty (Michal 2026-10-30, docs/napady/naradie-akcie.html)
+
+Staré znenie §11 (Robota v kroku Exekútora):
+
+> ### Exekútor
+>
+> Krok 4c bitky (§9), aj vo finále — **po poškodení, výsledku a špakoch za bitku
+> a za starších, pred Nakladačkou** (Michal 2026-10-28); **vždy po hráčoch: obranca
+> Robota a Exekútor, potom útočník Robota a Exekútor**.
+> Remíza na Dlhy, Herňa a Noviny teda rátajú priznané Dlhy
+> **pred** exekúciou. Najprv **Robota**: za každú aktívnu Robotu hráč **spáli**
+> 1 priznaný Dlh — v tomto kroku, nie pred poškodením, aby Povere nezobrala cieľ;
+> zmenší, čo zhorí Exekútorovi. Potom príde **Exekútor — bez prahu, vždy**, ku
+> každému hráčovi s aspoň 1 **priznaným** Dlhom (nepriznané sa nerátajú):
+
+Staré znenie §2: Robota „spáli 1 priznaný Dlh (z hry, §11)“ — bez špaku, keď Dlh nebol.
+
+
+Staré znenie §16 (Puška, v7):
+
+> | Puška | Dedičstvo: každá tvoja aktívna Petelica udelí o 1 poškodenie viac. |

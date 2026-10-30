@@ -26,6 +26,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["pojmy stupnice (v8.3)", "**pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**"],
     ["Povery (v8.3)", "**každá zvyšná Povera posunie silu priazne jedného staršieho o stupeň k tebe**"],
     ["Povery strop (v8.3)", "**najviac na 3**"],
+    ["Robota bez Dlhu (v8.4)", "**za každý Dlh, ktorý nemá čo spáliť, 1 špak**"],
+    ["Telefón (v8.4)", `z červenej ${cenaKroku(6, 5, true)}, z oranžovej ${cenaKroku(5, 4, true)}, zo žltej ${cenaKroku(4, 3, true)}`],
     ["Kmotor (v8)", "Kmotor: po bitke presunie 1 / 2 / 3 tvoje priznané Dlhy medzi súperove"],
     ["Exekútor bez prahu (2026-10-28)", "Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor"],
     ["rozpis úrovní (v7)", "stredná 1 · 2 · 2 · 3 · 3 · P"],

@@ -476,15 +476,12 @@ describe("Kšeft (v7)", () => {
 });
 
 describe("Bitka a po bitke (v7)", () => {
-  it("Puška a Vidly: Petelice a Rany z vyložených akcií o 1 viac — Rany navyše z efektov nie (Michal 2026-10-27)", () => {
+  it("Vidly: Rany z vyložených akcií o 1 viac — Rany navyše z efektov nie (Michal 2026-10-27); Puška už Petelicu nezvyšuje (2026-10-30)", () => {
     // Strýko z Ameriky kúpil Ranu navyše — Vidly ju nezosilnia.
     const s = { ...sHracom(vPitke("zastavka", [[], []]), 0, { dedicstvo: [inst("puska"), inst("vidly")] }), kseftRany: [1, 0] as [number, number] };
-    expect(nastrojeTuhe(s, 0, { Rana: 2, Petelica: 1 })).toEqual([
-      { zdroj: "puska", tuhe: 1 },
-      { zdroj: "vidly", tuhe: 2 },
-    ]);
+    expect(nastrojeTuhe(s, 0, { Rana: 2, Petelica: 1 })).toEqual([{ zdroj: "vidly", tuhe: 2 }]);
     const bez = poskodenieBitky(data, { ...s, hraci: [{ ...s.hraci[0], dedicstvo: [] }, s.hraci[1]] }, [{ Rana: 2, Petelica: 1 }, {}]).tuhe[0];
-    expect(poskodenieBitky(data, s, [{ Rana: 2, Petelica: 1 }, {}]).tuhe[0]).toBe(bez + 3);
+    expect(poskodenieBitky(data, s, [{ Rana: 2, Petelica: 1 }, {}]).tuhe[0]).toBe(bez + 2);
   });
 
   it("Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX", () => {

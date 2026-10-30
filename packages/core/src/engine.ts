@@ -44,6 +44,8 @@ import {
   priazenHraca,
   priazenSila,
   poveraMozna,
+  spojKlebety,
+  telefonHraca,
   ucinnaPriazen,
   obavanyHrac,
   poKonciKola,
@@ -190,6 +192,28 @@ export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit" | "vlastny">
 }
 
 /**
+ * Cigarety, ktoré hráč p dostane, keď teraz pasuje — jeden výpočet pre motor aj
+ * náhľad pasu: karty za pas (kartyZaPas), Autobusár (nič) a Píšťalka v súperovom
+ * Dedičstve (Náradie 2026-10-30): súperove aktívne Obmedzenia v línii ich uberajú, najmenej 0.
+ */
+export function cigaretyZaPas(
+  data: GameData,
+  s: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval" | "zostavaLimit" | "vlastny"> | null },
+  p: PlayerId,
+  vRuke: number,
+): number {
+  const z = s.zhromazdenieStav;
+  if (z === null) return 0;
+  const karty = kartyZaPas(z, p, vRuke);
+  if (karty > 0 && pasBezCigariet(data, s, p)) return 0;
+  const zaPas = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+  const q = opponentOf(p);
+  if (zaPas === 0 || !vDedicstve(s, q, "pistalka")) return zaPas;
+  const obmedzenia = evaluateLine(data, lineState(s)).sums[q].Obmedzenie ?? 0;
+  return Math.max(0, zaPas - obmedzenia);
+}
+
+/**
  * Autobusár (Zhromaždenie, v7): hráč p by pasoval po súperovi, ktorý má
  * Autobusára — cigarety za pas nedostane. Pre motor aj náhľad pasu.
  */
@@ -275,6 +299,10 @@ export interface BitkaStav {
   readonly poveryZostava?: readonly [number, number];
   /** Klebety tohto kola: o koľko stupňov Povery posunuli silu priazne starších (elders.ts). */
   readonly klebety?: Klebety;
+  /** Klebety z Povier každého hráča zvlášť — Horoskop ich prenesie do ďalšieho kola. */
+  readonly klebetyHracov?: readonly [Klebety, Klebety];
+  /** Robota už v tejto bitke spálila Dlhy a dala špaky (exekucieBitky sa smie volať znova). */
+  readonly robotaHotova?: readonly [boolean, boolean];
   readonly pohorseniaSpolu?: readonly [number, number];
   /**
    * Koľko z pohorsenieZostava sú ešte Pohoršenia zo súperovho patronátu (v6,
@@ -325,6 +353,8 @@ export interface BitkaNaNastenke {
   readonly zaBitku: readonly [number, number];
   /** Noviny (Titulka, 2026-10-28): koľko zo zaBitku porazeného je za Dlhy, ktoré má víťaz navyše. Chýba v starších záznamoch. */
   readonly noviny?: number;
+  /** Robota (Náradie 2026-10-30): špaky za Dlhy, ktoré nemala čo spáliť [hráč 0, hráč 1]. */
+  readonly robota?: readonly [number, number];
   /** Koľko zo zaBitku víťaz zobral zo sekery (predošlé remízy). */
   readonly zoSekery: number;
   /** Absťáky víťaza navyše oproti porazenému — o toľko dostal menej (do v8; od v8.1 vždy 0). */
@@ -460,6 +490,13 @@ export interface GameState {
   readonly kseftPovery?: readonly [number, number];
   /** Koľkokrát súper v tomto kole priložil kartu ku karte hráča (Pasca v7); verejné. */
   readonly prilozeniaKu?: readonly [number, number];
+  /** Poldeci, ktoré akcie Poldeci v tomto kole už otočili v Pitke (Jogurt, Náradie 2026-10-30). */
+  readonly poldeciOtoceneVKole?: readonly [number, number];
+  /**
+   * Klebety z Povier hráča s Horoskopom (Náradie 2026-10-30) — platia aj v nasledujúcom
+   * kole; priazen() ich pripočíta ku klebetám bitky. Verejné.
+   */
+  readonly klebetyPrenesene?: Klebety;
 }
 
 /** Čakajúca voľba Hasiča. */
@@ -513,7 +550,8 @@ export type Command =
   // Veštica (Prehra): poradové čísla v odhalených doberacích balíčkoch.
   | { readonly type: "vestica"; readonly moja: number; readonly jeho: number }
   // Vízia na konci Pitky: vrchnú kartu doberacieho balíčka do ruky (true), alebo zahodiť (false).
-  | { readonly type: "vizia"; readonly vziat: boolean }
+  // Krištáľová guľa (Náradie 2026-10-30): druha = rozhodnutie o druhej karte zhora, prvá ostane navrchu.
+  | { readonly type: "vizia"; readonly vziat: boolean; readonly druha?: true }
   // Zberný dvor do v7 — od v7 je to Kšeft (kseft s kartaUid); príkaz ostáva pre staré záznamy.
   | { readonly type: "vykup"; readonly uid: number }
   // Cintorín (Prehra, Michal 2026-10-27): Nástroj z ruky alebo zo šenku do Dedičstva zadarmo, alebo nič (uid null).
@@ -660,13 +698,24 @@ function obranca(s: { utocnik: PlayerId }): PlayerId {
  * Bonus z priazne daného typu pre hráča p: NASOBOK_PRIAZNE × sila (2 / 4 / 6),
  * 0, ak ju má súper alebo nikto.
  */
+/** Stav, z ktorého sa rátajú klebety kola (GameState aj ClientState). */
+export interface StavKlebiet {
+  readonly bitkaStav?: { readonly klebety?: Klebety } | null;
+  readonly klebetyPrenesene?: Klebety;
+}
+
+/** Klebety, ktoré v tomto kole platia: z Povier tejto bitky a prenesené Horoskopom (Náradie 2026-10-30). */
+export function klebetyKola(state: StavKlebiet): Klebety | undefined {
+  return spojKlebety(state.bitkaStav?.klebety, state.klebetyPrenesene);
+}
+
 export function priazen(
   data: GameData,
-  state: { readonly starsi: readonly ElderState[]; readonly bitkaStav?: { readonly klebety?: Klebety } | null },
+  state: { readonly starsi: readonly ElderState[] } & StavKlebiet,
   favour: Favour,
   p: PlayerId,
 ): number {
-  const klebety = state.bitkaStav?.klebety;
+  const klebety = klebetyKola(state);
   for (const elder of state.starsi) {
     // Priazeň dáva ukazovateľ (scorecard), nie karta, ktorá na ňom leží —
     // aj po náhrade staršieho. Klebety z Povier (v8.3) ju v tomto kole posúvajú.
@@ -684,7 +733,7 @@ export function priazen(
  */
 export function silaPriazne(
   data: GameData,
-  state: { readonly starsi: readonly ElderState[]; readonly bitkaStav?: { readonly klebety?: Klebety } | null },
+  state: { readonly starsi: readonly ElderState[] } & StavKlebiet,
   favour: Favour,
   p: PlayerId,
 ): number {
@@ -785,6 +834,8 @@ export function lineState(s: VerejnyStav & { readonly lokalitaOtocena: boolean }
     lokalita: s.ciel?.lokalita ?? null,
     lokalitaOtocena: s.lokalitaOtocena,
     strany: s.strany,
+    // Náradie (2026-10-30): Nástroje v Dedičstve, ktoré menia vyhodnotenie línie — verejné.
+    nastroje: [s.hraci[0].dedicstvo.map((k) => k.defId), s.hraci[1].dedicstvo.map((k) => k.defId)],
   };
 }
 
@@ -2696,7 +2747,9 @@ function cmdPass(s: MutState, data: GameData, p: PlayerId, events: Event[]): voi
   // súper vykladá sám.
   const karty = kartyZaPas(z, p, s.hraci[p].ruka.length);
   const autobus = karty > 0 && pasBezCigariet(data, s as GameState, p);
-  const ziska = autobus ? 0 : karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+  const ziska = cigaretyZaPas(data, s as GameState, p, s.hraci[p].ruka.length);
+  const pistalka = !autobus ? karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska : 0;
+  if (pistalka > 0) events.push({ type: "log", text: `Píšťalka: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
   hrac(s, p).cigarety += ziska;
   if (autobus) events.push({ type: "log", text: `Autobusár: hráč ${p + 1} pasuje po súperovi — cigarety za pas nedostane.` });
   events.push({
@@ -3286,6 +3339,21 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     }
   }
 
+  // Jogurt (Dedičstvo, Náradie 2026-10-30): tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke —
+  // čo otočia teraz, bitka už neotočí (poldeciOtoceneVKole).
+  for (const p of [0, 1] as const) {
+    if (!vDedicstve(s as GameState, p, "jogurt")) continue;
+    const otocene = s.poldeciOtoceneVKole?.[p] ?? 0;
+    const teraz = Math.min(Math.max(0, (sums[p].Poldeci ?? 0) - otocene), s.hraci[p].poldeciVypite);
+    if (teraz <= 0) continue;
+    hrac(s, p).poldeciVypite -= teraz;
+    hrac(s, p).poldeciPlne += teraz;
+    const nove: [number, number] = [s.poldeciOtoceneVKole?.[0] ?? 0, s.poldeciOtoceneVKole?.[1] ?? 0];
+    nove[p] += teraz;
+    s.poldeciOtoceneVKole = nove;
+    events.push({ type: "log", text: `Jogurt: hráčovi ${p + 1} akcie Poldeci otáčajú ${pocet(teraz, "vypitý poldeci", "vypité poldeci", "vypitých poldeci")} na plný hneď v Pitke.` });
+  }
+
   for (const p of [0, 1] as const) {
     ucet.cirhozy[p] = s.cirhozyVKole[p] - (kliatbyPred[p]?.cirhozy ?? 0);
     ucet.dlhy[p] = s.hraci[p].dlhy - (kliatbyPred[p]?.dlhy ?? 0);
@@ -3376,11 +3444,25 @@ function pripravVizia(s: MutState): boolean {
   return false;
 }
 
-function cmdVizia(s: MutState, data: GameData, cmd: { vziat: boolean }, p: PlayerId, events: Event[]): void {
+function cmdVizia(s: MutState, data: GameData, cmd: { vziat: boolean; druha?: true }, p: PlayerId, events: Event[]): void {
   need(s.faza === "pitka" && s.vizia !== null && viziaNaTahu(s as GameState) === p, "Teraz nerozhoduješ o Vízii.");
   const vrchna = s.hraci[p].doberaci[0];
   need(vrchna !== undefined, "Doberací balíček je prázdny.");
-  if (cmd.vziat) {
+  if (cmd.druha === true) {
+    // Krištáľová guľa: druhá karta zhora do ruky či preč, vrchná sa vráti navrch.
+    need(vDedicstve(s as GameState, p, "kristalova_gula"), "Druhú kartu ukáže len Krištáľová guľa.");
+    const druha = s.hraci[p].doberaci[1];
+    need(druha !== undefined, "Druhá karta v balíčku nie je.");
+    hrac(s, p).doberaci.splice(1, 1);
+    if (cmd.vziat) {
+      doRuky(s, p, druha);
+      events.push({ type: "tahal", hrac: p, pocet: 1 });
+      events.push({ type: "kartyTahane", hrac: p, karty: [druha as CardInstance], pre: p });
+      events.push({ type: "log", text: `Vízia (Krištáľová guľa): hráč ${p + 1} si berie druhú kartu zhora, vrchná ostáva navrchu.` });
+    } else {
+      events.push({ type: "log", text: `Vízia (Krištáľová guľa): hráč ${p + 1} zahadzuje druhú kartu zhora — ${defOf(data, druha as CardInstance).name}; vrchná ostáva navrchu.` });
+    }
+  } else if (cmd.vziat) {
     tahaj(s, p, 1, events);
     events.push({ type: "log", text: `Vízia: hráč ${p + 1} si vrchnú kartu balíčka berie do ruky.` });
   } else {
@@ -3805,9 +3887,18 @@ function aktivneAkcieKarty(vyhodnotenie: LineEval, uid: number): number {
   return ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
 }
 
-/** Koľko priznaných Dlhov spáli Robota v kroku Exekútora — 1 za kus. */
-function robotaPali(sums: ActionSums): number {
-  return sums.Robota ?? 0;
+/**
+ * Koľko priznaných Dlhov chce spáliť Robota v kroku Exekútora — 1 za kus, s Fúrikom
+ * v Dedičstve o 1 viac za kus (Náradie 2026-10-30). Za každý, ktorý nemá čo spáliť,
+ * dá 1 špak (zmena pravidla Robota, §2, §11).
+ */
+function robotaPali(sums: ActionSums, furikov = 0): number {
+  return (sums.Robota ?? 0) * (1 + furikov);
+}
+
+/** Fúriky v Dedičstve hráča p. */
+function furikov(s: VerejnyStav, p: PlayerId): number {
+  return s.hraci[p].dedicstvo.filter((k) => k.defId === "furik").length;
 }
 
 /**
@@ -3822,7 +3913,7 @@ export function paleneDlhyVBitke(
   s: VerejnyStav & { readonly lokalitaOtocena: boolean },
   vyhodnotenie: LineEval = evaluateLine(data, lineState(s)),
 ): readonly [number, number] {
-  return [robotaPali(vyhodnotenie.sums[0]), robotaPali(vyhodnotenie.sums[1])];
+  return [robotaPali(vyhodnotenie.sums[0], furikov(s, 0)), robotaPali(vyhodnotenie.sums[1], furikov(s, 1))];
 }
 
 function zacniBitku(s: MutState, data: GameData, events: Event[]): void {
@@ -3947,6 +4038,8 @@ function nastavSumy(s: MutState, data: GameData): void {
 /** Stav, z ktorého sa rátajú body Pohoršení (GameState aj ClientState). */
 export interface StavBodovPohorseni {
   readonly patronat: readonly ({ readonly elderId: string } | null)[];
+  /** Dedičstvo hráčov — Telefón mení cenu Pohoršenia k stredu (chýba v syntetických stavoch). */
+  readonly hraci?: readonly { readonly dedicstvo: readonly { readonly defId: string }[] }[];
   readonly bitkaStav: { readonly pohorsenieZostava: readonly [number, number]; readonly pohorseniaPatronatu?: readonly [number, number] } | null;
 }
 
@@ -3971,7 +4064,7 @@ export function bodyNaPohorsenie(state: StavBodovPohorseni, p: PlayerId, elder: 
  */
 export function pohorsenieMozne(state: StavBodovPohorseni, p: PlayerId, elder: Pick<ElderState, "elderId" | "marker">, kSebe = false): boolean {
   const body = bodyNaPohorsenie(state, p, elder);
-  return body > 0 && posunZaBody(elder, kSebe ? p : opponentOf(p), body) !== null;
+  return body > 0 && posunZaBody(elder, kSebe ? p : opponentOf(p), body, telefonHraca(state, p)) !== null;
 }
 
 /** Stav pre Pohoršenia bitky — línia a verejný patronát (GameState aj ClientState). */
@@ -4057,7 +4150,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
     const zostava = b.poveryZostava;
     for (const p of [obranca(s), s.utocnik]) {
       if (zostava[p] <= 0) continue;
-      if (!s.starsi.some((e) => poveraMozna(e as ElderState, p, b.klebety as Klebety | undefined))) {
+      if (!s.starsi.some((e) => poveraMozna(e as ElderState, p, klebetyKola(s as GameState)))) {
         events.push({ type: "log", text: `Hráč ${p + 1} stráca ${pocet(zostava[p], "Poveru", "Povery", "Povier")} — všetky priazne sú už jeho v sile 3.` });
         zostava[p] = 0;
         continue;
@@ -4439,9 +4532,24 @@ function exekucieBitky(s: MutState, data: GameData, events: Event[]): void {
   if (b === null) return;
   for (const p of [obranca(s), s.utocnik]) {
     if (b.exekutorHotovy[p]) continue;
-    for (let r = odoberDlhy(s, p, robotaPali(b.sums[p] as ActionSums)); r > 0; r--) {
-      events.push({ type: "log", text: `Robota: hráč ${p + 1} páli 1 priznaný Dlh.` });
+    // Robota (Náradie 2026-10-30): spáli 1 priznaný Dlh za kus (s Fúrikom viac); za každý,
+    // ktorý nemá čo spáliť, 1 špak. Robota sa ráta raz za bitku (exekutorHotovy).
+    const chce = b.robotaHotova?.[p] === true ? 0 : robotaPali(b.sums[p] as ActionSums, furikov(s as GameState, p));
+    const spalene = odoberDlhy(s, p, chce);
+    if (spalene > 0) events.push({ type: "log", text: `Robota: hráč ${p + 1} páli ${pocet(spalene, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")}.` });
+    if (chce - spalene > 0) {
+      s.spaky[p] += chce - spalene;
+      const zaznam = s.nastenka[s.nastenka.length - 1];
+      if (zaznam !== undefined) {
+        const r: [number, number] = [zaznam.robota?.[0] ?? 0, zaznam.robota?.[1] ?? 0];
+        r[p] += chce - spalene;
+        zaznam.robota = r;
+      }
+      events.push({ type: "log", text: `Robota: hráč ${p + 1} nemá čo spáliť — dostáva ${spakov(chce - spalene)}.` });
     }
+    const hotova: [boolean, boolean] = [b.robotaHotova?.[0] ?? false, b.robotaHotova?.[1] ?? false];
+    hotova[p] = true;
+    b.robotaHotova = hotova;
     const dlhy = s.hraci[p].dlhy;
     if (dlhy === 0) {
       b.exekutorHotovy[p] = true;
@@ -4551,11 +4659,16 @@ function cmdPovera(s: MutState, data: GameData, cmd: { elderId: string }, p: Pla
   need((b.poveryZostava?.[p] ?? 0) > 0, "Nemáš zvyšnú Poveru.");
   const elder = s.starsi.find((e) => e.elderId === cmd.elderId);
   need(elder !== undefined, "Taký starší nie je.");
+  need(poveraMozna(elder as ElderState, p, klebetyKola(s as GameState)), "Priazeň tohto staršieho je už tvoja v sile 3.");
+  const pred = ucinnaPriazen(elder as ElderState, klebetyKola(s as GameState));
+  const posun = p === 0 ? 1 : -1;
   const klebety = (b.klebety ?? {}) as Klebety;
-  need(poveraMozna(elder as ElderState, p, klebety), "Priazeň tohto staršieho je už tvoja v sile 3.");
-  const pred = ucinnaPriazen(elder as ElderState, klebety);
-  b.klebety = { ...klebety, [elder.elderId]: (klebety[elder.elderId] ?? 0) + (p === 0 ? 1 : -1) };
-  const po = ucinnaPriazen(elder as ElderState, b.klebety as Klebety);
+  b.klebety = { ...klebety, [elder.elderId]: (klebety[elder.elderId] ?? 0) + posun };
+  // Horoskop (Náradie 2026-10-30): klebety každého hráča zvlášť — jeho prejdú do ďalšieho kola.
+  const hracov: [Klebety, Klebety] = [b.klebetyHracov?.[0] ?? {}, b.klebetyHracov?.[1] ?? {}];
+  hracov[p] = { ...hracov[p], [elder.elderId]: (hracov[p][elder.elderId] ?? 0) + posun };
+  b.klebetyHracov = hracov as DeepMutable<[Klebety, Klebety]>;
+  const po = ucinnaPriazen(elder as ElderState, klebetyKola(s as GameState));
   const zostava = b.poveryZostava as [number, number];
   zostava[p] -= 1;
   const text = (u: { hrac: PlayerId | null; sila: number }): string => (u.hrac === null ? "nikto" : `hráč ${u.hrac + 1} +${u.sila}`);
@@ -4584,7 +4697,7 @@ function cmdPohorsenie(
   const body = bodyNaPohorsenie(s as GameState, p, elder);
   need(body > 0, "Pohoršenia z patronátu nesmú na staršieho, ktorého si súper vzal za patróna.");
   // v8.2: hráč vyberá staršieho a smer, nie počet polí — marker ide, kým Pohoršenia stačia.
-  const posun = posunZaBody(elder, smer, body);
+  const posun = posunZaBody(elder, smer, body, telefonHraca(s, p));
   need(posun !== null, "Na posun tohto markera tvoje Pohoršenia nestačia.");
   // Priazeň aj strach sa menia hneď — platia už v poškodení a v špakoch tejto bitky.
   const z = elder.marker;
@@ -4935,7 +5048,8 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
     if (vratene[q] > 0) events.push({ type: "log", text: `Na zdravie (priazeň Alkoholika): hráčovi ${q + 1} sa ${vratene[q] === 1 ? "poldeci z NA EX vracia plný" : `${vratene[q]} poldeci z NA EX vracajú plné`}.` });
   }
   for (const p of [0, 1] as const) {
-    let otocenia = b.sums[p].Poldeci ?? 0;
+    // Jogurt: čo akcie Poldeci otočili už v Pitke, sa v bitke neotáča znova.
+    let otocenia = Math.max(0, (b.sums[p].Poldeci ?? 0) - (s.poldeciOtoceneVKole?.[p] ?? 0));
     while (otocenia > 0 && s.hraci[p].poldeciVypite > 0) {
       hrac(s, p).poldeciVypite -= 1;
       hrac(s, p).poldeciPlne += 1;
@@ -5096,6 +5210,12 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
 
   vyplatUdrzanyStrach(s, data, events);
 
+  // Horoskop (Náradie 2026-10-30): klebety z Povier hráča s Horoskopom platia aj v nasledujúcom
+  // kole; prenesené z minulého kola týmto kolom končia.
+  const prenesene = spojKlebety(...([0, 1] as const).map((p) => (vDedicstve(s as GameState, p, "horoskop") ? (b.klebetyHracov?.[p] as Klebety | undefined) : undefined)));
+  if (prenesene === undefined) delete s.klebetyPrenesene;
+  else s.klebetyPrenesene = prenesene as DeepMutable<Klebety>;
+
   const boloFinale = jeFinale(s);
   s.bitkaStav = null;
   s.ciel = null;
@@ -5103,6 +5223,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   s.naexVKole = [false, false];
   delete s.kseftRany;
   delete s.kseftPovery;
+  delete s.poldeciOtoceneVKole;
   delete s.prilozeniaKu;
   s.pitkyKola = [];
 
@@ -5357,6 +5478,9 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
     case "pitka": {
       if (state.vizia !== null) {
         out.push({ type: "vizia", vziat: true }, { type: "vizia", vziat: false });
+        if (vDedicstve(state, p, "kristalova_gula") && state.hraci[p].doberaci.length > 1) {
+          out.push({ type: "vizia", vziat: true, druha: true }, { type: "vizia", vziat: false, druha: true });
+        }
         break;
       }
       const pitka = state.pitkaStav;
@@ -5424,7 +5548,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
         }
       } else if (b.krok === "povery") {
         if ((b.poveryZostava?.[p] ?? 0) > 0) {
-          for (const elder of state.starsi) if (poveraMozna(elder, p, b.klebety)) out.push({ type: "povera", elderId: elder.elderId });
+          for (const elder of state.starsi) if (poveraMozna(elder, p, klebetyKola(state))) out.push({ type: "povera", elderId: elder.elderId });
         }
       } else if (b.krok === "pohorsenie") {
         for (const elder of state.starsi) {
