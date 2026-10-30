@@ -1,0 +1,11 @@
+/* Ikona päste (vydesenie, Michal 2026-10-30) — ako krígeľ: veľkosť písma okolo, farba rodiča. */
+.ikona-paste {
+  display: inline-block;
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  margin-block: -0.15em;
+  vertical-align: -0.2em;
+  fill: currentColor;
+  overflow: visible;
+}

@@ -5944,8 +5944,9 @@ button.lsr-pole.ciel:focus-visible {
   }
 }
 
-/* Šípky smerov pod stupnicou, rovnako vysoké ako stupnica (Michal 2026-10-30: tlačidlá boli
-   neúmerne veľké); dotyková plocha ostáva 44 px — neviditeľný presah, nie väčšie tlačidlo. */
+/* Tlačidlá smerov pod stupnicou — krígeľ k tebe (udobriť), päsť k súperovi (vydesiť), Michal
+   2026-10-30 — rovnako vysoké ako stupnica (tlačidlá boli neúmerne veľké); dotyková plocha
+   ostáva 44 px — neviditeľný presah, nie väčšie tlačidlo. */
 .ls-sipky {
   flex: none;
   display: grid;
@@ -5981,17 +5982,24 @@ button.lsr-pole.ciel:focus-visible {
   font: inherit;
 }
 
-/* Rodič v selektore: globálne button:hover by inak prepísalo podklad. */
-.ls-sipky > button.ls-sip.ja {
+/* Rodič v selektore: globálne button:hover by inak prepísalo podklad. Oba smery vo farbe toho,
+   kto rozdeľuje: priazeň (krígeľ) aj strach (päsť) budú jeho — ako pečať priazne a pečiatka
+   vydesenia; súperova farba by pri pästi hovorila, že desí súper. */
+.ls-sipky > button.ls-sip {
   border-color: var(--ja);
   color: var(--ja);
   background: color-mix(in srgb, var(--ja) 12%, transparent);
 }
 
-.ls-sipky > button.ls-sip.su {
-  border-color: var(--su);
-  color: var(--su);
-  background: color-mix(in srgb, var(--su) 12%, transparent);
+.ls-sip .ikona-priazne,
+.ls-sip .ikona-paste {
+  width: 16px;
+  height: 16px;
+  margin-block: 0;
+}
+
+.ls-sip-spat {
+  font-size: 12px;
 }
 
 .ls-sip:hover:not(:disabled),
