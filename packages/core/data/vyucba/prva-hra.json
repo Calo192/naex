@@ -118,7 +118,7 @@
       "vestica",
       "svokra",
       "sofer",
-      "recidivista",
+      "recidivista/2/0",
       "podvodnik",
       "dvojcata",
       "financna_poradkyna",
@@ -2584,7 +2584,7 @@
     {
       "id": "i-robota",
       "kto": "info",
-      "melichar": "Pred exekútorom ešte pracuje [Robota] Robota: každá spojená Robota spáli jeden Dlh, a za ten už špaky nedáš. Tú tvoju ti Štamgast v minulom kole zrušil, pamätáš.",
+      "melichar": "Pred exekútorom ešte pracuje [Robota] Robota: každá spojená Robota spáli jeden Dlh, a za ten už špaky nedáš. Keď Dlh nemáš, dá ti Robota špak. Tú tvoju ti Štamgast v minulom kole zrušil, pamätáš.",
       "zvyraznit": [
         "bar:dlhy"
       ]
@@ -3165,6 +3165,19 @@
       "hlaskaChyby": "urazky/marha"
     },
     {
+      "id": "k-povera-finale-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "povera",
+        "elderId": "farar"
+      },
+      "melichar": "Bitka, najprv Povery. Ty žiadnu nemáš, Štamgast jednu a ohovoril Farára, nech ti exekútor zoberie viac. Máš jediný Dlh, tak mu to nepomôže. Výtržník má päť Rán, aj Recidivistov Odpor sa zmenil na Ranu: 6 : 6.",
+      "zvyraznit": [
+        "starsi:farar",
+        "bitka-ucet"
+      ]
+    },
+    {
       "id": "k-pohorsenie-abstak",
       "kto": "hrac",
       "prikaz": {
@@ -3172,7 +3185,7 @@
         "elderId": "starosta",
         "kSebe": true
       },
-      "melichar": "Bitka. Si obranca, Pohoršenia rozdeľuješ prvý, a tvoj Absťák ti dal jedno. Ťahaj Starostu k sebe, do žltej: jeho priazeň Bitkár ti dá tuhé hneď. 7 : 5.",
+      "melichar": "Si obranca, Pohoršenia rozdeľuješ prvý, a tvoj Absťák ti dal jedno. Ťahaj Starostu k sebe, do žltej: jeho priazeň Bitkár ti dá tuhé hneď. 7 : 6.",
       "hlaskaChyby": "nervy/jebem_im_boha_vyjebaneho",
       "zvyraznit": [
         "starsi:starosta"
@@ -3186,7 +3199,7 @@
         "elderId": "starosta",
         "kSebe": true
       },
-      "melichar": "Štamgast použil dve Pohoršenia, čo dostal za tvoj patronát. Políčko k stredu stojí 2, a tak ti Starostu vrátil do stredu a o Bitkára si prišiel. Na Poštárku ich použiť nesmel. 6 : 5.",
+      "melichar": "Štamgast použil dve Pohoršenia, čo dostal za tvoj patronát. Políčko k stredu stojí 2, a tak ti Starostu vrátil do stredu a o Bitkára si prišiel. Na Poštárku ich použiť nesmel. 6 : 6, remíza v tuhom. A tú rozhoduje Absťák: ty ho máš, on nie. Finále je jeho.",
       "zvyraznit": [
         "starsi:starosta"
       ]
@@ -3194,7 +3207,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Bitka finále 6 : 5, vyhral si a Poštárka ti ostáva, patronát vyšiel. Špaky: päť za karty v línii. Po bitke exekútor: tebe aj Štamgastovi zhorel Dlh aj so špakom. Nakladačka 1 je tvoja, ale vo finále sa nerozdeľuje, priazne by už nikomu nepomohli. A koniec finále je posledný koniec kola: Veterinár sa v oranžovej udržal od 3. kola, tak ti zaplatil 3. Stupne, kam sa starší dostali až vo finále, by už nedali nič.",
+      "melichar": "Finále vyhral Štamgast, na Absťák. Dostal päť špakov za karty v línii a tvoj patronát nevyšiel: Poštárka sa vrátila na svoje miesto a ty si odhodil poldeci. Po bitke exekútor: tebe aj Štamgastovi zhorel Dlh aj so špakom. Nakladačka sa vo finále nerozdeľuje. A koniec finále je posledný koniec kola: Veterinár sa v oranžovej udržal od 3. kola, tak ti zaplatil 3, aj keď si finále prehral. Stupne, kam sa starší dostali až vo finále, by už nedali nič.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body"
@@ -3203,7 +3216,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. Štamgast si za kôpku cigariet pripísal tri. A v Pitkách finále ti dvakrát pretiekla pečeň: dve Cirhózy ležia v balíčku nepriznané a stoja ťa 3 špaky za kus. 23 : 0, aj tak si vyhral.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: každý plný poldeci 1 špak, každých päť cigariet 1 špak. Štamgast si za kôpku cigariet pripísal tri. A v Pitkách finále ti dvakrát pretiekla pečeň: dve Cirhózy ležia v balíčku nepriznané a stoja ťa 3 špaky za kus. 17 : 5. Finále si prehral, hru si vyhral, rátajú sa špaky.",
       "zvyraznit": [
         "bar:body",
         "nastenka"
