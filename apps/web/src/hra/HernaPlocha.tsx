@@ -50,15 +50,11 @@ import type {
 import {
   KONSTANTY,
   MARKER_STRED,
-  STUPNICA_ZONY,
   jeCoTahat,
   jeFinaleNaNastenke,
   kartyZaPas,
   spakyTeraz,
   spakov,
-  bodyNaPohorsenie,
-  cenaKroku,
-  pohorsenieMozne,
   posunZaBody,
   efektyPrehry,
   hrozbaKliatob,
@@ -80,7 +76,6 @@ import {
   pocitadloBitky,
   pitkaPredBitkou,
   hrozbaNaex,
-  bitkaPoPohorseni,
   nepridelenePohorsenia,
   rozsahPohorseni,
   krokStavby,
@@ -107,13 +102,20 @@ import {
   nahladNaexNaKartu,
   najhorsiaOdpovedNaNaex,
   cenaTahu,
-  nahladPosunuMarkera,
-  nahladPosunuPrebytkom,
   nahladVylozenia,
   moznostiNaexVPohlade,
   zablokovaneStrany,
   posunMarker,
-  navrhPrebytku,
+  bitkaPoPlane,
+  cenaPosunuOPoli,
+  krokRozdelenia,
+  planRozdelenia,
+  prepniVolbu,
+  rozpocetPoPlane,
+  smeryRozdelenia,
+  starsiPreZvysok,
+  zvysokPrepadne,
+  type VolbaRozdelenia,
   printedSides,
   poskodenieBitky,
   rozpisPoskodenia,
@@ -135,7 +137,8 @@ import {
 import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
-import { LiniaStarsich, stopaStarsieho, ucinokPriazne, type StarsiVLinii, type VolbaPosunu } from "./LiniaStarsich.tsx";
+import { NAZOV_DELENIA } from "./textyStarsich.ts";
+import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
@@ -148,7 +151,6 @@ import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky } from "./rozlozenieNastenky.ts";
-import { CENA_POLA, nahladStrachu, textStupna } from "./textyStarsich.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
@@ -170,6 +172,7 @@ import {
   CenaCigariet,
   Vymena,
   HracDoska,
+  IkonaCigareta,
   IkonaKarty,
   IkonaPoldeci,
   OdhadBaru,
@@ -243,6 +246,8 @@ type ZalozkaKariet = "balicek" | "odhodene" | "priznane" | "dedicstvo";
  */
 interface Pokyn {
   readonly nadpis: ReactNode;
+  /** Bublina jedným písmom a jednou veľkosťou (rozdeľovanie, mock C · Pečať). */
+  readonly jednotny?: boolean;
   readonly text?: ReactNode;
   readonly tlacidla?: ReactNode;
   readonly vlavo?: ReactNode;
@@ -1493,7 +1498,57 @@ export function HernaPlocha({
   // Menej klikov (roadmapa #9 B): logika je v usePohodlie a v jadre (pohodlie.ts).
   const bezNaex = useBezNaexVBitke(view, posli);
   const odlozenyPas = useOdlozenyPrikaz(posli, `${klucTahu}|${vylozenia.length}`); // potiahnutá karta pas zruší
-  const navrhRozdelenia = navrhPrebytku(data, view);
+
+  // ---- rozdelenie Pohoršenia a prebytku (mock C · Pečať, Michal 2026-10-30) -------
+  // Posuny pri starších sú nepotvrdené v stave klienta; Potvrdiť ich pošle serveru jedným
+  // ťahom, Reset (aj Esc) ich zahodí. Plán, ceny a cieľ ráta jadro (planRozdelenia) — ten istý
+  // výpočet, aký urobí server, takže náhľad nikdy neklame. Pri zmene kroku sa stav zahodí.
+  const krokDelenia = somNaTahu && view.koniec === null ? krokRozdelenia(view, ja) : null;
+  const [volbyDelenia, setVolbyDelenia] = useState<readonly VolbaRozdelenia[]>([]);
+  const klucDelenia =
+    krokDelenia === null
+      ? null
+      : `${view.kolo}|${krokDelenia}|${krokDelenia === "pohorsenie" ? view.bitkaStav?.pohorsenieZostava[ja] : view.bitkaStav?.prebytokZostava}|${view.starsi.map((e) => e.marker).join("")}`;
+  useEffect(() => setVolbyDelenia([]), [klucDelenia]);
+  const planDelenia = krokDelenia === null ? null : planRozdelenia(view, ja, volbyDelenia);
+  // Žetóny minuté už potvrdenými posunmi: koľko bolo na začiatku kroku (po pripojení uprostred kroku od teraz).
+  const [zaciatokDeleniaStav, setZaciatokDelenia] = useState<{ readonly kluc: string; readonly spolu: number } | null>(null);
+  const klucKrokuDelenia = krokDelenia === null ? null : `${view.kolo}|${krokDelenia}`;
+  const zostavaDelenia = krokDelenia === "pohorsenie" ? (view.bitkaStav?.pohorsenieZostava[ja] ?? 0) : (view.bitkaStav?.prebytokZostava ?? 0);
+  useEffect(() => {
+    if (klucKrokuDelenia !== null && zaciatokDeleniaStav?.kluc !== klucKrokuDelenia) setZaciatokDelenia({ kluc: klucKrokuDelenia, spolu: zostavaDelenia });
+  }, [klucKrokuDelenia, zostavaDelenia, zaciatokDeleniaStav?.kluc]);
+  const zaciatokDelenia = zaciatokDeleniaStav?.kluc === klucKrokuDelenia ? zaciatokDeleniaStav.spolu : zostavaDelenia;
+  // Esc = Reset nepotvrdených posunov — až keď nie je otvorená lupa, dialóg či popis pečate (ten Esc zje skôr).
+  const maVolbyDelenia = volbyDelenia.length > 0;
+  useEffect(() => {
+    if (!maVolbyDelenia) return;
+    const klaves = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      const otvorene = (sel: string): boolean => [...document.querySelectorAll(sel)].some((el) => el.getClientRects().length > 0);
+      if (otvorene('.lupa:not(.doznieva), [role="dialog"]')) return;
+      e.preventDefault();
+      setVolbyDelenia([]);
+    };
+    window.addEventListener("keydown", klaves);
+    return () => window.removeEventListener("keydown", klaves);
+  }, [maVolbyDelenia]);
+  /** Starší mimo plánu, ktorých zvyšok ešte posunie — 0 pri kladnom zvyšku = zvyšok prepadne. */
+  const preZvysok = planDelenia === null ? [] : starsiPreZvysok(view, ja, planDelenia);
+  /** Zvyšok po pláne už nič nekúpi — server ho po Potvrdiť nechá prepadnúť a krok uzavrie. */
+  const prepadaDelenie = planDelenia !== null && zvysokPrepadne(view, ja, planDelenia);
+  const prepniDelenie = (v: VolbaRozdelenia): void => setVolbyDelenia((x) => prepniVolbu(view, ja, x, v));
+  // Výučba ide po jednom posune zo scenára — iný ťah by server odmietol.
+  const chybaDeleniaVyucby = ((): string | null => {
+    const o = vyucbaOcakava;
+    if (o === undefined || o === null || planDelenia === null || (o.type !== "pohorsenie" && o.type !== "prebytok")) return null;
+    const kroky = planDelenia.prikaz?.type === "tah" ? planDelenia.prikaz.kroky : [];
+    const k = kroky[0];
+    const kSebe = (c: Command): boolean => c.type === "pohorsenie" && c.kSebe === true;
+    if (kroky.length === 1 && k !== undefined && k.type === o.type && "elderId" in k && k.elderId === o.elderId && kSebe(k) === kSebe(o)) return null;
+    const meno = menoKarty(view.starsi.find((e) => e.elderId === o.elderId)?.karta.defId ?? o.elderId);
+    return `Teraz posuň len staršieho ${meno}${kSebe(o) ? " k sebe" : ""}.`;
+  })();
 
   // ---- čo sa práve stalo (dizajn hra-20261021-1240, UX N3) -------------------
   // Keď môj ťah skončí, zapamätá sa línia a dĺžka logu. Keď som znova na ťahu,
@@ -2979,6 +3034,35 @@ export function HernaPlocha({
         }),
       };
     }
+    // Rozdeľovanie (mock C · Pečať): Potvrdiť s počtom nepotvrdených posunov, v jeho rohu ↺ Reset.
+    // Bez posunov obe nevypálené; keď zvyšok už nič nekúpi, Potvrdiť pulzuje.
+    if (planDelenia !== null && krokDelenia !== null) {
+      const n = planDelenia.kroky.length;
+      const prikaz = planDelenia.prikaz;
+      const vyzva = n > 0 && (planDelenia.zvysok === 0 || prepadaDelenie);
+      return {
+        stred: (
+          <span className="pecat-tahu-obal pecat-delenia">
+            <button
+              type="button"
+              className={`pecat pecat-potvrd${vyzva ? " vyzva" : ""}`}
+              data-skratka="k"
+              data-vyucba="tlacidlo:potvrdit-delenie"
+              disabled={n === 0 || chybaDeleniaVyucby !== null}
+              title={n === 0 ? "Pri staršom vyber smer šípkou pod stupnicou." : (chybaDeleniaVyucby ?? "Pošle všetky nepotvrdené posuny naraz.")}
+              onClick={() => {
+                if (prikaz !== null) posli(prikaz);
+              }}
+            >
+              ✓ potvrdiť{n > 0 && <span className="poc">{n}</span>}
+            </button>
+            <button type="button" className="pecat-reset" disabled={n === 0} aria-label="Reset — vrátiť nepotvrdené posuny" title="Reset — vrátiť nepotvrdené posuny (Esc)" onClick={() => setVolbyDelenia([])}>
+              ↺
+            </button>
+          </span>
+        ),
+      };
+    }
     const bs = view.bitkaStav;
     if (view.faza === "bitka" && bs?.krok === "benzinka" && bs.caka === ja) {
       const vybrane = mode.typ === "vyber" ? mode.uids : [];
@@ -3134,7 +3218,7 @@ export function HernaPlocha({
       return {
         nadpis: (
           <>
-            {prebytok ? "Prebytok súpera" : "Pohoršenie súpera"} <small>zostáva {prebytok ? bsCak.prebytokZostava : bsCak.pohorsenieZostava[super_]}</small>
+            {prebytok ? NAZOV_DELENIA.prebytok : NAZOV_DELENIA.pohorsenie} súpera <small>zostáva {prebytok ? bsCak.prebytokZostava : bsCak.pohorsenieZostava[super_]}</small>
           </>
         ),
         text: (
@@ -4074,51 +4158,73 @@ export function HernaPlocha({
             ),
           };
         }
-        if (b.krok === "pohorsenie") {
+        // Bublina rozdeľovania (mock C · Pečať): jedno písmo a jedna veľkosť — názov, žetóny,
+        // zvyšok a pre koľkých starších ešte stačí. Dlhý pokyn je preč; smer a cenu ukáže karta.
+        if ((b.krok === "pohorsenie" || b.krok === "prebytok") && planDelenia !== null && krokDelenia !== null) {
+          const zvysok = planDelenia.zvysok;
+          const ide = (krokDelenia === "pohorsenie" ? b.pohorsenieZostava[ja] : b.prebytokZostava) - zvysok;
+          const minute = Math.max(0, zaciatokDelenia - zvysok - ide);
+          const m = preZvysok.length;
+          const drzi = b.prebytokDrzi;
+          const cigPre = krokDelenia === "prebytok" && drzi !== null ? (drzi === ja ? super_ : ja) : null;
+          const cig = cigPre === null ? 0 : new Set([...b.prebytokPosunute, ...planDelenia.kroky.map((k) => k.elderId)]).size;
+          // Pohoršenie mení priazeň hneď — keď to pohne poškodením (Bitkár, Veriaci), bublina ukáže bitku pred a po.
+          const bitka = krokDelenia === "pohorsenie" ? bitkaPoPlane(data, view, planDelenia) : null;
           return {
+            jednotny: true,
             nadpis: (
               <>
-                Pohoršenie <small>zostáva {b.pohorsenieZostava[ja]}</small>
+                <span className="pil-nazov">
+                  <IkonaDelenia krok={krokDelenia} /> {NAZOV_DELENIA[krokDelenia]}
+                </span>
+                <span className="zetony" aria-hidden="true">
+                  {Array.from({ length: minute + ide + zvysok }, (_, i) => (
+                    <span key={i} className={`zeton${i < minute ? " minute" : i < minute + ide ? " ide" : ""}`}>
+                      <IkonaDelenia krok={krokDelenia} />
+                    </span>
+                  ))}
+                </span>
+                <span>
+                  zostáva <b className="cislo">{zvysok}</b>
+                </span>
               </>
             ),
             text: (
               <>
-                Pri staršom vyber smer — marker pôjde tak ďaleko, ako Pohoršenia stačia ({CENA_POLA}). <strong>K súperovi</strong>: on dostane priazeň, starší
-                sa začne báť teba (nová zóna ti zaplatí po najbližšej výhre, cesta k vydeseniu). <strong>K sebe</strong>: priazeň sa ti zmení hneď a platí už v
-                tejto bitke.
-              </>
-            ),
-          };
-        }
-        if (b.krok === "prebytok") {
-          return {
-            nadpis: (
-              <>
-                Prebytok <small>zostáva {b.prebytokZostava}</small>
-              </>
-            ),
-            text: (
-              <>
-                {b.prebytokDrzi === ja
-                  ? "Klikni na staršieho — marker ide k súperovi (on priazeň, teba sa starší začne báť; nový stupeň ti zaplatí koniec ďalšieho kola, ak sa udrží). Rozdeliť treba celý prebytok."
-                  : `Prebytok drží ${menoHraca(super_)}, ale vyberáš ty: klikni na staršieho — marker ide k tebe (ty priazeň, súpera sa začne báť a nový stupeň mu zaplatí koniec ďalšieho kola, ak ho dovtedy neodtlačíš). Za každého posunutého staršieho cigareta. Rozdeliť treba celý prebytok.`}
-                {navrhRozdelenia !== null && (
-                  <span className="tlmene">
-                    {" "}
-                    Alebo celý prebytok naraz podľa špakov: {navrhRozdelenia.kroky.map((id) => menoKarty(view.starsi.find((e) => e.elderId === id)?.karta.defId ?? id)).join(", ")}.
+                <span className="pil-sep">·</span>
+                {zvysok === 0 ? (
+                  <span>všetko rozdané</span>
+                ) : m > 0 ? (
+                  <span>
+                    stačí ešte pre <b className="cislo">{m}</b> {m === 1 ? "staršieho" : "starších"}
+                  </span>
+                ) : !prepadaDelenie ? (
+                  <span>zvyšok minieš po potvrdení</span>
+                ) : (
+                  <span className="prepadne">
+                    <b className="cislo">{zvysok}</b> prepadne
+                  </span>
+                )}
+                {bitka !== null && (
+                  <span title="Priazeň sa Pohoršením mení hneď — platí už v tejto bitke.">
+                    bitka{" "}
+                    <b className="cislo">
+                      {bitka.pred.tuhe[ja]} : {bitka.pred.tuhe[super_]}
+                    </b>{" "}
+                    →{" "}
+                    <b className="cislo">
+                      {bitka.po.tuhe[ja]} : {bitka.po.tuhe[super_]}
+                    </b>
+                  </span>
+                )}
+                {cig > 0 && (
+                  <span className="pil-cig" title={`Za každého posunutého staršieho cigareta — ${cigPre === ja ? "tebe" : menoHraca(super_)}.`}>
+                    <IkonaCigareta /> +{cig}
+                    {cigPre === ja ? "" : ` ${menoHraca(super_)}`}
                   </span>
                 )}
               </>
             ),
-            ...(navrhRozdelenia === null
-              ? {}
-              : {
-                  vpravo: (
-                    <button className="pecat pecat-koncim" title="Posunie markery podľa návrhu vedľa — ten istý výpočet ako náhľad špakov pri staršom." onClick={() => posli(navrhRozdelenia.prikaz)}>
-                      rozdeliť naraz
-                    </button>
-                  ),
-                }),
           };
         }
         return null;
@@ -4130,73 +4236,7 @@ export function HernaPlocha({
   })();
 
   // ---- starší -------------------------------------------------------------
-  // Náhľad posunu (Michal 2026-10-19): komu posun pomôže — body spolu a priazeň.
-  // Stupeň s farbou a stavom staršieho (pojmy v8.3, R14).
-  const ZONA = (z: number): string => textStupna(z);
-  const DO_ZONY = ["stredu", "žltej", "oranžovej", "červenej"] as const;
-  const popisPosunu = (elder: ElderState, cezPohorsenie: boolean, naKraj = false, k: PlayerId = super_): string => {
-    // Prebytok: aj cigareta porazenému za prvý posun staršieho (§9.4) — nahladPosunuPrebytkom.
-    void naKraj;
-    // v8.2: marker ide, kým body stačia (cena podľa zóny) — náhľad ukáže, kam dôjde a za koľko.
-    const body = cezPohorsenie ? bodyNaPohorsenie(view, ja, elder) : (view.bitkaStav?.prebytokZostava ?? 0);
-    const n = cezPohorsenie ? nahladPosunuMarkera(data, view, elder.elderId, k, body) : nahladPosunuPrebytkom(data, view, elder.elderId);
-    const posun = posunZaBody(elder, k, body);
-    if (n === null || posun === null) return "";
-    const novy = posun.marker;
-    const priazen = n.priazen === null ? "♥ nikto" : `♥ ${n.priazen === ja ? "tebe" : "súperovi"} +${n.sila}`;
-    const zonaPred = ZONA(STUPNICA_ZONY[elder.marker]);
-    const zonaPo = ZONA(STUPNICA_ZONY[novy]);
-    const cena = cezPohorsenie ? pocet(posun.cena, "Pohoršenie", "Pohoršenia", "Pohoršení") : `${posun.cena} z prebytku`;
-    // Pri ±0 nech voľby nevyzerajú rovnako (UX N1, U11): koľko ešte chýba do ďalšej zóny.
-    let doZony = "";
-    if (n.zmena[ja] === 0 && n.zmena[super_] === 0) {
-      let m = novy;
-      let treba = 0;
-      for (let krok = 1; krok <= 4; krok++) {
-        const dalsi = posunMarker({ ...elder, marker: m }, k);
-        if (dalsi === null) break;
-        treba += cenaKroku(m, dalsi);
-        m = dalsi;
-        if (STUPNICA_ZONY[m] !== STUPNICA_ZONY[novy]) {
-          doZony = ` · do ${DO_ZONY[STUPNICA_ZONY[m]]} chýba ${treba - (body - posun.cena)}`;
-          break;
-        }
-      }
-    }
-    // Bez čísel pozícií (Michal 2026-10-22): hráč 2 vidí stupnicu zrkadlovo, „4 → 5“ by mu klamalo.
-    // Pohoršenie k sebe (v5): priazeň sa mení hneď, rozhoduje už túto bitku.
-    const hned = k === ja && cezPohorsenie && n.priazen !== priazenHraca(elder) ? " — hneď, platí už v tejto bitke" : "";
-    // Priazeň sa mení hneď — keď to pohne poškodením (Bitkár, Veriaci), náhľad ukáže bitku pred a po (playtest 20261026-181227-1).
-    const zmenaBitky = cezPohorsenie ? bitkaPoPohorseni(data, view, elder.elderId, ja, k === ja) : null;
-    const bitka = zmenaBitky === null ? "" : ` · bitka ${zmenaBitky.pred.tuhe[ja]} : ${zmenaBitky.pred.tuhe[super_]} → ${zmenaBitky.po.tuhe[ja]} : ${zmenaBitky.po.tuhe[super_]}`;
-    // Vydesenie po posune (návrh #38 B): nech si nikto omylom nezruší vlastné ohlásené vydesenie.
-    const vydeseni = ` · vydesených ty ${n.vydeseni[ja]} / ${menoHraca(super_)} ${n.vydeseni[super_]} (na výhru ${n.prahVydesenia})`;
-    return ` · ${k === ja ? "k sebe" : `od seba (k ${menoHraca(super_)})`} za ${cena}: ${zonaPred} → ${zonaPo} · ${nahladStrachu(n.spakyZaStarsieho[ja], n.spakyZaStarsieho[super_], menoHraca(super_), n.naUdrzanie[ja], n.naUdrzanie[super_])}${doZony} · ${priazen}${hned}${bitka}${vydeseni}`;
-  };
-  /**
-   * Pohoršenie oboma smermi (v5 bod 7): pri každom staršom voľba od seba alebo
-   * k sebe — len smery, ktoré jadro dovolí (hranice zón, kraj, Noviny).
-   */
-  const volbyPohorsenia = (elder: ElderState): readonly VolbaPosunu[] | undefined => {
-    const b = view.bitkaStav;
-    if (!somNaTahu || view.faza !== "bitka" || b?.caka !== ja || b.krok !== "pohorsenie") return undefined;
-    const naKraj = false;
-    const volby: VolbaPosunu[] = [];
-    for (const kSebe of [false, true]) {
-      // v8.2: Pohoršenia podľa ceny zóny, bez limitu, aj na kraj; z patronátu nie na súperovho patróna.
-      if (!pohorsenieMozne(view, ja, elder, kSebe)) continue;
-      const ciel = posunZaBody(elder, kSebe ? ja : super_, bodyNaPohorsenie(view, ja, elder))?.marker ?? null;
-      if (ciel === null) continue;
-      volby.push({
-        smer: kSebe ? "ja" : "su",
-        nazov: kSebe ? "k sebe" : "od seba",
-        akcia: `posunúť${popisPosunu(elder, true, naKraj, kSebe ? ja : super_)}`,
-        ciel,
-        klik: () => cmd(kSebe ? { type: "pohorsenie", elderId: elder.elderId, kSebe: true } : { type: "pohorsenie", elderId: elder.elderId }),
-      });
-    }
-    return volby.length === 0 ? undefined : volby;
-  };
+  // Pohoršenie a prebytok rozdeľuje hráč šípkami pri staršom (rozdelenieStarsieho, mock C · Pečať).
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
     if (!somNaTahu) return undefined;
     // Patronát (Michal 2026-10-20): staršieho, ktorý mi prejavuje priazeň, si vezmem do ruky.
@@ -4206,14 +4246,6 @@ export function HernaPlocha({
         akcia: `vziať do ruky${c.cigarety > 0 ? ` (−${cigariet(c.cigarety)})` : ""} · súper +${c.pohorsenia} Pohoršení`,
         klik: () => setMode({ typ: "patronat", elderId: elder.elderId, uid: null }),
       };
-    }
-    const b = view.bitkaStav;
-    if (view.faza === "bitka" && b?.caka === ja) {
-      // Prebytok ide vždy k súperovi držiteľa — rozdeľuje ho od v8 spravidla porazený, teda k nemu.
-      const smerPrebytku: PlayerId = b.prebytokDrzi === super_ ? ja : super_;
-      if (b.krok === "prebytok" && posunZaBody(elder, smerPrebytku, b.prebytokZostava) !== null) {
-        return { akcia: `posunúť marker${popisPosunu(elder, false, false, smerPrebytku)}`, klik: () => cmd({ type: "prebytok", elderId: elder.elderId }) };
-      }
     }
     return undefined;
   };
@@ -4225,7 +4257,7 @@ export function HernaPlocha({
     view.koniec !== null
       ? null
       : view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok")
-        ? { nazov: bs.krok === "pohorsenie" ? "Pohoršenie" : "Prebytok", kto: bs.caka, typ: bs.krok }
+        ? { nazov: NAZOV_DELENIA[bs.krok], kto: bs.caka, typ: bs.krok }
         : view.faza === "draft" && draft?.krok === "patronat"
           ? { nazov: "Patronát", kto: draft.naTahu, typ: "patronat" }
           : null;
@@ -4354,38 +4386,58 @@ export function HernaPlocha({
       if (hJa.cigarety < cenaPatronatu(e).cigarety) return "málo cigariet";
       return kandidatiPatronatu.length === 0 ? "nemáš v ruke Občana ani Zviera" : "nedá sa vziať";
     }
-    const pohorsenie = krokStarsich.typ === "pohorsenie";
-    if (pohorsenie) return bodyNaPohorsenie(view, ja, e) === 0 ? "Pohoršenia z patronátu naňho nesmú" : "Pohoršenia nestačia";
-    if (posunZaBody(e, smerPrebytkuStola, view.bitkaStav?.prebytokZostava ?? 0) !== null) return undefined;
-    return posunMarker(e, smerPrebytkuStola) === null ? "už na krajnej pozícii" : "zvyšok prebytku nestačí";
+    // Pohoršenie a prebytok: kto už nič nedostane, je tlmený na karte (rozdelenieStarsieho).
+    return undefined;
   };
-  // Prebytok ide k súperovi držiteľa (v8: rozdeľuje ho spravidla porazený, teda k nemu) —
-  // ten istý smer ako klik (klikStarsi), inak duch markera ukazoval opačnú stranu.
-  const smerPrebytkuStola: PlayerId = view.bitkaStav?.prebytokDrzi === super_ ? ja : super_;
+  /**
+   * Starší pri rozdeľovaní (mock C · Pečať): šípky smerov, ceny polí a nepotvrdený posun z plánu
+   * jadra. Starší v pláne má body zo svojho miesta v poradí (prehodenie smeru ho nechá na mieste),
+   * ostatní zo zvyšku po pláne (nový posun ide na koniec) — ako prepniVolbu a server.
+   */
+  const rozdelenieStarsieho = (e: ElderState): RozdelenieStarsieho | undefined => {
+    if (planDelenia === null || krokDelenia === null || !krokMoj) return undefined;
+    const krok = planDelenia.kroky.find((k) => k.elderId === e.elderId);
+    const body = krok?.body ?? rozpocetPoPlane(view, ja, planDelenia, e.elderId);
+    const ceny: ({ readonly cena: number; readonly dosah: boolean } | null)[] = Array.from({ length: 7 }, () => null);
+    const sipky: { ja?: RozdelenieStarsieho["sipky"]["ja"]; su?: RozdelenieStarsieho["sipky"]["su"] } = {};
+    for (const sm of smeryRozdelenia(view, ja)) {
+      for (let m = posunMarker(e, sm.smer); m !== null; m = posunMarker({ marker: m }, sm.smer)) {
+        const cena = cenaPosunuOPoli(e.marker, m - e.marker);
+        ceny[m] = { cena, dosah: cena <= body };
+      }
+      const posun = body > 0 ? posunZaBody(e, sm.smer, body) : null;
+      sipky[sm.smer === ja ? "ja" : "su"] = {
+        posun: posun === null ? null : { na: posun.marker, cena: posun.cena },
+        aktivna: krok !== undefined && krok.kSebe === sm.kSebe,
+        klik: () => prepniDelenie(sm.kSebe ? { elderId: e.elderId, kSebe: true } : { elderId: e.elderId }),
+      };
+    }
+    return {
+      sipky,
+      ceny,
+      navrh: krok === undefined ? null : { na: krok.na, cena: krok.cena },
+      mrtvy: krok === undefined && !Object.values(sipky).some((x) => x?.posun != null),
+    };
+  };
   const starsiVLinii: StarsiVLinii[] = view.starsi.map((e) => {
-    const klik = klikStarsi(e);
-    const volby = volbyPohorsenia(e);
+    const rozdelenie = rozdelenieStarsieho(e);
+    const klik = rozdelenie === undefined ? klikStarsi(e) : undefined;
     const obrazok = vzhladKarty(sada, data, e.karta.defId).obrazok;
     const iPatron = view.patronat.findIndex((x) => x?.elderId === e.elderId);
-    const pohorsenie = krokStarsich?.typ === "pohorsenie";
-    const ciel: MarkerPos | null =
-      !krokMoj || krokStarsich === null
-        ? null
-        : krokStarsich.typ === "patronat"
-          ? MARKER_STRED
-          : (posunZaBody(e, smerPrebytkuStola, pohorsenie ? bodyNaPohorsenie(view, ja, e) : (view.bitkaStav?.prebytokZostava ?? 0))?.marker ?? null);
+    // Duch markera pri patronáte: vziatý starší sa vráti do stredu.
+    const ciel: MarkerPos | null = krokMoj && krokStarsich?.typ === "patronat" ? MARKER_STRED : null;
     return {
       elder: e,
       meno: menoKarty(e.karta.defId),
       obrazok: obrazok === null ? null : mediaUrl(obrazok.nahlad),
       body: body.starsi.find((x) => x.elderId === e.elderId),
       klik,
-      volby,
       ciel,
-      dovod: klik === undefined && volby === undefined ? zamokStarsieho(e) : undefined,
+      dovod: klik === undefined && rozdelenie === undefined ? zamokStarsieho(e) : undefined,
       patron: iPatron === -1 ? null : { kto: iPatron as PlayerId, pohorsenia: view.patronat[iPatron]?.pohorsenia ?? 0 },
       vybrany: mode.typ === "patronat" && mode.elderId === e.elderId,
       stopa: stopaStarsieho(view.posunyMarkerov ?? [], e.elderId),
+      rozdelenie,
     };
   });
   // Lupa staršieho pri prejdení myšou zrušená (Michal 2026-10-30: „priveľa textu, hráča mätie“) —
@@ -5303,8 +5355,9 @@ export function HernaPlocha({
     // Počas pauzy po voľbe cieľa by „potvrdiť“ stavby svietilo v okne okolo lokality; miesto drží, aby stôl neposkočil.
     // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
     // by zakrývala karty draftu a pokyn.
-    // Ani keď z línie nad rukou nie je nič vidno (liniaVidno).
-    <div className={`${view.faza === "draft" || !liniaVidno ? "stol-hrana neprilepena" : "stol-hrana"} s-tlacidlami${pauzaBezi ? " pocas-pauzy" : ""}`}>
+    // Ani keď z línie nad rukou nie je nič vidno (liniaVidno) — okrem rozdeľovania: línia kariet
+    // je vtedy skrytá pod staršími a Potvrdiť musí ostať na očiach aj pri dvoch stĺpcoch na telefóne.
+    <div className={`${view.faza === "draft" || (!liniaVidno && krokDelenia === null) ? "stol-hrana neprilepena" : "stol-hrana"} s-tlacidlami${pauzaBezi ? " pocas-pauzy" : ""}`}>
       <div className="hrana-rad">
         <div className="hrana-vlavo">{hranaVlavo}</div>
         <div className="hrana-stred">{hranaStred}</div>
@@ -5466,7 +5519,7 @@ export function HernaPlocha({
             {/* Výučba po bitke hovorí o starších, hoci partia stojí pri voľbe cieľa 2. kola — „klikni na
                 lokalitu“ by hráča posielal na ťah, ktorý výučba nepustí. */}
             {!ukazStarsich && (
-              <div className="linia-stav" role="status" aria-live="polite" tabIndex={0}>
+              <div className={`linia-stav${pokyn?.jednotny === true ? " jednotna" : ""}`} role="status" aria-live="polite" tabIndex={0}>
                 {(pokyn === null || pokyn.nadpis !== null) && (
                   <strong className="pilulka-nadpis">
                     {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
@@ -5544,11 +5597,6 @@ export function HernaPlocha({
                   hraniceZon={false}
                   zmenene={zmeneniStarsi}
                   tlacidlo={tlacidloLinieStarsich}
-                  prebytok={
-                    krokMoj && bs !== null && bs.krok === "prebytok"
-                      ? { zostava: bs.prebytokZostava }
-                      : undefined
-                  }
                 />
               )}
             </div>

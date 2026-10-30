@@ -39,7 +39,7 @@
       },
       "melichar": {
         "utocnik": "Si útočník: kupuješ a hráš prvý. Dnes rozhodol žreb, odteraz je útočníkom ten, kto prehrá bitku. Tak si na tú rolu zvykaj.",
-        "obranca": "Si obranca: vyberáš lokalitu a Pitku začínaš ty. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku. Užívaj si to, kým to trvá."
+        "obranca": "Si obranca: vyberáš lokalitu a na NA EX odpovedáš prvý. Dnes rozhodol žreb, odteraz je obrancom ten, kto vyhrá bitku. Užívaj si to, kým to trvá."
       },
       "zvyraznit": ["os-kola"]
     },
@@ -88,7 +88,7 @@
         "podmienka": "nahladPitky(view)[ja].zadlzenie > 0",
         "jadro": ["packages/core/src/engine.ts:700 nahladPitky", "packages/core/src/engine.ts:873 prahyHraca (dlh)", "docs/PRAVIDLA.md §8 Zadĺženie a Dlh"]
       },
-      "melichar": "Akcia [Dlh] Dlh ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš kartu Dlh. Zadĺženie po Pitke nezmizne, čaká na ďalší Dlh. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
+      "melichar": "Akcia [Dlh] Hazard ti plní zadĺženie v bare. Keď dosiahne číslo za lomkou, dostaneš Dlh. Zadĺženie po Pitke nezmizne, čaká na ďalší Hazard. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
       "zvyraznit": ["bar:zadlzenie"]
     },
     {
@@ -96,11 +96,11 @@
       "poradie": 7,
       "uroven": "A",
       "spustac": {
-        "kedy": "hráč dostal prvú kartu Dlh",
-        "podmienka": "udalosť pitkaVysledok s dlhy[ja] > 0, alebo pribudol Dlh medzi mojimi priznanými",
+        "kedy": "hráč dostal prvý Dlh (počítadlo)",
+        "podmienka": "view.hraci[ja].dlhy > 0 (počítadlo Dlhov, v8.2)",
         "jadro": ["packages/core/src/engine.ts:412 Event pitkaVysledok", "docs/PRAVIDLA.md §11 Kliatby"]
       },
-      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Leží medzi priznanými kartami. Keď ich bude veľa, príde Exekútor aj po tvoje špaky, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá.",
+      "melichar": "Prvý Dlh! Úprimne, nečudujem sa. Nie je to karta, počíta sa v bare a je hneď priznaný. V každej bitke po neho príde Exekútor aj s tvojimi špakmi, a pri remíze v bitke rozhodujú aj Dlhy: kto ich má viac, prehrá.",
       "zvyraznit": ["bar:dlhy"]
     },
     {
@@ -134,7 +134,7 @@
       "poradie": 10,
       "uroven": "A",
       "spustac": {
-        "kedy": "po prvej bitke partie, keď sa skončí rozdeľovanie prebytku",
+        "kedy": "po prvej bitke partie, keď sa skončí rozdeľovanie Nakladačky",
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },
@@ -152,8 +152,8 @@
         "jadro": ["packages/core/src/engine.ts:188 BitkaKrok pohorsenie", "packages/core/src/engine.ts:2860 pohorseniaVBitke", "docs/PRAVIDLA.md §9.2 Pohoršenie"]
       },
       "melichar": {
-        "moje": "Tvoje Pohoršenie posunie jedného staršieho o krok k súperovi alebo k sebe, aj keď bitku prehráš. A to sa ti zíde. K sebe si vezmeš jeho priazeň hneď, platí už v tejto bitke.",
-        "superove": "Súperovo Pohoršenie posúva staršieho k tebe alebo k nemu, aj keď bitku prehrá. Priazeň sa mení hneď, ešte v tejto bitke. Nepozeraj tak na mňa, ja som ho nevyložil."
+        "moje": "Tvoje Pohoršenie posúva staršieho k súperovi alebo k sebe, aj keď bitku prehráš. A to sa ti zíde. Políčko von zo stredu stojí jedno Pohoršenie, ďalšie dve a tretie tri, späť k stredu o jedno viac. Vyberieš staršieho a smer a marker ide, kým Pohoršenia stačia. K sebe si vezmeš jeho priazeň hneď, platí už v tejto bitke.",
+        "superove": "Súperovo Pohoršenie posúva staršieho k tebe alebo k nemu, aj keď bitku prehrá, a každé políčko ho stojí podľa zóny. Priazeň sa mení hneď, ešte v tejto bitke. Nepozeraj tak na mňa, ja som ho nevyložil."
       },
       "zvyraznit": ["linia-starsich"]
     },
@@ -163,7 +163,7 @@
       "uroven": "A",
       "spustac": {
         "kedy": "keď prvýkrát hrozí Absťák (súper má v kole viac nerestí); ak výhľad nestihne, pri prvom Absťáku",
-        "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo pribudol Absťák medzi mojimi priznanými",
+        "podmienka": "stavZavislosti(view, ja).vyhlad === \"ziska\" na mojom ťahu, alebo mi pribudol Absťák (počítadlo)",
         "jadro": ["packages/core/src/zavislost.ts:58 stavZavislosti", "docs/PRAVIDLA.md §8 Nerest a Absťák"]
       },
       "melichar": "Pozor na Absťák: kto v kole pije [Poldeci] a fajčí [Cigareta] menej ako súper, dostane ho. Každý ti v bitke uberie 1 tuhé, ale dá ti Pohoršenie navyše: na suchu robíš scény. Kto pije viac, jedného sa zbaví. Ja len radím, rob si, ako chceš.",
