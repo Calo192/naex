@@ -714,22 +714,25 @@
     {
       "id": "5.stavba",
       "paragraf": "5. Cieľ a draft › Stavba šenku",
-      "pravidlo": "Stavba šenku: každý N kariet (nenahradení starší nadol na párne, pri nedostatku menej), naraz polovica do šenku a polovica naspodok; odhodené súper nevidí.",
+      "pravidlo": "Stavba šenku (v8.5): každý 2 karty z Náradia a 6 z Občanov (bez ohľadu na starších), naraz 4 do šenku v ľubovoľnom mixe a 4 naspodok ich balíčka; odhodené súper nevidí. Keď balíček nestačí, doplní druhý; keď oba, stavba sa zmenšuje (výklad Leadera 2026-10-30).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/draft.test.ts › každý dostane toľko kariet, koľko je nenahradených starších (nadol na párne)",
+        "packages/core/test/draft.test.ts › každý dostane 2 karty z Náradia a 6 z Občanov, bez ohľadu na počet starších (v8.5)",
+        "packages/core/test/draft.test.ts › čo jeden balíček nemá, doplní druhý; keď sa minú oba, stavba sa zmenšuje (výklad 2026-10-30)",
+        "packages/core/test/draft.test.ts › do šenku ľubovoľný mix; Nástroj naspodok ide k Náradiu, Občan k Občanom",
+        "packages/core/test/view-balicek.test.ts › počty kariet sú verejné, obsah a poradie nie",
         "packages/core/test/draft.test.ts › obaja hrajú naraz; výber sa odhalí, až keď vyberú obaja",
         "packages/core/test/draft.test.ts › odhodené karty sa nedostanú do pohľadu ani do logu súpera",
-        "packages/core/test/draft.test.ts › stavba má jeden krok; po nej má šenok 8 kariet a spoločný balíček stratil len tie"
+        "packages/core/test/draft.test.ts › stavba má jeden krok; po nej má šenok 8 kariet a balíčky stratili len tie"
       ]
     },
     {
       "id": "5.stavba.nevzate",
       "paragraf": "5. Cieľ a draft › Stavba šenku",
-      "pravidlo": "Nevzaté karty zo šenku idú pri ďalšom drafte naspodok spoločného balíčka.",
+      "pravidlo": "Nevzaté karty zo šenku idú pri ďalšom drafte naspodok svojho balíčka (Nástroj k Náradiu, ostatné k Občanom).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/draft.test.ts › nevzaté karty idú pri ďalšom drafte naspodok spoločného balíčka"
+        "packages/core/test/draft.test.ts › nevzaté karty idú pri ďalšom drafte naspodok svojho balíčka (Náradie / Občania)"
       ]
     },
     {
@@ -756,10 +759,11 @@
     {
       "id": "5.branie.doplnenie",
       "paragraf": "5. Cieľ a draft › Branie zo šenku",
-      "pravidlo": "Po braní sa šenok doplní z vrchu spoločného balíčka na 8 kariet.",
+      "pravidlo": "Po braní sa šenok doplní na 8 kariet v pomere stavby: najprv z Náradia, kým v šenku nie sú 2 Nástroje, zvyšok z Občanov (v8.5).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/draft.test.ts › po braní sa šenok doplní na 8 z vrchu spoločného balíčka"
+        "packages/core/test/draft.test.ts › po braní sa šenok doplní na 8; s 2 Nástrojmi v šenku z vrchu Občanov",
+        "packages/core/test/draft.test.ts › v pomere stavby: najprv z Náradia, kým v šenku nie sú 2 Nástroje, zvyšok z Občanov (v8.5)"
       ]
     },
     {
@@ -1355,11 +1359,12 @@
     {
       "id": "3.start.karty",
       "paragraf": "3. Príprava hry",
-      "pravidlo": "Každý má na začiatku v ruke 4 karty — Miňištrant, Milujúca manželka, Pijan, Dievčina na vydaj; doberací balíček je prázdny; tieto druhy nie sú v spoločnom balíčku (v6).",
+      "pravidlo": "Každý má na začiatku v ruke 4 karty — Miňištrant, Milujúca manželka, Pijan, Dievčina na vydaj; doberací balíček je prázdny; tieto druhy nie sú v Náradí ani v Občanoch (v6, v8.5).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/michal-20261018.test.ts › v6: obaja začínajú so 4 kartami v ruke — Miňištrant, Milujúca manželka, Pijan a Dievčina na vydaj (Michal 2026-10-26)",
-        "packages/core/test/engine.test.ts › hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 2, cigarety 3"
+        "packages/core/test/engine.test.ts › hra sa rozdá (v6): 4 štartovky v ruke, prázdny doberací balíček, šenok prázdny, poldeci 2, cigarety 3",
+        "packages/core/test/michal-20261018.test.ts › v Náradí a Občanoch (a teda v šenku) štartovky nie sú"
       ]
     },
     {
@@ -2117,7 +2122,7 @@
     {
       "id": "5.stavba.smetisko",
       "paragraf": "5. Cieľ a draft › Stavba šenku",
-      "pravidlo": "Polovica kariet zo stavby ide naspodok spoločného balíčka — web toto miesto volá Smetisko, pravidlá to slovo nepoznajú.",
+      "pravidlo": "Polovica kariet zo stavby ide naspodok ich balíčka (Náradie / Občania, v8.5) — web toto miesto volá Smetisko, pravidlá to slovo nepoznajú.",
       "stav": "netestovatelne",
       "testy": [],
       "poznamka": "Rozhranie Smetisko už nemá (stavba šenku klikom, d45d2c3); §5 hovorí „naspodok spoločného balíčka“ a tak ostáva (návrh #25 A, Michal 2026-10-28). Slovo Smetisko ostalo len v textoch Melichara vo výučbe (prva-hra.json, napovedy.json) — tie schvaľuje Michal."

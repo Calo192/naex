@@ -1,0 +1,47 @@
+<!doctype html><html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Výučba Prvá hra na pravidlách v8.5 (Náradie a Občania) — zmeny textov</title>
+<style>
+body{font:16px/1.45 system-ui,sans-serif;max-width:860px;margin:0 auto;padding:12px;background:#faf7f2;color:#222}
+h1{font-size:1.35em}h2{margin-top:1.6em;border-bottom:2px solid #c9b48a}
+.z{background:#fff;border:1px solid #e3d9c6;border-radius:8px;padding:8px 10px;margin:8px 0}
+.z.nov{border-left:5px solid #3a8a3a}.z.zrus{border-left:5px solid #a33}.z.tah{border-left:5px solid #c9a227}
+.h{font-size:.85em;color:#665}.p{font-size:.78em;color:#887;margin-top:6px}.t{font-size:.8em;color:#665;word-break:break-all}
+.o{color:#8a2b2b;text-decoration:line-through;margin:2px 0}.n{color:#1d5a1d}
+.box{background:#fff8e6;border:1px solid #e8cf8f;border-radius:8px;padding:8px 12px}
+</style></head><body>
+<h1>Výučba „Prvá hra“ na pravidlách v8.5 (Náradie a Občania) — zmeny textov Melichara</h1>
+<div class="box"><p><b>Prečo:</b> pravidlá v8.5 — spoločný balíček sa delí na Náradie a Občanov; stavba šenku dáva každému 2 Nástroje a 6 Občanov, zvyšok ide naspodok svojho balíčka, šenok sa dopĺňa najprv Náradím.</p><p><b>Príbeh sa nemení:</b> rozdanie má namiesto spoločného balíčka dva (naradie, obcania) zložené tak, aby šenok, kúpy, línie a všetky čísla ostali rovnaké (stopa partie po krokoch je zhodná so stavom pred v8.5). Každá stavba dostala 2 Nástroje navyše, ktoré idú naspodok; ťahy stavby majú nové zoznamy kariet naspodok.</p><p>Prečiarknuté pôvodné, zelené nové.</p></div>
+<h2>1. časť — Základy <small>(2 krokov)</small></h2><div class="z tah">
+  <div class="h"><b>k-stavba</b> · krok 9</div>
+  <div class="t">ťah: <s>{"type":"stavbaSenku","doSenku":["stavba:hasic","stavba:vestica","stavba:svokra","stavba:sofer"],"odhod":["stavba:recidivista","stavba:podvodnik","stavba:dvojcata","stavba:financna_poradkyna"]}</s> → {"type":"stavbaSenku","doSenku":["stavba:hasic","stavba:vestica","stavba:svokra","stavba:sofer"],"odhod":["stavba:recidivista","stavba:podvodnik","stavba:nealko","stavba:vinko"]}</div>
+  </div>
+<div class="z tah">
+  <div class="h"><b>k-stavba-bot</b> · krok 10</div>
+  <div class="t">ťah: <s>{"type":"stavbaSenku","doSenku":["stavba:zamocnik","stavba:kocovnik","stavba:praudovravec","stavba:cierna_macka"],"odhod":["stavba:veteran","stavba:silna_nezavisla_zena","stavba:vandal","stavba:traktoristka"]}</s> → {"type":"stavbaSenku","doSenku":["stavba:zamocnik","stavba:kocovnik","stavba:praudovravec","stavba:cierna_macka"],"odhod":["stavba:veteran","stavba:silna_nezavisla_zena","stavba:vyherny_automat","stavba:lievik"]}</div>
+  </div>
+<h2>2. časť — NA EX a podlosti <small>(3 krokov)</small></h2><div class="z ">
+  <div class="h"><b>i-stavba2</b> · krok 75</div>
+  
+  <div class="p">text</div><div class="o">Šenok dnes staviaš sám. Klikni na štyri karty, ktoré chceš mať v šenku, vybraná sa zdvihne. Zvyšné štyri pôjdu naspodok spoločného balíčka a Štamgast ich neuvidí. On robí to isté so svojimi ôsmimi.</div><div class="n">Šenok dnes staviaš sám. Dostal si osem kariet: dve z balíčka Náradia a šesť z Občanov. Klikni na štyri, ktoré chceš mať v šenku, vybraná sa zdvihne. Zvyšné štyri pôjdu naspodok svojich balíčkov a Štamgast ich neuvidí. On robí to isté so svojimi ôsmimi.</div></div>
+<div class="z tah">
+  <div class="h"><b>k-stavba2</b> · krok 76</div>
+  <div class="t">ťah: <s>{"type":"stavbaSenku","doSenku":["stavba:anonymny_alkoholik","stavba:sofer","stavba:stryko_z_ameriky","stavba:svokra"],"odhod":["stavba:recidivista","stavba:vymahac","stavba:kocovnik","stavba:degustatorka"]}</s> → {"type":"stavbaSenku","doSenku":["stavba:anonymny_alkoholik","stavba:sofer","stavba:stryko_z_ameriky","stavba:svokra"],"odhod":["stavba:recidivista","stavba:vymahac","stavba:zapalovac","stavba:vyherne_zreby"]}</div>
+  <div class="p">text</div><div class="o">Do šenku vyber Anonymného alkoholika, Šoféra, Strýka z Ameriky a Svokru, potom potvrď. Recidivistu nechaj dole: má [Petelica] Petelicu a Štamgast kupuje prvý. Zvyšní traja tiež nie.</div><div class="n">Do šenku vyber Anonymného alkoholika, Šoféra, Strýka z Ameriky a Svokru, potom potvrď. Recidivistu nechaj dole: má [Petelica] Petelicu a Štamgast kupuje prvý. Zvyšné tri karty tiež nie.</div></div>
+<div class="z tah">
+  <div class="h"><b>k-stavba2-bot</b> · krok 77</div>
+  <div class="t">ťah: <s>{"type":"stavbaSenku","doSenku":["stavba:silna_nezavisla_zena","stavba:kon","stavba:dvojcata","stavba:traktoristka"],"odhod":["stavba:veteran","stavba:financna_poradkyna","stavba:podvodnik","stavba:vandal"]}</s> → {"type":"stavbaSenku","doSenku":["stavba:silna_nezavisla_zena","stavba:kon","stavba:dvojcata","stavba:traktoristka"],"odhod":["stavba:veteran","stavba:financna_poradkyna","stavba:pistalka","stavba:hrable"]}</div>
+  </div>
+<h2>3. časť — Celá hra <small>(3 krokov)</small></h2><div class="z tah">
+  <div class="h"><b>k-stavba3</b> · krok 136</div>
+  <div class="t">ťah: <s>{"type":"stavbaSenku","doSenku":["stavba:kapybara","stavba:snubenica","stavba:svaty_text","stavba:kon"],"odhod":["stavba:zahradkar","stavba:policajtka","stavba:cierna_macka","stavba:praudovravec"]}</s> → {"type":"stavbaSenku","doSenku":["stavba:kapybara","stavba:snubenica","stavba:svaty_text","stavba:kon"],"odhod":["stavba:zahradkar","stavba:policajtka","stavba:cierna_macka","stavba:jogurt"]}</div>
+  </div>
+<div class="z tah">
+  <div class="h"><b>k-stavba3-bot</b> · krok 137</div>
+  <div class="t">ťah: <s>{"type":"stavbaSenku","doSenku":["stavba:vidly","stavba:puska","stavba:pes","stavba:veteran"],"odhod":["stavba:nealko","stavba:vinko","stavba:vyherny_automat","stavba:lievik"]}</s> → {"type":"stavbaSenku","doSenku":["stavba:vidly","stavba:puska","stavba:pes","stavba:veteran"],"odhod":["stavba:praudovravec","stavba:degustatorka","stavba:vandal","stavba:podvodnik"]}</div>
+  </div>
+<div class="z tah">
+  <div class="h"><b>k-stavba-finale</b> · krok 190</div>
+  <div class="t">ťah: <s>{"type":"stavbaSenku","doSenku":["stavba:liberal","stavba:niekoho_stryna","stavba:zivnostnik","stavba:policajtka"],"odhod":["stavba:sarlatan","stavba:kohut","stavba:krokodil","stavba:noviny"]}</s> → {"type":"stavbaSenku","doSenku":["stavba:liberal","stavba:niekoho_stryna","stavba:zivnostnik","stavba:policajtka"],"odhod":["stavba:sarlatan","stavba:kohut","stavba:noviny","stavba:horoskop"]}</div>
+  </div>
+
+</body></html>

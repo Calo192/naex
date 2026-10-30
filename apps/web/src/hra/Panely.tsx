@@ -1456,8 +1456,8 @@ export function PriebehKola({
         nadpis: "Draft — šenok a patronát",
         text: (
           <>
-            <b>Stavba šenku:</b> obaja naraz dajú z balíčka stavby polovicu kariet do šenku a polovicu naspodok spoločného
-            balíčka — bez podávania.
+            <b>Stavba šenku:</b> každý dostane {KONSTANTY.STAVBA_NARADIE} karty z Náradia a {KONSTANTY.STAVBA_OBCANIA} z Občanov; obaja
+            naraz dajú polovicu do šenku a polovicu naspodok ich balíčka — bez podávania.
             <span className="tip-riadok">
               <b>Branie:</b> striedavo, začína útočník — 1 karta za {KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za {KONSTANTY.CENA_SENKU[2]}{" "}
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.

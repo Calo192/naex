@@ -1718,3 +1718,27 @@ Staré znenie §2: Robota „spáli 1 priznaný Dlh (z hry, §11)“ — bez šp
 Staré znenie §16 (Puška, v7):
 
 > | Puška | Dedičstvo: každá tvoja aktívna Petelica udelí o 1 poškodenie viac. |
+
+
+## v8.5 — Náradie a Občania (Michal 2026-10-30)
+
+Spoločný balíček sa rozdelil na Náradie (Nástroje) a Občanov (ostatné); stavba
+šenku je vždy 2 + 6 kariet a doplnenie šenku ide v tom istom pomere.
+
+Staré znenie §5 (Stavba šenku):
+
+> Karty, ktoré zo starého šenku nikto nevzal, idú lícom dole naspodok
+> spoločného balíčka. Každý hráč si potom zo spoločného balíčka vezme
+> **N kariet** — N = počet nenahradených starších, zaokrúhlený nadol na párne
+> číslo; pri nedostatku kariet menej. Obaja naraz a tajne dajú zo svojho balíčka
+> **polovicu do šenku** a **polovicu naspodok spoločného balíčka** (lícom dole —
+> súper nevidí, čo hráč odhodil). Keď vyberú obaja, karty do šenku sa odhalia.
+> Balíčky si hráči nepodávajú. Pri N = 8 je to 4 + 4 a šenok má 8 kariet,
+> polovicu od každého.
+
+Staré znenie §5 (Branie zo šenku, posledný odsek):
+
+> Nevzaté karty ostávajú v šenku len do ďalšej stavby — vtedy idú naspodok
+> spoločného balíčka (Stavba šenku, vyššie); medzitým z neho berú Starosta a Cintorín. Po braní sa šenok **doplní z vrchu spoločného
+> balíčka na 8 kariet**. Keď sa spoločný balíček minie, šenok sa už nedopĺňa
+> a stavba sa zmenšuje až na nulu — hra beží ďalej bez trestu.

@@ -420,7 +420,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       out.push(
         `STAVBA ŠENKU (naraz): ty ${d.vybral[ja] ? "si už vybral" : "vyberáš"}, súper ${d.vybral[su] ? "už vybral" : "vyberá"}; súperov balíček: ${kartyNom(d.balicekPocet[su])} (nevidíš ho).`,
       );
-      out.push(`TVOJ BALÍČEK STAVBY (${d.mojBalicek.length}):`);
+      out.push(`TVOJ BALÍČEK STAVBY (${d.mojBalicek.length}; najprv Náradie, potom Občania — do šenku dáš polovicu v ľubovoľnom mixe):`);
       for (const k of d.mojBalicek) out.push(`  ${popisKarty(k)}`);
     } else {
       out.push(
@@ -650,7 +650,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   }
 
   out.push("");
-  out.push(`ŠENOK (${v.senok.length}, spoločný balíček ${v.spolocnyBalicekPocet}):`);
+  out.push(`ŠENOK (${v.senok.length}, Náradie ${v.naradiePocet}, Občania ${v.obcaniaPocet}):`);
   for (const k of v.senok) out.push(`  ${popisKarty(k)}`);
   out.push(`LOKALITY V HRE (${v.lokalityVHre.length}):`);
   for (const k of v.lokalityVHre) out.push(`  ${popisKarty(k)}`);
@@ -799,7 +799,7 @@ function moznosti(v: ClientState): string[] {
       if (ds.krok === "stavba") {
         const krok = krokStavby(ds.mojBalicek.length);
         out.push(
-          `{"type":"stavbaSenku","doSenku":[${Array.from({ length: krok.doSenku }, (_, i) => `A${i + 1}`).join(",")}],"odhod":[${Array.from({ length: krok.odhod }, (_, i) => `B${i + 1}`).join(",")}]}   — z TVOJHO BALÍČKA STAVBY (vyššie) daj ${krok.doSenku} ${krok.doSenku === 1 ? "kartu" : "karty"} do šenku (uvidia ich obaja, berie sa z neho) a ${krok.odhod} naspodok spoločného balíčka (súper ich neuvidí). Nič si nepodávate. Súper vyberá naraz s tebou; karty do šenku sa odhalia, keď vyberiete obaja.`,
+          `{"type":"stavbaSenku","doSenku":[${Array.from({ length: krok.doSenku }, (_, i) => `A${i + 1}`).join(",")}],"odhod":[${Array.from({ length: krok.odhod }, (_, i) => `B${i + 1}`).join(",")}]}   — z TVOJHO BALÍČKA STAVBY (vyššie) daj ${krok.doSenku} ${krok.doSenku === 1 ? "kartu" : "karty"} do šenku (uvidia ich obaja, berie sa z neho) a ${krok.odhod} naspodok (Nástroj naspodok Náradia, ostatné naspodok Občanov; súper ich neuvidí). Nič si nepodávate. Súper vyberá naraz s tebou; karty do šenku sa odhalia, keď vyberiete obaja.`,
         );
         break;
       }
@@ -1202,14 +1202,14 @@ async function main(): Promise<void> {
   if (prikaz === "karty") {
     const s = await pripoj();
     const cards = (s.sada.cardsJson as { cards: { id: string; name: string; tags: string[]; effect_text: string; left: { actions: Record<string, number>; blocked: number[] }; right: { actions: Record<string, number>; blocked: number[] } }[] }).cards;
-    // Počet kópií ako pri rozdaní (setupGame): spoločný balíček, štartovky, starší, lokality, kliatby.
+    // Počet kópií ako pri rozdaní (setupGame): Náradie a Občania, štartovky, starší, lokality, kliatby.
     const kopie = (c: (typeof cards)[number]): string => {
       const start = KONSTANTY.START_RUKA[c.id];
-      if (start !== undefined) return `štartovacia: ${start}× v ruke každého hráča, v spoločnom balíčku ani v šenku nie je`;
+      if (start !== undefined) return `štartovacia: ${start}× v ruke každého hráča, v Náradí, Občanoch ani v šenku nie je`;
       if (c.tags.includes("Lokalita")) return "lokalita: 1 kus (do hry ide len časť lokalít)";
       if (c.tags.includes("Starešina")) return "starší: 1 kus na scorecarde (do ruky len patronátom)";
       if (c.id === "cirhoza") return "kliatba: v balíčku nie je, vzniká počas hry (bez limitu)";
-      return `${KONSTANTY.KOPIE_V_SPOLOCNOM_BALICKU} kópie v spoločnom balíčku (každá s náhodným rozložením akcií)`;
+      return `${KONSTANTY.KOPIE_V_SPOLOCNOM_BALICKU} kópie v balíčku ${c.tags.includes("Nástroj") ? "Náradie" : "Občania"} (každá s náhodným rozložením akcií)`;
     };
     for (const c of cards) {
       const a = (x: Record<string, number>) => Object.entries(x).map(([k, n]) => `${k}${n > 1 ? `×${n}` : ""}`).join(", ") || "—";

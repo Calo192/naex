@@ -325,7 +325,8 @@ export function zahmliStav(state: GameState, ja: PlayerId, rng: RngState): [Game
   );
   const [skryte, r1] = rngShuffle(r, poUid([...on.ruka, ...on.doberaci, ...licomDole, ...zaverecne.map((z) => z.karta)]));
   const [mojBalicek, r2] = rngShuffle(r1, poUid(state.hraci[ja].doberaci));
-  const [spolocny, r3] = rngShuffle(r2, poUid(state.spolocnyBalicek));
+  const [naradie, r2b] = rngShuffle(r2, poUid(state.naradie));
+  const [obcania, r3] = rngShuffle(r2b, poUid(state.obcania));
   const [seed, r4] = rngInt(r3, 2 ** 31);
   r = r4;
   const naZaverecne = skryte.slice(licomDole.length, licomDole.length + zaverecne.length);
@@ -350,7 +351,8 @@ export function zahmliStav(state: GameState, ja: PlayerId, rng: RngState): [Game
     {
       ...state,
       rng: rngSeed(seed),
-      spolocnyBalicek: spolocny,
+      naradie,
+      obcania,
       hraci: ja === 0 ? [mojHrac, superHrac] : [superHrac, mojHrac],
       patronat,
       strany,

@@ -122,9 +122,11 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Konflikt, jeho Viera sa ráta ako Pecka.
 - **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
   Pakt s Paktom nerobí nič, s Posilnením nič nezdvojí, Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
-- **Draft:** stavba šenku naraz, bez podávania: z N kariet dáš **polovicu do šenku
-  a polovicu naspodok** (`{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`, pri 8 kartách 4 + 4)
-  — vyberáte naraz. Po braní sa šenok sám doplní na 8 z vrchu spoločného balíčka. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
+- **Draft (v8.5):** karty šenku sú v dvoch balíčkoch — **Náradie** (Nástroje) a **Občania** (ostatné).
+  Stavba šenku naraz, bez podávania: dostaneš **2 karty z Náradia a 6 z Občanov**, dáš **4 do šenku**
+  v ľubovoľnom mixe a 4 naspodok (Nástroj k Náradiu, ostatné k Občanom;
+  `{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`) — vyberáte naraz. Po braní sa šenok sám doplní
+  na 8: najprv z Náradia, kým v ňom nie sú 2 Nástroje, zvyšok z Občanov. Branie striedavo, začína útočník: **1 karta za 1 cigaretu,
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); poldeci sa
   v šenku neplatí; `draftStop` ukončí branie.
 - **Ruka bez limitu:** po každej bitke si dobereš **1 kartu** (2026-10-27, predtým 2); nič neodhadzuješ.

@@ -19,7 +19,7 @@ export const KONSTANTY = {
    * Počiatočná ruka každého hráča (v6, Michal 2026-10-26): len tieto štyri
    * karty, doberací balíček je na začiatku prázdny (predtým 7 štartoviek
    * 3/2/1/1 v balíčku a 5 v ruke). Tieto štyri druhy sú výhradne štartovacie —
-   * v spoločnom balíčku ani v šenku nie sú.
+   * v Náradí, Občanoch ani v šenku nie sú.
    */
   START_RUKA: {
     ministrant: 1,
@@ -29,11 +29,18 @@ export const KONSTANTY = {
   } as Readonly<Record<string, number>>,
 
   /**
-   * Koľko kópií každej karty (Občan/Zviera/Nástroj) je v spoločnom doberacom
-   * balíčku, každá s náhodným variantom (Michal 2026-10-22): 2 kópie dajú
-   * 62 kariet — dlhej hre stačia a sada sa neriedi.
+   * Koľko kópií každej karty (Občan/Zviera/Nástroj) je v balíčkoch Náradie
+   * a Občania, každá s náhodným variantom (Michal 2026-10-22): 2 kópie dlhej
+   * hre stačia a sada sa neriedi.
    */
   KOPIE_V_SPOLOCNOM_BALICKU: 2,
+  /**
+   * Stavba šenku (v8.5, Michal 2026-10-30): každý hráč dostane 2 karty
+   * z Náradia a 6 z Občanov, bez ohľadu na počet starších. V tom istom pomere
+   * sa šenok dopĺňa po braní (SENOK_PO_BRANI).
+   */
+  STAVBA_NARADIE: 2,
+  STAVBA_OBCANIA: 6,
 
   // Základy odvodených hodnôt (PRAVIDLA §8 a §10).
   /**
@@ -63,7 +70,7 @@ export const KONSTANTY = {
    */
   CENA_SENKU: [0, 1, 3] as readonly number[],
   /**
-   * Po braní sa šenok doplní z vrchu spoločného balíčka na toľkoto kariet
+   * Po braní sa šenok doplní z vrchu Náradia a Občanov na toľkoto kariet
    * (Michal 2026-10-20) — pre Pohreb Závislého, Starostu a iné efekty, ktoré z neho berú.
    */
   SENOK_PO_BRANI: 8,
@@ -159,6 +166,8 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // (porovnanie nerestí so súperom, +1 Pohoršenie, bez zrážky špakov).
 // v8.2 (Michal 2026-10-30) tiež bez novej značky: akcia Dlh sa volá Hazard, Dlh a Absťák sú
 // počítadlá (nie karty, Absťák bez dobratia), posun markera Pohoršením a prebytkom stojí podľa zóny.
+// v8.5 (Michal 2026-10-30) bez novej značky: spoločný balíček sa delí na Náradie a Občanov,
+// stavba šenku vždy 2 + 6 kariet.
 export const VERZIA_PRAVIDIEL = "v8";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-10-28";

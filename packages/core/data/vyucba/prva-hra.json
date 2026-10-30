@@ -113,76 +113,93 @@
         "cigarety": 3
       }
     ],
-    "spolocnyBalicek": [
+    "naradie": [
+      "nealko/1/0",
+      "vinko/0/0",
+      "vyherny_automat/0/0",
+      "lievik/0/0",
+      "puska/0/0",
+      "nealko/0/0",
+      "zapalovac/0/0",
+      "vyherne_zreby/0/0",
+      "pistalka/0/0",
+      "hrable/0/0",
+      "zrkadlo/0/0",
+      "telefon/0/0",
+      "svaty_text/0/0",
+      "jogurt/0/0",
+      "vidly/0/0",
+      "puska/0/1",
+      "energetak/0/0",
+      "noviny/0/0",
+      "horoskop/0/0",
+      "pasca/0/0",
+      "cigorky/0/0",
+      "furik/0/0",
+      "kristalova_gula/0/0",
+      "boxer/0/0",
+      "pistalka/0/0",
+      "zrkadlo/0/0",
+      "hrable/0/0"
+    ],
+    "obcania": [
       "hasic/0/1",
       "vestica",
       "svokra",
       "sofer",
       "recidivista/2/0",
       "podvodnik",
-      "dvojcata",
-      "financna_poradkyna",
       "zamocnik/1/0",
       "kocovnik",
       "praudovravec",
       "cierna_macka",
       "veteran",
       "silna_nezavisla_zena",
-      "vandal",
-      "traktoristka",
-      "puska",
-      "nealko",
       "anonymny_alkoholik/0/0",
       "sofer/0/0",
       "stryko_z_ameriky/0/0",
       "svokra/0/0",
       "recidivista/0/0",
       "vymahac/0/0",
-      "kocovnik/0/0",
-      "degustatorka/0/0",
       "silna_nezavisla_zena/0/0",
       "kon/0/0",
       "dvojcata/0/0",
       "traktoristka/0/0",
       "veteran/0/0",
       "financna_poradkyna/0/0",
-      "podvodnik/0/0",
-      "vandal/0/0",
-      "nealko/0/0",
-      "puska/0/0",
       "vestica/0/0",
       "kapybara/0/0",
       "zahradkar/0/0",
       "snubenica/0/0",
       "policajtka/0/0",
-      "svaty_text/0/0",
       "cierna_macka/0/0",
-      "praudovravec/0/0",
       "kon/1/0",
-      "vidly/0/0",
-      "puska/0/1",
       "pes/0/0",
       "veteran/1/0",
-      "nealko/1/0",
-      "vinko/0/0",
-      "vyherny_automat/0/0",
-      "lievik/0/0",
+      "praudovravec/0/0",
+      "degustatorka/0/0",
+      "vandal/0/0",
+      "podvodnik/0/0",
       "kulturista/0/0",
       "masiar/0/0",
-      "dohadzovacka/0/0",
       "liberal/0/0",
       "niekoho_stryna/0/0",
       "zivnostnik/0/0",
       "policajtka/1/0",
       "sarlatan/0/0",
       "kohut/0/0",
-      "krokodil/0/0",
-      "noviny/0/0",
-      "pasca/0/0",
-      "cigorky/0/0",
       "velmi_smutiaca_vdova/0/0",
       "vandal/1/0",
-      "degustatorka/1/0"
+      "degustatorka/1/0",
+      "recidivista/2/0",
+      "podvodnik/0/0",
+      "dvojcata/0/0",
+      "financna_poradkyna/0/0",
+      "veteran/0/0",
+      "krokodil/0/0",
+      "dohadzovacka/0/0",
+      "traktoristka/0/0",
+      "kocovnik/0/0"
     ]
   },
   "kroky": [
@@ -314,8 +331,8 @@
         "odhod": [
           "stavba:recidivista",
           "stavba:podvodnik",
-          "stavba:dvojcata",
-          "stavba:financna_poradkyna"
+          "stavba:nealko",
+          "stavba:vinko"
         ]
       },
       "melichar": "Dal som za teba štyri karty do šenku a štyri naspodok balíčka. Štamgast vyberá zo svojich ôsmich naraz s tebou. Jemu to trvá, počkáme.",
@@ -337,8 +354,8 @@
         "odhod": [
           "stavba:veteran",
           "stavba:silna_nezavisla_zena",
-          "stavba:vandal",
-          "stavba:traktoristka"
+          "stavba:vyherny_automat",
+          "stavba:lievik"
         ]
       },
       "melichar": ""
@@ -1169,7 +1186,7 @@
     {
       "id": "i-stavba2",
       "kto": "info",
-      "melichar": "Šenok dnes staviaš sám. Klikni na štyri karty, ktoré chceš mať v šenku, vybraná sa zdvihne. Zvyšné štyri pôjdu naspodok spoločného balíčka a Štamgast ich neuvidí. On robí to isté so svojimi ôsmimi.",
+      "melichar": "Šenok dnes staviaš sám. Dostal si osem kariet: dve z balíčka Náradia a šesť z Občanov. Klikni na štyri, ktoré chceš mať v šenku, vybraná sa zdvihne. Zvyšné štyri pôjdu naspodok svojich balíčkov a Štamgast ich neuvidí. On robí to isté so svojimi ôsmimi.",
       "zvyraznit": [
         "stavba"
       ]
@@ -1188,11 +1205,11 @@
         "odhod": [
           "stavba:recidivista",
           "stavba:vymahac",
-          "stavba:kocovnik",
-          "stavba:degustatorka"
+          "stavba:zapalovac",
+          "stavba:vyherne_zreby"
         ]
       },
-      "melichar": "Do šenku vyber Anonymného alkoholika, Šoféra, Strýka z Ameriky a Svokru, potom potvrď. Recidivistu nechaj dole: má [Petelica] Petelicu a Štamgast kupuje prvý. Zvyšní traja tiež nie.",
+      "melichar": "Do šenku vyber Anonymného alkoholika, Šoféra, Strýka z Ameriky a Svokru, potom potvrď. Recidivistu nechaj dole: má [Petelica] Petelicu a Štamgast kupuje prvý. Zvyšné tri karty tiež nie.",
       "hlaskaChyby": "nervy/20_uz_mam_v_pici_nervy_zas",
       "zvyraznit": [
         "stavba"
@@ -1212,8 +1229,8 @@
         "odhod": [
           "stavba:veteran",
           "stavba:financna_poradkyna",
-          "stavba:podvodnik",
-          "stavba:vandal"
+          "stavba:pistalka",
+          "stavba:hrable"
         ]
       },
       "melichar": ""
@@ -2056,7 +2073,7 @@
           "stavba:zahradkar",
           "stavba:policajtka",
           "stavba:cierna_macka",
-          "stavba:praudovravec"
+          "stavba:jogurt"
         ]
       },
       "melichar": "Šenok som ti dnes postavil ja, to už vieš: Kapybaru, Snúbenicu, Svätý text a Koňa.",
@@ -2076,10 +2093,10 @@
           "stavba:veteran"
         ],
         "odhod": [
-          "stavba:nealko",
-          "stavba:vinko",
-          "stavba:vyherny_automat",
-          "stavba:lievik"
+          "stavba:praudovravec",
+          "stavba:degustatorka",
+          "stavba:vandal",
+          "stavba:podvodnik"
         ]
       },
       "melichar": ""
@@ -2766,8 +2783,8 @@
         "odhod": [
           "stavba:sarlatan",
           "stavba:kohut",
-          "stavba:krokodil",
-          "stavba:noviny"
+          "stavba:noviny",
+          "stavba:horoskop"
         ]
       },
       "melichar": ""

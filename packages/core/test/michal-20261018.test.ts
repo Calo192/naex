@@ -32,10 +32,11 @@ describe("štartovacie karty", () => {
     expect(jeCoTahat(s0.hraci[0].doberaci.length, s0.hraci[0].odhadzovaci.length)).toBe(false);
   });
 
-  it("v spoločnom balíčku (a teda v šenku) štartovky nie sú", () => {
+  it("v Náradí a Občanoch (a teda v šenku) štartovky nie sú", () => {
     const s = setupGame(data, 7);
-    expect(s.spolocnyBalicek.filter((k) => STARTOVKY.includes(k.defId))).toEqual([]);
-    expect(s.spolocnyBalicek.length).toBeGreaterThan(0);
+    expect([...s.naradie, ...s.obcania].filter((k) => STARTOVKY.includes(k.defId))).toEqual([]);
+    expect(s.naradie.length).toBeGreaterThan(0);
+    expect(s.obcania.length).toBeGreaterThan(0);
   });
 });
 

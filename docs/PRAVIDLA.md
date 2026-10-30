@@ -102,6 +102,19 @@ Rozhodnuté; značka `VERZIA_PRAVIDIEL` ostáva „v8“):
   posilnený Hazard, tvoje ako posilnená Robota.
 - Karty pridá Admin do sady; kým nie sú zverejnené, jadro ich pozná podľa id.
 
+**v8.5 — Náradie a Občania** (Michal 2026-10-30; značka `VERZIA_PRAVIDIEL` ostáva „v8“):
+
+- **Spoločný balíček sa delí na dva** (§3, §5): **Náradie** (karty s tagom Nástroj)
+  a **Občania** (všetky ostatné karty, ktoré boli v spoločnom balíčku).
+- **Stavba šenku** (§5): každý hráč dostane **vždy 2 karty z Náradia a 6 z Občanov**;
+  počet nezávisí od nenahradených starších. Do šenku dá **4 v ľubovoľnom mixe**, zvyšok
+  naspodok svojho balíčka (Nástroj k Náradiu, ostatné k Občanom). Nevzaté karty zo
+  starého šenku idú naspodok svojho balíčka.
+- **Doplnenie šenku** (§5): na 8 v rovnakom pomere — najprv z Náradia, kým v šenku nie sú
+  aspoň 2 Nástroje, zvyšok z Občanov.
+- **Výklad Leadera (2026-10-30, Michal neurčil):** keď jeden balíček nestačí, chýbajúce
+  karty dá druhý; keď sa minú oba, stavba sa zmenšuje ako doteraz, bez trestu.
+
 Špecifikácia pravidiel kartovej hry NA EX! (Michal Calík) pre implementáciu
 a testy. Text pre hráčov je na stránke Pravidlá; toto je presné znenie, podľa
 ktorého sa hra programuje a overuje.
@@ -233,7 +246,11 @@ cigareta“ sa nepoužíva — cigareta je cigareta.
 - **Počiatočná ruka:** každý hráč má na začiatku v ruke **4 karty** —
   Miňištrant, Milujúca manželka, Pijan a Dievčina na vydaj (variácie podľa
   sady). **Doberací balíček je prázdny** — naplní ho až odhadzovací (§4).
-  Tieto štyri druhy nie sú v spoločnom balíčku ani v šenku.
+  Tieto štyri druhy nie sú v Náradí, Občanoch ani v šenku.
+- **Náradie a Občania (v8.5):** karty šenku ležia v dvoch balíčkoch lícom dole,
+  každý zamiešaný — **Náradie** (2 kópie každej karty s tagom Nástroj)
+  a **Občania** (2 kópie každej ďalšej karty okrem lokalít, starešinov, kliatob
+  a štartoviek). Počet kariet v oboch je verejný, poradie nie.
 - Každý hráč začína s **3 cigaretami**, **2 plnými poldeci**, **0 špakmi**,
   0 dlhmi, 0 poškodením pečene, 0 absťákmi a počítadlom nerestí na 0.
 - Šenok je na začiatku prázdny — hráči ho postavia v prvom drafte (§5).
@@ -289,14 +306,19 @@ z troch; vo finále z troch pinnacle (§14b).
 
 ### Stavba šenku
 
-Karty, ktoré zo starého šenku nikto nevzal, idú lícom dole naspodok
-spoločného balíčka. Každý hráč si potom zo spoločného balíčka vezme
-**N kariet** — N = počet nenahradených starších, zaokrúhlený nadol na párne
-číslo; pri nedostatku kariet menej. Obaja naraz a tajne dajú zo svojho balíčka
-**polovicu do šenku** a **polovicu naspodok spoločného balíčka** (lícom dole —
-súper nevidí, čo hráč odhodil). Keď vyberú obaja, karty do šenku sa odhalia.
-Balíčky si hráči nepodávajú. Pri N = 8 je to 4 + 4 a šenok má 8 kariet,
-polovicu od každého.
+Karty, ktoré zo starého šenku nikto nevzal, idú lícom dole naspodok svojho
+balíčka — Nástroj naspodok **Náradia**, ostatné naspodok **Občanov** (v8.5).
+Každý hráč si potom vezme **2 karty z vrchu Náradia a 6 z vrchu Občanov**
+(8 kariet; počet od v8.5 nezávisí od starších). Obaja naraz a tajne dajú zo
+svojich 8 kariet **4 do šenku v ľubovoľnom mixe** (0–2 Nástroje) a **4 naspodok**
+— každú naspodok jej balíčka, lícom dole (súper nevidí, čo hráč odhodil). Keď
+vyberú obaja, karty do šenku sa odhalia. Balíčky si hráči nepodávajú. Šenok má
+8 kariet, polovicu od každého.
+
+**Keď balíček nestačí** (výklad Leadera 2026-10-30, Michal to neurčil): chýbajúce
+karty sa vezmú z druhého balíčka (obranca berie prvý). Keď nestačia ani oba
+spolu, každý dostane najviac polovicu toho, čo v nich ostalo, zaokrúhlené nadol
+na párne číslo — stavba sa zmenšuje až na nulu a hra beží ďalej bez trestu.
 
 ### Branie zo šenku
 
@@ -312,9 +334,11 @@ poslednú šancu** (jeden ťah), potom branie končí. Prázdny šenok branie uk
 obom.
 
 Nevzaté karty ostávajú v šenku len do ďalšej stavby — vtedy idú naspodok
-spoločného balíčka (Stavba šenku, vyššie); medzitým z neho berú Starosta a Cintorín. Po braní sa šenok **doplní z vrchu spoločného
-balíčka na 8 kariet**. Keď sa spoločný balíček minie, šenok sa už nedopĺňa
-a stavba sa zmenšuje až na nulu — hra beží ďalej bez trestu.
+svojho balíčka (Stavba šenku, vyššie); medzitým z neho berú Starosta a Cintorín.
+Po braní sa šenok **doplní na 8 kariet v pomere stavby** (2 : 6): najprv z vrchu
+**Náradia**, kým v šenku nie sú aspoň **2 Nástroje**, zvyšok z vrchu **Občanov**
+(v8.5). Čo jeden balíček nemá, doplní druhý; keď sa minú oba, šenok sa už
+nedopĺňa — hra beží ďalej bez trestu.
 
 Hneď po braní dostane hráč s priazňou **Fajčiara** cigarety navyše rovné jej
 sile (§10). Nie sú z Pitky, preto ich súperovo Obmedzenie neuberá.
@@ -1603,6 +1627,8 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane (§6) |
 | Patronát | vziatie karty staršieho, ktorý ti prejavuje priazeň, do ruky za náhradu na scorecarde (§10) |
 | Nástenka | krčmová nástenka: odohrané bitky s víťazom a špakmi (§14) |
+| Náradie | balíček kariet s tagom Nástroj lícom dole; pri stavbe šenku z neho každý dostane 2 karty (§3, §5) |
+| Občania | balíček všetkých ostatných kariet šenku lícom dole; pri stavbe šenku z neho každý dostane 6 kariet (§3, §5) |
 | Nakladačka | (predtým prebytok, v8.3) rozdiel tuhého poškodenia v bitke, drží ju víťaz; posúva markery starších k súperovi držiteľa, pole podľa ceny zóny — starších vyberá ten, proti komu sa ráta; vo finále sa nerozdeľuje (§9.4, §10) |
 | Preskúmanie | zober a prezri si 5 kariet, potom ich vráť |
 | Prevaha | v kraji ju má, kto tam má viac svojich Občanov, Zvierat a Starešinov (Nástroje, Cirhóza nie); pri rovnosti hráč, ktorého karta v tom kraji leží hneď pri lokalite; dostane akcie hrany lokality v tom kraji (§6) |

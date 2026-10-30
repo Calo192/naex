@@ -58,3 +58,22 @@ describe("viewFor — zloženie doberacieho balíčka", () => {
     expect(JSON.stringify(viewFor(data, sBalickom(s, 0, ine), 1))).toBe(JSON.stringify(preSupera));
   });
 });
+
+describe("viewFor — balíčky Náradie a Občania (v8.5)", () => {
+  const zaklad = setupGame(data, 11);
+
+  it("počty kariet sú verejné, obsah a poradie nie", () => {
+    for (const ja of [0, 1] as const) {
+      const v = viewFor(data, zaklad, ja);
+      expect(v.naradiePocet).toBe(zaklad.naradie.length);
+      expect(v.obcaniaPocet).toBe(zaklad.obcania.length);
+      const json = JSON.stringify(v);
+      expect(json).not.toContain('"naradie":');
+      expect(json).not.toContain('"obcania":');
+      for (const k of [...zaklad.naradie, ...zaklad.obcania]) expect(json).not.toMatch(new RegExp(`"uid":${k.uid}[,}]`));
+      // Iné poradie oboch balíčkov dá ten istý pohľad.
+      const ine = { ...zaklad, naradie: [...zaklad.naradie].reverse(), obcania: [...zaklad.obcania].reverse() };
+      expect(JSON.stringify(viewFor(data, ine, ja))).toBe(json);
+    }
+  });
+});

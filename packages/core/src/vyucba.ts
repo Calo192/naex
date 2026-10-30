@@ -26,7 +26,7 @@ export interface RozdanieHraca {
 }
 
 export interface Rozdanie {
-  /** Semienko pre to, čo scenár neurčí (zamiešanie odhodených, varianty kariet spoločného balíčka). */
+  /** Semienko pre to, čo scenár neurčí (zamiešanie odhodených, varianty kariet Náradia a Občanov). */
   readonly seed: number;
   /**
    * Bez `rozpis`: lokality v poradí, v akom prídu do hry — ich počet je dĺžka hry.
@@ -48,7 +48,14 @@ export interface Rozdanie {
   readonly utocnik: PlayerId;
   /** Hráč 0 je človek, hráč 1 bot. */
   readonly hraci: readonly [RozdanieHraca, RozdanieHraca];
-  /** Spoločný balíček zhora nadol; balíčky stavby šenku sa berú z jeho vrchu. Bez neho ako v bežnej hre. */
+  /** Balíček Náradie zhora nadol (v8.5); stavba šenku berie z jeho vrchu. Bez neho ako v bežnej hre. */
+  readonly naradie?: readonly KartaRozdania[];
+  /** Balíček Občania zhora nadol (v8.5). Bez neho ako v bežnej hre. */
+  readonly obcania?: readonly KartaRozdania[];
+  /**
+   * Spoločný balíček spred v8.5 zhora nadol: rozdelí sa podľa druhu karty na
+   * Náradie a Občanov, poradie v každom ostáva. Naradie/obcania ho prepíšu.
+   */
   readonly spolocnyBalicek?: readonly KartaRozdania[];
 }
 

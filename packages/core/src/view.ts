@@ -172,7 +172,9 @@ export interface ClientState {
    * Dedičstvo leží na stole, súperove posilnené akcie žhnú tiež.
    */
   readonly vplyvyAkcii: readonly [readonly VplyvNaAkciu[], readonly VplyvNaAkciu[]];
-  readonly spolocnyBalicekPocet: number;
+  /** Počty kariet v balíčkoch Náradie a Občania (v8.5) — verejné, poradie a obsah nie. */
+  readonly naradiePocet: number;
+  readonly obcaniaPocet: number;
   readonly senok: readonly CardInstance[];
   /**
    * Lokality, z ktorých sa vyberá cieľ: v7 neodohrané lokality úrovne tohto
@@ -351,7 +353,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     ruka: state.hraci[ja].ruka,
     hraci: [publicPlayer(0), publicPlayer(1)],
     vplyvyAkcii: [vplyvyNaAkcie(state, 0, data), vplyvyNaAkcie(state, 1, data)],
-    spolocnyBalicekPocet: state.spolocnyBalicek.length,
+    naradiePocet: state.naradie.length,
+    obcaniaPocet: state.obcania.length,
     senok: state.senok,
     lokalityVHre: lokalityNaVyber(data, state),
     lokalitCelkom: state.lokalitCelkom,
