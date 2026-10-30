@@ -59,12 +59,35 @@ section.akcia { scroll-margin-top: 52px; }
 <body>
 <main>
 <h1>Náradie pre každú akciu</h1>
-<p class="mini">brainstorming · verzia 1 · 2026-10-30 · zadanie Michala cez Leadera · pravidlá ani kód sa nemenia · vetva <code>napady/naradie-akcie</code> · podklady: §2 akcie, §12 Nástroje a Dedičstvo, nástroje sady v26 (<code>cards.json</code>), rozhodnutia o starších a Poverách z 30. 10.</p>
+<p class="mini">brainstorming · verzia 2 (voľby Michala, Tipér, Puška) · 2026-10-30 · zadanie Michala cez Leadera · pravidlá ani kód sa nemenia · vetva <code>napady/naradie-akcie</code> · podklady: §2 akcie, §12 Nástroje a Dedičstvo, nástroje sady v26 (<code>cards.json</code>), rozhodnutia o starších a Poverách z 30. 10.</p>
 
 <div class="box zv">
   <p><b>Zadanie.</b> Nápady na náradie (Nástroj) pre každú akciu v hre. Akcie, ktoré náradie už majú, netreba: Petelica (Puška +1), Rana (Vidly +1), Viera (Svätý text +1). Ostáva <b>13 akcií</b>, ku každej 2 až 3 nápady: názov predmetu, text efektu v štýle sady, čo presne posilní, odhad sily, riziko a námet ilustrácie. Na konci tabuľka akcia → odporúčaný nástroj s voľbami pre interview.</p>
   <p><b>Zásady.</b> Nástroje sú len v Dedičstve (E1, Michal 2026-10-28), cena rastie spoločne (1, 2, 3 … cigariet). Popis karty nespomína iné karty. Žiadne umelé stropy. Posilnená akcia sa na stole ukáže <b>žeravou ikonou</b>, preto sú najlepšie efekty „tvoje X … o 1 viac / silnejšie“, ktoré sa dajú na ikone ukázať; nápady s iným tvarom sú označené <span class="chip m">iný tvar</span>. Každý nástroj má aj návrh dvoch vlastných akcií (ako Puška: Pecka, Petelica), lebo Nástroj v Dedičstve síce akcie nehrá, ale v šenku a v ruke je kartou ako každá iná.</p>
   <p><b>Pravidlá v8.2:</b> Dlh sa hráčom volá Hazard a je počítadlo (karty Dlh a Absťák zanikli); cena posunu markera 1 / 2 / 3 von, 2 / 3 / 4 k stredu; Povery sú od 30. 10. <b>výpožička priazne</b> (každá posunie silu priazne jedného staršieho o stupeň k majiteľovi, marker sa nehýbe) — náradie pre Povery je pre túto podobu, pri starej podobe (mäkké poškodenie) je poznámka.</p>
+</div>
+
+<div class="box rec" id="rozhodnute">
+  <h2 style="margin-top:0;border:0;padding:0">Rozhodnuté (Michal 2026-10-30, chat)</h2>
+  <p class="mini">Voľby z interview; kde Michal zmenil názov alebo efekt, platí jeho znenie. Pre naex-admin (karty v tvorcovi) a Developera (zmena akcie Robota).</p>
+  <div class="tab stack"><table>
+  <thead><tr><th>Akcia</th><th>Nástroj</th><th>Text efektu (Dedičstvo)</th><th>Poznámka</th></tr></thead>
+  <tbody>
+  <tr><th>Cigareta</th><td data-l="Nástroj"><b>Zapaľovač</b> (nový efekt)</td><td data-l="Text">Tvoje aktívne Cigarety nemožno zrušiť NA EX.</td><td data-l="Poznámka">Michalovo znenie; NA EX na kartu zruší ostatné aktívne akcie, Cigarety ostanú</td></tr>
+  <tr><th>Hazard</th><td data-l="Nástroj"><b>Výherné žreby</b> (nový)</td><td data-l="Text">Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené.</td><td data-l="Poznámka">Michalovo znenie — obráti aktiváciu Hazardu. O1 potvrdené: NA EX zdvojí spojené (teda neaktívne) Hazardy, platí to tak.</td></tr>
+  <tr><th>Obmedzenie</th><td data-l="Nástroj"><b>Píšťalka</b></td><td data-l="Text">Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas.</td><td data-l="Poznámka">—</td></tr>
+  <tr><th>Odpor</th><td data-l="Nástroj"><b>Hrable</b> (efekt Petície)</td><td data-l="Text">Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.</td><td data-l="Poznámka">O2 (Michal: „zrušené akcie sú posilnené“) — čítam ako efekt Petície + posilnenie ukradnutej akcie. <b>K tomu zmena kariet (naex-admin):</b> Recidivista, Kočovník, Dvojčatá a Šofér dostanú po 1 Odpore.</td></tr>
+  <tr><th>Pakt</th><td data-l="Nástroj"><b>Zrkadlo</b> (Zmluva na obrúsku)</td><td data-l="Text">Tvoj Pakt kopíruje prepojenú akciu dvakrát.</td><td data-l="Poznámka">premenované</td></tr>
+  <tr><th>Pecka</th><td data-l="Nástroj"><b>Boxer</b> (efekt Kyjaka)</td><td data-l="Text">Tvoje Pecky udeľujú o 1 poškodenie viac.</td><td data-l="Poznámka">Michal 2026-10-30: Boxer pridáva +1 k Pecke (nie „nemožno zmierniť Vierou“)</td></tr>
+  <tr><th>Pohoršenie</th><td data-l="Nástroj"><b>Telefón</b> (Zvon)</td><td data-l="Text">Tvoje Pohoršenia k stredu stoja toľko ako von.</td><td data-l="Poznámka">„žiadny zvon“ — premenované; ilustrácia: pevná linka s vytočeným kotúčom</td></tr>
+  <tr><th>Poldeci</th><td data-l="Nástroj"><b>Jogurt</b> (Štamperlík)</td><td data-l="Text">Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke.</td><td data-l="Poznámka">ilustrácia: malé poldecové fľaštičky z benzínky alebo plastové poldecáky ako jogurtové kelímky</td></tr>
+  <tr><th>Posilnenie</th><td data-l="Nástroj"><b>Energeťák</b></td><td data-l="Text">Tvoje Posilnenie nemožno zrušiť NA EX.</td><td data-l="Poznámka">—</td></tr>
+  <tr><th>Povera</th><td data-l="Nástroj"><b>Horoskop</b></td><td data-l="Text">Klebety z tvojich Povier platia aj v nasledujúcom kole.</td><td data-l="Poznámka">podľa výpožičky priazne</td></tr>
+  <tr><th>Poškodenie pečene</th><td data-l="Nástroj">žiadne</td><td data-l="Text">—</td><td data-l="Poznámka">—</td></tr>
+  <tr><th>Robota</th><td data-l="Nástroj"><b>Fúrik</b></td><td data-l="Text">Tvoje Roboty pália o 1 Dlh viac (teda 2).</td><td data-l="Poznámka"><b>Zmena akcie Robota v pravidlách (Developer, §2, §11), nezávisle od Fúrika:</b> Robota spáli 1 priznaný Dlh; za každý Dlh, ktorý nemá čo spáliť, dá 1 špak. S Fúrikom 2 Dlhy, bez Dlhov 2 špaky (O3). Pri 1 Dlhu a Fúriku: 1 spálený + 1 špak (moje čítanie).</td></tr>
+  <tr><th>Vízia</th><td data-l="Nástroj"><b>Krištáľová guľa</b> (efekt Okuliarov)</td><td data-l="Text">Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo zahoď, druhú vráť navrch.</td><td data-l="Poznámka">názov guľa, efekt okuliarov</td></tr>
+  </tbody></table></div>
+  <p style="margin-top:10px"><b>Rozhodnuté O1–O4 (Michal 2026-10-30):</b> O1 Žreby platia aj s NA EX. O2 Hrable: zrušené akcie sú tvoje a posilnené; Recidivista, Kočovník, Dvojčatá a Šofér dostanú 1 Odpor. O3 Fúrik páli 2 Dlhy; Robota dá 1 špak za každý Dlh, ktorý nemá čo spáliť (s Fúrikom 2). O4 Tipér na jeho spojoch. <b>Puška (nový efekt):</b> „Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej.“ — už nie +1. <b>Boxer:</b> Pecka +1.</p>
 </div>
 
 <div class="tab stack box"><table>
@@ -83,7 +106,7 @@ section.akcia { scroll-margin-top: 52px; }
 </tbody></table></div>
 
 <nav class="skupiny" aria-label="Akcie">
-  <a href="#cigareta">Cigareta</a><a href="#hazard">Hazard</a><a href="#obmedzenie">Obmedzenie</a><a href="#odpor">Odpor</a><a href="#pakt">Pakt</a><a href="#pecka">Pecka</a><a href="#pohorsenie">Pohoršenie</a><a href="#poldeci">Poldeci</a><a href="#posilnenie">Posilnenie</a><a href="#povera">Povera</a><a href="#pecen">Pečeň</a><a href="#robota">Robota</a><a href="#vizia">Vízia</a><a href="#tabulka">Tabuľka</a><a href="#volby">Voľby</a>
+  <a href="#cigareta">Cigareta</a><a href="#hazard">Hazard</a><a href="#obmedzenie">Obmedzenie</a><a href="#odpor">Odpor</a><a href="#pakt">Pakt</a><a href="#pecka">Pecka</a><a href="#pohorsenie">Pohoršenie</a><a href="#poldeci">Poldeci</a><a href="#posilnenie">Posilnenie</a><a href="#povera">Povera</a><a href="#pecen">Pečeň</a><a href="#robota">Robota</a><a href="#vizia">Vízia</a><a href="#tiper">Tipér</a><a href="#puska">Puška</a><a href="#tabulka">Tabuľka</a><a href="#volby">Voľby</a>
 </nav>
 
 <!-- ========================================================= -->
@@ -334,6 +357,42 @@ section.akcia { scroll-margin-top: 52px; }
 </section>
 
 <!-- ========================================================= -->
+<section class="akcia" id="tiper">
+<h2>Nová karta: Profesionálny tipér</h2>
+<p class="mini">Michal 2026-10-30: „akcie Hazard a Posilnenie, zvyšok nechám na teba; efekt — súperova posilnená akcia sa premení na posilnený Dlh, tvoja posilnená akcia na posilnenú Robotu.“ Sedí so zmenou Robota bez Dlhu = 1 špak (posilnená Robota bez Dlhov = 2 špaky). <b>Rozhodnuté (O4): rozsah „na jeho spojoch“.</b></p>
+<div class="nr rec"><div class="hl"><span class="n">Profesionálny tipér</span><span><span class="chip ok">odporúčam</span> <span class="chip v2">sila stredná až vysoká</span></span></div>
+<p class="ef">Furt: Posilnené akcie na jeho spojoch sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota.</p>
+<dl><dt>Tagy</dt><dd>Občan, Závislý, Chlap</dd><dt>Akcie</dt><dd>ľavá: Posilnenie, Hazard · pravá: Vízia, Cigareta (dva blokované sloty na každej strane; varianty ako u občanov)</dd><dt>Ako hrá</dt><dd>vyložený k súperovej karte: jeho Posilnenie súperovu akciu „zdvojí“ na 2 zadĺženia súperovi (pasca); vyložený k tvojej karte: tvoja akcia posilnená ním (alebo on susedom s Posilnením) = 2 spálené Dlhy, bez Dlhov 2 špaky. Vízia = tipér vidí výsledok, Cigareta = výhra.</dd><dt>Riziko</dt><dd class="r">NA EX zruší Posilnenie aj premenu; Pakt + Posilnenie = dve Posilnenia, nič sa nepremení; so Silnou ženou sa ráta dvakrát (4 zadĺženia); podstrčený k tvojej Petelici ju premení na Robotu — súper ho použije proti tebe, to je zámer kariet s Konfliktom a podstrčením</dd><dt>Príbeh</dt><dd>Nikdy nepracoval, ale každý piatok má „istú vec“. Dedine predáva tipy, sebe kupuje žreby; keď niekto vyhrá, bol to jeho tip, keď prehrá, bola to smola.</dd><dt>Ilustrácia</dt><dd>muž v teplákovej súprave pred stávkovou kanceláriou, zväzok tiketov v ruke, ceruzka za uchom, cigareta v kútiku úst</dd></dl></div>
+<div class="nr"><div class="hl"><span class="n">Variant: celá línia</span><span><span class="chip r">sila vysoká</span></span></div>
+<p class="ef">Furt: Súperove posilnené akcie sa rátajú ako posilnený Hazard, tvoje posilnené akcie ako posilnená Robota.</p>
+<dl><dt>Dopad</dt><dd>build-around: celá tvoja partia už nezdvojuje údery, ale Robotu (Dlhy / špaky), súperovo Posilnenie sa mu obracia na dlh; so Zrkadlom a Energeťákom silný motor</dd><dt>Riziko</dt><dd class="r">mení vyhodnotenie všetkých spojov na stole, ťažko čitateľné; dva Tipéri v línii nič navyše</dd></dl></div>
+<ol class="moznosti" style="list-style:none;padding:0"><li class="ine"><label><input type="radio" name="tiper" value="na jeho spojoch (odporúčam)"> na jeho spojoch</label> · <label><input type="radio" name="tiper" value="celá línia"> celá línia</label> · <label><input type="radio" name="tiper" value="iné"> iné:</label> <input type="text" data-ine="tiper" placeholder="poznámka"></li></ol>
+</section>
+
+<!-- ========================================================= -->
+<section class="akcia" id="puska">
+<h2>Puška: nový efekt</h2>
+<p class="mini">Michal: „4 poškodenia za Petelicu mi príde ako strašne veľa.“ Dnes: Dedičstvo: Tvoje Petelice udeľujú o 1 poškodenie viac. Akcie Pušky (Pecka, Petelica) ostávajú. <b>Rozhodnuté 2026-10-30 (druhé slovo Michala): Puška nepridáva +1.</b> Nový efekt: „Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej.“ Petelica 3 → 2 namiesto 0. Okrajové prípady (moje čítanie, Developer potvrdí): Úplatok Petelicu nezruší, len znižuje o stupeň — Puška naň nepôsobí; súperove Hrable (zrušená akcia je jeho a posilnená) nemajú čo ukradnúť, lebo Petelica zrušená nebola; Výtržník (zrážka NA EX) akcie nezrušuje, mení ich na Rany — Puška sa neuplatní; NA EX na tvoju kartu ďalej zdvojí neaktívne akcie, len Petelica ostane na 2. Návrhy nižšie ostávajú ako podklad.</p>
+<div class="nr rec"><div class="hl"><span class="n">Puška — výstrel desí</span><span><span class="chip ok">odporúčam</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Každá tvoja aktívna Petelica ti dá v bitke 1 bod posunu navyše.</p>
+<dl><dt>Posilní</dt><dd>Petelica ostáva 3 tuhé, k tomu politika (výstrel vystraší starších) — sedí s témou strachu a s ikonou</dd><dt>Riziko</dt><dd class="r">s Abstinentom a Obecným rozhlasom sa body sčítajú; inak mierne</dd><dt>Ilustrácia</dt><dd>tá istá puška, ale s vranami vzlietajúcimi z kostolnej veže</dd></dl>
+<label class="v"><input type="radio" name="puska" value="výstrel desí: Petelica = +1 bod posunu"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Puška — istá rana</span><span><span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoje Petelice nemožno zrušiť NA EX.</p>
+<dl><dt>Posilní</dt><dd>ťažký úder prežije súperovo NA EX (rovnaký vzor ako Zapaľovač a Energeťák)</dd><dt>Riziko</dt><dd class="r">tri nástroje s „nemožno zrušiť NA EX“ — NA EX slabne</dd><dt>Ilustrácia</dt><dd>puška s ďalekohľadom opretá o plot, na ňom terč z plechovky</dd></dl>
+<label class="v"><input type="radio" name="puska" value="istá rana: Petelice nemožno zrušiť NA EX"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Puška — prvý výstrel</span><span><span class="chip v3">sila nízka až stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoja prvá Petelica v bitke udeľuje o 1 poškodenie viac.</p>
+<dl><dt>Posilní</dt><dd>dnešný efekt, ale len raz za bitku (4 len jednu)</dd><dt>Riziko</dt><dd class="r">„prvá“ je poradie, ktoré hra musí určiť (najbližšie k lokalite); slabé pri jednej Petelici v línii rovnako ako dnes</dd><dt>Ilustrácia</dt><dd>jednoranová puška s jedným nábojom na stole, vedľa prázdna krabička</dd></dl>
+<label class="v"><input type="radio" name="puska" value="prvý výstrel: prvá Petelica +1"> vybrať</label></div>
+<div class="nr"><div class="hl"><span class="n">Puška — brokovnica</span><span><span class="chip m">iný tvar</span> <span class="chip v3">sila stredná</span></span></div>
+<p class="ef">Dedičstvo: Tvoja Petelica bez partnera na spoji sa ráta ako Rana.</p>
+<dl><dt>Posilní</dt><dd>Petelica na okraji línie nie je prázdna; priemerná hodnota Pušky klesne pod dnešok</dd><dt>Riziko</dt><dd class="r">výnimka z „bez partnera nič“ (ako Fajka)</dd><dt>Ilustrácia</dt><dd>brokovnica so zlomenou hlavňou, broky rozsypané po stole</dd></dl>
+<label class="v"><input type="radio" name="puska" value="brokovnica: Petelica bez partnera = Rana"> vybrať</label></div>
+<p class="ine"><label><input type="radio" name="puska" value="nechať 4"> nechať dnešný efekt</label> · <label><input type="radio" name="puska" value="iné"> iné:</label> <input type="text" data-ine="puska" placeholder="poznámka"></p>
+</section>
+
+<!-- ========================================================= -->
 <h2 id="tabulka">Tabuľka: akcia → odporúčaný nástroj</h2>
 <div class="tab stack box"><table>
 <thead><tr><th>Akcia</th><th>Odporúčam</th><th>Text</th><th>Alternatívy</th></tr></thead>
@@ -362,7 +421,7 @@ section.akcia { scroll-margin-top: 52px; }
 <script>
 (function () {
   var KLUC = "naex-naradie-akcie-v1";
-  var AKCIE = ["cigareta","hazard","obmedzenie","odpor","pakt","pecka","pohorsenie","poldeci","posilnenie","povera","pecen","robota","vizia"];
+  var AKCIE = ["cigareta","hazard","obmedzenie","odpor","pakt","pecka","pohorsenie","poldeci","posilnenie","povera","pecen","robota","vizia","tiper","puska"];
   var ulozene = {};
   try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) {}
   function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) {} vypis(); }

@@ -71,7 +71,10 @@ Katalóg je `tools/admin/styly.json`: id, názov, stav, popis, vzory.
 3. **Predmety fyzikálne správne**: krígeľ má jedno ucho, pohár žiadne, fľaša
    jedno hrdlo, ruka päť prstov. Postavy sa navzájom líšia, nie sú klony.
 4. **Bez nápisov a rámikov.** Text dodáva hra.
-5. Každý obrázok si pozri pri **plnej veľkosti** (Read) a skontroluj body 1–4.
+5. **Predmet je hlavný motív len kompozíciou** (v strede, veľký, jednoduché
+   pozadie), **žiadny kužeľ ani kruh svetla, spotlight** na ňom (Michal
+   2026-10-30: „highlight“ = stredový bod ilustrácie, nie kruhové svetlo).
+6. Každý obrázok si pozri pri **plnej veľkosti** (Read) a skontroluj body 1–5.
    Zlý obrázok vygeneruj znova, najviac 3 kolá na obrázok.
 
 ## Rozpočet
