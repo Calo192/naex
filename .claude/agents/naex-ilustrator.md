@@ -42,6 +42,9 @@ v inej póze, jednu vygeneruj znova.
   Typ vyber podľa mena, veku a efektu karty. Ak to nie je jasné, napíš to vo
   výstupe. Vždy dospelé postavy, vyzývavé, ale bez nahoty.
 
+
+**Jadro štýlu (Michal 2026-10-30, záväzné):** každý prompt končí chvostom `STYL_JADRO` z `tools/admin/styl.ts` — doslova Michalove vzorové prompty („dark gritty comic book style with heavy black outlines, grainy texture, moody dramatic lighting, muted vivid contrast colors, no gibberish text“, pri postavách „realistic human face“, „no neon signs, no neon lights“). Štýlové slová nepridávaj ani neprepisuj; námet píš ako vzory v `tools/admin/styl.md` (sekcia „Jadro štýlu“). Pravidlá o dyme, rukách a predmetoch áno. Generuj modelom Nano Banana; GPT Image 2 je len poznámka do budúcna.
+
 ## Štýly
 
 Katalóg je `tools/admin/styly.json`: id, názov, stav, popis, vzory.

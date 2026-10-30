@@ -5,7 +5,7 @@
       "id": "hra",
       "nazov": "Štýl hry",
       "stav": "aktivny",
-      "popis": "tools/admin/styl.md (prompt STYL v tools/admin/styl.ts)",
+      "popis": "tools/admin/styl.md (jadro štýlu = Michalove vzorové prompty 2026-10-30, chvost STYL_JADRO v tools/admin/styl.ts — doslova, nemeniť)",
       "vzory": [
         "packages/server/seed/karty/kocovnik.jpg",
         "packages/server/seed/karty/niekoho_stryna.jpg",
@@ -16,7 +16,7 @@
         "packages/server/seed/karty/veterinar.jpg",
         "packages/server/seed/karty/farar.jpg"
       ],
-      "poznamka": "Vzory = Michalove najobľúbenejšie karty (2026-10-24). Švagriná v sade nie je."
+      "poznamka": "Vzory = Michalove najobľúbenejšie karty (2026-10-24). Švagriná v sade nie je. Michal 2026-10-30: nové obrázky z API štýlom utekali — chvost zladený s jeho vzorovými promptmi. Do budúcna zaujímavý model GPT Image 2 (ukážky tools/admin/styly/gpt-image-2/)."
     },
     {
       "id": "noir",

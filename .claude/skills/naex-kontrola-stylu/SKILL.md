@@ -32,6 +32,7 @@ obrázky v tom štýle.
    > - **Melichar** `apps/web/public/melichar.jpg` a obrázky výučby,
    >   ak nejaké sú.
    >
+   > **Jadro štýlu (Michal 2026-10-30):** Michalove vzorové prompty v `tools/admin/styl.md` (sekcia „Jadro štýlu“) a vzory Krčmárka, Veterinár, Kočovník, Finančná poradkyňa — obrázok, ktorý sa od nich líši linkou, zrnom, svetlom alebo farbami, vytŕča.
    > **Merítko:** štýl z katalógu `tools/admin/styly.json` (pre štýl `hra`
    > `tools/admin/styl.md` a vzory z katalógu) a pevné pravidlá obrazu z tvojej
    > definície.

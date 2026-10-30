@@ -7,6 +7,34 @@ hotové orezané ilustrácie v `packages/server/seed/karty/<id>.jpg` (1024 × 10
 a `<id>@512.jpg`. Nová ilustrácia sa musí dať položiť vedľa nich bez toho, aby
 vyčnievala.
 
+
+## Jadro štýlu — Michalove vzorové prompty (2026-10-30, záväzné)
+
+Najlepšie obrázky sady vznikli z týchto promptov (Nano Banana). Nové obrázky
+z Leonardo API od nich štýlom utekali, preto **štýl musí ostať presne tento** —
+chvost `STYL_JADRO` v `tools/admin/styl.ts` je doslova ich znenie:
+
+> realistic human face, no neon signs, no neon lights, dark gritty comic book
+> style with heavy black outlines, grainy texture, moody dramatic lighting,
+> muted vivid contrast colors, no gibberish text
+
+Námet pred chvostom píš ako v týchto vzoroch — postava, výraz, oblečenie, čo
+robí, a prostredie s „very dark dimly-lit gloomy … with deep shadows and low
+warm lamplight“. Pravidlá o dyme, rukách a predmetoch (nižšie) do promptu
+patria, ale **štýlové slová nepridávaj ani nemeň** (žiadne „cross-hatching“,
+vymenované palety, „matching the reference images“).
+
+1. **Krčmárka:** a heavyset middle-aged village pub landlady with curly dark brown shoulder-length hair, large gold hoop earrings, thick gold chains and gold rings, a lit cigarette hanging from her lips with a wisp of smoke, an angry squinting scowl, ample cleavage, wearing a light floral apron over a dark teal short-sleeve dress, one hand on her hip, the other pouring liquor from a bottle into a small shot glass on a worn wooden bar counter, a beer mug and an ashtray with cigarette butts on the counter, a shelf of liquor bottles and a dartboard on the wall behind, set in a very dark dimly-lit gloomy pub interior with deep shadows and low warm lamplight, realistic human face, no neon signs, no neon lights, dark gritty comic book style with heavy black outlines, grainy texture, moody dramatic lighting, muted vivid contrast colors, no gibberish text
+2. **Veterinár:** a bleary drunk old village veterinarian in a blue surgical cap and grubby white coat with a stethoscope, a red bulbous nose and gold teeth, thick gold chains and gold rings, a gold watch, slumped grinning smugly in a worn leather armchair, grey stubble, set in a dim gloomy room with deep shadows, realistic human face, no neon signs, no neon lights, dark gritty comic book style with heavy black outlines, grainy texture, moody dramatic lighting, muted vivid contrast colors, no gibberish text
+3. **Kočovník:** a rough mysterious old dark skin gipsy man, heavily tattooed, chilled expression, unshaven with a cigarette dangling, missing a tooth, dirty layered patched clothes and a battered hat, sly grin, walking through a run-down village, comic book character, bright contrast colors, no gibberish text
+4. **Finančná poradkyňa:** full body shot of a scheming young village loan-shark businesswoman with blonde wavy hair, thick-rimmed glasses, heavy makeup, dark red lipstick and a sly predatory grin, sitting on a bar stool with legs crossed, leaning forward and offering a loan-contract paper and a pen towards the viewer, wearing an absurd tacky village-hot outfit: an open pinstripe business blazer over a leopard-print tube top, baggy camo cargo pants, and stiletto high heels, set in a dim grimy village pub with a wooden bar counter and shelves of bottles behind, no neon signs, no neon lights, dark gritty comic book style with heavy black outlines, grainy texture, moody dramatic lighting, muted vivid contrast colors, no gibberish text
+
+**Model:** pôvodné obrázky sú z **Nano Banana** (`gemini-2.5-flash-image`), tým
+generuj. **Do budúcna:** Michal (2026-10-30) si všimol, že **GPT Image 2**
+(`gpt-image-2`) dáva pre tie isté prompty zaujímavý výstup — ukážky v
+`tools/admin/styly/gpt-image-2/` (Kočovník ×3, Farár, Dievčina na vydaj ×2).
+Zatiaľ len poznámka, model nemeniť bez Michalovho pokynu.
+
 ## Čo štýl tvorí
 
 - **Drsný dospelý komiks / graphic novel**: hrubá čierna kontúra, ručná kresba
