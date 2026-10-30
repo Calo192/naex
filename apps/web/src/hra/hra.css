@@ -761,11 +761,15 @@ button.zdroj-starsi[aria-pressed="true"] {
   font-size: 0.8rem;
   line-height: 1.25;
   color: var(--tlmeny);
+  /* Blok troch počtov stojí v strede dlaždice, riadky v ňom nie — centrovaný každý zvlášť
+     skákal šikmo (Michal 2026-10-30). Čísla v jednom stĺpci doprava, slová od jedného okraja. */
+  text-align: left;
 }
 
 .karty-pocty b {
   display: inline-block;
   min-width: 1.6em;
+  text-align: right;
   color: var(--text);
   font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
@@ -4593,8 +4597,11 @@ button.auto-hotovo-odkaz {
 .doska .zdroj {
   gap: 1px;
   padding: 6px 9px;
-  /* Všetky dlaždice na stred ako Starší a Špaky (Michal 2026-10-30: zarovnanie nerovnomerné). */
+  /* Všetky dlaždice na stred ako Starší a Špaky (Michal 2026-10-30: zarovnanie nerovnomerné).
+     Aj zvislo — nadpis s číslom nalepené hore nechali pod sebou prázdno (Michal 2026-10-30);
+     „safe“: čo sa nezmestí, pretečie dole ako doteraz, nadpis sa hore neoreže. */
   align-items: center;
+  justify-content: safe center;
   text-align: center;
 }
 
@@ -4835,12 +4842,24 @@ button.auto-hotovo-odkaz {
     display: none;
   }
 
-  /* Karty: nadpis vľavo od troch počtov — pod nimi ostane riadok na kliatby a náradie. */
+  /* Karty: nadpis vľavo od troch počtov — pod nimi ostane riadok na kliatby a náradie.
+     Voľné miesto berú krajné stĺpce, nadpis s počtami tak stojí v strede dlaždice (Michal
+     2026-10-30); medzeru drží okraj nadpisu — stĺpcová medzera by zabrala miesto aj pri
+     prázdnych krajných stĺpcoch. */
   .doska .zdroj-karty:not(.ako-ciel) {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-content: start;
-    column-gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, max-content) minmax(0, 1fr);
+    align-content: safe center;
+  }
+
+  .doska .zdroj-karty:not(.ako-ciel) > .zdroj-nazov {
+    grid-area: 1 / 2;
+    align-self: center;
+    margin-right: 8px;
+  }
+
+  .doska .zdroj-karty:not(.ako-ciel) > .zdroj-hodnota {
+    grid-area: 1 / 3;
   }
 
   .doska .zdroj-karty > .zdroj-pod {
@@ -7093,21 +7112,28 @@ button.lsr-pole.ciel:focus-visible {
   }
 
   /* Nadpis vľavo od čísla, text pod oboma. Karty (tri počty pod sebou), Špaky a dlaždice
-     rozpisu bodov majú nadpis nad číslom ako doteraz — v rade by sa nezmestili. */
+     rozpisu bodov majú nadpis nad číslom ako doteraz — v rade by sa nezmestili. Nadpis s číslom
+     stojí v strede dlaždice a celý obsah aj zvislo (Michal 2026-10-30): voľné miesto berú krajné
+     stĺpce, text pod číslom má riadok len na výšku obsahu a ustúpi, keď sa nezmestí. */
   .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    align-content: start;
-    column-gap: 6px;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, max-content) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, max-content);
+    align-content: safe center;
   }
 
   .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) > .zdroj-nazov {
+    grid-area: 1 / 2;
     align-self: center;
+    margin-right: 6px;
+  }
+
+  .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) > .zdroj-hodnota {
+    grid-area: 1 / 3;
   }
 
   .doska .zdroj:not(.zdroj-karty, .zdroj-body, .zdroj-starsi, .spaky-dlazdica, .starsi-dlazdica) > .zdroj-pod {
-    grid-column: 1 / -1;
+    grid-area: 2 / 1 / 3 / -1;
   }
 
   /* V rade s nadpisom ustúpia najprv piktogramy poldeci (číslo plných je hneď vedľa). Rad s číslom
@@ -7132,8 +7158,8 @@ button.lsr-pole.ciel:focus-visible {
     gap: 3px;
   }
 
-  .doska .zdroj.zdroj-abstak {
-    column-gap: 4px;
+  .doska .zdroj.zdroj-abstak > .zdroj-nazov {
+    margin-right: 4px;
   }
 
   /* Pohárik v trasúcej sa ruke je len ozdoba — v rade s nadpisom by vytlačil „−1 tuhé“ za okraj. */
