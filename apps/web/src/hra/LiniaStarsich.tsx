@@ -27,6 +27,7 @@ import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
+import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { POPIS_STUPNICE, PRAVIDLO_STRACHU, plnaPriazen, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textStupna, textVydesenia } from "./textyStarsich.ts";
 
 /** Šípka smeru pri rozdeľovaní: kam marker pôjde a za koľko (null = tým smerom sa teraz nedá). */
@@ -253,7 +254,7 @@ function ScorecardVLinii({
   const priazenPo = priazenText(zobraz);
   const strachTeraz = strachText(teraz, false);
   const strachPo = strachText(zobraz, poPosune !== null);
-  const popisMarkera = `${s.meno}: ♥ ${priazenTeraz}; ${strachTeraz}`;
+  const popisMarkera = `${s.meno}: priazeň ${priazenTeraz}; ${strachTeraz}`;
 
   const stopa = s.stopa;
   const pata =
@@ -313,7 +314,7 @@ function ScorecardVLinii({
       <span className="ls-stav" aria-hidden="true">
         <b className="ls-meno">{s.meno}</b>
         <span className={`ls-cip priazen${zobraz.priazen === null ? "" : zobraz.priazen === ja ? " moja" : " superova"}${priazenPo !== priazenTeraz ? " po-posune" : ""}`}>
-          ♥ {priazenPo}
+          <IkonaPriazne /> {priazenPo}
         </span>
         <span
           className={`ls-cip strach${zobraz.obavany === null ? " nikoho" : zobraz.obavany === ja ? " moj" : " superov"}${strachPo !== strachTeraz ? " po-posune" : ""}`}
@@ -725,7 +726,7 @@ export function LupaStarsieho({
             <b>{s.meno}</b> <span className="lst-tlmene">· {sc.nazov}</span>
           </div>
           <p className="lst-priazen">
-            <b>♥ Priazeň{sila > 0 ? ` +${sila}` : ""}:</b> {plnaPriazen(fav, sila)}
+            <b><IkonaPriazne /> Priazeň{sila > 0 ? ` +${sila}` : ""}:</b> {plnaPriazen(fav, sila)}
           </p>
           <p className="lst-vydesenie">{textVydesenia(fav)}</p>
           {stopa !== undefined && (

@@ -1,8 +1,8 @@
 // Starší v rade dlaždíc (Michal 2026-10-27, dizajn spaky-starsi-20261027, S1 stupienky):
-// dlaždica Starší ukáže na prvý pohľad, koľko starších dáva hráčovi priazeň ♥
+// dlaždica Starší ukáže na prvý pohľad, koľko starších dáva hráčovi priazeň (krígeľ)
 // (stĺpček hore) a koľko sa ho bojí (stĺpček dole, špaky po vyhratej bitke); výška stĺpčeka
 // je zóna, aby sa dala prečítať aj bez farieb. Klik prepne stôl na líniu starších
-// a oba bary na bar starších — po dlaždici na každého staršieho: priazeň ♥ (účinok je v línii),
+// a oba bary na bar starších — po dlaždici na každého staršieho: priazeň (účinok je v línii),
 // alebo strach so špakmi, patronát a posun od poslednej bitky.
 
 import type { CSSProperties } from "react";
@@ -10,6 +10,7 @@ import type { ClientState, GameData, PlayerId } from "@naex/core";
 import { STUPNICA_ZONY, priazenSila, strachNaUdrzanie, strachNaVyplatu, prahVydesenia, vydesil } from "@naex/core";
 import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
+import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
 import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
 import { NAZOV_ZDROJA, riadokDlazdice, textStupna, titulStrachu, titulStrachuSpolu } from "./textyStarsich.ts";
@@ -49,7 +50,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
       title={
         starsi.stlacene
           ? "Späť na stôl (Esc)"
-          : `Priazeň ♥ ${ja ? "ti" : "mu"} dáva ${priazen} z ${view.starsi.length} starších (stĺpček hore) — ich efekt ${ja ? "máš" : "má"}. ` +
+          : `Priazeň ${ja ? "ti" : "mu"} dáva ${priazen} z ${view.starsi.length} starších (stĺpček hore) — ich efekt ${ja ? "máš" : "má"}. ` +
             `${titulStrachuSpolu(strach, ja, zaStarsich, naUdrzanie)} Výška = stupeň. Klik ukáže starších.` +
             (posuny > 0 ? ` Od bitky sa pohlo starších: ${posuny}.` : "")
       }
@@ -64,7 +65,10 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
         </span>
       </span>
       <span className="zdroj-hodnota">
-        <span className="velke-cislo starsi-priazen">♥{priazen}</span>
+        <span className="velke-cislo starsi-priazen">
+          <IkonaPriazne />
+          {priazen}
+        </span>
         <span className="stupienky" aria-hidden="true">
           {stlpce.map((s) => (
             <i key={s.elderId} className={s.smer} style={{ "--zona": s.zona, "--farba-zony": farbaZony(s.zona) } as CSSProperties} />
@@ -117,7 +121,9 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
         const posuny = (view.posunyMarkerov ?? []).filter((x) => x.elderId === e.elderId);
         const hodnota =
           smer === "hore" ? (
-            <span className="velke-cislo">♥ +{priazenSila(e)}</span>
+            <span className="velke-cislo">
+              <IkonaPriazne />+{priazenSila(e)}
+            </span>
           ) : smer === "dole" ? (
             <span className="velke-cislo">
               +{strach}
@@ -154,7 +160,7 @@ export function BarStarsich({ view, data, p, menoKarty }: BarStarsichProps) {
             <span className="zdroj-hodnota">{hodnota}</span>
             <span className="zdroj-pod">
               <span className="starsi-riadok">
-                {/* Výkričníky len pri tom, kto sa hráča bojí — v jeho farbe; priazeň nesie ♥ v čísle. */}
+                {/* Výkričníky len pri tom, kto sa hráča bojí — v jeho farbe; priazeň nesie krígeľ v čísle. */}
                 {smer === "dole" && <ZnackaStrachu uroven={zona} trieda={ja ? "moje" : "superove"} />}
                 {riadok}
                 {posuny.length > 0 && <span className="starsi-posun">⇄</span>}

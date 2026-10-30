@@ -1179,7 +1179,7 @@ button.cip.aktivny {
   margin-top: 6px;
 }
 
-/* ♥ zvýhodneného na konci stupnice — vo farbe hráča ako v hre (výkričníky farbí .ikona-strachu). */
+/* Krígeľ (priazeň) zvýhodneného na konci stupnice — vo farbe hráča ako v hre (výkričníky farbí .ikona-strachu). */
 .stupnica-priazen.moje {
   color: var(--ja);
 }

@@ -1,0 +1,20 @@
+/* Ikona priazne (krígeľ, Michal 2026-10-30) — veľkosť písma okolo, farba rodiča. */
+.ikona-priazne {
+  display: inline-block;
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  /* Záporný okraj: v riadku drobného textu ikona nezväčší výšku riadku. */
+  margin-block: -0.15em;
+  vertical-align: -0.2em;
+  fill: currentColor;
+  overflow: visible;
+}
+
+.ikona-priazne.moje {
+  color: var(--ja);
+}
+
+.ikona-priazne.superove {
+  color: var(--su);
+}
