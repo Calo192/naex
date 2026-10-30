@@ -51,7 +51,7 @@ export function textZakladu(b: Pick<BitkaNaNastenke, "karty" | "pitky">): string
 /** Kultúrny dom (v8): špaky porazeného za jeho karty v línii; inak 0. */
 export function spakyPorazeneho(b: BitkaNaNastenke): number {
   if (b.vitaz === null || b.lokalita?.defId !== "kulturny_dom") return 0;
-  return b.zaBitku[b.vitaz === 0 ? 1 : 0];
+  return b.zaBitku[b.vitaz === 0 ? 1 : 0] - (b.noviny ?? 0);
 }
 
 /** Prečo a ako sa bitka rozhodla — krátko pod lokalitu na nástenke. */
@@ -59,6 +59,7 @@ export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string):
   const out: string[] = [];
   const porazenemu = spakyPorazeneho(b);
   if (porazenemu > 0 && b.vitaz !== null) out.push(`${kto(b.vitaz === 0 ? 1 : 0)} +${porazenemu} za svoje karty (Kultúrny dom)`);
+  if ((b.noviny ?? 0) > 0 && b.vitaz !== null) out.push(`${kto(b.vitaz === 0 ? 1 : 0)} +${b.noviny} za Dlhy víťaza (Noviny)`);
   if (b.rozhodlo === "abstak") out.push("remíza → menej Absťákov");
   if (b.rozhodlo === "dlhy") out.push("remíza → menej Dlhov");
   if (b.abstakZrazka > 0) out.push(`−${b.abstakZrazka} za Absťák`);
@@ -77,7 +78,7 @@ export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string):
  */
 export function spakyZaHernu(b: BitkaNaNastenke): number {
   if (b.vitaz === null || b.lokalita?.defId !== "herna") return 0;
-  const spolu = b.zaBitku[0] + b.zaBitku[1];
+  const spolu = b.zaBitku[0] + b.zaBitku[1] - (b.noviny ?? 0);
   return Math.max(0, spolu - Math.max(1, zakladBitky(b) - b.abstakZrazka) - b.zoSekery);
 }
 

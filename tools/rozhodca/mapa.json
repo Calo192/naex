@@ -1696,7 +1696,7 @@
     {
       "id": "16.karta.dedicstvo-nastroje",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Svätý text (Viera +1), Noviny (v6: +1 špak po bitke, keď sa majiteľa bojí viac starších ako súpera), Vínko (limit +1, bez doliatia, barter áno).",
+      "pravidlo": "Svätý text (Viera +1), Noviny (Titulka: pri prehre +1 špak za každý Dlh víťaza navyše), Vínko (limit +1, bez doliatia, barter áno).",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
@@ -2153,9 +2153,10 @@
         "packages/core/test/v7-efekty.test.ts › Puška a Vidly: Petelice a Rany o 1 poškodenie viac — aj Rany navyše z efektov",
         "packages/core/test/v7-efekty.test.ts › Pasca: súper v kole priložil kartu k tvojej → Pecka navyše; Pijan: Rana za každé svoje NA EX",
         "packages/core/test/v7-efekty.test.ts › Recidivista sa porazenému vráti do ruky, Dievčina sa zahodí a víťaz získa Dlhy, Farár dá víťazovi zadĺženie",
-        "packages/core/test/v7-efekty.test.ts › Noviny: víťaz s viac priznanými Dlhmi — špaky za bitku dostane porazený",
+        "packages/core/test/v7-efekty.test.ts › Noviny — Titulka (návrh #40): porazený majiteľ dostane 1 špak za každý Dlh víťaza navyše, víťaz špaky za bitku celé",
         "packages/core/test/v7-efekty.test.ts › Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh"
-      ]
+      ],
+      "poznamka": "Noviny — Titulka (návrh #40, Michal 2026-10-28): porazený +1 špak za každý Dlh víťaza navyše."
     },
     {
       "id": "14b.finale.utocnik.v7",

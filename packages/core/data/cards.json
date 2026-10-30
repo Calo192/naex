@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-10-28T11:15:40.424Z",
+ "source": "tvorca kariet 2026-10-28T14:04:10.905Z",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -137,7 +137,7 @@
    "tags": [
     "Nástroj"
    ],
-   "effect_text": "Dedičstvo: Prehra: Ak má víťaz viac priznaných Dlhov ako ty, špaky za túto bitku dostaneš ty.",
+   "effect_text": "Dedičstvo: Prehra: Za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak.",
    "triggers": [
     "Dedičstvo",
     "Prehra"
@@ -936,7 +936,7 @@
     "Influencer",
     "Chlap"
    ],
-   "effect_text": "Furt: Odpor na jeho spojoch neruší, ale posilní — ráta sa ako Posilnenie.",
+   "effect_text": "Furt: Odpor na jeho spojoch nič neruší, ale ráta sa ako Posilnenie — zdvojí akciu, s ktorou je v páre, aj keď je súperova.",
    "triggers": [
     "Furt"
    ],

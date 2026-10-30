@@ -76,23 +76,23 @@ export function bzdochaText(data: GameData, v: ClientState): string | null {
 export function stavkaText(data: GameData, v: ClientState): string | null {
   const st = stavkaBitky(data, stolPriPoskodeni(data, v, dalsiePitkyKola(data, v)));
   if (st === null) return null;
-  const rozpis = (noviny: number, sekera: number, herna: number, starsi: number): string => {
+  const rozpis = (sekera: number, herna: number, starsi: number): string => {
     const casti = [
-      noviny === 0 && sekera > 0 ? `${sekera} zo sekery` : "",
-      noviny === 0 && herna > 0 ? `${herna} z Herne` : "",
+      sekera > 0 ? `${sekera} zo sekery` : "",
+      herna > 0 ? `${herna} z Herne` : "",
       starsi > 0 ? `${starsi} od starších` : "",
     ].filter((x) => x !== "");
     return casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
   };
   const noviny = [
-    st.noviny[0] > 0 ? ` Keď vyhráš, špaky za bitku (${st.noviny[0]}) dostane súper — Noviny v jeho Dedičstve, máš viac priznaných Dlhov.` : "",
-    st.noviny[1] > 0 ? ` Keď vyhrá súper, jeho špaky za bitku (${st.noviny[1]}) dostaneš ty — tvoje Noviny, má viac priznaných Dlhov.` : "",
+    st.noviny[0] > 0 ? ` Keď prehráš, dostaneš +${spakov(st.noviny[0])} — tvoje Noviny, súper má o toľko priznaných Dlhov viac.` : "",
+    st.noviny[1] > 0 ? ` Keď prehrá súper, dostane +${spakov(st.noviny[1])} — jeho Noviny, máš o toľko priznaných Dlhov viac.` : "",
   ].join("");
   const kd =
     st.porazenemu[0] + st.porazenemu[1] > 0
       ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${st.porazenemu[0]}, súper pri prehre +${st.porazenemu[1]}.`
       : "";
-  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.noviny[0], st.naSekere, st.herna[0], st.starsi[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.noviny[1], st.naSekere, st.herna[1], st.starsi[1])}.${noviny}${kd}`;
+  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0], st.starsi[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1], st.starsi[1])}.${noviny}${kd}`;
 }
 
 /**

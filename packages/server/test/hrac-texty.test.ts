@@ -89,7 +89,7 @@ describe("klient AI hráčov: Bzdocha (playtest 20261028-090549, nezrovnalosť 2
 });
 
 describe("klient AI hráčov: stávka bitky z jadra (nezrovnalosť 3, Noviny)", () => {
-  it("Noviny porazeného: špaky za bitku víťaza s viac Dlhmi dostane porazený", () => {
+  it("Noviny porazeného (Titulka): pri prehre +1 špak za každý Dlh, ktorý má víťaz navyše", () => {
     const dlh = (uid: number): CardInstance => ({ uid, defId: "dlh", leftLayout: 0, rightLayout: 0 });
     const { s } = doPitky(304, [], (x) => ({
       ...x,
@@ -100,12 +100,16 @@ describe("klient AI hráčov: stávka bitky z jadra (nezrovnalosť 3, Noviny)", 
     }));
     const v = viewFor(sada, s, 0);
     const st = stavkaBitky(sada, v);
-    expect(st?.noviny[0]).toBeGreaterThan(0);
+    // Hráč 0 má Dlhy navyše; Noviny má súper — dostane ich, keď prehrá.
+    expect(st?.noviny[0]).toBe(0);
+    expect(st?.noviny[1]).toBeGreaterThanOrEqual(2);
     const text = stavkaText(sada, v) ?? "";
-    expect(text).toContain(`Keď vyhráš, špaky za bitku (${st?.noviny[0]}) dostane súper — Noviny`);
+    expect(text).toContain(`Keď prehrá súper, dostane +`);
     expect(text).toContain(`tvoja výhra +${st?.vyhra} `);
     // Súper vidí to isté z druhej strany.
-    expect(stavkaText(sada, viewFor(sada, s, 1))).toContain(`Keď vyhrá súper, jeho špaky za bitku (${st?.noviny[0]}) dostaneš ty — tvoje Noviny`);
+    const st1 = stavkaBitky(sada, viewFor(sada, s, 1));
+    expect(st1?.noviny[0]).toBe(st?.noviny[1]);
+    expect(stavkaText(sada, viewFor(sada, s, 1))).toContain(`Keď prehráš, dostaneš +`);
   });
 
   it("bez cieľa kola stávka nie je", () => {

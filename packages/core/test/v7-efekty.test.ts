@@ -508,14 +508,16 @@ describe("Bitka a po bitke (v7)", () => {
     expect(vsetky(0)).not.toContain(dievc.uid);
   });
 
-  it("Noviny: víťaz s viac priznanými Dlhmi — špaky za bitku dostane porazený", () => {
+  it("Noviny — Titulka (návrh #40): porazený majiteľ dostane 1 špak za každý Dlh víťaza navyše, víťaz špaky za bitku celé", () => {
     const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
-    const s = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { priznane: [inst("dlh"), inst("dlh")] });
+    const s = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")], priznane: [inst("dlh")] }), 1, { priznane: [inst("dlh"), inst("dlh"), inst("dlh")] });
     const po = dohrajKolo(s);
     const bitka = po.nastenka.at(-1)!;
-    if (bitka.vitaz !== 1) return;
-    expect(bitka.zaBitku[0]).toBeGreaterThan(0);
-    expect(bitka.zaBitku[1]).toBe(0);
+    expect(bitka.vitaz).toBe(1);
+    // Dlhy pred exekúciou: víťaz 3 (aj s Dlhmi z Pitky), porazený 1 → aspoň 2.
+    expect(bitka.noviny ?? 0).toBeGreaterThanOrEqual(2);
+    expect(bitka.zaBitku[0]).toBe(bitka.noviny);
+    expect(bitka.zaBitku[1]).toBe(bitka.karty);
   });
 
   it("stávka bitky ráta Herňu a Noviny ako výplata (vyplatSpaky)", () => {
@@ -527,15 +529,16 @@ describe("Bitka a po bitke (v7)", () => {
     // 4 karty v línii (v8) + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
     expect(stavkaH.vyhra).toBe(4 + 3 + stavkaH.starsi[0]);
     expect(-stavkaBitky(data, viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
-    // Noviny porazeného: víťaz (hráč 1) má viac Dlhov — z výhry mu ostanú len starší.
+    // Noviny porazeného (Titulka): víťaz (hráč 1) má o 2 Dlhy viac — výhra celá, porazený +2.
     const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { priznane: [inst("dlh"), inst("dlh")] });
     const stavkaN = stavkaBitky(data, viewFor(data, n, 1))!;
-    expect(stavkaN.vyhra).toBe(stavkaN.starsi[0]);
-    expect(stavkaN.noviny[0]).toBeGreaterThan(0);
-    expect(stavkaBitky(data, viewFor(data, n, 0))!.noviny[1]).toBe(stavkaN.noviny[0]);
+    expect(stavkaN.vyhra).toBe(4 + stavkaN.starsi[0]);
+    expect(stavkaN.noviny).toEqual([0, 2]);
+    expect(stavkaBitky(data, viewFor(data, n, 0))!.noviny[0]).toBe(2);
     const poN = dohrajKolo(n).nastenka.at(-1)!;
     expect(poN.vitaz).toBe(1);
-    expect(poN.zaBitku).toEqual([stavkaN.noviny[0], 0]);
+    expect(poN.zaBitku[0]).toBe(poN.noviny);
+    expect(poN.noviny ?? 0).toBeGreaterThanOrEqual(2);
   });
 
   it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {

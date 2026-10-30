@@ -486,7 +486,6 @@ export function spakyTeraz(view: PohladSpakov): SpakyTeraz {
       : [view.koniec.vykupne?.[0] ?? BEZ_VYKUPNEHO, view.koniec.vykupne?.[1] ?? BEZ_VYKUPNEHO];
   const navyse = (p: PlayerId): number => (view.koniec === null ? vykupne[p].spaky : 0);
   const spolu: [number, number] = [view.spaky[0] - odpocet(0) + navyse(0), view.spaky[1] - odpocet(1) + navyse(1)];
-  // Noviny sa vyplácajú spolu so špakmi za starších (vyplatSpaky) — aj v odhade.
   const zaStarsich: [number, number] = [spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)];
   const vyplat = vyplatZaStarsich(view);
   return {
@@ -702,9 +701,8 @@ export interface StavkaBitky {
   /** Karty v línii teraz (v8) — víťaz dostane 1 špak za každú. */
   readonly karty: number;
   /**
-   * Moje špaky za výhru: karty v línii mínus rozdiel Absťákov (aspoň 1), sekera,
-   * Herňa a nevyplatené zóny starších, ktorí sa ma boja. S Novinami porazeného
-   * ostanú len starší.
+   * Moje špaky za výhru: karty v línii (aspoň 1), sekera, Herňa a nevyplatené
+   * zóny starších, ktorí sa ma boja.
    */
   readonly vyhra: number;
   /** Súperove špaky, keď vyhrá on (záporné číslo z môjho pohľadu). */
@@ -713,7 +711,7 @@ export interface StavkaBitky {
   readonly porazenemu: readonly [number, number];
   /** Herňa (v7): koľko z výhry [moja, súperova] je za priznané Dlhy porazeného. */
   readonly herna: readonly [number, number];
-  /** Noviny (v7): špaky za bitku [mojej výhry, súperovej] berie porazený — toľko. */
+  /** Noviny porazeného (Titulka, 2026-10-28): [moje pri prehre, súperove pri jeho prehre] — 1 za každý Dlh víťaza navyše. */
   readonly noviny: readonly [number, number];
   /** Špaky na sekere, ktoré vezme víťaz (vo finále pri sekere prepadnú). */
   readonly naSekere: number;
@@ -736,16 +734,15 @@ export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | nu
   const starsi: [number, number] = [spakyZaStarsich(view.starsi, ja), spakyZaStarsich(view.starsi, su)];
   const moja = spakyZaVyhru(view, ja, karty);
   const jeho = spakyZaVyhru(view, su, karty);
-  const vitazovi = (x: typeof moja, vitaz: PlayerId): number => (x.komu === vitaz ? x.spolu : 0);
   return {
     karty: karty.spolu,
     porazenemu: [jeho.porazenemu, moja.porazenemu],
-    vyhra: vitazovi(moja, ja) + starsi[0],
-    prehra: -(vitazovi(jeho, su) + starsi[1]),
+    vyhra: moja.spolu + starsi[0],
+    prehra: -(jeho.spolu + starsi[1]),
     naSekere: view.spakyNaSekere,
     starsi,
     herna: [moja.herna, jeho.herna],
-    noviny: [moja.komu === ja ? 0 : moja.spolu, jeho.komu === su ? 0 : jeho.spolu],
+    noviny: [jeho.noviny, moja.noviny],
   };
 }
 

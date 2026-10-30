@@ -312,6 +312,8 @@ export interface BitkaNaNastenke {
   readonly karty?: number;
   /** Špaky za bitku [hráč 0, hráč 1] — víťazovi so špakmi zo sekery, na Kultúrnom dome (v8) aj porazenému. */
   readonly zaBitku: readonly [number, number];
+  /** Noviny (Titulka, 2026-10-28): koľko zo zaBitku porazeného je za Dlhy, ktoré má víťaz navyše. Chýba v starších záznamoch. */
+  readonly noviny?: number;
   /** Koľko zo zaBitku víťaz zobral zo sekery (predošlé remízy). */
   readonly zoSekery: number;
   /** Absťáky víťaza navyše oproti porazenému — o toľko dostal menej (do v8; od v8.1 vždy 0). */
@@ -4687,9 +4689,7 @@ export function kartyBitky(s: {
 
 /** Špaky za bitku (krok 4a) pri víťazovi — komu idú a z čoho sa skladajú. */
 export interface SpakyZaVyhru {
-  /** Kto ich dostane: víťaz, s Novinami porazeného porazený. */
-  readonly komu: PlayerId;
-  /** Karty v línii mínus rozdiel Absťákov (aspoň 1). */
+  /** Karty v línii (aspoň 1). */
   readonly zisk: number;
   readonly zoSekery: number;
   /** Herňa (v7): toľko, koľko má porazený priznaných Dlhov. */
@@ -4697,6 +4697,8 @@ export interface SpakyZaVyhru {
   readonly spolu: number;
   /** Kultúrny dom (v8): porazený dostane 1 špak za každú svoju kartu v línii. */
   readonly porazenemu: number;
+  /** Noviny porazeného (Titulka): 1 špak za každý priznaný Dlh, ktorý má víťaz navyše. */
+  readonly noviny: number;
 }
 
 /**
@@ -4764,11 +4766,12 @@ export function spakyZaVyhru(
   const dlhy = (q: PlayerId): number => s.hraci[q].priznane.filter((k) => k.defId === "dlh").length;
   // Herňa (Bitka, v7): víťaz navyše toľko špakov, koľko má porazený priznaných Dlhov — bez stropu.
   const herna = jeCielLokalita(s, "herna") ? dlhy(porazeny) : 0;
-  // Noviny (Dedičstvo: Prehra, v7): víťaz s viac priznanými Dlhmi ako porazený — špaky za bitku berie porazený.
-  const komu = vDedicstve(s, porazeny, "noviny") && dlhy(vitaz) > dlhy(porazeny) ? porazeny : vitaz;
+  // Noviny — Titulka (Dedičstvo: Prehra, návrh #40, Michal 2026-10-28): porazený majiteľ
+  // dostane 1 špak za každý priznaný Dlh, ktorý má víťaz navyše; víťazovi sa nič neberie.
+  const noviny = vDedicstve(s, porazeny, "noviny") ? Math.max(0, dlhy(vitaz) - dlhy(porazeny)) : 0;
   // Kultúrny dom (Bitka, v8 „Obaja bodujú“): porazený aj za svoje karty v línii.
   const porazenemu = jeCielLokalita(s, "kulturny_dom") ? karty.vlastne[porazeny] : 0;
-  return { komu, zisk, zoSekery: s.spakyNaSekere, herna, spolu: zisk + s.spakyNaSekere + herna, porazenemu };
+  return { zisk, zoSekery: s.spakyNaSekere, herna, spolu: zisk + s.spakyNaSekere + herna, porazenemu, noviny };
 }
 
 /**
@@ -4776,7 +4779,7 @@ export function spakyZaVyhru(
  *  - víťaz dostane 1 špak za kartu v línii (aspoň 1; od v8.1 bez zrážky za Absťáky)
  *    a špaky zo sekery; pri sekere čakajú špaky kola na víťaza ďalšej bitky, vo finále prepadnú,
  *  - potom za starších, ktorí sa hráča boja (žltá 1, oranžová 2, červená 3): len
- *    víťaz, pri sekere obaja (v6.1). Noviny (v7) presunú špaky za bitku porazenému.
+ *    víťaz, pri sekere obaja (v6.1). Noviny porazeného mu dajú 1 špak za každý Dlh víťaza navyše.
  * Lokalita ide s výsledkom na nástenku.
  */
 function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events: Event[]): void {
@@ -4788,19 +4791,21 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events
   const karty = kartyBitky(s as GameState);
   const zaBitku: [number, number] = [0, 0];
   let zoSekery = 0;
+  let noviny = 0;
   const abstakZrazka = 0;
   let prepadlo = 0;
   const vitaz = outcome.vitaz;
   if (vitaz !== null) {
     const porazeny = opponentOf(vitaz);
-    const { komu, zisk, herna, spolu, porazenemu } = spakyZaVyhru(s as GameState, vitaz, karty);
+    const v = spakyZaVyhru(s as GameState, vitaz, karty);
+    const { zisk, herna, spolu, porazenemu } = v;
+    noviny = v.noviny;
     zoSekery = s.spakyNaSekere;
-    zaBitku[komu] += spolu;
-    zaBitku[porazeny] += porazenemu;
+    zaBitku[vitaz] += spolu;
+    zaBitku[porazeny] += porazenemu + noviny;
     s.spakyNaSekere = 0;
-    s.spaky[komu] += spolu;
-    s.spaky[porazeny] += porazenemu;
-    if (komu !== vitaz) events.push({ type: "log", text: `Noviny: hráč ${vitaz + 1} má viac priznaných Dlhov — špaky za bitku (${spolu}) berie hráč ${porazeny + 1}.` });
+    s.spaky[vitaz] += spolu;
+    s.spaky[porazeny] += porazenemu + noviny;
     const preco = outcome.rozhodlo === "abstak" ? " (remíza v tuhom, menej Absťákov)" : outcome.rozhodlo === "dlhy" ? " (remíza v tuhom aj v Absťákoch, menej priznaných Dlhov)" : "";
     events.push({
       type: "log",
@@ -4809,6 +4814,9 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events
     });
     if (porazenemu > 0) {
       events.push({ type: "log", text: `Kultúrny dom: aj porazený hráč ${porazeny + 1} dostáva ${spakov(porazenemu)} — 1 za každú svoju kartu v línii.` });
+    }
+    if (noviny > 0) {
+      events.push({ type: "log", text: `Noviny: porazený hráč ${porazeny + 1} dostáva ${spakov(noviny)} — víťaz má o ${pocet(noviny, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} viac.` });
     }
   } else if (finale) {
     prepadlo = karty.spolu + s.spakyNaSekere;
@@ -4837,6 +4845,7 @@ function vyplatSpaky(s: MutState, data: GameData, outcome: BattleOutcome, events
     pitky,
     karty: karty.spolu,
     zaBitku,
+    ...(noviny > 0 ? { noviny } : {}),
     zoSekery,
     abstakZrazka,
     prepadlo,

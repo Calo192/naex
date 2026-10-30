@@ -1531,3 +1531,10 @@ Staré znenie §13: „Podstrčený Pes nedá nič (§16)“ — odporovalo §16
 podstrčený“). Doplnené: vydesenie vo finále (§1, §14b), partner zrušenej akcie
 (§7), poradie Robota → Exekútor po hráčoch (§11), Kapybara povinná a Praudovravec
 zdvojí aj súperovu akciu (§16).
+
+## v8 — Noviny „Titulka“ (návrh #40, Michal 2026-10-28)
+
+Staré znenie (§14, §16):
+
+> | Noviny v Dedičstve (v7) | špaky za bitku dostane porazený, keď má víťaz viac priznaných Dlhov | krok 4a |
+> | Noviny | Dedičstvo: Prehra: keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za túto bitku (aj zo sekery a z Herne) dostaneš ty. Špaky za starších nie. |

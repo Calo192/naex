@@ -924,7 +924,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Vyhratá bitka</td><td>1 za každú kartu v línii na oboch stranách (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Prehratá bitka o Kultúrny dom</td><td>1 za každú svoju kartu v línii</td></tr>
             <tr><td>Starší, ktorí sa ťa boja</td><td>po vyhratej bitke (aj finále) za každú novú zónu: žltá 1, oranžová 2, červená 3 — čo už zaplatil, druhýkrát nedá, kým marker neustúpi; sivý nikomu; porazený nič, pri sekere obaja</td></tr>
-            <tr><td>Noviny v Dedičstve</td><td>keď prehráš a víťaz má viac priznaných Dlhov ako ty, špaky za bitku dostaneš ty</td></tr>
+            <tr><td>Noviny v Dedičstve</td><td>keď prehráš, 1 za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe</td></tr>
             <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (so súperovou priazňou Exekútora o 1 / 2 / 3 viac)</td></tr>
             <tr><td><P k="vykupne">Výkupné</P> na konci hry</td><td>každý plný poldeci 1, každých celých 5 cigariet 1 (zvyšok prepadne); bez stropu — vypitý poldeci ani poldeci pod NA EX sa nerátajú</td></tr>
             <tr><td>Nepriznaná Cirhóza</td><td>mínus 3 za kus na konci hry (ruka aj oba balíčky)</td></tr>

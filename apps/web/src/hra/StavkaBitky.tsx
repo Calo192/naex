@@ -13,15 +13,15 @@ const VYSVETLENIE =
 
 export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavka; readonly kratko?: boolean }) {
   const casti = [
-    stavka.naSekere > 0 && stavka.noviny[0] === 0 ? `${stavka.naSekere} zo sekery` : null,
-    stavka.herna[0] > 0 && stavka.noviny[0] === 0 ? `${stavka.herna[0]} z Herne` : null,
+    stavka.naSekere > 0 ? `${stavka.naSekere} zo sekery` : null,
+    stavka.herna[0] > 0 ? `${stavka.herna[0]} z Herne` : null,
     stavka.starsi[0] > 0 ? `${stavka.starsi[0]} od starších` : null,
   ].filter((x) => x !== null);
   const sekera = casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
-  // Noviny: víťaz s viac Dlhmi odovzdá špaky za bitku porazenému — povedať, inak „+1“ pri výhre mätie.
+  // Noviny (Titulka): porazený majiteľ dostane špak za každý Dlh víťaza navyše.
   const noviny = [
-    stavka.noviny[0] > 0 ? ` Keď vyhráš, špaky za bitku (${stavka.noviny[0]}) vezme súper — Noviny.` : "",
-    stavka.noviny[1] > 0 ? ` Keď vyhrá súper, jeho špaky za bitku (${stavka.noviny[1]}) dostaneš ty — Noviny.` : "",
+    stavka.noviny[0] > 0 ? ` Keď prehráš, dostaneš +${stavka.noviny[0]} za Dlhy, ktoré má súper navyše — Noviny.` : "",
+    stavka.noviny[1] > 0 ? ` Keď prehrá súper, dostane +${stavka.noviny[1]} za tvoje Dlhy navyše — jeho Noviny.` : "",
   ].join("");
   // Kultúrny dom (v8): aj porazený dostane špaky za svoje karty v línii.
   const kd =
