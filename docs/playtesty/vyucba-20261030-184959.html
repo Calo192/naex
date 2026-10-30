@@ -1,0 +1,144 @@
+<!doctype html><html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Playtest výučby 20261030-184959</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--tx:#f1e8d8;--ja:#e9ad45;--te:#d0563f;--ze:#7cbf74;--ok:#3a3128;--mu:#b8ac97}
+@media(prefers-color-scheme:light){:root{--bg:#f6efe2;--pl:#fffaf0;--tx:#241d15;--ja:#8a5a00;--te:#a8352a;--ze:#2f6b2a;--ok:#d9ccb2;--mu:#5d5444}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,Segoe UI,sans-serif}
+main{max-width:1050px;margin:0 auto;padding:1rem}h1,h2,h3{font-family:Georgia,serif;color:var(--ja)}
+section{background:var(--pl);border:1px solid var(--ok);border-radius:10px;padding:1rem;margin:1rem 0}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--ok);padding:.4rem;text-align:left;vertical-align:top}
+.sc{overflow-x:auto}details{border:1px solid var(--ok);border-radius:8px;padding:.5rem .8rem;margin:.5rem 0}summary{cursor:pointer;font-weight:600}
+.ver{font-size:1.1rem;border-left:4px solid var(--ja);padding-left:.8rem}.ok{color:var(--ze)}.zl{color:var(--te)}.ca{color:var(--ja)}
+.t{display:inline-block;border-radius:5px;padding:0 .45rem;font-size:.85em;border:1px solid var(--ok)}
+.bar{display:inline-block;height:.7em;background:var(--ja);border-radius:3px}
+select{font:inherit;background:var(--bg);color:var(--tx);border:1px solid var(--ok);border-radius:6px;padding:.2rem .6rem}
+code{background:var(--bg);padding:0 .25rem;border-radius:4px}th[tabindex]{cursor:pointer}
+.big{font-size:2rem;font-family:Georgia,serif;color:var(--ja)}
+</style></head><body><main>
+<header><h1>Playtest výučby „Prvá hra“ 20261030-184959</h1>
+<p>Traja nováčikovia na živom webe (pravidlá v9 + v9.1, commit dc27ee5): Marta Prvýkrát (učiteľka na dôchodku, 1920×1080, zameranie zrozumiteľnosť textu), Dodo Skipper (študent, 1440×800, ovládanie a tempo), Katka Stolová (1366×650, pochopenie hry). Všetci prešli všetky tri časti, 212/212 krokov, a vyhrali 42 : 5. Čísla krokov v texte sú tie, ktoré uvádzajú nováčikovia v denníkoch (±1 oproti indexom v <code>suhrn.json</code>).</p></header>
+
+<section id="verdikt"><h2>1. Verdikt</h2>
+<p class="ver"><b>Áno po opravách.</b> Výučba sa dá dokončiť (3 z 3) a nováčik z nej pochopí mechaniku (spoje, tuhé, bitka, NA EX, špaky), ale cieľ hry príde až v kroku ~125 a 209, pojmy sa používajú desiatky krokov pred vysvetlením a pár ovládacích miest (Kšeft vily, Dedičstvo, NA EX) nováčika zastaví.</p>
+<ol><li>Cieľ hry a „čo sú špaky“ povedať v kroku 2 (obsah).</li>
+<li>Kšeft vily: natívny rozbaľovač nahradiť tlačidlami; Dedičstvo označiť od začiatku kroku (ovládanie).</li>
+<li>Skrátiť a zlúčiť výučbu (212 krokov, strany s jednou vetou, 3× exekútor) a opraviť titulku „~15 min“ (obsah + text titulky).</li></ol></section>
+
+<section id="novacici"><h2>2. Nováčikovia</h2><div class="sc"><table>
+<tr><th>Nováčik</th><th>Rozlíšenie</th><th>Dokončil</th><th>Akcií</th><th>Chyby servera</th><th>Čas (podľa <code>suhrn.json</code>, bez záverečnej obrazovky)</th><th>Zaseknutí v denníku</th></tr>
+<tr><td>Marta Prvýkrát</td><td>1920×1080</td><td>212/212</td><td>488</td><td>1 (zámerný zlý klik, k-naex-vytrznik)</td><td>~17 min</td><td>5</td></tr>
+<tr><td>Dodo Skipper</td><td>1440×800</td><td>212/212</td><td>874</td><td>2 (zámerné zlé kliky, k-kup-hasic, k-povera1)</td><td>~30 min</td><td>2</td></tr>
+<tr><td>Katka Stolová</td><td>1366×650</td><td>212/212</td><td>953</td><td>0</td><td>~30 min</td><td>4</td></tr></table></div>
+<p>Spolu 11 záznamov ZASEKNUTIE na 8 rôznych miestach (76, 115, 149, 192, 202, 27, 69, 166). <b>Dĺžka:</b> merané časy v <code>suhrn.json</code> (17–30 min) sú nižšie než odhady nováčikov (Dodo ~55 min, Katka ~40 min, Marta „asi 3 hodiny akcií“); zdroj rozdielu neviem určiť, preto nad „~15 min“ z titulky ostáva istý len záver, že skutočná dĺžka je výrazne väčšia (Dodo: 15 + 15 + 22 min).</p></section>
+
+<section id="znamky"><h2>3. Známky V1–V10</h2>
+<div class="big">5,8 / 10</div><p>Priemery: Marta 4,9 · Dodo 6,5 · Katka 6,0. Klikni na hlavičku stĺpca pre zoradenie, na riadok pre zdôvodnenia.</p>
+<div class="sc"><table id="zt"><thead><tr><th tabindex="0" data-c="0">Kritérium</th><th tabindex="0" data-c="1">Marta</th><th tabindex="0" data-c="2">Dodo</th><th tabindex="0" data-c="3">Katka</th><th tabindex="0" data-c="4">Priemer</th></tr></thead><tbody id="zb"></tbody></table></div>
+<p>Zhodli sa na najlepšom: tón Melichara (6/8/8) a kvízy s vysvetlením pri zlej odpovedi; na najhoršom: tempo (4/5/5) a to, že „prečo“ a cieľ hry chýbajú (V3). Marta (staršia, číta pomaly) dala všade najnižšie známky – trpí hlavne pojmami pred vysvetlením; Dodo a Katka viac ovládaním a dĺžkou.</p></section>
+
+<section id="test"><h2>4. Test pochopenia</h2>
+<p>Odpovede overené proti <code>docs/PRAVIDLA.md</code> (v9.1). Meradlo krátkej výučby: počítajú sa otázky 1–7; 8 je nehodnotená (stratégia).</p>
+<div class="sc"><table><tr><th>Otázka</th><th>Marta</th><th>Dodo</th><th>Katka</th></tr>
+<tr><td>1 Cieľ a výhra (viac špakov; 3 väzni = výhra)</td><td class="ok">správne</td><td class="ok">správne</td><td class="ok">správne</td></tr>
+<tr><td>2 Poradie kola</td><td class="ok">správne</td><td class="ok">správne</td><td class="ok">správne</td></tr>
+<tr><td>3 Zhromaždenie a limit (plné poldeci + 1)</td><td class="ca">čiastočne – limit nespomenula, píše „každá ďalšia karta stojí plný poldeci“</td><td class="ok">správne</td><td class="ok">správne</td></tr>
+<tr><td>4 Pitka a NA EX</td><td class="ok">správne (sama si nie je istá detailmi)</td><td class="ok">správne</td><td class="ok">správne</td></tr>
+<tr><td>5 Bitka, tuhé, remíza</td><td class="ok">správne</td><td class="ok">správne</td><td class="ok">správne</td></tr>
+<tr><td>6 Starší (strach, smer posúvania)</td><td class="ca">čiastočne – „presné pravidlá posúvania neviem“</td><td class="ca">čiastočne – „kto koho tlačí a na ktorú stranu“ nepochopil</td><td class="ca">čiastočne – platby a zajatie vie, smer Nakladačky len prerozprávala</td></tr>
+<tr><td>7 Poldeci a cigarety (doliatie 2, nový 5, 5 cig = 1 špak)</td><td class="ok">správne</td><td class="ok">správne</td><td class="ok">správne</td></tr>
+<tr><td>8 Stratégia (nehodnotené)</td><td>–</td><td>–</td><td>–</td></tr></table></div>
+<p><b>Skóre: 17 správne, 4 čiastočne, 0 zle, 0 nevie z 21 odpovedí.</b> Sebahodnotenie: Marta ~45 %, Dodo 55–60 %, Katka ~65 %. Výučba spoľahlivo naučila: spoje a tuhé, poradie kola, bitku a remízu, poldeci/cigarety, základ NA EX. Nenaučila nikoho: smer posúvania starších a rozdiel strach vs. priazeň (kroky 55–65, 124). Všetci traja uviedli, že cieľ hry zistili až v kroku 125 (väzni) alebo 209; to sa v teste nerátalo ako chyba odpovede, ale ako chyba poradia vo výučbe. Marta: „Viem čo klikať, ale nie prečo.“</p></section>
+
+<section id="mapa"><h2>5. Mapa krokov (problémové)</h2>
+<p>Úplná mapa 212 krokov tu nie je; vyberané sú kroky s ZASEKNUTÍM alebo najviac akciami v <code>suhrn.json</code>.</p>
+<div class="sc"><table><tr><th>Krok</th><th>id</th><th>Marta</th><th>Dodo</th><th>Katka</th></tr>
+<tr><td>1</td><td>i-lokalita</td><td class="zl">zakrytá bublina (lupa)</td><td class="zl">zakrytá bublina (002–007)</td><td>–</td></tr>
+<tr><td>27</td><td>kvíz</td><td>–</td><td class="zl">Enter 9× naprázdno</td><td>–</td></tr>
+<tr><td>69, 132</td><td>koniec častí</td><td>–</td><td>–</td><td class="zl">Enter 6× naprázdno</td></tr>
+<tr><td>76</td><td>k-stavba2 (5–12 akcií)</td><td class="zl">zaseknutie</td><td class="ca">preskupenie kariet</td><td>–</td></tr>
+<tr><td>115</td><td>odpoveď na NA EX</td><td class="zl">zaseknutie (nerozumie)</td><td class="ca">„BEZ ODPOVEDE“ (114)</td><td>–</td></tr>
+<tr><td>149</td><td>k-dedicstvo</td><td class="zl">zaseknutie</td><td class="zl">3 pokusy</td><td class="zl">zaseknutie</td></tr>
+<tr><td>166</td><td>Pohoršenie</td><td>–</td><td>–</td><td class="zl">zaseknutie</td></tr>
+<tr><td>192</td><td>k-kseft (10–13 akcií, 46–67 s)</td><td class="zl">~12 akcií</td><td class="zl">klik nezabral 2×</td><td class="zl">zaseknutie</td></tr>
+<tr><td>202</td><td>k-naex-vytrznik</td><td class="zl">zaseknutie (59 s, 1 chyba)</td><td class="ca">108, 203 podobne</td><td>–</td></tr></table></div></section>
+
+<section id="zaseknutia"><h2>6. Zaseknutia</h2>
+<details open><summary>Kšeft vily (192) – všetci traja · chyba UI</summary><p>Chceli: vybrať „Starosta k sebe“ z rozbaľovača s 14–16 položkami. Stalo sa: zoznam sa otvoril, klik myšou na položku sa nezaregistroval, pomohli šípky + Enter (Marta ~12 akcií). <b>Pozor:</b> je to natívny <code>&lt;select&gt;</code> (<code>HernaPlocha.tsx</code>, ~riadok 6213); popup natívneho selectu nie je v DOM a mohol zlyhať len pri automatizovanom kliku. Reálny človek ho možno vyberie, no hodnotenie „16 položiek v rozbaľovači“ je zlé aj tak. Návrh: tlačidlá (karta × smer).</p></details>
+<details><summary>Dedičstvo (149) – všetci traja · chyba UI + scenár</summary><p>Zóna „Pusti sem Dedičstvo“ sa objaví až po kliku na kartu; bublina nepovie, kam. Návrh: zóna a zvýraznenie od začiatku kroku, text „potiahni Vidly vpravo dole“.</p></details>
+<details><summary>NA EX na Pijana (202, aj 108, 203) – Marta, Dodo · chyba UI</summary><p>Výber karty je prepínač bez jasného stavu „vybraná“; tlačidlo NA EX! vyzerá aktívne, kým nie je karta vybraná (vo výpise „nedostupné“), a mení miesto (712,576 → 878,576). Marta po „končím“ dostala „Takto nie“.</p></details>
+<details><summary>Stavba šenku (76) – Marta, Dodo · chyba UI + scenár</summary><p>Bublina povie „vyber 4 karty“ skôr, než povie, ktoré; po výbere sa karty preskupia a veľká lupa prekryje susedné. Návrh: povedať ktoré karty pred klikom, nemeniť poradie.</p></details>
+<details><summary>Koncové obrazovky častí (69, 132) – Katka · chyba UI</summary><p>Enter nerobí nič, treba kliknúť „Pokračovať 2. časťou / Hrať proti počítaču / Do lobby“.</p></details>
+<details><summary>Kvíz (27, 172, 177) – Dodo, Katka · chyba UI</summary><p>Enter v kvíze nerobí nič a nič nenapovie (treba 1/2); odpovede sú malé a menia polohu, pri 172 sa otázka ešte písala.</p></details>
+<details><summary>Pohoršenie (166) – Katka · scenár + UI</summary><p>Nová hustá obrazovka („−1 pint / −1 päsť“), Melichar hovorí „ťahaj“, ale ovláda sa klikom. Vyšlo to náhodou.</p></details>
+<details><summary>Krok 115 – Marta · scenár</summary><p>Nerozumela, kto komu čo zrušil (Odpor, Robota, Viera), akcie nikdy nevysvetlené.</p></details>
+<details><summary>Krok 1 – Marta, Dodo · chyba UI</summary><p>Po kliku z titulky ostal pod myšou obrovský náhľad karty a zakryl bublinu „Dať cigaretu“.</p></details>
+<p>Poznámka: Katkino „zaseknutie“ v kroku 5 (klik na Jednotu) bolo podľa nej chyba nástroja; tri lokality mali jeden veľký rám zvýraznenia, výučba na zlý klik nezareagovala.</p></section>
+
+<section id="ui"><h2>7. UI a UX</h2>
+<ul>
+<li><b>Zlepené systémové hlásenia v bubline</b> (všetci traja): „Čaká sa na hráča 2.Obaja ste skončili…“, „…vyhodnotí.Bitka.“; hláška je z <code>engine.ts</code> (~3304: „Hráč N končí svoju časť Pitky. Čaká sa na hráča M.“) a v bubline vystupuje meno hráča a „hráč 2“ pre bota. Potvrdené: správa nemá medzeru ani odstavec pred textom scenára.</li>
+<li><b>Mužský rod pri ženskej postave</b> (Marta, Katka): scenár <code>prva-hra.json</code> je v mužskom rode („vyhral si“, „vrátil si sa“, „sľúbil si“, „vyložil si“); <code>Vyucba.tsx</code> ~823 má tiež pevné „vyhral si“. Inde hra používa ženský rod, takže je to nejednotné.</li>
+<li><b>Rozlíšenie 1366×650</b> (Katka): ruka odrezaná v polovici, texty kariet nečitateľné, pri vyhodnotení bitky scrollbar. Aj pri 1440×800 (Dodo) sa stavový pás zlamuje do 2–5 riadkov a orezáva.</li>
+<li><b>Rekapitulácie Pitky a bitky</b> (všetci): modál prekryje bublinu, Melichar mlčí, Esc/Enter nefunguje počas animácie, tlačidlo „Ďalej“ mení miesto. Prázdna bublina v krokoch 100, 159–160, 205–206.</li>
+<li><b>Zvýraznenie</b>: rámy ukazujú celú nástenku/šenok namiesto konkrétnej ikony (Katka), chýba pri Dedičstve, Kšefte a hranách „pri tebe“ (Marta).</li>
+<li><b>Bublina</b>: tenký pás, text ~15 px, ikony 18 px (Marta); text sa „píše“ a Enter pridáva časť vety; zlomy uprostred vety („V 2.“ / „časti.“ v 41, 69, 170–176).</li>
+<li>Chybová hláška v 247 je zadrhnutá („toto teraz nie: urob ťah, ktorý svieti“); Dodo. Text sa dá omylom označiť modro po neúspešnom ťahaní (Katka).</li>
+<li>ODHAD v bubline: Marta ho vníma ako „desivý a zbytočný“, Dodo ho chváli („výborný“) – názory sa rozchádzajú.</li></ul></section>
+
+<section id="tempo"><h2>8. Dĺžka a tempo</h2>
+<p>212 krokov; titulka sľubuje „~15 minút“ (<code>VstupyVyucby.tsx</code>). Dodo: „Primeraná by bola ~25–30 min“, navrhuje skrátiť o tretinu. Zbytočne pomalé: úvod (kroky 1, 7, 8, ~12 klikov pred prvou akciou), exekútor vysvetlený 3× (60, 129, 167), po správnom kvíze 3–6 bublín, strany s jednou vetou („Odhad 4 : 2.“, „Zapamätaj si to.“), Chuť/Absťák v 2. aj 3. časti hoci sa nehrá. Príliš husté: 130–131 (6 pojmov naraz), 146 (10 spúšťačov), 60/67 (40–60 slov vo vete), 107. Marta by uvítala prestávku a rekapituláciu „toto vieš“ po prvej časti.</p></section>
+
+<section id="melichar"><h2>9. Melichar</h2>
+<p>Tón sedí všetkým trom (6/8/8). Najlepšie: „Konečne sa ťa niekto bojí.“, „Pečeni je to jedno, mne tiež.“ (Marta), „Hovoril som, že ho poznám.“ (Dodo), „Strana nie je partia.“, „Ako niektorí.“ (Katka; Marta ju dala medzi najhoršie). Najhoršie: „Zapamätaj si to.“ a „Ja o tom niečo viem.“ bez obsahu, „Tak to v živote chodí.“ ako náhrada vysvetlenia, opakované žiadanie cigarety (Dodo, Marta – únava po 3×; Katka ho berie ako vtip), „Čítať snáď vieš.“ (povýšenecké). Nadávky vadili len Marte. Tón nehodnotím ako problém, upozorňujem len na rod.</p></section>
+
+<section id="chyba"><h2>10. Čo chýba a čo je navyše</h2>
+<p><b>Chýba (všetci traja):</b> veta o cieli hry na začiatku („Vyhráš, ak máš po finále viac špakov, alebo ak zajmeš troch starších“); definícia špakov pred prvým použitím (krok 2); Pitka pred krokom 6; strach vs. priazeň a smer posúvania (55–65, 124); čo robia Povera, Viera, Robota, Odpor, Posilnenie, Bitkár pri prvej zmienke (Marta); prečo pasovanie dáva cigarety (Dodo); čo robí Cirhóza a prečo ju priznať (Marta, Katka); ktorá hrana je „moja“ (Marta, Dodo).<br><b>Navyše:</b> tretie vysvetlenie exekútora, Chuť/Absťák/neresti v prvej hre, Kšeft väzňa (208) len ako tip, kvízy, ktoré sa dajú uhádnuť (Marta), ODHAD v prvej časti (Marta).</p></section>
+
+<section id="opravy"><h2>11. Návrhy opráv podľa dopadu</h2>
+<p>Označenie: <span class="t zl">ovládanie</span> = chyba UI/hry, <span class="t ca">obsah</span> = text/poradie výučby (Michalove texty len hodnotím, nenavrhujem prepis).</p>
+<label>Filter: <select id="fo"><option value="">všetko</option><option>ovládanie</option><option>obsah</option></select></label>
+<div class="sc"><table id="ot"><tr><th>#</th><th>Krok (id)</th><th>Druh</th><th>Oprava</th><th>Kto</th><th>Hlásili</th></tr>
+<tr data-k="obsah"><td>1</td><td>2 (i-lokalita/i-lokality), 125, 209</td><td><span class="t ca">obsah</span> scenár</td><td>Cieľ hry (viac špakov / 3 väzni) a čo sú špaky povedať hneď v kroku 2; teraz až v 125/209. Najsilnejší nález – všetci traja, všetci ho dali medzi tri najdôležitejšie zmeny.</td><td>Navrhár scenára</td><td>3/3</td></tr>
+<tr data-k="ovládanie"><td>2</td><td>192 (k-kseft)</td><td><span class="t zl">ovládanie</span> UI</td><td>Kšeft vily ako tlačidlá (karta × smer) namiesto natívneho <code>&lt;select&gt;</code>; overiť, či klik zlyháva aj v bežnom prehliadači.</td><td>Developer / UX</td><td>3/3</td></tr>
+<tr data-k="ovládanie"><td>3</td><td>148–149 (k-dedicstvo)</td><td><span class="t zl">ovládanie</span> UI</td><td>Zóna „Pusti sem Dedičstvo“ viditeľná a zvýraznená od začiatku kroku; v bubline „potiahni vpravo dole“.</td><td>Developer</td><td>3/3</td></tr>
+<tr data-k="obsah"><td>4</td><td>celá výučba, titulka</td><td><span class="t ca">obsah</span></td><td>Skrátiť (zlúčiť strany s jednou vetou, 1 bublina po kvíze, exekútor raz, cigareta raz, Chuť/Absťák preč z prvej hry) a opraviť „~15 minút“ na skutočný čas alebo skrátiť na túto dĺžku.</td><td>Navrhár scenára + Developer (titulka)</td><td>3/3</td></tr>
+<tr data-k="obsah"><td>5</td><td>6 (Pitka), 22, 32–33, 60, 145–146</td><td><span class="t ca">obsah</span></td><td>Pojem vysvetliť pri prvom použití (Pitka, Dlh/Hazard, Cirhóza, Povera, Furt, priazeň, Nakladačka); zjednodušiť dvojicu strach/priazeň (55–65) – jeden obrázok stupnice „moja strana, kam sa tlačí“.</td><td>Navrhár scenára</td><td>3/3</td></tr>
+<tr data-k="ovládanie"><td>6</td><td>systémové hlásenia (12, 79, 112, 161, 164, 185…)</td><td><span class="t zl">ovládanie</span> hra/UI</td><td>Zlepené „…hráča 2.Obaja…“: pridať odstavec/medzeru; v bubline výučby použiť „ty“/„Štamgast“ namiesto „Dodo Skipper končí… hráč 2“.</td><td>Developer</td><td>3/3</td></tr>
+<tr data-k="ovládanie"><td>7</td><td>202, 108, 203 (NA EX)</td><td><span class="t zl">ovládanie</span> UI</td><td>Jasný stav „vybraná karta“, tlačidlo NA EX! sivé, kým nie je výber; stále miesto POTVRDIŤ/NA EX!/Ďalej.</td><td>UX/UI</td><td>2/3</td></tr>
+<tr data-k="ovládanie"><td>8</td><td>koncové obrazovky (69, 132), kvíz (27…)</td><td><span class="t zl">ovládanie</span> UI</td><td>Enter funguje na koncových obrazovkách a v kvíze (alebo nápis „stlač 1 / 2“), väčšie a stabilné odpovede kvízu.</td><td>Developer</td><td>2/3</td></tr>
+<tr data-k="ovládanie"><td>9</td><td>všetky pri 650 px</td><td><span class="t zl">ovládanie</span> UI</td><td>Ruka odrezaná pri 1366×650: menší horný pás alebo lupa na ruke; pás nad stolom bez orezania.</td><td>UX/UI</td><td>1/3 (Katka, čiastočne Dodo)</td></tr>
+<tr data-k="ovládanie"><td>10</td><td>1 (i-lokalita), 76</td><td><span class="t zl">ovládanie</span> UI</td><td>Skryť náhľad karty pod myšou po kliku z titulky; v šenku (76) nemeniť poradie a povedať, ktoré 4 karty, skôr než sa dá klikať.</td><td>Developer</td><td>2/3</td></tr>
+<tr data-k="ovládanie"><td>11</td><td>rod oslovenia</td><td><span class="t zl">ovládanie</span> UI</td><td>Mužský rod („vyhral si“, „vrátil si sa“) pri ženskej postave; scenár podľa pohlavia hráča, alebo neutrálne formulácie.</td><td>Developer / Navrhár</td><td>2/3</td></tr>
+<tr data-k="ovládanie"><td>12</td><td>rekapitulácie, prázdne bubliny (100, 159–160, 205–206)</td><td><span class="t zl">ovládanie</span> UI</td><td>Melichar k rekapitulácii povie vetu; vyplniť prázdne bubliny; Esc/Enter v modáloch.</td><td>UX/UI + Scenár</td><td>3/3</td></tr></table></div></section>
+
+<section id="zhrnutie"><h2>Zhrnutie</h2>
+<p>Hlavné opravy: (1) cieľ a špaky v kroku 2 [obsah], (2) Kšeft vily bez select [ovládanie], (3) Dedičstvo viditeľné [ovládanie], (4) skrátenie + časový údaj na titulke [obsah], (5) pojmy pri prvom použití [obsah]. Zlepené hlásenia a rod patria hneď za ne. Test pochopenia 17 správne / 4 čiastočne z 21; priemer V1–V10 = 5,8 (V1 5,7 · V2 6,3 · V3 5,0 · V4 5,7 · V5 6,0 · V6 5,7 · V7 4,7 · V8 7,3 · V9 5,3 · V10 6,3).</p></section>
+<footer><p>Traja AI nováčikovia hrali výučbu cez skutočný server bez znalosti pravidiel; jeden turnus, každý nováčik je jeden údaj.</p></footer>
+<script>
+(function(){
+var d=[["V1 Pochopenie hry",4,6,7,"Marta: pojmy ostali nejasné, cieľ až v 125. Dodo: základ sedí, starších naspamäť. Katka: spoje, špaky, väzni pochopiteľné."],
+["V2 Jasnosť pokynov",6,7,6,"Zasekli sa pri Kšefte vily, Dedičstve, NA EX a pri BEZ ODPOVEDE."],
+["V3 Vysvetlenie prečo",3,6,6,"Marta: pojmy 30–60 krokov pred vysvetlením. Dodo: cieľ až v 209. Katka: kvízy s vysvetlením sú výborné, Cirhóza bez prečo."],
+["V4 Bublina Melichara",5,6,6,"Tenký pás s malým písmom, vety zlomené uprostred, modály ju prekryjú."],
+["V5 Zvýraznenie",6,7,5,"Dodo: zlaté rámy v šenku presné. Katka: rám obklopí celú nástenku, nie ikonu. Marta: chýba pri Dedičstve a Kšefte."],
+["V6 Ovládanie",5,7,5,"Dodo chváli skratky a zlé kliky; Marta a Katka: rozbaľovač Kšeftu, výber karty, Enter na koncových obrazovkách."],
+["V7 Tempo a dĺžka",4,5,5,"212 krokov, strany s jednou vetou, titulka „~15 min“ nesedí."],
+["V8 Tón Melichara",6,8,8,"Humor funguje; Marte vadia nadávky a rod, cigareta po 3× únava."],
+["V9 Čitateľnosť stola",5,6,5,"Texty kariet drobné, pri 650 px odrezaná ruka, husté rekapitulácie."],
+["V10 Chuť hrať",5,7,7,"Marta by hrala proti počítaču; Dodo a Katka chcú zajať väzňa."]];
+var b=document.getElementById("zb");
+function avg(r){return Math.round((r[1]+r[2]+r[3])/3*10)/10}
+function draw(rows){b.innerHTML="";rows.forEach(function(r){
+var tr=document.createElement("tr");tr.tabIndex=0;tr.style.cursor="pointer";
+function cell(v,bar){var td=document.createElement("td");td.innerHTML=v+(bar?' <span class="bar" style="width:'+(v*8)+'px"></span>':"");return td}
+var t=document.createElement("td");t.textContent=r[0];tr.appendChild(t);
+tr.appendChild(cell(r[1],1));tr.appendChild(cell(r[2],1));tr.appendChild(cell(r[3],1));tr.appendChild(cell(avg(r),0));
+var dr=document.createElement("tr");dr.hidden=true;var dc=document.createElement("td");dc.colSpan=5;dc.textContent=r[4];dr.appendChild(dc);
+function tg(){dr.hidden=!dr.hidden}
+tr.onclick=tg;tr.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();tg()}};
+b.appendChild(tr);b.appendChild(dr)})}
+draw(d);
+document.querySelectorAll("#zt th").forEach(function(h){function s(){var c=+h.dataset.c;var x=d.slice();x.sort(function(a,b){return c===0?a[0].localeCompare(b[0]):(c===4?avg(a)-avg(b):a[c]-b[c])});if(h.dataset.o==="1"){x.reverse();h.dataset.o="0"}else h.dataset.o="1";draw(x)}
+h.onclick=s;h.onkeydown=function(e){if(e.key==="Enter")s()}});
+document.getElementById("fo").onchange=function(){var v=this.value;document.querySelectorAll("#ot tr[data-k]").forEach(function(r){r.hidden=v&&r.dataset.k!==v})};
+})();
+</script></main></body></html>

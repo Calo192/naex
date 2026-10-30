@@ -46,7 +46,7 @@ vo feedback.md.
 - oprava: 2026-10-30 20261030-115654-1: „strach platí za nové zóny hneď“ odporuje §10 v8.3 (strach až po udržaní, aj porazenému); Vilo ju preto nepoužil a sám ju vyvrátil pravidlami; prepísané na udržanie a obranu súpera.
 
 ### vilo-5 · Keď má súper v línii Bzdochu, nedávam NA EX na jeho kartu (ani zadarmo s Alkoholikom), lebo hrá Pitku až po mne, vidí môj cieľ a zrážkou na vlastnej karte z nej spraví Výtržníka — všetky jej akcie sú Rany pre neho.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -55,7 +55,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §7 Bzdocha, Výtržník. 115654-1 K5 P2: Vilov NA EX na Ferovho Záhradkára (Poldeci ×2 + Pečeň ×2 = Cirhóza/Pitku) → Fero s Bzdochou videl cieľ a dal NA EX na tú istú kartu → „Výtržník, všetky jej akcie sú Rany pre hráča 1“ = 6 Rán, 5 : 3 → 5 : 10 (−13 špakov).
 
 ### vilo-6 · Keď som na Zastávke na ťahu, spoločný zvyšok limitu je 3 a mám plný poldeci navyše, dám Vypiť + 2 karty, lebo spoločný limit padne na 0, súper v tom Zhromaždení už nevyloží nič a hra mu za pas nedá cigarety (ráta min zo spoločného a vlastného zvyšku) — pravidlo je nejasné (§15 vs. §6), autor ho môže zmeniť.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -64,7 +64,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §13 Vypiť, §15 Zastávka, §6 pas; engine kartyZaPas = min(spoločný zvyšok, vlastný zvyšok, ruka). 115654-1 K1 Z1: ťah vypiť + Vdova + Miňištrant → prevaha 3 : 2, bitka 6 : 0 (+6); log „Hráč 1 pasuje do Pitky“ bez cigariet, hoci Fero mal vlastný zvyšok 1 a 4 karty v ruke.
 
 ### vilo-7 · Keď dávam NA EX (aj zadarmo s Alkoholikom), najprv skontrolujem, či nemám v línii Šoféra (bez NA EX dá Pecku navyše, s ním nič) a či pečeň NA EX 1 + zdvojené Poldeci/Pečeň cieľa nedosiahne prah 3, lebo Cirhóza z vlastného NA EX stojí −3 alebo +1 tuhé súperovi v každej bitke.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -73,7 +73,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §7 (pečeň NA EX pri odkrytí), §8 prah 3, §16 Šofér. 115654-1 K5: Vilov NA EX zrušil Šoférov bonus +2 (a Fero zrážkou získal 6 Rán); K3 NA EX na vlastnú Vychovávateľku: pečeň 1 + Poldeci ×2 = 3 → log „Hráč 2 dosahuje prah pečene (3) — Cirhóza“, zahodená až Víziou.
 
 ### vilo-8 · Keď chcem bankovať strach na oranžovej či červenej (stupeň zaplatí až koniec ďalšieho kola), najprv spočítam súperove cigarety a Dedičstvo: s 1 cigaretou mi červenú zruší patronátom (červená 1, oranžová 2 cig) a s Telefónom odtlačí stupeň Pohoršeniami za cenu von, preto bankujem, len keď súper nemá cigarety ani Telefón, inak radšej mažem jeho čakajúce stupne.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 2
 - vyvrátenia: 0

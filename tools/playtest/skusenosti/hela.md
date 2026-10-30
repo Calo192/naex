@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### hela-1 · Keď hazardujem, vyberám hazard s vyčísliteľnou cenou (Veľmi smútiaca vdova, NA EX s náhľadom) a vyhýbam sa pečeni, keď má súper Oslávenca, lebo Cirhóza z posledných Pitiek je −3 a nedá sa priznať.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -27,7 +27,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §9.3 krok 1 (Viera a Povera sa vyrušia 1 : 1). 161907 K4: Hela dala tretie Pohoršenie na Krčmárku (Veriaci), Vilova Dievčina mala Poveru → tuhé 2 : 3 (log „Bitka: tuhé 2:3“); Veterinár (Bitkár) by dal 2 : 2 (remíza). 090549: P3 K6 Hela dala Pohoršenie k sebe na Veriaceho až po pohľade na súperove Povery; Povera Manželky zrušila 1 Vieru.
 
 ### hela-3 · Keď dávam NA EX, ktoré mi vyrobí priznaný Dlh (neaktívny Hazard na mojej karte), najprv spočítam remízu: pri vyrovnanom tuhom prehrávam na tiebreaku Dlhov, preto Dlhové NA EX dávam len pri náskoku aspoň 2 tuhé aj po súperovej odpovedi kartou (odpoveď s Pohoršením k sebe na Bitkára je +1 tuhé hneď).
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -36,7 +36,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §9.4 (remíza: menej Absťákov, potom menej priznaných Dlhov), §9.2 (priazeň z Pohoršenia platí hneď). 115654-2 K1: NA EX na vlastnú Svokru 4 : 5 → 8 : 6 a Dlh; Šimon odpovedal Dievčinou (Viera + Pohoršenie k sebe → Farár Bitkár +1) → 7 : 7, log „remíza v tuhom aj v Absťákoch, menej priznaných Dlhov“ → Šimon +7, Hela −8 špakov.
 
 ### hela-4 · Keď chcem hazardovať na zrážku NA EX (dať NA EX na vlastnú ohrozenú kartu, aby sa z nej stal Výtržník), spravím to, len keď súper nemá vlastnú kartu, na ktorej mu NA EX vynesie viac než útok na mňa, lebo inak dá NA EX na svoju a ja si zdvojím vlastné kliatby v každej Pitke kola.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -45,7 +45,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §7 zrážka, Výtržník. 115654-2 K4: Hela dala NA EX na vlastné Dvojčatá (odhad 80 %, že Šimon zaútočí na ne cez Čiernu mačku), Šimon dal NA EX na vlastného Praudovravca (Pohoršenie ×2, Povera ×2, Viera ×2) → Pečeň ×2 + Poldeci hrany × 3 Pitky = 3 Cirhózy (−9) a bitka 0 : 6.
 
 ### hela-5 · Keď som porazený a rozdeľujem veľkú Nakladačku (v8.3), rátam, že každý bod na mojej polovici je čakajúci špak pre víťaza na konci ďalšieho kola, preto body najprv miniem na návrat súperových už zaplatených markerov z jeho polovice cez stred (z červenej 4 + 3 + 2: súper stratí priazeň a víťazovi nevznikne čakajúci strach) a zvyšok dám len priazni, ktorú potrebujem hneď v ďalšej bitke a viem obrániť.
-- stav: overená
+- stav: neoverená
 - pravidlá: v8
 - potvrdenia: 1
 - vyvrátenia: 0
