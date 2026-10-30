@@ -161,7 +161,7 @@ import { pravitkoPosunu } from "./pravitko.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
-import { polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
+import { kartaVyucbyDoOblasti, polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
 import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole, type KrokNaStarsich } from "./prechodFazy.ts";
 import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatkyKrokov.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
@@ -190,6 +190,8 @@ import {
   type KartyDlazdica,
   type VyhladPitky,
 } from "./Panely.tsx";
+import { KseftVily } from "./KseftVily.tsx";
+import { CENA_VILY, moznostiVily } from "./volbaVily.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
@@ -2194,13 +2196,30 @@ export function HernaPlocha({
   const ONESKORENIE_LUPY_MS = 150;
   /** O koľko px sa musí myš po pustení karty pohnúť, aby sa lupa znova otvárala. */
   const VZDIALENOST_PO_PUSTENI = 60;
+  // Myš, ktorá sa od príchodu k stolu nepohla, lupu neotvorí: po kliku na „Začať výučbu“ ostala
+  // nad lokalitou a jej zväčšenina zakryla bublinu Melichara (playtest výučby 20261030, krok 1).
+  // Prehliadač po zmene stránky pošle pohyb na tom istom mieste — ten sa neráta.
+  const mysSaPohla = useRef(false);
+  useEffect(() => {
+    let prva: { readonly x: number; readonly y: number } | null = null;
+    const pohyb = (e: PointerEvent): void => {
+      if (e.pointerType !== "mouse") return;
+      if (prva === null) prva = { x: e.clientX, y: e.clientY };
+      else if (Math.hypot(e.clientX - prva.x, e.clientY - prva.y) >= 4) {
+        mysSaPohla.current = true;
+        window.removeEventListener("pointermove", pohyb);
+      }
+    };
+    window.addEventListener("pointermove", pohyb);
+    return () => window.removeEventListener("pointermove", pohyb);
+  }, []);
   const nadLupou = (kluc: string, najdi: (el: HTMLElement) => Element | null, fokus: boolean) => {
     najdiLupu.set(kluc, najdi);
     return {
       "data-lupa": kluc,
       tabIndex: fokus ? 0 : undefined,
       onPointerEnter: (e: ReactPointerEvent<HTMLElement>): void => {
-        if (e.pointerType !== "mouse" || tahanie !== null) return;
+        if (e.pointerType !== "mouse" || tahanie !== null || !mysSaPohla.current) return;
         const p = poPusteni.current;
         if (p !== null) {
           if (Math.hypot(e.clientX - p.x, e.clientY - p.y) < VZDIALENOST_PO_PUSTENI) return;
@@ -2485,7 +2504,7 @@ export function HernaPlocha({
                 Záverečná · odhalená
               </span>
             )}
-            {vybranaNaex && <span className="vybrana-pod">vybraná</span>}
+            {vybranaNaex && <span className="vybrana-pod">✓ vybraná</span>}
           </>
         ) : undefined;
       return sLupou(
@@ -2687,7 +2706,7 @@ export function HernaPlocha({
         ) : (
           superoveSkryteNaex.has(z.uid) && stitokSuperovhoNaex
         )}
-        {vybrana && <span className="vybrana-pod">vybraná</span>}
+        {vybrana && <span className="vybrana-pod">✓ vybraná</span>}
       </button>,
       -1000 - p,
     );
@@ -2941,7 +2960,9 @@ export function HernaPlocha({
   };
   const tahanaZRuky = tahanie !== null && tahanie.zdroj.odkial === "ruka" && !tahanie.zdroj.navrh ? tahanie.zdroj.karta : null;
   const vybranaKarta = vybranaDoOblasti === null ? null : (ruka.find((k) => k.uid === vybranaDoOblasti) ?? null);
-  const kartaOblasti = tahanaZRuky ?? vybranaKarta;
+  // Výučba: kartu, ktorú krok posiela do Dedičstva či na priznanie, čaká dlaždica od začiatku kroku.
+  const kartaVyucby = mozemOdkladat && tahanaZRuky === null && vybranaKarta === null ? kartaVyucbyDoOblasti(vyucbaOcakava, ruka, vylozenia) : null;
+  const kartaOblasti = tahanaZRuky ?? vybranaKarta ?? kartaVyucby;
   const typKarty = kartaOblasti === null ? null : typOblasti(kartaOblasti);
   const cielDlazdice: "priznanie" | "dedicstvo" | null = typKarty === null ? null : typKarty.priznanie ? "priznanie" : typKarty.dedicstvo ? "dedicstvo" : null;
   const smieNaDlazdicu = kartaOblasti !== null && cielDlazdice !== null && kamIde(kartaOblasti)[cielDlazdice];
@@ -3881,7 +3902,6 @@ export function HernaPlocha({
                 tip: "Zberný dvor (Kšeft): za cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky.",
                 akcia: () => setMode({ typ: "vykup" }),
               })}
-            <KseftyPitky data={data} view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
           </>
         );
         const koncim = (
@@ -4057,7 +4077,14 @@ export function HernaPlocha({
           ),
           vlavo: nakupy,
           stred: naexStred,
-          vpravo: koncim,
+          // Kšefty vpravo pri Skončiť Pitku, nie medzi nákupmi: vľavo by širší rad posunul NA EX! zo stredu
+          // hrany — nováčik ho hľadal na mieste z predošlej Pitky (playtest výučby 20261030, k-naex-vytrznik).
+          vpravo: (
+            <>
+              <KseftyPitky data={data} view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
+              {koncim}
+            </>
+          ),
         };
       }
 
@@ -5053,10 +5080,10 @@ export function HernaPlocha({
     setMiestoVolby(null);
     setVybranaDoOblasti(vybranaDoOblasti === k.uid ? null : k.uid);
   };
-  const vylozDoOblasti = (ciel: "priznanie" | "dedicstvo"): void => {
-    if (vybranaKarta === null || !kamIde(vybranaKarta)[ciel]) return;
-    const bez = vylozenia.filter((x) => x.karta.uid !== vybranaKarta.uid).map((x) => ({ uid: x.karta.uid, ciel: x.ciel }));
-    setNavrh({ typ: "vylozenia", polozky: [...bez, { uid: vybranaKarta.uid, ciel }] });
+  const vylozDoOblasti = (k: CardInstance, ciel: "priznanie" | "dedicstvo"): void => {
+    if (!kamIde(k)[ciel]) return;
+    const bez = vylozenia.filter((x) => x.karta.uid !== k.uid).map((x) => ({ uid: x.karta.uid, ciel: x.ciel }));
+    setNavrh({ typ: "vylozenia", polozky: [...bez, { uid: k.uid, ciel }] });
     setVybranaDoOblasti(null);
   };
   // Vrstva Karty so záložkami; klik na súperovu dlaždicu ukáže jeho Priznané a Dedičstvo.
@@ -5088,12 +5115,16 @@ export function HernaPlocha({
                   : "dobereš kartu · nemíňa limit"
                 : `−${cigariet(view.cenaDedicstva)} · máš ${hJa.cigarety}`,
             zamknute: chybaDlazdice,
-            aktivny: jeCiel(cielDlazdice) || (vybranaKarta !== null && smieNaDlazdicu),
+            aktivny: jeCiel(cielDlazdice) || ((vybranaKarta ?? kartaVyucby) !== null && smieNaDlazdicu),
             nad: nadCielom(cielDlazdice),
             dataCiel: jeCiel(cielDlazdice) ? cielDlazdice : undefined,
-            // Klik s vybraným Nástrojom robí to isté ako „odkazujem“ — jedna cesta, nie dve.
-            onKlik:
-              vybranaKarta !== null && smieNaDlazdicu ? () => (cielDlazdice === "dedicstvo" ? odkaz(vybranaKarta) : vylozDoOblasti(cielDlazdice)) : undefined,
+            // Klik s vybraným Nástrojom robí to isté ako „odkazujem“ — jedna cesta, nie dve. Vo výučbe
+            // dlaždica vezme kartu, ktorú krok čaká, aj bez výberu v ruke.
+            onKlik: ((): (() => void) | undefined => {
+              const k = vybranaKarta ?? kartaVyucby;
+              if (k === null || !smieNaDlazdicu) return undefined;
+              return () => (cielDlazdice === "dedicstvo" ? odkaz(k) : vylozDoOblasti(k, cielDlazdice));
+            })(),
           },
   });
 
@@ -6105,7 +6136,6 @@ type PecatNakupu = (p: {
  */
 function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData; readonly view: ClientState; readonly cmd: (c: Command) => void; readonly pecatNakupu: PecatNakupu }) {
   const [smetiarka, setSmetiarka] = useState<number | null>(null);
-  const [vila, setVila] = useState<string>("");
   const [vazenKarta, setVazenKarta] = useState<Readonly<Record<string, string>>>({});
   const ja = view.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
@@ -6206,31 +6236,8 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
       const dlh = h.dlhy > 0;
       out.push(pecatNakupu({ kluc: "kseftUrad", nazov: "Obecný úrad", cena: c, dovod: !dlh ? "Nemáš priznaný Dlh." : h.cigarety < c ? `Úrad chce ${cigariet(c)}.` : null, tip: "Kšeft: za 3 cigarety presunieš 1 svoj priznaný Dlh medzi súperove priznané.", akcia: () => cmd({ type: "kseft", uid }) }));
     }
-    if (lok.defId === "predsedova_vila" && h.cigarety >= 2) {
-      out.push(
-        // Výučba (3. časť) svieti Kšeft vily ako tlacidlo:kseft.
-        <span key="kseftVila" className="pecat pecat-nakup" data-vyucba="tlacidlo:kseft">
-          <select value={vila} onChange={(e) => setVila(e.target.value)}>
-            <option value="">Vila (2 cig.): marker…</option>
-            {view.starsi
-              .filter((e) => !view.pokusy.some((x) => x?.elderId === e.elderId))
-              .flatMap((e) => [
-                <option key={`${e.elderId}-s`} value={`${e.elderId}|0`}>{`${meno(e.karta.defId)} od seba`}</option>,
-                <option key={`${e.elderId}-j`} value={`${e.elderId}|1`}>{`${meno(e.karta.defId)} k sebe`}</option>,
-              ])}
-          </select>
-          <button
-            type="button"
-            disabled={vila === ""}
-            onClick={() => {
-              const [elderId, kSebe] = vila.split("|");
-              if (elderId !== undefined) cmd({ type: "kseft", uid, elderId, kSebe: kSebe === "1" });
-            }}
-          >
-            posunúť
-          </button>
-        </span>,
-      );
+    if (lok.defId === "predsedova_vila" && h.cigarety >= CENA_VILY) {
+      out.push(<KseftVily key="kseftVila" uid={uid} moznosti={moznostiVily(view)} meno={meno} cmd={cmd} napis={<Vymena das={<CenaCigariet n={CENA_VILY} />} dostanes="posun" />} />);
     }
   }
   return <>{out}</>;

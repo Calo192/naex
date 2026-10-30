@@ -21,3 +21,20 @@ export function tahOdkazu(data: GameData, view: ClientState, ja: PlayerId, poloz
   const plan = planVykladania(data, view, ja, z.zostavaLimit[ja], polozkyOdkazu(polozky, nastroj));
   return plan.chyba === null ? { kroky: plan.kroky, dovod: null } : { kroky: null, dovod: plan.chyba };
 }
+
+/**
+ * Výučba: karta z ruky, ktorú krok posiela do Dedičstva či na priznanie a ešte nie je v návrhu.
+ * Dlaždica Karty je jej cieľom od začiatku kroku — ukáže sa až po kliku na kartu a nováčik
+ * nevedel, kam ju dať (playtest výučby 20261030, k-dedicstvo).
+ */
+export function kartaVyucbyDoOblasti(ocakava: Command | null | undefined, ruka: readonly CardInstance[], polozky: readonly PolozkaVykladania[]): CardInstance | null {
+  if (ocakava === null || ocakava === undefined) return null;
+  const kroky = ocakava.type === "tah" ? ocakava.kroky : [ocakava];
+  for (const k of kroky) {
+    if (k.type !== "place" || (k.target !== "dedicstvo" && k.target !== "priznanie")) continue;
+    if (polozky.some((x) => x.karta.uid === k.uid)) continue;
+    const karta = ruka.find((r) => r.uid === k.uid);
+    if (karta !== undefined) return karta;
+  }
+  return null;
+}

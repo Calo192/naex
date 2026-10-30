@@ -124,8 +124,9 @@ body.vyucba-bezi .ls-sc.klik[data-vyucba-zvyraznene] {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--akcent) 55%, transparent);
 }
 
-/* Pečať NA EX! po výbere karty pulzuje — nováčik nevedel, že je to tlačidlo (playtest U6). */
-body.vyucba-bezi .pecat-naex {
+/* Pečať NA EX! po výbere karty pulzuje — nováčik nevedel, že je to tlačidlo (playtest U6). Bez vybranej
+   karty nie: vyzerala aktívna a nováčik ju stláčal skôr než kartu (playtest výučby 20261030). */
+body.vyucba-bezi .pecat-naex:not(.neaktivne) {
   animation: vyucba-vyzva 1.2s ease-in-out infinite;
 }
 
@@ -257,7 +258,8 @@ body.vyucba-bezi .oznamy-priazne {
   font-weight: 600;
 }
 
-.vyucba-dalej kbd {
+.vyucba-dalej kbd,
+.mel-vpravo .tlacidlo-hlavne kbd {
   margin-left: 6px;
   padding: 0 5px;
   border-radius: 4px;
@@ -416,4 +418,17 @@ body [data-napoveda-zvyraznene]:focus-visible {
 body.vyucba-bezi .oznam-achievementu {
   top: auto;
   bottom: 16px;
+}
+
+/* 1366 × 650: karty v ruke vo výučbe vyčnievajú ako na vyššom okne (70 %), nie do polovice —
+   nováčik ich nevedel prečítať ani nájsť názov (playtest výučby 20261030). Pás s názvom je tak
+   nad okrajom okna a štítok s menom netreba; stôl je o to nižší. */
+@media (min-width: 761px) and (max-height: 719px) {
+  body.vyucba-bezi .hra {
+    --ruka-skryte: calc(var(--ruka-kh) * 0.3);
+  }
+
+  body.vyucba-bezi .ruka-rad .ruka-meno {
+    display: none;
+  }
 }

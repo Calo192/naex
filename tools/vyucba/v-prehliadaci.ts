@@ -9,7 +9,9 @@
 // Bez --login si založí nový účet návštevníka (časti s textami na schválenie neuvidí).
 // Info kroky a kvízy kliká v bubline (kvíz skúša možnosti po poradí — aj zlá odpoveď
 // a jej hláška), ťah hráča pošle cez WebSocket stránky príkaz, ktorý krok čaká (myšou
-// ho hrá playtest výučby, tools/playtest/vyucba.ts). Na začiatku každej časti raz
+// ho hrá playtest výučby, tools/playtest/vyucba.ts) — Kšeft vily a NA EX klikne cez tlačidlá
+// stola. Enter skúša na konci časti (listuje a spustí ďalšiu) aj v kvíze (nesmie odpovedať).
+// Pri každom kroku zapíše, či je stránka vyššia než okno. Na začiatku každej časti raz
 // pošle zlý ťah — overí radu a hlášku pri chybe. Snímky: koniec každej časti,
 // začiatok ďalšej, lobby s „Pokračovať vo výučbe“; výpis do <vystup>/priebeh.json.
 
@@ -75,6 +77,8 @@ const STAV_KLUCOV = `(kluce) => kluce.map((k) => {
   if (k === "spoje-lokality") els = [...document.querySelectorAll(".linia .linia-skupina.lokalita .kl-slot.kl-aktivna")];
   else {
     els = [...document.querySelectorAll('[data-vyucba="' + k + '"]')];
+    // NA EX! bez vybranej karty nesvieti zámerne (Vyucba.tsx) — svieti karta; kľúč sa nehodnotí.
+    if (k === "tlacidlo:naex" && els.length > 0 && els.every((e) => e.getAttribute("aria-disabled") === "true")) return [k, 1, true];
     if (els.length === 0 && k === "bitka-ucet") els = [...document.querySelectorAll(".jbar-odhad")];
     if (els.length === 0 && k.includes(":")) {
       const z = k.slice(0, k.indexOf(":")), id = k.slice(k.indexOf(":") + 1);
@@ -147,6 +151,13 @@ try {
   };
   const sprava = (): Promise<SpravaVyucby | null> => js<SpravaVyucby | null>("window.__naex?.vyucba ?? null");
   const posliWs = (msg: unknown): Promise<unknown> => js(`window.__naex.ws.send(${JSON.stringify(JSON.stringify(msg))})`);
+  /** Enter ako od hráča (dôveryhodná udalosť) — výučba ho berie ako „ďalej“, na konci časti ako hlavné tlačidlo. */
+  const enter = async (): Promise<void> => {
+    await posli("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await posli("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+  };
+  /** O koľko px je stránka vyššia než okno — stôl sa má zmestiť bez posúvania. */
+  const pretecie = (): Promise<number> => js<number>("document.documentElement.scrollHeight - window.innerHeight");
   const klik = (selektor: string): Promise<boolean> => js<boolean>(`(() => { const b = document.querySelector(${JSON.stringify(selektor)}); if (!b || b.disabled) return false; b.click(); return true; })()`);
   /**
    * Medziobrazovky a Počítadlá (bitka, Pitka) zatvára hráč klikom — inak výučba čaká. Vráti, či niečo zavrel.
@@ -192,7 +203,16 @@ try {
   await js("fetch('/api/vyucba/znova',{method:'POST',headers:{'x-naex':'1'}}).then(r=>r.status)");
   await posli("Page.navigate", { url: `${zaklad}/hra` });
   await pockaj(3000);
-  if (!(await klik('[data-vyucba-vstup="zacat"]'))) throw new Error("V lobby nie je tlačidlo „Začať výučbu“.");
+  // „Začať výučbu“ skutočnou myšou — myš potom stojí nad stolom ako u hráča. Jej lupa karty zakryla
+  // v playteste 20261030 bublinu prvého kroku; tu sa zapíše, či sa otvorila.
+  const zacat = await js<{ x: number; y: number } | null>(
+    `(() => { const b = document.querySelector('[data-vyucba-vstup="zacat"]'); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`,
+  );
+  if (zacat === null) throw new Error("V lobby nie je tlačidlo „Začať výučbu“.");
+  await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: zacat.x, y: zacat.y });
+  await posli("Input.dispatchMouseEvent", { type: "mousePressed", x: zacat.x, y: zacat.y, button: "left", clickCount: 1 });
+  await posli("Input.dispatchMouseEvent", { type: "mouseReleased", x: zacat.x, y: zacat.y, button: "left", clickCount: 1 });
+  let lupaPoVstupe = false;
 
   let s = await cakajNaZmenu(null, 10_000);
   let zlyTahVCasti = 0;
@@ -200,11 +220,13 @@ try {
     if (s.hotovo || s.krok === null) {
       const cast = s.koniecCasti ?? 0;
       priebeh.push({ koniecCasti: cast, dalsia: s.dalsiaCast, pripravujeme: s.pripravujeme });
-      // Dlhší text listuje „ďalej“; ponuka ďalšej časti je až na poslednej strane.
+      // Dlhší text listuje Enter (ako hráč, playtest výučby 20261030: kroky 69 a 132); ponuka ďalšej
+      // časti je až na poslednej strane.
       for (let k = 0; k < 15 && !(await js<boolean>("!!document.querySelector('[data-vyucba-koniec]')")); k++) {
-        await klik("[data-vyucba-dalej]");
+        await enter();
         await pockaj(300);
       }
+      if (!(await js<boolean>("!!document.querySelector('[data-vyucba-koniec]')"))) chybyStranky.push(`Koniec ${cast}. časti: Enter nedolistoval k ponuke.`);
       await foto(`koniec-casti-${cast}`);
       if (s.dalsiaCast === null && s.pripravujeme === null) break;
       // Po 2. časti (a po poslednej žiadanej) cez lobby: „Pokračovať vo výučbe“ spustí ďalšiu časť od začiatku.
@@ -217,8 +239,11 @@ try {
         await js("window.__naex.vyucba = null");
         s = await cakajNaZmenu(null, 15_000);
       } else {
-        if (!(await klik("[data-vyucba-dalsia-cast]"))) throw new Error("Na konci časti nie je „Pokračovať ďalšou časťou“.");
+        // Enter na poslednej strane = hlavné tlačidlo „Pokračovať ďalšou časťou“.
+        if (!(await js<boolean>("!!document.querySelector('[data-vyucba-dalsia-cast]')"))) throw new Error("Na konci časti nie je „Pokračovať ďalšou časťou“.");
+        await enter();
         s = await cakajNaZmenu(s, 10_000);
+        if (s === null) chybyStranky.push(`Koniec ${cast}. časti: Enter nespustil ďalšiu časť.`);
       }
       if (s?.krok !== null && s?.krok !== undefined) await foto(`zaciatok-casti-${s.krok.cast.cast}`);
       continue;
@@ -232,6 +257,10 @@ try {
       await pockaj(400);
     }
     const zaznam: Record<string, unknown> = { i: krok.index, id: krok.id, kto: krok.kto, cast: krok.cast.cast };
+    if (krok.index <= 2 && (await js<boolean>("!!document.querySelector('.lupa')"))) {
+      zaznam.lupa = true;
+      lupaPoVstupe = true;
+    }
     if (kontrola) {
       // Kľúč sedí, keď jeho prvok svieti, alebo leží v svietiacom či ho obsahuje (zóna s presnejším
       // zvýraznením ostáva v tieni); neznámy = klient preň nemá na stole žiadny prvok.
@@ -241,6 +270,8 @@ try {
       const nesvieti = stav.filter(([, n, lit]) => n > 0 && !lit).map(([k]) => k);
       if (nezname.length > 0) zaznam.nezname = nezname;
       if (nesvieti.length > 0) zaznam.nesvieti = nesvieti;
+      const px = await pretecie();
+      if (px > 0) zaznam.pretecie = px;
     }
     priebeh.push(zaznam);
     if (kontrola && fotoKrokov.has(krok.id)) await foto(`krok-${krok.id}`);
@@ -255,8 +286,40 @@ try {
         zaznam.zlyTah = nove;
         await foto(`zly-tah-cast-${krok.cast.cast}`);
       }
-      await posliWs({ type: "cmd", cmd: krok.ocakava });
+      // Kšeft vily a NA EX hrá myšou cez tlačidlá stola — tie sa v playteste 20261030 zasekli; ostatné
+      // ťahy idú cez WebSocket. Keď klik krok neposunie, pošle ťah cez WebSocket a zapíše to.
+      const c = krok.ocakava as { type?: string; uid?: number; elderId?: string; kSebe?: boolean } | null;
+      let klikom = false;
+      if (c?.type === "kseft" && c.elderId !== undefined) {
+        await klik('[data-vyucba="tlacidlo:kseft"] > button');
+        await pockaj(400);
+        if (fotoKrokov.has(krok.id)) await foto(`krok-${krok.id}-ponuka`);
+        klikom = await klik(`[data-vyucba="kseft:${c.elderId}:${c.kSebe === true ? 1 : 0}"]`);
+      } else if (c?.type === "naex" && c.uid !== undefined) {
+        await klik(`.linia [data-vyucba-uid="${c.uid}"]`);
+        await pockaj(500);
+        if (fotoKrokov.has(krok.id)) await foto(`krok-${krok.id}-vybrana`);
+        klikom = await klik('[data-vyucba="tlacidlo:naex"]:not([aria-disabled="true"])');
+      }
+      if (klikom) {
+        const po = await cakajNaZmenu(s, 4_000);
+        if (po === null) {
+          zaznam.klikNezabral = true;
+          await posliWs({ type: "cmd", cmd: krok.ocakava });
+        } else zaznam.klikom = true;
+      } else {
+        if (c?.type === "kseft" || c?.type === "naex") zaznam.klikNezabral = true;
+        await posliWs({ type: "cmd", cmd: krok.ocakava });
+      }
     } else if (krok.kto === "otazka") {
+      // Enter na otázke odpoveď nevyberie (prvá sa ráta), len blikne možnosťami — dlhšia otázka ním
+      // najprv listuje (strana „1/2“).
+      const strana = await js<string | null>("document.querySelector('[data-vyucba-bublina] .mel-cislo-strany')?.textContent ?? null");
+      const listuje = strana !== null && strana.split("/")[0] !== strana.split("/")[1];
+      await enter();
+      await pockaj(250);
+      if (await js<boolean>("!!document.querySelector('.kviz-odpoved')")) zaznam.enterOdpovedal = true;
+      if (!listuje && !(await js<boolean>("!!document.querySelector('.vyucba-moznosti.napoveda')"))) zaznam.enterBezNapovedy = true;
       // Možnosti po poradí: zlá → späť na otázku, kým nepríde správna; potom ďalej.
       const pocet = await js<number>("document.querySelectorAll('.vyucba-moznost').length");
       for (let m = 0; m < pocet; m++) {
@@ -295,6 +358,15 @@ try {
   console.log(`Krokov ${priebeh.filter((p) => p.i !== undefined).length}, tichých ${priebeh.filter((p) => p.ticho === true).length}, zaseknutých ${zaseknute.length}, s nesvietiacim kľúčom ${nesvieti.length}.`);
   for (const p of nesvieti) console.log(`  ${String(p.id)}: ${p.nezname === undefined ? "" : `NEZNÁME ${JSON.stringify(p.nezname)} `}${p.nesvieti === undefined ? "" : `nesvieti ${JSON.stringify(p.nesvieti)}`}`);
   for (const p of zaseknute) console.log(`  ZASEKNUTÉ ${String(p.id)}`);
+  const klikom = priebeh.filter((p) => p.klikom === true).map((p) => String(p.id));
+  const nezabral = priebeh.filter((p) => p.klikNezabral === true).map((p) => String(p.id));
+  console.log(`Myšou (Kšeft vily, NA EX): ${klikom.length} ${JSON.stringify(klikom)}${nezabral.length > 0 ? `, KLIK NEZABRAL ${JSON.stringify(nezabral)}` : ""}.`);
+  const kvizy = priebeh.filter((p) => p.kto === "otazka");
+  const zleKvizy = kvizy.filter((p) => p.enterOdpovedal === true || p.enterBezNapovedy === true).map((p) => String(p.id));
+  console.log(`Enter v kvíze: ${kvizy.length} otázok${zleKvizy.length > 0 ? `, ZLE ${JSON.stringify(zleKvizy)}` : " bez odpovede, s nápovedou"}.`);
+  const pretecene = priebeh.filter((p) => typeof p.pretecie === "number").map((p) => `${String(p.id)} +${String(p.pretecie)} px`);
+  console.log(`Lupa karty po vstupe z lobby (myš stojí): ${lupaPoVstupe ? "OTVORENÁ" : "nie"}.`);
+  console.log(`Stránka vyššia než okno: ${pretecene.length === 0 ? "nikde" : pretecene.join(", ")}.`);
   console.log(`Konce častí: ${JSON.stringify(priebeh.filter((p) => p.koniecCasti !== undefined))}`);
   console.log(`Zavreté vrstvy: ${zavrete}. Hlášky pri chybe: ${hlasky.length}, chyby servera ${chybyServera.length}, chyby stránky ${chybyStranky.length}.`);
   for (const c of chybyStranky.slice(0, 10)) console.log(`  STRÁNKA ${c}`);
