@@ -62,13 +62,9 @@
   margin: 0;
   padding: 14px 12px 10px;
   list-style: none;
-  border-radius: 12px;
-  /* Korková doska: teplá plocha s jemným zrnom z dvoch prechodov. */
-  background:
-    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--akcent-tmavy) 16%, transparent) 0 2px, transparent 3px) 0 0 / 23px 19px,
-    radial-gradient(circle at 70% 60%, color-mix(in srgb, var(--pozadie) 40%, transparent) 0 1.5px, transparent 2.5px) 0 0 / 17px 21px,
-    color-mix(in srgb, var(--akcent-tmavy) 26%, var(--plocha-2));
-  border: 3px solid color-mix(in srgb, var(--akcent-tmavy) 45%, var(--okraj));
+  /* Lístky ležia priamo na stole — korkovú dosku za nimi Michal nechcel (2026-10-30). */
+  background: none;
+  border: 0;
 }
 
 .nastenka-listok {
