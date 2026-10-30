@@ -102,7 +102,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
       aria-modal="true"
       aria-label={`Bitka: ty ${cislo[ja]}, ${mena[su]} ${cislo[su]}`}
       onClick={(e) => {
-        if (!(e.target as HTMLElement).closest(".rk-dalej")) dobehni();
+        if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-rezim")) dobehni();
       }}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -209,11 +209,11 @@ export interface PocitadloSLiniouProps {
 
 /**
  * Výška vrstvy bez kariet a jeden riadok rekapitulácie (px). Nízke okno má kompaktné
- * rozloženie a široké nízke okno skóre a Ďalej vedľa tabuľky (hra.css).
+ * rozloženie a široké nízke okno skóre, Ďalej, súčet a špaky vedľa tabuľky (hra.css).
  */
-function rozmeryVrstvy(vyska: number, sirka: number): { readonly pevne: number; readonly riadok: number } {
-  if (vyska >= 860) return { pevne: 330, riadok: 42 };
-  return sirka >= 1000 ? { pevne: 110, riadok: 29 } : { pevne: 250, riadok: 29 };
+function rozmeryVrstvy(vyska: number, sirka: number): { readonly pevne: number; readonly riadok: number; readonly spakyVedla: boolean } {
+  if (vyska >= 860) return { pevne: 330, riadok: 42, spakyVedla: false };
+  return sirka >= 1000 ? { pevne: 110, riadok: 29, spakyVedla: true } : { pevne: 250, riadok: 29, spakyVedla: false };
 }
 
 /** Počítadlo s líniou z okamihu bitky: tvoja strana od lokality doľava, súperova doprava. */
@@ -227,8 +227,8 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
     ...stol.strany[su],
   ];
   // Karty sa zmestia na šírku aj s rekapituláciou na výšku — notebook 1366×650 bez scrollovania.
-  const { pevne, riadok } = rozmeryVrstvy(window.innerHeight, window.innerWidth);
-  const vyskaKariet = window.innerHeight - pevne - (rekap === null ? 0 : riadok * riadkovRekapitulacieBitky(rekap));
+  const { pevne, riadok, spakyVedla } = rozmeryVrstvy(window.innerHeight, window.innerWidth);
+  const vyskaKariet = window.innerHeight - pevne - (rekap === null ? 0 : riadok * riadkovRekapitulacieBitky(rekap, spakyVedla));
   const sirka = Math.max(36, Math.min(110, Math.floor((window.innerWidth - 120) / Math.max(1, poradie.length)), Math.floor(vyskaKariet / 1.4)));
   const rad = poradie.map((pl) => ({
     uid: pl.card.uid,
