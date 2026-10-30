@@ -65,14 +65,32 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
 <body>
 <main>
 <h1>Povery — lepšia integrácia</h1>
-<p class="mini">brainstorming · verzia 1 · 2026-10-30 · zadanie Michala z interview k revízii starších · pravidlá ani kód sa nemenia · vetva <code>napady/starsi-revizia</code> · nadväzuje na <code>docs/napady/starsi-revizia.html</code> (rozhodnutia o väzňovi, udržaní, priazniach)</p>
+<p class="mini">brainstorming · verzia 2 (rozhodnuté) · 2026-10-30 · zadanie Michala z interview k revízii starších · pravidlá ani kód sa nemenia · vetva <code>napady/starsi-revizia</code> · nadväzuje na <code>docs/napady/starsi-revizia.html</code> (rozhodnutia o väzňovi, udržaní, priazniach)</p>
 
 <div class="box zv">
   <p><b>Michal:</b> „Keďže sú Povery ako mäkké poškodenie nie úplne intuitívne, možno by sme ich mohli implementovať nejako lepšie… napríklad za každú efektívnu Poveru by hráč znížil silu vybranej priazne.“</p>
-  <p><b>V skratke:</b> Michalov nápad je zo všetkých variantov najkoherentnejší s novým svetom starších (udržanie, väzeň, priazne pre porazeného). Povera prestane byť „poškodením, ktoré nebije“ a stane sa <b>klebetou proti priazni</b>: marker sa nepohne (strach ostáva), len priazeň súpera v tejto bitke stratí silu. Mäkké poškodenie, strop podľa Dlhov aj „porazený drží prebytok“ zaniknú, §9.3 a §9.4 sa skrátia. Riziko je jedno: Povera bez cieľa (súper bez priazne) je hluchá, a priazne má spravidla porazený.</p>
+  <p><b>V skratke (pôvodný rozbor):</b> Michalov nápad je zo všetkých variantov najkoherentnejší s novým svetom starších (udržanie, väzeň, priazne pre porazeného). Povera prestane byť „poškodením, ktoré nebije“ a stane sa <b>klebetou proti priazni</b>: marker sa nepohne (strach ostáva), len priazeň súpera v tejto bitke stratí silu. Mäkké poškodenie, strop podľa Dlhov aj „porazený drží prebytok“ zaniknú, §9.3 a §9.4 sa skrátia. Riziko je jedno: Povera bez cieľa (súper bez priazne) je hluchá, a priazne má spravidla porazený.</p>
+</div>
+
+<div class="box rec" id="rozhodnute">
+  <h2 style="margin-top:0;border:0;padding:0">Rozhodnuté: Výpožička priazne (Michal 2026-10-30)</h2>
+  <p>Michal po interview upresnil svoj nápad a rozhodol otázky V1–V6 v chate. Toto je <b>záväzné znenie pre Developera</b>; možnosti nižšie ostávajú ako podklad. Nahrádza odpovede na P1–P4.</p>
+  <ol class="kroky">
+    <li><b>Krok bitky „Povery a Pohoršenie“</b> (dnešný krok 2): najprv Povery, potom Pohoršenie (V6 B). Povery tak zasiahnu aj Abstinenta.</li>
+    <li><b>Vyrušenie s Vierou ako dnes</b> (V4 A): <code>cancel = min(moja Viera, súperove Povery)</code>, obom sa odpočíta. Zvyšná Viera tlmí tuhé v kroku poškodenia ako doteraz.</li>
+    <li><b>Každá zvyšná Povera posunie silu priazne jedného staršieho o jeden stupeň k svojmu majiteľovi</b>, bez ohľadu na zónu — žiadne prahy 1 / 2 / 3, jedna Povera = jeden stupeň. <b>Marker sa nehýbe</b>, strach ani udržanie sa nemenia. Platí do konca kola (poškodenie, exekúcia, priazne po bitke).</li>
+    <li><b>Čo Povera smie:</b> znížiť súperovu priazeň (2 → 1 → 0), preklopiť ju v môj prospech (0 → moja 1), <b>požičať si</b> priazeň staršieho v strede (V1 A: 0 → moja 1), <b>zosilniť vlastnú</b> (V2 A: moja 1 → 2). Strop <b>3</b> oboma smermi (V3 A).</li>
+    <li><b>Poradie</b> (V5 A): obranca rozdá všetky svoje Povery, potom útočník, ktorý obrancove vidí. Povery oboch hráčov na toho istého staršieho pôsobia proti sebe (každá o stupeň k svojmu majiteľovi).</li>
+    <li>Potom <b>Pohoršenie</b> ako dnes: body posunu s novou cenou, aj body z Abstinenta — už s upravenou silou.</li>
+  </ol>
+  <p><b>Výpočet pre jadro:</b> klebety sú na staršom uložené ako <i>posun o n stupňov k hráčovi X</i> (nie pevné číslo), lebo Pohoršenie môže marker po Poverách ešte pohnúť. Účinná sila priazne staršieho pre hráča = sila z markera ± klebety, orezaná na −3 … +3, ráta sa pri každom použití priazne v tomto kole. Po kole klebety zaniknú.</p>
+  <p><b>Dôsledky:</b> mäkké poškodenie, celkové poškodenie a strop podľa Dlhov <b>zanikajú</b>; <b>prebytok = rozdiel tuhého a drží ho víťaz</b> (prípad „porazený drží prebytok“ zaniká, §9.4 sa skráti). Na jednu bitku môže mať priazeň aj hráč, ktorého sa starší bojí — výnimka z „priazeň a strach nikdy tomu istému“, platná len v kole. Pohoršenie je dlhodobá politika (marker, strach, udržanie, drahé), Povera jednorazová klebeta (lacná, len na kolo). Povera nikdy nie je hluchá (vždy sa dá požičať od staršieho v strede). Väzeň priazeň nemá, Povery naň nemieria (po kroku 2 revízie starších). 2 na 2: rozdeľuje kapitán.</p>
+  <p><b>Otvorené (P5, P6):</b> nový text Čiernej mačky („Tvoje Povery sa Vierou nerušia“ alebo „posúvajú o 2“) a pojem (Povera „ohovára“ staršieho vs. premenovať akciu na Klebeta). Kým Michal nerozhodne, navrhujem „nerušia sa Vierou“ a ponechať názov Povera.</p>
+  <p class="mini">Stratég po implementácii: ako často hráči Povery požičiavajú zo stredu vs. preklápajú súperove; „vedúci pred finále vyhrá“ do 80 %; výhra hráča s viac Poverami v línii; rebrík.</p>
 </div>
 
 <nav class="skupiny" aria-label="Časti">
+  <a href="#rozhodnute">Rozhodnuté</a>
   <a href="#dnes">Dnes</a>
   <a href="#preco">Prečo to nesedí</a>
   <a href="#moznosti">Možnosti</a>
