@@ -10,6 +10,7 @@
 //   &stop=kolo     začiatok kola &i=k
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
 //                  z prebytku (stopa v línii starších)
+//   &stop=posuny   súper posúva starších po bitke, dohrá sa po stavbu šenku ďalšieho kola (hráč ?ja vyberá)
 //   &stop=prebytok krok Prebytok po bitke, keď posúva hráč ?ja (náhľad posunu v línii starších)
 //   &stop=pohorsenie krok Pohoršenie v bitke, keď rozdeľuje hráč ?ja (&i=k: k-té také, od 0)
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
@@ -174,6 +175,22 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: { ...s, hraci: ja === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] }, dohraj: [] });
     }
     if (stop === "prebytok" && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
+    // Súper rozdeľuje po bitke a stôl to vidí; dohrá sa po stavbu šenku ďalšieho kola, kde
+    // vyberá hráč ?ja — starší ju nesmú zakryť (Michal 2026-10-30).
+    const bsu = s.bitkaStav;
+    if (stop === "posuny" && s.faza === "bitka" && bsu !== null && bsu.caka === (ja === 0 ? 1 : 0) && (bsu.krok === "pohorsenie" || bsu.krok === "prebytok")) {
+      const dohraj: Krok[] = [];
+      let x = s;
+      let r2 = rng;
+      for (let k = 0; k < 400 && x.koniec === null; k++) {
+        if (x.kolo > s.kolo && x.faza === "draft" && x.draftStav?.krok === "stavba" && x.draftStav.vyber[ja] === null) return najdene({ zaciatok: s, dohraj });
+        const u = tahy(data, x, r2, n + 1 + k);
+        if (u === null) break;
+        r2 = u.rng;
+        dohraj.push({ stav: x, cmd: u.cmd, kto: u.kto });
+        x = apply(data, x, u.cmd, u.kto).state;
+      }
+    }
     if (stop === "pohorsenie" && s.faza === "bitka" && s.bitkaStav?.krok === "pohorsenie" && s.bitkaStav.caka === ja && (s.bitkaStav.pohorsenieZostava[ja] ?? 0) > 0) {
       if (pohorseni++ === i) return najdene({ zaciatok: s, dohraj: [] });
     }

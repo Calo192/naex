@@ -1,5 +1,5 @@
 // Texty o staršom na jednom mieste (Michal 2026-10-28: „každá informácia na JEDNOM mieste“).
-// Línia starších, lupa, dlaždice v baroch aj legenda skladajú vety o priazni, strachu
+// Línia starších, lupa, dlaždice v baroch aj titulok stupnice skladajú vety o priazni, strachu
 // a posunoch odtiaľto — keď sa zmení, kedy a koľko starší platí za strach, mení sa len tu.
 
 import type { ElderState, Favour, Klebety, PlayerId, PosunMarkera } from "@naex/core";
@@ -75,29 +75,9 @@ export function titulStrachuSpolu(pocet: number, ja: boolean, spaky: number, naU
   return `${pocet} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): ${vetaVyplaty(ja, spaky, naUdrzanie, true)}`;
 }
 
-/** Ako starší platí za strach (v8.3) — legenda stupnice a lupa staršieho. */
+/** Ako starší platí za strach (v8.3) — titulok stupnice a lupa staršieho. */
 export const PRAVIDLO_STRACHU =
   "Bojí sa toho druhého. Stupeň, kam sa marker dostal, zaplatí až vtedy, keď sa na ňom marker udrží do konca nasledujúceho kola: žltá 1, oranžová 2, červená 3 (zo stredu po červenú spolu 6) — tomu, koho sa bojí, nech bitku vyhrá ktokoľvek. Každý stupeň raz; odtlačený stupeň nič a ústup k stredu zaplatené stupne zmaže. Vo finále nové stupne nič, udržané z posledného kola sa vyplatia po finále. V sivom strede nikomu.";
-
-/** Príklad do legendy stupnice: jeden starší mimo stredu z tejto partie. */
-export function prikladStrachu(o: {
-  readonly meno: string;
-  readonly zona: number;
-  readonly ty: boolean;
-  readonly super: string;
-  readonly sila: number;
-  readonly ucinok: string;
-  /** Udržané nezaplatené stupne (strachNaVyplatu) — koľko dá na konci kola. */
-  readonly spaky: number;
-  /** Nové stupne (strachNaUdrzanie) — zaplatí ich koniec ďalšieho kola, ak sa udržia. */
-  readonly naUdrzanie: number;
-}): string {
-  const { meno, zona, ty, super: su, sila, ucinok, spaky, naUdrzanie } = o;
-  return (
-    `${meno} je na ${ty ? `strane ${su}` : "tvojej strane"} (${textStupna(zona)}). ${ty ? `Priazeň +${sila} má ${su}` : `Priazeň +${sila} máš ty`} (${ucinok}). ` +
-    `Bojí sa ${ty ? "teba" : su}: ${vetaVyplaty(ty, spaky, naUdrzanie)}`
-  );
-}
 
 /** Čo prinesie vydesenie (stupeň 3, červená) — lupa staršieho. */
 export function textVydesenia(fav: Favour): string {
@@ -147,3 +127,13 @@ export function textPovery(elder: Pick<ElderState, "marker" | "elderId">, ja: Pl
 
 /** Cena posunu markera o pole (v8.2, Michal 2026-10-30) — Pohoršenie aj prebytok. */
 export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4";
+
+/**
+ * Ako čítať stupnicu — titulok na stupnici staršieho. Predtým legenda za tlačidlom „? stupnica“,
+ * ktoré zaberalo miesto starším (Michal 2026-10-30).
+ */
+export const POPIS_STUPNICE =
+  "Tvoja polovica stupnice je vždy vľavo, súperova vpravo. Stupne od stredu: 0 sivý stred (pokojný), 1 žltá (znepokojený), 2 oranžová (vystrašený), 3 červená (vydesený). " +
+  "♥ Priazeň má ten, na koho polovici marker leží — sila = stupeň (+1 / +2 / +3). " +
+  PRAVIDLO_STRACHU +
+  ` Posúva ho Nakladačka po bitke a Pohoršenie — od seba (desíš) alebo k sebe (upokojuješ); ${CENA_POLA}.`;

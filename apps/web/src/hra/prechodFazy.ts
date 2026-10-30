@@ -143,3 +143,37 @@ export function medziobrazovka(
       return null;
   }
 }
+
+/** Krok, ktorý sa robí na staršom (rozdeľovanie, Povery, patronát) — vtedy stôl ukazuje líniu starších. */
+export interface KrokNaStarsich {
+  readonly typ: "povery" | "pohorsenie" | "prebytok" | "patronat";
+  readonly kto: PlayerId;
+}
+
+export function krokNaStarsich(view: Pick<ClientState, "koniec" | "faza" | "bitkaStav" | "draftStav">): KrokNaStarsich | null {
+  if (view.koniec !== null) return null;
+  const bs = view.bitkaStav;
+  if (view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok" || bs.krok === "povery")) {
+    return { typ: bs.krok, kto: bs.caka };
+  }
+  if (view.faza === "draft" && view.draftStav?.krok === "patronat") return { typ: "patronat", kto: view.draftStav.naTahu };
+  return null;
+}
+
+/**
+ * Hráč má ťah, ktorý sa robí na stole — voľba cieľa na nástenke, stavba a branie šenku,
+ * Zhromaždenie, Pitka, kroky bitky na kartách. Línia starších by ho zakryla.
+ */
+export function tahNaStole(view: Pick<ClientState, "koniec" | "faza" | "bitkaStav" | "draftStav">, somNaTahu: boolean): boolean {
+  return somNaTahu && view.koniec === null && krokNaStarsich(view) === null;
+}
+
+/**
+ * Či stôl ukazuje líniu starších (bez pauzy, ťahania a počítadla bitky, tie rieši stôl): len
+ * v kroku na staršom, po kliku na Starší a vo výučbe. Po súperovom posune markerov ani po
+ * skončenom kroku sa sama neotvorí — hráč na nej zastal, hoci mal ťah na stole (Michal 2026-10-30:
+ * pred stavbou šenku); posuny neskôr ukáže animácia.
+ */
+export function starsiNaStole(o: { readonly krok: boolean; readonly nahliadnutie: boolean; readonly rucne: boolean; readonly vyucba: boolean }): boolean {
+  return o.krok ? !o.nahliadnutie : o.rucne || o.vyucba;
+}

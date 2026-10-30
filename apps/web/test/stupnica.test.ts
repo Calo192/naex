@@ -8,7 +8,7 @@ import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { PosunMarkera } from "@naex/core";
 import { loadGameData, setupGame } from "@naex/core";
 import { stopaStarsieho } from "../src/hra/LiniaStarsich.tsx";
-import { CENA_POLA, PRAVIDLO_STRACHU, nahladStrachu, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
+import { CENA_POLA, POPIS_STUPNICE, PRAVIDLO_STRACHU, nahladStrachu, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
@@ -83,5 +83,13 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
 
   it("cena poľa podľa zóny v legende stupnice (v8.2); pokyn Nakladačky nahradila bublina rozdeľovania (mock C)", () => {
     expect(CENA_POLA).toBe("pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4");
+  });
+});
+
+describe("titulok stupnice namiesto „? stupnica“ (Michal 2026-10-30)", () => {
+  it("povie, ktorá polovica je tvoja, priazeň, strach aj cenu posunu", () => {
+    expect(POPIS_STUPNICE).toMatch(/Tvoja polovica stupnice je vždy vľavo/);
+    expect(POPIS_STUPNICE).toContain(PRAVIDLO_STRACHU);
+    expect(POPIS_STUPNICE).toContain(CENA_POLA);
   });
 });
