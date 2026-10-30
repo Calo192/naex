@@ -1795,6 +1795,23 @@ export function HernaPlocha({
   const cielPanelRef = useRef<HTMLElement>(null);
   const draftPanelRef = useRef<HTMLElement>(null);
   const liniaObalRef = useRef<HTMLDivElement>(null);
+  // Pokyn v toku (výučba, pokyn s kartami) leží stredom na hrane stola — CSS potrebuje jeho výšku
+  // (--pilulka-h) a vráti, o koľko ustúpi obsah plste (--pilulka-presah); o to sa zmenší nástenka.
+  const [presahPilulky, setPresahPilulky] = useState(0);
+  const pilulkaRef = useCallback((el: HTMLDivElement | null) => {
+    const obal = el?.parentElement;
+    if (el === null || obal === null || obal === undefined) return;
+    const ro = new ResizeObserver(() => {
+      obal.style.setProperty("--pilulka-h", `${el.getBoundingClientRect().height}px`);
+      setPresahPilulky(Math.round(parseFloat(getComputedStyle(obal).getPropertyValue("--pilulka-presah")) || 0));
+    });
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      obal.style.removeProperty("--pilulka-h");
+      setPresahPilulky(0);
+    };
+  }, []);
   const posledneRolovanie = useRef(0);
   useEffect(() => {
     const zaznamenaj = (): void => {
@@ -5165,7 +5182,7 @@ export function HernaPlocha({
     view.lokalityVHre.length +
     (view.nastenka.some((b) => jeFinaleNaNastenke(b)) || view.ciel?.typ === "finale" ? 0 : 1) +
     1;
-  const nastenkaRozmer = rozmerNastenky(vnutroPlste.w - 20, vnutroPlste.h - 26 - 48, listkovNastenky, volbaNaStole ? view.lokalityVHre.length : 0);
+  const nastenkaRozmer = rozmerNastenky(vnutroPlste.w - 20, vnutroPlste.h - 26 - 48 - presahPilulky, listkovNastenky, volbaNaStole ? view.lokalityVHre.length : 0);
   const sirkaNastenky = nastenkaRozmer.sirkaKarty;
   const sirkaVolby = nastenkaRozmer.sirkaVyberu;
   // Voľba cieľa na nástenke: lokalita, o ktorú sa ešte nehralo, je karta na výber — klik ju dá
@@ -5578,7 +5595,7 @@ export function HernaPlocha({
             {/* Výučba po bitke hovorí o starších, hoci partia stojí pri voľbe cieľa 2. kola — „klikni na
                 lokalitu“ by hráča posielal na ťah, ktorý výučba nepustí. */}
             {!ukazStarsich && (
-              <div className={`linia-stav${pokyn?.jednotny === true ? " jednotna" : ""}`} role="status" aria-live="polite" tabIndex={0}>
+              <div ref={pilulkaRef} className={`linia-stav${pokyn?.jednotny === true ? " jednotna" : ""}`} role="status" aria-live="polite" tabIndex={0}>
                 {(pokyn === null || pokyn.nadpis !== null) && (
                   <strong className="pilulka-nadpis">
                     {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}

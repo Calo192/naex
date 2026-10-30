@@ -4891,12 +4891,22 @@ button.auto-hotovo-odkaz {
   outline-offset: 2px;
 }
 
+/* Registrovaná dĺžka: dedí sa ako px a HernaPlocha ju prečíta (nástenka sa o ňu zmenší). */
+@property --pilulka-presah {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* ---- plsť stola: línia kariet a nad ňou línia starších (#68) ---- */
 .stol-plst {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 12px 10px 10px;
+  /* --pilulka-presah: o koľko pokyn v toku (výučba, pokyn s kartami) siaha pod hranu stola
+     ďalej než 12 px (rezerva plste ako pod jednoriadkovou pilulkou) — o toľko ustúpi obsah
+     plste, aby pokyn neprekryl karty. */
+  padding: calc(12px + var(--pilulka-presah, 0px)) 10px 10px;
   border-radius: 18px;
   background:
     radial-gradient(ellipse at center, var(--stol-svetlo), transparent 70%),
@@ -6986,6 +6996,24 @@ button.lsr-pole.ciel:focus-visible {
     padding-top: 22px;
   }
 
+  /* Pokyn s kartami ostáva v toku, ale hrana stola ide jeho stredom (Michal 2026-10-21: pečiatky
+     na hrane stola) — predtým zasahoval do stola len 16 px a visel nad ním. --pilulka-h meria
+     HernaPlocha; −1 px = stred 2 px okraja plste. Dolná polovica panela leží v plsti, jej obsah
+     ustúpi o --pilulka-presah. */
+  .linia-stav:has(.zberatel-ponuka, .vizia-karta) {
+    margin-bottom: calc(var(--pilulka-h, 32px) / -2 - 1px);
+  }
+
+  .linia-obal:has(.zberatel-ponuka, .vizia-karta) {
+    --pilulka-presah: max(0px, var(--pilulka-h, 0px) / 2 - 12px);
+  }
+
+  /* Vrstvy na plsti sú absolute — padding plste ich neposunie, okraj áno (top aj bottom sú dané,
+     vrstva sa o toľko zníži). */
+  .stol-plst > :is(.vrstva-fazy, .vrstva-starsich, .vrstva-nastenky) {
+    margin-top: var(--pilulka-presah, 0px);
+  }
+
   .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
     position: absolute;
     top: 0;
@@ -7298,7 +7326,7 @@ button.lsr-pole.ciel:focus-visible {
   /* Nad líniou len tenký riadok nadpisov krajov; počet na prebitie a strany pod lokalitou
      sú v nápovede kraja (PRIDAVOK_NOTEBOOK v HernaPlocha). */
   .linia-obal .stol-plst {
-    padding-top: 6px;
+    padding-top: calc(6px + var(--pilulka-presah, 0px));
   }
 
   .stol-plst > .linia {
