@@ -1206,7 +1206,7 @@ function RiadkyHrozby({
 }
 
 /** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
-function verdiktBitky({ damage, ja, vysledok, naSekeru, poslednaBitka, prebytokNaRozdelenie, rodJa = null }: BitkaPanelProps) {
+function verdiktBitky({ damage, ja, vysledok, poslednaBitka, prebytokNaRozdelenie, rodJa = null }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   // Remíza v6 (Michal 2026-10-26): rozhodnú Absťáky, potom Dlhy, inak sekera — tu len odhad z tuhého (PRAVIDLA §9.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);

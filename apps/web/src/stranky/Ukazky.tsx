@@ -2,7 +2,7 @@
 // ktorom beží hra (evaluateLine, computeDamage, battleOutcome).
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { CardInstance, GameData, LineEval, PlayerId } from "@naex/core";
+import type { CardInstance, GameData, LineEval } from "@naex/core";
 import { STUPNICA_HODNOTY, STUPNICA_ZONY, battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";

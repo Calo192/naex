@@ -2,7 +2,6 @@
 // (v5) sú v bodyPodmienok.tsx; scorecardy na stole kreslí LiniaStarsich.tsx (#69).
 
 import type { Favour } from "@naex/core";
-import { KONSTANTY } from "@naex/core";
 
 /** „+4“, „−2“, „0“. */
 export function znamienko(n: number): string {
