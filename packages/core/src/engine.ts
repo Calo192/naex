@@ -1157,7 +1157,8 @@ export function poskodenieBitky(data: GameData, s: VerejnyStav, sums: readonly [
   return computeDamage(stranyBitky(data, s, sums));
 }
 
-function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [ActionSums, ActionSums]): [BattleSide, BattleSide] {
+/** Vstupy bitky oboch strán (súčty, bonusy, priazne) — z nich computeDamage ráta poškodenie. */
+export function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [ActionSums, ActionSums]): [BattleSide, BattleSide] {
   const mody = ([0, 1] as const).map((p) => bitkaMody(data, s, p));
   const strana = (p: PlayerId): BattleSide => {
     const opp = opponentOf(p);
