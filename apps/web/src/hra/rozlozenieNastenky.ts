@@ -23,6 +23,45 @@ const VYBER_S_KARTOU = 84;
 /** Od koľkých lístkov smie nástenka ísť do dvoch radov. */
 export const DVA_RADY_OD = 10;
 
+/**
+ * Lístok lokality na výber (Leader 2026-10-30: na 1366 × 650 boli karty 105 px a efekt 5 px).
+ * Karta s čitateľným efektom by mala ~260 px, na takú výška stola nestačí — lístok preto
+ * nesie ilustráciu karty s akciami na hranách a pod ňou (pri širokom lístku vedľa nej) názov
+ * a efekt písmom stola. Ilustrácia sa smie orezať zhora a zdola, akcie sú v jej strede.
+ */
+export interface ListokNaVyber {
+  /** Šírka lístka v px. */
+  readonly sirka: number;
+  /** Najväčšia výška lístka v px — vyšší obsah zmenší ilustráciu. */
+  readonly vyska: number;
+  /** Text vedľa ilustrácie (široký a nízky lístok), inak pod ňou. */
+  readonly vedla: boolean;
+  /** Šírka karty, z ktorej je ilustrácia (= strana štvorca ilustrácie). */
+  readonly obraz: number;
+  /** Odohrané bitky sú krátke lístky (bez karty a účtenky) v dvoch radoch nad sebou. */
+  readonly kratkeBitky: boolean;
+}
+
+/** Text lístka na výber vedľa ilustrácie má aspoň toľko (px), inak ide pod ňu. */
+const TEXT_VEDLA_MIN = 150;
+const TEXT_VEDLA_MAX = 260;
+const LISTOK_VYBERU_MAX = 300;
+/** Pod touto šírkou sa efekt na lístku nezmestí čitateľne ani pod ilustráciu. */
+const LISTOK_VYBERU_MIN = 110;
+/** Najnižšia ilustrácia na lístku ako podiel jej šírky — akcie na hranách sú v strednej polovici. */
+export const OREZ_MIN = 0.6;
+/** Výška názvu a ~4 riadkov efektu pod ilustráciou (px). */
+const TEXT_POD_REZERVA = 84;
+/** Lístky na výber aspoň takto široké nechajú odohrané bitky v plnej podobe. */
+const LISTOK_PLNY_PRAH = 170;
+/** Šírky ostatných lístkov pri voľbe cieľa (px): odohraná bitka bez karty s účtenkou, krátka
+ *  bitka, finále bez karty a Koniec (pri --nk = 1). */
+const LISTOK_ODOHRANY = 132;
+const LISTOK_KRATKY = 84;
+const MEDZERA_KRATKYCH = 8;
+const LISTOK_FINALE = 60;
+const LISTOK_KONIEC = 138;
+
 export interface RozmerNastenky {
   /** Šírka karty lokality na lístku v px. */
   readonly sirkaKarty: number;
@@ -33,6 +72,8 @@ export interface RozmerNastenky {
   readonly rady: number;
   /** Lístkov v jednom rade. */
   readonly stlpcov: number;
+  /** Lístky lokalít na výber (voľba cieľa v jednom rade), inak null — karty ako doteraz. */
+  readonly vyber: ListokNaVyber | null;
 }
 
 const nkPre = (w: number): number => Math.min(NK_MAX, Math.max(1, w / ZAKLAD));
@@ -55,11 +96,15 @@ function najvacsia(sirka: number, vyska: number, listkov: number, rady: number):
 
 /**
  * Najväčšia karta, pri ktorej sa nástenka zmestí do plochy `sirka` × `vyska` (vnútro vrstvy
- * nástenky). `naVyber` = koľko z lístkov sú karty na výber (voľba cieľa) — tie nemajú
- * víťaza ani účtenku, preto smú byť vyššie, kým sa rad zmestí do šírky.
+ * nástenky). `naVyber` = koľko z lístkov sú lokality na výber (voľba cieľa) — tie sú lístky
+ * s čitateľným efektom (ListokNaVyber), ak sa dajú; `odohranych` = lístky odohraných bitiek.
  */
-export function rozmerNastenky(sirka: number, vyska: number, listkov: number, naVyber = 0): RozmerNastenky {
+export function rozmerNastenky(sirka: number, vyska: number, listkov: number, naVyber = 0, odohranych = 0): RozmerNastenky {
   const jeden = najvacsia(sirka, vyska, listkov, 1);
+  if (naVyber > 0) {
+    const s = sListkamiNaVyber(sirka, vyska, listkov, naVyber, odohranych, jeden);
+    if (s !== null) return s;
+  }
   const dva = listkov >= DVA_RADY_OD ? najvacsia(sirka, vyska, listkov, 2) : 0;
   // Dva rady len vtedy, keď v nich budú karty väčšie a čitateľné — inak jeden rad lístkov.
   const rady = dva > jeden && dva >= KARTA_MIN ? 2 : 1;
@@ -78,5 +123,39 @@ export function rozmerNastenky(sirka: number, vyska: number, listkov: number, na
     const zvysok = (sirka - 48 - (listkov - 1) * MEDZERA - (listkov - naVyber) * sirkaListka) * 0.94;
     sirkaVyberu = Math.max(zRadu, Math.floor(Math.min(SIRKA_MAX, podlaVysky, zvysok / naVyber)));
   }
-  return { sirkaKarty: w, sirkaVyberu, nk: Math.round(nk * 100) / 100, rady, stlpcov };
+  return { sirkaKarty: w, sirkaVyberu, nk: Math.round(nk * 100) / 100, rady, stlpcov, vyber: null };
+}
+
+/**
+ * Voľba cieľa s lístkami na výber v jednom rade. Ostatné lístky (odohrané bitky, finále,
+ * Koniec) sú bez kariet — karta s účtenkou pod ňou by bola vyššia než rad (Zberný dvor
+ * s Exekútorom). Keď by aj tak lokalitám na výber nechali málo miesta (finále dlhej hry),
+ * sú odohrané bitky krátke — bez účtenky, v dvoch radoch nad sebou.
+ */
+function sListkamiNaVyber(sirka: number, vyska: number, listkov: number, naVyber: number, odohranych: number, jeden: number): RozmerNastenky | null {
+  const nk = nkPre(jeden);
+  // Nad radom sú len popolníky (52 px pri --nk = 1) a okraje zoznamu.
+  const vyskaRadu = Math.floor(vyska - 20 - 60 * nk);
+  // Finále a Koniec (Koniec je vždy posledný).
+  const ostatnych = Math.max(0, listkov - naVyber - odohranych);
+  const koniec = ostatnych > 0 ? Math.round(LISTOK_KONIEC * nk) : 0;
+  const finale = Math.max(0, ostatnych - 1) * LISTOK_FINALE;
+  const listok = (sirkaOstatnych: number, poloziek: number): ListokNaVyber | null => {
+    // Rezerva 6 % na naklonené lístky — rad sa nesmie zalomiť.
+    const naListok = ((sirka - 48 - (poloziek - 1) * MEDZERA - sirkaOstatnych) * 0.94) / naVyber;
+    // Text pod ilustráciou: tá smie klesnúť na OREZ_MIN svojej šírky (akcie na hranách ostanú celé).
+    const pod = Math.floor(Math.min(LISTOK_VYBERU_MAX, naListok, (vyskaRadu - TEXT_POD_REZERVA) / OREZ_MIN));
+    const obrazVedla = Math.floor(Math.min(vyskaRadu, naListok - TEXT_VEDLA_MIN));
+    // Nízky stôl a málo lokalít: pod ilustráciou by ostala nevyužitá šírka — štvorec ilustrácie
+    // vo výške radu a text vedľa.
+    if (pod < Math.min(LISTOK_VYBERU_MAX, naListok) && obrazVedla >= vyskaRadu * 0.7)
+      return { sirka: obrazVedla + Math.floor(Math.min(TEXT_VEDLA_MAX, naListok - obrazVedla)), vyska: obrazVedla, vedla: true, obraz: obrazVedla, kratkeBitky: false };
+    return pod >= LISTOK_VYBERU_MIN ? { sirka: pod, vyska: vyskaRadu, vedla: false, obraz: pod, kratkeBitky: false } : null;
+  };
+  const plne = listok(odohranych * LISTOK_ODOHRANY + finale + koniec, listkov);
+  const stlpcovKratkych = Math.ceil(odohranych / 2);
+  const kratke = odohranych === 0 ? null : listok(stlpcovKratkych * LISTOK_KRATKY + (stlpcovKratkych - 1) * MEDZERA_KRATKYCH + finale + koniec, naVyber + ostatnych + 1);
+  const vyber = plne !== null && (plne.sirka >= LISTOK_PLNY_PRAH || kratke === null || kratke.sirka <= plne.sirka) ? plne : kratke === null ? null : { ...kratke, kratkeBitky: true };
+  if (vyber === null) return null;
+  return { sirkaKarty: 0, sirkaVyberu: vyber.obraz, nk: Math.round(nk * 100) / 100, rady: 1, stlpcov: listkov, vyber };
 }
