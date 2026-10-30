@@ -7,13 +7,19 @@ import { resolve } from "node:path";
 /** Model, ktorým vznikla celá tlačová sada (názvy zdrojových súborov). */
 export const MODEL = "Nano Banana (Gemini 2.5 Flash Image)";
 
-/** Štýlový chvost promptu — opis súčasných ilustrácií. */
+/**
+ * Jadro štýlu — doslova chvost Michalových najlepších promptov (Krčmárka, Veterinár, Kočovník,
+ * Finančná poradkyňa; Michal 2026-10-30). Neprepisovať ani nedopĺňať inými štýlovými slovami
+ * (cross-hatching, paleta…) — nové obrázky inak utekajú od pôvodnej sady.
+ */
+export const STYL_JADRO =
+  "no neon signs, no neon lights, dark gritty comic book style with heavy black outlines, grainy texture, " +
+  "moody dramatic lighting, muted vivid contrast colors, no gibberish text";
+
+/** Štýlový chvost promptu: jadro štýlu a pevné pravidlá obrazu (dym, ruky, predmety, typy postáv). */
 export const STYL =
-  "Gritty adult comic book illustration matching the reference images: bold black ink outlines, hand-drawn linework, " +
-  "cross-hatching and grainy texture in the shadows, muted dirty palette of browns, olive, slate blue and grey with one warm " +
-  "accent light, slightly grotesque caricatured expressive faces with realistic proportions, run-down post-socialist " +
-  "Slovak village atmosphere with cluttered worn details. Square composition, main subject centered. " +
-  "No text, no letters, no logos, no watermark, no frame, no border. " +
+  "realistic human face, " + STYL_JADRO + ". " +
+  "Square composition, main subject centered. No letters, no logos, no watermark, no frame, no border. " +
   // Pevné pravidlo Michala 2026-10-24 pre každý obrázok (styl.md): ľuďom sa dymilo z chrbta a z uší.
   "Smoke may come ONLY from a lit cigarette, from a cigarette resting in an ashtray, or from the mouth of a person exhaling it — " +
   "never from ears, backs, hair, clothes or out of thin air. " +

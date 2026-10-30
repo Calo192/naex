@@ -99,7 +99,7 @@ import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkci
 import { nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
-import { MODEL, REFERENCIE, REFERENCIE_PASU, STYL_PASU, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
+import { MODEL, REFERENCIE, STYL_JADRO, REFERENCIE_PASU, STYL_PASU, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
 import type { PartiaTempa } from "./tempo.ts";
 import { prehladTempa } from "./tempo.ts";
 import { doplnNahladyCezChrome } from "./nahlady.ts";
@@ -326,9 +326,8 @@ const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--
 const STYL_AVATARA =
   "Square portrait avatar, head and shoulders, subject centered and looking at the viewer. A rural Slovak villager who is half human, " +
   "half crude home-made robot: rusty metal plates, exposed wires, a glowing cybernetic eye — 'peasant AI anarchy'. " +
-  "Gritty adult comic book illustration matching the reference images: bold black ink outlines, cross-hatching, grainy texture, " +
-  "muted dirty palette of browns, olive, slate blue and grey with one warm bulb light, slightly grotesque caricatured expressive face, " +
-  "run-down post-socialist village interior. No text, no letters, no logos, no watermark, no frame, no border.";
+  "Realistic human face, run-down post-socialist village interior with deep shadows and low warm lamplight, " + STYL_JADRO + ". " +
+  "No letters, no logos, no watermark, no frame, no border.";
 const REFERENCIE_AVATARA = ["stamgast", "rapavy_fero", "teta_gizka"].map((b) => join("packages/server/seed/avatary/boti", `${b}.jpg`));
 
 /** GET /api/admin/stav-servera (StavServera v packages/server/src/api.ts). */
