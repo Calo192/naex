@@ -918,7 +918,7 @@
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Vyhral si o 3 poškodenia, BOHA jeho! Prebytok poškodenia znamená tvoju dominanciu v bitke a tým si buduješ respekt u starších. My to tu voláme „respekt“, ale v skutočnosti je to strach. Prebytok posúva starších k Štamgastovi, a ktorých, to si vyberá porazený. Štamgast si vybral Farára. Ten je zo sivej, kde sa nikto nikoho nebojí ako na farskej oslave, rovno v oranžovej: začína sa ťa báť a Štamgastovi prejavuje priazeň.",
+      "melichar": "Vyhral si o 3 poškodenia, BOHA jeho! Nakladačka znamená tvoju dominanciu v bitke a tým si buduješ respekt u starších. My to tu voláme „respekt“, ale v skutočnosti je to strach. Nakladačka posúva starších k Štamgastovi, a ktorých, to si vyberá porazený. Štamgast si vybral Farára. Ten je zo sivej, kde sa nikto nikoho nebojí ako na farskej oslave, rovno v oranžovej: začína sa ťa báť a Štamgastovi prejavuje priazeň.",
       "zvyraznit": [
         "starsi:farar"
       ]
@@ -926,7 +926,7 @@
     {
       "id": "i-cena-posunu",
       "kto": "info",
-      "melichar": "Prečo rovno do oranžovej? Políčko nie je zadarmo: zo sivej do žltej stojí 1, zo žltej do oranžovej 2, do červenej 3 a späť k stredu vždy o 1 viac. Štamgast vybral len Farára a ten išiel, kým prebytok stačil: 1 + 2 = 3.",
+      "melichar": "Prečo rovno do oranžovej? Políčko nie je zadarmo: zo sivej do žltej stojí 1, zo žltej do oranžovej 2, do červenej 3 a späť k stredu vždy o 1 viac. Štamgast vybral len Farára a ten išiel, kým Nakladačka stačila: 1 + 2 = 3.",
       "zvyraznit": [
         "starsi:farar",
         "starsi-stupnica"
@@ -935,7 +935,7 @@
     {
       "id": "i-oranzova",
       "kto": "info",
-      "melichar": "Oranžová. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2. Farárova priazeň je Exekútor: kým ju má Štamgast, exekúcia ti zhorí o dva Dlhy viac. Stupnica sa posunula, lebo si vyhral o 3 a ten prebytok dal Štamgast celý Farárovi. Za posunutého staršieho dostal cigaretu. Útecha pre porazených.",
+      "melichar": "Oranžová. Farár sa ťa bojí na druhom stupni a Štamgast má jeho priazeň sily 2. Farárova priazeň je Exekútor: kým ju má Štamgast, exekúcia ti zhorí o dva Dlhy viac. Stupnica sa posunula, lebo si vyhral o 3 a tú Nakladačku dal Štamgast celú Farárovi. Za posunutého staršieho dostal cigaretu. Útecha pre porazených.",
       "zvyraznit": [
         "starsi:farar",
         "bar:dlhy",
@@ -965,7 +965,7 @@
     {
       "id": "q-prebytok",
       "kto": "otazka",
-      "melichar": "Prečo prebytok z tvojej výhry rozdeľoval Štamgast?",
+      "melichar": "Prečo Nakladačku z tvojej výhry rozdeľoval Štamgast?",
       "moznosti": [
         {
           "text": "Prehral, tak si vyberá, ktoré priazne dostane.",
@@ -975,7 +975,7 @@
         {
           "text": "Lebo je na ťahu útočník.",
           "spravna": false,
-          "vysvetlenie": "Nie, prebytok rozdeľuje ten, kto prehral. Že je potom aj útočníkom, je len ďalšia smola."
+          "vysvetlenie": "Nie, Nakladačku rozdeľuje ten, kto prehral. Že je potom aj útočníkom, je len ďalšia smola."
         }
       ]
     },
@@ -1010,7 +1010,7 @@
         {
           "text": "Tri, vyhral som o 3 poškodenia.",
           "spravna": false,
-          "vysvetlenie": "Tie tri boli prebytok a ten dal Štamgast Farárovi. Špaky za bitku sú za karty v línii, nie za pekné oči."
+          "vysvetlenie": "Tie tri boli Nakladačka a tú dal Štamgast Farárovi. Špaky za bitku sú za karty v línii, nie za pekné oči."
         }
       ]
     },
@@ -1760,7 +1760,7 @@
     {
       "id": "i-exekutor2",
       "kto": "info",
-      "melichar": "Bitka. Najprv [Pohoršenie] Pohoršenia: posúvajú starších k súperovi alebo k sebe a políčko stojí ako pri prebytku, von zo stredu 1, potom 2 a 3. Štamgast ich má tri, dve zo zdvojenej Dievčiny a jedno zo Silnej ženy. Exekútor príde ako minule, až po bitke.",
+      "melichar": "Bitka. Najprv [Pohoršenie] Pohoršenia: posúvajú starších k súperovi alebo k sebe a políčko stojí ako pri Nakladačke, von zo stredu 1, potom 2 a 3. Štamgast ich má tri, dve zo zdvojenej Dievčiny a jedno zo Silnej ženy. Exekútor príde ako minule, až po bitke.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -1802,7 +1802,7 @@
         {
           "text": "Mal som viac mäkkého.",
           "spravna": false,
-          "vysvetlenie": "Mäkké bitku nerozhoduje, to ide do prebytku. Rozhodli Dlhy.",
+          "vysvetlenie": "Mäkké bitku nerozhoduje, to ide do Nakladačky. Rozhodli Dlhy.",
           "hlaska": "nervy/bud_ticho"
         }
       ]
@@ -1844,7 +1844,7 @@
     {
       "id": "i-makke2",
       "kto": "info",
-      "melichar": "A prebytok? Tvoje dve [Povera] Povery dali 2 mäkké: Povera poškodzuje za súperove priznané Dlhy a Štamgast ich mal tri, exekútor ich spáli až po bitke. Bitku rozhoduje tuhé, prebytok celkové, teda tuhé plus mäkké: 7 : 5. Prebytok 2 je tvoj.",
+      "melichar": "A Nakladačka? Tvoje dve [Povera] Povery dali 2 mäkké: Povera poškodzuje za súperove priznané Dlhy a Štamgast ich mal tri, exekútor ich spáli až po bitke. Bitku rozhoduje tuhé, Nakladačku celkové, teda tuhé plus mäkké: 7 : 5. Nakladačka 2 je tvoja.",
       "zvyraznit": [
         "bar-supera:dlhy"
       ]
@@ -1852,17 +1852,17 @@
     {
       "id": "q-makke",
       "kto": "otazka",
-      "melichar": "Keby si bitku prehral 5 : 6 v tuhom a mal 2 mäkké, Štamgast nič, kto by mal prebytok?",
+      "melichar": "Keby si bitku prehral 5 : 6 v tuhom a mal 2 mäkké, Štamgast nič, kto by mal Nakladačku?",
       "moznosti": [
         {
           "text": "Ja, 7 : 6 v celkovom.",
           "spravna": true,
-          "vysvetlenie": "Áno. Prebytok drží, kto má viac celkového, aj keď bitku prehral. Rozdeľuje ho potom ten druhý."
+          "vysvetlenie": "Áno. Nakladačku drží, kto má viac celkového, aj keď bitku prehral. Rozdeľuje ju potom ten druhý."
         },
         {
           "text": "Štamgast, vyhral by bitku.",
           "spravna": false,
-          "vysvetlenie": "Bitku by vyhral, ale prebytok sa ráta z celkového: 7 : 6 pre teba.",
+          "vysvetlenie": "Bitku by vyhral, ale Nakladačka sa ráta z celkového: 7 : 6 pre teba.",
           "hlaska": "urazky/alebo_je_hluchy_kokot"
         }
       ]
@@ -1886,7 +1886,7 @@
         "type": "prebytok",
         "elderId": "veterinar"
       },
-      "melichar": "Prebytok rozdeľuje ten, proti komu sa ráta, teda Štamgast. Hrobára posunul do žltej, to stálo 1. Do oranžovej by stálo 2 a toľko už nemal, tak zvyšok dal Veterinárovi. Obaja sa začnú báť teba a Štamgastovi dajú priazeň, Alkoholik a Výpalník. Za každého posunutého staršieho dostal cigaretu, teda dve.",
+      "melichar": "Nakladačku rozdeľuje ten, proti komu sa ráta, teda Štamgast. Hrobára posunul do žltej, to stálo 1. Do oranžovej by stálo 2 a toľko už nemal, tak zvyšok dal Veterinárovi. Obaja sa začnú báť teba a Štamgastovi dajú priazeň, Alkoholik a Výpalník. Za každého posunutého staršieho dostal cigaretu, teda dve.",
       "zvyraznit": [
         "starsi:hrobar",
         "starsi:veterinar",
@@ -2590,7 +2590,7 @@
         "type": "prebytok",
         "elderId": "autobusar"
       },
-      "melichar": "Prebytok 3 je tvoj, rozdeľuje Štamgast: Veterinára zo žltej do oranžovej za 2 a zvyšok, 1, Autobusárovi do žltej. Priazne dostane on, ale oba sa boja teba. Za dvoch posunutých starších dostal Štamgast dve cigarety.",
+      "melichar": "Nakladačka 3 je tvoja, rozdeľuje Štamgast: Veterinára zo žltej do oranžovej za 2 a zvyšok, 1, Autobusárovi do žltej. Priazne dostane on, ale oba sa boja teba. Za dvoch posunutých starších dostal Štamgast dve cigarety.",
       "zvyraznit": [
         "starsi:veterinar",
         "starsi:autobusar",
@@ -3164,7 +3164,7 @@
     {
       "id": "i-prebytok-finale",
       "kto": "info",
-      "melichar": "Prebytok 1 je tvoj a vo finále ho rozdeľuje ten, kto ho drží: ty. Porazenému by priazne už nepomohli. A za nové zóny, ktoré tým vzniknú, ti starší zaplatia ešte teraz, po finále.",
+      "melichar": "Nakladačka 1 je tvoja a vo finále ju rozdeľuje ten, kto ju drží: ty. Porazenému by priazne už nepomohli. A za nové zóny, ktoré tým vzniknú, ti starší zaplatia ešte teraz, po finále.",
       "zvyraznit": [
         "linia-starsich"
       ]

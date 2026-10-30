@@ -134,7 +134,7 @@
       "poradie": 10,
       "uroven": "A",
       "spustac": {
-        "kedy": "po prvej bitke partie, keď sa skončí rozdeľovanie prebytku",
+        "kedy": "po prvej bitke partie, keď sa skončí rozdeľovanie Nakladačky",
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },

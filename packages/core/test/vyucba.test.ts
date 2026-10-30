@@ -436,7 +436,7 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(evaluateLine(data, lineState(po("k-zh-bot1"))).sums[1]).toMatchObject({ Pecka: 1, Povera: 1 });
     // Dievčinina Povera, zdvojená Hasičovým Posilnením (k-dievcina).
     expect(evaluateLine(data, lineState(po("k-dievcina"))).sums[0]).toMatchObject({ Povera: 2 });
-    // Bitka (i-bitka): tuhé 7 : 4, Povery sa vyrovnajú 1 : 1 (exekúcia až po poškodení, 2026-10-28) — prebytok 3.
+    // Bitka (i-bitka): tuhé 7 : 4, Povery sa vyrovnajú 1 : 1 (exekúcia až po poškodení, 2026-10-28) — Nakladačka 3.
     const d = pri("i-bitka").bitkaStav?.damage;
     expect([d?.tuhe, d?.makke, d?.celkove]).toEqual([[7, 4], [1, 1], [8, 5]]);
   });
@@ -459,12 +459,12 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(body(poBitke)).toEqual([5, -1]);
   });
 
-  it("prebytok 3 rozdeľuje porazený Štamgast, celý na Farára (v8.2: pole 1 + 2): jeden výber, Exekútor 0 → 2, cigareta za posunutého", () => {
+  it("Nakladačku 3 (prebytok) rozdeľuje porazený Štamgast, celú na Farára (v8.2: pole 1 + 2): jeden výber, Exekútor 0 → 2, cigareta za posunutého", () => {
     expect(scenar.kroky[i("k-prebytok1")]?.kto).toBe("bot");
     expect(naTahu(pri("k-prebytok1"))).toBe(1);
     expect(silaPriazne(data, pri("k-prebytok1"), "EXEKUTOR", 1)).toBe(0);
     const s = po("k-prebytok1");
-    // Zo stredu do žltej 1, do oranžovej 2 — celý prebytok 3 na jeden výber, ďalší výber už nie je.
+    // Zo stredu do žltej 1, do oranžovej 2 — celá Nakladačka 3 na jeden výber, ďalší výber už nie je.
     expect(s.starsi.find((e) => e.elderId === "farar")?.marker).toBe(5);
     expect(silaPriazne(data, s, "EXEKUTOR", 1)).toBe(2);
     expect(s.bitkaStav?.krok).not.toBe("prebytok");
@@ -533,7 +533,8 @@ describe("výučba Prvá hra — pripomienky Michala k 1. časti (#107, 2026-10-
   });
 
   it("karty sa zhromažďujú a hrajú, nie kladú; pečeň bez „stôl napočíta“ a Cirhóza je dedinská kliatba", () => {
-    expect(reci.filter((t) => /klad/i.test(t))).toEqual([]);
+    // „Nakladačka“ (prebytok, Michal 2026-10-30) nie je kladenie kariet.
+    expect(reci.filter((t) => /klad(?!ačk)/i.test(t))).toEqual([]);
     expect(reci.filter((t) => /stôl napočíta|zlú kartu/.test(t))).toEqual([]);
     expect(krok("i-pitky").melichar).toContain("dvakrát zhromažďujete a dvakrát pijete");
     expect(krok("i-pecen").melichar).toMatch(/^\[PoškodeniePečene\] Poškodenie pečene:/);
@@ -671,14 +672,14 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Exekútor až po poškodení (master 3ab061b): pred bitkou sa špaky nemenia.
     expect(body(po("k-odpoved-bot"))).toEqual([5, -1]);
     // v8.2: tri Pohoršenia na Starostu stačia len do oranžovej (1 + 2): Bitkár 2, tuhé 5 : 5. Remízu
-    // rozhodnú Dlhy (hráč 1, Štamgast 3) — bitka je hráčova; celkové 7 : 5, prebytok 2 rozdeľuje Štamgast.
+    // rozhodnú Dlhy (hráč 1, Štamgast 3) — bitka je hráčova; celkové 7 : 5, Nakladačku 2 rozdeľuje Štamgast.
     expect(odhad(pri("k-pohorsenie-bot1"))).toEqual([5, 3]);
     const s = po("k-pohorsenie-bot1");
     expect(s.starsi.find((e) => e.elderId === "starosta")?.marker).toBe(5);
     expect(s.bitkaStav).toMatchObject({ vitaz: 0, prebytokDrzi: 0, prebytokZostava: 2, exekutor: [1, 2], damage: { tuhe: [5, 5], celkove: [7, 5] } });
     // 9 za karty v línii, Farár a Starosta po 3 za žltú a oranžovú, exekútor 1 : 2.
     expect(body(s)).toEqual([19, -3]);
-    // Prebytok 2: Hrobár do žltej za 1, do oranžovej by stál 2 — zvyšok ide Veterinárovi.
+    // Nakladačka 2: Hrobár do žltej za 1, do oranžovej by stál 2 — zvyšok ide Veterinárovi.
     expect(po("k-prebytok-bot2").bitkaStav?.prebytokZostava).toBe(1);
     const kolo3 = po("k-prebytok-bot3");
     expect(kolo3.nastenka.at(-1)?.lokalita?.defId).toBe("ihrisko");
@@ -757,7 +758,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
       const texty = [k.melichar, ...(k.moznosti ?? []).flatMap((m) => [m.text, m.vysvetlenie]), ...(k.volba?.zle ?? []).map((z) => z.text), k.volba?.inak ?? ""];
       for (const text of texty) {
         expect(text, k.id).not.toMatch(/Smetisk/);
-        // „bod prebytku“ je iný význam a ostáva; víťazné body sú špaky.
+        // „bod Nakladačky“ je iný význam a ostáva; víťazné body sú špaky.
         expect(text, k.id).not.toMatch(/(?<!\p{L})(body|bodov|BODY)(?!\p{L})/u);
       }
     }
