@@ -187,7 +187,7 @@
       "zivnostnik/0/0",
       "policajtka/1/0",
       "sarlatan/0/0",
-      "kohut/0/0",
+      "sofer/0/0",
       "velmi_smutiaca_vdova/0/0",
       "vandal/1/0",
       "degustatorka/1/0",
@@ -2346,7 +2346,7 @@
         ],
         "odhod": [
           "stavba:sarlatan",
-          "stavba:kohut",
+          "stavba:sofer",
           "stavba:noviny",
           "stavba:horoskop"
         ]
