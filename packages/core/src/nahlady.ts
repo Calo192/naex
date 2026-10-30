@@ -30,7 +30,7 @@ import { evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, zhoriPriExekucii } from "./battle.ts";
 import { zahradkarChrani } from "./engine.ts";
-import { cenaPatronatu, MARKER_STRED, posunZaBody } from "./elders.ts";
+import { cenaPatronatu, MARKER_STRED, posunZaBody, telefonHraca } from "./elders.ts";
 import type { ClientState } from "./view.ts";
 import { cenaKliatby, hodnotaPohorseni } from "./view.ts";
 import { pocet } from "./jazyk.ts";
@@ -448,7 +448,7 @@ export function bitkaPoPohorseni(
 ): { readonly pred: DamageResult; readonly po: DamageResult } | null {
   if (view.ciel === null || view.bitkaStav === null || view.bitkaStav.damage !== null) return null;
   const elder = view.starsi.find((e) => e.elderId === elderId);
-  const marker = elder === undefined ? null : (posunZaBody(elder, kSebe ? p : opponentOf(p), bodyNaPohorsenie(view, p, elder))?.marker ?? null);
+  const marker = elder === undefined ? null : (posunZaBody(elder, kSebe ? p : opponentOf(p), bodyNaPohorsenie(view, p, elder), telefonHraca(view, p))?.marker ?? null);
   if (marker === null) return null;
   const sums = evaluateLine(data, lineState(view)).sums;
   const pred = poskodenieBitky(data, view, sums);

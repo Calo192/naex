@@ -64,7 +64,6 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   kocovnik: "native", // Furt: jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (Michal 2026-10-24; evaluateLine)
   cirhoza: "native", // Bitka: dodatočná rana od súpera (cirhozaBonus)
   dievcina_na_vydaj: "impl", // Prehra (v7): zahodí sa, súper získa Dlhy podľa jej aktívnych akcií (koniecBitky)
-  dlh: "native", // Bitka: krok Exekútora
   farar: "impl", // Prehra (v7): víťaz získa zadĺženie za každú svoju aktívnu Poveru (koniecBitky)
   financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
   hasic: "impl", // Nástup: náhodná karta z odhadzovacieho — nechať v ruke, alebo vrátiť (príkaz hasic)
@@ -115,7 +114,6 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   zberny_dvor: "impl", // Kšeft: za cigaretu ľubovoľná karta z vlastného odhadzovacieho balíčka
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
   zivnostnik: "impl", // Nástup (v7): v tom istom ťahu smie za neho priložiť Nástroj z ruky (voľba nastroj)
-  abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
   kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v7): NA EX len na kartu v kraji pri oltári
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)

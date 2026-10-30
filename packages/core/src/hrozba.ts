@@ -12,7 +12,7 @@ import { naexZaPitku } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
 import { lineState, naexCieleVLinii, pohorseniaVBitke, poskodenieBitky } from "./engine.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
-import { MARKER_KRAJ, MARKER_STRED, cenaPosunuOPoli } from "./elders.ts";
+import { MARKER_KRAJ, MARKER_STRED, cenaPosunuOPoli, telefonHraca } from "./elders.ts";
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
@@ -198,7 +198,7 @@ export function rozsahPohorseni(
     }
     const z = stol.starsi[kand.i]?.marker ?? MARKER_STRED;
     for (let d = Math.max(kand.od, -zostava); d <= Math.min(kand.po, zostava); d++) {
-      const cena = cenaPosunuOPoli(z, d);
+      const cena = cenaPosunuOPoli(z, d, telefonHraca(stol, p));
       if (cena > Math.min(zostava, kand.max)) continue;
       skus(k + 1, zostava - cena, d === 0 ? starsi : starsi.map((x, j) => (j === kand.i ? posun(x, d) : x)));
     }

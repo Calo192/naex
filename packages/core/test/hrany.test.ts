@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, LineState, PlacedCard, PlayerId, StranaLinie } from "../src/index.ts";
-import { evaluateLine, hranyZPohladu, loadGameData, nahladVylozenia, printedSides, stranyLokality, zadlzenieZLinie } from "../src/index.ts";
+import { evaluateLine, hranyZPohladu, loadGameData, nahladVylozenia, printedSides, stranyLokality, liberalZadlzenie, zadlzenieZLinie } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -78,12 +78,14 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
       }
 
       const pred = evaluateLine(data, line);
-      // Dlh ako ho pripíše Pitka — Finančná poradkyňa ho posiela súperovi (zadlzenieZLinie).
-      const dlhPred = zadlzenieZLinie(data, line, pred);
-      const dlhPo = zadlzenieZLinie(data, { strany: p === 0 ? [nova, []] : [[], nova] }, po);
+      // Dlh ako ho pripíše Pitka — Finančná poradkyňa ho posiela súperovi (zadlzenieZLinie), Liberál (v7)
+      // pridá súperovi bez rovnováhy žien a chlapov — náhľad ho ráta (hrany.ts), teda aj očakávanie.
+      const novaLinia = { strany: (p === 0 ? [nova, []] : [[], nova]) as LineState["strany"] };
+      const dlhPred = zadlzenieZLinie(data, line, pred).map((x, h) => x + (liberalZadlzenie(data, line)[h] ?? 0));
+      const dlhPo = zadlzenieZLinie(data, novaLinia, po).map((x, h) => x + (liberalZadlzenie(data, novaLinia)[h] ?? 0));
       for (const h of [0, 1] as const) {
         for (const a of new Set([...Object.keys(pred.sums[h]), ...Object.keys(po.sums[h]), "Dlh"]) as Set<keyof (typeof po.sums)[0]>) {
-          const cakane = a === "Dlh" ? dlhPo[h] - dlhPred[h] : (po.sums[h][a] ?? 0) - (pred.sums[h][a] ?? 0);
+          const cakane = a === "Dlh" ? (dlhPo[h] ?? 0) - (dlhPred[h] ?? 0) : (po.sums[h][a] ?? 0) - (pred.sums[h][a] ?? 0);
           expect(n.zmeny[h][a] ?? 0, `${karta.defId} ${h} ${a}`).toBe(cakane);
         }
       }

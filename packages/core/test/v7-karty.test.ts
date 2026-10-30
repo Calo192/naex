@@ -70,8 +70,8 @@ function vZhromazdeni(lok: string, strany: GameState["strany"], ruka: CardInstan
 }
 
 describe("sada v7 — dáta", () => {
-  it("81 kariet, 19 lokalít po úrovniach 5 / 6 / 5 / 3, akcia Pakt", () => {
-    expect(data.cards.size).toBe(81);
+  it("92 kariet (sada v39 bez Presbitera), 19 lokalít po úrovniach 5 / 6 / 5 / 3, akcia Pakt", () => {
+    expect(data.cards.size).toBe(92);
     const urovne = [1, 2, 3, 4].map((u) => data.lokality.filter((l) => urovenLokality(data, l.id) === u).length);
     expect(urovne).toEqual([5, 6, 5, 3]);
     expect((cardsJson as { actions: string[] }).actions).toContain("Pakt");
