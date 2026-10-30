@@ -1229,3 +1229,66 @@ button.jbar-odhad::before {
     display: none;
   }
 }
+
+/* Kvíz po playteste výučby 20261030: možnosti boli 15–35 px vysoké a ich miesto sa menilo s dĺžkou
+   textu. Teraz ležia vedľa seba v pevnom stĺpci, každá rovnako široká a aspoň 44 px vysoká; bublina
+   otázky je preto vyššia než bar a prekryje vrch súperovho baru (stôl je počas otázky zošednutý). */
+@media (min-width: 761px) {
+  .mel.kviz-otazka {
+    align-self: flex-start;
+    min-height: 58px;
+  }
+
+  .mel.kviz-otazka .mel-moznosti {
+    flex: 0 0 46%;
+    flex-direction: row;
+    max-width: 46%;
+    padding-block: 6px;
+  }
+
+  .mel-moznosti .vyucba-moznosti {
+    flex-direction: row;
+    width: 100%;
+    max-height: none;
+    gap: 8px;
+  }
+
+  .mel-moznosti .vyucba-moznost {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px 12px 4px 8px;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    white-space: normal;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 719px) {
+  .mel-moznosti .vyucba-moznost {
+    font-size: 0.82rem;
+  }
+}
+
+/* Enter na otázke: možnosti bliknú a klávesy 1 / 2 sa rozsvietia — čím sa odpovedá. */
+.vyucba-moznosti.napoveda .vyucba-moznost {
+  animation: kviz-napoveda 0.45s ease-in-out 2;
+}
+
+.vyucba-moznosti.napoveda .vyucba-moznost kbd {
+  color: var(--na-akcente);
+  background: var(--akcent);
+  border-color: var(--akcent);
+}
+
+@keyframes kviz-napoveda {
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--akcent) 60%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vyucba-moznosti.napoveda .vyucba-moznost {
+    animation: none;
+  }
+}
