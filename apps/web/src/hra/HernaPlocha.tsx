@@ -52,7 +52,7 @@ import {
   MARKER_STRED,
   jeCoTahat,
   jeFinaleNaNastenke,
-  kartyZaPas,
+  cigaretyZaPas,
   spakyTeraz,
   spakov,
   posunZaBody,
@@ -107,6 +107,8 @@ import {
   zablokovaneStrany,
   posunMarker,
   poveraMozna,
+  klebetyKola,
+  telefonHraca,
   bitkaPoPlane,
   cenaPosunuOPoli,
   krokRozdelenia,
@@ -3556,7 +3558,7 @@ export function HernaPlocha({
         // Celý ťah naraz (Michal 2026-10-19): karty sa ťahajú na stôl ako návrh,
         // každá ďalšia stojí plný poldeci, server dostane ťah až po „potvrdiť“ na stole.
         if (vylozenia.length === 0 || plan === null) {
-          const zaPas = (view.zhromazdenieStav === null ? 0 : kartyZaPas(view.zhromazdenieStav, ja, view.hraci[ja].rukaPocet)) * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
+          const zaPas = cigaretyZaPas(data, view, ja, view.hraci[ja].rukaPocet);
           // Pas je nevratný: potvrdenie len keď ešte niečo vyložiť môžem (UX N1, U10).
           const mozemVylozit = zostava > 0 && [...moznostiMiesta.values()].some((m) => m.karty.size > 0);
           if (odlozenyPas.caka !== null) {
@@ -3658,6 +3660,31 @@ export function HernaPlocha({
           // Vízia (Michal 2026-10-19): vrchná karta balíčka do ruky, alebo navždy preč.
           const k = view.volbaVizia;
           const zostava = view.vizia.zostava[ja];
+          // Krištáľová guľa (Náradie 2026-10-30): dve vrchné karty — o jednej rozhodneš, druhá ostane navrchu.
+          const k2 = view.volbaViziaDruha ?? null;
+          if (k2 !== null) {
+            return {
+              nadpis: "Vízia — Krištáľová guľa",
+              text: (
+                <span className="vizia-text">
+                  {k !== null && <span className="vizia-karta">{sLupou({ karta: k, sirka: 72 })}</span>}
+                  <span className="vizia-karta">{sLupou({ karta: k2, sirka: 72 })}</span>
+                  <span>
+                    Dve vrchné karty: <strong>{k === null ? "?" : menoKarty(k.defId)}</strong> a <strong>{menoKarty(k2.defId)}</strong>. Jednu si vezmi
+                    do ruky alebo ju zahoď — navždy z hry; druhá ostane navrchu balíčka.{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}
+                  </span>
+                </span>
+              ),
+              stred: pecatTahu({ text: "prvú do ruky", tip: "Vrchnú kartu si vezmeš do ruky, druhá bude navrchu.", akcia: () => posli({ type: "vizia", vziat: true }) }),
+              vpravo: (
+                <>
+                  <button onClick={() => posli({ type: "vizia", vziat: true, druha: true })}>druhú do ruky</button>{" "}
+                  <button onClick={() => posli({ type: "vizia", vziat: false })}>zahodiť prvú</button>{" "}
+                  <button onClick={() => posli({ type: "vizia", vziat: false, druha: true })}>zahodiť druhú</button>
+                </>
+              ),
+            };
+          }
           return {
             nadpis: "Vízia",
             text: (
@@ -4262,8 +4289,8 @@ export function HernaPlocha({
     // Povery (v8.3 „Výpožička priazne“): klik posunie silu priazne staršieho o stupeň k tebe na toto kolo.
     const bk = view.bitkaStav;
     if (view.faza === "bitka" && bk !== null && bk.caka === ja && bk.krok === "povery") {
-      if (!poveraMozna(elder, ja, bk.klebety)) return undefined;
-      return { akcia: textPovery(elder, ja, bk.klebety, menoHraca(super_)), klik: () => cmd({ type: "povera", elderId: elder.elderId }) };
+      if (!poveraMozna(elder, ja, klebetyKola(view))) return undefined;
+      return { akcia: textPovery(elder, ja, klebetyKola(view), menoHraca(super_)), klik: () => cmd({ type: "povera", elderId: elder.elderId }) };
     }
     // Patronát (Michal 2026-10-20): staršieho, ktorý mi prejavuje priazeň, si vezmem do ruky.
     if (mozniPatronati.some((e) => e.elderId === elder.elderId)) {
@@ -4414,7 +4441,7 @@ export function HernaPlocha({
       if (hJa.cigarety < cenaPatronatu(e).cigarety) return "málo cigariet";
       return kandidatiPatronatu.length === 0 ? "nemáš v ruke Občana ani Zviera" : "nedá sa vziať";
     }
-    if (krokStarsich.typ === "povery" && !poveraMozna(e, ja, view.bitkaStav?.klebety)) return "priazeň už tvoja v sile 3";
+    if (krokStarsich.typ === "povery" && !poveraMozna(e, ja, klebetyKola(view))) return "priazeň už tvoja v sile 3";
     // Pohoršenie a prebytok: kto už nič nedostane, je tlmený na karte (rozdelenieStarsieho).
     return undefined;
   };
@@ -4429,12 +4456,14 @@ export function HernaPlocha({
     const body = krok?.body ?? rozpocetPoPlane(view, ja, planDelenia, e.elderId);
     const ceny: ({ readonly cena: number; readonly dosah: boolean } | null)[] = Array.from({ length: 7 }, () => null);
     const sipky: { ja?: RozdelenieStarsieho["sipky"]["ja"]; su?: RozdelenieStarsieho["sipky"]["su"] } = {};
+    // Telefón (Náradie 2026-10-30): Pohoršenia k stredu stoja toľko ako von.
+    const telefon = krokDelenia === "pohorsenie" && telefonHraca(view, ja);
     for (const sm of smeryRozdelenia(view, ja)) {
       for (let m = posunMarker(e, sm.smer); m !== null; m = posunMarker({ marker: m }, sm.smer)) {
-        const cena = cenaPosunuOPoli(e.marker, m - e.marker);
+        const cena = cenaPosunuOPoli(e.marker, m - e.marker, telefon);
         ceny[m] = { cena, dosah: cena <= body };
       }
-      const posun = body > 0 ? posunZaBody(e, sm.smer, body) : null;
+      const posun = body > 0 ? posunZaBody(e, sm.smer, body, telefon) : null;
       sipky[sm.smer === ja ? "ja" : "su"] = {
         posun: posun === null ? null : { na: posun.marker, cena: posun.cena },
         aktivna: krok !== undefined && krok.kSebe === sm.kSebe,

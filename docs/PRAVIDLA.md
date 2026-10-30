@@ -89,6 +89,19 @@ starších krok 1, docs/napady/starsi-revizia.html R2 variant 6A a R14; značka
   ktorým sa po bitke posúvajú starší — sa volá **Nakladačka** všade, kde ho číta
   človek. Kľúče v dátach a príkaz `prebytok` ostávajú.
 
+**v8.4 — Náradie** (Michal 2026-10-30, docs/napady/naradie-akcie.html, sekcia
+Rozhodnuté; značka `VERZIA_PRAVIDIEL` ostáva „v8“):
+
+- **Robota** (§2, §11): spáli 1 priznaný Dlh; **za každý Dlh, ktorý nemá čo spáliť,
+  dá 1 špak** (s Fúrikom 2 Dlhy, bez Dlhov 2 špaky).
+- **12 nových Nástrojov do Dedičstva** (§12, §16): Zapaľovač, Výherné žreby, Píšťalka,
+  Hrable, Zrkadlo, Boxer, Telefón, Jogurt, Energeťák, Horoskop, Fúrik, Krištáľová guľa.
+- **Puška** (§16): už nepridáva +1 k Petelici — prepojenú Petelicu, ktorú by zrušil
+  Odpor či NA EX, namiesto zrušenia ráta o 1 poškodenie menej (3 → 2).
+- **Profesionálny tipér** (§16): posilnené akcie na jeho spojoch — súperove ako
+  posilnený Hazard, tvoje ako posilnená Robota.
+- Karty pridá Admin do sady; kým nie sú zverejnené, jadro ich pozná podľa id.
+
 Špecifikácia pravidiel kartovej hry NA EX! (Michal Calík) pre implementáciu
 a testy. Text pre hráčov je na stránke Pravidlá; toto je presné znenie, podľa
 ktorého sa hra programuje a overuje.
@@ -191,7 +204,7 @@ len na Občana či Starešinu, priznanie len Kliatby) alebo efekt karty.
 | Poldeci | `Poldeci` | otočí jeden vypitý poldeci späť na plný — **až pri bitke** (§9.5); v Pitke pridá poškodenie pečene |
 | Posilnenie | `Posilnenie` | zdvojnásobí prepojenú akciu (priaznivú aj nepriaznivú) (§6) |
 | Odpor | `Odpor` | zruší prepojenú akciu; Odpor + Odpor = Vzbura (§6) |
-| Robota | `Robota` | v kroku exekúcie (po poškodení), **pred** Exekútorom, spáli 1 priznaný Dlh (z hry, §11) |
+| Robota | `Robota` | v kroku exekúcie (po poškodení), **pred** Exekútorom, spáli 1 priznaný Dlh (z hry, §11); **za každý Dlh, ktorý nemá čo spáliť, dá 1 špak** (v8.4) |
 | Pakt | `Pakt` | **v7:** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá — Hazard, Pečeň). Premení sa ešte pred násobkami: Pakt + Posilnenie = dve Posilnenia, nič sa nezdvojí. Pakt + Pakt nerobí nič. **Odpor** Pakt zruší ako každú akciu (Vzbura nevznikne). Neaktívny Pakt nemá čo kopírovať: do súčtov nejde, NA EX ho nezdvojí a do podmienky „aspoň 1 neaktívna akcia“ (§7) sa neráta. Na hranách lokalít Pakt nie je; pri lokalite kopíruje akciu hrany. Pri Výtržníkovi (§7) je Rana ako každá jeho akcia. |
 
 Akcia sa volá ako karta či zdroj, ktorý dáva: `PoškodeniePečene` → Poškodenie
@@ -1192,8 +1205,11 @@ a za starších, pred Nakladačkou** (Michal 2026-10-28); **vždy po hráčoch: 
 Robota a Exekútor, potom útočník Robota a Exekútor**.
 Remíza na Dlhy, Herňa a Noviny teda rátajú priznané Dlhy
 **pred** exekúciou. Najprv **Robota**: za každú aktívnu Robotu hráč **spáli**
-1 priznaný Dlh — v tomto kroku, nie pred poškodením, aby Povere nezobrala cieľ;
-zmenší, čo zhorí Exekútorovi. Potom príde **Exekútor — bez prahu, vždy**, ku
+1 priznaný Dlh (s Fúrikom v Dedičstve o 1 viac za každý Fúrik); **za každý Dlh,
+ktorý Robota nemá čo spáliť, dostane 1 špak** (v8.4, Náradie 2026-10-30 — Robota
+bez Dlhov 1 špak, posilnená Robota bez Dlhov 2, s Fúrikom bez Dlhov 2, pri 1 Dlhu
+a Fúriku 1 spálený + 1 špak). Robota zmenší, čo zhorí Exekútorovi. Špaky za Robotu
+sú na nástenke pri bitke (`robota`). Potom príde **Exekútor — bez prahu, vždy**, ku
 každému hráčovi s aspoň 1 **priznaným** Dlhom (nepriznané sa nerátajú):
 
 ```
@@ -1250,8 +1266,28 @@ vyložený do Dedičstva v hre stojí **1** cigaretu, druhý (hocktorého hráč
 áno. Z Dedičstva sa Nástroj do línie nevracia.
 
 Efekt v Dedičstve funguje ako malá priazeň: Nealko prah Cirhózy +2, Svätý
-text Viera +1, Puška a Vidly (Petelice a Rany o 1 viac), Krabička cigariet,
-Noviny, Pasca, Výherný automat, Vínko, Lievik (§16).
+text Viera +1, Vidly (Rany o 1 viac), Puška (prepojená Petelica sa nedá zrušiť, len oslabiť), Krabička cigariet,
+Noviny, Pasca, Výherný automat, Vínko, Lievik a **Náradie** (v8.4, nižšie) (§16).
+
+**Náradie (v8.4, Michal 2026-10-30)** — Nástroj ku každej akcii, efekt len v Dedičstve
+majiteľa; menia sa len **tvoje** akcie (karty, ktoré si zahral):
+
+| Nástroj | Dedičstvo | Presne v hre |
+|---|---|---|
+| Zapaľovač | Tvoje aktívne Cigarety nemožno zrušiť NA EX. | NA EX na kartu zruší ostatné aktívne akcie; aktívne Cigarety ostanú ×1 (nezdvoja sa). |
+| Výherné žreby | Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené. | Rozhoduje, či slot má na spoji partnera; zrušené Odporom ostávajú zrušené. NA EX potom ako vždy: spojené (neaktívne) zdvojí, nespojené (aktívne) zruší (O1). |
+| Píšťalka | Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas. | Pri súperovom pase sa mu cigarety za pas znížia o tvoje aktívne Obmedzenia v línii v tej chvíli (najmenej 0); v Pitke uberajú ako vždy. |
+| Hrable | Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená. | Zrušená akcia (nie Posilnenie, Odpor, Pakt) sa pripíše majiteľovi Odporu ×2. |
+| Zrkadlo | Tvoj Pakt kopíruje prepojenú akciu dvakrát. | Pakt sa premení na akciu partnera ×2; proti Posilneniu ostáva nič. |
+| Boxer | Tvoje Pecky udeľujú o 1 poškodenie viac. | Ako Puška pri Petelici: každá aktívna Pecka z vyložených akcií +1 tuhé. |
+| Telefón | Tvoje Pohoršenia k stredu stoja toľko ako von. | Krok k stredu stojí toľko ako opačný krok von: z červenej 3, z oranžovej 2, zo žltej 1. Nakladačky sa netýka. |
+| Jogurt | Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke. | Vo vyhodnotení každej Pitky otočia akcie Poldeci v línii toľko vypitých, koľko v kole ešte neotočili; v bitke (krok 5) len zvyšok. |
+| Energeťák | Tvoje Posilnenie nemožno zrušiť NA EX. | NA EX na kartu s tvojím Posilnením partnerovi ×2 nezruší. |
+| Horoskop | Klebety z tvojich Povier platia aj v nasledujúcom kole. | Klebety tvojich Povier tejto bitky (§9.1) platia celé ďalšie kolo (aj Fajčiar, Výpalník…), potom zaniknú. Verejné. |
+| Fúrik | Tvoje Roboty pália o 1 Dlh viac (teda 2). | Každý Fúrik +1 Dlh za Robotu; čo nemá čo spáliť, dá špak (§11). |
+| Krištáľová guľa | Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo zahoď, druhú vráť navrch. | Ukážu sa dve vrchné karty doberacieho balíčka (len tebe); rozhodneš o jednej, druhá ostane navrchu. Pri jedinej karte ako bežná Vízia. |
+
+Kto má viac kusov toho istého Nástroja: Boxer a Fúrik sa sčítajú, ostatné nie.
 
 ---
 
@@ -1524,7 +1560,9 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Noviny | Dedičstvo: Prehra (Titulka, návrh #40, Michal 2026-10-28): za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak. Dlhy sa rátajú pred exekúciou (§9, krok 4a). Víťazovi sa nič neberie — svoje špaky za bitku dostane celé. |
 | Krabička cigariet | Dedičstvo: Pitka: za každé 2 cigarety, ktoré súper v Pitke vyfajčí (rátajú sa zaplatené cigarety), si hneď doberieš 1 kartu. Nie je to nerest. |
 | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, udelíš mu Pecku navyše. |
-| Puška | Dedičstvo: každá tvoja aktívna Petelica udelí o 1 poškodenie viac. |
+| Puška | Dedičstvo (Michal 2026-10-30, mení v7 „+1 k Petelici“): keď by tvoju **prepojenú** Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2; v súčtoch sa ráta ako Pecka). Prepojená = má na spoji partnera (aktívna len zo Vzbury nie). Úplatok Petelicu nezruší, len zníži — Puška naň nepôsobí; súperove Hrable nemajú čo ukradnúť (zrušenie nenastalo); Výtržník akcie nezrušuje (mení na Rany) — Puška sa neuplatní; NA EX ďalej zdvojí neaktívne akcie karty, prepojená Petelica ostane na 2. Text karty zmení Admin. |
+| Náradie (v8.4) | Zapaľovač, Výherné žreby, Píšťalka, Hrable, Zrkadlo, Boxer, Telefón, Jogurt, Energeťák, Horoskop, Fúrik, Krištáľová guľa — §12, tabuľka Náradie. |
+| Profesionálny tipér | Furt (v8.4): posilnené akcie na jeho spojoch (jeho strany a strany susedov k nemu) sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota. Posilnená = ×2 z Posilnenia, ktoré NA EX nezrušil; NA EX na Tipéra jeho Posilnenie aj premenu zruší. |
 | Vidly | Dedičstvo: každá tvoja aktívna akcia Rana z vyložených kariet (aj hrany lokality) udelí o 1 poškodenie viac. Rany navyše z efektov kariet (Svokra, Pijan, Vymáhač, Strýko z Ameriky) Vidly nezosilnia (Michal 2026-10-27). |
 | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); v poslednej Pitke kola (pred bitkou) získaš 1 Dlh. |
 | Svätý text | Dedičstvo: hodnota tvojej Viery je o 1 vyššia. |

@@ -100,16 +100,6 @@
   "obrazok": "vyherny_automat.jpg"
  },
  {
-  "id": "dlh",
-  "farba": null,
-  "sirkaMm": 54,
-  "vyskaMm": 80,
-  "mierkaTextu": 1.1,
-  "mierkaIkon": 1.3,
-  "kopie": 15,
-  "obrazok": "dlh.jpg"
- },
- {
   "id": "cirhoza",
   "farba": null,
   "sirkaMm": 54,
@@ -408,16 +398,6 @@
   "mierkaIkon": 1.3,
   "kopie": 1,
   "obrazok": "krcma.jpg"
- },
- {
-  "id": "abstak",
-  "farba": null,
-  "sirkaMm": 54,
-  "vyskaMm": 80,
-  "mierkaTextu": 1.1,
-  "mierkaIkon": 1.3,
-  "kopie": 10,
-  "obrazok": "abstak.jpg"
  },
  {
   "id": "cierna_macka",
@@ -818,5 +798,135 @@
   "mierkaIkon": 1.3,
   "kopie": 1,
   "obrazok": "herna.jpg"
+ },
+ {
+  "id": "boxer",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "boxer.jpg"
+ },
+ {
+  "id": "energetak",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "energetak.jpg"
+ },
+ {
+  "id": "furik",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "furik.jpg"
+ },
+ {
+  "id": "horoskop",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "horoskop.jpg"
+ },
+ {
+  "id": "hrable",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "hrable.jpg"
+ },
+ {
+  "id": "jogurt",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "jogurt.jpg"
+ },
+ {
+  "id": "kristalova_gula",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "kristalova_gula.jpg"
+ },
+ {
+  "id": "pistalka",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "pistalka.jpg"
+ },
+ {
+  "id": "profesionalny_tiper",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "profesionalny_tiper.jpg"
+ },
+ {
+  "id": "telefon",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "telefon.jpg"
+ },
+ {
+  "id": "vyherne_zreby",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "vyherne_zreby.jpg"
+ },
+ {
+  "id": "zapalovac",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "zapalovac.jpg"
+ },
+ {
+  "id": "zrkadlo",
+  "farba": null,
+  "sirkaMm": 54,
+  "vyskaMm": 80,
+  "mierkaTextu": 1.1,
+  "mierkaIkon": 1.3,
+  "kopie": 1,
+  "obrazok": "zrkadlo.jpg"
  }
 ]

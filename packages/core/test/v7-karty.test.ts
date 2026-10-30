@@ -70,8 +70,8 @@ function vZhromazdeni(lok: string, strany: GameState["strany"], ruka: CardInstan
 }
 
 describe("sada v7 — dáta", () => {
-  it("81 kariet, 19 lokalít po úrovniach 5 / 6 / 5 / 3, akcia Pakt", () => {
-    expect(data.cards.size).toBe(81);
+  it("92 kariet (sada v39 bez Presbitera), 19 lokalít po úrovniach 5 / 6 / 5 / 3, akcia Pakt", () => {
+    expect(data.cards.size).toBe(92);
     const urovne = [1, 2, 3, 4].map((u) => data.lokality.filter((l) => urovenLokality(data, l.id) === u).length);
     expect(urovne).toEqual([5, 6, 5, 3]);
     expect((cardsJson as { actions: string[] }).actions).toContain("Pakt");
@@ -79,10 +79,15 @@ describe("sada v7 — dáta", () => {
     for (const l of data.lokality) expect(cardVariants(l).total, l.id).toBe(1);
   });
 
-  it("hráčske karty majú 4 až 8 variantov (sloty.json, podmienky Michala)", () => {
+  it("hráčske karty majú 4 až 8 variantov, náradie najviac 2 (sloty.json, Michal 2026-10-30)", () => {
     for (const def of data.cards.values()) {
       if (["Lokalita", "Starešina", "Kliatba"].some((t) => def.tags.includes(t as never))) continue;
       const v = cardVariants(def).total;
+      if (def.tags.includes("Nástroj")) {
+        expect(v, def.id).toBeGreaterThanOrEqual(1);
+        expect(v, def.id).toBeLessThanOrEqual(2);
+        continue;
+      }
       expect(v, def.id).toBeGreaterThanOrEqual(4);
       expect(v, def.id).toBeLessThanOrEqual(8);
     }

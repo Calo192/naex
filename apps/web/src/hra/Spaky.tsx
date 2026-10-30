@@ -447,6 +447,7 @@ export function textSpakovBitky(b: BitkaNaNastenke, pred: readonly [number, numb
   const za = (p: PlayerId): string => {
     const casti: string[] = [];
     if (b.zaBitku[p] > 0) casti.push(`+${b.zaBitku[p]} bitka${b.zoSekery > 0 ? ` (z toho ${b.zoSekery} zo sekery)` : ""}`);
+    if ((b.robota?.[p] ?? 0) > 0) casti.push(`+${b.robota?.[p]} Robota`);
     if (b.zaStarsich[p] > 0) casti.push(`+${b.zaStarsich[p]} starší`);
     if (b.prebytok[p] > 0) casti.push(`+${b.prebytok[p]} Nakladačka`);
     if (b.exekutor[p] > 0) casti.push(`−${b.exekutor[p]} Exekútor`);
@@ -458,6 +459,6 @@ export function textSpakovBitky(b: BitkaNaNastenke, pred: readonly [number, numb
 
 /** Špaky v popolníkoch pred bitkou — zo záznamu nástenky (po bitke mínus to, čo bitka dala a vzala). */
 export function spakyPredBitkou(b: BitkaNaNastenke): readonly [number, number] {
-  const pred = (p: PlayerId): number => b.spakyPo[p] - b.zaBitku[p] - b.zaStarsich[p] - b.prebytok[p] + b.exekutor[p];
+  const pred = (p: PlayerId): number => b.spakyPo[p] - b.zaBitku[p] - (b.robota?.[p] ?? 0) - b.zaStarsich[p] - b.prebytok[p] + b.exekutor[p];
   return [pred(0), pred(1)];
 }

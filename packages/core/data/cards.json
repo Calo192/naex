@@ -1,3561 +1,4019 @@
 {
- "source": "tvorca kariet 2026-10-28T14:04:10.905Z",
- "actions": [
-  "Cigareta",
-  "Dlh",
-  "Obmedzenie",
-  "Odpor",
-  "Pakt",
-  "Pecka",
-  "Petelica",
-  "Pohoršenie",
-  "Poldeci",
-  "Posilnenie",
-  "Povera",
-  "PoškodeniePečene",
-  "Rana",
-  "Robota",
-  "Viera",
-  "Vízia"
- ],
- "tags": [
-  "Autorita",
-  "Chlap",
-  "Influencer",
-  "Kliatba",
-  "Kriminál",
-  "Lokalita",
-  "Nástroj",
-  "Občan",
-  "Pamätník",
-  "Pracujúci",
-  "Starešina",
-  "Zahraničný",
-  "Zviera",
-  "Závislý",
-  "Žena"
- ],
- "cards": [
-  {
-   "id": "veterinar",
-   "index": 1,
-   "name": "Veterinár",
-   "tags": [
-    "Starešina",
-    "Chlap"
-   ],
-   "effect_text": "Pitka: Karty v jeho okolí nepridávajú poškodenie pečene.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Posilnenie": 2
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Poldeci": 1
-    },
-    "allowed": {
-     "1": [
-      "Poldeci"
-     ],
-     "2": [
-      "Cigareta"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "autobusar",
-   "index": 2,
-   "name": "Autobusár",
-   "tags": [
-    "Starešina",
-    "Chlap"
-   ],
-   "effect_text": "Zhromaždenie: Ak súper pasuje po tebe, nedostane cigarety za pas.",
-   "triggers": [
-    "Zhromaždenie"
-   ],
-   "left": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Pecka": 1,
-     "Poldeci": 1
-    },
-    "allowed": {
-     "1": [
-      "Pecka"
-     ],
-     "2": [
-      "Cigareta"
-     ],
-     "3": [
-      "Poldeci"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1,
-     3
-    ],
-    "actions": {
-     "Robota": 1
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "noviny",
-   "index": 3,
-   "name": "Noviny",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Prehra: Za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak.",
-   "triggers": [
-    "Dedičstvo",
-    "Prehra"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Pohoršenie": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Povera": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "cigorky",
-   "index": 4,
-   "name": "Krabička cigariet",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest.",
-   "triggers": [
-    "Dedičstvo",
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "vinko",
-   "index": 5,
-   "name": "Vínko",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.",
-   "triggers": [
-    "Dedičstvo"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Poldeci": 2
-    }
-   },
-   "right": {
-    "blocked": [],
-    "actions": {
-     "PoškodeniePečene": 4
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 6,
-    "right": 1
-   }
-  },
-  {
-   "id": "pasca",
-   "index": 6,
-   "name": "Pasca",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Pecku navyše.",
-   "triggers": [
-    "Dedičstvo",
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Obmedzenie": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Odpor": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "puska",
-   "index": 7,
-   "name": "Puška",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Tvoje Petelice udeľujú o 1 poškodenie viac.",
-   "triggers": [
-    "Dedičstvo"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pecka": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Petelica": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "svaty_text",
-   "index": 8,
-   "name": "Svätý text",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.",
-   "triggers": [
-    "Dedičstvo"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Viera": 1
-    }
-   },
-   "right": {
-    "blocked": [],
-    "actions": {
-     "Viera": 1
-    }
-   },
-   "permutations": {
-    "total": 8,
-    "left": 2,
-    "right": 4
-   }
-  },
-  {
-   "id": "nealko",
-   "index": 9,
-   "name": "Nealko",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.",
-   "triggers": [
-    "Dedičstvo"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Pohoršenie": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     2,
-     3
-    ],
-    "actions": {
-     "Pohoršenie": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 4,
-    "right": 1
-   }
-  },
-  {
-   "id": "vyherny_automat",
-   "index": 10,
-   "name": "Výherný automat",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.",
-   "triggers": [
-    "Dedičstvo"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Robota": 1
-    }
-   },
-   "right": {
-    "blocked": [],
-    "actions": {
-     "Dlh": 4
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 4,
-    "right": 1
-   }
-  },
-  {
-   "id": "dlh",
-   "index": 11,
-   "name": "Dlh",
-   "tags": [
-    "Kliatba"
-   ],
-   "effect_text": "Bitka: Skontroluj, či pred dverami nestojí Exekútor. Pri remíze v tuhom aj v Absťákoch prehrá, kto má viac priznaných Dlhov.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "right": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "cirhoza",
-   "index": 12,
-   "name": "Cirhóza",
-   "tags": [
-    "Kliatba"
-   ],
-   "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 3 špaky.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "right": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "lesna_cesta",
-   "index": 13,
-   "name": "Lesná cesta",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Bitka: Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2,
-     3
-    ],
-    "actions": {
-     "Pecka": 1
-    },
-    "allowed": {
-     "0": [
-      "Pecka"
-     ]
-    },
-    "name": "v húštine"
-   },
-   "right": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Povera": 1
-    },
-    "allowed": {
-     "1": [
-      "Povera"
-     ]
-    },
-    "name": "pri kríži"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "ihrisko",
-   "index": 14,
-   "name": "Ihrisko",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Pecka": 1,
-     "Rana": 1
-    },
-    "allowed": {
-     "0": [
-      "Pecka"
-     ],
-     "3": [
-      "Rana"
-     ]
-    },
-    "name": "na trávniku"
-   },
-   "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Poldeci": 1
-    },
-    "allowed": {
-     "1": [
-      "Poldeci"
-     ],
-     "2": [
-      "Cigareta"
-     ]
-    },
-    "name": "na tribúne"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "pijan",
-   "index": 15,
-   "name": "Pijan",
-   "tags": [
-    "Občan",
-    "Závislý",
-    "Chlap"
-   ],
-   "effect_text": "Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Dlh": 1,
-     "PoškodeniePečene": 1
-    },
-    "allowed": {
-     "0": [
-      "PoškodeniePečene"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     1
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "PoškodeniePečene": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 1,
-    "right": 6
-   }
-  },
-  {
-   "id": "milujuca_manzelka",
-   "index": 16,
-   "name": "Milujúca manželka",
-   "tags": [
-    "Občan",
-    "Pamätník",
-    "Žena"
-   ],
-   "effect_text": "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Viera": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Odpor": 1,
-     "Povera": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "ministrant",
-   "index": 17,
-   "name": "Miňištrant",
-   "tags": [
-    "Občan",
-    "Závislý",
-    "Chlap"
-   ],
-   "effect_text": "Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "PoškodeniePečene": 1,
-     "Viera": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Povera": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "financna_poradkyna",
-   "index": 18,
-   "name": "Finančná poradkyňa",
-   "tags": [
-    "Občan",
-    "Pracujúci",
-    "Žena"
-   ],
-   "effect_text": "Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Dlh": 2,
-     "Povera": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Dlh": 1,
-     "Obmedzenie": 1
-    },
-    "allowed": {
-     "1": [
-      "Obmedzenie"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 3,
-    "right": 2
-   }
-  },
-  {
-   "id": "velmi_smutiaca_vdova",
-   "index": 19,
-   "name": "Veľmi smútiaca vdova",
-   "tags": [
-    "Občan",
-    "Kriminál",
-    "Žena"
-   ],
-   "effect_text": "Konflikt: Ak je priložená karta Chlap, po bitke ide z hry.",
-   "triggers": [
-    "Konflikt"
-   ],
-   "left": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Obmedzenie": 1,
-     "Rana": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Pohoršenie": 2
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 6,
-    "right": 1
-   }
-  },
-  {
-   "id": "vestica",
-   "index": 20,
-   "name": "Veštica",
-   "tags": [
-    "Občan",
-    "Zahraničný",
-    "Žena"
-   ],
-   "effect_text": "Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.",
-   "triggers": [
-    "Prehra"
-   ],
-   "left": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "PoškodeniePečene": 1,
-     "Vízia": 1
-    },
-    "allowed": {
-     "3": [
-      "PoškodeniePečene"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Povera": 2,
-     "Viera": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "silna_nezavisla_zena",
-   "index": 21,
-   "name": "Silná, nezávislá žena",
-   "tags": [
-    "Občan",
-    "Influencer",
-    "Žena"
-   ],
-   "effect_text": "Furt: Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Pohoršenie": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Dlh": 2
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 6,
-    "right": 1
-   }
-  },
-  {
-   "id": "policajtka",
-   "index": 22,
-   "name": "Policajtka",
-   "tags": [
-    "Občan",
+  "source": "tvorca kariet 2026-10-30T11:45:55.948Z",
+  "actions": [
+    "Cigareta",
+    "Dlh",
+    "Obmedzenie",
+    "Odpor",
+    "Pakt",
+    "Pecka",
+    "Petelica",
+    "Pohoršenie",
+    "Poldeci",
+    "Posilnenie",
+    "Povera",
+    "PoškodeniePečene",
+    "Rana",
+    "Robota",
+    "Viera",
+    "Vízia"
+  ],
+  "tags": [
     "Autorita",
-    "Žena"
-   ],
-   "effect_text": "Konflikt: Súper získa 1 Dlh. Ak je priložená karta Kriminál, namiesto toho ti dá 2 cigarety.",
-   "triggers": [
-    "Konflikt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Rana": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Robota": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "hasic",
-   "index": 23,
-   "name": "Hasič",
-   "tags": [
-    "Občan",
-    "Autorita",
-    "Chlap"
-   ],
-   "effect_text": "Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Posilnenie": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Petelica": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "praudovravec",
-   "index": 24,
-   "name": "Praudovravec",
-   "tags": [
-    "Občan",
-    "Influencer",
-    "Chlap"
-   ],
-   "effect_text": "Furt: Odpor na jeho spojoch nič neruší, ale ráta sa ako Posilnenie — zdvojí akciu, s ktorou je v páre, aj keď je súperova.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Odpor": 1,
-     "Povera": 1,
-     "Viera": 1
-    },
-    "allowed": {
-     "1": [
-      "Povera",
-      "Viera"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Povera": 1,
-     "Vízia": 1
-    },
-    "allowed": {
-     "3": [
-      "Vízia"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 8,
-    "left": 4,
-    "right": 2
-   }
-  },
-  {
-   "id": "zamocnik",
-   "index": 25,
-   "name": "Zámočník",
-   "tags": [
-    "Občan",
-    "Pracujúci",
-    "Chlap"
-   ],
-   "effect_text": "Furt: Akcie nástrojov v jeho okolí sú posilnené.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Poldeci": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pecka": 1,
-     "Robota": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "niekoho_stryna",
-   "index": 26,
-   "name": "Stryná",
-   "tags": [
-    "Občan",
-    "Pamätník",
-    "Žena"
-   ],
-   "effect_text": "Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "PoškodeniePečene": 1,
-     "Viera": 1
-    },
-    "allowed": {
-     "0": [
-      "Viera"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Povera": 1,
-     "Viera": 1,
-     "Vízia": 1
-    },
-    "allowed": {
-     "3": [
-      "Povera",
-      "Viera"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 8,
-    "left": 2,
-    "right": 4
-   }
-  },
-  {
-   "id": "veteran",
-   "index": 27,
-   "name": "Veterán",
-   "tags": [
-    "Občan",
-    "Pamätník",
-    "Chlap"
-   ],
-   "effect_text": "Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "PoškodeniePečene": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Odpor": 1,
-     "Pecka": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "recidivista",
-   "index": 28,
-   "name": "Recidivista",
-   "tags": [
-    "Občan",
-    "Kriminál",
     "Chlap",
-    "Zviera"
-   ],
-   "effect_text": "Prehra: Po bitke sa vráti do tvojej ruky.",
-   "triggers": [
-    "Prehra"
-   ],
-   "left": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Dlh": 2
-    }
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Petelica": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 3,
-    "right": 2
-   }
-  },
-  {
-   "id": "starosta",
-   "index": 29,
-   "name": "Starosta",
-   "tags": [
-    "Starešina",
-    "Chlap"
-   ],
-   "effect_text": "Nástup: Vezmi si 1 kartu zo šenku.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Pecka": 1,
-     "Poldeci": 1
-    },
-    "allowed": {
-     "0": [
-      "Pecka"
-     ],
-     "2": [
-      "Poldeci"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Pecka": 1
-    },
-    "allowed": {
-     "1": [
-      "Cigareta"
-     ],
-     "3": [
-      "Pecka"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "farar",
-   "index": 30,
-   "name": "Farár",
-   "tags": [
-    "Starešina",
-    "Chlap"
-   ],
-   "effect_text": "Prehra: Víťaz získa 1 zadĺženie za každú svoju aktívnu Poveru.",
-   "triggers": [
-    "Prehra"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Posilnenie": 2
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Viera": 2
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "postarka",
-   "index": 31,
-   "name": "Poštárka",
-   "tags": [
-    "Starešina",
-    "Žena"
-   ],
-   "effect_text": "Kšeft: Za 1 Dlh si dober 1 kartu.",
-   "triggers": [
-    "Kšeft"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Vízia": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Povera": 1,
-     "Vízia": 1
-    },
-    "allowed": {
-     "0": [
-      "Cigareta"
-     ],
-     "1": [
-      "Povera"
-     ],
-     "2": [
-      "Vízia"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "hrobar",
-   "index": 32,
-   "name": "Hrobár",
-   "tags": [
-    "Starešina",
-    "Chlap"
-   ],
-   "effect_text": "Konflikt: Priložená karta je posledná na svojej strane. Po bitke ide z hry.",
-   "triggers": [
-    "Konflikt"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Viera": 1,
-     "Vízia": 1
-    },
-    "allowed": {
-     "0": [
-      "Viera"
-     ],
-     "1": [
-      "Vízia"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Robota": 1
-    },
-    "allowed": {
-     "2": [
-      "Robota"
-     ],
-     "3": [
-      "Pohoršenie"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "vychovavatelka",
-   "index": 33,
-   "name": "Vychovávateľka",
-   "tags": [
-    "Starešina",
-    "Žena"
-   ],
-   "effect_text": "Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.",
-   "triggers": [
-    "Kšeft"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Obmedzenie": 1
-    },
-    "allowed": {
-     "0": [
-      "Obmedzenie"
-     ],
-     "3": [
-      "Cigareta"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "Povera": 1
-    },
-    "allowed": {
-     "0": [
-      "Poldeci"
-     ],
-     "3": [
-      "Povera"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "liberal",
-   "index": 34,
-   "name": "Liberál",
-   "tags": [
-    "Občan",
-    "Zahraničný",
-    "Žena",
-    "Chlap"
-   ],
-   "effect_text": "Pitka: Ak súperova partia nemá rovnako žien a chlapov, súper získa 1 zadĺženie.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Viera": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Povera": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "dievcina_na_vydaj",
-   "index": 35,
-   "name": "Dievčina na vydaj",
-   "tags": [
-    "Občan",
-    "Závislý",
-    "Žena"
-   ],
-   "effect_text": "Prehra: Zahoď túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.",
-   "triggers": [
-    "Prehra"
-   ],
-   "left": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Dlh": 2
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Povera": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 3,
-    "right": 2
-   }
-  },
-  {
-   "id": "zivnostnik",
-   "index": 36,
-   "name": "Živnostník",
-   "tags": [
-    "Občan",
-    "Pracujúci",
-    "Chlap"
-   ],
-   "effect_text": "Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Dlh": 1,
-     "Odpor": 1,
-     "Pakt": 1,
-     "Robota": 1
-    },
-    "allowed": {
-     "0": [
-      "Robota"
-     ],
-     "1": [
-      "Odpor"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Cigareta": 2,
-     "PoškodeniePečene": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "krcmarka",
-   "index": 37,
-   "name": "Krčmárka",
-   "tags": [
-    "Starešina",
-    "Žena"
-   ],
-   "effect_text": "Pitka: Na tvoje NA EX súper nesmie odpovedať kartou.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Poldeci": 1
-    },
-    "allowed": {
-     "2": [
-      "Obmedzenie"
-     ],
-     "3": [
-      "Poldeci"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Povera": 1
-    },
-    "allowed": {
-     "0": [
-      "Povera"
-     ],
-     "1": [
-      "Cigareta"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "zberny_dvor",
-   "index": 38,
-   "name": "Zberný dvor",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.",
-   "triggers": [
-    "Kšeft"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Petelica": 1,
-     "Robota": 1
-    },
-    "allowed": {
-     "1": [
-      "Robota"
-     ],
-     "3": [
-      "Petelica"
-     ]
-    },
-    "name": "pri váhe"
-   },
-   "right": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Obmedzenie": 1
-    },
-    "allowed": {
-     "1": [
-      "Dlh"
-     ],
-     "3": [
-      "Obmedzenie"
-     ]
-    },
-    "name": "za plotom"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "benzinka",
-   "index": 39,
-   "name": "Benzínka",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Cigareta": 2
-    },
-    "allowed": {
-     "1": [
-      "Cigareta"
-     ],
-     "2": [
-      "Cigareta"
-     ]
-    },
-    "name": "pri pokladni"
-   },
-   "right": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Pecka": 1
-    },
-    "allowed": {
-     "0": [
-      "Obmedzenie"
-     ],
-     "3": [
-      "Pecka"
-     ]
-    },
-    "name": "za budovou"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "zastavka",
-   "index": 40,
-   "name": "Zastávka",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Zhromaždenie: Obaja hráči majú spoločný limit vykladania — súčet ich limitov.",
-   "triggers": [
-    "Zhromaždenie"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1
-    },
-    "allowed": {
-     "1": [
-      "Cigareta"
-     ]
-    },
-    "name": "pod strieškou"
-   },
-   "right": {
-    "blocked": [
-     1,
-     2,
-     3
-    ],
-    "actions": {
-     "Pecka": 1
-    },
-    "allowed": {
-     "0": [
-      "Pecka"
-     ]
-    },
-    "name": "pri ceste"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "krcma",
-   "index": 41,
-   "name": "Krčma",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Petelica": 1
-    },
-    "allowed": {
-     "0": [
-      "Petelica"
-     ],
-     "2": [
-      "Dlh"
-     ]
-    },
-    "name": "pri výčape"
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Rana": 2
-    },
-    "allowed": {
-     "0": [
-      "Rana"
-     ],
-     "1": [
-      "Rana"
-     ]
-    },
-    "name": "pri dverách"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "abstak",
-   "index": 42,
-   "name": "Absťák",
-   "tags": [
-    "Kliatba"
-   ],
-   "effect_text": "Bitka: Udeluješ súperovi o ranu menej, ale máš 1 Pohoršenie navyše. Ak máš viac Absťákov než súper, pri remíze v tuhom prehráš.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "right": {
-    "blocked": [
-     0,
-     1,
-     2,
-     3
-    ],
-    "actions": {}
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "cierna_macka",
-   "index": 43,
-   "name": "Čierna mačka",
-   "tags": [
-    "Zviera"
-   ],
-   "effect_text": "Furt: Tvoje Povery spôsobujú mäkké poškodenie aj bez súperových priznaných dlhov.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Povera": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Povera": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "kocovnik",
-   "index": 44,
-   "name": "Kočovník",
-   "tags": [
-    "Občan",
-    "Zahraničný",
-    "Chlap"
-   ],
-   "effect_text": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "PoškodeniePečene": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Pecka": 1,
-     "PoškodeniePečene": 1
-    },
-    "allowed": {
-     "3": [
-      "PoškodeniePečene",
-      "Pecka"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 8,
-    "left": 2,
-    "right": 4
-   }
-  },
-  {
-   "id": "pes",
-   "index": 45,
-   "name": "Pes",
-   "tags": [
-    "Zviera"
-   ],
-   "effect_text": "Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Rana": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Rana": 2
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "kostol",
-   "index": 46,
-   "name": "Kostol",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu v kraji pri oltári.",
-   "triggers": [
-    "Zhromaždenie",
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Robota": 1,
-     "Viera": 1,
-     "Vízia": 1
-    },
-    "allowed": {
-     "0": [
-      "Robota"
-     ],
-     "1": [
-      "Viera"
-     ],
-     "2": [
-      "Vízia"
-     ]
-    },
-    "name": "pri oltári"
-   },
-   "right": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Pohoršenie": 1,
-     "Povera": 1,
-     "Viera": 1
-    },
-    "allowed": {
-     "1": [
-      "Pohoršenie"
-     ],
-     "2": [
-      "Povera"
-     ],
-     "3": [
-      "Viera"
-     ]
-    },
-    "name": "pri vchode"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "svokra",
-   "index": 47,
-   "name": "Svokra",
-   "tags": [
-    "Občan",
-    "Autorita",
-    "Žena"
-   ],
-   "effect_text": "Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2,
-     3
-    ],
-    "actions": {
-     "Poldeci": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
-     "Viera": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 1,
-    "right": 6
-   }
-  },
-  {
-   "id": "sarlatan",
-   "index": 48,
-   "name": "Šarlatán",
-   "tags": [
-    "Občan",
     "Influencer",
-    "Chlap"
-   ],
-   "effect_text": "Konflikt: Do konca kola sa jeho Dlhy rátajú ako Viera a Povery ako Rana.",
-   "triggers": [
-    "Konflikt"
-   ],
-   "left": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Povera": 2
-    }
-   },
-   "right": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Pohoršenie": 1,
-     "PoškodeniePečene": 1
-    },
-    "allowed": {
-     "2": [
-      "Pohoršenie"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 3,
-    "right": 2
-   }
-  },
-  {
-   "id": "podvodnik",
-   "index": 49,
-   "name": "Podvodník",
-   "tags": [
-    "Občan",
+    "Kliatba",
     "Kriminál",
-    "Chlap"
-   ],
-   "effect_text": "Prehra: Jeden tvoj priznaný Dlh sa presunie medzi súperove priznané.",
-   "triggers": [
-    "Prehra"
-   ],
-   "left": {
-    "blocked": [
-     1
-    ],
-    "actions": {
-     "Cigareta": 2,
-     "Dlh": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 3,
-    "right": 2
-   }
-  },
-  {
-   "id": "zahradkar",
-   "index": 50,
-   "name": "Záhradkár",
-   "tags": [
-    "Občan",
-    "Pracujúci",
-    "Chlap"
-   ],
-   "effect_text": "Exekúcia: Exekúcia v tomto kole pre teba neplatí.",
-   "triggers": [
-    "Exekúcia"
-   ],
-   "left": {
-    "blocked": [
-     1
-    ],
-    "actions": {
-     "Cigareta": 2,
-     "PoškodeniePečene": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "Rana": 1,
-     "Robota": 1
-    },
-    "allowed": {
-     "1": [
-      "Poldeci"
-     ]
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 3,
-    "right": 2
-   }
-  },
-  {
-   "id": "anonymny_alkoholik",
-   "index": 51,
-   "name": "Anonymný alkoholik",
-   "tags": [
-    "Občan",
-    "Závislý",
-    "Chlap"
-   ],
-   "effect_text": "Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Odpor": 1,
-     "Robota": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Viera": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "most",
-   "index": 52,
-   "name": "Most",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).",
-   "triggers": [
-    "Zhromaždenie"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Pecka": 1
-    },
-    "allowed": {
-     "1": [
-      "Pecka"
-     ]
-    },
-    "name": "pri kaplnke"
-   },
-   "right": {
-    "blocked": [
-     0,
-     1,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1
-    },
-    "allowed": {
-     "2": [
-      "Cigareta"
-     ]
-    },
-    "name": "pod mostom"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "obecny_urad",
-   "index": 53,
-   "name": "Obecný úrad",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Kšeft: Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.",
-   "triggers": [
-    "Kšeft"
-   ],
-   "left": {
-    "blocked": [
-     0
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Robota": 1,
-     "Viera": 1
-    },
-    "allowed": {
-     "1": [
-      "Robota"
-     ],
-     "2": [
-      "Viera"
-     ],
-     "3": [
-      "Obmedzenie"
-     ]
-    },
-    "name": "v kancelárii"
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
-     "Povera": 1
-    },
-    "allowed": {
-     "0": [
-      "Pecka"
-     ],
-     "1": [
-      "Dlh"
-     ],
-     "2": [
-      "Povera"
-     ]
-    },
-    "name": "na chodbe"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "jednota",
-   "index": 54,
-   "name": "Jednota",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1
-    },
-    "allowed": {
-     "1": [
-      "Cigareta"
-     ]
-    },
-    "name": "pri pulte"
-   },
-   "right": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Pohoršenie": 1
-    },
-    "allowed": {
-     "1": [
-      "Pohoršenie"
-     ]
-    },
-    "name": "pred obchodom"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "kulturny_dom",
-   "index": 55,
-   "name": "Kultúrny dom",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Bitka: Aj porazený dostane špaky — 1 za každú svoju kartu v línii.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1
-    ],
-    "actions": {
-     "Pohoršenie": 2,
-     "PoškodeniePečene": 1
-    },
-    "allowed": {
-     "0": [
-      "Pohoršenie"
-     ],
-     "2": [
-      "Pohoršenie"
-     ],
-     "3": [
-      "PoškodeniePečene"
-     ]
-    },
-    "name": "na parkete"
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Pecka": 1,
-     "Viera": 1
-    },
-    "allowed": {
-     "0": [
-      "Pecka"
-     ],
-     "1": [
-      "Cigareta"
-     ],
-     "2": [
-      "Viera"
-     ]
-    },
-    "name": "pred vchodom"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "vinna_pivnica",
-   "index": 56,
-   "name": "Vínna pivnica",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Pitka: Každý hráč smie dať NA EX až dvakrát.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "Posilnenie": 1,
-     "PoškodeniePečene": 1
-    },
-    "allowed": {
-     "0": [
-      "PoškodeniePečene"
-     ],
-     "1": [
-      "Poldeci"
-     ],
-     "2": [
-      "Posilnenie"
-     ]
-    },
-    "name": "pri sudoch"
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Pecka": 1,
-     "Rana": 1
-    },
-    "allowed": {
-     "0": [
-      "Rana"
-     ],
-     "1": [
-      "Pecka"
-     ],
-     "2": [
-      "Cigareta"
-     ]
-    },
-    "name": "na schodoch"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "druzstvo",
-   "index": 57,
-   "name": "Družstvo",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Zhromaždenie: Karty s tagom Pracujúci nemíňajú limit vykladania.",
-   "triggers": [
-    "Zhromaždenie"
-   ],
-   "left": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "Rana": 1,
-     "Robota": 1
-    },
-    "allowed": {
-     "0": [
-      "Robota"
-     ],
-     "1": [
-      "Poldeci"
-     ],
-     "3": [
-      "Rana"
-     ]
-    },
-    "name": "na poli"
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "Obmedzenie": 1,
-     "Odpor": 1,
-     "Pohoršenie": 1
-    },
-    "allowed": {
-     "0": [
-      "Obmedzenie"
-     ],
-     "1": [
-      "Pohoršenie"
-     ],
-     "2": [
-      "Odpor"
-     ]
-    },
-    "name": "na schôdzi"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "cintorin",
-   "index": 58,
-   "name": "Cintorín",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.",
-   "triggers": [
-    "Prehra"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Viera": 1
-    },
-    "allowed": {
-     "1": [
-      "Viera"
-     ]
-    },
-    "name": "pri hroboch"
-   },
-   "right": {
-    "blocked": [
-     0,
-     2,
-     3
-    ],
-    "actions": {
-     "Robota": 1
-    },
-    "allowed": {
-     "1": [
-      "Robota"
-     ]
-    },
-    "name": "pri márnici"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "dvojcata",
-   "index": 60,
-   "name": "Dvojčatá",
-   "tags": [
-    "Občan",
-    "Chlap"
-   ],
-   "effect_text": "Furt: Do prevahy sa rátajú za dvoch.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Pecka": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "PoškodeniePečene": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "sofer",
-   "index": 61,
-   "name": "Šofér",
-   "tags": [
-    "Občan",
-    "Chlap"
-   ],
-   "effect_text": "Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "Rana": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "PoškodeniePečene": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "kar",
-   "index": 62,
-   "name": "Kar",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Povera": 1,
-     "Viera": 1
-    },
-    "allowed": {
-     "1": [
-      "Viera"
-     ],
-     "2": [
-      "Povera"
-     ]
-    },
-    "name": "pri vdove"
-   },
-   "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "Rana": 1
-    },
-    "allowed": {
-     "1": [
-      "Poldeci"
-     ],
-     "2": [
-      "Rana"
-     ]
-    },
-    "name": "pri koláčoch"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "snubenica",
-   "index": 63,
-   "name": "Snúbenica",
-   "tags": [
-    "Občan",
-    "Žena"
-   ],
-   "effect_text": "Konflikt: Ak je priložená karta Chlap, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.",
-   "triggers": [
-    "Konflikt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Robota": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Viera": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "vidly",
-   "index": 64,
-   "name": "Vidly",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac.",
-   "triggers": [
-    "Dedičstvo"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Pecka": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Pohoršenie": 1
-    }
-   },
-   "permutations": {
-    "total": 8,
-    "left": 4,
-    "right": 2
-   }
-  },
-  {
-   "id": "lievik",
-   "index": 65,
-   "name": "Lievik",
-   "tags": [
-    "Nástroj"
-   ],
-   "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera.",
-   "triggers": [
-    "Dedičstvo"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Poldeci": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     3
-    ],
-    "actions": {
-     "PoškodeniePečene": 2
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "krokodil",
-   "index": 66,
-   "name": "Krokodíl",
-   "tags": [
-    "Zviera"
-   ],
-   "effect_text": "Bitka: Na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Odpor": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pecka": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "kapybara",
-   "index": 67,
-   "name": "Kapybara",
-   "tags": [
-    "Zviera"
-   ],
-   "effect_text": "Nástup: Posuň marker jedného staršieho o 1 pole k stredu.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Viera": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "kon",
-   "index": 68,
-   "name": "Kôň",
-   "tags": [
-    "Zviera"
-   ],
-   "effect_text": "Furt: Nástroj vedľa Koňa s ním tvorí spoj.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Posilnenie": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "kohut",
-   "index": 69,
-   "name": "Kohút",
-   "tags": [
-    "Zviera"
-   ],
-   "effect_text": "Pitka: Posledné slovo máš ty, aj keď si obranca.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Pohoršenie": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Odpor": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "degustatorka",
-   "index": 70,
-   "name": "Degustátorka",
-   "tags": [
-    "Občan",
-    "Závislý",
-    "Kriminál",
-    "Žena"
-   ],
-   "effect_text": "Nástup: Ak má súper viac plných poldeci ako ty, jeden mu ochutná — otoč ho na vypitý.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "PoškodeniePečene": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     1,
-     2
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "klebetnica",
-   "index": 71,
-   "name": "Bzdocha",
-   "tags": [
-    "Občan",
-    "Influencer",
-    "Žena"
-   ],
-   "effect_text": "Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX.",
-   "triggers": [
-    "Pitka"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Povera": 1,
-     "Vízia": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Pohoršenie": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "dohadzovacka",
-   "index": 72,
-   "name": "Dohadzovačka",
-   "tags": [
+    "Lokalita",
+    "Nástroj",
     "Občan",
     "Pamätník",
-    "Žena"
-   ],
-   "effect_text": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhej strany lokality.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     2
-    ],
-    "actions": {
-     "Pakt": 1,
-     "Viera": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Posilnenie": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "vandal",
-   "index": 73,
-   "name": "Vandal",
-   "tags": [
-    "Občan",
-    "Kriminál",
-    "Chlap"
-   ],
-   "effect_text": "Nástup: Otoč lokalitu o 180° — jej hrany si vymenia strany.",
-   "triggers": [
-    "Nástup"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Pecka": 1,
-     "PoškodeniePečene": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Odpor": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "stryko_z_ameriky",
-   "index": 74,
-   "name": "Strýko z Ameriky",
-   "tags": [
-    "Občan",
-    "Influencer",
+    "Pracujúci",
+    "Starešina",
     "Zahraničný",
-    "Chlap"
-   ],
-   "effect_text": "Kšeft: Za 2 cigarety udelíš v tejto bitke súperovi 1 Ranu navyše.",
-   "triggers": [
-    "Kšeft"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Cigareta": 2
-    }
-   },
-   "right": {
-    "blocked": [
-     1
-    ],
-    "actions": {
-     "Poldeci": 1,
-     "Vízia": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 1,
-    "right": 6
-   }
-  },
-  {
-   "id": "masiar",
-   "index": 75,
-   "name": "Mäsiar",
-   "tags": [
-    "Občan",
-    "Pracujúci",
-    "Chlap"
-   ],
-   "effect_text": "Furt: Efekty Zvierat v jeho okolí neplatia.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Pecka": 1,
-     "PoškodeniePečene": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Pecka": 1,
-     "PoškodeniePečene": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "kulturista",
-   "index": 76,
-   "name": "Kulturista",
-   "tags": [
-    "Občan",
-    "Influencer",
-    "Chlap"
-   ],
-   "effect_text": "Úplatok: Súper smie v každej Pitke dať na túto kartu 1 cigaretu. Každá zníži do konca kola jej útoky o stupeň (Petelica → Pecka → Rana → nič). Cigarety prepadnú.",
-   "triggers": [
-    "Úplatok"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Pecka": 1,
-     "Petelica": 1
-    },
-    "allowed": {
-     "1": [
-      "Petelica"
-     ],
-     "2": [
-      "Pecka"
-     ]
-    }
-   },
-   "right": {
-    "blocked": [],
-    "actions": {
-     "Dlh": 2
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 1,
-    "right": 6
-   }
-  },
-  {
-   "id": "traktoristka",
-   "index": 77,
-   "name": "Traktoristka",
-   "tags": [
-    "Občan",
-    "Pracujúci",
+    "Zviera",
+    "Závislý",
     "Žena"
-   ],
-   "effect_text": "Bitka: Ak máš v jej kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     0,
-     1
-    ],
-    "actions": {
-     "Pecka": 1,
-     "PoškodeniePečene": 1
+  ],
+  "cards": [
+    {
+      "id": "veterinar",
+      "index": 1,
+      "name": "Veterinár",
+      "tags": [
+        "Starešina",
+        "Chlap"
+      ],
+      "effect_text": "Pitka: Karty v jeho okolí nepridávajú poškodenie pečene.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Posilnenie": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Poldeci": 1
+        },
+        "allowed": {
+          "1": [
+            "Poldeci"
+          ],
+          "2": [
+            "Cigareta"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "autobusar",
+      "index": 2,
+      "name": "Autobusár",
+      "tags": [
+        "Starešina",
+        "Chlap"
+      ],
+      "effect_text": "Zhromaždenie: Ak súper pasuje po tebe, nedostane cigarety za pas.",
+      "triggers": [
+        "Zhromaždenie"
+      ],
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pecka": 1,
+          "Poldeci": 1
+        },
+        "allowed": {
+          "1": [
+            "Pecka"
+          ],
+          "2": [
+            "Cigareta"
+          ],
+          "3": [
+            "Poldeci"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          3
+        ],
+        "actions": {
+          "Robota": 1
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "noviny",
+      "index": 3,
+      "name": "Noviny",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Prehra: Za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak.",
+      "triggers": [
+        "Dedičstvo",
+        "Prehra"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Pohoršenie": 1,
+          "Povera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Povera": 2
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "cigorky",
+      "index": 4,
+      "name": "Krabička cigariet",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Pitka: Za každé 2 cigarety, ktoré súper vyfajčí, si dober 1 kartu. Nie je to nerest.",
+      "triggers": [
+        "Dedičstvo",
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Cigareta": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Cigareta": 2
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "vinko",
+      "index": 5,
+      "name": "Vínko",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Počíta sa, akoby si mal plný poldeci navyše. Nemôžeš dolievať poldeci za cigarety.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Poldeci": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "pasca",
+      "index": 6,
+      "name": "Pasca",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Bitka: Ak súper v tomto kole priložil kartu k tvojej, udelíš mu 1 Ranu navyše.",
+      "triggers": [
+        "Dedičstvo",
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Odpor": 1
+        },
+        "allowed": {
+          "0": [
+            "Obmedzenie"
+          ],
+          "3": [
+            "Odpor"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Odpor": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "puska",
+      "index": 7,
+      "name": "Puška",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Keď by tvoju prepojenú Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2
+        ],
+        "actions": {
+          "Pecka": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Petelica": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "svaty_text",
+      "index": 8,
+      "name": "Svätý text",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Viera": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Povera": 1,
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "nealko",
+      "index": 9,
+      "name": "Nealko",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoj prah Cirhózy je o 2 vyšší.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pohoršenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Pohoršenie": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "vyherny_automat",
+      "index": 10,
+      "name": "Výherný automat",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoj prah Dlhu je o 1 vyšší. V poslednej Pitke kola získaš 1 Dlh.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Robota": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 3
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "cirhoza",
+      "index": 11,
+      "name": "Cirhóza",
+      "tags": [
+        "Kliatba"
+      ],
+      "effect_text": "Bitka: Ak je priznaná, súper má +1 tuhé poškodenie. Nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry ti zoberie 3 špaky.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "actions": {}
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "actions": {}
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "lesna_cesta",
+      "index": 12,
+      "name": "Lesná cesta",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Bitka: Za každé svoje Zviera v súperovom kraji máš 1 tuhé poškodenie navyše.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Pecka": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ]
+        },
+        "name": "v húštine"
+      },
+      "right": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Povera": 1
+        },
+        "allowed": {
+          "1": [
+            "Povera"
+          ]
+        },
+        "name": "pri kríži"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "ihrisko",
+      "index": 13,
+      "name": "Ihrisko",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Bitka: V každom kraji, kde máš viac svojich Občanov, Zvierat a Starešinov než súper, máš 2 tuhé poškodenia navyše.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Pecka": 1,
+          "Rana": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ],
+          "3": [
+            "Rana"
+          ]
+        },
+        "name": "na trávniku"
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Poldeci": 1
+        },
+        "allowed": {
+          "1": [
+            "Poldeci"
+          ],
+          "2": [
+            "Cigareta"
+          ]
+        },
+        "name": "na tribúne"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "pijan",
+      "index": 14,
+      "name": "Pijan",
+      "tags": [
+        "Občan",
+        "Závislý",
+        "Chlap"
+      ],
+      "effect_text": "Bitka: Za každé NA EX, ktoré si v tomto kole dal, udelíš súperovi 1 Ranu navyše.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Dlh": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "0": [
+            "PoškodeniePečene"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          1
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "PoškodeniePečene": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 1,
+        "right": 6
+      }
+    },
+    {
+      "id": "milujuca_manzelka",
+      "index": 15,
+      "name": "Milujúca manželka",
+      "tags": [
+        "Občan",
+        "Pamätník",
+        "Žena"
+      ],
+      "effect_text": "Pitka: Tvoje poškodenie pečene v tejto Pitke je o 1 menšie.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Viera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Odpor": 1,
+          "Povera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "ministrant",
+      "index": 16,
+      "name": "Miňištrant",
+      "tags": [
+        "Občan",
+        "Závislý",
+        "Chlap"
+      ],
+      "effect_text": "Nástup: Ak vyvoláš Konflikt, do konca kola sa jeho Viera ráta ako Pecka.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "PoškodeniePečene": 1,
+          "Viera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Povera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "financna_poradkyna",
+      "index": 17,
+      "name": "Finančná poradkyňa",
+      "tags": [
+        "Občan",
+        "Pracujúci",
+        "Žena"
+      ],
+      "effect_text": "Pitka: Dlhy, ktoré vygeneruje táto karta, dostáva súper.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 2,
+          "Povera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Dlh": 1,
+          "Obmedzenie": 1
+        },
+        "allowed": {
+          "1": [
+            "Obmedzenie"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 3,
+        "right": 2
+      }
+    },
+    {
+      "id": "velmi_smutiaca_vdova",
+      "index": 18,
+      "name": "Veľmi smútiaca vdova",
+      "tags": [
+        "Občan",
+        "Kriminál",
+        "Žena"
+      ],
+      "effect_text": "Konflikt: Ak je priložená karta Chlap, po bitke ide z hry.",
+      "triggers": [
+        "Konflikt"
+      ],
+      "left": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Obmedzenie": 1,
+          "Rana": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Pohoršenie": 2
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 6,
+        "right": 1
+      }
+    },
+    {
+      "id": "vestica",
+      "index": 19,
+      "name": "Veštica",
+      "tags": [
+        "Občan",
+        "Zahraničný",
+        "Žena"
+      ],
+      "effect_text": "Prehra: Preskúmaj súperov a svoj doberací balík. Vymeň jednu jeho kartu za tvoju a karty vráť.",
+      "triggers": [
+        "Prehra"
+      ],
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "PoškodeniePečene": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "3": [
+            "PoškodeniePečene"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Povera": 2,
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 2,
+        "right": 3
+      }
+    },
+    {
+      "id": "silna_nezavisla_zena",
+      "index": 20,
+      "name": "Silná, nezávislá žena",
+      "tags": [
+        "Občan",
+        "Influencer",
+        "Žena"
+      ],
+      "effect_text": "Furt: Aktívne akcie tvojich kariet, ktoré s ňou susedia, sa rátajú dvakrát.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pohoršenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Dlh": 2
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 6,
+        "right": 1
+      }
+    },
+    {
+      "id": "policajtka",
+      "index": 21,
+      "name": "Policajtka",
+      "tags": [
+        "Občan",
+        "Autorita",
+        "Žena"
+      ],
+      "effect_text": "Konflikt: Súper získa 1 Dlh. Ak je priložená karta Kriminál, namiesto toho ti dá 2 cigarety.",
+      "triggers": [
+        "Konflikt"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Rana": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Robota": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "hasic",
+      "index": 22,
+      "name": "Hasič",
+      "tags": [
+        "Občan",
+        "Autorita",
+        "Chlap"
+      ],
+      "effect_text": "Nástup: Vytiahni náhodnú kartu zo svojho odhadzovacieho balíčka (aj kliatbu) a rozhodni sa, či si ju necháš, alebo ju odhodíš.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Posilnenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Petelica": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "praudovravec",
+      "index": 23,
+      "name": "Praudovravec",
+      "tags": [
+        "Občan",
+        "Influencer",
+        "Chlap"
+      ],
+      "effect_text": "Furt: Odpor na jeho spojoch nič neruší, ale ráta sa ako Posilnenie — zdvojí akciu, s ktorou je v páre, aj keď je súperova.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Odpor": 1,
+          "Povera": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "1": [
+            "Povera",
+            "Viera"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Pohoršenie": 1,
+          "Povera": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "3": [
+            "Vízia"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 8,
+        "left": 4,
+        "right": 2
+      }
+    },
+    {
+      "id": "zamocnik",
+      "index": 24,
+      "name": "Zámočník",
+      "tags": [
+        "Občan",
+        "Pracujúci",
+        "Chlap"
+      ],
+      "effect_text": "Furt: Akcie nástrojov v jeho okolí sú posilnené.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Poldeci": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pecka": 1,
+          "Robota": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "niekoho_stryna",
+      "index": 25,
+      "name": "Stryná",
+      "tags": [
+        "Občan",
+        "Pamätník",
+        "Žena"
+      ],
+      "effect_text": "Pitka: Každý hráč, ktorý v tejto Pitke nedal NA EX, dostane 1 poškodenie pečene.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "PoškodeniePečene": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "0": [
+            "Viera"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Povera": 1,
+          "Viera": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "3": [
+            "Povera",
+            "Viera"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 8,
+        "left": 2,
+        "right": 4
+      }
+    },
+    {
+      "id": "veteran",
+      "index": 26,
+      "name": "Veterán",
+      "tags": [
+        "Občan",
+        "Pamätník",
+        "Chlap"
+      ],
+      "effect_text": "Furt: NA EX na neho jeho aktívne akcie nezruší, ale zdvojí. Neaktívne nezdvojí.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Odpor": 1,
+          "Pecka": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "recidivista",
+      "index": 27,
+      "name": "Recidivista",
+      "tags": [
+        "Občan",
+        "Kriminál",
+        "Chlap",
+        "Zviera"
+      ],
+      "effect_text": "Prehra: Po bitke sa vráti do tvojej ruky.",
+      "triggers": [
+        "Prehra"
+      ],
+      "left": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Dlh": 2,
+          "Odpor": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Petelica": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 3,
+        "right": 2
+      }
+    },
+    {
+      "id": "starosta",
+      "index": 28,
+      "name": "Starosta",
+      "tags": [
+        "Starešina",
+        "Chlap"
+      ],
+      "effect_text": "Nástup: Vezmi si 1 kartu zo šenku.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Pecka": 1,
+          "Poldeci": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ],
+          "2": [
+            "Poldeci"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pecka": 1
+        },
+        "allowed": {
+          "1": [
+            "Cigareta"
+          ],
+          "3": [
+            "Pecka"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "farar",
+      "index": 29,
+      "name": "Farár",
+      "tags": [
+        "Starešina",
+        "Chlap"
+      ],
+      "effect_text": "Prehra: Víťaz získa 1 zadĺženie za každú svoju aktívnu Poveru.",
+      "triggers": [
+        "Prehra"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Posilnenie": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Viera": 2
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "postarka",
+      "index": 30,
+      "name": "Poštárka",
+      "tags": [
+        "Starešina",
+        "Žena"
+      ],
+      "effect_text": "Kšeft: Za 1 Dlh si dober 1 kartu.",
+      "triggers": [
+        "Kšeft"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Vízia": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Povera": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "0": [
+            "Cigareta"
+          ],
+          "1": [
+            "Povera"
+          ],
+          "2": [
+            "Vízia"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "hrobar",
+      "index": 31,
+      "name": "Hrobár",
+      "tags": [
+        "Starešina",
+        "Chlap"
+      ],
+      "effect_text": "Konflikt: Priložená karta je posledná na svojej strane. Po bitke ide z hry.",
+      "triggers": [
+        "Konflikt"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Viera": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "0": [
+            "Viera"
+          ],
+          "1": [
+            "Vízia"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pohoršenie": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "2": [
+            "Robota"
+          ],
+          "3": [
+            "Pohoršenie"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "vychovavatelka",
+      "index": 32,
+      "name": "Vychovávateľka",
+      "tags": [
+        "Starešina",
+        "Žena"
+      ],
+      "effect_text": "Kšeft: Za 2 cigarety máš v bitke 1 Poveru navyše.",
+      "triggers": [
+        "Kšeft"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Obmedzenie": 1
+        },
+        "allowed": {
+          "0": [
+            "Obmedzenie"
+          ],
+          "3": [
+            "Cigareta"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "Povera": 1
+        },
+        "allowed": {
+          "0": [
+            "Poldeci"
+          ],
+          "3": [
+            "Povera"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "liberal",
+      "index": 33,
+      "name": "Liberál",
+      "tags": [
+        "Občan",
+        "Zahraničný",
+        "Žena",
+        "Chlap"
+      ],
+      "effect_text": "Pitka: Ak súperova partia nemá rovnako žien a chlapov, súper získa 1 zadĺženie.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Pohoršenie": 1,
+          "Viera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Povera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "dievcina_na_vydaj",
+      "index": 34,
+      "name": "Dievčina na vydaj",
+      "tags": [
+        "Občan",
+        "Závislý",
+        "Žena"
+      ],
+      "effect_text": "Prehra: Zahoď túto kartu. Súper získa toľko Dlhov, koľko mala aktívnych akcií.",
+      "triggers": [
+        "Prehra"
+      ],
+      "left": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Dlh": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Pohoršenie": 1,
+          "Povera": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 3,
+        "right": 2
+      }
+    },
+    {
+      "id": "zivnostnik",
+      "index": 35,
+      "name": "Živnostník",
+      "tags": [
+        "Občan",
+        "Pracujúci",
+        "Chlap"
+      ],
+      "effect_text": "Nástup: V tom istom ťahu smieš za neho priložiť 1 Nástroj z ruky.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [],
+        "actions": {
+          "Dlh": 1,
+          "Odpor": 1,
+          "Pakt": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "0": [
+            "Robota"
+          ],
+          "1": [
+            "Odpor"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Cigareta": 2,
+          "PoškodeniePečene": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 2,
+        "right": 3
+      }
+    },
+    {
+      "id": "krcmarka",
+      "index": 36,
+      "name": "Krčmárka",
+      "tags": [
+        "Starešina",
+        "Žena"
+      ],
+      "effect_text": "Pitka: Na tvoje NA EX súper nesmie odpovedať kartou.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Poldeci": 1
+        },
+        "allowed": {
+          "2": [
+            "Obmedzenie"
+          ],
+          "3": [
+            "Poldeci"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Povera": 1
+        },
+        "allowed": {
+          "0": [
+            "Povera"
+          ],
+          "1": [
+            "Cigareta"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "zberny_dvor",
+      "index": 37,
+      "name": "Zberný dvor",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Kšeft: Za 1 cigaretu si vezmi do ruky ľubovoľnú kartu zo svojho odhadzovacieho balíčka.",
+      "triggers": [
+        "Kšeft"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Petelica": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "1": [
+            "Robota"
+          ],
+          "3": [
+            "Petelica"
+          ]
+        },
+        "name": "pri váhe"
+      },
+      "right": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Obmedzenie": 1
+        },
+        "allowed": {
+          "1": [
+            "Dlh"
+          ],
+          "3": [
+            "Obmedzenie"
+          ]
+        },
+        "name": "za plotom"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "benzinka",
+      "index": 38,
+      "name": "Benzínka",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Pitka: Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Cigareta": 2
+        },
+        "allowed": {
+          "1": [
+            "Cigareta"
+          ],
+          "2": [
+            "Cigareta"
+          ]
+        },
+        "name": "pri pokladni"
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Pecka": 1
+        },
+        "allowed": {
+          "0": [
+            "Obmedzenie"
+          ],
+          "3": [
+            "Pecka"
+          ]
+        },
+        "name": "za budovou"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "zastavka",
+      "index": 39,
+      "name": "Zastávka",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Zhromaždenie: Obaja hráči majú spoločný limit vykladania — súčet ich limitov.",
+      "triggers": [
+        "Zhromaždenie"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        },
+        "allowed": {
+          "1": [
+            "Cigareta"
+          ]
+        },
+        "name": "pod strieškou"
+      },
+      "right": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Pecka": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ]
+        },
+        "name": "pri ceste"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "krcma",
+      "index": 40,
+      "name": "Krčma",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Pitka: Ak máš plný poldeci a máš ho kam dať, musíš dať NA EX. Prah Cirhózy je tu o 2 vyšší.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Petelica": 1
+        },
+        "allowed": {
+          "0": [
+            "Petelica"
+          ],
+          "2": [
+            "Dlh"
+          ]
+        },
+        "name": "pri výčape"
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Rana": 2
+        },
+        "allowed": {
+          "0": [
+            "Rana"
+          ],
+          "1": [
+            "Rana"
+          ]
+        },
+        "name": "pri dverách"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "cierna_macka",
+      "index": 41,
+      "name": "Čierna mačka",
+      "tags": [
+        "Zviera"
+      ],
+      "effect_text": "Furt: Tvoje Povery poškodzujú aj bez súperových priznaných Dlhov.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pohoršenie": 1,
+          "Povera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Povera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "kocovnik",
+      "index": 42,
+      "name": "Kočovník",
+      "tags": [
+        "Občan",
+        "Zahraničný",
+        "Chlap"
+      ],
+      "effect_text": "Furt: Jeho akcie sa počítajú hráčovi, ktorý má v jeho kraji prevahu.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Odpor": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "3": [
+            "Odpor"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pecka": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "3": [
+            "PoškodeniePečene",
+            "Pecka"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 8,
+        "left": 2,
+        "right": 4
+      }
+    },
+    {
+      "id": "pes",
+      "index": 43,
+      "name": "Pes",
+      "tags": [
+        "Zviera"
+      ],
+      "effect_text": "Furt: Jeho aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Rana": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Rana": 2
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 2,
+        "right": 3
+      }
+    },
+    {
+      "id": "kostol",
+      "index": 44,
+      "name": "Kostol",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu v kraji pri oltári.",
+      "triggers": [
+        "Zhromaždenie",
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Robota": 1,
+          "Viera": 1,
+          "Vízia": 1
+        },
+        "allowed": {
+          "0": [
+            "Robota"
+          ],
+          "1": [
+            "Viera"
+          ],
+          "2": [
+            "Vízia"
+          ]
+        },
+        "name": "pri oltári"
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Pohoršenie": 1,
+          "Povera": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "1": [
+            "Pohoršenie"
+          ],
+          "2": [
+            "Povera"
+          ],
+          "3": [
+            "Viera"
+          ]
+        },
+        "name": "pri vchode"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "svokra",
+      "index": 45,
+      "name": "Svokra",
+      "tags": [
+        "Občan",
+        "Autorita",
+        "Žena"
+      ],
+      "effect_text": "Bitka: Za každú tvoju kartu so súperovým NA EX udelíš súperovi Ranu.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Poldeci": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Pecka": 1,
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 1,
+        "right": 6
+      }
+    },
+    {
+      "id": "sarlatan",
+      "index": 46,
+      "name": "Šarlatán",
+      "tags": [
+        "Občan",
+        "Influencer",
+        "Chlap"
+      ],
+      "effect_text": "Konflikt: Do konca kola sa jeho akcie Hazard rátajú ako Viera a Povery ako Rana.",
+      "triggers": [
+        "Konflikt"
+      ],
+      "left": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Povera": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pohoršenie": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "2": [
+            "Pohoršenie"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 3,
+        "right": 2
+      }
+    },
+    {
+      "id": "podvodnik",
+      "index": 47,
+      "name": "Podvodník",
+      "tags": [
+        "Občan",
+        "Kriminál",
+        "Chlap"
+      ],
+      "effect_text": "Prehra: Jeden tvoj priznaný Dlh sa presunie medzi súperove priznané.",
+      "triggers": [
+        "Prehra"
+      ],
+      "left": {
+        "blocked": [
+          1
+        ],
+        "actions": {
+          "Cigareta": 2,
+          "Dlh": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 3,
+        "right": 2
+      }
+    },
+    {
+      "id": "zahradkar",
+      "index": 48,
+      "name": "Záhradkár",
+      "tags": [
+        "Občan",
+        "Pracujúci",
+        "Chlap"
+      ],
+      "effect_text": "Exekúcia: Exekúcia v tomto kole pre teba neplatí.",
+      "triggers": [
+        "Exekúcia"
+      ],
+      "left": {
+        "blocked": [
+          1
+        ],
+        "actions": {
+          "Cigareta": 2,
+          "PoškodeniePečene": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "Rana": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "1": [
+            "Poldeci"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 3,
+        "right": 2
+      }
+    },
+    {
+      "id": "anonymny_alkoholik",
+      "index": 49,
+      "name": "Anonymný alkoholik",
+      "tags": [
+        "Občan",
+        "Závislý",
+        "Chlap"
+      ],
+      "effect_text": "Nástup: Priznaj všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Odpor": 1,
+          "Robota": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "most",
+      "index": 50,
+      "name": "Most",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Zhromaždenie: Karty sa smú vykladať len na vlastnú stranu (aj odpoveď na NA EX).",
+      "triggers": [
+        "Zhromaždenie"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Pecka": 1
+        },
+        "allowed": {
+          "1": [
+            "Pecka"
+          ]
+        },
+        "name": "pri kaplnke"
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        },
+        "allowed": {
+          "2": [
+            "Cigareta"
+          ]
+        },
+        "name": "pod mostom"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "obecny_urad",
+      "index": 51,
+      "name": "Obecný úrad",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Kšeft: Za 3 cigarety presuň 1 svoj priznaný Dlh medzi súperove priznané.",
+      "triggers": [
+        "Kšeft"
+      ],
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Robota": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "1": [
+            "Robota"
+          ],
+          "2": [
+            "Viera"
+          ],
+          "3": [
+            "Obmedzenie"
+          ]
+        },
+        "name": "v kancelárii"
+      },
+      "right": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Pecka": 1,
+          "Povera": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ],
+          "1": [
+            "Dlh"
+          ],
+          "2": [
+            "Povera"
+          ]
+        },
+        "name": "na chodbe"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "jednota",
+      "index": 52,
+      "name": "Jednota",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Pitka: Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        },
+        "allowed": {
+          "1": [
+            "Cigareta"
+          ]
+        },
+        "name": "pri pulte"
+      },
+      "right": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Pohoršenie": 1
+        },
+        "allowed": {
+          "1": [
+            "Pohoršenie"
+          ]
+        },
+        "name": "pred obchodom"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "kulturny_dom",
+      "index": 53,
+      "name": "Kultúrny dom",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Bitka: Aj porazený dostane špaky — 1 za každú svoju kartu v línii.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1
+        ],
+        "actions": {
+          "Pohoršenie": 2,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "0": [
+            "Pohoršenie"
+          ],
+          "2": [
+            "Pohoršenie"
+          ],
+          "3": [
+            "PoškodeniePečene"
+          ]
+        },
+        "name": "na parkete"
+      },
+      "right": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pecka": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ],
+          "1": [
+            "Cigareta"
+          ],
+          "2": [
+            "Viera"
+          ]
+        },
+        "name": "pred vchodom"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "vinna_pivnica",
+      "index": 54,
+      "name": "Vínna pivnica",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Pitka: Každý hráč smie dať NA EX až dvakrát.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "Posilnenie": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "0": [
+            "PoškodeniePečene"
+          ],
+          "1": [
+            "Poldeci"
+          ],
+          "2": [
+            "Posilnenie"
+          ]
+        },
+        "name": "pri sudoch"
+      },
+      "right": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Pecka": 1,
+          "Rana": 1
+        },
+        "allowed": {
+          "0": [
+            "Rana"
+          ],
+          "1": [
+            "Pecka"
+          ],
+          "2": [
+            "Cigareta"
+          ]
+        },
+        "name": "na schodoch"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "druzstvo",
+      "index": 55,
+      "name": "Družstvo",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Zhromaždenie: Karty s tagom Pracujúci nemíňajú limit vykladania.",
+      "triggers": [
+        "Zhromaždenie"
+      ],
+      "left": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "Rana": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "0": [
+            "Robota"
+          ],
+          "1": [
+            "Poldeci"
+          ],
+          "3": [
+            "Rana"
+          ]
+        },
+        "name": "na poli"
+      },
+      "right": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Obmedzenie": 1,
+          "Odpor": 1,
+          "Pohoršenie": 1
+        },
+        "allowed": {
+          "0": [
+            "Obmedzenie"
+          ],
+          "1": [
+            "Pohoršenie"
+          ],
+          "2": [
+            "Odpor"
+          ]
+        },
+        "name": "na schôdzi"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "cintorin",
+      "index": 56,
+      "name": "Cintorín",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Prehra: Smieš vyložiť jeden Nástroj z ruky alebo zo šenku do Dedičstva bez platenia.",
+      "triggers": [
+        "Prehra"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Viera": 1
+        },
+        "allowed": {
+          "1": [
+            "Viera"
+          ]
+        },
+        "name": "pri hroboch"
+      },
+      "right": {
+        "blocked": [
+          0,
+          2,
+          3
+        ],
+        "actions": {
+          "Robota": 1
+        },
+        "allowed": {
+          "1": [
+            "Robota"
+          ]
+        },
+        "name": "pri márnici"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "dvojcata",
+      "index": 58,
+      "name": "Dvojčatá",
+      "tags": [
+        "Občan",
+        "Chlap",
+        "Závislý"
+      ],
+      "effect_text": "Furt: Do prevahy sa rátajú za dvoch.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          0
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Odpor": 1,
+          "Pecka": 1
+        },
+        "allowed": {
+          "1": [
+            "Odpor"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "PoškodeniePečene": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "sofer",
+      "index": 59,
+      "name": "Šofér",
+      "tags": [
+        "Občan",
+        "Chlap",
+        "Pracujúci"
+      ],
+      "effect_text": "Bitka: Ak si v tomto kole nedal NA EX, udelíš súperovi 1 Pecku navyše.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "Rana": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Odpor": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "1": [
+            "Odpor"
+          ]
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "kar",
+      "index": 60,
+      "name": "Kar",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Pitka: Poškodenie pečene za NA EX dostane súper hráča, ktorý ho dal.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Povera": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "1": [
+            "Viera"
+          ],
+          "2": [
+            "Povera"
+          ]
+        },
+        "name": "pri vdove"
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "Rana": 1
+        },
+        "allowed": {
+          "1": [
+            "Poldeci"
+          ],
+          "2": [
+            "Rana"
+          ]
+        },
+        "name": "pri koláčoch"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "snubenica",
+      "index": 61,
+      "name": "Snúbenica",
+      "tags": [
+        "Občan",
+        "Žena",
+        "Influencer"
+      ],
+      "effect_text": "Konflikt: Ak je priložená karta Chlap, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.",
+      "triggers": [
+        "Konflikt"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Robota": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "vidly",
+      "index": 62,
+      "name": "Vidly",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Rany udeľujú o 1 poškodenie viac.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Pecka": 1,
+          "Rana": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Robota": 2
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "lievik",
+      "index": 63,
+      "name": "Lievik",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: NA EX smieš dať aj na Zviera.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Poldeci": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "PoškodeniePečene": 2
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "krokodil",
+      "index": 64,
+      "name": "Krokodíl",
+      "tags": [
+        "Zviera"
+      ],
+      "effect_text": "Bitka: Na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Odpor": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pecka": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "kapybara",
+      "index": 65,
+      "name": "Kapybara",
+      "tags": [
+        "Zviera"
+      ],
+      "effect_text": "Nástup: Posuň marker jedného staršieho o 1 pole k stredu.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Viera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "kon",
+      "index": 66,
+      "name": "Kôň",
+      "tags": [
+        "Zviera"
+      ],
+      "effect_text": "Furt: Nástroj vedľa Koňa s ním tvorí spoj.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Posilnenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "kohut",
+      "index": 67,
+      "name": "Kohút",
+      "tags": [
+        "Zviera"
+      ],
+      "effect_text": "Pitka: Posledné slovo máš ty, aj keď si obranca.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Pohoršenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Odpor": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 2,
+        "right": 3
+      }
+    },
+    {
+      "id": "degustatorka",
+      "index": 68,
+      "name": "Degustátorka",
+      "tags": [
+        "Občan",
+        "Závislý",
+        "Kriminál",
+        "Žena"
+      ],
+      "effect_text": "Nástup: Ak má súper viac plných poldeci ako ty, jeden mu ochutná — otoč ho na vypitý.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "klebetnica",
+      "index": 69,
+      "name": "Bzdocha",
+      "tags": [
+        "Občan",
+        "Influencer",
+        "Žena"
+      ],
+      "effect_text": "Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX.",
+      "triggers": [
+        "Pitka"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Povera": 1,
+          "Vízia": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Pohoršenie": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "dohadzovacka",
+      "index": 70,
+      "name": "Dohadzovačka",
+      "tags": [
+        "Občan",
+        "Pamätník",
+        "Žena"
+      ],
+      "effect_text": "Nástup: Ak susedíš s Občanom alebo Starešinom, za teba sa presunie najvzdialenejší Občan alebo Starešina opačného pohlavia ako tvoj sused z druhej strany lokality.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          2
+        ],
+        "actions": {
+          "Pakt": 1,
+          "Viera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Posilnenie": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "vandal",
+      "index": 71,
+      "name": "Vandal",
+      "tags": [
+        "Občan",
+        "Kriminál",
+        "Chlap"
+      ],
+      "effect_text": "Nástup: Otoč lokalitu o 180° — jej hrany si vymenia strany.",
+      "triggers": [
+        "Nástup"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Pecka": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Odpor": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "stryko_z_ameriky",
+      "index": 72,
+      "name": "Strýko z Ameriky",
+      "tags": [
+        "Občan",
+        "Influencer",
+        "Zahraničný",
+        "Chlap"
+      ],
+      "effect_text": "Kšeft: Za 2 cigarety udelíš v tejto bitke súperovi 1 Ranu navyše.",
+      "triggers": [
+        "Kšeft"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Cigareta": 2
+        }
+      },
+      "right": {
+        "blocked": [
+          1
+        ],
+        "actions": {
+          "Poldeci": 1,
+          "Vízia": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 1,
+        "right": 6
+      }
+    },
+    {
+      "id": "masiar",
+      "index": 73,
+      "name": "Mäsiar",
+      "tags": [
+        "Občan",
+        "Pracujúci",
+        "Chlap"
+      ],
+      "effect_text": "Furt: Efekty Zvierat v jeho okolí neplatia.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Pecka": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Pecka": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "kulturista",
+      "index": 74,
+      "name": "Kulturista",
+      "tags": [
+        "Občan",
+        "Influencer",
+        "Chlap"
+      ],
+      "effect_text": "Úplatok: Súper smie v každej Pitke dať na túto kartu 1 cigaretu. Každá zníži do konca kola jej útoky o stupeň (Petelica → Pecka → Rana → nič). Cigarety prepadnú.",
+      "triggers": [
+        "Úplatok"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Pecka": 1,
+          "Petelica": 1
+        },
+        "allowed": {
+          "1": [
+            "Petelica"
+          ],
+          "2": [
+            "Pecka"
+          ]
+        }
+      },
+      "right": {
+        "blocked": [],
+        "actions": {
+          "Dlh": 2
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 1,
+        "right": 6
+      }
+    },
+    {
+      "id": "traktoristka",
+      "index": 75,
+      "name": "Traktorista",
+      "tags": [
+        "Občan",
+        "Pracujúci",
+        "Chlap"
+      ],
+      "effect_text": "Bitka: Ak máš v jeho kraji prevahu, udelíš súperovi 1 Pecku navyše. Inak získaš 1 Dlh.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pecka": 1,
+          "PoškodeniePečene": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2
+        ],
+        "actions": {
+          "Dlh": 1
+        }
+      },
+      "permutations": {
+        "total": 6,
+        "left": 2,
+        "right": 3
+      }
+    },
+    {
+      "id": "vymahac",
+      "index": 76,
+      "name": "Vymáhač",
+      "tags": [
+        "Občan",
+        "Kriminál",
+        "Chlap"
+      ],
+      "effect_text": "Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Pecka": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "sklad",
+      "index": 77,
+      "name": "Sklad",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka.",
+      "triggers": [
+        "Kšeft"
+      ],
+      "left": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Pecka": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "0": [
+            "Robota"
+          ],
+          "2": [
+            "Pecka"
+          ]
+        },
+        "name": "pri vreciach"
+      },
+      "right": {
+        "blocked": [
+          1,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Dlh": 1
+        },
+        "allowed": {
+          "0": [
+            "Cigareta"
+          ],
+          "2": [
+            "Dlh"
+          ]
+        },
+        "name": "pri strážnici"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "polovnicka_chata",
+      "index": 78,
+      "name": "Poľovnícka chata",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [],
+        "actions": {
+          "Dlh": 1,
+          "Pecka": 1,
+          "Petelica": 1,
+          "Posilnenie": 1
+        },
+        "allowed": {
+          "0": [
+            "Posilnenie"
+          ],
+          "1": [
+            "Petelica"
+          ],
+          "2": [
+            "Dlh"
+          ],
+          "3": [
+            "Pecka"
+          ]
+        },
+        "name": "pri trofejach"
+      },
+      "right": {
+        "blocked": [],
+        "actions": {
+          "Petelica": 1,
+          "Pohoršenie": 1,
+          "PoškodeniePečene": 1,
+          "Rana": 1
+        },
+        "allowed": {
+          "0": [
+            "Rana"
+          ],
+          "1": [
+            "Petelica"
+          ],
+          "2": [
+            "PoškodeniePečene"
+          ],
+          "3": [
+            "Pohoršenie"
+          ]
+        },
+        "name": "na posede"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "predsedova_vila",
+      "index": 79,
+      "name": "Predsedova vila",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe. Marker staršieho, ktorého si súper v tomto kole vzal do patronátu, takto posunúť nesmieš.",
+      "triggers": [
+        "Kšeft"
+      ],
+      "left": {
+        "blocked": [],
+        "actions": {
+          "Cigareta": 1,
+          "Dlh": 1,
+          "Pecka": 2
+        },
+        "allowed": {
+          "0": [
+            "Cigareta"
+          ],
+          "1": [
+            "Pecka"
+          ],
+          "2": [
+            "Pecka"
+          ],
+          "3": [
+            "Dlh"
+          ]
+        },
+        "name": "pri bazéne"
+      },
+      "right": {
+        "blocked": [],
+        "actions": {
+          "Dlh": 1,
+          "Petelica": 1,
+          "Posilnenie": 1,
+          "Viera": 1
+        },
+        "allowed": {
+          "0": [
+            "Posilnenie"
+          ],
+          "1": [
+            "Petelica"
+          ],
+          "2": [
+            "Dlh"
+          ],
+          "3": [
+            "Viera"
+          ]
+        },
+        "name": "v pracovni"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "herna",
+      "index": 80,
+      "name": "Herňa",
+      "tags": [
+        "Lokalita"
+      ],
+      "effect_text": "Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.",
+      "triggers": [
+        "Bitka"
+      ],
+      "left": {
+        "blocked": [],
+        "actions": {
+          "Dlh": 1,
+          "Pecka": 1,
+          "Petelica": 1,
+          "PoškodeniePečene": 1
+        },
+        "allowed": {
+          "0": [
+            "Pecka"
+          ],
+          "1": [
+            "Petelica"
+          ],
+          "2": [
+            "PoškodeniePečene"
+          ],
+          "3": [
+            "Dlh"
+          ]
+        },
+        "name": "pri automatoch"
+      },
+      "right": {
+        "blocked": [],
+        "actions": {
+          "Dlh": 1,
+          "Pecka": 1,
+          "Rana": 1,
+          "Robota": 1
+        },
+        "allowed": {
+          "0": [
+            "Rana"
+          ],
+          "1": [
+            "Pecka"
+          ],
+          "2": [
+            "Robota"
+          ],
+          "3": [
+            "Dlh"
+          ]
+        },
+        "name": "v zadnej miestnosti"
+      },
+      "permutations": {
+        "total": 1,
+        "left": 1,
+        "right": 1
+      }
+    },
+    {
+      "id": "boxer",
+      "index": 81,
+      "name": "Valaška",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Pecky udeľujú o 1 poškodenie viac.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Pecka": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Odpor": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "energetak",
+      "index": 82,
+      "name": "Energeťák",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Posilnenie nemožno zrušiť NA EX.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Posilnenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          3
+        ],
+        "actions": {
+          "Poldeci": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "furik",
+      "index": 83,
+      "name": "Fúrik",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Roboty pália o 1 Dlh viac.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2
+        ],
+        "actions": {
+          "Robota": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Robota": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "horoskop",
+      "index": 84,
+      "name": "Horoskop",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Klebety z tvojich Povier platia aj v nasledujúcom kole.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Povera": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "hrable",
+      "index": 85,
+      "name": "Hrable",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Odpor": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Pohoršenie": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "jogurt",
+      "index": 86,
+      "name": "Jogurt",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke, nie až v bitke.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2
+        ],
+        "actions": {
+          "Poldeci": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "kristalova_gula",
+      "index": 87,
+      "name": "Krištáľová guľa",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Vízie ukážu 2 vrchné karty — jednu si vezmi alebo zahoď, druhú vráť navrch.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2
+        ],
+        "actions": {
+          "Vízia": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Povera": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "pistalka",
+      "index": 88,
+      "name": "Píšťalka",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1,
+          2
+        ],
+        "actions": {
+          "Obmedzenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Rana": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 1,
+        "right": 2
+      }
+    },
+    {
+      "id": "profesionalny_tiper",
+      "index": 89,
+      "name": "Profesionálny tipér",
+      "tags": [
+        "Občan",
+        "Závislý",
+        "Chlap"
+      ],
+      "effect_text": "Furt: Posilnené akcie na jeho spojoch sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota.",
+      "triggers": [
+        "Furt"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          3
+        ],
+        "actions": {
+          "Dlh": 1,
+          "Posilnenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2
+        ],
+        "actions": {
+          "Cigareta": 1,
+          "Vízia": 1
+        }
+      },
+      "permutations": {
+        "total": 4,
+        "left": 2,
+        "right": 2
+      }
+    },
+    {
+      "id": "telefon",
+      "index": 90,
+      "name": "Telefón",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Pohoršenia k stredu stoja toľko ako von.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pohoršenie": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Viera": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "vyherne_zreby",
+      "index": 91,
+      "name": "Výherné žreby",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje Hazardy sú aktívne, keď nie sú spojené, a neaktívne, keď sú spojené.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Dlh": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          1,
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "zapalovac",
+      "index": 92,
+      "name": "Zapaľovač",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoje aktívne Cigarety nemožno zrušiť NA EX.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          2,
+          3
+        ],
+        "actions": {
+          "Cigareta": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          3
+        ],
+        "actions": {
+          "Odpor": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
+    },
+    {
+      "id": "zrkadlo",
+      "index": 93,
+      "name": "Zrkadlo",
+      "tags": [
+        "Nástroj"
+      ],
+      "effect_text": "Dedičstvo: Tvoj Pakt kopíruje prepojenú akciu dvakrát.",
+      "triggers": [
+        "Dedičstvo"
+      ],
+      "left": {
+        "blocked": [
+          0,
+          1
+        ],
+        "actions": {
+          "Pakt": 1
+        }
+      },
+      "right": {
+        "blocked": [
+          0,
+          1,
+          3
+        ],
+        "actions": {
+          "Pakt": 1
+        }
+      },
+      "permutations": {
+        "total": 2,
+        "left": 2,
+        "right": 1
+      }
     }
-   },
-   "right": {
-    "blocked": [
-     2
-    ],
-    "actions": {
-     "Dlh": 1
-    }
-   },
-   "permutations": {
-    "total": 6,
-    "left": 2,
-    "right": 3
-   }
-  },
-  {
-   "id": "vymahac",
-   "index": 78,
-   "name": "Vymáhač",
-   "tags": [
-    "Občan",
-    "Kriminál",
-    "Chlap"
-   ],
-   "effect_text": "Bitka: Za každé 2 tvoje priznané Dlhy udelíš súperovi 1 Ranu navyše.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [
-     2,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Pecka": 1
-    }
-   },
-   "right": {
-    "blocked": [
-     0,
-     3
-    ],
-    "actions": {
-     "Dlh": 1,
-     "Rana": 1
-    }
-   },
-   "permutations": {
-    "total": 4,
-    "left": 2,
-    "right": 2
-   }
-  },
-  {
-   "id": "sklad",
-   "index": 79,
-   "name": "Sklad",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Kšeft: Za 1 cigaretu si vezmi do ruky vrchnú kartu zo súperovho odhadzovacieho balíčka.",
-   "triggers": [
-    "Kšeft"
-   ],
-   "left": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Pecka": 1,
-     "Robota": 1
-    },
-    "allowed": {
-     "0": [
-      "Robota"
-     ],
-     "2": [
-      "Pecka"
-     ]
-    },
-    "name": "pri vreciach"
-   },
-   "right": {
-    "blocked": [
-     1,
-     3
-    ],
-    "actions": {
-     "Cigareta": 1,
-     "Dlh": 1
-    },
-    "allowed": {
-     "0": [
-      "Cigareta"
-     ],
-     "2": [
-      "Dlh"
-     ]
-    },
-    "name": "pri strážnici"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "polovnicka_chata",
-   "index": 80,
-   "name": "Poľovnícka chata",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Furt: Aktívne Rany, Pecky a Petelice z hrán lokality sa rátajú dvakrát.",
-   "triggers": [
-    "Furt"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
-     "Petelica": 1,
-     "Posilnenie": 1
-    },
-    "allowed": {
-     "0": [
-      "Posilnenie"
-     ],
-     "1": [
-      "Petelica"
-     ],
-     "2": [
-      "Dlh"
-     ],
-     "3": [
-      "Pecka"
-     ]
-    },
-    "name": "pri trofejach"
-   },
-   "right": {
-    "blocked": [],
-    "actions": {
-     "Petelica": 1,
-     "Pohoršenie": 1,
-     "PoškodeniePečene": 1,
-     "Rana": 1
-    },
-    "allowed": {
-     "0": [
-      "Rana"
-     ],
-     "1": [
-      "Petelica"
-     ],
-     "2": [
-      "PoškodeniePečene"
-     ],
-     "3": [
-      "Pohoršenie"
-     ]
-    },
-    "name": "na posede"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "predsedova_vila",
-   "index": 81,
-   "name": "Predsedova vila",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole k súperovi alebo k sebe. Marker staršieho, ktorého si súper v tomto kole vzal do patronátu, takto posunúť nesmieš.",
-   "triggers": [
-    "Kšeft"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Cigareta": 1,
-     "Dlh": 1,
-     "Pecka": 2
-    },
-    "allowed": {
-     "0": [
-      "Cigareta"
-     ],
-     "1": [
-      "Pecka"
-     ],
-     "2": [
-      "Pecka"
-     ],
-     "3": [
-      "Dlh"
-     ]
-    },
-    "name": "pri bazéne"
-   },
-   "right": {
-    "blocked": [],
-    "actions": {
-     "Dlh": 1,
-     "Petelica": 1,
-     "Posilnenie": 1,
-     "Viera": 1
-    },
-    "allowed": {
-     "0": [
-      "Posilnenie"
-     ],
-     "1": [
-      "Petelica"
-     ],
-     "2": [
-      "Dlh"
-     ],
-     "3": [
-      "Viera"
-     ]
-    },
-    "name": "v pracovni"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  },
-  {
-   "id": "herna",
-   "index": 82,
-   "name": "Herňa",
-   "tags": [
-    "Lokalita"
-   ],
-   "effect_text": "Bitka: Víťaz dostane navyše toľko špakov, koľko má porazený priznaných Dlhov.",
-   "triggers": [
-    "Bitka"
-   ],
-   "left": {
-    "blocked": [],
-    "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
-     "Petelica": 1,
-     "PoškodeniePečene": 1
-    },
-    "allowed": {
-     "0": [
-      "Pecka"
-     ],
-     "1": [
-      "Petelica"
-     ],
-     "2": [
-      "PoškodeniePečene"
-     ],
-     "3": [
-      "Dlh"
-     ]
-    },
-    "name": "pri automatoch"
-   },
-   "right": {
-    "blocked": [],
-    "actions": {
-     "Dlh": 1,
-     "Pecka": 1,
-     "Rana": 1,
-     "Robota": 1
-    },
-    "allowed": {
-     "0": [
-      "Rana"
-     ],
-     "1": [
-      "Pecka"
-     ],
-     "2": [
-      "Robota"
-     ],
-     "3": [
-      "Dlh"
-     ]
-    },
-    "name": "v zadnej miestnosti"
-   },
-   "permutations": {
-    "total": 1,
-    "left": 1,
-    "right": 1
-   }
-  }
- ]
+  ]
 }

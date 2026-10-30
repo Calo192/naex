@@ -20,13 +20,13 @@ function sDedicstvom(s: GameState, p: PlayerId, dedicstvo: readonly CardInstance
 }
 
 describe("vplyvyNaAkcie — Nástroje v Dedičstve", () => {
-  it("bez Nástrojov nič; Puška Petelica, Vidly Rana, Svätý text Viera", () => {
+  it("bez Nástrojov nič; Vidly Rana, Svätý text Viera; Puška (Náradie 2026-10-30) Petelicu chráni, nezvyšuje", () => {
     const s0 = setupGame(data, 3);
     expect(vplyvyNaAkcie(s0, 0)).toEqual([]);
     const s = sDedicstvom(s0, 0, [inst("puska"), inst("vidly"), inst("svaty_text"), inst("nealko")]);
     expect(vplyvyNaAkcie(s, 0)).toEqual([
-      { akcia: "Petelica", zdroj: "puska", o: 1 },
       { akcia: "Rana", zdroj: "vidly", o: 1 },
+      { akcia: "Petelica", zdroj: "puska", o: 0, popis: "prepojenú Petelicu namiesto zrušenia (Odpor, NA EX) udelí o 1 poškodenie menej" },
       { akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA },
     ]);
     // Dedičstvo súpera hráča 0 neposilní.
@@ -45,7 +45,7 @@ describe("vplyvyNaAkcie — Nástroje v Dedičstve", () => {
     s = sDedicstvom(s, 1, [inst("svaty_text")]);
     const v0 = viewFor(data, s, 0);
     const v1 = viewFor(data, s, 1);
-    expect(v0.vplyvyAkcii).toEqual([[{ akcia: "Petelica", zdroj: "puska", o: 1 }], [{ akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA }]]);
+    expect(v0.vplyvyAkcii).toEqual([[{ akcia: "Petelica", zdroj: "puska", o: 0, popis: "prepojenú Petelicu namiesto zrušenia (Odpor, NA EX) udelí o 1 poškodenie menej" }], [{ akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA }]]);
     expect(v1.vplyvyAkcii).toEqual(v0.vplyvyAkcii);
   });
 });

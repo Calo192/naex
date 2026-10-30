@@ -98,6 +98,13 @@ export function priazenSila(elder: Pick<ElderState, "marker">): number {
  */
 export type Klebety = Readonly<Record<string, number>>;
 
+/** Súčet klebiet (bitka tohto kola + prenesené Horoskopom); undefined, keď nie sú žiadne. */
+export function spojKlebety(...zoznam: readonly (Klebety | undefined)[]): Klebety | undefined {
+  const out: Record<string, number> = {};
+  for (const k of zoznam) for (const [id, n] of Object.entries(k ?? {})) out[id] = (out[id] ?? 0) + n;
+  return Object.keys(out).length === 0 ? undefined : out;
+}
+
 /** Priazeň ako jedno číslo −3 … +3: kladná patrí hráčovi 0, záporná hráčovi 1. */
 function priazenSoZnamienkom(elder: Pick<ElderState, "marker">): number {
   return MARKER_STRED - elder.marker;
@@ -251,10 +258,17 @@ export function posunMarker(elder: Pick<ElderState, "marker">, smerK: PlayerId):
  * stred → žltá 1, žltá → oranžová 2, oranžová → červená 3 (zo stredu na červenú 6);
  * smerom k stredu o 1 viac — červená → oranžová 4, oranžová → žltá 3, žltá → stred 2.
  */
-export function cenaKroku(z: MarkerPos, na: MarkerPos): number {
+export function cenaKroku(z: MarkerPos, na: MarkerPos, telefon = false): number {
   const zo = STUPNICA_ZONY[z];
   const doZony = STUPNICA_ZONY[na];
+  // Telefón (Dedičstvo, Náradie 2026-10-30): Pohoršenia k stredu stoja toľko ako von.
+  if (telefon) return Math.max(zo, doZony);
   return doZony > zo ? doZony : zo + 1;
+}
+
+/** Má hráč p v Dedičstve Telefón — jeho Pohoršenia k stredu stoja toľko ako von (Náradie 2026-10-30)? */
+export function telefonHraca(s: { readonly hraci?: readonly { readonly dedicstvo: readonly { readonly defId: string }[] }[] }, p: PlayerId): boolean {
+  return s.hraci?.[p]?.dedicstvo.some((k) => k.defId === "telefon") ?? false;
 }
 
 /** Kam sa marker dostane za body a koľko to stojí (posunZaBody). */
@@ -269,12 +283,12 @@ export interface PosunZaBody {
  * marker ide k hráčovi `smerK`, kým zvyšok bodov stačí na ďalší krok (cenaKroku)
  * a kým nie je na kraji. null, keď nevyjde ani jeden krok.
  */
-export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, body: number): PosunZaBody | null {
+export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, body: number, telefon = false): PosunZaBody | null {
   let marker = elder.marker;
   let cena = 0;
   let kroky = 0;
   for (let dalsi = posunMarker({ marker }, smerK); dalsi !== null; dalsi = posunMarker({ marker }, smerK)) {
-    const c = cenaKroku(marker, dalsi);
+    const c = cenaKroku(marker, dalsi, telefon);
     if (cena + c > body) break;
     cena += c;
     marker = dalsi;
@@ -284,11 +298,11 @@ export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, 
 }
 
 /** Cena posunu markera z pozície `z` o `d` polí (záporné k hráčovi 0, kladné k hráčovi 1). */
-export function cenaPosunuOPoli(z: MarkerPos, d: number): number {
+export function cenaPosunuOPoli(z: MarkerPos, d: number, telefon = false): number {
   let cena = 0;
   for (let m = z, i = 0; i < Math.abs(d); i++) {
     const na = (d < 0 ? m - 1 : m + 1) as MarkerPos;
-    cena += cenaKroku(m, na);
+    cena += cenaKroku(m, na, telefon);
     m = na;
   }
   return cena;

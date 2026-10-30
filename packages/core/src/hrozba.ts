@@ -10,9 +10,9 @@ import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
 import { naexZaPitku } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
-import { lineState, naexCieleVLinii, pohorseniaVBitke, poskodenieBitky } from "./engine.ts";
+import { lineState, naexCieleVLinii, pohorseniaVBitke, poskodenieBitky, stranyBitky } from "./engine.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
-import { MARKER_KRAJ, MARKER_STRED, cenaPosunuOPoli } from "./elders.ts";
+import { MARKER_KRAJ, MARKER_STRED, cenaPosunuOPoli, telefonHraca } from "./elders.ts";
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
@@ -140,11 +140,6 @@ export interface RozsahPohorseni {
   readonly vysledok: BattleOutcome;
 }
 
-/** Rovnaké poškodenie — posun markera bitku nezmení. */
-function rovnake(a: DamageResult, b: DamageResult): boolean {
-  return a.tuhe[0] === b.tuhe[0] && a.tuhe[1] === b.tuhe[1] && a.celkove[0] === b.celkove[0] && a.celkove[1] === b.celkove[1];
-}
-
 /**
  * Najlepšia bitka, akú hráč p dosiahne svojimi nepridelenými Pohoršeniami
  * (k sebe aj k súperovi, súperove Pohoršenia stoja) — len ak zmení víťaza alebo
@@ -152,7 +147,7 @@ function rovnake(a: DamageResult, b: DamageResult): boolean {
  * súčty línie stoja, poškodenie sa ráta s novou priazňou. Posun stojí podľa zóny
  * (v8.2, cenaPosunuOPoli); že marker ide, kým body stačia, odhad zanedbá — zvyšok
  * hráč spravidla minie najprv na iného staršieho. Prehľadáva len starších, ktorých
- * posun poškodenie mení.
+ * posun mení vstupy bitky.
  */
 export function rozsahPohorseni(
   data: GameData,
@@ -164,8 +159,11 @@ export function rozsahPohorseni(
   const n = nepridelene.pocet[p];
   if (stol.ciel === null || n <= 0) return null;
   const bitka = (starsi: readonly ElderState[]): DamageResult => poskodenieBitky(data, { ...stol, starsi }, sums);
-  const zaklad = bitka(stol.starsi);
-  const teraz = hodnota(battleOutcome(zaklad), p);
+  const teraz = hodnota(battleOutcome(bitka(stol.starsi)), p);
+  // Porovnáva sa vstup bitky, nie poškodenie: priazeň skrytá pod súperovou Vierou
+  // (tuhé orezané na 0) poškodenie sama nezmení, s posunom iného staršieho však áno.
+  const strany = (starsi: readonly ElderState[]): string => JSON.stringify(stranyBitky(data, { ...stol, starsi }, sums));
+  const zakladStrany = strany(stol.starsi);
   // Pohoršenia zo súperovho patronátu nesmú na jeho patróna.
   const patron = stol.patronat[opponentOf(p)]?.elderId ?? null;
   const naPatrona = Math.max(0, n - nepridelene.zPatronatu[p]);
@@ -177,7 +175,7 @@ export function rozsahPohorseni(
       const od = -Math.min(max, e.marker - MARKER_KRAJ[0]);
       const po = Math.min(max, MARKER_KRAJ[1] - e.marker);
       const meni = Array.from({ length: po - od + 1 }, (_, k) => od + k).some(
-        (d) => d !== 0 && !rovnake(bitka(stol.starsi.map((x, j) => (j === i ? posun(x, d) : x))), zaklad),
+        (d) => d !== 0 && strany(stol.starsi.map((x, j) => (j === i ? posun(x, d) : x))) !== zakladStrany,
       );
       return { i, od, po, meni, max };
     })
@@ -198,7 +196,7 @@ export function rozsahPohorseni(
     }
     const z = stol.starsi[kand.i]?.marker ?? MARKER_STRED;
     for (let d = Math.max(kand.od, -zostava); d <= Math.min(kand.po, zostava); d++) {
-      const cena = cenaPosunuOPoli(z, d);
+      const cena = cenaPosunuOPoli(z, d, telefonHraca(stol, p));
       if (cena > Math.min(zostava, kand.max)) continue;
       skus(k + 1, zostava - cena, d === 0 ? starsi : starsi.map((x, j) => (j === kand.i ? posun(x, d) : x)));
     }

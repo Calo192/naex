@@ -61,6 +61,17 @@ const vysledok = (s: GameState): BattleOutcome => battleOutcome(poskodenieBitky(
 const hodnota = (v: BattleOutcome, p: PlayerId): number =>
   (v.vitaz === null ? 0 : v.vitaz === p ? 1000 : -1000) + (v.prebytokDrzi === null ? 0 : v.prebytokDrzi === p ? v.prebytok : -v.prebytok);
 
+/**
+ * Stav po odkrytí NA EX hráča p: poldeci na kartách a NA EX v kole (vypne Šoférov bonus) —
+ * tak ako hrozbaNaex; skryté NA EX sa do naexVKole zapíše až pri odkrytí (sada v39: Šofér s Odporom).
+ */
+const poNaex = (s: GameState, p: PlayerId): GameState => {
+  const t = sNaexNaKartach(s);
+  const naexVKole: [boolean, boolean] = [t.naexVKole?.[0] ?? false, t.naexVKole?.[1] ?? false];
+  naexVKole[p] = true;
+  return { ...t, naexVKole };
+};
+
 describe("hrozba na stole", () => {
   it("je to najlepšie skutočné NA EX z motora, a len keď zlepší výsledok", () => {
     let nasla = 0;
@@ -72,13 +83,13 @@ describe("hrozba na stole", () => {
         // Motor: každé povolené NA EX naozaj zahrané.
         const najlepsie = legalCommands(data, na, p)
           .flatMap((c) => (c.type === "naex" ? [c.uid] : []))
-          .map((uid) => hodnota(vysledok(sNaexNaKartach(apply(data, na, { type: "naex", uid }, p).state)), p));
+          .map((uid) => hodnota(vysledok(poNaex(apply(data, na, { type: "naex", uid }, p).state, p)), p));
         const best = Math.max(teraz, ...najlepsie);
         const h = hrozbaNaex(data, na, priebeh(na), p);
         if (best > teraz) {
           expect(h).not.toBeNull();
           expect(hodnota(h!.vysledok, p)).toBe(best);
-          expect(hodnota(vysledok(sNaexNaKartach(apply(data, na, { type: "naex", uid: h!.uid }, p).state)), p)).toBe(best);
+          expect(hodnota(vysledok(poNaex(apply(data, na, { type: "naex", uid: h!.uid }, p).state, p)), p)).toBe(best);
           nasla++;
         } else {
           expect(h).toBeNull();

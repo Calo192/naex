@@ -643,7 +643,8 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(overScenar(data, cela)).toBeNull();
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
     expect(koniec.koniec?.vitaz).toBe(0);
-    expect(koniec.koniec?.body).toEqual([23, 0]);
+    // v8.4: finále prehrá hráč remízou na Absťák (Výtržník má 5 Rán), hru vyhrá na špaky.
+    expect(koniec.koniec?.body).toEqual([15, 5]);
     // Dve nepriznané Cirhózy z Pitiek finále (i-koniec, q-koniec): −3 za kus.
     expect(koniec.koniec?.cirhozy).toEqual([2, 0]);
   });
@@ -708,23 +709,24 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(po("k-patronat-bot").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(3);
     expect(po("k-dedicstvo").hraci[0].dedicstvo.map((k) => k.defId)).toEqual(["vidly"]);
     expect(odhad(po("k-nastroj"))).toEqual([3, 5]);
-    expect(odhad(po("k-zh3-2"))).toEqual([7, 5]);
+    // Sada v41: Puškina Pecka sa spojí s Pijanovým Poldeci (Puška má jediné ľavé rozloženie).
+    expect(odhad(po("k-zh3-2"))).toEqual([5, 5]);
     expect(body(pri("i-pohorsenie3"))).toEqual([16, -3]);
     // Patronát vrátil Starostu do stredu — ústup zmazal držaný strach (3 špaky na konci kola sú preč).
     expect(po("k-patronat-bot").starsi.find((e) => e.elderId === "starosta")?.drzane ?? 0).toBe(0);
     // Obranca rozdeľuje prvý: tri Pohoršenia (1 z domu, 2 z patronátu) dotiahnu Poštárku do oranžovej (Veriaci 2).
     const poh = po("k-pohorsenie1");
     expect(poh.starsi.find((e) => e.elderId === "postarka")?.marker).toBe(1);
-    expect(odhad(poh)).toEqual([7, 3]);
+    expect(odhad(poh)).toEqual([5, 3]);
     // Štamgastov Absťák: −1 tuhé, +1 Pohoršenie — ťahá Starostu k sebe a Bitkár mu tuhé vráti.
     const vyhra = po("k-pohorsenie3-bot");
-    expect(vyhra.bitkaStav).toMatchObject({ vitaz: 0, prebytokZostava: 3, damage: { tuhe: [7, 4] } });
+    expect(vyhra.bitkaStav).toMatchObject({ vitaz: 0, prebytokZostava: 1, damage: { tuhe: [5, 4] } });
     // 5 za karty v línii, exekútor −1, od starších nič; Štamgastovi Kultúrny dom +2, exekútor −1.
     expect(body(vyhra)).toEqual([20, -2]);
-    // Nakladačka 3 jedným výberom: Veterinár zo stredu do oranžovej (1 + 2).
+    // Nakladačka 1: Veterinár zo stredu do žltej.
     const kolo4 = po("k-prebytok3-bot");
     expect(kolo4.kolo).toBe(4);
-    expect(kolo4.starsi.find((e) => e.elderId === "veterinar")).toMatchObject({ marker: 5, drzane: 2 });
+    expect(kolo4.starsi.find((e) => e.elderId === "veterinar")).toMatchObject({ marker: 4, drzane: 1 });
     expect(kolo4.hraci[1].poldeciPlne + kolo4.hraci[1].poldeciVypite).toBe(1);
     // Koniec 3. kola: hráč 0 nerestí, Štamgast 1 (fajčil) — Absťák dostane hráč, Štamgast sa svojho zbaví (i-abstak).
     expect(kolo4.hraci[0].abstaky).toBe(1);
@@ -733,9 +735,11 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Kšeft vily: Starosta zo Štamgastovej žltej do stredu — Bitkár mu hneď chýba.
     expect(po("k-kseft").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(3);
     expect(odhad(po("k-kseft"))).toEqual([2, 5]);
+    // Vo finále má Štamgast po Výtržníkovi zvyšnú Poveru (ohovorí Farára), tuhé 6 : 6.
+    expect(pri("k-povera-finale-bot").bitkaStav).toMatchObject({ krok: "povery", poveryZostava: [0, 1] });
     // Absťák hráča vo finále: Pohoršenie navyše, Starosta do jeho žltej (Bitkár 1).
     expect(po("k-pohorsenie-abstak").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(2);
-    expect(odhad(po("k-pohorsenie-abstak"))).toEqual([7, 5]);
+    expect(odhad(po("k-pohorsenie-abstak"))).toEqual([7, 6]);
   });
 
   it("3. časť: hráč sám robí patronát, Obmedzenie, Víziu, doliatie a NA EX so zrážkou (Michal 2026-10-28)", () => {
@@ -759,13 +763,16 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     // Zrážka: obaja NA EX na Recidivistu, z karty je Výtržník (všetky akcie Rany).
     const rec = po("k-finale-p3-bot").strany[1].find((pl) => pl.card.defId === "recidivista");
     expect(rec?.naexBy).toBeDefined();
-    expect(evaluateLine(data, lineState(po("k-finale-p3-bot"))).sums[1].Rana).toBe(4);
-    // Patronát vyšiel: Poštárka ostáva hráčovi. Vo finále sa Nakladačka nerozdeľuje — bitka končí hru.
+    // v8.4: Recidivista má navyše Odpor — aj ten je u Výtržníka Rana, spolu 5.
+    expect(evaluateLine(data, lineState(po("k-finale-p3-bot"))).sums[1].Rana).toBe(5);
+    // Štamgast vráti Starostu do stredu: 6 : 6 a remízu rozhodne Absťák hráča — finále je Štamgastovo,
+    // patronát nevyšiel (Poštárka späť, hráč odhodí poldeci). Nakladačka sa vo finále nerozdeľuje — bitka končí hru.
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
-    expect(koniec.starsi.find((e) => e.elderId === "postarka")).toMatchObject({ nahradeny: true, ziskal: 0 });
+    expect(koniec.nastenka.at(-1)?.vitaz).toBe(1);
+    expect(koniec.starsi.find((e) => e.elderId === "postarka")).toMatchObject({ nahradeny: false, marker: 3 });
     expect(po("k-pohorsenie-finale-bot").faza).toBe("koniec");
-    // Po finále zaplatí len strach udržaný z 3. kola: Veterinár v oranžovej, 3.
-    expect(koniec.starsi.find((e) => e.elderId === "veterinar")?.vyplatene).toBe(2);
+    // Po finále zaplatí len strach udržaný z 3. kola: Veterinár v žltej, 1.
+    expect(koniec.starsi.find((e) => e.elderId === "veterinar")?.vyplatene).toBe(1);
   });
 
   it("texty nehovoria o Smetisku ani o bodoch (Michal 2026-10-28: stavba klikom, víťazné body sú špaky)", () => {

@@ -8,7 +8,7 @@
 import type { Action, PlayerId, Tag } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
-import { defOf } from "./data.ts";
+import { defOf, printedSides } from "./data.ts";
 import type { GameState } from "./engine.ts";
 import type { ElderState } from "./elders.ts";
 import { favourStarsieho, prebudenyPre, priazenHraca, priazenSila } from "./elders.ts";
@@ -64,7 +64,6 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   kocovnik: "native", // Furt: jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (Michal 2026-10-24; evaluateLine)
   cirhoza: "native", // Bitka: dodatočná rana od súpera (cirhozaBonus)
   dievcina_na_vydaj: "impl", // Prehra (v7): zahodí sa, súper získa Dlhy podľa jej aktívnych akcií (koniecBitky)
-  dlh: "native", // Bitka: krok Exekútora
   farar: "impl", // Prehra (v7): víťaz získa zadĺženie za každú svoju aktívnu Poveru (koniecBitky)
   financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
   hasic: "impl", // Nástup: náhodná karta z odhadzovacieho — nechať v ruke, alebo vrátiť (príkaz hasic)
@@ -85,7 +84,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   postarka: "impl", // Kšeft (v7): za 1 Dlh 1 karta
   praudovravec: "impl", // Furt (v7, Dezinformátor): Odpor na jeho spojoch posilní (partia.ts)
   dvojcata: "impl", // Furt: do prevahy sa rátajú za dvoch (partia.ts, Michal 2026-10-20)
-  puska: "impl", // Dedičstvo (v7): Petelice o 1 poškodenie viac (nastrojeTuhe)
+  puska: "impl", // Dedičstvo (Náradie 2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2 (partia.ts puskaChrani)
   recidivista: "impl", // Prehra (v7): po bitke sa vráti do ruky (koniecBitky)
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
   starosta: "impl", // Nástup (v7): karta zo šenku (voľba senok)
@@ -98,10 +97,23 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
   vyherny_automat: "impl", // Dedičstvo (v7): prah Dlhu +1, v poslednej Pitke kola 1 Dlh
   zastavka: "impl", // Zhromaždenie: spoločný limit vykladania — súčet limitov oboch (Michal 2026-10-20)
+  // Náradie (Michal 2026-10-30, docs/napady/naradie-akcie.html): Nástroje do Dedičstva a Tipér.
+  zapalovac: "impl", // Dedičstvo: tvoje aktívne Cigarety nemožno zrušiť NA EX (partia.ts applyNaex)
+  vyherne_zreby: "impl", // Dedičstvo: Hazardy aktívne nespojené, spojené neaktívne; NA EX potom ako vždy (partia.ts)
+  pistalka: "impl", // Dedičstvo: tvoje Obmedzenia uberajú aj cigarety za pas (cmdPass)
+  hrable: "impl", // Dedičstvo: akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená (partia.ts)
+  zrkadlo: "impl", // Dedičstvo: tvoj Pakt kopíruje prepojenú akciu dvakrát (partia.ts)
+  boxer: "impl", // Dedičstvo: tvoje Pecky o 1 poškodenie viac (nastrojeTuhe)
+  telefon: "impl", // Dedičstvo: tvoje Pohoršenia k stredu stoja toľko ako von (cenaKroku)
+  jogurt: "impl", // Dedičstvo: tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke (vyhodnotPitku)
+  energetak: "impl", // Dedičstvo: tvoje Posilnenie nemožno zrušiť NA EX (partia.ts)
+  horoskop: "impl", // Dedičstvo: klebety z tvojich Povier platia aj v nasledujúcom kole (koniecBitky)
+  furik: "impl", // Dedičstvo: tvoje Roboty pália o 1 Dlh viac (exekucieBitky)
+  kristalova_gula: "impl", // Dedičstvo: Vízia ukáže 2 vrchné karty, jednu vezmi či zahoď, druhú vráť navrch (cmdVizia)
+  profesionalny_tiper: "impl", // Furt: posilnené akcie na jeho spojoch — súperove posilnený Hazard, tvoje posilnená Robota (partia.ts)
   zberny_dvor: "impl", // Kšeft: za cigaretu ľubovoľná karta z vlastného odhadzovacieho balíčka
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
   zivnostnik: "impl", // Nástup (v7): v tom istom ťahu smie za neho priložiť Nástroj z ruky (voľba nastroj)
-  abstak: "native", // Bitka: o ranu menej (−1 tuhé za kus)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
   kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v7): NA EX len na kartu v kraji pri oltári
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
@@ -528,20 +540,64 @@ export interface VplyvNaAkciu {
   readonly akcia: Action;
   /** defId Nástroja v Dedičstve. */
   readonly zdroj: string;
-  /** O koľko viac dá jedna taká akcia: poškodenie Petelice či Rany, hodnota Viery. */
+  /** O koľko viac dá jedna taká akcia: poškodenie Petelice, Pecky či Rany, hodnota Viery, Dlhy Roboty. */
   readonly o: number;
+  /** Zmena, ktorá nie je číslom (Zapaľovač: nemožno zrušiť NA EX) — veta do popisu ikony. */
+  readonly popis?: string;
+  /** Len na tejto karte v línii (Zámočník: Nástroje v jeho okolí); chýba = všetky karty hráča. */
+  readonly uid?: number;
 }
 
 /**
- * Akcie hráča p posilnené Nástrojmi v jeho Dedičstve (§12): Puška Petelice,
- * Vidly Rany (každý kus o 1 poškodenie), Svätý text Vieru. Jeden zdroj pre
+ * Zámočník (Furt): aktívne akcie Nástrojov v jeho okolí (sused vľavo a vpravo v línii)
+ * sa rátajú dvakrát (partia.ts kartoveEfekty) — žeravá ikona na tých Nástrojoch, aj na
+ * súperových (Náradie 2026-10-30). Vplyv patrí majiteľovi Nástroja, len na jeho karte.
+ */
+function vplyvyZamocnika(data: GameData, state: Pick<VerejnyStav, "strany">, p: PlayerId): VplyvNaAkciu[] {
+  const out: VplyvNaAkciu[] = [];
+  for (const strana of state.strany) {
+    strana.forEach((pl, i) => {
+      if (pl.card.defId !== "zamocnik") return;
+      for (const sused of [strana[i - 1], strana[i + 1]]) {
+        if (sused === undefined || sused.playedBy !== p || !defOf(data, sused.card).tags.includes("Nástroj")) continue;
+        const strany = printedSides(data, sused.card);
+        const akcie = new Set([...strany.left, ...strany.right].filter((a): a is Action => a !== null));
+        for (const akcia of akcie) out.push({ akcia, zdroj: "zamocnik", o: 0, popis: "Zámočník vedľa: aktívna akcia Nástroja sa ráta dvakrát", uid: sused.card.uid });
+      }
+    });
+  }
+  return out;
+}
+
+/** Nástroje, ktoré akciu menia inak než číslom (Náradie 2026-10-30) — žeravá ikona s vetou. */
+const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Action; readonly popis: string }[] = [
+  { zdroj: "puska", akcia: "Petelica", popis: "prepojenú Petelicu namiesto zrušenia (Odpor, NA EX) udelí o 1 poškodenie menej" },
+  { zdroj: "zapalovac", akcia: "Cigareta", popis: "aktívnu Cigaretu nemožno zrušiť NA EX" },
+  { zdroj: "energetak", akcia: "Posilnenie", popis: "Posilnenie nemožno zrušiť NA EX" },
+  { zdroj: "vyherne_zreby", akcia: "Dlh", popis: "Hazard je aktívny bez spoja, spojený neaktívny" },
+  { zdroj: "pistalka", akcia: "Obmedzenie", popis: "Obmedzenie uberie aj cigarety za pas" },
+  { zdroj: "hrable", akcia: "Odpor", popis: "akcia zrušená Odporom je tvoja a posilnená" },
+  { zdroj: "zrkadlo", akcia: "Pakt", popis: "Pakt kopíruje prepojenú akciu dvakrát" },
+  { zdroj: "telefon", akcia: "Pohoršenie", popis: "Pohoršenie k stredu stojí toľko ako von" },
+  { zdroj: "jogurt", akcia: "Poldeci", popis: "Poldeci otočí vypitý poldeci hneď v Pitke" },
+  { zdroj: "horoskop", akcia: "Povera", popis: "klebety z Povier platia aj v nasledujúcom kole" },
+  { zdroj: "kristalova_gula", akcia: "Vízia", popis: "Vízia ukáže 2 vrchné karty" },
+];
+
+/**
+ * Akcie hráča p posilnené Nástrojmi v jeho Dedičstve (§12): Boxer Pecky, Vidly Rany
+ * (každý kus o 1 poškodenie), Svätý text Vieru, Fúrik Robotu; Puška a ostatné Náradie
+ * menia akciu inak než číslom (popis). Jeden zdroj pre
  * bitku (nastrojeTuhe) aj pre žeravé ikony akcií na stole.
  */
-export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci">, p: PlayerId): readonly VplyvNaAkciu[] {
+export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci"> & Partial<Pick<VerejnyStav, "strany">>, p: PlayerId, data?: GameData): readonly VplyvNaAkciu[] {
   const kusov = (defId: string): number => state.hraci[p].dedicstvo.filter((k) => k.defId === defId).length;
   const out: VplyvNaAkciu[] = [];
-  if (kusov("puska") > 0) out.push({ akcia: "Petelica", zdroj: "puska", o: kusov("puska") });
+  if (kusov("boxer") > 0) out.push({ akcia: "Pecka", zdroj: "boxer", o: kusov("boxer") });
   if (kusov("vidly") > 0) out.push({ akcia: "Rana", zdroj: "vidly", o: kusov("vidly") });
+  if (kusov("furik") > 0) out.push({ akcia: "Robota", zdroj: "furik", o: kusov("furik"), popis: `Robota spáli o ${kusov("furik")} Dlh viac (bez Dlhu špak)` });
+  for (const v of VPLYVY_BEZ_CISLA) if (kusov(v.zdroj) > 0) out.push({ akcia: v.akcia, zdroj: v.zdroj, o: 0, popis: v.popis });
+  if (data !== undefined && state.strany !== undefined) out.push(...vplyvyZamocnika(data, { strany: state.strany }, p));
   // Rovnako ako hodnotaViery v bitke (engine): druhý Svätý text Vieru nezvýši.
   if (kusov("svaty_text") > 0) out.push({ akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA });
   return out;
@@ -553,10 +609,12 @@ export function vplyvyNaAkcie(state: Pick<VerejnyStav, "hraci">, p: PlayerId): r
  * (Svokra, Pijan, Vymáhač, Strýko) nie (Michal 2026-10-27). Jeden výpočet pre
  * bitku aj rozpis poškodenia.
  */
-export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Petelica?: number }): readonly { readonly zdroj: string; readonly tuhe: number }[] {
+export function nastrojeTuhe(state: VerejnyStav, p: PlayerId, sums: { readonly Rana?: number; readonly Pecka?: number; readonly Petelica?: number }): readonly { readonly zdroj: string; readonly tuhe: number }[] {
   const out: { zdroj: string; tuhe: number }[] = [];
   for (const v of vplyvyNaAkcie(state, p)) {
-    if (v.akcia !== "Rana" && v.akcia !== "Petelica") continue;
+    if (v.uid !== undefined) continue;
+    // Boxer (Náradie 2026-10-30): Pecky o 1 poškodenie viac, ako Puška pri Petelici.
+    if (v.akcia !== "Rana" && v.akcia !== "Pecka" && v.akcia !== "Petelica") continue;
     const tuhe = v.o * (sums[v.akcia] ?? 0);
     if (tuhe > 0) out.push({ zdroj: v.zdroj, tuhe });
   }

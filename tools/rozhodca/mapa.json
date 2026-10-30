@@ -622,6 +622,36 @@
       ]
     },
     {
+      "id": "12.naradie.linia",
+      "paragraf": "12. Nástroje a Dedičstvo › Dedičstvo",
+      "pravidlo": "Náradie v línii (v8.4): Zapaľovač (Cigarety imúnne voči NA EX), Energeťák (Posilnenie imúnne voči NA EX), Výherné žreby (Hazard aktívny bez spoja, NA EX zdvojí spojené), Hrable (zrušená Odporom tvoja ×2), Zrkadlo (Pakt ×2). Puška (2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naradie.test.ts › Zapaľovač: tvoje aktívne Cigarety NA EX nezruší (ostatné áno)",
+        "packages/core/test/naradie.test.ts › Energeťák: tvoje Posilnenie NA EX nezruší — partner ostáva ×2",
+        "packages/core/test/naradie.test.ts › Výherné žreby: Hazard nespojený aktívny, spojený neaktívny; NA EX zdvojí spojené (O1)",
+        "packages/core/test/naradie.test.ts › Hrable: akcia zrušená tvojím Odporom sa ráta ako tvoja a posilnená",
+        "packages/core/test/naradie.test.ts › Zrkadlo: tvoj Pakt kopíruje prepojenú akciu dvakrát",
+        "packages/core/test/naradie.test.ts › Puška: prepojenú Petelicu Odpor ani NA EX nezruší — udelí o 1 menej (3 → 2); súperove Hrable nemajú čo ukradnúť"
+      ],
+      "poznamka": "Michal 2026-10-30, docs/napady/naradie-akcie.html (Rozhodnuté). Karty pridá Admin do sady."
+    },
+    {
+      "id": "12.naradie.mimo-linie",
+      "paragraf": "12. Nástroje a Dedičstvo › Dedičstvo",
+      "pravidlo": "Náradie mimo línie (v8.4): Boxer (Pecka +1), Telefón (Pohoršenie k stredu za cenu von), Píšťalka (Obmedzenia uberajú cigarety za pas), Jogurt (Poldeci v Pitke), Horoskop (klebety aj ďalšie kolo), Krištáľová guľa (Vízia 2 karty).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naradie.test.ts › Boxer: tvoje Pecky o 1 poškodenie viac (aj žeravá ikona)",
+        "packages/core/test/naradie.test.ts › Telefón: Pohoršenie k stredu stojí toľko ako von (z červenej 3, nie 4)",
+        "packages/core/test/naradie.test.ts › Píšťalka: súperove Obmedzenia v línii uberajú aj cigarety za pas",
+        "packages/core/test/naradie.test.ts › Jogurt: tvoje Poldeci otočia vypitý poldeci hneď v Pitke, bitka ich znova neotočí",
+        "packages/core/test/naradie.test.ts › Horoskop: klebety z tvojich Povier platia aj v nasledujúcom kole",
+        "packages/core/test/naradie.test.ts › Krištáľová guľa: Vízia ponúkne aj druhú kartu zhora — tá ide do ruky, vrchná ostane navrchu"
+      ],
+      "poznamka": "Michal 2026-10-30, docs/napady/naradie-akcie.html (Rozhodnuté). Karty pridá Admin do sady."
+    },
+    {
       "id": "5.ciel.obranca",
       "paragraf": "5. Cieľ a draft › Voľba cieľa",
       "pravidlo": "Cieľ kola vyberá a natáča obranca.",
@@ -1024,10 +1054,11 @@
     {
       "id": "11.exekutor.robota",
       "paragraf": "11. Kliatby, priznanie, Exekútor › Exekútor",
-      "pravidlo": "Robota v kroku exekúcie (po poškodení) pred Exekútorom spáli 1 priznaný Dlh za aktívnu Robotu; po hráčoch — obranca Robota a Exekútor, potom útočník.",
+      "pravidlo": "Robota v kroku exekúcie (po poškodení) pred Exekútorom spáli 1 priznaný Dlh za aktívnu Robotu (s Fúrikom o 1 viac); za každý Dlh, ktorý nemá čo spáliť, dá 1 špak (v8.4, Náradie 2026-10-30).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-bitka.test.ts › §11: Robota spáli priznaný Dlh ešte pred exekúciou — 6 Dlhov, Robota 1, exekúcia 3 (polovica z 5 nahor)"
+        "packages/core/test/pravidla-bitka.test.ts › §11: Robota spáli priznaný Dlh ešte pred exekúciou — 6 Dlhov, Robota 1, exekúcia 3 (polovica z 5 nahor)",
+        "packages/core/test/naradie.test.ts › Robota bez Dlhu dá špak; s Fúrikom spáli 2 Dlhy, bez nich 2 špaky"
       ],
       "poznamka": "Poradie po hráčoch dopísané v §11 (Návrh #41 A (rozhodca, Michal 2026-10-28).); samostatný test poradia nie je, kód exekucieBitky."
     },
@@ -1635,6 +1666,17 @@
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+    },
+    {
+      "id": "16.karta.profesionalny-tiper",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Profesionálny tipér (Furt, v8.4): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako posilnená Robota.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naradie.test.ts › Profesionálny tipér: tvoja posilnená akcia na jeho spoji sa ráta ako posilnená Robota",
+        "packages/core/test/naradie.test.ts › Profesionálny tipér: súperova posilnená akcia na jeho spoji sa ráta ako posilnený Hazard"
+      ],
+      "poznamka": "O4: rozsah na jeho spojoch."
     },
     {
       "id": "16.karta.pes",

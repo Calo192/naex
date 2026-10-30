@@ -44,6 +44,7 @@ import {
   strachNaUdrzanie,
   strachNaUdrzanieSpolu,
   strachNaVyplatu,
+  telefonHraca,
   vydesil,
 } from "./elders.ts";
 import type { DamageResult } from "./battle.ts";
@@ -208,6 +209,8 @@ export interface ClientState {
   readonly zhromazdenieStav: ZhromazdenieStav | null;
   readonly pitkaStav: PitkaStav | null;
   readonly bitkaStav: BitkaVerejne | null;
+  /** Klebety prenesené Horoskopom z minulého kola (Náradie 2026-10-30) — verejné. */
+  readonly klebetyPrenesene?: Klebety;
   /** Patronáty oboch hráčov v tomto kole (verejné, bez karty lícom dole). */
   readonly patronat: readonly [PatronatVerejne | null, PatronatVerejne | null];
   /** Moja karta lícom dole na scorecarde (patronát) — súper ju nevidí. */
@@ -218,6 +221,8 @@ export interface ClientState {
   readonly vizia: { readonly zostava: readonly [number, number] } | null;
   /** Vízia: vrchná karta MÔJHO balíčka, o ktorej práve rozhodujem — len mne. */
   readonly volbaVizia: CardInstance | null;
+  /** Krištáľová guľa (Náradie 2026-10-30): druhá karta zhora — len majiteľovi počas jeho Vízie. */
+  readonly volbaViziaDruha?: CardInstance | null;
   /**
    * Hasič: kto rozhoduje o vytiahnutej karte a ktorá to je. Verejné obom —
    * karta leží v jeho odhadzovacom balíčku, ten je verejný. null = nikto
@@ -345,7 +350,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     dedicstvaVylozene: state.dedicstvaVylozene,
     ruka: state.hraci[ja].ruka,
     hraci: [publicPlayer(0), publicPlayer(1)],
-    vplyvyAkcii: [vplyvyNaAkcie(state, 0), vplyvyNaAkcie(state, 1)],
+    vplyvyAkcii: [vplyvyNaAkcie(state, 0, data), vplyvyNaAkcie(state, 1, data)],
     spolocnyBalicekPocet: state.spolocnyBalicek.length,
     senok: state.senok,
     lokalityVHre: lokalityNaVyber(data, state),
@@ -423,6 +428,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             spalit: bitka.spalit,
             zivnostnikZostava: bitka.zivnostnikZostava ?? 0,
           },
+    ...(state.klebetyPrenesene === undefined ? {} : { klebetyPrenesene: state.klebetyPrenesene }),
     patronat: [verejnyPatronat(0), verejnyPatronat(1)],
     mojaNahrada: state.patronat[ja]?.nahrada ?? null,
     volbaVestica:
@@ -431,6 +437,8 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
         : null,
     vizia: state.vizia,
     volbaVizia: state.vizia !== null && naTahu(state) === ja ? (state.hraci[ja].doberaci[0] ?? null) : null,
+    volbaViziaDruha:
+      state.vizia !== null && naTahu(state) === ja && state.hraci[ja].dedicstvo.some((k) => k.defId === "kristalova_gula") ? (state.hraci[ja].doberaci[1] ?? null) : null,
     hasicVolba:
       hasic === undefined || hasic.typ !== undefined ? null : { hrac: hasic.hrac, karta: state.hraci[hasic.hrac].odhadzovaci.find((k) => k.uid === hasic.uid) ?? null },
     volbaNastupu:
@@ -553,7 +561,7 @@ export function rozpisSpakov(view: Pick<ClientState, "nastenka" | "koniec" | "sp
   const pre = (p: PlayerId): RozpisSpakov => {
     const sucet = (f: (b: BitkaNaNastenke) => number): number => view.nastenka.reduce((a, b) => a + f(b), 0);
     return {
-      zaBitky: sucet((b) => b.zaBitku[p]),
+      zaBitky: sucet((b) => b.zaBitku[p] + (b.robota?.[p] ?? 0)),
       zaStarsich: sucet((b) => b.zaStarsich[p]),
       prebytok: sucet((b) => b.prebytok[p]),
       exekutor: -sucet((b) => b.exekutor[p]),
@@ -639,7 +647,7 @@ export interface NahladPosunu {
 export function nahladPosunuMarkera(_data: GameData, view: ClientState, elderId: string, k: PlayerId, body: number): NahladPosunu | null {
   const elder = view.starsi.find((e) => e.elderId === elderId);
   if (elder === undefined) return null;
-  const marker = posunZaBody(elder, k, body)?.marker ?? null;
+  const marker = posunZaBody(elder, k, body, telefonHraca(view, view.ja))?.marker ?? null;
   if (marker === null) return null;
   const posunuty = sPosunutymMarkerom(elder, marker);
   const pred = spakyTeraz(view).odhad;
@@ -732,7 +740,7 @@ export function hodnotaPohorseni(_data: GameData, view: ClientState, p: PlayerId
       if (e.elderId === v.patronat[super_]?.elderId) continue;
       for (const smer of [super_, p] as const) {
         // v8.2: posun stojí podľa zóny a marker ide, kým Pohoršenia stačia.
-        const posun = posunZaBody(e, smer, zostava);
+        const posun = posunZaBody(e, smer, zostava, telefonHraca(v, p));
         if (posun === null) continue;
         const po = sMarkerom(v, e.elderId, posun.marker);
         const hodnota = hodnotaPohladu(po, p);

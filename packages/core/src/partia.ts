@@ -83,6 +83,12 @@ export interface LineState {
   readonly lokalitaOtocena: boolean;
   /** partie[p][0] je karta najbližšie k lokalite. */
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
+  /**
+   * Nástroje v Dedičstve hráčov (defId) — tie, ktoré menia vyhodnotenie línie
+   * (Náradie 2026-10-30: Zapaľovač, Energeťák, Výherné žreby, Hrable, Zrkadlo).
+   * Chýba = žiadne (testy, ukážky).
+   */
+  readonly nastroje?: readonly [readonly string[], readonly string[]];
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -189,6 +195,19 @@ interface Elem {
   readonly zrusil: (string | null)[][];
   /** Akcie susedov, ktoré Posilnenie tejto karty zdvojilo — NA EX ich zdvojenie zruší. */
   readonly posilnene: { readonly elem: Elem; readonly side: 0 | 1; readonly k: number }[];
+  /** spojena[side][k]: slot má na spoji partnera (Výherné žreby rátajú podľa toho). */
+  readonly spojena: boolean[][];
+  /** zrusilOdporom[side][k]: majiteľ Odporu, ktorý akciu zrušil (Hrable). */
+  readonly zrusilOdporom: (PlayerId | null)[][];
+  /** tiper[side][k]: posilnená akcia na spoji Profesionálneho tipéra — jeho majiteľ (premena pri súčte). */
+  readonly tiper: (PlayerId | null)[][];
+  /** puska[side][k]: Petelica, ktorú Puška zachránila pred zrušením — ráta sa o 1 poškodenie menej. */
+  readonly puska: boolean[][];
+}
+
+/** Má hráč p v Dedičstve Nástroj defId? (LineState.nastroje) */
+function maNastroj(line: Pick<LineState, "nastroje">, p: PlayerId, defId: string): boolean {
+  return line.nastroje?.[p].includes(defId) ?? false;
 }
 
 /**
@@ -344,7 +363,33 @@ function makeElem(
     dovody: [0, 1].map(() => [[], [], [], []]),
     zrusil: [0, 1].map(() => [null, null, null, null]),
     posilnene: [],
+    spojena: [0, 1].map(() => [false, false, false, false]),
+    zrusilOdporom: [0, 1].map(() => [null, null, null, null]),
+    tiper: [0, 1].map(() => [null, null, null, null]),
+    puska: [0, 1].map(() => [false, false, false, false]),
   };
+}
+
+/**
+ * Puška (Dedičstvo, Michal 2026-10-30): keď by tvoju prepojenú Petelicu zrušil iný
+ * efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2).
+ * Prepojená = má na spoji partnera; Petelica aktívna len zo Vzbury nie. Úplatok ani
+ * Výtržník Petelicu nerušia — Puška sa ich netýka; súperove Hrable nemajú čo ukradnúť.
+ */
+function puskaChrani(elem: Elem, line: Pick<LineState, "nastroje">): void {
+  if (elem.isLokalita || !maNastroj(line, elem.owner, "puska")) return;
+  for (const side of [0, 1] as const) {
+    const actions = side === 0 ? elem.effLeft : elem.effRight;
+    for (let k = 0; k < 4; k++) {
+      if (actions[k] !== "Petelica" || !elem.spojena[side]![k] || elem.stav[side]![k] !== "zrusena") continue;
+      elem.stav[side]![k] = "aktivna";
+      elem.nasobok[side]![k] = 1;
+      elem.zrusil[side]![k] = null;
+      elem.zrusilOdporom[side]![k] = null;
+      elem.puska[side]![k] = true;
+      elem.dovody[side]![k] = ["karta:puska"];
+    }
+  }
 }
 
 function markVzbura(elem: Elem, side: 0 | 1, skutocna = true): void {
@@ -375,7 +420,7 @@ export function spojVznikne(
 }
 
 /** Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`; `umlcane` = Zvieratá vedľa Mäsiara. */
-function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>): void {
+function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>, line: Pick<LineState, "nastroje">): void {
   const x = { tags: a.tags, stred: a.isLokalita, defId: a.defId, umlcany: umlcane.has(a.uid) };
   if (!spojVznikne(x, { tags: b.tags, stred: b.isLokalita, defId: b.defId, umlcany: umlcane.has(b.uid) })) return;
   // Praudovravec (Dezinformátor, v7): Odpor na jeho spojoch neruší, ale posilní.
@@ -384,6 +429,8 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>): void {
     let actA = a.effRight[k];
     let actB = b.effLeft[k];
     if (actA == null || actB == null) continue;
+    a.spojena[1]![k] = true;
+    b.spojena[0]![k] = true;
     if (dezinformator) {
       if (actA === "Odpor") actA = "Posilnenie";
       if (actB === "Odpor") actB = "Posilnenie";
@@ -397,14 +444,19 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>): void {
     // Pakt (v7): na spoji sa správa ako akcia, s ktorou je v páre — premení sa pred
     // násobkami (12.3 bod 2), takže pri Posilnení vzniknú dve Posilnenia bez účinku.
     // Odpor ho zruší ako každú akciu (bod 4).
+    // Zrkadlo (Dedičstvo, Náradie 2026-10-30): tvoj Pakt kopíruje prepojenú akciu dvakrát.
+    let zrkadloA = false;
+    let zrkadloB = false;
     if (actA === "Pakt" && actB !== "Odpor") {
       actA = actB;
       (a.effRight as Slot[])[k] = actB;
       a.dovody[1]![k]!.push("Pakt");
+      zrkadloA = maNastroj(line, a.owner, "zrkadlo") && !a.isLokalita;
     } else if (actB === "Pakt" && actA !== "Odpor") {
       actB = actA;
       (b.effLeft as Slot[])[k] = actA;
       b.dovody[0]![k]!.push("Pakt");
+      zrkadloB = maNastroj(line, b.owner, "zrkadlo") && !b.isLokalita;
     }
 
     const odporA = actA === "Odpor";
@@ -425,6 +477,7 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>): void {
       odporElem.stav[odporSide]![k] = "aktivna";
       otherElem.stav[otherSide]![k] = "zrusena";
       otherElem.zrusil[otherSide]![k] = "Odpor";
+      otherElem.zrusilOdporom[otherSide]![k] = odporElem.isLokalita ? null : odporElem.owner;
       // Posilnenie + Odpor: neprepojené akcie aktivuje IBA karta s Odporom.
       if (otherAct === "Posilnenie") markVzbura(odporElem, odporSide, false);
     } else if (posilA && posilB) {
@@ -446,6 +499,66 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>): void {
       b.stav[0]![k] = "aktivna";
       b.nasobok[0]![k] = 1;
     }
+    if (zrkadloA && a.stav[1]![k] === "aktivna" && actA !== "Posilnenie") {
+      a.nasobok[1]![k] = (a.nasobok[1]![k] as number) * 2;
+      a.dovody[1]![k]!.push("karta:zrkadlo");
+    }
+    if (zrkadloB && b.stav[0]![k] === "aktivna" && actB !== "Posilnenie") {
+      b.nasobok[0]![k] = (b.nasobok[0]![k] as number) * 2;
+      b.dovody[0]![k]!.push("karta:zrkadlo");
+    }
+  }
+}
+
+/**
+ * Výherné žreby (Dedičstvo, Náradie 2026-10-30): Hazardy majiteľa sú aktívne, keď nie
+ * sú spojené, a neaktívne, keď sú spojené. Beží pred NA EX — to potom zdvojí spojené
+ * (neaktívne) a zruší nespojené (aktívne), ako každú akciu (O1). Zrušené Odporom ostávajú.
+ */
+function vyherneZreby(elem: Elem, line: Pick<LineState, "nastroje">): void {
+  if (elem.isLokalita || !maNastroj(line, elem.owner, "vyherne_zreby")) return;
+  for (const side of [0, 1] as const) {
+    const actions = side === 0 ? elem.effLeft : elem.effRight;
+    for (let k = 0; k < 4; k++) {
+      if (actions[k] !== "Dlh" || elem.stav[side]![k] === "zrusena") continue;
+      if (elem.spojena[side]![k]) {
+        elem.stav[side]![k] = "neaktivna";
+        elem.nasobok[side]![k] = 0;
+        elem.dovody[side]![k] = [];
+      } else {
+        elem.stav[side]![k] = "aktivna";
+        elem.nasobok[side]![k] = 1;
+        elem.dovody[side]![k]!.push("karta:vyherne_zreby");
+      }
+    }
+  }
+}
+
+/**
+ * Profesionálny tipér (Furt, Náradie 2026-10-30): posilnené akcie na jeho spojoch
+ * sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota.
+ * Rozsah: jeho strany a strany susedov k nemu. Posilnená = ×2 z Posilnenia (po NA EX).
+ */
+function profesionalnyTiper(segments: readonly (readonly Elem[])[]): void {
+  for (const seg of segments) {
+    seg.forEach((t, i) => {
+      if (t.isLokalita || t.defId !== "profesionalny_tiper") return;
+      const oznac = (e: Elem, side: 0 | 1): void => {
+        for (let k = 0; k < 4; k++) {
+          if (e.stav[side]![k] === "aktivna" && (e.dovody[side]![k] ?? []).includes("Posilnenie")) e.tiper[side]![k] = t.owner;
+        }
+      };
+      const lavy = seg[i - 1];
+      const pravy = seg[i + 1];
+      if (lavy !== undefined) {
+        oznac(t, 0);
+        oznac(lavy, 1);
+      }
+      if (pravy !== undefined) {
+        oznac(t, 1);
+        oznac(pravy, 0);
+      }
+    });
   }
 }
 
@@ -475,8 +588,10 @@ function applyVzbura(elem: Elem): void {
  * všetkých kariet, aby NA EX na partnerovi (zrušenie, Veterán ×2) vychádzalo
  * už z ×1. Veteránovi NA EX Posilnenie nezruší, takže zdvojenie ostáva.
  */
-function zrusPosilnenie(elem: Elem): void {
+function zrusPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): void {
   if (elem.naexBy === undefined || elem.defId === "veteran") return;
+  // Energeťák (Dedičstvo, Náradie 2026-10-30): tvoje Posilnenie nemožno zrušiť NA EX.
+  if (!elem.isLokalita && maNastroj(line, elem.owner, "energetak")) return;
   for (const { elem: partner, side, k } of elem.posilnene) {
     if (partner.stav[side]![k] !== "aktivna" || partner.nasobok[side]![k] !== 2) continue;
     partner.nasobok[side]![k] = 1;
@@ -485,8 +600,13 @@ function zrusPosilnenie(elem: Elem): void {
   }
 }
 
-function applyNaex(elem: Elem): void {
+function applyNaex(elem: Elem, line: Pick<LineState, "nastroje">): void {
   if (elem.naexBy === undefined) return;
+  // Zapaľovač a Energeťák (Dedičstvo, Náradie 2026-10-30): tvoje aktívne Cigarety,
+  // resp. Posilnenie NA EX nezruší (a nezdvojí — ostávajú, ako sú).
+  const imunne: Action[] = [];
+  if (!elem.isLokalita && maNastroj(line, elem.owner, "zapalovac")) imunne.push("Cigareta");
+  if (!elem.isLokalita && maNastroj(line, elem.owner, "energetak")) imunne.push("Posilnenie");
   if (elem.defId === "veteran") {
     zdvojAktivne(elem, "NA EX", "NA EX");
     return;
@@ -496,6 +616,7 @@ function applyNaex(elem: Elem): void {
     for (let k = 0; k < 4; k++) {
       if (actions[k] == null) continue;
       const stav = elem.stav[side]![k];
+      if (stav === "aktivna" && imunne.includes(actions[k] as Action)) continue;
       if (stav === "aktivna") {
         elem.stav[side]![k] = "zrusena";
         elem.nasobok[side]![k] = 0;
@@ -668,12 +789,15 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   for (const segment of segments) {
     for (let i = 0; i + 1 < segment.length; i++) {
-      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem, umlcane);
+      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem, umlcane, line);
     }
   }
   for (const elem of elems) applyVzbura(elem);
-  for (const elem of elems) zrusPosilnenie(elem);
-  for (const elem of elems) applyNaex(elem);
+  for (const elem of elems) vyherneZreby(elem, line);
+  for (const elem of elems) zrusPosilnenie(elem, line);
+  for (const elem of elems) applyNaex(elem, line);
+  for (const elem of elems) puskaChrani(elem, line);
+  profesionalnyTiper(segments);
   kartoveEfekty(segments, umlcane);
   // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre
   // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami (okrem Posilnenia
@@ -728,10 +852,18 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const kocovnik = elem.defId === "kocovnik" && elem.strana !== null ? (susedLokality[elem.strana] ?? elem.owner) : null;
         const nastroj = susedNastroja.get(elem)?.[side] ?? null;
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
-        const ako = akciaPoPremene(elem, action);
+        const tiper = elem.tiper[side]![k] ?? null;
+        // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
+        const ako = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] ? "Pecka" : akciaPoPremene(elem, action);
         if (ako === null) continue;
         if (zrusil != null) {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
+          // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
+          const odporom = elem.zrusilOdporom[side]![k] ?? null;
+          if (zrusil === "Odpor" && odporom !== null && maNastroj(line, odporom, "hrable")) {
+            sums[odporom][ako] = (sums[odporom][ako] ?? 0) + 2;
+            pridajZdroj(odporom, ako, { defId: elem.defId, uid: elem.uid, hodnota: 2, vStrede: elem.isLokalita, dovody: ["Odpor", "karta:hrable"] });
+          }
           continue;
         }
         // Poľovnícka chata (Furt, v7): aktívne Rany, Pecky a Petelice z jej hrán sa rátajú dvakrát.
@@ -739,7 +871,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         sums[target][ako] = (sums[target][ako] ?? 0) + hodnota;
         const dovody = [...(elem.dovody[side]![k] ?? [])];
         if (hodnota !== nasobok) dovody.push("karta:polovnicka_chata");
-        if (ako !== action) dovody.push(elem.uplatky > 0 && elem.premena === undefined ? "Úplatok" : `karta:${elem.premena ?? "sarlatan"}`);
+        if (tiper !== null) dovody.push("karta:profesionalny_tiper");
+        else if (ako !== action) dovody.push(elem.uplatky > 0 && elem.premena === undefined ? "Úplatok" : `karta:${elem.premena ?? "sarlatan"}`);
         pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota, vStrede: elem.isLokalita, dovody });
       }
     }
