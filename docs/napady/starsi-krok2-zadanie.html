@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Starší — krok 2: zadanie — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; --zlta:#e3c74a; --siva:#8a847a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; --zlta:#9a8410; --siva:#8a847a; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 16px 12px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { font: .8rem ui-monospace, Consolas, monospace; background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; overflow-x: auto; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); }
+.box.rec { border-color: var(--zelena); }
+.box.riz { border-color: var(--cervena); }
+.box.mer { border-color: var(--modra); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.v2 { color: var(--oranzova); } .chip.v3 { color: var(--slaby); } .chip.zv { color: var(--akcent); } .chip.m { color: var(--modra); } .chip.r { color: var(--cervena); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); -webkit-overflow-scrolling: touch; }
+nav.skupiny a, .ovl button { flex: none; font: inherit; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+details.q { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details.q[open] { padding-bottom: 10px; border-color: var(--akcent); }
+details.q summary { cursor: pointer; padding: 10px 0; list-style: none; }
+details.q summary::-webkit-details-marker { display: none; }
+.qid { font: 700 .95rem Georgia, serif; color: var(--akcent); margin-right: 4px; }
+.qt { font-weight: 600; }
+.volba { margin-left: 6px; color: var(--zelena); font-weight: 700; }
+ol.moznosti { list-style: none; padding: 0; margin: 8px 0; }
+li.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--plocha-2); }
+li.moz.rec { border-color: var(--zelena); }
+li.moz label { display: block; cursor: pointer; }
+li.moz span:not(.chip) { display: block; font-size: .9rem; color: var(--tlmeny); margin-top: 2px; }
+li.moz input { accent-color: var(--akcent); }
+.pozn { display: block; font-size: .8rem; color: var(--slaby); margin-top: 6px; }
+.pozn textarea { width: 100%; font: inherit; font-size: .9rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px; margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .8rem; }
+tbody th { font-family: Georgia, serif; width: 24%; font-weight: 600; }
+.tab { overflow-x: auto; }
+@media (max-width: 560px) { .tab.stack tr { display: block; border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  .tab.stack th, .tab.stack td { display: block; border: 0; padding: 2px 4px; width: auto; }
+  .tab.stack thead { display: none; }
+  .tab.stack td::before { content: attr(data-l); display: block; font-size: .72rem; color: var(--slaby); } }
+#vystup { width: 100%; min-height: 140px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+details.q, section, h2 { scroll-margin-top: 52px; }
+.karta { border-left: 3px solid var(--akcent); padding: 4px 10px; margin: 6px 0 8px; font-family: Georgia, serif; }
+.bk { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin: 0 0 10px; background: var(--plocha-2); }
+.bk .hl { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.bk .hl b { font-family: Georgia, serif; font-size: 1.02rem; }
+.bk .hl .mini { font-size: .78rem; }
+.bk .strany { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.bk .strana { display: grid; gap: 3px; }
+.bk .strana p { margin: 0 0 2px; font-size: .72rem; color: var(--slaby); }
+.bk .slot { border: 1px solid var(--okraj); border-radius: 6px; padding: 2px 7px; font-size: .82rem; background: var(--plocha); }
+.bk .slot i { font-style: normal; color: var(--slaby); font-size: .7rem; margin-right: 4px; }
+.bk .slot.blk { background: repeating-linear-gradient(45deg, transparent 0 4px, var(--okraj) 4px 6px); color: var(--slaby); }
+.bk .slot.neg { border-color: var(--cervena); color: var(--cervena); }
+.bk .slot.dmg { border-color: var(--oranzova); }
+.bk .slot.pos { border-color: var(--modra); }
+.bk .pz { font-size: .82rem; color: var(--tlmeny); margin: 6px 0 0; }
+.kroky { counter-reset: k; list-style: none; padding: 0; }
+.kroky li { position: relative; padding-left: 30px; margin-bottom: 8px; }
+.kroky li::before { counter-increment: k; content: counter(k); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); color: #1a1410; font-weight: 700; font-size: .8rem; text-align: center; line-height: 22px; }
+.ok { color: var(--zelena); } .zle { color: var(--cervena); } .m { color: var(--modra); }
+</style>
+</head>
+<body>
+<main>
+<h1>Starší — krok 2: zadanie pre Developera</h1>
+<p class="mini">brainstorming · verzia 1.1 (rozhodnutia Michala O1–O10) · 2026-10-30 · zadanie Michala cez Leadera · vetva <code>napady/starsi-revizia</code> · podklady: <a href="starsi-revizia.html#rozhodnute">starsi-revizia.html</a> (Rozhodnuté 1–17, T2, T3, T5), <a href="povery.html">povery.html</a>, PRAVIDLA.md v8.4 (§1, §5, §7, §9, §10, §11, §14, §14b, §16), <code>cards.json</code> (sada v43), <code>scorecards.json</code>, <code>elders.json</code></p>
+
+<div class="box zv">
+  <p><b>Čo je toto.</b> Zadanie druhého kroku revízie starších — to, čo Michal rozhodol 2026-10-30 a čo ešte nie je v hre: <b>väzeň</b> namiesto patronátu a vydesenia, <b>výhradné Kšefty starších</b> (nahrádzajú všetky dnešné efekty starších, Michal potvrdil 2026-10-30 cez Leadera), <b>bossovia</b> so šiestimi akciami a <b>nová sada priazní</b>. Krok 1 (cena posunu, strach po udržaní, Povery, pojmy) je hotový v pravidlách v8.2–v8.3 a v master.</p>
+  <p><b>Pre koho.</b> Developer (jadro, server, klient, pravidlá, testy), Admin (karty starších v tvorcovi), bot-tréner (nové ťahy bota), stratég (meranie). Všetko je napísané ako pravidlo. <b>Otvorené body O1–O10 Michal rozhodol 2026-10-30</b> (sekcia <a href="#rozhodnute">Rozhodnuté</a>); sekcia <a href="#otvorene">Otvorené body</a> ostáva len ako podklad s alternatívami.</p>
+  <p><b>Spúšťa sa</b> po ULTRA playteste kroku 1 (beží 2026-10-30). Poradie práce je v sekcii <a href="#poradie">Poradie</a>.</p>
+</div>
+
+<nav class="skupiny" aria-label="Časti">
+  <a href="#rozhodnute">Rozhodnuté</a>
+  <a href="#prehlad">Prehľad</a>
+  <a href="#vazen">Väzeň</a>
+  <a href="#kseft">Kšeft väzňa</a>
+  <a href="#karty">Texty kariet</a>
+  <a href="#bossovia">Bossovia</a>
+  <a href="#priazne">Priazne</a>
+  <a href="#rusi">Ruší sa</a>
+  <a href="#kde">Pravidlá a kód</a>
+  <a href="#otvorene">Otvorené</a>
+  <a href="#poradie">Poradie</a>
+  <a href="#volby">Moje voľby</a>
+</nav>
+
+<!-- ============================================================ -->
+<section id="rozhodnute">
+<h2>Rozhodnuté (Michal 2026-10-30, otvorené body O1–O10)</h2>
+<p>Odpovede cez Leadera; zapracované do textov nižšie. Developer implementuje presne toto.</p>
+<div class="tab stack">
+<table>
+<thead><tr><th>Bod</th><th>Rozhodnutie</th></tr></thead>
+<tbody>
+<tr><th>O1 · Starosta</th><td data-l="Rozhodnutie"><b>Do konca kola</b> — Kšeft platí od vyhodnotenia Pitky, v ktorej padol, až po bitku (poškodenie z hrán sa ráta v bitke).</td></tr>
+<tr><th>O2 · Farár</th><td data-l="Rozhodnutie"><b>Áno</b> — súperova aktívna Viera je posilnený Hazard v každom vyhodnotení Pitky do konca kola, ako každý Hazard v línii; v bitke Viera chýba.</td></tr>
+<tr><th>O3 · Veterinár</th><td data-l="Rozhodnutie"><b>Cirhóza z ruky alebo priznaná — nie z odhadzovacieho balíčka</b> (Michalova vlastná voľba, ani A, ani B). Bez takej Cirhózy platí len časť o pečeni.</td></tr>
+<tr><th>O4 · Krčmárka</th><td data-l="Rozhodnutie"><b>Vrátiť</b> — už dané skryté NA EX sa súperovi vráti (poldeci plný, bez neresti a pečene); od spustenia Kšeftu NA EX nedá.</td></tr>
+<tr><th>O5 · Priazeň Robota</th><td data-l="Rozhodnutie"><b>Áno</b> — priazeň = akcie Robota navyše, aj s 1 špakom za Dlh, ktorý nemá čo spáliť (v8.4).</td></tr>
+<tr><th>O6 · Vychovávateľka</th><td data-l="Rozhodnutie"><b>Áno</b> — +3 tuhé držiteľovi v bitke, jedna Petelica na Kšeft, Viera ju tlmí.</td></tr>
+<tr><th>O7 · Finále</th><td data-l="Rozhodnutie"><b>Áno</b> — pokus o zajatie aj vo finále; tretí väzeň vyhrá pred konečnými špakmi.</td></tr>
+<tr><th>O8 · Marker „v ohrození“</th><td data-l="Rozhodnutie"><b>Áno, nehýbe sa</b> — v kole pokusu ním nehýbe Pohoršenie, prebytok ani Povery; udržaný strach sa platí normálne.</td></tr>
+<tr><th>O9 · Neúspešný pokus</th><td data-l="Rozhodnutie"><b>Áno, zmaže sa</b> — ústup o stupeň zmaže nezaplatenú červenú ako každý ústup (§10).</td></tr>
+<tr><th>O10 · Poradie</th><td data-l="Rozhodnutie"><b>Hneď</b> — implementovať celé a nasadiť; bot-tréner a playtest max za tým.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="prehlad">
+<h2>Prehľad zmien</h2>
+<div class="tab stack">
+<table>
+<thead><tr><th>Oblasť</th><th>Dnes (v8.4)</th><th>Po kroku 2</th><th>Zdroj</th></tr></thead>
+<tbody>
+<tr><th>Obrana a výhra</th><td data-l="Dnes">Patronát (karta do ruky, náhrada, marker do stredu); ohlásené vydesenie = výhra</td><td data-l="Po kroku 2"><b>Pokus o zajatie</b> staršieho, ktorý sa ťa bojí na stupni 3; <b>väzeň</b> v priznaných kartách; <b>tretí väzeň = výhra hneď</b>; vydesenie ako výhra zaniká</td><td data-l="Zdroj">R1 B, R4 A, R5 B, R15 A</td></tr>
+<tr><th>Hodnota väzňa</th><td data-l="Dnes">—</td><td data-l="Po kroku 2">Na konci hry podľa poradia zajatia v celej partii: 1. väzeň <b>8</b>, 2. <b>6</b>, 3. <b>4</b>, 4. <b>2</b> špaky, nech zajal ktokoľvek</td><td data-l="Zdroj">R3 C, potvrdené 2026-10-30</td></tr>
+<tr><th>Efekty starších</th><td data-l="Dnes">Pasívne efekty v línii (patrón) alebo po prebudení; Kšeft len Poštárka a Vychovávateľka</td><td data-l="Po kroku 2"><b>Výhradný Kšeft väzňa</b> za vypitý plný poldeci; karta staršieho v línii má len akcie; prebudenie zaniká; všetkých 8 dnešných efektov zaniká</td><td data-l="Zdroj">R6 A, R7 A, R8–R10, R16 B, Michal 2026-10-30 (Pakt = Kšeft)</td></tr>
+<tr><th>Karta staršieho</th><td data-l="Dnes">4 akcie, 4 blokované sloty, 0 nerestí</td><td data-l="Po kroku 2"><b>Boss</b>: 6 akcií, 2 blokované, presne 1 neresť; dve siluety 4 + 4</td><td data-l="Zdroj">R12 A (1 neresť u každého), R13 (4 + 4)</td></tr>
+<tr><th>Priazne</th><td data-l="Dnes">Bitkár, Veriaci, Abstinent, Kmotor 1/2/3, Exekútor, Výpalník, Fajčiar po šenku, Alkoholik</td><td data-l="Po kroku 2">Bitkár, Veriaci, Abstinent, <b>Advokát</b>, <b>Robota</b>, <b>Fajčiar po bitke</b>, <b>Kmotor 2/3/4</b>, Alkoholik; Exekútor a Výpalník von</td><td data-l="Zdroj">R11 A na skúšku, ôsma Alkoholik</td></tr>
+<tr><th>Šenok</th><td data-l="Dnes">N = nenahradení starší (párne nadol)</td><td data-l="Po kroku 2"><b>N = 8 vždy</b> (väzni šenok nezmenšujú)</td><td data-l="Zdroj">R16 B</td></tr>
+<tr><th>Čo ostáva z kroku 1</th><td data-l="Dnes" colspan="2">Cena posunu 1/2/3 von a 2/3/4 k stredu, strach až po udržaní (6A), Povery „výpožička priazne“, pojmy (farby a stupne 0–3, stav staršieho, od seba / k sebe) — nič z toho sa nemení</td><td data-l="Zdroj">v8.2–v8.3</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="vazen">
+<h2>1 · Väzeň namiesto patronátu</h2>
+<p>Pravidlo tak, ako ide do §10 (nový oddiel „Zajatie a väzeň“ namiesto „Patronát“ a „Prebudenie“). Zdroj: R1 B s presným znením z T2, R3 C, R4 A, R5 B, R15 čítanie A, R16 B.</p>
+
+<ol class="kroky">
+<li><b>Podmienka.</b> Starší sa hráča bojí na <b>stupni 3</b> — marker je na červenej na súperovej polovici (súper má jeho priazeň sily 3, výkričníky v tvojej farbe). Väzeň ani starší v ohrození sa zajať nedajú.</li>
+<li><b>Kedy.</b> V drafte <b>po braní zo šenku</b>, presne tam, kde je dnes patronát: rozhoduje <b>útočník, potom obranca</b> (druhý vidí voľbu prvého); každý hráč najviac <b>jeden pokus za kolo</b>; obaja smú v tom istom kole skúsiť každý iného staršieho. Platí aj vo finále (O7, Michal: áno).</li>
+<li><b>Cena.</b> <b>1 cigareta</b>, prepadne (do banky) bez ohľadu na výsledok. Bez cigarety pokus nie je.</li>
+<li><b>Priebeh kola.</b> Karta staršieho ide <b>súperovi do ruky</b>; marker ostáva na červenej so stavom <b>„v ohrození“</b> — v tomto kole sa ním nehýbe Pohoršenie, prebytok ani Povery a jeho udržaný strach sa platí normálne (O8, Michal: áno). Súper smie staršieho v kole vyložiť ako ktorúkoľvek kartu (tag Starešina: ráta sa do prevahy, dá sa naň NA EX), <b>bez efektu — len akcie</b> (boss, sekcia <a href="#bossovia">Bossovia</a>). Nemusí ho zahrať. Boss sa po bitke vracia vždy, aj keby ho efekt poslal z hry alebo do balíčka (Krokodíl, Dievčina, Hrobár dnešný — nezničiteľný).</li>
+<li><b>Výsledok (krok 6d bitky, dnes patronát).</b> Pokúšajúci <b>vyhral</b> bitku → starší ide do jeho <b>priznaných kariet ako väzeň</b> (z ruky aj z línie súpera), scorecard sa otočí (priazeň zanikla), na ukazovateli ostane prázdne miesto bez markera. <b>Prehral alebo sekera</b> → starší späť na ukazovateľ, marker <b>o stupeň späť</b> (na oranžovú, stupeň 2) — ústup zmaže nezaplatený stupeň 3 ako každý ústup (§10; O9, Michal: áno), cena prepadla. Keď skúšali obaja, víťazov pokus uspeje, porazeného zlyhá; pri sekere zlyhajú oba.</li>
+<li><b>Väzeň.</b> Leží v priznaných kartách držiteľa („v pivnici“). <b>Nehýbe sa, nedáva priazeň ani strach</b>, nie je cieľom Povier, Pohoršenia ani prebytku, <b>nikto ho nevyslobodí</b>. Držiteľ má jeho <b>Kšeft</b> (sekcia <a href="#kseft">Kšeft väzňa</a>). Nie je karta v línii (špaky za bitku nie), nie je kliatba (Exekútor nie), do výkupného sa neráta.</li>
+<li><b>Koniec hry.</b> <b>Tretí väzeň jedného hráča = výhra hneď</b> (po bitke, v kroku 6d; vo finále pred konečnými špakmi). Inak po finále dostane každý hráč špaky za svojich väzňov <b>podľa poradia zajatia v celej partii</b>: prvý zajatý starší v partii 8, druhý 6, tretí 4, štvrtý 2 — nech ho zajal ktokoľvek (najviac 2 + 2 bodovaných, tretí hru končí).</li>
+<li><b>Šenok.</b> N = 8 vždy (§5), väzni ho nezmenšujú.</li>
+<li><b>2 na 2.</b> Pokus robí kapitán; boss ide do ruky súperovho kapitána (paragraf 2 na 2 doplní, kto určí ruku).</li>
+</ol>
+
+<div class="box riz">
+<p><b>Čo tým zaniká (§1, §10):</b> patronát (karta do ruky patróna, náhrada lícom dole, marker do stredu, Pohoršenia navyše, bolestné, „kartu z patronátu nemožno vymeniť Starostom“), <b>nahradený starší</b> ako pojem, <b>prebudenie</b>, <b>vydesenie ako výhra</b> („ohlásené vydesenie“, kontrola pri posune a na konci kola, výnimka vo finále). §1 sa skráti: hra končí tretím väzňom alebo po finále väčším počtom špakov. Slovo „vydesený“ ostáva len ako stav staršieho na stupni 3 (pojmy v8.3).</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="kseft">
+<h2>2 · Kšeft väzňa</h2>
+<p>Doplnenie §7 „Kšeft“. Zdroj: R6 A, R7 A, R9 A, Michal 2026-10-30 (Kšeft nahrádza všetky dnešné efekty starších).</p>
+<ul>
+<li><b>Kto.</b> Výhradne <b>držiteľ väzňa</b>. Karta staršieho na ukazovateli, v ruke alebo v línii efekt nemá. Text karty začína „<b>Väzeň — Kšeft:</b>“, aby bolo jasné, že platí až v pivnici.</li>
+<li><b>Cena.</b> <b>Vypiť 1 plný poldeci</b> zo svojej zásoby (nie ten, čo leží na NA EX): poldeci sa otočí na vypitý, je to <b>nerest</b> (počítadlo Absťáku), <b>+1 poškodenie pečene v tejto Pitke</b>, a keďže je o plný poldeci menej, v ďalšom Zhromaždení je limit vykladania o 1 nižší. Bez plného poldeci Kšeft nie je. Platba je verejná.</li>
+<li><b>Kedy.</b> V Pitke, <b>kým ju hráč neskončil</b> (nie počas odpovede na NA EX, nie po „končím“) — aj keď súper už svoju Pitku skončil, ako dnes. <b>Každý väzeň raz za Pitku</b>; s dvoma väzňami sú to dva Kšefty za dva poldeci. Kšeft nie je ťah.</li>
+<li><b>Nedá sa naprázdno.</b> Kšeft, ktorý nemá čo urobiť (Hrobár pri súperovej prázdnej ruke, Autobusár pri prázdnom šenku, Poštárka bez priznaného Dlhu, Vychovávateľka na Krčme), server <b>neponúkne</b> — poldeci sa nepremrhá. Veterinár je výnimka: bez Cirhózy v ruke alebo medzi priznanými platí aspoň časť o pečeni.</li>
+<li><b>Trvanie.</b> Okamžité (Hrobár, Autobusár, Poštárka, Veterinárova Cirhóza), „v tejto Pitke“ (Krčmárka, Vychovávateľka, Veterinárova pečeň), „do konca kola“ (Farár, Starosta — O1, Michal: do konca kola). Účinok „v bitke“ sa pripočíta v bitke kola, ako pri dnešnej Vychovávateľke.</li>
+</ul>
+
+<h3>Poradie Kšeft vs. NA EX v Pitke</h3>
+<p>Kšeft sa vyhodnotí <b>hneď a verejne</b> v okamihu spustenia. NA EX je <b>skryté až do odkrytia</b> po „hotovo“ oboch. Z toho:</p>
+<ul>
+<li><b>Krčmárka (zákaz).</b> Od spustenia Kšeftu súper v tejto Pitke NA EX dať nemôže — server zámer odmietne. Ak NA EX už dal skryto, <b>vráti sa mu</b>: poldeci späť plný, bez neresti, bez pečene; prezradí sa tým len to, že NA EX mal, nie kam (O4, Michal: vrátiť). Na Krčme mu Kšeft <b>povinnosť NA EX zruší</b> (R9 A). Držiteľov vlastný NA EX nie je dotknutý.</li>
+<li><b>Vychovávateľka (hrozba).</b> Je verejná — súper ju vidí, kým vyberá. Vyhodnotí sa pri <b>odkrytí NA EX</b> v tejto Pitke: ak súper dal aspoň jedno NA EX, držiteľ má v bitke <b>+3 tuhé</b> („Petelica navyše“ v kroku 3, Viera ju tlmí ako každé tuhé; nie je to akcia na karte, Silná žena ani NA EX ju nemenia). Na Krčme (NA EX povinné) sa Kšeft nedá spustiť (R16 B).</li>
+<li><b>Farár, Starosta (do konca kola).</b> Platia od vyhodnotenia Pitky, v ktorej boli spustené, vrátane nej, až po bitku. NA EX sa na ne skladá ako vždy: Viera, ktorú NA EX zrušil, nie je aktívna, takže Farár z nej Hazard nespraví; NA EX na kartu pri lokalite hranu nemení, takže Starostovo ×2 na hrane ostáva.</li>
+<li><b>Hrobár, Autobusár, Poštárka, Veterinár.</b> Okamžité; s NA EX nijako neinteragujú (Veterinárova pečeň v tejto Pitke zahŕňa aj pečeň z odkrytého NA EX, ako dnes Veterinár v línii nezahŕňal — tu je to „tvoje poškodenie pečene v tejto Pitke = 0“, vrátane vlastného NA EX a ceny Kšeftu).</li>
+<li><b>Kšeft lokality a Kšeft karty</b> (Strýko, Zberný dvor, Sklad, Obecný úrad, Predsedova vila) fungujú ako doteraz; Kšeft väzňa je tretí druh s vlastnou cenou.</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="karty">
+<h2>3 · Texty kariet ôsmich starších</h2>
+<p>Finálne znenia s rozhodnutými variantmi (R8 A Starosta všetky hrany, R9 A Krčmárka zákaz, R10 A Farár do konca kola, R16 B Autobusár 1 karta a Vychovávateľka na Krčme neplatí). Tvar podľa §7: „Kšeft: Za &lt;cena&gt; &lt;účinok&gt;.“ s predponou <b>Väzeň</b>. Spúšťač v tvorcovi: nový <code>Väzeň</code> (Admin), aby ho jadro odlíšilo od Kšeftu karty v línii. Popis karty iné karty nemenuje (zásada Michala).</p>
+
+<div class="tab stack">
+<table>
+<thead><tr><th>Starší</th><th>Text karty</th><th>Výklad pre jadro (§16)</th><th>Dnešný efekt — ruší sa</th></tr></thead>
+<tbody>
+<tr><th>Hrobár</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci súper odhodí náhodnú kartu z ruky.</div></td><td data-l="Výklad">Náhoda zo seedovaného generátora (zásada 4). Karta ide do súperovho odhadzovacieho balíčka (nie z hry). Pri prázdnej ruke sa Kšeft neponúkne. 2 na 2: ruku vyberie kapitán súperov.</td><td data-l="Ruší sa">Konflikt: priložená karta je posledná na svojej strane, po bitke ide z hry.</td></tr>
+<tr><th>Farár</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci sa do konca kola každá súperova aktívna Viera ráta ako posilnený Hazard.</div></td><td data-l="Výklad">Od vyhodnotenia tejto Pitky do bitky: každá súperova aktívna akcia Viera v línii je Hazard ×2 (2 zadĺženia pre súpera v každom vyhodnotení Pitky, ako každý Hazard — O2, Michal: áno) a v bitke Viera nie je (neruší Povery, netlmí tuhé). Viera z priazne Veriaceho nie je akcia — ostáva. Súper bez Viery: Kšeft je naprázdno, ale ponúkne sa (hráč hádže na ďalšie Pitky).</td><td data-l="Ruší sa">Prehra: víťaz získa 1 zadĺženie za každú svoju aktívnu Poveru.</td></tr>
+<tr><th>Autobusár</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.</div></td><td data-l="Výklad">Podľa voľby, do ruky. Šenok sa nedopĺňa (ako Starosta dnes). Pri prázdnom šenku sa neponúkne.</td><td data-l="Ruší sa">Zhromaždenie: súper, ktorý pasuje po tebe, nedostane cigarety za pas.</td></tr>
+<tr><th>Starosta</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci sú do konca kola všetky aktívne akcie hrán lokality posilnené.</div></td><td data-l="Výklad">Obe hrany, aj tá, ktorú prevahou dostáva súper (R8 A — Michalovo znenie, je to hazard držiteľa). ×2 sa násobí s ďalšími násobkami (Posilnenie na spoji, Silná žena). Trvanie „do konca kola“ (O1, Michal 2026-10-30) — poškodenie z hrán sa ráta až v bitke, „v tejto Pitke“ by naň nedosiahlo.</td><td data-l="Ruší sa">Nástup: vezmi si 1 kartu zo šenku (prechádza na Autobusárov Kšeft).</td></tr>
+<tr><th>Poštárka</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci prepíš 1 svoj priznaný Dlh na súpera.</div></td><td data-l="Výklad">Počítadlá: tebe −1, súperovi +1 (hneď priznaný). Bez priznaného Dlhu sa neponúkne. Prekrýva sa s Kmotrom a Obecným úradom — v poriadku, je výhradný a drahší.</td><td data-l="Ruší sa">Kšeft: za 1 Dlh si dober 1 kartu.</td></tr>
+<tr><th>Krčmárka</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci súper v tejto Pitke NA EX nedá.</div></td><td data-l="Výklad">Zákaz od spustenia; už dané skryté NA EX sa súperovi vráti (O4, Michal: vrátiť). Na Krčme ruší súperovu povinnosť NA EX (R9 A). Vínna pivnica (dve NA EX): zákaz platí na obe.</td><td data-l="Ruší sa">Pitka: na tvoje NA EX súper nesmie odpovedať kartou.</td></tr>
+<tr><th>Vychovávateľka</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci dostane súper v bitke Petelicu, ak v tejto Pitke dá NA EX.</div></td><td data-l="Výklad">Pri odkrytí NA EX v tejto Pitke: aspoň jedno súperovo NA EX → držiteľ +3 tuhé v bitke kola (jedna Petelica na Kšeft, aj keby dal dve NA EX). Na Krčme sa neponúkne (R16 B). Verejná hrozba — súper vie a rozhoduje sa.</td><td data-l="Ruší sa">Kšeft: za 2 cigarety máš v bitke 1 Poveru navyše.</td></tr>
+<tr><th>Veterinár</th><td data-l="Text karty"><div class="karta">Väzeň — Kšeft: Za vypitý poldeci zahoď z hry 1 Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta poškodenie pečene.</div></td><td data-l="Výklad">Cirhóza <b>z ruky alebo priznaná, nie z odhadzovacieho balíčka</b> (O3, Michal 2026-10-30) — podľa voľby, z hry. Pečeň držiteľa v tejto Pitke = 0 vrátane ceny Kšeftu, vlastného NA EX a súperovho NA EX na jeho karty (inak by sa cena trestala sama). Bez Cirhózy v ruke či medzi priznanými sa ponúkne len časť o pečeni.</td><td data-l="Ruší sa">Pitka: karty v jeho okolí nepridávajú poškodenie pečene.</td></tr>
+</tbody>
+</table>
+</div>
+<p class="mini">Riadok „Starší“ v §16 Výklad kariet sa nahradí: „Starší: karta má v línii len akcie; efekt (Väzeň — Kšeft) platí výhradne držiteľovi väzňa (§7, §10).“</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="bossovia">
+<h2>4 · Bossovia — 6 akcií po slotoch</h2>
+<p>Zdroj: T5 návrh B (presne 1 neresť, R12 A) a R13 (dve siluety 4 + 4). Ľ = ľavá strana, P = pravá, index 0 hore – 3 dole. Rozloženie je <b>pevné</b> (1 permutácia, <code>allowed</code> na každý slot) ako dnes. Hazard je v dátach akcia <code>Dlh</code>, Pečeň je <code>PoškodeniePečene</code>. Ilustrácie ostávajú. Zadáva Admin v tvorcovi (akcie po stranách, blokované sloty, allowed, spúšťač Väzeň, text) a zverejní sadu; cards.json v repe sa dorovná z <code>/api/sada</code> podľa docs/NASADENIE.md.</p>
+
+<h3>Silueta A — blokované Ľ3 a P0 (úderníci a kontrola)</h3>
+
+<div class="bk"><div class="hl"><b>Starosta</b><span class="mini">úderník · tuhé 5 · neresť Hazard (korupcia)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot dmg"><i>0</i>Petelica</div><div class="slot"><i>1</i>Cigareta</div><div class="slot pos"><i>2</i>Posilnenie</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+<div class="strana"><p>Pravá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot dmg"><i>1</i>Pecka</div><div class="slot"><i>2</i>Cigareta</div><div class="slot neg"><i>3</i>Hazard</div></div>
+</div><p class="pz">Dnes: Pecka, Poldeci / Cigareta, Pecka (blokované Ľ1, Ľ3, P0, P2).</p></div>
+
+<div class="bk"><div class="hl"><b>Autobusár</b><span class="mini">úderník · tuhé 4 · neresť Pečeň (pije za volantom)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot dmg"><i>0</i>Pecka</div><div class="slot"><i>1</i>Cigareta</div><div class="slot pos"><i>2</i>Robota</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+<div class="strana"><p>Pravá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot dmg"><i>1</i>Pecka</div><div class="slot"><i>2</i>Cigareta</div><div class="slot neg"><i>3</i>Pečeň</div></div>
+</div><p class="pz">Dnes: Pecka, Cigareta, Poldeci / Robota (blokované Ľ0, P0, P1, P3).</p></div>
+
+<div class="bk"><div class="hl"><b>Hrobár</b><span class="mini">kontrola · tuhé 4 · neresť Hazard (kšeftuje s hrobmi)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot dmg"><i>0</i>Petelica</div><div class="slot pos"><i>1</i>Pohoršenie</div><div class="slot pos"><i>2</i>Vízia</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+<div class="strana"><p>Pravá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot pos"><i>1</i>Pohoršenie</div><div class="slot dmg"><i>2</i>Rana</div><div class="slot neg"><i>3</i>Hazard</div></div>
+</div><p class="pz">Dnes: Viera, Vízia / Robota, Pohoršenie (blokované Ľ2, Ľ3, P0, P1).</p></div>
+
+<div class="bk"><div class="hl"><b>Vychovávateľka</b><span class="mini">kontrola · tuhé 3 · neresť Pečeň (v kabinete)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot dmg"><i>0</i>Pecka</div><div class="slot pos"><i>1</i>Obmedzenie</div><div class="slot pos"><i>2</i>Povera</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+<div class="strana"><p>Pravá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot pos"><i>1</i>Obmedzenie</div><div class="slot dmg"><i>2</i>Rana</div><div class="slot neg"><i>3</i>Pečeň</div></div>
+</div><p class="pz">Dnes: Obmedzenie, Cigareta / Poldeci, Povera (blokované Ľ1, Ľ2, P1, P2).</p></div>
+
+<h3>Silueta B — blokované Ľ0 a P3 (ekonomika a podpora, zrkadlovo: akcie o slot posunuté, poradie ostáva)</h3>
+
+<div class="bk"><div class="hl"><b>Krčmárka</b><span class="mini">ekonomika · tuhé 2 · neresť Pečeň (čo si naleje)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot pos"><i>1</i>Poldeci</div><div class="slot pos"><i>2</i>Obmedzenie</div><div class="slot"><i>3</i>Cigareta</div></div>
+<div class="strana"><p>Pravá</p><div class="slot pos"><i>0</i>Poldeci</div><div class="slot dmg"><i>1</i>Pecka</div><div class="slot neg"><i>2</i>Pečeň</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+</div><p class="pz">Dnes: Obmedzenie, Poldeci / Povera, Cigareta (blokované Ľ0, Ľ1, P2, P3).</p></div>
+
+<div class="bk"><div class="hl"><b>Poštárka</b><span class="mini">karty · tuhé 1 · neresť Hazard (hrá s dôchodkami)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot pos"><i>1</i>Vízia</div><div class="slot pos"><i>2</i>Povera</div><div class="slot dmg"><i>3</i>Rana</div></div>
+<div class="strana"><p>Pravá</p><div class="slot pos"><i>0</i>Vízia</div><div class="slot pos"><i>1</i>Povera</div><div class="slot neg"><i>2</i>Hazard</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+</div><p class="pz">Dnes: Vízia / Cigareta, Povera, Vízia (blokované Ľ0, Ľ2, Ľ3, P3).</p></div>
+
+<div class="bk"><div class="hl"><b>Farár</b><span class="mini">podpora · tuhé 0 · neresť Pečeň (omšové víno)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot pos"><i>1</i>Posilnenie</div><div class="slot pos"><i>2</i>Viera</div><div class="slot pos"><i>3</i>Viera</div></div>
+<div class="strana"><p>Pravá</p><div class="slot pos"><i>0</i>Pohoršenie</div><div class="slot pos"><i>1</i>Posilnenie</div><div class="slot neg"><i>2</i>Pečeň</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+</div><p class="pz">Dnes: Posilnenie ×2 / Viera ×2 (blokované Ľ0, Ľ2, P1, P3).</p></div>
+
+<div class="bk"><div class="hl"><b>Veterinár</b><span class="mini">podpora · tuhé 1 · neresť Hazard (lieky načierno)</span></div>
+<div class="strany">
+<div class="strana"><p>Ľavá</p><div class="slot blk"><i>0</i>blokovaný</div><div class="slot pos"><i>1</i>Posilnenie</div><div class="slot pos"><i>2</i>Viera</div><div class="slot pos"><i>3</i>Poldeci</div></div>
+<div class="strana"><p>Pravá</p><div class="slot pos"><i>0</i>Posilnenie</div><div class="slot dmg"><i>1</i>Rana</div><div class="slot neg"><i>2</i>Hazard</div><div class="slot blk"><i>3</i>blokovaný</div></div>
+</div><p class="pz">Dnes: Posilnenie ×2 / Poldeci, Cigareta (blokované Ľ0, Ľ3, P0, P3).</p></div>
+
+<p><b>Súhrn:</b> 8 × 6 akcií, 8 nerestí (4 Hazard, 4 Pečeň), tuhé 5 / 4 / 4 / 3 / 2 / 1 / 0 / 1, štyri Posilnenia u podporných. Dátový tvar pre jednu stranu (príklad Starosta, ľavá):</p>
+<pre>"left": { "blocked": [3],
+          "actions": { "Petelica": 1, "Cigareta": 1, "Posilnenie": 1 },
+          "allowed": { "0": ["Petelica"], "1": ["Cigareta"], "2": ["Posilnenie"] } },
+"permutations": { "total": 1, "left": 1, "right": 1 },
+"triggers": ["Väzeň"]</pre>
+<p class="mini">Test sady (rozhodca / Admin): každý starší má 6 akcií, presne 1 z {Dlh, PoškodeniePečene}, 2 blokované sloty v silueta A (Ľ3, P0) alebo B (Ľ0, P3), 1 permutáciu.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="priazne">
+<h2>5 · Priazne 1 / 2 / 3</h2>
+<p>Zdroj: R11 A „Michalova sada doslovne, na skúšku“ + ôsma priazeň Alkoholik (Brainstorming na Michalovu žiadosť). Sila = stupeň markera (účinná sila po Poverách, §9.1). Tabuľka ide do §10 „Priazne“ namiesto dnešnej.</p>
+<div class="tab stack">
+<table>
+<thead><tr><th>Priazeň</th><th>Uplatňuje sa pri</th><th>Účinok</th><th>sila 1 / 2 / 3</th><th>Kľúč v dátach</th></tr></thead>
+<tbody>
+<tr><th>Bitkár</th><td data-l="Kedy">Poškodenie v bitke (§9.3)</td><td data-l="Účinok">tuhé poškodenie navyše</td><td data-l="Sila">+1 / +2 / +3</td><td data-l="Kľúč"><code>BITKAR</code> (bez zmeny)</td></tr>
+<tr><th>Veriaci</th><td data-l="Kedy">Viera v bitke (§9.1, §9.3)</td><td data-l="Účinok">Viera navyše (hodnota 1)</td><td data-l="Sila">+1 / +2 / +3</td><td data-l="Kľúč"><code>VERIACI</code> (bez zmeny)</td></tr>
+<tr><th>Abstinent</th><td data-l="Kedy">Pohoršenie v bitke (§9.2)</td><td data-l="Účinok">body posunu navyše, hrá ich ako svoje</td><td data-l="Sila">+1 / +2 / +3</td><td data-l="Kľúč"><code>LAKOMEC</code> (bez zmeny)</td></tr>
+<tr><th>Advokát <span class="chip zv">nová</span></th><td data-l="Kedy">Exekúcia (§11, krok 4c)</td><td data-l="Účinok">exekúcia ti odpočíta o toľko <b>špakov menej</b> (najmenej 0); Dlhy zhoria ako doteraz (polovica nahor)</td><td data-l="Sila">−1 / −2 / −3 špaky</td><td data-l="Kľúč"><code>ADVOKAT</code>; nahrádza <code>EXEKUTOR</code> (staré sady: EXEKUTOR → ADVOKAT pri načítaní)</td></tr>
+<tr><th>Robota <span class="chip zv">nová</span></th><td data-l="Kedy">Exekúcia, pred Exekútorom (§11)</td><td data-l="Účinok">akcie Robota navyše: každá spáli 1 tvoj priznaný Dlh; za Dlh, ktorý nemá čo spáliť, 1 špak (v8.4; O5, Michal: áno)</td><td data-l="Sila">1 / 2 / 3 Roboty</td><td data-l="Kľúč"><code>ROBOTA</code>; nahrádza <code>NEPRAJNIK</code> (Výpalník → Robota pri načítaní)</td></tr>
+<tr><th>Fajčiar <span class="chip v2">zmena</span></th><td data-l="Kedy"><b>Po bitke</b> (krok 6c), nie po braní zo šenku</td><td data-l="Účinok">cigarety navyše; Obmedzenie ich neuberá; cigarety za prebytok porazenému ostávajú (rozhodnutie 12)</td><td data-l="Sila">+1 / +2 / +3</td><td data-l="Kľúč"><code>FAJCIAR</code></td></tr>
+<tr><th>Kmotor <span class="chip v2">zmena</span></th><td data-l="Kedy">Po bitke (krok 6c)</td><td data-l="Účinok">tvoje priznané Dlhy prejdú medzi súperove; ak ich máš menej, presunie, koľko máš; bez Dlhu nič (na skúšku — stratég meria hluchosť)</td><td data-l="Sila">2 / 3 / 4 Dlhy</td><td data-l="Kľúč"><code>UZERNIK</code></td></tr>
+<tr><th>Alkoholik</th><td data-l="Kedy">Poldeci v bitke (§9.5)</td><td data-l="Účinok">„Na zdravie do dna“: poldeci z tvojho NA EX sa vráti plný</td><td data-l="Sila">1 / 2 / 3 za kolo</td><td data-l="Kľúč"><code>ALKOHOLIK</code> (bez zmeny)</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>Von:</b> Exekútor (priazeň; akcia exekúcie v §11 ostáva), Výpalník — Výpalné. <code>scorecards.json</code>: id <code>exekutor</code> → <code>advokat</code> (nazov Advokát, favour ADVOKAT), id <code>neprajnik</code> → <code>robota</code> (nazov Robota, favour ROBOTA); tvorca (Bodovacie karty) dostane nové názvy, zverejní Admin. Náhradné znenie Alkoholika, ak sa v playteste ukáže hluchý: „po bitke sa ti 1 / 2 / 3 vypité poldeci otočia na plné“ — zatiaľ nie.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="rusi">
+<h2>6 · Čo sa ruší</h2>
+<ul>
+<li><b>Všetkých 8 dnešných efektov starších</b> (tabuľka v sekcii <a href="#karty">Texty kariet</a>) vrátane spúšťačov Konflikt, Prehra, Nástup, Zhromaždenie, Pitka u starších; riadok „Starší“ v §16.</li>
+<li><b>Patronát</b> (§5 „Potom nasleduje patronát“, §10 Patronát, §9 krok 6d, §9.2 Pohoršenia z patronátu, §9.4 sekera „patronát ako prehra“, §14b „patronát ako v každom kole“, bot <code>patronat</code>, UI patronátu, výučba — Melicharove texty o patronáte len hlásiť, Michal rozhodne).</li>
+<li><b>Prebudenie</b> (§10, §7 „prebudený starší“ v Kšefte, §16).</li>
+<li><b>Vydesenie ako výhra</b> (§1 riadok tabuľky, kontrola pri posune a na konci kola, §9 krok 8 „vydesenie“, §14b kontrola pred konečnými špakmi, §10 „ráta sa do vydesenia“). Stav staršieho „vydesený“ (stupeň 3) ostáva.</li>
+<li><b>Nahradený starší</b> a náhrada lícom dole (§10 úvod, viewFor náhrady, §5 N podľa nenahradených).</li>
+<li><b>Priazne</b> Exekútor a Výpalník; Fajčiar po braní zo šenku (§5 odsek o Fajčiarovi).</li>
+<li><b>Kšeft Poštárky a Vychovávateľky</b> v dnešnom tvare (§7 vymenovanie: „starší Poštárka a Vychovávateľka (v línii aj prebudení)“).</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="kde">
+<h2>7 · Pravidlá, kód, dáta, bot, UI, testy</h2>
+<h3>docs/PRAVIDLA.md (v8.5 alebo v9 — dávka)</h3>
+<ul>
+<li><b>§1</b> Podmienky konca: „Hráč zajme tretieho staršieho → vyhráva hneď“; odsek o vydesení von.</li>
+<li><b>§5</b> N = 8 vždy; „Potom nasleduje pokus o zajatie (§10)“ namiesto patronátu; Fajčiar po šenku von.</li>
+<li><b>§7</b> Kšeft: tretí druh „Kšeft väzňa“ (kto, cena vypitý poldeci, raz za Pitku na väzňa, neponúka sa naprázdno), odsek „Poradie Kšeft vs. NA EX“ (Krčmárka, Vychovávateľka); vymenovanie Kšeftov: Strýko, väzni, lokality.</li>
+<li><b>§9</b> tabuľka krokov: 2 Pohoršenie bez „z patronátu“; 6c Fajčiar po bitke; 6d „Zajatie: výsledok pokusu; tretí väzeň = koniec hry“; 8 bez vydesenia. §9.4 sekera: „pokus o zajatie zlyhá“.</li>
+<li><b>§10</b> úvod bez nahradeného staršieho; nový oddiel <b>„Zajatie a väzeň“</b> (sekcia <a href="#vazen">1</a>) namiesto „Patronát“; „Prebudenie“ von; tabuľka priazní podľa sekcie <a href="#priazne">5</a>; stav markera „v ohrození“ a prázdne miesto po väzňovi.</li>
+<li><b>§11</b> Priznanie: väzeň leží medzi priznanými kartami, nie je kliatba. Exekúcia: Robota z priazne pred Exekútorom; Advokát.</li>
+<li><b>§14</b> Špaky: riadok „Väzni — 8 / 6 / 4 / 2 podľa poradia zajatia v partii, po finále“; riadok vydesenia von. <b>§14b</b> finále: pokus o zajatie aj vo finále (O7, Michal: áno), tretí väzeň pred konečnými špakmi; vydesenie von.</li>
+<li><b>§16</b> riadky ôsmich starších a riadok „Starší“ nanovo. <b>§17</b> slovník: väzeň, pokus o zajatie, boss, v ohrození, Kšeft väzňa; patronát, prebudenie, náhrada, vydesenie (výhra) von. Paragraf 2 na 2: kapitán a pokus.</li>
+<li><code>docs/pravidla-historia.md</code>: staré znenia §1, §10 Patronát a Prebudenie, tabuľka priazní v8. <code>tools/playtest/tahak.md</code> (čísla stráži test) a <code>tools/rozhodca/mapa.json</code> (nové paragrafy → testy).</li>
+</ul>
+<h3>packages/core (bez I/O)</h3>
+<ul>
+<li><code>types.ts</code>: stav — <code>vazni</code> na hráčovi (id staršieho, poradie zajatia v partii), <code>pokus</code> v kole (hráč, starší), starší: stav <code>vOhrozeni</code>, <code>vazen</code> (bez markera), scorecard otočený; karta bossa v ruke súpera. <code>constants.ts</code>: hodnoty väzňov [8, 6, 4, 2], cena pokusu 1, väzni na výhru 3, N šenku 8.</li>
+<li><code>elders.ts</code>: patronát a prebudenie von; pokus (podmienka stupeň 3, kto smie), výsledok pokusu (väzeň / späť o stupeň s ústupom podľa §10), priazne (ADVOKAT, ROBOTA, Fajčiar po bitke, Kmotor 2/3/4), mapovanie starých kľúčov.</li>
+<li><code>engine.ts</code>: fáza draftu „pokus o zajatie“ (zámer útočníka, potom obrancu, validácia); zámer „Kšeft väzňa“ v Pitke (cena, raz za Pitku, odmietnutie naprázdno); Krčmárkin zákaz pri zámere NA EX (vrátenie skrytého); koniec hry tretím väzňom.</li>
+<li><code>effects.ts</code>: 8 Kšeftov väzňa podľa výkladu v sekcii <a href="#karty">3</a>; dnešné efekty starších von; spúšťač <code>Väzeň</code>.</li>
+<li><code>battle.ts</code>: krok 6d zajatie; Vychovávateľka +3 tuhé; Farárova Viera → Hazard; Starostove hrany ×2; Advokát a Robota v exekúcii; Fajčiar a Kmotor po bitke; špaky za väzňov po finále.</li>
+<li><code>view.ts</code> (<code>viewFor</code>): boss v súperovej ruke — ktorý starší je v ruke je verejné, ruka ostáva skrytá; náhrada lícom dole zaniká; test, že sa nič nové neprezradí (nemenné pravidlo 2).</li>
+<li><code>bot.ts</code>: pokus (odhad špakov: väzeň + Kšeft proti riziku prehry s bossom u súpera), hra s bossom v ruke, Kšefty väzňa (kedy vypiť poldeci), nové priazne; potom bot-tréner s turnajom.</li>
+<li><code>nahlady.ts</code>, <code>rekapitulacia.ts</code>, <code>kronika.ts</code>, <code>momenty.ts</code>, <code>achievementy.ts</code>: nové udalosti (pokus, zajatie, Kšeft väzňa, výhra tromi väzňami), hlášky Melichara pre momenty (Admin / Michal).</li>
+</ul>
+<h3>packages/server, apps/web</h3>
+<ul>
+<li>Server: nové zámery (pokus, Kšeft väzňa), 2 na 2 kapitán; seed sady — nové karty starších a scorecardy cez tvorcu, značka migrácie v <code>dorovnajSoSeedom</code> až po skopírovaní cards.json (CLAUDE.md, zásada 5).</li>
+<li>Klient: stupnica — stav „v ohrození“ a prázdne miesto väzňa; pivnica (väzni medzi priznanými kartami s tlačidlom Kšeftu a cenou poldeci); draft — tlačidlo pokusu namiesto patronátu; ruka — boss označený ako zajatý starší; krčmová nástenka a „keby skončila teraz“ — špaky za väzňov; rekapitulácia bitky; stránka Pravidlá (<code>pravidla/kapitoly.tsx</code>), slovník, ťahák, výučba (Michalove texty o patronáte a vydesení — len hlásiť).</li>
+</ul>
+<h3>Dáta (Admin)</h3>
+<ul>
+<li>Tvorca: 8 kariet starších podľa sekcie <a href="#bossovia">4</a> (akcie, blokované, allowed, 1 permutácia), spúšťač <code>Väzeň</code>, texty podľa sekcie <a href="#karty">3</a>; bodovacie karty Advokát a Robota namiesto Exekútora a Výpalníka; zverejniť sadu; <code>packages/core/data/cards.json</code> a <code>scorecards.json</code> dorovnať z <code>/api/sada</code>.</li>
+</ul>
+<h3>Testy a meranie</h3>
+<ul>
+<li>Vitest: pokus (podmienka, cena, poradie, oba naraz, sekera), výsledok (väzeň, späť o stupeň a ústup), väzeň (bez priazne, bez Povier, bez Pohoršenia), tretí väzeň = koniec, špaky 8/6/4/2 podľa poradia v partii, Kšefty všetkých ôsmich (vrátane Krčmárka vs skryté NA EX, Vychovávateľka na Krčme, Veterinárova pečeň 0, Starostove hrany ×2 pre oboch), priazne (Advokát min 0, Robota so špakom, Fajčiar po bitke, Kmotor 2/3/4), N = 8, viewFor. Odtlačok hry (<code>tools/upratovanie/odtlacok.ts</code>) sa zmení — zámer, nová základňa.</li>
+<li>Stratég po implementácii (z T2 a T5): % partií končiacich tromi väzňami; väzni na partiu a na hráča; podiel špakov za väzňov na špakoch víťaza (cieľ ≤ 35 %); % neúspešných pokusov a kto ich robí; víťaznosť kola s bossom v ruke obrancu; úspešnosť pokusu podľa bossa (20–80 %); frekvencia každej priazne pri prebytku (hluchá pod 5 %); rebrík ε 0,1 / 0,25 (zručnosť nesmie klesnúť oproti V7 + 6A).</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="otvorene">
+<h2>8 · Otvorené body — uzavreté</h2>
+<p><b>Michal rozhodol všetky 2026-10-30</b> — výsledok je v sekcii <a href="#rozhodnute">Rozhodnuté</a> a pri každej otázke ako zelený štítok. Otázky ostávajú ako podklad s alternatívami; rádiá a <a href="#volby">Moje voľby</a> sú už len archív.</p>
+
+<details class="q" id="O1"><summary><span class="qid">O1</span><span class="qt">Starosta — ako dlho platí Kšeft „hrany posilnené“?</span> <span class="chip ok">Michal: A, do konca kola</span><span class="volba" data-pre="O1"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O1" value="A"> <b>A · Do konca kola</b> <span class="chip ok">odporúčam</span><span>Poškodenie z hrán sa ráta až v bitke — „v tejto Pitke“ by Rany a Pecky na hranách nezdvojilo, len zadĺženie a cigarety. Rovnaké trvanie ako Farár.</span></label></li>
+<li class="moz"><label><input type="radio" name="O1" value="B"> <b>B · Len v tejto Pitke</b><span>Zdvojí len per-Pitka účinky hrán (zadĺženie, pečeň, cigarety, Vízia); v bitke nič. Slabší, čitateľnejší.</span></label></li>
+</ol></details>
+
+<details class="q" id="O2"><summary><span class="qid">O2</span><span class="qt">Farár — Viera ako posilnený Hazard sa ráta v každej Pitke do konca kola?</span> <span class="chip ok">Michal: A, áno</span><span class="volba" data-pre="O2"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O2" value="A"> <b>A · Áno, ako každý Hazard v línii</b> <span class="chip ok">odporúčam</span><span>Od Pitky, v ktorej Kšeft padol: 2 zadĺženia za Vieru v každom vyhodnotení Pitky; v bitke Viera chýba. Tri Pitky × 2 Viery = 12 zadĺžení — silný, ale výhradný a stojí poldeci; súper môže Vieru stiahnuť NA EX alebo Odporom.</span></label></li>
+<li class="moz"><label><input type="radio" name="O2" value="B"> <b>B · Raz za kolo — 2 zadĺženia za Vieru, až v bitke</b><span>Miernejší; Hazard by sa správal inak než Hazard na karte, čo pravidlá komplikuje.</span></label></li>
+</ol></details>
+
+<details class="q" id="O3"><summary><span class="qid">O3</span><span class="qt">Veterinár — ktorú Cirhózu smie zahodiť?</span> <span class="chip ok">Michal: z ruky alebo priznanú, nie z odhadzovacieho balíčka</span><span class="volba" data-pre="O3"></span></summary>
+<p class="mini"><b>Rozhodnuté inak než A aj B:</b> Cirhóza z ruky alebo priznaná; odhadzovací balíček nie (Michal 2026-10-30). Zapracované v texte karty aj vo výklade.</p>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O3" value="A"> <b>A · Ktorúkoľvek svoju: z ruky, z odhadzovacieho balíčka aj priznanú</b> <span class="chip ok">odporúčam</span><span>Bez umelého obmedzenia; priznaná Cirhóza dáva súperovi +1 tuhé každú bitku, nepriznaná −3 na konci — hráč si vyberie, čo ho bolí. Bez Cirhózy platí len časť o pečeni.</span></label></li>
+<li class="moz"><label><input type="radio" name="O3" value="B"> <b>B · Len z ruky alebo odhadzovacieho balíčka</b><span>Znenie z T3; priznanej sa nezbaví.</span></label></li>
+</ol></details>
+
+<details class="q" id="O4"><summary><span class="qid">O4</span><span class="qt">Krčmárka — čo so súperovým NA EX, ktoré už dal skryto pred Kšeftom?</span> <span class="chip ok">Michal: A, vrátiť</span><span class="volba" data-pre="O4"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O4" value="A"> <b>A · Vráti sa mu (poldeci plný, bez neresti a pečene)</b> <span class="chip ok">odporúčam</span><span>Zákaz platí na celú Pitku; súper sa dozvie len to, že Kšeft padol, jeho poldeci sa vráti (prezradí „mal NA EX“, nie kam). Jednoduché pravidlo, jedna veta.</span></label></li>
+<li class="moz"><label><input type="radio" name="O4" value="B"> <b>B · Kšeft sa dá spustiť len kým súper Pitku neskončil; už dané NA EX ostáva</b><span>Čistejší zákaz, ale držiteľ musí Krčmárku hrať naslepo skôr než súper skončí — Pitka je naraz, takže často nestihne.</span></label></li>
+</ol></details>
+
+<details class="q" id="O5"><summary><span class="qid">O5</span><span class="qt">Priazeň Robota — aj 1 špak za Dlh, ktorý nemá čo spáliť (ako akcia Robota v8.4)?</span> <span class="chip ok">Michal: A, áno</span><span class="volba" data-pre="O5"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O5" value="A"> <b>A · Áno — priazeň = akcie Robota navyše, aj so špakom</b> <span class="chip ok">odporúčam</span><span>Rovnaké ako Bitkár (+tuhé), Veriaci (+Viera), Abstinent (+Pohoršenia): priazeň pridáva akcie. Nikdy nie je hluchá — bez Dlhov dá 1 / 2 / 3 špaky.</span></label></li>
+<li class="moz"><label><input type="radio" name="O5" value="B"> <b>B · Nie — len páli Dlhy, bez Dlhov nič</b><span>Michalov zápis „Robota 1/2/3“ doslovne; bez Dlhov hluchá.</span></label></li>
+</ol></details>
+
+<details class="q" id="O6"><summary><span class="qid">O6</span><span class="qt">Vychovávateľka — „Petelica“ = +3 tuhé držiteľovi v bitke, jedna na Kšeft?</span> <span class="chip ok">Michal: A, áno</span><span class="volba" data-pre="O6"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O6" value="A"> <b>A · Áno, +3 tuhé pre držiteľa, jedna na Kšeft, Viera ju tlmí</b> <span class="chip ok">odporúčam</span><span>„Súper dostane Petelicu“ = súper dostane 3 tuhé navyše. Nie je to akcia na karte — Silná žena, Posilnenie ani NA EX ju nemenia.</span></label></li>
+<li class="moz"><label><input type="radio" name="O6" value="B"> <b>B · +3 tuhé, ktoré Viera netlmí (ako rana „mimo línie“)</b><span>Silnejšie; nové pravidlo o netlmenom tuhom.</span></label></li>
+</ol></details>
+
+<details class="q" id="O7"><summary><span class="qid">O7</span><span class="qt">Pokus o zajatie aj vo finále?</span> <span class="chip ok">Michal: A, áno</span><span class="volba" data-pre="O7"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O7" value="A"> <b>A · Áno</b> <span class="chip ok">odporúčam</span><span>Patronát dnes vo finále platí. Tretí väzeň vo finále vyhrá pred konečnými špakmi; inak väzeň dostane 8 / 6 / 4 / 2 podľa poradia ako každý. Zaostávajúci útočník má vo finále ešte jednu páku.</span></label></li>
+<li class="moz"><label><input type="radio" name="O7" value="B"> <b>B · Nie</b><span>Finále bez pokusu; jednoduchšie, ale vedúci je vo finále nedotknuteľný.</span></label></li>
+</ol></details>
+
+<details class="q" id="O8"><summary><span class="qid">O8</span><span class="qt">Marker „v ohrození“ — v kole pokusu sa ním nehýbe?</span> <span class="chip ok">Michal: A, nehýbe sa</span><span class="volba" data-pre="O8"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O8" value="A"> <b>A · Nehýbe sa (Pohoršenie, prebytok ani Povery)</b> <span class="chip ok">odporúčam</span><span>Pokus je zaplatený a obrana je v bitke s bossom v ruke, nie v Pohoršení za 4 body. Udržaný strach z červenej sa platí normálne. Jedno pravidlo, žiadne „pokus padá, ak…“.</span></label></li>
+<li class="moz"><label><input type="radio" name="O8" value="B"> <b>B · Hýbe sa; ak marker pred bitkou klesne pod stupeň 3, pokus padá (cena prepadne)</b><span>Druhá obrana cez Pohoršenie / prebytok; viac stavov a výnimiek.</span></label></li>
+</ol></details>
+
+<details class="q" id="O9"><summary><span class="qid">O9</span><span class="qt">Neúspešný pokus — ústup o stupeň zmaže nezaplatenú červenú (3 špaky čakajúce na udržanie)?</span> <span class="chip ok">Michal: A, zmaže sa</span><span class="volba" data-pre="O9"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O9" value="A"> <b>A · Áno, ako každý ústup (§10)</b> <span class="chip ok">odporúčam</span><span>Pokus = riziko: cigareta + boss u súpera + stupeň. Bez výnimky v pravidlách. Kto chce istých 3 špakov, počká kolo a zajíma až potom.</span></label></li>
+<li class="moz"><label><input type="radio" name="O9" value="B"> <b>B · Nie — ústup z pokusu udržanie nemaže</b><span>Miernejší trest; výnimka z pravidla ústupu.</span></label></li>
+</ol></details>
+
+<details class="q" id="O10"><summary><span class="qid">O10</span><span class="qt">Kšeft väzňa pri ULTRA / playteste — bot a AI hráči: zapnúť väzňa až s natrénovaným botom?</span> <span class="chip ok">Michal: A, hneď</span><span class="volba" data-pre="O10"></span></summary>
+<ol class="moznosti">
+<li class="moz rec"><label><input type="radio" name="O10" value="A"> <b>A · Implementovať celé, nasadiť, bot-tréner hneď za tým, playtest AI max</b> <span class="chip ok">odporúčam</span><span>Poradie v sekcii 9. Partie s botom budú chvíľu slabšie v pokusoch; ľudia proti ľuďom nie.</span></label></li>
+<li class="moz"><label><input type="radio" name="O10" value="B"> <b>B · Nasadiť až po bot-trénerovi</b><span>Dlhšia linka, ale bot od prvého dňa pozná väzňa.</span></label></li>
+</ol></details>
+</section>
+
+<!-- ============================================================ -->
+<section id="poradie">
+<h2>9 · Poradie práce</h2>
+<ol class="kroky">
+<li><b>Michal</b> rozhodol otvorené body O1–O10 (2026-10-30, sekcia <a href="#rozhodnute">Rozhodnuté</a>) — hotové.</li>
+<li><b>Developer</b> (vetva <code>pravidla/vazen</code> nad master): jadro + server + klient + PRAVIDLA.md + testy; typecheck, build, odtlačok nanovo; commit, push, merge do master.</li>
+<li><b>Admin</b> v tvorcovi: 8 kariet starších (akcie, sloty, spúšťač Väzeň, texty), bodovacie karty Advokát a Robota, zverejniť sadu; cards.json a scorecards.json do repa, značka migrácie až po skopírovaní.</li>
+<li><b>Korektor</b>: texty kariet, §10, slovník, UI; hlási Michalove texty vo výučbe (patronát, vydesenie).</li>
+<li><b>Bot-tréner</b>: pokus, boss v ruke, Kšefty väzňa, nové priazne; turnaj proti starému botovi.</li>
+<li><b>Stratég</b>: merania zo sekcie 7 (väzeň vs V7 + 6A).</li>
+<li><b>Nasadenie</b> (<code>/naex-nasad</code>), <b>novinka</b> pre hráčov, <b>playtest AI max</b>, nováčikovia vo výučbe.</li>
+</ol>
+</section>
+
+<!-- ============================================================ -->
+<section id="volby">
+<h2>Moje voľby</h2>
+<p class="mini">Voľby sa ukladajú v prehliadači. Skopíruj výstup a pošli Leaderovi.</p>
+<div class="ovl"><button type="button" id="kopiruj">Skopírovať</button><button type="button" id="vymaz">Vymazať voľby</button></div>
+<textarea id="vystup" readonly aria-label="Výstup volieb"></textarea>
+</section>
+
+</main>
+<script>
+(function () {
+  var KLUC = "naex-starsi-krok2-v1";
+  var OTAZKY = ["O1","O2","O3","O4","O5","O6","O7","O8","O9","O10"];
+  var stav = {};
+  try { stav = JSON.parse(localStorage.getItem(KLUC) || "{}") || {}; } catch (e) { stav = {}; }
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) {} }
+  function nazov(q) { var d = document.getElementById(q); var t = d && d.querySelector(".qt"); return t ? t.textContent : q; }
+  function popis(q, v) { var i = document.querySelector('input[name="' + q + '"][value="' + v + '"]'); var b = i && i.parentNode.querySelector("b"); return b ? b.textContent : v; }
+  function vykresli() {
+    var r = ["Michal — starší krok 2, otvorené body (docs/napady/starsi-krok2-zadanie.html):", ""];
+    OTAZKY.forEach(function (q) {
+      var v = stav[q]; var vol = document.querySelector('#' + q + ' .volba');
+      if (vol) vol.textContent = v ? "→ " + v : "";
+      r.push(q + " " + nazov(q) + " — " + (v ? popis(q, v) : "nerozhodnuté"));
+    });
+    document.getElementById("vystup").value = r.join("\n");
+  }
+  OTAZKY.forEach(function (q) {
+    var ins = document.querySelectorAll('input[name="' + q + '"]');
+    Array.prototype.forEach.call(ins, function (i) {
+      if (stav[q] === i.value) i.checked = true;
+      i.addEventListener("change", function () { stav[q] = i.value; uloz(); vykresli(); });
+    });
+  });
+  document.getElementById("kopiruj").addEventListener("click", function () {
+    var t = document.getElementById("vystup"); t.select();
+    try { navigator.clipboard.writeText(t.value); } catch (e) { document.execCommand("copy"); }
+  });
+  document.getElementById("vymaz").addEventListener("click", function () {
+    stav = {}; uloz();
+    Array.prototype.forEach.call(document.querySelectorAll('details.q input[type=radio]'), function (i) { i.checked = false; });
+    vykresli();
+  });
+  vykresli();
+})();
+</script>
+</body>
+</html>
