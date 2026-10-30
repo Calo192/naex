@@ -10,12 +10,18 @@ import { farbaKarty, formatujEfekt, geometriaKarty } from "@naex/tvorba";
 import { mediaUrl } from "../lib/api.ts";
 import { IkonaAkcie } from "./IkonaAkcie.tsx";
 import { useTip, type TipObsah } from "./Tip.tsx";
+import type { ZarSlotu } from "./zar.ts";
 import "./karta.css";
 
 /** Stav slotu v hre (živé vyhodnotenie línie). */
 export interface SlotStav {
   readonly stav: "aktivna" | "zrusena" | "neaktivna";
   readonly nasobok: number;
+}
+
+/** Žeravá či vyhasnutá ikona v slote; nova = prvé zobrazenie (odletí iskra, stúpne dym). */
+export interface ZarNaKarte extends ZarSlotu {
+  readonly nova: boolean;
 }
 
 export type VzhladKarty = Pick<
@@ -35,6 +41,8 @@ export interface KartaLicoProps {
   /** Lokálny náhľad obrázka (tvorca pred nahraním). */
   readonly nahladObrazka?: string | null;
   readonly sloty?: { readonly lava: readonly (SlotStav | null)[]; readonly prava: readonly (SlotStav | null)[] } | null;
+  /** Akcie zmenené Nástrojom v Dedičstve či Úplatkom (sloty vytlačených strán, indexy zhora). */
+  readonly zar?: { readonly lava: readonly (ZarNaKarte | null)[]; readonly prava: readonly (ZarNaKarte | null)[] } | undefined;
   readonly odznaky?: ReactNode;
   readonly onClick?: (() => void) | undefined;
   readonly vybrana?: boolean;
@@ -91,17 +99,18 @@ export function KartaLico(props: KartaLicoProps) {
     if (r === undefined) return null;
     const akcia = vzhlad.akcie.find((a) => a.kluc === kluc);
     const st = sloty?.[strana][i] ?? null;
+    const zar = props.zar?.[strana][i] ?? null;
     const nazov = akcia?.nazov ?? kluc;
     const stavText =
       st === null ? null : st.stav === "aktivna" ? `Aktívna${st.nasobok > 1 ? ` ×${st.nasobok}` : ""}` : st.stav === "zrusena" ? "Zrušená Odporom" : "Neaktívna — na spoji nemá pár";
     return (
       <span
         key={`${strana}${i}`}
-        className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}`}
+        className={`kl-slot${st === null ? "" : ` kl-${st.stav}`}${props.spoj?.[strana].includes(i) === true ? " kl-spoj" : ""}${zar === null ? "" : ` kl-zar-${zar.smer} kl-zar-${strana}${zar.nova ? " kl-zar-nova" : ""}`}`}
         data-akcia={kluc}
         style={{ "--x": r.x, "--y": r.y, "--s": r.w, "--r": g.polomerSlotu } as CSSProperties}
         tabIndex={bezPopisov ? undefined : props.slotyBezFokusu === true ? -1 : 0}
-        aria-label={`${nazov}: ${akcia?.popis ?? ""}`}
+        aria-label={`${nazov}: ${akcia?.popis ?? ""}${zar === null ? "" : ` ${zar.popis}`}`}
         {...hover({
           nadpis: nazov,
           ikona: (
@@ -112,12 +121,15 @@ export function KartaLico(props: KartaLicoProps) {
           text: (
             <>
               {akcia?.popis ?? "Akcia bez popisu."}
+              {zar !== null && <span className={`tip-zar tip-zar-${zar.smer}`}>{zar.popis}</span>}
               {stavText !== null && <span className="tip-stav">{stavText}</span>}
             </>
           ),
         })}
       >
-        <IkonaAkcie kluc={kluc} akcia={akcia} />
+        <IkonaAkcie kluc={kluc} akcia={akcia} zar={zar?.smer === "plus"} />
+        {zar !== null && <ZarZnak smer={zar.smer} nova={zar.nova} />}
+        {zar !== null && !bezPopisov && <span className="kl-zar-stitok">{zar.stitok}</span>}
         {st !== null && st.nasobok > 1 && <span className="kl-nasobok">×{st.nasobok}</span>}
       </span>
     );
@@ -225,6 +237,35 @@ export function KartaLico(props: KartaLicoProps) {
       </div>
       {tip}
     </div>
+  );
+}
+
+/**
+ * Iskra pri žeravej ikone (ostáva, aby ju nezlial žiar aktívnej akcie), pri prvom
+ * zobrazení navyše jedna odletí; vyhasnutá ikona má nad sebou dym.
+ */
+function ZarZnak({ smer, nova }: { readonly smer: "plus" | "minus"; readonly nova: boolean }) {
+  if (smer === "minus") {
+    return (
+      <span className="kl-dym" aria-hidden="true">
+        <svg viewBox="0 0 40 60">
+          <path d="M20 58C8 48 30 40 18 28C8 18 28 12 20 2" />
+        </svg>
+      </span>
+    );
+  }
+  const hviezda = <path d="M10 0L12 8L20 10L12 12L10 20L8 12L0 10L8 8Z" />;
+  return (
+    <>
+      <span className="kl-iskra" aria-hidden="true">
+        <svg viewBox="0 0 20 20">{hviezda}</svg>
+      </span>
+      {nova && (
+        <span className="kl-iskra kl-iskra-let" aria-hidden="true">
+          <svg viewBox="0 0 20 20">{hviezda}</svg>
+        </span>
+      )}
+    </>
   );
 }
 

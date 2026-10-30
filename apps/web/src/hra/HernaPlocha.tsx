@@ -160,7 +160,7 @@ import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatk
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
-import { HernaKarta, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
+import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
@@ -542,6 +542,9 @@ export function HernaPlocha({
     const { key, ...rest } = props;
     return <HernaKarta key={key} sada={sada} data={data} {...rest} />;
   };
+  // Žeravé ikony (Michal 2026-10-30): karty v ruke a línii vedia, čo ich majiteľovi posilňuje Dedičstvo.
+  const videneZaru = useRef(new Map<string, number>()).current;
+  const zarStola = useMemo(() => ({ view, videne: videneZaru }), [view, videneZaru]);
   const super_ = (ja === 0 ? 1 : 0) as PlayerId;
   const [mode, setMode] = useState<Mode>({ typ: "ziadny" });
   const [vrstva, setVrstva] = useState<Vrstva | null>(null);
@@ -5414,6 +5417,7 @@ export function HernaPlocha({
   })();
 
   return (
+    <ZarStolaKontext.Provider value={zarStola}>
     <div
       className={stolScroll ? "hra stol-scroll" : "hra"}
       style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
@@ -6043,6 +6047,7 @@ export function HernaPlocha({
         </div>
       )}
     </div>
+    </ZarStolaKontext.Provider>
   );
 }
 

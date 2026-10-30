@@ -569,11 +569,18 @@ function akciaPoPremene(elem: Elem, action: Action): Action | null {
   let a: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
   if (elem.premena === "sarlatan") a = a === "Dlh" ? "Viera" : a === "Povera" ? "Rana" : a;
   else if (elem.premena === "ministrant" && a === "Viera") a = "Pecka";
-  if (elem.uplatky > 0) {
-    const i = STUPNE_UTOKU.indexOf(a);
-    if (i !== -1) return STUPNE_UTOKU[i + elem.uplatky] ?? null;
-  }
-  return a;
+  return utokPoUplatku(a, elem.uplatky);
+}
+
+/**
+ * Úplatok Kulturistu (v7): útok znížený o `uplatky` stupňov (Petelica → Pecka →
+ * Rana → nič = null). Iné akcie a karta bez úplatku ostávajú. Aj pre vyhasnuté
+ * ikony na stole.
+ */
+export function utokPoUplatku(action: Action, uplatky: number): Action | null {
+  if (uplatky <= 0) return action;
+  const i = STUPNE_UTOKU.indexOf(action);
+  return i === -1 ? action : (STUPNE_UTOKU[i + uplatky] ?? null);
 }
 
 function elemEval(elem: Elem): CardLineEval {
