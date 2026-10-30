@@ -42,8 +42,8 @@ describe("stopa posunu", () => {
 
 describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
   it("priazeň: komu a krátky účinok, bez priazne účinok pri +1", () => {
-    expect(riadokPriazne("NEPRAJNIK", "ty", 1)).toBe("ty +1 · výpalné 1 cig. za NA EX");
-    expect(riadokPriazne("BITKAR", null, 0)).toBe("nikto · pri +1: +1 tuhé v bitke");
+    expect(riadokPriazne("NEPRAJNIK", "ty", 1)).toBe("ty: výpalné 1 cig. za NA EX");
+    expect(riadokPriazne("BITKAR", null, 0)).toBe("nikomu · pri +1: +1 tuhé v bitke");
   });
 
   it("strach (v8): koho sa bojí a koľko zaplatí za ďalšiu výhru — len nezaplatené zóny", () => {

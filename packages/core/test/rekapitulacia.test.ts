@@ -10,7 +10,9 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, Event, GameState, PlacedCard, PlayerId, RekapitulaciaPitky } from "../src/index.ts";
 import {
+  akcieRekapitulacie,
   apply,
+  AKCIE_PITKY,
   AKCIE_TUHE,
   evaluateLine,
   loadGameData,
@@ -87,6 +89,13 @@ describe("rekapitulácia Pitky", () => {
             expect(r.pecen.cirhozy[p]).toBe(cirhozy[p]);
             expect(r.pecen.cirhozy[p]).toBe(Math.floor(pecenPitky(r, p) / r.pecen.prah[p]));
             if (r.pecen.cirhozy[p] > 0) sCirhozou++;
+            // Podrobný náhľad (Michal 2026-10-30): súčet ikon = číslo riadku, zrušené dali 0.
+            const podrobne = (a: (typeof AKCIE_PITKY)[number]): number => (r.akcie?.[a] ?? []).filter((x) => x.kto === p).reduce((n, x) => n + x.n, 0);
+            expect(podrobne("Dlh")).toBe(r.zadlzenie.zoStola[p]);
+            expect(podrobne("PoškodeniePečene")).toBe(r.pecen.poskodenie[p]);
+            expect(podrobne("Poldeci")).toBe(r.pecen.poldeci[p]);
+            expect(podrobne("Cigareta")).toBe(r.cigarety.akcie[p]);
+            expect(podrobne("Vízia")).toBe(r.vizia[p]);
           }
           // Zvyšok pečene pod prahom motor po Pitke vynuluje (log dokonciPitku); zadĺženie
           // od v7 ostáva na účte (D6) — v rekapitulácii je ako zvyšok.
@@ -163,6 +172,7 @@ describe("rekapitulácia bitky", () => {
   it("tuhé, Viera × Povera, mäkké a blok z Pitiek kola sedia s poškodením bitky", () => {
     let bitiek = 0;
     let sPoverou = 0;
+    let zrusenych = 0;
     let sPitkami = 0;
     for (const zaznamy of PARTIE) {
       let pitkyKola: RekapitulaciaPitky[] = [];
@@ -195,6 +205,18 @@ describe("rekapitulácia bitky", () => {
             if (!r.bezStropu[p]) expect(r.makkeStrop[p]).toBeGreaterThanOrEqual(r.priznaneDlhy[q]);
             expect(sucet(r.pohorsenie.polozky, p)).toBe(r.pohorsenie.spolu[p]);
             if (sucet(r.povera, p) > 0) sPoverou++;
+            // Podrobný náhľad: súčet ikon = číslo riadku; zrušené dali 0 a vedia čím.
+            const ikony = r.akcie ?? {};
+            for (const a of AKCIE_TUHE) expect(sucet(ikony[a] ?? [], p)).toBe(e.sums[p][a] ?? 0);
+            expect(sucet(ikony.Viera ?? [], p)).toBe(sucet(r.viera, p));
+            expect(sucet(ikony.Povera ?? [], p)).toBe(sucet(r.povera, p));
+            expect(sucet(ikony.Pohoršenie ?? [], p)).toBe(r.pohorsenie.spolu[p]);
+            for (const x of Object.values(ikony).flat()) {
+              if (!x.zrusena) continue;
+              zrusenych++;
+              expect(x.n).toBe(0);
+              expect(["Odpor", "NA EX"]).toContain(x.dovody[0]);
+            }
           }
           // Blok „z Pitiek kola“ = súčet rekapitulácií Pitiek tohto kola.
           expect(r.pitkyKola?.pocet ?? 0).toBe(pitkyKola.length);
@@ -215,6 +237,47 @@ describe("rekapitulácia bitky", () => {
     expect(bitiek).toBeGreaterThan(5);
     expect(sPoverou).toBeGreaterThan(0);
     expect(sPitkami).toBeGreaterThan(0);
+    expect(zrusenych).toBeGreaterThan(0);
+  });
+
+  it("podrobný náhľad: 2 Rany, Rana ×2 a dve sivé (Odpor, NA EX) = 4 (príklad Michala 2026-10-30)", () => {
+    const RANY: Layout4 = ["Rana", "Rana", "Rana", "Rana"];
+    const PROTI: Layout4 = ["Rana", "Odpor", "Posilnenie", null];
+    const JEDNA: Layout4 = ["Rana", null, null, null];
+    // Súperova karta je otočená — jej vytlačená pravá strana je pri spoji vľavo, v obrátenom poradí.
+    const CUDZIA: Layout4 = [null, null, null, "Rana"];
+    const sd = syntheticData([makeDef("rany", EMPTY, RANY), makeDef("proti", PROTI, EMPTY), makeDef("jedna", EMPTY, JEDNA), makeDef("cudzia", EMPTY, CUDZIA)]);
+    const rany = instanceFor(sd, "rany", EMPTY, RANY);
+    const proti = instanceFor(sd, "proti", PROTI, EMPTY);
+    const jedna = instanceFor(sd, "jedna", EMPTY, JEDNA);
+    const cudzia = instanceFor(sd, "cudzia", EMPTY, CUDZIA);
+    // Bez lokality: strana 0 je úsek [rany, proti] (zľava), strana 1 úsek [jedna, cudzia].
+    const line = {
+      lokalita: null,
+      lokalitaOtocena: false,
+      strany: [
+        [{ card: proti, playedBy: 0 }, { card: rany, playedBy: 0 }],
+        [{ card: jedna, playedBy: 0, naexBy: 1 }, { card: cudzia, playedBy: 1 }],
+      ],
+    } as const satisfies { strany: readonly [readonly PlacedCard[], readonly PlacedCard[]] } & Record<string, unknown>;
+    const linia = evaluateLine(sd, line);
+    expect(linia.zrusene[0].Rana?.map((z) => [z.defId, z.dovody])).toEqual([
+      ["rany", ["Odpor"]],
+      ["jedna", ["NA EX"]],
+    ]);
+    const ikony = akcieRekapitulacie(linia, ["Rana"]).Rana ?? [];
+    const moje = ikony.filter((x) => x.kto === 0).map((x) => [x.defId, x.n, x.zrusena]);
+    expect(moje).toEqual([
+      ["proti", 1, false],
+      ["rany", 1, false],
+      ["rany", 2, false],
+      ["rany", 0, true],
+      ["jedna", 0, true],
+    ]);
+    expect(ikony.filter((x) => x.kto === 0).reduce((n, x) => n + x.n, 0)).toBe(4);
+    expect(linia.sums[0].Rana).toBe(4);
+    // Súperova Rana na spoji so zrušenou ostáva jeho.
+    expect(ikony.filter((x) => x.kto === 1).map((x) => [x.defId, x.n])).toEqual([["cudzia", 1]]);
   });
 });
 

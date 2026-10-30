@@ -34,8 +34,10 @@ import "./vyucba.css";
 /**
  * Kliky, ktoré zámok kroku bez ťahu púšťa: bublina, lupa, zatvorenie vrstiev, hlavička webu
  * a dialóg „Odísť z partie?“ — ten leží mimo hlavičky a bez neho nešiel zavrieť ani opustiť.
+ * Vyhodnotenie bitky a Pitky (.pocitadlo-bitky) je modálne — bez neho Ďalej po Pitke
+ * nereagovalo na klik, len na Enter (Michal 2026-10-30).
  */
-export const KLIKY_MIMO_ZAMKU = `[data-vyucba-bublina], .lupa, .vrstva-zavriet, .pecat-zrusit, .hlavicka, .${ZAVES_ODCHODU}`;
+export const KLIKY_MIMO_ZAMKU = `[data-vyucba-bublina], .lupa, .vrstva-zavriet, .pecat-zrusit, .hlavicka, .pocitadlo-bitky, .${ZAVES_ODCHODU}`;
 
 /** Stav výučby účtu (GET /api/vyucba). */
 export interface VyucbaUctu {

@@ -72,7 +72,7 @@ describe("výkričníky vo farbe obávaného", () => {
   const s0 = setupGame(data, 5);
   const elder = (marker: MarkerPos): ElderState => ({ ...(s0.starsi[0] as ElderState), marker });
   // Od 2026-10-28 (Michal: „mouseover je redundantný“) stupnicu, priazeň a strach ukazuje len
-  // karta staršieho v línii — lupa nesie plné znenie priazne a pravidlá.
+  // karta staršieho v línii (od 2026-10-30 bez lupy pri prejdení myšou).
   const karta = (marker: MarkerPos): string =>
     renderToStaticMarkup(
       createElement(LiniaStarsich, {
@@ -88,22 +88,21 @@ describe("výkričníky vo farbe obávaného", () => {
       }),
     );
 
-  it("marker na súperovej červenej: ♥ na Ferovom konci, !!! v mojej farbe na mojom", () => {
+  // Od 2026-10-30 (Michal: drobné „◀ ty … Fero ▶“ pod stupnicou nič nehovorili) je pod staršinom
+  // meno, komu akú priazeň dáva (vo farbe toho hráča) a koho sa bojí, s výkričníkmi v jeho farbe.
+  it("marker na súperovej červenej: ♥ Ferovi vo Ferovej farbe, !!! v mojej farbe", () => {
     // Pozícia 6 = krajná na strane hráča 1: priazeň má Fero, bojí sa hráča 0 (ja).
     const html = karta(6);
-    const strany = html.slice(html.indexOf('class="ls-strany"'), html.indexOf('class="ls-stav"'));
-    const [moja, superova] = strany.split('class="superove"');
-    expect(moja).toContain("ikona-strachu s3");
-    expect(moja).not.toContain("♥");
-    expect(superova).toContain("♥");
-    expect(superova).not.toContain("ikona-strachu");
+    expect(html).toContain('class="ls-meno">Farár<');
+    expect(html).toMatch(/ls-cip priazen superova[^>]*>♥ Fero: /);
+    expect(html).not.toContain("ls-strany");
     expect(html).toMatch(/ls-cip strach moj[^>]*>.*ikona-strachu s3.*bojí sa teba · \+6 š za ďalšiu výhru/);
   });
 
   it("marker na mojej žltej: ! vo Ferovej farbe, ♥ na mojom konci", () => {
     const html = karta(2);
     expect(html).toMatch(/ls-cip strach superov[^>]*>.*ikona-strachu s1.*bojí sa Fero · \+1 š za ďalšiu výhru/);
-    expect(html).toMatch(/ls-cip priazen moja[^>]*>♥ ty \+1/);
+    expect(html).toMatch(/ls-cip priazen moja[^>]*>♥ ty: /);
   });
 
   it("v strede nikto: žiadne výkričníky ani ♥ na stupnici", () => {
