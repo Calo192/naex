@@ -203,10 +203,13 @@ body.vyucba-bezi :is(.ls-poradie, .ls-odznak) {
 }
 
 /* Pokyn na stole celý (playtest U4: trojbodka orezala „Alebo celý prebytok naraz…“) — vo výučbe
-   leží v toku nad plsťou a zalomí sa, nič neprekryje. Na nízkom okne (1366 × 650) by druhý riadok
+   leží v toku a zalomí sa. Hrana stola ide jeho stredom ako mimo výučby (predtým visel celý nad
+   plsťou); čo z neho siaha pod hranu ďalej než jeden riadok, o to ustúpi obsah plste
+   (--pilulka-presah, hra.css), takže nič neprekryje. Na nízkom okne (1366 × 650) by druhý riadok
    zmenšil karty línie pod 75 px — tam ostáva v riadku, celé znenie pod myšou. */
 @media (min-width: 761px) and (min-height: 720px) {
   body.vyucba-bezi .linia-obal:not(:has(.zberatel-ponuka, .vizia-karta)) {
+    --pilulka-presah: max(0px, var(--pilulka-h, 0px) / 2 - 12px);
     padding-top: 0;
   }
 
@@ -218,7 +221,7 @@ body.vyucba-bezi :is(.ls-poradie, .ls-odznak) {
     width: auto;
     max-width: 100%;
     align-self: center;
-    margin: 0 0 4px;
+    margin: 0 0 calc(var(--pilulka-h, 30px) / -2 - 1px);
   }
 
   body.vyucba-bezi .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) > .pilulka-text {
