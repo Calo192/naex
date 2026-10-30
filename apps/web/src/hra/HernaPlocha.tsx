@@ -161,7 +161,7 @@ import { polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
 import { klucPrechodu, medziobrazovka } from "./prechodFazy.ts";
 import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatkyKrokov.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
-import { klavesPreskociPauzu, PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
+import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
@@ -2088,7 +2088,8 @@ export function HernaPlocha({
   }, [zavriLupuHned]);
 
   // Pauza po súperovej voľbe cieľa (roadmapa #102): stavbu šenku robia obaja naraz, takže
-  // hráč by súperovu voľbu prebehol — stôl ju na chvíľu ukáže a prvý klik či kláves ju len zruší.
+  // hráč by súperovu voľbu prebehol. Michal 2026-10-30 („nevidel som, akú lokalitu súper
+  // vyberá“): lokalita sa ukáže veľká, „Rozumiem“ príde po 3 s a stôl čaká na klik.
   // Vo výučbe lokalitu ukazuje Melichar svojím krokom, v prehrávači tempo určuje hráč.
   const [pauzaCiela, setPauzaCiela] = useState<PauzaCiela | null>(null);
   const predVolbouCiela = useRef<ClientState | null>(null);
@@ -2129,38 +2130,8 @@ export function HernaPlocha({
     !cakaOdhalenie &&
     (vrstvaVyhodnotenia === null || pocitadlo !== null);
   useEffect(() => {
-    if (!pauzaBezi) return;
-    zavriLupuHned();
-    const t = setTimeout(zrusPauzuCiela, PAUZA_CIELA_MS);
-    // Kláves pauzu zruší a ďalej nejde — skratka by inak odoslala ťah stavby.
-    const klaves = (e: KeyboardEvent): void => {
-      if (!klavesPreskociPauzu(e.key)) return;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      zrusPauzuCiela();
-    };
-    window.addEventListener("keydown", klaves, true);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("keydown", klaves, true);
-    };
-  }, [pauzaBezi, zrusPauzuCiela, zavriLupuHned]);
-  // Okno okolo lokality v strede línie — meria sa po vykreslení, pri posune aj zmene okna.
-  const [oknoPauzy, setOknoPauzy] = useState<DOMRect | null>(null);
-  useLayoutEffect(() => {
-    if (!pauzaBezi) {
-      setOknoPauzy(null);
-      return;
-    }
-    const zmeraj = (): void => setOknoPauzy(lokalitaRef.current?.getBoundingClientRect() ?? null);
-    zmeraj();
-    window.addEventListener("scroll", zmeraj, true);
-    window.addEventListener("resize", zmeraj);
-    return () => {
-      window.removeEventListener("scroll", zmeraj, true);
-      window.removeEventListener("resize", zmeraj);
-    };
-  }, [pauzaBezi]);
+    if (pauzaBezi) zavriLupuHned();
+  }, [pauzaBezi, zavriLupuHned]);
   // Susedia uhnú o polovicu prírastku šírky lupy (harmonika v hra.css) — pred
   // vykreslením, aby sa susedia nepohli najprv o starý posun.
   useLayoutEffect(() => {
@@ -5424,50 +5395,38 @@ export function HernaPlocha({
     </div>
   );
 
-  // Nápis stojí nad lokalitou (pod ňou, keď nad ňou nie je miesto) — obidve hrany hovoria natočenie.
+  // Lokalita, ktorú vybral súper: karta v čitateľnej veľkosti a pod ňou hrany tak, ako ležia na stole
+  // (k tebe vľavo). Na notebooku stojí vedľa textu, aby sa zmestila na výšku bez posúvania.
   const pauzaCielaEl = ((): ReactNode => {
     if (!pauzaBezi || lokalita === null) return null;
     const kTebe = krajStrany(ja);
     const kSuperovi = krajStrany(super_);
-    const nad = oknoPauzy !== null && oknoPauzy.top > 150;
-    const polohaNapisu: CSSProperties | undefined =
-      oknoPauzy === null
-        ? undefined
-        : {
-            left: oknoPauzy.left + oknoPauzy.width / 2,
-            top: nad ? oknoPauzy.top - 14 : oknoPauzy.bottom + 14,
-            transform: nad ? "translate(-50%, -100%)" : "translateX(-50%)",
-          };
+    const finale = view.ciel?.typ === "finale";
+    const sirkaKarty = Math.round(
+      Math.max(
+        120,
+        mobil ? Math.min(sirkaOkna * 0.62, (vyskaOkna - 360) / POMER_KARTY) : Math.min(560, vyskaOkna - 160) / POMER_KARTY,
+      ),
+    );
+    const obsah = {
+      kluc: `${view.kolo}|lokalita-supera`,
+      nadnadpis: finale ? "Finále · vrcholová lokalita" : `Kolo ${view.kolo} · lokalita`,
+      nadpis: menoKarty(lokalita.defId),
+      text:
+        `${menoHraca(super_)} ${tvar(rodHracaP(super_), "vybral", "vybrala", "vybral(a)")} ${finale ? "vrcholovú lokalitu finále" : "lokalitu, o ktorú sa v tomto kole bije"}. ` +
+        (kTebe !== null && kSuperovi !== null ? `K tebe je hrana „${kTebe}“, k súperovi „${kSuperovi}“.` : "Ľavá hrana karty je k tebe, pravá k súperovi."),
+    };
     return (
-      <div
-        className="pauza-ciela"
-        style={{ "--pauza-ms": `${PAUZA_CIELA_MS}ms` } as CSSProperties}
-        onClick={zrusPauzuCiela}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          zrusPauzuCiela();
-        }}
-      >
-        {oknoPauzy !== null && (
-          <div
-            className="pauza-ciela-okno"
-            style={{ left: oknoPauzy.left - 8, top: oknoPauzy.top - 8, width: oknoPauzy.width + 16, height: oknoPauzy.height + 16 }}
-            aria-hidden="true"
-          />
-        )}
-        <div className={`pauza-ciela-napis${oknoPauzy === null ? " stred" : ""}`} style={polohaNapisu} role="status" aria-live="assertive">
-          <strong>Súper vybral: {menoKarty(lokalita.defId)}</strong>
-          {kTebe !== null && kSuperovi !== null ? (
-            <span>
-              k tebe <b>{kTebe}</b> · k súperovi <b>{kSuperovi}</b>
-            </span>
-          ) : (
-            ikonyStranStredu
-          )}
-          <small>klik alebo kláves — ďalej</small>
-          <span className="pauza-ciela-cas" aria-hidden="true" />
+      <Medziobrazovka obsah={obsah} onRozumiem={zrusPauzuCiela} tlacidloPoMs={PAUZA_CIELA_MS} vypinac={false} trieda="lokalita-supera">
+        <div className="ls-lokalita">
+          {karta({ karta: lokalita, sirka: sirkaKarty, otocena: view.lokalitaOtocena !== (ja === 1) })}
+          <span className="ls-hrany" style={{ width: sirkaKarty }}>
+            <span>◀ k tebe{kTebe !== null && <b> {kTebe}</b>}</span>
+            <span>{kSuperovi !== null && <b>{kSuperovi} </b>}k súperovi ▶</span>
+          </span>
+          {ikonyStranStredu}
         </div>
-      </div>
+      </Medziobrazovka>
     );
   })();
 

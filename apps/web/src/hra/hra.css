@@ -9198,89 +9198,86 @@ button.lsr-pole.ciel:focus-visible {
   }
 }
 
-/* Pauza po súperovej voľbe cieľa (roadmapa #102): stôl stmavne okrem vybranej lokality.
-   Vrstva chytá prvý klik, aby nepadol do stavby šenku pod ňou. */
-.pauza-ciela {
-  position: fixed;
-  inset: 0;
-  z-index: 800;
-  cursor: pointer;
-}
-
-.pauza-ciela-okno {
-  position: fixed;
-  border-radius: 16px;
-  border: 3px solid var(--akcent);
-  box-shadow:
-    0 0 0 100vmax rgba(0, 0, 0, 0.55),
-    0 0 28px var(--akcent);
-  pointer-events: none;
-  animation: pauza-ciela-ziara 1s ease-in-out infinite alternate;
-}
-
-.pauza-ciela-napis {
-  position: fixed;
+/* Lokalita, ktorú vybral súper (roadmapa #102; Michal 2026-10-30): medziobrazovka s kartou
+   v čitateľnej veľkosti a hranami tak, ako ležia na stole. „Rozumiem“ príde po 3 s. */
+.lokalita-supera .medziobrazovka-okno {
   display: grid;
+  grid-template-columns: auto minmax(0, 340px);
+  grid-template-rows: 1fr auto auto auto auto 1fr;
+  column-gap: 32px;
+  row-gap: 10px;
   justify-items: center;
-  gap: 4px;
-  max-width: min(520px, 92vw);
-  padding: 10px 18px 12px;
-  border-radius: 12px;
-  border: 2px solid var(--akcent);
-  background: var(--plocha-2);
-  color: var(--text);
-  text-align: center;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
-  overflow: hidden;
-  animation: oznam-prichod 0.22s ease;
+  max-width: min(860px, 100%);
+  padding: 20px 30px;
 }
 
-.pauza-ciela-napis.stred {
-  left: 50%;
-  top: 40%;
-  transform: translate(-50%, -50%);
+.lokalita-supera .ls-lokalita {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
-.pauza-ciela-napis strong {
-  font-size: 1.35rem;
-  color: var(--akcent);
+.lokalita-supera .medziobrazovka-nad {
+  grid-column: 2;
+  grid-row: 2;
 }
 
-.pauza-ciela-napis span {
-  font-size: 0.92rem;
+.lokalita-supera h2 {
+  grid-column: 2;
+  grid-row: 3;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
 }
 
-.pauza-ciela-napis small {
+.lokalita-supera p {
+  grid-column: 2;
+  grid-row: 4;
+}
+
+.lokalita-supera .tlacidlo-hlavne,
+.lokalita-supera .medziobrazovka-caka {
+  grid-column: 2;
+  grid-row: 5;
+}
+
+.ls-hrany {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.9rem;
   color: var(--tlmeny);
-  font-size: 0.78rem;
 }
 
-/* Ubúdajúci pásik hovorí, koľko z 3 s ešte ostáva. */
-.pauza-ciela-cas {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  width: 100%;
+.ls-hrany b {
+  color: var(--text);
+}
+
+@media (max-width: 760px) {
+  .lokalita-supera .medziobrazovka-okno {
+    display: flex;
+    padding: 16px 18px;
+  }
+}
+
+/* Miesto tlačidla, kým nepríde: ubúdajúci pásik hovorí, koľko z 3 s ešte ostáva. */
+.medziobrazovka-caka {
+  display: grid;
+  align-items: center;
+  width: 160px;
+  height: 42px;
+}
+
+.medziobrazovka-caka > span {
+  height: 4px;
+  border-radius: 2px;
   background: var(--akcent);
-  transform-origin: left;
-  animation: pauza-ciela-cas var(--pauza-ms, 3000ms) linear forwards;
+  transform-origin: center;
+  animation: medziobrazovka-caka var(--caka-ms, 3000ms) linear forwards;
 }
 
-@keyframes pauza-ciela-ziara {
-  from {
-    box-shadow:
-      0 0 0 100vmax rgba(0, 0, 0, 0.55),
-      0 0 10px var(--akcent);
-  }
-  to {
-    box-shadow:
-      0 0 0 100vmax rgba(0, 0, 0, 0.55),
-      0 0 34px var(--akcent);
-  }
-}
-
-@keyframes pauza-ciela-cas {
+@keyframes medziobrazovka-caka {
   from {
     transform: scaleX(1);
   }
@@ -9290,13 +9287,9 @@ button.lsr-pole.ciel:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pauza-ciela-okno,
-  .pauza-ciela-napis {
+  .medziobrazovka-caka > span {
     animation: none;
-  }
-
-  .pauza-ciela-cas {
-    display: none;
+    opacity: 0.4;
   }
 }
 

@@ -1,13 +1,16 @@
-// Pauza po súperovej voľbe cieľa (roadmapa #102): ukáže sa len hráčovi, ktorému cieľ vybral súper,
+// Pauza po súperovej voľbe cieľa (roadmapa #102, Michal 2026-10-30): ukáže sa len hráčovi, ktorému cieľ vybral súper,
 // a len pri prechode z voľby cieľa ďalej. Overuje sa na skutočnej partii z pohľadu hráča (viewFor).
 
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
-import type { PlayerId } from "@naex/core";
+import type { GameState, PlayerId } from "@naex/core";
 import { apply, loadGameData, setupGame, viewFor } from "@naex/core";
-import { klavesPreskociPauzu, pauzaPoVolbeCiela } from "../src/hra/pauzaCiela.ts";
+import { Medziobrazovka } from "../src/hra/Medziobrazovka.tsx";
+import { PAUZA_CIELA_MS, pauzaPoVolbeCiela } from "../src/hra/pauzaCiela.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -39,6 +42,16 @@ describe("pauzaPoVolbeCiela", () => {
     expect(pauzaPoVolbeCiela(v, v)).toBeNull();
   });
 
+  it("vo finále vidí pauzu útočník, ktorému vrcholovú lokalitu vybral vedúci", () => {
+    const s0 = setupGame(data, 4);
+    const pred: GameState = { ...s0, kolo: s0.lokalitCelkom + 1, faza: "volbaCiela", ciel: null, utocnik: 0, spaky: [3, 5] };
+    const vila = pred.lokalityVHre.find((k) => k.defId === "predsedova_vila")!;
+    const po = apply(data, pred, { type: "chooseLocation", uid: vila.uid, otocena: false }, 1).state;
+    expect(po.ciel?.typ).toBe("finale");
+    expect(pauzaPoVolbeCiela(viewFor(data, pred, 0), viewFor(data, po, 0))).toEqual({ kolo: po.kolo, uid: vila.uid });
+    expect(pauzaPoVolbeCiela(viewFor(data, pred, 1), viewFor(data, po, 1))).toBeNull();
+  });
+
   it("počas voľby cieľa ešte nie je čo ukázať", () => {
     const { pred, utocnik } = volbaCiela(3);
     const v = viewFor(data, pred, utocnik);
@@ -46,12 +59,27 @@ describe("pauzaPoVolbeCiela", () => {
   });
 });
 
-describe("klavesPreskociPauzu", () => {
-  it("samé modifikátory pauzu nezrušia, ostatné klávesy áno", () => {
-    expect(klavesPreskociPauzu("Shift")).toBe(false);
-    expect(klavesPreskociPauzu("Control")).toBe(false);
-    expect(klavesPreskociPauzu("Enter")).toBe(true);
-    expect(klavesPreskociPauzu("k")).toBe(true);
-    expect(klavesPreskociPauzu("Escape")).toBe(true);
+describe("medziobrazovka s lokalitou súpera", () => {
+  const obsah = { kluc: "3|lokalita-supera", nadnadpis: "Kolo 3 · lokalita", nadpis: "Krčma", text: "Súper vybral lokalitu." };
+  const html = (tlacidloPoMs?: number, vypinac?: boolean): string =>
+    renderToStaticMarkup(
+      createElement(Medziobrazovka, { obsah, onRozumiem: () => {}, tlacidloPoMs, vypinac, trieda: "lokalita-supera" }, createElement("div", { className: "ls-lokalita" }, "karta")),
+    );
+
+  it("prvé 3 s je namiesto „Rozumiem“ len pásik času — lokalitu nemožno preklikať", () => {
+    const h = html(PAUZA_CIELA_MS, false);
+    expect(PAUZA_CIELA_MS).toBe(3000);
+    expect(h).not.toContain("Rozumiem");
+    expect(h).toContain("medziobrazovka-caka");
+    expect(h).toContain("ls-lokalita");
+    // Profil vypína len medziobrazovky fáz, lokalitu súpera nie.
+    expect(h).not.toContain("Vypnúť ich môžeš v profile");
+  });
+
+  it("medziobrazovka fázy bez oneskorenia má „Rozumiem“ hneď", () => {
+    const h = html();
+    expect(h).toContain("Rozumiem");
+    expect(h).not.toContain("medziobrazovka-caka");
+    expect(h).toContain("Vypnúť ich môžeš v profile");
   });
 });

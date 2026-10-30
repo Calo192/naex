@@ -1,9 +1,11 @@
-// Pauza po súperovej voľbe cieľa (roadmapa #102, Michal 2026-10-25): „3 s, klik preskočí —
-// vybraná lokalita sa na 3 sekundy zvýrazní s nápisom ‚Súper vybral: <Lokalita>‘.“ Server
-// medzitým hrá ďalej; pauza je len v zobrazení, preto sa zisťuje z dvoch pohľadov za sebou.
+// Pauza po súperovej voľbe cieľa (roadmapa #102, Michal 2026-10-25; 2026-10-30: „nevidel som,
+// akú lokalitu súper vyberá“). Vybraná lokalita sa ukáže veľká, „Rozumiem“ príde až po 3 s
+// a stôl čaká na klik. Server medzitým hrá ďalej; pauza je len v zobrazení, preto sa zisťuje
+// z dvoch pohľadov za sebou.
 
 import type { ClientState } from "@naex/core";
 
+/** Ako dlho lokalita súpera stojí bez tlačidla — čas na prečítanie, nie na preklikanie. */
 export const PAUZA_CIELA_MS = 3000;
 
 export interface PauzaCiela {
@@ -22,9 +24,4 @@ export function pauzaPoVolbeCiela(pred: ClientState | null, view: ClientState): 
   if (pred.naTahu === null || pred.naTahu === view.ja) return null;
   const lokalita = view.ciel?.lokalita ?? null;
   return lokalita === null ? null : { kolo: view.kolo, uid: lokalita.uid };
-}
-
-/** Klávesy, ktoré pauzu nepreskočia — samé modifikátory sú súčasť skratky, nie zámer pokračovať. */
-export function klavesPreskociPauzu(key: string): boolean {
-  return !["Shift", "Control", "Alt", "Meta", "AltGraph", "CapsLock"].includes(key);
 }
