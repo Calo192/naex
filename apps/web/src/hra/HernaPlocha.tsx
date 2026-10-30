@@ -3052,7 +3052,7 @@ export function HernaPlocha({
               data-skratka="k"
               data-vyucba="tlacidlo:potvrdit-delenie"
               disabled={n === 0 || chybaDeleniaVyucby !== null}
-              title={n === 0 ? "Pri staršom vyber smer šípkou pod stupnicou." : (chybaDeleniaVyucby ?? "Pošle všetky nepotvrdené posuny naraz.")}
+              title={n === 0 ? (krokDelenia === "prebytok" ? "Pri staršom vyber krígeľ pod stupnicou." : "Pri staršom vyber pod stupnicou krígeľ (udobriť) alebo päsť (vydesiť).") : (chybaDeleniaVyucby ?? "Pošle všetky nepotvrdené posuny naraz.")}
               onClick={() => {
                 if (prikaz !== null) posli(prikaz);
               }}
@@ -4280,7 +4280,7 @@ export function HernaPlocha({
   })();
 
   // ---- starší -------------------------------------------------------------
-  // Pohoršenie a prebytok rozdeľuje hráč šípkami pri staršom (rozdelenieStarsieho, mock C · Pečať).
+  // Pohoršenie a prebytok rozdeľuje hráč krígľom a päsťou pri staršom (rozdelenieStarsieho, mock C · Pečať).
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
     if (!somNaTahu) return undefined;
     // Povery (v8.3 „Výpožička priazne“): klik posunie silu priazne staršieho o stupeň k tebe na toto kolo.
@@ -4426,7 +4426,7 @@ export function HernaPlocha({
     return undefined;
   };
   /**
-   * Starší pri rozdeľovaní (mock C · Pečať): šípky smerov, ceny polí a nepotvrdený posun z plánu
+   * Starší pri rozdeľovaní (mock C · Pečať): smery (krígeľ, päsť), ceny polí a nepotvrdený posun z plánu
    * jadra. Starší v pláne má body zo svojho miesta v poradí (prehodenie smeru ho nechá na mieste),
    * ostatní zo zvyšku po pláne (nový posun ide na koniec) — ako prepniVolbu a server.
    */

@@ -14,7 +14,7 @@
 //
 // Rozdelenie Pohoršenia a prebytku (mock C · Pečať, Michal 2026-10-30): v mojom kroku má
 // karta meno na stred, pečať priazne na portréte, plochú stupnicu s cenou na každom
-// dosiahnuteľnom poli a pod ňou šípky smerov rovnako vysoké ako stupnica. Posuny sú
+// dosiahnuteľnom poli a pod ňou tlačidlá smerov (krígeľ k sebe, päsť k súperovi) rovnako vysoké ako stupnica. Posuny sú
 // nepotvrdené, kým ich Potvrdiť na hrane stola nepošle — plán ráta jadro (rozdelenie.ts).
 
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
@@ -27,6 +27,7 @@ import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
+import { IkonaPaste } from "./IkonaPaste.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { POPIS_STUPNICE, PRAVIDLO_STRACHU, plnaPriazen, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textStupna, textVydesenia } from "./textyStarsich.ts";
 
@@ -40,7 +41,7 @@ export interface SipkaRozdelenia {
 
 /** Starší pri rozdeľovaní Pohoršenia či prebytku (mock C · Pečať) — dáta z plánu jadra. */
 export interface RozdelenieStarsieho {
-  /** Šípky ◀ k tebe a k súperovi ▶; chýbajúca = krok ten smer nedovoľuje (prebytok má jeden). */
+  /** Smery k tebe (krígeľ, udobriť) a k súperovi (päsť, vydesiť); chýbajúci = krok ten smer nedovoľuje (prebytok má jeden). */
   readonly sipky: { readonly ja?: SipkaRozdelenia | undefined; readonly su?: SipkaRozdelenia | undefined };
   /** Cena posunu na pole stupnice (pozície 0–6) a či naň rozpočet stačí; null = tam sa nejde. */
   readonly ceny: readonly ({ readonly cena: number; readonly dosah: boolean } | null)[];
@@ -368,7 +369,7 @@ export function zmenaPriazne(a: Pick<Vztah, "priazen" | "sila">, b: Pick<Vztah, 
 
 /**
  * Karta staršieho pri rozdeľovaní (mock C · Pečať): meno na stred, portrét s pečaťou priazne
- * a cenou nepotvrdeného posunu, plochá stupnica s cenami, šípky smerov a riadok strachu.
+ * a cenou nepotvrdeného posunu, plochá stupnica s cenami, krígeľ a päsť smerov a riadok strachu.
  */
 function KartaRozdelenia({
   s,
@@ -401,29 +402,36 @@ function KartaRozdelenia({
   const kam = (smer: "ja" | "su"): string => (smer === "ja" ? "k tebe" : `k ${mena[su]}`);
   const zona = (m: MarkerPos): string => NAZVY_ZON[STUPNICA_ZONY[m]] ?? "";
 
+  // Smer posunu nesie ikona, nie šípka (Michal 2026-10-30): k tebe = krígeľ (udobríš ho, dá ti
+  // priazeň), k súperovi = päsť (vydesíš ho, začne sa ťa báť). Obe sú vo farbe hráča, ktorý
+  // rozdeľuje — priazeň aj strach sú jeho, ako pečať priazne a pečiatka vydesenia na stole.
   const sipka = (smer: "ja" | "su"): ReactNode => {
     const x = r.sipky[smer];
     if (x === undefined) return <span className={`ls-sip ${smer} bez-smeru`} aria-hidden="true" />;
     const cena = x.aktivna ? navrh?.cena : x.posun?.cena;
     const ok = x.aktivna || x.posun !== null;
+    const sloveso = smer === "ja" ? "udobriť" : "vydesiť";
     const popis = x.aktivna
-      ? `${s.meno}: zrušiť posun ${kam(smer)}`
+      ? `${s.meno}: zrušiť ${smer === "ja" ? "udobrenie" : "vydesenie"}`
       : x.posun !== null
-        ? `${s.meno} ${kam(smer)}: na ${zona(x.posun.na)}, stojí ${x.posun.cena}`
-        : `${s.meno}: ${kam(smer)} sa teraz nedá`;
-    const znak = x.aktivna ? "↶" : smer === "ja" ? "◀" : "▶";
+        ? `${s.meno}: ${sloveso} — marker ${kam(smer)} na ${zona(x.posun.na)}, stojí ${x.posun.cena}`
+        : `${s.meno}: ${sloveso} sa teraz nedá`;
+    const ikona = smer === "ja" ? <IkonaPriazne /> : <IkonaPaste />;
+    const spat = x.aktivna ? <span className="ls-sip-spat">↶</span> : null;
     const suma = cena === undefined ? null : <small>−{cena}</small>;
     return (
       <button type="button" className={`ls-sip ${smer}${x.aktivna ? " aktivna" : ""}`} disabled={!ok} aria-pressed={x.aktivna} aria-label={popis} title={popis} onClick={x.klik}>
         {smer === "ja" ? (
           <>
-            {znak}
+            {spat}
+            {ikona}
             {suma}
           </>
         ) : (
           <>
             {suma}
-            {znak}
+            {ikona}
+            {spat}
           </>
         )}
       </button>
