@@ -250,3 +250,35 @@ rašpľa (č. 5–6). Michal vybral „hot chick“.
   „SLIVOVICA“ na etikete, pseudotext na bankovkách a zlatý zub vyzeral ako
   tesák. Lekcia: fľašu píš „plain glass bottle with no label at all“, zlatý
   zub pri ženách vynechaj.
+
+### Injekcia (Nástroj, predtým Lievik) — 2026-10-31
+
+`H6` = `F:\Projects\handoff\ilustracie-2026-10-31-injekcia\`, koláž `H6\kolaz.jpg`.
+Karta Lievik premenovaná na Injekcia, efekt rovnaký (Dedičstvo: NA EX smieš dať
+aj na Zviera; akcie Poldeci 1 / Poškodenie pečene 2). Satira z efektu: veterinárna
+striekačka plná slivovice, „vitamíny“ aj pre zviera. Predlohy všetkých: Puška, Vinko.
+Spoločný opis: „a big old-fashioned reusable veterinary syringe made of thick glass
+and dented chrome metal with three finger rings and a long steel needle, its plain
+glass barrel with only simple tick marks and no numbers“ + „no hands, no blood, no
+pills, no powder“ + veta o rovnomernom svetle bez spotlightu.
+
+- **Na výbere (Michal ešte nevybral):**
+  - č. 1–2 (`injekcia-a`, kolo 1-1 a 2-1): striekačka so slivovicou na dečke
+    na stole v krčme vedľa poldecáka a fľaše bez etikety, z ihly kvapka.
+    Č. 2 má prázdnu fľašu a tenký čierny rámik.
+  - č. 3–4 (`injekcia-b`, kolo 1-1 a 2-1): striekačka na ohrade chlieva,
+    fľaša a poldecák na stĺpiku, v slame odpadnuté prasa. Č. 3 má rámik
+    a prázdnu etiketu.
+  - č. 5–6 (`injekcia-c`, kolo 1-1 a 1-2): striekačka v smaltovanej
+    emitni v dedinskej ambulancii, fľaša slivovice, poldecák, fonendoskop.
+    Č. 5 má svetlý okraj (orezať).
+  - č. 7–8 (`injekcia-d`, kolo 1-1 a 2-2): striekačka pri demižóne
+    v pivnici, č. 8 zapichnutá ihlou do stola.
+- **Zamietnuté pred kolážou (moja kontrola):** `injekcia-a` kolo 1-2
+  (striekačka visí vo vzduchu, kvapka z polovice ihly), `injekcia-b` kolo 1-2
+  (ružová tekutina pôsobí ako krv), `injekcia-d` kolo 1-2 (krúžky na strane
+  ihly, písmená na valci), `injekcia-d` kolo 2-1 (tieň postavy na sude).
+  `injekcia-d` ihlu do korku nespravila ani raz.
+  **Lekcia:** pri tekutine v striekačke píš „clear colourless (not pink, not
+  red)“, inak model kreslí ružovú ako krv. Striekačku vždy polož naležato
+  na podložku, postavená sa rozpadá.
