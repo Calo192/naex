@@ -483,7 +483,8 @@ button.pult-cip {
   align-items: center;
   gap: 6px;
   height: 100%;
-  padding: 0;
+  /* ✕ návrhu visí na pravom hornom rohu pečiatky — nesmie vypadnúť z obrazovky. */
+  padding: 0 12px 0 0;
 }
 
 .hra.mobil-sirka:not(.stol-scroll) .hrana-stred,
@@ -928,4 +929,11 @@ html.stol-na-sirku .medziobrazovka {
 .pult-hore {
   position: relative;
   z-index: 35;
+}
+
+/* Lokalita od súpera: hrany pod kartou v jednom riadku — šírku karty (inline) by inak lámali po slove. */
+html.stol-na-sirku .lokalita-supera .ls-hrany {
+  width: max-content !important;
+  gap: 14px;
+  font-size: 12px;
 }

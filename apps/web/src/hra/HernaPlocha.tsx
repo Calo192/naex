@@ -5599,7 +5599,12 @@ export function HernaPlocha({
     const sirkaKarty = Math.round(
       Math.max(
         120,
-        mobil ? Math.min(sirkaOkna * 0.62, (vyskaOkna - 360) / POMER_KARTY) : Math.min(560, vyskaOkna - 160) / POMER_KARTY,
+        mobil
+          ? Math.min(sirkaOkna * 0.62, (vyskaOkna - 360) / POMER_KARTY)
+          : naSirku
+            ? // Telefón na šírku: pod kartou ešte dva riadky hrán a ikony strán.
+              (vyskaOkna - 190) / POMER_KARTY
+            : Math.min(560, vyskaOkna - 160) / POMER_KARTY,
       ),
     );
     const obsah = {
