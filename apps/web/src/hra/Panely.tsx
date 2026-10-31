@@ -626,11 +626,11 @@ export function HracDoska({
             tip={
               view.ciel?.typ === "finale"
                 ? utoci
-                  ? { nadpis: "Útočník finále", text: "Má menej špakov — dobieha (pri rovnosti prehral poslednú bitku). Vykladá prvý, v Pitke má posledné slovo." }
+                  ? { nadpis: "Útočník finále", text: "Má menej špakov — dobieha (pri rovnosti prehral poslednú bitku). Vykladá prvý, na NA EX odpovedá prvý." }
                   : { nadpis: "Obranca finále", text: "Vedie v špakoch: vybral a natočil vrcholovú lokalitu. V Pitke začína." }
                 : utoci
-                ? { nadpis: "Útočník", text: "Prehral poslednú bitku: zo šenku berie a vykladá prvý. V Pitke hrá druhý — má posledné slovo." }
-                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá cieľ kola, v Pitke začína. Remízu v tuhom vyhrá, kto má menej Absťákov, potom Dlhov; inak idú špaky na sekeru." }
+                ? { nadpis: "Útočník", text: "Prehral poslednú bitku: vykladá prvý, zo šenku berie druhý. Na NA EX odpovedá prvý — lícom dole." }
+                : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá cieľ kola, zo šenku berie prvý (na prvom ťahu 1 kartu), na NA EX odpovedá druhý na druhý kraj. Remízu v tuhom vyhrá, kto má menej Absťákov, potom Dlhov; inak idú špaky na sekeru." }
             }
             frajerina={info?.frajerina}
           />
@@ -1459,7 +1459,7 @@ export function PriebehKola({
             <b>Stavba šenku:</b> každý dostane {KONSTANTY.STAVBA_NARADIE} karty z Náradia a {KONSTANTY.STAVBA_OBCANIA} z Občanov; obaja
             naraz dajú polovicu do šenku a polovicu naspodok ich balíčka — bez podávania.
             <span className="tip-riadok">
-              <b>Branie:</b> striedavo, začína útočník — 1 karta za {KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za {KONSTANTY.CENA_SENKU[2]}{" "}
+              <b>Branie:</b> striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za {KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za {KONSTANTY.CENA_SENKU[2]}{" "}
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
             </span>
             <span className="tip-riadok">
@@ -1505,9 +1505,9 @@ export function PriebehKola({
           nadpis: `Pitka${viac ? ` ${i} z ${pitiek}` : ""}`,
           text: (
             <>
-              <b>Začína obranca</b>; keď dá „hotovo“, hrá útočník a má posledné slovo („hotovo“ sa nedá vrátiť). NA EX! — plný poldeci na
+              <b>Hráte obaja naraz</b>; „hotovo“ sa nedá vrátiť a NA EX sa odkryjú naraz. NA EX! — plný poldeci na
               Občana či Starešinu v línii: zruší jeho aktívne akcie a zdvojí neaktívne (násobky sa násobia: NA EX × Silná žena = ×4); súper
-              smie hneď odpovedať jednou kartou. Fajčiť (karta za 1, 2, 3… cig. v každej Pitke), doliať poldeci ({KONSTANTY.REFILL_CENA} cig.), nový poldeci (barter).
+              smie po odkrytí odpovedať jednou kartou lícom dole (najprv útočník, potom obranca na druhý kraj; otočia sa naraz). Fajčiť (karta za 1, 2, 3… cig. v každej Pitke), doliať poldeci ({KONSTANTY.REFILL_CENA} cig.), nový poldeci (barter).
               <span className="tip-riadok">
                 Potom sa pripíšu akcie: Dlh (zadĺženie — za každý celý prah Dlh, hneď priznaný), Poškodenie pečene a Poldeci (za každý celý
                 prah Cirhóza do odhadzovacieho balíčka), Obmedzenie, Cigarety a Vízia. Pečeň aj zadĺženie sa po Pitke vynulujú.

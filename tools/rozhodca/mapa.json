@@ -431,18 +431,23 @@
     {
       "id": "7.odpoved",
       "paragraf": "7. Pitka › Odpoveď na NA EX",
-      "pravidlo": "Po odkrytí smie hráč za každé súperovo NA EX vyložiť jednu kartu z ruky mimo limitu; najprv odpovedá obranca, potom útočník; kto nemá kartu, neodpovedá; potom sa Pitka vyhodnotí.",
+      "pravidlo": "Po odkrytí smie hráč za každé súperovo NA EX vyložiť jednu kartu z ruky mimo limitu, lícom dole a zadarmo (v9.2): najprv útočník, potom obranca na druhý kraj línie (keď útočník neodpovedal, na ktorýkoľvek); obe sa otočia naraz pred vyhodnotením Pitky; kto nemá kartu, neodpovedá.",
       "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/playtest-055944.test.ts › súper smie hneď vyložiť jednu kartu mimo limitu, potom je na ťahu znova ten, kto NA EX dal; packages/core/test/playtest-055944.test.ts › bez kariet v ruke sa reakcia neponúka."
+      "testy": [
+        "packages/core/test/pravidla-v92.test.ts › najprv útočník; jeho odpoveď súper nevidí (viewFor ani udalosti); obranca len na druhý kraj; otočia sa naraz",
+        "packages/core/test/pravidla-v92.test.ts › útočník neodpovie → obranca smie na ktorýkoľvek kraj (Michal 2026-10-30)"
+      ],
+      "poznamka": "v9.2 (Michal 2026-10-30): pravidlo sa zmenilo — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "7.odpoved.striedavo",
       "paragraf": "7. Pitka › Odpoveď na NA EX",
-      "pravidlo": "Keď NA EX dali obaja (aj pri zrážke), odpovedajú obaja — obranca prvý, útočník druhý; počas odpovede sa nefajčí ani nedáva NA EX.",
+      "pravidlo": "Keď NA EX dali obaja (aj pri zrážke), odpovedajú obaja — útočník prvý, obranca druhý (v9.2); viac NA EX = viac kôl odpovedí (výklad 2026-10-30); počas odpovede sa nefajčí ani nedáva NA EX.",
       "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-kolo.test.ts › §7: obranca začína; po jeho NA EX odpovedá útočník; „hotovo“ je nevratné; na NA EX útočníka obranca už len odpovie."
+      "testy": [
+        "packages/core/test/pravidla-kolo.test.ts › §7 (v9.2): obranca začína; NA EX oboch sa odkryjú naraz, až keď obaja skončia; odpovedá najprv útočník, potom obranca"
+      ],
+      "poznamka": "v9.2 (Michal 2026-10-30): pravidlo sa zmenilo — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "7.odpoved.prevaha",
@@ -718,13 +723,14 @@
     {
       "id": "5.branie",
       "paragraf": "5. Cieľ a draft › Branie zo šenku",
-      "pravidlo": "Zo šenku sa berie striedavo, začína útočník: 1 karta za 1 cigaretu, 2 za 3; poldeci sa neplatí, bez cigarety nič.",
-      "stav": "pokryte",
+      "pravidlo": "Zo šenku sa berie striedavo, začína obranca (v9.2) — na svojom prvom ťahu len 1 kartu; inak 1 karta za 1 cigaretu, 2 za 3; poldeci sa neplatí, bez cigarety nič.",
+      "stav": "na-overenie",
       "testy": [
-        "packages/core/test/draft.test.ts › striedavo, začína útočník; 1 karta = 1 cigareta, 2 karty = 3 cigarety, nič zadarmo, poldeci sa neplatí",
+        "packages/core/test/draft.test.ts › striedavo, začína obranca (v9.2); 1 karta = 1 cigareta, 2 karty = 3 cigarety, nič zadarmo, poldeci sa neplatí",
         "packages/core/test/draft.test.ts › bez cigariet sa zo šenku nedá brať — hra za hráča branie ukončí",
         "packages/core/test/bot.test.ts › zo šenku berie len za cigarety a len legálne (Michal 2026-10-19)"
-      ]
+      ],
+      "poznamka": "v9.2 (Michal 2026-10-30): pravidlo sa zmenilo — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "5.branie.posledna-sanca",
@@ -852,10 +858,10 @@
     {
       "id": "7.poradie",
       "paragraf": "7. Pitka › Poradie: obranca začína, útočník má posledné slovo",
-      "pravidlo": "Pitku začína obranca, „hotovo“ je nevratné a v logu; potom útočník; keď sú hotoví obaja, NA EX sa odkryjú (najprv obrancovo), nasledujú odpovede (útočník posledný) a vyhodnotenie.",
+      "pravidlo": "Pitku hrajú obaja naraz, „hotovo“ je nevratné a v logu; keď sú hotoví obaja, NA EX sa odkryjú naraz (v9.2), nasledujú odpovede lícom dole (útočník, potom obranca na druhý kraj) a Pitka sa vyhodnotí.",
       "stav": "na-overenie",
       "testy": [],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/pravidla-kolo.test.ts › §7: obranca začína; po jeho NA EX odpovedá útočník; „hotovo“ je nevratné; na NA EX útočníka obranca už len odpovie; packages/core/test/pravidla-20261021.test.ts › „hotovo“ v Pitke sa zapíše do logu, ktorý vidia obaja."
+      "poznamka": "v9.2 (Michal 2026-10-30): pravidlo sa zmenilo — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "8.dlh.prah",
@@ -1771,10 +1777,13 @@
     {
       "id": "7.naex.odkrytie",
       "paragraf": "7. Pitka › Odkrytie NA EX a Výtržník",
-      "pravidlo": "Keď sú hotoví obaja, skryté NA EX sa odkryjú — najprv obrancove, potom útočníkove; až vtedy poldeci ľahne na kartu, pripíše sa pečeň a platia Výpalné, Vychovávateľka a Policajtka.",
+      "pravidlo": "Keď sú hotoví obaja, skryté NA EX sa odkryjú naraz (v9.2) — oba poldeci ľahnú súčasne, potom sa pripíše pečeň a platia efekty okolo NA EX.",
       "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
+      "testy": [
+        "packages/core/test/pravidla-v92.test.ts › jedna hláška pre obe NA EX, poldeci ležia na oboch kartách súčasne",
+        "packages/core/test/pitka-naraz.test.ts › NA EX sa odkryjú, až keď skončia obaja; kto skončil, už nehrá"
+      ],
+      "poznamka": "v9.2 (Michal 2026-10-30): pravidlo sa zmenilo — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "7.naex.skryte-viewfor",

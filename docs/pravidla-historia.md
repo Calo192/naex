@@ -1946,3 +1946,49 @@ Pasca dáva Ranu (text karty v tvorcovi od sady v36), nie Pecku. Boxer sa v sade
 Valaška (id karty `boxer` ostáva).
 
 > | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, udelíš mu Pecku navyše. |
+
+## v9.2 — šenok začína obranca, NA EX naraz, odpovede lícom dole (Michal 2026-10-30)
+
+Dávka nad v9.1 (vetva `oprava/v91-zrazka-ohrozenie`, interview Michala 2026-10-30).
+Značka partií ostáva `v9` (`VERZIA_PRAVIDIEL` smie byť len `vN`; v9.2 ide s v9.1 v jednom
+nasadení). Formulácia „najprv obrancove, potom útočníkove“ vznikla pri implementácii
+NA EX naraz v pravidlách v5 (commity 4da3232 a e74bcd4, 2026-10-25) podľa vtedajšieho
+poradia v Pitke (obranca začínal) — v interview 4 sa rozhodovalo len o poradí odpovedí.
+
+### Branie zo šenku (§4, §5)
+
+Staré znenie §5:
+
+> Hráči berú zo šenku **striedavo, začína útočník**, kým obaja neprestanú. Na
+> svojom ťahu hráč vezme:
+>
+> - **1 kartu za 1 cigaretu**, alebo
+> - **2 karty za 3 cigarety**.
+
+Staré znenie §4 (útočník):
+
+> **Berie zo šenku prvý, vykladá prvý a v Pitke má posledné slovo** (na odkryté NA EX
+> odpovedá druhý, §7) — jeho výhody slúžia na dobiehanie. **Obranca** je víťaz
+> poslednej bitky: **vyberá a natáča cieľ** kola a na odkryté NA EX **odpovedá prvý**.
+
+### Odkrytie NA EX a odpovede (§7)
+
+Staré znenie §7 (Poradie):
+
+> Keď sú hotoví obaja, **NA EX sa odkryjú** (najprv obrancove, potom útočníkove),
+> nasledujú odpovede — najprv obranca, potom útočník, ktorý má **posledné
+> slovo** — a Pitka sa vyhodnotí. **Kohút** (v7) dá posledné slovo svojmu
+> majiteľovi aj ako obrancovi; **Krčmárka** zakáže súperovi odpovedať kartou na
+> NA EX jej majiteľa.
+
+Staré znenie §7 (Odpoveď na NA EX):
+
+> Po odkrytí smie hráč za **každé súperovo NA EX** vyložiť **jednu kartu
+> z ruky** na koniec svojej alebo súperovej strany. Najprv odpovedá **obranca**
+> (na NA EX útočníka), potom **útočník** (na NA EX obrancu) — útočník má
+> posledné slovo. Keď NA EX dali obaja (aj pri zrážke), odpovedajú obaja.
+
+### Kohút (§16) — dočasne vyradený
+
+Staré znenie: „Pitka: posledné slovo pri odpovediach na NA EX (§7) má jeho majiteľ aj ako
+obranca — súper odpovedá prvý. Keď ho majú obaja, platí bežné poradie.“

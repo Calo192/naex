@@ -89,13 +89,13 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     expect(m?.text).toMatch(/1 karta za 1 cigaretu, 2 karty za 3 cigarety/);
   });
 
-  it("každá Pitka zvlášť; hrá sa naraz, útočník má posledné slovo, Bzdocha čaká (Michal 2026-10-27)", () => {
+  it("každá Pitka zvlášť; hrá sa naraz, útočník odpovedá prvý lícom dole (v9.2), Bzdocha čaká (Michal 2026-10-27)", () => {
     const prva = medziobrazovka(p({ faza: "pitka", pitkaCislo: 1 }), 0, "Eva", null);
     const druha = medziobrazovka(p({ faza: "pitka", pitkaCislo: 2 }), 0, "Eva", null);
     expect(prva).toMatchObject({ nadpis: "Pitka", nadnadpis: "Kolo 2 · 1 z 2" });
     expect(druha?.kluc).not.toBe(prva?.kluc);
     expect(prva?.text).toMatch(/^Hráte obaja naraz/);
-    expect(medziobrazovka(p({ faza: "pitka" }), 1, "Eva", null)?.text).toMatch(/posledné slovo máš ty/);
+    expect(medziobrazovka(p({ faza: "pitka" }), 1, "Eva", null)?.text).toMatch(/na ne odpovieš prvý lícom dole/);
     expect(medziobrazovka({ ...p({ faza: "pitka" }), pitkaStav: { bzdocha: 0 } }, 0, "Eva", null)?.text).toMatch(/^Máš Bzdochu: počkáš, kým Eva skončí/);
     expect(medziobrazovka({ ...p({ faza: "pitka" }), pitkaStav: { bzdocha: 1 } }, 0, "Eva", null)?.text).toMatch(/Eva má Bzdochu/);
   });

@@ -49,6 +49,7 @@ import {
   sMojimiSkrytymiNaex,
   favourStarsieho,
   krokStavby,
+  cieleOdpovede,
   cieleVykladania,
   cielLokalitaId,
   evaluateLine,
@@ -96,6 +97,7 @@ import {
   vydesil,
   vidiVolbuSupera,
   zablokovaneStrany,
+  maxZoSenku,
 } from "@naex/core";
 import { bzdochaText, prehraNaexText, prehraText, starsiNaNakladacku, stavkaText, superoveSkryteNaex, sVidenymiSkrytymiNaex } from "./texty-hraca.ts";
 
@@ -370,7 +372,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     out.push(`KONIEC HRY: vyhral ${kto(v.koniec.vitaz)}. ${rozlozRod(v.koniec.dovod, rodyHracov)}${v.koniec.body ? ` Špaky: ty ${v.koniec.body[ja]}, súper ${v.koniec.body[su]}.` : ""}`);
   }
   out.push(
-    `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — zo šenku berieš prvý a vykladáš prvý" : "obranca — vyberáš a natáčaš cieľ kola, zo šenku berieš aj vykladáš druhý"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} ${v.lokalitCelkom <= 4 ? "lokality" : "lokalít"} a potom FINÁLE${v.rozpis !== undefined ? ` (úrovne lokalít po kolách ${v.rozpis.map((u) => (u === 4 ? "P" : String(u))).join(" · ")}; úroveň = počet akcií na hrane lokality; obranca vyberá zo všetkých neodohraných lokalít úrovne kola; finále je bitka o pinnacle lokalitu ako o každú inú, vyberá a natáča ju obranca — vedúci; útočí zaostávajúci (menej špakov, pri rovnosti porazený poslednej bitky); Pitky podľa spojov s lokalitou, 1–5)` : ""}${v.ciel?.typ === "finale" ? " — TERAZ JE FINÁLE na pinnacle lokalite" : ""}; odohraných bitiek ${v.nastenka.length}. ŠPAKY (víťazné body): ty ${v.spaky[ja]}, súper ${v.spaky[su]}${v.spakyNaSekere > 0 ? `, na sekere ${v.spakyNaSekere}` : ""}. Limit ruky nie je; po každej bitke si každý dobere ${kariet(KONSTANTY.KARTY_PO_BITKE)}. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
+    `Ty si ${mena[ja]} (${v.utocnik === ja ? "útočník — zo šenku berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý (lícom dole)" : "obranca — vyberáš a natáčaš cieľ kola, zo šenku berieš prvý (na prvom ťahu len 1 kartu), vykladáš druhý a na NA EX odpovedáš druhý (na druhý kraj línie)"}), súper ${mena[su]}. Hrá sa o ${v.lokalitCelkom} ${v.lokalitCelkom <= 4 ? "lokality" : "lokalít"} a potom FINÁLE${v.rozpis !== undefined ? ` (úrovne lokalít po kolách ${v.rozpis.map((u) => (u === 4 ? "P" : String(u))).join(" · ")}; úroveň = počet akcií na hrane lokality; obranca vyberá zo všetkých neodohraných lokalít úrovne kola; finále je bitka o pinnacle lokalitu ako o každú inú, vyberá a natáča ju obranca — vedúci; útočí zaostávajúci (menej špakov, pri rovnosti porazený poslednej bitky); Pitky podľa spojov s lokalitou, 1–5)` : ""}${v.ciel?.typ === "finale" ? " — TERAZ JE FINÁLE na pinnacle lokalite" : ""}; odohraných bitiek ${v.nastenka.length}. ŠPAKY (víťazné body): ty ${v.spaky[ja]}, súper ${v.spaky[su]}${v.spakyNaSekere > 0 ? `, na sekere ${v.spakyNaSekere}` : ""}. Limit ruky nie je; po každej bitke si každý dobere ${kariet(KONSTANTY.KARTY_PO_BITKE)}. Ďalší Nástroj do Dedičstva stojí ${v.cenaDedicstva} cig. (cena rastie pre oboch). Pitiek v bitke = 1 + menší počet aktivovaných akcií karty v strede (z dvoch strán).`,
   );
 
   // Stôl po prípadnom vyhodnotení — rovnako ako klient. V strede leží lokalita.
@@ -420,7 +422,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       for (const k of d.mojBalicek) out.push(`  ${popisKarty(k)}`);
     } else {
       out.push(
-        `BRANIE ZO ŠENKU (striedavo, začína útočník; na ťahu 1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu alebo 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety, poldeci sa neplatí; kto nemá cigaretu, prestane): ty ${d.noveKarty[ja]}${d.hotovo[ja] ? " (skončil si)" : ""}, súper ${d.noveKarty[su]}${d.hotovo[su] ? " (skončil)" : ""}.`,
+        `BRANIE ZO ŠENKU (striedavo, začína obranca — na svojom prvom ťahu len 1 kartu; inak na ťahu 1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu alebo 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety, poldeci sa neplatí; kto nemá cigaretu, prestane): ty ${d.noveKarty[ja]}${d.hotovo[ja] ? " (skončil si)" : ""}, súper ${d.noveKarty[su]}${d.hotovo[su] ? " (skončil)" : ""}.`,
       );
     }
   }
@@ -454,14 +456,14 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       ps.hotovy[p]
         ? `skončil${koniec(p)}`
         : ps.reakcia === p
-          ? "odpovedá na NA EX"
+          ? "odpovedá na NA EX (lícom dole)"
           : cakaSBzdochou(ps, p)
             ? "čaká s Bzdochou, kým súper skončí (potom uvidí jeho NA EX)"
             : hraVPitke(ps, p)
               ? `hrá${p === ja && mojeSkryte > 0 ? " (skryto si dal NA EX)" : ""}`
               : "čaká";
     out.push(
-      `PITKA NARAZ — obaja hráte súčasne a každý skončí sám: ${kto(obr)} (obranca): ${stav(obr)} · ${kto(v.utocnik)} (útočník, na NA EX odpovedá posledný): ${stav(v.utocnik)}. „hotovo“ je nevratné; NA EX sa odkryjú, keď skončia obaja.`,
+      `PITKA NARAZ — obaja hráte súčasne a každý skončí sám: ${kto(obr)} (obranca): ${stav(obr)} · ${kto(v.utocnik)} (útočník, na NA EX odpovedá prvý): ${stav(v.utocnik)}. „hotovo“ je nevratné; NA EX sa odkryjú naraz, keď skončia obaja. Odpovede (v9.2): najprv útočník lícom dole, potom obranca lícom dole na druhý kraj línie (ak útočník neodpovedal, na ktorýkoľvek); obe sa otočia naraz a Pitka sa vyhodnotí — posledné slovo nemá nikto.`,
     );
     const bz = bzdochaText(DATA, v);
     if (bz !== null) out.push(bz);
@@ -495,7 +497,8 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     pl.naexBy === undefined
       ? ""
       : `, NA EX: ${kto(pl.naexBy)}${pl.naexBy2 !== undefined ? ` aj ${kto(pl.naexBy2)} — zrážka${pl.vytrznik === true ? ", z karty je Výtržník" : ""}` : ""}${skryteText(pl.card.uid)}`;
-  const zaverecnaText = (pl: PlacedCard): string => (pl.zaverecna === true ? ", TVOJA ZÁVEREČNÁ lícom dole — súper ju nevidí" : "");
+  const zaverecnaText = (pl: PlacedCard): string =>
+    pl.zaverecna !== true ? "" : pl.odpoved === true ? ", TVOJA ODPOVEĎ NA NA EX lícom dole — súper ju nevidí, otočí sa s jeho odpoveďou" : ", TVOJA ZÁVEREČNÁ lícom dole — súper ju nevidí";
   // Úplatok na karte (playtest 20261030-184957: Rany Výtržníka zmizli zo súčtov a na karte nebolo prečo).
   const uplatokText = (pl: PlacedCard): string =>
     (pl.uplatky ?? 0) > 0 ? `, ÚPLATOK ×${pl.uplatky}: útoky karty do konca kola o ${pl.uplatky} ${pl.uplatky === 1 ? "stupeň" : "stupne"} slabšie (Petelica → Pecka → Rana → nič)` : "";
@@ -520,7 +523,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     );
   // Záverečná súpera (roadmapa #83): leží lícom dole na konci strany, nevieš čo to je.
   for (const z of vs.zaverecne.filter((x) => x.majitel !== ja))
-    out.push(`  [SÚPEROVA ZÁVEREČNÁ lícom dole na konci ${z.strana === ja ? "tvojej" : "súperovej"} strany${z.naexBy !== null ? `, NA EX: ${kto(z.naexBy)}${skryteText(z.uid)}` : ""} — nevieš, čo to je, ráta sa do bitky (v súčtoch nižšie chýba); za ňu sa nedá priložiť, otočí sa na konci Pitky]`);
+    out.push(`  [SÚPEROVA ${z.odpoved === true ? "ODPOVEĎ NA NA EX" : "ZÁVEREČNÁ"} lícom dole na konci ${z.strana === ja ? "tvojej" : "súperovej"} strany${z.naexBy !== null ? `, NA EX: ${kto(z.naexBy)}${skryteText(z.uid)}` : ""} — nevieš, čo to je, ráta sa do bitky (v súčtoch nižšie chýba); za ňu sa nedá priložiť, ${z.odpoved === true ? "otočí sa spolu s odpoveďou druhého hráča, pred vyhodnotením Pitky" : "otočí sa na konci Pitky"}]`);
 
   const sumy = (p: PlayerId) => Object.entries(lineEval.sums[p]).map(([a, n]) => `${a} ${n}`).join(", ") || "nič";
   out.push(`Tvoje aktívne akcie (tvoja partia + akcie lokality, ktoré aktivuje tvoja karta): ${sumy(ja)}`);
@@ -819,7 +822,8 @@ function moznosti(v: ClientState): string[] {
       for (const k of v.senok) {
         if (cig >= (KONSTANTY.CENA_SENKU[1] ?? 1)) c({ type: "draftBer", uids: [k.uid] }, `vezmi zo šenku ${meno(k.defId)} za ${KONSTANTY.CENA_SENKU[1]} cigaretu (máš ${cig})`);
       }
-      if (cig >= (KONSTANTY.CENA_SENKU[2] ?? 3) && v.senok.length >= 2)
+      if (maxZoSenku(v, ja) < 2) out.push(`(Berieš zo šenku prvý — na prvom ťahu len 1 kartu; 2 karty za ${KONSTANTY.CENA_SENKU[2]} až na ďalšom ťahu.)`);
+      else if (cig >= (KONSTANTY.CENA_SENKU[2] ?? 3) && v.senok.length >= 2)
         out.push(`{"type":"draftBer","uids":[U1,U2]}   — vezmi zo šenku DVE karty (uid zo šenku vyššie) za ${KONSTANTY.CENA_SENKU[2]} cigarety (máš ${cig}); potom berie súper`);
       break;
     }
@@ -869,13 +873,19 @@ function moznosti(v: ClientState): string[] {
       const h = v.hraci[ja];
       const pk = v.pitkaStav;
       if (pk?.reakcia === ja) {
-        // Odpoveď na súperovo NA EX (Michal 2026-10-12): jedna karta mimo limitu.
-        c({ type: "bezReakcie" }, "na súperovo NA EX neodpovedať");
+        // Odpoveď na súperovo NA EX (v9.2): jedna karta lícom dole, zadarmo, mimo limitu;
+        // po útočníkovi obranca len na druhý kraj línie. Otočia sa naraz.
+        const kraj = pk.krajOdpovede ?? null;
+        out.push(
+          kraj === null
+            ? `(Odpoveď ide LÍCOM DOLE — súper ju neuvidí, kým neodpovie aj on${v.utocnik === ja ? "; obranca potom smie len na druhý kraj línie" : ""}. Obe sa otočia naraz a Pitka sa vyhodnotí.)`
+            : `(Súper odpovedal lícom dole na koniec ${kraj === ja ? "tvojej" : "svojej"} strany — ty smieš len na druhý kraj línie. Potom sa obe otočia naraz.)`,
+        );
+        c({ type: "bezReakcie" }, "na súperovo NA EX neodpovedať (v tejto Pitke už neodpovedáš)");
         for (const k of v.ruka) {
-          for (const t of cieleVykladania(DATA, v.strany, ja, k, Number.POSITIVE_INFINITY, true, cielLokalitaId(v), zablokovaneStrany(v))) {
-            if (t === "vlastna" || t === "superova") {
-              c({ type: "place", uid: k.uid, target: t }, `odpoveď na NA EX: vylož ${meno(k.defId)} → ${POPIS_CIELA[t]} (limit nemíňa)${popisVylozenia(v, k, t)}`);
-            }
+          for (const t of cieleOdpovede(DATA, v, ja, k)) {
+            if (zablokovaneStrany(v)[t === "vlastna" ? ja : su]) continue;
+            c({ type: "place", uid: k.uid, target: t }, `odpoveď na NA EX LÍCOM DOLE: vylož ${meno(k.defId)} → ${POPIS_CIELA[t]} (zadarmo, limit nemíňa; Nástup až pri otočení)${popisVylozenia(v, k, t)}`);
           }
         }
         break;
@@ -888,7 +898,7 @@ function moznosti(v: ClientState): string[] {
       // Tie isté podmienky ako motor.
       const ciele = new Set(moznostiNaexVPohlade(DATA, v));
       const naexEste = ciele.size > 0;
-      if (mojeSkryte.length > 0) out.push(`(Skryto si dal ${mojeSkryte.length === 1 ? "NA EX" : `${mojeSkryte.length} NA EX`} — odkryje sa, keď obaja skončíte Pitku; súper potom smie odpovedať jednou kartou za každé.)`);
+      if (mojeSkryte.length > 0) out.push(`(Skryto si dal ${mojeSkryte.length === 1 ? "NA EX" : `${mojeSkryte.length} NA EX`} — odkryje sa, keď obaja skončíte Pitku; súper potom smie odpovedať jednou kartou lícom dole za každé.)`);
       if (naexEste) {
         for (const p of [0, 1] as const) {
           for (const pl of v.strany[p]) {
@@ -1098,7 +1108,7 @@ function textUdalosti(e: Event, mena: readonly string[], ja: PlayerId): string |
     case "manualEfekt":
       return `⚠ EFEKT, ktorý hra nevyhodnocuje automaticky: ${e.nazov} — ${e.text}`;
     case "bitkaVysledok":
-      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper) — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, Nakladačka ${e.prebytok}${e.prebytokNaRozdelenie < e.prebytok ? ` (po Puške ${e.prebytokNaRozdelenie})` : ""}` : ""}.`;
+      return `Bitka: tuhé ${e.damage.tuhe[ja]}:${e.damage.tuhe[ja === 0 ? 1 : 0]} (ty:súper) — vyhráva ${e.vitaz === null ? "nikto" : m(e.vitaz)}${e.prebytok > 0 ? `, Nakladačka ${e.prebytok}${e.prebytokNaRozdelenie < e.prebytok ? " (vo finále sa nerozdeľuje — víťaz za každý bod dostane špak)" : ""}` : ""}.`;
     case "pitkaRekap": {
       // Odhalená Záverečná (Michal 2026-10-27) — karta a čo v Pitke dala; efekty pri otočení sú v logu.
       const z = e.rekap.zaverecne ?? [];
@@ -1178,6 +1188,8 @@ async function main(): Promise<void> {
       if (c.tags.includes("Lokalita")) return "lokalita: 1 kus (do hry ide len časť lokalít)";
       if (c.tags.includes("Starešina")) return "starší: 1 kus na ukazovateli (do ruky len ako boss pri súperovom pokuse o zajatie)";
       if (c.id === "cirhoza") return "kliatba: v balíčku nie je, vzniká počas hry (bez limitu)";
+      // Absťák (v9.1) vzniká z Chuti na konci kola — do Občanov ani do šenku nepatrí (playtest 20261030-184957, Eva N2).
+      if (c.id === "abstak") return "kliatba: v balíčku nie je, vzniká počas hry (z Chuti na konci kola, do odhadzovacieho balíčka)";
       return `${KONSTANTY.KOPIE_V_SPOLOCNOM_BALICKU} kópie v balíčku ${c.tags.includes("Nástroj") ? "Náradie" : "Občania"} (každá s náhodným rozložením akcií)`;
     };
     for (const c of cards) {

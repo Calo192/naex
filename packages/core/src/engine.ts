@@ -1989,7 +1989,7 @@ function cmdStavbaSenku(
  * Najviac kariet, ktoré si hráč p smie vziať na tomto ťahu v braní (v9.2, Michal 2026-10-30):
  * kto berie prvý (obranca), na prvom ťahu len SENOK_PRVY_TAH; inak 1 alebo 2.
  */
-export function maxZoSenku(state: Pick<GameState, "utocnik" | "draftStav">, p: PlayerId): number {
+export function maxZoSenku(state: { readonly utocnik: PlayerId; readonly draftStav: { readonly noveKarty: readonly [number, number] } | null }, p: PlayerId): number {
   const d = state.draftStav;
   const prvyTah = d !== null && p === obranca(state) && d.noveKarty[p] === 0;
   return prvyTah ? KONSTANTY.SENOK_PRVY_TAH : KONSTANTY.CENA_SENKU.length - 1;

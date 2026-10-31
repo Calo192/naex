@@ -200,6 +200,8 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // (tretí väzeň vyhráva), Kšeft väzňa namiesto efektov starších, bossovia, nové priazne.
 // v9.1 (Michal 2026-10-30) bez novej značky — v9 ešte nebola nasadená: Chuť a karta Absťák
 // (Nervák zanikol), Nakladačka vo finále → špaky 1 : 1, Zastávka (karta zo šenku po 1. Pitke), Pasca Rana.
+// v9.2 (Michal 2026-10-30) bez novej značky — ide s v9.1: šenok začína obranca (1. ťah 1 karta),
+// NA EX sa odkrývajú naraz, odpovede na NA EX lícom dole (útočník, potom obranca na druhý kraj).
 export const VERZIA_PRAVIDIEL = "v9";
 /** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-10-30";

@@ -41,26 +41,24 @@ Pokračuje cloudový agent. Zadania od organizátora (Michal 2026-10-30).
 - `VERZIA_PRAVIDIEL` ostáva `"v9"` (test vyžaduje `^v\d+$`); v9.2 len v dokumentoch,
   ako v9.1 — treba potvrdiť s organizátorom.
 
+## Dokončené 2026-10-31
+
+- Klient: skrytá odpoveď (štítok „Odpoveď · lícom dole“, rub súperovej odpovede), výber kraja
+  (druhý kraj s vysvetlením), texty poradia; šenok — v prvom ťahu obrancu len 1 karta s vysvetlením.
+- `tools/playtest/hrac.ts`: ponuka odpovede cez `cieleOdpovede`, texty šenku a odpovedí, výpis
+  `karty` (Absťák vzniká počas hry), log finále (Nakladačka sa vo finále nerozdeľuje).
+- Ťahák + `tahak.test.ts`, PRAVIDLA.md v9.2, stránka Pravidlá, `pravidla-historia.md`,
+  `zmeny-pravidiel.html`, mapa rozhodcu, nový test `pravidla-v92.test.ts`.
+- Turnaj (20, chamtivy, stredna, Štamgast): pred 18 výhier + 1 remíza (872 : 485) → po 19 výhier
+  (1082 : 253), všetko dohrané. Odtlačok sa zmenil (zámerná zmena pravidiel).
+
 ## Ostáva
 
-- `tools/playtest/hrac.ts`: texty šenku (r. ~373, ~423, ~820: obranca prvý, prvý ťah len 1),
-  odpovede (r. ~456, ~464, ~871, ~891, ~900: lícom dole, kraj, bez posledného slova, Kohút);
-  výpis `karty` — Absťák „vzniká počas hry“ ako Cirhóza (r. ~1180); log finále
-  „po Puške 0“ (r. ~1101) → vo finále sa Nakladačka nerozdeľuje.
-- `tools/playtest/tahak.md` (r. ~85, ~91, ~144) + `packages/core/test/tahak.test.ts`.
-- Web: `apps/web/src/hra/Panely.tsx:1462`, `prechodFazy.ts:81,102` (šenok), tlačidlo
-  „2 karty za 3“ v prvom ťahu nedostupné s vysvetlením; `HernaPlocha.tsx` ~3683 (odpoveď:
-  lícom dole, výber kraja — len druhý kraj, súper odpovedal lícom dole), zobrazenie skrytej
-  odpovede (view `zaverecne`, prípadne príznak `odpoved` v `ZaverecnaVerejna`), test viewFor
-  pre skrytú odpoveď (súper nevidí kartu ani v udalostiach).
-- Stránka Pravidlá `apps/web/src/stranky/pravidla/kapitoly.tsx` (r. 215, 254, 366, 414–416, 428).
-- `docs/PRAVIDLA.md` §4 (r. ~300), §5 (r. ~355), §7 (r. ~521, ~584, ~611), §16 Kohút
-  (dočasne vyradený), slovník r. ~1754; `docs/pravidla-historia.md` (v9.2),
-  `docs/playtesty/zmeny-pravidiel.html`, `tools/rozhodca/mapa.json`, komentár v constants.ts.
-- Turnaj bota pred/po, odtlačok (mení sa zámerne — v9.2), `npm test`, typecheck, build.
-- Výučba: `prehraj.ts --ticho` padá na **kroku 10 (k-kupa-bot)** — obranca (hráč) berie zo
-  šenku prvý; ďalšie rozchody (odpovede, odkrytie) sa ukážu až po prepočte (Vymyselník).
-  Padajú `vyucba.test.ts` (21) a `napovedy.test.ts` (2, stoja na scenári).
+- Výučba: `prehraj.ts --ticho` padá na **kroku 10 (k-kupa-bot)** — obranca (hráč) berie zo šenku
+  prvý. Padajú `vyucba.test.ts`, `napovedy.test.ts` (2) a `apps/web/test/zmenyVyucby.test.ts` —
+  všetky stoja na scenári; prepočíta Vymyselník (ďalšie rozchody — odkrytie NA EX naraz, odpovede
+  lícom dole, zrážka vo finále — sa ukážu až po prepočte kroku 10).
+- Kohút vyradiť zo sady (Admin v tvorcovi), potom skopírovať cards.json zo sady.
 - Známa chyba v9.1 (mimo zadania): Zastávka odloží zmenu fázy → `pitkaPredBitkou` nespozná
   poslednú Pitku (test rekapitulacia má TODO výnimku).
-- Pred odovzdaním: mergnúť origin/master, commit, push (nemergovať do master).
+- Rozhodnutie Michala: Úplatok na Výtržníkovi (dnes zníži jeho Rany na nič).

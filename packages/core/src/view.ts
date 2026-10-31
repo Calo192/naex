@@ -142,6 +142,8 @@ export interface ZaverecnaVerejna {
   readonly majitel: PlayerId;
   readonly uid: number;
   readonly naexBy: PlayerId | null;
+  /** Odpoveď na NA EX lícom dole (v9.2), nie Záverečná — otočí sa ešte v tejto Pitke. */
+  readonly odpoved?: true;
 }
 
 /**
@@ -334,7 +336,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
   for (const strana of [0, 1] as const) {
     for (const pl of state.strany[strana]) {
       if (pl.zaverecna !== true) continue;
-      zaverecne.push({ strana, majitel: pl.playedBy, uid: skryta(pl) ? uidZaverecnej(strana) : pl.card.uid, naexBy: pl.naexBy ?? null });
+      zaverecne.push({ strana, majitel: pl.playedBy, uid: skryta(pl) ? uidZaverecnej(strana) : pl.card.uid, naexBy: pl.naexBy ?? null, ...(pl.odpoved === true ? { odpoved: true as const } : {}) });
     }
   }
   const d = state.draftStav;

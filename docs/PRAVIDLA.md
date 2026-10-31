@@ -5,6 +5,15 @@ docs/napady/starsi-krok2-zadanie.html, rozhodnutia O1–O10) a dávka v9.1 (Chu�
 Nakladačka vo finále, quick wins z ULTRA playtestu 20261030-115654). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií ostáva `v9`).
 
+**Zmeny v9.2 oproti v9.1** (Michal 2026-10-30; staré znenia v `docs/pravidla-historia.md`, sekcia v9.2):
+
+- **Šenok začína obranca** (§4, §5): útočník berie druhý. Kto berie prvý, na **svojom
+  prvom ťahu vezme len 1 kartu** (za 1 cigaretu) — nevykradne šenok; ďalej 1 alebo 2 ako doteraz.
+- **NA EX sa odkrývajú naraz** (§7): jedna udalosť, oba poldeci ľahnú súčasne.
+- **Odpovede na NA EX lícom dole** (§7): štýlom Záverečnej, ale zadarmo — najprv
+  **útočník**, potom **obranca na druhý kraj línie**; obe sa **otočia naraz** a Pitka sa
+  vyhodnotí. Posledné slovo nemá nikto. **Kohút** je dočasne vyradený (§16).
+
 **Zmeny v9.1 oproti v9** (staré znenia v `docs/pravidla-historia.md`, sekcia v9.1):
 
 - **Chuť a Absťák v3** (§4, §8, §9, §11, §14, §16, §17; docs/napady/abstak-3.html):
@@ -297,11 +306,11 @@ finále: voľba pinnacle → draft → (Zhromaždenie → Pitka) × 1–5 → bi
 ```
 
 **Útočník** = hráč, ktorý **prehral poslednú bitku** (v prvom kole náhodne;
-pri sekere ostáva útočníkom; vo finále útočí, kto má menej špakov, §14b). **Berie zo šenku prvý, vykladá prvý a v Pitke má
-posledné slovo** (na odkryté NA EX odpovedá druhý, §7) — jeho výhody slúžia
-na dobiehanie. **Obranca** je víťaz
-poslednej bitky: **vyberá a natáča cieľ** kola a na odkryté NA EX
-**odpovedá prvý**. Pitku hrajú obaja naraz (§7).
+pri sekere ostáva útočníkom; vo finále útočí, kto má menej špakov, §14b). **Vykladá prvý
+a na odkryté NA EX odpovedá prvý** (lícom dole, §7) — jeho výhody slúžia na dobiehanie.
+**Obranca** je víťaz poslednej bitky: **vyberá a natáča cieľ** kola, **berie zo šenku
+prvý** (v9.2, na prvom ťahu len 1 kartu, §5) a na odkryté NA EX odpovedá druhý — na
+druhý kraj línie. Pitku hrajú obaja naraz (§7).
 
 **Začiatok kola:**
 
@@ -352,11 +361,14 @@ na párne číslo — stavba sa zmenšuje až na nulu a hra beží ďalej bez tr
 
 ### Branie zo šenku
 
-Hráči berú zo šenku **striedavo, začína útočník**, kým obaja neprestanú. Na
-svojom ťahu hráč vezme:
+Hráči berú zo šenku **striedavo, začína obranca** (v9.2, Michal 2026-10-30; útočník
+berie druhý), kým obaja neprestanú. Na svojom ťahu hráč vezme:
 
 - **1 kartu za 1 cigaretu**, alebo
 - **2 karty za 3 cigarety**.
+
+Kto berie prvý, na **svojom prvom ťahu vezme len 1 kartu** — aby nevykradol šenok;
+všetky ďalšie ťahy oboch hráčov ako vyššie (pri dosť cigaretách teda 1 – 2 – 2 – 2…).
 
 Poldeci sa v šenku neplatí a nič nie je zadarmo. Kto nemá cigaretu, brať
 nemôže (hra za neho branie ukončí). Keď jeden prestane, druhý má už len **jednu
@@ -511,18 +523,17 @@ cigariet.
 Pred každou Pitkou je Zhromaždenie (§6); počet Pitiek v kole určuje lokalita
 (nižšie).
 
-### Poradie: Pitka naraz, útočník má posledné slovo
+### Poradie: Pitka naraz, odpovede lícom dole
 
 Pitku hrajú **obaja hráči naraz** (Michal 2026-10-27): každý fajčí, dolieva,
 barteruje, použije Kšefty a Úplatky a **skryto vyberie NA EX** (nižšie), kedy
 chce, a skončí sám „hotovo“. Súperove kroky (fajčenie, nákupy, Kšefty) vidno
 hneď, jeho NA EX nie. „Hotovo“ je **nevratné** a zapíše sa do logu („Hráč X
 končí svoju časť Pitky“); kto skončil, v tejto Pitke už nič nerobí. Keď sú
-hotoví obaja, **NA EX sa odkryjú** (najprv obrancove, potom útočníkove),
-nasledujú odpovede — najprv obranca, potom útočník, ktorý má **posledné
-slovo** — a Pitka sa vyhodnotí. **Kohút** (v7) dá posledné slovo svojmu
-majiteľovi aj ako obrancovi; **Krčmárka** zakáže súperovi odpovedať kartou na
-NA EX jej majiteľa.
+hotoví obaja, **NA EX sa odkryjú naraz** (v9.2), nasledujú odpovede **lícom dole** —
+najprv útočník, potom obranca na druhý kraj línie; obe sa otočia naraz a Pitka sa
+vyhodnotí (nižšie). Posledné slovo od v9.2 nemá nikto; **Kohút** je dočasne vyradený
+(§16).
 
 **Bzdocha je jediná výnimka:** jej majiteľ **čaká**, kým súper skončí svoju
 časť Pitky, a až potom hrá — a vidí súperovo skryté NA EX. Keď má Bzdochu
@@ -581,9 +592,10 @@ kým sa NA EX neodkryjú.
 
 ### Odkrytie NA EX a Výtržník
 
-Keď skončia obaja, NA EX sa **odkryjú** — najprv obrancove, potom útočníkove.
-Až teraz poldeci ľahne na kartu, pripíše sa pečeň a uplatnia sa efekty okolo
-NA EX.
+Keď skončia obaja, NA EX sa **odkryjú naraz** (v9.2, Michal 2026-10-30) — oba
+poldeci ľahnú na karty súčasne. Až teraz sa pripíše pečeň a uplatnia sa efekty okolo
+NA EX. Výsledok od poradia nezávisí (zrážka je súmerná, pečeň aj hrozba
+Vychovávateľky sa rátajú po hráčoch).
 
 **Zrážka:** ak obaja vybrali **tú istú kartu**, ležia na nej poldeci oboch
 a z karty je **Výtržník**. Karta sa najprv spáruje so susedmi s pôvodnými
@@ -609,11 +621,25 @@ a susedova Pecka platí ×1.
 ### Odpoveď na NA EX
 
 Po odkrytí smie hráč za **každé súperovo NA EX** vyložiť **jednu kartu
-z ruky** na koniec svojej alebo súperovej strany. Najprv odpovedá **obranca**
-(na NA EX útočníka), potom **útočník** (na NA EX obrancu) — útočník má
-posledné slovo. Keď NA EX dali obaja (aj pri zrážke), odpovedajú obaja.
-Odpoveď limit vykladania nemíňa; kto nemá kartu, ktorú smie vyložiť,
-neodpovedá. Cieľ: spárovať neaktívne akcie karty s NA EX — tie sa tým stanú
+z ruky** na koniec svojej alebo súperovej strany — **lícom dole, štýlom Záverečnej, ale
+zadarmo** (v9.2, Michal 2026-10-30):
+
+1. Najprv **útočník** (na NA EX obrancu) vyloží odpoveď lícom dole na jeden kraj línie.
+2. Potom **obranca** (na NA EX útočníka) lícom dole — **len na druhý kraj línie**, než
+   kam vyložil útočník. Keď útočník neodpovedal, obranca smie na ktorýkoľvek kraj.
+3. Obe odpovede sa **otočia naraz** — až vtedy sa vyhodnotí ich Nástup a Konflikt,
+   ktorý vyvolali priložením — a Pitka sa vyhodnotí.
+
+Odpoveďou hráč v tejto Pitke končí s vykladaním. Kým odpoveď leží lícom dole, súper
+z nej nevidí nič a odhad bitky ju nezarátava (ako Záverečnú, §13). Keď NA EX dali obaja
+(aj pri zrážke), odpovedajú obaja. Odpoveď limit vykladania nemíňa; kto nemá kartu,
+ktorú smie vyložiť, neodpovedá.
+
+**Výklad (Developer 2026-10-30, na potvrdenie Michalom):** viac súperových NA EX v Pitke
+(Vínna pivnica) = viac **kôl odpovedí** — v každom kole najviac jedna odpoveď každého
+v poradí útočník, obranca na druhý kraj; kolo sa otočí, potom ďalšie (za kartou lícom dole
+sa priložiť nedá). Kto odpoveď vynechá, v tejto Pitke už neodpovedá. Bzdocha skrytú
+odpoveď nevidí (týka sa len NA EX). Cieľ: spárovať neaktívne akcie karty s NA EX — tie sa tým stanú
 aktívnymi a NA EX ich zruší. Počas odpovede sa nefajčí ani nedáva NA EX.
 Odpoveď je bežné vyloženie: smie zmeniť **prevahu v kraji** aj **počet
 Pitiek**. Po odpovediach sa Pitka vyhodnotí.
@@ -1529,7 +1555,7 @@ jej hrany, efekt, kraje aj prevaha (Kočovník, Dvojčatá ako inde).
 - **Útočí zaostávajúci** — hráč s **menej špakmi** (Michal 2026-10-27, mení
   rozhodnutie z 26. 10.). Pri rovnosti útočí ten, kto **prehral poslednú
   bitku**; keď posledná bitka skončila sekerou, útočník ostáva útočníkom.
-  Útočník vykladá prvý a v Pitke má posledné slovo.
+  Útočník vykladá prvý a na NA EX odpovedá prvý (lícom dole); obranca berie zo šenku prvý.
 - **Obranca — hráč, ktorý vedie** (viac špakov) — vyberie a natočí pinnacle
   lokalitu (z troch, §5). Potom šenok, branie a **pokus o zajatie** ako v každom kole (O7).
 - Pitiek je ako na každej lokalite **1 + menší počet aktivovaných akcií hrán**
@@ -1643,7 +1669,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Mäsiar | Furt (Michal 2026-10-28): **efekty Zvierat** v jeho okolí (oboch hráčov) neplatia, kým s ním susedia; ich **akcie sa rátajú normálne**. Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Bitka, aj jeho koniec bitky), Kohúta (Pitka) a Recidivistu (Prehra — rozhoduje okolie v chvíli, keď sa efekt spúšťa). Kapybara priložená k Mäsiarovi sa nespustí; Nástup, ktorý už prebehol, sa nevracia. Mäsiar lícom dole (Záverečná) ešte nič neumlčí. Do 2026-10-28 Mäsiar rušil akcie Zvierat. |
 | Krokodíl | Bitka: na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí (oboch hráčov); Starešinovia a Nástroje nie. Ich akcie v bitke ešte platia. |
 | Kapybara | Nástup: marker jedného staršieho (podľa voľby majiteľa) sa posunie o 1 pole k stredu. **Povinný** — keď je aspoň jeden marker mimo stredu, posunie sa, aj keď sú to len markery na polovici majiteľa. |
-| Kohút | Pitka: posledné slovo pri odpovediach na NA EX (§7) má jeho majiteľ aj ako obranca — súper odpovedá prvý. Keď ho majú obaja, platí bežné poradie. |
+| Kohút | **Dočasne vyradený (v9.2, Michal 2026-10-30)** — posledné slovo pri odpovediach na NA EX zaniklo (odpovede lícom dole, §7); karta sa prerobí a zo sady ju vyradí Admin. V jadre nemá účinok (TODO). Predtým: posledné slovo mal jeho majiteľ aj ako obranca. |
 | Pijan | Bitka: za každé NA EX, ktoré majiteľ v tomto kole dal (poldeci ešte leží na karte), udelí súperovi Ranu navyše — za každého Pijana. |
 | Milujúca manželka | Pitka: tvoje poškodenie pečene v Pitke je o 1 menšie (najprv z akcií Poškodenie pečene, potom z Poldeci); latku Absťáku (Chuť) nemení, nie je Kliatba. |
 | Opatrovateľka | Furt (v9.1): kým leží odhalená v línii, na konci kola sa Chuť jej majiteľa porovnáva, akoby bola **o 2 nižšia** (s nerestami kola, §8); Chuť ubúda normálne. Viac Opatrovateliek sa sčíta (−2 za každú). Ráta sa stav línie pri bitke (po bitke idú karty do balíčka). |
@@ -1751,7 +1777,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Zaplatený / držaný stupeň | stupeň, ktorý starší už zaplatil, a stupeň, na ktorom marker stál na konci minulého kola a neustúpil; ústup ich zmaže (§10) |
 | Strana | polovica línie od lokality — tvoja a súperova (§6) |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |
-| Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále menej špakov, §14b) — berie zo šenku prvý, vykladá prvý a v Pitke má posledné slovo (na NA EX odpovedá druhý); obranca je víťaz minulej bitky — volí a natáča cieľ, na NA EX odpovedá prvý; Pitku hrajú obaja naraz (§4, §7) |
+| Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále menej špakov, §14b) — vykladá prvý a na NA EX odpovedá prvý (lícom dole); obranca je víťaz minulej bitky — volí a natáča cieľ, berie zo šenku prvý (na prvom ťahu 1 kartu, v9.2), na NA EX odpovedá druhý na druhý kraj línie; Pitku hrajú obaja naraz (§4, §7) |
 | Výtržník | karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka): všetky jej akcie sú aktívne Rany pre majiteľa, len počas jednej bitky (§7) |
 | Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu (§13) |
 | Výkupné | po finále 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, bez stropu (§14) |
