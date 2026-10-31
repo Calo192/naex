@@ -23,9 +23,10 @@ function stol(strany: GameState["strany"], h: Partial<GameState> = {}): GameStat
 describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia", () => {
   it("umlčané sú Zvieratá oboch hráčov, ktoré susedia s odkrytým Mäsiarom", () => {
     const pes = inst("pes");
-    const kohut = inst("kohut");
-    const s = stol([[lezi(pes, 0), lezi(inst("masiar"), 1), lezi(kohut, 1)], [lezi(inst("kon"), 0)]]);
-    expect([...zvieratAUmlcane(data, lineState(s))].sort()).toEqual([pes.uid, kohut.uid].sort());
+    // Kohút je vyradený zo sady v51 — druhé Zviera je Čierna mačka.
+    const macka = inst("cierna_macka");
+    const s = stol([[lezi(pes, 0), lezi(inst("masiar"), 1), lezi(macka, 1)], [lezi(inst("kon"), 0)]]);
+    expect([...zvieratAUmlcane(data, lineState(s))].sort()).toEqual([pes.uid, macka.uid].sort());
     // Mäsiar lícom dole (Záverečná) ešte nič neumlčí.
     const z = stol([[lezi(pes, 0), lezi(inst("masiar"), 1, { zaverecna: true })], []]);
     expect(zvieratAUmlcane(data, lineState(z)).size).toBe(0);
@@ -47,16 +48,16 @@ describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplat
     expect(spojVznikne(nastroj, { ...kon, umlcany: true })).toBe(false);
   });
 
-  it("Čierna mačka vedľa Mäsiara neplatí — Viera jej Povery ruší (v8.3); Kohút a Krokodíl neplatia", () => {
+  it("Čierna mačka vedľa Mäsiara neplatí — Viera jej Povery ruší (v8.3); Čierna mačka a Krokodíl neplatia (Kohút je zo sady v51 vyradený)", () => {
     const mackaSama = stol([[lezi(inst("cierna_macka"), 0)], []]);
     const mackaPriMasiarovi = stol([[lezi(inst("cierna_macka"), 0), lezi(inst("masiar"), 1)], []]);
     const sums = [{ Povera: 2 }, { Viera: 2 }] as const;
     expect(poskodenieBitky(data, mackaSama, sums).zvysnaPovera[0]).toBe(2);
     expect(poskodenieBitky(data, mackaPriMasiarovi, sums).zvysnaPovera[0]).toBe(0);
-    const s = stol([[lezi(inst("kohut"), 0), lezi(inst("masiar"), 1), lezi(inst("krokodil"), 1)], []]);
-    expect(zvieraPlati(data, s, 0, "kohut")).toBe(false);
+    const s = stol([[lezi(inst("cierna_macka"), 0), lezi(inst("masiar"), 1), lezi(inst("krokodil"), 1)], []]);
+    expect(zvieraPlati(data, s, 0, "cierna_macka")).toBe(false);
     expect(zvieraPlati(data, s, 1, "krokodil")).toBe(false);
-    expect(zvieraPlati(data, stol([[lezi(inst("kohut"), 0)], []]), 0, "kohut")).toBe(true);
+    expect(zvieraPlati(data, stol([[lezi(inst("cierna_macka"), 0)], []]), 0, "cierna_macka")).toBe(true);
   });
 
   it("Kapybara priložená k Mäsiarovi sa nespustí", () => {
