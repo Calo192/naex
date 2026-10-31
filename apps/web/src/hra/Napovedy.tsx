@@ -152,12 +152,18 @@ export function NapovedaMelichara({
   udalosti,
   pocitadloBezi,
   sada,
+  jednaNaFazu = false,
 }: {
   readonly data: GameData;
   readonly view: ClientState;
   readonly udalosti: { readonly id: number; readonly events: readonly Event[] };
   readonly pocitadloBezi: boolean;
   readonly sada: Sada | null;
+  /**
+   * Telefón (Michal 2026-10-31): najviac jedna nápoveda za fázu — ďalšia príde až pri ďalšej
+   * zmene fázy, nie hneď po zatvorení (bublina leží cez ruku).
+   */
+  readonly jednaNaFazu?: boolean;
 }) {
   const { zapnute, videne, oznac, vypni } = useNapovedyUctu();
   const [cakajuca, setCakajuca] = useState<Napoveda | null>(null);
@@ -181,7 +187,9 @@ export function NapovedaMelichara({
   }, [data, view, zapnute, videne, cakajuca, ukazana]);
 
   const superNaTahu = view.naTahu !== null && view.naTahu !== view.ja;
-  const caka = pocitadloBezi || moment || superNaTahu;
+  const fazaKluc = `${view.kolo}|${view.faza}|${view.bitkaStav?.krok ?? ""}`;
+  const [fazaPoslednej, setFazaPoslednej] = useState<string | null>(null);
+  const caka = pocitadloBezi || moment || superNaTahu || (jednaNaFazu && fazaPoslednej === fazaKluc);
   useEffect(() => {
     if (cakajuca === null || ukazana !== null || caka) return;
     // Chvíľa pokoja: bublina nevyskočí uprostred rýchlych ťahov a pri vstupe do výučby
@@ -189,11 +197,12 @@ export function NapovedaMelichara({
     const t = setTimeout(() => {
       setCakajuca(null);
       setUkazana(cakajuca);
+      setFazaPoslednej(fazaKluc);
       // Videná je už ukázaná — „raz“ platí, aj keď ju hráč nezavrie (odíde, obnoví stránku).
       oznac(cakajuca.id);
     }, POKOJ_MS);
     return () => clearTimeout(t);
-  }, [cakajuca, ukazana, caka, oznac]);
+  }, [cakajuca, ukazana, caka, oznac, fazaKluc]);
 
   useEffect(() => {
     if (!zapnute && !ukazka.current) {

@@ -1663,56 +1663,6 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .poradie-koniec {
   display: none;
 }
 
-/* ---- rekapitulácia bitky na telefóne: stĺpce sa neprekrývajú, mená sa lámu po slovách ---- */
-html.stol-na-sirku .pocitadlo-scena.s-rekapom {
-  grid-template-columns: minmax(0, 290px) minmax(0, 1fr);
-  gap: 6px 10px;
-}
-
-html.stol-na-sirku .pocitadlo-scena.s-rekapom > :is(.pocitadlo-panel, .pocitadlo-rad, .rk-spaky-blok, .rekap) {
-  min-width: 0;
-  max-width: 100%;
-}
-
-html.stol-na-sirku .pocitadlo-scena.s-rekapom > .rk-spaky-blok {
-  overflow: hidden;
-  padding: 2px 6px 6px;
-  font-size: 12px;
-}
-
-html.stol-na-sirku .pocitadlo-scena .rk-spaky .spaky-bitky {
-  min-width: 0;
-  width: 100%;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-}
-
-html.stol-na-sirku .pocitadlo-scena :is(.rk-spaky, .rekap) :is(th, .rk-hlava > span, .spaky-bitky > :is(span, b, strong):nth-child(-n + 3)) {
-  overflow-wrap: normal;
-  word-break: normal;
-  hyphens: none;
-}
-
-html.stol-na-sirku .pocitadlo-scena .rekap {
-  padding-top: 44px;
-}
-
-/* Prepínač Súhrn · Podrobne · Text: ťukateľný (36 px) a nad hlavičkou stĺpcov. */
-html.stol-na-sirku .pocitadlo-scena .rk-rezim > button {
-  min-height: 36px;
-  padding: 2px 12px;
-  font-size: 12px;
-}
-
-/* Pečiatka momentu nad súhrnom (Výprask…) na telefóne menšia — nezakryje prepínač ani hlavičku. */
-html.stol-na-sirku .moment-vrstva:not(.peciatky-krokov) .moment-pecat {
-  scale: 0.7;
-}
-
-/* Odznaky presunu („→1“) pri krajných stĺpcoch rekapitulácie ležia mimo riadku — okraj pre ne. */
-html.stol-na-sirku .pocitadlo-scena .rekap {
-  padding-inline: 34px;
-}
-
 .partia-menu-okno kbd {
   display: none;
 }
@@ -1739,4 +1689,482 @@ html.stol-na-sirku .pocitadlo-scena .rekap {
     opacity: 0;
     visibility: hidden;
   }
+}
+
+/* ==== oprava 4 (Michal 2026-10-31: „súhrny bitky a Pitky sú chaos“) ==== */
+
+/* ---- súhrn bitky a Pitky na telefóne: pruh s výsledkom a Ďalej hore, kto čo dostal, jeden zoznam ---- */
+html.stol-na-sirku .pocitadlo-bitky.rk-telefon {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: max(4px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  overflow: hidden;
+}
+
+.rk-tel-pruh {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  min-height: 40px;
+  border: 2px solid var(--akcent);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--plocha);
+}
+
+.rk-tel-hlava {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.rk-tel-nadpis {
+  font: 800 11px/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+}
+
+.rk-tel-hlava .pocitadlo-cisla {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font: 800 22px/1 var(--nadpis);
+}
+
+.rk-tel-hlava .pocitadlo-cisla .ja {
+  color: var(--ja);
+}
+
+.rk-tel-hlava .pocitadlo-cisla .su {
+  color: var(--su);
+}
+
+.rk-tel-verdikt {
+  font-weight: 800;
+  color: var(--text);
+}
+
+.rk-tel-verdikt.ja {
+  color: var(--ja);
+}
+
+.rk-tel-verdikt.su {
+  color: var(--su);
+}
+
+/* Moment (Výprask, Zvrat…) je štítok v pruhu — pečiatka cez obsah na telefóne nie je. */
+.rk-moment {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font: 800 11px/1.3 var(--nadpis);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rk-moment.superov {
+  background: var(--plocha-3);
+  color: var(--cervena-svetla);
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+html.stol-na-sirku:has(.rk-telefon) .moment-vrstva:not(.peciatky-krokov) {
+  display: none;
+}
+
+.hra.mobil-sirka .rk-tel-akcia,
+html.stol-na-sirku .rk-tel-akcia {
+  flex: none;
+  min-width: 112px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-left: 1px solid color-mix(in srgb, var(--pozadie) 40%, transparent);
+  border-radius: 0;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font: 800 13px/1 var(--nadpis);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: none;
+}
+
+html.stol-na-sirku .rk-tel-akcia.caka {
+  background: var(--plocha-3);
+  color: var(--text);
+}
+
+.rk-vysledok {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rk-vys {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid var(--okraj);
+  border-radius: 10px;
+  background: var(--plocha);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.rk-vys.ja {
+  border-left: 3px solid var(--ja);
+}
+
+.rk-vys.su {
+  border-left: 3px solid var(--su);
+}
+
+.rk-vys.nakl {
+  border-left: 3px solid var(--akcent);
+}
+
+.rk-vys-kto {
+  font-weight: 700;
+  color: var(--tlmeny);
+}
+
+.rk-vys b {
+  font: 800 15px/1 var(--nadpis);
+}
+
+.rk-vys b.plus {
+  color: var(--zelena-svetla);
+}
+
+.rk-vys b.minus {
+  color: var(--cervena-svetla);
+}
+
+.rk-vys b.nic {
+  color: var(--tlmeny);
+}
+
+.rk-vys small {
+  font-size: 11px;
+  color: var(--tlmeny);
+}
+
+.rk-tel-telo {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+html.stol-na-sirku .rk-tel-telo > .rk-rezim {
+  position: static;
+  align-self: flex-start;
+  flex: none;
+}
+
+html.stol-na-sirku .rk-tel-telo > .rk-rezim > button {
+  min-height: 34px;
+  padding: 2px 14px;
+  font-size: 12px;
+}
+
+.rk-tel-zoznam {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--okraj);
+  border-radius: 12px;
+  background: var(--plocha);
+}
+
+html.stol-na-sirku .rk-tel-zoznam > :is(.rekap, .rk-spaky-blok) {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: 0 10px 8px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* Hlavička stĺpcov ostane hore, keď sa zoznam posúva. */
+html.stol-na-sirku .rk-tel-zoznam .rk-hlava > span {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: 6px;
+  background: var(--plocha);
+}
+
+html.stol-na-sirku .rk-tel-zoznam .rk-spaky .spaky-bitky {
+  min-width: 0;
+  width: 100%;
+}
+
+html.stol-na-sirku .rk-tel-zoznam .rk-legenda {
+  padding: 4px 10px 8px;
+  font-size: 11px;
+}
+
+/* ---- nič nepláva cez líniu: odhad a hlásenia sú v pruhu pokynu, bar ostáva len Melicharovi ---- */
+.hra.mobil-sirka:not(.stol-scroll) .jbar:not(.mel-hovori) {
+  display: none;
+}
+
+.pruh-odhad {
+  flex: none;
+  display: flex;
+}
+
+.hra.mobil-sirka .pruh-odhad > button {
+  min-width: 52px;
+  min-height: 38px;
+  margin: 0;
+  padding: 0 10px;
+  border: 0;
+  border-right: 1px solid var(--okraj);
+  border-radius: 0;
+  background: var(--plocha-3);
+  font: 800 14px/1 var(--nadpis);
+  color: var(--text);
+}
+
+.hra.mobil-sirka .pruh-odhad > button.vyhravam {
+  color: var(--zelena-svetla);
+}
+
+.hra.mobil-sirka .pruh-odhad > button.prehravam {
+  color: var(--cervena-svetla);
+}
+
+.hra.mobil-sirka .pruh-sprava {
+  color: var(--text);
+  background: color-mix(in srgb, var(--akcent) 14%, transparent);
+}
+
+.hra.mobil-sirka .pruh-sprava.chyba {
+  color: var(--cervena-svetla);
+  background: color-mix(in srgb, var(--cervena) 18%, transparent);
+}
+
+/* Druhá voľba binárneho rozhodnutia: tmavý segment vedľa žltej hlavnej akcie. */
+.pruh-druha {
+  flex: none;
+  display: flex;
+}
+
+.hra.mobil-sirka .pruh-druha > button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-left: 1px solid var(--okraj);
+  border-radius: 0;
+  background: var(--plocha-3);
+  color: var(--text);
+  font: 800 12px/1.1 var(--nadpis);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  rotate: none;
+  box-shadow: none;
+}
+
+.hra.mobil-sirka .pruh-druha > button::after {
+  display: none;
+}
+
+/* „Vybraná“ pri karte: malý štítok na jej spodku, nie pečiatka cez susednú kartu. */
+.hra.mobil-sirka:not(.stol-scroll) .vybrana-pod {
+  bottom: 3px;
+  padding: 0 6px;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  box-shadow: none;
+}
+
+html.stol-na-sirku .rk-tel-telo > .rk-rezim > button[aria-pressed="true"] {
+  color: var(--na-akcente);
+  background: var(--akcent);
+}
+
+/* ---- medziobrazovky na telefóne: nadpis a Rozumiem v hornom riadku, text pod nimi ---- */
+html.stol-na-sirku .medziobrazovka:not(.lokalita-supera, .okno-zdroja) .medziobrazovka-okno {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "nad tl"
+    "nadpis tl"
+    "text text"
+    "pozn pozn";
+  align-items: center;
+  column-gap: 18px;
+  row-gap: 6px;
+  width: min(700px, 96vw);
+  max-width: none;
+  text-align: left;
+}
+
+html.stol-na-sirku .medziobrazovka:not(.lokalita-supera, .okno-zdroja) .medziobrazovka-okno > * {
+  grid-column: 1 / -1;
+}
+
+html.stol-na-sirku .medziobrazovka:not(.lokalita-supera, .okno-zdroja) .medziobrazovka-nad {
+  grid-area: nad;
+}
+
+html.stol-na-sirku .medziobrazovka:not(.lokalita-supera, .okno-zdroja) h2 {
+  grid-area: nadpis;
+  font-size: 1.5rem;
+}
+
+html.stol-na-sirku .medziobrazovka:not(.lokalita-supera, .okno-zdroja) .medziobrazovka-okno > p {
+  grid-area: text;
+}
+
+html.stol-na-sirku .medziobrazovka:not(.lokalita-supera, .okno-zdroja) .medziobrazovka-okno > :is(.tlacidlo-hlavne, .medziobrazovka-caka) {
+  grid-area: tl;
+  align-self: center;
+  min-width: 140px;
+}
+
+html.stol-na-sirku .medziobrazovka:not(.lokalita-supera, .okno-zdroja) .medziobrazovka-pozn {
+  grid-area: pozn;
+}
+
+/* Okno zdroja: Rozumiem hore vpravo vedľa nadpisu, nie pod obsahom. */
+html.stol-na-sirku .okno-zdroja .medziobrazovka-okno {
+  grid-template-areas:
+    "nad tlacidlo"
+    "nadpis tlacidlo"
+    "text riadky"
+    "text akcia";
+}
+
+html.stol-na-sirku .okno-zdroja .medziobrazovka-nad,
+html.stol-na-sirku .okno-zdroja h2 {
+  justify-self: start;
+}
+
+html.stol-na-sirku .okno-zdroja .medziobrazovka-okno > .tlacidlo-hlavne {
+  justify-self: end;
+  align-self: center;
+}
+
+/* ---- súhrn posunov starších na telefóne: meno a Ďalej v hornom riadku, stupnica a dôsledky pod nimi ---- */
+html.stol-na-sirku .suhrn-bublina.mobil {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+}
+
+html.stol-na-sirku .suhrn-bublina.mobil > * {
+  grid-column: 1 / -1;
+}
+
+html.stol-na-sirku .suhrn-bublina.mobil > .sb-hlava {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+html.stol-na-sirku .suhrn-bublina.mobil > .sb-pata {
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 0;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+html.stol-na-sirku .suhrn-bublina.mobil > .sb-pata.s-dosledkami {
+  grid-column: 1 / -1;
+  grid-row: auto;
+}
+
+html.stol-na-sirku .suhrn-bublina.mobil .sb-portret {
+  width: 36px;
+  height: 36px;
+}
+
+html.stol-na-sirku .suhrn-bublina .sb-dalej {
+  min-height: 40px;
+  margin-right: 0;
+  padding: 4px 16px;
+}
+
+/* Šírku a polohu bubliny počíta SuhrnPosunov pre počítač (inline štýl) — na telefóne je to pás medzi okrajmi displeja. */
+html.stol-na-sirku .suhrn-bublina.mobil {
+  left: max(6px, env(safe-area-inset-left)) !important;
+  right: max(6px, env(safe-area-inset-right));
+  width: auto !important;
+}
+
+/* ---- koniec partie na telefóne: nadpis a tlačidlá v hornom pruhu (prilepené), obsah sa posúva pod nimi ---- */
+html.stol-na-sirku .koniec-okno {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  column-gap: 12px;
+  padding-top: 0;
+}
+
+html.stol-na-sirku .koniec-okno > * {
+  grid-column: 1 / -1;
+}
+
+html.stol-na-sirku .koniec-okno > h2 {
+  grid-column: 1;
+  grid-row: 1;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 6px 0;
+  background: var(--plocha-2);
+}
+
+html.stol-na-sirku .koniec-okno > .koniec-tlacidla {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: 0;
+  bottom: auto;
+  z-index: 2;
+  margin: 0 -18px 0 0;
+  padding: 6px 18px 6px 0;
+  border-top: 0;
+  background: var(--plocha-2);
+}
+
+html.stol-na-sirku .koniec-okno .koniec-verzia {
+  display: none;
+}
+
+/* Účet bitky a toast priazne by plávali cez líniu — na telefóne to povie súhrn bitky, stĺpce a Log. */
+.hra.mobil-sirka:not(.stol-scroll) :is(.toasty-stola .ucet-bitky, .toast-priazne) {
+  display: none;
 }

@@ -494,7 +494,7 @@ export function Hra() {
       <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={hovorPriMomente} pocitadloBezi={pocitadloBezi} />
     )}
     {/* Nápovedy Melichara (Michal 2026-10-24): v každej partii, nie vo výučbe — tam hovorí scenár. */}
-    {hra.vyucba === null && <NapovedaMelichara data={hra.data} view={hra.view} udalosti={hra.udalosti} pocitadloBezi={pocitadloBezi} sada={m.sada} />}
+    {hra.vyucba === null && <NapovedaMelichara data={hra.data} view={hra.view} udalosti={hra.udalosti} pocitadloBezi={pocitadloBezi} sada={m.sada} jednaNaFazu={naSirku} />}
     {/* Hláška pri pečiatke momentu: kým znie, Melichar je v bare (Michal 2026-10-25). Text hlášky sa
         neukazuje (Michal 2026-10-22), len že hovorí. */}
     {melicharHovori && (

@@ -10,10 +10,10 @@
 // s upratovaním naraz a skutočná línia zo stola zmizne skôr, než počítadlo dobehne.
 
 import { useEffect, useState, type ReactNode } from "react";
-import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, PlayerId, PocitadloBitky as Pocitadlo, RekapitulaciaBitky, StolBitky } from "@naex/core";
+import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, Moment, PlayerId, PocitadloBitky as Pocitadlo, RekapitulaciaBitky, StolBitky } from "@naex/core";
 import { stavPocitadla, vlnyKariet } from "@naex/core";
 import { IkonaPoldeci } from "./Panely.tsx";
-import { RekapBitky, riadkovRekapitulacieBitky, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
+import { RekapBitky, StitkyMomentov, VysledokBitky, riadkovRekapitulacieBitky, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 
 /** Zdroje bonusov a zrážok, ktoré nie sú kartou. */
 const ZDROJ: Readonly<Record<string, string>> = {
@@ -44,9 +44,16 @@ export interface PocitadloBitkyProps {
   readonly piktogramy?: PiktogramyRekapitulacie;
   /** Odpovede na NA EX v Pitkách kola — rekapitulácia ich povie slovami. */
   readonly odpovede?: readonly OdpovedNaNaex[];
+  /**
+   * Telefón na šírku (Michal 2026-10-31, oprava 4): jeden stĺpec ako pruh pokynu — hore výsledok
+   * a Ďalej, pod ním kto čo dostal a záložky; náhľady kariet línie vypadnú (línia je hneď na stole).
+   */
+  readonly naSirku?: boolean;
+  /** Momenty bitky (Výprask…) — na telefóne štítok v pruhu namiesto pečiatky cez obsah. */
+  readonly momenty?: readonly Moment[];
 }
 
-export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [] }: PocitadloBitkyProps) {
+export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [] }: PocitadloBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const posledna = p.vln - 1;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -94,6 +101,55 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
   const zoznam = viditelne.filter((k) => k.druh !== "karta");
   // Riadky rekapitulácie podľa toho, kedy svieti ich karta; čo nie je kartou, s bonusmi.
   const vlnaKarty = (uid: number | null): number => (uid === null ? p.vlnaBonusov : (vlnyKariet?.get(uid) ?? 0));
+  const verdikt = vitaz === null ? "Remíza v tuhom" : vitaz === ja ? `Vyhrávaš o ${p.tuhe[ja] - p.tuhe[su]}` : `Prehrávaš o ${p.tuhe[su] - p.tuhe[ja]}`;
+
+  if (naSirku) {
+    return (
+      <div
+        className={`pocitadlo-bitky rk-telefon${hotovo ? " hotova" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Bitka: ty ${cislo[ja]}, ${mena[su]} ${cislo[su]}`}
+        onClick={(e) => {
+          if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-rezim")) dobehni();
+        }}
+      >
+        <div className="rk-tel-pruh">
+          <span className="rk-tel-hlava">
+            <span className="rk-tel-nadpis">Bitka · tuhé</span>
+            <span className="pocitadlo-cisla" aria-live="polite">
+              <b className={`ja${(hotovo || vysledokHned) && vitaz === ja ? " vyhra" : ""}`}>{cislo[ja]}</b>
+              <span className="pocitadlo-dvojbodka">:</span>
+              <b className={`su${(hotovo || vysledokHned) && vitaz === su ? " vyhra" : ""}`}>{cislo[su]}</b>
+            </span>
+            {(hotovo || vysledokHned) && <span className={`rk-tel-verdikt${vitaz === null ? "" : vitaz === ja ? " ja" : " su"}`}>{verdikt}</span>}
+            {hotovo && <StitkyMomentov momenty={momenty} ja={ja} />}
+          </span>
+          <button type="button" className={`rk-dalej rk-tel-akcia${hotovo ? "" : " caka"}`} onClick={hotovo ? onKoniec : dobehni} autoFocus={hotovo}>
+            {hotovo ? "Ďalej" : "Hneď výsledok"}
+          </button>
+        </div>
+        {hotovo && rekap !== null && <VysledokBitky r={rekap} ja={ja} mena={mena} />}
+        {rekap !== null && piktogramy !== undefined && (
+          <RekapBitky
+            r={rekap}
+            ja={ja}
+            menoSupera={mena[su]}
+            menoKarty={menoKarty}
+            piktogramy={piktogramy}
+            vlna={vlna}
+            hotovo={hotovo}
+            vlnaKarty={vlnaKarty}
+            vlnaRusenia={p.vlnaBonusov}
+            vlnaUcinku={p.vlnaZrazok}
+            mena={mena}
+            odpovede={odpovede}
+            telefon
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -165,7 +221,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
           <div className="pocitadlo-koniec">
             {(hotovo || vysledokHned) && (
               <span className="pocitadlo-verdikt">
-                {vitaz === null ? "Remíza v tuhom" : vitaz === ja ? `Vyhrávaš o ${p.tuhe[ja] - p.tuhe[su]}` : `Prehrávaš o ${p.tuhe[su] - p.tuhe[ja]}`}
+                {verdikt}
               </span>
             )}
             {hotovo && (
@@ -197,6 +253,7 @@ export interface PocitadloSLiniouProps {
     readonly linia: LineEval;
     readonly rekap: RekapitulaciaBitky | null;
     readonly odpovede?: readonly OdpovedNaNaex[];
+    readonly momenty?: readonly Moment[];
   };
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
@@ -205,6 +262,7 @@ export interface PocitadloSLiniouProps {
   readonly piktogramy: PiktogramyRekapitulacie;
   readonly onKoniec: () => void;
   readonly vysledokHned?: boolean;
+  readonly naSirku?: boolean;
 }
 
 /**
@@ -217,7 +275,7 @@ function rozmeryVrstvy(vyska: number, sirka: number): { readonly pevne: number; 
 }
 
 /** Počítadlo s líniou z okamihu bitky: tvoja strana od lokality doľava, súperova doprava. */
-export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false }: PocitadloSLiniouProps) {
+export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false }: PocitadloSLiniouProps) {
   const { stol, linia, rekap } = vrstva;
   const su: PlayerId = ja === 0 ? 1 : 0;
   const lok = stol.ciel?.lokalita ?? null;
@@ -262,6 +320,8 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
       vlnyKariet={vlnyKariet(stol)}
       piktogramy={piktogramy}
       odpovede={vrstva.odpovede ?? []}
+      naSirku={naSirku}
+      momenty={vrstva.momenty ?? []}
     />
   );
 }

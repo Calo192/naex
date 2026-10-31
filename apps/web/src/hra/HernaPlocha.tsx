@@ -132,7 +132,7 @@ import {
   hraVPitke,
   cakaSBzdochou,
 } from "@naex/core";
-import type { ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
+import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
@@ -267,12 +267,15 @@ interface Pokyn {
   readonly vlavo?: ReactNode;
   readonly stred?: ReactNode;
   readonly vpravo?: ReactNode;
+  /** Telefón: druhá voľba binárneho rozhodnutia — tmavý segment vedľa hlavnej akcie, nie v ▾. */
+  readonly druha?: ReactNode;
 }
 /** Hrana stola pre ťah s návrhom: pečiatka v strede, vedľajšie voľby vľavo či vpravo. */
 interface HranaTahu {
   readonly stred: ReactNode;
   readonly vlavo?: ReactNode;
   readonly vpravo?: ReactNode;
+  readonly druha?: ReactNode;
 }
 /** Výkup zo šrotu: dve karty cez seba (odhadzovací balíček). */
 function IkonaSrotu() {
@@ -504,7 +507,7 @@ interface UcetPitky {
 
 /** Vrstva po vyhodnotení: rekapitulácia Pitky, alebo Počítadlo bitky s rekapituláciou. */
 type VrstvaVyhodnotenia =
-  | { readonly druh: "pitka"; readonly r: RekapitulaciaPitky; readonly nadpis: string; readonly odpovede: readonly OdpovedNaNaex[] }
+  | { readonly druh: "pitka"; readonly r: RekapitulaciaPitky; readonly nadpis: string; readonly odpovede: readonly OdpovedNaNaex[]; readonly momenty?: readonly Moment[] }
   | {
       readonly druh: "bitka";
       readonly p: Pocitadlo;
@@ -512,6 +515,8 @@ type VrstvaVyhodnotenia =
       readonly linia: LineEval;
       readonly rekap: RekapitulaciaBitky | null;
       readonly odpovede: readonly OdpovedNaNaex[];
+      /** Pečiatky momentov z tej istej dávky udalostí — telefón ich ukáže v pruhu súhrnu, nie cez obsah. */
+      readonly momenty?: readonly Moment[];
     };
 
 /** Účet bitky — výsledok, lokality, posuny markerov a body pred a po. */
@@ -1754,6 +1759,10 @@ export function HernaPlocha({
       }
     }
     if (nove.length === 0) return;
+    // Momenty (Výprask, Zvrat…) patria k poslednému vyhodnoteniu dávky.
+    const momentyDavky = events.flatMap((e) => (e.type === "moment" ? [e.moment] : []));
+    const posledna = nove.at(-1);
+    if (momentyDavky.length > 0 && posledna !== undefined) nove[nove.length - 1] = { ...posledna, momenty: momentyDavky };
     pocitadloAktivne.current = true;
     // Prehrávač pri posúvaní nehromadí vrstvy — ukáže len tú z práve zobrazeného kroku.
     if (prehravanie !== undefined) setFrontaVrstiev(nove);
@@ -3257,12 +3266,13 @@ export function HernaPlocha({
   const stolTlacidla = ((): HranaTahu | null => {
     if (!somNaTahu || view.koniec !== null) return null;
     if (view.faza === "volbaCiela" && lokalitaNavrh !== null) {
+      const otocit = (
+        <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
+          otočiť ↻
+        </button>
+      );
       return {
-        vlavo: (
-          <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
-            otočiť ↻
-          </button>
-        ),
+        ...(naSirku ? { druha: otocit } : { vlavo: otocit }),
         stred: pecatTahu({
           text: "potvrdiť",
           skratka: "k",
@@ -3563,7 +3573,11 @@ export function HernaPlocha({
               ))}
             </span>
           ),
-          ...(zoSenku ? {} : { vpravo: <button className="pecat pecat-tichy" onClick={() => posli({ type: "nastroj", uid: null })}>bez Nástroja</button> }),
+          ...(zoSenku
+            ? {}
+            : naSirku
+              ? { druha: <button onClick={() => posli({ type: "nastroj", uid: null })}>bez Nástroja</button> }
+              : { vpravo: <button className="pecat pecat-tichy" onClick={() => posli({ type: "nastroj", uid: null })}>bez Nástroja</button> }),
         };
       }
       return {
@@ -3608,7 +3622,7 @@ export function HernaPlocha({
           tip: k === null ? "Hra pokračuje." : "Kartu si necháš v ruke.",
           akcia: () => posli({ type: "hasic", nechat: k !== null }),
         }),
-        ...(k === null ? {} : { vpravo: <button onClick={() => posli({ type: "hasic", nechat: false })}>vrátiť</button> }),
+        ...(k === null ? {} : naSirku ? { druha: <button onClick={() => posli({ type: "hasic", nechat: false })}>vrátiť</button> } : { vpravo: <button onClick={() => posli({ type: "hasic", nechat: false })}>vrátiť</button> }),
       };
     }
 
@@ -3931,7 +3945,7 @@ export function HernaPlocha({
             ),
             // „zahodiť“ je druhá voľba, nie zrušenie — preto nie je ✕ na pečiatke.
             stred: pecatTahu({ text: "do ruky", tip: "Vrchnú kartu balíčka si vezmeš do ruky.", akcia: () => posli({ type: "vizia", vziat: true }) }),
-            vpravo: <button onClick={() => posli({ type: "vizia", vziat: false })}>zahodiť</button>,
+            ...(naSirku ? { druha: <button onClick={() => posli({ type: "vizia", vziat: false })}>zahodiť</button> } : { vpravo: <button onClick={() => posli({ type: "vizia", vziat: false })}>zahodiť</button> }),
           };
         }
         const hracJa = view.hraci[ja];
@@ -5644,6 +5658,22 @@ export function HernaPlocha({
       </div>
     </div>
   );
+  // Odhad bitky v pruhu pokynu (telefón): malý segment vľavo, ťuk = okno s celým odhadom — cez líniu nič.
+  const odhadVPruhu: ReactNode = (() => {
+    if (!naSirku || bitkaProps === null) return null;
+    const t = bitkaProps.damage.tuhe;
+    const rozdiel = t[ja] - t[super_];
+    return (
+      <button
+        type="button"
+        className={rozdiel > 0 ? "vyhravam" : rozdiel < 0 ? "prehravam" : "remiza"}
+        aria-label={`Odhad bitky ${t[ja]} : ${t[super_]} — ťuk ukáže podrobnosti`}
+        onClick={() => setDetailOdhadu(true)}
+      >
+        {t[ja]}:{t[super_]}
+      </button>
+    );
+  })();
   // Línia starších otvorená ťukom na Starších v stĺpci (nie krok): pruh povie, čo stôl ukazuje, a vráti späť.
   const pohladNaStarsich = naSirku && starsiViditelni && krokStarsich === null && pohladStarsich !== null;
   const pruhPokynu = !naSirku ? null : pohladNaStarsich ? (
@@ -5665,6 +5695,10 @@ export function HernaPlocha({
       nadpis={pokyn === null || pokyn.nadpis !== null ? (pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)) : null}
       text={pokyn?.text === undefined ? null : preDotykUzol(pokyn.text)}
       hlavna={hranaStred ?? hranaVpravo}
+      druha={stolTlacidla?.druha ?? pokyn?.druha}
+      odhad={odhadVPruhu}
+      sprava={spravaBaru === null ? null : { text: spravaBaru.text, chyba: spravaBaru.druh === "chyba" }}
+      onZrusSpravu={zrusChybu}
       vedlajsie={
         <>
           {hranaVlavo}
@@ -6409,6 +6443,8 @@ export function HernaPlocha({
           piktogramy={piktogramyRekapitulacie}
           onKoniec={koniecPocitadla}
           odpovede={vrstvaVyhodnotenia.odpovede}
+          naSirku={naSirku}
+          momenty={vrstvaVyhodnotenia.momenty}
         />
       )}
       {peciatkaKroku !== null && (
@@ -6458,6 +6494,7 @@ export function HernaPlocha({
           piktogramy={piktogramyRekapitulacie}
           onKoniec={koniecPocitadla}
           vysledokHned={vyucba === true}
+          naSirku={naSirku}
         />
       )}
 

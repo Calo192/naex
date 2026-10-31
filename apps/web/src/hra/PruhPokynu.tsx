@@ -6,6 +6,10 @@
 // Ťahy prichádzajú ako hotové tlačidlá z HernaPlocha (tie isté, čo na počítači ležia na hrane
 // stola). ✕ a ↺ sedia v rohu hlavnej pečiatky — v pruhu sa skryjú a v ▾ ich ukáže druhá kópia
 // pečiatky, v ktorej je zasa skryté všetko okrem nich (CSS mobil-sirka.css).
+//
+// Oprava 4 (Michal 2026-10-31): nič nepláva cez líniu — hlásenie o súperovom ťahu sa ukáže
+// na chvíľu v pruhu namiesto textu pokynu a odhad bitky je malý segment vľavo (ťuk = okno).
+// Pri binárnej voľbe (Vízia „zahodiť“, Hasič „vrátiť“) je druhá voľba tmavý segment vedľa hlavnej.
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 
@@ -20,14 +24,32 @@ export interface PruhPokynuProps {
   readonly kluc: string;
   readonly jednotny?: boolean;
   readonly odkaz?: Ref<HTMLDivElement>;
+  /** Druhá voľba binárneho rozhodnutia — tmavý segment hneď za hlavnou akciou. */
+  readonly druha?: ReactNode | undefined;
+  /** Odhad bitky ako malý segment vľavo (tlačidlo, ťuk = okno odhadu). */
+  readonly odhad?: ReactNode;
+  /** Hlásenie (súperov ťah, účet Pitky, chyba) — na chvíľu nahradí text pokynu. */
+  readonly sprava?: { readonly text: string; readonly chyba: boolean } | null;
+  readonly onZrusSpravu?: (() => void) | undefined;
 }
+
+/** Ako dlho ostane hlásenie v pruhu (chyba o niečo dlhšie). */
+const SPRAVA_MS = 4500;
+const CHYBA_MS = 7000;
 
 /** Má prvok viditeľné tlačidlo? (skryté kópie majú display: none — žiadny obdĺžnik) */
 function maTlacidlo(el: HTMLElement | null): boolean {
   return el !== null && [...el.querySelectorAll<HTMLElement>("button, select")].some((b) => b.getClientRects().length > 0);
 }
 
-export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = false, odkaz }: PruhPokynuProps) {
+export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = false, odkaz, druha, odhad, sprava = null, onZrusSpravu }: PruhPokynuProps) {
+  const [ukazanaSprava, setUkazanaSprava] = useState<{ readonly text: string; readonly chyba: boolean } | null>(null);
+  useEffect(() => {
+    if (sprava === null) return;
+    setUkazanaSprava(sprava);
+    const t = setTimeout(() => setUkazanaSprava(null), sprava.chyba ? CHYBA_MS : SPRAVA_MS);
+    return () => clearTimeout(t);
+  }, [sprava?.text, sprava?.chyba]);
   const [otvorene, setOtvorene] = useState(false);
   const [rozbaleny, setRozbaleny] = useState(false);
   const [maMenu, setMaMenu] = useState(false);
@@ -76,22 +98,41 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
       className={`pruh-pokynu${maHlavnu ? " s-akciou" : ""}${jednotny ? " jednotna" : ""}`}
     >
       <div ref={odkaz} className="linia-stav pruh-pokynu-riadok" role="status" aria-live="polite">
-        <button
-          type="button"
-          className="pruh-text"
-          aria-expanded={rozbaleny}
-          title="Ťuk ukáže celý pokyn"
-          onClick={() => {
-            setRozbaleny((r) => !r);
-            setOtvorene(false);
-          }}
-        >
-          {nadpis !== null && <strong className="pilulka-nadpis">{nadpis}</strong>}
-          {text !== null && <span className="pilulka-text">{text}</span>}
-        </button>
+        {odhad !== undefined && odhad !== null && <span className="pruh-odhad">{odhad}</span>}
+        {ukazanaSprava !== null ? (
+          <button
+            type="button"
+            className={`pruh-text pruh-sprava${ukazanaSprava.chyba ? " chyba" : ""}`}
+            title="Ťuk hlásenie zavrie — celé je v Logu"
+            onClick={() => {
+              setUkazanaSprava(null);
+              if (ukazanaSprava.chyba) onZrusSpravu?.();
+            }}
+          >
+            <span className="pilulka-text">
+              {ukazanaSprava.chyba ? "⚠ Ťah neprešiel: " : "↺ "}
+              {ukazanaSprava.text}
+            </span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="pruh-text"
+            aria-expanded={rozbaleny}
+            title="Ťuk ukáže celý pokyn"
+            onClick={() => {
+              setRozbaleny((r) => !r);
+              setOtvorene(false);
+            }}
+          >
+            {nadpis !== null && <strong className="pilulka-nadpis">{nadpis}</strong>}
+            {text !== null && <span className="pilulka-text">{text}</span>}
+          </button>
+        )}
         <span ref={hlavnaRef} className="pruh-hlavna">
           {hlavna}
         </span>
+        {druha !== undefined && druha !== null && <span className="pruh-druha">{druha}</span>}
         {maMenu && (
           <button
             type="button"

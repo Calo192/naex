@@ -6,7 +6,7 @@
 // tu sa len kreslia a odkrývajú po vlnách. Tabuľka nezmizne sama, zavrie ju až Ďalej.
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import type { Action, AkciaRekapitulacie, AkciaTuha, CielVykladania, NaexRekapitulacie, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
+import type { Action, AkciaRekapitulacie, AkciaTuha, CielVykladania, Moment, NaexRekapitulacie, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
 import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
 import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 
@@ -145,20 +145,44 @@ function useRezim(): readonly [RezimRekapitulacie, (r: RezimRekapitulacie) => vo
   return [rezim, nastav];
 }
 
-function PrepinacRezimu({ rezim, onRezim }: { readonly rezim: RezimRekapitulacie; readonly onRezim: (r: RezimRekapitulacie) => void }) {
+/** Záložka Špaky (telefón): špaky bitky nie sú bočný panel, ale vlastná záložka za Súhrnom. */
+interface ZalozkaSpakov {
+  readonly zapnuta: boolean;
+  readonly zapni: () => void;
+}
+
+function PrepinacRezimu({ rezim, onRezim, spaky }: { readonly rezim: RezimRekapitulacie; readonly onRezim: (r: RezimRekapitulacie) => void; readonly spaky?: ZalozkaSpakov }) {
+  const tlacidlo = (x: (typeof REZIMY)[number]): ReactNode => (
+    <button key={x.id} type="button" aria-pressed={spaky?.zapnuta !== true && rezim === x.id} onClick={() => onRezim(x.id)} title={x.title}>
+      {x.nazov}
+    </button>
+  );
   return (
     <span className="rk-rezim" role="group" aria-label="Režim rekapitulácie">
-      {REZIMY.map((x) => (
-        <button key={x.id} type="button" aria-pressed={rezim === x.id} onClick={() => onRezim(x.id)} title={x.title}>
-          {x.nazov}
+      {REZIMY.slice(0, 1).map(tlacidlo)}
+      {spaky !== undefined && (
+        <button type="button" aria-pressed={spaky.zapnuta} onClick={spaky.zapni} title="Špaky z bitky: za bitku, za starších, Exekútor">
+          špaky
         </button>
-      ))}
+      )}
+      {REZIMY.slice(1).map(tlacidlo)}
     </span>
   );
 }
 
 /** Hlavička tabuľky: ty · akcia · súper; prepínač režimu v pravom rohu tabuľky. */
-function HlavickaRekapitulacie({ menoSupera, rezim, onRezim }: { readonly menoSupera: string; readonly rezim: RezimRekapitulacie; readonly onRezim: (r: RezimRekapitulacie) => void }) {
+function HlavickaRekapitulacie({
+  menoSupera,
+  rezim,
+  onRezim,
+  bezPrepinaca = false,
+}: {
+  readonly menoSupera: string;
+  readonly rezim: RezimRekapitulacie;
+  readonly onRezim: (r: RezimRekapitulacie) => void;
+  /** Telefón: prepínač je nad zoznamom ako záložky, nie v rohu tabuľky. */
+  readonly bezPrepinaca?: boolean;
+}) {
   return (
     <div className="rk-hlava" role="row">
       {/* Text nemá stĺpce — kto čo urobil, hovorí každý riadok. */}
@@ -171,7 +195,7 @@ function HlavickaRekapitulacie({ menoSupera, rezim, onRezim }: { readonly menoSu
       <span className="r" role="columnheader">
         {rezim === "text" ? "" : menoSupera}
       </span>
-      <PrepinacRezimu rezim={rezim} onRezim={onRezim} />
+      {!bezPrepinaca && <PrepinacRezimu rezim={rezim} onRezim={onRezim} />}
     </div>
   );
 }
@@ -520,6 +544,8 @@ export interface RekapBitkyProps {
   readonly mena?: readonly [string, string];
   /** Odpovede na NA EX v Pitkách kola — blok „z Pitiek kola“ ich povie slovami. */
   readonly odpovede?: readonly OdpovedNaNaex[];
+  /** Telefón na šírku: záložky Súhrn · Špaky · Podrobne · Text nad jedným zoznamom, ktorý sa posúva. */
+  readonly telefon?: boolean;
 }
 
 /**
@@ -593,10 +619,11 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = fal
   return bezSpakov ? n : n + riadkovSpakovBitky(r);
 }
 
-export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [] }: RekapBitkyProps) {
+export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false }: RekapBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim();
+  const [zalozkaSpakov, setZalozkaSpakov] = useState(false);
   const vid = (uid: number | null, w = vlna): boolean => hotovo || vlnaKarty(uid) <= w;
   const sucet = (xs: readonly PolozkaRekapitulacie[], kto: PlayerId, w = vlna): number => xs.filter((x) => x.kto === kto && vid(x.uid, w)).reduce((a, x) => a + x.n, 0);
   const konecne = (xs: readonly PolozkaRekapitulacie[], kto: PlayerId): number => xs.filter((x) => x.kto === kto).reduce((a, x) => a + x.n, 0);
@@ -641,11 +668,9 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
   // Textový režim nahradí riadky tabuľky vetami až po dobehnutí počítadla; súčet a špaky ostanú.
   const tabulka = rezim !== "text";
 
-  return (
-    <>
-      {/* Miesto pre všetky riadky od začiatku — línia nad tabuľkou neposkakuje, keď riadky nabiehajú. */}
+  const tabulkaEl = (
       <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia bitky" style={{ "--rk-riadkov": riadkovRekapitulacieBitky(r, true) } as CSSProperties}>
-        <HlavickaRekapitulacie menoSupera={menoSupera} rezim={rezim} onRezim={setRezim} />
+        <HlavickaRekapitulacie menoSupera={menoSupera} rezim={rezim} onRezim={setRezim} bezPrepinaca={telefon} />
         {rezim === "text" && !hotovo && (
           <div className="rk-text-caka" role="row">
             počíta sa…
@@ -702,7 +727,8 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
           </>
         )}
       </div>
-      {/* Súčet a špaky samostatne: na nízkom širokom okne idú vedľa tabuľky pod skóre (hra.css), inak pod ňu. */}
+  );
+  const spakyEl = (
       <div className="rk-spaky-blok" style={{ "--rk-riadkov": riadkovSpakovBitky(r) } as CSSProperties}>
         {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} />}
         {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
@@ -711,8 +737,90 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
             <SpakyBitky b={r.spaky} ja={ja} mena={ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]} menoKarty={menoKarty} />
           </div>
         )}
+        {telefon && !hotovo && <div className="rk-text-caka">počíta sa…</div>}
       </div>
+  );
+  if (telefon) {
+    return (
+      <div className="rk-tel-telo">
+        <PrepinacRezimu
+          rezim={rezim}
+          onRezim={(x) => {
+            setZalozkaSpakov(false);
+            setRezim(x);
+          }}
+          spaky={{ zapnuta: zalozkaSpakov, zapni: () => setZalozkaSpakov(true) }}
+        />
+        <div className="rk-tel-zoznam">{zalozkaSpakov ? spakyEl : tabulkaEl}</div>
+      </div>
+    );
+  }
+  return (
+    <>
+      {/* Miesto pre všetky riadky od začiatku — línia nad tabuľkou neposkakuje, keď riadky nabiehajú. */}
+      {tabulkaEl}
+      {/* Súčet a špaky samostatne: na nízkom širokom okne idú vedľa tabuľky pod skóre (hra.css), inak pod ňu. */}
+      {spakyEl}
     </>
+  );
+}
+
+/** Momenty bitky či Pitky ako štítky v pruhu súhrnu (telefón) — pečiatka by ležala cez obsah. */
+export function StitkyMomentov({ momenty, ja }: { readonly momenty: readonly Moment[]; readonly ja: PlayerId }) {
+  if (momenty.length === 0) return null;
+  return (
+    <>
+      {momenty.map((m, i) => (
+        <span key={i} className={`rk-moment moment-${m.stupen}${m.hrac === null ? "" : m.hrac === ja ? " moj" : " superov"}`} title={m.popis}>
+          {m.nazov}
+        </span>
+      ))}
+    </>
+  );
+}
+
+/**
+ * Kto čo z bitky má (telefón, Michal 2026-10-31): špaky každého so zložením a komu ide Nakladačka
+ * (z nej priazeň starších) — na prvý pohľad, bez čítania tabuliek.
+ */
+export function VysledokBitky({ r, ja, mena }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly mena: readonly [string, string] }) {
+  const su: PlayerId = ja === 0 ? 1 : 0;
+  const b = r.spaky;
+  const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
+  const hrac = (p: PlayerId): ReactNode => {
+    if (b === undefined) return null;
+    const casti: [string, number][] = [
+      ["bitka", b.zaBitku[p]],
+      ["strach", b.zaStarsich[p]],
+      ["Nakladačka", b.prebytok[p]],
+      ["Exekútor", -b.exekutor[p]],
+    ];
+    const spolu = casti.reduce((a, [, n]) => a + n, 0);
+    const nenulove = casti.filter(([, n]) => n !== 0);
+    return (
+      <span className={`rk-vys ${p === ja ? "ja" : "su"}`}>
+        <span className="rk-vys-kto">{p === ja ? "ty" : mena[su]}</span>
+        <b className={spolu > 0 ? "plus" : spolu < 0 ? "minus" : "nic"}>{zn(spolu)} š</b>
+        {nenulove.length > 0 && <small>{nenulove.map(([k, n]) => `${k} ${zn(n)}`).join(" · ")}</small>}
+      </span>
+    );
+  };
+  return (
+    <div className="rk-vysledok">
+      {hrac(ja)}
+      {hrac(su)}
+      <span className="rk-vys nakl">
+        {r.prebytokDrzi === null ? (
+          "Nakladačka: nikto"
+        ) : (
+          <>
+            Nakladačka <b>{r.prebytok}</b> → {r.prebytokDrzi === ja ? "ty" : mena[su]}
+            {/* Nakladačku rozdeľuje porazený (v8): kto dostane priazeň a koho sa začnú báť, rozhodne on. */}
+            <small>{(b?.prebytok[r.prebytokDrzi] ?? 0) > 0 ? "= špaky (finále)" : `rozdeľuje ${r.prebytokDrzi === ja ? mena[su] : "ty"} · priazeň a strach starších`}</small>
+          </>
+        )}
+      </span>
+    </div>
   );
 }
 
@@ -909,6 +1017,10 @@ export interface RekapitulaciaPitkyProps {
   readonly onKoniec: () => void;
   /** Odpovede na NA EX v tejto Pitke. */
   readonly odpovede?: readonly OdpovedNaNaex[];
+  /** Telefón na šírku: pruh s nadpisom a Ďalej hore, pod ním kto čo dostal a jeden zoznam. */
+  readonly naSirku?: boolean;
+  /** Momenty Pitky — na telefóne štítok v pruhu namiesto pečiatky cez obsah. */
+  readonly momenty?: readonly Moment[] | undefined;
 }
 
 /** Stred riadku Pitky: len ikona; názov a vysvetlenie v tooltipe (Michal 2026-10-30: popisy spod ikon preč). */
@@ -920,7 +1032,7 @@ function StredPitky({ ikona, title }: { readonly ikona: ReactNode; readonly titl
   );
 }
 
-export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [] }: RekapitulaciaPitkyProps) {
+export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [], naSirku = false, momenty = [] }: RekapitulaciaPitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim();
@@ -1059,24 +1171,9 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
   const prah = (x: readonly [number, number]): string => (x[ja] === x[su] ? `${x[ja]}` : `${x[ja]} : ${x[su]}`);
   const prahDlhu: readonly [number, number] = [prahDlhuPitky(r, 0), prahDlhuPitky(r, 1)];
 
-  return (
-    <div
-      className={`pocitadlo-bitky rekap-pitky${hotovo ? " hotova" : ""}`}
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${nadpis}: rekapitulácia`}
-      onClick={(e) => {
-        if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-rezim")) dobehni();
-      }}
-    >
-      <div className="pocitadlo-scena">
-        <div className="pocitadlo-panel hotovo">
-          <span className="pocitadlo-nadpis">{nadpis}</span>
-          <span className="pocitadlo-vyhodnotena">vyhodnotená</span>
-          <span className="pocitadlo-mena">ty · {mena[su]}</span>
-        </div>
+  const tabulkaEl = (
         <div className={`rekap rz-${rezim}${rezim === "podrobne" ? " podrobne" : ""}`} role="table" aria-label="Rekapitulácia Pitky">
-          <HlavickaRekapitulacie menoSupera={mena[su]} rezim={rezim} onRezim={setRezim} />
+          <HlavickaRekapitulacie menoSupera={mena[su]} rezim={rezim} onRezim={setRezim} bezPrepinaca={naSirku} />
           {!tabulka && <TextRekapitulacie riadky={riadkyTextuPitky(r, odpovede, ja).filter((x) => vid(x.krok))} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} />}
           {tabulka && naex && vid(0) && (
             <>
@@ -1124,6 +1221,8 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
           )}
           {tabulka && vid(4) && zaverecne.length > 0 && <ZaverecneRiadky zaverecne={zaverecne} ja={ja} mena={mena} menoKarty={menoKarty} piktogramy={piktogramy} bezTextu={rezim === "podrobne"} />}
         </div>
+  );
+  const legendaEl = (
         <div className={`rk-legenda${rezim === "text" ? " skryta" : ""}`} aria-hidden="true">
           <span>
             <span className="rk-bk z-pitia" /> pitie a NA EX
@@ -1154,6 +1253,86 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
             pečeň: zvyšok prepadne
           </span>
         </div>
+  );
+  // Hráč s čítačkou počuje aj to, kto čo dostal — nielen pruhy.
+  const citackaEl = (
+      <span className="rk-citacka" aria-live="polite">
+        {hotovo
+          ? `Ty: ${r.zadlzenie.dlhy[ja]} Dlh, ${r.pecen.cirhozy[ja]} Cirhóza, ${r.cigarety.zisk[ja]} cigariet. ${mena[su]}: ${r.zadlzenie.dlhy[su]} Dlh, ${r.pecen.cirhozy[su]} Cirhóza, ${r.cigarety.zisk[su]} cigariet.`
+          : ""}
+      </span>
+  );
+  /** Kto čo z Pitky dostal (telefón): karty Dlh a Cirhóza, cigarety — bez čítania riadkov. */
+  const zisk = (p: PlayerId): ReactNode => {
+    const casti = [
+      r.zadlzenie.dlhy[p] > 0 ? `+${r.zadlzenie.dlhy[p]} Dlh` : "",
+      r.pecen.cirhozy[p] > 0 ? `+${r.pecen.cirhozy[p]} Cirhóza` : "",
+      r.cigarety.zisk[p] > 0 ? `+${r.cigarety.zisk[p]} cig.` : "",
+    ].filter((x) => x !== "");
+    return (
+      <span className={`rk-vys ${p === ja ? "ja" : "su"}`}>
+        <span className="rk-vys-kto">{p === ja ? "ty" : mena[su]}</span>
+        <b className={casti.length === 0 ? "nic" : undefined}>{casti.length === 0 ? "nič" : casti.join(" · ")}</b>
+      </span>
+    );
+  };
+  if (naSirku) {
+    return (
+      <div
+        className={`pocitadlo-bitky rekap-pitky rk-telefon${hotovo ? " hotova" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${nadpis}: rekapitulácia`}
+        onClick={(e) => {
+          if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-rezim")) dobehni();
+        }}
+      >
+        <div className="rk-tel-pruh">
+          <span className="rk-tel-hlava">
+            <span className="rk-tel-nadpis">{nadpis}</span>
+            <span className="rk-tel-verdikt">vyhodnotená</span>
+            {hotovo && <StitkyMomentov momenty={momenty} ja={ja} />}
+          </span>
+          <button type="button" className={`rk-dalej rk-tel-akcia${hotovo ? "" : " caka"}`} onClick={hotovo ? onKoniec : dobehni} autoFocus={hotovo}>
+            {hotovo ? "Ďalej" : "Hneď výsledok"}
+          </button>
+        </div>
+        {hotovo && (
+          <div className="rk-vysledok">
+            {zisk(ja)}
+            {zisk(su)}
+          </div>
+        )}
+        <div className="rk-tel-telo">
+          <PrepinacRezimu rezim={rezim} onRezim={setRezim} />
+          <div className="rk-tel-zoznam">
+            {tabulkaEl}
+            {legendaEl}
+          </div>
+        </div>
+        {citackaEl}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`pocitadlo-bitky rekap-pitky${hotovo ? " hotova" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${nadpis}: rekapitulácia`}
+      onClick={(e) => {
+        if (!(e.target as HTMLElement).closest(".rk-dalej, .rk-rezim")) dobehni();
+      }}
+    >
+      <div className="pocitadlo-scena">
+        <div className="pocitadlo-panel hotovo">
+          <span className="pocitadlo-nadpis">{nadpis}</span>
+          <span className="pocitadlo-vyhodnotena">vyhodnotená</span>
+          <span className="pocitadlo-mena">ty · {mena[su]}</span>
+        </div>
+        {tabulkaEl}
+        {legendaEl}
         <div className="pocitadlo-pata">
           <div className="pocitadlo-koniec">
             {hotovo && (
@@ -1166,11 +1345,7 @@ export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, pikto
         </div>
       </div>
       {/* Hráč s čítačkou počuje aj to, kto čo dostal — nielen pruhy. */}
-      <span className="rk-citacka" aria-live="polite">
-        {hotovo
-          ? `Ty: ${r.zadlzenie.dlhy[ja]} Dlh, ${r.pecen.cirhozy[ja]} Cirhóza, ${r.cigarety.zisk[ja]} cigariet. ${mena[su]}: ${r.zadlzenie.dlhy[su]} Dlh, ${r.pecen.cirhozy[su]} Cirhóza, ${r.cigarety.zisk[su]} cigariet.`
-          : ""}
-      </span>
+      {citackaEl}
     </div>
   );
 }
