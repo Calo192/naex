@@ -50,7 +50,7 @@ html.stol-na-sirku .obsah:has(> .hra) {
 }
 
 /* Text mimo kariet najmenej 11 px (zadanie Leadera). */
-.hra.mobil-sirka:not(.stol-scroll) :is(.pult-hraca, .tabula, .stol-hrana, .linia-stav, .partia-hlavicka) {
+.hra.mobil-sirka:not(.stol-scroll) :is(.pult-hraca, .porovnanie, .stol-hrana, .linia-stav, .partia-hlavicka) {
   font-size: max(11px, 0.75rem);
 }
 
@@ -109,6 +109,11 @@ html.stol-na-sirku .obsah:has(> .hra) {
   pointer-events: auto;
 }
 
+/* Bez odhadu bitky by odznak len opakoval cieľ kola, ktorý leží na stole. */
+.hra.mobil-sirka:not(.stol-scroll) .jbar-odhad:has(> .jbar-nadpis) {
+  display: none;
+}
+
 .hra.mobil-sirka:not(.stol-scroll) .jbar-sprava-miesto {
   min-height: 0;
   pointer-events: auto;
@@ -151,10 +156,12 @@ html.stol-na-sirku .obsah:has(> .hra) {
   flex-direction: column;
 }
 
+/* Horný okraj plste: štítky NA EX nad kartami nesmú zaliezť pod pokyn. */
 .hra.mobil-sirka:not(.stol-scroll) .linia-obal > .stol-plst {
   flex: 1 1 0;
   min-height: 0;
   margin: 0;
+  padding-top: 18px;
 }
 
 /* ---- horný pult: menu Partia a Log, súper, jeho Starší ---- */
@@ -585,14 +592,14 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
 }
 
 /* ---- tabuľa porovnania ty | súper (dizajn B) ---- */
-.tabula-zaves {
+.porovnanie-zaves {
   position: fixed;
   inset: 0;
   z-index: 60;
   background: color-mix(in srgb, var(--pozadie) 55%, transparent);
 }
 
-.tabula {
+.porovnanie {
   position: fixed;
   top: calc(var(--okraj-h) + 4px);
   bottom: calc(var(--okraj-d) + 4px);
@@ -607,7 +614,7 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
 
-.tabula-hlava {
+.porovnanie-hlava {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -617,14 +624,14 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
   color: var(--akcent-svetly);
 }
 
-.tabula-zavri {
+.porovnanie-zavri {
   width: 44px;
   height: 44px;
   padding: 0;
   font-size: 1.1rem;
 }
 
-.tabula-telo {
+.porovnanie-telo {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -635,11 +642,11 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
   padding: 6px 12px;
 }
 
-.tabula-riadok {
+.porovnanie-riadok {
   display: contents;
 }
 
-.tabula-l {
+.porovnanie-l {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -649,13 +656,13 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
   font-size: 12px;
 }
 
-.tabula-l .pult-pikto {
+.porovnanie-l .pult-pikto {
   width: 16px;
   height: 16px;
   fill: currentColor;
 }
 
-.tabula-v {
+.porovnanie-v {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -664,26 +671,26 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
   font: 800 0.95rem/1 var(--pismo);
 }
 
-.tabula-v.ja {
+.porovnanie-v.ja {
   color: var(--ja);
 }
 
-.tabula-v.su {
+.porovnanie-v.su {
   color: var(--su);
 }
 
-.tabula-v.zle {
+.porovnanie-v.zle {
   color: var(--cervena-svetla);
 }
 
-.tabula-akcie {
+.porovnanie-akcie {
   display: flex;
   gap: 6px;
   padding: 6px 10px 8px;
   border-top: 1px solid var(--okraj);
 }
 
-.tabula-akcie button {
+.porovnanie-akcie button {
   flex: 1 1 0;
   min-height: 44px;
   padding: 0 6px;
@@ -713,8 +720,8 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
 }
 
 .otoc-telefon-ikona {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   fill: none;
   stroke-width: 4;
   stroke-linecap: round;
@@ -722,35 +729,35 @@ body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahat
 }
 
 .otoc-telefon-ikona .telefon {
-  stroke: var(--okraj-svetly);
-  animation: otoc-telefon 2.4s ease-in-out infinite;
-  transform-origin: 60px 50px;
+  stroke: var(--akcent-svetly);
+  transform-box: view-box;
+  transform-origin: 60px 62px;
+  animation: otoc-telefon 2.6s ease-in-out infinite;
 }
 
-.otoc-telefon-ikona .telefon-sirka {
-  stroke: var(--akcent);
-  opacity: 0;
-  animation: otoc-telefon-sirka 2.4s ease-in-out infinite;
-}
-
-.otoc-telefon-ikona :is(.sipka, .sipka-hrot) {
+.otoc-telefon-ikona .sipka {
   stroke: var(--akcent);
 }
 
+/* Telefón sa otočí na šírku, chvíľu ostane a vráti sa — ukáže pohyb, nie len výsledok. */
 @keyframes otoc-telefon {
-  0%, 30% { transform: rotate(0deg); opacity: 1; }
-  60%, 100% { transform: rotate(90deg); opacity: 0; }
-}
-
-@keyframes otoc-telefon-sirka {
-  0%, 55% { opacity: 0; }
-  70%, 100% { opacity: 1; }
+  0%,
+  20% {
+    transform: rotate(0deg);
+  }
+  50%,
+  80% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .otoc-telefon-ikona .telefon,
-  .otoc-telefon-ikona .telefon-sirka {
+  .otoc-telefon-ikona .telefon {
     animation: none;
+    transform: rotate(90deg);
   }
 }
 
@@ -797,6 +804,25 @@ html.stol-na-sirku .pocitadlo-scena.s-rekapom > .rk-spaky-blok {
   width: 100%;
 }
 
+/* Pri rekapitulácii bitky ide zoznam priazní do ľavého stĺpca a verdikt s Ďalej do pätičky. */
+html.stol-na-sirku .pocitadlo-scena.s-rekapom {
+  grid-template-areas:
+    "panel rekap"
+    "rad rekap"
+    "spaky rekap"
+    "zoznam rekap";
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom > .pocitadlo-pata {
+  display: contents;
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom .pocitadlo-zoznam {
+  grid-area: zoznam;
+  justify-content: center;
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom .pocitadlo-koniec,
 html.stol-na-sirku .pocitadlo-scena > .pocitadlo-pata {
   grid-area: pata;
   position: fixed;
@@ -854,4 +880,52 @@ html.stol-na-sirku .koniec-tlacidla :is(button, .tlacidlo) {
 html.stol-na-sirku .medziobrazovka {
   max-height: calc(100dvh - 8px);
   overflow-y: auto;
+}
+
+/* ---- Majster Melichar (nápovedy, hlášky) na šírku: pás nad dokom cez šírku plste ---- */
+.hra.mobil-sirka:not(.stol-scroll) .jbar.mel-hovori {
+  width: calc(100vw - var(--okraj-l) - var(--okraj-r) - 12px);
+  pointer-events: auto;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar > .jbar-mel-miesto {
+  display: flex;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar > .jbar-mel-miesto:empty {
+  display: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar .mel {
+  --mel-avatar: 40px;
+  gap: 10px;
+  padding: 4px 10px;
+  border-top: 1px solid var(--akcent);
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar .mel-vpravo button {
+  min-height: 44px;
+}
+
+/* ---- vrstvy (Log, Karty, Šenok, Veštica) cez celú výšku telefónu ---- */
+.hra.mobil-sirka:not(.stol-scroll) .vrstva {
+  padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .vrstva-panel {
+  max-height: 100%;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .vrstva-zavriet {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Menu Partia ▾ leží nad pokynom a plsťou. */
+.pult-hore {
+  position: relative;
+  z-index: 35;
 }
