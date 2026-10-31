@@ -7,7 +7,7 @@ import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { sNavratom } from "../lib/navrat.ts";
-import { maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -22,7 +22,8 @@ import { OznamZiskov } from "../achievementy/VPartii.tsx";
 import { tvar } from "../stranky/Statistiky.tsx";
 import { bezPrvejCasti, rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
-import { useNepodporovaneZariadenie } from "./zariadenie.ts";
+import { useNepodporovaneZariadenie, useStolNaSirku, type DovodNepodporovania } from "./zariadenie.ts";
+import { OtocTelefon } from "./OtocTelefon.tsx";
 import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
 import "./hra.css";
 
@@ -247,12 +248,14 @@ function Lobby({
 }
 
 /** Mobil a úzke okno: hra sa tu zatiaľ hrať nedá (Michal 2026-10-22), zvyšok webu áno. */
-function NepodporovaneZariadenie({ dovod }: { readonly dovod: "dotyk" | "uzke" }) {
+function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovania }) {
   return (
     <>
-    <HlavaStranky nadpis="Tu sa NA EX! zatiaľ hrať nedá" />
+    <HlavaStranky nadpis={dovod === "otoc" ? "Otoč telefón na šírku" : "Tu sa NA EX! zatiaľ hrať nedá"} />
     <div className="formular-stred panel">
-      {dovod === "dotyk" ? (
+      {dovod === "otoc" ? (
+        <p>Stôl pre telefón je zatiaľ len pre správcov a len na šírku. Otoč telefón — rozohraná partia ťa počká.</p>
+      ) : dovod === "dotyk" ? (
         <p>
           Herný stôl potrebuje širokú obrazovku a myš. Otvor NA EX! na počítači alebo na tablete na šírku — rozohraná partia ťa tam
           počká.
@@ -283,7 +286,10 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: "dotyk" | "uzke" }
 export function Hra() {
   useTitulok("Hrať");
   const { ja, nacitane, nastav: nastavUcet } = useUcet();
-  const nepodporovane = useNepodporovaneZariadenie();
+  // Telefón na šírku smie zatiaľ len správca (Michal 2026-10-31) — ostatným ostáva oznam.
+  const spravca = ja !== null && jeSpravca(ja.rola);
+  const nepodporovane = useNepodporovaneZariadenie(spravca);
+  const { naSirku, otoc } = useStolNaSirku(spravca);
   // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
   const hra = useHra(ja !== null && nepodporovane === null);
 
@@ -377,8 +383,9 @@ export function Hra() {
     }
   }, [pripojene, miestnost, pripoj]);
 
-  if (nepodporovane !== null) return <NepodporovaneZariadenie dovod={nepodporovane} />;
+  // Rola správcu je známa až po načítaní účtu — dovtedy by telefón na šírku bliklo oznamom.
   if (!nacitane) return <Nacitavanie />;
+  if (nepodporovane !== null) return <NepodporovaneZariadenie dovod={nepodporovane} />;
   if (ja === null) {
     // Pozvánka /hra?kod=ABCD: po prihlásení aj registrácii späť s kódom — efekt vyššie hráča pripojí.
     // Bez pozvánky začína nový účet profilom ako doteraz.
@@ -467,6 +474,7 @@ export function Hra() {
 
   return (
     <>
+    {otoc && <OtocTelefon />}
     <HudbaPartie />
     {/* Vo výučbe len na jej konci — achievement Prvá hra (Michal 2026-10-25). */}
     {(hra.vyucba === null || hra.vyucba.hotovo) && <OznamZiskov zisky={hra.achievementy.zisky} />}
@@ -497,6 +505,7 @@ export function Hra() {
       </MelicharVBare>
     )}
     <HernaPlocha
+      naSirku={naSirku}
       onPocitadlo={setPocitadloBezi}
       view={hra.view}
       data={hra.data}

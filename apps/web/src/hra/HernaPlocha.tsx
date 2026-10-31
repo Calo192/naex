@@ -195,8 +195,11 @@ import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { NAHRADIT, textNepolozenejKarty } from "./nepolozenaKarta.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
-import { useTahanie } from "./useTahanie.ts";
+import { useTahanie, type Tahanie } from "./useTahanie.ts";
+import { PultHraca, Tabula, cislaHraca } from "./PultHraca.tsx";
+import { Avatar } from "../komponenty.tsx";
 import "./hra.css";
+import "./mobil-sirka.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
 import { IkonaSpaku, Nastenka, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
@@ -276,6 +279,8 @@ function IkonaSrotu() {
   );
 }
 
+/** Podržanie prsta, po ktorom sa karta v ruke zväčší (telefón na šírku). */
+const DLHY_TUK_MS = 450;
 /** Ako dlho sa stôl po prechode fázy ustáli, kým príde medziobrazovka. */
 const MEDZIOBRAZOVKA_MS = 400;
 /** Ako dlho ostane toast na stole (výsledok bitky; ohlásené vydesenie o 3 s dlhšie). */
@@ -286,6 +291,12 @@ const PECIATKA_KROKU_MS = 2000;
 /** Šírka karty v ruke — nastavuje aj --ruka-w v hra.css (na mobile menšia). */
 const SIRKA_V_RUKE = 120;
 const SIRKA_V_RUKE_MOBIL = 72;
+/** Telefón na šírku: výška karty v ruke ako zlomok výšky okna (vejár v doku, dizajn A „Pult“). */
+const RUKA_NA_SIRKU = 0.3;
+/** Telefón na šírku: najmenšia karta v línii — stôl sa tam nikdy neposúva, karta sa radšej zmenší. */
+const SIRKA_NA_SIRKU_MIN = 56;
+/** Telefón na šírku: najmenšie miesto pre ťahy v doku, aj keď žiadny nie je (ruka nepreskakuje). */
+const AKCIE_NA_SIRKU_MIN = 120;
 /** Pod touto šírkou okna je rozloženie mobilné. */
 const MOBIL = 760;
 /** Výšky okna, pod ktorými sa stôl zhustí — rovnaké hranice má hra.css (@media max-height). */
@@ -457,6 +468,11 @@ export interface HernaPlochaProps {
    * 2. kola — línia starších ostane na stole (bar bežný, nie bodový) namiesto výberu lokality.
    */
   readonly ukazStarsich?: boolean;
+  /**
+   * Telefón na šírku, zatiaľ len pre správcov (Michal 2026-10-31): rozloženie „Pult“ (mobil-sirka.css) —
+   * hlavička webu preč, súper v riadku čipov hore, tvoj pult a ruka v doku dole, karta sa kladie ťukom.
+   */
+  readonly naSirku?: boolean;
 }
 
 /** Názvy fáz pre titulok karty prehliadača. */
@@ -532,6 +548,7 @@ export function HernaPlocha({
   zaHracaHra = false,
   naneisto = false,
   ukazStarsich = false,
+  naSirku = false,
 }: HernaPlochaProps) {
   DATA = data;
   // Odložené zobrazenie (Michal 2026-10-27): kým hráč pozerá odhalenú Záverečnú a rekapituláciu
@@ -591,7 +608,37 @@ export function HernaPlocha({
   // Dotyková obrazovka bez myši — kartu v ruke zväčší ťuknutie (hover tam nie je).
   const jeDotyk = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(hover: none)").matches === true, []);
   // Nízky notebook (MacBook 14" ≈ 860 px, 13" s lištou ≈ 800, 1366 × 650): menšia ruka nechá výšku stolu.
-  const sirkaVRuke = mobil ? SIRKA_V_RUKE_MOBIL : vyskaOkna < NIZKE_OKNO ? 84 : vyskaOkna < NOTEBOOK ? 96 : SIRKA_V_RUKE;
+  // Na šírku telefónu je ruka vejár v doku: karta má výšku ≈ 30 % okna, vidno jej hornú polovicu.
+  const sirkaVRuke = naSirku
+    ? Math.round((vyskaOkna * RUKA_NA_SIRKU) / POMER_KARTY)
+    : mobil
+      ? SIRKA_V_RUKE_MOBIL
+      : vyskaOkna < NIZKE_OKNO
+        ? 84
+        : vyskaOkna < NOTEBOOK
+          ? 96
+          : SIRKA_V_RUKE;
+  // Telefón na šírku: celá obrazovka patrí stolu — hlavička webu sa skryje (hra.css nevie o roli správcu,
+  // preto trieda na <html>) a obsah siahne aj pod výrez displeja; okraje dorovná env(safe-area-inset-*).
+  useEffect(() => {
+    if (!naSirku) return;
+    const html = document.documentElement;
+    html.classList.add("stol-na-sirku");
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
+    const povodny = meta?.content ?? null;
+    if (meta !== null && !/viewport-fit/.test(meta.content)) meta.content = `${meta.content}, viewport-fit=cover`;
+    // Zamknúť na šírku dovolí prehliadač len na celej obrazovke či v PWA (hlavne Android) — inak ticho nič.
+    const orientacia = screen.orientation as (ScreenOrientation & { lock?: (o: string) => Promise<void> }) | undefined;
+    try {
+      orientacia?.lock?.("landscape").catch(() => undefined);
+    } catch {
+      // starší prehliadač bez Promise z lock()
+    }
+    return () => {
+      html.classList.remove("stol-na-sirku");
+      if (meta !== null && povodny !== null) meta.content = povodny;
+    };
+  }, [naSirku]);
   // Časová os kola sa lepí pod hlavičku webu — tá je tiež prilepená, preto jej výška.
   const [vyskaHlavicky, setVyskaHlavicky] = useState(0);
   useEffect(() => {
@@ -737,17 +784,20 @@ export function HernaPlocha({
     // Výučba stôl na scroll neprepína: návrh ťahu so spojom (vysunuté karty, pokyn v dvoch riadkoch
     // úzkeho stola) ho prepol natrvalo a pás hráča s rukou ostali pod okrajom okna (UI inšpekcia
     // 20261024-napovedy, N4). Karty ostávajú aj tak na SIRKA_CITATELNA a do plste sa vojdú.
-    if (mobil || vyucba === true || stolScroll || vyskaPlste === 0 || sirkaPodlaVysky >= SIRKA_CITATELNA) return;
+    if (mobil || naSirku || vyucba === true || stolScroll || vyskaPlste === 0 || sirkaPodlaVysky >= SIRKA_CITATELNA) return;
     // Skrytá línia (starší, voľba cieľa, draft): plsť zmenší pokyn s kartami (patronát),
     // nie karty línie — scroll by plsť zrazil na pár px (UI inšpekcia 20261024-nahlad, N1).
     if (plstRef.current?.classList.contains("linia-skryta") === true) return;
     const t = setTimeout(() => setStolScroll(true), ONESKORENIE_SCROLLU_MS);
     return () => clearTimeout(t);
-  }, [mobil, vyucba, stolScroll, vyskaPlste, sirkaPodlaVysky]);
+  }, [mobil, naSirku, vyucba, stolScroll, vyskaPlste, sirkaPodlaVysky]);
   const sirkaVLinii =
     sirkaLinie === 0
       ? Math.min(SIRKA_V_LINII, sirkaPodlaVysky)
-      : // Minimum platí pre šírku (dlhá línia sa radšej posúva); výška stola ho prebije —
+      : naSirku
+        ? // Na šírku telefónu určuje kartu len výška plste — dlhá línia sa posúva (dizajn A: 5–7 kariet naraz).
+          Math.max(SIRKA_NA_SIRKU_MIN, Math.min(SIRKA_V_LINII, sirkaPodlaVysky))
+        : // Minimum platí pre šírku (dlhá línia sa radšej posúva); výška stola ho prebije —
         // na nízkom notebooku sa karty inak orezali dole (Michal 2026-10-23) — no nie pod
         // čitateľnú veľkosť: tam už stôl prejde na scroll.
         Math.max(
@@ -1981,7 +2031,74 @@ export function HernaPlocha({
     el.style.left = `${p.x}px`;
     el.style.top = `${p.y}px`;
   }, [chybaTahania]);
-  const { tahanie, zacni, duchRef } = useTahanie(pusti);
+  const { tahanie: tahanieMysou, zacni, duchRef } = useTahanie(pusti);
+  // Telefón na šírku (dizajn A „Pult“): ťuk na kartu ju vyberie a ciele svietia ako pri ťahaní,
+  // ťuk na cieľ ju položí — ťahanie od spodku displeja berie iPhone ako gesto domov.
+  const [vyberTukom, setVyberTukom] = useState<Zdroj | null>(null);
+  useEffect(() => setVyberTukom(null), [klucTahu, naSirku]);
+  const tahanie: Tahanie<Zdroj> | null =
+    tahanieMysou ?? (vyberTukom === null ? null : { zdroj: vyberTukom, x: 0, y: 0, sirka: 0, ciel: null });
+  // Dok na šírku telefónu: ruka siaha po ťahy vpravo — ich šírka sa mení podľa fázy (pas, NA EX, potvrdiť).
+  const hraRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const hra = hraRef.current;
+    if (!naSirku || hra === null) return;
+    let w = 0;
+    for (const el of hra.querySelectorAll<HTMLElement>(".stol-hrana :is(.hrana-stred, .hrana-vpravo)")) w += el.offsetWidth > 0 ? el.offsetWidth + 6 : 0;
+    const nove = `${Math.max(AKCIE_NA_SIRKU_MIN, w)}px`;
+    if (hra.style.getPropertyValue("--akcie-w") !== nove) hra.style.setProperty("--akcie-w", nove);
+    // Tvoj pult má šírku podľa obsahu (počet čipov, Chuť len keď ju partia má).
+    const moj = hra.querySelector<HTMLElement>(".pult-hraca.moj")?.offsetWidth ?? 0;
+    const mojW = `${moj}px`;
+    if (moj > 0 && hra.style.getPropertyValue("--moj-w") !== mojW) hra.style.setProperty("--moj-w", mojW);
+  });
+  // Tabuľa porovnania ty | súper (dizajn B) — na šírku telefónu nahrádza dva plné bary.
+  const [tabulaOtvorena, setTabulaOtvorena] = useState(false);
+  const prepniVyberTukom = (z: Zdroj): void => setVyberTukom((v) => (v?.karta.uid === z.karta.uid ? null : z));
+  // Ťuk mimo karty a cieľa výber zruší, ťuk na cieľ kartu položí (zachytí sa skôr, než ho dostane cieľ).
+  const tukNaCiel = (e: ReactMouseEvent<HTMLElement>): void => {
+    if (vyberTukom === null || !(e.target instanceof Element)) return;
+    const ciel = e.target.closest<HTMLElement>("[data-ciel]")?.dataset.ciel;
+    // Iná karta v ruke je pri ťuku výberom, nie miestom v poradí ruky.
+    if (ciel !== undefined && !ciel.startsWith(PORADIE) && cieleZdroja(vyberTukom).has(ciel)) {
+      e.preventDefault();
+      e.stopPropagation();
+      setVyberTukom(null);
+      pusti(vyberTukom, ciel, { x: e.clientX, y: e.clientY });
+      return;
+    }
+    if (e.target.closest(".tahatelna, .lupa") === null) setVyberTukom(null);
+  };
+  // Podržanie prsta na karte v ruke ju zväčší (lupa) — ťuk ju na šírku telefónu vyberá.
+  const dlhyTuk = useRef<{ readonly casovac: number; readonly zrus: () => void } | null>(null);
+  const poDlhomTuku = useRef(false);
+  const zacniDlhyTuk = (e: ReactPointerEvent<HTMLElement>, akcia: (el: HTMLElement) => void): void => {
+    dlhyTuk.current?.zrus();
+    poDlhomTuku.current = false;
+    const el = e.currentTarget;
+    const x0 = e.clientX;
+    const y0 = e.clientY;
+    const pohyb = (ev: PointerEvent): void => {
+      if (Math.hypot(ev.clientX - x0, ev.clientY - y0) > 8) zrus();
+    };
+    const zrus = (): void => {
+      if (dlhyTuk.current !== null) clearTimeout(dlhyTuk.current.casovac);
+      dlhyTuk.current = null;
+      window.removeEventListener("pointermove", pohyb);
+      window.removeEventListener("pointerup", zrus);
+      window.removeEventListener("pointercancel", zrus);
+    };
+    window.addEventListener("pointermove", pohyb);
+    window.addEventListener("pointerup", zrus);
+    window.addEventListener("pointercancel", zrus);
+    const casovac = window.setTimeout(() => {
+      zrus();
+      poDlhomTuku.current = true;
+      akcia(el);
+    }, DLHY_TUK_MS);
+    dlhyTuk.current = { casovac, zrus };
+  };
+  useEffect(() => () => dlhyTuk.current?.zrus(), []);
 
   // ---- lupa nad kartami na stole a vo vrstvách ----------------------------
   // Michal 2026-10-22: karta sa zväčší pri prejdení myšou (predtým klikom) a susedia
@@ -2352,6 +2469,10 @@ export function HernaPlocha({
     />
   );
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
+  // Vybraná karta, ktorá už nemá kam ísť (limit sa minul, karta odišla z ruky), sa odznačí.
+  useEffect(() => {
+    if (vyberTukom !== null && aktivneCiele.size === 0) setVyberTukom(null);
+  });
   const jeCiel = (c: string): boolean => aktivneCiele.has(c);
   const nadCielom = (c: string): boolean => tahanie?.ciel === c && jeCiel(c);
 
@@ -2364,15 +2485,25 @@ export function HernaPlocha({
     trieda?: string,
     odstran?: () => void,
     /** Karta v ruke: zastávka klávesnice a klik bez myši (Enter, ťuknutie) — dizajn UX N4. */
-    fokus?: { readonly aktivuj: (el: HTMLElement) => void; readonly popis: string; readonly tukni?: boolean; readonly naMys?: (() => void) | undefined },
+    fokus?: {
+      readonly aktivuj: (el: HTMLElement) => void;
+      readonly popis: string;
+      readonly tukni?: boolean;
+      readonly naMys?: (() => void) | undefined;
+      /** Podržanie prsta (len na šírku telefónu) — lupa. */
+      readonly podrz?: ((el: HTMLElement) => void) | undefined;
+    },
   ): ReactNode => {
     const moze = cieleZdroja(z).size > 0;
     const ide = tahanie?.zdroj.karta.uid === z.karta.uid;
+    // Na šírku telefónu ťuk na kartu bez vlastnej akcie (karta v línii z návrhu, šenok, lokalita) ju vyberie.
+    const tukVyberie = naSirku && moze && fokus === undefined;
+    const podrz = naSirku ? fokus?.podrz : undefined;
     const nahraditelna = ciel !== undefined && !ide && jeCiel(ciel);
     const poradie = ciel?.startsWith(PORADIE) === true;
     const triedy = trieda === undefined ? ["tahatelna"] : ["tahatelna", trieda];
     if (moze) triedy.push("chytitelna");
-    if (ide) triedy.push("tahana");
+    if (ide) triedy.push(tahanieMysou === null ? "vybrana-tukom" : "tahana");
     // Nie „navrh“ — tú triedu má karta návrhu v sekcii Playtest (margin 14px) a CSS je spoločné.
     if (z.navrh) triedy.push("navrhnuta");
     if (nahraditelna) triedy.push(poradie ? "poradie-ciel" : "nahraditelna");
@@ -2387,16 +2518,44 @@ export function HernaPlocha({
         key={kluc}
         className={triedy.join(" ")}
         data-ciel={nahraditelna ? ciel : undefined}
-        onPointerDown={moze ? (e) => zacni(z, e) : undefined}
+        onPointerDown={
+          podrz !== undefined
+            ? (e) => {
+                zacniDlhyTuk(e, podrz);
+                if (moze) zacni(z, e);
+              }
+            : moze
+              ? (e) => zacni(z, e)
+              : undefined
+        }
         onDragStart={(e) => e.preventDefault()}
         onContextMenu={pravyKlik(odstran)}
         {...(fokus === undefined
-          ? {}
+          ? tukVyberie
+            ? {
+                onClick: (e: React.MouseEvent<HTMLDivElement>) => {
+                  // Karta s vlastným klikom (výber v šenku, lokalita na nástenke) ho robí sama.
+                  if (e.target instanceof Element && e.target.closest(".kl-klik") !== null) return;
+                  e.stopPropagation();
+                  prepniVyberTukom(z);
+                },
+              }
+            : {}
           : {
               tabIndex: 0,
               "aria-label": fokus.popis,
               ...(fokus.naMys === undefined ? {} : { onMouseEnter: fokus.naMys }),
-              ...(fokus.tukni === true ? { onClick: (e: React.MouseEvent<HTMLDivElement>) => fokus.aktivuj(e.currentTarget) } : {}),
+              ...(fokus.tukni === true
+                ? {
+                    onClick: (e: React.MouseEvent<HTMLDivElement>) => {
+                      if (poDlhomTuku.current) {
+                        poDlhomTuku.current = false;
+                        return;
+                      }
+                      fokus.aktivuj(e.currentTarget);
+                    },
+                  }
+                : {}),
               onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
                 if (e.key !== "Enter" && e.key !== " ") return;
                 e.preventDefault();
@@ -5356,6 +5515,79 @@ export function HernaPlocha({
     </div>
   );
 
+  // Štítok partie a menu Partia ▾ (Michal 2026-10-26, #22 A) — menu webu je počas partie preč (#23).
+  // Na šírku telefónu je hlavička webu skrytá a menu s Logom ležia v hornom pulte stola.
+  const hlavickaPartie =
+    prehravanie !== undefined ? (
+      <div className="hlavicka-partia">{prehravanie}</div>
+    ) : (
+      <HlavickaPartie
+        kod={kod}
+        view={view}
+        menoSupera={menoHraca(super_)}
+        superBot={hraci[super_]?.bot === true}
+        superPripojeny={superPripojeny}
+        superOdpojenyOd={superOdpojenyOd}
+        vyucba={vyucba === true}
+        os={osVListe && !naSirku ? osKola : null}
+        nastroje={osVListe || naSirku ? nastrojeStola : null}
+        melichar={vHlavicke}
+        vzdat={() => cmd({ type: "vzdat" })}
+        kontumacia={kontumacia}
+        opustit={opustit}
+      />
+    );
+  // Pult hráča na šírku telefónu: čipy namiesto dlaždíc, detail v tabuli (PultHraca.tsx).
+  const pult = (p: PlayerId): ReactNode => (
+    <PultHraca
+      view={view}
+      p={p}
+      info={hraci[p]}
+      meno={hraci[p]?.meno ?? `Hráč ${p + 1}`}
+      cisla={cislaHraca(view, p, prahy(p), zavislost(p), body)}
+      naTahu={naTahuStrana(p)}
+      starsi={{
+        stlacene: starsiViditelni && krokStarsich === null && pohladLinie === p,
+        prepni: () => prepniStarsich(p),
+        id: idLinieStarsich,
+        ...(p === ja
+          ? {
+              posuny: new Set((view.posunyMarkerov ?? []).map((x) => x.elderId)).size,
+              suhrn: suhrnBezi && suhrnDlazdice !== null ? suhrnDlazdice : undefined,
+            }
+          : {}),
+      }}
+      body={body}
+      karty={kartyDlazdica(p)}
+      spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === p, prepni: () => otvorNastenku(p) }}
+      tabula={{ otvorena: tabulaOtvorena, prepni: () => setTabulaOtvorena((o) => !o) }}
+    />
+  );
+  const tabulaEl = !naSirku || !tabulaOtvorena ? null : (
+    <Tabula
+      ja={cislaHraca(view, ja, prahy(ja), zavislost(ja), body)}
+      su={cislaHraca(view, super_, prahy(super_), zavislost(super_), body)}
+      avatary={[
+        <Avatar key="ja" meno={hraci[ja]?.meno ?? "ty"} avatar={hraci[ja]?.avatar ?? null} velkost={28} farba="ja" />,
+        <Avatar key="su" meno={hraci[super_]?.meno ?? "súper"} avatar={hraci[super_]?.avatar ?? null} velkost={28} farba="su" />,
+      ]}
+      zavri={() => setTabulaOtvorena(false)}
+      akcie={
+        <>
+          <button type="button" className="tlacidlo-male" onClick={() => { setTabulaOtvorena(false); otvorNastenku(ja); }}>
+            Nástenka
+          </button>
+          <button type="button" className="tlacidlo-male" onClick={() => { setTabulaOtvorena(false); otvorKarty(ja, "balicek"); }}>
+            Moje karty
+          </button>
+          <button type="button" className="tlacidlo-male" onClick={() => { setTabulaOtvorena(false); otvorKarty(super_, "priznane"); }}>
+            Karty súpera
+          </button>
+        </>
+      }
+    />
+  );
+
   // Lokalita, ktorú vybral súper: karta v čitateľnej veľkosti a pod ňou hrany tak, ako ležia na stole
   // (k tebe vľavo). Na notebooku stojí vedľa textu, aby sa zmestila na výšku bez posúvania.
   const pauzaCielaEl = ((): ReactNode => {
@@ -5394,10 +5626,13 @@ export function HernaPlocha({
   return (
     <ZarStolaKontext.Provider value={zarStola}>
     <div
-      className={stolScroll ? "hra stol-scroll" : "hra"}
+      ref={hraRef}
+      className={naSirku ? "hra mobil-sirka" : stolScroll ? "hra stol-scroll" : "hra"}
       style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
+      onClickCapture={naSirku ? tukNaCiel : undefined}
     >
       {pauzaCielaEl}
+      {tabulaEl}
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
       {view.koniec !== null && !koniecZavrety && prehravanie === undefined && bezOknaKonca !== true && (
         <KoniecHry
@@ -5429,34 +5664,18 @@ export function HernaPlocha({
       >
         {skratky.napoveda && <SkratkyNapoveda onZavri={skratky.zavriNapovedu} />}
       </JednotnyBar>
-      {slotHlavicky !== null &&
-        createPortal(
-          prehravanie !== undefined ? (
-            <div className="hlavicka-partia">{prehravanie}</div>
-          ) : (
-            // Štítok partie a menu Partia ▾ (Michal 2026-10-26, #22 A) — menu webu je počas partie preč (#23).
-            <HlavickaPartie
-              kod={kod}
-              view={view}
-              menoSupera={menoHraca(super_)}
-              superBot={hraci[super_]?.bot === true}
-              superPripojeny={superPripojeny}
-              superOdpojenyOd={superOdpojenyOd}
-              vyucba={vyucba === true}
-              os={osVListe ? osKola : null}
-              nastroje={osVListe ? nastrojeStola : null}
-              melichar={vHlavicke}
-              vzdat={() => cmd({ type: "vzdat" })}
-              kontumacia={kontumacia}
-              opustit={opustit}
-            />
-          ),
-          slotHlavicky,
-        )}
+      {slotHlavicky !== null && !naSirku && createPortal(hlavickaPartie, slotHlavicky)}
 
       <div className="plocha">
         {/* Súperi sedia oproti sebe (Michal 2026-10-22): súperov bar hore, tvoj pod stolom;
             scoreboard nad staršími zanikol — body sú v bare hráča. */}
+        {naSirku ? (
+          // Telefón na šírku: menu Partia a Log, súper v riadku čipov a jeho Starší (dizajn A „Pult“).
+          <div className="pult-hore">
+            {hlavickaPartie}
+            {pult(super_)}
+          </div>
+        ) : (
         <HracDoska
           data={data}
           view={view}
@@ -5475,6 +5694,7 @@ export function HernaPlocha({
           // Stav súpera je bodkou na jeho avatare, nie v lište (dizajn timeline-lista A); bot sa neodpája.
           spojenie={hraci[super_]?.bot === true || vyucba === true || prehravanie !== undefined ? undefined : { pripojeny: superPripojeny, odpojenyOd: superOdpojenyOd }}
         />
+        )}
         {/* Starší hore — mimo dosahu ruky, aby sa ich lupa nebila s lupou kariet v ruke. */}
         <div className="stred">
           {/* Stôl je hneď pod staršími — pás pokynov a ruka ho neprekryjú
@@ -5606,6 +5826,7 @@ export function HernaPlocha({
             {hranaStola}
           </div>
 
+          {naSirku ? pult(ja) : (
           <HracDoska
             data={data}
             view={view}
@@ -5634,6 +5855,7 @@ export function HernaPlocha({
             rezim={rezimBaru}
             pocitadloBezi={pocitadloBezi}
           />
+          )}
 
 
         </div>
@@ -5900,9 +6122,11 @@ export function HernaPlocha({
               const klucLupy = `r${k.uid}`;
               const zdrojRuky: Zdroj = { karta: k, odkial: "ruka", navrh: false };
               lupaKarty.set(klucLupy, { render: (s) => karta({ karta: k, sirka: s }), zdroj: zdrojRuky });
+              const lupaRuky = (el: HTMLElement): void => otvorLupu(klucLupy, el.querySelector(".kl"));
               const aktivuj = (el: HTMLElement): void => {
                 if (onClick !== undefined) onClick();
-                else otvorLupu(klucLupy, el.querySelector(".kl"));
+                else if (naSirku && cieleZdroja(zdrojRuky).size > 0) prepniVyberTukom(zdrojRuky);
+                else lupaRuky(el);
               };
               return tahatelna(
                 zdrojRuky,
@@ -5916,7 +6140,8 @@ export function HernaPlocha({
                 {
                   aktivuj,
                   popis: `${menoKarty(k.defId)}${naMiesto !== undefined ? " — položiť na vybrané miesto" : ""}`,
-                  tukni: jeDotyk && onClick === undefined,
+                  tukni: (jeDotyk || naSirku) && onClick === undefined,
+                  podrz: naSirku ? lupaRuky : undefined,
                   // Štítok „dobraná“ zmizne pri prvom prejdení myšou — hráč kartu videl (Michal 2026-10-30).
                   naMys: dobrata ? () => setDobrate((d) => d.filter((u) => u !== k.uid)) : undefined,
                 },
@@ -6037,16 +6262,16 @@ export function HernaPlocha({
         );
       })()}
 
-      {tahanie !== null && (
+      {tahanieMysou !== null && (
         <div
           className="tahanie-duch"
           ref={duchRef}
-          style={{ transform: `translate(${tahanie.x}px, ${tahanie.y}px)`, width: tahanie.sirka }}
+          style={{ transform: `translate(${tahanieMysou.x}px, ${tahanieMysou.y}px)`, width: tahanieMysou.sirka }}
         >
           {karta({
-            karta: tahanie.zdroj.karta,
-            sirka: tahanie.sirka,
-            otocena: tahanie.zdroj.odkial === "lokality" && tahanie.zdroj.navrh && lokalitaNavrhOtocena,
+            karta: tahanieMysou.zdroj.karta,
+            sirka: tahanieMysou.sirka,
+            otocena: tahanieMysou.zdroj.odkial === "lokality" && tahanieMysou.zdroj.navrh && lokalitaNavrhOtocena,
             bezPopisov: true,
           })}
         </div>

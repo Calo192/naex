@@ -45,6 +45,8 @@ import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { Momenty } from "./Momenty.tsx";
 import type { HracInfo } from "./useHra.ts";
+import { useStolNaSirku } from "./zariadenie.ts";
+import { OtocTelefon } from "./OtocTelefon.tsx";
 
 interface Krok {
   readonly stav: GameState;
@@ -269,6 +271,8 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     return q().get("zerava") === "1" ? { ...o, zaciatok: sZeravou(o.zaciatok, ja) } : o;
   }, [data]);
   const [stav, setStav] = useState<GameState>(odohrane.zaciatok);
+  // Ukážka je len pre správcu — na telefóne na šírku ukáže stôl „Pult“ ako partia (Michal 2026-10-31).
+  const { naSirku, otoc } = useStolNaSirku(true);
   const [udalosti, setUdalosti] = useState<{ readonly id: number; readonly events: readonly Event[] }>({ id: 0, events: [] });
   const rng = useRef(rngSeed(Number(q().get("seed") ?? "8") ^ 0x77));
   // Kým sa nedohrá zastavená bitka či koniec, bot za súpera neťahá — inak by ťah predbehol dohranie.
@@ -333,7 +337,9 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     : [{ meno: "Rapavý Fero", avatar: avSu, bot: true, profil: "ziadny" }, { meno: "Jano", avatar: avJa }];
   return (
     <>
+    {otoc && <OtocTelefon />}
     <HernaPlocha
+      naSirku={naSirku}
       view={view}
       data={data}
       sada={sada}

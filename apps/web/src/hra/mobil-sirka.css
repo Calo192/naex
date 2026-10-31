@@ -1,0 +1,857 @@
+/* ---- stôl pre telefón na šírku (Michal 2026-10-31, dizajn stol-landscape A „Pult“ + tabuľa z B) ----
+ * Platí len s triedou .mobil-sirka na .hra (a .stol-na-sirku na <html>) — tú dá HernaPlocha len
+ * správcovi na nízkom dotykovom displeji na šírku (zariadenie.ts). Počítač, notebook ani telefón
+ * na výšku sa nemenia. Kostra: súper v riadku čipov hore, plsť s líniou cez celú šírku, dole dok
+ * (tvoj pult · ruka · ťahy pod pravým palcom). Okraje výrezu dorovná env(safe-area-inset-*). */
+
+html.stol-na-sirku,
+html.stol-na-sirku body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html.stol-na-sirku .hlavicka,
+html.stol-na-sirku .paticka {
+  display: none;
+}
+
+html.stol-na-sirku .obsah:has(> .hra) {
+  height: 100dvh;
+  max-width: none;
+  padding: 0;
+  overflow: hidden;
+}
+
+.hra.mobil-sirka {
+  --okraj-l: max(6px, env(safe-area-inset-left));
+  --okraj-r: max(6px, env(safe-area-inset-right));
+  --okraj-h: max(4px, env(safe-area-inset-top));
+  --okraj-d: max(2px, env(safe-area-inset-bottom));
+  --pult-h: 46px;
+  --dok-h: 68px;
+  /* Tvoj pult vľavo dole a ťahy vpravo dole — ruka je medzi nimi. */
+  --moj-w: 272px;
+  --akcie-w: 120px;
+  --pitka-h: 0px;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100dvh;
+  padding: var(--okraj-h) var(--okraj-r) calc(var(--dok-h) + var(--pitka-h) + var(--okraj-d)) var(--okraj-l);
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+.hra.mobil-sirka:has(.hrana-vlavo > *) {
+  --pitka-h: 52px;
+}
+
+/* Text mimo kariet najmenej 11 px (zadanie Leadera). */
+.hra.mobil-sirka:not(.stol-scroll) :is(.pult-hraca, .tabula, .stol-hrana, .linia-stav, .partia-hlavicka) {
+  font-size: max(11px, 0.75rem);
+}
+
+/* ---- jednotný bar: len odhad bitky a správy, ako odznak v ľavom hornom rohu plste ---- */
+.hra.mobil-sirka:not(.stol-scroll) .jbar {
+  display: block;
+  position: fixed;
+  top: auto;
+  bottom: calc(var(--okraj-d) + var(--dok-h) + var(--pitka-h) + 10px);
+  left: calc(var(--okraj-l) + 6px);
+  z-index: 30;
+  width: min(46vw, 380px);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar-st {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar-strana,
+.hra.mobil-sirka:not(.stol-scroll) .jbar-os,
+.hra.mobil-sirka:not(.stol-scroll) .jbar-cip {
+  display: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar-stred {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar-odhad {
+  justify-content: flex-start;
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
+  min-height: 0;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--pozadie) 80%, transparent);
+  pointer-events: auto;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar-sprava-miesto {
+  min-height: 0;
+  pointer-events: auto;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar-sprava.stara {
+  display: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .jbar-sprava {
+  max-width: 100%;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--pozadie) 88%, transparent);
+  white-space: normal;
+}
+
+/* ---- plocha: horný pult, plsť ---- */
+.hra.mobil-sirka:not(.stol-scroll) .plocha {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .stred {
+  flex: 1 1 0;
+  min-height: 0;
+  gap: 0;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .linia-obal,
+.hra.mobil-sirka:not(.stol-scroll) .linia-obal.s-hranou {
+  margin: 0;
+  padding: 10px 0 0;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .linia-obal > .stol-plst {
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0;
+}
+
+/* ---- horný pult: menu Partia a Log, súper, jeho Starší ---- */
+.pult-hore {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--pult-h);
+  min-width: 0;
+}
+
+.pult-hore .partia-hlavicka {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+.pult-hore .partia-os,
+.pult-hore .partia-hlavicka button.hlava-skratky,
+.pult-hore .partia-kod,
+.pult-hore .partia-menu-tlacidlo .sipka,
+.pult-hore .hp-citacka {
+  display: none;
+}
+
+.pult-hore .hlava-vrstvy {
+  display: flex;
+  gap: 6px;
+}
+
+.pult-hore :is(.hlava-vrstva, .partia-menu-tlacidlo) {
+  position: relative;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 8px;
+  border-radius: 10px;
+}
+
+.pult-hore .partia-menu {
+  top: calc(100% + 4px);
+  left: 0;
+  right: auto;
+  max-height: calc(100dvh - var(--pult-h) - 16px);
+  overflow-y: auto;
+}
+
+/* ---- pult hráča: avatar, čipy, Starší ---- */
+.pult-hraca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 6px 0 0;
+  border: 1px solid var(--okraj);
+  border-radius: 10px;
+  background: var(--plocha);
+}
+
+.pult-hraca.superov {
+  flex: 1 1 auto;
+  height: 44px;
+  border-left: 3px solid var(--su);
+}
+
+.pult-hraca.moj {
+  position: fixed;
+  left: var(--okraj-l);
+  bottom: calc(var(--okraj-d) + 2px);
+  z-index: 27;
+  width: max-content;
+  height: 62px;
+  border-left: 3px solid var(--ja);
+}
+
+.pult-hraca.na-tahu {
+  border-color: var(--stol-okraj, var(--okraj-svetly));
+}
+
+.pult-hraca.superov.na-tahu {
+  border-left-color: var(--su);
+}
+
+.pult-hraca.moj.na-tahu {
+  border-left-color: var(--ja);
+}
+
+.pult-kto {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  height: 100%;
+  padding: 0 4px 0 6px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pult-meno {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 130px;
+  line-height: 1.2;
+}
+
+.pult-meno strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--su);
+  font: 800 0.875rem/1.2 var(--nadpis);
+}
+
+.pult-rola {
+  font-size: 11px;
+  color: var(--tlmeny);
+  white-space: nowrap;
+}
+
+.pult-cipy {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px 10px;
+  min-width: 0;
+}
+
+.pult-hraca.moj .pult-cipy {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 2px 10px;
+}
+
+.pult-cip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: 700 0.875rem/1 var(--pismo);
+  white-space: nowrap;
+}
+
+button.pult-cip {
+  min-height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pult-cip b {
+  font-weight: 800;
+}
+
+.pult-cip svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  color: var(--tlmeny);
+}
+
+.pult-cip .ikona-spaku {
+  width: 24px;
+  height: 12px;
+}
+
+.pult-cip .ikona-poldeci {
+  fill: var(--akcent);
+}
+
+.pult-cip.zle,
+.pult-cip.zle svg {
+  color: var(--cervena-svetla);
+}
+
+.pult-cip.ciel-zona {
+  outline: 2px solid var(--zelena);
+  outline-offset: 2px;
+  animation: pult-ciel 1s ease-in-out infinite alternate;
+}
+
+.pult-cip.zamknuta {
+  opacity: 0.55;
+}
+
+.pult-cip.stlacene {
+  outline: 1px solid var(--akcent);
+}
+
+@keyframes pult-ciel {
+  to {
+    outline-color: var(--zelena-svetla);
+  }
+}
+
+/* Dlaždica Starší z baru, zhustená: stĺpčeky a priazeň, bez popisov. */
+.pult-hraca .zdroj-starsi {
+  flex: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  min-width: 44px;
+  margin: 0;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.pult-hraca .zdroj-starsi .zdroj-pod {
+  display: none;
+}
+
+.pult-hraca .zdroj-starsi .zdroj-nazov {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.pult-hraca .zdroj-starsi .zdroj-nazov :is(.zdroj-posuny, .starsi-desi) {
+  display: none;
+}
+
+.pult-hraca .zdroj-starsi .zdroj-hodnota {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 4px;
+}
+
+.pult-hraca .zdroj-starsi .velke-cislo {
+  font-size: 1rem;
+}
+
+.pult-hraca .zdroj-starsi .stupienky {
+  height: 26px;
+}
+
+/* ---- pokyn: pilulka hore na plsti, najviac dva riadky ---- */
+.hra.mobil-sirka:not(.stol-scroll) .linia-stav {
+  max-width: calc(100% - 16px);
+  margin: 4px auto -10px;
+  padding: 3px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* Pokyn najviac na dva riadky — rozbalenie pod myšou z počítača na dotyku nie je (audit U10). */
+.hra.mobil-sirka:not(.stol-scroll) .linia-stav > .pilulka-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .linia-stav:is(:focus, :focus-within) > .pilulka-text {
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .linia-stav .pilulka-nadpis {
+  font-size: 11px;
+}
+
+/* ---- dok vpravo: ťahy; nákupy Pitky v rade nad dokom ---- */
+.hra.mobil-sirka:not(.stol-scroll) .stol-hrana,
+.hra.mobil-sirka:not(.stol-scroll) .stol-hrana.neprilepena {
+  position: fixed;
+  left: var(--okraj-l);
+  right: var(--okraj-r);
+  bottom: calc(var(--okraj-d) + 2px);
+  z-index: 28;
+  margin: 0;
+  pointer-events: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .stol-hrana {
+  top: auto;
+  height: 62px;
+  translate: none;
+}
+
+/* Pečiatky ťahov v doku menšie než na stole počítača, no stále aspoň 44 px na prst. */
+.hra.mobil-sirka:not(.stol-scroll) .stol-hrana button {
+  min-height: 44px;
+  max-height: 58px;
+  padding: 4px 10px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  rotate: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .stol-hrana button :is(small, .pecat-pod, .cena-cig) {
+  font-size: 11px;
+}
+
+/* Potvrdenie a koniec ťahu vedľa seba vpravo; šírku zmeria HernaPlocha do --akcie-w (ruka po ne). */
+.hra.mobil-sirka:not(.stol-scroll) .hrana-rad {
+  position: static;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .hrana-stred,
+.hra.mobil-sirka:not(.stol-scroll) .hrana-vpravo {
+  flex: none;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .hrana-stred:empty,
+.hra.mobil-sirka:not(.stol-scroll) .hrana-vpravo:empty {
+  display: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .hrana-vlavo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--dok-h) + 2px);
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 6px;
+  height: 48px;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .hrana-rad :is(button, .pecat) {
+  min-height: 44px;
+}
+
+/* ---- ruka: vejár v doku medzi pultom a ťahmi ---- */
+.hra.mobil-sirka:not(.stol-scroll) .ruka {
+  position: fixed;
+  left: calc(var(--okraj-l) + var(--moj-w) + 6px);
+  right: calc(var(--okraj-r) + var(--akcie-w) + 6px);
+  bottom: 0;
+  height: var(--dok-h);
+  padding: 4px 0 0;
+  background: none;
+  overflow: visible;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .ruka-nadpis {
+  display: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .ruka-rad {
+  gap: 4px;
+  align-items: flex-start;
+  overflow: visible;
+}
+
+/* Na dotyku ostáva :hover visieť po ťuku — zväčšenie z počítača tu nepatrí, kartu zdvihne výber. */
+body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahatelna:hover > .kl {
+  transform: none;
+  box-shadow: none;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahatelna.vybrana-tukom {
+  z-index: 12;
+}
+
+body:not(.tahanie-aktivne) .hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahatelna.vybrana-tukom > .kl,
+.hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahatelna.vybrana-tukom > .kl {
+  transform: translateY(calc(-1 * var(--ruka-w) * 80 / 54 + var(--dok-h) - 6px));
+  box-shadow:
+    0 0 0 2px var(--akcent),
+    0 14px 30px rgba(0, 0, 0, 0.6);
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .ruka-meno {
+  display: block;
+  top: 2px;
+}
+
+.hra.mobil-sirka:not(.stol-scroll) .ruka-rad > .tahatelna.vybrana-tukom > .ruka-meno {
+  opacity: 0;
+}
+
+/* Vybraná karta v línii či v šenku: obrys ako výber, nie polopriesvitný duch z ťahania. */
+.hra.mobil-sirka:not(.stol-scroll) .tahatelna.vybrana-tukom:not(.ruka-rad > *) > * {
+  outline: 3px solid var(--akcent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Miesta, kam vybraná karta smie: pulzujú. */
+.hra.mobil-sirka:not(.stol-scroll) .ciel-miesto {
+  animation: miesto-tukom 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes miesto-tukom {
+  from {
+    border-color: var(--zelena);
+  }
+  to {
+    border-color: var(--zelena-svetla);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--zelena) 35%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hra.mobil-sirka:not(.stol-scroll) .ciel-miesto,
+  .pult-cip.ciel-zona {
+    animation: none;
+  }
+}
+
+/* ---- tabuľa porovnania ty | súper (dizajn B) ---- */
+.tabula-zaves {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--pozadie) 55%, transparent);
+}
+
+.tabula {
+  position: fixed;
+  top: calc(var(--okraj-h) + 4px);
+  bottom: calc(var(--okraj-d) + 4px);
+  left: calc(var(--okraj-l) + 4px);
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  width: min(360px, 60vw);
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 14px;
+  background: var(--plocha);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.tabula-hlava {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 4px 14px;
+  border-bottom: 1px solid var(--okraj);
+  font: 800 1rem/1.2 var(--nadpis);
+  color: var(--akcent-svetly);
+}
+
+.tabula-zavri {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 1.1rem;
+}
+
+.tabula-telo {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 56px 56px;
+  align-content: start;
+  gap: 0 6px;
+  padding: 6px 12px;
+}
+
+.tabula-riadok {
+  display: contents;
+}
+
+.tabula-l {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  border-bottom: 1px solid color-mix(in srgb, var(--okraj) 60%, transparent);
+  color: var(--tlmeny);
+  font-size: 12px;
+}
+
+.tabula-l .pult-pikto {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.tabula-v {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  border-bottom: 1px solid color-mix(in srgb, var(--okraj) 60%, transparent);
+  font: 800 0.95rem/1 var(--pismo);
+}
+
+.tabula-v.ja {
+  color: var(--ja);
+}
+
+.tabula-v.su {
+  color: var(--su);
+}
+
+.tabula-v.zle {
+  color: var(--cervena-svetla);
+}
+
+.tabula-akcie {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px 8px;
+  border-top: 1px solid var(--okraj);
+}
+
+.tabula-akcie button {
+  flex: 1 1 0;
+  min-height: 44px;
+  padding: 0 6px;
+}
+
+/* ---- výzva otočiť telefón (na telefóne sa hrá len na šírku, Michal 2026-10-31) ---- */
+.otoc-telefon {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: max(24px, env(safe-area-inset-top)) 28px max(24px, env(safe-area-inset-bottom));
+  text-align: center;
+  color: var(--tlmeny);
+  font-size: 1rem;
+  line-height: 1.45;
+  background: radial-gradient(circle at 50% 40%, color-mix(in oklab, var(--zelena-ziariva) 14%, var(--pozadie)), var(--pozadie) 70%);
+}
+
+.otoc-telefon strong {
+  font: 800 1.6rem/1.2 var(--nadpis);
+  color: var(--akcent-svetly);
+}
+
+.otoc-telefon-ikona {
+  width: 120px;
+  height: 120px;
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.otoc-telefon-ikona .telefon {
+  stroke: var(--okraj-svetly);
+  animation: otoc-telefon 2.4s ease-in-out infinite;
+  transform-origin: 60px 50px;
+}
+
+.otoc-telefon-ikona .telefon-sirka {
+  stroke: var(--akcent);
+  opacity: 0;
+  animation: otoc-telefon-sirka 2.4s ease-in-out infinite;
+}
+
+.otoc-telefon-ikona :is(.sipka, .sipka-hrot) {
+  stroke: var(--akcent);
+}
+
+@keyframes otoc-telefon {
+  0%, 30% { transform: rotate(0deg); opacity: 1; }
+  60%, 100% { transform: rotate(90deg); opacity: 0; }
+}
+
+@keyframes otoc-telefon-sirka {
+  0%, 55% { opacity: 0; }
+  70%, 100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .otoc-telefon-ikona .telefon,
+  .otoc-telefon-ikona .telefon-sirka {
+    animation: none;
+  }
+}
+
+/* ---- vyhodnotenie bitky a Pitky na šírku: dva stĺpce, Ďalej vždy na očiach (dizajn A, audit U9) ---- */
+/* Pätička je fixed, nie sticky: autoFocus na Ďalej by inak posunul okno na koniec a vrch by odrezal. */
+html.stol-na-sirku .pocitadlo-bitky {
+  align-items: flex-start;
+  padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 64px max(10px, env(safe-area-inset-left));
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  grid-template-areas:
+    "panel rekap"
+    "rad rekap"
+    "spaky rekap"
+    "pata pata";
+  align-items: start;
+  justify-items: center;
+  gap: 8px 14px;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom > .pocitadlo-panel {
+  grid-area: panel;
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom > .pocitadlo-rad {
+  grid-area: rad;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom > .rekap {
+  grid-area: rekap;
+  width: 100%;
+}
+
+html.stol-na-sirku .pocitadlo-scena.s-rekapom > .rk-spaky-blok {
+  grid-area: spaky;
+  width: 100%;
+}
+
+html.stol-na-sirku .pocitadlo-scena > .pocitadlo-pata {
+  grid-area: pata;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 6px max(10px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  background: linear-gradient(to top, var(--pozadie) 70%, transparent);
+}
+
+html.stol-na-sirku .pocitadlo-pata .pocitadlo-tip {
+  display: none;
+}
+
+html.stol-na-sirku .pocitadlo-pata .rk-dalej {
+  min-height: 44px;
+}
+
+/* ---- koniec partie: okno na celú výšku, tlačidlá vždy dole na očiach ---- */
+html.stol-na-sirku .koniec-vrstva {
+  padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+}
+
+html.stol-na-sirku .koniec-okno {
+  width: min(760px, 100%);
+  max-height: 100%;
+  padding: 12px 18px 0;
+}
+
+html.stol-na-sirku .koniec-okno h2 {
+  font-size: 1.5rem;
+}
+
+html.stol-na-sirku .koniec-tlacidla {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin: 8px -18px 0;
+  padding: 8px 18px max(8px, env(safe-area-inset-bottom));
+  background: var(--plocha-2);
+  border-top: 1px solid var(--okraj);
+}
+
+html.stol-na-sirku .koniec-tlacidla :is(button, .tlacidlo) {
+  min-height: 44px;
+}
+
+/* Medziobrazovky a okná, ktoré sú na počítači vyššie než telefón na šírku, sa posúvajú vnútri. */
+html.stol-na-sirku .medziobrazovka {
+  max-height: calc(100dvh - 8px);
+  overflow-y: auto;
+}
