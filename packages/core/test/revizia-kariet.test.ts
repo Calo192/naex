@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, ElderState, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
+import type { CardInstance, ElderState, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   KONSTANTY,
   apply,
@@ -17,7 +17,6 @@ import {
   evaluateLine,
   loadGameData,
   posunMarker,
-  printedSides,
   setupGame,
 } from "../src/index.ts";
 import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
@@ -49,21 +48,6 @@ describe("Dedičstvo stojí cigarety (od 2026-10-19 rastúca cena, viď pravidla
     const chudobny = { ...s, hraci: [{ ...s.hraci[0], cigarety: 0 }, s.hraci[1]] } as GameState;
     expect(() => apply(data, chudobny, { type: "place", uid: puska.uid, target: "dedicstvo" }, 0)).toThrow(/cigaret/);
   });
-});
-
-describe("Pasca a Kočovník vo vyhodnotení línie", () => {
-  const R = ["Rana", null, null, null] as const;
-  const D = ["Dlh", null, null, null] as const;
-  const E = [null, null, null, null] as const;
-  const sd = syntheticData([
-    makeDef("lok", R, R, { tags: ["Lokalita"] }),
-    makeDef("obcan", R, R),
-    makeDef("kocovnik", D, D, { tags: ["Občan", "Zahraničný"] }),
-    makeDef("prazdny", E, E),
-  ]);
-  const k = (id: string, l: readonly (string | null)[], r: readonly (string | null)[]) =>
-    instanceFor(sd, id, l as never, r as never);
-
 });
 
 // Kočovník (Furt, Michal 2026-10-24): jeho akcie dostane hráč s prevahou v jeho

@@ -23,7 +23,6 @@ import {
   rngInt,
   rngSeed,
   rozlozRod,
-  setupGame,
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";

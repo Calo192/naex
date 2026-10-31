@@ -11,10 +11,9 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { ActionSums, ClientState, Command, DamageResult, GameState, PlayerId } from "../src/index.ts";
+import type { ClientState, Command, DamageResult, GameState, PlayerId } from "../src/index.ts";
 import {
   apply,
-  partiaHraca,
   battleOutcome,
   cenaKliatby,
   dalsiePitkyKola,
@@ -143,7 +142,6 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         { cirhoza: number; dlh: number },
         { cirhoza: number; dlh: number },
       ];
-      const su: PlayerId = p === 0 ? 1 : 0;
       const bez = poPitke(s);
       const bezBitka = doPoskodenia(bez);
       const zaklad = sMojimiSkrytymiNaex(data, view);

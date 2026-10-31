@@ -26,11 +26,10 @@ import {
   prahyHraca,
   priazenZKluca,
   pocetPitiek,
-  setupGame,
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
+import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);

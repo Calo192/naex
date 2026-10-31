@@ -17,7 +17,6 @@ import {
   cieleVykladania,
   legalCommands,
   loadGameData,
-  moznostiNaex,
   naexZaPitku,
   rozdelujePrebytok,
   parseScorecards,

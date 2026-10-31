@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, ElderState, Event, GameState, MarkerPos, PlayerId } from "../src/index.ts";
-import { apply, evaluateLine, legalCommands, loadGameData, naTahu, priazen, setupGame, viewFor } from "../src/index.ts";
+import { apply, evaluateLine, legalCommands, loadGameData, naTahu, priazen, viewFor } from "../src/index.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);

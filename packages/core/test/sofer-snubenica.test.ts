@@ -10,7 +10,7 @@ import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { apply, evaluateLine, legalCommands, loadGameData, nahladVylozenia, setupGame, tahBota } from "../src/index.ts";
+import { evaluateLine, loadGameData, setupGame, tahBota } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 

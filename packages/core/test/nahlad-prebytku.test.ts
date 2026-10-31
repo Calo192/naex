@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { ClientState, ElderState, GameState, MarkerPos } from "../src/index.ts";
+import type { ElderState, GameState, MarkerPos } from "../src/index.ts";
 import { STUPNICA_ZONY, apply, spakyTeraz, loadGameData, nahladPosunuMarkera, nahladPosunuPrebytkom, posunZaBody, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);

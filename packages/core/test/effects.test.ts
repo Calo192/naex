@@ -5,18 +5,15 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, Command, GameState, PlacedCard, PlayerId } from "../src/index.ts";
+import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   REGISTER,
-  apply,
   doliatieZakazane,
   bitkaMody,
   computeDamage,
   jeEfektManual,
-  legalCommands,
   limitBonus,
   loadGameData,
-  naTahu,
   prahCirhozyBonus,
   setupGame,
 } from "../src/index.ts";
@@ -116,15 +113,6 @@ describe("M10 — MANUAL režim", () => {
     expect(Object.entries(REGISTER).filter(([, st]) => st === "manual")).toEqual([]);
   });
 });
-
-/** Stav v Zhromaždení, hráč 0 na ťahu s voľným limitom. */
-function zhrom(s: GameState): GameState {
-  return {
-    ...s,
-    faza: "zhromazdenie",
-    zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
-  } as GameState;
-}
 
 describe("pravidlá v2 a nová tlačová sada", () => {
   it("Robota je akcia a Záhradkár má spúšťač Exekúcia (v7)", () => {

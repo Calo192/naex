@@ -20,7 +20,6 @@ import type {
 import {
   apply,
   buildGameData,
-  computeDamage,
   evaluateLine,
   legalCommands,
   loadGameData,
@@ -28,8 +27,6 @@ import {
   naTahu,
   parseScorecards,
   poskodenieBitky,
-  priazen,
-  setupGame,
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";

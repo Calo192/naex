@@ -14,11 +14,9 @@ import {
   apply,
   buildGameData,
   computeDamage,
-  legalCommands,
   loadGameData,
   naTahu,
   parseScorecards,
-  setupGame,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
@@ -280,34 +278,7 @@ describe("§14 Koniec hry po finále (v6)", () => {
 
 // §8 Chuť a Absťák (v9.1) stráži abstak-chut.test.ts.
 
-// --- §16 Výklad kariet ------------------------------------------------------------------------
-
-describe("§16 Výklad kariet", () => {
-  function vZhromazdeni(seed: number, ruka: CardInstance[], h: Partial<PlayerState> = {}): GameState {
-    const s0 = setupSBalickom(data, seed);
-    return sHracom(
-      { ...s0, faza: "zhromazdenie", utocnik: 0, pitkyCelkom: 1, pitkaCislo: 0, zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] } },
-      0,
-      { ruka, ...h },
-    );
-  }
-
-
-
-
-
-
-  function sPostarkou(seed: number, h: Partial<PlayerState>): GameState {
-    const s = vPitke(data, seed, [[lezi(inst("postarka"), 0)], []]);
-    return sHracom({ ...s, pitkaStav: pitkaStav(0) }, 0, { priznane: [], ...h });
-  }
-
-
-
-
-});
-
-// --- §10 Prebudenie a §14 Kategórie ------------------------------------------------------------
+/// --- §10 Prebudenie a §14 Kategórie ------------------------------------------------------------
 
 describe("§10 Prebudenie a §14 finále", () => {
 

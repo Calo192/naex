@@ -24,8 +24,6 @@ import {
   opponentOf,
   parseCards,
   parseScorecards,
-  prevahaStran,
-  setupGame,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";

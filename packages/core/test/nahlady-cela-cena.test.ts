@@ -9,24 +9,15 @@ import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, ClientState, Event, GameState, MarkerPos, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   apply,
-  battleOutcome,
   buildGameData,
   dopadyNahladu,
-  evaluateLine,
   hodnotaPohorseni,
-  lineState,
   loadGameData,
   moznostiNaex,
   naTahu,
   nahladNaexNaKartu,
   parseScorecards,
-  pohorseniaVBitke,
-  poskodenieBitky,
-  prebytokNahladu,
-  prebytokNaRozdelenie,
-  setupGame,
   stavPoPokuse,
-  sNaexNaKartach,
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";

@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, GameState, MarkerPos, PlayerId, VolbaRozdelenia } from "../src/index.ts";
-import { apply, bitkaPoPlane, favourStarsieho, loadGameData, planRozdelenia, prepniVolbu, rozpocetPoPlane, setupGame, starsiPreZvysok, viewFor, zvysokPrepadne } from "../src/index.ts";
+import { apply, bitkaPoPlane, favourStarsieho, loadGameData, planRozdelenia, prepniVolbu, setupGame, starsiPreZvysok, viewFor, zvysokPrepadne } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 

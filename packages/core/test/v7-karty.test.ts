@@ -15,7 +15,6 @@ import {
   lineState,
   loadGameData,
   lokalitNevybranych,
-  moznostiKseftu,
   moznostiNaex,
   naexCieleVLinii,
   pocetPitiek,
@@ -60,12 +59,6 @@ function vPitke(lok: string, strany: GameState["strany"], seed = 7): GameState {
     pitkaCislo: 1,
     pitkaStav: pitkaStav(0),
   };
-}
-
-/** Zhromaždenie na lokalite `lok` (hráč 0 na ťahu, limit 2). */
-function vZhromazdeni(lok: string, strany: GameState["strany"], ruka: CardInstance[]): GameState {
-  const s = vPitke(lok, strany);
-  return sHracom({ ...s, faza: "zhromazdenie", pitkaStav: null, pitkaCislo: 0, zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] } }, 0, { ruka });
 }
 
 describe("sada v7 — dáta", () => {

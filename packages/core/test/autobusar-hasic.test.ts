@@ -1,8 +1,6 @@
-// Autobusár a Hasič (Michal 2026-10-26, brainstorming kariet).
-// Autobusár, variant A „dôsledný“: jeden Absťák ignoruje všade, kde sa v bitke
-// rátajú — v poškodení, pri remíze v tuhom aj v špakoch víťaza.
-// Hasič: Nástup vytiahne náhodnú kartu z vlastného odhadzovacieho balíčka (aj
-// kliatbu) a hráč sa rozhodne, či si ju nechá v ruke, alebo ju vráti.
+// Hasič (Michal 2026-10-26, brainstorming kariet): Nástup vytiahne náhodnú kartu
+// z vlastného odhadzovacieho balíčka (aj kliatbu) a hráč sa rozhodne, či si ju
+// nechá v ruke, alebo ju vráti.
 // Očakávané hodnoty sú z pravidla, nie z kódu.
 
 import { describe, expect, it } from "vitest";
@@ -10,69 +8,14 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, Event, GameState, MarkerPos, PlacedCard, PlayerId } from "../src/index.ts";
-import { apply, legalCommands, loadGameData, naTahu, rngSeed, setupGame, stavkaBitky, tahBota, viewFor } from "../src/index.ts";
+import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
+import { apply, legalCommands, loadGameData, naTahu, rngSeed, setupGame, tahBota, viewFor } from "../src/index.ts";
 import { naexOdkryte } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 let uidSeq = 770000;
 const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
-
-// ---------------------------------------------------------------------------
-// Autobusár
-
-function bitka(b: Partial<BitkaStav>): BitkaStav {
-  return {
-    krok: null,
-    caka: null,
-    sums: [{}, {}],
-    exekutorHotovy: [true, true],
-    exekutor: [0, 0],
-    pohorsenieZostava: [0, 0],
-    damage: null,
-    vitaz: null,
-    prebytokDrzi: null,
-    prebytokZostava: 0,
-    prebytokPosunute: [],
-    benzinkaZostava: [0, 0],
-    karHotovy: [true, true],
-    spalit: [],
-    vesticaHotova: true,
-    ...b,
-  };
-}
-
-/**
- * Bitka o Krčmu čaká na posledné Pohoršenie hráča 0; potom sa poškodenie
- * vyhodnotí zo súčtov `sums`. Hráč 0 má priznaných `abstaky[0]` Absťákov,
- * hráč 1 `abstaky[1]`; s `autobusar` leží Autobusár v partii hráča 0.
- */
-function predPoskodenim(o: { sums: BitkaStav["sums"]; abstaky: readonly [number, number]; autobusar: boolean; pitky?: number }): GameState {
-  const s0 = setupGame(data, 5);
-  const abstaky = (n: number): CardInstance[] => Array.from({ length: n }, () => inst("abstak"));
-  const strany: GameState["strany"] = [o.autobusar ? [{ card: inst("autobusar"), playedBy: 0 }] : [], []];
-  return {
-    ...s0,
-    faza: "bitka",
-    kolo: 3,
-    utocnik: 1,
-    strany,
-    ciel: { typ: "lokalita", lokalita: s0.lokalityVHre.find((k) => k.defId === "krcma") ?? inst("krcma") },
-    lokalityVHre: s0.lokalityVHre.filter((k) => k.defId !== "krcma"),
-    pitkaCislo: o.pitky ?? 2,
-    pitkyCelkom: o.pitky ?? 2,
-    starsi: s0.starsi.map((e) => ({ ...e, marker: 3 as MarkerPos })),
-    hraci: [
-      { ...s0.hraci[0], priznane: abstaky(o.abstaky[0]) },
-      { ...s0.hraci[1], priznane: abstaky(o.abstaky[1]) },
-    ],
-    bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0], sums: o.sums }),
-  };
-}
-
-const vyhodnot = (s: GameState) => apply(data, s, { type: "pohorsenie", elderId: s.starsi[0]!.elderId }, 0);
-
 
 // ---------------------------------------------------------------------------
 // Hasič

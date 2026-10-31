@@ -8,14 +8,12 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, ElderState, GameState, MarkerPos, PlayerId } from "../src/index.ts";
+import type { BitkaStav, CardInstance, ElderState, GameState, MarkerPos } from "../src/index.ts";
 import {
   apply,
-  eventsFor,
   loadGameData,
   setupGame,
   spakyTeraz,
-  vyplatZaStarsich,
   viewFor,
 } from "../src/index.ts";
 

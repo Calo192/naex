@@ -26,7 +26,6 @@ import {
   paleneDlhyVBitke,
   priazenZKluca,
   rozpisPoskodenia,
-  setupGame,
   tahBota,
   uidZaverecnej,
   viewFor,

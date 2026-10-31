@@ -12,18 +12,14 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, Event, GameState, PlacedCard, PlayerId } from "../src/index.ts";
+import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   apply,
   bitkaMody,
   evaluateLine,
-  pohorseniaVBitke,
-  krcmaVyzaduje,
-  legalCommands,
   lineState,
   loadGameData,
   moznostiNaex,
-  naTahu,
   poskodenieBitky,
   rozpisPoskodenia,
   setupGame,
@@ -71,27 +67,6 @@ function vPitke(strany: GameState["strany"], naTahu: PlayerId = 0, n: Nastavenie
 
 /** Kam smie hráč p dať NA EX — aj keď práve nie je na ťahu (vyberá skryto, každý vo svojej časti Pitky). */
 const naexCiele = (s: GameState, p: PlayerId): number[] => moznostiNaex(data, s, p);
-
-/**
- * Pitka naraz: kto je na ťahu, dá svoje NA EX (v poradí zo zoznamu) a skončí.
- * Zastaví sa, keď sa čaká na odpoveď na odkryté NA EX alebo keď Pitka skončí.
- */
-function odohraj(s: GameState, naex: readonly [readonly number[], readonly number[]]): { state: GameState; logy: string[] } {
-  let t = s;
-  const logy: string[] = [];
-  const zostava = [[...naex[0]], [...naex[1]]];
-  for (let i = 0; i < 20 && t.faza === "pitka" && t.vizia === null && t.pitkaStav !== null && t.pitkaStav.reakcia === null; i++) {
-    const p = naTahu(t);
-    if (p === null) break;
-    const u = zostava[p]?.shift();
-    const r = apply(data, t, u === undefined ? { type: "skipNaex" } : { type: "naex", uid: u }, p);
-    for (const e of r.events as Event[]) if (e.type === "log") logy.push(e.text);
-    t = r.state;
-  }
-  return { state: t, logy };
-}
-
-const dlhy = (s: GameState, p: PlayerId): number => s.hraci[p].dlhy;
 
 
 describe("Svokra (Bitka: Rana za každú tvoju kartu so súperovým NA EX)", () => {

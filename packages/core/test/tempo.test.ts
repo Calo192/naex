@@ -6,7 +6,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, parseScorecards, rozlozRod, setupGame } from "../src/index.ts";
+import { KONSTANTY, apply, buildGameData, legalCommands, loadGameData, parseScorecards, rozlozRod } from "../src/index.ts";
 import { EMPTY, instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
 import { setupSBalickom } from "./helpers.ts";
 

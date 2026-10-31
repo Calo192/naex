@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, ElderState, Event, GameState, PlacedCard, PlayerId } from "../src/index.ts";
-import { apply, battleOutcome, loadGameData, prebytokNaRozdelenie, setupGame } from "../src/index.ts";
+import { apply, loadGameData, setupGame } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -53,11 +53,6 @@ function vBitke(strany: GameState["strany"], b: Partial<BitkaStav>, uprav: (s: G
 }
 
 const logy = (events: readonly Event[]): string[] => events.flatMap((e) => (e.type === "log" ? [e.text] : []));
-
-/** Hráč 0 doloží posledné Pohoršenie — bitka potom vyhodnotí poškodenie zo súčtov `sums`. */
-function poPohorseni(s: GameState) {
-  return apply(data, s, { type: "pohorsenie", elderId: s.starsi[0]!.elderId }, 0);
-}
 
 describe("bitka hlási, čo zmenší či zruší Nakladačka a Pohoršenia", () => {
 

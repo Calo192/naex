@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { ClientState, Command, GameState, MarkerPos, PlayerId } from "../src/index.ts";
+import type { Command, GameState, MarkerPos, PlayerId } from "../src/index.ts";
 import {
   apply,
   cenaKliatby,

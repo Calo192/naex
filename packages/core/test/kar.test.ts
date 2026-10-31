@@ -7,8 +7,8 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, GameState, PlacedCard } from "../src/index.ts";
-import { apply, legalCommands, loadGameData, setupGame } from "../src/index.ts";
+import type { CardInstance, GameState } from "../src/index.ts";
+import { apply, loadGameData, setupGame } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
