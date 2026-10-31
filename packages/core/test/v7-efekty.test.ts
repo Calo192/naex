@@ -284,6 +284,19 @@ describe("efekty v línii (v7)", () => {
     for (const a of ["Petelica", "Pecka", "Rana"] as const) expect((ev.zdroje[1][a] ?? []).some((z) => z.uid === kult.uid)).toBe(false);
   });
 
+  it("Výtržník prebíja Úplatok (v9.3): staré úplatky Rany neoslabia a nový sa ponúknuť nedá", () => {
+    const kult = inst("kulturista");
+    const vytrznik = (x: Partial<PlacedCard>): GameState =>
+      ({ ...vPitke("zastavka", [[], [lezi(inst("zamocnik"), 0), lezi(kult, 1, { naexBy: 0, naexBy2: 1, vytrznik: true, ...x })]]), pitkaStav: pitkaStav(0) }) as GameState;
+    const rany = (s: GameState): number => (evaluateLine(data, lineState(s)).zdroje[1].Rana ?? []).filter((z) => z.uid === kult.uid).length;
+    const bez = vytrznik({});
+    expect(rany(bez)).toBeGreaterThan(0);
+    // Úplatky spred zrážky (z predošlej Pitky kola) na karte ležia, ale Výtržníkove Rany ostávajú všetky.
+    expect(rany(vytrznik({ uplatky: 2 }))).toBe(rany(bez));
+    expect(legalCommands(data, bez, 0).some((c) => c.type === "uplatok")).toBe(false);
+    expect(() => apply(data, bez, { type: "uplatok", uid: kult.uid }, 0)).toThrow();
+  });
+
   it("Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)", () => {
     const kroko = inst("krokodil");
     const moj = inst("zamocnik");

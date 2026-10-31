@@ -21,9 +21,9 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
     kluc: "Dlh",
     nazov: "Hazard",
     popis:
-      `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — je hneď priznaný (počítadlo, nie karta). ` +
-      "Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov, " +
-      "so súperovou priazňou Exekútora o 1 / 2 / 3 viac; pri remíze v bitke prehráva, kto má viac priznaných Dlhov.",
+      `Zvýši zadĺženie o 1. V Pitke za každé ${KONSTANTY.PRAH_DLHU_ZAKLAD} zadĺženia získaš Dlh — je hneď priznaný (počítadlo, nie karta), zvyšok zadĺženia ostáva na ďalšiu Pitku. ` +
+      "Za priznané Dlhy príde v každej bitke Exekútor: spáli ti polovicu priznaných Dlhov (zaokrúhlene nahor) a rovnako veľa špakov " +
+      "(tvoja priazeň Advokáta špaky uberie). Pri remíze v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov.",
   },
   {
     kluc: "PoškodeniePečene",
@@ -34,7 +34,10 @@ export const AKCIE_20261019: readonly { readonly kluc: string; readonly nazov: s
   {
     kluc: "Cigareta",
     nazov: "Cigareta",
-    popis: "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi šenok, Dedičstvo a doliatie poldeci, vyfajčená cigareta = karta hneď.",
+    popis:
+      "V Pitke dostaneš 1 cigaretu (mínus súperove Obmedzenia). Cigarety sa prenášajú — platíš nimi šenok, Dedičstvo, doliatie poldeci, Kšefty aj fajčenie: " +
+      `v Pitke dobereš kartu, prvé fajčenie v Pitke stojí ${KONSTANTY.CENA_FAJCENIA_ZAKLAD} cigaretu, druhé ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + KONSTANTY.CENA_FAJCENIA_PRIRASTOK}, ` +
+      `tretie ${KONSTANTY.CENA_FAJCENIA_ZAKLAD + 2 * KONSTANTY.CENA_FAJCENIA_PRIRASTOK}…`,
   },
   { kluc: "Obmedzenie", nazov: "Obmedzenie", popis: "Súper dostane v Pitke o 1 cigaretu menej." },
   {
@@ -55,9 +58,9 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Rana", "Rana", "1 tuhé poškodenie."),
   A("Pecka", "Pecka", "2 tuhé poškodenia."),
   A("Petelica", "Petelica", "3 tuhé poškodenia."),
-  A("Povera", "Povera", "Poškodzuje: mäkké poškodenie proti súperovým priznaným Dlhom (najviac toľko, koľko ich má). So súperovou Vierou sa ruší 1 : 1."),
+  A("Povera", "Povera", "Ohovára staršieho. So súperovou Vierou sa ruší 1 : 1. Každá zvyšná Povera posunie v bitke silu priazne jedného staršieho o stupeň k tebe (najviac na 3) do konca kola — marker sa nehýbe."),
   A("Viera", "Viera", "Znižuje súperovo tuhé poškodenie o 1 za kus; Veriaci pridá Vieru navyše +1 / +2 / +3. So súperovou Poverou sa ruší 1 : 1."),
-  A("Pohoršenie", "Pohoršenie", "Bod na posun markera ľubovoľného staršieho k súperovi alebo k sebe: pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4. Vyberieš staršieho a smer, marker ide, kým Pohoršenia stačia — priazeň sa mení hneď, vyhodnocuje sa ako prvé, bez ohľadu na výsledok bitky."),
+  A("Pohoršenie", "Pohoršenie", "Bod na posun markera ľubovoľného staršieho k súperovi alebo k sebe: pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4. Vyberieš staršieho a smer, marker ide, kým Pohoršenia stačia — priazeň sa mení hneď, vyhodnocuje sa v bitke hneď po Poverách, bez ohľadu na výsledok bitky. Na staršieho v ohrození nesmie."),
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
   A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
@@ -93,17 +96,18 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
     "Dedičstvo",
     "Pasívny bonus Nástroja, kým leží v tvojej hracej oblasti. Vyloženie do Dedičstva stojí cigarety — cena rastie spoločne pre oboch: prvý Nástroj v hre 1 cigaretu, druhý 2, tretí 3…",
   ),
-  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu (máš vyššie tuhé poškodenie). Pri rovnakom tuhom nevyhrá nikto — lokalita ide na sekeru."),
-  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu (máš nižšie tuhé poškodenie). Pri rovnakom tuhom neprehrá nikto — lokalita ide na sekeru."),
+  // Remízu v tuhom rozhodujú Absťáky, potom priznané Dlhy (battleOutcome, §9.4); sekera až keď nerozhodne nič.
+  S("Výhra", "Uplatní sa, keď vyhráš bitku o lokalitu: máš vyššie tuhé poškodenie, pri rovnakom tuhom menej Absťákov a pri ich rovnosti menej priznaných Dlhov. Keď nerozhodne ani to, nevyhrá nikto — špaky kola idú na sekeru."),
+  S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Absťákov a pri ich rovnosti viac priznaných Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."),
   // Kšeft (v7, Michal 2026-10-27): aktívny efekt za cenu; Prestávka a Exekúcia zanikli (nemali kartu).
-  S("Kšeft", "Aktívny efekt: za cenu (cigarety, poldeci, Dlh, karta) ho spustíš sám v Pitke na svojom ťahu, každú kartu raz za Pitku. Kšeft lokality smie použiť každý hráč."),
+  S("Kšeft", "Aktívny efekt: za cenu (cigarety, poldeci, Dlh, karta) ho spustíš sám v Pitke, kým ju neskončíš — každú kartu raz za Pitku; Kšeft nie je ťah. Kšeft lokality smie použiť každý hráč, Kšeft väzňa (Väzeň — Kšeft) len hráč, ktorý toho staršieho drží ako väzňa."),
   // Konflikt, Úplatok a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14).
   S("Konflikt", "Spustí sa, keď táto karta leží v línii a súper k nej priloží svoju kartu. Keď prikladáš ty, Konflikt nevyvoláš; priložený Nástroj, NA EX ani zrážka ho nespúšťajú."),
-  S("Úplatok", "Súper smie v Pitke na svojom ťahu dať na túto kartu cigaretu, raz za Pitku; cigareta prepadne."),
+  S("Úplatok", "Súper smie v Pitke, kým ju neskončil, dať na túto kartu cigaretu, raz za Pitku; cigareta prepadne."),
   S("Exekúcia", "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
-  P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — zober a prezri si 5 kariet, potom ich vráť."),
+  P("preskúmaj", ["preskúmať", "preskúma"], "Preskúmanie — prezrieš si karty, ktoré efekt určí (napr. celý doberací balíček), a vrátiš ich."),
   // Michal 2026-10-20: prevaha v kraji rozhoduje o akciách hrany lokality.
   {
     slovo: "Prevaha",

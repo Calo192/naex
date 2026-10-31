@@ -2008,3 +2008,30 @@ Zo špecifikácie vypadli znenia, ktoré už v hre neplatia:
 - §11: „výnimka je Milujúca manželka, ktorá je aj Občan“ a riadok „Milujúca manželka — áno,
   pri priznaní si hráč hneď dobere kartu“ — od v7 nie je Kliatba, priznať sa nedá.
 - §17: heslo „Náhrada“ (patrilo k patronátu, žiadna karta ho nepoužíva).
+
+## v9.3 — Výtržník prebíja Úplatok (Michal 2026-10-31)
+
+Interview po audite pravidiel (`docs/napady/audit-pravidiel-v92.html`). Michal: „Výtržník prebíja
+úplatky, keď sa karta dostane do stavu výtržník — neberie ohľad.“ Značka partií ostáva `v9`;
+stránka Pravidlá odteraz ukazuje presnú verziu (`VERZIA_PRAVIDIEL_PRESNA`, Michal: „Pravidlá majú
+vždy odzrkadľovať aktuálne správanie nasadenej verzie hry.“).
+
+Do v9.2 Úplatok znižoval aj Rany Výtržníka — jediná cigareta zmenila všetky jeho Rany na nič
+a Úplatok sa dal na Výtržníka dať aj v ďalšej Pitke kola. Staré znenie §16 (Kulturista, po audite):
+
+> **Úplatok (v7, Kulturista):** opak Kšeftu — platí súper. V Pitke na svojom
+> ťahu (nie pri odpovedi na NA EX) smie dať na súperovu kartu s Úplatkom
+> 1 cigaretu, raz za Pitku na kartu. Každá zníži do konca kola útoky karty
+> o stupeň: Petelica → Pecka → Rana → nič (akcia ostáva spárovaná, len sa
+> neráta). Cigareta prepadne (nikto ju nedostane). **Stav hry (audit 2026-10-31, Michal
+> nerozhodol):** keď je z Kulturistu Výtržník (§7), Úplatok znižuje aj jeho Rany — už jediná
+> cigareta zmení všetky Rany Výtržníka na nič (`partia.ts` `utokPoUplatku`).
+
+Staré znenie §7 (Úplatok):
+
+> **Úplatok** je opak Kšeftu: platí **súper**. Na súperovu odkrytú kartu
+> s Úplatkom (Kulturista) smie hráč v Pitke, kým ju neskončil, dať 1 cigaretu, raz
+> za Pitku na kartu; účinok je na karte (§16), cigareta prepadne.
+
+Hlavička PRAVIDLA.md predtým: „Pravidlá v9 (zmrazené 2026-10-30), dávky v9.1 a v9.2“;
+stránka Pravidlá písala „Pravidlá v9, platné od 30. 10. 2026“.

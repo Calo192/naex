@@ -34,7 +34,7 @@ const TRVANIE_ISKRY_MS = 1200;
 function miestoKarty(view: ZarStola["view"], uid: number): { readonly majitel: PlayerId; readonly miesto: "ruka" | "linia"; readonly uplatky: number } | null {
   for (const strana of view.strany) {
     const pl = strana.find((x) => x.card.uid === uid);
-    if (pl !== undefined) return { majitel: pl.playedBy, miesto: "linia", uplatky: pl.uplatky ?? 0 };
+    if (pl !== undefined) return { majitel: pl.playedBy, miesto: "linia", uplatky: pl.vytrznik === true ? 0 : (pl.uplatky ?? 0) };
   }
   return view.ruka.some((k) => k.uid === uid) ? { majitel: view.ja, miesto: "ruka", uplatky: 0 } : null;
 }

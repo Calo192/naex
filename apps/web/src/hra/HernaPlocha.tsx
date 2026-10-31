@@ -6306,9 +6306,9 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
       </span>,
     );
   }
-  // Úplatok (v7): cigareta na súperovho Kulturistu, raz za Pitku na kartu.
+  // Úplatok (v7): cigareta na súperovho Kulturistu, raz za Pitku na kartu; na Výtržníka nie (v9.3).
   for (const pl of [...view.strany[0], ...view.strany[1]]) {
-    if (pl.playedBy !== su || pl.card.defId !== "kulturista" || pl.zaverecna === true || (pitka.uplatok ?? []).includes(pl.card.uid)) continue;
+    if (pl.playedBy !== su || pl.card.defId !== "kulturista" || pl.zaverecna === true || pl.vytrznik === true || (pitka.uplatok ?? []).includes(pl.card.uid)) continue;
     const uid = pl.card.uid;
     out.push(pecatNakupu({ kluc: `uplatok${uid}`, nazov: "Úplatok", cena: 1, dovod: h.cigarety < 1 ? "Úplatok stojí cigaretu." : null, tip: `Úplatok: cigareta na súperovho Kulturistu — jeho útoky budú do konca kola o stupeň slabšie (teraz ${pl.uplatky ?? 0}).`, akcia: () => cmd({ type: "uplatok", uid }) }));
   }

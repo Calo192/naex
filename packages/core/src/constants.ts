@@ -202,9 +202,16 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // (Nervák zanikol), Nakladačka vo finále → špaky 1 : 1, Zastávka (karta zo šenku po 1. Pitke), Pasca Rana.
 // v9.2 (Michal 2026-10-30) bez novej značky — ide s v9.1: šenok začína obranca (1. ťah 1 karta),
 // NA EX sa odkrývajú naraz, odpovede na NA EX lícom dole (útočník, potom obranca na druhý kraj).
+// v9.3 (Michal 2026-10-31) bez novej značky: Výtržník prebíja Úplatok.
 export const VERZIA_PRAVIDIEL = "v9";
-/** Odkedy platí VERZIA_PRAVIDIEL — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-30";
+/**
+ * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
+ * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
+ * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
+ */
+export const VERZIA_PRAVIDIEL_PRESNA = "v9.3";
+/** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
+export const PRAVIDLA_PLATNE_OD = "2026-10-31";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

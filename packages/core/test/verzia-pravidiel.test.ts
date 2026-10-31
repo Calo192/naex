@@ -5,7 +5,7 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { PRAVIDLA_PLATNE_OD, VERZIA_PRAVIDIEL } from "../src/constants.ts";
+import { PRAVIDLA_PLATNE_OD, VERZIA_PRAVIDIEL, VERZIA_PRAVIDIEL_PRESNA } from "../src/constants.ts";
 
 const pravidla = readFileSync(new URL("../../../docs/PRAVIDLA.md", import.meta.url), "utf8");
 
@@ -15,15 +15,19 @@ describe("verzia pravidiel", () => {
     expect(VERZIA_PRAVIDIEL).not.toMatch(/^\d{4}-/);
   });
 
+  it("presná verzia na stránke Pravidlá je dávka tej istej značky („v9.3“ pri „v9“)", () => {
+    expect(VERZIA_PRAVIDIEL_PRESNA).toMatch(/^v\d+(\.\d+)?$/);
+    const presna: string = VERZIA_PRAVIDIEL_PRESNA;
+    expect(presna === VERZIA_PRAVIDIEL || presna.startsWith(`${VERZIA_PRAVIDIEL}.`)).toBe(true);
+  });
+
   it("dátum platnosti je skutočný dátum RRRR-MM-DD", () => {
     expect(PRAVIDLA_PLATNE_OD).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(new Date(`${PRAVIDLA_PLATNE_OD}T00:00:00Z`).toISOString().slice(0, 10)).toBe(PRAVIDLA_PLATNE_OD);
   });
 
-  // TODO(v5): PRAVIDLA.md prepíše na v5 iný agent po rozhodnutiach Michala
-  // (docs/pravidla-v5/davka.md) — potom skip zrušiť, hlavička musí sedieť s jadrom.
   it("hlavička PRAVIDLA.md sedí s jadrom", () => {
     const hlavicka = pravidla.split(/\r?\n/).slice(0, 6).join(" ");
-    expect(hlavicka).toContain(`Pravidlá ${VERZIA_PRAVIDIEL} (zmrazené ${PRAVIDLA_PLATNE_OD})`);
+    expect(hlavicka).toContain(`Pravidlá ${VERZIA_PRAVIDIEL_PRESNA} (platné od ${PRAVIDLA_PLATNE_OD})`);
   });
 });

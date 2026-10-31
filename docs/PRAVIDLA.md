@@ -1,10 +1,18 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v9 (zmrazené 2026-10-30), dávky v9.1 a v9.2** — krok 2 revízie starších (Michal 2026-10-30,
+**Pravidlá v9.3 (platné od 2026-10-31)** — v9 zmrazené 2026-10-30 (krok 2 revízie starších, Michal 2026-10-30,
 docs/napady/starsi-krok2-zadanie.html, rozhodnutia O1–O10), dávka v9.1 (Chuť,
-Nakladačka vo finále, quick wins z ULTRA playtestu 20261030-115654) a v9.2 (šenok, NA EX naraz,
-odpovede lícom dole). Sada kariet v53 (`cards.json`), audit textu proti hre 2026-10-31. Pravidlá sa
-menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií ostáva `v9`).
+Nakladačka vo finále, quick wins z ULTRA playtestu 20261030-115654), v9.2 (šenok, NA EX naraz,
+odpovede lícom dole) a v9.3 (Výtržník prebíja Úplatok). Sada kariet v53 (`cards.json`), audit textu proti hre 2026-10-31. Pravidlá sa
+menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií ostáva `v9`; presnú verziu
+ukazuje stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v9.3 oproti v9.2** (Michal 2026-10-31, interview po audite pravidiel `docs/napady/audit-pravidiel-v92.html`;
+staré znenia v `docs/pravidla-historia.md`, sekcia v9.3):
+
+- **Výtržník prebíja Úplatok** (§7, §16 Kulturista): kým je karta Výtržníkom, úplatky na nej
+  sa na jej akcie neuplatnia — ani tie, ktoré dostala pred zrážkou. Na Výtržníka sa Úplatok
+  dať nedá (hra ho neponúkne, cigareta by prepadla naprázdno).
 
 **Zmeny v9.2 oproti v9.1** (Michal 2026-10-30; staré znenia v `docs/pravidla-historia.md`, sekcia v9.2):
 
@@ -609,7 +617,9 @@ NA EX ako vždy: pečeň +1 tomu, kto NA EX dal,
 a v bitke sa vypijú oba poldeci (§9.5); Svokra majiteľa
 karty ju ráta ako kartu so súperovým NA EX. **Po bitke Výtržník
 vytriezvie** — karta má znova pôvodné akcie; Výtržníkom je len počas jednej
-bitky.
+bitky. **Výtržník prebíja Úplatok** (v9.3, Michal 2026-10-31): kým je karta Výtržníkom,
+úplatky na nej sa na jej akcie neuplatnia — ani tie, ktoré dostala pred zrážkou — a nový
+Úplatok na ňu dať nemožno (nižšie).
 
 Príklad (v6.1): karta má na hrane pri susedovi Posilnenie proti jeho Pecke a vedľa
 neho Ranu bez partnera. Bez zrážky dá sused Pecku ×2. Keď je z karty Výtržník, jej
@@ -743,7 +753,9 @@ Hazard nespraví), NA EX na kartu pri lokalite hranu nemení (×2 ostáva).
 
 **Úplatok** je opak Kšeftu: platí **súper**. Na súperovu odkrytú kartu
 s Úplatkom (Kulturista) smie hráč v Pitke, kým ju neskončil, dať 1 cigaretu, raz
-za Pitku na kartu; účinok je na karte (§16), cigareta prepadne.
+za Pitku na kartu; účinok je na karte (§16), cigareta prepadne. Na **Výtržníka**
+Úplatok dať nemožno — hra ho neponúkne (v9.3): Výtržník úplatky neberie na vedomie
+a cigareta by prepadla naprázdno.
 
 ### Počet Pitiek
 
@@ -1648,9 +1660,11 @@ nie Konflikt.
 ťahu (nie pri odpovedi na NA EX) smie dať na súperovu kartu s Úplatkom
 1 cigaretu, raz za Pitku na kartu. Každá zníži do konca kola útoky karty
 o stupeň: Petelica → Pecka → Rana → nič (akcia ostáva spárovaná, len sa
-neráta). Cigareta prepadne (nikto ju nedostane). **Stav hry (audit 2026-10-31, Michal
-nerozhodol):** keď je z Kulturistu Výtržník (§7), Úplatok znižuje aj jeho Rany — už jediná
-cigareta zmení všetky Rany Výtržníka na nič (`partia.ts` `utokPoUplatku`).
+neráta). Cigareta prepadne (nikto ju nedostane). **Výtržník prebíja Úplatok** (v9.3,
+Michal 2026-10-31): keď je z Kulturistu Výtržník (§7), všetky jeho Rany platia bez ohľadu
+na úplatky — aj na tie z predošlej Pitky kola, ktoré na karte ležia ďalej — a ďalší Úplatok
+naňho dať nemožno. Výtržníkom ostáva do konca bitky, takže úplatky spred zrážky
+už neplatia vôbec.
 
 | Karta | Výklad |
 |---|---|
@@ -1736,7 +1750,7 @@ cigareta zmení všetky Rany Výtržníka na nič (`partia.ts` `utokPoUplatku`).
 | Konflikt | spúšťač (v7): efekt ležiacej karty, keď k nej súper priloží svoju; vlastné priloženie, Nástroj, NA EX ani zrážka ho nespúšťajú (§6, §16) |
 | Vyvolať Konflikt | priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (§16) |
 | Kšeft | spúšťač (v7): aktívny efekt za cenu, spustíš ho sám v Pitke, kým ju neskončíš, každú kartu raz za Pitku (§7) |
-| Úplatok | spúšťač (v7): súper platí cigaretou za oslabenie tvojej karty, raz za Pitku; cigareta prepadne (§7, §16) |
+| Úplatok | spúšťač (v7): súper platí cigaretou za oslabenie tvojej karty, raz za Pitku; cigareta prepadne; na Výtržníka nie (v9.3, §7, §16) |
 | Pakt | akcia (v7): na spoji sa správa ako akcia, s ktorou je v páre (§2) |
 | Čiarky na účte | zadĺženie pod prahom Dlhu; od v7 neprepadá ani po Pitke, ani po kole (D6, §8) |
 | Kraj | polovica línie od lokality, pomenovaná podľa hrany lokality (Krčma: pri výčape / pri dverách) (§6) |
@@ -1773,7 +1787,7 @@ cigareta zmení všetky Rany Výtržníka na nič (`partia.ts` `utokPoUplatku`).
 | Strana | polovica línie od lokality — tvoja a súperova (§6) |
 | Šenok | ponuka kariet lícom nahor; obaja vidia, čo berú (§5) |
 | Útočník / obranca | útočník je **porazený z minulej bitky** (v prvom kole náhodne, pri sekere ostáva; vo finále menej špakov, §14b) — vykladá prvý a na NA EX odpovedá prvý (lícom dole); obranca je víťaz minulej bitky — volí a natáča cieľ, berie zo šenku prvý (na prvom ťahu 1 kartu, v9.2), na NA EX odpovedá druhý na druhý kraj línie; Pitku hrajú obaja naraz (§4, §7) |
-| Výtržník | karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka): všetky jej akcie sú aktívne Rany pre majiteľa, len počas jednej bitky (§7) |
+| Výtržník | karta, na ktorú obaja dali NA EX v tej istej Pitke (zrážka): všetky jej akcie sú aktívne Rany pre majiteľa, len počas jednej bitky; úplatky na ňu neplatia (v9.3) (§7) |
 | Vypiť | otočiť plný poldeci na vypitý: limit −1, pečeň +1, ďalšia karta v tom istom ťahu (§13) |
 | Výkupné | po finále 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, bez stropu (§14) |
 | Záverečná | karta lícom dole za cigaretu, ukončí vykladanie v Zhromaždení; otočí sa na konci Pitky (§13) |

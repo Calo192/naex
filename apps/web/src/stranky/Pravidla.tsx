@@ -5,7 +5,7 @@
 // pod myšou a slovník je na konci.
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { PRAVIDLA_PLATNE_OD, VERZIA_PRAVIDIEL } from "@naex/core";
+import { PRAVIDLA_PLATNE_OD, VERZIA_PRAVIDIEL_PRESNA } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
@@ -25,7 +25,7 @@ const obrazokKapitoly = (meno: string): string | null =>
 
 /** „2026-10-24“ → „24. 10. 2026“ — tak, ako dátum píšu hráči. */
 const [rokPlatnosti, mesiacPlatnosti, denPlatnosti] = PRAVIDLA_PLATNE_OD.split("-").map(Number);
-const VERZIA = `Pravidlá ${VERZIA_PRAVIDIEL}, platné od ${denPlatnosti}. ${mesiacPlatnosti}. ${rokPlatnosti}`;
+const VERZIA = `Pravidlá ${VERZIA_PRAVIDIEL_PRESNA}, platné od ${denPlatnosti}. ${mesiacPlatnosti}. ${rokPlatnosti}`;
 
 /** Kam dopadne skok na kotvu: pod lepkavú hlavičku webu, na mobile aj pod lištu „N / 15“. */
 function odsadenie(): number {

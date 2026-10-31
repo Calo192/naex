@@ -819,7 +819,7 @@ export function HracDoska({
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
                 Každé {prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh (v7). Za priznané Dlhy príde v každej bitke
-                Exekútor: zhorí polovica Dlhov (zaokrúhlene nahor) a toľko špakov, so súperovou priazňou Exekútora o 1 / 2 / 3 viac. Záhradkár v tvojej partii ho v tom kole obíde.
+                Exekútor: zhorí polovica Dlhov (zaokrúhlene nahor) a toľko špakov, tvoja priazeň Advokáta z nich uberie 1 / 2 / 3. Záhradkár v tvojej partii ho v tom kole obíde.
               </>
             ),
           }}

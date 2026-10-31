@@ -15,6 +15,8 @@ nesie jeho definícia. Kód nečítaj sám, všetko robí agent.
    > docs/upratovanie/stav.json“>`. Postupuj podľa svojej definície: vetva
    > `upratovanie/<dátum>`, správanie nemeníš (odtlačok pred = po), najviac
    > okolo 800 zmenených riadkov, výstup PR do master. Do master nemerguj.
+   > Úlohy z poľa `naRade` v `docs/upratovanie/stav.json` (zadal ich Michal) majú
+   > prednosť pred poradím častí (`poradie`, `dalsia`) — vezmi ich ako prvé.
 
    V cloudovej routine (bez lokálneho disku F:) dočasné súbory patria do
    `/tmp` a PR otvor nástrojom na GitHub, ktorý je v behu dostupný.

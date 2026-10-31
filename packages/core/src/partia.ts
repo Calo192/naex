@@ -371,7 +371,9 @@ function makeElem(
     naexBy,
     vieraAkoVizia: false,
     premena: pl?.premena,
-    uplatky: pl?.uplatky ?? 0,
+    // Výtržník prebíja Úplatok (v9.3, Michal 2026-10-31): úplatky spred zrážky na karte
+    // ostávajú, ale kým je Výtržníkom, jej Rany neoslabujú.
+    uplatky: pl?.vytrznik === true ? 0 : (pl?.uplatky ?? 0),
     dovody: [0, 1].map(() => [[], [], [], []]),
     zrusil: [0, 1].map(() => [null, null, null, null]),
     posilnene: [],

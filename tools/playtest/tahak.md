@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v9.2, 2026-10-30; sada v53)
+# Ťahák — platné pravidlá NA EX! (v9.3, 2026-10-31; sada v53)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -127,7 +127,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nepočíta (aj cena Kšeftu a NA EX).
 - **Úplatok (v7, Kulturista):** na súperovho Kulturistu smieš v každej Pitke dať 1 cigaretu
   (`{"type":"uplatok","uid":…}`); každá zníži do konca kola jeho útoky o stupeň (Petelica → Pecka →
-  Rana → nič). Cigareta prepadne.
+  Rana → nič). Cigareta prepadne. **Výtržník prebíja Úplatok** (v9.3): na Kulturistu-Výtržníka
+  Úplatok dať nemožno a úplatky spred zrážky jeho Rany neoslabia.
 - **Konflikt (v7):** efekt **ležiacej** karty, keď k nej **súper** priloží svoju (aj odpoveďou na NA EX;
   Záverečná až pri otočení). Keď prikladáš ty k svojej, nič; priložený Nástroj nič; NA EX ani zrážka nič.
   Najprv Nástup priloženej karty, potom Konflikt. Veľmi smútiaca vdova (priložený Chlap po bitke z hry),

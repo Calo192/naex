@@ -30,6 +30,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["šenok začína obranca (v9.2)", "Branie striedavo, **začína obranca (v9.2)**"],
     ["šenok prvý ťah (v9.2)", `**kto berie prvý, na svojom prvom ťahu vezme len ${pocet(KONSTANTY.SENOK_PRVY_TAH, "kartu", "karty", "kariet")}**`],
     ["odpovede lícom dole (v9.2)", "najprv **útočník**, potom **obranca na druhý kraj línie**"],
+    ["Výtržník prebíja Úplatok (v9.3)", "**Výtržník prebíja Úplatok** (v9.3): na Kulturistu-Výtržníka"],
     ["Zastávka (v9.1)", "Zastávka (v9.1: po **prvej Pitke kola** si každý vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca"],
     ["pojmy stupnice (v8.3)", "**pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**"],
     ["Povery (v8.3)", "**každá zvyšná Povera posunie silu priazne jedného staršieho o stupeň k tebe**"],

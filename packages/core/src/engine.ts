@@ -4075,7 +4075,10 @@ function cmdKseftVazna(s: MutState, data: GameData, cmd: { elderId: string; kart
   pitka.kseft = pouzite;
 }
 
-/** Súperove Kulturistovia, na ktoré hráč p smie v tejto Pitke dať Úplatok (v7). */
+/**
+ * Súperove Kulturistovia, na ktoré hráč p smie v tejto Pitke dať Úplatok (v7).
+ * Na Výtržníka nie (v9.3): Výtržník úplatky neberie na vedomie, cigareta by prepadla naprázdno.
+ */
 export function moznostiUplatku(data: GameData, state: GameState, p: PlayerId): Command[] {
   const pitka = state.pitkaStav;
   if (state.faza !== "pitka" || pitka === null || pitka.reakcia !== null || state.vizia !== null || pitka.hotovy[p]) return [];
@@ -4083,7 +4086,7 @@ export function moznostiUplatku(data: GameData, state: GameState, p: PlayerId): 
   const opp = opponentOf(p);
   if (efektPotlaceny(data, state, opp, "kulturista")) return [];
   return partiaHraca(state, opp)
-    .filter((pl) => pl.card.defId === "kulturista" && pl.zaverecna !== true && !(pitka.uplatok ?? []).includes(pl.card.uid))
+    .filter((pl) => pl.card.defId === "kulturista" && pl.zaverecna !== true && pl.vytrznik !== true && !(pitka.uplatok ?? []).includes(pl.card.uid))
     .map((pl) => ({ type: "uplatok", uid: pl.card.uid }) as Command);
 }
 
