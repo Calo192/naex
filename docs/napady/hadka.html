@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hádka — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 16px 12px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); } .box.mer { border-color: var(--modra); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.v2 { color: var(--oranzova); } .chip.v3 { color: var(--slaby); } .chip.m { color: var(--modra); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a, .ovl button { flex: none; font: inherit; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+details.q { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details.q[open] { padding-bottom: 10px; border-color: var(--akcent); }
+details.q summary { cursor: pointer; padding: 10px 0; list-style: none; }
+details.q summary::-webkit-details-marker { display: none; }
+.qid { font: 700 .95rem Georgia, serif; color: var(--akcent); margin-right: 4px; }
+.qt { font-weight: 600; }
+.volba { margin-left: 6px; color: var(--zelena); font-weight: 700; }
+ol.moznosti { list-style: none; padding: 0; margin: 8px 0; }
+li.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--plocha-2); }
+li.moz.rec { border-color: var(--zelena); }
+li.moz label { display: block; cursor: pointer; }
+li.moz span:not(.chip) { display: block; font-size: .9rem; color: var(--tlmeny); margin-top: 2px; }
+li.moz input { accent-color: var(--akcent); }
+.pozn { display: block; font-size: .8rem; color: var(--slaby); margin-top: 6px; }
+.pozn textarea { width: 100%; font: inherit; font-size: .9rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px; margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .8rem; }
+tbody th { font-family: Georgia, serif; width: 28%; font-weight: 600; }
+.tab { overflow-x: auto; }
+@media (max-width: 560px) { .tab.stack tr { display: block; border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  .tab.stack th, .tab.stack td { display: block; border: 0; padding: 2px 4px; width: auto; }
+  .tab.stack thead { display: none; }
+  .tab.stack td::before { content: attr(data-l); display: block; font-size: .72rem; color: var(--slaby); } }
+#vystup { width: 100%; min-height: 120px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+details.q, section, h2 { scroll-margin-top: 52px; }
+.kroky { counter-reset: k; list-style: none; padding: 0; }
+.kroky li { position: relative; padding-left: 30px; margin-bottom: 8px; }
+.kroky li::before { counter-increment: k; content: counter(k); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); color: #1a1410; font-weight: 700; font-size: .8rem; text-align: center; line-height: 22px; }
+pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; font-size: .82rem; overflow-x: auto; }
+.ok { color: var(--zelena); } .zle { color: var(--cervena); }
+</style>
+</head>
+<body>
+<main>
+<h1>Hádka — mäkké poškodenie o priazne</h1>
+<p class="mini">nápad Michala · verzia 1 · 2026-10-31 · pravidlá ani kód sa zatiaľ nemenia · nahradil by Povery „Výpožička priazne“ (§9.1, <code>docs/napady/povery.html</code>) a Pohoršenie ako posun markera (§9.2)</p>
+
+<div class="box zv">
+  <p><b>Problém (Michal):</b> „Keď hráč posúva priazne starších, či už Pohoršením alebo Poverami, môže nastať situácia, že jeden hráč posunie marker staršieho a druhý to vzápätí zmení toho istého staršieho.“</p>
+  <p><b>Prečo to vzniká:</b> obaja majú rovnakú moc nad tým istým markerom, v oboch smeroch a jeden po druhom. Útočník rozdeľuje vždy posledný a obrancove posuny vidí (§9.1 bod 4, §9.2 Poradie), takže má vždy posledné slovo. Pri 2 na 2 (U1 → O1 → U2 → O2) by sa marker prehadzoval štyrikrát.</p>
+  <p><b>Michalov nápad:</b> Poškodenie bude <b>tuhé</b> (Rana, Pecka, Petelica) a <b>mäkké</b> (Pohoršenie, Povera). Popri bitke sa hrá <b>hádka</b> len na mäkké. Víťaz hádky rozdelí priazne starších <b>len k sebe</b>, marker strachu sa nehýbe a priazne platia do konca kola. Potom sa vyhodnotí bitka s priazňami po hádke.</p>
+</div>
+
+<div class="box rec" id="rozhodnute">
+  <h2 style="margin-top:0;border:0;padding:0">Rozhodnuté (Michal 2026-10-31, v chate)</h2>
+  <ol class="kroky">
+    <li><b>Mäkké poškodenie:</b> Pohoršenie = 1 mäkké, Povera = 2 mäkké.</li>
+    <li><b>Hádku vyhrá</b>, kto má viac mäkkého. Víťaz rozdeľuje <b>rozdiel</b> mäkkého (ako Nakladačka). Porazený v hádke nerozdeľuje nič.</li>
+    <li><b>Len k sebe:</b> každý bod posúva <b>silu priazne</b> vybraného staršieho k víťazovi hádky. Môže súperovi priazeň znížiť, preklopiť ju k sebe aj zosilniť vlastnú, súperovi ju dať nesmie. Voľba smeru zaniká, víťaz vyberá len staršieho.</li>
+    <li><b>Marker sa nehýbe:</b> strach, udržanie a zaplatené stupne sa nemenia (§10). Markery hýbe už len Nakladačka (a zajatie, Kapybara, Predsedova vila).</li>
+    <li><b>Cena podľa zóny ako pri Nakladačke:</b> von zo stredu 1 / 2 / 3, k stredu o 1 drahšie (2 / 3 / 4). Strop je sila 3 pre víťaza. Bod, ktorý už na žiadny posun nestačí, prepadne.</li>
+    <li><b>Platí do konca kola</b>, teda v bitke (Bitkár, Veriaci), v exekúcii (Advokát, Robota) aj po bitke (Kmotor, Fajčiar, Alkoholik). Potom zanikne.</li>
+    <li><b>Viera je štít proti Poverám aj proti tuhému.</b> S Poverami sa ruší 1 : 1 ako dnes (jedna Viera zruší jednu Poveru, teda 2 mäkké). Zvyšná Viera tlmí tuhé v poškodení. Proti Pohoršeniu Viera nepomáha.</li>
+  </ol>
+</div>
+
+<nav class="skupiny" aria-label="Časti">
+  <a href="#znenie">Znenie</a><a href="#priklad">Príklad</a><a href="#co-riesi">Čo rieši</a><a href="#karty">Karty a dáta</a><a href="#rizika">Riziká</a><a href="#otazky">Otázky</a><a href="#volby">Voľby</a>
+</nav>
+
+<h2 id="znenie">Návrh znenia (pre §9)</h2>
+<div class="box">
+  <p><b>Krok bitky 1 · Hádka</b> (nahrádza dnešné kroky 1 Povery a 2 Pohoršenie):</p>
+<pre>1. Viera a Povery sa vyrušia 1 : 1
+     cancel = min(viera[ja], povery[súper]);  obom sa odpočíta
+     Čierna mačka: majiteľove Povery sa s Vierou nerušia
+2. mäkké[ja] = Pohoršenie×1 + zvyšné_Povery×2 + Abstinent (otázka H1)
+3. víťaz hádky = vyššie mäkké;  rovnosť = nikto
+   hádka = |rozdiel mäkkého|
+4. víťaz hádky rozdelí hádku na sily priazní (len k sebe, cena podľa zóny,
+   strop 3); marker sa nehýbe; platí do konca kola</pre>
+  <p>Potom <b>krok 3 Poškodenie</b> ako dnes: zvyšná Viera tlmí tuhé, Bitkár a Veriaci pôsobia účinnou silou po hádke (otázka H2). Ďalej výsledok, špaky, exekúcia a Nakladačka bez zmeny.</p>
+  <p class="mini">Účinná sila priazne = sila z markera ± posun z hádky, orezaná na −3 … +3. V jadre už je <code>ucinnaPriazen</code> (elders.ts) s klebetami. Hádka by do nich len zapisovala namiesto Povier.</p>
+</div>
+
+<h2 id="priklad">Príklad</h2>
+<div class="box">
+  <p><b>Ana</b> aktivovala 2 Pohoršenia a 2 Povery. <b>Boris</b> 1 Pohoršenie, 1 Poveru a 1 Vieru.</p>
+  <ul>
+    <li>Borisova Viera zruší jednu Aninu Poveru. Ana: 2 + 1×2 = <b>4 mäkké</b>. Boris (Ana Vieru nemá): 1 + 2 = <b>3 mäkké</b>.</li>
+    <li>Ana vyhrala hádku o <b>1</b>. Fajčiar je v strede a Ana si ho za 1 preklopí na svoju žltú: priazeň sily 1 do konca kola, teda cigareta po bitke. Marker Fajčiara ostal v strede.</li>
+  </ul>
+  <p><b>Väčšia hádka:</b> rozdiel 5 a Boris má Bitkára v sile 2 (oranžová na jeho strane). Ana má dve cesty:</p>
+  <ul>
+    <li><b>Zobrať</b>: oranžová → žltá 3 a žltá → stred 2 = 5. Borisov Bitkár v tejto bitke nedá nič.</li>
+    <li><b>Získať</b>: Advokát zo stredu na jej žltú 1, žltá → oranžová 2 (Advokát 2), Veriaci zo stredu 1, Robota zo stredu 1. Borisov Bitkár bije ďalej.</li>
+  </ul>
+  <p class="mini">Toto je rozhodnutie, ktoré hádka pridáva: brániť sa proti súperovej priazni, alebo si nabrať vlastné. Súper ho nemôže zvrátiť.</p>
+</div>
+
+<h2 id="co-riesi">Čo rieši</h2>
+<div class="box rec">
+  <ul>
+    <li><b>Prepisovanie zmizne úplne.</b> Rozdeľuje len víťaz hádky a len k sebe, takže súper nemá čo vrátiť. Poradie obranca a útočník v tomto kroku nehrá rolu a pri 2 na 2 netreba riešiť poradie U1 → O1 → U2 → O2.</li>
+    <li><b>Rozdelenie bude čisté:</b> tuhé → bitka → Nakladačka → marker a strach (trvalé, špaky); mäkké → hádka → priazeň na toto kolo.</li>
+    <li><b>Pitka dostane skutočnú voľbu:</b> aktivovať tuhé (lokalita, špaky, Nakladačka), alebo mäkké (priazne na toto kolo). Bitku sa dá prehrať a hádku vyhrať.</li>
+    <li><b>Dať priazeň súperovi</b> ostane len pri Nakladačke, kde ju vyberá porazený.</li>
+    <li>Pravidlá sa skrátia: z §9.1 aj §9.2 zostane jeden krok s jednou cenovou tabuľkou, ktorú hráči poznajú z Nakladačky.</li>
+  </ul>
+</div>
+
+<h2 id="karty">Čo to spraví s kartami a dátami</h2>
+<div class="tab stack box"><table>
+  <thead><tr><th>Čo</th><th>Dnes</th><th>Po hádke</th></tr></thead>
+  <tbody>
+    <tr><th>Akcie v sade</th><td data-l="Dnes">≈ 32 Pohoršení, ≈ 35 Povier (súčet akcií po stranách v <code>cards.json</code>)</td><td data-l="Po hádke">mäkkého ≈ 32 + 70 = 102, tuhého ≈ 41 + 110 + 66 = 217 (Rana, Pecka, Petelica)</td></tr>
+    <tr><th>Telefón</th><td data-l="Dnes">„Dedičstvo: Tvoje Pohoršenia k stredu stoja toľko ako von.“</td><td data-l="Po hádke">Pohoršenie už markerom nehýbe. Nový text, napr. „Tvoje body hádky k stredu stoja toľko ako von.“ (Admin)</td></tr>
+    <tr><th>Šarlatán</th><td data-l="Dnes">„Konflikt: … Hazard rátajú ako Viera a Povery ako Rana.“</td><td data-l="Po hádke">funguje ďalej: súperove Povery sa z mäkkého presunú do tuhého</td></tr>
+    <tr><th>Čierna mačka</th><td data-l="Dnes">„Furt: Tvoje Povery sa Vierou nerušia.“</td><td data-l="Po hádke">bez zmeny: jej Povery dajú vždy 2 mäkké</td></tr>
+    <tr><th>Abstinent</th><td data-l="Dnes">Pohoršenia navyše +1 / +2 / +3</td><td data-l="Po hádke">mäkké navyše, otázka H1</td></tr>
+    <tr><th>Achievement „Pohoršenie“</th><td data-l="Dnes">posuň Pohoršením markery spolu aspoň o {prah} (<code>achievementy.json</code>)</td><td data-l="Po hádke">nová metrika, napr. „vyhraj hádku o aspoň {prah}“</td></tr>
+    <tr><th>Cigarety za Nakladačku</th><td data-l="Dnes">Pohoršenie sa neráta</td><td data-l="Po hádke">bez zmeny</td></tr>
+  </tbody>
+</table></div>
+<p class="mini">Dotknuté miesta pre neskoršiu implementáciu: PRAVIDLA.md §2 (tabuľka akcií), §9 (tabuľka krokov), §9.1, §9.2, §9.3, §10 (Abstinent, text o cene posunu a smere); jadro (bitka, <code>ucinnaPriazen</code>), <code>bot.ts</code>, <code>tools/playtest/tahak.md</code>, výučba Prvá hra, stôl (súhrn bitky, log hádky).</p>
+
+<h2 id="rizika">Riziká a čo zmerať</h2>
+<div class="box riz">
+  <ul>
+    <li><b>Povera za 2 môže byť príliš silná.</b> Pohoršenie by bolo slabšia sestra, ktorú zachráni len to, že ho Viera nezastaví. Zmerať Poveru za 2 aj za 1.</li>
+    <li><b>Snehová guľa:</b> hádka posilní Bitkára a ten pomôže vyhrať bitku. Silnejší v Pitke môže vyhrať oboje. Zmerať, ako často vyhrá hádku aj bitku ten istý hráč.</li>
+    <li><b>Pomalšia ekonomika strachu:</b> markery hýbe už len Nakladačka, takže strach (a špaky za udržanie) bude menej ovládateľný. Odtlačiť stupeň, ktorý by súperovi zaplatil koniec kola, môže len porazený pri Nakladačke.</li>
+    <li><b>Hluchá hádka:</b> keď víťaz už má všetky použiteľné priazne v sile 3, body prepadnú. Pravdepodobne zriedkavé.</li>
+  </ul>
+</div>
+<div class="box mer"><p><b>Čo zmerať (stratég, worktree, turnaj botov proti dnešku):</b> strategickosť (rebrík, duplikát), „vedúci pred finále vyhrá“, podiel bitiek, v ktorých víťaz hádky vyhrá aj bitku, priemerná veľkosť hádky, ktoré priazne víťazi hádky berú (zobrať vs. získať), a Povera 2 vs. 1. Bot sa musí najprv naučiť rozdeliť hádku (<code>naex-bot-trener</code>).</p></div>
+
+<h2 id="otazky">Otázky pre Michala</h2>
+<div class="ovl"><button type="button" id="rozbal">Rozbaliť všetko</button><button type="button" id="zbal">Zbaliť</button></div>
+
+<details class="q" id="H1" open>
+  <summary><span class="qid">H1</span> <span class="qt">Abstinent</span><span class="volba"></span></summary>
+  <p>Dnes dáva Pohoršenia navyše, po zmene by dával mäkké. Problém: jeho sila sa dá hádkou meniť, no zároveň do hádky vstupuje (kruh). A kto ho má, vyhrá hádku ľahšie a s ňou ďalšie priazne (snehová guľa).</p>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="H1" value="A · mäkké navyše podľa sily z markera (pred hádkou)"> <b>A · Mäkké navyše podľa markera</b> <span class="chip ok">odporúčam</span></label><span>+1 / +2 / +3 mäkké podľa sily z markera, nie po hádke. Kruh zmizne, Abstinent ostane tým, čím je. Snehová guľa sa meria.</span></li>
+    <li class="moz"><label><input type="radio" name="H1" value="B · pridá k výhre hádky (len víťazovi)"> <b>B · Pridá k výhre hádky</b></label><span>„Ak vyhráš hádku, rozdelíš o +1 / +2 / +3 viac.“ Nerozhodne, kto hádku vyhrá, len koľko víťaz dostane. Menej snehovej gule, ale pri prehratej hádke nič.</span></li>
+    <li class="moz"><label><input type="radio" name="H1" value="C · štít v hádke (zníži súperovo mäkké)"> <b>C · Štít v hádke</b></label><span>„Súperovo mäkké −1 / −2 / −3.“ Abstinent sa nedá pohoršiť, je to obrana namiesto útoku. Tematicky sedí, Viera chráni pred Poverou, Abstinent pred Pohoršením.</span></li>
+    <li class="moz"><label><input type="radio" name="H1" value="D · iná priazeň namiesto Abstinenta"> <b>D · Iná priazeň</b></label><span>Abstinent zanikne a scorecard dostane novú priazeň (návrh pripraví Vymyselník).</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="H1" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="H2">
+  <summary><span class="qid">H2</span> <span class="qt">Veriaci: s akou silou ráta Vieru</span><span class="volba"></span></summary>
+  <p>Viera vstupuje do hádky (ruší Povery), takže Veriaci sa musí rátať pred hádkou. Hádka však môže Veriaceho zmeniť a potom by zvyšok mal tlmiť tuhé.</p>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="H2" value="A · proti Poverám sila pred hádkou, rozdiel po hádke na tuhé"> <b>A · Dve časti</b> <span class="chip ok">odporúčam</span></label><span>Proti Poverám ráta Viera Veriaceho so silou pred hádkou. Čo hádka Veriacemu pridá alebo uberie, sa prejaví v tlmení tuhého. Pritiahnuť si Veriaceho v hádke tak má zmysel.</span></li>
+    <li class="moz"><label><input type="radio" name="H2" value="B · len raz, pred hádkou (ako dnes)"> <b>B · Len raz, pred hádkou</b></label><span>Jednoduchšie, ale Veriaci by bol v hádke zbytočný cieľ.</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="H2" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="H3">
+  <summary><span class="qid">H3</span> <span class="qt">Hodnota Povery</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="H3" value="A · Povera 2, overiť meraním"> <b>A · Povera 2 mäkké, overiť</b> <span class="chip ok">odporúčam</span></label><span>Podľa nápadu. Viera ju ruší, preto je cennejšia ako Pohoršenie. Stratég zmeria aj variant 1.</span></li>
+    <li class="moz"><label><input type="radio" name="H3" value="B · Povera 1"> <b>B · Povera 1 mäkké</b></label><span>Obe mäkké akcie rovnako, rozdiel je len v tom, že Poveru zastaví Viera.</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="H3" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="H4">
+  <summary><span class="qid">H4</span> <span class="qt">Starší v ohrození (pokus o zajatie)</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="H4" value="A · smie, marker sa nehýbe"> <b>A · Smie</b> <span class="chip ok">odporúčam</span></label><span>Dnešný zákaz (O8) chráni marker pred posunom počas zajatia. Hádka markerom nehýbe, takže zákaz nie je potrebný.</span></li>
+    <li class="moz"><label><input type="radio" name="H4" value="B · nesmie (ako dnes Pohoršenie)"> <b>B · Nesmie</b></label><span>Starší v ohrození nedá v tomto kole hádkou nikomu nič.</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="H4" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="H5">
+  <summary><span class="qid">H5</span> <span class="qt">Remíza v hádke</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="H5" value="A · nikto nerozdeľuje"> <b>A · Nikto</b> <span class="chip ok">odporúčam</span></label><span>Rozdiel je 0, takže nie je čo rozdeliť. Žiadne ďalšie rozhodovanie (Absťáky, Dlhy).</span></li>
+    <li class="moz"><label><input type="radio" name="H5" value="B · rozhodne obranca"> <b>B · Obranca</b></label><span>Pri remíze vyhrá obranca, ale nemá čo rozdeliť. Má zmysel len vtedy, ak hádka dáva aj niečo iné (napr. Abstinent B).</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="H5" rows="2"></textarea></label>
+</details>
+
+<details class="q" id="H6">
+  <summary><span class="qid">H6</span> <span class="qt">Pojmy</span><span class="volba"></span></summary>
+  <ol class="moznosti">
+    <li class="moz rec"><label><input type="radio" name="H6" value="A · hádka, mäkké poškodenie, víťaz hádky"> <b>A · Hádka a mäkké poškodenie</b> <span class="chip ok">odporúčam</span></label><span>„Mäkké“ sa vracia s jasným významom. Body na rozdelenie sú „hádka“ (ako „Nakladačka“).</span></li>
+    <li class="moz"><label><input type="radio" name="H6" value="B · hádka, body klebiet"> <b>B · Hádka a klebety</b></label><span>Namiesto „mäkké poškodenie“ len „klebety“, aby sa nemiešali s poškodením v bitke.</span></li>
+  </ol>
+  <label class="pozn">Poznámka<textarea data-pozn="H6" rows="2"></textarea></label>
+</details>
+
+<h2 id="volby">Moje voľby</h2>
+<textarea id="vystup" readonly></textarea>
+<div class="ovl"><button type="button" id="kopiruj">Kopírovať</button><button type="button" id="vymaz">Vymazať voľby</button></div>
+</main>
+<script>
+(function () {
+  var KLUC = "naex-hadka-v1";
+  var ulozene = {};
+  try { ulozene = JSON.parse(localStorage.getItem(KLUC) || "{}"); } catch (e) {}
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(ulozene)); } catch (e) {} vypis(); }
+  function vypis() {
+    var riadky = [];
+    document.querySelectorAll("details.q").forEach(function (d) {
+      var v = ulozene[d.id], p = ulozene[d.id + "_p"];
+      var el = d.querySelector(".volba"); if (el) el.textContent = v ? "→ " + v.split(" · ")[0] : "";
+      if (v || p) riadky.push(d.id + ": " + (v || "?") + (p ? " — " + p : ""));
+    });
+    document.getElementById("vystup").value = riadky.length ? riadky.join("\n") : "(zatiaľ nič nevybrané)";
+  }
+  document.querySelectorAll("li.moz input").forEach(function (i) {
+    if (ulozene[i.name] === i.value) i.checked = true;
+    i.addEventListener("change", function () { ulozene[i.name] = i.value; uloz(); });
+  });
+  document.querySelectorAll("textarea[data-pozn]").forEach(function (t) {
+    var k = t.getAttribute("data-pozn") + "_p"; t.value = ulozene[k] || "";
+    t.addEventListener("input", function () { ulozene[k] = t.value.trim(); uloz(); });
+  });
+  document.getElementById("rozbal").onclick = function () { document.querySelectorAll("details.q").forEach(function (d) { d.open = true; }); };
+  document.getElementById("zbal").onclick = function () { document.querySelectorAll("details.q").forEach(function (d) { d.open = false; }); };
+  document.getElementById("kopiruj").onclick = function () {
+    var t = document.getElementById("vystup"); t.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(t.value); else document.execCommand("copy");
+  };
+  document.getElementById("vymaz").onclick = function () {
+    if (!confirm("Vymazať všetky voľby a poznámky?")) return;
+    ulozene = {}; uloz();
+    document.querySelectorAll("li.moz input").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll("textarea[data-pozn]").forEach(function (t) { t.value = ""; });
+  };
+  function otvor(id) { var d = document.getElementById(id); if (d && d.tagName === "DETAILS") d.open = true; }
+  if (location.hash) otvor(location.hash.slice(1));
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) { a.addEventListener("click", function () { otvor(a.getAttribute("href").slice(1)); }); });
+  vypis();
+})();
+</script>
