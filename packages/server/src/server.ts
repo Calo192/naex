@@ -64,6 +64,7 @@ import {
   zapisTahKariet,
 } from "@naex/core";
 import { otvorDb } from "./db.ts";
+import { zlucUcty } from "./zlucenie.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { Ucty, jeSpravca } from "./auth.ts";
 import { Media } from "./media.ts";
@@ -471,6 +472,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           poZverejneni: () => undefined,
           stavServera,
           nastavUzavierku,
+          zlucUcty: (z, doId, skusobne) => zlucUcty(db, z, doId, skusobne),
           vyucbaKrokov: scenarVyucby.kroky.length,
           vyucbaVerzia: scenarVyucby.verzia ?? null,
           postupVyucby,

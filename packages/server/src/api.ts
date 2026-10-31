@@ -33,6 +33,7 @@ import type { Novinky } from "./novinky.ts";
 import type { Dielna } from "./dielna.ts";
 import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
+import type { VysledokZlucenia } from "./zlucenie.ts";
 import { overKategoriu as overKategoriuNazoru, overSkupinu } from "./nazory.ts";
 
 /** Rozohraná partia hráča — pilulka „Partia beží · Späť ku stolu“ v hlavičke mimo stola. */
@@ -132,6 +133,8 @@ export interface ApiKontext {
   readonly vyucbaPreHracov: boolean;
   /** Zapne alebo vypne uzávierku; vráti nový stav. */
   readonly nastavUzavierku: (zapnut: boolean) => Uzavierka | null;
+  /** Zlúči duplikát `z` do účtu `doId` (zlucenie.ts); skusobne = nanečisto. */
+  readonly zlucUcty: (z: number, doId: number, skusobne: boolean) => VysledokZlucenia;
 }
 
 /** Postup výučby účtu podľa častí scenára (server.ts postupVyucby). */
@@ -1049,6 +1052,13 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const nove = ctx.prava.uloz(ja2, await citajJson(req));
       ctx.ucty.prepocitajRanky(nove.postup);
       return ok(nove);
+    }
+    // Zlúčenie duplicitného účtu (Michal 2026-10-31) — len admin: prepisuje cudzie dáta a maže účet.
+    if (metoda === "POST" && casti[2] === "pouzivatelia" && casti.length === 5 && casti[4] === "zluc") {
+      if (ja2.rola !== "admin") throw new ChybaVstupu("Zlúčiť účty smie len admin.", 403);
+      const b = await citajJson(req);
+      if (b.skusobne !== undefined && typeof b.skusobne !== "boolean") throw new ChybaVstupu("skusobne musí byť true alebo false.");
+      return ok(ctx.zlucUcty(Number(id), Number(b.do), b.skusobne === true));
     }
     if (metoda === "PATCH" && casti[2] === "pouzivatelia" && casti.length === 4) {
       const b = await citajJson(req);

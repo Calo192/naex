@@ -401,6 +401,11 @@ export class Ucty {
   }
 
   registruj(login: string, heslo: string, meno: string, teraz: number): Pouzivatel {
+    if (jeLoginAgentaSPriponou(login)) {
+      throw new ChybaVstupu(
+        `Prihlasovacie meno ${login} nie je povolené: AI agent má na webe jediný účet a login s číslom na konci (ai-…-2) sa nezakladá. Bez hesla k pôvodnému účtu to vráť Leaderovi.`,
+      );
+    }
     const existuje = this.db.prepare("SELECT 1 FROM pouzivatelia WHERE login = ?").get(login);
     // Meno admina je rezervované, aj kým ho konfigurácia nezaložila.
     if (existuje !== undefined || login.toLowerCase() === this.adminLogin.toLowerCase()) {
@@ -513,6 +518,14 @@ export class ChybaVstupu extends Error {
     super(message);
     this.status = status;
   }
+}
+
+/**
+ * Login agenta s číslom na konci (ai-admin-2, ai-dizajner-3) — tak vznikali duplicitné
+ * AI účty, keď pracovisko nenašlo heslo (zlúčené 2026-10-31). ai-dizajner-ui je iný agent, nie duplikát.
+ */
+export function jeLoginAgentaSPriponou(login: string): boolean {
+  return /^ai-.+-\d+$/i.test(login);
 }
 
 export function overLogin(login: unknown): string {

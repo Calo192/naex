@@ -5,8 +5,9 @@
 // deploy/.env.produkcia, Michal 2026-10-21), inak --url, NAEX_WEB_URL alebo
 // vývojový server http://localhost:8787. Každý agent tam má
 // vlastný účet „<meno> (AI)“; heslá sú v jednom súbore pre všetky pracoviská
-// (mimo gitu, tools/playtest/ucty.ts). „Admin (AI)“ má jediný účet — keď jeho
-// heslo chýba, nástroj skončí s chybou namiesto zakladania ai-admin-2.
+// (mimo gitu, tools/playtest/ucty.ts). Každý agent aj postava má jediný účet —
+// keď je login obsadený a heslo chýba, nástroj skončí s chybou; ai-admin-2 a pod.
+// nezakladá (server login s číslom na konci odmietne, duplikáty zlúči admin.ts zluc-ucty).
 // Nový účet je na webe návštevník (spätnú väzbu len číta) — nástroj ho preto
 // heslom admina (lokálne z .env, na živom webe z deploy/.env.produkcia) zaradí
 // ako hráča so značkou AI; jeho príspevky web predvolene skrýva (Michal 2026-10-21).
@@ -170,11 +171,10 @@ export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAge
   const kluc = klucWebu(url);
   const zaklad = loginAgenta(meno);
   let ucet = najdiUlozeny(nacitajUcty(subor)[kluc], zaklad);
-  // Ak je login na webe obsadený (napr. stratené heslá), postava skúsi zaklad-2, zaklad-3…
-  // Jediný účet (Admin) nie — každá prípona by bol ďalší „Admin (AI)“ na webe.
-  const pokusov = JEDINY_UCET.has(meno) ? 1 : 9;
-  for (let n = 1; ucet === undefined && n <= pokusov; n++) {
-    const novy = { login: n === 1 ? zaklad : `${zaklad}-${n}`, heslo: randomBytes(12).toString("base64url"), meno: menoAgenta(meno) };
+  // Obsadený login bez hesla (stratené heslá) sa nerieši príponou zaklad-2 — každá prípona bola
+  // ďalší „<meno> (AI)“ na webe (ai-admin-2…9, ai-dizajner-2…3) a server ju od 2026-10-31 odmietne.
+  if (ucet === undefined) {
+    const novy = { login: zaklad, heslo: randomBytes(12).toString("base64url"), meno: menoAgenta(meno) };
     const r = await volaj(url, "POST", "/registracia", "", novy);
     if (r.ok) {
       ucet = novy;
@@ -183,7 +183,7 @@ export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAge
       throw new Error(`Registrácia ${novy.login} na ${url} zlyhala.`);
     }
   }
-  if (ucet === undefined && JEDINY_UCET.has(meno)) {
+  if (ucet === undefined) {
     throw new Error(
       [
         `Účet ${zaklad} („${menoAgenta(meno)}“) na ${url} existuje, ale jeho heslo nie je v ${subor} (kľúč "${kluc}").`,
@@ -194,7 +194,6 @@ export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAge
       ].join("\n"),
     );
   }
-  if (ucet === undefined) throw new Error(`Pre agenta „${meno}“ sa nepodarilo založiť účet na ${url}.`);
   const r = await volaj(url, "POST", "/prihlasenie", "", { login: ucet.login, heslo: ucet.heslo });
   if (!r.ok) throw new Error(`Prihlásenie ${ucet.login} na ${url}: ${await r.text()}`);
   const cookie = (r.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
@@ -202,9 +201,6 @@ export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAge
   await nastavPohlaviePostavy(url, cookie, meno);
   return { ...ucet, cookie };
 }
-
-/** Agenti s jediným účtom na webe — po ai-admin-2…6 na živom webe (2026-10-26). */
-const JEDINY_UCET: ReadonlySet<string> = new Set(["Admin"]);
 
 /** Postavy playtesterov majú pohlavie (hraci.json) — hlášky v partii sa podľa neho skloňujú (Michal 2026-10-22). */
 async function nastavPohlaviePostavy(url: string, cookie: string, meno: string): Promise<void> {

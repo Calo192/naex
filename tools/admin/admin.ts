@@ -57,6 +57,9 @@
 //                                 pri hotove voliteľne novinka, v ktorej to je; pri zamietnute povinne jedna veta prečo
 //   playtesty                     reporty playtestov
 //   pouzivatelia                  účty na webe
+//   zluc-ucty <z-id> <do-id> [--potvrdene]   zlúči duplicitný účet do hlavného (reporty, názory, partie…) a duplikát
+//                                 zmaže; bez --potvrdene len vypíše, čo by sa stalo. Prihlasuje sa heslom admina z .env
+//                                 (živý web deploy/.env.produkcia) — agent ako subadmin na to nemá právo
 //   tempo [--json]                koľko trvajú partie a kde ide čas (fázy, príkazy) — roadmapa #9
 //   ucet                          prihlási agenta (prvýkrát založí a povýši účet)
 //   avatar <subor>                avatar účtu Admin (AI)
@@ -96,7 +99,7 @@ import eldersJson from "../../packages/core/data/elders.json" with { type: "json
 import scorecardsJson from "../../packages/core/data/scorecards.json" with { type: "json" };
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia } from "@naex/tvorba";
 import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkcie, variantyKarty } from "@naex/tvorba";
-import { nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
+import { adminWebu, nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
 import { MODEL, REFERENCIE, STYL_JADRO, REFERENCIE_PASU, STYL_PASU, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
@@ -115,6 +118,15 @@ interface Novinka {
   readonly text: string;
   readonly odkaz: string;
   readonly vydanie?: string;
+}
+
+/** Odpoveď POST /api/admin/pouzivatelia/:z/zluc (packages/server/src/zlucenie.ts). */
+interface VysledokZluceniaCli {
+  readonly z: { readonly id: number; readonly login: string; readonly meno: string };
+  readonly do: { readonly id: number; readonly login: string; readonly meno: string };
+  readonly skusobne: boolean;
+  readonly tabulky: readonly { readonly tabulka: string; readonly stlpec: string; readonly prepisane: number; readonly zahodene: number }[];
+  readonly relacie: number;
 }
 
 interface ObsahTvorcu {
@@ -512,6 +524,30 @@ async function main(): Promise<void> {
     }
     if (riadky.length === 0) console.log("Zatiaľ nič negenerované cez API.");
     else console.log(`${tabulka(["karta", "kolá", "obrázky", "cena"], riadky)}\nSpolu: ${spolu.toFixed(4)} (jednotka podľa API, pri PAYG USD)`);
+    return;
+  }
+
+  // Agent je subadmin — zlúčenie účtov smie len admin, preto heslo admina (.env, na živom webe deploy/.env.produkcia).
+  if (prikaz === "zluc-ucty") {
+    const [z, doId] = [Number(arg[0]), Number(arg[1])];
+    if (!Number.isInteger(z) || !Number.isInteger(doId)) throw new Error("Použitie: zluc-ucty <z-id> <do-id> [--potvrdene]");
+    const admin = adminWebu(url);
+    if (admin.heslo === undefined || admin.heslo === "") throw new Error(`Na zlúčenie treba heslo admina (NAEX_ADMIN_HESLO v .env, živý web deploy/.env.produkcia) pre ${url}.`);
+    const p = await volaj(url, "POST", "/api/prihlasenie", "", { login: admin.login, heslo: admin.heslo });
+    if (!p.ok) throw new Error(`Prihlásenie admina na ${url}: ${await p.text()}`);
+    const adminCookie = (p.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
+    try {
+      const v = await json<VysledokZluceniaCli>(await volaj(url, "POST", `/api/admin/pouzivatelia/${z}/zluc`, adminCookie, { do: doId, skusobne: !potvrdene }));
+      console.log(`${v.skusobne ? "NANEČISTO — " : ""}${v.z.id} ${v.z.meno} (${v.z.login}) → ${v.do.id} ${v.do.meno} (${v.do.login}) na ${url}`);
+      if (v.tabulky.length > 0) {
+        console.log(tabulka(["tabuľka", "stĺpec", "prepísané", "zahodené (kolízia)"], v.tabulky.map((t) => [t.tabulka, t.stlpec, String(t.prepisane), String(t.zahodene)])));
+      } else {
+        console.log("Duplikát nič nevlastní.");
+      }
+      console.log(`Relácie duplikátu: ${v.relacie} ${v.skusobne ? "by sa zrušili" : "zrušené"}. Účet ${v.z.login} ${v.skusobne ? "by sa zmazal — zlúčiť: --potvrdene" : "zmazaný"}.`);
+    } finally {
+      await volaj(url, "POST", "/api/odhlasenie", adminCookie);
+    }
     return;
   }
 

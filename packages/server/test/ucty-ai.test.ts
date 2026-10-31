@@ -116,14 +116,24 @@ describe("prihlasAgenta bez uloženého hesla", () => {
     expect(registracie).toEqual([]);
   });
 
-  it("postava playtestera si pri obsadenom logine založí ďalší ako doteraz", async () => {
+  it("ani postava playtestera pri obsadenom logine nezaloží ďalší s príponou", async () => {
     const subor = join(koren, "naex-ucty.json");
     writeFileSync(subor, "{}");
     vi.stubEnv("NAEX_UCTY", subor);
     const registracie = webSObsadenymi(["ai-jano-bitkar"]);
 
-    expect((await prihlasAgenta(ZIVY, "Jano Bitkár")).login).toBe("ai-jano-bitkar-2");
-    expect(registracie).toEqual(["ai-jano-bitkar", "ai-jano-bitkar-2"]);
-    expect(Object.keys(citajUcty(subor)[ZIVY] ?? {})).toEqual(["ai-jano-bitkar-2"]);
+    await expect(prihlasAgenta(ZIVY, "Jano Bitkár")).rejects.toThrow(/nový s príponou sa nezakladá/);
+    expect(registracie).toEqual(["ai-jano-bitkar"]);
+    expect(citajUcty(subor)).toEqual({});
+  });
+
+  it("nová postava si založí účet bez prípony", async () => {
+    const subor = join(koren, "naex-ucty.json");
+    writeFileSync(subor, "{}");
+    vi.stubEnv("NAEX_UCTY", subor);
+    const registracie = webSObsadenymi([]);
+
+    expect((await prihlasAgenta(ZIVY, "Jano Bitkár")).login).toBe("ai-jano-bitkar");
+    expect(registracie).toEqual(["ai-jano-bitkar"]);
   });
 });
