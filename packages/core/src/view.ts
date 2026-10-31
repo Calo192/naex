@@ -38,7 +38,6 @@ import { pocetAbstakov } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
 import {
-  MARKER_STRED,
   favourStarsieho,
   posunZaBody,
   priazenHraca,
@@ -592,7 +591,7 @@ export function rozpisSpakov(view: Pick<ClientState, "nastenka" | "koniec" | "sp
  * NA EX a Vypiť. Nepriznaná Cirhóza stojí na konci SPAKY_ZA_CIRHOZU; Dlh sám
  * špaky neberie (trestá ho Exekútor a remíza).
  */
-export function cenaKliatby(_data: GameData, _view: ClientState, _p: PlayerId, defId: "dlh" | "cirhoza"): number {
+export function cenaKliatby(defId: "dlh" | "cirhoza"): number {
   return defId === "cirhoza" ? -KONSTANTY.SPAKY_ZA_CIRHOZU : 0;
 }
 
@@ -795,7 +794,7 @@ export interface StavkaBitky {
  * v8.1 neuberajú. Strach starších od v8.3 v stávke nie je — platí za udržanie
  * na konci kola, nech bitku vyhrá ktokoľvek.
  */
-export function stavkaBitky(data: GameData, view: ClientState): StavkaBitky | null {
+export function stavkaBitky(view: ClientState): StavkaBitky | null {
   if (view.ciel === null || view.koniec !== null) return null;
   const ja = view.ja;
   const su = opponentOf(ja);

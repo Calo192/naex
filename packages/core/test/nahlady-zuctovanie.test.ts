@@ -139,7 +139,7 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
     let bitky = 0;
     for (const { s, p, seed } of stavy) {
       const view = viewFor(data, s, p);
-      const ceny = ([0, 1] as const).map((q) => ({ cirhoza: cenaKliatby(data, view, q, "cirhoza"), dlh: cenaKliatby(data, view, q, "dlh") })) as [
+      const ceny = ([0, 1] as const).map(() => ({ cirhoza: cenaKliatby("cirhoza"), dlh: cenaKliatby("dlh") })) as [
         { cirhoza: number; dlh: number },
         { cirhoza: number; dlh: number },
       ];

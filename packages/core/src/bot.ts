@@ -29,19 +29,17 @@ import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
-import type { PlacedCard } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
 import { spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
 import { sPosunutymMarkerom, spakyZaStarsich, strachNaUdrzanieSpolu, strachZ, vydesil } from "./elders.ts";
-import { efektHraca, efektPotlaceny, jeCielLokalita, limitZhromazdenia, partiaHraca } from "./effects.ts";
+import { jeCielLokalita, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
 import type { Command, GameState } from "./engine.ts";
 import {
   apply,
-  barterCena,
   cieleVykladania,
   cielLokalitaId,
   krcmaVyzaduje,
@@ -49,7 +47,6 @@ import {
   sPrilozenou,
   krokStavby,
   legalCommands,
-  naexCieleVLinii,
   sNaexNaKartach,
   silaPriazne,
   lineState,
@@ -63,7 +60,6 @@ import {
   spakyZaVaznov,
   vazniHraca,
   priazen,
-  uidZaverecnej,
   verejneAbstaky,
   nepriznaneCirhozy,
   vykupneHraca,
@@ -213,7 +209,6 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   stryko_z_ameriky: 0.5,
   krokodil: 0.4,
   kon: 0.3,
-  kohut: 0.3,
   pijan: 0.3,
   degustatorka: 0.3,
   klebetnica: 0.3,
@@ -465,7 +460,7 @@ function buducnostHry(s: GameState): number {
  * oproti prehre je dvojnásobok. Strach starších od v8.3 v stávke nie je — platí
  * za udržanie na konci kola, nech bitku vyhrá ktokoľvek.
  */
-function stavkaBitky(_data: GameData, s: GameState, _ja: PlayerId): number {
+function stavkaBitky(s: GameState): number {
   if (s.ciel === null) return 0;
   // Pokus o zajatie (v9): víťaz bitky rozhodne, či bude väzeň.
   let pokusy = 0;
@@ -840,24 +835,6 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
   };
 }
 
-/**
- * Hodnota stavu, keď hráč q ešte dá najlepšie NA EX (alebo žiadne) — pre
- * odhad rundy „Ešte jednu!“, po ktorej príde nová Pitka.
- */
-function sNajlepsimNaex(k: Kontext, s: GameState, q: PlayerId, ostrost: number): number {
-  let best = hodnotaStavu(k, s, ostrost);
-  if (s.hraci[q].poldeciPlne <= 0) return best;
-  for (const uid of naexCieleVLinii(k.data, lineState(s), q)) {
-    const cielena = (pl: PlacedCard, si: number): boolean => pl.card.uid === uid || (pl.zaverecna === true && uid === uidZaverecnej(si as PlayerId));
-    const strany = s.strany.map((strana, si) => strana.map((pl) => (cielena(pl, si) ? { ...pl, naexBy: q } : pl))) as unknown as GameState["strany"];
-    const h = s.hraci[q];
-    const hrac = { ...h, poldeciPlne: h.poldeciPlne - 1, pecen: h.pecen + 1, nerestiTotoKolo: h.nerestiTotoKolo + 1 };
-    const po: GameState = { ...s, strany, hraci: q === 0 ? [hrac, s.hraci[1]] : [s.hraci[0], hrac] };
-    best = Math.max(best, hodnotaStavu(k, po, ostrost));
-  }
-  return best;
-}
-
 // ---------------------------------------------------------------------------
 // Rozhodnutie
 
@@ -929,7 +906,7 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   const k: Kontext = {
     data,
     ja,
-    stavka: stavkaBitky(data, state, ja),
+    stavka: stavkaBitky(state),
     buducnost: buducnostHry(state),
     povaha: povahaBota(nastavenia.povaha),
   };
@@ -986,7 +963,7 @@ function hodnotaHrany(hrana: readonly (Action | null)[]): number {
 }
 
 function volbaCiela(v: Volba): Command | null {
-  const { data, state, ja, k } = v;
+  const { data, state, ja } = v;
   // Lokalita: draft výsledok rozmaže, rozhoduje natočenie — hrana k mojej
   // strane sa páruje skôr s mojimi kartami.
   let lokalita: Command | null = null;
@@ -1252,7 +1229,7 @@ function pitka(v: Volba): Command | null {
     // NA EX naraz (v5): skryté NA EX sa ráta, akoby už ležalo na karte; súper
     // naň odpovie až po odkrytí — ak má čím.
     const poOdpovedi = (po0: GameState): number => {
-      let po = poOdkrytiNaex(data, po0, ja);
+      let po = poOdkrytiNaex(po0, ja);
       if (po.hraci[su].ruka.length > 0) {
         const odpoved = najlepsieVylozenie(k, po, po.hraci[su].ruka, su, Number.POSITIVE_INFINITY);
         if (odpoved !== null) {
@@ -1290,7 +1267,7 @@ function pitka(v: Volba): Command | null {
  * bitky (bitkaMody). Policajtka vo v7 za NA EX Dlh nedáva — len Konflikt
  * pri priložení, ten ráta simulácia vyloženia.
  */
-function poOdkrytiNaex(data: GameData, s: GameState, ja: PlayerId): GameState {
+function poOdkrytiNaex(s: GameState, ja: PlayerId): GameState {
   const pocet = (s.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === ja).length;
   const po = sNaexNaKartach(s);
   if (pocet === 0) return po;

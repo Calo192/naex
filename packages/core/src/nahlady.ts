@@ -19,11 +19,10 @@ import {
   poskodenieBitky,
   prebytokNaRozdelenie,
   sPrilozenou,
-  silaPriazne,
   bodyNaPohorsenie,
   zablokovaneStrany,
 } from "./engine.ts";
-import { efektHraca, efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
+import { efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
@@ -165,8 +164,8 @@ export function dopadyNahladu(
   const stav = (s: ClientState, p: PlayerId, dalsie: number) => {
     const sums = evaluateLine(data, lineState(s)).sums;
     // Vo Vízii je táto Pitka už vyhodnotená — ako nahladPitky.
-    const tato = s.vizia === null ? cigaretyZPitky(data, s, sums, s.pitkaCislo)[p] : 0;
-    const dalej = cigaretyZPitky(data, s, sums, s.pitkaCislo + 1)[p] * dalsie;
+    const tato = s.vizia === null ? cigaretyZPitky(sums)[p] : 0;
+    const dalej = cigaretyZPitky(sums)[p] * dalsie;
     const pohorsenia = pohorseniaVBitke(data, s, sums)[p];
     return {
       cigarety: s.hraci[p].cigarety + tato + dalej,
@@ -369,7 +368,7 @@ export interface NahladNaexNaKartu extends CenaTahu {
  * Najhoršia odpoveď súpera na NA EX z náhľadu `n` (najhorsiaOdpoved) — zvlášť,
  * lebo skúša celú sadu (≈ 7 ms na kartu): klient ju ráta len pre vybranú kartu.
  */
-export function najhorsiaOdpovedNaNaex(data: GameData, view: ClientState, n: NahladNaexNaKartu): NajhorsiaOdpoved | null {
+export function najhorsiaOdpovedNaNaex(data: GameData, n: NahladNaexNaKartu): NajhorsiaOdpoved | null {
   return najhorsiaOdpoved(data, n.odkrytie.view, n.dalsiePitky[1]);
 }
 
@@ -519,7 +518,6 @@ export function efektyPrehry(data: GameData, v: ClientState): EfektyPrehry {
     return ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
   };
   const pre = (porazeny: PlayerId): [number, number] => {
-    const vitaz = opponentOf(porazeny);
     const partia = partiaHraca(v, porazeny).filter((pl) => pl.zaverecna !== true);
     const dievcina = partia
       .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
@@ -564,7 +562,7 @@ export interface HrozbaKliatob {
 export function hrozbaKliatob(data: GameData, view: ClientState, hrac: PlayerId, smie: boolean): HrozbaKliatob | null {
   if (!smie || view.ciel === null || (view.faza !== "zhromazdenie" && view.faza !== "pitka")) return null;
   const obet = opponentOf(hrac);
-  const ceny = ([0, 1] as const).map((q) => ({ cirhoza: cenaKliatby(data, view, q, "cirhoza"), dlh: cenaKliatby(data, view, q, "dlh") })) as [CenyKliatob, CenyKliatob];
+  const ceny = ([0, 1] as const).map(() => ({ cirhoza: cenaKliatby("cirhoza"), dlh: cenaKliatby("dlh") })) as [CenyKliatob, CenyKliatob];
   const zacate = view.faza === "pitka" ? view.pitkaCislo : view.pitkaCislo + 1;
   const dPred = Math.max(0, view.pitkyCelkom - zacate);
   const dlhyPred = vyhladDlhov(data, view, dPred);

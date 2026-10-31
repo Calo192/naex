@@ -3,7 +3,6 @@
 // každý príkaz overí ako vždy, pravidlá sa nemenia.
 
 import type { Command } from "./engine.ts";
-import { partiaHraca } from "./effects.ts";
 import type { PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { ClientState } from "./view.ts";

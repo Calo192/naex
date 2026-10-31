@@ -209,8 +209,8 @@ function predNaex(s: GameState): boolean {
   return moznostiNaex(data, s, p).length > 0;
 }
 
-const cenyKliatob = (v: ClientState): [{ cirhoza: number; dlh: number }, { cirhoza: number; dlh: number }] =>
-  [0, 1].map((q) => ({ cirhoza: cenaKliatby(data, v, q as PlayerId, "cirhoza"), dlh: cenaKliatby(data, v, q as PlayerId, "dlh") })) as [
+const cenyKliatob = (): [{ cirhoza: number; dlh: number }, { cirhoza: number; dlh: number }] =>
+  [0, 1].map(() => ({ cirhoza: cenaKliatby("cirhoza"), dlh: cenaKliatby("dlh") })) as [
     { cirhoza: number; dlh: number },
     { cirhoza: number; dlh: number },
   ];
@@ -241,11 +241,11 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
       const su = supera(p);
       const view = viewFor(data, s, p);
       for (const uid of moznostiNaex(data, s, p)) {
-        const n = nahladNaexNaKartu(data, view, uid, cenyKliatob(view));
+        const n = nahladNaexNaKartu(data, view, uid, cenyKliatob());
         if (n === null) continue;
         const r = naOdpoved(s, p, uid);
         if (r === null) continue;
-        const najhorsia = najhorsiaOdpovedNaNaex(data, view, n);
+        const najhorsia = najhorsiaOdpovedNaNaex(data, n);
         const hranica = najhorsia === null ? hodnota(battleOutcome(n.po), p) : hodnota(najhorsia.vysledok, p);
         for (const c of legalCommands(data, r, su)) {
           // Odpoveď je bežné vyloženie (place) do línie.
@@ -275,9 +275,9 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
       const p = naTahu(s) as PlayerId;
       const view = viewFor(data, s, p);
       for (const uid of moznostiNaex(data, s, p)) {
-        const n = nahladNaexNaKartu(data, view, uid, cenyKliatob(view));
+        const n = nahladNaexNaKartu(data, view, uid, cenyKliatob());
         if (n === null) continue;
-        const o = najhorsiaOdpovedNaNaex(data, view, n);
+        const o = najhorsiaOdpovedNaNaex(data, n);
         if (o === null) continue;
         najdene++;
         expect(hodnota(o.vysledok, p)).toBeLessThan(hodnota(battleOutcome(n.po), p));
@@ -318,7 +318,7 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
       if (s.vazni.length > 0) continue;
       const view = viewFor(data, s, p);
       for (const uid of moznostiNaex(data, s, p)) {
-        const n = nahladNaexNaKartu(data, view, uid, cenyKliatob(view));
+        const n = nahladNaexNaKartu(data, view, uid, cenyKliatob());
         if (n === null || n.dalsiePitky[1] !== 0) continue;
         const t = doDalsiehoKola(apply(data, s, { type: "naex", uid }, p).state);
         if (t.koniec !== null || t.kolo === s.kolo || t.faza === "draft") continue;

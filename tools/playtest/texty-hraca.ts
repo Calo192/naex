@@ -88,7 +88,7 @@ export function bzdochaText(data: GameData, v: ClientState): string | null {
  * špakoch za bitku (stolPriPoskodeni). Bez cieľa null.
  */
 export function stavkaText(data: GameData, v: ClientState): string | null {
-  const st = stavkaBitky(data, stolPriPoskodeni(data, v, dalsiePitkyKola(data, v)));
+  const st = stavkaBitky(stolPriPoskodeni(data, v, dalsiePitkyKola(data, v)));
   if (st === null) return null;
   const rozpis = (sekera: number, herna: number): string => {
     const casti = [

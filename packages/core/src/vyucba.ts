@@ -316,13 +316,6 @@ export function zacniVyucbu(data: GameData, scenar: ScenarVyucby): GameState {
   return setupZRozdania(data, scenar.rozdanie);
 }
 
-/** Výsledok prehratia scenára po krok `po` (bez neho). */
-export interface StavVyucby {
-  readonly state: GameState;
-  /** Index nasledujúceho kroku (= počet vykonaných). */
-  readonly krok: number;
-}
-
 /**
  * Hráč dá Melicharovi 1 cigaretu zo svojho baru (za výučbu). Nie je to ťah
  * pravidiel, preto nejde cez apply — jadro ju len uberie.

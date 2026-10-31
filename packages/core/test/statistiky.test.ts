@@ -42,7 +42,7 @@ function odohraj(seed: number): { state: GameState; stat: DvojicaStatistik; udal
     udalosti.push(...vysledok.events);
     state = vysledok.state;
   }
-  return { state, stat: uzavriStatistiky(data, stat, state), udalosti };
+  return { state, stat: uzavriStatistiky(stat, state), udalosti };
 }
 
 describe("štatistiky partie", () => {

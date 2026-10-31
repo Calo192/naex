@@ -45,7 +45,7 @@ function partia(seed: number, bot: boolean): { s: GameState; k: StavKroniky; sta
     vysledky.push(...events.filter((e) => e.type === "bitkaVysledok"));
     s = po;
   }
-  return { s, k, stat: doplnNaexZKroniky(uzavriStatistiky(data, stat, s), k.kola), vysledky };
+  return { s, k, stat: doplnNaexZKroniky(uzavriStatistiky(stat, s), k.kola), vysledky };
 }
 
 describe("kronika partie", () => {

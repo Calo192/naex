@@ -1115,7 +1115,7 @@ export function HernaPlocha({
   // súperova Záverečná cez náhradné uid). Značka bez Kostola svietila aj tam (roadmapa #112).
   const naexCiele = useMemo(() => new Set(moznostiNaexVPohlade(data, view)), [data, view]);
   const pitka = view.pitkaStav;
-  const naexLimitMinuty = pitka !== null && naexLimitMinutyHraca(data, view, ja);
+  const naexLimitMinuty = pitka !== null && naexLimitMinutyHraca(view, ja);
   const naexMozny = somNaTahu && naexCiele.size > 0;
   // Kartu so značkou smieš rovno kliknúť.
   const naexPriamo = naexMozny;
@@ -1140,7 +1140,7 @@ export function HernaPlocha({
   const vypijemVTahu = plan?.poldeci ?? 0;
   // Stávka bitky (návrh 3 A): v pásme kola a pri potvrdení pasu.
   const stavka = useMemo(
-    () => (view.faza === "zhromazdenie" || view.faza === "pitka" ? stavkaBitky(data, view) : null),
+    () => (view.faza === "zhromazdenie" || view.faza === "pitka" ? stavkaBitky(view) : null),
     [data, view],
   );
   const nahladyPitky = useMemo(() => {
@@ -1153,11 +1153,11 @@ export function HernaPlocha({
   /** Špaky jednej Cirhózy a jedného Dlhu na konci hry (cenaKliatby: Cirhóza −SPAKY_ZA_CIRHOZU, Dlh 0). */
   const cenyKliatob = useMemo(
     () =>
-      ([0, 1] as const).map((p) => ({ cirhoza: cenaKliatby(data, view, p, "cirhoza"), dlh: cenaKliatby(data, view, p, "dlh") })) as [
+      ([0, 1] as const).map(() => ({ cirhoza: cenaKliatby("cirhoza"), dlh: cenaKliatby("dlh") })) as [
         { readonly cirhoza: number; readonly dlh: number },
         { readonly cirhoza: number; readonly dlh: number },
       ],
-    [data, view],
+    [],
   );
   const dalsiePitky = Math.max(0, view.pitkyCelkom - (view.faza === "pitka" ? view.pitkaCislo : view.pitkaCislo + 1));
   // Dlhy po najbližšej bitke (návrh #1 B): z nových prežijú len tie, ktoré
@@ -3997,7 +3997,7 @@ export function HernaPlocha({
         const vybranaUid = mode.typ === "naexCiel" ? mode.uid : null;
         const vybrana = vybranaUid === null ? undefined : nahladNaex.get(vybranaUid);
         // Najhoršia verejne možná odpoveď súpera — skúša celú sadu, preto len pre vybranú kartu (playtest 20261026-173610-3).
-        const odpoved = vybrana === undefined ? null : najhorsiaOdpovedNaNaex(data, view, vybrana);
+        const odpoved = vybrana === undefined ? null : najhorsiaOdpovedNaNaex(data, vybrana);
         const naRub = vybranaUid !== null && view.zaverecne.some((z) => z.uid === vybranaUid);
         const menoVybranej = naRub ? "súperovu Záverečnú" : vybranaUid === null ? "" : menoKarty(view.strany.flat().find((pl) => pl.card.uid === vybranaUid)?.card.defId ?? "");
         // Limit po NA EX na túto kartu: akcie Poldeci po NA EX (zruší či zdvojí ich) — playtest 20261026-173610-1.

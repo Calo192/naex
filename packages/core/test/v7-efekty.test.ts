@@ -519,17 +519,17 @@ describe("Bitka a po bitke (v7)", () => {
     const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
     // Herňa: hráč 1 vyhrá, hráč 0 má 3 priznané Dlhy → víťaz +3.
     const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dlhy: 3 });
-    const stavkaH = stavkaBitky(data, viewFor(data, h, 1))!;
+    const stavkaH = stavkaBitky(viewFor(data, h, 1))!;
     expect(stavkaH.herna).toEqual([3, 0]);
     // 4 karty v línii (v8) + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
     expect(stavkaH.vyhra).toBe(4 + 3);
-    expect(-stavkaBitky(data, viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
+    expect(-stavkaBitky(viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
     // Noviny porazeného (Titulka): víťaz (hráč 1) má o 2 Dlhy viac — výhra celá, porazený +2.
     const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { dlhy: 2 });
-    const stavkaN = stavkaBitky(data, viewFor(data, n, 1))!;
+    const stavkaN = stavkaBitky(viewFor(data, n, 1))!;
     expect(stavkaN.vyhra).toBe(4);
     expect(stavkaN.noviny).toEqual([0, 2]);
-    expect(stavkaBitky(data, viewFor(data, n, 0))!.noviny[0]).toBe(2);
+    expect(stavkaBitky(viewFor(data, n, 0))!.noviny[0]).toBe(2);
     const poN = dohrajKolo(n).nastenka.at(-1)!;
     expect(poN.vitaz).toBe(1);
     expect(poN.zaBitku[0]).toBe(poN.noviny);

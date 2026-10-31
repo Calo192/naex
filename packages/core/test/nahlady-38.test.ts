@@ -25,7 +25,7 @@ import {
 } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
-const ceny = (v: ClientState) => ([0, 1] as const).map((q) => ({ cirhoza: cenaKliatby(data, v, q, "cirhoza"), dlh: cenaKliatby(data, v, q, "dlh") })) as [{ cirhoza: number; dlh: number }, { cirhoza: number; dlh: number }];
+const ceny = () => ([0, 1] as const).map(() => ({ cirhoza: cenaKliatby("cirhoza"), dlh: cenaKliatby("dlh") })) as [{ cirhoza: number; dlh: number }, { cirhoza: number; dlh: number }];
 
 /** Stavy Zhromaždenia s cieľom z náhodných partií (bez skrytých NA EX — oba pohľady vidia to isté). */
 function* zhromazdenia(seedy: readonly number[]): Generator<GameState> {
@@ -56,7 +56,7 @@ describe("hrozba kliatob na stole (#38 B)", () => {
         if (!s.strany.flat().some((pl) => pl.zaverecna === true)) expect(hrozbaKliatob(data, viewFor(data, s, obet), hrac, true)).toEqual(k);
         // Každé NA EX hráča z verejnej línie: kliatby obete z náhľadu, ktorý by videl on.
         const vsetky = naexCieleVLinii(data, lineState(vHraca), hrac).flatMap((uid) => {
-          const n = nahladNaexNaKartu(data, vHraca, uid, ceny(vHraca));
+          const n = nahladNaexNaKartu(data, vHraca, uid, ceny());
           if (n === null) return [];
           const x = n.kliatby[obet];
           const cirhozy = x.cirhozy + x.dalejCirhozy;

@@ -16,7 +16,6 @@ import { MARKER_KRAJ, MARKER_STRED, cenaPosunuOPoli, telefonHraca } from "./elde
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
-import { opponentOf } from "./types.ts";
 
 /** Stôl bitky — verejný stav s otočením lokality (to isté, z čoho sa ráta odhad bitky). */
 export type StolBitky = VerejnyStav & { readonly lokalitaOtocena: boolean };

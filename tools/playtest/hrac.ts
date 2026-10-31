@@ -286,8 +286,8 @@ function kartaVLinii(
 function vyhladPitkyText(v: ClientState, p: PlayerId): string | null {
   if (v.ciel === null || (v.faza !== "zhromazdenie" && v.faza !== "pitka")) return null;
   const n = nahladPitky(DATA, { ...v, hraci: v.hraci })[p];
-  const cC = cenaKliatby(DATA, v, p, "cirhoza");
-  const cD = cenaKliatby(DATA, v, p, "dlh");
+  const cC = cenaKliatby("cirhoza");
+  const cD = cenaKliatby("dlh");
   const kedy = v.faza === "pitka" ? "po Pitke" : "v najbližšej Pitke";
   const kliatby: string[] = [];
   if (n.cirhozy > 0) kliatby.push(`Cirhóza ×${n.cirhozy} (nepriznaná na konci ${spakov(n.cirhozy * cC)})`);
@@ -324,7 +324,7 @@ function dopadyText(d: readonly [DopadyNahladu, DopadyNahladu], ja: PlayerId): s
 function cenaNaexText(v: ClientState, uid: number): string {
   const ja = v.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
-  const ceny = ([0, 1] as const).map((p) => ({ cirhoza: cenaKliatby(DATA, v, p, "cirhoza"), dlh: cenaKliatby(DATA, v, p, "dlh") })) as [CenyKliatob, CenyKliatob];
+  const ceny = ([0, 1] as const).map(() => ({ cirhoza: cenaKliatby("cirhoza"), dlh: cenaKliatby("dlh") })) as [CenyKliatob, CenyKliatob];
   const n = nahladNaexNaKartu(DATA, v, uid, ceny);
   if (n === null) return "";
   const pre = (p: PlayerId): string => {
@@ -347,7 +347,7 @@ function cenaNaexText(v: ClientState, uid: number): string {
     o.doDna ? "Na zdravie: poldeci sa ti po bitke vráti plný" : "",
   ].filter((x) => x !== "");
   // Najhoršia verejne možná odpoveď (playtest 20261026-173610-3 N5) a limit po NA EX na túto kartu (akcie Poldeci).
-  const odp = najhorsiaOdpovedNaNaex(DATA, v, n);
+  const odp = najhorsiaOdpovedNaNaex(DATA, n);
   const odpoved =
     odp === null
       ? ""
@@ -918,7 +918,7 @@ function moznosti(v: ClientState): string[] {
           c({ type: "naex", uid: z.uid }, `NA EX na SÚPEROVU ZÁVEREČNÚ lícom dole (${z.strana === ja ? "na tvojej" : "na súperovej"} strane) — nevieš, čo to je; prejde vždy, aktívne akcie zruší a neaktívne zdvojí ako pri každej karte; pečeň +1 tebe`);
         }
       }
-      if (naexLimitMinuty(DATA, v, ja) && (pk?.naexPouzity[ja] === true || mojeSkryte.length > 0)) {
+      if (naexLimitMinuty(v, ja) && (pk?.naexPouzity[ja] === true || mojeSkryte.length > 0)) {
         out.push("(NA EX si v tejto Pitke už dal)");
       } else if (naexMoznosti === 0) out.push("(NA EX ide len na Občana či Starešinu v línii, ktorý má aspoň 1 aktívnu a aspoň 1 neaktívnu akciu, bez poldeci — tvojho aj súperovho, nie Nástroj — a len s plným poldeci)");
       const cenaFajc = cenaFajceniaHraca(v, ja);

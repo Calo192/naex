@@ -256,7 +256,7 @@ function vPitke(elderId: string, p: PlayerId = 0, upravy: (s: GameState) => Game
   return upravy(s);
 }
 
-const kseft = (s: GameState, p: PlayerId = 0): Command[] => moznostiKseftuVazna(data, s, p);
+const kseft = (s: GameState, p: PlayerId = 0): Command[] => moznostiKseftuVazna(s, p);
 
 describe("§7 Kšeft väzňa — kto, cena, raz za Pitku", () => {
   it("len držiteľ väzňa; cena = vypitý plný poldeci (nerest, +1 pečeň, limit nižší); raz za Pitku", () => {

@@ -79,14 +79,6 @@ export function pocetAbstakov(player: Pick<PlayerState, "ruka" | "doberaci" | "o
 }
 
 /**
- * Veľkosť balíčka = doberací + odhadzovací + ruka. Priznané karty ani
- * Dedičstvo sa nerátajú (PRAVIDLA §1).
- */
-export function velkostBalicka(player: PlayerState): number {
-  return player.doberaci.length + player.odhadzovaci.length + player.ruka.length;
-}
-
-/**
  * Limit vykladania = plné poldeci + 1. Vypité poldeci, poldeci ležiace na
  * kartách cez NA EX (pravidlá v4, Michal 2026-10-23 — oslabenie NA EX)
  * a priznané karty limit neovplyvňujú (PRAVIDLA §6).

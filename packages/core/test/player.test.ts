@@ -15,7 +15,6 @@ import {
   prahCirhozy,
   prahDlhu,
   setupGame,
-  velkostBalicka,
 } from "../src/index.ts";
 import { EMPTY, instanceFor, makeDef, syntheticData } from "./helpers.ts";
 
@@ -59,19 +58,6 @@ describe("M3 — limit vykladania", () => {
 });
 
 describe("M3 — odvodené hodnoty", () => {
-  it("veľkosť balíčka neráta priznané ani dedičstvo", () => {
-    const karta = () => instanceFor(data, "obcan", EMPTY, EMPTY);
-    const player = {
-      ...freshPlayer(),
-      ruka: [karta(), karta()],
-      doberaci: [karta()],
-      odhadzovaci: [karta()],
-      priznane: [karta()],
-      dedicstvo: [karta()],
-    };
-    expect(velkostBalicka(player)).toBe(4);
-  });
-
   it("v5: prahy priazeň nezdvíha, súperov Exekútor prah Exekúcie zníži; hodnota Viery je 1", () => {
     expect(prahCirhozy()).toBe(3);
     expect(prahDlhu()).toBe(2);

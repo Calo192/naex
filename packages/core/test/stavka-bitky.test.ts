@@ -34,8 +34,8 @@ describe("stavkaBitky", () => {
     prejdiZhromazdenia((state) => {
       // So skrytou Záverečnou vidí každý inú líniu — stávka sa líšiť smie.
       if (state.strany.some((strana) => strana.some((pl) => pl.zaverecna === true))) return;
-      const s0 = stavkaBitky(data, viewFor(data, state, 0));
-      const s1 = stavkaBitky(data, viewFor(data, state, 1));
+      const s0 = stavkaBitky(viewFor(data, state, 0));
+      const s1 = stavkaBitky(viewFor(data, state, 1));
       expect(s0).not.toBeNull();
       expect(s0?.vyhra).toBe(-(s1?.prehra ?? Number.NaN));
       expect(s0?.prehra).toBe(-(s1?.vyhra ?? Number.NaN));
@@ -48,7 +48,7 @@ describe("stavkaBitky", () => {
     let porovnane = 0;
     prejdiZhromazdenia((state) => {
       const view = viewFor(data, state, 0);
-      const st = stavkaBitky(data, view);
+      const st = stavkaBitky(view);
       if (st === null) return;
       expect(st.karty).toBe(kartyBitky(view).spolu);
       if (view.ciel?.lokalita?.defId !== "kulturny_dom") expect(st.porazenemu).toEqual([0, 0]);
@@ -64,6 +64,6 @@ describe("stavkaBitky", () => {
 
   it("mimo bitky o lokalitu stávka nie je", () => {
     const state = setupGame(data, 1, { lokalit: 5 });
-    expect(stavkaBitky(data, viewFor(data, state, 0))).toBeNull();
+    expect(stavkaBitky(viewFor(data, state, 0))).toBeNull();
   });
 });

@@ -510,7 +510,7 @@ export function krokAchievementov(
 ): { readonly stav: StavAchievementov; readonly zisky: readonly [ZiskVPartii[], ZiskVPartii[]] } {
   const vzdane = cmd.type === "vzdat";
   let statPo = zapisTah(stav.stat, pred, cmd, autor, po, udalosti);
-  if (pred.koniec === null && po.koniec !== null && !vzdane) statPo = uzavriStatistiky(data, statPo, po);
+  if (pred.koniec === null && po.koniec !== null && !vzdane) statPo = uzavriStatistiky(statPo, po);
   const kronikaPred = stav.kronika ?? novaKronika(pred);
   const kronikaPo = zapisDoKroniky(data, kronikaPred, pred, cmd, autor, po, udalosti);
   const krok: KrokMetriky = { data, pred, cmd, autor, po, udalosti, statPred: stav.stat, statPo, kronikaPred, kronikaPo, kontext, vzdane };

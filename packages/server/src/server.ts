@@ -1301,7 +1301,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           return u !== null && prava.smie(u, "hodnotene_partie");
         }),
         body: koniec.koniec.body,
-        statistiky: doplnNaexZKroniky(uzavriStatistiky(room.data, room.statistiky, koniec), room.kronika?.kola ?? []),
+        statistiky: doplnNaexZKroniky(uzavriStatistiky(room.statistiky, koniec), room.kronika?.kola ?? []),
         statistikyKariet: room.statistikyKariet,
       });
       if (room.achievementy !== null) achievementy?.priradPartiu(klucMiestnosti(room), partia);

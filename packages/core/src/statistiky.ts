@@ -7,7 +7,6 @@
 
 import type { Action, CardInstance, PlayerId, Podmienka } from "./types.ts";
 import { opponentOf } from "./types.ts";
-import type { GameData } from "./data.ts";
 import type { Command, Event, GameState } from "./engine.ts";
 import { cenaFajceniaHraca } from "./engine.ts";
 import type { PlayerState } from "./player.ts";
@@ -377,7 +376,7 @@ export function zapisTah(
 }
 
 /** Záver partie: vyhraté bitky o lokality, vydesenie a konečné špaky (v6). */
-export function uzavriStatistiky(data: GameData, stat: DvojicaStatistik, koniec: GameState): DvojicaStatistik {
+export function uzavriStatistiky(stat: DvojicaStatistik, koniec: GameState): DvojicaStatistik {
   const bodovana = koniec.koniec?.body != null;
   const out = stat.map((st, i) => {
     const p = i as PlayerId;
