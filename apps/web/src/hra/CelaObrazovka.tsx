@@ -100,7 +100,16 @@ export function PonukaCelejObrazovky({ prepni }: { readonly prepni: () => void }
           <button type="button" className="tlacidlo-jemne" onClick={nie}>
             Teraz nie
           </button>
-          <button type="button" className="tlacidlo-hlavne" onClick={prepni} autoFocus>
+          <button
+            type="button"
+            className="tlacidlo-hlavne"
+            onClick={() => {
+              // Aj keď prehliadač celú obrazovku odmietne, ponuka zmizne — ikona v stĺpci ostáva.
+              nie();
+              prepni();
+            }}
+            autoFocus
+          >
             Na celú obrazovku
           </button>
         </span>

@@ -1,18 +1,18 @@
-// Stôl pre telefón na šírku (Michal 2026-10-31, dizajn stol-landscape A „Pult“ + tabuľa z B):
-// namiesto dvoch plných barov má každý hráč jeden riadok čipov (ikona a číslo) — súper hore,
-// ty v doku vľavo dole. Ťuk na hráča otvorí tabuľu porovnania ty | súper so všetkými číslami,
-// ktoré na počítači nesú dlaždice baru. Čipy Karty, Špaky a dlaždica Starší robia to isté
-// ako ich dlaždice (vrstva Karty, nástenka, línia starších); Karty je aj cieľom kliatby.
+// Stôl pre telefón na šírku (Michal 2026-10-31): hráči sú v úzkych zvislých stĺpcoch po stranách
+// (ty vľavo, súper vpravo), v strede je celá výška pre líniu, šenok a ruku. Stĺpec má len ikonu
+// a číslo každého zdroja; ťuk na zdroj otvorí okno s podrobnosťami v štýle medziobrazoviek,
+// ťuk na hráča tabuľu porovnania ty | súper (dizajn B). Karty sú aj cieľom kliatby či Nástroja.
 
 import { useEffect, type ReactNode } from "react";
-import type { ClientState, PlayerId, SpakyTeraz } from "@naex/core";
+import type { ClientState, PlayerId } from "@naex/core";
 import { IKONY } from "../karta/ikony.ts";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaAbstak, IkonaCigareta, IkonaKarty, IkonaPoldeci, type KartyDlazdica } from "./Panely.tsx";
-import { DlazdicaStarsich, type DlazdicaStarsichProps } from "./Starsi.tsx";
+import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import type { HracInfo } from "./useHra.ts";
-import { riadkyTabule, type CislaHraca } from "./tabula.ts";
+import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
+import { Medziobrazovka } from "./Medziobrazovka.tsx";
 
 /** Piktogram akcie z karty (IKONY) v štvorci 0..100. */
 function Pikto({ kluc }: { readonly kluc: "Dlh" | "PoškodeniePečene" }) {
@@ -25,78 +25,68 @@ function Pikto({ kluc }: { readonly kluc: "Dlh" | "PoškodeniePečene" }) {
   );
 }
 
-function Cip({ ikona, n, popis, zle = false, trieda = "" }: { readonly ikona: ReactNode; readonly n: ReactNode; readonly popis: string; readonly zle?: boolean; readonly trieda?: string }) {
-  return (
-    <span className={`pult-cip${zle ? " zle" : ""}${trieda === "" ? "" : ` ${trieda}`}`} title={popis} aria-label={popis}>
-      {ikona}
-      <b>{n}</b>
-    </span>
-  );
-}
-
-export interface PultHracaProps {
+export interface StlpecHracaProps {
   readonly view: ClientState;
   readonly p: PlayerId;
   readonly info: HracInfo | null;
   readonly meno: string;
   readonly cisla: CislaHraca;
   readonly naTahu: boolean;
-  readonly starsi: DlazdicaStarsichProps["starsi"];
-  readonly body: SpakyTeraz;
   readonly karty: KartyDlazdica;
-  readonly spakyKlik: { readonly stlacene: boolean; readonly prepni: () => void };
-  /** Ťuk na hráča: tabuľa porovnania. */
+  /** Ťuk na zdroj: okno s podrobnosťami (DetailZdroja). */
+  readonly detail: (zdroj: ZdrojStlpca) => void;
+  /** Ťuk na starších: línia starších na stole. */
+  readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void };
+  /** Ťuk na hráča: tabuľa porovnania ty | súper. */
   readonly tabula: { readonly otvorena: boolean; readonly prepni: () => void };
+  /** Nástroje stola na spodku stĺpca (Log, celá obrazovka, menu Partia). */
+  readonly children?: ReactNode;
 }
 
-export function PultHraca({ view, p, info, meno, cisla, naTahu, starsi, body, karty, spakyKlik, tabula }: PultHracaProps) {
+/**
+ * Úzky zvislý stĺpec hráča (Michal 2026-10-31, po skúške na telefóne): ty vľavo, súper vpravo —
+ * ako kraje línie. Len ikona a číslo každého zdroja; ťuk otvorí okno s podrobnosťami.
+ */
+export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail, starsi, tabula, children }: StlpecHracaProps) {
   const ja = p === view.ja;
   const utoci = view.utocnik === p;
   const c = karty.ciel;
+  const cip = (zdroj: ZdrojStlpca, ikona: ReactNode, n: ReactNode, popis: string, zle = false): ReactNode => (
+    <button type="button" className={`stlpec-cip stlpec-${zdroj}${zle ? " zle" : ""}`} aria-label={popis} title={popis} onClick={() => detail(zdroj)}>
+      {ikona}
+      <b>{n}</b>
+    </button>
+  );
   return (
-    <section className={`pult-hraca ${ja ? "moj" : "superov"}${naTahu ? " na-tahu" : ""}`} aria-label={`Hráč ${meno}`}>
+    <section className={`stlpec-hraca ${ja ? "moj" : "superov"}${naTahu ? " na-tahu" : ""}`} aria-label={`Hráč ${meno}`}>
+      <button type="button" className="stlpec-kto" aria-expanded={tabula.otvorena} title={`${ja ? "Ty" : meno} · ${utoci ? "útočník" : "obranca"} — ťuk ukáže tabuľu: ty a súper`} onClick={tabula.prepni}>
+        <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={30} farba={ja ? "ja" : "su"} />
+        <span className={`stlpec-rola ${utoci ? "utocnik" : "obranca"}`} aria-hidden="true">
+          {utoci ? "⚔" : "⛨"}
+        </span>
+      </button>
       <button
         type="button"
-        className="pult-kto"
-        aria-expanded={tabula.otvorena}
-        title={`${ja ? "Ty" : meno} — ťuk ukáže tabuľu: ty a súper`}
-        onClick={tabula.prepni}
+        className={["stlpec-cip stlpec-karty", c !== null ? "ako-ciel" : "", c?.aktivny === true ? "ciel-zona" : "", c?.zamknute != null ? "zamknuta" : ""].join(" ")}
+        data-ciel={c?.dataCiel}
+        aria-label={c !== null ? (c.zamknute ?? `${c.nazov}: ${c.pozn}`) : `Karty v ruke ${cisla.karty}`}
+        title={c !== null ? (c.zamknute ?? `${c.nazov}: ${c.pozn}`) : `Karty v ruke ${cisla.karty}`}
+        onClick={c?.onKlik ?? (() => detail("karty"))}
       >
-        <Avatar meno={meno} avatar={info?.avatar ?? null} velkost={ja ? 34 : 30} farba={ja ? "ja" : "su"} />
-        {!ja && (
-          <span className="pult-meno">
-            <strong>{meno}</strong>
-            <span className={`pult-rola ${utoci ? "utocnik" : "obranca"}`}>{utoci ? "⚔ útočník" : "⛨ obranca"}</span>
-          </span>
-        )}
+        <IkonaKarty />
+        <b>{c !== null ? "sem" : cisla.karty}</b>
       </button>
-      <span className="pult-cipy">
-        <button
-          type="button"
-          className={["pult-cip pult-karty", c !== null ? "ako-ciel" : "", c?.aktivny === true ? "ciel-zona" : "", c?.zamknute != null ? "zamknuta" : ""].join(" ")}
-          data-ciel={c?.dataCiel}
-          title={c !== null ? (c.zamknute ?? `${c.nazov}: ${c.pozn}`) : `Karty v ruke ${cisla.karty} · balíček ${cisla.balicek} · odhodené ${cisla.odhodene} — ťuk ukáže karty`}
-          onClick={c?.onKlik ?? karty.otvor}
-        >
-          <IkonaKarty />
-          <b>{c !== null ? c.nazov : cisla.karty}</b>
-        </button>
-        <Cip ikona={<IkonaPoldeci />} n={cisla.poldeci} popis={`Poldeci plné ${cisla.poldeci}, vypité ${cisla.vypite} · limit kariet ${cisla.limit}`} />
-        {cisla.chut !== null && <Cip ikona={<IkonaAbstak />} n={cisla.chut} popis={`Chuť ${cisla.chut} · neresti dnes ${cisla.nerestiDnes}`} zle={cisla.chutHrozi} />}
-        <Cip ikona={<Pikto kluc="Dlh" />} n={cisla.dlhy} popis={`Dlhy ${cisla.dlhy} · zadĺženie ${cisla.zadlzenie}/${cisla.prahDlhu}`} zle={cisla.exekucia > 0} />
-        <Cip ikona={<IkonaCigareta />} n={cisla.cigarety} popis={`Cigarety ${cisla.cigarety}`} />
-        <button
-          type="button"
-          className={`pult-cip pult-spaky${spakyKlik.stlacene ? " stlacene" : ""}`}
-          aria-pressed={spakyKlik.stlacene}
-          title={`Špaky ${cisla.spaky} — ťuk ukáže nástenku`}
-          onClick={spakyKlik.prepni}
-        >
-          <IkonaSpaku />
-          <b>{cisla.spaky}</b>
-        </button>
-      </span>
-      <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsich[p]} naUdrzanie={body.naUdrzanie[p]} starsi={starsi} />
+      {cip("poldeci", <IkonaPoldeci />, cisla.poldeci, `Poldeci plné ${cisla.poldeci}, vypité ${cisla.vypite}, limit kariet ${cisla.limit}`)}
+      {cisla.chut !== null && cip("chut", <IkonaAbstak />, cisla.chut, `Chuť ${cisla.chut}, neresti dnes ${cisla.nerestiDnes}`, cisla.chutHrozi)}
+      {cip("pecen", <Pikto kluc="PoškodeniePečene" />, cisla.pecen, `Pečeň ${cisla.pecen} z ${cisla.prahPecene}`, cisla.pecen >= cisla.prahPecene - 1)}
+      {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, `Dlhy ${cisla.dlhy}, zadĺženie ${cisla.zadlzenie} z ${cisla.prahDlhu}`, cisla.exekucia > 0)}
+      {cip("cigarety", <IkonaCigareta />, cisla.cigarety, `Cigarety ${cisla.cigarety}`)}
+      {cip("spaky", <IkonaSpaku />, cisla.spaky, `Špaky ${cisla.spaky}`)}
+      <button type="button" className={`stlpec-cip stlpec-starsi${starsi.stlacene ? " stlacene" : ""}`} aria-pressed={starsi.stlacene} aria-label={`Starší: priazeň ${cisla.priazen} — ťuk ukáže líniu starších`} title="Starší — línia starších" onClick={starsi.prepni}>
+        <IkonaPriazne />
+        <b>{cisla.priazen}</b>
+      </button>
+      {children !== undefined && <span className="stlpec-nastroje">{children}</span>}
     </section>
   );
 }
@@ -147,5 +137,37 @@ export function Tabula({ ja, su, avatary, zavri, akcie }: TabulaProps) {
         {akcie !== undefined && <div className="porovnanie-akcie">{akcie}</div>}
       </div>
     </>
+  );
+}
+
+export interface OknoZdrojaProps {
+  readonly zdroj: ZdrojStlpca;
+  readonly cisla: CislaHraca;
+  readonly ja: boolean;
+  readonly meno: string;
+  readonly zavri: () => void;
+  /** Tlačidlo pod tabuľkou (napr. „Ukázať karty“, „Nástenka“). */
+  readonly akcia?: { readonly text: string; readonly spusti: () => void } | undefined;
+}
+
+/** Okno zdroja: čo na počítači ukazuje dlaždica baru a jej nápoveda — ako medziobrazovka. */
+export function OknoZdroja({ zdroj, cisla, ja, meno, zavri, akcia }: OknoZdrojaProps) {
+  const d = detailZdroja(zdroj, cisla, ja);
+  return (
+    <Medziobrazovka obsah={{ kluc: `zdroj-${zdroj}`, nadnadpis: ja ? "ty" : meno, nadpis: d.nadpis, text: d.text }} onRozumiem={zavri} vypinac={false} trieda="okno-zdroja">
+      <dl className="okno-zdroja-riadky">
+        {d.riadky.map(([k, v]) => (
+          <span key={k} className="okno-zdroja-riadok">
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </span>
+        ))}
+      </dl>
+      {akcia !== undefined && (
+        <button type="button" className="tlacidlo-male okno-zdroja-akcia" onClick={akcia.spusti}>
+          {akcia.text}
+        </button>
+      )}
+    </Medziobrazovka>
   );
 }

@@ -168,7 +168,7 @@ import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
-import { rezimRadov } from "./spakyAStarsi.ts";
+import { rezimRadov, stupienkyStarsich } from "./spakyAStarsi.ts";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import {
   AkcieStrany,
@@ -196,8 +196,9 @@ import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { NAHRADIT, textNepolozenejKarty } from "./nepolozenaKarta.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie, type Tahanie } from "./useTahanie.ts";
-import { PultHraca, Tabula } from "./PultHraca.tsx";
-import { cislaHraca } from "./tabula.ts";
+import { OknoZdroja, StlpecHraca, Tabula } from "./PultHraca.tsx";
+import { cislaHraca, type ZdrojStlpca } from "./tabula.ts";
+import { preDotyk } from "./dotyk.ts";
 import { Avatar } from "../komponenty.tsx";
 import { PonukaCelejObrazovky, TlacidloCelejObrazovky, useCelaObrazovka } from "./CelaObrazovka.tsx";
 import "./hra.css";
@@ -608,7 +609,13 @@ export function HernaPlocha({
       setVyskaOkna(window.innerHeight);
     };
     window.addEventListener("resize", zmena);
-    return () => window.removeEventListener("resize", zmena);
+    document.addEventListener("fullscreenchange", zmena);
+    window.visualViewport?.addEventListener("resize", zmena);
+    return () => {
+      window.removeEventListener("resize", zmena);
+      document.removeEventListener("fullscreenchange", zmena);
+      window.visualViewport?.removeEventListener("resize", zmena);
+    };
   }, []);
   // Telefón na šírku má vlastné rozloženie (Pult) — mobil na výšku by preň prestavil šenok a cieľ kola
   // (na Androide s lištou prehliadača má okno pod 760 px a stavba šenku sa zasekla, Michal 2026-10-31).
@@ -747,13 +754,22 @@ export function HernaPlocha({
   useLayoutEffect(() => {
     const panel = vrstvaFazyEl?.firstElementChild;
     if (!(panel instanceof HTMLElement)) return;
-    const hore = panel.getBoundingClientRect().top;
+    // Na šírku telefónu je panel na celú výšku plste a obsah v ňom vystredený — réžia sa ráta
+    // od vrchu obsahu, inak by voľné miesto nad ním zmenšovalo karty (a tým rástlo) donekonečna.
+    let hore = panel.getBoundingClientRect().top;
+    if (naSirku) hore = Math.min(...[...panel.children].map((c) => c.getBoundingClientRect().top), Number.POSITIVE_INFINITY) - parseFloat(getComputedStyle(panel).paddingTop);
     let spodok = hore;
     for (const c of panel.children) spodok = Math.max(spodok, c.getBoundingClientRect().bottom);
     const obsah = spodok - hore + parseFloat(getComputedStyle(panel).paddingBottom);
     let karty = 0;
     // Lokalita pri stavbe je väčšia než karty balíčka — do réžie patrí, čo pridá navyše.
-    for (const kl of panel.querySelectorAll<HTMLElement>(":is(.stavba-balicek, .draft-karty:not(.stavba-senok-zatial *)) .kl")) karty = Math.max(karty, kl.offsetHeight);
+    // Rady kariet (balíček stavby na telefóne v dvoch) nie sú réžia — rátajú sa všetky.
+    const rady = new Set<number>();
+    for (const kl of panel.querySelectorAll<HTMLElement>(":is(.stavba-balicek, .draft-karty:not(.stavba-senok-zatial *)) .kl")) {
+      karty = Math.max(karty, kl.offsetHeight);
+      if (kl.closest(".stavba-balicek") !== null) rady.add(Math.round(kl.getBoundingClientRect().top / 8));
+    }
+    karty *= Math.max(1, rady.size);
     const zatial = panel.querySelector<HTMLElement>(".stavba-senok-zatial .kl")?.offsetHeight ?? 0;
     if (karty === 0) return;
     const r = Math.round(obsah - karty - zatial);
@@ -2074,6 +2090,8 @@ export function HernaPlocha({
   });
   // Tabuľa porovnania ty | súper (dizajn B) — na šírku telefónu nahrádza dva plné bary.
   const [tabulaOtvorena, setTabulaOtvorena] = useState(false);
+  // Okno zdroja zo stĺpca hráča (ťuk na cigarety, poldeci…) — ako medziobrazovka.
+  const [oknoZdroja, setOknoZdroja] = useState<{ readonly p: PlayerId; readonly zdroj: ZdrojStlpca } | null>(null);
   const prepniVyberTukom = (z: Zdroj): void => setVyberTukom((v) => (v?.karta.uid === z.karta.uid ? null : z));
   // Ťuk mimo karty a cieľa výber zruší, ťuk na cieľ kartu položí (zachytí sa skôr, než ho dostane cieľ).
   const tukNaCiel = (e: ReactMouseEvent<HTMLElement>): void => {
@@ -2115,6 +2133,16 @@ export function HernaPlocha({
       zrus();
       poDlhomTuku.current = true;
       akcia(el);
+      // Klik po pustení prsta padne na zväčšenú kartu (lupa nad ňou) — nesmie ju vybrať ani vziať.
+      const pusti = (): void => {
+        const zahod = (c: MouseEvent): void => {
+          c.stopPropagation();
+          c.preventDefault();
+        };
+        window.addEventListener("click", zahod, { capture: true, once: true });
+        setTimeout(() => window.removeEventListener("click", zahod, { capture: true }), 400);
+      };
+      window.addEventListener("pointerup", pusti, { once: true });
     }, DLHY_TUK_MS);
     dlhyTuk.current = { casovac, zrus };
   };
@@ -2402,6 +2430,19 @@ export function HernaPlocha({
       onBlur: (): void => setLupa((l) => (l?.kluc === kluc && l.zFokusu === true ? null : l)),
       // Dotyk nemá prejdenie myšou — kartu bez akcie zväčší ťuknutie.
       onClick: jeDotyk && fokus ? (e: ReactMouseEvent<HTMLElement>) => otvorLupu(kluc, najdi(e.currentTarget)) : undefined,
+      // Telefón na šírku: podržanie prsta kartu zväčší a klik po ňom nič nevykoná (playtest mobilu
+      // 2026-10-31: podržanie lokality ju otočilo, karty v šenku vzalo).
+      ...(naSirku
+        ? {
+            onPointerDownCapture: (e: ReactPointerEvent<HTMLElement>): void => zacniDlhyTuk(e, (el) => otvorLupu(kluc, najdi(el))),
+            onClickCapture: (e: ReactMouseEvent<HTMLElement>): void => {
+              if (!poDlhomTuku.current) return;
+              poDlhomTuku.current = false;
+              e.preventDefault();
+              e.stopPropagation();
+            },
+          }
+        : {}),
     };
   };
   // Zvislý posun kariet, aby sa akcie na spoji stretli slot pri slote, ráta useZarovnanieLinie z DOM.
@@ -4951,7 +4992,9 @@ export function HernaPlocha({
   const radZatial = stavim && view.senok.length > 0 ? 0.7 : 0;
   // Branie má vedľa šenku aj lokalitu, o ktorú sa bije (Michal 2026-10-30) — o 1,5 karty viac.
   const lokalitaPriBrani = view.faza === "draft" && !stavim && view.ciel?.lokalita != null ? 1.5 : 0;
-  const miestDraftu = stavim ? Math.max(6, (draft?.mojBalicek.length ?? 8) + 2) : Math.max(6, view.faza === "draft" ? view.senok.length + tieneSenku.length + lokalitaPriBrani : view.lokalityVHre.length);
+  // Telefón na šírku: balíček stavby v dvoch radoch — v jednom by mali karty pri 8 kusoch ≈ 44 px.
+  const radyStavby = naSirku && stavim ? 2 : 1;
+  const miestDraftu = stavim ? Math.max(radyStavby === 2 ? 4 : 6, Math.ceil((draft?.mojBalicek.length ?? 8) / radyStavby) + 2) : Math.max(6, view.faza === "draft" ? view.senok.length + tieneSenku.length + lokalitaPriBrani : view.lokalityVHre.length);
   const sirkaDraftu = mobil
     ? 84
     : Math.max(
@@ -4963,7 +5006,7 @@ export function HernaPlocha({
           // 60 px okraje panelu a zón, 10 px medzera za každou kartou.
           sirkaLinie > 0 ? Math.floor((sirkaLinie - 60) / miestDraftu) - 10 : 118,
           // Pri stole so scrollom má vrstva výšku podľa obsahu — karty sa podľa nej nezmenšujú.
-          stolScroll ? Number.POSITIVE_INFINITY : vyskaVrstvy > 0 ? Math.floor((vyskaVrstvy - reziaDraftu) / (POMER_KARTY * (1 + radZatial))) : 118,
+          stolScroll ? Number.POSITIVE_INFINITY : vyskaVrstvy > 0 ? Math.floor((vyskaVrstvy - reziaDraftu - (radyStavby - 1) * 10) / (POMER_KARTY * (radyStavby + radZatial))) : 118,
         ),
       );
   // Voľba cieľa na stole (Michal 2026-10-19): lokality sú v paneli namiesto
@@ -5563,43 +5606,54 @@ export function HernaPlocha({
         superOdpojenyOd={superOdpojenyOd}
         vyucba={vyucba === true}
         os={osVListe && !naSirku ? osKola : null}
-        nastroje={osVListe || naSirku ? nastrojeStola : null}
+        nastroje={osVListe && !naSirku ? nastrojeStola : null}
         melichar={vHlavicke}
         vzdat={() => cmd({ type: "vzdat" })}
         kontumacia={kontumacia}
         opustit={opustit}
       />
     );
-  // Pult hráča na šírku telefónu: čipy namiesto dlaždíc, detail v tabuli (PultHraca.tsx).
+  // Čísla stĺpca a tabule: aj cena nového poldeci a priazeň starších.
+  const cislaPultu = (p: PlayerId) =>
+    cislaHraca(view, p, prahy(p), zavislost(p), body, { cenaBarteru: barterCena(data, view, p), priazen: stupienkyStarsich(view.starsi, p).priazen });
+  // Stĺpec hráča na šírku telefónu (PultHraca.tsx): ty vľavo s nástrojmi stola, súper vpravo s menu Partia.
   const pult = (p: PlayerId): ReactNode => (
-    <PultHraca
+    <StlpecHraca
       view={view}
       p={p}
       info={hraci[p]}
       meno={hraci[p]?.meno ?? `Hráč ${p + 1}`}
-      cisla={cislaHraca(view, p, prahy(p), zavislost(p), body)}
+      cisla={cislaPultu(p)}
       naTahu={naTahuStrana(p)}
-      starsi={{
-        stlacene: starsiViditelni && krokStarsich === null && pohladLinie === p,
-        prepni: () => prepniStarsich(p),
-        id: idLinieStarsich,
-        ...(p === ja
-          ? {
-              posuny: new Set((view.posunyMarkerov ?? []).map((x) => x.elderId)).size,
-              suhrn: suhrnBezi && suhrnDlazdice !== null ? suhrnDlazdice : undefined,
-            }
-          : {}),
-      }}
-      body={body}
       karty={kartyDlazdica(p)}
-      spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === p, prepni: () => otvorNastenku(p) }}
+      detail={(zdroj) => setOknoZdroja({ p, zdroj })}
+      starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === p, prepni: () => prepniStarsich(p) }}
       tabula={{ otvorena: tabulaOtvorena, prepni: () => setTabulaOtvorena((o) => !o) }}
-    />
+    >
+      {p === ja ? nastrojeStola : hlavickaPartie}
+    </StlpecHraca>
   );
+  const oknoZdrojaEl =
+    !naSirku || oknoZdroja === null ? null : (
+      <OknoZdroja
+        zdroj={oknoZdroja.zdroj}
+        cisla={cislaPultu(oknoZdroja.p)}
+        ja={oknoZdroja.p === ja}
+        meno={menoHraca(oknoZdroja.p)}
+        zavri={() => setOknoZdroja(null)}
+        akcia={
+          oknoZdroja.zdroj === "karty"
+            ? { text: "Ukázať karty", spusti: () => { setOknoZdroja(null); otvorKarty(oknoZdroja.p, oknoZdroja.p === ja ? "balicek" : "priznane"); } }
+            : oknoZdroja.zdroj === "spaky"
+              ? { text: "Krčmová nástenka", spusti: () => { setOknoZdroja(null); otvorNastenku(oknoZdroja.p); } }
+              : undefined
+        }
+      />
+    );
   const tabulaEl = !naSirku || !tabulaOtvorena ? null : (
     <Tabula
-      ja={cislaHraca(view, ja, prahy(ja), zavislost(ja), body)}
-      su={cislaHraca(view, super_, prahy(super_), zavislost(super_), body)}
+      ja={cislaPultu(ja)}
+      su={cislaPultu(super_)}
       avatary={[
         <Avatar key="ja" meno={hraci[ja]?.meno ?? "ty"} avatar={hraci[ja]?.avatar ?? null} velkost={28} farba="ja" />,
         <Avatar key="su" meno={hraci[super_]?.meno ?? "súper"} avatar={hraci[super_]?.avatar ?? null} velkost={28} farba="su" />,
@@ -5668,9 +5722,18 @@ export function HernaPlocha({
       className={naSirku ? "hra mobil-sirka" : stolScroll ? "hra stol-scroll" : "hra"}
       style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
       onClickCapture={naSirku ? tukNaCiel : undefined}
+      onContextMenuCapture={
+        naSirku
+          ? (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          : undefined
+      }
     >
       {pauzaCielaEl}
       {tabulaEl}
+      {oknoZdrojaEl}
       {naSirku && celaObrazovka.mozna && !celaObrazovka.zapnuta && view.koniec === null && <PonukaCelejObrazovky prepni={celaObrazovka.prepni} />}
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
       {view.koniec !== null && !koniecZavrety && prehravanie === undefined && bezOknaKonca !== true && (
@@ -5699,7 +5762,7 @@ export function HernaPlocha({
         su={stranaBaru(super_)}
         sprava={spravaBaru}
         zrusChybu={zrusChybu}
-        bezPrepinaca={mobil}
+        bezPrepinaca={mobil || naSirku}
       >
         {skratky.napoveda && <SkratkyNapoveda onZavri={skratky.zavriNapovedu} />}
       </JednotnyBar>
@@ -5709,11 +5772,8 @@ export function HernaPlocha({
         {/* Súperi sedia oproti sebe (Michal 2026-10-22): súperov bar hore, tvoj pod stolom;
             scoreboard nad staršími zanikol — body sú v bare hráča. */}
         {naSirku ? (
-          // Telefón na šírku: menu Partia a Log, súper v riadku čipov a jeho Starší (dizajn A „Pult“).
-          <div className="pult-hore">
-            {hlavickaPartie}
-            {pult(super_)}
-          </div>
+          // Telefón na šírku: súper v úzkom stĺpci vpravo (kraj línie k nemu), menu Partia na jeho spodku.
+          pult(super_)
         ) : (
         <HracDoska
           data={data}
@@ -5759,7 +5819,7 @@ export function HernaPlocha({
                     {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
                   </strong>
                 )}
-                {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
+                {pokyn?.text !== undefined && <span className="pilulka-text">{naSirku && typeof pokyn.text === "string" ? preDotyk(pokyn.text) : pokyn.text}</span>}
               </div>
             )}
             {toastPriazneEl}
@@ -6247,7 +6307,7 @@ export function HernaPlocha({
             const o = vzhladKarty(sada, data, defId).obrazok;
             return o === null ? null : mediaUrl(o.nahlad);
           }}
-          mobil={mobil}
+          mobil={mobil || naSirku}
           // Každý svojím tempom: obranca po súhrne vyberá, útočníka čaká lokalita súpera alebo čakanie.
           posledne={viewZoServera.faza === "volbaCiela" && viewZoServera.utocnik !== ja ? "Vybrať lokalitu" : "Ďalej"}
           onDlazdica={setSuhrnDlazdice}
@@ -6280,10 +6340,13 @@ export function HernaPlocha({
         );
       })()}
       {(() => {
-        const lk = lupa === null || tahanie !== null ? undefined : lupaKarty.get(lupa.kluc);
+        // Výber ťukom (telefón na šírku) lupu nezakazuje — tú ruší len skutočné ťahanie.
+        const lk = lupa === null || tahanieMysou !== null ? undefined : lupaKarty.get(lupa.kluc);
         if (lupa === null || lk === undefined) return null;
         const z = lk.zdroj;
         const chytit = z !== undefined && cieleZdroja(z).size > 0;
+        // Na telefóne je karta malá — podržanie ju zväčší skoro na výšku displeja.
+        const mierka = naSirku ? maxMierkaLupy(lupa.rect) : (lk.mierka ?? mierkaLupy);
         return (
           <Lupa
             // Nový kľúč = nová lupa s nástupom; stará pod ňou dozneje.
@@ -6291,12 +6354,12 @@ export function HernaPlocha({
             rect={lupa.rect}
             prechod={lupa.prechod === true}
             nad={lk.nad === true}
-            mierka={lk.mierka ?? mierkaLupy}
+            mierka={mierka}
             onZavri={zavriLupu}
-            onPointerDown={chytit ? (e) => zacni(z, e, lupa.rect.width) : undefined}
-            onOdstran={lk.odstran}
+            onPointerDown={chytit && !naSirku ? (e) => zacni(z, e, lupa.rect.width) : undefined}
+            onOdstran={naSirku ? undefined : lk.odstran}
           >
-            {lk.render(lupa.rect.width * Math.min(lk.mierka ?? mierkaLupy, maxMierkaLupy(lupa.rect)))}
+            {lk.render(lupa.rect.width * Math.min(mierka, maxMierkaLupy(lupa.rect)))}
           </Lupa>
         );
       })()}

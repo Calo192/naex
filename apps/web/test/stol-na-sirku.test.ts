@@ -4,7 +4,8 @@
 
 import { describe, expect, it } from "vitest";
 import { dovodNepodporovania, stolNaSirku, type Zhoda } from "../src/hra/zariadenie.ts";
-import { riadkyTabule, type CislaHraca } from "../src/hra/tabula.ts";
+import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "../src/hra/tabula.ts";
+import { preDotyk } from "../src/hra/dotyk.ts";
 
 /** Zariadenie podľa rozmeru a vstupu — vyhodnotí dotazy z zariadenie.ts ako prehliadač. */
 function zariadenie(sirka: number, vyska: number, dotyk: boolean): Zhoda {
@@ -117,5 +118,38 @@ describe("tabuľa ty | súper", () => {
 
   it("bez Chuti v partii riadok Chuť vynechá", () => {
     expect(riadkyTabule(cisla({ chut: null }), cisla({ chut: null })).some((x) => x.kluc === "chut")).toBe(false);
+  });
+});
+
+describe("okno zdroja v stĺpci hráča", () => {
+  it("každý zdroj má nadpis, vysvetlenie a riadky s číslami", () => {
+    for (const z of ["karty", "poldeci", "chut", "pecen", "dlhy", "cigarety", "spaky"] as const satisfies readonly ZdrojStlpca[]) {
+      const d = detailZdroja(z, cisla({}), true);
+      expect(d.nadpis.length, z).toBeGreaterThan(0);
+      expect(d.text.length, z).toBeGreaterThan(20);
+      expect(d.riadky.length, z).toBeGreaterThan(0);
+    }
+  });
+
+  it("cigarety ukážu ceny: fajčenie teraz, nový poldeci, Dedičstvo", () => {
+    const d = detailZdroja("cigarety", cisla({ cigarety: 7, cenaFajcenia: 3, cenaBarteru: 5, cenaDedicstva: 4 }), true);
+    const r = new Map(d.riadky);
+    expect(r.get("cigarety")).toBe("7");
+    expect(r.get("fajčenie teraz")).toBe("3 cig.");
+    expect(r.get("nový poldeci")).toBe("5 cig.");
+    expect(r.get("Nástroj do Dedičstva")).toBe("4 cig.");
+  });
+
+  it("poldeci ukážu plné, vypité a limit", () => {
+    const r = new Map(detailZdroja("poldeci", cisla({ poldeci: 3, vypite: 1, limit: 4 }), false).riadky);
+    expect([r.get("plné"), r.get("vypité"), r.get("limit kariet")]).toEqual(["3", "1", "4"]);
+  });
+});
+
+describe("pokyn na dotyku", () => {
+  it("klik a klikni nahradí ťukom, iné slová nechá", () => {
+    expect(preDotyk("Klikni na nástenke na lokalitu.")).toBe("Ťukni na nástenke na lokalitu.");
+    expect(preDotyk("Klikom vyber 4 karty — ďalší klik vráti.")).toBe("Ťukom vyber 4 karty — ďalší ťuk vráti.");
+    expect(preDotyk("kliknutím otočíš")).toBe("kliknutím otočíš");
   });
 });
