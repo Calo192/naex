@@ -262,7 +262,15 @@ and dented chrome metal with three finger rings and a long steel needle, its pla
 glass barrel with only simple tick marks and no numbers“ + „no hands, no blood, no
 pills, no powder“ + veta o rovnomernom svetle bez spotlightu.
 
-- **Na výbere (Michal ešte nevybral):**
+- **Schválené (č. 7):** `H6\injekcia-hra-7.jpg` (`injekcia-d`, kolo 1-1).
+  Námet: striekačka do polovice plná slivovice, opretá o veľký zelený demižón
+  v prútenom koši na drsnom drevenom stole v pivnici, vedľa jeden poldecák,
+  za ňou sudy a pavučiny („very dark dimly-lit gloomy village cellar“).
+  Ihla do korku nevyšla, striekačka stojí opretá o demižón. Michal dôvod
+  neuviedol. Predlohy: Puška, Vinko.
+  **Lekcia:** predmet opretý o väčšiu vec z tej istej neresti (demižón)
+  funguje. Satira stačí jemná, cez to, čím je striekačka naplnená.
+- **Nevybrané:**
   - č. 1–2 (`injekcia-a`, kolo 1-1 a 2-1): striekačka so slivovicou na dečke
     na stole v krčme vedľa poldecáka a fľaše bez etikety, z ihly kvapka.
     Č. 2 má prázdnu fľašu a tenký čierny rámik.
@@ -271,14 +279,19 @@ pills, no powder“ + veta o rovnomernom svetle bez spotlightu.
     a prázdnu etiketu.
   - č. 5–6 (`injekcia-c`, kolo 1-1 a 1-2): striekačka v smaltovanej
     emitni v dedinskej ambulancii, fľaša slivovice, poldecák, fonendoskop.
-    Č. 5 má svetlý okraj (orezať).
-  - č. 7–8 (`injekcia-d`, kolo 1-1 a 2-2): striekačka pri demižóne
-    v pivnici, č. 8 zapichnutá ihlou do stola.
+    Č. 5 má svetlý okraj.
+  - č. 8 (`injekcia-d`, kolo 2-2): ten istý námet s pokynom „needle pointing
+    straight down … through the cork“. Striekačka zapichnutá ihlou do stola,
+    zvislá.
+
+  **Lekcia:** chliev s prasaťom (doslovné „Zviera“) Michal nevybral, hoci
+  efekt sedí najpriamejšie. Pri predmete nemusí satira kopírovať text efektu.
 - **Zamietnuté pred kolážou (moja kontrola):** `injekcia-a` kolo 1-2
   (striekačka visí vo vzduchu, kvapka z polovice ihly), `injekcia-b` kolo 1-2
   (ružová tekutina pôsobí ako krv), `injekcia-d` kolo 1-2 (krúžky na strane
   ihly, písmená na valci), `injekcia-d` kolo 2-1 (tieň postavy na sude).
   `injekcia-d` ihlu do korku nespravila ani raz.
   **Lekcia:** pri tekutine v striekačke píš „clear colourless (not pink, not
-  red)“, inak model kreslí ružovú ako krv. Striekačku vždy polož naležato
-  na podložku, postavená sa rozpadá.
+  red)“, inak model kreslí ružovú ako krv. ~~Striekačku vždy polož naležato
+  na podložku, postavená sa rozpadá.~~ Vyvrátené 2026-10-31: vybraná č. 7 stojí
+  opretá o demižón. Rozpadá sa len voľne stojaca alebo visiaca striekačka.
