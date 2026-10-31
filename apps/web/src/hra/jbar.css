@@ -611,6 +611,17 @@ button.jbar-odhad::before {
   .jbar-strana {
     min-height: 34px;
     padding: 4px 8px;
+    /* Polovica šírky na výšku nestačí na meno aj počty (360 px: „6 v ruke“ zmizlo v prechode) — zalomí sa. */
+    mask-image: none;
+  }
+
+  .jbar-strana .jbar-obsah {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .jbar-strana .jbar-ruka {
+    white-space: nowrap;
   }
 
   .jbar-os {

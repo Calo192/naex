@@ -9367,3 +9367,170 @@ button.lsr-pole.ciel:focus-visible {
     grid-column: 1 / -1;
   }
 }
+
+/* ---- bar hráča na mobile ----
+ * Rad deviatich dlaždíc s pevnou výškou sa do 360–412 px nezmestil: dlaždice (aspoň 84 px) pretiekli
+ * svoje stĺpce, prekrývali sa a stránka išla do strany. Na mobile je meno s avatarom v prvom
+ * riadku a dlaždice pod ním po štyroch; bar má výšku podľa obsahu, text sa zalomí, neoreže. */
+@media (max-width: 760px) {
+  .doska,
+  .plocha > section.doska,
+  .doska.superova {
+    --avatar-max: 40px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: none;
+    height: auto;
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .doska:is(.moja, .superova) :is(.doska-hrac, .doska-zdroje > *) {
+    grid-row: auto;
+    grid-column: auto;
+    overflow: visible;
+  }
+
+  .doska:is(.moja, .superova) .doska-hrac {
+    grid-column: 1 / -1;
+    gap: 10px;
+    padding: 4px;
+  }
+
+  .doska-meno {
+    font-size: 1rem;
+  }
+
+  /* Rovnaké poradie na oboch baroch — zrkadlenie od stredu obrazovky na výšku nemá zmysel. */
+  .doska .zdroj-karty { order: 1; }
+  .doska .zdroj-poldeci { order: 2; }
+  .doska .zdroj-cigarety { order: 3; }
+  .doska .zdroj-abstak { order: 4; }
+  .doska .zdroj-pecen { order: 5; }
+  .doska .zdroj-dlhy { order: 6; }
+  .doska .zdroj-starsi { order: 7; }
+  .doska .zdroj-body { order: 8; }
+
+  /* Prepnutý bar (špaky, starší) zaberie celé riadky pod menom. */
+  .doska:is(.moja, .superova) :is(.bar-spakov, .bar-starsich) {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    order: 9;
+  }
+
+  /* Mená starších by sa vo štvrtine šírky zmenšili pod 8 px — dlaždice starších sú po dvoch. */
+  .doska:is(.moja, .superova) .bar-starsich {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .doska .starsi-dlazdica .zdroj-nazov {
+    font-size: max(0.7rem, min(0.76rem, 100cqi / (var(--znakov, 10) * 0.6)));
+  }
+
+  .doska .zdroj {
+    justify-content: flex-start;
+    min-width: 0;
+    min-height: 44px;
+    padding: 4px;
+    overflow: hidden;
+  }
+
+  .doska .zdroj-nazov {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    line-height: 1.15;
+  }
+
+  .doska .zdroj-posuny,
+  .doska .zdroj-starsi .zdroj-nazov .zdroj-posuny {
+    font-size: 0.7rem;
+  }
+
+  /* Nadpis Starších s odznakom posunov sa do štvrtiny šírky nezmestí — odznak ide pod neho. */
+  .doska .zdroj-starsi .zdroj-nazov {
+    flex-wrap: wrap;
+    justify-content: center;
+    white-space: normal;
+  }
+
+  .doska .pocet-spakov {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px 4px;
+  }
+
+  .doska .pocet-spakov .ikona-spaku {
+    width: 36px;
+    height: 18px;
+  }
+
+  .doska-oblast {
+    flex-wrap: wrap;
+  }
+
+  .doska-oblast .cip {
+    font-size: 0.7rem;
+    white-space: normal;
+  }
+
+  .doska .zdroj-hodnota {
+    flex-wrap: wrap;
+    gap: 4px;
+    min-height: 26px;
+    height: auto;
+  }
+
+  .doska .velke-cislo {
+    font-size: 1.4rem;
+  }
+
+  .doska .ikona-poldeci,
+  .doska .zdroj-hodnota > .ikona-cigareta,
+  .doska .ikona-abstak {
+    width: 16px;
+    height: 16px;
+  }
+
+  .doska .poldeci-rad {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Text pod číslom sa zalamuje — v úzkej dlaždici by trojbodka zrezala skoro všetko. */
+  .doska .zdroj-pod {
+    max-height: none;
+    font-size: 0.7rem;
+    line-height: 1.2;
+    overflow: visible;
+  }
+
+  .doska .zdroj-pod.karty-oblast,
+  .doska .zdroj-pod > :is(span, b):not(.obchod-cigariet),
+  .doska .zdroj .zdroj-pod > :only-child,
+  .doska .zdroj .zdroj-pod > .pruh + .vyhlad:last-child {
+    display: block;
+    overflow: visible;
+    white-space: normal;
+    text-overflow: clip;
+    -webkit-line-clamp: none;
+    overflow-wrap: anywhere;
+  }
+
+  .doska .karty-pocty {
+    font-size: 0.72rem;
+  }
+
+  .doska .karty-pocty b {
+    min-width: 1.2em;
+    font-size: 0.85rem;
+  }
+
+  /* Počet a slovo spolu — „0“ a „odhodené“ na dvoch riadkoch sa čítali ako dva údaje. */
+  .doska .karty-pocty > span {
+    white-space: nowrap;
+  }
+
+  /* Tlačidlá obchodu cigariet sú v Pitke aj pečiatkami na hrane stola — v dlaždici by mali 20 px. */
+  .doska .obchod-cigariet {
+    display: none;
+  }
+}
