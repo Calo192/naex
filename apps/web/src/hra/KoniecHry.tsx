@@ -86,6 +86,13 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             koniec
           />
         )}
+        {view.nastenka.length > 0 && rozpis !== null && (
+          // Súčet čísel pri lokalitách nie je celkové skóre — playtest 20261031-191322 v tom hľadal chybu.
+          <p className="koniec-cirhozy koniec-pozn-lokalit">
+            Pri lokalite sú špaky jej víťaza za ňu (bitka, Robota, starší, Nakladačka, Exekútor). Spolu nižšie ráta aj porazeného v každej bitke, výkupné a
+            Cirhózu.
+          </p>
+        )}
         {rozpis !== null && (
           <div className="koniec-rozpis">
             <UcetSpakov rozpis={rozpis} ja={ja} mena={mena} />

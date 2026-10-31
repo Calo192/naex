@@ -2168,3 +2168,209 @@ html.stol-na-sirku .koniec-okno .koniec-verzia {
 .hra.mobil-sirka:not(.stol-scroll) :is(.toasty-stola .ucet-bitky, .toast-priazne) {
   display: none;
 }
+
+/* ==== oprava 5 (playtest mobilu 20261031-191322) ==== */
+
+/* ---- súhrn posunov starších na telefóne: jeden zoznam, pred → po slovami, čipy s textom ---- */
+.suhrn-tel-zoznam {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 8px;
+}
+
+.st-riadok {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--okraj) 70%, transparent);
+}
+
+.st-riadok:last-child {
+  border-bottom: 0;
+}
+
+.st-portret {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--plocha-3);
+}
+
+.st-portret img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.st-telo {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.st-hlava {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  font-size: 13px;
+}
+
+.st-hlava b {
+  font: 800 14px/1.2 var(--nadpis);
+  color: var(--text);
+}
+
+.st-posun {
+  color: var(--tlmeny);
+}
+
+.st-cipy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.st-cip {
+  padding: 2px 8px;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--text);
+  background: var(--plocha-2);
+}
+
+.st-cip.ja {
+  border-color: var(--ja);
+}
+
+.st-cip.su {
+  border-color: var(--su);
+}
+
+html.stol-na-sirku .rk-tel-akcia:disabled {
+  opacity: 0.6;
+}
+
+/* Vety pre myš a pre dotyk: na telefóne len dotyková. */
+.len-dotyk {
+  display: none;
+}
+
+.hra.mobil-sirka .len-mys {
+  display: none;
+}
+
+.hra.mobil-sirka .len-dotyk {
+  display: inline;
+}
+
+/* ---- pruh pokynu: text v dvoch riadkoch (hlásenia súpera sa dočítajú), Nakladačka bez radu žetónov ---- */
+.hra.mobil-sirka .pruh-text .pilulka-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.hra.mobil-sirka .pruh-text :is(.zetony, .pil-sep) {
+  display: none;
+}
+
+.hra.mobil-sirka .pruh-pokynu.jednotna .pruh-text .pilulka-nadpis {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 6px;
+  white-space: nowrap;
+}
+
+/* Potvrdenie a varovanie: celé znenie pod pruhom, zvýraznené. */
+.pruh-cely.naliehavy {
+  border-color: var(--akcent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---- línia: hlavičky krajov sa skrátia, nevytŕčajú cez plsť ---- */
+.hra.mobil-sirka:not(.stol-scroll) .linia-skupina .partia-popis {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---- súhrn Pitky: skóre bitky pred → po a prázdna Pitka jednou vetou ---- */
+.rk-tel-skore {
+  color: var(--tlmeny);
+}
+
+.rk-tel-skore b {
+  font: 800 16px/1 var(--nadpis);
+  color: var(--text);
+}
+
+.rk-tel-skore b.lepsie {
+  color: var(--zelena-svetla);
+}
+
+.rk-tel-skore b.horsie {
+  color: var(--cervena-svetla);
+}
+
+.rk-prazdna {
+  margin: 0;
+  padding: 14px 12px;
+  border: 1px solid var(--okraj);
+  border-radius: 12px;
+  background: var(--plocha);
+  font-size: 14px;
+  color: var(--tlmeny);
+}
+
+.rk-vys b + b {
+  margin-left: 2px;
+}
+
+/* ---- záložka Text: hlavička „čo sa stalo“ nad riadkami, meno súpera celé ---- */
+html.stol-na-sirku .rk-tel-zoznam .rekap.rz-text .rk-hlava > span {
+  position: static;
+}
+
+html.stol-na-sirku .rk-tel-zoznam .rk-text {
+  margin-top: 4px;
+}
+
+html.stol-na-sirku .rk-tel-zoznam .rk-tr {
+  grid-template-columns: 26px max-content minmax(0, 1fr);
+}
+
+html.stol-na-sirku .rk-tel-zoznam .rk-tr-kto {
+  overflow: visible;
+}
+
+/* ---- koniec partie: hlavička je jeden riadok, nástenka a rozpis sa posúvajú s oknom ---- */
+html.stol-na-sirku .koniec-okno .koniec-rozpis {
+  max-height: none;
+  overflow: visible;
+}
+
+/* Potvrdenie v pruhu: text zvýraznený (celé znenie, keď sa nezmestí, ukáže bublina pod pruhom). */
+.hra.mobil-sirka .pruh-pokynu.naliehavy .pruh-text {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Popisky pod ikonami akcií v súhrne bitky boli ≈ 7 px. */
+html.stol-na-sirku .rk-tel-zoznam .rk-nazov {
+  font-size: 10px;
+}

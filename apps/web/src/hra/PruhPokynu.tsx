@@ -31,6 +31,8 @@ export interface PruhPokynuProps {
   /** Hlásenie (súperov ťah, účet Pitky, chyba) — na chvíľu nahradí text pokynu. */
   readonly sprava?: { readonly text: string; readonly chyba: boolean } | null;
   readonly onZrusSpravu?: (() => void) | undefined;
+  /** Potvrdenie či varovanie: celé znenie sa ukáže pod pruhom samo (oprava 5 — „Skončiť bez NA EX?“ bolo orezané). */
+  readonly naliehavy?: boolean;
 }
 
 /** Ako dlho ostane hlásenie v pruhu (chyba o niečo dlhšie). */
@@ -42,7 +44,7 @@ function maTlacidlo(el: HTMLElement | null): boolean {
   return el !== null && [...el.querySelectorAll<HTMLElement>("button, select")].some((b) => b.getClientRects().length > 0);
 }
 
-export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = false, odkaz, druha, odhad, sprava = null, onZrusSpravu }: PruhPokynuProps) {
+export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = false, odkaz, druha, odhad, sprava = null, onZrusSpravu, naliehavy = false }: PruhPokynuProps) {
   const [ukazanaSprava, setUkazanaSprava] = useState<{ readonly text: string; readonly chyba: boolean } | null>(null);
   useEffect(() => {
     if (sprava === null) return;
@@ -55,6 +57,8 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
   const [maMenu, setMaMenu] = useState(false);
   const [maHlavnu, setMaHlavnu] = useState(false);
   const obal = useRef<HTMLDivElement>(null);
+  // Potvrdenie sa ukáže celé pod pruhom, len keď sa do dvoch riadkov pruhu nezmestí.
+  const [orezany, setOrezany] = useState(false);
   const menu = useRef<HTMLDivElement>(null);
   const hlavnaRef = useRef<HTMLSpanElement>(null);
 
@@ -72,6 +76,9 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
 
   // Čo sa dá stlačiť, vie až DOM (fragmenty bez tlačidiel, skryté kópie) — po každom prekreslení.
   useLayoutEffect(() => {
+    const t = obal.current?.querySelector<HTMLElement>(".pruh-text .pilulka-text");
+    const o = t !== null && t !== undefined && t.scrollHeight > t.clientHeight + 1;
+    if (o !== orezany) setOrezany(o);
     const m = maTlacidlo(menu.current);
     const h = maTlacidlo(hlavnaRef.current);
     if (m !== maMenu) setMaMenu(m);
@@ -95,7 +102,7 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
   return (
     <div
       ref={obal}
-      className={`pruh-pokynu${maHlavnu ? " s-akciou" : ""}${jednotny ? " jednotna" : ""}`}
+      className={`pruh-pokynu${maHlavnu ? " s-akciou" : ""}${jednotny ? " jednotna" : ""}${naliehavy ? " naliehavy" : ""}`}
     >
       <div ref={odkaz} className="linia-stav pruh-pokynu-riadok" role="status" aria-live="polite">
         {odhad !== undefined && odhad !== null && <span className="pruh-odhad">{odhad}</span>}
@@ -148,8 +155,8 @@ export function PruhPokynu({ nadpis, text, hlavna, vedlajsie, kluc, jednotny = f
           </button>
         )}
       </div>
-      {rozbaleny && (
-        <div className="pruh-cely" onClick={() => setRozbaleny(false)}>
+      {(rozbaleny || (naliehavy && orezany && !otvorene)) && (
+        <div className={`pruh-cely${naliehavy ? " naliehavy" : ""}`} onClick={() => setRozbaleny(false)}>
           {nadpis !== null && <strong className="pilulka-nadpis">{nadpis}</strong>} {text}
         </div>
       )}

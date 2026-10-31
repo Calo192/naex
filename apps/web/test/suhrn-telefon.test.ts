@@ -6,6 +6,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { BitkaNaNastenke, RekapitulaciaBitky } from "@naex/core";
 import { StitkyMomentov, VysledokBitky } from "../src/hra/Rekapitulacia.tsx";
+import { textDosledku } from "../src/hra/SuhrnPosunov.tsx";
 
 const spaky = (x: Partial<BitkaNaNastenke>): BitkaNaNastenke =>
   ({ zaBitku: [0, 0], zaStarsich: [0, 0], prebytok: [0, 0], exekutor: [0, 0], ...x }) as BitkaNaNastenke;
@@ -17,20 +18,20 @@ describe("výsledok bitky na telefóne", () => {
     const r = rekap({ prebytok: 6, prebytokDrzi: 0, spaky: spaky({ zaBitku: [5, 0], zaStarsich: [1, 2], exekutor: [0, 1] }) });
     const t = text(renderToStaticMarkup(createElement(VysledokBitky, { r, ja: 0, mena: ["Jano", "Fero"] })));
     expect(t).toContain("ty +6 š bitka +5 · strach +1");
-    expect(t).toContain("Fero +1 š strach +2 · Exekútor −1");
+    expect(t).toContain("Fero +1 š strach +2 · Exekútor −1 · zhorené pri exekúcii za Dlhy");
   });
 
   it("Nakladačku rozdeľuje porazený — pri tvojej výhre súper", () => {
     const r = rekap({ prebytok: 6, prebytokDrzi: 0, spaky: spaky({ zaBitku: [5, 0] }) });
     const t = text(renderToStaticMarkup(createElement(VysledokBitky, { r, ja: 0, mena: ["Jano", "Fero"] })));
-    expect(t).toContain("Nakladačka 6 → ty rozdeľuje Fero");
+    expect(t).toContain("Nakladačka 6 → ty · rozdeľuje Fero: priazeň jemu, strach z teba");
   });
 
   it("vo finále je Nakladačka v špakoch víťaza, nie na rozdelenie", () => {
     const r = rekap({ prebytok: 14, prebytokDrzi: 1, spaky: spaky({ zaBitku: [0, 6], prebytok: [0, 14] }) });
     const t = text(renderToStaticMarkup(createElement(VysledokBitky, { r, ja: 0, mena: ["Jano", "Fero"] })));
     expect(t).toContain("Fero +20 š bitka +6 · Nakladačka +14");
-    expect(t).toContain("= špaky (finále)");
+    expect(t).toContain("· = špaky (finále)");
   });
 
   it("moment je štítok — svoj žltý, súperov odlíšený", () => {
@@ -39,5 +40,19 @@ describe("výsledok bitky na telefóne", () => {
     );
     expect(html).toContain("VÝPRASK");
     expect(html).toContain("superov");
+  });
+});
+
+describe("súhrn posunov starších na telefóne — dôsledky slovami", () => {
+  const mena = ["Jano", "Fero"] as const;
+  it("špaky na udržanie sú špaky, nie cigarety, a čakajú na koniec ďalšieho kola", () => {
+    expect(textDosledku({ druh: "naUdrzanie", hrac: 0, spaky: 3 }, 0, mena, [])).toBe("+3 š tebe, ak sa udrží do konca ďalšieho kola");
+    expect(textDosledku({ druh: "vyplata", hrac: 1, spaky: 1, stupen: 1 }, 0, mena, [])).toBe("+1 š Fero za udržaný strach (vyplatené)");
+  });
+
+  it("priazeň, Povera a väzeň s textom", () => {
+    expect(textDosledku({ druh: "priazen", hrac: 0, sila: 3, bolo: 2 }, 0, mena, [])).toBe("priazeň ty 3 (predtým 2)");
+    expect(textDosledku({ druh: "povera", hrac: 1, stupne: 1 }, 0, mena, [])).toBe("Povera Fero: požičaná priazeň 1");
+    expect(textDosledku({ druh: "vazen", hrac: 0, poradie: 1 }, 0, mena, [])).toMatch(/^uväznený · väzeň tvoj 0\/\d$/);
   });
 });

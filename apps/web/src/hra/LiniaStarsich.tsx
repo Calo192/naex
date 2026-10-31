@@ -151,7 +151,11 @@ export function LiniaStarsich({ starsi, data, ja, pohlad, mena, krok, zmenene, t
             {akciaNahladu}
           </>
         ) : (
-          <span className="ls-tlmene">Prejdi myšou alebo Tabom na staršieho — riadky pod stupnicou ukážu stav po posune.</span>
+          <span className="ls-tlmene">
+            {/* Na telefóne myš ani Tab nie sú (playtest mobilu 20261031-191322) — mobil-sirka.css prepne vetu. */}
+            <span className="len-mys">Prejdi myšou alebo Tabom na staršieho — riadky pod stupnicou ukážu stav po posune.</span>
+            <span className="len-dotyk">Ťukni na staršieho — riadky pod stupnicou ukážu stav po posune.</span>
+          </span>
         )}
       </span>
     );

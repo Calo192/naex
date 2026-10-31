@@ -161,7 +161,7 @@ import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole
 import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatkyKrokov.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { SuhrnLokality } from "./SuhrnLokality.tsx";
-import { SuhrnPosunov } from "./SuhrnPosunov.tsx";
+import { SuhrnPosunov, SuhrnPosunovTelefon } from "./SuhrnPosunov.tsx";
 import type { SuhrnDlazdice } from "./Starsi.tsx";
 import { suhrnPosunov, zaciatokKola, type PolozkaSuhrnu, type ZaciatokKola } from "./obsahSuhrnu.ts";
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
@@ -271,6 +271,8 @@ interface Pokyn {
   readonly vpravo?: ReactNode;
   /** Telefón: druhá voľba binárneho rozhodnutia — tmavý segment vedľa hlavnej akcie, nie v ▾. */
   readonly druha?: ReactNode;
+  /** Telefón: potvrdenie či varovanie — pruh ukáže celé znenie pod sebou, nie orezané trojbodkou. */
+  readonly naliehavy?: boolean;
 }
 /** Hrana stola pre ťah s návrhom: pečiatka v strede, vedľajšie voľby vľavo či vpravo. */
 interface HranaTahu {
@@ -307,6 +309,8 @@ const RUKA_NA_SIRKU = 0.25;
 const KARIET_V_RUKE_NA_SIRKU = 8;
 /** Telefón na šírku: najmenšia karta v línii — stôl sa tam nikdy neposúva, karta sa radšej zmenší. */
 const SIRKA_NA_SIRKU_MIN = 36;
+/** Telefón na šírku: pri dlhej línii smie karta klesnúť aj pod SIRKA_NA_SIRKU_MIN — prečíta sa podržaním. */
+const SIRKA_NA_SIRKU_MIN_LINIA = 26;
 /** Telefón na šírku s lištou prehliadača: pod touto výškou okna sa nástenka pri voľbe cieľa zhustí. */
 const NIZKY_TELEFON = 360;
 /** Výška popolníkov nad lístkami nástenky (rozlozenieNastenky: 60 px pri --nk = 1). */
@@ -511,7 +515,15 @@ interface UcetPitky {
 
 /** Vrstva po vyhodnotení: rekapitulácia Pitky, alebo Počítadlo bitky s rekapituláciou. */
 type VrstvaVyhodnotenia =
-  | { readonly druh: "pitka"; readonly r: RekapitulaciaPitky; readonly nadpis: string; readonly odpovede: readonly OdpovedNaNaex[]; readonly momenty?: readonly Moment[] }
+  | {
+      readonly druh: "pitka";
+      readonly r: RekapitulaciaPitky;
+      readonly nadpis: string;
+      readonly odpovede: readonly OdpovedNaNaex[];
+      readonly momenty?: readonly Moment[];
+      /** Tuhé bitky pred Pitkou a po nej — telefón ukáže, čo Pitka (NA EX) spravila so skóre. */
+      readonly skore?: { readonly pred: readonly [number, number]; readonly po: readonly [number, number] } | null;
+    }
   | {
       readonly druh: "bitka";
       readonly p: Pocitadlo;
@@ -844,8 +856,12 @@ export function HernaPlocha({
     sirkaLinie === 0
       ? Math.min(SIRKA_V_LINII, sirkaPodlaVysky)
       : naSirku
-        ? // Na šírku telefónu určuje kartu len výška plste — dlhá línia sa posúva (dizajn A: 5–7 kariet naraz).
-          Math.max(SIRKA_NA_SIRKU_MIN, Math.min(SIRKA_V_LINII, sirkaPodlaVysky))
+        ? // Na šírku telefónu sa línia zmestí medzi stĺpce (oprava 5: pri 5–8 kartách pretiekla cez okraj
+          // a „+“ zmizlo) — karty sa rovnomerne zmenšia podľa šírky aj výšky plste.
+          Math.max(
+            SIRKA_NA_SIRKU_MIN_LINIA,
+            Math.min(SIRKA_V_LINII, sirkaPodlaVysky, Math.floor((sirkaLinie - 24) / (pocetVLinii + 1 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 4),
+          )
         : // Minimum platí pre šírku (dlhá línia sa radšej posúva); výška stola ho prebije —
         // na nízkom notebooku sa karty inak orezali dole (Michal 2026-10-23) — no nie pod
         // čitateľnú veľkosť: tam už stôl prejde na scroll.
@@ -1748,7 +1764,18 @@ export function HernaPlocha({
         if (!pitkaPredBitkou(events, i) || e.rekap.naex.karty.length > 0 || odpovede.length > 0) {
           const ciel = view.ciel ?? predoslyView.current?.ciel ?? null;
           const lok = ciel?.lokalita ?? null;
-          nove.push({ druh: "pitka", r: e.rekap, nadpis: `Pitka ${e.rekap.pitka} / ${e.rekap.pitkyCelkom}${lok === null ? "" : ` · ${menoKarty(lok.defId)}`}`, odpovede });
+          // Skóre bitky pred Pitkou a po nej z verejnej línie (to isté, čo ráta odhad na stole).
+          const tuhe = (s: ClientState | null): readonly [number, number] | null =>
+            s === null || s.ciel === null || s.strany.every((x) => x.length === 0) ? null : poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums).tuhe;
+          const pred = tuhe(predoslyView.current);
+          const po = tuhe(viewZoServera);
+          nove.push({
+            druh: "pitka",
+            r: e.rekap,
+            nadpis: `Pitka ${e.rekap.pitka} / ${e.rekap.pitkyCelkom}${lok === null ? "" : ` · ${menoKarty(lok.defId)}`}`,
+            odpovede,
+            skore: pred === null || po === null ? null : { pred, po },
+          });
         }
       }
       if (e.type === "bitkaVysledok") {
@@ -2335,7 +2362,32 @@ export function HernaPlocha({
   const [potvrdenaMedzi, setPotvrdenaMedzi] = useState<string | null>(() =>
     view.kolo === 1 && view.faza === "volbaCiela" ? null : (medziTeraz?.kluc ?? null),
   );
-  const medziCaka = medziZapnute && medziTeraz !== null && medziTeraz.kluc !== potvrdenaMedzi;
+  // Telefón (oprava 5): úvodné okno fázy len prvýkrát v partii, nie v každom kole — v kole 1 to bolo
+  // ≈ 7 ťukov na Rozumiem. Videné druhy (šenok, Pitka…) si pamätá karta prehliadača pre túto partiu.
+  const klucVidenychMedzi = `naex-medzi-${kod}`;
+  const [videneDruhyMedzi, setVideneDruhyMedzi] = useState<ReadonlySet<string>>(() => {
+    try {
+      return new Set(JSON.parse(sessionStorage.getItem(klucVidenychMedzi) ?? "[]") as string[]);
+    } catch {
+      return new Set();
+    }
+  });
+  const druhMedzi = (kluc: string): string => kluc.split("|")[1] ?? kluc;
+  const potvrdMedzi = (kluc: string): void => {
+    setPotvrdenaMedzi(kluc);
+    if (!naSirku) return;
+    setVideneDruhyMedzi((v) => {
+      const nove = new Set([...v, druhMedzi(kluc)]);
+      try {
+        sessionStorage.setItem(klucVidenychMedzi, JSON.stringify([...nove]));
+      } catch {
+        // bez úložiska si to pamätá len tento stôl
+      }
+      return nove;
+    });
+  };
+  const medziCaka =
+    medziZapnute && medziTeraz !== null && medziTeraz.kluc !== potvrdenaMedzi && !(naSirku && videneDruhyMedzi.has(druhMedzi(medziTeraz.kluc)));
   // Krátka chvíľa, kým sa stôl ustáli (bitka a nové kolo prídu naraz, počítadlo až po nich).
   const [medziUstalena, setMedziUstalena] = useState<string | null>(null);
   const klucMedzi = medziCaka ? medziTeraz.kluc : null;
@@ -3045,7 +3097,8 @@ export function HernaPlocha({
         {stredKarta !== null && (
           <span className={`kraj-prevaha ${prevaha[p] === ja ? "moja" : prevaha[p] === null ? "" : "superova"}`} data-vyucba="prevaha">
             {" "}
-            · prevaha: {kto(prevaha[p])}
+            {/* Telefón: krátko, celé meno by hlavičku kraja orezalo (playtest 20261031-191322). */}
+            · prevaha: {naSirku ? (prevaha[p] === null ? "nikto" : prevaha[p] === ja ? "ty" : "súper") : kto(prevaha[p])}
           </span>
         )}
         {smer === "vpravo" ? " →" : ""}
@@ -4289,6 +4342,7 @@ export function HernaPlocha({
           );
         return {
           nadpis,
+          naliehavy: potvrdzujem,
           text: potvrdzujem ? (
             <strong>Skončiť bez NA EX? Máš plný poldeci a v tejto Pitke ho už nedáš — klikni ešte raz, alebo Esc.</strong>
           ) : krcma ? (
@@ -5701,6 +5755,7 @@ export function HernaPlocha({
     <PruhPokynu
       kluc={klucTahu}
       jednotny={pokyn?.jednotny === true}
+      naliehavy={pokyn?.naliehavy === true}
       nadpis={pokyn === null || pokyn.nadpis !== null ? (pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)) : null}
       text={pokyn?.text === undefined ? null : preDotykUzol(pokyn.text)}
       hlavna={hranaStred ?? hranaVpravo}
@@ -6471,6 +6526,7 @@ export function HernaPlocha({
           odpovede={vrstvaVyhodnotenia.odpovede}
           naSirku={naSirku}
           momenty={vrstvaVyhodnotenia.momenty}
+          skore={vrstvaVyhodnotenia.skore ?? null}
         />
       )}
       {peciatkaKroku !== null && (
@@ -6488,8 +6544,26 @@ export function HernaPlocha({
           </div>
         </div>
       )}
-      {medziViditelna && medziTeraz !== null && <Medziobrazovka obsah={medziTeraz} onRozumiem={() => setPotvrdenaMedzi(medziTeraz.kluc)} />}
-      {suhrnBezi && (
+      {medziViditelna && medziTeraz !== null && <Medziobrazovka obsah={medziTeraz} onRozumiem={() => potvrdMedzi(medziTeraz.kluc)} />}
+      {/* Telefón: jeden zoznam všetkých starších s Ďalej v pruhu hore (oprava 5) — nie bublina po jednom. */}
+      {suhrnBezi && naSirku && (
+        <SuhrnPosunovTelefon
+          key={suhrn.kolo}
+          polozky={suhrn.polozky}
+          kolo={suhrn.kolo}
+          ja={ja}
+          mena={[menoHraca(0), menoHraca(1)]}
+          vazni={view.vazni}
+          menoKarty={menoKarty}
+          obrazok={(defId) => {
+            const o = vzhladKarty(sada, data, defId).obrazok;
+            return o === null ? null : mediaUrl(o.nahlad);
+          }}
+          posledne={viewZoServera.faza === "volbaCiela" && viewZoServera.utocnik !== ja ? "Vybrať lokalitu" : "Ďalej"}
+          onKoniec={koniecSuhrnu}
+        />
+      )}
+      {suhrnBezi && !naSirku && (
         <SuhrnPosunov
           key={suhrn.kolo}
           polozky={suhrn.polozky}

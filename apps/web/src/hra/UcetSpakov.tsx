@@ -7,9 +7,10 @@ import type { PlayerId, RozpisSpakov } from "@naex/core";
 import { IkonaSpaku, sMinusom } from "./Spaky.tsx";
 
 const RIADKY: readonly { readonly kluc: keyof RozpisSpakov; readonly nazov: string }[] = [
-  { kluc: "zaBitky", nazov: "vyhraté bitky" },
+  // Súčet za bitky ráta aj Robotu (rozpisSpakov) — „vyhraté bitky“ nesedelo so špakmi pri lokalitách (playtest 20261031-191322).
+  { kluc: "zaBitky", nazov: "za bitky a Robotu" },
   { kluc: "zaStarsich", nazov: "starší, ktorí sa boja" },
-  { kluc: "prebytok", nazov: "Nakladačka (partie do v7)" },
+  { kluc: "prebytok", nazov: "Nakladačka vo finále" },
   { kluc: "exekutor", nazov: "Exekútor" },
   { kluc: "vykupne", nazov: "výkupné (poldeci, cigarety)" },
   { kluc: "cirhoza", nazov: "nepriznaná Cirhóza" },

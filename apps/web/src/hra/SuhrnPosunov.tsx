@@ -7,7 +7,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { MarkerPos, PlayerId, Vazen } from "@naex/core";
-import { KONSTANTY, STUPNICA_ZONY, cigariet, pocet } from "@naex/core";
+import { KONSTANTY, STUPNICA_ZONY, cigariet, obavanyHrac, pocet, strachZ } from "@naex/core";
 import "./suhrn-posunov.css";
 import { IKONY } from "../karta/ikony.ts";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
@@ -441,3 +441,101 @@ function IkonaPiktogramu({ kluc, trieda }: { readonly kluc: "Povera" | "Cigareta
 
 const IkonaPovery = () => <IkonaPiktogramu kluc="Povera" trieda="povera" />;
 const IkonaCigarety = () => <IkonaPiktogramu kluc="Cigareta" trieda="cigareta" />;
+
+export interface SuhrnPosunovTelefonProps {
+  readonly polozky: readonly PolozkaSuhrnu[];
+  readonly kolo: number;
+  readonly ja: PlayerId;
+  readonly mena: readonly [string, string];
+  readonly vazni: readonly Vazen[];
+  readonly menoKarty: (defId: string) => string;
+  readonly obrazok: (defId: string) => string | null;
+  readonly posledne: string;
+  readonly onKoniec: () => void;
+}
+
+/** Ďalej sa odomkne až po chvíli — dvojťuk z predošlého okna by súhrn preskočil nevidený. */
+const ZAMOK_TELEFONU_MS = 700;
+
+/**
+ * Súhrn posunov na telefóne (Michal 2026-10-31, oprava 5: bublina po jednom bola chaos): rovnaký vzor
+ * ako súhrn bitky — hore pruh so žltým Ďalej na stálom mieste, pod ním jeden zoznam všetkých
+ * starších naraz: pred → po slovami a dôsledky ako čipy s textom.
+ */
+export function SuhrnPosunovTelefon({ polozky, kolo, ja, mena, vazni, menoKarty, obrazok, posledne, onKoniec }: SuhrnPosunovTelefonProps) {
+  const [odomknute, setOdomknute] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setOdomknute(true), ZAMOK_TELEFONU_MS);
+    return () => clearTimeout(t);
+  }, []);
+  const stav = (m: MarkerPos): string => {
+    const o = obavanyHrac({ marker: m });
+    return o === null ? "stred" : `bojí sa ${o === ja ? "teba" : mena[o]} (${strachZ({ marker: m }, o)})`;
+  };
+  return (
+    <div className="pocitadlo-bitky rk-telefon hotova suhrn-telefon" role="dialog" aria-modal="true" aria-label={`Starší po kole ${kolo}`}>
+      <div className="rk-tel-pruh">
+        <span className="rk-tel-hlava">
+          <span className="rk-tel-nadpis">Starší po kole {kolo}</span>
+          <span className="rk-tel-verdikt">{pocet(polozky.length, "zmena", "zmeny", "zmien")}</span>
+        </span>
+        <button type="button" className={`rk-dalej rk-tel-akcia${odomknute ? "" : " caka"}`} disabled={!odomknute} onClick={onKoniec}>
+          {posledne}
+        </button>
+      </div>
+      <div className="rk-tel-zoznam suhrn-tel-zoznam">
+        {polozky.map((p) => {
+          const o = obrazok(p.defId);
+          const cipy = dosledky(p).filter((d) => d.druh !== "strach");
+          return (
+            <div key={p.elderId} className="st-riadok">
+              <span className="st-portret">{o !== null ? <img src={o} alt="" draggable={false} /> : null}</span>
+              <span className="st-telo">
+                <span className="st-hlava">
+                  <b>{menoKarty(p.defId)}</b>
+                  <span className="st-posun">
+                    {p.vazen !== null ? "uväznený" : p.posun === null ? `ostáva: ${stav(p.elder?.marker ?? (3 as MarkerPos))}` : `${stav(p.posun.z)} → ${stav(p.posun.na)}`}
+                  </span>
+                </span>
+                {cipy.length > 0 && (
+                  <span className="st-cipy">
+                    {cipy.map((d, i) => (
+                      <span key={i} className={`st-cip ${d.hrac === ja ? "ja" : "su"}`}>
+                        {textDosledku(d, ja, mena, vazni)}
+                      </span>
+                    ))}
+                  </span>
+                )}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** Dôsledok slovami (telefón) — ikona bez popisu sa nedala prečítať (playtest 20261031-191322). */
+export function textDosledku(d: Dosledok, ja: PlayerId, mena: readonly [string, string], vazni: readonly Vazen[]): string {
+  const kto = d.hrac === ja ? "ty" : mena[d.hrac];
+  const komu = d.hrac === ja ? "tebe" : mena[d.hrac];
+  switch (d.druh) {
+    case "priazen":
+      return `priazeň ${kto} ${d.sila}${d.bolo !== null && d.bolo !== d.sila ? ` (predtým ${d.bolo})` : ""}`;
+    case "strataPriazne":
+      return `${kto} prichádza o priazeň ${d.sila}`;
+    case "strach":
+      return `bojí sa ${d.hrac === ja ? "teba" : mena[d.hrac]} (${d.stupen})`;
+    case "naUdrzanie":
+      // Špaky, nie cigarety: zaplatí ich koniec ďalšieho kola, ak marker vydrží — cigarety za posun sú už v stĺpci.
+      return `+${d.spaky} š ${komu}, ak sa udrží do konca ďalšieho kola`;
+    case "zajatieMozne":
+      return `${d.hrac === ja ? "môžeš" : `${mena[d.hrac]} môže`} po šenku skúsiť zajať (${cigariet(KONSTANTY.CENA_POKUSU)})`;
+    case "vyplata":
+      return `+${d.spaky} š ${komu} za udržaný strach (vyplatené)`;
+    case "povera":
+      return `Povera ${kto}: požičaná priazeň ${d.stupne}`;
+    case "vazen":
+      return `uväznený · väzeň ${d.hrac === ja ? "tvoj" : mena[d.hrac]} ${vazni.filter((v) => v.hrac === d.hrac).length}/${KONSTANTY.VAZNI_NA_VYHRU}`;
+  }
+}
