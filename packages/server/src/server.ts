@@ -1460,14 +1460,8 @@ function serveStatic(dir: string, req: IncomingMessage, res: ServerResponse): vo
         "form-action 'self'",
       ].join("; ");
     }
-    // Vite pridáva do názvov hash — tie sa môžu cachovať natrvalo.
-    // Ilustrácie pravidiel nemajú hash v názve, ale menia sa zriedka — deň v cache
-    // ušetrí opakované dotazy na server (Singapur je od nás ďaleko).
-    hlavicky["cache-control"] = subor.includes(join("assets", ""))
-      ? "public, max-age=31536000, immutable"
-      : subor.includes(join("pravidla", "")) && extname(subor) === ".jpg"
-        ? "public, max-age=86400"
-        : "no-cache";
+    // Vite pridáva do názvov hash — tie sa môžu cachovať natrvalo (aj ilustrácie pravidiel).
+    hlavicky["cache-control"] = subor.includes(join("assets", "")) ? "public, max-age=31536000, immutable" : "no-cache";
     res.writeHead(200, hlavicky);
     res.end(obsah);
   } catch {
