@@ -178,8 +178,6 @@ export class Robot {
           return { type: "benzinka", uids: obcania.slice(0, b.benzinkaZostava[ja]).map((pl) => pl.card.uid) };
         }
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
-        // v6: Exekútor sa pýta len na Záhradkára — robot ho zahodí.
-        if (b.krok === "exekutor") return { type: "zahradkar", zahodit: true };
         // v8.3: Povery — robot ich dá na prvého staršieho, kam smú (klient z verejného pohľadu).
         if (b.krok === "povery") {
           const elder = view.starsi.find((e) => poveraMozna(e, ja, b.klebety));

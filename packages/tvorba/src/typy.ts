@@ -150,7 +150,3 @@ export interface Sada extends Vzhlad {
   readonly bodovacie?: readonly BodovaciaKarta[];
   readonly ikonyBodovania?: readonly IkonaBodovania[];
 }
-
-export function prazdnaStrana(): StranaNavrhu {
-  return { blokovane: [], akcie: {}, povolene: {} };
-}

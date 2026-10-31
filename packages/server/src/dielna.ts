@@ -17,7 +17,6 @@ export type StavDielne = (typeof STAVY_DIELNE)[number];
 /** Stav, ako ho vidí hráč: „v hre“ a „archív“ sa odvodzujú pri čítaní. */
 export type StavZobrazeny = StavDielne | "v_hre" | "archiv";
 export type TypNavrhu = "nova" | "uprava";
-export type Rozhodnutie = "schvalit" | "vratit" | "zamietnut";
 
 /** Otvorené návrhy (koncept, hlasovanie, vrátené) — najviac 3 na hráča. */
 export const MAX_OTVORENYCH = 3;
