@@ -614,6 +614,13 @@ export function HernaPlocha({
   // (na Androide s lištou prehliadača má okno pod 760 px a stavba šenku sa zasekla, Michal 2026-10-31).
   const mobil = sirkaOkna < MOBIL && !naSirku;
   const celaObrazovka = useCelaObrazovka();
+  // Kto od stola odíde (lobby, iná stránka), nemá ostať na celej obrazovke.
+  useEffect(
+    () => () => {
+      if (document.fullscreenElement !== null) void document.exitFullscreen().catch(() => undefined);
+    },
+    [],
+  );
   // Dotyková obrazovka bez myši — kartu v ruke zväčší ťuknutie (hover tam nie je).
   const jeDotyk = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(hover: none)").matches === true, []);
   // Nízky notebook (MacBook 14" ≈ 860 px, 13" s lištou ≈ 800, 1366 × 650): menšia ruka nechá výšku stolu.
@@ -5356,6 +5363,8 @@ export function HernaPlocha({
           ?
         </button>
       )}
+      {/* Celá obrazovka (Michal 2026-10-31) — na počítači pre všetkých, na telefóne skryje lištu prehliadača. */}
+      {celaObrazovka.mozna && <TlacidloCelejObrazovky zapnuta={celaObrazovka.zapnuta} prepni={celaObrazovka.prepni} />}
     </div>
   );
   const rukaPocet = (p: PlayerId): ReactNode => (
@@ -5703,7 +5712,6 @@ export function HernaPlocha({
           // Telefón na šírku: menu Partia a Log, súper v riadku čipov a jeho Starší (dizajn A „Pult“).
           <div className="pult-hore">
             {hlavickaPartie}
-            {celaObrazovka.mozna && <TlacidloCelejObrazovky zapnuta={celaObrazovka.zapnuta} prepni={celaObrazovka.prepni} />}
             {pult(super_)}
           </div>
         ) : (

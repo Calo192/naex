@@ -1,6 +1,8 @@
 // Celá obrazovka na telefóne (Michal 2026-10-31, po skúške na Androide): adresný riadok Chromu
 // zobral stolu na šírku ≈ 15 % výšky. Fullscreen API ho na ťuk skryje a potom sa dá zamknúť
 // orientácia na šírku. iPhone (Safari) Fullscreen API pre stránku nemá — tam sa nič neponúka.
+// Na počítači je to len nenápadná ikona vedľa Log · ? pre všetkých (Michal 2026-10-31); stôl
+// v celej obrazovke prepočíta rozloženie sám (reaguje na resize okna).
 
 import { useCallback, useEffect, useState } from "react";
 
@@ -56,7 +58,7 @@ export function TlacidloCelejObrazovky({ zapnuta, prepni }: { readonly zapnuta: 
   return (
     <button
       type="button"
-      className="tlacidlo-celej-obrazovky"
+      className="hlava-vrstva tlacidlo-celej-obrazovky"
       aria-pressed={zapnuta}
       aria-label={zapnuta ? "Ukončiť celú obrazovku" : "Hrať na celú obrazovku"}
       title={zapnuta ? "Ukončiť celú obrazovku" : "Hrať na celú obrazovku"}

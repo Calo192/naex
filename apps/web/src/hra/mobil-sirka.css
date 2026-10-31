@@ -965,7 +965,7 @@ html.stol-na-sirku .lokalita-supera .ls-hrany {
 }
 
 /* ---- celá obrazovka (Android): ikona v pulte a ponuka pri príchode k stolu ---- */
-.tlacidlo-celej-obrazovky {
+.pult-hore .tlacidlo-celej-obrazovky {
   flex: none;
   display: inline-flex;
   align-items: center;
@@ -977,8 +977,8 @@ html.stol-na-sirku .lokalita-supera .ls-hrany {
 }
 
 .ikona-celej-obrazovky {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2.2;
