@@ -199,6 +199,7 @@ import { useTahanie, type Tahanie } from "./useTahanie.ts";
 import { PultHraca, Tabula } from "./PultHraca.tsx";
 import { cislaHraca } from "./tabula.ts";
 import { Avatar } from "../komponenty.tsx";
+import { PonukaCelejObrazovky, TlacidloCelejObrazovky, useCelaObrazovka } from "./CelaObrazovka.tsx";
 import "./hra.css";
 import "./mobil-sirka.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
@@ -295,9 +296,13 @@ const SIRKA_V_RUKE_MOBIL = 72;
 /** Telefón na šírku: výška karty v ruke ako zlomok výšky okna (vejár v doku, dizajn A „Pult“). */
 const RUKA_NA_SIRKU = 0.3;
 /** Telefón na šírku: najmenšia karta v línii — stôl sa tam nikdy neposúva, karta sa radšej zmenší. */
-const SIRKA_NA_SIRKU_MIN = 56;
+const SIRKA_NA_SIRKU_MIN = 36;
 /** Telefón na šírku: najmenšie miesto pre ťahy v doku, aj keď žiadny nie je (ruka nepreskakuje). */
 const AKCIE_NA_SIRKU_MIN = 120;
+/** Telefón na šírku s lištou prehliadača: pod touto výškou okna sa nástenka pri voľbe cieľa zhustí. */
+const NIZKY_TELEFON = 360;
+/** Výška popolníkov nad lístkami nástenky (rozlozenieNastenky: 60 px pri --nk = 1). */
+const POPOLNIKY_NASTENKY = 60;
 /** Pod touto šírkou okna je rozloženie mobilné. */
 const MOBIL = 760;
 /** Výšky okna, pod ktorými sa stôl zhustí — rovnaké hranice má hra.css (@media max-height). */
@@ -605,7 +610,10 @@ export function HernaPlocha({
     window.addEventListener("resize", zmena);
     return () => window.removeEventListener("resize", zmena);
   }, []);
-  const mobil = sirkaOkna < MOBIL;
+  // Telefón na šírku má vlastné rozloženie (Pult) — mobil na výšku by preň prestavil šenok a cieľ kola
+  // (na Androide s lištou prehliadača má okno pod 760 px a stavba šenku sa zasekla, Michal 2026-10-31).
+  const mobil = sirkaOkna < MOBIL && !naSirku;
+  const celaObrazovka = useCelaObrazovka();
   // Dotyková obrazovka bez myši — kartu v ruke zväčší ťuknutie (hover tam nie je).
   const jeDotyk = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(hover: none)").matches === true, []);
   // Nízky notebook (MacBook 14" ≈ 860 px, 13" s lištou ≈ 800, 1366 × 650): menšia ruka nechá výšku stolu.
@@ -2044,8 +2052,12 @@ export function HernaPlocha({
   useLayoutEffect(() => {
     const hra = hraRef.current;
     if (!naSirku || hra === null) return;
-    let w = 0;
-    for (const el of hra.querySelectorAll<HTMLElement>(".stol-hrana :is(.hrana-stred, .hrana-vpravo)")) w += el.offsetWidth > 0 ? el.offsetWidth + 6 : 0;
+    // Od ľavého okraja ťahov po pravý okraj stola (aj s odsadením pre ✕ návrhu).
+    let vlavo = Number.POSITIVE_INFINITY;
+    for (const el of hra.querySelectorAll<HTMLElement>(".stol-hrana :is(.hrana-stred, .hrana-vpravo)")) {
+      if (el.offsetWidth > 0) vlavo = Math.min(vlavo, el.getBoundingClientRect().left);
+    }
+    const w = Number.isFinite(vlavo) ? Math.ceil(hra.getBoundingClientRect().right - parseFloat(getComputedStyle(hra).paddingRight) - vlavo) + 6 : 0;
     const nove = `${Math.max(AKCIE_NA_SIRKU_MIN, w)}px`;
     if (hra.style.getPropertyValue("--akcie-w") !== nove) hra.style.setProperty("--akcie-w", nove);
     // Tvoj pult má šírku podľa obsahu (počet čipov, Chuť len keď ju partia má).
@@ -4936,7 +4948,8 @@ export function HernaPlocha({
   const sirkaDraftu = mobil
     ? 84
     : Math.max(
-        56,
+        // Telefón na šírku s lištou prehliadača (300 – 340 px): karty sa radšej zmenšia, než by ich zrezal okraj.
+        naSirku ? SIRKA_NA_SIRKU_MIN : 56,
         Math.min(
           170,
           // Na šírku: stavba má balíček + lokalitu, branie kariet šenku, voľba cieľa lokalít;
@@ -5001,7 +5014,8 @@ export function HernaPlocha({
       // Lokalita, o ktorú sa bije, namiesto Smetiska (#147): väčšia než karty balíčka — hráč
       // vidí hrany, efekt a kraje, k čomu karty vyberá. Vysoká ako balíček s miestom na zdvihnutú
       // kartu a nadpisom (≈ 54 px), aby kartám balíčka nebrala výšku.
-      const sirkaLokality = Math.round(sirkaDraftu + 54 / POMER_KARTY);
+      // Na šírku telefónu je lokalita rovnako veľká ako karty balíčka — vyššia by brala výšku všetkým kartám.
+      const sirkaLokality = naSirku ? sirkaDraftu : Math.round(sirkaDraftu + 54 / POMER_KARTY);
       return (
         <section ref={draftPanelRef} className={`draft-panel stavba ${somNaTahu ? "moj-tah" : "cakanie"}`} aria-label="Stavba šenku" data-vyucba="stavba">
           {/* Na stole nadpis aj čo robiť hovorí pilulka a „potvrdiť“ je pečiatka na hrane stola — hlavička
@@ -5098,7 +5112,7 @@ export function HernaPlocha({
           {lokalitaBrania !== null && !mobil && (
             <div className="stavba-lokalita">
               <span className="stavba-lokalita-nazov">{view.ciel?.typ === "finale" ? "finále" : "bije sa o"}</span>
-              {sLupou({ karta: lokalitaBrania, sirka: Math.round(sirkaDraftu + 54 / POMER_KARTY), otocena: view.lokalitaOtocena }, { trieda: "stavba-lokalita-karta" })}
+              {sLupou({ karta: lokalitaBrania, sirka: naSirku ? sirkaDraftu : Math.round(sirkaDraftu + 54 / POMER_KARTY), otocena: view.lokalitaOtocena }, { trieda: "stavba-lokalita-karta" })}
             </div>
           )}
           <div className="harmonika draft-karty branie-karty" data-vyucba="senok">
@@ -5252,9 +5266,18 @@ export function HernaPlocha({
     1;
   // Pri voľbe cieľa podľa skutočnej vrstvy — odhad počíta s hranou stola, aj keď na nej nič nie je,
   // a lístkom na výber by chýbalo ~40 px výšky.
+  // Telefón na šírku s lištou prehliadača (≤ 360 px): pri voľbe cieľa nástenka skryje popolníky
+  // (špaky sú v pultoch) a lístok Koniec — inak by lokality na výber vytlačila pod okraj plste.
+  const volbaNaNizkomTelefone = naSirku && volbaNaStole && vyskaOkna <= NIZKY_TELEFON;
   const nastenkaRozmer =
     volbaNaStole && rozmerVrstvyNastenky !== null
-      ? rozmerNastenky(rozmerVrstvyNastenky.w, rozmerVrstvyNastenky.h, listkovNastenky, view.lokalityVHre.length, view.nastenka.length)
+      ? rozmerNastenky(
+          rozmerVrstvyNastenky.w,
+          rozmerVrstvyNastenky.h + (volbaNaNizkomTelefone ? POPOLNIKY_NASTENKY : 0),
+          listkovNastenky - (volbaNaNizkomTelefone ? 1 : 0),
+          view.lokalityVHre.length,
+          view.nastenka.length,
+        )
       : rozmerNastenky(vnutroPlste.w - 20, vnutroPlste.h - 26 - 48 - presahPilulky, listkovNastenky, volbaNaStole ? view.lokalityVHre.length : 0, view.nastenka.length);
   const sirkaNastenky = nastenkaRozmer.sirkaKarty;
   const sirkaVolby = nastenkaRozmer.sirkaVyberu;
@@ -5603,7 +5626,7 @@ export function HernaPlocha({
           ? Math.min(sirkaOkna * 0.62, (vyskaOkna - 360) / POMER_KARTY)
           : naSirku
             ? // Telefón na šírku: pod kartou ešte dva riadky hrán a ikony strán.
-              (vyskaOkna - 190) / POMER_KARTY
+              (vyskaOkna - 210) / POMER_KARTY
             : Math.min(560, vyskaOkna - 160) / POMER_KARTY,
       ),
     );
@@ -5639,6 +5662,7 @@ export function HernaPlocha({
     >
       {pauzaCielaEl}
       {tabulaEl}
+      {naSirku && celaObrazovka.mozna && !celaObrazovka.zapnuta && view.koniec === null && <PonukaCelejObrazovky prepni={celaObrazovka.prepni} />}
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
       {view.koniec !== null && !koniecZavrety && prehravanie === undefined && bezOknaKonca !== true && (
         <KoniecHry
@@ -5679,6 +5703,7 @@ export function HernaPlocha({
           // Telefón na šírku: menu Partia a Log, súper v riadku čipov a jeho Starší (dizajn A „Pult“).
           <div className="pult-hore">
             {hlavickaPartie}
+            {celaObrazovka.mozna && <TlacidloCelejObrazovky zapnuta={celaObrazovka.zapnuta} prepni={celaObrazovka.prepni} />}
             {pult(super_)}
           </div>
         ) : (
@@ -5802,7 +5827,7 @@ export function HernaPlocha({
             {nastenkaNaStole && (
               <div
                 ref={vrstvaNastenkyRef}
-                className={`vrstva-nastenky${nastenkaRozmer.sirkaKarty >= NASTENKA_KARTA_MIN ? "" : " bez-kariet"}`}
+                className={`vrstva-nastenky${nastenkaRozmer.sirkaKarty >= NASTENKA_KARTA_MIN ? "" : " bez-kariet"}${volbaNaNizkomTelefone ? " volba-nizka" : ""}`}
                 data-vyucba="nastenka"
                 style={{ "--nk": nastenkaRozmer.nk, "--nk-sirka": `${nastenkaRozmer.sirkaKarty}px`, "--nk-stlpcov": nastenkaRozmer.rady === 2 ? nastenkaRozmer.stlpcov : 99 } as CSSProperties}
               >

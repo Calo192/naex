@@ -4,6 +4,12 @@
  * na výšku sa nemenia. Kostra: súper v riadku čipov hore, plsť s líniou cez celú šírku, dole dok
  * (tvoj pult · ruka · ťahy pod pravým palcom). Okraje výrezu dorovná env(safe-area-inset-*). */
 
+/* Android Chrome inak text „zväčšuje“ podľa vlastného odhadu (font boosting) a stôl sa rozíde. */
+html.stol-na-sirku {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 html.stol-na-sirku,
 html.stol-na-sirku body {
   height: 100%;
@@ -30,6 +36,8 @@ html.stol-na-sirku .obsah:has(> .hra) {
   --okraj-d: max(2px, env(safe-area-inset-bottom));
   --pult-h: 46px;
   --dok-h: 68px;
+  /* Výška tvojho pultu a ťahov v doku (dok-h mínus okraj). */
+  --dok-vnutro: 62px;
   /* Tvoj pult vľavo dole a ťahy vpravo dole — ruka je medzi nimi. */
   --moj-w: 272px;
   --akcie-w: 120px;
@@ -235,7 +243,7 @@ html.stol-na-sirku .obsah:has(> .hra) {
   bottom: calc(var(--okraj-d) + 2px);
   z-index: 27;
   width: max-content;
-  height: 62px;
+  height: var(--dok-vnutro);
   border-left: 3px solid var(--ja);
 }
 
@@ -388,11 +396,9 @@ button.pult-cip {
   display: none;
 }
 
+/* Zvislý nápis STARŠÍ by z 40 px dlaždice vytŕčal — stĺpčeky a pohár priazne ju poznačia aj bez neho. */
 .pult-hraca .zdroj-starsi .zdroj-nazov {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  display: none;
 }
 
 .pult-hraca .zdroj-starsi .zdroj-nazov :is(.zdroj-posuny, .starsi-desi) {
@@ -428,8 +434,8 @@ button.pult-cip {
 .hra.mobil-sirka:not(.stol-scroll) .linia-stav > .pilulka-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
   overflow: hidden;
   white-space: normal;
 }
@@ -457,7 +463,7 @@ button.pult-cip {
 
 .hra.mobil-sirka:not(.stol-scroll) .stol-hrana {
   top: auto;
-  height: 62px;
+  height: var(--dok-vnutro);
   translate: none;
 }
 
@@ -936,4 +942,159 @@ html.stol-na-sirku .lokalita-supera .ls-hrany {
   width: max-content !important;
   gap: 14px;
   font-size: 12px;
+}
+
+/* ---- nízke okno (telefón s lištou prehliadača: 762 × 340, 780 × 300) ----
+ * Pult aj dok sa zhustia, aby plsť s hlavným prvkom fázy ostala na očiach. */
+@media (max-height: 360px) {
+  .hra.mobil-sirka {
+    --pult-h: 44px;
+    --dok-h: 58px;
+    --dok-vnutro: 54px;
+  }
+
+
+  .hra.mobil-sirka:not(.stol-scroll) .stol-hrana button {
+    max-height: 52px;
+  }
+
+  .hra.mobil-sirka:not(.stol-scroll) .linia-stav {
+    margin-top: 2px;
+    padding: 2px 10px;
+  }
+}
+
+/* ---- celá obrazovka (Android): ikona v pulte a ponuka pri príchode k stolu ---- */
+.tlacidlo-celej-obrazovky {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+}
+
+.ikona-celej-obrazovky {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ponuka-celej-obrazovky {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: color-mix(in srgb, var(--pozadie) 70%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+.ponuka-celej-obrazovky-okno {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 440px;
+  padding: 14px 20px;
+  border: 1px solid var(--akcent);
+  border-radius: 14px;
+  background: var(--plocha-2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--tlmeny);
+}
+
+.ponuka-celej-obrazovky-okno strong {
+  font: 800 1.25rem/1.2 var(--nadpis);
+  color: var(--akcent-svetly);
+}
+
+.ponuka-celej-obrazovky-okno .ikona-celej-obrazovky {
+  width: 36px;
+  height: 36px;
+  stroke: var(--akcent);
+}
+
+.ponuka-celej-obrazovky-tlacidla {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ponuka-celej-obrazovky-tlacidla button {
+  min-height: 44px;
+  padding: 0 16px;
+}
+
+/* ---- toast hudby: hore v strede nad plsťou, nie cez tvoj pult a ťahy v doku ---- */
+html.stol-na-sirku .hudba-oznam {
+  top: calc(max(4px, env(safe-area-inset-top)) + 50px);
+  bottom: auto;
+  left: 50%;
+  translate: -50% 0;
+  max-width: min(320px, 60vw);
+  padding: 4px 12px;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* Pitka a branie zo šenku na nízkom okne: nákupy za cigarety zaberú dok namiesto tvojho pultu
+ * a ruky (v Pitke sa z ruky nehrá; na NA EX odpovedáš, keď nákupy zmiznú) — plsť nestratí riadok. */
+@media (max-height: 360px) {
+  .hra.mobil-sirka:has(.hrana-vlavo > *) {
+    --pitka-h: 0px;
+  }
+
+  .hra.mobil-sirka:not(.stol-scroll):has(.hrana-vlavo > *) :is(.pult-hraca.moj, .ruka) {
+    display: none;
+  }
+
+  .hra.mobil-sirka:not(.stol-scroll) .hrana-vlavo {
+    left: 0;
+    right: calc(var(--akcie-w) + 6px);
+    bottom: 0;
+    height: var(--dok-vnutro);
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .hra.mobil-sirka:not(.stol-scroll) .hrana-vlavo button.pecat-nakup {
+    min-width: 0;
+    padding: 2px 8px;
+  }
+}
+
+/* Šenok a voľba cieľa ležia vo vrstve cez celú plsť (na počítači nechávajú miesto hrane stola). */
+.hra.mobil-sirka:not(.stol-scroll) .stol-plst > .vrstva-fazy,
+.hra.mobil-sirka:not(.stol-scroll) .linia-obal.s-hranou .stol-plst > .vrstva-fazy {
+  inset: 14px 4px 4px;
+  margin: 0;
+}
+
+@media (max-height: 360px) {
+  .hra.mobil-sirka:not(.stol-scroll) .stavba-balicek-pozn {
+    display: none;
+  }
+}
+
+/* Nástenka (voľba cieľa, účet špakov): hrana stola je v doku, nie na plsti — celá výška pre lístky. */
+.hra.mobil-sirka:not(.stol-scroll) .stol-plst > .vrstva-nastenky,
+.hra.mobil-sirka:not(.stol-scroll) .linia-obal.s-hranou .stol-plst > .vrstva-nastenky {
+  inset: 16px 4px 4px;
+  margin: 0;
+}
+
+.hra.mobil-sirka .vrstva-nastenky.volba-nizka :is(.nastenka-popolniky, .nastenka-listok.koniec) {
+  display: none;
 }
