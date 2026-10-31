@@ -2586,7 +2586,9 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
   }
   const prilozeniaKu: [number, number] = [s.prilozeniaKu?.[0] ?? 0, s.prilozeniaKu?.[1] ?? 0];
   if (sused !== null && sused.playedBy !== kto) prilozeniaKu[sused.playedBy] += 1;
-  return { ...s, strany, hraci, prilozeniaKu };
+  // Vandal (Nástup): lokalita sa otočí o 180° — hrany si vymenia strany (nastupEfekt).
+  const vandal = karta.defId === "vandal" && s.ciel?.lokalita != null && defOf(data, karta).triggers.includes("Nástup") && !efektPotlaceny(data, s, kto, "vandal");
+  return { ...s, strany, hraci, prilozeniaKu, ...(vandal ? { lokalitaOtocena: !s.lokalitaOtocena } : {}) };
 }
 
 /**

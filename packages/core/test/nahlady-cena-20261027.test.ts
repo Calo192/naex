@@ -36,6 +36,7 @@ import {
   rngInt,
   rngSeed,
   rozsahPohorseni,
+  sPrilozenou,
   setupGame,
   silaDoDna,
   spakyTeraz,
@@ -396,5 +397,31 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
     }
     expect(porovnane).toBeGreaterThanOrEqual(40);
     expect(viacDlhov).toBeGreaterThan(0);
+  });
+});
+
+describe("Vandal ako odpoveď na NA EX (seed 4016, sada v51)", () => {
+  it("náhľad (sPrilozenou) otočí lokalitu ako Nástup v motore — najhoršia odpoveď s ním ráta", () => {
+    const s0 = setupGame(data, 4016);
+    const vandal: CardInstance = { uid: 990001, defId: "vandal", leftLayout: 0, rightLayout: 0 };
+    const pijan: CardInstance = { uid: 990002, defId: "pijan", leftLayout: 0, rightLayout: 0 };
+    const s: GameState = {
+      ...s0,
+      faza: "zhromazdenie",
+      utocnik: 0,
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
+      pitkyCelkom: 1,
+      pitkaCislo: 0,
+      strany: [[{ card: pijan, playedBy: 0 }], []],
+      hraci: [{ ...s0.hraci[0], ruka: [vandal], poldeciPlne: 2 }, s0.hraci[1]],
+      zhromazdenieStav: { naTahu: 0, zostavaLimit: [2, 2], pasoval: [false, false], navyse: [0, 0] },
+    };
+    for (const target of ["vlastna", "superova"] as const) {
+      const motor = apply(data, s, { type: "place", uid: vandal.uid, target }, 0).state;
+      const nahlad = sPrilozenou(data, s, target === "vlastna" ? 0 : 1, vandal, 0);
+      expect(motor.lokalitaOtocena).toBe(!s.lokalitaOtocena);
+      expect(nahlad.lokalitaOtocena).toBe(motor.lokalitaOtocena);
+      expect(evaluateLine(data, lineState(nahlad)).sums).toEqual(evaluateLine(data, lineState(motor)).sums);
+    }
   });
 });
