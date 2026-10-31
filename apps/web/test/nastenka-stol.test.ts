@@ -25,9 +25,10 @@ describe("nástenka na stole", () => {
     expect(bloky.some((b) => /\.vrstva-nastenky,\s*\.vrstva-nastenky \.nastenka-listok \{\s*animation: none;/.test(b))).toBe(true);
   });
 
-  it("lístky na výber: efekt písmom stola aspoň 11,5 px, nie zmenšenou kartou (Leader 2026-10-30)", () => {
-    const pismo = /font: 400 calc\(clamp\(([\d.]+)px,/.exec(telo(".ll-efekt"))?.[1];
-    expect(Number(pismo)).toBeGreaterThanOrEqual(11.5);
+  it("karty na výber vyzerajú ako v náhľade — žiadna lístková verzia s iným rozložením (Michal 2026-10-31)", () => {
+    expect(css).not.toMatch(/\.listok-lokality|\.ll-(obraz|text|nazov|efekt)/);
+    // Výšku dá karte jej pomer strán, nie lístok (inak by sa karta orezala či roztiahla).
+    expect(telo(".vrstva-nastenky .nastenka-listok.na-vyber.citatelny")).not.toMatch(/height:/);
     // Lístok na výber má šírku z rozmerNastenky aj na nízkom stole bez kariet (bez-kariet).
     expect(telo(".vrstva-nastenky .nastenka-listok.na-vyber.citatelny")).toMatch(/width: var\(--lc-sirka\);[\s\S]*max-width: none;/);
   });
@@ -39,8 +40,7 @@ describe("nástenka na stole", () => {
     expect(stlpec).toContain(`width: calc(${POPOLNIKY_VEDLA}px * var(--nk, 1));`);
   });
 
-  it("lístok na výber aj Koniec majú pevný rozmer karty — obsah ich nenatiahne ani nestlačí (Michal 2026-10-31)", () => {
-    expect(telo(".vrstva-nastenky .nastenka-listok.na-vyber.citatelny")).toMatch(/height: var\(--lc-vyska\);/);
+  it("Koniec má pevný rozmer karty — obsah ho nenatiahne ani nestlačí (Michal 2026-10-31)", () => {
     const koniec = telo(".vrstva-nastenky .nastenka-listok.koniec.kartovy");
     expect(koniec).toMatch(/width: var\(--lc-sirka\);/);
     expect(koniec).toMatch(/height: var\(--lc-vyska\);/);

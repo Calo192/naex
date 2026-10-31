@@ -157,7 +157,6 @@ import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
-import { ListokLokality } from "./ListokLokality.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
 import { pravitkoPosunu } from "./pravitko.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
@@ -5230,12 +5229,8 @@ export function HernaPlocha({
           }
         : undefined,
     };
-    const obsah =
-      nastenkaRozmer.vyber === null ? (
-        karta(props)
-      ) : (
-        <ListokLokality karta={karta(props)} vzhladKarty={vzhladKarty(sada, data, k.defId)} vzhlad={vzhladSady(sada)} onClick={props.onClick} />
-      );
+    // Tá istá karta ako v náhľade a lupe, len menšia (Michal 2026-10-31: „Bez zmeny vzhľadu karty“).
+    const obsah = karta(props);
     return volimLokalitu ? sLupou(props, { obsah: tahatelna(z, obsah), zdroj: z }) : sLupou(props, { obsah });
   };
 

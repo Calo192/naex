@@ -116,7 +116,7 @@ export interface NastenkaProps {
   readonly mierka?: number;
   /** Šírka kariet na výber (voľba cieľa) — bez víťaza a účtenky smú byť väčšie. */
   readonly sirkaVyberu?: number;
-  /** Lístky na výber s čitateľným efektom (ListokLokality) namiesto celých kariet; `vyber` dostane šírku ilustrácie. */
+  /** Rozmer kariet na výber v jednom rade (rozmerNastenky); `vyber` dostane ich šírku. */
   readonly listokVyberu?: ListokNaVyber | null | undefined;
 }
 
@@ -188,9 +188,9 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
           <li
             key={l.kluc}
             className="nastenka-listok caka na-vyber citatelny"
-            style={{ "--naklon": naklon, "--i": i, "--lc-sirka": `${v.sirka}px`, "--lc-vyska": `${v.vyska}px`, "--lc-obraz": `${v.obraz}px` } as CSSProperties}
+            style={{ "--naklon": naklon, "--i": i, "--lc-sirka": `${v.sirka}px` } as CSSProperties}
           >
-            <span className="nastenka-karta">{vyber(l.lokalita, v.obraz)}</span>
+            <span className="nastenka-karta">{vyber(l.lokalita, v.sirka)}</span>
           </li>
         );
       }

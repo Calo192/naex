@@ -58,15 +58,13 @@ describe("lístky na výber pri voľbe cieľa", () => {
         expect(v).not.toBeNull();
         if (v === null) return;
         expect(r.rady).toBe(1);
-        // Šírka textu ≥ 110 px dá efektu písmo ≥ 11,5 px (spaky.css .ll-efekt) a riadok ~18 znakov.
+        // Karty na výber v jednom rade s ostatnými lístkami len od 110 px.
         expect(v.sirka).toBeGreaterThanOrEqual(110);
         // Pomer strán karty (Michal 2026-10-31: „zmrštené“ karty) a lístok sa zmestí do výšky radu.
         expect(Math.abs(v.vyska / v.sirka - POMER)).toBeLessThan(0.01);
         // Popolníky nad radom berú výšku, vedľa neho šírku.
         expect(v.vyska).toBeLessThanOrEqual(vyska - 20 - (v.popolnikyVedla ? 0 : 60 * r.nk) + 1);
         const popolniky = v.popolnikyVedla ? POPOLNIKY_VEDLA * r.nk + 14 : 0;
-        // Ilustrácia na OREZ_MIN + názov a ~4 riadky efektu sa zmestia do lístka.
-        expect(v.sirka * 0.6 + 84).toBeLessThanOrEqual(v.vyska + 1);
         // Ostatné lístky sú bez kariet (karta s účtenkou by bola vyššia než rad).
         expect(r.sirkaKarty).toBe(0);
         const historia = v.kratkeBitky ? Math.ceil(odohranych / 2) * 84 + (Math.ceil(odohranych / 2) - 1) * 8 : odohranych * 132;
