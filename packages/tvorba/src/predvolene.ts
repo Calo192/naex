@@ -103,7 +103,7 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   S("Kšeft", "Aktívny efekt: za cenu (cigarety, poldeci, Dlh, karta) ho spustíš sám v Pitke, kým ju neskončíš — každú kartu raz za Pitku; Kšeft nie je ťah. Kšeft lokality smie použiť každý hráč, Kšeft väzňa (Väzeň — Kšeft) len hráč, ktorý toho staršieho drží ako väzňa."),
   // Konflikt, Úplatok a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14).
   S("Konflikt", "Spustí sa, keď táto karta leží v línii a súper k nej priloží svoju kartu. Keď prikladáš ty, Konflikt nevyvoláš; priložený Nástroj, NA EX ani zrážka ho nespúšťajú."),
-  S("Úplatok", "Súper smie v Pitke, kým ju neskončil, dať na túto kartu cigaretu, raz za Pitku; cigareta prepadne."),
+  S("Úplatok", "Súper smie v Pitke, kým ju neskončil, dať na túto kartu cigaretu, raz za Pitku; cigareta prepadne. Kým je karta Výtržníkom, úplatky na nej neplatia a nový sa na ňu dať nedá."),
   S("Exekúcia", "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),
