@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audit pravidiel proti hre (v9.2, sada v53) — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 900px; margin: 0 auto; padding: 16px 12px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.4rem, 6vw, 2.1rem); margin: 0 0 6px; }
+h2 { font-size: 1.22rem; margin: 30px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .82em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.riz { border-color: var(--cervena); } .box.ok { border-color: var(--zelena); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+nav { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav a { flex: none; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; }
+details { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details[open] { padding-bottom: 8px; }
+summary { cursor: pointer; padding: 10px 0; font-weight: 600; }
+ol.opr { padding-left: 22px; margin: 0; }
+ol.opr li { margin-bottom: 10px; }
+.kde { font: .78rem ui-monospace, Consolas, monospace; color: var(--modra); overflow-wrap: anywhere; }
+.pred { color: var(--cervena); text-decoration: line-through; text-decoration-thickness: 1px; }
+.po { color: var(--zelena); }
+.dok { color: var(--slaby); font-size: .85rem; }
+.cislo { font: 700 1.6rem Georgia, serif; color: var(--akcent); }
+.mriezka { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 10px 0; }
+.mriezka .box { text-align: center; margin: 0; }
+</style>
+</head>
+<body>
+<main>
+<h1>Audit pravidiel proti hre</h1>
+<p class="mini">Vymyselník, 2026-10-31 · vetva <code>pravidla/audit-v92-web</code> z <code>origin/master</code> 6426fb2 (pravidlá v9.2, sada v53) ·
+Michal: „Chcem, aby pravidlá odzrkadľovali to, čo hra naozaj robí.“</p>
+
+<nav>
+  <a href="#suhrn">Súhrn</a><a href="#web">Stránka Pravidlá</a><a href="#slovnik">Slovník a ukážky</a><a href="#spec">PRAVIDLA.md</a><a href="#tahak">Ťahák</a><a href="#lisi">Hra sa líši</a><a href="#otazky">Otázky</a>
+</nav>
+
+<h2 id="suhrn">Súhrn</h2>
+<div class="mriezka">
+  <div class="box ok"><div class="cislo">66</div>opravených miest</div>
+  <div class="box zv"><div class="cislo">3</div>hra sa líši od rozhodnutia</div>
+  <div class="box riz"><div class="cislo">3</div>otázky na Michala</div>
+</div>
+<div class="box">
+<p><b>Čo som prešiel:</b> stránku Pravidlá (<code>apps/web/src/stranky/pravidla/kapitoly.tsx</code>, <code>slovnik.ts</code>, ukážky
+<code>apps/web/src/stranky/Ukazky.tsx</code>), <code>docs/PRAVIDLA.md</code> a ťahák <code>tools/playtest/tahak.md</code>. Každé tvrdenie som porovnal
+s jadrom (<code>engine.ts</code>, <code>effects.ts</code>, <code>partia.ts</code>, <code>constants.ts</code>), dátami (<code>cards.json</code> v53, <code>elders.json</code>,
+<code>scorecards.json</code>) a so zverejnenou sadou na živom webe (<code>/api/sada</code>, verzia 37).</p>
+<p><b>Najčastejšie zastarané veci:</b> Milujúca manželka ako kliatba, za ktorú pri priznaní dostaneš kartu (od v7 je to Občan); poradie
+kariet v kroku bitky (Exekútor až po špakoch, Chuť pred udržaným strachom); „víťaz dostane špak za každú Pitku“ (od v8 platia karty v línii);
+staré poradie odpovedí na NA EX v slovníku (obranca ako prvý); stará Zastávka (spoločný limit); barter na Jednote; starší „Kováč“, ktorý v hre nie je.</p>
+<p><b>Overené bez zmeny</b> (sedia s kódom): ceny šenku 1/3, obranca na prvom ťahu len 1 karta, stavba 2 + 6, doplnenie na 8; pas min(limit, ruka);
+fajčenie 1/2/3…; doliatie 2, barter 5; prahy Cirhózy 3 a Dlhu 2 (+1 Výherný automat); cena posunu 1/2/3 a 4/3/2; strach žltá 1, oranžová 2, červená 3;
+väzni 8/6/4/2, pokus za 1 cigaretu; Nakladačka vo finále 1 : 1; výkupné; Cirhóza −3; 19 lokalít a ich úrovne aj kraje; siluety bossov A/B.</p>
+<p><b>Overenie:</b> <code>npm test</code> (177 súborov, 1334 testov), <code>npm run typecheck</code> a <code>npm run build</code> prešli. Kód hry som nemenil.</p>
+</div>
+
+<h2 id="web">Stránka Pravidlá — kapitoly <span class="mini">(apps/web/src/stranky/pravidla/kapitoly.tsx)</span></h2>
+<details open><summary>23 opráv</summary>
+<ol class="opr">
+<li><span class="kde">kapitoly.tsx:119, 128 (Čo máš pred sebou)</span><br><span class="pred">Bar: … neresti kola a špaky</span> → <span class="po">… neresti kola, Chuť a špaky</span><br><span class="dok">Chuť je verejné počítadlo na bare (engine.ts <code>stavZavislosti</code>, §8).</span></li>
+<li><span class="kde">kapitoly.tsx:194 (Kolo)</span><br><span class="pred">Opakuje sa 1- až 4-krát</span> → <span class="po">1- až 5-krát (5-krát len na pinnacle vo finále)</span></li>
+<li><span class="kde">kapitoly.tsx:357 (Koľko Pitiek)</span><br><span class="pred">(1 až 4)</span> → <span class="po">(1 až 5)</span></li>
+<li><span class="kde">kapitoly.tsx:360</span><br><span class="pred">Koľko Pitiek sa odohrá, toľko špakov dostane víťaz bitky.</span> → <span class="po">Počet Pitiek špaky neurčuje — víťaz dostane špak za každú kartu v línii.</span><br><span class="dok">engine.ts <code>vyplatSpaky</code> ráta <code>kartyBitky</code> (v8).</span></li>
+<li><span class="kde">kapitoly.tsx:366 (Poradie Pitky)</span><br><span class="pred">najprv útočník, potom obranca</span> → <span class="po">… potom obranca na druhý kraj línie</span></li>
+<li><span class="kde">kapitoly.tsx:381</span><br><span class="pred">doberáš si ich fajčením, priznaním kliatby, Víziou</span> → <span class="po">fajčením, Víziou a efektmi kariet (Kšefty, Zastávka)</span><br><span class="dok">Jediná priznateľná kliatba je Cirhóza a za ňu sa nedoberá (engine.ts:2323–2330).</span></li>
+<li><span class="kde">kapitoly.tsx:486–487 (Pečeň)</span><br><span class="po">+ Milujúca manželka v línii ti zníži pečeň v Pitke o 1.</span><br><span class="dok">engine.ts:1056.</span></li>
+<li><span class="kde">kapitoly.tsx:494 (Dlh)</span><br><span class="pred">Dlhy, ktoré dáva priamo karta (napríklad Poštárka)</span> → <span class="po">(napríklad Policajtka či Dievčina na vydaj)</span><br><span class="dok">Poštárka je od v9 Kšeft väzňa, ktorý Dlh len presúva.</span></li>
+<li><span class="kde">kapitoly.tsx:500 (Neresti)</span><br><span class="po">+ Kšeft väzňa 1; Záverečná nerest nie je</span><br><span class="dok">engine.ts:3998 (Kšeft väzňa), nerest inde len 2838, 3365, 5396.</span></li>
+<li><span class="kde">kapitoly.tsx:568 (Výsledok)</span><br><span class="pred">Ak má viac Absťáky špaky nezrážajú.</span> → <span class="po">Absťáky špaky nezrážajú.</span> <span class="dok">(rozbitá veta)</span></li>
+<li><span class="kde">kapitoly.tsx:575 (Kroky bitky, 1.)</span><br><span class="pred">Krčmárka, Dievčina na vydaj; pri bitke o Kar zahodiť Cirhózu</span> → <span class="po">Traktorista bez prevahy dá Dlh</span><br><span class="dok">engine.ts:4273 (<code>zacniBitku</code>); Kar je od v7 Pitka (krok Kar beží len so starou sadou, engine.ts:4446).</span></li>
+<li><span class="kde">kapitoly.tsx:594</span><br><span class="pred">Exekútor ako 2. krok (pred Poverami)</span> → <span class="po">za krokom Špaky za bitku</span><br><span class="dok">engine.ts:5082–5083 (<code>vyplatSpaky</code>, potom <code>exekucieBitky</code>).</span></li>
+<li><span class="kde">kapitoly.tsx:614</span><br><span class="pred">Výhra a Prehra — Živnostník, …</span> → <span class="po">… Recidivista, Dievčina na vydaj, Podvodník, potom Krokodíl</span><br><span class="dok">Živnostník je od v7 Nástup; krok Výhra beží len so starou sadou (engine.ts:4571).</span></li>
+<li><span class="kde">kapitoly.tsx:627</span><br><span class="pred">Špaky za starších, potom Chuť</span> → <span class="po">Chuť a Absťák, potom špaky za starších</span><br><span class="dok">engine.ts:5571 a 5575.</span></li>
+<li><span class="kde">kapitoly.tsx:761 (Kliatby, V skratke)</span><br><span class="pred">Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka.</span> → <span class="po">Kliatby: Dlh, Cirhóza, Absťák.</span><br><span class="dok">cards.json: Milujúca manželka má tagy Občan, Pamätník, Žena.</span></li>
+<li><span class="kde">kapitoly.tsx:763</span><br><span class="pred">Za priznanie Milujúcej manželky dobereš kartu — za Cirhózu nie.</span> → <span class="po">Priznať sa dá len Cirhóza — kartu za ňu nedobereš.</span></li>
+<li><span class="kde">kapitoly.tsx:772</span><br><span class="pred">Do línie z kliatob patrí len Milujúca manželka.</span> → <span class="po">Kliatba do línie nepatrí.</span></li>
+<li><span class="kde">kapitoly.tsx:779 (Dlh)</span><br><span class="pred">súperove Povery proti nim poškodzujú</span> → <span class="po">(vypustené)</span><br><span class="dok">Od v8.3 Povery nepoškodzujú, posúvajú silu priazne (engine.ts <code>cmdPovera</code>).</span></li>
+<li><span class="kde">kapitoly.tsx:794</span><br><span class="pred">Milujúca manželka — za priznanie si dobereš kartu.</span> → <span class="po">už kliatba nie je — je to Občan do línie (pečeň −1)</span></li>
+<li><span class="kde">kapitoly.tsx:801 (Robota)</span><br><span class="po">+ za Dlh, ktorý nemá čo spáliť, dostaneš 1 špak</span><br><span class="dok">engine.ts <code>exekucieBitky</code> (v8.4).</span></li>
+<li><span class="kde">kapitoly.tsx:805 (Exekútor)</span><br><span class="pred">(Povery tvoje Dlhy ešte spočítajú)</span> → <span class="po">(remíza a Herňa tvoje Dlhy ešte spočítajú)</span></li>
+<li><span class="kde">kapitoly.tsx:938 (Lokality)</span><br><span class="pred">Zastávka · Zhromaždenie · Spoločný limit vykladania…</span> → <span class="po">Zastávka · Pitka · po prvej Pitke kola karta zo šenku zadarmo, najprv útočník</span><br><span class="dok">engine.ts:4179 (<code>zastavkaVolba</code>), text karty v53.</span></li>
+<li><span class="kde">kapitoly.tsx:996–997 (Príklad špakov)</span><br><span class="pred">Kováč sa ťa bojí v žltej</span> → <span class="po">Poštárka sa ťa bojí v žltej</span><br><span class="dok">Kováč medzi 8 staršími nie je (elders.json).</span></li>
+</ol>
+</details>
+
+<h2 id="slovnik">Slovník a ukážky <span class="mini">(slovnik.ts, Ukazky.tsx)</span></h2>
+<details open><summary>12 opráv</summary>
+<ol class="opr">
+<li><span class="kde">slovnik.ts:16 barter</span><br><span class="pred">(na Jednote o 1 menej)</span> → <span class="po">(vypustené)</span><br><span class="dok">Barter vždy 5 (player.ts:115, engine.ts:3384); Jednota v7 zakazuje fajčiť a dolievať.</span></li>
+<li><span class="kde">slovnik.ts:18 cigareta</span><br><span class="po">+ platí aj Záverečnú a pokus o zajatie</span></li>
+<li><span class="kde">slovnik.ts:21 dlh</span><br><span class="pred">súperove Povery proti nim poškodzujú</span> → <span class="po">(vypustené)</span></li>
+<li><span class="kde">slovnik.ts:34 kliatba</span><br><span class="pred">karty Cirhóza, Absťák a Milujúca manželka</span> → <span class="po">karty Cirhóza a Absťák … Priznať sa dá len Cirhóza.</span></li>
+<li><span class="kde">slovnik.ts:44 nástroj</span><br><span class="pred">inak ide do Dedičstva</span> → <span class="po">alebo ho za cigarety vyložíš do Dedičstva</span></li>
+<li><span class="kde">slovnik.ts:46 nerest</span><br><span class="po">+ Kšeft väzňa 1</span></li>
+<li><span class="kde">slovnik.ts:48 odpoveď na NA EX</span><br><span class="pred">najprv odpovedá obranca, potom útočník</span> → <span class="po">lícom dole, zadarmo; najprv útočník, potom obranca na druhý kraj, otočia sa naraz</span><br><span class="dok">engine.ts:3041.</span></li>
+<li><span class="kde">slovnik.ts:55 pitka</span><br><span class="pred">… a víťaz bitky dostane 1 špak za každú</span> → <span class="po">(vypustené)</span></li>
+<li><span class="kde">slovnik.ts:76 útočník a obranca</span><br><span class="pred">Útočník … berie zo šenku a vykladá prvý; obranca … na NA EX odpovedá prvý</span> → <span class="po">Útočník vykladá a odpovedá prvý; obranca berie zo šenku prvý (na prvom ťahu 1 kartu)</span></li>
+<li><span class="kde">Ukazky.tsx:232 (kalkulačka bitky)</span><br><span class="pred">Celkové poškodenie je vyrovnané</span> → <span class="po">Tuhé poškodenie je vyrovnané</span> <span class="dok">(celkové poškodenie od v8.3 nie je)</span></li>
+<li><span class="kde">Ukazky.tsx:233</span><br><span class="pred">„Ty rozdelí Nakladačku 3 medzi starších.“</span> → <span class="po">„Ty drží Nakladačku 3 — medzi starších ju rozdelí súper.“</span><br><span class="dok">engine.ts <code>rozdelujePrebytok</code> = súper držiteľa (v8).</span></li>
+<li><span class="kde">Ukazky.tsx:278 (stupnica)</span><br><span class="pred">Na krajnej pozícii sa starší prebudí … a ráta sa do vydesenia.</span> → <span class="po">Na krajnej pozícii je starší vydesený — súper/ty ho smie po šenku skúsiť zajať.</span> <span class="dok">(prebudenie a výhra vydesením zanikli v9)</span></li>
+</ol>
+</details>
+
+<h2 id="spec">docs/PRAVIDLA.md</h2>
+<details open><summary>25 opráv</summary>
+<ol class="opr">
+<li><span class="kde">PRAVIDLA.md:3</span><br><span class="pred">Pravidlá v9 …, dávka v9.1</span> → <span class="po">dávky v9.1 a v9.2 … Sada kariet v53</span> <span class="dok">(značka v hlavičke ostáva, stráži ju test)</span></li>
+<li><span class="kde">PRAVIDLA.md:181</span><br><span class="pred">(„v4“ … „v8“)</span> → <span class="po">(„v4“ … „v9“)</span></li>
+<li><span class="kde">PRAVIDLA.md:255 §2 Cigareta</span><br><span class="pred">platí sa nimi šenok, Dedičstvo, doliatie, barter a Starosta</span> → <span class="po">… barter, Záverečná, pokus o zajatie, Úplatok a Kšefty</span> <span class="dok">(Starosta je Kšeft väzňa za poldeci)</span></li>
+<li><span class="kde">PRAVIDLA.md:325–327 §4</span><br><span class="pred">priznanie kliatby (§11)</span> → <span class="po">Priznanie Cirhózy kartu nedá (§11).</span></li>
+<li><span class="kde">PRAVIDLA.md:425–426 §6</span><br><span class="pred">Za kartu, ktorú Hrobár urobil poslednou (Konflikt) …</span> → <span class="po">Za skrytú Záverečnú ani odpoveď lícom dole sa nepriloží, kým sa neotočí.</span><br><span class="dok">Hrobár je od v9 Kšeft väzňa; zablokovanie strany: engine.ts <code>zablokovaneStrany</code>.</span></li>
+<li><span class="kde">PRAVIDLA.md:659 §7</span><br><span class="pred">barter 5 cigariet (na Jednote o 1 menej)</span> → <span class="po">barter 5 cigariet</span></li>
+<li><span class="kde">PRAVIDLA.md:679–680 §7 krok 6</span><br><span class="pred">doberajú sa fajčením, priznaním kliatby, Kšeftmi a Víziou</span> → <span class="po">fajčením, Kšeftmi, Víziou a efektmi (Zastávka)</span></li>
+<li><span class="kde">PRAVIDLA.md:708 §7 Kšeft</span><br><span class="pred">za Kšeft lokality (Zberný dvor, Sklad, Obecný úrad) áno [nerest], ako pri barteri</span> → <span class="po">cigarety za Kšeft karty ani lokality nie sú nerest; nerest je len Kšeft väzňa</span><br><span class="dok">Rozpor s §8 (v9.1); kód nerest za Kšeft lokality nepridáva.</span></li>
+<li><span class="kde">PRAVIDLA.md:815 §8</span><br><span class="pred">Nie sú nerest: … Starosta …</span> → <span class="po">… pokus o zajatie, Úplatok, Kšefty kariet a lokalít</span> <span class="dok">(Starosta ako Kšeft väzňa je nerest 1)</span></li>
+<li><span class="kde">PRAVIDLA.md:860, 878 §9, §9.0</span><br><span class="pred">Traktoristka</span> → <span class="po">Traktorista</span> <span class="dok">(meno karty v sade v53, tag Chlap)</span></li>
+<li><span class="kde">PRAVIDLA.md:909, 949 §9.1, §9.3</span><br><span class="pred">Otvorené (P5, P6) … text karty zmení Admin</span> → <span class="po">Rozhodnuté (P5, P6, Michal 2026-10-30), text karty v sade</span></li>
+<li><span class="kde">PRAVIDLA.md:981 §9.4</span><br><span class="pred">(zahodené, odstránené efektom, Benzínka v bitke)</span> → <span class="po">(zahodené, odstránené efektom)</span> <span class="dok">(Benzínka je od v7 Pitka)</span></li>
+<li><span class="kde">PRAVIDLA.md:1320 §11 Priznanie</span><br><span class="pred">výnimka je Milujúca manželka, ktorá je aj Občan</span> → <span class="po">v sade v53 sa dá priznať len Cirhóza; Manželka od v7 nie je Kliatba</span></li>
+<li><span class="kde">PRAVIDLA.md:1335–1348 §11 tabuľky</span><br><span class="pred">Milujúca manželka — áno, pri priznaní karta</span> a riadok Manželka v druhej tabuľke → <span class="po">vypustené + poznámka, že jadro by kartu dalo za inú Kliatbu, ale taká v sade nie je</span><br><span class="dok">engine.ts:2323–2341.</span></li>
+<li><span class="kde">PRAVIDLA.md:1356 §11 Exekútor</span><br><span class="pred">po … špakoch za bitku a za starších</span> → <span class="po">po … špakoch za bitku</span> <span class="dok">(strach sa platí až na konci kola)</span></li>
+<li><span class="kde">PRAVIDLA.md:1382 a §16 Záhradkár</span><br><span class="pred">(ani navyše za súperovu priazeň Exekútora)</span> → <span class="po">(vypustené — priazeň Exekútora zanikla v9)</span></li>
+<li><span class="kde">PRAVIDLA.md:1386 §11</span><br><span class="pred">Obecný úrad, Podvodník a priazeň Kmotra</span> → <span class="po">+ Kšeft väzňa Poštárky</span></li>
+<li><span class="kde">PRAVIDLA.md:1606 §15</span><br><span class="pred">Tabuľka v6 s riadkami Kostol (ani NA EX), Benzínka (nikto nefajčí), Lesná cesta (najviac +2), Zberný dvor, Kar (Bitka), Obecný úrad (prah Exekútora −4, Robota 2), Jednota (barter −1)</span> → <span class="po">ostali len Krčma, Zastávka, Most, Vínna pivnica, Družstvo</span><br><span class="dok">Vyradené riadky odporovali tabuľke v7/v8 nad nimi; staré znenia sú v <code>docs/pravidla-historia.md</code> (pribudla sekcia auditu).</span></li>
+<li><span class="kde">PRAVIDLA.md:1651 §16 Úplatok</span><br><span class="po">+ stav hry: Úplatok na Výtržníkovi zmaže jeho Rany</span> (pozri <a href="#otazky">otázku 1</a>)</li>
+<li><span class="kde">PRAVIDLA.md:1665 §16 Mäsiar</span><br><span class="pred">… Kohúta (Pitka) …</span> → <span class="po">vypustené; Recidivista (Zviera aj Občan)</span></li>
+<li><span class="kde">PRAVIDLA.md:1668 §16 Kohút</span><br><span class="pred">zo sady ju vyradí Admin</span> → <span class="po">v sade v53 karta nie je (vyradená v sade v51)</span></li>
+<li><span class="kde">PRAVIDLA.md:1686 §16</span><br><span class="pred">Traktoristka</span> → <span class="po">Traktorista</span></li>
+<li><span class="kde">PRAVIDLA.md:1698, 1713 §16</span><br><span class="pred">Čierna mačka — návrh, otvorené P5, text zmení Admin; Puška — Text karty zmení Admin.</span> → <span class="po">rozhodnuté; text karty v sade v53 už znie podľa pravidla</span></li>
+<li><span class="kde">PRAVIDLA.md §17</span><br><span class="pred">heslo Náhrada</span> → <span class="po">vypustené</span> <span class="dok">(patrilo k patronátu; žiadna karta ani spúšťač ho nepoužíva)</span></li>
+<li><span class="kde">PRAVIDLA.md:1749 §17</span><br><span class="pred">Odpoveď na NA EX … najprv obranca, potom útočník</span> → <span class="po">lícom dole, zadarmo; najprv útočník, potom obranca na druhý kraj; otočia sa naraz</span></li>
+</ol>
+</details>
+
+<h2 id="tahak">Ťahák AI hráčov <span class="mini">(tools/playtest/tahak.md, test tahak.test.ts prešiel)</span></h2>
+<details open><summary>6 opráv</summary>
+<ol class="opr">
+<li><span class="kde">tahak.md:1</span> <span class="pred">(v9, 2026-10-30)</span> → <span class="po">(v9.2, 2026-10-30; sada v53)</span></li>
+<li><span class="kde">tahak.md:69</span> <span class="pred">(1–4)</span> → <span class="po">(1–4, na pinnacle vo finále 1–5)</span></li>
+<li><span class="kde">tahak.md:151</span> <span class="pred">Karty navyše: … priznanie kliatby</span> → <span class="po">Priznanie Cirhózy kartu nedá.</span></li>
+<li><span class="kde">tahak.md:157</span> <span class="pred">Kartou je aj Cirhóza (a Milujúca manželka)</span> → <span class="po">Cirhóza — jediná kliatba, ktorú smieš priznať</span> <span class="dok">(rozpor s r. 165 toho istého ťaháka)</span></li>
+<li><span class="kde">tahak.md:164</span> <span class="po">+ Kšeft väzňa Poštárky presúva Dlh</span></li>
+<li><span class="kde">tahak.md:262</span> <span class="pred">Traktoristka: … v jej kraji</span> → <span class="po">Traktorista: … v jeho kraji</span></li>
+</ol>
+</details>
+
+<h2 id="lisi">Hra sa líši od rozhodnutia</h2>
+<p class="mini">Pravidlá opisujú, čo hra robí. Tieto miesta sú v hre (dáta na živom webe alebo kód) inak, než Michal rozhodol — o oprave hry rozhodne Michal.</p>
+
+<div class="box riz">
+<h3>1. Legenda akcií na stránke Pravidlá: stará akcia „Dlh“ a staré popisy</h3>
+<p><b>Rozhodnuté:</b> v8.2 (Michal 2026-10-30) sa akcia s kľúčom <code>Dlh</code> volá <b>Hazard</b>; v8.3 Povera nepoškodzuje, ale posúva silu priazne;
+v9 priazeň Exekútora zanikla (Advokát); smer posunu je „od seba / k sebe“.</p>
+<p><b>Hra:</b> kapitola „Čo máš pred sebou › Akcie“ kreslí názvy a popisy z dát tvorcu (<code>/api/sada</code> na živom webe, sada verzia 37). Tam je:</p>
+<ul>
+<li>akcia <code>Dlh</code> s názvom <b>„Dlh“</b> a popisom „… so súperovou priazňou Exekútora o 1 / 2 / 3 viac“,</li>
+<li>Povera: „Poškodzuje: mäkké poškodenie proti súperovým priznaným Dlhom“,</li>
+<li>Pohoršenie: „posun … k súperovi alebo k sebe … vyhodnocuje sa ako prvé“ (prvé sú od v8.3 Povery).</li>
+</ul>
+<p>Rovnaké staré texty sú aj vo východisku tvorcu <code>packages/tvorba/src/predvolene.ts:21–27</code> (Hazard), <code>:58</code> (Povera) a <code>:60</code> (Pohoršenie).
+Jadro robí podľa rozhodnutí (Povery: engine.ts <code>cmdPovera</code>; Advokát: engine.ts <code>exekucia</code>).</p>
+<p><b>Odporúčanie:</b> Admin prepíše v tvorcovi názov Hazard a tri popisy a zverejní sadu; Developer opraví <code>predvolene.ts</code> (kód, ja ho meniť nesmiem).</p>
+</div>
+
+<div class="box riz">
+<h3>2. Spúšťače Výhra a Prehra v slovníku: „pri rovnakom tuhom nevyhrá nikto“</h3>
+<p><b>Rozhodnuté:</b> v6 — pri remíze v tuhom vyhrá, kto má menej Absťákov, potom menej priznaných Dlhov; až potom sekera (§9.4).</p>
+<p><b>Hra:</b> jadro to tak robí (<code>battle.ts</code> <code>battleOutcome</code>, engine.ts <code>vyhodnotPoskodenie</code>), ale popis spúšťačov <b>Výhra</b>
+a <b>Prehra</b> v dátach tvorcu (slovník stránky Pravidlá, časť „Kedy efekt platí“, aj nápoveda na kartách) hovorí „Pri rovnakom tuhom nevyhrá
+nikto — lokalita ide na sekeru“. V dátach je aj spúšťač <b>Prestávka</b>, ktorý žiadna karta nemá, a <b>Kšeft</b> „na svojom ťahu“, hoci sa
+Pitka od 2026-10-27 hrá naraz.</p>
+<p><b>Odporúčanie:</b> Admin v tvorcovi: Výhra „… keď bitku vyhráš — vyšším tuhým, alebo pri remíze menej Absťákov či Dlhov“, Prehra obdobne;
+Prestávku zmazať; v Kšefte „kým Pitku neskončíš“. <code>predvolene.ts:96–99</code> rovnako (Developer).</p>
+</div>
+
+<div class="box zv">
+<h3>3. Zvyšky starej sady v jadre (len pre úplnosť, hráč ich nevidí)</h3>
+<p>Jadro ešte vie starú Kar (Bitka, engine.ts:4446), Benzínku v bitke (krok <code>benzinka</code>), Živnostníka s Výhrou (engine.ts:4571)
+a Praudovravca, ktorý umlčí Autority (effects.ts:224). So sadou v53 sa nespustia — rozhodnutia v7 hra dodržiava. Návrh pre agenta upratovača,
+nie zmena pravidiel. Kohút: rozhodnutie „dočasne vyradený“ sedí (v sade nie je, engine.ts má TODO).</p>
+</div>
+
+<h2 id="otazky">Otázky na Michala</h2>
+<div class="box zv">
+<h3>1. Úplatok na Výtržníkovi</h3>
+<p><b>Text:</b> pravidlá Úplatok × Výtržník nikde neriešia (zapísané ako otvorené v <code>docs/napady/v92-stav.md</code>).
+<b>Hra:</b> všetky akcie Výtržníka sú Rany a Úplatok znižuje útok o stupeň (Rana → nič), takže <b>jediná cigareta zmaže všetky Rany
+Výtržníka</b> (<code>partia.ts:713</code> <code>utokPoUplatku</code>; playtest 20261030-184957). Zapísal som to do §16 ako stav hry.</p>
+<p><b>Odporúčam:</b> Úplatok na Výtržníka neplatí — zrážka je silný moment oboch hráčov a za 1 cigaretu ju zmazať je lacné. Druhá možnosť: nechať tak.</p>
+</div>
+<div class="box zv">
+<h3>2. Verzia na stránke Pravidlá</h3>
+<p>Stránka píše „Pravidlá <b>v9</b>, platné od 30. 10. 2026“ (<code>VERZIA_PRAVIDIEL = "v9"</code>, constants.ts), hoci na webe beží v9.2.
+Značku partií test drží v tvare „vN“.</p>
+<p><b>Odporúčam:</b> značka partií ostane „v9“, ale stránka (a hlavička PRAVIDLA.md) ukáže „v9.2“ — malá úprava kódu pre Developera.</p>
+</div>
+<div class="box zv">
+<h3>3. Dáta tvorcu na živom webe</h3>
+<p>Smie Admin hneď prepísať názov Hazard a popisy akcií a spúšťačov (body 1 a 2 vyššie) a zverejniť sadu? Mení sa len text, nie pravidlá.</p>
+<p><b>Odporúčam:</b> áno.</p>
+</div>
+
+<p class="mini">Súbory: <code>apps/web/src/stranky/pravidla/kapitoly.tsx</code>, <code>apps/web/src/stranky/pravidla/slovnik.ts</code>,
+<code>apps/web/src/stranky/Ukazky.tsx</code>, <code>docs/PRAVIDLA.md</code>, <code>docs/pravidla-historia.md</code>, <code>tools/playtest/tahak.md</code>.</p>
+</main>
+</body>
+</html>

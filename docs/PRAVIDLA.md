@@ -1,8 +1,9 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v9 (zmrazené 2026-10-30), dávka v9.1** — krok 2 revízie starších (Michal 2026-10-30,
-docs/napady/starsi-krok2-zadanie.html, rozhodnutia O1–O10) a dávka v9.1 (Chuť,
-Nakladačka vo finále, quick wins z ULTRA playtestu 20261030-115654). Pravidlá sa
+**Pravidlá v9 (zmrazené 2026-10-30), dávky v9.1 a v9.2** — krok 2 revízie starších (Michal 2026-10-30,
+docs/napady/starsi-krok2-zadanie.html, rozhodnutia O1–O10), dávka v9.1 (Chuť,
+Nakladačka vo finále, quick wins z ULTRA playtestu 20261030-115654) a v9.2 (šenok, NA EX naraz,
+odpovede lícom dole). Sada kariet v53 (`cards.json`), audit textu proti hre 2026-10-31. Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií ostáva `v9`).
 
 **Zmeny v9.2 oproti v9.1** (Michal 2026-10-30; staré znenia v `docs/pravidla-historia.md`, sekcia v9.2):
@@ -177,7 +178,7 @@ za krokom** (§5–§10), **Podrobnosti** (§11–§16) a slovník (§17).
 - Čo pravidlá nehovoria, nedopĺňaj potichu — spýtaj sa a zapíš to sem.
 - Ako sa pravidlá menili a čo platilo predtým: `docs/pravidla-historia.md`
   (zmeny oproti v7: sekcia v8). Partie v archíve nesú `VERZIA_PRAVIDIEL`
-  („v4“ … „v8“, staršie dátumové značky).
+  („v4“ … „v9“, staršie dátumové značky).
 
 ---
 
@@ -251,7 +252,7 @@ len na Občana či Starešinu, priznanie len Kliatby) alebo efekt karty.
 | Hazard | `Dlh` | zvýši **zadĺženie** o 1; každé 2 zadĺženia = 1 Dlh, hneď priznaný (počítadlo, §8; v7 zvyšok neprepadá); za priznané Dlhy príde v každej bitke Exekútor (§11) |
 | Poškodenie pečene | `PoškodeniePečene` | pridá poškodenie pečene (§8) |
 | Obmedzenie | `Obmedzenie` | súper dostane v Pitke o 1 cigaretu menej |
-| Cigareta | `Cigareta` | +1 **cigareta** v Pitke — cigarety sa prenášajú z kola na kolo; platí sa nimi šenok, Dedičstvo, doliatie, barter a Starosta, fajčením (len v Pitke, §7) dávajú karty |
+| Cigareta | `Cigareta` | +1 **cigareta** v Pitke — cigarety sa prenášajú z kola na kolo; platí sa nimi šenok, Dedičstvo, doliatie, barter, Záverečná, pokus o zajatie, Úplatok a Kšefty (Strýko, lokality), fajčením (len v Pitke, §7) dávajú karty |
 | Vízia | `Vízia` | na konci Pitky: za každú aktívnu Víziu sa hráč pozrie na vrchnú kartu svojho doberacieho balíčka a vezme si ju do ruky, alebo ju **zahodí** (z hry) |
 | Poldeci | `Poldeci` | otočí jeden vypitý poldeci späť na plný — **až pri bitke** (§9.5); v Pitke pridá poškodenie pečene |
 | Posilnenie | `Posilnenie` | zdvojnásobí prepojenú akciu (priaznivú aj nepriaznivú) (§6) |
@@ -322,8 +323,8 @@ druhý kraj línie. Pitku hrajú obaja naraz (§7).
   každom ťahaní, aj uprostred neho. Na začiatku hry je doberací balíček
   prázdny (§3): kým hráč nemá ani odhadzovací, ťahanie nedá nič, fajčiť sa
   nedá a Poštárka sa nepoužije. **Limit ruky nie je** — hráč smie mať kariet, koľko chce. Karty
-  navyše dáva šenok, fajčenie v Pitke (§7), priznanie kliatby (§11), Vízia
-  a efekty.
+  navyše dáva šenok, fajčenie v Pitke (§7), Vízia a efekty (Kšefty, Zastávka,
+  Hasič…). Priznanie Cirhózy kartu nedá (§11).
 
 **Koniec kola** (po bitke a návrate kariet, §9.7): neresti kola sa porovnajú
 s **Chuťou** každého hráča (Absťák, §8; po finále nie), starší zaplatia **udržaný strach**
@@ -422,8 +423,7 @@ Nástroja sa v striedaní počíta ako ťah, priznanie nie.
   strana“ ostáva len ako pomenovanie, ku komu kraj prilieha.
 - Nástroj tvorí spoj len s Občanom alebo Starešinom a nesmie susediť
   s Nástrojom na konci strany, kam sa vykladá (§12). Kliatba do línie nepatrí.
-  Za kartu, ktorú Hrobár urobil poslednou (Konflikt, §16), sa na tej strane už
-  nič nepriloží.
+  Za skrytú Záverečnú ani odpoveď lícom dole sa nepriloží, kým sa neotočí (§7, §13).
 - **Konflikt (v7):** keď súper priloží kartu k tvojej ležiacej karte so
   spúšťačom Konflikt, spustí sa jej efekt — po Nástupe priloženej karty. Vlastné
   priloženie, priložený Nástroj, NA EX ani zrážka Konflikt nespúšťajú (§16).
@@ -656,7 +656,7 @@ Pitiek**. Po odpovediach sa Pitka vyhodnotí.
   nefajčí (§15).
 - **Doliatie, 2 cigarety** (počas Pitky) → otoč jeden vypitý poldeci späť na
   plný. S Vínkom v Dedičstve nie (§16).
-- **Stokársky barter, 5 cigariet** (na Jednote o 1 menej) → nový plný poldeci
+- **Stokársky barter, 5 cigariet** → nový plný poldeci
   navyše.
 - Zadarmo sa jeden vypitý poldeci otočí na začiatku kola (§4).
 - Čo po finále ostane, sa vykúpi: plný poldeci 1 špak, každých celých
@@ -677,7 +677,7 @@ Po „hotovo“ oboch hráčov:
    ```
    Priazeň Fajčiara dáva cigarety po bitke (§10, v9), nie v Pitke.
 6. **Ťahanie kariet** — Pitka sama karty nedáva; doberajú sa fajčením,
-   priznaním kliatby, Kšeftmi a Víziou.
+   Kšeftmi, Víziou a efektmi (Zastávka po prvej Pitke).
 7. **Vízia** — za každú aktívnu Víziu sa hráč pozrie na vrchnú kartu svojho
    doberacieho balíčka (keď sa doberací balíček minie, odhadzovací sa
    zamieša a stane sa z neho nový doberací balíček)
@@ -705,8 +705,8 @@ partii (aj podstrčená k súperovi, nie skrytá Záverečná) a Kšeft lokality
 použiť **každý hráč**, každý raz za Pitku. Kšeft nie je ťah; platba je verejná.
 Účinok „v tejto bitke“ sa pripočíta v bitke kola. Kšeft majú Strýko z Ameriky,
 väzni (Kšeft väzňa, nižšie) a lokality Zberný dvor, Sklad, Obecný úrad
-a Predsedova vila (§15, §16). Cigarety za Kšeft karty nie sú nerest; za Kšeft
-lokality (Zberný dvor, Sklad, Obecný úrad) áno, ako pri barteri.
+a Predsedova vila (§15, §16). Cigarety za Kšeft karty ani lokality nie sú nerest
+(od v9.1, §8); nerest je len Kšeft väzňa (vypitý poldeci).
 
 ### Kšeft väzňa (v9)
 
@@ -812,9 +812,9 @@ vlastného tela — kto si zvykne, musí pokračovať.
 | vyfajčená cigareta (za každú zaplatenú — druhé fajčenie v Pitke 2 atď.) | 1 |
 | Kšeft väzňa (platí sa vypitým plným poldeci, §7) | 1 |
 
-**Nie sú nerest:** doliatie, barter, šenok, Záverečná, Dedičstvo, Starosta,
-cigarety za Kšefty lokalít (Zberný dvor, Sklad, Obecný úrad, Predsedova vila),
-akcie Cigareta a Poldeci.
+**Nie sú nerest:** doliatie, barter, šenok, Záverečná, Dedičstvo, pokus o zajatie,
+Úplatok, cigarety za Kšefty kariet a lokalít (Strýko z Ameriky, Zberný dvor, Sklad,
+Obecný úrad, Predsedova vila), akcie Cigareta a Poldeci.
 
 **Chuť** je verejné počítadlo hráča, na začiatku hry **0**. **Na konci kola**
 (po bitke a návrate kariet, pred udržaným strachom; po poslednej bitke hry nie),
@@ -857,7 +857,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 
 | Krok | Čo sa deje | Kde |
 |---|---|---|
-| 0 | Efekty na začiatku bitky (Traktoristka; v starej sade Kar) | §9.0 |
+| 0 | Efekty na začiatku bitky (Traktorista; v starej sade Kar) | §9.0 |
 | 1 | Povery (v8.3) — Viera a Povery sa vyrušia, zvyšné posunú silu priazní (obranca prvý, potom útočník) | §9.1 |
 | 2 | Pohoršenie (aj z priazne Abstinenta — už po Poverách) — pole podľa ceny zóny; nie na staršieho v ohrození | §9.2 |
 | 3 | Poškodenie — tuhé (mäkké od v8.3 nie je) | §9.3 |
@@ -875,7 +875,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 
 ### 9.0 Efekty na začiatku bitky
 
-Traktoristka bez prevahy (Dlh) (§16). V starej sade (do v6) Kar: každý hráč s nepriznanou
+Traktorista bez prevahy (Dlh) (§16; v sade v53 sa karta volá Traktorista, predtým Traktoristka). V starej sade (do v6) Kar: každý hráč s nepriznanou
 Cirhózou v ruke sa rozhodne (obranca, potom útočník), či jednu zahodí.
 
 ### 9.1 Povery (v8.3 „Výpožička priazne“)
@@ -906,10 +906,9 @@ poškodenie):
 priazne = sila z markera ± klebety, orezaná na −3 … +3, ráta sa pri každom použití
 priazne v tomto kole (`ucinnaPriazen`, elders.ts).
 
-**Otvorené (P5, P6, Michal):** Čierna mačka zatiaľ podľa návrhu dokumentu „Furt:
-Tvoje Povery sa Vierou nerušia.“ — jej Povery a súperova Viera sa nevyrušia (Viera
-ostáva na tuhé); text karty v tvorcovi zmení Admin. Pojem ostáva **Povera**
-(„ohovára staršieho“).
+**Rozhodnuté (P5, P6, Michal 2026-10-30, docs/napady/povery.html):** Čierna mačka „Furt:
+Tvoje Povery sa Vierou nerušia.“ (text karty v sade) — jej Povery a súperova Viera sa
+nevyrušia (Viera ostáva na tuhé). Pojem ostáva **Povera** („ohovára staršieho“).
 
 ### 9.2 Pohoršenie
 
@@ -947,7 +946,7 @@ Pohoršenie nedáva (Nervák zanikol, §8).
 ```
 1. Viera a Povera sa vyrušia 1:1 (zvyšné Povery už rozdelil krok Povery, §9.1)
      cancel = min(viera[ja], povera[súper]);  obom sa odpočíta
-     Čierna mačka: majiteľove Povery sa s Vierou nerušia (návrh, otvorené P5)
+     Čierna mačka: majiteľove Povery sa s Vierou nerušia (P5, Michal 2026-10-30)
 
 2. tuhé[ja] = (Rana×1 + Pecka×2 + Petelica×3 + súperove priznané Cirhózy + sila Bitkára)
              − zvyšná_viera[súper] × hodnota_viery(súper)
@@ -979,7 +978,7 @@ Nakladačka       = |rozdiel tuhého|        (pri remíze v tuhom ju nikto nezí
 každú kartu, ktorá v čase bitky leží v línii** pri lokalite — na oboch stranách,
 jeho aj súperove, aj odkrytá Záverečná, aj vo finále. Nerátajú sa priznané karty
 (kliatby), Dedičstvo, lokalita ani karty, ktoré z línie počas kola zmizli
-(zahodené, odstránené efektom, Benzínka v bitke). Počet Pitiek špaky neurčuje.
+(zahodené, odstránené efektom). Počet Pitiek špaky neurčuje.
 Víťaz dostane **vždy aspoň 1 špak**. Absťáky špaky **neuberajú** (trestajú ranou
 menej, §8). Vo finále víťaz dostane navyše **1 špak za každý bod Nakladačky** (v9.1,
 nižšie). Na Kultúrnom dome dostane aj
@@ -1318,8 +1317,9 @@ Ktoré karty a kde ležia, sa neposiela.
 ### Priznanie
 
 Kartu s tagom Kliatba možno **priznať** — vyložiť mimo línie do vlastnej
-hracej oblasti. **Kliatba do línie nepatrí**, dá sa len priznať; výnimka je
-Milujúca manželka, ktorá je aj Občan a má akcie.
+hracej oblasti. **Kliatba do línie nepatrí**, dá sa len priznať. V sade v53 sa dá
+priznať len **Cirhóza** (Dlh vzniká priznaný, Absťák sa priznať nedá); Milujúca
+manželka od v7 Kliatba nie je — je to Občan a kladie sa do línie (§16).
 
 - **Priznaná kliatba je natrvalo mimo balíčka** — nevracia sa po bitke ani pri
   zamiešaní odhadzovacieho balíčka. Priznanie je jediný bežný spôsob, ako si
@@ -1338,22 +1338,23 @@ Milujúca manželka, ktorá je aj Občan a má akcie.
 |---|---|
 | Dlh (počítadlo) | **nie** — vzniká rovno priznaný |
 | Absťák (karta, v9.1) | — nedá sa priznať |
-| Milujúca manželka | áno — pri priznaní si hráč hneď dobere kartu |
 | Cirhóza | **nie** |
+
+Jadro dá pri priznaní kartu za každú inú kartu s tagom Kliatba (rozhodnutie 2026-10-19,
+Cirhóza výnimka od 2026-10-20) — v sade v53 taká karta nie je.
 
 | | Nepriznaná | Priznaná |
 |---|---|---|
 | Dlh | — (vzniká priznaný) | **v každej bitke ho páli Exekútor** (aj špaky), ráta sa do remízy v bitke |
 | Cirhóza | ide po bitke do tvojho odhadzovacieho balíčka; na konci hry **−3 špaky** | na konci nestojí nič; **súper za ňu v bitke +1 tuhé**; kartu za priznanie **nedostaneš** |
-| Milujúca manželka | — | Absťáku sa netýka (v7 nie je Kliatba, §16) |
 
 Kliatby a špaky (v6): nepriznaná Cirhóza stojí na konci 3 špaky (v8), Dlh berie
 špaky cez Exekútora; Absťák špaky neuberá — berie tuhé v každej bitke (§8, §9.3).
 
 ### Exekútor
 
-Krok 4c bitky (§9), aj vo finále — **po poškodení, výsledku a špakoch za bitku
-a za starších, pred Nakladačkou** (Michal 2026-10-28); **vždy po hráčoch: obranca
+Krok 4c bitky (§9), aj vo finále — **po poškodení, výsledku a špakoch za bitku,
+pred Nakladačkou** (Michal 2026-10-28); **vždy po hráčoch: obranca
 Robota a Exekútor, potom útočník Robota a Exekútor**.
 Remíza na Dlhy, Herňa a Noviny teda rátajú priznané Dlhy
 **pred** exekúciou. Najprv **Robota**: za každú aktívnu Robotu hráč **spáli**
@@ -1378,11 +1379,11 @@ tejto bitky). Priazeň Exekútora zanikla v9.
 
 **Záhradkár (Exekúcia, Michal 2026-10-28):** keď leží odkrytý v línii v partii
 hráča (jeho karta, v tejto bitke), Exekútor ho v kroku 4c obíde — nezhorí mu ani
-jeden Dlh a neodpočíta žiadne špaky (ani navyše za súperovu priazeň Exekútora).
+jeden Dlh a neodpočíta žiadne špaky.
 Nezahadzuje sa, po bitke sa vráti ako každá karta (§16).
 
 Zvyšné priznané Dlhy na konci hry nestoja nič. Priznané Dlhy pália len Robota
-a Exekútor; Obecný úrad, Podvodník a priazeň Kmotra (v8) ich presúvajú
+a Exekútor; Obecný úrad, Podvodník, Kšeft väzňa Poštárky a priazeň Kmotra ich presúvajú
 k súperovi.
 
 ---
@@ -1602,22 +1603,15 @@ finále): Poľovnícka chata, Predsedova vila, Herňa. Hrany sú v `cards.json`
 | Kultúrny dom | Bitka | **Obaja získajú špaky** (v8, Michal 2026-10-28, návrh #29): víťaz dostane špaky za všetky karty v línii ako inde, porazený 1 špak za každú svoju kartu v línii (svoju partiu, na ktorejkoľvek strane). Pri sekere nikto nie je porazený — špaky kola idú na sekeru ako inde. Nakladačka sa rozdeľuje ako inde (§9.4). |
 | Ihrisko | Bitka | V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (pri rovnosti nikto) — rátajú sa ako do prevahy, **Dvojčatá za dve** (v8, návrh #32); z oboch krajov teda až +4. |
 
-Tabuľka v6 — platí len pre lokality, ktoré v tabuľke vyššie nie sú (Krčma, Zastávka, Most, Vínna pivnica, Družstvo). Akcie na hranách určujú počet Pitiek (§7); efekt platí v kole,
+Ďalšie lokality — tie, ktoré v tabuľke vyššie nie sú (Krčma, Zastávka, Most, Vínna pivnica, Družstvo); staré znenia v6 lokalít z tabuľky vyššie sú v `docs/pravidla-historia.md` (audit 2026-10-31 ich odtiaľto vyradil). Akcie na hranách určujú počet Pitiek (§7); efekt platí v kole,
 keď je lokalita cieľom. Po bitke ide lokalita na krčmovú nástenku (§14) —
 nikto ju neovláda.
 
 | Lokalita | Kedy | Efekt |
 |---|---|---|
 | Krčma | Pitka | Kto má plný poldeci a Občana či Starešinu v línii (vlastného či súperovho), musí dať NA EX (skryto ako vždy, §7) — bez neho Pitku neskončí. Prah Cirhózy je v kole o Krčmu obom o 2 vyšší (sčíta sa s Alkoholikom a Nealkom). |
-| Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta) ani dať NA EX. |
-| Benzínka | Pitka | Nikto nesmie fajčiť. |
 | Zastávka | Pitka | (v9.1) Po **prvej Pitke kola** si každý hráč vezme **zadarmo 1 kartu zo šenku** — najprv útočník, potom obranca. Šenok sa medzi nimi nedopĺňa; jediná karta pripadne útočníkovi, z prázdneho šenku sa neberie nič. Do v9 spoločný limit vykladania. |
-| Lesná cesta | Bitka | +1 tuhé za každého svojho Občana, Zviera či Starešinu v súperovom kraji, najviac +2. |
-| Zberný dvor | Pitka | Raz za Pitku: za 1 cigaretu karta z vlastného odhadzovacieho balíčka do ruky (do v9 nerest; od v9.1 nie). |
 | Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
-| Kar | Bitka | Na začiatku bitky smie každý hráč (obranca, potom útočník) zahodiť jednu **nepriznanú** Cirhózu alebo **Absťák** (v9.1) z ruky — navždy z hry (§9.0). |
-| Obecný úrad | Bitka | Prah Exekútora je o 4 nižší; každá Robota spáli 2 priznané Dlhy namiesto 1. |
-| Jednota | Pitka | Stokársky barter (nový poldeci) je o 1 cigaretu lacnejší. |
 | Vínna pivnica | Pitka | NA EX smie hráč dať v Pitke až dvakrát (obe skryto, na dve rôzne karty). |
 | Družstvo | Zhromaždenie | Karty s tagom Pracujúci nemíňajú limit vykladania. |
 
@@ -1654,7 +1648,9 @@ nie Konflikt.
 ťahu (nie pri odpovedi na NA EX) smie dať na súperovu kartu s Úplatkom
 1 cigaretu, raz za Pitku na kartu. Každá zníži do konca kola útoky karty
 o stupeň: Petelica → Pecka → Rana → nič (akcia ostáva spárovaná, len sa
-neráta). Cigareta prepadne (nikto ju nedostane).
+neráta). Cigareta prepadne (nikto ju nedostane). **Stav hry (audit 2026-10-31, Michal
+nerozhodol):** keď je z Kulturistu Výtržník (§7), Úplatok znižuje aj jeho Rany — už jediná
+cigareta zmení všetky Rany Výtržníka na nič (`partia.ts` `utokPoUplatku`).
 
 | Karta | Výklad |
 |---|---|
@@ -1666,10 +1662,10 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Živnostník | Nástup: hneď za neho smie majiteľ priložiť 1 Nástroj z ruky na tú istú stranu — mimo limitu vykladania; Nástroj s ním tvorí spoj (§12). Hra počká na voľbu ako pri Hasičovi; v ťahu s viacerými kartami sa voľba robí hneď po Živnostníkovi (ďalšia karta na tú stranu ju zruší). Ako Záverečná: pri otočení. |
 | Šarlatán | Konflikt: do konca kola sa jeho akcie Hazard rátajú ako Viera a Povera ako Rana (mení sa druh, nie aktivita); po bitke ide do balíčka s pôvodnými akciami. Platí aj pre akcie zdvojené NA EX (Hazard ×2 = Viera ×2, bez zadĺženia). Pozor pri odpovedi na NA EX: akcie, ktoré priložená karta spojom aktivuje, NA EX **zruší** ako každú aktívnu akciu (§7) — aj premenené Rany (ULTRA 20261030-115654, prehratie partie). |
 | Pes | Furt: jeho aktívne akcie na spoji so súperovou kartou (strana Psa k tej karte) sa rátajú dvakrát; násobky sa násobia (§7). Platí aj podstrčený či podstrčením vzniknutý spoj. |
-| Mäsiar | Furt (Michal 2026-10-28): **efekty Zvierat** v jeho okolí (oboch hráčov) neplatia, kým s ním susedia; ich **akcie sa rátajú normálne**. Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Bitka, aj jeho koniec bitky), Kohúta (Pitka) a Recidivistu (Prehra — rozhoduje okolie v chvíli, keď sa efekt spúšťa). Kapybara priložená k Mäsiarovi sa nespustí; Nástup, ktorý už prebehol, sa nevracia. Mäsiar lícom dole (Záverečná) ešte nič neumlčí. Do 2026-10-28 Mäsiar rušil akcie Zvierat. |
+| Mäsiar | Furt (Michal 2026-10-28): **efekty Zvierat** v jeho okolí (oboch hráčov) neplatia, kým s ním susedia; ich **akcie sa rátajú normálne**. Týka sa Psa, Koňa a Čiernej mačky (Furt), Krokodíla (Bitka, aj jeho koniec bitky) a Recidivistu (Zviera aj Občan; Prehra — rozhoduje okolie v chvíli, keď sa efekt spúšťa). Kapybara priložená k Mäsiarovi sa nespustí; Nástup, ktorý už prebehol, sa nevracia. Mäsiar lícom dole (Záverečná) ešte nič neumlčí. Do 2026-10-28 Mäsiar rušil akcie Zvierat. |
 | Krokodíl | Bitka: na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí (oboch hráčov); Starešinovia a Nástroje nie. Ich akcie v bitke ešte platia. |
 | Kapybara | Nástup: marker jedného staršieho (podľa voľby majiteľa) sa posunie o 1 pole k stredu. **Povinný** — keď je aspoň jeden marker mimo stredu, posunie sa, aj keď sú to len markery na polovici majiteľa. |
-| Kohút | **Dočasne vyradený (v9.2, Michal 2026-10-30)** — posledné slovo pri odpovediach na NA EX zaniklo (odpovede lícom dole, §7); karta sa prerobí a zo sady ju vyradí Admin. V jadre nemá účinok (TODO). Predtým: posledné slovo mal jeho majiteľ aj ako obranca. |
+| Kohút | **Dočasne vyradený (v9.2, Michal 2026-10-30)** — posledné slovo pri odpovediach na NA EX zaniklo (odpovede lícom dole, §7); v sade v53 karta nie je (vyradená v sade v51), prerobí sa. V jadre nemá účinok (TODO). Predtým: posledné slovo mal jeho majiteľ aj ako obranca. |
 | Pijan | Bitka: za každé NA EX, ktoré majiteľ v tomto kole dal (poldeci ešte leží na karte), udelí súperovi Ranu navyše — za každého Pijana. |
 | Milujúca manželka | Pitka: tvoje poškodenie pečene v Pitke je o 1 menšie (najprv z akcií Poškodenie pečene, potom z Poldeci); latku Absťáku (Chuť) nemení, nie je Kliatba. |
 | Opatrovateľka | Furt (v9.1): kým leží odhalená v línii, na konci kola sa Chuť jej majiteľa porovnáva, akoby bola **o 2 nižšia** (s nerestami kola, §8); Chuť ubúda normálne. Viac Opatrovateliek sa sčíta (−2 za každú). Ráta sa stav línie pri bitke (po bitke idú karty do balíčka). |
@@ -1678,7 +1674,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Dievčina na vydaj | Prehra: keď jej majiteľ prehrá, zahodí sa (z hry) a víťaz získa toľko Dlhov, koľko mala aktívnych akcií (s násobkami). |
 | Snúbenica | Konflikt: ak je priložená karta Chlap, po bitke ide do odhadzovacieho balíčka majiteľa Snúbenice a odteraz je jeho. |
 | Bzdocha | Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX. Majiteľ čaká, kým súper skončí svoju časť Pitky, potom hrá a vidí súperove skryté NA EX; majú ju obaja → nečaká nikto (§7, Michal 2026-10-27). |
-| Záhradkár | Exekúcia (Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ Keď leží odkrytý v línii v partii majiteľa (jeho karta, aj na súperovej strane), Exekútor ho v kroku exekúcie (§9, 4c) obíde — nezhorí mu žiadny Dlh ani špak (ani navyše za priazeň Exekútora). Nezahadzuje sa; v ruke či v balíčkoch nerobí nič. Súperov Záhradkár ťa nechráni. |
+| Záhradkár | Exekúcia (Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ Keď leží odkrytý v línii v partii majiteľa (jeho karta, aj na súperovej strane), Exekútor ho v kroku exekúcie (§9, 4c) obíde — nezhorí mu žiadny Dlh ani špak. Nezahadzuje sa; v ruke či v balíčkoch nerobí nič. Súperov Záhradkár ťa nechráni. |
 | Anonymný alkoholik | Nástup: majiteľ prizná všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka (§11). |
 | Dohadzovačka | Nástup (Michal 2026-10-28): keď ju hráč priloží k Občanovi alebo Starešinovi O2 (jej vnútorný sused, karta ktoréhokoľvek hráča), z **druhej strany lokality** sa **najvzdialenejší** (od lokality) Občan alebo Starešina opačného pohlavia ako O2 (Žena ↔ Chlap; karta ktoréhokoľvek hráča) presunie za Dohadzovačku — na vonkajší koniec jej strany. Príklad: „O1 … … O2“, Dohadzovačka za O2 → „… … O2 · Dohadzovačka · O1“. Presun je **povinný**, bez voľby. Karta ostáva svojho majiteľa a natočená k nemu, medzera na druhej strane sa uzavrie a spoje sa prepočítajú. Karta s oboma tagmi (Liberál) sa ráta ako oboje — ako O2 hľadá Ženu aj Chlapa, ako O1 sa hodí k obom. Presun **nie je priloženie**: Konflikt presunutej ani susednej karty sa nespustí a Pasca ho neráta. Skrytá Záverečná sa nepresúva (a ako O2 nerozhoduje); ako Záverečná sa Dohadzovačka vyhodnotí pri otočení. Ak O2 nemá Ženu ani Chlapa, nie je Občan ani Starešina, alebo na druhej strane nie je vhodný O1, nič sa nestane. Do 2026-10-28 Bitka: karta zo šenku za zmiešané spoje. |
 | Kulturista | Úplatok (vyššie). |
@@ -1687,7 +1683,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Svokra | Bitka: za každú kartu majiteľa (na ktorejkoľvek strane, aj Svokru samu), na ktorej leží súperov poldeci z NA EX, udelí súperovi Ranu; ráta sa aj zrážka (Výtržník), vlastné NA EX nie. Každá Svokra zvlášť. |
 | Hasič | Nástup: z majiteľovho odhadzovacieho balíčka sa vytiahne náhodná karta (aj kliatba, aj Absťák); majiteľ si ju nechá v ruke, alebo ju vráti. Kým nerozhodne, hra čaká. Prázdny balíček = nič. |
 | Šofér | Bitka: ak si v tomto kole nedal NA EX, udelíš súperovi Pecku navyše (+2 tuhé), za každého Šoféra. |
-| Traktoristka | Bitka: s prevahou v kraji, kde leží, Pecka navyše; bez nej dostaneš na začiatku bitky Dlh. |
+| Traktorista | Bitka (v sade v53 Traktorista, Chlap; id `traktoristka`, predtým Traktoristka): s prevahou v kraji, kde leží, Pecka navyše; bez nej dostaneš na začiatku bitky Dlh. |
 | Podvodník | Prehra: jeden tvoj priznaný Dlh prejde medzi súperove priznané (za každého Podvodníka). |
 | Praudovravec | Furt: Odpor na jeho spojoch neruší, ale ráta sa ako Posilnenie — zdvojí partnerovu akciu na spoji (§6), aj keď je to súperova akcia. |
 | Kočovník | Furt: všetky jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (§6). |
@@ -1699,7 +1695,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Degustátorka | Nástup: ak má súper viac plných poldeci ako ty, jeden sa mu otočí na vypitý (nie nerest ani pečeň). |
 | Vandal | Nástup: lokalita sa otočí o 180° (hrany si vymenia kraje). |
 | Kôň | Furt: Nástroj vedľa neho s ním tvorí spoj ako s Občanom. |
-| Čierna mačka | (v8.3, návrh — otvorené P5, text zmení Admin) Furt: majiteľove Povery sa Vierou nerušia. |
+| Čierna mačka | (v8.3, P5 rozhodol Michal 2026-10-30) Furt: majiteľove Povery sa Vierou nerušia. |
 | Strýko z Ameriky | Kšeft: za 2 cigarety Rana navyše v bitke kola. |
 | **Starší** | Karta staršieho (boss) má v línii **len akcie**; efekt (Väzeň — Kšeft) platí výhradne držiteľovi väzňa (§7, §10). |
 | Veterinár | Väzeň — Kšeft: Za vypitý poldeci zahoď z hry 1 Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta poškodenie pečene. Nie z odhadzovacieho balíčka (O3). Pečeň držiteľa v tejto Pitke = 0 vrátane ceny Kšeftu, vlastného NA EX a súperovho NA EX na jeho karty. Bez Cirhózy platí len časť o pečeni. |
@@ -1714,7 +1710,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Noviny | Dedičstvo: Prehra (Titulka, návrh #40, Michal 2026-10-28): za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak. Dlhy sa rátajú pred exekúciou (§9, krok 4a). Víťazovi sa nič neberie — svoje špaky za bitku dostane celé. |
 | Krabička cigariet | Dedičstvo: Pitka: za každé 2 cigarety, ktoré súper v Pitke vyfajčí (rátajú sa zaplatené cigarety), si hneď doberieš 1 kartu. Nie je to nerest. |
 | Pasca | Dedičstvo: Bitka: ak súper v tomto kole priložil kartu (akúkoľvek, aj lícom dole) k tvojej, udelíš mu **1 Ranu** navyše (v9.1 podľa textu karty od sady v36; predtým Pecku). |
-| Puška | Dedičstvo (Michal 2026-10-30, mení v7 „+1 k Petelici“): keď by tvoju **prepojenú** Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2; v súčtoch sa ráta ako Pecka). Prepojená = má na spoji partnera (aktívna len zo Vzbury nie). Úplatok Petelicu nezruší, len zníži — Puška naň nepôsobí; súperove Hrable nemajú čo ukradnúť (zrušenie nenastalo); Výtržník akcie nezrušuje (mení na Rany) — Puška sa neuplatní; NA EX ďalej zdvojí neaktívne akcie karty, prepojená Petelica ostane na 2. Text karty zmení Admin. |
+| Puška | Dedičstvo (Michal 2026-10-30, mení v7 „+1 k Petelici“): keď by tvoju **prepojenú** Petelicu zrušil iný efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2; v súčtoch sa ráta ako Pecka). Prepojená = má na spoji partnera (aktívna len zo Vzbury nie). Úplatok Petelicu nezruší, len zníži — Puška naň nepôsobí; súperove Hrable nemajú čo ukradnúť (zrušenie nenastalo); Výtržník akcie nezrušuje (mení na Rany) — Puška sa neuplatní; NA EX ďalej zdvojí neaktívne akcie karty, prepojená Petelica ostane na 2. Text karty v sade v53 už znie podľa tohto pravidla. |
 | Náradie (v8.4) | Zapaľovač, Výherné žreby, Píšťalka, Hrable, Zrkadlo, Valaška, Telefón, Jogurt, Energeťák, Horoskop, Fúrik, Krištáľová guľa — §12, tabuľka Náradie. |
 | Profesionálny tipér | Furt (v8.4): posilnené akcie na jeho spojoch (jeho strany a strany susedov k nemu) sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota. Posilnená = ×2 z Posilnenia, ktoré NA EX nezrušil; NA EX na Tipéra jeho Posilnenie aj premenu zruší. |
 | Vidly | Dedičstvo: každá tvoja aktívna akcia Rana z vyložených kariet (aj hrany lokality) udelí o 1 poškodenie viac. Rany navyše z efektov kariet (Svokra, Pijan, Vymáhač, Strýko z Ameriky) Vidly nezosilnia (Michal 2026-10-27). |
@@ -1745,13 +1741,12 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Čiarky na účte | zadĺženie pod prahom Dlhu; od v7 neprepadá ani po Pitke, ani po kole (D6, §8) |
 | Kraj | polovica línie od lokality, pomenovaná podľa hrany lokality (Krčma: pri výčape / pri dverách) (§6) |
 | Línia | celý rad kariet v kole; lokalita v strede (§6) |
-| Náhrada | hráč nahradí kartu z množiny určenej efektom |
 | NA EX | plný poldeci na Občana či Starešinu v línii, vybraný v Pitke skryto: zruší jeho aktívne akcie a zdvojí neaktívne (§7) |
 | Nástup | vyhodnotenie pri zahraní karty |
 | Nerest | len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1, Kšeft väzňa 1 — porovnávajú sa s Chuťou (§8) |
 | Furt | platí, kým je karta odhalená kdekoľvek v hracom priestore |
 | Odhodenie | do odhadzovacieho balíčka hráča, ktorý kartu zahral |
-| Odpoveď na NA EX | po odkrytí za každé súperovo NA EX jedna karta z ruky do línie mimo limitu; najprv obranca, potom útočník (§7) |
+| Odpoveď na NA EX | po odkrytí za každé súperovo NA EX jedna karta z ruky do línie lícom dole, zadarmo a mimo limitu; najprv útočník, potom obranca na druhý kraj línie, obe sa otočia naraz (§7) |
 | Pohoršenie | akcia: v bitke 1 bod na posun markera staršieho od seba (desí) alebo k sebe (upokojuje); pole stojí podľa zóny, vyberáš staršieho a smer; priazeň sa mení hneď (§9.2, §10) |
 | Povera | akcia (v8.3): ohovára staršieho — zvyšná po Viere posunie v bitke silu priazne jedného staršieho o stupeň k tebe, len na toto kolo (§9.1) |
 | Klebety | posun sily priazní z Povier v tomto kole; marker sa nehýbe, po kole zaniknú (§9.1) |

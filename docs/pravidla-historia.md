@@ -1992,3 +1992,19 @@ Staré znenie §7 (Odpoveď na NA EX):
 
 Staré znenie: „Pitka: posledné slovo pri odpovediach na NA EX (§7) má jeho majiteľ aj ako
 obranca — súper odpovedá prvý. Keď ho majú obaja, platí bežné poradie.“
+
+## Audit textu proti hre (2026-10-31, sada v53)
+
+Pravidlá sa nemenili — text sa zosúladil s tým, čo hra robí (docs/napady/audit-pravidiel-v92.html).
+Zo špecifikácie vypadli znenia, ktoré už v hre neplatia:
+
+- §6: „Za kartu, ktorú Hrobár urobil poslednou (Konflikt, §16), sa na tej strane už nič
+  nepriloží.“ — Hrobár je od v9 len Kšeft väzňa.
+- §15, tabuľka v6: riadky Kostol (ani NA EX), Benzínka (nikto nefajčí), Lesná cesta (Občan,
+  Zviera či Starešina, najviac +2), Zberný dvor (Pitka), Kar (Bitka: zahodiť Cirhózu alebo
+  Absťák), Obecný úrad (prah Exekútora −4, Robota 2 Dlhy), Jednota (barter o 1 lacnejší) —
+  platí tabuľka v7/v8 nad ňou.
+- §7 (aj slovník stránky Pravidlá): „Stokársky barter … (na Jednote o 1 menej)“ — barter stojí vždy 5 cigariet.
+- §11: „výnimka je Milujúca manželka, ktorá je aj Občan“ a riadok „Milujúca manželka — áno,
+  pri priznaní si hráč hneď dobere kartu“ — od v7 nie je Kliatba, priznať sa nedá.
+- §17: heslo „Náhrada“ (patrilo k patronátu, žiadna karta ho nepoužíva).

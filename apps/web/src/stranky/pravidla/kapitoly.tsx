@@ -116,7 +116,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "03-co-mas-pred-sebou",
     vSkratke: [
       "Ruka, doberací a odhadzovací balíček.",
-      "Bar: poldeci, cigarety, pečeň, zadĺženie, neresti kola a špaky.",
+      "Bar: poldeci, cigarety, pečeň, zadĺženie, neresti kola, Chuť a špaky.",
       "Karta má akcie po hranách, tagy a efekt.",
     ],
     obsah: (s) => (
@@ -125,7 +125,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Máš <strong>ruku</strong> (bez limitu), <strong>doberací balíček</strong> a <strong>odhadzovací balíček</strong>. Keď sa
           doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový doberací balíček. Na bare vidíš svoje <P k="poldeci">poldeci</P> (plné a vypité),{" "}
-          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, zadĺženie, <P k="nerest">neresti</P> kola a svoje{" "}
+          <P k="cigareta">cigarety</P>, <P k="pecen">pečeň</P>, zadĺženie, <P k="nerest">neresti</P> kola, <P k="chut">Chuť</P> a svoje{" "}
           <P k="spak">špaky</P>.
         </p>
         <H3 id="co-mas-pred-sebou-karta">Karta</H3>
@@ -191,7 +191,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>
             <strong>Zhromaždenie a Pitka.</strong> Striedavo vykladáte karty do línie, potom sa pije a vyhodnocuje. Opakuje sa
-            1- až 4-krát podľa línie.
+            1- až 5-krát podľa línie (5-krát len na pinnacle vo finále).
           </li>
           <li>
             <strong>Bitka.</strong> Viac tuhého poškodenia vyhráva a dostane špak za každú kartu v línii. Nakladačka posúva
@@ -354,16 +354,16 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="pitka-pocet">Koľko Pitiek</H3>
         <p>
           Po Zhromaždení nasleduje <P k="pitka">Pitka</P>. V bitke je ich <strong>1 + menší z počtov aktivovaných akcií lokality</strong>{" "}
-          na jej dvoch stranách (1 až 4). Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta,
+          na jej dvoch stranách (1 až 5). Akciu lokality aktivuje karta, ktorá s ňou tvorí spoj; Odpor na hrane lokality sa ráta,
           akcia hrany zrušená Odporom karty nie. Ak sú na jednej strane lokality aktivované 3 jej akcie a na druhej 1, pijú sa{" "}
           <strong>2 Pitky</strong> — ráta sa podľa strán, nie podľa toho, kto kartu zahral; akcia ×2 je stále jedna. Pred každou Pitkou je Zhromaždenie. Počet sa počas kola mení s líniou — začatá Pitka sa vždy
-          dopije. Úroveň lokality je počet akcií na jej hrane (1, 2, 3, pinnacle 4), takže kolo má 1 až 5 Pitiek. Koľko Pitiek sa odohrá, toľko špakov dostane víťaz bitky.
+          dopije. Úroveň lokality je počet akcií na jej hrane (1, 2, 3, pinnacle 4), takže kolo má 1 až 5 Pitiek. Počet Pitiek špaky neurčuje — víťaz bitky dostane špak za každú kartu v línii.
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
         <p>
           <strong>Pitku hráte obaja naraz.</strong> Kým ju neskončíš, smieš fajčiť, doliať, barterovať, použiť Kšefty a Úplatky
           a skryto vybrať NA EX — súperove nákupy vidíš hneď, jeho NA EX nie. Keď skončíš, nedá sa to vrátiť. Keď ste hotoví
-          obaja, NA EX sa odkryjú <strong>naraz</strong> a odpovedáte na ne lícom dole — najprv útočník, potom obranca; obe sa otočia naraz. Jediná výnimka
+          obaja, NA EX sa odkryjú <strong>naraz</strong> a odpovedáte na ne lícom dole — najprv útočník, potom obranca na druhý kraj línie; obe sa otočia naraz. Jediná výnimka
           je <strong>Bzdocha</strong>: jej majiteľ čaká, kým súper skončí, a potom hrá a vidí jeho NA EX. Potom sa Pitka vyhodnotí:
         </p>
         <ol>
@@ -378,7 +378,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           </li>
           <li>Záverečné karty sa otočia lícom hore (kapitola <a href="#pokrocile">Pokročilé ťahy</a>).</li>
         </ol>
-        <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením, priznaním kliatby, Víziou a efektmi kariet.</p>
+        <p className="tlmene">Pitka sama karty nedáva — doberáš si ich fajčením, Víziou a efektmi kariet (Kšefty, Zastávka).</p>
         <H3 id="naex">NA EX</H3>
         <p>
           V Pitke, kým ju neskončíš, položíš plný poldeci na kartu v línii s tagom <strong>Občan</strong> alebo{" "}
@@ -483,21 +483,22 @@ export const KAPITOLY: readonly Kapitola[] = [
           K <P k="pecen">pečeni</P> prispieva každá akcia <strong>Poškodenie pečene</strong>, každá akcia <strong>Poldeci</strong>{" "}
           a každé NA EX. Vyhodnotí sa <strong>len v Pitke</strong>: za každý celý prah (3; Nealko v Dedičstve a Krčma ho zvyšujú) dostaneš
           kartu <P k="cirhoza">Cirhóza</P> — ide do tvojho odhadzovacieho balíčka. Po Pitke sa pečeň vynuluje, zvyšok pod prahom
-          sa neprenáša. Poldeci vypitý v Zhromaždení (ďalšia karta v ťahu) pripíše +1 pečene do najbližšej Pitky.
+          sa neprenáša. Poldeci vypitý v Zhromaždení (ďalšia karta v ťahu) pripíše +1 pečene do najbližšej Pitky. Milujúca
+          manželka v línii ti zníži pečeň v Pitke o 1.
         </p>
         <H3 id="cena-dlh">Zadĺženie a Dlh</H3>
         <p>
           Každá akcia <strong>Hazard</strong> v Pitke zvýši zadĺženie o 1. Každé 2 zadĺženia ti dajú jeden{" "}
           <P k="dlh">Dlh</P> — nie je to karta, ale počítadlo: je hneď priznaný, neťaháš ho a kartu zaň nedoberáš. Zvyšok zadĺženia sa po Pitke nemaže — krčmár píše čiarky
           a ostávajú ti na účte do ďalšej Pitky aj kola. Dlhy, ktoré dáva
-          priamo karta (napríklad Poštárka), idú rovno. Viac Pitiek v bitke teda znamená viac pečene aj Dlhov. Doska ti vopred
+          priamo karta (napríklad Policajtka či Dievčina na vydaj), idú rovno. Viac Pitiek v bitke teda znamená viac pečene aj Dlhov. Doska ti vopred
           ukazuje, čo karty na stole pripíšu a koľko kliatob z toho bude.
         </p>
         <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
         <p>
           <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, každé <strong>NA EX 2</strong>{" "}
-          (je to väčšia dávka), každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2). Doliatie, barter, šenok,
-          Dedičstvo ani cigarety za Kšefty lokalít nerest nie sú.
+          (je to väčšia dávka), každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2) a Kšeft väzňa 1 (vypitý poldeci).
+          Doliatie, barter, šenok, Záverečná, Dedičstvo ani cigarety za Kšefty lokalít nerest nie sú.
         </p>
         <p>
           <P k="chut">Chuť</P> je tvoje verejné číslo, na začiatku 0 — kto si zvykne, musí pokračovať. Na konci kola:
@@ -564,7 +565,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <p className="zvyraznene">
           Víťaz dostane 1 <P k="spak">špak</P> za každú kartu, ktorá pri bitke leží v línii — na oboch stranách, aj odkrytá
-          Záverečná, aj vo finále; priznané karty, Dedičstvo a karty, ktoré z línie počas kola zmizli, sa nerátajú. Ak má viac
+          Záverečná, aj vo finále; priznané karty, Dedičstvo a karty, ktoré z línie počas kola zmizli, sa nerátajú.
           Absťáky špaky nezrážajú. Lokalitu si neberie — ide na krčmovú{" "}
           <P k="nastenka">nástenku</P> s jeho menom a špakmi. <strong>Nakladačka</strong> je rozdiel tuhého poškodenia — drží ju
           víťaz, ale rozdeľuje ju jeho súper; pri remíze v tuhom Nakladačka nie je.
@@ -572,13 +573,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="bitka-kroky">Kroky bitky v poradí</H3>
         <ol className="kroky">
           <li>
-            <strong>Efekty na začiatku bitky</strong> — Krčmárka, Dievčina na vydaj; pri bitke o Kar potom každý smie zahodiť
-            jednu nepriznanú Cirhózu z ruky.
-          </li>
-          <li>
-            <strong>Exekútor</strong> — po špakoch za bitku: najprv Robota, potom exekúcia každému s priznaným
-            Dlhom: zhorí polovica Dlhov nahor a rovnako veľa špakov; Záhradkár v partii ju obíde (kapitola{" "}
-            <a href="#kliatby">Kliatby a priznanie</a>).
+            <strong>Efekty na začiatku bitky</strong> — Traktorista bez prevahy v jeho kraji dá svojmu majiteľovi Dlh.
           </li>
           <li>
             <strong>Povery</strong> — po vyrušení s Vierou posunú silu priazní starších o stupeň k svojmu majiteľovi (obranca prvý).
@@ -597,6 +592,11 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje), vo finále aj špak za každý bod Nakladačky; lokalita ide na nástenku.
           </li>
           <li>
+            <strong>Exekútor</strong> — po špakoch za bitku: najprv Robota, potom exekúcia každému s priznaným
+            Dlhom: zhorí polovica Dlhov nahor a rovnako veľa špakov; Záhradkár v partii ju obíde (kapitola{" "}
+            <a href="#kliatby">Kliatby a priznanie</a>).
+          </li>
+          <li>
             <strong>Nakladačka</strong> — markery starších sa posunú k súperovi víťaza (rozdiel tuhého); ktorých starších,
             vyberá ten súper (spravidla porazený si vyberie priazne). Prejaví sa až v ďalšej bitke. Vo finále sa Nakladačka nerozdeľuje — víťaz za ňu dostane 1 špak za každý bod.
           </li>
@@ -611,10 +611,9 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Cintorín</strong> — porazený v bitke o Cintorín smie dať jeden Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
           </li>
           <li>
-            <strong>Výhra a Prehra</strong> — Živnostník, cigarety za Nakladačku (súper dostane 1 cigaretu za každého staršieho,
+            <strong>Výhra a Prehra</strong> — cigarety za Nakladačku (súper dostane 1 cigaretu za každého staršieho,
             ktorého marker sa Nakladačkou posunul), Kmotor (kto má jeho priazeň, tomu prejdú 2 / 3 / 4 priznané Dlhy k súperovi), Fajčiar
-            (cigarety po bitke) a ostatné
-            efekty Výhra a Prehra.
+            (cigarety po bitke) a efekty Výhra a Prehra (Recidivista, Dievčina na vydaj, Podvodník), potom Krokodíl.
           </li>
           <li>
             <strong>Zajatie</strong> — kto pri pokuse o zajatie vyhral bitku, má väzňa; neúspešný pokus vráti staršieho a marker
@@ -625,11 +624,11 @@ export const KAPITOLY: readonly Kapitola[] = [
             idú tiež do odhadzovacieho balíčka.
           </li>
           <li>
-            <strong>Špaky za starších</strong> — každý starší zaplatí tomu, koho sa bojí, stupne, na ktorých sa marker udržal od konca
-            minulého kola a ešte ich nezaplatil — nech bitku vyhral ktokoľvek.
+            <strong>Chuť a Absťák</strong> — menej nerestí, než je tvoja Chuť, = karta Absťák; potom Chuť klesne o 1 od väčšieho z Chuti a nerestí (po finále už nie).
           </li>
           <li>
-            <strong>Chuť a Absťák</strong> — menej nerestí, než je tvoja Chuť, = karta Absťák; potom Chuť klesne o 1 od väčšieho z Chuti a nerestí (po finále už nie).
+            <strong>Špaky za starších</strong> — každý starší zaplatí tomu, koho sa bojí, stupne, na ktorých sa marker udržal od konca
+            minulého kola a ešte ich nezaplatil — nech bitku vyhral ktokoľvek.
           </li>
           <li>
             <strong>Nové kolo</strong> — každému sa doleje jeden vypitý poldeci a každý si dobere 1 kartu.
@@ -759,9 +758,9 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Kliatby a priznanie",
     obrazok: "11-kliatby",
     vSkratke: [
-      "Kliatby: Dlh, Cirhóza, Absťák, Milujúca manželka. Dlh je počítadlo, nie karta — je hneď priznaný. Absťák sa priznať nedá.",
+      "Kliatby: Dlh, Cirhóza, Absťák. Dlh je počítadlo, nie karta — je hneď priznaný. Absťák sa priznať nedá.",
       "Priznanie vyloží kliatbu natrvalo mimo línie; limit nemíňa.",
-      "Za priznanie Milujúcej manželky dobereš kartu — za Cirhózu nie.",
+      "Priznať sa dá len Cirhóza — kartu za ňu nedobereš.",
       "Za priznané Dlhy príde v každej bitke Exekútor: zhorí polovica Dlhov nahor a rovnako veľa špakov.",
       "Nepriznaná Cirhóza ťa na konci hry stojí 3 špaky.",
     ],
@@ -770,14 +769,14 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kliatby-priznanie">Priznanie</H3>
         <p>
           <P k="kliatba">Kliatbu</P> môžeš namiesto do línie vyložiť do svojej hracej oblasti — je{" "}
-          <P k="priznanie">priznaná</P> a natrvalo mimo balíčka. Priznanie nemíňa limit vykladania ani neodovzdá ťah. Do línie
-          z kliatob patrí len Milujúca manželka.
+          <P k="priznanie">priznaná</P> a natrvalo mimo balíčka. Priznanie nemíňa limit vykladania ani neodovzdá ťah. Kliatba
+          do línie nepatrí.
         </p>
         <ul>
           <li>
             <strong>Dlh</strong> — nie je karta, ale počítadlo priznaných Dlhov: nový Dlh (prah zadĺženia, efekt karty) je hneď
             priznaný a kartu zaň <strong>nedobereš</strong>; neťahá sa a nedá sa s ním inak manipulovať. Za priznané Dlhy
-            príde v každej bitke Exekútor, súperove Povery proti nim poškodzujú a pri remíze v bitke prehrá, kto ich má viac.
+            príde v každej bitke Exekútor a pri remíze v bitke prehrá, kto ich má viac.
           </li>
           <li>
             <strong>Cirhóza</strong> — ide do odhadzovacieho balíčka; do ruky príde, až keď sa doberací balíček minie
@@ -792,17 +791,18 @@ export const KAPITOLY: readonly Kapitola[] = [
             Zahodiť ho smie len Vízia.
           </li>
           <li>
-            <strong>Milujúca manželka</strong> — za priznanie si dobereš kartu.
+            <strong>Milujúca manželka</strong> už kliatba nie je — je to Občan, ktorý sa kladie do línie (a tam ti zníži pečeň
+            v Pitke o 1).
           </li>
         </ul>
         <H3 id="kliatby-exekutor">Exekútor a Robota</H3>
         <ol>
           <li>
-            <strong>Robota:</strong> po poškodení, tesne pred exekúciou, spáliš za každú aktívnu Robotu 1 priznaný Dlh. Ide sa po
+            <strong>Robota:</strong> po poškodení, tesne pred exekúciou, spáliš za každú aktívnu Robotu 1 priznaný Dlh; za Dlh, ktorý nemá čo spáliť, dostaneš 1 špak. Ide sa po
             hráčoch: obranca Robota a Exekútor, potom útočník.
           </li>
           <li>
-            Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong> po poškodení a špakoch za bitku (Povery tvoje Dlhy ešte spočítajú), kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
+            Potom príde <P k="exekutor">Exekútor</P> — <strong>v každej bitke</strong> po poškodení a špakoch za bitku (remíza a Herňa tvoje Dlhy ešte spočítajú), kým máš aspoň jeden priznaný Dlh: zhorí ti{" "}
             <strong>polovica priznaných Dlhov</strong> (zaokrúhlené nahor, aj jediný Dlh) a <strong>rovnako veľa špakov</strong>.
             S priazňou Advokáta ti zhorí o 1 / 2 / 3 špaky menej (Dlhy zhoria ako vždy). Súper ich nedostane a smieš ísť do mínusu.
           </li>
@@ -935,7 +935,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je obom o 2 vyšší.</td></tr>
           <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na kartu v kraji pri oltári.</td></tr>
           <tr><td>Benzínka</td><td>Pitka</td><td>Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality (pri rovnosti nikto).</td></tr>
-          <tr><td>Zastávka</td><td>Zhromaždenie</td><td>Spoločný limit vykladania = súčet vašich limitov. Pas dá cigarety len za tvoj vlastný zvyšok limitu.</td></tr>
+          <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca (z prázdneho šenku nič).</td></tr>
           <tr><td>Lesná cesta</td><td>Bitka</td><td>+1 tuhé za každé tvoje Zviera v súperovom kraji.</td></tr>
           <tr><td>Ihrisko</td><td>Bitka</td><td>V každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Dvojčatá za dve) — spolu až +4.</td></tr>
           <tr><td>Zberný dvor</td><td>Kšeft</td><td>Za 1 cigaretu ľubovoľná karta z tvojho odhadzovacieho balíčka do ruky.</td></tr>
@@ -993,8 +993,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         </table>
         <p className="zvyraznene">
           Príklad: v bitke o Krčmu leží v línii 6 kariet (tvoje aj súperove) a vyhral si — máš 6 špakov. Farár sa ťa bojí
-          v oranžovej od minulého kola a ešte ti nič nezaplatil, Starosta v žltej, ktorú ti už zaplatil, Kováč sa ťa bojí v žltej
-          až od tejto bitky. Na konci kola dostaneš od Farára 1 + 2 = 3 (Starosta nič, Kováč až na konci ďalšieho kola, ak ho
+          v oranžovej od minulého kola a ešte ti nič nezaplatil, Starosta v žltej, ktorú ti už zaplatil, Poštárka sa ťa bojí v žltej
+          až od tejto bitky. Na konci kola dostaneš od Farára 1 + 2 = 3 (Starosta nič, Poštárka až na konci ďalšieho kola, ak ju
           súper dovtedy neodtlačí). Súpera sa od minulého kola bojí Hrobár v žltej — hoci bitku prehral, dostane 1. Je to 9 : 1.
         </p>
         <H3 id="finale">Finále</H3>

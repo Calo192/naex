@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v9, 2026-10-30)
+# Ťahák — platné pravidlá NA EX! (v9.2, 2026-10-30; sada v53)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -66,7 +66,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   poslednej `{"type":"vypit"}` — pri dvoch kartách **vypit, karta, karta**; „karta,
   vypit, karta“ server odmietne), alebo jednotlivé `place` / `vypit`.
 - **Pitky:** Pitiek v bitke = **1 + menší počet aktivovaných akcií lokality**
-  z jej dvoch strán (1–4); Odpor na hrane lokality sa ráta, akcia hrany zrušená
+  z jej dvoch strán (1–4, na pinnacle vo finále 1–5); Odpor na hrane lokality sa ráta, akcia hrany zrušená
   Odporom karty nie. Ráta sa podľa strán, nie podľa toho, kto kartu zahral (aj
   podstrčená); akcia hrany ×2 je stále jedna. Pred každou
   Pitkou je Zhromaždenie. Počet sa mení s líniou — výpis ho ukazuje. „Ešte
@@ -148,20 +148,20 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Karty navyše: šenok, fajčenie (`smoke`: karta hneď, **len v Pitke** (v5), v Zhromaždení
   nie; **prvé fajčenie v Pitke 1 cigareta, druhé 2, tretie 3…**, každá Pitka znova od 1
   (2026-10-27), každá vyfajčená cigareta je nerest (v9.1: druhé fajčenie za 2 = 2 neresti); s prázdnym doberacím aj odhadzovacím balíčkom sa fajčiť
-  nedá), priznanie kliatby, Vízia, efekty. Malý balíček prehru nespôsobí (v5).
+  nedá), Vízia, efekty (Kšefty, Zastávka). Priznanie Cirhózy kartu nedá. Malý balíček prehru nespôsobí (v5).
   Keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa z neho nový
   doberací balíček (pri každom ťahaní).
 - **Kliatby (v8.2, 2026-10-30):** **Dlh je počítadlo, nie karta** — vzniká rovno priznaný,
   neťaháš ho, kartu zaň nedobereš a nedá sa s ním inak manipulovať (stav ukazuje „priznané dlhy N“,
   verejné). Priznané Dlhy idú k Exekútorovi a pri remíze v bitke prehráva viac Dlhov.
-  **Absťák je od v9.1 karta** (Kliatba, nedá sa priznať, nižšie). Kartou je aj **Cirhóza** (a Milujúca manželka). Nová **Cirhóza ide do tvojho
+  **Absťák je od v9.1 karta** (Kliatba, nedá sa priznať, nižšie). Kartou je aj **Cirhóza** — jediná kliatba, ktorú smieš priznať. Nová **Cirhóza ide do tvojho
   odhadzovacieho balíčka** (2026-10-25) — do ruky príde, až keď sa doberací balíček minie a odhadzovací
   sa zamieša; priznáš ju, keď chceš, ale kartu za ňu **nedobereš** a súper za každú
   priznanú dostane v bitke +1 tuhé (nepriznaná ide po bitke do tvojho odhadzovacieho balíčka; na konci hry −3 špaky za kus)
   — prizná ju hneď, alebo riskuješ, že sa ti do konca nevráti do ruky. Kým ju nepriznáš, súper za ňu tuhé
   nedostáva. Počet súperových
   nepriznaných Cirhóz je verejný (stav ho ukazuje). Dlh pália Robota (1 Dlh za aktívnu Robotu; **za každý Dlh, ktorý nemá čo spáliť, 1 špak** — v8.4) a Exekútor
-  (v každej bitke); Obecný úrad, Podvodník a Kmotor ho presunú súperovi. Anonymný
+  (v každej bitke); Obecný úrad, Podvodník, Kšeft väzňa Poštárky a Kmotor ho presunú súperovi. Anonymný
   alkoholik (Nástup, v7) prizná všetky Cirhózy z tvojho odhadzovacieho balíčka (Absťák nie). Milujúca manželka už nie je Kliatba (v7). Kliatba do línie nepatrí. Priznanie nemíňa
   limit ani neodovzdá ťah. Za priznané Dlhy príde v každej bitke Exekútor.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
@@ -259,7 +259,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže remíza, Herňa a Noviny
   rátajú Dlhy pred exekúciou. Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
   keď leží v línii v tvojej partii, exekúcia ťa v tomto kole obíde (žiadny Dlh ani špak); nezahadzuje sa.
-  Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktoristka: s prevahou v jej kraji Pecka navyše,
+  Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktorista: s prevahou v jeho kraji Pecka navyše,
   inak Dlh; Podvodník pri prehre presunie tvoj priznaný Dlh súperovi. **Noviny** (Dedičstvo: Prehra, 2026-10-28):
   keď prehráš, dostaneš 1 špak za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe; víťaz nič nestratí.
 - **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2 (platí aj podstrčený); Mäsiar —
