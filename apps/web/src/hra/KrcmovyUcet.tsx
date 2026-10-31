@@ -116,7 +116,7 @@ export function KrcmovyUcet(props: KrcmovyUcetProps) {
 }
 
 /** Partie do v4: body za kusy po podmienkach (kusy × body × počet scorecardov). */
-function UcetV4({ body, data, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
+function UcetV4({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
   const kedy = `zatvorené po kole ${kolo}`;
   const su: PlayerId = ja === 0 ? 1 : 0;
   const podmienky = bodyPoPodmienkach(body);

@@ -93,50 +93,66 @@ export function priemeryHraca(partie: readonly PartiaSuhrnu[]): Readonly<Record<
   return Object.fromEntries(METRIKY.map((m) => [m.kluc, priemer(bezNull(hodnotyHraca(m, partie)))]));
 }
 
+/** Silná (sila kladná) alebo slabá stránka v jednej metrike, s váhou na zoradenie. */
+interface KandidatStranky {
+  readonly s: Stranka;
+  readonly silna: boolean;
+  readonly sila: number;
+}
+
+/**
+ * Stránka z rozdielu oproti súperovi v tej istej partii: rozdiel musí byť
+ * prakticky veľký (PRAH), štatisticky istý (2 smerodajné chyby) a stály (70 % partií).
+ */
+function strankaMetriky(m: DefMetriky, moje: readonly (number | null)[], ich: readonly (number | null)[], ja: number | null, su: number | null): KandidatStranky | null {
+  const smer = m.lepsie === "viac" ? 1 : -1;
+  const rozdiely: number[] = [];
+  moje.forEach((x, i) => {
+    const y = ich[i];
+    if (x !== null && y !== null && y !== undefined) rozdiely.push(smer * (x - y));
+  });
+  if (rozdiely.length < OD_STRANOK) return null;
+  const n = rozdiely.length;
+  const str = priemer(rozdiely) ?? 0;
+  const sd = Math.sqrt(rozdiely.reduce((a, d) => a + (d - str) ** 2, 0) / Math.max(1, n - 1));
+  const se = sd / Math.sqrt(n);
+  const rovnako = rozdiely.filter((d) => Math.sign(d) === Math.sign(str) && d !== 0).length;
+  const vyrazna = Math.abs(str) >= PRAH[m.jednotka] && Math.abs(str) >= 2 * se && rovnako / n >= 0.7;
+  if (!vyrazna) return null;
+  return {
+    s: {
+      kluc: m.kluc,
+      text: `${m.nazov}: ${ja}${m.jednotka === "%" ? " %" : m.jednotka === "b" ? " š" : ""} oproti ${su} u súperov`,
+      dokaz: `${str > 0 ? "lepšie" : "horšie"} v ${rovnako} z ${n} partií`,
+    },
+    silna: str > 0,
+    sila: Math.abs(str) / PRAH[m.jednotka],
+  };
+}
+
+/** Novšia polovica mínus staršia — partie sú od najnovšej, novšia polovica je na začiatku. */
+function trendPolovic(platne: readonly number[]): number {
+  const pol = Math.floor(platne.length / 2);
+  return (priemer(platne.slice(0, pol)) ?? 0) - (priemer(platne.slice(pol)) ?? 0);
+}
+
 /**
  * Súhrn z partií hráča (najnovšia prvá). `populacia` = priemery ostatných hráčov
  * s aspoň PARTII_NA_PRIEMER partiami; priemer hráčov sa ukáže až pri HRACOV_NA_PRIEMER.
  * `sStrankami` = vlastník a správca (cudzí silné a slabé stránky nevidí).
  */
 export function spocitajSuhrn(partie: readonly PartiaSuhrnu[], populacia: readonly Readonly<Record<string, number | null>>[], sStrankami: boolean): Suhrn {
-  const silne: { s: Stranka; sila: number }[] = [];
-  const slabe: { s: Stranka; sila: number }[] = [];
+  const stranky: KandidatStranky[] = [];
   const metriky = METRIKY.map((m): Metrika => {
     const moje = hodnotyHraca(m, partie);
     const ich = hodnotySupera(m, partie);
     const platne = bezNull(moje);
+    const ja = zaokruhli(priemer(platne));
+    const su = zaokruhli(priemer(bezNull(ich)));
     const hraci = populacia.length >= HRACOV_NA_PRIEMER ? priemer(bezNull(populacia.map((p) => p[m.kluc] ?? null))) : null;
-    // Trend: partie sú od najnovšej, novšia polovica je na začiatku.
-    let trend: number | null = null;
-    if (platne.length >= OD_TRENDU) {
-      const pol = Math.floor(platne.length / 2);
-      trend = (priemer(platne.slice(0, pol)) ?? 0) - (priemer(platne.slice(pol)) ?? 0);
-    }
-    // Silné a slabé stránky: rozdiel oproti súperovi v tej istej partii.
     if (sStrankami) {
-      const smer = m.lepsie === "viac" ? 1 : -1;
-      const rozdiely: number[] = [];
-      moje.forEach((x, i) => {
-        const y = ich[i];
-        if (x !== null && y !== null && y !== undefined) rozdiely.push(smer * (x - y));
-      });
-      if (rozdiely.length >= OD_STRANOK) {
-        const n = rozdiely.length;
-        const str = priemer(rozdiely) ?? 0;
-        const sd = Math.sqrt(rozdiely.reduce((a, d) => a + (d - str) ** 2, 0) / Math.max(1, n - 1));
-        const se = sd / Math.sqrt(n);
-        const rovnako = rozdiely.filter((d) => Math.sign(d) === Math.sign(str) && d !== 0).length;
-        if (Math.abs(str) >= PRAH[m.jednotka] && Math.abs(str) >= 2 * se && rovnako / n >= 0.7) {
-          const ja = zaokruhli(priemer(platne));
-          const su = zaokruhli(priemer(bezNull(ich)));
-          const s: Stranka = {
-            kluc: m.kluc,
-            text: `${m.nazov}: ${ja}${m.jednotka === "%" ? " %" : m.jednotka === "b" ? " š" : ""} oproti ${su} u súperov`,
-            dokaz: `${str > 0 ? "lepšie" : "horšie"} v ${rovnako} z ${n} partií`,
-          };
-          (str > 0 ? silne : slabe).push({ s, sila: Math.abs(str) / PRAH[m.jednotka] });
-        }
-      }
+      const st = strankaMetriky(m, moje, ich, ja, su);
+      if (st !== null) stranky.push(st);
     }
     return {
       kluc: m.kluc,
@@ -144,12 +160,17 @@ export function spocitajSuhrn(partie: readonly PartiaSuhrnu[], populacia: readon
       popis: m.popis,
       jednotka: m.jednotka,
       lepsie: m.lepsie,
-      hodnota: zaokruhli(priemer(platne)),
+      hodnota: ja,
       partii: platne.length,
-      porovnanie: { superi: zaokruhli(priemer(bezNull(ich))), hraci: zaokruhli(hraci) },
-      trend: zaokruhli(trend),
+      porovnanie: { superi: su, hraci: zaokruhli(hraci) },
+      trend: platne.length >= OD_TRENDU ? zaokruhli(trendPolovic(platne)) : null,
     };
   });
-  const top = (xs: { s: Stranka; sila: number }[]): Stranka[] => xs.sort((a, b) => b.sila - a.sila).slice(0, 2).map((x) => x.s);
-  return { partii: partie.length, metriky, silne: top(silne), slabe: top(slabe) };
+  const top = (silna: boolean): Stranka[] =>
+    stranky
+      .filter((x) => x.silna === silna)
+      .sort((a, b) => b.sila - a.sila)
+      .slice(0, 2)
+      .map((x) => x.s);
+  return { partii: partie.length, metriky, silne: top(true), slabe: top(false) };
 }

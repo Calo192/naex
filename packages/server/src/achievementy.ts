@@ -92,10 +92,19 @@ const preKlienta = (a: Achievement, rank: number): AchievementPreKlienta => ({
   zriedkavost: a.zriedkavost,
 });
 
+const ziskPreKlienta = (a: Achievement, rank: number, hodnota: number): ZiskAchievementu => ({
+  ...preKlienta(a, rank),
+  rank,
+  hodnota,
+  vzacny: rank >= 3 || a.tajny,
+});
+
 interface Kariera {
   readonly hodnota: number;
   readonly aktualna: number;
 }
+
+const ZIADNA_KARIERA: Kariera = { hodnota: 0, aktualna: 0 };
 
 /** Hráč v partii, ktorý achievementy získava. */
 interface HracAchievementov {
@@ -150,6 +159,20 @@ export class Achievementy {
     ).map((r) => ({ achievement: r.achievement, rank: Number(r.rank), ziskane: Number(r.ziskane), partia: r.partia === null ? null : Number(r.partia) }));
   }
 
+  private achievement(id: string): Achievement | undefined {
+    return this.katalog.achievementy.find((a) => a.id === id);
+  }
+
+  /** Zapíše hráčovi ranky od mal + 1 po rank — každý rank je vlastný riadok s časom zisku. */
+  private zapisRanky(pouzivatel: number, achievement: string, mal: number, rank: number, cas: number, miestnost: string): void {
+    transakcia(this.db, () => {
+      const vloz = this.db.prepare(
+        "INSERT OR IGNORE INTO achievementy_zisky (pouzivatel, achievement, rank, ziskane, miestnost, partia) VALUES (?, ?, ?, ?, ?, NULL)",
+      );
+      for (let r = mal + 1; r <= rank; r++) vloz.run(pouzivatel, achievement, r, cas, miestnost);
+    });
+  }
+
   private kariera(pouzivatel: number): Map<string, Kariera> {
     const out = new Map<string, Kariera>();
     const riadky = this.db.prepare("SELECT proti, kluc, hodnota, aktualna FROM achievementy_kariera WHERE pouzivatel = ?").all(pouzivatel) as {
@@ -182,13 +205,13 @@ export class Achievementy {
       for (const s of stitkyPartie(stav, miesto, a)) spolu.add(s);
       return spolu.size;
     }
-    const stara = h.kariera.get(k) ?? { hodnota: 0, aktualna: 0 };
+    const stara = h.kariera.get(k) ?? ZIADNA_KARIERA;
     return pripocitajKarieru(a, stara, agregatPartie(stav, miesto, a)).hodnota;
   }
 
   /**
    * Začiatok partie. hraci[i] = účet na mieste i, alebo null (bot); AI účty
-   * nezískavajú nič. superi = účty súperov (pre „rôznych súperov“).
+   * nezískavajú nič. Súperi v kontexte (pre „rôznych súperov“) sú len ľudia.
    */
   zacni(hraci: readonly [{ readonly id: number; readonly ai: boolean } | null, { readonly id: number; readonly ai: boolean } | null], botPovaha: string | null): AchievementyMiestnosti {
     const typ: TypPartie = hraci.some((h) => h === null) ? "bot" : "ludia";
@@ -235,7 +258,7 @@ export class Achievementy {
       // Kandidáti: zisky z jadra (bitka/Pitka/kolo/partia) + kariéra prepočítaná so súčtom.
       const kandidati = new Map<string, { a: Achievement; rank: number; hodnota: number }>();
       for (const z of krok.zisky[miesto]) {
-        const a = this.katalog.achievementy.find((x) => x.id === z.id);
+        const a = this.achievement(z.id);
         if (a !== undefined && ratSa(a, am.typ)) kandidati.set(a.id, { a, rank: z.rank, hodnota: z.hodnota });
       }
       for (const a of this.katalog.achievementy) {
@@ -246,14 +269,9 @@ export class Achievementy {
       for (const { a, rank, hodnota } of kandidati.values()) {
         const mal = h.drzane.get(a.id) ?? 0;
         if (rank <= mal) continue;
-        transakcia(this.db, () => {
-          const vloz = this.db.prepare(
-            "INSERT OR IGNORE INTO achievementy_zisky (pouzivatel, achievement, rank, ziskane, miestnost, partia) VALUES (?, ?, ?, ?, ?, NULL)",
-          );
-          for (let r = mal + 1; r <= rank; r++) vloz.run(h.id, a.id, r, cas, miestnost);
-        });
+        this.zapisRanky(h.id, a.id, mal, rank, cas, miestnost);
         h.drzane.set(a.id, rank);
-        const zisk: ZiskAchievementu = { ...preKlienta(a, rank), rank, hodnota, vzacny: rank >= 3 || a.tajny };
+        const zisk = ziskPreKlienta(a, rank, hodnota);
         h.ziskane.push(zisk);
         zisky[miesto].push(zisk);
       }
@@ -282,7 +300,7 @@ export class Achievementy {
           }
           const zaPartiu = agregatPartie(am.stav, miesto, a);
           if (zaPartiu === undefined) continue;
-          const nova = pripocitajKarieru(a, h.kariera.get(k) ?? { hodnota: 0, aktualna: 0 }, zaPartiu);
+          const nova = pripocitajKarieru(a, h.kariera.get(k) ?? ZIADNA_KARIERA, zaPartiu);
           this.db
             .prepare(
               "INSERT INTO achievementy_kariera (pouzivatel, proti, kluc, hodnota, aktualna) VALUES (?, ?, ?, ?, ?) ON CONFLICT (pouzivatel, proti, kluc) DO UPDATE SET hodnota = excluded.hodnota, aktualna = excluded.aktualna",
@@ -300,7 +318,7 @@ export class Achievementy {
       hodnoty.set(a.id, a.rozsah === "kariera" ? this.hodnotaKariery(h, a, am.stav, miesto) : hodnotaVPartii(am.stav, miesto, a));
     }
     const blizko = chybaloMalo(this.katalog, hodnoty, h.drzane).flatMap((p) => {
-      const a = this.katalog.achievementy.find((x) => x.id === p.id);
+      const a = this.achievement(p.id);
       return a === undefined ? [] : [{ ...preKlienta(a, p.rank), rank: p.rank, hodnota: p.hodnota, prah: p.prah }];
     });
     return { ziskane: [...h.ziskane], chybaloMalo: blizko };
@@ -316,9 +334,8 @@ export class Achievementy {
    * (aj tajné a „záporné“ ako Vlastný gól); achievement vyradený z katalógu sa neráta.
    */
   hviezdy(pouzivatel: number): HviezdyHraca {
-    let hviezdy = 0;
     const drzane = this.drzane(pouzivatel);
-    for (const a of this.katalog.achievementy) hviezdy += Math.min(drzane.get(a.id) ?? 0, a.prahy.length);
+    const hviezdy = this.katalog.achievementy.reduce((n, a) => n + Math.min(drzane.get(a.id) ?? 0, a.prahy.length), 0);
     return { hviezdy, spolu: this.spoluHviezd() };
   }
 
@@ -334,11 +351,8 @@ export class Achievementy {
       const mal = drzane.get(a.id) ?? 0;
       const rank = Math.min(cast, a.prahy.length);
       if (a.metrika !== "vyucba" || mal >= rank) continue;
-      transakcia(this.db, () => {
-        const vloz = this.db.prepare("INSERT OR IGNORE INTO achievementy_zisky (pouzivatel, achievement, rank, ziskane, miestnost, partia) VALUES (?, ?, ?, ?, 'vyucba', NULL)");
-        for (let r = mal + 1; r <= rank; r++) vloz.run(pouzivatel, a.id, r, cas);
-      });
-      out.push({ ...preKlienta(a, rank), rank, hodnota: cast, vzacny: rank >= 3 || a.tajny });
+      this.zapisRanky(pouzivatel, a.id, mal, rank, cas, "vyucba");
+      out.push(ziskPreKlienta(a, rank, cast));
     }
     return out;
   }
@@ -383,7 +397,7 @@ export class Achievementy {
       if (a.rozsah !== "kariera") return null;
       const k = klucVedra(a.proti, a);
       if (a.agregacia === "rozne") return { hodnota: rozne.get(k)?.size ?? 0, aktualna: null };
-      const v = kariera.get(k) ?? { hodnota: 0, aktualna: 0 };
+      const v = kariera.get(k) ?? ZIADNA_KARIERA;
       return { hodnota: v.hodnota, aktualna: a.agregacia === "seria" ? v.aktualna : null };
     };
     const polozky = this.katalog.achievementy.map((a): PolozkaVitriny => {
