@@ -47,8 +47,6 @@ describe("§9.2 Pohoršenia, ktoré na žiadny posun nestačia, prepadnú (v8.2)
       prebytokDrzi: null,
       prebytokZostava: 0,
       prebytokPosunute: [],
-      benzinkaZostava: [0, 0],
-      karHotovy: [true, true],
       spalit: [],
       vesticaHotova: true,
       ...b,

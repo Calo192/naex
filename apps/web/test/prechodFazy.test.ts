@@ -138,7 +138,7 @@ describe("tahNaStole — línia starších nezakryje ťah (Michal 2026-10-30: pr
       t("volbaCiela"),
       t("zhromazdenie"),
       t("pitka"),
-      t("bitka", { bitkaStav: krokBitky("kar") }),
+      t("bitka", { bitkaStav: krokBitky("cintorin") }),
     ]) {
       expect(tahNaStole(v, true)).toBe(true);
       expect(tahNaStole(v, false)).toBe(false);

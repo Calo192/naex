@@ -733,7 +733,7 @@ function moznosti(v: ClientState): string[] {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   const nv = v.volbaNastupu;
   if (nv !== null && nv.hrac === ja) {
-    // Voľby v7: karta zo šenku (Starosta, Dohadzovačka), Nástroj za Živnostníka, Kapybara.
+    // Voľby v7: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara.
     if (nv.typ === "senok") {
       for (const k of v.senok) c({ type: "senok", uid: k.uid }, `ZO ŠENKU: vezmi si ${popisKarty(k)} do ruky`);
       return out;
@@ -743,19 +743,7 @@ function moznosti(v: ClientState): string[] {
       for (const k of v.ruka) if ((DATA.cards.get(k.defId)?.tags ?? []).includes("Nástroj")) c({ type: "nastroj", uid: k.uid }, `ŽIVNOSTNÍK: prilož za neho ${popisKarty(k)} (limit nemíňa)`);
       return out;
     }
-    if (nv.typ === "kapybara") {
-      for (const e of v.starsi) if (e.marker !== 3) c({ type: "kapybara", elderId: e.elderId }, `KAPYBARA: marker ${meno(e.karta.defId)} o 1 pole k stredu`);
-      return out;
-    }
-    if (nv.typ === "klebetnica") {
-      for (const k of nv.ruka ?? []) c({ type: "klebetnica", uid: k.uid }, `KLEBETNICA: súperovu kartu ${popisKarty(k)} pošli naspodok jeho doberacieho balíčka`);
-    } else {
-      v.starsi.forEach((a, i) =>
-        v.starsi.slice(i + 1).forEach((b) =>
-          c({ type: "dohadzovacka", elderA: a.elderId, elderB: b.elderId }, `DOHADZOVAČKA: vymeň priazne (scorecardy) starším ${meno(a.karta.defId)} a ${meno(b.karta.defId)}; markery ostanú, kde sú`),
-        ),
-      );
-    }
+    for (const e of v.starsi) if (e.marker !== 3) c({ type: "kapybara", elderId: e.elderId }, `KAPYBARA: marker ${meno(e.karta.defId)} o 1 pole k stredu`);
     return out;
   }
   if (v.hasicVolba !== null) {
@@ -980,22 +968,8 @@ function moznosti(v: ClientState): string[] {
     }
     case "bitka": {
       const b = v.bitkaStav;
-      if (b?.krok === "benzinka") {
-        const obcania = [...v.strany[0], ...v.strany[1]].filter(
-          (pl) => pl.playedBy === ja && !b.spalit.includes(pl.card.uid) && (DATA.cards.get(pl.card.defId)?.tags ?? []).includes("Občan"),
-        );
-        out.push(
-          `{"type":"benzinka","uids":[…]}   — Benzínka: vyber presne ${b.benzinkaZostava[ja]} svojich Občanov z línie, ktorí sa zahodia (spália): ${obcania.map((pl) => `#${pl.card.uid} ${meno(pl.card.defId)}`).join(", ")}`,
-        );
-      }
       if (b?.krok === "vestica") {
         out.push(`{"type":"vestica","moja":I,"jeho":J}   — Veštica: vymeň kartu I zo svojho doberacieho balíčka za kartu J zo súperovho (zoznamy vyššie); balíčky sa potom zamiešajú`);
-      }
-      if (b?.krok === "kar") {
-        // Kar (roadmapa #80): nepriznaná Cirhóza z ruky preč — na konci by uberala body.
-        const cirhoza = v.ruka.find((k) => k.defId === "cirhoza");
-        if (cirhoza !== undefined) c({ type: "kar", uid: cirhoza.uid }, "Kar: zahoď jednu nepriznanú Cirhózu z ruky (navždy z hry)");
-        c({ type: "kar", uid: null }, "Kar: Cirhózu si nechať");
       }
       if (b?.krok === "cintorin") {
         // Cintorín (Michal 2026-10-27, Pozostalosť): porazený dá Nástroj z ruky alebo zo šenku do Dedičstva zadarmo.
@@ -1005,15 +979,6 @@ function moznosti(v: ClientState): string[] {
           }
         }
         c({ type: "cintorin", uid: null }, "Cintorín: nič nedávať do Dedičstva");
-      }
-      if (b?.krok === "zivnostnik") {
-        // Živnostník (Výhra, Michal 2026-10-26): víťaz vyberá, ktoré súperovo Dedičstvo zahodí.
-        const videne = new Set<string>();
-        for (const k of v.hraci[su].dedicstvo) {
-          if (videne.has(k.defId)) continue;
-          videne.add(k.defId);
-          c({ type: "zivnostnik", uid: k.uid }, `Živnostník: súperovi zahoď z Dedičstva ${meno(k.defId)} (navždy z hry)`);
-        }
       }
       // Len markery, na ktorých posun body stačia (v8.2: pole von zo stredu 1 / 2 / 3, k stredu 2 / 3 / 4).
       const nahlad = (e: ElderState, cezPohorsenie: boolean, k: PlayerId = su): string => {

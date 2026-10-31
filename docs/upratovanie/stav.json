@@ -1,8 +1,6 @@
 {
   "poznamka": "Stav agenta naex-upratovac: poradie častí kódu, ktorú vezme budúci beh, a história behov. Agent ho na konci behu aktualizuje.",
-  "naRade": [
-    "Michal 2026-10-31: odstrániť z packages/core/src vetvy pre karty starších sád, ktoré sa so sadou v53 nespustia — stará Kar, Benzínka v bitke, Živnostník so spúšťačom Výhra (audit pravidiel v9.2)"
-  ],
+  "naRade": [],
   "poradie": [
     "packages/core/src",
     "packages/server/src",

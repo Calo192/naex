@@ -95,13 +95,8 @@ export class Robot {
     const ja = view.ja;
     // Hasič: robot si kartu vždy nechá.
     if (view.hasicVolba !== null) return { type: "hasic", nechat: true };
-    // Voľby Nástupu v7: Klebetnica pošle naspodok prvú súperovu kartu, Dohadzovačka vymení prvých dvoch starších.
     const nv = view.volbaNastupu;
     if (nv !== null && nv.hrac === ja) {
-      const k = nv.ruka?.[0];
-      if (nv.typ === "klebetnica" && k !== undefined) return { type: "klebetnica", uid: k.uid };
-      const [x, y] = view.starsi;
-      if (nv.typ === "dohadzovacka" && x !== undefined && y !== undefined) return { type: "dohadzovacka", elderA: x.elderId, elderB: y.elderId };
       // v7: karta zo šenku, Nástroj za Živnostníka (robot nič), Kapybara (prvý marker mimo stredu).
       const zoSenku = view.senok[0];
       if (nv.typ === "senok" && zoSenku !== undefined) return { type: "senok", uid: zoSenku.uid };
@@ -171,12 +166,6 @@ export class Robot {
       case "bitka": {
         const b = view.bitkaStav;
         if (b === null) throw new Error("bitka bez stavu");
-        if (b.krok === "benzinka") {
-          const obcania = [...view.strany[0], ...view.strany[1]].filter(
-            (pl) => pl.playedBy === ja && !b.spalit.includes(pl.card.uid) && (DATA.cards.get(pl.card.defId)?.tags ?? []).includes("Občan"),
-          );
-          return { type: "benzinka", uids: obcania.slice(0, b.benzinkaZostava[ja]).map((pl) => pl.card.uid) };
-        }
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
         // v8.3: Povery — robot ich dá na prvého staršieho, kam smú (klient z verejného pohľadu).
         if (b.krok === "povery") {
@@ -200,7 +189,6 @@ export class Robot {
         }
         // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.
         if (b.krok === "cintorin") return { type: "cintorin", uid: null };
-        if (b.krok === "kar") return { type: "kar", uid: null };
         throw new Error(`nečakaný krok bitky ${b.krok}`);
       }
       default:

@@ -912,9 +912,9 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   };
   const volba: Volba = { data, state, ja, legal, vzorky, k, nahoda };
 
-  // Voľby, ktoré menia stôl (Dohadzovačka v6, Kapybara, Nástroj za Živnostníka), si zahrá nanečisto.
+  // Voľby, ktoré menia stôl (Kapybara, Nástroj za Živnostníka), si zahrá nanečisto.
   const typ = state.hasicVolby?.[0]?.typ;
-  if (typ === "dohadzovacka" || typ === "kapybara" || typ === "nastroj") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
+  if (typ === "kapybara" || typ === "nastroj") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
 }
@@ -923,15 +923,9 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
 function volbaHasica(data: GameData, state: GameState): Command | null {
   const volba = state.hasicVolby?.[0];
   if (volba === undefined) return null;
-  if (volba.typ === "klebetnica") {
-    // Klebetnica (v7): súperovi pošle naspodok jeho najlepšiu kartu v ruke.
-    const ruka = state.hraci[opponentOf(volba.hrac)].ruka;
-    const best = [...ruka].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
-    return best === undefined ? null : { type: "klebetnica", uid: best.uid };
-  }
-  if (volba.typ === "dohadzovacka" || volba.typ === "kapybara" || volba.typ === "nastroj") return null;
+  if (volba.typ === "kapybara" || volba.typ === "nastroj") return null;
   if (volba.typ === "senok") {
-    // Starosta, Dohadzovačka (v7): zo šenku najlepšiu kartu.
+    // Zastávka: zo šenku najlepšiu kartu.
     const best = [...state.senok].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a))[0];
     return best === undefined ? null : { type: "senok", uid: best.uid };
   }
@@ -1293,20 +1287,6 @@ function bitka(v: Volba): Command | null {
     case "pohorsenie":
     case "prebytok":
       return najlepsi(v, v.legal, ohodnot);
-    case "benzinka": {
-      const pocet = v.legal.find((c) => c.type === "benzinka")?.uids.length ?? 0;
-      const spalit = b.spalit;
-      const obcania = partiaHraca(state, ja)
-        .filter((pl) => defOf(data, pl.card).tags.includes("Občan") && !spalit.includes(pl.card.uid))
-        .sort((x, y) => hodnotaKarty(data, x.card) - hodnotaKarty(data, y.card));
-      return { type: "benzinka", uids: obcania.slice(0, pocet).map((pl) => pl.card.uid) };
-    }
-    case "kar": {
-      // Kar: nepriznaná Cirhóza na konci prehráva súboje o Cirhózu — zahodí ju
-      // vždy (v5: prehra balíčkom pod 5 kariet neplatí).
-      const zahod = v.legal.find((c) => c.type === "kar" && c.uid !== null);
-      return zahod ?? { type: "kar", uid: null };
-    }
     case "cintorin": {
       // Cintorín: zadarmo do Dedičstva najcennejší Nástroj z ruky alebo zo šenku.
       let best: Command | null = null;
@@ -1321,22 +1301,6 @@ function bitka(v: Volba): Command | null {
         }
       }
       return best ?? { type: "cintorin", uid: null };
-    }
-    case "zivnostnik": {
-      // Živnostník: zahodí súperovi najcennejšie Dedičstvo.
-      const su = opponentOf(ja);
-      let best: Command | null = null;
-      let bestV = Number.NEGATIVE_INFINITY;
-      for (const cmd of v.legal) {
-        if (cmd.type !== "zivnostnik") continue;
-        const karta = state.hraci[su].dedicstvo.find((x) => x.uid === cmd.uid);
-        const hodnota = karta === undefined ? 0 : (DEDICSTVO[karta.defId] ?? 0);
-        if (hodnota > bestV) {
-          bestV = hodnota;
-          best = cmd;
-        }
-      }
-      return best;
     }
     case "vestica": {
       const su = opponentOf(ja);

@@ -153,10 +153,10 @@ describe("rozsah nepridelených Pohoršení = najlepšie, čo hráč v bitke dos
       // Pohoršenia už minuté hýbu priazňou Abstinenta — porovnáva sa len pred prvým.
       if (b.pohorseniaSpolu === undefined || b.pohorsenieZostava.some((n, q) => n !== b.pohorseniaSpolu?.[q])) continue;
       const view = viewFor(data, s, 0);
-      // V bitke pred Benzínkou ešte nie sú pridelené — ráta sa ich ten istý výpočet ako nastavSumy.
-      const predBenzinkou = { ...view, bitkaStav: view.bitkaStav === null ? null : { ...view.bitkaStav, krok: "benzinka" as const, pohorsenieZostava: [0, 0] as const } };
+      // Kým bitka nevstúpi do Povier, ešte nie sú pridelené — ráta sa ich ten istý výpočet ako nastavSumy.
+      const predPoverami = { ...view, bitkaStav: view.bitkaStav === null ? null : { ...view.bitkaStav, krok: "povery" as const, caka: null, pohorsenieZostava: [0, 0] as const } };
       // Koľko bitka hráčom pridelila (pohorseniaSpolu), nie koľko im ešte zostáva.
-      expect(nepridelenePohorsenia(data, predBenzinkou, b.sums).pocet, `seed ${seed}`).toEqual(b.pohorseniaSpolu);
+      expect(nepridelenePohorsenia(data, predPoverami, b.sums).pocet, `seed ${seed}`).toEqual(b.pohorseniaSpolu);
     }
   });
 });
@@ -299,7 +299,7 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
       const legal = legalCommands(data, s, q).filter((c) => c.type !== "vzdat");
       // Povery (v8.3) nie na Alkoholika — jeho „do dna“ by sa v bitke zmenilo, to náhľad nevie.
       const povera = legal.find((c) => c.type === "povera" && favourStarsieho(data, s.starsi.find((e) => e.elderId === c.elderId)!) !== "ALKOHOLIK");
-      const cmd = legal.find((c) => c.type === "skipNaex") ?? legal.find((c) => c.type === "bezReakcie") ?? legal.find((c) => c.type === "kar" && c.uid === null) ?? povera ?? legal[0];
+      const cmd = legal.find((c) => c.type === "skipNaex") ?? legal.find((c) => c.type === "bezReakcie") ?? povera ?? legal[0];
       if (cmd === undefined) break;
       s = apply(data, s, cmd, q).state;
     }
@@ -364,7 +364,6 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
         legal.find((c) => c.type === "pass") ??
         legal.find((c) => c.type === "bezReakcie") ??
         legal.find((c) => c.type === "vizia" && c.vziat) ??
-        legal.find((c) => c.type === "kar" && c.uid === null) ??
         legal[0];
       if (cmd === undefined) break;
       s = apply(data, s, cmd, q).state;
@@ -378,9 +377,7 @@ describe("výhľad Dlhov cez viac Pitiek kola = Dlhy po Exekútorovi (roadmapa #
     for (const { s, seed } of vzorky) {
       const t = poExekutora(s);
       if (t.faza !== "bitka" || t.kolo !== s.kolo) continue;
-      // Benzínka mení líniu voľbou hráča — výhľad ju nepredvída. Pohoršenia v bitke idú od
-      // 2026-10-28 pred exekúciou a smú pohnúť priazňou Exekútora — ani to výhľad nevie.
-      if (s.ciel?.lokalita?.defId === "benzinka") continue;
+      // Pohoršenia v bitke idú od 2026-10-28 pred exekúciou a smú pohnúť priazňou Exekútora — to výhľad nevie.
       for (const p of [0, 1] as const) {
         // Priazne Robota a Advokát (v9) sa smú v bitke pohnúť Poverami a Pohoršeniami — to výhľad nevie.
         if (silaPriazne(data, s, "ROBOTA", p) !== silaPriazne(data, t, "ROBOTA", p)) continue;

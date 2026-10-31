@@ -50,8 +50,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    benzinkaZostava: [0, 0],
-    karHotovy: [true, true],
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -206,16 +204,12 @@ describe("§9.7 a §11 Karta Absťák (v9.1)", () => {
     for (const target of ["priznanie", "vlastna", "superova"] as const) expect(() => apply(data, z, { type: "place", uid: a.uid, target }, 0)).toThrow();
   });
 
-  it("§11: Vízia ho smie zahodiť z hry; Kar zahodí Absťák z ruky ako Cirhózu", () => {
+  it("§11: Vízia ho smie zahodiť z hry", () => {
     const s0 = setupSBalickom(data, 17);
     const a = inst("abstak");
     const v: GameState = sHracom({ ...s0, faza: "pitka", utocnik: 0, pitkyCelkom: 1, pitkaCislo: 1, pitkaStav: null, vizia: { zostava: [1, 0] } as GameState["vizia"] }, 0, { doberaci: [a, ...s0.hraci[0].doberaci] });
     const po = apply(data, v, { type: "vizia", vziat: false }, 0).state;
     expect(pocetAbstakov(po.hraci[0])).toBe(0);
-    const k = inst("abstak");
-    const kar = predKoncomKola(18, (x) => ({ ...sHracom(x, 0, { ruka: [...x.hraci[0].ruka, k] }), bitkaStav: bitka({ krok: "kar", caka: 0, karHotovy: [false, true] }) }));
-    expect(legalCommands(data, kar, 0)).toContainEqual({ type: "kar", uid: k.uid });
-    expect(pocetAbstakov(apply(data, kar, { type: "kar", uid: k.uid }, 0).state.hraci[0])).toBe(0);
   });
 
   it("viewFor: počet Absťákov oboch je verejný, poloha karty v ruke a doberacom balíčku nie", () => {

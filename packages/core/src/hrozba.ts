@@ -107,19 +107,21 @@ export type StolPohorseni = StolBitky & {
   readonly bitkaStav: {
     readonly krok: BitkaKrok | null;
     readonly damage: DamageResult | null;
+    readonly caka: PlayerId | null;
     readonly pohorsenieZostava: readonly [number, number];
   } | null;
 };
 
 /**
  * Pohoršenia, ktoré hráči ešte rozdelia pred poškodením. Pred bitkou (a kým
- * ich bitka po Benzínke nepridelí) ten istý výpočet ako nastavSumy, v bitke
- * zvyšok z bitkaStav.
+ * ich bitka pri vstupe do Povier nepridelí) ten istý výpočet ako nastavSumy,
+ * v bitke zvyšok z bitkaStav. Povery bez čakajúceho hráča = bitka do nich ešte
+ * nevstúpila (stojí na voľbe z efektu Bitka či Furt).
  */
 export function nepridelenePohorsenia(data: GameData, stol: StolPohorseni, sums: readonly [ActionSums, ActionSums]): NepridelenePohorsenia {
   const b = stol.bitkaStav;
   if (b !== null && b.damage !== null) return { pocet: [0, 0] };
-  if (b === null || b.krok === "benzinka") return { pocet: pohorseniaVBitke(data, stol, sums) };
+  if (b === null || (b.krok === "povery" && b.caka === null)) return { pocet: pohorseniaVBitke(data, stol, sums) };
   return { pocet: b.pohorsenieZostava };
 }
 

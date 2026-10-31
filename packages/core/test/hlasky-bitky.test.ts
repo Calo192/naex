@@ -28,9 +28,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    benzinkaZostava: [0, 0],
-
-    karHotovy: [true, true],
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -55,16 +52,17 @@ function vBitke(strany: GameState["strany"], b: Partial<BitkaStav>, uprav: (s: G
 const logy = (events: readonly Event[]): string[] => events.flatMap((e) => (e.type === "log" ? [e.text] : []));
 
 describe("bitka hlási, čo zmenší či zruší Nakladačka a Pohoršenia", () => {
-
-
   it("Policajtka (Michal 2026-10-26) Pohoršenia neruší — bitka o nej mlčí", () => {
-    // Benzínka: hráč 0 spáli jedného z dvoch Občanov, potom sa prepočítajú Pohoršenia.
+    // Bitka stojí na voľbe Hasiča pred Poverami; po nej vstúpi do Povier a prepočíta Pohoršenia.
     // Pohoršenia navyše dáva Abstinent (Nervák za Absťák zanikol v9.1).
-    const s = vBitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], { krok: "benzinka", caka: 0, benzinkaZostava: [1, 0], exekutorHotovy: [false, false] }, (t) => ({
+    const hasic = inst("pijan");
+    const s = vBitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], { krok: "povery", exekutorHotovy: [false, false] }, (t) => ({
       ...t,
       starsi: t.starsi.map((e) => (data.scorecards.find((x) => x.id === e.scorecard)?.favour === "LAKOMEC" ? { ...e, marker: 0 as const } : e)),
+      hraci: [{ ...t.hraci[0], odhadzovaci: [hasic] }, t.hraci[1]],
+      hasicVolby: [{ hrac: 0, uid: hasic.uid, potom: "bitka" }],
     }));
-    const { state, events } = apply(data, s, { type: "benzinka", uids: [s.strany[0][0]!.card.uid] }, 0);
+    const { state, events } = apply(data, s, { type: "hasic", nechat: false }, 0);
     expect(logy(events).some((t) => t.startsWith("Policajtka") || t.startsWith("Praudovravec umlčal"))).toBe(false);
     expect(state.bitkaStav?.pohorseniaSpolu?.[0] ?? 0).toBeGreaterThanOrEqual(2);
   });

@@ -59,8 +59,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     prebytokDrzi: null,
     prebytokZostava: 0,
     prebytokPosunute: [],
-    benzinkaZostava: [0, 0],
-    karHotovy: [true, true],
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -125,7 +123,7 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
       strany: [[], []],
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, vitaz: null, pohorsenieZostava: [n, 0], karHotovy: [true, true], vesticaHotova: false }),
+      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, vitaz: null, pohorsenieZostava: [n, 0], vesticaHotova: false }),
     });
   }
   const sMarkerom = (s: GameState, elderId: string, marker: ElderState["marker"]): GameState => ({

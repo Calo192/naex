@@ -149,8 +149,6 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       prebytokDrzi: null,
       prebytokZostava: 0,
       prebytokPosunute: [],
-      benzinkaZostava: [0, 0],
-      karHotovy: [true, true],
       spalit: [],
       vesticaHotova: false,
       ...b,
@@ -207,20 +205,6 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       }
     }
   }, 30_000);
-
-  it("na Kare zahodí nepriznanú Cirhózu aj s tenkým balíčkom (prehra balíčkom pod 5 neplatí)", () => {
-    const s0 = vPohorseni(91, () => 3);
-    let uid = 880000;
-    const k = (defId: string): CardInstance => ({ uid: ++uid, defId, leftLayout: 0, rightLayout: 0 });
-    const cirhoza = k("cirhoza");
-    const s: GameState = {
-      ...s0,
-      bitkaStav: bitka({ krok: "kar", caka: 0, karHotovy: [false, true] }),
-      hraci: [{ ...s0.hraci[0], ruka: [cirhoza, k("pijan")], doberaci: [k("pijan")], odhadzovaci: [] }, s0.hraci[1]],
-    };
-    expect(legalCommands(data, s, 0)).toContainEqual({ type: "kar", uid: cirhoza.uid });
-    expect(tahBota(data, s, 0, 1)).toEqual({ type: "kar", uid: cirhoza.uid });
-  });
 });
 
 describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {

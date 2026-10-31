@@ -1142,16 +1142,6 @@
       ]
     },
     {
-      "id": "15.lokalita.kar",
-      "paragraf": "15. Lokality",
-      "pravidlo": "Kar: na začiatku bitky smie každý (obranca, potom útočník) zahodiť jednu nepriznanú Cirhózu z ruky — navždy z hry.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/kar.test.ts › Cirhózu si hráč smie nechať; bez Cirhózy v ruke sa krok preskočí",
-        "packages/core/test/kar.test.ts › inde ako na Kare sa krok nekoná"
-      ]
-    },
-    {
       "id": "10.priazne.zberatel-zruseny",
       "paragraf": "10. Starší › Priazne",
       "pravidlo": "Krok Zberateľa po bitke zanikol; staré sady so Zberateľom či Očumovateľom sa načítajú ako Kmotor (kľúč UZERNIK).",
@@ -1329,7 +1319,7 @@
       "pravidlo": "Absťák sa (v9.1) nezbavuje nerestami — karta ostáva v balíčku; zahodí ju Vízia (v starej sade aj Kar). Hasič ju vytiahne ako každú kartu.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/abstak-chut.test.ts › §11: Vízia ho smie zahodiť z hry; Kar zahodí Absťák z ruky ako Cirhózu",
+        "packages/core/test/abstak-chut.test.ts › §11: Vízia ho smie zahodiť z hry",
         "packages/core/test/abstak-chut.test.ts › §9.7: Absťák z ruky ide po bitke do odhadzovacieho balíčka"
       ],
       "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."

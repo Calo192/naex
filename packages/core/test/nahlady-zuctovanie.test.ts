@@ -116,7 +116,7 @@ function doPoskodenia(s0: GameState): { readonly s: GameState; readonly rozhodnu
     const q = naTahu(s);
     if (q === null) break;
     const legal = legalCommands(data, s, q);
-    const cmd = legal.find((c) => c.type === "kar" && c.uid === null) ?? legal[0];
+    const cmd = legal[0];
     if (cmd === undefined) break;
     rozhodnutia.add(cmd.type);
     s = apply(data, s, cmd, q).state;
@@ -158,7 +158,7 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         const b0 = bez.bitkaStav;
         if (s1.faza !== "bitka" || bez.faza !== "bitka" || b1 === null || b0 === null || b1.damage !== null || b0.damage !== null) continue;
         const kde = `seed ${seed} kolo ${s.kolo}, hráč ${p}, NA EX na ${uid}`;
-        if (s.ciel?.lokalita?.defId !== "benzinka") expect(n.liniaPo.sums, `${kde}: súčty akcií v bitke`).toEqual(b1.sums);
+        expect(n.liniaPo.sums, `${kde}: súčty akcií v bitke`).toEqual(b1.sums);
         for (const q of [0, 1] as const) {
           expect(n.dopady[q].cigarety, `${kde}: cigarety hráča ${q}`).toBe(s1.hraci[q].cigarety - bez.hraci[q].cigarety);
           expect(n.kliatby[q].cirhozy + n.kliatby[q].dalejCirhozy, `${kde}: Cirhózy hráča ${q}`).toBe(s1.cirhozyVKole[q] - bez.cirhozyVKole[q]);
@@ -169,8 +169,7 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
           expect(n.dopady[q].pohorsenia, `${kde}: Pohoršenia navyše hráča ${q}`).toBe(pA - pB);
         }
         porovnane++;
-        // Bitka až po poškodenie. Benzínka mení líniu voľbou hráča — tú náhľad nepredvída.
-        if (s.ciel?.lokalita?.defId === "benzinka") continue;
+        // Bitka až po poškodenie.
         const sNaex = doPoskodenia(s1);
         const dA = sNaex.s.bitkaStav;
         const dB = bezBitka.s.bitkaStav;

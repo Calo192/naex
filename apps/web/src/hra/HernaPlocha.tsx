@@ -396,8 +396,7 @@ type Mode =
   | { typ: "naexCiel"; uid: number | null }
   // Pokus o zajatie (v9): vybraný starší, potvrdí sa pečaťou.
   | { typ: "pokus"; elderId: string }
-  // Výbery viacerých kariet: Benzínka (Občania v línii), Veštica.
-  | { typ: "vyber"; uids: readonly number[] }
+  // Veštica: po jednej karte z oboch doberacích balíčkov.
   | { typ: "vestica"; moja: number | null; jeho: number | null }
   | { typ: "vykup" };
 
@@ -1110,17 +1109,6 @@ export function HernaPlocha({
   const naexMozny = somNaTahu && naexCiele.size > 0;
   // Kartu so značkou smieš rovno kliknúť.
   const naexPriamo = naexMozny;
-  // Benzínka: vlastní Občania v línii, z ktorých hráč vyberá, koho zahodí.
-  const benzinkaCiele = useMemo(() => {
-    const out = new Set<number>();
-    const bs = view.bitkaStav;
-    if (bs === null || bs.krok !== "benzinka" || bs.caka !== ja) return out;
-    for (const pl of [...view.strany[0], ...view.strany[1]]) {
-      if (pl.playedBy !== ja || bs.spalit.includes(pl.card.uid)) continue;
-      if ((data.cards.get(pl.card.defId)?.tags ?? []).includes("Občan")) out.add(pl.card.uid);
-    }
-    return out;
-  }, [data, view, ja]);
 
   // ---- výhľad Pitky (Michal 2026-10-21) ------------------------------------
   // Počítadlá pečene a zadĺženia ukazujú stav „po Pitke“, nie „doteraz“ — ten
@@ -1492,13 +1480,12 @@ export function HernaPlocha({
   }, [vybraneMiesto, miestoVolby, view.lokalitaOtocena, ja, data]);
   const spojPre = (uid: number) => (spojSuseda?.uid === uid ? spojSuseda.spoj : undefined);
 
-  // Kroky s výberom viacerých kariet si pri začiatku pripravia prázdny výber.
+  // Veštica si pri začiatku kroku pripraví prázdny výber.
   const bs0 = view.bitkaStav;
   const krokVyberu: string | null =
     bs0 !== null && bs0.caka === ja ? (bs0.krok ?? null) : null;
   useEffect(() => {
-    if (krokVyberu === "benzinka") setMode({ typ: "vyber", uids: [] });
-    else if (krokVyberu === "vestica") setMode({ typ: "vestica", moja: null, jeho: null });
+    if (krokVyberu === "vestica") setMode({ typ: "vestica", moja: null, jeho: null });
   }, [krokVyberu, klucTahu]);
 
   const posli = (c: Command): void => {
@@ -2465,9 +2452,6 @@ export function HernaPlocha({
     if (naexPriamo && mode.typ === "ziadny" && naexCiele.has(uid)) {
       return () => setMode({ typ: "naexCiel", uid });
     }
-    if (benzinkaCiele.has(uid) && mode.typ === "vyber") {
-      return () => setMode({ typ: "vyber", uids: mode.uids.includes(uid) ? mode.uids.filter((u) => u !== uid) : [...mode.uids, uid] });
-    }
     return undefined;
   };
 
@@ -2483,7 +2467,6 @@ export function HernaPlocha({
   const kartaVLinii = (placed: PlacedCard): ReactNode => {
     {
       const uid = placed.card.uid;
-      const vybranaBenzinka = mode.typ === "vyber" && benzinkaCiele.has(uid) && mode.uids.includes(uid);
       const otocena = otoceneTeraz.has(uid);
       // Otočená súperova Záverečná je v línii „nová“ — štítok otočenia povie viac.
       const nova = noveSuperove.includes(uid) && !otocena;
@@ -2555,7 +2538,7 @@ export function HernaPlocha({
           otocena: placed.playedBy !== ja,
           eval: lineEval.cards.get(uid) ?? null,
           onClick: klikLinia(placed.playedBy, uid),
-          vybrana: (mode.typ === "naexCiel" && mode.uid === uid) || vybranaBenzinka,
+          vybrana: mode.typ === "naexCiel" && mode.uid === uid,
           spoj: spojPre(uid),
           vytrznik,
         },
@@ -2576,8 +2559,6 @@ export function HernaPlocha({
             .trim() || undefined,
           ...(mode.typ === "naexCiel" && !naexCiele.has(uid) ? { titul: dovodBezNaexNaKartu(placed) } : {}),
           ...(stitky !== undefined ? { stitok: stitky } : {}),
-          // Benzínka: pravý klik vyradí Občana z výberu.
-          odstran: vybranaBenzinka && mode.typ === "vyber" ? () => setMode({ typ: "vyber", uids: mode.uids.filter((u) => u !== uid) }) : undefined,
         },
       );
     }
@@ -3128,19 +3109,6 @@ export function HernaPlocha({
         ),
       };
     }
-    const bs = view.bitkaStav;
-    if (view.faza === "bitka" && bs?.krok === "benzinka" && bs.caka === ja) {
-      const vybrane = mode.typ === "vyber" ? mode.uids : [];
-      const treba = bs.benzinkaZostava[ja];
-      return {
-        stred: pecatTahu({
-          text: `zahodiť ${vybrane.length}/${treba}`,
-          dovod: vybrane.length !== treba ? `Vyber ${treba} svojich Občanov v línii.` : null,
-          akcia: () => posli({ type: "benzinka", uids: vybrane }),
-          ...(vybrane.length > 0 ? { zrus: { akcia: () => setMode({ typ: "ziadny" }), popis: "Zrušiť výber" } } : {}),
-        }),
-      };
-    }
     return null;
   })();
   /** Pravý klik na prázdny stôl zruší rozbehnutý výber (miesto, cieľ NA EX…). */
@@ -3357,7 +3325,7 @@ export function HernaPlocha({
       };
     }
     if (view.volbaNastupu !== null && view.volbaNastupu.hrac === ja) {
-      // Voľby v7 čakajú ako Hasič: karta zo šenku (Starosta, Dohadzovačka), Nástroj za Živnostníka, Kapybara.
+      // Voľby v7 čakajú ako Hasič: karta zo šenku (Zastávka), Nástroj za Živnostníka, Kapybara.
       const nv = view.volbaNastupu;
       if (nv.typ === "senok" || nv.typ === "nastroj") {
         const zoSenku = nv.typ === "senok";
@@ -3377,26 +3345,20 @@ export function HernaPlocha({
           ...(zoSenku ? {} : { vpravo: <button className="pecat pecat-tichy" onClick={() => posli({ type: "nastroj", uid: null })}>bez Nástroja</button> }),
         };
       }
-      if (nv.typ === "kapybara") {
-        return {
-          nadpis: "Kapybara",
-          text: (
-            <span>
-              Posuň marker jedného staršieho o 1 pole k stredu:{" "}
-              {view.starsi
-                .filter((e) => e.marker !== MARKER_STRED)
-                .map((e) => (
-                  <button key={e.elderId} type="button" className="pecat pecat-nakup" onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
-                    {defOf(data, e.karta).name}
-                  </button>
-                ))}
-            </span>
-          ),
-        };
-      }
       return {
-        nadpis: nv.typ === "klebetnica" ? "Klebetnica" : "Dohadzovačka",
-        text: <VolbaNastupu view={view} posli={posli} />,
+        nadpis: "Kapybara",
+        text: (
+          <span>
+            Posuň marker jedného staršieho o 1 pole k stredu:{" "}
+            {view.starsi
+              .filter((e) => e.marker !== MARKER_STRED)
+              .map((e) => (
+                <button key={e.elderId} type="button" className="pecat pecat-nakup" onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
+                  {defOf(data, e.karta).name}
+                </button>
+              ))}
+          </span>
+        ),
       };
     }
     if (view.hasicVolba !== null) {
@@ -4134,19 +4096,6 @@ export function HernaPlocha({
       case "bitka": {
         const b = view.bitkaStav;
         if (b === null) return null;
-        if (b.krok === "benzinka") {
-          const vybrane = mode.typ === "vyber" ? mode.uids : [];
-          const treba = b.benzinkaZostava[ja];
-          return {
-            nadpis: "Benzínka",
-            text: (
-              <>
-                Cigaretiek je nad 7 — lokalitu nikto nevyhrá. Klikni na <strong>{treba}</strong> svojich Občanov v línii, ktorých
-                zahodíš (vybraní: {vybrane.length}; pravým klikom výber zrušíš). Potvrdíš na stole.
-              </>
-            ),
-          };
-        }
         if (b.krok === "vestica") {
           const v = mode.typ === "vestica" ? mode : { moja: null, jeho: null };
           return {
@@ -4158,21 +4107,6 @@ export function HernaPlocha({
               dovod: v.moja === null || v.jeho === null ? "Vyber po jednej karte z oboch balíčkov (tlačidlo balíčky)." : null,
               akcia: () => v.moja !== null && v.jeho !== null && posli({ type: "vestica", moja: v.moja, jeho: v.jeho }),
             }),
-          };
-        }
-        if (b.krok === "kar") {
-          // Kar (roadmapa #80): jednu nepriznanú Cirhózu z ruky smie hráč zahodiť.
-          const cirhoza = view.ruka.find((k) => k.defId === "cirhoza");
-          return {
-            nadpis: "Kar",
-            text: "Na Kare smieš zahodiť jednu nepriznanú Cirhózu z ruky — navždy z hry.",
-            // Bez Cirhózy v ruke je jediná voľba „nechať si ju“ — tá je potom v strede ako ťah bez návrhu.
-            ...(cirhoza === undefined
-              ? { stred: pecatTahu({ text: "nechať si ju", druh: "pas", akcia: () => posli({ type: "kar", uid: null }) }) }
-              : {
-                  stred: pecatTahu({ text: "zahodiť Cirhózu", akcia: () => posli({ type: "kar", uid: cirhoza.uid }) }),
-                  vpravo: <button onClick={() => posli({ type: "kar", uid: null })}>nechať si ju</button>,
-                }),
           };
         }
         if (b.krok === "cintorin") {
@@ -4198,31 +4132,6 @@ export function HernaPlocha({
               </span>
             ),
             tlacidla: <button onClick={() => posli({ type: "cintorin", uid: null })}>nič</button>,
-          };
-        }
-        if (b.krok === "zivnostnik") {
-          // Živnostník (Výhra, Michal 2026-10-26): víťaz vyberie, ktoré súperovo Dedičstvo zahodí.
-          // Rovnaké Dedičstvá sa ponúknu raz — je jedno, ktorý kus zmizne.
-          const ponuka = view.hraci[super_].dedicstvo.filter((k, i, vsetky) => vsetky.findIndex((x) => x.defId === k.defId) === i);
-          return {
-            nadpis: (
-              <>
-                Živnostník{b.zivnostnikZostava > 1 && <small> zostáva {b.zivnostnikZostava}</small>}
-              </>
-            ),
-            text: (
-              <span className="zberatel-text">
-                <span>
-                  {tvar(rodHracaP(ja), "Vyhral si", "Vyhrala si", "Bitka je vyhratá")} so Živnostníkom v línii — klikni na Dedičstvo, ktoré {menoHraca(super_)}{" "}
-                  <strong>zahodí</strong> (navždy z hry).
-                </span>
-                <span className="zberatel-ponuka">
-                  {ponuka.map((k) => (
-                    <span key={k.uid}>{karta({ karta: k, sirka: 84, onClick: () => posli({ type: "zivnostnik", uid: k.uid }) })}</span>
-                  ))}
-                </span>
-              </span>
-            ),
           };
         }
         // Povery (v8.3 „Výpožička priazne“): klik na staršieho posunie silu jeho priazne k tebe na toto kolo.
@@ -6259,45 +6168,3 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
   }
   return <>{out}</>;
 }
-
-/** Klebetnica a Dohadzovačka (v7): voľba Nástupu. Súperovu ruku pohľad pošle len tomu, kto vyberá. */
-function VolbaNastupu({ view, posli }: { readonly view: ClientState; readonly posli: (c: Command) => void }) {
-  const [a, setA] = useState("");
-  const [b, setB] = useState("");
-  const nv = view.volbaNastupu;
-  if (nv === null) return null;
-  if (nv.typ === "klebetnica") {
-    return (
-      <span>
-        Klebetnica: súperovu kartu pošli naspodok jeho doberacieho balíčka.{" "}
-        {(nv.ruka ?? []).map((k) => (
-          <button key={k.uid} type="button" onClick={() => posli({ type: "klebetnica", uid: k.uid })}>
-            {k.defId}
-          </button>
-        ))}
-      </span>
-    );
-  }
-  return (
-    <span>
-      Dohadzovačka: vymeň dvom starším priazne (scorecardy), markery ostanú.{" "}
-      {[
-        [a, setA],
-        [b, setB],
-      ].map(([hodnota, nastav], i) => (
-        <select key={i} value={hodnota as string} onChange={(e) => (nastav as (x: string) => void)(e.target.value)}>
-          <option value="">starší…</option>
-          {view.starsi.map((e) => (
-            <option key={e.elderId} value={e.elderId}>
-              {e.karta.defId}
-            </option>
-          ))}
-        </select>
-      ))}
-      <button type="button" disabled={a === "" || b === "" || a === b} onClick={() => posli({ type: "dohadzovacka", elderA: a, elderB: b })}>
-        vymeniť
-      </button>
-    </span>
-  );
-}
-

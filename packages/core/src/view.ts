@@ -97,11 +97,8 @@ export interface BitkaVerejne {
   readonly klebety: Klebety;
   /** Špaky, ktoré hráčom v tejto bitke zhoreli pri exekúcii (v6). */
   readonly exekutor: readonly [number, number];
-  readonly benzinkaZostava: readonly [number, number];
   /** Karty v línii, ktoré sa po bitke spália (Dievčina na vydaj). */
   readonly spalit: readonly number[];
-  /** Živnostník (Výhra): koľko súperových Dedičstiev víťaz ešte zahodí (0 mimo kroku). */
-  readonly zivnostnikZostava: number;
 }
 
 /**
@@ -239,11 +236,8 @@ export interface ClientState {
    * nerozhoduje; karta null = medzitým z odhadzovacieho zmizla.
    */
   readonly hasicVolba: { readonly hrac: PlayerId; readonly karta: CardInstance | null } | null;
-  /**
-   * Voľba Nástupu v7, ktorá čaká ako Hasič: Klebetnica (súperova ruka — vidí ju
-   * len ten, kto vyberá) alebo Dohadzovačka (dvaja starší).
-   */
-  readonly volbaNastupu: { readonly typ: NonNullable<HasicVolba["typ"]>; readonly hrac: PlayerId; readonly ruka: readonly CardInstance[] | null } | null;
+  /** Voľba, ktorá čaká ako Hasič: karta zo šenku (Zastávka), Nástroj za Živnostníka, starší pre Kapybaru. */
+  readonly volbaNastupu: { readonly typ: NonNullable<HasicVolba["typ"]>; readonly hrac: PlayerId } | null;
   /**
    * Nepriznané kliatby v MOJOM doberacom balíčku (len počty, poradie nie).
    * Vlastné karty hráč pozná, len nevie, v akom poradí ich dobere. Od v8.2 len
@@ -430,9 +424,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             poveryZostava: bitka.poveryZostava ?? [0, 0],
             klebety: bitka.klebety ?? {},
             exekutor: bitka.exekutor,
-            benzinkaZostava: bitka.benzinkaZostava,
             spalit: bitka.spalit,
-            zivnostnikZostava: bitka.zivnostnikZostava ?? 0,
           },
     ...(state.klebetyPrenesene === undefined ? {} : { klebetyPrenesene: state.klebetyPrenesene }),
     pokusy: state.pokusy,
@@ -447,10 +439,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
       state.vizia !== null && naTahu(state) === ja && state.hraci[ja].dedicstvo.some((k) => k.defId === "kristalova_gula") ? (state.hraci[ja].doberaci[1] ?? null) : null,
     hasicVolba:
       hasic === undefined || hasic.typ !== undefined ? null : { hrac: hasic.hrac, karta: state.hraci[hasic.hrac].odhadzovaci.find((k) => k.uid === hasic.uid) ?? null },
-    volbaNastupu:
-      hasic?.typ === undefined
-        ? null
-        : { typ: hasic.typ, hrac: hasic.hrac, ruka: hasic.typ === "klebetnica" && hasic.hrac === ja ? state.hraci[ja === 0 ? 1 : 0].ruka : null },
+    volbaNastupu: hasic?.typ === undefined ? null : { typ: hasic.typ, hrac: hasic.hrac },
     mojeKliatbyVBalicku: { cirhoza: state.hraci[ja].doberaci.filter((k) => k.defId === "cirhoza").length },
     mojBalicekZlozenie: zlozenie(state.hraci[ja].doberaci),
     nepriznaneKliatby: [nepriznaneKliatbyHraca(state.hraci[0]), nepriznaneKliatbyHraca(state.hraci[1])],

@@ -230,8 +230,6 @@ describe("klient AI hráčov: Nakladačka a starší v ohrození (playtest 20261
       prebytokDrzi: 1,
       prebytokZostava: 4,
       prebytokPosunute: [],
-      benzinkaZostava: [0, 0],
-      karHotovy: [true, true],
       spalit: [],
       vesticaHotova: true,
     };
