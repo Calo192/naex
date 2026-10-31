@@ -4,6 +4,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { POPOLNIKY_VEDLA } from "../src/hra/rozlozenieNastenky.ts";
 
 const css = readFileSync(fileURLToPath(new URL("../src/hra/spaky.css", import.meta.url)), "utf8");
 const telo = (selektor: string): string => {
@@ -29,6 +30,13 @@ describe("nástenka na stole", () => {
     expect(Number(pismo)).toBeGreaterThanOrEqual(11.5);
     // Lístok na výber má šírku z rozmerNastenky aj na nízkom stole bez kariet (bez-kariet).
     expect(telo(".vrstva-nastenky .nastenka-listok.na-vyber.citatelny")).toMatch(/width: var\(--lc-sirka\);[\s\S]*max-width: none;/);
+  });
+
+  it("nízky stôl: popolníky v stĺpci vedľa radu, šírka stĺpca ako v rozmerNastenky (Michal 2026-10-31)", () => {
+    expect(telo(".vrstva-nastenky .nastenka-ucet.vedla")).toMatch(/flex-direction: row;/);
+    const stlpec = telo(".nastenka-ucet.vedla .nastenka-popolniky");
+    expect(stlpec).toMatch(/flex-direction: column;/);
+    expect(stlpec).toContain(`width: calc(${POPOLNIKY_VEDLA}px * var(--nk, 1));`);
   });
 
   it("lístok na výber aj Koniec majú pevný rozmer karty — obsah ich nenatiahne ani nestlačí (Michal 2026-10-31)", () => {

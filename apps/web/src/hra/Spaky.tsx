@@ -286,8 +286,10 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
   if (ucet === undefined) return zoznam;
   const rozpis = rozpisSpakov({ nastenka, koniec: null, spaky: ucet.body.spaky });
   const { body } = ucet;
+  // Nízky stôl pri voľbe cieľa (Michal 2026-10-31): popolníky vedľa radu, karty dostanú celú výšku.
+  const popolnikyVedla = vyber !== undefined && listokVyberu?.popolnikyVedla === true;
   return (
-    <div className="nastenka-ucet">
+    <div className={`nastenka-ucet${popolnikyVedla ? " vedla" : ""}`}>
       <div className="nastenka-popolniky">
         {poradie.map((p) => {
           const r = rozpis[p];

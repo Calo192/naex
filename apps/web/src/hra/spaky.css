@@ -858,6 +858,59 @@
   max-width: none;
 }
 
+/* Nízky stôl pri voľbe cieľa (Michal 2026-10-31, ListokNaVyber.popolnikyVedla): popolníky so skóre
+   v stĺpci vedľa radu, nech lokality na výber dostanú celú výšku. Šírku stĺpca ráta aj
+   rozmerNastenky (POPOLNIKY_VEDLA). Rozpis sa zalomí, počet špakov je pod menom. */
+.vrstva-nastenky .nastenka-ucet.vedla {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.nastenka-ucet.vedla .nastenka-popolniky {
+  flex: none;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 8px;
+  width: calc(150px * var(--nk, 1));
+}
+
+.nastenka-ucet.vedla .nastenka-popolnik {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  row-gap: 2px;
+}
+
+.nastenka-ucet.vedla .nastenka-popolnik .avatar {
+  grid-row: 1;
+}
+
+/* Dlhé meno (Bot Rapavý Fero) sa zalomí, neskráti. */
+.nastenka-ucet.vedla .np-meno {
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.nastenka-ucet.vedla .nastenka-popolnik .pocet-spakov {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-self: center;
+}
+
+.nastenka-ucet.vedla .np-rozpis {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.nastenka-ucet.vedla > .nastenka {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
 /* Koniec pri voľbe cieľa (Michal 2026-10-31: „ten KONIEC to je katastrofa… nič nesmie pretŕčať“):
    veľkosť karty na výber (--lc-sirka × --lc-vyska), písmo rastie so šírkou a ListokKonca ho
    zmenší (--m), kým sa celý obsah nezmestí. Dlhé meno sa skráti, číslo ostane celé. */

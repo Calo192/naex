@@ -1,7 +1,7 @@
 // Krčmová nástenka na stole (Michal 2026-10-28: „zväčšiť, a to o dosť“).
 
 import { describe, expect, it } from "vitest";
-import { DVA_RADY_OD, KARTA_MIN, POMER, rozmerNastenky } from "../src/hra/rozlozenieNastenky.ts";
+import { DVA_RADY_OD, KARTA_MIN, POMER, POPOLNIKY_VEDLA, rozmerNastenky } from "../src/hra/rozlozenieNastenky.ts";
 
 describe("rozmer nástenky", () => {
   it("väčšia plsť = väčšie karty, písmo rastie s nimi", () => {
@@ -62,7 +62,9 @@ describe("lístky na výber pri voľbe cieľa", () => {
         expect(v.sirka).toBeGreaterThanOrEqual(110);
         // Pomer strán karty (Michal 2026-10-31: „zmrštené“ karty) a lístok sa zmestí do výšky radu.
         expect(Math.abs(v.vyska / v.sirka - POMER)).toBeLessThan(0.01);
-        expect(v.vyska).toBeLessThanOrEqual(vyska - 20 - 60 * r.nk + 1);
+        // Popolníky nad radom berú výšku, vedľa neho šírku.
+        expect(v.vyska).toBeLessThanOrEqual(vyska - 20 - (v.popolnikyVedla ? 0 : 60 * r.nk) + 1);
+        const popolniky = v.popolnikyVedla ? POPOLNIKY_VEDLA * r.nk + 14 : 0;
         // Ilustrácia na OREZ_MIN + názov a ~4 riadky efektu sa zmestia do lístka.
         expect(v.sirka * 0.6 + 84).toBeLessThanOrEqual(v.vyska + 1);
         // Ostatné lístky sú bez kariet (karta s účtenkou by bola vyššia než rad).
@@ -70,7 +72,7 @@ describe("lístky na výber pri voľbe cieľa", () => {
         const historia = v.kratkeBitky ? Math.ceil(odohranych / 2) * 84 + (Math.ceil(odohranych / 2) - 1) * 8 : odohranych * 132;
         const poloziek = v.kratkeBitky ? naVyber + 3 : listkov;
         // Koniec má veľkosť karty na výber.
-        expect((naVyber + 1) * v.sirka + historia + 60 + (poloziek - 1) * 14 + 48).toBeLessThanOrEqual(sirka);
+        expect((naVyber + 1) * v.sirka + historia + 60 + (poloziek - 1) * 14 + 48 + popolniky).toBeLessThanOrEqual(sirka);
       });
 
   it("veľa odohraných bitiek: krátke lístky v dvoch radoch, nech lokality na výber dostanú šírku", () => {
@@ -83,6 +85,20 @@ describe("lístky na výber pri voľbe cieľa", () => {
     const maly = rozmerNastenky(1295, 282, 7, 5);
     const velky = rozmerNastenky(1849, 524, 7, 5);
     expect(velky.vyber?.sirka ?? 0).toBeGreaterThan(maly.vyber?.sirka ?? 0);
+  });
+
+  it("nízky stôl (Michal 2026-10-31): popolníky vedľa radu, keď sú tak karty väčšie; veľký stôl bez zmeny", () => {
+    // 1366 × 650: začiatok hry (5 lokalít, rad je úzky) aj neskôr (3 lokality) — karty väčšie než s popolníkmi nad radom.
+    const zaciatok = rozmerNastenky(1295, 264, 7, 5, 0).vyber;
+    expect(zaciatok?.popolnikyVedla).toBe(true);
+    expect(zaciatok?.sirka ?? 0).toBeGreaterThan(136);
+    const neskor = rozmerNastenky(1295, 264, 7, 3, 2).vyber;
+    expect(neskor?.popolnikyVedla).toBe(true);
+    expect(neskor?.sirka ?? 0).toBeGreaterThanOrEqual(Math.floor(136 * 1.2));
+    // 1440 × 800 so 7 lístkami už rad obmedzuje šírka — popolníky ostanú nad ním.
+    expect(rozmerNastenky(1369, 371, 7, 5, 0).vyber?.popolnikyVedla).toBe(false);
+    // Veľká obrazovka bez zmeny, aj keď by vedľa radu boli karty väčšie (málo lokalít).
+    for (const [w, h] of [[1529, 444], [1849, 494]] as const) for (const [v, o] of [[5, 0], [3, 0], [2, 3]] as const) expect(rozmerNastenky(w, h, v + o + 2, v, o).vyber?.popolnikyVedla).toBe(false);
   });
 
   it("nízky a široký stôl: lístok sa zmenší celý, v pomere strán karty — nie roztiahne do šírky", () => {
