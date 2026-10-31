@@ -1419,7 +1419,7 @@ vyložený do Dedičstva v hre stojí **1** cigaretu, druhý (hocktorého hráč
 
 Efekt v Dedičstve funguje ako malá priazeň: Nealko prah Cirhózy +2, Svätý
 text Viera +1, Vidly (Rany o 1 viac), Puška (prepojená Petelica sa nedá zrušiť, len oslabiť), Krabička cigariet,
-Noviny, Pasca, Výherný automat, Vínko, Lievik a **Náradie** (v8.4, nižšie) (§16).
+Noviny, Pasca, Výherný automat, Vínko, Injekcia a **Náradie** (v8.4, nižšie) (§16).
 
 **Náradie (v8.4, Michal 2026-10-30)** — Nástroj ku každej akcii, efekt len v Dedičstve
 majiteľa; menia sa len **tvoje** akcie (karty, ktoré si zahral):
@@ -1722,7 +1722,7 @@ neráta). Cigareta prepadne (nikto ju nedostane).
 | Svätý text | Dedičstvo: hodnota tvojej Viery je o 1 vyššia. |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); vyložené v Zhromaždení platí **hneď** — zostávajúci limit sa zvýši o 1 (návrh #26 B, Michal 2026-10-28). Druhé Vínko limit nezvýši. Poldeci za cigarety dolievať nesmieš. |
 | Nealko | Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (sčíta sa s Krčmou). Poldeci, NA EX ani akciu Poldeci nemení. |
-| Lievik | Dedičstvo: NA EX smieš dať aj na Zviera. |
+| Injekcia | Dedičstvo: NA EX smieš dať aj na Zviera. |
 
 ---
 

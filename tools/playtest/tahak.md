@@ -213,7 +213,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Súperova **Svokra** mu v bitke dá +1 tuhé
   (Ranu) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
   Šofér (v7): ak si v kole nedal NA EX, v bitke Pecka navyše. **Pijan** (v7): za každé tvoje NA EX v kole
-  Rana navyše. Lievik v Dedičstve: NA EX aj na Zviera. **Stryná** (Pitka): kto v Pitke nedal NA EX,
+  Rana navyše. Injekcia v Dedičstve: NA EX aj na Zviera. **Stryná** (Pitka): kto v Pitke nedal NA EX,
   +1 pečeň. **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
   aktívne akcie zdvojí (nezruší), neaktívne nechá.
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX —

@@ -3209,7 +3209,7 @@ export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId, na
       }
       if (placed.naexBy !== undefined) continue;
       const tags = defOf(data, placed.card).tags;
-      // Lievik (Dedičstvo, v7): aj na Zviera.
+      // Injekcia (lievik) (Dedičstvo, v7): aj na Zviera.
       if ((tags.includes("Občan") || tags.includes("Starešina") || (naZviera && tags.includes("Zviera"))) && zmysel.has(placed.card.uid)) out.push(placed.card.uid);
     }
   }

@@ -223,7 +223,7 @@ describe("efekty v bitke (v7)", () => {
     expect(prirastkyPitky(data, s).poskodeniePecene[0]).toBe(0);
   });
 
-  it("Lievik: NA EX aj na Zviera", () => {
+  it("Injekcia (id lievik): NA EX aj na Zviera", () => {
     const s = vPitke("zastavka", [[lezi(inst("kon"), 0), lezi(inst("pes"), 0)], []]);
     const bez = naexCieleVLinii(data, lineState(s), 0);
     const s2 = naexCieleVLinii(data, lineState(s), 0, true);
