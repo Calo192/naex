@@ -236,9 +236,18 @@ const PARTIE = [
   { id: "20261030-115654-2", report: "20261030-115654.html", dlzka: "stredná (5 + finále), asi 146 min (ULTRA)", vysledok: "Šimon 42 : 23 Hela", mena: ["Hela","Šimon"],
     jano: [7,8,5,6,9,6,6,6,8,8,5,9], eva: [8,8,6,7,9,7,6,7,8,8,8,9],
     zmenyPred: [] },
+  { id: "20261031-004030-1", report: "20261031-004030.html", dlzka: "stredná (5 + finále), asi 55 min", vysledok: "Fero 49 : 23 Šimon", mena: ["Fero","Šimon"],
+    jano: [7,8,6,7,7,7,6,7,7,6,6,8], eva: [6,7,4,6,8,6,4,6,7,7,4,8],
+    zmenyPred: ["Pravidlá v8.5: balíčky Náradie a Občania, šenok z dvoch kôpok (ae4964d)","Pravidlá v9: väzeň namiesto patronátu a vydesenia, Kšeft väzňa, bossovia, nové priazne","Pravidlá v9.1: Chuť a karta Absťák, Nakladačka vo finále na špaky, Zastávka zadarmo karta, Pasca"] },
+  { id: "20261031-004030-2", report: "20261031-004030.html", dlzka: "stredná (5 + finále), asi 55 min", vysledok: "Eva 41 : 4 Vilo", mena: ["Vilo","Eva"],
+    jano: [6,6,4,6,8,5,4,5,6,6,4,8], eva: [7,7,6,7,9,5,5,7,8,7,5,9],
+    zmenyPred: [] },
+  { id: "20261031-004030-3", report: "20261031-004030.html", dlzka: "stredná (5 + finále), asi 57 min", vysledok: "Hela 62 : 32 Jano", mena: ["Jano","Hela"],
+    jano: [7,7,4,6,9,6,6,7,8,7,6,9], eva: [8,8,6,7,9,5,5,7,8,7,7,9],
+    zmenyPred: [] },
 ];
 // Zmeny, ktoré ešte žiadna partia neoverila.
-const CAKAJUCE = ["Pravidlá v8.5: balíčky Náradie a Občania, šenok z dvoch kôpok (ae4964d)"];
+const CAKAJUCE = [];
 
 const priemer = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 const f1 = (x) => x.toFixed(1).replace(".", ",");

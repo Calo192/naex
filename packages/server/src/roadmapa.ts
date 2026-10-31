@@ -23,7 +23,7 @@ export const STLPCE = [
   { kluc: "hotove", nazov: "Hotové", horizont: "", zamer: "Implementované a nasadené.", verejny: true },
 ] as const;
 export type Stlpec = (typeof STLPCE)[number]["kluc"];
-const KLUCE_STLPCOV: readonly string[] = STLPCE.map((s) => s.kluc);
+const KLUCE_STLPCOV: readonly Stlpec[] = STLPCE.map((s) => s.kluc);
 
 export const OBLASTI = ["pravidla", "ui", "karty", "2v2", "platforma", "komunita"] as const;
 export type Oblast = (typeof OBLASTI)[number];
@@ -221,7 +221,7 @@ export class Roadmapa {
   pridaj(ja: Pouzivatel, telo: Record<string, unknown>, teraz: number): number {
     if (!jeSpravca(ja.rola) && !ja.ai) throw new ChybaVstupu("Do roadmapy pridáva len admin, subadmin alebo AI navrhár.", 403);
     // AI agent pridáva len do Prijímača — stĺpec a poradie určí človek.
-    const stlpec = ja.ai && !jeSpravca(ja.rola) ? "prijimac" : zJednej(telo.stlpec ?? "prijimac", KLUCE_STLPCOV, "Stĺpec") as Stlpec;
+    const stlpec = ja.ai && !jeSpravca(ja.rola) ? "prijimac" : zJednej(telo.stlpec ?? "prijimac", KLUCE_STLPCOV, "Stĺpec");
     const obsah = overObsah(telo, null);
     this.overZavislosti(obsah.zavisi, null);
     const navrch = telo.navrch === true;
@@ -248,7 +248,7 @@ export class Roadmapa {
   presun(ja: Pouzivatel, id: number, telo: Record<string, unknown>, teraz: number): void {
     if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Poradie v roadmape mení len admin alebo subadmin.", 403);
     const p = this.jedna(id);
-    const stlpec = zJednej(telo.stlpec ?? p.stlpec, KLUCE_STLPCOV, "Stĺpec") as Stlpec;
+    const stlpec = zJednej(telo.stlpec ?? p.stlpec, KLUCE_STLPCOV, "Stĺpec");
     const pred = telo.pred === null || telo.pred === undefined ? null : Number(telo.pred);
     if (pred !== null && !Number.isInteger(pred)) throw new ChybaVstupu("Pred: id položky alebo null.");
     if (pred === id) return;
@@ -322,11 +322,13 @@ export class Roadmapa {
       case "overene":
         if (p !== null) this.premiestni(p, p.stlpec, p.poradie, teraz, { hotovo: `Overené playtestom: ${n.verdikt}`.slice(0, MAX_TEXT) });
         return;
-      case "nezabralo":
+      case "nezabralo": {
         // Zmena je v kóde, ale problém trvá — o ďalšom kroku rozhodne Michal.
-        if (p === null) this.vloz({ ...obsah, stav: "overit", hotovo: `Nezabralo: ${n.verdikt}`.slice(0, MAX_TEXT) }, "prijimac", this.hranica("prijimac", "zaciatok"), teraz, n.id);
-        else this.premiestni(p, "prijimac", this.hranica("prijimac", "zaciatok"), teraz, { stav: "overit", hotovo: `Nezabralo: ${n.verdikt}`.slice(0, MAX_TEXT) });
+        const zmeny = { stav: "overit", hotovo: `Nezabralo: ${n.verdikt}`.slice(0, MAX_TEXT) } satisfies Partial<ObsahPolozky>;
+        if (p === null) this.vloz({ ...obsah, ...zmeny }, "prijimac", this.hranica("prijimac", "zaciatok"), teraz, n.id);
+        else this.premiestni(p, "prijimac", this.hranica("prijimac", "zaciatok"), teraz, zmeny);
         return;
+      }
       case "zamietnute":
       case "nove":
         if (p !== null && (p.stlpec === "prijimac" || p.stlpec === "neskor")) this.db.prepare("DELETE FROM roadmapa WHERE id = ?").run(p.id);

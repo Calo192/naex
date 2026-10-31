@@ -16,7 +16,8 @@ import { ALL_DLZKY, NAZOV_DLZKY, NAZOV_DLZKY_GENITIV, type DlzkaHry, type Katalo
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 import type { Db } from "./db.ts";
-import { RANKY_HRACOV, jeRankHraca, type RankHraca } from "./prava.ts";
+import { JsonTabulka } from "./db.ts";
+import { RANKY_HRACOV, jeRankHraca, jeZoznamRankov, type RankHraca } from "./prava.ts";
 
 /** Ligu odomkne toľko výhier proti človeku v inej lige; vyhier 0 = liga je otvorená každému. */
 export interface PodmienkaLigy {
@@ -38,6 +39,9 @@ export interface PravidloLigy {
   /** Ranky, ktoré ligu majú bez ohľadu na výhry. */
   readonly ranky: readonly RankHraca[];
 }
+
+/** Čo o hráčovi ligy potrebujú: správca a AI smú vždy, ranky môžu ligu odomknúť. */
+type HracLigy = Pick<Pouzivatel, "id" | "rola" | "ai">;
 
 /** Prečo hráč ligu smie: splnil podmienku sám, smú ju všetci, smie vždy (správca, AI), alebo nesmie. */
 export type PristupKLige = "odomknuta" | "vsetci" | "vzdy" | "zamknuta";
@@ -131,9 +135,7 @@ function overPravidlo(liga: DlzkaHry, v: unknown, katalog: KatalogAchievementov 
   if (typeof v !== "object" || v === null || Array.isArray(v)) throw new ChybaVstupu(`${NAZOV_DLZKY[liga]}: objekt { podmienka, ranky }.`);
   const o = v as Record<string, unknown>;
   const ranky = o.ranky ?? [];
-  if (!Array.isArray(ranky) || ranky.some((x) => !(RANKY_HRACOV as readonly unknown[]).includes(x))) {
-    throw new ChybaVstupu(`${NAZOV_DLZKY[liga]}: zoznam rankov (${RANKY_HRACOV.join(", ")}).`);
-  }
+  if (!jeZoznamRankov(ranky)) throw new ChybaVstupu(`${NAZOV_DLZKY[liga]}: zoznam rankov (${RANKY_HRACOV.join(", ")}).`);
   let podmienka: PodmienkaLigy | null = null;
   if (o.podmienka !== null && o.podmienka !== undefined) {
     const p = o.podmienka as Record<string, unknown>;
@@ -162,12 +164,14 @@ function overPravidlo(liga: DlzkaHry, v: unknown, katalog: KatalogAchievementov 
 
 export class Ligy {
   private readonly db: Db;
+  private readonly nastavenia: JsonTabulka<unknown>;
   private readonly teraz: () => number;
   /** null = achievementy sú vypnuté; podmienka achievementom sa potom nedá splniť ani nastaviť. */
   private readonly achievementy: ZdrojAchievementov | null;
 
   constructor(db: Db, teraz: () => number, achievementy: ZdrojAchievementov | null = null) {
     this.db = db;
+    this.nastavenia = new JsonTabulka(db, "nastavenia", "kluc");
     this.teraz = teraz;
     this.achievementy = achievementy;
   }
@@ -179,12 +183,11 @@ export class Ligy {
 
   /** Uložené nastavenie doplnené o predvolené; pokazený záznam ligy = predvolené pravidlo. */
   nastavenie(): NastavenieLig {
-    const r = this.db.prepare("SELECT data FROM nastavenia WHERE kluc = ?").get(KLUC) as { data: string } | undefined;
     let ulozene: Partial<{ verzia: unknown; vsetkym: unknown; ajProtiPocitacu: unknown; ligy: Record<string, unknown> }> = {};
     try {
-      ulozene = r === undefined ? {} : (JSON.parse(r.data) as typeof ulozene);
+      ulozene = (this.nastavenia.jeden(KLUC) ?? {}) as typeof ulozene;
     } catch {
-      ulozene = {};
+      // Pokazený záznam — platí predvolené.
     }
     const ligy = { ...PREDVOLENE_LIGY.ligy } as Record<DlzkaHry, PravidloLigy>;
     for (const l of ALL_DLZKY) {
@@ -223,9 +226,7 @@ export class Ligy {
       ajProtiPocitacu: (telo.ajProtiPocitacu as boolean | undefined) ?? teraz.ajProtiPocitacu,
       ligy,
     };
-    this.db
-      .prepare("INSERT INTO nastavenia (kluc, data) VALUES (?, ?) ON CONFLICT(kluc) DO UPDATE SET data = excluded.data")
-      .run(KLUC, JSON.stringify({ verzia: VERZIA_ZAZNAMU, ...nove }));
+    this.nastavenia.uloz(KLUC, { verzia: VERZIA_ZAZNAMU, ...nove });
     return nove;
   }
 
@@ -249,7 +250,7 @@ export class Ligy {
    * Stav všetkých líg pre hráča. Splnenú podmienku hneď zapíše — aj keď je
    * zapnuté „všetci smú všetko“ —, aby ju neskoršie sprísnenie nevzalo.
    */
-  stav(ja: Pick<Pouzivatel, "id" | "rola" | "ai">): StavLigy[] {
+  stav(ja: HracLigy): StavLigy[] {
     const n = this.nastavenie();
     const volny = jeSpravca(ja.rola) || ja.ai;
     const odomknute = this.odomknute(ja.id);
@@ -286,7 +287,7 @@ export class Ligy {
   }
 
   /** Po archivovanej partii ľudí: zapíše, čo hráč práve odomkol. */
-  dorovnaj(ja: Pick<Pouzivatel, "id" | "rola" | "ai">): void {
+  dorovnaj(ja: HracLigy): void {
     this.stav(ja);
   }
 
@@ -294,7 +295,7 @@ export class Ligy {
    * Prečo hráč ligu hrať nesmie (text pre hlášku), alebo null, keď smie.
    * Partie proti počítaču obmedzuje len zapnuté „aj proti počítaču“.
    */
-  preco(ja: Pick<Pouzivatel, "id" | "rola" | "ai">, liga: DlzkaHry, protiPocitacu: boolean): string | null {
+  preco(ja: HracLigy, liga: DlzkaHry, protiPocitacu: boolean): string | null {
     if (protiPocitacu && !this.nastavenie().ajProtiPocitacu) return null;
     const s = this.stav(ja).find((x) => x.liga === liga);
     if (s === undefined || s.smie) return null;

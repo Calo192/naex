@@ -10,6 +10,7 @@
 import type { Pouzivatel, Rola } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 import type { Db } from "./db.ts";
+import { JsonTabulka } from "./db.ts";
 
 export const PRAVA = [
   "hrat_bot",
@@ -50,6 +51,10 @@ export const RANKY_HRACOV = ["navstevnik", "hrac", "deci", "sedmicka"] as const 
 export type RankHraca = (typeof RANKY_HRACOV)[number];
 
 export const jeRankHraca = (r: Rola): r is RankHraca => (RANKY_HRACOV as readonly Rola[]).includes(r);
+
+/** Zoznam rankov z requestu (matica práv, pravidlá líg) — len hráčske ranky. */
+export const jeZoznamRankov = (v: unknown): v is readonly RankHraca[] =>
+  Array.isArray(v) && v.every((x) => (RANKY_HRACOV as readonly unknown[]).includes(x));
 
 /**
  * Postup na Deci a Sedmičku v percentách všetkých hviezd (★) achievementov
@@ -121,21 +126,20 @@ export function dalsiRank(postup: PostupRankov, rank: RankHraca, h: HviezdyHraca
 }
 
 export class Prava {
-  private readonly db: Db;
+  private readonly nastavenia: JsonTabulka<unknown>;
 
   constructor(db: Db) {
-    this.db = db;
+    this.nastavenia = new JsonTabulka(db, "nastavenia", "kluc");
   }
 
   /** Uložené nastavenie doplnené o predvolené — nové právo tak dostane predvolenú hodnotu samo. */
   nastavenie(): NastaveniePrav {
-    const r = this.db.prepare("SELECT data FROM nastavenia WHERE kluc = ?").get(KLUC) as { data: string } | undefined;
     // Postup v partiách (kľúč „postup“, do 2026-10-25) sa ignoruje — percentá hviezd sú v „postupHviezd“.
     let ulozene: Partial<{ matica: Record<string, unknown>; postupHviezd: Record<string, unknown> }> = {};
     try {
-      ulozene = r === undefined ? {} : (JSON.parse(r.data) as typeof ulozene);
+      ulozene = (this.nastavenia.jeden(KLUC) ?? {}) as typeof ulozene;
     } catch {
-      ulozene = {};
+      // Pokazený záznam — platí predvolené.
     }
     const matica = { ...PREDVOLENE_PRAVA.matica } as Record<Pravo, readonly RankHraca[]>;
     for (const p of PRAVA) {
@@ -159,9 +163,7 @@ export class Prava {
       if (typeof telo.matica !== "object" || telo.matica === null || Array.isArray(telo.matica)) throw new ChybaVstupu("Matica: objekt právo → ranky.");
       for (const [p, v] of Object.entries(telo.matica as Record<string, unknown>)) {
         if (!(PRAVA as readonly string[]).includes(p)) throw new ChybaVstupu(`Neznáme právo „${p}“.`);
-        if (!Array.isArray(v) || v.some((x) => !(RANKY_HRACOV as readonly unknown[]).includes(x))) {
-          throw new ChybaVstupu(`Právo „${p}“: zoznam rankov (${RANKY_HRACOV.join(", ")}).`);
-        }
+        if (!jeZoznamRankov(v)) throw new ChybaVstupu(`Právo „${p}“: zoznam rankov (${RANKY_HRACOV.join(", ")}).`);
         matica[p as Pravo] = RANKY_HRACOV.filter((x) => v.includes(x));
       }
     }
@@ -177,9 +179,7 @@ export class Prava {
       if (postup.sedmicka <= postup.deci) throw new ChybaVstupu("Sedmička musí vyžadovať viac hviezd ako Deci.");
     }
     const nove: NastaveniePrav = { matica, postup };
-    this.db
-      .prepare("INSERT INTO nastavenia (kluc, data) VALUES (?, ?) ON CONFLICT(kluc) DO UPDATE SET data = excluded.data")
-      .run(KLUC, JSON.stringify({ matica, postupHviezd: postup }));
+    this.nastavenia.uloz(KLUC, { matica, postupHviezd: postup });
     return nove;
   }
 

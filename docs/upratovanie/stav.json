@@ -9,7 +9,7 @@
     "apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout)",
     "tools"
   ],
-  "dalsia": 1,
+  "dalsia": 2,
   "behy": [
     {
       "datum": "2026-10-26",
@@ -30,6 +30,17 @@
       "poznamka": "Druhý beh v ten istý deň (plánovaná routine), vetva založená nanovo z master — ranný beh už bol zmergovaný. Prejdené: celé packages/core/src okrem bot.ts (rizikový zdieľaný súbor) — mŕtve exporty, konštanty a importy (tsc --noUnusedLocals), opponentOf všade, odoberDlhy v engine.ts, spoločné pomocné funkcie náhľadov vo view.ts. Nechané: bot.ts (mŕtve sNajlepsimNaex, limitZhromazdenia, nepoužité parametre), nepoužité parametre data a pitkaCislo vo verejnom cigaretyZPitky, exporty používané len vo vlastnom súbore. Ďalej packages/server/src — začni api.ts a achievementy.ts.",
       "zmenenychRiadkov": 219,
       "odtlacok": "c4bb90c0629f5645e6ee11dfbd91bf7421c607ea35a7d4adf90b390cd618252b"
+    },
+    {
+      "datum": "2026-10-30",
+      "vetva": "upratovanie/2026-10-30",
+      "casti": [
+        "packages/server/src",
+        "čerstvé súbory master: packages/core/src/vyucba.ts, apps/web/src/hra (nepoužité importy a parametre)"
+      ],
+      "poznamka": "Prejdené: achievementy.ts, ligy.ts, prava.ts, roadmapa.ts, navrhy.ts, suhrn.ts, tempo.ts, playtesty.ts, prehravac.ts; core/vyucba.ts (obálka radaKVolbe); nepoužité importy a parametre v klientovi mimo HernaPlocha. Vynechané kvôli rozrobenej práci: api.ts, db.ts, nazory.ts, novinky.ts, core/index.ts a skoro celé apps/web/src/hra/HernaPlocha.tsx a CSS. Nechané: text() validátory v navrhy/roadmapa/novinky/dielna/nazory (líšia sa povinnosťou a hláškami), mŕtve props HracDoska (popisKarty, cenaDlhu, mena) a hraniceZon v LiniaStarsich — volá ich HernaPlocha. server.ts len zbežne. Ďalej apps/web/src/hra — začni nimi, keď HernaPlocha nebude rozrobená.",
+      "zmenenychRiadkov": 238,
+      "odtlacok": "ccece1f51975f551b4b80d0c05faf86d8c8cb738046a7d3fc489d93e0e466e0c"
     }
   ]
 }

@@ -402,7 +402,7 @@ export function overScenar(data: GameData, scenar: ScenarVyucby): string | null 
     const kto = ktoVykona(krok);
     if (krok.prikaz === undefined) return `Krok ${i} (${krok.id}): ${krok.kto} bez príkazu.`;
     try {
-      const cmd = prikazZoScenara(state, kto, krok.prikaz ?? { type: "pass" });
+      const cmd = prikazZoScenara(state, kto, krok.prikaz);
       if (naTahu(state) !== kto && !(state.faza === "draft" && state.draftStav?.krok === "stavba")) {
         return `Krok ${i} (${krok.id}): na ťahu je hráč ${naTahu(state)}, nie ${krok.kto}.`;
       }
@@ -697,10 +697,6 @@ export interface RadaVyucby {
 export function radaVyucby(state: GameState, volba: VolbaKroku, prikaz: Command): RadaVyucby {
   const zly = (volba.zle ?? []).find((z) => zodpovedaVzoru(state, prikaz, z.prikaz));
   return zly === undefined ? { text: volba.inak, hlaska: null } : { text: zly.text, hlaska: zly.hlaska ?? null };
-}
-
-export function radaKVolbe(state: GameState, volba: VolbaKroku, prikaz: Command): string {
-  return radaVyucby(state, volba, prikaz).text;
 }
 
 /** Skupina a súbor bez prípony z hlášky scenára; null pri zlom tvare. */
