@@ -255,6 +255,31 @@
   </dl>
 </article>
 
+<h3 id="posudok">Doplnok: merania k posudku návrhov navrhára (31. 10.)</h3>
+<p>Návrhy navrhára som zmeral rovnakými parametrami ako východisko. Posudok je v <code>playtest/navrhy/20261031-004030/posudok-stratega.md</code>. Nové sú dve čísla východiska: útočník vyhrá <strong>69 % / 66 %</strong> bitiek pred finále a prvú kartu na obrancovu stranu dá v 81 % bitiek.</p>
+<div class="tab"><table>
+<caption>Z / M = zrkadlo / mix. „Útočník“ = útočník vyhrá bitku pred finále. Rebrík ε 0,1 / 0,25; „vs. chamtivý“ = výhry plného bota proti chamtivému. Bot sa variantom neprispôsobuje (domáca karta: výber výpočtom stavu, bot ju dal v 33 z 36 ponúk).</caption>
+<thead><tr><th scope="col">variant</th><th scope="col">rozdiel Z / M</th><th scope="col">vedúci pred finále Z / M</th><th scope="col">finále Z / M</th><th scope="col">otočky Z / M</th><th scope="col">útočník Z / M</th><th scope="col">ruka ≤ 1</th><th scope="col">červená</th><th scope="col">rebrík 0,1 / 0,25</th><th scope="col">vs. chamtivý</th><th scope="col">predurč.</th><th scope="col">možnosti</th></tr></thead>
+<tbody>
+<tr class="base"><th scope="row">východisko v9.1</th><td>22,6 / 23,3</td><td>73 % / 76 %</td><td>77 % / 78 %</td><td>27 % / 29 %</td><td>69 % / 66 %</td><td>78 %</td><td>27 %</td><td>58 % / 73 %</td><td>83 %</td><td>0,43</td><td>8,2</td></tr>
+<tr><th scope="row">N1 + N2 spolu (dobratie do 3, finále ½, pole po poli)</th><td class="dobre">18,9 / 18,4</td><td>72 % / 67 %</td><td>85 % / 86 %</td><td>34 % / 42 %</td><td>69 % / 69 %</td><td class="dobre">0 %</td><td class="dobre">3 %</td><td>58 % / 72 %</td><td class="dobre">95 %</td><td class="dobre">0,24</td><td class="dobre">9,2</td></tr>
+<tr><th scope="row">dobratie do 2 + finále ½</th><td class="dobre">16,5 / 19,2</td><td>71 % / 76 %</td><td>83 % / 78 %</td><td>29 % / 31 %</td><td>67 % / 62 %</td><td class="dobre">0 %</td><td>25 %</td><td>65 % / 73 %</td><td>93 %</td><td>0,40</td><td>8,3</td></tr>
+<tr><th scope="row">dobratie do 3, finále bez Nakladačky</th><td class="dobre">14,2 / 12,9</td><td class="zle">80 % / 83 %</td><td>75 % / 67 %</td><td>26 % / 22 %</td><td>69 % / 65 %</td><td class="dobre">0 %</td><td>24 %</td><td>57 % / 82 %</td><td class="dobre">97 %</td><td>0,35</td><td>8,6</td></tr>
+<tr><th scope="row">Nakladačka nesmie na červenú</th><td>19,5 / 20,6</td><td>64 % / 71 %</td><td>84 % / 76 %</td><td>37 % / 31 %</td><td>69 % / 65 %</td><td>71 %</td><td>0 %</td><td>55 % / 68 %</td><td class="zle">73 %</td><td>0,29</td><td>8,3</td></tr>
+<tr><th scope="row">Robota bez Dlhu: špak raz za kartu (v9.1)</th><td>23,1 / 23,0</td><td>72 % / 75 %</td><td>76 % / 80 %</td><td>27 % / 27 %</td><td>69 % / 66 %</td><td>81 %</td><td>27 %</td><td>55 % / 72 %</td><td>85 %</td><td>0,45</td><td>8,2</td></tr>
+<tr><th scope="row">domáca karta obrancu (zadarmo)</th><td>18,0 / 19,5</td><td>61 % / 57 %</td><td class="zle">84 % / 85 %</td><td>38 % / 40 %</td><td>66 % / 65 %</td><td>82 %</td><td>20 %</td><td>57 % / 68 %</td><td>87 %</td><td>0,43</td><td class="zle">7,6</td></tr>
+<tr><th scope="row">pri rovnosti tiel nemá prevahu nikto</th><td>18,7 / 21,6</td><td>65 % / 66 %</td><td>82 % / 75 %</td><td>35 % / 36 %</td><td class="dobre">61 % / 67 %</td><td>72 %</td><td>20 %</td><td>57 % / 72 %</td><td>82 %</td><td>0,43</td><td>7,9</td></tr>
+<tr><th scope="row">hrana domácemu, kým súper nemá o 2 viac</th><td>16,5 / 18,6</td><td>67 % / 78 %</td><td>81 % / 75 %</td><td>35 % / 34 %</td><td>67 % / 62 %</td><td>69 %</td><td>21 %</td><td>58 % / 70 %</td><td>93 %</td><td>0,37</td><td>8,0</td></tr>
+</tbody></table></div>
+<ul>
+  <li><strong>N1 a N2 patria do jedného playtestu.</strong> Spolu nestratia nič na rebríku (samo N2 55 / 68 %, N2 s finále ½ 48 / 62 %). Predurčenosť rozdania klesne na 0,24, prvýkrát pod šum (0,31). Možnosti na ťah stúpnu na 9,2.</li>
+  <li><strong>Dobratie do 2 je rovnocenné dobratiu do 3</strong> (ruka ≤ 1 pred finále 0 % v oboch, rebrík v šume). Do 2 je miernejšie k cigaretám, preto ho odporúčam ako prvú hodnotu.</li>
+  <li><strong>Finále bez Nakladačky</strong> s dobratím je najlepšie na „lepší hráč vyhrá“ (stompy 43 / 33 %, proti chamtivému 97 %). Vedúci pred finále však vyhrá 80–83 % a otočky klesnú na 22–26 %, presne to, čo v9.1 menila.</li>
+  <li><strong>Domáca karta</strong> podstrčenie skoro odstráni (81 → 7 %), útočník však ďalej vyhrá 66 % bitiek. Jeho výhoda nie je v prvej karte, ale v poradí (vykladá prvý, berie zo šenku prvý, posledné slovo v Pitke). Výhru útočníka v zrkadle zníži len „pri rovnosti nikto“ (69 → 61 %).</li>
+  <li><strong>Robota raz za kartu</strong> na v9.1 uberie tretinu jej špakov (5,5 → 4,0 na partiu) a nič iné nepohne. N4 platí: zaviesť.</li>
+  <li><strong>Zákaz červenej</strong> Nakladačkou sploští rebrík (proti chamtivému 83 → 73 %, ε 0,5 82 → 73 %). Zamietnuť v prospech N2.</li>
+</ul>
+
 <h2 id="sledovat">Čo sledovať v ďalšom playteste</h2>
 <ol>
   <li><strong>Ruka a cigarety pred finále:</strong> Koľko kariet a cigariet si mal na začiatku finále ty a súper? Rozhodlo finále to, čo ste mali v ruke, alebo to, ako ste hrali?</li>
