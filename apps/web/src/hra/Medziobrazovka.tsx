@@ -15,9 +15,11 @@ export interface MedziobrazovkaProps {
   /** Poznámka o vypínači v profile — len pri medziobrazovkách, ktoré profil naozaj vypína. */
   readonly vypinac?: boolean;
   readonly trieda?: string;
+  /** Ťuk mimo okna ho zavrie ako „Rozumiem“ (okná zdrojov a odhadu na telefóne). */
+  readonly zavrietMimo?: boolean;
 }
 
-export function Medziobrazovka({ obsah, onRozumiem, children, tlacidloPoMs = 0, vypinac = true, trieda }: MedziobrazovkaProps) {
+export function Medziobrazovka({ obsah, onRozumiem, children, tlacidloPoMs = 0, vypinac = true, trieda, zavrietMimo = false }: MedziobrazovkaProps) {
   // Skratky stola (K, P, N, Esc…) by stlačili tlačidlá pod ňou — kým je hore, klávesy
   // nedôjdu ďalej než sem. Enter a medzera ostanú tlačidlu „Rozumiem“ (predvolená akcia).
   useEffect(() => {
@@ -37,11 +39,17 @@ export function Medziobrazovka({ obsah, onRozumiem, children, tlacidloPoMs = 0, 
     return () => clearTimeout(t);
   }, [obsah.kluc, tlacidloPoMs]);
   return (
-    <div className={trieda === undefined ? "medziobrazovka" : `medziobrazovka ${trieda}`} role="dialog" aria-modal="true" aria-labelledby="medziobrazovka-nadpis">
+    <div
+      className={trieda === undefined ? "medziobrazovka" : `medziobrazovka ${trieda}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="medziobrazovka-nadpis"
+      onClick={zavrietMimo ? (e) => e.target === e.currentTarget && onRozumiem() : undefined}
+    >
       <div className="medziobrazovka-okno" key={obsah.kluc}>
         <span className="medziobrazovka-nad">{obsah.nadnadpis}</span>
         <h2 id="medziobrazovka-nadpis">{obsah.nadpis}</h2>
-        <p>{obsah.text}</p>
+        {obsah.text !== "" && <p>{obsah.text}</p>}
         {children}
         {tlacidloPre === obsah.kluc ? (
           <button type="button" className="tlacidlo-hlavne" onClick={onRozumiem} autoFocus>

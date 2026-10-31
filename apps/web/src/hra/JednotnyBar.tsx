@@ -35,6 +35,8 @@ export interface JednotnyBarProps {
   readonly zrusChybu?: (() => void) | undefined;
   /** Na mobile strany ukazujú len karty — akcie sú v celom paneli bitky pod barom. */
   readonly bezPrepinaca?: boolean;
+  /** Telefón na šírku: ťuk na odznak odhadu ukáže okno s celým odhadom (nápoveda pod myšou tam nie je). */
+  readonly onOdhad?: (() => void) | undefined;
   /** Plávajúce pod barom (zoznam skratiek). */
   readonly children?: ReactNode;
 }
@@ -57,7 +59,7 @@ function Strana({ s, kto, rezim }: { readonly s: StranaBaru; readonly kto: "ja" 
   );
 }
 
-export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja, su, sprava, zrusChybu, bezPrepinaca = false, children }: JednotnyBarProps) {
+export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja, su, sprava, zrusChybu, bezPrepinaca = false, onOdhad, children }: JednotnyBarProps) {
   const { tip: okno, ukaz, skry } = useTip();
   // Kým nepríde nová správa, stará ostane stlmená (mock V2) — miesto nikdy neskáče prázdne
   // a hráč si ju ešte dočíta. Chyba po potvrdení zmizne celá.
@@ -114,12 +116,12 @@ export function JednotnyBar({ os, desi, nastroje, rezim, prepni, stred, tip, ja,
             data-prepni-strany=""
             data-vyucba="odhad"
             aria-pressed={rezim === "karty"}
-            aria-label={bezPrepinaca ? undefined : `Strany baru: ${rezim === "akcie" ? "akcie" : "karty"} — klik prepne na ${prepnutNa}`}
-            disabled={bezPrepinaca}
-            onClick={prepni}
-            onMouseEnter={(e) => tip !== null && ukaz(e.currentTarget, tip)}
+            aria-label={onOdhad !== undefined ? "Odhad bitky — ťuk ukáže podrobnosti" : bezPrepinaca ? undefined : `Strany baru: ${rezim === "akcie" ? "akcie" : "karty"} — klik prepne na ${prepnutNa}`}
+            disabled={bezPrepinaca && onOdhad === undefined}
+            onClick={onOdhad ?? prepni}
+            onMouseEnter={(e) => onOdhad === undefined && tip !== null && ukaz(e.currentTarget, tip)}
             onMouseLeave={skry}
-            onFocus={(e) => tip !== null && ukaz(e.currentTarget, tip)}
+            onFocus={(e) => onOdhad === undefined && tip !== null && ukaz(e.currentTarget, tip)}
             onBlur={skry}
           >
             {stred}

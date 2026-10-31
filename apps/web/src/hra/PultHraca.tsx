@@ -3,7 +3,7 @@
 // a číslo každého zdroja; ťuk na zdroj otvorí okno s podrobnosťami v štýle medziobrazoviek,
 // ťuk na hráča tabuľu porovnania ty | súper (dizajn B). Karty sú aj cieľom kliatby či Nástroja.
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { ClientState, PlayerId } from "@naex/core";
 import { IKONY } from "../karta/ikony.ts";
 import { Avatar } from "../komponenty.tsx";
@@ -39,15 +39,13 @@ export interface StlpecHracaProps {
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void };
   /** Ťuk na hráča: tabuľa porovnania ty | súper. */
   readonly tabula: { readonly otvorena: boolean; readonly prepni: () => void };
-  /** Nástroje stola na spodku stĺpca (Log, celá obrazovka, menu Partia). */
-  readonly children?: ReactNode;
 }
 
 /**
  * Úzky zvislý stĺpec hráča (Michal 2026-10-31, po skúške na telefóne): ty vľavo, súper vpravo —
  * ako kraje línie. Len ikona a číslo každého zdroja; ťuk otvorí okno s podrobnosťami.
  */
-export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail, starsi, tabula, children }: StlpecHracaProps) {
+export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail, starsi, tabula }: StlpecHracaProps) {
   const ja = p === view.ja;
   const utoci = view.utocnik === p;
   const c = karty.ciel;
@@ -86,7 +84,6 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
         <IkonaPriazne />
         <b>{cisla.priazen}</b>
       </button>
-      {children !== undefined && <span className="stlpec-nastroje">{children}</span>}
     </section>
   );
 }
@@ -154,7 +151,7 @@ export interface OknoZdrojaProps {
 export function OknoZdroja({ zdroj, cisla, ja, meno, zavri, akcia }: OknoZdrojaProps) {
   const d = detailZdroja(zdroj, cisla, ja);
   return (
-    <Medziobrazovka obsah={{ kluc: `zdroj-${zdroj}`, nadnadpis: ja ? "ty" : meno, nadpis: d.nadpis, text: d.text }} onRozumiem={zavri} vypinac={false} trieda="okno-zdroja">
+    <Medziobrazovka obsah={{ kluc: `zdroj-${zdroj}`, nadnadpis: ja ? "ty" : meno, nadpis: d.nadpis, text: d.text }} onRozumiem={zavri} vypinac={false} zavrietMimo trieda="okno-zdroja">
       <dl className="okno-zdroja-riadky">
         {d.riadky.map(([k, v]) => (
           <span key={k} className="okno-zdroja-riadok">
@@ -169,5 +166,37 @@ export function OknoZdroja({ zdroj, cisla, ja, meno, zavri, akcia }: OknoZdrojaP
         </button>
       )}
     </Medziobrazovka>
+  );
+}
+
+const KLUC_PODRZANIA = "naex.mobil.podrz";
+
+/**
+ * Jednorazová nápoveda na telefóne (playtest mobilu 2026-10-31: o zväčšení podržaním nikde nič):
+ * karty sú malé, podržanie prsta ich zväčší. Zmizne ťukom alebo sama; ukáže sa raz na prehliadač.
+ */
+export function NapovedaPodrzania() {
+  const [ukaz, setUkaz] = useState(() => {
+    try {
+      return localStorage.getItem(KLUC_PODRZANIA) !== "1";
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    if (!ukaz) return;
+    try {
+      localStorage.setItem(KLUC_PODRZANIA, "1");
+    } catch {
+      // bez úložiska sa ukáže aj nabudúce — nevadí
+    }
+    const t = setTimeout(() => setUkaz(false), 9000);
+    return () => clearTimeout(t);
+  }, [ukaz]);
+  if (!ukaz) return null;
+  return (
+    <button type="button" className="napoveda-podrzania" onClick={() => setUkaz(false)}>
+      <span aria-hidden="true">☝</span> Podrž kartu = zväčšenie · ťuk na kartu = výber
+    </button>
   );
 }

@@ -92,6 +92,29 @@ export function useNapovedyUctu(): {
   return { zapnute: prihlaseny ? ja.napovedy !== false : !vypnuteBezUctu, videne, oznac, vypni };
 }
 
+/**
+ * Vypínač nápovedí bez zoznamu videných (menu ☰ na telefóne, Michal 2026-10-31) — to isté
+ * nastavenie ako v profile; bez účtu v prehliadači.
+ */
+export function useVypinacNapoved(): { readonly zapnute: boolean; readonly prepni: () => void } {
+  const { ja, nastav } = useUcet();
+  const [vypnuteBezUctu, setVypnuteBezUctu] = useState(() => localStorage.getItem(KLUC_VYPNUTE) === "1");
+  const zapnute = ja !== null ? ja.napovedy !== false : !vypnuteBezUctu;
+  const prepni = useCallback(() => {
+    if (ja === null) {
+      if (zapnute) localStorage.setItem(KLUC_VYPNUTE, "1");
+      else localStorage.removeItem(KLUC_VYPNUTE);
+      setVypnuteBezUctu(zapnute);
+      return;
+    }
+    void api
+      .patch<{ pouzivatel: Pouzivatel }>("/profil", { napovedy: !zapnute })
+      .then((r) => nastav(r.pouzivatel))
+      .catch(() => undefined);
+  }, [ja, zapnute, nastav]);
+  return { zapnute, prepni };
+}
+
 /** Ukážka z adresy (?ukazka-napovedy=id): text z pohľadu, ak situácia platí, inak prvý variant. */
 function ukazkaZAdresy(data: GameData, view: ClientState): Napoveda | null {
   const id = new URLSearchParams(location.search).get("ukazka-napovedy");

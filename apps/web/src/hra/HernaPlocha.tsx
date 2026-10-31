@@ -196,11 +196,13 @@ import { menoVoVete, rodHraca, textHlasky } from "./useHra.ts";
 import { NAHRADIT, textNepolozenejKarty } from "./nepolozenaKarta.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie, type Tahanie } from "./useTahanie.ts";
-import { OknoZdroja, StlpecHraca, Tabula } from "./PultHraca.tsx";
+import { NapovedaPodrzania, OknoZdroja, StlpecHraca, Tabula } from "./PultHraca.tsx";
 import { cislaHraca, type ZdrojStlpca } from "./tabula.ts";
-import { preDotyk } from "./dotyk.ts";
+import { preDotykUzol } from "./dotyk.ts";
 import { Avatar } from "../komponenty.tsx";
-import { PonukaCelejObrazovky, TlacidloCelejObrazovky, useCelaObrazovka } from "./CelaObrazovka.tsx";
+import { TlacidloCelejObrazovky, useCelaObrazovka } from "./CelaObrazovka.tsx";
+import { PruhPokynu } from "./PruhPokynu.tsx";
+import { useVypinacNapoved } from "./Napovedy.tsx";
 import "./hra.css";
 import "./mobil-sirka.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
@@ -294,12 +296,12 @@ const PECIATKA_KROKU_MS = 2000;
 /** Šírka karty v ruke — nastavuje aj --ruka-w v hra.css (na mobile menšia). */
 const SIRKA_V_RUKE = 120;
 const SIRKA_V_RUKE_MOBIL = 72;
-/** Telefón na šírku: výška karty v ruke ako zlomok výšky okna (vejár v doku, dizajn A „Pult“). */
-const RUKA_NA_SIRKU = 0.3;
+/** Telefón na šírku: výška pásu ruky ako zlomok výšky okna — spodok patrí len ruke (Michal 2026-10-31). */
+const RUKA_NA_SIRKU = 0.25;
+/** Telefón na šírku: toľko kariet leží v ruke vedľa seba bez prekrývania. */
+const KARIET_V_RUKE_NA_SIRKU = 8;
 /** Telefón na šírku: najmenšia karta v línii — stôl sa tam nikdy neposúva, karta sa radšej zmenší. */
 const SIRKA_NA_SIRKU_MIN = 36;
-/** Telefón na šírku: najmenšie miesto pre ťahy v doku, aj keď žiadny nie je (ruka nepreskakuje). */
-const AKCIE_NA_SIRKU_MIN = 120;
 /** Telefón na šírku s lištou prehliadača: pod touto výškou okna sa nástenka pri voľbe cieľa zhustí. */
 const NIZKY_TELEFON = 360;
 /** Výška popolníkov nad lístkami nástenky (rozlozenieNastenky: 60 px pri --nk = 1). */
@@ -621,6 +623,8 @@ export function HernaPlocha({
   // (na Androide s lištou prehliadača má okno pod 760 px a stavba šenku sa zasekla, Michal 2026-10-31).
   const mobil = sirkaOkna < MOBIL && !naSirku;
   const celaObrazovka = useCelaObrazovka();
+  // Vypínač nápovedí Melichara v menu ☰ (telefón).
+  const napovedy = useVypinacNapoved();
   // Kto od stola odíde (lobby, iná stránka), nemá ostať na celej obrazovke.
   useEffect(
     () => () => {
@@ -631,9 +635,10 @@ export function HernaPlocha({
   // Dotyková obrazovka bez myši — kartu v ruke zväčší ťuknutie (hover tam nie je).
   const jeDotyk = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(hover: none)").matches === true, []);
   // Nízky notebook (MacBook 14" ≈ 860 px, 13" s lištou ≈ 800, 1366 × 650): menšia ruka nechá výšku stolu.
-  // Na šírku telefónu je ruka vejár v doku: karta má výšku ≈ 30 % okna, vidno jej hornú polovicu.
+  // Na šírku telefónu je ruka pás cez celú šírku medzi stĺpcami: karta celá, osem vedľa seba.
+  const vyskaRukyNaSirku = Math.round(Math.min(110, Math.max(64, vyskaOkna * RUKA_NA_SIRKU)));
   const sirkaVRuke = naSirku
-    ? Math.round((vyskaOkna * RUKA_NA_SIRKU) / POMER_KARTY)
+    ? Math.floor(Math.min((vyskaRukyNaSirku - 8) / POMER_KARTY, (sirkaOkna - 2 * 68 - 12 - (KARIET_V_RUKE_NA_SIRKU - 1) * 4) / KARIET_V_RUKE_NA_SIRKU))
     : mobil
       ? SIRKA_V_RUKE_MOBIL
       : vyskaOkna < NIZKE_OKNO
@@ -869,11 +874,20 @@ export function HernaPlocha({
   const [potvrdenie, setPotvrdenie] = useState<"hotovo" | null>(null);
   useEffect(() => setPotvrdenie(null), [klucTahu, view.pitkaCislo]);
   // „Skončiť Pitku“ bez NA EX chce druhý klik — keď ho hráč neurobí, tlačidlo sa po chvíli vráti.
+  // Na telefóne vydrží, kým hráč neťukne inde — „naozaj?“ v pruhu by si inak nestihol prečítať.
   useEffect(() => {
     if (potvrdenie === null) return;
+    if (naSirku) {
+      const mimo = (e: PointerEvent): void => {
+        if (e.target instanceof Element && e.target.closest('[data-vyucba="tlacidlo:hotovo"]') !== null) return;
+        setPotvrdenie(null);
+      };
+      document.addEventListener("pointerdown", mimo, true);
+      return () => document.removeEventListener("pointerdown", mimo, true);
+    }
     const t = setTimeout(() => setPotvrdenie(null), 4000);
     return () => clearTimeout(t);
-  }, [potvrdenie]);
+  }, [potvrdenie, naSirku]);
   useEffect(() => {
     if (potvrdenie === null && mode.typ !== "naexCiel") return;
     const klaves = (e: KeyboardEvent): void => {
@@ -2070,24 +2084,9 @@ export function HernaPlocha({
   useEffect(() => setVyberTukom(null), [klucTahu, naSirku]);
   const tahanie: Tahanie<Zdroj> | null =
     tahanieMysou ?? (vyberTukom === null ? null : { zdroj: vyberTukom, x: 0, y: 0, sirka: 0, ciel: null });
-  // Dok na šírku telefónu: ruka siaha po ťahy vpravo — ich šírka sa mení podľa fázy (pas, NA EX, potvrdiť).
   const hraRef = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const hra = hraRef.current;
-    if (!naSirku || hra === null) return;
-    // Od ľavého okraja ťahov po pravý okraj stola (aj s odsadením pre ✕ návrhu).
-    let vlavo = Number.POSITIVE_INFINITY;
-    for (const el of hra.querySelectorAll<HTMLElement>(".stol-hrana :is(.hrana-stred, .hrana-vpravo)")) {
-      if (el.offsetWidth > 0) vlavo = Math.min(vlavo, el.getBoundingClientRect().left);
-    }
-    const w = Number.isFinite(vlavo) ? Math.ceil(hra.getBoundingClientRect().right - parseFloat(getComputedStyle(hra).paddingRight) - vlavo) + 6 : 0;
-    const nove = `${Math.max(AKCIE_NA_SIRKU_MIN, w)}px`;
-    if (hra.style.getPropertyValue("--akcie-w") !== nove) hra.style.setProperty("--akcie-w", nove);
-    // Tvoj pult má šírku podľa obsahu (počet čipov, Chuť len keď ju partia má).
-    const moj = hra.querySelector<HTMLElement>(".pult-hraca.moj")?.offsetWidth ?? 0;
-    const mojW = `${moj}px`;
-    if (moj > 0 && hra.style.getPropertyValue("--moj-w") !== mojW) hra.style.setProperty("--moj-w", mojW);
-  });
+  // Okno s odhadom bitky (ťuk na odznak odhadu na telefóne) a menu Partia (☰ v rohu plste).
+  const [detailOdhadu, setDetailOdhadu] = useState(false);
   // Tabuľa porovnania ty | súper (dizajn B) — na šírku telefónu nahrádza dva plné bary.
   const [tabulaOtvorena, setTabulaOtvorena] = useState(false);
   // Okno zdroja zo stĺpca hráča (ťuk na cigarety, poldeci…) — ako medziobrazovka.
@@ -3118,8 +3117,10 @@ export function HernaPlocha({
         onMouseLeave={() => setNahladZaverecnej(false)}
         onFocus={() => setNahladZaverecnej(true)}
         onBlur={() => setNahladZaverecnej(false)}
-        onClick={() => {
+        onClick={(e) => {
           if (zaverecna.kroky !== null) posli({ type: "tah", kroky: zaverecna.kroky });
+          // Na dotyku nápoveda pod myšou nie je — ťuk povie, prečo záverečná teraz nejde.
+          else if (naSirku && zaverecna.dovod !== null) setChybaTahania({ text: zaverecna.dovod, x: e.clientX, y: e.clientY });
         }}
       >
         <span className="ikona-rub" aria-hidden="true" />
@@ -3817,10 +3818,8 @@ export function HernaPlocha({
                 </span>
               </>
             )),
-            vpravo: (
-              <>
-                {tlacidloZaverecnej}
-                {tlacidloOdkazu}
+            ...(() => {
+              const pas = (
                 <button
                   className="pecat pecat-koncim"
                   data-skratka="p"
@@ -3830,8 +3829,28 @@ export function HernaPlocha({
                 >
                   <Vymena das="pasovať" dostanes={<CenaCigariet n={zaPas} znamienko="+" />} />
                 </button>
-              </>
-            ),
+              );
+              // Na telefóne je pas hlavná akcia pruhu pokynu, záverečná a odkaz idú do ▾.
+              return naSirku
+                ? {
+                    stred: pas,
+                    vpravo: (
+                      <>
+                        {tlacidloZaverecnej}
+                        {tlacidloOdkazu}
+                      </>
+                    ),
+                  }
+                : {
+                    vpravo: (
+                      <>
+                        {tlacidloZaverecnej}
+                        {tlacidloOdkazu}
+                        {pas}
+                      </>
+                    ),
+                  };
+            })(),
           };
         }
         const mojVyhlad = nahladyPitky?.[ja] ?? null;
@@ -4150,7 +4169,7 @@ export function HernaPlocha({
               else posli({ type: "skipNaex" });
             }}
           >
-            {potvrdzujem ? "naozaj bez NA EX?" : "Skončiť Pitku"}
+            {potvrdzujem ? (naSirku ? "Naozaj? ťukni znova" : "naozaj bez NA EX?") : "Skončiť Pitku"}
           </button>
         );
         // Vybraná karta (klik na kartu so značkou): pod kartou „vybraná“, v pilulke náhľad, na hrane pečiatka NA EX!.
@@ -4219,6 +4238,12 @@ export function HernaPlocha({
                 data-vyucba="tlacidlo:naex"
                 aria-disabled="true"
                 title={dovodBezNaex ?? "Najprv klikni v línii na kartu so značkou NA EX — potom ho dáš týmto tlačidlom (skryto)."}
+                // Na dotyku nápoveda pod myšou nie je — ťuk povie, prečo NA EX teraz nejde.
+                onClick={
+                  naSirku
+                    ? (e) => setChybaTahania({ text: dovodBezNaex ?? "Najprv ťukni v línii na kartu so značkou NA EX — potom NA EX!.", x: e.clientX, y: e.clientY })
+                    : undefined
+                }
               >
                 NA EX!
               </button>
@@ -4300,16 +4325,41 @@ export function HernaPlocha({
               </>
             )
           ),
-          vlavo: nakupy,
-          stred: naexStred,
-          // Kšefty vpravo pri Skončiť Pitku, nie medzi nákupmi: vľavo by širší rad posunul NA EX! zo stredu
-          // hrany — nováčik ho hľadal na mieste z predošlej Pitky (playtest výučby 20261030, k-naex-vytrznik).
-          vpravo: (
-            <>
-              <KseftyPitky data={data} view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
-              {koncim}
-            </>
-          ),
+          ...(naSirku
+            ? // Telefón: hlavná akcia pruhu je NA EX!, keď je karta vybraná, inak Skončiť Pitku; zvyšok v ▾.
+              vybranaUid !== null && dovodBezNaex === null && !potvrdzujem
+              ? {
+                  vlavo: nakupy,
+                  stred: naexStred,
+                  vpravo: (
+                    <>
+                      <KseftyPitky data={data} view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
+                      {koncim}
+                    </>
+                  ),
+                }
+              : {
+                  vlavo: (
+                    <>
+                      {naexStred}
+                      {nakupy}
+                    </>
+                  ),
+                  stred: koncim,
+                  vpravo: <KseftyPitky data={data} view={view} cmd={cmd} pecatNakupu={pecatNakupu} />,
+                }
+            : {
+                vlavo: nakupy,
+                stred: naexStred,
+                // Kšefty vpravo pri Skončiť Pitku, nie medzi nákupmi: vľavo by širší rad posunul NA EX! zo stredu
+                // hrany — nováčik ho hľadal na mieste z predošlej Pitky (playtest výučby 20261030, k-naex-vytrznik).
+                vpravo: (
+                  <>
+                    <KseftyPitky data={data} view={view} cmd={cmd} pecatNakupu={pecatNakupu} />
+                    {koncim}
+                  </>
+                ),
+              }),
         };
       }
 
@@ -4992,23 +5042,26 @@ export function HernaPlocha({
   const radZatial = stavim && view.senok.length > 0 ? 0.7 : 0;
   // Branie má vedľa šenku aj lokalitu, o ktorú sa bije (Michal 2026-10-30) — o 1,5 karty viac.
   const lokalitaPriBrani = view.faza === "draft" && !stavim && view.ciel?.lokalita != null ? 1.5 : 0;
-  // Telefón na šírku: balíček stavby v dvoch radoch — v jednom by mali karty pri 8 kusoch ≈ 44 px.
-  const radyStavby = naSirku && stavim ? 2 : 1;
-  const miestDraftu = stavim ? Math.max(radyStavby === 2 ? 4 : 6, Math.ceil((draft?.mojBalicek.length ?? 8) / radyStavby) + 2) : Math.max(6, view.faza === "draft" ? view.senok.length + tieneSenku.length + lokalitaPriBrani : view.lokalityVHre.length);
-  const sirkaDraftu = mobil
-    ? 84
-    : Math.max(
+  const miestDraftuPre = (rady: number): number =>
+    stavim ? Math.max(rady === 2 ? 4 : 6, Math.ceil((draft?.mojBalicek.length ?? 8) / rady) + 2) : Math.max(6, view.faza === "draft" ? view.senok.length + tieneSenku.length + lokalitaPriBrani : view.lokalityVHre.length);
+  const sirkaDraftuPre = (radyStavby: number): number => {
+    const miestDraftu = miestDraftuPre(radyStavby);
+    return Math.max(
         // Telefón na šírku s lištou prehliadača (300 – 340 px): karty sa radšej zmenšia, než by ich zrezal okraj.
         naSirku ? SIRKA_NA_SIRKU_MIN : 56,
         Math.min(
           170,
           // Na šírku: stavba má balíček + lokalitu, branie kariet šenku, voľba cieľa lokalít;
           // 60 px okraje panelu a zón, 10 px medzera za každou kartou.
-          sirkaLinie > 0 ? Math.floor((sirkaLinie - 60) / miestDraftu) - 10 : 118,
+          sirkaLinie > 0 ? (naSirku ? Math.floor((sirkaLinie - 24) / miestDraftu) - 7 : Math.floor((sirkaLinie - 60) / miestDraftu) - 10) : 118,
           // Pri stole so scrollom má vrstva výšku podľa obsahu — karty sa podľa nej nezmenšujú.
           stolScroll ? Number.POSITIVE_INFINITY : vyskaVrstvy > 0 ? Math.floor((vyskaVrstvy - reziaDraftu - (radyStavby - 1) * 10) / (POMER_KARTY * (radyStavby + radZatial))) : 118,
         ),
       );
+  };
+  // Telefón na šírku: balíček stavby v jednom či dvoch radoch — podľa toho, kde budú karty väčšie
+  // (nízka plsť s rukou dole chce jeden rad, vyššia dva). Rad sa zalomí sám podľa šírky kariet.
+  const sirkaDraftu = mobil ? 84 : naSirku && stavim ? Math.max(sirkaDraftuPre(1), sirkaDraftuPre(2)) : sirkaDraftuPre(1);
   // Voľba cieľa na stole (Michal 2026-10-19): lokality sú v paneli namiesto
   // stavby šenku.
   const cielPanel = ((): ReactNode => {
@@ -5576,7 +5629,8 @@ export function HernaPlocha({
     );
   const maHranaTlacidla = hranaVlavo !== null || hranaStred !== null || hranaVpravo !== null;
   // Na stole (Michal 2026-10-25) je hrana jeden rad stredom na čiare okraja plste.
-  const hranaStola = !maHranaTlacidla ? null : (
+  // Na telefóne hrana nie je — ťahy sú v pruhu pokynu (spodok patrí ruke, Michal 2026-10-31).
+  const hranaStola = !maHranaTlacidla || naSirku ? null : (
     // Počas pauzy po voľbe cieľa by „potvrdiť“ stavby svietilo v okne okolo lokality; miesto drží, aby stôl neposkočil.
     // V drafte sa hrana neprilepí nad ruku: stôl leží pod draftom a pri posúvaní
     // by zakrývala karty draftu a pokyn.
@@ -5589,6 +5643,37 @@ export function HernaPlocha({
         <div className="hrana-vpravo">{hranaVpravo}</div>
       </div>
     </div>
+  );
+  // Línia starších otvorená ťukom na Starších v stĺpci (nie krok): pruh povie, čo stôl ukazuje, a vráti späť.
+  const pohladNaStarsich = naSirku && starsiViditelni && krokStarsich === null && pohladStarsich !== null;
+  const pruhPokynu = !naSirku ? null : pohladNaStarsich ? (
+    <PruhPokynu
+      kluc={`starsi-${klucTahu}`}
+      nadpis="Starší"
+      text={`Priazeň a strach starších${pohladLinie === ja ? "" : ` · pohľad ${menoHraca(pohladLinie)}`} — podrž staršieho = zväčšenie.`}
+      hlavna={
+        <button type="button" className="pruh-spat" onClick={zavriStarsich}>
+          ← späť na stôl
+        </button>
+      }
+      vedlajsie={null}
+    />
+  ) : (
+    <PruhPokynu
+      kluc={klucTahu}
+      jednotny={pokyn?.jednotny === true}
+      nadpis={pokyn === null || pokyn.nadpis !== null ? (pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)) : null}
+      text={pokyn?.text === undefined ? null : preDotykUzol(pokyn.text)}
+      hlavna={hranaStred ?? hranaVpravo}
+      vedlajsie={
+        <>
+          {hranaVlavo}
+          {hranaStred !== null && hranaVpravo}
+          {/* ✕ a ↺ z rohu hlavnej pečiatky — v pruhu sú skryté, tu sa ukážu len ony. */}
+          {hranaStred !== null && <span className="pruh-zrusenie">{hranaStred}</span>}
+        </>
+      }
+    />
   );
 
   // Štítok partie a menu Partia ▾ (Michal 2026-10-26, #22 A) — menu webu je počas partie preč (#23).
@@ -5611,6 +5696,28 @@ export function HernaPlocha({
         vzdat={() => cmd({ type: "vzdat" })}
         kontumacia={kontumacia}
         opustit={opustit}
+        dotyk={
+          naSirku
+            ? {
+                polozky: (
+                  <>
+                    <button type="button" role="menuitem" data-zavrie="" onClick={() => setVrstva("log")}>
+                      Log partie
+                      {log.length - videnyLog > 0 && <span className="pocet nove">{log.length - videnyLog}</span>}
+                    </button>
+                    <button type="button" role="menuitemcheckbox" aria-checked={napovedy.zapnute} onClick={napovedy.prepni}>
+                      Nápovedy Melichara: <b>{napovedy.zapnute ? "zapnuté" : "vypnuté"}</b>
+                    </button>
+                    {celaObrazovka.zapnuta && (
+                      <button type="button" role="menuitem" data-zavrie="" onClick={celaObrazovka.prepni}>
+                        Ukončiť celú obrazovku
+                      </button>
+                    )}
+                  </>
+                ),
+              }
+            : undefined
+        }
       />
     );
   // Čísla stĺpca a tabule: aj cena nového poldeci a priazeň starších.
@@ -5629,9 +5736,7 @@ export function HernaPlocha({
       detail={(zdroj) => setOknoZdroja({ p, zdroj })}
       starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === p, prepni: () => prepniStarsich(p) }}
       tabula={{ otvorena: tabulaOtvorena, prepni: () => setTabulaOtvorena((o) => !o) }}
-    >
-      {p === ja ? nastrojeStola : hlavickaPartie}
-    </StlpecHraca>
+    />
   );
   const oknoZdrojaEl =
     !naSirku || oknoZdroja === null ? null : (
@@ -5688,8 +5793,8 @@ export function HernaPlocha({
         mobil
           ? Math.min(sirkaOkna * 0.62, (vyskaOkna - 360) / POMER_KARTY)
           : naSirku
-            ? // Telefón na šírku: pod kartou ešte dva riadky hrán a ikony strán.
-              (vyskaOkna - 210) / POMER_KARTY
+            ? // Telefón na šírku: karta vľavo na výšku okna, text a hrany vedľa nej.
+              (vyskaOkna - 56) / POMER_KARTY
             : Math.min(560, vyskaOkna - 160) / POMER_KARTY,
       ),
     );
@@ -5705,7 +5810,7 @@ export function HernaPlocha({
       <Medziobrazovka obsah={obsah} onRozumiem={zrusPauzuCiela} tlacidloPoMs={PAUZA_CIELA_MS} vypinac={false} trieda="lokalita-supera">
         <div className="ls-lokalita">
           {karta({ karta: lokalita, sirka: sirkaKarty, otocena: view.lokalitaOtocena !== (ja === 1) })}
-          <span className="ls-hrany" style={{ width: sirkaKarty }}>
+          <span className="ls-hrany" style={naSirku ? undefined : { width: sirkaKarty }}>
             <span>◀ k tebe{kTebe !== null && <b> {kTebe}</b>}</span>
             <span>{kSuperovi !== null && <b>{kSuperovi} </b>}k súperovi ▶</span>
           </span>
@@ -5720,7 +5825,7 @@ export function HernaPlocha({
     <div
       ref={hraRef}
       className={naSirku ? "hra mobil-sirka" : stolScroll ? "hra stol-scroll" : "hra"}
-      style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px` } as CSSProperties}
+      style={{ "--ruka-w": `${sirkaVRuke}px`, "--hlavicka-h": `${vyskaHlavicky}px`, ...(naSirku ? { "--dok-h": `${vyskaRukyNaSirku}px` } : {}) } as CSSProperties}
       onClickCapture={naSirku ? tukNaCiel : undefined}
       onContextMenuCapture={
         naSirku
@@ -5732,9 +5837,20 @@ export function HernaPlocha({
       }
     >
       {pauzaCielaEl}
+      {naSirku && view.koniec === null && ruka.length > 0 && <NapovedaPodrzania />}
       {tabulaEl}
       {oknoZdrojaEl}
-      {naSirku && celaObrazovka.mozna && !celaObrazovka.zapnuta && view.koniec === null && <PonukaCelejObrazovky prepni={celaObrazovka.prepni} />}
+      {naSirku && detailOdhadu && bitkaProps !== null && (
+        <Medziobrazovka
+          obsah={{ kluc: "odhad-bitky", nadnadpis: lokalita === null ? "bitka" : menoKarty(lokalita.defId), nadpis: bitkaProps.vysledok ? "Výsledok bitky" : "Odhad bitky", text: "" }}
+          onRozumiem={() => setDetailOdhadu(false)}
+          vypinac={false}
+          zavrietMimo
+          trieda="okno-odhadu"
+        >
+          <div className="okno-odhadu-telo">{tipOdhadu(bitkaProps, stavka, "").text}</div>
+        </Medziobrazovka>
+      )}
       {/* V prehrávači výsledok ukáže detail partie — okno konca s hodnotením a lobby tam nepatrí. */}
       {view.koniec !== null && !koniecZavrety && prehravanie === undefined && bezOknaKonca !== true && (
         <KoniecHry
@@ -5763,6 +5879,7 @@ export function HernaPlocha({
         sprava={spravaBaru}
         zrusChybu={zrusChybu}
         bezPrepinaca={mobil || naSirku}
+        onOdhad={naSirku && bitkaProps !== null ? () => setDetailOdhadu(true) : undefined}
       >
         {skratky.napoveda && <SkratkyNapoveda onZavri={skratky.zavriNapovedu} />}
       </JednotnyBar>
@@ -5812,14 +5929,21 @@ export function HernaPlocha({
             {/* tabIndex: pokyn skrátený na jeden riadok sa rozbalí aj z klávesnice (fokus). */}
             {/* Výučba po bitke hovorí o starších, hoci partia stojí pri voľbe cieľa 2. kola — „klikni na
                 lokalitu“ by hráča posielal na ťah, ktorý výučba nepustí. */}
-            {!ukazStarsich && (
+            {/* Telefón: pruh pokynu s ťahmi a ☰ Partia v pravom hornom rohu plste — jediná ikona na stole. */}
+            {naSirku && (
+              <div className="pruh-riadok">
+                {!ukazStarsich && pruhPokynu}
+                {hlavickaPartie}
+              </div>
+            )}
+            {!ukazStarsich && !naSirku && (
               <div ref={pilulkaRef} className={`linia-stav${pokyn?.jednotny === true ? " jednotna" : ""}`} role="status" aria-live="polite" tabIndex={0}>
                 {(pokyn === null || pokyn.nadpis !== null) && (
                   <strong className="pilulka-nadpis">
                     {pokyn?.nadpis ?? (view.koniec !== null ? "Koniec hry" : somNaTahu ? "Tvoj ťah" : `Na ťahu je ${menoHraca(super_)}`)}
                   </strong>
                 )}
-                {pokyn?.text !== undefined && <span className="pilulka-text">{naSirku && typeof pokyn.text === "string" ? preDotyk(pokyn.text) : pokyn.text}</span>}
+                {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
               </div>
             )}
             {toastPriazneEl}
@@ -5855,13 +5979,13 @@ export function HernaPlocha({
                       : `Hrana k tebe: ${krajStrany(ja)} · hrana k súperovi: ${krajStrany(super_)}`
                   }
                 >
-                  {jeFinaleStola && lokalita !== null ? "finále · lokalita" : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
+                  {jeFinaleStola && lokalita !== null ? (naSirku ? "finále" : "finále · lokalita") : lokalita !== null || lokalitaNavrh !== null ? "lokalita" : "cieľ kola"}
                 </span>
                 <div className="partia-rad harmonika">{stredLinie}</div>
                 {popisStranStredu}
                 {lokalitaNavrh !== null && tahanie === null && (
                   <span className="otocit-tip" data-vyucba="otocenie">
-                    klik na kartu = otočiť ↻
+                    {naSirku ? "ťuk" : "klik"} na kartu = otočiť ↻
                   </span>
                 )}
               </div>
@@ -6254,7 +6378,16 @@ export function HernaPlocha({
           {zoSenku.map((k) =>
             tahatelna(
               { karta: k, odkial: "senok", navrh: true },
-              karta({ karta: k, sirka: sirkaVRuke }),
+              naSirku ? (
+                <>
+                  {karta({ karta: k, sirka: sirkaVRuke })}
+                  <span className="ruka-meno" aria-hidden="true">
+                    {menoKarty(k.defId)}
+                  </span>
+                </>
+              ) : (
+                karta({ karta: k, sirka: sirkaVRuke })
+              ),
               k.uid,
               NAHRADIT + k.uid,
               undefined,

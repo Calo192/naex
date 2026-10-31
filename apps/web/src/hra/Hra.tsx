@@ -24,6 +24,7 @@ import { bezPrvejCasti, rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, Vyucb
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
 import { useNepodporovaneZariadenie, useStolNaSirku, type DovodNepodporovania } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
+import { VyzvaCelejObrazovky, useVyzvaTelefonu } from "./CelaObrazovka.tsx";
 import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
 import "./hra.css";
 
@@ -251,9 +252,12 @@ function Lobby({
 function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovania }) {
   return (
     <>
-    <HlavaStranky nadpis={dovod === "otoc" ? "Otoč telefón na šírku" : "Tu sa NA EX! zatiaľ hrať nedá"} />
+    <HlavaStranky nadpis={dovod === "otoc" ? "Otoč telefón na šírku" : dovod === "iphone" ? "Na iPhone sa hra zatiaľ nedá hrať" : "Tu sa NA EX! zatiaľ hrať nedá"} />
     <div className="formular-stred panel">
-      {dovod === "otoc" ? (
+      {dovod === "iphone" ? (
+        // Michal 2026-10-31: na mobile zatiaľ len Android — na iPhone ani správca, partia sa ani nezaloží.
+        <p>Zahraj si na počítači, tablete alebo telefóne s Androidom — rozohraná partia ťa tam počká.</p>
+      ) : dovod === "otoc" ? (
         <p>Stôl pre telefón je zatiaľ len pre správcov a len na šírku. Otoč telefón — rozohraná partia ťa počká.</p>
       ) : dovod === "dotyk" ? (
         <p>
@@ -265,7 +269,12 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovani
       )}
       <p className="tlmene">Kým sa hra dostane aj na mobil, môžeš si tu čítať:</p>
       <div className="riadok-tlacidiel">
-        <Odkaz href="/pravidla" className="tlacidlo tlacidlo-hlavne">
+        {dovod === "iphone" && (
+          <Odkaz href="/" className="tlacidlo tlacidlo-hlavne">
+            Späť na úvod
+          </Odkaz>
+        )}
+        <Odkaz href="/pravidla" className={dovod === "iphone" ? "tlacidlo" : "tlacidlo tlacidlo-hlavne"}>
           Pravidlá
         </Odkaz>
         <Odkaz href="/karty" className="tlacidlo">
@@ -290,6 +299,8 @@ export function Hra() {
   const spravca = ja !== null && jeSpravca(ja.rola);
   const nepodporovane = useNepodporovaneZariadenie(spravca);
   const { naSirku, otoc } = useStolNaSirku(spravca);
+  // Na telefóne povinne celá obrazovka (Michal 2026-10-31); kde ju prehliadač nevie, aspoň na šírku.
+  const telefon = useVyzvaTelefonu(naSirku, otoc);
   // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
   const hra = useHra(ja !== null && nepodporovane === null);
 
@@ -474,7 +485,8 @@ export function Hra() {
 
   return (
     <>
-    {otoc && <OtocTelefon />}
+    {telefon.vyzva === "cela" && <VyzvaCelejObrazovky zapni={telefon.zapni} />}
+    {telefon.vyzva === "otoc" && <OtocTelefon />}
     <HudbaPartie />
     {/* Vo výučbe len na jej konci — achievement Prvá hra (Michal 2026-10-25). */}
     {(hra.vyucba === null || hra.vyucba.hotovo) && <OznamZiskov zisky={hra.achievementy.zisky} />}

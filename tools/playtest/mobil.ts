@@ -295,6 +295,12 @@ async function strazca(): Promise<void> {
   await cdp.posli("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
   // Telefón má posuvníky len prekryvné a počas posúvania — trvalý pruh desktopu by klamal o šírke.
   await cdp.posli("Emulation.setScrollbarsHidden", { hidden: true });
+  // Stôl na telefóne je povinne na celej obrazovke. Skutočná celá obrazovka v headless Chrome
+  // zmení okno na vlastný rozmer (746 × 245) a emulácia telefónu by sa rozsypala — telefón tu
+  // celú obrazovku len predstiera: requestFullscreen nastaví fullscreenElement a pošle udalosť.
+  await cdp.posli("Page.enable");
+  await cdp.posli("Page.addScriptToEvaluateOnNewDocument", { source: CELA_OBRAZOVKA });
+  await cdp.posli("Runtime.evaluate", { expression: CELA_OBRAZOVKA });
   await natoc(false);
   stav.pripraveny = true;
   uloz();
@@ -317,6 +323,18 @@ async function strazca(): Promise<void> {
   await cdp.koniec;
   process.exit(0);
 }
+
+/** Predstieraná celá obrazovka (viď strážcu): rozmer okna sa nemení, stránka vidí fullscreen. */
+const CELA_OBRAZOVKA = String.raw`(() => {
+  if (window.__naexCela) return;
+  window.__naexCela = true;
+  let el = null;
+  Object.defineProperty(Document.prototype, "fullscreenElement", { configurable: true, get: () => el });
+  Object.defineProperty(Document.prototype, "fullscreenEnabled", { configurable: true, get: () => true });
+  const zmena = () => document.dispatchEvent(new Event("fullscreenchange"));
+  Element.prototype.requestFullscreen = function () { el = this; setTimeout(zmena, 0); return Promise.resolve(); };
+  Document.prototype.exitFullscreen = function () { el = null; setTimeout(zmena, 0); return Promise.resolve(); };
+})()`;
 
 // ---- čo je na obrazovke --------------------------------------------------------
 

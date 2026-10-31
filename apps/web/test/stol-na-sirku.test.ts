@@ -3,9 +3,11 @@
 // dostane výzvu otočiť telefón (stôl pod ňou ostáva). Tabuľa ty | súper ukazuje všetky čísla barov.
 
 import { describe, expect, it } from "vitest";
-import { dovodNepodporovania, stolNaSirku, type Zhoda } from "../src/hra/zariadenie.ts";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { dovodNepodporovania, jeIPhone, stolNaSirku, vyzvaTelefonu, type Zhoda } from "../src/hra/zariadenie.ts";
 import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "../src/hra/tabula.ts";
-import { preDotyk } from "../src/hra/dotyk.ts";
+import { preDotyk, preDotykUzol } from "../src/hra/dotyk.ts";
 
 /** Zariadenie podľa rozmeru a vstupu — vyhodnotí dotazy z zariadenie.ts ako prehliadač. */
 function zariadenie(sirka: number, vyska: number, dotyk: boolean): Zhoda {
@@ -151,5 +153,64 @@ describe("pokyn na dotyku", () => {
     expect(preDotyk("Klikni na nástenke na lokalitu.")).toBe("Ťukni na nástenke na lokalitu.");
     expect(preDotyk("Klikom vyber 4 karty — ďalší klik vráti.")).toBe("Ťukom vyber 4 karty — ďalší ťuk vráti.");
     expect(preDotyk("kliknutím otočíš")).toBe("kliknutím otočíš");
+  });
+
+  it("pravý klik a Esc telefón nemá — dovetky o nich vypadnú", () => {
+    expect(preDotyk("Skončiť bez NA EX? Máš plný poldeci — klikni ešte raz, alebo Esc.")).toBe("Skončiť bez NA EX? Máš plný poldeci — ťukni ešte raz.");
+    expect(preDotyk("potvrdíš „hotovo“, ✕ (alebo pravý klik na kartu v ruke) ju vráti do šenku.")).toBe("potvrdíš „hotovo“, ✕ ju vráti do šenku.");
+    expect(preDotyk("Zrušíš opätovným klikom, pravým klikom alebo Esc.")).toBe("Zrušíš opätovným ťukom.");
+  });
+
+  it("prepíše aj texty v JSX pokyne (strong, span), komponenty nechá", () => {
+    const uzol = createElement("span", null, "Klikni na ", createElement("strong", null, "kartu"), " — pravým klikom ju vrátiš.");
+    expect(renderToStaticMarkup(createElement("p", null, preDotykUzol(uzol)))).toBe("<p><span>Ťukni na <strong>kartu</strong> — ťukom ju vrátiš.</span></p>");
+  });
+});
+
+describe("telefón: povinne celá obrazovka (Michal 2026-10-31)", () => {
+  it("kým nie je celá obrazovka, stôl prekryje výzva — aj na výšku najprv celá obrazovka", () => {
+    expect(vyzvaTelefonu({ telefon: true, naVysku: false, celaMozna: true, celaZapnuta: false })).toBe("cela");
+    expect(vyzvaTelefonu({ telefon: true, naVysku: true, celaMozna: true, celaZapnuta: false })).toBe("cela");
+    expect(vyzvaTelefonu({ telefon: true, naVysku: false, celaMozna: true, celaZapnuta: true })).toBeNull();
+  });
+
+  it("zámok na šírku zlyhal a telefón je na výšku — výzva otočiť", () => {
+    expect(vyzvaTelefonu({ telefon: true, naVysku: true, celaMozna: true, celaZapnuta: true })).toBe("otoc");
+  });
+
+  it("prehliadač bez celej obrazovky (či ju odmietol) chce len šírku; počítač nič", () => {
+    expect(vyzvaTelefonu({ telefon: true, naVysku: false, celaMozna: false, celaZapnuta: false })).toBeNull();
+    expect(vyzvaTelefonu({ telefon: true, naVysku: true, celaMozna: false, celaZapnuta: false })).toBe("otoc");
+    expect(vyzvaTelefonu({ telefon: false, naVysku: false, celaMozna: true, celaZapnuta: false })).toBeNull();
+  });
+});
+
+describe("iPhone: hra zatiaľ zablokovaná pre všetkých (Michal 2026-10-31)", () => {
+  const IPHONE = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1";
+  const IPAD = "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1";
+  const IPADOS = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15";
+  const ANDROID = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36";
+
+  it("spozná iPhone a iPod, iPad ani Android nie", () => {
+    expect(jeIPhone(IPHONE)).toBe(true);
+    expect(jeIPhone("Mozilla/5.0 (iPod touch; CPU iPhone OS 15_0 like Mac OS X)")).toBe(true);
+    expect(jeIPhone(IPAD)).toBe(false);
+    expect(jeIPhone(IPADOS)).toBe(false);
+    expect(jeIPhone(ANDROID)).toBe(false);
+  });
+
+  it("na iPhone sa nehrá ani správca, na šírku ani na výšku — stôl pre telefón sa neotvorí", () => {
+    for (const z of [zariadenie(844, 390, true), zariadenie(390, 844, true)]) {
+      for (const spravca of [false, true]) {
+        expect(dovodNepodporovania(z, spravca, true)).toBe("iphone");
+        expect(stolNaSirku(z, spravca, true).naSirku).toBe(false);
+      }
+    }
+  });
+
+  it("Android telefón správcu hrá ďalej, iPad sa správa ako doteraz", () => {
+    expect(dovodNepodporovania(zariadenie(844, 390, true), true, false)).toBeNull();
+    expect(dovodNepodporovania(zariadenie(1180, 820, true), false, false)).toBeNull();
+    expect(dovodNepodporovania(zariadenie(820, 1180, true), false, false)).toBe("dotyk");
   });
 });

@@ -5,6 +5,7 @@
 // Menu webu je počas partie preč — hráč hrá. Nebezpečné akcie sú v menu, vzdanie sa s potvrdením.
 
 import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { ClientState } from "@naex/core";
 import { chod } from "../lib/router.tsx";
 import { MIMO_PULTU, prepniPultMelichara } from "./Soundboard.tsx";
@@ -43,6 +44,11 @@ export interface HlavickaPartieProps {
   readonly kontumacia?: (() => void) | undefined;
   /** Po konci partie: opustiť miestnosť. */
   readonly opustit: () => void;
+  /**
+   * Telefón na šírku (Michal 2026-10-31): ☰ v rohu plste a menu ako okno cez stôl; položky navrch
+   * (Log, nápovedy, celá obrazovka) — na stole z nich nič nie je.
+   */
+  readonly dotyk?: { readonly polozky: ReactNode } | undefined;
 }
 
 export function HlavickaPartie({
@@ -59,6 +65,7 @@ export function HlavickaPartie({
   vzdat,
   kontumacia,
   opustit,
+  dotyk,
 }: HlavickaPartieProps) {
   const krok = krokPartie(view);
   const bezi = view.koniec === null;
@@ -83,7 +90,7 @@ export function HlavickaPartie({
     if (!otvorene) return;
     menu.current?.querySelector<HTMLElement>("button:not(:disabled)")?.focus();
     const mimo = (e: PointerEvent): void => {
-      if (e.target instanceof Node && obal.current?.contains(e.target) === true) return;
+      if (e.target instanceof Node && (obal.current?.contains(e.target) === true || menu.current?.contains(e.target) === true)) return;
       setOtvorene(false);
       setPotvrd(false);
     };
@@ -110,6 +117,18 @@ export function HlavickaPartie({
     return () => clearTimeout(t);
   }, [skopirovane]);
 
+  // Na telefóne je menu okno cez celý stôl so závesom — mimo stĺpcov a plste, ktoré by ho orezali.
+  const obalMenu = (m: ReactNode): ReactNode =>
+    dotyk === undefined
+      ? m
+      : createPortal(
+          <div className="partia-menu-vrstva" {...{ [MIMO_PULTU]: "" }}>
+            <div className="partia-menu-zaves" onClick={() => zavri(false)} />
+            {m}
+          </div>,
+          document.body,
+        );
+
   // Šípky hore/dole medzi položkami menu.
   const sipky = (e: ReactKeyboardEvent<HTMLDivElement>): void => {
     if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
@@ -130,12 +149,13 @@ export function HlavickaPartie({
           type="button"
           ref={tlacidlo}
           id={ID_TLACIDLA_PARTIE}
-          className="partia-menu-tlacidlo"
+          className={dotyk === undefined ? "partia-menu-tlacidlo" : "partia-menu-tlacidlo partia-menu-ikona"}
           aria-haspopup="menu"
           aria-expanded={otvorene}
+          aria-label={dotyk === undefined ? undefined : "Partia — menu"}
           onClick={() => (otvorene ? zavri(false) : setOtvorene(true))}
         >
-          Partia
+          {dotyk === undefined ? "Partia" : "☰"}
           {/* Kód miestnosti (len hra s človekom) — kopírovanie je v menu. */}
           {!vyucba && !superBot && (
             <span className="partia-kod" title="Kód miestnosti — pošli ho súperovi, alebo sa ním vrátiš">
@@ -146,15 +166,31 @@ export function HlavickaPartie({
           {ponukaKontumaciu && kontum.druh === "mozna" && <span className="bodka-pozor" title="Môžeš si vyžiadať kontumačnú výhru" />}
           {ponukaKontumaciu && kontum.druh === "mozna" && <span className="hp-citacka">(kontumačná výhra je k dispozícii)</span>}
         </button>
-        {otvorene && (
-          <div className="partia-menu" role="menu" aria-label={`Partia ${kod}`} ref={menu} onKeyDown={sipky}>
+        {otvorene && obalMenu(
+          <div
+            className={dotyk === undefined ? "partia-menu" : "partia-menu partia-menu-okno"}
+            role="menu"
+            aria-label={`Partia ${kod}`}
+            ref={menu}
+            onKeyDown={sipky}
+            onClick={(e) => {
+              // Na telefóne sa okno po výbere položky zavrie (vzdanie sa má vlastné potvrdenie).
+              if (dotyk !== undefined && e.target instanceof Element && e.target.closest("[data-zavrie]") !== null) zavri(false);
+            }}
+          >
             <div className="partia-menu-hlava">
               <strong>{vyucba ? "Prvá hra s Melicharom" : `Partia ${kod}`}</strong>
               <span>
                 s {menoSupera} · {krok.text}
                 {!superBot && !pripojeny && " · súper je odpojený"}
               </span>
+              {dotyk !== undefined && (
+                <button type="button" className="partia-menu-zavri" aria-label="Zavrieť menu" onClick={() => zavri(false)}>
+                  ✕
+                </button>
+              )}
             </div>
+            {dotyk?.polozky}
             {!vyucba && !superBot && (
               <button
                 type="button"
@@ -245,7 +281,7 @@ export function HlavickaPartie({
                 )}
               </>
             )}
-          </div>
+          </div>,
         )}
       </div>
     </div>

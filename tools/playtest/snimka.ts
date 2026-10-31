@@ -16,6 +16,7 @@
 // pár uložený v účte má prednosť, preto len pre účty, ktoré si ho v profile nevybrali.
 // --miestnost KÓD uloží v režime „web“ kód miestnosti do prehliadača (návrat do partie po načítaní).
 // --cakaj MS počká po načítaní ešte MS milisekúnd (ukážky, ktoré najprv odohrajú partiu v prehliadači).
+// --iphone emuluje Safari na iPhone (user-agent) — hra je tam zatiaľ zablokovaná (Michal 2026-10-31).
 //
 // Režim „web“ nepotrebuje partiu: prihlási sa na web (predvolene vývojový server
 // :8787, inak --url / NAEX_WEB_URL) AI účtom „<--ako> (AI)“ — hráč, s --tvorba
@@ -35,7 +36,7 @@ import { prihlasAgenta, webUrl } from "./web.ts";
 
 const args = process.argv.slice(2);
 /** Prepínače bez hodnoty — argument za nimi je voľný (relácia, názov). */
-const BEZ_HODNOTY = new Set(["--tvorba", "--plna", "--mobil", "--prehod"]);
+const BEZ_HODNOTY = new Set(["--tvorba", "--plna", "--mobil", "--prehod", "--iphone"]);
 const volba = (k: string): string | undefined => {
   const i = args.indexOf(k);
   return i < 0 ? undefined : args[i + 1];
@@ -158,6 +159,11 @@ try {
 
   await posli("Emulation.setDeviceMetricsOverride", { width: sirka, height: vyska, deviceScaleFactor: 1, mobile: mobil });
   if (mobil) await posli("Emulation.setTouchEmulationEnabled", { enabled: true });
+  if (ma("--iphone"))
+    await posli("Emulation.setUserAgentOverride", {
+      userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+      platform: "iPhone",
+    });
   const { zaklad } = ucet;
   await posli("Page.navigate", { url: `${zaklad}/` });
   await pockaj(1500);

@@ -1,18 +1,29 @@
-// Celá obrazovka na telefóne (Michal 2026-10-31, po skúške na Androide): adresný riadok Chromu
-// zobral stolu na šírku ≈ 15 % výšky. Fullscreen API ho na ťuk skryje a potom sa dá zamknúť
-// orientácia na šírku. iPhone (Safari) Fullscreen API pre stránku nemá — tam sa nič neponúka.
-// Na počítači je to len nenápadná ikona vedľa Log · ? pre všetkých (Michal 2026-10-31); stôl
-// v celej obrazovke prepočíta rozloženie sám (reaguje na resize okna).
+// Celá obrazovka (Michal 2026-10-31, po skúške na Androide): adresný riadok Chromu zobral stolu
+// na šírku ≈ 15 % výšky. Na telefóne je celá obrazovka povinná — kým nie je, stôl prekryje výzva
+// „Ťukni a hraj na celú obrazovku“ (Fullscreen API chce gesto) a po ťuku sa zamkne orientácia
+// na šírku. iPhone (Safari) Fullscreen API pre stránku nemá — tam stačí poloha na šírku.
+// Na počítači je to len nenápadná ikona vedľa Log · ? pre všetkých; stôl v celej obrazovke
+// prepočíta rozloženie sám (reaguje na resize okna).
 
 import { useCallback, useEffect, useState } from "react";
-
-const KLUC_ODMIETNUTIA = "naex-cela-obrazovka-nie";
+import { vyzvaTelefonu, type VyzvaTelefonu } from "./zariadenie.ts";
 
 type OrientaciaSZamkom = ScreenOrientation & { lock?: (o: string) => Promise<void> };
+
+/** Prehliadač odmietol celú obrazovku (napr. vstavaný prehliadač aplikácie) — do zatvorenia karty sa už nevyžaduje. */
+const KLUC_ODMIETNUTA = "naex-cela-obrazovka-odmietnuta";
 
 /** Prehliadač vie dať stránku na celú obrazovku (Android Chrome áno, iPhone Safari nie). */
 function dostupna(): boolean {
   return typeof document !== "undefined" && document.fullscreenEnabled === true && typeof document.documentElement.requestFullscreen === "function";
+}
+
+function odmietnuta(): boolean {
+  try {
+    return sessionStorage.getItem(KLUC_ODMIETNUTA) === "1";
+  } catch {
+    return false;
+  }
 }
 
 function zamkniNaSirku(): void {
@@ -22,6 +33,17 @@ function zamkniNaSirku(): void {
   } catch {
     // starší prehliadač — orientáciu nechá na hráčovi
   }
+}
+
+/** Zapne celú obrazovku a zamkne šírku; false = prehliadač ju odmietol. */
+function zapni(): Promise<boolean> {
+  return document.documentElement
+    .requestFullscreen({ navigationUI: "hide" })
+    .then(() => {
+      zamkniNaSirku();
+      return true;
+    })
+    .catch(() => false);
 }
 
 export function useCelaObrazovka(): { readonly mozna: boolean; readonly zapnuta: boolean; readonly prepni: () => void } {
@@ -37,12 +59,31 @@ export function useCelaObrazovka(): { readonly mozna: boolean; readonly zapnuta:
       void document.exitFullscreen().catch(() => undefined);
       return;
     }
-    void document.documentElement
-      .requestFullscreen({ navigationUI: "hide" })
-      .then(zamkniNaSirku)
-      .catch(() => undefined);
+    void zapni();
   }, []);
   return { mozna, zapnuta, prepni };
+}
+
+/**
+ * Výzva na telefóne (stôl pre telefón, len správca): celá obrazovka, kde ju prehliadač vie,
+ * inak len poloha na šírku. `zapni` patrí do ťuku na výzvu.
+ */
+export function useVyzvaTelefonu(telefon: boolean, naVysku: boolean): { readonly vyzva: VyzvaTelefonu; readonly zapni: () => void } {
+  const { mozna, zapnuta } = useCelaObrazovka();
+  const [zamietnuta, setZamietnuta] = useState(odmietnuta);
+  const vyzva = vyzvaTelefonu({ telefon, naVysku, celaMozna: mozna && !zamietnuta, celaZapnuta: zapnuta });
+  const zapniCelu = useCallback(() => {
+    void zapni().then((ok) => {
+      if (ok) return;
+      setZamietnuta(true);
+      try {
+        sessionStorage.setItem(KLUC_ODMIETNUTA, "1");
+      } catch {
+        // súkromné okno bez úložiska — pamätá si to len táto stránka
+      }
+    });
+  }, []);
+  return { vyzva, zapni: zapniCelu };
 }
 
 function IkonaCelejObrazovky({ zapnuta }: { readonly zapnuta: boolean }) {
@@ -70,50 +111,16 @@ export function TlacidloCelejObrazovky({ zapnuta, prepni }: { readonly zapnuta: 
 }
 
 /**
- * Výrazná ponuka pri príchode k stolu: raz za návštevu, kým hráč nie je na celej obrazovke.
- * „Teraz nie“ si prehliadač zapamätá do zatvorenia karty (ikona v pulte ostáva).
+ * Celoplošná výzva na telefóne: kým nie je celá obrazovka, stôl sa nehrá. Ťuk kamkoľvek ju zapne
+ * (prehliadač chce gesto). Stôl pod výzvou ostáva v DOM aj so spojením — keď hráč celú obrazovku
+ * opustí gestom späť, výzva sa vráti a partia počká presne v tom stave.
  */
-export function PonukaCelejObrazovky({ prepni }: { readonly prepni: () => void }) {
-  const [odmietnuta, setOdmietnuta] = useState(() => {
-    try {
-      return sessionStorage.getItem(KLUC_ODMIETNUTIA) === "1";
-    } catch {
-      return false;
-    }
-  });
-  if (odmietnuta) return null;
-  const nie = (): void => {
-    setOdmietnuta(true);
-    try {
-      sessionStorage.setItem(KLUC_ODMIETNUTIA, "1");
-    } catch {
-      // súkromné okno bez úložiska — ponuka sa len skryje
-    }
-  };
+export function VyzvaCelejObrazovky({ zapni }: { readonly zapni: () => void }) {
   return (
-    <div className="ponuka-celej-obrazovky" role="dialog" aria-modal="true" aria-labelledby="ponuka-celej-obrazovky-nadpis">
-      <div className="ponuka-celej-obrazovky-okno">
-        <IkonaCelejObrazovky zapnuta={false} />
-        <strong id="ponuka-celej-obrazovky-nadpis">Hrať na celú obrazovku?</strong>
-        <span>Lišta prehliadača zaberá stolu miesto. Na celej obrazovke sú karty väčšie a nič sa neskrýva pod okraj.</span>
-        <span className="ponuka-celej-obrazovky-tlacidla">
-          <button type="button" className="tlacidlo-jemne" onClick={nie}>
-            Teraz nie
-          </button>
-          <button
-            type="button"
-            className="tlacidlo-hlavne"
-            onClick={() => {
-              // Aj keď prehliadač celú obrazovku odmietne, ponuka zmizne — ikona v stĺpci ostáva.
-              nie();
-              prepni();
-            }}
-            autoFocus
-          >
-            Na celú obrazovku
-          </button>
-        </span>
-      </div>
-    </div>
+    <button type="button" className="otoc-telefon vyzva-celej-obrazovky" aria-labelledby="vyzva-celej-obrazovky-nadpis" onClick={zapni} autoFocus>
+      <IkonaCelejObrazovky zapnuta={false} />
+      <strong id="vyzva-celej-obrazovky-nadpis">Ťukni a hraj na celú obrazovku</strong>
+      <span>Stôl NA EX! sa na telefóne hrá na celej obrazovke — lišta prehliadača by zobrala miesto kartám. Partia beží ďalej a počká ťa presne v tomto stave.</span>
+    </button>
   );
 }

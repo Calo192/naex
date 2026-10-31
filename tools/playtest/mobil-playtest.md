@@ -66,8 +66,13 @@ Neotváraj počas partie inú stránku (`otvor`) — partia proti botovi odchodo
 5. **Prekrývanie** — vrstvy, nápovedy a bubliny, ktoré zakryjú, čo práve treba.
 6. **Tok a orientácia** — vieš v každej fáze, čo máš urobiť a kam ťuknúť? Dostaneš sa ďalej
    bez hľadania?
-7. **Otočenie** — aspoň raz `otoc` (na výšku má byť výzva „Otoč telefón na šírku“)
-   a späť; partia má pokračovať v tom istom stave.
+7. **Otočenie** — aspoň raz `otoc` a späť; partia má pokračovať v tom istom stave.
+
+Stôl sa na telefóne hrá povinne na celej obrazovke: pri príchode k stolu (aj po obnovení
+stránky) je celoplošná výzva „Ťukni a hraj na celú obrazovku“ — ťukni na ňu. Nástroj celú
+obrazovku len predstiera (rozmer displeja ostáva, aký si zadal pri `zaloz`), lebo skutočná celá
+obrazovka v headless Chrome rozbije emuláciu telefónu. Ťahy sú v pruhu pokynu hore (hlavná
+akcia žltá, ▾ vedľajšie), menu ☰ v pravom hornom rohu plste (Log, nápovedy, vzdať sa).
 
 ## Zápis nálezov
 
