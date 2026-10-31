@@ -58,6 +58,8 @@ const STAVY: Readonly<Record<StavPolozky, string>> = {
   rozpracovane: "rozpracované",
   hotove: "hotové",
 };
+// Štítok na karte nesie len druh zdroja (Michal 2026-10-31: „max 1–2 slová“) — celé znenie je v detaile a v nápovede.
+const ZDROJE: Readonly<Record<string, string>> = { playtest: "Playtest", dizajn: "Dizajn", michal: "Michal", napad: "Dielňa" };
 
 const datum = (cas: number): string => new Date(cas).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric" });
 
@@ -124,7 +126,11 @@ function Karta({
         </p>
       )}
       <div className="rm-stitky">
-        {p.zdroj !== null && <span className={`rm-stitok zdroj-${p.zdroj.typ}`}>{p.zdroj.text}</span>}
+        {p.zdroj !== null && (
+          <span className={`rm-stitok zdroj-${p.zdroj.typ}`} title={p.zdroj.text}>
+            {ZDROJE[p.zdroj.typ] ?? "Zdroj"}
+          </span>
+        )}
         {!hotova && <span className={`rm-stitok stav-${p.stav}`}>{STAVY[p.stav]}</span>}
         {p.zavisi.length > 0 && !hotova && <span className="rm-stitok zavisi">↳ po {p.zavisi.length}</span>}
         {hotova && p.dokoncena !== null && <span className="rm-stitok">{datum(p.dokoncena)}</span>}

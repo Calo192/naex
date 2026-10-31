@@ -1027,6 +1027,9 @@
   border: 1px solid var(--okraj-svetly);
   color: var(--tlmeny);
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rm-stitok.zdroj-playtest {
