@@ -38,8 +38,8 @@
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CardInstance, Command, Event, GameData, GameState, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor } from "@naex/core";
+import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -60,6 +60,8 @@ interface Odohrane {
   readonly zaciatok: GameState;
   /** Ťahy, ktoré sa dohrajú po načítaní (bitka, koniec). */
   readonly dohraj: readonly Krok[];
+  /** História lokalít k začiatku (súhrn lokality na nástenke) — ako ju skladá server. */
+  readonly historia?: HistoriaLokalit;
 }
 
 const q = (): URLSearchParams => new URLSearchParams(window.location.search);
@@ -141,13 +143,15 @@ function odohraj(data: GameData): Odohrane {
 
 function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohrane; readonly najdene: boolean } {
   const p = q();
-  const najdene = (odohrane: Odohrane) => ({ odohrane, najdene: true });
+  const najdene = (odohrane: Odohrane) => ({ odohrane: { historia, ...odohrane }, najdene: true });
   const stop = p.get("stop") ?? "finale";
   const i = Number(p.get("i") ?? "0");
   const karty = Number(p.get("karty") ?? "3");
   const ja = (p.get("ja") === "1" ? 1 : 0) as PlayerId;
   let s = setupGame(data, seed, { lokalit: Number(p.get("lokalit") ?? "3") });
   let zaciatokKola = s;
+  let historia = novaHistoriaLokalit(s);
+  let historiaKola = historia;
   let tahyKola: Krok[] = [];
   let rng = rngSeed(seed ^ 0x5a);
   let bitiek = 0;
@@ -211,6 +215,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     }
     if (s.faza === "volbaCiela" && s.kolo !== zaciatokKola.kolo) {
       zaciatokKola = s;
+      historiaKola = historia;
       tahyKola = [];
     }
     const t = tahy(data, s, rng, n);
@@ -230,7 +235,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
         dohraj.push({ stav: x, cmd: u.cmd, kto: u.kto });
         x = apply(data, x, u.cmd, u.kto).state;
       }
-      return najdene({ zaciatok: zaciatokKola, dohraj });
+      return najdene({ zaciatok: zaciatokKola, dohraj, historia: historiaKola });
     }
     tahyKola.push({ stav: s, cmd: t.cmd, kto: t.kto, rychlo: true });
     if (stop === "bitka" && bitka && bitiek++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
@@ -252,9 +257,10 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
         if (x.strany[superova]?.some((pl) => pl.zaverecna === true && pl.playedBy !== ja)) return najdene({ zaciatok: s, dohraj });
       }
     }
+    historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [] }, najdene: stop !== "zaverecna" };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: stop !== "zaverecna" };
 }
 
 export function UkazkaStola() {
@@ -271,6 +277,9 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     return q().get("zerava") === "1" ? { ...o, zaciatok: sZeravou(o.zaciatok, ja) } : o;
   }, [data]);
   const [stav, setStav] = useState<GameState>(odohrane.zaciatok);
+  // História lokalít ako na serveri — súhrn lokality po kliku na nástenke.
+  const historia = useRef<HistoriaLokalit>(odohrane.historia ?? novaHistoriaLokalit(odohrane.zaciatok));
+  const [lokality, setLokality] = useState<readonly LokalitaVHistorii[]>(() => lokalityPreKlienta(historia.current));
   // Ukážka je len pre správcu — na telefóne na šírku ukáže stôl „Pult“ ako partia (Michal 2026-10-31).
   const { naSirku, otoc } = useStolNaSirku(true);
   const [udalosti, setUdalosti] = useState<{ readonly id: number; readonly events: readonly Event[] }>({ id: 0, events: [] });
@@ -285,6 +294,8 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   const pouzi = (s: GameState, cmd: Command, kto: PlayerId): GameState => {
     try {
       const { state, events } = apply(data, s, cmd, kto);
+      historia.current = zapisDoHistorie(historia.current, s, cmd, kto, state, events);
+      setLokality(lokalityPreKlienta(historia.current));
       const strop = obmedzMomenty(momenty(data, s, state, events), stavMomentov.current, state);
       stavMomentov.current = strop.stav;
       const typ = vynuteny.current;
@@ -346,6 +357,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
       hraci={hraci}
       log={[]}
       udalosti={udalosti}
+      lokality={lokality}
       chyba={null}
       superPripojeny
       kod="ukážka"

@@ -954,3 +954,214 @@
     animation: none;
   }
 }
+
+/* ---- odohraná lokalita v stĺpci (Michal 2026-10-31) ----
+ * Fotka víťaza nad kartou, pod kartou špaky, ktoré za lokalitu získal (porazený vedľa menšie,
+ * ak niečo dostal). Rozpis na myš a fokus, klik otvorí súhrn lokality. */
+.nastenka-listok.v-stlpci .nastenka-vitaz .avatar {
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--pozadie) 70%, transparent);
+}
+
+.nastenka-ziskane {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  line-height: 1;
+}
+
+.nz-hrac {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font: 800 0.95rem/1 var(--nadpis);
+  white-space: nowrap;
+}
+
+.nz-hrac .ikona-spaku {
+  width: 1.7em;
+  height: 0.85em;
+  margin: 0;
+}
+
+.nz-hrac.vitaz {
+  font-size: 1.25rem;
+}
+
+.nz-hrac.moje {
+  color: color-mix(in srgb, var(--ja) 70%, var(--text));
+}
+
+.nz-hrac.superove {
+  color: color-mix(in srgb, var(--su) 70%, var(--text));
+}
+
+.nz-hrac.nic {
+  color: var(--tlmeny);
+}
+
+.vrstva-nastenky .nz-hrac {
+  font-size: calc(0.95rem * var(--nk, 1));
+}
+
+.vrstva-nastenky .nz-hrac.vitaz {
+  font-size: calc(1.25rem * var(--nk, 1));
+}
+
+.nastenka-listok[tabindex] {
+  cursor: help;
+}
+
+.nastenka-listok.klikatelny {
+  cursor: pointer;
+}
+
+.nastenka-listok[tabindex]:hover,
+.nastenka-listok[tabindex]:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--akcent),
+    0 6px 14px color-mix(in srgb, var(--pozadie) 70%, transparent);
+}
+
+.nastenka-listok[tabindex]:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 3px;
+}
+
+/* Rozpis na myš: v portáli nad stolom, myš ani klik neberie (lístok pod ním ostáva pod myšou). */
+.nastenka-rozpis-na-mys {
+  position: fixed;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px 9px;
+  border-radius: 12px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--pozadie) 80%, transparent);
+  color: var(--text);
+  font-size: 0.82rem;
+  line-height: 1.25;
+  pointer-events: none;
+  animation: rozpis-prichod 0.12s ease-out both;
+}
+
+.nrm-hlava {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nrm-hlava b {
+  font: 800 1rem/1.15 var(--nadpis);
+}
+
+.nrm-hlava span {
+  font-size: 0.74rem;
+  color: var(--tlmeny);
+}
+
+.nastenka-rozpis-na-mys table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.nastenka-rozpis-na-mys th,
+.nastenka-rozpis-na-mys td {
+  padding: 3px 4px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.nastenka-rozpis-na-mys thead th {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tlmeny);
+  text-align: right;
+}
+
+.nastenka-rozpis-na-mys thead th:first-child,
+.nastenka-rozpis-na-mys tbody th,
+.nastenka-rozpis-na-mys tfoot th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.nastenka-rozpis-na-mys thead th.moje {
+  color: var(--ja);
+}
+
+.nastenka-rozpis-na-mys thead th.superove {
+  color: var(--su);
+}
+
+.nastenka-rozpis-na-mys td {
+  width: 32%;
+  text-align: right;
+  font-weight: 800;
+}
+
+.nastenka-rozpis-na-mys td.moje {
+  color: color-mix(in srgb, var(--ja) 70%, var(--text));
+}
+
+.nastenka-rozpis-na-mys td.superove {
+  color: color-mix(in srgb, var(--su) 70%, var(--text));
+}
+
+.nastenka-rozpis-na-mys td.nic {
+  color: var(--tlmeny);
+  font-weight: 600;
+}
+
+.nastenka-rozpis-na-mys td.minus {
+  color: var(--cervena-svetla);
+}
+
+.nastenka-rozpis-na-mys td small {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--tlmeny);
+}
+
+.nastenka-rozpis-na-mys tfoot th,
+.nastenka-rozpis-na-mys tfoot td {
+  border-bottom: 0;
+  padding-top: 5px;
+  font-size: 0.95rem;
+}
+
+.nastenka-rozpis-na-mys tfoot .ikona-spaku {
+  width: 1.6em;
+  height: 0.8em;
+}
+
+.nrm-pozn {
+  font-size: 0.72rem;
+  color: var(--tlmeny);
+}
+
+.nrm-klik {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--akcent-svetly);
+}
+
+@keyframes rozpis-prichod {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nastenka-rozpis-na-mys {
+    animation: none;
+  }
+}

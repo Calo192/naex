@@ -525,6 +525,7 @@ export function Hra() {
       hraci={hra.hraci}
       log={hra.log}
       udalosti={hra.udalosti}
+      lokality={hra.lokality}
       bezOknaKonca={hra.vyucba !== null}
       vyucba={hra.vyucba !== null}
       // Ťah bota či hry s textom Melichara čaká na „ďalej“ — bitka, ktorú spustil, sa prehrá až po ňom (U3).

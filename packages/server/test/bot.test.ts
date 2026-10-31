@@ -67,6 +67,20 @@ describe("offline protihráč na serveri", () => {
       expect(tahov).toBeLessThan(3000);
     }
     expect(a.view?.koniec).not.toBeNull();
+    // História lokalít (súhrn lokality po kliku na nástenke): ku každej bitke na nástenke záznam,
+    // posiela sa len pri zmene a nesie len verejné (nemenné pravidlo 2).
+    const spravy = a.ostatne.filter((m) => m.type === "lokality");
+    const lokality = (spravy.at(-1)?.lokality ?? []) as { kolo: number; bitka: unknown; pitky: unknown[] }[];
+    expect(lokality.map((z) => z.kolo)).toEqual(a.view?.nastenka.map((b) => b.kolo));
+    for (const z of lokality) {
+      expect(z.bitka).not.toBeNull();
+      expect(z.pitky.length).toBeGreaterThan(0);
+    }
+    expect(spravy.length).toBeLessThan(a.pocetStavov / 3);
+    const text = JSON.stringify(spravy);
+    expect(text).not.toContain('"pre"');
+    expect(text).not.toContain('"ruka"');
+    expect(text).not.toContain('"doberaci"');
     // Návštevník sa stáva hráčom po prvej dohratej partii, aj proti botovi (Michal 2026-10-21).
     expect(await rola()).toBe("hrac");
 

@@ -40,7 +40,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "klebety", pojem: "Klebety", popis: "Posun sily priazne staršieho z Povier v tomto kole (v8.3): o stupeň k majiteľovi Povery za každú, najviac na 3; marker sa nehýbe, po kole zaniknú." },
   { id: "naex", pojem: "NA EX!", popis: "Plný poldeci na kartu v línii, vybraný v Pitke skryto: zruší jej aktívne akcie a zdvojí neaktívne." },
   { id: "naradie", pojem: "Náradie", popis: "Balíček Nástrojov lícom dole; pri stavbe šenku z neho dostaneš 2 karty, nevzaté a odhodené Nástroje sa vracajú naspodok." },
-  { id: "nastenka", pojem: "Krčmová nástenka", popis: "Odohrané bitky: lokalita, víťaz a jeho špaky za bitku; lokalitu si víťaz neberie." },
+  { id: "nastenka", pojem: "Krčmová nástenka", popis: "Odohrané bitky: lokalita, víťaz a koľko špakov za ňu v kole získal (bitka, Robota, starší…); lokalitu si víťaz neberie. Klik na lokalitu ukáže súhrn Pitiek a bitky." },
   { id: "nastroj", pojem: "Nástroj", popis: "Karta s tagom Nástroj; v línii funguje len pri Občanovi či Starešinovi, alebo ho za cigarety vyložíš do Dedičstva." },
   { id: "natocenie", pojem: "Natočenie", popis: "Ako obranca otočí lokalitu — určuje, ktorá jej hrana patrí ktorému kraju." },
   { id: "nerest", pojem: "Nerest", popis: "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1, Kšeft väzňa 1. Na konci kola sa porovnáva s tvojou Chuťou." },

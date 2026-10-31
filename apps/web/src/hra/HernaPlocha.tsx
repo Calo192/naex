@@ -38,6 +38,7 @@ import type {
   Event,
   GameData,
   LineEval,
+  LokalitaVHistorii,
   PlacedCard,
   PlayerId,
   PocitadloBitky as Pocitadlo,
@@ -159,6 +160,7 @@ import { kartaVyucbyDoOblasti, polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
 import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole, type KrokNaStarsich } from "./prechodFazy.ts";
 import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatkyKrokov.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
+import { SuhrnLokality } from "./SuhrnLokality.tsx";
 import { SuhrnPosunov } from "./SuhrnPosunov.tsx";
 import type { SuhrnDlazdice } from "./Starsi.tsx";
 import { suhrnPosunov, zaciatokKola, type PolozkaSuhrnu, type ZaciatokKola } from "./obsahSuhrnu.ts";
@@ -438,6 +440,8 @@ export interface HernaPlochaProps {
   readonly log: readonly string[];
   /** Udalosti poslednej správy so stavom — účet Pitky a bitky. */
   readonly udalosti?: { readonly id: number; readonly events: readonly Event[] };
+  /** História odohraných lokalít zo servera — súhrn lokality po kliku na nástenke. */
+  readonly lokality?: readonly LokalitaVHistorii[];
   readonly chyba: string | null;
   readonly zrusChybu?: () => void;
   readonly superPripojeny: boolean;
@@ -542,6 +546,7 @@ export function HernaPlocha({
   hraci,
   log,
   udalosti,
+  lokality = [],
   chyba,
   zrusChybu,
   superPripojeny,
@@ -584,6 +589,8 @@ export function HernaPlocha({
   const super_ = (ja === 0 ? 1 : 0) as PlayerId;
   const [mode, setMode] = useState<Mode>({ typ: "ziadny" });
   const [vrstva, setVrstva] = useState<Vrstva | null>(null);
+  /** Kolo odohranej lokality, ktorej súhrn (Pitky a bitka) je otvorený po kliku na nástenke. */
+  const [suhrnLokality, setSuhrnLokality] = useState<number | null>(null);
   // Čí popolník nástenka zvýrazní (Michal 2026-10-27): Špaky súpera otvoria jeho, hlavička tvoju.
   const [nastenkaPre, setNastenkaPre] = useState<PlayerId>(ja);
   useEffect(() => {
@@ -2535,6 +2542,8 @@ export function HernaPlocha({
       mierka={mierka}
       sirkaVyberu={sirkaVyberu}
       listokVyberu={listokVyberu}
+      suhrn={(b) => (naSirku || !lokality.some((z) => z.kolo === b.kolo) ? null : () => setSuhrnLokality(b.kolo))}
+      poStarom={naSirku}
     />
   );
   const aktivneCiele: ReadonlySet<string> = tahanie === null ? new Set() : cieleZdroja(tahanie.zdroj);
@@ -6432,6 +6441,23 @@ export function HernaPlocha({
         </div>
       </div>
 
+      {(() => {
+        const b = suhrnLokality === null ? undefined : view.nastenka.find((x) => x.kolo === suhrnLokality);
+        if (b === undefined) return null;
+        return (
+          <SuhrnLokality
+            key={`suhrn-${b.kolo}`}
+            b={b}
+            zaznam={lokality.find((z) => z.kolo === b.kolo) ?? null}
+            ja={ja}
+            mena={[menoHraca(0), menoHraca(1)]}
+            avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
+            menoKarty={menoKarty}
+            piktogramy={piktogramyRekapitulacie}
+            onZavri={() => setSuhrnLokality(null)}
+          />
+        );
+      })()}
       {vrstvaVyhodnotenia?.druh === "pitka" && (
         <RekapitulaciaPitkyVrstva
           key={`pitka-${view.kolo}-${vrstvaVyhodnotenia.r.pitka}`}

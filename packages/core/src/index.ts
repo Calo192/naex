@@ -20,6 +20,7 @@ export * from "./engine.ts";
 export * from "./rozdelenie.ts";
 export * from "./pohodlie.ts";
 export * from "./kronika.ts";
+export * from "./historiaLokalit.ts";
 export * from "./prehravac.ts";
 export * from "./view.ts";
 export * from "./vyucba.ts";

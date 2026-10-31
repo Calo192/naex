@@ -4,7 +4,7 @@
 // pošle rejoin s kódom z localStorage a hráč pokračuje, kde prestal.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ClientState, Command, DlzkaHry, Event, GameData, Pohlavie, Rod } from "@naex/core";
+import type { ClientState, Command, DlzkaHry, Event, GameData, LokalitaVHistorii, Pohlavie, Rod } from "@naex/core";
 import { kariet, loadGameData, rozlozRod } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
@@ -134,6 +134,8 @@ type ServerMsg =
   | { type: "state"; view: ClientState; events: Event[] }
   /** Doterajší log partie pri návrate (obnovenie stránky, výpadok) — nahrádza miestny. */
   | { type: "historia"; events: Event[] }
+  /** História lokalít — po vstupe k stolu a po každej zmene (bitka, koniec jej kola). */
+  | { type: "lokality"; lokality: LokalitaVHistorii[] }
   /** odpojenyMs: ako dlho súper chýba — len pri návrate k stolu, inak práve odišiel. */
   | { type: "superPripojeny"; connected: boolean; odpojenyMs?: number }
   | { type: "frajerina"; zmeny: ZmenyFrajeriny }
@@ -206,6 +208,8 @@ export interface HraHook {
   readonly log: readonly string[];
   /** Udalosti poslednej správy so stavom (id rastie) — účet Pitky a bitky na stole. */
   readonly udalosti: { readonly id: number; readonly events: readonly Event[] };
+  /** História odohraných lokalít (Pitky, bitka, posuny) — súhrn lokality po kliku na nástenke. */
+  readonly lokality: readonly LokalitaVHistorii[];
   readonly chyba: string | null;
   readonly superPripojeny: boolean;
   /** Odkedy je súper odpojený (čas prehliadača) — odpočet kontumácie; null = pripojený. */
@@ -281,6 +285,7 @@ export function useHra(aktivne: boolean): HraHook {
   const [view, setView] = useState<ClientState | null>(null);
   const [log, setLog] = useState<readonly string[]>([]);
   const [udalosti, setUdalosti] = useState<{ readonly id: number; readonly events: readonly Event[] }>({ id: 0, events: [] });
+  const [lokality, setLokality] = useState<readonly LokalitaVHistorii[]>([]);
   const [chyba, setChyba] = useState<string | null>(null);
   const [superPripojeny, setSuperPripojeny] = useState(true);
   const [superOdpojenyOd, setSuperOdpojenyOd] = useState<number | null>(null);
@@ -326,6 +331,7 @@ export function useHra(aktivne: boolean): HraHook {
           setFrajerina(null);
           setAchievementy({ n: 0, zisky: [] });
           setSuhrnAchievementov(null);
+          setLokality([]);
           // Krok výučby príde hneď po privítaní — iná miestnosť výučbu nemá.
           setVyucba(null);
           localStorage.setItem(KLUC, msg.code);
@@ -338,6 +344,9 @@ export function useHra(aktivne: boolean): HraHook {
           // obnovení stránky písal „Hráč 1“ namiesto mena.
           menaRef.current = msg.hraci.map((h, i) => menoVoVete(h, i));
           rodyRef.current = [rodHraca(msg.hraci[0]), rodHraca(msg.hraci[1])];
+          break;
+        case "lokality":
+          setLokality(msg.lokality);
           break;
         case "historia":
           setLog(msg.events.map((e) => textUdalosti(e, menaRef.current, rodyRef.current)).filter((t): t is string => t !== null).slice(-250));
@@ -402,6 +411,7 @@ export function useHra(aktivne: boolean): HraHook {
             setMiestnost(null);
             setView(null);
             setLog([]);
+            setLokality([]);
             setHraci([null, null]);
             setVyucba(null);
             setChyba(TEXT_ZANIKLEJ_PARTIE);
@@ -454,6 +464,7 @@ export function useHra(aktivne: boolean): HraHook {
     view,
     log,
     udalosti,
+    lokality,
     chyba,
     superPripojeny,
     superOdpojenyOd,
@@ -480,6 +491,7 @@ export function useHra(aktivne: boolean): HraHook {
       setMiestnost(null);
       setView(null);
       setLog([]);
+      setLokality([]);
       setHraci([null, null]);
       setFrajerina(null);
       setVyucba(null);

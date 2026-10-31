@@ -2,7 +2,7 @@
 // alebo ľubovoľnej stránky webu (pre UI a UX dizajnéra).
 // Headless Chrome cez DevTools protokol: prihlási sa za hráča, otvorí /hra
 // a odfotí vrch stránky (stôl) a spodok (starší, ruka). Voliteľne prejde
-// myšou na bod (mouseover) a odfotí aj to.
+// myšou na bod alebo na stred prvku podľa CSS selektora (mouseover) a odfotí aj to.
 //
 //   node --experimental-strip-types --no-warnings tools/playtest/snimka.ts <relacia> <1|2> [nazov] [--sirka 1600] [--vyska 1000] [--hover x,y] [--cesta pravidla] [--klik selektor]
 //   node --experimental-strip-types --no-warnings tools/playtest/snimka.ts web [nazov] --cesta spatna-vazba [--ako "Dizajnér"] [--tvorba] [--plna] [--mobil] [--vystup priečinok] [--url http://…]
@@ -57,7 +57,10 @@ const mobil = ma("--mobil");
 const plna = ma("--plna");
 const sirka = Number(volba("--sirka") ?? (mobil ? "390" : "1600"));
 const vyska = Number(volba("--vyska") ?? (mobil ? "844" : "1000"));
-const hover = volba("--hover")?.split(",").map(Number);
+// --hover x,y alebo CSS selektor (myš na stred prvku, napr. ".nastenka-listok[tabindex]").
+const hoverArg = volba("--hover");
+const hover = hoverArg !== undefined && /^d+,d+$/.test(hoverArg) ? hoverArg.split(",").map(Number) : undefined;
+const hoverSel = hoverArg !== undefined && hover === undefined ? hoverArg : undefined;
 // Git Bash (MSYS) na Windows prepíše argument „/pravidla" na „C:/Program Files/Git/pravidla" —
 // vrátime pôvodnú cestu; bez lomky na začiatku ju doplníme.
 let cesta = volba("--cesta") ?? (web ? "/" : "/hra");
@@ -204,8 +207,14 @@ try {
     await pockaj(900);
     await foto(kliky.length === 1 ? "klik" : `klik${i + 1}`);
   }
-  if (hover !== undefined && hover.length === 2) {
-    await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: hover[0], y: hover[1] });
+  let bod = hover;
+  if (hoverSel !== undefined) {
+    const r = await js(`(() => { const el = document.querySelector(${JSON.stringify(hoverSel)}); if (!el) return null; const b = el.getBoundingClientRect(); return [Math.round(b.left + b.width / 2), Math.round(b.top + b.height / 2)]; })()`);
+    bod = (r.result as { value?: number[] | null } | undefined)?.value ?? undefined;
+    if (bod === undefined) console.error(`--hover: prvok ${hoverSel} sa nenašiel`);
+  }
+  if (bod !== undefined && bod.length === 2) {
+    await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: bod[0], y: bod[1] });
     await pockaj(700);
     await foto("hover");
     await posli("Input.dispatchMouseEvent", { type: "mouseMoved", x: 2, y: 2 });

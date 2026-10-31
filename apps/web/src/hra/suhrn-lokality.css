@@ -1,0 +1,230 @@
+/* Súhrn lokality po kliku na nástenke (Michal 2026-10-31) — vrstva rekapitulácie (pocitadlo-bitky,
+   rekap, rk-spaky-blok z hra.css); tu len rozloženie dvoch stĺpcov a tabuľka Pitiek. Farby len
+   z tokenov schemy.css. */
+
+.suhrn-lokality > .pocitadlo-scena {
+  width: min(100%, 1240px);
+}
+
+.sl-panel {
+  min-width: min(100%, 420px);
+}
+
+.sl-vysledok {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.suhrn-lokality .pocitadlo-mena {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.sl-telo {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  cursor: auto;
+}
+
+.sl-stlpec {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sl-stlpec > .rekap,
+.sl-stlpec > .rk-spaky-blok {
+  width: 100%;
+}
+
+.sl-nadpis {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font: 800 0.85rem/1.2 var(--nadpis);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--akcent-svetly);
+}
+
+.sl-nadpis small {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--tlmeny);
+}
+
+.sl-pozn {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--tlmeny);
+}
+
+/* Tabuľka Pitiek: ty vľavo, Pitka v strede, súper vpravo — ako riadky rekapitulácie. */
+.rekap.sl-pitky {
+  min-height: 0;
+  row-gap: 0;
+}
+
+.sl-riadok {
+  display: contents;
+}
+
+.sl-riadok > * {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--okraj);
+}
+
+.sl-riadok:last-child > * {
+  border-bottom: 0;
+}
+
+.sl-hlava > span {
+  padding: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sl-hlava > .moje {
+  color: var(--ja);
+  text-align: right;
+}
+
+.sl-hlava > .superove {
+  color: var(--su);
+}
+
+.sl-bunka {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.sl-bunka.l {
+  justify-content: flex-end;
+}
+
+.sl-stred {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-inline: 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.sl-bitka-riadok > .sl-stred b {
+  white-space: normal;
+  max-width: 7em;
+  line-height: 1.15;
+}
+
+.sl-rozpis {
+  padding: 1px 8px;
+  border-radius: 99px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  color: var(--akcent-svetly);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sl-rozpis:hover {
+  border-color: var(--akcent);
+}
+
+.sl-rozpis:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 2px;
+}
+
+.sl-cip {
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--okraj);
+  background: var(--plocha-2);
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.sl-cip.dobre {
+  border-color: color-mix(in srgb, var(--zelena) 55%, var(--okraj));
+  color: var(--zelena-svetla);
+}
+
+.sl-cip.zle {
+  border-color: color-mix(in srgb, var(--cervena) 55%, var(--okraj));
+  color: var(--cervena-svetla);
+}
+
+.sl-nic {
+  color: var(--tlmeny);
+}
+
+.sl-posuny {
+  margin: 0;
+  padding: 8px 14px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--okraj);
+  background: color-mix(in srgb, var(--plocha) 90%, transparent);
+  font-size: 0.8rem;
+}
+
+.sl-posuny li {
+  padding-left: 8px;
+  border-left: 3px solid var(--okraj-svetly);
+}
+
+.sl-posuny li.moje {
+  border-left-color: var(--ja);
+}
+
+.sl-posuny li.superove {
+  border-left-color: var(--su);
+}
+
+.sl-posuny small {
+  color: var(--tlmeny);
+}
+
+.sl-bitka .rekap,
+.sl-bitka .rk-spaky-blok {
+  width: 100%;
+}
+
+/* Užšie okno: stĺpce pod sebou, vrstva sa posúva (pocitadlo-bitky má overflow-y). */
+@media (max-width: 1100px) {
+  .sl-telo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Zavrieť ostáva na očiach aj na nízkom okne, keď sa súhrn posúva. */
+.suhrn-lokality .pocitadlo-pata {
+  position: sticky;
+  bottom: 0;
+  padding: 6px 0 2px;
+}

@@ -1552,7 +1552,11 @@ nástenky a v „keby skončila teraz“.
 
 Špaky smú klesnúť do mínusu. **Krčmová nástenka** ukazuje odohrané bitky:
 lokalitu (aj pinnacle finále, s príznakom finále), počet kariet v línii, víťaza a špaky za
-bitku; klient z nej skladá aj rozpis popolníka.
+bitku; klient z nej skladá aj rozpis popolníka. Pod lokalitou je, koľko špakov za ňu víťaz
+v kole získal spolu — za bitku, Robotu, starších na konci kola, Nakladačku, mínus Exekútor;
+porazený vedľa, ak niečo získal. Rozpis po hráčoch ukáže myš (aj fokus klávesnicou), klik
+otvorí súhrn lokality: Pitky kola (kto čo získal a stratil) a rekapituláciu bitky. Súhrn je
+len evidencia z verejných udalostí — server ho skladá z toho, čo videli obaja.
 
 Scorecard nesie len **priazeň** staršieho (§10). Bodovacie podmienky (Lokality,
 Starší, Cigarety, Rezerva, Cirhóza, Dlhy, Absťák, zóny strachu) sa v6 rušia —

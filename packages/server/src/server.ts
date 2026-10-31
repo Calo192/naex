@@ -14,7 +14,7 @@ import { randomInt } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, PlayerId, Pohlavie, ScenarVyucby, StatistikyKariet, StavKroniky, StavMomentov } from "@naex/core";
+import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, HistoriaLokalit, PlayerId, Pohlavie, ScenarVyucby, StatistikyKariet, StavKroniky, StavMomentov } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
@@ -35,6 +35,10 @@ import {
   doplnNaexZKroniky,
   novaKronika,
   zapisDoKroniky,
+  lokalityPreKlienta,
+  lokalityZmenene,
+  novaHistoriaLokalit,
+  zapisDoHistorie,
   POVAHY,
   PREDVOLENA_DLZKA,
   ALL_DLZKY,
@@ -152,6 +156,8 @@ interface Room {
   readonly prikazy: [PlayerId, Command][];
   /** Záznam po kolách (kronika z jadra) — do archívu pre detail partie a súhrn. */
   kronika: StavKroniky | null;
+  /** História lokalít (Pitky, bitka, posuny) pre súhrn lokality na nástenke — verejná, posiela sa obom. */
+  lokality: HistoriaLokalit | null;
   /** Čas a príkazy po fázach (roadmapa #9) — ukladá sa aj pri partii s botom. */
   tempo: StavTempa | null;
   /** Štatistiky kariet rozohranej partie (pre tvorcu kariet). */
@@ -526,6 +532,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
   };
 
+  /** História lokalít obom — sú v nej len verejné udalosti (zapisDoHistorie), pre oboch rovnaká. */
+  const posliLokality = (room: Room): void => {
+    const lokality = lokalityPreKlienta(room.lokality);
+    for (const ws of room.sockets) if (ws !== null) send(ws, { type: "lokality", lokality });
+  };
+
   // Profil: „ziadny“ (bot), „skryty“ (AI playtester pre hráča — bez Frajeriny), „verejny“.
   // Rozhoduje server podľa toho, kto správu dostane (Michal 2026-10-22).
   const posliHracov = (room: Room): void => {
@@ -582,6 +594,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     posliHracov(room);
     if (room.state !== null) {
       send(ws, { type: "historia", events: room.historia[seat] });
+      send(ws, { type: "lokality", lokality: lokalityPreKlienta(room.lokality) });
       send(ws, { type: "state", view: viewFor(room.data, room.state, seat), events: [] });
       const druhe: PlayerId = seat === 0 ? 1 : 0;
       const connected = room.sockets[druhe] !== null || room.bot === druhe;
@@ -630,6 +643,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       seed: null,
       prikazy: [],
       kronika: null,
+      lokality: null,
       tempo: null,
       statistikyKariet: {},
       vysledok: null,
@@ -667,6 +681,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     room.statistiky = noveStatistiky();
     room.tempo = noveTempo(room.zaciatok);
     room.kronika = novaKronika(room.state);
+    room.lokality = novaHistoriaLokalit(room.state);
   };
 
   const handleMsg = (ws: WebSocket, msg: ClientMsg): void => {
@@ -921,6 +936,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const result = apply(room.data, pred, cmd, seat);
     room.prikazy.push([seat, cmd]);
     if (room.kronika !== null) room.kronika = zapisDoKroniky(room.data, room.kronika, pred, cmd, seat, result.state, result.events);
+    const lokalityPred = room.lokality;
+    // Výučba nemá rozdanie (rozdaj) — história sa založí pri prvom príkaze.
+    room.lokality = zapisDoHistorie(room.lokality ?? novaHistoriaLokalit(pred), pred, cmd, seat, result.state, result.events);
     room.state = result.state;
     room.lastActivity = teraz();
     if (room.tempo !== null) room.tempo = zapisPrikaz(room.tempo, fazaPrikazu(pred), seat, room.lastActivity, result.events);
@@ -929,6 +947,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     // Pečiatky momentov — z verejných zmien, rovnaké pre oboch (momenty.ts).
     const strop = obmedzMomenty(momenty(room.data, pred, result.state, result.events), room.momenty, result.state);
     room.momenty = strop.stav;
+    // História lokalít len pri zmene (po bitke a do konca jej kola) — nie s každým stavom.
+    if (lokalityZmenene(lokalityPred, room.lokality)) posliLokality(room);
     broadcast(room, [...result.events, ...strop.vybrane.map((moment): Event => ({ type: "moment", moment }))]);
     achievementyPoKroku(room, pred, cmd, seat, result.state, result.events);
     const skoncila = pred.koniec === null && result.state.koniec !== null;
