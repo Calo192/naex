@@ -366,6 +366,12 @@ export interface BitkaNaNastenke {
   readonly prebytok: readonly [number, number];
   /** Špaky oboch po bitke (pred záverečnou Cirhózou a výkupným). */
   readonly spakyPo: readonly [number, number];
+  /**
+   * Povery bitky po hráčoch (klebety, v8.3): o koľko stupňov ktorý hráč posunul silu priazne
+   * ktorého staršieho. Bitka po vyhodnotení zo stola zmizne — súhrn kola ich vezme odtiaľto.
+   * Verejné ako bitka; chýba, keď v bitke nikto Povery nerozdelil.
+   */
+  readonly povery?: readonly [Klebety, Klebety];
 }
 
 /** Položka rozpisu špakov za starších po bitke (BitkaNaNastenke.zaStarsichRozpis). */
@@ -5499,6 +5505,12 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
       b.spalit.push(obet.card.uid);
       events.push({ type: "log", text: `Krokodíl hráča ${pl.playedBy + 1} zožiera kartu ${defOf(data, obet.card).name} — ide z hry.` });
     }
+  }
+
+  const povery = b.klebetyHracov;
+  const zaznamBitky = s.nastenka[s.nastenka.length - 1];
+  if (zaznamBitky !== undefined && zaznamBitky.kolo === s.kolo && povery !== undefined && povery.some((k) => Object.keys(k).length > 0)) {
+    zaznamBitky.povery = [{ ...povery[0] }, { ...povery[1] }];
   }
 
   // 6d. Zajatie (v9): víťazov pokus uspeje, ostatné zlyhajú; tretí väzeň končí hru.

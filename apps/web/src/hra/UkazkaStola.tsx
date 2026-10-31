@@ -7,6 +7,8 @@
 //   &stop=bitka    tesne pred k-tou bitkou (&i=k, od 0) — po načítaní ju bot dohrá,
 //                  takže beží počítadlo a rekapitulácia
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
+//   &stop=suhrn    začiatok kola k-tej bitky (&i=k, od 0); po načítaní sa kolo rýchlo dohrá po bitku —
+//                  po zavretí vyhodnotenia príde súhrn posunov starších
 //   &stop=kolo     začiatok kola &i=k
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
 //                  z prebytku (stopa v línii starších)
@@ -48,6 +50,8 @@ interface Krok {
   readonly stav: GameState;
   readonly cmd: Command;
   readonly kto: PlayerId;
+  /** Ťah sa dohrá hneď za predošlým (dohranie celého kola pred bitkou). */
+  readonly rychlo?: true;
 }
 
 interface Odohrane {
@@ -141,6 +145,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   const karty = Number(p.get("karty") ?? "3");
   const ja = (p.get("ja") === "1" ? 1 : 0) as PlayerId;
   let s = setupGame(data, seed, { lokalit: Number(p.get("lokalit") ?? "3") });
+  let zaciatokKola = s;
+  let tahyKola: Krok[] = [];
   let rng = rngSeed(seed ^ 0x5a);
   let bitiek = 0;
   let pohorseni = 0;
@@ -201,11 +207,30 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       const b = sBzdochou(data, s, ja, stop === "bzdocha-caka");
       if (b !== null) return najdene({ zaciatok: b, dohraj: [] });
     }
+    if (s.faza === "volbaCiela" && s.kolo !== zaciatokKola.kolo) {
+      zaciatokKola = s;
+      tahyKola = [];
+    }
     const t = tahy(data, s, rng, n);
     if (t === null) break;
     rng = t.rng;
     const { state: po, events } = apply(data, s, t.cmd, t.kto);
     const bitka = events.some((e) => e.type === "bitkaVysledok");
+    if (stop === "suhrn" && bitka && bitiek++ === i) {
+      // Za bitkou aj rozdeľovanie Nakladačky, kým kolo neskončí — súhrn ho má ukázať.
+      const dohraj: Krok[] = [...tahyKola, { stav: s, cmd: t.cmd, kto: t.kto }];
+      let x = po;
+      let r2 = rng;
+      for (let k = 0; k < 60 && x.koniec === null && x.kolo === s.kolo; k++) {
+        const u = tahy(data, x, r2, n + 1 + k);
+        if (u === null) break;
+        r2 = u.rng;
+        dohraj.push({ stav: x, cmd: u.cmd, kto: u.kto });
+        x = apply(data, x, u.cmd, u.kto).state;
+      }
+      return najdene({ zaciatok: zaciatokKola, dohraj });
+    }
+    tahyKola.push({ stav: s, cmd: t.cmd, kto: t.kto, rychlo: true });
     if (stop === "bitka" && bitka && bitiek++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
     if (stop === "koniec" && po.koniec !== null) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
     const superova = s.strany.findIndex((strana) => strana.some((pl) => pl.zaverecna === true && pl.playedBy !== ja));
@@ -276,13 +301,15 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     // Ťah po ťahu s pauzou ako bot na serveri — každý krok má vlastné udalosti (rekapitulácia
     // Pitky, súperova ďalšia Záverečná, kým rekapitulácia ešte svieti).
     let s = odohrane.zaciatok;
-    const casovace = odohrane.dohraj.map((k, i) =>
-      setTimeout(() => {
+    let kedy = 500;
+    const casovace = odohrane.dohraj.map((k, i) => {
+      kedy += k.rychlo === true ? 40 : 700;
+      return setTimeout(() => {
         s = pouzi(s, k.cmd, k.kto);
         setStav(s);
         if (i === odohrane.dohraj.length - 1) setDohrate(true);
-      }, 1200 + i * 700),
-    );
+      }, kedy);
+    });
     return () => casovace.forEach(clearTimeout);
   }, [odohrane]);
 

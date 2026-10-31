@@ -6,7 +6,7 @@
 // alebo strach so špakmi, pokus o zajatie a posun od poslednej bitky. Odznak počíta väzňov (v9).
 
 import type { CSSProperties } from "react";
-import type { ClientState, GameData, PlayerId } from "@naex/core";
+import type { ClientState, GameData, MarkerPos, PlayerId } from "@naex/core";
 import { KONSTANTY, STUPNICA_ZONY, priazenSila, strachNaUdrzanie, strachNaVyplatu, vydesil } from "@naex/core";
 import { farbaZony, ucinokPriazne } from "./LiniaStarsich.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
@@ -22,12 +22,38 @@ export interface DlazdicaStarsichProps {
   readonly zaStarsich: number;
   /** Strach, ktorý čaká na udržanie (v8.3) — zaplatí ho koniec ďalšieho kola. */
   readonly naUdrzanie: number;
-  readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string; readonly posuny?: number };
+  readonly starsi: {
+    readonly stlacene: boolean;
+    readonly prepni: () => void;
+    readonly id: string;
+    readonly posuny?: number;
+    readonly suhrn?: SuhrnDlazdice | undefined;
+  };
+}
+
+/**
+ * Dlaždica počas súhrnu kola (mock 5): svieti, svetlo ide stĺpčekmi zľava doprava a stĺpček
+ * zobrazeného staršieho sa mení spolu s markerom v bubline. Stĺpčeky sú starší zo začiatku kola.
+ */
+export interface SuhrnDlazdice {
+  /** Marker, ktorý stĺpček práve ukazuje; null = starší je už väzeň. */
+  readonly stlpce: readonly { readonly elderId: string; readonly marker: MarkerPos | null }[];
+  /** Stĺpček pod svetlom. */
+  readonly sken: string | null;
+  /** Stĺpček, z ktorého vyskočila bublina. */
+  readonly aktivny: string | null;
+  /** Stĺpčeky, ktoré svetlo prešlo bez bubliny. */
+  readonly preskoceni: ReadonlySet<string>;
 }
 
 export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: DlazdicaStarsichProps) {
   const ja = p === view.ja;
-  const { priazen, strach, stlpce } = stupienkyStarsich(view.starsi, p);
+  const suhrn = starsi.suhrn;
+  const { priazen, strach, stlpce: stlpceTeraz } = stupienkyStarsich(view.starsi, p);
+  const stlpce =
+    suhrn === undefined
+      ? stlpceTeraz
+      : suhrn.stlpce.map((s) => (s.marker === null ? { elderId: s.elderId, smer: "vazen" as const, zona: 0 } : stupienkyStarsich([{ elderId: s.elderId, marker: s.marker }], p).stlpce[0]!));
   // Výkričníky pred špakmi za strach: najvyšší stupeň, v akom sa hráča niekto bojí (ako v línii).
   const najStrach = Math.max(0, ...stlpce.filter((s) => s.smer === "dole").map((s) => s.zona));
   const posuny = starsi.posuny ?? 0;
@@ -42,7 +68,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
   return (
     <button
       type="button"
-      className={`zdroj zdroj-starsi${starsi.stlacene ? " stlacene" : ""}`}
+      className={`zdroj zdroj-starsi${starsi.stlacene ? " stlacene" : ""}${suhrn === undefined ? "" : " suhrn-ziari"}`}
       aria-pressed={starsi.stlacene}
       aria-controls={starsi.id}
       data-vyucba-prvok="starsi"
@@ -66,11 +92,21 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
       <span className="zdroj-hodnota">
         <span className="velke-cislo starsi-priazen">
           <IkonaPriazne />
-          {priazen}
+          {/* Počas súhrnu číslo ide so stĺpčekmi, nie dopredu. */}
+          {suhrn === undefined ? priazen : stlpce.filter((s) => s.smer === "hore").length}
         </span>
         <span className="stupienky" aria-hidden="true">
           {stlpce.map((s) => (
-            <i key={s.elderId} className={s.smer} style={{ "--zona": s.zona, "--farba-zony": farbaZony(s.zona) } as CSSProperties} />
+            <i
+              key={s.elderId}
+              className={
+                suhrn === undefined
+                  ? s.smer
+                  : `${s.smer}${suhrn.sken === s.elderId ? " sken" : ""}${suhrn.aktivny === s.elderId ? " aktivny" : ""}${suhrn.preskoceni.has(s.elderId) ? " sedy" : ""}`
+              }
+              style={{ "--zona": s.zona, "--farba-zony": farbaZony(s.zona) } as CSSProperties}
+              data-suhrn-stlpcek={suhrn === undefined ? undefined : s.elderId}
+            />
           ))}
         </span>
       </span>

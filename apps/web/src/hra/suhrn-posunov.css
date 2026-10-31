@@ -1,0 +1,519 @@
+/* Súhrn posunov starších pred výberom lokality (mock 5 „Bublina pri dlaždici“, Michal 2026-10-30/31).
+ * Stôl ostáva stolom — clona len zachytí kliky (klik mimo nič nerobí), bublina stojí nad
+ * stĺpčekom dlaždice Starší. Farby len z tokenov schemy.css; stupnica má pevné farby zón. */
+
+.suhrn-clona {
+  position: fixed;
+  inset: 0;
+  z-index: 860;
+  background: transparent;
+}
+
+/* Dlaždica Starší počas súhrnu: žiara a svetlo, ktoré ide stĺpčekmi. */
+.zdroj-starsi.suhrn-ziari {
+  box-shadow:
+    0 0 0 3px var(--akcent),
+    0 0 24px color-mix(in srgb, var(--akcent) 50%, transparent);
+  animation: suhrn-ziara 0.35s ease-out both;
+}
+
+@keyframes suhrn-ziara {
+  from {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.zdroj-starsi.suhrn-ziari .stupienky i {
+  border-radius: 2px;
+  transition:
+    opacity 0.25s ease,
+    box-shadow 0.15s ease;
+}
+
+.zdroj-starsi.suhrn-ziari .stupienky i::after {
+  transition:
+    height 0.35s ease,
+    top 0.35s ease,
+    bottom 0.35s ease;
+}
+
+.zdroj-starsi.suhrn-ziari .stupienky i.sken {
+  box-shadow:
+    0 0 0 1px var(--akcent-svetly),
+    0 0 10px 3px color-mix(in srgb, var(--akcent) 70%, transparent);
+}
+
+.zdroj-starsi.suhrn-ziari .stupienky i.aktivny {
+  outline: 2px solid var(--akcent);
+  outline-offset: 2px;
+}
+
+.zdroj-starsi.suhrn-ziari .stupienky i.sedy {
+  opacity: 0.35;
+}
+
+/* Väzeň: prázdne miesto na ukazovateli (ako v línii). */
+.zdroj-starsi.suhrn-ziari .stupienky i.vazen::after {
+  top: calc(50% - 4px);
+  height: 8px;
+  background: none;
+  border: 1px dashed var(--slaby-text);
+}
+
+/* ---- bublina ---- */
+.suhrn-bublina {
+  box-sizing: border-box;
+  position: fixed;
+  z-index: 865;
+  display: grid;
+  gap: 12px;
+  max-width: calc(100vw - 16px);
+  padding: 14px 18px 14px;
+  border-radius: 16px;
+  background: var(--plocha);
+  border: 2px solid var(--akcent);
+  color: var(--text);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--pozadie) 70%, transparent);
+  transform-origin: var(--sipka) 100%;
+  animation: suhrn-prichod 0.38s ease-out both;
+}
+
+/* Šípka na stĺpček. */
+.suhrn-bublina::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: var(--sipka);
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  background: var(--plocha);
+  border-right: 2px solid var(--akcent);
+  border-bottom: 2px solid var(--akcent);
+  rotate: 45deg;
+}
+
+/* Po potvrdení sa bublina vtiahne späť do stĺpčeka. */
+.suhrn-bublina.odchod {
+  animation: suhrn-odchod 0.3s ease-in both;
+}
+
+@keyframes suhrn-prichod {
+  from {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes suhrn-odchod {
+  to {
+    transform: scale(0.05);
+    opacity: 0;
+  }
+}
+
+.sb-hlava {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sb-portret {
+  position: relative;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--plocha-3);
+}
+
+.sb-portret img,
+.sb-portret-prazdny {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Uväznený: mreže cez portrét vo farbe toho, kto ho zajal. */
+.sb-mreze {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--pozadie) 30%, transparent);
+  animation: pecat-dopad 0.25s ease-out both;
+}
+
+.sb-mreze .sb-ikona {
+  width: 92%;
+  height: 92%;
+  filter: drop-shadow(0 1px 2px var(--pozadie));
+}
+
+.sb-mreze.ja {
+  color: var(--ja);
+}
+
+.sb-mreze.su {
+  color: var(--su);
+}
+
+.sb-meno {
+  min-width: 0;
+  font: 800 1.45rem/1.15 var(--nadpis);
+  overflow-wrap: anywhere;
+}
+
+/* Stupnica pred → po: výška poľa = stupeň (ako v línii starších), marker s krígľom vo farbe priazne. */
+.sb-stupnica {
+  --seg: calc(100% / 7);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 34px;
+  margin: 2px 22px 4px;
+}
+
+.sb-stupnica i {
+  flex: 1;
+  height: calc(10px + var(--z) * 8px);
+  border-radius: 3px;
+}
+
+.sb-kraj {
+  position: absolute;
+  bottom: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.sb-kraj.ja {
+  left: -18px;
+  background: var(--ja);
+}
+
+.sb-kraj.su {
+  right: -18px;
+  background: var(--su);
+}
+
+.sb-marker {
+  position: absolute;
+  bottom: -4px;
+  left: calc((var(--p) + 0.5) * var(--seg));
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--pozadie);
+  border: 3px solid var(--slaby-text);
+  box-shadow:
+    0 0 0 1px var(--text),
+    0 2px 6px color-mix(in srgb, var(--pozadie) 60%, transparent);
+  color: var(--slaby-text);
+  transition:
+    left 0.38s cubic-bezier(0.4, 1.6, 0.5, 1),
+    border-color 0.2s;
+}
+
+.sb-marker .ikona-priazne {
+  width: 62%;
+  height: 62%;
+  margin: 0;
+}
+
+.sb-marker.ja {
+  border-color: var(--ja);
+  color: var(--ja);
+}
+
+.sb-marker.su {
+  border-color: var(--su);
+  color: var(--su);
+}
+
+/* Duch: kde marker začal kolo. */
+.sb-marker.duch {
+  background: none;
+  border: 2px dashed var(--akcent-svetly);
+  box-shadow: none;
+  opacity: 0.85;
+  transition: none;
+}
+
+.sb-stopa {
+  position: absolute;
+  bottom: 9px;
+  left: calc((var(--od) + 0.5) * var(--seg));
+  width: calc((var(--do) - var(--od)) * var(--seg));
+  height: 4px;
+  border-radius: 2px;
+  background: var(--akcent-svetly);
+  opacity: 0.8;
+  transition:
+    left 0.38s ease,
+    width 0.38s ease;
+}
+
+/* Dôsledky: len ikony a čísla vo farbe hráča, žiadny verdikt (Michal 2026-10-31). */
+.sb-dosledky {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  animation: suhrn-dosledky 0.25s ease-out 0.35s both;
+}
+
+@keyframes suhrn-dosledky {
+  from {
+    opacity: 0;
+  }
+}
+
+.sb-cip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 5px 12px 5px 9px;
+  border-radius: 999px;
+  background: var(--plocha-2);
+  border: 2px solid var(--okraj-svetly);
+  font: 800 1.2rem/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sb-cip .ikona-priazne,
+.sb-cip .ikona-strachu,
+.sb-cip .sb-ikona {
+  width: 1.3em;
+  height: 1.3em;
+  margin: 0;
+  vertical-align: 0;
+}
+
+.sb-cip .ikona-spaku {
+  width: 1.7em;
+  height: 0.85em;
+  fill: var(--text);
+}
+
+.sb-cip.ja {
+  border-color: var(--ja);
+}
+
+.sb-cip.su {
+  border-color: var(--su);
+}
+
+.sb-cip.ja > .ikona-priazne,
+.sb-cip.ja b,
+.sb-cip.ja > .sb-ikona:first-child {
+  color: var(--ja);
+}
+
+.sb-cip.su > .ikona-priazne,
+.sb-cip.su b,
+.sb-cip.su > .sb-ikona:first-child {
+  color: var(--su);
+}
+
+.sb-cip s {
+  color: var(--slaby-text);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+.sb-cip.strata {
+  opacity: 0.65;
+  border-style: dashed;
+}
+
+.sb-cip .sb-ikona.hodiny {
+  width: 1em;
+  height: 1em;
+  color: var(--tlmeny);
+}
+
+.sb-cip .sb-ikona.cigareta {
+  color: var(--tlmeny);
+}
+
+/* Zaplatené teraz: plný podklad vo farbe hráča. */
+.sb-cip.vyplata.ja {
+  background: color-mix(in srgb, var(--ja) 18%, var(--plocha-2));
+}
+
+.sb-cip.vyplata.su {
+  background: color-mix(in srgb, var(--su) 18%, var(--plocha-2));
+}
+
+.sb-ikona {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+.sb-pata {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 52px;
+}
+
+.sb-bodky {
+  display: flex;
+  gap: 5px;
+  margin-right: auto;
+}
+
+.sb-bodky i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--okraj-svetly);
+}
+
+.sb-bodky i.bolo {
+  background: var(--tlmeny);
+}
+
+.sb-bodky i.teraz {
+  background: var(--akcent);
+}
+
+.suhrn-bublina .sb-dalej {
+  animation: pecat-dopad 0.22s ease-out;
+}
+
+.sb-dalej .sb-pocet {
+  font: 700 0.8rem var(--pismo);
+  letter-spacing: 0;
+  opacity: 0.75;
+}
+
+.sb-caka {
+  width: 200px;
+  height: 52px;
+}
+
+/* Mobil: spodný panel cez celú šírku (Michal 2026-10-31). */
+.suhrn-bublina.mobil {
+  gap: 9px;
+  max-width: none;
+  padding: 12px 12px calc(10px + env(safe-area-inset-bottom));
+  border-radius: 16px 16px 0 0;
+  border-bottom: 0;
+  transform-origin: 50% 100%;
+  animation-name: suhrn-panel;
+}
+
+.suhrn-bublina.mobil::after {
+  display: none;
+}
+
+.suhrn-bublina.mobil.odchod {
+  animation-name: suhrn-panel-odchod;
+}
+
+@keyframes suhrn-panel {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes suhrn-panel-odchod {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.suhrn-bublina.mobil .sb-portret {
+  width: 46px;
+  height: 46px;
+}
+
+.suhrn-bublina.mobil .sb-meno {
+  font-size: 1.1rem;
+}
+
+.suhrn-bublina.mobil .sb-stupnica {
+  height: 28px;
+  margin-inline: 18px;
+}
+
+.suhrn-bublina.mobil .sb-marker {
+  width: 26px;
+  height: 26px;
+}
+
+.suhrn-bublina.mobil .sb-cip {
+  min-height: 34px;
+  padding: 4px 9px 4px 7px;
+  font-size: 1rem;
+}
+
+.suhrn-bublina.mobil .sb-pata {
+  min-height: 46px;
+}
+
+/* Nízky notebook (1366 × 650): menšia bublina, nech stôl nad ňou ostane vidno. */
+@media (max-height: 700px) {
+  .suhrn-bublina {
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .sb-portret {
+    width: 48px;
+    height: 48px;
+  }
+
+  .sb-meno {
+    font-size: 1.2rem;
+  }
+
+  .sb-cip {
+    min-height: 34px;
+    font-size: 1.05rem;
+  }
+
+  .sb-pata {
+    min-height: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zdroj-starsi.suhrn-ziari,
+  .suhrn-bublina,
+  .suhrn-bublina.odchod,
+  .sb-dosledky,
+  .sb-mreze,
+  .suhrn-bublina .sb-dalej {
+    animation: none;
+  }
+
+  .sb-marker,
+  .sb-stopa,
+  .zdroj-starsi.suhrn-ziari .stupienky i,
+  .zdroj-starsi.suhrn-ziari .stupienky i::after {
+    transition: none;
+  }
+}

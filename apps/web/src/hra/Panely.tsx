@@ -28,7 +28,7 @@ import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { BarSpakov } from "./BarSpakov.tsx";
-import { BarStarsich, DlazdicaStarsich } from "./Starsi.tsx";
+import { BarStarsich, DlazdicaStarsich, type DlazdicaStarsichProps } from "./Starsi.tsx";
 import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
@@ -454,9 +454,9 @@ export interface HracDoskaProps {
   /**
    * Dlaždica Starší (Michal 2026-10-27, S1 stupienky): klik prepne stôl na líniu starších
    * a oba bary na bar starších. `stlacene`: línia práve ukazuje tohto hráča.
-   * posuny = koľko starších sa pohlo od poslednej bitky (stopa na stupnici, #95).
+   * posuny = koľko starších sa pohlo od poslednej bitky (stopa na stupnici, #95); suhrn = beží súhrn kola.
    */
-  readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void; readonly id: string; readonly posuny?: number };
+  readonly starsi: DlazdicaStarsichProps["starsi"];
   /** Klik na Špaky otvorí krčmovú nástenku s účtom (Michal 2026-10-27, variant A). */
   readonly spakyKlik: { readonly stlacene: boolean; readonly prepni: () => void };
   /** Dlaždica KARTY: klik otvorí vrstvu Karty, pri ťahaní kliatby či Nástroja je cieľom (#76). */
