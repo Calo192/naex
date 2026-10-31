@@ -2035,3 +2035,25 @@ Staré znenie §7 (Úplatok):
 
 Hlavička PRAVIDLA.md predtým: „Pravidlá v9 (zmrazené 2026-10-30), dávky v9.1 a v9.2“;
 stránka Pravidlá písala „Pravidlá v9, platné od 30. 10. 2026“.
+
+## Stará Kar v bitke vypadla z hry aj zo špecifikácie (2026-10-31, sada v53)
+
+Pravidlá sa nemenili. Z jadra zmizli kroky bitky pre karty starších sád, ktoré sada v53
+nespustí: Kar v bitke (zahodiť Cirhózu alebo Absťák), Benzínka v bitke (zahodiť Občanov),
+Živnostník so spúšťačom Výhra (víťaz zahodí súperovo Dedičstvo) a voľby Nástupu Klebetnice
+(súperova karta naspodok) a Dohadzovačky (výmena priazní dvom starším). Text §8 a §9.0 sa
+zosúladil s hrou. Staré znenia:
+
+§8 (Absťák):
+
+> - zahodiť ju smie len **Vízia** alebo efekt, ktorý to výslovne povie (v starej sade
+>   aj Kar, §9.0); Hasič ju vytiahne ako každú kartu a hráč ju vráti alebo si ju nechá;
+
+§9, tabuľka krokov:
+
+> | 0 | Efekty na začiatku bitky (Traktorista; v starej sade Kar) | §9.0 |
+
+§9.0:
+
+> Traktorista bez prevahy (Dlh) (§16; v sade v53 sa karta volá Traktorista, predtým Traktoristka). V starej sade (do v6) Kar: každý hráč s nepriznanou
+> Cirhózou v ruke sa rozhodne (obranca, potom útočník), či jednu zahodí.

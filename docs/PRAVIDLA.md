@@ -849,8 +849,8 @@ normálne.
   užitočnej karty;
 - v bitke **−1 tuhé** hráčovi za každú kartu Absťák **kdekoľvek v jeho balíčku**
   (ruka, doberací, odhadzovací, §9.3); remízu v tuhom prehráva, kto ich má viac (§9.4);
-- zahodiť ju smie len **Vízia** alebo efekt, ktorý to výslovne povie (v starej sade
-  aj Kar, §9.0); Hasič ju vytiahne ako každú kartu a hráč ju vráti alebo si ju nechá;
+- zahodiť ju smie len **Vízia** alebo efekt, ktorý to výslovne povie; Hasič ju
+  vytiahne ako každú kartu a hráč ju vráti alebo si ju nechá;
 - na konci hry nestojí nič (§14) a Pohoršenie nedáva (Nervák zanikol).
 
 Počet Absťákov oboch hráčov je verejný (karta pribúda pred očami oboch), poloha
@@ -869,7 +869,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 
 | Krok | Čo sa deje | Kde |
 |---|---|---|
-| 0 | Efekty na začiatku bitky (Traktorista; v starej sade Kar) | §9.0 |
+| 0 | Efekty na začiatku bitky (Traktorista) | §9.0 |
 | 1 | Povery (v8.3) — Viera a Povery sa vyrušia, zvyšné posunú silu priazní (obranca prvý, potom útočník) | §9.1 |
 | 2 | Pohoršenie (aj z priazne Abstinenta — už po Poverách) — pole podľa ceny zóny; nie na staršieho v ohrození | §9.2 |
 | 3 | Poškodenie — tuhé (mäkké od v8.3 nie je) | §9.3 |
@@ -887,8 +887,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí:
 
 ### 9.0 Efekty na začiatku bitky
 
-Traktorista bez prevahy (Dlh) (§16; v sade v53 sa karta volá Traktorista, predtým Traktoristka). V starej sade (do v6) Kar: každý hráč s nepriznanou
-Cirhózou v ruke sa rozhodne (obranca, potom útočník), či jednu zahodí.
+Traktorista bez prevahy (Dlh) (§16; v sade v53 sa karta volá Traktorista, predtým Traktoristka).
 
 ### 9.1 Povery (v8.3 „Výpožička priazne“)
 
