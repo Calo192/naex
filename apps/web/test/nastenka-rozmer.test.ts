@@ -1,7 +1,7 @@
 // Krčmová nástenka na stole (Michal 2026-10-28: „zväčšiť, a to o dosť“).
 
 import { describe, expect, it } from "vitest";
-import { DVA_RADY_OD, KARTA_MIN, rozmerNastenky } from "../src/hra/rozlozenieNastenky.ts";
+import { DVA_RADY_OD, KARTA_MIN, POMER, rozmerNastenky } from "../src/hra/rozlozenieNastenky.ts";
 
 describe("rozmer nástenky", () => {
   it("väčšia plsť = väčšie karty, písmo rastie s nimi", () => {
@@ -59,15 +59,18 @@ describe("lístky na výber pri voľbe cieľa", () => {
         if (v === null) return;
         expect(r.rady).toBe(1);
         // Šírka textu ≥ 110 px dá efektu písmo ≥ 11,5 px (spaky.css .ll-efekt) a riadok ~18 znakov.
-        expect(v.vedla ? v.sirka - v.obraz : v.sirka).toBeGreaterThanOrEqual(110);
-        // Ilustrácia na OREZ_MIN + názov a ~4 riadky efektu sa zmestia do výšky radu.
-        if (!v.vedla) expect(v.sirka * 0.6 + 84).toBeLessThanOrEqual(v.vyska + 1);
-        else expect(v.obraz).toBeLessThanOrEqual(v.vyska);
+        expect(v.sirka).toBeGreaterThanOrEqual(110);
+        // Pomer strán karty (Michal 2026-10-31: „zmrštené“ karty) a lístok sa zmestí do výšky radu.
+        expect(Math.abs(v.vyska / v.sirka - POMER)).toBeLessThan(0.01);
+        expect(v.vyska).toBeLessThanOrEqual(vyska - 20 - 60 * r.nk + 1);
+        // Ilustrácia na OREZ_MIN + názov a ~4 riadky efektu sa zmestia do lístka.
+        expect(v.sirka * 0.6 + 84).toBeLessThanOrEqual(v.vyska + 1);
         // Ostatné lístky sú bez kariet (karta s účtenkou by bola vyššia než rad).
         expect(r.sirkaKarty).toBe(0);
         const historia = v.kratkeBitky ? Math.ceil(odohranych / 2) * 84 + (Math.ceil(odohranych / 2) - 1) * 8 : odohranych * 132;
         const poloziek = v.kratkeBitky ? naVyber + 3 : listkov;
-        expect(naVyber * v.sirka + historia + 60 + 138 * r.nk + (poloziek - 1) * 14 + 48).toBeLessThanOrEqual(sirka);
+        // Koniec má veľkosť karty na výber.
+        expect((naVyber + 1) * v.sirka + historia + 60 + (poloziek - 1) * 14 + 48).toBeLessThanOrEqual(sirka);
       });
 
   it("veľa odohraných bitiek: krátke lístky v dvoch radoch, nech lokality na výber dostanú šírku", () => {
@@ -82,10 +85,19 @@ describe("lístky na výber pri voľbe cieľa", () => {
     expect(velky.vyber?.sirka ?? 0).toBeGreaterThan(maly.vyber?.sirka ?? 0);
   });
 
-  it("nízky a široký lístok má text vedľa ilustrácie", () => {
+  it("nízky a široký stôl: lístok sa zmenší celý, v pomere strán karty — nie roztiahne do šírky", () => {
     const v = rozmerNastenky(1295, 282, 5, 3).vyber;
-    expect(v?.vedla).toBe(true);
-    expect(v?.obraz).toBeGreaterThanOrEqual(150);
+    expect(v).not.toBeNull();
+    if (v === null) return;
+    expect(v.vyska).toBe(Math.round(v.sirka * POMER));
+    expect(v.vyska).toBeLessThanOrEqual(282);
+  });
+
+  it("karta na výber bez lístkov (drobné karty) nechá miesto aj Koncu veľkosti karty", () => {
+    const r = rozmerNastenky(700, 300, 9, 7, 0);
+    expect(r.vyber).toBeNull();
+    // 7 kariet na výber + Koniec rovnako široký + finále (lístok bez karty) a medzery.
+    expect(8 * r.sirkaVyberu + 104 + 8 * 14 + 48).toBeLessThanOrEqual(700);
   });
 
   it("mimo voľby cieľa (Špaky, kompaktná nástenka) ostáva nástenka s kartami", () => {

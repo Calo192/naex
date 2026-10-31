@@ -30,4 +30,14 @@ describe("nástenka na stole", () => {
     // Lístok na výber má šírku z rozmerNastenky aj na nízkom stole bez kariet (bez-kariet).
     expect(telo(".vrstva-nastenky .nastenka-listok.na-vyber.citatelny")).toMatch(/width: var\(--lc-sirka\);[\s\S]*max-width: none;/);
   });
+
+  it("lístok na výber aj Koniec majú pevný rozmer karty — obsah ich nenatiahne ani nestlačí (Michal 2026-10-31)", () => {
+    expect(telo(".vrstva-nastenky .nastenka-listok.na-vyber.citatelny")).toMatch(/height: var\(--lc-vyska\);/);
+    const koniec = telo(".vrstva-nastenky .nastenka-listok.koniec.kartovy");
+    expect(koniec).toMatch(/width: var\(--lc-sirka\);/);
+    expect(koniec).toMatch(/height: var\(--lc-vyska\);/);
+    expect(koniec).toMatch(/overflow: hidden;/);
+    // Dlhé meno hráča sa skráti, nevytŕča z lístka.
+    expect(telo(".nastenka-koniec .nk-meno")).toMatch(/text-overflow: ellipsis;/);
+  });
 });

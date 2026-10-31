@@ -3,13 +3,13 @@
 // nástenka ukazuje nad každou lokalitou fotku víťaza a koľko špakov za ňu získal
 // (aj finále). Čísla ráta jadro (nástenka, rozpisSpakov), tu sa len kreslia.
 
-import type { CSSProperties, ReactNode } from "react";
+import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import type { BitkaNaNastenke, CardInstance, CielKola, PlayerId, SpakyTeraz } from "@naex/core";
 import { KONSTANTY, jeFinaleNaNastenke, pocet, rozpisSpakov, spakov } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
-import type { ListokNaVyber } from "./rozlozenieNastenky.ts";
+import { POMER, type ListokNaVyber } from "./rozlozenieNastenky.ts";
 import "./spaky.css";
 
 export { IkonaSpaku };
@@ -154,6 +154,13 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
   // a účtenky v dvoch radoch nad sebou — šírku dostanú lokality na výber (rozmerNastenky).
   const kratkeBitky = vyber !== undefined && listokVyberu?.kratkeBitky === true;
   const kratky = (l: Listok): boolean => kratkeBitky && l.stav === "odohrana";
+  // Pri voľbe cieľa má Koniec veľkosť karty na výber (Michal 2026-10-31: „môže mať veľkosť karty“) —
+  // nie úzky lístok, z ktorého mená vytŕčali. Pri drobných kartách ostane lístkom podľa obsahu.
+  const sirkaKonca = ((): { readonly sirka: number; readonly vyska: number } | null => {
+    if (vyber === undefined) return null;
+    const w = listokVyberu?.sirka ?? sirkaVyberu;
+    return w >= KONIEC_KARTA_MIN ? { sirka: w, vyska: listokVyberu?.vyska ?? Math.round(w * POMER) } : null;
+  })();
   const listokEl = (l: Listok, i: number): ReactNode => {
     const b = l.bitka;
     const nazov = l.finale ? (l.lokalita === null ? "Finále" : `Finále · ${menoKarty(l.lokalita.defId)}`) : l.lokalita === null ? "lokalita" : menoKarty(l.lokalita.defId);
@@ -180,7 +187,7 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
         return (
           <li
             key={l.kluc}
-            className={`nastenka-listok caka na-vyber citatelny${v.vedla ? " vedla" : ""}`}
+            className="nastenka-listok caka na-vyber citatelny"
             style={{ "--naklon": naklon, "--i": i, "--lc-sirka": `${v.sirka}px`, "--lc-vyska": `${v.vyska}px`, "--lc-obraz": `${v.obraz}px` } as CSSProperties}
           >
             <span className="nastenka-karta">{vyber(l.lokalita, v.obraz)}</span>
@@ -243,9 +250,8 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
       )}
       {listky.map((l, i) => (kratky(l) ? null : listokEl(l, i)))}
       {ucet !== undefined && !koniec && (
-        <li
-          className="nastenka-listok koniec"
-          style={{ "--naklon": "1deg" } as CSSProperties}
+        <ListokKonca
+          kartovy={sirkaKonca}
           title={`Po finále sa vykúpi, čo hráčom ostalo: každý plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI} špak, každých celých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1 špak (teraz ${dvojica(ucet.body.vykupne.map((v) => v.poldeci) as [number, number], (n) => `${n} poldeci`)}; ${dvojica(ucet.body.vykupne.map((v) => v.cigarety) as [number, number], (n) => `${n} cig.`)}). Každá nepriznaná Cirhóza (ruka aj oba balíčky) zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`}
         >
           <span className="nastenka-vitaz">
@@ -257,23 +263,23 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
             <span className="nk-nadpis">výkupné zdrojov</span>
             {poradie.map((p) => (
               <span key={`v${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
-                {kto(p)} <b className={ucet.body.vykupne[p].spaky > 0 ? "plus" : ""}>{ucet.body.vykupne[p].spaky > 0 ? `+${ucet.body.vykupne[p].spaky}` : "0"}</b>
+                <span className="nk-meno">{kto(p)}</span> <b className={ucet.body.vykupne[p].spaky > 0 ? "plus" : ""}>{ucet.body.vykupne[p].spaky > 0 ? `+${ucet.body.vykupne[p].spaky}` : "0"}</b>
               </span>
             ))}
             <span className="nk-nadpis">väzni</span>
             {poradie.map((p) => (
               <span key={`z${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
-                {kto(p)} <b className={ucet.body.vazni[p] > 0 ? "plus" : ""}>{ucet.body.vazni[p] > 0 ? `+${ucet.body.vazni[p]}` : "0"}</b>
+                <span className="nk-meno">{kto(p)}</span> <b className={ucet.body.vazni[p] > 0 ? "plus" : ""}>{ucet.body.vazni[p] > 0 ? `+${ucet.body.vazni[p]}` : "0"}</b>
               </span>
             ))}
             <span className="nk-nadpis">nepriznaná Cirhóza</span>
             {poradie.map((p) => (
               <span key={`c${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
-                {kto(p)} <b className={ucet.body.cirhozy[p] > 0 ? "minus" : ""}>{ucet.body.cirhozy[p] > 0 ? `−${ucet.body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}` : "0"}</b>
+                <span className="nk-meno">{kto(p)}</span> <b className={ucet.body.cirhozy[p] > 0 ? "minus" : ""}>{ucet.body.cirhozy[p] > 0 ? `−${ucet.body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}` : "0"}</b>
               </span>
             ))}
           </span>
-        </li>
+        </ListokKonca>
       )}
     </ol>
   );
@@ -303,6 +309,45 @@ export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, me
       </div>
       {zoznam}
     </div>
+  );
+}
+
+/** Užší Koniec veľkosti karty by text nezmestil čitateľne. */
+const KONIEC_KARTA_MIN = 100;
+/** Najmenšia mierka písma Konca veľkosti karty, keď sa obsah nezmestí. */
+const KONIEC_MIERKA_MIN = 0.7;
+
+/**
+ * Lístok „Koniec · po finále“ s výkupným zdrojov, väzňami a nepriznanou Cirhózou. S `kartovy` má
+ * rozmer karty na výber a písmo sa zmenší, kým sa celý obsah nezmestí — nič nesmie vytŕčať.
+ */
+function ListokKonca({ kartovy, title, children }: { readonly kartovy: { readonly sirka: number; readonly vyska: number } | null; readonly title: string; readonly children: ReactNode }) {
+  const ref = useRef<HTMLLIElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el === null || kartovy === null) return;
+    const prisposob = (): void => {
+      let m = 1;
+      el.style.setProperty("--m", "1");
+      while (el.scrollHeight > el.clientHeight + 1 && m > KONIEC_MIERKA_MIN) {
+        m = Math.round((m - 0.025) * 1000) / 1000;
+        el.style.setProperty("--m", String(m));
+      }
+    };
+    prisposob();
+    const ro = new ResizeObserver(prisposob);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [kartovy?.sirka, kartovy?.vyska]);
+  return (
+    <li
+      ref={ref}
+      className={`nastenka-listok koniec${kartovy !== null ? " kartovy" : ""}`}
+      style={{ "--naklon": "1deg", ...(kartovy !== null ? { "--lc-sirka": `${kartovy.sirka}px`, "--lc-vyska": `${kartovy.vyska}px` } : {}) } as CSSProperties}
+      title={title}
+    >
+      {children}
+    </li>
   );
 }
 

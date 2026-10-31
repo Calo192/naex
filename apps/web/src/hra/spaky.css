@@ -741,10 +741,10 @@
 }
 
 /* Lístky lokalít na výber s čitateľným efektom (Leader 2026-10-30, ListokLokality): rozmery
-   (--lc-sirka, --lc-vyska, --lc-obraz) ráta rozmerNastenky. Lístky v rade majú rovnakú výšku
-   (stretch); finále a Koniec ostanú v strede. */
+   (--lc-sirka, --lc-vyska, --lc-obraz) ráta rozmerNastenky — vždy v pomere strán karty
+   (Michal 2026-10-31: „zmrštené“ karty). Odohrané bitky a finále ostanú v strede radu. */
 .vrstva-nastenky .nastenka.volba.citatelna {
-  align-items: stretch;
+  align-items: center;
   gap: 14px;
 }
 
@@ -759,7 +759,7 @@
   flex-direction: column;
   width: var(--lc-sirka);
   max-width: none;
-  max-height: var(--lc-vyska);
+  height: var(--lc-vyska);
   opacity: 1;
 }
 
@@ -858,22 +858,60 @@
   max-width: none;
 }
 
-/* Široký a nízky lístok: štvorec ilustrácie vo výške lístka a text vedľa neho. */
-.nastenka-listok.citatelny.vedla .listok-lokality {
-  flex-direction: row;
-  height: var(--lc-obraz);
+/* Koniec pri voľbe cieľa (Michal 2026-10-31: „ten KONIEC to je katastrofa… nič nesmie pretŕčať“):
+   veľkosť karty na výber (--lc-sirka × --lc-vyska), písmo rastie so šírkou a ListokKonca ho
+   zmenší (--m), kým sa celý obsah nezmestí. Dlhé meno sa skráti, číslo ostane celé. */
+.vrstva-nastenky .nastenka-listok.koniec.kartovy {
+  justify-content: center;
+  width: var(--lc-sirka);
+  max-width: none;
+  height: var(--lc-vyska);
+  gap: 0.3em;
+  padding: 0.7em 0.75em 0.6em;
+  overflow: hidden;
+  border: 1px solid var(--okraj-svetly);
+  border-top: 3px dashed var(--okraj-svetly);
+  background: var(--plocha-2);
+  opacity: 1;
+  font-size: calc(clamp(10.5px, var(--lc-sirka) * 0.08, 16px) * var(--m, 1));
 }
 
-.nastenka-listok.citatelny.vedla .ll-obraz {
-  flex: none;
-  width: var(--lc-obraz);
-  height: var(--lc-obraz);
+.nastenka-listok.koniec.kartovy .nastenka-vitaz {
   min-height: 0;
 }
 
-.nastenka-listok.citatelny.vedla .ll-text {
-  flex: 1 1 0;
+.nastenka-listok.koniec.kartovy .nastenka-otaznik {
+  min-width: 2.8em;
+  height: 2.2em;
+  font-size: 0.9em;
+}
+
+.nastenka-listok.koniec.kartovy .nastenka-nazov {
+  font-size: 1.12em;
+  line-height: 1.2;
+}
+
+.nastenka-listok.koniec.kartovy .nastenka-uctenka {
+  gap: 0.15em;
+  padding: 0.35em 0 0;
+  font-size: 1em;
+}
+
+.nastenka-listok.koniec.kartovy .nk-nadpis {
+  margin-top: 0.4em;
+  font-size: 0.78em;
+  line-height: 1.15;
+  color: var(--tlmeny);
+}
+
+.nastenka-koniec .nk-meno {
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nastenka-koniec .nk-hrac b {
+  flex: none;
 }
 
 /* Nízka plsť (1366 × 650): lístky bez kariet a hustejšie, nech sa nástenka zmestí bez posúvania. */
