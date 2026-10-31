@@ -3,7 +3,7 @@
 // Žiadne DSL — jedna malá funkcia na kartu, zavesená na konkrétny háčik
 // motora. Neimplementovaný efekt nie je blokujúci: karta beží v režime
 // MANUAL — motor ju v správnej fáze pripomenie v logu a hráči ju vyhodnotia
-// sami. Register MUSÍ pokrývať všetkých 51 id (kontroluje to test).
+// sami. Register MUSÍ pokrývať všetky id sady (kontroluje to test).
 
 import type { Action, PlayerId, Tag } from "./types.ts";
 import { opponentOf } from "./types.ts";

@@ -117,9 +117,6 @@ export const KONSTANTY = {
   EFEKT: {
     IHRISKO_TUHE: 2,
     ZBERNY_DVOR_CENA: 1,
-    /** Do v7 Poštárka (Pitka) dávala až 2 karty; od v7 Kšeft za 1 Dlh 1 karta. */
-    POSTARKA_KARTY: 2,
-    POSTARKA_DLHY: 1,
     SVOKRA_RANY: 1,
     NEALKO_PRAH_CIRHOZY: 2,
     KRCMA_PRAH_CIRHOZY: 2,
