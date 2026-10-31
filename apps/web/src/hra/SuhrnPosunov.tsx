@@ -119,19 +119,32 @@ export function SuhrnPosunov({ polozky, zaciatok, ja, mena, vazni, menoKarty, ob
     onDlazdica({ stlpce, sken: idStlpca ?? null, aktivny: faza === "sken" || polozka === undefined ? null : polozka.elderId, preskoceni });
   }, [stlpec, marker, faza, preskoceni]);
 
-  // Klávesy stola (K, P, N, Esc…) by stláčali tlačidlá pod súhrnom; Enter a medzera ostanú tlačidlu.
+  // Fokus ostane v súhrne (aria-modal): Tab a Shift+Tab vedú na tlačidlo, kým nie je, na clonu.
+  // Klávesy stola (K, P, N, Esc…) nedôjdu ďalej a Enter či medzera mimo bubliny nič nestlačia.
+  const clonaRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    clonaRef.current?.focus({ preventScroll: true });
+    const ciel = (): HTMLElement | null => document.querySelector<HTMLElement>(".suhrn-bublina .sb-dalej") ?? clonaRef.current;
+    const vBubline = (e: KeyboardEvent): boolean => e.target instanceof Element && e.target.closest(".suhrn-bublina") !== null;
     const zadrz = (e: KeyboardEvent): void => {
-      if (e.key !== "Tab") e.stopImmediatePropagation();
+      e.stopImmediatePropagation();
+      if (e.key === "Tab") {
+        e.preventDefault();
+        ciel()?.focus({ preventScroll: true });
+      } else if (!vBubline(e) && (e.key === "Enter" || e.key === " ")) e.preventDefault();
     };
     window.addEventListener("keydown", zadrz, true);
-    return () => window.removeEventListener("keydown", zadrz, true);
+    window.addEventListener("keyup", zadrz, true);
+    return () => {
+      window.removeEventListener("keydown", zadrz, true);
+      window.removeEventListener("keyup", zadrz, true);
+    };
   }, []);
 
   return (
     <>
       {/* Klik mimo tlačidla nič nerobí (Michal 2026-10-31) — clona ho zachytí. */}
-      <div className="suhrn-clona" aria-hidden="true" />
+      <div ref={clonaRef} className="suhrn-clona" tabIndex={-1} aria-hidden="true" />
       {polozka !== undefined && faza !== "sken" && (
         <Bublina
           key={polozka.elderId}
@@ -206,9 +219,10 @@ function Bublina({
         setPoloha({ left: (window.innerWidth - sirka) / 2, bottom: 12, sipka: -100, sirka });
         return;
       }
+      // Poloha podľa dlaždice, nie stĺpčeka — medzi staršími sa hýbe len šípka.
       const s = stlpec.getBoundingClientRect();
       const stred = s.left + s.width / 2;
-      const left = Math.max(12, Math.min(stred - 110, window.innerWidth - sirka - 12));
+      const left = Math.max(12, Math.min(d.left + d.width / 2 - 110, window.innerWidth - sirka - 12));
       setPoloha({ left, bottom: window.innerHeight - d.top + 14, sipka: stred - left, sirka });
     };
     zmeraj();
@@ -225,7 +239,13 @@ function Bublina({
   useEffect(() => {
     if (odomknute) tlacidloRef.current?.focus();
   }, [odomknute]);
-  const dos = dosledky(p);
+  const dosledkyEl = (
+    <div className="sb-dosledky">
+      {dosledky(p).map((d, i) => (
+        <Cip key={i} d={d} ja={ja} mena={mena} vazni={vazni} />
+      ))}
+    </div>
+  );
   const vazen = p.vazen;
   return (
     <div
@@ -256,12 +276,10 @@ function Bublina({
         <b className="sb-meno">{meno}</b>
       </div>
       {p.posun !== null && <VelkaStupnica z={p.posun.z} marker={marker ?? p.posun.z} ja={ja} />}
-      <div className="sb-dosledky">
-        {dos.map((d, i) => (
-          <Cip key={i} d={d} ja={ja} mena={mena} vazni={vazni} />
-        ))}
-      </div>
-      <div className="sb-pata">
+      {/* Bez stupnice (výplata, Povera, väzeň) idú dôsledky do riadka s tlačidlom — bublina nie je naprázdno vysoká. */}
+      {p.posun !== null && dosledkyEl}
+      <div className={`sb-pata${p.posun === null ? " s-dosledkami" : ""}`}>
+        {p.posun === null && dosledkyEl}
         {poradie.n > 1 && (
           <span className="sb-bodky" aria-hidden="true">
             {Array.from({ length: poradie.n }, (_, k) => (

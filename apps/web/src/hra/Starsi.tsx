@@ -114,14 +114,19 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
         <span>
           {/* v8.3: strach platí za udržanie na konci kola; koľko starších sa bojí, ukazujú stĺpčeky dole a nápoveda (na 1366 sa oboje nezmestí). */}
           {strach > 0 && <ZnackaStrachu uroven={najStrach} trieda={ja ? "moje" : "superove"} />}
-          {strach === 0
-            ? `nikto sa ${ja ? "ťa" : "ho"} nebojí`
-            : zaStarsich > 0
-              ? `+${zaStarsich} ${riadokDlazdice("dole", ja)}`
-              : naUdrzanie > 0
-                ? `+${naUdrzanie} ${riadokDlazdice("dole", ja, 0, naUdrzanie)}`
-                : riadokDlazdice("dole", ja, 0)}
-          {strach > 0 && zaStarsich > 0 && <IkonaSpaku />}
+          {/* Ikona špakov hneď za číslom — na 1366–1440 sa riadok oreže na konci a ikona by odpadla. */}
+          {strach === 0 ? (
+            `nikto sa ${ja ? "ťa" : "ho"} nebojí`
+          ) : zaStarsich > 0 ? (
+            <>
+              +{zaStarsich}
+              <IkonaSpaku /> {riadokDlazdice("dole", ja)}
+            </>
+          ) : naUdrzanie > 0 ? (
+            `+${naUdrzanie} ${riadokDlazdice("dole", ja, 0, naUdrzanie)}`
+          ) : (
+            riadokDlazdice("dole", ja, 0)
+          )}
         </span>
         <span className={`starsi-desi-riadok${desiHrozi ? " hrozi" : ""}`} title={desiTitul}>
           väzni {vyd}/{prah}
