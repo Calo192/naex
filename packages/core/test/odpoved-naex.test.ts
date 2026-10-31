@@ -30,22 +30,33 @@ function partia(seed: number): { readonly pred: GameState; readonly cmd: Command
 describe("odpoveď na NA EX", () => {
   const tahy = [3, 9, 21].flatMap(partia);
 
-  it("každý ťah hráča na rade s odpoveďou ohlási odpoveď udalosťou (karta alebo žiadna)", () => {
+  it("každá odpoveď sa ohlási udalosťou — vynechanie hneď, karta lícom dole až pri otočení (v9.2)", () => {
     // Len samotná odpoveď (karta alebo „bez odpovede“) — počas odpovede smú prísť aj voľby efektov (Hasič).
     const reakcie = tahy.filter((t) => t.pred.faza === "pitka" && t.pred.pitkaStav?.reakcia != null && (t.cmd.type === "place" || t.cmd.type === "bezReakcie"));
     expect(reakcie.length).toBeGreaterThan(0);
+    const otocene = new Map(
+      tahy.flatMap((t) => t.events.flatMap((e) => (e.type === "odpovedNaNaex" && e.uid !== null ? [[e.uid, e] as const] : []))),
+    );
+    let licomDole = 0;
     for (const t of reakcie) {
-      const q = t.pred.pitkaStav?.reakcia;
-      const o = t.events.find((e): e is Extract<Event, { type: "odpovedNaNaex" }> => e.type === "odpovedNaNaex");
-      expect(o?.hrac).toBe(q);
-      if (o !== undefined && o.uid !== null) {
-        // Karta z ruky toho, kto odpovedal — verejná, ide lícom hore do línie.
-        expect(t.pred.hraci[o.hrac].ruka.find((k) => k.uid === o.uid)?.defId).toBe(o.defId);
+      const q = t.pred.pitkaStav?.reakcia as 0 | 1;
+      if (t.cmd.type === "bezReakcie") {
+        const o = t.events.find((e): e is Extract<Event, { type: "odpovedNaNaex" }> => e.type === "odpovedNaNaex" && e.hrac === q);
+        expect(o?.uid).toBeNull();
+        expect(eventsFor(t.events, 0).some((e) => e.type === "odpovedNaNaex")).toBe(true);
+        expect(eventsFor(t.events, 1).some((e) => e.type === "odpovedNaNaex")).toBe(true);
+        continue;
       }
-      // Rovnaká pre oboch hráčov.
-      expect(eventsFor(t.events, 0).some((e) => e.type === "odpovedNaNaex")).toBe(true);
-      expect(eventsFor(t.events, 1).some((e) => e.type === "odpovedNaNaex")).toBe(true);
+      if (t.cmd.type !== "place") continue;
+      const uid = t.cmd.uid;
+      // Karta sa ukáže pri otočení: z ruky toho, kto odpovedal, a rovnako pre oboch hráčov.
+      const o = otocene.get(uid);
+      expect(o?.hrac).toBe(q);
+      expect(t.pred.hraci[q].ruka.find((k) => k.uid === uid)?.defId).toBe(o?.defId);
+      if (!t.events.some((e) => e.type === "odpovedNaNaex" && e.uid === uid)) licomDole++;
     }
+    // Aspoň raz ležala odpoveď lícom dole cez ťah (útočník odpovedal, obranca ešte nie).
+    expect(licomDole).toBeGreaterThan(0);
   });
 
   it("výsledok bitky nesie líniu, z ktorej sa rátal — tie isté karty ako príspevky kariet", () => {

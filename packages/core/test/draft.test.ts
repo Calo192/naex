@@ -168,45 +168,50 @@ describe("stavba šenku", () => {
     expect(s.senok).toHaveLength(8);
     expect(s.naradie.length + s.obcania.length).toBe(s0.naradie.length + s0.obcania.length - 8);
     expect(s.draftStav?.krok).toBe("beranie");
-    // Zo šenku berie prvý útočník (Michal 2026-10-16).
-    expect(naTahu(s)).toBe(s.utocnik);
+    // Zo šenku berie prvý obranca (v9.2, Michal 2026-10-30; predtým útočník).
+    expect(naTahu(s)).toBe(obrancaOf(s));
   });
 });
 
 describe("branie zo šenku (Michal 2026-10-19: 1 karta za cigaretu, 2 karty za 3 cigarety)", () => {
-  it("striedavo, začína útočník; 1 karta = 1 cigareta, 2 karty = 3 cigarety, nič zadarmo, poldeci sa neplatí", () => {
+  it("striedavo, začína obranca (v9.2); 1 karta = 1 cigareta, 2 karty = 3 cigarety, nič zadarmo, poldeci sa neplatí", () => {
     let s = postavSenok(doDraftu(5));
-    const u = s.utocnik;
-    const o = obrancaOf(s);
+    // v9.2: prvý berie obranca, útočník druhý.
+    const u = obrancaOf(s);
+    const o = s.utocnik;
     s = sCigaretami(sCigaretami(s, u, 4), o, 2);
     const poldeci = s.hraci[o].poldeciPlne;
     expect(() => apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, o)).toThrow(IllegalCommandError);
     expect(() => apply(data, s, { type: "draftBer", uids: [] }, u)).toThrow(/1 alebo 2/);
     expect(() => apply(data, s, { type: "draftBer", uids: s.senok.slice(0, 3).map((k) => k.uid) }, u)).toThrow(/1 alebo 2/);
-    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, u).state;
-    expect(s.hraci[u].cigarety).toBe(1);
-    expect(s.draftStav?.noveKarty[u]).toBe(2);
+    // v9.2: kto berie prvý, na prvom ťahu vezme len 1 kartu — ponuka aj server.
+    expect(legalCommands(data, s, u).some((c) => c.type === "draftBer" && c.uids.length === 2)).toBe(false);
+    expect(() => apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, u)).toThrow(/prvom ťahu/);
+    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, u).state;
+    expect(s.hraci[u].cigarety).toBe(3);
+    expect(s.draftStav?.noveKarty[u]).toBe(1);
     expect(naTahu(s)).toBe(o);
-    // Obranca s 2 cigaretami nemá na dve karty — len na jednu.
+    // Útočník s 2 cigaretami nemá na dve karty — len na jednu.
     expect(legalCommands(data, s, o).some((c) => c.type === "draftBer" && c.uids.length === 2)).toBe(false);
     expect(() => apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, o)).toThrow(/3 cigarety/);
     s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, o).state;
     expect(s.hraci[o].cigarety).toBe(1);
     expect(s.hraci[o].poldeciPlne).toBe(poldeci);
     expect(naTahu(s)).toBe(u);
-    // Limit kariet nie je — berie sa, kým je čím platiť.
-    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, u).state;
+    // Na ďalšom ťahu už aj 2 karty za 3 cigarety; limit kariet nie je — berie sa, kým je čím platiť.
+    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, u).state;
+    expect(s.hraci[u].cigarety).toBe(0);
     expect(s.draftStav?.noveKarty[u]).toBe(3);
   });
 
   it("bez cigariet sa zo šenku nedá brať — hra za hráča branie ukončí", () => {
     let s = postavSenok(doDraftu(6));
-    const u = s.utocnik;
-    const o = obrancaOf(s);
+    const u = obrancaOf(s);
+    const o = s.utocnik;
     s = sCigaretami(sCigaretami(s, u, 3), o, 0);
     expect(legalCommands(data, s, o).some((c) => c.type === "draftBer")).toBe(false);
     s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, u).state;
-    // Obranca nemá čím platiť → jeho branie sa ukončí samo, berie ďalej útočník.
+    // Útočník nemá čím platiť → jeho branie sa ukončí samo, berie ďalej obranca.
     expect(s.draftStav?.hotovo[o]).toBe(true);
     expect(naTahu(s)).toBe(u);
   });
@@ -222,7 +227,7 @@ describe("branie zo šenku (Michal 2026-10-19: 1 karta za cigaretu, 2 karty za 3
   it("prázdny šenok: hra za hráča sama ukončí branie", () => {
     let s = postavSenok(doDraftu(7));
     s = { ...s, senok: [] };
-    expect(legalCommands(data, s, s.utocnik)).toEqual([{ type: "draftStop" } satisfies Command]);
+    expect(legalCommands(data, s, obrancaOf(s))).toEqual([{ type: "draftStop" } satisfies Command]);
   });
 
   it("nevzaté karty idú pri ďalšom drafte naspodok svojho balíčka (Náradie / Občania)", () => {
@@ -246,11 +251,12 @@ describe("branie zo šenku (Michal 2026-10-19: 1 karta za cigaretu, 2 karty za 3
 describe("doplnenie šenku po braní (Michal 2026-10-20)", () => {
   it("po braní sa šenok doplní na 8; s 2 Nástrojmi v šenku z vrchu Občanov", () => {
     let s = postavSenok(doDraftu(10));
-    const u = s.utocnik;
-    s = sCigaretami(s, u, 3);
-    // Zoberie dva Nástroje obrancu — v šenku ostanú dva útočníkove.
+    // Obranca (prvý, v9.2) a útočník vezmú po jednom Nástroji z čela šenku — v šenku ostanú dva ďalšie.
+    const o = obrancaOf(s);
+    s = sCigaretami(sCigaretami(s, o, 3), s.utocnik, 3);
     expect(s.senok.slice(0, 2).every((k) => jeNaradie(data, k))).toBe(true);
-    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid, s.senok[1]!.uid] }, u).state;
+    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, o).state;
+    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]!.uid] }, s.utocnik).state;
     expect(s.senok).toHaveLength(6);
     expect(s.senok.filter((k) => jeNaradie(data, k))).toHaveLength(2);
     const vrch = s.obcania.slice(0, 2).map((k) => k.uid);
@@ -279,8 +285,9 @@ describe("doplnenie šenku po braní (Michal 2026-10-20)", () => {
 describe("posledná šanca v šenku (Michal 2026-10-20)", () => {
   it("keď jeden prestane, druhý berie už len raz a branie končí", () => {
     let s = postavSenok(doDraftu(11));
-    const u = s.utocnik;
-    const o = obrancaOf(s);
+    // Prvý je na ťahu obranca (v9.2) a prestane; útočník berie už len raz.
+    const u = obrancaOf(s);
+    const o = s.utocnik;
     s = sCigaretami(sCigaretami(s, u, 9), o, 9);
     s = apply(data, s, { type: "draftStop" }, u).state;
     expect(naTahu(s)).toBe(o);

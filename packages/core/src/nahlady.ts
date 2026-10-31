@@ -283,7 +283,7 @@ export function cenaTahu(data: GameData, pred: ClientState, po: ClientState, cen
  * Čo jedno ďalšie NA EX hráča p zúčtuje pri odkrytí (v5, NA EX naraz) — tým istým
  * poradím ako odhalNaex v motore. `doDna`: poldeci z neho
  * sa po bitke vráti plný (Na zdravie, Alkoholik). Súperove skryté NA EX náhľad
- * nepozná, preto zrážku (Výtržník) nesľubuje.
+ * pozná len s Bzdochou — vtedy zrážku (Výtržník) zloží poOdkrytiNaex.
  */
 export interface OdkrytieNaex {
   readonly doDna: boolean;
@@ -334,8 +334,15 @@ export function poOdkrytiNaex(data: GameData, view: ClientState, uid: number): P
   const naRub = kde === -1 && view.zaverecne.some((z) => z.uid === uid && z.naexBy === null);
   if (kde === -1 && !naRub) return null;
   const doDna = odkrytieNaex(data, view, ja).doDna;
+  // Bzdocha: súperovo skryté NA EX na tú istú kartu hráč vidí — pri odkrytí bude zrážka
+  // a z karty Výtržník (playtest 20261030-184957, Šimon: náhľad sľuboval bežné NA EX).
+  // Poradie ako odhalNaex: naexBy obranca, naexBy2 útočník.
+  const zrazka = kde !== -1 && (view.pitkaStav?.skryteNaex ?? []).some((x) => x.hrac === su && x.uid === uid);
+  const obr = opponentOf(view.utocnik);
+  const sNaex = (pl: ClientState["strany"][0][number]): ClientState["strany"][0][number] =>
+    zrazka ? { ...pl, naexBy: obr, naexBy2: view.utocnik, vytrznik: true } : { ...pl, naexBy: ja };
   const strany: [ClientState["strany"][0], ClientState["strany"][1]] = [view.strany[0], view.strany[1]];
-  if (kde !== -1) strany[kde as PlayerId] = view.strany[kde as PlayerId].map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: ja } : pl));
+  if (kde !== -1) strany[kde as PlayerId] = view.strany[kde as PlayerId].map((pl) => (pl.card.uid === uid ? sNaex(pl) : pl));
   const zaverecne = naRub ? view.zaverecne.map((z) => (z.uid === uid ? { ...z, naexBy: ja } : z)) : view.zaverecne;
   const naexVKole: [boolean, boolean] = [view.naexVKole[0], view.naexVKole[1]];
   naexVKole[ja] = true;
@@ -457,8 +464,8 @@ export function bitkaPoPohorseni(
 /**
  * Náhľad NA EX hráča `view.ja` na kartu `uid` (návrh #49): základom je pohľad
  * s jeho už skrytými NA EX (sMojimiSkrytymiNaex), stôl po NA EX skladá
- * poOdkrytiNaex — tie isté kroky ako motor. Platí, ak súper NA EX nedá na tú
- * istú kartu (zrážka) a neodpovie.
+ * poOdkrytiNaex — tie isté kroky ako motor. Zrážku ráta, len keď súperovo NA EX
+ * na tú istú kartu hráč vidí (Bzdocha); platí, ak súper neodpovie.
  */
 export function nahladNaexNaKartu(data: GameData, view: ClientState, uid: number, ceny: readonly [CenyKliatob, CenyKliatob]): NahladNaexNaKartu | null {
   const zaklad = sMojimiSkrytymiNaex(data, view);

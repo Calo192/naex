@@ -81,9 +81,9 @@ describe("Pitka naraz (Michal 2026-10-27)", () => {
     t = apply(sada, t, { type: "naex", uid: pol }, 1).state;
     expect(naexNaLinii(t)).toBe(0);
     const r = apply(sada, t, { type: "skipNaex" }, 1);
-    const odkryte = r.events.flatMap((e) => (e.type === "log" && e.text.startsWith("Odkryté NA EX") ? [e.text] : []));
-    // Najprv obrancove (hráč 2), potom útočníkove (hráč 1) — ako doteraz.
-    expect(odkryte).toEqual(["Odkryté NA EX: hráč 2 dal NA EX na svoju kartu pn_pol.", "Odkryté NA EX: hráč 1 dal NA EX na súperovu kartu pn_lavy."]);
+    const odkryte = r.events.flatMap((e) => (e.type === "log" && e.text.startsWith("NA EX sa odkrývajú") ? [e.text] : []));
+    // v9.2: naraz — jedna hláška pre oboch.
+    expect(odkryte).toEqual(["NA EX sa odkrývajú naraz: hráč 2 na svoju kartu pn_pol; hráč 1 na súperovu kartu pn_lavy."]);
   });
 
   it("viewFor nepošle súperovo skryté NA EX — ani počas hry, ani keď súper skončil", () => {

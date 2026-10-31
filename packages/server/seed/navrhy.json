@@ -660,16 +660,6 @@
   "obrazok": "kon.jpg"
  },
  {
-  "id": "kohut",
-  "farba": null,
-  "sirkaMm": 54,
-  "vyskaMm": 80,
-  "mierkaTextu": 1.1,
-  "mierkaIkon": 1.3,
-  "kopie": 1,
-  "obrazok": "kohut.jpg"
- },
- {
   "id": "degustatorka",
   "farba": null,
   "sirkaMm": 54,

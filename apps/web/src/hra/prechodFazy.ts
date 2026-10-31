@@ -78,7 +78,7 @@ export function medziobrazovka(
         nadpis: "Výber lokality",
         text: obranca
             ? "Vyber lokalitu, o ktorú sa v tomto kole bije, a natoč ju — natočenie určí, ktorá jej hrana pripadne ktorému kraju línie."
-            : `${S} ako obranca vyberá a natáča lokalitu. Ty útočíš: zo šenku berieš prvý, vykladáš prvý a v Pitke máš posledné slovo.`,
+            : `${S} ako obranca vyberá a natáča lokalitu. Ty útočíš: zo šenku berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý.`,
       };
     }
     case "draft":
@@ -99,7 +99,7 @@ export function medziobrazovka(
         nadpis: "Šenok",
         text:
           `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov a tajne ich rozdelí: polovica pôjde do šenku, polovica naspodok. ` +
-          `Potom beriete zo šenku striedavo, začína útočník — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
+          `Potom beriete zo šenku striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
       };
     case "zhromazdenie": {
       const n = view.pitkaCislo + 1;
@@ -123,7 +123,7 @@ export function medziobrazovka(
             ? `Máš Bzdochu: počkáš, kým ${S} skončí Pitku, potom hráš a vidíš jeho NA EX.`
             : `Hráte obaja naraz: fajči, dolievaj a skryto vyber NA EX, potom „Skončiť Pitku“. ${
                 view.pitkaStav?.bzdocha != null ? `${S} má Bzdochu — hrá až po tebe a uvidí tvoje NA EX.` : "NA EX sa odkryjú, keď skončíte obaja"
-              }${view.pitkaStav?.bzdocha != null ? "" : obranca ? ` — na ne odpovedáš prvý, ${S} má posledné slovo.` : " — posledné slovo máš ty."}`,
+              }${view.pitkaStav?.bzdocha != null ? "" : obranca ? ` — ${S} na ne odpovie prvý lícom dole, ty potom na druhý kraj; otočia sa naraz.` : " — na ne odpovieš prvý lícom dole, súper potom na druhý kraj; otočia sa naraz."}`,
       };
     case "bitka": {
       // v8: prebytok rozdeľuje ten, proti komu sa ráta (vo finále sa od v8.3 nerozdeľuje).

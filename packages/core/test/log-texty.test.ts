@@ -37,9 +37,15 @@ describe("odpoveď na NA EX ohlási zmenu prevahy a počtu Pitiek", () => {
         const taIstaPitka = po.faza === "pitka" && po.pitkaCislo === state.pitkaCislo;
         if (cmd.type === "place" && state.faza === "pitka" && state.pitkaStav?.reakcia === hrac && taIstaPitka) {
           odpovedi++;
-          const pred = prevahaStran(data, state.strany);
+          // v9.2: odpovede ležia lícom dole a hlásia sa až pri otočení — prevaha pred kolom odpovedí.
+          const pred = prevahaStran(data, state.strany.map((st) => st.filter((pl) => pl.odpoved !== true)) as unknown as GameState["strany"]);
           const teraz = prevahaStran(data, po.strany);
           const texty = events.flatMap((e) => (e.type === "log" && e.text.startsWith("Odpoveď na NA EX:") ? [e.text] : []));
+          if (!events.some((e) => e.type === "log" && e.text.startsWith("Odpovede sa otáčajú naraz"))) {
+            expect(texty).toEqual([]);
+            state = po;
+            continue;
+          }
           const zmienPrevahy = [0, 1].filter((k) => pred[k] !== teraz[k]).length;
           expect(texty.filter((t) => t.includes("prevahu")).length).toBe(zmienPrevahy);
           // Počet Pitiek po odpovedi — hra ho ešte v tom istom ťahu nezmení inak.

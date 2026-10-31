@@ -115,7 +115,7 @@ describe("§4 Priebeh kola — kto volí cieľ a kto útočí", () => {
 // --- §7 Pitka nahlas a odpoveď na NA EX ------------------------------------
 
 describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal 2026-10-21)", () => {
-  it("§7 (v5 NA EX naraz): obranca začína; NA EX oboch sa odkryjú, až keď obaja skončia; odpovedá najprv obranca, posledné slovo má útočník", () => {
+  it("§7 (v9.2): obranca začína; NA EX oboch sa odkryjú naraz, až keď obaja skončia; odpovedá najprv útočník, potom obranca", () => {
     const s0 = setupSBalickom(data, 5);
     const pijan0 = inst("pijan");
     const pijan1 = inst("pijan");
@@ -141,19 +141,19 @@ describe("§7 Pitka — obranca začína, útočník má posledné slovo (Michal
     // „Hotovo“ je nevratné: obranca už nič nehrá, je na ťahu útočník.
     expect(naTahu(s)).toBe(0);
     expect(legalCommands(data, s, 1)).toEqual([]);
-    // Útočník dá NA EX a skončí → odkrytie; odpovedá najprv obranca (na NA EX útočníka).
+    // Útočník dá NA EX a skončí → odkrytie; odpovedá najprv útočník (na NA EX obrancu, v9.2).
     s = apply(data, s, { type: "naex", uid: pijan1.uid }, 0).state;
     s = apply(data, s, { type: "skipNaex" }, 0).state;
     expect(s.strany[0][0]?.naexBy).toBe(1);
     expect(s.strany[1][0]?.naexBy).toBe(0);
-    expect(s.pitkaStav?.reakcia).toBe(1);
-    const odpoved = legalCommands(data, s, 1);
+    expect(s.pitkaStav?.reakcia).toBe(0);
+    const odpoved = legalCommands(data, s, 0);
     expect(odpoved.some((c) => c.type === "place")).toBe(true);
     expect(odpoved.every((c) => c.type === "place" || c.type === "bezReakcie")).toBe(true);
-    s = apply(data, s, { type: "bezReakcie" }, 1).state;
-    // Posledné slovo má útočník (Michal 2026-10-25, interview 4).
-    expect(s.pitkaStav?.reakcia).toBe(0);
-    const { events } = apply(data, s, { type: "bezReakcie" }, 0);
+    s = apply(data, s, { type: "bezReakcie" }, 0).state;
+    // Potom obranca (v9.2 — posledné slovo už nie je, odpovede sa otočia naraz).
+    expect(s.pitkaStav?.reakcia).toBe(1);
+    const { events } = apply(data, s, { type: "bezReakcie" }, 1);
     expect(events.some((e) => e.type === "pitkaVysledok")).toBe(true);
   });
 

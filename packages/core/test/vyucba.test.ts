@@ -720,12 +720,12 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
   });
 
   it("3. časť (v9): zajatie len vysvetlené, Dedičstvo, Exekútor s Advokátom, Kultúrny dom, bez Absťáku, Farár na červenej", () => {
-    // Hráč je obranca (vyhral 2. kolo): Kultúrny dom parketom k sebe; Štamgast útočí a kupuje Veterána.
+    // Hráč je obranca (vyhral 2. kolo): Kultúrny dom parketom k sebe; v9.2 kupuje prvý (Vidly), Štamgast Veterána.
     expect(cela.kroky[i("k-ciel3")]).toMatchObject({ kto: "hrac", prikaz: { type: "chooseLocation", uid: "lokality:kulturny_dom", otocena: false } });
     expect(po("k-kup3-bot").hraci[1].ruka.some((k) => k.defId === "veteran")).toBe(true);
     // Po šenku nikto sa nikoho nebojí na stupni 3 — zajatie hra preskočí, začína Zhromaždenie.
-    expect(po("k-kup3b").faza).toBe("zhromazdenie");
-    expect(po("k-kup3b").pokusy).toEqual([null, null]);
+    expect(po("k-stop3").faza).toBe("zhromazdenie");
+    expect(po("k-stop3").pokusy).toEqual([null, null]);
     expect(po("k-dedicstvo").hraci[0].dedicstvo.map((k) => k.defId)).toEqual(["vidly"]);
     // v9.1: Štamgast nemá Absťák (výučba bez Chuti) — o tuhé viac.
     expect(odhad(po("k-nastroj"))).toEqual([3, 4]);
@@ -899,5 +899,39 @@ describe("výučba — prerobenie podľa playtestu výučby 20261030-184959", ()
     const minuty = (celyScenar.casti ?? []).map((c) => c.minuty ?? 0);
     expect(minuty.every((m) => m > 0)).toBe(true);
     expect(minuty.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(40);
+  });
+});
+
+describe("výučba — pravidlá v9.2 (šenok začína obranca, odpovede na NA EX lícom dole)", () => {
+  const kroky = celyScenar.kroky;
+  const i = (id: string): number => {
+    const n = kroky.findIndex((k) => k.id === id);
+    if (n < 0) throw new Error(`Scenár nemá krok ${id}`);
+    return n;
+  };
+
+  it("v každom kole kupuje zo šenku prvý hráč (obranca) jednu kartu, až potom Štamgast", () => {
+    for (const [hrac, bot] of [["k-kup-hasic", "k-kupa-bot"], ["k-kup2", "k-kupa2-bot"], ["k-kup3", "k-kup3-bot"], ["k-kup-finale", "k-kup-finale-bot"]] as const) {
+      expect(i(hrac), hrac).toBeLessThan(i(bot));
+      const prikaz = kroky[i(hrac)]?.prikaz as { readonly uids?: readonly string[] } | undefined;
+      expect(prikaz?.uids?.length, hrac).toBe(1);
+    }
+  });
+
+  it("na NA EX odpovedá prvý Štamgast (útočník) lícom dole, hráč potom; otočenie komentuje i-odpovede", () => {
+    expect(i("k-odpoved-bot")).toBeLessThan(i("k-bez-odpovede"));
+    expect(i("i-odpovede")).toBe(i("k-bez-odpovede") + 1);
+    const s = prehrajVyucbu(data, celyScenar, i("k-bez-odpovede"));
+    const skryta = s.strany[0].find((pl) => pl.card.defId === "milujuca_manzelka" && pl.odpoved === true);
+    expect(skryta?.zaverecna).toBe(true);
+    // Hráč vidí len rub — karta Štamgasta lícom dole sa mu neposiela.
+    const manzelky = (strana: readonly { readonly card: { readonly defId: string } }[]): number => strana.filter((pl) => pl.card.defId === "milujuca_manzelka").length;
+    expect(manzelky(viewFor(data, s, 0).strany[0])).toBe(manzelky(s.strany[0]) - 1);
+    const po = prehrajVyucbu(data, celyScenar, i("k-bez-odpovede") + 1);
+    expect(po.strany[0].some((pl) => pl.odpoved === true && pl.zaverecna === true)).toBe(false);
+  });
+
+  it("texty nehovoria, že šenok začína útočník, ani o poslednom slove", () => {
+    for (const k of kroky) expect(k.melichar, k.id).not.toMatch(/útočník[^.]*kupuje prvý|kupuje prvý: |má posledné slovo/);
   });
 });
