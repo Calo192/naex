@@ -23,7 +23,6 @@ function linia(r: RozdelenieStarsieho): string {
     createElement(LiniaStarsich, {
       starsi: [{ elder, meno: "Farár", obrazok: null, body: undefined, patron: null, rozdelenie: r }],
       data,
-      ikony: [],
       ja: 0,
       pohlad: 0,
       mena: ["Jano", "Fero"],

@@ -3,7 +3,7 @@
 // len riadok v páse pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
 import { useEffect, useRef } from "react";
-import type { ClientState, GameData, PlayerId, Rod, Vykupne } from "@naex/core";
+import type { ClientState, PlayerId, Rod, Vykupne } from "@naex/core";
 import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
@@ -14,7 +14,6 @@ import { textHlasky } from "./useHra.ts";
 
 export interface KoniecHryProps {
   readonly view: ClientState;
-  readonly data: GameData;
   readonly mena: readonly [string, string];
   readonly menoKarty: (defId: string) => string;
   readonly frajerina: ZmenyFrajeriny | null;

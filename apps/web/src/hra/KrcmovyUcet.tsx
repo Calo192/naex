@@ -2,7 +2,7 @@
 // dizajn stol-oproti-c2-20261022-1030): ty vľavo, súper vpravo, v strede starší
 // (v5) či podmienka (partie do v4, body za kusy). Papier sú obrátené tokeny.
 
-import type { GameData, PlayerId, Podmienka } from "@naex/core";
+import type { PlayerId, Podmienka } from "@naex/core";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
 import { PORADIE_PODMIENOK, SMER_V5, ZA_CO, bodyPoPodmienkach, jeBodovanieV5, kohoBoduje, subojeStarsieho, type BodyPodmienky, type BodyTeraz } from "./bodyPodmienok.tsx";
 import { znamienko } from "./Scorecard.tsx";
@@ -22,7 +22,6 @@ const JEDNOTKA: Readonly<Record<Podmienka, string>> = {
 
 export interface KrcmovyUcetProps {
   readonly body: BodyTeraz;
-  readonly data: GameData;
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly menoStarsieho: (elderId: string) => string;

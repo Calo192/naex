@@ -78,7 +78,6 @@ describe("výkričníky vo farbe obávaného", () => {
       createElement(LiniaStarsich, {
         starsi: [{ elder: elder(marker), meno: "Farár", obrazok: null, body: undefined, patron: null }],
         data,
-        ikony: [],
         ja: 0,
         pohlad: 0,
         mena: ["Jano", "Fero"],

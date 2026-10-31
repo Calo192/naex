@@ -241,7 +241,6 @@ export function DetailPartie({ id }: { readonly id: number }) {
           <div className="detail-ucet-obal">
             <KrcmovyUcet
               body={d.zaverecne}
-              data={data}
               ja={ja}
               mena={mena}
               menoStarsieho={(elderId) => d.menaStarsich[elderId] ?? elderId}

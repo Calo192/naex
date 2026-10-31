@@ -5495,7 +5495,6 @@ export function HernaPlocha({
           rodJa={rodHracaP(ja)}
           rody={[rodHracaP(0), rodHracaP(1)]}
           view={view}
-          data={data}
           mena={[menoHraca(0), menoHraca(1)]}
           avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
           menoKarty={menoKarty}
@@ -5656,7 +5655,6 @@ export function HernaPlocha({
                 <LiniaStarsich
                   starsi={starsiVLinii}
                   data={data}
-                  ikony={sada.ikonyBodovania ?? []}
                   ja={ja}
                   pohlad={pohladLinie}
                   mena={[menoHraca(0), menoHraca(1)]}

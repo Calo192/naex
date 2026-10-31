@@ -24,7 +24,6 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Action, ElderState, Favour, GameData, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
 import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, scorecardStarsieho, strachNaUdrzanie, strachNaVyplatu, type MarkerPos } from "@naex/core";
-import type { IkonaBodovania } from "@naex/tvorba";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
@@ -105,7 +104,6 @@ export interface StarsiVLinii {
 export interface LiniaStarsichProps {
   readonly starsi: readonly StarsiVLinii[];
   readonly data: GameData;
-  readonly ikony: readonly IkonaBodovania[];
   readonly ja: PlayerId;
   /** Čí pohľad línia ukazuje — po kliku na súperovu dlaždicu Starší súperov. */
   readonly pohlad: PlayerId;
@@ -132,7 +130,7 @@ function vztah(elder: ElderState, marker: MarkerPos) {
  */
 export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
 
-export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, zmenene, tlacidlo, lupa }: LiniaStarsichProps) {
+export function LiniaStarsich({ starsi, data, ja, pohlad, mena, krok, zmenene, tlacidlo, lupa }: LiniaStarsichProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<string | null>(null);
@@ -174,7 +172,6 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, zme
             key={s.elder.elderId}
             s={s}
             data={data}
-            ikony={ikony}
             ja={ja}
             mena={mena}
             krok={krok}
@@ -204,7 +201,6 @@ function ScorecardVLinii({
 }: {
   readonly s: StarsiVLinii;
   readonly data: GameData;
-  readonly ikony: readonly IkonaBodovania[];
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly krok: string | null;

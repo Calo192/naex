@@ -61,7 +61,6 @@ describe("pravítko pod stupnicou", () => {
       createElement(LiniaStarsich, {
         starsi: [{ elder, meno: "Farár", obrazok: null, body: undefined, patron: null, rozdelenie: r }],
         data,
-        ikony: [],
         ja: 0,
         pohlad: 0,
         mena: ["Jano", "Fero"],
@@ -109,7 +108,6 @@ describe("pravítko po rozdaní", () => {
       createElement(LiniaStarsich, {
         starsi: [{ elder, meno: "Farár", obrazok: null, body: undefined, patron: null, rozdelenie: { sipky: { ja: { posun: null, aktivna: false, klik: () => {}, pravitko: p } }, ceny: Array.from({ length: 7 }, () => null), navrh: null, mrtvy: true } }],
         data,
-        ikony: [],
         ja: 0,
         pohlad: 0,
         mena: ["Jano", "Fero"],
