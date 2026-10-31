@@ -934,15 +934,10 @@ function moznosti(v: ClientState): string[] {
       // Kšeft (v7): každá karta raz za Pitku; Kšeft lokality smie použiť každý hráč.
       if (pk !== null && pk.reakcia === null) {
         const pouzite = pk.kseft?.[ja] ?? [];
-        const skryteMoje = (pk.skryteNaex ?? []).filter((x) => x.hrac === ja).length;
         for (const pl of [...v.strany[0], ...v.strany[1]]) {
           if (pl.playedBy !== ja || pl.zaverecna === true || pouzite.includes(pl.card.uid)) continue;
           const uid = pl.card.uid;
           if (pl.card.defId === "stryko_z_ameriky" && h.cigarety >= KONSTANTY.EFEKT.STRYKO_CENA) c({ type: "kseft", uid }, `KŠEFT Strýko z Ameriky: za ${cigariet(KONSTANTY.EFEKT.STRYKO_CENA)} udelíš v bitke tohto kola súperovi 1 Ranu navyše (raz za Pitku)`);
-          if (pl.card.defId === "oslavenec" && h.poldeciPlne - skryteMoje > 0 && !zakazVypit(v))
-            c({ type: "kseft", uid }, "KŠEFT Oslávenec: tvoj plný poldeci → vypitý (nie nerest, tebe pečeň nie), súper dostane hneď 2 poškodenia pečene (raz za Pitku)");
-          if (pl.card.defId === "smetiarka")
-            for (const k of v.ruka) if (!(DATA.cards.get(k.defId)?.tags ?? []).includes("Kliatba")) c({ type: "kseft", uid, kartaUid: k.uid }, `KŠEFT Smetiarka: odhoď ${meno(k.defId)} z ruky do odhadzovacieho balíčka a dostaneš 1 cigaretu (raz za Pitku)`);
         }
         // Kšeft väzňa (v9): len držiteľ, za vypitý plný poldeci, raz za Pitku na väzňa — ten istý výpočet ako jadro.
         for (const k of ponukaKseftuVazna(stavKseftuVaznaZPohladu(v), ja)) {

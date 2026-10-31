@@ -563,8 +563,8 @@ export type Command =
   | { readonly type: "zivnostnik"; readonly uid: number }
   // Hasič (Nástup, Michal 2026-10-26): kartu z odhadzovacieho balíčka si nechať v ruke (true), alebo ju vrátiť (false).
   | { readonly type: "hasic"; readonly nechat: boolean }
-  // Kšeft (v7): uid karty v línii alebo lokality; voľba podľa karty (Smetiarka: karta z ruky,
-  // Predsedova vila: starší a smer).
+  // Kšeft (v7): uid karty v línii alebo lokality; voľba podľa karty (Zberný dvor: karta
+  // z odhadzovacieho balíčka, Predsedova vila: starší a smer).
   | { readonly type: "kseft"; readonly uid: number; readonly kartaUid?: number; readonly elderId?: string; readonly kSebe?: boolean }
   // Klebetnica (Nástup, v7): uid karty zo súperovej ruky, ktorá ide naspodok jeho balíčka.
   | { readonly type: "klebetnica"; readonly uid: number }
@@ -3715,15 +3715,14 @@ function cmdDohadzovacka(s: MutState, data: GameData, cmd: { elderA: string; eld
   dokonciPoVolbe(s, data, volba, events);
 }
 
-/** Pečeň z pitia počas Pitky (Kar, Oslávenec) — rekapitulácia ju ráta ako pitie zo Zhromaždenia. */
+/** Pečeň z pitia počas Pitky (Kar) — rekapitulácia ju ráta ako pitie zo Zhromaždenia. */
 function pitieVPitke(s: MutState, p: PlayerId, n: number): void {
   if (s.zaciatokPitky != null) s.zaciatokPitky.pecen[p] += n;
 }
 
-/** Karty s Kšeftom v línii (Oslávenec a Smetiarka sú mimo sady v7, efekt ostáva rozhodnutý). */
-const KSEFTY_KARIET: readonly string[] = ["stryko_z_ameriky", "oslavenec", "smetiarka"];
+/** Karty s Kšeftom v línii. */
+const KSEFTY_KARIET: readonly string[] = ["stryko_z_ameriky"];
 const KSEFTY_LOKALIT: readonly string[] = ["zberny_dvor", "sklad", "obecny_urad", "predsedova_vila"];
-const OSLAVENEC_PECEN = 2;
 const SKLAD_CENA = 1;
 const VILA_CENA = 2;
 
@@ -3738,7 +3737,7 @@ function kseftPouzity(s: Pick<GameState, "pitkaStav">, p: PlayerId, uid: number)
  * partii (nie skrytá Záverečná), Kšeft lokality obaja. Kšeft väzňa (v9) ponúka
  * moznostiKseftuVazna.
  */
-export function moznostiKseftu(data: GameData, state: GameState, p: PlayerId): Command[] {
+export function moznostiKseftu(state: GameState, p: PlayerId): Command[] {
   const pitka = state.pitkaStav;
   if (state.faza !== "pitka" || pitka === null || pitka.reakcia !== null || state.vizia !== null || pitka.hotovy[p]) return [];
   const h = state.hraci[p];
@@ -3747,18 +3746,7 @@ export function moznostiKseftu(data: GameData, state: GameState, p: PlayerId): C
   for (const pl of partiaHraca(state, p)) {
     const uid = pl.card.uid;
     if (pl.zaverecna === true || !KSEFTY_KARIET.includes(pl.card.defId) || kseftPouzity(state, p, uid)) continue;
-    switch (pl.card.defId) {
-      case "stryko_z_ameriky":
-        if (h.cigarety >= KONSTANTY.EFEKT.STRYKO_CENA) out.push({ type: "kseft", uid });
-        break;
-      case "oslavenec":
-        // Poldeci sľúbené skrytému NA EX už nalievať nemožno.
-        if (h.poldeciPlne - skryteHraca(pitka, p).length > 0 && !zakazVypit(state)) out.push({ type: "kseft", uid });
-        break;
-      case "smetiarka":
-        for (const k of h.ruka) if (!defOf(data, k).tags.includes("Kliatba") && !jeKartaBossa(state, k.uid)) out.push({ type: "kseft", uid, kartaUid: k.uid });
-        break;
-    }
+    if (pl.card.defId === "stryko_z_ameriky" && h.cigarety >= KONSTANTY.EFEKT.STRYKO_CENA) out.push({ type: "kseft", uid });
   }
   const lok = state.ciel?.lokalita ?? null;
   if (lok !== null && KSEFTY_LOKALIT.includes(lok.defId) && !kseftPouzity(state, p, lok.uid)) {
@@ -3794,28 +3782,6 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
       r[p] += 1;
       s.kseftRany = r;
       events.push({ type: "log", text: `Strýko z Ameriky platí rundu: hráč ${p + 1} udelí v tejto bitke 1 Ranu navyše.` });
-      break;
-    }
-    case "oslavenec":
-      need(h.poldeciPlne - skryteHraca(pitka, p).length > 0, "Oslávenec chce plný poldeci (ten na skrytom NA EX nie).");
-      need(!zakazVypit(s as GameState), "Kostol: nikto nesmie vypiť.");
-      // Nie je to nerest ani pečeň platiteľa — vypil to súper (Michal, plan.md časť 4).
-      h.poldeciPlne -= 1;
-      h.poldeciVypite += 1;
-      events.push({ type: "log", text: `Oslávenec: hráč ${p + 1} nalieva hráčovi ${opp + 1} — ten dostáva ${OSLAVENEC_PECEN} poškodenia pečene.` });
-      pitieVPitke(s, opp, OSLAVENEC_PECEN);
-      pridajPecen(s, data, opp, OSLAVENEC_PECEN, events);
-      break;
-    case "smetiarka": {
-      const idx = h.ruka.findIndex((k) => k.uid === cmd.kartaUid);
-      need(idx !== -1, "Vyber kartu z ruky.");
-      const karta = h.ruka[idx] as CardInstance;
-      need(!defOf(data, karta).tags.includes("Kliatba"), "Kliatbu Smetiarka nezoberie.");
-      need(!jeKartaBossa(s as GameState, karta.uid), "Staršieho, o ktorého zajatie sa hrá, Smetiarka nezoberie.");
-      h.ruka.splice(idx, 1);
-      h.odhadzovaci.push(karta as DeepMutable<CardInstance>);
-      h.cigarety += 1;
-      events.push({ type: "log", text: `Smetiarka: hráč ${p + 1} odhadzuje ${defOf(data, karta).name} a dostáva cigaretu.` });
       break;
     }
     case "zberny_dvor": {
@@ -5817,7 +5783,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       ) {
         out.push({ type: "refillPoldeci" });
       }
-      out.push(...moznostiKseftu(data, state, p), ...moznostiKseftuVazna(state, p), ...moznostiUplatku(data, state, p));
+      out.push(...moznostiKseftu(state, p), ...moznostiKseftuVazna(state, p), ...moznostiUplatku(data, state, p));
       break;
     }
     case "bitka": {

@@ -6218,7 +6218,6 @@ type PecatNakupu = (p: {
  * pečiatku (výber karty z odhadzovacieho balíčka).
  */
 function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData; readonly view: ClientState; readonly cmd: (c: Command) => void; readonly pecatNakupu: PecatNakupu }) {
-  const [smetiarka, setSmetiarka] = useState<number | null>(null);
   const [vazenKarta, setVazenKarta] = useState<Readonly<Record<string, string>>>({});
   const ja = view.ja;
   const su: PlayerId = ja === 0 ? 1 : 0;
@@ -6227,42 +6226,12 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
   const h = view.hraci[ja];
   const meno = (defId: string): string => data.cards.get(defId)?.name ?? defId;
   const pouzite = pitka.kseft?.[ja] ?? [];
-  const skryte = (pitka.skryteNaex ?? []).filter((x) => x.hrac === ja).length;
   const karty = [...view.strany[0], ...view.strany[1]].filter((pl) => pl.playedBy === ja && pl.zaverecna !== true && !pouzite.includes(pl.card.uid));
   const out: ReactNode[] = [];
   for (const pl of karty) {
     const uid = pl.card.uid;
     if (pl.card.defId === "stryko_z_ameriky")
       out.push(pecatNakupu({ kluc: `kseft${uid}`, nazov: "Strýko", cena: KONSTANTY.EFEKT.STRYKO_CENA, dovod: h.cigarety < KONSTANTY.EFEKT.STRYKO_CENA ? "Strýko chce 2 cigarety." : null, tip: "Kšeft: za 2 cigarety udelíš v bitke tohto kola 1 Ranu navyše.", akcia: () => cmd({ type: "kseft", uid }) }));
-    if (pl.card.defId === "oslavenec")
-      out.push(
-        pecatNakupu({
-          kluc: `kseft${uid}`,
-          nazov: "Oslávenec",
-          cena: 0,
-          dovod: h.poldeciPlne - skryte <= 0 ? "Oslávenec chce plný poldeci." : view.ciel?.lokalita?.defId === "kostol" ? "Kostol: nikto nesmie vypiť." : null,
-          tip: "Kšeft: za tvoj plný poldeci súper dostane 2 poškodenia pečene.",
-          akcia: () => cmd({ type: "kseft", uid }),
-        }),
-      );
-    if (pl.card.defId === "smetiarka") {
-      const moznosti = view.ruka.filter((k) => !(data.cards.get(k.defId)?.tags.includes("Kliatba") ?? false));
-      out.push(
-        <span key={`kseft${uid}`} className="pecat pecat-nakup">
-          <select value={smetiarka ?? ""} onChange={(e) => setSmetiarka(e.target.value === "" ? null : Number(e.target.value))}>
-            <option value="">Smetiarka: karta z ruky…</option>
-            {moznosti.map((k) => (
-              <option key={k.uid} value={k.uid}>
-                {meno(k.defId)}
-              </option>
-            ))}
-          </select>
-          <button type="button" disabled={smetiarka === null} onClick={() => smetiarka !== null && cmd({ type: "kseft", uid, kartaUid: smetiarka })}>
-            odhodiť za cigaretu
-          </button>
-        </span>,
-      );
-    }
   }
   // Kšeft väzňa (v9): len držiteľ väzňa, za vypitý plný poldeci, raz za Pitku na väzňa.
   const kseftyVazna = ponukaKseftuVazna(stavKseftuVaznaZPohladu(view), ja);
