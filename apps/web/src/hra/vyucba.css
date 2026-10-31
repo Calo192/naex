@@ -69,18 +69,6 @@
   background: color-mix(in srgb, var(--cervena) 14%, var(--plocha));
 }
 
-.vyucba-vysvetlenie {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border-left: 3px solid var(--cervena);
-  background: color-mix(in srgb, var(--cervena) 10%, var(--plocha));
-}
-
-.vyucba-vysvetlenie.spravna {
-  border-left-color: var(--zelena);
-  background: color-mix(in srgb, var(--zelena) 12%, var(--plocha));
-}
-
 /* Výučba: dôvod zamknutého „potvrdiť“ vedľa tlačidla na hrane stola. */
 .vyucba-zamok {
   align-self: center;
@@ -144,16 +132,6 @@ body.vyucba-bezi .pecat-naex:not(.neaktivne) {
   }
 }
 
-/* Prvá veta: čo kliknúť (z príkazu, ktorý krok čaká). */
-.vyucba-text .vyucba-pokyn {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border-left: 3px solid var(--akcent);
-  background: color-mix(in srgb, var(--akcent) 12%, var(--plocha));
-  font-weight: 700;
-  color: var(--text);
-}
-
 /* Karta v ruke, ktorú výučba zvýrazní, je vysunutá celá — zasunutá nemala vidno názov (UI inšpekcia). */
 body.vyucba-bezi .ruka-rad > .tahatelna:not(:hover) > .kl[data-vyucba-zvyraznene] {
   transform: translateY(calc(-1 * var(--ruka-skryte) - 4px));
@@ -179,11 +157,6 @@ body.vyucba-bezi:not(.vyucba-stavka) .stavka-bitky {
    stôl prešiel na scroll a stránka sa odroľovala (Katka, krok 53). */
 body.vyucba-bezi .ucet-bitky {
   display: none;
-}
-
-/* Najdrobnejšie popisy v paneli starších (poradie, odznak +1) aspoň 11 px. */
-body.vyucba-bezi :is(.ls-poradie, .ls-odznak) {
-  font-size: max(11px, 1em);
 }
 
 /* Čo sa po ťahu Štamgasta či hry zmenilo: prerušovaný obrys bez pulzu — nie je to pokyn klikni. */
@@ -228,11 +201,6 @@ body.vyucba-bezi :is(.ls-poradie, .ls-odznak) {
   body.vyucba-bezi .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) > .pilulka-text {
     white-space: normal;
   }
-}
-
-/* Počas výučby komentuje Melichar — pruh priazne na stole by ležal cez karty. */
-body.vyucba-bezi .oznamy-priazne {
-  display: none;
 }
 
 .vyucba-text {

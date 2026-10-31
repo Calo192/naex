@@ -286,95 +286,10 @@
   line-height: 1.3;
 }
 
-.udaj-siroky {
-  grid-column: 1 / -1;
-  margin-top: 6px;
-}
-
 /* Bodovanie: dlaždice vľavo, pruhy podmienok vpravo v dvoch stĺpcoch. */
 .stat-sekcia.siroka .udaje {
   grid-template-columns: repeat(3, minmax(90px, 130px)) 1fr;
   align-items: start;
-}
-
-.stat-sekcia.siroka .udaj-siroky {
-  grid-column: 4;
-  grid-row: 1 / span 2;
-  margin-top: 0;
-}
-
-.stat-sekcia.siroka .body-podla {
-  grid-template-columns: 1fr 1fr;
-  column-gap: 32px;
-}
-
-/* body podľa podmienok: diverging pruhy okolo nuly */
-.body-podla {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 6px;
-}
-
-.body-podla li {
-  display: grid;
-  grid-template-columns: minmax(0, 11rem) 1fr 2.6rem;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.86rem;
-}
-
-.body-podla-nazov {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.body-podla-nazov .ikona-podmienky,
-.body-podla-nazov .ikona-podmienky-text {
-  flex: none;
-  width: 20px;
-  height: 20px;
-}
-
-.body-podla-nazov .ikona-podmienky-text {
-  display: inline-grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--plocha-3);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
-
-.body-podla-os {
-  position: relative;
-  height: 12px;
-  background: linear-gradient(90deg, transparent calc(var(--nula) - 0.5px), var(--okraj-svetly) calc(var(--nula) - 0.5px), var(--okraj-svetly) calc(var(--nula) + 0.5px), transparent calc(var(--nula) + 0.5px));
-}
-
-.body-podla-pruh {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  min-width: 3px;
-  background: var(--akcent);
-  border-radius: 0 4px 4px 0;
-}
-
-.body-podla-pruh.zaporny {
-  background: var(--cervena);
-  border-radius: 4px 0 0 4px;
-}
-
-.body-podla-hodnota {
-  text-align: right;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
 }
 
 /* aktívne akcie v bitkách */
@@ -552,10 +467,6 @@ td.cislo {
   gap: 24px;
 }
 
-.rebricek .stranka-hlava {
-  margin-bottom: 0;
-}
-
 .tabulka-rebricka tr.ja td {
   background: color-mix(in srgb, var(--akcent) 7%, transparent);
 }
@@ -630,10 +541,6 @@ td.cislo {
   gap: 22px;
 }
 
-.spatna-vazba .stranka-hlava {
-  margin-bottom: 0;
-}
-
 .novy-nazor {
   display: grid;
   gap: 14px;
@@ -655,25 +562,6 @@ td.cislo {
   align-items: center;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
-}
-
-.nazory-ovladanie {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.nazory-triedenie {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-}
-
-.nazory-triedenie select {
-  width: auto;
 }
 
 .nazory-ai {
@@ -702,13 +590,6 @@ td.cislo {
 
 .nazor.stav-hotove {
   border-color: color-mix(in srgb, var(--zelena) 40%, transparent);
-}
-
-.nazor-hlava {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
-  align-items: center;
 }
 
 .nazor-meta {
@@ -954,12 +835,6 @@ button.cigareta-tlacidlo {
   .stat-sekcia.siroka .udaje {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
-  .stat-sekcia.siroka .udaj-siroky {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    margin-top: 6px;
-  }
 }
 
 @media (max-width: 900px) {
@@ -984,18 +859,6 @@ button.cigareta-tlacidlo {
 
   .udaje {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .stat-sekcia.siroka .body-podla {
-    grid-template-columns: 1fr;
-  }
-
-  .body-podla li {
-    grid-template-columns: minmax(0, 8.5rem) 1fr 2.2rem;
-  }
-
-  .nazor-hlava {
-    grid-template-columns: auto 1fr;
   }
 
   .nazor-stav-vyber {

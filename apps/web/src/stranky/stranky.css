@@ -4,14 +4,6 @@
   color: var(--tlmeny);
 }
 
-.stranka-hlava {
-  margin-bottom: 28px;
-}
-
-.stranka-hlava p {
-  max-width: 72ch;
-}
-
 .cipy {
   display: flex;
   flex-wrap: wrap;
@@ -1081,15 +1073,6 @@ button.cip.aktivny {
   font-size: 1rem;
 }
 
-.bitka-utocnik {
-  font-weight: 400;
-  font-size: 0.85rem;
-  color: var(--tlmeny);
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
 .pocitadlo {
   display: flex;
   justify-content: space-between;
@@ -1230,15 +1213,6 @@ button.cip.aktivny {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.hraci-hlavicka h1 {
-  margin-bottom: 6px;
-}
-
-.hraci-hlavicka p {
-  max-width: 75ch;
-  margin: 0;
 }
 
 .hraci-ovladanie {

@@ -21,14 +21,6 @@
   border: 1px solid var(--okraj);
 }
 
-.admin-menu-titul {
-  font: 700 0.75rem/1 var(--pismo);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--akcent);
-  padding: 0 10px;
-}
-
 .admin-menu-skupina {
   display: flex;
   flex-direction: column;
@@ -1245,7 +1237,6 @@ code {
     scrollbar-width: none;
   }
 
-  .admin-menu-titul,
   .admin-menu-nazov {
     display: none;
   }

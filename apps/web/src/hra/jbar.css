@@ -173,15 +173,6 @@
   color: var(--text);
 }
 
-.jbar-poradie {
-  font: 800 1rem/1 var(--nadpis);
-  color: var(--tlmeny);
-}
-
-.jbar-strana.na-tahu .jbar-poradie {
-  color: var(--akcent);
-}
-
 .jbar-pozn {
   overflow: hidden;
   text-overflow: ellipsis;

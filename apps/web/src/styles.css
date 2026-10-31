@@ -410,10 +410,6 @@ img.avatar-hraca {
   .mriezka > .st-prirucka-text.s-okrajom {
     grid-column: 4 / span 6;
   }
-
-  .mriezka > .st-prirucka-okraj {
-    grid-column: 10 / -1;
-  }
 }
 
 @media (max-width: 1439.98px) {

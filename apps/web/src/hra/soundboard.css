@@ -110,19 +110,6 @@
   mask: radial-gradient(circle, transparent 6px, #000 6.5px);
 }
 
-/* Súperova hláška — bodka na tlačidle. */
-.sb-bodka {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--su);
-  box-shadow: 0 0 0 2px var(--pozadie);
-  animation: sb-pulz 1s ease-in-out infinite;
-}
-
 @keyframes sb-pulz {
   50% {
     transform: scale(0.7);
@@ -730,7 +717,6 @@
   .sb-spust.pocka,
   .sb-info.trasie,
   .sb-info.trasie2,
-  .sb-bodka,
   .fuz.hovori .fuz-l,
   .fuz.hovori .fuz-p,
   .sb-pecat-odtlacok {
