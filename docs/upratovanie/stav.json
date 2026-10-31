@@ -44,6 +44,16 @@
       "poznamka": "Prejdené: achievementy.ts, ligy.ts, prava.ts, roadmapa.ts, navrhy.ts, suhrn.ts, tempo.ts, playtesty.ts, prehravac.ts; core/vyucba.ts (obálka radaKVolbe); nepoužité importy a parametre v klientovi mimo HernaPlocha. Vynechané kvôli rozrobenej práci: api.ts, db.ts, nazory.ts, novinky.ts, core/index.ts a skoro celé apps/web/src/hra/HernaPlocha.tsx a CSS. Nechané: text() validátory v navrhy/roadmapa/novinky/dielna/nazory (líšia sa povinnosťou a hláškami), mŕtve props HracDoska (popisKarty, cenaDlhu, mena) a hraniceZon v LiniaStarsich — volá ich HernaPlocha. server.ts len zbežne. Ďalej apps/web/src/hra — začni nimi, keď HernaPlocha nebude rozrobená.",
       "zmenenychRiadkov": 238,
       "odtlacok": "ccece1f51975f551b4b80d0c05faf86d8c8cb738046a7d3fc489d93e0e466e0c"
+    },
+    {
+      "datum": "2026-10-31",
+      "vetva": "upratovanie/2026-10-31-mrtvy-kod",
+      "casti": [
+        "celé repo (ručný beh na pokyn Michala): packages/core/src, packages/tvorba/src, packages/server/src, apps/web/src, tools — mŕtvy a nepoužívaný kód"
+      ],
+      "poznamka": "Mimo poradia, „dalsia“ sa nemení. Odstránené: nepoužité importy, parametre a exporty v jadre (cigaretyZPitky, naexLimitMinuty, stavkaBitky, cenaKliatby… bez nepoužitých argumentov; KSEFTY_VAZNOV, pocetBojacichSa, velkostBalicka, sNajlepsimNaex), Kšefty Smetiarky a Oslávenca (mimo sady od v7), konštanty Poštárky spred v7; v klientovi lupa staršieho, IkonaPodmienky, bodový bar, mŕtve props (hraniceZon, popisKarty, cenaDlhu, mena, ikony, data) a stav, ≈ 720 riadkov mŕtveho CSS, nepoužité obrázky public/karty a public/pravidla; tools/sada-v7, kedyRozhodneVydesenie, prázdny bot5-po-d1b.txt; pomocníci po zmazaných testoch. Nechané (zmena by pohla odtlačkom, protokolom alebo testami): kroky bitky benzinka/kar/zivnostnik s poľami benzinkaZostava a karHotovy a príkazmi, staré voľby Nástupu Klebetnice a Dohadzovačky (komentár: pre staré uloženia), krok exekutor v BitkaKrok (test ho porovnáva), Kohút v registri (TODO Michal, karta sa prerobí), Presbiter a Brigádnik v partia.ts (súbežná vetva; Presbiter je v lokálnej sade), POST /admin/karty/poradie (API), finale-miesto v spaky.css (súbežná vetva), testovacie švy navrhPrebytku, zoznamMetrik, SPUSTACE_NAPOVED, svgIkonyBodovania, strazenaPartia, ≈ 370 exportov používaných len vo vlastnom súbore.",
+      "zmenenychRiadkov": 1894,
+      "odtlacok": "1028448632a3f910833c3920c13ab9a5064775f87cf0ae62032a3ece07bcdcd1"
     }
   ]
 }
