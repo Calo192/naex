@@ -18,13 +18,13 @@ vo feedback.md.
 - oprava: 2026-10-28 20261028-090549-3: číslo −5 bolo zo starého znenia, PRAVIDLA §14 v8 dávajú −3 za kus (výsledok 43 : 32 sedel na −3). Neoverená, kým ju nepotvrdí partia.
 
 ### hela-2 · Keď dávam Pohoršenie k sebe na Veriaceho (Viera +1), najprv skontrolujem súperove Povery, lebo Viera najprv ruší Poveru 1 : 1 a tuhé sa nemusí zmeniť; Bitkár zvýši tuhé vždy.
-- stav: neoverená
-- pravidlá: v8
-- potvrdenia: 2
+- stav: overená
+- pravidlá: v9
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-10-28
-- partie: 20261027-161907-3, 20261028-090549-3
-- prečo: PRAVIDLA §9.3 krok 1 (Viera a Povera sa vyrušia 1 : 1). 161907 K4: Hela dala tretie Pohoršenie na Krčmárku (Veriaci), Vilova Dievčina mala Poveru → tuhé 2 : 3 (log „Bitka: tuhé 2:3“); Veterinár (Bitkár) by dal 2 : 2 (remíza). 090549: P3 K6 Hela dala Pohoršenie k sebe na Veriaceho až po pohľade na súperove Povery; Povera Manželky zrušila 1 Vieru.
+- dátum: 2026-10-31
+- partie: 20261027-161907-3, 20261028-090549-3, 20261031-004030-3
+- prečo: PRAVIDLA §9.3 krok 1 (Viera a Povera sa vyrušia 1 : 1). 161907 K4: Hela dala tretie Pohoršenie na Krčmárku (Veriaci), Vilova Dievčina mala Poveru → tuhé 2 : 3 (log „Bitka: tuhé 2:3“); Veterinár (Bitkár) by dal 2 : 2 (remíza). 090549: P3 K6 Hela dala Pohoršenie k sebe na Veriaceho až po pohľade na súperove Povery; Povera Manželky zrušila 1 Vieru. 004030-3 K3: Helin Povery (3) vyrušili Janov Veriaci Viera 2 (Veriaci 3 → 2), tuhé ostalo.
 
 ### hela-3 · Keď dávam NA EX, ktoré mi vyrobí priznaný Dlh (neaktívny Hazard na mojej karte), najprv spočítam remízu: pri vyrovnanom tuhom prehrávam na tiebreaku Dlhov, preto Dlhové NA EX dávam len pri náskoku aspoň 2 tuhé aj po súperovej odpovedi kartou (odpoveď s Pohoršením k sebe na Bitkára je +1 tuhé hneď).
 - stav: neoverená

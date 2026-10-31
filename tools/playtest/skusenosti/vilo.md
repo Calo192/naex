@@ -7,23 +7,23 @@ vo feedback.md.
 ## Skúsenosti
 
 ### vilo-1 · Keď bitku môže rozhodnúť remíza v tuhom, nevyrábam si priznaný Dlh (NA EX na vlastnú kartu s neaktívnym Hazardom, Poštárka, Dievčina) a Dlhy oboch si pred bitkou spočítam, lebo remízu v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov (§9.4) — jediný Dlh zmení výhru na prehru.
-- stav: neoverená
-- pravidlá: v7
-- potvrdenia: 1
+- stav: overená
+- pravidlá: v9
+- potvrdenia: 2
 - vyvrátenia: 0
-- dátum: 2026-10-30
-- partie: 20261027-131033-3
-- prečo: PRAVIDLA §9.4 (remíza: Absťáky, potom Dlhy), §15 Jednota. 131033-3 K1: tuhé 1 : 1, Dlhy 1 : 1 → sekera (log „Sekera: remíza v tuhom, v Absťákoch aj v Dlhoch“); bez Vilovho Dlhu z Jednoty by rozhodol 0 : 1 v jeho prospech.
+- dátum: 2026-10-31
+- partie: 20261027-131033-3, 20261031-004030-2
+- prečo: PRAVIDLA §9.4 (remíza: Absťáky, potom Dlhy), §15 Jednota. 131033-3 K1: tuhé 1 : 1, Dlhy 1 : 1 → sekera (log „Sekera: remíza v tuhom, v Absťákoch aj v Dlhoch“); bez Vilovho Dlhu z Jednoty by rozhodol 0 : 1 v jeho prospech. 004030-2 K1: remíza 4 : 4 by prešla na Dlhy (0 : 4 pre Evu), Vilo ju Pohoršením k sebe na Bitkára zmenil na 5 : 4.
 - oprava: 2026-10-30 20261030-115654-1: pôvodné znenie stálo na Kšefte Jednoty (1 Dlh → 2 cigarety), ktorý §15 v7 nemá (Jednota: kto má viac Dlhov, nesmie fajčiť ani dolievať) — Vilo to v partii overil a skúsenosť nepoužil; jadro (Dlh rozhoduje remízu) platí: 20261030-115654-2 K1 Hela prehrala 7 : 7 na Dlhy 1 : 0 po vlastnom Dlhovom NA EX (−8 špakov); prepísané bez Jednoty.
 
 ### vilo-2 · Keď mám priznané Dlhy, počítam s Exekútorom v každej bitke (polovica Dlhov nahor + súperova priazeň Exekútora, rovnako špakov, aj pri jedinom Dlhu), preto Dlhy nenarábam (Poštárka, NA EX zdvojujúci moje neaktívne Dlh, Silná vedľa Dlhu), držím Záhradkára a pri tesnej remíze si Dlhy spočítam, lebo menej Dlhov vyhráva; na Poveru proti jedinému Dlhu sa nespolieham — Exekútor ho zhorí skôr.
-- stav: neoverená
-- pravidlá: v8
-- potvrdenia: 2
+- stav: overená
+- pravidlá: v9
+- potvrdenia: 3
 - vyvrátenia: 0
-- dátum: 2026-10-30
-- partie: 20261028-090549-1, 20261030-115654-1
-- prečo: PRAVIDLA §11 v8 (Exekútor bez prahu, pred poškodením), §9.4. P1 K2 Exekútor spálil Vilov jediný Dlh a 1 špak pred poškodením a Ferove 2 Povery nič neurobili; finále Ferov Exekútor sily 2 (Hrobár) zhorel Vilovi 1 Dlh a 1 špak; Vilo sa kvôli tomu vyhýbal Silnej, Snúbenici a Kulturistovi. 115654-1 K1: Exekútor spálil presne ceil(2/2) + 1 (Ferova Povera na Hrobára) = 2 Dlhy a 2 špaky hneď v prvom kole; Vilo potom Dlhy celé kolo odmietal a Ferov trik s Poradkyňou (4 zadĺženia) zrazil odpoveďou Vdovou na 1.
+- dátum: 2026-10-31
+- partie: 20261028-090549-1, 20261030-115654-1, 20261031-004030-2
+- prečo: PRAVIDLA §11 v8 (Exekútor bez prahu, pred poškodením), §9.4. P1 K2 Exekútor spálil Vilov jediný Dlh a 1 špak pred poškodením a Ferove 2 Povery nič neurobili; finále Ferov Exekútor sily 2 (Hrobár) zhorel Vilovi 1 Dlh a 1 špak; Vilo sa kvôli tomu vyhýbal Silnej, Snúbenici a Kulturistovi. 115654-1 K1: Exekútor spálil presne ceil(2/2) + 1 (Ferova Povera na Hrobára) = 2 Dlhy a 2 špaky hneď v prvom kole; Vilo potom Dlhy celé kolo odmietal a Ferov trik s Poradkyňou (4 zadĺženia) zrazil odpoveďou Vdovou na 1. 004030-2 K2 Exekútor Vilovi zjedol 6 špakov (12 Dlhov po Evinom NA EX), K3 3 Dlhy + 1 špak (Advokát ušetril 2); K5 Eva s Dlhmi si prisadla Robotu.
 - oprava: 2026-10-28 20261028-090549-1: pôvodné znenie (prah Exekútora 7 − priazeň, Poštárka tesne pod prahom) odporovalo §11 v8 — prah zrušený (Michal 2026-10-28), Exekútor príde ku každému s priznaným Dlhom; prepísané.
 
 ### vilo-3 · Keď má súper v línii Kulturistu (Petelica ×2), nedávam NA EX (po spárovaní susedom sú všetky akcie aktívne) a platím Úplatok 1 cigaretu v každej Pitke (Petelica → Pecka → Rana), Mäsiarom vypínam jeho Zvieratá.
@@ -46,31 +46,22 @@ vo feedback.md.
 - oprava: 2026-10-30 20261030-115654-1: „strach platí za nové zóny hneď“ odporuje §10 v8.3 (strach až po udržaní, aj porazenému); Vilo ju preto nepoužil a sám ju vyvrátil pravidlami; prepísané na udržanie a obranu súpera.
 
 ### vilo-5 · Keď má súper v línii Bzdochu, nedávam NA EX na jeho kartu (ani zadarmo s Alkoholikom), lebo hrá Pitku až po mne, vidí môj cieľ a zrážkou na vlastnej karte z nej spraví Výtržníka — všetky jej akcie sú Rany pre neho.
-- stav: neoverená
-- pravidlá: v8
-- potvrdenia: 1
+- stav: overená
+- pravidlá: v9
+- potvrdenia: 2
 - vyvrátenia: 0
-- dátum: 2026-10-30
-- partie: 20261030-115654-1
-- prečo: PRAVIDLA §7 Bzdocha, Výtržník. 115654-1 K5 P2: Vilov NA EX na Ferovho Záhradkára (Poldeci ×2 + Pečeň ×2 = Cirhóza/Pitku) → Fero s Bzdochou videl cieľ a dal NA EX na tú istú kartu → „Výtržník, všetky jej akcie sú Rany pre hráča 1“ = 6 Rán, 5 : 3 → 5 : 10 (−13 špakov).
-
-### vilo-6 · Keď som na Zastávke na ťahu, spoločný zvyšok limitu je 3 a mám plný poldeci navyše, dám Vypiť + 2 karty, lebo spoločný limit padne na 0, súper v tom Zhromaždení už nevyloží nič a hra mu za pas nedá cigarety (ráta min zo spoločného a vlastného zvyšku) — pravidlo je nejasné (§15 vs. §6), autor ho môže zmeniť.
-- stav: neoverená
-- pravidlá: v8
-- potvrdenia: 1
-- vyvrátenia: 0
-- dátum: 2026-10-30
-- partie: 20261030-115654-1
-- prečo: PRAVIDLA §13 Vypiť, §15 Zastávka, §6 pas; engine kartyZaPas = min(spoločný zvyšok, vlastný zvyšok, ruka). 115654-1 K1 Z1: ťah vypiť + Vdova + Miňištrant → prevaha 3 : 2, bitka 6 : 0 (+6); log „Hráč 1 pasuje do Pitky“ bez cigariet, hoci Fero mal vlastný zvyšok 1 a 4 karty v ruke.
+- dátum: 2026-10-31
+- partie: 20261030-115654-1, 20261031-004030-3
+- prečo: PRAVIDLA §7 Bzdocha, Výtržník. 115654-1 K5 P2: Vilov NA EX na Ferovho Záhradkára (Poldeci ×2 + Pečeň ×2 = Cirhóza/Pitku) → Fero s Bzdochou videl cieľ a dal NA EX na tú istú kartu → „Výtržník, všetky jej akcie sú Rany pre hráča 1“ = 6 Rán, 5 : 3 → 5 : 10 (−13 špakov). 004030-3 K2: Janov NA EX na Pijana proti Hele s Bzdochou → zrážka, Výtržník, 5 : 15 (z 7 : 10), −20 špakov podľa Jana.
 
 ### vilo-7 · Keď dávam NA EX (aj zadarmo s Alkoholikom), najprv skontrolujem, či nemám v línii Šoféra (bez NA EX dá Pecku navyše, s ním nič) a či pečeň NA EX 1 + zdvojené Poldeci/Pečeň cieľa nedosiahne prah 3, lebo Cirhóza z vlastného NA EX stojí −3 alebo +1 tuhé súperovi v každej bitke.
-- stav: neoverená
-- pravidlá: v8
-- potvrdenia: 1
+- stav: overená
+- pravidlá: v9
+- potvrdenia: 2
 - vyvrátenia: 0
-- dátum: 2026-10-30
-- partie: 20261030-115654-1
-- prečo: PRAVIDLA §7 (pečeň NA EX pri odkrytí), §8 prah 3, §16 Šofér. 115654-1 K5: Vilov NA EX zrušil Šoférov bonus +2 (a Fero zrážkou získal 6 Rán); K3 NA EX na vlastnú Vychovávateľku: pečeň 1 + Poldeci ×2 = 3 → log „Hráč 2 dosahuje prah pečene (3) — Cirhóza“, zahodená až Víziou.
+- dátum: 2026-10-31
+- partie: 20261030-115654-1, 20261031-004030-2
+- prečo: PRAVIDLA §7 (pečeň NA EX pri odkrytí), §8 prah 3, §16 Šofér. 115654-1 K5: Vilov NA EX zrušil Šoférov bonus +2 (a Fero zrážkou získal 6 Rán); K3 NA EX na vlastnú Vychovávateľku: pečeň 1 + Poldeci ×2 = 3 → log „Hráč 2 dosahuje prah pečene (3) — Cirhóza“, zahodená až Víziou. 004030-2 K5: Vypiť 1 + NA EX 1 + Živnostník ✓ 1 = prah pečene 3 → Cirhóza (rátané, nie z vlastného NA EX náhľadu).
 
 ### vilo-8 · Keď chcem bankovať strach na oranžovej či červenej (stupeň zaplatí až koniec ďalšieho kola), najprv spočítam súperove cigarety a Dedičstvo: s 1 cigaretou mi červenú zruší patronátom (červená 1, oranžová 2 cig) a s Telefónom odtlačí stupeň Pohoršeniami za cenu von, preto bankujem, len keď súper nemá cigarety ani Telefón, inak radšej mažem jeho čakajúce stupne.
 - stav: neoverená
