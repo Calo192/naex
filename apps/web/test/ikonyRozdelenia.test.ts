@@ -28,7 +28,6 @@ function linia(r: RozdelenieStarsieho): string {
       pohlad: 0,
       mena: ["Jano", "Fero"],
       krok: "pohorsenie",
-      hraniceZon: false,
       zmenene: new Set<string>(),
     }),
   );

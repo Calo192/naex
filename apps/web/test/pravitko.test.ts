@@ -66,7 +66,6 @@ describe("pravítko pod stupnicou", () => {
         pohlad: 0,
         mena: ["Jano", "Fero"],
         krok,
-        hraniceZon: false,
         zmenene: new Set<string>(),
       }),
     );
@@ -115,7 +114,6 @@ describe("pravítko po rozdaní", () => {
         pohlad: 0,
         mena: ["Jano", "Fero"],
         krok: "prebytok",
-        hraniceZon: false,
         zmenene: new Set<string>(),
       }),
     );

@@ -4,7 +4,7 @@
 
 import type { ElderState, Favour, Klebety, PlayerId, PosunMarkera } from "@naex/core";
 import { NAZVY_ZON, STAV_STARSIEHO, ucinnaPriazen } from "@naex/core";
-import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
+import { UCINOK_KRATKO } from "./Scorecard.tsx";
 
 export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
   pohorsenie: "Pohoršenie",
@@ -23,11 +23,6 @@ const spakov = (n: number): string => (n === 1 ? "špak" : n < 5 ? "špaky" : "�
  */
 export function riadokPriazne(fav: Favour, komu: string | null, sila: number): string {
   return komu === null || sila <= 0 ? `nikomu · pri +1: ${UCINOK_KRATKO[fav](1)}` : `${komu}: ${UCINOK_KRATKO[fav](sila)}`;
-}
-
-/** Plné znenie priazne do lupy (na karte je len krátke). */
-export function plnaPriazen(fav: Favour, sila: number): string {
-  return sila > 0 ? UCINOK_PRIAZNE[fav](sila) : `${UCINOK_PRIAZNE[fav](1)} (pri +1)`;
 }
 
 /** Stupeň so zónou a stavom staršieho (pojmy v8.3): „stupeň 2, oranžová — vystrašený“. */
@@ -76,37 +71,13 @@ export function titulStrachuSpolu(pocet: number, ja: boolean, spaky: number, naU
   return `${pocet} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): ${vetaVyplaty(ja, spaky, naUdrzanie, true)}`;
 }
 
-/** Ako starší platí za strach (v8.3) — titulok stupnice a lupa staršieho. */
+/** Ako starší platí za strach (v8.3) — titulok stupnice. */
 export const PRAVIDLO_STRACHU =
   "Bojí sa toho druhého. Stupeň, kam sa marker dostal, zaplatí až vtedy, keď sa na ňom marker udrží do konca nasledujúceho kola: žltá 1, oranžová 2, červená 3 (zo stredu po červenú spolu 6) — tomu, koho sa bojí, nech bitku vyhrá ktokoľvek. Každý stupeň raz; odtlačený stupeň nič a ústup k stredu zaplatené stupne zmaže. Vo finále nové stupne nič, udržané z posledného kola sa vyplatia po finále. V sivom strede nikomu.";
 
-/** Čo prinesie vydesenie (stupeň 3, červená) — lupa staršieho. */
-export function textVydesenia(fav: Favour): string {
-  return `Vydesíš ho (červená) → keď sa tam marker udrží do konca ďalšieho kola, zaplatí ti ju (+3 š), ale súper dostane priazeň +3 (${UCINOK_KRATKO[fav](3)}). Vydesí ho súper → ty priazeň +3.`;
-}
-
-/** Zdroje posunov od poslednej bitky: „Prebytok · Michal ×3“. */
-export function textStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdroj"]; readonly kto: PlayerId; readonly pocet: number }[], kto: (p: PlayerId) => string): string {
-  return zdroje.map((x) => `${NAZOV_ZDROJA[x.zdroj]} · ${kto(x.kto)}${x.pocet > 1 ? ` ×${x.pocet}` : ""}`).join(" · ");
-}
-
-/** Štítok posunu na portréte — len zdroj a počet, kto posúval nesie farba (celé znenie je v lupe). */
+/** Štítok posunu na portréte — len zdroj a počet, kto posúval nesie farba. */
 export function stitokStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdroj"]; readonly pocet: number }[]): string {
   return zdroje.map((x) => `${NAZOV_ZDROJA[x.zdroj]}${x.pocet > 1 ? ` ×${x.pocet}` : ""}`).join(" · ");
-}
-
-/**
- * Náhľad posunu markera v hlavičke línie (v8.3): koľko tento starší po posune zaplatí za
- * strach na konci kola a koľko bude čakať na udržanie — nahladPosunuMarkera/Prebytkom
- * jadra (spakyZaStarsieho, naUdrzanie).
- */
-export function nahladStrachu(ty: number, su: number, menoSupera: string, cakaTy = 0, cakaSu = 0): string {
-  const kto = (a: number, b: number): string => (a > 0 ? `ty +${a}` : `${menoSupera} +${b}`);
-  const casti = [
-    ty > 0 || su > 0 ? `za strach na konci kola ${kto(ty, su)}` : null,
-    cakaTy > 0 || cakaSu > 0 ? `čaká na udržanie ${kto(cakaTy, cakaSu)}` : null,
-  ].filter((x) => x !== null);
-  return casti.length === 0 ? "za strach nič nové" : casti.join(" · ");
 }
 
 /**

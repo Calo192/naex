@@ -32,7 +32,7 @@ import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { IkonaPaste } from "./IkonaPaste.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import type { Pravitko } from "./pravitko.ts";
-import { POPIS_STUPNICE, PRAVIDLO_STRACHU, plnaPriazen, riadokPriazne, riadokStrachu, stitokStopy, textStopy, textStupna, textVydesenia } from "./textyStarsich.ts";
+import { POPIS_STUPNICE, riadokPriazne, riadokStrachu, stitokStopy } from "./textyStarsich.ts";
 
 /** Šípka smeru pri rozdeľovaní: kam marker pôjde a za koľko (null = tým smerom sa teraz nedá). */
 export interface SipkaRozdelenia {
@@ -92,8 +92,6 @@ export interface StarsiVLinii {
   readonly ciel?: MarkerPos | null | undefined;
   /** Prečo sa v kroku nedá kliknúť (zamknutý starší). */
   readonly dovod?: string | undefined;
-  /** Prejdené hranice zón v tejto bitke — ukazujú sa pri Pohoršení. */
-  readonly hranice?: number | undefined;
   /** Pokus o zajatie (v9): kto skúša staršieho zajať — starší je v ohrození, karta v súperovej ruke. */
   readonly patron: { readonly kto: PlayerId } | null;
   /** Vybraný pri pokuse o zajatie (čaká sa na potvrdenie). */
@@ -114,8 +112,6 @@ export interface LiniaStarsichProps {
   readonly mena: readonly [string, string];
   /** Krok na staršom, ktorý línia práve ukazuje (Pohoršenie…) — inak null. */
   readonly krok: string | null;
-  /** Pri Pohoršení svietia hranice zón (§9.2: najviac 2 na marker). */
-  readonly hraniceZon: boolean;
   /** Starší, ktorých posun sa práve zmenil (blikne po kroku). */
   readonly zmenene: ReadonlySet<string>;
   /** Tlačidlo vľavo v hlavičke: späť na stôl, nahliadnuť, ďalej. */
@@ -136,7 +132,7 @@ function vztah(elder: ElderState, marker: MarkerPos) {
  */
 export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
 
-export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hraniceZon, zmenene, tlacidlo, lupa }: LiniaStarsichProps) {
+export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, zmenene, tlacidlo, lupa }: LiniaStarsichProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<string | null>(null);
@@ -173,7 +169,7 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hra
         </div>
       )}
       <div className="ls-rad">
-        {starsi.map((s, i) => (
+        {starsi.map((s) => (
           <ScorecardVLinii
             key={s.elder.elderId}
             s={s}
@@ -182,7 +178,6 @@ export function LiniaStarsich({ starsi, data, ikony, ja, pohlad, mena, krok, hra
             ja={ja}
             mena={mena}
             krok={krok}
-            hraniceZon={hraniceZon}
             zmeneny={zmenene.has(s.elder.elderId)}
             nahlad={nahlad === s.elder.elderId}
             onNahlad={(n) => setNahlad(n ? s.elder.elderId : (x) => (x === s.elder.elderId ? null : x))}
@@ -201,7 +196,6 @@ function ScorecardVLinii({
   ja,
   mena,
   krok,
-  hraniceZon,
   zmeneny,
   nahlad,
   onNahlad,
@@ -214,7 +208,6 @@ function ScorecardVLinii({
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly krok: string | null;
-  readonly hraniceZon: boolean;
   readonly zmeneny: boolean;
   /** Myš či fokus je na tomto staršom — riadky ukážu stav po posune. */
   readonly nahlad: boolean;
@@ -314,7 +307,6 @@ function ScorecardVLinii({
         ciel={duch === null ? null : poloha(duch)}
         stopa={stopa === undefined || stopa.z === elder.marker ? null : poloha(stopa.z)}
         priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"}
-        hranice={hraniceZon}
       />
       {/* Pod staršinom meno a komu akú priazeň dáva, väčším písmom (Michal 2026-10-30: drobné
           popisy strán a poradie nad ním nič nehovorili). */}
@@ -740,14 +732,12 @@ function Stupnica({
   ciel,
   stopa,
   priazen,
-  hranice,
 }: {
   readonly marker: number;
   readonly ciel: number | null;
   /** Kde marker stál pred posunmi od poslednej bitky (duch stopy). */
   readonly stopa: number | null;
   readonly priazen: "ja" | "su" | null;
-  readonly hranice: boolean;
 }) {
   return (
     <span className="ls-stupnica" aria-hidden="true" title={POPIS_STUPNICE} data-vyucba="starsi-stupnica">
@@ -781,57 +771,4 @@ export function ucinokPriazne(data: GameData, elder: ElderState): { readonly kra
     kratko: `${sila > 0 ? "" : "pri +1: "}${UCINOK_KRATKO[fav](pri)}`,
     cely: `${sila > 0 ? `Priazeň +${sila}` : "Priazeň (zatiaľ nikoho), pri +1"}: ${UCINOK_PRIAZNE[fav](pri)}`,
   };
-}
-
-/**
- * Lupa staršieho (Michal 2026-10-23, zúžená 2026-10-28): len to, čo na karte v línii nie je —
- * karta s akciami, plné znenie priazne, pravidlo strachu, čo prinesie vydesenie a odkiaľ
- * sa marker od bitky pohol. Stupnicu, komu priazeň a koho sa bojí ukazuje karta v línii.
- */
-export function LupaStarsieho({
-  s,
-  data,
-  ja,
-  mena,
-  sirka,
-  karta,
-}: {
-  readonly s: StarsiVLinii;
-  readonly data: GameData;
-  readonly ikony: readonly IkonaBodovania[];
-  readonly ja: PlayerId;
-  readonly mena: readonly [string, string];
-  readonly sirka: number;
-  /** Karta staršieho s akciami (HernaKarta) v šírke ≈ 26 % lupy — výška ako text vedľa nej. */
-  readonly karta: ReactNode;
-}) {
-  const { elder } = s;
-  const sc = scorecardStarsieho(data, elder);
-  const fav = favourStarsieho(data, elder);
-  const sila = priazenSila(elder);
-  const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
-  const stopa = s.stopa;
-  return (
-    <div className="lupa-starsieho" style={{ width: sirka }}>
-      <div className="lst-vrch">
-        <div className="lst-karta">{karta}</div>
-        <div className="lst-info">
-          <div className="lst-hlava">
-            <b>{s.meno}</b> <span className="lst-tlmene">· {sc.nazov}</span>
-          </div>
-          <p className="lst-priazen">
-            <b><IkonaPriazne /> Priazeň{sila > 0 ? ` +${sila}` : ""}:</b> {plnaPriazen(fav, sila)}
-          </p>
-          <p className="lst-vydesenie">{textVydesenia(fav)}</p>
-          {stopa !== undefined && (
-            <p className="lst-stopa">
-              <b>Od bitky:</b> {textStopy(stopa.zdroje, kto)}
-              {stopa.z === elder.marker ? " — marker je späť, kde bol." : ` (${textStupna(STUPNICA_ZONY[stopa.z])} → ${textStupna(STUPNICA_ZONY[elder.marker])}).`}
-            </p>
-          )}
-          <p className="lst-tlmene">{PRAVIDLO_STRACHU}</p>
-        </div>
-      </div>
-    </div>
-  );
 }

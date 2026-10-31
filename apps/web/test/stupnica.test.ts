@@ -8,7 +8,7 @@ import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { PosunMarkera } from "@naex/core";
 import { loadGameData, setupGame } from "@naex/core";
 import { stopaStarsieho } from "../src/hra/LiniaStarsich.tsx";
-import { CENA_POLA, POPIS_STUPNICE, PRAVIDLO_STRACHU, nahladStrachu, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy, textStopy } from "../src/hra/textyStarsich.ts";
+import { CENA_POLA, POPIS_STUPNICE, PRAVIDLO_STRACHU, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy } from "../src/hra/textyStarsich.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
@@ -33,10 +33,9 @@ describe("stopa posunu", () => {
     expect(stopaStarsieho(posuny, "nikto")).toBeUndefined();
   });
 
-  it("štítok na portréte nesie len zdroj a počet, lupa aj kto posúval", () => {
+  it("štítok na portréte nesie len zdroj a počet", () => {
     const stopa = stopaStarsieho(posuny, id)!;
     expect(stitokStopy(stopa.zdroje)).toBe("Pohoršenie · Nakladačka ×2");
-    expect(textStopy(stopa.zdroje, (p) => (p === 0 ? "ty" : "Fero"))).toBe("Pohoršenie · ty · Nakladačka · ty ×2");
   });
 });
 
@@ -55,11 +54,7 @@ describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
     expect(riadokStrachu(null, false, 0)).toBe("nikoho sa nebojí");
   });
 
-  it("náhľad posunu (v8.3) hovorí o konci kola a o udržaní, nie o výhre", () => {
-    expect(nahladStrachu(3, 0, "Fero")).toBe("za strach na konci kola ty +3");
-    expect(nahladStrachu(0, 1, "Fero")).toBe("za strach na konci kola Fero +1");
-    expect(nahladStrachu(0, 0, "Fero", 2, 0)).toBe("čaká na udržanie ty +2");
-    expect(nahladStrachu(0, 0, "Fero")).toBe("za strach nič nové");
+  it("pravidlo strachu (v8.3) hovorí o konci kola a o udržaní, nie o výhre", () => {
     expect(PRAVIDLO_STRACHU).toMatch(/Každý stupeň raz/);
     expect(PRAVIDLO_STRACHU).toMatch(/udrží do konca nasledujúceho kola/);
     expect(PRAVIDLO_STRACHU).not.toMatch(/vyhrá (aj finále)/);

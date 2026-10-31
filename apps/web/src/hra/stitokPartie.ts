@@ -47,22 +47,6 @@ export function minSek(ms: number): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
-export interface ZmenaSpakov {
-  /** 0 = ja, 1 = súper (poradie v štítku). */
-  readonly kto: 0 | 1;
-  readonly n: number;
-}
-
-/** Čo sa v popolníkoch zmenilo — po bitke „+2“, po Exekútorovi aj záporné. */
-export function zmenySpakov(pred: readonly [number, number], po: readonly [number, number]): ZmenaSpakov[] {
-  const zmeny: ZmenaSpakov[] = [];
-  for (const kto of [0, 1] as const) {
-    const n = po[kto] - pred[kto];
-    if (n !== 0) zmeny.push({ kto, n });
-  }
-  return zmeny;
-}
-
 /** „+2“, „−1“ (typografické mínus). */
 export const textZmeny = (n: number): string => (n > 0 ? `+${n}` : `−${-n}`);
 

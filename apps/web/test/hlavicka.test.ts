@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { hlavneMenu, jeAktivna, menuUctu, spravaWebu } from "../src/lib/navigacia.ts";
-import { KONTUMACIA_PO_MS, krokPartie, minSek, stavKontumacie, textZmeny, zmenySpakov } from "../src/hra/stitokPartie.ts";
+import { KONTUMACIA_PO_MS, krokPartie, minSek, stavKontumacie, textZmeny } from "../src/hra/stitokPartie.ts";
 import type { Pouzivatel, Pravo, Rola } from "../src/lib/ucet.tsx";
 
 const VSETKY: readonly Pravo[] = [
@@ -89,13 +89,7 @@ describe("štítok partie", () => {
     expect(krokPartie(stav(4, 3, false, true)).text).toBe("Koniec partie");
   });
 
-  it("zmena špakov po bitke: kto a koľko, aj záporná", () => {
-    expect(zmenySpakov([3, 1], [5, 1])).toEqual([{ kto: 0, n: 2 }]);
-    expect(zmenySpakov([3, 1], [2, 2])).toEqual([
-      { kto: 0, n: -1 },
-      { kto: 1, n: 1 },
-    ]);
-    expect(zmenySpakov([3, 1], [3, 1])).toEqual([]);
+  it("zmena špakov: „+2“, „−1“", () => {
     expect(textZmeny(2)).toBe("+2");
     expect(textZmeny(-1)).toBe("−1");
   });

@@ -46,8 +46,6 @@ export const SMER_V5: Readonly<Record<Podmienka, number>> = {
   abstak: -1,
 };
 
-const ZONOVE: readonly Podmienka[] = ["znepokojenie", "strach", "vydesenie"];
-
 export const PORADIE_PODMIENOK: readonly Podmienka[] = ["lokality", "starsi", "cigarety", "rezerva", "znepokojenie", "strach", "vydesenie", "dlh", "cirhoza", "abstak"];
 
 /** Čo sa v súboji podmienky porovnáva — prvý riadok nápovedy. */
@@ -63,12 +61,6 @@ export const ZA_CO: Readonly<Record<Podmienka, string>> = {
   abstak: "Vyhrá, kto za celú hru získal menej Absťákov — zbavením sa Absťáku neubudnú.",
   rezerva: "Vyhrá, kto má na konci viac plných poldeci; Vínko v Dedičstve sa ráta ako plný.",
 };
-
-/** Jednotka hodnoty v súboji: zónové podmienky rátajú starších, ostatné kusy. */
-export function jednotka(podmienka: Podmienka, n: number): string {
-  if (ZONOVE.includes(podmienka)) return n === 1 ? "starší" : "starších";
-  return "ks";
-}
 
 /** Súboj jednej aktívnej podmienky pri staršom. */
 export interface SubojPodmienky {
@@ -103,36 +95,6 @@ export function kohoBoduje(s: BodyStarsieho): PlayerId | "obaja" | null {
 /** Bodovanie v5 má pri každom staršom aj počty vyhratých súbojov — staré partie (v4) nie. */
 export function jeBodovanieV5(body: BodyTeraz): boolean {
   return body.starsi.every((s) => (s as Partial<BodyStarsieho>).vyhry !== undefined);
-}
-
-/** Súboje jednej podmienky naprieč staršími — pre bodový bar. */
-export interface SubojeTypu {
-  readonly podmienka: Podmienka;
-  /** Koľko súbojov tejto podmienky vyhráva hráč 0 a 1 (zvyšok je rovnosť). */
-  readonly vyhry: readonly [number, number];
-  readonly pocet: number;
-  /** Hodnota hráčov — rovnaká pri každom staršom (okrem zónových, tam sa nepočíta ten starší). */
-  readonly hodnoty: readonly [number, number];
-  readonly starsi: readonly { readonly elderId: string; readonly suboj: SubojPodmienky }[];
-}
-
-/** Súboje podľa podmienky v poradí PORADIE_PODMIENOK; podmienka, ktorá nie je aktívna nikde, chýba. */
-export function subojePoPodmienkach(body: BodyTeraz): Map<Podmienka, SubojeTypu> {
-  const out = new Map<Podmienka, { podmienka: Podmienka; vyhry: [number, number]; pocet: number; hodnoty: [number, number]; starsi: { elderId: string; suboj: SubojPodmienky }[] }>();
-  for (const s of body.starsi) {
-    for (const suboj of subojeStarsieho(s)) {
-      const m = out.get(suboj.podmienka) ?? { podmienka: suboj.podmienka, vyhry: [0, 0], pocet: 0, hodnoty: [0, 0], starsi: [] };
-      m.pocet++;
-      if (suboj.vitaz !== null) m.vyhry[suboj.vitaz]++;
-      m.hodnoty = [Math.max(m.hodnoty[0], suboj.hodnoty[0]), Math.max(m.hodnoty[1], suboj.hodnoty[1])];
-      m.starsi.push({ elderId: s.elderId, suboj });
-      out.set(suboj.podmienka, m);
-    }
-  }
-  return new Map(PORADIE_PODMIENOK.flatMap((p) => {
-    const m = out.get(p);
-    return m === undefined ? [] : [[p, m] as const];
-  }));
 }
 
 // ---- do v4: body za kusy (krčmový účet starých partií) ------------------------------

@@ -438,19 +438,14 @@ export interface HracDoskaProps {
   /** Absťáky, neresti kola a výhľad na koniec kola (stavZavislosti). */
   readonly zavislost: StavZavislosti;
   readonly menoKarty: (defId: string) => string;
-  readonly popisKarty: (defId: string) => string;
   /** Výhľad Pitky (Zhromaždenie a Pitka) — inak null. */
   readonly vyhlad: VyhladPitky | null;
-  /** Špaky jedného Dlhu na konci hry (v6: 0 — Dlh trestá Exekútor a remíza). */
-  readonly cenaDlhu: number;
   /** Doliatie a nový poldeci za cigarety — len na tvojej doske (Michal 2026-10-18: nedali sa nájsť). */
   readonly obchodCigariet?:
     | { readonly mozno: boolean; readonly doliat: () => void; readonly novy: () => void; readonly cenaBarteru: number }
     | undefined;
   /** Špaky „keby hra skončila teraz“ — dlaždica Body (v6: špaky mínus nepriznaná Cirhóza). */
   readonly body: SpakyTeraz;
-  /** Mená oboch hráčov podľa miesta. */
-  readonly mena: readonly [string, string];
   /**
    * Dlaždica Starší (Michal 2026-10-27, S1 stupienky): klik prepne stôl na líniu starších
    * a oba bary na bar starších. `stlacene`: línia práve ukazuje tohto hráča.
@@ -522,12 +517,9 @@ export function HracDoska({
   prahy,
   zavislost,
   menoKarty,
-  popisKarty,
   vyhlad,
-  cenaDlhu,
   obchodCigariet,
   body,
-  mena,
   starsi,
   spakyKlik,
   karty,
@@ -1034,8 +1026,6 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
 function StranaBitky({
   meno,
   tuhe,
-  makke,
-  celkove,
   sums,
   zdroje,
   rozpis,
@@ -1047,8 +1037,6 @@ function StranaBitky({
 }: {
   readonly meno: string;
   readonly tuhe: number;
-  readonly makke: number;
-  readonly celkove: number;
   readonly sums: ActionSums;
   readonly zdroje: ZdrojeAkcii;
   readonly rozpis: RozpisPoskodenia;
@@ -1207,7 +1195,7 @@ function RiadkyHrozby({
 }
 
 /** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
-function verdiktBitky({ damage, ja, vysledok, poslednaBitka, prebytokNaRozdelenie, rodJa = null }: BitkaPanelProps) {
+function verdiktBitky({ damage, ja, vysledok, poslednaBitka, rodJa = null }: BitkaPanelProps) {
   const su = (ja === 0 ? 1 : 0) as PlayerId;
   // Remíza v6 (Michal 2026-10-26): rozhodnú Absťáky, potom Dlhy, inak sekera — tu len odhad z tuhého (PRAVIDLA §9.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
@@ -1304,8 +1292,6 @@ export function BitkaPanel(props: BitkaPanelProps) {
     <StranaBitky
       meno={mena[p]}
       tuhe={damage.tuhe[p]}
-      makke={damage.makke[p]}
-      celkove={damage.celkove[p]}
       sums={sums[p]}
       zdroje={zdroje[p]}
       rozpis={rozpis[p]}

@@ -704,7 +704,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
       </div>
       {/* Súčet a špaky samostatne: na nízkom širokom okne idú vedľa tabuľky pod skóre (hra.css), inak pod ňu. */}
       <div className="rk-spaky-blok" style={{ "--rk-riadkov": riadkovSpakovBitky(r) } as CSSProperties}>
-        {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} ikonaPovery={ikona("Povera")} />}
+        {hotovo && <SucetBitky r={r} ja={ja} menoSupera={menoSupera} />}
         {/* Špaky bitky (v6): za bitku, za starších, Exekútor; prebytok vo finále dopíše až nástenka. */}
         {hotovo && r.spaky !== undefined && (
           <div className="rk-spaky">
@@ -717,7 +717,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
 }
 
 /** Tuhé poškodenie a komu ide Nakladačka (PRAVIDLA §9.4; od v8.3 Povery poškodenie nedávajú). */
-function SucetBitky({ r, ja, menoSupera, ikonaPovery }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly menoSupera: string; readonly ikonaPovery: ReactNode }) {
+function SucetBitky({ r, ja, menoSupera }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly menoSupera: string }) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const cast = (kto: PlayerId): ReactNode => (
     <span className={kto === ja ? "ja" : "su"}>
@@ -785,7 +785,6 @@ function VieraPovera({
     const z = zetony(druh, kto);
     const zrusenych = druh === "Viera" ? r.zrusenaViera[kto] : r.zrusenaPovera[kto];
     const kto2 = kto === ja ? "ja" : "su";
-    const proti: PlayerId = kto === 0 ? 1 : 0;
     const videne = z.filter((x) => vid(x.uid)).length;
     let ucinok: ReactNode = null;
     if (ucinkuje && druh === "Viera" && r.vieraUbera[kto] > 0) {

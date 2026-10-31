@@ -23,7 +23,6 @@ import {
   useState,
   type CSSProperties,
   type FocusEvent as ReactFocusEvent,
-  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
@@ -70,8 +69,6 @@ import {
   stavPoPokuse,
   tvar,
   vyhladDlhov,
-  cieleVykladania,
-  cielLokalitaId,
   evaluateLine,
   pocitadloBitky,
   pitkaPredBitkou,
@@ -92,8 +89,6 @@ import {
   krajeStran,
   dovodZakazuFajcit,
   defOf,
-  efektHraca,
-  efektPotlaceny,
   jednotaZakazuje,
   cenaFajceniaHraca,
   naexLimitMinuty as naexLimitMinutyHraca,
@@ -126,7 +121,6 @@ import {
   poskodenieBitky,
   rozpisPoskodenia,
   prahyHraca,
-  priazen,
   priazenHraca,
   priazenSila,
   scorecardStarsieho,
@@ -137,9 +131,8 @@ import {
   vidiVolbuSupera,
   hraVPitke,
   cakaSBzdochou,
-  vydesil,
 } from "@naex/core";
-import type { ActionSums, DopadyNahladu, GameState, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
+import type { ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
@@ -206,7 +199,7 @@ import { useTahanie } from "./useTahanie.ts";
 import "./hra.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
-import { IkonaSpaku, Nastenka, PocetSpakov, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
+import { IkonaSpaku, Nastenka, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
 
 /**
  * Čo sa ťahá. `navrh` = karta už leží na stole, ale len ako nepotvrdený návrh.
@@ -566,8 +559,6 @@ export function HernaPlocha({
   useEffect(() => {
     if (vrstva !== "lokality") setNastenkaPre(ja);
   }, [vrstva, ja]);
-  /** Lokalita nakliknutá vo vrstve lokalít — tlačidlo „umiestniť“ ju položí na stôl. */
-  const [vyberLokality, setVyberLokality] = useState<number | null>(null);
   /** Kedy sme naposledy automaticky otvorili vrstvu — raz za fázu, nie pri každom prekreslení. */
   const autoVrstva = useRef("");
   // Obrazovka konca hry sa dá zavrieť a pozrieť si stôl.
@@ -1288,7 +1279,6 @@ export function HernaPlocha({
     return casti.length === 0 ? null : casti.join(" · ");
   };
   // Možnosť NA EX pod myšou či fokusom — tá istá karta svieti na stole.
-  const [zvyraznenaNaex, setZvyraznenaNaex] = useState<number | null>(null);
   // Karta z riadku hrozby (prejdenie myšou) — v línii sa zvýrazní.
   const [ukazHrozbu, setUkazHrozbu] = useState<number | null>(null);
 
@@ -1517,7 +1507,6 @@ export function HernaPlocha({
     // Vo výučbe môže server ťah odmietnuť radou Melichara („Otoč ho, klikni naň ešte raz“) — návrh
     // ostane na stole, nech ho hráč opraví; prijatý ťah zmení klucTahu a návrh zmizne aj tak.
     if (vyucba !== true) setNavrh(null);
-    setVyberLokality(null);
   };
   // Menej klikov (roadmapa #9 B): logika je v usePohodlie a v jadre (pohodlie.ts).
   const bezNaex = useBezNaexVBitke(view, posli);
@@ -1869,14 +1858,6 @@ export function HernaPlocha({
   }, [klucTahu, somNaTahu]);
 
   const volimLokalitu = somNaTahu && view.faza === "volbaCiela" && view.koniec === null;
-  const vybranaLokalita = view.lokalityVHre.find((k) => k.uid === vyberLokality);
-  /** Nakliknutá lokalita ide na stôl ako návrh — otočiť a potvrdiť sa dá tam. */
-  const umiestniLokalitu = (): void => {
-    if (vybranaLokalita === undefined) return;
-    setNavrh({ typ: "lokalita", uid: vybranaLokalita.uid, otocena: ja === 1 });
-    setVyberLokality(null);
-    setVrstva(null);
-  };
   /** Klik na kartu v šenku: pridá ju do výberu (do limitu), opätovný klik ju vráti. */
   const prepniZoSenku = (uid: number): void => {
     const uids = zoSenku.map((k) => k.uid);
@@ -2574,7 +2555,7 @@ export function HernaPlocha({
           otocena: placed.playedBy !== ja,
           eval: lineEval.cards.get(uid) ?? null,
           onClick: klikLinia(placed.playedBy, uid),
-          vybrana: (mode.typ === "naexCiel" && (mode.uid === uid || zvyraznenaNaex === uid)) || vybranaBenzinka,
+          vybrana: (mode.typ === "naexCiel" && mode.uid === uid) || vybranaBenzinka,
           spoj: spojPre(uid),
           vytrznik,
         },
@@ -3202,9 +3183,6 @@ export function HernaPlocha({
       )}
       <span className="pecat-nazov">{p.nazov}</span>
     </button>
-  );
-  const otvorVrstvu = (v: Vrstva): ReactNode => (
-    <button onClick={() => setVrstva(v)}>{v === "senok" ? "otvoriť šenok" : "otvoriť lokality"}</button>
   );
   const pokyn: Pokyn | null = (() => {
     if (view.koniec !== null) {
@@ -4587,10 +4565,6 @@ export function HernaPlocha({
     ) : null;
   const prahy = (p: PlayerId) => prahyHraca(data, stol, p);
   const zavislost = (p: PlayerId) => stavZavislosti(data, { ...stol, kolo: view.kolo, hraci: view.hraci }, p);
-  const popisKarty = (defId: string): string => {
-    const def = data.cards.get(defId);
-    return def === undefined ? defId : `${def.name}: ${def.effectText}`;
-  };
   const b = view.bitkaStav;
   // Hrozba na stole do riadku bitky: súperova prvá (to je to prekvapenie z posledného slova, #35).
   const najdiVLinii = (uid: number) => view.strany.flat().find((pl) => pl.card.uid === uid);
@@ -5583,11 +5557,8 @@ export function HernaPlocha({
           prahy={prahy(super_)}
           zavislost={zavislost(super_)}
           menoKarty={menoKarty}
-          popisKarty={popisKarty}
           vyhlad={vyhladPitky(super_)}
-          cenaDlhu={cenyKliatob[super_].dlh}
           body={body}
-          mena={[menoHraca(0), menoHraca(1)]}
           starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === super_, prepni: () => prepniStarsich(super_), id: idLinieStarsich }}
           spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === super_, prepni: () => otvorNastenku(super_) }}
           karty={kartyDlazdica(super_)}
@@ -5690,7 +5661,6 @@ export function HernaPlocha({
                   pohlad={pohladLinie}
                   mena={[menoHraca(0), menoHraca(1)]}
                   krok={krokMoj && krokStarsich !== null ? krokStarsich.nazov : null}
-                  hraniceZon={false}
                   zmenene={zmeneniStarsi}
                   tlacidlo={tlacidloLinieStarsich}
                 />
@@ -5737,9 +5707,7 @@ export function HernaPlocha({
             prahy={prahy(ja)}
             zavislost={zavislost(ja)}
             menoKarty={menoKarty}
-            popisKarty={popisKarty}
             vyhlad={vyhladPitky(ja)}
-            cenaDlhu={cenyKliatob[ja].dlh}
             obchodCigariet={{
               mozno: somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === null && view.koniec === null,
               doliat: () => cmd({ type: "refillPoldeci" }),
@@ -5747,7 +5715,6 @@ export function HernaPlocha({
               cenaBarteru: barterCena(data, view, ja),
             }}
             body={body}
-            mena={[menoHraca(0), menoHraca(1)]}
             starsi={{
               stlacene: starsiViditelni && krokStarsich === null && pohladLinie === ja,
               prepni: () => prepniStarsich(ja),

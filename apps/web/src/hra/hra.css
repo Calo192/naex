@@ -1879,21 +1879,6 @@ button.tlacidlo-naex.neaktivne:active {
 }
 
 /* v5: riadok na staršieho — súboje ako štítky (víťaz farbou), body za staršieho vpravo. */
-
-.ikona-podmienky {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 4px;
-}
-
-.ikona-podmienky-text {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  font-weight: 800;
-}
 /* ---- log (vo vrstve) ---- */
 
 .log {
@@ -5215,8 +5200,7 @@ button.auto-hotovo-odkaz {
 }
 
 /* Výkričníky pred „bojí sa…“ dedia farbu čipu — farbu toho, koho sa starší bojí. */
-.ls-cip .ikona-strachu,
-.lupa-starsieho .ikona-strachu {
+.ls-cip .ikona-strachu {
   margin-right: 3px;
 }
 
@@ -6370,67 +6354,6 @@ button.lsr-pole.ciel:focus-visible {
 
 .ls-sc.zvyrazneny {
   box-shadow: 0 0 0 2px var(--akcent);
-}
-
-/* Lupa staršieho (Michal 2026-10-23): výška podľa obsahu, karta hore vedľa textu,
-   podmienky 4 + 4 ako na scorecarde. Písmo pevné — lupa má pevnú šírku. */
-.lupa-starsieho {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 12px;
-  background: var(--plocha);
-  border: 2px solid var(--akcent);
-  color: var(--text);
-  font-size: 0.8rem;
-  line-height: 1.3;
-}
-
-.lst-vrch {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: 10px;
-}
-
-.lst-info {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.lst-info p {
-  margin: 0;
-}
-
-.lst-hlava b {
-  font: 800 1.15rem/1.1 var(--nadpis);
-}
-
-.lst-tlmene {
-  color: var(--slaby-text);
-}
-
-.lupa-starsieho .ls-stupnica {
-  height: 18px;
-}
-
-.lst-priazen.moja b {
-  color: var(--ja);
-}
-
-.lst-priazen.superova b {
-  color: var(--su);
-}
-
-.lst-vydesenie b {
-  color: var(--cervena-text);
-}
-
-.lst-stopa b {
-  color: var(--akcent-svetly);
 }
 
 /* ---- Malý notebook (Michal 2026-10-23) ----

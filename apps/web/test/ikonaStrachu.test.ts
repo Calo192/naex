@@ -14,7 +14,7 @@ import { loadGameData, setupGame } from "@naex/core";
 import { Podtacok } from "../src/achievementy/Podtacok.tsx";
 import { piktogramPodtacka } from "../src/achievementy/piktogram.ts";
 import { IkonaStrachu, ZnackaStrachu } from "../src/hra/IkonaStrachu.tsx";
-import { LiniaStarsich, LupaStarsieho } from "../src/hra/LiniaStarsich.tsx";
+import { LiniaStarsich } from "../src/hra/LiniaStarsich.tsx";
 import { RozpisStarsich } from "../src/hra/Spaky.tsx";
 import { cestyStrachu, stupenStrachu, svgIkonyBodovania } from "../src/hra/tvaryStrachu.ts";
 
@@ -83,7 +83,6 @@ describe("výkričníky vo farbe obávaného", () => {
         pohlad: 0,
         mena: ["Jano", "Fero"],
         krok: null,
-        hraniceZon: false,
         zmenene: new Set<string>(),
       }),
     );
@@ -109,23 +108,6 @@ describe("výkričníky vo farbe obávaného", () => {
     const html = karta(3);
     expect(html).not.toContain("ikona-strachu");
     expect(html).toContain("nikoho sa nebojí");
-  });
-
-  it("lupa neopakuje kartu: bez stupnice a riadkov priazne a strachu, s plným znením priazne", () => {
-    const html = renderToStaticMarkup(
-      createElement(LupaStarsieho, {
-        s: { elder: elder(2), meno: "Farár", obrazok: null, body: undefined, patron: null },
-        data,
-        ikony: [],
-        ja: 0,
-        mena: ["Jano", "Fero"],
-        sirka: 600,
-        karta: null,
-      }),
-    );
-    expect(html).not.toContain("ls-stupnica");
-    expect(html).not.toContain("ls-cip");
-    expect(html).toContain("Priazeň +1:");
   });
 
   it("rozpis za starších: výkričníky podľa špakov vo farbe toho, kto ich dostal; Noviny bez nich", () => {

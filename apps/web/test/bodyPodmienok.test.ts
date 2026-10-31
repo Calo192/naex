@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { BodPodmienky, BodyStarsieho, BodyTeraz } from "../src/hra/bodyPodmienok.tsx";
-import { jeBodovanieV5, kohoBoduje, subojePoPodmienkach, subojeStarsieho } from "../src/hra/bodyPodmienok.tsx";
+import { jeBodovanieV5, kohoBoduje, subojeStarsieho } from "../src/hra/bodyPodmienok.tsx";
 
 const pol = (podmienka: BodPodmienky["podmienka"], index: BodPodmienky["index"], kusy: number, body: number): BodPodmienky => ({ strana: "lava", index, podmienka, aktivna: true, kusy, body });
 
@@ -27,12 +27,6 @@ describe("archív v5: súboje pri starších", () => {
       spolu = [spolu[0] + s.body[0], spolu[1] + s.body[1]];
     }
     expect(spolu).toEqual(zaznam.spolu);
-  });
-
-  it("súboje podľa podmienky sčítajú vyhry cez všetkých starších", () => {
-    const t = subojePoPodmienkach(zaznam).get("cigarety");
-    expect(t?.pocet).toBe(2);
-    expect(t?.vyhry).toEqual([1, 1]);
   });
 });
 
