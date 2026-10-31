@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet 2026-10-30T16:48:30.894Z",
+  "source": "tvorca kariet 2026-10-31T07:10:54.458Z",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -2993,42 +2993,8 @@
       }
     },
     {
-      "id": "kohut",
-      "index": 67,
-      "name": "Kohút",
-      "tags": [
-        "Zviera"
-      ],
-      "effect_text": "Pitka: Posledné slovo máš ty, aj keď si obranca.",
-      "triggers": [
-        "Pitka"
-      ],
-      "left": {
-        "blocked": [
-          1,
-          2
-        ],
-        "actions": {
-          "Pohoršenie": 1
-        }
-      },
-      "right": {
-        "blocked": [
-          2
-        ],
-        "actions": {
-          "Odpor": 1
-        }
-      },
-      "permutations": {
-        "total": 6,
-        "left": 2,
-        "right": 3
-      }
-    },
-    {
       "id": "degustatorka",
-      "index": 68,
+      "index": 67,
       "name": "Degustátorka",
       "tags": [
         "Občan",
@@ -3068,7 +3034,7 @@
     },
     {
       "id": "klebetnica",
-      "index": 69,
+      "index": 68,
       "name": "Bzdocha",
       "tags": [
         "Občan",
@@ -3107,7 +3073,7 @@
     },
     {
       "id": "dohadzovacka",
-      "index": 70,
+      "index": 69,
       "name": "Dohadzovačka",
       "tags": [
         "Občan",
@@ -3146,7 +3112,7 @@
     },
     {
       "id": "vandal",
-      "index": 71,
+      "index": 70,
       "name": "Vandal",
       "tags": [
         "Občan",
@@ -3185,7 +3151,7 @@
     },
     {
       "id": "stryko_z_ameriky",
-      "index": 72,
+      "index": 71,
       "name": "Strýko z Ameriky",
       "tags": [
         "Občan",
@@ -3223,7 +3189,7 @@
     },
     {
       "id": "masiar",
-      "index": 73,
+      "index": 72,
       "name": "Mäsiar",
       "tags": [
         "Občan",
@@ -3262,7 +3228,7 @@
     },
     {
       "id": "kulturista",
-      "index": 74,
+      "index": 73,
       "name": "Kulturista",
       "tags": [
         "Občan",
@@ -3305,7 +3271,7 @@
     },
     {
       "id": "traktoristka",
-      "index": 75,
+      "index": 74,
       "name": "Traktorista",
       "tags": [
         "Občan",
@@ -3342,7 +3308,7 @@
     },
     {
       "id": "vymahac",
-      "index": 76,
+      "index": 75,
       "name": "Vymáhač",
       "tags": [
         "Občan",
@@ -3381,7 +3347,7 @@
     },
     {
       "id": "sklad",
-      "index": 77,
+      "index": 76,
       "name": "Sklad",
       "tags": [
         "Lokalita"
@@ -3436,7 +3402,7 @@
     },
     {
       "id": "polovnicka_chata",
-      "index": 78,
+      "index": 77,
       "name": "Poľovnícka chata",
       "tags": [
         "Lokalita"
@@ -3501,7 +3467,7 @@
     },
     {
       "id": "predsedova_vila",
-      "index": 79,
+      "index": 78,
       "name": "Predsedova vila",
       "tags": [
         "Lokalita"
@@ -3565,7 +3531,7 @@
     },
     {
       "id": "herna",
-      "index": 80,
+      "index": 79,
       "name": "Herňa",
       "tags": [
         "Lokalita"
@@ -3630,7 +3596,7 @@
     },
     {
       "id": "boxer",
-      "index": 81,
+      "index": 80,
       "name": "Valaška",
       "tags": [
         "Nástroj"
@@ -3666,7 +3632,7 @@
     },
     {
       "id": "energetak",
-      "index": 82,
+      "index": 81,
       "name": "Energeťák",
       "tags": [
         "Nástroj"
@@ -3702,7 +3668,7 @@
     },
     {
       "id": "furik",
-      "index": 83,
+      "index": 82,
       "name": "Fúrik",
       "tags": [
         "Nástroj"
@@ -3738,7 +3704,7 @@
     },
     {
       "id": "horoskop",
-      "index": 84,
+      "index": 83,
       "name": "Horoskop",
       "tags": [
         "Nástroj"
@@ -3774,7 +3740,7 @@
     },
     {
       "id": "hrable",
-      "index": 85,
+      "index": 84,
       "name": "Hrable",
       "tags": [
         "Nástroj"
@@ -3810,7 +3776,7 @@
     },
     {
       "id": "jogurt",
-      "index": 86,
+      "index": 85,
       "name": "Jogurt",
       "tags": [
         "Nástroj"
@@ -3846,7 +3812,7 @@
     },
     {
       "id": "kristalova_gula",
-      "index": 87,
+      "index": 86,
       "name": "Krištáľová guľa",
       "tags": [
         "Nástroj"
@@ -3882,7 +3848,7 @@
     },
     {
       "id": "pistalka",
-      "index": 88,
+      "index": 87,
       "name": "Píšťalka",
       "tags": [
         "Nástroj"
@@ -3918,7 +3884,7 @@
     },
     {
       "id": "profesionalny_tiper",
-      "index": 89,
+      "index": 88,
       "name": "Profesionálny tipér",
       "tags": [
         "Občan",
@@ -3957,7 +3923,7 @@
     },
     {
       "id": "telefon",
-      "index": 90,
+      "index": 89,
       "name": "Telefón",
       "tags": [
         "Nástroj"
@@ -3993,7 +3959,7 @@
     },
     {
       "id": "vyherne_zreby",
-      "index": 91,
+      "index": 90,
       "name": "Výherné žreby",
       "tags": [
         "Nástroj"
@@ -4029,7 +3995,7 @@
     },
     {
       "id": "zapalovac",
-      "index": 92,
+      "index": 91,
       "name": "Zapaľovač",
       "tags": [
         "Nástroj"
@@ -4065,7 +4031,7 @@
     },
     {
       "id": "zrkadlo",
-      "index": 93,
+      "index": 92,
       "name": "Zrkadlo",
       "tags": [
         "Nástroj"
@@ -4101,7 +4067,7 @@
     },
     {
       "id": "abstak",
-      "index": 94,
+      "index": 93,
       "name": "Absťák",
       "tags": [
         "Kliatba"
@@ -4136,7 +4102,7 @@
     },
     {
       "id": "opatrovatelka",
-      "index": 95,
+      "index": 94,
       "name": "Opatrovateľka",
       "tags": [
         "Občan",

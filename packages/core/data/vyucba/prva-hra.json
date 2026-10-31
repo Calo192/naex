@@ -341,7 +341,7 @@
     {
       "id": "i-preco-senok",
       "kto": "info",
-      "melichar": "Prečo? Do šenku dávaš, čo chceš kúpiť: ja som dal Hasiča. Naspodok ide, čo nechceš nechať súperovi: Recidivista má tiež [Petelica] Petelicu a Štamgast kupuje prvý. Z celého šenku potom kupujete obaja.",
+      "melichar": "Prečo? Do šenku dávaš, čo chceš kúpiť: ja som dal Hasiča. Naspodok ide, čo nechceš nechať súperovi: Recidivista má tiež [Petelica] Petelicu a Štamgast by ho schmatol hneď po tebe. Z celého šenku potom kupujete obaja.",
       "zvyraznit": [
         "senok"
       ]
@@ -364,21 +364,6 @@
       ]
     },
     {
-      "id": "k-kupa-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "draftBer",
-        "uids": [
-          "senok:zamocnik"
-        ]
-      },
-      "melichar": "Šenok stojí, teraz sa kupuje, striedavo. Štamgast začína: Zámočník za jednu [Cigareta] cigaretu, ubudla mu v jeho bare.",
-      "zvyraznit": [
-        "senok",
-        "bar-supera:cigarety"
-      ]
-    },
-    {
       "id": "k-kup-hasic",
       "kto": "hrac",
       "prikaz": {
@@ -387,10 +372,36 @@
           "senok:hasic"
         ]
       },
-      "melichar": "Kúp Hasiča za [Cigareta] cigaretu – cigarety máš v bare a sú tu platidlo. Hasič má [Rana] Ranu a [Petelica] Petelicu, tuhé 1 a 3. Áno, tri je viac ako jeden.",
+      "melichar": "Kupuje sa striedavo a začínaš ty – kto začína, berie prvý raz len jednu kartu. Kúp Hasiča za [Cigareta] cigaretu, cigarety máš v bare a sú tu platidlo. Hasič má [Rana] Ranu a [Petelica] Petelicu, tuhé 1 a 3. Áno, tri je viac ako jeden.",
       "zvyraznit": [
         "senok:hasic",
         "bar:cigarety"
+      ]
+    },
+    {
+      "id": "k-kupa-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:zamocnik"
+        ]
+      },
+      "melichar": "Štamgast kúpil Zámočníka za jednu [Cigareta] cigaretu, ubudla mu v jeho bare.",
+      "zvyraznit": [
+        "senok",
+        "bar-supera:cigarety"
+      ]
+    },
+    {
+      "id": "k-stop",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": "Viac netreba, klikni už neťahám (P); čo v šenku ostane, počká na ďalšie kolo. Zvyšné [Cigareta] cigarety sa ti zídu neskôr.",
+      "zvyraznit": [
+        "tlacidlo:pas"
       ]
     },
     {
@@ -399,18 +410,7 @@
       "prikaz": {
         "type": "draftStop"
       },
-      "melichar": "Štamgast už nekupuje. Ty máš poslednú šancu; čo v šenku ostane, počká na ďalšie kolo."
-    },
-    {
-      "id": "k-stop",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "draftStop"
-      },
-      "melichar": "Klikni už neťahám (P). Zvyšné [Cigareta] cigarety sa ti zídu neskôr.",
-      "zvyraznit": [
-        "tlacidlo:pas"
-      ]
+      "melichar": "Štamgast tiež už nekupuje. Draft je za nami."
     },
     {
       "id": "i-zhromazdenie",
@@ -971,7 +971,7 @@
     {
       "id": "i-rola",
       "kto": "info",
-      "melichar": "Minulá bitka je tvoja, si obranca a vyberáš lokalitu. Štamgast prehral, je útočník: kupuje prvý, vykladá prvý a v Pitke má posledné slovo – kto prehrá, dostane výhody. Mne ich nikto nedal. A druhé kolo, druhá úroveň: na hrane lokality sú dve akcie, viac spojov, viac Pitiek.",
+      "melichar": "Minulá bitka je tvoja, si obranca: vyberáš lokalitu a zo šenku kupuješ prvý. Štamgast prehral, je útočník: vykladá prvý a na NA EX odpovedá prvý – kto prehrá, dostane výhody. Mne ich nikto nedal. A druhé kolo, druhá úroveň: na hrane lokality sú dve akcie, viac spojov, viac Pitiek.",
       "zvyraznit": [
         "os-kola",
         "lokality"
@@ -1063,7 +1063,7 @@
           "stavba:vyherne_zreby"
         ]
       },
-      "melichar": "Šenok dnes staviaš ty: klikni na Anonymného alkoholika, Šoféra, Strýka z Ameriky a Svokru a potvrď. Zvyšné štyri idú naspodok tvojich balíčkov, Štamgast ich neuvidí. Recidivista ostane dole: má [Petelica] Petelicu a Štamgast kupuje prvý.",
+      "melichar": "Šenok dnes staviaš ty: klikni na Anonymného alkoholika, Šoféra, Strýka z Ameriky a Svokru a potvrď. Zvyšné štyri idú naspodok tvojich balíčkov, Štamgast ich neuvidí. Recidivista ostane dole: má [Petelica] Petelicu a Štamgastovi ho nedáme.",
       "hlaskaChyby": "nervy/20_uz_mam_v_pici_nervy_zas",
       "zvyraznit": [
         "stavba"
@@ -1090,6 +1090,21 @@
       "melichar": ""
     },
     {
+      "id": "k-kup2",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:anonymny_alkoholik"
+        ]
+      },
+      "melichar": "Začínaš ty, prvý raz jednu kartu: Anonymného alkoholika za [Cigareta] cigaretu. Prečo jeho, uvidíš. Dôveruj mi, ja som tiež raz niekomu dôveroval.",
+      "hlaskaChyby": "urazky/ty_debil",
+      "zvyraznit": [
+        "senok:anonymny_alkoholik"
+      ]
+    },
+    {
       "id": "k-kupa2-bot",
       "kto": "bot",
       "prikaz": {
@@ -1099,25 +1114,22 @@
           "senok:dvojcata"
         ]
       },
-      "melichar": "Štamgast je útočník, kupuje prvý: Silnú nezávislú ženu a Dvojčatá naraz za tri [Cigareta] cigarety. Jedna karta stojí cigaretu, dve stoja tri.",
+      "melichar": "Štamgast kúpil Silnú nezávislú ženu a Dvojčatá naraz, za tri [Cigareta] cigarety. Jedna karta stojí cigaretu, dve stoja tri.",
       "zvyraznit": [
         "senok",
         "bar-supera:cigarety"
       ]
     },
     {
-      "id": "k-kup2",
+      "id": "k-stop2",
       "kto": "hrac",
       "prikaz": {
-        "type": "draftBer",
-        "uids": [
-          "senok:anonymny_alkoholik"
-        ]
+        "type": "draftStop"
       },
-      "melichar": "Kúp Anonymného alkoholika za jednu [Cigareta] cigaretu. Prečo, uvidíš. Dôveruj mi, ja som tiež raz niekomu dôveroval.",
-      "hlaskaChyby": "urazky/ty_debil",
+      "melichar": "Viac nekupuj, klikni už neťahám (P). Cigarety sa ti zídu na fajčenie.",
+      "hlaskaChyby": "nervy/bud_ticho",
       "zvyraznit": [
-        "senok:anonymny_alkoholik"
+        "tlacidlo:pas"
       ]
     },
     {
@@ -1127,18 +1139,6 @@
         "type": "draftStop"
       },
       "melichar": ""
-    },
-    {
-      "id": "k-stop2",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "draftStop"
-      },
-      "melichar": "Ani ty už neťahaj (P). Cigarety sa ti zídu na fajčenie.",
-      "hlaskaChyby": "nervy/bud_ticho",
-      "zvyraznit": [
-        "tlacidlo:pas"
-      ]
     },
     {
       "id": "k-zh2-bot1",
@@ -1476,7 +1476,7 @@
     {
       "id": "i-naex2",
       "kto": "info",
-      "melichar": "Posledná Pitka a teraz NA EX, podľa neho sa hra volá: plný [Poldeci] poldeci na Občana alebo Starešinu v línii, svojho aj súperovho. Osamotené akcie tej karty zdvojí, spojené zruší. Súper nevidí, kam ide tvoje NA EX, kým neskončíte obaja.",
+      "melichar": "Posledná Pitka a teraz NA EX, podľa neho sa hra volá: plný [Poldeci] poldeci na Občana alebo Starešinu v línii, svojho aj súperovho. Osamotené akcie tej karty zdvojí, spojené zruší. Súper nevidí, kam ide tvoje NA EX, kým neskončíte obaja – potom sa všetky odkryjú naraz.",
       "zvyraznit": [
         "tlacidlo:naex",
         "bar:poldeci"
@@ -1568,9 +1568,22 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Obaja ste skončili a NA EX sa odkryli. Štamgast dal svoje na vlastnú Dievčinu na vydaj: zdvojil jej osamotené [Pohoršenie] Pohoršenie. Aj [Dlh] Hazard, ale Dlhy mu zjavne nevadia.",
+      "melichar": "Obaja ste skončili a NA EX sa odkryli naraz. Štamgast dal svoje na vlastnú Dievčinu na vydaj: zdvojil jej osamotené [Pohoršenie] Pohoršenie. Aj [Dlh] Hazard, ale Dlhy mu zjavne nevadia.",
       "zvyraznit": [
         "linia:dievcina_na_vydaj"
+      ]
+    },
+    {
+      "id": "k-odpoved-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "place",
+        "uid": "ruka:milujuca_manzelka",
+        "target": "superova"
+      },
+      "melichar": "Teraz odpovede: za každé súperovo NA EX smie hráč vyložiť jednu kartu z ruky, zadarmo, mimo limitu a lícom dole. Prvý odpovedá útočník – Štamgast dal kartu lícom dole za tvojho Alkoholika. Čo to je, uvidíš, až sa odpovede otočia.",
+      "zvyraznit": [
+        "linia"
       ]
     },
     {
@@ -1579,7 +1592,7 @@
       "prikaz": {
         "type": "bezReakcie"
       },
-      "melichar": "Teraz odpovede, začínaš ty – klikni BEZ ODPOVEDE. Za každé súperovo NA EX smieš vyložiť kartu z ruky mimo limitu: keď ňou spojíš osamotenú akciu karty s NA EX, NA EX ju zruší namiesto zdvojenia. Štamgastovi nepomáhaj, nech svoj [Dlh] Hazard zaplatí.",
+      "melichar": "Klikni BEZ ODPOVEDE. Ty smieš odpovedať len na druhý kraj, Štamgastov, a tam by sa mu Hazard Dievčiny len spojil. Odpoveď robí toto: spojí osamotenú akciu karty s NA EX a NA EX ju potom zruší namiesto zdvojenia.",
       "hlaskaChyby": "urazky/ty_spina",
       "zvyraznit": [
         "tlacidlo:bez-odpovede"
@@ -1602,16 +1615,12 @@
       }
     },
     {
-      "id": "k-odpoved-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "place",
-        "uid": "ruka:milujuca_manzelka",
-        "target": "superova"
-      },
-      "melichar": "A Štamgast má posledné slovo: položil svoju manželku za tvojho Alkoholika a spojil jeho dve osamotené akcie, aj [Robota] Robotu. Tvoje NA EX ich namiesto zdvojenia zrušilo – Robota je preč. A jeho manželka sa ráta do trávnika: zas 4 : 4.",
+      "id": "i-odpovede",
+      "kto": "info",
+      "melichar": "Odpovede sa otočili naraz: Štamgast tam mal svoju manželku. Tá spojila dve osamotené akcie tvojho Alkoholika, aj [Robota] Robotu, a tvoje NA EX ich namiesto zdvojenia zrušilo – Robota je preč. A jeho manželka sa ráta do trávnika: zas 4 : 4.",
       "zvyraznit": [
-        "bitka-ucet"
+        "linia",
+        "prevaha"
       ]
     },
     {
@@ -1871,17 +1880,6 @@
       "melichar": ""
     },
     {
-      "id": "k-kup3-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "draftBer",
-        "uids": [
-          "senok:veteran"
-        ]
-      },
-      "melichar": "Štamgast je útočník, kupuje prvý: Veterána. Starý vojak, ešte o ňom budeš počuť."
-    },
-    {
       "id": "k-kup3",
       "kto": "hrac",
       "prikaz": {
@@ -1890,19 +1888,22 @@
           "senok:vidly"
         ]
       },
-      "melichar": "Teraz ty: Vidly za [Cigareta] cigaretu. Vidly aj Puška sú Nástroje: v línii sa spoja len s Občanom alebo Starešinom a ich akcie dostane majiteľ tej karty. Svoj efekt majú len v Dedičstve – o chvíľu.",
+      "melichar": "Kupuješ prvý, prvý raz jednu kartu: Vidly za [Cigareta] cigaretu. Vidly aj Puška sú Nástroje: v línii sa spoja len s Občanom alebo Starešinom a ich akcie dostane majiteľ tej karty. Svoj efekt majú len v Dedičstve – o chvíľu.",
       "hlaskaChyby": "nervy/19_ach_boha",
       "zvyraznit": [
         "senok:vidly"
       ]
     },
     {
-      "id": "k-stop3-bot",
+      "id": "k-kup3-bot",
       "kto": "bot",
       "prikaz": {
-        "type": "draftStop"
+        "type": "draftBer",
+        "uids": [
+          "senok:veteran"
+        ]
       },
-      "melichar": ""
+      "melichar": "Štamgast kúpil Veterána. Starý vojak, ešte o ňom budeš počuť."
     },
     {
       "id": "k-kup3b",
@@ -1917,6 +1918,26 @@
       "hlaskaChyby": "urazky/ty_debil",
       "zvyraznit": [
         "senok:puska"
+      ]
+    },
+    {
+      "id": "k-stop3-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": ""
+    },
+    {
+      "id": "k-stop3",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": "Dosť nákupov, klikni už neťahám (P). Cigarety budeš potrebovať.",
+      "hlaskaChyby": "nervy/bud_ticho",
+      "zvyraznit": [
+        "tlacidlo:pas"
       ]
     },
     {
@@ -2374,6 +2395,21 @@
       "melichar": ""
     },
     {
+      "id": "k-kup-finale",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "draftBer",
+        "uids": [
+          "senok:policajtka"
+        ]
+      },
+      "melichar": "Začínaš ty, jednu kartu: Policajtku za [Cigareta] cigaretu. Má [Obmedzenie] Obmedzenie: keď je spojené, súper dostane v Pitke o jednu cigaretu menej. Lakomstvo ako zbraň. Tomu rozumiem.",
+      "hlaskaChyby": "urazky/kokot_blaznivy_jebnuty",
+      "zvyraznit": [
+        "senok:policajtka"
+      ]
+    },
+    {
       "id": "k-kup-finale-bot",
       "kto": "bot",
       "prikaz": {
@@ -2388,29 +2424,6 @@
       ]
     },
     {
-      "id": "k-kup-finale",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "draftBer",
-        "uids": [
-          "senok:policajtka"
-        ]
-      },
-      "melichar": "Kúp Policajtku za [Cigareta] cigaretu. Má [Obmedzenie] Obmedzenie: keď je spojené, súper dostane v Pitke o jednu cigaretu menej. Lakomstvo ako zbraň. Tomu rozumiem.",
-      "hlaskaChyby": "urazky/kokot_blaznivy_jebnuty",
-      "zvyraznit": [
-        "senok:policajtka"
-      ]
-    },
-    {
-      "id": "k-stop-finale-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "draftStop"
-      },
-      "melichar": ""
-    },
-    {
       "id": "k-stop-finale",
       "kto": "hrac",
       "prikaz": {
@@ -2422,6 +2435,14 @@
         "tlacidlo:pas",
         "bar:cigarety"
       ]
+    },
+    {
+      "id": "k-stop-finale-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "draftStop"
+      },
+      "melichar": ""
     },
     {
       "id": "k-pokus",
