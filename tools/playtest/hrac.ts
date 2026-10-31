@@ -66,8 +66,6 @@ import {
   nahladPosunuPrebytkom,
   dovodZakazuFajcit,
   jednotaZakazuje,
-  efektHraca,
-  efektPotlaceny,
   cenaFajceniaHraca,
   zakazVypit,
   nahladVylozenia,
@@ -81,7 +79,6 @@ import {
   hrozbaKliatob,
   mozeEsteNaex,
   textHrozbyKliatob,
-  priazen,
   poskodenieBitky,
   prahyHraca,
   printedSides,
@@ -666,8 +663,6 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   return out.join("\n");
 }
 
-// Bonus priazne = NASOBOK_PRIAZNE × sila (Michal 2026-10-16: sila 1 / 2 / 3, účinok dvojnásobný).
-const bonus = (s: number): number => KONSTANTY.NASOBOK_PRIAZNE * s;
 const UCINOK: Record<string, (s: number) => string> = {
   // Priazne v9 (Michal 2026-10-30): sila 1 / 2 / 3 bez dvojnásobku.
   UZERNIK: (s) => `Kmotor: po bitke prejdú až ${s + 1} tvoje priznané Dlhy medzi súperove priznané`,

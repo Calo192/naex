@@ -7,7 +7,6 @@ import { describe, expect, it } from "vitest";
 import {
   bzdochaText,
   efektyPrehry,
-  kedyRozhodneVydesenie,
   prehraNaexText,
   starsiNaNakladacku,
   stavkaText,
@@ -149,19 +148,6 @@ describe("klient AI hráčov: stávka bitky z jadra (nezrovnalosť 3, Noviny)", 
   it("bez cieľa kola stávka nie je", () => {
     const s = setupGame(data, 305);
     expect(stavkaText(data, viewFor(data, s, 0))).toBeNull();
-  });
-});
-
-describe("klient AI hráčov: ohlásené vydesenie vo finále (nezrovnalosť 8, „kolo 7“)", () => {
-  const stredna = { lokalitCelkom: 5, rozpis: [1, 2, 2, 3, 3, 4] };
-  it("ohlásenie pred finále rozhodne na konci finále, ohlásené vo finále nedozreje", () => {
-    expect(kedyRozhodneVydesenie(stredna, 4)).toBe("na konci kola 5");
-    expect(kedyRozhodneVydesenie(stredna, 5)).toBe("na konci finále (ešte pred konečnými špakmi)");
-    expect(kedyRozhodneVydesenie(stredna, 6)).toBeNull();
-  });
-  it("sada bez finále: posledné kolo je posledná lokalita", () => {
-    expect(kedyRozhodneVydesenie({ lokalitCelkom: 5 }, 4)).toBe("na konci kola 5 (posledného)");
-    expect(kedyRozhodneVydesenie({ lokalitCelkom: 5 }, 5)).toBeNull();
   });
 });
 

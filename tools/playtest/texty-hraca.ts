@@ -108,19 +108,6 @@ export function stavkaText(data: GameData, v: ClientState): string | null {
   return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1])}.${noviny}${kd}`;
 }
 
-/**
- * Kedy rozhodne ohlásené vydesenie (§1): na konci kola po ohlásení. Finále je
- * posledné kolo — ohlásenie z kola pred ním rozhodne na konci finále, ešte pred
- * konečnými špakmi (skontrolujVydesenie), ohlásené vo finále už nedozreje (null).
- */
-export function kedyRozhodneVydesenie(v: Pick<ClientState, "lokalitCelkom" | "rozpis">, ohlasene: number): string | null {
-  const finale = v.rozpis !== undefined;
-  const posledne = finale ? v.lokalitCelkom + 1 : v.lokalitCelkom;
-  if (ohlasene >= posledne) return null;
-  if (ohlasene + 1 === posledne) return finale ? "na konci finále (ešte pred konečnými špakmi)" : `na konci kola ${ohlasene + 1} (posledného)`;
-  return `na konci kola ${ohlasene + 1}`;
-}
-
 /** Efekty Prehra porazeného slovami — ten istý text ako web (jadro, návrh #38 B). */
 const textyPrehry = textyEfektovPrehry;
 
