@@ -144,7 +144,7 @@ import { NAZOV_DELENIA } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { favourPodlaId, hadkaBitky, kratkeMeno, listokHadky, pocetPriazniKola, priazenKola, priazenMarkera, type PriazneBitky } from "./priazenKola.ts";
-import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
+import { PonukaZajatia, type MoznostZajatia } from "./PonukaZajatia.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
 import { PocitadloSLiniou } from "./PocitadloBitky.tsx";
@@ -852,7 +852,7 @@ export function HernaPlocha({
     // úzkeho stola) ho prepol natrvalo a pás hráča s rukou ostali pod okrajom okna (UI inšpekcia
     // 20261024-napovedy, N4). Karty ostávajú aj tak na SIRKA_CITATELNA a do plste sa vojdú.
     if (mobil || naSirku || vyucba === true || stolScroll || vyskaPlste === 0 || sirkaPodlaVysky >= SIRKA_CITATELNA) return;
-    // Skrytá línia (starší, voľba cieľa, draft): plsť zmenší pokyn s kartami (patronát),
+    // Skrytá línia (starší, voľba cieľa, draft): plsť zmenší pokyn s kartami (zajatie),
     // nie karty línie — scroll by plsť zrazil na pár px (UI inšpekcia 20261024-nahlad, N1).
     if (plstRef.current?.classList.contains("linia-skryta") === true) return;
     const t = setTimeout(() => setStolScroll(true), ONESKORENIE_SCROLLU_MS);
@@ -1116,7 +1116,7 @@ export function HernaPlocha({
     );
   };
   /** Karta staršieho, o ktorého zajatie sa hrá (boss) — v ruke a v línii nesie štítok. */
-  const jeKartaPatronatu = (uid: number): boolean =>
+  const jeKartaZajatia = (uid: number): boolean =>
     view.pokusy.some((x) => x !== null && view.starsi.find((e) => e.elderId === x.elderId)?.karta.uid === uid);
   const limitTeraz = limitZhromazdenia(view, ja);
   const zoSenkuLimit = kolkoMozemBrat;
@@ -4646,7 +4646,7 @@ export function HernaPlocha({
     if (mamTahNaStole) setPohladStarsich(null);
   }, [mamTahNaStole]);
   // Línia starších zmizne, hneď ako prestane byť aktuálna (Michal 2026-10-27): koniec bitky či
-  // patronátu, výber lokality, šenok, Zhromaždenie, Pitka — aj keď je na ťahu súper.
+  // pokusu o zajatie, výber lokality, šenok, Zhromaždenie, Pitka — aj keď je na ťahu súper.
   const fazaStola = klucPrechodu(view);
   const predoslaFazaStola = useRef(fazaStola);
   useEffect(() => {
@@ -4657,7 +4657,7 @@ export function HernaPlocha({
   // Kým beží počítadlo bitky, stôl ukazuje líniu kariet (rozsvecujú sa), nie starších.
   // Pauza po súperovej voľbe cieľa líniu starších na chvíľu skryje — rámik pauzy by inak svietil
   // na medzeru medzi staršími a vybranú lokalitu by nebolo vidno (Michal 2026-10-26). Po pauze
-  // sa línia vráti sama: stav, ktorý ju otvoril (patronát, Starší), sa nemení.
+  // sa línia vráti sama: stav, ktorý ju otvoril (zajatie, Starší), sa nemení.
   const starsiViditelni =
     !pauzaBezi &&
     tahanie === null &&
@@ -4805,12 +4805,12 @@ export function HernaPlocha({
   const idLinieStarsich = useId();
   // Ponuka pokusu o zajatie (v9, predtým patronátu #110): kým si hráč staršieho nevybral, stôl ukáže
   // namiesto línie starších len tých, ktorých smie skúsiť zajať — kartu s akciami, priazeň a cenu.
-  const vyberPatronatu = krokMoj && krokStarsich?.typ === "zajatie" && mode.typ !== "pokus" && moznePokusyJa.length > 0;
+  const vyberZajatia = krokMoj && krokStarsich?.typ === "zajatie" && mode.typ !== "pokus" && moznePokusyJa.length > 0;
   // „všetci starší“ prepne na líniu (markery, súboje) bez bodového režimu barov; nový krok začne ponukou.
-  const [liniaPriPatronate, setLiniaPriPatronate] = useState(false);
-  useEffect(() => setLiniaPriPatronate(false), [klucKroku]);
-  const ponukaPatronatu: MoznostPatronatu[] | null =
-    vyberPatronatu && pohladStarsich === null && !liniaPriPatronate
+  const [liniaPriZajati, setLiniaPriZajati] = useState(false);
+  useEffect(() => setLiniaPriZajati(false), [klucKroku]);
+  const ponukaZajatia: MoznostZajatia[] | null =
+    vyberZajatia && pohladStarsich === null && !liniaPriZajati
       ? moznePokusyJa.map((e) => {
           const vyber = (): void => setMode({ typ: "pokus", elderId: e.elderId });
           const n = nahladPokusu(view);
@@ -4830,12 +4830,12 @@ export function HernaPlocha({
   // zaberal miesto starším (Michal 2026-10-30).
   const tlacidloLinieStarsich: ReactNode =
     krokStarsich !== null ? (
-      vyberPatronatu ? (
+      vyberZajatia ? (
         <button
           type="button"
           className="ls-tlacidlo"
           onClick={() => {
-            setLiniaPriPatronate(false);
+            setLiniaPriZajati(false);
             setPohladStarsich(null);
           }}
         >
@@ -5742,7 +5742,7 @@ export function HernaPlocha({
   const vpravoTahu = stolTlacidla?.vpravo ?? null;
   // Pri výbere patróna ležia starší na stole s kartou (ponuka) alebo v línii na klik — tlačidlá
   // s menami by ich len opakovali a pri štyroch by pretiekli cez dosku hráča.
-  const tlacidlaPokynu = vyberPatronatu ? undefined : pokyn?.tlacidla;
+  const tlacidlaPokynu = vyberZajatia ? undefined : pokyn?.tlacidla;
   const hranaVpravo =
     vpravoTahu === null && tlacidlaPokynu === undefined && pokyn?.vpravo === undefined ? null : (
       <>
@@ -6153,10 +6153,10 @@ export function HernaPlocha({
               </div>
             )}
             <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni} data-vyucba="linia-starsich">
-              {starsiViditelni && ponukaPatronatu !== null && (
-                <PonukaPatronatu moznosti={ponukaPatronatu} menoSupera={menoHraca(super_)} vsetci={() => setLiniaPriPatronate(true)} />
+              {starsiViditelni && ponukaZajatia !== null && (
+                <PonukaZajatia moznosti={ponukaZajatia} menoSupera={menoHraca(super_)} vsetci={() => setLiniaPriZajati(true)} />
               )}
-              {starsiViditelni && ponukaPatronatu === null && (
+              {starsiViditelni && ponukaZajatia === null && (
                 <LiniaStarsich
                   starsi={starsiVLinii}
                   data={data}
@@ -6490,7 +6490,7 @@ export function HernaPlocha({
                   </span>
                   {nova &&<span className="nova-stitok">zo šenku</span>}
                   {dobrata && <span className="nova-stitok">dobraná</span>}
-                  {jeKartaPatronatu(k.uid) && <span className="nova-stitok">starší · pokus o zajatie</span>}
+                  {jeKartaZajatia(k.uid) && <span className="nova-stitok">starší · pokus o zajatie</span>}
                   {pary.length > 0 && <span className="spoj-stitok">{pary.length === 1 ? "1 spoj" : `${pary.length} spoje`}</span>}
                 </>
               );

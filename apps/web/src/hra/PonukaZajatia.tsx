@@ -9,7 +9,7 @@ import { CenaCigariet } from "./Panely.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { rozlozeniePonuky } from "./rozlozeniePonuky.ts";
 
-export interface MoznostPatronatu {
+export interface MoznostZajatia {
   readonly elderId: string;
   readonly meno: string;
   /** Karta staršieho s akciami (HernaKarta s lupou) v danej šírke; klik na ňu ho vyberie. */
@@ -22,12 +22,12 @@ export interface MoznostPatronatu {
   readonly vyber: () => void;
 }
 
-export function PonukaPatronatu({
+export function PonukaZajatia({
   moznosti,
   menoSupera,
   vsetci,
 }: {
-  readonly moznosti: readonly MoznostPatronatu[];
+  readonly moznosti: readonly MoznostZajatia[];
   readonly menoSupera: string;
   /** Prepne stôl na celú líniu starších (markery, súboje); späť tlačidlom v línii. */
   readonly vsetci: () => void;

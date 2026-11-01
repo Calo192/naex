@@ -3668,8 +3668,6 @@ button.pecat-potvrd:disabled::after {
   }
 }
 
-/* ---- Patronát (Michal 2026-10-20): starší v ruke patróna ---------------------- */
-
 /* ---- hudba: názov skladby na chvíľu, keď začne hrať ---- */
 
 /* Vľavo dole vedľa počtu v balíčku (Michal 2026-10-28): hore prekrýval lištu fáz. Tam je
@@ -8826,8 +8824,9 @@ button.auto-hotovo-odkaz {
   visibility: hidden;
 }
 
-/* Ponuka patronátu (#110): na mieste línie starších len tí, ktorých si smieš vziať —
-   karta s akciami v čitateľnej veľkosti, vedľa priazeň a cena. */
+/* Ponuka pokusu o zajatie (v9; do v8 ponuka patronátu #110, trieda ostala): na mieste línie
+   starších len tí, ktorých smieš skúsiť zajať — karta s akciami v čitateľnej veľkosti, vedľa
+   priazeň a cena. */
 .ponuka-patronatu {
   height: 100%;
   display: flex;

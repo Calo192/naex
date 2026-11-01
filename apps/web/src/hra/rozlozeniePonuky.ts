@@ -1,4 +1,4 @@
-// Rozloženie ponuky patronátu (#110) — bez DOM, aby sa dalo otestovať.
+// Rozloženie ponuky pokusu o zajatie (do v8 ponuka patronátu #110) — bez DOM, aby sa dalo otestovať.
 
 /** Pomer výšky a šírky karty — ten istý ako na stole (HernaPlocha). */
 const POMER_KARTY = 80 / 54;
