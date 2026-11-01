@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Päta, Lakeť, Otočka — posudok režimu a efekty Má dosť</title>
+<style>
+/* Tokeny schémy Krčma (apps/web/src/schemy.css), ako v mocku pata-laket-otocka-mock.html. */
+:root{
+  --pozadie:#14110e;--plocha:#1e1914;--plocha-2:#28211a;--plocha-3:#332a21;--okraj:#3d3229;--okraj-svetly:#57483a;
+  --text:#f1e8d8;--tlmeny:#b6a790;--slaby-text:#9d8f7b;
+  --akcent:#e9ad45;--akcent-tmavy:#b9802a;--akcent-svetly:#ffd08a;--na-akcente:#2b1b03;
+  --cervena:#d0563f;--cervena-svetla:#ff9d88;--zelena:#7cbf74;--zelena-svetla:#7fe39a;
+  --info:#8fc3e0;--ja:#5cc0cf;--su:#e0805f;--f-starsi:#6a6ab8;
+  --pismo:Roboto,"Segoe UI",system-ui,sans-serif;--nadpis:Bitter,Georgia,serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--pozadie);color:var(--text);font:15px/1.5 var(--pismo);-webkit-text-size-adjust:100%}
+body{padding:0 0 calc(70px + env(safe-area-inset-bottom))}
+h1,h2,h3,h4{font-family:var(--nadpis);margin:0;line-height:1.25}
+a{color:var(--akcent-svetly)}
+.hlava{padding:14px 16px 6px;max-width:980px;margin:0 auto}
+.hlava h1{font-size:1.3rem;color:var(--akcent)}
+.hlava p{margin:4px 0 0;color:var(--tlmeny);font-size:.85rem}
+main{max-width:980px;margin:0 auto;padding:0 10px}
+.zalozka{display:none}.zalozka.aktivna{display:block}
+.zalozka>h2{font-size:1.15rem;margin:10px 4px 8px;color:var(--akcent-svetly)}
+.panel{background:var(--plocha);border:1px solid var(--okraj);border-radius:14px;padding:10px 13px;margin:10px 0}
+.panel h3{font-size:1rem;margin-bottom:6px;color:var(--akcent-svetly)}
+.panel h4{font-size:.92rem;margin:8px 0 4px;color:var(--text)}
+.panel ul,.panel ol{margin:4px 0;padding-left:20px}.panel li{margin:3px 0}
+.tlmeny{color:var(--tlmeny)}.maly{font-size:.82rem}
+.znacka{display:inline-block;padding:0 8px;border-radius:10px;font:700 .68rem/1.7 var(--pismo);letter-spacing:.05em;text-transform:uppercase;vertical-align:middle;white-space:nowrap}
+.z-ano{background:color-mix(in srgb,var(--zelena) 20%,transparent);color:var(--zelena-svetla);border:1px solid color-mix(in srgb,var(--zelena) 60%,transparent)}
+.z-skus{background:color-mix(in srgb,var(--akcent) 20%,transparent);color:var(--akcent-svetly);border:1px solid var(--akcent-tmavy)}
+.z-nie{background:color-mix(in srgb,var(--cervena) 20%,transparent);color:var(--cervena-svetla);border:1px solid color-mix(in srgb,var(--cervena) 60%,transparent)}
+.z-info{background:color-mix(in srgb,var(--info) 16%,transparent);color:var(--info);border:1px solid color-mix(in srgb,var(--info) 50%,transparent)}
+.z-furt{background:color-mix(in srgb,var(--f-starsi) 30%,transparent);color:#c9c9ff;border:1px solid var(--f-starsi)}
+.z-hned{background:color-mix(in srgb,var(--su) 22%,transparent);color:#ffc2ab;border:1px solid var(--su)}
+.verdikt{border-left:4px solid var(--akcent);padding-left:10px}
+table{border-collapse:collapse;width:100%;font-size:.84rem;margin:6px 0}
+th,td{border-bottom:1px solid var(--okraj);padding:5px 6px;text-align:left;vertical-align:top}
+th{color:var(--tlmeny);font-weight:600}
+td.c,th.c{text-align:right;white-space:nowrap}
+tr.hl td{background:color-mix(in srgb,var(--akcent) 10%,transparent)}
+.tab-obal{overflow-x:auto}
+.cislo{font:800 1.5rem/1 var(--nadpis);color:var(--akcent)}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:8px 0}
+.kpi div{background:var(--plocha-2);border:1px solid var(--okraj);border-radius:12px;padding:8px 10px}
+.kpi small{display:block;color:var(--tlmeny);font-size:.76rem;margin-top:4px}
+.riziko{border-left:4px solid var(--cervena)}
+.dobre{border-left:4px solid var(--zelena)}
+.navrh{border-left:4px solid var(--akcent)}
+.navrh dl{margin:4px 0;display:grid;grid-template-columns:92px 1fr;gap:3px 10px;font-size:.88rem}
+.navrh dt{color:var(--tlmeny);font-weight:600}
+.navrh dd{margin:0}
+@media(max-width:520px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:4px}}
+/* Má dosť */
+.starsi{border-left:4px solid var(--f-starsi)}
+.starsi .hl-riadok{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.starsi .akcie{font-size:.78rem;color:var(--slaby-text)}
+.hlaska{font-family:var(--nadpis);font-style:italic;color:var(--akcent-svetly);margin:4px 0}
+.varianty{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
+.varianty button{font:inherit;font-size:.82rem;color:var(--text);background:var(--plocha-2);border:1px solid var(--okraj-svetly);border-radius:10px;padding:5px 10px;cursor:pointer}
+.varianty button.vybraty{border-color:var(--akcent);box-shadow:0 0 0 1px var(--akcent)}
+.varianty button .odp{color:var(--zelena-svetla);font-weight:700}
+.variant{display:none;background:var(--plocha-2);border:1px solid var(--okraj);border-radius:12px;padding:8px 10px}
+.variant.vybraty{display:block}
+.variant .txt{font-weight:600;margin:2px 0 6px}
+.variant dl{margin:0;display:grid;grid-template-columns:118px 1fr;gap:2px 10px;font-size:.84rem}
+.variant dt{color:var(--tlmeny)}.variant dd{margin:0}
+@media(max-width:520px){.variant dl{grid-template-columns:1fr}.variant dt{margin-top:4px}}
+.otazka{background:var(--plocha);border:1px solid var(--okraj);border-radius:12px;padding:9px 12px;margin:8px 0}
+.otazka b.n{color:var(--akcent);margin-right:6px}
+/* spodná lišta záložiek */
+nav.zal{position:fixed;left:0;right:0;bottom:0;z-index:5;background:color-mix(in srgb,var(--plocha) 94%,transparent);backdrop-filter:blur(6px);
+  border-top:1px solid var(--okraj);padding:6px 6px calc(6px + env(safe-area-inset-bottom));display:flex;gap:6px;justify-content:center}
+nav.zal button{flex:1;max-width:220px;font:600 .84rem var(--pismo);color:var(--tlmeny);background:var(--plocha-2);border:1px solid var(--okraj);border-radius:10px;padding:8px 4px;cursor:pointer}
+nav.zal button.aktivna{color:var(--na-akcente);background:var(--akcent);border-color:var(--akcent)}
+select{font:inherit;color:var(--text);background:var(--plocha-2);border:1px solid var(--okraj-svetly);border-radius:8px;padding:4px 8px}
+code{font-size:.82em;background:var(--plocha-3);padding:0 4px;border-radius:4px}
+</style>
+</head>
+<body>
+<header class="hlava">
+  <h1>Päta, Lakeť, Otočka — posudok režimu</h1>
+  <p>Vymyselník · 2026-11-01 · roadmapa #166 · podklad: mock <code>2721afb</code>, sada v55 (<code>cards.json</code>), 288 bitiek botov (36 partií, Prvá liga) a presný výpočet spojov radu starších. Pečeň podľa Michala (mock × 1,5).</p>
+</header>
+<main>
+
+<!-- ============================ POSUDOK ============================ -->
+<section class="zalozka aktivna" id="z-posudok">
+<h2>Posudok mechaník</h2>
+
+<div class="panel verdikt">
+  <h3>V skratke</h3>
+  <ul>
+    <li><b>Nápad drží:</b> draft, rad so spojmi a efekt Má dosť dávajú režimu vlastnú tvár a nové rozhodnutia (koho draftovať, ako zoradiť, koho podraziť skôr).</li>
+    <li><b>Pri pečeni × 1,5 je partia krátka:</b> model dáva <b>3 kolá</b> (p10–p90: 2–4). Lokality donekonečna sa ani nestihnú uplatniť. Na 5 kôl treba pečeň zhruba <b>× 2</b> (Farár 30 …), na 7 kôl × 3.</li>
+    <li><b>Rad prebije líniu:</b> 4 starší dajú v mediáne <b>10 tuhého</b> za bitku, celá línia v Kalamite 5,6. Do radu nezasiahne NA EX, Odpor ani prevaha, takže dve tretiny tuhého idú mimo interakcie.</li>
+    <li><b>Výhra v bitke takmer nič nedá:</b> poškodenie dávajú obaja, výhra prinesie len rolu obrancu. V 23 % partií padnú poslední starší oboch v tej istej bitke.</li>
+    <li><b>Plošné pravidlá sa násobia počtom starších:</b> exekúcia (20 % všetkého poškodenia, väčšinou si ho hráč spôsobí sám Hazardom z radu), Povery, a s nimi Horoskop (8 poškodenia na jednu Poveru) a Čierna mačka.</li>
+    <li><b>Snowball je mierny:</b> podrazený starší ostáva spojkou, a keď ho hráč dá na kraj radu, stratí len 1–2,5 tuhého. Plošné škody proti oslabenému súperovi slabnú. Krátka partia však aj tak rozhodne prvým podrazením (87 %).</li>
+  </ul>
+</div>
+
+<div class="panel">
+  <h3>Čísla, z ktorých vychádzam</h3>
+  <div class="kpi">
+    <div><span class="cislo">5,6</span><small>tuhé z línie na hráča a bitku (boti, Kalamita; medián 4, p90 12)</small></div>
+    <div><span class="cislo">10</span><small>tuhé z radu 4 starších pri najlepšom poradí (medián zo 70 štvoríc; 6–16)</small></div>
+    <div><span class="cislo">1,7</span><small>Pitiek na kolo (boti); akcie radu sa rátajú v každej</small></div>
+    <div><span class="cislo">61</span><small>pečeň 4 starších jedného hráča v priemere (spolu 120 pri × 1,5)</small></div>
+    <div><span class="cislo">≈ 19–25</span><small>poškodenia, ktoré hráč dostane za kolo (tuhé + Povery + jed + exekúcia)</small></div>
+    <div><span class="cislo">3,3</span><small>tuhého za bitku je priemerný rozdiel medzi štvoricou a jej doplnkom (draft; max 8)</small></div>
+  </div>
+  <h4>Rad 4 starších — priemer aktívnych akcií (najlepšie poradie)</h4>
+  <div class="tab-obal"><table>
+    <tr><th>Za Pitku (každú)</th><th class="c">Ø</th><th>V bitke</th><th class="c">Ø</th></tr>
+    <tr><td>Hazard</td><td class="c">1,66</td><td>Rana / Pecka / Petelica</td><td class="c">1,46 / 2,39 / 1,16</td></tr>
+    <tr><td>Poškodenie pečene + Poldeci</td><td class="c">1,39 + 0,60</td><td>Povera</td><td class="c">1,77</td></tr>
+    <tr><td>Cigareta</td><td class="c">1,56</td><td>Pohoršenie</td><td class="c">1,44</td></tr>
+    <tr><td>Vízia</td><td class="c">1,23</td><td>Viera</td><td class="c">0,99</td></tr>
+    <tr><td>Obmedzenie</td><td class="c">0,63</td><td>Robota</td><td class="c">0,26</td></tr>
+  </table></div>
+  <p class="maly tlmeny">Typy starších: Farár, Krčmárka, Poštárka, Veterinár majú akcie „dole“ (ľavý slot 0 blokovaný), Starosta, Hrobár, Autobusár, Vychovávateľka „hore“. Starší rôznych typov sa spoja na 3 miestach, rovnakého typu na 2. Draft je preto aj o typoch.</p>
+</div>
+
+<div class="panel">
+  <h3>Ukážková bitka (draft z mocku, línia typická)</h3>
+  <p class="maly tlmeny">A: Starosta, Farár, Hrobár, Vychovávateľka (pečeň 61,5) · B: Krčmárka, Poštárka, Autobusár, Veterinár (58,5). Línia každému: 5 tuhého, 1 Povera, 1 Viera, 1 Hazard. 2 Pitky.</p>
+  <div class="tab-obal"><table>
+    <tr><th></th><th>A</th><th>B</th></tr>
+    <tr><td>Rad (najlepšie poradie)</td><td>9 tuhé, Pohoršenie 3, Viera 2, Hazard 1</td><td>12 tuhé, Viera 1, Povera 1, Robota 1, Hazard 1</td></tr>
+    <tr><td>Povery proti Viere</td><td>1 Povera ← Viera B 2: zrušená, B má 1 Vieru navyše</td><td>2 Povery ← Viera A 3: zrušené, A má 1 navyše</td></tr>
+    <tr><td>Tuhé po Viere</td><td><b>13</b> → podrazí Poštárku (12) + 1 Veterinárovi</td><td><b>16</b> → podrazí Vychovávateľku (13,5) + 2,5 Farárovi</td></tr>
+    <tr><td>Jed</td><td>3 na Krčmárku (−3, ostane 2)</td><td>—</td></tr>
+    <tr><td>Exekúcia (3 zadĺženia → 1 Dlh)</td><td>−1 každému stojacemu (3)</td><td>−1 každému stojacemu (3)</td></tr>
+    <tr class="hl"><td>Po kole 1</td><td>3 stoja, 42,5 pečene (−19)</td><td>3 stoja, 39,5 pečene (−19)</td></tr>
+    <tr><td>Rad po podrazení (podrazený na kraji)</td><td>8 tuhé (−1)</td><td>11 tuhé (−1)</td></tr>
+  </table></div>
+  <p class="maly">Každý stratí za kolo tretinu pečene a jedného staršieho. Bitku vyhral B (16 : 13), ale výhra mu nedala nič okrem toho, že bude obranca.</p>
+</div>
+
+<div class="panel">
+  <h3>Dĺžka partie podľa pečene (model)</h3>
+  <p class="maly tlmeny">Hrubý model: línia sa náhodne vyberie z bitiek botov, rad sa počíta presne zo spojov a po každom podrazení sa preskladá, tuhé ide sústredene na najslabšieho staršieho, jed na najzdravšieho, exekúcia plošne. 1 500–3 000 partií na riadok. Draft je náhodný hadovitý. Čísla ukazujú rád veľkosti, nie presnú hodnotu.</p>
+  <label class="maly">Pravidlo tuhého:
+    <select id="rezim">
+      <option value="obaja">obaja rozdelia celé svoje tuhé (rozhodnuté)</option>
+      <option value="prvy">víťaz udrie prvý (návrh N2)</option>
+      <option value="rozdiel">len rozdiel tuhého porazenému (Nakladačka)</option>
+    </select>
+  </label>
+  <div class="tab-obal"><table id="tab-dlzka"></table></div>
+  <p class="maly">Podiel zdrojov poškodenia (obaja, × 1,5): <b>tuhé 55 %</b>, Povery 12 %, jed 13 %, <b>exekúcia 20 %</b>. Keď porazený dáva len rozdiel, tuhé klesne na 19 % a hru rozhodujú exekúcia (39 %), Povery a jed. Bitka by tak stratila zmysel ešte viac.</p>
+</div>
+
+<h2>Čo je dobré</h2>
+<div class="panel dobre"><ul>
+  <li><b>Hadovitý draft A B B A A B B A</b> je férový (súčet poradí 18 : 18) a má hĺbku: nerozhoduje len sila staršieho, ale aj jeho typ (hore/dole), pečeň a efekt Má dosť.</li>
+  <li><b>Rad ako druhá, malá línia</b> zúročí pravidlá spoja, ktoré hráč už pozná. Nové pravidlá netreba, len nové miesto.</li>
+  <li><b>Spojka</b> (podrazený ostáva v rade) tlmí snowball. Podrazený na kraji radu stojí len 1–2,5 tuhého, a preskladať rad po strate je pekné rozhodnutie.</li>
+  <li><b>Plošné škody vyrovnávajú hru:</b> Povery aj exekúcia proti súperovi s 2 staršími zoberú polovicu toho, čo proti 4. Vedúci hráč tak doťahuje pomalšie.</li>
+  <li><b>Má dosť ako útecha porazeného</b> funguje ako dobiehanie, presne podľa zásady „odmena za väčšiu výzvu“.</li>
+  <li><b>Lokality donekonečna</b> a remíza, ktorá neexistuje, odstránia ligy, finále, výkup aj počítanie špakov. Pre nováčika je režim čitateľnejší.</li>
+  <li><b>Jed</b> je nový druh poškodenia, ktorý trvá ďalej, a dáva Pohoršeniu vlastnú rolu (Povera plošne, Pohoršenie v čase, tuhé hneď).</li>
+</ul></div>
+
+<h2>Čo je zlé alebo rizikové</h2>
+<div class="panel riziko">
+  <h3>1 · Partia je krátka</h3>
+  <p>Pri pečeni × 1,5 vychádzajú <b>3 kolá</b> (p10–p90: 2–4): každý hráč dostane za kolo 19–25 poškodenia z 61. Draft 8 starších, prestavba radu a efekty Má dosť sa za 3 kolá nestihnú rozohrať. Prvé podrazenie rozhodne v 87 % partií. → N1</p>
+</div>
+<div class="panel riziko">
+  <h3>2 · Rad prebije líniu a nič doň nezasiahne</h3>
+  <p>Rad dá v mediáne 10 tuhého, línia 5,6. Zhromaždenie, NA EX, Odpor, Úplatok, Výtržník a prevaha menia len tretinu poškodenia. Prestavba radu je skoro vyriešená úloha (24 poradí, optimum vie spočítať aj bot), takže rozhodovanie sa presúva z hry do draftu. → N5, otázka 5</p>
+</div>
+<div class="panel riziko">
+  <h3>3 · Výhra v bitke nemá váhu, poslední starší padnú naraz</h3>
+  <p>Poškodenie dávajú obaja, výhra prinesie len rolu obrancu (výber lokality, šenok prvý). V <b>23 %</b> partií padnú poslední starší oboch v tej istej bitke, takže pravidlo je nutné, nie okrajové. → N2</p>
+</div>
+<div class="panel riziko">
+  <h3>4 · Exekúcia × počet starších a Hazard z radu v každej Pitke</h3>
+  <p>Rad dá 1,66 Hazardu za Pitku. Zhruba 2 Dlhy za kolo, exekúcia z nich spáli 1 a ten uberie po 1 každému staršiemu. Jeden Hazard tak stojí vlastného hráča ≈ 1,5 pečene, viac, ako dá súperovi Rana. Spolu je to <b>20 % všetkého poškodenia</b> a väčšinou si ho hráč spôsobí sám. Pre Starostu, Hrobára, Poštárku a Veterinára (Hazard na hrane) je to cena za draft, čo je tematicky dobré. Pozor na Záhradkára: „exekúcia neplatí“ tu zachráni 4–8 pečene, a to je jedna z najsilnejších kariet režimu.</p>
+</div>
+<div class="panel riziko">
+  <h3>5 · Povery × 4 a Náradie, ktoré ich násobí</h3>
+  <p>Nezrušená Povera = 4 poškodenia (Rana 1). Viera je preto proti Poverám 4× cennejšia ako proti tuhému. Je to v poriadku, keď Viera najprv ruší Povery (N3). Problém sú karty: <b>Horoskop</b> (sila 2) z jednej Povery spraví 8 poškodenia, <b>Čierna mačka</b> („Povery sa Vierou nerušia“) zaručí 4 za kus. V rade môže byť až 4 Povery (Poštárka, Vychovávateľka) → 16 plošne. → N9</p>
+</div>
+<div class="panel riziko">
+  <h3>6 · Jed rastie do trojuholníka</h3>
+  <p>Jed n uberie spolu n + (n−1) + … + 1. Tri Pohoršenia naraz dajú 6, po dve každé kolo na toho istého staršieho 2 + 3 + 4 + 5 … Jedno samotné Pohoršenie dá len 1, takže sa oplatí jed kopiť na najzdravšieho staršieho. Keď starší padne, zvyšok jedu prepadne. → N4</p>
+</div>
+<div class="panel riziko">
+  <h3>7 · Liečenie partiu nenaťahuje, Robota je zbytočná</h3>
+  <p>Robota je vzácna (línia 0,42, rad 0,26 za bitku), takže lieči ≈ 0,7 za kolo pri 19–25 poškodenia. Obava „liečenie naťahuje“ sa nenapĺňa. Opačný problém: Robota a Fúrik stratia význam. → N7</p>
+</div>
+<div class="panel riziko">
+  <h3>8 · Cirhóza stratí zuby</h3>
+  <p>Na konci nestojí nič a partia trvá 3–5 kôl, kým sa balíček prešuchá 1–2-krát. Nepriznať ju je skoro zadarmo, priznať znamená +1 tuhé súperovi. Dilema „priznať, alebo riskovať“ sa zmení na „nikdy nepriznať“. Pečeň v Pitke tým stratí váhu, hoci rad pridáva ≈ 2 pečene za Pitku. Riešenie len naznačujem (otázka 4), lebo každé pridá ďalšie poškodenie a skráti partiu.</p>
+</div>
+<div class="panel riziko">
+  <h3>9 · Dominantná stratégia: podraziť najslabšieho</h3>
+  <p>Tuhé sa delí po bodoch, takže najlepšie je sústrediť ho na staršieho s najnižšou pečeňou. V modeli padne <b>Poštárka (12) prvá v 82 %</b> partií. Lieky: efekt Má dosť, pre ktorý sa súperovi neoplatí podraziť ho skoro (návrh pre Poštárku nižšie), a vyrovnanejšia pečeň, keď sa bude dolaďovať.</p>
+</div>
+
+<div class="panel">
+  <h3>Môj názor na otvorené otázky Leadera</h3>
+  <div class="tab-obal"><table>
+    <tr><th>Otázka</th><th>Názor</th></tr>
+    <tr><td>Zaokrúhlenie pečene</td><td>Zdvojnásobiť Michalove čísla (N1), potom sú všetky celé. Ak ostane × 1,5, tak nahor: Starosta, Hrobár 17, Veterinár, Vychovávateľka 14.</td></tr>
+    <tr><td>Poradie poškodení, súčasné padnutie</td><td>Víťaz bitky udrie prvý, po každom kroku sa kontroluje koniec, pri sekere ide prvý útočník (N2).</td></tr>
+    <tr><td>Štít Viery: Povery vs. tuhé</td><td>Ako v Kalamite: Viera najprv ruší Povery 1 : 1, zvyšok tlmí tuhé 1 : 1 ešte pred rozdelením (N3). Hráč nevolí, výpočet je už v jadre.</td></tr>
+    <tr><td>Pohoršenie na viacerých</td><td>Po kusoch: každé Pohoršenie = jed 1 na staršieho podľa výberu (N4).</td></tr>
+    <tr><td>Prečerpanie, strieľanie do podrazených</td><td>Tuhé sa delí po bodoch, takže prečerpanie nevzniká. Do podrazených nie (bod by prepadol zbytočne), Povery a exekúcia zasiahnu len stojacich.</td></tr>
+    <tr><td>Robota nad max, oživenie</td><td>Nad pôvodnú pečeň áno (bez stropu), oživenie nie: Má dosť by sa zapínal a vypínal a efekty Hneď by sa dali spustiť znova.</td></tr>
+    <tr><td>Čo je výhra v bitke</td><td>Víťaz = vyššie tuhé, potom Absťáky, Dlhy, sekera ako dnes. Výhra dá tempo (N2) a rolu obrancu.</td></tr>
+    <tr><td>Prebytok cigariet a poldeci</td><td>Zásadu formálne spĺňa fajčenie (cena rastie bez stropu) a šenok. Zmysel v cieli režimu dá Runda pre staršieho (N6).</td></tr>
+    <tr><td>Karty a lokality so špakmi</td><td>Preložiť 1 špak = 1 pečeň, režimové texty dať do dát (N9).</td></tr>
+    <tr><td>Kšefty starších</td><td>Zaniknú, ich miesto na karte zaberie Má dosť. Živý starší má len akcie, podrazený len efekt, a karta tak má v každej chvíli jednu rolu.</td></tr>
+    <tr><td>Kto začína draft, prvý obranca</td><td>Losom. Druhý v drafte si vyberie, či bude v 1. kole obranca, alebo útočník (N8).</td></tr>
+  </table></div>
+</div>
+</section>
+
+<!-- ============================ NÁVRHY ============================ -->
+<section class="zalozka" id="z-navrhy">
+<h2>Návrhy mechaník</h2>
+<p class="maly tlmeny" style="margin:0 4px">Bez umelých stropov a limitov zdrojov, bez AI a DSL. Každý návrh kontroloval jadro (<code>packages/core</code>), na ktoré by sa napojil.</p>
+
+<div class="panel navrh">
+  <h3>N1 · Pečeň × 2 Michalových čísel <span class="znacka z-ano">odporúčam</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Pri × 1,5 trvá partia 3 kolá a prvé podrazenie rozhodne (87 %).</dd>
+    <dt>Návrh</dt><dd>Farár 30, Krčmárka 36, Starosta 33, Poštárka 24, Hrobár 33, Autobusár 30, Veterinár 27, Vychovávateľka 27. Celé čísla, pomer ostáva Michalov.</dd>
+    <dt>Dopad</dt><dd>Model: ≈ 5 kôl (4–6), súčasný koniec 10 %, prvé podrazenie rozhodne v 78 %. Čísla patria do dát (nová tabuľka pečene starších s <code>TODO</code>), nie do kódu.</dd>
+    <dt>Riziko</dt><dd>Kolo trvá dlho, takže 5 kôl je časovo ako Druhá liga. Ak má partia trvať 7 kôl, treba × 3.</dd>
+    <dt>Odporúčanie</dt><dd>Prvý playtest s × 2. Po ňom doladiť podľa skutočnej línie, lebo boti v Kalamite hrajú na špaky, nie na pečeň.</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N2 · Víťaz udrie prvý, koniec sa kontroluje po každom kroku <span class="znacka z-ano">odporúčam</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Výhra v bitke takmer nič nedá. V 23 % partií padnú poslední starší oboch naraz.</dd>
+    <dt>Návrh</dt><dd>Poradie: (1) víťaz bitky: tuhé, Povery, nový jed → kontrola konca; (2) porazený rovnako (svoje poškodenie má spočítané už z línie a radu pri bitke, nič sa neprepočítava) → kontrola; (3) starý jed oboch; (4) Robota a exekúcia oboch. Partia skončí hneď, keď jednému nestojí nikto, a ďalšie kroky sa už nerobia. Pri sekere ide prvý <b>útočník</b> (zaostávajúci, zásada odmena za výzvu).</dd>
+    <dt>Dopad</dt><dd>Súčasný koniec zmizne: v krokoch 1 a 2 padajú starší len jednej strany, a keď v kroku 3 alebo 4 padnú poslední starší oboch, vyhrá víťaz bitky. Dĺžka sa nemení. Jadro: nové kroky bitky v <code>battle.ts</code>/<code>engine.ts</code>, rekapitulácia bitky dostane poradie.</dd>
+    <dt>Riziko</dt><dd>Mierne posilní silnejšieho (v modeli o 1 bod). Porazený, ktorý stratil posledného staršieho v kroku 1, už neudrie, a to môže pôsobiť kruto.</dd>
+    <dt>Odporúčanie</dt><dd>Áno, je to najlacnejšie úplné riešenie súčasného padnutia.</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N3 · Viera ako v Kalamite: najprv Povery, potom tuhé <span class="znacka z-ano">odporúčam</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>„Plošný štít“ sa dá čítať aj tak, že tlmí poškodenie každého staršieho zvlášť. Útočník by potom všetko sústredil na jedného a Viera by takmer nepomohla.</dd>
+    <dt>Návrh</dt><dd>Viera najprv ruší súperove Povery 1 : 1 (každá zrušená ušetrí až 4), zvyšná Viera zníži súperovo tuhé o 1 za kus, ešte kým ho rozdelí. Jed Viera netlmí.</dd>
+    <dt>Dopad</dt><dd>Výpočet už robí <code>computeDamage</code> (<code>battle.ts:82</code>), mení sa len to, čo sa s výsledkom stane. Svätý text (+1 hodnota Viery v tlmení tuhého) platí ďalej.</dd>
+    <dt>Riziko</dt><dd>Žiadne nové. Viera bude proti Poverám veľmi cenná, a tak to má byť.</dd>
+    <dt>Odporúčanie</dt><dd>Áno.</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N4 · Pohoršenie po kusoch, jed preskočí na suseda <span class="znacka z-skus">skúsiť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Nie je jasné, ako sa Pohoršenie delí. Jed na podrazenom prepadne a jed sa oplatí len kopiť.</dd>
+    <dt>Návrh</dt><dd>Každé Pohoršenie = jed 1 na súperovho staršieho podľa výberu (verejne). Keď starší s jedom padne, zvyšný jed preskočí na suseda v rade (ak má dvoch, vyberie ten, kto jed dal).</dd>
+    <dt>Dopad</dt><dd>Poradie radu dostane obrannú stránku: koho dať vedľa koho, koho na kraj. Jadro: jed ako počítadlo na staršom, presun pri podrazení.</dd>
+    <dt>Riziko</dt><dd>Ďalšie pravidlo, ktoré treba ukázať na stole. Jed je o niečo silnejší (neprepadá).</dd>
+    <dt>Odporúčanie</dt><dd>Prvú časť (po kusoch) hneď. Preskakovanie až po prvej hre, ak sa ukáže, že jed prepadá často.</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N5 · NA EX aj na staršieho v rade <span class="znacka z-skus">skúsiť</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Dve tretiny tuhého idú z radu, do ktorého nič nezasiahne. Prebytočný poldeci nemá kam ísť (NA EX raz za Pitku).</dd>
+    <dt>Návrh</dt><dd>NA EX smie ísť aj na stojaceho staršieho v rade, vlastného aj súperovho, podľa bežných pravidiel (aspoň 1 aktívna a 1 neaktívna akcia). Krajný starší má vonkajšiu hranu nespárovanú: NA EX zruší jeho 3 vnútorné akcie a zdvojí 3 vonkajšie. Prostredný starší so všetkými 6 aktívnymi NA EX nedostane.</dd>
+    <dt>Dopad</dt><dd>Vlastný krajný starší: +3 akcie za poldeci. Súperov: oplatí sa, keď má vonku Hazard alebo pečeň a vnútri Petelicu (Starosta, Hrobár na kraji): NA EX mu zdvojí Hazard. Kam dať NA EX (do línie, do svojho radu alebo do súperovho) je nové rozhodnutie. Jadro: cieľ NA EX v rade, vyhodnotenie radu ako línie; skryté NA EX ostáva vo <code>viewFor</code> ako dnes.</dd>
+    <dt>Riziko</dt><dd>NA EX do vlastného radu partiu zrýchli. NA EX je nerest a pečeň, takže viac Cirhóz.</dd>
+    <dt>Odporúčanie</dt><dd>Skúsiť v druhom playteste, až keď bude sedieť dĺžka (N1).</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N6 · Runda pre staršieho (prebytok na pečeň) <span class="znacka z-ano">odporúčam</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Výkupné zmizlo, rad dá 1,56 Cigarety za Pitku. Zásada bez stropov chce, aby prebytok mal zmysel. Fajčenie ho míňa, ale do cieľa režimu (pečeň starších) nevedie.</dd>
+    <dt>Návrh</dt><dd>Na konci kola smie hráč dať <b>plný poldeci</b> alebo <b>5 cigariet</b> za +1 pečeň vlastnému stojacemu staršiemu, koľkokrát chce. Kurz je výkupné z Kalamity (1 špak = 1 pečeň). Nad pôvodnú pečeň áno, podrazeného nie.</dd>
+    <dt>Dopad</dt><dd>Prebytok má vždy kam ísť a krátka partia sa trochu natiahne. Jadro: nový príkaz na konci kola, verejný.</dd>
+    <dt>Riziko</dt><dd>Pri drahom kurze je to okrajové, pri lacnom hra „na liečenie“. Poldeci minutý na rundu chýba v limite vykladania ďalšieho kola, a to je dobré rozhodnutie.</dd>
+    <dt>Odporúčanie</dt><dd>Áno, s kurzom výkupného.</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N7 · Robota: spáliť Dlh, alebo vyliečiť 2 <span class="znacka z-ano">odporúčam</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Liečenie o 1 za Robotu dá ≈ 0,7 pečene za kolo. Robota aj Fúrik stratia význam.</dd>
+    <dt>Návrh</dt><dd>Každá aktívna Robota v kroku exekúcie: spáli 1 Dlh (s Fúrikom 2) <b>alebo</b> vylieči 2 pečene jednému stojacemu staršiemu. Nad pôvodnú pečeň áno, oživenie nie.</dd>
+    <dt>Dopad</dt><dd>Spálený Dlh ušetrí pri exekúcii až 1 × počet starších, takže voľba je naozajstná. Jadro: <code>exekucieBitky</code> dostane voľbu, Fúrik ostáva.</dd>
+    <dt>Riziko</dt><dd>Malé, Roboty je málo.</dd>
+    <dt>Odporúčanie</dt><dd>Áno.</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N8 · Druhý v drafte si vyberie rolu <span class="znacka z-ano">odporúčam</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Prvý výber berie najsilnejšieho staršieho (napr. Krčmárka: 18 pečene, Pecka, 2 Poldeci). Rozdiel štvorice a doplnku je až 8 tuhého za bitku.</dd>
+    <dt>Návrh</dt><dd>Kto draftuje prvý, sa losuje zo semienka. Druhý si po drafte vyberie, či bude v 1. kole obranca (vyberá lokalitu, šenok berie prvý), alebo útočník (vykladá prvý).</dd>
+    <dt>Dopad</dt><dd>Jedna voľba navyše, jadro: krok po drafte.</dd>
+    <dt>Riziko</dt><dd>Žiadne.</dd>
+    <dt>Odporúčanie</dt><dd>Áno.</dd>
+  </dl>
+</div>
+
+<div class="panel navrh">
+  <h3>N9 · Režimové texty kariet (špaky → pečeň, plošné Povery) <span class="znacka z-ano">odporúčam</span></h3>
+  <dl>
+    <dt>Problém</dt><dd>Niektoré karty pracujú so špakmi, markerom alebo priazňou. Iné s plošnými Poverami prerastú.</dd>
+    <dt>Návrh</dt><dd>
+      <b>Horoskop:</b> sila 2 platí len proti jednému staršiemu podľa výberu. <b>Čierna mačka:</b> Povery sa Vierou nerušia, ale zasiahnu len jedného staršieho podľa výberu.
+      <b>Kultúrny dom:</b> porazený vylieči 1 pečeň za každú svoju kartu v línii. <b>Herňa:</b> víťaz rozdelí navyše toľko tuhého, koľko má porazený Dlhov.
+      <b>Noviny:</b> Prehra: vylieč 1 pečeň za každý Dlh, ktorý má víťaz navyše. <b>Predsedova vila:</b> Kšeft za 2 cigarety: jed 1 na súperovho staršieho.
+      <b>Kapybara:</b> Nástup: zníž jed jedného staršieho o 1. <b>Cirhóza:</b> bez „−3 špaky“. <b>Robota:</b> bez špakov (N7).</dd>
+    <dt>Dopad</dt><dd>Text karty podľa režimu v dátach sady (Admin v tvorcovi), jadro vyberie podľa režimu. Nie je to DSL, efekty ostávajú v kóde po id.</dd>
+    <dt>Riziko</dt><dd>Dve znenia tej istej karty mätú, preto sa na stole má ukázať len to platné.</dd>
+    <dt>Odporúčanie</dt><dd>Áno, ako zoznam pre Admina pred prvou hrou.</dd>
+  </dl>
+</div>
+</section>
+
+<!-- ============================ MÁ DOSŤ ============================ -->
+<section class="zalozka" id="z-madost">
+<h2>Nové efekty Má dosť</h2>
+
+<div class="panel">
+  <h3>Zásady, ktoré som dodržal</h3>
+  <ul>
+    <li>Efekt <b>pomáha majiteľovi alebo škodí súperovi</b>, nikdy majiteľovi. Platí od podrazenia staršieho.</li>
+    <li><b>Hneď</b> = raz pri podrazení (ešte v tej bitke, po poškodení). <b>Furt</b> = do konca partie.</li>
+    <li>Každý odporúčaný efekt má <b>iný zdroj a fázu kola</b> (tabuľka nižšie). Žiadne dva nie sú rovnaké ani takmer rovnaké.</li>
+    <li>Popis nespomína iné konkrétne karty. Hlášky sú bez etnických nadávok.</li>
+  </ul>
+  <h4>Kedy kto padá a čo to znamená pre silu efektu</h4>
+  <p class="maly">Štvrtý podrazený starší ukončí partiu, takže jeho Má dosť nikdy neplatí. Starší s nízkou pečeňou padajú skoro a ich efekt Furt platí najdlhšie: Poštárka padla v modeli prvá v 82 % partií, Veterinár a Vychovávateľka (13,5) bývajú druhí. Preto majú títo traja efekty, ktoré pomáhajú bez priamej škody (informácia, poriadok, čistenie). Silnejšie efekty dostali starší s vysokou pečeňou (Krčmárka 18, Starosta a Hrobár 16,5), ktorí padajú neskoro. Tak vzniká rozhodnutie <b>koho podraziť skôr</b>: najslabšieho rýchlo, alebo toho, koho efekt sa súperovi najmenej zíde.</p>
+  <div class="tab-obal"><table>
+    <tr><th>Starší</th><th>Odporúčaný efekt</th><th>Druh</th><th>Fáza / zdroj</th><th>Sila</th></tr>
+    <tr><td>Poštárka (12)</td><td>Všetko vyklopím</td><td>Furt</td><td>informácia: súperova ruka</td><td>stredný</td></tr>
+    <tr><td>Veterinár (13,5)</td><td>Liečim už len kravy</td><td>Hneď</td><td>Cirhózy (Pitka, balíček)</td><td>stredný</td></tr>
+    <tr><td>Vychovávateľka (13,5)</td><td>Do radu!</td><td>Furt</td><td>prestavba radu súpera</td><td>stredný</td></tr>
+    <tr><td>Farár (15)</td><td>Rozhrešenie</td><td>Furt</td><td>bitka: jed</td><td>stredný (podľa súpera)</td></tr>
+    <tr><td>Autobusár (15)</td><td>Ty nastupuješ prvý</td><td>Furt</td><td>šenok: poradie brania</td><td>stredný</td></tr>
+    <tr><td>Starosta (16,5)</td><td>Kde sa pije, poviem ja</td><td>Furt</td><td>voľba cieľa: lokalita</td><td>stredný až silný</td></tr>
+    <tr><td>Hrobár (16,5)</td><td>Aspoň mám robotu</td><td>Furt</td><td>bitka: tuhé</td><td>rastie 0 → 6</td></tr>
+    <tr><td>Krčmárka (18)</td><td>Už ti nenalejem</td><td>Furt</td><td>začiatok kola: súperov poldeci (limit, NA EX)</td><td>silný</td></tr>
+  </table></div>
+</div>
+
+<div id="starsi-zoznam"></div>
+
+<div class="panel">
+  <h3>S čím som efekty porovnával</h3>
+  <p class="maly"><b>Všetkých 22 Nástrojov</b> (<code>cards.json</code>, tag Nástroj): Noviny, Krabička cigariet, Vínko, Pasca, Puška, Svätý text, Nealko, Výherný automat, Vidly, Injekcia, Valaška, Energeťák, Fúrik, Horoskop, Hrable, Jogurt, Krištáľová guľa, Píšťalka, Telefón, Výherné žreby, Zapaľovač, Zrkadlo. Žiadny odporúčaný ani alternatívny efekt nerobí to isté: Nástroje menia hodnotu alebo zrušiteľnosť akcií hráča, prah Dlhu či Cirhózy a Vízie. Efekty Má dosť pracujú s rukou, radom, lokalitou, šenkom, jedom, Cirhózami, začiatkom kola a počtom podrazených.</p>
+  <p class="maly"><b>Ostatné karty, ktoré sú najbližšie:</b> Klebetnica (vidíš súperovo NA EX), Sklad, Veštica, Hasič, Zberný dvor (karty z balíčkov), Zastávka (karta zo šenku zadarmo), Degustátorka (súperov plný poldeci na vypitý, raz pri Nástupe), Vínko (sám nemôžeš dolievať), Milujúca manželka, Opatrovateľka, Nealko (pečeň, Chuť), Anonymný alkoholik (prizná Cirhózy), Vymáhač, Vidly, Valaška (tuhé navyše), Kočovník, Vandal (prevaha, otočenie lokality), Silná nezávislá žena (susedia ×2), Podvodník, Obecný úrad, Finančná poradkyňa (Dlhy súperovi), Záhradkár (exekúcia). Porovnával som aj s ôsmimi Kšeftmi väzňa zo súčasných kariet starších a s návrhmi z mocku. Kde je podobnosť blízko, uvádzam ju pri variante.</p>
+</div>
+
+<div class="panel">
+  <h3>Nemenné pravidlá</h3>
+  <ul class="maly">
+    <li><b>Skrytá informácia:</b> Poštárka odkrýva ruku len cez <code>viewFor</code> na serveri (pohľad hráča, ktorého Poštárka padla, dostane súperovu ruku). Klient ruku neskrýva ani neodkrýva sám, treba test vo <code>view</code>. Prestavba radu je naraz a skryto, takže Vychovávateľka mení súperov rad až po odhalení oboch radov a server pred odhalením neposiela súperovo poradie.</li>
+    <li><b>Náhoda:</b> žiadny efekt nepoužíva náhodu. Keby sa vybral „náhodný“ variant, išiel by cez generátor v <code>GameState</code>.</li>
+    <li><b>Zámery, nie výsledky:</b> voľby (koho vymeniť, ktorú lokalitu) posiela klient ako zámer, server overí.</li>
+    <li><b>Bez I/O v jadre:</b> všetko sú čisté prechody stavu.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============================ OTÁZKY ============================ -->
+<section class="zalozka" id="z-otazky">
+<h2>Čo by som sa ešte spýtal Michala</h2>
+<div class="otazka"><b class="n">1.</b><b>Koľko kôl má partia trvať?</b> <span class="tlmeny">Pri pečeni × 1,5 vychádzajú 3. Od toho závisí pečeň (N1) a či sa oplatí N5.</span></div>
+<div class="otazka"><b class="n">2.</b><b>Platí Má dosť, aj keď staršieho podrazí vlastná exekúcia?</b> <span class="tlmeny">Mock hovorí „keď ho podrazí súper“. Odporúčam vždy, je to jednoduchšie a „má dosť“ je jedno od koho.</span></div>
+<div class="otazka"><b class="n">3.</b><b>Smie Poštárka odkryť celú súperovu ruku?</b> <span class="tlmeny">Pre človeka je to silné, bot to nevyužije. Slabšia verzia: odkrytý počet kariet podľa druhu (Občan, Nástroj, Kliatba).</span></div>
+<div class="otazka"><b class="n">4.</b><b>Má mať Cirhóza v režime zuby?</b> <span class="tlmeny">Napr. nepriznaná v ruke pri bitke = −1 pečeň vlastnému staršiemu. Inak ju nikto nebude priznávať. Partiu to ale skráti.</span></div>
+<div class="otazka"><b class="n">5.</b><b>Je v poriadku, že rad dáva dve tretiny tuhého?</b> <span class="tlmeny">Alternatíva: rad dáva všetko okrem Rany, Pecky a Petelice (ekonomika, Povery, Viera, jed), tuhé len z línie. Bitka by ostala v Zhromaždení a NA EX.</span></div>
+<div class="otazka"><b class="n">6.</b><b>Ktoré tri úrovne lokalít sú na výber?</b> <span class="tlmeny">Náhodne 3 zo 4, alebo pevne 1–2–3 a od 4. kola 2–3–4 (gradácia)? A vracajú sa odohrané lokality naspodok?</span></div>
+</section>
+</main>
+
+<nav class="zal">
+  <button data-z="z-posudok" class="aktivna">Posudok</button>
+  <button data-z="z-navrhy">Návrhy</button>
+  <button data-z="z-madost">Má dosť</button>
+  <button data-z="z-otazky">Otázky</button>
+</nav>
+
+<script>
+// Záložky
+document.querySelectorAll("nav.zal button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("nav.zal button").forEach(x=>x.classList.toggle("aktivna",x===b));
+  document.querySelectorAll(".zalozka").forEach(z=>z.classList.toggle("aktivna",z.id===b.dataset.z));
+  scrollTo({top:0});
+}));
+
+// Model dĺžky partie (scratchpad model.ts; pečeň = násobok čísel mocku, Michal = × 1,5)
+const DLZKA={
+  obaja:  [["× 1 (mock)",2.1,"2–3",29,96],["× 1,5 (Michal)",2.9,"2–4",23,87],["× 2,25",4.1,"3–5",16,78],["× 3 (návrh N1)",5.2,"4–6",10,78],["× 4,5",7.4,"6–9",6,64]],
+  prvy:   [["× 1,5 (Michal)",3.0,"2–4",0,86],["× 2,25",4.1,"3–5",0,79],["× 3 (návrh N1)",5.3,"4–6",0,74],["× 4,5",7.3,"6–9",0,65]],
+  rozdiel:[["× 1 (mock)",2.9,"2–4",15,83],["× 1,5 (Michal)",4.0,"3–5",13,82],["× 2,25",5.5,"4–7",8,79],["× 3 (návrh N1)",6.9,"5–9",5,74],["× 4,5",9.4,"7–12",4,72]]
+};
+function kresliDlzku(){
+  const r=document.getElementById("rezim").value;
+  document.getElementById("tab-dlzka").innerHTML='<tr><th>Pečeň</th><th class="c">Kôl Ø</th><th class="c">p10–p90</th><th class="c">Súčasný koniec</th><th class="c">Prvé podrazenie → prehra</th></tr>'+
+    DLZKA[r].map(x=>'<tr'+(x[0].includes("N1")?' class="hl"':'')+'><td>'+x[0]+'</td><td class="c">'+String(x[1]).replace(".",",")+'</td><td class="c">'+x[2]+'</td><td class="c">'+x[3]+' %</td><td class="c">'+x[4]+' %</td></tr>').join("")+
+    (r==="prvy"?'<tr><td colspan="5" class="maly tlmeny">Súčasný koniec 0 % platí s kontrolou po každom kroku (N2). V modeli bez nej ostáva 11–17 % (jed a exekúcia po úderoch).</td></tr>':'');
+}
+document.getElementById("rezim").addEventListener("change",kresliDlzku);kresliDlzku();
+
+// Efekty Má dosť: [názov, druh, text, sila, koho podraziť skôr, najbližšia karta / pozn.]
+const STARSI=[
+ {id:"postarka",meno:"Poštárka",pecen:"12 (návrh N1: 24)",akcie:"Vízia ×2, Povera ×2, Rana, Hazard",hlaska:"Všetko vyklopím. Aj to, čo som čítala cez obálku.",odp:0,v:[
+  ["Všetko vyklopím","Furt","Súperova ruka je pre teba odkrytá.","stredný: čistá informácia, žiadna priama škoda, preto je vhodný pre staršieho, ktorý padá prvý","Áno, láme dominantnú stratégiu „najslabší prvý“: súper musí zvážiť, či Poštárku podrazí skoro a hrá potom celú partiu s odkrytými kartami.","Klebetnica ukáže len NA EX v Pitke, Sklad a Veštica jednu kartu z balíčka. Trvalo odkrytú ruku nemá nikto. Server: viewFor + test."],
+  ["Doporučený list","Furt","Na začiatku každého kola si doberieš o 1 kartu viac.","stredný, spoľahlivý","Málo, je to stály malý bonus, bez napätia.","Žiadna karta nemení základné dobratie. Hasič a Zberný dvor berú z odhadzovacieho balíčka, nie navyše."],
+  ["Upomienky","Hneď","Súper získa toľko Dlhov, koľko máš ty priznaných.","stredný až silný (exekúcia je plošná)","Áno: kým máš veľa Dlhov, súper ju nechce podraziť.","Blízko Podvodníka, Obecného úradu a Finančnej poradkyne (presun Dlhov). Tu sa Dlhy kopírujú, nepresúvajú, ale téma je rovnaká, preto len ako alternatíva."]]},
+ {id:"veterinar",meno:"Veterinár",pecen:"13,5 (N1: 27)",akcie:"Posilnenie ×2, Viera, Poldeci, Rana, Hazard",hlaska:"Liečim už len kravy. Teba ošetrím naposledy.",odp:0,v:[
+  ["Liečim už len kravy","Hneď","Zahoď z hry všetky svoje Cirhózy, z ruky, z oboch balíčkov aj priznané.","stredný: rastie s počtom Cirhóz (rad dáva ≈ 2 pečene za Pitku, po 2–3 kolách 2–4 Cirhózy)","Áno: súper ho chce podraziť skoro, kým majiteľ nemá veľa Cirhóz. Pri pečeni 13,5 padá skoro aj tak.","Anonymný alkoholik Cirhózy prizná, nezahodí. Vízia zahodí len vrchnú kartu. Súčasný Kšeft väzňa zahodí jednu. Nástroj na to nie je."],
+  ["Ošetrovňa","Furt","Na konci každej bitky si vylieč 2 pečene jednému stojacemu staršiemu.","stredný, naťahuje partiu (pri krátkej partii vítané)","Málo: rovnaký úžitok, nech padne kedykoľvek, preto čím skôr, tým horšie pre súpera.","Robota tiež lieči, ale je to akcia, ktorá treba aktivovať. Tu ide o pevné liečenie bez akcie. Nástroj nelieči."],
+  ["Uspanie","Hneď","Jeden súperov stojaci starší do konca ďalšieho kola nedáva akcie (v rade je ako spojka).","silný: −2 až −4 tuhého súperovi na kolo, k tomu jeho Povery a Viera","Áno, súper ho nechce podraziť pred dôležitou bitkou.","Žiadna karta nevypína staršieho. Treba presne určiť trvanie, preto len ako alternatíva."]]},
+ {id:"vychovavatelka",meno:"Vychovávateľka",pecen:"13,5 (N1: 27)",akcie:"Pecka, Obmedzenie ×2, Povera, Rana, Pečeň",hlaska:"Do radu, po dvoch! Ty vedľa neho, a ticho!",odp:0,v:[
+  ["Do radu!","Furt","Po odhalení radov vymeníš v súperovom rade dvoch susedných starších.","stredný: súperovi rozbije typové striedanie (spoj 3 → 2), čo je −1 až −4 akcie","Áno: súper s dobre poskladaným radom ju chce podraziť čo najneskôr.","Rad je nový, žiadna karta s ním nepracuje. Vandal otočí lokalitu, Dohadzovačka presunie kartu v línii, to je iné miesto."],
+  ["Sadni si!","Furt","Súperov limit vykladania je o 1 nižší (najmenej 1).","silný","Áno.","Blízko k Krčmárke (tiež zmenší súperov limit cez poldeci). Ak sa vyberie Krčmárka K1, tento nie."],
+  ["Za trest","Furt","Za každé súperovo NA EX dostane jeho starší podľa tvojho výberu jed 1.","stredný, trestá pitie (téma postavy)","Áno: proti súperovi, ktorý dáva NA EX.","Pijan a Svokra dávajú Ranu za NA EX, Kar presúva pečeň. Jed je iný zdroj a Nástroj NA EX netrestá. Nadväzuje na jej súčasný Kšeft (Petelica za súperovo NA EX)."]]},
+ {id:"farar",meno:"Farár",pecen:"15 (N1: 30)",akcie:"Viera ×2, Posilnenie ×2, Pohoršenie, Pečeň",hlaska:"Odpúšťam vám. Aj to, čo ešte len spravíte.",odp:0,v:[
+  ["Rozhrešenie","Furt","Jed na tvojich starších klesá po každej bitke o 2 namiesto o 1.","stredný: proti súperovi s Pohoršeniami silný, proti ostatným slabý","Áno, závisí od štýlu súpera: kto hrá na jed, nechá Farára naposledy.","Jed je nový zdroj, žiadna karta s ním nepracuje. Telefón chráni Pohoršenia pred zrušením, je na opačnej strane."],
+  ["Posledné pomazanie","Hneď","Každý tvoj stojaci starší si vylieči 3 pečene.","stredný (najviac 9)","Málo: najviac dá, keď ešte stoja traja.","Žiadna karta nelieči plošne. Robota lieči jedného."],
+  ["Kázeň","Furt","Súperove Povery tvojim starším pečeň neuberajú.","silný (Povery sú 12 % poškodenia)","Áno, proti súperovi s Poverami veľmi.","Čierna mačka robí opak (Povery sa nerušia). Svätý text zvyšuje hodnotu Viery. Kázeň Povery ruší úplne, preto len ako alternatíva."]]},
+ {id:"autobusar",meno:"Autobusár",pecen:"15 (N1: 30)",akcie:"Pecka ×2, Cigareta ×2, Robota, Pečeň",hlaska:"Posledný spoj. Ty nastupuješ prvý, ostatní pešo.",odp:0,v:[
+  ["Ty nastupuješ prvý","Furt","Zo šenku berieš vždy prvý (aj ako útočník) a už na prvom ťahu smieš vziať 2 karty.","stredný: lepší výber zo šenku každé kolo","Áno, stredne: čím skôr padne, tým viac šenkov.","Žiadna karta nemení poradie brania. Zastávka dáva kartu zadarmo obom."],
+  ["Cestovný poriadok","Furt","Pri prestavbe radu odhalí súper svoj rad prvý. Ty prestavuješ, až keď ho vidíš.","slabý až stredný (rad sa mení málo)","Málo.","Žiadna karta. Ak súper má Vychovávateľku „Do radu!“, treba určiť poradie: najprv poriadok, potom výmena."],
+  ["Posledný spoj","Hneď","Vezmi si zo šenku 2 karty zadarmo.","stredný","Málo.","Blízko Zastávky (karta zo šenku zadarmo) a súčasného Kšeftu väzňa. Len ako alternatíva."]]},
+ {id:"starosta",meno:"Starosta",pecen:"16,5 (N1: 33)",akcie:"Petelica, Cigareta ×2, Posilnenie, Pecka, Hazard",hlaska:"Odstupujem. Ale kde sa pije, poviem ešte ja.",odp:0,v:[
+  ["Kde sa pije, poviem ja","Furt","Lokalitu kola vyberáš a natáčaš ty, aj keď si útočník.","stredný až silný: počet Pitiek (ekonomika radu) a hrany lokality","Áno: súper ho podrazí skoro len vtedy, keď mu lokality nezáležia.","Žiadna karta neberie voľbu cieľa. Vandal lokalitu len otočí."],
+  ["Obecný majetok","Furt","Akcie hrany lokality pri tvojom kraji dostávaš ty, aj keď tam nemáš prevahu.","silný","Áno.","Blízko Kočovníka (prevaha mení majiteľa akcií) a súčasného Kšeftu (hrany posilnené). Len ako alternatíva."],
+  ["Rozpočet obce","Furt","Jednu z troch ponúkaných lokalít každého ďalšieho kola smieš nahradiť ľubovoľnou neodohranou.","slabý až stredný","Málo.","Žiadna karta. Je zložitejší na ukázanie, preto len ako alternatíva."]]},
+ {id:"hrobar",meno:"Hrobár",pecen:"16,5 (N1: 33)",akcie:"Petelica, Pohoršenie ×2, Vízia, Rana, Hazard",hlaska:"Aspoň mám robotu.",odp:0,v:[
+  ["Aspoň mám robotu","Furt","V každej bitke máš 1 tuhé navyše za každého podrazeného staršieho okrem neho, tvojho aj súperovho.","rastie: 1–2 hneď po podrazení, 3–5 na konci","Áno: súper ho chce podraziť ako posledného (potom nikdy neplatí), alebo skoro, kým sa nenazbieralo.","Vymáhač ráta Dlhy, Vidly a Valaška menia hodnotu akcií. Počet podrazených je nový zdroj. Hláška je z mocku, Michal ju už videl."],
+  ["Jama je vykopaná","Hneď","Daj súperovmu staršiemu podľa výberu jed 3.","stredný (6 poškodenia v čase)","Málo.","Jed je nový zdroj. Blízko k Farárovi (jed), preto nie spolu s Rozhrešením."],
+  ["Pohreb","Furt","Za každého súperovho staršieho, ktorého podrazíš, si dober 2 karty.","stredný","Málo.","Zberný dvor a Sklad berú konkrétnu kartu za cigaretu, tu sa doberá za podrazenie."]]},
+ {id:"krcmarka",meno:"Krčmárka",pecen:"18 (N1: 36)",akcie:"Poldeci ×2, Obmedzenie, Cigareta, Pecka, Pečeň",hlaska:"Už ti nenalejem.",odp:0,v:[
+  ["Už ti nenalejem","Furt","Súperovi sa na začiatku kola neotočí vypitý poldeci na plný.","silný: súper má o poldeci menej (limit vykladania, NA EX), kým si nedoleje za 2 cigarety","Áno: padá ako posledná (18), a tak sa súper rozhoduje, či ju nechať na koniec.","Degustátorka otočí súperov plný poldeci raz pri Nástupe, Vínko zakazuje dolievať vlastníkovi. Toto je trvalé a mieri na súpera. Mock mal tú istú hlášku s opačným terčom."],
+  ["Runda na môj účet","Hneď","Otoč všetky svoje vypité poldeci na plné.","stredný","Málo.","Žiadna karta neotočí všetky naraz. Jogurt a Vínko pracujú inak."],
+  ["Na sekeru","Furt","Doliatie ťa stojí 1 cigaretu namiesto 2.","slabý","Málo.","Vínko dolievanie zakazuje (opak). Nástroj cenu nemení."]]}
+];
+const zoz=document.getElementById("starsi-zoznam");
+zoz.innerHTML=STARSI.map((s,si)=>'<div class="panel starsi"><div class="hl-riadok"><h3>'+s.meno+'</h3><span class="maly tlmeny">pečeň '+s.pecen+'</span></div>'+
+ '<div class="akcie">Akcie: '+s.akcie+'</div><div class="hlaska">„'+s.hlaska+'“</div>'+
+ '<div class="varianty">'+s.v.map((v,i)=>'<button data-s="'+si+'" data-i="'+i+'" class="'+(i===s.odp?"vybraty":"")+'">'+(i===s.odp?'<span class="odp">✓ </span>':'')+v[0]+'</button>').join("")+'</div>'+
+ s.v.map((v,i)=>'<div class="variant'+(i===s.odp?" vybraty":"")+'" data-s="'+si+'" data-i="'+i+'">'+
+   '<div><span class="znacka '+(v[1]==="Furt"?"z-furt":"z-hned")+'">'+v[1]+'</span> '+(i===s.odp?'<span class="znacka z-ano">odporúčaný</span>':'<span class="znacka z-info">alternatíva</span>')+'</div>'+
+   '<div class="txt">Má dosť: '+v[1]+': '+v[2]+'</div>'+
+   '<dl><dt>Sila</dt><dd>'+v[3]+'</dd><dt>Koho podraziť skôr</dt><dd>'+v[4]+'</dd><dt>Duplicita</dt><dd>'+v[5]+'</dd></dl></div>').join("")+'</div>').join("");
+zoz.addEventListener("click",e=>{const b=e.target.closest("button[data-s]");if(!b)return;const s=b.dataset.s,i=b.dataset.i;
+  zoz.querySelectorAll('[data-s="'+s+'"]').forEach(x=>x.classList.toggle("vybraty",x.dataset.i===i));});
+</script>
+</body>
+</html>
