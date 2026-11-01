@@ -65,7 +65,7 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
 <body>
 <main>
 <h1>Hádka — mäkké poškodenie o priazne</h1>
-<p class="mini">nápad Michala · verzia 1 · 2026-10-31 · pravidlá ani kód sa zatiaľ nemenia · nahradil by Povery „Výpožička priazne“ (§9.1, <code>docs/napady/povery.html</code>) a Pohoršenie ako posun markera (§9.2)</p>
+<p class="mini">nápad Michala · verzia 2 · 2026-11-01 (H1 rozhodnuté) · pravidlá ani kód sa zatiaľ nemenia · nahradil by Povery „Výpožička priazne“ (§9.1, <code>docs/napady/povery.html</code>) a Pohoršenie ako posun markera (§9.2)</p>
 
 <div class="box zv">
   <p><b>Problém (Michal):</b> „Keď hráč posúva priazne starších, či už Pohoršením alebo Poverami, môže nastať situácia, že jeden hráč posunie marker staršieho a druhý to vzápätí zmení toho istého staršieho.“</p>
@@ -83,6 +83,7 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
     <li><b>Cena podľa zóny ako pri Nakladačke:</b> von zo stredu 1 / 2 / 3, k stredu o 1 drahšie (2 / 3 / 4). Strop je sila 3 pre víťaza. Bod, ktorý už na žiadny posun nestačí, prepadne.</li>
     <li><b>Platí do konca kola</b>, teda v bitke (Bitkár, Veriaci), v exekúcii (Advokát, Robota) aj po bitke (Kmotor, Fajčiar, Alkoholik). Potom zanikne.</li>
     <li><b>Viera je štít proti Poverám aj proti tuhému.</b> S Poverami sa ruší 1 : 1 ako dnes (jedna Viera zruší jednu Poveru, teda 2 mäkké). Zvyšná Viera tlmí tuhé v poškodení. Proti Pohoršeniu Viera nepomáha.</li>
+    <li><b>Abstinent vyjde z hádky</b> (Michal 2026-11-01, variant „Absťáky neškodia v bitke“): v tejto bitke sa ti <b>neráta 1 / 2 / 3 Absťákov</b>, podľa účinnej sily priazne (po hádke). Tuhé ti za ne neklesne a nerátajú sa ani pri remíze v tuhom. Karty Absťák ostávajú v balíčku a na konci kola sa rátajú ako doteraz. Pohoršenia navyše už nedáva, takže do hádky nevstupuje žiadna priazeň okrem Veriaceho (H2).</li>
   </ol>
 </div>
 
@@ -96,7 +97,7 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
 <pre>1. Viera a Povery sa vyrušia 1 : 1
      cancel = min(viera[ja], povery[súper]);  obom sa odpočíta
      Čierna mačka: majiteľove Povery sa s Vierou nerušia
-2. mäkké[ja] = Pohoršenie×1 + zvyšné_Povery×2 + Abstinent (otázka H1)
+2. mäkké[ja] = Pohoršenie×1 + zvyšné_Povery×2      (Abstinent už nie)
 3. víťaz hádky = vyššie mäkké;  rovnosť = nikto
    hádka = |rozdiel mäkkého|
 4. víťaz hádky rozdelí hádku na sily priazní (len k sebe, cena podľa zóny,
@@ -139,7 +140,7 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
     <tr><th>Telefón</th><td data-l="Dnes">„Dedičstvo: Tvoje Pohoršenia k stredu stoja toľko ako von.“</td><td data-l="Po hádke">Pohoršenie už markerom nehýbe. Nový text, napr. „Tvoje body hádky k stredu stoja toľko ako von.“ (Admin)</td></tr>
     <tr><th>Šarlatán</th><td data-l="Dnes">„Konflikt: … Hazard rátajú ako Viera a Povery ako Rana.“</td><td data-l="Po hádke">funguje ďalej: súperove Povery sa z mäkkého presunú do tuhého</td></tr>
     <tr><th>Čierna mačka</th><td data-l="Dnes">„Furt: Tvoje Povery sa Vierou nerušia.“</td><td data-l="Po hádke">bez zmeny: jej Povery dajú vždy 2 mäkké</td></tr>
-    <tr><th>Abstinent</th><td data-l="Dnes">Pohoršenia navyše +1 / +2 / +3</td><td data-l="Po hádke">mäkké navyše, otázka H1</td></tr>
+    <tr><th>Abstinent</th><td data-l="Dnes">Pohoršenia navyše +1 / +2 / +3</td><td data-l="Po hádke">v bitke sa ti neráta 1 / 2 / 3 Absťákov (tuhé neklesne, nerátajú sa pri remíze); Pohoršenia navyše nedáva</td></tr>
     <tr><th>Achievement „Pohoršenie“</th><td data-l="Dnes">posuň Pohoršením markery spolu aspoň o {prah} (<code>achievementy.json</code>)</td><td data-l="Po hádke">nová metrika, napr. „vyhraj hádku o aspoň {prah}“</td></tr>
     <tr><th>Cigarety za Nakladačku</th><td data-l="Dnes">Pohoršenie sa neráta</td><td data-l="Po hádke">bez zmeny</td></tr>
   </tbody>
@@ -160,17 +161,17 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
 <h2 id="otazky">Otázky pre Michala</h2>
 <div class="ovl"><button type="button" id="rozbal">Rozbaliť všetko</button><button type="button" id="zbal">Zbaliť</button></div>
 
-<details class="q" id="H1" open>
-  <summary><span class="qid">H1</span> <span class="qt">Abstinent</span><span class="volba"></span></summary>
-  <p>Dnes dáva Pohoršenia navyše, po zmene by dával mäkké. Problém: jeho sila sa dá hádkou meniť, no zároveň do hádky vstupuje (kruh). A kto ho má, vyhrá hádku ľahšie a s ňou ďalšie priazne (snehová guľa).</p>
-  <ol class="moznosti">
-    <li class="moz rec"><label><input type="radio" name="H1" value="A · mäkké navyše podľa sily z markera (pred hádkou)"> <b>A · Mäkké navyše podľa markera</b> <span class="chip ok">odporúčam</span></label><span>+1 / +2 / +3 mäkké podľa sily z markera, nie po hádke. Kruh zmizne, Abstinent ostane tým, čím je. Snehová guľa sa meria.</span></li>
-    <li class="moz"><label><input type="radio" name="H1" value="B · pridá k výhre hádky (len víťazovi)"> <b>B · Pridá k výhre hádky</b></label><span>„Ak vyhráš hádku, rozdelíš o +1 / +2 / +3 viac.“ Nerozhodne, kto hádku vyhrá, len koľko víťaz dostane. Menej snehovej gule, ale pri prehratej hádke nič.</span></li>
-    <li class="moz"><label><input type="radio" name="H1" value="C · štít v hádke (zníži súperovo mäkké)"> <b>C · Štít v hádke</b></label><span>„Súperovo mäkké −1 / −2 / −3.“ Abstinent sa nedá pohoršiť, je to obrana namiesto útoku. Tematicky sedí, Viera chráni pred Poverou, Abstinent pred Pohoršením.</span></li>
-    <li class="moz"><label><input type="radio" name="H1" value="D · iná priazeň namiesto Abstinenta"> <b>D · Iná priazeň</b></label><span>Abstinent zanikne a scorecard dostane novú priazeň (návrh pripraví Vymyselník).</span></li>
-  </ol>
-  <label class="pozn">Poznámka<textarea data-pozn="H1" rows="2"></textarea></label>
-</details>
+<div class="box rec" id="H1">
+  <p><span class="qid">H1</span> <b>Abstinent — rozhodnuté (Michal 2026-11-01): Absťáky neškodia v bitke</b></p>
+  <p><b>Znenie:</b> „Abstinent: v bitke sa ti neráta 1 / 2 / 3 Absťákov.“ Podľa účinnej sily priazne po hádke.</p>
+  <ul>
+    <li><b>V poškodení</b> (§9.3): od tuhého sa odpočíta len <code>max(0, počet_mojich_absťákov − sila)</code>.</li>
+    <li><b>Pri remíze v tuhom</b> (§9.4): porovnáva sa počet Absťákov znížený o silu Abstinenta (najmenej 0).</li>
+    <li>Karty Absťák ostávajú v balíčku ako mŕtve karty. Chuť ani koniec kola sa nemenia.</li>
+  </ul>
+  <p><b>Prečo:</b> Abstinent do hádky nevstupuje, takže zmizne závislosť od hádky aj snehová guľa. Dostane vlastnú tému (pomáha ti so závislosťou), akú dnes nemá žiadna priazeň. Pre toho, kto má Absťáky, je dobrým cieľom v hádke, lebo pôsobí ešte v tej istej bitke.</p>
+  <p class="mini">Zvažované a zamietnuté: mäkké navyše podľa markera, bonus k výhre hádky, štít proti Pohoršeniu, odvykanie (Chuť nižšia, bije sa s Opatrovateľkou), vyhodenie Absťáku z hry, triezvy pohľad do balíčka. Čo zmerať: ako často Abstinent v bitke niečo zmení (hráč má Absťáky) a či nie je hluchý v partiách s malou Chuťou.</p>
+</div>
 
 <details class="q" id="H2">
   <summary><span class="qid">H2</span> <span class="qt">Veriaci: s akou silou ráta Vieru</span><span class="volba"></span></summary>
@@ -204,7 +205,7 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
   <summary><span class="qid">H5</span> <span class="qt">Remíza v hádke</span><span class="volba"></span></summary>
   <ol class="moznosti">
     <li class="moz rec"><label><input type="radio" name="H5" value="A · nikto nerozdeľuje"> <b>A · Nikto</b> <span class="chip ok">odporúčam</span></label><span>Rozdiel je 0, takže nie je čo rozdeliť. Žiadne ďalšie rozhodovanie (Absťáky, Dlhy).</span></li>
-    <li class="moz"><label><input type="radio" name="H5" value="B · rozhodne obranca"> <b>B · Obranca</b></label><span>Pri remíze vyhrá obranca, ale nemá čo rozdeliť. Má zmysel len vtedy, ak hádka dáva aj niečo iné (napr. Abstinent B).</span></li>
+    <li class="moz"><label><input type="radio" name="H5" value="B · rozhodne obranca"> <b>B · Obranca</b></label><span>Pri remíze vyhrá obranca, ale nemá čo rozdeliť. Má zmysel len vtedy, ak by hádka dávala aj niečo iné ako body na rozdelenie.</span></li>
   </ol>
   <label class="pozn">Poznámka<textarea data-pozn="H5" rows="2"></textarea></label>
 </details>
