@@ -1263,6 +1263,15 @@ button.cip.aktivny {
   font-size: 0.82rem;
 }
 
+/* E-mail hráča vidí len admin (Michal 2026-11-01) — pod menom, odsadený na šírku avatara. */
+.hraci-email {
+  display: block;
+  margin: 2px 0 0 42px;
+  font-size: 0.82rem;
+  color: var(--tlmeny);
+  overflow-wrap: anywhere;
+}
+
 .hraci-prazdne {
   padding: 16px 4px;
 }

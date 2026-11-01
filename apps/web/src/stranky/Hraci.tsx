@@ -11,6 +11,7 @@ import { RankyPrava } from "./RankyPrava.tsx";
 import { PravaLig } from "./PravaLig.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 
+/** email posiela server len adminovi (Michal 2026-11-01), subadminovi chýba. */
 type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number; readonly rolaRucne?: boolean };
 
 const FILTRE: readonly (Rola | "ai")[] = ["admin", "subadmin", "sedmicka", "deci", "hrac", "navstevnik", "ai"];
@@ -61,7 +62,9 @@ export function Hraci() {
   if (zoznam === null) return <div className="hraci-stranka">{hlava}{chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />}</div>;
   const f = hladat.trim().toLowerCase();
   const sedi = (p: Riadok, x: Rola | "ai" | null) => x === null || (x === "ai" ? p.ai === true : p.rola === x);
-  const viditelni = zoznam.filter((p) => sedi(p, filter) && (f === "" || p.login.toLowerCase().includes(f) || p.meno.toLowerCase().includes(f)));
+  const viditelni = zoznam.filter(
+    (p) => sedi(p, filter) && (f === "" || p.login.toLowerCase().includes(f) || p.meno.toLowerCase().includes(f) || (p.email ?? "").toLowerCase().includes(f)),
+  );
   const pocet = (x: Rola | "ai") => zoznam.filter((p) => sedi(p, x)).length;
 
   return (
@@ -71,7 +74,7 @@ export function Hraci() {
       <RankyPrava poZmene={nacitaj} />
       <PravaLig />
       <div className="hraci-ovladanie">
-        <input type="search" placeholder="Hľadať meno alebo login…" value={hladat} onChange={(e) => setHladat(e.target.value)} aria-label="Hľadať hráča" />
+        <input type="search" placeholder={somAdmin ? "Hľadať meno, login alebo e-mail…" : "Hľadať meno alebo login…"} value={hladat} onChange={(e) => setHladat(e.target.value)} aria-label="Hľadať hráča" />
         <div className="cipy" role="group" aria-label="Filter podľa úrovne">
           <button className={filter === null ? "cip aktivny" : "cip"} aria-pressed={filter === null} onClick={() => setFilter(null)}>
             Všetci ({zoznam.length})
@@ -105,6 +108,11 @@ export function Hraci() {
                       <span className="tlmene">@{p.login}</span>
                     </span>
                   </Odkaz>
+                  {p.email != null && (
+                    <a href={`mailto:${p.email}`} className="hraci-email" title="E-mail na obnovu hesla — vidí ho len admin">
+                      {p.email}
+                    </a>
+                  )}
                 </td>
                 <td>{new Date(p.vytvoreny).toLocaleDateString("sk")}</td>
                 <td className="cislo">{p.dohrate}</td>

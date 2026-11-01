@@ -70,6 +70,9 @@ export function Prihlasenie() {
         <button type="submit" className="tlacidlo-hlavne" disabled={caka}>
           {caka ? "Prihlasujem…" : "Prihlásiť sa"}
         </button>
+        <p className="prihlasenie-zabudol">
+          <Odkaz href="/zabudnute-heslo">Zabudol som heslo</Odkaz>
+        </p>
       </form>
       <p className="formular-paticka">
         Ešte nemáš účet? <Odkaz href={`/registracia${location.search}`}>Zaregistruj sa</Odkaz>
@@ -156,6 +159,8 @@ export function Profil() {
   const [nove, setNove] = useState("");
   const subor = useRef<HTMLInputElement>(null);
   const novy = new URLSearchParams(location.search).get("novy") === "1";
+  const obnovene = new URLSearchParams(location.search).get("obnovene") === "1";
+  const [email, setEmail] = useState(ja?.email ?? "");
 
   if (ja === null) return null;
 
@@ -369,6 +374,18 @@ export function Profil() {
     }
   };
 
+  // E-mail (Michal 2026-11-01): nepovinný, zatiaľ len na obnovu zabudnutého hesla.
+  const ulozEmail = async (hodnota: string) => {
+    try {
+      const r = await api.patch<{ pouzivatel: Pouzivatel }>("/profil", { email: hodnota });
+      nastav(r.pouzivatel);
+      setEmail(r.pouzivatel.email ?? "");
+      setSprava({ druh: "ok", text: r.pouzivatel.email == null ? "E-mail je vymazaný." : "E-mail je uložený." });
+    } catch (err) {
+      chyba(err);
+    }
+  };
+
   const zmenHeslo = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -393,6 +410,7 @@ export function Profil() {
         }
       />
       {novy && <Hlaska druh="ok">Účet je pripravený. Nastav si herné meno a fotku — uvidí ich tvoj súper.</Hlaska>}
+      {obnovene && <Hlaska druh="ok">Heslo je zmenené a si prihlásený. Na ostatných zariadeniach sa prihlás novým heslom.</Hlaska>}
       {sprava !== null && <Hlaska druh={sprava.druh}>{sprava.text}</Hlaska>}
 
       <section className="panel profil-hlava">
@@ -571,6 +589,29 @@ export function Profil() {
         <button type="submit" className="tlacidlo-hlavne" disabled={meno.trim() === ja.meno}>
           Uložiť meno
         </button>
+      </form>
+
+      <form
+        className="panel"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void ulozEmail(email);
+        }}
+      >
+        <h3>E-mail</h3>
+        <Pole label="E-mailová adresa" pomoc="Nepovinné. Použijeme ho len na obnovu zabudnutého hesla.">
+          <input type="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={254} placeholder="napr. fero@example.sk" />
+        </Pole>
+        <div className="riadok-tlacidiel">
+          <button type="submit" className="tlacidlo-hlavne" disabled={email.trim() === (ja.email ?? "")}>
+            Uložiť e-mail
+          </button>
+          {ja.email != null && (
+            <button type="button" className="tlacidlo-jemne" onClick={() => void ulozEmail("")}>
+              Vymazať
+            </button>
+          )}
+        </div>
       </form>
 
       <form className="panel" onSubmit={(e) => void zmenHeslo(e)}>

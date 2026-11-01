@@ -1084,6 +1084,12 @@ button.sprava-tlacidlo {
   font-size: 0.92rem;
 }
 
+.prihlasenie-zabudol {
+  margin: 0.8rem 0 0;
+  text-align: center;
+  font-size: 0.92rem;
+}
+
 .profil {
   max-width: 760px;
   display: grid;

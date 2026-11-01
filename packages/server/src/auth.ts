@@ -9,6 +9,7 @@
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { IncomingMessage } from "node:http";
 import type { Db } from "./db.ts";
+import { transakcia } from "./db.ts";
 import type { HviezdyHraca, PostupRankov } from "./prava.ts";
 import { RANKY_HRACOV, jeRankHraca, rankPodlaHviezd, type RankHraca } from "./prava.ts";
 import type { Pohlavie } from "@naex/core";
@@ -433,6 +434,44 @@ export class Ucty {
     const r = this.db.prepare("SELECT heslo FROM pouzivatelia WHERE id = ?").get(id) as { heslo: string } | undefined;
     if (r === undefined || !overHeslo(stare, r.heslo)) throw new ChybaVstupu("Súčasné heslo nesedí.");
     this.db.prepare("UPDATE pouzivatelia SET heslo = ? WHERE id = ?").run(hashHesla(nove), id);
+    // Nové heslo platí — starší odkaz na obnovu by ho inak mohol prepísať.
+    this.db.prepare("DELETE FROM obnova_hesla WHERE pouzivatel = ?").run(id);
+  }
+
+  /**
+   * Nové heslo z odkazu na obnovu: zanikne každý odkaz aj každá relácia účtu —
+   * kto sa prihlásil starým (možno ukradnutým) heslom, je odhlásený.
+   */
+  nastavHesloPoObnove(id: number, nove: string): void {
+    transakcia(this.db, () => {
+      this.db.prepare("UPDATE pouzivatelia SET heslo = ? WHERE id = ?").run(hashHesla(nove), id);
+      this.db.prepare("DELETE FROM obnova_hesla WHERE pouzivatel = ?").run(id);
+      this.db.prepare("DELETE FROM relacie WHERE pouzivatel = ?").run(id);
+    });
+  }
+
+  /**
+   * E-mail účtu (Michal 2026-11-01) — zámerne mimo Pouzivatel, ktorý sa posiela aj iným
+   * (partia, profily, spätná väzba). Smie ho dostať len hráč sám a admin.
+   */
+  email(id: number): string | null {
+    const r = this.db.prepare("SELECT email FROM pouzivatelia WHERE id = ?").get(id) as { email: string | null } | undefined;
+    return r?.email ?? null;
+  }
+
+  /** Nastaví alebo vymaže (null) e-mail; obsadený iným účtom (bez ohľadu na veľké písmená) odmietne. */
+  nastavEmail(id: number, email: string | null): void {
+    if (email !== null) {
+      const iny = this.db.prepare("SELECT id FROM pouzivatelia WHERE email = ? COLLATE NOCASE AND id <> ?").get(email, id);
+      if (iny !== undefined) throw new ChybaVstupu("Tento e-mail už používa iný účet. Zadaj iný, alebo pole nechaj prázdne.", 409);
+    }
+    this.db.prepare("UPDATE pouzivatelia SET email = ? WHERE id = ?").run(email, id);
+  }
+
+  /** Účet s týmto e-mailom (bez ohľadu na veľké písmená), alebo null. */
+  podlaEmailu(email: string): Pouzivatel | null {
+    const r = this.db.prepare("SELECT id FROM pouzivatelia WHERE email = ? COLLATE NOCASE").get(email) as { id: number } | undefined;
+    return r === undefined ? null : this.podlaId(r.id);
   }
 
   novaRelacia(id: number, teraz: number): string {
@@ -488,15 +527,17 @@ export class Ucty {
     return this.podlaId(id);
   }
 
-  zoznam(): (Pouzivatel & { vytvoreny: number; dohrate: number; rolaRucne: boolean })[] {
+  /** Zoznam účtov pre správu; e-maily len pre admina (sEmailom), subadmin ich nevidí. */
+  zoznam(sEmailom = false): (Pouzivatel & { vytvoreny: number; dohrate: number; rolaRucne: boolean; email?: string | null })[] {
     const rows = this.db
-      .prepare(`SELECT id, login, meno, avatar, rola, rola_rucne, ai, vytvoreny, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia ORDER BY id`)
+      .prepare(`SELECT id, login, meno, avatar, rola, rola_rucne, ai, vytvoreny, email, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia ORDER BY id`)
       .all() as Record<string, unknown>[];
     return rows.map((r) => ({
       ...(this.riadok(r) as Pouzivatel),
       vytvoreny: Number(r.vytvoreny),
       dohrate: Number(r.dohrate),
       rolaRucne: Number(r.rola_rucne) === 1,
+      ...(sEmailom ? { email: typeof r.email === "string" ? r.email : null } : {}),
     }));
   }
 
@@ -540,6 +581,21 @@ export function overHesloVstup(heslo: unknown): string {
     throw new ChybaVstupu("Heslo musí mať aspoň 8 znakov.");
   }
   return heslo;
+}
+
+/**
+ * E-mail z requestu: prázdny reťazec alebo null = vymazať (pole je nepovinné).
+ * Len hrubé overenie tvaru — či schránka existuje, ukáže až doručenie.
+ */
+export function overEmail(v: unknown): string | null {
+  if (v === null) return null;
+  if (typeof v !== "string") throw new ChybaVstupu("E-mail musí byť text.");
+  const e = v.trim();
+  if (e === "") return null;
+  if (e.length > 254 || !/^[^\s@<>"(),;:]+@[^\s@<>"(),;:]+\.[^\s@<>"(),;:]{2,}$/.test(e)) {
+    throw new ChybaVstupu("Toto nevyzerá ako e-mailová adresa (napr. fero@example.sk).");
+  }
+  return e;
 }
 
 export function overMeno(meno: unknown): string {

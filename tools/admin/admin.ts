@@ -56,7 +56,7 @@
 //   stav <id-nazoru> <stav> [--novinka <id>] [--dovod "…"]   nove | prijate | planovane | hotove | zamietnute;
 //                                 pri hotove voliteľne novinka, v ktorej to je; pri zamietnute povinne jedna veta prečo
 //   playtesty                     reporty playtestov
-//   pouzivatelia                  účty na webe
+//   pouzivatelia                  účty na webe (e-mail len pri prihlásení ako admin, subadmin ho nedostane)
 //   zluc-ucty <z-id> <do-id> [--potvrdene]   zlúči duplicitný účet do hlavného (reporty, názory, partie…) a duplikát
 //                                 zmaže; bez --potvrdene len vypíše, čo by sa stalo. Prihlasuje sa heslom admina z .env
 //                                 (živý web deploy/.env.produkcia) — agent ako subadmin na to nemá právo
@@ -1170,8 +1170,13 @@ async function main(): Promise<void> {
     }
 
     case "pouzivatelia": {
-      const { pouzivatelia } = await api<{ pouzivatelia: { id: number; login: string; meno: string; rola: string; dohrate: number }[] }>("GET", "/admin/pouzivatelia");
-      for (const p of pouzivatelia) console.log(`${p.id}  ${p.rola.padEnd(10)} ${p.meno} (${p.login}), dohraté ${p.dohrate}`);
+      const { pouzivatelia } = await api<{ pouzivatelia: { id: number; login: string; meno: string; rola: string; dohrate: number; email?: string | null }[] }>(
+        "GET",
+        "/admin/pouzivatelia",
+      );
+      for (const p of pouzivatelia) {
+        console.log(`${p.id}  ${p.rola.padEnd(10)} ${p.meno} (${p.login}), dohraté ${p.dohrate}${p.email == null ? "" : `, ${p.email}`}`);
+      }
       break;
     }
 
