@@ -65,7 +65,7 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
 <body>
 <main>
 <h1>Hádka — mäkké poškodenie o priazne</h1>
-<p class="mini">nápad Michala · verzia 3 · 2026-11-01 (všetko rozhodnuté, čaká na meranie stratéga) · pravidlá ani kód sa zatiaľ nemenia · nahradil by Povery „Výpožička priazne“ (§9.1, <code>docs/napady/povery.html</code>) a Pohoršenie ako posun markera (§9.2)</p>
+<p class="mini">nápad Michala · verzia 4 · 2026-11-01 (všetko rozhodnuté vrátane náradia, čaká na meranie stratéga) · pravidlá ani kód sa zatiaľ nemenia · nahradil by Povery „Výpožička priazne“ (§9.1, <code>docs/napady/povery.html</code>) a Pohoršenie ako posun markera (§9.2)</p>
 
 <div class="box zv">
   <p><b>Problém (Michal):</b> „Keď hráč posúva priazne starších, či už Pohoršením alebo Poverami, môže nastať situácia, že jeden hráč posunie marker staršieho a druhý to vzápätí zmení toho istého staršieho.“</p>
@@ -92,7 +92,7 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
 </div>
 
 <nav class="skupiny" aria-label="Časti">
-  <a href="#znenie">Znenie</a><a href="#priklad">Príklad</a><a href="#abstinent">Abstinent</a><a href="#co-riesi">Čo rieši</a><a href="#karty">Karty a dáta</a><a href="#rizika">Riziká</a>
+  <a href="#znenie">Znenie</a><a href="#priklad">Príklad</a><a href="#abstinent">Abstinent</a><a href="#naradie">Náradie</a><a href="#co-riesi">Čo rieši</a><a href="#karty">Karty a dáta</a><a href="#rizika">Riziká</a>
 </nav>
 
 <h2 id="znenie">Návrh znenia (pre §9)</h2>
@@ -139,6 +139,32 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
   <p class="mini">Zvažované a zamietnuté: mäkké navyše podľa markera, bonus k výhre hádky, štít proti Pohoršeniu, odvykanie (Chuť nižšia, bije sa s Opatrovateľkou), vyhodenie Absťáku z hry, triezvy pohľad do balíčka. Čo zmerať: ako často Abstinent v bitke niečo zmení (hráč má Absťáky) a či nie je hluchý v partiách s malou Chuťou.</p>
 </div>
 
+<h2 id="naradie">Náradie (Michal 2026-11-01)</h2>
+<div class="box rec">
+  <p>Náradie, ktoré pracovalo s Pohoršením, Poverami a Vierou. Texty v sade zmení Admin.</p>
+  <div class="tab stack"><table>
+    <thead><tr><th>Náradie</th><th>Nový text</th><th>Ako to funguje</th></tr></thead>
+    <tbody>
+      <tr><th>Telefón</th><td data-l="Nový text">„Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX.“</td><td data-l="Ako to funguje">Tvoje Pohoršenia sa vždy dostanú do hádky. Je to náradie istoty, podobne ako Zapaľovač (Cigarety) a Energeťák (Posilnenie). Pôvodný text (cena k stredu) bez posunu markera nemá zmysel.</td></tr>
+      <tr><th>Horoskop</th><td data-l="Nový text">„Dedičstvo: Tvoje Povery majú silu 2.“</td><td data-l="Ako to funguje">Každá tvoja Povera dá <b>2 mäkké</b> namiesto 1. S Vierou sa ruší stále <b>1 : 1 na kusy</b>: jedna súperova Viera zruší jednu tvoju Poveru, teda 2 mäkké.</td></tr>
+      <tr><th>Svätý text</th><td data-l="Nový text">„Dedičstvo: Hodnota tvojej Viery je o 1 vyššia — aj proti Poverám (každá tvoja Viera zruší 2 Povery).“</td><td data-l="Ako to funguje">Hodnota Viery 2 platí v tlmení tuhého ako doteraz a navyše v rušení Povier: každá tvoja Viera zruší 2 súperove Povery.</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Ako sa ruší Viera s Poverou</b> (jednotný výpočet, ráta sa na kusy):</p>
+<pre>zrušené_Povery = min(súperove_Povery, moja_Viera × hodnota_Viery_proti_Poverám)
+                 hodnota = 1, so Svätým textom 2
+mäkké z Povier = zvyšné_Povery × sila_Povery        (1, s Horoskopom 2)
+Viera, ktorá rušila Povery, sa na tuhé nepoužije (ako dnes)</pre>
+  <div class="tab stack"><table>
+    <thead><tr><th>Jedna Viera proti…</th><th>bez Horoskopu (Povera = 1)</th><th>s Horoskopom (Povera = 2)</th></tr></thead>
+    <tbody>
+      <tr><th>bežná Viera</th><td data-l="bez Horoskopu">zruší 1 Poveru = 1 mäkké</td><td data-l="s Horoskopom">zruší 1 Poveru = 2 mäkké</td></tr>
+      <tr><th>Viera so Svätým textom</th><td data-l="bez Horoskopu">zruší 2 Povery = 2 mäkké</td><td data-l="s Horoskopom">zruší 2 Povery = <b>4 mäkké</b></td></tr>
+    </tbody>
+  </table></div>
+  <p class="mini">Takto som pochopil Michalov príklad („jedna Viera zruší 2 Povery, ak sú vylepšené Horoskopom; so Svätým textom rovno 4“): čísla 2 a 4 sú body mäkkého, rušia sa celé Povery 1 : 1, Svätý text zruší dve. Ak to bolo myslené inak, treba opraviť. Čo zmerať: Pohoršenie za 2 s Telefónom sa nedá zastaviť ani Vierou, ani Odporom a NA EX. Nesmie byť automatická výhra hádky.</p>
+</div>
+
 <h2 id="co-riesi">Čo rieši</h2>
 <div class="box rec">
   <ul>
@@ -155,7 +181,9 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
   <thead><tr><th>Čo</th><th>Dnes</th><th>Po hádke</th></tr></thead>
   <tbody>
     <tr><th>Akcie v sade (v53)</th><td data-l="Dnes">20 Pohoršení, 25 Povier na bežných kartách (so staršími 23 a 28); súčet hodnôt akcií oboch strán v <code>cards.json</code>, každá karta má v šenku rovnako kópií</td><td data-l="Po hádke">mäkkého 20×2 + 25×1 = 65, tuhého 26 + 29×2 + 10×3 = 114 (Rana, Pecka, Petelica; bežné karty)</td></tr>
-    <tr><th>Telefón</th><td data-l="Dnes">„Dedičstvo: Tvoje Pohoršenia k stredu stoja toľko ako von.“</td><td data-l="Po hádke">Pohoršenie už markerom nehýbe. Nový text, napr. „Tvoje body hádky k stredu stoja toľko ako von.“ (Admin)</td></tr>
+    <tr><th>Telefón</th><td data-l="Dnes">„Dedičstvo: Tvoje Pohoršenia k stredu stoja toľko ako von.“</td><td data-l="Po hádke"><b>„Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX.“</b> (rozhodnuté, viď <a href="#naradie">Náradie</a>)</td></tr>
+    <tr><th>Horoskop</th><td data-l="Dnes">„Dedičstvo: Klebety z tvojich Povier platia aj v nasledujúcom kole.“</td><td data-l="Po hádke"><b>„Dedičstvo: Tvoje Povery majú silu 2.“</b> (rozhodnuté)</td></tr>
+    <tr><th>Svätý text</th><td data-l="Dnes">„Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.“ (len proti tuhému)</td><td data-l="Po hádke"><b>hodnota Viery 2 aj proti Poverám:</b> každá tvoja Viera zruší 2 Povery (rozhodnuté)</td></tr>
     <tr><th>Šarlatán</th><td data-l="Dnes">„Konflikt: … Hazard rátajú ako Viera a Povery ako Rana.“</td><td data-l="Po hádke">funguje ďalej: súperove Povery sa z mäkkého presunú do tuhého</td></tr>
     <tr><th>Čierna mačka</th><td data-l="Dnes">„Furt: Tvoje Povery sa Vierou nerušia.“</td><td data-l="Po hádke">bez zmeny: jej Povery dajú vždy 1 mäkké</td></tr>
     <tr><th>Abstinent</th><td data-l="Dnes">Pohoršenia navyše +1 / +2 / +3</td><td data-l="Po hádke">v bitke sa ti neráta 1 / 2 / 3 Absťákov (tuhé neklesne, nerátajú sa pri remíze); Pohoršenia navyše nedáva</td></tr>
