@@ -4,11 +4,14 @@
 // na šírku. iPhone (Safari) Fullscreen API pre stránku nemá — tam stačí poloha na šírku.
 // Na počítači je to len nenápadná ikona vedľa Log · ? pre všetkých; stôl v celej obrazovke
 // prepočíta rozloženie sám (reaguje na resize okna).
+// Web pridaný na plochu (manifest.webmanifest, display fullscreen) beží na celej obrazovke bez
+// Fullscreen API — výzva tam netreba, šírku zamkne stôl sám a pri odchode od stola ju uvoľní,
+// inak by ostali na šírku zamknuté aj Karty.
 
 import { useCallback, useEffect, useState } from "react";
 import { vyzvaTelefonu, type VyzvaTelefonu } from "./zariadenie.ts";
 
-type OrientaciaSZamkom = ScreenOrientation & { lock?: (o: string) => Promise<void> };
+type OrientaciaSZamkom = ScreenOrientation & { lock?: (o: string) => Promise<void>; unlock?: () => void };
 
 /** Prehliadač odmietol celú obrazovku (napr. vstavaný prehliadač aplikácie) — do zatvorenia karty sa už nevyžaduje. */
 const KLUC_ODMIETNUTA = "naex-cela-obrazovka-odmietnuta";
@@ -16,6 +19,15 @@ const KLUC_ODMIETNUTA = "naex-cela-obrazovka-odmietnuta";
 /** Prehliadač vie dať stránku na celú obrazovku (Android Chrome áno, iPhone Safari nie). */
 function dostupna(): boolean {
   return typeof document !== "undefined" && document.fullscreenEnabled === true && typeof document.documentElement.requestFullscreen === "function";
+}
+
+/** Spustené z plochy ako aplikácia na celú obrazovku (manifest display: fullscreen). */
+function aplikaciaNaCelu(): boolean {
+  return typeof window !== "undefined" && window.matchMedia?.("(display-mode: fullscreen)").matches === true;
+}
+
+function zapnutaTeraz(): boolean {
+  return typeof document !== "undefined" && (document.fullscreenElement !== null || aplikaciaNaCelu());
 }
 
 function odmietnuta(): boolean {
@@ -26,12 +38,23 @@ function odmietnuta(): boolean {
   }
 }
 
+function orientacia(): OrientaciaSZamkom | undefined {
+  return (typeof screen === "undefined" ? undefined : screen.orientation) as OrientaciaSZamkom | undefined;
+}
+
 function zamkniNaSirku(): void {
-  const o = (typeof screen === "undefined" ? undefined : screen.orientation) as OrientaciaSZamkom | undefined;
   try {
-    o?.lock?.("landscape").catch(() => undefined);
+    orientacia()?.lock?.("landscape").catch(() => undefined);
   } catch {
     // starší prehliadač — orientáciu nechá na hráčovi
+  }
+}
+
+function uvolniOrientaciu(): void {
+  try {
+    orientacia()?.unlock?.();
+  } catch {
+    // bez zámku nie je čo uvoľniť
   }
 }
 
@@ -48,9 +71,9 @@ function zapni(): Promise<boolean> {
 
 export function useCelaObrazovka(): { readonly mozna: boolean; readonly zapnuta: boolean; readonly prepni: () => void } {
   const [mozna] = useState(dostupna);
-  const [zapnuta, setZapnuta] = useState(() => typeof document !== "undefined" && document.fullscreenElement !== null);
+  const [zapnuta, setZapnuta] = useState(zapnutaTeraz);
   useEffect(() => {
-    const zmena = (): void => setZapnuta(document.fullscreenElement !== null);
+    const zmena = (): void => setZapnuta(zapnutaTeraz());
     document.addEventListener("fullscreenchange", zmena);
     return () => document.removeEventListener("fullscreenchange", zmena);
   }, []);
@@ -65,13 +88,18 @@ export function useCelaObrazovka(): { readonly mozna: boolean; readonly zapnuta:
 }
 
 /**
- * Výzva na telefóne (stôl pre telefón, len správca): celá obrazovka, kde ju prehliadač vie,
+ * Výzva na telefóne (stôl pre telefón, od ranku Poldeci): celá obrazovka, kde ju prehliadač vie,
  * inak len poloha na šírku. `zapni` patrí do ťuku na výzvu.
  */
 export function useVyzvaTelefonu(telefon: boolean, naVysku: boolean): { readonly vyzva: VyzvaTelefonu; readonly zapni: () => void } {
   const { mozna, zapnuta } = useCelaObrazovka();
   const [zamietnuta, setZamietnuta] = useState(odmietnuta);
   const vyzva = vyzvaTelefonu({ telefon, naVysku, celaMozna: mozna && !zamietnuta, celaZapnuta: zapnuta });
+  useEffect(() => {
+    if (!telefon || !aplikaciaNaCelu()) return;
+    zamkniNaSirku();
+    return uvolniOrientaciu;
+  }, [telefon]);
   const zapniCelu = useCallback(() => {
     void zapni().then((ok) => {
       if (ok) return;

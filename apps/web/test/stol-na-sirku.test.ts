@@ -1,11 +1,24 @@
-// Stôl pre telefón na šírku (Michal 2026-10-31): zatiaľ len pre správcov. Ostatní na telefóne
-// vidia oznam ako doteraz, počítač sa nemení; správca na telefóne hrá vždy na šírku a na výšku
-// dostane výzvu otočiť telefón (stôl pod ňou ostáva). Tabuľa ty | súper ukazuje všetky čísla barov.
+// Stôl pre telefón na šírku (Michal 2026-10-31 pre správcov, 2026-11-01 od ranku Poldeci). Bez ranku
+// Poldeci telefón ukáže oznam „rank“, iPhone sa blokuje každému, počítač sa nemení; kto smie, hrá
+// na telefóne vždy na šírku a na výšku dostane výzvu otočiť telefón (stôl pod ňou ostáva).
+// Tabuľa ty | súper ukazuje všetky čísla barov.
 
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { dovodNepodporovania, jeIPhone, stolNaSirku, vyzvaTelefonu, type Zhoda } from "../src/hra/zariadenie.ts";
+import {
+  dovodNepodporovania,
+  jeIPhone,
+  MEDZERA_KARIET_TELEFON,
+  sirkaKartyNaTelefone,
+  smieTelefon,
+  stolNaSirku,
+  telefonStranky,
+  vyzvaTelefonu,
+  type Zhoda,
+} from "../src/hra/zariadenie.ts";
+import { CHYBA_NA_TELEFONE, UpozornenieTelefonu, upozornenieSkryte } from "../src/hra/UpozornenieTelefonu.tsx";
+import type { Rola } from "../src/lib/ucet.tsx";
 import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "../src/hra/tabula.ts";
 import { preDotyk, preDotykUzol } from "../src/hra/dotyk.ts";
 
@@ -25,17 +38,38 @@ function zariadenie(sirka: number, vyska: number, dotyk: boolean): Zhoda {
   return (dotaz) => dotaz.split(",").some((cast) => cast.trim().split(" and ").every((p) => podmienka(p.trim())));
 }
 
-describe("telefón na šírku len pre správcu", () => {
+describe("telefón na šírku od ranku Poldeci", () => {
   const telefonSirka = zariadenie(844, 390, true);
   const telefonVyska = zariadenie(390, 844, true);
 
-  it("hráč na telefóne vidí oznam ako doteraz", () => {
-    expect(dovodNepodporovania(telefonSirka, false)).toBe("dotyk");
-    expect(dovodNepodporovania(telefonVyska, false)).toBe("dotyk");
-    expect(stolNaSirku(telefonSirka, false)).toEqual({ naSirku: false, otoc: false });
+  it("stôl pre telefón smie Poldeci, Deci, Sedmička a správca; návštevník a odhlásený nie", () => {
+    const smu: readonly Rola[] = ["hrac", "deci", "sedmicka", "subadmin", "admin"];
+    for (const r of smu) expect(smieTelefon(r), r).toBe(true);
+    expect(smieTelefon("navstevnik")).toBe(false);
+    expect(smieTelefon(null)).toBe(false);
   });
 
-  it("správca hrá na telefóne na šírku, na výšku dostane výzvu otočiť (stôl ostáva)", () => {
+  it("bez ranku Poldeci telefón (aj Android 762 × 340) ukáže oznam o ranku, nie stôl", () => {
+    for (const z of [telefonSirka, telefonVyska, zariadenie(762, 340, true), zariadenie(360, 780, true)]) {
+      expect(dovodNepodporovania(z, false)).toBe("rank");
+      expect(stolNaSirku(z, false)).toEqual({ naSirku: false, otoc: false });
+    }
+  });
+
+  it("Poldeci na Androide 762 × 340 hrá na stole pre telefón", () => {
+    const android = zariadenie(762, 340, true);
+    expect(dovodNepodporovania(android, smieTelefon("hrac"))).toBeNull();
+    expect(stolNaSirku(android, smieTelefon("hrac"))).toEqual({ naSirku: true, otoc: false });
+  });
+
+  it("iPhone ostáva zablokovaný každému, aj správcovi", () => {
+    for (const mobil of [false, true]) {
+      expect(dovodNepodporovania(telefonSirka, mobil, true)).toBe("iphone");
+      expect(stolNaSirku(telefonSirka, mobil, true).naSirku).toBe(false);
+    }
+  });
+
+  it("kto smie, hrá na telefóne na šírku, na výšku dostane výzvu otočiť (stôl ostáva)", () => {
     for (const [w, h] of [
       [844, 390],
       [932, 430],
@@ -63,7 +97,7 @@ describe("telefón na šírku len pre správcu", () => {
     expect(dovodNepodporovania(zariadenie(844, 390, false), true)).toBe("uzke");
   });
 
-  it("tablet na šírku hrá ako doteraz, na výšku správcovi radí otočiť", () => {
+  it("tablet na šírku hrá ako doteraz, na výšku radí otočiť len tomu, kto smie stôl pre telefón", () => {
     expect(dovodNepodporovania(zariadenie(1180, 820, true), true)).toBeNull();
     expect(stolNaSirku(zariadenie(1180, 820, true), true).naSirku).toBe(false);
     expect(dovodNepodporovania(zariadenie(820, 1180, true), false)).toBe("dotyk");
@@ -96,6 +130,41 @@ const cisla = (x: Partial<CislaHraca>): CislaHraca => ({
   vazni: 0,
   cirhozyNepriznane: 0,
   ...x,
+});
+
+describe("upozornenie pred stolom na telefóne", () => {
+  it("vymenúva, čo na telefóne chýba, a dá sa skryť natrvalo", () => {
+    const html = renderToStaticMarkup(createElement(UpozornenieTelefonu, { rozumiem: () => undefined }));
+    expect(html).toContain("Hra zatiaľ nie je optimalizovaná pre telefón.");
+    expect(html).toContain("Pre plný zážitok hraj na počítači.");
+    expect(html).toContain("Neukazovať znova");
+    expect(html).toContain("Rozumiem");
+    expect(CHYBA_NA_TELEFONE.some((t) => t.includes("časová os"))).toBe(true);
+    for (const t of CHYBA_NA_TELEFONE) expect(html).toContain(t);
+  });
+
+  it("bez úložiska (súkromné okno, server) sa upozornenie ukáže", () => {
+    expect(upozornenieSkryte()).toBe(false);
+  });
+});
+
+describe("stránka Karty na telefóne", () => {
+  it("telefón na výšku a na šírku rozozná aj pre iPhone, tablet a počítač nie", () => {
+    expect(telefonStranky(zariadenie(360, 780, true))).toEqual({ telefon: true, naVysku: true });
+    expect(telefonStranky(zariadenie(780, 360, true))).toEqual({ telefon: true, naVysku: false });
+    expect(telefonStranky(zariadenie(1180, 820, true)).telefon).toBe(false);
+    expect(telefonStranky(zariadenie(820, 1180, true)).telefon).toBe(false);
+    expect(telefonStranky(zariadenie(1366, 650, false)).telefon).toBe(false);
+    expect(telefonStranky(zariadenie(360, 780, false)).telefon).toBe(false);
+  });
+
+  it("na výšku karta cez celú šírku mriežky, na šírku tri vedľa seba bez pretečenia", () => {
+    expect(sirkaKartyNaTelefone(328, true)).toBe(328);
+    const w = sirkaKartyNaTelefone(740, false);
+    expect(w).toBe(Math.floor((740 - 2 * MEDZERA_KARIET_TELEFON) / 3));
+    expect(3 * w + 2 * MEDZERA_KARIET_TELEFON).toBeLessThanOrEqual(740);
+    expect(sirkaKartyNaTelefone(0, false)).toBe(0);
+  });
 });
 
 describe("tabuľa ty | súper", () => {
