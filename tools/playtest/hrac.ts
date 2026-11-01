@@ -595,13 +595,13 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
         }.`,
       );
     }
-    // Pokus o zajatie (v9): kto skúša zajať — boss je v súperovej ruke, starší v ohrození.
+    // Pokus o zajatie (v10.1): kto skúša zajať — boss je v jeho ruke, starší v ohrození.
     for (const p of [ja, su] as const) {
       const pokus = v.pokusy[p];
       if (pokus === null) continue;
       const e = v.starsi.find((x) => x.elderId === pokus.elderId);
       out.push(
-        `  POKUS O ZAJATIE: ${p === ja ? "TY skúšaš" : "SÚPER skúša"} zajať ${meno(e?.karta.defId ?? "")} — jeho karta je v ruke ${p === ja ? "súpera" : "tvojej"} (smie sa vyložiť ako Starešina, len akcie). Starší je v ohrození: v tomto kole jeho markerom nehýbe Nakladačka, Vila ani Kapybara (hádka smie meniť len silu jeho priazne). ${p === ja ? "Vyhráš bitku = tvoj väzeň; prehráš alebo sekera = vráti sa a marker ustúpi o stupeň." : "Ak súper bitku vyhrá, je jeho väzeň; ak ju vyhráš ty alebo je sekera, pokus zlyhá."}`,
+        `  POKUS O ZAJATIE: ${p === ja ? "TY skúšaš" : "SÚPER skúša"} zajať ${meno(e?.karta.defId ?? "")} — jeho karta je v ruke ${p === ja ? "tvojej" : "súpera"} (smie sa vyložiť ako Starešina, len akcie). Starší je v ohrození: v tomto kole jeho markerom nehýbe Nakladačka, Vila ani Kapybara (hádka smie meniť len silu jeho priazne). ${p === ja ? "Vyhráš bitku = tvoj väzeň; prehráš alebo sekera = vráti sa a marker ustúpi o stupeň." : "Ak súper bitku vyhrá, je jeho väzeň; ak ju vyhráš ty alebo je sekera, pokus zlyhá."}`,
       );
     }
   }
@@ -619,7 +619,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const vazni = (p: PlayerId) => v.vazni.filter((x) => x.hrac === p);
   const ciele = (p: PlayerId) => v.starsi.filter((e) => vydesil(e, p)).map((e) => meno(e.karta.defId));
   out.push(
-    `  VÄZNI (tretí = výhra hneď; po finále podľa poradia zajatia v partii ${KONSTANTY.SPAKY_ZA_VAZNOV.join(" / ")} špakov): ty ${vazni(ja).length}/${KONSTANTY.VAZNI_NA_VYHRU}${vazni(ja).length > 0 ? ` (${vazni(ja).map((x) => `${meno(x.karta.defId)} ${x.poradie}.`).join(", ")})` : ""}, súper ${vazni(su).length}/${KONSTANTY.VAZNI_NA_VYHRU}${vazni(su).length > 0 ? ` (${vazni(su).map((x) => `${meno(x.karta.defId)} ${x.poradie}.`).join(", ")})` : ""}. Na stupni 3 sa bojí — teba: ${ciele(ja).join(", ") || "nikto"}; súpera: ${ciele(su).join(", ") || "nikto"} (tých sa dá po šenku skúsiť zajať).`,
+    `  VÄZNI (tretí = výhra hneď; po finále podľa poradia zajatia v partii ${KONSTANTY.SPAKY_ZA_VAZNOV.join(" / ")} špakov): ty ${vazni(ja).length}/${KONSTANTY.VAZNI_NA_VYHRU}${vazni(ja).length > 0 ? ` (${vazni(ja).map((x) => `${meno(x.karta.defId)} ${x.poradie}.`).join(", ")})` : ""}, súper ${vazni(su).length}/${KONSTANTY.VAZNI_NA_VYHRU}${vazni(su).length > 0 ? ` (${vazni(su).map((x) => `${meno(x.karta.defId)} ${x.poradie}.`).join(", ")})` : ""}. Na stupni 3 sa bojí — teba: ${ciele(ja).join(", ") || "nikto"}; súpera: ${ciele(su).join(", ") || "nikto"} (tých sa dá pred stavbou šenku skúsiť zajať; boss ide pokúšajúcemu do ruky).`,
   );
   for (const e of v.starsi) {
     const b = body.starsi.find((x) => x.elderId === e.elderId);

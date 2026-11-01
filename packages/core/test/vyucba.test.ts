@@ -624,6 +624,17 @@ describe("výučba — hlášky Melichara len pri chybe hráča (Michal 2026-10-
   });
 });
 
+describe("výučba — odkaz na kartu zadarmo pri stavbe (v10.1)", () => {
+  it("prikazZoScenara preloží odkaz v poli nechaj ako ostatné polia stavby", () => {
+    const s0 = setupGame(data, 7);
+    const b = s0.obcania.slice(0, 8);
+    const s: GameState = { ...s0, faza: "draft", draftStav: { krok: "stavba", balicky: [b, []], vyber: [null, null], naTahu: 0, hotovo: [false, false], noveKarty: [0, 0] } };
+    const k = b[0]!;
+    const cmd = prikazZoScenara(s, 0, { type: "stavbaSenku", doSenku: [], odhod: [], nechaj: `stavba:${k.defId}` }) as Extract<Command, { type: "stavbaSenku" }>;
+    expect(cmd.nechaj).toBe(b.find((x) => x.defId === k.defId)!.uid);
+  });
+});
+
 describe("výučba — hláška v kroku a v rade (Michal 2026-10-27)", () => {
   it("rada k zlému ťahu nesie hlášku vzoru, všeobecná je bez nej", () => {
     const i = scenar.kroky.findIndex((k) => k.id === "k-ciel");

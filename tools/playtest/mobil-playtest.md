@@ -46,12 +46,11 @@ PORT=8790 NAEX_WEB_PORT=5176 NAEX_SCENAR=zajatie-vyhra npm run dev    # + máš 
 
 Server to pri štarte vypíše („Vývojový scenár partií proti botovi: zajatie“). Na produkcii
 (`NODE_ENV=production` alebo `NAEX_SECURE_COOKIE=1`) sa premenná ignoruje. Partie s ľuďmi
-a výučba sa nemenia. Čo prejsť: pri braní zo šenku pokyn pripomenie pokus a cigaretu → po šenku
-ponuka „Pokus o zajatie — koho skúsiš zajať?“ → výber staršieho a pečať „−1 → skúsiť zajať“ →
-karta staršieho je v súperovej ruke (línia Starší: „v ohrození · zajať skúša ty · karta v ruke:
-súper“) → bitka → pečiatka ZAJATIE (väzeň, STARŠÍ 1/3) alebo štítok „Zajatie zlyhalo“ a marker
-na oranžovej → v ďalšej Pitke Kšeft väzňa. Bot si cigarety často minie v šenku, potom pokus
-nemá — jeho pokus sa preto ukáže len niekedy.
+a výučba sa nemenia. Čo prejsť (v10.1): po výbere lokality, pred stavbou šenku ponuka „Pokus
+o zajatie — koho skúsiš zajať?“ → výber staršieho a pečať „−1 → skúsiť zajať“ → karta staršieho
+je v tvojej ruke (línia Starší: „v ohrození · zajať skúša ty · karta v ruke: ty“) → keď skúša
+bot, pri stavbe si najprv klikneš kartu zadarmo („do ruky“) → bitka → pečiatka ZAJATIE (väzeň, STARŠÍ 1/3) alebo štítok „Zajatie zlyhalo“ a marker
+na oranžovej → v ďalšej Pitke Kšeft väzňa.
 
 ## Príkazy playtestera n
 

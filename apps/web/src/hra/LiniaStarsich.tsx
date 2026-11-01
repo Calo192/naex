@@ -99,7 +99,7 @@ export interface StarsiVLinii {
   readonly klik?: { readonly akcia: string; readonly klik: () => void } | undefined;
   /** Prečo sa v kroku nedá kliknúť (zamknutý starší). */
   readonly dovod?: string | undefined;
-  /** Pokus o zajatie (v9): kto skúša staršieho zajať — starší je v ohrození, karta v súperovej ruke. */
+  /** Pokus o zajatie (v10.1): kto skúša staršieho zajať — starší je v ohrození, karta v jeho ruke. */
   readonly patron: { readonly kto: PlayerId } | null;
   /** Vybraný pri pokuse o zajatie (čaká sa na potvrdenie). */
   readonly vybrany?: boolean;
@@ -299,7 +299,7 @@ function ScorecardVLinii({
           <ListokHadky listok={listok} menoSupera={mena[su]} />
           {s.patron !== null && (
             <span className="ls-patron">
-              v ohrození · zajať skúša {s.patron.kto === ja ? "ty" : kto(s.patron.kto)} · karta v ruke: {s.patron.kto === ja ? "súper" : "ty"}
+              v ohrození · zajať skúša {s.patron.kto === ja ? "ty" : kto(s.patron.kto)} · karta v ruke: {s.patron.kto === ja ? "ty" : kto(s.patron.kto)}
             </span>
           )}
           {stopa !== undefined && s.patron === null && <StitokPosunu stopa={stopa} ja={ja} />}

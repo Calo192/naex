@@ -221,7 +221,8 @@ export const cakaNaDalej = (krok: KrokVyucby): boolean => (krok.kto === "bot" ||
 export const ktoVykona = (krok: KrokVyucby): PlayerId => (krok.kto === "bot" ? VYUCBA_BOT : VYUCBA_HRAC);
 
 /** Pole príkazu, ktoré nesie uid karty (alebo zoznam uid). */
-const UID_POLIA = ["uid", "rukaUid", "senokUid", "cirhozaUid", "kartaUid"] as const;
+// `nechaj` = karta zadarmo pri stavbe šenku (v10.1, súper skúša zajatie).
+const UID_POLIA = ["uid", "rukaUid", "senokUid", "cirhozaUid", "kartaUid", "nechaj"] as const;
 const UID_ZOZNAMY = ["uids", "doSenku", "odhod"] as const;
 
 function zona(state: GameState, kto: PlayerId, nazov: string): readonly CardInstance[] {
