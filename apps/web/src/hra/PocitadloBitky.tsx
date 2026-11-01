@@ -53,7 +53,7 @@ export interface PocitadloBitkyProps {
   readonly naSirku?: boolean;
   /** Momenty bitky (Výprask…) — na telefóne štítok v pruhu namiesto pečiatky cez obsah. */
   readonly momenty?: readonly Moment[];
-  /** Povery po starších a mená starších podľa priazne (krúžok priazne v rekapitulácii). */
+  /** Hádka po starších a mená starších podľa priazne (krúžok priazne v rekapitulácii). */
   readonly priazne?: PriazneBitky | undefined;
 }
 

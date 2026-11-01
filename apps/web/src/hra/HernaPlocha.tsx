@@ -4499,7 +4499,7 @@ export function HernaPlocha({
             tlacidla: <button onClick={() => posli({ type: "cintorin", uid: null })}>nič</button>,
           };
         }
-        // Povery (v8.3 „Výpožička priazne“): klik na staršieho posunie silu jeho priazne k tebe na toto kolo.
+        // Hádka (v10) a Nakladačka: klik na staršieho ho pridá do nepotvrdených posunov.
         // Bublina rozdeľovania (mock C · Pečať): jedno písmo a jedna veľkosť — názov, žetóny,
         // zvyšok a pre koľkých starších ešte stačí. Dlhý pokyn je preč; smer a cenu ukáže karta.
         if ((b.krok === "hadka" || b.krok === "prebytok") && planDelenia !== null && krokDelenia !== null) {
