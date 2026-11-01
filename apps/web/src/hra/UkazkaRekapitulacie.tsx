@@ -52,7 +52,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   const q = new URLSearchParams(window.location.search);
   const druh = q.get("druh") === "pitka" ? "pitka" : "bitka";
   const seed = Number(q.get("seed") ?? "8");
-  const ja = (q.get("ja") === "1" ? 1 : 0) as PlayerId;
+  const ja: PlayerId = q.get("ja") === "1" ? 1 : 0;
   const [kolo, setKolo] = useState(0);
   const najdene = useMemo(() => odohraj(data, seed), [data, seed]);
   const piktogramy: PiktogramyRekapitulacie = {

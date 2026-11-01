@@ -195,7 +195,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   const stop = p.get("stop") ?? "finale";
   const i = Number(p.get("i") ?? "0");
   const karty = Number(p.get("karty") ?? "3");
-  const ja = (p.get("ja") === "1" ? 1 : 0) as PlayerId;
+  const ja: PlayerId = p.get("ja") === "1" ? 1 : 0;
   let s = setupGame(data, seed, { lokalit: Number(p.get("lokalit") ?? "3") });
   let zaciatokKola = s;
   let historia = novaHistoriaLokalit(s);
@@ -323,7 +323,7 @@ export function UkazkaStola() {
 
 function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada>["sada"]> }) {
   const data = useHerneData(sada);
-  const ja = (q().get("ja") === "1" ? 1 : 0) as PlayerId;
+  const ja: PlayerId = q().get("ja") === "1" ? 1 : 0;
   const odohrane = useMemo(() => {
     const o = odohraj(data);
     const k = q().get("klebety");
