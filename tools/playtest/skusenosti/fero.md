@@ -7,13 +7,13 @@ vo feedback.md.
 ## Skúsenosti
 
 ### fero-1 · Keď mám pred finále 8 alebo viac cigariet, minem ich radšej za karty v šenku (1 cigareta = 1 karta), doliatie poldeci, barter (5 cigariet = plný poldeci: výkupné ostane rovnaké a pribudne limit) či fajčenie, než ich nechám na výkupné, lebo výkupné dá len 1 špak za 5 cigariet.
-- stav: neoverená
-- pravidlá: v9
-- potvrdenia: 4
+- stav: overená
+- pravidlá: v10
+- potvrdenia: 5
 - vyvrátenia: 0
-- dátum: 2026-10-31
-- partie: 20261027-105422-1, 20261028-090549-1, 20261030-115654-1, 20261031-004030-1
-- prečo: PRAVIDLA §14 Výkupné (+1 špak za každých 5 cigariet, plný poldeci +1). 131033-1: Fero v K4 za 5 cigariet kúpil 3 karty a vyhral 13 : 12, v K5 za 3 cig. Hasiča + Recidivistu (11 : 6); koncové výkupné z 5 cigariet bolo +1 špak, z Janových 6 cig. a poldeci +2 — pri skóre 35 : 1 bezvýznamné. 090549: Fero pred finále 2× barter (10 cig.: limit 4 → 6, výkupné za plný poldeci +1 ostalo rovnaké ako za 5 cigariet) a z 15 cigariet výkupné +3; barter je pred finále lacnejší než šetrenie. 115654-1: pred finále dal 4 cig za 3 karty (Veštica, Živnostník, Strýko — výkupné by dalo 0), vo finále naopak nechal 6 cig nedotknutých, Strýkove 2 Cigarety doplnili päťku → +1 špak; Kšeft Strýka (2 cig → Rana) vedome nekúpil. 004030-1 (v9): pred finále 11 cigariet — na karty minul len 4 (šenok mal málo vhodných kariet), Kšeft Predsedovej vily za 2 cig zmazal Šimonovi 2 špaky strachu zadarmo (výkupné 8 → 6 cig. ostalo 1 špak); koniec: 2 poldeci + 6 cig. = 3 špaky.
+- dátum: 2026-11-01
+- partie: 20261027-105422-1, 20261028-090549-1, 20261030-115654-1, 20261031-004030-1, 20261101-084841-1
+- prečo: PRAVIDLA §14 Výkupné (+1 špak za každých 5 cigariet, plný poldeci +1). 131033-1: Fero v K4 za 5 cigariet kúpil 3 karty a vyhral 13 : 12, v K5 za 3 cig. Hasiča + Recidivistu (11 : 6); koncové výkupné z 5 cigariet bolo +1 špak, z Janových 6 cig. a poldeci +2 — pri skóre 35 : 1 bezvýznamné. 090549: Fero pred finále 2× barter (10 cig.: limit 4 → 6, výkupné za plný poldeci +1 ostalo rovnaké ako za 5 cigariet) a z 15 cigariet výkupné +3; barter je pred finále lacnejší než šetrenie. 115654-1: pred finále dal 4 cig za 3 karty (Veštica, Živnostník, Strýko — výkupné by dalo 0), vo finále naopak nechal 6 cig nedotknutých, Strýkove 2 Cigarety doplnili päťku → +1 špak; Kšeft Strýka (2 cig → Rana) vedome nekúpil. 004030-1 (v9): pred finále 11 cigariet — na karty minul len 4 (šenok mal málo vhodných kariet), Kšeft Predsedovej vily za 2 cig zmazal Šimonovi 2 špaky strachu zadarmo (výkupné 8 → 6 cig. ostalo 1 špak); koniec: 2 poldeci + 6 cig. = 3 špaky. 084841-1 (v10): K2 barter 5 cig. → 3. plný poldeci (limit 4 : 3, posledný ťah, bitka 13 : 0), K4 druhý barter (limit 5); šenok bol v K5 a finále prázdny (Šimon stopol bez braní), takže ostalo 15 cig. a koniec dal výkupné +6 (3 poldeci + 3 špaky z cigariet) — kurz 5 : 1 potvrdený, barter bol jediný sink bez straty.
 - oprava: 2026-10-27 20261027-131033-1: pôvodné znenie („cigarety po finále nemajú žiadnu hodnotu“) odporovalo PRAVIDLA §14 (výkupné 5 : 1, Michal 2026-10-27) — platilo už vo v6.1, nielen vo v7; premisa prepísaná na kurz výkupné 5 : 1 voči šenku 1 : 1.
 
 
@@ -61,3 +61,12 @@ vo feedback.md.
 - dátum: 2026-10-31
 - partie: 20261031-004030-1
 - prečo: PRAVIDLA §10 (ústup zmaže nezaplatený stupeň), §16 Kapybara. K5: Fero zobral Kapybaru a Psa za 3 cig., položil Kapybaru na vlastnú stranu a posunul Autobusára oranžová → žltá; Šimon: „Fero zrušil mojich +2 strachu“, Fero: „Šimonovi −2 špaky“ (Šimon udržal v K5 len Vychovávateľku +1).
+
+### fero-7 · Keď obranca zo šenku nevezme nič a stopne, mám jediný posledný ťah, preto v ňom beriem 2 karty za 3 cigarety (nie 1 za 1), lebo druhý ťah už nebude (§5).
+- stav: overená
+- pravidlá: v10
+- potvrdenia: 1
+- vyvrátenia: 0
+- dátum: 2026-11-01
+- partie: 20261101-084841-1
+- prečo: PRAVIDLA §5 (po stope jedného má druhý jednu poslednú šancu). 084841-1 K5: Šimon obranca nevzal nič, Fero Šofér + Nealko za 3 cig., bitka 11 : 1; finále: Šimon opäť nič, Fero Mäsiar + Liberál za 3 cig. (denník K5, finále).
