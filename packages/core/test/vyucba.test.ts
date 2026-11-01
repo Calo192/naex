@@ -64,11 +64,6 @@ const scenar: ScenarVyucby = { ...celyScenar, casti: (celyScenar.casti ?? []).sl
 const pokracovanie = celyScenar.kroky.slice(koniecPrvej + 1);
 const hlaskyChyby = celyScenar.hlaskyChyby ?? [];
 
-// Pravidlá v10.1 (Michal 2026-11-01): pokus o zajatie je pred stavbou šenku. Scenár Prvej hry
-// (prva-hra.json, texty Melichara sú Michalove) ho vo finále robí ešte po braní, takže 3. časť
-// od kroku k-stavba-finale neprejde. Testy celej partie čakajú na nový scenár — potom false.
-const FINALE_CAKA_NA_V101 = true;
-
 describe("výučba — scenár", () => {
   it("scenár prva-hra prejde v jadre od začiatku do konca (každý krok legálny, na ťahu ten, komu patrí)", () => {
     expect(overScenar(data, scenar)).toBeNull();
@@ -670,7 +665,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
   const odhad = (s: GameState): readonly number[] => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums).tuhe;
   const body = (s: GameState): readonly number[] => s.spaky;
 
-  it.skipIf(FINALE_CAKA_NA_V101)("celá partia (1. + 2. + 3. časť) prejde v jadre od začiatku do konca hry", () => {
+  it("celá partia (1. + 2. + 3. časť) prejde v jadre od začiatku do konca hry", () => {
     expect(overScenar(data, cela)).toBeNull();
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
     expect(koniec.koniec?.vitaz).toBe(0);
@@ -683,7 +678,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(koniec.koniec?.cirhozy).toEqual([1, 0]);
   });
 
-  it.skipIf(FINALE_CAKA_NA_V101)("časti nadväzujú: každá má začiatok a koniec, idú za sebou a 2. časť začína tam, kde 1. skončila", () => {
+  it("časti nadväzujú: každá má začiatok a koniec, idú za sebou a 2. časť začína tam, kde 1. skončila", () => {
     const casti = cela.casti ?? [];
     expect(casti.map((c) => c.cast)).toEqual([1, 2, 3]);
     let predosly = -1;
@@ -771,13 +766,20 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(pocetAbstakov(kolo4.hraci[1])).toBe(0);
   });
 
-  it.skipIf(FINALE_CAKA_NA_V101)("finále (v9): pokus o zajatie Farára, Kšeft vily, doliatie, zrážka NA EX na hráčovom Pijanovi, väzeň", () => {
-    for (const id of ["k-pokus", "k-kup-finale", "k-vypit-finale", "k-doliatie", "k-naex-vytrznik"]) expect(cela.kroky[i(id)]?.kto, id).toBe("hrac");
-    // Pokus o zajatie: cigareta prepadne, Farár ide Štamgastovi do ruky a je v ohrození.
+  it("finále (v9): pokus o zajatie Farára, Kšeft vily, doliatie, zrážka NA EX na hráčovom Pijanovi, väzeň", () => {
+    for (const id of ["k-pokus", "k-kup-finale", "k-vypit-finale", "k-finale-z3-pas", "k-doliatie", "k-naex-vytrznik", "k-bez-odpovede-finale"]) expect(cela.kroky[i(id)]?.kto, id).toBe("hrac");
+    // v10.1: pokus o zajatie hneď po voľbe vily, pred stavbou šenku — cigareta prepadne, Farár ide
+    // hráčovi do ruky a je v ohrození; Štamgast si pri stavbe nechá 1 kartu zadarmo (4 do šenku, 3 naspodok).
+    expect(i("k-pokus")).toBe(i("k-ciel-finale") + 1);
+    expect(i("k-stavba-finale")).toBe(i("k-pokus") + 1);
     const pokus = po("k-pokus");
     expect(pokus.hraci[0].cigarety).toBe(pri("k-pokus").hraci[0].cigarety - 1);
-    expect(pokus.hraci[1].ruka.some((k) => k.defId === "farar")).toBe(true);
+    expect(pokus.hraci[0].ruka.some((k) => k.defId === "farar")).toBe(true);
     expect(pokus.pokusy[0]).toMatchObject({ elderId: "farar" });
+    const zadarmo = po("k-stavba-finale-bot");
+    expect(zadarmo.hraci[1].ruka).toHaveLength(pri("k-stavba-finale-bot").hraci[1].ruka.length + 1);
+    expect(zadarmo.hraci[1].ruka.some((k) => k.defId === "podvodnik")).toBe(true);
+    expect(zadarmo.senok).toHaveLength(8);
     expect(odhad(po("k-pijan-finale"))).toEqual([3, 5]);
     // Kšeft vily: v10 Starosta zo stredu do žltej hráča — Bitkár 1 je hráčov (v9 zo Štamgastovej oranžovej do žltej).
     expect(po("k-kseft").starsi.find((e) => e.elderId === "starosta")?.marker).toBe(2);
@@ -792,7 +794,9 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(odhad(po("k-finale-p3-bot"))).toEqual([13, 5]);
     // v10: Štamgastova Povera vyhrá hádku o 1 — dá ju Poštárke (k-hadka-finale-bot, Veriaci uberie hráčovi 1 tuhé:
     // 12 : 5) a hra skončí; Nakladačka 7 na špaky 1 : 1.
-    expect(po("k-bez-odpovede-finale-bot").bitkaStav).toMatchObject({ krok: "hadka", caka: 1, hadka: { makke: [0, 1], vitaz: 1, velkost: 1 } });
+    // Hráč drží Farára, smie odpovedať — bitka začne až po jeho „bez odpovede“.
+    expect(po("k-bez-odpovede-finale-bot").faza).toBe("pitka");
+    expect(po("k-bez-odpovede-finale").bitkaStav).toMatchObject({ krok: "hadka", caka: 1, hadka: { makke: [0, 1], vitaz: 1, velkost: 1 } });
     expect(po("k-hadka-finale-bot").faza).toBe("koniec");
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
     expect(koniec.nastenka.at(-1)).toMatchObject({ vitaz: 0, prebytok: [7, 0], povery: [{}, { postarka: -1 }] });
@@ -838,7 +842,7 @@ describe("výučba v troch častiach — hranice, hlášky pri chybe, lokalita k
     expect(celyScenar.verzia).toBe("v10-hadka-2026-11-01");
   });
 
-  it.skipIf(FINALE_CAKA_NA_V101)("overScenar stráži hranice častí: medzera, chýbajúci koniec, zlé číslo", () => {
+  it("overScenar stráži hranice častí: medzera, chýbajúci koniec, zlé číslo", () => {
     expect(overScenar(data, celyScenar)).toBeNull();
     const casti = celyScenar.casti ?? [];
     const bezKonca: ScenarVyucby = { ...celyScenar, kroky: celyScenar.kroky.map((k) => (k.id === "i-dovidenia2" ? (Object.fromEntries(Object.entries(k).filter(([x]) => x !== "koniecCasti")) as typeof k) : k)) };
@@ -865,7 +869,7 @@ describe("výučba v troch častiach — hranice, hlášky pri chybe, lokalita k
     expect(hlaskaPriChybe({ ...celyScenar, hlaskyChyby: [] }, bez, null, 3)).toEqual({ hlaska: null, zaloha: false });
   });
 
-  it.skipIf(FINALE_CAKA_NA_V101)("Kšeft vily mieri na lokalitu kola cez odkaz ciel:, nie natvrdo uid", () => {
+  it("Kšeft vily mieri na lokalitu kola cez odkaz ciel:, nie natvrdo uid", () => {
     const i = index("k-kseft");
     const prikaz = celyScenar.kroky[i]?.prikaz;
     expect(prikaz).toMatchObject({ type: "kseft", uid: "ciel:predsedova_vila" });
@@ -900,7 +904,7 @@ describe("výučba — prerobenie podľa playtestu výučby 20261030-184959", ()
     expect(kroky.filter((k) => pravidlo.test(k.melichar)).map((k) => k.id)).toEqual(["i-body"]);
   });
 
-  it.skipIf(FINALE_CAKA_NA_V101)("Pitka či bitka, ktorú uzavrie ťah bota, nemlčí — Melichar komentuje rekapituláciu", () => {
+  it("Pitka či bitka, ktorú uzavrie ťah bota, nemlčí — Melichar komentuje rekapituláciu", () => {
     for (const [n, k] of kroky.entries()) {
       if (k.kto !== "bot") continue;
       const pred = prehrajVyucbu(data, celyScenar, n);

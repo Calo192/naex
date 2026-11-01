@@ -1815,6 +1815,32 @@
       }
     },
     {
+      "id": "i-zajatie",
+      "kto": "info",
+      "melichar": "Pred šenkom je zajatie: staršieho, ktorý sa ťa bojí na stupni 3, smieš za [Cigareta] cigaretu skúsiť zajať. Jeho karta ide tebe do ruky; vyhráš bitku a je to tvoj väzeň, prehráš a starší ti o stupeň ustúpi. Dnes sa na trojke nebojí nikto.",
+      "zvyraznit": [
+        "linia-starsich"
+      ]
+    },
+    {
+      "id": "q-zajatie",
+      "kto": "otazka",
+      "melichar": "Koho smieš skúsiť zajať?",
+      "moznosti": [
+        {
+          "text": "Staršieho, ktorý sa ma bojí na stupni 3.",
+          "spravna": true,
+          "vysvetlenie": "Áno. Kto sa ťa nebojí na smrť, toho do pivnice nedostaneš."
+        },
+        {
+          "text": "Toho, kto mi prejavuje priazeň.",
+          "spravna": false,
+          "vysvetlenie": "Naopak: zajať sa dá ten, kto sa ťa bojí na trojke – a ten priazeň dáva súperovi.",
+          "hlaska": "nervy/bud_ticho"
+        }
+      ]
+    },
+    {
       "id": "k-stavba3",
       "kto": "auto",
       "prikaz": {
@@ -1916,32 +1942,6 @@
       "hlaskaChyby": "nervy/bud_ticho",
       "zvyraznit": [
         "tlacidlo:pas"
-      ]
-    },
-    {
-      "id": "i-zajatie",
-      "kto": "info",
-      "melichar": "Po šenku je zajatie: staršieho, ktorý sa ťa bojí na stupni 3, smieš za [Cigareta] cigaretu skúsiť zajať. Jeho karta ide Štamgastovi do ruky; vyhráš bitku a je to tvoj väzeň, prehráš a starší ti o stupeň ustúpi. Dnes sa na trojke nebojí nikto.",
-      "zvyraznit": [
-        "linia-starsich"
-      ]
-    },
-    {
-      "id": "q-zajatie",
-      "kto": "otazka",
-      "melichar": "Koho smieš skúsiť zajať?",
-      "moznosti": [
-        {
-          "text": "Staršieho, ktorý sa ma bojí na stupni 3.",
-          "spravna": true,
-          "vysvetlenie": "Áno. Kto sa ťa nebojí na smrť, toho do pivnice nedostaneš."
-        },
-        {
-          "text": "Toho, kto mi prejavuje priazeň.",
-          "spravna": false,
-          "vysvetlenie": "Naopak: zajať sa dá ten, kto sa ťa bojí na trojke – a ten priazeň dáva súperovi.",
-          "hlaska": "nervy/bud_ticho"
-        }
       ]
     },
     {
@@ -2348,6 +2348,34 @@
       }
     },
     {
+      "id": "k-pokus",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "pokus",
+        "elderId": "farar"
+      },
+      "melichar": "Zajatie, rad je na tebe. Farár sa ťa bojí na trojke: skús ho zajať za [Cigareta] cigaretu. Jeho karta pôjde tebe do ruky, smieš ju vyložiť len s akciami, a Farárom v tomto kole nič nepohne. Štamgast si za to pri stavbe šenku nechá jednu kartu do ruky, zadarmo. Vyhraj finále a je to tvoj väzeň.",
+      "hlaskaChyby": "nervy/20_uz_mam_v_pici_nervy_zas",
+      "zvyraznit": [
+        "ponuka-patronatu"
+      ],
+      "volba": {
+        "kandidati": [
+          "starsi:farar"
+        ],
+        "zle": [
+          {
+            "prikaz": {
+              "type": "bezPokusu"
+            },
+            "text": "Nie, dnes zajímaš. Farár, za jednu cigaretu.",
+            "hlaska": "urazky/ty_marha"
+          }
+        ],
+        "inak": "Farár, za cigaretu."
+      }
+    },
+    {
       "id": "k-stavba-finale",
       "kto": "auto",
       "prikaz": {
@@ -2381,9 +2409,9 @@
         "odhod": [
           "stavba:pasca",
           "stavba:cigorky",
-          "stavba:degustatorka",
-          "stavba:podvodnik"
-        ]
+          "stavba:degustatorka"
+        ],
+        "nechaj": 258
       },
       "melichar": ""
     },
@@ -2422,7 +2450,7 @@
       "prikaz": {
         "type": "draftStop"
       },
-      "melichar": "Viac nekupuj, klikni už neťahám (P). Cigarety budeš potrebovať: zajatie, Kšeft aj doliatie niečo stoja.",
+      "melichar": "Viac nekupuj, klikni už neťahám (P). Cigarety budeš potrebovať: Kšeft aj doliatie niečo stoja.",
       "hlaskaChyby": "nervy/bud_ticho",
       "zvyraznit": [
         "tlacidlo:pas",
@@ -2438,34 +2466,6 @@
       "melichar": ""
     },
     {
-      "id": "k-pokus",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "pokus",
-        "elderId": "farar"
-      },
-      "melichar": "Zajatie, rad je na tebe. Farár sa ťa bojí na trojke: skús ho zajať za [Cigareta] cigaretu. Jeho karta pôjde Štamgastovi do ruky, smie ju vyložiť len s akciami, a Farárom v tomto kole nič nepohne. Vyhraj finále a je to tvoj väzeň.",
-      "hlaskaChyby": "nervy/20_uz_mam_v_pici_nervy_zas",
-      "zvyraznit": [
-        "ponuka-patronatu"
-      ],
-      "volba": {
-        "kandidati": [
-          "starsi:farar"
-        ],
-        "zle": [
-          {
-            "prikaz": {
-              "type": "bezPokusu"
-            },
-            "text": "Nie, dnes zajímaš. Farár, za jednu cigaretu.",
-            "hlaska": "urazky/ty_marha"
-          }
-        ],
-        "inak": "Farár, za cigaretu."
-      }
-    },
-    {
       "id": "k-zh-finale-bot",
       "kto": "bot",
       "prikaz": {
@@ -2478,7 +2478,7 @@
           }
         ]
       },
-      "melichar": "Finále sa hrá ako každé kolo. Štamgast útočí, vykladá prvý: Recidivista k vile. Farára drží v ruke, nech sa trasie."
+      "melichar": "Finále sa hrá ako každé kolo. Štamgast útočí, vykladá prvý: Recidivista k vile. Farára držíš v ruke ty, nech sa trasie."
     },
     {
       "id": "k-pijan-finale",
@@ -2644,12 +2644,24 @@
       "melichar": ""
     },
     {
+      "id": "k-finale-z3-pas",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": "Farára nechaj v ruke a pasuj (P), dostaneš [Cigareta] cigaretu.",
+      "hlaskaChyby": "urazky/vyjebany",
+      "zvyraznit": [
+        "tlacidlo:pas"
+      ]
+    },
+    {
       "id": "k-doliatie",
       "kto": "hrac",
       "prikaz": {
         "type": "refillPoldeci"
       },
-      "melichar": "Posledná Pitka, ruku máš prázdnu. Doliatie: za dve [Cigareta] cigarety otočíš vypitý [Poldeci] poldeci späť na plný – nový by stál päť. Na konci hry je plný poldeci špak, dve cigarety nie. Počítaj.",
+      "melichar": "Posledná Pitka. Doliatie: za dve [Cigareta] cigarety otočíš vypitý [Poldeci] poldeci späť na plný – nový by stál päť. Na konci hry je plný poldeci špak, dve cigarety nie. Počítaj.",
       "hlaskaChyby": "urazky/svine_vyjebane",
       "zvyraznit": [
         "tlacidlo:doliat",
@@ -2709,7 +2721,19 @@
       "prikaz": {
         "type": "bezReakcie"
       },
-      "melichar": "Štamgast bez odpovede. Finálová bitka – pozri na počítadlo, potom ti to zrátam."
+      "melichar": "Štamgast bez odpovede."
+    },
+    {
+      "id": "k-bez-odpovede-finale",
+      "kto": "hrac",
+      "prikaz": {
+        "type": "bezReakcie"
+      },
+      "melichar": "Klikni BEZ ODPOVEDE, Farára nechaj v ruke. Finálová bitka – pozri na počítadlo, potom ti to zrátam.",
+      "hlaskaChyby": "urazky/ty_spina",
+      "zvyraznit": [
+        "tlacidlo:bez-odpovede"
+      ]
     },
     {
       "id": "k-hadka-finale-bot",

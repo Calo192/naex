@@ -57,7 +57,7 @@ function sOdkazmi(state: GameState, p: PlayerId, c: Command): string {
     return uid;
   };
   return JSON.stringify(c, (key, v: unknown) =>
-    ["uid", "rukaUid", "senokUid", "cirhozaUid", "kartaUid"].includes(key) && typeof v === "number"
+    ["uid", "rukaUid", "senokUid", "cirhozaUid", "kartaUid", "nechaj"].includes(key) && typeof v === "number"
       ? odkaz(v)
       : ["uids", "doSenku", "odhod"].includes(key) && Array.isArray(v)
         ? v.map((x: unknown) => (typeof x === "number" ? odkaz(x) : x))
