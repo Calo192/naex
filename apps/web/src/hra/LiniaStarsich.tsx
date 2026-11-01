@@ -605,7 +605,7 @@ function StupnicaRozdelenia({
   readonly ja: PlayerId;
 }) {
   // Zrkadlenie: tvoja polovica vľavo — zobrazené pole k leží na pozícii poloha(k).
-  const poloha = (k: number): MarkerPos => (ja === 0 ? k : 6 - k) as MarkerPos;
+  const poloha = (k: number): MarkerPos => polohaPreHraca(k, ja) as MarkerPos;
   const v = r.vyber;
   const ciel = v !== undefined && !v.aktivna && v.posun !== null ? v.posun.na : null;
   return (

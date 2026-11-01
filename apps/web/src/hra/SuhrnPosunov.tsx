@@ -15,7 +15,7 @@ import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { IkonaHadky, KruzokPriazne } from "./KruzokPriazne.tsx";
-import { ktoPriazen, kratkeMeno, priazenSuhrnu, type PriazenKola } from "./priazenKola.ts";
+import { ktoPriazen, kratkeMeno, polohaPreHraca, priazenSuhrnu, type PriazenKola } from "./priazenKola.ts";
 
 const textPriazne = (p: PriazenKola, menoSupera: string): string => ktoPriazen(p, { ja: "ty", su: kratkeMeno(menoSupera) });
 import type { SuhrnDlazdice } from "./Starsi.tsx";
@@ -337,7 +337,7 @@ const NAVRAT_BODKY_MS = 900;
  * `bodkaOd` (poloha v zobrazení hráča): bodka začne tam, kam ju dala hádka, a vráti sa do prsteňa.
  */
 function VelkaStupnica({ z, marker, ja, bodkaOd = null }: { readonly z: MarkerPos; readonly marker: MarkerPos; readonly ja: PlayerId; readonly bodkaOd?: number | null }) {
-  const poloha = (m: number): number => (ja === 0 ? m : 6 - m);
+  const poloha = (m: number): number => polohaPreHraca(m, ja);
   const [doma, setDoma] = useState(bodkaOd === null || bezPohybu());
   useEffect(() => {
     if (doma) return;
