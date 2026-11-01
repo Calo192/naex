@@ -720,7 +720,6 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
             max={max}
             rusi={hotovo || vlna >= vlnaRusenia}
             ucinkuje={hotovo || vlna >= vlnaUcinku}
-            priazne={priazne}
           />
         )}
         {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} pod="2 mäkké" />, true, undefined, "Pohoršenie")}
@@ -959,9 +958,7 @@ function VieraPovera({
   max,
   rusi,
   ucinkuje,
-  priazne,
 }: {
-  readonly priazne: PriazneBitky | undefined;
   readonly r: RekapitulaciaBitky;
   readonly ja: PlayerId;
   readonly menoSupera: string;

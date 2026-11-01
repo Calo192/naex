@@ -155,7 +155,6 @@ import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
-import { vzhladSady } from "../lib/sada.tsx";
 import { pravitkoPosunu } from "./pravitko.ts";
 import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
@@ -174,7 +173,7 @@ import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "
 import { useZarovnanieLinie } from "./zarovnanieLinie.ts";
 import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
-import { rezimRadov, stupienkyStarsich } from "./spakyAStarsi.ts";
+import { rezimRadov } from "./spakyAStarsi.ts";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
 import {
   AkcieStrany,
