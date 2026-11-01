@@ -469,7 +469,7 @@ export interface GameState {
   /** Kšefty väzňov s účinkom do konca kola (v9). Verejné. */
   readonly kseftyKola?: KseftyKola;
   /**
-   * Posuny markerov (Pohoršenie, prebytok, zajatie) od poslednej bitky do
+   * Posuny markerov (Nakladačka, zajatie, Kšeft, Kapybara) od poslednej bitky do
    * konca nasledujúceho Zhromaždenia — stopa na stupnici a účtenka (#95).
    * Verejné; pravidlá z nich nič nerátajú.
    */
@@ -4260,14 +4260,6 @@ export function hadkaNaStarsieho(state: StavHadkyBitky, elder: Pick<ElderState, 
   return body > 0 && posunHadkou(elder, p, body, klebetyKola(state)) !== null;
 }
 
-/**
- * Mäkké poškodenie oboch zo súčtov línie (v10) — ten istý výpočet ako vstup do hádky,
- * pre náhľady a odhad bitky.
- */
-export function makkeVBitke(data: GameData, s: VerejnyStav, sums: readonly [ActionSums, ActionSums]): readonly [number, number] {
-  return poskodenieBitky(data, s, sums).makke;
-}
-
 /** Smie prebytok hráča `drzi` (zvyšok `body`) posunúť marker tohto staršieho? (v ohrození nie, v9 O8) */
 export function prebytokNaStarsieho(state: { readonly pokusy?: readonly (PokusOZajatie | null)[] }, elder: Pick<ElderState, "marker" | "elderId">, drzi: PlayerId, body: number): boolean {
   if (state.pokusy !== undefined && vOhrozeni({ pokusy: state.pokusy }, elder.elderId)) return false;
@@ -4927,7 +4919,7 @@ export interface SpakyZaVyhru {
 
 /**
  * Udržaný strach na konci kola (v8.3, Michal 2026-10-30, variant 6A): po bitke,
- * Pohoršeniach aj prebytku zaplatí každý starší hráčovi, ktorého sa bojí, stupne,
+ * hádke aj Nakladačke zaplatí každý starší hráčovi, ktorého sa bojí, stupne,
  * ktoré marker udržal od konca minulého kola (strachNaVyplatu) — nech bitku vyhral
  * ktokoľvek; stupeň, na ktorom marker stojí teraz, sa začína udržiavať (poKonciKola).
  * Vo finále sa tak vyplatí, čo sa udržalo z posledného kola; nové stupne finále nič.

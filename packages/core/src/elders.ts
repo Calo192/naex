@@ -258,8 +258,8 @@ export function poKonciKola<E extends StavStrachu>(elder: E): E {
 }
 
 /**
- * Posun markera o jedno pole k hráčovi `smerK` (Kšeft Predsedovej vily, Kapybara;
- * Nakladačka od v8.2 cez posunZaBody).
+ * Posun markera o jedno pole k hráčovi `smerK` (Kšeft Predsedovej vily; Nakladačka
+ * od v8.2 a hádka od v10 cez posunZaBody).
  * Zamknutie krajnej pozície sa ruší (Michal 2026-10-26): na červenú smie marker
  * aj viac posunmi v jednom kole a z červenej ho smie súper odtlačiť. Vracia
  * novú pozíciu, alebo null, keď je marker už na kraji v tom smere.
