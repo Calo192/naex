@@ -12,11 +12,14 @@
 // pri prejdení myšou stav po posune. Lupa nesie len to, čo na karte nie je: plné znenie
 // priazne, pravidlo strachu, vydesenie a odkiaľ sa marker pohol. Texty: textyStarsich.ts.
 //
-// Rozdelenie Pohoršenia a prebytku (mock C · Pečať, Michal 2026-10-30): v mojom kroku má
-// karta meno na stred, pečať priazne na portréte, plochú stupnicu s cenou na každom
-// dosiahnuteľnom poli a pod ňou tlačidlá smerov (krígeľ k sebe, päsť k súperovi) rovnako vysoké ako stupnica. Posuny sú
-// nepotvrdené, kým ich Potvrdiť na hrane stola nepošle — plán ráta jadro (rozdelenie.ts).
-// Medzi stupnicou a tlačidlami je pravítko posunu (mock 2 B, Michal 2026-10-30): pole po poli,
+// Rozdelenie hádky a Nakladačky (mock C · Pečať, Michal 2026-10-30): v mojom kroku má
+// karta meno na stred, pečať priazne na portréte a plochú stupnicu s cenou na každom
+// dosiahnuteľnom poli. Smer je daný pravidlami (hádka k víťazovi §9.1, Nakladačka k súperovi
+// držiteľa §9.4), preto tlačidlá smerov (krígeľ, päsť) zmizli (Michal 2026-11-01: „presúva sa
+// len jedným smerom“) — ťuk na staršieho výber pridá, ďalší ho vráti; tlačidlo pod stupnicou nesie
+// len znamienko, piktogram priazne a číslo (mock 9). Posuny sú nepotvrdené, kým ich Potvrdiť na hrane stola nepošle —
+// plán ráta jadro (rozdelenie.ts).
+// Pod stupnicou je pravítko posunu (mock 2 B, Michal 2026-10-30): pole po poli,
 // kým body stačia, a za čiarou rozpočtu zámok (pravitko.ts).
 
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
@@ -28,29 +31,31 @@ import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { VykricnikyPeciatky } from "./IkonaStrachu.tsx";
-import { IkonaPaste } from "./IkonaPaste.tsx";
-import { IkonaPriazne } from "./IkonaPriazne.tsx";
-import { KruzokPriazne, ListokHadky, ObsahNapovedyStarsieho, spojUdalosti, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
+import { IkonaPriazneKruzku, KruzokPriazne, ListokHadky, ObsahNapovedyStarsieho, spojUdalosti, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import type { Pravitko } from "./pravitko.ts";
 import { dvojityMarker, ktoPriazen, listokHadky, obsahNapovedy, polohaPreHraca, priazenKola, type DvojityMarker, type ListokHadky as ListokHadkyData, type PriazenKola } from "./priazenKola.ts";
 import { riadokStrachu, stitokStopy } from "./textyStarsich.ts";
 
 export { IKONA_PRIAZNE } from "./KruzokPriazne.tsx";
 
-/** Šípka smeru pri rozdeľovaní: kam marker pôjde a za koľko (null = tým smerom sa teraz nedá). */
-export interface SipkaRozdelenia {
+/** Výber staršieho pri rozdeľovaní: kam marker (pri hádke priazeň) pôjde a za koľko (null = už nestačí). */
+export interface VyberRozdelenia {
   readonly posun: { readonly na: MarkerPos; readonly cena: number } | null;
-  /** Tento smer je už v nepotvrdených posunoch — ťuk ho zruší. */
+  /** Starší je už v nepotvrdených posunoch — ťuk ho vráti. */
   readonly aktivna: boolean;
   readonly klik: () => void;
-  /** Cesta markera týmto smerom za body, ktoré staršiemu ostali (pravítko pod stupnicou). */
+  /** Cesta markera za body, ktoré staršiemu ostali (pravítko pod stupnicou). */
   readonly pravitko: Pravitko;
+  /** Smer daný pravidlami: „ja“ = k tebe (hádka vždy), „su“ = k súperovi (Nakladačka, keď ju držíš ty). */
+  readonly smer: "ja" | "su";
+  /** Ďalej sa nedá — marker na kraji, pri hádke priazeň už tvoja v sile 3. */
+  readonly kraj: boolean;
 }
 
-/** Starší pri rozdeľovaní Pohoršenia či prebytku (mock C · Pečať) — dáta z plánu jadra. */
+/** Starší pri rozdeľovaní hádky či Nakladačky (mock C · Pečať) — dáta z plánu jadra. */
 export interface RozdelenieStarsieho {
-  /** Smery k tebe (krígeľ, udobriť) a k súperovi (päsť, vydesiť); chýbajúci = krok ten smer nedovoľuje (prebytok má jeden). */
-  readonly sipky: { readonly ja?: SipkaRozdelenia | undefined; readonly su?: SipkaRozdelenia | undefined };
+  /** Výber staršieho v jedinom smere kroku; chýba = krok smer nemá. */
+  readonly vyber?: VyberRozdelenia | undefined;
   /** Cena posunu na pole stupnice (pozície 0–6) a či naň rozpočet stačí; null = tam sa nejde. */
   readonly ceny: readonly ({ readonly cena: number; readonly dosah: boolean } | null)[];
   /** Nepotvrdený posun tohto staršieho. */
@@ -422,58 +427,52 @@ function KartaRozdelenia({
         : strachNaVyplatu(sPosunutymMarkerom(elder, navrh.na), v.obavany);
   const strachTeraz = riadokStrachu(teraz.obavany === null ? null : mena[teraz.obavany], teraz.obavany === ja, spaky(teraz, false));
   const strachPo = riadokStrachu(zobraz.obavany === null ? null : mena[zobraz.obavany], zobraz.obavany === ja, spaky(zobraz, true));
-  const kam = (smer: "ja" | "su"): string => (smer === "ja" ? "k tebe" : `k ${mena[su]}`);
   const zona = (m: MarkerPos): string => NAZVY_ZON[STUPNICA_ZONY[m]] ?? "";
 
-  // Smer posunu nesie ikona, nie šípka (Michal 2026-10-30): k tebe = krígeľ (udobríš ho, dá ti
-  // priazeň), k súperovi = päsť (vydesíš ho, začne sa ťa báť). Obe sú vo farbe hráča, ktorý
-  // rozdeľuje — priazeň aj strach sú jeho, ako pečať priazne a pečiatka vydesenia na stole.
-  const sipka = (smer: "ja" | "su"): ReactNode => {
-    const x = r.sipky[smer];
-    if (x === undefined) return <span className={`ls-sip ${smer} bez-smeru`} aria-hidden="true" />;
-    const cena = x.aktivna ? navrh?.cena : x.posun?.cena;
-    const ok = x.aktivna || x.posun !== null;
-    const sloveso = smer === "ja" ? "udobriť" : "vydesiť";
-    const popis =
-      r.hadka === true
-        ? x.aktivna
-          ? `${s.meno}: zrušiť výber hádky`
-          : x.posun !== null
-            ? `${s.meno}: hádka — priazeň k tebe na silu ${STUPNICA_ZONY[x.posun.na]} (${zona(x.posun.na)}), stojí ${x.posun.cena}; do konca kola, marker stojí`
-            : `${s.meno}: hádka sem nestačí alebo je priazeň už tvoja v sile 3`
-        : x.aktivna
-          ? `${s.meno}: zrušiť ${smer === "ja" ? "udobrenie" : "vydesenie"}`
-          : x.posun !== null
-            ? `${s.meno}: ${sloveso} — marker ${kam(smer)} na ${zona(x.posun.na)}, stojí ${x.posun.cena}`
-            : `${s.meno}: ${sloveso} sa teraz nedá`;
-    const ikona = smer === "ja" ? <IkonaPriazne /> : <IkonaPaste />;
-    const spat = x.aktivna ? <span className="ls-sip-spat">↶</span> : null;
-    const suma = cena === undefined ? null : <small>−{cena}</small>;
-    return (
-      <button type="button" className={`ls-sip ${smer}${x.aktivna ? " aktivna" : ""}`} disabled={!ok} aria-pressed={x.aktivna} aria-label={popis} title={popis} onClick={x.klik}>
-        {smer === "ja" ? (
-          <>
-            {spat}
-            {ikona}
-            {suma}
-          </>
-        ) : (
-          <>
-            {suma}
-            {ikona}
-            {spat}
-          </>
-        )}
-      </button>
+  const v = r.vyber;
+  // Ťuk na kartu (portrét, stupnica, pás) pridá výber alebo ho vráti — pečať priazne má vlastný ťuk (nápoveda).
+  const mozno = v !== undefined && (v.aktivna || v.posun !== null);
+  const kam = v?.smer === "su" ? `k ${mena[su]}` : "k tebe";
+  const popisVyberu =
+    v === undefined
+      ? `${s.meno}: tu sa teraz nerozdeľuje`
+      : v.aktivna
+        ? `${s.meno}: vrátiť výber (${navrh?.cena ?? 0} späť do zvyšku)`
+        : v.posun === null
+          ? v.kraj
+            ? r.hadka === true
+              ? `${s.meno}: priazeň je už tvoja v sile 3`
+              : `${s.meno}: marker je na kraji`
+            : `${s.meno}: zvyšok na ďalšie pole nestačí`
+          : r.hadka === true
+            ? `${s.meno}: pridať bod hádky — priazeň k tebe na silu ${STUPNICA_ZONY[v.posun.na]} (${zona(v.posun.na)}), stojí ${v.posun.cena}; do konca kola, marker stojí`
+            : `${s.meno}: posunúť marker ${kam} na ${zona(v.posun.na)}, stojí ${v.posun.cena}`;
+  // Tlačidlo bez textu a bez ceny (Michal 2026-11-01, mock 9): znamienko, piktogram priazne ako
+  // v krúžku a číslo — „+ Rana 2“ = priazeň po posune patrí tomu, ku komu krok ide, v sile 2;
+  // „− Viera 1“ = priazeň druhej strany len klesne o 1. Cena je na stupnici, pravítku a štítku −N.
+  const ucinok = v === undefined ? null : ucinokVyberu(elder, klebety, ja, v, navrh, r.hadka === true);
+  const pas =
+    v === undefined ? null : (
+      <>
+        {v.aktivna && <span className="ls-vyber-spat">↺</span>}
+        {ucinok !== null && <span className="ls-vyber-znak">{ucinok.znak}</span>}
+        <IkonaPriazneKruzku fav={favourStarsieho(data, elder)} />
+        {ucinok !== null && <span className="ls-vyber-cislo">{ucinok.cislo}</span>}
+      </>
     );
-  };
+  const farbaPasu = ucinok?.znak === "+" && v?.smer === "su" ? " su" : "";
 
   return (
     <div
-      className={`ls-sc rozdel${navrh !== null ? " s-posunom" : ""}${r.mrtvy ? " mrtvy" : ""}${zmeneny ? " zmena" : ""}`}
+      className={`ls-sc rozdel${navrh !== null ? " s-posunom" : ""}${r.mrtvy ? " mrtvy" : ""}${mozno ? " volitelny" : ""}${zmeneny ? " zmena" : ""}`}
       data-vyucba={`starsi:${elder.elderId}`}
       role="group"
       aria-label={`${s.meno}: ${strachPo}${navrh !== null ? ` — posun na ${zona(navrh.na)} za ${navrh.cena}` : ""}`}
+      title={mozno ? popisVyberu : undefined}
+      onClick={(e) => {
+        if (e.target instanceof Element && e.target.closest(".ls-pecat-pr") !== null) return;
+        if (mozno) v.klik();
+      }}
     >
       <b className="ls-meno ls-meno-stred">{s.meno}</b>
       <div className="ls-telo">
@@ -504,35 +503,50 @@ function KartaRozdelenia({
           />
         </span>
       </div>
-      <StupnicaRozdelenia r={r} marker={elder.marker} bodka={dm} ja={ja} meno={s.meno} />
+      <StupnicaRozdelenia r={r} marker={elder.marker} bodka={dm} ja={ja} />
       <PravitkaRozdelenia r={r} meno={s.meno} />
-      <span className="ls-sipky">
-        {sipka("ja")}
-        {sipka("su")}
-      </span>
+      {/* Klávesnica: pás je tlačidlo (Enter, medzerník); klik z neho prebuble na kartu a urobí výber. */}
+      {pas !== null && (
+        <button type="button" className={`ls-vyber${farbaPasu}${v?.aktivna === true ? " aktivna" : ""}`} aria-disabled={!mozno} aria-pressed={v?.aktivna === true} aria-label={popisVyberu}>
+          {pas}
+        </button>
+      )}
     </div>
   );
 }
 
 /**
- * Pravítka posunu pod stupnicou (mock 2 B): Nakladačka má jeden smer, preto jedno pravítko cez
- * celú šírku; Pohoršenie dva, každé nad svojím tlačidlom (krígeľ vľavo, päsť vpravo).
+ * Čo výber urobí s priazňou (tlačidlo „+/− piktogram číslo“): „+“ = priazeň po posune patrí strane,
+ * ku ktorej krok ide (hádka: rozdeľujúci, Nakladačka: súper držiteľa), číslo = jej sila; „−“ =
+ * priazeň druhej strany len klesne (aj do stredu), číslo = o koľko. Hádka posúva účinnú priazeň
+ * tohto kola (cieľ je jej poloha). Nakladačka je posledný krok kola a posúva marker — sila z hádky
+ * do konca kola ostáva pevná, takže sa ráta priazeň z markera, ktorá platí od ďalšieho kola.
  */
+export function ucinokVyberu(
+  elder: ElderState,
+  klebety: Klebety | undefined,
+  ja: PlayerId,
+  v: Pick<VyberRozdelenia, "posun" | "smer">,
+  navrh: { readonly na: MarkerPos } | null,
+  hadka: boolean,
+): { readonly znak: "+" | "−"; readonly cislo: number } | null {
+  const na = navrh?.na ?? v.posun?.na;
+  if (na === undefined) return null;
+  const pred = priazenKola(elder, hadka ? klebety : undefined, ja);
+  const hrac: PlayerId | null = na < 3 ? 0 : na > 3 ? 1 : null;
+  const po = hadka ? { komu: hrac === null ? null : hrac === ja ? "ja" : "su", sila: STUPNICA_ZONY[na] ?? 0 } : priazenKola({ ...elder, marker: na }, undefined, ja);
+  if (po.komu === v.smer && po.sila > 0) return { znak: "+", cislo: po.sila };
+  const pokles = pred.komu !== null && pred.komu !== v.smer ? pred.sila - (po.komu === pred.komu ? po.sila : 0) : 0;
+  return pokles > 0 ? { znak: "−", cislo: pokles } : null;
+}
+
+/** Pravítko posunu pod stupnicou (mock 2 B) — smer je jeden, preto jedno cez celú šírku. */
 function PravitkaRozdelenia({ r, meno }: { readonly r: RozdelenieStarsieho; readonly meno: string }) {
-  const { ja, su } = r.sipky;
-  if (ja !== undefined && su !== undefined) {
-    return (
-      <span className="lsp-rad">
-        <PravitkoPosunu p={ja.pravitko} smer="ja" meno={meno} plne={false} />
-        <PravitkoPosunu p={su.pravitko} smer="su" meno={meno} plne={false} />
-      </span>
-    );
-  }
-  const jediny = ja ?? su;
-  if (jediny === undefined) return null;
+  const v = r.vyber;
+  if (v === undefined) return null;
   return (
     <span className="lsp-rad jeden">
-      <PravitkoPosunu p={jediny.pravitko} smer={ja === undefined ? "su" : "ja"} meno={meno} plne />
+      <PravitkoPosunu p={v.pravitko} smer={v.smer} meno={meno} plne />
     </span>
   );
 }
@@ -586,40 +600,37 @@ function PravitkoPosunu({ p, smer, meno, plne }: { readonly p: Pravitko; readonl
             {p.cena} z {p.body}
           </span>
         )}
-        {/* Bez ◀ ▶ z mocku — smer nesie krígeľ a päsť pod pravítkom (Michal 2026-10-30: šípky preč). */}
+        {/* Bez ◀ ▶ z mocku (Michal 2026-10-30: šípky preč) — smer je daný pravidlami. */}
         <span className="lsp-polia">{rozdane ? "rozdané" : polia}</span>
       </span>
     </span>
   );
 }
 
-/** Plochá stupnica pri rozdeľovaní: 7 polí, cena až po pole, cieľ šípky orámovaný a klikateľný. */
+/** Plochá stupnica pri rozdeľovaní: 7 polí, cena až po pole, cieľ výberu orámovaný (ťuk berie celá karta). */
 function StupnicaRozdelenia({
   r,
   marker,
   bodka,
   ja,
-  meno,
 }: {
   readonly r: RozdelenieStarsieho;
   readonly marker: MarkerPos;
   /** Prsteň (marker) a bodka (priazeň tohto kola) — bodka ide s nepotvrdeným posunom. */
   readonly bodka: DvojityMarker;
   readonly ja: PlayerId;
-  readonly meno: string;
 }) {
   // Zrkadlenie: tvoja polovica vľavo — zobrazené pole k leží na pozícii poloha(k).
   const poloha = (k: number): MarkerPos => (ja === 0 ? k : 6 - k) as MarkerPos;
-  const ciele = new Map<number, SipkaRozdelenia>();
-  for (const x of [r.sipky.ja, r.sipky.su]) if (x !== undefined && !x.aktivna && x.posun !== null) ciele.set(x.posun.na, x);
+  const v = r.vyber;
+  const ciel = v !== undefined && !v.aktivna && v.posun !== null ? v.posun.na : null;
   return (
     <span className="ls-stupnica-r" data-vyucba="starsi-stupnica">
       {STUPNICA_ZONY.map((_, k) => {
         const pos = poloha(k);
         const z = STUPNICA_ZONY[pos] ?? 0;
         const c = r.ceny[pos] ?? null;
-        const ciel = ciele.get(pos);
-        const trieda = `lsr-pole z${z}${c === null ? "" : c.dosah ? " dosah" : " mimo"}${ciel !== undefined ? " ciel" : ""}`;
+        const trieda = `lsr-pole z${z}${c === null ? "" : c.dosah ? " dosah" : " mimo"}${pos === ciel ? " ciel" : ""}`;
         const vnutro = (
           <>
             {c !== null && c.dosah && <i className="lsr-cena">{c.cena}</i>}
@@ -629,14 +640,10 @@ function StupnicaRozdelenia({
           </>
         );
         const styl = { background: farbaZony(z), "--z": z } as CSSProperties;
-        return ciel === undefined ? (
+        return (
           <span key={k} className={trieda} style={styl}>
             {vnutro}
           </span>
-        ) : (
-          <button key={k} type="button" className={trieda} style={styl} aria-label={`${meno}: na ${NAZVY_ZON[z] ?? ""}, stojí ${ciel.posun?.cena ?? 0}`} onClick={ciel.klik}>
-            {vnutro}
-          </button>
         );
       })}
     </span>

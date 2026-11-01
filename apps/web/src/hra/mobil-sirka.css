@@ -1334,7 +1334,7 @@ html.stol-na-sirku .okno-zdroja .medziobrazovka-okno > .tlacidlo-hlavne {
   gap: 6px;
 }
 
-.hra.mobil-sirka:not(.stol-scroll) .vrstva-starsich :is(.lsr-pole, .ls-sip, .ls-pecat) {
+.hra.mobil-sirka:not(.stol-scroll) .vrstva-starsich :is(.lsr-pole, .ls-vyber, .ls-pecat) {
   min-height: 32px;
 }
 
@@ -1614,8 +1614,8 @@ html.stol-na-sirku .lokalita-supera :is(.tlacidlo-hlavne, .medziobrazovka-caka) 
     radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.55), transparent) right / 14px 100% no-repeat scroll;
 }
 
-/* Udobriť / vydesiť a stupnica: väčšie ciele pre prst. */
-.hra.mobil-sirka:not(.stol-scroll) .vrstva-starsich :is(.lsr-pole, .ls-sip, .ls-pecat) {
+/* Pás výberu, stupnica a pečať: väčšie ciele pre prst. */
+.hra.mobil-sirka:not(.stol-scroll) .vrstva-starsich :is(.lsr-pole, .ls-vyber, .ls-pecat) {
   min-height: 40px;
 }
 

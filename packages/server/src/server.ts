@@ -68,6 +68,7 @@ import {
   zapisTahKariet,
 } from "@naex/core";
 import { otvorDb } from "./db.ts";
+import { pouziScenar, type Scenar } from "./scenar.ts";
 import { zlucUcty } from "./zlucenie.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { Ucty, jeSpravca } from "./auth.ts";
@@ -290,6 +291,8 @@ export interface ServerOpts {
   readonly achievementyZapnute?: boolean;
   /** Iný scenár výučby (testy); predvolene data/vyucba/prva-hra.json. */
   readonly scenarVyucby?: ScenarVyucby;
+  /** Vývojový scenár partií proti botovi (scenar.ts) — len lokálny server, index.ts ho na produkcii nepustí. */
+  readonly scenar?: Scenar;
   /** Pevný seed rozdania každej novej partie (testy) — partia sa dá zopakovať. */
   readonly seedRozdania?: number;
 }
@@ -676,7 +679,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   /** Rozdanie novej partie: seed, stav jadra a prázdne záznamy (štatistiky, tempo, kronika). */
   const rozdaj = (room: Room): void => {
     room.seed = opts.seedRozdania ?? randomInt(2 ** 31);
-    room.state = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
+    const rozdane = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
+    room.state = opts.scenar !== undefined && room.bot !== null ? pouziScenar(rozdane, opts.scenar, room.bot === 1 ? 0 : 1) : rozdane;
     room.zaciatok = teraz();
     room.statistiky = noveStatistiky();
     room.tempo = noveTempo(room.zaciatok);

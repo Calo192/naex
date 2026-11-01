@@ -9,11 +9,19 @@
 //   NAEX_VYUCBA          1 = výučba „Prvá hra“ aj pre hráčov pri vypnutom vypínači (dočasný server
 //                        playtestu výučby: nováčik má byť obyčajný návštevník, nie správca)
 //   NAEX_ACHIEVEMENTY    1 = achievementy počítať aj pri „zapnute“: false v katalógu (vývoj a UI inšpekcia)
+//   NAEX_SCENAR          vývojový scenár partií proti botovi (scenar.ts): zajatie | zajatie-vyhra —
+//                        starší na stupni 3 pre tok zajatia; pri NODE_ENV=production sa ignoruje
 
 import { fileURLToPath } from "node:url";
 import { createGameServer } from "./server.ts";
+import { scenarZProstredia } from "./scenar.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
+
+// Scenár mení rozdanie — na živom webe nikdy (scenarZProstredia).
+const { scenar, ignorovany } = scenarZProstredia(process.env);
+if (ignorovany !== null) console.warn(`NAEX_SCENAR=${ignorovany} sa ignoruje (neznámy scenár alebo produkcia).`);
+if (scenar !== undefined) console.log(`Vývojový scenár partií proti botovi: ${scenar}`);
 
 createGameServer({
   port: PORT,
@@ -23,6 +31,7 @@ createGameServer({
   ...(process.env.NAEX_VYUCBA === "1" ? { vyucbaZapnuta: true } : {}),
   ...(process.env.NAEX_ACHIEVEMENTY === "1" ? { achievementyZapnute: true } : {}),
   ...(process.env.NAEX_PLAYTESTY ? { playtestyDir: process.env.NAEX_PLAYTESTY } : {}),
+  ...(scenar !== undefined ? { scenar } : {}),
 })
   .then((server) => {
     console.log(`NA EX server počúva na http://localhost:${server.port}`);

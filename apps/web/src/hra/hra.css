@@ -5016,14 +5016,15 @@ button.auto-hotovo-odkaz {
   --farba-hraca: var(--su);
 }
 
+/* Vpravo ostáva miesto pre krúžok priazne (z-index 4) — text pod ním bol orezaný (2026-11-01). */
 .ls-patron {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 2px 4px;
+  padding: 2px clamp(32px, 23cqw, 52px) 2px 4px;
   font: 700 0.6rem/1.25 var(--pismo);
-  text-align: center;
+  text-align: left;
   color: var(--text);
   background: color-mix(in srgb, var(--pozadie) 82%, transparent);
 }
@@ -5272,9 +5273,8 @@ button.auto-hotovo-odkaz {
   color: var(--akcent-svetly);
 }
 
-/* ---- Rozdeľovanie Pohoršenia a prebytku (mock C · Pečať, Michal 2026-10-30) ----
-   Meno na stred, pečať priazne na portréte, plochá stupnica s cenami a pod ňou šípky
-   rovnako vysoké ako stupnica. Nepotvrdený posun: jantárový rám, cena v rohu portrétu,
+/* ---- Rozdeľovanie hádky a Nakladačky (mock C · Pečať, Michal 2026-10-30) ----
+   Meno na stred, pečať priazne na portréte, plochá stupnica s cenami a pod ňou pás výberu. Nepotvrdený posun: jantárový rám, cena v rohu portrétu,
    duch markera v cieli. Kto už nič nedostane, je tlmený. */
 .ls-sc.rozdel {
   gap: 5px;
@@ -5288,8 +5288,7 @@ button.auto-hotovo-odkaz {
 
 .ls-sc.rozdel.mrtvy .ls-portret img,
 .ls-sc.rozdel.mrtvy .ls-stupnica-r,
-.ls-sc.rozdel.mrtvy .lsp-rad,
-.ls-sc.rozdel.mrtvy .ls-sipky {
+.ls-sc.rozdel.mrtvy .lsp-rad {
   opacity: 0.4;
   filter: grayscale(0.5);
 }
@@ -5342,15 +5341,14 @@ button.auto-hotovo-odkaz {
   opacity: 0.3;
 }
 
-button.lsr-pole.ciel {
+/* Cieľ ťuku — pole, kam výber posunie; ťuk berie celá karta, pri prejdení myšou cieľ zasvieti. */
+.lsr-pole.ciel {
   z-index: 1;
-  cursor: pointer;
   outline: 3px solid var(--text);
   outline-offset: -1px;
 }
 
-button.lsr-pole.ciel:hover,
-button.lsr-pole.ciel:focus-visible {
+.ls-sc.rozdel.volitelny:hover .lsr-pole.ciel {
   outline-color: var(--akcent-svetly);
 }
 
@@ -5423,90 +5421,85 @@ button.lsr-pole.ciel:focus-visible {
   }
 }
 
-/* Tlačidlá smerov pod stupnicou — krígeľ k tebe (udobriť), päsť k súperovi (vydesiť), Michal
-   2026-10-30 — rovnako vysoké ako stupnica (tlačidlá boli neúmerne veľké); dotyková plocha
-   ostáva 44 px — neviditeľný presah, nie väčšie tlačidlo. */
-.ls-sipky {
-  flex: none;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
+/* Výber staršieho pri rozdeľovaní (Michal 2026-11-01): smer je daný pravidlami, tlačidlá smerov
+   (krígeľ, päsť) zmizli — ťuk na kartu pridá výber, ďalší ho vráti (↺). Tlačidlo bez textu a ceny
+   (mock 9): znamienko, piktogram priazne ako v krúžku a číslo; dotyková plocha je celá karta. */
+.ls-sc.rozdel.volitelny {
+  cursor: pointer;
 }
 
-.ls-sip {
+.ls-vyber {
+  flex: none;
   position: relative;
   min-width: 0;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 0 4px;
+  gap: 4px;
+  padding: 0 6px;
   border-radius: 4px;
-  border: 1px solid var(--okraj-svetly);
-  background: var(--plocha-2);
-  color: var(--text);
   font: 800 11px/1 var(--pismo);
   font-variant-numeric: tabular-nums;
-  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: inherit;
 }
 
-.ls-sip::before {
-  content: "";
-  position: absolute;
-  inset: -4px -2px -16px;
-}
-
-.ls-sip small {
-  font: inherit;
-}
-
-/* Rodič v selektore: globálne button:hover by inak prepísalo podklad. Oba smery vo farbe toho,
-   kto rozdeľuje: priazeň (krígeľ) aj strach (päsť) budú jeho — ako pečať priazne a pečiatka
-   vydesenia; súperova farba by pri pästi hovorila, že desí súper. */
-.ls-sipky > button.ls-sip {
-  border-color: var(--ja);
+/* Rodič v selektore: globálne button:hover by inak prepísalo podklad. Farba toho, kto rozdeľuje. */
+.ls-sc.rozdel > button.ls-vyber {
+  border: 1px solid var(--ja);
   color: var(--ja);
   background: color-mix(in srgb, var(--ja) 12%, transparent);
 }
 
-.ls-sip .ikona-priazne,
-.ls-sip .ikona-paste {
+.ls-vyber .kr-ikona {
+  flex: none;
   width: 16px;
   height: 16px;
-  margin-block: 0;
+  fill: currentColor;
 }
 
-.ls-sip-spat {
-  font-size: 12px;
+.ls-vyber-znak,
+.ls-vyber-spat {
+  font-size: 13px;
 }
 
-.ls-sip:hover:not(:disabled),
-.ls-sip:focus-visible {
+.ls-vyber-cislo {
+  font-size: 13px;
+}
+
+/* Nakladačka: priazeň po posune dostane súper — tlačidlo v jeho farbe. */
+.ls-sc.rozdel > button.ls-vyber.su {
+  border-color: var(--su);
+  color: var(--su);
+  background: color-mix(in srgb, var(--su) 12%, transparent);
+}
+
+.ls-sc.rozdel.volitelny:hover > button.ls-vyber,
+.ls-sc.rozdel > button.ls-vyber:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--akcent-svetly);
 }
 
-.ls-sipky > button.ls-sip.aktivna {
+.ls-sc.rozdel.volitelny:hover {
+  border-color: var(--akcent-svetly);
+}
+
+.ls-sc.rozdel > button.ls-vyber.aktivna {
   color: var(--na-akcente);
   background: var(--akcent);
   border-color: var(--akcent-svetly);
 }
 
-.ls-sipky > button.ls-sip:disabled {
-  opacity: 0.28;
-  cursor: not-allowed;
+.ls-sc.rozdel > button.ls-vyber[aria-disabled="true"] {
+  opacity: 0.4;
   border-style: dashed;
   background: transparent;
 }
 
-.ls-sip.bez-smeru {
-  visibility: hidden;
-}
-
 /* Pravítko posunu (mock 2 B, Michal 2026-10-30): šírka dielika = cena poľa, farba = zóna, svetlá
-   čiara = rozpočet, za ňou šrafované pole so zámkom. Pohoršenie má dve pravítka nad tlačidlami
-   smerov (rovnaká mriežka ako .ls-sipky), Nakladačka jedno cez celú šírku. */
+   čiara = rozpočet, za ňou šrafované pole so zámkom. Smer je jeden, pravítko cez celú šírku. */
 .lsp-rad {
   flex: none;
   display: grid;
@@ -9577,4 +9570,14 @@ button.lsr-pole.ciel:focus-visible {
   .doska .obchod-cigariet {
     display: none;
   }
+}
+
+/* Pripomienka pokusu o zajatie pri braní zo šenku (2026-11-01): bez cigarety jadro pokus potichu
+   preskočí, preto pokyn varuje skôr, než hráč minie poslednú. */
+.pokyn-zajatie {
+  color: var(--akcent-svetly);
+}
+
+.pokyn-zajatie.malo {
+  color: var(--cervena-svetla);
 }

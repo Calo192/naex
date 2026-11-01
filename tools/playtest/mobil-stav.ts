@@ -38,6 +38,17 @@ export function citajDisplej(s: string | undefined): Displej {
   return { sirka: Math.max(a, b), vyska: Math.min(a, b) };
 }
 
+/** Okná počítača (notebook, stôl) — prehliadač bez dotyku, myšou (playtest toku zajatia 2026-11-01). */
+export const DISPLEJE_POCITACA = ["1366x650", "1440x800", "1920x1080"] as const;
+
+/**
+ * Počítač, nie telefón: okno vyššie ako 500 CSS px — telefón na šírku má výšku do ~400,
+ * mobilné rozloženie stola (mobil-sirka.css) platí len do max-height 500 px.
+ */
+export function jePocitac(d: Displej): boolean {
+  return d.vyska > 500;
+}
+
 /** Rozmer okna podľa natočenia telefónu. */
 export function oknoDispleja(d: Displej, naVysku: boolean): Displej {
   return naVysku ? { sirka: d.vyska, vyska: d.sirka } : d;

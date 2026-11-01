@@ -24,9 +24,34 @@ $M zaloz 2 --url http://localhost:8791 --web http://localhost:5176 [--displej 76
 - `--displej`: okno telefónu na šírku **s lištou prehliadača** v CSS px. Predvolene
   `762x340` (Android Chrome, Michal 2026-10-31); ďalej `800x330`, `844x350` (iPhone Safari),
   `915x380`, `780x300` (malý telefón). Hustota pixelov 3, dotyk, user-agent telefónu.
+  **Počítač:** okno vyššie ako 500 px (`1366x650` notebook, `1440x800`, `1920x1080`) je
+  prehliadač bez emulácie telefónu a bez dotyku — `tuk` je klik myšou, `podrz` = myš nad bodom
+  (nápoveda), `potiahni` ťahá myšou, `otoc` nie je. Stôl vidí každý účet, nielen správca.
 - `--kola 1` = playtest „jedno kolo“ (predvolené). Krátka hra = `--liga kratka` (Tretia
   liga: 3 lokality + finále) a `--kola 4` (celá partia). Partia s botom sa do štatistík neráta.
 - Výpis povie cestu relácie `R` (napr. `playtest/mobil/20261031-152424`).
+
+## Scenár: zajatie staršieho (§10)
+
+Stupeň 3 (starší sa hráča bojí na červenej) príde v bežnej partii zriedka a neskoro. Na
+**lokálnom** serveri ho zapne premenná `NAEX_SCENAR` — každá nová partia proti botovi začne tak,
+že prvý starší sa bojí teba na stupni 3 (smieš ho skúsiť zajať), druhý sa bojí bota (pokus
+smie skúsiť bot), tretí je na tvojej žltej a obaja máte o 4 cigarety viac:
+
+```bash
+PORT=8790 NAEX_WEB_PORT=5176 NAEX_SCENAR=zajatie npm run dev          # tok zajatia
+PORT=8790 NAEX_WEB_PORT=5176 NAEX_SCENAR=zajatie-vyhra npm run dev    # + máš už 2 väzňov:
+#   Kšeft väzňa hneď v 1. Pitke (tlačidlo „Hrobár (väzeň, poldeci)“), tretí väzeň = výhra
+```
+
+Server to pri štarte vypíše („Vývojový scenár partií proti botovi: zajatie“). Na produkcii
+(`NODE_ENV=production` alebo `NAEX_SECURE_COOKIE=1`) sa premenná ignoruje. Partie s ľuďmi
+a výučba sa nemenia. Čo prejsť: pri braní zo šenku pokyn pripomenie pokus a cigaretu → po šenku
+ponuka „Pokus o zajatie — koho skúsiš zajať?“ → výber staršieho a pečať „−1 → skúsiť zajať“ →
+karta staršieho je v súperovej ruke (línia Starší: „v ohrození · zajať skúša ty · karta v ruke:
+súper“) → bitka → pečiatka ZAJATIE (väzeň, STARŠÍ 1/3) alebo štítok „Zajatie zlyhalo“ a marker
+na oranžovej → v ďalšej Pitke Kšeft väzňa. Bot si cigarety často minie v šenku, potom pokus
+nemá — jeho pokus sa preto ukáže len niekedy.
 
 ## Príkazy playtestera n
 

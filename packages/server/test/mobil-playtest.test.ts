@@ -9,6 +9,7 @@ import {
   type StavMobilu,
   bodCiela,
   citajDisplej,
+  jePocitac,
   citajLigu,
   odohraneKola,
   oknoDispleja,
@@ -31,6 +32,12 @@ describe("displej telefónu", () => {
     expect(d).toEqual({ sirka: 844, vyska: 350 });
     expect(oknoDispleja(d, true)).toEqual({ sirka: 350, vyska: 844 });
     expect(oknoDispleja(d, false)).toBe(d);
+  });
+  it("počítač (1366×650 a vyššie okná) je bez emulácie telefónu, telefón na šírku nie", () => {
+    expect(jePocitac(citajDisplej("1366x650"))).toBe(true);
+    expect(jePocitac(citajDisplej("1920x1080"))).toBe(true);
+    expect(jePocitac(citajDisplej("762x340"))).toBe(false);
+    expect(jePocitac(citajDisplej("915x380"))).toBe(false);
   });
   it("nezmysel odmietne", () => {
     expect(() => citajDisplej("telefon")).toThrow(/762x340/);

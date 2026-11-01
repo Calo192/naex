@@ -1097,6 +1097,23 @@ export function HernaPlocha({
     view.faza === "draft" && draft?.krok === "zajatie" && somNaTahu && view.pokusy[ja] === null && hJa.cigarety >= KONSTANTY.CENA_POKUSU
       ? view.starsi.filter((e) => pokusMozny(e, ja) && !view.pokusy.some((x) => x?.elderId === e.elderId))
       : [];
+  /**
+   * Starší, ktorých po šenku smiem skúsiť zajať (bojí sa ma na stupni 3). Pri braní zo šenku to pokyn
+   * pripomenie: bez cigarety jadro pokus potichu preskočí (len riadok v logu) — v partiách botov
+   * bola podmienka 40× na 20 partií, cigaretu na pokus malo po šenku len 5× (2026-11-01).
+   */
+  const zajatieCaka = view.faza === "draft" && draft?.krok === "beranie" && view.pokusy[ja] === null ? view.starsi.filter((e) => pokusMozny(e, ja) && !view.pokusy.some((x) => x?.elderId === e.elderId)) : [];
+  const pripomienkaZajatia = (zostane: number): ReactNode => {
+    if (zajatieCaka.length === 0) return null;
+    const kto = zajatieCaka.map((e) => menoKarty(e.karta.defId)).join(" a ");
+    const malo = zostane < KONSTANTY.CENA_POKUSU;
+    return (
+      <strong className={`pokyn-zajatie${malo ? " malo" : ""}`}>
+        {kto} sa ťa bojí na stupni 3 — po šenku {zajatieCaka.length === 1 ? "ho" : "jedného"} smieš skúsiť zajať za {cigariet(KONSTANTY.CENA_POKUSU)}
+        {malo ? (cigJa < KONSTANTY.CENA_POKUSU ? ", ale nemáš ju." : ", nechaj si ju!") : "."}{" "}
+      </strong>
+    );
+  };
   /** Karta staršieho, o ktorého zajatie sa hrá (boss) — v ruke a v línii nesie štítok. */
   const jeKartaPatronatu = (uid: number): boolean =>
     view.pokusy.some((x) => x !== null && view.starsi.find((e) => e.elderId === x.elderId)?.karta.uid === uid);
@@ -3383,7 +3400,7 @@ export function HernaPlocha({
               data-skratka="k"
               data-vyucba="tlacidlo:potvrdit-delenie"
               disabled={n === 0 || chybaDeleniaVyucby !== null}
-              title={n === 0 ? (krokDelenia === "prebytok" ? "Pri staršom vyber krígeľ pod stupnicou." : "Pri staršom vyber krígeľ — jeho priazeň pôjde k tebe (do konca kola).") : (chybaDeleniaVyucby ?? "Pošle všetky nepotvrdené posuny naraz.")}
+              title={n === 0 ? (krokDelenia === "prebytok" ? "Najprv klikni na staršieho — jeho marker sa posunie." : "Najprv klikni na staršieho — jeho priazeň pôjde k tebe (do konca kola).") : (chybaDeleniaVyucby ?? "Pošle všetky nepotvrdené posuny naraz.")}
               onClick={() => {
                 if (prikaz !== null) posli(prikaz);
               }}
@@ -3786,11 +3803,13 @@ export function HernaPlocha({
           text:
             zoSenku.length > 0 ? (
               <>
+                {pripomienkaZajatia(cigJa - cenaBrania)}
                 Berieš <strong>{zoSenku.map((k) => menoKarty(k.defId)).join(" a ")}</strong> za {cigariet(cenaBrania)} — potvrdíš „hotovo“, {mobil ? "„vrátiť“" : "✕"} (alebo
                 pravý klik na kartu v ruke) {zoSenku.length === 1 ? "ju vráti" : "ich vráti"} do šenku.
               </>
             ) : mozemBrat ? (
               <>
+                {pripomienkaZajatia(cigJa - (KONSTANTY.CENA_SENKU[1] ?? 1))}
                 <strong>Tvoj ťah</strong> — klikni na {kolkoMozemBrat === 2 ? "1 alebo 2 karty" : "kartu"} v šenku (alebo ich potiahni do ruky) a daj
                 „hotovo“ (1 karta ={" "}
                 {cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty = {cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}), alebo už neťahaj. Limit vykladania: {limitTeraz}.
@@ -3799,7 +3818,10 @@ export function HernaPlocha({
             ) : view.senok.length === 0 ? (
               "Šenok je prázdny."
             ) : (
-              `Nemáš cigaretu — zo šenku už nevezmeš. Limit vykladania v tomto kole: ${limitTeraz}.`
+              <>
+                {pripomienkaZajatia(cigJa)}
+                Nemáš cigaretu — zo šenku už nevezmeš. Limit vykladania v tomto kole: {limitTeraz}.
+              </>
             ),
           ...(mobil
             ? {}
@@ -4524,6 +4546,17 @@ export function HernaPlocha({
                     <b className="cislo">{zvysok}</b> prepadne
                   </span>
                 )}
+                {/* Tlačidlá smerov nie sú (smer je daný pravidlami) — kým nič nevybral, bublina povie, kam ťuknúť. */}
+                {ide === 0 && m > 0 && (
+                  <>
+                    <span className="pil-sep">·</span>{" "}
+                    {/* Medzera: na telefóne je oddeľovač skrytý a vety by sa zliali. */}
+                    <span>
+                      <span className="len-mys">klikni</span>
+                      <span className="len-dotyk">ťukni</span> na staršieho
+                    </span>
+                  </>
+                )}
                 {bitka !== null && <span className="pil-sep">·</span>}
                 {bitka !== null && (
                   <span title="Priazeň sa hádkou mení hneď — platí už v tejto bitke (do konca kola).">
@@ -4576,7 +4609,7 @@ export function HernaPlocha({
       },
     };
   };
-  // Hádku a Nakladačku rozdeľuje hráč krígľom pri staršom (rozdelenieStarsieho, mock C · Pečať).
+  // Hádku a Nakladačku rozdeľuje hráč ťukom na staršieho (rozdelenieStarsieho, mock C · Pečať).
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
     if (!somNaTahu) return undefined;
     // Pokus o zajatie (v9): staršieho, ktorý sa ma bojí na stupni 3, skúsim zajať.
@@ -4710,7 +4743,7 @@ export function HernaPlocha({
     return undefined;
   };
   /**
-   * Starší pri rozdeľovaní (mock C · Pečať): smer (krígeľ) s pravítkom, ceny polí a nepotvrdený posun z plánu
+   * Starší pri rozdeľovaní (mock C · Pečať): výber s pravítkom, ceny polí a nepotvrdený posun z plánu
    * jadra. Starší v pláne má body zo svojho miesta v poradí, ostatní zo zvyšku po pláne (nový posun ide
    * na koniec) — ako prepniVolbu a server. Hádka (v10) posúva polohu účinnej priazne, nie marker —
    * ceny a cieľ sa rátajú od nej (polohyRozdelenia), smer je vždy k víťazovi.
@@ -4722,7 +4755,7 @@ export function HernaPlocha({
     const krok = planDelenia.kroky.find((k) => k.elderId === e.elderId);
     const body = krok?.body ?? rozpocetPoPlane(view, ja, planDelenia, e.elderId);
     const ceny: ({ readonly cena: number; readonly dosah: boolean } | null)[] = Array.from({ length: 7 }, () => null);
-    const sipky: { ja?: RozdelenieStarsieho["sipky"]["ja"]; su?: RozdelenieStarsieho["sipky"]["su"] } = {};
+    let vyber: RozdelenieStarsieho["vyber"];
     const z = polohyDelenia.get(e.elderId);
     if (smerDelenia !== null && z !== undefined) {
       for (let m = posunMarker({ marker: z }, smerDelenia); m !== null; m = posunMarker({ marker: m }, smerDelenia)) {
@@ -4730,18 +4763,20 @@ export function HernaPlocha({
         ceny[m] = { cena, dosah: cena <= body };
       }
       const posun = body > 0 ? posunZaBody({ marker: z }, smerDelenia, body) : null;
-      sipky[smerDelenia === ja ? "ja" : "su"] = {
+      vyber = {
         posun: posun === null ? null : { na: posun.marker, cena: posun.cena },
         aktivna: krok !== undefined,
         klik: () => prepniDelenie({ elderId: e.elderId }),
         pravitko: pravitkoPosunu(z, smerDelenia, body),
+        smer: smerDelenia === ja ? "ja" : "su",
+        kraj: posunMarker({ marker: z }, smerDelenia) === null,
       };
     }
     return {
-      sipky,
+      vyber,
       ceny,
       navrh: krok === undefined ? null : { na: krok.na, cena: krok.cena },
-      mrtvy: krok === undefined && !Object.values(sipky).some((x) => x?.posun != null),
+      mrtvy: krok === undefined && vyber?.posun == null,
       ...(krokDelenia === "hadka" ? { hadka: true } : {}),
     };
   };
@@ -4768,7 +4803,7 @@ export function HernaPlocha({
       bodkaPoKliku:
         krokStarsich?.typ === "hadka" && rozdelenie !== undefined
           ? (() => {
-              const na = rozdelenie.navrh?.na ?? rozdelenie.sipky.ja?.posun?.na;
+              const na = rozdelenie.navrh?.na ?? rozdelenie.vyber?.posun?.na;
               return na === undefined ? null : polohaPreHraca(na, ja);
             })()
           : klik !== undefined && krokStarsich?.typ === "hadka"

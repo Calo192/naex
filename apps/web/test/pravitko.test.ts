@@ -8,7 +8,7 @@ import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import { loadGameData, posunZaBody, setupGame, type MarkerPos, type PlayerId } from "@naex/core";
-import { LiniaStarsich, type RozdelenieStarsieho, type SipkaRozdelenia } from "../src/hra/LiniaStarsich.tsx";
+import { LiniaStarsich, type RozdelenieStarsieho, type VyberRozdelenia } from "../src/hra/LiniaStarsich.tsx";
 import { pravitkoPosunu } from "../src/hra/pravitko.ts";
 
 describe("pravitkoPosunu", () => {
@@ -50,9 +50,9 @@ describe("pravítko pod stupnicou", () => {
   const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
   const elder = { ...setupGame(data, 5).starsi[0]!, marker: 4 as MarkerPos };
   const ceny = Array.from({ length: 7 }, () => null);
-  const smer = (smerK: PlayerId, body: number): SipkaRozdelenia => {
+  const smer = (smerK: PlayerId, body: number): VyberRozdelenia => {
     const p = pravitkoPosunu(4, smerK, body);
-    return { posun: p.polia === 0 ? null : { na: (4 + (smerK === 0 ? -p.polia : p.polia)) as MarkerPos, cena: p.cena }, aktivna: false, klik: () => {}, pravitko: p };
+    return { posun: p.polia === 0 ? null : { na: (4 + (smerK === 0 ? -p.polia : p.polia)) as MarkerPos, cena: p.cena }, aktivna: false, klik: () => {}, pravitko: p, smer: smerK === 0 ? "ja" : "su", kraj: false };
   };
   const linia = (r: RozdelenieStarsieho, krok: string): string =>
     renderToStaticMarkup(
@@ -68,7 +68,7 @@ describe("pravítko pod stupnicou", () => {
     );
 
   it("Nakladačka: jedno pravítko cez celú šírku s rozpočtom, poliami a zámkom za čiarou", () => {
-    const html = linia({ sipky: { ja: smer(0, 5) }, ceny, navrh: null, mrtvy: false }, "prebytok");
+    const html = linia({ vyber: smer(0, 5), ceny, navrh: null, mrtvy: false }, "prebytok");
     expect(html).toContain('class="lsp-rad jeden"');
     expect(html.match(/class="lsp ja"/g)).toHaveLength(1);
     expect(html.match(/class="lsp-dielik z\d"/g)).toHaveLength(3);
@@ -80,17 +80,16 @@ describe("pravítko pod stupnicou", () => {
     expect(html).toContain('aria-label="Farár: o 3 polia za 5 z 5, ďalšie pole stojí 3"');
   });
 
-  it("Pohoršenie: dve pravítka nad krígľom a päsťou, bez šípok", () => {
-    const html = linia({ sipky: { ja: smer(0, 2), su: smer(1, 2) }, ceny, navrh: null, mrtvy: false }, "pohorsenie");
-    expect(html).toMatch(/class="lsp-rad"><span class="lsp ja"[^]*<span class="lsp su"/);
-    expect(html).not.toContain("lsp-body");
-    expect(html).toContain('aria-label="Farár: o 1 pole za 2 z 2, ďalšie pole stojí 1"');
+  it("Nakladačka, ktorú držíš ty (k súperovi): jedno pravítko, smer sa nevyberá (Michal 2026-11-01)", () => {
+    const html = linia({ vyber: smer(1, 2), ceny, navrh: null, mrtvy: false }, "prebytok");
+    expect(html.match(/class="lsp su"/g)).toHaveLength(1);
+    expect(html).not.toContain("class=\"lsp ja\"");
     expect(html).toContain('aria-label="Farár: o 1 pole za 2 z 2, ďalšie pole stojí 3"');
     expect(html).not.toMatch(/[◀▶]/);
   });
 
   it("keď body nestačia ani na jedno pole, pravítko ukáže hneď zámok", () => {
-    const html = linia({ sipky: { ja: smer(0, 1) }, ceny, navrh: null, mrtvy: true }, "prebytok");
+    const html = linia({ vyber: smer(0, 1), ceny, navrh: null, mrtvy: true }, "prebytok");
     expect(html).toContain('aria-label="Farár: 1 nestačí ani na jedno pole (stojí 2)"');
     expect(html).toContain("nestačí");
     expect(html).toContain('class="lsp-ciara" style="left:50.00%"');
@@ -104,7 +103,7 @@ describe("pravítko po rozdaní", () => {
     const p = pravitkoPosunu(elder.marker, 0, 0);
     const html = renderToStaticMarkup(
       createElement(LiniaStarsich, {
-        starsi: [{ elder, meno: "Farár", obrazok: null, body: undefined, patron: null, rozdelenie: { sipky: { ja: { posun: null, aktivna: false, klik: () => {}, pravitko: p } }, ceny: Array.from({ length: 7 }, () => null), navrh: null, mrtvy: true } }],
+        starsi: [{ elder, meno: "Farár", obrazok: null, body: undefined, patron: null, rozdelenie: { vyber: { posun: null, aktivna: false, klik: () => {}, pravitko: p, smer: "ja", kraj: false }, ceny: Array.from({ length: 7 }, () => null), navrh: null, mrtvy: true } }],
         data,
         ja: 0,
         pohlad: 0,

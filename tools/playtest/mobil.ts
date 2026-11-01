@@ -7,7 +7,7 @@
 // Návod pre agenta: tools/playtest/mobil-playtest.md.
 //
 //   M = node --experimental-strip-types --no-warnings tools/playtest/mobil.ts
-//   $M zaloz [1–3] [--url http://localhost:8790] [--web http://localhost:5176] [--displej 762x340|800x330|844x350|915x380|780x300]
+//   $M zaloz [1–3] [--url http://localhost:8790] [--web http://localhost:5176] [--displej 762x340|800x330|844x350|915x380|780x300|1366x650|1440x800|1920x1080]
 //            [--kola 1] [--liga kratka|stredna|dlha] [--hraci "Palec,Ukazovák"]
 //   $M <R> <n> partia                  založí partiu proti botovi (liga relácie) a otvorí stôl
 //   $M <R> <n> pozri                   snímka + ťukateľné prvky + upozornenia z DOM
@@ -29,7 +29,9 @@
 // Snímka je v CSS px okna telefónu (762×340), takže súradnice zo snímky platia pre tuk;
 // ostré detaily v skutočnej hustote dá „detail“. Emulácia: viewport s mobile=true,
 // devicePixelRatio 3, dotyk (pointer: coarse — zariadenie.ts spozná telefón), user-agent
-// Chrome na Androide. Natočenie drží strážca (proces pri prehliadači), príkaz otoc mu ho
+// Chrome na Androide. Okno vyššie ako 500 px (--displej 1366x650 a pod.) je počítač: bez
+// emulácie telefónu, DPR 1, myš — tuk = klik, podrz = myš nad bodom (nápoveda), potiahni = ťahanie
+// myšou; otoc nie je. Natočenie drží strážca (proces pri prehliadači), príkaz otoc mu ho
 // pošle súborom zaznam/orientacia.json.
 
 import { spawn } from "node:child_process";
@@ -50,6 +52,7 @@ import {
   UA_TELEFONU,
   bodCiela,
   citajDisplej,
+  jePocitac,
   citajLigu,
   odohraneKola,
   oknoDispleja,
@@ -210,9 +213,15 @@ async function zaloz(): Promise<void> {
     await cdp.js(`fetch('/api/vyucba/preskocit',{method:'POST',headers:{'x-naex':'1'}}).then(r=>r.status)`).catch(() => 0);
     await cdp.posli("Page.navigate", { url: `${web}/hra` });
     await pockaj(1200);
-    const telefon = await cdp.js<boolean>(`matchMedia('(pointer: coarse) and (orientation: landscape) and (max-height: 500px)').matches`);
-    cdp.zavri();
-    if (!telefon) throw new Error("Prehliadač sa netvári ako telefón na šírku (pointer: coarse) — emulácia zlyhala.");
+    if (jePocitac(displej)) {
+      const mys = await cdp.js<boolean>(`matchMedia('(pointer: fine)').matches && !matchMedia('(max-height: 500px)').matches`);
+      cdp.zavri();
+      if (!mys) throw new Error("Prehliadač sa netvári ako počítač s myšou (pointer: fine) — emulácia zlyhala.");
+    } else {
+      const telefon = await cdp.js<boolean>(`matchMedia('(pointer: coarse) and (orientation: landscape) and (max-height: 500px)').matches`);
+      cdp.zavri();
+      if (!telefon) throw new Error("Prehliadač sa netvári ako telefón na šírku (pointer: coarse) — emulácia zlyhala.");
+    }
     hraci.push({ n, meno: menoAgenta(meno), login: ucet.login, cdpPort, chromePid: ch.pid ?? 0, strazcaPid: strazca.pid ?? 0 });
   }
 
@@ -220,7 +229,7 @@ async function zaloz(): Promise<void> {
   writeFileSync(join(r, "mobil.json"), `${JSON.stringify(rel, null, 2)}\n`);
   const rr = lomky(r);
   console.log(`Playtest mobilu založený: ${rr}`);
-  console.log(`Web: ${web} (API ${url}), telefón ${displej.sirka}×${displej.vyska} na šírku, DPR ${DPR}, dotyk; liga ${liga}, koniec po ${kola} ${kola === 1 ? "kole" : "kolách"}`);
+  console.log(`Web: ${web} (API ${url}), ${jePocitac(displej) ? `počítač ${displej.sirka}×${displej.vyska}, myš` : `telefón ${displej.sirka}×${displej.vyska} na šírku, DPR ${DPR}, dotyk`}; liga ${liga}, koniec po ${kola} ${kola === 1 ? "kole" : "kolách"}`);
   for (const h of hraci) console.log(`Playtester ${h.n}: ${h.meno} (${h.login}, subadmin) — lobby /hra; partiu založí: mobil.ts ${rr} ${h.n} partia`);
   console.log(`Zastaví: tools/playtest/mobil.ts ${rr} ukonci`);
   process.exit(0);
@@ -278,6 +287,15 @@ async function strazca(): Promise<void> {
   });
   await cdp.posli("Network.enable");
   await cdp.posli("Runtime.enable");
+  if (jePocitac(displej)) {
+    // Počítač: len rozmer okna — žiadny dotyk, user-agent ani predstieraná celá obrazovka.
+    await cdp.posli("Emulation.setDeviceMetricsOverride", { width: displej.sirka, height: displej.vyska, deviceScaleFactor: 1, mobile: false });
+    stav.pripraveny = true;
+    uloz();
+    console.log(`Strážca playtestera ${n} beží (počítač ${displej.sirka}×${displej.vyska}).`);
+    await cdp.koniec;
+    process.exit(0);
+  }
   const natoc = async (naVysku: boolean): Promise<void> => {
     const o = oknoDispleja(displej, naVysku);
     await cdp.posli("Emulation.setDeviceMetricsOverride", {
@@ -550,6 +568,24 @@ async function akcia(): Promise<void> {
   const cdp = await pripojCdp(h.cdpPort);
   const dotyk = (type: "touchStart" | "touchMove" | "touchEnd", bod?: { x: number; y: number }) =>
     cdp.posli("Input.dispatchTouchEvent", { type, touchPoints: bod === undefined ? [] : [{ x: bod.x, y: bod.y, id: 1, radiusX: 8, radiusY: 8, force: 1 }] });
+  // Počítač: myš namiesto prsta (ľavé tlačidlo; pri pohybe so stlačeným ťahá).
+  const pocitac = jePocitac(rel.displej);
+  const mys = (type: "mouseMoved" | "mousePressed" | "mouseReleased", bod: { x: number; y: number }, stlacene = false) =>
+    cdp.posli("Input.dispatchMouseEvent", { type, x: bod.x, y: bod.y, button: type === "mouseMoved" && !stlacene ? "none" : "left", buttons: stlacene || type === "mousePressed" ? 1 : 0, clickCount: type === "mouseMoved" ? 0 : 1 });
+  let posledny = { x: 0, y: 0 };
+  const prst = async (type: "touchStart" | "touchMove" | "touchEnd", bod?: { x: number; y: number }): Promise<void> => {
+    if (!pocitac) {
+      await dotyk(type, bod);
+      return;
+    }
+    const b = bod ?? posledny;
+    posledny = b;
+    if (type === "touchStart") {
+      await mys("mouseMoved", b);
+      await mys("mousePressed", b);
+    } else if (type === "touchMove") await mys("mouseMoved", b, true);
+    else await mys("mouseReleased", b);
+  };
   const extra: string[] = [];
   let popis = prikaz;
   switch (prikaz) {
@@ -562,9 +598,9 @@ async function akcia(): Promise<void> {
       const body = (ciele.length === 0 ? [undefined] : ciele).map((c) => bodCiela(c, prvky, prikaz));
       for (const [i, b] of body.entries()) {
         if (i > 0) await pockaj(400);
-        await dotyk("touchStart", b);
+        await prst("touchStart", b);
         await pockaj(70);
-        await dotyk("touchEnd");
+        await prst("touchEnd");
       }
       popis = `ťuk ${ciele.map((c, i) => `${c} (${body[i]?.x},${body[i]?.y})`).join(", ")}`;
       break;
@@ -572,6 +608,13 @@ async function akcia(): Promise<void> {
     case "podrz": {
       const b = bodCiela(volne[3], prvky, prikaz);
       const ms = Math.max(Number(volba("--ms") ?? "700"), 100);
+      if (pocitac) {
+        // Na počítači „podržať“ = myš nad bodom: nápoveda sa ukáže pri prejdení myšou.
+        await mys("mouseMoved", b);
+        await pockaj(ms);
+        popis = `myš nad ${volne[3]} (${b.x},${b.y})`;
+        break;
+      }
       await dotyk("touchStart", b);
       await pockaj(ms);
       // Čo hráč vidí, kým drží prst (lupa) — po pustení sa môže zavrieť.
@@ -585,16 +628,17 @@ async function akcia(): Promise<void> {
     case "potiahni": {
       const a = bodCiela(volne[3], prvky, prikaz);
       const b = bodCiela(volne[4], prvky, prikaz);
-      await dotyk("touchStart", a);
+      await prst("touchStart", a);
       for (let i = 1; i <= 15; i++) {
-        await dotyk("touchMove", { x: Math.round(a.x + ((b.x - a.x) * i) / 15), y: Math.round(a.y + ((b.y - a.y) * i) / 15) });
+        await prst("touchMove", { x: Math.round(a.x + ((b.x - a.x) * i) / 15), y: Math.round(a.y + ((b.y - a.y) * i) / 15) });
         await pockaj(25);
       }
-      await dotyk("touchEnd");
+      await prst("touchEnd", b);
       popis = `potiahnutie ${volne[3]} → ${volne[4]}`;
       break;
     }
     case "otoc": {
+      if (pocitac) throw new Error("Počítač sa neotáča — otoc je len pre telefón.");
       const naVysku = !stavPred.naVysku;
       writeFileSync(suborOrientacie(r, n), JSON.stringify({ naVysku }));
       if ((await cakajNaStav(r, n, (s) => s.naVysku === naVysku, 5000)) === null) throw new Error("Strážca telefón neotočil — beží ešte relácia?");
@@ -681,7 +725,8 @@ async function akcia(): Promise<void> {
     `${JSON.stringify({ t: Date.now(), akcia: popis, url: obr.url, naVysku: stav.naVysku, kolo: stav.kolo, faza: stav.faza, chyby: noveChyby.map((c) => c.text), konzola: novaKonzola.map((c) => c.text), upozornenia: obr.upozornenia.length, maleCiele: obr.prvky.filter((p) => p.w < MALY_CIEL || p.h < MALY_CIEL).length, snimka: lomky(snimka) })}\n`,
   );
 
-  const out: string[] = [`Snímka: ${lomky(snimka)}  ← pozri ju (Read); telefón ${stav.naVysku ? "NA VÝŠKU" : "na šírku"} ${oknoPo.sirka}×${oknoPo.vyska} CSS px = súradnice pre tuk`];
+  const zariadenie = pocitac ? `počítač ${oknoPo.sirka}×${oknoPo.vyska} CSS px = súradnice pre tuk (klik myšou)` : `telefón ${stav.naVysku ? "NA VÝŠKU" : "na šírku"} ${oknoPo.sirka}×${oknoPo.vyska} CSS px = súradnice pre tuk`;
+  const out: string[] = [`Snímka: ${lomky(snimka)}  ← pozri ju (Read); ${zariadenie}`];
   out.push(...extra);
   out.push(`Stránka: ${obr.url}${obr.vyskaStranky > oknoPo.vyska + 4 ? ` (stránka je vysoká ${obr.vyskaStranky} px — posun prstom: potiahni)` : ""}`);
   out.push(...popisPartie(stav, rel.kola));
