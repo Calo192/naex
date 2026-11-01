@@ -1171,7 +1171,7 @@ export function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [Acti
       abstaky: verejneAbstaky(s, p),
       // Bitkár v5 (Michal 2026-10-24): +1 / +2 / +3 tuhého, nie dvojnásobok — účinnou silou po hádke.
       priazenBitkara: silaPriazne(data, s, "BITKAR", p),
-      // Svätý text (Dedičstvo, v10): hodnota tvojej Viery je o 1 vyššia — aj proti Poverám.
+      // Svätý text (Dedičstvo): hodnota tvojej Viery je o 1 vyššia — len v tlmení tuhého, Povery ruší 1 : 1.
       hodnotaViery: hodnotaViery() + (vDedicstve(s, p, "svaty_text") ? KONSTANTY.EFEKT.SVATY_TEXT_VIERA : 0),
       // Veriaci (Michal 2026-10-20): Viera navyše rovná sile priazne, nie vyššia hodnota každej
       // Viery. Proti Poverám so silou pred hádkou, v tlmení tuhého po nej (v10, H2).
@@ -4674,6 +4674,15 @@ function existujeLegalnyPrebytok(s: MutState, drzi: PlayerId): boolean {
  * udalosť obom), nová pozícia, zaplatené a držané stupne strachu (v8.3, sPosunutymMarkerom).
  */
 function presunMarker(s: MutState, events: Event[], elder: DeepMutable<ElderState>, na: MarkerPos, zdroj: PosunMarkera["zdroj"], kto: PlayerId): void {
+  // Sila z hádky je do konca kola pevná (Michal 2026-11-01): keď marker staršieho, ktorého hádka
+  // posunula, pohne Nakladačka, klebety sa posunú opačne — účinná priazeň ostane, zmení sa len strach.
+  const klebety = s.bitkaStav?.klebety;
+  const k = klebety?.[elder.elderId];
+  if (klebety !== undefined && k !== undefined && s.bitkaStav !== null) {
+    const nove: Record<string, number> = { ...klebety, [elder.elderId]: k + (na - elder.marker) };
+    if (nove[elder.elderId] === 0) delete nove[elder.elderId];
+    s.bitkaStav.klebety = nove;
+  }
   if (elder.marker !== na) {
     const posun: PosunMarkera = { elderId: elder.elderId, z: elder.marker, na, zdroj, kto };
     s.posunyMarkerov.push(posun);
@@ -5223,11 +5232,15 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
     }
   }
 
-  // Klebety hádky (v10) idú na nástenku pod víťaza hádky — súhrn kola ich ukáže, keď bitka zo stola zmizne.
-  const vitazHadky = b.hadka?.vitaz ?? null;
+  // Hádka (v10) ide na nástenku pod víťaza — o koľko stupňov posunul silu priazne ktorého staršieho
+  // (z výberov hádky, nie z klebiet: tie Nakladačka po hádke vyrovnáva, aby sila ostala pevná).
+  const hd = b.hadka;
   const zaznamBitky = s.nastenka[s.nastenka.length - 1];
-  if (zaznamBitky !== undefined && zaznamBitky.kolo === s.kolo && vitazHadky !== null && b.klebety !== undefined && Object.keys(b.klebety).length > 0) {
-    zaznamBitky.povery = vitazHadky === 0 ? [{ ...b.klebety }, {}] : [{}, { ...b.klebety }];
+  if (zaznamBitky !== undefined && zaznamBitky.kolo === s.kolo && hd !== undefined && hd.vitaz !== null && hd.posuny.length > 0) {
+    const znam = (u: { readonly hrac: PlayerId | null; readonly sila: number }): number => (u.hrac === null ? 0 : u.hrac === 0 ? u.sila : -u.sila);
+    const posun: Record<string, number> = {};
+    for (const x of hd.posuny) posun[x.elderId] = (posun[x.elderId] ?? 0) + znam(x.po) - znam(x.pred);
+    zaznamBitky.povery = hd.vitaz === 0 ? [posun, {}] : [{}, posun];
   }
 
   // 6d. Zajatie (v9): víťazov pokus uspeje, ostatné zlyhajú; tretí väzeň končí hru.

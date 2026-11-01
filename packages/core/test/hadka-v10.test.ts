@@ -59,12 +59,14 @@ describe("§9 krok Hádka — mäkké poškodenie (computeDamage)", () => {
     expect(d.makke[0]).toBe(4);
   });
 
-  it("Svätý text: každá Viera zruší 2 Povery (s Horoskopom 4 mäkké); Viera, ktorá rušila, netlmí tuhé", () => {
+  it("Svätý text: jedna Viera zruší stále len jednu Poveru (aj vylepšenú Horoskopom); hodnota 2 len v tlmení tuhého", () => {
+    // Michal 2026-11-01: „1 akcia Viera zruší jednu akciu Povera — vylepšenú, nevylepšenú“.
     const bez = computeDamage([side({ sums: { Povera: 2 } }), side({ sums: { Viera: 1 }, hodnotaViery: 2 })]);
-    expect(bez.makke[0]).toBe(0);
+    expect(bez.zrusenePovery?.[0]).toBe(1);
+    expect(bez.makke[0]).toBe(1);
     const sHoroskopom = computeDamage([side({ sums: { Povera: 3, Rana: 4 }, silaPovery: 2 }), side({ sums: { Viera: 2 }, hodnotaViery: 2 })]);
-    // Prvá Viera zruší 2 Povery (4 mäkké), druhá tretiu — žiadna nezostane na tuhé.
-    expect(sHoroskopom.makke[0]).toBe(0);
+    // Dve Viery zrušia dve vylepšené Povery celé, tretia dá 2 mäkké; na tuhé Viera nezostane.
+    expect(sHoroskopom.makke[0]).toBe(2);
     expect(sHoroskopom.zvysnaViera[1]).toBe(0);
     expect(sHoroskopom.tuhe[0]).toBe(4);
     // Zvyšná Viera so Svätým textom tlmí tuhé dvakrát.
@@ -244,6 +246,34 @@ describe("§9 krok Hádka v motore", () => {
     // Prázdna línia: mäkké 0 : 0 — hádka nie je, bitka sa vyhodnotila.
     expect(events.some((e) => e.type === "bitkaVysledok")).toBe(true);
     expect(state.bitkaStav === null || state.bitkaStav.krok !== "hadka").toBe(true);
+  });
+
+  it("sila z hádky je do konca kola pevná: Nakladačka pohne markerom Fajčiara, cigareta po bitke ostane z hádky", () => {
+    // Michal 2026-11-01: „sila z hádky ostane pevná“ — Nakladačka zmení len marker (strach).
+    const s = vHadke({ velkost: 1, sums: [{ Rana: 1 }, {}] });
+    const fajciar = idPriazne(s, "FAJCIAR");
+    const cig = [s.hraci[0].cigarety, s.hraci[1].cigarety];
+    const t = apply(data, s, { type: "hadka", elderId: fajciar }, 0).state;
+    // Hráč 0 vyhral bitku o 1, Nakladačku rozdeľuje porazený hráč 1 — dá ju Fajčiarovi.
+    expect(t.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1 });
+    const u = apply(data, t, { type: "prebytok", elderId: fajciar }, 1).state;
+    expect(u.starsi.find((e) => e.elderId === fajciar)?.marker).toBe(4);
+    // Hráč 0 dostane cigaretu od Fajčiara (sila 1 z hádky), hráč 1 len za Nakladačku.
+    expect(u.hraci[0].cigarety - cig[0]!).toBe(1);
+    expect(u.hraci[1].cigarety - cig[1]!).toBe(1);
+    // Nástenka nesie hádku ako posun o 1 k hráčovi 0 (nie vyrovnané klebety).
+    expect(u.nastenka.at(-1)?.povery).toEqual([{ [fajciar]: 1 }, {}]);
+  });
+
+  it("starší, ktorého hádka neposunula, sa po Nakladačke riadi novým markerom", () => {
+    const s = vHadke({ velkost: 1, sums: [{ Rana: 1 }, {}] });
+    const fajciar = idPriazne(s, "FAJCIAR");
+    const cig = [s.hraci[0].cigarety, s.hraci[1].cigarety];
+    const t = apply(data, s, { type: "hadka", elderId: idPriazne(s, "LAKOMEC") }, 0).state;
+    const u = apply(data, t, { type: "prebytok", elderId: fajciar }, 1).state;
+    // Fajčiar na žltej hráča 1: cigareta jemu (a cigareta za Nakladačku), hráčovi 0 nič.
+    expect(u.hraci[0].cigarety - cig[0]!).toBe(0);
+    expect(u.hraci[1].cigarety - cig[1]!).toBe(2);
   });
 
   it("rozdelenie hádky je verejné — súper vidí mäkké, zvyšok aj klebety", () => {

@@ -635,7 +635,7 @@
         "packages/core/test/naradie.test.ts › Horoskop (v10): tvoje Povery majú silu 2 — klebety z hádky do ďalšieho kola neprejdú",
         "packages/core/test/naradie.test.ts › Krištáľová guľa: Vízia ponúkne aj druhú kartu zhora — tá ide do ruky, vrchná ostane navrchu",
         "packages/core/test/hadka-v10.test.ts › NA EX moje aktívne Pohoršenia nezruší (ostatné áno)",
-        "packages/core/test/hadka-v10.test.ts › Svätý text: každá Viera zruší 2 Povery (s Horoskopom 4 mäkké); Viera, ktorá rušila, netlmí tuhé"
+        "packages/core/test/hadka-v10.test.ts › Svätý text: jedna Viera zruší stále len jednu Poveru (aj vylepšenú Horoskopom); hodnota 2 len v tlmení tuhého"
       ],
       "poznamka": "Michal 2026-10-30, docs/napady/naradie-akcie.html (Rozhodnuté). Karty pridá Admin do sady. v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
@@ -979,7 +979,7 @@
     {
       "id": "9.hadka.makke",
       "paragraf": "9. Bitka › 9.1 Hádka (v10)",
-      "pravidlo": "Viera (s Veriacim pred hádkou) a Povery sa vyrušia 1 : 1 na kusy (Svätý text: každá Viera 2; Čierna mačka: jej Povery nie); mäkké = Pohoršenie × 2 + zvyšné Povery × sila Povery; víťaz hádky = vyššie mäkké, hádka = rozdiel, rovnosť = nikto.",
+      "pravidlo": "Viera (s Veriacim pred hádkou) a Povery sa vyrušia 1 : 1 na kusy (jedna Viera jednu Poveru aj vylepšenú Horoskopom — Svätý text rušenie nemení, Michal 2026-11-01; Čierna mačka: jej Povery nie); mäkké = Pohoršenie × 2 + zvyšné Povery × sila Povery; víťaz hádky = vyššie mäkké, hádka = rozdiel, rovnosť = nikto.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/hadka-v10.test.ts › Ana a Boris: Borisova Viera zruší jednu Aninu Poveru — mäkké 5 : 3, Ana vyhrala hádku o 2",
@@ -992,7 +992,7 @@
     {
       "id": "9.hadka.rozdelenie",
       "paragraf": "9. Bitka › 9.1 Hádka (v10)",
-      "pravidlo": "Víťaz hádky rozdelí hádku na sily priazní starších len k sebe (súperovi nesmie), vyberá len staršieho; cena podľa zóny ako Nakladačka (von 1/2/3, k stredu 2/3/4), strop sila 3, zvyšok bez posunu prepadne; marker sa nehýbe; platí do konca kola (bitka, exekúcia, po bitke).",
+      "pravidlo": "Víťaz hádky rozdelí hádku na sily priazní starších len k sebe (súperovi nesmie), vyberá len staršieho; cena podľa zóny ako Nakladačka (von 1/2/3, k stredu 2/3/4), strop sila 3, zvyšok bez posunu prepadne; marker sa nehýbe; platí do konca kola (bitka, exekúcia, po bitke) a je pevná — Nakladačka po hádke zmení len marker staršieho, ktorého hádka posunula (Michal 2026-11-01).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/hadka-v10.test.ts › Ana vyhrala hádku o 2: Fajčiar aj Robota zo stredu na jej žltú — cigareta po bitke a spálený Dlh; markery v strede",
@@ -1003,7 +1003,9 @@
         "packages/core/test/pravidla-v5.test.ts › víťaz vyberá len staršieho; priazeň ide k nemu a platí už v poškodení tejto bitky, marker stojí",
         "packages/core/test/pravidla-v5.test.ts › strop 3: na staršieho, ktorého priazeň je už víťazova v sile 3, hádka nesmie",
         "packages/core/test/pravidla-v5.test.ts › cena podľa zóny ako Nakladačka: súperovu silu 3 na stred za 4 + 3 + 2 = 9, potom k sebe na 1 za 1",
-        "packages/core/test/strach-udrzanie.test.ts › hádka stupeň neodtlačí (v10): zníži priazeň na toto kolo, marker a udržaný strach ostanú"
+        "packages/core/test/strach-udrzanie.test.ts › hádka stupeň neodtlačí (v10): zníži priazeň na toto kolo, marker a udržaný strach ostanú",
+        "packages/core/test/hadka-v10.test.ts › sila z hádky je do konca kola pevná: Nakladačka pohne markerom Fajčiara, cigareta po bitke ostane z hádky",
+        "packages/core/test/hadka-v10.test.ts › starší, ktorého hádka neposunula, sa po Nakladačke riadi novým markerom"
       ],
       "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },

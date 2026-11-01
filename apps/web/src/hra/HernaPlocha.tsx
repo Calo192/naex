@@ -4742,6 +4742,7 @@ export function HernaPlocha({
       ceny,
       navrh: krok === undefined ? null : { na: krok.na, cena: krok.cena },
       mrtvy: krok === undefined && !Object.values(sipky).some((x) => x?.posun != null),
+      ...(krokDelenia === "hadka" ? { hadka: true } : {}),
     };
   };
   const starsiVLinii: StarsiVLinii[] = view.starsi.map((e) => {

@@ -212,11 +212,11 @@ describe("rekapitulácia bitky", () => {
             // Viera a Povera (v10): rušia sa na kusy — moja Viera zruší 1 súperovu Poveru (Svätý text 2).
             expect(sucet(r.povera, p) - r.zrusenaPovera[p]).toBe(d.zvysnaPovera[p]);
             expect(r.zrusenaViera[p]).toBe(d.vieraNaPovery?.[p] ?? 0);
-            expect(r.zrusenaPovera[q]).toBeGreaterThanOrEqual(r.zrusenaViera[p]);
-            expect(r.zrusenaPovera[q]).toBeLessThanOrEqual(r.zrusenaViera[p] * 2);
+            // Jedna Viera zruší jednu Poveru (Svätý text rušenie nemení, Michal 2026-11-01).
+            expect(r.zrusenaPovera[q]).toBe(r.zrusenaViera[p]);
             // Čierna mačka (v8.3): Povery jej majiteľa sa Vierou nerušia.
             const macka = [...(e.strany?.[0] ?? []), ...(e.strany?.[1] ?? [])].some((pl) => pl.card.defId === "cierna_macka" && pl.playedBy === q);
-            if (!macka) expect([Math.min(sucet(r.viera, p), sucet(r.povera, q)), Math.min(2 * sucet(r.viera, p), sucet(r.povera, q))]).toContain(r.zrusenaPovera[q]);
+            if (!macka) expect(r.zrusenaPovera[q]).toBe(Math.min(sucet(r.viera, p), sucet(r.povera, q)));
             // Mäkké (v10) = Pohoršenie × 2 + zvyšné Povery × sila Povery; celkové = tuhé.
             expect(r.zvysnaPovera[p]).toBe(d.zvysnaPovera[p]);
             expect(r.makke?.[p]).toBe(d.makke[p]);

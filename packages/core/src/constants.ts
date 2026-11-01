@@ -212,7 +212,7 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // v9.3 (Michal 2026-10-31) bez novej značky: Výtržník prebíja Úplatok.
 // v10 (Michal 2026-11-01, docs/napady/hadka.html): Hádka — Povery a Pohoršenie sú mäkké
 // poškodenie, víťaz hádky posunie priazne starších k sebe do konca kola (marker sa nehýbe);
-// Abstinent odpúšťa Absťáky, nové Telefón, Horoskop a Svätý text.
+// Abstinent odpúšťa Absťáky, nové Telefón, Horoskop (Svätý text ostáva len na tuhé).
 export const VERZIA_PRAVIDIEL = "v10";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má

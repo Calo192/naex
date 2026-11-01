@@ -997,7 +997,7 @@ function VieraPovera({
     const kto2 = kto === ja ? "ja" : "su";
     const videne = z.filter((x) => vid(x.uid)).length;
     let ucinok: ReactNode = null;
-    // Viera (v10) najprv ruší súperove Povery na kusy (Svätý text: každá 2), zvyšná uberá tuhé.
+    // Viera (v10) najprv ruší súperove Povery 1 : 1 na kusy, zvyšná uberá tuhé.
     const zrusilaPovier = druh === "Viera" ? r.zrusenaPovera[kto === ja ? su : ja] : 0;
     if (ucinkuje && druh === "Viera" && (r.vieraUbera[kto] > 0 || zrusilaPovier > 0)) {
       ucinok = (

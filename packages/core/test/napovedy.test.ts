@@ -90,14 +90,19 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     expect(ids(cintorin, 0)).not.toContain("lokalita-pravidlo");
   });
 
-  it("Pohoršenie (v10): nápoveda o posune markera sa v hádke nespúšťa, kým ju Vymyselník neprepíše", () => {
+  it("hádka (v10, id pohorsenie): víťaz hádky dostane „moje“, súper „superove“", () => {
     const s = {
       ...s0,
       faza: "bitka",
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] },
       bitkaStav: { krok: "hadka", caka: 1, sums: [{}, {}], exekutorHotovy: [true, true], hadka: { makke: [0, 2], vitaz: 1, velkost: 2, zostava: 2, prepadlo: 0, posuny: [] } },
     } as unknown as GameState;
-    for (const p of [0, 1] as const) expect(napovedy(data, katalog, viewFor(data, s, p)).some((n) => n.id === "pohorsenie")).toBe(false);
+    const text = (p: 0 | 1) => napovedy(data, katalog, viewFor(data, s, p)).find((n) => n.id === "pohorsenie")?.text ?? "";
+    expect(text(1)).toMatch(/^Hádku si vyhral: máš viac mäkkého poškodenia/);
+    expect(text(0)).toMatch(/^Hádku vyhral súper: má viac mäkkého poškodenia/);
+    // Remíza v hádke: nikto nerozdeľuje, nápoveda nie je.
+    const remiza = { ...s, bitkaStav: { ...(s.bitkaStav as object), hadka: { makke: [1, 1], vitaz: null, velkost: 0, zostava: 0, prepadlo: 0, posuny: [] } } } as unknown as GameState;
+    expect(napovedy(data, katalog, viewFor(data, remiza, 0)).some((n) => n.id === "pohorsenie")).toBe(false);
   });
 
   it("priazeň a vydesenie: meno staršieho z karty a variant podľa toho, koho sa bojí", () => {

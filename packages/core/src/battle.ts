@@ -29,10 +29,7 @@ export interface BattleSide {
   readonly poveryBezViery?: boolean;
   /** Priazeň Bitkára, ak ju mám (inak 0) — tuhé poškodenie navyše, účinnou silou po hádke. */
   readonly priazenBitkara: number;
-  /**
-   * Hodnota jednej MOJEJ Viery = 1 + Svätý text — v tlmení tuhého aj v rušení Povier
-   * (v10: Viera so Svätým textom zruší 2 Povery).
-   */
+  /** Hodnota jednej MOJEJ Viery v tlmení tuhého = 1 + Svätý text; Povery ruší 1 : 1 bez ohľadu na hodnotu. */
   readonly hodnotaViery: number;
   /** Viera navyše z priazne Veriaceho so silou PRED hádkou — ruší Povery (v10). Chýba = 0. */
   readonly vieraVeriacehoPred?: number;
@@ -82,19 +79,15 @@ export function vysledokHadky(makke: readonly [number, number]): VysledokHadky {
 export function abstakyVBitke(abstaky: number, silaAbstinenta = 0): number {
   return Math.max(0, abstaky - silaAbstinenta);
 }
-
 export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageResult {
-  // 1. Hádka (v10, docs/napady/hadka.html): Viera a Povery sa vyrušia 1 : 1 na kusy —
-  //    moja Viera (s Veriacim pred hádkou) zruší najviac Viera × hodnota súperových Povier
-  //    (Svätý text: každá Viera dve). Čierna mačka: jej Povery sa nerušia.
+  // 1. Hádka (v10, docs/napady/hadka.html): Viera a Povery sa vyrušia 1 : 1 na kusy — jedna
+  //    akcia Viera zruší jednu akciu Povera, aj vylepšenú Horoskopom; Svätý text rušenie
+  //    nemení (Michal 2026-11-01). Čierna mačka: jej Povery sa nerušia.
   const viera = ([0, 1] as const).map((p) => n(sides[p].sums.Viera) + n(sides[p].vieraVeriacehoPred)) as [number, number];
   const povera = [n(sides[0].sums.Povera), n(sides[1].sums.Povera)] as const;
-  const zrusene = ([0, 1] as const).map((p) => {
-    const q = opponentOf(p);
-    return sides[p].poveryBezViery === true ? 0 : Math.min(povera[p], viera[q] * sides[q].hodnotaViery);
-  }) as [number, number];
-  // Viera, ktorá rušila Povery, sa na tuhé nepoužije — aj tá so Svätým textom, ktorá zrušila len jednu.
-  const vieraNaPovery = ([0, 1] as const).map((p) => Math.ceil(zrusene[opponentOf(p)] / Math.max(1, sides[p].hodnotaViery))) as [number, number];
+  const zrusene = ([0, 1] as const).map((p) => (sides[p].poveryBezViery === true ? 0 : Math.min(povera[p], viera[opponentOf(p)]))) as [number, number];
+  // Viera, ktorá rušila Povery, sa na tuhé nepoužije.
+  const vieraNaPovery = [zrusene[1], zrusene[0]] as [number, number];
   const zvysnaPovera = [povera[0] - zrusene[0], povera[1] - zrusene[1]] as const;
   // Veriaci po hádke: čo mu hádka pridala alebo ubrala, sa prejaví v tlmení tuhého.
   const zvysnaViera = ([0, 1] as const).map((p) => {

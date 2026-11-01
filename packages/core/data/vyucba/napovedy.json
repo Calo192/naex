@@ -148,12 +148,12 @@
       "spustac": {
         "kedy": "prvá hádka v bitke, ktorú niekto vyhral (v10; id ostáva pohorsenie)",
         "podmienka": "view.bitkaStav.krok === \"hadka\" && view.bitkaStav.hadka.vitaz !== null",
-        "variant": "moje, keď view.bitkaStav.caka === ja, inak superove",
+        "variant": "moje, keď view.bitkaStav.hadka.vitaz === ja, inak superove",
         "jadro": ["packages/core/src/engine.ts:272 BitkaKrok hadka", "packages/core/src/engine.ts:4722 cmdHadka", "docs/PRAVIDLA.md §9.1 Hádka (v10)"]
       },
       "melichar": {
-        "moje": "Hádku si vyhral: máš viac mäkkého, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na priazne starších, len k sebe: zo stredu na žltú 1, ďalej 2 a 3, k stredu o jedno viac. Vyberieš staršieho a priazeň ide, kým body stačia. Platí hneď, ešte v tejto bitke, a do konca kola. Stupnica stojí. Užívaj, kým môžeš.",
-        "superove": "Hádku vyhral súper: má viac mäkkého, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na priazne starších k sebe. Platia hneď, ešte v tejto bitke, a do konca kola, stupnica stojí. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
+        "moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na priazne starších: zo stredu na žltú 1, ďalej 2 a 3, k stredu o jedno viac. Vyberieš staršieho a priazeň ide, kým body stačia. Platí hneď, ešte v tejto bitke, a do konca kola. Stupnica stojí. Užívaj, kým môžeš.",
+        "superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na priazne starších k sebe. Platia hneď, ešte v tejto bitke, a do konca kola, stupnica stojí. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
       },
       "zvyraznit": ["linia-starsich"]
     },

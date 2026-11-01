@@ -57,6 +57,8 @@ export interface RozdelenieStarsieho {
   readonly navrh: { readonly na: MarkerPos; readonly cena: number } | null;
   /** Zvyšok ho už nikam neposunie — karta je tlmená. */
   readonly mrtvy: boolean;
+  /** Krok hádky (v10): posúva sa sila priazne do konca kola, nie marker — iný popis tlačidla. */
+  readonly hadka?: boolean;
 }
 
 /** Posuny jedného staršieho od poslednej bitky (do konca Zhromaždenia) — duch a štítok. */
@@ -432,11 +434,18 @@ function KartaRozdelenia({
     const cena = x.aktivna ? navrh?.cena : x.posun?.cena;
     const ok = x.aktivna || x.posun !== null;
     const sloveso = smer === "ja" ? "udobriť" : "vydesiť";
-    const popis = x.aktivna
-      ? `${s.meno}: zrušiť ${smer === "ja" ? "udobrenie" : "vydesenie"}`
-      : x.posun !== null
-        ? `${s.meno}: ${sloveso} — marker ${kam(smer)} na ${zona(x.posun.na)}, stojí ${x.posun.cena}`
-        : `${s.meno}: ${sloveso} sa teraz nedá`;
+    const popis =
+      r.hadka === true
+        ? x.aktivna
+          ? `${s.meno}: zrušiť výber hádky`
+          : x.posun !== null
+            ? `${s.meno}: hádka — priazeň k tebe na silu ${STUPNICA_ZONY[x.posun.na]} (${zona(x.posun.na)}), stojí ${x.posun.cena}; do konca kola, marker stojí`
+            : `${s.meno}: hádka sem nestačí alebo je priazeň už tvoja v sile 3`
+        : x.aktivna
+          ? `${s.meno}: zrušiť ${smer === "ja" ? "udobrenie" : "vydesenie"}`
+          : x.posun !== null
+            ? `${s.meno}: ${sloveso} — marker ${kam(smer)} na ${zona(x.posun.na)}, stojí ${x.posun.cena}`
+            : `${s.meno}: ${sloveso} sa teraz nedá`;
     const ikona = smer === "ja" ? <IkonaPriazne /> : <IkonaPaste />;
     const spat = x.aktivna ? <span className="ls-sip-spat">↶</span> : null;
     const suma = cena === undefined ? null : <small>−{cena}</small>;

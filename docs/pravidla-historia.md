@@ -2169,3 +2169,11 @@ Staré priazne a náradie:
 
 Starší v ohrození: v kole pokusu ním nehýbalo „Pohoršenie, Nakladačka ani Povery“ (O8); od v10 len
 Nakladačka (a Kšeft vily, Kapybara), hádka smie meniť silu jeho priazne (H4).
+
+## v10 — dorobky podľa Michala (2026-11-01)
+
+- **Svätý text a Povery:** prvé znenie v10 (každá Viera so Svätým textom zruší 2 Povery) Michal
+  opravil: „1 akcia Viera zruší jednu akciu Povera — vylepšenú, nevylepšenú“. Svätý text ostáva
+  „Hodnota tvojej Viery je o 1 vyššia.“ len v tlmení tuhého.
+- **Sila z hádky je pevná do konca kola:** prvé znenie počítalo priazeň po Nakladačke ako marker ±
+  posun z hádky; teraz Nakladačka staršiemu, ktorého hádka posunula, zmení len strach.

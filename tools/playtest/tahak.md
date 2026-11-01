@@ -193,7 +193,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   NA EX potom zdvojí spojené), Píšťalka (tvoje Obmedzenia uberajú aj súperove cigarety za pas), Hrable (akcia
   zrušená tvojím Odporom je tvoja ×2), Zrkadlo (tvoj Pakt kopíruje ×2), Valaška (Pecka +1 poškodenie), Telefón: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX (v10), Jogurt (Poldeci otočia
   vypitý poldeci hneď v Pitke), Energeťák (tvoje Posilnenie nemožno zrušiť NA EX), Horoskop: tvoje Povery majú silu 2
-  (v10; každá dá 2 mäkké), Svätý text: hodnota tvojej Viery je o 1 vyššia — aj proti Poverám (každá tvoja Viera zruší 2 Povery), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
+  (v10; každá dá 2 mäkké), Svätý text: hodnota tvojej Viery je o 1 vyššia (len v tlmení tuhého; Povery ruší 1 : 1), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
   karty: o jednej rozhodneš — `{"type":"vizia","vziat":true,"druha":true}` je o druhej —, druhá ostane navrchu).
   **Profesionálny tipér** (Furt): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako
   posilnená Robota.
@@ -301,14 +301,16 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (6) **Zvyšok, ktorý na žiadne pole nestačí, prepadne.** `{"type":"prebytok","elderId":…}` posiela porazený.
   **Vo finále sa Nakladačka nerozdeľuje — víťaz finále za ňu dostane 1 špak za každý bod (v9.1).**
 - **Hádka (v10, 2026-11-01) — mäkké poškodenie:** Povera a Pohoršenie **tuhé nerobia**, sú mäkké poškodenie.
-  Na začiatku bitky sa Viera (aj z Veriaceho, so silou pred hádkou) a Povery vyrušia 1 : 1 na kusy;
+  Na začiatku bitky sa Viera (aj z Veriaceho, so silou pred hádkou) a Povery vyrušia 1 : 1 na kusy —
+  jedna Viera zruší jednu Poveru, aj vylepšenú Horoskopom;
   **mäkké = Pohoršenie × 2 + zvyšné Povery × 1** (Horoskop: Povera 2). Viera proti Pohoršeniu nepomáha;
   zvyšná Viera tlmí tuhé. Kto má viac mäkkého, vyhral hádku o rozdiel; rovnosť = nikto. **Víťaz hádky rozdelí
   rozdiel mäkkého na sily priazní starších len k sebe** (`{"type":"hadka","elderId":…}`) — zníži súperovu,
   preklopí ju, zosilní tvoju; vyberáš len staršieho, sila ide pole po poli podľa ceny ako pri Nakladačke,
   **najviac na silu 3, marker sa nehýbe** (strach, udržanie ani zaplatené stupne sa nemenia). Platí **do konca
   kola** — v poškodení (Bitkár, Veriaci, Abstinent), v exekúcii (Advokát, Robota) aj po bitke (Kmotor, Fajčiar,
-  Alkoholik), potom zanikne. Porazený v hádke nerozdeľuje nič. Čo už na žiadny posun nestačí, prepadne.
+  Alkoholik), potom zanikne; **sila z hádky je pevná** — Nakladačka po bitke zmení markeru takého staršieho
+  len strach, nie priazeň. Porazený v hádke nerozdeľuje nič. Čo už na žiadny posun nestačí, prepadne.
   Víťaza bitky aj Nakladačku (rozdiel tuhého) určuje tuhé. Čierna mačka: jej majiteľove Povery sa Vierou nerušia.
 - **Remíza (v6):** pri rovnakom tuhom vyhrá, kto má **menej Absťákov**, potom **menej
   priznaných Dlhov**; inak **sekera** — špaky kola (karty v línii) vezme víťaz najbližšej bitky,

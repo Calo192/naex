@@ -96,7 +96,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   recidivista: "impl", // Prehra (v7): po bitke sa vráti do ruky (koniecBitky)
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
   starosta: "impl", // Väzeň — Kšeft: do konca kola hrany lokality posilnené (partia.ts hranyPosilnene)
-  svaty_text: "impl", // Dedičstvo (v10): hodnota tvojej Viery o 1 vyššia — aj proti Poverám (každá zruší 2; computeDamage)
+  svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
   veterinar: "impl", // Väzeň — Kšeft: Cirhóza z ruky či priznaná z hry, v tejto Pitke pečeň 0 (bezPecene)
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt (v7): priložený Chlap ide po bitke z hry (konflikt)

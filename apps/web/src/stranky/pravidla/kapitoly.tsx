@@ -544,8 +544,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <ol>
           <li>
-            <P k="viera">Viera</P> a Povery sa vyrušia 1 : 1 na kusy — tvoja Viera ruší súperove Povery a naopak (so Svätým textom
-            každá tvoja Viera zruší 2). Proti Pohoršeniu Viera nepomáha.
+            <P k="viera">Viera</P> a Povery sa vyrušia 1 : 1 na kusy — jedna tvoja Viera zruší jednu súperovu Poveru, aj vylepšenú
+            Horoskopom, a naopak. Proti Pohoršeniu Viera nepomáha.
           </li>
           <li>
             <strong>Mäkké</strong> = Pohoršenie × 2 + zvyšné Povery × 1 (s Horoskopom × 2). Kto ho má viac, <strong>vyhral hádku</strong> o
@@ -555,7 +555,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             Víťaz hádky ju rozdelí na <strong>sily priazní</strong> starších — <strong>len k sebe</strong>: súperovi priazeň zníži,
             preklopí ju k sebe alebo zosilní svoju, najviac na 3. Pole stojí ako pri Nakladačke (von zo stredu 1 / 2 / 3, k stredu
             2 / 3 / 4); čo nestačí na žiadny posun, prepadne. <strong>Marker sa nehýbe</strong> — strach ani udržanie sa nemenia.
-            Priazeň platí do konca kola: v bitke, v exekúcii aj po bitke.
+            Priazeň platí do konca kola: v bitke, v exekúcii aj po bitke — a je pevná: keď Nakladačka pohne markerom staršieho,
+            ktorého hádka posunula, zmení sa len strach.
           </li>
           <li>
             Zvyšná Viera zníži súperovo tuhé poškodenie, pod 0 neklesne. Veriaci (priazeň) ti pridá Vieru navyše — proti Poverám so

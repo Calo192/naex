@@ -76,7 +76,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "tag", pojem: "Tag", popis: "Druh karty (Občan, Zviera, Starešina, Nástroj…); odkazujú na neho efekty." },
   { id: "tuhe", pojem: "Tuhé poškodenie", popis: "Poškodenie z Rany (1), Pecky (2) a Petelice (3); kto má viac, vyhrá bitku." },
   { id: "utocnik", pojem: "Útočník a obranca", popis: "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie zo šenku prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci." },
-  { id: "viera", pojem: "Viera", popis: "Akcia, ktorá ruší súperove Povery 1 : 1 (so Svätým textom každá 2) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha." },
+  { id: "viera", pojem: "Viera", popis: "Akcia, ktorá ruší súperove Povery 1 : 1 (aj vylepšené Horoskopom) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha." },
   { id: "vizia", pojem: "Vízia", popis: "Na konci Pitky pozrieš vrchnú kartu balíčka a vezmeš si ju alebo ju navždy zahodíš." },
   { id: "vydesenie", pojem: "Vydesený", popis: "Starší na stupni 3 (krajná červená): bojí sa hráča na opačnej strane — ten ho smie po šenku skúsiť zajať." },
   { id: "vytrznik", pojem: "Výtržník", popis: "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke: všetky jej akcie sú Rany pre majiteľa, do konca bitky; Úplatok na ňu neplatí." },

@@ -18,8 +18,8 @@ dávky v9.1 Chuť, v9.2 šenok a NA EX naraz, v9.3 Výtržník prebíja Úplatok
   nerátajú sa ani pri remíze v tuhom); Pohoršenia navyše už nedáva.
 - **Veriaci** (§9.1, §9.3): proti Poverám so silou pred hádkou, rozdiel po hádke tlmí tuhé.
 - **Náradie** (§12): Telefón — tvoje Pohoršenia nemožno zrušiť Odporom a NA EX; Horoskop — tvoje
-  Povery majú silu 2 (prenášanie klebiet do ďalšieho kola zaniklo); Svätý text — hodnota tvojej
-  Viery je o 1 vyššia aj proti Poverám (každá tvoja Viera zruší 2 Povery).
+  Povery majú silu 2 (prenášanie klebiet do ďalšieho kola zaniklo). Svätý text ostáva „hodnota
+  tvojej Viery je o 1 vyššia“ len v tlmení tuhého — Povery ruší jedna Viera po jednej (Michal 2026-11-01).
 - **Starší v ohrození** (§10): hádka smie meniť silu jeho priazne; zákaz O8 ostáva pre Nakladačku.
 
 **Zmeny v9.3 oproti v9.2** (Michal 2026-10-31, interview po audite pravidiel `docs/napady/audit-pravidiel-v92.html`;
@@ -271,7 +271,7 @@ len na Občana či Starešinu, priznanie len Kliatby) alebo efekt karty.
 | Petelica | `Petelica` | 3 tuhé poškodenie |
 | Povera | `Povera` | **1 mäkké poškodenie** (v10; s Horoskopom 2) do hádky (§9.1); ruší sa so súperovou Vierou 1 : 1 na kusy |
 | Pohoršenie | `Pohoršenie` | **2 mäkké poškodenie** (v10) do hádky (§9.1); Viera ho nezruší, Telefón ho chráni pred Odporom a NA EX |
-| Viera | `Viera` | najprv zruší súperove Povery 1 : 1 na kusy (so Svätým textom každá 2), zvyšná znižuje súperovo tuhé poškodenie o hodnotu Viery (1; Svätý text v Dedičstve +1) za kus; priazeň Veriaceho pridá Vieru navyše rovnú sile (+1 / +2 / +3; proti Poverám so silou pred hádkou, §9.1) |
+| Viera | `Viera` | najprv zruší súperove Povery 1 : 1 na kusy (jedna Viera jednu Poveru, aj vylepšenú Horoskopom), zvyšná znižuje súperovo tuhé poškodenie o hodnotu Viery (1; Svätý text v Dedičstve +1) za kus; priazeň Veriaceho pridá Vieru navyše rovnú sile (+1 / +2 / +3; proti Poverám so silou pred hádkou, §9.1) |
 | Hazard | `Dlh` | zvýši **zadĺženie** o 1; každé 2 zadĺženia = 1 Dlh, hneď priznaný (počítadlo, §8; v7 zvyšok neprepadá); za priznané Dlhy príde v každej bitke Exekútor (§11) |
 | Poškodenie pečene | `PoškodeniePečene` | pridá poškodenie pečene (§8) |
 | Obmedzenie | `Obmedzenie` | súper dostane v Pitke o 1 cigaretu menej |
@@ -914,10 +914,11 @@ Potom sa vyhodnotí bitka s priazňami po hádke.
 
 ```
 1. Viera a Povery sa vyrušia 1 : 1 na kusy
-     zrušené_Povery[súper] = min(Povery[súper], Viera[ja] × hodnota_Viery[ja])
+     zrušené_Povery[súper] = min(Povery[súper], Viera[ja])
        Viera[ja] = moje aktívne Viery + Viera navyše z Veriaceho so silou PRED hádkou
-       hodnota_Viery = 1, so Svätým textom v Dedičstve 2 (každá Viera zruší 2 Povery)
-     Viera, ktorá rušila Povery, sa na tuhé nepoužije (aj keď so Svätým textom zrušila len jednu)
+       jedna akcia Viera zruší jednu akciu Povera — aj vylepšenú Horoskopom (sila 2);
+       Svätý text rušenie nemení, hodnota Viery platí len v tlmení tuhého (Michal 2026-11-01)
+     Viera, ktorá rušila Povery, sa na tuhé nepoužije
      Čierna mačka: majiteľove Povery sa s Vierou nerušia
 
 2. mäkké[ja] = Pohoršenie × 2 + zvyšné_Povery × sila_Povery
@@ -948,7 +949,10 @@ v sade zmení, treba to prepočítať.
 - **Marker sa nehýbe** — strach, udržanie aj zaplatené stupne ostávajú (§10). Markery hýbe už
   len Nakladačka (a neúspešný pokus o zajatie, Kapybara, Kšeft Predsedovej vily).
 - Priazne po hádke platia **do konca kola**: v bitke (Bitkár, Veriaci, Abstinent), v exekúcii
-  (Advokát, Robota) aj po bitke (Kmotor, Fajčiar, Alkoholik). Potom zaniknú. Na jedno kolo tak
+  (Advokát, Robota) aj po bitke (Kmotor, Fajčiar, Alkoholik). Potom zaniknú. **Sila z hádky je
+  pevná** (Michal 2026-11-01): keď Nakladačka po bitke pohne markerom staršieho, ktorého hádka
+  posunula, zmení sa len strach — priazeň do konca kola ostane taká, akú dala hádka. Ostatným
+  starším Nakladačka priazeň mení ako vždy. Na jedno kolo tak
   môže mať priazeň aj hráč, ktorého sa starší bojí — výnimka z „priazeň a strach nikdy tomu
   istému“ (§10).
 - **Starší v ohrození** (pokus o zajatie, §10): hádka smie meniť silu jeho priazne (H4) —
@@ -959,7 +963,8 @@ v sade zmení, treba to prepočítať.
 Čo mu hádka pridá alebo uberie, sa prejaví v tlmení tuhého v kroku poškodenia (§9.3).
 
 **Výpočet (jadro):** posun z hádky je na staršom uložený ako **klebety** — o koľko stupňov
-k hráčovi sa sila posunula (nie pevné číslo), lebo Nakladačka marker po hádke ešte pohne.
+k hráčovi je sila od markera; keď Nakladačka marker takého staršieho pohne, klebety sa posunú
+opačne, takže účinná sila ostane.
 Účinná sila priazne = sila z markera ± klebety, orezaná na −3 … +3, ráta sa pri každom použití
 priazne v tomto kole (`ucinnaPriazen`, elders.ts).
 
@@ -1755,7 +1760,7 @@ už neplatia vôbec.
 | Profesionálny tipér | Furt (v8.4): posilnené akcie na jeho spojoch (jeho strany a strany susedov k nemu) sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota. Posilnená = ×2 z Posilnenia, ktoré NA EX nezrušil; NA EX na Tipéra jeho Posilnenie aj premenu zruší. |
 | Vidly | Dedičstvo: každá tvoja aktívna akcia Rana z vyložených kariet (aj hrany lokality) udelí o 1 poškodenie viac. Rany navyše z efektov kariet (Svokra, Pijan, Vymáhač, Strýko z Ameriky) Vidly nezosilnia (Michal 2026-10-27). |
 | Výherný automat | Dedičstvo: tvoj prah Dlhu je o 1 vyšší (§8); v poslednej Pitke kola (pred bitkou) získaš 1 Dlh. |
-| Svätý text | Dedičstvo: Hodnota tvojej Viery je o 1 vyššia — aj proti Poverám (každá tvoja Viera zruší 2 Povery). Hodnota 2 platí v tlmení tuhého aj v rušení Povier (v10, §9.1); Viera, ktorá zrušila čo i len jednu Poveru, na tuhé nezostane. |
+| Svätý text | Dedičstvo: Hodnota tvojej Viery je o 1 vyššia. — Hodnota 2 platí len v tlmení tuhého (§9.3); Povery ruší Viera 1 : 1 ako každá — jedna Viera jednu Poveru, aj vylepšenú Horoskopom (Michal 2026-11-01, v10). |
 | Vínko | Dedičstvo: ráta sa ako plný poldeci navyše (limit +1); vyložené v Zhromaždení platí **hneď** — zostávajúci limit sa zvýši o 1 (návrh #26 B, Michal 2026-10-28). Druhé Vínko limit nezvýši. Poldeci za cigarety dolievať nesmieš. |
 | Nealko | Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (sčíta sa s Krčmou). Poldeci, NA EX ani akciu Poldeci nemení. |
 | Injekcia | Dedičstvo: NA EX smieš dať aj na Zviera. |
