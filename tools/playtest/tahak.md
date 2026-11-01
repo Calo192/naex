@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v10, 2026-11-01; sada v55)
+# Ťahák — platné pravidlá NA EX! (v10, 2026-11-01; sada v56)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri

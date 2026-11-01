@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet 2026-11-01T07:13:40.842Z",
+  "source": "tvorca kariet 2026-11-01T08:36:13.582Z",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -354,7 +354,7 @@
       "tags": [
         "Nástroj"
       ],
-      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia — aj proti Poverám (každá tvoja Viera zruší 2 Povery).",
+      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.",
       "triggers": [
         "Dedičstvo"
       ],
