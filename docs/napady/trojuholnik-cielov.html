@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trojuholník víťazných cieľov — NA EX!</title>
+<style>
+:root { --pozadie:#14110e; --plocha:#1e1914; --plocha-2:#28211a; --okraj:#3d3229; --text:#f1e8d8; --tlmeny:#b6a790; --slaby:#8b7d6a;
+  --akcent:#e9ad45; --zelena:#7cbf74; --cervena:#d0563f; --modra:#5cc0cf; --oranzova:#e08a3a; color-scheme: dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#dccdb3; --text:#2a2016;
+  --tlmeny:#6b5b45; --slaby:#7a6a52; --akcent:#a8680f; --zelena:#3f7f38; --cervena:#b0402c; --modra:#2a7f8c; --oranzova:#b0601a; color-scheme: light; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.5 system-ui, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 16px 12px 100px; }
+h1, h2, h3 { font-family: Georgia, serif; line-height: 1.2; }
+h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); margin: 0 0 6px; }
+h2 { font-size: 1.25rem; margin: 34px 0 10px; padding-bottom: 4px; border-bottom: 1px solid var(--okraj); }
+h3 { font-size: 1.02rem; margin: 18px 0 6px; color: var(--akcent); }
+p { margin: 0 0 10px; }
+code { font: .84em ui-monospace, Consolas, monospace; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+a { color: var(--akcent); }
+.box { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+.box.zv { border-color: var(--akcent); } .box.rec { border-color: var(--zelena); } .box.riz { border-color: var(--cervena); } .box.mer { border-color: var(--modra); }
+.box > :last-child { margin-bottom: 0; }
+.mini { color: var(--slaby); font-size: .85rem; }
+ul, ol { padding-left: 20px; } li { margin-bottom: 5px; }
+.chip { display: inline-block; font-size: .72rem; padding: 0 7px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; vertical-align: 1px; }
+.chip.ok { color: var(--zelena); } .chip.v2 { color: var(--oranzova); } .chip.v3 { color: var(--slaby); } .chip.m { color: var(--modra); }
+nav.skupiny { position: sticky; top: 0; z-index: 2; background: var(--pozadie); padding: 8px 0; display: flex; gap: 6px; overflow-x: auto; border-bottom: 1px solid var(--okraj); }
+nav.skupiny a, .ovl button { flex: none; font: inherit; font-size: .85rem; text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
+.ovl { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+details.q { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; margin: 0 0 8px; padding: 0 12px; }
+details.q[open] { padding-bottom: 10px; border-color: var(--akcent); }
+details.q summary { cursor: pointer; padding: 10px 0; list-style: none; }
+details.q summary::-webkit-details-marker { display: none; }
+.qid { font: 700 .95rem Georgia, serif; color: var(--akcent); margin-right: 4px; }
+.qt { font-weight: 600; }
+.volba { margin-left: 6px; color: var(--zelena); font-weight: 700; }
+ol.moznosti { list-style: none; padding: 0; margin: 8px 0; }
+li.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--plocha-2); }
+li.moz.rec { border-color: var(--zelena); }
+li.moz label { display: block; cursor: pointer; }
+li.moz span:not(.chip) { display: block; font-size: .9rem; color: var(--tlmeny); margin-top: 2px; }
+li.moz input { accent-color: var(--akcent); }
+.pozn { display: block; font-size: .8rem; color: var(--slaby); margin-top: 6px; }
+.pozn textarea { width: 100%; font: inherit; font-size: .9rem; background: var(--pozadie); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 6px; margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--okraj); }
+thead th { color: var(--slaby); font-weight: 600; font-size: .8rem; }
+tbody th { font-family: Georgia, serif; width: 28%; font-weight: 600; }
+.tab { overflow-x: auto; }
+@media (max-width: 560px) { .tab.stack tr { display: block; border-bottom: 1px solid var(--okraj); padding: 6px 0; }
+  .tab.stack th, .tab.stack td { display: block; border: 0; padding: 2px 4px; width: auto; }
+  .tab.stack thead { display: none; }
+  .tab.stack td::before { content: attr(data-l); display: block; font-size: .72rem; color: var(--slaby); } }
+#vystup { width: 100%; min-height: 120px; font: .85rem ui-monospace, Consolas, monospace; background: var(--plocha); color: var(--text); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px; }
+details.q, section, h2 { scroll-margin-top: 52px; }
+.kroky { counter-reset: k; list-style: none; padding: 0; }
+.kroky li { position: relative; padding-left: 30px; margin-bottom: 8px; }
+.kroky li::before { counter-increment: k; content: counter(k); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: var(--akcent); color: #1a1410; font-weight: 700; font-size: .8rem; text-align: center; line-height: 22px; }
+pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; font-size: .82rem; overflow-x: auto; }
+.ok { color: var(--zelena); } .zle { color: var(--cervena); }
+.moz { border: 1px solid var(--okraj); border-radius: 10px; padding: 7px 10px; margin: 6px 0; background: var(--plocha-2); font-size: .93rem; }
+.vrch { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:8px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Trojuholník víťazných cieľov</h1>
+<p class="mini">Vymyselník · 2026-11-01 · na rozhodnutie Michalovi · pravidlá (v10.2) ani kód sa nemenia · nadväzuje na rozhovor Michala s Leaderom (Strach / Reči / Krčma), <code>docs/napady/hadka.html</code>, <code>docs/kniznica/2026-10-26-posledna-bitka-a-vplyv.html</code></p>
+
+<div class="box zv">
+  <p><b>Problém (60 partií botov, Druhá liga, 2026-11-01):</b> kto vyhrá finále (§14b), vyhrá partiu v <b>85 %</b>. Kto vedie pred finále, vyhrá len v <b>63 %</b> (medián náskoku 9). Špaky po kolách (obaja spolu): 8 · 10 · 10 · 11 · 15 · <b>21</b>. Nakladačka vo finále 1 : 1 dá ≈ <b>11,7</b> špaku, bitka ≈ 8. Na pinnacle je až 5 Pitiek.</p>
+  <p><b>Výhra tretím väzňom: 0 zo 60.</b> Nakladačku rozdeľuje porazený (§9.4 bod 2, <code>PRAVIDLA.md:1074</code>; <code>engine.ts:5128</code> <code>rozdelujePrebytok</code> vráti súpera držiteľa), takže staršieho na červenú nepustí. <b>Hádku</b> (§9.1) v 80 % vyhrá víťaz bitky, priemerne o 2,2. Samostatná os to nie je.</p>
+  <p><b>Dnes funguje jediná stratégia:</b> postaviť motor na cigarety a Vízie a nazbierať vo finále. Michal chce aj iné platné cesty, napríklad rýchlu agresívnu výhru, ktorej sa defenzívny hráč neubráni.</p>
+</div>
+
+<div class="box">
+  <p><b>Princíp všetkých návrhov tu:</b> jeden vrchol trojuholníka je vždy <b>dnešný koniec</b>, teda viac špakov po finále. Ostatné dva sú <b>okamžité výhry</b> pred finále. Hra preto nepotrebuje nové počítanie bodov. Stačí, aby okamžité výhry boli dosiahnuteľné, aby každá mala protiťah a aby hráč na špaky jednu z nich porážal a s druhou prehrával.</p>
+  <ul>
+    <li><b>Ohlásená výhra s odpoveďou</b> (knižnica, <code>ohlasena-vyhra-s-odpovedou</code>, Inis): výhru nemožno vziať z ničoho. Kolo pred ňou je verejná hrozba (boss v ruke, požičaný starší), súper má na odpoveď celé kolo.</li>
+    <li><b>Jedna bitka = jeden víťaz.</b> Obe okamžité výhry potrebujú vyhratú bitku, takže v tej istej bitke nikdy nesplnia cieľ obaja hráči.</li>
+  </ul>
+</div>
+
+<nav class="skupiny" aria-label="Časti">
+  <a href="#prehlad">Prehľad</a><a href="#n1">N1 Strach</a><a href="#n2">N2 Reči</a><a href="#n3">N3 Krčma</a><a href="#vazby">Väzby</a><a href="#casovanie">Časovanie</a><a href="#hranicne">Hraničné</a><a href="#ui">UI</a><a href="#paky">Páky</a><a href="#alt">Alternatívy</a><a href="#meranie">Meranie</a><a href="#otazky">Otázky</a>
+</nav>
+
+<h2 id="prehlad">Prehľad: Strach · Reči · Krčma</h2>
+<div class="tab stack box"><table>
+  <thead><tr><th>Vrchol</th><th>Palivo</th><th>Cieľ</th><th>Porazí</th><th>Prehrá s</th></tr></thead>
+  <tbody>
+    <tr><th>Strach (lovec)</th><td data-l="Palivo">tuhé → Nakladačka → červená → pokus o zajatie</td><td data-l="Cieľ"><b>⌊L/2⌋ väzňov</b> = výhra hneď</td><td data-l="Porazí">Reči</td><td data-l="Prehrá s">Krčma</td></tr>
+    <tr><th>Reči (klebetník)</th><td data-l="Palivo">mäkké → hádka → reči na staršom → výpožička</td><td data-l="Cieľ"><b>⌊L/2⌋ spojencov</b> = výhra hneď</td><td data-l="Porazí">Krčma</td><td data-l="Prehrá s">Strach</td></tr>
+    <tr><th>Krčma (motor)</th><td data-l="Palivo">Cigareta, Vízia, šenok, priazne → finále</td><td data-l="Cieľ">viac <b>špakov po finále</b> (dnes)</td><td data-l="Porazí">Strach</td><td data-l="Prehrá s">Reči</td></tr>
+  </tbody>
+</table></div>
+<p class="mini">L = počet lokalít bez pinnacle: Tretia liga 3 → 1, Druhá 5 → 2, Prvá 7 → 3 (<code>DLZKY_HRY</code>, <code>constants.ts</code>). Orientácia šípok je z rozhovoru; či je správna, rozhodne meranie a otázka 1.</p>
+
+<h2 id="n1">N1 · Strach: ⌊L/2⌋ väzňov <span class="chip ok">odporúčam</span></h2>
+<div class="box">
+  <p><b>Problém:</b> 0/60 výhier väzňom, lebo tri väzne v piatich kolách sú pri porazenom, ktorý rozdeľuje, nedosiahnuteľné. Michalov nápad.</p>
+  <p><b>Znenie</b> (§1 tabuľka, §10 Koniec hry):</p>
+  <pre>Väzni na výhru = ⌊lokality bez pinnacle / 2⌋
+                 Tretia liga 1 · Druhá 2 · Prvá 3
+Kto ich má, vyhráva hneď (krok 6d; vo finále pred konečnými špakmi).
+Špaky za väzňov po finále 8 / 6 / 4 / 2 ostávajú.</pre>
+  <p><b>Protiťahy obrancu</b> (všetky už existujú): odtlačiť staršieho z červenej Nakladačkou, keď vyhrá bitku. Kolo pokusu je verejné (boss v ruke súpera), takže sa naň dá pripraviť a vyhrať práve túto bitku. Priazeň sily 3 od staršieho na červenej dostáva obranca, napríklad Bitkár +3 tuhé alebo Fajčiar +3 cigarety.</p>
+  <p><b>Overené v kóde:</b> konštanta <code>VAZNI_NA_VYHRU: 3</code> (<code>constants.ts:149</code>) sa číta v <code>engine.ts:2295</code>, <code>view.ts:619</code>, <code>bot.ts:668</code>, <code>bot.ts:679</code> a <code>achievementy.ts:121</code>. Nahradí ju funkcia dĺžky hry. Text pravidiel: <code>PRAVIDLA.md:241</code>, <code>:1327</code>, §14b <code>:1658</code>. S pravidlami nekoliduje. Pokus vo finále (O7) ostáva.</p>
+  <p><b>Riziko:</b> v Tretej lige = 1 väzeň a jedno zajatie ukončí partiu. Bez páky P1 (víťaz vyberá prvého staršieho) sa však červená ani tak skoro nedosiahne, takže samotné N1 možno nič nezmení.</p>
+  <p><b>Odporúčanie:</b> áno, je to najlacnejší krok (jedna konštanta → funkcia), ale len spolu s P1. Inak ostane 0 %.</p>
+</div>
+
+<h2 id="n2">N2 · Reči: výpožička a spojenci <span class="chip v2">veľká zmena</span></h2>
+<div class="box">
+  <p><b>Problém:</b> hádka je tieň bitky (v 80 % ju vyhrá víťaz bitky) a priazeň na jedno kolo neotvára cestu k výhre. Michalov nápad: hádka už nemení priazne, mäkké sa zbiera na starších ako <b>reči</b>.</p>
+  <p><b>Znenie</b> (§9.1 krok 4, §10, nový odsek „Reči a spojenec“):</p>
+  <ol class="kroky">
+    <li><b>Hádka sa ráta ako dnes</b> (Viera ruší Povery 1 : 1, Pohoršenie 2, Povera 1, Horoskop, Telefón, Čierna mačka). Zmení sa len krok 4: víťaz hádky položí rozdiel ako <b>reči</b> na starších, ktorí sa ho <b>nebojia</b> (marker v strede alebo na jeho polovici). 1 bod = 1 reč, bez ceny podľa zóny, ľubovoľne rozdelené. Sily priazní hádka nemení, klebety zanikajú.</li>
+    <li><b>Reči sa hromadia bez stropu</b> a ostávajú z kola na kolo. Zhoria, keď sa ťa starší <b>začne báť</b> (marker prejde na súperovu polovicu), keď starší odíde zo stupnice (väzeň či spojenec, vtedy zhoria reči oboch), alebo keď ich minieš.</li>
+    <li><b>Výpožička</b> v drafte, v tom istom kroku ako pokus o zajatie (útočník, potom obranca). Za kolo máš jeden ťah na staršieho: <b>pokus alebo výpožička</b>. Podmienka: na staršom máš aspoň <code>PRAH_RECI</code> svojich rečí (<b>TODO 4</b>, merať 3–6) a nie je v ohrození. Minieš prah, zvyšok rečí ostane. Karta bossa ide verejne do tvojej ruky. Starší je požičaný: v kole sa jeho markerom nehýbe (ako O8).</li>
+    <li><b>Požičaný v línii</b> má akcie a navyše <b>efekt</b>. Návrh, ktorý nepotrebuje nové texty: jeho <b>Kšeft väzňa raz za kolo bez poldeci</b>, kým leží v línii v tvojej partii. Ostatné možnosti sú v otázke 5.</li>
+    <li><b>Výsledok v kroku 6d:</b> vyhráš bitku a požičaný leží v línii v tvojej partii (aj podstrčený) → <b>spojenec</b>. Odíde zo stupnice ako väzeň, scorecard sa otočí a máš jeho Kšeft väzňa. Inak ide starší späť na ukazovateľ, marker sa nemení a minuté reči prepadli.</li>
+    <li><b>⌊L/2⌋ spojencov = výhra hneď.</b> Po finále dajú spojenci špaky v spoločnom poradí so zajatými (8 / 6 / 4 / 2).</li>
+  </ol>
+  <p><b>Prečo Reči porazí Krčmu:</b> motor nehrá mäkké a Viera ruší len Povery (za 1), proti Pohoršeniu (za 2) nepomôže (§9.1). Klebetník nazbiera reči a na jednu bitku si požičia bossa so 6 akciami. Krčma musí túto bitku vyhrať, inak stratí partiu ešte pred finále, kde je jej sila.</p>
+  <p><b>Protiťahy proti Rečiam:</b> (a) <b>Nakladačka spáli reči</b>. Kto bitku prehrá a rozdeľuje, posunie staršieho s cudzími rečami na polovicu klebetníka, teda klebetníka sa začne báť a jeho reči zhoria. Klebetníkovi sa teda neoplatí vyhrávať veľké bitky. (b) Vyhrať bitku výpožičky. (c) Zajať toho istého staršieho skôr (Strach). (d) Viera proti Poverám, Odpor a NA EX proti Pohoršeniu (bez Telefónu).</p>
+  <p><b>Overené v kóde:</b> výpočet hádky (<code>battle.ts:99</code>) ostáva. Rozdelenie (<code>engine.ts:4789</code>) a klebety (<code>elders.ts:123–171</code> <code>ucinnaPriazen</code>, <code>engine.ts:4729</code>) sa nahradia počítadlom rečí na staršom (<code>ElderState</code>, verejné, <code>viewFor</code> nič neskrýva). Výpožička použije cestu pokusu: boss do ruky, <code>vOhrozeni</code> (<code>engine.ts:2140</code>), <code>vyriesZajatie</code> (<code>engine.ts:2244</code>). Efekt požičaného potrebuje spúšťač pri <code>triggers: ["Väzeň"]</code> v <code>cards.json</code>, dáta zadá Admin a kód efektov ostane po kartách. Žiadne DSL.</p>
+  <p><b>Ruší sa:</b> v10 hádka ako posun sily priazní (§9.1 krok 4 <code>PRAVIDLA.md:975–1001</code>) vrátane Veriaceho „pred/po hádke“ (H2). Michal ju schválil 2026-11-01, preto je to otázka 2.</p>
+  <p><b>Riziká:</b> výpožička vo finále ešte posilní finále (otázka 6). Hustota stola: reči oboch × 8 starších. Bossovi v línii netreba nové efekty, ak prejde návrh Kšeftu väzňa. Hádka dnes kopíruje bitku (80 %), takže reči môže zbierať práve lovec. Rozhodne, či balíček na mäkké vyhráva hádku aj pri prehratej bitke.</p>
+  <p><b>Odporúčanie:</b> áno, ale ako <b>etapa 2</b>, až keď N1 + P1 ukážu, že okamžitá výhra vôbec žije.</p>
+</div>
+
+<h2 id="n3">N3 · Krčma: finále ostáva cieľom, len menej drví <span class="chip ok">odporúčam</span></h2>
+<div class="box">
+  <p><b>Problém:</b> finále rozhoduje 85 % partií. Keď ostane také silné, motor porazí všetko a trojuholník bude len na papieri.</p>
+  <p><b>Znenie:</b> cieľ Krčmy je dnešný koniec, teda viac špakov po finále (§14). Mení sa len páka <a href="#paky">P2</a>: Nakladačka vo finále 1 : 2.</p>
+  <p><b>Prečo Krčma porazí Strach:</b> lovec tlačí starších na červenú, a tým dáva motoru priazeň sily 3 (Fajčiar +3 cigarety, Robota 3 = až 3 špaky bez Dlhov, Advokát). Porazený dostane aj cigaretu za každého posunutého staršieho (§9.4, <code>PRAVIDLA.md:1099</code>). Motor si môže dovoliť prehrávať skoré bitky a vyhrať tú jednu, v ktorej je pokus (verejný o kolo vopred). Finále má aj tak.</p>
+  <p><b>Protiťahy proti Krčme:</b> Reči (rýchla výhra pred finále), Obmedzenie, Krčmárka a Hrobár ako väzni, Jednota, Sklad.</p>
+</div>
+
+<h2 id="vazby">Väzby a protiťahy</h2>
+<div class="tab stack box"><table>
+  <thead><tr><th>Hrana</th><th>Prečo vyhráva</th><th>Ako sa slabší bráni</th></tr></thead>
+  <tbody>
+    <tr><th>Strach &gt; Reči</th><td data-l="Prečo vyhráva">Výpožička potrebuje vyhratú bitku a lovec hrá tuhé. Lovcova Nakladačka dáva klebetníkovi starších, ktorí sa ho nebojia (reči na nich platia), ale tých istých lovec chce zajať. Zajatie spáli všetky reči.</td><td data-l="Ako sa bráni">Požičať si staršieho skôr, než ho lovec dotlačí na 3. Je to preteky o toho istého staršieho a útočník rozhoduje prvý.</td></tr>
+    <tr><th>Reči &gt; Krčma</th><td data-l="Prečo vyhráva">Motor nehrá mäkké a do finále nepríde.</td><td data-l="Ako sa bráni">Nakladačkou spáliť reči, Odpor a NA EX na Pohoršenie, vyhrať bitku výpožičky.</td></tr>
+    <tr><th>Krčma &gt; Strach</th><td data-l="Prečo vyhráva">Červená dáva motoru priazeň 3 a cigarety, pokus je verejný a motor vyhrá finále.</td><td data-l="Ako sa bráni">P1: lovec vyberie staršieho s neškodnou priazňou (Kmotor bez Dlhov, Alkoholik).</td></tr>
+  </tbody>
+</table></div>
+<p class="mini">Pozor na páku P1: dá lovcovi voľbu priazne, ktorú daruje, a oslabí hranu Krčma &gt; Strach. Meranie môže otočiť šípku.</p>
+
+<h2 id="casovanie">Časovanie: kedy hrozí čo</h2>
+<div class="tab stack box"><table>
+  <thead><tr><th>Liga</th><th>Rozpis</th><th>Strach (najskôr)</th><th>Reči (najskôr)</th><th>Krčma</th></tr></thead>
+  <tbody>
+    <tr><th>Tretia</th><td data-l="Rozpis">1 · 2 · 3 · P</td><td data-l="Strach">1 väzeň: kolo 1 Nakladačka ≥ 6 na jedného (P1), kolo 2 pokus a výhra → <b>koniec po 2. kole</b></td><td data-l="Reči">hádka ≥ prah v kole 1, výpožička a výhra v kole 2 → <b>po 2. kole</b></td><td data-l="Krčma">jediné finále, motor má 3 kolá</td></tr>
+    <tr><th>Druhá</th><td data-l="Rozpis">1 · 2 · 2 · 3 · 3 · P</td><td data-l="Strach">2 väzni, jeden pokus za kolo → <b>po 3. kole</b></td><td data-l="Reči">2 spojenci → <b>po 3. kole</b></td><td data-l="Krčma">finále po 5 kolách</td></tr>
+    <tr><th>Prvá</th><td data-l="Rozpis">1 · 1 · 2 · 2 · 3 · 3 · 3 · P</td><td data-l="Strach">3 väzni → <b>po 4. kole</b></td><td data-l="Reči">3 spojenci → <b>po 4. kole</b></td><td data-l="Krčma">finále po 7 kolách</td></tr>
+  </tbody>
+</table></div>
+<p class="mini">Ide o teoretické minimum. Skutočný čas treba zmerať (veľkosť Nakladačky a hádky v 1. kole ešte nepoznáme). Okamžité výhry sú symetrické a obe najskôr v polovici partie. Cieľ (TODO Michal): koľko partií má skončiť pred finále, napríklad 20–35 %.</p>
+
+<h2 id="hranicne">Hraničné prípady</h2>
+<div class="box">
+  <ul>
+    <li><b>Súčasné splnenie</b> nenastane. Obe výhry sa vyhodnotia v kroku 6d a uspeje len víťaz bitky. Jeden hráč má za kolo jeden ťah na staršieho, takže nezíska väzňa aj spojenca naraz.</li>
+    <li><b>Ten istý starší</b>: A ho chce zajať (bojí sa A na 3), B má na ňom reči (B sa nebojí). Rozhoduje poradie draftu, prvý je útočník. Starší v ohrození sa požičať nedá a požičaný sa nedá zajať.</li>
+    <li><b>Obaja skúšajú v tom istom kole</b> (pokus aj výpožička): ako dnes, víťaz bitky uspeje a porazený neuspeje. Karta zadarmo nie je nikomu.</li>
+    <li><b>Sekera</b>: oba ťahy zlyhajú. Pri výpožičke minuté reči prepadnú (TODO: alebo sa vrátia?).</li>
+    <li><b>Požičaný nie je v línii</b> (nevyložený, alebo ho efekt odstránil): výpožička zlyhá aj pri výhre. Boss je nezničiteľný a vráti sa (§10).</li>
+    <li><b>Finále</b>: okamžitá výhra v kroku 6d finále má prednosť pred konečnými špakmi (§14b, <code>PRAVIDLA.md:1658</code>). Výpožička vo finále je otázka 6.</li>
+    <li><b>Úbytok starších</b>: v Prvej lige 3 väzni + 3 spojenci = 6 z 8. Pre lovca aj klebetníka ubúdajú ciele, čo je prirodzená brzda bez stropu.</li>
+    <li><b>Hádka remízou</b>: nikto nedá reči. Hluchá hádka (všetci starší sa víťaza boja) prepadne ako dnes zvyšok Nakladačky.</li>
+    <li><b>Skorý koniec</b>: Chuť ani udržaný strach sa po okamžitej výhre nerátajú (ako dnes pri treťom väzňovi).</li>
+  </ul>
+  <p class="mini"><b>2 na 2</b> (len poznámka): reči, väzni a spojenci patria tímu. L ostáva počet lokalít. Výpožičku robí kapitán ako pokus (§10 odsek 2 na 2). Karta zadarmo tímu súpera, ktorej ruke, ešte nie je rozhodnuté.</p>
+</div>
+
+<h2 id="ui">Viditeľnosť v UI (všetko verejné)</h2>
+<div class="box">
+  <ul>
+    <li><b>Pri hráčoch</b> je ukazovateľ cieľa „Väzni 1/2 · Spojenci 0/2“ a pri splnenej podmienke banner hrozby: „Ana má požičaného Farára. Vyhrá bitku → 2. spojenec → koniec hry.“ Boss v ruke je verejný už dnes.</li>
+    <li><b>Pri staršom</b> sú dve kôpky rečí vo farbách hráčov s číslom a prahom (3/4) a značka, či reči platia (nebojí sa ťa).</li>
+    <li><b>Pri rozdelení Nakladačky</b> stôl ukáže „tento posun spáli Borisovi 3 reči“ a „Farár bude na červenej, Ana ho môže zajať“.</li>
+    <li><b>Log hádky</b>: „Ana vyhrala hádku o 3 → 3 reči na Farára (spolu 5)“.</li>
+    <li>V <code>viewFor</code> nepribúda nič skryté. Karta zadarmo ostáva skrytá ako dnes.</li>
+  </ul>
+</div>
+
+<h2 id="paky">Podporné páky</h2>
+<div class="box">
+  <h3>P1 · Víťaz vyberá prvého staršieho pri Nakladačke <span class="chip ok">odporúčam s N1</span></h3>
+  <p>Víťaz (držiteľ) určí prvého staršieho, zvyšok rozdeľuje porazený ako dnes (§9.4 bod 2). Lovec tak vie sústrediť 6 bodov na červenú. Kód: <code>rozdelujePrebytok</code> (<code>engine.ts:5128</code>) vráti držiteľa pre prvý výber. Bez P1 je N1 pravdepodobne mŕtve. Riziko: oslabí hranu Krčma &gt; Strach (vyberie neškodnú priazeň). Varianta: víťaz vyberá prvého, ale len zo starších, ktorí sa ho už boja.</p>
+  <h3>P2 · Nakladačka vo finále 1 : 2 <span class="chip ok">odporúčam</span></h3>
+  <p>1 špak za každé 2 body, nadol (<code>SPAKY_ZA_NAKLADACKU_VO_FINALE</code>, <code>constants.ts:113</code>, výpočet <code>engine.ts:5088</code>). Z ≈ 11,7 na ≈ 6 špakov. Nie je to strop, len kurz. Ide priamo proti 85 %.</p>
+  <h3>P3 · Nakladačka rozbije motor <span class="chip v3">len ako páka</span></h3>
+  <p>Mimo finále smie <b>držiteľ</b> namiesto posunu markera minúť body Nakladačky (cena TODO, napr. 3) a zahodiť z hry 1 kartu z odhadzovacieho balíčka porazeného, teda rozbiť mu motor. Bije Krčmu, takže posilní Strach proti nej a môže otočiť šípku. Použiť len vtedy, keď meranie ukáže, že Krčma Strach prevalcuje. Inak trojuholník rozbije. Kolíziu s §9.4 bod 2 (rozdeľuje porazený) treba vyriešiť: o zahodení rozhoduje držiteľ pred rozdelením.</p>
+</div>
+
+<h2 id="alt">Alternatívne trojuholníky</h2>
+<p class="mini">Všetky si nechávajú Krčmu (špaky po finále) ako jeden vrchol. Mení sa druhý alebo tretí.</p>
+
+<div class="box">
+  <h3>A1 · Strach · Úžera · Krčma (Dlhy namiesto Rečí) <span class="chip v2">záloha</span></h3>
+  <p><b>Cieľ Úžery:</b> „<b>Bankrot</b>“: súper má po exekúcii (krok 4c) aspoň <code>PRAH_BANKROTU</code> priznaných Dlhov viac než ty (<b>TODO</b>, napr. 4 + 2·⌊L/2⌋) → výhra hneď. Mäkšia varianta bez okamžitej výhry: špaky, ktoré súperovi zhorí Exekútor, dostaneš ty.</p>
+  <p><b>Palivo existuje:</b> Kmotor 2/3/4, Poštárka (väzeň), Farár (väzeň: súperova Viera = Hazard), Obecný úrad, Podvodník, Herňa, Noviny, Jednota.</p>
+  <ul>
+    <li><b>Úžera &gt; Krčma</b>: Exekútor motoru v každej bitke spáli špaky, Jednota mu zakáže fajčiť, Herňa vo finále platí za jeho Dlhy.</li>
+    <li><b>Krčma &gt; Strach</b>: ako vyššie.</li>
+    <li><b>Strach &gt; Úžera</b> <span class="chip v3">slabá hrana</span>: úžerník stojí na priazni Kmotra a Kšeftoch väzňov, lovec mu zajme staršieho s Kmotrom (väzeň nedá priazeň) a vyhráva bitky.</li>
+  </ul>
+  <p><b>Výhoda:</b> v10 hádka ostane nedotknutá. <b>Riziká:</b> Kmotor je na náhodnom scorecarde, takže stratégiu určí rozdanie. Robota je univerzálna protilátka. Dlhová špirála hráča frustruje.</p>
+  <p><b>Bot:</b> hodnota presunu Dlhu podľa vzdialenosti k prahu bankrotu, voľba Kmotra pri rozdeľovaní ako porazený, obrana Robotou.</p>
+</div>
+
+<div class="box">
+  <h3>A2 · Séria · Reči · Krčma (tempo namiesto väzňov) <span class="chip v2">na zváženie</span></h3>
+  <p><b>Cieľ Série:</b> vyhraj ⌊L/2⌋ + 1 bitiek po sebe, <b>pri ktorých súper nevyhral hádku</b> (Tretia 2, Druhá 3, Prvá 4) → výhra hneď. Ide o najčitateľnejšiu „rýchlu agresívnu výhru“: jeden ukazovateľ, žiadna stupnica.</p>
+  <ul>
+    <li><b>Séria &gt; Krčma</b>: tempo bije chamtivosť, motor skoré bitky prehráva.</li>
+    <li><b>Reči &gt; Séria</b>: výhra v hádke prerušuje sériu aj pri prehratej bitke. Mäkký balíček je jediná obrana, ktorá nemusí vyhrať tuhé.</li>
+    <li><b>Krčma &gt; Reči</b> <span class="chip v3">slabá hrana</span>: motor má viac kariet (Vízie, šenok) a teda viac Viery, Odporu a NA EX proti mäkkému.</li>
+  </ul>
+  <p><b>Brzda zo štruktúry</b> (knižnica <code>brzda-v-strukture</code>): porazený je útočník, teda vykladá prvý a na NA EX odpovedá prvý (§4). <b>Riziká:</b> v Tretej lige stačia 2 výhry po sebe, čo môže byť náhoda prvých kôl. Väzni (N1) by potom boli zbytoční a Strach zanikne. Sekera sériu nepreruší ani nepredĺži (TODO).</p>
+  <p><b>Bot:</b> vážiť bitku podľa série (nie len špaky), obranca musí vedieť „stačí vyhrať hádku“.</p>
+</div>
+
+<div class="box">
+  <h3>A3 · Strach · Pivnica · Krčma (opiť súpera) <span class="chip v3">neodporúčam teraz</span></h3>
+  <p><b>Cieľ Pivnice:</b> „<b>Pod stolom</b>“: súper má na konci kola aspoň ⌊L/2⌋ + 1 Cirhóz (priznaných aj nepriznaných) → výhra hneď.</p>
+  <ul>
+    <li><b>Pivnica &gt; Krčma</b>: motor pije (NA EX = 2 neresti, Chuť), Krčma ho núti do NA EX, Kar mu dá pečeň za cudzie NA EX.</li>
+    <li><b>Strach &gt; Pivnica</b>: lovec nepije a vyhráva bitky. Pivničiar platí poldeci a Chuť, potom ho brzdia Absťáky (−1 tuhé).</li>
+    <li><b>Krčma &gt; Strach</b>: ako vyššie.</li>
+  </ul>
+  <p><b>Prekážka:</b> pečeň dnes ide vždy majiteľovi karty (podstrčenie, §13, „akcie bodujú pre teba“). Jediný prenos je Kar. Vrchol by potreboval novú páku („NA EX na súperovu kartu dá pečeň majiteľovi karty“), ktorá zasahuje do akcie, podľa ktorej sa hra volá. Priznaná Cirhóza navyše dáva súperovi tuhé, takže by vznikla snehová guľa. Protilátky Nealko, Milujúca manželka a Veterinár sú silné.</p>
+</div>
+
+<h2 id="meranie">Čo zmerať a čo naučiť bota</h2>
+<div class="box mer">
+  <p><b>Merania</b> (stratég vo vlastnom worktree, <code>tools/bot/turnaj.ts</code>, <code>tools/bot/zajatie.ts</code>, <code>tools/bot/strategickost.ts</code>):</p>
+  <ol>
+    <li><b>Základ</b>, všetky tri ligy (60 partií): výhra väzňom %, víťaz finále → výhra %, vedúci pred finále %, maximálny stupeň strachu (<code>zajatie.ts</code>), veľkosť Nakladačky a hádky po kolách.</li>
+    <li><b>N1</b>, <b>N1 + P1</b>, <b>N1 + P1 + P2</b>: to isté plus podiel partií ukončených pred finále a v ktorom kole.</li>
+    <li><b>Matica 3 × 3</b> povahy lovec / klebetník / krčmár (40 partií na dvojicu, striedanie strán). Cieľ: korisť 55–65 %, predátor 35–45 %, zrkadlo ≈ 50 %, žiadny vrchol nad 55 % v priemere (TODO Michal). Ak hrana chýba, ukáže sa to tu.</li>
+    <li><b>Strategickosť</b> (rebrík, duplikát) nesmie klesnúť oproti dnešku. Okamžité výhry nesmú pridať náhodu.</li>
+    <li>Pri N2: podiel hádok, ktoré vyhral porazený v bitke (dnes 20 %), priemerné reči na staršom pri výpožičke, úspešnosť výpožičiek, prah 3 / 4 / 5 / 6.</li>
+  </ol>
+  <p><b>Bot-tréner</b> (<code>naex-bot-trener</code>, <code>bot.ts</code>):</p>
+  <ul>
+    <li><b>Povahy podľa cieľa</b> (<code>POVAHY</code>, <code>bot.ts:95</code>): lovec váži tuhé a sústredenie Nakladačky, klebetník mäkké v drafte a rozdelenie rečí, krčmár je dnešný štamgast.</li>
+    <li><b>Hodnota okamžitej výhry</b>: <code>hodnotaVazna</code> (<code>bot.ts:676–680</code>) má +200 za výhru podľa <code>VAZNI_NA_VYHRU</code>. Treba prah podľa ligy a to isté pre spojenca.</li>
+    <li><b>P1</b>: ako víťaz vybrať prvého staršieho (červená, neškodná priazeň, bez súperových rečí).</li>
+    <li><b>Obrana</b>: rozpoznať verejnú hrozbu (boss v súperovej ruke, reči nad prahom), oceniť práve túto bitku, Nakladačkou spáliť reči a odtlačiť červenú.</li>
+    <li><b>Výpožička</b>: kedy minúť reči, ocenenie bossa v ruke a v línii (6 akcií a efekt).</li>
+  </ul>
+</div>
+
+<h2 id="otazky">Otázky na rozhodnutie</h2>
+<details class="q"><summary><span class="qid">1.</span><span class="qt">Ktorý vrchol je „rýchla výhra, ktorej sa defenzívny neubráni“?</span></summary>
+<div class="moz"><b>Ako v rozhovore</b>: Reči &gt; Krčma, Krčma &gt; Strach, Strach &gt; Reči. Proti motoru je rýchlou výhrou klebetník. Lovec je „bitkár“ proti mäkkému.</div>
+<div class="moz"><b>Opačne</b>: Strach &gt; Krčma (P1, motor prehráva skoré bitky), Krčma &gt; Reči, Reči &gt; Strach (lovec dáva klebetníkovi platné ciele aj priazeň 3). Lovec je potom agresor proti defenzívnemu motoru.</div>
+<div class="moz"><b>Nech rozhodne matica 3 × 3</b> <span class="chip ok">odporúčam</span>: obe orientácie sa dajú obhájiť a P1 ich prevažuje.</div></details>
+<details class="q"><summary><span class="qid">2.</span><span class="qt">Smie N2 zrušiť v10 hádku (posun síl priazní, klebety, Veriaci pred/po)?</span></summary>
+<div class="moz"><b>Áno, v etape 2</b> <span class="chip ok">odporúčam</span>: najprv N1 + P1 + P2, potom Reči.</div>
+<div class="moz"><b>Nie</b>: miesto Rečí meriť A1 Úžeru, kde hádka ostane.</div></details>
+<details class="q"><summary><span class="qid">3.</span><span class="qt">Väzni a spojenci: oddelené ciele, alebo jeden súčet?</span></summary>
+<div class="moz"><b>Oddelene</b> <span class="chip ok">odporúčam</span>: ⌊L/2⌋ väzňov alebo ⌊L/2⌋ spojencov. Trojuholník ostane čistý.</div>
+<div class="moz"><b>Súčet</b>: zmes je silnejšia ako čistá cesta, takže trojuholník sa zlieva do jednej stratégie.</div></details>
+<details class="q"><summary><span class="qid">4.</span><span class="qt">Prah rečí a cena výpožičky</span></summary>
+<p>Návrh: prah 4 (TODO merať 3–6), bez cigarety. Alebo prah 3 + 1 cigareta ako pokus. A dostane súper kartu zadarmo aj pri výpožičke (§5)?</p></details>
+<details class="q"><summary><span class="qid">5.</span><span class="qt">Efekt požičaného bossa v línii</span></summary>
+<div class="moz"><b>Jeho Kšeft väzňa raz za kolo bez poldeci</b> <span class="chip ok">odporúčam</span>: 8 hotových textov, len nový spúšťač.</div>
+<div class="moz"><b>Len akcie</b> (ako boss pri pokuse): najlacnejšie, ale Michal chcel aj efekt.</div>
+<div class="moz"><b>Nové efekty „Požičaný:“</b>: 8 nových textov, ktoré navrhne Admin a vyváži stratég.</div></details>
+<details class="q"><summary><span class="qid">6.</span><span class="qt">Výpožička vo finále</span></summary>
+<div class="moz"><b>Nie</b>: finále neposilňovať.</div>
+<div class="moz"><b>Len ak by to bol víťazný spojenec</b> <span class="chip ok">odporúčam</span>: posledná šanca klebetníka, ako pokus vo finále (O7).</div>
+<div class="moz"><b>Áno</b>, ako pokus o zajatie.</div></details>
+<details class="q"><summary><span class="qid">7.</span><span class="qt">P1: koľko Nakladačky vyberá víťaz?</span></summary>
+<div class="moz"><b>Len prvého staršieho</b> <span class="chip ok">odporúčam</span>; zvyšok porazený.</div>
+<div class="moz"><b>Prvého, ale len z tých, ktorí sa ho už boja</b>: slabšie, zachová Krčma &gt; Strach.</div>
+<div class="moz"><b>Celú</b>: späť pred v8 (#28), Strach by bol príliš silný.</div></details>
+<details class="q"><summary><span class="qid">8.</span><span class="qt">P2: Nakladačka vo finále 1 : 2?</span></summary>
+<p>Odporúčam áno, a merať s tým istým cieľom ako v9.1 (vedúci pred finále okolo polovice, víťaz finále ďaleko pod 85 %).</p></details>
+<details class="q"><summary><span class="qid">9.</span><span class="qt">Koľko partií má skončiť pred finále?</span></summary>
+<p>Cieľové pásmo pre ladenie prahov, napríklad 20–35 %. Bez neho stratég nevie, kam ladiť.</p></details>
+<details class="q"><summary><span class="qid">10.</span><span class="qt">Ktorú alternatívu meriať ako zálohu?</span></summary>
+<p>Odporúčam <b>A1 Úžera</b> (hádka ostane, palivo existuje). A2 Séria len ak Strach ani s P1 neožije. A3 Pivnica nie.</p></details>
+
+<div class="box rec">
+  <p><b>Odporúčanie v skratke:</b> etapa 1 = <b>N1 + P1 + P2</b> (čísla a jedna voľba, žiadny nový pojem), zmerať botmi s povahou lovca. Etapa 2 = <b>N2 Reči</b>, ak etapa 1 ukáže živú okamžitú výhru. Inak záloha A1. Rozpor s pravidlami nenašiel žiadny návrh. N2 ruší čerstvo schválený krok 4 v10 hádky (otázka 2).</p>
+</div>
+</main>
+</body>
+</html>
