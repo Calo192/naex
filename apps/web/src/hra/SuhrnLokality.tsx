@@ -5,8 +5,9 @@
 // na svoju rekapituláciu. Čísla skladá obsahSuhrnuLokality.ts, históriu posiela server.
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import type { BitkaNaNastenke, LokalitaVHistorii, MarkerPos, PitkaVHistorii, PlayerId } from "@naex/core";
-import { STAV_STARSIEHO, STUPNICA_ZONY, jeFinaleNaNastenke, obavanyHrac } from "@naex/core";
+import type { BitkaNaNastenke, Favour, LokalitaVHistorii, MarkerPos, PitkaVHistorii, PlayerId } from "@naex/core";
+import { STAV_STARSIEHO, STUPNICA_ZONY, jeFinaleNaNastenke, obavanyHrac, priazenHraca, priazenSila } from "@naex/core";
+import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { RekapBitky, RekapitulaciaPitkyVrstva, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 import { SpakyBitky, spakyPredBitkou, rozpisLokality } from "./Spaky.tsx";
@@ -25,9 +26,16 @@ export interface SuhrnLokalityProps {
   readonly menoKarty: (defId: string) => string;
   readonly piktogramy: PiktogramyRekapitulacie;
   readonly onZavri: () => void;
+  /** Priazeň staršieho podľa id — krúžok pri posunoch a v rozpise za starších (Michal 2026-10-31). */
+  readonly favour?: ((elderId: string) => Favour | null) | undefined;
 }
 
-export function SuhrnLokality({ b, zaznam, ja, mena, avatary, menoKarty, piktogramy, onZavri }: SuhrnLokalityProps) {
+export function SuhrnLokality(props: SuhrnLokalityProps) {
+  const obsah = <SuhrnLokalityObsah {...props} />;
+  return props.favour === undefined ? obsah : <FavourStarsich.Provider value={props.favour}>{obsah}</FavourStarsich.Provider>;
+}
+
+function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogramy, onZavri, favour = () => null }: SuhrnLokalityProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const idNadpisu = useId();
   const [detail, setDetail] = useState<PitkaVHistorii | null>(null);
@@ -160,6 +168,12 @@ export function SuhrnLokality({ b, zaznam, ja, mena, avatary, menoKarty, piktogr
                   <ul className="sl-posuny">
                     {zaznam.posuny.map((x, i) => (
                       <li key={i} className={x.kto === ja ? "moje" : "superove"}>
+                        {/* Krúžok: priazeň po posune (marker na novom mieste). */}
+                        {(() => {
+                          const fav = favour(x.elderId);
+                          const h = priazenHraca({ marker: x.na });
+                          return fav === null ? null : <PilulkaPriazne fav={fav} p={{ komu: h === null ? null : h === ja ? "ja" : "su", sila: priazenSila({ marker: x.na }) }} />;
+                        })()}{" "}
                         <b>{x.defId === null ? x.elderId : menoKarty(x.defId)}</b>: {stav(x.z)} → {stav(x.na)}{" "}
                         <small>
                           ({NAZOV_ZDROJA[x.zdroj]} · {kto(x.kto)})

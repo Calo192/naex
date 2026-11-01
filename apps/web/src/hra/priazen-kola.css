@@ -1,0 +1,559 @@
+/* Krúžok priazne, dvojitý marker, lístok Hádky a nápoveda nad staršom (Michal 2026-10-31,
+ * mockup „Priazeň podľa Michala“). Farby len z tokenov schemy.css. Farebné triedy
+ * majú zdvojený selektor — rodičia ako .pocitadlo-zoznam .ja inak prebijú farbu písma na farbu pozadia. */
+
+/* ---- Krúžok priazne: farba = komu priazeň patrí v tomto kole, ikona = akcia priazne ---- */
+.kr-obal {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+  line-height: 1;
+}
+
+.kr {
+  --kr-d: 46px;
+  width: var(--kr-d);
+  height: var(--kr-d);
+  display: inline-grid;
+  place-items: center;
+  align-content: center;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--pozadie) 55%, transparent);
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--pozadie) 70%, transparent);
+  background: var(--plocha-2);
+  color: var(--slaby-text);
+  font: 800 calc(var(--kr-d) * 0.27) / 1 var(--pismo);
+  font-variant-numeric: tabular-nums;
+}
+
+.kr .kr-ikona {
+  width: calc(var(--kr-d) * 0.48);
+  height: calc(var(--kr-d) * 0.48);
+  fill: currentColor;
+}
+
+.kr.kr.ja {
+  background: var(--ja);
+  color: var(--na-farbe-hraca);
+}
+
+.kr.kr.su {
+  background: var(--su);
+  color: var(--na-farbe-hraca);
+}
+
+/* Číslo vedľa krúžku (tesné dlaždice pri 1366): v krúžku len ikona. */
+.kr-vedla {
+  display: none;
+  font: 800 15px/1 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+}
+
+.kr-vedla.ja {
+  color: var(--ja);
+}
+
+.kr-vedla.su {
+  color: var(--su);
+}
+
+.kr-obal.cislo-vedla .kr-cislo {
+  display: none;
+}
+
+.kr-obal.cislo-vedla .kr .kr-ikona {
+  width: calc(var(--kr-d) * 0.62);
+  height: calc(var(--kr-d) * 0.62);
+}
+
+.kr-obal.cislo-vedla .kr-vedla {
+  display: inline;
+}
+
+/* Krúžok v malom tvare do riadku textu. */
+.kr-pil {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px 1px 4px;
+  border-radius: 999px;
+  background: var(--plocha-2);
+  color: var(--slaby-text);
+  font: 800 0.75rem/1.35 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  vertical-align: -1px;
+  white-space: nowrap;
+}
+
+.kr-pil .kr-ikona {
+  width: 1.15em;
+  height: 1.15em;
+  fill: currentColor;
+}
+
+.kr-pil.kr-pil.ja {
+  background: var(--ja);
+  color: var(--na-farbe-hraca);
+}
+
+.kr-pil.kr-pil.su {
+  background: var(--su);
+  color: var(--na-farbe-hraca);
+}
+
+/* ---- Dvojitý marker: prsteň = strach podľa markera, bodka = priazeň tohto kola ---- */
+.dm-prsten,
+.dm-bodka,
+.dm-duch {
+  position: absolute;
+  left: calc((var(--p) + 0.5) * var(--seg));
+  bottom: calc(var(--dm-o) / 2 - 1px);
+  translate: -50% 50%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.dm-prsten {
+  z-index: 2;
+  width: var(--dm-o);
+  height: var(--dm-o);
+  border: max(2px, calc(var(--dm-o) * 0.18)) solid var(--text);
+  background: var(--pozadie);
+  box-shadow: 0 0 0 1px var(--pozadie);
+  transition: left 0.45s ease-out;
+}
+
+/* Tmavý lem drží bodku viditeľnú aj na žltej a oranžovej (kontrast 1,2 : 1 bez neho). */
+.dm-bodka {
+  --dm-v: max(6px, calc(var(--dm-o) * 0.47));
+  z-index: 3;
+  width: var(--dm-v);
+  height: var(--dm-v);
+  bottom: calc(var(--dm-o) / 2 - 1px);
+  background: var(--slaby-text);
+  box-shadow: 0 0 0 2px var(--pozadie);
+  transition: left 0.6s ease-in-out;
+}
+
+.dm-bodka.ja {
+  background: var(--ja);
+}
+
+.dm-bodka.su {
+  background: var(--su);
+}
+
+/* Prerušovaná bodka: kam ju posunie ďalší bod hádky (výber staršieho). */
+.dm-duch {
+  --dm-v: max(8px, calc(var(--dm-o) * 0.6));
+  z-index: 3;
+  width: var(--dm-v);
+  height: var(--dm-v);
+  border: 2px dashed var(--akcent-svetly);
+  background: color-mix(in srgb, var(--akcent-svetly) 35%, transparent);
+}
+
+/* ---- Lístok Hádky: kto hádku vyhral (farba) a o koľko (číslo) — príčina, nie výsledok ---- */
+.lst-obal {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 4;
+  display: grid;
+  justify-items: start;
+  gap: 3px;
+  pointer-events: auto;
+}
+
+.lst {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font: 800 0.75rem/1.2 var(--pismo);
+  font-variant-numeric: tabular-nums;
+  color: var(--na-farbe-hraca);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--pozadie) 75%, transparent);
+  rotate: -4deg;
+  white-space: nowrap;
+}
+
+.lst.lst.ja {
+  background: var(--ja);
+}
+
+.lst.lst.su {
+  background: var(--su);
+}
+
+/* Roh dlaždice: len značka hádky a číslo, meno sa vedľa neho zmenší (--znakov). */
+.lst-obal.roh {
+  left: auto;
+  right: 1px;
+  top: 1px;
+  display: flex;
+  gap: 2px;
+}
+
+.lst-obal.roh .lst {
+  padding: 0 4px;
+  font-size: 0.66rem;
+}
+
+/* Koniec kola: lístok sa odlepí a spadne. */
+.lst-obal.odlep .lst {
+  animation: lst-odlep 1s ease-in forwards;
+}
+
+@keyframes lst-odlep {
+  30% {
+    transform: rotate(-14deg) translateY(-4px);
+  }
+
+  100% {
+    transform: rotate(-35deg) translate(-30px, 40px);
+    opacity: 0;
+  }
+}
+
+/* ---- Nápoveda nad staršom (myš, fokus) a nad krúžkami stupnice ---- */
+.np-tip {
+  position: fixed;
+  z-index: 320;
+  width: 270px;
+  display: grid;
+  gap: 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--pozadie);
+  color: var(--text);
+  font: 400 0.8rem/1.4 var(--pismo);
+  text-align: left;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--pozadie) 80%, transparent);
+  pointer-events: none;
+}
+
+.np-tip::after {
+  content: "";
+  position: absolute;
+  left: var(--sipka);
+  bottom: -7px;
+  width: 12px;
+  height: 12px;
+  background: var(--pozadie);
+  border-right: 1px solid var(--okraj-svetly);
+  border-bottom: 1px solid var(--okraj-svetly);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.np-tip.pod::after {
+  top: -7px;
+  bottom: auto;
+  transform: translateX(-50%) rotate(225deg);
+}
+
+.np-tip.kratky {
+  width: max-content;
+  max-width: 300px;
+  padding: 7px 10px;
+}
+
+.np-tip .np-hadka {
+  color: var(--akcent-svetly);
+}
+
+.np-hlava {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.np-hlava .np-meno {
+  display: block;
+  font: 700 0.9rem/1.2 var(--nadpis);
+}
+
+.np-hlava .np-nazov {
+  display: block;
+  color: var(--slaby-text);
+  font-size: 0.78rem;
+}
+
+.np-akcia {
+  margin-bottom: 4px;
+  color: var(--akcent-svetly);
+  font-weight: 700;
+}
+
+.np-r {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--okraj);
+}
+
+.np-l {
+  flex: none;
+  width: 58px;
+  color: var(--slaby-text);
+  font-size: 0.72rem;
+}
+
+.np-po {
+  display: block;
+  color: var(--slaby-text);
+  font-size: 0.72rem;
+}
+
+.np-kto.ja {
+  color: var(--ja);
+}
+
+.np-kto.su {
+  color: var(--su);
+}
+
+/* Strach: farba toho, koho sa bojí — „bojí sa teba“ v tvojej farbe. */
+.np-strach.ja {
+  color: var(--ja);
+}
+
+.np-strach.su {
+  color: var(--su);
+}
+
+.np-strach.nikto {
+  color: var(--slaby-text);
+}
+
+b.np-kto {
+  font-weight: 800;
+}
+
+/* ---- Telefón: podržanie prsta = zväčšenina staršieho a pod ňou tá istá nápoveda ---- */
+.np-zoom-clona {
+  position: fixed;
+  inset: 0;
+  z-index: 330;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  background: color-mix(in srgb, var(--pozadie) 70%, transparent);
+}
+
+.np-zoom {
+  max-height: calc(100dvh - 12px);
+  overflow: auto;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.np-zoom-karta {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha);
+}
+
+.np-zoom-portret {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--plocha-2);
+}
+
+.np-zoom-portret img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.np-zoom-portret .kr-obal {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+}
+
+.np-zoom-karta b {
+  font: 700 0.95rem/1.2 var(--nadpis);
+}
+
+.np-tip.np-tip-zoom {
+  position: relative;
+  width: min(300px, calc(100vw - 24px));
+}
+
+.np-tip.np-tip-zoom::after {
+  display: none;
+}
+
+/* Nízky telefón na šírku: zväčšenina vedľa nápovedy, nech sa obe zmestia bez posúvania. */
+@media (max-height: 420px) {
+  .np-zoom {
+    grid-auto-flow: column;
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-prsten,
+  .dm-bodka {
+    transition: none;
+  }
+
+  .lst-obal.odlep .lst {
+    animation-duration: 1ms;
+  }
+}
+
+/* Krúžok, meno a prechod v jednom riadku (rekapitulácia, súhrny, nástenka). */
+.kr-riadok {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.kr-riadok small {
+  color: var(--slaby-text);
+  font-weight: 400;
+}
+
+.lst .lst-ikona {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+  fill: currentColor;
+}
+
+/* Dlaždica s lístkom: meno uhne doľava, nech ho lístok v rohu nezakryje. */
+.starsi-dlazdica:has(> .lst-obal) .zdroj-nazov {
+  padding-right: 22px;
+}
+
+/* ---- Pás starších na konci partie: krúžok priazne a dvojitý marker pri každom ---- */
+.pas-starsich {
+  margin: 10px 0 4px;
+}
+
+.pas-st-nadpis {
+  margin: 0 0 6px;
+  color: var(--slaby-text);
+  font: 700 0.72rem/1.2 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pas-st-rad {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pas-st {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 5px 4px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--okraj);
+  background: var(--plocha);
+  cursor: help;
+}
+
+.pas-st:focus-visible {
+  outline: 2px solid var(--akcent);
+  outline-offset: 1px;
+}
+
+.pas-st-portret {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  overflow: visible;
+  background: var(--plocha-2);
+}
+
+.pas-st-portret img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.pas-st-kruzok {
+  position: absolute;
+  right: -8px;
+  bottom: -6px;
+}
+
+.pas-st-kruzok .kr {
+  --kr-d: 26px;
+}
+
+.pas-st-meno {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 700 0.72rem/1.2 var(--nadpis);
+}
+
+.pas-st-stupnica {
+  --seg: calc(100% / 7);
+  --dm-o: 11px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  width: 100%;
+  max-width: 76px;
+  height: 12px;
+}
+
+.pas-st-stupnica i {
+  flex: 1;
+  height: calc(3px + var(--z) * 3px);
+  border-radius: 1px;
+}
+
+.pas-st.vazen {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.pas-st-vazen {
+  font-size: 0.68rem;
+  color: var(--slaby-text);
+}
+
+.pas-st.vazen.ja .pas-st-vazen {
+  color: var(--ja);
+}
+
+.pas-st.vazen.su .pas-st-vazen {
+  color: var(--su);
+}

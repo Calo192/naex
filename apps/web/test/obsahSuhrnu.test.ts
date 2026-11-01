@@ -68,7 +68,7 @@ describe("súhrn posunov kola", () => {
     const zaznam = bitka(2, { zaStarsich: [2, 0], zaStarsichRozpis: [[{ elderId: a.elderId, defId: a.karta.defId, spaky: 2 }, { elderId: null, defId: "noviny", spaky: 1 }], []] });
     const s = suhrnPosunov(pred([naPozicii(a, 5), b]), po([naPozicii(a, 5), b], { nastenka: [bitka(1), zaznam] }));
     expect(s).toHaveLength(1);
-    expect(s[0]).toMatchObject({ elderId: a.elderId, posun: null, vyplata: [{ hrac: 0, spaky: 2, stupen: 2 }], povery: [], vazen: null });
+    expect(s[0]).toMatchObject({ elderId: a.elderId, posun: null, vyplata: [{ hrac: 0, spaky: 2, stupen: 2 }], hadka: [], vazen: null });
     expect(dosledky(s[0]!)).toEqual([{ druh: "vyplata", hrac: 0, spaky: 2, stupen: 2 }]);
   });
 
@@ -83,10 +83,10 @@ describe("súhrn posunov kola", () => {
     expect(suhrnPosunov(pred([naPozicii(a, 5)]), po([naPozicii(a, 5)], { nastenka: [stara, bitka(2)] }))).toEqual([]);
   });
 
-  it("Povera sa ukáže, aj keď sa marker nepohol — po hráčoch, bez znamienka", () => {
+  it("hádka sa ukáže, aj keď sa marker nepohol — po hráčoch, bez znamienka", () => {
     const zaznam = bitka(2, { povery: [{ [a.elderId]: 1 }, { [a.elderId]: -2, [b.elderId]: -1 }] });
     const s = suhrnPosunov(pred([a, b, c]), po([a, b, c], { nastenka: [zaznam] }));
-    expect(s.map((x) => [x.elderId, x.posun, x.povery])).toEqual([
+    expect(s.map((x) => [x.elderId, x.posun, x.hadka])).toEqual([
       [a.elderId, null, [{ hrac: 0, stupne: 1 }, { hrac: 1, stupne: 2 }]],
       [b.elderId, null, [{ hrac: 1, stupne: 1 }]],
     ]);
@@ -163,7 +163,7 @@ describe("súhrn v partii botov", () => {
               if (x.posun !== null) {
                 expect(x.posun.z).toBe(z.starsi.find((e) => e.elderId === x.elderId)?.marker);
                 expect(x.posun.na).toBe(v.starsi.find((e) => e.elderId === x.elderId)?.marker);
-              } else expect(x.vazen !== null || x.vyplata.length > 0 || x.povery.length > 0).toBe(true);
+              } else expect(x.vazen !== null || x.vyplata.length > 0 || x.hadka.length > 0).toBe(true);
             }
             // Každý starší, ktorého marker sa za kolo zmenil, je v súhrne.
             const zmeneni = v.starsi.filter((e) => z.starsi.find((x) => x.elderId === e.elderId)?.marker !== e.marker).map((e) => e.elderId);

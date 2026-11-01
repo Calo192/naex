@@ -9,6 +9,8 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { Action, AkciaRekapitulacie, AkciaTuha, CielVykladania, Moment, NaexRekapitulacie, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
 import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
 import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
+import { PriazenStarsiehoVRiadku } from "./KruzokPriazne.tsx";
+import { popisHadkyNaStarsom, prechodPriazne, type PriazneBitky } from "./priazenKola.ts";
 
 /** Piktogram akcie a jej názov zo sady (HernaPlocha). */
 export interface PiktogramyRekapitulacie {
@@ -562,6 +564,8 @@ export interface RekapBitkyProps {
   readonly odpovede?: readonly OdpovedNaNaex[];
   /** Telefón na šírku: záložky Súhrn · Špaky · Podrobne · Text nad jedným zoznamom, ktorý sa posúva. */
   readonly telefon?: boolean;
+  /** Hádka po starších (krúžok a meno namiesto „priazeň ±1“, Michal 2026-10-31). */
+  readonly priazne?: PriazneBitky | undefined;
 }
 
 /**
@@ -635,7 +639,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = fal
   return bezSpakov ? n : n + riadkovSpakovBitky(r);
 }
 
-export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false }: RekapBitkyProps) {
+export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne }: RekapBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(telefon);
@@ -705,6 +709,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
             max={max}
             rusi={hotovo || vlna >= vlnaRusenia}
             ucinkuje={hotovo || vlna >= vlnaUcinku}
+            priazne={priazne}
           />
         )}
         {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} />, true, undefined, "Pohoršenie")}
@@ -885,7 +890,9 @@ function VieraPovera({
   max,
   rusi,
   ucinkuje,
+  priazne,
 }: {
+  readonly priazne: PriazneBitky | undefined;
   readonly r: RekapitulaciaBitky;
   readonly ja: PlayerId;
   readonly menoSupera: string;
@@ -928,7 +935,19 @@ function VieraPovera({
         </Cip>
       );
     }
-    if (ucinkuje && druh === "Povera" && (r.zvysnaPovera?.[kto] ?? 0) > 0) {
+    const hadka = (priazne?.hadka ?? []).filter((x) => x.hrac === kto);
+    if (ucinkuje && druh === "Povera" && hadka.length > 0) {
+      // Hádka pomenovaná menom staršieho a krúžkom výsledku (Michal 2026-10-31), z markera → toto kolo.
+      ucinok = (
+        <>
+          {hadka.map((x) => (
+            <Cip key={x.elderId} trieda={`${kto2} rk-hadka`} title={popisHadkyNaStarsom(x, menoSupera)}>
+              <PriazenStarsiehoVRiadku fav={x.fav} p={x.teraz} meno={x.meno} prechod={prechodPriazne(x.z, x.teraz, menoSupera)} />
+            </Cip>
+          ))}
+        </>
+      );
+    } else if (ucinkuje && druh === "Povera" && (r.zvysnaPovera?.[kto] ?? 0) > 0) {
       // v8.3: zvyšné Povery posunuli silu priazní (klebety na toto kolo), nie poškodenie.
       const n = r.zvysnaPovera[kto];
       ucinok = (

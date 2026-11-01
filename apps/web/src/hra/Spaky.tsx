@@ -3,13 +3,14 @@
 // nástenka ukazuje nad každou lokalitou fotku víťaza a koľko špakov za ňu získal
 // (aj finále). Čísla ráta jadro (nástenka, rozpisSpakov), tu sa len kreslia.
 
-import { useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
+import { useContext, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { BitkaNaNastenke, CardInstance, CielKola, PlayerId, SpakyTeraz } from "@naex/core";
+import type { BitkaNaNastenke, CardInstance, CielKola, Favour, PlayerId, SpakyTeraz } from "@naex/core";
 import { KONSTANTY, jeFinaleNaNastenke, pocet, rozpisSpakov, spakov } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
+import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { POMER, type ListokNaVyber } from "./rozlozenieNastenky.ts";
 import "./spaky.css";
 
@@ -130,6 +131,8 @@ export interface NastenkaProps {
    * a účtenka pod lístkom, bez rozpisu na myš.
    */
   readonly poStarom?: boolean;
+  /** Priazeň staršieho podľa id — krúžok v rozpise za starších (Michal 2026-10-31). */
+  readonly favour?: ((elderId: string) => Favour | null) | undefined;
 }
 
 interface Listok {
@@ -145,7 +148,12 @@ interface Listok {
  * čakajúce špaky), bitka, o ktorú sa práve hrá, lokality, ktoré ešte len prídu,
  * a na konci finále.
  */
-export function Nastenka({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false }: NastenkaProps) {
+export function Nastenka(props: NastenkaProps) {
+  const obsah = <NastenkaObsah {...props} />;
+  return props.favour === undefined ? obsah : <FavourStarsich.Provider value={props.favour}>{obsah}</FavourStarsich.Provider>;
+}
+
+function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   // Rozpis na myš aj na fokus klávesnicou: ktorý lístok a jeho prvok (poloha okienka).
   const [naMys, setNaMys] = useState<{ readonly i: number; readonly el: HTMLElement } | null>(null);
@@ -426,20 +434,30 @@ export function textRozpisuStarsich(b: BitkaNaNastenke, p: PlayerId, menoKarty: 
 }
 
 /**
- * Rozpis za starších s výkričníkmi (Michal 2026-10-27): stupeň strachu = špaky, ktoré starší dal,
- * farba = hráč, ktorého sa bál a ktorý ich dostal. Noviny sú bez výkričníkov — nie sú starší.
+ * Rozpis za starších (Michal 2026-10-27): stupeň strachu = špaky, ktoré starší dal. S priazňou
+ * staršieho (FavourStarsich) je pred menom krúžok priazne (Michal 2026-10-31) — priazeň toho
+ * stupňa patrila súperovi hráča, ktorého sa bál; inak výkričníky vo farbe hráča. Noviny sú bez
+ * značky — nie sú starší.
  */
 export function RozpisStarsich({ b, p, ja, menoKarty }: { readonly b: BitkaNaNastenke; readonly p: PlayerId; readonly ja: PlayerId; readonly menoKarty: (defId: string) => string }) {
+  const favour = useContext(FavourStarsich);
   const polozky = b.zaStarsichRozpis?.[p] ?? [];
   return (
     <>
-      {polozky.map((x, i) => (
-        <span key={i} className="rozpis-starsieho">
-          {i > 0 && ", "}
-          {x.elderId !== null && <ZnackaStrachu uroven={x.spaky} trieda={p === ja ? "moje" : "superove"} />}
-          {menoKarty(x.defId)} +{x.spaky}
-        </span>
-      ))}
+      {polozky.map((x, i) => {
+        const fav = x.elderId === null ? null : favour(x.elderId);
+        return (
+          <span key={i} className="rozpis-starsieho">
+            {i > 0 && ", "}
+            {fav !== null ? (
+              <PilulkaPriazne fav={fav} p={{ komu: p === ja ? "su" : "ja", sila: Math.min(3, x.spaky) }} />
+            ) : (
+              x.elderId !== null && <ZnackaStrachu uroven={x.spaky} trieda={p === ja ? "moje" : "superove"} />
+            )}{" "}
+            {menoKarty(x.defId)} +{x.spaky}
+          </span>
+        );
+      })}
     </>
   );
 }

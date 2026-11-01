@@ -13,6 +13,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, Moment, PlayerId, PocitadloBitky as Pocitadlo, RekapitulaciaBitky, StolBitky } from "@naex/core";
 import { stavPocitadla, vlnyKariet } from "@naex/core";
 import { IkonaPoldeci } from "./Panely.tsx";
+import { PilulkaPriazne } from "./KruzokPriazne.tsx";
+import type { PriazneBitky } from "./priazenKola.ts";
 import { RekapBitky, StitkyMomentov, VysledokBitky, riadkovRekapitulacieBitky, type OdpovedNaNaex, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 
 /** Zdroje bonusov a zrážok, ktoré nie sú kartou. */
@@ -51,9 +53,11 @@ export interface PocitadloBitkyProps {
   readonly naSirku?: boolean;
   /** Momenty bitky (Výprask…) — na telefóne štítok v pruhu namiesto pečiatky cez obsah. */
   readonly momenty?: readonly Moment[];
+  /** Povery po starších a mená starších podľa priazne (krúžok priazne v rekapitulácii). */
+  readonly priazne?: PriazneBitky | undefined;
 }
 
-export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [] }: PocitadloBitkyProps) {
+export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [], priazne }: PocitadloBitkyProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const posledna = p.vln - 1;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -144,6 +148,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             vlnaUcinku={p.vlnaZrazok}
             mena={mena}
             odpovede={odpovede}
+            priazne={priazne}
             telefon
           />
         )}
@@ -206,6 +211,7 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             vlnaUcinku={p.vlnaZrazok}
             mena={mena}
             odpovede={odpovede}
+            priazne={priazne}
           />
         )}
         <div className="pocitadlo-pata">
@@ -213,7 +219,16 @@ export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledok
             <span className="pocitadlo-zoznam">
               {zoznam.map((k, i) => (
                 <span key={i} className={`${k.kto === ja ? "ja" : "su"}${k.druh === "zrazka" ? " stit" : ""}`}>
-                  {k.kto === ja ? "ty" : mena[su]}: {popis(k)}
+                  {k.zdroj === "BITKAR" && priazne !== undefined ? (
+                    // Pečiatka priazne menom staršieho a krúžkom (Michal 2026-10-31).
+                    <>
+                      <PilulkaPriazne fav="BITKAR" p={{ komu: k.kto === ja ? "ja" : "su", sila: k.zmena }} /> {priazne.menoStarsieho("BITKAR") ?? "Bitkár"}: +{k.zmena} tuhé
+                    </>
+                  ) : (
+                    <>
+                      {k.kto === ja ? "ty" : mena[su]}: {popis(k)}
+                    </>
+                  )}
                 </span>
               ))}
             </span>
@@ -263,6 +278,7 @@ export interface PocitadloSLiniouProps {
   readonly onKoniec: () => void;
   readonly vysledokHned?: boolean;
   readonly naSirku?: boolean;
+  readonly priazne?: PriazneBitky | undefined;
 }
 
 /**
@@ -275,7 +291,7 @@ function rozmeryVrstvy(vyska: number, sirka: number): { readonly pevne: number; 
 }
 
 /** Počítadlo s líniou z okamihu bitky: tvoja strana od lokality doľava, súperova doprava. */
-export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false }: PocitadloSLiniouProps) {
+export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false, priazne }: PocitadloSLiniouProps) {
   const { stol, linia, rekap } = vrstva;
   const su: PlayerId = ja === 0 ? 1 : 0;
   const lok = stol.ciel?.lokalita ?? null;
@@ -322,6 +338,7 @@ export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogram
       odpovede={vrstva.odpovede ?? []}
       naSirku={naSirku}
       momenty={vrstva.momenty ?? []}
+      priazne={priazne}
     />
   );
 }

@@ -50,9 +50,9 @@ describe("súhrn posunov starších na telefóne — dôsledky slovami", () => {
     expect(textDosledku({ druh: "vyplata", hrac: 1, spaky: 1, stupen: 1 }, 0, mena, [])).toBe("+1 š Fero za udržaný strach (vyplatené)");
   });
 
-  it("priazeň, Povera a väzeň s textom", () => {
+  it("priazeň, hádka a väzeň s textom", () => {
     expect(textDosledku({ druh: "priazen", hrac: 0, sila: 3, bolo: 2 }, 0, mena, [])).toBe("priazeň ty 3 (predtým 2)");
-    expect(textDosledku({ druh: "povera", hrac: 1, stupne: 1 }, 0, mena, [])).toBe("Povera Fero: požičaná priazeň 1");
+    expect(textDosledku({ druh: "hadka", hrac: 1, stupne: 1 }, 0, mena, [])).toBe("hádka Fero: priazeň do konca kola (+1)");
     expect(textDosledku({ druh: "vazen", hrac: 0, poradie: 1 }, 0, mena, [])).toMatch(/^uväznený · väzeň tvoj 0\/\d$/);
   });
 });

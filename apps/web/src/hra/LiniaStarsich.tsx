@@ -22,16 +22,20 @@
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Action, ElderState, Favour, GameData, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, scorecardStarsieho, strachNaUdrzanie, strachNaVyplatu, type MarkerPos } from "@naex/core";
+import type { Action, ElderState, GameData, Klebety, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, strachNaUdrzanie, strachNaVyplatu, type MarkerPos } from "@naex/core";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
-import { VykricnikyPeciatky, ZnackaStrachu } from "./IkonaStrachu.tsx";
+import { VykricnikyPeciatky } from "./IkonaStrachu.tsx";
 import { IkonaPaste } from "./IkonaPaste.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
+import { KruzokPriazne, ListokHadky, ObsahNapovedyStarsieho, spojUdalosti, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import type { Pravitko } from "./pravitko.ts";
-import { POPIS_STUPNICE, riadokPriazne, riadokStrachu, stitokStopy } from "./textyStarsich.ts";
+import { dvojityMarker, ktoPriazen, listokHadky, obsahNapovedy, polohaPreHraca, priazenKola, type DvojityMarker, type ListokHadky as ListokHadkyData, type PriazenKola } from "./priazenKola.ts";
+import { riadokStrachu, stitokStopy } from "./textyStarsich.ts";
+
+export { IKONA_PRIAZNE } from "./KruzokPriazne.tsx";
 
 /** Šípka smeru pri rozdeľovaní: kam marker pôjde a za koľko (null = tým smerom sa teraz nedá). */
 export interface SipkaRozdelenia {
@@ -99,6 +103,8 @@ export interface StarsiVLinii {
   readonly stopa?: StopaStarsieho | undefined;
   /** Rozdeľovanie Pohoršenia či prebytku v mojom kroku. */
   readonly rozdelenie?: RozdelenieStarsieho | undefined;
+  /** Kam by bodku posunul klik (bod hádky) — prerušovaná bodka pri prejdení myšou. */
+  readonly bodkaPoKliku?: number | null;
 }
 
 export interface LiniaStarsichProps {
@@ -108,6 +114,8 @@ export interface LiniaStarsichProps {
   /** Čí pohľad línia ukazuje — po kliku na súperovu dlaždicu Starší súperov. */
   readonly pohlad: PlayerId;
   readonly mena: readonly [string, string];
+  /** Klebety, ktoré v kole platia (hádka bitky) — priazeň kola v krúžku, bodke a lístku. */
+  readonly klebety?: Klebety | undefined;
   /** Krok na staršom, ktorý línia práve ukazuje (Pohoršenie…) — inak null. */
   readonly krok: string | null;
   /** Starší, ktorých posun sa práve zmenil (blikne po kroku). */
@@ -130,7 +138,7 @@ function vztah(elder: ElderState, marker: MarkerPos) {
  */
 export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
 
-export function LiniaStarsich({ starsi, data, ja, pohlad, mena, krok, zmenene, tlacidlo, lupa }: LiniaStarsichProps) {
+export function LiniaStarsich({ starsi, data, ja, pohlad, mena, klebety, krok, zmenene, tlacidlo, lupa }: LiniaStarsichProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<string | null>(null);
@@ -153,8 +161,8 @@ export function LiniaStarsich({ starsi, data, ja, pohlad, mena, krok, zmenene, t
         ) : (
           <span className="ls-tlmene">
             {/* Na telefóne myš ani Tab nie sú (playtest mobilu 20261031-191322) — mobil-sirka.css prepne vetu. */}
-            <span className="len-mys">Prejdi myšou alebo Tabom na staršieho — riadky pod stupnicou ukážu stav po posune.</span>
-            <span className="len-dotyk">Ťukni na staršieho — riadky pod stupnicou ukážu stav po posune.</span>
+            <span className="len-mys">Prejdi myšou alebo Tabom na staršieho — nápoveda ukáže, čo klik urobí.</span>
+            <span className="len-dotyk">Podrž prst na staršom — ukáže priazeň a strach; ťuk vyberie.</span>
           </span>
         )}
       </span>
@@ -178,6 +186,7 @@ export function LiniaStarsich({ starsi, data, ja, pohlad, mena, krok, zmenene, t
             data={data}
             ja={ja}
             mena={mena}
+            klebety={klebety}
             krok={krok}
             zmeneny={zmenene.has(s.elder.elderId)}
             nahlad={nahlad === s.elder.elderId}
@@ -196,6 +205,7 @@ function ScorecardVLinii({
   data,
   ja,
   mena,
+  klebety,
   krok,
   zmeneny,
   nahlad,
@@ -207,72 +217,71 @@ function ScorecardVLinii({
   readonly data: GameData;
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
+  readonly klebety: Klebety | undefined;
   readonly krok: string | null;
   readonly zmeneny: boolean;
-  /** Myš či fokus je na tomto staršom — riadky ukážu stav po posune. */
+  /** Myš či fokus je na tomto staršom — v kroku prerušovaná bodka ukáže cieľ bodu hádky. */
   readonly nahlad: boolean;
   readonly onNahlad: (n: boolean) => void;
   readonly kto: (p: PlayerId) => string;
   readonly lupa: HTMLAttributes<HTMLElement> | undefined;
 }) {
-  if (s.rozdelenie !== undefined) return <KartaRozdelenia s={s} r={s.rozdelenie} data={data} ja={ja} mena={mena} zmeneny={zmeneny} />;
-  const { elder, body, klik } = s;
   const su: PlayerId = ja === 0 ? 1 : 0;
+  const { elder, body, klik } = s;
   const fav = favourStarsieho(data, elder);
-  // Zrkadlenie (Michal 2026-10-22, #55): každý vidí svoju polovicu stupnice vľavo.
-  const poloha = (m: number): number => (ja === 0 ? m : 6 - m);
   const koho = (p: PlayerId): string => (p === ja ? "teba" : mena[p]);
+  const listok = listokHadky(elder.elderId, klebety, ja);
+  const napoveda = useNapovedaStarsieho(
+    () => {
+      const o = obavanyHrac(elder);
+      return obsahNapovedy({
+        data,
+        elder,
+        meno: s.meno,
+        klebety,
+        ja,
+        mena,
+        spaky: o === null ? 0 : (body?.spaky[o] ?? strachNaVyplatu(elder, o)),
+        naUdrzanie: o === null ? 0 : (body?.naUdrzanie[o] ?? strachNaUdrzanie(elder, o)),
+        akcia: klik?.akcia ?? null,
+      });
+    },
+    { menoSupera: mena[su], zvacsenina: () => <ZvacseninaStarsieho s={s} fav={fav} p={priazenKola(elder, klebety, ja)} listok={listok} menoSupera={mena[su]} /> },
+  );
+  if (s.rozdelenie !== undefined) return <KartaRozdelenia s={s} r={s.rozdelenie} data={data} ja={ja} mena={mena} klebety={klebety} zmeneny={zmeneny} />;
 
   const krokTrieda =
     krok === null ? "" : s.vybrany === true ? " vybrany" : klik !== undefined ? ` klik${nahlad ? " nahl" : ""}` : " nedost";
-  // Náhľad ťahu ako jedna značka (Michal 2026-10-28): v kroku duch markera ukáže cieľ posunu
-  // aj bez myši; riadky pod stupnicou prejdú na stav po posune až pri prejdení myšou.
+  // Náhľad ťahu ako jedna značka (Michal 2026-10-28): v kroku duch markera ukáže cieľ posunu.
   const cielKroku = klik !== undefined || s.vybrany === true ? (s.ciel ?? null) : null;
   const duch = cielKroku !== null && cielKroku !== elder.marker ? cielKroku : null;
-  const poPosune = duch !== null && (nahlad || s.vybrany === true) ? duch : null;
   const teraz = vztah(elder, elder.marker);
-  const zobraz = poPosune === null ? teraz : vztah(elder, poPosune);
   const vydeseny = teraz.uroven === 3;
-
-  // Špaky za strach na konci kola a čo čaká na udržanie (v8.3): teraz z jadra (spakyTeraz),
-  // po posune so zaplatenými a držanými stupňami tak, ako ich posun nechá (sPosunutymMarkerom).
-  const spaky = (v: ReturnType<typeof vztah>, poPosune: boolean): number =>
-    v.obavany === null
-      ? 0
-      : !poPosune
-        ? (body?.spaky[v.obavany] ?? strachNaVyplatu(elder, v.obavany))
-        : strachNaVyplatu(sPosunutymMarkerom(elder, cielKroku ?? elder.marker), v.obavany);
-  const naUdrzanie = (v: ReturnType<typeof vztah>, poPosune: boolean): number =>
-    v.obavany === null
-      ? 0
-      : !poPosune
-        ? (body?.naUdrzanie[v.obavany] ?? strachNaUdrzanie(elder, v.obavany))
-        : strachNaUdrzanie(sPosunutymMarkerom(elder, cielKroku ?? elder.marker), v.obavany);
-  const priazenText = (v: ReturnType<typeof vztah>): string => riadokPriazne(fav, v.priazen === null ? null : kto(v.priazen), v.sila);
-  const strachText = (v: ReturnType<typeof vztah>, po: boolean): string => riadokStrachu(v.obavany === null ? null : mena[v.obavany], v.obavany === ja, spaky(v, po), naUdrzanie(v, po));
-  const priazenTeraz = priazenText(teraz);
-  const priazenPo = priazenText(zobraz);
-  const strachTeraz = strachText(teraz, false);
-  const strachPo = strachText(zobraz, poPosune !== null);
-  const popisMarkera = `${s.meno}: priazeň ${priazenTeraz}; ${strachTeraz}`;
+  const pk = priazenKola(elder, klebety, ja);
+  const dm = dvojityMarker(elder, klebety, ja);
+  const o = teraz.obavany;
+  const strachText = riadokStrachu(o === null ? null : mena[o], o === ja, o === null ? 0 : (body?.spaky[o] ?? strachNaVyplatu(elder, o)), o === null ? 0 : (body?.naUdrzanie[o] ?? strachNaUdrzanie(elder, o)));
+  const popisMarkera = `${s.meno}: priazeň v tomto kole ${ktoPriazen(pk, { ja: "ty", su: mena[su] })}; ${strachText}`;
 
   const stopa = s.stopa;
-  const pata =
-    s.dovod !== undefined ? (
-      <span className="ls-dovod">{s.dovod}</span>
-    ) : null;
+  const pata = s.dovod !== undefined ? <span className="ls-dovod">{s.dovod}</span> : null;
+  const bodkaDuch = nahlad && s.bodkaPoKliku != null ? s.bodkaPoKliku : null;
 
   return (
     <div
       className={`ls-sc${krokTrieda}${zmeneny ? " zmena" : ""}${stopa !== undefined ? " so-stopou" : ""}`}
       data-vyucba={`starsi:${s.elder.elderId}`}
       {...(klik === undefined
-        ? { "aria-label": popisMarkera + (s.dovod !== undefined ? ` — ${s.dovod}` : ""), ...(krok === null ? lupa : undefined) }
-        : {
+        ? spojUdalosti(napoveda.props, { tabIndex: 0, "aria-label": popisMarkera + (s.dovod !== undefined ? ` — ${s.dovod}` : ""), ...(krok === null ? lupa : undefined) })
+        : spojUdalosti(napoveda.props, {
             role: "button",
             tabIndex: 0,
             "aria-label": `${popisMarkera} — klikni: ${klik.akcia}`,
-            onClick: klik.klik,
+            onClick: () => {
+              // Ťuk po podržaní prsta otvoril zväčšeninu — hádku ani zajatie nespúšťa.
+              if (napoveda.poPodrzani()) return;
+              klik.klik();
+            },
             onKeyDown: (e: ReactKeyboardEvent) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -283,7 +292,7 @@ function ScorecardVLinii({
             onMouseLeave: () => onNahlad(false),
             onFocus: () => onNahlad(true),
             onBlur: () => onNahlad(false),
-          })}
+          }))}
     >
       <div className="ls-telo">
         <span className="ls-portret">
@@ -294,50 +303,60 @@ function ScorecardVLinii({
               <VykricnikyPeciatky />
             </span>
           )}
+          <ListokHadky listok={listok} menoSupera={mena[su]} />
           {s.patron !== null && (
             <span className="ls-patron">
               v ohrození · zajať skúša {s.patron.kto === ja ? "ty" : kto(s.patron.kto)} · karta v ruke: {s.patron.kto === ja ? "súper" : "ty"}
             </span>
           )}
           {stopa !== undefined && s.patron === null && <StitokPosunu stopa={stopa} ja={ja} />}
+          {/* Krúžok priazne vždy (Michal 2026-10-31): priazeň, ktorá v tomto kole naozaj platí. */}
+          <KruzokPriazne fav={fav} p={pk} trieda="ls-kruzok" />
         </span>
       </div>
       <Stupnica
-        marker={poloha(elder.marker)}
-        ciel={duch === null ? null : poloha(duch)}
-        stopa={stopa === undefined || stopa.z === elder.marker ? null : poloha(stopa.z)}
-        priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"}
+        marker={polohaPreHraca(elder.marker, ja)}
+        ciel={duch === null ? null : polohaPreHraca(duch, ja)}
+        stopa={stopa === undefined || stopa.z === elder.marker ? null : polohaPreHraca(stopa.z, ja)}
+        dm={dm}
+        bodkaDuch={bodkaDuch}
+        kruzky={napoveda.kruzky(dm.posunute)}
       />
-      {/* Pod staršinom meno a komu akú priazeň dáva, väčším písmom (Michal 2026-10-30: drobné
-          popisy strán a poradie nad ním nič nehovorili). */}
+      {/* Pod staršinom len meno (Michal 2026-10-31): priazeň nesie krúžok, vety nápoveda. */}
       <span className="ls-stav" aria-hidden="true">
         <b className="ls-meno">{s.meno}</b>
-        <span className={`ls-cip priazen${zobraz.priazen === null ? "" : zobraz.priazen === ja ? " moja" : " superova"}${priazenPo !== priazenTeraz ? " po-posune" : ""}`}>
-          <IkonaPriazne /> {priazenPo}
-        </span>
-        <span
-          className={`ls-cip strach${zobraz.obavany === null ? " nikoho" : zobraz.obavany === ja ? " moj" : " superov"}${strachPo !== strachTeraz ? " po-posune" : ""}`}
-        >
-          <ZnackaStrachu uroven={zobraz.obavany === null ? 0 : zobraz.uroven} />
-          {strachPo}
-        </span>
       </span>
       {pata !== null && <div className="ls-pata">{pata}</div>}
+      {napoveda.vrstva}
     </div>
   );
 }
 
-/** Ikona akcie, ktorú priazeň staršieho posilňuje — pečať priazne (mock C · Pečať). */
-export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
-  BITKAR: "Rana",
-  VERIACI: "Viera",
-  UZERNIK: "Dlh",
-  ADVOKAT: "Dlh",
-  ROBOTA: "Robota",
-  FAJCIAR: "Cigareta",
-  ALKOHOLIK: "Poldeci",
-  LAKOMEC: "Pohoršenie",
-};
+/** Zväčšenina staršieho na telefóne (podržanie prsta) — pod ňou je nápoveda. */
+function ZvacseninaStarsieho({
+  s,
+  fav,
+  p,
+  listok,
+  menoSupera,
+}: {
+  readonly s: StarsiVLinii;
+  readonly fav: ReturnType<typeof favourStarsieho>;
+  readonly p: PriazenKola;
+  readonly listok: ListokHadkyData | null;
+  readonly menoSupera: string;
+}) {
+  return (
+    <span className="np-zoom-karta">
+      <span className="np-zoom-portret">
+        {s.obrazok !== null ? <img src={s.obrazok} alt="" draggable={false} /> : null}
+        <ListokHadky listok={listok} menoSupera={menoSupera} />
+        <KruzokPriazne fav={fav} p={p} velkost={46} />
+      </span>
+      <b>{s.meno}</b>
+    </span>
+  );
+}
 
 /**
  * Ikona kroku v bubline a na žetónoch — piktogram akcie: Pohoršenie, prebytok je prebytok
@@ -375,6 +394,7 @@ function KartaRozdelenia({
   data,
   ja,
   mena,
+  klebety,
   zmeneny,
 }: {
   readonly s: StarsiVLinii;
@@ -382,10 +402,13 @@ function KartaRozdelenia({
   readonly data: GameData;
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
+  readonly klebety: Klebety | undefined;
   readonly zmeneny: boolean;
 }) {
   const { elder } = s;
   const su: PlayerId = ja === 0 ? 1 : 0;
+  // Posun markera hýbe prsteňom a bodka ide s ním o rovnaký kus — rozdiel z hádky ostáva.
+  const dm = dvojityMarker(r.navrh === null ? elder : { ...elder, marker: r.navrh.na }, klebety, ja);
   const teraz = vztah(elder, elder.marker);
   const navrh = r.navrh;
   const zobraz = navrh === null ? teraz : vztah(elder, navrh.na);
@@ -458,10 +481,21 @@ function KartaRozdelenia({
             </span>
           )}
           {navrh !== null && <span className="ls-cena-navrhu">−{navrh.cena}</span>}
-          <PecatPriazne elder={elder} meno={s.meno} data={data} ja={ja} mena={mena} na={navrh?.na ?? null} strach={{ teraz: strachTeraz, po: strachPo }} />
+          <ListokHadky listok={listokHadky(elder.elderId, klebety, ja)} menoSupera={mena[su]} />
+          <PecatPriazne
+            elder={elder}
+            meno={s.meno}
+            data={data}
+            ja={ja}
+            mena={mena}
+            klebety={klebety}
+            body={s.body}
+            na={navrh?.na ?? null}
+            strach={{ teraz: strachTeraz, po: strachPo }}
+          />
         </span>
       </div>
-      <StupnicaRozdelenia r={r} marker={elder.marker} priazen={teraz.priazen === null ? null : teraz.priazen === ja ? "ja" : "su"} ja={ja} meno={s.meno} />
+      <StupnicaRozdelenia r={r} marker={elder.marker} bodka={dm} ja={ja} meno={s.meno} />
       <PravitkaRozdelenia r={r} meno={s.meno} />
       <span className="ls-sipky">
         {sipka("ja")}
@@ -554,13 +588,14 @@ function PravitkoPosunu({ p, smer, meno, plne }: { readonly p: Pravitko; readonl
 function StupnicaRozdelenia({
   r,
   marker,
-  priazen,
+  bodka,
   ja,
   meno,
 }: {
   readonly r: RozdelenieStarsieho;
   readonly marker: MarkerPos;
-  readonly priazen: "ja" | "su" | null;
+  /** Prsteň (marker) a bodka (priazeň tohto kola) — bodka ide s nepotvrdeným posunom. */
+  readonly bodka: DvojityMarker;
   readonly ja: PlayerId;
   readonly meno: string;
 }) {
@@ -579,8 +614,9 @@ function StupnicaRozdelenia({
         const vnutro = (
           <>
             {c !== null && c.dosah && <i className="lsr-cena">{c.cena}</i>}
-            {pos === marker && <b className={`lsr-mk${priazen === null ? "" : ` ${priazen}`}${r.navrh !== null ? " stare" : ""}`} />}
+            {pos === marker && <b className={`lsr-mk${r.navrh !== null ? " stare" : ""}`} />}
             {r.navrh !== null && pos === r.navrh.na && <b className="lsr-mk duch" />}
+            {k === bodka.bodka && <b className={`lsr-bodka${bodka.komu === null ? "" : ` ${bodka.komu}`}`} />}
           </>
         );
         const styl = { background: farbaZony(z), "--z": z } as CSSProperties;
@@ -599,9 +635,9 @@ function StupnicaRozdelenia({
 }
 
 /**
- * Pečať priazne na portréte (mock C): ikona akcie a sila vo farbe toho, komu priazeň patrí;
- * v strede sivý prerušovaný obrys bez čísla. Pri nepotvrdenom posune nová pečať, preškrtnutá
- * stará hodnota a ▲ / ▼ / ⇄. Myš, ťuk či fokus otvorí popis; Esc ho zavrie.
+ * Krúžok priazne na portréte pri rozdeľovaní (mock C): priazeň tohto kola (po hádke) vo farbe
+ * toho, komu patrí. Pri nepotvrdenom posune nový krúžok, preškrtnutá stará hodnota a ▲ / ▼ / ⇄.
+ * Myš, ťuk či fokus otvorí nápovedu staršieho so stavom po posune; Esc ju zavrie.
  */
 function PecatPriazne({
   elder,
@@ -609,6 +645,8 @@ function PecatPriazne({
   data,
   ja,
   mena,
+  klebety,
+  body,
   na,
   strach,
 }: {
@@ -617,25 +655,28 @@ function PecatPriazne({
   readonly data: GameData;
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
+  readonly klebety: Klebety | undefined;
+  readonly body: SpakyStarsieho | undefined;
   readonly na: MarkerPos | null;
   /** Koho sa starší bojí teraz a po posune (riadok strachu, pod kartou už nie je). */
   readonly strach: { readonly teraz: string; readonly po: string };
 }) {
+  const su: PlayerId = ja === 0 ? 1 : 0;
   const fav = favourStarsieho(data, elder);
-  const a = vztah(elder, elder.marker);
-  const b = na === null || na === elder.marker ? null : vztah(elder, na);
+  const a = priazenKola(elder, klebety, ja);
+  const b = na === null || na === elder.marker ? null : priazenKola({ ...elder, marker: na }, klebety, ja);
   const p = b ?? a;
-  const zmena = b === null ? null : zmenaPriazne(a, b, ja);
-  const trieda = (v: Vztah): string => (v.priazen === null ? "nikto" : v.priazen === ja ? "ja" : "su");
-  const kto = (v: Vztah): ReactNode => (v.priazen === null ? "nikto" : <span className={`kto-${trieda(v)}`}>{v.priazen === ja ? "ty" : mena[v.priazen]}</span>);
+  const vz = (x: PriazenKola) => ({ priazen: x.hrac, sila: x.sila });
+  const zmena = b === null ? null : zmenaPriazne(vz(a), vz(b), ja);
+  const m = { ja: "ty", su: mena[su] };
   const [poloha, setPoloha] = useState<{ readonly x: number; readonly y: number; readonly hore: boolean } | null>(null);
   const ref = useRef<HTMLButtonElement>(null);
   const otvor = (): void => {
     const el = ref.current;
     if (el === null) return;
     const rect = el.getBoundingClientRect();
-    const hore = rect.top > 170;
-    setPoloha({ x: Math.min(Math.max(rect.left + rect.width / 2, 130), window.innerWidth - 130), y: hore ? rect.top - 8 : rect.bottom + 8, hore });
+    const hore = rect.top > 250;
+    setPoloha({ x: Math.min(Math.max(rect.left + rect.width / 2, 145), window.innerWidth - 145), y: hore ? rect.top - 8 : rect.bottom + 8, hore });
   };
   useEffect(() => {
     if (poloha === null) return;
@@ -649,15 +690,14 @@ function PecatPriazne({
     window.addEventListener("keydown", klaves, true);
     return () => window.removeEventListener("keydown", klaves, true);
   }, [poloha]);
-  const ikona = IKONY[IKONA_PRIAZNE[fav]];
-  const nazov = scorecardStarsieho(data, elder).nazov;
-  const popis = `${meno}: priazeň ${nazov} ${p.priazen === null ? "nikto" : `+${p.sila} ${p.priazen === ja ? "ty" : mena[p.priazen]}`}`;
+  const popis = `${meno}: priazeň v tomto kole ${ktoPriazen(p, m)}`;
+  const o = obavanyHrac(elder);
   return (
     <span className="ls-pecat-pr">
       <button
         ref={ref}
         type="button"
-        className={`ls-pecat ${trieda(p)}`}
+        className="ls-pecat"
         aria-label={popis}
         aria-expanded={poloha !== null}
         onPointerEnter={(e) => {
@@ -672,35 +712,29 @@ function PecatPriazne({
         onBlur={() => setPoloha(null)}
         onClick={() => (poloha === null ? otvor() : setPoloha(null))}
       >
-        <svg className="ls-pecat-ikona" viewBox="0 0 100 100" aria-hidden="true">
-          {ikona.map((c, i) => (
-            <path key={i} d={c.d} fillRule={c.evenOdd ? "evenodd" : "nonzero"} />
-          ))}
-        </svg>
-        {p.priazen !== null && <span>+{p.sila}</span>}
+        <KruzokPriazne fav={fav} p={p} trieda="ls-kruzok-r" />
       </button>
       {zmena !== null && <span className={`ls-pecat-zmena ${zmena.trieda}`}>{zmena.znak}</span>}
-      {b !== null && a.priazen !== null && <s className="ls-pecat-bolo">+{a.sila}</s>}
+      {b !== null && a.komu !== null && <s className="ls-pecat-bolo">+{a.sila}</s>}
       {poloha !== null &&
         createPortal(
-          <span className={`ls-pecat-tip${poloha.hore ? " hore" : ""}`} role="tooltip" style={{ left: poloha.x, top: poloha.y }}>
-            <b>
-              {meno} · {nazov}
-              {a.priazen !== null ? ` +${a.sila}` : ""}
-            </b>
-            <br />
-            {a.priazen === null ? (
-              `nikomu — v strede nedáva nič (pri +1: ${UCINOK_PRIAZNE[fav](1)})`
-            ) : (
-              <>
-                {kto(a)}: {UCINOK_PRIAZNE[fav](a.sila)}
-              </>
-            )}
-            <span className="strach">{strach.teraz}</span>
+          <span className={`np-tip ls-pecat-tip${poloha.hore ? " hore" : ""}`} role="tooltip" style={{ left: poloha.x, top: poloha.y }}>
+            <ObsahNapovedyStarsieho
+              o={obsahNapovedy({
+                data,
+                elder,
+                meno,
+                klebety,
+                ja,
+                mena,
+                spaky: o === null ? 0 : (body?.spaky[o] ?? strachNaVyplatu(elder, o)),
+                naUdrzanie: o === null ? 0 : (body?.naUdrzanie[o] ?? strachNaUdrzanie(elder, o)),
+              })}
+              menoSupera={mena[su]}
+            />
             {b !== null && (
               <span className="po">
-                po posune: {kto(b)}
-                {b.priazen !== null ? ` +${b.sila}` : ""}
+                po posune: <span className={`np-kto ${b.komu ?? "nikto"}`}>{ktoPriazen(b, m)}</span>
                 {strach.po !== strach.teraz && (
                   <>
                     <br />
@@ -731,16 +765,23 @@ function Stupnica({
   marker,
   ciel,
   stopa,
-  priazen,
+  dm,
+  bodkaDuch,
+  kruzky,
 }: {
   readonly marker: number;
   readonly ciel: number | null;
   /** Kde marker stál pred posunmi od poslednej bitky (duch stopy). */
   readonly stopa: number | null;
-  readonly priazen: "ja" | "su" | null;
+  /** Dvojitý marker: prsteň = strach (marker), bodka = priazeň tohto kola (Michal 2026-10-31). */
+  readonly dm: DvojityMarker;
+  /** Prerušovaná bodka — kam ju posunie klik (bod hádky). */
+  readonly bodkaDuch: number | null;
+  /** Prejdenie myšou nad stupnicou: nápoveda o prsteni a bodke. */
+  readonly kruzky: HTMLAttributes<HTMLElement>;
 }) {
   return (
-    <span className="ls-stupnica" aria-hidden="true" title={POPIS_STUPNICE} data-vyucba="starsi-stupnica">
+    <span className="ls-stupnica" aria-hidden="true" data-vyucba="starsi-stupnica" {...kruzky}>
       {/* 7 polí (v6): červená, oranžová, žltá, sivá, žltá, oranžová, červená — číslo = sila priazne aj špaky za strach. */}
       {STUPNICA_ZONY.map((z, k) => (
         <i key={k} style={{ background: farbaZony(z), "--z": z } as CSSProperties}>
@@ -753,7 +794,9 @@ function Stupnica({
           <b className="ls-marker stopa" style={{ "--p": stopa } as CSSProperties} />
         </>
       )}
-      <b className={`ls-marker${priazen === null ? "" : ` ${priazen}`}`} style={{ "--p": marker } as CSSProperties} />
+      <b className="dm-prsten" style={{ "--p": dm.prsten } as CSSProperties} />
+      <b className={`dm-bodka${dm.komu === null ? "" : ` ${dm.komu}`}`} style={{ "--p": dm.bodka } as CSSProperties} />
+      {bodkaDuch !== null && bodkaDuch !== dm.bodka && <b className="dm-duch" style={{ "--p": bodkaDuch } as CSSProperties} />}
       {ciel !== null && ciel !== marker && <b className="ls-marker duch" style={{ "--p": ciel } as CSSProperties} />}
     </span>
   );

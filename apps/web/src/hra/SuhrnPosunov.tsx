@@ -6,14 +6,18 @@
 // Čo ukázať, ráta obsahSuhrnu.ts; tu je len poradie a kreslenie.
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import type { MarkerPos, PlayerId, Vazen } from "@naex/core";
-import { KONSTANTY, STUPNICA_ZONY, cigariet, obavanyHrac, pocet, strachZ } from "@naex/core";
+import type { GameData, MarkerPos, PlayerId, Vazen } from "@naex/core";
+import { KONSTANTY, STUPNICA_ZONY, cigariet, favourStarsieho, obavanyHrac, pocet, strachZ } from "@naex/core";
 import "./suhrn-posunov.css";
 import { IKONY } from "../karta/ikony.ts";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { farbaZony } from "./LiniaStarsich.tsx";
+import { IkonaHadky, KruzokPriazne } from "./KruzokPriazne.tsx";
+import { ktoPriazen, kratkeMeno, priazenSuhrnu, type PriazenKola } from "./priazenKola.ts";
+
+const textPriazne = (p: PriazenKola, menoSupera: string): string => ktoPriazen(p, { ja: "ty", su: kratkeMeno(menoSupera) });
 import type { SuhrnDlazdice } from "./Starsi.tsx";
 import { dosledky, type Dosledok, type PolozkaSuhrnu } from "./obsahSuhrnu.ts";
 
@@ -26,6 +30,7 @@ const PRICHOD_MS = 380;
 const ODCHOD_MS = 300;
 
 export interface SuhrnPosunovProps {
+  readonly data: GameData;
   readonly polozky: readonly PolozkaSuhrnu[];
   /** Starší zo začiatku kola v poradí stĺpčekov dlaždice a ich markery vtedy. */
   readonly zaciatok: readonly { readonly elderId: string; readonly marker: MarkerPos }[];
@@ -44,7 +49,7 @@ export interface SuhrnPosunovProps {
 
 const bezPohybu = (): boolean => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 
-export function SuhrnPosunov({ polozky, zaciatok, ja, mena, vazni, menoKarty, obrazok, mobil, posledne, onDlazdica, onKoniec }: SuhrnPosunovProps) {
+export function SuhrnPosunov({ data, polozky, zaciatok, ja, mena, vazni, menoKarty, obrazok, mobil, posledne, onDlazdica, onKoniec }: SuhrnPosunovProps) {
   const rm = useMemo(bezPohybu, []);
   const cas = (ms: number): number => (rm ? 0 : ms);
   // Stĺpčeky dlaždice: starší zo začiatku kola; kto pribudol (zatiaľ nič také), ide na koniec.
@@ -148,6 +153,7 @@ export function SuhrnPosunov({ polozky, zaciatok, ja, mena, vazni, menoKarty, ob
       {polozka !== undefined && faza !== "sken" && (
         <Bublina
           key={polozka.elderId}
+          data={data}
           p={polozka}
           ja={ja}
           mena={mena}
@@ -168,6 +174,7 @@ export function SuhrnPosunov({ polozky, zaciatok, ja, mena, vazni, menoKarty, ob
 }
 
 function Bublina({
+  data,
   p,
   ja,
   mena,
@@ -182,6 +189,7 @@ function Bublina({
   tlacidlo,
   onDalej,
 }: {
+  readonly data: GameData;
   readonly p: PolozkaSuhrnu;
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
@@ -247,6 +255,12 @@ function Bublina({
     </div>
   );
   const vazen = p.vazen;
+  // Krúžok pri mene (Michal 2026-10-31): priazeň po kole; po hádke aj „toto kolo → po kole“
+  // a na stupnici sa bodka vráti do prsteňa (v kole bez posunu markera).
+  const e = p.elder;
+  const fav = e === null ? null : favourStarsieho(data, e);
+  const pz = e === null ? null : priazenSuhrnu(e, p.hadka, ja);
+  const poHadke = pz !== null && p.posun === null && p.hadka.length > 0;
   return (
     <div
       ref={ref}
@@ -274,12 +288,24 @@ function Bublina({
           )}
         </span>
         <b className="sb-meno">{meno}</b>
+        {fav !== null && pz !== null && (
+          <span className="sb-kruzky" role="img" aria-label={poHadke ? `Priazeň v kole po hádke ${textPriazne(pz.vKole, mena[ja === 0 ? 1 : 0])}, po kole ${textPriazne(pz.poKole, mena[ja === 0 ? 1 : 0])}` : `Priazeň po kole ${textPriazne(pz.poKole, mena[ja === 0 ? 1 : 0])}`}>
+            {poHadke && (
+              <>
+                <KruzokPriazne fav={fav} p={pz.vKole} velkost={mobil ? 30 : 36} />
+                <span className="sb-sipka" aria-hidden="true">→</span>
+              </>
+            )}
+            <KruzokPriazne fav={fav} p={pz.poKole} velkost={mobil ? 30 : 36} />
+          </span>
+        )}
       </div>
       {p.posun !== null && <VelkaStupnica z={p.posun.z} marker={marker ?? p.posun.z} ja={ja} />}
-      {/* Bez stupnice (výplata, Povera, väzeň) idú dôsledky do riadka s tlačidlom — bublina nie je naprázdno vysoká. */}
-      {p.posun !== null && dosledkyEl}
-      <div className={`sb-pata${p.posun === null ? " s-dosledkami" : ""}`}>
-        {p.posun === null && dosledkyEl}
+      {poHadke && e !== null && pz !== null && <VelkaStupnica z={e.marker} marker={e.marker} ja={ja} bodkaOd={pz.dm.bodka} />}
+      {/* Bez stupnice (výplata, väzeň) idú dôsledky do riadka s tlačidlom — bublina nie je naprázdno vysoká. */}
+      {(p.posun !== null || poHadke) && dosledkyEl}
+      <div className={`sb-pata${p.posun === null && !poHadke ? " s-dosledkami" : ""}`}>
+        {p.posun === null && !poHadke && dosledkyEl}
         {poradie.n > 1 && (
           <span className="sb-bodky" aria-hidden="true">
             {Array.from({ length: poradie.n }, (_, k) => (
@@ -302,10 +328,25 @@ function Bublina({
   );
 }
 
-/** Stupnica pred → po: každý vidí svoju polovicu vľavo (ako línia starších), duch ostane na starom mieste. */
-function VelkaStupnica({ z, marker, ja }: { readonly z: MarkerPos; readonly marker: MarkerPos; readonly ja: PlayerId }) {
+/** Ako dlho bodka hádky stojí, kým sa vráti do prsteňa. */
+const NAVRAT_BODKY_MS = 900;
+
+/**
+ * Stupnica pred → po: každý vidí svoju polovicu vľavo (ako línia starších), duch ostane na starom
+ * mieste. Dvojitý marker ako v línii: prsteň = marker (strach), bodka = priazeň vo farbe hráča.
+ * `bodkaOd` (poloha v zobrazení hráča): bodka začne tam, kam ju dala hádka, a vráti sa do prsteňa.
+ */
+function VelkaStupnica({ z, marker, ja, bodkaOd = null }: { readonly z: MarkerPos; readonly marker: MarkerPos; readonly ja: PlayerId; readonly bodkaOd?: number | null }) {
   const poloha = (m: number): number => (ja === 0 ? m : 6 - m);
-  const komu = marker < 3 ? 0 : marker > 3 ? 1 : null;
+  const [doma, setDoma] = useState(bodkaOd === null || bezPohybu());
+  useEffect(() => {
+    if (doma) return;
+    const t = setTimeout(() => setDoma(true), NAVRAT_BODKY_MS);
+    return () => clearTimeout(t);
+  }, []);
+  const bodka = bodkaOd !== null && !doma ? bodkaOd : poloha(marker);
+  // Tvoja polovica je vždy vľavo — farbu bodky povie strana.
+  const komu = bodka < 3 ? "ja" : bodka > 3 ? "su" : "nikto";
   return (
     <span className="sb-stupnica" aria-hidden="true">
       <span className="sb-kraj ja" />
@@ -319,9 +360,8 @@ function VelkaStupnica({ z, marker, ja }: { readonly z: MarkerPos; readonly mark
           <b className="sb-marker duch" style={{ "--p": poloha(z) } as CSSProperties} />
         </>
       )}
-      <b className={`sb-marker${komu === null ? "" : komu === ja ? " ja" : " su"}`} style={{ "--p": poloha(marker) } as CSSProperties}>
-        {komu !== null && <IkonaPriazne />}
-      </b>
+      <b className="sb-marker" style={{ "--p": poloha(marker) } as CSSProperties} />
+      <b className={`sb-bodka ${komu}`} style={{ "--p": bodka } as CSSProperties} />
     </span>
   );
 }
@@ -387,12 +427,12 @@ function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: Player
           <b>+{d.spaky}</b>
         </>,
       );
-    case "povera":
+    case "hadka":
       return cip(
-        "povera",
-        `Povera: ${kto} — priazeň požičaná v bitke o ${d.stupne} ${d.stupne === 1 ? "stupeň" : "stupne"}`,
+        "hadka",
+        textDosledku(d, ja, mena, vazni),
         <>
-          <IkonaPovery />
+          <IkonaHadky trieda="sb-ikona" />
           <IkonaPriazne />
           <b>+{d.stupne}</b>
         </>,
@@ -429,7 +469,7 @@ function IkonaHodin() {
   );
 }
 
-function IkonaPiktogramu({ kluc, trieda }: { readonly kluc: "Povera" | "Cigareta"; readonly trieda: string }) {
+function IkonaPiktogramu({ kluc, trieda }: { readonly kluc: "Cigareta"; readonly trieda: string }) {
   return (
     <svg className={`sb-ikona ${trieda}`} viewBox="0 0 100 100" aria-hidden="true">
       {IKONY[kluc].map((c, i) => (
@@ -439,10 +479,10 @@ function IkonaPiktogramu({ kluc, trieda }: { readonly kluc: "Povera" | "Cigareta
   );
 }
 
-const IkonaPovery = () => <IkonaPiktogramu kluc="Povera" trieda="povera" />;
 const IkonaCigarety = () => <IkonaPiktogramu kluc="Cigareta" trieda="cigareta" />;
 
 export interface SuhrnPosunovTelefonProps {
+  readonly data: GameData;
   readonly polozky: readonly PolozkaSuhrnu[];
   readonly kolo: number;
   readonly ja: PlayerId;
@@ -462,7 +502,7 @@ const ZAMOK_TELEFONU_MS = 700;
  * ako súhrn bitky — hore pruh so žltým Ďalej na stálom mieste, pod ním jeden zoznam všetkých
  * starších naraz: pred → po slovami a dôsledky ako čipy s textom.
  */
-export function SuhrnPosunovTelefon({ polozky, kolo, ja, mena, vazni, menoKarty, obrazok, posledne, onKoniec }: SuhrnPosunovTelefonProps) {
+export function SuhrnPosunovTelefon({ data, polozky, kolo, ja, mena, vazni, menoKarty, obrazok, posledne, onKoniec }: SuhrnPosunovTelefonProps) {
   const [odomknute, setOdomknute] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setOdomknute(true), ZAMOK_TELEFONU_MS);
@@ -487,9 +527,15 @@ export function SuhrnPosunovTelefon({ polozky, kolo, ja, mena, vazni, menoKarty,
         {polozky.map((p) => {
           const o = obrazok(p.defId);
           const cipy = dosledky(p).filter((d) => d.druh !== "strach");
+          const e = p.elder;
+          const pz = e === null ? null : priazenSuhrnu(e, p.hadka, ja);
           return (
             <div key={p.elderId} className="st-riadok">
-              <span className="st-portret">{o !== null ? <img src={o} alt="" draggable={false} /> : null}</span>
+              <span className="st-portret">
+                {o !== null ? <img src={o} alt="" draggable={false} /> : null}
+                {/* Krúžok priazne po kole (Michal 2026-10-31) — vždy, aj na telefóne. */}
+                {e !== null && pz !== null && <KruzokPriazne fav={favourStarsieho(data, e)} p={pz.poKole} velkost={22} popis={`priazeň po kole: ${textPriazne(pz.poKole, mena[ja === 0 ? 1 : 0])}`} />}
+              </span>
               <span className="st-telo">
                 <span className="st-hlava">
                   <b>{menoKarty(p.defId)}</b>
@@ -533,8 +579,8 @@ export function textDosledku(d: Dosledok, ja: PlayerId, mena: readonly [string, 
       return `${d.hrac === ja ? "môžeš" : `${mena[d.hrac]} môže`} po šenku skúsiť zajať (${cigariet(KONSTANTY.CENA_POKUSU)})`;
     case "vyplata":
       return `+${d.spaky} š ${komu} za udržaný strach (vyplatené)`;
-    case "povera":
-      return `Povera ${kto}: požičaná priazeň ${d.stupne}`;
+    case "hadka":
+      return `hádka ${kto}: priazeň do konca kola (+${d.stupne})`;
     case "vazen":
       return `uväznený · väzeň ${d.hrac === ja ? "tvoj" : mena[d.hrac]} ${vazni.filter((v) => v.hrac === d.hrac).length}/${KONSTANTY.VAZNI_NA_VYHRU}`;
   }

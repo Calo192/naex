@@ -1,7 +1,7 @@
 // Súhrn posunov starších pred výberom lokality (Michal 2026-10-30, mock 5 „Bublina pri dlaždici“;
 // interview 2026-10-31). Čo sa v kole stalo so staršími, vidia obaja hráči rovnako: každý
 // pohnutý starší má jednu bublinu so stupnicou pred → po (bez krokov a zdrojov), nepohnutý
-// len keď na konci kola vyplatil udržaný strach alebo naň padla Povera; úspešné zajatie je
+// len keď na konci kola vyplatil udržaný strach alebo mu hádka posunula priazeň; úspešné zajatie je
 // bublina „uväznený“ namiesto samostatného okna. Bez Reactu, aby sa obsah dal otestovať.
 //
 // Kolo sa porovnáva po stavoch, nie po zázname posunov: stopa posunov (posunyMarkerov) sa
@@ -30,14 +30,14 @@ export interface PolozkaSuhrnu {
   readonly elderId: string;
   /** Karta na ukazovateli (meno a portrét; aj náhrada bossa). */
   readonly defId: string;
-  /** Stupnica pred → po; null, keď sa marker nepohol (len výplata či Povera) alebo starší je väzeň. */
+  /** Stupnica pred → po; null, keď sa marker nepohol (len výplata či hádka) alebo starší je väzeň. */
   readonly posun: { readonly z: MarkerPos; readonly na: MarkerPos } | null;
   /** Starší po kole — z neho sú dôsledky (priazeň, strach, špaky na udržanie); väzeň null. */
   readonly elder: ElderState | null;
   /** Udržaný strach, ktorý starší na konci kola zaplatil (špaky). */
   readonly vyplata: readonly { readonly hrac: PlayerId; readonly spaky: number; readonly stupen: number }[];
-  /** Povery bitky: koľko stupňov priazne si ktorý hráč na tomto staršom požičal. */
-  readonly povery: readonly { readonly hrac: PlayerId; readonly stupne: number }[];
+  /** Hádka bitky (v10): o koľko stupňov víťaz hádky posunul silu priazne k sebe, do konca kola. */
+  readonly hadka: readonly { readonly hrac: PlayerId; readonly stupne: number }[];
   /** Úspešné zajatie v kroku 6d. */
   readonly vazen: Pick<Vazen, "hrac" | "poradie"> | null;
 }
@@ -57,7 +57,8 @@ export function suhrnPosunov(
       const spaky = (bitka?.zaStarsichRozpis?.[hrac] ?? []).filter((x) => x.elderId === elderId).reduce((a, x) => a + x.spaky, 0);
       return spaky > 0 ? [{ hrac, spaky, stupen: Math.min(STUPNICA_ZONY[z], STUPNICA_ZONY[na]) }] : [];
     });
-  const povery = (elderId: string): PolozkaSuhrnu["povery"] =>
+  // Záznam nástenky nesie posun z hádky po hráčoch (pole „povery“ jadra z čias Povier).
+  const hadka = (elderId: string): PolozkaSuhrnu["hadka"] =>
     ([0, 1] as const).flatMap((hrac) => {
       const stupne = Math.abs(bitka?.povery?.[hrac][elderId] ?? 0);
       return stupne > 0 ? [{ hrac, stupne }] : [];
@@ -70,26 +71,26 @@ export function suhrnPosunov(
     if (e === undefined) {
       const v = pred.vazni.includes(a.elderId) ? undefined : po.vazni.find((x) => x.elderId === a.elderId);
       if (v === undefined) continue;
-      out.push({ elderId: a.elderId, defId: v.karta.defId, posun: null, elder: null, vyplata: vyplata(a.elderId, a.marker, a.marker), povery: povery(a.elderId), vazen: { hrac: v.hrac, poradie: v.poradie } });
+      out.push({ elderId: a.elderId, defId: v.karta.defId, posun: null, elder: null, vyplata: vyplata(a.elderId, a.marker, a.marker), hadka: hadka(a.elderId), vazen: { hrac: v.hrac, poradie: v.poradie } });
       continue;
     }
-    const polozka = polozkaStarsieho(a.marker, e, vyplata(e.elderId, a.marker, e.marker), povery(e.elderId));
+    const polozka = polozkaStarsieho(a.marker, e, vyplata(e.elderId, a.marker, e.marker), hadka(e.elderId));
     if (polozka !== null) out.push(polozka);
   }
   // Starší, ktorý na začiatku kola nebol na stupnici (zatiaľ ho nič nepridáva), ide na koniec.
   for (const e of po.starsi) {
     if (videni.has(e.elderId)) continue;
-    const polozka = polozkaStarsieho(e.marker, e, vyplata(e.elderId, e.marker, e.marker), povery(e.elderId));
+    const polozka = polozkaStarsieho(e.marker, e, vyplata(e.elderId, e.marker, e.marker), hadka(e.elderId));
     if (polozka !== null) out.push(polozka);
   }
   return out;
 }
 
-function polozkaStarsieho(z: MarkerPos, e: ElderState, vyplata: PolozkaSuhrnu["vyplata"], povery: PolozkaSuhrnu["povery"]): PolozkaSuhrnu | null {
+function polozkaStarsieho(z: MarkerPos, e: ElderState, vyplata: PolozkaSuhrnu["vyplata"], hadka: PolozkaSuhrnu["hadka"]): PolozkaSuhrnu | null {
   // Tam a späť (Michal 2026-10-31) je ako nepohnutý.
   const posun = z === e.marker ? null : { z, na: e.marker };
-  if (posun === null && vyplata.length === 0 && povery.length === 0) return null;
-  return { elderId: e.elderId, defId: e.karta.defId, posun, elder: e, vyplata, povery, vazen: null };
+  if (posun === null && vyplata.length === 0 && hadka.length === 0) return null;
+  return { elderId: e.elderId, defId: e.karta.defId, posun, elder: e, vyplata, hadka, vazen: null };
 }
 
 /** Dôsledok v bubline — len ikony a čísla, žiadny verdikt (Michal 2026-10-31). */
@@ -105,7 +106,8 @@ export type Dosledok =
   /** Stupeň 3: obávaný ho smie po šenku skúsiť zajať. */
   | { readonly druh: "zajatieMozne"; readonly hrac: PlayerId }
   | { readonly druh: "vyplata"; readonly hrac: PlayerId; readonly spaky: number; readonly stupen: number }
-  | { readonly druh: "povera"; readonly hrac: PlayerId; readonly stupne: number }
+  /** Hádka posunula silu priazne k víťazovi (len do konca kola). */
+  | { readonly druh: "hadka"; readonly hrac: PlayerId; readonly stupne: number }
   | { readonly druh: "vazen"; readonly hrac: PlayerId; readonly poradie: number };
 
 export function dosledky(p: PolozkaSuhrnu): readonly Dosledok[] {
@@ -128,6 +130,6 @@ export function dosledky(p: PolozkaSuhrnu): readonly Dosledok[] {
     }
   }
   for (const v of p.vyplata) out.push({ druh: "vyplata", hrac: v.hrac, spaky: v.spaky, stupen: v.stupen });
-  for (const v of p.povery) out.push({ druh: "povera", hrac: v.hrac, stupne: v.stupne });
+  for (const v of p.hadka) out.push({ druh: "hadka", hrac: v.hrac, stupne: v.stupne });
   return out;
 }

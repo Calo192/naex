@@ -36,6 +36,7 @@ import type {
   Command,
   ElderState,
   Event,
+  Favour,
   GameData,
   LineEval,
   LokalitaVHistorii,
@@ -104,6 +105,7 @@ import {
   posunMarker,
   poveraMozna,
   poveraNaStarsieho,
+  favourStarsieho,
   klebetyKola,
   telefonHraca,
   bitkaPoPlane,
@@ -139,6 +141,8 @@ import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
 import { NAZOV_DELENIA, textPovery } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { PilulkaPriazne } from "./KruzokPriazne.tsx";
+import { bodkaPoBode, favourPodlaId, hadkaBitky, kratkeMeno, listokHadky, pocetPriazniKola, priazenKola, priazenMarkera, type PriazneBitky } from "./priazenKola.ts";
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
@@ -185,6 +189,7 @@ import {
   PriebehKola,
   tipOdhadu,
   type BitkaPanelProps,
+  type PriazenVOdhade,
   type HrozbaBitky,
   type KartyDlazdica,
   type VyhladPitky,
@@ -2566,6 +2571,8 @@ export function HernaPlocha({
       </div>
     );
   };
+  // Priazeň podľa id staršieho pre záznamy nástenky a súhrnov (krúžok priazne pri mene).
+  const favourPodlaIdStola = (elderId: string) => favourPodlaId(data, view, elderId);
   // Krčmová nástenka (v6, spaky.html bod 12): lokalitu si víťaz neberie — ide na nástenku s jeho fotkou a špakmi.
   const nastenkaEl = (
     sKartami: boolean,
@@ -2586,6 +2593,7 @@ export function HernaPlocha({
       avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
       karta={sKartami ? (k, sirka) => karta({ karta: k, sirka }) : undefined}
       menoKarty={menoKarty}
+      favour={favourPodlaIdStola}
       sirkaKarty={Math.round(sirkaKarty)}
       kompaktna={kompaktna}
       koniec={view.koniec !== null}
@@ -4575,6 +4583,26 @@ export function HernaPlocha({
   })();
 
   // ---- starší -------------------------------------------------------------
+  /**
+   * Hádka bitky po starších pre rekapituláciu (krúžok a meno namiesto „priazeň ±1“): po bitke
+   * zo záznamu nástenky (po hráčoch), kým bitka beží, zo súčtu klebiet v pohľade.
+   */
+  const priazneBitky = (kolo: number): PriazneBitky => {
+    const zaznam = view.nastenka.find((x) => x.kolo === kolo);
+    const bk = view.bitkaStav;
+    const zdroj = zaznam?.povery !== undefined ? { hracov: zaznam.povery } : bk !== null && view.kolo === kolo ? { sucet: bk.klebety } : {};
+    const hadka = hadkaBitky(view.starsi, zdroj, ja).flatMap((x) => {
+      const e = view.starsi.find((y) => y.elderId === x.elderId);
+      return e === undefined ? [] : [{ ...x, meno: menoKarty(e.karta.defId), fav: favourStarsieho(data, e) }];
+    });
+    return {
+      hadka,
+      menoStarsieho: (fav) => {
+        const e = view.starsi.find((x) => favourStarsieho(data, x) === fav);
+        return e === undefined ? null : menoKarty(e.karta.defId);
+      },
+    };
+  };
   // Pohoršenie a prebytok rozdeľuje hráč krígľom a päsťou pri staršom (rozdelenieStarsieho, mock C · Pečať).
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
     if (!somNaTahu) return undefined;
@@ -4769,6 +4797,8 @@ export function HernaPlocha({
       vybrany: mode.typ === "pokus" && mode.elderId === e.elderId,
       stopa: stopaStarsieho(view.posunyMarkerov ?? [], e.elderId),
       rozdelenie,
+      // Výber staršieho pre bod hádky: prerušovaná bodka tam, kam ju klik posunie.
+      bodkaPoKliku: klik !== undefined && krokStarsich?.typ === "povery" ? bodkaPoBode(e, klebetyKola(view), ja) : null,
     };
   });
   // Lupa staršieho pri prejdení myšou zrušená (Michal 2026-10-30: „priveľa textu, hráča mätie“) —
@@ -4887,6 +4917,22 @@ export function HernaPlocha({
       : polozkyHrozby.map((h) => ({ ...h, mini: h.zdroj === "pohorsenia" || h.zdroj === "kliatby" ? h.mini : h.mini.replace(/ \(prebytok [^)]*\)$/, "").replace(/^(ty|súper) až/, "$1 NA EX až") }));
   // Odhad bitky len keď ho hráči ovplyvnia — v Zhromaždení, Pitke a bitke;
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
+  // Priazne, ktoré pôsobia priamo v bitke (tuhé, Viera, Pohoršenie, Robota), po hádke — nápoveda odhadu.
+  const priazneOdhadu = (): PriazenVOdhade[] => {
+    const kl = klebetyKola(view);
+    const su = kratkeMeno(menoHraca(super_));
+    return view.starsi.flatMap((e) => {
+      const fav = favourStarsieho(data, e);
+      if (fav !== "BITKAR" && fav !== "VERIACI" && fav !== "LAKOMEC" && fav !== "ROBOTA") return [];
+      const pk = priazenKola(e, kl, ja);
+      if (pk.komu === null) return [];
+      const meno = menoKarty(e.karta.defId);
+      const zm = priazenMarkera(e, ja);
+      const listok = listokHadky(e.elderId, kl, ja);
+      const hadka = listok === null || (zm.komu === pk.komu && zm.sila === pk.sila) ? null : listok.komu === "ja" ? "(tvoja hádka)" : `(hádka: ${su})`;
+      return [{ fav, p: pk, text: pk.komu === "ja" ? `${meno} ${UCINOK_KRATKO[fav](pk.sila)}` : `${meno}: ${su} ${UCINOK_KRATKO[fav](pk.sila)}`, hadka }];
+    });
+  };
   const bitkaProps: BitkaPanelProps | null =
     odhad === null || view.faza === "volbaCiela" || view.faza === "draft" || view.koniec !== null
       ? null
@@ -4910,6 +4956,7 @@ export function HernaPlocha({
           hrozby: b?.damage != null ? [] : hrozbyBitky,
           poBitke: b?.damage != null ? null : efektyPoBitke(zaklad),
           ukazHrozbu: setUkazHrozbu,
+          priazne: priazneOdhadu(),
         };
   // Strany jednotného baru (Michal 2026-10-25): aktivované akcie, alebo karty na vyloženie.
   // Kým hráč neklikne na odhad, režim určí fáza; ručné prepnutie platí do konca fázy.
@@ -4967,7 +5014,7 @@ export function HernaPlocha({
   // v playteste 20261016-134912 to porazená nepochopila. Michal 2026-10-23: plávajúci
   // toast na hornej hrane stola (nemení rozloženie), jeden naraz, 4 s; záznam píše
   // do logu server (zaznamyPriazne v jadre), takže ostane aj po obnovení stránky.
-  type ToastPriazne = { readonly id: number; readonly komu: PlayerId; readonly zaklad: string; readonly pocet: number; readonly cele: string };
+  type ToastPriazne = { readonly id: number; readonly komu: PlayerId; readonly fav: Favour; readonly sila: number; readonly zaklad: string; readonly pocet: number; readonly cele: string };
   const [toastPriazne, setToastPriazne] = useState<ToastPriazne | null>(null);
   const predoslaPriazen = useRef<ReadonlyMap<string, { readonly komu: PlayerId | null; readonly sila: number }> | null>(null);
   const idOznamu = useRef(0);
@@ -4989,7 +5036,7 @@ export function HernaPlocha({
     const pred = predoslaPriazen.current;
     predoslaPriazen.current = teraz;
     if (pred === null) return;
-    const nove: { komu: PlayerId; kratko: string; cele: string }[] = [];
+    const nove: { komu: PlayerId; fav: Favour; sila: number; kratko: string; cele: string }[] = [];
     for (const e of view.starsi) {
       const t = teraz.get(e.elderId);
       const p = pred.get(e.elderId);
@@ -4999,7 +5046,10 @@ export function HernaPlocha({
       const meno = menoKarty(e.karta.defId);
       nove.push({
         komu: t.komu,
-        kratko: `${meno} ${t.komu === ja ? "ti dáva" : `dáva ${menoHraca(t.komu)}`} priazeň ${t.sila}: ${UCINOK_KRATKO[sc.favour](t.sila)}`,
+        fav: sc.favour,
+        sila: t.sila,
+        // Komu a akú silnú povie krúžok (Michal 2026-10-31) — text len meno a účinok.
+        kratko: `${meno} · ${t.komu === ja ? "ty" : kratkeMeno(menoHraca(t.komu))}: ${UCINOK_KRATKO[sc.favour](t.sila)}`,
         cele: `${t.komu === ja ? "Dostávaš" : `${menoHraca(t.komu)} dostáva`} priazeň ${meno} (${sc.nazov}) sily ${t.sila}: ${UCINOK_PRIAZNE[sc.favour](t.sila)}`,
       });
     }
@@ -5010,7 +5060,7 @@ export function HernaPlocha({
     const teraz2 = performance.now();
     if (poslednyToast.current !== null && poslednyToast.current.text === kratko && teraz2 - poslednyToast.current.kedy < 8000) return;
     poslednyToast.current = { text: kratko, kedy: teraz2 };
-    const novy = { id: ++idOznamu.current, komu: posledny.komu, zaklad: posledny.kratko, pocet: nove.length, cele: nove.map((n) => n.cele).join("\n") };
+    const novy = { id: ++idOznamu.current, komu: posledny.komu, fav: posledny.fav, sila: posledny.sila, zaklad: posledny.kratko, pocet: nove.length, cele: nove.map((n) => n.cele).join("\n") };
     const z = zobrazenyToast.current;
     if (pocitadloAktivne.current) toastCaka.current = zluc(toastCaka.current, novy);
     else ukazToast(z !== null && teraz2 - z.od < 1500 ? zluc(z.t, novy) : novy);
@@ -5060,7 +5110,7 @@ export function HernaPlocha({
         onClick={() => ukazToast(null)}
         onContextMenu={pravyKlik(() => ukazToast(null))}
       >
-        <span aria-hidden="true"><IkonaPriazne /></span> {toastPriazne.zaklad}
+        <PilulkaPriazne fav={toastPriazne.fav} p={{ komu: toastPriazne.komu === ja ? "ja" : "su", sila: toastPriazne.sila }} /> {toastPriazne.zaklad}
         {toastPriazne.pocet > 1 && ` (+${toastPriazne.pocet - 1})`}
       </button>
     );
@@ -5820,7 +5870,7 @@ export function HernaPlocha({
     );
   // Čísla stĺpca a tabule: aj cena nového poldeci a priazeň starších.
   const cislaPultu = (p: PlayerId) =>
-    cislaHraca(view, p, prahy(p), zavislost(p), body, { cenaBarteru: barterCena(data, view, p), priazen: stupienkyStarsich(view.starsi, p).priazen });
+    cislaHraca(view, p, prahy(p), zavislost(p), body, { cenaBarteru: barterCena(data, view, p), priazen: pocetPriazniKola(view.starsi, klebetyKola(view), p) });
   // Stĺpec hráča na šírku telefónu (PultHraca.tsx): ty vľavo s nástrojmi stola, súper vpravo s menu Partia.
   const pult = (p: PlayerId): ReactNode => (
     <StlpecHraca
@@ -5958,6 +6008,13 @@ export function HernaPlocha({
           mena={[menoHraca(0), menoHraca(1)]}
           avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
           menoKarty={menoKarty}
+          starsi={{
+            data,
+            obrazok: (defId) => {
+              const o = vzhladKarty(sada, data, defId).obrazok;
+              return o === null ? null : mediaUrl(o.nahlad);
+            },
+          }}
           frajerina={frajerina}
           achievementy={achievementy ?? null}
           onZavri={() => setKoniecZavrety(true)}
@@ -6004,6 +6061,7 @@ export function HernaPlocha({
           spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === super_, prepni: () => otvorNastenku(super_) }}
           karty={kartyDlazdica(super_)}
           rezim={rezimBaru}
+          menoSupera={menoHraca(super_)}
           pocitadloBezi={pocitadloBezi}
           // Stav súpera je bodkou na jeho avatare, nie v lište (dizajn timeline-lista A); bot sa neodpája.
           spojenie={hraci[super_]?.bot === true || vyucba === true || prehravanie !== undefined ? undefined : { pripojeny: superPripojeny, odpojenyOd: superOdpojenyOd }}
@@ -6108,6 +6166,7 @@ export function HernaPlocha({
                   ja={ja}
                   pohlad={pohladLinie}
                   mena={[menoHraca(0), menoHraca(1)]}
+                  klebety={klebetyKola(view)}
                   krok={krokMoj && krokStarsich !== null ? krokStarsich.nazov : null}
                   zmenene={zmeneniStarsi}
                   tlacidlo={tlacidloLinieStarsich}
@@ -6156,6 +6215,7 @@ export function HernaPlocha({
             prahy={prahy(ja)}
             zavislost={zavislost(ja)}
             menoKarty={menoKarty}
+            menoSupera={menoHraca(super_)}
             vyhlad={vyhladPitky(ja)}
             obchodCigariet={{
               mozno: somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === null && view.koniec === null,
@@ -6509,6 +6569,7 @@ export function HernaPlocha({
             avatary={[hraci[0]?.avatar ?? null, hraci[1]?.avatar ?? null]}
             menoKarty={menoKarty}
             piktogramy={piktogramyRekapitulacie}
+            favour={favourPodlaIdStola}
             onZavri={() => setSuhrnLokality(null)}
           />
         );
@@ -6549,6 +6610,7 @@ export function HernaPlocha({
       {suhrnBezi && naSirku && (
         <SuhrnPosunovTelefon
           key={suhrn.kolo}
+          data={data}
           polozky={suhrn.polozky}
           kolo={suhrn.kolo}
           ja={ja}
@@ -6566,6 +6628,7 @@ export function HernaPlocha({
       {suhrnBezi && !naSirku && (
         <SuhrnPosunov
           key={suhrn.kolo}
+          data={data}
           polozky={suhrn.polozky}
           zaciatok={suhrn.zaciatok.starsi}
           ja={ja}
@@ -6595,6 +6658,7 @@ export function HernaPlocha({
           onKoniec={koniecPocitadla}
           vysledokHned={vyucba === true}
           naSirku={naSirku}
+          priazne={priazneBitky(pocitadlo.stol.kolo)}
         />
       )}
 

@@ -86,21 +86,22 @@ describe("výkričníky vo farbe obávaného", () => {
       }),
     );
 
-  // Od 2026-10-30 (Michal: drobné „◀ ty … Fero ▶“ pod stupnicou nič nehovorili) je pod staršinom
-  // meno, komu akú priazeň dáva (vo farbe toho hráča) a koho sa bojí, s výkričníkmi v jeho farbe.
-  it("marker na súperovej červenej: krígeľ Ferovi vo Ferovej farbe, !!! v mojej farbe", () => {
+  // Od 2026-10-31 (Michal, mockup „Priazeň podľa Michala“) je pod staršinom len meno: priazeň nesie
+  // krúžok vo farbe toho, komu patrí, a vety o priazni a strachu sú v nápovede (aj v aria-label).
+  it("marker na súperovej červenej: krúžok vo Ferovej farbe, !!! v mojej farbe", () => {
     // Pozícia 6 = krajná na strane hráča 1: priazeň má Fero, bojí sa hráča 0 (ja).
     const html = karta(6);
     expect(html).toContain('class="ls-meno">Farár<');
-    expect(html).toMatch(/ls-cip priazen superova[^>]*><svg class="ikona-priazne"[^>]*>.*?<\/svg> Fero: /);
-    expect(html).not.toContain("ls-strany");
-    expect(html).toMatch(/ls-cip strach moj[^>]*>.*ikona-strachu s3.*bojí sa teba · \+6 š čaká na udržanie/);
+    expect(html).toMatch(/class="kr su"[^>]*>.*?kr-cislo">\+3</);
+    expect(html).not.toContain("ls-cip");
+    expect(html).toContain('class="ls-peciatka moja"');
+    expect(html).toContain("priazeň v tomto kole Fero +3; bojí sa teba · +6 š čaká na udržanie");
   });
 
-  it("marker na mojej žltej: ! vo Ferovej farbe, krígeľ na mojom konci", () => {
+  it("marker na mojej žltej: krúžok v mojej farbe, strach v nápovede", () => {
     const html = karta(2);
-    expect(html).toMatch(/ls-cip strach superov[^>]*>.*ikona-strachu s1.*bojí sa Fero · \+1 š čaká na udržanie/);
-    expect(html).toMatch(/ls-cip priazen moja[^>]*><svg class="ikona-priazne"[^>]*>.*?<\/svg> ty: /);
+    expect(html).toMatch(/class="kr ja"[^>]*>.*?kr-cislo">\+1</);
+    expect(html).toContain("priazeň v tomto kole ty +1; bojí sa Fero · +1 š čaká na udržanie");
   });
 
   it("v strede nikto: žiadne výkričníky ani krígeľ na stupnici", () => {

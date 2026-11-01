@@ -3,11 +3,13 @@
 // len riadok v páse pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
 import { useEffect, useRef } from "react";
-import type { ClientState, PlayerId, Rod, Vykupne } from "@naex/core";
+import type { ClientState, GameData, PlayerId, Rod, Vykupne } from "@naex/core";
 import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
 import { Nastenka, PocetSpakov } from "./Spaky.tsx";
+import { PasStarsich } from "./PasStarsich.tsx";
+import { favourPodlaId } from "./priazenKola.ts";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
 import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
@@ -27,6 +29,8 @@ export interface KoniecHryProps {
   readonly rody?: readonly [Rod, Rod];
   /** Fotky hráčov na krčmovú nástenku (víťaz bitky). */
   readonly avatary?: readonly [string | null, string | null];
+  /** S dátami a portrétmi ukáže pás starších s krúžkami priazne (Michal 2026-10-31). */
+  readonly starsi?: { readonly data: GameData; readonly obrazok: (defId: string) => string | null } | undefined;
 }
 
 /** „2 plné poldeci a 7 cigariet = +3“ — čo sa hráčovi na konci vykúpilo. */
@@ -35,7 +39,7 @@ function vykupneText(v: Vykupne | undefined): string {
   return `${pocet(v.poldeci, "plný poldeci", "plné poldeci", "plných poldeci")} a ${pocet(v.cigarety, "cigareta", "cigarety", "cigariet")} = +${v.spaky}`;
 }
 
-export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null] }: KoniecHryProps) {
+export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = null, onZavri, opustit, rodJa = null, rody = [null, null], avatary = [null, null], starsi }: KoniecHryProps) {
   const koniec = view.koniec;
   // Fokus na „späť do lobby“ bez posunu — autoFocus vyroloval vysoké okno nadol a výsledok
   // hore hráč nevidel (UI inšpekcia 2026-10-24).
@@ -82,10 +86,12 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             mena={mena}
             avatary={avatary}
             menoKarty={menoKarty}
+            favour={starsi === undefined ? undefined : (id) => favourPodlaId(starsi.data, view, id)}
             kompaktna
             koniec
           />
         )}
+        {starsi !== undefined && <PasStarsich view={view} data={starsi.data} mena={mena} menoKarty={menoKarty} obrazok={starsi.obrazok} />}
         {view.nastenka.length > 0 && rozpis !== null && (
           // Súčet čísel pri lokalitách nie je celkové skóre — playtest 20261031-191322 v tom hľadal chybu.
           <p className="koniec-cirhozy koniec-pozn-lokalit">

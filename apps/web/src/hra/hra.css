@@ -5032,6 +5032,8 @@ button.auto-hotovo-odkaz {
 /* 7 polí (v6): 3-2-1-0-1-2-3; čísla pod poľami = sila priazne aj špaky za strach. */
 .ls-stupnica {
   --seg: calc(100% / 7);
+  /* Prsteň 17 / 15 / 12 px (1920 / 1366 / telefón), bodka asi polovica (mockup D3). */
+  --dm-o: clamp(12px, 7.6cqw, 17px);
   flex: none;
   position: relative;
   display: flex;
@@ -5151,18 +5153,36 @@ button.auto-hotovo-odkaz {
   color: var(--su);
 }
 
-/* Dva riadky, ktoré nikdy nezmiznú: komu priazeň a koho sa bojí. Zalamujú sa — veta sa
-   neoreže (Michal 2026-10-28); miesto na dva + dva riadky drží stupnice v jednom rade. */
+/* Pod stupnicou len meno (Michal 2026-10-31): priazeň nesie krúžok na portréte, vety o priazni
+   a strachu nápoveda. Uvoľnené miesto berie portrét. */
 .ls-stav {
   flex: none;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  /* Miesto na meno, dva riadky priazne a dva strachu — stupnice ôsmich kariet stoja v jednom rade.
-     Väčším písmom a s menom staršieho (Michal 2026-10-30: drobné popisy nič nehovorili). */
-  min-height: calc(1.3em + 4 * 1.25em + 4px);
   font-size: clamp(0.72rem, 1.05cqw, 0.86rem);
   line-height: 1.25;
+}
+
+.ls-stav > .ls-meno {
+  text-align: center;
+}
+
+/* Krúžok priazne vpravo dole na portréte, lístok Povery vľavo hore — nekryjú sa. */
+.ls-portret > .ls-kruzok {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 4;
+}
+
+.ls-kruzok .kr {
+  --kr-d: clamp(28px, 21cqw, 46px);
+}
+
+.ls-sc:focus-visible {
+  outline: 2px solid var(--akcent);
+  outline-offset: 1px;
 }
 
 .ls-stav > .ls-meno {
@@ -5347,25 +5367,39 @@ button.lsr-pole.ciel:focus-visible {
   color: var(--lesk);
 }
 
+/* Prsteň = marker (strach, kam ťa Pohoršenie posúva, platíš od neho); bodka = priazeň tohto kola. */
 .lsr-mk {
   position: absolute;
   inset: 50% auto auto 50%;
   z-index: 2;
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   translate: -50% -50%;
   border-radius: 50%;
   background: var(--pozadie);
-  border: 3px solid var(--slaby-text);
-  box-shadow: 0 0 0 1px var(--text);
+  border: 3px solid var(--text);
+  box-shadow: 0 0 0 1px var(--pozadie);
 }
 
-.lsr-mk.ja {
-  border-color: var(--ja);
+.lsr-bodka {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 3;
+  width: 8px;
+  height: 8px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--slaby-text);
+  box-shadow: 0 0 0 2px var(--pozadie);
+  pointer-events: none;
 }
 
-.lsr-mk.su {
-  border-color: var(--su);
+.lsr-bodka.ja {
+  background: var(--ja);
+}
+
+.lsr-bodka.su {
+  background: var(--su);
 }
 
 .lsr-mk.stare {
@@ -5584,48 +5618,23 @@ button.lsr-pole.ciel:focus-visible {
   z-index: 4;
 }
 
+/* Krúžok priazne pri rozdeľovaní (Michal 2026-10-31): ten istý tvar ako v línii — priazeň kola. */
 .ls-pecat {
-  --d: clamp(36px, 30cqw, 54px);
-  width: var(--d);
-  height: var(--d);
   display: grid;
-  place-items: center;
-  align-content: center;
   padding: 0;
+  border: 0;
   border-radius: 50%;
-  border: 3px double;
-  font: 900 clamp(0.8rem, 8cqw, 0.95rem) / 1 var(--nadpis);
-  font-variant-numeric: tabular-nums;
-  rotate: -10deg;
-  box-shadow: 0 4px 10px rgb(0 0 0 / 0.55);
+  background: none;
   cursor: help;
 }
 
-.ls-pecat-ikona {
-  width: calc(var(--d) * 0.4);
-  height: calc(var(--d) * 0.4);
-  fill: currentColor;
+.ls-pecat .kr {
+  --kr-d: clamp(32px, 26cqw, 50px);
 }
 
-.ls-pecat-pr > button.ls-pecat.ja {
-  color: var(--na-farbe-hraca);
-  background: var(--ja);
-  border-color: var(--na-farbe-hraca);
-}
-
-.ls-pecat-pr > button.ls-pecat.su {
-  color: var(--na-farbe-hraca);
-  background: var(--su);
-  border-color: var(--na-farbe-hraca);
-}
-
-.ls-pecat-pr > button.ls-pecat.nikto {
-  --d: clamp(30px, 24cqw, 44px);
-  color: var(--slaby-text);
-  background: var(--plocha);
-  border: 2px dashed var(--okraj-svetly);
-  box-shadow: none;
-  rotate: 0deg;
+.ls-pecat:focus-visible {
+  outline: 3px solid var(--akcent);
+  outline-offset: 2px;
 }
 
 .ls-pecat-zmena {
@@ -5669,8 +5678,8 @@ button.lsr-pole.ciel:focus-visible {
   position: fixed;
   z-index: 200;
   translate: -50% 0;
-  width: max-content;
-  max-width: 240px;
+  width: 270px;
+  max-width: 270px;
   padding: 8px 10px;
   border-radius: 10px;
   border: 2px solid var(--okraj-svetly);
@@ -5937,7 +5946,6 @@ button.lsr-pole.ciel:focus-visible {
 
   .ls-stav {
     gap: 0;
-    min-height: calc(1.2em + 4 * 1.2em);
     font-size: 0.7rem;
     line-height: 1.2;
   }
@@ -6279,6 +6287,42 @@ button.lsr-pole.ciel:focus-visible {
 .starsi-dlazdica .velke-cislo .ikona-spaku {
   width: 1.1em;
   height: 0.6em;
+}
+
+/* Krúžok priazne tohto kola v dlaždici (Michal 2026-10-31) — vždy; pri strachu vedľa neho špaky. */
+.starsi-dlazdica {
+  position: relative;
+}
+
+.starsi-dlazdica > .zdroj-hodnota {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dl-kruzok .kr {
+  --kr-d: clamp(24px, 23cqi, 34px);
+}
+
+/* Tesná dlaždica (1366): v krúžku len ikona, číslo vedľa vo farbe hráča (mockup D6 B). */
+@container (width < 125px) {
+  .dl-kruzok .kr {
+    --kr-d: 22px;
+  }
+
+  .dl-kruzok .kr-cislo {
+    display: none;
+  }
+
+  .dl-kruzok .kr .kr-ikona {
+    width: 62%;
+    height: 62%;
+  }
+
+  .dl-kruzok .kr-vedla {
+    display: inline;
+  }
 }
 
 /* Dlaždica Starší (S1 stupienky): stĺpček na každého staršieho v poradí línie — hore priazeň,

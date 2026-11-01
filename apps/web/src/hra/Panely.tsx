@@ -10,6 +10,7 @@ import type {
   ActionSums,
   ClientState,
   DamageResult,
+  Favour,
   GameData,
   NahladPitkyHraca,
   PlayerId,
@@ -26,6 +27,8 @@ import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
+import { PilulkaPriazne } from "./KruzokPriazne.tsx";
+import type { PriazenKola } from "./priazenKola.ts";
 import { Avatar } from "../komponenty.tsx";
 import { BarSpakov } from "./BarSpakov.tsx";
 import { BarStarsich, DlazdicaStarsich, type DlazdicaStarsichProps } from "./Starsi.tsx";
@@ -465,6 +468,8 @@ export interface HracDoskaProps {
   readonly pocitadloBezi?: boolean | undefined;
   /** Spojenie súpera (človek) — bodka na avatare, odpojený aj s časom pod menom. */
   readonly spojenie?: { readonly pripojeny: boolean; readonly odpojenyOd: number | null } | undefined;
+  /** Meno súpera toho, kto sa pozerá — nápoveda a lístok Hádky v bare starších. */
+  readonly menoSupera?: string;
 }
 
 /**
@@ -526,6 +531,7 @@ export function HracDoska({
   rezim,
   pocitadloBezi = false,
   spojenie,
+  menoSupera = "súper",
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
@@ -650,7 +656,7 @@ export function HracDoska({
       {/* display: contents — dlaždice sú priamo v mriežke baru (poradie v hra.css). */}
       <div className="doska-zdroje">
         {rezim === "spaky" && <BarSpakov view={view} p={p} body={body} menoKarty={menoKarty} />}
-        {rezim === "starsi" && <BarStarsich view={view} data={data} p={p} menoKarty={menoKarty} />}
+        {rezim === "starsi" && <BarStarsich view={view} data={data} p={p} menoKarty={menoKarty} menoSupera={menoSupera} />}
         <Zdroj
           nazov="Poldeci"
           trieda="zdroj-poldeci"
@@ -1136,6 +1142,17 @@ export interface BitkaPanelProps {
   readonly skrytaSupera?: boolean;
   /** Efekty Prehra po bitke podľa stola (návrh #38 B: Dievčina na vydaj, Farár, Podvodník). */
   readonly poBitke?: string | null;
+  /** Priazne, ktoré vstupujú do bitky (po hádke) — v nápovede odhadu s krúžkom (Michal 2026-10-31). */
+  readonly priazne?: readonly PriazenVOdhade[];
+}
+
+export interface PriazenVOdhade {
+  readonly fav: Favour;
+  readonly p: PriazenKola;
+  /** „Autobusár +1 tuhé v bitke“, „Veterinár: Fero +1 Viera v bitke“. */
+  readonly text: string;
+  /** „(hádka: Fero)“ — keď ju hádka tohto kola zmenila. */
+  readonly hadka: string | null;
 }
 
 export interface HrozbaBitky {
@@ -1269,6 +1286,17 @@ export function tipOdhadu(props: BitkaPanelProps, stavka: StavkaBitkyCisla | nul
         )}
         {!vysledok && rozdiel !== 0 && <span className="tip-riadok">pri remíze: {coPriRemize}</span>}
         {props.poBitke != null && <span className="tip-riadok">po bitke (efekty Prehra): {props.poBitke}</span>}
+        {(props.priazne ?? []).length > 0 && (
+          <span className="tip-riadok tip-priazne">
+            priazne:
+            {(props.priazne ?? []).map((x, i) => (
+              <span key={i} className="tip-priazen">
+                <PilulkaPriazne fav={x.fav} p={x.p} /> {x.text}
+                {x.hadka !== null && <small> {x.hadka}</small>}
+              </span>
+            ))}
+          </span>
+        )}
         {!vysledok && stavka !== null && (
           <span className="tip-riadok">
             táto bitka ({pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra <b>+{stavka.vyhra} špakov</b>, súperova <b>+{-stavka.prehra}</b>
