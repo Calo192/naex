@@ -35,7 +35,8 @@ export function Domov() {
       <section className="hero">
         <div>
           <p className="hero-text">
-            Stav partiu z kariet, ktoré sa dotýkajú stranami, bi sa o lokality, des starších — a nezabudni na vlastné dlhy.
+            Vystavaj nezastaviteľnú partiu odhodlaných dedinských stvorení. Vypi si, pohádaj sa, ak ti chutí, aj sa pobi… hlavne
+            nech ten druhý vidí, že tebe nikto nebude blatníky na Pionieri ohýbať.
           </p>
           {novacik ? (
             <div className="riadok-tlacidiel hero-novacik">
