@@ -136,7 +136,7 @@ export interface ZdrojAkcie {
   readonly hodnota: number;
   readonly vStrede: boolean;
   /**
-   * Prečo je akcia aktívna či zdvojená: "Posilnenie", "Vzbura", "NA EX",
+   * Prečo je akcia aktívna či zdvojená: "Posilnenie", "Vzbura", "Odpor proti Posilneniu", "NA EX",
    * alebo "karta:<defId>" pri efekte karty (Liberál, Zámočník, Pijan…).
    */
   readonly dovody: readonly string[];
@@ -191,7 +191,7 @@ interface Elem {
   /**
    * Skutočná Vzbura (Odpor + Odpor). Odpor proti Posilneniu tiež aktivuje
    * neprepojené akcie, ale Vzbura to nie je — štítok a moment ju nehlásia
-   * (playtest v7 131033).
+   * (playtest v7 131033) a ani dôvod aktivácie ju nemenuje (názor #91).
    */
   skutocnaVzbura: boolean;
   readonly naexBy: PlayerId | undefined;
@@ -591,7 +591,7 @@ function applyVzbura(elem: Elem): void {
       if (actions[k] != null && elem.stav[side]![k] === "neaktivna") {
         elem.stav[side]![k] = "aktivna";
         elem.nasobok[side]![k] = 1;
-        elem.dovody[side]![k]!.push("Vzbura");
+        elem.dovody[side]![k]!.push(elem.skutocnaVzbura ? "Vzbura" : "Odpor proti Posilneniu");
       }
     }
   }

@@ -143,6 +143,7 @@ describe("M2 — modifikátory na spoji", () => {
     expect(evaluated.sums[0]).toEqual({ Pecka: 1, Rana: 1 });
     expect(evaluated.cards.get(cardA.uid)?.vzbura).toBe(true);
     expect(evaluated.cards.get(cardB.uid)?.vzbura).toBe(true);
+    expect(evaluated.zdroje[0].Pecka?.map((z) => z.dovody)).toEqual([["Vzbura"]]);
     expect(evaluated.cards.get(cardA.uid)?.right[3]?.stav).toBe("aktivna");
     expect(evaluated.cards.get(cardB.uid)?.left[2]?.stav).toBe("aktivna");
   });
@@ -181,6 +182,9 @@ describe("M2 — modifikátory na spoji", () => {
     expect(evaluated.sums[0]).toEqual({ Pecka: 1 });
     expect(evaluated.cards.get(cardB.uid)?.right[1]?.stav).toBe("zrusena");
     expect(evaluated.cards.get(cardB.uid)?.left[2]?.stav).toBe("neaktivna");
+    // Názor #91: nie je to Vzbura — ani štítok karty, ani dôvod aktivácie v rozpise.
+    expect(evaluated.cards.get(cardA.uid)?.vzbura).toBe(false);
+    expect(evaluated.zdroje[0].Pecka?.map((z) => z.dovody)).toEqual([["Odpor proti Posilneniu"]]);
   });
 
   it("Posilnenie + Posilnenie → nič (rozhodnutie k otvorenej otázke č. 1)", () => {

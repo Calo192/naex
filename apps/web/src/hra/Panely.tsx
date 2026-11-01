@@ -965,9 +965,11 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
         ? "zdvojená cez NA EX"
         : d === "Vzbura"
           ? "aktivovaná Vzburou"
-          : d.startsWith("karta:")
-            ? `efekt karty ${menoKarty(d.slice(6))}`
-            : d;
+          : d === "Odpor proti Posilneniu"
+            ? "aktivovaná Odporom proti Posilneniu"
+            : d.startsWith("karta:")
+              ? `efekt karty ${menoKarty(d.slice(6))}`
+              : d;
 
   const aktivne = PORADIE_AKCII.filter((a) => (sums[a] ?? 0) !== 0 || (a === "Povera" && rozpis.poveraIgnorovana > 0) || (zdroje[a] ?? []).length > 0);
   // Názvy sa zmestia len k pár akciám — pri viacerých by sa ikony na strane baru nezmestili.
