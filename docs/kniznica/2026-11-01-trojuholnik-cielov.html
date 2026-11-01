@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trojuholník víťazných cieľov — knižnica mechaník NA EX!</title>
+<style>
+:root { --pozadie:#15120f; --plocha:#1f1a15; --plocha-2:#2a231c; --okraj:#43372c; --text:#f1e8d8; --tlmeny:#b8a993;
+  --akcent:#e9ad45; --dobre:#7fbf7a; --zle:#d8705f; --stred:#d9c04a;
+  --serif:Georgia,"Times New Roman",serif; --sans:system-ui,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,Consolas,monospace; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; color-scheme:light; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 var(--sans); }
+main { max-width:1040px; margin:0 auto; padding:28px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+h1,h2,h3 { font-family:var(--serif); line-height:1.2; text-wrap:balance; }
+h1 { font-size:clamp(1.7rem,4.6vw,2.5rem); margin:0 0 8px; }
+h2 { font-size:1.4rem; margin:40px 0 14px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.08rem; margin:18px 0 6px; }
+p, ul, ol { max-width:76ch; } p { margin:0 0 10px; } li { margin-bottom:5px; }
+a { color:var(--akcent); } :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.uvod, .pozn { color:var(--tlmeny); } .pozn { font-size:.9rem; }
+.skratka { background:var(--plocha); border:1px solid var(--akcent); border-radius:12px; padding:14px 16px; margin:18px 0; }
+.skratka h2 { margin:0 0 6px; border:0; padding:0; font-size:1.2rem; }
+.tab-obal { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.9rem; }
+th, td { padding:7px 6px; text-align:left; vertical-align:top; border-bottom:1px solid var(--okraj); }
+thead th { border-bottom:2px solid var(--okraj); font-size:.83rem; color:var(--tlmeny); font-weight:600; }
+.znamka { display:inline-block; font-size:.78rem; border-radius:999px; padding:0 8px; border:1px solid currentColor; white-space:nowrap; }
+.n { color:var(--dobre); } .s { color:var(--stred); } .v { color:var(--zle); }
+.filtre { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+button { appearance:none; font:inherit; font-size:.88rem; padding:6px 11px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); cursor:pointer; }
+button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:600; }
+tr[hidden] { display:none; }
+details.mech { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; margin:12px 0; }
+details.mech[open] { border-color:var(--akcent); }
+details.mech summary { cursor:pointer; font-family:var(--serif); font-size:1.12rem; }
+details.mech summary small { font-family:var(--sans); color:var(--tlmeny); font-size:.82rem; }
+.hra { border-left:3px solid var(--okraj); padding:2px 0 2px 12px; margin:8px 0; }
+.hra b { display:block; }
+.mriezka { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:4px 22px; }
+.princip li { margin-bottom:10px; }
+.troj { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:14px 16px; }
+.troj-obal { display:grid; grid-template-columns:minmax(260px,380px) 1fr; gap:18px; align-items:start; }
+@media (max-width:760px) { .troj-obal { grid-template-columns:1fr; } }
+.troj svg { width:100%; height:auto; display:block; }
+.troj svg text { fill:var(--text); font:600 13px var(--sans); }
+.troj svg .uzol { fill:var(--plocha-2); stroke:var(--akcent); stroke-width:1.5; }
+.troj svg .silna { stroke:var(--dobre); } .troj svg .stredna { stroke:var(--stred); } .troj svg .slaba { stroke:var(--zle); stroke-dasharray:6 4; }
+.troj svg .dilema { stroke:var(--tlmeny); stroke-dasharray:2 4; }
+.legenda { font-size:.85rem; color:var(--tlmeny); }
+.sipky li b { font-weight:600; }
+code { font-family:var(--mono); font-size:.86em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.88rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="pozn"><a href="index.html">Knižnica mechaník</a> · Študent · 1. 11. 2026 · téma zo zadania (rozhovor s Michalom 2026-11-01) · pravidlá v10.2</p>
+<h1>Trojuholník víťazných cieľov</h1>
+<p class="uvod">Ako hry pre dvoch dávajú viac rovnocenných ciest k výhre, ktoré sa navzájom porážajú (rýchly útok &gt; motor &gt; obrana &gt; rýchly útok), a čo z toho sedí na NA EX!. Študent zbiera, nenavrhuje: návrhy robia Vymyselník a Navrhár, merania stratég.</p>
+
+<section class="skratka">
+<h2>V skratke</h2>
+<ul>
+<li><b>17 hier</b> (z toho 11 stavaných pre dvoch), <b>6 nových mechaník</b> a 3 doplnené. Všetky sú v <code>mechaniky.json</code> pod témou <code>trojuholnik-cielov</code>.</li>
+<li>Hry pre dvoch takmer nikdy nemajú čistý kameň–papier–nožnice. Častejšie majú <a href="#zaklad-a-dve-nahle-smrti">body ako základ a popri nich dve náhle výhry</a> (7 Wonders Duel, Splendor Duel, Hanamikoji, Twilight Struggle, Watergate). Náhle výhry padnú v menšine partií (7WD podľa BGA okolo 40 %), ale súper ich musí strážiť v každej.</li>
+<li>Dnešné 0 zo 60 výhier väzňom má príčinu v §9.4 bod 2: <b>porazený rozdeľuje Nakladačku</b>, takže hrozbu v hĺbke (stupeň 3) vždy obíde. Samotné ⌊L/2⌋ to nezmení. Zmení to až <a href="#vidlicka-sirka-hlbka">vidlička šírka/hĺbka</a> alebo tlak, ktorý riadi víťaz.</li>
+<li>Rýchly útok potrebuje <a href="#utocnik-ovlada-hodiny">páku na hodiny</a>. Dokiaľ je finále najväčšie kolo (21 špakov oboch, Nakladačka 1 : 1), motor vždy vyhrá dlhú hru a nikto nechce byť „beatdown“ (Flores).</li>
+<li>Smer šípok neurčujú mená štýlov, ale <a href="#trojuholnik-archetypov">ceny odpovedí</a>. Magic a Hearthstone majú tie isté archetypy, no šípku medzi aggro a control opačne.</li>
+</ul>
+</section>
+
+<h2 id="problem">1. Problém v NA EX!</h2>
+<p>Pravidlá dávajú tri cesty k špakom (§14): bitky (karty v línii, §9.4), udržaný strach (§10) a väzňov (tretí väzeň = výhra hneď, §1, §10). Meranie z 1. 11. 2026 (60 partií botov, Druhá liga, zadanie z rozhovoru s Michalom) ukazuje, že reálne ostala jediná: <b>motor na cigarety a Vízie, ktorý zbiera vo finále</b>. Kto vyhrá finále (§14b), vyhrá partiu v 85 %, vedúci pred finále len v 63 %. Špaky oboch hráčov po kolách sú 8 · 10 · 10 · 11 · 15 · 21. Finále má až 5 Pitiek (§7, Počet Pitiek) a Nakladačku 1 : 1 ≈ 11,7 špaku (§9.4).</p>
+<p>Výhra tretím väzňom padla <b>0-krát zo 60</b>. Zajať sa dá len staršieho, ktorý sa ťa bojí na stupni 3 (§10, Zajatie a väzeň). Markery ale hýbe len Nakladačka a tú rozdeľuje porazený (§9.4 bod 2), ktorý staršieho na červenú nikdy nepustí. Prehra je navyše lacná: porazený dostane cigaretu za každého staršieho posunutého Nakladačkou (§9.4) a cigarety za pas (§6). Hádka (§9.1, v10) v 80 % padne tomu istému hráčovi ako bitka a jej priemerná veľkosť je 2,2, takže dnes nie je samostatná os.</p>
+<p>Michal chce, aby boli platné aj iné štýly, napríklad rýchla agresívna výhra, ktorej sa hráč, čo len stavia, neubráni. Z rozhovoru je rozhodnuté: Dedičstvo nie je samostatný vrchol a hádka sa nevracia k posúvaniu markerov. Tretí vrchol „Krčma“ sú špaky po finále. Ladenie finále (Nakladačka 1 : 2) je samostatná téma.</p>
+
+<h2 id="hry">2. Hry v rešerši</h2>
+<p class="pozn">Ku každej hre: aké ciele alebo štýly má, čo ich robí rovnocennými, čo bráni, aby jeden dominoval, ako hráč vidí súperov postup a ako sa hrá vo dvojici. Zdroj je pri každom riadku, údaje bez zdroja sú označené.</p>
+<div class="filtre" role="group" aria-label="Filter hier">
+<button type="button" data-f="" aria-pressed="true">Všetky</button>
+<button type="button" data-f="dvaja" aria-pressed="false">Len pre dvoch</button>
+<button type="button" data-f="ciele" aria-pressed="false">Viac podmienok výhry</button>
+<button type="button" data-f="styly" aria-pressed="false">Štýly (archetypy)</button>
+</div>
+<div class="tab-obal"><table id="hry-tab">
+<thead><tr><th>Hra</th><th>Ciele alebo štýly</th><th>Čo ich robí rovnocennými / čo bráni dominancii</th><th>Ako vidno súperov postup</th><th>Vo dvojici</th></tr></thead>
+<tbody>
+<tr data-f="dvaja ciele"><td><b>7 Wonders Duel</b> (2015)<br><a href="https://opinionatedgamers.com/2016/01/22/7-wonders-duel-game-review/">recenzia</a> · <a href="https://be.doc.boardgamearena.com/Tips_sevenwondersduel">BGA tipy</a> · <a href="https://forum.boardgamearena.com/viewtopic.php?p=112104">7WD in Numbers</a></td><td>Vojsko (pešiak v hlavnom meste súpera), veda (6 rôznych symbolov z 7), inak body.</td><td>Všetky tri cesty berú z tej istej pyramídy kariet. Vojsko pri prvom vstupe do zóny rabuje súperove mince (<a href="https://rulespal.com/7-wonders-duel/rulebook">pravidlá</a>), takže zároveň bije ekonomiku. Kto vojsko ignoruje, „takmer iste prehrá“ (recenzia). Podiel: BGA tipy okolo 20 % vojsko a 20 % veda, fórum BGA 58 / 25,6 / 16,4 %.</td><td>Pešiak na jednej spoločnej stope, vyložené symboly vedy.</td><td>Hra je pre dvoch stavaná.</td></tr>
+<tr data-f="dvaja ciele"><td><b>Splendor Duel</b> (2022)<br><a href="https://rules.dized.com/game/W-CkaRFlR36L6fiDQiWcHQ/jDfcPfeeQJm94NVijGRTYA/victory-conditions">pravidlá</a> · <a href="https://es.boardgamearena.com/doc/Tips_splendorduel">BGA tipy</a></td><td>20 bodov, 10 koruniek alebo 10 bodov v jednej farbe, kontrola po každom ťahu.</td><td>Tie isté nákupy ťahajú k rôznym kartám. Väčšina partií sa vyhrá na 20 bodov, ale kto drží otvorené všetky cesty, toho sa ťažšie blokuje (BGA tipy).</td><td>Karty sú verejné. Návod radí v závere počítať súperove korunky a farby, inak „potichu“ prehráš na korunkách.</td><td>Hra je pre dvoch stavaná.</td></tr>
+<tr data-f="dvaja ciele"><td><b>Hanamikoji</b> (2013)<br><a href="https://boardgamegeek.com/wiki/page/Hanamikoji_FAQ">BGG FAQ</a> · <a href="https://en.doc.boardgamearena.com/Gamehelphanamikoji">BGA</a></td><td>4 gejše zo 7 (šírka) alebo 11 bodov šarmu (hĺbka, gejše 2–5).</td><td>Malé gejše sa oplatí brať na počet, veľké na body. Keď v tom istom kole splní každý inú podmienku, vyhráva 11 bodov (FAQ).</td><td>Priazeň gejší je verejná.</td><td>Hra je pre dvoch stavaná.</td></tr>
+<tr data-f="dvaja ciele"><td><b>Schotten Totten</b> (1999)<br><a href="https://en.doc.boardgamearena.com/Gamehelpschottentotten">BGA</a> · <a href="https://cs.uwaterloo.ca/~dtompkin/archive/dtlib/base/Schotten%20Totten.pdf">pravidlá</a></td><td>5 kameňov z 9 alebo 3 susedné.</td><td>Obrana jedného kameňa môže otvoriť susedný rad, takže obranca volí, kde prehrá menej (vidlička).</td><td>Karty pri kameňoch sú verejné.</td><td>Hra je pre dvoch stavaná.</td></tr>
+<tr data-f="dvaja ciele"><td><b>Twilight Struggle</b> (2005)<br><a href="https://rulespal.com/twilight-struggle/rulebook">pravidlá</a></td><td>20 VP na spoločnej stope, kontrola Európy pri jej vyhodnotení, DEFCON 1 (zdroje sa rozchádzajú, kto prehrá), inak VP po 10. kole.</td><td>Bojiskové štáty sa rátajú do regiónov aj do Európy, takže každý vplyv je útokom aj obranou.</td><td>Jedna stopa od −20 do +20, vplyv na mape je verejný.</td><td>Hra je pre dvoch stavaná.</td></tr>
+<tr data-f="dvaja ciele"><td><b>Watergate</b> (2019)<br><a href="https://officialgamerules.org/game-rules/watergate/">pravidlá</a> · <a href="https://www.boardgamequest.com/watergate-review/">recenzia</a></td><td>Asymetria: Nixon vyhrá 5 žetónmi momentu, redaktor spojením aspoň 2 informátorov s Nixonovým portrétom.</td><td>Obe strany sa bijú o tie isté žetóny na kartách udalostí. Každá karta je voľba medzi postupom k svojmu cieľu a odobratím žetónu súperovi.</td><td>Žetóny a sieť dôkazov sú verejné.</td><td>Hra je pre dvoch stavaná (Golden Geek 2019 za najlepšiu hru pre 2, podľa recenzie).</td></tr>
+<tr data-f="dvaja styly"><td><b>Magic: The Gathering</b><br><a href="https://gametyrantindustries.squarespace.com/news/determining-your-decks-archetype-in-magic-the-gathering?format=amp">archetypy</a> · <a href="https://mtg.wiki/page/Archetype">mtg.wiki</a> · <a href="https://mtg.wiki/page/Mike_Flores">Flores</a></td><td>Aggro, control, combo a midrange. Bežný cyklus: combo &gt; aggro &gt; control &gt; combo.</td><td>Metahra: keď sa rozmnoží jeden archetyp, pribudne jeho predátorov. „Who's the Beatdown?“ (Flores, 1999): rolu určuje zápas, nie balíček.</td><td>Stôl je verejný, ruka skrytá. Archetyp súpera sa číta z prvých ťahov.</td><td>Základný formát je pre dvoch.</td></tr>
+<tr data-f="dvaja styly"><td><b>Hearthstone</b><br><a href="https://www.keengamer.com/articles/guides/hearthstones-3-major-deck-types-explained-aggro-midrange-and-control/">archetypy</a></td><td>Aggro, midrange, control (niekde aj combo).</td><td>Control tu bije aggro (vymazanie stola, liečenie), aggro bije midrange a midrange bije control, teda opačná šípka ako v Magicu. Tier listy ukazujú, že jeden archetyp občas dominuje celé obdobie.</td><td>Ako v Magicu.</td><td>Hra je pre dvoch.</td></tr>
+<tr data-f="dvaja ciele styly"><td><b>Android: Netrunner</b><br><a href="https://stimhack.com/the-four-corps-you-meet-in-netrunner-by-erinrockabitch/">Four Corps</a></td><td>Korporácia: 7 bodov agend alebo flatline runnera. Archetypy: glacier, rush, fast advance, kill.</td><td>Každý archetyp chce od runnera inú obranu (prelomenie ICE, ekonomika, ochrana pred zabitím). Komunita sa nezhodne, či sú rush, glacier a fast advance tri ciele alebo len tri spôsoby skórovania.</td><td>Ruka a časť serverov sú skryté, runner číta podľa ICE a tempa.</td><td>Asymetrická hra pre dvoch.</td></tr>
+<tr data-f="dvaja styly"><td><b>Star Realms</b><br><a href="https://www.starrealms.com/a-colony-wars-strategy-primer-from-darwin-kastle/">primer Darwina Kastla</a></td><td>Jediná výhra (autorita súpera na 0), štýly podľa frakcií: Blob agresívny, Trade Federation ekonomika a liečenie, Machine Cult preriedenie, Star Empire ťahanie a odhadzovanie.</td><td>Liečenie Trade Federation je odpoveď na agresiu. Stratégia sa skladá z 1–2 frakcií podľa trhu.</td><td>Trh aj základne sú verejné.</td><td>Hra je pre dvoch stavaná.</td></tr>
+<tr data-f="styly"><td><b>Dominion</b><br><a href="https://dominionstrategy.com/2013/01/21/the-five-fundamental-deck-types-introduction/">päť typov</a> · <a href="https://wiki.dominionstrategy.com/index.php/Rush_(strategy)">Rush</a> · <a href="https://wiki.dominionstrategy.com/index.php/Witch">Witch</a></td><td>Big Money (základ), engine, rush (rýchly koniec cez tri kôpky), slog (dlhá hra).</td><td>Rush bije engine, lebo hru ukončí skôr, než engine začne platiť. Witch dáva +2 karty sebe a kliatbu súperovi, takže útok je vedľajší účinok dobrej karty.</td><td>Nákupy sú verejné, balíček sa dá spočítať.</td><td>Dobre funguje aj vo dvojici (z vlastných vedomostí, neoverené).</td></tr>
+<tr data-f="dvaja styly"><td><b>StarCraft, Yomi</b> (Sirlin)<br><a href="https://sirlin.net/articles/designing-yomi">Designing Yomi</a> · <a href="https://liquipedia.net/starcraft2/7_Roach_Rush_(vs._Terran)">Liquipedia</a></td><td>Skorý rush, silná ekonomika, stredná stavba. V Yomi: útok &gt; hod &gt; blok &gt; útok.</td><td>Sirlin: kameň–papier–nožnice nie je plytký, keď majú voľby rôzne výplaty a riziko. Rush trestá chamtivú expanziu. Komunita dodáva, že dobre bránená expanzia porazí oba.</td><td>Scouting, teda ísť sa pozrieť, čo súper stavia.</td><td>Hry pre dvoch (StarCraft 1 na 1).</td></tr>
+<tr data-f="ciele"><td><b>Root</b> (2018)<br><a href="https://www.therootdatabase.com/law/victory/en/">Law of Root, Víťazstvo</a></td><td>30 VP alebo karta Dominancie (od 10 VP).</td><td>Kto aktivuje Dominanciu, zíde zo stopy bodov a už body nezbiera. Ohlásený cieľ stojí celý popolník.</td><td>Karta Dominancie je verejná.</td><td>Jeden zdroj uvádza Dominanciu až od 3 hráčov (neoverené, pozri pravidlá). Policajta robí stôl.</td></tr>
+<tr data-f="ciele"><td><b>Inis</b> (2016)<br><a href="https://gamers-hq.de/media/pdf/e3/87/33/INIS_RULES_EN.pdf">pravidlá</a></td><td>6 území, 6 svätýň alebo náčelník nad 6 súperovými klanmi.</td><td>Splnenie dá len žetón Pretender a výhru až na začiatku ďalšieho kola, ak nikto nemá viac splnených podmienok. Súper má teda kolo na odpoveď.</td><td>Mapa je verejná, Pretender ohlásený.</td><td>Hrá sa od 2. Vo dvojici bráni len súper, koalícia nie je (z vlastných vedomostí, neoverené).</td></tr>
+<tr data-f="ciele"><td><b>Kemet</b> (2012)<br><a href="https://boardgame.de/reviews/kemet.htm">recenzia</a> · <a href="https://www.orderofgamers.com/downloads/Kemet_v3.4.pdf">pravidlá v3.4</a></td><td>Trvalé body (útok, obeta, dlaždice) a dočasné (chrámy).</td><td>Za vyhratý útok trvalý bod, za obranu nič. Za hradbami sa body získať nedajú, takže „korytnačka“ nevyhrá.</td><td>Body sú verejné, trvalé a dočasné odlíšené tvarom.</td><td>Hrá sa od 2, lepšie pri viacerých (z vlastných vedomostí, neoverené).</td></tr>
+<tr data-f="ciele"><td><b>Cosmic Encounter</b><br><a href="https://zatu.com/cosmic-encounter-review/">recenzia</a> · <a href="https://nerdist.com/article/have-a-close-encounter-of-the-cosmic-kind/">Nerdist</a></td><td>Bežná výhra (5 kolónií) a mimozemšťania s vlastnou výhrou (Masochist: stratiť všetky lode, Tick-Tock).</td><td>Alternatívnu výhru stráži celý stôl a artefakty (Mobius Tubes vymaže Masochistov postup).</td><td>Moc mimozemšťana je verejná.</td><td>Pre 3–5 hráčov (z vlastných vedomostí). Bez stola, ktorý brzdí, by vo dvojici neprežila.</td></tr>
+<tr data-f="ciele"><td><b>Dune: Imperium</b> (2020)<br><a href="https://www.meeplemountain.com/reviews/dune-imperium/">recenzia</a></td><td>Body z konfliktov a z vplyvu vo frakciách (aliancie), koniec pri 10 bodoch alebo po 10 kolách.</td><td>Spojenectvo frakcie drží najvyšší vplyv a dá sa prebrať (z vlastných vedomostí, neoverené).</td><td>Stopy vplyvu sú verejné.</td><td>1–4 hráči. Vo dvojici hrá tretí automatický protivník (z vlastných vedomostí, neoverené).</td></tr>
+</tbody></table></div>
+
+<h2 id="principy">3. Princípy trojuholníka</h2>
+<ol class="princip">
+<li><b>Kto je beatdown.</b> Flores sa pýta: keby partia bežala bez zmeny, kto vyhrá? Ten druhý musí útočiť (<a href="https://mtg.wiki/page/Mike_Flores">mtg.wiki</a>). V NA EX! je odpoveď vždy „motor“, lebo finále je najväčšie kolo, a útočník nemá čím partiu skončiť. Rýchly útok preto potrebuje <b>náhlu výhru</b> (väzni) alebo <b>páku na hodiny</b> (<a href="#utocnik-ovlada-hodiny">„Platiť!“</a>).</li>
+<li><b>Smer šípky určuje cena odpovede, nie meno štýlu.</b> V Magicu aggro bije control, v Hearthstone control bije aggro, lebo liečenie a mazanie stola sú tam lacnejšie. V NA EX! sú odpovede na tuhé Viera (§9.3) a hádka, ktorá na kolo vezme súperovi Bitkára (§9.1). Ich cena rozhodne, či obrana bije útok.</li>
+<li><b>Jeden základ a dve hrozby skôr ako čistý cyklus.</b> Hry pre dvoch (7WD, Splendor Duel, Hanamikoji, TS, Watergate) majú body ako záchrannú sieť a 1–2 náhle výhry, ktoré treba strážiť. Hrozba pôsobí aj vtedy, keď sa nenaplní: obranca za ňu platí v každej partii.</li>
+<li><b>Odpoveď ako vedľajší účinok.</b> Najlepšia hrozba je dobrý ťah, ktorý navyše škodí: rabovanie mincí v 7WD, Witch (+2 karty a kliatba). Čistá nenávisť (karta, ktorá je mŕtva v iných zápasoch) robí z voľby lotériu. NA EX! stavia balíček počas partie zo šenku (§5), takže hate-draft (zobrať kartu, aby ju nemal súper) je prirodzená odpoveď.</li>
+<li><b>Spoločný zdroj ťahaný opačnými smermi.</b> Stopa v 7WD, VP v Twilight Struggle, gejše v Hanamikoji: každý krok k svojmu cieľu je krok súpera späť. NA EX! má takých 8 starších na stupniciach (§10). Keď väzni aj spojenci berú z rovnakých 8, cesty sa nemíňajú (<a href="#spolocny-bazen-dvoch-ciest">spoločný bazén</a>).</li>
+<li><b>Rôzne osi musia byť rôzne zdroje.</b> Keď dve cesty vyhráva ten istý ťah, splynú. Dnes hádku v 80 % vyhrá víťaz bitky, lebo viac kariet v línii dá viac všetkého. Os sa oddelí, keď súperí o to isté miesto (limit vykladania §6, sloty kariet) a jej výsledok nezávisí od víťazstva v bitke.</li>
+<li><b>Hrozba musí byť viditeľná a počítateľná.</b> Kritika „point salad“: hráč nevidí, ako ďaleko je od výhry (<a href="https://opinionatedgamers.com/2014/08/19/soups-on-point-salad-games-a-roundtable-discussion/">Opinionated Gamers</a>). Ideál je počítadlo pri popolníku a ohlásenie pred koncom (Inis Pretender, Root Dominancia, dnešný pokus o zajatie §5).</li>
+<li><b>Rôzne výplaty, nie len rôzne mená</b> (<a href="https://sirlin.net/articles/designing-yomi">Sirlin</a>). Náhla výhra je veľká výplata za veľké riziko, body sú istota. Keď je výplata rovnaká, voľba je hádanie.</li>
+<li><b>Snowball a dobiehanie.</b> Náhla výhra urýchľuje vedúceho. NA EX! má dnes dobiehanie zabudované (útočí porazený §4, vo finále zaostávajúci §14b). Hrozba preto potrebuje kolo na odpoveď (udržanie do konca kola ako pri strachu §10, ohlásenie).</li>
+<li><b>Vo dvojici nie je policajt.</b> V Inis, Roote a Cosmic Encounter brzdí vedúceho celý stôl. Vo dvojici to musí zvládnuť jediný súper, takže každá hrozba potrebuje odpoveď dostupnú jednému hráčovi. Pre budúci formát 2 na 2 platí to isté pre tím (⌊L/2⌋ väzňov na tím).</li>
+</ol>
+
+<h2 id="kandidati">4. Kandidáti na trojuholník pre NA EX!</h2>
+<p>Šesť kandidátov poskladaných z mechaník v kapitole 6. Pri každom je, čo koho porazí a prečo (cez § PRAVIDLA.md) a ako silná je šípka podľa dnešných pravidiel. Kliknutím sa ukáže schéma.</p>
+<div class="filtre" role="group" aria-label="Kandidát" id="troj-tl"></div>
+<div class="troj">
+<div class="troj-obal">
+<div><svg id="troj-svg" viewBox="0 0 380 330" role="img" aria-labelledby="troj-nazov"></svg>
+<p class="legenda"><span class="n">━ silná</span> · <span class="s">━ stredná</span> · <span class="v">╍ slabá alebo chýba</span> · ┈ dilema (obranca nemôže strážiť oboje)</p></div>
+<div><h3 id="troj-nazov"></h3><p id="troj-popis"></p><ul class="sipky" id="troj-sipky"></ul><p class="pozn" id="troj-pozn"></p></div>
+</div>
+</div>
+
+<h3>Porovnanie kandidátov</h3>
+<div class="tab-obal"><table>
+<thead><tr><th>Kandidát</th><th>Rozhodnutie hráča</th><th>Zložitosť</th><th>Zásah do pravidiel</th><th>Riziko</th></tr></thead>
+<tbody>
+<tr><td><b>T1 Strach – Krčma – Reči</b> (Michal)</td><td>Na ktorých starších desiť a ktorých presviedčať, kedy skúsiť zajatie, kedy si požičať staršieho</td><td><span class="znamka v">vysoká</span></td><td>§1, §9.1 (výstup hádky), §10 (spojenec, výpožička), oprava §9.4</td><td>Reči splynú so Strachom, keď spojenec vyžaduje vyhratú bitku. Karta bossa ako výpožička je silná.</td></tr>
+<tr><td><b>T2 Vidlička strachu</b></td><td>Porazený: sústrediť Nakladačku (hrozí červená) alebo rozložiť (hrozí šírka)</td><td><span class="znamka n">nízka</span></td><td>§1, §10: jedna nová podmienka výhry (N udržaných strachov)</td><td>Šírka sa ťažko vracia, zle zvolené N skončí partiu priskoro</td></tr>
+<tr><td><b>T3 „Platiť!“ – Krčma – Obrana</b></td><td>Vedúci: ukončiť teraz, alebo hrať ďalej. Ostatní: držať tesné skóre.</td><td><span class="znamka n">nízka</span></td><td>§4, §14b: jedno ohlásenie na začiatku kola</td><td>Kratšie partie a snowball z náhodného prvého útočníka</td></tr>
+<tr><td><b>T4 Povesť – Strach – Krčma</b> (7WD)</td><td>Kam tlačiť povesť, kedy rabovať, či hrať mäkké namiesto tuhého</td><td><span class="znamka s">stredná</span></td><td>§9.1 (hádka posúva ďalší žetón), nová stopa</td><td>Deviata stupnica na stole, znovu otvára výstup hádky (v10)</td></tr>
+<tr><td><b>T5 Klebety – Útok – Krčma</b> (Dominion)</td><td>Klebeta do súperovho balíčka, Víziu minúť na čistenie alebo na kartu</td><td><span class="znamka s">stredná</span></td><td>§8, §11: nová Kliatba, výstup hádky</td><td>Tretia mŕtva karta vedľa Absťáku a Cirhózy, prekrýva sa s nimi</td></tr>
+<tr><td><b>T6 Ohlásený cieľ</b> (vrstva nad T1/T2)</td><td>Zahodiť popolník a ísť na väzňov či spojencov, alebo nie</td><td><span class="znamka s">stredná</span></td><td>§1, §14: ohlásenie, ktoré zmrazí špaky za bitky</td><td>Nikto ho nezvolí, ak je cena priveľká</td></tr>
+</tbody></table></div>
+
+<h3 id="posudok">Posúdenie kandidátov z rozhovoru</h3>
+<ul>
+<li><b>Väzni ⌊L/2⌋</b> (Tretia liga 1, Druhá 2, Prvá 3). Škálovanie s ligou je dobré a podobá sa 7WD alebo Hanamikoji, kde hranica sedí na zhruba polovici bazéna. Samo však 0/60 nezmení, lebo príčinou nie je počet, ale to, že sa na červenú nedá dostať (§9.4 bod 2). Treba k nemu tlak, ktorý riadi víťaz, alebo vidličku (T2). V Tretej lige ukončí partiu jediný väzeň, preto treba merať zvlášť. Pokus o zajatie je už dnes „ohlásená výhra s odpoveďou“ (verejný, boss ide pokúšajúcemu do ruky, súper dostane kartu zadarmo, §5, §10), čo hry pre dvoch odporúčajú.</li>
+<li><b>Reči → výpožička → spojenci.</b> Zrkadlo zajatia (strach a presvedčenie) a spoločný bazén 8 starších sú v rešerši najsilnejší argument (Watergate, Twilight Struggle, Hanamikoji). Kľúčová podmienka: ak sa spojenec robí <i>vyhratou bitkou</i> s výpožičkou v línii, os splynie s tuhým, rovnako ako dnes hádka (80 %). Oddelí sa, keď spojenca robí <i>vyhratá hádka</i> s výpožičkou v línii, teda mäkké, nie tuhé. Tón sedí („presvedčiť pri poháriku“). Treba zmerať silu karty bossa na jedno kolo (6 akcií, §10).</li>
+<li><b>Stupnica povesti (7WD)</b> je prirodzený tug-of-war s rabovaním, ktoré bije motor. Ide však o ďalšiu stupnicu a hádka by znova hýbala žetónom, hoci nie markerom staršieho. Michal 2026-11-01 rozhodol, že hádka sa k markerom nevráti, takže pred návrhom treba overiť, či sa to týka aj samostatnej stopy.</li>
+<li><b>Klebety do balíčka (Dominion)</b> útočia na motor priamo v balíčku a Vízia (§2) je prirodzená odpoveď motora. Prekrývajú sa ale s Absťákom (§8), ktorý už je mŕtvou kartou zahoditeľnou Víziou.</li>
+<li><b>Dedičstvo ako samostatný cieľ (zamietnuté).</b> Rešerš Michalovi dáva za pravdu: Dedičstvo je zosilňovač (Valaška a Puška pre tuhé, Horoskop a Telefón pre mäkké, Krištáľová guľa a Zapaľovač pre motor, §12). V reči Magicu je to „farba“ vrcholu, nie vrchol. Môže však slúžiť ako <b>viditeľný signál štýlu</b>: Nástroj v Dedičstve je verejný a natrvalo, podobne ako základňa v Star Realms. Súper z neho prečíta, čo ide hrať.</li>
+</ul>
+
+<h2 id="tabulka">5. Porovnanie mechaník</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Mechanika</th><th>Rozhodnutie hráča</th><th>Zložitosť</th><th>Zásah do pravidiel</th><th>Riziko</th></tr></thead>
+<tbody>
+<tr><td><a href="#zaklad-a-dve-nahle-smrti">Body a dve náhle výhry</a></td><td>Koľko platiť za obranu proti hrozbe, ktorá sa možno nenaplní</td><td><span class="znamka s">stredná</span></td><td>§1 podmienky konca, počítadlo pri popolníku</td><td>Hrozba nedosiahnuteľná (dnes) alebo lacná</td></tr>
+<tr><td><a href="#vidlicka-sirka-hlbka">Vidlička šírka/hĺbka</a></td><td>Kde prehrať menej</td><td><span class="znamka n">nízka</span></td><td>§1, §10, jedna podmienka</td><td>Šírka sa ťažko vracia</td></tr>
+<tr><td><a href="#utocnik-ovlada-hodiny">Útočník ovláda hodiny</a></td><td>Ukončiť teraz, alebo hrať ďalej</td><td><span class="znamka n">nízka</span></td><td>§4, §14b</td><td>Kratšie partie, snowball</td></tr>
+<tr><td><a href="#trojuholnik-archetypov">Trojuholník archetypov</a></td><td>Ktorý štýl hrať proti tomuto súperovi, kedy prejsť na iný</td><td><span class="znamka v">vysoká</span> (rámec)</td><td>Ceny odpovedí (§9.1, §9.3)</td><td>Karty miešajú akcie a štýly sa zlievajú</td></tr>
+<tr><td><a href="#utok-na-ekonomiku-vedlajsim-ucinkom">Útok na ekonomiku vedľajším účinkom</a></td><td>Tlačiť os, ktorá súčasne berie súperovi zdroje</td><td><span class="znamka s">stredná</span></td><td>§9.1 výstup hádky alebo nová Kliatba §11</td><td>Snowball, prekryv s Absťákom</td></tr>
+<tr><td><a href="#spolocny-bazen-dvoch-ciest">Spoločný bazén dvoch ciest</a></td><td>Ktorého staršieho desiť, ktorého presviedčať, komu vziať cieľ</td><td><span class="znamka s">stredná</span></td><td>§10 spojenec vedľa väzňa</td><td>Dva ukazovatele na jednom staršom</td></tr>
+<tr><td><a href="index.html">Doplnené:</a> ohlásená výhra, korisť za hranicu, trvalé a dočasné body</td><td>pozri index</td><td>—</td><td>—</td><td>—</td></tr>
+</tbody></table></div>
+
+<h2 id="mechaniky">6. Mechaniky podrobne</h2>
+<details class="mech" id="zaklad-a-dve-nahle-smrti">
+<summary>Body ako základ, popri nich dve náhle výhry, ktoré treba strážiť <small>· 7 zdrojov · <code>zaklad-a-dve-nahle-smrti</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> NA EX! má dnes jednu reálnu cestu: motor na cigarety a Vízie, ktorý zbiera vo finále. Výhra tretím väzňom padla 0-krát zo 60 partií botov (Druhá liga, 2026-11-01). Keď vedľajšia výhra nehrozí, súper ju nemusí strážiť a hra sa zúži na jednu os.</p>
+<h3>Ako funguje</h3><ol><li>Hra má základné skóre (body na konci).</li><li>Popri ňom má 1–2 podmienky okamžitej výhry na iných osiach (vojsko a veda; gejše a šarm; korunky a farba).</li><li>Každá podmienka má verejné meradlo, ktoré sa dá spočítať (stopa, počet symbolov).</li><li>Hráč, ktorý ide na body, musí priebežne platiť za obranu (vojsko na vyrovnanie, zobratý symbol, zablokovaná karta) a tie platby mu potom chýbajú v bodoch.</li><li>Náhle výhry tvoria menšinu výsledkov, ale ich hrozba formuje každú partiu.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>7 Wonders Duel (Bauza, Cathala, 2015, 2 hráči)</b>Tri cesty: vojenská prevaha (pešiak v hlavnom meste súpera), vedecká prevaha (6 rôznych symbolov z 7), inak body. Recenzent: kto ignoruje súperov vojenský ťah, takmer iste prehrá. Hráč rozhoduje, koľko kariet obetuje na brzdenie súpera namiesto vlastných bodov. <a href="https://opinionatedgamers.com/2016/01/22/7-wonders-duel-game-review/">zdroj</a></div><div class="hra"><b>7 Wonders Duel — ako často padne náhla výhra</b>Tipy na BGA uvádzajú podľa dát BGA zhruba 20 % partií vojenskou a 20 % vedeckou prevahou; analýza na fóre BGA má pre základnú hru civil 58 %, vedu 25,6 %, vojsko 16,4 % (veľkosť vzorky neuvádza). Pre NA EX! to dáva hrubý cieľ: náhle výhry v 20 až 40 % partií. <a href="https://be.doc.boardgamearena.com/Tips_sevenwondersduel">zdroj</a></div><div class="hra"><b>7WD in Numbers (fórum BGA)</b>Rozpis 58 / 25,6 / 16,4 % a poznámka, že politická výhra z rozšírenia Agora je takmer dominantná. To je varovanie, že novú cestu treba merať, lebo ľahko prevalcuje ostatné. <a href="https://forum.boardgamearena.com/viewtopic.php?p=112104">zdroj</a></div><div class="hra"><b>Splendor Duel (Andre, Cathala, 2022, 2 hráči)</b>Výhra pri 20 bodoch prestíže, 10 korunkách alebo 10 bodoch v jednej farbe, kontroluje sa po každom ťahu. Návod radí počítať súperove korunky a farby. Typická prehra: hráč počíta len body a súper medzitým potichu nazbiera 10 koruniek. <a href="https://rules.dized.com/game/W-CkaRFlR36L6fiDQiWcHQ/jDfcPfeeQJm94NVijGRTYA/victory-conditions">zdroj</a></div><div class="hra"><b>Splendor Duel — ktorá cesta vyhráva</b>Tipy na BGA: väčšina partií sa vyhrá na 20 bodov, ale kto si drží otvorené všetky tri cesty, toho sa ťažšie blokuje. Náhle výhry tu slúžia hlavne ako tlak, ktorý núti súpera rozložiť pozornosť. <a href="https://es.boardgamearena.com/doc/Tips_splendorduel">zdroj</a></div><div class="hra"><b>Twilight Struggle (Gupta, Matthews, 2005, 2 hráči)</b>Jedna spoločná stopa VP od −20 do +20, pri 20 je okamžitá výhra; kontrola Európy pri vyhodnotení Európy je tiež okamžitá výhra; DEFCON 1 končí partiu (zdroje sa rozchádzajú, kto prehrá). Hrozby sú viditeľné celú hru. <a href="https://rulespal.com/twilight-struggle/rulebook">zdroj</a></div><div class="hra"><b>Watergate (Cramer, 2019, 2 hráči, asymetrická)</b>Nixon vyhrá, keď získa 5 žetónov momentu. Redaktor vyhrá, keď spojí aspoň 2 informátorov reťazou odkrytých dôkazov s Nixonovým portrétom. Každá strana preťahuje oba ciele naraz: obe hrozby sú verejné a každá karta je voľba, ktorú z nich tlačiť a ktorú brzdiť. <a href="https://officialgamerules.org/game-rules/watergate/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>BGDF: jedna podmienka výhry je pre hráča zrozumiteľnejšia, pri viacerých sa mu cieľ rozmazáva. Kritika „point salad“ (body odvšadiaľ): hráč nevidí, ako ďaleko je od výhry. Náhla smrť môže pôsobiť ako antiklimax („zabudol som sa brániť“; z vlastných vedomostí, neoverené). Čísla 7WD sa podľa zdroja líšia (20+20 % vs. 25,6+16,4 %).</p></div>
+<div><h3>Riziká</h3><p>Náhla výhra nesmie byť nedosiahnuteľná (dnes 0/60) ani lacná. Nováčik môže prehrať náhlou smrťou bez toho, aby ju videl prichádzať, preto treba nápovedu Melichara pri prvom staršom na červenej. V Tretej lige (⌊3/2⌋ = 1) môže jedna úspešná bitka s pokusom ukončiť partiu po 2. lokalite. Tón hry neutrpí, väzeň aj spojenec sú krčmové.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Krčma (špaky po finále, §14, §14b) ostáva základom. Dve náhle výhry: Strach (väzni, §10; dnes tretí väzeň, návrh Michala ⌊L/2⌋: Tretia liga 1, Druhá 2, Prvá 3) a Reči (spojenci, návrh z rozhovoru, tiež ⌊L/2⌋). Obe merané verejne pri staršom: marker strachu a žetóny rečí. Obe ohlásené vopred: pokus o zajatie je už dnes verejný a boss ide do ruky (§5, §10). Pri popolníku pribudne počítadlo „väzni 0/2 · spojenci 0/2“. Výučba: jedna veta v Rýchlom štarte (§1): „Vyhráš aj skôr, keď máš ⌊L/2⌋ väzňov alebo spojencov.“</p>
+<h3>Čo zmerať</h3><p>Podiel výhier podľa cesty (cieľ hrubo 20–40 % partií mimo špakov), P(výhra | vyhrané finále) dnes 85 % s cieľom pod 70 %, P(výhra | vedenie pred finále) dnes 63 %, medián kola náhlej výhry, koľko cigariet a kariet minie obranca na brzdenie (odtlačenie, Viera).</p>
+</details>
+<details class="mech" id="vidlicka-sirka-hlbka">
+<summary>Vidlička: šírka alebo hĺbka z tých istých ťahov <small>· 4 zdrojov · <code>vidlicka-sirka-hlbka</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Nakladačku rozdeľuje porazený (§9.4 bod 2), preto staršieho nikdy nepustí na červenú a zajatie nevznikne (0 zo 60). Keď hrozí len hĺbka (jeden starší na stupni 3), obranca sa jej vyhne tým, že Nakladačku rozloží.</p>
+<h3>Ako funguje</h3><ol><li>Dve podmienky výhry vyplývajú z toho istého súboja. Hĺbka: 3 susedné kamene, 10 bodov v jednej farbe, väčšina v pár veľkých cieľoch. Šírka: 5 kameňov hocikde, 4 gejše, 20 bodov.</li><li>Obranca nemôže strážiť obe naraz: keď obranu sústredí, prehrá na šírku, keď ju rozloží, prehrá na hĺbku.</li><li>Obe sa kontrolujú po každom kroku a hra končí hneď.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Schotten Totten (Knizia, 1999, 2 hráči)</b>Vyhráš 5 kameňov z 9 alebo 3 susedné. Obrana jedného kameňa môže otvoriť susedný rad a hráč sa musí rozhodnúť, kde prehrá menej. Hra končí hneď, ako niekto splní niektorú podmienku. <a href="https://en.doc.boardgamearena.com/Gamehelpschottentotten">zdroj</a></div><div class="hra"><b>Schotten Totten — pravidlá</b>Oficiálne pravidlá: obe podmienky (5 kameňov alebo 3 susedné) a okamžitý koniec. <a href="https://cs.uwaterloo.ca/~dtompkin/archive/dtlib/base/Schotten%20Totten.pdf">zdroj</a></div><div class="hra"><b>Hanamikoji (Nakayama, 2013, 2 hráči)</b>Vyhráš 4 gejše zo 7 (šírka) alebo 11 bodov šarmu (hĺbka; gejše majú hodnotu 2 až 5). Malé gejše sa oplatí brať na počet, veľké na body. Keď v tom istom kole splní každý inú podmienku, podľa FAQ na BGG vyhráva 11 bodov. <a href="https://boardgamegeek.com/wiki/page/Hanamikoji_FAQ">zdroj</a></div><div class="hra"><b>Splendor Duel (2022, 2 hráči)</b>20 bodov (šírka), 10 bodov v jednej farbe (hĺbka) a 10 koruniek (tretia os). Tie isté nákupy z jedného trhu ťahajú k rôznym kartám, takže obranca, ktorý berie kartu len preto, aby ju nemal súper, sa vzdáva vlastného postupu. <a href="https://en.doc.boardgamearena.com/Gamehelpsplendorduel">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Keď je jedna podmienka výrazne lacnejšia, druhá je mŕtva (Splendor Duel: väčšina partií končí na 20 bodoch, tipy BGA). Bez ohlásenia môže výhra prísť nečakane. V Schotten Totten veľa rozhodne ťahanie kariet (z vlastných vedomostí, neoverené).</p></div>
+<div><h3>Riziká</h3><p>Šírka sa ťažko vracia: marker k stredu posúva zas len Nakladačka, ktorú rozdeľuje ohrozený hráč. Ten si vyberie iných starších, takže odpoveďou je hlavne vyhrávať bitky. Nízke N znamená rýchly koniec v Tretej lige. Výhra by mohla zatieniť špaky za udržaný strach (§14). Pojem „udržaný stupeň“ je pre nováčika ťažký.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Hĺbka je dnešný väzeň (starší sa ťa bojí na stupni 3, §10). Šírka je nová podmienka: na konci kola (krok 8, §9) sa ťa na udržaných stupňoch bojí aspoň N starších. N treba zmerať (napr. 5 z 8) a rozhodnúť, či sa väzni rátajú. Porazený musí rozdeliť celú Nakladačku (§9.4 bod 5). Keď ju sústredí, hrozí červená a pokus o zajatie, keď ju rozloží, hrozí šírka. Dnešný vzorec motora (prehrať, rozložiť Nakladačku a zobrať cigaretu za každého posunutého staršieho, §9.4) tak priamo kŕmi súperovu šírku. Karty sa nemenia. Na ploche pribudne počítadlo „boja sa ťa: 3/5“, vo výučbe obrázok stupníc s piatimi žltými.</p>
+<h3>Čo zmerať</h3><p>Na koľkých starších sa dnes Nakladačka rozdeľuje (priemer, rozptyl) a ako po zavedení vidličky. Podiel výhier šírkou a hĺbkou pre N = 4, 5, 6. Kolo, v ktorom niekto prvýkrát dosiahne N. Či porazený začne Nakladačku sústreďovať (počet starších na červenej za partiu).</p>
+</details>
+<details class="mech" id="utocnik-ovlada-hodiny">
+<summary>Kto je beatdown: útočník ovláda dĺžku partie (rush, „Platiť!“) <small>· 5 zdrojov · <code>utocnik-ovlada-hodiny</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Partia má pevný počet L lokalít a po nich finále, ktoré je najväčším kolom (oba hráči spolu 21 špakov, Nakladačka 1 : 1 ≈ 11,7). Rýchly útok nemá ako zinkasovať vedenie: finále ho zmaže a vedúci pred finále vyhrá len 63 %.</p>
+<h3>Ako funguje</h3><ol><li>Flores sa pýta: keby partia bežala ďalej bez zmeny, kto vyhrá? Ten druhý musí byť útočník (beatdown) a tlačiť na koniec.</li><li>Útočník potrebuje páku na hodiny. V Dominione rush vyprázdni tri kôpky a ukončí hru skôr, než engine začne platiť.</li><li>Obranca odpovedá tým, že drží krok (vlastné tempo), alebo koniec zbrzdí.</li><li>Motor (engine) vyhrá, keď partia trvá dosť dlho.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Magic: The Gathering — „Who's the Beatdown?“ (Flores, 1999)</b>Základný článok teórie Magicu: rola hráča (útočník alebo kontrola) nie je daná balíčkom, ale zápasom. Kto vyhrá dlhú hru, nech brzdí, ten druhý musí útočiť. Hráč, ktorý rolu prečíta zle, prehrá aj s lepšími kartami. <a href="https://mtg.wiki/page/Mike_Flores">zdroj</a></div><div class="hra"><b>Who's the Beatdown — dnešný pohľad</b>Článok z roku 2023: princíp stále pomáha hráčom určiť rolu v partii. <a href="https://themanabase.com/?p=9464">zdroj</a></div><div class="hra"><b>Dominion — Rush (DominionStrategy wiki)</b>Rush je stratégia, ktorá sa snaží hru ukončiť čo najskôr, typicky vyprázdnením troch kôpok. Proti engine je to podľa wiki dobrý zápas, lebo engine ešte nestihol začať platiť. Opak je Slog, ktorý chce hru čo najdlhšiu. <a href="https://wiki.dominionstrategy.com/index.php/Rush_(strategy)">zdroj</a></div><div class="hra"><b>Dominion — päť základných typov balíčka</b>Big Money ako základ, engine, rush a slog sú odlíšené tým, ako dlhú hru chcú. Hráč volí podľa toho, čo hrá súper: proti dlhému balíčku viac rushu, proti rýchlemu Big Money viac slogu. <a href="https://dominionstrategy.com/2013/01/21/the-five-fundamental-deck-types-introduction/">zdroj</a></div><div class="hra"><b>StarCraft — rush trestá chamtivú expanziu</b>Liquipedia opisuje skoré útoky ako trest za príliš chamtivé rozširovanie. Kto rush ubráni bez veľkej straty, vyhrá na ekonomike. <a href="https://liquipedia.net/starcraft2/7_Roach_Rush_(vs._Terran)">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Flores sám hovorí, že si článok pamätajú, lebo bol prvý, nie najlepší. Návod k StarCraftu: trojuholník rush / turtle / boom v praxi čisto neplatí a dobre bránená expanzia porazí oba. V Dominione rush závisí od kariet na stole a v niektorých hrách vôbec neexistuje.</p></div>
+<div><h3>Riziká</h3><p>Kratšie partie, stôl uvidí menej kariet. Snowball z náhodného prvého útočníka (§3). Prah X je podmienka konca, nie strop zdroja, takže CLAUDE.md porušený nie je. Tón sedí výborne. Prvá liga (7 lokalít) môže stratiť zmysel, keď sa dá ukončiť skôr.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>„Platiť!“: na začiatku kola (pred voľbou cieľa, §4, §5) smie hráč, ktorý vedie o aspoň X špakov (alebo má viac väzňov), zavolať „Platiť!“. Toto kolo je potom finále na pinnacle (§14b) a zvyšné lokality sa nehrajú. Útočí zaostávajúci ako vo finále. Motor tak nedostane všetky kolá na stavbu a jeho najväčšie kolo príde skôr, keď je slabší. Variant bez prahu: „Platiť!“ smie zavolať ktokoľvek, ale za cenu (súper si vyberie pinnacle, alebo dostane kartu zadarmo ako pri pokuse o zajatie, §5). Karty sa nemenia. Na ploche pribudne tlačidlo „Platiť!“ s ukazovateľom, kedy je dostupné. Výučba: hláška „Pán hostinský, platiť!“. Názov Fajront je v knižnici už obsadený (eskalacia-fajront, režim Päta, Lakeť, Otočka).</p>
+<h3>Čo zmerať</h3><p>Ako často zaznie „Platiť!“ a v ktorom kole. Výhra toho, kto volal (cieľ 55–65 %, nie 85 %). Priemerná dĺžka partie. P(výhra | vedenie pred finále), dnes 63 %. Či motor začne skôr hrať na bitky (podiel pasov za cigarety v 1.–2. kole).</p>
+</details>
+<details class="mech" id="trojuholnik-archetypov">
+<summary>Trojuholník archetypov (aggro – control – combo, rush – boom – turtle): smer šípok určujú ceny odpovedí <small>· 7 zdrojov · <code>trojuholnik-archetypov</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Michal chce viac rovnocenných štýlov. Rovnocennosť nevznikne tým, že každý štýl dostane vlastné body. Vznikne, keď každý štýl má korisť, proti ktorej vyhráva, aj predátora, proti ktorému prehráva.</p>
+<h3>Ako funguje</h3><ol><li>Tri štýly sa líšia tempom a odpoveďami: rýchly útok (lacné hrozby, skorý tlak), kontrola alebo obrana (lacné odpovede, neskorá prevaha) a motor alebo combo (najprv investícia, potom výbuch alebo iná výhra).</li><li>Útok bije motor (motor ešte nestihol), obrana bije útok (odpovede sú lacnejšie ako hrozby), motor bije obranu (obrana nemá čím zastaviť neskorý výbuch).</li><li>Smer šípok neurčujú mená štýlov. Magic aj Hearthstone majú tie isté archetypy, no šípku medzi aggro a control opačne, podľa toho, koľko stoja odpovede.</li><li>Metahra: keď sa jeden štýl rozmnoží, pribudne aj jeho predátorov.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Magic: The Gathering — archetypy</b>Bežný opis cyklu: combo bije aggro, aggro bije control, control bije combo a midrange je „strýko, ktorého všetci tolerujú“. Combo dokončí kombináciu, kým sa aggro ešte preteká. Aggro získa náskok skôr, než control nájde odpovede. Control má rušenie, na ktoré combo dopláca. <a href="https://gametyrantindustries.squarespace.com/news/determining-your-decks-archetype-in-magic-the-gathering?format=amp">zdroj</a></div><div class="hra"><b>Magic — Archetype (mtg.wiki)</b>Definície archetypov a hybridov. Aggro bije control, lebo vybuduje výhodu skôr, než control nájde potrebné karty. <a href="https://mtg.wiki/page/Archetype">zdroj</a></div><div class="hra"><b>Hearthstone — aggro, midrange, control</b>Tu je control zvyčajne odpoveďou na aggro (vymazanie stola, liečenie, viac zdrojov na konci), aggro bije midrange a midrange bije control. Je to opačná šípka ako v Magicu, lebo pravidlá dávajú odpovediam inú cenu. Podiel archetypov sa mení s patchmi: keď je jeden obľúbený, rastú jeho protivníci. <a href="https://www.keengamer.com/articles/guides/hearthstones-3-major-deck-types-explained-aggro-midrange-and-control/">zdroj</a></div><div class="hra"><b>Android: Netrunner — štyri korporácie</b>Korporácia vyhrá 7 bodmi agend alebo zabitím (flatline) runnera. Archetypy: glacier (veľa ICE, dlhá hra), rush (skoro skórovať), fast advance (skórovať z ruky, málo ICE) a kill. Runner musí prečítať, ktorý z nich hrá súper, lebo každý chce inú obranu. <a href="https://stimhack.com/the-four-corps-you-meet-in-netrunner-by-erinrockabitch/">zdroj</a></div><div class="hra"><b>Star Realms — frakcie ako štýly (2 hráči)</b>Blob je agresívny, Trade Federation dáva ekonomiku a ako jediná vracia životy (autoritu), Machine Cult preriedi balíček, Star Empire ťahá karty a núti súpera odhadzovať. Hráč sa podľa trhu a súpera rozhodne pre 1–2 frakcie. <a href="https://www.starrealms.com/a-colony-wars-strategy-primer-from-darwin-kastle/">zdroj</a></div><div class="hra"><b>Sirlin — Designing Yomi</b>Kameň–papier–nožnice nie je plytký, keď majú možnosti rôzne výplaty a pribudne riadenie rizika. V StarCrafte sa rovnako navzájom porážajú skorý rush, silná ekonomika a stredná stavba. V Yomi: útok bije hod, hod bije blok, blok bije útok. <a href="https://sirlin.net/articles/designing-yomi">zdroj</a></div><div class="hra"><b>Schreiber a Romero — Game Balance: netranzitívne mechaniky</b>Netranzitívne mechaniky (nijaká voľba nedominuje, každú niečo porazí) sú pre PvP zaujímavejšie ako tranzitívne, lebo hráč smie počas partie meniť stratégiu a blafovať. Rozbor sa robí maticou výplat. <a href="https://bowling-bash.blogspot.com/2011/03/literature-game-balance-ch3-transitive.html">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Holý kameň–papier–nožnice je hádanie. Sirlin pridáva rôzne výplaty a riziko, inak voľba nie je rozhodnutím. Kde sa balíček stavia pred partiou, často rozhodne už párovanie („zlý matchup“). Tier listy v Hearthstone ukazujú, že jeden archetyp občas dominuje celé obdobie. Trojuholník v StarCrafte je podľa komunity voľnejší, než sa hovorí.</p></div>
+<div><h3>Riziká</h3><p>Karty NA EX! miešajú akcie (jedna karta má Ranu aj Vieru), takže štýly sa zlievajú. Viera slúži proti Poverám aj proti tuhému, môže teda byť odpoveďou na dva vrcholy naraz. Nováčik potrebuje tri vysvetlenia. Balans sa dá ladiť len meraním matice.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Útok = tuhé (Rana, Pecka, Petelica, Bitkár, §9.3) a cez Nakladačku strach a väzni (§10). Reči alebo obrana = Viera, Povera, Pohoršenie a hádka (§9.1): berie súperovi Bitkára na jedno kolo, tlmí tuhé a podľa návrhu robí spojencov. Krčma = Cigareta, Vízia, Poldeci, pas za cigarety (§6) a z toho finále (§14b). Šípky: Útok &gt; Krčma (motor prehráva skoro), Reči &gt; Útok (Viera tlmí tuhé, hádka berie Bitkára, spojenec mimo stupnice sa nedá zajať), Krčma &gt; Reči (priazne z hádky platia len do konca kola, kým karty motora ostávajú natrvalo, a vo finále má motor až 5 Pitiek). Balíček sa v NA EX! stavia počas partie zo šenku, takže hráč na súpera reaguje (scouting); trojuholník je tým mäkší a viac o čítaní súpera. Pre botov treba tri povahy podľa vrcholov (bot.ts POVAHY).</p>
+<h3>Čo zmerať</h3><p>Matica 3 × 3 výhier povahy proti povahe: každý vrchol nad 55 % proti svojej koristi a pod 45 % proti svojmu predátorovi. Podiel povahy v rebríčku botov. Korelácia víťaza hádky a víťaza bitky (dnes 80 %, cieľ ≤ 60 %). Či existuje povaha, ktorá je nad 50 % proti obom ostatným (dominantná stratégia).</p>
+</details>
+<details class="mech" id="utok-na-ekonomiku-vedlajsim-ucinkom">
+<summary>Útok na ekonomiku ako vedľajší účinok vlastného plánu (rabovanie, kliatby) <small>· 4 zdrojov · <code>utok-na-ekonomiku-vedlajsim-ucinkom</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Motor v NA EX! nič nestojí. Kto prehráva, dostane cigarety za pas (§6) aj za Nakladačku (§9.4) a sám si vyberá, ktoré priazne dostane. Nikto mu počas stavby nevezme cigarety ani karty, a preto motor nemá predátora.</p>
+<h3>Ako funguje</h3><ol><li>Postup na jednej osi (vojsko, kliatby) zároveň berie súperovi zdroje, z ktorých žije jeho ekonomika.</li><li>V 7 Wonders Duel sa žetóny rabovania vyhodnotia pri prvom vstupe do zóny: súper stratí 2 alebo 5 mincí.</li><li>V Dominione Witch dá sebe +2 karty a súperovi Curse (mŕtva karta, −1 VP). Útočník nehrá čistú nenávisť, hrá dobrú kartu, ktorá navyše škodí.</li><li>Aj odpoveď je vedľajší účinok: vlastná Witch alebo vyhadzovanie kariet z balíčka (trashing).</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>7 Wonders Duel — rabovanie na vojenskej stope</b>Vojenský postup súčasne hrozí náhlou výhrou a berie súperovi mince na budovy. Hráč na body musí odpovedať, inak stratí ekonomiku aj partiu. <a href="https://rulespal.com/7-wonders-duel/rulebook">zdroj</a></div><div class="hra"><b>Dominion — Witch</b>Terminálne dobratie +2 karty a Curse každému súperovi. Kliatby sa rozdávajú v poradí ťahov. Keď dôjdu, Witch ďalej ťahá karty. <a href="https://wiki.dominionstrategy.com/index.php/Witch">zdroj</a></div><div class="hra"><b>Dominion — Curse a obrana</b>Curse je kôpka, ktorá sa ráta do konca hry, takže hra s prekliatím sa skráti. Starší článok radí odpovedať vlastnou Witch (každá kliatba rozdaná súperovi je kliatba, ktorú nedostaneš ty) a kliatby vyhadzovať (Chapel, Remodel). <a href="https://wiki.dominionstrategy.com/index.php/Curse">zdroj</a></div><div class="hra"><b>Star Realms — Star Empire a Blob</b>Star Empire ťahá karty a núti súpera odhadzovať, teda bije jeho ďalšie kolo. Blob je agresívny. Útok aj škoda na ekonomike súpera vychádzajú z tých istých kariet. <a href="https://www.starrealms.com/a-colony-wars-strategy-primer-from-darwin-kastle/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Witch v základnej sade Dominionu sa považuje za veľmi silnú. Údaj o 60–65 % výhier prvého hráča s Witch je z neoverenej stránky dood.gg. Prekliatia frustrujú a bez spôsobu, ako ich vyhodiť, z nich je snowball.</p></div>
+<div><h3>Riziká</h3><p>Absťák a Cirhóza už sú mŕtve karty v balíčku a tretí druh ich preplní (aj výučbu). Rabovanie cigariet zasiahne aj pokus o zajatie (1 cigareta, §10) a šenok, čím ešte pridá prehrávajúcemu (snowball). Mení výstup hádky, o ktorom Michal rozhodol 2026-11-01 (v10), preto ide len ako doplnok, nie náhrada priazní.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Dve možnosti. (a) Rabovanie z hádky: víťaz hádky (§9.1) popri priazniach alebo namiesto nich vezme súperovi cigarety podľa veľkosti hádky, čím motor platí za to, že hrá bez mäkkého. Variant ako korisť pri prvom vstupe (knižnica: korist-za-hranicu). (b) Klebeta: karta s tagom Kliatba (ako Absťák, §8, §11) do súperovho odhadzovacieho balíčka za vyhratú hádku. Dá sa priznať (§11) za cenu, alebo zahodiť Víziou (§2), takže motor sa bráni vlastným nástrojom, ale Víziu minie na čistenie namiesto karty. Tón: klebety a ohováranie sedia do krčmy presne. Žiadny strop: klebiet môže byť koľko chce, zbaviť sa ich dá priznaním.</p>
+<h3>Čo zmerať</h3><p>Cigarety motora po 3. kole s rabovaním a bez neho. Podiel výhier povahy Krčma. Počet klebiet v balíčku a koľko Vízií motor minie na čistenie. Dĺžka ťahu a partie.</p>
+</details>
+<details class="mech" id="spolocny-bazen-dvoch-ciest">
+<summary>Spoločný bazén, o ktorý súperia dve víťazné cesty (strach a presvedčenie o tých istých starších) <small>· 4 zdrojov · <code>spolocny-bazen-dvoch-ciest</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Keď má každá cesta k výhre vlastné ciele, hráči sa míňajú a každý hrá svoje („multiplayer solitaire“). Keď dve cesty berú z toho istého obmedzeného bazéna, každý krok na jednej ceste zároveň bráni súperovi na druhej.</p>
+<h3>Ako funguje</h3><ol><li>Obe cesty potrebujú tie isté objekty (štáty, gejše, kamene, starší).</li><li>Objekt, ktorý získa jedna cesta, druhej chýba.</li><li>Hráč vidí, koľko objektov ešte ostáva a kto ich kam ťahá.</li><li>Watergate: Nixon vyhrá 5 žetónmi momentu, redaktor spojením 2 informátorov s Nixonom. Obe strany sa bijú o žetóny, ktoré ležia na tých istých kartách udalostí.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Watergate (Cramer, 2019, 2 hráči)</b>Asymetrické ciele na tom istom stole. Nixon tlačí moment a redaktor dôkazy, no každá karta posúva oboje. Hráč stále volí, či postúpi k svojmu cieľu, alebo vezme súperovi žetón. Hra získala Golden Geek za najlepšiu hru pre 2 hráčov 2019 (podľa recenzie). <a href="https://www.boardgamequest.com/watergate-review/">zdroj</a></div><div class="hra"><b>Twilight Struggle (2 hráči)</b>Bojiskové štáty sa rátajú do bodovania regiónov aj do kontroly Európy (okamžitá výhra) a VP sú jedna spoločná stopa od −20 do +20. Každý vplyv je zároveň útokom aj obranou. <a href="https://rulespal.com/twilight-struggle/rulebook">zdroj</a></div><div class="hra"><b>Hanamikoji (2 hráči)</b>Sedem gejší je bazén pre obe podmienky (4 gejše alebo 11 šarmu). Gejša, ktorú vyhrá súper, chýba v oboch tvojich cestách. <a href="https://en.doc.boardgamearena.com/Gamehelphanamikoji">zdroj</a></div><div class="hra"><b>Dune: Imperium (Dennis, 2020)</b>Body z konfliktov aj z vplyvu vo frakciách. Spojenectvo frakcie drží hráč s najvyšším vplyvom a súper mu ho môže prebrať. Detail o prebratí je z vlastných vedomostí, neoverené. Hra je pre 1–4 hráčov, pri dvoch hrá tretí automatický protivník (z vlastných vedomostí, neoverené). <a href="https://www.meeplemountain.com/reviews/dune-imperium/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Pri priveľkom bazéne sa cesty nestretnú, pri malom rozhodne prvé získanie (snowball). Watergate sa vyčíta mierna výhoda jednej strany (z vlastných vedomostí, neoverené).</p></div>
+<div><h3>Riziká</h3><p>Na jednom staršom sú dva ukazovatele (marker strachu a reči), čítanie je ťažšie. Keď väzeň aj spojenec vyžadujú vyhratú bitku, cesty splynú: dnes hádku v 80 % vyhrá ten, kto vyhrá aj bitku. Efekt výpožičky (karta bossa so 6 akciami, §10) môže byť silnejší než samotná cesta.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>8 starších je spoločný bazén pre väzňov (strach, §10) aj spojencov (návrh z rozhovoru: reči z hádky → výpožička staršieho → spojenec). Väzeň aj spojenec odchádzajú zo stupnice (prázdne miesto ako dnes pri väzňovi). Pri ⌊L/2⌋ (Druhá liga 2 + 2 z 8) súperia obaja o tých istých starších. Kto si spraví spojenca zo staršieho, ktorý sa súpera bojí na oranžovej, vezme súperovi budúceho väzňa. Reči ležia na staršom ako verejné žetóny (ako dnešné klebety, §9.1), strach ostáva markerom. Starší nesmie byť naraz zajatý aj presvedčený: buď sa reči na staršom v ohrození nerátajú, alebo pokus o zajatie reči zruší (na rozhodnutie).</p>
+<h3>Čo zmerať</h3><p>Koľko starších skončí ako väzeň, spojenec alebo ostane na stupnici. Či hráči berú súperovi cieľ (spojenec zo staršieho, ktorý sa súpera bojí na stupni 2+). Korelácia víťaza hádky a víťaza bitky v kole výpožičky. Podiel výhier spojencami a väzňami.</p>
+</details>
+<details class="mech" id="korist-za-hranicu">
+<summary>Korisť za prvý vstup do zóny (namiesto renty za každé kolo) <small>· 3 zdrojov · <code>korist-za-hranicu</code> · doplnená, pôvodne 2026-10-26</small></summary>
+<p><b>Problém, ktorý rieši:</b> Vplyv, ktorý sa vypláca po každej bitke, je úrok: kto vydesí staršieho skoro, inkasuje ho pri každej ďalšej bitke a mierka „starší vs. bitky“ sa rozíde (v6 príklad: strach 19 špakov, bitky 4).</p>
+<h3>Ako funguje</h3><ol><li>Na stupnici ťahanej oboma hráčmi (tug-of-war) ležia pri zónach jednorazové žetóny koristi.</li><li>Keď marker prvýkrát vstúpi do zóny so žetónom, aktívny hráč žetón vyhodnotí (súper stratí mince / ty dostaneš body) a žetón ide z hry.</li><li>Návrat markera a opätovný vstup už nič nedáva.</li><li>Na konci hry sa raz zaráta pozícia markera (0 / 2 / 5 / 10 VP).</li><li>Marker v hlavnom meste súpera = okamžitá výhra.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>7 Wonders Duel (Bauza, Cathala, 2015, 2 hráči)</b>Vojenská stopa je jediná spoločná stupnica. Žetóny Looting (súper stratí 2 alebo 5 mincí) sa vyhodnotia len pri prvom vstupe do zóny a idú do škatule; body za pozíciu (0/2/5/10) sa rátajú len raz na konci. Hráč rozhoduje, kedy tlačiť: tlak je udalosť s okamžitým účinkom, nie investícia, ktorá úročí. Slabší vo vojsku navyše volí, kto začne ďalší vek. <a href="https://rulespal.com/7-wonders-duel/rulebook">zdroj</a></div><div class="hra"><b>7 Wonders Duel — prečo stopa ťahá oboch</b>Recenzia: stopa dáva obom stály dôvod reagovať; tlačiť znamená brať súperovi mince a body, súper môže tlačiť späť, investícia do vojska chýba inde. <a href="https://bargames101.com/7-wonders-duel/">zdroj</a></div><div class="hra"><b>7 Wonders Duel — podiel náhlych výhier (BGA)</b>Podľa tipov BGA zhruba 20 % partií končí vojenskou prevahou a 20 % vedeckou. Vojenská stopa s rabovaním je hrozba, ktorú hráč na body musí platiť celú partiu. <a href="https://be.doc.boardgamearena.com/Tips_sevenwondersduel">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>V 7WD je vojenská výhra častá pri nepozornom súperovi a hráči ju vnímajú ako „náhlu smrť“ (z vlastných vedomostí, neoverené). Jednorazová korisť sama nebrzdí cestu na kraj stupnice — to robí až dĺžka stupnice a protitlak.</p></div>
+<div><h3>Riziká</h3><p>Zabudnuté žetóny = viac evidencie (web to rieši sám). Ak je korisť príliš malá, strach prestane byť os a hra sa zúži na bitky. Pohoršenie bez limitu (v6) môže v jednej bitke pobrať tri žetóny naraz — treba strop alebo zachovať limit hraníc zón.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Pri stupnici 7 polí (v6) leží pri každej zóne strachu na každej polovici žetón Špak: prvý vstup markera do žltej dá vydesujúcemu 1 špak, do oranžovej 1, do červenej 2 (čísla na zmeranie), žetón ide preč. Po bitke sa už nevypláca „každý starší, ktorý sa ťa bojí“; strach sa zaráta raz po finále podľa polohy (1/2/3). Popolník dostane ohorky pri udalosti, nie každé kolo. Scorecard: na stupnici natlačené tri žetóny na stranu. Výučba: „Kto prvý vystraší, berie špak. Kto ho udrží do konca, berie znova.“</p>
+<h3>Čo zmerať</h3><p>Podiel špakov zo starších vs. z bitiek pri dnešnej v6 a pri koristi; korelácia vedenia po 2. bitke s výhrou partie (snowball); počet žetónov koristi za partiu; frekvencia vydesenia a kolo, v ktorom príde.</p>
+</details>
+<details class="mech" id="trvale-a-docasne-body">
+<summary>Trvalé body za čin, dočasné body za držbu <small>· 5 zdrojov · <code>trvale-a-docasne-body</code> · doplnená, pôvodne 2026-10-26</small></summary>
+<p><b>Problém, ktorý rieši:</b> Keď sa každý bod hneď stane trvalým, vedenie z prvej polovice sa nedá dobehnúť; keď je všetko dočasné, rozhodne len posledný stav (posledná bitka).</p>
+<h3>Ako funguje</h3><ol><li>Body sú dvoch druhov.</li><li>Trvalé dáva čin (vyhratý útok, obeta) a už sa nestratia.</li><li>Dočasné dáva držba (chrám, pyramída, priazeň) a platia, len kým držíš; súper ti ich vezme.</li><li>Víťazný prah (8 / 10) sa ráta zo súčtu oboch.</li><li>Malý most: držba dvoch chrámov na konci kola sa premení na 1 trvalý bod.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Kemet (Bariot, Montiel, 2012)</b>Trvalé body len za vyhratý útok, za obranu nič; chrámy a pyramídy úrovne 4 dávajú dočasné body, ktoré sa dajú stratiť. Armády sa preto tlačia v „preťahovaní, kde nikto nie je v bezpečí“. Hráč rozhoduje: útočiť pre istotu, alebo držať pre stav. <a href="https://islaythedragon.com/featured/i-like-king-tut-and-i-cannot-lie-a-review-of-kemet/">zdroj</a></div><div class="hra"><b>Kemet — zdroje bodov</b>Zoznam trvalých (útoky, dva chrámy, Svätyňa, dlaždice) a dočasných (chrám, pyramída 4) bodov. <a href="https://goonhammer.com/boardhammer-kemet-ta-seti-expansion">zdroj</a></div><div class="hra"><b>Ra (Knizia, 1999)</b>Dlaždice civilizácie a bohov sa na konci epochy zahodia (dočasné), monumenty sa bodujú až na konci hry (trvalé). Hráč váži: istý bod teraz, alebo budovať na koniec. Že sa faraóni držia a bodujú každú epochu, je z vlastných vedomostí, neoverené. <a href="https://en.wikipedia.org/wiki/Ra_(board_game)">zdroj</a></div><div class="hra"><b>Hanamikoji (Nakayama, 2013, 2 hráči)</b>Priazeň gejše (marker) ostáva medzi kolami u toho, kto ju získal; pri remíze sa nepohne a body z nej platia, len kým ju súper nevyhrá späť. Držiteľovi stačí remíza, vyzývateľ musí vyhrať. <a href="https://en.boardgamearena.com/gamepanel?game=hanamikoji">zdroj</a></div><div class="hra"><b>Kemet — útok ako jediný zdroj trvalých bodov</b>Recenzie: za vyhratý útok trvalý bod, za obranu nič, a body sa nedajú získať opevnením za hradbami mesta. Dizajn tak útok zabudoval priamo do skóre a „korytnačka“ nemá ako vyhrať. <a href="https://boardgame.de/reviews/kemet.htm">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Kemet sa pre 2 hráčov hrá horšie ako pre 3–5 (z vlastných vedomostí, neoverené); okamžitý koniec pri prahu môže dať výhru tomu, kto len dočasne dosiahol číslo (Kemet to rieši tým, že sa kontroluje na konci dňa — podľa vydania, viď pravidlá v3.4). Dva druhy bodov sú pojem navyše pre nováčika.</p></div>
+<div><h3>Riziká</h3><p>Ak sa strach ráta len na konci, posledná bitka (prebytok) zase rozhoduje veľa — preto len spolu s koristou za hranicu alebo s medzibodovaním. Dva druhy špakov treba vo výučbe ukázať farbou (ohorok vs. horiaca cigareta). Bonus útočníka môže motivovať úmyselnú prehru (overiť).</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Popolník (trvalé) a stôl starších (dočasné). Trvalé špaky: vyhratá bitka (odohrané Pitky). Kemet navyše odmeňuje len útok: v NA EX je útočník hráč, ktorý prehral minulú bitku, takže „+1 trvalý špak za bitku vyhratú ako útočník“ je zabudovaný návrat do hry bez darčeka. Dočasné: strach starších sa nepripisuje po každej bitke, ukazuje sa ako živý stav a do popolníka padne raz, po finále. Most ako pri dvoch chrámoch: kto má na konci kola aspoň 3 starších v strachu, dostane 1 trvalý špak. Hanamikoji poučenie: pri remíze v posune marker ostáva, nikto ho nevynuluje.</p>
+<h3>Čo zmerať</h3><p>Podiel výhier, keď vedúci po 3. bitke vyhrá partiu (dnes / variant); priemerný rozdiel skóre pred finále; či hráči úmyselne prehrávajú kvôli útočníkovi (bitky prehraté s veľkou rezervou kariet).</p>
+</details>
+<details class="mech" id="ohlasena-vyhra-s-odpovedou">
+<summary>Náhla výhra: ohlásiť, zaplatiť, nechať súpera odpovedať <small>· 6 zdrojov · <code>ohlasena-vyhra-s-odpovedou</code> · doplnená, pôvodne 2026-10-26</small></summary>
+<p><b>Problém, ktorý rieši:</b> Druhá cesta k výhre (vydesenie) dáva vplyvu váhu, ale keď je rýchla a lacná, hra skončí skôr, než sa súper zorientuje; keď je nedosiahnuteľná, nikto ju nehrá.</p>
+<h3>Ako funguje</h3><ol><li>Okrem bodov existuje okamžitá výhra (podmienka na stole alebo prah na jednej stupnici).</li><li>Splnenie nestačí: hráč si ju nárokuje akciou alebo musí stav udržať do ďalšieho kola.</li><li>Nárok je verejný, súper dostane ťah na odpoveď.</li><li>Niekde nárok stojí: kto ide na náhlu výhru, vzdá sa bodov (Root).</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Inis (Bisson, 2016)</b>Tri podmienky výhry; kto splní aspoň jednu, smie si ťahom vziať žetón Pretender a vyhrá na začiatku ďalšieho kola, ak ho iný hráč nedorovná v počte splnených podmienok. Rozhodnutie: kedy sa odhaliť. <a href="https://www.meeplemountain.com/reviews/inis-review-lets-make-a-king/">zdroj</a></div><div class="hra"><b>Root (Wehrle, 2018)</b>Od 10 VP smie hráč aktivovať kartu Dominancie: zíde zo stopy bodov a vyhrá, ak na začiatku svojho ďalšieho ťahu ovláda dané čistinky. Karta je verejná, ostatní ju môžu blokovať. Jeden zdroj uvádza, že Dominancia platí až od 3 hráčov — pri dvoch by teda nebola. <a href="https://www.avclub.com/the-brutally-cute-game-of-root">zdroj</a></div><div class="hra"><b>Twilight Struggle (2 hráči)</b>Jedna spoločná stopa od −20 do +20: kto dosiahne 20, vyhrá hneď; inak sa po 10. kole zúčtuje. Celé skóre je jedno číslo — vždy vidno, kto vedie a o koľko. <a href="https://en.wikipedia.org/wiki/Twilight_Struggle">zdroj</a></div><div class="hra"><b>7 Wonders Duel / Hanamikoji (2 hráči)</b>7WD: konflikt v hlavnom meste súpera = okamžitá výhra. Hanamikoji: 4 gejše alebo 11 bodov šarmu končí hru hneď. Obe držia hrozbu viditeľnú celú hru. <a href="https://en.boardgamearena.com/gamepanel?game=hanamikoji">zdroj</a></div><div class="hra"><b>Root — Law of Root, Víťazstvo (3.3)</b>Presné znenie dominancie: od 10 VP, aktivácia za denného svetla, hráč zíde zo stopy bodov a už body nezbiera. Ohlásený cieľ stojí celý popolník a súper vie presne, čo strážiť. <a href="https://www.therootdatabase.com/law/victory/en/">zdroj</a></div><div class="hra"><b>Inis — pravidlá (Pretender)</b>Tri podmienky (prítomnosť v 6 územiach, 6 svätýň, náčelník nad 6 súperovými klanmi). Splnenie dá len žetón Pretender a výhru až na začiatku ďalšieho kola, ak nikto nemá viac splnených podmienok. <a href="https://gamers-hq.de/media/pdf/e3/87/33/INIS_RULES_EN.pdf">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Okamžité výhry vedú k „zabudol som sa brániť“ prehrám a hráči ich niekedy vnímajú ako antiklimax (z vlastných vedomostí, neoverené). Dominancia v Roote je pri dvoch hráčoch podľa jedného zdroja vypnutá — mechanika je stavaná na koalície viacerých.</p></div>
+<div><h3>Riziká</h3><p>Ďalší pojem a krok; ak je nárok drahý, vydesenie zmizne z hry (dnes je aj tak zriedkavé). Blokovanie rovnosťou môže viesť k pretláčaniu markerov tam a späť (dĺžka).</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>NA EX! má ohlásené vydesenie (§1: polovica starších, udržať do konca ďalšieho kola, odpoveď patronátom). V6 ruší zamknutie a limit Pohoršenia, takže vydesenie zrýchli (spaky.html, časť 4). Poučky: (a) Inis — vydesenie si treba nárokovať ťahom (napr. namiesto patronátu, verejne) a súper ho zablokuje, ak má rovnako vydesených starších; (b) Root — kto ohlási vydesenie, prestane zbierať špaky za bitky (stavia všetko na jednu kartu); (c) Twilight Struggle — ukazovať skóre ako jedno číslo rozdielu (popolník vs. popolník) s ryskou náhlej výhry. Scorecard sa nemení; na stole pribudne žetón Ohlásenie.</p>
+<h3>Čo zmerať</h3><p>Frekvencia ohláseného vydesenia v v6 (bez zamknutia) a kolo, v ktorom príde; podiel ohlásení, ktoré súper odvráti; či hráči vydesenie hrajú zámerne alebo vznikne náhodou.</p>
+</details>
+
+<h2 id="merat">7. Čo zmerať botmi (pre stratéga)</h2>
+<ul>
+<li><b>Dnešný základ:</b> na koľkých starších porazený rozdeľuje Nakladačku (priemer a rozptyl), koľko starších dosiahne stupeň 3 za partiu, korelácia víťaza hádky a víťaza bitky (80 %), P(výhra | finále) 85 %, P(výhra | vedenie pred finále) 63 %.</li>
+<li><b>Podiel výhier podľa cesty:</b> väzni, spojenci, šírka, „Platiť!“ a špaky. Hrubý cieľ podľa 7WD je 20–40 % partií mimo špakov a žiadna cesta pod 10 %.</li>
+<li><b>Matica 3 × 3 povah</b> (bot.ts POVAHY, napr. Útok, Reči, Krčma): každý vrchol nad 55 % proti koristi a pod 45 % proti predátorovi. Žiadna povaha nad 50 % proti obom ostatným, inak je to dominantná stratégia.</li>
+<li><b>Citlivosť:</b> N pre šírku (4/5/6), prah X pre „Platiť!“, ⌊L/2⌋ zvlášť v Tretej lige (1 väzeň).</li>
+<li><b>Dĺžka a tón:</b> priemerný počet kôl, podiel partií skončených pred finále, koľko cigariet a kariet minie obranca na brzdenie.</li>
+</ul>
+
+<footer>NA EX! · Študent · 1. 11. 2026 · Zdroje sú pri každej hre. Údaje bez zdroja sú označené „z vlastných vedomostí, neoverené“. Merania NA EX! pochádzajú zo zadania (60 partií botov, Druhá liga, 2026-11-01). Niektoré stránky (sirlin.net, wikipedia.org, medium.com) sa v tomto prostredí nedali otvoriť, ich obsah je prevzatý z výsledkov vyhľadávania.</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  // filter tabuľky hier
+  var tl = document.querySelectorAll(".filtre[aria-label='Filter hier'] button");
+  tl.forEach(function (b) { b.addEventListener("click", function () {
+    tl.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    var f = b.getAttribute("data-f");
+    document.querySelectorAll("#hry-tab tbody tr").forEach(function (tr) {
+      tr.hidden = !!f && tr.getAttribute("data-f").split(" ").indexOf(f) < 0;
+    });
+  }); });
+
+  // kandidáti na trojuholník
+  var T = [
+    { id: "T1", nazov: "T1 Strach – Krčma – Reči (návrh Michala)", v: ["Strach\n(väzni ⌊L/2⌋)", "Krčma\n(finále)", "Reči\n(spojenci ⌊L/2⌋)"],
+      popis: "Tri vrcholy z rozhovoru: väzni ⌊L/2⌋ (§10), špaky po finále (§14b), spojenci ⌊L/2⌋ cez reči z hádky a výpožičku staršieho. Všetci berú z tých istých 8 starších.",
+      s: [
+        { z: 0, k: 1, sila: "slaba", t: "Strach > Krčma: motor prehráva skoro (pas za cigarety §6, cigarety za Nakladačku §9.4), takže súper by mal tlačiť starších na červenú. Dnes šípka chýba (0/60), lebo porazený rozdeľuje (§9.4 bod 2). Po oprave (víťaz riadi časť tlaku, alebo vidlička T2) bude silná." },
+        { z: 2, k: 0, sila: "stredna", t: "Reči > Strach: spojenec odchádza zo stupnice a ubúda zajateľných, hádka na kolo vezme útočníkovi Bitkára (§9.1), Viera tlmí tuhé (§9.3)." },
+        { z: 1, k: 2, sila: "stredna", t: "Krčma > Reči: priazne z hádky platia len do konca kola (§9.1), karty motora ostávajú natrvalo. Vo finále má motor až 5 Pitiek a väčšiu ruku, takže vyhrá aj hádku. Viera ruší Povery 1 : 1." }
+      ],
+      pozn: "Kľúč: spojenca musí robiť vyhratá hádka, nie bitka, inak Reči splynú so Strachom. Mechaniky: spolocny-bazen-dvoch-ciest, zaklad-a-dve-nahle-smrti." },
+    { id: "T2", nazov: "T2 Vidlička strachu (Schotten Totten, Hanamikoji)", v: ["Hĺbka\n(väzeň, stupeň 3)", "Krčma\n(finále)", "Šírka\n(N udržaných strachov)"],
+      popis: "Žiadny nový podsystém. Popri väzňovi pribudne druhá podmienka: na konci kola sa ťa na udržaných stupňoch bojí aspoň N starších (§10). Porazený musí rozdeliť celú Nakladačku (§9.4 bod 5): keď ju sústredí, hrozí hĺbka, keď ju rozloží, hrozí šírka.",
+      s: [
+        { z: 2, k: 1, sila: "silna", t: "Šírka > Krčma: dnešný vzorec motora (prehrať, rozložiť Nakladačku na veľa starších a zobrať cigaretu za každého, §9.4) priamo kŕmi súperovu šírku." },
+        { z: 0, k: 1, sila: "stredna", t: "Hĺbka > Krčma: keď sa motor bráni šírke sústredením, staršieho pošle na červenú a súper skúsi zajatie (§5, §10)." },
+        { z: 0, k: 2, sila: "dilema", t: "Hĺbka a šírka sa nebijú, robia vidličku pre porazeného. Obranca nemôže strážiť oboje naraz." },
+        { z: 1, k: 0, sila: "stredna", t: "Krčma vyhrá, keď sú bitky vyrovnané a Nakladačky malé: hrozby sa nenaplnia a rozhodne finále." }
+      ],
+      pozn: "Najlacnejší zásah do pravidiel. Treba zmerať N (4/5/6) a či sa väzni rátajú do šírky. Mechanika: vidlicka-sirka-hlbka." },
+    { id: "T3", nazov: "T3 „Platiť!“ – Krčma – Obrana (Dominion rush, Flores)", v: ["„Platiť!“\n(vedúci skráti partiu)", "Krčma\n(finále)", "Obrana\n(Viera, hádka)"],
+      popis: "Hráč, ktorý vedie o X špakov (alebo má viac väzňov), smie na začiatku kola zavolať „Platiť!“ a toto kolo je finále (§14b). Klasický cyklus aggro > greed > control > aggro.",
+      s: [
+        { z: 0, k: 1, sila: "silna", t: "„Platiť!“ > Krčma: motor nedostane všetky kolá a jeho najväčšie kolo príde skôr, keď je slabší (Dominion: rush bije engine)." },
+        { z: 2, k: 0, sila: "stredna", t: "Obrana > „Platiť!“: Viera (§9.3) a hádka (§9.1) držia bitky tesné. Bez vedenia o X sa volať nedá, remízy idú na sekeru (§9.4)." },
+        { z: 1, k: 2, sila: "silna", t: "Krčma > Obrana: obrana nič nebuduje a v dlhej partii prehrá finále, čo je dnešný stav." }
+      ],
+      pozn: "Jedno nové pravidlo, žiadna nová evidencia. Riziko: kratšie partie a snowball z náhodného prvého útočníka (§3). Mechanika: utocnik-ovlada-hodiny." },
+    { id: "T4", nazov: "T4 Povesť – Strach – Krčma (7 Wonders Duel)", v: ["Povesť\n(stopa rečí, rabovanie)", "Krčma\n(finále)", "Strach\n(väzni)"],
+      popis: "Hádka posúva jeden spoločný žetón Povesti medzi hráčmi. Pri prvom vstupe do zóny súper stratí cigarety (korisť), na kraji je výhra („vyhnali ho z dediny“).",
+      s: [
+        { z: 0, k: 1, sila: "silna", t: "Povesť > Krčma: rabovanie berie motoru cigarety, z ktorých žije (7WD: vojsko rabuje mince)." },
+        { z: 2, k: 0, sila: "stredna", t: "Strach > Povesť: kto hrá mäkké, má menej tuhého, prehráva bitky a jeho starší idú na červenú." },
+        { z: 1, k: 2, sila: "slaba", t: "Krčma > Strach: dnes chýba. Motor nemá ako premeniť cigarety na obranu starších. Precedens je Kšeft Predsedovej vily (2 cigarety = 1 pole, §15), ale len vo finále. Možnosť: Kšeft „runda pre staršieho“, ktorý upokojí staršieho za cigarety s cenou podľa zóny. Prebytok cigariet by tak mal kam ísť (CLAUDE.md, žiadne stropy)." }
+      ],
+      pozn: "Mení výstup hádky (v10) a pridáva deviatu stupnicu. Mechaniky: korist-za-hranicu, utok-na-ekonomiku-vedlajsim-ucinkom." },
+    { id: "T5", nazov: "T5 Klebety – Útok – Krčma (Dominion Witch)", v: ["Klebety\n(Kliatba do balíčka)", "Krčma\n(finále)", "Útok\n(tuhé, väzni)"],
+      popis: "Víťaz hádky dá porazenému kartu Klebeta (Kliatba, §11) do odhadzovacieho balíčka. Dá sa priznať alebo zahodiť Víziou (§2).",
+      s: [
+        { z: 0, k: 1, sila: "stredna", t: "Klebety > Krčma: zahlcujú balíček motora a nútia ho míňať Vízie na čistenie namiesto kariet." },
+        { z: 2, k: 0, sila: "stredna", t: "Útok > Klebety: kto hrá na hádku, má menej tuhého a stráca bitky aj starších." },
+        { z: 1, k: 2, sila: "slaba", t: "Krčma > Útok: dnes chýba, rovnako ako v T4. Treba spôsob, ako premeniť zdroje motora na obranu starších." }
+      ],
+      pozn: "Prekrýva sa s Absťákom (§8), ktorý je tiež mŕtva karta zahoditeľná Víziou. Mechanika: utok-na-ekonomiku-vedlajsim-ucinkom." },
+    { id: "T6", nazov: "T6 Ohlásený cieľ (Root Dominancia, Inis Pretender), vrstva nad T1 a T2", v: ["Ohlásim\nväzňov", "Zbieram\nšpaky", "Ohlásim\nspojencov"],
+      popis: "Kto chce vyhrať väzňami alebo spojencami, ohlási to na začiatku kola. Od tej chvíle mu za bitky nepribúdajú špaky (Root: zíde zo stopy) a za to mu stačí o jedného menej, alebo sa náhla výhra inak spustiť nedá.",
+      s: [
+        { z: 0, k: 1, sila: "stredna", t: "Ohlásenie je verejný záväzok: súper vie, čo strážiť (Inis: výhra až v ďalšom kole)." },
+        { z: 2, k: 1, sila: "stredna", t: "Rovnako pre spojencov." },
+        { z: 0, k: 2, sila: "dilema", t: "Ohlásiť smie len jednu cestu, takže voľba je rozhodnutie, nie súčet." }
+      ],
+      pozn: "Nevytvára šípky, robí hrozby čitateľnými a dáva im cenu. Mechanika: ohlasena-vyhra-s-odpovedou (doplnená)." }
+  ];
+  var NS = "http://www.w3.org/2000/svg";
+  var P = [[190, 52], [62, 268], [318, 268]];
+  var svg = document.getElementById("troj-svg");
+  function el(n, a) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); return e; }
+  function kresli(t) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var defs = el("defs", {});
+    ["silna", "stredna", "slaba"].forEach(function (c) {
+      var m = el("marker", { id: "h-" + c, viewBox: "0 0 10 10", refX: "9", refY: "5", markerWidth: "7", markerHeight: "7", orient: "auto-start-reverse" });
+      var p = el("path", { d: "M0,0 L10,5 L0,10 z", "class": c });
+      p.style.fill = getComputedStyle(document.documentElement).getPropertyValue(c === "silna" ? "--dobre" : c === "stredna" ? "--stred" : "--zle");
+      m.appendChild(p); defs.appendChild(m);
+    });
+    svg.appendChild(defs);
+    t.s.forEach(function (s, i) {
+      var a = P[s.z], b = P[s.k];
+      var dx = b[0] - a[0], dy = b[1] - a[1], d = Math.sqrt(dx * dx + dy * dy);
+      var ux = dx / d, uy = dy / d, r = 48;
+      // dve šípky medzi tými istými vrcholmi sa odsunú bokom
+      var dvoj = t.s.some(function (o, j) { return j !== i && ((o.z === s.k && o.k === s.z) || (o.z === s.z && o.k === s.k)); });
+      var off = dvoj ? (s.z < s.k ? 9 : -9) : 0;
+      var nx = -uy * off, ny = ux * off;
+      var l = el("line", { x1: a[0] + ux * r + nx, y1: a[1] + uy * r + ny, x2: b[0] - ux * r + nx, y2: b[1] - uy * r + ny, "class": s.sila, "stroke-width": "3" });
+      if (s.sila !== "dilema") l.setAttribute("marker-end", "url(#h-" + s.sila + ")");
+      var tt = el("title", {}); tt.textContent = s.t; l.appendChild(tt);
+      svg.appendChild(l);
+    });
+    t.v.forEach(function (v, i) {
+      svg.appendChild(el("circle", { cx: P[i][0], cy: P[i][1], r: 44, "class": "uzol" }));
+      var riadky = v.split("\n");
+      riadky.forEach(function (rz, j) {
+        var tx = el("text", { x: P[i][0], y: P[i][1] + (j - (riadky.length - 1) / 2) * 15 + 4, "text-anchor": "middle" });
+        if (j > 0) tx.setAttribute("style", "font-weight:400;font-size:10.5px");
+        tx.textContent = rz; svg.appendChild(tx);
+      });
+    });
+    document.getElementById("troj-nazov").textContent = t.nazov;
+    document.getElementById("troj-popis").textContent = t.popis;
+    var ul = document.getElementById("troj-sipky"); ul.innerHTML = "";
+    var meno = { silna: "silná", stredna: "stredná", slaba: "slabá / chýba", dilema: "dilema" };
+    t.s.forEach(function (s) {
+      var li = document.createElement("li"), b = document.createElement("b");
+      b.className = s.sila === "silna" ? "n" : s.sila === "stredna" ? "s" : s.sila === "slaba" ? "v" : "";
+      b.textContent = "[" + meno[s.sila] + "] "; li.appendChild(b); li.appendChild(document.createTextNode(s.t)); ul.appendChild(li);
+    });
+    document.getElementById("troj-pozn").textContent = t.pozn;
+  }
+  var box = document.getElementById("troj-tl");
+  T.forEach(function (t, i) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = t.id;
+    b.title = t.nazov; b.setAttribute("aria-pressed", String(i === 0));
+    b.addEventListener("click", function () {
+      box.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      kresli(t);
+    });
+    box.appendChild(b);
+  });
+  kresli(T[0]);
+
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) { a.addEventListener("click", function () {
+    var e = document.getElementById(a.getAttribute("href").slice(1)); if (e && e.tagName === "DETAILS") e.open = true; }); });
+  if (location.hash) { var e = document.getElementById(location.hash.slice(1)); if (e && e.tagName === "DETAILS") { e.open = true; e.scrollIntoView(); } }
+})();
+</script>
+</body>
+</html>
