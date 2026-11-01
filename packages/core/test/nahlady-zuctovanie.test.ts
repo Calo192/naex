@@ -23,7 +23,6 @@ import {
   mozeHrat,
   nahladNaexNaKartu,
   naTahu,
-  pohorseniaVBitke,
   poskodenieBitky,
   prebytokNaRozdelenie,
   rngInt,
@@ -103,15 +102,15 @@ function poPitke(s0: GameState): GameState {
 }
 
 /**
- * Bitka po Pitke po prvé Pohoršenie alebo po poškodenie: Kar nič nezahodí, Benzínka
- * a Exekútor prvou legálnou možnosťou — zapamätá si, ktoré padli. Pohoršenia hýbu
- * markermi, a tým priazňou (Bitkár, Veriaci) podľa voľby hráča — pred nimi je stôl
+ * Bitka po Pitke po rozdelenie hádky alebo po poškodenie: Kar nič nezahodí, Benzínka
+ * a Exekútor prvou legálnou možnosťou — zapamätá si, ktoré padli. Hádka (v10) hýbe
+ * priazňou (Bitkár, Veriaci, Abstinent) podľa voľby víťaza — pred ňou je stôl
  * taký, aký náhľad sľubuje.
  */
 function doPoskodenia(s0: GameState): { readonly s: GameState; readonly rozhodnutia: ReadonlySet<string> } {
   let s = s0;
   const rozhodnutia = new Set<string>();
-  const caka = (t: GameState): boolean => (t.bitkaStav?.krok === "pohorsenie" || t.bitkaStav?.krok === "povery") && t.bitkaStav.caka !== null;
+  const caka = (t: GameState): boolean => t.bitkaStav?.krok === "hadka" && t.bitkaStav.caka !== null;
   for (let i = 0; i < 80 && s.faza === "bitka" && s.bitkaStav?.damage == null && !caka(s) && s.koniec === null; i++) {
     const q = naTahu(s);
     if (q === null) break;
@@ -162,11 +161,11 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         for (const q of [0, 1] as const) {
           expect(n.dopady[q].cigarety, `${kde}: cigarety hráča ${q}`).toBe(s1.hraci[q].cigarety - bez.hraci[q].cigarety);
           expect(n.kliatby[q].cirhozy + n.kliatby[q].dalejCirhozy, `${kde}: Cirhózy hráča ${q}`).toBe(s1.cirhozyVKole[q] - bez.cirhozyVKole[q]);
-          // Bitka ráta Pohoršenia zo svojich súčtov (nastavSumy) — tým istým výpočtom ako náhľad.
-          const pA = pohorseniaVBitke(data, s1, b1.sums)[q];
-          const pB = pohorseniaVBitke(data, bez, b0.sums)[q];
-          expect(n.dopady[q].pohorseniaSpolu, `${kde}: Pohoršenia hráča ${q}`).toBe(pA);
-          expect(n.dopady[q].pohorsenia, `${kde}: Pohoršenia navyše hráča ${q}`).toBe(pA - pB);
+          // Bitka ráta mäkké zo svojich súčtov (hádka v10) — tým istým výpočtom ako náhľad.
+          const mA = poskodenieBitky(data, s1, b1.sums).makke[q];
+          const mB = poskodenieBitky(data, bez, b0.sums).makke[q];
+          expect(n.dopady[q].makkeSpolu, `${kde}: mäkké hráča ${q}`).toBe(mA);
+          expect(n.dopady[q].makke, `${kde}: mäkké navyše hráča ${q}`).toBe(mA - mB);
         }
         porovnane++;
         // Bitka až po poškodenie.
@@ -182,11 +181,9 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
           expect(dlhy(stolPriPoskodeni(data, zaklad, 0), q), `${kde}: Dlhy bez NA EX, hráč ${q}`).toBe(dlhy(bezBitka.s, q));
           // Dlhy po bitke (po exekúcii, ktorá ide od 2026-10-28 až po poškodení) overuje test výhľadu Dlhov.
         }
-        // Pohoršenia, ktoré bitka hráčovi pridelila (prvý, kto ich má, ešte nezačal).
-        for (const q of [0, 1] as const) {
-          if (dA.damage === null && dA.pohorsenieZostava[q] > 0) expect(n.dopady[q].pohorseniaSpolu, `${kde}: Pohoršenia v bitke, hráč ${q}`).toBe(dA.pohorsenieZostava[q]);
-        }
-        // Poškodenie: hotové z bitky, alebo pred Pohoršeniami tým istým výpočtom ako vyhodnotPoskodenie.
+        // Hádka, ktorú bitka vyhodnotila: mäkké z náhľadu.
+        if (dA.hadka !== undefined) expect([n.dopady[0].makkeSpolu, n.dopady[1].makkeSpolu], `${kde}: mäkké v hádke`).toEqual(dA.hadka.makke);
+        // Poškodenie: hotové z bitky, alebo pred hádkou tým istým výpočtom ako vyhodnotPoskodenie.
         const poskodenie = (t: GameState): DamageResult => t.bitkaStav?.damage ?? poskodenieBitky(data, t, t.bitkaStav!.sums);
         const pA = poskodenie(sNaex.s);
         const pB = poskodenie(bezBitka.s);

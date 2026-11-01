@@ -29,7 +29,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     exekutor: [0, 0],
-    pohorsenieZostava: [0, 0],
+   
     damage: null,
     vitaz: null,
     prebytokDrzi: null,
@@ -68,7 +68,7 @@ function predPoskodenim(o: {
     pitkaCislo: o.pitky ?? 2,
     pitkyCelkom: o.pitky ?? 2,
     starsi: s0.starsi.map((e) => ({ ...e, marker: 3 as MarkerPos })),
-    bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0], sums: o.sums }),
+    bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [1, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] }, sums: o.sums }),
   };
   return o.uprav === undefined ? s : o.uprav(s);
 }
@@ -79,8 +79,8 @@ const lokalita = (s: GameState, defId: string): GameState["ciel"] => ({
 });
 const FINALE: GameState["ciel"] = { typ: "finale", lokalita: inst("krcma") };
 
-/** Posledné Pohoršenie hráča 0 na prvého staršieho k súperovi (k hráčovi 1) — strach z hráča 0. */
-const pohorsenie = (s: GameState) => apply(data, s, { type: "pohorsenie", elderId: s.starsi[0]!.elderId }, 0);
+/** Hráč 0 rozdelí hádku za 1 na prvého staršieho (v10) — marker sa nehýbe, bitka sa vyhodnotí. */
+const pohorsenie = (s: GameState) => apply(data, s, { type: "hadka", elderId: s.starsi[0]!.elderId }, 0);
 
 describe("v6 bod 1–5: špaky za bitku a za starších, poradie bitky", () => {
   const s0 = setupGame(data, 5);

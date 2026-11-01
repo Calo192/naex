@@ -571,8 +571,8 @@ export function popisKroku(data: GameData, state: GameState, c: Command): PopisK
         return `vyber ${nazov}`;
       case "prebytok":
         return `posuň Nakladačkou staršieho „${menoStarsieho(data, state, c.elderId)}“`;
-      case "pohorsenie":
-        return `posuň Pohoršením staršieho „${menoStarsieho(data, state, c.elderId)}“`;
+      case "hadka":
+        return `daj hádkou priazeň staršieho „${menoStarsieho(data, state, c.elderId)}“ k sebe`;
       case "pokus":
         return `skús zajať staršieho „${menoStarsieho(data, state, c.elderId)}“`;
       case "bezPokusu":

@@ -33,14 +33,14 @@ describe("§10 cena posunu markera (v8.2)", () => {
   });
 });
 
-describe("§9.2 Pohoršenia, ktoré na žiadny posun nestačia, prepadnú (v8.2)", () => {
+describe("§9 hádka, ktorá na žiadny posun nestačí, prepadne (v10; do v9 Pohoršenia)", () => {
   function bitka(b: Partial<BitkaStav>): BitkaStav {
     return {
-      krok: "pohorsenie",
+      krok: "hadka",
       caka: 0,
       sums: [{}, {}],
       exekutorHotovy: [true, true],
-      pohorsenieZostava: [0, 0],
+      hadka: { makke: [2, 0], vitaz: 0, velkost: 2, zostava: 2, prepadlo: 0, posuny: [] },
       exekutor: [0, 0],
       damage: null,
       vitaz: null,
@@ -55,7 +55,7 @@ describe("§9.2 Pohoršenia, ktoré na žiadny posun nestačia, prepadnú (v8.2)
 
   it("zvyšok 1 pri markeroch mimo stredu prepadne a log to povie", () => {
     const s0 = setupGame(data, 21);
-    // Hráč 0 posunie jediného staršieho v strede (1 bod) — ďalšie pole stojí 2, zvyšok 1 nevyjde nikde.
+    // Víťaz hádky posunie priazeň jediného staršieho v strede (1 bod) — ďalšie pole stojí 2, zvyšok 1 nevyjde nikde.
     const s: GameState = {
       ...s0,
       faza: "bitka",
@@ -65,11 +65,12 @@ describe("§9.2 Pohoršenia, ktoré na žiadny posun nestačia, prepadnú (v8.2)
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
       starsi: s0.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 3 : i % 2 === 0 ? 1 : 5) as MarkerPos })),
-      bitkaStav: bitka({ pohorsenieZostava: [2, 0] }),
+      bitkaStav: bitka({ }),
     };
-    const { state, events } = apply(data, s, { type: "pohorsenie", elderId: s.starsi[0]!.elderId }, 0);
-    expect(state.starsi[0]!.marker).toBe(4);
-    expect(events.some((e) => e.type === "log" && e.text.includes("stráca 1 Pohoršenie"))).toBe(true);
+    const { state, events } = apply(data, s, { type: "hadka", elderId: s.starsi[0]!.elderId }, 0);
+    // Marker sa nehýbe; priazeň do konca kola je hráča 0 v sile 1 (klebety +1 k hráčovi 0).
+    expect(state.starsi.map((e) => e.marker)).toEqual(s.starsi.map((e) => e.marker));
+    expect(events.some((e) => e.type === "log" && e.text.includes("Hádka 1 prepadla"))).toBe(true);
   });
 });
 

@@ -27,7 +27,7 @@ vo feedback.md.
 
 
 ### jano-3 · Keď sa blíži finále, nechávam si aspoň 3 cigarety a 3 karty v ruke (neminiem všetko na pokus o zajatie či Záverečnú v predposlednom kole), lebo vo finále víťaz dostane 1 špak za každý bod Nakladačky (§9.4, §14b) a hráč bez cigariet a kariet nemá čím položiť prvé karty ani zamknúť kraj.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -46,7 +46,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §16 Noviny, §9.4 (remíza: Absťáky, potom Dlhy), §11. P2 finále: Jano vyhral tuhé 6 : 6 na Absťáky, ale Eva mala v Dedičstve Noviny a Jano 8 priznaných Dlhov proti jej 0 → špaky za bitku (10) šli Eve, 12 : 24; P2 K5 tuhé 4 : 4 prehral Jano na Dlhy 1 : 0.
 
 ### jano-5 · Keď som útočník a mám cigaretu, položím Záverečnú (aj po Vypiť: [vypiť, silná karta, Záverečná]) na koniec súperovho kraja, v ktorom potrebujem prevahu alebo hranu, lebo Záverečná tú stranu zablokuje (za ňu sa nedá priložiť ani odpovedať), súper ju do bitky nedoplní a ja v Zhromaždení končím bez straty ťahu.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 1
 - vyvrátenia: 0

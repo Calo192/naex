@@ -65,14 +65,15 @@ describe("posun markera", () => {
         if (posun.zdroj === "zajatie") continue;
         // Pri prebytku je „kto“ držiteľ — rozdeľuje ho od v8 jeho súper (spravidla porazený).
         expect(posun.kto).toBe(k.cmd.type === "prebytok" ? k.pred.bitkaStav?.prebytokDrzi : k.hrac);
-        const zdroj = k.cmd.type === "pohorsenie" ? "pohorsenie" : k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
+        const zdroj = k.cmd.type === "prebytok" ? "prebytok" : k.cmd.type === "kseft" ? "kseft" : k.cmd.type === "kapybara" ? "nastup" : null;
         expect(posun.zdroj).toBe(zdroj);
-        // v8.2: Pohoršenie aj prebytok posunú marker naraz o toľko polí, na koľko stačia body.
+        // v8.2: Nakladačka posunie marker naraz o toľko polí, na koľko stačia body (hádka v10 markerom nehýbe).
         if (posun.zdroj === "kseft" || posun.zdroj === "nastup") expect(Math.abs(posun.na - posun.z)).toBe(1);
       }
     }
     // kseft = Predsedova vila (v7, len finále na nej).
-    for (const z of ["pohorsenie", "prebytok"]) expect(zdroje.has(z)).toBe(true);
+    expect(zdroje.has("prebytok")).toBe(true);
+    expect(zdroje.has("pohorsenie")).toBe(false);
   });
 
   it("stopa drží do konca Zhromaždenia po bitke a viewFor ju posiela obom", () => {
@@ -94,7 +95,7 @@ describe("posun markera", () => {
   it("log posunu menuje staršieho a stupeň s farbou, nie id (pojmy v8.3)", () => {
     let videl = 0;
     for (const k of partie(SEEDY.slice(0, 3))) {
-      if (k.cmd.type !== "pohorsenie" && k.cmd.type !== "prebytok") continue;
+      if (k.cmd.type !== "prebytok") continue;
       const id = k.cmd.elderId;
       const log = k.events.flatMap((e) => (e.type === "log" && /^(Pohoršenie|Nakladačka) \(hráč [12], [^)]+\): /.test(e.text) ? [e.text] : []));
       expect(log).toHaveLength(1);
@@ -111,7 +112,7 @@ describe("posun markera", () => {
     const stav = ["pokojný", "znepokojený", "vystrašený", "vydesený"];
     let klesla = 0;
     for (const k of partie([...SEEDY, 55, 89, 144, 233, 377, 610])) {
-      if (k.cmd.type !== "pohorsenie" && k.cmd.type !== "prebytok") continue;
+      if (k.cmd.type !== "prebytok") continue;
       const id = k.cmd.elderId;
       const z = k.pred.starsi.find((e) => e.elderId === id)?.marker as number;
       const na = k.po.starsi.find((e) => e.elderId === id)?.marker as number;

@@ -2,8 +2,8 @@
 // Línia starších, lupa, dlaždice v baroch aj titulok stupnice skladajú vety o priazni, strachu
 // a posunoch odtiaľto — keď sa zmení, kedy a koľko starší platí za strach, mení sa len tu.
 
-import type { ElderState, Favour, Klebety, PlayerId, PosunMarkera } from "@naex/core";
-import { NAZVY_ZON, STAV_STARSIEHO, ucinnaPriazen } from "@naex/core";
+import type { Favour, PosunMarkera } from "@naex/core";
+import { NAZVY_ZON, STAV_STARSIEHO } from "@naex/core";
 import { UCINOK_KRATKO } from "./Scorecard.tsx";
 
 export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
@@ -84,20 +84,9 @@ export function stitokStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdr
  * Názov kroku rozdeľovania na stole (bublina, línia starších) — na jednom mieste. Prebytok
  * poškodenia sa hráčovi volá Nakladačka (Michal 2026-10-30); v kóde ostáva „prebytok“.
  */
-export const NAZOV_DELENIA = { pohorsenie: "Pohoršenie", prebytok: "Nakladačka" } as const;
+export const NAZOV_DELENIA = { hadka: "Hádka", prebytok: "Nakladačka" } as const;
 
-/**
- * Náhľad Povery na staršom (v8.3 „Výpožička priazne“): priazeň v tomto kole pred a po —
- * marker sa nehýbe, strach ani udržanie sa nemenia.
- */
-export function textPovery(elder: Pick<ElderState, "marker" | "elderId">, ja: PlayerId, klebety: Klebety | undefined, menoSupera: string): string {
-  const kto = (u: { readonly hrac: PlayerId | null; readonly sila: number }): string => (u.hrac === null ? "nikto" : `${u.hrac === ja ? "ty" : menoSupera} +${u.sila}`);
-  const pred = ucinnaPriazen(elder, klebety);
-  const po = ucinnaPriazen(elder, { ...klebety, [elder.elderId]: (klebety?.[elder.elderId] ?? 0) + (ja === 0 ? 1 : -1) });
-  return `Povera: priazeň v tomto kole ${kto(pred)} → ${kto(po)} (marker sa nehýbe)`;
-}
-
-/** Cena posunu markera o pole (v8.2, Michal 2026-10-30) — Pohoršenie aj prebytok. */
+/** Cena posunu o pole (v8.2, Michal 2026-10-30) — Nakladačka aj hádka (v10). */
 export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4";
 
 /**
@@ -108,4 +97,4 @@ export const POPIS_STUPNICE =
   "Tvoja polovica stupnice je vždy vľavo, súperova vpravo. Stupne od stredu: 0 sivý stred (pokojný), 1 žltá (znepokojený), 2 oranžová (vystrašený), 3 červená (vydesený). " +
   "Priazeň má ten, na koho polovici marker leží — sila = stupeň (+1 / +2 / +3). " +
   PRAVIDLO_STRACHU +
-  ` Posúva ho Nakladačka po bitke a Pohoršenie — od seba (desíš) alebo k sebe (upokojuješ); ${CENA_POLA}.`;
+  ` Marker posúva Nakladačka po bitke (${CENA_POLA}); hádka (v10) mení len silu priazne do konca kola.`;

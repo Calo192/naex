@@ -997,13 +997,16 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
     if (sila !== undefined) stav.push(`${hodnota} × ${sila} = ${hodnota * sila} tuhého poškodenia`);
     if (a === "Viera") {
       stav.push(`hodnota jednej Viery ${rozpis.hodnotaViery}`);
-      if (zrusene > 0) stav.push(`${zrusene} zrušila súperova Povera`);
+      if (zrusene > 0) stav.push(`${zrusene} minutá na súperove Povery`);
+      if (rozpis.veriaciPo !== rozpis.veriaciPred) stav.push(`Veriaci: pred hádkou ${rozpis.veriaciPred}, po hádke ${rozpis.veriaciPo}`);
     }
     if (a === "Povera") {
       if (ignorovana > 0) stav.push(`${ignorovana} ignoruje súperov Farár`);
       if (zrusene > 0) stav.push(`${zrusene} zrušila súperova Viera`);
-      stav.push(`zvyšné ${rozpis.zvysnaPovera} v bitke posunú silu priazní o stupeň k tebe (na toto kolo)`);
+      stav.push(`zvyšné ${rozpis.zvysnaPovera} = ${rozpis.zvysnaPovera * rozpis.silaPovery} mäkké do hádky`);
     }
+    // Hádka (v10): Pohoršenie je 2 mäkké, Viera ho nezruší.
+    if (a === "Pohoršenie") stav.push(`${hodnota} × 2 = ${hodnota * 2} mäkké do hádky`);
     dlazdice.push(
       <Dlazdica
         key={a}
@@ -1075,7 +1078,7 @@ function StranaBitky({
           </span>
         ))}
         <span className="tip-stav">
-          Rozdiel tuhého je Nakladačka, drží ju víťaz (Povery od v8.3 poškodenie nedávajú — posúvajú priazne). Pri
+          Rozdiel tuhého je Nakladačka, drží ju víťaz (Pohoršenia a Povery sú mäkké — rozhodujú len hádku, v10). Pri
           rovnakom tuhom vyhrá, kto má menej Absťákov, potom menej priznaných Dlhov; inak idú špaky na sekeru.
         </span>
       </>
@@ -1157,8 +1160,8 @@ export interface PriazenVOdhade {
 
 export interface HrozbaBitky {
   readonly kto: "ja" | "su";
-  /** NA EX z kariet na stole (predvolené), rozsah nepridelených Pohoršení, alebo kliatby z NA EX (#38 B). */
-  readonly zdroj?: "naex" | "pohorsenia" | "kliatby";
+  /** NA EX z kariet na stole (predvolené), rozsah nerozdelenej hádky (v10), alebo kliatby z NA EX (#38 B). */
+  readonly zdroj?: "naex" | "hadka" | "kliatby";
   /** Krátko do riadku bitky: „Súper ešte môže: tuhé 0 : 8“. */
   readonly kratko: string;
   /** Najkratšie, keď hrozbu majú obaja a idú do jedného riadku: „súper až 0 : 8“. */
@@ -1200,7 +1203,7 @@ function RiadkyHrozby({
   if (!jedenRiadok) return <>{hrozby.map((h) => cast(h, h.kratko))}</>;
   return (
     <span className="hrozba-bitky-riadok" data-vyucba="hrozba" title={hrozby.map((h) => h.cele).join("\n")}>
-      {hrozby[0]?.zdroj === "pohorsenia" ? "" : "ešte môže: "}
+      {hrozby[0]?.zdroj === "hadka" ? "" : "ešte môže: "}
       {hrozby.map((h, i) => (
         <span key={klucHrozby(h)}>
           {i > 0 && " · "}
@@ -1546,7 +1549,7 @@ export function PriebehKola({
           Rozdiel tuhého je Nakladačka: drží ju víťaz, starších vyberá porazený (vo finále sa nerozdeľuje, víťaz za ňu dostane špaky 1 : 1). Strach starších platí na
           konci kola za stupne udržané od minulého kola — každému, koho sa boja.
           <span className="tip-riadok">
-            Potom Exekútor, Pohoršenie, Nakladačka… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole
+            Najprv hádka (mäkké), potom poškodenie, Exekútor, Nakladačka… a každý si dobere {pocet(KONSTANTY.KARTY_PO_BITKE, "kartu", "karty", "kariet")}. Porazený je v ďalšom kole
             útočník.
           </span>
         </>

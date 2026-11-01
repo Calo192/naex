@@ -5,14 +5,14 @@
 // z verejných vecí, takže to isté smie ukázať web aj klient agentov.
 
 import type { BattleOutcome, DamageResult } from "./battle.ts";
-import { battleOutcome } from "./battle.ts";
+import { battleOutcome, vysledokHadky } from "./battle.ts";
 import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
 import { naexZaPitku } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
-import { lineState, naexCieleVLinii, pohorseniaVBitke, poskodenieBitky, stranyBitky } from "./engine.ts";
-import type { ElderState, MarkerPos } from "./elders.ts";
-import { MARKER_KRAJ, MARKER_STRED, cenaPosunuOPoli, telefonHraca } from "./elders.ts";
+import { lineState, naexCieleVLinii, poskodenieBitky, stranyBitky } from "./engine.ts";
+import type { ElderState, Klebety } from "./elders.ts";
+import { MARKER_KRAJ, cenaPosunuOPoli, polohaPriazne } from "./elders.ts";
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
@@ -92,93 +92,95 @@ export function hrozbaNaex(
 
 
 /**
- * Rozsah nepridelených Pohoršení (Michal 2026-10-27 „ukázať rozsah“, playtest
- * 20261027-105422): odhad bitky ráta s markermi, ako stoja, no Pohoršenia sa
- * prideľujú až v bitke a priazeň (Bitkár, Veriaci) mení
- * poškodenie hneď. Všetko z verejného: počty Pohoršení vidia obaja.
+ * Rozsah nerozdelenej hádky (v10; predtým rozsah Pohoršení, Michal 2026-10-27 „ukázať
+ * rozsah“): odhad bitky ráta s priazňami, ako stoja, no víťaz hádky ich pred poškodením
+ * posunie k sebe (Bitkár, Veriaci, Abstinent). Všetko z verejného: línia aj hádka.
  */
-export interface NepridelenePohorsenia {
-  readonly pocet: readonly [number, number];
+export interface NerozdelenaHadka {
+  /** Víťaz hádky (null = remíza alebo hádka nie je). */
+  readonly vitaz: PlayerId | null;
+  /** Koľko z hádky ešte rozdelí. */
+  readonly zostava: number;
 }
 
-/** Stôl pre Pohoršenia: verejné pokusy o zajatie (v9) a stav bitky (GameState aj ClientState). */
-export type StolPohorseni = StolBitky & {
-  readonly pokusy: readonly ({ readonly elderId: string } | null)[];
+/** Stôl pre hádku: stav bitky (GameState aj ClientState). */
+export type StolHadky = StolBitky & {
   readonly bitkaStav: {
     readonly krok: BitkaKrok | null;
     readonly damage: DamageResult | null;
     readonly caka: PlayerId | null;
-    readonly pohorsenieZostava: readonly [number, number];
+    readonly hadka?: { readonly vitaz: PlayerId | null; readonly zostava: number };
+    readonly klebety?: Klebety;
   } | null;
 };
 
 /**
- * Pohoršenia, ktoré hráči ešte rozdelia pred poškodením. Pred bitkou (a kým
- * ich bitka pri vstupe do Povier nepridelí) ten istý výpočet ako nastavSumy,
- * v bitke zvyšok z bitkaStav. Povery bez čakajúceho hráča = bitka do nich ešte
- * nevstúpila (stojí na voľbe z efektu Bitka či Furt).
+ * Hádka, ktorú víťaz ešte rozdelí pred poškodením. Pred bitkou (a kým do nej bitka
+ * nevstúpila) z mäkkého línie — ten istý výpočet ako vstup do hádky; v bitke zvyšok z bitkaStav.
  */
-export function nepridelenePohorsenia(data: GameData, stol: StolPohorseni, sums: readonly [ActionSums, ActionSums]): NepridelenePohorsenia {
+export function nerozdelenaHadka(data: GameData, stol: StolHadky, sums: readonly [ActionSums, ActionSums]): NerozdelenaHadka {
   const b = stol.bitkaStav;
-  if (b !== null && b.damage !== null) return { pocet: [0, 0] };
-  if (b === null || (b.krok === "povery" && b.caka === null)) return { pocet: pohorseniaVBitke(data, stol, sums) };
-  return { pocet: b.pohorsenieZostava };
+  if (b !== null && b.damage !== null) return { vitaz: null, zostava: 0 };
+  if (b === null || b.hadka === undefined) {
+    const h = vysledokHadky(poskodenieBitky(data, stol, sums).makke);
+    return { vitaz: h.vitaz, zostava: h.velkost };
+  }
+  return { vitaz: b.hadka.vitaz, zostava: b.hadka.zostava };
 }
 
-export interface RozsahPohorseni {
-  /** Kto Pohoršenia rozdeľuje. */
+export interface RozsahHadky {
+  /** Kto hádku rozdeľuje (jej víťaz). */
   readonly hrac: PlayerId;
   readonly pocet: number;
-  /** Najlepšia bitka pre hráča, ktorý ich rozdeľuje (súperove stoja). */
+  /** Najlepšia bitka pre víťaza hádky. */
   readonly damage: DamageResult;
   readonly vysledok: BattleOutcome;
 }
 
 /**
- * Najlepšia bitka, akú hráč p dosiahne svojimi nepridelenými Pohoršeniami
- * (k sebe aj k súperovi, súperove Pohoršenia stoja) — len ak zmení víťaza alebo
- * prebytok v jeho prospech, inak null. Ten istý výpočet ako vyhodnotPoskodenie:
- * súčty línie stoja, poškodenie sa ráta s novou priazňou. Posun stojí podľa zóny
- * (v8.2, cenaPosunuOPoli); že marker ide, kým body stačia, odhad zanedbá — zvyšok
- * hráč spravidla minie najprv na iného staršieho. Prehľadáva len starších, ktorých
- * posun mení vstupy bitky.
+ * Najlepšia bitka, akú víťaz hádky p dosiahne jej rozdelením (len k sebe, cena podľa zóny,
+ * strop 3) — len ak zmení víťaza alebo Nakladačku v jeho prospech, inak null. Ten istý
+ * výpočet ako vyhodnotPoskodenie: súčty línie stoja, poškodenie sa ráta s klebetami.
+ * Že priazeň ide, kým body stačia, odhad zanedbá — zvyšok víťaz minie najprv na iného
+ * staršieho. Prehľadáva len starších, ktorých posun mení vstupy bitky.
  */
-export function rozsahPohorseni(
+export function rozsahHadky(
   data: GameData,
-  stol: StolPohorseni,
+  stol: StolHadky,
   sums: readonly [ActionSums, ActionSums],
-  nepridelene: NepridelenePohorsenia,
+  nerozdelena: NerozdelenaHadka,
   p: PlayerId,
-): RozsahPohorseni | null {
-  const n = nepridelene.pocet[p];
-  if (stol.ciel === null || n <= 0) return null;
-  const bitka = (starsi: readonly ElderState[]): DamageResult => poskodenieBitky(data, { ...stol, starsi }, sums);
-  const teraz = hodnota(battleOutcome(bitka(stol.starsi)), p);
+): RozsahHadky | null {
+  const n = nerozdelena.zostava;
+  if (stol.ciel === null || nerozdelena.vitaz !== p || n <= 0) return null;
+  const zaklad = stol.bitkaStav?.klebety ?? {};
+  const sKlebetami = (k: Klebety): StolHadky => ({ ...stol, bitkaStav: { krok: "hadka", damage: null, caka: null, ...(stol.bitkaStav ?? {}), klebety: k } });
+  const bitka = (k: Klebety): DamageResult => poskodenieBitky(data, sKlebetami(k), sums);
+  const teraz = hodnota(battleOutcome(bitka(zaklad)), p);
   // Porovnáva sa vstup bitky, nie poškodenie: priazeň skrytá pod súperovou Vierou
   // (tuhé orezané na 0) poškodenie sama nezmení, s posunom iného staršieho však áno.
-  const strany = (starsi: readonly ElderState[]): string => JSON.stringify(stranyBitky(data, { ...stol, starsi }, sums));
-  const zakladStrany = strany(stol.starsi);
-  // Starší v ohrození (pokus o zajatie, v9) sa v kole pokusu nehýbe.
-  const vOhrozeni = new Set(stol.pokusy.flatMap((x) => (x === null ? [] : [x.elderId])));
-  const posun = (e: ElderState, d: number): ElderState => ({ ...e, marker: (e.marker + d) as MarkerPos });
-  // Posuny d každého staršieho: záporné k hráčovi 0, kladné k hráčovi 1.
+  const strany = (k: Klebety): string => JSON.stringify(stranyBitky(data, sKlebetami(k), sums));
+  const zakladStrany = strany(zaklad);
+  const smer = p === 0 ? -1 : 1;
+  const sPosunom = (k: Klebety, e: ElderState, d: number): Klebety => {
+    // Poloha priazne ide o d polí k p; klebety = marker − nová poloha (elders.ts posunHadkou).
+    const na = polohaPriazne(e, k) + smer * d;
+    return { ...k, [e.elderId]: e.marker - na };
+  };
   const kandidati = stol.starsi
-    .map((e, i) => {
-      const max = vOhrozeni.has(e.elderId) ? 0 : n;
-      const od = -Math.min(max, e.marker - MARKER_KRAJ[0]);
-      const po = Math.min(max, MARKER_KRAJ[1] - e.marker);
-      const meni = Array.from({ length: po - od + 1 }, (_, k) => od + k).some(
-        (d) => d !== 0 && strany(stol.starsi.map((x, j) => (j === i ? posun(x, d) : x))) !== zakladStrany,
-      );
-      return { i, od, po, meni, max };
+    .map((e) => {
+      const z = polohaPriazne(e, zaklad);
+      const max = Math.min(n, p === 0 ? z - MARKER_KRAJ[0] : MARKER_KRAJ[1] - z);
+      const meni = Array.from({ length: max }, (_, i) => i + 1).some((d) => strany(sPosunom(zaklad, e, d)) !== zakladStrany);
+      return { e, z, max, meni };
     })
     .filter((k) => k.meni);
-  let najlepsia: RozsahPohorseni | null = null;
+  let najlepsia: RozsahHadky | null = null;
   let najlepsiaHodnota = teraz;
-  const skus = (k: number, zostava: number, starsi: readonly ElderState[]): void => {
-    const kand = kandidati[k];
+  const skus = (i: number, zostava: number, k: Klebety): void => {
+    const kand = kandidati[i];
     if (kand === undefined) {
-      const damage = bitka(starsi);
+      const damage = bitka(k);
       const vysledok = battleOutcome(damage);
       const h = hodnota(vysledok, p);
       if (h > najlepsiaHodnota) {
@@ -187,13 +189,12 @@ export function rozsahPohorseni(
       }
       return;
     }
-    const z = stol.starsi[kand.i]?.marker ?? MARKER_STRED;
-    for (let d = Math.max(kand.od, -zostava); d <= Math.min(kand.po, zostava); d++) {
-      const cena = cenaPosunuOPoli(z, d, telefonHraca(stol, p));
-      if (cena > Math.min(zostava, kand.max)) continue;
-      skus(k + 1, zostava - cena, d === 0 ? starsi : starsi.map((x, j) => (j === kand.i ? posun(x, d) : x)));
+    for (let d = 0; d <= kand.max; d++) {
+      const cena = cenaPosunuOPoli(kand.z, smer * d);
+      if (cena > zostava) break;
+      skus(i + 1, zostava - cena, d === 0 ? k : sPosunom(k, kand.e, d));
     }
   };
-  skus(0, n, stol.starsi);
+  skus(0, n, zaklad);
   return najlepsia;
 }

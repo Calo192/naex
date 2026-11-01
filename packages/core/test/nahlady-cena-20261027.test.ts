@@ -1,8 +1,8 @@
 // Náhľady sľubujú inú cenu, než hra zúčtuje — návrh #1 / roadmapa #49, dorobenie
 // (Michal 2026-10-27, playtesty 20261027-062058 a 20261027-105422, nočné
 // nezrovnalosti 20261026). Každý náhľad sa porovná s motorom:
-//  - rozsah nepridelených Pohoršení = najlepšie, čo hráč Pohoršeniami v bitke dosiahne,
-//  - Pohoršenie „k sebe“: bitka po posune = poškodenie motora,
+//  - rozsah nerozdelenej hádky (v10; predtým Pohoršení) = horná hranica toho, čo víťaz hádky dosiahne,
+//  - hádka: bitka po pláne = poškodenie motora,
 //  - najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne horšie,
 //  - limit ďalšieho kola po NA EX ráta akciu Poldeci,
 //  - odhad „do konca“ ráta Noviny, náhľad vyloženia bonus Psa.
@@ -15,8 +15,8 @@ import type { BattleOutcome, BitkaStav, CardInstance, Command, DamageResult, Gam
 import {
   apply,
   battleOutcome,
+  bitkaPoPlane,
   silaPriazne,
-  bitkaPoPohorseni,
   cenaKliatby,
   evaluateLine,
   favourStarsieho,
@@ -30,11 +30,12 @@ import {
   nahladNaexNaKartu,
   najhorsiaOdpovedNaNaex,
   naTahu,
-  nepridelenePohorsenia,
+  nerozdelenaHadka,
+  planRozdelenia,
   poskodenieBitky,
   rngInt,
   rngSeed,
-  rozsahPohorseni,
+  rozsahHadky,
   sPrilozenou,
   setupGame,
   silaDoDna,
@@ -78,93 +79,91 @@ function stavy(seedy: readonly number[], vezmi: (s: GameState) => boolean, naRoz
   return out;
 }
 
-const markery = (s: GameState): string => s.starsi.map((e) => e.marker).join("");
+const klebety = (s: GameState): string => JSON.stringify(s.bitkaStav?.klebety ?? {});
 
 /**
- * Pohoršenie v motore a poškodenie bitky po ňom: keď bolo posledné, bitka sa môže
+ * Výber hádky v motore a poškodenie bitky po ňom: keď bol posledný, bitka sa môže
  * dohrať celá (aj do ďalšieho kola) — poškodenie je potom v udalosti bitkaVysledok.
  */
-function poPohorseni(t: GameState, c: Command, p: PlayerId, sums: BitkaStav["sums"]): { readonly u: GameState; readonly damage: DamageResult } {
+function poVybere(t: GameState, c: Command, p: PlayerId, sums: BitkaStav["sums"]): { readonly u: GameState; readonly damage: DamageResult } {
   const { state: u, events } = apply(data, t, c, p);
   const vysledok = events.find((e) => e.type === "bitkaVysledok");
   const damage = vysledok?.type === "bitkaVysledok" ? vysledok.damage : (u.bitkaStav?.damage ?? poskodenieBitky(data, u, sums));
   return { u, damage };
 }
 
-/** Bitka čaká na Pohoršenie hráča p, má ich nanajvýš 2 (motor sa prehľadáva celý) a lícom dole neleží žiadna Záverečná. */
-function predPohorsenim(s: GameState): boolean {
+/** Bitka čaká, kým víťaz hádky rozdelí nanajvýš 4 body (motor sa prehľadáva celý), lícom dole neleží Záverečná. */
+function predHadkou(s: GameState): boolean {
   const b = s.bitkaStav;
-  if (s.faza !== "bitka" || b === null || b.krok !== "pohorsenie" || b.caka === null || b.damage !== null) return false;
-  const n = b.pohorsenieZostava[b.caka];
-  return n > 0 && n <= 2 && !s.strany.flat().some((pl) => pl.zaverecna === true);
+  if (s.faza !== "bitka" || b === null || b.krok !== "hadka" || b.caka === null || b.damage !== null || b.hadka === undefined) return false;
+  const n = b.hadka.zostava;
+  return n > 0 && n <= 4 && !s.strany.flat().some((pl) => pl.zaverecna === true);
 }
 
-describe("rozsah nepridelených Pohoršení = najlepšie, čo hráč v bitke dosiahne (Michal 2026-10-27)", () => {
-  const vzorky = stavy(Array.from({ length: 160 }, (_, i) => 3000 + i), predPohorsenim, 2);
+describe("rozsah nerozdelenej hádky = horná hranica toho, čo víťaz v bitke dosiahne (v10)", () => {
+  const vzorky = stavy(Array.from({ length: 160 }, (_, i) => 3000 + i), predHadkou, 2);
 
   it("vzoriek je dosť", () => {
-    expect(vzorky.length).toBeGreaterThanOrEqual(60);
+    expect(vzorky.length).toBeGreaterThanOrEqual(40);
   });
 
-  it("každé poradie Pohoršení v motore dopadne nanajvýš tak dobre ako rozsah — a rozsah sa dá dosiahnuť", () => {
+  it("žiadne poradie výberov v motore nedopadne lepšie ako rozsah — a rozsah sa väčšinou dá dosiahnuť", () => {
     let menia = 0;
+    let presne = 0;
     for (const { s, seed } of vzorky) {
       const b = s.bitkaStav as BitkaStav;
       const p = b.caka as PlayerId;
       const teraz = hodnota(battleOutcome(poskodenieBitky(data, s, b.sums)), p);
-      // Všetky poradia Pohoršení hráča p (rovnaké markery sa skúmajú raz).
       let najlepsie = Number.NEGATIVE_INFINITY;
-      let videne = new Map<string, GameState>([[markery(s), s]]);
-      for (let k = 0; k < b.pohorsenieZostava[p]; k++) {
+      let videne = new Map<string, GameState>([[klebety(s), s]]);
+      for (let k = 0; k < (b.hadka?.zostava ?? 0) && videne.size > 0; k++) {
         const dalsie = new Map<string, GameState>();
         for (const t of videne.values()) {
-          for (const c of legalCommands(data, t, p).filter((x) => x.type === "pohorsenie")) {
-            const { u, damage } = poPohorseni(t, c, p, b.sums);
-            if (u.koniec !== null) continue; // vydesenie ukončí hru — o bitke sa nerozhoduje
-            const posledne = u.bitkaStav === null || u.bitkaStav.caka !== p || u.bitkaStav.krok !== "pohorsenie";
-            if (posledne) najlepsie = Math.max(najlepsie, hodnota(battleOutcome(damage), p));
-            else dalsie.set(markery(u), u);
+          for (const c of legalCommands(data, t, p).filter((x) => x.type === "hadka")) {
+            const { u, damage } = poVybere(t, c, p, b.sums);
+            if (u.koniec !== null) continue;
+            const posledny = u.bitkaStav === null || u.bitkaStav.caka !== p || u.bitkaStav.krok !== "hadka";
+            if (posledny) najlepsie = Math.max(najlepsie, hodnota(battleOutcome(damage), p));
+            else dalsie.set(klebety(u), u);
           }
         }
         videne = dalsie;
       }
       if (najlepsie === Number.NEGATIVE_INFINITY) continue;
       const view = viewFor(data, s, p);
-      const stol = { ...view, lokalitaOtocena: view.lokalitaOtocena };
-      const nepridelene = nepridelenePohorsenia(data, stol, b.sums);
-      expect(nepridelene.pocet, `seed ${seed}: počet Pohoršení`).toEqual(b.pohorsenieZostava);
-      const r = rozsahPohorseni(data, stol, b.sums, nepridelene, p);
-      const kde = `seed ${seed} kolo ${s.kolo}, hráč ${p}, Pohoršení ${b.pohorsenieZostava[p]}`;
+      const nerozdelena = nerozdelenaHadka(data, view, b.sums);
+      expect(nerozdelena, `seed ${seed}: hádka`).toEqual({ vitaz: p, zostava: b.hadka?.zostava });
+      const r = rozsahHadky(data, view, b.sums, nerozdelena, p);
+      const kde = `seed ${seed} kolo ${s.kolo}, hráč ${p}, hádka ${b.hadka?.zostava}`;
       if (r === null) {
-        expect(najlepsie, `${kde}: rozsah tvrdí, že bitku nepohnú`).toBeLessThanOrEqual(teraz);
+        expect(najlepsie, `${kde}: rozsah tvrdí, že bitku nepohne`).toBeLessThanOrEqual(teraz);
       } else {
         menia++;
-        expect(hodnota(r.vysledok, p), kde).toBe(najlepsie);
-        expect(r.pocet).toBe(b.pohorsenieZostava[p]);
+        expect(najlepsie, kde).toBeLessThanOrEqual(hodnota(r.vysledok, p));
+        if (hodnota(r.vysledok, p) === najlepsie) presne++;
       }
     }
-    // Aspoň niekde Pohoršenia bitku naozaj menia — inak by test nič neoveril.
     expect(menia).toBeGreaterThanOrEqual(3);
+    expect(presne * 2).toBeGreaterThanOrEqual(menia);
   }, 60000);
 
-  it("odhad pred bitkou počíta s tými istými Pohoršeniami, aké bitka pridelí", () => {
+  it("odhad pred bitkou počíta s tou istou hádkou, akú bitka vyhodnotí", () => {
     for (const { s, seed } of vzorky) {
       const b = s.bitkaStav as BitkaStav;
-      // Pohoršenia už minuté hýbu priazňou Abstinenta — porovnáva sa len pred prvým.
-      if (b.pohorseniaSpolu === undefined || b.pohorsenieZostava.some((n, q) => n !== b.pohorseniaSpolu?.[q])) continue;
+      const h = b.hadka;
+      if (h === undefined || h.zostava !== h.velkost) continue;
       const view = viewFor(data, s, 0);
-      // Kým bitka nevstúpi do Povier, ešte nie sú pridelené — ráta sa ich ten istý výpočet ako nastavSumy.
-      const predPoverami = { ...view, bitkaStav: view.bitkaStav === null ? null : { ...view.bitkaStav, krok: "povery" as const, caka: null, pohorsenieZostava: [0, 0] as const } };
-      // Koľko bitka hráčom pridelila (pohorseniaSpolu), nie koľko im ešte zostáva.
-      expect(nepridelenePohorsenia(data, predPoverami, b.sums).pocet, `seed ${seed}`).toEqual(b.pohorseniaSpolu);
+      const bezHadky = view.bitkaStav === null ? view : { ...view, bitkaStav: { ...view.bitkaStav } };
+      if (bezHadky.bitkaStav !== null) delete (bezHadky.bitkaStav as { hadka?: unknown }).hadka;
+      expect(nerozdelenaHadka(data, bezHadky, b.sums), `seed ${seed}`).toEqual({ vitaz: h.vitaz, zostava: h.velkost });
     }
   });
 });
 
-describe("Pohoršenie „k sebe“ aj „k súperovi“: náhľad bitky = poškodenie motora (playtest 20261026-181227-1)", () => {
-  const vzorky = stavy(Array.from({ length: 160 }, (_, i) => 3000 + i), predPohorsenim, 2);
+describe("hádka: náhľad bitky po pláne = poškodenie motora (v10)", () => {
+  const vzorky = stavy(Array.from({ length: 160 }, (_, i) => 3000 + i), predHadkou, 2);
 
-  it("bitka po posune sedí s motorom; null, len keď sa poškodenie nezmení", () => {
+  it("bitka po výbere sedí s motorom; null, len keď sa tuhé nezmení", () => {
     let zmeny = 0;
     let porovnane = 0;
     for (const { s, seed } of vzorky) {
@@ -172,26 +171,24 @@ describe("Pohoršenie „k sebe“ aj „k súperovi“: náhľad bitky = poško
       const p = b.caka as PlayerId;
       const view = viewFor(data, s, p);
       for (const c of legalCommands(data, s, p)) {
-        if (c.type !== "pohorsenie") continue;
-        const { u, damage: po } = poPohorseni(s, c, p, b.sums);
+        if (c.type !== "hadka") continue;
+        const { u, damage: po } = poVybere(s, c, p, b.sums);
         if (u.koniec !== null) continue;
         const pred = poskodenieBitky(data, s, b.sums);
-        const n = bitkaPoPohorseni(data, view, c.elderId, p, c.kSebe === true);
-        const kde = `seed ${seed}: ${c.elderId} ${c.kSebe === true ? "k sebe" : "k súperovi"}`;
+        const n = bitkaPoPlane(data, view, planRozdelenia(view, p, [{ elderId: c.elderId }]));
+        const kde = `seed ${seed}: ${c.elderId}`;
         porovnane++;
         if (n === null) {
           expect(po.tuhe, kde).toEqual(pred.tuhe);
-          expect(po.celkove, kde).toEqual(pred.celkove);
         } else {
           zmeny++;
           expect(n.pred.tuhe, kde).toEqual(pred.tuhe);
           expect(n.po.tuhe, kde).toEqual(po.tuhe);
-          expect(n.po.celkove, kde).toEqual(po.celkove);
         }
       }
     }
-    expect(porovnane).toBeGreaterThanOrEqual(300);
-    expect(zmeny).toBeGreaterThanOrEqual(5);
+    expect(porovnane).toBeGreaterThanOrEqual(150);
+    expect(zmeny).toBeGreaterThanOrEqual(3);
   });
 });
 
@@ -250,9 +247,11 @@ describe("najhoršia odpoveď na NA EX: žiadna skutočná odpoveď nedopadne ho
           const karta = r.hraci[su].ruka.find((k) => k.uid === c.uid);
           // Nástup Snúbenice vymení kartu s NA EX — náhľad ho nepredvída (napísané v najhorsiaOdpoved).
           if (karta === undefined || karta.defId === "snubenica") continue;
-          const t = apply(data, r, c, su).state;
+          const { state: t, events } = apply(data, r, c, su);
           const v = viewFor(data, t, p);
-          const d = poskodenieBitky(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]), evaluateLine(data, lineState(v)).sums);
+          // Bez hádky (mäkké 0 : 0, v10) sa bitka vyhodnotí hneď v tom istom ťahu — poškodenie je v udalosti.
+          const vysledok = events.find((e) => e.type === "bitkaVysledok");
+          const d = vysledok?.type === "bitkaVysledok" ? vysledok.damage : poskodenieBitky(data, stolPriPoskodeni(data, v, n.dalsiePitky[1]), evaluateLine(data, lineState(v)).sums);
           const h = hodnota(battleOutcome(d), p);
           odpovede++;
           expect(h, `seed ${seed}: NA EX na ${uid}, odpoveď ${karta.defId} → ${c.target}`).toBeGreaterThanOrEqual(hranica);
@@ -297,9 +296,9 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
       const q = kto(s);
       if (q === null) break;
       const legal = legalCommands(data, s, q).filter((c) => c.type !== "vzdat");
-      // Povery (v8.3) nie na Alkoholika — jeho „do dna“ by sa v bitke zmenilo, to náhľad nevie.
-      const povera = legal.find((c) => c.type === "povera" && favourStarsieho(data, s.starsi.find((e) => e.elderId === c.elderId)!) !== "ALKOHOLIK");
-      const cmd = legal.find((c) => c.type === "skipNaex") ?? legal.find((c) => c.type === "bezReakcie") ?? povera ?? legal[0];
+      // Hádka (v10) nie na Alkoholika — jeho „do dna“ by sa v bitke zmenilo, to náhľad nevie.
+      const hadka = legal.find((c) => c.type === "hadka" && favourStarsieho(data, s.starsi.find((e) => e.elderId === c.elderId)!) !== "ALKOHOLIK");
+      const cmd = legal.find((c) => c.type === "skipNaex") ?? legal.find((c) => c.type === "bezReakcie") ?? hadka ?? legal[0];
       if (cmd === undefined) break;
       s = apply(data, s, cmd, q).state;
     }

@@ -22,7 +22,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [true, true],
     exekutor: [0, 0],
-    pohorsenieZostava: [0, 0],
+   
     damage: null,
     vitaz: null,
     prebytokDrzi: null,
@@ -35,7 +35,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
 }
 
 /**
- * Bitka o Krčmu čaká na Pohoršenia hráča 0 (útočník 1); poškodenie sa potom vyhodnotí
+ * Bitka o Krčmu čaká, kým hráč 0 rozdelí hádku (v10) (útočník 1); poškodenie sa potom vyhodnotí
  * zo súčtov `sums`. Markery podľa `markery` (ostatní v strede), v línii po Pijanovi.
  */
 function predPoskodenim(o: {
@@ -58,7 +58,7 @@ function predPoskodenim(o: {
       if (m === undefined) return { ...e, marker: 3 as MarkerPos };
       return m[2] === undefined ? { ...e, marker: m[1] } : { ...e, marker: m[1], vyplatene: m[2] };
     }),
-    bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [o.pohorsenia ?? 1, 0], sums: o.sums }),
+    bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [o.pohorsenia ?? 1, 0], vitaz: 0, velkost: o.pohorsenia ?? 1, zostava: o.pohorsenia ?? 1, prepadlo: 0, posuny: [] }, sums: o.sums }),
   };
   return o.uprav === undefined ? s : o.uprav(s);
 }
@@ -68,7 +68,7 @@ const elder = (s: GameState, i: number): string => s.starsi[i]!.elderId;
 describe("v8: Nakladačku rozdeľuje porazený", () => {
   it("víťaz drží Nakladačku, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on", () => {
     const s = predPoskodenim({ sums: [{ Rana: 5 }, {}] });
-    const st = apply(data, s, { type: "pohorsenie", elderId: elder(s, 0) }, 0).state;
+    const st = apply(data, s, { type: "hadka", elderId: elder(s, 0) }, 0).state;
     expect(st.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1, prebytokZostava: 5 });
     expect(legalCommands(data, st, 0)).toEqual([]);
     expect(() => apply(data, st, { type: "prebytok", elderId: elder(s, 3) }, 0)).toThrow();
@@ -85,13 +85,13 @@ describe("v8: Nakladačku rozdeľuje porazený", () => {
     expect(t.posunyMarkerov.filter((x) => x.zdroj === "prebytok").every((x) => x.kto === 0)).toBe(true);
   });
 
-  it("pri sekere Nakladačku nedrží nikto — Povery už poškodenie nedávajú (v8.3)", () => {
-    // Tuhé 2 : 2; Povera hráča 1 ide na klebety, nie do celkového — Nakladačka nie je.
+  it("pri sekere Nakladačku nedrží nikto — mäkké do tuhého nevstupuje (v10)", () => {
+    // Tuhé 2 : 2; Povera hráča 1 je mäkké (hádka), nie tuhé — Nakladačka nie je.
     const s = predPoskodenim({
       sums: [{ Rana: 2 }, { Rana: 2, Povera: 1 }],
       uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], dlhy: 1 }, { ...t.hraci[1], dlhy: 1 }] }),
     });
-    const st = apply(data, s, { type: "pohorsenie", elderId: elder(s, 0) }, 0).state;
+    const st = apply(data, s, { type: "hadka", elderId: elder(s, 0) }, 0).state;
     expect(st.nastenka.at(-1)?.vitaz).toBeNull();
     expect(st.bitkaStav?.prebytokDrzi ?? null).toBeNull();
     expect(st.posunyMarkerov.filter((x) => x.zdroj === "prebytok")).toEqual([]);

@@ -1,6 +1,6 @@
 // Celá cena NA EX a patronátu v náhľade (návrh #1, playtest 20261024-075830):
-// cigarety, Pohoršenia a mäkké, ktoré náhľad sľúbi, musí hra naozaj zúčtovať —
-// rátajú ich tie isté funkcie (cigaretyZPitky, pohorseniaVBitke).
+// cigarety a mäkké (hádka v10), ktoré náhľad sľúbi, musí hra naozaj zúčtovať —
+// rátajú ich tie isté funkcie (cigaretyZPitky, poskodenieBitky).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -11,12 +11,12 @@ import {
   apply,
   buildGameData,
   dopadyNahladu,
-  hodnotaPohorseni,
   loadGameData,
   moznostiNaex,
   naTahu,
   nahladNaexNaKartu,
   parseScorecards,
+  poskodenieBitky,
   stavPoPokuse,
   viewFor,
 } from "../src/index.ts";
@@ -103,14 +103,14 @@ function poNaex(pred: ClientState, p: PlayerId, uid: number): ClientState {
   return { ...pred, strany, hraci };
 }
 
-/** Pohoršenia, ktoré bitka hráčom pridelí — prvý stav bitky, ktorý ich už nastavil. */
-const pohorseniaBitky = (t: GameState): readonly [number, number] => {
+/** Mäkké, s ktorým bitka vstúpi do hádky (v10) — z hádky, alebo tým istým výpočtom pred ňou. */
+const makkeBitky = (t: GameState): readonly [number, number] => {
   const b = t.bitkaStav;
   if (b === null) throw new Error("Bitka nezačala.");
-  return b.pohorsenieZostava;
+  return b.hadka?.makke ?? poskodenieBitky(data, t, b.sums).makke;
 };
 
-describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním", () => {
+describe("náhľad NA EX: cigarety a mäkké sedia so zúčtovaním", () => {
   it("cigarety: o koľko viac či menej dostane súper v Pitke", () => {
     const s = vPitke([
       lezi(instanceFor(data, "fajciar_test", C4, C4), 0),
@@ -140,24 +140,24 @@ describe("náhľad NA EX: cigarety, Pohoršenia a mäkké sedia so zúčtovaním
     expect(tri.cigarety).toBe(jedna.cigarety * 3);
   });
 
-  it("Pohoršenia: o koľko posunov viac súper dostane v bitke a ≈ body z nich", () => {
+  it("mäkké (v10): o koľko viac mäkkého súper vnesie do hádky — Pohoršenie za 2", () => {
     const s = vPitke([
       lezi(instanceFor(data, "pohorsujuci_test", P4, P4), 0),
       lezi(instanceFor(data, "pohorsujuci_test", P4, P4), 0),
       lezi(instanceFor(data, "pohorsujuci_test", P4, P4), 0),
     ]);
     const p: PlayerId = 1;
-    const bez = pohorseniaBitky(dohraj(s).t);
+    const bez = makkeBitky(dohraj(s).t);
     let zmeny = 0;
     for (const uid of ciele(s)) {
       const pred = viewFor(data, s, p);
       const po = poNaex(pred, p, uid);
       const [d0] = dopadyNahladu(data, pred, po, 0);
-      const sNaex = pohorseniaBitky(dohraj(naex(s, p, uid)).t);
-      expect(d0.pohorsenia).toBe(sNaex[0] - bez[0]);
-      expect(d0.pohorseniaSpolu).toBe(sNaex[0]);
-      expect(d0.pohorseniaBody).toBe(hodnotaPohorseni(data, po, 0, sNaex[0]) - hodnotaPohorseni(data, pred, 0, bez[0]));
-      if (d0.pohorsenia !== 0) zmeny++;
+      const sNaex = makkeBitky(dohraj(naex(s, p, uid)).t);
+      expect(d0.makke).toBe(sNaex[0] - bez[0]);
+      expect(d0.makkeSpolu).toBe(sNaex[0]);
+      expect(d0.makke % 2).toBe(0);
+      if (d0.makke !== 0) zmeny++;
     }
     expect(zmeny).toBeGreaterThan(0);
   });
@@ -215,15 +215,15 @@ describe("náhľad NA EX nemlčí o tom, čo hra zúčtuje navyše (návrh #49)"
     ]);
     const s: GameState = { ...s0, strany: [s0.strany[0], [lezi(karta(940001, "policajtka"), 1)]] };
     const bez = sLogom(s);
-    const spolu = (t: GameState): number => t.bitkaStav?.pohorseniaSpolu?.[0] ?? 0;
+    const spolu = (t: GameState): number => (t.bitkaStav === null ? 0 : makkeBitky(t)[0]);
     expect(spolu(bez.t)).toBeGreaterThan(0);
     // 0 : 0 NA EX — Policajtka mlčí.
     expect(bez.log.some((x) => x.startsWith("Policajtka:"))).toBe(false);
     for (const uid of ciele(s).filter((u) => u !== 940001)) {
       const n = nahladNaexNaKartu(data, viewFor(data, s, 1), uid, ceny)!;
       const { t } = sLogom(naex(s, 1, uid));
-      expect(n.dopady[0].pohorsenia).toBe(spolu(t) - spolu(bez.t));
-      expect(n.dopady[0].pohorseniaSpolu).toBe(spolu(t));
+      expect(n.dopady[0].makke).toBe(spolu(t) - spolu(bez.t));
+      expect(n.dopady[0].makkeSpolu).toBe(spolu(t));
     }
   });
 

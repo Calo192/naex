@@ -88,7 +88,7 @@ describe("M10 — vzorové efekty (háčiky)", () => {
   });
 
 
-  it("Čierna mačka (v8.3, návrh P5): Povery sa Vierou nerušia — mäkké poškodenie nie je", () => {
+  it("Čierna mačka (v8.3, P5): Povery sa Vierou nerušia — všetky sú mäkké (v10)", () => {
     const strana = (sums: Record<string, number>, bezViery = false) => ({
       sums,
       cirhozaBonus: 0,
@@ -98,13 +98,13 @@ describe("M10 — vzorové efekty (háčiky)", () => {
       hodnotaViery: 1,
       ...(bezViery ? { poveryBezViery: true } : {}),
     });
-    // Bez mačky: 1 Viera zruší 1 Poveru, zvyšné 3 idú na klebety.
+    // Bez mačky: 1 Viera zruší 1 Poveru, zvyšné 3 sú mäkké.
     expect(computeDamage([strana({ Povera: 4 }), strana({ Viera: 1 })]).zvysnaPovera[0]).toBe(3);
     // S mačkou sa nerušia — Povery aj Viera ostávajú.
     const d = computeDamage([strana({ Povera: 4 }, true), strana({ Viera: 1 })]);
     expect(d.zvysnaPovera[0]).toBe(4);
     expect(d.zvysnaViera[1]).toBe(1);
-    expect(d.makke).toEqual([0, 0]);
+    expect(d.makke).toEqual([4, 0]);
   });
 });
 

@@ -2057,3 +2057,115 @@ zosúladil s hrou. Staré znenia:
 
 > Traktorista bez prevahy (Dlh) (§16; v sade v53 sa karta volá Traktorista, predtým Traktoristka). V starej sade (do v6) Kar: každý hráč s nepriznanou
 > Cirhózou v ruke sa rozhodne (obranca, potom útočník), či jednu zahodí.
+
+## v10 — Hádka (Michal 2026-11-01)
+
+Návrh a rozhodnutia: `docs/napady/hadka.html` (verzia 4, všetko rozhodnuté vrátane náradia).
+Dôvod (Michal): pri Poverách aj Pohoršení mohol jeden hráč posunúť marker či priazeň staršieho
+a druhý ho vzápätí vrátiť — útočník mal vždy posledné slovo. Kroky Povery a Pohoršenie sa zlúčili
+do jedného kroku **Hádka**: mäkké poškodenie (Pohoršenie 2, Povera 1), víťaz hádky posúva sily
+priazní len k sebe do konca kola, marker sa nehýbe. Abstinent odpúšťa Absťáky namiesto Pohoršení
+navyše; Telefón, Horoskop a Svätý text dostali nové efekty. Achievement „Pohoršenie“ (id ostáva)
+je „Hádka“ — vyhraj hádku o aspoň 3 / 5 / 7.
+
+Staré znenie §9.1 a §9.2:
+
+> ### 9.1 Povery (v8.3 „Výpožička priazne“)
+>
+> Michal 2026-10-30 (docs/napady/povery.html, sekcia Rozhodnuté; nahrádza mäkké
+> poškodenie):
+>
+> 1. **Viera a Povery sa vyrušia 1 : 1** ako doteraz: cancel = min(moja Viera,
+>    súperove Povery), obom sa odpočíta. Ráta sa raz, na začiatku kroku, s priazňami
+>    pred Poverami (Veriaci). Zvyšná Viera potom tlmí tuhé v kroku 3.
+> 2. **Každá zvyšná Povera posunie silu priazne jedného staršieho o jeden stupeň
+>    k svojmu majiteľovi** — bez ohľadu na zónu, žiadne prahy. Smie znížiť súperovu
+>    priazeň (2 → 1 → 0), preklopiť ju k sebe (0 → moja 1), požičať si priazeň
+>    staršieho v strede (0 → moja 1) aj zosilniť vlastnú (moja 1 → 2). **Strop 3**
+>    oboma smermi — na staršieho, ktorého priazeň je už moja v sile 3, Povera nesmie.
+> 3. **Marker sa nehýbe** — strach ani udržanie sa nemenia. Klebety platia
+>    **do konca kola** (poškodenie, exekúcia, priazne po bitke: Kmotor, Alkoholik),
+>    potom zaniknú. Na jedno kolo tak môže mať priazeň aj hráč, ktorého sa starší
+>    bojí — výnimka z „priazeň a strach nikdy tomu istému“ (§10).
+> 4. **Poradie:** obranca rozdá všetky svoje Povery, potom útočník, ktorý obrancove
+>    vidí; Povery oboch na toho istého staršieho pôsobia proti sebe. Rozdať treba
+>    všetky; čo už nemá cieľ (všetky priazne sú hráčove v sile 3), prepadne.
+> 5. Potom Pohoršenie (§9.2) — Pohoršenia z priazne Abstinenta sa rátajú už so
+>    silou po Poverách.
+>
+> **Výpočet (jadro):** klebety sú na staršom uložené ako posun o n stupňov k hráčovi
+> (nie pevné číslo), lebo Pohoršenie môže marker po Poverách ešte pohnúť. Účinná sila
+> priazne = sila z markera ± klebety, orezaná na −3 … +3, ráta sa pri každom použití
+> priazne v tomto kole (`ucinnaPriazen`, elders.ts).
+>
+> **Rozhodnuté (P5, P6, Michal 2026-10-30, docs/napady/povery.html):** Čierna mačka „Furt:
+> Tvoje Povery sa Vierou nerušia.“ (text karty v sade) — jej Povery a súperova Viera sa
+> nevyrušia (Viera ostáva na tuhé). Pojem ostáva **Povera** („ohovára staršieho“).
+>
+> ### 9.2 Pohoršenie
+>
+> Každé aktivované Pohoršenie je **1 bod na posun markera** — **od seba (desí),
+> alebo k sebe (upokojuje)** — **bez ohľadu na výsledok bitky**. Hráč, ktorého akcia sa aktivovala,
+> vyberá **len staršieho a smer**, nie počet polí: marker sa posunie tak ďaleko,
+> ako jeho zvyšné Pohoršenia stačia (cena poľa podľa zóny, §10 — von zo stredu
+> 1 / 2 / 3, k stredu 2 / 3 / 4), a zvyšok smie dať ďalším starším. Pohoršenia,
+> ktoré už na žiadny posun nestačia, prepadnú (log to oznámi). Oba smery smie
+> každý hráč.
+>
+> **Pohoršenia navyše:** z priazne Abstinenta (+1 / +2 / +3). Absťák od v9.1
+> Pohoršenie nedáva (Nervák zanikol, §8).
+>
+> - **Od seba:** súper dostane (alebo posilní) priazeň toho staršieho a starší
+>   sa začne báť teba (§10).
+> - **K sebe:** priazeň toho staršieho získaš ty, alebo ju súperovi uberieš.
+> - Pohoršenie mení priazeň **hneď**, v oboch smeroch: nová priazeň platí už
+>   v ďalších krokoch tej istej bitky (napr. Bitkár či Veriaci v poškodení,
+>   krok 3), takže bitku môže rozhodnúť.
+> - Pohoršenie funguje ako Nakladačka (v8.2, Michal 2026-10-30): **pole stojí podľa
+>   zóny** (§10), ten istý marker smie ísť aj viackrát, **bez limitu** a **aj na
+>   krajnú pozíciu** (zo stredu na červenú šesť Pohoršení: 1 + 2 + 3). Ďalej von
+>   ako na kraj sa nedá.
+> - Strach z nového stupňa zaplatí až **koniec nasledujúceho kola**, ak sa udrží
+>   (v8.3, §10). Pohoršenie však môže súperovi **odtlačiť** stupeň, ktorý by mu
+>   zaplatil koniec tohto kola.
+> - K aktívnym Pohoršeniam pribudnú Pohoršenia z priazne **Abstinenta** (§10).
+> - Na staršieho **v ohrození** (pokus o zajatie v tomto kole, §10) Pohoršenie nesmie (v9, O8).
+> - **Poradie:** Pohoršenia rozdeľuje najprv **obranca** (všetky svoje), potom
+>   **útočník** — každý vidí posuny toho pred ním.
+>
+
+Staré znenie §9.3 (začiatok):
+
+> ### 9.3 Poškodenie
+>
+> ```
+> 1. Viera a Povera sa vyrušia 1:1 (zvyšné Povery už rozdelil krok Povery, §9.1)
+>      cancel = min(viera[ja], povera[súper]);  obom sa odpočíta
+>      Čierna mačka: majiteľove Povery sa s Vierou nerušia (P5, Michal 2026-10-30)
+>
+> 2. tuhé[ja] = (Rana×1 + Pecka×2 + Petelica×3 + súperove priznané Cirhózy + sila Bitkára)
+>              − zvyšná_viera[súper] × hodnota_viery(súper)
+>              − počet_mojich_absťákov   (karty Absťák v ruke, doberacom aj odhadzovacom balíčku, v9.1)
+>      minimum 0
+>
+> Mäkké a celkové poškodenie od v8.3 nie sú (Povery posúvajú priazne, §9.1).
+> ```
+>
+> **Priznaná Cirhóza škodí tomu, kto ju priznal:** za každú priznanú Cirhózu
+
+Stará tabuľka krokov §9 (kroky 1–3):
+
+> | 1 | Povery (v8.3) — Viera a Povery sa vyrušia, zvyšné posunú silu priazní (obranca prvý, potom útočník) | §9.1 |
+> | 2 | Pohoršenie (aj z priazne Abstinenta — už po Poverách) — pole podľa ceny zóny; nie na staršieho v ohrození | §9.2 |
+> | 3 | Poškodenie — tuhé (mäkké od v8.3 nie je) | §9.3 |
+
+Staré priazne a náradie:
+
+> | Abstinent | Pohoršenie v bitke (§9.2) | Pohoršenia navyše, hrá ich ako svoje | +1 / +2 / +3 | `LAKOMEC` |
+>
+> | Telefón | Tvoje Pohoršenia k stredu stoja toľko ako von. | Krok k stredu stojí toľko ako opačný krok von: z červenej 3, z oranžovej 2, zo žltej 1. Nakladačky sa netýka. |
+> | Horoskop | Klebety z tvojich Povier platia aj v nasledujúcom kole. | Klebety tvojich Povier tejto bitky (§9.1) platia celé ďalšie kolo (aj Fajčiar, Robota…), potom zaniknú. Verejné. |
+> | Svätý text | Dedičstvo: hodnota tvojej Viery je o 1 vyššia. |
+
+Starší v ohrození: v kole pokusu ním nehýbalo „Pohoršenie, Nakladačka ani Povery“ (O8); od v10 len
+Nakladačka (a Kšeft vily, Kapybara), hádka smie meniť silu jeho priazne (H4).

@@ -142,7 +142,7 @@ describe("cigarety porazenému za Nakladačku", () => {
         caka: 0,
         sums: [{}, {}],
         exekutorHotovy: [true, true],
-        pohorsenieZostava: [0, 0],
+       
         exekutor: [0, 0],
         damage: { tuhe: [5, 0], makke: [0, 0], celkove: [5, 0], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] },
         vitaz: 0,

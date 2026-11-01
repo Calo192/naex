@@ -47,7 +47,8 @@ export interface PosunMarkera {
   readonly na: MarkerPos;
   /**
    * kseft = Predsedova vila (v7), nastup = Kapybara (v7), zajatie = ústup po neúspešnom
-   * pokuse (v9); patronat len v záznamoch partií do v8.
+   * pokuse (v9); patronat len v záznamoch partií do v8, pohorsenie do v9 (v10 markerom
+   * hýbe len Nakladačka).
    */
   readonly zdroj: "pohorsenie" | "prebytok" | "patronat" | "zajatie" | "kseft" | "nastup";
   /** Hráč, ktorého akcia marker posunula (pri prebytku držiteľ prebytku). */
@@ -117,18 +118,12 @@ export function priazenSila(elder: Pick<ElderState, "marker">): number {
 }
 
 /**
- * Klebety staršieho (Povery v8.3 „Výpožička priazne“, Michal 2026-10-30): o koľko
- * stupňov Povery tohto kola posunuli silu jeho priazne — kladne k hráčovi 0,
- * záporne k hráčovi 1. Marker sa nehýbe; po kole klebety zaniknú.
+ * Klebety staršieho (v10 Hádka, Michal 2026-11-01; zaviedli ich Povery v8.3): o koľko
+ * stupňov víťaz hádky v tomto kole posunul silu jeho priazne — kladne k hráčovi 0,
+ * záporne k hráčovi 1. Marker sa nehýbe; po kole klebety zaniknú. Ukladá sa posun,
+ * nie pevné číslo, lebo Nakladačka po hádke marker ešte pohne (Kmotor a Fajčiar po nej).
  */
 export type Klebety = Readonly<Record<string, number>>;
-
-/** Súčet klebiet (bitka tohto kola + prenesené Horoskopom); undefined, keď nie sú žiadne. */
-export function spojKlebety(...zoznam: readonly (Klebety | undefined)[]): Klebety | undefined {
-  const out: Record<string, number> = {};
-  for (const k of zoznam) for (const [id, n] of Object.entries(k ?? {})) out[id] = (out[id] ?? 0) + n;
-  return Object.keys(out).length === 0 ? undefined : out;
-}
 
 /** Priazeň ako jedno číslo −3 … +3: kladná patrí hráčovi 0, záporná hráčovi 1. */
 function priazenSoZnamienkom(elder: Pick<ElderState, "marker">): number {
@@ -145,10 +140,35 @@ export function ucinnaPriazen(elder: Pick<ElderState, "marker" | "elderId">, kle
   return { hrac: v > 0 ? 0 : v < 0 ? 1 : null, sila: Math.abs(v) };
 }
 
-/** Smie ďalšia Povera hráča p posunúť priazeň tohto staršieho k nemu? (strop 3) */
-export function poveraMozna(elder: Pick<ElderState, "marker" | "elderId">, p: PlayerId, klebety?: Klebety): boolean {
+/**
+ * Účinná priazeň ako poloha na stupnici (0–6) — hádka sa platí podľa zóny ako Nakladačka,
+ * len sa posúva táto poloha, nie marker.
+ */
+export function polohaPriazne(elder: Pick<ElderState, "marker" | "elderId">, klebety?: Klebety): MarkerPos {
+  const u = ucinnaPriazen(elder, klebety);
+  return (u.hrac === null ? MARKER_STRED : u.hrac === 0 ? MARKER_STRED - u.sila : MARKER_STRED + u.sila) as MarkerPos;
+}
+
+/** Smie víťaz hádky p ešte posunúť priazeň tohto staršieho k sebe? (strop sila 3) */
+export function hadkaMozna(elder: Pick<ElderState, "marker" | "elderId">, p: PlayerId, klebety?: Klebety): boolean {
   const u = ucinnaPriazen(elder, klebety);
   return !(u.hrac === p && u.sila >= 3);
+}
+
+/** Posun priazne hádkou: kam sa dostane poloha priazne (polohaPriazne), za koľko a nové klebety staršieho. */
+export interface PosunHadkou extends PosunZaBody {
+  /** Klebety staršieho po posune (posun od markera). */
+  readonly klebety: number;
+}
+
+/**
+ * Hádka (v10): víťaz p vyberá len staršieho — sila jeho priazne ide k p pole po poli
+ * podľa ceny zóny (cenaKroku, ako Nakladačka), kým zvyšok `body` stačí, najviac na silu 3.
+ * null, keď nevyjde ani jeden krok.
+ */
+export function posunHadkou(elder: Pick<ElderState, "marker" | "elderId">, p: PlayerId, body: number, klebety?: Klebety): PosunHadkou | null {
+  const posun = posunZaBody({ marker: polohaPriazne(elder, klebety) }, p, body);
+  return posun === null ? null : { ...posun, klebety: elder.marker - posun.marker };
 }
 
 /** Hráč, ktorého sa starší bojí — ten na opačnej strane, než leží marker (v sivom nikto). */
@@ -239,7 +259,7 @@ export function poKonciKola<E extends StavStrachu>(elder: E): E {
 
 /**
  * Posun markera o jedno pole k hráčovi `smerK` (Kšeft Predsedovej vily, Kapybara;
- * Pohoršenie a prebytok od v8.2 cez posunZaBody).
+ * Nakladačka od v8.2 cez posunZaBody).
  * Zamknutie krajnej pozície sa ruší (Michal 2026-10-26): na červenú smie marker
  * aj viac posunmi v jednom kole a z červenej ho smie súper odtlačiť. Vracia
  * novú pozíciu, alebo null, keď je marker už na kraji v tom smere.
@@ -251,22 +271,15 @@ export function posunMarker(elder: Pick<ElderState, "marker">, smerK: PlayerId):
 }
 
 /**
- * Cena posunu markera o jedno pole z `z` na susedné `na` za Pohoršenie či prebytok
- * (v8.2, Michal 2026-10-30): smerom von zo stredu toľko, aká je cieľová zóna —
+ * Cena posunu o jedno pole z `z` na susedné `na` — Nakladačka aj hádka (v8.2, Michal
+ * 2026-10-30; hádka v10): smerom von zo stredu toľko, aká je cieľová zóna —
  * stred → žltá 1, žltá → oranžová 2, oranžová → červená 3 (zo stredu na červenú 6);
  * smerom k stredu o 1 viac — červená → oranžová 4, oranžová → žltá 3, žltá → stred 2.
  */
-export function cenaKroku(z: MarkerPos, na: MarkerPos, telefon = false): number {
+export function cenaKroku(z: MarkerPos, na: MarkerPos): number {
   const zo = STUPNICA_ZONY[z];
   const doZony = STUPNICA_ZONY[na];
-  // Telefón (Dedičstvo, Náradie 2026-10-30): Pohoršenia k stredu stoja toľko ako von.
-  if (telefon) return Math.max(zo, doZony);
   return doZony > zo ? doZony : zo + 1;
-}
-
-/** Má hráč p v Dedičstve Telefón — jeho Pohoršenia k stredu stoja toľko ako von (Náradie 2026-10-30)? */
-export function telefonHraca(s: { readonly hraci?: readonly { readonly dedicstvo: readonly { readonly defId: string }[] }[] }, p: PlayerId): boolean {
-  return s.hraci?.[p]?.dedicstvo.some((k) => k.defId === "telefon") ?? false;
 }
 
 /** Kam sa marker dostane za body a koľko to stojí (posunZaBody). */
@@ -277,16 +290,16 @@ export interface PosunZaBody {
 }
 
 /**
- * Posun za body (v8.2): hráč vyberá len staršieho a smer, nie počet polí —
+ * Posun za body (v8.2): hráč vyberá len staršieho, nie počet polí —
  * marker ide k hráčovi `smerK`, kým zvyšok bodov stačí na ďalší krok (cenaKroku)
  * a kým nie je na kraji. null, keď nevyjde ani jeden krok.
  */
-export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, body: number, telefon = false): PosunZaBody | null {
+export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, body: number): PosunZaBody | null {
   let marker = elder.marker;
   let cena = 0;
   let kroky = 0;
   for (let dalsi = posunMarker({ marker }, smerK); dalsi !== null; dalsi = posunMarker({ marker }, smerK)) {
-    const c = cenaKroku(marker, dalsi, telefon);
+    const c = cenaKroku(marker, dalsi);
     if (cena + c > body) break;
     cena += c;
     marker = dalsi;
@@ -295,12 +308,12 @@ export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, 
   return kroky === 0 ? null : { marker, cena, kroky };
 }
 
-/** Cena posunu markera z pozície `z` o `d` polí (záporné k hráčovi 0, kladné k hráčovi 1). */
-export function cenaPosunuOPoli(z: MarkerPos, d: number, telefon = false): number {
+/** Cena posunu z pozície `z` o `d` polí (záporné k hráčovi 0, kladné k hráčovi 1). */
+export function cenaPosunuOPoli(z: MarkerPos, d: number): number {
   let cena = 0;
   for (let m = z, i = 0; i < Math.abs(d); i++) {
     const na = (d < 0 ? m - 1 : m + 1) as MarkerPos;
-    cena += cenaKroku(m, na, telefon);
+    cena += cenaKroku(m, na);
     m = na;
   }
   return cena;

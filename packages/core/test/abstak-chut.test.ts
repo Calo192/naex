@@ -43,7 +43,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     caka: null,
     sums: [{}, {}],
     exekutorHotovy: [true, true],
-    pohorsenieZostava: [0, 0],
+   
     exekutor: [0, 0],
     damage: null,
     vitaz: 0,

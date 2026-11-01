@@ -209,15 +209,18 @@ describe("rekapitulácia bitky", () => {
             const q: PlayerId = p === 0 ? 1 : 0;
             // Jednotky tuhého = súčty akcií, z ktorých bitka rátala.
             for (const a of AKCIE_TUHE) expect(sucet(r.tuhe[a], p)).toBe(e.sums[p][a] ?? 0);
-            // Viera a Povera: rušia sa v dvojiciach — moja Viera so súperovou Poverou.
-            expect(sucet(r.viera, p) - r.zrusenaViera[p]).toBe(d.zvysnaViera[p]);
+            // Viera a Povera (v10): rušia sa na kusy — moja Viera zruší 1 súperovu Poveru (Svätý text 2).
             expect(sucet(r.povera, p) - r.zrusenaPovera[p]).toBe(d.zvysnaPovera[p]);
-            expect(r.zrusenaViera[p]).toBe(r.zrusenaPovera[q]);
+            expect(r.zrusenaViera[p]).toBe(d.vieraNaPovery?.[p] ?? 0);
+            expect(r.zrusenaPovera[q]).toBeGreaterThanOrEqual(r.zrusenaViera[p]);
+            expect(r.zrusenaPovera[q]).toBeLessThanOrEqual(r.zrusenaViera[p] * 2);
             // Čierna mačka (v8.3): Povery jej majiteľa sa Vierou nerušia.
             const macka = [...(e.strany?.[0] ?? []), ...(e.strany?.[1] ?? [])].some((pl) => pl.card.defId === "cierna_macka" && pl.playedBy === q);
-            if (!macka) expect(r.zrusenaViera[p]).toBe(Math.min(sucet(r.viera, p), sucet(r.povera, q)));
-            // Zvyšné Povery (v8.3) idú na klebety, nie do poškodenia; celkové = tuhé.
+            if (!macka) expect([Math.min(sucet(r.viera, p), sucet(r.povera, q)), Math.min(2 * sucet(r.viera, p), sucet(r.povera, q))]).toContain(r.zrusenaPovera[q]);
+            // Mäkké (v10) = Pohoršenie × 2 + zvyšné Povery × sila Povery; celkové = tuhé.
             expect(r.zvysnaPovera[p]).toBe(d.zvysnaPovera[p]);
+            expect(r.makke?.[p]).toBe(d.makke[p]);
+            expect(r.makke?.[p]).toBe(r.pohorsenie.spolu[p] * 2 + r.zvysnaPovera[p] * (r.silaPovery?.[p] ?? 1));
             expect(r.celkove[p]).toBe(r.tuheSpolu[p]);
             expect(sucet(r.pohorsenie.polozky, p)).toBe(r.pohorsenie.spolu[p]);
             if (sucet(r.povera, p) > 0) sPoverou++;

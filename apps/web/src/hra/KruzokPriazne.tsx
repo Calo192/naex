@@ -20,8 +20,20 @@ export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
   ROBOTA: "Robota",
   FAJCIAR: "Cigareta",
   ALKOHOLIK: "Poldeci",
-  LAKOMEC: "Pohoršenie",
+  // Abstinent (v10) Pohoršenie nedáva — krúžok kreslí prázdny pohárik Absťáku (IkonaPriazneKruzku).
+  LAKOMEC: "Poldeci",
 };
+
+/** Ikona v krúžku priazne: akcia priazne, pri Abstinentovi (v10) Absťák — prázdny pohárik. */
+export function IkonaPriazneKruzku({ fav }: { readonly fav: Favour }) {
+  if (fav !== "LAKOMEC") return <IkonaAkcie akcia={IKONA_PRIAZNE[fav]} />;
+  return (
+    <svg className="kr-ikona" viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M28 10h44l-7 80H35zM36 18l5 64h18l5-64z" fillRule="evenodd" />
+      <path d="M50 40c-6 8-8 12-8 16a8 8 0 0 0 16 0c0-4-2-8-8-16z" />
+    </svg>
+  );
+}
 
 export function IkonaAkcie({ akcia, trieda = "kr-ikona" }: { readonly akcia: Action; readonly trieda?: string }) {
   return (
@@ -70,7 +82,7 @@ export function KruzokPriazne({
       {...(popis === undefined ? { "aria-hidden": true } : { role: "img", "aria-label": popis, title: popis })}
     >
       <span className={`kr ${trieda(p.komu)}`} style={velkost === undefined ? undefined : ({ "--kr-d": `${velkost}px` } as CSSProperties)}>
-        <IkonaAkcie akcia={IKONA_PRIAZNE[fav]} />
+        <IkonaPriazneKruzku fav={fav} />
         {cislo !== null && <b className="kr-cislo">{cislo}</b>}
       </span>
       {cislo !== null && <b className={`kr-vedla ${trieda(p.komu)}`}>{cislo}</b>}
@@ -82,7 +94,7 @@ export function KruzokPriazne({
 export function PilulkaPriazne({ fav, p, popis }: { readonly fav: Favour; readonly p: Pick<PriazenKola, "komu" | "sila">; readonly popis?: string }) {
   return (
     <span className={`kr-pil ${trieda(p.komu)}`} {...(popis === undefined ? { "aria-hidden": true } : { role: "img", "aria-label": popis, title: popis })}>
-      <IkonaAkcie akcia={IKONA_PRIAZNE[fav]} />
+      <IkonaPriazneKruzku fav={fav} />
       {p.komu !== null && p.sila > 0 ? `+${p.sila}` : "—"}
     </span>
   );

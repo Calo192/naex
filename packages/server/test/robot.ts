@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, lineState, naexCieleVLinii, pohorsenieMozne, posunZaBody, poveraMozna, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, lineState, hadkaNaStarsieho, naexCieleVLinii, posunZaBody, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -167,25 +167,18 @@ export class Robot {
         const b = view.bitkaStav;
         if (b === null) throw new Error("bitka bez stavu");
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
-        // v8.3: Povery — robot ich dá na prvého staršieho, kam smú (klient z verejného pohľadu).
-        if (b.krok === "povery") {
-          const elder = view.starsi.find((e) => poveraMozna(e, ja, b.klebety));
-          if (elder === undefined) throw new Error("povery: žiadny cieľ");
-          return { type: "povera", elderId: elder.elderId };
+        // v10: hádku rozdeľuje víťaz — robot ju dá na prvého staršieho, kam smie (klient z verejného pohľadu).
+        if (b.krok === "hadka") {
+          const elder = view.starsi.find((e) => hadkaNaStarsieho(view, e, ja));
+          if (elder === undefined) throw new Error("hádka: žiadny cieľ");
+          return { type: "hadka", elderId: elder.elderId };
         }
-        if (b.krok === "pohorsenie" || b.krok === "prebytok") {
+        if (b.krok === "prebytok") {
           // Prebytok ide k súperovi držiteľa — od v8 ho rozdeľuje spravidla porazený, teda k nemu.
-          const smerK = b.krok === "prebytok" && b.prebytokDrzi !== null ? (b.prebytokDrzi === 0 ? 1 : 0) : ja === 0 ? 1 : 0;
-          const elder = view.starsi.find((e) =>
-            b.krok === "pohorsenie" ? pohorsenieMozne(view, ja, e) : posunZaBody(e, smerK, b.prebytokZostava) !== null,
-          );
-          // v5: Pohoršenie smie aj k sebe — keď k súperovi nejde nič.
-          const kSebe = b.krok === "pohorsenie" && elder === undefined ? view.starsi.find((e) => pohorsenieMozne(view, ja, e, true)) : undefined;
-          if (kSebe !== undefined) return { type: "pohorsenie", elderId: kSebe.elderId, kSebe: true };
-          if (elder === undefined) throw new Error(`${b.krok}: žiadny posúvateľný marker`);
-          return b.krok === "pohorsenie"
-            ? { type: "pohorsenie", elderId: elder.elderId }
-            : { type: "prebytok", elderId: elder.elderId };
+          const smerK = b.prebytokDrzi !== null ? (b.prebytokDrzi === 0 ? 1 : 0) : ja === 0 ? 1 : 0;
+          const elder = view.starsi.find((e) => !view.pokusy.some((x) => x?.elderId === e.elderId) && posunZaBody(e, smerK, b.prebytokZostava) !== null);
+          if (elder === undefined) throw new Error("prebytok: žiadny posúvateľný marker");
+          return { type: "prebytok", elderId: elder.elderId };
         }
         // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.
         if (b.krok === "cintorin") return { type: "cintorin", uid: null };

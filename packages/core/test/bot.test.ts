@@ -142,7 +142,6 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       caka: null,
       sums: [{}, {}],
       exekutorHotovy: [true, true],
-      pohorsenieZostava: [0, 0],
       exekutor: [0, 0],
       damage: null,
       vitaz: null,
@@ -154,8 +153,8 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       ...b,
     };
   }
-  /** Bitka s prázdnou líniou v kroku Pohoršenia; hráč 0 (obranca) má posledné Pohoršenie. */
-  function vPohorseni(seed: number, markery: (e: ElderState) => ElderState["marker"]): GameState {
+  /** Bitka s prázdnou líniou v kroku hádky (v10); hráč 0 (obranca) vyhral hádku o 1. */
+  function vHadke(seed: number, markery: (e: ElderState) => ElderState["marker"]): GameState {
     const s0 = setupGame(data, seed);
     return {
       ...s0,
@@ -166,22 +165,24 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
       lokalityVHre: s0.lokalityVHre.slice(1),
       starsi: s0.starsi.map((e) => ({ ...e, marker: markery(e) })),
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0] }),
+      bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [2, 1], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
     };
   }
   const priazenStarsieho = (s: GameState, elderId: string): string => favourStarsieho(data, s.starsi.find((e) => e.elderId === elderId) as ElderState);
 
-  it("v8: posledné Pohoršenie dá radšej k sebe na výhru Bitkárom než na strach — žltá zóna zaplatí len raz", () => {
+  it("v10: hádku za 1 dá na Bitkára — priazeň do konca kola vyhrá bitku 1 : 0", () => {
     for (const seed of [71, 72, 73]) {
-      // Všetci v strede, prázdna línia 0 : 0. Bitkár k sebe vyhrá bitku (aspoň 1 špak) a priazeň
-      // ostane botovi; strach súpera by dal pri sekere 1 špak raz a súperovi priazeň (v8).
-      const s = vPohorseni(seed, () => 3);
+      // Všetci v strede, prázdna línia 0 : 0. Bitkár k sebe na toto kolo vyhrá bitku (aspoň 1 špak).
+      const s = vHadke(seed, () => 3);
       for (const povaha of POVAHY) {
         const cmd = tahBota(data, s, 0, seed, { povaha: povaha.id });
-        expect(cmd.type, povaha.id).toBe("pohorsenie");
-        if (cmd.type !== "pohorsenie") continue;
-        expect(cmd.kSebe === true, `${povaha.id} ${seed}`).toBe(true);
-        expect(apply(data, s, cmd, 0).state.spaky[0]).toBe(1);
+        expect(cmd.type, povaha.id).toBe("hadka");
+        if (cmd.type !== "hadka") continue;
+        expect(priazenStarsieho(s, cmd.elderId), `${povaha.id} ${seed}`).toBe("BITKAR");
+        const po = apply(data, s, cmd, 0).state;
+        expect(po.spaky[0]).toBe(1);
+        // Marker sa nehýbe.
+        expect(po.starsi.map((e) => e.marker)).toEqual(s.starsi.map((e) => e.marker));
       }
     }
   }, 30_000);
@@ -191,10 +192,11 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       // Po výhre Rana + Bitkár (k sebe) drží hráč 0 prebytok 2; rozdeľuje ho porazený hráč 1.
       // Žltá → stred stojí od v8.2 dva body (Michal 2026-10-30), preto Rana navyše.
       const bitkar = (e: ElderState): boolean => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR";
-      const s0 = vPohorseni(seed, () => 3);
+      // Bitkár už je víťazov (žltá, sila 1); hádka ide na Alkoholika, ktorý bitku nemení.
+      const s0 = vHadke(seed, (e) => (bitkar(e) ? 2 : 3));
       const s: GameState = { ...s0, bitkaStav: { ...s0.bitkaStav!, sums: [{ Rana: 1 }, {}] } };
-      const id = s.starsi.find(bitkar)?.elderId as string;
-      const po = apply(data, s, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
+      const alkoholik = s.starsi.find((e) => priazenStarsieho(s, e.elderId) === "ALKOHOLIK")?.elderId as string;
+      const po = apply(data, s, { type: "hadka", elderId: alkoholik }, 0).state;
       expect(po.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1 });
       for (const povaha of POVAHY) {
         const cmd = tahBota(data, po, 1, seed, { povaha: povaha.id });

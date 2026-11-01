@@ -732,10 +732,10 @@
     },
     {
       "id": "pohorsenie",
-      "nazov": "Pohoršenie",
+      "nazov": "Hádka",
       "kategoria": "starsi",
-      "popis": "Posuň v jednej bitke Pohoršením markery spolu aspoň o {prah}.",
-      "metrika": "stat.posunyPohorsenim",
+      "popis": "Vyhraj hádku o aspoň {prah}.",
+      "metrika": "stat.hadkaVyhrana",
       "rozsah": "bitka",
       "prahy": [
         3,
@@ -751,7 +751,7 @@
         "vzacne",
         "legendarne"
       ],
-      "zdroj": "príkaz pohorsenie"
+      "zdroj": "hádka v bitke (v10; id ostáva kvôli získaným stupňom, do v9 posuny Pohoršením)"
     },
     {
       "id": "milacik-dediny",

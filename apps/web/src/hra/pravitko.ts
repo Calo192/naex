@@ -15,7 +15,7 @@ export interface DielikPravitka {
 }
 
 export interface Pravitko {
-  /** Body, ktoré posun má (zvyšok Nakladačky či Pohoršení pre tohto staršieho). */
+  /** Body, ktoré posun má (zvyšok Nakladačky či hádky pre tohto staršieho). */
   readonly body: number;
   readonly dieliky: readonly DielikPravitka[];
   /** Koľko posun naozaj stojí a o koľko polí marker pôjde. */
@@ -23,12 +23,12 @@ export interface Pravitko {
   readonly polia: number;
 }
 
-/** Cesta markera z `marker` k hráčovi `smerK` za `body` (Telefón: k stredu za cenu ako von). */
-export function pravitkoPosunu(marker: MarkerPos, smerK: PlayerId, body: number, telefon = false): Pravitko {
+/** Cesta markera (pri hádke sily priazne) z `marker` k hráčovi `smerK` za `body`. */
+export function pravitkoPosunu(marker: MarkerPos, smerK: PlayerId, body: number): Pravitko {
   const dieliky: DielikPravitka[] = [];
   let cena = 0;
   for (let z = marker, na = posunMarker({ marker: z }, smerK); na !== null; z = na, na = posunMarker({ marker: z }, smerK)) {
-    const c = cenaKroku(z, na, telefon);
+    const c = cenaKroku(z, na);
     const zamok = cena + c > body;
     dieliky.push({ na, zona: STUPNICA_ZONY[na], cena: c, zamok });
     if (zamok) break;

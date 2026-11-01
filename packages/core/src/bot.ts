@@ -8,7 +8,7 @@
 //    v bitkách, ktoré ešte prídu, zdroje
 //    (poldeci, cigarety, ruka, Absťáky, Dlhy) a odhad prebiehajúcej bitky
 //    (tuhé poškodenie z línie → šanca na výhru × čo je v stávke),
-//  - pri vykladaní, NA EX, Pohoršení a prebytku si zahrá
+//  - pri vykladaní, NA EX, hádke a Nakladačke si zahrá
 //    dopredu na kópii stavu tým istým jadrom (apply, evaluateLine): po svojom
 //    ťahu dohrá Zhromaždenie, v ktorom obaja vykladajú chamtivo,
 //  - drobné voľby (draft, fajčenie, priznanie, limit ruky…) robí pravidlami.
@@ -23,7 +23,7 @@
 // Čisté a deterministické ako zvyšok jadra — náhoda ide zo semienka, ktoré
 // dá volajúci (server).
 
-import type { Action, CardInstance, PlayerId } from "./types.ts";
+import type { Action, CardInstance, Favour, PlayerId } from "./types.ts";
 import { ALL_FAVOURS, opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
@@ -31,7 +31,7 @@ import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import { evaluateLine } from "./partia.ts";
 import { KONSTANTY } from "./constants.ts";
-import { spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
+import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState, MarkerPos } from "./elders.ts";
 import { sPosunutymMarkerom, spakyZaStarsich, strachNaUdrzanieSpolu, strachZ, vydesil } from "./elders.ts";
 import { jeCielLokalita, partiaHraca } from "./effects.ts";
@@ -49,9 +49,9 @@ import {
   legalCommands,
   sNaexNaKartach,
   silaPriazne,
+  klebetyKola,
   lineState,
   poskodenieBitky,
-  pohorseniaVBitke,
   jeFinale,
   kartyBitky,
   zahradkarChrani,
@@ -150,8 +150,9 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Rana: 1,
   Pecka: 2,
   Petelica: 3,
+  // Mäkké poškodenie (v10): Povera 1, Pohoršenie 2 — hádka.
   Povera: 0.4,
-  Pohoršenie: 0.7,
+  Pohoršenie: 0.8,
   Viera: 1,
   Dlh: -0.8,
   PoškodeniePečene: -0.5,
@@ -257,7 +258,7 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
 /**
  * Čo jeden bod sily priazne urobí v jednej budúcej bitke (v jednotkách
  * hodnotaStavu). Priazne v5 nie sú rovnako silné v každej partii: Bitkár
- * a Veriaci menia tuhé, Abstinent dáva Pohoršenia, kým „do dna“
+ * a Veriaci menia tuhé, Abstinent odpúšťa Absťáky (v10), kým „do dna“
  * zaberú len pri NA EX a Kmotor len pri priznanom Dlhu. Súperovi tak bot
  * dáva tú, ktorá mu v tejto partii urobí najmenej (Michal 2026-10-24).
  * Exekútor tu nie je — nižší prah súpera už ráta hodnotaZdrojov.
@@ -265,7 +266,8 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
 const PRIAZEN_ZA_BITKU = {
   BITKAR: 1.2,
   VERIACI: 0.9,
-  LAKOMEC: 0.7,
+  /** Za Absťák, ktorý Abstinent v bitke odpustí (v10) — ako bod tuhého. */
+  LAKOMEC: 1.1,
   FAJCIAR: 0.5,
   /** Za špak, ktorý Advokát ušetrí pri exekúcii (len s priznaným Dlhom). */
   ADVOKAT: 0.8,
@@ -276,7 +278,7 @@ const PRIAZEN_ZA_BITKU = {
   /** Za priznaný Dlh, ktorý Kmotor presunie súperovi (v8): mne ubudne, jemu pribudne. */
   UZERNIK: 1.0,
 } as const;
-/** Pravdepodobnosť, že priazeň vydrží do ďalšej bitky (prebytok a Pohoršenie markery hýbu). */
+/** Pravdepodobnosť, že priazeň vydrží do ďalšej bitky (Nakladačka markery hýbe). */
 const VYDRZ_PRIAZNE = 0.6;
 /** Koľko NA EX dá hráč priemerne za bitku (partie botov v5). */
 const NAEX_ZA_BITKU = 0.35;
@@ -482,7 +484,7 @@ function kartyVStavke(s: GameState, q: PlayerId, sanca: number): number {
 /**
  * Odhad prebiehajúcej bitky z pohľadu hráča q: šanca na výhru z rozdielu
  * tuhého poškodenia × stávka, prebytok a čo línia v Pitke prinesie (cigarety,
- * Pohoršenia, Dlhy, pečeň). `ostrost` = istota výsledku (v Zhromaždení môže
+ * hádka, Dlhy, pečeň). `ostrost` = istota výsledku (v Zhromaždení môže
  * súper ešte odpovedať, v bitke je rozhodnuté).
  */
 function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): number {
@@ -491,7 +493,8 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const sums = evaluateLine(data, lineState(s)).sums;
   const dmg = poskodenieBitky(data, s, sums);
   // Remíza v tuhom (v6): vyhrá menej Absťákov, potom menej priznaných Dlhov, inak sekera (šanca ½).
-  const remiza = (p: PlayerId): [number, number] => [verejneAbstaky(s, p), prahyHraca(data, s, p).priznaneDlhy];
+  // Abstinent (v10) Absťáky odpustí aj pri remíze.
+  const remiza = (p: PlayerId): [number, number] => [abstakyVBitke(verejneAbstaky(s, p), dmg.abstinent?.[p]), prahyHraca(data, s, p).priznaneDlhy];
   const [aq, dq] = remiza(q);
   const [ao, dO] = remiza(o);
   const tuhe = dmg.tuhe[q] - dmg.tuhe[o];
@@ -502,10 +505,14 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const prebytok = jeFinale(s) ? celk : Math.max(-PREBYTOK_STROP, Math.min(PREBYTOK_STROP, celk));
   let v = k.povaha.bitka * (k.stavka * (sanca - 0.5) + kartyVStavke(s, q, sanca) + cenaBoduPrebytku(s) * prebytok);
 
+  // Hádka (v10): víťaz posunie priazne k sebe do konca kola — bod hádky ≈ stupeň priazne
+  // na jedno kolo (v bitke ho bot ráta presne, najlepsi). Kým bitka nezačala, ide z línie.
+  if (s.faza === "zhromazdenie" || s.faza === "pitka") {
+    v += k.povaha.bitka * ZA_BOD_HADKY * Math.max(-HADKA_STROP, Math.min(HADKA_STROP, dmg.makke[q] - dmg.makke[o]));
+  }
+
   // Akcie, ktoré sa vyhodnotia až v Pitke — po nej už sú v stave.
   if (s.faza === "zhromazdenie" || s.faza === "pitka") {
-    const pohorsenia = pohorseniaVBitke(data, s, sums);
-    const zaPohorsenie = cenaPosunu(s);
     for (const p of [q, o] as const) {
       const sp = sums[p];
       const so = sums[opponentOf(p)];
@@ -514,11 +521,6 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       // Výkupné: cigareta z Pitky a poldeci otočený v bitke na plný sú na konci hry aj špaky.
       const vykupne = k.povaha.body * vahaVykupneho(s);
       w += (0.3 * k.buducnost + vykupne / KONSTANTY.CIGARIET_ZA_SPAK) * Math.max(0, (sp.Cigareta ?? 0) - (so.Obmedzenie ?? 0));
-      // Pohoršenie je bod posunu markera bez limitu — nový stupeň zaplatí raz, keď sa
-      // udrží do konca ďalšieho kola (v8.3); pevných 0,5 za kus podceňovalo karty s Pohoršením.
-      w += zaPohorsenie * Math.min(POHORSENIE_STROP, pohorsenia[p]);
-      // Povera (v8.3): zvyšná po Viere posunie silu priazne o stupeň na toto kolo — nikdy hluchá.
-      w += ZA_POVERU * Math.min(POHORSENIE_STROP, dmg.zvysnaPovera[p]);
       // Robota (v8.4): za každý Dlh, ktorý nemá čo spáliť, špak (Fúrik páli viac).
       const furik = h.dedicstvo.filter((x) => x.defId === "furik").length;
       w += k.povaha.body * Math.max(0, (sp.Robota ?? 0) * (1 + furik) - h.dlhy);
@@ -549,7 +551,7 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   v *= k.povaha.zdroje;
   // Absťák (v9.1): karta v balíčku — o ranu menej v každej bitke a mŕtvy ťah.
   let postih = 0.7 * verejneAbstaky(s, p);
-  // Priznaný Dlh: remíza v bitke, súperove Povery; špaky, ktoré zhoria pri exekúcii, ráta rozdielBodov.
+  // Priznaný Dlh: remíza v bitke; špaky, ktoré zhoria pri exekúcii, ráta rozdielBodov.
   postih += 0.3 * prahyHraca(k.data, s, p).priznaneDlhy;
   postih += hrozbaAbstaku(k, s, p);
   v -= k.povaha.kliatby * postih;
@@ -581,53 +583,73 @@ function chybajuceNeresti(k: Kontext, s: GameState, ja: PlayerId): number {
 const TENKY_BALICEK = 7;
 
 /**
- * Priazne hráča p v bitkách, ktoré ešte prídu. Prebiehajúcu bitku ráta
- * hodnotaBitky so skutočnou priazňou (Pohoršenie k sebe platí hneď).
+ * Priazne hráča p v bitkách, ktoré ešte prídu — z markera; klebety z hádky (v10) platia len
+ * do konca tohto kola (klebetyTohtoKola). Prebiehajúcu bitku ráta hodnotaBitky so skutočnou
+ * priazňou (hádka platí hneď).
  */
 function hodnotaPriazni(k: Kontext, s: GameState, p: PlayerId): number {
   const n = kolPoTomto(s);
-  if (n === 0) return 0;
+  let v = klebetyTohtoKola(k, s, p);
+  if (n === 0) return v;
   let bitiek = 0;
   for (let j = 0; j < n; j++) bitiek += VYDRZ_PRIAZNE ** j;
-  const pv = k.povaha;
-  let v = 0;
+  const zMarkera = { starsi: s.starsi };
   for (const fav of ALL_FAVOURS) {
-    const sila = priazen(k.data, s, fav, p) / KONSTANTY.NASOBOK_PRIAZNE;
+    const sila = silaPriazne(k.data, zMarkera, fav, p);
     if (sila <= 0) continue;
-    switch (fav) {
-      case "BITKAR":
-        v += sila * PRIAZEN_ZA_BITKU.BITKAR * pv.bitka * bitiek;
-        break;
-      case "VERIACI":
-        v += sila * PRIAZEN_ZA_BITKU.VERIACI * pv.bitka * bitiek;
-        break;
-      case "LAKOMEC":
-        v += sila * PRIAZEN_ZA_BITKU.LAKOMEC * pv.body * bitiek;
-        break;
-      case "FAJCIAR":
-        v += sila * PRIAZEN_ZA_BITKU.FAJCIAR * pv.zdroje * bitiek;
-        break;
-      case "ROBOTA":
-        // Akcie Robota navyše (v9): spália Dlh, alebo dajú špak.
-        v += sila * PRIAZEN_ZA_BITKU.ROBOTA * pv.body * bitiek;
-        break;
-      case "ALKOHOLIK":
-        // „Do dna“: plný poldeci namiesto vypitého, najviac za sila NA EX v kole — NA EX je zriedka viac.
-        v += Math.min(sila, 1) * NAEX_ZA_BITKU * PRIAZEN_ZA_BITKU.DO_DNA * pv.zdroje * bitiek;
-        break;
-      case "UZERNIK": {
-        // Kmotor bez priznaného Dlhu nerobí nič; presunie ich súperovi najviac toľko, koľko mám.
-        const dlhy = prahyHraca(k.data, s, p).priznaneDlhy;
-        v += Math.min(dlhy, (sila + 1) * bitiek) * PRIAZEN_ZA_BITKU.UZERNIK * pv.kliatby;
-        break;
-      }
-      case "ADVOKAT": {
-        // Advokát ušetrí špaky len pri exekúcii — s priznaným Dlhom.
-        const dlhy = prahyHraca(k.data, s, p).priznaneDlhy;
-        if (dlhy > 0) v += Math.min(sila, zhoriPriExekucii(dlhy)) * PRIAZEN_ZA_BITKU.ADVOKAT * pv.body * bitiek;
-        break;
-      }
+    v += hodnotaSilyPriazne(k, s, p, fav, sila) * bitiek;
+  }
+  return v;
+}
+
+/** Čo priazeň `fav` sily `sila` hráčovi p urobí v jednej bitke (jednotky hodnotaStavu). */
+function hodnotaSilyPriazne(k: Kontext, s: GameState, p: PlayerId, fav: Favour, sila: number): number {
+  const pv = k.povaha;
+  switch (fav) {
+    case "BITKAR":
+      return sila * PRIAZEN_ZA_BITKU.BITKAR * pv.bitka;
+    case "VERIACI":
+      return sila * PRIAZEN_ZA_BITKU.VERIACI * pv.bitka;
+    case "LAKOMEC":
+      // Abstinent (v10): odpustí najviac toľko Absťákov, koľko ich hráč má — bez Absťáku nič.
+      return Math.min(sila, verejneAbstaky(s, p)) * PRIAZEN_ZA_BITKU.LAKOMEC * pv.bitka;
+    case "FAJCIAR":
+      return sila * PRIAZEN_ZA_BITKU.FAJCIAR * pv.zdroje;
+    case "ROBOTA":
+      // Akcie Robota navyše (v9): spália Dlh, alebo dajú špak.
+      return sila * PRIAZEN_ZA_BITKU.ROBOTA * pv.body;
+    case "ALKOHOLIK":
+      // „Do dna“: plný poldeci namiesto vypitého, najviac za sila NA EX v kole — NA EX je zriedka viac.
+      return Math.min(sila, 1) * NAEX_ZA_BITKU * PRIAZEN_ZA_BITKU.DO_DNA * pv.zdroje;
+    case "UZERNIK": {
+      // Kmotor bez priznaného Dlhu nerobí nič; presunie ich súperovi najviac toľko, koľko mám.
+      const dlhy = prahyHraca(k.data, s, p).priznaneDlhy;
+      return Math.min(dlhy, sila + 1) * PRIAZEN_ZA_BITKU.UZERNIK * pv.kliatby;
     }
+    case "ADVOKAT": {
+      // Advokát ušetrí špaky len pri exekúcii — s priznaným Dlhom.
+      const dlhy = prahyHraca(k.data, s, p).priznaneDlhy;
+      return dlhy > 0 ? Math.min(sila, zhoriPriExekucii(dlhy)) * PRIAZEN_ZA_BITKU.ADVOKAT * pv.body : 0;
+    }
+  }
+}
+
+/**
+ * Klebety z hádky (v10) v tomto kole: o koľko účinná priazeň hráča p prevyšuje priazeň
+ * z markera v krokoch, ktoré ešte len prídu — exekúcia (Advokát, Robota) pred výsledkom
+ * bitky, Kmotor, Fajčiar a Alkoholik po nej. Priazne bitky (Bitkár, Veriaci, Abstinent)
+ * ráta hodnotaBitky priamo z poškodenia.
+ */
+function klebetyTohtoKola(k: Kontext, s: GameState, p: PlayerId): number {
+  const b = s.bitkaStav;
+  if (b === null || klebetyKola(s) === undefined) return 0;
+  const zMarkera = { starsi: s.starsi };
+  let v = 0;
+  const poBitke: readonly Favour[] = ["FAJCIAR", "UZERNIK", "ALKOHOLIK"];
+  const exekucia: readonly Favour[] = ["ADVOKAT", "ROBOTA"];
+  for (const fav of [...(b.damage === null ? exekucia : []), ...poBitke]) {
+    const rozdiel = silaPriazne(k.data, s, fav, p) - silaPriazne(k.data, zMarkera, fav, p);
+    if (rozdiel !== 0) v += Math.sign(rozdiel) * hodnotaSilyPriazne(k, s, p, fav, Math.abs(rozdiel));
   }
   return v;
 }
@@ -687,8 +709,8 @@ function hodnotaStavu(k: Kontext, s: GameState, ostrost: number): number {
 
 /**
  * Bitka s rozhodnutým poškodením, ktorej lokalita ešte nie je pridelená. Bez
- * tohto by posledné Pohoršenie útočníka (po ňom sa poškodenie vyhodnotí hneď)
- * nevidelo, že Pohoršenie k sebe (Bitkár, Veriaci) bitku vyhrá.
+ * tohto by posledný výber hádky (po ňom sa poškodenie vyhodnotí hneď)
+ * nevidelo, že priazeň z hádky (Bitkár, Veriaci, Abstinent) bitku vyhrá.
  */
 function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bitkaStav"]>): number {
   // Špaky za bitku sú po výsledku už v popolníkoch, strach na konci kola ráta rozdielBodov.
@@ -710,7 +732,7 @@ function cenaBoduPrebytku(s: GameState): number {
 }
 
 /**
- * Čo prinesie jeden bod posunu markera od seba (bod prebytku, Pohoršenie) v špakoch,
+ * Čo prinesie jeden bod posunu markera od seba (bod Nakladačky) v špakoch,
  * v8.3: nový stupeň zaplatí raz (ZONA_ZA_BOD), až keď sa udrží do konca ďalšieho
  * kola (VYDRZ_POSUNU). Keď ďalší koniec kola nepríde (finále), posun má len obrannú
  * cenu — odtlačiť súperov držaný stupeň skôr, než ho koniec kola zaplatí.
@@ -743,11 +765,14 @@ function cenaNovejCirhozy(k: Kontext, s: GameState): number {
 
 /** Koľko z hodnoty posunu markera ostane, keď ho súper môže odtlačiť späť (turnaj v6). */
 const VYDRZ_POSUNU = 0.6;
-/** Stupeň priazne na jedno kolo z jednej Povery (v8.3) — v bitke ho bot ráta presne (najlepsi). */
-const ZA_POVERU = 0.5;
-/** Strop prebytku a Pohoršení v odhade bitky — markerov a polí je konečne veľa. */
+/**
+ * Bod hádky (v10) pred bitkou: posun priazne na jedno kolo stojí 1–4 body podľa zóny, takže
+ * bod je menej než stupeň priazne. Jemné ladenie patrí naex-bot-trener.
+ */
+const ZA_BOD_HADKY = 0.4;
+/** Strop prebytku a hádky v odhade bitky — starších a polí je konečne veľa. */
 const PREBYTOK_STROP = 8;
-const POHORSENIE_STROP = 6;
+const HADKA_STROP = 8;
 
 // ---------------------------------------------------------------------------
 // Zhromaždenie nanečisto — obaja vykladajú chamtivo
@@ -1283,8 +1308,7 @@ function bitka(v: Volba): Command | null {
   const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 3);
 
   switch (b.krok) {
-    case "povery":
-    case "pohorsenie":
+    case "hadka":
     case "prebytok":
       return najlepsi(v, v.legal, ohodnot);
     case "cintorin": {

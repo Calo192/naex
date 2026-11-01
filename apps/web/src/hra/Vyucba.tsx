@@ -315,7 +315,7 @@ export function krokSoStarsimi(krok: KrokVyucby | null): boolean {
   if (krok === null) return false;
   return (
     krok.zvyraznit.some((k) => k === "bar:body" || k === "linia-starsich" || k === "starsi-stupnica" || k.startsWith("starsi:")) ||
-    ["prebytok", "pohorsenie", "pokus", "bezPokusu"].includes(krok.ocakava?.type ?? "")
+    ["prebytok", "hadka", "pokus", "bezPokusu"].includes(krok.ocakava?.type ?? "")
   );
 }
 

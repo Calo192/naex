@@ -89,6 +89,16 @@ export const KONSTANTY = {
   NASOBOK_PRIAZNE: 2,
   HODNOTA_VIERY_ZAKLAD: 1, // Veriaci (2026-10-20) dáva Vieru navyše rovnú sile, hodnotu nemení
   /**
+   * Hádka (v10, Michal 2026-11-01, docs/napady/hadka.html H3): mäkké poškodenie z akcie,
+   * ktorej je v sade menej, je 2, z početnejšej 1 — v sade v53 je Povier viac než
+   * Pohoršení. Horoskop (Dedičstvo) dá Povere silu 2. Pri zmene pomeru akcií v sade prepočítať.
+   */
+  HADKA: {
+    POHORSENIE_MAKKE: 2,
+    POVERA_MAKKE: 1,
+    HOROSKOP_POVERA: 2,
+  },
+  /**
    * Špaky (pravidlá v6, Michal 2026-10-26): víťaz bitky dostane vždy aspoň
    * SPAKY_ZA_BITKU_MIN a nepriznaná Cirhóza na konci hry stojí toľkoto špakov
    * za kus (ruka aj oba balíčky) — v8 (Michal 2026-10-28, návrh #33) 3, predtým 5.
@@ -200,15 +210,18 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // v9.2 (Michal 2026-10-30) bez novej značky — ide s v9.1: šenok začína obranca (1. ťah 1 karta),
 // NA EX sa odkrývajú naraz, odpovede na NA EX lícom dole (útočník, potom obranca na druhý kraj).
 // v9.3 (Michal 2026-10-31) bez novej značky: Výtržník prebíja Úplatok.
-export const VERZIA_PRAVIDIEL = "v9";
+// v10 (Michal 2026-11-01, docs/napady/hadka.html): Hádka — Povery a Pohoršenie sú mäkké
+// poškodenie, víťaz hádky posunie priazne starších k sebe do konca kola (marker sa nehýbe);
+// Abstinent odpúšťa Absťáky, nové Telefón, Horoskop a Svätý text.
+export const VERZIA_PRAVIDIEL = "v10";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v9.3";
+export const VERZIA_PRAVIDIEL_PRESNA = "v10";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-10-31";
+export const PRAVIDLA_PLATNE_OD = "2026-11-01";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

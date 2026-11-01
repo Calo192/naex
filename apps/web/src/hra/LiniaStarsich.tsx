@@ -362,9 +362,9 @@ function ZvacseninaStarsieho({
  * Ikona kroku v bubline a na žetónoch — piktogram akcie: Pohoršenie, prebytok je prebytok
  * poškodenia, preto Rana (Michal 2026-10-30).
  */
-const AKCIA_DELENIA: Readonly<Record<"pohorsenie" | "prebytok", Action>> = { pohorsenie: "Pohoršenie", prebytok: "Rana" };
+const AKCIA_DELENIA: Readonly<Record<"hadka" | "prebytok", Action>> = { hadka: "Pohoršenie", prebytok: "Rana" };
 
-export function IkonaDelenia({ krok }: { readonly krok: "pohorsenie" | "prebytok" }) {
+export function IkonaDelenia({ krok }: { readonly krok: "hadka" | "prebytok" }) {
   return (
     <svg className="ikona-delenia" viewBox="0 0 100 100" aria-hidden="true">
       {IKONY[AKCIA_DELENIA[krok]].map((c, i) => (

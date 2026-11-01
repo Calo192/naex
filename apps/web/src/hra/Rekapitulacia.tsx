@@ -273,7 +273,7 @@ export type CastTextu =
   | { readonly t: "kliatba"; readonly akcia: Action }
   | { readonly t: "hlaska"; readonly s: string };
 
-export type DruhRiadkuTextu = "naex" | "odpoved" | "tuhe" | "viera" | "povera" | "pohorsenie" | "dlh" | "pecen" | "cigarety" | "vizia" | "zaverecna";
+export type DruhRiadkuTextu = "naex" | "odpoved" | "tuhe" | "viera" | "povera" | "pohorsenie" | "hadka" | "dlh" | "pecen" | "cigarety" | "vizia" | "zaverecna";
 
 export interface RiadokTextu {
   readonly druh: DruhRiadkuTextu;
@@ -391,11 +391,20 @@ export function riadkyTextuBitky(r: RekapitulaciaBitky, odpovede: readonly Odpov
     if (n === 0) continue;
     const casti: CastTextu[] = [{ t: "akcie", akcie: [["Povera", n]] }];
     if (r.zrusenaPovera[p] > 0) casti.push(text("✕"), tucne(r.zrusenaPovera[p]), text("s Vierou súpera"));
-    if ((r.zvysnaPovera?.[p] ?? 0) > 0) casti.push(text("· zvyšné posunuli priazeň o"), tucne(r.zvysnaPovera[p]));
+    // v10: zvyšné Povery sú mäkké poškodenie do hádky (s Horoskopom po 2).
+    if ((r.zvysnaPovera?.[p] ?? 0) > 0) casti.push(text("· zvyšné ="), tucne(r.zvysnaPovera[p] * (r.silaPovery?.[p] ?? 1)), text("mäkké"));
     out.push({ druh: "povera", kto: p, casti, krok: 0 });
   }
   for (const p of [ja, su]) {
-    if (r.pohorsenie.spolu[p] > 0) out.push({ druh: "pohorsenie", kto: p, casti: [{ t: "akcie", akcie: [["Pohoršenie", r.pohorsenie.spolu[p]]] }], krok: 0 });
+    if (r.pohorsenie.spolu[p] > 0)
+      out.push({ druh: "pohorsenie", kto: p, casti: [{ t: "akcie", akcie: [["Pohoršenie", r.pohorsenie.spolu[p]]] }, text("="), tucne(r.pohorsenie.spolu[p] * 2), text("mäkké")], krok: 0 });
+  }
+  const h = r.hadka;
+  if (h !== undefined && h.makke[0] + h.makke[1] > 0) {
+    const casti: CastTextu[] = [text("hádka"), tucne(`${h.makke[ja]} : ${h.makke[su]}`)];
+    if (h.vitaz === null) casti.push(text("— remíza, nikto nerozdeľuje"));
+    else casti.push(text("— vyhral o"), tucne(h.velkost), ...(h.prepadlo > 0 ? [text("·"), tucne(h.prepadlo), text("prepadlo")] : []));
+    out.push({ druh: "hadka", kto: h.vitaz ?? ja, casti, krok: 0 });
   }
   out.push(...riadkyNaex(r.naex, odpovede, ja));
   const pk = r.pitkyKola;
@@ -419,6 +428,7 @@ const IKONA_DRUHU: Readonly<Record<DruhRiadkuTextu, Action | null>> = {
   viera: "Viera",
   povera: "Povera",
   pohorsenie: "Pohoršenie",
+  hadka: "Pohoršenie",
   dlh: "Dlh",
   pecen: "PoškodeniePečene",
   cigarety: "Cigareta",
@@ -634,6 +644,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = fal
   for (const a of AKCIE_TUHE) if (r.tuhe[a].length > 0) n++;
   if (r.viera.length + r.povera.length > 0) n += 2.6;
   if (r.pohorsenie.polozky.length > 0) n++;
+  if (r.hadka !== undefined && r.hadka.makke[0] + r.hadka.makke[1] > 0) n++;
   if (r.naex.karty.length > 0) n += 2;
   if (r.pitkyKola !== null) n += 2.5 + 1.4 * (r.pitkyKola.zaverecne?.length ?? 0);
   return bezSpakov ? n : n + riadkovSpakovBitky(r);
@@ -712,7 +723,8 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
             priazne={priazne}
           />
         )}
-        {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} />, true, undefined, "Pohoršenie")}
+        {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} pod="2 mäkké" />, true, undefined, "Pohoršenie")}
+        {tabulka && (hotovo || vlna >= vlnaUcinku) && <RiadokHadky r={r} ja={ja} menoSupera={menoSupera} priazne={priazne} menoKarty={menoKarty} />}
         {tabulka && riadok("naex-x2", naexX2, <Stred ikona={<ZnakNaex znak="×2" ikona={poldeci} />} nazov="NA EX" pod="zdvojilo" />, true, (kto) => titulNaex("zdvojilo", kto), undefined, (kto) => detailNaex(r.naex, "zdvojilo", kto, ja, piktogramy))}
         {tabulka && riadok("naex-zrus", naexZrus, <Stred ikona={<ZnakNaex znak="✕" ikona={poldeci} />} nazov="NA EX" pod="zrušilo" />, naexX2.length === 0, (kto) => titulNaex("zrusilo", kto), undefined, (kto) => detailNaex(r.naex, "zrusilo", kto, ja, piktogramy))}
         {/* Telefón: riadky z Pitiek kola ukázal už súhrn Pitky — v súhrne bitky by len mýlili, čo patrí bitke. */}
@@ -880,6 +892,63 @@ function SucetBitky({ r, ja, menoSupera }: { readonly r: RekapitulaciaBitky; rea
  * nimi sivé tie, ktoré zrušil Odpor či NA EX. Zvyšná Viera uberie tuhé, zvyšná Povera
  * zaberie len na súperove priznané Dlhy.
  */
+/**
+ * Riadok Hádka (v10) cez celú šírku: kto vyhral o koľko (mäkké oboch) a čo rozdelil — starší
+ * menom a krúžkom priazne, sila z markera → do konca kola (zobrazenie priazne, KruzokPriazne).
+ */
+function RiadokHadky({
+  r,
+  ja,
+  menoSupera,
+  priazne,
+  menoKarty,
+}: {
+  readonly r: RekapitulaciaBitky;
+  readonly ja: PlayerId;
+  readonly menoSupera: string;
+  readonly priazne: PriazneBitky | undefined;
+  readonly menoKarty: (defId: string) => string;
+}) {
+  const h = r.hadka;
+  if (h === undefined || h.makke[0] + h.makke[1] === 0) return null;
+  const su: PlayerId = ja === 0 ? 1 : 0;
+  const kto = h.vitaz === null ? null : h.vitaz === ja ? "ja" : "su";
+  const starsi = (priazne?.hadka ?? []).filter((x) => x.hrac === h.vitaz);
+  const zJadra = h.starsi.filter((x) => !starsi.some((y) => y.elderId === x.elderId));
+  const sila = (u: { readonly hrac: PlayerId | null; readonly sila: number }): string => (u.hrac === null ? "nikto" : `${u.hrac === ja ? "ty" : menoSupera} ${u.sila}`);
+  return (
+    <div className="rk-riadok rk-zaverecna rk-hadka-riadok nova-skupina" role="row">
+      <span className="rk-zaverecna-text" role="cell">
+        <span className="rk-zaverecna-kto">Hádka:</span>{" "}
+        {kto === null ? (
+          <>
+            remíza{" "}
+            <b>
+              {h.makke[ja]} : {h.makke[su]}
+            </b>{" "}
+            mäkké — nikto nerozdeľuje
+          </>
+        ) : (
+          <>
+            {kto === "ja" ? "vyhral si" : `vyhral ${menoSupera}`} o <b>{h.velkost}</b> ({h.makke[ja]} : {h.makke[su]} mäkké)
+            {starsi.map((x) => (
+              <Cip key={x.elderId} trieda={`${kto} rk-hadka`} title={popisHadkyNaStarsom(x, menoSupera)}>
+                <PriazenStarsiehoVRiadku fav={x.fav} p={x.teraz} meno={x.meno} prechod={prechodPriazne(x.z, x.teraz, menoSupera)} />
+              </Cip>
+            ))}
+            {zJadra.map((x) => (
+              <Cip key={x.elderId} trieda={`${kto} rk-hadka`} title="priazeň do konca kola, marker sa nehýbe">
+                {menoKarty(x.defId)} {sila(x.pred)} → {sila(x.po)}
+              </Cip>
+            ))}
+            {h.prepadlo > 0 && <small> · {h.prepadlo} prepadlo</small>}
+          </>
+        )}
+      </span>
+    </div>
+  );
+}
+
 function VieraPovera({
   r,
   ja,
@@ -928,31 +997,30 @@ function VieraPovera({
     const kto2 = kto === ja ? "ja" : "su";
     const videne = z.filter((x) => vid(x.uid)).length;
     let ucinok: ReactNode = null;
-    if (ucinkuje && druh === "Viera" && r.vieraUbera[kto] > 0) {
-      ucinok = (
-        <Cip trieda={kto2} title={`zvyšná Viera uberá ${kto === ja ? menoSupera : "tebe"} ${r.vieraUbera[kto]} tuhé`}>
-          −{r.vieraUbera[kto]} tuhé
-        </Cip>
-      );
-    }
-    const hadka = (priazne?.hadka ?? []).filter((x) => x.hrac === kto);
-    if (ucinkuje && druh === "Povera" && hadka.length > 0) {
-      // Hádka pomenovaná menom staršieho a krúžkom výsledku (Michal 2026-10-31), z markera → toto kolo.
+    // Viera (v10) najprv ruší súperove Povery na kusy (Svätý text: každá 2), zvyšná uberá tuhé.
+    const zrusilaPovier = druh === "Viera" ? r.zrusenaPovera[kto === ja ? su : ja] : 0;
+    if (ucinkuje && druh === "Viera" && (r.vieraUbera[kto] > 0 || zrusilaPovier > 0)) {
       ucinok = (
         <>
-          {hadka.map((x) => (
-            <Cip key={x.elderId} trieda={`${kto2} rk-hadka`} title={popisHadkyNaStarsom(x, menoSupera)}>
-              <PriazenStarsiehoVRiadku fav={x.fav} p={x.teraz} meno={x.meno} prechod={prechodPriazne(x.z, x.teraz, menoSupera)} />
+          {zrusilaPovier > 0 && (
+            <Cip trieda={kto2} title={`Viera zrušila ${zrusilaPovier} ${zrusilaPovier === 1 ? "Poveru" : zrusilaPovier < 5 ? "Povery" : "Povier"} ${kto === ja ? menoSupera : "tebe"} — tie mäkké nedali`}>
+              ✕{zrusilaPovier} {nazov("Povera")}
             </Cip>
-          ))}
+          )}
+          {r.vieraUbera[kto] > 0 && (
+            <Cip trieda={kto2} title={`zvyšná Viera uberá ${kto === ja ? menoSupera : "tebe"} ${r.vieraUbera[kto]} tuhé`}>
+              −{r.vieraUbera[kto]} tuhé
+            </Cip>
+          )}
         </>
       );
-    } else if (ucinkuje && druh === "Povera" && (r.zvysnaPovera?.[kto] ?? 0) > 0) {
-      // v8.3: zvyšné Povery posunuli silu priazní (klebety na toto kolo), nie poškodenie.
-      const n = r.zvysnaPovera[kto];
+    }
+    if (ucinkuje && druh === "Povera" && (r.zvysnaPovera?.[kto] ?? 0) > 0) {
+      // v10: zvyšné Povery sú mäkké poškodenie do hádky (Horoskop: každá 2).
+      const makke = r.zvysnaPovera[kto] * (r.silaPovery?.[kto] ?? 1);
       ucinok = (
-        <Cip trieda={kto2} title={`${n} ${n === 1 ? "Povera posunula" : "Povery posunuli"} silu priazní o stupeň k ${kto === ja ? "tebe" : menoSupera} — len na toto kolo`}>
-          priazeň ±{n}
+        <Cip trieda={kto2} title={`zvyšné Povery dali ${makke} mäkké do hádky${(r.silaPovery?.[kto] ?? 1) > 1 ? " (Horoskop: každá 2)" : ""}`}>
+          {makke} mäkké
         </Cip>
       );
     }

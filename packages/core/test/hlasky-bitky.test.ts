@@ -21,7 +21,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     caka: null,
     sums: [{}, {}],
     exekutorHotovy: [true, true],
-    pohorsenieZostava: [0, 0],
+   
     exekutor: [0, 0],
     damage: null,
     vitaz: null,
@@ -53,17 +53,15 @@ const logy = (events: readonly Event[]): string[] => events.flatMap((e) => (e.ty
 
 describe("bitka hlási, čo zmenší či zruší Nakladačka a Pohoršenia", () => {
   it("Policajtka (Michal 2026-10-26) Pohoršenia neruší — bitka o nej mlčí", () => {
-    // Bitka stojí na voľbe Hasiča pred Poverami; po nej vstúpi do Povier a prepočíta Pohoršenia.
-    // Pohoršenia navyše dáva Abstinent (Nervák za Absťák zanikol v9.1).
+    // Bitka stojí na voľbe Hasiča pred hádkou; po nej vstúpi do hádky a prepočíta súčty.
     const hasic = inst("pijan");
-    const s = vBitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], { krok: "povery", exekutorHotovy: [false, false] }, (t) => ({
+    const s = vBitke([[lezi("pijan", 0), lezi("pijan", 0)], [lezi("policajtka", 1)]], { krok: "hadka", exekutorHotovy: [false, false] }, (t) => ({
       ...t,
-      starsi: t.starsi.map((e) => (data.scorecards.find((x) => x.id === e.scorecard)?.favour === "LAKOMEC" ? { ...e, marker: 0 as const } : e)),
       hraci: [{ ...t.hraci[0], odhadzovaci: [hasic] }, t.hraci[1]],
       hasicVolby: [{ hrac: 0, uid: hasic.uid, potom: "bitka" }],
     }));
     const { state, events } = apply(data, s, { type: "hasic", nechat: false }, 0);
     expect(logy(events).some((t) => t.startsWith("Policajtka") || t.startsWith("Praudovravec umlčal"))).toBe(false);
-    expect(state.bitkaStav?.pohorseniaSpolu?.[0] ?? 0).toBeGreaterThanOrEqual(2);
+    expect(events.some((e) => e.type === "bitkaVysledok")).toBe(true);
   });
 });

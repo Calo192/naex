@@ -65,7 +65,11 @@ export interface StatistikyHraca {
   readonly kartyDoSuperovej: number;
   readonly dedicstvo: number;
 
+  /** Markery posunuté Pohoršením — len partie do v9 (v10 markerom hýbe len Nakladačka). */
   readonly posunyPohorsenim: number;
+  /** Bitky, v ktorých hráč vyhral hádku (v10), a súčet veľkosti vyhratých hádok. */
+  readonly hadkyVyhrane: number;
+  readonly hadkaVyhrana: number;
   readonly posunyPrebytkom: number;
   readonly starsiZiskani: number;
   readonly lokalityOvladnute: number;
@@ -139,6 +143,8 @@ export function prazdneStatistiky(): StatistikyHraca {
     kartyDoSuperovej: 0,
     dedicstvo: 0,
     posunyPohorsenim: 0,
+    hadkyVyhrane: 0,
+    hadkaVyhrana: 0,
     posunyPrebytkom: 0,
     starsiZiskani: 0,
     lokalityOvladnute: 0,
@@ -297,9 +303,6 @@ function zapisJedneho(
         case "refillPoldeci":
           s.dolievania += 1;
           break;
-        case "pohorsenie":
-          s.posunyPohorsenim += 1;
-          break;
         case "prebytok":
           s.posunyPrebytkom += 1;
           break;
@@ -339,6 +342,11 @@ function zapisJedneho(
       s.najvacsiZasah = Math.max(s.najvacsiZasah, d.celkove[p]);
       if (e.prebytokDrzi === p) s.prebytokZiskany += e.prebytok;
       s.poveryUcinne += d.zvysnaPovera[p];
+      // Hádka (v10): vyhral ju, kto mal viac mäkkého.
+      if (d.makke[p] > d.makke[opp]) {
+        s.hadkyVyhrane += 1;
+        s.hadkaVyhrana += d.makke[p] - d.makke[opp];
+      }
       for (const [akcia, n] of Object.entries(e.sums[p]) as [Action, number][]) {
         if (n > 0) s.akcie[akcia] = (s.akcie[akcia] ?? 0) + n;
       }

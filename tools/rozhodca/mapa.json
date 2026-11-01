@@ -1,6 +1,6 @@
 {
   "pravidlaCommit": "e832dad38119bd7cf966223c11d09046e478333e",
-  "aktualizovane": "2026-10-30",
+  "aktualizovane": "2026-11-01",
   "pravidla": [
     {
       "id": "1.zaklad.dvaja-hraci",
@@ -76,13 +76,14 @@
     {
       "id": "2.akcie.povera",
       "paragraf": "2. Karta, akcie, tagy, varianty › Akcie",
-      "pravidlo": "Povera (v8.3 „Výpožička priazne“): nepoškodzuje — ruší sa s Vierou 1:1, každá zvyšná v bitke posunie silu priazne jedného staršieho o stupeň k majiteľovi, len na toto kolo (§9.1).",
+      "pravidlo": "Povera (v10): 1 mäkké poškodenie do hádky (s Horoskopom 2); so súperovou Vierou sa ruší 1 : 1 na kusy; Pohoršenie 2 mäkké, Viera ho nezruší (§9.1).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/battle.test.ts › Viera a Povera sa vyrušia 1:1 — zvyšné Povery idú na klebety, nie do poškodenia (v8.3)",
-        "packages/core/test/povery-v83.test.ts › Povera posunie silu priazne o stupeň k majiteľovi — marker sa nehýbe; obranca prvý, potom útočník"
+        "packages/core/test/battle.test.ts › Viera a Povera sa vyrušia 1:1 — zvyšné Povery sú mäkké poškodenie do hádky, nie tuhé (v10)",
+        "packages/core/test/hadka-v10.test.ts › Ana a Boris: Borisova Viera zruší jednu Aninu Poveru — mäkké 5 : 3, Ana vyhrala hádku o 2",
+        "packages/core/test/hadka-v10.test.ts › Viera proti Pohoršeniu nepomáha — zvyšná Viera tlmí tuhé"
       ],
-      "poznamka": "v8.3 (Michal 2026-10-30, docs/napady/povery.html): mäkké poškodenie zaniklo."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
       "id": "2.akcie.viera-hodnota",
@@ -624,17 +625,19 @@
     {
       "id": "12.naradie.mimo-linie",
       "paragraf": "12. Nástroje a Dedičstvo › Dedičstvo",
-      "pravidlo": "Náradie mimo línie (v8.4): Boxer (Pecka +1), Telefón (Pohoršenie k stredu za cenu von), Píšťalka (Obmedzenia uberajú cigarety za pas), Jogurt (Poldeci v Pitke), Horoskop (klebety aj ďalšie kolo), Krištáľová guľa (Vízia 2 karty).",
+      "pravidlo": "Náradie mimo línie (v8.4): Boxer (Pecka +1), Telefón (v10: Pohoršenia nemožno zrušiť Odporom a NA EX), Píšťalka (Obmedzenia uberajú cigarety za pas), Jogurt (Poldeci v Pitke), Horoskop (v10: Povery majú silu 2), Krištáľová guľa (Vízia 2 karty).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naradie.test.ts › Boxer: tvoje Pecky o 1 poškodenie viac (aj žeravá ikona)",
-        "packages/core/test/naradie.test.ts › Telefón: Pohoršenie k stredu stojí toľko ako von (z červenej 3, nie 4)",
+        "packages/core/test/hadka-v10.test.ts › Odpor súpera na spoji s mojím Pohoršením ho nezruší",
         "packages/core/test/naradie.test.ts › Píšťalka: súperove Obmedzenia v línii uberajú aj cigarety za pas",
         "packages/core/test/naradie.test.ts › Jogurt: tvoje Poldeci otočia vypitý poldeci hneď v Pitke, bitka ich znova neotočí",
-        "packages/core/test/naradie.test.ts › Horoskop: klebety z tvojich Povier platia aj v nasledujúcom kole",
-        "packages/core/test/naradie.test.ts › Krištáľová guľa: Vízia ponúkne aj druhú kartu zhora — tá ide do ruky, vrchná ostane navrchu"
+        "packages/core/test/naradie.test.ts › Horoskop (v10): tvoje Povery majú silu 2 — klebety z hádky do ďalšieho kola neprejdú",
+        "packages/core/test/naradie.test.ts › Krištáľová guľa: Vízia ponúkne aj druhú kartu zhora — tá ide do ruky, vrchná ostane navrchu",
+        "packages/core/test/hadka-v10.test.ts › NA EX moje aktívne Pohoršenia nezruší (ostatné áno)",
+        "packages/core/test/hadka-v10.test.ts › Svätý text: každá Viera zruší 2 Povery (s Horoskopom 4 mäkké); Viera, ktorá rušila, netlmí tuhé"
       ],
-      "poznamka": "Michal 2026-10-30, docs/napady/naradie-akcie.html (Rozhodnuté). Karty pridá Admin do sady."
+      "poznamka": "Michal 2026-10-30, docs/napady/naradie-akcie.html (Rozhodnuté). Karty pridá Admin do sady. v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
       "id": "5.ciel.obranca",
@@ -974,67 +977,68 @@
       "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
     },
     {
-      "id": "9.pohorsenie.posun",
-      "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Každé Pohoršenie je bod na posun markera staršieho od seba alebo k sebe (v8.2: pole podľa ceny zóny, hráč vyberá staršieho a smer, marker ide, kým body stačia; zvyšok, ktorý nestačí na žiadny posun, prepadne), bez ohľadu na výsledok bitky; priazeň sa mení hneď, strach z nového stupňa až po udržaní (v8.3).",
+      "id": "9.hadka.makke",
+      "paragraf": "9. Bitka › 9.1 Hádka (v10)",
+      "pravidlo": "Viera (s Veriacim pred hádkou) a Povery sa vyrušia 1 : 1 na kusy (Svätý text: každá Viera 2; Čierna mačka: jej Povery nie); mäkké = Pohoršenie × 2 + zvyšné Povery × sila Povery; víťaz hádky = vyššie mäkké, hádka = rozdiel, rovnosť = nikto.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v5.test.ts › legálne sú oba smery; k sebe posunie marker k hráčovi a priazeň platí už v poškodení tejto bitky",
-        "packages/core/test/spaky-v6.test.ts › víťaz dostane 1 špak za každú kartu v línii na oboch stranách (v8), nie za Pitky; strach za Pohoršenie v bitke nič (v8.3); lokalitu si neberie",
-        "packages/core/test/pravidla-v8-2.test.ts › posunZaBody: marker ide, kým zvyšok stačí na ďalšie pole, a vráti cenu; bez jediného poľa null",
-        "packages/core/test/pravidla-v8-2.test.ts › zvyšok 1 pri markeroch mimo stredu prepadne a log to povie",
-        "packages/core/test/pohorsenie-v82.test.ts › marker ide, kým zvyšok stačí: 5 Pohoršení zo stredu = oranžová, 2 ostanú (na červenú treba 3)",
-        "packages/core/test/pohorsenie-v82.test.ts › k sebe platí to isté: z ľavej červenej k stredu 4, potom 3"
+        "packages/core/test/hadka-v10.test.ts › Ana a Boris: Borisova Viera zruší jednu Aninu Poveru — mäkké 5 : 3, Ana vyhrala hádku o 2",
+        "packages/core/test/hadka-v10.test.ts › rovnosť mäkkého = remíza, nikto nerozdeľuje (H5)",
+        "packages/core/test/hadka-v10.test.ts › remíza v hádke: nikto nerozdeľuje a bitka ide rovno na poškodenie",
+        "packages/core/test/hadka-v10.test.ts › Čierna mačka: jej Povery sa Vierou nerušia — vždy mäkké, Viera ostáva na tuhé"
       ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/playtest-055944.test.ts › dáva priazeň a jeho marker sa dá posunúť Pohoršením; do ruky ho vziať nemožno. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
-      "id": "9.pohorsenie.hranice",
-      "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Pohoršenie nemá limit hraníc zón — ten istý marker smie ísť viackrát (oba smery); každé pole stojí podľa zóny (v8.2).",
+      "id": "9.hadka.rozdelenie",
+      "paragraf": "9. Bitka › 9.1 Hádka (v10)",
+      "pravidlo": "Víťaz hádky rozdelí hádku na sily priazní starších len k sebe (súperovi nesmie), vyberá len staršieho; cena podľa zóny ako Nakladačka (von 1/2/3, k stredu 2/3/4), strop sila 3, zvyšok bez posunu prepadne; marker sa nehýbe; platí do konca kola (bitka, exekúcia, po bitke).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v5.test.ts › v8.2: limit hraníc zón nie je — zo stredu na kraj 1 + 2 + 3 = 6 jedným výberom, späť do stredu 4 + 3 + 2 = 9",
-        "packages/core/test/pohorsenie-v82.test.ts › k stredu je pole o 1 drahšie: z pravej oranžovej na ľavú červenú 3 + 2 + 1 + 2 + 3 = 11"
+        "packages/core/test/hadka-v10.test.ts › Ana vyhrala hádku o 2: Fajčiar aj Robota zo stredu na jej žltú — cigareta po bitke a spálený Dlh; markery v strede",
+        "packages/core/test/hadka-v10.test.ts › väčšia hádka o 5 — „zobrať“: Borisov Bitkár sily 2 cez stred na nič (3 + 2), v tejto bitke nebije",
+        "packages/core/test/hadka-v10.test.ts › väčšia hádka o 5 — „získať“: Advokát na 2 (1 + 2), Veriaci a Robota na 1 — Borisov Bitkár bije ďalej",
+        "packages/core/test/hadka-v10.test.ts › súperovi priazeň dať nesmie, porazený v hádke nerozdeľuje nič; ťah s príkazom inej fázy server odmietne",
+        "packages/core/test/hadka-v10.test.ts › strop 3 a prepadnutie: keď sú všetky priazne víťazove v sile 3, hádka celá prepadne a log to povie",
+        "packages/core/test/pravidla-v5.test.ts › víťaz vyberá len staršieho; priazeň ide k nemu a platí už v poškodení tejto bitky, marker stojí",
+        "packages/core/test/pravidla-v5.test.ts › strop 3: na staršieho, ktorého priazeň je už víťazova v sile 3, hádka nesmie",
+        "packages/core/test/pravidla-v5.test.ts › cena podľa zóny ako Nakladačka: súperovu silu 3 na stred za 4 + 3 + 2 = 9, potom k sebe na 1 za 1",
+        "packages/core/test/strach-udrzanie.test.ts › hádka stupeň neodtlačí (v10): zníži priazeň na toto kolo, marker a udržaný strach ostanú"
       ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/patronat-20261020.test.ts › pravá sivá → ľavá oranžová (4 posuny) smie; packages/core/test/patronat-20261020.test.ts › z pravej oranžovej len po ľavú sivú — tretia hranica nie; packages/core/test/patronat-20261020.test.ts › Kultúrny dom limit ruší, na krajnú však Pohoršenie nesmie; packages/core/test/elders.test.ts › hranice zón: v sivej sa nič neprekračuje. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
-      "id": "9.pohorsenie.kraj",
-      "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Pohoršenie smie na krajnú pozíciu (v8.2 zo stredu na červenú 1 + 2 + 3 = 6), ďalej von nie.",
+      "id": "9.hadka.verejne",
+      "paragraf": "9. Bitka › 9.1 Hádka (v10)",
+      "pravidlo": "Rozdelenie hádky je verejné — obaja vidia mäkké, zvyšok aj klebety; klient plánuje to isté ako server.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/pravidla-v5.test.ts › v6: aj k sebe smie na krajnú pozíciu, ďalej von nie (oranžová → červená stojí 3, v8.2)",
-        "packages/core/test/pohorsenie-v82.test.ts › zo stredu na červenú 6 Pohoršení jedným výberom: žltá 1 + oranžová 2 + červená 3"
+        "packages/core/test/hadka-v10.test.ts › rozdelenie hádky je verejné — súper vidí mäkké, zvyšok aj klebety",
+        "packages/core/test/rozdelenie.test.ts › hádka z verejného pohľadu: plán počíta s klebetami, ktoré už víťaz rozdelil"
       ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/elders.test.ts › Pohoršenie nikdy nedostane marker na krajnú pozíciu; packages/core/test/revizia-kariet.test.ts › Noviny: Pohoršenie smie na krajnú pozíciu, ak bol marker na predposlednej od začiatku kola. v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
-      "id": "9.povery.vypozicka",
-      "paragraf": "9. Bitka › 9.1 Povery",
-      "pravidlo": "Krok Povery pred Pohoršením (v8.3): zvyšné Povery po Viere posunú silu priazne staršieho o stupeň k majiteľovi (zníženie, preklopenie, požičanie zo stredu, zosilnenie; strop 3), marker sa nehýbe, platí do konca kola (aj Abstinent, Bitkár, Kmotor); obranca rozdeľuje prvý; klebety sú verejné.",
+      "id": "9.hadka.veriaci",
+      "paragraf": "9. Bitka › 9.1 Hádka (v10)",
+      "pravidlo": "Veriaci v dvoch častiach (H2): proti Poverám so silou pred hádkou, rozdiel sily po hádke sa prejaví v tlmení tuhého.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/povery-v83.test.ts › Povera posunie silu priazne o stupeň k majiteľovi — marker sa nehýbe; obranca prvý, potom útočník",
-        "packages/core/test/povery-v83.test.ts › požičať priazeň staršieho v strede (0 → moja 1), preklopiť a zosilniť vlastnú — najviac 3",
-        "packages/core/test/povery-v83.test.ts › klebety pôsobia v poškodení (Bitkár) aj na Pohoršenia z Abstinenta — a po kole zaniknú",
-        "packages/core/test/povery-v83.test.ts › klebety a zvyšné Povery sú verejné — obaja hráči ich vidia rovnako",
-        "packages/core/test/povery-v83.test.ts › bot Povery rozdeľuje (a celá partia botov dobehne)"
+        "packages/core/test/hadka-v10.test.ts › Veriaci v dvoch častiach: proti Poverám so silou pred hádkou, rozdiel po hádke v tlmení tuhého"
       ],
-      "poznamka": "Michal 2026-10-30, docs/napady/povery.html (Rozhodnuté: Výpožička priazne)."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
       "id": "9.poskodenie.vzorec",
       "paragraf": "9. Bitka › 9.3 Poškodenie",
-      "pravidlo": "Viera a Povera sa rušia 1:1 (Čierna mačka nie); tuhé = akcie + súperove priznané Cirhózy + sila Bitkára (po klebetách) − zvyšná súperova Viera × hodnota − vlastné Absťáky (min 0). Mäkké a celkové poškodenie od v8.3 nie sú.",
+      "pravidlo": "tuhé = akcie + súperove priznané Cirhózy + Bitkár (po hádke) − zvyšná súperova Viera × hodnota (Viera minutá na Povery nie; Veriaci po hádke ± rozdiel) − max(0, vlastné Absťáky − Abstinent), min 0; mäkké do tuhého nevstupuje (v10).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé",
         "packages/core/test/battle.test.ts › priazeň Bitkára pridáva tuhé navyše",
-        "packages/core/test/povery-v83.test.ts › mäkké a celkové poškodenie zaniklo: Nakladačka = rozdiel tuhého, drží ju víťaz"
+        "packages/core/test/hadka-v10.test.ts › Viera proti Pohoršeniu nepomáha — zvyšná Viera tlmí tuhé"
       ],
-      "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/battle.test.ts › Viera a Povera sa vyrušia 1:1 a zrušená Povera neudelí nič; packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé; packages/core/test/battle.test.ts › priazeň Bitkára pridáva tuhé navyše; packages/core/test/battle.test.ts › mäkké poškodenie je zastropené súperovým priznaným dlhom; packages/core/test/nahlad.test.ts › odhad sa rovná poškodeniu, ktoré vyrátal motor."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
       "id": "9.poskodenie.cirhoza",
@@ -1078,7 +1082,7 @@
         "packages/core/test/battle.test.ts › pri remíze v celkovom poškodení nikto nezíska Nakladačku",
         "packages/core/test/revizia-kariet.test.ts › 1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1",
         "packages/core/test/pravidla-v8.test.ts › víťaz drží Nakladačku, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on",
-        "packages/core/test/pravidla-v8.test.ts › pri sekere Nakladačku nedrží nikto — Povery už poškodenie nedávajú (v8.3)",
+        "packages/core/test/pravidla-v8.test.ts › pri sekere Nakladačku nedrží nikto — mäkké do tuhého nevstupuje (v10)",
         "packages/core/test/strach-udrzanie.test.ts › udržané z posledného kola sa vyplatia po finále aj porazenému; nové stupne finále nič; Nakladačka sa nerozdeľuje — v9.1 víťaz dostane za ňu špaky 1 : 1"
       ],
       "poznamka": "Znenie opravené podľa rozhodcu #15 (Michal 2026-10-22, implementované 2026-10-23). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
@@ -1204,7 +1208,7 @@
     {
       "id": "10.priazne.hodnoty",
       "paragraf": "10. Starší › Priazne",
-      "pravidlo": "Priazne pôsobia silou 1/2/3: Bitkár +1/2/3 tuhého, Kmotor −1/2/3 priznaného Dlhu po bitke, Abstinent +1/2/3 Pohoršenia, Exekútor súperov prah −1/2/3, Výpalné (Výpalník) 1/2/3 cigarety za každé súperovo NA EX, Fajčiar +1/2/3 po šenku (Obmedzenie neuberá), Na zdravie (Alkoholik) 1/2/3 poldeci z NA EX za kolo plných, Veriaci +1/2/3 Viery.",
+      "pravidlo": "Priazne pôsobia silou 1/2/3: Bitkár +1/2/3 tuhého, Kmotor −1/2/3 priznaného Dlhu po bitke, Abstinent 1/2/3 Absťáky sa v bitke nerátajú (v10), Exekútor súperov prah −1/2/3, Výpalné (Výpalník) 1/2/3 cigarety za každé súperovo NA EX, Fajčiar +1/2/3 po šenku (Obmedzenie neuberá), Na zdravie (Alkoholik) 1/2/3 poldeci z NA EX za kolo plných, Veriaci +1/2/3 Viery.",
       "stav": "na-overenie",
       "testy": [],
       "poznamka": "v5 (2026-10-25): pravidlo sa zmenilo — rozhodca ho prejde znova a doplní testy (jadro v5: packages/core/test/pravidla-v5.test.ts). Testy v4: packages/core/test/player.test.ts › prahy rastú s priazňou, hodnota Viery je 1 (Veriaci dáva Vieru navyše); packages/core/test/revizia-kariet.test.ts › Lakomec: barter za 5 / 4 / 3 / 2 cigarety podľa sily priazne; packages/core/test/effects.test.ts › Neprajník a Čierna mačka: Povery nad súperove priznané Dlhy; packages/core/test/battle.test.ts › priazeň Bitkára pridáva tuhé navyše; packages/core/test/pravidla-20261019.test.ts › dve Viery s priazňou sily 2 uberú súperovi 4 tuhé, nie 10; packages/core/test/pravidla-20261019.test.ts › priazeň Úžerníka zvýši prah Dlhu o silu; súper má prah 2; packages/core/test/pravidla-kolo.test.ts › §10 Fajčiar: +sila cigariet (bez ×2) len v 1. Pitke kola."
@@ -1344,16 +1348,6 @@
         "packages/core/test/battle.test.ts › tuhé neklesne pod nulu a absťáky znižujú vlastné tuhé",
         "packages/core/test/abstak-chut.test.ts › −1 tuhé za každú kartu Absťák kdekoľvek v balíčku (ruka, doberací, odhadzovací); Pohoršenie nedáva"
       ]
-    },
-    {
-      "id": "9.pohorsenie.abstak",
-      "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Nervák zanikol (v9.1): Absťák Pohoršenie nedáva.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/abstak-chut.test.ts › −1 tuhé za každú kartu Absťák kdekoľvek v balíčku (ruka, doberací, odhadzovací); Pohoršenie nedáva"
-      ],
-      "poznamka": "v8.1 Nervák (Michal 2026-10-28, roadmapa #113). v8.2 (Michal 2026-10-30): znenie a testy podľa novej ceny posunu / počítadiel Dlhu a Absťáku."
     },
     {
       "id": "8.abstak.autobusar",
@@ -1668,7 +1662,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/poradkyna-nahlad.test.ts › Dlh z jej akcií náhľad pripíše súperovi rovnako ako Pitka",
-        "packages/core/test/effects.test.ts › Čierna mačka (v8.3, návrh P5): Povery sa Vierou nerušia — mäkké poškodenie nie je",
+        "packages/core/test/effects.test.ts › Čierna mačka (v8.3, P5): Povery sa Vierou nerušia — všetky sú mäkké (v10)",
         "packages/core/test/battle.test.ts › Čierna mačka (v8.3, návrh): moje Povery sa Vierou nerušia — Viera ostáva na tuhé"
       ]
     },
@@ -1826,12 +1820,15 @@
       "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
     },
     {
-      "id": "9.pohorsenie.abstinent",
-      "paragraf": "9. Bitka › 9.2 Pohoršenie",
-      "pravidlo": "Priazeň Abstinenta pridá v bitke +1/2/3 Pohoršenia.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "v5 (2026-10-25): nové pravidlo — rozhodca ho prejde a priradí test."
+      "id": "9.poskodenie.abstinent",
+      "paragraf": "9. Bitka › 9.3 Poškodenie",
+      "pravidlo": "Abstinent (v10): v bitke sa ti neráta 1/2/3 Absťákov (účinnou silou po hádke) — tuhé za ne neklesne, pri remíze v tuhom sa porovnáva počet znížený o silu; Pohoršenia navyše nedáva.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/hadka-v10.test.ts › Abstinent: v bitke sa neráta 1 / 2 / 3 Absťákov — v poškodení aj pri remíze v tuhom",
+        "packages/core/test/pravidla-v5.test.ts › Abstinent (v10): Pohoršenia navyše nedáva; barter nezlacňuje"
+      ],
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
       "id": "9.kmotor",
@@ -2143,10 +2140,9 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/elders.test.ts › v8.3: ústup k stredu zmaže zaplatené aj držané stupne, z ktorých marker odišiel; prechod na druhú polovicu zmaže všetko",
-        "packages/core/test/strach-udrzanie.test.ts › odtlačený stupeň sa nezaplatí — Pohoršenie súpera vráti marker skôr, než koniec kola zaplatí",
-        "packages/core/test/strach-udrzanie.test.ts › ústup a návrat v tom istom kole: vrátený stupeň je znova nový a čaká ďalšie kolo",
-        "packages/core/test/strach-udrzanie.test.ts › prechod cez stred zmaže držanie — druhá polovica platí druhému hráčovi až po udržaní"
-      ]
+        "packages/core/test/strach-udrzanie.test.ts › hádka stupeň neodtlačí (v10): zníži priazeň na toto kolo, marker a udržaný strach ostanú"
+      ],
+      "poznamka": "v10: Pohoršenie markerom nehýbe — scenáre ústupu Pohoršením vypadli; ústup Nakladačkou a pokusom strážia testy sPosunutymMarkerom."
     },
     {
       "id": "10.priazne.kmotor",
@@ -2208,15 +2204,15 @@
     {
       "id": "10.zajatie.v-ohrozeni",
       "paragraf": "10. Starší › Zajatie a väzeň",
-      "pravidlo": "Starší v ohrození sa v kole pokusu nehýbe — Pohoršenie, Nakladačka, Povery (O8), Kšeft Predsedovej vily a Kapybara naňho nesmú.",
+      "pravidlo": "Starší v ohrození sa v kole pokusu nehýbe — Nakladačka (O8), Kšeft Predsedovej vily a Kapybara naňho nesmú; hádka smie meniť silu jeho priazne (v10, H4).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vazen.test.ts › O8: starší v ohrození sa v kole pokusu nehýbe — Pohoršenie, prebytok ani Povera naňho nesmú",
-        "packages/core/test/rozdelenie.test.ts › starší v ohrození (pokus o zajatie, v9) sa nehýbe — plán aj server rovnako",
+        "packages/core/test/vazen.test.ts › O8: starší v ohrození sa v kole pokusu nehýbe — Nakladačka naňho nesmie; hádka smie meniť silu priazne (v10, H4)",
+        "packages/core/test/rozdelenie.test.ts › starší v ohrození (pokus o zajatie) sa pri hádke posúva (v10 H4), pri Nakladačke nie (O8)",
         "packages/core/test/v7-karty.test.ts › Predsedova vila: za 2 cigarety posun markera, nie staršieho v ohrození (pokus o zajatie, v9)",
         "packages/server/test/hrac-texty.test.ts › staršieho v ohrození výpis neponúkne — rovnako ako server"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v10 (Michal 2026-11-01, docs/napady/hadka.html): Developer, na prejdenie rozhodcom."
     },
     {
       "id": "10.zajatie.vysledok",

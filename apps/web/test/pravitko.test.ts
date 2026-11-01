@@ -13,12 +13,11 @@ import { pravitkoPosunu } from "../src/hra/pravitko.ts";
 
 describe("pravitkoPosunu", () => {
   it("ide pole po poli, kým body stačia — ako posunZaBody v jadre", () => {
-    for (const telefon of [false, true])
-      for (let m = 0; m <= 6; m++)
+    for (let m = 0; m <= 6; m++)
         for (const smer of [0, 1] as PlayerId[])
           for (let body = 0; body <= 15; body++) {
-            const p = pravitkoPosunu(m as MarkerPos, smer, body, telefon);
-            const jadro = posunZaBody({ marker: m as MarkerPos }, smer, body, telefon);
+            const p = pravitkoPosunu(m as MarkerPos, smer, body);
+            const jadro = posunZaBody({ marker: m as MarkerPos }, smer, body);
             expect([p.cena, p.polia]).toEqual(jadro === null ? [0, 0] : [jadro.cena, jadro.kroky]);
             expect(p.dieliky.filter((d) => d.zamok).length).toBeLessThanOrEqual(1);
             expect(p.dieliky.at(-1)?.zamok ?? false).toBe(p.dieliky.some((d) => d.zamok));
@@ -42,9 +41,8 @@ describe("pravitkoPosunu", () => {
     expect(pravitkoPosunu(0, 0, 5).dieliky).toEqual([]);
   });
 
-  it("s Telefónom stojí pole k stredu toľko ako von", () => {
+  it("k stredu je pole o 1 drahšie (Telefón od v10 cenu nemení)", () => {
     expect(pravitkoPosunu(5, 0, 3)).toMatchObject({ cena: 3, polia: 1, dieliky: [{ cena: 3 }, { cena: 2, zamok: true }] });
-    expect(pravitkoPosunu(5, 0, 3, true)).toMatchObject({ cena: 3, polia: 2, dieliky: [{ cena: 2 }, { cena: 1 }, { cena: 1, zamok: true }] });
   });
 });
 

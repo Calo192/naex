@@ -1,8 +1,8 @@
 // Vyhodnotenie bitky — presné poradie z PRAVIDLA.md §9 (M4).
 //
-// Tu sú len ČISTÉ funkcie (Exekútor / poškodenie / výsledok). Kroky, ktoré
-// vyžadujú rozhodnutie hráča (Povery, Pohoršenie, rozdelenie Nakladačky,
-// Pohreb), motor v M6 len pripraví ako čakajúce rozhodnutia.
+// Tu sú len ČISTÉ funkcie (Exekútor / hádka a poškodenie / výsledok). Kroky, ktoré
+// vyžadujú rozhodnutie hráča (rozdelenie hádky a Nakladačky, Veštica, Cintorín),
+// motor len pripraví ako čakajúce rozhodnutia.
 
 import type { ActionSums } from "./partia.ts";
 import type { PlayerId } from "./types.ts";
@@ -11,7 +11,7 @@ import { KONSTANTY } from "./constants.ts";
 
 /** Vstup jedného hráča do výpočtu poškodenia. */
 export interface BattleSide {
-  /** Súčty aktívnych akcií hráča z evaluateLine. */
+  /** Súčty aktívnych akcií hráča z evaluateLine (Viera bez Veriaceho). */
   readonly sums: ActionSums;
   /**
    * Cirhózy ležiace v SÚPEROVEJ partii — ich efekt „Obdržíš od súpera
@@ -25,44 +25,86 @@ export interface BattleSide {
   readonly abstaky: number;
   /** Tuhé menej z efektov súpera (Pasca: −1 za každé moje Zviera v línii). Chýba = 0. */
   readonly tuheZlava?: number;
-  /**
-   * Moje Povery sa súperovou Vierou nerušia (Čierna mačka, v8.3 — návrh
-   * docs/napady/povery.html, text karty zmení Admin). Chýba = false.
-   */
+  /** Moje Povery sa súperovou Vierou nerušia (Čierna mačka). Chýba = false. */
   readonly poveryBezViery?: boolean;
-  /** Priazeň Bitkára, ak ju mám (inak 0) — tuhé poškodenie navyše. */
+  /** Priazeň Bitkára, ak ju mám (inak 0) — tuhé poškodenie navyše, účinnou silou po hádke. */
   readonly priazenBitkara: number;
-  /** Hodnota jednej MOJEJ Viery = 1 + Svätý text (priazeň Veriaceho pridáva Vieru navyše, nie hodnotu). */
+  /**
+   * Hodnota jednej MOJEJ Viery = 1 + Svätý text — v tlmení tuhého aj v rušení Povier
+   * (v10: Viera so Svätým textom zruší 2 Povery).
+   */
   readonly hodnotaViery: number;
+  /** Viera navyše z priazne Veriaceho so silou PRED hádkou — ruší Povery (v10). Chýba = 0. */
+  readonly vieraVeriacehoPred?: number;
+  /** Viera navyše z priazne Veriaceho so silou PO hádke — rozdiel oproti „pred“ tlmí tuhé (v10). Chýba = vieraVeriacehoPred. */
+  readonly vieraVeriaceho?: number;
+  /** Koľko mäkkého dá jedna moja zvyšná Povera: 1, s Horoskopom 2 (v10). Chýba = 1. */
+  readonly silaPovery?: number;
+  /** Sila priazne Abstinenta po hádke — v bitke sa mi toľko Absťákov neráta (v10). Chýba = 0. */
+  readonly silaAbstinenta?: number;
 }
 
 export interface DamageResult {
   readonly tuhe: readonly [number, number];
   /**
-   * Mäkké poškodenie zaniklo vo v8.3 (Povery „Výpožička priazne“, Michal 2026-10-30) —
-   * vždy 0; pole ostáva pre archív partií a štatistiky.
+   * Mäkké poškodenie (v10 Hádka): Pohoršenie × 2 + zvyšné Povery × sila Povery.
+   * Vyššie mäkké vyhrá hádku; v8.3–v9 vždy 0 (archív).
    */
   readonly makke: readonly [number, number];
-  /** Od v8.3 rovné tuhému (mäkké nie je); pole ostáva pre archív. */
+  /** Od v8.3 rovné tuhému — mäkké do víťaza bitky nevstupuje; pole ostáva pre archív. */
   readonly celkove: readonly [number, number];
   readonly zvysnaViera: readonly [number, number];
   readonly zvysnaPovera: readonly [number, number];
+  /** Moje Povery, ktoré zrušila súperova Viera (v10). Chýba v archíve. */
+  readonly zrusenePovery?: readonly [number, number];
+  /** Moja Viera minutá na rušenie súperových Povier (v10). Chýba v archíve. */
+  readonly vieraNaPovery?: readonly [number, number];
+  /** Sila Abstinenta — o toľko menej Absťákov sa ráta v poškodení aj pri remíze (v10). Chýba = 0. */
+  readonly abstinent?: readonly [number, number];
 }
 
 function n(v: number | undefined): number {
   return v ?? 0;
 }
 
+/** Hádka z mäkkého (v10): víťaz = vyššie mäkké, veľkosť = rozdiel; remíza = nikto. */
+export interface VysledokHadky {
+  readonly vitaz: PlayerId | null;
+  readonly velkost: number;
+}
+
+export function vysledokHadky(makke: readonly [number, number]): VysledokHadky {
+  if (makke[0] === makke[1]) return { vitaz: null, velkost: 0 };
+  return { vitaz: makke[0] > makke[1] ? 0 : 1, velkost: Math.abs(makke[0] - makke[1]) };
+}
+
+/** Absťáky, ktoré sa v bitke rátajú: Abstinent ich toľko odpustí, najmenej 0 (v10). */
+export function abstakyVBitke(abstaky: number, silaAbstinenta = 0): number {
+  return Math.max(0, abstaky - silaAbstinenta);
+}
+
 export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageResult {
-  // 1. Viera a Povera sa vyrušia 1:1 — moja Viera ruší súperove Povery,
-  //    moje Povery rušia súperovu Vieru. Zvyšné Povery posúvajú silu priazní
-  //    (v8.3, krok Povery v engine.ts); Čierna mačka: tie páry sa nerušia.
-  const viera = [n(sides[0].sums.Viera), n(sides[1].sums.Viera)] as const;
+  // 1. Hádka (v10, docs/napady/hadka.html): Viera a Povery sa vyrušia 1 : 1 na kusy —
+  //    moja Viera (s Veriacim pred hádkou) zruší najviac Viera × hodnota súperových Povier
+  //    (Svätý text: každá Viera dve). Čierna mačka: jej Povery sa nerušia.
+  const viera = ([0, 1] as const).map((p) => n(sides[p].sums.Viera) + n(sides[p].vieraVeriacehoPred)) as [number, number];
   const povera = [n(sides[0].sums.Povera), n(sides[1].sums.Povera)] as const;
-  const cancel0 = sides[0].poveryBezViery === true ? 0 : Math.min(povera[0], viera[1]);
-  const cancel1 = sides[1].poveryBezViery === true ? 0 : Math.min(povera[1], viera[0]);
-  const zvysnaViera = [viera[0] - cancel1, viera[1] - cancel0] as const;
-  const zvysnaPovera = [povera[0] - cancel0, povera[1] - cancel1] as const;
+  const zrusene = ([0, 1] as const).map((p) => {
+    const q = opponentOf(p);
+    return sides[p].poveryBezViery === true ? 0 : Math.min(povera[p], viera[q] * sides[q].hodnotaViery);
+  }) as [number, number];
+  // Viera, ktorá rušila Povery, sa na tuhé nepoužije — aj tá so Svätým textom, ktorá zrušila len jednu.
+  const vieraNaPovery = ([0, 1] as const).map((p) => Math.ceil(zrusene[opponentOf(p)] / Math.max(1, sides[p].hodnotaViery))) as [number, number];
+  const zvysnaPovera = [povera[0] - zrusene[0], povera[1] - zrusene[1]] as const;
+  // Veriaci po hádke: čo mu hádka pridala alebo ubrala, sa prejaví v tlmení tuhého.
+  const zvysnaViera = ([0, 1] as const).map((p) => {
+    const s = sides[p];
+    const posun = n(s.vieraVeriaceho ?? s.vieraVeriacehoPred) - n(s.vieraVeriacehoPred);
+    return Math.max(0, viera[p] - vieraNaPovery[p] + posun);
+  }) as [number, number];
+  const makke = ([0, 1] as const).map(
+    (p) => n(sides[p].sums.Pohoršenie) * KONSTANTY.HADKA.POHORSENIE_MAKKE + zvysnaPovera[p] * (sides[p].silaPovery ?? KONSTANTY.HADKA.POVERA_MAKKE),
+  ) as [number, number];
 
   const tuhe = ([0, 1] as const).map((p) => {
     const me = sides[p];
@@ -75,15 +117,18 @@ export function computeDamage(sides: readonly [BattleSide, BattleSide]): DamageR
       me.cirhozaBonus +
       me.tuheBonus +
       me.priazenBitkara;
-    return Math.max(0, base - oppViera * opp.hodnotaViery - me.abstaky - (me.tuheZlava ?? 0));
+    return Math.max(0, base - oppViera * opp.hodnotaViery - abstakyVBitke(me.abstaky, me.silaAbstinenta) - (me.tuheZlava ?? 0));
   }) as [number, number];
 
   return {
     tuhe,
-    makke: [0, 0],
+    makke,
     celkove: [tuhe[0], tuhe[1]],
-    zvysnaViera: [...zvysnaViera] as [number, number],
+    zvysnaViera,
     zvysnaPovera: [...zvysnaPovera] as [number, number],
+    zrusenePovery: zrusene,
+    vieraNaPovery,
+    abstinent: [n(sides[0].silaAbstinenta), n(sides[1].silaAbstinenta)],
   };
 }
 
@@ -118,7 +163,13 @@ function menej(x: readonly [number, number]): PlayerId | null {
   return x[0] === x[1] ? null : x[0] < x[1] ? 0 : 1;
 }
 
-export function battleOutcome(damage: DamageResult, remiza?: RemizaBitky): BattleOutcome {
+export function battleOutcome(damage: DamageResult, remizaVstup?: RemizaBitky): BattleOutcome {
+  // Abstinent (v10): pri remíze v tuhom sa porovnáva počet Absťákov znížený o jeho silu.
+  const a = damage.abstinent;
+  const remiza =
+    remizaVstup === undefined || a === undefined
+      ? remizaVstup
+      : { ...remizaVstup, abstaky: [abstakyVBitke(remizaVstup.abstaky[0], a[0]), abstakyVBitke(remizaVstup.abstaky[1], a[1])] as const };
   const prebytokDrzi: PlayerId | null = damage.tuhe[0] === damage.tuhe[1] ? null : damage.tuhe[0] > damage.tuhe[1] ? 0 : 1;
   const prebytok = Math.abs(damage.tuhe[0] - damage.tuhe[1]);
   if (damage.tuhe[0] !== damage.tuhe[1]) return { vitaz: damage.tuhe[0] > damage.tuhe[1] ? 0 : 1, rozhodlo: "tuhe", prebytokDrzi, prebytok };

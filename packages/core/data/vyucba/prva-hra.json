@@ -825,7 +825,7 @@
       "id": "k-povera1",
       "kto": "hrac",
       "prikaz": {
-        "type": "povera",
+        "type": "hadka",
         "elderId": "farar"
       },
       "melichar": "Najprv Povery: ty máš dve, Štamgast jednu, začínaš ty. Klikni na Farára a ohovor ho. Povera je klebeta: priazeň staršieho sa na toto kolo posunie o stupeň k tebe, stupnica stojí. Farár ti dnes požičia priazeň sily 1.",
@@ -835,11 +835,7 @@
     },
     {
       "id": "k-povera2",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "povera",
-        "elderId": "farar"
-      },
+      "kto": "info",
       "melichar": "Druhú Poveru tiež Farárovi: priazeň sily 2, len na dnes.",
       "zvyraznit": [
         "starsi:farar"
@@ -847,11 +843,7 @@
     },
     {
       "id": "k-povera-bot",
-      "kto": "bot",
-      "prikaz": {
-        "type": "povera",
-        "elderId": "farar"
-      },
+      "kto": "info",
       "melichar": "Štamgast ohovoril Farára späť, ostala ti priazeň sily 1. Potom tuhé 7 : 4: bitka o Lesnú cestu je tvoja. Za vyhratú bitku dostaneš špak za každú kartu v línii na oboch stranách – šesť. Ohorky, tie ja zbieram celý život.",
       "zvyraznit": [
         "starsi:farar",
@@ -1650,26 +1642,16 @@
     },
     {
       "id": "k-povera3",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "povera",
-        "elderId": "hrobar"
-      },
+      "kto": "info",
       "melichar": "Ty máš dve Povery, Štamgastovu jedinú zrušila tvoja [Viera] Viera. Ohovor Hrobára: jeho priazeň je Alkoholik a po bitke ti vráti poldeci z NA EX plný. Starostu nechaj, toho by ti Štamgast troma Pohoršeniami aj tak vyrovnal.",
-      "hlaskaChyby": "nervy/16_to_zas_bude_vyzerat",
       "zvyraznit": [
         "starsi:hrobar"
       ]
     },
     {
       "id": "k-povera4",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "povera",
-        "elderId": "hrobar"
-      },
+      "kto": "info",
       "melichar": "Aj druhú Hrobárovi. Povery treba rozdať všetky.",
-      "hlaskaChyby": "nervy/bud_ticho",
       "zvyraznit": [
         "starsi:hrobar"
       ]
@@ -1678,9 +1660,17 @@
       "id": "k-pohorsenie-bot1",
       "kto": "bot",
       "prikaz": {
-        "type": "pohorsenie",
-        "elderId": "starosta",
-        "kSebe": true
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "hadka",
+            "elderId": "starosta"
+          },
+          {
+            "type": "hadka",
+            "elderId": "krcmarka"
+          }
+        ]
       },
       "melichar": "Štamgast si troma Pohoršeniami ťahá Starostu k sebe, do oranžovej na svojej strane. Starostova priazeň je Bitkár: tuhé navyše, tu 2. A Pohoršenie mení priazeň hneď, ešte v tejto bitke: z 5 : 3 je 5 : 5.",
       "zvyraznit": [
@@ -2222,8 +2212,8 @@
       "id": "k-povera5",
       "kto": "hrac",
       "prikaz": {
-        "type": "povera",
-        "elderId": "starosta"
+        "type": "hadka",
+        "elderId": "krcmarka"
       },
       "melichar": "Ohovor Starostu. Jeho Bitkár je Štamgastov v sile 2, tvoje klebety mu ho dnes stiahnu na 1: 5 : 3.",
       "hlaskaChyby": "nervy/16_to_zas_bude_vyzerat",
@@ -2233,14 +2223,8 @@
     },
     {
       "id": "k-pohorsenie1",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "pohorsenie",
-        "elderId": "postarka",
-        "kSebe": true
-      },
+      "kto": "info",
       "melichar": "Teraz Pohoršenie, máš jedno z Kultúrneho domu. Klikni na Poštárku a posuň ju k sebe, do žltej na tvojej strane: jej priazeň Veriaci bude tvoja – [Viera] Viera navyše, ktorá uberie Štamgastovi tuhé. 5 : 2, a Štamgast Pohoršenie nemá: bitka je tvoja.",
-      "hlaskaChyby": "nervy/19_ach_boha",
       "zvyraznit": [
         "starsi:postarka"
       ]
@@ -2719,12 +2703,16 @@
     },
     {
       "id": "i-bitka-finale",
-      "kto": "info",
+      "kto": "bot",
       "melichar": "Finále je tvoje, 12 : 6, a Farár je tvoj väzeň, prvý v partii: leží v pivnici, nehýbe sa, priazeň nedáva a nikto ho nevyslobodí. Špaky: päť za karty v línii a Nakladačka 6 sa vo finále mení na špaky jedna ku jednej. Exekútor ti zobral jeden. A Farár ti zaplatil udržanú trojku.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body"
-      ]
+      ],
+      "prikaz": {
+        "type": "hadka",
+        "elderId": "krcmarka"
+      }
     },
     {
       "id": "i-koniec",

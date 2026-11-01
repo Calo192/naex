@@ -120,24 +120,50 @@ export interface PitkyKola {
   readonly zaverecne?: readonly ZaverecnaOdhalena[];
 }
 
+/**
+ * Hádka bitky (v10, docs/napady/hadka.html): mäkké oboch, kto vyhral o koľko a čo víťaz
+ * rozdelil — účinná priazeň staršieho pred a po (do konca kola, marker sa nehýbe).
+ */
+export interface HadkaRekapitulacie {
+  readonly makke: Dvojica;
+  readonly vitaz: PlayerId | null;
+  readonly velkost: number;
+  /** Body hádky, ktoré už na žiadny posun nestačili. */
+  readonly prepadlo: number;
+  readonly starsi: readonly {
+    readonly elderId: string;
+    /** Karta staršieho (meno na stole). */
+    readonly defId: string;
+    readonly pred: { readonly hrac: PlayerId | null; readonly sila: number };
+    readonly po: { readonly hrac: PlayerId | null; readonly sila: number };
+    readonly cena: number;
+  }[];
+}
+
 export interface RekapitulaciaBitky {
   /** Jednotky akcií tuhého po kartách (zdvojená akcia = 2). */
   readonly tuhe: Readonly<Record<AkciaTuha, readonly PolozkaRekapitulacie[]>>;
-  /** Jednotky Viery a Povery, ktoré idú do rušenia (Veriaci pridá, Farár uberie). */
+  /** Jednotky Viery (s Veriacim pred hádkou) a Povery, ktoré idú do rušenia. */
   readonly viera: readonly PolozkaRekapitulacie[];
   readonly povera: readonly PolozkaRekapitulacie[];
-  /** Moja Viera zrušená súperovými Poverami a moje Povery zrušené súperovou Vierou. */
+  /** Moja Viera minutá na súperove Povery (v10) a moje Povery zrušené súperovou Vierou. */
   readonly zrusenaViera: Dvojica;
   readonly zrusenaPovera: Dvojica;
   /** Tuhé, ktoré súperovi uberie moja zvyšná Viera (× hodnota Viery). */
   readonly vieraUbera: Dvojica;
   /** Moje priznané Dlhy pri vyhodnotení (remíza v tuhom). */
   readonly priznaneDlhy: Dvojica;
-  /** Zvyšné Povery po vyrušení s Vierou — v8.3 posunuli silu priazní (klebety), nie poškodenie. */
+  /** Zvyšné Povery po vyrušení s Vierou — od v10 mäkké poškodenie (× sila Povery). */
   readonly zvysnaPovera: Dvojica;
-  /** Povery, ktoré súperov Farár ignoruje (do rušenia nejdú). */
+  /** Archív (Farár do v8) — vždy 0. */
   readonly poveraIgnorovana: Dvojica;
+  /** Pohoršenia (aktívne akcie) — od v10 mäkké poškodenie, každé za 2. */
   readonly pohorsenie: { readonly polozky: readonly PolozkaRekapitulacie[]; readonly spolu: Dvojica };
+  /** Mäkké poškodenie oboch (v10) a sila jednej Povery (Horoskop 2). Chýba v starších záznamoch. */
+  readonly makke?: Dvojica;
+  readonly silaPovery?: Dvojica;
+  /** Hádka (v10). Chýba v starších záznamoch. */
+  readonly hadka?: HadkaRekapitulacie;
   readonly naex: NaexRekapitulacie;
   readonly pitkyKola: PitkyKola | null;
   readonly tuheSpolu: Dvojica;
@@ -272,8 +298,10 @@ export interface VstupRekapitulacieBitky {
   readonly rozpis: readonly [RozpisPoskodenia, RozpisPoskodenia];
   readonly damage: DamageResult;
   readonly priznaneDlhy: Dvojica;
-  /** Pohoršenia, ktoré hráči v bitke dostali (nastavSumy). */
+  /** Aktívne Pohoršenia v bitke (mäkké × 2, v10). */
   readonly pohorsenia: Dvojica;
+  /** Hádka tejto bitky (v10). */
+  readonly hadka?: HadkaRekapitulacie;
   readonly pitkyKola: readonly RekapitulaciaPitky[];
   readonly vitaz: PlayerId | null;
   readonly prebytok: number;
@@ -284,9 +312,9 @@ export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): 
   const { linia, rozpis, damage } = v;
   const tuhe = {} as Record<AkciaTuha, PolozkaRekapitulacie[]>;
   for (const a of AKCIE_TUHE) tuhe[a] = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p][a], p), p, nula(v.sums[p][a])));
-  // Do rušenia ide Viera s Veriacim a Povera bez tých, ktoré ignoruje súperov Farár (stranyBitky).
-  const vieraSpolu = dvojica((p) => damage.zvysnaViera[p] + rozpis[p].zrusenaViera);
-  const poveraSpolu = dvojica((p) => damage.zvysnaPovera[p] + rozpis[p].zrusenaPovera);
+  // Do rušenia ide Viera s Veriacim pred hádkou (v10) a všetky Povery.
+  const vieraSpolu = dvojica((p) => nula(v.sums[p].Viera) + rozpis[p].veriaciPred);
+  const poveraSpolu = dvojica((p) => nula(v.sums[p].Povera));
   const viera = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p].Viera, p), p, vieraSpolu[p]));
   const povera = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p].Povera, p), p, poveraSpolu[p]));
   const pohorsenie = ([0, 1] as const).flatMap((p) => naSucet(poKartach(linia.zdroje[p].Pohoršenie, p), p, v.pohorsenia[p]));
@@ -301,6 +329,9 @@ export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): 
     zvysnaPovera: dvojica((p) => rozpis[p].zvysnaPovera),
     poveraIgnorovana: dvojica((p) => rozpis[p].poveraIgnorovana),
     pohorsenie: { polozky: pohorsenie, spolu: v.pohorsenia },
+    makke: [damage.makke[0], damage.makke[1]],
+    silaPovery: dvojica((p) => rozpis[p].silaPovery),
+    ...(v.hadka === undefined ? {} : { hadka: v.hadka }),
     naex: ucinokNaex(data, v.line, linia),
     pitkyKola: v.pitkyKola.length === 0 ? null : spocitajPitkyKola(v.pitkyKola),
     tuheSpolu: [damage.tuhe[0], damage.tuhe[1]],
@@ -308,7 +339,7 @@ export function rekapitulaciaBitky(data: GameData, v: VstupRekapitulacieBitky): 
     vitaz: v.vitaz,
     prebytok: v.prebytok,
     prebytokDrzi: v.prebytokDrzi,
-    // Riadky ukazujú súčty bitky (Viera s Veriacim, Povera bez ignorovaných Farárom, Pohoršenia s patronátom).
+    // Riadky ukazujú súčty bitky (Viera s Veriacim pred hádkou, Povery, Pohoršenia).
     akcie: akcieRekapitulacie(linia, [...AKCIE_TUHE, "Viera", "Povera", "Pohoršenie"], (p, a) =>
       a === "Viera" ? vieraSpolu[p] : a === "Povera" ? poveraSpolu[p] : a === "Pohoršenie" ? v.pohorsenia[p] : nula(v.sums[p][a]),
     ),

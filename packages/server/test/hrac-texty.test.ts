@@ -223,7 +223,7 @@ describe("klient AI hráčov: Nakladačka a starší v ohrození (playtest 20261
       caka: 0,
       sums: [{}, {}],
       exekutorHotovy: [true, true],
-      pohorsenieZostava: [0, 0],
+     
       exekutor: [0, 0],
       damage: null,
       vitaz: 1,

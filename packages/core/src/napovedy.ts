@@ -102,10 +102,9 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
 
   body: (_d, v) => (v.kolo >= 2 ? ANO : null),
 
-  pohorsenie: (_d, v, ja) =>
-    v.faza === "bitka" && v.bitkaStav?.krok === "pohorsenie" && v.bitkaStav.caka !== null
-      ? { variant: v.bitkaStav.caka === ja ? "moje" : "superove" }
-      : null,
+  // v10 (Hádka): Pohoršenie už markerom nehýbe — text Melichara o posune markera neplatí.
+  // Kým Vymyselník nenapíše nápovedu k hádke (schvaľuje Michal), nespúšťa sa.
+  pohorsenie: () => null,
 
   abstak: (d, v, ja) => {
     if (verejneAbstaky(v, ja) > 0) return ANO;

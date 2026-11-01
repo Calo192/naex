@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### vilo-1 · Keď bitku môže rozhodnúť remíza v tuhom, nevyrábam si priznaný Dlh (NA EX na vlastnú kartu s neaktívnym Hazardom, Poštárka, Dievčina) a Dlhy oboch si pred bitkou spočítam, lebo remízu v tuhom aj v Absťákoch prehráva, kto má viac priznaných Dlhov (§9.4) — jediný Dlh zmení výhru na prehru.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -17,7 +17,7 @@ vo feedback.md.
 - oprava: 2026-10-30 20261030-115654-1: pôvodné znenie stálo na Kšefte Jednoty (1 Dlh → 2 cigarety), ktorý §15 v7 nemá (Jednota: kto má viac Dlhov, nesmie fajčiť ani dolievať) — Vilo to v partii overil a skúsenosť nepoužil; jadro (Dlh rozhoduje remízu) platí: 20261030-115654-2 K1 Hela prehrala 7 : 7 na Dlhy 1 : 0 po vlastnom Dlhovom NA EX (−8 špakov); prepísané bez Jednoty.
 
 ### vilo-2 · Keď mám priznané Dlhy, počítam s Exekútorom v každej bitke (polovica Dlhov nahor + súperova priazeň Exekútora, rovnako špakov, aj pri jedinom Dlhu), preto Dlhy nenarábam (Poštárka, NA EX zdvojujúci moje neaktívne Dlh, Silná vedľa Dlhu), držím Záhradkára a pri tesnej remíze si Dlhy spočítam, lebo menej Dlhov vyhráva; na Poveru proti jedinému Dlhu sa nespolieham — Exekútor ho zhorí skôr.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 3
 - vyvrátenia: 0
@@ -46,7 +46,7 @@ vo feedback.md.
 - oprava: 2026-10-30 20261030-115654-1: „strach platí za nové zóny hneď“ odporuje §10 v8.3 (strach až po udržaní, aj porazenému); Vilo ju preto nepoužil a sám ju vyvrátil pravidlami; prepísané na udržanie a obranu súpera.
 
 ### vilo-5 · Keď má súper v línii Bzdochu, nedávam NA EX na jeho kartu (ani zadarmo s Alkoholikom), lebo hrá Pitku až po mne, vidí môj cieľ a zrážkou na vlastnej karte z nej spraví Výtržníka — všetky jej akcie sú Rany pre neho.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -55,7 +55,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §7 Bzdocha, Výtržník. 115654-1 K5 P2: Vilov NA EX na Ferovho Záhradkára (Poldeci ×2 + Pečeň ×2 = Cirhóza/Pitku) → Fero s Bzdochou videl cieľ a dal NA EX na tú istú kartu → „Výtržník, všetky jej akcie sú Rany pre hráča 1“ = 6 Rán, 5 : 3 → 5 : 10 (−13 špakov). 004030-3 K2: Janov NA EX na Pijana proti Hele s Bzdochou → zrážka, Výtržník, 5 : 15 (z 7 : 10), −20 špakov podľa Jana.
 
 ### vilo-7 · Keď dávam NA EX (aj zadarmo s Alkoholikom), najprv skontrolujem, či nemám v línii Šoféra (bez NA EX dá Pecku navyše, s ním nič) a či pečeň NA EX 1 + zdvojené Poldeci/Pečeň cieľa nedosiahne prah 3, lebo Cirhóza z vlastného NA EX stojí −3 alebo +1 tuhé súperovi v každej bitke.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 2
 - vyvrátenia: 0

@@ -138,7 +138,7 @@ describe("dôsledky v bubline", () => {
 
 describe("súhrn v partii botov", () => {
   it(
-    "posuny sedia s markermi na začiatku kôl, Povery bitky ostanú na nástenke",
+    "posuny sedia s markermi na začiatku kôl, hádka bitky ostane na nástenke",
     () => {
       let poveryVidno = false;
       for (const seed of [3, 11]) {
@@ -149,11 +149,12 @@ describe("súhrn v partii botov", () => {
           if (kto === null) break;
           const predTahom = s;
           s = apply(data, s, tahBota(data, s, kto, seed + n), kto).state;
-          const klebety = predTahom.bitkaStav?.klebetyHracov;
-          if (s.bitkaStav === null && predTahom.bitkaStav !== null && klebety !== undefined && klebety.some((k) => Object.keys(k).length > 0)) {
-            // Posledná Povera mohla prísť v tom istom ťahu — nástenka má aspoň to, čo bolo pred ním.
+          // v10: klebety z hádky idú na nástenku pod víťaza hádky (pole povery).
+          const klebety = predTahom.bitkaStav?.klebety;
+          const vitazHadky = predTahom.bitkaStav?.hadka?.vitaz ?? null;
+          if (s.bitkaStav === null && predTahom.bitkaStav !== null && vitazHadky !== null && klebety !== undefined && Object.keys(klebety).length > 0) {
             const zaznam = s.nastenka.find((x) => x.kolo === predTahom.kolo);
-            for (const p of [0, 1] as const) for (const [id, n] of Object.entries(klebety[p])) expect(Math.abs(zaznam?.povery?.[p][id] ?? 0)).toBeGreaterThanOrEqual(Math.abs(n));
+            for (const [id, n] of Object.entries(klebety)) expect(zaznam?.povery?.[vitazHadky][id]).toBe(n);
             poveryVidno = true;
           }
           if (s.kolo === z.kolo + 1 && s.koniec === null) {

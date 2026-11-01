@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### fero-1 · Keď mám pred finále 8 alebo viac cigariet, minem ich radšej za karty v šenku (1 cigareta = 1 karta), doliatie poldeci, barter (5 cigariet = plný poldeci: výkupné ostane rovnaké a pribudne limit) či fajčenie, než ich nechám na výkupné, lebo výkupné dá len 1 špak za 5 cigariet.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 4
 - vyvrátenia: 0
@@ -36,7 +36,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §11 v8.4 (Robota bez Dlhu = špak), §16 Zámočník, Profesionálny tipér. 115654-1 K4: Starosta → Zámočník → Vidly → Tipér = Robota 8 (klient „Robota +2“ a „Robota +6“), po Vilovom NA EX na Tipéra 6; log „Robota: hráč 1 nemá čo spáliť — dostáva 6 špakov“ k 10 za karty, bitka 19 : 0.
 
 ### fero-4 · Keď mám priznaný Dlh a v línii Robotu, alebo stojím na Obecnom úrade s 3 cigaretami, zbavím sa Dlhu ešte pred bitkou (Kšeft úradu ho presunie súperovi, Robota ho spáli), lebo Exekútor spáli polovicu Dlhov nahor aj so špakmi a každá Robota bez Dlhu dá špak — Dlh u súpera je −1 jemu a +1 mne (§11).
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -45,7 +45,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §11 (Robota, Exekútor), §15 Obecný úrad. 115654-1 K4 P3: log „Obecný úrad: hráč 1 platí 3 cigarety a jeho priznaný Dlh prechádza na hráča 2“, v bitke „Exekútor: hráčovi 2 zhorí 1 priznaný Dlh a 1 špak“ a „Robota: hráč 1 nemá čo spáliť — dostáva 6 špakov“ (inak by prvá Robota spálila Dlh = 5 špakov). 004030-1 K1: 3 Dlhy (Vzbura), Robota 2 (hrana + priazeň Farára) spálila 2 a Exekútor 1; Advokát ušetril špak → 0 špakov Exekútorovi.
 
 ### fero-5 · Keď mám v línii Bzdochu (hrám Pitku až po súperovi a vidím jeho NA EX) a jeho NA EX mieri na moju kartu s neaktívnym Hazardom, Pečeňou či Poldeci, dám NA EX na tú istú kartu, lebo zrážka z nej spraví Výtržníka: všetky jej akcie sú Rany pre mňa a kliatby sa nezdvoja (§7).
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 2
 - vyvrátenia: 0
@@ -54,7 +54,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §7 Bzdocha, Odkrytie NA EX a Výtržník. 115654-1 K5 P2: log „Bzdocha: hráč 1 hrá Pitku až po súperovi a uvidí jeho NA EX“, Vilo NA EX na Záhradkára (Poldeci ×2 + Pečeň ×2 = Cirhóza v každej Pitke), Fero zrážka → „je z nej Výtržník, všetky jej akcie sú Rany pre hráča 1“ = 6 Rán, bitka 10 : 5 namiesto 5 : 3 pre Vila. 004030-3 K2 (Hela s Bzdochou): Janovo NA EX na jej Pijan (pečeň ×2) videla a dala NA EX na tú istú kartu → Výtržník, odhad 10 : 2 → 16 : 2, Janovo NA EX bez efektu; Jano sa tak stal Bzdochinou obeťou (5 : 15).
 
 ### fero-6 · Keď mám Kapybaru a súper má staršieho s čakajúcim stupňom strachu (stupeň, ktorý sa ešte nedržal do konca kola), položím ju na vlastnú stranu a posuniem tohto staršieho o pole k stredu, lebo ústup zmaže jeho nezaplatený stupeň a Kapybara je zároveň telo do línie; Kapybaru si beriem zo šenku skôr, než ju vezme súper.
-- stav: overená
+- stav: neoverená
 - pravidlá: v9
 - potvrdenia: 1
 - vyvrátenia: 0

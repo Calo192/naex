@@ -90,16 +90,14 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     expect(ids(cintorin, 0)).not.toContain("lokalita-pravidlo");
   });
 
-  it("Pohoršenie: kto vyberá, dostane „moje“, súper „superove“", () => {
+  it("Pohoršenie (v10): nápoveda o posune markera sa v hádke nespúšťa, kým ju Vymyselník neprepíše", () => {
     const s = {
       ...s0,
       faza: "bitka",
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] },
-      bitkaStav: { krok: "pohorsenie", caka: 1, sums: [{}, {}], exekutorHotovy: [true, true], pohorsenieZostava: [0, 1], cirhozy: 0, dlhy: 0 },
+      bitkaStav: { krok: "hadka", caka: 1, sums: [{}, {}], exekutorHotovy: [true, true], hadka: { makke: [0, 2], vitaz: 1, velkost: 2, zostava: 2, prepadlo: 0, posuny: [] } },
     } as unknown as GameState;
-    const text = (p: 0 | 1) => napovedy(data, katalog, viewFor(data, s, p)).find((n) => n.id === "pohorsenie")?.text ?? "";
-    expect(text(1)).toMatch(/^Tvoje Pohoršenie/);
-    expect(text(0)).toMatch(/^Súperovo Pohoršenie/);
+    for (const p of [0, 1] as const) expect(napovedy(data, katalog, viewFor(data, s, p)).some((n) => n.id === "pohorsenie")).toBe(false);
   });
 
   it("priazeň a vydesenie: meno staršieho z karty a variant podľa toho, koho sa bojí", () => {

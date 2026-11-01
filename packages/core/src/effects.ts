@@ -96,7 +96,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   recidivista: "impl", // Prehra (v7): po bitke sa vráti do ruky (koniecBitky)
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
   starosta: "impl", // Väzeň — Kšeft: do konca kola hrany lokality posilnené (partia.ts hranyPosilnene)
-  svaty_text: "impl", // Dedičstvo: Viera chráni pred mäkkým
+  svaty_text: "impl", // Dedičstvo (v10): hodnota tvojej Viery o 1 vyššia — aj proti Poverám (každá zruší 2; computeDamage)
   veterinar: "impl", // Väzeň — Kšeft: Cirhóza z ruky či priznaná z hry, v tejto Pitke pečeň 0 (bezPecene)
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt (v7): priložený Chlap ide po bitke z hry (konflikt)
@@ -112,10 +112,10 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   hrable: "impl", // Dedičstvo: akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená (partia.ts)
   zrkadlo: "impl", // Dedičstvo: tvoj Pakt kopíruje prepojenú akciu dvakrát (partia.ts)
   boxer: "impl", // Dedičstvo: tvoje Pecky o 1 poškodenie viac (nastrojeTuhe)
-  telefon: "impl", // Dedičstvo: tvoje Pohoršenia k stredu stoja toľko ako von (cenaKroku)
+  telefon: "impl", // Dedičstvo (v10): tvoje Pohoršenia nemožno zrušiť Odporom a NA EX (partia.ts)
   jogurt: "impl", // Dedičstvo: tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke (vyhodnotPitku)
   energetak: "impl", // Dedičstvo: tvoje Posilnenie nemožno zrušiť NA EX (partia.ts)
-  horoskop: "impl", // Dedičstvo: klebety z tvojich Povier platia aj v nasledujúcom kole (koniecBitky)
+  horoskop: "impl", // Dedičstvo (v10): tvoje Povery majú silu 2 — mäkké (stranyBitky)
   furik: "impl", // Dedičstvo: tvoje Roboty pália o 1 Dlh viac (exekucieBitky)
   kristalova_gula: "impl", // Dedičstvo: Vízia ukáže 2 vrchné karty, jednu vezmi či zahoď, druhú vráť navrch (cmdVizia)
   profesionalny_tiper: "impl", // Furt: posilnené akcie na jeho spojoch — súperove posilnený Hazard, tvoje posilnená Robota (partia.ts)
@@ -128,7 +128,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Konflikt (v7): jeho Dlhy sú Viera a Povery Rana do konca kola (partia.ts)
   podvodnik: "impl", // Prehra (v7): jeden tvoj priznaný Dlh prejde k súperovi
-  cierna_macka: "impl", // Furt (v8.3, návrh): tvoje Povery sa Vierou nerušia
+  cierna_macka: "impl", // Furt (v8.3): tvoje Povery sa Vierou nerušia — vždy mäkké (computeDamage)
   anonymny_alkoholik: "impl", // Nástup (v7): prizná nepriznané Cirhózy z odhadzovacieho balíčka
   // Roadmapa #71 (2026-10-23).
   sofer: "impl", // Bitka (v7): bez NA EX v kole Pecka navyše (bitkaMody)
@@ -572,9 +572,9 @@ const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Actio
   { zdroj: "pistalka", akcia: "Obmedzenie", popis: "Obmedzenie uberie aj cigarety za pas" },
   { zdroj: "hrable", akcia: "Odpor", popis: "akcia zrušená Odporom je tvoja a posilnená" },
   { zdroj: "zrkadlo", akcia: "Pakt", popis: "Pakt kopíruje prepojenú akciu dvakrát" },
-  { zdroj: "telefon", akcia: "Pohoršenie", popis: "Pohoršenie k stredu stojí toľko ako von" },
+  { zdroj: "telefon", akcia: "Pohoršenie", popis: "Pohoršenie nemožno zrušiť Odporom ani NA EX" },
   { zdroj: "jogurt", akcia: "Poldeci", popis: "Poldeci otočí vypitý poldeci hneď v Pitke" },
-  { zdroj: "horoskop", akcia: "Povera", popis: "klebety z Povier platia aj v nasledujúcom kole" },
+  { zdroj: "horoskop", akcia: "Povera", popis: "Povera má silu 2 (2 mäkké)" },
   { zdroj: "kristalova_gula", akcia: "Vízia", popis: "Vízia ukáže 2 vrchné karty" },
 ];
 

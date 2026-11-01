@@ -177,7 +177,7 @@ describe("keď sa doberací balíček minie, odhadzovací sa zamieša a stane sa
           caka: 0,
           sums: [{}, {}],
           exekutorHotovy: [true, true],
-          pohorsenieZostava: [0, 0],
+         
           exekutor: [0, 0],
           damage: null,
           vitaz: 0,
@@ -223,7 +223,7 @@ describe("Veštica pri prázdnom doberacom balíčku zamieša odhadzovací (Mich
             caka: 0,
             sums: [{}, {}],
             exekutorHotovy: [true, true],
-            pohorsenieZostava: [0, 0],
+           
             exekutor: [0, 0],
             damage: null,
             vitaz: 0,

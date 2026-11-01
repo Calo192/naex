@@ -14,7 +14,8 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
   // Priazne v5 (Michal 2026-10-24/25): účinok = sila 1 / 2 / 3, bez dvojnásobku.
   // Priazne v9 (Michal 2026-10-30): Kmotor 2 / 3 / 4, Fajčiar po bitke, Advokát a Robota namiesto Exekútora a Výpalníka.
   UZERNIK: (s) => `Kmotor: po bitke prejdú až ${s + 1} tvoje priznané Dlhy medzi súperove priznané.`,
-  LAKOMEC: (s) => `Abstinent: v bitke +${s} ${s === 1 ? "Pohoršenie" : "Pohoršenia"}.`,
+  // Abstinent v10 (Michal 2026-11-01): Absťáky v bitke neškodia — predtým Pohoršenia navyše.
+  LAKOMEC: (s) => `Abstinent: v bitke sa ti neráta ${s} ${s === 1 ? "Absťák" : "Absťáky"} (tuhé za ne neklesne, nerátajú sa ani pri remíze).`,
   ROBOTA: (s) => `Robota: v bitke ${s === 1 ? "1 akcia Robota" : `${s} akcie Robota`} navyše — spália priznaný Dlh, inak 1 špak.`,
   BITKAR: (s) => `+${s} tuhého poškodenia v každej bitke.`,
   // Michal 2026-10-20: Viera navyše rovná sile — predtým vyššia hodnota každej Viery (dve Viery = štít 10).
@@ -31,7 +32,7 @@ export const UCINOK_PRIAZNE: Readonly<Record<Favour, (sila: number) => string>> 
  */
 export const UCINOK_KRATKO: Readonly<Record<Favour, (sila: number) => string>> = {
   UZERNIK: (s) => `${s + 1} Dlhy súperovi po bitke`,
-  LAKOMEC: (s) => `+${s} Pohoršenie v bitke`,
+  LAKOMEC: (s) => `−${s} Absťák v bitke`,
   ROBOTA: (s) => `+${s} Robota v bitke`,
   BITKAR: (s) => `+${s} tuhé v bitke`,
   VERIACI: (s) => `+${s} ${s === 1 ? "Viera" : "Viery"} v bitke`,

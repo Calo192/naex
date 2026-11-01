@@ -15,11 +15,9 @@ import {
   nahladPitky,
   paleneDlhyVBitke,
   pocetPitiek,
-  pohorseniaVBitke,
   poskodenieBitky,
   prebytokNaRozdelenie,
   sPrilozenou,
-  bodyNaPohorsenie,
   zablokovaneStrany,
 } from "./engine.ts";
 import { efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
@@ -29,10 +27,9 @@ import { evaluateLine } from "./partia.ts";
 import type { BattleOutcome, DamageResult } from "./battle.ts";
 import { battleOutcome, zhoriPriExekucii } from "./battle.ts";
 import { zahradkarChrani } from "./engine.ts";
-import { posunZaBody, telefonHraca } from "./elders.ts";
 import { KONSTANTY } from "./constants.ts";
 import type { ClientState } from "./view.ts";
-import { cenaKliatby, hodnotaPohorseni } from "./view.ts";
+import { cenaKliatby } from "./view.ts";
 import { pocet } from "./jazyk.ts";
 
 /** Stôl pre náhľad — línia a pečeň po zamýšľanom ťahu (ako pre nahladPitky). */
@@ -42,7 +39,7 @@ export type StolNahladu = Parameters<typeof nahladPitky>[1];
 export interface DlhyDoBitky {
   /** Nové Dlhy v tejto Pitke a v ďalších Pitkách kola (ak sa na stole nič nezmení). */
   readonly nove: number;
-  /** Priznané Dlhy pri poškodení — Povery, remíza, Herňa a Noviny (pred Robotou a Exekútorom, 2026-10-28). */
+  /** Priznané Dlhy pri poškodení — remíza, Herňa a Noviny (pred Robotou a Exekútorom, 2026-10-28). */
   readonly priPoskodeni: number;
   /** Koľko priznaných Dlhov bitka najviac spáli (Robota). */
   readonly kapacita: number;
@@ -138,20 +135,15 @@ export function kliatbyNahladu(
 
 /**
  * Zvyšok ceny ťahu mimo kliatob a tuhého (návrh #1, playtest 20261024-075830):
- * cigarety, Pohoršenia a mäkké poškodenie hráča po ťahu oproti stavu bez
- * neho. Cigarety a Pohoršenia rátajú tie isté funkcie ako zúčtovanie
- * (cigaretyZPitky, pohorseniaVBitke), mäkké poškodenieBitky.
+ * cigarety a mäkké poškodenie hráča po ťahu oproti stavu bez neho. Cigarety ráta tá istá
+ * funkcia ako zúčtovanie (cigaretyZPitky), mäkké poškodenieBitky (hádka v10).
  */
 export interface DopadyNahladu {
   /** Cigarety navyše: priamo (patronát) a vo vyhodnotení tejto aj ďalších Pitiek kola. */
   readonly cigarety: number;
-  /** Pohoršenia navyše v najbližšej bitke a koľko ich bude spolu. */
-  readonly pohorsenia: number;
-  readonly pohorseniaSpolu: number;
-  /** ≈ o koľko Pohoršenia navyše pohnú rozdiel bodov hráča (on − súper), hltavo (hodnotaPohorseni). */
-  readonly pohorseniaBody: number;
-  /** Mäkké poškodenie navyše v najbližšej bitke. */
+  /** Mäkké poškodenie navyše v najbližšej bitke a koľko ho bude spolu (v10). */
   readonly makke: number;
+  readonly makkeSpolu: number;
 }
 
 export function dopadyNahladu(
@@ -166,11 +158,8 @@ export function dopadyNahladu(
     // Vo Vízii je táto Pitka už vyhodnotená — ako nahladPitky.
     const tato = s.vizia === null ? cigaretyZPitky(sums)[p] : 0;
     const dalej = cigaretyZPitky(sums)[p] * dalsie;
-    const pohorsenia = pohorseniaVBitke(data, s, sums)[p];
     return {
       cigarety: s.hraci[p].cigarety + tato + dalej,
-      pohorsenia,
-      pohorseniaBody: hodnotaPohorseni(data, s, p, pohorsenia),
       makke: poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums).makke[p],
     };
   };
@@ -179,10 +168,8 @@ export function dopadyNahladu(
     const b = stav(po, p, dPo);
     return {
       cigarety: b.cigarety - a.cigarety,
-      pohorsenia: b.pohorsenia - a.pohorsenia,
-      pohorseniaSpolu: b.pohorsenia,
-      pohorseniaBody: b.pohorseniaBody - a.pohorseniaBody,
       makke: b.makke - a.makke,
+      makkeSpolu: b.makke,
     };
   };
   return [pre(0), pre(1)];
@@ -433,31 +420,6 @@ export function najhorsiaOdpoved(
     }
   }
   return najhorsia;
-}
-
-/**
- * Bitka pred a po Pohoršeniach hráča `p` na staršieho (k sebe či k súperovi,
- * playtest 20261026-181227-1 N2: priazeň Bitkára otočí bitku 4 : 4 → 5 : 4);
- * v8.2 marker ide, kým hráčove Pohoršenia stačia (posunZaBody).
- * Ten istý výpočet ako vyhodnotPoskodenie — súčty línie, nová priazeň. Null mimo
- * bitky pred poškodením alebo keď posun poškodenie nezmení.
- */
-export function bitkaPoPohorseni(
-  data: GameData,
-  view: ClientState,
-  elderId: string,
-  p: PlayerId,
-  kSebe: boolean,
-): { readonly pred: DamageResult; readonly po: DamageResult } | null {
-  if (view.ciel === null || view.bitkaStav === null || view.bitkaStav.damage !== null) return null;
-  const elder = view.starsi.find((e) => e.elderId === elderId);
-  const marker = elder === undefined ? null : (posunZaBody(elder, kSebe ? p : opponentOf(p), bodyNaPohorsenie(view, p, elder), telefonHraca(view, p))?.marker ?? null);
-  if (marker === null) return null;
-  const sums = evaluateLine(data, lineState(view)).sums;
-  const pred = poskodenieBitky(data, view, sums);
-  const po = poskodenieBitky(data, { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? { ...e, marker } : e)) }, sums);
-  const rovnake = pred.tuhe[0] === po.tuhe[0] && pred.tuhe[1] === po.tuhe[1] && pred.celkove[0] === po.celkove[0] && pred.celkove[1] === po.celkove[1];
-  return rovnake ? null : { pred, po };
 }
 
 /**

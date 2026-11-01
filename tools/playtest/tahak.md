@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v9.3, 2026-10-31; sada v53)
+# Ťahák — platné pravidlá NA EX! (v10, 2026-11-01; sada v55)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -14,10 +14,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   kola zmizli), aspoň 1 — Absťáky ich neuberajú; lokalitu si
   **neberie** (ide na nástenku). Počet Pitiek už špaky neurčuje.
   **Strach až po udržaní (v8.3, 2026-10-30):** stupeň, kam sa marker dostal, zaplatí hráčovi, ktorého
-  sa starší bojí, **až na konci nasledujúceho kola, ak sa na ňom marker dovtedy udrží** — po bitke,
-  Pohoršeniach aj Nakladačke; **nech bitku vyhral ktokoľvek, aj porazenému**. Každý stupeň raz: **žltá 1,
+  sa starší bojí, **až na konci nasledujúceho kola, ak sa na ňom marker dovtedy udrží** — po bitke
+  aj Nakladačke; **nech bitku vyhral ktokoľvek, aj porazenému**. Každý stupeň raz: **žltá 1,
   oranžová 2, červená 3 (zo stredu na červenú spolu 6)**. Odtlačený stupeň nič; zaparkovaný marker druhýkrát
-  nič nedá. Keď marker ustúpi k stredu (Pohoršenie, Nakladačka, neúspešný pokus o zajatie, Kšeft, Kapybara), stupne, z ktorých
+  nič nedá. Keď marker ustúpi k stredu (Nakladačka, neúspešný pokus o zajatie, Kšeft, Kapybara), stupne, z ktorých
   ustúpil, sa pri ďalšom postupe platia znova (zas až po udržaní); na druhej polovici platí nanovo druhému
   hráčovi. V stávke bitky strach nie je. Nepriznaná Cirhóza na konci **−3 špaky za kus** (v8; ruka aj oba balíčky).
   Exekútor berie špaky (nižšie). Špaky smú ísť do mínusu; výpis ich ukazuje pri oboch hráčoch aj
@@ -41,7 +41,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   útočí **zaostávajúci — kto má menej špakov** (pri rovnosti porazený poslednej bitky, po sekere ostáva
   útočník); **obranca (vedúci) vyberie a natočí pinnacle lokalitu** (jednu z troch), potom šenok
   a pokus o zajatie ako v každom kole. Kraje a prevaha platia, počet Pitiek podľa spojov s lokalitou (1–5),
-  víťaz 1 špak za kartu v línii. **Vo finále sa rozdeľuje len Pohoršenie, Nakladačka nie (v8.3) — víťaz finále
+  víťaz 1 špak za kartu v línii. **Vo finále sa rozdeľuje len hádka, Nakladačka nie (v8.3) — víťaz finále
   dostane za každý bod Nakladačky 1 špak (v9.1).** Kto zaostáva, dobehne ho vysokou výhrou vo finále.
   Po finále starší zaplatia stupne udržané z posledného kola (aj porazenému); stupne, kam sa marker
   dostal až vo finále, nič.
@@ -191,10 +191,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Náradie (v8.4, 2026-10-30) — Nástroje do Dedičstva, menia len tvoje akcie:** Zapaľovač (tvoje aktívne
   Cigarety nemožno zrušiť NA EX), Výherné žreby (tvoje Hazardy aktívne, keď nie sú spojené, spojené neaktívne;
   NA EX potom zdvojí spojené), Píšťalka (tvoje Obmedzenia uberajú aj súperove cigarety za pas), Hrable (akcia
-  zrušená tvojím Odporom je tvoja ×2), Zrkadlo (tvoj Pakt kopíruje ×2), Valaška (Pecka +1 poškodenie), Telefón
-  (tvoje Pohoršenia k stredu stoja ako von: z červenej 3, z oranžovej 2, zo žltej 1), Jogurt (Poldeci otočia
-  vypitý poldeci hneď v Pitke), Energeťák (tvoje Posilnenie nemožno zrušiť NA EX), Horoskop (klebety tvojich
-  Povier platia aj v ďalšom kole), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
+  zrušená tvojím Odporom je tvoja ×2), Zrkadlo (tvoj Pakt kopíruje ×2), Valaška (Pecka +1 poškodenie), Telefón: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX (v10), Jogurt (Poldeci otočia
+  vypitý poldeci hneď v Pitke), Energeťák (tvoje Posilnenie nemožno zrušiť NA EX), Horoskop: tvoje Povery majú silu 2
+  (v10; každá dá 2 mäkké), Svätý text: hodnota tvojej Viery je o 1 vyššia — aj proti Poverám (každá tvoja Viera zruší 2 Povery), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
   karty: o jednej rozhodneš — `{"type":"vizia","vziat":true,"druha":true}` je o druhej —, druhá ostane navrchu).
   **Profesionálny tipér** (Furt): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako
   posilnená Robota.
@@ -239,7 +238,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Chuť = väčšie z (Chuť, neresti kola) − 1** (nie pod 0). Súper latku neurčuje. Po finále nič.
   Opatrovateľka v tvojej partii porovná tvoju Chuť o 2 nižšiu. **Karta Absťák:** nedá sa priznať ani vyložiť,
   po bitke ide z ruky späť do odhadzovacieho balíčka; v bitke **−1 tuhé za každý Absťák v tvojom balíčku**
-  (ruka, doberací, odhadzovací); pri remíze v tuhom prehráva, kto ich má viac; Pohoršenie nedáva. Zahodiť
+  (ruka, doberací, odhadzovací); pri remíze v tuhom prehráva, kto ich má viac (obe po odpustení Abstinentom, v10); Pohoršenie nedáva. Zahodiť
   ho smie len **Vízia**. Výpis ukazuje „CHUŤ 3 | dnes 1 | chýba 2“ a počet Absťákov oboch. Flám (veľa NA EX)
   zdvihne Chuť a ďalšie kolo ťa núti piť znova.
 - **Stupnica (v6, pojmy v8.3):** 7 polí, **stupne 3-2-1-0-1-2-3** — červená, oranžová, žltá, sivý stred.
@@ -248,7 +247,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   na konci nasledujúceho kola, ak sa udrží).
   Scorecard nesie už len priazeň, bodovacie podmienky nie sú.
 - **Priazeň (v9)** sila 1 / 2 / 3 = stupeň, bez dvojnásobku: Bitkár +1 / +2 / +3
-  tuhého; Veriaci +1 / +2 / +3 Viery; Abstinent +1 / +2 / +3 Pohoršenia v bitke; **Advokát**: exekúcia
+  tuhého; Veriaci +1 / +2 / +3 Viery (proti Poverám so silou pred hádkou, rozdiel po hádke tlmí tuhé); Abstinent: v bitke sa ti neráta 1 / 2 / 3 Absťákov (v10 — tuhé neklesne a nerátajú sa ani pri remíze); **Advokát**: exekúcia
   ti odpočíta o 1 / 2 / 3 špaky menej (najmenej 0; Dlhy zhoria ako vždy); **Robota**: 1 / 2 / 3 akcie
   Robota navyše (pália Dlhy, za Dlh, ktorý nemá čo spáliť, 1 špak); Fajčiar +1 / +2 / +3 cigarety
   **po bitke** (Obmedzenie ich neuberá); **Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove** (koľko máš);
@@ -274,8 +273,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   obranca; `{"type":"pokus","elderId":…}` / `bezPokusu`) smieš skúsiť zajať staršieho, ktorý sa ťa
   **bojí na stupni 3** (červená na súperovej polovici). Cena **1 cigareta**, prepadne vždy. Každý najviac
   jeden pokus za kolo, obaja smú (každý iného). Karta staršieho (boss) ide **súperovi do ruky** — smie ju
-  vyložiť ako Starešinu (len akcie). Starší je **v ohrození**: v tomto kole ním nehýbe Pohoršenie, Nakladačka,
-  Povery, Vila ani Kapybara; jeho udržaný strach sa platí normálne. **Vyhráš bitku** → starší je tvoj
+  vyložiť ako Starešinu (len akcie). Starší je **v ohrození**: v tomto kole jeho markerom nehýbe Nakladačka,
+  Vila ani Kapybara (silu jeho priazne hádka meniť smie, v10); jeho udržaný strach sa platí normálne. **Vyhráš bitku** → starší je tvoj
   **väzeň** (v priznaných kartách, zo stupnice zmizne — priazeň aj strach zanikajú). **Prehra aj sekera** →
   starší späť, marker o stupeň k stredu (nezaplatená červená sa zmaže). Platí aj vo finále.
   **Tretí väzeň = výhra hneď.** Po finále väzni dajú špaky podľa poradia zajatia v celej partii:
@@ -284,18 +283,11 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   stupnici, nie polovica — z tvojej polovice posun od seba marker len priblíži k stredu (tvoja priazeň −1,
   súpera sa bojí menej). Log posunu píše stupeň pred → po s farbou a stavom staršieho, komu priazeň
   stúpla/klesla a kto staršieho desí.
-- **Cena posunu markera (v8.2, 2026-10-30)** — Pohoršenie aj Nakladačka: pole von zo stredu stojí 1 / 2 / 3,
-  k stredu 4 / 3 / 2 (z červenej, z oranžovej, zo žltej); zo stredu na červenú 6. Vyberáš **len staršieho**
-  (pri Pohoršení aj smer), marker ide, kým body stačia; zvyšok dáš ďalším starším. Čo už na žiadny posun
+- **Cena posunu markera (v8.2, 2026-10-30)** — Nakladačka aj hádka: pole von zo stredu stojí 1 / 2 / 3,
+  k stredu 4 / 3 / 2 (z červenej, z oranžovej, zo žltej); zo stredu na červenú 6. Vyberáš **len staršieho**,
+  marker (pri hádke sila priazne) ide, kým body stačia; zvyšok dáš ďalším starším. Čo už na žiadny posun
   nestačí, prepadne. Kšeft Predsedovej vily a Kapybara posúvajú o jedno pole bez ceny.
-- **Pohoršenie (v5 oboma smermi):** z akcií a priazne Abstinenta (Absťák od v9.1 nie);
-  každé je bod na posun **od seba alebo
-  k sebe** (`{"type":"pohorsenie","elderId":…}`, k sebe s `"kSebe":true`);
-  k sebe si vezmeš priazeň, a tá platí hneď, už v poškodení tej istej bitky. Nový stupeň z Pohoršenia
-  zaplatí až koniec ďalšieho kola, ak sa udrží; Pohoršením však súperovi odtlačíš stupeň, ktorý by mu
-  zaplatil koniec tohto kola. Ten istý
-  marker smieš posúvať **bez limitu, aj na červenú** (zo stredu 6 Pohoršení).
-- **Poradie bitky:** **Povery** → Pohoršenie → poškodenie → výsledok → špaky za bitku
+- **Poradie bitky:** **hádka** → poškodenie → výsledok → špaky za bitku
   → exekúcia (Robota, Exekútor) → Nakladačka (posunie markery k súperovi držiteľa podľa ceny poľa, aj na
   červenú a z nej von — zamknutie sa ruší; prejaví sa až v ďalšej bitke; vo finále sa nerozdeľuje, víťaz za ňu
   dostane špaky 1 : 1) → … →
@@ -308,13 +300,16 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   pole; zvyšok dá porazený ďalšiemu staršiemu. (5) **Nedá sa prestať** — kým zvyšok stačí na niektorý posun.
   (6) **Zvyšok, ktorý na žiadne pole nestačí, prepadne.** `{"type":"prebytok","elderId":…}` posiela porazený.
   **Vo finále sa Nakladačka nerozdeľuje — víťaz finále za ňu dostane 1 špak za každý bod (v9.1).**
-- **Povery „Výpožička priazne“ (v8.3, 2026-10-30):** Povera **nepoškodzuje**. Na začiatku bitky sa Viera
-  a Povery vyrušia 1 : 1; **každá zvyšná Povera posunie silu priazne jedného staršieho o stupeň k tebe**
-  (`{"type":"povera","elderId":…}`) — zníži súperovu, preklopí ju, požičia priazeň staršieho v strede
-  alebo zosilní tvoju, **najviac na 3**. Marker sa nehýbe (strach ani udržanie sa nemenia), platí **do konca
-  kola** (poškodenie, exekúcia, Kmotor), potom zanikne. Obranca rozdeľuje prvý, útočník vidí. Abstinent sa
-  ráta už po Poverách. **Mäkké a celkové poškodenie nie sú** — víťaza aj Nakladačku (rozdiel tuhého, drží
-  ju víťaz) určuje tuhé. Čierna mačka (návrh): jej majiteľove Povery sa Vierou nerušia.
+- **Hádka (v10, 2026-11-01) — mäkké poškodenie:** Povera a Pohoršenie **tuhé nerobia**, sú mäkké poškodenie.
+  Na začiatku bitky sa Viera (aj z Veriaceho, so silou pred hádkou) a Povery vyrušia 1 : 1 na kusy;
+  **mäkké = Pohoršenie × 2 + zvyšné Povery × 1** (Horoskop: Povera 2). Viera proti Pohoršeniu nepomáha;
+  zvyšná Viera tlmí tuhé. Kto má viac mäkkého, vyhral hádku o rozdiel; rovnosť = nikto. **Víťaz hádky rozdelí
+  rozdiel mäkkého na sily priazní starších len k sebe** (`{"type":"hadka","elderId":…}`) — zníži súperovu,
+  preklopí ju, zosilní tvoju; vyberáš len staršieho, sila ide pole po poli podľa ceny ako pri Nakladačke,
+  **najviac na silu 3, marker sa nehýbe** (strach, udržanie ani zaplatené stupne sa nemenia). Platí **do konca
+  kola** — v poškodení (Bitkár, Veriaci, Abstinent), v exekúcii (Advokát, Robota) aj po bitke (Kmotor, Fajčiar,
+  Alkoholik), potom zanikne. Porazený v hádke nerozdeľuje nič. Čo už na žiadny posun nestačí, prepadne.
+  Víťaza bitky aj Nakladačku (rozdiel tuhého) určuje tuhé. Čierna mačka: jej majiteľove Povery sa Vierou nerušia.
 - **Remíza (v6):** pri rovnakom tuhom vyhrá, kto má **menej Absťákov**, potom **menej
   priznaných Dlhov**; inak **sekera** — špaky kola (karty v línii) vezme víťaz najbližšej bitky,
   vo finále prepadnú; strach starších platí ako vždy (udržanie); útočník ostáva, pokus o zajatie zlyhá.

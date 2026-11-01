@@ -24,8 +24,8 @@ export interface Medziobrazovka {
 
 /**
  * Medziobrazovka pre to, čo sa na stole práve začína (Michal 2026-10-27: výber lokality,
- * šenok, Zhromaždenie, Pitka, bitka, prebytok, nové kolo, finále). Patronát a Pohoršenie
- * ju nemajú — sú to kroky vnútri fáz. Finále nahradilo starý oznam finále.
+ * šenok, Zhromaždenie, Pitka, hádka (v10), bitka, prebytok, nové kolo, finále). Pokus o zajatie
+ * ju nemá — je to krok vnútri fázy. Finále nahradilo starý oznam finále.
  * `bitkaKola` = kolo bitky, ktorej počítadlo čaká na stole — bitka sa často vyhodnotí
  * naraz s koncom kola a stôl je už v ďalšom kole, kým počítadlo len začína.
  */
@@ -43,12 +43,26 @@ export function medziobrazovka(
   const kolo = view.rozpis !== undefined && view.kolo > view.lokalitCelkom ? "Finále" : `Kolo ${view.kolo}`;
   /** Poradie Zhromaždenia či Pitky v kole ide nad nadpis — dlhý nadpis by sa zalomil. */
   const poradie = (n: number): string => (view.pitkyCelkom > 1 ? `${kolo} · ${n} z ${view.pitkyCelkom}` : kolo);
+  // Hádka (v10): jednorazové okno, keď víťaz hádky rozdeľuje — pred poškodením, ešte bez počítadla.
+  const hd = view.bitkaStav?.hadka;
+  if (bitkaKola === null && view.faza === "bitka" && view.bitkaStav?.krok === "hadka" && hd !== undefined && hd.vitaz !== null && hd.zostava > 0) {
+    const skore = `${hd.makke[hd.vitaz]} : ${hd.makke[hd.vitaz === 0 ? 1 : 0]}`;
+    return {
+      kluc: `${view.kolo}|hadka`,
+      nadnadpis: kolo,
+      nadpis: "Hádka",
+      text:
+        hd.vitaz === ja
+          ? `Vyhral si hádku ${skore} — o ${hd.velkost}. Vyber starších: ich priazeň pôjde k tebe, pole stojí 1–4 podľa zóny, najviac na silu 3. Platí do konca kola, už v tejto bitke; markery sa nehýbu.`
+          : `${S} vyhral hádku ${skore} — o ${hd.velkost} — a berie si priazne starších k sebe do konca kola. Markery sa nehýbu; potom príde poškodenie.`,
+    };
+  }
   if (bitkaKola !== null || (view.faza === "bitka" && view.bitkaStav?.krok !== "prebytok")) {
     return {
       kluc: `${bitkaKola ?? view.kolo}|bitka`,
       nadnadpis: `Kolo ${bitkaKola ?? view.kolo}`,
       nadpis: "Bitka",
-      text: "Najprv Povery: každá, ktorú nezruší Viera, posunie silu priazne jedného staršieho o stupeň k svojmu majiteľovi — len na toto kolo, marker sa nehýbe. Potom Pohoršenie a poškodenie: viac tuhého (Rana, Pecka, Petelica) vyhráva bitku a špaky, rozdiel tuhého je Nakladačka na posun starších.",
+      text: "Najprv hádka: Pohoršenia a Povery sú mäkké poškodenie — kto ho má viac, posunie priazne starších k sebe do konca kola (marker sa nehýbe). Potom poškodenie: viac tuhého (Rana, Pecka, Petelica) vyhráva bitku a špaky, rozdiel tuhého je Nakladačka na posun starších.",
     };
   }
   const obranca = view.utocnik !== ja;
@@ -144,16 +158,16 @@ export function medziobrazovka(
   }
 }
 
-/** Krok, ktorý sa robí na staršom (rozdeľovanie, Povery, patronát) — vtedy stôl ukazuje líniu starších. */
+/** Krok, ktorý sa robí na staršom (hádka, Nakladačka, pokus o zajatie) — vtedy stôl ukazuje líniu starších. */
 export interface KrokNaStarsich {
-  readonly typ: "povery" | "pohorsenie" | "prebytok" | "zajatie";
+  readonly typ: "hadka" | "prebytok" | "zajatie";
   readonly kto: PlayerId;
 }
 
 export function krokNaStarsich(view: Pick<ClientState, "koniec" | "faza" | "bitkaStav" | "draftStav">): KrokNaStarsich | null {
   if (view.koniec !== null) return null;
   const bs = view.bitkaStav;
-  if (view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "pohorsenie" || bs.krok === "prebytok" || bs.krok === "povery")) {
+  if (view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "hadka" || bs.krok === "prebytok")) {
     return { typ: bs.krok, kto: bs.caka };
   }
   if (view.faza === "draft" && view.draftStav?.krok === "zajatie") return { typ: "zajatie", kto: view.draftStav.naTahu };

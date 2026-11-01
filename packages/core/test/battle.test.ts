@@ -33,11 +33,11 @@ describe("M4 — poškodenie", () => {
     expect(damage.tuhe[1]).toBe(0);
   });
 
-  it("Viera a Povera sa vyrušia 1:1 — zvyšné Povery idú na klebety, nie do poškodenia (v8.3)", () => {
+  it("Viera a Povera sa vyrušia 1:1 — zvyšné Povery sú mäkké poškodenie do hádky, nie tuhé (v10)", () => {
     const damage = computeDamage([side({ sums: { Povera: 3 } }), side({ sums: { Viera: 2 } })]);
     expect(damage.zvysnaPovera[0]).toBe(1);
     expect(damage.zvysnaViera[1]).toBe(0);
-    expect(damage.makke).toEqual([0, 0]);
+    expect(damage.makke).toEqual([1, 0]);
     expect(damage.celkove).toEqual(damage.tuhe);
   });
 

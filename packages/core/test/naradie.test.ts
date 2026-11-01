@@ -9,7 +9,6 @@ import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, GameState, LineState, MarkerPos, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   apply,
-  cenaKroku,
   favourStarsieho,
   cigaretyZaPas,
   evaluateLine,
@@ -17,7 +16,7 @@ import {
   loadGameData,
   nastrojeTuhe,
   naTahu,
-  posunZaBody,
+  poskodenieBitky,
   setupGame,
   silaPriazne,
   viewFor,
@@ -133,7 +132,6 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     sums: [{}, {}],
     exekutorHotovy: [false, false],
     exekutor: [0, 0],
-    pohorsenieZostava: [0, 0],
     damage: null,
     vitaz: null,
     prebytokDrzi: null,
@@ -173,13 +171,6 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(nastrojeTuhe(s, 1, { Rana: 2 })).toEqual([]);
   });
 
-  it("Telefón: Pohoršenie k stredu stojí toľko ako von (z červenej 3, nie 4)", () => {
-    expect(cenaKroku(0, 1)).toBe(4);
-    expect(cenaKroku(0, 1, true)).toBe(3);
-    expect(cenaKroku(2, 3, true)).toBe(1);
-    expect(posunZaBody({ marker: 0 as MarkerPos }, 1, 6, true)?.marker).toBe(3);
-  });
-
   it("Píšťalka: súperove Obmedzenia v línii uberajú aj cigarety za pas", () => {
     const s0 = setupGame(data, 4);
     const zh = { naTahu: 0, pasoval: [false, false], zostavaLimit: [3, 3], navyse: [0, 0] };
@@ -207,12 +198,12 @@ describe("Náradie mimo línie (§11, §12)", () => {
         ciel: { typ: "lokalita", lokalita: ciel },
         lokalityVHre: s0.lokalityVHre.slice(1),
         hraci: [{ ...s0.hraci[0], dlhy }, s0.hraci[1]],
-        // Bitka čaká na Pohoršenie hráča 0; súčty s Robotou hráča 0 sa po ňom vyhodnotia (exekucieBitky).
-        bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0], sums: [{ Robota: 1, Rana: 3 }, {}] }),
+        // Bitka čaká na hádku hráča 0 (v10); súčty s Robotou hráča 0 sa po nej vyhodnotia (exekucieBitky).
+        bitkaStav: bitka({ krok: "hadka", caka: 0, sums: [{ Robota: 1, Rana: 3 }, {}], hadka: { makke: [1, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
       };
       return sDedicstvom(s, 0, nastroje);
     };
-    const po = (s: GameState): GameState => apply(data, s, { type: "pohorsenie", elderId: s.starsi.filter((e) => favourStarsieho(data, e) !== "ROBOTA").at(-1)!.elderId }, 0).state;
+    const po = (s: GameState): GameState => apply(data, s, { type: "hadka", elderId: s.starsi.filter((e) => favourStarsieho(data, e) !== "ROBOTA").at(-1)!.elderId }, 0).state;
     // Bez Fúrika: 3 Dlhy → spáli 1; 0 Dlhov → 1 špak.
     const a = po(zaklad(3, []));
     expect(a.hraci[0].dlhy).toBeLessThanOrEqual(2);
@@ -277,7 +268,7 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(t.hraci[0].doberaci[0]?.defId).toBe("pijan");
   });
 
-  it("Horoskop: klebety z tvojich Povier platia aj v nasledujúcom kole", () => {
+  it("Horoskop (v10): tvoje Povery majú silu 2 — klebety z hádky do ďalšieho kola neprejdú", () => {
     const s0 = sDedicstvom(setupGame(data, 5), 0, ["horoskop"]);
     const ciel = s0.lokalityVHre.find((k) => k.defId === "krcma")!;
     const stred = s0.starsi.map((e) => ({ ...e, marker: 3 as MarkerPos }));
@@ -289,18 +280,22 @@ describe("Náradie mimo línie (§11, §12)", () => {
       starsi: stred,
       ciel: { typ: "lokalita", lokalita: ciel },
       lokalityVHre: s0.lokalityVHre.filter((k) => k.defId !== "krcma"),
-      bitkaStav: bitka({ krok: "povery", caka: 0, poveryZostava: [1, 0], exekutorHotovy: [true, true] }),
+      bitkaStav: bitka({ krok: "hadka", caka: 0, exekutorHotovy: [true, true], hadka: { makke: [2, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
     };
+    // Povera hráča s Horoskopom dá 2 mäkké, bez neho 1.
+    expect(poskodenieBitky(data, s, [{ Povera: 1 }, { Povera: 1 }]).makke).toEqual([2, 1]);
     const elder = s.starsi[0]!;
-    let t = apply(data, s, { type: "povera", elderId: elder.elderId }, 0).state;
+    const r = apply(data, s, { type: "hadka", elderId: elder.elderId }, 0);
+    let t = r.state;
     const favour = data.scorecards.find((x) => x.id === elder.scorecard)!.favour;
-    expect(silaPriazne(data, t, favour, 0)).toBe(1);
+    expect(r.events.some((e) => e.type === "log" && e.text.includes("priazeň do konca kola nikto → hráč 1 +1"))).toBe(true);
     for (let i = 0; i < 60 && t.bitkaStav !== null && t.koniec === null; i++) {
       const p = naTahu(t) as PlayerId;
       t = apply(data, t, legalCommands(data, t, p)[0]!, p).state;
     }
     expect(t.bitkaStav).toBeNull();
-    expect(t.klebetyPrenesene?.[elder.elderId]).toBe(1);
-    expect(viewFor(data, t, 1).klebetyPrenesene?.[elder.elderId]).toBe(1);
+    // Nové kolo: priazeň je znova z markera.
+    expect(silaPriazne(data, t, favour, 0)).toBe(0);
+    expect(JSON.stringify(viewFor(data, t, 1))).not.toContain("klebetyPrenesene");
   });
 });

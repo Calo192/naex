@@ -489,9 +489,16 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>, line: P
         ? ([a, 1, b, 0, actB] as const)
         : ([b, 0, a, 1, actA] as const);
       odporElem.stav[odporSide]![k] = "aktivna";
-      otherElem.stav[otherSide]![k] = "zrusena";
-      otherElem.zrusil[otherSide]![k] = "Odpor";
-      otherElem.zrusilOdporom[otherSide]![k] = odporElem.isLokalita ? null : odporElem.owner;
+      // Telefón (Dedičstvo, v10): tvoje Pohoršenia nemožno zrušiť Odporom — ostávajú aktívne.
+      if (otherAct === "Pohoršenie" && !otherElem.isLokalita && maNastroj(line, otherElem.owner, "telefon")) {
+        otherElem.stav[otherSide]![k] = "aktivna";
+        otherElem.nasobok[otherSide]![k] = 1;
+        otherElem.dovody[otherSide]![k]!.push("karta:telefon");
+      } else {
+        otherElem.stav[otherSide]![k] = "zrusena";
+        otherElem.zrusil[otherSide]![k] = "Odpor";
+        otherElem.zrusilOdporom[otherSide]![k] = odporElem.isLokalita ? null : odporElem.owner;
+      }
       // Posilnenie + Odpor: neprepojené akcie aktivuje IBA karta s Odporom.
       if (otherAct === "Posilnenie") markVzbura(odporElem, odporSide, false);
     } else if (posilA && posilB) {
@@ -616,11 +623,13 @@ function zrusPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): void {
 
 function applyNaex(elem: Elem, line: Pick<LineState, "nastroje">): void {
   if (elem.naexBy === undefined) return;
-  // Zapaľovač a Energeťák (Dedičstvo, Náradie 2026-10-30): tvoje aktívne Cigarety,
-  // resp. Posilnenie NA EX nezruší (a nezdvojí — ostávajú, ako sú).
+  // Zapaľovač, Energeťák a Telefón (Dedičstvo, Náradie 2026-10-30, v10): tvoje aktívne Cigarety,
+  // Posilnenie, resp. Pohoršenia NA EX nezruší (a nezdvojí — ostávajú, ako sú).
   const imunne: Action[] = [];
   if (!elem.isLokalita && maNastroj(line, elem.owner, "zapalovac")) imunne.push("Cigareta");
   if (!elem.isLokalita && maNastroj(line, elem.owner, "energetak")) imunne.push("Posilnenie");
+  // Telefón (Dedičstvo, v10): tvoje Pohoršenia nemožno zrušiť NA EX.
+  if (!elem.isLokalita && maNastroj(line, elem.owner, "telefon")) imunne.push("Pohoršenie");
   if (elem.defId === "veteran") {
     zdvojAktivne(elem, "NA EX", "NA EX");
     return;

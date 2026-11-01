@@ -37,7 +37,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     caka: null,
     sums: [{}, {}],
     exekutorHotovy: [true, true],
-    pohorsenieZostava: [0, 0],
+   
     exekutor: [0, 0],
     damage: null,
     vitaz: 0,
@@ -144,7 +144,7 @@ describe("§10 Pokus o zajatie — podmienka, cena, poradie", () => {
     expect(r.state.faza).toBe("zhromazdenie");
   });
 
-  it("O8: starší v ohrození sa v kole pokusu nehýbe — Pohoršenie, prebytok ani Povera naňho nesmú", () => {
+  it("O8: starší v ohrození sa v kole pokusu nehýbe — Nakladačka naňho nesmie; hádka smie meniť silu priazne (v10, H4)", () => {
     const s0 = predPokusom();
     const id = s0.starsi[0]!.elderId;
     const s: GameState = {
@@ -152,14 +152,16 @@ describe("§10 Pokus o zajatie — podmienka, cena, poradie", () => {
       faza: "bitka",
       draftStav: null,
       pokusy: [{ elderId: id }, null],
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 1, pohorsenieZostava: [0, 9], poveryZostava: [0, 0] }),
+      bitkaStav: bitka({ krok: "prebytok", caka: 0, prebytokDrzi: 1, prebytokZostava: 9 }),
     };
-    expect(legalCommands(data, s, 1).some((c) => c.type === "pohorsenie" && c.elderId === id)).toBe(false);
-    expect(() => apply(data, s, { type: "pohorsenie", elderId: id, kSebe: true }, 1)).toThrow();
-    const sPrebytok: GameState = { ...s, bitkaStav: bitka({ krok: "prebytok", caka: 0, prebytokDrzi: 1, prebytokZostava: 9 }) };
-    expect(legalCommands(data, sPrebytok, 0).some((c) => c.type === "prebytok" && c.elderId === id)).toBe(false);
-    const sPovery: GameState = { ...s, bitkaStav: bitka({ krok: "povery", caka: 1, poveryZostava: [0, 3] }) };
-    expect(legalCommands(data, sPovery, 1).some((c) => c.type === "povera" && c.elderId === id)).toBe(false);
+    expect(legalCommands(data, s, 0).some((c) => c.type === "prebytok" && c.elderId === id)).toBe(false);
+    expect(() => apply(data, s, { type: "prebytok", elderId: id }, 0)).toThrow();
+    // Hádka markerom nehýbe: víťaz hádky (hráč 0) smie priazeň hráča 1 sily 3 znížiť (červená → oranžová za 4).
+    const sHadka: GameState = { ...s, bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [4, 0], vitaz: 0, velkost: 4, zostava: 4, prepadlo: 0, posuny: [] } }) };
+    expect(legalCommands(data, sHadka, 0).some((c) => c.type === "hadka" && c.elderId === id)).toBe(true);
+    const { events } = apply(data, sHadka, { type: "hadka", elderId: id }, 0);
+    expect(events.some((e) => e.type === "log" && e.text.includes("priazeň do konca kola hráč 2 +3 → hráč 2 +2; marker sa nehýbe"))).toBe(true);
+    expect(events.some((e) => e.type === "posunMarkera" && e.elderId === id && e.zdroj !== "zajatie")).toBe(false);
   });
 });
 

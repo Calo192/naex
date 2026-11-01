@@ -269,8 +269,8 @@ export const KAPITOLY: readonly Kapitola[] = [
             Starešinu — v línii má len akcie.
           </li>
           <li>
-            Starší je <strong>v ohrození</strong>: v tomto kole jeho markerom nič nehýbe (Pohoršenie, Nakladačka, Povery). Strach,
-            ktorý ti udržal, ti zaplatí normálne.
+            Starší je <strong>v ohrození</strong>: v tomto kole jeho markerom nič nehýbe (Nakladačka, Kšeft vily, Kapybara); silu jeho
+            priazne smie zmeniť hádka. Strach, ktorý ti udržal, ti zaplatí normálne.
           </li>
         </ul>
         <p className="zvyraznene">
@@ -529,32 +529,39 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "09-bitka",
     vSkratke: [
       "Tuhé: Rana 1, Pecka 2, Petelica 3. Viera ho znižuje.",
-      "Povera nepoškodzuje: každá, ktorú nezruší Viera, posunie silu priazne staršieho o stupeň k tebe — len na toto kolo.",
+      "Hádka: Pohoršenie dá 2 mäkké, Povera 1 (Viera ju zruší). Kto má viac mäkkého, posunie priazne starších k sebe do konca kola — marker stojí.",
       "Viac tuhého vyhráva: víťaz dostane 1 špak za každú kartu v línii, lokalita ide na nástenku.",
       "Remízu rozhodne menej Absťákov, potom menej Dlhov, inak sekera.",
       "Nakladačka je rozdiel tuhého: drží ju víťaz, rozdeľuje ju porazený.",
     ],
     obsah: () => (
       <>
-        <H3 id="bitka-poskodenie">Povery a tuhé poškodenie</H3>
+        <H3 id="bitka-poskodenie">Hádka a tuhé poškodenie</H3>
         <p>
-          <P k="tuhe">Tuhé</P> poškodenie (Rana 1, Pecka 2, Petelica 3) rozhoduje o víťazovi. Každá tvoja priznaná Cirhóza dá súperovi +1 tuhé.{" "}
-          <P k="povera">Povera</P> nepoškodzuje — <strong>ohovára staršieho</strong>: požičia ti jeho priazeň na toto kolo.
+          <P k="tuhe">Tuhé</P> poškodenie (Rana 1, Pecka 2, Petelica 3) rozhoduje o víťazovi bitky. Každá tvoja priznaná Cirhóza dá súperovi +1 tuhé.{" "}
+          <P k="pohorsenie">Pohoršenie</P> a <P k="povera">Povera</P> sú <P k="makke">mäkké</P> poškodenie — tuhé nerobia, hrá sa o ne{" "}
+          <P k="hadka">hádka</P>.
         </p>
         <ol>
           <li>
-            <P k="viera">Viera</P> a Povery sa vyrušia 1 : 1 — tvoja Viera ruší súperove Povery a naopak.
+            <P k="viera">Viera</P> a Povery sa vyrušia 1 : 1 na kusy — tvoja Viera ruší súperove Povery a naopak (so Svätým textom
+            každá tvoja Viera zruší 2). Proti Pohoršeniu Viera nepomáha.
           </li>
           <li>
-            Každá zvyšná Povera posunie <strong>silu priazne</strong> jedného staršieho o stupeň k tebe: zníži súperovu (2 → 1 → 0),
-            preklopí ju k tebe, požičia ti priazeň staršieho v strede alebo zosilní tvoju — najviac na 3. Marker sa nehýbe, strach
-            ani udržanie sa nemenia; platí do konca kola. Povery rozdeľuje najprv obranca, potom útočník.
+            <strong>Mäkké</strong> = Pohoršenie × 2 + zvyšné Povery × 1 (s Horoskopom × 2). Kto ho má viac, <strong>vyhral hádku</strong> o
+            rozdiel; pri rovnosti nikto.
           </li>
           <li>
-            Zvyšná Viera zníži súperovo tuhé poškodenie, pod 0 neklesne. Veriaci (priazeň) ti pridá Vieru navyše; hodnotu jednej
-            Viery mení len Svätý text v Dedičstve.
+            Víťaz hádky ju rozdelí na <strong>sily priazní</strong> starších — <strong>len k sebe</strong>: súperovi priazeň zníži,
+            preklopí ju k sebe alebo zosilní svoju, najviac na 3. Pole stojí ako pri Nakladačke (von zo stredu 1 / 2 / 3, k stredu
+            2 / 3 / 4); čo nestačí na žiadny posun, prepadne. <strong>Marker sa nehýbe</strong> — strach ani udržanie sa nemenia.
+            Priazeň platí do konca kola: v bitke, v exekúcii aj po bitke.
           </li>
-          <li>Každý Absťák ti zníži tuhé o 1.</li>
+          <li>
+            Zvyšná Viera zníži súperovo tuhé poškodenie, pod 0 neklesne. Veriaci (priazeň) ti pridá Vieru navyše — proti Poverám so
+            silou pred hádkou, čo mu hádka pridá či uberie, sa prejaví v tlmení tuhého. Hodnotu jednej Viery mení len Svätý text.
+          </li>
+          <li>Každý Absťák ti zníži tuhé o 1 — Abstinent ti ich v bitke toľko odpustí, aká je jeho sila.</li>
         </ol>
         <UkazkaBitky />
         <H3 id="bitka-vysledok">Výsledok a sekera</H3>
@@ -577,14 +584,11 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Efekty na začiatku bitky</strong> — Traktorista bez prevahy v jeho kraji dá svojmu majiteľovi Dlh.
           </li>
           <li>
-            <strong>Povery</strong> — po vyrušení s Vierou posunú silu priazní starších o stupeň k svojmu majiteľovi (obranca prvý).
+            <strong>Hádka</strong> — Viera ruší Povery, kto má viac mäkkého (Pohoršenie 2, Povera 1), posunie sily priazní starších
+            k sebe do konca kola; marker stojí.
           </li>
           <li>
-            <strong>Pohoršenie</strong> — posúva markery starších od seba alebo k sebe (kapitola{" "}
-            <a href="#starsi">Starší a Nakladačka</a>).
-          </li>
-          <li>
-            <strong>Poškodenie</strong> — tuhé znižuje zvyšná Viera a každý Absťák v tvojom balíčku.
+            <strong>Poškodenie</strong> — tuhé znižuje zvyšná Viera a každý Absťák v tvojom balíčku (Abstinent ich odpustí).
           </li>
           <li>
             <strong>Výsledok</strong> — víťaz (pri remíze rozhodnú Absťáky, potom Dlhy), inak sekera.
@@ -647,7 +651,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Marker staršieho posunutý od seba = súper má priazeň, starší sa bojí teba — desíš ho; k sebe ho upokojuješ.",
       "Stupnica má 7 polí: stupne 3-2-1-0-1-2-3 (červená, oranžová, žltá, sivý stred…); starší je pokojný, znepokojený, vystrašený alebo vydesený.",
       "Stupeň zaplatí (1 / 2 / 3) až keď sa na ňom marker udrží do konca ďalšieho kola — tomu, koho sa bojí, aj porazenému.",
-      "Nakladačka aj Pohoršenie platia za pole podľa zóny: von zo stredu 1 / 2 / 3, k stredu 2 / 3 / 4 — bez limitu, aj na krajnú pozíciu.",
+      "Marker posúva Nakladačka — pole podľa zóny: von zo stredu 1 / 2 / 3, k stredu 2 / 3 / 4, bez limitu, aj na krajnú pozíciu. Hádka mení len silu priazne do konca kola.",
       "Starší, ktorý sa ťa bojí na stupni 3, sa dá zajať — tretí väzeň vyhráva.",
     ],
     obsah: () => (
@@ -669,7 +673,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           k stredu, stupne, z ktorých ustúpil, sa pri ďalšom postupe platia znova (a znova až po udržaní).
         </p>
         <UkazkaStupnice />
-        <H3 id="starsi-prebytok">Nakladačka a Pohoršenie</H3>
+        <H3 id="starsi-prebytok">Nakladačka a hádka</H3>
         <p>
           <P k="prebytok">Nakladačka</P> je rozdiel v tuhom poškodení. Krok za krokom:
         </p>
@@ -698,12 +702,9 @@ export const KAPITOLY: readonly Kapitola[] = [
           posunutého dostane 1 cigaretu. <strong>Vo finále sa Nakladačka nerozdeľuje — víťaz finále za ňu dostane 1 špak za každý bod.</strong>
         </p>
         <p>
-          Každé <P k="pohorsenie">Pohoršenie</P> je bod na posun markera — <strong>od seba (desíš), alebo k sebe (upokojuješ)</strong>; vyberáš ty
-          staršieho a smer, pole stojí ako pri Nakladačke a marker ide, kým tvoje Pohoršenia stačia (zvyšok dáš inému staršiemu).
-          K sebe si priazeň toho staršieho vezmeš (alebo ju súperovi uberieš). Priazeň sa mení <strong>hneď</strong> — platí už
-          v poškodení tej istej bitky, takže ju môže rozhodnúť. Ten istý marker smieš posunúť aj viackrát,{" "}
-          <strong>bez limitu</strong> a aj na krajnú pozíciu (zo stredu na červenú šesť Pohoršení). Strach z nového stupňa sa
-          zaplatí až po udržaní; Pohoršením však môžeš súperovi <strong>odtlačiť</strong> stupeň, ktorý by mu koniec kola zaplatil.
+          <P k="hadka">Hádka</P> (kapitola <a href="#bitka">Bitka</a>) markerom nehýbe: víťaz hádky posúva len <strong>silu priazne</strong>{" "}
+          k sebe, pole za pole za tú istú cenu ako pri Nakladačke, najviac na silu 3. Priazeň sa mení <strong>hneď</strong> — platí už
+          v poškodení tej istej bitky, v exekúcii aj po bitke, a na konci kola zanikne. Strach, udržanie aj zaplatené stupne ostávajú.
         </p>
         <H3 id="starsi-priazne">Priazne</H3>
         <p>
@@ -721,7 +722,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tbody>
             <tr><td>Bitkár</td><td>Tuhé poškodenie v bitke</td><td>+1 / +2 / +3</td></tr>
             <tr><td>Veriaci</td><td>Viera navyše v bitke</td><td>+1 / +2 / +3</td></tr>
-            <tr><td>Abstinent</td><td>Pohoršenia navyše v bitke</td><td>+1 / +2 / +3</td></tr>
+            <tr><td>Abstinent</td><td>V bitke sa ti neráta toľko Absťákov (tuhé za ne neklesne, nerátajú sa ani pri remíze)</td><td>1 / 2 / 3</td></tr>
             <tr><td>Advokát</td><td>Exekúcia ti vezme o toľko špakov menej (Dlhy zhoria ako vždy)</td><td>−1 / −2 / −3</td></tr>
             <tr><td>Robota</td><td>Akcie Robota navyše — spália priznaný Dlh, inak dajú špak</td><td>1 / 2 / 3</td></tr>
             <tr><td>Fajčiar</td><td>Cigarety po bitke (Obmedzenie ich neuberá)</td><td>+1 / +2 / +3</td></tr>
@@ -732,8 +733,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="starsi-vydesenie">Krajná pozícia a zajatie</H3>
         <ul>
           <li>
-            <strong>Krajná pozícia:</strong> na červenú sa marker smie dostať aj viacerými posunmi v jednom kole, Nakladačkou aj
-            Pohoršením. Súper ho z nej smie odtlačiť späť.
+            <strong>Krajná pozícia:</strong> na červenú sa marker smie dostať aj viacerými posunmi v jednom kole Nakladačkou.
+            Súper ho z nej smie odtlačiť späť.
           </li>
           <li>
             <P k="vydesenie">Vydesený</P> starší (stupeň 3) sa dá po šenku skúsiť <a href="#patronat">zajať</a>. Tretí{" "}
@@ -1014,7 +1015,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             v línii (na Herni navyše za Dlhy porazeného). Pri sekere vo finále špaky kola aj zo sekery prepadnú.
           </li>
           <li>
-            Vo finále sa rozdeľuje len Pohoršenie, Nakladačka už nie — víťaz finále za ňu dostane 1 špak za každý bod. Po finále starší zaplatia stupne udržané z posledného kola
+            Vo finále sa rozdeľuje len hádka, Nakladačka už nie — víťaz finále za ňu dostane 1 špak za každý bod. Po finále starší zaplatia stupne udržané z posledného kola
             (každému, koho sa boja); stupne, kam sa marker dostal až vo finále, nič. Potom sa vykúpia zvyšné plné poldeci a cigarety (poldeci 1 špak, 5 cigariet 1 špak), odpočíta sa
             nepriznaná Cirhóza a vyhrá hráč s viac špakmi.
           </li>

@@ -435,8 +435,10 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
 
         <Sekcia nazov="Poškodenie" ikona={<Akcia kluc="Petelica" />}>
           <Udaj nazov="tuhého udeleného" hodnota={cislo(s.tuheUdelene)} vyrazny pomoc="Rany, Pecky, Petelice a bonusy po odpočítaní súperovej Viery." />
-          <Udaj nazov="mäkkého udeleného" hodnota={cislo(s.makkeUdelene)} pomoc="Povery zastropené súperovými priznanými dlhmi." />
-          <Udaj nazov="na bitku" hodnota={bitkyPriemer(s.tuheUdelene + s.makkeUdelene)} pomoc="Priemerné celkové poškodenie v jednej bitke." />
+          <Udaj nazov="mäkkého udeleného" hodnota={cislo(s.makkeUdelene)} pomoc="Pohoršenia × 2 a Povery, ktoré nezrušila súperova Viera (od pravidiel v10 — hádka)." />
+          <Udaj nazov="hádok vyhraných" hodnota={cislo(s.hadkyVyhrane)} pomoc="Bitky, v ktorých mal hráč viac mäkkého a rozdelil hádku (od v10)." />
+          <Udaj nazov="na vyhratú hádku" hodnota={priemer(s.hadkaVyhrana, s.hadkyVyhrane)} pomoc="Priemerná veľkosť vyhratej hádky — o koľko mal viac mäkkého." />
+          <Udaj nazov="tuhého na bitku" hodnota={bitkyPriemer(s.tuheUdelene)} pomoc="Priemerné tuhé poškodenie v jednej bitke." />
           <Udaj nazov="obdržaného" hodnota={cislo(s.poskodenieObdrzane)} />
           <Udaj nazov="obdržaného na bitku" hodnota={bitkyPriemer(s.poskodenieObdrzane)} />
           <Udaj nazov="najväčší zásah" hodnota={cislo(s.najvacsiZasah)} pomoc="Najvyššie celkové poškodenie v jednej bitke." />
@@ -455,7 +457,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
           <Udaj nazov="Povier účinných" hodnota={percento(s.poveryUcinne, s.akcie.Povera ?? 0)} pomoc="Povery, ktoré nevyrušila súperova Viera." />
           <Udaj nazov="aktívnej Viery" hodnota={cislo(s.akcie.Viera ?? 0)} />
           <Udaj nazov="aktívnych Pohoršení" hodnota={cislo(s.akcie.Pohoršenie ?? 0)} />
-          <Udaj nazov="posunov Pohoršením" hodnota={cislo(s.posunyPohorsenim)} pomoc="Markery starších posunuté Pohoršením k súperovi." />
+          <Udaj nazov="posunov Pohoršením (do v9)" hodnota={cislo(s.posunyPohorsenim)} pomoc="Markery starších posunuté Pohoršením — len partie do pravidiel v9." />
           <Udaj nazov="absťákov" hodnota={cislo(s.abstakyZiskane)} />
         </Sekcia>
 

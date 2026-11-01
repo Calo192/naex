@@ -20,7 +20,6 @@ import {
   loadGameData,
   naTahu,
   parseScorecards,
-  pohorseniaVBitke,
   poskodenieBitky,
   prahyHraca,
   paleneDlhyVBitke,
@@ -52,7 +51,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     caka: null,
     sums: [{}, {}],
     exekutorHotovy: [true, true],
-    pohorsenieZostava: [0, 0],
+   
     exekutor: [0, 0],
     damage: null,
     vitaz: 0,
@@ -111,9 +110,9 @@ describe("v5 bod 8: nepriznaná Cirhóza po bitke do odhadzovacieho balíčka", 
   });
 });
 
-describe("v5 bod 7: Pohoršenie oboma smermi", () => {
-  /** Bitka v kroku Pohoršenia, hráč 0 má `n` Pohoršení, línia prázdna. */
-  function vPohorseni(seed: number, uprav: (s: GameState) => GameState = (s) => s, n = 1): GameState {
+describe("v10: hádka posúva silu priazne len k víťazovi (predtým v5 bod 7 Pohoršenie oboma smermi)", () => {
+  /** Bitka v kroku hádky, hráč 0 ju vyhral o `n`, línia prázdna. */
+  function vHadke(seed: number, uprav: (s: GameState) => GameState = (s) => s, n = 1): GameState {
     const s0 = setupSBalickom(data, seed);
     return uprav({
       ...s0,
@@ -123,7 +122,7 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
       strany: [[], []],
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, vitaz: null, pohorsenieZostava: [n, 0], vesticaHotova: false }),
+      bitkaStav: bitka({ krok: "hadka", caka: 0, vitaz: null, vesticaHotova: false, hadka: { makke: [n, 0], vitaz: 0, velkost: n, zostava: n, prepadlo: 0, posuny: [] } }),
     });
   }
   const sMarkerom = (s: GameState, elderId: string, marker: ElderState["marker"]): GameState => ({
@@ -132,45 +131,39 @@ describe("v5 bod 7: Pohoršenie oboma smermi", () => {
   });
   const bitkarId = (s: GameState): string => s.starsi.find((e) => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR")!.elderId;
 
-  it("legálne sú oba smery; k sebe posunie marker k hráčovi a priazeň platí už v poškodení tejto bitky", () => {
-    const s = vPohorseni(71);
+  it("víťaz vyberá len staršieho; priazeň ide k nemu a platí už v poškodení tejto bitky, marker stojí", () => {
+    const s = vHadke(71);
     const id = bitkarId(s);
     const st = sMarkerom(s, id, 3);
-    const legal = legalCommands(data, st, 0);
-    expect(legal).toContainEqual({ type: "pohorsenie", elderId: id });
-    expect(legal).toContainEqual({ type: "pohorsenie", elderId: id, kSebe: true });
-    const kSebe = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
-    expect(kSebe.starsi.find((e) => e.elderId === id)?.marker).toBe(2);
-    // Bitkár na strane hráča 0 (sila 1) mu dal tuhé navyše už v tejto bitke — prázdna línia, inak 0 : 0.
-    expect(kSebe.bitkaStav?.damage?.tuhe[0]).toBeGreaterThan(0);
-    expect(kSebe.bitkaStav?.vitaz).toBe(0);
-    const kSuperovi = apply(data, st, { type: "pohorsenie", elderId: id }, 0);
-    expect(kSuperovi.state.starsi.find((e) => e.elderId === id)?.marker).toBe(4);
-    const vysledok = kSuperovi.events.find((e) => e.type === "bitkaVysledok");
-    expect(vysledok?.type === "bitkaVysledok" ? vysledok.damage.tuhe[0] : -1).toBe(0);
+    expect(legalCommands(data, st, 0)).toContainEqual({ type: "hadka", elderId: id });
+    expect(legalCommands(data, st, 1).filter((c) => c.type === "hadka")).toEqual([]);
+    const po = apply(data, st, { type: "hadka", elderId: id }, 0).state;
+    expect(po.starsi.find((e) => e.elderId === id)?.marker).toBe(3);
+    // Bitkár hráča 0 (sila 1 do konca kola) mu dal tuhé navyše už v tejto bitke — prázdna línia, inak 0 : 0.
+    expect(po.bitkaStav?.damage?.tuhe[0]).toBe(1);
+    expect(po.bitkaStav?.vitaz).toBe(0);
   });
 
-  it("v6: aj k sebe smie na krajnú pozíciu, ďalej von nie (oranžová → červená stojí 3, v8.2)", () => {
-    const s = vPohorseni(72, (x) => x, 3);
+  it("strop 3: na staršieho, ktorého priazeň je už víťazova v sile 3, hádka nesmie", () => {
+    const s = vHadke(72, (x) => x, 3);
     const id = s.starsi[0]!.elderId;
     const st = sMarkerom(s, id, 1);
-    expect(legalCommands(data, st, 0)).toContainEqual({ type: "pohorsenie", elderId: id, kSebe: true });
-    const po = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state;
-    expect(po.starsi.find((e) => e.elderId === id)?.marker).toBe(0);
+    expect(legalCommands(data, st, 0)).toContainEqual({ type: "hadka", elderId: id });
     const naKraji = sMarkerom(s, id, 0);
-    expect(legalCommands(data, naKraji, 0)).not.toContainEqual({ type: "pohorsenie", elderId: id, kSebe: true });
-    expect(() => apply(data, naKraji, { type: "pohorsenie", elderId: id, kSebe: true }, 0)).toThrow(IllegalCommandError);
+    expect(legalCommands(data, naKraji, 0)).not.toContainEqual({ type: "hadka", elderId: id });
+    expect(() => apply(data, naKraji, { type: "hadka", elderId: id }, 0)).toThrow(IllegalCommandError);
   });
 
-  it("v8.2: limit hraníc zón nie je — zo stredu na kraj 1 + 2 + 3 = 6 jedným výberom, späť do stredu 4 + 3 + 2 = 9", () => {
-    const s = vPohorseni(73, (x) => x, 15);
+  it("cena podľa zóny ako Nakladačka: súperovu silu 3 na stred za 4 + 3 + 2 = 9, potom k sebe na 1 za 1", () => {
+    const s = vHadke(73, (x) => x, 10);
     const id = s.starsi[0]!.elderId;
-    let st = sMarkerom(s, id, 3);
-    st = apply(data, st, { type: "pohorsenie", elderId: id, kSebe: true }, 0).state; // 3 → 0
-    expect(st.starsi.find((x) => x.elderId === id)?.marker).toBe(0);
-    expect(st.bitkaStav?.pohorsenieZostava[0]).toBe(9);
-    st = apply(data, st, { type: "pohorsenie", elderId: id }, 0).state; // 0 → 3, na žltú súpera už nič neostane
-    expect(st.starsi.find((x) => x.elderId === id)?.marker).toBe(3);
+    // Marker na červenej hráča 1 — priazeň hráča 1 sily 3.
+    let st = sMarkerom(s, id, 6);
+    // Ostatní starší na víťazovej červenej: zvyšok ide len na tohto staršieho.
+    st = { ...st, starsi: st.starsi.map((e) => (e.elderId === id ? e : { ...e, marker: 0 as const })) };
+    const { state, events } = apply(data, st, { type: "hadka", elderId: id }, 0);
+    expect(events.some((e) => e.type === "log" && e.text.includes("(hráč 1, 10 z hádky)") && e.text.includes("hráč 2 +3 → hráč 1 +1"))).toBe(true);
+    expect(state.starsi.find((e) => e.elderId === id)?.marker).toBe(6);
   });
 });
 
@@ -262,9 +255,9 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
     }
   });
 
-  it("Abstinent (Lakomec): v bitke +1 / +2 / +3 Pohoršenia; barter nezlacňuje", () => {
+  it("Abstinent (v10): Pohoršenia navyše nedáva; barter nezlacňuje", () => {
     const s0 = setupSBalickom(data, 92);
-    expect(pohorseniaVBitke(data, sPriaznou(s0, "LAKOMEC", 1, 2), [{}, {}])).toEqual([0, 2]);
+    expect(poskodenieBitky(data, sPriaznou(s0, "LAKOMEC", 1, 2), [{}, {}]).makke).toEqual([0, 0]);
     expect(barterCena(data, sPriaznou(s0, "LAKOMEC", 1, 3), 1)).toBe(KONSTANTY.BARTER_CENA);
   });
 
@@ -277,10 +270,10 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
       hraci: [{ ...s0.hraci[0], dlhy: 5 }, { ...s0.hraci[1], dlhy: 5 }],
-      bitkaStav: bitka({ krok: "pohorsenie", caka: 0, pohorsenieZostava: [1, 0], exekutorHotovy: [false, false] }),
+      bitkaStav: bitka({ krok: "hadka", caka: 0, exekutorHotovy: [false, false], hadka: { makke: [1, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
     };
     const iny = s.starsi.find((e) => e.marker === 3 && !["ADVOKAT", "ROBOTA"].includes(favourStarsieho(data, e)))!;
-    const po = apply(data, s, { type: "pohorsenie", elderId: iny.elderId }, 0).state;
+    const po = apply(data, s, { type: "hadka", elderId: iny.elderId }, 0).state;
     expect([po.hraci[0].dlhy, po.hraci[1].dlhy]).toEqual([2, 2]);
     expect(po.nastenka.at(-1)?.exekutor).toEqual([1, 3]);
     expect(prahyHraca(data, s, 0).exekucia).toBe(3);
