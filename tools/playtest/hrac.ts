@@ -50,6 +50,7 @@ import {
   nahladPitky,
   sMojimiSkrytymiNaex,
   favourStarsieho,
+  kartaZadarmo,
   krokStavby,
   cieleOdpovede,
   cieleVykladania,
@@ -407,6 +408,12 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       );
       out.push(`TVOJ BALÍČEK STAVBY (${d.mojBalicek.length}; najprv Náradie, potom Občania — do šenku dáš polovicu v ľubovoľnom mixe):`);
       for (const k of d.mojBalicek) out.push(`  ${popisKarty(k)}`);
+      if (kartaZadarmo(v, ja)) out.push("KARTA ZADARMO: súper sa pokúša o zajatie — 1 kartu z balíčka stavby si tajne necháš do ruky.");
+      if (kartaZadarmo(v, su)) out.push("Súper si za tvoj pokus o zajatie tajne nechá 1 kartu zo svojho balíčka stavby do ruky.");
+    } else if (d.krok === "zajatie") {
+      out.push(
+        `POKUS O ZAJATIE (pred stavbou šenku, v10.1): rozhoduje útočník, potom obranca; ty ${d.hotovo[ja] ? "si už rozhodol" : "rozhoduješ"}, súper ${d.hotovo[su] ? "už rozhodol" : "ešte nie"}.`,
+      );
     } else {
       out.push(
         `BRANIE ZO ŠENKU (striedavo, začína obranca — na svojom prvom ťahu len 1 kartu; inak na ťahu 1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu alebo 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety, poldeci sa neplatí; kto nemá cigaretu, prestane): ty ${d.noveKarty[ja]}${d.hotovo[ja] ? " (skončil si)" : ""}, súper ${d.noveKarty[su]}${d.hotovo[su] ? " (skončil)" : ""}.`,
@@ -752,14 +759,16 @@ function moznosti(v: ClientState): string[] {
       const ds = v.draftStav;
       if (ds === null) break;
       if (ds.krok === "stavba") {
-        const krok = krokStavby(ds.mojBalicek.length);
+        const krok = krokStavby(ds.mojBalicek.length, kartaZadarmo(v, ja));
+        const nechaj = krok.nechaj === 1 ? `,"nechaj":C` : "";
+        const zadarmo = krok.nechaj === 1 ? " KARTA ZADARMO (v10.1, súper sa pokúša o zajatie): C = 1 karta, ktorú si tajne necháš do ruky — súper nevie, ktorá." : "";
         out.push(
-          `{"type":"stavbaSenku","doSenku":[${Array.from({ length: krok.doSenku }, (_, i) => `A${i + 1}`).join(",")}],"odhod":[${Array.from({ length: krok.odhod }, (_, i) => `B${i + 1}`).join(",")}]}   — z TVOJHO BALÍČKA STAVBY (vyššie) daj ${krok.doSenku} ${krok.doSenku === 1 ? "kartu" : "karty"} do šenku (uvidia ich obaja, berie sa z neho) a ${krok.odhod} naspodok (Nástroj naspodok Náradia, ostatné naspodok Občanov; súper ich neuvidí). Nič si nepodávate. Súper vyberá naraz s tebou; karty do šenku sa odhalia, keď vyberiete obaja.`,
+          `{"type":"stavbaSenku","doSenku":[${Array.from({ length: krok.doSenku }, (_, i) => `A${i + 1}`).join(",")}],"odhod":[${Array.from({ length: krok.odhod }, (_, i) => `B${i + 1}`).join(",")}]${nechaj}}   — z TVOJHO BALÍČKA STAVBY (vyššie) daj ${krok.doSenku} ${krok.doSenku === 1 ? "kartu" : "karty"} do šenku (uvidia ich obaja, berie sa z neho) a ${krok.odhod} naspodok (Nástroj naspodok Náradia, ostatné naspodok Občanov; súper ich neuvidí).${zadarmo} Nič si nepodávate. Súper vyberá naraz s tebou; karty do šenku sa odhalia, keď vyberiete obaja.`,
         );
         break;
       }
       if (ds.krok === "zajatie") {
-        // Pokus o zajatie (v9): staršieho, ktorý sa ťa bojí na stupni 3, za cigaretu.
+        // Pokus o zajatie (v10.1 pred stavbou šenku): staršieho, ktorý sa ťa bojí na stupni 3, za cigaretu.
         c({ type: "bezPokusu" }, "o zajatie sa nepokúšaš");
         const h = v.hraci[ja];
         const ciele = v.starsi.filter((e) => pokusMozny(e, ja) && !v.pokusy.some((x) => x?.elderId === e.elderId));
@@ -773,7 +782,7 @@ function moznosti(v: ClientState): string[] {
           const dopady = dopadyText(dopadyNahladu(DATA, v, stavPoPokuse(v, e.elderId), 0), ja);
           c(
             { type: "pokus", elderId: e.elderId },
-            `POKUS O ZAJATIE: ${meno(e.karta.defId)} (bojí sa ťa na stupni 3) — zaplatíš ${KONSTANTY.CENA_POKUSU} cig. (prepadne), jeho karta ide súperovi do ruky a v tomto kole sa marker nehýbe. Vyhráš bitku = tvoj väzeň (${n.poradie}. v partii, po finále ${n.spaky} špakov${n.vyhra ? "; TRETÍ VÄZEŇ = VYHRÁŠ HNEĎ" : ""}); prehráš alebo sekera = vráti sa a marker ustúpi o stupeň (nezaplatená červená prepadne)${dopady}`,
+            `POKUS O ZAJATIE: ${meno(e.karta.defId)} (bojí sa ťa na stupni 3) — zaplatíš ${KONSTANTY.CENA_POKUSU} cig. (prepadne), jeho karta ide tebe do ruky (smieš ju vyložiť, len akcie) a v tomto kole sa marker nehýbe; ${v.pokusy[su] !== null ? "súper skúša tiež, takže kartu zadarmo pri stavbe šenku nedostane nikto (ani ty)" : "súper si pri stavbe šenku tajne nechá 1 kartu zadarmo (ak sa nepokúsi aj on)"}. Vyhráš bitku = tvoj väzeň (${n.poradie}. v partii, po finále ${n.spaky} špakov${n.vyhra ? "; TRETÍ VÄZEŇ = VYHRÁŠ HNEĎ" : ""}); prehráš alebo sekera = vráti sa a marker ustúpi o stupeň (nezaplatená červená prepadne)${dopady}`,
           );
         }
         break;

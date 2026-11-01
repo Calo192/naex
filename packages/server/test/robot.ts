@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, krokStavby, lineState, hadkaNaStarsieho, naexCieleVLinii, posunZaBody, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, kartaZadarmo, krokStavby, lineState, hadkaNaStarsieho, naexCieleVLinii, posunZaBody, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -114,10 +114,16 @@ export class Robot {
       case "draft": {
         const d = view.draftStav;
         if (d?.krok === "stavba") {
-          // Po dvoch do šenku a naspodok, zvyšok súperovi (Michal 2026-10-19).
+          // Polovica do šenku, polovica naspodok; pri súperovom pokuse o zajatie prvá karta zadarmo (v10.1).
           const uids = d.mojBalicek.map((k) => k.uid);
-          const krok = krokStavby(uids.length);
-          return { type: "stavbaSenku", doSenku: uids.slice(0, krok.doSenku), odhod: uids.slice(krok.doSenku, krok.doSenku + krok.odhod) };
+          const krok = krokStavby(uids.length, kartaZadarmo(view, ja));
+          const zvysok = uids.slice(krok.nechaj);
+          return {
+            type: "stavbaSenku",
+            doSenku: zvysok.slice(0, krok.doSenku),
+            odhod: zvysok.slice(krok.doSenku, krok.doSenku + krok.odhod),
+            ...(krok.nechaj === 1 ? { nechaj: uids[0] } : {}),
+          };
         }
         // Pokus o zajatie (v9) robot nevyužíva.
         if (d?.krok === "zajatie") return { type: "bezPokusu" };

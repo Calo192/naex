@@ -65,7 +65,7 @@ describe("scenár zajatia — rozdanie", () => {
 describe("scenár zajatia — tok v jadre (§10)", () => {
   const vysledky = new Set<string>();
   // Rozdanie 11: človek bitku vyhrá (väzeň), rozdanie 12: nie (ústup na oranžovú) — oba výsledky.
-  it.each([11, 12])("rozdanie %i: po braní zo šenku sa pokus ponúkne, boss ide súperovi do ruky a po bitke je väzeň alebo ústup", (rozdanie) => {
+  it.each([11, 12])("rozdanie %i: pred stavbou šenku sa pokus ponúkne, boss ide pokúšajúcemu do ruky (v10.1) a po bitke je väzeň alebo ústup", (rozdanie) => {
     const s0 = pouziScenar(setupGame(data, rozdanie), "zajatie", 0);
     const ciel = s0.starsi[0]!.elderId;
     // Krok zajatia, keď rozhoduje človek (hráč 1 = bot, jeho voľbu urobí bot).
@@ -75,13 +75,13 @@ describe("scenár zajatia — tok v jadre (§10)", () => {
     const karta = s.starsi.find((e) => e.elderId === ciel)!.karta;
     const po = apply(data, s, { type: "pokus", elderId: ciel }, 0).state;
     expect(po.pokusy[0]).toEqual({ elderId: ciel });
-    expect(po.hraci[1].ruka.some((k) => k.uid === karta.uid)).toBe(true);
-    // Súper bossa v ruke vidí; človek vie, že je u súpera (pokus je verejný), ostatné karty nie.
+    expect(po.hraci[0].ruka.some((k) => k.uid === karta.uid)).toBe(true);
+    // Človek bossa v ruke vidí; súper vie, že je u človeka (pokus je verejný), ostatné karty nie.
     const pohladCloveka = viewFor(data, po, 0);
     expect(pohladCloveka.pokusy[0]).toEqual({ elderId: ciel });
-    expect(viewFor(data, po, 1).ruka.some((k) => k.uid === karta.uid)).toBe(true);
-    expect(pohladCloveka.ruka.some((k) => k.uid === karta.uid)).toBe(false);
-    expect(pohladCloveka.hraci[1].rukaPocet).toBe(po.hraci[1].ruka.length);
+    expect(pohladCloveka.ruka.some((k) => k.uid === karta.uid)).toBe(true);
+    expect(viewFor(data, po, 1).ruka.some((k) => k.uid === karta.uid)).toBe(false);
+    expect(viewFor(data, po, 1).hraci[0].rukaPocet).toBe(po.hraci[0].ruka.length);
     // Dohrá sa kolo: výsledok je väzeň človeka, alebo starší späť o stupeň (oranžová).
     const konec = hrajKym(po, (x) => x.pokusy[0] === null);
     const vazen = konec.vazni.find((v) => v.elderId === ciel);
@@ -91,7 +91,7 @@ describe("scenár zajatia — tok v jadre (§10)", () => {
       expect(konec.starsi.some((e) => e.elderId === ciel)).toBe(false);
     } else {
       expect(strachZ(konec.starsi.find((e) => e.elderId === ciel)!, 0)).toBe(2);
-      expect(konec.hraci[1].ruka.some((k) => k.uid === karta.uid)).toBe(false);
+      expect(konec.hraci[0].ruka.some((k) => k.uid === karta.uid)).toBe(false);
     }
   });
 

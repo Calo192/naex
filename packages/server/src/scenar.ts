@@ -25,7 +25,7 @@ export function scenarZProstredia(env: Readonly<Record<string, string | undefine
   return !produkcia && jeScenar(x) ? { scenar: x, ignorovany: null } : { scenar: undefined, ignorovany: x };
 }
 
-/** Cigarety navyše, aby po braní zo šenku ostala aspoň jedna na pokus. */
+/** Cigarety navyše na pokus o zajatie (pred stavbou šenku, v10.1) aj na branie zo šenku. */
 const CIGARETY_NAVYSE = 4;
 
 /**

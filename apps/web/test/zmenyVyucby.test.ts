@@ -14,6 +14,8 @@ import { stitokTahu, zmenyStola } from "../src/hra/zmenyVyucby.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const scenar = scenarJson as unknown as ScenarVyucby;
+/** Pravidlá v10.1 (pokus pred stavbou šenku) — scenár finále čaká na úpravu, potom false. */
+const FINALE_CAKA_NA_V101 = true;
 
 /** Pohľad hráča pred a po každom ťahu scenára — bot, hra za hráča aj hráč (zmenyStola ich nerozlišuje). */
 function tahySoZmenami(): { readonly krok: KrokScenara; readonly pred: ClientState; readonly po: ClientState }[] {
@@ -22,6 +24,9 @@ function tahySoZmenami(): { readonly krok: KrokScenara; readonly pred: ClientSta
   for (const [i, krok] of scenar.kroky.entries()) {
     const pred = viewFor(data, state, VYUCBA_HRAC);
     // Aj info krok môže meniť partiu (cigareta pre Melichara v 2. časti).
+    // v10.1: scenár finále robí pokus o zajatie ešte po braní — od k-stavba-finale neprejde, kým
+    // Michal neschváli nový scenár; testované ťahy sú všetky skôr.
+    if (FINALE_CAKA_NA_V101 && krok.id === "k-stavba-finale") break;
     state = vykonajKrok(data, scenar, state, i);
     if (krok.kto === "info" || krok.kto === "otazka" || krok.prikaz === undefined) continue;
     out.push({ krok, pred, po: viewFor(data, state, VYUCBA_HRAC) });

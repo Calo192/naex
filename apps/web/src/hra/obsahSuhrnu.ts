@@ -103,7 +103,7 @@ export type Dosledok =
   | { readonly druh: "strach"; readonly hrac: PlayerId; readonly stupen: number }
   /** Špaky, ktoré zaplatí koniec ďalšieho kola, ak sa marker udrží. */
   | { readonly druh: "naUdrzanie"; readonly hrac: PlayerId; readonly spaky: number }
-  /** Stupeň 3: obávaný ho smie po šenku skúsiť zajať. */
+  /** Stupeň 3: obávaný ho smie pred šenkom skúsiť zajať. */
   | { readonly druh: "zajatieMozne"; readonly hrac: PlayerId }
   | { readonly druh: "vyplata"; readonly hrac: PlayerId; readonly spaky: number; readonly stupen: number }
   /** Hádka posunula silu priazne k víťazovi (len do konca kola). */

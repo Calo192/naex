@@ -25,10 +25,13 @@ export interface MoznostZajatia {
 export function PonukaZajatia({
   moznosti,
   menoSupera,
+  superSkusa,
   vsetci,
 }: {
   readonly moznosti: readonly MoznostZajatia[];
   readonly menoSupera: string;
+  /** Súper sa už o zajatie pokúša — karta zadarmo pri stavbe šenku (v10.1) nebude nikomu. */
+  readonly superSkusa: boolean;
   /** Prepne stôl na celú líniu starších (markery, súboje); späť tlačidlom v línii. */
   readonly vsetci: () => void;
 }) {
@@ -46,7 +49,11 @@ export function PonukaZajatia({
     <div className="ponuka-patronatu" ref={ref} data-vyucba="ponuka-patronatu">
       <div className="pp-hlava">
         <b>Pokus o zajatie — koho skúsiš zajať?</b>
-        <span className="pp-tlmene">karta pôjde {menoSupera} do ruky, marker sa v tomto kole nehýbe; vyhráš bitku — je tvoj väzeň; myšou na kartu ju zväčšíš</span>
+        <span className="pp-tlmene">
+          karta pôjde tebe do ruky;{" "}
+          {superSkusa ? "kartu zadarmo pri stavbe nedostane nikto" : `${menoSupera} si pri stavbe nechá 1 kartu zadarmo`}; vyhráš bitku — je tvoj väzeň; marker
+          sa v tomto kole nehýbe; myšou na kartu ju zväčšíš
+        </span>
         <button type="button" className="ls-tlacidlo" onClick={vsetci}>
           všetci starší →
         </button>

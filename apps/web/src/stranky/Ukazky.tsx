@@ -275,7 +275,7 @@ export function UkazkaStupnice() {
             má {strana === "tvojej" ? "ty" : "súper"}. Starší sa bojí {strana === "tvojej" ? "súpera" : "teba"} na stupni{" "}
             <strong>{uroven}</strong> <ZnackaStrachu uroven={uroven} trieda={strana === "tvojej" ? "superove" : "moje"} /> — keď sa tu marker udrží do konca nasledujúceho kola, {strana === "tvojej" ? "súperovi" : "tebe"} zaplatí stupne, ktoré ešte nezaplatil (tento{" "}
             {uroven === 1 ? "1 špak" : `${uroven} špaky`}, spolu so stupňami pod ním {(uroven * (uroven + 1)) / 2}), nech bitku vyhrá ktokoľvek; zaparkovaný marker druhýkrát nič nedá.
-            {(m === 0 || m === 6) && ` Na krajnej pozícii je starší vydesený — ${strana === "tvojej" ? "súper" : "ty"} ho smie po šenku skúsiť zajať.`}
+            {(m === 0 || m === 6) && ` Na krajnej pozícii je starší vydesený — ${strana === "tvojej" ? "súper" : "ty"} ho smie pred šenkom skúsiť zajať.`}
           </>
         )}
       </div>

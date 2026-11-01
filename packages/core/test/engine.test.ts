@@ -31,7 +31,7 @@ function tajneUids(state: GameState, ja: PlayerId): number[] {
   // Vízia (Michal 2026-10-19): hráč, ktorý práve rozhoduje, vidí vrchnú kartu
   // SVOJHO balíčka — jedinú výnimku; súper ju nevidí nikdy.
   const vidiVrch = state.vizia !== null && naTahu(state) === ja;
-  // Boss v súperovej ruke (pokus o zajatie, v9) je verejný — vie sa, ktorý starší to je.
+  // Boss v ruke pokúšajúceho (pokus o zajatie, v10.1) je verejný — vie sa, ktorý starší to je.
   const verejneVRuke = new Set(state.starsi.map((e) => e.karta.uid));
   return [
     ...state.hraci[super_].ruka.filter((k) => !verejneVRuke.has(k.uid)).map((k) => k.uid),

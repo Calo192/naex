@@ -4,7 +4,7 @@
 //   node --experimental-strip-types --no-warnings tools/bot/zajatie.ts [partii] [dlzka] [povaha]
 //
 // Bot hrá proti sebe (predvolene povahy na striedačku). Ráta sa v kroku draftu „zajatie“
-// (po braní zo šenku): či sa niektorý starší hráča bojí na stupni 3, či mal hráč cigaretu,
+// (od v10.1 hneď po voľbe cieľa, pred stavbou šenku): či sa niektorý starší hráča bojí na stupni 3, či mal hráč cigaretu,
 // koľko pokusov bot urobil a koľko z nich vyšlo; navyše najvyšší stupeň strachu v partii.
 
 import { readFileSync } from "node:fs";
@@ -43,12 +43,12 @@ for (let i = 0; i < partii; i++) {
     const cmd = tahBota(data, s, p as PlayerId, seed, { povaha: povahy[p] });
     if (cmd.type === "pokus") pokusov++;
     const vazniPred = s.vazni.length;
-    const beraniePred = s.faza === "draft" && s.draftStav?.krok === "beranie";
+    const volbaPred = s.faza === "volbaCiela";
     s = apply(data, s, cmd, p).state;
     uspechov += s.vazni.length - vazniPred;
     // Krok „zajatie“, v ktorom nikto pokus nemá, jadro preskočí v tom istom ťahu — ráta sa
-    // preto chvíľa, keď branie zo šenku skončí (markery sa pri preskočení nehýbu).
-    if (beraniePred && !(s.faza === "draft" && s.draftStav?.krok === "beranie")) {
+    // preto chvíľa po voľbe cieľa (markery ani cigarety sa pri preskočení nemenia).
+    if (volbaPred && s.faza !== "volbaCiela") {
       krokovZajatia++;
       for (const q of [0, 1] as const) {
         if (!s.starsi.some((e) => pokusMozny(e, q))) continue;

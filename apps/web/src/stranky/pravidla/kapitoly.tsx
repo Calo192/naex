@@ -258,15 +258,19 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="patronat">Pokus o zajatie a väzeň</H3>
         <p>
-          Po braní sa najprv útočník, potom obranca rozhodne, či skúsi zajať staršieho, ktorý sa ho{" "}
+          Hneď po výbere lokality, ešte <strong>pred stavbou šenku</strong>, sa najprv útočník, potom obranca rozhodne, či skúsi zajať staršieho, ktorý sa ho{" "}
           <strong>bojí na stupni 3</strong> (marker na červenej na súperovej polovici). Každý najviac jeden pokus za kolo; smiete
           obaja, každý iného staršieho. Platí aj vo finále.
         </p>
         <ul>
           <li>Zaplatíš <strong>1 cigaretu</strong> — prepadne, nech pokus dopadne akokoľvek.</li>
           <li>
-            Karta staršieho ide <strong>súperovi do ruky</strong> (vie sa, ktorá to je). Súper ju smie v tomto kole vyložiť ako
-            Starešinu — v línii má len akcie.
+            Karta staršieho ide <strong>tebe do ruky</strong> (vie sa, ktorá to je). Smieš ju v tomto kole vyložiť ako
+            Starešinu — v línii má len akcie; po bitke sa vráti.
+          </li>
+          <li>
+            Súper si za to pri stavbe šenku <strong>tajne nechá 1 kartu zadarmo</strong> zo svojich 8 do ruky — 4 dá do šenku,
+            3 naspodok. Dostane ju, aj keď pokus zlyhá. Keď skúšate obaja, kartu zadarmo nemá nikto.
           </li>
           <li>
             Starší je <strong>v ohrození</strong>: v tomto kole jeho markerom nič nehýbe (Nakladačka, Kšeft vily, Kapybara); silu jeho
@@ -738,7 +742,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             Súper ho z nej smie odtlačiť späť.
           </li>
           <li>
-            <P k="vydesenie">Vydesený</P> starší (stupeň 3) sa dá po šenku skúsiť <a href="#patronat">zajať</a>. Tretí{" "}
+            <P k="vydesenie">Vydesený</P> starší (stupeň 3) sa dá pred stavbou šenku skúsiť <a href="#patronat">zajať</a>. Tretí{" "}
             <P k="vazen">väzeň</P> vyhráva hru. Karta staršieho je <strong>boss</strong>: 6 akcií a jedna neresť; v línii má len
             akcie, jeho efekt je <a href="#pitka-kseft">Kšeft väzňa</a>.
           </li>

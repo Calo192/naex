@@ -437,15 +437,16 @@ export function nahladNaexNaKartu(data: GameData, view: ClientState, uid: number
 
 /**
  * Stôl po pokuse o zajatie hráča `view.ja` (v9): cigareta zaplatená, starší v ohrození
- * (jeho markerom v tomto kole nič nehýbe). Boss v súperovej ruke pohľad nemení.
+ * (jeho markerom v tomto kole nič nehýbe) a boss v mojej ruke (v10.1).
  */
 export function stavPoPokuse(view: ClientState, elderId: string): ClientState {
   const ja = view.ja;
+  const boss = view.starsi.find((e) => e.elderId === elderId)?.karta;
   const hraci: [ClientState["hraci"][0], ClientState["hraci"][1]] = [view.hraci[0], view.hraci[1]];
-  hraci[ja] = { ...hraci[ja], cigarety: hraci[ja].cigarety - KONSTANTY.CENA_POKUSU };
+  hraci[ja] = { ...hraci[ja], cigarety: hraci[ja].cigarety - KONSTANTY.CENA_POKUSU, rukaPocet: hraci[ja].rukaPocet + (boss === undefined ? 0 : 1) };
   const pokusy: [ClientState["pokusy"][0], ClientState["pokusy"][1]] = [view.pokusy[0], view.pokusy[1]];
   pokusy[ja] = { elderId };
-  return { ...view, hraci, pokusy };
+  return { ...view, hraci, pokusy, ruka: boss === undefined ? view.ruka : [...view.ruka, boss] };
 }
 
 // ---------------------------------------------------------------------------

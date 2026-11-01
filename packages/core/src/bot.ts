@@ -45,6 +45,7 @@ import {
   krcmaVyzaduje,
   kartyZaPas,
   sPrilozenou,
+  kartaZadarmo,
   krokStavby,
   legalCommands,
   sNaexNaKartach,
@@ -320,7 +321,7 @@ export function zahmliStav(state: GameState, ja: PlayerId, rng: RngState): [Game
   // Pred miešaním kanonické poradie — výsledok tak nezávisí od toho, ako sú
   // skryté karty v skutočnosti rozdelené a zoradené (overuje test férovosti).
   const poUid = (karty: readonly CardInstance[]): CardInstance[] => [...karty].sort((a, b) => a.uid - b.uid);
-  // Boss v súperovej ruke (pokus o zajatie, v9) je verejný — do miešania nejde, ostáva v ruke.
+  // Boss v súperovej ruke (jeho pokus o zajatie, v10.1) je verejný — do miešania nejde, ostáva v ruke.
   const bossovia = on.ruka.filter((x) => jeKartaBossa(state, x.uid));
   // Aj súperova skrytá Záverečná v línii — na jej miesto ide náhodná z jeho skrytých kariet.
   const zaverecne = ([0, 1] as const).flatMap((strana) =>
@@ -1019,12 +1020,15 @@ function draft(v: Volba): Command | null {
   if (d.krok === "stavba") {
     // Najlepšie karty do šenku (inak ich tam dá súper). Útočník berie zo šenku
     // druhý (v9.2) — ďalšie dobré radšej pošle naspodok, než by ich podal súperovi.
-    const zoradene = [...d.balicky[ja]].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
-    const krok = krokStavby(zoradene.length);
+    // Karta zadarmo (v10.1, súper skúša zajatie): najlepšiu si nechá do ruky.
+    const vsetky = [...d.balicky[ja]].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
+    const krok = krokStavby(vsetky.length, kartaZadarmo(state, ja));
+    const nechaj = krok.nechaj === 1 ? vsetky[0] : undefined;
+    const zoradene = nechaj === undefined ? vsetky : vsetky.slice(1);
     const doSenku = zoradene.slice(0, krok.doSenku);
     const zvysok = zoradene.slice(krok.doSenku);
     const odhod = state.utocnik !== ja ? zvysok.slice(zvysok.length - krok.odhod) : zvysok.slice(0, krok.odhod);
-    return { type: "stavbaSenku", doSenku: doSenku.map((x) => x.uid), odhod: odhod.map((x) => x.uid) };
+    return { type: "stavbaSenku", doSenku: doSenku.map((x) => x.uid), odhod: odhod.map((x) => x.uid), ...(nechaj === undefined ? {} : { nechaj: nechaj.uid }) };
   }
   // Branie zo šenku (Michal 2026-10-19): 1 karta za cigaretu, 2 karty za 3.
   const ponuka = [...state.senok].sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
@@ -1055,13 +1059,16 @@ function draft(v: Volba): Command | null {
 /**
  * Pokus o zajatie (v9, Michal 2026-10-30) — odhad zo špakov: pri výhre väzeň (špaky
  * podľa poradia, Kšeft, tretí vyhráva) a starší zmizne zo stupnice, pri prehre marker
- * ustúpi o stupeň (nezaplatená červená prepadne). Cigareta prepadne vždy a boss ide
- * súperovi do ruky. Výsledok bitky je pred Zhromaždením neistý.
+ * ustúpi o stupeň (nezaplatená červená prepadne). Cigareta prepadne vždy, boss ide
+ * mne do ruky (v10.1 — v kole je to karta navyše) a súper si pri stavbe šenku nechá
+ * kartu zadarmo; keď už skúša on, prídem o tú svoju. Výsledok bitky je pred Zhromaždením neistý.
  */
 function pokus(v: Volba): Command | null {
   const { data, state, ja, k } = v;
   const su = opponentOf(ja);
   const bez = v.legal.find((c) => c.type === "bezPokusu") ?? null;
+  // Karta zadarmo je najlepšia z ôsmich kariet stavby — nad priemer balíčka, kým je hra pred ním.
+  const kartaZadarmo = 0.4 + 0.8 * k.buducnost;
   const hodnotaStarsich = (starsi: readonly ElderState[]): number => {
     const s = { ...state, starsi };
     return k.povaha.body * (rozdielBodov(data, s, ja, starsi) - hodnotaVydesenia(s, su)) + hodnotaPriazni(k, s, ja) - hodnotaPriazni(k, s, su);
@@ -1080,8 +1087,9 @@ function pokus(v: Volba): Command | null {
     const hodnota =
       sanca * (poVyhre - teraz) +
       (1 - sanca) * (poPrehre - teraz) -
-      cenaCigariet(k, state, ja, KONSTANTY.CENA_POKUSU) -
-      0.5 * hodnotaKarty(data, elder.karta) +
+      cenaCigariet(k, state, ja, KONSTANTY.CENA_POKUSU) +
+      0.5 * hodnotaKarty(data, elder.karta) -
+      kartaZadarmo +
       0.4 * k.povaha.bitka;
     if (hodnota > bestV) {
       bestV = hodnota;

@@ -2407,6 +2407,23 @@ button.dlzka-volba.aktivna {
     0 12px 22px color-mix(in srgb, #000 calc(var(--tma) * 50%), transparent);
 }
 
+/* Karta zadarmo (v10.1): ide do ruky, nie do Šenku — zdvihnutá, inou farbou a so štítkom. */
+.stavba-vyber.nechana {
+  position: relative;
+  transform: translateY(-16px);
+}
+
+.stavba-vyber.nechana > .kl {
+  box-shadow:
+    0 0 0 3px var(--zelena),
+    0 12px 22px color-mix(in srgb, #000 calc(var(--tma) * 50%), transparent);
+}
+
+.stavba-vyber.nechana > .nova-stitok {
+  background: var(--zelena);
+  z-index: 2;
+}
+
 .stavba-vyber.zosivena > .kl {
   opacity: 0.38;
   filter: grayscale(0.85);
@@ -9435,14 +9452,4 @@ button.auto-hotovo-odkaz {
   .doska .obchod-cigariet {
     display: none;
   }
-}
-
-/* Pripomienka pokusu o zajatie pri braní zo šenku (2026-11-01): bez cigarety jadro pokus potichu
-   preskočí, preto pokyn varuje skôr, než hráč minie poslednú. */
-.pokyn-zajatie {
-  color: var(--akcent-svetly);
-}
-
-.pokyn-zajatie.malo {
-  color: var(--cervena-svetla);
 }

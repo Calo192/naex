@@ -32,6 +32,7 @@ export interface Medziobrazovka {
 export function medziobrazovka(
   view: Pick<ClientState, "kolo" | "faza" | "utocnik" | "pitkaCislo" | "pitkyCelkom" | "lokalitCelkom" | "rozpis" | "bitkaStav" | "koniec" | "ciel" | "spaky"> & {
     readonly pitkaStav?: { readonly bzdocha?: PlayerId | null } | null;
+    readonly draftStav?: { readonly krok: string } | null;
   },
   ja: PlayerId,
   menoSupera: string,
@@ -112,6 +113,10 @@ export function medziobrazovka(
         nadnadpis: kolo,
         nadpis: "Šenok",
         text:
+          // v10.1: pokus o zajatie je pred stavbou — okno ho ohlási, keď sa oň niekto môže pokúsiť.
+          (view.draftStav?.krok === "zajatie"
+            ? "Najprv pokus o zajatie: útočník, potom obranca smie za cigaretu skúsiť zajať staršieho, ktorý sa ho bojí na stupni 3 — vezme si ho do ruky a súper si pri stavbe nechá 1 kartu zadarmo. "
+            : "") +
           `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov a tajne ich rozdelí: polovica pôjde do šenku, polovica naspodok. ` +
           `Potom beriete zo šenku striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
       };

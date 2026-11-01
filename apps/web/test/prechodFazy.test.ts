@@ -10,12 +10,12 @@ const draft = (krok: "stavba" | "beranie" | "zajatie") => ({ krok }) as unknown 
 const f = (faza: ClientState["faza"], ine: Partial<Faza> = {}): Faza => ({ kolo: 2, faza, draftStav: null, pitkaCislo: 1, ...ine });
 
 describe("klucPrechodu — kedy stôl prepne z línie starších späť na stôl", () => {
-  it("koniec pokusu o zajatie (draft → Zhromaždenie), výber lokality, šenok aj Pitka menia kľúč", () => {
+  it("pokus o zajatie (v10.1 pred stavbou šenku), výber lokality, šenok aj Pitka menia kľúč", () => {
     const kroky = [
       f("bitka"),
       f("volbaCiela", { kolo: 3 }),
-      f("draft", { kolo: 3, draftStav: draft("stavba") }),
       f("draft", { kolo: 3, draftStav: draft("zajatie") }),
+      f("draft", { kolo: 3, draftStav: draft("stavba") }),
       f("zhromazdenie", { kolo: 3 }),
       f("pitka", { kolo: 3 }),
       f("zhromazdenie", { kolo: 3, pitkaCislo: 1 }),
@@ -126,6 +126,9 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
   it("pokus o zajatie je krok šenku (ten istý kľúč, nová medziobrazovka nepríde); koniec hry ju nemá", () => {
     const patronat = { krok: "zajatie" } as unknown as ClientState["draftStav"];
     expect(medziobrazovka({ ...p({ faza: "draft" }), draftStav: patronat } as Pohlad, 0, "Eva", null)?.kluc).toBe("2|senok");
+    // v10.1: okno šenku začína pokusom (je pred stavbou) a hovorí o karte zadarmo.
+    expect(medziobrazovka({ ...p({ faza: "draft" }), draftStav: patronat } as Pohlad, 0, "Eva", null)?.text).toMatch(/^Najprv pokus o zajatie.*1 kartu zadarmo/);
+    expect(medziobrazovka(p({ faza: "draft" }), 0, "Eva", null)?.text).toMatch(/^Každý dostane/);
     expect(medziobrazovka(p({ koniec: { vitaz: 0 } as unknown as Pohlad["koniec"] }), 0, "Eva", null)).toBeNull();
   });
 });

@@ -1,10 +1,20 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v10 (platné od 2026-11-01)** — Hádka (Michal 2026-11-01, docs/napady/hadka.html, verzia 4)
+**Pravidlá v10.1 (platné od 2026-11-01)** — Hádka (Michal 2026-11-01, docs/napady/hadka.html, verzia 4)
 na v9.3 (v9 zmrazené 2026-10-30, krok 2 revízie starších, docs/napady/starsi-krok2-zadanie.html;
-dávky v9.1 Chuť, v9.2 šenok a NA EX naraz, v9.3 Výtržník prebíja Úplatok). Sada kariet v55
-(`cards.json`). Pravidlá sa menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií
-`v10`; presnú verziu ukazuje stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+dávky v9.1 Chuť, v9.2 šenok a NA EX naraz, v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred
+šenkom). Sada kariet v55 (`cards.json`). Pravidlá sa menia len v dávkach; celá dávka dostane ďalšiu
+verziu (značka partií `v10`; presnú verziu ukazuje stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v10.1 oproti v10** (Michal 2026-11-01; staré znenia v `docs/pravidla-historia.md`,
+sekcia v10.1):
+
+- **Pokus o zajatie pred stavbou šenku** (§4, §5, §10): po voľbe cieľa, ešte pred stavbou
+  šenku (predtým po braní). Karta staršieho (boss) ide **pokúšajúcemu do ruky** (predtým
+  súperovi) — smie ju v kole vyložiť, len s akciami. O výsledku ďalej rozhoduje bitka (krok 6d).
+- **Karta zadarmo** (§5): súper pokúšajúceho si pri stavbe zo svojich 8 kariet **tajne nechá
+  1 do ruky**, 4 dá do šenku a 3 naspodok — aj keď pokus potom zlyhá. Keď skúšajú obaja,
+  karta zadarmo nie je nikomu.
 
 **Zmeny v10 oproti v9.3** (Michal 2026-11-01, docs/napady/hadka.html; staré znenia v
 `docs/pravidla-historia.md`, sekcia v10):
@@ -324,7 +334,7 @@ cigareta“ sa nepoužíva — cigareta je cigareta.
 ## 4. Priebeh kola
 
 ```
-začiatok kola → voľba cieľa → draft (stavba šenku, branie, pokus o zajatie)
+začiatok kola → voľba cieľa → draft (pokus o zajatie, stavba šenku, branie)
   → (Zhromaždenie → Pitka) × 1–4 (pinnacle 1–5) → bitka → koniec kola
 finále: voľba pinnacle → draft → (Zhromaždenie → Pitka) × 1–5 → bitka → koniec hry   (§14b)
 ```
@@ -367,6 +377,13 @@ určuje, ktorá hrana lokality leží pri ktorom kraji línie (§6). **v7:** vyb
 zo **všetkých ešte neodohraných lokalít úrovne tohto kola** (§3) — vždy aspoň
 z troch; vo finále z troch pinnacle (§14b).
 
+### Pokus o zajatie
+
+Hneď po voľbe cieľa, ešte pred stavbou šenku (v10.1, Michal 2026-11-01), sa rozhodne
+o **pokuse o zajatie** (§10): najprv útočník, potom obranca (vidí voľbu prvého). Kto
+skúša, zaplatí 1 cigaretu a karta staršieho (boss) mu ide do ruky. Kto pokus nemá
+(nikto sa ho nebojí na stupni 3, alebo nemá cigaretu), tomu ho hra preskočí.
+
 ### Stavba šenku
 
 Karty, ktoré zo starého šenku nikto nevzal, idú lícom dole naspodok svojho
@@ -378,10 +395,19 @@ svojich 8 kariet **4 do šenku v ľubovoľnom mixe** (0–2 Nástroje) a **4 nas
 vyberú obaja, karty do šenku sa odhalia. Balíčky si hráči nepodávajú. Šenok má
 8 kariet, polovicu od každého.
 
+**Karta zadarmo** (v10.1, Michal 2026-11-01): keď sa o zajatie pokúša **len jeden**
+hráč, jeho súper si zo svojich 8 kariet **tajne nechá 1 do ruky** (aj Nástroj), **4 dá do
+šenku** (mix ako vždy) a **3 naspodok**. Pokúšajúci vie len, že si súper kartu nechal,
+nie ktorú. Kartu dostane za pokus — aj keď pokus potom zlyhá. Keď skúšajú obaja,
+karta zadarmo nie je nikomu. Šenok má aj tak 8 kariet.
+
 **Keď balíček nestačí** (výklad Leadera 2026-10-30, Michal to neurčil): chýbajúce
 karty sa vezmú z druhého balíčka (obranca berie prvý). Keď nestačia ani oba
 spolu, každý dostane najviac polovicu toho, čo v nich ostalo, zaokrúhlené nadol
 na párne číslo — stavba sa zmenšuje až na nulu a hra beží ďalej bez trestu.
+Kto má kartu zadarmo, z menšieho balíčka si najprv nechá 1 a zvyšok rozdelí podľa
+tohto pravidla — do šenku polovicu nahor, naspodok polovicu nadol (výklad Leadera
+2026-11-01; zo 6 kariet teda 1 + 3 + 2). Bez stavby karta zadarmo nie je.
 
 ### Branie zo šenku
 
@@ -394,7 +420,7 @@ berie druhý), kým obaja neprestanú. Na svojom ťahu hráč vezme:
 Kto berie prvý, na **svojom prvom ťahu vezme len 1 kartu** — aby nevykradol šenok;
 všetky ďalšie ťahy oboch hráčov ako vyššie (pri dosť cigaretách teda 1 – 2 – 2 – 2…).
 
-Poldeci sa v šenku neplatí a nič nie je zadarmo. Kto nemá cigaretu, brať
+Poldeci sa v šenku neplatí a nič zo šenku nie je zadarmo. Kto nemá cigaretu, brať
 nemôže (hra za neho branie ukončí). Keď jeden prestane, druhý má už len **jednu
 poslednú šancu** (jeden ťah), potom branie končí. Prázdny šenok branie ukončí
 obom.
@@ -409,7 +435,7 @@ nedopĺňa — hra beží ďalej bez trestu.
 Počet kariet stavby je **vždy 2 + 6** (N = 8, v8.5); väzni ho nezmenšujú (v9).
 Priazeň Fajčiara dáva cigarety od v9 po bitke (§10), nie po braní.
 
-Potom nasleduje **pokus o zajatie** (§10): rozhoduje útočník, potom obranca.
+Po braní začína Zhromaždenie (§6) — pokus o zajatie je od v10.1 pred stavbou (vyššie).
 
 ---
 
@@ -1257,24 +1283,26 @@ R15 A, R16 B; O7–O9).
 súperovej polovici (súper má jeho priazeň sily 3). Väzňa ani staršieho v ohrození
 zajať nemožno.
 
-**Kedy.** V drafte po braní zo šenku (§5): rozhoduje **útočník, potom obranca** (druhý
-vidí voľbu prvého); každý hráč **najviac jeden pokus za kolo**; obaja smú v tom istom
+**Kedy.** V drafte hneď po voľbe cieľa, **pred stavbou šenku** (§5; v10.1, Michal 2026-11-01 —
+predtým po braní): rozhoduje **útočník, potom obranca** (druhý vidí voľbu prvého); každý hráč **najviac jeden pokus za kolo**; obaja smú v tom istom
 kole, každý iného staršieho. Platí **aj vo finále** (O7).
 
 **Cena.** **1 cigareta**, prepadne do banky bez ohľadu na výsledok. Bez cigarety pokus
 nie je (hra ho preskočí a hráčovi povie prečo).
 
-**Priebeh kola.** Karta staršieho (boss) ide **súperovi do ruky** — verejne, každý
-vie, ktorý starší to je; zvyšok ruky ostáva skrytý. Marker ostáva na červenej so stavom
+**Priebeh kola.** Karta staršieho (boss) ide **pokúšajúcemu do ruky** (v10.1; predtým
+súperovi) — verejne, každý vie, ktorý starší to je; zvyšok ruky ostáva skrytý. Súper si
+za to pri stavbe šenku **tajne nechá 1 kartu zadarmo** (§5) — aj keď pokus zlyhá; keď
+skúšajú obaja, nikto. Marker ostáva na červenej so stavom
 **v ohrození**: v tomto kole ním nehýbe **Nakladačka** (O8; ani Kšeft Predsedovej vily
 a Kapybara — výklad nižšie) a jeho udržaný strach sa platí normálne. **Hádka** smie meniť
-silu jeho priazne (v10, H4) — markerom nehýbe. Súper smie bossa v kole vyložiť ako ktorúkoľvek kartu (tag Starešina: ráta
+silu jeho priazne (v10, H4) — markerom nehýbe. Pokúšajúci smie bossa v kole vyložiť ako ktorúkoľvek kartu (tag Starešina: ráta
 sa do prevahy, dá sa naň NA EX), bez efektu — len akcie. Nemusí ho zahrať. Boss sa po
 bitke vracia vždy, aj keby ho efekt poslal z hry či do balíčka (Krokodíl, Dievčina,
 Kšeft Hrobára) — je nezničiteľný.
 
 **Výsledok (krok 6d bitky).** Pokúšajúci **vyhral bitku** → starší ide do jeho
-priznaných kariet ako **väzeň** (z ruky aj z línie súpera), scorecard sa otočí
+priznaných kariet ako **väzeň** (z ruky aj z línie), scorecard sa otočí
 (priazeň zanikla), na ukazovateli ostane prázdne miesto bez markera; udržaný strach
 z tohto kola mu ešte zaplatí. **Prehral alebo sekera** → starší späť na ukazovateľ,
 marker **o stupeň späť** (na oranžovú) — ústup zmaže nezaplatený stupeň 3 ako každý
@@ -1293,8 +1321,8 @@ druhý **6**, tretí **4**, štvrtý **2** — nech ho zajal ktokoľvek (`KONSTA
 
 **Šenok.** N = 8 vždy (§5), väzni ho nezmenšujú.
 
-**2 na 2.** Pokus robí kapitán; boss ide do ruky súperovho kapitána (paragraf 2 na 2
-doplní, kto určí ruku).
+**2 na 2.** Pokus robí kapitán; boss ide do ruky jemu, kartu zadarmo dostane súperov tím
+(paragraf 2 na 2 doplní, ktorá ruka).
 
 **Výklady Developera (2026-10-30, zadanie ich neurčilo — na potvrdenie Michalom):**
 
@@ -1601,7 +1629,7 @@ jej hrany, efekt, kraje aj prevaha (Kočovník, Dvojčatá ako inde).
   bitku**; keď posledná bitka skončila sekerou, útočník ostáva útočníkom.
   Útočník vykladá prvý a na NA EX odpovedá prvý (lícom dole); obranca berie zo šenku prvý.
 - **Obranca — hráč, ktorý vedie** (viac špakov) — vyberie a natočí pinnacle
-  lokalitu (z troch, §5). Potom šenok, branie a **pokus o zajatie** ako v každom kole (O7).
+  lokalitu (z troch, §5). Potom **pokus o zajatie**, šenok a branie ako v každom kole (O7).
 - Pitiek je ako na každej lokalite **1 + menší počet aktivovaných akcií hrán**
   (1–5) — teda podľa spojov s lokalitou. Víťaz dostane **1 špak za každú kartu
   v línii** (v8; aspoň 1); na Herni navyše toľko, koľko má
@@ -1798,7 +1826,8 @@ už neplatia vôbec.
 | Hádka | krok bitky (v10): kto má viac mäkkého, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“) a rozdelí ho na sily priazní starších len k sebe — cena podľa zóny, strop 3, do konca kola, marker sa nehýbe; remíza = nikto (§9.1) |
 | Klebety | posun sily priazní z hádky v tomto kole; marker sa nehýbe, po kole zaniknú (§9.1) |
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane (§6) |
-| Pokus o zajatie | po šenku za 1 cigaretu skús zajať staršieho, ktorý sa ťa bojí na stupni 3; karta ide súperovi do ruky (boss), starší je v ohrození (§10) |
+| Pokus o zajatie | pred stavbou šenku za 1 cigaretu skús zajať staršieho, ktorý sa ťa bojí na stupni 3; karta ide tebe do ruky (boss), súper si pri stavbe nechá kartu zadarmo, starší je v ohrození (§5, §10) |
+| Karta zadarmo | pri súperovom pokuse o zajatie si zo svojej stavby šenku tajne necháš 1 kartu do ruky (4 do šenku, 3 naspodok); keď skúšate obaja, nikto (§5) |
 | Väzeň | zajatý starší v priznaných kartách držiteľa („v pivnici“) — nedáva priazeň ani strach, držiteľ má jeho Kšeft; tretí väzeň vyhráva; po finále 8 / 6 / 4 / 2 špakov podľa poradia (§10, §14) |
 | V ohrození | starší, o ktorého zajatie sa v tomto kole hrá — jeho markerom nič nehýbe; silu jeho priazne smie hádka meniť (§10) |
 | Boss | karta staršieho: 6 akcií, 2 blokované sloty, 1 neresť; v línii len akcie (§10, §16) |

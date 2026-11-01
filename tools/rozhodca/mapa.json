@@ -715,6 +715,19 @@
       ]
     },
     {
+      "id": "5.stavba.karta-zadarmo",
+      "paragraf": "5. Cieľ a draft › Stavba šenku",
+      "pravidlo": "Karta zadarmo (v10.1): keď sa o zajatie pokúša len jeden hráč, jeho súper si zo svojich 8 kariet stavby tajne nechá 1 do ruky, 4 dá do šenku a 3 naspodok (aj keď pokus zlyhá); keď skúšajú obaja, nikto. Pri menšom balíčku najprv 1, zvyšok napoly (výklad Leadera 2026-11-01). Pokúšajúci nevidí, ktorú kartu si súper nechal.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vazen.test.ts › krokStavby: kto má kartu zadarmo, z 8 si nechá 1, 4 do šenku, 3 naspodok; pri menšom balíčku najprv 1, zvyšok napoly",
+        "packages/core/test/vazen.test.ts › súper pokúšajúceho si nechá 1 kartu zadarmo do ruky; pokúšajúci nie; šenok má stále 8 kariet",
+        "packages/core/test/vazen.test.ts › keď skúšajú obaja (každý iného staršieho), karta zadarmo nie je nikomu",
+        "packages/core/test/vazen.test.ts › viewFor a eventsFor (nemenné pravidlo 2): pokúšajúci nevidí, ktorú kartu si súper nechal, ani zvyšok jeho stavby"
+      ],
+      "poznamka": "v10.1 (Michal 2026-11-01) — Programátor, na prejdenie rozhodcom."
+    },
+    {
       "id": "5.stavba.nevzate",
       "paragraf": "5. Cieľ a draft › Stavba šenku",
       "pravidlo": "Nevzaté karty zo šenku idú pri ďalšom drafte naspodok svojho balíčka (Nástroj k Náradiu, ostatné k Občanom).",
@@ -783,7 +796,7 @@
       "stav": "pokryte",
       "testy": [
         "packages/core/test/pravidla-kolo.test.ts › §6: limit vykladania sa počíta nanovo na začiatku každého Zhromaždenia (aj medzi Pitkami)",
-        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide súperovi do ruky"
+        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide pokúšajúcemu do ruky (v10.1)"
       ]
     },
     {
@@ -2193,15 +2206,16 @@
     {
       "id": "10.zajatie.podmienka",
       "paragraf": "10. Starší › Zajatie a väzeň",
-      "pravidlo": "Pokus o zajatie len na staršieho, ktorý sa hráča bojí na stupni 3; cena 1 cigareta prepadne; boss ide súperovi do ruky; útočník, potom obranca; najviac jeden pokus za kolo, obaja smú (každý iného).",
+      "pravidlo": "Pokus o zajatie len na staršieho, ktorý sa hráča bojí na stupni 3; cena 1 cigareta prepadne; od v10.1 pred stavbou šenku a boss ide pokúšajúcemu do ruky; útočník, potom obranca; najviac jeden pokus za kolo, obaja smú (každý iného).",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide súperovi do ruky",
-        "packages/core/test/vazen.test.ts › každý najviac jeden pokus za kolo; obaja smú, každý iného staršieho; potom Zhromaždenie",
+        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide pokúšajúcemu do ruky (v10.1)",
+        "packages/core/test/vazen.test.ts › každý najviac jeden pokus za kolo; obaja smú, každý iného staršieho; potom stavba šenku (v10.1)",
         "packages/core/test/vazen.test.ts › bez cigarety pokus nie je — hra ho preskočí a dôvod povie len hráčovi",
-        "packages/core/test/elders.test.ts › zajať smie len hráč, ktorého sa starší bojí na stupni 3 (červená na súperovej polovici)"
+        "packages/core/test/elders.test.ts › zajať smie len hráč, ktorého sa starší bojí na stupni 3 (červená na súperovej polovici)",
+        "packages/core/test/vazen.test.ts › poradie: voľba cieľa → pokus o zajatie (útočník, potom obranca) → stavba šenku → branie → Zhromaždenie"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30); v10.1 pokus pred šenkom, boss pokúšajúcemu (Michal 2026-11-01) — na prejdenie rozhodcom."
     },
     {
       "id": "10.zajatie.v-ohrozeni",
@@ -2222,10 +2236,10 @@
       "pravidlo": "Krok 6d: víťaz zajme (väzeň, zo stupnice preč, udržaný strach zaplatí); porazený či sekera — starší späť, marker o stupeň k stredu, nezaplatená červená sa zmaže (O9); boss sa vracia vždy.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vazen.test.ts › víťaz zajme: starší zmizne zo stupnice, je väzeň (1. v partii), karta odíde z ruky súpera; udržaný strach zaplatí",
+        "packages/core/test/vazen.test.ts › víťaz zajme: starší zmizne zo stupnice, je väzeň (1. v partii), karta odíde z jeho ruky; udržaný strach zaplatí",
         "packages/core/test/vazen.test.ts › porazený: starší späť na ukazovateľ, marker o stupeň späť a nezaplatená červená sa zmaže (O9)",
         "packages/core/test/vazen.test.ts › sekera: pokus zlyhá",
-        "packages/core/test/vazen.test.ts › boss vyložený súperom do línie sa po bitke vráti aj tak — nezostane v odhadzovacom balíčku"
+        "packages/core/test/vazen.test.ts › boss vyložený pokúšajúcim do línie sa po bitke vráti aj tak — nezostane v odhadzovacom balíčku"
       ],
       "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
     },

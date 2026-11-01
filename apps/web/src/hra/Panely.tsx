@@ -1482,9 +1482,9 @@ export function PriebehKola({
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
             </span>
             <span className="tip-riadok">
-              <b>Pokus o zajatie:</b> staršieho, ktorý sa hráča bojí na stupni 3, smie skúsiť zajať — najprv útočník, potom obranca.
-              Stojí {KONSTANTY.CENA_POKUSU} cigaretu (prepadne), karta staršieho ide súperovi do ruky a marker sa v kole nehýbe. Vyhrá bitku = väzeň
-              (tretí vyhráva); prehrá = starší sa vráti a marker ustúpi o stupeň.
+              <b>Pokus o zajatie:</b> pred stavbou šenku smie hráč skúsiť zajať staršieho, ktorý sa ho bojí na stupni 3 — najprv útočník, potom obranca.
+              Stojí {KONSTANTY.CENA_POKUSU} cigaretu (prepadne), karta staršieho ide pokúšajúcemu do ruky a marker sa v kole nehýbe; súper si pri stavbe
+              tajne nechá 1 kartu zadarmo (keď skúšajú obaja, nikto). Vyhrá bitku = väzeň (tretí vyhráva); prehrá = starší sa vráti a marker ustúpi o stupeň.
             </span>
             {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v šenku ({view.senok.length}).</span>}
           </>

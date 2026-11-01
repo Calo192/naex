@@ -68,7 +68,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
   const desiHrozi = vyd >= prah - 1;
   const desiTitul =
     `Väzni: ${vyd} z ${prah}. Kto zajme tretieho staršieho, vyhrá.` +
-    (ciele > 0 ? ` Na stupni 3 sa ${ja ? "ťa" : "ho"} bojí ${ciele} — ${ciele === 1 ? "toho" : "tých"} sa dá po šenku skúsiť zajať.` : "");
+    (ciele > 0 ? ` Na stupni 3 sa ${ja ? "ťa" : "ho"} bojí ${ciele} — ${ciele === 1 ? "toho" : "tých"} sa dá pred šenkom skúsiť zajať.` : "");
   return (
     <button
       type="button"

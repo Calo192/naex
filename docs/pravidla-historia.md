@@ -2177,3 +2177,31 @@ Nakladačka (a Kšeft vily, Kapybara), hádka smie meniť silu jeho priazne (H4)
   „Hodnota tvojej Viery je o 1 vyššia.“ len v tlmení tuhého.
 - **Sila z hádky je pevná do konca kola:** prvé znenie počítalo priazeň po Nakladačke ako marker ±
   posun z hádky; teraz Nakladačka staršiemu, ktorého hádka posunula, zmení len strach.
+
+## v10.1 — pokus o zajatie pred stavbou šenku, karta zadarmo (Michal 2026-11-01)
+
+Michal: „Zajatie staršieho bude prebiehať tak, že hráč zoberie staršieho SEBE do ruky, nedá ho
+súperovi ako teraz. Toto sa stane pred tvorbou šenku […] Ak hráč staršieho zajme, jeho súper môže
+zo šenku jednu kartu zobrať priamo na ruku ZADARMO, ale stále musí 4 karty pridať do šenku, čiže 3
+zahodí a jedna mu ostane. Ak obaja hráči skúsia staršieho zajať, zadarmo brať kartu zo šenku nebudú.“
+Spresnenia: pred šenkom je len pokus (výsledok v kroku 6d ako doteraz), karta zadarmo je z vlastných
+8 kariet stavby, tajne, aj keď pokus zlyhá.
+
+Staré znenia:
+
+> §4: `začiatok kola → voľba cieľa → draft (stavba šenku, branie, pokus o zajatie)`
+>
+> §5 (koniec Brania zo šenku): Potom nasleduje **pokus o zajatie** (§10): rozhoduje útočník, potom obranca.
+>
+> §10 Kedy: V drafte po braní zo šenku (§5): rozhoduje **útočník, potom obranca** (druhý
+> vidí voľbu prvého); …
+>
+> §10 Priebeh kola: Karta staršieho (boss) ide **súperovi do ruky** — verejne, každý
+> vie, ktorý starší to je; zvyšok ruky ostáva skrytý. … Súper smie bossa v kole vyložiť ako
+> ktorúkoľvek kartu (tag Starešina: ráta sa do prevahy, dá sa naň NA EX), bez efektu — len akcie.
+>
+> §10 2 na 2: Pokus robí kapitán; boss ide do ruky súperovho kapitána (paragraf 2 na 2
+> doplní, kto určí ruku).
+>
+> §17 Pokus o zajatie: po šenku za 1 cigaretu skús zajať staršieho, ktorý sa ťa bojí na stupni 3;
+> karta ide súperovi do ruky (boss), starší je v ohrození (§10)

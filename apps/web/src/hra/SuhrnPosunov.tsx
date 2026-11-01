@@ -411,7 +411,7 @@ function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: Player
     case "zajatieMozne":
       return cip(
         "zajatie",
-        `Stupeň 3 — ${d.hrac === ja ? "môžeš ho" : `${mena[d.hrac]} ho môže`} po šenku skúsiť zajať za ${cigariet(KONSTANTY.CENA_POKUSU)}`,
+        `Stupeň 3 — ${d.hrac === ja ? "môžeš ho" : `${mena[d.hrac]} ho môže`} pred šenkom skúsiť zajať za ${cigariet(KONSTANTY.CENA_POKUSU)}`,
         <>
           <IkonaMrezi />
           <IkonaCigarety />
@@ -576,7 +576,7 @@ export function textDosledku(d: Dosledok, ja: PlayerId, mena: readonly [string, 
       // Špaky, nie cigarety: zaplatí ich koniec ďalšieho kola, ak marker vydrží — cigarety za posun sú už v stĺpci.
       return `+${d.spaky} š ${komu}, ak sa udrží do konca ďalšieho kola`;
     case "zajatieMozne":
-      return `${d.hrac === ja ? "môžeš" : `${mena[d.hrac]} môže`} po šenku skúsiť zajať (${cigariet(KONSTANTY.CENA_POKUSU)})`;
+      return `${d.hrac === ja ? "môžeš" : `${mena[d.hrac]} môže`} pred šenkom skúsiť zajať (${cigariet(KONSTANTY.CENA_POKUSU)})`;
     case "vyplata":
       return `+${d.spaky} š ${komu} za udržaný strach (vyplatené)`;
     case "hadka":

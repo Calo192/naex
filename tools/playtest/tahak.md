@@ -39,8 +39,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   2 plné poldeci, 3 cigarety, 0 špakov. Kým nemáš odhadzovací balíček, ťahať ani fajčiť sa nedá.
 - **Finále (v7, 2026-10-27):** posledná bitka je o **pinnacle lokalitu** a hrá sa ako o každú inú:
   útočí **zaostávajúci — kto má menej špakov** (pri rovnosti porazený poslednej bitky, po sekere ostáva
-  útočník); **obranca (vedúci) vyberie a natočí pinnacle lokalitu** (jednu z troch), potom šenok
-  a pokus o zajatie ako v každom kole. Kraje a prevaha platia, počet Pitiek podľa spojov s lokalitou (1–5),
+  útočník); **obranca (vedúci) vyberie a natočí pinnacle lokalitu** (jednu z troch), potom pokus
+  o zajatie a šenok ako v každom kole. Kraje a prevaha platia, počet Pitiek podľa spojov s lokalitou (1–5),
   víťaz 1 špak za kartu v línii. **Vo finále sa rozdeľuje len hádka, Nakladačka nie (v8.3) — víťaz finále
   dostane za každý bod Nakladačky 1 špak (v9.1).** Kto zaostáva, dobehne ho vysokou výhrou vo finále.
   Po finále starší zaplatia stupne udržané z posledného kola (aj porazenému); stupne, kam sa marker
@@ -141,7 +141,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Draft (v8.5):** karty šenku sú v dvoch balíčkoch — **Náradie** (Nástroje) a **Občania** (ostatné).
   Stavba šenku naraz, bez podávania: dostaneš **2 karty z Náradia a 6 z Občanov**, dáš **4 do šenku**
   v ľubovoľnom mixe a 4 naspodok (Nástroj k Náradiu, ostatné k Občanom;
-  `{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`) — vyberáte naraz. Po braní sa šenok sám doplní
+  `{"type":"stavbaSenku","doSenku":[…],"odhod":[…]}`) — vyberáte naraz. **Karta zadarmo (v10.1):** keď sa
+  o zajatie pokúša len súper, z tvojich 8 si **1 tajne necháš do ruky**, 4 dáš do šenku a 3 naspodok
+  (`"nechaj":uid` v `stavbaSenku`) — aj keď súperov pokus zlyhá; keď skúšate obaja, nikto. Po braní sa šenok sám doplní
   na 8: najprv z Náradia, kým v ňom nie sú 2 Nástroje, zvyšok z Občanov. Branie striedavo, **začína obranca (v9.2)**: **1 karta za 1 cigaretu,
   2 karty za 3 cigarety** (`{"type":"draftBer","uids":[…]}`); **kto berie prvý, na svojom prvom ťahu vezme len 1 kartu**; poldeci sa
   v šenku neplatí; `draftStop` ukončí branie.
@@ -269,11 +271,11 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   2 cigarety, ktoré súper vyfajčí, karta; Liberál (Pitka) — súper bez rovnováhy žien a chlapov
   +1 zadĺženie; Recidivista (Prehra) — po bitke späť do ruky; Dievčina na vydaj (Prehra) — zahodí sa,
   víťaz získa Dlhy podľa jej aktívnych akcií.
-- **Pokus o zajatie (v9, 2026-10-30, nahradil patronát a vydesenie):** po braní zo šenku (útočník, potom
-  obranca; `{"type":"pokus","elderId":…}` / `bezPokusu`) smieš skúsiť zajať staršieho, ktorý sa ťa
+- **Pokus o zajatie (v9, 2026-10-30, nahradil patronát a vydesenie):** od v10.1 **pred stavbou šenku**, hneď
+  po voľbe cieľa (útočník, potom obranca; `{"type":"pokus","elderId":…}` / `bezPokusu`) smieš skúsiť zajať staršieho, ktorý sa ťa
   **bojí na stupni 3** (červená na súperovej polovici). Cena **1 cigareta**, prepadne vždy. Každý najviac
-  jeden pokus za kolo, obaja smú (každý iného). Karta staršieho (boss) ide **súperovi do ruky** — smie ju
-  vyložiť ako Starešinu (len akcie). Starší je **v ohrození**: v tomto kole jeho markerom nehýbe Nakladačka,
+  jeden pokus za kolo, obaja smú (každý iného). Karta staršieho (boss) ide **tebe do ruky** (v10.1) — smieš ju
+  v kole vyložiť ako Starešinu (len akcie), po bitke sa vráti. Súper si za to pri stavbe nechá kartu zadarmo. Starší je **v ohrození**: v tomto kole jeho markerom nehýbe Nakladačka,
   Vila ani Kapybara (silu jeho priazne hádka meniť smie, v10); jeho udržaný strach sa platí normálne. **Vyhráš bitku** → starší je tvoj
   **väzeň** (v priznaných kartách, zo stupnice zmizne — priazeň aj strach zanikajú). **Prehra aj sekera** →
   starší späť, marker o stupeň k stredu (nezaplatená červená sa zmaže). Platí aj vo finále.

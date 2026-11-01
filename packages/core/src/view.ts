@@ -106,7 +106,7 @@ export interface BitkaVerejne {
  * výber v kroku len ako „vybral“ (karty sa odhalia, až keď vyberú obaja).
  */
 export interface DraftVerejne {
-  readonly krok: "stavba" | "beranie" | "zajatie";
+  readonly krok: "zajatie" | "stavba" | "beranie";
   readonly mojBalicek: readonly CardInstance[];
   readonly balicekPocet: readonly [number, number];
   readonly mojVyber: VyberStavby | null;

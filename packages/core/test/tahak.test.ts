@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { DLZKY_HRY, KONSTANTY } from "../src/constants.ts";
 import { cenaKroku } from "../src/elders.ts";
-import { cenaFajcenia } from "../src/engine.ts";
+import { cenaFajcenia, krokStavby } from "../src/engine.ts";
 import { pocet } from "../src/jazyk.ts";
 
 const tahak = readFileSync(new URL("../../../tools/playtest/tahak.md", import.meta.url), "utf8").replace(/\s+/g, " ");
@@ -56,6 +56,13 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["cena šenku", `1 karta za ${KONSTANTY.CENA_SENKU[1]} cigaretu, 2 karty za ${KONSTANTY.CENA_SENKU[2]} cigarety`],
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],
     ["stavba šenku z dvoch balíčkov (v8.5)", `dostaneš **${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov**, dáš **${(KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA) / 2} do šenku**`],
+    [
+      "karta zadarmo pri súperovom pokuse o zajatie (v10.1)",
+      ((n, k) => `z tvojich ${n} si **${k.nechaj} tajne necháš do ruky**, ${k.doSenku} dáš do šenku a ${k.odhod} naspodok`)(
+        KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA,
+        krokStavby(KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA, true),
+      ),
+    ],
     ["doplnenie šenku v pomere (v8.5)", `najprv z Náradia, kým v ňom nie sú ${KONSTANTY.STAVBA_NARADIE} Nástroje, zvyšok z Občanov`],
     ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],
     [
