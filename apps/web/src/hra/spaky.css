@@ -395,28 +395,6 @@
   color: var(--akcent-svetly);
 }
 
-.finale-miesto {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px;
-  border-radius: 10px;
-  border: 2px dashed var(--akcent);
-  background: color-mix(in srgb, var(--akcent) 8%, transparent);
-  color: var(--akcent-svetly);
-  text-align: center;
-  font-size: 0.8rem;
-  line-height: 1.3;
-}
-
-.finale-miesto b {
-  font: 800 1rem/1 var(--nadpis);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 /* ---- špaky jednej bitky (účet bitky, rekapitulácia) ---- */
 .spaky-bitky {
   display: grid;

@@ -2735,23 +2735,6 @@ button.dlzka-volba.aktivna {
   color: var(--akcent);
 }
 
-.pas-pitky-pocet {
-  font: 800 1.05rem/1.1 var(--pismo);
-  color: var(--text);
-}
-
-/* Po drafte počet Pitiek raz zabliká — nový údaj kola. */
-.pas-pitky-pocet.viac {
-  color: var(--akcent);
-  animation: pas-zablikaj 1.2s ease 2;
-}
-
-@keyframes pas-zablikaj {
-  50% {
-    text-shadow: 0 0 14px var(--akcent);
-  }
-}
-
 .pas-sloty {
   display: inline-flex;
   gap: 4px;
@@ -5061,17 +5044,6 @@ button.auto-hotovo-odkaz {
   color: var(--slaby-text);
 }
 
-/* Hranice zón pri Pohoršení: zárezy nad stupnicou (UI A7 — čiara cez žltú mala 1,3 : 1). */
-.ls-stupnica em {
-  position: absolute;
-  top: -3px;
-  left: calc(var(--b) * var(--seg) - 1px);
-  translate: -50% 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 6px solid var(--akcent);
-}
-
 /* Kruh na stupnici — dnes len duch stopy (.stopa); marker kreslí dvojitý marker (priazen-kola.css). */
 .ls-marker {
   position: absolute;
@@ -5108,37 +5080,6 @@ button.auto-hotovo-odkaz {
   opacity: 0.8;
 }
 
-/* Strany pod stupnicou (návrh stupnica-popis A): tvoja polovica je vždy vľavo. */
-.ls-strany {
-  flex: none;
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  margin-top: -2px;
-  font: 700 0.6rem/1.15 var(--pismo);
-  letter-spacing: 0.03em;
-}
-
-.ls-strany > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  min-width: 0;
-  white-space: nowrap;
-}
-
-.ls-strany .ikona-strachu {
-  margin-block: -4px;
-}
-
-.ls-strany .moje {
-  color: var(--ja);
-}
-
-.ls-strany .superove {
-  color: var(--su);
-}
-
 /* Pod stupnicou len meno (Michal 2026-10-31): priazeň nesie krúžok na portréte, vety o priazni
    a strachu nápoveda. Uvoľnené miesto berie portrét. */
 .ls-stav {
@@ -5154,7 +5095,7 @@ button.auto-hotovo-odkaz {
   text-align: center;
 }
 
-/* Krúžok priazne vpravo dole na portréte, lístok Povery vľavo hore — nekryjú sa. */
+/* Krúžok priazne vpravo dole na portréte, lístok Hádky vľavo hore — nekryjú sa. */
 .ls-portret > .ls-kruzok {
   position: absolute;
   right: 6px;
@@ -5174,49 +5115,6 @@ button.auto-hotovo-odkaz {
 .ls-stav > .ls-meno {
   flex: none;
   font-size: clamp(0.85rem, 1.3cqw, 1.08rem);
-}
-
-.ls-stav > .ls-cip.priazen {
-  font-weight: 700;
-}
-
-.ls-cip {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  color: var(--tlmeny);
-}
-
-/* Farba = hráč, o ktorom čip hovorí (krígeľ komu, bojí sa koho) — vždy dvaja rôzni. */
-.ls-cip.priazen.moja,
-.ls-cip.strach.moj {
-  color: var(--ja);
-}
-
-.ls-cip.priazen.superova,
-.ls-cip.strach.superov {
-  color: var(--su);
-}
-
-.ls-cip.strach.nikoho {
-  color: var(--slaby-text);
-}
-
-.ls-cip s {
-  opacity: 0.6;
-}
-
-/* Výkričníky pred „bojí sa…“ dedia farbu čipu — farbu toho, koho sa starší bojí. */
-.ls-cip .ikona-strachu {
-  margin-right: 3px;
-}
-
-/* Náhľad pred posunom: riadok, ktorý sa posunom zmení, ukazuje stav po posune. */
-.ls-cip.po-posune {
-  margin-inline: -3px;
-  padding: 0 3px;
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--akcent) 14%, transparent);
-  box-shadow: inset 0 0 0 1px var(--akcent);
 }
 
 /* Štítok posunu na portréte: len zdroj a počet; kto posúval, nesie farba. */
@@ -5677,16 +5575,6 @@ button.auto-hotovo-odkaz {
   font-family: var(--nadpis);
 }
 
-.ls-pecat-tip .kto-ja {
-  color: var(--ja);
-  font-weight: 800;
-}
-
-.ls-pecat-tip .kto-su {
-  color: var(--su);
-  font-weight: 800;
-}
-
 .ls-pecat-tip .strach {
   display: block;
   margin-top: 4px;
@@ -5926,11 +5814,6 @@ button.auto-hotovo-odkaz {
     gap: 0;
     font-size: 0.7rem;
     line-height: 1.2;
-  }
-
-  .ls-strany {
-    font-size: 0.56rem;
-    margin-top: 0;
   }
 }
 
