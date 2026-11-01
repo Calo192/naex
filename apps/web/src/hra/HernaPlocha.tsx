@@ -135,14 +135,14 @@ import {
   hraVPitke,
   cakaSBzdochou,
 } from "@naex/core";
-import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, MarkerPos, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
+import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
 import { NAZOV_DELENIA } from "./textyStarsich.ts";
 import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
-import { bodkaPoBode, polohaPreHraca, favourPodlaId, hadkaBitky, kratkeMeno, listokHadky, pocetPriazniKola, priazenKola, priazenMarkera, type PriazneBitky } from "./priazenKola.ts";
+import { favourPodlaId, hadkaBitky, kratkeMeno, listokHadky, pocetPriazniKola, priazenKola, priazenMarkera, type PriazneBitky } from "./priazenKola.ts";
 import { PonukaPatronatu, type MoznostPatronatu } from "./PonukaPatronatu.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
@@ -4785,30 +4785,17 @@ export function HernaPlocha({
     const klik = rozdelenie === undefined ? klikStarsi(e) : undefined;
     const obrazok = vzhladKarty(sada, data, e.karta.defId).obrazok;
     const iPatron = view.pokusy.findIndex((x) => x?.elderId === e.elderId);
-    const ciel: MarkerPos | null = null;
     return {
       elder: e,
       meno: menoKarty(e.karta.defId),
       obrazok: obrazok === null ? null : mediaUrl(obrazok.nahlad),
       body: body.starsi.find((x) => x.elderId === e.elderId),
       klik,
-      ciel,
       dovod: klik === undefined && rozdelenie === undefined ? zamokStarsieho(e) : undefined,
       patron: iPatron === -1 ? null : { kto: iPatron as PlayerId },
       vybrany: mode.typ === "pokus" && mode.elderId === e.elderId,
       stopa: stopaStarsieho(view.posunyMarkerov ?? [], e.elderId),
       rozdelenie,
-      // Výber staršieho pre bod hádky: prerušovaná bodka tam, kam ju klik posunie.
-      // Pri hádke (v10) ide celý zvyšok naraz — bodka tam, kam ju výber posunie (plán jadra), nie o jeden bod.
-      bodkaPoKliku:
-        krokStarsich?.typ === "hadka" && rozdelenie !== undefined
-          ? (() => {
-              const na = rozdelenie.navrh?.na ?? rozdelenie.vyber?.posun?.na;
-              return na === undefined ? null : polohaPreHraca(na, ja);
-            })()
-          : klik !== undefined && krokStarsich?.typ === "hadka"
-            ? bodkaPoBode(e, klebetyKola(view), ja)
-            : null,
     };
   });
   // Lupa staršieho pri prejdení myšou zrušená (Michal 2026-10-30: „priveľa textu, hráča mätie“) —

@@ -5072,7 +5072,7 @@ button.auto-hotovo-odkaz {
   border-top: 6px solid var(--akcent);
 }
 
-/* Marker: tmavý disk s prstencom farby toho, kto má priazeň (UI U4 — 15 : 1). */
+/* Kruh na stupnici — dnes len duch stopy (.stopa); marker kreslí dvojitý marker (priazen-kola.css). */
 .ls-marker {
   position: absolute;
   bottom: -1px;
@@ -5086,21 +5086,6 @@ button.auto-hotovo-odkaz {
   box-shadow: 0 0 0 1px var(--text);
   /* Posun je plynulý — skok nevysvetľoval smer (UI A11). */
   transition: left 0.45s ease-out;
-}
-
-.ls-marker.ja {
-  border-color: var(--ja);
-}
-
-.ls-marker.su {
-  border-color: var(--su);
-}
-
-/* Duch: kam marker posun dostane. */
-.ls-marker.duch {
-  background: color-mix(in srgb, var(--akcent) 35%, transparent);
-  border: 2px solid var(--akcent);
-  box-shadow: none;
 }
 
 /* Stopa posunu od bitky (#95): prerušovaný duch na starom mieste a čiara k markeru. */

@@ -105,8 +105,7 @@
 
 /* ---- Dvojitý marker: prsteň = strach podľa markera, bodka = priazeň tohto kola ---- */
 .dm-prsten,
-.dm-bodka,
-.dm-duch {
+.dm-bodka {
   position: absolute;
   left: calc((var(--p) + 0.5) * var(--seg));
   bottom: calc(var(--dm-o) / 2 - 1px);
@@ -143,16 +142,6 @@
 
 .dm-bodka.su {
   background: var(--su);
-}
-
-/* Prerušovaná bodka: kam ju posunie ďalší bod hádky (výber staršieho). */
-.dm-duch {
-  --dm-v: max(8px, calc(var(--dm-o) * 0.6));
-  z-index: 3;
-  width: var(--dm-v);
-  height: var(--dm-v);
-  border: 2px dashed var(--akcent-svetly);
-  background: color-mix(in srgb, var(--akcent-svetly) 35%, transparent);
 }
 
 /* ---- Lístok Hádky: kto hádku vyhral (farba) a o koľko (číslo) — príčina, nie výsledok ---- */

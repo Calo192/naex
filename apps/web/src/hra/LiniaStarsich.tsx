@@ -1,16 +1,15 @@
 // Línia starších (Michal 2026-10-23, roadmapa #68 + #69 variant A): osem
 // starších v rade na mieste línie kariet. Ukáže sa po kliku na dlaždicu Starší
-// a sama pri krokoch na staršom (Pohoršenie, prebytok, pokus o zajatie).
+// a sama pri krokoch na staršom (hádka, Nakladačka, pokus o zajatie).
 // Pri staršom je len portrét, priazeň a stupnica 7 polí so zrkadlením (tvoja
 // polovica vľavo) — bodovacie podmienky scorecardov v6 nie sú (Michal 2026-10-26:
 // „Ostala len priazeň a na tú scorecard netreba“).
 //
 // Každá informácia na jednom mieste (Michal 2026-10-28: „strašne veľa textu… mouseover
-// je redundantný“): pod stupnicou strany „◀ ty · súper ▶“ a dva riadky — komu priazeň
-// s krátkym účinkom a koho sa bojí so špakmi po vyhratej bitke. Na portréte štítok so
-// zdrojom posunu od bitky (duch na starom mieste). V kroku duch ukáže cieľ posunu a riadky
-// pri prejdení myšou stav po posune. Lupa nesie len to, čo na karte nie je: plné znenie
-// priazne, pravidlo strachu, vydesenie a odkiaľ sa marker pohol. Texty: textyStarsich.ts.
+// je redundantný“): pod stupnicou len meno, priazeň tohto kola nesie krúžok na portréte
+// (Michal 2026-10-31) a vety o priazni a strachu nápoveda staršieho (KruzokPriazne.tsx).
+// Na portréte štítok so zdrojom posunu od bitky, na stupnici duch na starom mieste.
+// Texty: textyStarsich.ts.
 //
 // Rozdelenie hádky a Nakladačky (mock C · Pečať, Michal 2026-10-30): v mojom kroku má
 // karta meno na stred, pečať priazne na portréte a plochú stupnicu s cenou na každom
@@ -96,10 +95,8 @@ export interface StarsiVLinii {
   readonly obrazok: string | null;
   /** Špaky, ktoré starší dá po bitke [hráč 0, hráč 1] (v6). */
   readonly body: SpakyStarsieho | undefined;
-  /** Klik v kroku (Pohoršenie, prebytok, pokus o zajatie) a čo urobí. */
+  /** Klik v kroku (pokus o zajatie) a čo urobí — hádku a Nakladačku nesie `rozdelenie`. */
   readonly klik?: { readonly akcia: string; readonly klik: () => void } | undefined;
-  /** Kam by sa marker posunul (duch markera v kroku). */
-  readonly ciel?: MarkerPos | null | undefined;
   /** Prečo sa v kroku nedá kliknúť (zamknutý starší). */
   readonly dovod?: string | undefined;
   /** Pokus o zajatie (v9): kto skúša staršieho zajať — starší je v ohrození, karta v súperovej ruke. */
@@ -108,10 +105,8 @@ export interface StarsiVLinii {
   readonly vybrany?: boolean;
   /** Posuny od poslednej bitky — duch na starom mieste a štítok so zdrojom. */
   readonly stopa?: StopaStarsieho | undefined;
-  /** Rozdeľovanie Pohoršenia či prebytku v mojom kroku. */
+  /** Rozdeľovanie hádky či Nakladačky v mojom kroku. */
   readonly rozdelenie?: RozdelenieStarsieho | undefined;
-  /** Kam by bodku posunul klik (bod hádky) — prerušovaná bodka pri prejdení myšou. */
-  readonly bodkaPoKliku?: number | null;
 }
 
 export interface LiniaStarsichProps {
@@ -123,14 +118,12 @@ export interface LiniaStarsichProps {
   readonly mena: readonly [string, string];
   /** Klebety, ktoré v kole platia (hádka bitky) — priazeň kola v krúžku, bodke a lístku. */
   readonly klebety?: Klebety | undefined;
-  /** Krok na staršom, ktorý línia práve ukazuje (Pohoršenie…) — inak null. */
+  /** Krok na staršom, ktorý línia práve ukazuje (hádka, Nakladačka, pokus o zajatie) — inak null. */
   readonly krok: string | null;
   /** Starší, ktorých posun sa práve zmenil (blikne po kroku). */
   readonly zmenene: ReadonlySet<string>;
   /** Tlačidlo vľavo v hlavičke: späť na stôl, nahliadnuť, ďalej. */
   readonly tlacidlo?: ReactNode;
-  /** Lupa staršieho (prejdenie myšou, ťuk) — udalosti a data-lupa z HernaPlocha. */
-  readonly lupa?: ((s: StarsiVLinii) => HTMLAttributes<HTMLElement>) | undefined;
 }
 
 /** Vzťah staršieho k hráčom pri danej polohe markera. */
@@ -145,7 +138,7 @@ function vztah(elder: ElderState, marker: MarkerPos) {
  */
 export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
 
-export function LiniaStarsich({ starsi, data, ja, pohlad, mena, klebety, krok, zmenene, tlacidlo, lupa }: LiniaStarsichProps) {
+export function LiniaStarsich({ starsi, data, ja, pohlad, mena, klebety, krok, zmenene, tlacidlo }: LiniaStarsichProps) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<string | null>(null);
@@ -199,7 +192,6 @@ export function LiniaStarsich({ starsi, data, ja, pohlad, mena, klebety, krok, z
             nahlad={nahlad === s.elder.elderId}
             onNahlad={(n) => setNahlad(n ? s.elder.elderId : (x) => (x === s.elder.elderId ? null : x))}
             kto={kto}
-            lupa={lupa?.(s)}
           />
         ))}
       </div>
@@ -218,7 +210,6 @@ function ScorecardVLinii({
   nahlad,
   onNahlad,
   kto,
-  lupa,
 }: {
   readonly s: StarsiVLinii;
   readonly data: GameData;
@@ -227,11 +218,10 @@ function ScorecardVLinii({
   readonly klebety: Klebety | undefined;
   readonly krok: string | null;
   readonly zmeneny: boolean;
-  /** Myš či fokus je na tomto staršom — v kroku prerušovaná bodka ukáže cieľ bodu hádky. */
+  /** Myš či fokus je na tomto staršom — v kroku ho zvýrazní a hlavička povie, čo klik urobí. */
   readonly nahlad: boolean;
   readonly onNahlad: (n: boolean) => void;
   readonly kto: (p: PlayerId) => string;
-  readonly lupa: HTMLAttributes<HTMLElement> | undefined;
 }) {
   const su: PlayerId = ja === 0 ? 1 : 0;
   const { elder, body, klik } = s;
@@ -259,9 +249,6 @@ function ScorecardVLinii({
 
   const krokTrieda =
     krok === null ? "" : s.vybrany === true ? " vybrany" : klik !== undefined ? ` klik${nahlad ? " nahl" : ""}` : " nedost";
-  // Náhľad ťahu ako jedna značka (Michal 2026-10-28): v kroku duch markera ukáže cieľ posunu.
-  const cielKroku = klik !== undefined || s.vybrany === true ? (s.ciel ?? null) : null;
-  const duch = cielKroku !== null && cielKroku !== elder.marker ? cielKroku : null;
   const teraz = vztah(elder, elder.marker);
   const vydeseny = teraz.uroven === 3;
   const pk = priazenKola(elder, klebety, ja);
@@ -272,14 +259,13 @@ function ScorecardVLinii({
 
   const stopa = s.stopa;
   const pata = s.dovod !== undefined ? <span className="ls-dovod">{s.dovod}</span> : null;
-  const bodkaDuch = nahlad && s.bodkaPoKliku != null ? s.bodkaPoKliku : null;
 
   return (
     <div
       className={`ls-sc${krokTrieda}${zmeneny ? " zmena" : ""}${stopa !== undefined ? " so-stopou" : ""}`}
       data-vyucba={`starsi:${s.elder.elderId}`}
       {...(klik === undefined
-        ? spojUdalosti(napoveda.props, { tabIndex: 0, "aria-label": popisMarkera + (s.dovod !== undefined ? ` — ${s.dovod}` : ""), ...(krok === null ? lupa : undefined) })
+        ? spojUdalosti(napoveda.props, { tabIndex: 0, "aria-label": popisMarkera + (s.dovod !== undefined ? ` — ${s.dovod}` : "") })
         : spojUdalosti(napoveda.props, {
             role: "button",
             tabIndex: 0,
@@ -323,10 +309,8 @@ function ScorecardVLinii({
       </div>
       <Stupnica
         marker={polohaPreHraca(elder.marker, ja)}
-        ciel={duch === null ? null : polohaPreHraca(duch, ja)}
         stopa={stopa === undefined || stopa.z === elder.marker ? null : polohaPreHraca(stopa.z, ja)}
         dm={dm}
-        bodkaDuch={bodkaDuch}
         kruzky={napoveda.kruzky(dm.posunute)}
       />
       {/* Pod staršinom len meno (Michal 2026-10-31): priazeň nesie krúžok, vety nápoveda. */}
@@ -366,8 +350,8 @@ function ZvacseninaStarsieho({
 }
 
 /**
- * Ikona kroku v bubline a na žetónoch — piktogram akcie: Pohoršenie, prebytok je prebytok
- * poškodenia, preto Rana (Michal 2026-10-30).
+ * Ikona kroku v bubline a na žetónoch — piktogram akcie: hádka Pohoršenie (mäkké), Nakladačka
+ * je prebytok poškodenia, preto Rana (Michal 2026-10-30).
  */
 const AKCIA_DELENIA: Readonly<Record<"hadka" | "prebytok", Action>> = { hadka: "Pohoršenie", prebytok: "Rana" };
 
@@ -393,7 +377,7 @@ export function zmenaPriazne(a: Pick<Vztah, "priazen" | "sila">, b: Pick<Vztah, 
 
 /**
  * Karta staršieho pri rozdeľovaní (mock C · Pečať): meno na stred, portrét s pečaťou priazne
- * a cenou nepotvrdeného posunu, plochá stupnica s cenami, krígeľ a päsť smerov a riadok strachu.
+ * a cenou nepotvrdeného posunu, plochá stupnica s cenami, pravítko a tlačidlo výberu.
  */
 function KartaRozdelenia({
   s,
@@ -776,23 +760,18 @@ function StitokPosunu({ stopa, ja }: { readonly stopa: StopaStarsieho; readonly 
   return <span className={`ls-listok${farba}`}>⇄ {stitokStopy(stopa.zdroje)}</span>;
 }
 
-/** Schodová stupnica: výška segmentu = úroveň zóny, marker je tmavý disk s prstencom priazne. */
+/** Schodová stupnica: výška segmentu = úroveň zóny; na nej dvojitý marker a stopa posunu. */
 function Stupnica({
   marker,
-  ciel,
   stopa,
   dm,
-  bodkaDuch,
   kruzky,
 }: {
   readonly marker: number;
-  readonly ciel: number | null;
   /** Kde marker stál pred posunmi od poslednej bitky (duch stopy). */
   readonly stopa: number | null;
   /** Dvojitý marker: prsteň = strach (marker), bodka = priazeň tohto kola (Michal 2026-10-31). */
   readonly dm: DvojityMarker;
-  /** Prerušovaná bodka — kam ju posunie klik (bod hádky). */
-  readonly bodkaDuch: number | null;
   /** Prejdenie myšou nad stupnicou: nápoveda o prsteni a bodke. */
   readonly kruzky: HTMLAttributes<HTMLElement>;
 }) {
@@ -812,8 +791,6 @@ function Stupnica({
       )}
       <b className="dm-prsten" style={{ "--p": dm.prsten } as CSSProperties} />
       <b className={`dm-bodka${dm.komu === null ? "" : ` ${dm.komu}`}`} style={{ "--p": dm.bodka } as CSSProperties} />
-      {bodkaDuch !== null && bodkaDuch !== dm.bodka && <b className="dm-duch" style={{ "--p": bodkaDuch } as CSSProperties} />}
-      {ciel !== null && ciel !== marker && <b className="ls-marker duch" style={{ "--p": ciel } as CSSProperties} />}
     </span>
   );
 }
