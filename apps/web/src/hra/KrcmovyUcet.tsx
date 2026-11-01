@@ -2,7 +2,7 @@
 // dizajn stol-oproti-c2-20261022-1030): ty vľavo, súper vpravo, v strede starší
 // (v5) či podmienka (partie do v4, body za kusy). Papier sú obrátené tokeny.
 
-import type { PlayerId, Podmienka } from "@naex/core";
+import { opponentOf, type PlayerId, type Podmienka } from "@naex/core";
 import { NAZOV_PODMIENKY } from "../karta/podmienky.ts";
 import { PORADIE_PODMIENOK, SMER_V5, ZA_CO, bodyPoPodmienkach, jeBodovanieV5, kohoBoduje, subojeStarsieho, type BodyPodmienky, type BodyTeraz } from "./bodyPodmienok.tsx";
 import { znamienko } from "./Scorecard.tsx";
@@ -51,7 +51,7 @@ const ZA_V4: Readonly<Partial<Record<Podmienka, string>>> = {
  */
 function UcetV5({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
   const kedy = `zatvorené po kole ${kolo}`;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const rozdiel = body.spolu[ja] - body.spolu[su];
   return (
     <section className="krcmovy-ucet" role="region" aria-label={`Účet — body, ${kedy}`}>
@@ -117,7 +117,7 @@ export function KrcmovyUcet(props: KrcmovyUcetProps) {
 /** Partie do v4: body za kusy po podmienkach (kusy × body × počet scorecardov). */
 function UcetV4({ body, ja, mena, menoStarsieho, kolo }: KrcmovyUcetProps) {
   const kedy = `zatvorené po kole ${kolo}`;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const podmienky = bodyPoPodmienkach(body);
   const riadky: Riadok[] = PORADIE_PODMIENOK.map((podmienka) => {
     const m = podmienky.get(podmienka);

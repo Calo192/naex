@@ -7,7 +7,7 @@
 
 import type { CSSProperties } from "react";
 import type { ClientState, ElderState, GameData, Klebety, MarkerPos, PlayerId } from "@naex/core";
-import { KONSTANTY, STUPNICA_ZONY, favourStarsieho, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu, vydesil } from "@naex/core";
+import { KONSTANTY, STUPNICA_ZONY, favourStarsieho, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu, vydesil, opponentOf } from "@naex/core";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { KruzokPriazne, ListokHadky, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import { ktoPriazen, listokHadky, obsahNapovedy, pocetPriazniKola, priazenKola, riadokPriazneDlazdice } from "./priazenKola.ts";
@@ -183,7 +183,7 @@ function DlazdicaStarsieho({
   readonly klebety: Klebety | undefined;
 }) {
   const ja = p === view.ja;
-  const su: PlayerId = p === 0 ? 1 : 0;
+  const su = opponentOf(p);
   const smer = smerStarsieho(e, p);
   const zona = STUPNICA_ZONY[e.marker];
   // v8.3: udržané nezaplatené stupne (koniec kola) a nové, ktoré čakajú na udržanie.

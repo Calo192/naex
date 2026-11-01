@@ -6,7 +6,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { BitkaNaNastenke, Favour, LokalitaVHistorii, MarkerPos, PitkaVHistorii, PlayerId } from "@naex/core";
-import { STAV_STARSIEHO, STUPNICA_ZONY, jeFinaleNaNastenke, obavanyHrac, priazenHraca, priazenSila } from "@naex/core";
+import { STAV_STARSIEHO, STUPNICA_ZONY, jeFinaleNaNastenke, obavanyHrac, priazenHraca, priazenSila, opponentOf } from "@naex/core";
 import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { RekapBitky, RekapitulaciaPitkyVrstva, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
@@ -36,7 +36,7 @@ export function SuhrnLokality(props: SuhrnLokalityProps) {
 }
 
 function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogramy, onZavri, favour = () => null }: SuhrnLokalityProps) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const idNadpisu = useId();
   const [detail, setDetail] = useState<PitkaVHistorii | null>(null);
   const detailRef = useRef(detail);

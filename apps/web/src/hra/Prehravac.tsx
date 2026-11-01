@@ -5,7 +5,7 @@
 // naň odkázať.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { loadGameData, type ClientState, type Event, type PlayerId } from "@naex/core";
+import { loadGameData, opponentOf, type ClientState, type Event, type PlayerId } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import { api } from "../lib/api.ts";
@@ -267,7 +267,7 @@ export function Prehravac({ id }: { readonly id: number }) {
         <span className="tlmene">{popis}</span>
       </span>
       {zoznam.ja === null && (
-        <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setMiesto((m) => (m === 0 ? 1 : 0))} title="Správca: pohľad druhého hráča">
+        <button type="button" className="tlacidlo-male tlacidlo-jemne" onClick={() => setMiesto((m) => opponentOf(m))} title="Správca: pohľad druhého hráča">
           pohľad: {mena[miesto]}
         </button>
       )}

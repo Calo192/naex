@@ -10,7 +10,7 @@
 // Bez Reactu, aby sa dalo otestovať. Klebety sú verejné a už sú v pohľade — server neposiela nič nové.
 
 import type { BitkaNaNastenke, ElderState, Favour, GameData, Klebety, MarkerPos, PlayerId } from "@naex/core";
-import { MARKER_STRED, STUPNICA_ZONY, favourStarsieho, scorecardStarsieho, ucinnaPriazen } from "@naex/core";
+import { MARKER_STRED, STUPNICA_ZONY, favourStarsieho, scorecardStarsieho, ucinnaPriazen, opponentOf } from "@naex/core";
 import { UCINOK_KRATKO } from "./Scorecard.tsx";
 import { riadokStrachu, textStupna } from "./textyStarsich.ts";
 
@@ -165,14 +165,14 @@ export interface VstupNapovedy {
 }
 
 export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
-  const su: PlayerId = v.ja === 0 ? 1 : 0;
+  const su = opponentOf(v.ja);
   const m = { ja: "ty", su: v.mena[su] };
   const fav = favourStarsieho(v.data, v.elder);
   const teraz = priazenKola(v.elder, v.klebety, v.ja);
   const zMarkera = priazenMarkera(v.elder, v.ja);
   const listok = listokHadky(v.elder.elderId, v.klebety, v.ja);
   // Strach je vždy podľa markera — hádka ho nemení (v10).
-  const obavany = zMarkera.hrac === null ? null : zMarkera.hrac === 0 ? 1 : 0;
+  const obavany = zMarkera.hrac === null ? null : opponentOf(zMarkera.hrac);
   return {
     meno: v.meno,
     nazovPriazne: scorecardStarsieho(v.data, v.elder).nazov,

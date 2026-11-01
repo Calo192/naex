@@ -25,7 +25,7 @@ import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Action, ElderState, GameData, Klebety, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, strachNaUdrzanie, strachNaVyplatu, type MarkerPos } from "@naex/core";
+import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, strachNaUdrzanie, strachNaVyplatu, opponentOf, type MarkerPos } from "@naex/core";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
@@ -139,7 +139,7 @@ function vztah(elder: ElderState, marker: MarkerPos) {
 export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] ?? FARBY_STUPNICE[3];
 
 export function LiniaStarsich({ starsi, data, ja, pohlad, mena, klebety, krok, zmenene, tlacidlo }: LiniaStarsichProps) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   // Náhľad posunu v hlavičke — celý text, dlaždica sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<string | null>(null);
   const nahladovany = starsi.find((s) => s.elder.elderId === nahlad);
@@ -223,7 +223,7 @@ function ScorecardVLinii({
   readonly onNahlad: (n: boolean) => void;
   readonly kto: (p: PlayerId) => string;
 }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const { elder, body, klik } = s;
   const fav = favourStarsieho(data, elder);
   const koho = (p: PlayerId): string => (p === ja ? "teba" : mena[p]);
@@ -397,7 +397,7 @@ function KartaRozdelenia({
   readonly zmeneny: boolean;
 }) {
   const { elder } = s;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   // Posun markera hýbe prsteňom a bodka ide s ním o rovnaký kus — rozdiel z hádky ostáva.
   const dm = dvojityMarker(r.navrh === null ? elder : { ...elder, marker: r.navrh.na }, klebety, ja);
   const teraz = vztah(elder, elder.marker);
@@ -661,7 +661,7 @@ function PecatPriazne({
   /** Koho sa starší bojí teraz a po posune (riadok strachu, pod kartou už nie je). */
   readonly strach: { readonly teraz: string; readonly po: string };
 }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const fav = favourStarsieho(data, elder);
   const a = priazenKola(elder, klebety, ja);
   const b = na === null || na === elder.marker ? null : priazenKola({ ...elder, marker: na }, klebety, ja);

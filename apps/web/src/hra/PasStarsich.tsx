@@ -3,8 +3,8 @@
 // staršom (myš, fokus, podržanie prsta) povie aj to, koľko špakov komu počas partie dal.
 
 import type { CSSProperties } from "react";
-import type { ClientState, ElderState, GameData, PlayerId } from "@naex/core";
-import { STUPNICA_ZONY, favourStarsieho, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu } from "@naex/core";
+import type { ClientState, ElderState, GameData } from "@naex/core";
+import { STUPNICA_ZONY, favourStarsieho, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu, opponentOf } from "@naex/core";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { KruzokPriazne, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import { dvojityMarker, ktoPriazen, kratkeMeno, obsahNapovedy, priazenKola, spakyOdStarsieho } from "./priazenKola.ts";
@@ -18,7 +18,7 @@ export interface PasStarsichProps {
 }
 
 export function PasStarsich({ view, data, mena, menoKarty, obrazok }: PasStarsichProps) {
-  const su: PlayerId = view.ja === 0 ? 1 : 0;
+  const su = opponentOf(view.ja);
   if (view.starsi.length + view.vazni.length === 0) return null;
   return (
     <section className="pas-starsich" aria-label="Starší na konci partie">
@@ -60,7 +60,7 @@ function StarsiVPase({
   readonly obrazok: string | null;
 }) {
   const ja = view.ja;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const klebety = klebetyKola(view);
   const fav = favourStarsieho(data, e);
   const pk = priazenKola(e, klebety, ja);

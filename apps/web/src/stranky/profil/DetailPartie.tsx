@@ -3,7 +3,7 @@
 // súperove skryté čísla server neposiela.
 
 import { useEffect, useMemo, useState } from "react";
-import { NAZOV_DLZKY, loadGameData, type DlzkaHry, type PlayerId } from "@naex/core";
+import { NAZOV_DLZKY, loadGameData, opponentOf, type DlzkaHry, type PlayerId } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import { api } from "../../lib/api.ts";
@@ -20,7 +20,7 @@ import "./profil.css";
 
 /** Body oboch po kolách ako dve čiary (ty a súper). */
 function PriebehBodov({ body, mena, ja }: { readonly body: readonly (readonly [number, number])[]; readonly mena: readonly [string, string]; readonly ja: PlayerId }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const w = 640;
   const h = 180;
   const p = 28;
@@ -86,7 +86,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
 
   // Správca, ktorý nehral, sa pozerá z miesta hráča 1.
   const ja: PlayerId = d.ja ?? 0;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const mena: [string, string] = [d.hraci[0].meno, d.hraci[1].meno];
   // Partie v6: víťazné body sú špaky (Michal 2026-10-26); staršie archívy ostávajú v bodoch.
   const v6 = d.zaverecne !== null && "verzia" in d.zaverecne;

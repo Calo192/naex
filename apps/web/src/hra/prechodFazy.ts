@@ -1,7 +1,7 @@
 // Prechody fáz na stole (Michal 2026-10-27): línia starších zmizne, hneď ako prestane byť
 // aktuálna, a pri prechode do novej fázy sa ukáže medziobrazovka (nadpis a 1–2 vety).
 
-import { cigariet, KONSTANTY } from "@naex/core";
+import { cigariet, KONSTANTY, opponentOf } from "@naex/core";
 import type { ClientState, PlayerId } from "@naex/core";
 
 /**
@@ -46,7 +46,7 @@ export function medziobrazovka(
   // Hádka (v10): jednorazové okno, keď víťaz hádky rozdeľuje — pred poškodením, ešte bez počítadla.
   const hd = view.bitkaStav?.hadka;
   if (bitkaKola === null && view.faza === "bitka" && view.bitkaStav?.krok === "hadka" && hd !== undefined && hd.vitaz !== null && hd.zostava > 0) {
-    const skore = `${hd.makke[hd.vitaz]} : ${hd.makke[hd.vitaz === 0 ? 1 : 0]}`;
+    const skore = `${hd.makke[hd.vitaz]} : ${hd.makke[opponentOf(hd.vitaz)]}`;
     return {
       kluc: `${view.kolo}|hadka`,
       nadnadpis: kolo,

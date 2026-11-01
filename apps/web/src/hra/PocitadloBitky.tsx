@@ -11,7 +11,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import type { CardInstance, CardLineEval, KrokPocitadla, LineEval, Moment, PlayerId, PocitadloBitky as Pocitadlo, RekapitulaciaBitky, StolBitky } from "@naex/core";
-import { stavPocitadla, vlnyKariet } from "@naex/core";
+import { stavPocitadla, vlnyKariet, opponentOf } from "@naex/core";
 import { IkonaPoldeci } from "./Panely.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import type { PriazneBitky } from "./priazenKola.ts";
@@ -58,7 +58,7 @@ export interface PocitadloBitkyProps {
 }
 
 export function PocitadloBitky({ p, ja, mena, menoKarty, rad, onKoniec, vysledokHned = false, rekap = null, vlnyKariet, piktogramy, odpovede = [], naSirku = false, momenty = [], priazne }: PocitadloBitkyProps) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const posledna = p.vln - 1;
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   const [vlna, setVlna] = useState(tlmene ? posledna : -1);
@@ -293,7 +293,7 @@ function rozmeryVrstvy(vyska: number, sirka: number): { readonly pevne: number; 
 /** Počítadlo s líniou z okamihu bitky: tvoja strana od lokality doľava, súperova doprava. */
 export function PocitadloSLiniou({ vrstva, ja, mena, karta, menoKarty, piktogramy, onKoniec, vysledokHned = false, naSirku = false, priazne }: PocitadloSLiniouProps) {
   const { stol, linia, rekap } = vrstva;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const lok = stol.ciel?.lokalita ?? null;
   const poradie: readonly { readonly card: CardInstance; readonly playedBy: PlayerId | null; readonly naexBy?: PlayerId | undefined }[] = [
     ...[...stol.strany[ja]].reverse(),

@@ -7,7 +7,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { GameData, MarkerPos, PlayerId, Vazen } from "@naex/core";
-import { KONSTANTY, STUPNICA_ZONY, cigariet, favourStarsieho, obavanyHrac, pocet, strachZ } from "@naex/core";
+import { KONSTANTY, STUPNICA_ZONY, cigariet, favourStarsieho, obavanyHrac, pocet, strachZ, opponentOf } from "@naex/core";
 import "./suhrn-posunov.css";
 import { IKONY } from "../karta/ikony.ts";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
@@ -289,7 +289,7 @@ function Bublina({
         </span>
         <b className="sb-meno">{meno}</b>
         {fav !== null && pz !== null && (
-          <span className="sb-kruzky" role="img" aria-label={poHadke ? `Priazeň v kole po hádke ${textPriazne(pz.vKole, mena[ja === 0 ? 1 : 0])}, po kole ${textPriazne(pz.poKole, mena[ja === 0 ? 1 : 0])}` : `Priazeň po kole ${textPriazne(pz.poKole, mena[ja === 0 ? 1 : 0])}`}>
+          <span className="sb-kruzky" role="img" aria-label={poHadke ? `Priazeň v kole po hádke ${textPriazne(pz.vKole, mena[opponentOf(ja)])}, po kole ${textPriazne(pz.poKole, mena[opponentOf(ja)])}` : `Priazeň po kole ${textPriazne(pz.poKole, mena[opponentOf(ja)])}`}>
             {poHadke && (
               <>
                 <KruzokPriazne fav={fav} p={pz.vKole} velkost={mobil ? 30 : 36} />
@@ -534,7 +534,7 @@ export function SuhrnPosunovTelefon({ data, polozky, kolo, ja, mena, vazni, meno
               <span className="st-portret">
                 {o !== null ? <img src={o} alt="" draggable={false} /> : null}
                 {/* Krúžok priazne po kole (Michal 2026-10-31) — vždy, aj na telefóne. */}
-                {e !== null && pz !== null && <KruzokPriazne fav={favourStarsieho(data, e)} p={pz.poKole} velkost={22} popis={`priazeň po kole: ${textPriazne(pz.poKole, mena[ja === 0 ? 1 : 0])}`} />}
+                {e !== null && pz !== null && <KruzokPriazne fav={favourStarsieho(data, e)} p={pz.poKole} velkost={22} popis={`priazeň po kole: ${textPriazne(pz.poKole, mena[opponentOf(ja)])}`} />}
               </span>
               <span className="st-telo">
                 <span className="st-hlava">

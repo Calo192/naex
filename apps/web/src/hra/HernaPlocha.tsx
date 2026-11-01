@@ -134,6 +134,7 @@ import {
   vidiVolbuSupera,
   hraVPitke,
   cakaSBzdochou,
+  opponentOf,
 } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
@@ -603,7 +604,7 @@ export function HernaPlocha({
   // Žeravé ikony (Michal 2026-10-30): karty v ruke a línii vedia, čo ich majiteľovi posilňuje Dedičstvo.
   const videneZaru = useRef(new Map<string, number>()).current;
   const zarStola = useMemo(() => ({ view, videne: videneZaru }), [view, videneZaru]);
-  const super_ = (ja === 0 ? 1 : 0) as PlayerId;
+  const super_ = opponentOf(ja);
   const [mode, setMode] = useState<Mode>({ typ: "ziadny" });
   const [vrstva, setVrstva] = useState<Vrstva | null>(null);
   /** Kolo odohranej lokality, ktorej súhrn (Pitky a bitka) je otvorený po kliku na nástenke. */
@@ -3087,7 +3088,7 @@ export function HernaPlocha({
   const textRovnostiKraja = (p: PlayerId): string | null => {
     const s = stavKraja(data, stol.strany[p]);
     if (stredKarta === null || s.prevaha === null || s.naPrebitie === null) return null;
-    const druhy: PlayerId = s.prevaha === 0 ? 1 : 0;
+    const druhy = opponentOf(s.prevaha);
     const zs = view.faza === "zhromazdenie" ? view.zhromazdenieStav : null;
     const rovnost = !s.rovnost
       ? ""
@@ -4029,7 +4030,7 @@ export function HernaPlocha({
         }
         const hracJa = view.hraci[ja];
         const pitkaSt = view.pitkaStav;
-        const obranca: PlayerId = view.utocnik === 0 ? 1 : 0;
+        const obranca = opponentOf(view.utocnik);
         const naexBol = naexLimitMinuty;
         const nadpis = null;
         if (reagujem) {
@@ -5604,7 +5605,7 @@ export function HernaPlocha({
     };
     const zs = view.zhromazdenieStav;
     const ps = view.pitkaStav;
-    const obranca: PlayerId = view.utocnik === 0 ? 1 : 0;
+    const obranca = opponentOf(view.utocnik);
     if (view.koniec !== null) {
       casti.push(rukaPocet(p));
     } else if (view.faza === "zhromazdenie" && zs !== null) {
@@ -6751,7 +6752,7 @@ type PecatNakupu = (p: {
 function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData; readonly view: ClientState; readonly cmd: (c: Command) => void; readonly pecatNakupu: PecatNakupu }) {
   const [vazenKarta, setVazenKarta] = useState<Readonly<Record<string, string>>>({});
   const ja = view.ja;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const pitka = view.pitkaStav;
   if (pitka === null || pitka.reakcia !== null || pitka.hotovy[ja]) return null;
   const h = view.hraci[ja];

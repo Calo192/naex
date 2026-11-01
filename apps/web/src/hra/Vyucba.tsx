@@ -9,7 +9,7 @@
 // Nájdený prvok dostane data-vyucba-zvyraznene="kľúč" (číta ho playtest výučby).
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { ClientState, Command, Event as UdalostHry } from "@naex/core";
+import { opponentOf, type ClientState, type Command, type Event as UdalostHry } from "@naex/core";
 import { api } from "../lib/api.ts";
 import { ZAVES_ODCHODU } from "../lib/odchod.ts";
 import {
@@ -867,7 +867,7 @@ export function textNaKonci(stav: Pick<StavVyucby, "koniecCasti" | "dalsiaCast" 
   const dalsia = stav.dalsiaCast ?? stav.pripravujeme;
   if (dalsia === null) {
     const k = view.koniec;
-    const su = view.ja === 0 ? 1 : 0;
+    const su = opponentOf(view.ja);
     const vysledok =
       k === null || k.body === null
         ? ""

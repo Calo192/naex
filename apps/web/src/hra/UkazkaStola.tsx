@@ -49,7 +49,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, MarkerPos, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -130,7 +130,7 @@ function sHasicom(data: GameData, s: GameState, p: PlayerId): GameState {
  * dá skryté NA EX a Pitku skončí — p hrá po ňom a vidí ho.
  */
 function sBzdochou(data: GameData, s: GameState, p: PlayerId, caka = false): GameState | null {
-  const su: PlayerId = p === 0 ? 1 : 0;
+  const su = opponentOf(p);
   const bzdocha: CardInstance = { uid: s.nextUid, defId: "klebetnica", leftLayout: 0, rightLayout: 0 };
   const strany: GameState["strany"] = p === 0 ? [[...s.strany[0], { card: bzdocha, playedBy: p }], s.strany[1]] : [s.strany[0], [...s.strany[1], { card: bzdocha, playedBy: p }]];
   const t: GameState = { ...s, nextUid: s.nextUid + 1, strany };
@@ -162,7 +162,7 @@ function sExekuciou(s: GameState, p: PlayerId): GameState {
 function sZeravou(s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
   const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
-  const su: PlayerId = p === 0 ? 1 : 0;
+  const su = opponentOf(p);
   const ja = { ...s.hraci[p], dedicstvo: [...s.hraci[p].dedicstvo, karta("puska"), karta("vidly")], ruka: [...s.hraci[p].ruka, karta("hasic"), karta("recidivista"), karta("policajtka"), karta("kulturista")] };
   const on = { ...s.hraci[su], dedicstvo: [...s.hraci[su].dedicstvo, karta("svaty_text"), karta("vidly")] };
   const strany: [GameState["strany"][0], GameState["strany"][1]] = [[...s.strany[0]], [...s.strany[1]]];
@@ -228,9 +228,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       s.pitkaStav.reakcia === null &&
       s.vizia === null &&
       mozeHrat(s, ja) &&
-      !s.pitkaStav.hotovy[ja === 0 ? 1 : 0] &&
+      !s.pitkaStav.hotovy[opponentOf(ja)] &&
       moznostiNaex(data, s, ja).length > 0 &&
-      s.hraci[ja === 0 ? 1 : 0].ruka.length >= 2
+      s.hraci[opponentOf(ja)].ruka.length >= 2
     ) {
       const h = { ...s.hraci[ja], ruka: [] };
       return najdene({ zaciatok: { ...s, hraci: ja === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] }, dohraj: [] });
@@ -239,7 +239,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     // Súper rozdeľuje po bitke a stôl to vidí; dohrá sa po stavbu šenku ďalšieho kola, kde
     // vyberá hráč ?ja — starší ju nesmú zakryť (Michal 2026-10-30).
     const bsu = s.bitkaStav;
-    if (stop === "posuny" && s.faza === "bitka" && bsu !== null && bsu.caka === (ja === 0 ? 1 : 0) && (bsu.krok === "hadka" || bsu.krok === "prebytok")) {
+    if (stop === "posuny" && s.faza === "bitka" && bsu !== null && bsu.caka === opponentOf(ja) && (bsu.krok === "hadka" || bsu.krok === "prebytok")) {
       const dohraj: Krok[] = [];
       let x = s;
       let r2 = rng;
@@ -255,10 +255,10 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if ((stop === "hadka" || stop === "pohorsenie") && s.faza === "bitka" && s.bitkaStav?.krok === "hadka" && s.bitkaStav.caka === ja && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
       if (hadok++ === i) return najdene({ zaciatok: s, dohraj: [] });
     }
-    if (stop === "hadka-super" && s.faza === "bitka" && s.bitkaStav?.krok === "hadka" && s.bitkaStav.caka === (ja === 0 ? 1 : 0) && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
+    if (stop === "hadka-super" && s.faza === "bitka" && s.bitkaStav?.krok === "hadka" && s.bitkaStav.caka === opponentOf(ja) && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
       if (hadokSupera++ === i) return najdene({ zaciatok: s, dohraj: [] });
     }
-    if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[ja === 0 ? 1 : 0] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
+    if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
     if (bzdochaStop && s.faza === "pitka" && s.pitkaStav !== null && s.pitkaStav.reakcia === null && s.vizia === null && !s.pitkaStav.hotovy[0] && !s.pitkaStav.hotovy[1]) {
@@ -397,7 +397,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
 
   // Za súpera ťahá bot.
   useEffect(() => {
-    const kto: PlayerId = ja === 0 ? 1 : 0;
+    const kto = opponentOf(ja);
     if (!dohrate || !mozeHrat(stav, kto) || q().get("bot") === "0") return;
     const t = setTimeout(() => {
       const [j, r] = rngInt(rng.current, 2 ** 31);

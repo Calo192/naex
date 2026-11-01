@@ -6,7 +6,7 @@
 import { useContext, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { BitkaNaNastenke, CardInstance, CielKola, Favour, PlayerId, SpakyTeraz } from "@naex/core";
-import { KONSTANTY, jeFinaleNaNastenke, pocet, rozpisSpakov, spakov } from "@naex/core";
+import { KONSTANTY, jeFinaleNaNastenke, pocet, rozpisSpakov, spakov, opponentOf } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
@@ -54,15 +54,15 @@ export function textZakladu(b: Pick<BitkaNaNastenke, "karty" | "pitky">): string
 /** Kultúrny dom (v8): špaky porazeného za jeho karty v línii; inak 0. */
 export function spakyPorazeneho(b: BitkaNaNastenke): number {
   if (b.vitaz === null || b.lokalita?.defId !== "kulturny_dom") return 0;
-  return b.zaBitku[b.vitaz === 0 ? 1 : 0] - (b.noviny ?? 0);
+  return b.zaBitku[opponentOf(b.vitaz)] - (b.noviny ?? 0);
 }
 
 /** Prečo a ako sa bitka rozhodla — krátko pod lokalitu na nástenke. */
 export function poznamkaBitky(b: BitkaNaNastenke, kto: (p: PlayerId) => string): string[] {
   const out: string[] = [];
   const porazenemu = spakyPorazeneho(b);
-  if (porazenemu > 0 && b.vitaz !== null) out.push(`${kto(b.vitaz === 0 ? 1 : 0)} +${porazenemu} za svoje karty (Kultúrny dom)`);
-  if ((b.noviny ?? 0) > 0 && b.vitaz !== null) out.push(`${kto(b.vitaz === 0 ? 1 : 0)} +${b.noviny} za Dlhy víťaza (Noviny)`);
+  if (porazenemu > 0 && b.vitaz !== null) out.push(`${kto(opponentOf(b.vitaz))} +${porazenemu} za svoje karty (Kultúrny dom)`);
+  if ((b.noviny ?? 0) > 0 && b.vitaz !== null) out.push(`${kto(opponentOf(b.vitaz))} +${b.noviny} za Dlhy víťaza (Noviny)`);
   if (b.rozhodlo === "abstak") out.push("remíza → menej Absťákov");
   if (b.rozhodlo === "dlhy") out.push("remíza → menej Dlhov");
   if (b.abstakZrazka > 0) out.push(`−${b.abstakZrazka} za Absťák`);
@@ -158,7 +158,7 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
   // Rozpis na myš aj na fokus klávesnicou: ktorý lístok a jeho prvok (poloha okienka).
   const [naMys, setNaMys] = useState<{ readonly i: number; readonly el: HTMLElement } | null>(null);
   const idRozpisu = useId();
-  const poradie: readonly [PlayerId, PlayerId] = ucet === undefined || ucet.zvyraznit === ja ? [ja, ja === 0 ? 1 : 0] : [ucet.zvyraznit, ja];
+  const poradie: readonly [PlayerId, PlayerId] = ucet === undefined || ucet.zvyraznit === ja ? [ja, opponentOf(ja)] : [ucet.zvyraznit, ja];
   const listky: Listok[] = [
     ...nastenka.map((b, i): Listok => ({ kluc: `b${i}`, lokalita: b.lokalita, finale: jeFinaleNaNastenke(b), stav: "odohrana", bitka: b })),
     ...(ciel !== null && !koniec ? [{ kluc: "teraz", lokalita: ciel.lokalita, finale: ciel.typ === "finale", stav: "teraz" as const }] : []),
@@ -528,7 +528,7 @@ export function SpakyBitky({
   /** S menami kariet ukáže pri špakoch za starších, ktorý starší koľko dal. */
   readonly menoKarty?: ((defId: string) => string) | undefined;
 }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "—");
   const zaBitku = (p: PlayerId): string => poznamkaZaBitku(b, p);
   const zaStarsich = (p: PlayerId): string => (menoKarty === undefined ? "" : textRozpisuStarsich(b, p, menoKarty));
@@ -684,7 +684,7 @@ export function rozpisLokality(b: BitkaNaNastenke, menoKarty?: (defId: string) =
 function ZiskLokality({ b, ja }: { readonly b: BitkaNaNastenke; readonly ja: PlayerId }) {
   const { spolu } = rozpisLokality(b);
   const prvy: PlayerId = b.vitaz ?? ja;
-  const druhy: PlayerId = prvy === 0 ? 1 : 0;
+  const druhy = opponentOf(prvy);
   const ukaz = (p: PlayerId): boolean => p === b.vitaz || spolu[p] !== 0;
   return (
     <span className="nastenka-ziskane">
@@ -736,7 +736,7 @@ function RozpisNaMys({
     const top = Math.min(Math.max(8, r.top), Math.max(8, window.innerHeight - h - 8));
     setPoloha({ left, top });
   }, [el, b]);
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const { riadky, spolu } = rozpisLokality(b, menoKarty);
   const nazov = b.lokalita === null ? (jeFinaleNaNastenke(b) ? "Finále" : "lokalita") : `${jeFinaleNaNastenke(b) ? "Finále · " : ""}${menoKarty(b.lokalita.defId)}`;
   const vysledok = b.vitaz === null ? "sekera" : b.vitaz === ja ? "tvoja výhra" : `výhra – ${mena[b.vitaz]}`;

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DlzkaHry, NaladaMomentu } from "@naex/core";
-import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
+import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA, opponentOf } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
 import { chod, Odkaz, useTitulok } from "../lib/router.tsx";
@@ -627,7 +627,7 @@ export function Hra() {
         hra.view.koniec === null && maPravo(ja, "melichar_soundboard") && (
           <Soundboard
             ja={m.seat}
-            menoSupera={hra.hraci[m.seat === 0 ? 1 : 0]?.meno ?? "Súper"}
+            menoSupera={hra.hraci[opponentOf(m.seat)]?.meno ?? "Súper"}
             udalost={hra.melichar}
             pusti={hra.pustiMelichara}
           />

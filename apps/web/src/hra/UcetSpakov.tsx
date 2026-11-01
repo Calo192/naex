@@ -3,7 +3,7 @@
 // hry a detail partie; rovnaká mriežka ako špaky jednej bitky (SpakyBitky).
 // Čísla ráta jadro (rozpisSpakov), klient ich len píše.
 
-import type { PlayerId, RozpisSpakov } from "@naex/core";
+import { opponentOf, type PlayerId, type RozpisSpakov } from "@naex/core";
 import { IkonaSpaku, sMinusom } from "./Spaky.tsx";
 
 const RIADKY: readonly { readonly kluc: keyof RozpisSpakov; readonly nazov: string }[] = [
@@ -19,7 +19,7 @@ const RIADKY: readonly { readonly kluc: keyof RozpisSpakov; readonly nazov: stri
 const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
 
 export function UcetSpakov({ rozpis, ja, mena }: { readonly rozpis: readonly [RozpisSpakov, RozpisSpakov]; readonly ja: PlayerId; readonly mena: readonly [string, string] }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   return (
     <div className="spaky-bitky ucet-spakov" role="table" aria-label="Účet špakov">
       <span className="sb-hlava" role="row">

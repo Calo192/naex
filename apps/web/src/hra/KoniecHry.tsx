@@ -3,8 +3,8 @@
 // len riadok v páse pokynov, hráči ho prehliadli a nevedeli, odkiaľ body sú.
 
 import { useEffect, useRef } from "react";
-import type { ClientState, GameData, PlayerId, Rod, Vykupne } from "@naex/core";
-import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar } from "@naex/core";
+import type { ClientState, GameData, Rod, Vykupne } from "@naex/core";
+import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar, opponentOf } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
 import { Nastenka, PocetSpakov } from "./Spaky.tsx";
@@ -47,7 +47,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
   useEffect(() => lobbyRef.current?.focus({ preventScroll: true }), [koniec === null]);
   if (koniec === null) return null;
   const ja = view.ja;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const nadpis =
     koniec.vitaz === null
       ? "Remíza"

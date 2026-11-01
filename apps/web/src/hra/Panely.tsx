@@ -20,7 +20,7 @@ import type {
   StavkaBitky as StavkaBitkyCisla,
   ZdrojeAkcii,
 } from "@naex/core";
-import { KONSTANTY, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, spakov, tvar, vidiVolbuSupera } from "@naex/core";
+import { KONSTANTY, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, spakov, tvar, vidiVolbuSupera, opponentOf } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
@@ -552,7 +552,7 @@ export function HracDoska({
   // Súperove skryté NA EX prídu len s Bzdochou (hrám Pitku po ňom) — a moje vidí súper, keď ju má on.
   const skryteNaex = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
   const kSkrytemu = ja
-    ? vidiVolbuSupera(data, view, p === 0 ? 1 : 0)
+    ? vidiVolbuSupera(data, view, opponentOf(p))
       ? ", súper ho vidí cez Bzdochu"
       : ", súper ho ešte nevidí"
     : ", skryté — vidíš ho cez Bzdochu";
@@ -1216,7 +1216,7 @@ function RiadkyHrozby({
 
 /** Verdikt a prebytok bitky — spoločné pre panel aj jeho jednoriadkový súhrn. */
 function verdiktBitky({ damage, ja, vysledok, poslednaBitka, rodJa = null }: BitkaPanelProps) {
-  const su = (ja === 0 ? 1 : 0) as PlayerId;
+  const su = opponentOf(ja);
   // Remíza v6 (Michal 2026-10-26): rozhodnú Absťáky, potom Dlhy, inak sekera — tu len odhad z tuhého (PRAVIDLA §9.4).
   const { vitaz, prebytok, prebytokDrzi } = battleOutcome(damage);
   const rozdiel = Math.abs(damage.tuhe[ja] - damage.tuhe[su]);

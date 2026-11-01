@@ -7,7 +7,7 @@
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { Action, AkciaRekapitulacie, AkciaTuha, CielVykladania, Moment, NaexRekapitulacie, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
-import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky } from "@naex/core";
+import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky, opponentOf } from "@naex/core";
 import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 import { PriazenStarsiehoVRiadku } from "./KruzokPriazne.tsx";
 import { popisHadkyNaStarsom, prechodPriazne, type PriazneBitky } from "./priazenKola.ts";
@@ -302,7 +302,7 @@ function riadkyNaex(naex: NaexRekapitulacie, odpovede: readonly OdpovedNaNaex[],
     return { druh: "naex", kto: x.dal, casti, krok: 0 };
   });
   for (const o of odpovede) {
-    const su: PlayerId = o.hrac === 0 ? 1 : 0;
+    const su = opponentOf(o.hrac);
     const strana = o.ciel === "vlastna" ? o.hrac : su;
     out.push({
       druh: "odpoved",
@@ -327,7 +327,7 @@ function riadkyZaverecnych(zaverecne: readonly ZaverecnaOdhalena[], krok: number
 
 /** Riadky textového režimu Pitky v poradí vyhodnotenia (PRAVIDLA §7): NA EX, Dlh, pečeň, cigarety, Vízia, Záverečné. */
 export function riadkyTextuPitky(r: RekapitulaciaPitky, odpovede: readonly OdpovedNaNaex[], ja: PlayerId): RiadokTextu[] {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const out = riadkyNaex(r.naex, odpovede, ja);
   for (const p of [ja, su]) {
     const n = zadlzeniePitky(r, p);
@@ -371,7 +371,7 @@ export function riadkyTextuPitky(r: RekapitulaciaPitky, odpovede: readonly Odpov
 
 /** Riadky textového režimu bitky: tuhé, Viera a Povera, Pohoršenie, NA EX, Pitky kola, Záverečné. */
 export function riadkyTextuBitky(r: RekapitulaciaBitky, odpovede: readonly OdpovedNaNaex[], ja: PlayerId): RiadokTextu[] {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const spolu = (xs: readonly PolozkaRekapitulacie[], p: PlayerId): number => xs.filter((x) => x.kto === p).reduce((a, x) => a + x.n, 0);
   const out: RiadokTextu[] = [];
   for (const p of [ja, su]) {
@@ -651,7 +651,7 @@ export function riadkovRekapitulacieBitky(r: RekapitulaciaBitky, bezSpakov = fal
 }
 
 export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hotovo, vlnaKarty, vlnaRusenia, vlnaUcinku, mena, odpovede = [], telefon = false, priazne }: RekapBitkyProps) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(telefon);
   const [zalozkaSpakov, setZalozkaSpakov] = useState(false);
@@ -818,7 +818,7 @@ export function StitkyMomentov({ momenty, ja }: { readonly momenty: readonly Mom
  * (z nej priazeň starších) — na prvý pohľad, bez čítania tabuliek.
  */
 export function VysledokBitky({ r, ja, mena }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly mena: readonly [string, string] }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const b = r.spaky;
   const zn = (n: number): string => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0");
   const hrac = (p: PlayerId): ReactNode => {
@@ -868,7 +868,7 @@ export function VysledokBitky({ r, ja, mena }: { readonly r: RekapitulaciaBitky;
 
 /** Tuhé poškodenie a komu ide Nakladačka (PRAVIDLA §9.4; od v8.3 Povery poškodenie nedávajú). */
 function SucetBitky({ r, ja, menoSupera }: { readonly r: RekapitulaciaBitky; readonly ja: PlayerId; readonly menoSupera: string }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const cast = (kto: PlayerId): ReactNode => (
     <span className={kto === ja ? "ja" : "su"}>
       <b>{r.tuheSpolu[kto]}</b>
@@ -910,7 +910,7 @@ function RiadokHadky({
 }) {
   const h = r.hadka;
   if (h === undefined || h.makke[0] + h.makke[1] === 0) return null;
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const kto = h.vitaz === null ? null : h.vitaz === ja ? "ja" : "su";
   const starsi = (priazne?.hadka ?? []).filter((x) => x.hrac === h.vitaz);
   const zJadra = h.starsi.filter((x) => !starsi.some((y) => y.elderId === x.elderId));
@@ -969,7 +969,7 @@ function VieraPovera({
   readonly rusi: boolean;
   readonly ucinkuje: boolean;
 }) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const zruseneSloty = (druh: "Viera" | "Povera", kto: PlayerId): readonly AkciaRekapitulacie[] => (r.akcie?.[druh] ?? []).filter((x) => x.kto === kto && x.zrusena);
   if (r.viera.length + r.povera.length + zruseneSloty("Viera", 0).length + zruseneSloty("Viera", 1).length + zruseneSloty("Povera", 0).length + zruseneSloty("Povera", 1).length === 0) return null;
@@ -1145,7 +1145,7 @@ function StredPitky({ ikona, title }: { readonly ikona: ReactNode; readonly titl
 }
 
 export function RekapitulaciaPitkyVrstva({ r, ja, mena, nadpis, menoKarty, piktogramy, onKoniec, odpovede = [], naSirku = false, momenty = [], skore = null }: RekapitulaciaPitkyProps) {
-  const su: PlayerId = ja === 0 ? 1 : 0;
+  const su = opponentOf(ja);
   const { ikona, nazov } = piktogramy;
   const [rezim, setRezim] = useRezim(naSirku);
   const tlmene = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
