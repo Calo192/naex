@@ -2411,7 +2411,7 @@
           "stavba:cigorky",
           "stavba:degustatorka"
         ],
-        "nechaj": 258
+        "nechaj": "stavba:podvodnik"
       },
       "melichar": ""
     },

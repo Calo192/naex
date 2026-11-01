@@ -175,3 +175,31 @@ describe("nápovedy — náhodné partie", () => {
     for (const id of ["stavba-senku", "rola", "pas-cigarety", "body", "zaverecna"]) expect([...videne], id).toContain(id);
   });
 });
+
+describe("nápovedy — karta zadarmo (v10.1)", () => {
+  /** Stavba šenku s danými pokusmi o zajatie (null = hráč neskúša). */
+  const stavba = (pokusy: GameState["pokusy"]): GameState => {
+    const s0 = setupGame(data, 7);
+    const balicky: [CardInstance[], CardInstance[]] = [s0.obcania.slice(0, 8), s0.obcania.slice(8, 16)];
+    return { ...s0, faza: "draft", pokusy, draftStav: { krok: "stavba", balicky, vyber: [null, null], naTahu: 0, hotovo: [false, false], noveKarty: [0, 0] } };
+  };
+  const id = (s: GameState) => s.starsi[0]!.elderId;
+
+  it("súper sa pokúša o zajatie → hráčovi pred stavbou-senku; pokúšajúcemu nie", () => {
+    const s = stavba([null, null]);
+    const sPokusom = stavba([null, { elderId: id(s) }]);
+    expect(ids(sPokusom, 0)).toContain("karta-zadarmo");
+    expect(ids(sPokusom, 1)).not.toContain("karta-zadarmo");
+    expect(dalsiaNapoveda(data, katalog, viewFor(data, sPokusom, 0), new Set())?.id).toBe("karta-zadarmo");
+    expect(ids(s, 0)).not.toContain("karta-zadarmo");
+  });
+
+  it("keď skúšajú obaja, alebo hráč už vybral, nápoveda nie je", () => {
+    const s = stavba([null, null]);
+    const obaja = stavba([{ elderId: id(s) }, { elderId: s.starsi[1]!.elderId }]);
+    expect(ids(obaja, 0)).not.toContain("karta-zadarmo");
+    const sPokusom = stavba([null, { elderId: id(s) }]);
+    const vybral: GameState = { ...sPokusom, draftStav: { ...sPokusom.draftStav!, vyber: [{ doSenku: [], odhod: [] }, null] } };
+    expect(ids(vybral, 0)).not.toContain("karta-zadarmo");
+  });
+});

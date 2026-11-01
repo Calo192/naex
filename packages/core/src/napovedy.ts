@@ -14,7 +14,7 @@ import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
 import { pokusMozny, priazenHraca, priazenSila, vydesil } from "./elders.ts";
-import { kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
+import { kartaZadarmo, kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
 import { KONSTANTY } from "./constants.ts";
@@ -60,6 +60,11 @@ const naMojomTahuVZhromazdeni = (v: ClientState, ja: PlayerId): boolean =>
 
 /** Spúšťače podľa id nápovede — špecifikácia v docs/napady/napovedy-prva-partia.html. */
 const SPUSTACE: Readonly<Record<string, Spustac>> = {
+  // v10.1: súper sa pokúša o zajatie — pri stavbe si hráč nechá 1 kartu zadarmo (ide pred stavba-senku).
+  "karta-zadarmo": (_d, v, ja) =>
+    v.faza === "draft" && v.draftStav?.krok === "stavba" && v.draftStav.mojBalicek.length > 0 && v.draftStav.mojVyber === null && kartaZadarmo(v, ja)
+      ? ANO
+      : null,
   "stavba-senku": (_d, v) =>
     v.faza === "draft" && v.draftStav?.krok === "stavba" && v.draftStav.mojBalicek.length > 0 && v.draftStav.mojVyber === null ? ANO : null,
 

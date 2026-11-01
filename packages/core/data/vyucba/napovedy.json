@@ -16,6 +16,18 @@
   },
   "napovedy": [
     {
+      "id": "karta-zadarmo",
+      "poradie": 0,
+      "uroven": "A",
+      "spustac": {
+        "kedy": "prvá stavba šenku, v ktorej si hráč smie nechať kartu zadarmo (súper sa pokúša o zajatie, v10.1); ide pred stavba-senku",
+        "podmienka": "view.faza === \"draft\" && view.draftStav.krok === \"stavba\" && môj balíček stavby nie je prázdny && ešte som nevybral && kartaZadarmo(view, ja)",
+        "jadro": ["packages/core/src/engine.ts kartaZadarmo, krokStavby", "docs/PRAVIDLA.md §5 Karta zadarmo"]
+      },
+      "melichar": "Súper sa ťa pokúša zajať, tak si zo svojich ôsmich jednu necháš do ruky, zadarmo: klikni na ňu prvú. Potom štyri do šenku a tri naspodok. Súper vie, že si si niečo nechal, ale nevie čo.",
+      "zvyraznit": ["stavba"]
+    },
+    {
       "id": "stavba-senku",
       "poradie": 1,
       "uroven": "A",
