@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet 2026-10-31T07:50:26.717Z",
+  "source": "tvorca kariet 2026-11-01T07:13:40.842Z",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -354,7 +354,7 @@
       "tags": [
         "Nástroj"
       ],
-      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia.",
+      "effect_text": "Dedičstvo: Hodnota tvojej Viery je o 1 vyššia — aj proti Poverám (každá tvoja Viera zruší 2 Povery).",
       "triggers": [
         "Dedičstvo"
       ],
@@ -3709,7 +3709,7 @@
       "tags": [
         "Nástroj"
       ],
-      "effect_text": "Dedičstvo: Klebety z tvojich Povier platia aj v nasledujúcom kole.",
+      "effect_text": "Dedičstvo: Tvoje Povery majú silu 2.",
       "triggers": [
         "Dedičstvo"
       ],
@@ -3928,7 +3928,7 @@
       "tags": [
         "Nástroj"
       ],
-      "effect_text": "Dedičstvo: Tvoje Pohoršenia k stredu stoja toľko ako von.",
+      "effect_text": "Dedičstvo: Tvoje Pohoršenia nemožno zrušiť Odporom a NA EX.",
       "triggers": [
         "Dedičstvo"
       ],
