@@ -835,8 +835,9 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <H3 id="nastroje-linia">Nástroj v línii</H3>
         <p>
-          <P k="nastroj">Nástroj</P> nemíňa limit vykladania a NA EX naň dať nemožno. Nástroj nesmie susediť s Nástrojom —
-          náradie musí mať kto používať. Spoj s ním vznikne len pri karte s tagom <strong>Občan alebo Starešina</strong>; pri
+          <P k="nastroj">Nástroj</P> nemíňa limit vykladania a NA EX naň dať nemožno. Nástroj nesmie susediť s Nástrojom a{" "}
+          <strong>vedľa lokality sa nevykladá</strong> — na prázdnu stranu, svoju ani súperovu, ho nevyložíš (v ťahu po Vypiť
+          smie za kartu, ktorú si práve vyložil; za Živnostníka áno). Náradie musí mať kto používať. Spoj s ním vznikne len pri karte s tagom <strong>Občan alebo Starešina</strong>; pri
           lokalite, karte staršieho či inej karte sa neaktivuje nič.
         </p>
         <p className="zvyraznene">

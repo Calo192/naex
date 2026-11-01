@@ -14,6 +14,11 @@ export interface StavNepolozenej {
   readonly dovodStola: string | null;
   /** Zhromaždenie: hráč môže pasovať do Pitky (pri odpovedi na NA EX nie). */
   readonly pas: boolean;
+  /**
+   * Prečo práve táto karta na stôl nesmie, keď inam áno (Nástroj vedľa lokality, v10.2) —
+   * bez neho by hláška „na stôl už kartu nevyložíš“ znela ako vyčerpaný limit.
+   */
+  readonly dovodKarty?: string | null;
 }
 
 const sBodkou = (t: string): string => (/[.!?…]$/.test(t.trim()) ? t.trim() : `${t.trim()}.`);
@@ -30,5 +35,6 @@ export function textNepolozenejKarty(s: StavNepolozenej): string {
     : s.pas
       ? " Ak už nič nevykladáš, pasuj (P)."
       : "";
+  if (s.dovodKarty != null) return `${sBodkou(s.dovodKarty)}${dalej}`;
   return `Na stôl už kartu nevyložíš.${dovod}${dalej}`;
 }

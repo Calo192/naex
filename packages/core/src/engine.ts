@@ -2528,6 +2528,8 @@ function vylozDoLinie(
   const sused = susedNaKonci(s.strany, cielPartia);
   need(sused?.zaverecna !== true, "Za Záverečnú sa nedá priložiť, kým sa na konci Pitky neotočí.");
   need(sused?.posledna !== true, "Za túto kartu sa už nepriloží — Hrobár ju urobil poslednou na strane.");
+  // Vedľa lokality sa Nástroj nevykladá (v10.2, Michal 2026-11-01) — ani na súperovu stranu.
+  need(!(def.tags.includes("Nástroj") && sused == null), NASTROJ_PRI_LOKALITE);
   if (def.tags.includes("Nástroj") && sused != null) {
     need(
       !defOf(data, sused.card as CardInstance).tags.includes("Nástroj"),
@@ -2564,6 +2566,9 @@ function vylozDoLinie(
   // Konflikt (v7, plan.md 13): najprv Nástup priloženej karty, potom Konflikt ležiacej.
   if (sused != null) konflikt(s, data, sused as DeepMutable<PlacedCard>, nova, events);
 }
+
+/** Dôvod pre server aj klienta, keď sa Nástroj vykladá na prázdnu stranu. */
+export const NASTROJ_PRI_LOKALITE = "Vedľa lokality sa Nástroj vyložiť nedá — najprv tam musí ležať iná karta.";
 
 /** Karta, ku ktorej sa priložila posledná karta strany `strana`. */
 function susedPrilozenej(s: MutState, strana: PlayerId): DeepMutable<PlacedCard> | null {
@@ -4542,9 +4547,11 @@ export function planVykladania(
       return chyba(
         x.ciel === "dedicstvo"
           ? `Do Dedičstva treba ${cena} cig.`
-          : zostava <= 0
-            ? "Limit vykladania je vyčerpaný."
-            : `${defOf(data, x.karta).name} sem vyložiť nemôžeš.`,
+          : defOf(data, x.karta).tags.includes("Nástroj") && strany[x.ciel === "vlastna" ? p : opponentOf(p)].length === 0
+            ? NASTROJ_PRI_LOKALITE
+            : zostava <= 0
+              ? "Limit vykladania je vyčerpaný."
+              : `${defOf(data, x.karta).name} sem vyložiť nemôžeš.`,
       );
     }
     if (x.zaverecna === true) {
@@ -4610,6 +4617,8 @@ export function cieleVykladania(
     if (koniec?.zaverecna === true || zablokovane[ciel === "vlastna" ? p : opponentOf(p)]) return false;
     // Za kartu, ktorú Hrobár urobil poslednou, sa už nepriloží (Konflikt v7).
     if (koniec?.posledna === true) return false;
+    // Vedľa lokality sa Nástroj nevykladá (v10.2) — prázdna strana ho neprijme.
+    if (jeNastroj && koniec == null) return false;
     return !(jeNastroj && koniec != null && defOf(data, koniec.card).tags.includes("Nástroj"));
   };
   const out: CielVykladania[] = [];

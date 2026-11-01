@@ -1,10 +1,19 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v10.1 (platné od 2026-11-01)** — Hádka (Michal 2026-11-01, docs/napady/hadka.html, verzia 4)
+**Pravidlá v10.2 (platné od 2026-11-01)** — Hádka (Michal 2026-11-01, docs/napady/hadka.html, verzia 4)
 na v9.3 (v9 zmrazené 2026-10-30, krok 2 revízie starších, docs/napady/starsi-krok2-zadanie.html;
 dávky v9.1 Chuť, v9.2 šenok a NA EX naraz, v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred
-šenkom). Sada kariet v55 (`cards.json`). Pravidlá sa menia len v dávkach; celá dávka dostane ďalšiu
+šenkom; v10.2 Nástroj nie vedľa lokality). Sada kariet v55 (`cards.json`). Pravidlá sa menia len v dávkach; celá dávka dostane ďalšiu
 verziu (značka partií `v10`; presnú verziu ukazuje stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v10.2 oproti v10.1** (Michal 2026-11-01: „Vedľa lokality sa nedá umiestniť náradie.“;
+staré znenia v `docs/pravidla-historia.md`, sekcia v10.2):
+
+- **Nástroj nie vedľa lokality** (§6, §12): Nástroj sa do línie nevyloží na prázdnu stranu —
+  ani na svoju, ani na súperovu, ani vo finále (pinnacle je lokalita). Platí pre každé vyloženie
+  do línie (aj ťah s viacerými kartami, Záverečná, odpoveď na NA EX); za Živnostníka ho priložiť
+  smieš. Do Dedičstva ako doteraz. Nástroj, ktorý sa k lokalite dostane neskôr (karta medzi
+  nimi odíde), ostáva ležať.
 
 **Zmeny v10.1 oproti v10** (Michal 2026-11-01; staré znenia v `docs/pravidla-historia.md`,
 sekcia v10.1):
@@ -471,7 +480,8 @@ Nástroja sa v striedaní počíta ako ťah, priznanie nie.
   vlastné (Krčma: *pri výčape* / *pri dverách*; zoznam v §15). „Tvoja/súperova
   strana“ ostáva len ako pomenovanie, ku komu kraj prilieha.
 - Nástroj tvorí spoj len s Občanom alebo Starešinom a nesmie susediť
-  s Nástrojom na konci strany, kam sa vykladá (§12). Kliatba do línie nepatrí.
+  s Nástrojom na konci strany, kam sa vykladá, ani s lokalitou — na prázdnu stranu
+  sa nevyloží (v10.2, §12). Kliatba do línie nepatrí.
   Za skrytú Záverečnú ani odpoveď lícom dole sa nepriloží, kým sa neotočí (§7, §13).
 - **Konflikt (v7):** keď súper priloží kartu k tvojej ležiacej karte so
   spúšťačom Konflikt, spustí sa jej efekt — po Nástupe priloženej karty. Vlastné
@@ -1471,6 +1481,13 @@ k súperovi.
 - **Efekt Nástroja v línii neplatí** — len v Dedičstve.
 - Nástroj nesmie susediť s Nástrojom na konci strany, kam sa vykladá
   (susedstvo je fyzické).
+- **Vedľa lokality sa Nástroj nevykladá** (v10.2, Michal 2026-11-01): na prázdnu stranu
+  — svoju ani súperovu, ani vo finále na pinnacle — ho vyložiť nemožno. Platí pre každé
+  vyloženie do línie: bežné, ďalšiu kartu ťahu po Vypiť (§13, Nástroj smie za kartu
+  vyloženú v tom istom ťahu), Záverečnú aj odpoveď na NA EX. Za Živnostníka ho priložiť
+  smieš (leží za ním, nie pri lokalite). Do Dedičstva sa vykladá ako doteraz. Pravidlo je
+  len o vykladaní: Nástroj, ku ktorému sa lokalita dostane neskôr (karta medzi nimi odíde
+  z línie), ostáva ležať.
 - Nástroj sa do limitu vykladania **nezapočítava vôbec**, ale jeho vyloženie
   (do línie aj do Dedičstva) sa v striedaní počíta ako ťah (§6).
 

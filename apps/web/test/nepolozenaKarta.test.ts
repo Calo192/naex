@@ -31,6 +31,17 @@ describe("textNepolozenejKarty", () => {
     expect(t).not.toContain("+");
   });
 
+  it("Nástroj vedľa lokality (v10.2): povie dôvod karty a pošle do Dedičstva, nie „na stôl už nie“", () => {
+    const t = textNepolozenejKarty({
+      ciele: new Set(["dedicstvo"]),
+      plus: true,
+      dovodStola: null,
+      pas: true,
+      dovodKarty: "Vedľa lokality sa Nástroj vyložiť nedá — najprv tam musí ležať iná karta.",
+    });
+    expect(t).toBe("Vedľa lokality sa Nástroj vyložiť nedá — najprv tam musí ležať iná karta. Pustiť ju môžeš ešte na zvýraznené miesto mimo stola, inak pasuj (P).");
+  });
+
   it("pri odpovedi na NA EX pasovať neradí", () => {
     const t = textNepolozenejKarty({ ciele: new Set(), plus: false, dovodStola: "Sem žiadnu kartu z ruky vyložiť nesmieš.", pas: false });
     expect(t).not.toContain("pasuj");

@@ -198,6 +198,20 @@
       ]
     },
     {
+      "id": "12.nastroj.lokalita",
+      "paragraf": "12. Nástroje a Dedičstvo › Nástroj v línii",
+      "pravidlo": "Vedľa lokality sa Nástroj nevykladá (v10.2): na prázdnu stranu ani svoju, ani súperovu; za Živnostníka a do Dedičstva áno; neskôr pri lokalite ostáva ležať.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/naradie-pri-lokalite.test.ts › na prázdnu stranu sa nevyloží — ani na svoju, ani na súperovu; Dedičstvo áno",
+        "packages/core/test/naradie-pri-lokalite.test.ts › za Občanom na ktorejkoľvek strane áno",
+        "packages/core/test/naradie-pri-lokalite.test.ts › ťah s viacerými kartami: Nástroj smie až za kartu vyloženú v tom istom ťahu",
+        "packages/core/test/naradie-pri-lokalite.test.ts › Živnostník pri lokalite: Nástroj za neho áno (neleží už pri lokalite)",
+        "packages/core/test/naradie-pri-lokalite.test.ts › odpoveď na NA EX: Nástroj nie na prázdnu stranu",
+        "packages/core/test/naradie-pri-lokalite.test.ts › Nástroj, ku ktorému sa lokalita dostane neskôr, ostáva ležať"
+      ]
+    },
+    {
       "id": "12.nastroj.akcie",
       "paragraf": "12. Nástroje a Dedičstvo › Nástroj v línii",
       "pravidlo": "Akcie Nástroja na spoji dostane majiteľ karty, s ktorou Nástroj tvorí spoj.",
@@ -212,7 +226,7 @@
       "pravidlo": "Nástroj nesmie susediť s Nástrojom na konci strany; Pes sa nestretne s iným Zvieraťom vo svojej partii.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie"
+        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie ani s lokalitou (v10.2)"
       ]
     },
     {
@@ -299,7 +313,7 @@
       "pravidlo": "Nástroj sa do limitu vykladania nezapočítava.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie",
+        "packages/core/test/vykladanie.test.ts › Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie ani s lokalitou (v10.2)",
         "packages/core/test/pravidla-kolo.test.ts › §6/§11: priznanie neodovzdá ťah, vyloženie Nástroja do Dedičstva áno — a limit vykladania nemíňa"
       ]
     },

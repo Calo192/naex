@@ -2205,3 +2205,17 @@ Staré znenia:
 >
 > §17 Pokus o zajatie: po šenku za 1 cigaretu skús zajať staršieho, ktorý sa ťa bojí na stupni 3;
 > karta ide súperovi do ruky (boss), starší je v ohrození (§10)
+
+## v10.2 — Nástroj nie vedľa lokality (Michal 2026-11-01)
+
+Michal: „Vedľa lokality sa nedá umiestniť náradie.“ Spresnenia (Leader): na žiadnu stranu, pri
+každom vyložení do línie aj vo finále; Živnostník a Dedičstvo ako doteraz; Nástroj, ku ktorému sa
+lokalita dostane neskôr, ostáva ležať.
+
+Staré znenia:
+
+> §6 Línia: Nástroj tvorí spoj len s Občanom alebo Starešinom a nesmie susediť
+> s Nástrojom na konci strany, kam sa vykladá (§12). Kliatba do línie nepatrí.
+>
+> §12 Nástroj v línii: Nástroj nesmie susediť s Nástrojom na konci strany, kam sa vykladá
+> (susedstvo je fyzické). (Na prázdnu stranu, hneď k lokalite, sa Nástroj vyložiť smel.)

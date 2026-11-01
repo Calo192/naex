@@ -201,7 +201,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   posilnená Robota.
 - **Nástroj v línii** tvorí spoj len s Občanom/Starešinom a jeho akcie dostane
   **majiteľ karty, s ktorou tvorí spoj** (podstrčený Nástroj pracuje pre
-  súpera).
+  súpera). **Vedľa lokality sa Nástroj nevykladá (v10.2):** na prázdnu stranu (svoju ani
+  súperovu, ani vo finále) ho nevyložíš — ani ako Záverečnú či odpoveď na NA EX; v ťahu po Vypiť
+  smie za kartu, ktorú si práve vyložil. Do Dedičstva áno. Ostáva ležať, keď sa k lokalite dostane neskôr.
 - **NA EX na Občana alebo Starešinu v línii — svojho aj súperovho**, len na kartu
   s aspoň 1 aktívnou a aspoň 1 neaktívnou akciou (2026-10-23; súperova Záverečná vždy). Zruší
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.

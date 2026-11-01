@@ -103,6 +103,7 @@ import {
   nahladVylozenia,
   moznostiNaexVPohlade,
   zablokovaneStrany,
+  NASTROJ_PRI_LOKALITE,
   posunMarker,
   hadkaMozna,
   favourStarsieho,
@@ -2066,11 +2067,17 @@ export function HernaPlocha({
       const vykladal = z.odkial === "ruka" && !z.navrh && vykladam;
       if (vykladal && document.elementFromPoint(bod.x, bod.y)?.closest(".ruka") == null) {
         const miesta = [...moznostiMiesta.values()];
+        // Nástroj vedľa lokality (v10.2): povedz to o tejto karte, nie všeobecné „na stôl už nie“.
+        const bez = vylozenia.filter((x) => x.karta.uid !== z.karta.uid);
+        const priLokalite = reagujem
+          ? defOf(data, z.karta).tags.includes("Nástroj") && view.strany.some((st) => st.length === 0)
+          : (["vlastna", "superova"] as const).some((c) => planTahu([...bez, { karta: z.karta, ciel: c }]).chyba === NASTROJ_PRI_LOKALITE);
         const text = textNepolozenejKarty({
           ciele: cieleZdroja(z),
           plus: miesta.some((m) => m.dovod === null),
           dovodStola: miesta.find((m) => m.dovod !== null)?.dovod ?? null,
           pas: view.faza === "zhromazdenie",
+          dovodKarty: priLokalite ? NASTROJ_PRI_LOKALITE : null,
         });
         setChybaTahania({ text, ...bod });
       }
@@ -3175,6 +3182,11 @@ export function HernaPlocha({
       <span className="volba-miesta-text">
         <strong>{miestoVolby === "vlastna" ? "Na tvoju stranu" : "Na súperovu stranu"}:</strong> klikni na kartu v ruke. Vysunuté sa tu spoja
         (svietia akcie spoja), stlmené sa dajú položiť bez spoja.{" "}
+        {view.strany[miestoVolby === "vlastna" ? ja : super_].length === 0 &&
+          !vylozenia.some((x) => x.ciel === miestoVolby) &&
+          ruka.some((k) => !vylozenia.some((x) => x.karta.uid === k.uid) && defOf(data, k).tags.includes("Nástroj")) && (
+            <span className="tlmene">Nástroj sem nie — vedľa lokality sa nevykladá.</span>
+          )}{" "}
         {vylozenia.some((x) => x.ciel !== "priznanie") && view.faza === "zhromazdenie" && (
           <span className="nm-poldeci">ďalšia karta v ťahu: −1 plný poldeci</span>
         )}{" "}

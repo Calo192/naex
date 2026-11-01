@@ -32,9 +32,10 @@ describe("cieleVykladania", () => {
     expect(cieleVykladania(data, prazdne, 0, karta("milujuca_manzelka"), 1)).toEqual(["vlastna", "superova", "priznanie"]);
   });
 
-  it("Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie", () => {
-    expect(cieleVykladania(data, prazdne, 0, karta("noviny"), 0)).toEqual(["vlastna", "superova", "dedicstvo"]);
-    const partie = [[lezi("pijan"), lezi("vinko")], []] as const;
+  it("Nástroj limit nemíňa, ale nesusedí s Nástrojom na konci partie ani s lokalitou (v10.2)", () => {
+    expect(cieleVykladania(data, prazdne, 0, karta("noviny"), 0)).toEqual(["dedicstvo"]);
+    expect(cieleVykladania(data, [[lezi("pijan")], [lezi("pijan", 1)]], 0, karta("noviny"), 0)).toEqual(["vlastna", "superova", "dedicstvo"]);
+    const partie = [[lezi("pijan"), lezi("vinko")], [lezi("pijan", 1)]] as const;
     expect(cieleVykladania(data, partie, 0, karta("noviny"), 3)).toEqual(["superova", "dedicstvo"]);
   });
 

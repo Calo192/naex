@@ -219,7 +219,7 @@ export const VERZIA_PRAVIDIEL = "v10";
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v10.1";
+export const VERZIA_PRAVIDIEL_PRESNA = "v10.2";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-01";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
