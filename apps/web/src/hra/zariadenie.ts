@@ -1,6 +1,5 @@
-// Hra na mobile zatiaľ nie je podporovaná (Michal 2026-10-22): herný stôl
-// potrebuje šírku a myš. Blokuje sa len v klientovi, server nič nerozlišuje.
-// Tablet na šírku (≥ 1024 px) hrať smie; telefón aj na šírku nie (nízky).
+// Herný stôl potrebuje šírku a myš (Michal 2026-10-22) — úzke a dotykové displeje sa
+// blokujú len v klientovi, server nič nerozlišuje. Tablet na šírku (≥ 1024 px) hrať smie.
 // Stôl pre telefón na šírku (rozloženie „Pult“, mobil-sirka.css) skúšali najprv len admin a subadmin
 // (Michal 2026-10-31); od 2026-11-01 ho na Androide dostane každý od ranku Poldeci. Nováčik bez
 // výučby nie — výučba na telefóne nie je odladená a stôl bez nej nepochopí. Na telefóne sa hrá

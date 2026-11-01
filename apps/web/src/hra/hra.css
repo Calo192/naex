@@ -4471,7 +4471,7 @@ button.auto-hotovo-odkaz {
   filter: blur(3px);
 }
 
-/* Krok na staršom (Pohoršenie, prebytok, patronát): jantárový okraj plste. */
+/* Krok na staršom (hádka, Nakladačka, pokus o zajatie): jantárový okraj plste. */
 .stol-plst.krok-starsich {
   border-color: var(--akcent);
 }
@@ -5248,7 +5248,7 @@ button.auto-hotovo-odkaz {
   color: var(--lesk);
 }
 
-/* Prsteň = marker (strach, kam ťa Pohoršenie posúva, platíš od neho); bodka = priazeň tohto kola. */
+/* Prsteň = marker (strach); bodka = priazeň tohto kola. */
 .lsr-mk {
   position: absolute;
   inset: 50% auto auto 50%;

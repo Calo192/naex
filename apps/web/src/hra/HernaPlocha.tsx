@@ -493,8 +493,9 @@ export interface HernaPlochaProps {
    */
   readonly ukazStarsich?: boolean;
   /**
-   * Telefón na šírku, zatiaľ len pre správcov (Michal 2026-10-31): rozloženie „Pult“ (mobil-sirka.css) —
-   * hlavička webu preč, súper v riadku čipov hore, tvoj pult a ruka v doku dole, karta sa kladie ťukom.
+   * Telefón na šírku (Michal 2026-10-31; od 2026-11-01 hráč od ranku Poldeci): rozloženie „Pult“
+   * (mobil-sirka.css) — hlavička webu preč, hráči v úzkych stĺpcoch po stranách, v strede pokyn,
+   * plsť a dok s rukou; karta sa kladie ťukom.
    */
   readonly naSirku?: boolean;
 }
@@ -674,7 +675,7 @@ export function HernaPlocha({
         : vyskaOkna < NOTEBOOK
           ? 96
           : SIRKA_V_RUKE;
-  // Telefón na šírku: celá obrazovka patrí stolu — hlavička webu sa skryje (hra.css nevie o roli správcu,
+  // Telefón na šírku: celá obrazovka patrí stolu — hlavička webu sa skryje (hra.css nevie o ranku hráča,
   // preto trieda na <html>) a obsah siahne aj pod výrez displeja; okraje dorovná env(safe-area-inset-*).
   useEffect(() => {
     if (!naSirku) return;
@@ -1765,7 +1766,7 @@ export function HernaPlocha({
       if (e.type === "pitkaVysledok") setUcetPitky({ kolo: view.kolo, pitka: e.pitka, cirhozy: e.cirhozy, dlhy: e.dlhy, cigarety: e.cigarety });
       // Poslednú Pitku kola ukáže rekapitulácia bitky („z Pitiek kola“), nie vlastná vrstva (Michal 2026-10-26) —
       // okrem Pitky s NA EX či odpoveďou (Michal 2026-10-28): medzi ňou a rekapituláciou bitky býva
-      // Pohoršenie, prebytok aj Vízia, a hráč musí hneď vidieť, čo NA EX a odpoveď spravili.
+      // hádka, Nakladačka aj Vízia, a hráč musí hneď vidieť, čo NA EX a odpoveď spravili.
       if (e.type === "pitkaRekap") {
         const odpovede = odpovedePitky.current;
         odpovedePitky.current = [];
@@ -4912,7 +4913,7 @@ export function HernaPlocha({
       : polozkyHrozby.map((h) => ({ ...h, mini: h.zdroj === "hadka" || h.zdroj === "kliatby" ? h.mini : h.mini.replace(/ \(prebytok [^)]*\)$/, "").replace(/^(ty|súper) až/, "$1 NA EX až") }));
   // Odhad bitky len keď ho hráči ovplyvnia — v Zhromaždení, Pitke a bitke;
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
-  // Priazne, ktoré pôsobia priamo v bitke (tuhé, Viera, Pohoršenie, Robota), po hádke — nápoveda odhadu.
+  // Priazne, ktoré pôsobia priamo v bitke (tuhé, Viera, Absťáky, Robota), po hádke — nápoveda odhadu.
   const priazneOdhadu = (): PriazenVOdhade[] => {
     const kl = klebetyKola(view);
     const su = kratkeMeno(menoHraca(super_));

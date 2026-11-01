@@ -1,9 +1,10 @@
 /* ---- stôl pre telefón na šírku (Michal 2026-10-31, dizajn stol-landscape A „Pult“ + tabuľa z B) ----
- * Platí len s triedou .mobil-sirka na .hra (a .stol-na-sirku na <html>) — tú dá HernaPlocha len
- * správcovi na nízkom dotykovom displeji na šírku (zariadenie.ts). Počítač, notebook ani telefón
- * na výšku sa nemenia. Kostra (Michal 2026-10-31 po skúške na telefóne): hráči v úzkych zvislých
- * stĺpcoch po stranách (ty vľavo, súper vpravo — ako kraje línie), v strede celá výška pre pokyn,
- * plsť a dok (ruka · ťahy pod pravým palcom). Okraje výrezu dorovná env(safe-area-inset-*). */
+ * Platí len s triedou .mobil-sirka na .hra (a .stol-na-sirku na <html>) — tú dá HernaPlocha na telefóne
+ * hráčovi od ranku Poldeci (Michal 2026-11-01; predtým len správcovi), viď zariadenie.ts. Na výšku stôl
+ * prekryje výzva otočiť telefón; počítač, notebook ani tablet sa nemenia. Kostra (Michal 2026-10-31
+ * po skúške na telefóne): hráči v úzkych zvislých stĺpcoch po stranách (ty vľavo, súper vpravo — ako
+ * kraje línie), v strede celá výška pre pokyn, plsť a dok (ruka · ťahy pod pravým palcom). Okraje
+ * výrezu dorovná env(safe-area-inset-*). */
 
 /* Android Chrome inak text „zväčšuje“ podľa vlastného odhadu (font boosting) a stôl sa rozíde. */
 html.stol-na-sirku {
@@ -1315,7 +1316,7 @@ html.stol-na-sirku .okno-zdroja .medziobrazovka-okno > .tlacidlo-hlavne {
   justify-self: center;
 }
 
-/* ---- línia starších (Nakladačka, Pohoršenie, Povery): stĺpce aspoň 112 px, rad sa posúva ----
+/* ---- línia starších (hádka, Nakladačka, zajatie): stĺpce aspoň 112 px, rad sa posúva ----
  * Pri 8 starších na 600 px boli ciele 7–30 px (playtest mobilu 2026-10-31). */
 .hra.mobil-sirka:not(.stol-scroll) .stol-plst > .vrstva-starsich,
 .hra.mobil-sirka:not(.stol-scroll) .linia-obal.s-hranou .stol-plst > .vrstva-starsich {
