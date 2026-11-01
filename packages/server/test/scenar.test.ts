@@ -40,13 +40,11 @@ describe("scenár zajatia — len mimo produkcie", () => {
 describe("scenár zajatia — rozdanie", () => {
   const s0 = setupGame(data, 11);
 
-  it("prvý starší sa človeka bojí na stupni 3, druhý bota, tretí je na žltej človeka; cigarety navyše", () => {
+  it("prvý starší sa človeka bojí na stupni 3, druhý bota; obaja majú cigarety navyše", () => {
     const s = pouziScenar(s0, "zajatie", 0);
     expect(strachZ(s.starsi[0]!, 0)).toBe(3);
     expect(strachZ(s.starsi[1]!, 1)).toBe(3);
-    // Kapybara potrebuje staršieho mimo stredu, ktorý nie je v ohrození (inak by jadro partiu zaseklo).
-    expect(s.starsi[2]!.marker).toBe(2);
-    expect(s.starsi.slice(3).every((e) => e.marker === s0.starsi.find((x) => x.elderId === e.elderId)?.marker)).toBe(true);
+    expect(s.starsi.slice(2).every((e) => e.marker === s0.starsi.find((x) => x.elderId === e.elderId)?.marker)).toBe(true);
     expect(s.hraci[0].cigarety).toBeGreaterThan(s0.hraci[0].cigarety);
     expect(s.hraci[1].cigarety).toBeGreaterThan(s0.hraci[1].cigarety);
     expect(s.vazni).toEqual([]);

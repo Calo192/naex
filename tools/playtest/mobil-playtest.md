@@ -36,7 +36,7 @@ $M zaloz 2 --url http://localhost:8791 --web http://localhost:5176 [--displej 76
 Stupeň 3 (starší sa hráča bojí na červenej) príde v bežnej partii zriedka a neskoro. Na
 **lokálnom** serveri ho zapne premenná `NAEX_SCENAR` — každá nová partia proti botovi začne tak,
 že prvý starší sa bojí teba na stupni 3 (smieš ho skúsiť zajať), druhý sa bojí bota (pokus
-smie skúsiť bot), tretí je na tvojej žltej a obaja máte o 4 cigarety viac:
+smie skúsiť bot) a obaja máte o 4 cigarety viac:
 
 ```bash
 PORT=8790 NAEX_WEB_PORT=5176 NAEX_SCENAR=zajatie npm run dev          # tok zajatia

@@ -2708,6 +2708,12 @@ function nastupEfekt(
         events.push({ type: "log", text: "Kapybara: všetky markery sú v strede — nič sa nestane." });
         break;
       }
+      // Starší v ohrození sa nehýbe (§10) — keď sú mimo stredu len takí, voľba by nemala ani jednu
+      // možnosť a partia by sa zasekla (2026-11-01). Efekt prepadne.
+      if (!s.starsi.some((e) => e.marker !== MARKER_STRED && !vOhrozeni(s as GameState, e.elderId))) {
+        events.push({ type: "log", text: "Kapybara nemá koho posunúť — mimo stredu sú len starší v ohrození. Efekt prepadá." });
+        break;
+      }
       s.hasicVolby = [...(s.hasicVolby ?? []), { hrac: p, typ: "kapybara", uid: 0, potom: null }];
       events.push({ type: "log", text: `Kapybara: hráč ${p + 1} posunie marker jedného staršieho o 1 pole k stredu.` });
       break;

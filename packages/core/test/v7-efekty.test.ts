@@ -12,6 +12,8 @@ import {
   bitkaMody,
   evaluateLine,
   legalCommands,
+  mozeHrat,
+  naTahu,
   lineState,
   loadGameData,
   moznostiNaex,
@@ -232,6 +234,21 @@ describe("efekty v línii (v7)", () => {
     const pk = apply(data, { ...sk, starsi }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0).state;
     const volby = legalCommands(data, pk, 0);
     expect(volby).toEqual([{ type: "kapybara", elderId: starsi[0]!.elderId }]);
+  });
+
+  it("Kapybara bez možného cieľa (mimo stredu len starší v ohrození) prepadne — partia sa nezasekne (2026-11-01)", () => {
+    const kapy = inst("kapybara");
+    const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
+    const starsi = sk.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 0 : i === 1 ? 6 : 3) as 0 | 3 | 6 }));
+    const pokusy: GameState["pokusy"] = [{ elderId: starsi[1]!.elderId }, { elderId: starsi[0]!.elderId }];
+    const r = apply(data, { ...sk, starsi, pokusy }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0);
+    expect(r.state.hasicVolby ?? []).toEqual([]);
+    expect(r.state.starsi.map((e) => e.marker)).toEqual(starsi.map((e) => e.marker));
+    expect(r.events.some((e) => e.type === "log" && e.text.startsWith("Kapybara nemá koho posunúť"))).toBe(true);
+    // Hra ide ďalej: niekto má legálny ťah (pred opravou bola voľba bez možností a legalCommands prázdne).
+    const p = ([0, 1] as const).find((q) => mozeHrat(r.state, q)) ?? naTahu(r.state);
+    expect(p).not.toBeNull();
+    expect(legalCommands(data, r.state, p!).length).toBeGreaterThan(0);
   });
 
   it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)", () => {
