@@ -108,7 +108,7 @@ describe("e-mail v profile", () => {
     const b = await registruj(server.port);
     const r = await volaj("PATCH", "/profil", b.cookie, { email: "jozo@example.SK" });
     expect(r.status).toBe(409);
-    expect(String(r.data.chyba)).toContain("iný účet");
+    expect(String(r.data.chyba)).toContain("nedá použiť");
     expect(await emailZJa(b.cookie)).toBeNull();
     expect((await volaj("PATCH", "/profil", a.cookie, { email: "jozo@example.sk" })).status).toBe(200);
     expect(await emailZJa(a.cookie)).toBe("jozo@example.sk");

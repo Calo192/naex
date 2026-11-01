@@ -463,7 +463,7 @@ export class Ucty {
   nastavEmail(id: number, email: string | null): void {
     if (email !== null) {
       const iny = this.db.prepare("SELECT id FROM pouzivatelia WHERE email = ? COLLATE NOCASE AND id <> ?").get(email, id);
-      if (iny !== undefined) throw new ChybaVstupu("Tento e-mail už používa iný účet. Zadaj iný, alebo pole nechaj prázdne.", 409);
+      if (iny !== undefined) throw new ChybaVstupu("Tento e-mail sa nedá použiť. Zadaj iný, alebo pole nechaj prázdne.", 409);
     }
     this.db.prepare("UPDATE pouzivatelia SET email = ? WHERE id = ?").run(email, id);
   }
