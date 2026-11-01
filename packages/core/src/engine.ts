@@ -3680,7 +3680,8 @@ function pitieVPitke(s: MutState, p: PlayerId, n: number): void {
 const KSEFTY_KARIET: readonly string[] = ["stryko_z_ameriky"];
 const KSEFTY_LOKALIT: readonly string[] = ["zberny_dvor", "sklad", "obecny_urad", "predsedova_vila"];
 const SKLAD_CENA = 1;
-const VILA_CENA = 2;
+/** Cena Kšeftu Predsedovej vily — klient ju ukazuje na tlačidle. */
+export const VILA_CENA = 2;
 
 /** Kšeft použitý hráčom p v tejto Pitke? */
 function kseftPouzity(s: Pick<GameState, "pitkaStav">, p: PlayerId, uid: number): boolean {

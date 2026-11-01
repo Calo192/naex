@@ -135,6 +135,9 @@ import {
   hraVPitke,
   cakaSBzdochou,
   opponentOf,
+  vOhrozeni,
+  jeKartaBossa,
+  VILA_CENA,
 } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
@@ -195,7 +198,7 @@ import {
   type VyhladPitky,
 } from "./Panely.tsx";
 import { KseftVily } from "./KseftVily.tsx";
-import { CENA_VILY, moznostiVily } from "./volbaVily.ts";
+import { moznostiVily } from "./volbaVily.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
@@ -1094,16 +1097,15 @@ export function HernaPlocha({
   const mozemBrat = kolkoMozemBrat > 0;
   // Pokus o zajatie (v9): koho smiem skúsiť zajať — rovnaké podmienky ako v jadre (moznePokusy).
   const hJa = view.hraci[ja];
+  const bojaSaMaNaTrojke = view.starsi.filter((e) => pokusMozny(e, ja) && !vOhrozeni(view, e.elderId));
   const moznePokusyJa =
-    view.faza === "draft" && draft?.krok === "zajatie" && somNaTahu && view.pokusy[ja] === null && hJa.cigarety >= KONSTANTY.CENA_POKUSU
-      ? view.starsi.filter((e) => pokusMozny(e, ja) && !view.pokusy.some((x) => x?.elderId === e.elderId))
-      : [];
+    view.faza === "draft" && draft?.krok === "zajatie" && somNaTahu && view.pokusy[ja] === null && hJa.cigarety >= KONSTANTY.CENA_POKUSU ? bojaSaMaNaTrojke : [];
   /**
    * Starší, ktorých po šenku smiem skúsiť zajať (bojí sa ma na stupni 3). Pri braní zo šenku to pokyn
    * pripomenie: bez cigarety jadro pokus potichu preskočí (len riadok v logu) — v partiách botov
    * bola podmienka 40× na 20 partií, cigaretu na pokus malo po šenku len 5× (2026-11-01).
    */
-  const zajatieCaka = view.faza === "draft" && draft?.krok === "beranie" && view.pokusy[ja] === null ? view.starsi.filter((e) => pokusMozny(e, ja) && !view.pokusy.some((x) => x?.elderId === e.elderId)) : [];
+  const zajatieCaka = view.faza === "draft" && draft?.krok === "beranie" && view.pokusy[ja] === null ? bojaSaMaNaTrojke : [];
   const pripomienkaZajatia = (zostane: number): ReactNode => {
     if (zajatieCaka.length === 0) return null;
     const kto = zajatieCaka.map((e) => menoKarty(e.karta.defId)).join(" a ");
@@ -1115,9 +1117,6 @@ export function HernaPlocha({
       </strong>
     );
   };
-  /** Karta staršieho, o ktorého zajatie sa hrá (boss) — v ruke a v línii nesie štítok. */
-  const jeKartaZajatia = (uid: number): boolean =>
-    view.pokusy.some((x) => x !== null && view.starsi.find((e) => e.elderId === x.elderId)?.karta.uid === uid);
   const limitTeraz = limitZhromazdenia(view, ja);
   const zoSenkuLimit = kolkoMozemBrat;
   // Keď hráč má vyberať kartu zo šenku (Starosta) či Vešticu, vrstva sa otvorí
@@ -4734,12 +4733,12 @@ export function HernaPlocha({
   const zamokStarsieho = (e: ElderState): string | undefined => {
     if (!krokMoj || krokStarsich === null) return undefined;
     if (krokStarsich.typ === "zajatie") {
-      if (view.pokusy.some((x) => x?.elderId === e.elderId)) return "v ohrození";
+      if (vOhrozeni(view, e.elderId)) return "v ohrození";
       if (!pokusMozny(e, ja)) return "nebojí sa ťa na stupni 3";
       return hJa.cigarety < KONSTANTY.CENA_POKUSU ? "nemáš cigaretu" : "nedá sa zajať";
     }
     if (krokStarsich.typ === "hadka" && !hadkaMozna(e, ja, klebetyKola(view))) return "priazeň už tvoja v sile 3";
-    if (krokStarsich.typ === "prebytok" && view.pokusy.some((x) => x?.elderId === e.elderId)) return "v ohrození — nehýbe sa";
+    if (krokStarsich.typ === "prebytok" && vOhrozeni(view, e.elderId)) return "v ohrození — nehýbe sa";
     // Hádka a Nakladačka: kto už nič nedostane, je tlmený na karte (rozdelenieStarsieho).
     return undefined;
   };
@@ -6490,7 +6489,7 @@ export function HernaPlocha({
                   </span>
                   {nova &&<span className="nova-stitok">zo šenku</span>}
                   {dobrata && <span className="nova-stitok">dobraná</span>}
-                  {jeKartaZajatia(k.uid) && <span className="nova-stitok">starší · pokus o zajatie</span>}
+                  {jeKartaBossa(view, k.uid) && <span className="nova-stitok">starší · pokus o zajatie</span>}
                   {pary.length > 0 && <span className="spoj-stitok">{pary.length === 1 ? "1 spoj" : `${pary.length} spoje`}</span>}
                 </>
               );
@@ -6820,8 +6819,8 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
       const dlh = h.dlhy > 0;
       out.push(pecatNakupu({ kluc: "kseftUrad", nazov: "Obecný úrad", cena: c, dovod: !dlh ? "Nemáš priznaný Dlh." : h.cigarety < c ? `Úrad chce ${cigariet(c)}.` : null, tip: "Kšeft: za 3 cigarety presunieš 1 svoj priznaný Dlh medzi súperove priznané.", akcia: () => cmd({ type: "kseft", uid }) }));
     }
-    if (lok.defId === "predsedova_vila" && h.cigarety >= CENA_VILY) {
-      out.push(<KseftVily key="kseftVila" uid={uid} moznosti={moznostiVily(view)} meno={meno} cmd={cmd} napis={<Vymena das={<CenaCigariet n={CENA_VILY} />} dostanes="posun" />} />);
+    if (lok.defId === "predsedova_vila" && h.cigarety >= VILA_CENA) {
+      out.push(<KseftVily key="kseftVila" uid={uid} moznosti={moznostiVily(view)} meno={meno} cmd={cmd} napis={<Vymena das={<CenaCigariet n={VILA_CENA} />} dostanes="posun" />} />);
     }
   }
   return <>{out}</>;
