@@ -431,5 +431,292 @@
     "merat": "Pre každú z 29 kariet: hodnota karty pre bota v 1 na 1 vs. 2 na 2 pri A, B, C (výhry s kartou v línii); koľko negatívnych účinkov skončí na slabšom hráčovi pri B.",
     "temy": ["hra-2-na-2"],
     "pridane": "2026-10-28"
+  },
+  {
+    "id": "ucinok-pri-pade-s-rozpoctom",
+    "nazov": "Účinok pri páde s rozpočtom (deathrattle, Last Breath, Destroyed:)",
+    "problem": "Podrazený starší spustí Má dosť, ktorý pomáha majiteľovi alebo škodí súperovi. Keď je Má dosť silnejší ako živý starší, hráč chce vlastného staršieho stratiť a útočník ho nechce podraziť. Keď je slabý, pád je len strata a snowball rastie.",
+    "ako": "1. Jednotka nesie účinok, ktorý sa spustí pri jej smrti (tesne predtým, ako odíde zo hry). 2. Hodnota účinku je zarátaná v cene jednotky: karty s účinkom pri smrti majú slabšie základné hodnoty alebo nevýhodu. 3. Súper účinok vidí vopred a rozhoduje, kedy a či vôbec jednotku zabiť. 4. Hra má vzácnu a drahú odpoveď, ktorá zabije bez spustenia účinku (Silence, Obliterate). 5. Zabiť vlastnú jednotku sa dá len cez samostatnú a platenú cestu (sacrifice outlet), nie ako vedľajší účinok.",
+    "hry": [
+      {
+        "nazov": "Hearthstone — Deathrattle",
+        "preco": "„Deathrattle is an extra effect that happens when a minion dies.“ Príručka radí, že niekedy je lepšie „simply not killing the Deathrattle minion“. Útočník teda rozhoduje, kedy zabiť a či vôbec. Najlepšia odpoveď je Silence, ktorá zruší aj deathrattle.",
+        "zdroj": "https://www.hearthstonetopdecks.com/guides/hearthstone-deathrattle-guide-keyword-explanation-card-list/"
+      },
+      {
+        "nazov": "Hearthstone — lacné umlčanie oslabené",
+        "preco": "Dizajnéri Blizzardu pri oslabení napísali, že deathrattly a Taunty, ktoré zneškodní 2-manová karta („hoot-hooting“, teda sova Ironbeak Owl — identifikácia karty z vlastných vedomostí), „isn't much fun“. Odpoveď na účinok pri smrti má byť drahá a vzácna, inak sa účinky pri smrti nedajú navrhovať.",
+        "zdroj": "https://www.pcgamer.com/playable-or-not-analysing-the-latest-hearthstone-nerfs-in-detail"
+      },
+      {
+        "nazov": "Legends of Runeterra — Last Breath",
+        "preco": "Účinok pri smrti „usually works in your favor“, preto „many cards with a Last Breath effect have downsides like below average stats“. Účinok je teda zaplatený v cene karty.",
+        "zdroj": "https://www.invenglobal.com/articles/9660/guide-what-is-last-breath-in-legends-of-runeterra"
+      },
+      {
+        "nazov": "Legends of Runeterra — Obliterate",
+        "preco": "Obliterate zničí jednotku „without triggering their Last Breath effects“. Vzácna odpoveď dáva súperovi spôsob, ako silný účinok pri smrti obísť.",
+        "zdroj": "https://outof.games/realms/legends-of-runeterra/cards/keywords/last-breath"
+      },
+      {
+        "nazov": "KeyForge — Destroyed:",
+        "preco": "Účinok „resolves automatically when the card is destroyed, immediately before it leaves play“, takže ešte vidí svojich susedov v línii (neighbors, flanks). Preto sa účinky pri zničení môžu viazať na susedov (napr. Duma the Martyr lieči oboch susedov — podľa výsledku vyhľadávania na archonarcana.com, stránku som priamo neotvoril).",
+        "zdroj": "https://ultraboardgames.com/keyforge/glossary.php"
+      },
+      {
+        "nazov": "Magic: The Gathering — Aristocrats",
+        "preco": "Balíček stavaný na smrti vlastných tvorov potrebuje tri veci: „free sacrifice outlet“, odmenu za smrť a krmivo. Keď niektorá chýba, stratégia sa zasekne. Poučenie pre dizajn: keď hra ponúka lacnú vlastnú obetu aj odmenu za smrť, smrť prestane byť stratou.",
+        "zdroj": "https://gamertagmythras.com/blog/magic-the-gathering/best-mtg-aristocrats-sacrifice-commander"
+      },
+      {
+        "nazov": "Super Auto Pets — Faint",
+        "preco": "Tím stojí v rade a zviera s Faint spustí účinok pri páde (napr. Hedgehog: 2 poškodenia všetkým, verzia 0.1.0). Návody radia dávať také zvieratá dopredu, aby padli skoro. Poradie radu teda rozhoduje, kedy sa účinok spustí.",
+        "zdroj": "https://gamepretty.com/super-auto-pets-all-pets-and-food-v0-1-0/"
+      }
+    ],
+    "kritika": "Ten, kto jednotku zabil, má zlý pocit, že súperovi pomohol. Keď je odpoveď lacná, účinky pri smrti strácajú zmysel. Blizzard preto lacné umlčanie oslabil (PC Gamer). Keď je účinok pri smrti silný, súper nechce zabíjať a hra sa ťahá (z vlastných vedomostí, neoverené). Ak sa účinok pri smrti používa ako dobiehanie, platí aj kritika dobiehania: „one player's Catch-up is another player's Stolen Win“ (League of Gamemakers).",
+    "prevod": "Má dosť = deathrattle staršieho. (1) Spustí sa, keď pečeň staršieho klesne na 0. Odporúčanie: vyhodnotiť až po všetkom poškodení bitky, všetky Má dosť naraz (najprv obranca, potom útočník), aby nevznikali reťaze. (2) Rozpočet: Má dosť má mať menšiu hodnotu, než akú starší dá živý za 1–2 kolá. Starší so silnými akciami v rade dostane slabší Má dosť a naopak. Útočník potom pri rozdeľovaní tuhého volí, koho podraziť prvého. (3) Posledný starší svoj Má dosť nikdy nespustí, lebo partia skončí. Útočník si preto na koniec nechá toho, koho Má dosť je najsilnejší (ako rada z Hearthstonu „not killing“). (4) Vlastná obeta: v NA EX! je takou cestou exekúcia vlastných Dlhov (Hazardy v rade a v línii). Odporúčanie: keď staršieho zrazí exekúcia, Má dosť sa nespustí („zložil sa sám, len odpadne“), alebo sa Má dosť dimenzuje tak, aby sa vlastný pád nikdy nevyplatil. (5) Odpoveď pre Vymyselníka: jedna vzácna karta, ktorá staršieho podrazí bez Má dosť („zložil sa potichu“). Karta staršieho: text Má dosť namiesto Kšeftu väzňa. Výučba: Má dosť sa vysvetlí až pri prvom páde.",
+    "rizika": "Ak Má dosť pomáha majiteľovi priveľmi, režim má zabudovaný rubber band, vedúci hráč nechce podrážať a partia sa predĺži. Trvalé účinky, ktoré rastú s počtom padlých starších, vedú k patu. Pre nováčika je to 8 rôznych účinkov a 4 súperove treba mať v hlave, preto treba stručný text na karte. Tón: Má dosť je silný satirický moment, preto jedna veta v hlase postavy.",
+    "merat": "(a) Úspešnosť hráča, ktorý prišiel o staršieho prvý (cieľ asi 35–45 %: pád má byť strata, nie katastrofa). (b) Pri každom staršom rozdiel úspešnosti, keď padne prvý a keď padne posledný. (c) Či bot pri voľnej voľbe niekedy pustí vlastného staršieho na smrť (Hazard v rade, bez liečenia) — malo by to byť takmer nikdy. (d) Koho boti podrážajú prvého; ak vždy toho istého, účinky nie sú vyvážené.",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "plosne-slabne-s-cielmi",
+    "nazov": "Plošné poškodenie slabne s počtom cieľov, cielené dorazí",
+    "problem": "Povera v režime Päta, Lakeť, Otočka uberie 1 každému stojacemu staršiemu súpera. Pri 4 stojacich je to 4 body, štyrikrát viac ako Rana. Treba vedieť, či plošné a cielené poškodenie ostanú v rovnováhe celú partiu a koľko potom stojí Viera ako štít.",
+    "ako": "1. Plošný účinok zasiahne všetkých nepriateľov a jeho hodnota je sila × počet cieľov. 2. Cielené poškodenie ide do jedného cieľa a dá sa sústrediť (focus fire). 3. Keď ciele odpadávajú, plošné slabne a cielené sa stáva relatívne silnejším. Hra tak sama prechádza od „rozbiť všetkých“ k „doraziť posledného“. 4. Štít proti plošnému účinku má hodnotu, ktorá sa násobí počtom chránených.",
+    "hry": [
+      {
+        "nazov": "Lanchesterove zákony (matematika boja)",
+        "preco": "Pri mierenej paľbe je sila armády úmerná druhej mocnine počtu jednotiek. Každá stratená jednotka znižuje paľbu, preto sa prevaha zväčšuje (snowball). Diskusia hráčov RTS poznamenáva, že tento model „doesn't really model … area of effect attack“: plošné poškodenie snowball narúša. Znenie zákona je z vlastných vedomostí, pozri Wikipédiu.",
+        "zdroj": "https://en.wikipedia.org/wiki/Lanchester%27s_laws"
+      },
+      {
+        "nazov": "Lanchester v hrách (Age of Empires fórum)",
+        "preco": "Hráči používajú square law na pochopenie, prečo sa sústredená paľba vyplatí v malých stretoch, a pripomínajú, že plošné útoky aj úvodný náraz model mení.",
+        "zdroj": "https://forums.ageofempires.com/t/understanding-lanchesters-square-law-to-improve-the-militia-line/262191?page=2"
+      },
+      {
+        "nazov": "Slay the Spire — Corpse Explosion",
+        "preco": "Jed na jedného nepriateľa a keď zomrie, poškodenie rovné jeho max HP všetkým nepriateľom. Cielené sa premení na plošné a sila závisí od toho, koľko nepriateľov ešte stojí.",
+        "zdroj": "https://slaythespire.wiki.gg/wiki/Corpse_Explosion"
+      },
+      {
+        "nazov": "Hearthstone — plošné kúzla (board clear)",
+        "preco": "Plošné kúzla trestajú hráča, ktorý vyložil veľa slabých minionov, a nútia ho vykladať opatrne. Hodnota kúzla rastie s počtom cieľov (z vlastných vedomostí, neoverené).",
+        "zdroj": "z vlastných vedomostí, neoverené"
+      }
+    ],
+    "kritika": "Keď plošné poškodenie nezávisí od počtu cieľov alebo je lacné, vytlačí cielené a hra sa zúži na jednu stratégiu (z vlastných vedomostí, neoverené). Keď cielené poškodenie dorazí oslabeného hneď, vzniká snowball podľa Lanchestera.",
+    "prevod": "Povera uberie 1 každému stojacemu staršiemu súpera, podrazeným nie. Povera má teda podľa počtu stojacich hodnotu 4/3/2/1, a to je prirodzená brzda: kto podrazil dvoch, má Povery polovičné, zaostávajúci plné. Viera: odporúčanie ako v hádke v10 (§9.1). Najprv ruší Povery 1 : 1, takže jedna Viera ušetrí 1 pečeň každému chránenému, teda až 4. Až zvyšok Viery tlmí súperovo tuhé z celkového súčtu pred rozdelením, nie zvlášť pri každom staršom. Horoskop (Povery sila 2) dá v tomto režime −2 každému, teda 8 pečene za jednu akciu pri 4 stojacich, preto ho treba pre režim prečíslovať. Tuhé rozdeľuje útočník voľne, čo je focus fire. Karty sa nemenia, stôl ukáže pri rade „Povery −N každému“. Výučba: „Povera je krupobitie na celý rad, Pecka je facka jednému.“",
+    "rizika": "Mierka: v sade je 25–28 Povier (PRAVIDLA §9.1), plošné môže zatieniť tuhé. Rad s Poštárkou a Vychovávateľkou má 2–3 Povery (výpočet z mocku: priemer 1,16, najviac 3). Viera má štvornásobnú cenu, takže Farár a Veterinár sa v drafte nadhodnotia. Pre nováčika je pravidlo jednoduché.",
+    "merat": "Podiel poškodenia podľa kanála (tuhé / Povery / jed / exekúcia) za partiu a podľa počtu stojacich starších. Úspešnosť tímov s 2 a viac Poverami v rade. Či existuje dominantná stratégia „len Povery“. Úspešnosť s Horoskopom v Dedičstve.",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "jed-s-poklesom",
+    "nazov": "Jed, ktorý slabne o 1 a dá sa vrstviť (poison)",
+    "problem": "Pohoršenie je v režime jed. Na konci bitky uberie toľko pečene, koľko je jedu, potom jed klesne o 1, a nový jed sa pripočíta. Treba vedieť, aký je silný, čo s jedom na padnutom staršom a ako sa má k Viere a liečeniu.",
+    "ako": "1. Hráč pridá na cieľ N jedu. 2. Na začiatku alebo na konci ťahu cieľ stratí toľko životov, koľko má jedu, a jed klesne o 1. 3. Ďalší jed sa pripočíta. 4. Jed obchádza štít (Block). 5. Spolu dá N jedu N + (N−1) + … + 1 = N(N+1)/2, takže sústredený jed rastie rýchlejšie ako lineárne.",
+    "hry": [
+      {
+        "nazov": "Slay the Spire — Poison",
+        "preco": "Na začiatku ťahu nepriateľa jed „deals HP loss equal to its current Poison stacks, then reduces those stacks by 1“ a obchádza Block. Catalyst jed zdvojnásobí. Relikvia The Specimen prenesie jed z porazeného nepriateľa na ďalšieho, takže jed nevyjde nazmar.",
+        "zdroj": "https://slaythespire.wiki.gg/wiki/Poison"
+      },
+      {
+        "nazov": "Slay the Spire — Corpse Explosion",
+        "preco": "Kombinácia jedu a účinku pri smrti: otrávený nepriateľ pri smrti poškodí všetkých. Jed na jedného je príprava na plošný úder.",
+        "zdroj": "https://slaythespire.wiki.gg/wiki/Corpse_Explosion"
+      },
+      {
+        "nazov": "Hearthstone — Fatigue (rovnaký trojuholník)",
+        "preco": "Fatigue dáva 1, 2, 3… poškodenia a súčet je (N)(N+1)/2. Rovnaký trojuholník ako jed s poklesom: krok o 1 dáva v súčte kvadratický rast.",
+        "zdroj": "https://hearthstone.wiki.gg/wiki/Fatigue"
+      }
+    ],
+    "kritika": "Jed je pomalý: prvé kolá skoro nič, potom veľa naraz. V krátkych súbojoch sa nestihne prejaviť, v dlhých dominuje (z vlastných vedomostí, neoverené). Jed na cieli, ktorý zomrie, vyjde nazmar, preto existuje The Specimen.",
+    "prevod": "Pohoršenie = jed na staršieho podľa voľby toho, kto ho dal. Na konci bitky uberie toľko pečene, koľko je jedu, potom jed −1. Príklad: 2 Pohoršenia každé kolo na toho istého staršieho dajú jed 2, 3, 4, 5… a za 4 kolá 14 pečene, proti čomu Viera nepomáha. Je to prirodzený liek na pato. Prevody: (a) „Klebeta ide ďalej“: keď otrávený starší padne a jed mu ostane, zvyšok jedu prejde na jeho stojaceho suseda v rade (vyberie ten, kto jed dal). Bez suseda jed prepadne, lebo cieľ zmizol, nie je to strop zdroja. Susedstvo v rade tak dostane aj obrannú stránku. (b) Jed blokuje liečenie (mechanika protiliecenie). Stôl: odznak jedu so šípkou poklesu. Výučba: „Pohoršenie je klebeta: bolí, kým sa nezabudne.“",
+    "rizika": "Sústredený jed rastie kvadraticky, takže hra sa môže zúžiť na „všetko Pohoršenie na jedného“ (aj tak je to prirodzený focus fire). Evidencia: pri každom staršom treba sledovať číslo jedu, stôl ho musí ukázať. Telefón (Pohoršenia nemožno zrušiť) jed ešte zosilní. Tón: klebeta ako jed sedí výborne.",
+    "merat": "Podiel jedu na celkovom poškodení. Za koľko kôl jed zabije staršieho pri 1, 2 a 3 Pohoršeniach za kolo. Dĺžka partie s prenosom jedu a bez neho.",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "protiliecenie",
+    "nazov": "Liečenie s odpoveďou: otrávený sa nehojí (anti-heal)",
+    "problem": "Robota v režime lieči jedného staršieho o svoju hodnotu. Keď sa dá liečiť a poškodenie je malé, partia sa zasekne (heal stall). Hra bez remízy a bez limitu kôl to nesmie dopustiť.",
+    "ako": "1. Liečenie vracia životy. 2. Súper má k dispozícii stav (debuff), ktorý liečenie cieľa zníži alebo zruší. 3. Hráč pri liečení volí, či lieči, alebo najprv odstráni debuff. 4. Debuff vzniká z útoku, nie je to karta navyše.",
+    "hry": [
+      {
+        "nazov": "League of Legends — Grievous Wounds",
+        "preco": "Debuff zníži prijaté liečenie (40 % podľa oficiálnej wiki, číslo sa s patchmi menilo). Je to hlavná odpoveď na postavy s veľkým liečením.",
+        "zdroj": "https://wiki.leagueoflegends.com/en-us/Grievous_Wounds"
+      },
+      {
+        "nazov": "League of Legends — Riot o liečení (patch 11.18)",
+        "preco": "Po prestavbe predmetov pribudlo liečenia a Grievous Wounds sa stal „one of the most potent counters“. Vedúci dizajnér priznal, že systém nie je „in an optimal state“: rovnováha liečenia a protiliečenia je ťažká.",
+        "zdroj": "https://www.sportskeeda.com/esports/league-legends-patch-11-18-soraka-dr-mundo-buffs-will-look-optimize-grevious-wounds-mechanic"
+      },
+      {
+        "nazov": "Slay the Spire — jed obchádza Block",
+        "preco": "Obrana (Block) nezastaví všetko. Jed ju obíde, takže obranca nemá jednu univerzálnu odpoveď a hromadenie obrany nevedie k patu.",
+        "zdroj": "https://slaythespire.wiki.gg/wiki/Poison"
+      }
+    ],
+    "kritika": "Protiliečenie, ktoré musíš mať, inak prehráš, je daň, nie rozhodnutie. Hráči LoL sa sťažujú na liečenie aj na protiliečenie (earlygame.com). Plošné „liečenie nefunguje“ zabije postavy, ktoré stoja na liečení.",
+    "prevod": "„Kto má jed, nehojí sa“: Robota na staršom s jedom najprv zníži jed o svoju hodnotu, až zvyšok vylieči pečeň. Hráč volí, či vylieči zdravšieho staršieho naplno, alebo zmyje jed otrávenému. Liečenie nad maximum pečene: odporúčanie nie, lebo maximum je vlastnosť staršieho, nie strop zdroja. Ak Michal chce liečenie bez maxima, musí mať prebytok zmysel. Oživenie podrazeného: nie, partia musí smerovať ku koncu. Karty sa nemenia, vo výučbe stačí jedna veta pri Robote.",
+    "rizika": "Robota v režime lieči namiesto pálenia Dlhov, takže Dlhy sa môžu hromadiť a exekúcia zrazí všetkých starších naraz. To pôsobí proti patu, ale môže to byť príliš prudké. Robota je na staršom len u Autobusára, väčšina Robôt je na kartách.",
+    "merat": "Počet partií, kde súčet pečene oboch neklesne 3 kolá po sebe (pato). Priemerné liečenie za kolo oproti poškodeniu. Dĺžka partie s pravidlom a bez neho.",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "eskalacia-fajront",
+    "nazov": "Eskalácia bez stropu: rastúce poškodenie, ktoré partiu dovedie ku koncu (Fatigue, Fajront)",
+    "problem": "Režim nemá ligu ani finále, lokality sú donekonečna a remíza neexistuje. Hra musí zaručiť koniec bez umelého limitu kôl.",
+    "ako": "1. Od určitej chvíle (prázdny balíček, kolo N) vzniká poškodenie, ktoré nespôsobila žiadna karta. 2. Pri každom ďalšom výskyte rastie o 1 (1, 2, 3…). 3. Zasiahne oboch rovnako, takže výhodu má ten, kto má viac životov alebo lepšie hospodári. 4. Súčet je N(N+1)/2: koniec príde rýchlo, ale nie skokom.",
+    "hry": [
+      {
+        "nazov": "Hearthstone — Fatigue",
+        "preco": "Fatigue dáva 1 poškodenie a 1 navyše za každý predošlý zásah. Podľa wiki „limits game length“. Pôvodne bol prázdny balíček okamžitou prehrou. Keď tak Jeff Kaplan prehral tesne pred výhrou, tím zaviedol rastúce poškodenie, aby koniec nebol šok a každé rozhodnutie ostalo dôležité.",
+        "zdroj": "https://hearthstone.wiki.gg/wiki/Fatigue"
+      },
+      {
+        "nazov": "Hearthstone — Fatigue a Jeff Kaplan",
+        "preco": "Rozhovor o vzniku: poškodenie „ratchets up“ pri každom ťahaní z prázdneho balíčka namiesto okamžitej prehry.",
+        "zdroj": "https://pcgamer.com/hearthstone-got-its-fatigue-mechanic-thanks-to-jeff-kaplan"
+      },
+      {
+        "nazov": "Hearthstone Battlegrounds",
+        "preco": "Porazený stratí toľko životov, aká je úroveň krčmy víťaza plus úrovne jeho preživších minionov. Na začiatku 2–5, neskôr aj 20+. Poškodenie rastie so silou tabúľ, takže partia sa sama zrýchľuje.",
+        "zdroj": "https://www.shacknews.com/article/114803/how-to-play-hearthstone-battlegrounds"
+      },
+      {
+        "nazov": "Super Auto Pets — konečné životy",
+        "preco": "Versus: 6 životov, prehra −1, remíza nič; Arena končí po 10 výhrach. Dĺžku tu drží konečné počítadlo, nie rastúce poškodenie. Je to opačné riešenie, ktoré v NA EX! nahrádza pečeň starších.",
+        "zdroj": "https://superautopets.wiki.gg/wiki/The_Basics"
+      }
+    ],
+    "kritika": "Eskalácia, ktorá príde priskoro, rozhoduje namiesto hráčov (náhla smrť). Keď príde prineskoro, hráči hrajú na hodiny. V Hearthstone ju stratégia Mill využíva ako zbraň (wiki Mill), takže eskalácia sa môže stať cieľom stratégie.",
+    "prevod": "„Fajront“: od kola K (návrh K = 7, zmerať) stratí na konci bitky každý stojaci starší oboch hráčov 1, potom 2, 3… pečene. Viera ani Robota proti tomu nepomáhajú, lebo je to kocovina, nie úder. Nie je to limit zdroja ani kôl, len rastúci tlak. Alternatíva B: od kola K sa z trojice lokalít vyradí úroveň 1 a ponúkne sa 2/3/4 (pinnacle). Viac Pitiek a akcií dá viac poškodenia a „vždy 3 rôzne úrovne“ ostane. Stôl ukáže počítadlo „do fajrontu X kôl“. Výučba: „O polnoci krčmárka zhasína — kto ešte stojí, pije na vlastné riziko.“",
+    "rizika": "Rovnaké poškodenie obom zvýhodní toho, kto má viac pečene (vedúceho), a pôsobí proti dobiehaniu. Mierni to, že Fajront zasiahne len stojacich, takže zaostávajúci s menším počtom stojacich stratí menej. Tón je výborný, zložitosť nízka.",
+    "merat": "Rozdelenie dĺžky partie bez Fajrontu (medián, 90. a 99. percentil). K zvoliť tak, aby Fajront nastal najviac v 20 % partií. Úspešnosť hráča, ktorý pri začiatku Fajrontu vedie v pečeni.",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "fer-draft-unikatnych",
+    "nazov": "Férový draft unikátnych postáv (had, Thue–Morse, opačné poradie, rozdeľ a vyber)",
+    "problem": "8 unikátnych starších sa delí 4 a 4 hadovito (A B B A A B B A). Výber rozhoduje o sile radu: podľa výpočtu z mocku dá najlepšia štvorica 16 tuhého z radu, najhoršia 6. Prvý výber môže byť priveľmi cenný a 8. výber je vynútený.",
+    "ako": "Had: A B B A A B B A. Thue–Morse: A B B A B A A B (druhá štvorica je zrkadlom prvej). Opačné poradie: kto ide v hre neskôr, vyberá frakciu prvý (Root). Rozdeľ a vyber: jeden rozdelí ponuku na dve kôpky, druhý si jednu vyberie (Hanamikoji). Kompenzácia: druhý v drafte začína partiu výhodnejšou rolou.",
+    "hry": [
+      {
+        "nazov": "Thue–Morse (férové delenie)",
+        "preco": "Obyčajné striedanie zvýhodňuje prvého. Poradie ABBA BAAB to vyrovnáva lepšie. Podľa J. D. Cooka nie je dokonalé, keď je jeden kus cennejší ako všetky ostatné spolu.",
+        "zdroj": "https://www.johndcook.com/blog/?p=22897"
+      },
+      {
+        "nazov": "Thue–Morse — Wikipédia",
+        "preco": "Postupnosť sa uvádza ako „fair share sequence“ na striedanie výberov (Palacios-Huerta, Brams a Taylor).",
+        "zdroj": "https://en.wikipedia.org/wiki/Thue%E2%80%93Morse_sequence"
+      },
+      {
+        "nazov": "Root — Advanced Setup",
+        "preco": "Frakcie sa vyberajú od posledného hráča v poradí ťahov proti smeru hodín. Výhoda frakcie sa vyrovnáva poradím ťahov.",
+        "zdroj": "https://www.therootdatabase.com/law/advanced-setup/en/"
+      },
+      {
+        "nazov": "Hanamikoji (2 hráči)",
+        "preco": "Competition: vyložíš 4 karty v dvoch pároch a súper si vezme jeden pár. Gift: 3 karty, súper si vezme jednu. Rozdeľ a vyber je pre dvoch férové, lebo kto delí, nevie, čo mu ostane.",
+        "zdroj": "https://rulespal.com/hanamikoji/rulebook"
+      },
+      {
+        "nazov": "Twilight Struggle — dražba o stranu",
+        "preco": "Na turnajoch sa o stranu dražia body vplyvu (z vlastných vedomostí, neoverené).",
+        "zdroj": "z vlastných vedomostí, neoverené"
+      }
+    ],
+    "kritika": "Had pri ôsmich kusoch má vynútený posledný výber a láka na hate-draft (vezmem ti doplnok). Thue–Morse sa ťažko vysvetľuje. Rozdeľ a vyber pri 8 postavách vedie k dlhému premýšľaniu a delič musí poznať hodnotu všetkých. Dražba pridá počty hneď na začiatok.",
+    "prevod": "(1) Ponechať had, ale druhý v drafte (B) je v 1. kole obranca: volí lokalitu a berie zo šenku prvý (navrhol to už mock). (2) Ak boti ukážu, že prvý v drafte vyhráva viac ako 55 %, prejsť na Thue–Morse ABBABAAB (A berie 1., 4., 6. a 7., B 2., 3., 5. a 8.). Súčet poradí 18 : 18 má aj had, Thue–Morse vyrovná aj súčet druhých mocnín (102 : 102, had 106 : 98). (3) Pre pokročilých „Krčmárka rozlieva“: jeden rozdelí 8 starších na dve štvorice, druhý si vyberie, a kto delil, je v 1. kole obranca. Typy hrán (akcie vľavo hore alebo vľavo dole) tvoria synergiu: starší rôznych typov sa spoja na 3 miestach, rovnakého typu na 2. Draft preto má synergiu aj hate-draft. Výučba: draft až v druhej partii, prvá partia s pevnými štvoricami.",
+    "rizika": "Pri pevných 8 starších sa draft časom vyrieši (vždy najprv Veterinár). Výpočet z mocku: so Veterinárom dá rad v priemere 12,3 tuhého, s Vychovávateľkou 9,8 (Povery nerátam). Riešením je ladenie pečene a Má dosť, nie poradie draftu.",
+    "merat": "Úspešnosť podľa pozície v drafte (A/B), s kompenzáciou obrancu a bez nej. Ktorý starší ide u botov prvý (ak ten istý vo viac ako 50 % partií, starší nie sú vyvážení). Rozptyl úspešnosti štvoríc.",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "rad-s-poziciou-a-mrtvolou",
+    "nazov": "Rad s pozíciou: skryté preskladanie a padnutý, ktorý drží miesto",
+    "problem": "Rad 4 starších mimo línie sa spája susedmi a hráč ho po šenku preskladá naraz a skryto. Podrazený ostáva ako spojka. Kedy preskladanie prinesie rozhodnutie a kedy je to len hľadanie jedného najlepšieho poradia?",
+    "ako": "1. Jednotky stoja v rade a pozícia určuje, s kým sa spájajú, kto útočí a kto je zasiahnutý. 2. Medzi bojmi smie hráč rad preskladať a súper to nevidí; boj sa odohrá až potom. 3. Padnutá jednotka buď uvoľní miesto a rad sa zomkne (Super Auto Pets), alebo zanechá mŕtvolu, ktorá drží miesto (Darkest Dungeon). 4. Rozhodnutie vzniká len vtedy, keď sa najlepšie poradie mení s okolnosťami (súperov rad, lokalita, ruka).",
+    "hry": [
+      {
+        "nazov": "Super Auto Pets",
+        "preco": "V obchode smú hráči „rearrange their team to optimize positioning“. V boji útočí krajné zviera na krajné súperovo, padnuté zmizne a ďalšie postúpi. Boj sa odohrá bez zásahu hráča.",
+        "zdroj": "https://superautopets.wiki.gg/wiki/The_Basics"
+      },
+      {
+        "nazov": "Hearthstone Battlegrounds",
+        "preco": "Miniony útočia zľava doprava, takže pozícia je zručnosť („use this information to maximise the value of your minions“). Hráč rad preskladá počas náboru.",
+        "zdroj": "https://www.icy-veins.com/hearthstone/hearthstone-battlegrounds-strategy-tips"
+      },
+      {
+        "nazov": "Darkest Dungeon — mŕtvoly",
+        "preco": "Nepriateľ po smrti zanechá mŕtvolu, ktorá „occupy the combat position of the monster, temporarily preserving the original formations“, kým ju niekto neodstráni. Útoky na náhodný cieľ mŕtvoly preskakujú.",
+        "zdroj": "https://darkestdungeon.wiki.gg/wiki/Corpse"
+      },
+      {
+        "nazov": "Darkest Dungeon — pozícia a posun",
+        "preco": "Schopnosti hrdinov fungujú len z určitých pozícií. Rozhodenie (Shuffle) pokazí zostavu a posun späť stojí ťah. Pozícia tak má cenu.",
+        "zdroj": "https://darkestdungeon.wiki.gg/wiki/Move"
+      },
+      {
+        "nazov": "KeyForge — susedia a krídla",
+        "preco": "Susedia (neighbors) a krídla (flanks) sú pojmy línie. Účinok pri zničení sa vyhodnotí „immediately before it leaves play“, takže ešte vidí svojich susedov.",
+        "zdroj": "https://ultraboardgames.com/keyforge/glossary.php"
+      }
+    ],
+    "kritika": "Keď sa najlepšie poradie nemení, preskladanie je len kontrola a v každom kole prázdny ťah. Pri 24 možnostiach hrozí dlhé premýšľanie (z vlastných vedomostí, neoverené). Na fóre Battlegrounds sa hráči sťažujú na nečakané prehadzovanie poradia (us.forums.blizzard.com, téma „minion order swapping“).",
+    "prevod": "Výpočet z mocku (8 starších, akcie na hranách z mocku, rad 4, 24 poradí): rozdiel tuhého z radu medzi najlepším a najhorším poradím je v priemere 7 (pri ukážkovej štvorici súpera 5 až 13). Rad dá 12–18 aktívnych akcií. V poradí najlepšom pre tuhé má rad v priemere 1,46 Hazardu na Pitku, dá sa však poskladať aj na 0,40 za cenu tuhého. Keď lokalita sľubuje 3 Pitky, Hazard z radu sa ráta trikrát. Preskladanie je teda voľba „sila v bitke alebo dlhy v Pitkách“ a mení sa s úrovňou lokality, čo je dobre. Padnutý ako spojka (Darkest Dungeon): susedia na spoji s ním svoje akcie dostanú, takže padnutý v strede drží dva spoje, na kraji jeden. Po páde má preskladanie zmysel. Strata tuhého z radu s preskladaním: 10,7 (4 stoja) → 8,2 (3) → 5,2 (2). Návrh: ponechať voľné preskladanie naraz a skryto. Stôl ukáže pri zvolenom poradí súčty tuhé / Hazard / Poškodenie pečene, nielen tlačidlo „najlepšie“, ktoré by rozhodnutie zrušilo.",
+    "rizika": "Dlhé premýšľanie nad 24 poradiami. Tlačidlo „navrhni“ zruší rozhodnutie. Skryté preskladanie bez informácie o súperovom rade je hádanie, teda len polovičné rozhodnutie. Otáčanie (Michal zamietol) by počet možností zdvojnásobilo.",
+    "merat": "Ako často sa najlepšie poradie bota mení medzi kolami (pod 20 % je preskladanie šum). Priemerný zisk z preskladania (tuhé, Hazard). Čas ťahu ľudí pri prestavbe. Podiel tuhého z radu a z línie (ak má rad viac ako 60 %, Zhromaždenie stráca váhu).",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
+  },
+  {
+    "id": "brzda-v-strukture",
+    "nazov": "Dobiehanie zo štruktúry hry, nie darček zaostávajúcemu",
+    "problem": "Strata staršieho zníži silu radu, takže kto prvý podrazí, má viac akcií a snowball. Treba dobiehanie, ktoré nepôsobí ako ukradnutá výhra a nepredĺži partiu.",
+    "ako": "1. Výhoda vedúceho mu zároveň niečo berie (poradie, menej cieľov, drahšie suroviny). 2. Zaostávajúci nedostane darček, ale lepšiu pozíciu na rozhodnutie. 3. Dobiehanie je slabšie ako výhoda vedenia, vedenie má ostať výhodou.",
+    "hry": [
+      {
+        "nazov": "Power Grid (Friese, 2004)",
+        "preco": "Podľa článku „might be the most commonly cited game with significant catch-up mechanics“. Podrobnosť, že vedúci kupuje suroviny a stavia posledný, je z vlastných vedomostí, neoverené.",
+        "zdroj": "https://insideupgames.com/?p=12842"
+      },
+      {
+        "nazov": "League of Gamemakers — Should games have a catch-up mechanic?",
+        "preco": "Dobiehanie môže byť náplasť na hlbšiu chybu a „one player's Catch-up is another player's Stolen Win“. Odporúča radšej viac ciest k výhre a tlak na vedúceho vstavaný do pravidiel.",
+        "zdroj": "https://leagueofgamemakers.com/ask-the-league-should-games-have-a-catch-up-mechanic"
+      },
+      {
+        "nazov": "Portal Games — About catching up mechanisms",
+        "preco": "Snowball znamená, že niektorí sa pri stole bavia a iní nie. Zaostávajúci má mať možnosť prijať trest výmenou za skutočnú šancu.",
+        "zdroj": "https://portalgames.pl/en/?p=9155"
+      },
+      {
+        "nazov": "Colony — obhajoba vedúceho (Burt Yaroch)",
+        "preco": "„Runaway leader“ je podľa autora často nadávka pre veľmi meritokratické hry. Vedenie má byť odmenou, nie chybou.",
+        "zdroj": "https://brandonthegamedev.com/colony-letting-leaders-lead/"
+      }
+    ],
+    "kritika": "Priveľa bŕzd vedie k patu a dlhej partii, keď nikto nevie odskočiť. Dar zaostávajúcemu vyzerá ako almužna a víťaz má pocit, že mu výhru vzali (League of Gamemakers).",
+    "prevod": "Režim už má tri vstavané brzdy: (1) súperove Povery slabnú s počtom tvojich padlých (4 → 3 → 2), (2) padnutý ostáva ako spojka, takže zmiznú len jeho vlastné akcie, (3) útočník (porazený v bitke) vykladá prvý a odpovedá prvý (PRAVIDLA §4). Štvrtou je Má dosť, ak sedí rozpočet. Čísla z mocku: rad stratí 23 % tuhého po prvom páde a ďalších 37 % po druhom, takže po druhom páde snowball zosilnie. Návrh: nepridávať darčeky. Ak meranie ukáže snowball, posilniť štruktúru: víťaz bitky nedostane okrem roly obrancu nič navyše a Fajront zasiahne len stojacich (vedúci so 4 stojacimi stratí viac).",
+    "rizika": "Priveľa bŕzd vedie k patu, primálo k tomu, že partiu rozhodne prvý pád. Brzdy sa navzájom násobia, takže ich treba merať spolu, nie po jednej.",
+    "merat": "Úspešnosť hráča, ktorý prvý podrazil staršieho (cieľ najviac 65 %). Úspešnosť pri stave 4 : 2 stojacich. Počet zmien vedenia v súčte pečene za partiu.",
+    "temy": ["pata-laket-otocka"],
+    "pridane": "2026-11-01"
   }
 ]

@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Päta, Lakeť, Otočka — rozbor režimu (Študent)</title>
+<style>
+:root { --pozadie:#15120f; --plocha:#1f1a15; --plocha-2:#2a231c; --okraj:#43372c; --text:#f1e8d8; --tlmeny:#b8a993;
+  --akcent:#e9ad45; --dobre:#7fbf7a; --zle:#d8705f; --stred:#d9c04a;
+  --serif:Georgia,"Times New Roman",serif; --sans:system-ui,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,Consolas,monospace; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; color-scheme:light; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 var(--sans); }
+main { max-width:980px; margin:0 auto; padding:28px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+h1,h2,h3 { font-family:var(--serif); line-height:1.2; text-wrap:balance; }
+h1 { font-size:clamp(1.7rem,4.6vw,2.5rem); margin:0 0 8px; }
+h2 { font-size:1.4rem; margin:40px 0 14px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.08rem; margin:0 0 6px; }
+p, ul, ol { max-width:76ch; } p { margin:0 0 10px; } li { margin-bottom:6px; }
+a { color:var(--akcent); } :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.uvod, .pozn { color:var(--tlmeny); } .pozn { font-size:.9rem; }
+.skratka { background:var(--plocha); border:1px solid var(--akcent); border-radius:12px; padding:14px 18px; margin:18px 0; }
+.skratka h2 { margin:0 0 8px; border:0; padding:0; font-size:1.2rem; }
+.karty { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:12px; }
+.k { background:var(--plocha); border:1px solid var(--okraj); border-left:4px solid var(--okraj); border-radius:10px; padding:12px 14px; }
+.k.dobre { border-left-color:var(--dobre); } .k.zle { border-left-color:var(--zle); } .k.stred { border-left-color:var(--stred); }
+.k p { margin:0 0 6px; font-size:.95rem; } .k p:last-child { margin:0; }
+.znamka { display:inline-block; font-size:.76rem; border-radius:999px; padding:0 8px; border:1px solid currentColor; white-space:nowrap; vertical-align:2px; margin-left:4px; }
+.n { color:var(--dobre); } .s { color:var(--stred); } .v { color:var(--zle); }
+.navrh { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; margin:10px 0; }
+.navrh h3 { font-size:1.12rem; }
+.navrh dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 14px; margin:8px 0 0; font-size:.95rem; }
+.navrh dt { color:var(--tlmeny); } .navrh dd { margin:0; }
+.filtre { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; }
+button { appearance:none; font:inherit; font-size:.88rem; padding:6px 11px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); cursor:pointer; }
+button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:600; }
+.navrh[hidden] { display:none; }
+.kalk { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:14px 16px; }
+.ovl { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px 20px; margin-bottom:12px; }
+.ovl label { display:block; font-size:.9rem; color:var(--tlmeny); }
+.ovl input[type=range] { width:100%; accent-color:var(--akcent); }
+.ovl output { color:var(--text); font-weight:600; }
+.vysledok { font-size:1.15rem; margin:6px 0 10px; } .vysledok b { color:var(--akcent); font-size:1.5rem; }
+.tab-obal { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.9rem; }
+th, td { padding:6px 6px; text-align:left; vertical-align:top; border-bottom:1px solid var(--okraj); }
+thead th { border-bottom:2px solid var(--okraj); font-size:.84rem; color:var(--tlmeny); font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+.bar { display:inline-block; height:9px; background:var(--dobre); border-radius:3px; vertical-align:middle; }
+.bar.nizka { background:var(--zle); } .bar.stredna { background:var(--stred); }
+.zasady li { margin-bottom:9px; }
+.priklad { background:var(--plocha-2); border-radius:10px; padding:10px 14px; margin:8px 0; }
+.priklad q { font-style:italic; }
+code { font-family:var(--mono); font-size:.86em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.88rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="pozn"><a href="index.html">Knižnica mechaník</a> · Študent · 1. 11. 2026 · na žiadosť Michala (roadmapa #166) · podklady a zdroje: <a href="2026-11-01-pata-laket-otocka.html">rešerš 13 hier a 8 mechaník</a></p>
+<h1>Päta, Lakeť, Otočka: rozbor režimu</h1>
+<p class="uvod">Michal chcel názor: čo je na režime dobré, čo zlé a ktoré mechaniky by ho vylepšili. Vychádzam z mocku (<code>2721afb</code>), z rozhodnutí z 31. 10. a 1. 11. a z výpočtu nad akciami 8 starších v mocku (70 štvoríc × 24 poradí). Partie zatiaľ nikto nehral, takže čísla sú odhad a stratég ich musí overiť botmi.</p>
+
+<section class="skratka">
+<h2>V skratke</h2>
+<ul>
+<li><b>Jadro je dobré:</b> jeden jasný cieľ namiesto štyroch mien (špaky, strach, priazeň, väzni), pečeň ako životy a <i>Má dosť</i> ako satirický vrchol partie.</li>
+<li><b>Najväčšie riziko nie je nekonečná partia, ale krátka partia rozhodnutá draftom.</b> Rad 4 starších dá v priemere 10,7 tuhého za bitku (6 až 16), teda viac ako línia v dnešných bitkách (4–10). Pri pečeni ×1,5 vychádza partia hrubo na 4 kolá a Zhromaždenie s NA EX stráca váhu.</li>
+<li><b>Druhé riziko:</b> <i>Má dosť</i>, ktorý vždy pomáha majiteľovi, robí z vlastnej exekúcie lacnú cestu, ako sa staršieho zbaviť vo vhodnej chvíli.</li>
+<li><b>Hneď by som doplnil tri pravidlá:</b> Fajront (rastúce poškodenie od kola K), <i>Má dosť</i> sa nespustí pri vlastnej exekúcii, a poradie rozhodnutia, keď poslední starší oboch padnú v tej istej bitke. Pri ďalších piatich návrhoch nižšie je pri každom napísané, či ho odporúčam, alebo ho treba najprv zmerať.</li>
+</ul>
+</section>
+
+<h2>a) Čo je na režime dobré</h2>
+<div class="karty">
+<div class="k dobre"><h3>Jeden cieľ, ktorý vidno</h3><p>Hráč vždy vie, ako ďaleko je od výhry (súčet pečene súpera). Kalamita má štyri meny a nováčik nevie, čo práve naháňa. Tu je jedna. Dobre sa to učí a dobre sa na to pozerá.</p></div>
+<div class="k dobre"><h3>Má dosť je moment príbehu</h3><p>Deathrattle v Hearthstone funguje, lebo útočník rozhoduje, kedy zabiť (návody radia niekedy „simply not killing“). <i>Má dosť</i> dá to isté rozhodnutie a k tomu krčmovú pointu v hlase postavy. „Podraziť“ a „má dosť“ sú presné slová pre slovenskú krčmu.</p></div>
+<div class="k dobre"><h3>Draft je skutočné rozhodnutie</h3><p>Starší s akciami vľavo hore a vľavo dole sa spoja na 3 miestach, dvaja rovnakého typu len na 2. Typy sú v sade 4 a 4, takže draft má synergiu aj hate-draft (vezmem ti doplnok).</p></div>
+<div class="k dobre"><h3>Padnutý ako spojka tlmí snowball</h3><p>Ako mŕtvola v Darkest Dungeon, ktorá drží miesto v zostave. Zmiznú len akcie padnutého, susedia na spoji s ním svoje dostanú. Rad stratí po prvom páde asi 23 % tuhého, nie polovicu.</p></div>
+<div class="k dobre"><h3>Tri tvary poškodenia</h3><p>Plošné (Povery), cielené (tuhé) a oneskorené (jed). Na každé platí niečo iné: Viera zastaví Povery aj tuhé, jed nezastaví. Jed je tak vstavaný liek na pato. Povery navyše samy slabnú, keď súperovi padajú starší (4 → 3 → 2), čo je prirodzená brzda vedúceho.</p></div>
+<div class="k dobre"><h3>Preskladanie má zmysel</h3><p>Rozdiel tuhého z radu medzi najlepším a najhorším poradím je v priemere 7. V poradí najlepšom na tuhé má rad 1,46 Hazardu na Pitku, dá sa však poskladať aj na 0,40. Pri lokalite s 3 Pitkami sa to oplatí, pri jednej nie. Voľba sa mení s lokalitou, a preto je to rozhodnutie, nie raz nájdené optimum.</p></div>
+<div class="k dobre"><h3>Kolo a zdroje ostávajú</h3><p>Hráč Kalamity sa nové kolo neučí. Mení sa len cieľ a to, kam ide poškodenie. Pre výučbu je to lacný druhý režim.</p></div>
+</div>
+
+<h2>b) Čo je zlé alebo rizikové</h2>
+<div class="karty">
+<div class="k zle"><h3>Rad prevalcuje líniu <span class="znamka v">vysoké</span></h3><p>Rad dá 12–18 aktívnych akcií v každej Pitke a 6–16 tuhého v bitke (priemer 10,7). Línia dáva v dnešných bitkách 4–10 tuhého (reporty v <code>docs/playtesty/</code>). Srdce hry, teda Zhromaždenie, NA EX a odpovede, sa môže zmeniť na doplnok k radu a partiu rozhodne draft s poradím.</p></div>
+<div class="k zle"><h3>Partia môže byť krátka <span class="znamka v">vysoké</span></h3><p>Každý hráč dáva poškodenie každú bitku (tuhé celé, nielen rozdiel). Pri pečeni ×1,5 (štvorica 54–64,5) to vychádza hrubo na 4 kolá, kratšie ako Druhá liga Kalamity. Opačná chyba hrozí tiež: pri stole plnom Viery a Roboty posledný starší „lieči sa a stojí“. Vyskúšaj v kalkulačke nižšie.</p></div>
+<div class="k zle"><h3>Výhodná smrť vlastného staršieho <span class="znamka v">vysoké</span></h3><p>Keď <i>Má dosť</i> vždy pomáha majiteľovi, vlastná exekúcia je to, čo Magic volá „free sacrifice outlet“. Hazard z radu sa ráta v každej Pitke, takže hráč si môže staršieho so silným <i>Má dosť</i> zámerne pustiť. Smrť potom prestane byť stratou.</p></div>
+<div class="k stred"><h3>Spoločný pád bude častý <span class="znamka s">stredné</span></h3><p>Obaja dávajú poškodenie naraz a súčty pečene štvoríc sú podobné. To, že poslední starší oboch padnú v tej istej bitke, bude bežný koniec, nie výnimka. Pravidlo treba mať pred prvou partiou.</p></div>
+<div class="k stred"><h3>Exekúcia ako najväčší kanál <span class="znamka s">stredné</span></h3><p>Rad v poradí na tuhé vyrobí asi 1,46 Hazardu na Pitku. Pri 3 Pitkách je to okolo 2 Dlhov za kolo a exekúcia zasiahne všetkých 4 starších naraz. Robota v režime lieči a Dlhy nepáli, takže sa hromadia. Hráč sa môže zložiť sám, a to rýchlejšie, než ho zloží súper.</p></div>
+<div class="k stred"><h3>Mierka plošného <span class="znamka s">stredné</span></h3><p>Povera = 4 Rany pri 4 stojacich, s Horoskopom 8. Viera tak má štvornásobnú cenu a Farár s Veterinárom sa v drafte nadhodnotia. Draft sa dá vyriešiť: so Veterinárom dá rad v priemere 12,3 tuhého, s Vychovávateľkou 9,8.</p></div>
+<div class="k stred"><h3>Posledný Má dosť nikdy nezaznie <span class="znamka s">vlastnosť</span></h3><p>Partia skončí pádom posledného, takže jeho <i>Má dosť</i> sa nespustí. Útočník si staršieho s najsilnejším <i>Má dosť</i> nechá na koniec. Je to dobré rozhodnutie, ale efekty treba navrhovať s vedomím, že najsilnejší sa spustí najzriedkavejšie.</p></div>
+<div class="k stred"><h3>Cirhóza a prebytky bez odbytu <span class="znamka s">stredné</span></h3><p>Nepriznaná Cirhóza na konci nestojí nič a priznaná dá súperovi +1 tuhé, takže ju nikto neprizná a len upcháva balíček. Výkup zaniká, takže cigarety a poldeci sa hromadia. Podľa zásady „bez stropov“ treba dať prebytku odbyt.</p></div>
+<div class="k stred"><h3>Dva režimy a 2 na 2 <span class="znamka s">údržba</span></h3><p>Karty so špakmi (Kultúrny dom, Herňa, Noviny, Robota, Exekútor) potrebujú v režime iný význam. S formátom 2 na 2 vznikajú tri varianty pravidiel. Navrhujem jednu tabuľku prekladu v pravidlách režimu, nie dvojaké texty na kartách.</p></div>
+</div>
+
+<h2>Kalkulačka dĺžky partie (ilustrácia, nie meranie)</h2>
+<div class="kalk">
+<p class="pozn">Model je symetrický: obaja hráči strácajú starších podobne, preto sila radu klesá podľa počtu stojacich (100 % / 77 % / 49 % / 20 %, výpočet z mocku). Viera najprv ruší Povery, zvyšok tlmí tuhé. Tuhé ide sústredene na najslabšieho, jed na jedného staršieho, liečenie na najslabšieho. Na meranie treba botov.</p>
+<div class="ovl">
+<label>Pečeň na staršieho <output id="o-pec"></output><input type="range" id="pec" min="8" max="40" step="0.5" value="15"></label>
+<label>Tuhé z línie za bitku <output id="o-lin"></output><input type="range" id="lin" min="0" max="15" step="0.5" value="6"></label>
+<label>Tuhé z radu (4 stoja) <output id="o-rad"></output><input type="range" id="rad" min="0" max="16" step="0.1" value="10.7"></label>
+<label>Povery spolu za bitku <output id="o-pov"></output><input type="range" id="pov" min="0" max="6" step="0.5" value="2"></label>
+<label>Viera súpera za bitku <output id="o-vie"></output><input type="range" id="vie" min="0" max="6" step="0.5" value="1.5"></label>
+<label>Pohoršenia (jed) za kolo <output id="o-poh"></output><input type="range" id="poh" min="0" max="4" step="0.1" value="1.2"></label>
+<label>Liečenie Robotou za kolo <output id="o-heal"></output><input type="range" id="heal" min="0" max="6" step="0.5" value="1"></label>
+<label>Exekúcia každému staršiemu za kolo <output id="o-exek"></output><input type="range" id="exek" min="0" max="3" step="0.25" value="0.5"></label>
+<label>Fajront od kola (0 = bez) <output id="o-K"></output><input type="range" id="K" min="0" max="12" step="1" value="0"></label>
+<label><input type="checkbox" id="anti" checked> Otrávený sa nehojí (Robota najprv zmyje jed)</label>
+</div>
+<p class="vysledok" id="vysledok"></p>
+<div class="tab-obal"><table><thead><tr><th>Kolo</th><th>Pečeň štyroch starších po bitke</th><th class="num">Stoja</th></tr></thead><tbody id="kola"></tbody></table></div>
+<p class="pozn">Skús: pečeň 15 → partia za 4 kolá. Línia 3, rad 6, Viera 3, liečenie 3, exekúcia 0 → posledný starší stojí donekonečna. To isté s Fajrontom od 7. kola → koniec v 11. kole.</p>
+</div>
+
+<h2>c) Návrhy mechaník</h2>
+<div class="filtre" role="group" aria-label="Filtrovať návrhy">
+<button type="button" data-f="vsetko" aria-pressed="true">Všetky</button><button type="button" data-f="ano" aria-pressed="false">Odporúčam</button><button type="button" data-f="skusit" aria-pressed="false">Vyskúšať botmi</button><button type="button" data-f="ak" aria-pressed="false">Len ak to meranie ukáže</button>
+</div>
+
+<div class="navrh" data-o="ano"><h3>1. Fajront <span class="znamka n">odporúčam</span></h3>
+<p>Od kola K (návrh 7) stratí na konci bitky každý stojaci starší oboch hráčov 1, potom 2, 3… pečene. Viera ani Robota proti tomu nepomáhajú, je to kocovina. „O polnoci krčmárka zhasína.“</p>
+<dl><dt>Prečo</dt><dd>Hearthstone Fatigue (1, 2, 3…) zaviedli preto, aby koniec nebol šok a hra mala hranicu. Rieši pato posledného staršieho bez limitu kôl a bez stropu zdrojov. Zasiahne len stojacich, takže vedúci so 4 stojacimi stratí viac ako zaostávajúci s 2.</dd>
+<dt>Zmerať</dt><dd>K tak, aby Fajront nastal najviac v 20 % partií; dĺžka partie (medián, 99. percentil).</dd>
+<dt>Knižnica</dt><dd><a href="2026-11-01-pata-laket-otocka.html#eskalacia-fajront">eskalacia-fajront</a></dd></dl></div>
+
+<div class="navrh" data-o="ano"><h3>2. Rozpočet Má dosť a „zložil sa sám“ <span class="znamka n">odporúčam</span></h3>
+<p><i>Má dosť</i> sa spustí, keď staršieho zrazí súperovo poškodenie (tuhé, Povery, jed) alebo Fajront. Keď ho zrazí exekúcia vlastných Dlhov, <i>Má dosť</i> sa nespustí: „zložil sa sám, len odpadne“. Každý <i>Má dosť</i> je slabší ako to, čo starší dá živý za jedno kolo.</p>
+<dl><dt>Prečo</dt><dd>Legends of Runeterra platí Last Breath „below average stats“. Magic Aristocrats ukazujú, že lacná vlastná obeta spolu s odmenou za smrť urobí zo smrti výhodu. Bez tohto pravidla bude stratég ladiť každý <i>Má dosť</i> zvlášť.</dd>
+<dt>Zmerať</dt><dd>Či bot niekedy zámerne pustí vlastného staršieho (musí byť takmer nikdy); úspešnosť hráča, ktorý prišiel o staršieho prvý (35–45 %).</dd>
+<dt>Knižnica</dt><dd><a href="2026-11-01-pata-laket-otocka.html#ucinok-pri-pade-s-rozpoctom">ucinok-pri-pade-s-rozpoctom</a></dd></dl></div>
+
+<div class="navrh" data-o="ano"><h3>3. Spoločný pád posledných <span class="znamka n">odporúčam</span></h3>
+<p>Ak v tej istej bitke padnú poslední starší oboch, vyhrá víťaz bitky (vyššie tuhé). Pri rovnosti rozhodne menej Absťákov, potom menej Dlhov (ako PRAVIDLA §9.4), a ak je rovnosť aj tam, vyhrá útočník, teda hráč, ktorý predošlú bitku prehral.</p>
+<dl><dt>Prečo</dt><dd>Remíza neexistuje, a pri súbežnom poškodení je takýto koniec častý. Posledný krok odmení väčšiu výzvu (zásada Michala z 27. 10.) a v Kalamite už tie isté kroky hráči poznajú.</dd>
+<dt>Zmerať</dt><dd>Podiel partií so spoločným pádom; ak je vysoký, zvážiť vyhodnotiť poškodenie postupne (najprv obranca).</dd></dl></div>
+
+<div class="navrh" data-o="ano"><h3>4. Viera: najprv Povery, potom tuhé z celku <span class="znamka n">odporúčam</span></h3>
+<p>Viera najprv ruší súperove Povery 1 : 1, takže jedna Viera ušetrí 1 pečeň každému stojacemu staršiemu. Zvyšok Viery zníži súperovo celkové tuhé ešte pred rozdelením (nie zvlášť pri každom staršom). Horoskop treba pre režim prečíslovať (dnes 8 pečene za akciu).</p>
+<dl><dt>Prečo</dt><dd>Rovnaké poradie ako hádka v10 (§9.1), takže hráč sa nič nové neučí. Povera je pri 4 stojacich štvornásobná, takže ju obranca aj tak chce zrušiť ako prvú. Štít pri každom staršom zvlášť by bol evidencia bez rozhodnutia.</dd>
+<dt>Zmerať</dt><dd>Podiel poškodenia z Povier; úspešnosť štvoríc s Farárom a Veterinárom.</dd>
+<dt>Knižnica</dt><dd><a href="2026-11-01-pata-laket-otocka.html#plosne-slabne-s-cielmi">plosne-slabne-s-cielmi</a></dd></dl></div>
+
+<div class="navrh" data-o="ano skusit"><h3>5. Jed: otrávený sa nehojí, klebeta ide ďalej <span class="znamka n">odporúčam</span> <span class="znamka s">prenos vyskúšať</span></h3>
+<p>(a) Robota na staršom s jedom najprv zníži jed o svoju hodnotu a až zvyšok vylieči pečeň. Hráč volí, či vylieči zdravšieho naplno, alebo zmyje jed. (b) Keď otrávený padne a jed mu ostane, zvyšok prejde na jeho stojaceho suseda v rade (vyberie ten, kto jed dal). Bez suseda jed prepadne, lebo cieľ zmizol.</p>
+<dl><dt>Prečo</dt><dd>Grievous Wounds v LoL je odpoveď na liečenie a Riot sám priznáva, že vyvážiť liečenie je ťažké. Preto len jemná verzia: jed spomalí liečenie, nezruší ho. Prenos je The Specimen zo Slay the Spire a dá radu obrannú stránku: koho postavím vedľa otráveného.</dd>
+<dt>Zmerať</dt><dd>Partie, kde súčet pečene neklesne 3 kolá po sebe; dĺžka partie s prenosom a bez neho.</dd>
+<dt>Knižnica</dt><dd><a href="2026-11-01-pata-laket-otocka.html#protiliecenie">protiliecenie</a>, <a href="2026-11-01-pata-laket-otocka.html#jed-s-poklesom">jed-s-poklesom</a></dd></dl></div>
+
+<div class="navrh" data-o="ano ak"><h3>6. Draft: druhý v drafte je prvý obranca <span class="znamka n">odporúčam</span> <span class="znamka s">Thue–Morse len ak</span></h3>
+<p>Had A B B A A B B A ostáva. Hráč B (druhý v drafte) je v 1. kole obranca: volí lokalitu a berie zo šenku prvý. Ak boti ukážu, že A vyhráva viac ako 55 %, prejsť na A B B A B A A B (Thue–Morse). Pre pokročilých variant „Krčmárka rozlieva“: jeden rozdelí 8 starších na dve štvorice, druhý si vyberie.</p>
+<dl><dt>Prečo</dt><dd>Root vyrovnáva výhodu frakcie poradím ťahov a Hanamikoji používa rozdeľ a vyber. Thue–Morse vyrovná aj druhý rád (súčet druhých mocnín poradí 102 : 102, had 106 : 98). Pri 8 kusoch je to však malý rozdiel, preto až po meraní.</dd>
+<dt>Zmerať</dt><dd>Úspešnosť podľa pozície v drafte; ktorý starší ide u botov prvý.</dd>
+<dt>Knižnica</dt><dd><a href="2026-11-01-pata-laket-otocka.html#fer-draft-unikatnych">fer-draft-unikatnych</a></dd></dl></div>
+
+<div class="navrh" data-o="ak"><h3>7. Váha radu proti línii <span class="znamka s">len ak to meranie ukáže</span></h3>
+<p>Ak rad dá viac ako 60 % tuhého, vrátiť sa k pôvodnému odporúčaniu mocku: akcie radu platia v bitke a v poslednej Pitke kola, nie v každej Pitke. Druhá možnosť je pečeň ×2 až ×2,5 namiesto ×1,5. Stôl má pri preskladaní ukazovať súčty tuhé / Hazard / Poškodenie pečene, nielen tlačidlo „najlepšie poradie“.</p>
+<dl><dt>Prečo</dt><dd>V Hearthstone Battlegrounds a Super Auto Pets je zostava celá hra. NA EX! má jadro v Zhromaždení a NA EX a rad ho nesmie zatieniť. Tlačidlo „najlepšie“ by z preskladania urobilo prázdny ťah.</dd>
+<dt>Zmerať</dt><dd>Podiel tuhého z radu a z línie; ako často sa mení najlepšie poradie radu (pod 20 % je to šum).</dd>
+<dt>Knižnica</dt><dd><a href="2026-11-01-pata-laket-otocka.html#rad-s-poziciou-a-mrtvolou">rad-s-poziciou-a-mrtvolou</a></dd></dl></div>
+
+<div class="navrh" data-o="skusit"><h3>8. Odbyt prebytku: „Rundu platím“ <span class="znamka s">vyskúšať botmi</span></h3>
+<p>Výkup zaniká, a tak prebytok cigariet a poldeci potrebuje útočný odbyt, ktorý partiu skráti, nie predĺži. Príklad pre Vymyselníka: v Zhromaždení namiesto vyloženia zaplať 3 cigarety a daj 1 jed súperovmu staršiemu („pozval som celú krčmu, nech sa o ňom rozpráva“). Nepriznaná Cirhóza: pri každom zamiešaní balíčka −1 pečeň staršiemu podľa súpera, aby priznanie znovu bolo rozhodnutím.</p>
+<dl><dt>Prečo</dt><dd>Zásada „bez stropov“ (Michal 27. 10.) žiada prebytok minúť. Liečiť za cigarety by vytvorilo pato, ale jed za cigarety tlačí partiu ku koncu.</dd>
+<dt>Zmerať</dt><dd>Priemerné cigarety na konci partie; podiel jedu z odbytu na poškodení.</dd></dl></div>
+
+<h2>d) Zásady pre efekty Má dosť</h2>
+<p>Čo vyplýva z rešerše účinkov pri smrti (Hearthstone, Legends of Runeterra, KeyForge, Magic, Super Auto Pets). Celú sadu navrhuje Vymyselník, príklady nižšie len ukazujú, ako zásady vyzerajú na karte.</p>
+<ol class="zasady">
+<li><b>Menej ako živý.</b> <i>Má dosť</i> má hodnotu najviac toho, čo starší dá živý za jedno kolo. Pád je vždy strata (Last Breath: „below average stats“).</li>
+<li><b>Žiadna výhodná samovražda.</b> Pri exekúcii vlastných Dlhov sa nespustí. Bez lacnej vlastnej obety nevznikne stratégia Aristocrats.</li>
+<li><b>Jednorazové pred trvalými.</b> Trvalé nesmú rásť s počtom padlých (to by bol rubber band a pato), nesmú liečiť pečeň ani oživovať. Partia musí smerovať ku koncu.</li>
+<li><b>Škoda súperovi oneskorená alebo hospodárska.</b> Žiadne okamžité poškodenie súperových starších, inak vzniknú reťaze pádov v jednej bitke. Lepší je jed na ďalšiu bitku, cigarety, Dlh alebo karta z ruky.</li>
+<li><b>Silný Má dosť, slabší živý.</b> Starší so silným <i>Má dosť</i> má slabšie akcie v rade alebo menej pečene. Útočník potom váži, či ho nechať na koniec (rada z Hearthstonu „not killing“).</li>
+<li><b>Väzba na rad tam, kde vytvára rozhodnutie.</b> Ako Duma the Martyr v KeyForge, ktorý pri zničení lieči susedov: <i>Má dosť</i> smie pôsobiť na susedov v rade, ale v malom, aby preskladanie dostalo ďalší dôvod.</li>
+<li><b>Dá sa naň odpovedať.</b> Jedna vzácna a drahá karta „zložil sa potichu“ podrazí bez <i>Má dosť</i> (Silence, Obliterate). Lacná odpoveď by efekty zabila, Blizzard preto lacné umlčanie zdražil.</li>
+<li><b>Jedna veta v hlase postavy,</b> všetky <i>Má dosť</i> sa vyhodnotia naraz po bitke (najprv obranca), aby sa nič nespúšťalo uprostred rozdeľovania.</li>
+</ol>
+<h3>Príklady (ilustrácia zásad, nie návrh sady)</h3>
+<div class="priklad"><b>Farár</b> — <q>Pomodlím sa za vás.</q> Hneď: zmy všetok jed zo svojich stojacich starších. <span class="pozn">Pomáha majiteľovi, jednorazový, pečeň nelieči (zásady 3, 6).</span></div>
+<div class="priklad"><b>Krčmárka</b> — <q>Zatváram, platí sa!</q> Hneď: súper ti zaplatí 2 cigarety (koľko má). <span class="pozn">Hospodárska škoda súperovi (zásada 4).</span></div>
+<div class="priklad"><b>Hrobár</b> — <q>Jamu kopem aj tebe.</q> Hneď: daj jed 2 jednému staršiemu súpera. <span class="pozn">Škoda oneskorená do ďalšej bitky, žiadna reťaz (zásada 4).</span></div>
+<div class="priklad"><b>Poštárka</b> — <q>Všetko vyklopím.</q> Furt: súper hrá s odkrytou rukou. <span class="pozn">Z mocku. Trvalý, ale nerastie a nelieči (zásada 3); server ho musí riešiť vo <code>viewFor()</code>.</span></div>
+<div class="priklad"><b>Autobusár</b> — <q>Posledný spoj odišiel.</q> Hneď: vezmi si 1 kartu zo šenku zadarmo; z prázdneho šenku dober 1 kartu. <span class="pozn">Malý jednorazový zisk pre majiteľa (zásada 1). Text mocku „nikto nedoberá“ zasiahol oboch, preto je nahradený.</span></div>
+
+<h2>Čo by mal stratég zmerať, keď bude režim v jadre</h2>
+<ol>
+<li>Dĺžka partie: medián, 90. a 99. percentil, s Fajrontom a bez neho.</li>
+<li>Podiel poškodenia podľa kanála: tuhé z línie, tuhé z radu, Povery, jed, exekúcia, Fajront.</li>
+<li>Úspešnosť hráča, ktorý prvý podrazil staršieho (cieľ najviac 65 %), a hráča, ktorý prvý o staršieho prišiel (35–45 %).</li>
+<li>Úspešnosť podľa pozície v drafte (A/B) a poradie výberov botov.</li>
+<li>Či boti niekedy zámerne pustia vlastného staršieho.</li>
+<li>Koho boti podrážajú prvého; pri každom staršom rozdiel úspešnosti, keď padne prvý a keď posledný.</li>
+<li>Ako často sa mení najlepšie poradie radu medzi kolami.</li>
+<li>Podiel partií so spoločným pádom posledných starších.</li>
+</ol>
+
+<footer>NA EX! · Študent · vetva <code>kniznica/pata-laket-otocka</code> · <code>docs/kniznica/pata-laket-otocka-rozbor.html</code> · zdroje pri každom tvrdení o cudzej hre sú v <a href="2026-11-01-pata-laket-otocka.html">dokumente rešerše</a> a v <code>mechaniky.json</code> · čísla radu sú z akcií starších v mocku (70 štvoríc × 24 poradí), čísla línie z reportov Kalamity, pečeň ×1,5 podľa rozhodnutia z 1. 11.</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  // Filtrovanie návrhov podľa odporúčania.
+  var tl = document.querySelectorAll(".filtre button");
+  tl.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tl.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      var f = b.getAttribute("data-f");
+      document.querySelectorAll(".navrh").forEach(function (n) {
+        n.hidden = f !== "vsetko" && n.getAttribute("data-o").split(" ").indexOf(f) < 0;
+      });
+    });
+  });
+
+  // Kalkulačka: symetrický odhad, za koľko kôl padnú štyria starší jedného hráča.
+  var SILA_RADU = [0, 0.2, 0.49, 0.77, 1]; // podiel tuhého radu podľa stojacich (výpočet z mocku)
+  function v(id) { return Number(document.getElementById(id).value); }
+  function zive(hp) { return hp.map(function (h, i) { return i; }).filter(function (i) { return hp[i] > 0; }).sort(function (a, b) { return hp[a] - hp[b]; }); }
+  function simuluj(o) {
+    var hp = [o.pec, o.pec, o.pec, o.pec], jed = 0, ciel = -1, kola = [];
+    for (var r = 1; r <= 40; r++) {
+      var st = zive(hp).length;
+      if (!st) return { koniec: r - 1, kola: kola };
+      var povery = Math.max(0, o.pov - o.vie), zvysokViery = Math.max(0, o.vie - o.pov);
+      var tuhe = Math.max(0, o.lin + o.rad * SILA_RADU[st] - zvysokViery);
+      if (ciel >= 0 && hp[ciel] > 0 && jed > 0) { hp[ciel] -= jed; jed -= 1; } else if (ciel >= 0 && hp[ciel] <= 0) { jed = 0; }
+      for (var i = 0; i < 4; i++) if (hp[i] > 0) hp[i] -= povery + o.exek;
+      while (tuhe > 0) { var z = zive(hp); if (!z.length) break; var d = Math.min(tuhe, hp[z[0]]); hp[z[0]] -= d; tuhe -= d; }
+      var z2 = zive(hp);
+      if (z2.length) { if (ciel < 0 || hp[ciel] <= 0) ciel = z2[0]; jed += o.poh; }
+      if (o.K && r >= o.K) for (var j = 0; j < 4; j++) if (hp[j] > 0) hp[j] -= r - o.K + 1;
+      var z3 = zive(hp);
+      if (z3.length && o.heal) {
+        var h = o.heal, c = z3[0];
+        if (o.anti && c === ciel && jed > 0) { var m = Math.min(jed, h); jed -= m; h -= m; }
+        hp[c] = Math.min(o.pec, hp[c] + h);
+      }
+      kola.push(hp.map(function (x) { return Math.max(0, Math.round(x * 10) / 10); }));
+    }
+    return { koniec: null, kola: kola };
+  }
+  function kresli() {
+    ["pec", "lin", "rad", "pov", "vie", "poh", "heal", "exek", "K"].forEach(function (id) {
+      document.getElementById("o-" + id).textContent = id === "K" && v("K") === 0 ? "bez" : v(id);
+    });
+    var o = { pec: v("pec"), lin: v("lin"), rad: v("rad"), pov: v("pov"), vie: v("vie"), poh: v("poh"), heal: v("heal"), exek: v("exek"), K: v("K"), anti: document.getElementById("anti").checked };
+    var s = simuluj(o);
+    document.getElementById("vysledok").innerHTML = s.koniec === null
+      ? "Za 40 kôl nepadli všetci — <b>pato</b> (posledný starší sa lieči rýchlejšie, než dostáva)."
+      : "Všetci štyria starší padnú v <b>" + s.koniec + ". kole</b>.";
+    var tb = document.getElementById("kola"), html = "";
+    s.kola.slice(0, 14).forEach(function (k, i) {
+      var bary = k.map(function (x) {
+        var p = x / o.pec, tr = p > 0.5 ? "" : (p > 0.25 ? " stredna" : " nizka");
+        return '<span class="bar' + tr + '" style="width:' + Math.round(p * 60) + 'px" title="' + x + '"></span> ' + x;
+      }).join(" · ");
+      html += "<tr><td>" + (i + 1) + "</td><td>" + bary + '</td><td class="num">' + k.filter(function (x) { return x > 0; }).length + "</td></tr>";
+    });
+    if (s.kola.length > 14) html += '<tr><td colspan="3" class="pozn">… ďalších ' + (s.kola.length - 14) + " kôl</td></tr>";
+    tb.innerHTML = html;
+  }
+  document.querySelectorAll(".kalk input").forEach(function (i) { i.addEventListener("input", kresli); });
+  kresli();
+})();
+</script>
+</body>
+</html>
