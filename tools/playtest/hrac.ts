@@ -594,7 +594,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       if (pokus === null) continue;
       const e = v.starsi.find((x) => x.elderId === pokus.elderId);
       out.push(
-        `  POKUS O ZAJATIE: ${p === ja ? "TY skúšaš" : "SÚPER skúša"} zajať ${meno(e?.karta.defId ?? "")} — jeho karta je v ruke ${p === ja ? "súpera" : "tvojej"} (smie sa vyložiť ako Starešina, len akcie). Starší je v ohrození: v tomto kole ním nehýbe Pohoršenie, Nakladačka, Povery, Vila ani Kapybara. ${p === ja ? "Vyhráš bitku = tvoj väzeň; prehráš alebo sekera = vráti sa a marker ustúpi o stupeň." : "Ak súper bitku vyhrá, je jeho väzeň; ak ju vyhráš ty alebo je sekera, pokus zlyhá."}`,
+        `  POKUS O ZAJATIE: ${p === ja ? "TY skúšaš" : "SÚPER skúša"} zajať ${meno(e?.karta.defId ?? "")} — jeho karta je v ruke ${p === ja ? "súpera" : "tvojej"} (smie sa vyložiť ako Starešina, len akcie). Starší je v ohrození: v tomto kole jeho markerom nehýbe Nakladačka, Vila ani Kapybara (hádka smie meniť len silu jeho priazne). ${p === ja ? "Vyhráš bitku = tvoj väzeň; prehráš alebo sekera = vráti sa a marker ustúpi o stupeň." : "Ak súper bitku vyhrá, je jeho väzeň; ak ju vyhráš ty alebo je sekera, pokus zlyhá."}`,
       );
     }
   }
@@ -603,9 +603,9 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   const body = spakyTeraz(v);
   out.push("STARŠÍ (stupnica 0–6: 0–2 polovica hráča 1, 3 sivý stred, 4–6 polovica hráča 2):");
   out.push(
-    `  STUPEŇ 0–3 od stredu (0 sivý stred pokojný, 1 žltá znepokojený, 2 oranžová vystrašený, 3 červená vydesený). PRIAZEŇ má hráč, ku ktorému je marker posunutý — sila = stupeň; starší sa bojí toho DRUHÉHO na tom istom stupni. ` +
+    `  STUPEŇ 0–3 od stredu (0 sivý stred pokojný, 1 žltá znepokojený, 2 oranžová vystrašený, 3 červená vydesený). PRIAZEŇ má hráč, ku ktorému je marker posunutý — sila = stupeň (v tomto kole ju môže zmeniť hádka, v10); starší sa bojí toho DRUHÉHO na tom istom stupni. ` +
       `ŠPAKY ZA STRACH (v8.3): stupeň, kam sa marker dostal, zaplatí hráčovi, ktorého sa starší bojí, AŽ NA KONCI NASLEDUJÚCEHO KOLA, ak sa na ňom marker dovtedy udrží (${ZONY_STRACHU}) — NECH BITKU VYHRAL KTOKOĽVEK, aj porazenému. Odtlačený stupeň nič; zaparkovaný marker druhýkrát nič nedá; ústup k stredu zaplatené stupne zmaže. Vo finále nové stupne nič, udržané z posledného kola sa vyplatia po finále. ` +
-      "Pohoršenie (od seba = desíš, k sebe = upokojuješ) a Nakladačka posúvajú marker, pole stojí podľa zóny (von 1 / 2 / 3, k stredu 2 / 3 / 4), bez limitu, aj na červenú a z nej späť. Scorecard nesie len priazeň.",
+      "Marker posúva len Nakladačka (rozdeľuje porazený) a efekty Vila a Kapybara, pole stojí podľa zóny (von 1 / 2 / 3, k stredu 2 / 3 / 4), bez limitu, aj na červenú a z nej späť. Pohoršenie (2) a Povera (1) sú mäkké poškodenie do HÁDKY (v10): víťaz hádky posúva rovnakými cenami len SILU priazne k sebe do konca kola, marker stojí. Scorecard nesie len priazeň.",
   );
   out.push(`  ŠPAKY: ty ${body.spaky[ja]}, súper ${body.spaky[su]}; na konci tohto kola od starších za udržané stupne: ty +${body.zaStarsich[ja]}, súper +${body.zaStarsich[su]} (nech bitku vyhrá ktokoľvek); čaká na udržanie do konca ďalšieho kola: ty +${body.naUdrzanie[ja]}, súper +${body.naUdrzanie[su]}; nepriznaná Cirhóza na konci −${KONSTANTY.SPAKY_ZA_CIRHOZU} za kus (ty ${body.cirhozy[ja]}, súper ${body.cirhozy[su]}); výkupné na konci (plný poldeci ${KONSTANTY.SPAKY_ZA_POLDECI}, každých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet 1): ty +${body.vykupne[ja].spaky}, súper +${body.vykupne[su].spaky}; keby skončila teraz ty ${body.spolu[ja]}, súper ${body.spolu[su]}; odhad do konca (markery stoja) ty ${body.odhad[ja]}, súper ${body.odhad[su]}.`);
   // Väzni (v9): tretí väzeň vyhráva, ostatní dajú po finále špaky podľa poradia zajatia.
