@@ -1,0 +1,59 @@
+/* ---- upozornenie pred stolom na telefóne (Michal 2026-11-01) ----
+ * Okno medziobrazovky v rozložení pre telefón (mobil-sirka.css: nadpis a Rozumiem v hornom
+ * riadku, text pod nimi); zoznam, rada a „Neukazovať znova“ idú pod text. Nad výzvou na celú
+ * obrazovku — tá sa ukáže, až keď je upozornenie preč. */
+.medziobrazovka.upozornenie-telefonu {
+  z-index: 1010;
+}
+
+.upozornenie-telefonu-chyba {
+  margin: 0;
+  padding: 0 0 0 1.2em;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--tlmeny);
+}
+
+/* Druhý odsek nesmie do mriežkovej oblasti prvého (mobil-sirka.css dáva každému > p oblasť text). */
+html.stol-na-sirku .medziobrazovka.upozornenie-telefonu .medziobrazovka-okno > p.upozornenie-telefonu-rada {
+  grid-area: auto;
+  grid-column: 1 / -1;
+  font-weight: 700;
+}
+
+.upozornenie-telefonu-volba {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  min-height: 44px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.upozornenie-telefonu-volba input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--akcent);
+}
+
+/* Telefón na výšku (pred otočením): Rozumiem pod nadpisom, nie vedľa — vedľa by nadpis zalomil. */
+@media (orientation: portrait) {
+  html.stol-na-sirku .medziobrazovka.upozornenie-telefonu .medziobrazovka-okno {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    grid-template-areas:
+      "nad"
+      "nadpis"
+      "text";
+  }
+
+  html.stol-na-sirku .medziobrazovka.upozornenie-telefonu .medziobrazovka-okno > button.tlacidlo-hlavne {
+    grid-area: auto;
+    order: 1;
+    justify-self: stretch;
+  }
+}

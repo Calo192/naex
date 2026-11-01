@@ -1,6 +1,8 @@
 // Glosár kariet (/karty) — zverejnená sada v tlačovom vzhľade, s variantmi,
 // detailom karty a legendou akcií. Prístupný aj bez prihlásenia. Príbeh a účel
 // karty v hre ukazuje len detail karty tu (Michal 2026-10-26) — hra ani výučba nie.
+// Na telefóne (Michal 2026-11-01) idú karty na výšku po jednej cez celú šírku, na šírku po troch;
+// šírku karty dopočíta mriežka z vlastnej šírky — karta sa len rovnomerne zmenší, nikdy nedeformuje.
 
 import { useEffect, useMemo, useState } from "react";
 import type { KartaNavrh, Vzhlad } from "@naex/tvorba";
@@ -10,6 +12,7 @@ import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { api } from "../lib/api.ts";
 import { KartyZalozky } from "../dielna/Dielna.tsx";
+import { MEDZERA_KARIET_TELEFON, sirkaKartyNaTelefone, useTelefonStranky } from "../hra/zariadenie.ts";
 
 /** Autor karty z Dielne; „prerobena“ = tvorca ju po prevzatí zmenil, vtedy „nápad: X“. */
 type AutoriKariet = Readonly<Record<string, { readonly meno: string; readonly prerobena: boolean; readonly navrh: number }>>;
@@ -46,6 +49,19 @@ function TextKarty({ nadpis, text, trieda }: { readonly nadpis: string; readonly
       )}
     </section>
   );
+}
+
+/** Šírka prvku v CSS px (callback ref); sleduje otočenie telefónu aj zmenu okna. */
+function useSirkaPrvku(): readonly [(el: HTMLElement | null) => void, number] {
+  const [prvok, setPrvok] = useState<HTMLElement | null>(null);
+  const [sirka, setSirka] = useState(0);
+  useEffect(() => {
+    if (prvok === null) return;
+    const ro = new ResizeObserver(([z]) => setSirka(z?.contentRect.width ?? 0));
+    ro.observe(prvok);
+    return () => ro.disconnect();
+  }, [prvok]);
+  return [setPrvok, sirka];
 }
 
 function SipkyVariantov({ v, pocet, nastav }: { readonly v: number; readonly pocet: number; readonly nastav: (n: number) => void }) {
@@ -178,6 +194,11 @@ export function Glosar() {
   const [varianty, setVarianty] = useState<Readonly<Record<string, number>>>({});
   const [detail, setDetail] = useState<KartaNavrh | null>(null);
   const [autori, setAutori] = useState<AutoriKariet>({});
+  const { telefon, naVysku } = useTelefonStranky();
+  const [mriezkaRef, sirkaMriezky] = useSirkaPrvku();
+  // Kým mriežka nie je zmeraná, platí šírka z posuvníka (na telefóne je skrytý).
+  const naTelefone = telefon && sirkaMriezky > 0;
+  const sirkaKarty = naTelefone ? sirkaKartyNaTelefone(sirkaMriezky, naVysku) : sirka;
   useEffect(() => {
     api
       .get<{ autori: AutoriKariet }>("/dielna/autori")
@@ -222,7 +243,7 @@ export function Glosar() {
             ))}
           </div>
           <input type="search" placeholder="Hľadať názov, tag, efekt alebo príbeh…" value={hladat} onChange={(e) => setHladat(e.target.value)} />
-          <label className="glosar-velkost">
+          <label className="glosar-velkost" hidden={telefon}>
             <span className="tlmene">Veľkosť</span>
             <input type="range" min={150} max={420} step={10} value={sirka} onChange={(e) => setSirka(Number(e.target.value))} />
           </label>
@@ -230,7 +251,14 @@ export function Glosar() {
       </aside>
       <div className="st-obsah">
 
-      <div className="mriezka-kariet" style={{ gridTemplateColumns: `repeat(auto-fill, ${sirka}px)` }}>
+      <div
+        ref={mriezkaRef}
+        className={telefon ? "mriezka-kariet na-telefone" : "mriezka-kariet"}
+        style={{
+          gridTemplateColumns: naTelefone ? `repeat(${naVysku ? 1 : 3}, ${sirkaKarty}px)` : `repeat(auto-fill, ${sirka}px)`,
+          columnGap: naTelefone ? MEDZERA_KARIET_TELEFON : undefined,
+        }}
+      >
         {viditelne.map((k) => {
           const vs = variantyKarty(k);
           const i = varianty[k.id] ?? 0;
@@ -238,7 +266,7 @@ export function Glosar() {
           if (roz === null) return null;
           return (
             <figure key={k.id} className="mriezka-polozka">
-              <KartaLico karta={k} lava={roz.lava} prava={roz.prava} vzhlad={vzhlad} sirka={sirka} onClick={() => setDetail(k)} />
+              <KartaLico karta={k} lava={roz.lava} prava={roz.prava} vzhlad={vzhlad} sirka={sirkaKarty} onClick={() => setDetail(k)} />
               <figcaption>
                 <SipkyVariantov v={i} pocet={vs.pocet} nastav={(n) => setVarianty((s) => ({ ...s, [k.id]: n }))} />
               </figcaption>

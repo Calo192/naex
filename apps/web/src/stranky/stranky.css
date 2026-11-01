@@ -45,6 +45,11 @@ button.cip.aktivny {
   align-items: center;
 }
 
+/* Na telefóne šírku kariet určuje displej (Glosar.tsx) — posuvník by nemal čo meniť. */
+.glosar-velkost[hidden] {
+  display: none;
+}
+
 .glosar-velkost input {
   width: 120px;
 }

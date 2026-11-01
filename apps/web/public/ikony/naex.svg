@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Pohár z loga NA EX! (styles.css .logo-pohar): tmavé pozadie Krčmy, pivo v akcente, okraj v texte.
+       Celý pohár leží v bezpečnej zóne maskovateľnej ikony (kruh 80 % stredu). -->
+  <rect width="512" height="512" fill="#14110e"/>
+  <polygon points="160,228 352,228 340,396 172,396" fill="#e9ad45"/>
+  <path d="M152 128 L172 392 Q173 400 181 400 L331 400 Q339 400 340 392 L360 128" fill="none" stroke="#f1e8d8" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

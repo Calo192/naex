@@ -5,7 +5,7 @@ import type { DlzkaHry, NaladaMomentu } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
 import { useSada } from "../lib/sada.tsx";
-import { Odkaz, useTitulok } from "../lib/router.tsx";
+import { chod, Odkaz, useTitulok } from "../lib/router.tsx";
 import { sNavratom } from "../lib/navrat.ts";
 import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
@@ -22,9 +22,10 @@ import { OznamZiskov } from "../achievementy/VPartii.tsx";
 import { tvar } from "../stranky/Statistiky.tsx";
 import { bezPrvejCasti, rozpracovana, ukazStarsichVoVyucbe, useVyucbaUctu, VyucbaStol, type VyucbaUctu } from "./Vyucba.tsx";
 import { PonukaVyucby, VyucbaVLobby } from "./VstupyVyucby.tsx";
-import { useNepodporovaneZariadenie, useStolNaSirku, type DovodNepodporovania } from "./zariadenie.ts";
+import { smieTelefon, useNepodporovaneZariadenie, useStolNaSirku, type DovodNepodporovania } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
 import { VyzvaCelejObrazovky, useVyzvaTelefonu } from "./CelaObrazovka.tsx";
+import { UpozornenieTelefonu, upozornenieSkryte } from "./UpozornenieTelefonu.tsx";
 import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
 import "./hra.css";
 
@@ -59,12 +60,15 @@ function Lobby({
   chyba,
   vyucba,
   zacniVyucbu,
+  vyucbaNaPocitaci,
 }: {
   readonly zaloz: (verejna: boolean, dlzka: DlzkaHry, bot?: boolean) => void;
   readonly pripoj: (kod: string) => void;
   readonly chyba: string | null;
   readonly vyucba: VyucbaUctu | null;
   readonly zacniVyucbu: (odznova: boolean) => void;
+  /** Telefón: výučba tu nie je odladená — namiesto vstupu len oznam, že patrí na počítač. */
+  readonly vyucbaNaPocitaci: boolean;
 }) {
   const { ja } = useUcet();
   const { sada } = useSada();
@@ -95,7 +99,7 @@ function Lobby({
   // Vypnuté tlačidlo pri uzávierke povie prečo; hlavné nesmie ostať zlaté, akoby išlo (UI inšpekcia).
   const preco = zavrete ? uzavierka : undefined;
   // Nováčikovi bez 1. časti je hlavnou výzvou výučba (#104) — založenie hry je druhoradé.
-  const hlavneZalozenie = !zavrete && !(vyucba !== null && bezPrvejCasti(true, vyucba));
+  const hlavneZalozenie = !zavrete && !(vyucba !== null && !vyucbaNaPocitaci && bezPrvejCasti(true, vyucba));
 
   useEffect(() => {
     let zive = true;
@@ -126,7 +130,10 @@ function Lobby({
       <HlavaStranky nadpis="Hrať" uvod="Založ hru a pošli kamarátovi kód, alebo sa pridaj k niekomu, kto čaká na súpera." />
       {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
       {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}
-      {vyucba !== null && vyucba.dostupna && !zavrete && <VyucbaVLobby vyucba={vyucba} zacni={zacniVyucbu} />}
+      {vyucba !== null && vyucba.dostupna && !zavrete && !vyucbaNaPocitaci && <VyucbaVLobby vyucba={vyucba} zacni={zacniVyucbu} />}
+      {vyucba !== null && vyucba.dostupna && vyucbaNaPocitaci && (
+        <Hlaska druh="info">Výučbu Prvá hra si zahraj na počítači — na telefóne zatiaľ nie je odladená.</Hlaska>
+      )}
       <div className="lobby">
         <section className="panel">
           <h2>Nová hra</h2>
@@ -248,17 +255,37 @@ function Lobby({
   );
 }
 
+const NADPIS_NEPODPOROVANEHO: Readonly<Record<DovodNepodporovania, string>> = {
+  otoc: "Otoč telefón na šírku",
+  iphone: "Na iPhone sa hra zatiaľ nedá hrať",
+  rank: "Na telefóne hrajú hráči od ranku Poldeci",
+  dotyk: "Tu sa NA EX! zatiaľ hrať nedá",
+  uzke: "Tu sa NA EX! zatiaľ hrať nedá",
+};
+
+/** Späť, odkiaľ hráč prišiel; keď prišiel rovno na /hra (odkaz, záložka), na úvod. */
+function spat(): void {
+  if (history.length > 1) history.back();
+  else chod("/");
+}
+
 /** Mobil a úzke okno: hra sa tu zatiaľ hrať nedá (Michal 2026-10-22), zvyšok webu áno. */
 function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovania }) {
   return (
     <>
-    <HlavaStranky nadpis={dovod === "otoc" ? "Otoč telefón na šírku" : dovod === "iphone" ? "Na iPhone sa hra zatiaľ nedá hrať" : "Tu sa NA EX! zatiaľ hrať nedá"} />
+    <HlavaStranky nadpis={NADPIS_NEPODPOROVANEHO[dovod]} />
     <div className="formular-stred panel">
       {dovod === "iphone" ? (
         // Michal 2026-10-31: na mobile zatiaľ len Android — na iPhone ani správca, partia sa ani nezaloží.
         <p>Zahraj si na počítači, tablete alebo telefóne s Androidom — rozohraná partia ťa tam počká.</p>
+      ) : dovod === "rank" ? (
+        // Michal 2026-11-01: na Androide od ranku Poldeci; výučba je na telefóne neodladená, preto na počítači.
+        <>
+          <p>Na telefóne môžu hrať hráči od ranku Poldeci. Najprv prejdi výučbu Prvá hra na počítači.</p>
+          <p className="tlmene">Poldeci budeš po výučbe alebo po prvej dohratej partii. Potom si zahráš aj na telefóne s Androidom.</p>
+        </>
       ) : dovod === "otoc" ? (
-        <p>Stôl pre telefón je zatiaľ len pre správcov a len na šírku. Otoč telefón — rozohraná partia ťa počká.</p>
+        <p>Stôl pre telefón sa hrá len na šírku. Otoč telefón — rozohraná partia ťa počká.</p>
       ) : dovod === "dotyk" ? (
         <p>
           Herný stôl potrebuje širokú obrazovku a myš. Otvor NA EX! na počítači alebo na tablete na šírku — rozohraná partia ťa tam
@@ -267,14 +294,19 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovani
       ) : (
         <p>Okno je na herný stôl príliš úzke. Roztiahni ho aspoň na 900 px a hra sa ukáže — rozohraná partia ťa počká.</p>
       )}
-      <p className="tlmene">Kým sa hra dostane aj na mobil, môžeš si tu čítať:</p>
+      <p className="tlmene">{dovod === "rank" ? "Dovtedy si tu môžeš čítať:" : "Kým sa hra dostane aj na mobil, môžeš si tu čítať:"}</p>
       <div className="riadok-tlacidiel">
         {dovod === "iphone" && (
           <Odkaz href="/" className="tlacidlo tlacidlo-hlavne">
             Späť na úvod
           </Odkaz>
         )}
-        <Odkaz href="/pravidla" className={dovod === "iphone" ? "tlacidlo" : "tlacidlo tlacidlo-hlavne"}>
+        {dovod === "rank" && (
+          <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={spat}>
+            Späť
+          </button>
+        )}
+        <Odkaz href="/pravidla" className={dovod === "iphone" || dovod === "rank" ? "tlacidlo" : "tlacidlo tlacidlo-hlavne"}>
           Pravidlá
         </Odkaz>
         <Odkaz href="/karty" className="tlacidlo">
@@ -292,15 +324,41 @@ function NepodporovaneZariadenie({ dovod }: { readonly dovod: DovodNepodporovani
   );
 }
 
+/** Výučba je na telefóne neodladená (Michal 2026-11-01) — rozohranú dohrá hráč na počítači. */
+function VyucbaNaTelefone({ prerus }: { readonly prerus: () => void }) {
+  return (
+    <>
+      <HlavaStranky nadpis="Výučbu dohraj na počítači" />
+      <div className="formular-stred panel">
+        <p>Výučba Prvá hra zatiaľ nie je odladená pre telefón. Majster Melichar ťa počká na počítači — rozohraná časť ostane, kde si skončil.</p>
+        <div className="riadok-tlacidiel">
+          <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={prerus}>
+            Prerušiť výučbu
+          </button>
+          <Odkaz href="/pravidla" className="tlacidlo">
+            Pravidlá
+          </Odkaz>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function Hra() {
   useTitulok("Hrať");
   const { ja, nacitane, nastav: nastavUcet } = useUcet();
-  // Telefón na šírku smie zatiaľ len správca (Michal 2026-10-31) — ostatným ostáva oznam.
+  // Telefón na šírku smie hráč od ranku Poldeci (Michal 2026-11-01; predtým len správca) — ostatným oznam.
   const spravca = ja !== null && jeSpravca(ja.rola);
-  const nepodporovane = useNepodporovaneZariadenie(spravca);
-  const { naSirku, otoc } = useStolNaSirku(spravca);
+  const mobil = smieTelefon(ja?.rola ?? null);
+  const nepodporovane = useNepodporovaneZariadenie(mobil);
+  const { naSirku, otoc } = useStolNaSirku(mobil);
   // Na telefóne povinne celá obrazovka (Michal 2026-10-31); kde ju prehliadač nevie, aspoň na šírku.
   const telefon = useVyzvaTelefonu(naSirku, otoc);
+  // Výučba na telefóne nie je odladená — hráč ju dostane na počítači; správca ju tu smie skúšať.
+  const vyucbaNaPocitaci = naSirku && !spravca;
+  // Upozornenie pred stolom (Michal 2026-11-01): pri každej partii (kód miestnosti), kým ho hráč neskryje.
+  const [upozornenieSkryl, setUpozornenieSkryl] = useState(upozornenieSkryte);
+  const [upozornenieVidel, setUpozornenieVidel] = useState<string | null>(null);
   // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
   const hra = useHra(ja !== null && nepodporovane === null);
 
@@ -355,10 +413,10 @@ export function Hra() {
   const { zaloz } = hra;
   const zalozSPonukou = useCallback(
     (verejna: boolean, dlzka: DlzkaHry, bot = false) => {
-      if (vyucbaUctu?.ponuknut === true && !ponukaZavreta) setZalozPoPonuke({ verejna, dlzka, bot });
+      if (vyucbaUctu?.ponuknut === true && !ponukaZavreta && !vyucbaNaPocitaci) setZalozPoPonuke({ verejna, dlzka, bot });
       else zaloz(verejna, dlzka, bot);
     },
-    [vyucbaUctu, ponukaZavreta, zaloz],
+    [vyucbaUctu, ponukaZavreta, zaloz, vyucbaNaPocitaci],
   );
   const preskocPonuku = useCallback(() => {
     preskocVyucbu();
@@ -380,9 +438,11 @@ export function Hra() {
   useEffect(() => {
     if (new URLSearchParams(location.search).get("vyucba") === null || !pripojene || miestnost !== null || vyucbaUctu === null) return;
     history.replaceState(null, "", "/hra");
+    // Na telefóne výučba nezačne — lobby povie, že patrí na počítač.
+    if (vyucbaNaPocitaci) return;
     // Odznova, len keď nie je čím pokračovať (rozohraná časť, alebo hotová časť a ďalšia čaká).
     if (vyucbaUctu.dostupna) zacniVyucbu(vyucbaUctu.stav !== null && !rozpracovana(vyucbaUctu));
-  }, [pripojene, miestnost, vyucbaUctu, zacniVyucbu]);
+  }, [pripojene, miestnost, vyucbaUctu, zacniVyucbu, vyucbaNaPocitaci]);
   useEffect(() => {
     const kod = new URLSearchParams(location.search).get("kod");
     if (kod !== null && pripojene && miestnost === null) {
@@ -396,7 +456,8 @@ export function Hra() {
 
   // Rola správcu je známa až po načítaní účtu — dovtedy by telefón na šírku bliklo oznamom.
   if (!nacitane) return <Nacitavanie />;
-  if (nepodporovane !== null) return <NepodporovaneZariadenie dovod={nepodporovane} />;
+  // Odhlásený na telefóne sa najprv prihlási — o ranku sa rozhodne až podľa účtu.
+  if (nepodporovane !== null && !(nepodporovane === "rank" && ja === null)) return <NepodporovaneZariadenie dovod={nepodporovane} />;
   if (ja === null) {
     // Pozvánka /hra?kod=ABCD: po prihlásení aj registrácii späť s kódom — efekt vyššie hráča pripojí.
     // Bez pozvánky začína nový účet profilom ako doteraz.
@@ -425,7 +486,7 @@ export function Hra() {
   if (m === null) {
     return (
       <>
-        <Lobby zaloz={zalozSPonukou} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} />
+        <Lobby zaloz={zalozSPonukou} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} vyucbaNaPocitaci={vyucbaNaPocitaci} />
         {zalozPoPonuke !== null && vyucbaUctu !== null && !ponukaZavreta && (
           <PonukaVyucby vyucba={vyucbaUctu} zacni={() => zacniVyucbu(false)} preskoc={preskocPonuku} />
         )}
@@ -479,14 +540,29 @@ export function Hra() {
     );
   }
 
+  // Rozohraná výučba otvorená na telefóne (napr. z počítača) — stôl výučby sa tu neukáže.
+  if (hra.vyucba !== null && vyucbaNaPocitaci) return <VyucbaNaTelefone prerus={prerusVyucbu} />;
+
+  const ukazUpozornenie = naSirku && !upozornenieSkryl && upozornenieVidel !== m.code;
+  const rozumiemUpozorneniu = (neukazovat: boolean): void => {
+    setUpozornenieVidel(m.code);
+    if (neukazovat) setUpozornenieSkryl(true);
+    // Ťuk na „Rozumiem“ je gesto, ktoré prehliadač chce pre celú obrazovku — druhá výzva netreba.
+    if (telefon.vyzva === "cela") telefon.zapni();
+  };
   const krokVyucby = hra.vyucba?.krok ?? null;
   const zadrzBitku =
     krokVyucby !== null && (krokVyucby.kto === "bot" || krokVyucby.kto === "auto") && krokVyucby.melichar.trim() !== "" ? krokVyucby.id : null;
 
   return (
     <>
-    {telefon.vyzva === "cela" && <VyzvaCelejObrazovky zapni={telefon.zapni} />}
-    {telefon.vyzva === "otoc" && <OtocTelefon />}
+    {ukazUpozornenie ? (
+      <UpozornenieTelefonu rozumiem={rozumiemUpozorneniu} />
+    ) : telefon.vyzva === "cela" ? (
+      <VyzvaCelejObrazovky zapni={telefon.zapni} />
+    ) : (
+      telefon.vyzva === "otoc" && <OtocTelefon />
+    )}
     <HudbaPartie />
     {/* Vo výučbe len na jej konci — achievement Prvá hra (Michal 2026-10-25). */}
     {(hra.vyucba === null || hra.vyucba.hotovo) && <OznamZiskov zisky={hra.achievementy.zisky} />}
