@@ -13,7 +13,10 @@ import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategor
 import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overIdNapovedy, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overIdNapovedy, overEmail, citajCookie, jeSpravca } from "./auth.ts";
+import type { ObnovaHesla } from "./obnovaHesla.ts";
+import { ODPOVED_ZIADOSTI, textEmailuObnovy } from "./obnovaHesla.ts";
+import type { PosliEmail } from "./email.ts";
 import type { DruhMedia, Media } from "./media.ts";
 import type { Hudba } from "./hudba.ts";
 import type { Obsah } from "./obsah.ts";
@@ -81,6 +84,12 @@ export const OZNAM_UZAVIERKY = "Pripravujeme aktualizáciu hry — nové partie 
 
 export interface ApiKontext {
   readonly ucty: Ucty;
+  /** Obnova zabudnutého hesla cez e-mail z profilu (Michal 2026-11-01). */
+  readonly obnovaHesla: ObnovaHesla;
+  /** Odosielanie e-mailov — zatiaľ len do logu (email.ts, NAEX_EMAIL_REZIM). */
+  readonly posliEmail: PosliEmail;
+  /** Verejná adresa webu do odkazov v e-mailoch (NAEX_ADRESA); null = len cesta. Nie z hlavičky Host — tú podvrhne útočník. */
+  readonly adresa: string | null;
   readonly obsah: Obsah;
   readonly media: Media;
   /** Predvolené avatary (dedinské trosky), z ktorých si hráč môže vybrať. */
@@ -158,8 +167,10 @@ const JSON_LIMIT = 2 * 1024 * 1024;
 
 // Brzda proti hádaniu hesiel: najviac 10 neúspechov z jednej IP za 10 minút.
 const neuspechy = new Map<string, { pocet: number; od: number }>();
+const ipZRequestu = (req: IncomingMessage): string => String(req.headers["x-forwarded-for"] ?? req.socket.remoteAddress ?? "").split(",")[0]?.trim() ?? "";
+
 function brzda(req: IncomingMessage, teraz: number, zlyhanie: boolean): void {
-  const ip = String(req.headers["x-forwarded-for"] ?? req.socket.remoteAddress ?? "").split(",")[0]?.trim() ?? "";
+  const ip = ipZRequestu(req);
   const z = neuspechy.get(ip);
   if (z !== undefined && teraz - z.od > 10 * 60 * 1000) neuspechy.delete(ip);
   const aktualny = neuspechy.get(ip);
@@ -371,6 +382,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     return p;
   };
   const ok = (telo: unknown, status = 200, hlavicky: Record<string, string> = {}) => odpoved(res, status, telo, hlavicky);
+  // Vlastný účet s e-mailom — e-mail nie je v Pouzivatel, aby sa nedostal k iným (partia, profily, spätná väzba).
+  const vlastny = (p: Pouzivatel | null) => (p === null ? null : { ...p, email: ctx.ucty.email(p.id) });
   const casti = cesta.split("/").filter((c) => c !== "").map(decodeURIComponent);
   const r = `${metoda} /${casti.slice(1).join("/")}`;
 
@@ -380,14 +393,14 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "GET /ja") {
       // Neprihlásený má práva Nealka — klient podľa nich skryje odkazy (Vývoj), ktoré by server odmietol.
       if (ja === null) return ok({ pouzivatel: null, prava: ctx.prava.zoznam(null) });
-      return ok({ pouzivatel: { ...ja, dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) } });
+      return ok({ pouzivatel: { ...vlastny(ja), dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) } });
     }
 
     if (r === "POST /registracia") {
       const b = await citajJson(req);
       const p = ctx.ucty.registruj(overLogin(b.login), overHesloVstup(b.heslo), overMeno(b.meno), teraz);
       const token = ctx.ucty.novaRelacia(p.id, teraz);
-      return ok({ pouzivatel: p }, 201, { "set-cookie": cookieRelacie(token, ctx.bezpecneCookie) });
+      return ok({ pouzivatel: vlastny(p) }, 201, { "set-cookie": cookieRelacie(token, ctx.bezpecneCookie) });
     }
 
     if (r === "POST /prihlasenie") {
@@ -399,7 +412,35 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         throw new ChybaVstupu("Nesprávne meno alebo heslo.", 401);
       }
       const token = ctx.ucty.novaRelacia(p.id, teraz);
-      return ok({ pouzivatel: p }, 200, { "set-cookie": cookieRelacie(token, ctx.bezpecneCookie) });
+      return ok({ pouzivatel: vlastny(p) }, 200, { "set-cookie": cookieRelacie(token, ctx.bezpecneCookie) });
+    }
+
+    // ----- obnova zabudnutého hesla (Michal 2026-11-01) ---------------------
+    // Odpoveď je vždy rovnaká a e-mail sa neodosiela v rámci požiadavky — ani čas
+    // odpovede neprezradí, či účet s e-mailom existuje.
+    if (r === "POST /obnova-hesla") {
+      const b = await citajJson(req);
+      const email = overEmail(b.email);
+      if (email === null) throw new ChybaVstupu("Zadaj e-mail, ktorý máš v profile.");
+      const z = ctx.obnovaHesla.poziadaj(email, ipZRequestu(req), teraz);
+      if (z !== null) {
+        const { predmet, text } = textEmailuObnovy(z.pouzivatel, z.token, ctx.adresa);
+        void ctx.posliEmail(z.email, predmet, text).catch((err: unknown) => console.error("E-mail na obnovu hesla sa neodoslal:", err));
+      }
+      return ok({ ok: true, sprava: ODPOVED_ZIADOSTI });
+    }
+
+    if (r === "POST /obnova-hesla/over") {
+      const b = await citajJson(req);
+      return ok({ platny: ctx.obnovaHesla.platny(b.token, teraz) });
+    }
+
+    // Po novom hesle sú všetky staré relácie preč a hráč je prihlásený novou — ako po registrácii.
+    if (r === "POST /obnova-hesla/nove") {
+      const b = await citajJson(req);
+      const p = ctx.obnovaHesla.nastavHeslo(b.token, overHesloVstup(b.heslo), teraz);
+      const token = ctx.ucty.novaRelacia(p.id, teraz);
+      return ok({ pouzivatel: vlastny(p) }, 200, { "set-cookie": cookieRelacie(token, ctx.bezpecneCookie) });
     }
 
     if (r === "POST /odhlasenie") {
@@ -411,9 +452,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     if (r === "PATCH /profil") {
       const p = prihlaseny();
       const b = await citajJson(req);
+      // E-mail sa overí a uloží prvý — obsadený iným účtom odmietne celú zmenu.
+      if (b.email !== undefined) ctx.ucty.nastavEmail(p.id, overEmail(b.email));
       // Meno, zväčšenie lupy, hlasitosť hudby aj farebná schéma sa ukladajú samostatne — posiela sa len to, čo sa mení.
       return ok({
-        pouzivatel: ctx.ucty.upravProfil(p.id, {
+        pouzivatel: vlastny(ctx.ucty.upravProfil(p.id, {
           ...(b.meno !== undefined ? { meno: overMeno(b.meno) } : {}),
           ...(b.lupa !== undefined ? { lupa: overLupu(b.lupa) } : {}),
           ...(b.hudba !== undefined ? { hudba: overHlasitost(b.hudba) } : {}),
@@ -425,7 +468,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
           ...(b.napovedy !== undefined ? { napovedy: overPrepinac(b.napovedy, "Nápovedy Melichara") } : {}),
           ...(b.pohlavie !== undefined ? { pohlavie: overPohlavie(b.pohlavie) } : {}),
           ...(b.skrytySuhrn !== undefined ? { skrytySuhrn: overPrepinac(b.skrytySuhrn, "Skryť môj súhrn") } : {}),
-        }),
+        })),
       });
     }
 
@@ -510,7 +553,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       ctx.prava.vyzaduj(p, "vlastna_fotka");
       const buf = await citajTelo(req, AVATAR_LIMIT);
       const m = ctx.media.uloz(buf, "avatar", `avatar-${p.id}`, teraz, ["image/jpeg", "image/png", "image/webp"]);
-      return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: m.id }) });
+      return ok({ pouzivatel: vlastny(ctx.ucty.upravProfil(p.id, { avatar: m.id })) });
     }
 
     // Michal 2026-10-19: namiesto vlastnej fotky si hráč vyberie jednu z trosiek.
@@ -525,13 +568,13 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const b = await citajJson(req);
       const id = String(b.avatar ?? "");
       if (!ctx.predvoleneAvatary.includes(id)) throw new ChybaVstupu("Taký predvolený avatar neexistuje.");
-      return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: id }) });
+      return ok({ pouzivatel: vlastny(ctx.ucty.upravProfil(p.id, { avatar: id })) });
     }
 
     if (r === "DELETE /profil/avatar") {
       const p = prihlaseny();
       // Bez vlastnej fotky dostane hráč náhodnú dedinskú trosku.
-      return ok({ pouzivatel: ctx.ucty.upravProfil(p.id, { avatar: ctx.ucty.predvolenyAvatar() }) });
+      return ok({ pouzivatel: vlastny(ctx.ucty.upravProfil(p.id, { avatar: ctx.ucty.predvolenyAvatar() })) });
     }
 
     // ----- verejné -------------------------------------------------------
@@ -998,7 +1041,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ kariet: karty.length, pridane, upravene, nezname });
     }
 
-    if (sub === "GET /pouzivatelia") return ok({ pouzivatelia: ctx.ucty.zoznam() });
+    // E-maily hráčov vidí len admin (Michal 2026-11-01), subadmin nie.
+    if (sub === "GET /pouzivatelia") return ok({ pouzivatelia: ctx.ucty.zoznam(ja2.rola === "admin") });
     // Tempo partií — kde ide čas (roadmapa #9, admin.ts tempo).
     if (sub === "GET /tempo") return ok({ partie: ctx.tempoPartii.zoznam() });
     // Štatistiky kariet z odohraných partií (rebalans); ?od=<verzia sady>.

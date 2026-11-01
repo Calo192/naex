@@ -11,10 +11,13 @@
 //   NAEX_ACHIEVEMENTY    1 = achievementy počítať aj pri „zapnute“: false v katalógu (vývoj a UI inšpekcia)
 //   NAEX_SCENAR          vývojový scenár partií proti botovi (scenar.ts): zajatie | zajatie-vyhra —
 //                        starší na stupni 3 pre tok zajatia; pri NODE_ENV=production sa ignoruje
+//   NAEX_EMAIL_REZIM     ako posielať e-maily (obnova hesla); zatiaľ len log = vypísať do logu (predvolene)
+//   NAEX_ADRESA          verejná adresa webu do odkazov v e-mailoch (https://naex.sk); bez nej len cesta
 
 import { fileURLToPath } from "node:url";
 import { createGameServer } from "./server.ts";
 import { scenarZProstredia } from "./scenar.ts";
+import { odosielacZProstredia } from "./email.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
 
@@ -32,6 +35,8 @@ createGameServer({
   ...(process.env.NAEX_ACHIEVEMENTY === "1" ? { achievementyZapnute: true } : {}),
   ...(process.env.NAEX_PLAYTESTY ? { playtestyDir: process.env.NAEX_PLAYTESTY } : {}),
   ...(scenar !== undefined ? { scenar } : {}),
+  posliEmail: odosielacZProstredia(process.env.NAEX_EMAIL_REZIM),
+  ...(process.env.NAEX_ADRESA ? { adresa: process.env.NAEX_ADRESA } : {}),
 })
   .then((server) => {
     console.log(`NA EX server počúva na http://localhost:${server.port}`);

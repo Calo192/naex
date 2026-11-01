@@ -95,6 +95,8 @@ import { Roadmapa } from "./roadmapa.ts";
 import { Novinky } from "./novinky.ts";
 import { Dielna } from "./dielna.ts";
 import { Hodnotenia } from "./znamky.ts";
+import { ObnovaHesla } from "./obnovaHesla.ts";
+import { emailDoLogu, type PosliEmail } from "./email.ts";
 import { titul } from "./frajerina.ts";
 import { Achievementy, nacitajKatalog, type AchievementyMiestnosti } from "./achievementy.ts";
 
@@ -295,14 +297,22 @@ export interface ServerOpts {
   readonly scenar?: Scenar;
   /** Pevný seed rozdania každej novej partie (testy) — partia sa dá zopakovať. */
   readonly seedRozdania?: number;
+  /** Odosielanie e-mailov (obnova hesla); predvolene len do logu servera (email.ts). */
+  readonly posliEmail?: PosliEmail;
+  /** Verejná adresa webu do odkazov v e-mailoch (NAEX_ADRESA, napr. https://naex.sk); bez nej len cesta. */
+  readonly adresa?: string;
+  /** Hodiny servera (testy platnosti odkazov); predvolene Date.now. */
+  readonly teraz?: () => number;
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
-  const teraz = (): number => Date.now();
+  const teraz = opts.teraz ?? ((): number => Date.now());
   const dataDir = resolve(opts.dataDir ?? "data");
   mkdirSync(dataDir, { recursive: true });
   const db = otvorDb(join(dataDir, "naex.sqlite"));
   const ucty = new Ucty(db, opts.admin ?? { login: "Admin", heslo: null });
+  const obnovaHesla = new ObnovaHesla(db, ucty);
+  const posliEmail = opts.posliEmail ?? emailDoLogu();
   const media = new Media(db, dataDir);
   const avatary = new Avatary(media, teraz());
   const hudba = new Hudba(dataDir);
@@ -455,6 +465,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       void spracujApi(
         {
           ucty,
+          obnovaHesla,
+          posliEmail,
+          adresa: opts.adresa ?? null,
           obsah,
           media,
           predvoleneAvatary: avatary.hracov,

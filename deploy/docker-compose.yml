@@ -8,6 +8,9 @@ services:
     environment:
       NAEX_ADMIN_HESLO: ${NAEX_ADMIN_HESLO}
       NAEX_SECURE_COOKIE: "1"
+      # Odkazy v e-mailoch (obnova hesla); odosielanie je zatiaľ len do logu (docs/NASADENIE.md 8).
+      NAEX_ADRESA: https://${DOMENA}
+      NAEX_EMAIL_REZIM: ${NAEX_EMAIL_REZIM:-log}
     volumes:
       - naex-data:/data
     expose:

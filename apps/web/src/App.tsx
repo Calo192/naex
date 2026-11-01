@@ -13,6 +13,7 @@ import { Domov } from "./stranky/Domov.tsx";
 import { Glosar } from "./stranky/Glosar.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
 import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
+import { NoveHeslo, ZabudnuteHeslo } from "./stranky/ObnovaHesla.tsx";
 import { Hra } from "./hra/Hra.tsx";
 import { HracProfil } from "./stranky/profil/Profil.tsx";
 import { DetailPartie } from "./stranky/profil/DetailPartie.tsx";
@@ -104,6 +105,8 @@ export function App() {
     : cesta === "/novinky" ? <Novinky />
     : cesta === "/prihlasenie" ? <Prihlasenie />
     : cesta === "/registracia" ? <Registracia />
+    : cesta === "/zabudnute-heslo" ? <ZabudnuteHeslo />
+    : cesta === "/obnova-hesla" ? <NoveHeslo />
     : cesta === "/rebricek" ? chranene(<Rebricek />)
     : cesta === "/spatna-vazba" ? chranene(<SpatnaVazba />)
     : <Nenajdene />;

@@ -45,7 +45,7 @@ const citaj = (db: Db, id: number): { id: number; login: string; meno: string; r
 /** Názov v úvodzovkách pre SQL — názvy tabuliek a stĺpcov prichádzajú zo schémy, nie od klienta. */
 const q = (meno: string): string => `"${meno.replace(/"/g, '""')}"`;
 
-/** Všetky stĺpce, ktoré odkazujú na používateľa (okrem relácií, tie sa rušia). */
+/** Všetky stĺpce, ktoré odkazujú na používateľa (okrem relácií a odkazov na obnovu hesla, tie sa rušia). */
 export function odkazyNaPouzivatela(db: Db): { tabulka: string; stlpec: string }[] {
   const tabulky = (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name").all() as { name: string }[]).map(
     (t) => t.name,
@@ -61,7 +61,7 @@ export function odkazyNaPouzivatela(db: Db): { tabulka: string; stlpec: string }
       if (t === tabulka && stlpce.has(s) && !out.some((o) => o.tabulka === t && o.stlpec === s)) out.push({ tabulka, stlpec: s });
     }
   }
-  return out.filter((o) => o.tabulka !== "relacie");
+  return out.filter((o) => o.tabulka !== "relacie" && o.tabulka !== "obnova_hesla");
 }
 
 /**
@@ -88,6 +88,8 @@ export function zlucUcty(db: Db, zId: number, doId: number, skusobne: boolean): 
       if (prepisane > 0 || zahodene > 0) tabulky.push({ tabulka, stlpec, prepisane, zahodene });
     }
     const relacie = Number(db.prepare("DELETE FROM relacie WHERE pouzivatel = ?").run(zId).changes);
+    // Odkaz na obnovu hesla duplikátu by po prepísaní menil heslo hlavného účtu.
+    db.prepare("DELETE FROM obnova_hesla WHERE pouzivatel = ?").run(zId);
     db.prepare("DELETE FROM pouzivatelia WHERE id = ?").run(zId);
     db.exec(skusobne ? "ROLLBACK" : "COMMIT");
     return {

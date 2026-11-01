@@ -208,6 +208,47 @@ novú značku (`dorovnajSoSeedom(teraz, "migracia-sada-vN-…")`).
 Rozohrané partie sa pri reštarte stratia (stav partie je v pamäti) — aktualizuj,
 keď nikto nehrá. Účty, karty a obrázky ostávajú v databáze.
 
+### 8. E-maily (obnova zabudnutého hesla)
+
+Hráč si môže v profile uložiť nepovinný e-mail; na stránke prihlásenia je odkaz
+**Zabudol som heslo** a server na ten e-mail pošle odkaz na nové heslo (platí
+1 hodinu, raz). **Odosielanie je zatiaľ vypnuté** (Michal 2026-11-01): režim
+`NAEX_EMAIL_REZIM=log` (predvolený) e-mail neodošle, len ho zapíše do logu
+servera — kto, kam a odkaz:
+
+```bash
+# na serveri
+cd /opt/naex/deploy && sudo docker compose logs naex | grep -A8 "e-mail, neodoslaný"
+```
+
+Odkaz v e-maile začína adresou z `NAEX_ADRESA` (compose ju nastaví na
+`https://${DOMENA}`). Z hlavičky `Host` sa zámerne neberie — útočník by si
+inak vyžiadal obnovu cudzieho účtu s odkazom na vlastnú doménu.
+
+**Čo treba na zapnutie odosielania** (bez nových závislostí, `package.json` sa nemení):
+
+1. V `packages/server/src/email.ts` pridať režim do `REZIMY_EMAILU`
+   a jeho implementáciu `PosliEmail` — `(komu, predmet, text) => Promise<void>`;
+   v `odosielacZProstredia` ju vybrať podľa režimu. Dve cesty:
+   - **Gmail SMTP** (`smtp`): `node:tls` na `smtp.gmail.com:465`, príkazy
+     EHLO, AUTH PLAIN (účet + *heslo aplikácie* z Google účtu s dvojfázovým
+     overením, nie bežné heslo), MAIL FROM, RCPT TO, DATA, QUIT. Telo
+     `Content-Type: text/plain; charset=utf-8`, predmet s diakritikou
+     kódovaný ako `=?UTF-8?B?…?=`. Gmail dovolí rádovo stovky správ denne.
+   - **HTTPS API služby** (`api`, napr. Brevo, Resend, Postmark): jeden
+     `fetch` POST s kľúčom v hlavičke. Doména odosielateľa potrebuje
+     záznamy SPF a DKIM, inak pošta padá do nevyžiadanej.
+2. Premenné prostredia v `deploy/.env` na serveri (mimo gitu) a ich
+   odovzdanie v `deploy/docker-compose.yml` (sekcia `environment`):
+   `NAEX_EMAIL_REZIM` a podľa režimu napr. `NAEX_EMAIL_OD` (adresa
+   odosielateľa), `NAEX_SMTP_UCET` + `NAEX_SMTP_HESLO`, alebo `NAEX_EMAIL_API_KLUC`.
+3. Chyba odosielania sa len zapíše do logu — hráč dostane vždy tú istú
+   odpoveď („Ak účet s týmto e-mailom existuje…“), aby sa nedalo zistiť, kto je
+   registrovaný. Test odosielača: vlastný e-mail v profile → Zabudol som heslo.
+
+E-mail hráča vidí len on sám (profil) a admin (Hráči → pod loginom,
+`admin.ts pouzivatelia` pri prihlásení ako admin); subadmin ani ostatní hráči nie.
+
 ## Lokálne bez Dockera
 
 ```bash
@@ -227,3 +268,5 @@ Dáta sú v priečinku `data/` (databáza `naex.sqlite` a `media/`).
 | `NAEX_ADMIN_HESLO` | heslo jediného admina; bez neho sa účet nezakladá | — |
 | `NAEX_ADMIN_LOGIN` | prihlasovacie meno admina | `Admin` |
 | `NAEX_SECURE_COOKIE` | `1` = prihlásenie len cez HTTPS (za Caddy vždy) | — |
+| `NAEX_EMAIL_REZIM` | ako posielať e-maily (obnova hesla); zatiaľ len `log` = zapísať do logu | `log` |
+| `NAEX_ADRESA` | verejná adresa webu do odkazov v e-mailoch | compose: `https://${DOMENA}`, inak len cesta |

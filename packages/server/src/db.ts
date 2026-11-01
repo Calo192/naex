@@ -25,6 +25,14 @@ CREATE TABLE IF NOT EXISTS relacie (
   pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
   plati_do INTEGER NOT NULL
 );
+-- Odkazy na obnovu zabudnutého hesla (Michal 2026-11-01): ako pri reláciách len hash
+-- tokenu. Použitý odkaz zanikne spolu so všetkými ostatnými odkazmi účtu.
+CREATE TABLE IF NOT EXISTS obnova_hesla (
+  token TEXT PRIMARY KEY,
+  pouzivatel INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
+  vytvoreny INTEGER NOT NULL,
+  plati_do INTEGER NOT NULL
+);
 CREATE TABLE IF NOT EXISTS media (
   id TEXT PRIMARY KEY,
   typ TEXT NOT NULL,
@@ -387,7 +395,12 @@ function migruj(db: Db): void {
     ["pohlavie", "TEXT"],
     // Profil (Michal 2026-10-22): „skryť môj súhrn“ pred ostatnými; hodnotenie (Frajerina) ostáva viditeľné.
     ["skryty_suhrn", "INTEGER NOT NULL DEFAULT 0"],
+    // Nepovinný e-mail (Michal 2026-11-01), zatiaľ len na obnovu zabudnutého hesla.
+    // Vidí ho len hráč sám a admin; NULL = neuviedol.
+    ["email", "TEXT"],
   ]);
+  // Obnova hesla musí nájsť jediný účet — ten istý e-mail, ani s inými veľkými písmenami, nesmú mať dva účty.
+  db.exec("CREATE UNIQUE INDEX IF NOT EXISTS pouzivatelia_email ON pouzivatelia(email COLLATE NOCASE) WHERE email IS NOT NULL");
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
   doplnStlpce(db, "navrhy", [["verdikt", "TEXT NOT NULL DEFAULT ''"]]);
   // Vydanie novinky (Michal 2026-10-27), napr. „Pravidlá v6“ — nadpis dňa v Novinkách; '' = len dátum.

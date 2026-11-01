@@ -76,6 +76,8 @@ export interface Pouzivatel {
   readonly medziobrazovky?: boolean;
   /** Pohlavie pre tvary hlášok v partii; null/chýba = neuvádza (neutrálne hlášky). */
   readonly pohlavie?: Pohlavie | null;
+  /** Nepovinný e-mail na obnovu hesla — server ho posiela len hráčovi samému a adminovi. */
+  readonly email?: string | null;
 }
 
 export const LUPA_OD = 150;
