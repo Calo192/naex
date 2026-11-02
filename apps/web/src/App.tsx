@@ -11,6 +11,7 @@ import { Odkaz, useCesta } from "./lib/router.tsx";
 import { jeSpravca, maPravo, useUcet } from "./lib/ucet.tsx";
 import { Domov } from "./stranky/Domov.tsx";
 import { Glosar } from "./stranky/Glosar.tsx";
+import { Heatmapa } from "./stranky/Heatmapa.tsx";
 import { Pravidla } from "./stranky/Pravidla.tsx";
 import { Prihlasenie, Profil, Registracia } from "./stranky/Ucet.tsx";
 import { NoveHeslo, ZabudnuteHeslo } from "./stranky/ObnovaHesla.tsx";
@@ -102,6 +103,7 @@ export function App() {
   const stranka: ReactNode =
     cesta === "/" ? <Domov />
     : cesta === "/karty" ? <Glosar />
+    : cesta === "/karty/heatmapa" ? <Heatmapa />
     : cesta === "/novinky" ? <Novinky />
     : cesta === "/prihlasenie" ? <Prihlasenie />
     : cesta === "/registracia" ? <Registracia />

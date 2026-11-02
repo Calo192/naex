@@ -18,6 +18,9 @@
 //   &stop=hadka-super krok Hádka, keď ju rozdeľuje súper (čakanie hráča ?ja)
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
 //                  odpovie a bitka sa vyhodnotí v jeho ťahu
+//   &stop=vizia    Vízia: hráč ?ja rozhoduje o vrchnej karte balíčka (veľké okno, Michal 2026-11-02);
+//                  &gula=1 mu dá do Dedičstva Krištáľovú guľu — okno ukáže dve karty
+//   &stop=vestica  Veštica po prehratej bitke: hráč ?ja vyberá karty z oboch doberacích balíčkov
 //   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
@@ -114,6 +117,13 @@ function sMarkermi(s: GameState, spec: string): GameState {
   return { ...s, starsi: s.starsi.map((e, i) => (na.has(i) ? { ...e, marker: na.get(i) as MarkerPos, vyplatene: 0, drzane: 0 } : e)) };
 }
 
+/** Hráčovi p dá do Dedičstva Krištáľovú guľu — Vízia ukáže dve vrchné karty. */
+function sGulou(s: GameState, p: PlayerId): GameState {
+  const gula: CardInstance = { uid: s.nextUid, defId: "kristalova_gula", leftLayout: 0, rightLayout: 0 };
+  const h = { ...s.hraci[p], dedicstvo: [...s.hraci[p].dedicstvo, gula] };
+  return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] };
+}
+
 /** Hráč p vyloží Hasiča s neprázdnym odhadzovacím balíčkom — stav čaká na jeho voľbu. */
 function sHasicom(data: GameData, s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
@@ -180,8 +190,8 @@ function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: 
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  if (!["zaverecna", "hadka", "hadka-super", "pohorsenie"].includes(q().get("stop") ?? "")) return odohrajSeed(data, seed).odohrane;
-  // Súperova Záverečná ani hádka určitého víťaza nepadne v každej partii — skúša sa od zadaného seedu ďalej.
+  if (!["zaverecna", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "")) return odohrajSeed(data, seed).odohrane;
+  // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
     const x = odohrajSeed(data, seed + pokus);
     if (x.najdene) return x.odohrane;
@@ -258,6 +268,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "hadka-super" && s.faza === "bitka" && s.bitkaStav?.krok === "hadka" && s.bitkaStav.caka === opponentOf(ja) && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
       if (hadokSupera++ === i) return najdene({ zaciatok: s, dohraj: [] });
     }
+    if (stop === "vizia" && s.vizia !== null && naTahu(s) === ja && s.hraci[ja].doberaci.length >= 2)
+      return najdene({ zaciatok: p.get("gula") === "1" ? sGulou(s, ja) : s, dohraj: [] });
+    if (stop === "vestica" && s.faza === "bitka" && s.bitkaStav?.krok === "vestica" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
@@ -312,7 +325,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: stop !== "zaverecna" };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica"].includes(stop) };
 }
 
 export function UkazkaStola() {
