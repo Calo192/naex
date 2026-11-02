@@ -1,20 +1,21 @@
-// Súhrn posunov starších pred výberom lokality (Michal 2026-10-30, mock 5 „Bublina pri dlaždici“;
-// interview 2026-10-31). Čo sa v kole stalo so staršími, vidia obaja hráči rovnako: každý
-// pohnutý starší má jednu bublinu so stupnicou pred → po (bez krokov a zdrojov), nepohnutý
-// len keď na konci kola vyplatil udržaný strach alebo mu hádka posunula priazeň; úspešné zajatie je
-// bublina „uväznený“ namiesto samostatného okna. Bez Reactu, aby sa obsah dal otestovať.
+// Súhrn kola pri starších pred výberom lokality (Michal 2026-10-30, mock 5 „Bublina pri dlaždici“;
+// interview 2026-10-31; v11 Strach a reči 2026-11-02). Čo sa v kole stalo so staršími, vidia obaja
+// hráči rovnako: každý starší, ktorému sa zmenil strach či reči, má jednu bublinu s teplomermi
+// pred → po; nezmenený len keď po bitke bodoval; úspešné zajatie je bublina „uväznený“.
+// Bez Reactu, aby sa obsah dal otestovať.
 //
-// Kolo sa porovnáva po stavoch, nie po zázname posunov: stopa posunov (posunyMarkerov) sa
-// maže na začiatku každej Pitky, takže v kole s viac Pitkami by Kšefty z prvej chýbali.
+// Kolo sa porovnáva po stavoch, nie po zázname zmien: zmeny markerov sa mažú na začiatku
+// každej Pitky, takže v kole s viac Pitkami by Kšefty z prvej chýbali.
 
-import type { BitkaNaNastenke, ClientState, ElderState, PlayerId, Vazen } from "@naex/core";
-import { pokusMozny } from "@naex/core";
-import { type MarkerPos, STUPNICA_ZONY, obavanyHrac, priazenHraca, priazenSila, strachNaVyplatu, strachZ, markerStarsieho, type SMarkerom } from "./staraStupnica.ts";
+import type { BitkaNaNastenke, ClientState, ElderState, PlayerId, Stupen, Vazen } from "@naex/core";
+import { pokusMozny, priazenHraca, priazenSila } from "@naex/core";
+
+type Markery = Pick<ElderState, "strach" | "reci">;
 
 /** Starší a väzni na začiatku kola — prvý pohľad kola je pri voľbe cieľa, keď sa ešte nič nepohlo. */
 export interface ZaciatokKola {
   readonly kolo: number;
-  readonly starsi: readonly ({ readonly elderId: string; readonly karta: ElderState["karta"] } & SMarkerom)[];
+  readonly starsi: readonly ({ readonly elderId: string; readonly karta: ElderState["karta"] } & Markery)[];
   /** Starší, ktorí už boli väzňami. */
   readonly vazni: readonly string[];
 }
@@ -22,7 +23,7 @@ export interface ZaciatokKola {
 export function zaciatokKola(view: Pick<ClientState, "kolo" | "starsi" | "vazni">): ZaciatokKola {
   return {
     kolo: view.kolo,
-    starsi: view.starsi.map((e) => ({ elderId: e.elderId, marker: markerStarsieho(e), karta: e.karta })),
+    starsi: view.starsi.map((e) => ({ elderId: e.elderId, karta: e.karta, strach: e.strach, reci: e.reci })),
     vazni: view.vazni.map((v) => v.elderId),
   };
 }
@@ -31,38 +32,31 @@ export interface PolozkaSuhrnu {
   readonly elderId: string;
   /** Karta na ukazovateli (meno a portrét; aj náhrada bossa). */
   readonly defId: string;
-  /** Stupnica pred → po; null, keď sa marker nepohol (len výplata či hádka) alebo starší je väzeň. */
-  readonly posun: { readonly z: MarkerPos; readonly na: MarkerPos } | null;
-  /** Starší po kole — z neho sú dôsledky (priazeň, strach, špaky na udržanie); väzeň null. */
+  /** Strach a reči na začiatku kola. */
+  readonly pred: Markery;
+  /** Starší po kole — z neho sú dôsledky (priazeň, strach, reči); väzeň null. */
   readonly elder: ElderState | null;
-  /** Udržaný strach, ktorý starší na konci kola zaplatil (špaky). */
-  readonly vyplata: readonly { readonly hrac: PlayerId; readonly spaky: number; readonly stupen: number }[];
-  /** Hádka bitky (v10): o koľko stupňov víťaz hádky posunul silu priazne k sebe, do konca kola. */
-  readonly hadka: readonly { readonly hrac: PlayerId; readonly stupne: number }[];
+  /** Markery sa v kole zmenili (inak len bodovanie). */
+  readonly zmena: boolean;
+  /** Špaky, ktoré starší po bitke dal (bodovanie, v11): za reči alebo za strach. */
+  readonly vyplata: readonly { readonly hrac: PlayerId; readonly spaky: number; readonly reci: boolean }[];
   /** Úspešné zajatie v kroku 6d. */
   readonly vazen: Pick<Vazen, "hrac" | "poradie"> | null;
 }
+
+const rovnake = (a: Markery, b: Markery): boolean => a.strach[0] === b.strach[0] && a.strach[1] === b.strach[1] && a.reci[0] === b.reci[0] && a.reci[1] === b.reci[1];
 
 /**
  * Obsah súhrnu kola v poradí stĺpčekov dlaždice Starší (poradie starších na začiatku kola).
  * Prázdny zoznam = v kole sa nič nestalo a súhrn sa preskočí.
  */
-export function suhrnPosunov(
-  pred: ZaciatokKola,
-  po: Pick<ClientState, "starsi" | "vazni" | "nastenka">,
-): readonly PolozkaSuhrnu[] {
+export function suhrnPosunov(pred: ZaciatokKola, po: Pick<ClientState, "starsi" | "vazni" | "nastenka">): readonly PolozkaSuhrnu[] {
   const bitka: BitkaNaNastenke | undefined = po.nastenka.find((b) => b.kolo === pred.kolo);
-  // Stupeň výplaty: udržaný je ten, ktorý marker držal od začiatku kola a neustúpil z neho.
-  const vyplata = (elderId: string, z: MarkerPos, na: MarkerPos): PolozkaSuhrnu["vyplata"] =>
+  const vyplata = (elderId: string): PolozkaSuhrnu["vyplata"] =>
     ([0, 1] as const).flatMap((hrac) => {
-      const spaky = (bitka?.zaStarsichRozpis?.[hrac] ?? []).filter((x) => x.elderId === elderId).reduce((a, x) => a + x.spaky, 0);
-      return spaky > 0 ? [{ hrac, spaky, stupen: Math.min(STUPNICA_ZONY[z], STUPNICA_ZONY[na]) }] : [];
-    });
-  // Záznam nástenky nesie posun z hádky po hráčoch (pole „povery“ jadra z čias Povier).
-  const hadka = (elderId: string): PolozkaSuhrnu["hadka"] =>
-    ([0, 1] as const).flatMap((hrac) => {
-      const stupne = Math.abs(bitka?.povery?.[hrac][elderId] ?? 0);
-      return stupne > 0 ? [{ hrac, stupne }] : [];
+      const xs = (bitka?.zaStarsichRozpis?.[hrac] ?? []).filter((x) => x.elderId === elderId);
+      const spaky = xs.reduce((a, x) => a + x.spaky, 0);
+      return spaky > 0 ? [{ hrac, spaky, reci: xs.some((x) => x.reci === true) }] : [];
     });
   const out: PolozkaSuhrnu[] = [];
   const videni = new Set<string>();
@@ -72,65 +66,59 @@ export function suhrnPosunov(
     if (e === undefined) {
       const v = pred.vazni.includes(a.elderId) ? undefined : po.vazni.find((x) => x.elderId === a.elderId);
       if (v === undefined) continue;
-      out.push({ elderId: a.elderId, defId: v.karta.defId, posun: null, elder: null, vyplata: vyplata(a.elderId, markerStarsieho(a), markerStarsieho(a)), hadka: hadka(a.elderId), vazen: { hrac: v.hrac, poradie: v.poradie } });
+      out.push({ elderId: a.elderId, defId: v.karta.defId, pred: a, elder: null, zmena: true, vyplata: vyplata(a.elderId), vazen: { hrac: v.hrac, poradie: v.poradie } });
       continue;
     }
-    const polozka = polozkaStarsieho(markerStarsieho(a), e, vyplata(e.elderId, markerStarsieho(a), markerStarsieho(e)), hadka(e.elderId));
+    const polozka = polozkaStarsieho(a, e, vyplata(e.elderId));
     if (polozka !== null) out.push(polozka);
   }
   // Starší, ktorý na začiatku kola nebol na stupnici (zatiaľ ho nič nepridáva), ide na koniec.
   for (const e of po.starsi) {
     if (videni.has(e.elderId)) continue;
-    const polozka = polozkaStarsieho(markerStarsieho(e), e, vyplata(e.elderId, markerStarsieho(e), markerStarsieho(e)), hadka(e.elderId));
+    const polozka = polozkaStarsieho(e, e, vyplata(e.elderId));
     if (polozka !== null) out.push(polozka);
   }
   return out;
 }
 
-function polozkaStarsieho(z: MarkerPos, e: ElderState, vyplata: PolozkaSuhrnu["vyplata"], hadka: PolozkaSuhrnu["hadka"]): PolozkaSuhrnu | null {
-  // Tam a späť (Michal 2026-10-31) je ako nepohnutý.
-  const posun = z === markerStarsieho(e) ? null : { z, na: markerStarsieho(e) };
-  if (posun === null && vyplata.length === 0 && hadka.length === 0) return null;
-  return { elderId: e.elderId, defId: e.karta.defId, posun, elder: e, vyplata, hadka, vazen: null };
+function polozkaStarsieho(pred: Markery, e: ElderState, vyplata: PolozkaSuhrnu["vyplata"]): PolozkaSuhrnu | null {
+  // Tam a späť (Michal 2026-10-31) je ako nezmenený.
+  const zmena = !rovnake(pred, e);
+  if (!zmena && vyplata.length === 0) return null;
+  return { elderId: e.elderId, defId: e.karta.defId, pred: { strach: pred.strach, reci: pred.reci }, elder: e, zmena, vyplata, vazen: null };
 }
 
 /** Dôsledok v bubline — len ikony a čísla, žiadny verdikt (Michal 2026-10-31). */
 export type Dosledok =
-  /** Priazeň staršieho po kole: komu a akej sily; `bolo` = sila pred posunom u toho istého hráča. */
+  /** Priazeň staršieho po kole: komu a akej sily; `bolo` = sila pred kolom u toho istého hráča. */
   | { readonly druh: "priazen"; readonly hrac: PlayerId; readonly sila: number; readonly bolo: number | null }
-  /** Priazeň, o ktorú hráč posunom prišiel (preškrtnutá). */
+  /** Priazeň, o ktorú hráč v kole prišiel (preškrtnutá). */
   | { readonly druh: "strataPriazne"; readonly hrac: PlayerId; readonly sila: number }
-  /** Koho sa starší bojí a na akom stupni. */
-  | { readonly druh: "strach"; readonly hrac: PlayerId; readonly stupen: number }
-  /** Špaky, ktoré zaplatí koniec ďalšieho kola, ak sa marker udrží. */
-  | { readonly druh: "naUdrzanie"; readonly hrac: PlayerId; readonly spaky: number }
-  /** Stupeň 3: obávaný ho smie pred šenkom skúsiť zajať. */
+  /** Strach hráča sa zmenil (z → na). */
+  | { readonly druh: "strach"; readonly hrac: PlayerId; readonly z: Stupen; readonly na: Stupen }
+  /** Reči hráča sa zmenili (z → na; 0 = zanikli). */
+  | { readonly druh: "reci"; readonly hrac: PlayerId; readonly z: Stupen; readonly na: Stupen }
+  /** Strach na červenej: hráč ho smie pred šenkom skúsiť zajať. */
   | { readonly druh: "zajatieMozne"; readonly hrac: PlayerId }
-  | { readonly druh: "vyplata"; readonly hrac: PlayerId; readonly spaky: number; readonly stupen: number }
-  /** Hádka posunula silu priazne k víťazovi (len do konca kola). */
-  | { readonly druh: "hadka"; readonly hrac: PlayerId; readonly stupne: number }
+  /** Bodovanie po bitke: špaky za reči alebo za strach. */
+  | { readonly druh: "vyplata"; readonly hrac: PlayerId; readonly spaky: number; readonly reci: boolean }
   | { readonly druh: "vazen"; readonly hrac: PlayerId; readonly poradie: number };
 
 export function dosledky(p: PolozkaSuhrnu): readonly Dosledok[] {
   const out: Dosledok[] = [];
   if (p.vazen !== null) out.push({ druh: "vazen", hrac: p.vazen.hrac, poradie: p.vazen.poradie });
   const e = p.elder;
-  if (e !== null && p.posun !== null) {
-    const pred = { marker: p.posun.z };
+  if (e !== null && p.zmena) {
     const kto = priazenHraca(e);
-    const ktoPred = priazenHraca(pred);
-    if (ktoPred !== null && ktoPred !== kto) out.push({ druh: "strataPriazne", hrac: ktoPred, sila: priazenSila(pred) });
-    if (kto !== null) out.push({ druh: "priazen", hrac: kto, sila: priazenSila(e), bolo: ktoPred === kto ? priazenSila(pred) : null });
-    const obava = obavanyHrac(e);
-    if (obava !== null) {
-      out.push({ druh: "strach", hrac: obava, stupen: strachZ(e, obava) });
-      // Na začiatku kola sú stupne už „držané“ — zaplatí ich koniec tohto (pre hráča ďalšieho) kola.
-      const spaky = strachNaVyplatu(e, obava);
-      if (spaky > 0) out.push({ druh: "naUdrzanie", hrac: obava, spaky });
-      if (pokusMozny(e, obava)) out.push({ druh: "zajatieMozne", hrac: obava });
+    const ktoPred = priazenHraca(p.pred);
+    if (ktoPred !== null && ktoPred !== kto) out.push({ druh: "strataPriazne", hrac: ktoPred, sila: priazenSila(p.pred) });
+    if (kto !== null && (ktoPred !== kto || priazenSila(p.pred) !== priazenSila(e))) out.push({ druh: "priazen", hrac: kto, sila: priazenSila(e), bolo: ktoPred === kto ? priazenSila(p.pred) : null });
+    for (const h of [0, 1] as const) {
+      if (p.pred.strach[h] !== e.strach[h]) out.push({ druh: "strach", hrac: h, z: p.pred.strach[h], na: e.strach[h] });
+      if (p.pred.reci[h] !== e.reci[h]) out.push({ druh: "reci", hrac: h, z: p.pred.reci[h], na: e.reci[h] });
+      if (p.pred.strach[h] < 3 && pokusMozny(e, h)) out.push({ druh: "zajatieMozne", hrac: h });
     }
   }
-  for (const v of p.vyplata) out.push({ druh: "vyplata", hrac: v.hrac, spaky: v.spaky, stupen: v.stupen });
-  for (const v of p.hadka) out.push({ druh: "hadka", hrac: v.hrac, stupne: v.stupne });
+  for (const v of p.vyplata) out.push({ druh: "vyplata", hrac: v.hrac, spaky: v.spaky, reci: v.reci });
   return out;
 }

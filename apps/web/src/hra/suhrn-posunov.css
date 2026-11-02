@@ -576,3 +576,75 @@
     transition: none;
   }
 }
+
+/* v11 Strach a reči: teplomery hráčov pred → po (namiesto stupnice so 7 poľami). */
+.sb-teplomery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 14px;
+  margin: 6px 0 4px;
+}
+
+.sb-tep {
+  display: grid;
+  grid-template-columns: auto repeat(3, 1fr);
+  align-items: center;
+  gap: 3px;
+}
+
+.sb-tep-kto {
+  min-width: 2.5em;
+  font: 700 0.74rem/1.2 var(--pismo);
+}
+
+.sb-tep.ja .sb-tep-kto {
+  color: var(--ja);
+}
+
+.sb-tep.su .sb-tep-kto {
+  color: var(--su);
+}
+
+.sb-tep-seg {
+  position: relative;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--okraj-svetly);
+  background: var(--plocha-2);
+  transition: background-color 0.4s ease;
+}
+
+.sb-tep-seg.nove {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 1px;
+}
+
+.sb-tep-reci {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font: 800 0.66rem/1 var(--pismo);
+  color: var(--text);
+  background: var(--plocha);
+  border: 2px solid currentColor;
+}
+
+.sb-tep.ja .sb-tep-reci {
+  color: var(--ja);
+}
+
+.sb-tep.su .sb-tep-reci {
+  color: var(--su);
+}
+
+.sb-tep-reci.nove {
+  box-shadow: 0 0 0 2px var(--akcent);
+}
+
+.sb-tep-text {
+  grid-column: 1 / -1;
+  font-size: 0.7rem;
+  color: var(--tlmeny);
+}

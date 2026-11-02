@@ -1,90 +1,45 @@
-// Popis stupnice a stopa posunu (roadmapa #95) a texty pri staršom (Michal 2026-10-28):
-// stopa zráta zdroje posunov; riadky pod stupnicou sú krátke a každá veta je na jednom mieste.
+// Texty pri staršom (Michal 2026-10-28: každá veta na jednom mieste; v11 Strach a reči): zmeny
+// markerov slovami, štítok zmien na portréte, riadky dlaždíc a ceny stupňov.
 
 import { describe, expect, it } from "vitest";
-import cardsJson from "../../../packages/core/data/cards.json";
-import eldersJson from "../../../packages/core/data/elders.json";
-import scorecardsJson from "../../../packages/core/data/scorecards.json";
-import type { PosunMarkera } from "@naex/core";
-import { loadGameData, setupGame } from "@naex/core";
-import { stopaStarsieho } from "../src/hra/LiniaStarsich.tsx";
-import { CENA_POLA, POPIS_STUPNICE, PRAVIDLO_STRACHU, riadokDlazdice, riadokPriazne, riadokStrachu, stitokStopy } from "../src/hra/textyStarsich.ts";
+import type { ZmenaMarkera } from "@naex/core";
+import { stitokZmien } from "../src/hra/LiniaStarsich.tsx";
+import { CENA_POLA, PRAVIDLO_STRACHU, nazovStupna, riadokDlazdice, riadokPriazne, textZmeny } from "../src/hra/textyStarsich.ts";
 
-const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
-const s0 = setupGame(data, 5);
+const MENA = ["Jano", "Fero"] as const;
 
-describe("stopa posunu", () => {
-  const id = s0.starsi[0]!.elderId;
-  const posuny: PosunMarkera[] = [
-    { elderId: id, z: 4, na: 5, zdroj: "pohorsenie", kto: 0 },
-    { elderId: "iny", z: 4, na: 3, zdroj: "pohorsenie", kto: 1 },
-    { elderId: id, z: 5, na: 6, zdroj: "prebytok", kto: 0 },
-    { elderId: id, z: 6, na: 7, zdroj: "prebytok", kto: 0 },
-  ];
+describe("zmeny markerov (v11)", () => {
+  const z = (x: Partial<ZmenaMarkera>): ZmenaMarkera => ({ elderId: "e", hrac: 0, marker: "strach", z: 0, na: 1, zdroj: "nakladacka", kto: 0, ...x });
 
-  it("začína pozíciou pred prvým posunom a rovnaké zdroje po sebe zráta", () => {
-    expect(stopaStarsieho(posuny, id)).toEqual({
-      z: 4,
-      zdroje: [
-        { zdroj: "pohorsenie", kto: 0, pocet: 1 },
-        { zdroj: "prebytok", kto: 0, pocet: 2 },
-      ],
-    });
-    expect(stopaStarsieho(posuny, "nikto")).toBeUndefined();
+  it("štítok nesie zdroje a počet", () => {
+    expect(stitokZmien([z({}), z({ zdroj: "hadka", marker: "reci" }), z({ z: 1, na: 2 })])).toBe("Nakladačka ×2 · Hádka");
+    expect(stitokZmien([z({ zdroj: "nastup", kto: 1, hrac: 0, marker: "reci" })])).toBe("Kapybara");
   });
 
-  it("štítok na portréte nesie len zdroj a počet", () => {
-    const stopa = stopaStarsieho(posuny, id)!;
-    expect(stitokStopy(stopa.zdroje)).toBe("Pohoršenie · Nakladačka ×2");
+  it("zmena slovami z pohľadu hráča", () => {
+    expect(textZmeny(z({ z: 1, na: 2 }), 0, MENA)).toBe("tvoj strach žltá → oranžová");
+    expect(textZmeny(z({ hrac: 1, marker: "reci", z: 2, na: 0 }), 0, MENA)).toBe("reči (Fero) oranžová → zanikli");
+    expect(textZmeny(z({ hrac: 1, z: 3, na: 0 }), 1, MENA)).toBe("tvoj strach červená → nič");
   });
 });
 
-describe("riadky pod stupnicou (Michal 2026-10-28)", () => {
+describe("riadky pri staršom", () => {
   it("priazeň: komu a krátky účinok, bez priazne účinok pri +1", () => {
     expect(riadokPriazne("ROBOTA", "ty", 1)).toBe("ty: +1 Robota v bitke");
     expect(riadokPriazne("BITKAR", null, 0)).toBe("nikomu · pri +1: +1 tuhé v bitke");
   });
 
-  it("strach (v8.3): koho sa bojí, koľko zaplatí koniec kola a koľko čaká na udržanie", () => {
-    expect(riadokStrachu("Fero", false, 2)).toBe("bojí sa Fero · +2 š na konci kola");
-    expect(riadokStrachu("Jano", true, 6)).toBe("bojí sa teba · +6 š na konci kola");
-    expect(riadokStrachu("Jano", true, 1, 5)).toBe("bojí sa teba · +1 š na konci kola +5 čaká");
-    expect(riadokStrachu("Fero", false, 0, 3)).toBe("bojí sa Fero · +3 š čaká na udržanie");
-    expect(riadokStrachu("Fero", false, 0)).toBe("bojí sa Fero · stupne zaplatené");
-    expect(riadokStrachu(null, false, 0)).toBe("nikoho sa nebojí");
-  });
-
-  it("pravidlo strachu (v8.3) hovorí o konci kola a o udržaní, nie o výhre", () => {
-    expect(PRAVIDLO_STRACHU).toMatch(/Každý stupeň raz/);
-    expect(PRAVIDLO_STRACHU).toMatch(/udrží do konca nasledujúceho kola/);
-    expect(PRAVIDLO_STRACHU).not.toMatch(/vyhrá (aj finále)/);
-  });
-
-  it("riadky sú krátke — pri bežnom mene najviac dva riadky karty, bez „…“", () => {
-    for (const fav of ["UZERNIK", "LAKOMEC", "ROBOTA", "BITKAR", "VERIACI", "FAJCIAR", "ALKOHOLIK", "ADVOKAT"] as const) {
-      for (const sila of [0, 1, 2, 3]) expect(riadokPriazne(fav, sila === 0 ? null : "Michal", sila).length).toBeLessThanOrEqual(44);
-    }
-    expect(riadokStrachu("Michal", false, 3).length).toBeLessThanOrEqual(44);
-    expect(riadokStrachu("Michal", false, 3, 5).length).toBeLessThanOrEqual(44);
-  });
-
-  it("dlaždica v bare len slovo — účinok je v línii", () => {
+  it("dlaždica v bare len slovo", () => {
     expect(riadokDlazdice("hore", true)).toBe("pomáha ti");
-    expect(riadokDlazdice("dole", false)).toBe("na konci kola");
-    expect(riadokDlazdice("dole", false, 0, 2)).toBe("čaká na udržanie");
-    expect(riadokDlazdice("dole", true, 0)).toBe("zaplatené");
+    expect(riadokDlazdice("dole", false)).toBe("bojí sa ho");
     expect(riadokDlazdice("nic", true)).toBe("neutrálny");
   });
 
-  it("cena poľa podľa zóny v legende stupnice (v8.2); pokyn Nakladačky nahradila bublina rozdeľovania (mock C)", () => {
-    expect(CENA_POLA).toBe("pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4");
-  });
-});
-
-describe("titulok stupnice namiesto „? stupnica“ (Michal 2026-10-30)", () => {
-  it("povie, ktorá polovica je tvoja, priazeň, strach aj cenu posunu", () => {
-    expect(POPIS_STUPNICE).toMatch(/Tvoja polovica stupnice je vždy vľavo/);
-    expect(POPIS_STUPNICE).toContain(PRAVIDLO_STRACHU);
-    expect(POPIS_STUPNICE).toContain(CENA_POLA);
+  it("stupne a ceny v11: žltá 1, oranžová 2, červená 3; špaky 1 / 3 / 5", () => {
+    expect(nazovStupna(0)).toBe("nič");
+    expect(nazovStupna(3)).toBe("červená");
+    expect(CENA_POLA).toBe("stupeň stojí 1 / 2 / 3 (žltá / oranžová / červená)");
+    expect(PRAVIDLO_STRACHU).toMatch(/žltá 1, oranžová 3, červená 5/);
+    expect(PRAVIDLO_STRACHU).toMatch(/porazenému len za reči/);
   });
 });

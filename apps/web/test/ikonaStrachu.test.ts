@@ -1,5 +1,3 @@
-// Stará stupnica (v10: marker, klebety, udržaný strach) — v11 Strach a reči. Testy starého zobrazenia
-// starších sú preskočené, kým stôl neprestaví agent UI (Teplomery a Pult).
 // Ikony strachu starších (Michal 2026-10-27, sada 5 „Výkričníky“): stupeň nesie počet
 // výkričníkov, farbu hráč, ktorého sa starší bojí; krígeľ priazne je na konci zvýhodneného. Tlačové
 // ikony bodovania v seede sú z tých istých tvarov ako ikona na stole.
@@ -8,15 +6,10 @@ import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import cardsJson from "../../../packages/core/data/cards.json";
-import eldersJson from "../../../packages/core/data/elders.json";
-import scorecardsJson from "../../../packages/core/data/scorecards.json";
-import type { BitkaNaNastenke, ElderState, MarkerPos } from "@naex/core";
-import { loadGameData, setupGame } from "@naex/core";
+import type { BitkaNaNastenke } from "@naex/core";
 import { Podtacok } from "../src/achievementy/Podtacok.tsx";
 import { piktogramPodtacka } from "../src/achievementy/piktogram.ts";
 import { IkonaStrachu, ZnackaStrachu } from "../src/hra/IkonaStrachu.tsx";
-import { LiniaStarsich } from "../src/hra/LiniaStarsich.tsx";
 import { RozpisStarsich } from "../src/hra/Spaky.tsx";
 import { cestyStrachu, stupenStrachu, svgIkonyBodovania } from "../src/hra/tvaryStrachu.ts";
 
@@ -70,48 +63,7 @@ describe("achievement so zónovou podmienkou", () => {
 });
 
 describe("výkričníky vo farbe obávaného", () => {
-  const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
-  const s0 = setupGame(data, 5);
-  const elder = (marker: MarkerPos): ElderState => ({ ...(s0.starsi[0] as ElderState), marker });
-  // Od 2026-10-28 (Michal: „mouseover je redundantný“) stupnicu, priazeň a strach ukazuje len
-  // karta staršieho v línii (od 2026-10-30 bez lupy pri prejdení myšou).
-  const karta = (marker: MarkerPos): string =>
-    renderToStaticMarkup(
-      createElement(LiniaStarsich, {
-        starsi: [{ elder: elder(marker), meno: "Farár", obrazok: null, body: undefined, patron: null }],
-        data,
-        ja: 0,
-        pohlad: 0,
-        mena: ["Jano", "Fero"],
-        krok: null,
-        zmenene: new Set<string>(),
-      }),
-    );
-
-  // Od 2026-10-31 (Michal, mockup „Priazeň podľa Michala“) je pod staršinom len meno: priazeň nesie
-  // krúžok vo farbe toho, komu patrí, a vety o priazni a strachu sú v nápovede (aj v aria-label).
-  it.skip("marker na súperovej červenej: krúžok vo Ferovej farbe, !!! v mojej farbe", () => {
-    // Pozícia 6 = krajná na strane hráča 1: priazeň má Fero, bojí sa hráča 0 (ja).
-    const html = karta(6);
-    expect(html).toContain('class="ls-meno">Farár<');
-    expect(html).toMatch(/class="kr su"[^>]*>.*?kr-cislo">\+3</);
-    expect(html).not.toContain("ls-cip");
-    expect(html).toContain('class="ls-peciatka moja"');
-    expect(html).toContain("priazeň v tomto kole Fero +3; bojí sa teba · +6 š čaká na udržanie");
-  });
-
-  it.skip("marker na mojej žltej: krúžok v mojej farbe, strach v nápovede", () => {
-    const html = karta(2);
-    expect(html).toMatch(/class="kr ja"[^>]*>.*?kr-cislo">\+1</);
-    expect(html).toContain("priazeň v tomto kole ty +1; bojí sa Fero · +1 š čaká na udržanie");
-  });
-
-  it("v strede nikto: žiadne výkričníky ani krígeľ na stupnici", () => {
-    const html = karta(3);
-    expect(html).not.toContain("ikona-strachu");
-    expect(html).toContain("nikoho sa nebojí");
-  });
-
+  // Línia starších (teplomery) má vlastné testy v teplomery.test.ts.
   it("rozpis za starších: výkričníky podľa špakov vo farbe toho, kto ich dostal; Noviny bez nich", () => {
     const b = {
       zaStarsichRozpis: [

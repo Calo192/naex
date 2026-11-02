@@ -13,7 +13,7 @@ import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { POMER, type ListokNaVyber } from "./rozlozenieNastenky.ts";
 import "./spaky.css";
-import { type SpakyTeraz } from "./staraStupnica.ts";
+import type { SpakyTeraz } from "@naex/core";
 
 export { IkonaSpaku };
 
@@ -320,12 +320,6 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
             {poradie.map((p) => (
               <span key={`v${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
                 <span className="nk-meno">{kto(p)}</span> <b className={ucet.body.vykupne[p].spaky > 0 ? "plus" : ""}>{ucet.body.vykupne[p].spaky > 0 ? `+${ucet.body.vykupne[p].spaky}` : "0"}</b>
-              </span>
-            ))}
-            <span className="nk-nadpis">väzni</span>
-            {poradie.map((p) => (
-              <span key={`z${p}`} className={`nk-hrac ${p === ja ? "moje" : "superove"}`}>
-                <span className="nk-meno">{kto(p)}</span> <b className={ucet.body.vazni[p] > 0 ? "plus" : ""}>{ucet.body.vazni[p] > 0 ? `+${ucet.body.vazni[p]}` : "0"}</b>
               </span>
             ))}
             <span className="nk-nadpis">nepriznaná Cirhóza</span>

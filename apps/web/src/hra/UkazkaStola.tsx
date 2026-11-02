@@ -13,9 +13,11 @@
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
 //                  z prebytku (stopa v línii starších)
 //   &stop=posuny   súper posúva starších po bitke, dohrá sa po stavbu šenku ďalšieho kola (hráč ?ja vyberá)
-//   &stop=prebytok krok Prebytok po bitke, keď posúva hráč ?ja (náhľad posunu v línii starších)
-//   &stop=hadka      krok Hádka v bitke, keď ju rozdeľuje hráč ?ja (&i=k: k-té také, od 0; v10, predtým stop=pohorsenie)
-//   &stop=hadka-super krok Hádka, keď ju rozdeľuje súper (čakanie hráča ?ja)
+//   &stop=prebytok krok Nakladačka po bitke, keď ju na svoj strach rozdeľuje hráč ?ja (v11)
+//   &stop=reci     krok Reči po bitke, keď hádku na svoje reči rozdeľuje hráč ?ja (&i=k: k-té také, od 0;
+//                  v11, predtým stop=hadka a stop=pohorsenie — stále fungujú)
+//   &stop=reci-super krok Reči, keď ich rozdeľuje súper (čakanie hráča ?ja; aj stop=hadka-super)
+//   &pult=1        línia starších sa otvorí v rozložení Pult (mock 5) namiesto Teplomerov
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
 //                  odpovie a bitka sa vyhodnotí v jeho ťahu
 //   &stop=vizia    Vízia: hráč ?ja rozhoduje o vrchnej karte balíčka (veľké okno, Michal 2026-11-02);
@@ -46,18 +48,11 @@
 //                  súperova Milujúca manželka a Pes
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
-//   &klebety=i:n,… posun priazne hádkou na i-tom staršom (od 0), n stupňov k hráčovi 1 (kladné)
-//                  či 2 (záporné) — platí do konca kola (snímky krúžku, bodky a lístka Hádky); v10 žijú
-//                  klebety len v bitke (bitkaStav.klebety), preto len so stop v bitke (napr. &stop=prebytok)
-//   &zanik=MS      posun z &klebety po MS ms zanikne ako na konci kola (lístok sa odlepí, bodka
-//                  sa vráti do prsteňa)
-//   &hadka=i:n,…   s &stop=suhrn: záznam bitky na nástenke dostane posun z hádky na i-tom staršom
-//                  (n k hráčovi 1 kladné, k 2 záporné) — bublina súhrnu ukáže hádku
-//   &markery=i:m,… marker i-teho staršieho na pozícii m (0–6, 3 = stred; 0 = stupeň 3 u hráča 1);
-//                  zaplatené a udržané stupne sa vynulujú
+//   &markery=i:s0.s1.r0.r1,… strach a reči i-teho staršieho (od 0): strach hráča 1 a 2, reči hráča 1 a 2
+//                  (0–3; reči len nad strachom, inak 0) — snímky teplomerov a Pultu
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
+import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, Stupen, TypMomentu } from "@naex/core";
 import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
@@ -66,7 +61,7 @@ import { Momenty } from "./Momenty.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { useStolNaSirku } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
-import { type MarkerPos } from "./staraStupnica.ts";
+import { ULOZENY_REZIM_LINIE } from "./HernaPlocha.tsx";
 
 interface Krok {
   readonly stav: GameState;
@@ -86,43 +81,21 @@ interface Odohrane {
 
 const q = (): URLSearchParams => new URLSearchParams(window.location.search);
 
-/**
- * Klebety z parametra &klebety=i:n,… — v klebetách bitky (v10: prenášanie Horoskopom zaniklo),
- * takže platia do konca tohto kola ako posun z hádky. Mimo bitky klebety nie sú — stav sa nemení.
- */
-function sKlebetami(s: GameState, spec: string): GameState {
-  const klebety: Record<string, number> = {};
-  for (const cast of spec.split(",")) {
-    const [i, n] = cast.split(":");
-    const e = s.starsi[Number(i)];
-    if (e !== undefined && Number.isFinite(Number(n)) && Number(n) !== 0) klebety[e.elderId] = Number(n);
-  }
-  // Klebety (v10) v11 nie sú — ukážka ich ignoruje.
-  return s;
-}
-
-/** Záznam bitky kola `kolo` s posunom z hádky podľa &hadka=i:n,… (bublina súhrnu posunov). */
-function sHadkouNaNastenke(s: GameState, spec: string, kolo: number): GameState {
-  const b = s.nastenka.find((x) => x.kolo === kolo);
-  if (b === undefined || b.povery !== undefined) return s;
-  const h: [Record<string, number>, Record<string, number>] = [{}, {}];
-  for (const cast of spec.split(",")) {
-    const [i, n] = cast.split(":").map(Number);
-    const e = i === undefined ? undefined : s.starsi[i];
-    if (e !== undefined && n !== undefined && Number.isFinite(n) && n !== 0) h[n > 0 ? 0 : 1][e.elderId] = n;
-  }
-  return { ...s, nastenka: s.nastenka.map((x) => (x === b ? { ...b, povery: h } : x)) };
-}
-
-/** Markery z parametra &markery=i:m,… (snímky priazne v rôznych zónach). */
+/** Strach a reči z parametra &markery=i:s0.s1.r0.r1,… (snímky teplomerov a Pultu). */
 function sMarkermi(s: GameState, spec: string): GameState {
-  const na = new Map<number, number>();
+  const na = new Map<number, { strach: readonly [Stupen, Stupen]; reci: readonly [Stupen, Stupen] }>();
+  const st = (x: number | undefined): Stupen => (x !== undefined && Number.isInteger(x) && x >= 0 && x <= 3 ? (x as Stupen) : 0);
   for (const cast of spec.split(",")) {
-    const [i, m] = cast.split(":").map(Number);
-    if (i !== undefined && m !== undefined && Number.isInteger(m) && m >= 0 && m <= 6) na.set(i, m);
+    const [i, m] = cast.split(":");
+    const c = (m ?? "").split(".").map(Number);
+    if (i === undefined || !Number.isInteger(Number(i))) continue;
+    const strach: [Stupen, Stupen] = [st(c[0]), st(c[1])];
+    const reci: [Stupen, Stupen] = [st(c[2]), st(c[3])];
+    for (const p of [0, 1] as const) if (reci[p] <= strach[p]) reci[p] = 0;
+    na.set(Number(i), { strach, reci });
   }
   if (na.size === 0) return s;
-  return { ...s, starsi: s.starsi.map((e, i) => (na.has(i) ? { ...e, marker: na.get(i) as MarkerPos, vyplatene: 0, drzane: 0 } : e)) };
+  return { ...s, starsi: s.starsi.map((e, i) => ({ ...e, ...(na.get(i) ?? {}) })) };
 }
 
 /** Hráčovi p dá do Dedičstva Krištáľovú guľu — Vízia ukáže dve vrchné karty. */
@@ -230,7 +203,7 @@ function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: 
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  if (!["zaverecna", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "")) return odohrajSeed(data, seed).odohrane;
+  if (!["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "")) return odohrajSeed(data, seed).odohrane;
   // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
     const x = odohrajSeed(data, seed + pokus);
@@ -291,7 +264,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     // Súper rozdeľuje po bitke a stôl to vidí; dohrá sa po stavbu šenku ďalšieho kola, kde
     // vyberá hráč ?ja — starší ju nesmú zakryť (Michal 2026-10-30).
     const bsu = s.bitkaStav;
-    if (stop === "posuny" && s.faza === "bitka" && bsu !== null && bsu.caka === opponentOf(ja) && (bsu.krok === "hadka" || bsu.krok === "prebytok")) {
+    if (stop === "posuny" && s.faza === "bitka" && bsu !== null && bsu.caka === opponentOf(ja) && (bsu.krok === "reci" || bsu.krok === "prebytok")) {
       const dohraj: Krok[] = [];
       let x = s;
       let r2 = rng;
@@ -304,10 +277,10 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
         x = apply(data, x, u.cmd, u.kto).state;
       }
     }
-    if ((stop === "hadka" || stop === "pohorsenie") && s.faza === "bitka" && s.bitkaStav?.krok === "hadka" && s.bitkaStav.caka === ja && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
+    if ((stop === "reci" || stop === "hadka" || stop === "pohorsenie") && s.faza === "bitka" && s.bitkaStav?.krok === "reci" && s.bitkaStav.caka === ja && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
       if (hadok++ === i) return najdene({ zaciatok: s, dohraj: [] });
     }
-    if (stop === "hadka-super" && s.faza === "bitka" && s.bitkaStav?.krok === "hadka" && s.bitkaStav.caka === opponentOf(ja) && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
+    if ((stop === "reci-super" || stop === "hadka-super") && s.faza === "bitka" && s.bitkaStav?.krok === "reci" && s.bitkaStav.caka === opponentOf(ja) && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
       if (hadokSupera++ === i) return najdene({ zaciatok: s, dohraj: [] });
     }
     if (stop === "vizia" && s.vizia !== null && naTahu(s) === ja && s.hraci[ja].doberaci.length >= 2)
@@ -387,11 +360,11 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   const ja: PlayerId = q().get("ja") === "1" ? 1 : 0;
   const odohrane = useMemo(() => {
     const o = odohraj(data);
-    const k = q().get("klebety");
     const mk = q().get("markery");
     const sM = mk === null ? o : { ...o, zaciatok: sMarkermi(o.zaciatok, mk) };
-    const sK = k === null ? sM : { ...sM, zaciatok: sKlebetami(sM.zaciatok, k) };
-    return q().get("zerava") === "1" ? { ...sK, zaciatok: sZeravou(sK.zaciatok, ja) } : sK;
+    // Rozloženie línie starších sa pamätá v prehliadači — &pult=1 ho prepne pred prvým kreslením.
+    if (q().get("pult") !== null) localStorage.setItem(ULOZENY_REZIM_LINIE, q().get("pult") === "1" ? "pult" : "teplomery");
+    return q().get("zerava") === "1" ? { ...sM, zaciatok: sZeravou(sM.zaciatok, ja) } : sM;
   }, [data]);
   const [stav, setStav] = useState<GameState>(odohrane.zaciatok);
   // História lokalít ako na serveri — súhrn lokality po kliku na nástenke.
@@ -411,8 +384,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   const pouzi = (s: GameState, cmd: Command, kto: PlayerId): GameState => {
     try {
       const vysledok = apply(data, s, cmd, kto);
-      const h = q().get("hadka");
-      const state = h === null ? vysledok.state : sHadkouNaNastenke(vysledok.state, h, odohrane.zaciatok.kolo);
+      const state = vysledok.state;
       const events = vysledok.events;
       historia.current = zapisDoHistorie(historia.current, s, cmd, kto, state, events);
       setLokality(lokalityPreKlienta(historia.current));
@@ -447,14 +419,6 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     });
     return () => casovace.forEach(clearTimeout);
   }, [odohrane]);
-
-  // &zanik=MS: posun z hádky zanikne ako na konci kola.
-  useEffect(() => {
-    const ms = Number(q().get("zanik") ?? "NaN");
-    if (!Number.isFinite(ms)) return;
-    const t = setTimeout(() => setStav((s) => (s.bitkaStav === null ? s : { ...s, bitkaStav: { ...s.bitkaStav, klebety: {} } })), ms);
-    return () => clearTimeout(t);
-  }, []);
 
   // Za súpera ťahá bot.
   useEffect(() => {
