@@ -229,18 +229,19 @@ const PRIAZEN = {
   Alkoholik: s => `${s} poldeci späť plné`, Abstinent: s => `${s} Absťáky sa nerátajú`,
 };
 const ANTI = { Veriaci: s => `−${s} Viera obom` };
-// Stav z príkladu v strach-reci.html: [strach, reči]
+// Stav z príkladu v strach-reci.html (verzia 2): [strach, reči]; reči sú vždy nad strachom, 0 = žiadne
 const E = [
-  { id: "farar", n: "Farár", p: "Veriaci", a: [3, 0], b: [3, 1] },
+  { id: "farar", n: "Farár", p: "Veriaci", a: [3, 0], b: [3, 0] },
   { id: "krcmarka", n: "Krčmárka", p: "Fajčiar", a: [2, 3], b: [0, 0] },
-  { id: "starosta", n: "Starosta", p: "Bitkár", a: [0, 0], b: [2, 1] },
+  { id: "starosta", n: "Starosta", p: "Bitkár", a: [0, 0], b: [1, 2] },
   { id: "postarka", n: "Poštárka", p: "Advokát", a: [3, 0], b: [0, 2], ohr: "a" },
   { id: "hrobar", n: "Hrobár", p: "Abstinent", vazen: "b" },
-  { id: "autobusar", n: "Autobusár", p: "Robota", a: [1, 1], b: [1, 0] },
+  { id: "autobusar", n: "Autobusár", p: "Robota", a: [1, 0], b: [1, 0] },
   { id: "veterinar", n: "Veterinár", p: "Kmotor", a: [0, 2], b: [3, 0] },
   { id: "vychovavatelka", n: "Vychovávateľka", p: "Alkoholik", a: [3, 0], b: [1, 0] },
 ];
-const sib = e => !e.vazen && e.a[0] === 3 && e.b[0] === 3;
+// Šibnutý starší (obaja na červenej) zatiaľ nie je — Michal 2026-11-02 (O1, O2).
+const sib = () => false;
 function priazen(e) {
   if (e.vazen || sib(e)) return null;
   const d = e.b[0] - e.a[0];
