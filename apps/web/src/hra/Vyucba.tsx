@@ -314,8 +314,8 @@ function Stmavenie({ obdlzniky, sede }: { readonly obdlzniky: readonly Obdlznik[
 export function krokSoStarsimi(krok: KrokVyucby | null): boolean {
   if (krok === null) return false;
   return (
-    krok.zvyraznit.some((k) => k === "bar:body" || k === "linia-starsich" || k === "starsi-stupnica" || k.startsWith("starsi:")) ||
-    ["prebytok", "hadka", "pokus", "bezPokusu"].includes(krok.ocakava?.type ?? "")
+    krok.zvyraznit.some((k) => k === "bar:body" || k === "linia-starsich" || k === "starsi-stupnica" || k.startsWith("starsi:") || k.startsWith("strach:") || k.startsWith("reci:") || k.startsWith("stupen:")) ||
+    ["prebytok", "reci", "hadka", "pokus", "bezPokusu"].includes(krok.ocakava?.type ?? "")
   );
 }
 

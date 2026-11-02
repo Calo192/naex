@@ -12,7 +12,6 @@ import { ZnackaStrachu } from "../hra/IkonaStrachu.tsx";
 import { IkonaPriazne } from "../hra/IkonaPriazne.tsx";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
-import { STUPNICA_HODNOTY, STUPNICA_ZONY } from "../hra/staraStupnica.ts";
 
 export function useHerneData(sada: Sada): GameData {
   return useMemo(() => loadGameData(sada.cardsJson, eldersJson, sada.scorecardsJson ?? scorecardsJson), [sada]);
@@ -238,7 +237,10 @@ export function UkazkaBitky() {
   );
 }
 
-// v6: 7 polí, jediné sivé v strede (index 3); pojmy v8.3: farba a stav staršieho.
+// v6: 7 polí, jediné sivé v strede (index 3); pojmy v8.3: farba a stav staršieho. Stôl má od v11 Strach
+// a reči teplomery (LiniaStarsich.tsx) — táto ukážka pravidiel ostáva, kým sa kapitola neprepíše.
+const STUPNICA_ZONY = [3, 2, 1, 0, 1, 2, 3] as const;
+const STUPNICA_HODNOTY = STUPNICA_ZONY;
 const ZONY = ["červená", "oranžová", "žltá", "stred", "žltá", "oranžová", "červená"];
 const STAV = ["pokojný", "znepokojený", "vystrašený", "vydesený"];
 const ZONA_TRIEDA = ["cervena", "oranzova", "zlta", "siva", "zlta", "oranzova", "cervena"];

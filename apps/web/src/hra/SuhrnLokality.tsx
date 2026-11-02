@@ -6,15 +6,14 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { BitkaNaNastenke, Favour, LokalitaVHistorii, PitkaVHistorii, PlayerId } from "@naex/core";
-import { STAV_STARSIEHO, jeFinaleNaNastenke, opponentOf } from "@naex/core";
+import { jeFinaleNaNastenke, opponentOf } from "@naex/core";
 import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { RekapBitky, RekapitulaciaPitkyVrstva, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
 import { SpakyBitky, spakyPredBitkou, rozpisLokality } from "./Spaky.tsx";
 import { odpovedeKola, riadkySuhrnuLokality } from "./obsahSuhrnuLokality.ts";
-import { NAZOV_ZDROJA } from "./textyStarsich.ts";
+import { NAZOV_ZDROJA, textZmeny } from "./textyStarsich.ts";
 import "./suhrn-lokality.css";
-import { type MarkerPos, STUPNICA_ZONY, obavanyHrac, priazenHraca, priazenSila } from "./staraStupnica.ts";
 
 export interface SuhrnLokalityProps {
   /** Záznam nástenky — špaky po celom kole (aj starší a Robota). */
@@ -78,11 +77,6 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
   const rozhodlo = b.rozhodlo === "abstak" ? " (remíza v tuhom → menej Absťákov)" : b.rozhodlo === "dlhy" ? " (remíza v tuhom → menej Dlhov)" : "";
   const riadky = zaznam === null ? [] : riadkySuhrnuLokality(zaznam);
   const pitkyCelkom = zaznam?.pitky[0]?.rekap.pitkyCelkom ?? zaznam?.pitky.length ?? 0;
-  const stav = (m: MarkerPos): string => {
-    const zona = STUPNICA_ZONY[m];
-    const koho = obavanyHrac({ marker: m });
-    return zona === 0 || koho === null ? "stred" : `bojí sa ${koho === ja ? "teba" : mena[koho]} (${STAV_STARSIEHO[zona]}, ${zona})`;
-  };
   const cipy = (xs: RiadokZmien, p: PlayerId): ReactNode =>
     xs[p].length === 0 ? (
       <span className="sl-nic">—</span>
@@ -165,17 +159,16 @@ function SuhrnLokalityObsah({ b, zaznam, ja, mena, avatary, menoKarty, piktogram
               {zaznam !== null && <p className="sl-pozn">Pitka 1 ráta aj stavbu šenku a prvé Zhromaždenie, každá ďalšia aj svoje Zhromaždenie.</p>}
               {zaznam !== null && zaznam.posuny.length > 0 && (
                 <>
-                  <h3 className="sl-nadpis">Posuny starších</h3>
+                  <h3 className="sl-nadpis">Strach a reči starších</h3>
                   <ul className="sl-posuny">
                     {zaznam.posuny.map((x, i) => (
                       <li key={i} className={x.kto === ja ? "moje" : "superove"}>
-                        {/* Krúžok: priazeň po posune (marker na novom mieste). */}
                         {(() => {
+                          // Krúžok: priazeň hráča, ktorého marker sa zmenil — piktogram povie, ktorý starší.
                           const fav = favour(x.elderId);
-                          const h = priazenHraca({ marker: x.na });
-                          return fav === null ? null : <PilulkaPriazne fav={fav} p={{ komu: h === null ? null : h === ja ? "ja" : "su", sila: priazenSila({ marker: x.na }) }} />;
+                          return fav === null ? null : <PilulkaPriazne fav={fav} p={{ komu: x.hrac === ja ? "ja" : "su", sila: 0 }} />;
                         })()}{" "}
-                        <b>{x.defId === null ? x.elderId : menoKarty(x.defId)}</b>: {stav(x.z)} → {stav(x.na)}{" "}
+                        <b>{x.defId === null ? x.elderId : menoKarty(x.defId)}</b>: {textZmeny(x, ja, mena)}{" "}
                         <small>
                           ({NAZOV_ZDROJA[x.zdroj]} · {kto(x.kto)})
                         </small>

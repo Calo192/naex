@@ -1,5 +1,5 @@
 // Pás starších na konci partie (Michal 2026-10-31, rozhodnutie 5 k mockupu „Priazeň podľa Michala“):
-// všetci starší s krúžkom priazne a dvojitým markerom tak, ako partia skončila. Nápoveda nad
+// všetci starší s krúžkom priazne a strachom a rečami oboch (v11) tak, ako partia skončila. Nápoveda nad
 // staršom (myš, fokus, podržanie prsta) povie aj to, koľko špakov komu počas partie dal.
 
 import type { CSSProperties } from "react";
@@ -7,8 +7,7 @@ import type { ClientState, ElderState, GameData } from "@naex/core";
 import { favourStarsieho, opponentOf } from "@naex/core";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { KruzokPriazne, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
-import { dvojityMarker, ktoPriazen, kratkeMeno, obsahNapovedy, priazenKola, spakyOdStarsieho } from "./priazenKola.ts";
-import { STUPNICA_ZONY, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu } from "./staraStupnica.ts";
+import { ktoPriazen, kratkeMeno, obsahNapovedy, priazenKola, spakyOdStarsieho } from "./priazenKola.ts";
 
 export interface PasStarsichProps {
   readonly view: ClientState;
@@ -62,27 +61,12 @@ function StarsiVPase({
 }) {
   const ja = view.ja;
   const su = opponentOf(ja);
-  const klebety = klebetyKola(view);
   const fav = favourStarsieho(data, e);
-  const pk = priazenKola(e, klebety, ja);
-  const dm = dvojityMarker(e, klebety, ja);
+  const pk = priazenKola(e, ja);
   const spaky = spakyOdStarsieho(view.nastenka, e.elderId);
   const textSpakov = `ty +${spaky[ja]} · ${kratkeMeno(mena[su])} +${spaky[su]}`;
   const napoveda = useNapovedaStarsieho(
-    () => {
-      const o = obavanyHrac(e);
-      return obsahNapovedy({
-        data,
-        elder: e,
-        meno,
-        klebety,
-        ja,
-        mena,
-        spaky: o === null ? 0 : strachNaVyplatu(e, o),
-        naUdrzanie: o === null ? 0 : strachNaUdrzanie(e, o),
-        dalsi: { nazov: "Dal špaky", text: textSpakov },
-      });
-    },
+    () => obsahNapovedy({ data, elder: e, meno, ja, mena, dalsi: { nazov: "Dal špaky", text: textSpakov } }),
     {
       menoSupera: mena[su],
       zvacsenina: () => (
@@ -100,7 +84,7 @@ function StarsiVPase({
     <li
       className="pas-st"
       tabIndex={0}
-      aria-label={`${meno}: priazeň ${ktoPriazen(pk, { ja: "ty", su: mena[su] })}; špaky za strach počas partie ${textSpakov}`}
+      aria-label={`${meno}: priazeň ${ktoPriazen(pk, { ja: "ty", su: mena[su] })}; špaky za strach a reči počas partie ${textSpakov}`}
       {...napoveda.props}
     >
       <span className="pas-st-portret">
@@ -108,12 +92,14 @@ function StarsiVPase({
         <KruzokPriazne fav={fav} p={pk} trieda="pas-st-kruzok" />
       </span>
       <span className="pas-st-meno">{meno}</span>
-      <span className="pas-st-stupnica" aria-hidden="true">
-        {STUPNICA_ZONY.map((z, k) => (
-          <i key={k} style={{ background: farbaZony(z), "--z": z } as CSSProperties} />
+      <span className="pas-st-markery" aria-hidden="true">
+        {[ja, su].map((p) => (
+          <span key={p} className={`pas-st-tep ${p === ja ? "ja" : "su"}`}>
+            {([1, 2, 3] as const).map((z) => (
+              <i key={z} className={e.strach[p] >= z ? "on" : e.reci[p] === z ? "reci" : ""} style={e.strach[p] >= z || e.reci[p] === z ? ({ "--farba": farbaZony(z) } as CSSProperties) : undefined} />
+            ))}
+          </span>
         ))}
-        <b className="dm-prsten" style={{ "--p": dm.prsten } as CSSProperties} />
-        <b className={`dm-bodka${dm.komu === null ? "" : ` ${dm.komu}`}`} style={{ "--p": dm.bodka } as CSSProperties} />
       </span>
       {napoveda.vrstva}
     </li>

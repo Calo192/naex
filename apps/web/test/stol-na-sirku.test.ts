@@ -125,9 +125,13 @@ const cisla = (x: Partial<CislaHraca>): CislaHraca => ({
   prahPecene: 3,
   spaky: 7,
   zaStarsich: 0,
+  zaStarsichPrehra: 0,
   priznane: 0,
   dedicstvo: 1,
   vazni: 0,
+  vazniNaVyhru: 3,
+  cervene: 0,
+  cervenychNaVyhru: 4,
   cirhozyNepriznane: 0,
   ...x,
 });
@@ -171,7 +175,7 @@ describe("tabuľa ty | súper", () => {
   it("má riadok pre každé číslo baru a hodnoty oboch hráčov", () => {
     const r = riadkyTabule(cisla({ spaky: 12 }), cisla({ spaky: 3, cigarety: 9 }));
     const podla = new Map(r.map((x) => [x.kluc, x]));
-    for (const k of ["karty", "poldeci", "limit", "cigarety", "spaky", "chut", "dlhy", "zadlzenie", "pecen", "balicek", "priznane", "dedicstvo", "vazni"]) {
+    for (const k of ["karty", "poldeci", "limit", "cigarety", "spaky", "chut", "dlhy", "zadlzenie", "pecen", "balicek", "priznane", "dedicstvo", "vazni", "cervene"]) {
       expect(podla.has(k), k).toBe(true);
     }
     expect(podla.get("spaky")).toMatchObject({ ja: "12", su: "3" });

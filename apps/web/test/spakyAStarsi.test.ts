@@ -1,5 +1,3 @@
-// Stará stupnica (v10: marker, klebety, udržaný strach) — v11 Strach a reči. Testy starého zobrazenia
-// starších sú preskočené, kým stôl neprestaví agent UI (Teplomery a Pult).
 // Bar špakov a dlaždica Starší (Michal 2026-10-27): dlaždice špakov musia dať dokopy
 // popolník (inak hráč skóre zo stola neposkladá) a stupienky musia ukázať, kto dáva
 // hráčovi priazeň a kto sa ho bojí — na partiách botov z pohľadu hráča (viewFor).
@@ -9,7 +7,7 @@ import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { ClientState, GameState, PlayerId } from "@naex/core";
-import { apply, jeFinaleNaNastenke, loadGameData, naTahu, priazenHraca, setupGame, spakyTeraz, strachNaVyplatu, strachZ, tahBota, viewFor } from "@naex/core";
+import { apply, jeFinaleNaNastenke, loadGameData, naTahu, priazenHraca, setupGame, spakyTeraz, tahBota, viewFor } from "@naex/core";
 import { rezimRadov, spakyPodlaZdroja, stupienkyStarsich } from "../src/hra/spakyAStarsi.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -52,27 +50,34 @@ describe("bar špakov", () => {
   }
 });
 
-describe("dlaždica Starší", () => {
-  it("priazeň hore, strach dole, stred nič; výška je zóna", () => {
-    const starsi = ([0, 1, 2, 3, 4, 5, 6] as const).map((marker) => ({ elderId: `e${marker}`, marker }));
+describe("dlaždica Starší (v11)", () => {
+  it("priazeň hore (sila), strach dole (stupeň), inak nič", () => {
+    const starsi = [
+      { elderId: "a", strach: [0, 2] },
+      { elderId: "b", strach: [3, 1] },
+      { elderId: "c", strach: [1, 1] },
+      { elderId: "d", strach: [0, 0] },
+    ] as const;
     const ja = stupienkyStarsich(starsi, 0);
-    expect(ja.stlpce.map((s) => s.smer)).toEqual(["hore", "hore", "hore", "nic", "dole", "dole", "dole"]);
-    expect(ja.stlpce.map((s) => s.zona)).toEqual([3, 2, 1, 0, 1, 2, 3]);
-    expect([ja.priazen, ja.strach]).toEqual([3, 3]);
+    expect(ja.stlpce.map((s) => [s.smer, s.zona])).toEqual([
+      ["hore", 2],
+      ["dole", 3],
+      ["dole", 1],
+      ["nic", 0],
+    ]);
+    expect([ja.priazen, ja.strach]).toEqual([1, 2]);
     const su = stupienkyStarsich(starsi, 1);
-    expect(su.stlpce.map((s) => s.smer)).toEqual(["dole", "dole", "dole", "nic", "hore", "hore", "hore"]);
+    expect(su.stlpce.map((s) => s.smer)).toEqual(["dole", "hore", "dole", "nic"]);
   });
 
-  it.skip("v partii sedí s jadrom: priazeň = priazenHraca, strach = starší, ktorí dávajú špaky", () => {
+  it("v partii sedí s jadrom: priazeň = priazenHraca, špaky po výhre zo spakyTeraz", () => {
     for (const v of poBitkach(8)) {
       const body = spakyTeraz(v);
       for (const p of [0, 1] as const satisfies readonly PlayerId[]) {
         const s = stupienkyStarsich(v.starsi, p);
         expect(s.priazen).toBe(v.starsi.filter((e) => priazenHraca(e) === p).length);
-        expect(s.strach).toBe(v.starsi.filter((e) => strachZ(e, p) > 0).length);
-        // Stĺpčeky dole ukazujú zónu; po bitke od nich príde len to, čo ešte nezaplatili (v8).
-        expect(body.zaStarsich[p]).toBe(v.starsi.reduce((a, e) => a + strachNaVyplatu(e, p), 0));
-        expect(body.zaStarsich[p]).toBeLessThanOrEqual(s.stlpce.filter((x) => x.smer === "dole").reduce((a, x) => a + (x.zona * (x.zona + 1)) / 2, 0));
+        expect(s.strach).toBe(v.starsi.filter((e) => e.strach[p] > 0).length);
+        expect(body.zaStarsichVyhra[p]).toBeGreaterThanOrEqual(body.zaStarsichPrehra[p]);
       }
     }
   }, DLHO);

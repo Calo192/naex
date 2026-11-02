@@ -1,89 +1,58 @@
-// Texty o staršom na jednom mieste (Michal 2026-10-28: „každá informácia na JEDNOM mieste“).
-// Línia starších, lupa, dlaždice v baroch aj titulok stupnice skladajú vety o priazni, strachu
-// a posunoch odtiaľto — keď sa zmení, kedy a koľko starší platí za strach, mení sa len tu.
+// Texty o staršom na jednom mieste (Michal 2026-10-28: „každá informácia na JEDNOM mieste“;
+// v11 Strach a reči 2026-11-02). Línia starších (Teplomery, Pult), dlaždice v baroch, súhrny
+// a nástenka skladajú vety o strachu, rečiach a ich zmenách odtiaľto.
 
-import type { Favour } from "@naex/core";
-import { NAZVY_ZON, STAV_STARSIEHO } from "@naex/core";
+import type { Favour, PlayerId, ZmenaMarkera } from "@naex/core";
+import { KONSTANTY, NAZVY_ZON } from "@naex/core";
 import { UCINOK_KRATKO } from "./Scorecard.tsx";
-import { type PosunMarkera } from "./staraStupnica.ts";
 
-export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"] | "pohorsenie" | "prebytok" | "patronat", string>> = {
-  pohorsenie: "Pohoršenie",
-  prebytok: "Nakladačka",
-  patronat: "Patronát",
-  zajatie: "Zajatie zlyhalo",
-  kseft: "Predsedova vila",
-  nastup: "Kapybara",
+/** Prečo sa marker zmenil (ZmenaMarkera.zdroj) — krátko, na štítok a do logu zmien. */
+export const NAZOV_ZDROJA: Readonly<Record<ZmenaMarkera["zdroj"], string>> = {
   nakladacka: "Nakladačka",
   hadka: "Hádka",
   bodovanie: "Bodovanie",
   zanik: "Reči zanikli",
+  zajatie: "Zajatie zlyhalo",
+  kseft: "Predsedova vila",
+  nastup: "Kapybara",
 };
 
-const spakov = (n: number): string => (n === 1 ? "špak" : n < 5 ? "špaky" : "špakov");
+const spakov = (n: number): string => (n === 1 ? "špak" : n > 1 && n < 5 ? "špaky" : "špakov");
 
 /**
- * Riadok priazne pod staršinom: komu a akú priazeň dáva — bez priazne účinok pri +1
- * (Michal 2026-10-23). Sila je už v účinku („+2 tuhé v bitke“), druhýkrát sa nepíše (2026-10-30).
+ * Riadok priazne: komu a akú priazeň dáva — bez priazne účinok pri +1 (Michal 2026-10-23).
+ * Sila je už v účinku („+2 tuhé v bitke“), druhýkrát sa nepíše (2026-10-30).
  */
 export function riadokPriazne(fav: Favour, komu: string | null, sila: number): string {
   return komu === null || sila <= 0 ? `nikomu · pri +1: ${UCINOK_KRATKO[fav](1)}` : `${komu}: ${UCINOK_KRATKO[fav](sila)}`;
 }
 
-/** Stupeň so zónou a stavom staršieho (pojmy v8.3): „stupeň 2, oranžová — vystrašený“. */
-export function textStupna(zona: number): string {
-  return zona === 0 ? "stred — pokojný" : `stupeň ${zona}, ${NAZVY_ZON[zona]} — ${STAV_STARSIEHO[zona]}`;
-}
+/** Názov stupňa: „žltá“; 0 = „nič“. */
+export const nazovStupna = (s: number): string => (s === 0 ? "nič" : (NAZVY_ZON[s] ?? ""));
 
 /**
- * Riadok strachu pod stupnicou (v8.3): koho sa bojí, koľko mu zaplatí koniec tohto kola
- * (udržané stupne, strachNaVyplatu jadra) a koľko čaká na udržanie (strachNaUdrzanie) —
- * nech bitku vyhrá ktokoľvek. `koho` = null, ak sa nebojí nikoho; `ty` = bojí sa hráča,
- * ktorý sa pozerá.
+ * Zmena markera slovami z pohľadu hráča `ja`: „tvoj strach žltá → oranžová“,
+ * „reči Fera oranžová → zanikli“.
  */
-export function riadokStrachu(koho: string | null, ty: boolean, spaky: number, naUdrzanie = 0): string {
-  if (koho === null) return "nikoho sa nebojí";
-  const komu = ty ? "teba" : koho;
-  // Krátko — riadok pod stupnicou má najviac dva riadky karty (stupnica.test).
-  if (spaky > 0) return `bojí sa ${komu} · +${spaky} š na konci kola${naUdrzanie > 0 ? ` +${naUdrzanie} čaká` : ""}`;
-  return `bojí sa ${komu} · ${naUdrzanie > 0 ? `+${naUdrzanie} š čaká na udržanie` : "stupne zaplatené"}`;
+export function textZmeny(z: Pick<ZmenaMarkera, "hrac" | "marker" | "z" | "na">, ja: PlayerId, mena: readonly [string, string]): string {
+  const ty = z.hrac === ja;
+  const co = z.marker === "strach" ? (ty ? "tvoj strach" : `strach (${mena[z.hrac]})`) : ty ? "tvoje reči" : `reči (${mena[z.hrac]})`;
+  const na = z.na === 0 ? (z.marker === "strach" ? "nič" : "zanikli") : nazovStupna(z.na);
+  return `${co} ${nazovStupna(z.z)} → ${na}`;
 }
 
-/** Krátky riadok dlaždice v bare hráča: ako starší k nemu stojí (číslo nad ním povie koľko). */
-export function riadokDlazdice(smer: "hore" | "dole" | "nic", ja: boolean, spaky = 1, naUdrzanie = 0): string {
+/** Krátky riadok dlaždice v bare hráča: ako starší k nemu stojí. */
+export function riadokDlazdice(smer: "hore" | "dole" | "nic", ja: boolean): string {
   if (smer === "hore") return ja ? "pomáha ti" : "pomáha mu";
-  if (smer === "dole") return spaky > 0 ? "na konci kola" : naUdrzanie > 0 ? "čaká na udržanie" : "zaplatené";
+  if (smer === "dole") return ja ? "bojí sa ťa" : "bojí sa ho";
   return "neutrálny";
 }
 
-/** Čo starší zaplatí za strach (v8.3) — koniec tohto kola a čo čaká na udržanie. */
-function vetaVyplaty(ja: boolean, spaky: number, naUdrzanie: number, mnozne = false): string {
-  const casti = [
-    spaky > 0 ? `na konci tohto kola ${ja ? "ti" : "mu"} ${mnozne ? "dajú" : "dá"} ${spaky} ${spakov(spaky)} za stupne udržané od minulého kola` : null,
-    naUdrzanie > 0 ? `${naUdrzanie} ${spakov(naUdrzanie)} čaká na udržanie — zaplatí ich koniec ďalšieho kola, ak marker dovtedy neustúpi (vo finále nové stupne nič)` : null,
-  ].filter((x) => x !== null);
-  if (casti.length === 0) return `stupne už ${mnozne ? "zaplatili" : "zaplatil"} — ďalší špak až po novom postupe markera.`;
-  return `${casti.join("; ")}. Nezáleží, kto bitku vyhrá.`;
-}
-
-/** Titulok dlaždice staršieho, ktorý sa hráča bojí (v8.3: platí udržaný stupeň). */
-export function titulStrachu(meno: string, ja: boolean, zona: number, spaky: number, naUdrzanie = 0): string {
-  return `${meno} sa ${ja ? "ťa" : "ho"} bojí (${textStupna(zona)}): ${vetaVyplaty(ja, spaky, naUdrzanie)}`;
-}
-
-/** Strach v titulku dlaždice Starší (súhrn za všetkých starších). */
-export function titulStrachuSpolu(pocet: number, ja: boolean, spaky: number, naUdrzanie = 0): string {
-  return `${pocet} sa ${ja ? "ťa" : "ho"} bojí (stĺpček dole): ${vetaVyplaty(ja, spaky, naUdrzanie, true)}`;
-}
-
-/** Ako starší platí za strach (v8.3) — titulok stupnice. */
+/** Ako sa čítajú teplomery (v11) — titulok v hlavičke línie a v ukážkach. */
 export const PRAVIDLO_STRACHU =
-  "Bojí sa toho druhého. Stupeň, kam sa marker dostal, zaplatí až vtedy, keď sa na ňom marker udrží do konca nasledujúceho kola: žltá 1, oranžová 2, červená 3 (zo stredu po červenú spolu 6) — tomu, koho sa bojí, nech bitku vyhrá ktokoľvek. Každý stupeň raz; odtlačený stupeň nič a ústup k stredu zaplatené stupne zmaže. Vo finále nové stupne nič, udržané z posledného kola sa vyplatia po finále. V sivom strede nikomu.";
-
-/** Štítok posunu na portréte — len zdroj a počet, kto posúval nesie farba. */
-export function stitokStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdroj"]; readonly pocet: number }[]): string {
-  return zdroje.map((x) => `${NAZOV_ZDROJA[x.zdroj]}${x.pocet > 1 ? ` ×${x.pocet}` : ""}`).join(" · ");
-}
+  `Každý hráč má pri staršom strach a reči na stupnici 0–3 (sivá, žltá, oranžová, červená). Strach dvíha víťaz bitky Nakladačkou a neklesá; ` +
+  `reči dvíha víťaz hádky a sú vždy nad strachom. Priazeň dáva starší tomu, koho sa bojí menej — sila je rozdiel strachov. ` +
+  `Po bitke dá starší víťazovi špaky za najvyšší marker, porazenému len za reči: žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}.`;
 
 /**
  * Názov kroku rozdeľovania na stole (bublina, línia starších) — na jednom mieste. Prebytok
@@ -91,15 +60,8 @@ export function stitokStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdr
  */
 export const NAZOV_DELENIA = { hadka: "Hádka", reci: "Hádka", prebytok: "Nakladačka" } as const;
 
-/** Cena posunu o pole (v8.2, Michal 2026-10-30) — Nakladačka aj hádka (v10). */
-export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4";
+/** Cena stupňa (v11): do žltej 1, do oranžovej 2, do červenej 3 — Nakladačka aj hádka. */
+export const CENA_POLA = `stupeň stojí ${KONSTANTY.CENA_STUPNA[1]} / ${KONSTANTY.CENA_STUPNA[2]} / ${KONSTANTY.CENA_STUPNA[3]} (žltá / oranžová / červená)`;
 
-/**
- * Ako čítať stupnicu — titulok na stupnici staršieho. Predtým legenda za tlačidlom „? stupnica“,
- * ktoré zaberalo miesto starším (Michal 2026-10-30).
- */
-export const POPIS_STUPNICE =
-  "Tvoja polovica stupnice je vždy vľavo, súperova vpravo. Stupne od stredu: 0 sivý stred (pokojný), 1 žltá (znepokojený), 2 oranžová (vystrašený), 3 červená (vydesený). " +
-  "Priazeň má ten, na koho polovici marker leží — sila = stupeň (+1 / +2 / +3). " +
-  PRAVIDLO_STRACHU +
-  ` Marker posúva Nakladačka po bitke (${CENA_POLA}); hádka (v10) mení len silu priazne do konca kola.`;
+/** Špaky slovom („1 špak“, „3 špaky“). */
+export const textSpakov = (n: number): string => `${n} ${spakov(n)}`;

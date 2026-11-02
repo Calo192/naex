@@ -47,16 +47,18 @@ import type {
   RekapitulaciaPitky,
   VerejnyStav,
   ZobrataVerejne,
+  Zdvih,
 } from "@naex/core";
-import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, dopadyNahladu, nahladPitky, pocet, stavPoPokuse, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, nerozdelenaHadka, kartaZadarmo, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladPokusu, pokusMozny, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, vOhrozeni, jeKartaBossa } from "@naex/core";
+import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, dopadyNahladu, nahladPitky, pocet, stavPoPokuse, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, kartaZadarmo, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladPokusu, pokusMozny, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, vOhrozeni, jeKartaBossa, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
-import { NAZOV_DELENIA } from "./textyStarsich.ts";
-import { IkonaDelenia, LiniaStarsich, stopaStarsieho, ucinokPriazne, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { CENA_POLA, NAZOV_DELENIA } from "./textyStarsich.ts";
+import { IkonaDelenia, LiniaStarsich, ucinokPriazne, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { klikNaStupen, radStarsich, stupneRozdelenia, suhrnRozdelenia, zdvihStarsieho } from "./teplomery.ts";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
-import { favourPodlaId, hadkaBitky, kratkeMeno, listokHadky, pocetPriazniKola, priazenKola, priazenMarkera, type PriazneBitky } from "./priazenKola.ts";
+import { favourPodlaId, kratkeMeno, pocetPriazniKola, priazenKola, reciZHadky, type PriazneBitky } from "./priazenKola.ts";
 import { PonukaZajatia, type MoznostZajatia } from "./PonukaZajatia.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
@@ -69,7 +71,6 @@ import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
-import { pravitkoPosunu } from "./pravitko.ts";
 import { prepniSNechanim, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
@@ -130,10 +131,9 @@ import "./mobil-sirka.css";
 // Až po hra.css — jednotný bar upravuje aj jej pravidlá (os kola, nástroje, rezerva stola).
 import "./jbar.css";
 import { IkonaSpaku, Nastenka, sMinusom, spakyPredBitkou, textSpakovBitky } from "./Spaky.tsx";
-import { MARKER_STRED, posunZaBody, posunMarker, klebetyKola, cenaPosunuOPoli, priazenHraca, priazenSila, markerStarsieho, posunyZoZmien } from "./staraStupnica.ts";
-import { rozsahHadky, hadkaMozna, bitkaPoPlane, planRozdelenia, prepniVolbu, rozpocetPoPlane, smerRozdelenia, polohyRozdelenia, starsiPreZvysok, zvysokPrepadne, type VolbaRozdelenia } from "./staraStupnica.ts";
-import { spakyTeraz } from "./staraStupnica.ts";
-import { SPAKY_ZA_VAZNOV } from "./staraStupnica.ts";
+
+/** Kľúč v localStorage: rozloženie línie starších (Teplomery alebo Pult). */
+export const ULOZENY_REZIM_LINIE = "naex-linia-starsich";
 import { vazniNaVyhru } from "@naex/core";
 
 /**
@@ -1095,7 +1095,7 @@ export function HernaPlocha({
   // Stôl tak, ako by vyzeral po potvrdení návrhu — z neho sa ráta živé
   // zvýraznenie spojov aj odhad bitky. Moje skryté NA EX v ňom ležia na kartách
   // (pre mňa sú dané), súperove nie — tie sa ukážu až pri odkrytí.
-  const { stol, lineEval, odhad, rozpis, hrozby, hrozbyKliatob, rozsahy, presunute } = useMemo(() => {
+  const { stol, lineEval, odhad, rozpis, hrozby, hrozbyKliatob, presunute } = useMemo(() => {
     let strany: ClientState["strany"] = zaklad.strany;
     let hraci = zaklad.hraci;
     let prilozeniaKu = zaklad.prilozeniaKu;
@@ -1156,14 +1156,7 @@ export function HernaPlocha({
       ciel === null || view.bitkaStav !== null || vylozenia.length > 0
         ? ([null, null] as const)
         : ([hrozbaKliatob(data, zaklad, 0, mozeEsteNaex(stolBitky, priebeh, 0)), hrozbaKliatob(data, zaklad, 1, mozeEsteNaex(stolBitky, priebeh, 1))] as const);
-    // Nerozdelená hádka (v10; predtým rozsah Pohoršení, Michal 2026-10-27): kam až ňou víťaz bitku dotiahne.
-    const stolHadky = { ...stolBitky, bitkaStav: view.bitkaStav };
-    const nerozdelena = nerozdelenaHadka(data, stolHadky, lineEval.sums);
-    const rozsahy =
-      ciel === null
-        ? ([null, null] as const)
-        : ([rozsahHadky(data, stolHadky, lineEval.sums, nerozdelena, 0), rozsahHadky(data, stolHadky, lineEval.sums, nerozdelena, 1)] as const);
-    return { stol, lineEval, odhad, rozpis, hrozby, hrozbyKliatob, rozsahy, presunute };
+    return { stol, lineEval, odhad, rozpis, hrozby, hrozbyKliatob, presunute };
     // vylozene a lokalitaNavrh sú odvodené len z navrh a view.
   }, [data, view, navrh, somNaTahu, zaklad]);
 
@@ -1561,54 +1554,42 @@ export function HernaPlocha({
   const bezNaex = useBezNaexVBitke(view, posli);
   const odlozenyPas = useOdlozenyPrikaz(posli, `${klucTahu}|${vylozenia.length}`); // potiahnutá karta pas zruší
 
-  // ---- rozdelenie hádky (v10) a Nakladačky (mock C · Pečať, Michal 2026-10-30) -------
-  // Posuny pri starších sú nepotvrdené v stave klienta; Potvrdiť ich pošle serveru jedným
-  // ťahom, Reset (aj Esc) ich zahodí. Plán, ceny a cieľ ráta jadro (planRozdelenia) — ten istý
-  // výpočet, aký urobí server, takže náhľad nikdy neklame. Pri zmene kroku sa stav zahodí.
+  // ---- rozdelenie Nakladačky (strach) a hádky (reči), v11 Strach a reči ----------------
+  // Zdvihy pri starších sú nepotvrdené v stave klienta; Potvrdiť ich pošle serveru jedným
+  // zámerom, Návrh ich vyplní (navrhRozdelenia jadra), Reset (aj Esc) ich zahodí. Cenu, zvyšok
+  // a úplnosť ráta jadro (planRozdelenia) — ten istý výpočet, aký urobí server.
   const krokDelenia = somNaTahu && view.koniec === null ? krokRozdelenia(view, ja) : null;
-  const [volbyDelenia, setVolbyDelenia] = useState<readonly VolbaRozdelenia[]>([]);
+  const [zdvihyDelenia, setZdvihyDelenia] = useState<readonly Zdvih[]>([]);
   const klucDelenia =
     krokDelenia === null
       ? null
-      : `${view.kolo}|${krokDelenia}|${bodyRozdelenia(view, ja)}|${view.starsi.map((e) => markerStarsieho(e)).join("")}|`;
-  useEffect(() => setVolbyDelenia([]), [klucDelenia]);
-  const planDelenia = krokDelenia === null ? null : planRozdelenia(view, ja, volbyDelenia);
-  // Žetóny minuté už potvrdenými posunmi: koľko bolo na začiatku kroku (po pripojení uprostred kroku od teraz).
-  const [zaciatokDeleniaStav, setZaciatokDelenia] = useState<{ readonly kluc: string; readonly spolu: number } | null>(null);
-  const klucKrokuDelenia = krokDelenia === null ? null : `${view.kolo}|${krokDelenia}`;
-  const zostavaDelenia = bodyRozdelenia(view, ja);
+      : `${view.kolo}|${krokDelenia}|${bodyRozdelenia(view, ja)}|${view.starsi.map((e) => `${e.strach.join("")}${e.reci.join("")}`).join("|")}`;
+  useEffect(() => setZdvihyDelenia([]), [klucDelenia]);
+  const planDelenia = krokDelenia === null ? null : suhrnRozdelenia(view, ja, zdvihyDelenia);
+  // Esc = Reset nepotvrdených zdvihov — až keď nie je otvorená lupa či dialóg (ten Esc zje skôr).
+  const maZdvihyDelenia = zdvihyDelenia.length > 0;
   useEffect(() => {
-    if (klucKrokuDelenia !== null && zaciatokDeleniaStav?.kluc !== klucKrokuDelenia) setZaciatokDelenia({ kluc: klucKrokuDelenia, spolu: zostavaDelenia });
-  }, [klucKrokuDelenia, zostavaDelenia, zaciatokDeleniaStav?.kluc]);
-  const zaciatokDelenia = zaciatokDeleniaStav?.kluc === klucKrokuDelenia ? zaciatokDeleniaStav.spolu : zostavaDelenia;
-  // Esc = Reset nepotvrdených posunov — až keď nie je otvorená lupa, dialóg či popis pečate (ten Esc zje skôr).
-  const maVolbyDelenia = volbyDelenia.length > 0;
-  useEffect(() => {
-    if (!maVolbyDelenia) return;
+    if (!maZdvihyDelenia) return;
     const klaves = (e: KeyboardEvent): void => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
       const otvorene = (sel: string): boolean => [...document.querySelectorAll(sel)].some((el) => el.getClientRects().length > 0);
       if (otvorene('.lupa:not(.doznieva), [role="dialog"]')) return;
       e.preventDefault();
-      setVolbyDelenia([]);
+      setZdvihyDelenia([]);
     };
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
-  }, [maVolbyDelenia]);
-  /** Starší mimo plánu, ktorých zvyšok ešte posunie — 0 pri kladnom zvyšku = zvyšok prepadne. */
-  const preZvysok = planDelenia === null ? [] : starsiPreZvysok(view, ja, planDelenia);
-  /** Zvyšok po pláne už nič nekúpi — server ho po Potvrdiť nechá prepadnúť a krok uzavrie. */
-  const prepadaDelenie = planDelenia !== null && zvysokPrepadne(view, ja, planDelenia);
-  const prepniDelenie = (v: VolbaRozdelenia): void => setVolbyDelenia((x) => prepniVolbu(view, ja, x, v));
-  // Výučba ide po jednom posune zo scenára — iný ťah by server odmietol.
+  }, [maZdvihyDelenia]);
+  const klikDelenia = (elderId: string, stupen: number): void => setZdvihyDelenia((x) => klikNaStupen(view, ja, x, elderId, stupen));
+  // Výučba čaká konkrétne rozdelenie (v11 jeden zámer so zdvihmi aj na viac starších) — zdvih na iného
+  // staršieho, než scenár chce, server odmietne; Potvrdiť povie prečo.
   const chybaDeleniaVyucby = ((): string | null => {
     const o = vyucbaOcakava;
-    // Výučba (v10) rozdeľovala po staršom — v11 jeden zámer so zdvihmi; kým sa výučba neprepíše, len prvý starší.
     if (o === undefined || o === null || planDelenia === null || (o.type !== "reci" && o.type !== "prebytok")) return null;
-    const ciel = o.zdvihy[0]?.elderId;
-    if (ciel === undefined || planDelenia.kroky.every((k) => k.elderId === ciel)) return null;
-    const meno = menoKarty(view.starsi.find((e) => e.elderId === ciel)?.karta.defId ?? ciel);
-    return o.type === "reci" ? `Teraz daj reči len staršiemu ${meno}.` : `Teraz zdvihni strach len pri staršom ${meno}.`;
+    const ciele = new Set(o.zdvihy.map((z) => z.elderId));
+    if (ciele.size === 0 || zdvihyDelenia.every((z) => ciele.has(z.elderId))) return null;
+    const mena = [...ciele].map((id) => menoKarty(view.starsi.find((e) => e.elderId === id)?.karta.defId ?? id)).join(", ");
+    return o.type === "reci" ? `Teraz daj reči len starším: ${mena}.` : `Teraz zdvihni strach len pri starších: ${mena}.`;
   })();
 
   // ---- čo sa práve stalo (dizajn hra-20261021-1240, UX N3) -------------------
@@ -1814,7 +1795,8 @@ export function HernaPlocha({
     const bitka = view.nastenka.find((b) => b.kolo === pred.kolo) ?? null;
     const posuny = view.starsi.flatMap((e) => {
       const a = zaklad.starsi.find((x) => x.elderId === e.elderId);
-      return a === undefined || markerStarsieho(a) === markerStarsieho(e) ? [] : [{ meno: menoKarty(e.karta.defId), pred: markerStarsieho(a), po: markerStarsieho(e) }];
+      const priazen = (x: Pick<ElderState, "strach">): number => x.strach[1] - x.strach[0];
+      return a === undefined || priazen(a) === priazen(e) ? [] : [{ meno: menoKarty(e.karta.defId), pred: priazen(a), po: priazen(e) }];
     });
     setUcetBitky({
       kolo: pred.kolo,
@@ -1918,7 +1900,7 @@ export function HernaPlocha({
         ? cielPanelRef.current
         : view.faza === "draft"
           ? (draftPanelRef.current ?? liniaObalRef.current)
-          : view.faza === "bitka" && (krok === "hadka" || krok === "prebytok")
+          : view.faza === "bitka" && (krok === "reci" || krok === "prebytok")
             ? liniaObalRef.current
             : liniaObalRef.current;
     if (el === null) return;
@@ -3360,29 +3342,49 @@ export function HernaPlocha({
         }),
       };
     }
-    // Rozdeľovanie (mock C · Pečať): Potvrdiť s počtom nepotvrdených posunov, v jeho rohu ↺ Reset.
-    // Bez posunov obe nevypálené; keď zvyšok už nič nekúpi, Potvrdiť pulzuje.
+    // Rozdeľovanie (v11): Návrh vyplní úplné rozdelenie, Potvrdiť pošle len úplné (iné server
+    // neprijme), v jeho rohu ↺ Reset. Keď je rozdelenie úplné, Potvrdiť pulzuje.
     if (planDelenia !== null && krokDelenia !== null) {
-      const n = planDelenia.kroky.length;
+      const n = zdvihyDelenia.length;
       const prikaz = planDelenia.prikaz;
-      const vyzva = n > 0 && (planDelenia.zvysok === 0 || prepadaDelenie);
+      const navrh = navrhRozdelenia(view);
+      const dovod =
+        chybaDeleniaVyucby ??
+        planDelenia.chyba ??
+        (n === 0
+          ? `Klikni na stupeň v tvojom teplomeri — ${krokDelenia === "prebytok" ? "strach" : "reči"} pri staršom pôjdu hore. Alebo Návrh.`
+          : planDelenia.esteSaDa.length > 0
+            ? `Zvyšok ${planDelenia.zvysok} ešte stačí na ďalší stupeň — rozdeľ ho, server prijme len úplné rozdelenie.`
+            : null);
       return {
         stred: (
           <span className="pecat-tahu-obal pecat-delenia">
             <button
               type="button"
-              className={`pecat pecat-potvrd${vyzva ? " vyzva" : ""}`}
+              className="pecat pecat-tichy pecat-navrh-delenia"
+              data-vyucba="tlacidlo:navrh-delenia"
+              disabled={navrh === null || vyucba === true}
+              title="Návrh: rozdelí body tak, aby si mal po bitke čo najviac a súper čo najmenej — dá sa upraviť klikmi."
+              onClick={() => {
+                if (navrh !== null) setZdvihyDelenia(navrh.zdvihy);
+              }}
+            >
+              Návrh
+            </button>
+            <button
+              type="button"
+              className={`pecat pecat-potvrd${prikaz !== null && n > 0 ? " vyzva" : ""}`}
               data-skratka="k"
               data-vyucba="tlacidlo:potvrdit-delenie"
-              disabled={n === 0 || chybaDeleniaVyucby !== null}
-              title={n === 0 ? (krokDelenia === "prebytok" ? "Najprv klikni na staršieho — jeho marker sa posunie." : "Najprv klikni na staršieho — jeho priazeň pôjde k tebe (do konca kola).") : (chybaDeleniaVyucby ?? "Pošle všetky nepotvrdené posuny naraz.")}
+              disabled={prikaz === null || chybaDeleniaVyucby !== null}
+              title={dovod ?? `Pošle rozdelenie naraz${planDelenia.prepadne > 0 ? ` — ${planDelenia.prepadne} prepadne` : ""}.`}
               onClick={() => {
                 if (prikaz !== null) posli(prikaz);
               }}
             >
               ✓ potvrdiť{n > 0 && <span className="poc">{n}</span>}
             </button>
-            <button type="button" className="pecat-reset" disabled={n === 0} aria-label="Reset — vrátiť nepotvrdené posuny" title="Reset — vrátiť nepotvrdené posuny (Esc)" onClick={() => setVolbyDelenia([])}>
+            <button type="button" className="pecat-reset" disabled={n === 0} aria-label="Reset — vrátiť nepotvrdené zdvihy" title="Reset — vrátiť nepotvrdené zdvihy (Esc)" onClick={() => setZdvihyDelenia([])}>
               ↺
             </button>
           </span>
@@ -3523,7 +3525,7 @@ export function HernaPlocha({
     }
     // Súperov krok na staršom (UX N4): názov kroku a čo z neho bude mať čakajúci, nie len „Čakáš“.
     const bsCak = view.bitkaStav;
-    if (!somNaTahu && view.faza === "bitka" && bsCak !== null && bsCak.caka === super_ && (bsCak.krok === "prebytok" || bsCak.krok === "hadka")) {
+    if (!somNaTahu && view.faza === "bitka" && bsCak !== null && bsCak.caka === super_ && (bsCak.krok === "prebytok" || bsCak.krok === "reci")) {
       const prebytok = bsCak.krok === "prebytok";
       return {
         nadpis: (
@@ -3535,21 +3537,13 @@ export function HernaPlocha({
           <span className="cakanie-text">
             {prebytok ? (
               <>
-                {bsCak.prebytokDrzi === ja ? (
-                  <>
-                    <strong>{menoHraca(super_)}</strong> rozdeľuje tvoju Nakladačku: vyberá, ktorí starší pôjdu k nemu — on dostane ich priazeň, teba sa
-                    začnú báť (nový stupeň ti zaplatí koniec ďalšieho kola, ak sa udrží). Za každého staršieho dostane cigaretu.
-                  </>
-                ) : (
-                  <>
-                    <strong>{menoHraca(super_)}</strong> posúva starších k tebe: ty máš hneď ich priazeň, starší sa začnú báť súpera.
-                  </>
-                )}
+                <strong>{menoHraca(super_)}</strong> vyhral bitku a rozdeľuje Nakladačku na svoj strach — starší sa ho začnú báť viac a
+                priazeň sa posunie k tebe.
               </>
             ) : (
               <>
-                <strong>{menoHraca(super_)}</strong> vyhral hádku {bsCak.hadka === undefined ? "" : `${bsCak.hadka.makke[super_]} : ${bsCak.hadka.makke[ja]} `}a berie si priazne
-                starších k sebe — do konca kola, markery sa nehýbu. Tebe môže priazeň len zobrať, nie dať.
+                <strong>{menoHraca(super_)}</strong> vyhral hádku {bsCak.hadka === undefined ? "" : `${bsCak.hadka.makke[super_]} : ${bsCak.hadka.makke[ja]} `}a rozdeľuje ju na
+                svoje reči — za ne mu starší dajú špaky aj po prehratej bitke.
               </>
             )}
             <span className="bodky" aria-hidden="true" />
@@ -3634,14 +3628,17 @@ export function HernaPlocha({
         nadpis: "Kapybara",
         text: (
           <span>
-            Posuň marker jedného staršieho o 1 pole k stredu:{" "}
+            Zníž súperove reči pri jednom staršom o stupeň:{" "}
             {view.starsi
-              .filter((e) => markerStarsieho(e) !== MARKER_STRED)
-              .map((e) => (
-                <button key={e.elderId} type="button" className="pecat pecat-nakup" onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
-                  {defOf(data, e.karta).name}
-                </button>
-              ))}
+              .filter((e) => e.reci[super_] > 0)
+              .map((e) => {
+                const na = reciNizsie(e, super_);
+                return (
+                  <button key={e.elderId} type="button" className="pecat pecat-nakup" data-vyucba={`tlacidlo:kapybara-${e.elderId}`} onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
+                    {defOf(data, e.karta).name}: {NAZVY_ZON[e.reci[super_]]} → {na === 0 ? "zaniknú" : NAZVY_ZON[na]}
+                  </button>
+                );
+              })}
           </span>
         ),
       };
@@ -3700,15 +3697,15 @@ export function HernaPlocha({
           const vybrany = mode.typ === "pokus" ? view.starsi.find((e) => e.elderId === mode.elderId) : undefined;
           if (mode.typ === "pokus" && vybrany !== undefined) {
             const cenaTahu = textDopadov(dopadyNahladu(data, view, stavPoPokuse(view, vybrany.elderId), 0));
-            const n = nahladPokusu(view);
+            const n = nahladPokusu(view, vybrany.elderId);
             return {
               nadpis: `Pokus o zajatie — ${menoKarty(vybrany.karta.defId)}`,
               text: (
                 <>
                   Karta staršieho pôjde tebe do ruky (smieš ju vyložiť, len akcie)
-                  {view.pokusy[super_] === null ? <>; {menoHraca(super_)} si pri stavbe šenku nechá 1 kartu zadarmo</> : null}. <strong>Vyhráš bitku — je tvoj väzeň</strong> ({n.poradie}. zajatý v partii, po finále{" "}
-                  {spakov(n.kradez)}
-                  {n.vyhra ? " — tretí väzeň: vyhráš hneď" : ""}); prehráš alebo sekera — vráti sa a marker ustúpi o stupeň.
+                  {view.pokusy[super_] === null ? <>; {menoHraca(super_)} si pri stavbe šenku nechá 1 kartu zadarmo</> : null}. <strong>Vyhráš bitku — je tvoj väzeň</strong> ({n.poradie}. zajatý v partii)
+                  a {menoHraca(super_)} ti odovzdá {spakov(n.kradez)} za svoj najvyšší marker pri ňom; väzni {n.mojichVaznov}/{n.vazniNaVyhru}
+                  {n.vyhra ? " — vyhráš hneď" : ""}. Prehráš alebo sekera — vráti sa a tvoj strach pri ňom klesne na nič.
                   {cenaTahu !== null && <> Cena: {cenaTahu}.</>}
                 </>
               ),
@@ -3725,7 +3722,7 @@ export function HernaPlocha({
             nadpis: "Pokus o zajatie",
             text: (
               <>
-                Za {cigariet(KONSTANTY.CENA_POKUSU)} (prepadne) si vezmi staršieho, ktorý sa ťa bojí na stupni 3, do ruky.{" "}
+                Za {cigariet(KONSTANTY.CENA_POKUSU)} (prepadne) si vezmi do ruky staršieho, pri ktorom máš strach na červenej.{" "}
                 {view.pokusy[super_] === null ? `${menoHraca(super_)} si pri stavbe šenku nechá 1 kartu zadarmo.` : "Skúšate obaja — karta zadarmo nebude."}{" "}
                 <strong>Vyhráš bitku — je tvoj väzeň.</strong>
               </>
@@ -4448,40 +4445,35 @@ export function HernaPlocha({
             tlacidla: <button onClick={() => posli({ type: "cintorin", uid: null })}>nič</button>,
           };
         }
-        // Hádka (v10) a Nakladačka: klik na staršieho ho pridá do nepotvrdených posunov.
-        // Bublina rozdeľovania (mock C · Pečať): jedno písmo a jedna veľkosť — názov, žetóny,
-        // zvyšok a pre koľkých starších ešte stačí. Dlhý pokyn je preč; smer a cenu ukáže karta.
-        if ((b.krok === "hadka" || b.krok === "prebytok") && planDelenia !== null && krokDelenia !== null) {
+        // Nakladačka (strach) a hádka (reči), v11: klik na stupeň v teplomeri pridá zdvih.
+        // Bublina rozdeľovania: názov, žetóny (idú / zostáva), cena stupňov a čo prepadne.
+        if ((b.krok === "reci" || b.krok === "prebytok") && planDelenia !== null && krokDelenia !== null) {
           const zvysok = planDelenia.zvysok;
-          const ide = bodyRozdelenia(view, ja) - zvysok;
-          const minute = Math.max(0, zaciatokDelenia - zvysok - ide);
-          const m = preZvysok.length;
-          const drzi = b.prebytokDrzi;
-          const cigPre = krokDelenia === "prebytok" && drzi !== null ? (drzi === ja ? super_ : ja) : null;
-          const cig = cigPre === null ? 0 : new Set(planDelenia.kroky.map((k) => k.elderId)).size;
-          // Hádka mení priazeň hneď — keď to pohne poškodením (Bitkár, Veriaci, Abstinent), bublina ukáže bitku pred a po.
-          const bitka = krokDelenia === "reci" ? bitkaPoPlane(data, view, planDelenia) : null;
+          const ide = planDelenia.cena;
+          const m = planDelenia.esteSaDa.length;
           return {
             jednotny: true,
             nadpis: (
               <>
                 <span className="pil-nazov">
-                  <IkonaDelenia krok={krokDelenia} /> {NAZOV_DELENIA[krokDelenia]}
+                  <IkonaDelenia krok={krokDelenia} /> {NAZOV_DELENIA[krokDelenia]} → {krokDelenia === "prebytok" ? "tvoj strach" : "tvoje reči"}
                 </span>
                 <span className="zetony" aria-hidden="true">
-                  {Array.from({ length: minute + ide + zvysok }, (_, i) => (
-                    <span key={i} className={`zeton${i < minute ? " minute" : i < minute + ide ? " ide" : ""}`}>
+                  {Array.from({ length: Math.min(ide + zvysok, 24) }, (_, i) => (
+                    <span key={i} className={`zeton${i < ide ? " ide" : ""}`}>
                       <IkonaDelenia krok={krokDelenia} />
                     </span>
                   ))}
                 </span>
-                <span>
-                  zostáva <b className="cislo">{zvysok}</b>
+                <span data-vyucba="rozdelenie-zvysok">
+                  zostáva <b className="cislo">{zvysok}</b> z {planDelenia.body}
                 </span>
               </>
             ),
             text: (
               <>
+                <span className="pil-sep">·</span>
+                <span title={CENA_POLA}>stupeň 1 / 2 / 3</span>
                 <span className="pil-sep">·</span>
                 {zvysok === 0 ? (
                   <span>všetko rozdané</span>
@@ -4489,42 +4481,20 @@ export function HernaPlocha({
                   <span>
                     stačí ešte pre <b className="cislo">{m}</b> {m === 1 ? "staršieho" : "starších"}
                   </span>
-                ) : !prepadaDelenie ? (
-                  <span>zvyšok minieš po potvrdení</span>
                 ) : (
                   <span className="prepadne">
-                    <b className="cislo">{zvysok}</b> prepadne
+                    <b className="cislo">{planDelenia.prepadne}</b> prepadne
                   </span>
                 )}
-                {/* Tlačidlá smerov nie sú (smer je daný pravidlami) — kým nič nevybral, bublina povie, kam ťuknúť. */}
                 {ide === 0 && m > 0 && (
                   <>
                     <span className="pil-sep">·</span>{" "}
                     {/* Medzera: na telefóne je oddeľovač skrytý a vety by sa zliali. */}
                     <span>
                       <span className="len-mys">klikni</span>
-                      <span className="len-dotyk">ťukni</span> na staršieho
+                      <span className="len-dotyk">ťukni</span> na stupeň v teplomeri
                     </span>
                   </>
-                )}
-                {bitka !== null && <span className="pil-sep">·</span>}
-                {bitka !== null && (
-                  <span title="Priazeň sa hádkou mení hneď — platí už v tejto bitke (do konca kola).">
-                    bitka{" "}
-                    <b className="cislo">
-                      {bitka.pred.tuhe[ja]} : {bitka.pred.tuhe[super_]}
-                    </b>{" "}
-                    →{" "}
-                    <b className="cislo">
-                      {bitka.po.tuhe[ja]} : {bitka.po.tuhe[super_]}
-                    </b>
-                  </span>
-                )}
-                {cig > 0 && (
-                  <span className="pil-cig" title={`Za každého posunutého staršieho cigareta — ${cigPre === ja ? "tebe" : menoHraca(super_)}.`}>
-                    <IkonaCigareta /> +{cig}
-                    {cigPre === ja ? "" : ` ${menoHraca(super_)}`}
-                  </span>
                 )}
               </>
             ),
@@ -4539,15 +4509,9 @@ export function HernaPlocha({
   })();
 
   // ---- starší -------------------------------------------------------------
-  /**
-   * Hádka bitky po starších pre rekapituláciu (krúžok a meno namiesto „priazeň ±1“): po bitke
-   * zo záznamu nástenky (po hráčoch), kým bitka beží, zo súčtu klebiet v pohľade.
-   */
-  const priazneBitky = (kolo: number): PriazneBitky => {
-    const zaznam = view.nastenka.find((x) => x.kolo === kolo);
-    const bk = view.bitkaStav;
-    const zdroj = zaznam?.povery !== undefined ? { hracov: zaznam.povery } : {};
-    const hadka = hadkaBitky(view.starsi, zdroj, ja).flatMap((x) => {
+  /** Reči z hádky po starších a meno staršieho podľa priazne — rekapitulácia bitky (v11). */
+  const priazneBitky = (_kolo: number): PriazneBitky => {
+    const hadka = reciZHadky({ hadka: view.bitkaStav?.hadka, zmeny: view.zmenyMarkerov }, ja).flatMap((x) => {
       const e = view.starsi.find((y) => y.elderId === x.elderId);
       return e === undefined ? [] : [{ ...x, meno: menoKarty(e.karta.defId), fav: favourStarsieho(data, e) }];
     });
@@ -4559,8 +4523,12 @@ export function HernaPlocha({
       },
     };
   };
-  // Hádku a Nakladačku rozdeľuje hráč ťukom na staršieho (rozdelenieStarsieho, mock C · Pečať).
+  // Nakladačku a hádku rozdeľuje hráč klikom na stupeň v teplomeri (rozdelenieStarsieho).
   const klikStarsi = (elder: ElderState): { readonly akcia: string; readonly klik: () => void } | undefined => {
+    // Kapybara (v11): súperove reči pri staršom o stupeň nižšie — výber aj klikom v línii.
+    if (view.volbaNastupu?.typ === "kapybara" && view.volbaNastupu.hrac === ja && elder.reci[super_] > 0) {
+      return { akcia: "Kapybara — súperove reči o stupeň nižšie", klik: () => posli({ type: "kapybara", elderId: elder.elderId }) };
+    }
     if (!somNaTahu) return undefined;
     // Pokus o zajatie (v9): staršieho, ktorý sa ma bojí na stupni 3, skúsim zajať.
     if (moznePokusyJa.some((e) => e.elderId === elder.elderId)) {
@@ -4664,14 +4632,15 @@ export function HernaPlocha({
     return () => window.removeEventListener("keydown", klaves);
   }, [starsiViditelni, nahliadnutie, vrstva, lupa, krokStarsich === null]);
   // Starší, ktorým sa práve pohol marker — v línii bliknú.
-  const markeryPred = useRef<ReadonlyMap<string, number> | null>(null);
+  const markeryPred = useRef<ReadonlyMap<string, string> | null>(null);
   const [zmeneniStarsi, setZmeneniStarsi] = useState<ReadonlySet<string>>(new Set());
   useEffect(() => {
-    const teraz = new Map(view.starsi.map((e) => [e.elderId, markerStarsieho(e)]));
+    const kluc = (e: ElderState): string => `${e.strach.join()}|${e.reci.join()}`;
+    const teraz = new Map(view.starsi.map((e) => [e.elderId, kluc(e)]));
     const pred = markeryPred.current;
     markeryPred.current = teraz;
     if (pred === null) return;
-    const zmena = new Set(view.starsi.filter((e) => pred.get(e.elderId) !== markerStarsieho(e)).map((e) => e.elderId));
+    const zmena = new Set(view.starsi.filter((e) => pred.get(e.elderId) !== kluc(e)).map((e) => e.elderId));
     if (zmena.size === 0) return;
     setZmeneniStarsi(zmena);
     const t = setTimeout(() => setZmeneniStarsi(new Set()), 1600);
@@ -4684,70 +4653,59 @@ export function HernaPlocha({
     if (!krokMoj || krokStarsich === null) return undefined;
     if (krokStarsich.typ === "zajatie") {
       if (vOhrozeni(view, e.elderId)) return "v ohrození";
-      if (!pokusMozny(e, ja)) return "nebojí sa ťa na stupni 3";
+      if (!pokusMozny(e, ja)) return "tvoj strach nie je na červenej";
       return hJa.cigarety < KONSTANTY.CENA_POKUSU ? "nemáš cigaretu" : "nedá sa zajať";
     }
-    if (krokStarsich.typ === "hadka" && !hadkaMozna(e, ja, klebetyKola(view))) return "priazeň už tvoja v sile 3";
-    if (krokStarsich.typ === "prebytok" && vOhrozeni(view, e.elderId)) return "v ohrození — nehýbe sa";
-    // Hádka a Nakladačka: kto už nič nedostane, je tlmený na karte (rozdelenieStarsieho).
+    // Nakladačka a hádka: stupne, ktoré sa nedajú, nesie teplomer (zamknutý, mimo).
     return undefined;
   };
-  /**
-   * Starší pri rozdeľovaní (mock C · Pečať): výber s pravítkom, ceny polí a nepotvrdený posun z plánu
-   * jadra. Starší v pláne má body zo svojho miesta v poradí, ostatní zo zvyšku po pláne (nový posun ide
-   * na koniec) — ako prepniVolbu a server. Hádka (v10) posúva polohu účinnej priazne, nie marker —
-   * ceny a cieľ sa rátajú od nej (polohyRozdelenia), smer je vždy k víťazovi.
-   */
-  const polohyDelenia = planDelenia === null || krokDelenia === null || !krokMoj ? null : polohyRozdelenia(view, ja);
-  const smerDelenia = krokDelenia === null ? null : smerRozdelenia(view, ja);
+  /** Starší pri rozdeľovaní (v11): stupne môjho markera a nepotvrdený zdvih z plánu jadra. */
   const rozdelenieStarsieho = (e: ElderState): RozdelenieStarsieho | undefined => {
-    if (planDelenia === null || krokDelenia === null || !krokMoj || polohyDelenia === null) return undefined;
-    const krok = planDelenia.kroky.find((k) => k.elderId === e.elderId);
-    const body = krok?.body ?? rozpocetPoPlane(view, ja, planDelenia, e.elderId);
-    const ceny: ({ readonly cena: number; readonly dosah: boolean } | null)[] = Array.from({ length: 7 }, () => null);
-    let vyber: RozdelenieStarsieho["vyber"];
-    const z = polohyDelenia.get(e.elderId);
-    if (smerDelenia !== null && z !== undefined) {
-      for (let m = posunMarker({ marker: z }, smerDelenia); m !== null; m = posunMarker({ marker: m }, smerDelenia)) {
-        const cena = cenaPosunuOPoli(z, m - z);
-        ceny[m] = { cena, dosah: cena <= body };
-      }
-      const posun = body > 0 ? posunZaBody({ marker: z }, smerDelenia, body) : null;
-      vyber = {
-        posun: posun === null ? null : { na: posun.marker, cena: posun.cena },
-        aktivna: krok !== undefined,
-        klik: () => prepniDelenie({ elderId: e.elderId }),
-        pravitko: pravitkoPosunu(z, smerDelenia, body),
-        smer: smerDelenia === ja ? "ja" : "su",
-        kraj: posunMarker({ marker: z }, smerDelenia) === null,
-      };
-    }
+    if (planDelenia === null || krokDelenia === null || !krokMoj) return undefined;
     return {
-      vyber,
-      ceny,
-      navrh: krok === undefined ? null : { na: krok.na, cena: krok.cena },
-      mrtvy: krok === undefined && vyber?.posun == null,
-      ...(krokDelenia === "reci" ? { hadka: true } : {}),
+      marker: planDelenia.marker,
+      stupne: stupneRozdelenia(view, ja, zdvihyDelenia, e.elderId),
+      zdvih: zdvihStarsieho(e, ja, planDelenia.marker, zdvihyDelenia),
+      klik: (s) => klikDelenia(e.elderId, s),
     };
   };
-  const starsiVLinii: StarsiVLinii[] = view.starsi.map((e) => {
+  const poDeleni = planDelenia === null ? view : pohladPoRozdeleni(view, ja, planDelenia.marker, zdvihyDelenia);
+  const obrazokStarsieho = (defId: string): string | null => {
+    const o = vzhladKarty(sada, data, defId).obrazok;
+    return o === null ? null : mediaUrl(o.nahlad);
+  };
+  const radLinie: MiestoVLinii[] = radStarsich(view.starsi, view.vazni).map((m): MiestoVLinii => {
+    if (m.typ === "vazen") return { typ: "vazen", v: { elderId: m.vazen.elderId, meno: menoKarty(m.vazen.karta.defId), obrazok: obrazokStarsieho(m.vazen.karta.defId), hrac: m.vazen.hrac } };
+    const e = m.elder;
     const rozdelenie = rozdelenieStarsieho(e);
     const klik = rozdelenie === undefined ? klikStarsi(e) : undefined;
-    const obrazok = vzhladKarty(sada, data, e.karta.defId).obrazok;
     const iPatron = view.pokusy.findIndex((x) => x?.elderId === e.elderId);
-    return {
+    const zmeny = view.zmenyMarkerov.filter((x) => x.elderId === e.elderId);
+    const s: StarsiVLinii = {
       elder: e,
       meno: menoKarty(e.karta.defId),
-      obrazok: obrazok === null ? null : mediaUrl(obrazok.nahlad),
-      body: body.starsi.find((x) => x.elderId === e.elderId),
+      obrazok: obrazokStarsieho(e.karta.defId),
       klik,
       dovod: klik === undefined && rozdelenie === undefined ? zamokStarsieho(e) : undefined,
       patron: iPatron === -1 ? null : { kto: iPatron as PlayerId },
       vybrany: mode.typ === "pokus" && mode.elderId === e.elderId,
-      stopa: stopaStarsieho(posunyZoZmien(view.zmenyMarkerov, view.starsi), e.elderId),
+      zmeny,
       rozdelenie,
+      po: rozdelenie?.zdvih == null ? undefined : poDeleni.starsi.find((x) => x.elderId === e.elderId),
     };
+    return { typ: "starsi", s };
   });
+  // Teplomery alebo Pult (mock 3 / mock 5) — voľba sa pamätá v prehliadači.
+  const [rezimLinie, setRezimLinie] = useState<RezimLinie>(() => (typeof localStorage !== "undefined" && localStorage.getItem(ULOZENY_REZIM_LINIE) === "pult" ? "pult" : "teplomery"));
+  const zmenRezimLinie = (r: RezimLinie): void => {
+    setRezimLinie(r);
+    try {
+      localStorage.setItem(ULOZENY_REZIM_LINIE, r);
+    } catch {
+      // Súkromné okno bez úložiska — voľba platí len do obnovenia.
+    }
+  };
+  const pultLinie = useMemo(() => pultStarsich(view), [view]);
   // Lupa staršieho pri prejdení myšou zrušená (Michal 2026-10-30: „priveľa textu, hráča mätie“) —
   // meno a priazeň sú pod staršinom priamo v línii.
   const rezimBaru = rezimRadov({ nastenkaKlikom: vrstva === "lokality", nastenkaNaStole, liniaStarsich: bodovyRezim });
@@ -4762,7 +4720,7 @@ export function HernaPlocha({
     vyberZajatia && pohladStarsich === null && !liniaPriZajati
       ? moznePokusyJa.map((e) => {
           const vyber = (): void => setMode({ typ: "pokus", elderId: e.elderId });
-          const n = nahladPokusu(view);
+          const n = nahladPokusu(view, e.elderId);
           const ucinok = ucinokPriazne(data, e);
           return {
             elderId: e.elderId,
@@ -4770,7 +4728,7 @@ export function HernaPlocha({
             karta: (sirka: number) => sLupou({ karta: e.karta, sirka, onClick: vyber }),
             priazen: { sila: priazenSila(e), nazov: scorecardStarsieho(data, e).nazov, kratko: ucinok.kratko, cely: ucinok.cely },
             cigarety: KONSTANTY.CENA_POKUSU,
-            vazen: { poradie: n.poradie, spaky: n.kradez, vyhra: n.vyhra },
+            vazen: { poradie: n.poradie, spaky: n.kradez, vyhra: n.vyhra, mojich: n.mojichVaznov, naVyhru: n.vazniNaVyhru },
             vyber,
           };
         })
@@ -4837,26 +4795,9 @@ export function HernaPlocha({
       cele: `${kto === "ja" ? "Ak dáš" : `Ak ${menoHraca(super_)} dá`} NA EX na ${karta}: ${komu} do konca kola ${kliatby} (z kariet na stole, ruka sa neráta).`,
     };
   };
-  // Rozsah nerozdelenej hádky (v10; predtým Pohoršení) — vedľa hrozby NA EX, rovnakým tvarom (Michal 2026-10-27).
-  const textRozsahu = (kto: "ja" | "su"): HrozbaBitky | null => {
-    const r = rozsahy[kto === "ja" ? ja : super_];
-    if (r === null) return null;
-    const v = r.vysledok;
-    const tuhe = `tuhé ${r.damage.tuhe[ja]} : ${r.damage.tuhe[super_]}`;
-    return {
-      kto,
-      zdroj: "hadka",
-      uid: null,
-      // Hádka príde isto — riadok s ňou začína bez „ešte môže“; číslo ide hneď za kto,
-      // aby ho pri 1366 px neodrezalo (snímka 1366 × 650).
-      mini: `${kto === "ja" ? "ty" : "súper"} až ${r.damage.tuhe[ja]} : ${r.damage.tuhe[super_]} hádkou`,
-      kratko: `${kto === "ja" ? "Ty" : "Súper"} hádkou (${r.pocet}) až: ${tuhe}`,
-      cele: `${kto === "ja" ? "Vyhrávaš" : `${menoHraca(super_)} vyhráva`} hádku o ${r.pocet} — rozdelí sa v bitke na priazne starších, platí hneď (Bitkár, Veriaci, Abstinent): najviac ${tuhe}${v.prebytokDrzi === null ? "" : ` · Nakladačka ${v.prebytok} → ${v.prebytokDrzi === ja ? "tebe" : menoHraca(super_)}`}.`,
-    };
-  };
   // Hádka príde v bitke isto, NA EX len možno — ide prvá; pri viacerých položkách bez prebytku
   // (je v titulku a nápovede), inak by sa do riadku pri 1366 px nezmestila ani druhá.
-  const polozkyHrozby = [textRozsahu("su"), textHrozby("su"), textKliatobHrozby("su"), textRozsahu("ja"), textHrozby("ja"), textKliatobHrozby("ja")].filter((h): h is HrozbaBitky => h !== null);
+  const polozkyHrozby = [textHrozby("su"), textKliatobHrozby("su"), textHrozby("ja"), textKliatobHrozby("ja")].filter((h): h is HrozbaBitky => h !== null);
   const hrozbyBitky =
     polozkyHrozby.length < 2
       ? polozkyHrozby
@@ -4865,18 +4806,14 @@ export function HernaPlocha({
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
   // Priazne, ktoré pôsobia priamo v bitke (tuhé, Viera, Absťáky, Robota), po hádke — nápoveda odhadu.
   const priazneOdhadu = (): PriazenVOdhade[] => {
-    const kl = klebetyKola(view);
     const su = kratkeMeno(menoHraca(super_));
     return view.starsi.flatMap((e) => {
       const fav = favourStarsieho(data, e);
       if (fav !== "BITKAR" && fav !== "VERIACI" && fav !== "LAKOMEC" && fav !== "ROBOTA") return [];
-      const pk = priazenKola(e, kl, ja);
+      const pk = priazenKola(e, ja);
       if (pk.komu === null) return [];
       const meno = menoKarty(e.karta.defId);
-      const zm = priazenMarkera(e, ja);
-      const listok = listokHadky(e.elderId, kl, ja);
-      const hadka = listok === null || (zm.komu === pk.komu && zm.sila === pk.sila) ? null : listok.komu === "ja" ? "(tvoja hádka)" : `(hádka: ${su})`;
-      return [{ fav, p: pk, text: pk.komu === "ja" ? `${meno} ${UCINOK_KRATKO[fav](pk.sila)}` : `${meno}: ${su} ${UCINOK_KRATKO[fav](pk.sila)}`, hadka }];
+      return [{ fav, p: pk, text: pk.komu === "ja" ? `${meno} ${UCINOK_KRATKO[fav](pk.sila)}` : `${meno}: ${su} ${UCINOK_KRATKO[fav](pk.sila)}`, hadka: null }];
     });
   };
   const bitkaProps: BitkaPanelProps | null =
@@ -5828,7 +5765,7 @@ export function HernaPlocha({
     );
   // Čísla stĺpca a tabule: aj cena nového poldeci a priazeň starších.
   const cislaPultu = (p: PlayerId) =>
-    cislaHraca(view, p, prahy(p), zavislost(p), body, { cenaBarteru: barterCena(data, view, p), priazen: pocetPriazniKola(view.starsi, klebetyKola(view), p) });
+    cislaHraca(view, p, prahy(p), zavislost(p), body, { cenaBarteru: barterCena(data, view, p), priazen: pocetPriazniKola(view.starsi, p) });
   // Stĺpec hráča na šírku telefónu (PultHraca.tsx): ty vľavo s nástrojmi stola, súper vpravo s menu Partia.
   const pult = (p: PlayerId): ReactNode => (
     <StlpecHraca
@@ -6115,14 +6052,17 @@ export function HernaPlocha({
               )}
               {starsiViditelni && ponukaZajatia === null && (
                 <LiniaStarsich
-                  starsi={starsiVLinii}
+                  rad={radLinie}
                   data={data}
                   ja={ja}
                   pohlad={pohladLinie}
                   mena={[menoHraca(0), menoHraca(1)]}
-                  klebety={klebetyKola(view)}
                   krok={krokMoj && krokStarsich !== null ? krokStarsich.nazov : null}
                   zmenene={zmeneniStarsi}
+                  vyhry={view.vyhry}
+                  pult={pultLinie}
+                  rezim={rezimLinie}
+                  onRezim={zmenRezimLinie}
                   tlacidlo={tlacidloLinieStarsich}
                 />
               )}
@@ -6429,14 +6369,13 @@ export function HernaPlocha({
                     Pivnica — väzni <b>{vazniHraca.length}</b>/{vazniNaVyhru(view.lokalitCelkom)}
                   </h3>
                   <p className="popis">
-                    Väzeň nedáva priazeň ani strach. {moje ? "Jeho Kšeft spustíš v Pitke za vypitý plný poldeci, raz za Pitku." : "Jeho Kšeft má len držiteľ."} Po finále
-                    špaky podľa poradia zajatia: {SPAKY_ZA_VAZNOV.join(" / ")}.
+                    Väzeň nedáva priazeň a ráta sa držiteľovi ako červený strach. {moje ? "Jeho Kšeft spustíš v Pitke za vypitý plný poldeci, raz za Pitku." : "Jeho Kšeft má len držiteľ."}
                   </p>
                   <div className="vrstva-karty">
                     {vazniHraca.map((v) =>
                       sLupou(
                         { karta: v.karta, sirka: SIRKA_VO_VRSTVE },
-                        { stitok: <span className="balicek-kusov">{v.poradie}. · {SPAKY_ZA_VAZNOV[v.poradie - 1] ?? 0} š.</span> },
+                        { stitok: <span className="balicek-kusov">{v.poradie}. zajatý</span> },
                       ),
                     )}
                   </div>
@@ -6452,11 +6391,11 @@ export function HernaPlocha({
           nazov="Pivnica — tvoji väzni"
           pozn={
             <>
-              Tretí väzeň vyhráva – zajať môžeš staršieho, ktorý sa ťa bojí na stupni 3.
+              Väzni na výhru: {prahVyd} (vo vyhratej bitke) – zajať môžeš staršieho, pri ktorom máš strach na červenej.
               {vydeseni[super_] >= prahVyd - 1 && view.koniec === null && (
                 <span className="pivnica-hrozba">
                   {" "}
-                  {menoHraca(super_)} má {vydeseni[super_]}/{prahVyd} — odtlač starších, ktorí sa ho boja na stupni 3.
+                  {menoHraca(super_)} má {vydeseni[super_]}/{prahVyd} väzňov.
                 </span>
               )}
             </>
@@ -6474,7 +6413,7 @@ export function HernaPlocha({
                 <div key={v.elderId} className="pivnica-vazen">
                   {karta({ karta: v.karta, sirka: naSirku ? SIRKA_PIVNICE_NA_SIRKU : SIRKA_PIVNICE })}
                   <span className="pivnica-poradie">
-                    {v.poradie}. zajatý · po finále {SPAKY_ZA_VAZNOV[v.poradie - 1] ?? 0} š.
+                    {v.poradie}. zajatý
                   </span>
                   {k !== undefined ? kseftNaKarte(k) : <span className="pivnica-mimo">Kšeft len v Pitke, kým ju neskončíš</span>}
                 </div>
@@ -6702,6 +6641,7 @@ export function HernaPlocha({
           ja={ja}
           mena={[menoHraca(0), menoHraca(1)]}
           vazni={view.vazni}
+          vazniNaVyhru={view.vyhry.vazniNaVyhru}
           menoKarty={menoKarty}
           obrazok={(defId) => {
             const o = vzhladKarty(sada, data, defId).obrazok;
@@ -6720,6 +6660,7 @@ export function HernaPlocha({
           ja={ja}
           mena={[menoHraca(0), menoHraca(1)]}
           vazni={view.vazni}
+          vazniNaVyhru={view.vyhry.vazniNaVyhru}
           menoKarty={menoKarty}
           obrazok={(defId) => {
             const o = vzhladKarty(sada, data, defId).obrazok;

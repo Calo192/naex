@@ -2,8 +2,7 @@
 // otestovať: odkiaľ hráč špaky má (súčet dá popolník) a ako stoja starší k hráčovi.
 
 import type { BitkaNaNastenke, CardInstance, ClientState, ElderState, PlayerId } from "@naex/core";
-import { jeFinaleNaNastenke } from "@naex/core";
-import { STUPNICA_ZONY, obavanyHrac, priazenHraca, strachZ, type SMarkerom, markerStarsieho } from "./staraStupnica.ts";
+import { jeFinaleNaNastenke, priazenHraca, priazenSila } from "@naex/core";
 
 export interface SpakyPodlaZdroja {
   /** Špaky za vyhraté bitky o lokality (so sekerou, ktorú víťaz zobral). */
@@ -45,9 +44,20 @@ export function spakyPodlaZdroja(view: Pick<ClientState, "nastenka">, p: PlayerI
 
 export type SmerStarsieho = "hore" | "dole" | "nic";
 
-/** Ako starší stojí k hráčovi: hore = dáva mu priazeň (krígeľ), dole = bojí sa ho (špaky po bitke), nic = stred. */
-export function smerStarsieho(e: SMarkerom, p: PlayerId): SmerStarsieho {
-  return priazenHraca(e) === p ? "hore" : obavanyHrac(e) === p ? "dole" : "nic";
+type Strachy = Pick<ElderState, "strach">;
+
+/**
+ * Ako starší stojí k hráčovi (v11): hore = dáva mu priazeň (krígeľ), dole = bojí sa ho (strach,
+ * špaky po vyhratej bitke) a priazeň dáva súperovi alebo nikomu, nic = nebojí sa ho.
+ */
+export function smerStarsieho(e: Strachy, p: PlayerId): SmerStarsieho {
+  return priazenHraca(e) === p ? "hore" : e.strach[p] > 0 ? "dole" : "nic";
+}
+
+/** Výška stĺpčeka: pri priazni jej sila, pri strachu jeho stupeň. */
+export function zonaStarsieho(e: Strachy, p: PlayerId): number {
+  const smer = smerStarsieho(e, p);
+  return smer === "hore" ? priazenSila(e) : smer === "dole" ? e.strach[p] : 0;
 }
 
 export interface StupienkyStarsich {
@@ -59,11 +69,11 @@ export interface StupienkyStarsich {
   readonly stlpce: readonly { readonly elderId: string; readonly smer: SmerStarsieho; readonly zona: number }[];
 }
 
-export function stupienkyStarsich(starsi: readonly (Pick<ElderState, "elderId"> & SMarkerom)[], p: PlayerId): StupienkyStarsich {
+export function stupienkyStarsich(starsi: readonly (Pick<ElderState, "elderId"> & Strachy)[], p: PlayerId): StupienkyStarsich {
   return {
     priazen: starsi.filter((e) => priazenHraca(e) === p).length,
-    strach: starsi.filter((e) => strachZ(e, p) > 0).length,
-    stlpce: starsi.map((e) => ({ elderId: e.elderId, smer: smerStarsieho(e, p), zona: STUPNICA_ZONY[markerStarsieho(e)] })),
+    strach: starsi.filter((e) => e.strach[p] > 0).length,
+    stlpce: starsi.map((e) => ({ elderId: e.elderId, smer: smerStarsieho(e, p), zona: zonaStarsieho(e, p) })),
   };
 }
 

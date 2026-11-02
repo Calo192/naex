@@ -8,7 +8,7 @@ import type { CSSProperties } from "react";
 import type { ClientState, PlayerId } from "@naex/core";
 import { KONSTANTY, pocet } from "@naex/core";
 import { spakyPodlaZdroja } from "./spakyAStarsi.ts";
-import { type SpakyTeraz } from "./staraStupnica.ts";
+import type { SpakyTeraz } from "@naex/core";
 
 export interface BarSpakovProps {
   readonly view: ClientState;
@@ -42,8 +42,8 @@ export function BarSpakov({ view, p, body, menoKarty }: BarSpakovProps) {
       nazov: "Starší",
       hodnota: zn(rozpis.zaStarsich),
       trieda: rozpis.zaStarsich > 0 ? "plus" : "",
-      pod: `+${body.zaStarsich[p]} na konci kola${body.naUdrzanie[p] > 0 ? ` · +${body.naUdrzanie[p]} čaká` : ""}`,
-      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Na konci kola ${ja ? "ti" : "mu"} dajú ${body.zaStarsich[p]} za stupne udržané od minulého kola a ${body.naUdrzanie[p]} čaká na udržanie do konca ďalšieho kola (žltá 1, oranžová 2, červená 3; každý stupeň raz, odtlačený nič, vo finále nové nič). Nezáleží, kto bitku vyhrá.`,
+      pod: `po bitke +${body.zaStarsichVyhra[p]} · prehra +${body.zaStarsichPrehra[p]}`,
+      popis: `Doteraz od starších ${zn(rozpis.zaStarsich)}. Po najbližšej bitke ${ja ? "ti" : "mu"} dajú ${body.zaStarsichVyhra[p]}, keď ju ${ja ? "vyhráš" : "vyhrá"} (najvyšší marker — reči, inak strach), a ${body.zaStarsichPrehra[p]}, keď ju ${ja ? "prehráš" : "prehrá"} (len reči): žltá 1, oranžová 3, červená 5.`,
     },
     {
       kluc: "finale",

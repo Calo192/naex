@@ -110,17 +110,13 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     expect(medziobrazovka(p({ faza: "bitka", bitkaStav: hadka }), 1, "Eva", null)?.text).toMatch(/^Vyhral si hádku 4 : 1 — o 3/);
   });
 
-  it("Nakladačka (v8): drží ju vyššie celkové, rozdeľuje súper — ten sa dozvie, že vyberá priazne a dostane cigarety", () => {
-    // Hráč 1 drží prebytok, rozdeľuje porazený hráč 0.
-    const drzim = medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 0) }), 1, "Eva", null);
-    expect(drzim).toMatchObject({ kluc: "2|Nakladačka", nadpis: "Nakladačka" });
-    expect(drzim?.text).toMatch(/^Máš vyššie tuhé/);
-    expect(drzim?.text).toMatch(/Ktorých, vyberá Eva/);
-    const vyberam = medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 0) }), 0, "Eva", null)?.text;
-    expect(vyberam).toMatch(/vyberáš ty/);
-    expect(vyberam).toMatch(/dostaneš cigaretu/);
-    // Vo finále rozdeľuje držiteľ.
-    expect(medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 1) }), 1, "Eva", null)?.text).toMatch(/Rozdeľ Nakladačku/);
+  it("Nakladačka (v11): rozdeľuje ju víťaz bitky na svoj strach — súper sa dozvie, že priazeň ide k nemu", () => {
+    const rozdelujem = medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 1) }), 1, "Eva", null);
+    expect(rozdelujem).toMatchObject({ kluc: "2|Nakladačka", nadpis: "Nakladačka" });
+    expect(rozdelujem?.text).toMatch(/^Vyhral si bitku. Rozdeľ Nakladačku na svoj strach/);
+    const cakam = medziobrazovka(p({ faza: "bitka", bitkaStav: bitka("prebytok", 1, 1) }), 0, "Eva", null)?.text;
+    expect(cakam).toMatch(/^Eva vyhral bitku a rozdeľuje Nakladačku/);
+    expect(cakam).toMatch(/priazeň sa posunie k tebe/);
   });
 
   it("pokus o zajatie je krok šenku (ten istý kľúč, nová medziobrazovka nepríde); koniec hry ju nemá", () => {
@@ -153,8 +149,8 @@ describe("tahNaStole — línia starších nezakryje ťah (Michal 2026-10-30: pr
     }
   });
 
-  it("Hádka, Nakladačka a pokus o zajatie sa robia na staršom", () => {
-    for (const krok of ["hadka", "prebytok"]) {
+  it("Reči z hádky, Nakladačka a pokus o zajatie sa robia na staršom (v11)", () => {
+    for (const krok of ["reci", "prebytok"]) {
       expect(krokNaStarsich(t("bitka", { bitkaStav: krokBitky(krok, 1) }))).toEqual({ typ: krok, kto: 1 });
       expect(tahNaStole(t("bitka", { bitkaStav: krokBitky(krok) }), true)).toBe(false);
     }
@@ -165,7 +161,7 @@ describe("tahNaStole — línia starších nezakryje ťah (Michal 2026-10-30: pr
   it("po konci hry nie je ťah ani krok", () => {
     const koniec = { koniec: {} as ClientState["koniec"] };
     expect(tahNaStole(t("draft", { draftStav: draftNa("stavba"), ...koniec }), true)).toBe(false);
-    expect(krokNaStarsich(t("bitka", { bitkaStav: krokBitky("hadka"), ...koniec }))).toBeNull();
+    expect(krokNaStarsich(t("bitka", { bitkaStav: krokBitky("reci"), ...koniec }))).toBeNull();
   });
 });
 

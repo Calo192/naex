@@ -1,22 +1,21 @@
-// Stará stupnica (v10: marker, klebety, udržaný strach) — v11 Strach a reči. Testy starého zobrazenia
-// starších sú preskočené, kým stôl neprestaví agent UI (Teplomery a Pult).
-// Súhrn posunov starších pred výberom lokality (Michal 2026-10-31): ktorí starší, stupnica
-// pred → po, výplata udržaného strachu, zajatie, Povery; tam a späť je ako nepohnutý
+// Súhrn kola pri starších pred výberom lokality (Michal 2026-10-31; v11 Strach a reči 2026-11-02):
+// ktorí starší, teplomery pred → po, bodovanie po bitke, zajatie; tam a späť je ako nezmenený
 // a kolo bez udalostí súhrn nemá.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../../packages/core/data/cards.json";
 import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
-import type { BitkaNaNastenke, ClientState, ElderState, GameState, MarkerPos, Vazen } from "@naex/core";
+import type { BitkaNaNastenke, ClientState, ElderState, GameState, Stupen, Vazen } from "@naex/core";
 import { apply, loadGameData, naTahu, setupGame, tahBota, viewFor } from "@naex/core";
 import { dosledky, suhrnPosunov, zaciatokKola, type ZaciatokKola } from "../src/hra/obsahSuhrnu.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
-const [a, b, c, d] = s0.starsi as unknown as [ElderState, ElderState, ElderState, ElderState];
+const [a, b, c] = s0.starsi as unknown as [ElderState, ElderState, ElderState];
 
-const naPozicii = (e: ElderState, marker: MarkerPos, extra: Partial<ElderState> = {}): ElderState => ({ ...e, marker, ...extra });
+type S = readonly [Stupen, Stupen];
+const s = (e: ElderState, strach: S, reci: S = [0, 0]): ElderState => ({ ...e, strach, reci });
 
 function bitka(kolo: number, extra: Partial<BitkaNaNastenke> = {}): BitkaNaNastenke {
   return {
@@ -40,154 +39,105 @@ function bitka(kolo: number, extra: Partial<BitkaNaNastenke> = {}): BitkaNaNaste
 
 const pred = (starsi: readonly ElderState[], vazni: readonly string[] = []): ZaciatokKola => ({
   kolo: 2,
-  starsi: starsi.map((e) => ({ elderId: e.elderId, marker: e.marker, karta: e.karta })),
+  starsi: starsi.map((e) => ({ elderId: e.elderId, karta: e.karta, strach: e.strach, reci: e.reci })),
   vazni,
 });
 
 type Po = Pick<ClientState, "starsi" | "vazni" | "nastenka">;
-const po = (starsi: readonly ElderState[], extra: Partial<Po> = {}): Po => ({ starsi, vazni: [], nastenka: [bitka(2)], ...extra });
+const po = (starsi: readonly ElderState[], extra: Partial<Po> = {}): Po => ({ starsi: starsi as Po["starsi"], vazni: [], nastenka: [bitka(2)], ...extra });
 
-describe("súhrn posunov kola", () => {
-  it.skip("prázdny, keď sa v kole nič nestalo", () => {
-    expect(suhrnPosunov(pred([a, b]), po([a, b]))).toEqual([]);
+describe("súhrn kola pri starších (v11)", () => {
+  it("starší so zmeneným strachom či rečami má teplomery pred → po, nezmenení chýbajú, poradie podľa dlaždice", () => {
+    const x = suhrnPosunov(pred([a, b, c]), po([s(a, [0, 0], [0, 2]), b, s(c, [1, 0])]));
+    expect(x.map((p) => p.elderId)).toEqual([a.elderId, c.elderId]);
+    expect(x[0]).toMatchObject({ zmena: true, pred: { strach: [0, 0], reci: [0, 0] }, vazen: null });
+    expect(x[1]?.elder?.strach).toEqual([1, 0]);
   });
 
-  it("pohnutý starší má stupnicu pred → po, nepohnutí chýbajú, poradie podľa dlaždice", () => {
-    const z = pred([naPozicii(a, 3), naPozicii(b, 3), naPozicii(c, 4)]);
-    const s = suhrnPosunov(z, po([naPozicii(a, 3), naPozicii(b, 5), naPozicii(c, 1)]));
-    expect(s.map((x) => [x.elderId, x.posun])).toEqual([
-      [b.elderId, { z: 3, na: 5 }],
-      [c.elderId, { z: 4, na: 1 }],
+  it("tam a späť je ako nezmenený", () => {
+    expect(suhrnPosunov(pred([s(a, [1, 0], [2, 0])]), po([s(a, [1, 0], [2, 0])]))).toEqual([]);
+  });
+
+  it("nezmenený, ktorý po bitke bodoval, má bublinu s výplatou (za reči alebo strach)", () => {
+    const rozpis: BitkaNaNastenke["zaStarsichRozpis"] = [[{ elderId: a.elderId, defId: a.karta.defId, spaky: 3, reci: true }], [{ elderId: b.elderId, defId: b.karta.defId, spaky: 1 }]];
+    const x = suhrnPosunov(pred([s(a, [0, 0], [2, 0]), s(b, [0, 1])]), po([s(a, [0, 0], [2, 0]), s(b, [0, 1])], { nastenka: [bitka(2, { zaStarsichRozpis: rozpis })] }));
+    expect(x.map((p) => [p.elderId, p.zmena, p.vyplata])).toEqual([
+      [a.elderId, false, [{ hrac: 0, spaky: 3, reci: true }]],
+      [b.elderId, false, [{ hrac: 1, spaky: 1, reci: false }]],
     ]);
-  });
-
-  it("tam a späť je ako nepohnutý", () => {
-    // Napr. Pohoršenie 3 → 5 a Nakladačka späť 5 → 3: na konci kola tam, kde začal.
-    expect(suhrnPosunov(pred([naPozicii(a, 3)]), po([naPozicii(a, 3)]))).toEqual([]);
-  });
-
-  it.skip("nepohnutý, ktorý vyplatil udržaný strach, má bublinu bez stupnice", () => {
-    const zaznam = bitka(2, { zaStarsich: [2, 0], zaStarsichRozpis: [[{ elderId: a.elderId, defId: a.karta.defId, spaky: 2 }, { elderId: null, defId: "noviny", spaky: 1 }], []] });
-    const s = suhrnPosunov(pred([naPozicii(a, 5), b]), po([naPozicii(a, 5), b], { nastenka: [bitka(1), zaznam] }));
-    expect(s).toHaveLength(1);
-    expect(s[0]).toMatchObject({ elderId: a.elderId, posun: null, vyplata: [{ hrac: 0, spaky: 2, stupen: 2 }], hadka: [], vazen: null });
-    expect(dosledky(s[0]!)).toEqual([{ druh: "vyplata", hrac: 0, spaky: 2, stupen: 2 }]);
-  });
-
-  it("pohnutý, ktorý vyplatil, má stupnicu aj výplatu v stupni, ktorý držal", () => {
-    const zaznam = bitka(2, { zaStarsichRozpis: [[{ elderId: a.elderId, defId: a.karta.defId, spaky: 3 }], []] });
-    const [p] = suhrnPosunov(pred([naPozicii(a, 5)]), po([naPozicii(a, 6)], { nastenka: [zaznam] }));
-    expect(p).toMatchObject({ posun: { z: 5, na: 6 }, vyplata: [{ hrac: 0, spaky: 3, stupen: 2 }] });
   });
 
   it("výplata z inej bitky sa neráta", () => {
-    const stara = bitka(1, { zaStarsichRozpis: [[{ elderId: a.elderId, defId: a.karta.defId, spaky: 1 }], []] });
-    expect(suhrnPosunov(pred([naPozicii(a, 5)]), po([naPozicii(a, 5)], { nastenka: [stara, bitka(2)] }))).toEqual([]);
+    const rozpis: BitkaNaNastenke["zaStarsichRozpis"] = [[{ elderId: a.elderId, defId: a.karta.defId, spaky: 5 }], []];
+    expect(suhrnPosunov(pred([a]), po([a], { nastenka: [bitka(1, { zaStarsichRozpis: rozpis })] }))).toEqual([]);
   });
 
-  it.skip("hádka sa ukáže, aj keď sa marker nepohol — po hráčoch, bez znamienka", () => {
-    const zaznam = bitka(2, { povery: [{ [a.elderId]: 1 }, { [a.elderId]: -2, [b.elderId]: -1 }] });
-    const s = suhrnPosunov(pred([a, b, c]), po([a, b, c], { nastenka: [zaznam] }));
-    expect(s.map((x) => [x.elderId, x.posun, x.hadka])).toEqual([
-      [a.elderId, null, [{ hrac: 0, stupne: 1 }, { hrac: 1, stupne: 2 }]],
-      [b.elderId, null, [{ hrac: 1, stupne: 1 }]],
+  it("úspešné zajatie je bublina „uväznený“ v poradí s ostatnými; starý väzeň sa znova neukáže", () => {
+    const v: Vazen = { elderId: b.elderId, hrac: 1, poradie: 1, karta: b.karta, scorecard: b.scorecard, miesto: 1 };
+    const x = suhrnPosunov(pred([a, b, c]), po([s(a, [0, 1]), c], { vazni: [v] }));
+    expect(x.map((p) => [p.elderId, p.vazen])).toEqual([
+      [a.elderId, null],
+      [b.elderId, { hrac: 1, poradie: 1 }],
     ]);
-  });
-
-  it("úspešné zajatie je bublina „uväznený“ v poradí s ostatnými, aj s výplatou", () => {
-    const vazen: Vazen = { elderId: b.elderId, hrac: 1, poradie: 1, karta: b.karta, scorecard: b.scorecard, miesto: 1 };
-    const zaznam = bitka(2, { zaStarsichRozpis: [[], [{ elderId: b.elderId, defId: b.karta.defId, spaky: 3 }]] });
-    const s = suhrnPosunov(pred([naPozicii(a, 3), naPozicii(b, 0), naPozicii(c, 3)]), po([naPozicii(a, 4), naPozicii(c, 2)], { vazni: [vazen], nastenka: [zaznam] }));
-    expect(s.map((x) => x.elderId)).toEqual([a.elderId, b.elderId, c.elderId]);
-    expect(s[1]).toMatchObject({ posun: null, elder: null, vazen: { hrac: 1, poradie: 1 }, vyplata: [{ hrac: 1, spaky: 3, stupen: 3 }] });
-    expect(dosledky(s[1]!)).toEqual([
-      { druh: "vazen", hrac: 1, poradie: 1 },
-      { druh: "vyplata", hrac: 1, spaky: 3, stupen: 3 },
-    ]);
-  });
-
-  it("starý väzeň sa znova neukáže; neúspešný pokus je bežný posun", () => {
-    const vazen: Vazen = { elderId: d.elderId, hrac: 0, poradie: 1, karta: d.karta, scorecard: d.scorecard, miesto: 3 };
-    const s = suhrnPosunov(pred([naPozicii(a, 6)], [d.elderId]), po([naPozicii(a, 5)], { vazni: [vazen] }));
-    expect(s.map((x) => [x.elderId, x.posun, x.vazen])).toEqual([[a.elderId, { z: 6, na: 5 }, null]]);
+    expect(suhrnPosunov(pred([a, c], [b.elderId]), po([a, c], { vazni: [v] }))).toEqual([]);
   });
 });
 
 describe("dôsledky v bubline", () => {
-  it.skip("priazeň u toho istého hráča nesie silu pred posunom", () => {
-    const [p] = suhrnPosunov(pred([naPozicii(a, 2)]), po([naPozicii(a, 0, { drzane: 3, vyplatene: 1 })]));
+  it("priazeň u toho istého hráča nesie silu pred kolom; strach a reči pred → po; červená = zajatie možné", () => {
+    const [p] = suhrnPosunov(pred([s(a, [0, 1])]), po([s(a, [0, 3])]));
     expect(dosledky(p!)).toEqual([
       { druh: "priazen", hrac: 0, sila: 3, bolo: 1 },
-      { druh: "strach", hrac: 1, stupen: 3 },
-      // Držané 3, zaplatené 1 → koniec ďalšieho kola zaplatí oranžovú a červenú.
-      { druh: "naUdrzanie", hrac: 1, spaky: 5 },
+      { druh: "strach", hrac: 1, z: 1, na: 3 },
       { druh: "zajatieMozne", hrac: 1 },
     ]);
   });
 
-  it.skip("prechod cez stred: stratená priazeň jedného, nová druhého; stred bez priazne a strachu", () => {
-    const [p] = suhrnPosunov(pred([naPozicii(a, 1)]), po([naPozicii(a, 4, { drzane: 1 })]));
+  it("prechod priazne: stratená jednému, nová druhému; reči zanikli pod strachom", () => {
+    const [p] = suhrnPosunov(pred([s(a, [0, 2], [2, 0])]), po([s(a, [3, 2])]));
     expect(dosledky(p!)).toEqual([
       { druh: "strataPriazne", hrac: 0, sila: 2 },
       { druh: "priazen", hrac: 1, sila: 1, bolo: null },
-      { druh: "strach", hrac: 0, stupen: 1 },
-      { druh: "naUdrzanie", hrac: 0, spaky: 1 },
+      { druh: "strach", hrac: 0, z: 0, na: 3 },
+      { druh: "reci", hrac: 0, z: 2, na: 0 },
+      { druh: "zajatieMozne", hrac: 0 },
     ]);
-    const [q] = suhrnPosunov(pred([naPozicii(a, 5)]), po([naPozicii(a, 3)]));
-    expect(dosledky(q!)).toEqual([{ druh: "strataPriazne", hrac: 1, sila: 2 }]);
   });
 });
 
 describe("súhrn v partii botov", () => {
-  it.skip(
-    "posuny sedia s markermi na začiatku kôl, hádka bitky ostane na nástenke",
+  it(
+    "zmeny sedia so strachom a rečami na začiatku kôl",
     () => {
-      let poveryVidno = false;
+      let kol = 0;
       for (const seed of [3, 11]) {
-        let s: GameState = setupGame(data, seed, { lokalit: 3 });
-        let z = zaciatokKola(viewFor(data, s, 0));
-        for (let n = 0; n < 8000 && s.koniec === null; n++) {
-          const kto = naTahu(s);
+        let st: GameState = setupGame(data, seed, { lokalit: 3 });
+        let z = zaciatokKola(viewFor(data, st, 0));
+        for (let n = 0; n < 8000 && st.koniec === null; n++) {
+          const kto = naTahu(st);
           if (kto === null) break;
-          const predTahom = s;
-          const cmd = tahBota(data, s, kto, seed + n);
-          s = apply(data, s, cmd, kto).state;
-          // v10: posuny priazne z hádky idú na nástenku pod víťaza hádky (pole povery) — z výberov hádky,
-          // nie z klebiet: tie po hádke vyrovnáva posun markera (Nakladačka, prebytok), aby sila ostala pevná.
-          const hadka = predTahom.bitkaStav?.hadka;
-          const vitazHadky = hadka?.vitaz ?? null;
-          if (s.bitkaStav === null && predTahom.bitkaStav !== null && hadka !== undefined && vitazHadky !== null && hadka.posuny.length > 0) {
-            const zaznam = s.nastenka.find((x) => x.kolo === predTahom.kolo);
-            const znam = (u: { readonly hrac: number | null; readonly sila: number }): number => (u.hrac === null ? 0 : u.hrac === 0 ? u.sila : -u.sila);
-            const posun: Record<string, number> = {};
-            for (const x of hadka.posuny) posun[x.elderId] = (posun[x.elderId] ?? 0) + znam(x.po) - znam(x.pred);
-            // Posledný výber hádky (ten istý ťah bitku dokončí) v predTahom ešte nie je — jeho staršieho len overíme, že je na nástenke.
-            const naNastenke = { ...(zaznam?.povery?.[vitazHadky] ?? {}) };
-            if (cmd.type === "hadka") {
-              expect(naNastenke[cmd.elderId]).toBeDefined();
-              delete naNastenke[cmd.elderId];
-              delete posun[cmd.elderId];
-            }
-            expect(naNastenke).toEqual(posun);
-            poveryVidno = true;
-          }
-          if (s.kolo === z.kolo + 1 && s.koniec === null) {
-            const v = viewFor(data, s, 1);
+          st = apply(data, st, tahBota(data, st, kto, seed + n), kto).state;
+          if (st.kolo === z.kolo + 1 && st.koniec === null) {
+            const v = viewFor(data, st, 1);
             const suhrn = suhrnPosunov(z, v);
+            const kluc = (e: Pick<ElderState, "strach" | "reci">): string => `${e.strach.join()}|${e.reci.join()}`;
             for (const x of suhrn) {
-              if (x.posun !== null) {
-                expect(x.posun.z).toBe(z.starsi.find((e) => e.elderId === x.elderId)?.marker);
-                expect(x.posun.na).toBe(v.starsi.find((e) => e.elderId === x.elderId)?.marker);
-              } else expect(x.vazen !== null || x.vyplata.length > 0 || x.hadka.length > 0).toBe(true);
+              const zac = z.starsi.find((e) => e.elderId === x.elderId);
+              if (x.zmena && x.elder !== null) expect(kluc(x.pred)).toBe(kluc(zac!));
+              if (!x.zmena) expect(x.vyplata.length).toBeGreaterThan(0);
             }
-            // Každý starší, ktorého marker sa za kolo zmenil, je v súhrne.
-            const zmeneni = v.starsi.filter((e) => z.starsi.find((x) => x.elderId === e.elderId)?.marker !== e.marker).map((e) => e.elderId);
-            expect(suhrn.filter((x) => x.posun !== null).map((x) => x.elderId)).toEqual(zmeneni);
+            // Každý starší, ktorému sa za kolo zmenil strach či reči, je v súhrne.
+            const zmeneni = v.starsi.filter((e) => {
+              const zac = z.starsi.find((x) => x.elderId === e.elderId);
+              return zac !== undefined && kluc(zac) !== kluc(e);
+            });
+            expect(suhrn.filter((x) => x.zmena && x.elder !== null).map((x) => x.elderId)).toEqual(zmeneni.map((e) => e.elderId));
             z = zaciatokKola(v);
+            kol++;
           }
         }
       }
-      expect(poveryVidno).toBe(true);
+      expect(kol).toBeGreaterThan(0);
     },
     120_000,
   );

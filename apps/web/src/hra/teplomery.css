@@ -1,0 +1,729 @@
+/* Línia starších v11 — Teplomery (mock 3) a Pult (mock 5), docs/napady/strach-reci-mocky.html.
+   Farby stupňov sú pevné ako na tlačenom scorecarde (--tp-z1..3 z FARBY_STUPNICE, LiniaStarsich.tsx),
+   ostatné len tokeny zo schemy.css. */
+
+.tp-linia > .ls-hlava {
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+
+.tp-linia > .ls-hlava > .ls-nahlad {
+  margin-inline: auto 0;
+}
+
+/* ---- stav výhier a prepínač ---- */
+.tp-stav-vyhier {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-size: 0.74rem;
+  color: var(--slaby-text);
+}
+
+.tp-vyhry {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj);
+  background: color-mix(in srgb, var(--plocha) 80%, transparent);
+  white-space: nowrap;
+}
+
+.tp-vyhry > b {
+  color: var(--tlmeny);
+  font-variant-numeric: tabular-nums;
+}
+
+.tp-vyhry.ja > .tp-vyhry-kto {
+  color: var(--ja);
+  font-weight: 700;
+}
+
+.tp-vyhry.su > .tp-vyhry-kto {
+  color: var(--su);
+  font-weight: 700;
+}
+
+.tp-vyhry.hrozi {
+  border-color: var(--cervena);
+}
+
+.tp-vyhry.hrozi > b {
+  color: var(--cervena-text);
+}
+
+.tp-pipy {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.tp-pipy > i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--plocha-3);
+  border: 1px solid var(--okraj-svetly);
+}
+
+.tp-pipy > i.on {
+  background: var(--tp-z3);
+  border-color: var(--tp-z3);
+}
+
+.tp-vazni {
+  color: var(--tlmeny);
+}
+
+.tp-prepinac {
+  flex: none;
+  display: inline-flex;
+  border: 1px solid var(--okraj-svetly);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.tp-prepinac > button {
+  min-height: 24px;
+  padding: 2px 10px;
+  border: 0;
+  background: var(--plocha);
+  color: var(--tlmeny);
+  font: 600 0.74rem/1.2 var(--pismo);
+  cursor: pointer;
+}
+
+.tp-prepinac > button[aria-pressed="true"] {
+  background: var(--akcent);
+  color: var(--na-akcente);
+}
+
+.tp-prepinac > button:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: -2px;
+}
+
+/* ---- Teplomery ---- */
+.tp-k {
+  --tp-w: clamp(11px, 11cqw, 18px);
+  position: relative;
+}
+
+.tp-k .ls-portret {
+  isolation: isolate;
+}
+
+/* Tmavý prechod pod teplomermi a pod krúžkom — teplomery cez obrázok potrebujú kontrast. */
+.tp-tien {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, color-mix(in srgb, var(--tma) 62%, transparent) 0, transparent 24%, transparent 76%, color-mix(in srgb, var(--tma) 62%, transparent) 100%),
+    linear-gradient(to bottom, transparent 62%, color-mix(in srgb, var(--tma) 55%, transparent) 100%);
+}
+
+.tp-bar {
+  position: absolute;
+  z-index: 2;
+  top: 14%;
+  bottom: 22%;
+  width: var(--tp-w);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tp-bar.ja {
+  left: 4px;
+}
+
+.tp-bar.su {
+  right: 4px;
+}
+
+/* Rozdeľovanie: tvoj teplomer je širší — stupne sú tlačidlá. */
+.tp-bar.rozdel {
+  --tp-w: clamp(20px, 17cqw, 30px);
+}
+
+.tp-seg {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  border: 1.5px solid color-mix(in srgb, var(--text) 70%, transparent);
+  background: color-mix(in srgb, var(--pozadie) 62%, transparent);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--tma) 70%, transparent);
+  font: 800 0.7rem/1 var(--pismo);
+  color: var(--text);
+}
+
+.tp-seg.z1.on {
+  background: var(--tp-z1);
+  border-color: var(--tp-z1);
+}
+
+.tp-seg.z2.on {
+  background: var(--tp-z2);
+  border-color: var(--tp-z2);
+}
+
+.tp-seg.z3.on {
+  background: var(--tp-z3);
+  border-color: var(--tp-z3);
+}
+
+/* Nepotvrdený zdvih — šrafa cez farbu stupňa. */
+.tp-seg.nove {
+  background-image: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in srgb, var(--pozadie) 45%, transparent) 4px 7px);
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 1px;
+}
+
+button.tp-seg {
+  cursor: pointer;
+}
+
+button.tp-seg.dosah {
+  border: 2px dashed var(--akcent-svetly);
+  background: color-mix(in srgb, var(--akcent) 22%, color-mix(in srgb, var(--pozadie) 55%, transparent));
+}
+
+button.tp-seg.dosah:hover,
+button.tp-seg:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 1px;
+}
+
+button.tp-seg.mimo {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tp-seg.zamknuty {
+  opacity: 0.45;
+}
+
+.tp-cena {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  color: var(--text);
+  text-shadow: 0 1px 2px var(--tma);
+}
+
+/* Bublina rečí na stupni, vedľa teplomera smerom do portrétu. */
+.tp-reci {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+.tp-bar.ja .tp-reci {
+  left: calc(100% + 2px);
+}
+
+.tp-bar.su .tp-reci {
+  right: calc(100% + 2px);
+}
+
+.tp-bub {
+  display: block;
+  width: clamp(18px, 20cqw, 30px);
+  height: clamp(18px, 20cqw, 30px);
+}
+
+.tp-bub path {
+  fill: var(--plocha);
+  stroke-width: 2.4;
+}
+
+.tp-bub text {
+  font: 800 10px var(--pismo);
+}
+
+.tp-bar.ja .tp-bub path {
+  stroke: var(--ja);
+}
+
+.tp-bar.ja .tp-bub text {
+  fill: var(--ja);
+}
+
+.tp-bar.su .tp-bub path {
+  stroke: var(--su);
+}
+
+.tp-bar.su .tp-bub text {
+  fill: var(--su);
+}
+
+.tp-reci.nove .tp-bub {
+  filter: drop-shadow(0 0 3px var(--akcent));
+}
+
+/* Ohrozenie a štítok zmien hore, krúžok priazne dole v strede. */
+.tp-ohrozenie {
+  position: absolute;
+  z-index: 3;
+  top: 3px;
+  left: 50%;
+  translate: -50% 0;
+  max-width: calc(100% - 2 * var(--tp-w) - 12px);
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px dashed currentColor;
+  background: color-mix(in srgb, var(--plocha-2) 92%, transparent);
+  font: 700 0.6rem/1.3 var(--pismo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tp-ohrozenie.ja {
+  color: var(--ja);
+}
+
+.tp-ohrozenie.su {
+  color: var(--su);
+}
+
+.tp-k .ls-listok.tp-zmeny {
+  z-index: 3;
+  top: 3px;
+  bottom: auto;
+  left: 50%;
+  translate: -50% 0;
+  max-width: calc(100% - 2 * var(--tp-w) - 12px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tp-cena-navrhu {
+  position: absolute;
+  z-index: 3;
+  top: 22px;
+  left: 50%;
+  translate: -50% 0;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font: 800 0.75rem/1.4 var(--pismo);
+}
+
+.tp-k .ls-portret > .tp-kruzok {
+  right: auto;
+  left: 50%;
+  bottom: 4px;
+  translate: -50% 0;
+}
+
+.tp-stav {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.tp-stav > .ls-meno {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.tp-body {
+  flex: none;
+  font-size: 0.72rem;
+  color: var(--slaby-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.tp-body > b.ja {
+  color: var(--ja);
+}
+
+.tp-body > b.su {
+  color: var(--su);
+}
+
+.tp-k.rozdel.mrtvy {
+  opacity: 0.8;
+}
+
+.tp-k.rozdel.s-posunom {
+  border-color: var(--akcent);
+}
+
+/* Väzeň: prázdne miesto v rade, za mrežami. */
+.tp-vazen {
+  border-style: dashed;
+  border-color: var(--okraj-svetly);
+}
+
+.tp-vazen.ja {
+  border-color: var(--ja);
+}
+
+.tp-vazen.su {
+  border-color: var(--su);
+}
+
+.tp-vazen .ls-portret img {
+  filter: grayscale(1) brightness(0.55);
+}
+
+.tp-mreze {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 14px, color-mix(in srgb, var(--tma) 80%, transparent) 14px 18px);
+}
+
+.tp-vazen-text {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  text-align: center;
+  font: 700 0.72rem/1.25 var(--pismo);
+  color: var(--text);
+  background: color-mix(in srgb, var(--pozadie) 80%, transparent);
+}
+
+.tp-vazen-text > small {
+  font-weight: 400;
+  color: var(--tlmeny);
+}
+
+/* ---- Pult ---- */
+.tp-pult-obal {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.tp-pult {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 2px;
+  font-size: clamp(0.7rem, 0.9cqw, 0.86rem);
+}
+
+.tp-pult th {
+  padding: 0 6px;
+  font: 600 0.68rem/1.2 var(--pismo);
+  color: var(--slaby-text);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.tp-pult :is(th, td).ja,
+.tp-pult th > .ja {
+  color: var(--ja);
+}
+
+.tp-pult :is(th, td).su,
+.tp-pult th > .su {
+  color: var(--su);
+}
+
+.tp-pult td {
+  padding: 1px 6px;
+  height: 24px;
+  text-align: center;
+  background: var(--plocha);
+  border-top: 1px solid var(--okraj);
+  border-bottom: 1px solid var(--okraj);
+  white-space: nowrap;
+}
+
+.tp-pult td:first-child {
+  border-left: 1px solid var(--okraj);
+  border-radius: 8px 0 0 8px;
+}
+
+.tp-pult td:last-child {
+  border-right: 1px solid var(--okraj);
+  border-radius: 0 8px 8px 0;
+}
+
+.tp-pult :is(th, td).vlavo {
+  text-align: left;
+}
+
+.tp-pult tr.ohrozeny td {
+  border-color: var(--akcent);
+}
+
+.tp-pult tr.s-posunom td {
+  background: color-mix(in srgb, var(--akcent) 10%, var(--plocha));
+}
+
+.tp-pult tfoot td {
+  font-weight: 700;
+  background: var(--plocha-2);
+}
+
+.tp-pult-kto {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tp-pult-kto img,
+.tp-pult-obr {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: 50% 20%;
+  background: var(--plocha-3);
+}
+
+.tp-pult-kto b {
+  display: block;
+  font-family: var(--nadpis);
+  line-height: 1.1;
+}
+
+.tp-pult-kto small {
+  display: none;
+}
+
+.tp-pult-kto .tp-pult-ohr {
+  margin-left: 4px;
+  font-size: 0.72rem;
+}
+
+.tp-pipy-pult {
+  display: inline-flex;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.tp-pipy-pult > :is(i, button) {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  border-radius: 3px;
+  background: var(--plocha-3);
+  border: 1px solid var(--okraj-svetly);
+  font: 800 0.6rem/1 var(--pismo);
+  color: var(--text);
+}
+
+.tp-pipy-pult > button {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.tp-pipy-pult:not(.reci) > .z1.on {
+  background: var(--tp-z1);
+  border-color: var(--tp-z1);
+}
+
+.tp-pipy-pult:not(.reci) > .z2.on {
+  background: var(--tp-z2);
+  border-color: var(--tp-z2);
+}
+
+.tp-pipy-pult:not(.reci) > .z3.on {
+  background: var(--tp-z3);
+  border-color: var(--tp-z3);
+}
+
+.tp-pipy-pult.reci > :is(i, button) {
+  border-radius: 50%;
+}
+
+.tp-pipy-pult.reci > .on {
+  background: transparent;
+  border: 3px solid var(--tp-z1);
+}
+
+.tp-pipy-pult.reci > .z2.on {
+  border-color: var(--tp-z2);
+}
+
+.tp-pipy-pult.reci > .z3.on {
+  border-color: var(--tp-z3);
+}
+
+.tp-pipy-pult > .nove {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 1px;
+}
+
+.tp-pipy-pult > button.dosah {
+  border: 2px dashed var(--akcent-svetly);
+}
+
+.tp-pipy-pult > button.mimo {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tp-priazen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tp-priazen > small {
+  color: var(--tlmeny);
+  max-width: 16ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tp-priazen-os {
+  position: relative;
+  width: 70px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--plocha-2);
+}
+
+.tp-priazen-os::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--okraj-svetly);
+}
+
+.tp-priazen-os > i {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  border-radius: 4px;
+}
+
+.tp-priazen-os.ja > i {
+  right: 50%;
+  background: var(--ja);
+}
+
+.tp-priazen-os.su > i {
+  left: 50%;
+  background: var(--su);
+}
+
+.tp-bd {
+  font-variant-numeric: tabular-nums;
+}
+
+.tp-pult-vazen td {
+  border-style: dashed;
+}
+
+/* Nízky stôl: hlavička v jednom riadku, v Pulte menšie riadky. */
+@container linia-starsich (height < 330px) {
+  .tp-pult-kto img,
+  .tp-pult-obr {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tp-pult-kto small,
+  .tp-priazen > small {
+    display: none;
+  }
+
+  .tp-pult td {
+    padding-block: 1px;
+  }
+}
+
+/* Telefón na šírku: menej textu v hlavičke, väčšie ciele v rozdeľovaní. */
+.hra.mobil-sirka .tp-vyhry-kto,
+.hra.mobil-sirka .tp-pipy,
+.hra.mobil-sirka .tp-priazen > small,
+.hra.mobil-sirka .tp-pult-kto small {
+  display: none;
+}
+
+.hra.mobil-sirka .tp-pult-obal {
+  overflow-x: auto;
+}
+
+.hra.mobil-sirka .tp-bar.rozdel {
+  --tp-w: 28px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tp-seg.nove,
+  .tp-pipy-pult > .nove {
+    animation: tp-nove 1.4s ease-in-out infinite;
+  }
+
+  @keyframes tp-nove {
+    50% {
+      outline-color: transparent;
+    }
+  }
+}
+
+/* Pás starších na konci partie (PasStarsich.tsx): strach a reči oboch ako malé teplomery. */
+.pas-st-markery {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pas-st-tep {
+  display: inline-flex;
+  gap: 2px;
+  padding: 1px 3px;
+  border-radius: 4px;
+  border: 1px solid var(--okraj);
+}
+
+.pas-st-tep.ja {
+  border-color: var(--ja);
+}
+
+.pas-st-tep.su {
+  border-color: var(--su);
+}
+
+.pas-st-tep > i {
+  width: 8px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--plocha-3);
+}
+
+.pas-st-tep > i.on {
+  background: var(--farba);
+}
+
+.pas-st-tep > i.reci {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--farba);
+  border-radius: 50%;
+}
+
+.tp-vyhry.ja {
+  border-color: color-mix(in srgb, var(--ja) 60%, var(--okraj));
+}
+
+.tp-vyhry.su {
+  border-color: color-mix(in srgb, var(--su) 60%, var(--okraj));
+}

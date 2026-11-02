@@ -3,6 +3,7 @@
 
 import { cigariet, KONSTANTY, opponentOf } from "@naex/core";
 import type { ClientState, PlayerId } from "@naex/core";
+import { CENA_POLA } from "./textyStarsich.ts";
 
 /**
  * Kľúč fázy stola: mení sa pri každom prechode, ktorý hráča posúva k ďalšej práci —
@@ -105,7 +106,7 @@ export function medziobrazovka(
           nadpis: "Finále",
           text:
             "Bije sa o vrcholovú lokalitu ako o každú inú: Pitiek je podľa spojov s lokalitou, víťaz dostane 1 špak za každú kartu v línii. " +
-            "Nakladačka sa nerozdeľuje; po finále starší zaplatia stupne udržané z posledného kola.",
+            "Nakladačka ani hádka sa nerozdeľujú — víťaz ich dostane v špakoch; starší po finále bodujú ako po každej bitke.",
         };
       }
       return {
@@ -115,7 +116,7 @@ export function medziobrazovka(
         text:
           // v10.1: pokus o zajatie je pred stavbou — okno ho ohlási, keď sa oň niekto môže pokúsiť.
           (view.draftStav?.krok === "zajatie"
-            ? "Najprv pokus o zajatie: útočník, potom obranca smie za cigaretu skúsiť zajať staršieho, ktorý sa ho bojí na stupni 3 — vezme si ho do ruky a súper si pri stavbe nechá 1 kartu zadarmo. "
+            ? "Najprv pokus o zajatie: útočník, potom obranca smie za cigaretu skúsiť zajať staršieho, pri ktorom má strach na červenej — vezme si ho do ruky a súper si pri stavbe nechá 1 kartu zadarmo. "
             : "") +
           `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov a tajne ich rozdelí: polovica pôjde do šenku, polovica naspodok. ` +
           `Potom beriete zo šenku striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
@@ -145,17 +146,15 @@ export function medziobrazovka(
               }${view.pitkaStav?.bzdocha != null ? "" : obranca ? ` — ${S} na ne odpovie prvý lícom dole, ty potom na druhý kraj; otočia sa naraz.` : " — na ne odpovieš prvý lícom dole, súper potom na druhý kraj; otočia sa naraz."}`,
       };
     case "bitka": {
-      // v8: prebytok rozdeľuje ten, proti komu sa ráta (vo finále sa od v8.3 nerozdeľuje).
+      // v11: Nakladačku rozdeľuje víťaz bitky na svoj strach (vo finále sa nerozdeľuje).
       const drzi = view.bitkaStav?.prebytokDrzi ?? null;
       const vyberam = view.bitkaStav?.caka === ja;
       const text =
         drzi === ja
           ? vyberam
-            ? "Máš vyššie tuhé poškodenie. Rozdeľ Nakladačku medzi starších — vyber staršieho, marker pôjde k súperovi, kým zvyšok stačí; nový stupeň strachu zaplatí koniec ďalšieho kola, ak sa udrží."
-            : `Máš vyššie tuhé poškodenie: Nakladačka posunie markery k súperovi (pole stojí 1–4 podľa zóny) a starší sa začnú báť teba. Ktorých, vyberá ${S}.`
-          : vyberam
-            ? `${S} má vyššie tuhé poškodenie: Nakladačka posunie markery k tebe, ale ktorých starších, vyberáš ty — vezmi si priazne, ktoré sa ti hodia. Za každého posunutého staršieho dostaneš cigaretu.`
-            : `${S} má vyššie tuhé poškodenie a rozdeľuje Nakladačku medzi starších — ich markery pôjdu k tebe.`;
+            ? `Vyhral si bitku. Rozdeľ Nakladačku na svoj strach — klikni na stupeň v teplomeri pri staršom (${CENA_POLA}); čo už nikam nestačí, prepadne.`
+            : "Vyhral si bitku — Nakladačka ide na tvoj strach."
+          : `${S} vyhral bitku a rozdeľuje Nakladačku na svoj strach — starší sa ho začnú báť viac a priazeň sa posunie k tebe.`;
       return { kluc: `${view.kolo}|Nakladačka`, nadnadpis: kolo, nadpis: "Nakladačka", text };
     }
     default:
@@ -165,14 +164,14 @@ export function medziobrazovka(
 
 /** Krok, ktorý sa robí na staršom (hádka, Nakladačka, pokus o zajatie) — vtedy stôl ukazuje líniu starších. */
 export interface KrokNaStarsich {
-  readonly typ: "hadka" | "prebytok" | "zajatie";
+  readonly typ: "reci" | "prebytok" | "zajatie";
   readonly kto: PlayerId;
 }
 
 export function krokNaStarsich(view: Pick<ClientState, "koniec" | "faza" | "bitkaStav" | "draftStav">): KrokNaStarsich | null {
   if (view.koniec !== null) return null;
   const bs = view.bitkaStav;
-  if (view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "hadka" || bs.krok === "prebytok")) {
+  if (view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "reci" || bs.krok === "prebytok")) {
     return { typ: bs.krok, kto: bs.caka };
   }
   if (view.faza === "draft" && view.draftStav?.krok === "zajatie") return { typ: "zajatie", kto: view.draftStav.naTahu };

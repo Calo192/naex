@@ -1,6 +1,6 @@
-// Krúžok priazne, lístok Hádky a nápoveda nad staršom (Michal 2026-10-31, mockup „Priazeň
-// podľa Michala“). Krúžok je pri staršom vždy — v línii, v baroch, v rekapitulácii, v bublinách
-// aj na konci partie — a ukazuje priazeň, ktorá v tomto kole naozaj platí (po hádke, v10).
+// Krúžok priazne a nápoveda nad staršom (Michal 2026-10-31, mockup „Priazeň podľa Michala“;
+// v11 Strach a reči). Krúžok je pri staršom vždy — v línii, v baroch, v rekapitulácii, v bublinách
+// aj na konci partie — a ukazuje, komu starší dáva priazeň a akú silnú.
 // Texty pod fotkou nie sú: všetko celou vetou povie nápoveda pri prejdení myšou, fokusom
 // klávesnice alebo podržaním prsta (na telefóne so zväčšeninou staršieho). Obsah: priazenKola.ts.
 
@@ -9,7 +9,7 @@ import { createContext, useEffect, useLayoutEffect, useRef, useState, type CSSPr
 import { createPortal } from "react-dom";
 import type { Action, Favour } from "@naex/core";
 import { IKONY } from "../karta/ikony.ts";
-import { kratkeMeno, ktoPriazen, popisListka, riadkyKruzkov, textListka, vetaHadky, type KomuPriazen, type ListokHadky as ListokHadkyData, type ObsahNapovedy, type PriazenKola } from "./priazenKola.ts";
+import { kratkeMeno, riadkyKruzkov, type KomuPriazen, type ObsahNapovedy, type PriazenKola } from "./priazenKola.ts";
 
 /** Ikona akcie, ktorú priazeň staršieho posilňuje — v krúžku priazne (mock C · Pečať). */
 export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
@@ -115,33 +115,6 @@ export function PriazenStarsiehoVRiadku({ fav, p, meno, prechod }: { readonly fa
 }
 
 /**
- * Lístok Hádky na portréte a v rohu dlaždice: kto hádku vyhral (farba) a o koľko stupňov posunul
- * silu priazne (číslo). Keď posun na konci kola zanikne, lístok sa „odlepí“ (useOdlepeny).
- */
-export function ListokHadky({
-  listok,
-  menoSupera,
-  roh = false,
-}: {
-  readonly listok: ListokHadkyData | null;
-  readonly menoSupera: string;
-  /** Roh dlaždice: menší, bez mena. */
-  readonly roh?: boolean;
-}) {
-  const { zobraz, odlepuje } = useOdlepeny(listok);
-  if (zobraz === null) return null;
-  const popis = popisListka(zobraz, menoSupera);
-  return (
-    <span className={`lst-obal${roh ? " roh" : ""}${odlepuje ? " odlep" : ""}`}>
-      <span className={`lst ${zobraz.komu}`} role="img" aria-label={popis} title={popis}>
-        <IkonaHadky />
-        {roh ? `+${zobraz.stupne}` : textListka(zobraz)}
-      </span>
-    </span>
-  );
-}
-
-/**
  * Značka hádky: dve bubliny proti sebe (hádka dvoch). Zámerne iná ako piktogram Povery —
  * do hádky vstupuje aj Pohoršenie.
  */
@@ -154,70 +127,32 @@ export function IkonaHadky({ trieda = "lst-ikona" }: { readonly trieda?: string 
   );
 }
 
-/** Ako dlho sa lístok odlepuje (CSS animácia lst-odlep). */
-const ODLEP_MS = 1000;
-
-/**
- * Lístok, ktorý zmizol (koniec kola), ešte chvíľu kreslí s triedou „odlep“ — odlepí sa a spadne.
- * Pri prefers-reduced-motion CSS animáciu skráti a lístok zmizne hneď.
- */
-function useOdlepeny(listok: ListokHadkyData | null): { readonly zobraz: ListokHadkyData | null; readonly odlepuje: boolean } {
-  const [stary, setStary] = useState<ListokHadkyData | null>(null);
-  const predosly = useRef<ListokHadkyData | null>(listok);
-  useEffect(() => {
-    const pred = predosly.current;
-    predosly.current = listok;
-    if (listok !== null || pred === null) {
-      setStary(null);
-      return;
-    }
-    setStary(pred);
-    const t = setTimeout(() => setStary(null), ODLEP_MS);
-    return () => clearTimeout(t);
-  }, [listok === null ? "" : `${listok.hrac}:${listok.stupne}`]);
-  return listok !== null ? { zobraz: listok, odlepuje: false } : { zobraz: stary, odlepuje: stary !== null };
-}
-
-/** Obsah nápovedy nad staršom: krúžok, účinok, hádka (z markera → toto kolo), strach a stupeň. */
+/** Obsah nápovedy nad staršom: krúžok, účinok priazne, strach a reči oboch a stav (v11). */
 export function ObsahNapovedyStarsieho({ o, menoSupera }: { readonly o: ObsahNapovedy; readonly menoSupera: string }) {
-  const m = { ja: "ty", su: kratkeMeno(menoSupera) };
-  const kto = (p: PriazenKola): ReactNode => <span className={`np-kto ${trieda(p.komu)}`}>{ktoPriazen(p, m)}</span>;
-  const h = o.hadka;
+  const su = kratkeMeno(menoSupera);
   return (
     <>
       <span className="np-hlava">
         <KruzokPriazne fav={o.favour} p={o.priazen} velkost={34} />
         <span>
           <b className="np-meno">{o.meno}</b>
-          <small className="np-nazov">priazeň {o.nazovPriazne}</small>
+          <small className="np-nazov">
+            priazeň {o.nazovPriazne} · {o.stav}
+          </small>
         </span>
       </span>
       {o.akcia !== null && <span className="np-akcia">Klik: {o.akcia}</span>}
       <span className="np-ucinok">
         {o.ucinok.kto !== null && <b className={`np-kto ${trieda(o.ucinok.komu)}`}>{o.ucinok.kto}:</b>} {o.ucinok.text}
       </span>
-      {h !== null && (
-        <span className="np-r" aria-label={vetaHadky(h.zMarkera, h.listok, h.teraz, menoSupera)}>
-          <span className="np-l">Hádka</span>
+      {o.hraci.map((h) => (
+        <span key={h.komu} className="np-r">
+          <span className={`np-l np-kto ${h.komu}`}>{h.komu === "ja" ? "ty" : su}</span>
           <span>
-            z markera {kto(h.zMarkera)} ·{" "}
-            <span className={`np-kto ${h.listok.komu}`}>
-              {h.listok.komu === "ja" ? "ty" : m.su} v hádke {h.listok.komu === "ja" ? "+" : "−"}
-              {h.listok.stupne}
-            </span>{" "}
-            · toto kolo {kto(h.teraz)}
-            <small className="np-po">po kole zase {kto(h.zMarkera)}</small>
+            {h.markery} · po bitke výhra <b>{h.vyhra}</b> / prehra <b>{h.prehra}</b> š
           </span>
         </span>
-      )}
-      <span className="np-r">
-        <span className="np-l">Strach</span>
-        <span className={`np-strach ${trieda(o.strach.komu)}`}>{o.strach.text}</span>
-      </span>
-      <span className="np-r">
-        <span className="np-l">Stupeň</span>
-        <span>{o.stupen}</span>
-      </span>
+      ))}
       {o.dalsi !== null && (
         <span className="np-r">
           <span className="np-l">{o.dalsi.nazov}</span>
@@ -367,7 +302,7 @@ export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | null, moznosti
         : createPortal(
             <TipPriKotve kotva={stav.kotva} kratky={stav.druh === "kruzky"}>
               {stav.druh === "kruzky" ? (
-                riadkyKruzkov(stav.posunute).map((r, i) => (
+                riadkyKruzkov().map((r, i) => (
                   <span key={i} className={i === 1 ? "np-hadka" : undefined}>
                     {r}
                   </span>

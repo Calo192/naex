@@ -1,12 +1,12 @@
-// Súhrn posunov starších pred výberom lokality (Michal 2026-10-30, mock 5 „Bublina pri dlaždici“;
-// interview 2026-10-31). Stôl ostáva stolom: dlaždica Starší v bare hráča zasvieti, jej
+// Súhrn kola pri starších pred výberom lokality (Michal 2026-10-30, mock 5 „Bublina pri dlaždici“;
+// interview 2026-10-31; v11 Strach a reči — teplomery pred → po namiesto stupnice). Stôl ostáva stolom: dlaždica Starší v bare hráča zasvieti, jej
 // stĺpčekmi prejde svetlo zľava doprava a pri každom zobrazenom staršom vyskočí z jeho
 // stĺpčeka bublina; stĺpček sa mení spolu s markerom v bubline. Tlačidlo príde po 2 s a len
 // ono pokračuje — klik mimo nič nerobí. Po poslednom staršom ide hra rovno ďalej.
 // Čo ukázať, ráta obsahSuhrnu.ts; tu je len poradie a kreslenie.
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import type { GameData, PlayerId, Vazen } from "@naex/core";
+import type { ElderState, GameData, PlayerId, Stupen, Vazen } from "@naex/core";
 import { KONSTANTY, cigariet, favourStarsieho, pocet, opponentOf } from "@naex/core";
 import "./suhrn-posunov.css";
 import { IkonaMrezi } from "./ikonyZdrojov.tsx";
@@ -16,13 +16,13 @@ import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { IkonaHadky, KruzokPriazne } from "./KruzokPriazne.tsx";
-import { ktoPriazen, kratkeMeno, polohaPreHraca, priazenSuhrnu, type PriazenKola } from "./priazenKola.ts";
+import { ktoPriazen, kratkeMeno, priazenKola, type PriazenKola } from "./priazenKola.ts";
+import { nazovStupna } from "./textyStarsich.ts";
+import { spakyStupna } from "./teplomery.ts";
 
 const textPriazne = (p: PriazenKola, menoSupera: string): string => ktoPriazen(p, { ja: "ty", su: kratkeMeno(menoSupera) });
 import type { SuhrnDlazdice } from "./Starsi.tsx";
 import { dosledky, type Dosledok, type PolozkaSuhrnu } from "./obsahSuhrnu.ts";
-import { type MarkerPos, STUPNICA_ZONY, obavanyHrac, strachZ, markerStarsieho, type SMarkerom } from "./staraStupnica.ts";
-import { VAZNI_NA_VYHRU_ZOBRAZENIE } from "./staraStupnica.ts";
 
 /** Pauza pri každom staršom, kým príde tlačidlo (Michal 2026-10-31). */
 export const PAUZA_SUHRNU_MS = 2000;
@@ -35,11 +35,13 @@ const ODCHOD_MS = 300;
 export interface SuhrnPosunovProps {
   readonly data: GameData;
   readonly polozky: readonly PolozkaSuhrnu[];
-  /** Starší zo začiatku kola v poradí stĺpčekov dlaždice a ich markery vtedy. */
-  readonly zaciatok: readonly ({ readonly elderId: string } & SMarkerom)[];
+  /** Starší zo začiatku kola v poradí stĺpčekov dlaždice a ich strachy vtedy. */
+  readonly zaciatok: readonly ({ readonly elderId: string } & Pick<ElderState, "strach">)[];
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly vazni: readonly Vazen[];
+  /** Väzni na výhru (podľa ligy) — čip väzňa „1/3“. */
+  readonly vazniNaVyhru: number;
   readonly menoKarty: (defId: string) => string;
   readonly obrazok: (defId: string) => string | null;
   readonly mobil: boolean;
@@ -52,7 +54,7 @@ export interface SuhrnPosunovProps {
 
 const bezPohybu = (): boolean => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 
-export function SuhrnPosunov({ data, polozky, zaciatok, ja, mena, vazni, menoKarty, obrazok, mobil, posledne, onDlazdica, onKoniec }: SuhrnPosunovProps) {
+export function SuhrnPosunov({ data, polozky, zaciatok, ja, mena, vazni, vazniNaVyhru, menoKarty, obrazok, mobil, posledne, onDlazdica, onKoniec }: SuhrnPosunovProps) {
   const rm = useMemo(bezPohybu, []);
   const cas = (ms: number): number => (rm ? 0 : ms);
   // Stĺpčeky dlaždice: starší zo začiatku kola; kto pribudol (zatiaľ nič také), ide na koniec.
@@ -60,7 +62,8 @@ export function SuhrnPosunov({ data, polozky, zaciatok, ja, mena, vazni, menoKar
   const [stlpec, setStlpec] = useState(-1);
   const [faza, setFaza] = useState<"sken" | "bublina" | "odchod">("sken");
   const [odomknute, setOdomknute] = useState(false);
-  const [marker, setMarker] = useState<MarkerPos | null>(null);
+  // Bublina najprv ukáže teplomery pred kolom, po chvíli po ňom (stĺpček v dlaždici s nimi).
+  const [poZmene, setPoZmene] = useState(false);
   const [preskoceni, setPreskoceni] = useState<ReadonlySet<string>>(new Set());
   const idStlpca = stlpec >= 0 ? poradie[stlpec] : undefined;
   const polozka = idStlpca === undefined ? undefined : polozky.find((p) => p.elderId === idStlpca);
@@ -89,16 +92,10 @@ export function SuhrnPosunov({ data, polozky, zaciatok, ja, mena, vazni, menoKar
     setFaza("bublina");
     setOdomknute(false);
     const casovace: ReturnType<typeof setTimeout>[] = [setTimeout(() => setOdomknute(true), PAUZA_SUHRNU_MS)];
-    const posun = polozka.posun;
-    if (posun === null) setMarker(null);
-    else if (rm) setMarker(posun.na);
+    if (!polozka.zmena || rm) setPoZmene(true);
     else {
-      // Marker ide po poliach; stĺpček v dlaždici s ním (oba berú `marker`).
-      setMarker(posun.z);
-      const kroky = Math.abs(posun.na - posun.z);
-      const smer = posun.na > posun.z ? 1 : -1;
-      const krok = Math.min(420, 1100 / kroky);
-      for (let i = 1; i <= kroky; i++) casovace.push(setTimeout(() => setMarker((posun.z + smer * i) as MarkerPos), PRICHOD_MS + krok * (i - 1)));
+      setPoZmene(false);
+      casovace.push(setTimeout(() => setPoZmene(true), PRICHOD_MS + 400));
     }
     return () => casovace.forEach(clearTimeout);
     // Krok sa mení len so stĺpčekom.
@@ -110,23 +107,24 @@ export function SuhrnPosunov({ data, polozky, zaciatok, ja, mena, vazni, menoKar
     setTimeout(() => {
       setFaza("sken");
       setOdomknute(false);
-      setMarker(null);
+      setPoZmene(false);
       setStlpec((x) => x + 1);
     }, cas(ODCHOD_MS));
   };
 
-  // Dlaždica: zobrazení starší majú marker po kole (väzeň zmizne), ten v bubline ide s markerom.
+  // Dlaždica: zobrazení starší majú strachy po kole (väzeň zmizne), ten v bubline ide s nimi.
   useEffect(() => {
     const stlpce = poradie.map((elderId, i) => {
       const p = polozky.find((x) => x.elderId === elderId);
       const zs = zaciatok.find((s) => s.elderId === elderId);
-      const z = (zs === undefined ? undefined : markerStarsieho(zs)) ?? (p?.elder == null ? undefined : markerStarsieho(p.elder)) ?? (3 as MarkerPos);
-      if (p === undefined || i > stlpec) return { elderId, marker: z };
-      if (i === stlpec) return { elderId, marker: p.vazen !== null ? (faza === "odchod" ? null : z) : (marker ?? z) };
-      return { elderId, marker: p.vazen !== null ? null : ((p.elder == null ? undefined : markerStarsieho(p.elder)) ?? z) };
+      const z: readonly [Stupen, Stupen] = zs?.strach ?? p?.pred.strach ?? [0, 0];
+      if (p === undefined || i > stlpec) return { elderId, strach: z };
+      const po = p.elder?.strach ?? z;
+      if (i === stlpec) return { elderId, strach: p.vazen !== null ? (faza === "odchod" ? null : z) : poZmene ? po : z };
+      return { elderId, strach: p.vazen !== null ? null : po };
     });
     onDlazdica({ stlpce, sken: idStlpca ?? null, aktivny: faza === "sken" || polozka === undefined ? null : polozka.elderId, preskoceni });
-  }, [stlpec, marker, faza, preskoceni]);
+  }, [stlpec, poZmene, faza, preskoceni]);
 
   // Fokus ostane v súhrne (aria-modal): Tab a Shift+Tab vedú na tlačidlo, kým nie je, na clonu.
   // Klávesy stola (K, P, N, Esc…) nedôjdu ďalej a Enter či medzera mimo bubliny nič nestlačia.
@@ -162,9 +160,10 @@ export function SuhrnPosunov({ data, polozky, zaciatok, ja, mena, vazni, menoKar
           ja={ja}
           mena={mena}
           vazni={vazni}
+          vazniNaVyhru={vazniNaVyhru}
           meno={menoKarty(polozka.defId)}
           obrazok={obrazok(polozka.defId)}
-          marker={marker}
+          poZmene={poZmene}
           mobil={mobil}
           odchod={faza === "odchod"}
           poradie={{ i: zobrazenych + 1, n: polozky.length }}
@@ -183,9 +182,10 @@ function Bublina({
   ja,
   mena,
   vazni,
+  vazniNaVyhru,
   meno,
   obrazok,
-  marker,
+  poZmene,
   mobil,
   odchod,
   poradie,
@@ -198,9 +198,10 @@ function Bublina({
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly vazni: readonly Vazen[];
+  readonly vazniNaVyhru: number;
   readonly meno: string;
   readonly obrazok: string | null;
-  readonly marker: MarkerPos | null;
+  readonly poZmene: boolean;
   readonly mobil: boolean;
   readonly odchod: boolean;
   readonly poradie: { readonly i: number; readonly n: number };
@@ -254,17 +255,18 @@ function Bublina({
   const dosledkyEl = (
     <div className="sb-dosledky">
       {dosledky(p).map((d, i) => (
-        <Cip key={i} d={d} ja={ja} mena={mena} vazni={vazni} />
+        <Cip key={i} d={d} ja={ja} mena={mena} vazni={vazni} vazniNaVyhru={vazniNaVyhru} />
       ))}
     </div>
   );
   const vazen = p.vazen;
-  // Krúžok pri mene (Michal 2026-10-31): priazeň po kole; po hádke aj „toto kolo → po kole“
-  // a na stupnici sa bodka vráti do prsteňa (v kole bez posunu markera).
+  // Krúžok pri mene (Michal 2026-10-31): priazeň po kole; keď sa zmenila, aj „pred → po“.
   const e = p.elder;
   const fav = e === null ? null : favourStarsieho(data, e);
-  const pz = e === null ? null : priazenSuhrnu(e, p.hadka, ja);
-  const poHadke = pz !== null && p.posun === null && p.hadka.length > 0;
+  const pkPred = e === null ? null : priazenKola(p.pred, ja);
+  const pkPo = e === null ? null : priazenKola(e, ja);
+  const zmenaPriazne = pkPred !== null && pkPo !== null && (pkPred.komu !== pkPo.komu || pkPred.sila !== pkPo.sila);
+  const menoSu = mena[opponentOf(ja)];
   return (
     <div
       ref={ref}
@@ -292,24 +294,23 @@ function Bublina({
           )}
         </span>
         <b className="sb-meno">{meno}</b>
-        {fav !== null && pz !== null && (
-          <span className="sb-kruzky" role="img" aria-label={poHadke ? `Priazeň v kole po hádke ${textPriazne(pz.vKole, mena[opponentOf(ja)])}, po kole ${textPriazne(pz.poKole, mena[opponentOf(ja)])}` : `Priazeň po kole ${textPriazne(pz.poKole, mena[opponentOf(ja)])}`}>
-            {poHadke && (
+        {fav !== null && pkPred !== null && pkPo !== null && (
+          <span className="sb-kruzky" role="img" aria-label={zmenaPriazne ? `Priazeň pred kolom ${textPriazne(pkPred, menoSu)}, po kole ${textPriazne(pkPo, menoSu)}` : `Priazeň ${textPriazne(pkPo, menoSu)}`}>
+            {zmenaPriazne && (
               <>
-                <KruzokPriazne fav={fav} p={pz.vKole} velkost={mobil ? 30 : 36} />
+                <KruzokPriazne fav={fav} p={pkPred} velkost={mobil ? 30 : 36} />
                 <span className="sb-sipka" aria-hidden="true">→</span>
               </>
             )}
-            <KruzokPriazne fav={fav} p={pz.poKole} velkost={mobil ? 30 : 36} />
+            <KruzokPriazne fav={fav} p={pkPo} velkost={mobil ? 30 : 36} />
           </span>
         )}
       </div>
-      {p.posun !== null && <VelkaStupnica z={p.posun.z} marker={marker ?? p.posun.z} ja={ja} />}
-      {poHadke && e !== null && pz !== null && <VelkaStupnica z={markerStarsieho(e)} marker={markerStarsieho(e)} ja={ja} bodkaOd={pz.dm.bodka} />}
-      {/* Bez stupnice (výplata, väzeň) idú dôsledky do riadka s tlačidlom — bublina nie je naprázdno vysoká. */}
-      {(p.posun !== null || poHadke) && dosledkyEl}
-      <div className={`sb-pata${p.posun === null && !poHadke ? " s-dosledkami" : ""}`}>
-        {p.posun === null && !poHadke && dosledkyEl}
+      {p.zmena && e !== null && <TeplomerySuhrnu pred={p.pred} po={poZmene ? e : p.pred} ja={ja} menoSu={kratkeMeno(menoSu)} />}
+      {/* Bez teplomerov (bodovanie, väzeň) idú dôsledky do riadka s tlačidlom — bublina nie je naprázdno vysoká. */}
+      {p.zmena && e !== null && dosledkyEl}
+      <div className={`sb-pata${!p.zmena || e === null ? " s-dosledkami" : ""}`}>
+        {(!p.zmena || e === null) && dosledkyEl}
         {poradie.n > 1 && (
           <span className="sb-bodky" aria-hidden="true">
             {Array.from({ length: poradie.n }, (_, k) => (
@@ -332,45 +333,40 @@ function Bublina({
   );
 }
 
-/** Ako dlho bodka hádky stojí, kým sa vráti do prsteňa. */
-const NAVRAT_BODKY_MS = 900;
-
 /**
- * Stupnica pred → po: každý vidí svoju polovicu vľavo (ako línia starších), duch ostane na starom
- * mieste. Dvojitý marker ako v línii: prsteň = marker (strach), bodka = priazeň vo farbe hráča.
- * `bodkaOd` (poloha v zobrazení hráča): bodka začne tam, kam ju dala hádka, a vráti sa do prsteňa.
+ * Teplomery hráčov v bubline (v11): strach a reči pred kolom → po ňom, tvoj vľavo, súperov vpravo.
+ * Stupne, ktoré v kole pribudli, sú šrafované; reči sú bublina s počtom špakov.
  */
-function VelkaStupnica({ z, marker, ja, bodkaOd = null }: { readonly z: MarkerPos; readonly marker: MarkerPos; readonly ja: PlayerId; readonly bodkaOd?: number | null }) {
-  const poloha = (m: number): number => polohaPreHraca(m, ja);
-  const [doma, setDoma] = useState(bodkaOd === null || bezPohybu());
-  useEffect(() => {
-    if (doma) return;
-    const t = setTimeout(() => setDoma(true), NAVRAT_BODKY_MS);
-    return () => clearTimeout(t);
-  }, []);
-  const bodka = bodkaOd !== null && !doma ? bodkaOd : poloha(marker);
-  // Tvoja polovica je vždy vľavo — farbu bodky povie strana.
-  const komu = bodka < 3 ? "ja" : bodka > 3 ? "su" : "nikto";
+function TeplomerySuhrnu({ pred, po, ja, menoSu }: { readonly pred: Pick<ElderState, "strach" | "reci">; readonly po: Pick<ElderState, "strach" | "reci">; readonly ja: PlayerId; readonly menoSu: string }) {
+  const su = opponentOf(ja);
+  const jeden = (p: PlayerId, kto: string) => (
+    <span className={`sb-tep ${p === ja ? "ja" : "su"}`}>
+      <span className="sb-tep-kto">{kto}</span>
+      {([1, 2, 3] as const).map((z) => {
+        const on = po.strach[p] >= z;
+        const nove = on && pred.strach[p] < z;
+        const reci = po.reci[p] === z;
+        return (
+          <span key={z} className={`sb-tep-seg${on ? " on" : ""}${nove ? " nove" : ""}`} style={on ? ({ background: farbaZony(z) } as CSSProperties) : undefined}>
+            {reci && <b className={`sb-tep-reci${pred.reci[p] !== z ? " nove" : ""}`}>{spakyStupna(z)}</b>}
+          </span>
+        );
+      })}
+      <small className="sb-tep-text">
+        strach {nazovStupna(po.strach[p])}
+        {po.reci[p] > 0 ? ` · reči ${nazovStupna(po.reci[p])}` : ""}
+      </small>
+    </span>
+  );
   return (
-    <span className="sb-stupnica" aria-hidden="true">
-      <span className="sb-kraj ja" />
-      <span className="sb-kraj su" />
-      {STUPNICA_ZONY.map((zona, k) => (
-        <i key={k} style={{ background: farbaZony(zona), "--z": zona } as CSSProperties} />
-      ))}
-      {z !== marker && (
-        <>
-          <u className="sb-stopa" style={{ "--od": Math.min(poloha(z), poloha(marker)), "--do": Math.max(poloha(z), poloha(marker)) } as CSSProperties} />
-          <b className="sb-marker duch" style={{ "--p": poloha(z) } as CSSProperties} />
-        </>
-      )}
-      <b className="sb-marker" style={{ "--p": poloha(marker) } as CSSProperties} />
-      <b className={`sb-bodka ${komu}`} style={{ "--p": bodka } as CSSProperties} />
+    <span className="sb-teplomery" aria-hidden="true">
+      {jeden(ja, "ty")}
+      {jeden(su, menoSu)}
     </span>
   );
 }
 
-function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: PlayerId; readonly mena: readonly [string, string]; readonly vazni: readonly Vazen[] }) {
+function Cip({ d, ja, mena, vazni, vazniNaVyhru }: { readonly d: Dosledok; readonly ja: PlayerId; readonly mena: readonly [string, string]; readonly vazni: readonly Vazen[]; readonly vazniNaVyhru: number }) {
   const farba = d.hrac === ja ? "ja" : "su";
   const kto = d.hrac === ja ? "ty" : mena[d.hrac];
   const komu = d.hrac === ja ? "tebe" : mena[d.hrac];
@@ -401,21 +397,21 @@ function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: Player
         </>,
       );
     case "strach":
-      return cip("strach", `Bojí sa ${koho} — stupeň ${d.stupen}`, <ZnackaStrachu uroven={d.stupen} trieda={d.hrac === ja ? "moje" : "superove"} />);
-    case "naUdrzanie":
+      return cip("strach", textDosledku(d, ja, mena, vazni, vazniNaVyhru), <ZnackaStrachu uroven={d.na} trieda={d.hrac === ja ? "moje" : "superove"} />);
+    case "reci":
       return cip(
-        "udrzanie",
-        `${pocet(d.spaky, "špak", "špaky", "špakov")} ${komu}, keď sa marker udrží do konca kola`,
+        "reci",
+        textDosledku(d, ja, mena, vazni, vazniNaVyhru),
         <>
-          <IkonaSpaku />
-          <b>+{d.spaky}</b>
-          <IkonaHodin />
+          <IkonaHadky trieda="sb-ikona" />
+          {d.z > 0 && <s>{nazovStupna(d.z)}</s>}
+          <b>{d.na === 0 ? "—" : nazovStupna(d.na)}</b>
         </>,
       );
     case "zajatieMozne":
       return cip(
         "zajatie",
-        `Stupeň 3 — ${d.hrac === ja ? "môžeš ho" : `${mena[d.hrac]} ho môže`} pred šenkom skúsiť zajať za ${cigariet(KONSTANTY.CENA_POKUSU)}`,
+        `Strach na červenej — ${d.hrac === ja ? "môžeš ho" : `${mena[d.hrac]} ho môže`} pred šenkom skúsiť zajať za ${cigariet(KONSTANTY.CENA_POKUSU)}`,
         <>
           <IkonaMrezi className="sb-ikona" />
           <IkonaCigarety />
@@ -424,45 +420,27 @@ function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: Player
     case "vyplata":
       return cip(
         "vyplata",
-        `Udržaný strach: ${pocet(d.spaky, "špak", "špaky", "špakov")} ${komu}`,
+        `${pocet(d.spaky, "špak", "špaky", "špakov")} ${komu} za ${d.reci ? "reči" : "strach"} po bitke`,
         <>
-          <ZnackaStrachu uroven={d.stupen} trieda={d.hrac === ja ? "moje" : "superove"} />
+          {d.reci ? <IkonaHadky trieda="sb-ikona" /> : <ZnackaStrachu uroven={1} trieda={d.hrac === ja ? "moje" : "superove"} />}
           <IkonaSpaku />
           <b>+{d.spaky}</b>
-        </>,
-      );
-    case "hadka":
-      return cip(
-        "hadka",
-        textDosledku(d, ja, mena, vazni),
-        <>
-          <IkonaHadky trieda="sb-ikona" />
-          <IkonaPriazne />
-          <b>+{d.stupne}</b>
         </>,
       );
     case "vazen": {
       const n = vazni.filter((v) => v.hrac === d.hrac).length;
       return cip(
         "vazen",
-        `Uväznený — ${d.hrac === ja ? "tvoj" : `${mena[d.hrac]} má`} väzeň (${n} z ${VAZNI_NA_VYHRU_ZOBRAZENIE})`,
+        `Uväznený — ${d.hrac === ja ? "tvoj" : `${mena[d.hrac]} má`} väzeň (${n} z ${vazniNaVyhru})`,
         <>
           <IkonaMrezi className="sb-ikona" />
           <b>
-            {n}/{VAZNI_NA_VYHRU_ZOBRAZENIE}
+            {n}/{vazniNaVyhru}
           </b>
         </>,
       );
     }
   }
-}
-
-function IkonaHodin() {
-  return (
-    <svg className="sb-ikona hodiny" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 2h12v2h-1.4c0 3.1-1.9 4.7-3.5 6 1.6 1.3 3.5 2.9 3.5 6V20H18v2H6v-2h1.4v-4c0-3.1 1.9-4.7 3.5-6-1.6-1.3-3.5-2.9-3.5-6H6zm3.4 2c0 2.2 1.3 3.3 2.6 4.4 1.3-1.1 2.6-2.2 2.6-4.4zm2.6 9.6c-1.3 1.1-2.6 2.2-2.6 4.4v2h5.2v-2c0-2.2-1.3-3.3-2.6-4.4z" />
-    </svg>
-  );
 }
 
 function IkonaPiktogramu({ kluc, trieda }: { readonly kluc: "Cigareta"; readonly trieda: string }) {
@@ -484,6 +462,7 @@ export interface SuhrnPosunovTelefonProps {
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
   readonly vazni: readonly Vazen[];
+  readonly vazniNaVyhru: number;
   readonly menoKarty: (defId: string) => string;
   readonly obrazok: (defId: string) => string | null;
   readonly posledne: string;
@@ -498,16 +477,12 @@ const ZAMOK_TELEFONU_MS = 700;
  * ako súhrn bitky — hore pruh so žltým Ďalej na stálom mieste, pod ním jeden zoznam všetkých
  * starších naraz: pred → po slovami a dôsledky ako čipy s textom.
  */
-export function SuhrnPosunovTelefon({ data, polozky, kolo, ja, mena, vazni, menoKarty, obrazok, posledne, onKoniec }: SuhrnPosunovTelefonProps) {
+export function SuhrnPosunovTelefon({ data, polozky, kolo, ja, mena, vazni, vazniNaVyhru, menoKarty, obrazok, posledne, onKoniec }: SuhrnPosunovTelefonProps) {
   const [odomknute, setOdomknute] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setOdomknute(true), ZAMOK_TELEFONU_MS);
     return () => clearTimeout(t);
   }, []);
-  const stav = (m: MarkerPos): string => {
-    const o = obavanyHrac({ marker: m });
-    return o === null ? "stred" : `bojí sa ${o === ja ? "teba" : mena[o]} (${strachZ({ marker: m }, o)})`;
-  };
   return (
     <div className="pocitadlo-bitky rk-telefon hotova suhrn-telefon" role="dialog" aria-modal="true" aria-label={`Starší po kole ${kolo}`}>
       <div className="rk-tel-pruh">
@@ -522,28 +497,28 @@ export function SuhrnPosunovTelefon({ data, polozky, kolo, ja, mena, vazni, meno
       <div className="rk-tel-zoznam suhrn-tel-zoznam">
         {polozky.map((p) => {
           const o = obrazok(p.defId);
-          const cipy = dosledky(p).filter((d) => d.druh !== "strach");
+          const cipy = dosledky(p);
           const e = p.elder;
-          const pz = e === null ? null : priazenSuhrnu(e, p.hadka, ja);
+          const pz = e === null ? null : priazenKola(e, ja);
           return (
             <div key={p.elderId} className="st-riadok">
               <span className="st-portret">
                 {o !== null ? <img src={o} alt="" draggable={false} /> : null}
                 {/* Krúžok priazne po kole (Michal 2026-10-31) — vždy, aj na telefóne. */}
-                {e !== null && pz !== null && <KruzokPriazne fav={favourStarsieho(data, e)} p={pz.poKole} velkost={22} popis={`priazeň po kole: ${textPriazne(pz.poKole, mena[opponentOf(ja)])}`} />}
+                {e !== null && pz !== null && <KruzokPriazne fav={favourStarsieho(data, e)} p={pz} velkost={22} popis={`priazeň po kole: ${textPriazne(pz, mena[opponentOf(ja)])}`} />}
               </span>
               <span className="st-telo">
                 <span className="st-hlava">
                   <b>{menoKarty(p.defId)}</b>
                   <span className="st-posun">
-                    {p.vazen !== null ? "uväznený" : p.posun === null ? `ostáva: ${stav((p.elder == null ? undefined : markerStarsieho(p.elder)) ?? (3 as MarkerPos))}` : `${stav(p.posun.z)} → ${stav(p.posun.na)}`}
+                    {p.vazen !== null ? "uväznený" : p.zmena ? "zmena" : "bodoval"}
                   </span>
                 </span>
                 {cipy.length > 0 && (
                   <span className="st-cipy">
                     {cipy.map((d, i) => (
                       <span key={i} className={`st-cip ${d.hrac === ja ? "ja" : "su"}`}>
-                        {textDosledku(d, ja, mena, vazni)}
+                        {textDosledku(d, ja, mena, vazni, vazniNaVyhru)}
                       </span>
                     ))}
                   </span>
@@ -558,26 +533,24 @@ export function SuhrnPosunovTelefon({ data, polozky, kolo, ja, mena, vazni, meno
 }
 
 /** Dôsledok slovami (telefón) — ikona bez popisu sa nedala prečítať (playtest 20261031-191322). */
-export function textDosledku(d: Dosledok, ja: PlayerId, mena: readonly [string, string], vazni: readonly Vazen[]): string {
+export function textDosledku(d: Dosledok, ja: PlayerId, mena: readonly [string, string], vazni: readonly Vazen[], vazniNaVyhru: number): string {
   const kto = d.hrac === ja ? "ty" : mena[d.hrac];
   const komu = d.hrac === ja ? "tebe" : mena[d.hrac];
+  const tvoj = d.hrac === ja ? "tvoj" : `${mena[d.hrac]} —`;
   switch (d.druh) {
     case "priazen":
       return `priazeň ${kto} ${d.sila}${d.bolo !== null && d.bolo !== d.sila ? ` (predtým ${d.bolo})` : ""}`;
     case "strataPriazne":
       return `${kto} prichádza o priazeň ${d.sila}`;
     case "strach":
-      return `bojí sa ${d.hrac === ja ? "teba" : mena[d.hrac]} (${d.stupen})`;
-    case "naUdrzanie":
-      // Špaky, nie cigarety: zaplatí ich koniec ďalšieho kola, ak marker vydrží — cigarety za posun sú už v stĺpci.
-      return `+${d.spaky} š ${komu}, ak sa udrží do konca ďalšieho kola`;
+      return `${tvoj} strach ${nazovStupna(d.z)} → ${nazovStupna(d.na)}`;
+    case "reci":
+      return `${d.hrac === ja ? "tvoje" : `${mena[d.hrac]} —`} reči ${nazovStupna(d.z)} → ${d.na === 0 ? "zanikli" : nazovStupna(d.na)}`;
     case "zajatieMozne":
       return `${d.hrac === ja ? "môžeš" : `${mena[d.hrac]} môže`} pred šenkom skúsiť zajať (${cigariet(KONSTANTY.CENA_POKUSU)})`;
     case "vyplata":
-      return `+${d.spaky} š ${komu} za udržaný strach (vyplatené)`;
-    case "hadka":
-      return `hádka ${kto}: priazeň do konca kola (+${d.stupne})`;
+      return `+${d.spaky} š ${komu} za ${d.reci ? "reči" : "strach"} po bitke`;
     case "vazen":
-      return `uväznený · väzeň ${d.hrac === ja ? "tvoj" : mena[d.hrac]} ${vazni.filter((v) => v.hrac === d.hrac).length}/${VAZNI_NA_VYHRU_ZOBRAZENIE}`;
+      return `uväznený · väzeň ${d.hrac === ja ? "tvoj" : mena[d.hrac]} ${vazni.filter((v) => v.hrac === d.hrac).length}/${vazniNaVyhru}`;
   }
 }

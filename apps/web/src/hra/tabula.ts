@@ -2,8 +2,7 @@
 
 import type { ClientState, PlayerId, StavZavislosti } from "@naex/core";
 import { KONSTANTY, cenaFajceniaHraca, limitZhromazdenia, spakov } from "@naex/core";
-import { VAZNI_NA_VYHRU_ZOBRAZENIE } from "./staraStupnica.ts";
-import { type SpakyTeraz } from "./staraStupnica.ts";
+import type { SpakyTeraz } from "@naex/core";
 
 /** Prahy hráča (prahyHraca) — to, čo z nich pult a tabuľa ukazujú. */
 export interface PrahyPultu {
@@ -34,10 +33,17 @@ export interface CislaHraca {
   readonly pecen: number;
   readonly prahPecene: number;
   readonly spaky: number;
+  /** Špaky od starších po najbližšej bitke, keď ju hráč vyhrá (v11). */
   readonly zaStarsich: number;
+  /** … a keď ju prehrá — len reči. */
+  readonly zaStarsichPrehra: number;
   readonly priznane: number;
   readonly dedicstvo: number;
   readonly vazni: number;
+  readonly vazniNaVyhru: number;
+  /** Červené strachy (väzni sa rátajú) a koľko treba na výhru (v11). */
+  readonly cervene: number;
+  readonly cervenychNaVyhru: number;
   readonly cirhozyNepriznane: number;
   /** Ďalšia vyfajčená cigareta v tejto Pitke (1, 2, 3…). */
   readonly cenaFajcenia: number;
@@ -82,10 +88,14 @@ export function cislaHraca(
     pecen: h.pecen,
     prahPecene: prahy.cirhoza,
     spaky: view.spaky[p],
-    zaStarsich: body.zaStarsich[p],
+    zaStarsich: body.zaStarsichVyhra[p],
+    zaStarsichPrehra: body.zaStarsichPrehra[p],
     priznane: h.priznane.length,
     dedicstvo: h.dedicstvo.length,
-    vazni: view.vazni.filter((v) => v.hrac === p).length,
+    vazni: view.vyhry.vazni[p],
+    vazniNaVyhru: view.vyhry.vazniNaVyhru,
+    cervene: view.vyhry.cervene[p],
+    cervenychNaVyhru: view.vyhry.cervenychNaVyhru,
     cirhozyNepriznane: view.nepriznaneKliatby[p].cirhoza,
     cenaFajcenia: cenaFajceniaHraca(view, p),
     cenaBarteru: ine.cenaBarteru,
@@ -119,7 +129,7 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
     r("limit", "Limit kariet", (c) => String(c.limit)),
     r("cigarety", "Cigarety", (c) => String(c.cigarety)),
     r("spaky", "Špaky", (c) => String(c.spaky)),
-    r("zaStarsich", "Za starších po bitke", (c) => (c.zaStarsich > 0 ? `+${c.zaStarsich}` : "0")),
+    r("zaStarsich", "Za starších (výhra · prehra)", (c) => `+${c.zaStarsich} · +${c.zaStarsichPrehra}`),
   ];
   if (ja.chut !== null || su.chut !== null) {
     riadky.push(r("chut", "Chuť · neresti dnes", (c) => (c.chut === null ? "–" : `${c.chut} · ${c.nerestiDnes}`), (c) => c.chutHrozi));
@@ -133,7 +143,8 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
     r("balicek", "Balíček · odhodené", (c) => `${c.balicek} · ${c.odhodene}`),
     r("priznane", "Priznané kliatby", (c) => String(c.priznane)),
     r("dedicstvo", "Dedičstvo (náradie)", (c) => String(c.dedicstvo)),
-    r("vazni", "Väzni", (c) => `${c.vazni}/${VAZNI_NA_VYHRU_ZOBRAZENIE}`),
+    r("cervene", "Červené", (c) => `${c.cervene}/${c.cervenychNaVyhru}`),
+    r("vazni", "Väzni", (c) => `${c.vazni}/${c.vazniNaVyhru}`),
   );
   return riadky;
 }
@@ -223,9 +234,11 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean): De
         text: "Špaky sú body: za vyhraté bitky, za karty v línii, za starších, ktorí sa boja, a na konci hry výkupné. Odkiaľ prišli, ukáže krčmová nástenka.",
         riadky: [
           ["špaky", String(c.spaky)],
-          ["za starších po bitke", c.zaStarsich > 0 ? `+${c.zaStarsich}` : "0"],
+          ["za starších po výhre", `+${c.zaStarsich}`],
+          ["za starších po prehre", `+${c.zaStarsichPrehra}`],
           ["priazeň starších", String(c.priazen)],
-          ["väzni", `${c.vazni} z ${VAZNI_NA_VYHRU_ZOBRAZENIE}`],
+          ["červené", `${c.cervene} z ${c.cervenychNaVyhru}`],
+          ["väzni", `${c.vazni} z ${c.vazniNaVyhru}`],
         ],
       };
   }
