@@ -281,15 +281,17 @@ button.r3-seg.mimo {
   text-shadow: 0 1px 2px var(--tma);
 }
 
-/* Hladina strachu: od vnútorného okraja pásu do stredu, bodka v strede, meno hráča nad ňou. */
+/* Hladina strachu: od vnútorného okraja pásu do stredu, bodka v strede, meno hráča nad ňou.
+   Čiara vyplní presne 2 px medzeru pásu na čiare stupňa, takže sedí na vrchu plného strachu; pri
+   rovnakom strachu sú obe hladiny jedna čiara (Michal 2026-11-02). Hrúbky čiar sú celé px — Chrome
+   zlomkovú hrúbku rámika zaokrúhli nadol a čiara by sa posunula pod čiaru stupňa. */
 .r3-hladina {
   position: absolute;
   z-index: 1;
   bottom: calc(var(--h) * 100% / 3);
   height: 0;
-  margin-bottom: -1.3px;
-  translate: 0 var(--dy, 0px);
-  border-top: 2.6px solid currentColor;
+  margin-bottom: -1px;
+  border-top: 2px solid currentColor;
 }
 
 .r3-hladina.ja {
@@ -307,7 +309,7 @@ button.r3-seg.mimo {
 .r3-hladina::after {
   content: "";
   position: absolute;
-  top: -4.3px;
+  top: -4px;
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -323,7 +325,8 @@ button.r3-seg.mimo {
 }
 
 .r3-hladina.duch {
-  border-top: 1.8px dashed currentColor;
+  margin-bottom: -0.5px;
+  border-top: 1px dashed currentColor;
   opacity: 0.55;
 }
 
@@ -362,8 +365,8 @@ button.r3-seg.mimo {
   left: 50%;
   bottom: calc(var(--a) * 100% / 3 + 3px);
   height: calc((var(--b) - var(--a)) * 100% / 3 - 6px);
-  translate: -1.2px 0;
-  border-left: 2.4px dashed var(--ja);
+  translate: -1px 0;
+  border-left: 2px dashed var(--ja);
 }
 
 .r3-zatvorka.su {
@@ -373,7 +376,7 @@ button.r3-seg.mimo {
 .r3-zatvorka > b {
   position: absolute;
   top: 50%;
-  left: -1.2px;
+  left: -1px;
   translate: -50% -50%;
   padding: 0 0.42em;
   border-radius: 999px;

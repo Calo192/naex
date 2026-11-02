@@ -179,6 +179,29 @@ export function suhrnBitky(zaciatok: ZaciatokKola, view: Pick<ClientState, "star
   };
 }
 
+/** Čo si stôl pamätá z pohľadov servera: začiatok kola a súhrn bitky, ktorý sa práve má spustiť. */
+export interface PohladSuhrnu {
+  readonly zaciatok: ZaciatokKola | null;
+  readonly suhrn: SuhrnBitky | null;
+}
+
+/**
+ * Spúšťanie súhrnu (pohľady servera v poradí, ako prídu). Začiatok kola je prvý pohľad kola pred
+ * Zhromaždením; súhrn bitky príde s prvým pohľadom ďalšieho kola — bez ohľadu na to, kto čo rozdeľoval.
+ * Stačí aj Draft: keď súper ako obranca vyberie lokalitu hneď, pohľad s voľbou cieľa môže prísť
+ * neskoro (pomalé spojenie, návrat po výpadku) a súhrn by sa stratil spolu so začiatkom ďalšieho kola.
+ * Do Zhromaždenia sa markery nemenia (Kapybara až pri Nástupe) a zmeny markerov z bitky sa mažú až
+ * na začiatku Pitky.
+ */
+export function dalsiPohladSuhrnu(zaciatok: ZaciatokKola | null, v: Pick<ClientState, "kolo" | "faza" | "koniec" | "starsi" | "vazni" | "zmenyMarkerov" | "nastenka">): PohladSuhrnu {
+  if (zaciatok !== null && zaciatok.kolo === v.kolo) return { zaciatok, suhrn: null };
+  const predZhromazdenim = v.koniec === null && (v.faza === "volbaCiela" || v.faza === "draft");
+  return {
+    zaciatok: predZhromazdenim ? zaciatokKola(v) : null,
+    suhrn: predZhromazdenim && zaciatok !== null && v.kolo === zaciatok.kolo + 1 ? suhrnBitky(zaciatok, v) : null,
+  };
+}
+
 /** Starší sa v kroku pohol (svieti), ostatní stmavnú. */
 export function dotknuty(e: StarsiVSuhrne, k: KrokSuhrnu): boolean {
   if (k === "bodovanie") return e.bod[0] + e.bod[1] > 0;

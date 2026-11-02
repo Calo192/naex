@@ -444,8 +444,9 @@ function TeplomerStarsieho({
         <span className="ls-portret">
           {s.obrazok !== null ? <img src={s.obrazok} alt="" draggable={false} /> : <span className="ls-portret-prazdny" />}
           <span className="tp-tien" aria-hidden="true" />
+          {/* Nový kľúč v každom kroku súhrnu prehrá pohyb znova; súrodenci potrebujú každý iný kľúč. */}
           <TeplomerR3
-            key={suhrn?.kluc}
+            key={suhrn === undefined ? undefined : `tp-${suhrn.kluc}`}
             elderId={elder.elderId}
             ja={ja}
             v={po}
@@ -459,7 +460,7 @@ function TeplomerStarsieho({
           />
           {suhrn !== undefined ? (
             suhrn.stitky.length > 0 && (
-              <span className="r3-stitky" key={suhrn.kluc}>
+              <span className="r3-stitky" key={`st-${suhrn.kluc}`}>
                 {suhrn.stitky.map((x, i) => (
                   <span key={i} className={`r3-stitok ${x.trieda}`} style={{ "--d": `${0.2 + i * 0.15}s` } as CSSProperties}>
                     <span className="dlhe">{x.text}</span>
@@ -563,7 +564,6 @@ function TeplomerR3({
   readonly suhrn: boolean;
 }) {
   const su = opponentOf(ja);
-  const rovnako = v.strach[ja] === v.strach[su];
   const pk = priazenKola(v, ja);
   const prPred = pred === null ? null : priazenKola(pred, ja);
   const prNova = prPred !== null && (prPred.komu !== pk.komu || prPred.sila !== pk.sila);
@@ -572,11 +572,10 @@ function TeplomerR3({
   const hladina = (h: PlayerId) => {
     const strana = h === ja ? "ja" : "su";
     const posun = pred !== null && pred.strach[h] !== v.strach[h];
-    const dy = rovnako ? (h === ja ? -2 : 2) : 0;
     return (
       <span key={strana}>
-        {posun && duch && <span className={`r3-hladina ${strana} duch`} style={{ "--h": pred.strach[h], "--dy": `${pred.strach[0] === pred.strach[1] ? dy : 0}px` } as CSSProperties} />}
-        <span className={`r3-hladina ${strana}${posun && suhrn ? " posun" : ""}`} style={{ "--h": v.strach[h], "--h-od": pred?.strach[h] ?? v.strach[h], "--dy": `${dy}px` } as CSSProperties}>
+        {posun && duch && <span className={`r3-hladina ${strana} duch`} style={{ "--h": pred.strach[h] } as CSSProperties} />}
+        <span className={`r3-hladina ${strana}${posun && suhrn ? " posun" : ""}`} style={{ "--h": v.strach[h], "--h-od": pred?.strach[h] ?? v.strach[h] } as CSSProperties}>
           <b className="r3-meno">{mena[h]}</b>
         </span>
       </span>

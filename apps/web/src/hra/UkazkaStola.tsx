@@ -9,6 +9,10 @@
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
 //   &stop=suhrn    začiatok kola k-tej bitky (&i=k, od 0); po načítaní sa kolo rýchlo dohrá po bitku —
 //                  po zavretí vyhodnotenia príde súhrn posunov starších
+//                  &rucne=prebytok: bitka, po ktorej hráč ?ja rozdeľuje Nakladačku a súper hádku;
+//                  &rucne=reci: súper Nakladačku, hráč ?ja hádku; len-prebytok, len-reci: hráč ?ja jedno,
+//                  súper nič; oba: hráč ?ja oboje — dohrá sa len po hráčovo rozdelenie, to urobí hráč
+//                  sám (k-ta taká bitka, hľadá sa aj v ďalších seedoch)
 //   &stop=po-bitke súhrn po k-tej bitke (&i=k, od 0) hneď po načítaní — kolo sa dohrá po voľbu cieľa ďalšieho
 //                  kola (súhrn krok po kroku na línii starších, R3)
 //   &stop=kolo     začiatok kola &i=k
@@ -213,6 +217,15 @@ function sZeravou(s: GameState, p: PlayerId): GameState {
   return { ...s, nextUid: uid, strany, hraci: p === 0 ? [ja, on] : [on, ja] };
 }
 
+/** &rucne=…: kto čo po bitke rozdelí (ja = hráč ?ja, su = súper). */
+const ROZDELENIA_UKAZKY: Readonly<Record<string, readonly string[]>> = {
+  prebytok: ["ja:prebytok", "su:reci"],
+  reci: ["su:prebytok", "ja:reci"],
+  "len-prebytok": ["ja:prebytok"],
+  "len-reci": ["ja:reci"],
+  oba: ["ja:prebytok", "ja:reci"],
+};
+
 function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: number): { cmd: Command; kto: PlayerId; rng: ReturnType<typeof rngSeed> } | null {
   const kto = naTahu(s);
   if (kto === null) return null;
@@ -222,7 +235,8 @@ function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: 
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  if (!["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "")) return odohrajSeed(data, seed).odohrane;
+  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
+  if (!hlada) return odohrajSeed(data, seed).odohrane;
   // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
     const x = odohrajSeed(data, seed + pokus);
@@ -340,7 +354,29 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       }
       return najdene({ zaciatok: x, dohraj: [], suhrn: zaciatokKola });
     }
-    if (stop === "suhrn" && bitka && bitiek++ === i) {
+    const rucne = p.get("rucne");
+    if (stop === "suhrn" && bitka && rucne !== null) {
+      // Kto čo rozdelí, ukáže dohranie kola botmi; hráč ?ja potom svoje rozdelí sám.
+      const dohraj: Krok[] = [...tahyKola, { stav: s, cmd: t.cmd, kto: t.kto }];
+      const delenia = new Set<string>();
+      let pred: number | null = null;
+      let x = po;
+      let r2 = rng;
+      for (let k = 0; k < 60 && x.koniec === null && x.kolo === s.kolo; k++) {
+        const u = tahy(data, x, r2, n + 1 + k);
+        if (u === null) break;
+        r2 = u.rng;
+        if (u.cmd.type === "prebytok" || u.cmd.type === "reci") {
+          delenia.add(`${u.kto === ja ? "ja" : "su"}:${u.cmd.type}`);
+          if (u.kto === ja && pred === null) pred = dohraj.length;
+        }
+        dohraj.push({ stav: x, cmd: u.cmd, kto: u.kto });
+        x = apply(data, x, u.cmd, u.kto).state;
+      }
+      const chcem = ROZDELENIA_UKAZKY[rucne] ?? ROZDELENIA_UKAZKY.prebytok!;
+      if (pred !== null && chcem.length === delenia.size && chcem.every((d) => delenia.has(d)) && bitiek++ === i) return najdene({ zaciatok: zaciatokKola, dohraj: dohraj.slice(0, pred), historia: historiaKola });
+    }
+    if (stop === "suhrn" && bitka && rucne === null && bitiek++ === i) {
       // Za bitkou aj rozdeľovanie Nakladačky, kým kolo neskončí — súhrn ho má ukázať.
       const dohraj: Krok[] = [...tahyKola, { stav: s, cmd: t.cmd, kto: t.kto }];
       let x = po;
@@ -377,7 +413,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica"].includes(stop) };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
 export function UkazkaStola() {

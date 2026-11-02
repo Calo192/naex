@@ -79,7 +79,7 @@ import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole
 import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatkyKrokov.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { SuhrnLokality } from "./SuhrnLokality.tsx";
-import { suhrnBitky, zaciatokKola, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKola } from "./krokySuhrnu.ts";
+import { dalsiPohladSuhrnu, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKola } from "./krokySuhrnu.ts";
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -2242,22 +2242,17 @@ export function HernaPlocha({
 
   // Súhrn po bitke krok po kroku na línii starších (Michal 2026-11-02, návrh c): po zavretí
   // vyhodnotenia bitky ukáže na teplomeroch v poradí pravidiel, čo sa so staršími stalo. Krok sa
-  // neprehráva sám — Ďalej a Preskočiť (Michal). Začiatok kola si stôl zapamätá z prvého pohľadu
-  // kola (voľba cieľa); kto sa pripojil uprostred kola, súhrn tohto kola nedostane. Výučba ho
-  // zatiaľ nemá (text Melichara chýba), prehrávač ide svojím tempom.
+  // neprehráva sám — Ďalej a Preskočiť (Michal). Kedy sa spustí, rozhoduje dalsiPohladSuhrnu (z pohľadov
+  // servera); kto sa pripojil uprostred kola, súhrn tohto kola nedostane. Výučba ho zatiaľ nemá (text
+  // Melichara chýba), prehrávač ide svojím tempom.
   const suhrnZapnuty = vyucba !== true && prehravanie === undefined;
   const zaciatokTohtoKola = useRef<ZaciatokKola | null>(ukazkaSuhrnu ?? null);
   const [suhrn, setSuhrn] = useState<{ readonly kolo: number; readonly bitka: SuhrnBitky; readonly krok: number } | null>(null);
   useEffect(() => {
     if (!suhrnZapnuty) return;
-    const v = viewZoServera;
-    const z = zaciatokTohtoKola.current;
-    if (z !== null && z.kolo === v.kolo) return;
-    if (z !== null && v.kolo === z.kolo + 1 && v.faza === "volbaCiela" && v.koniec === null) {
-      const bitka = suhrnBitky(z, v);
-      if (bitka !== null) setSuhrn({ kolo: z.kolo, bitka, krok: 0 });
-    }
-    zaciatokTohtoKola.current = v.faza === "volbaCiela" ? zaciatokKola(v) : null;
+    const x = dalsiPohladSuhrnu(zaciatokTohtoKola.current, viewZoServera);
+    zaciatokTohtoKola.current = x.zaciatok;
+    if (x.suhrn !== null) setSuhrn({ kolo: x.suhrn.kolo, bitka: x.suhrn, krok: 0 });
   }, [viewZoServera]);
   const suhrnBezi =
     suhrn !== null &&
@@ -4718,8 +4713,10 @@ export function HernaPlocha({
   // „všetci starší“ prepne na líniu (markery, súboje) bez bodového režimu barov; nový krok začne ponukou.
   const [liniaPriZajati, setLiniaPriZajati] = useState(false);
   useEffect(() => setLiniaPriZajati(false), [klucKroku]);
+  // Súhrn po bitke má na línii prednosť (Michal 2026-11-02): keď súper ako obranca vyberie lokalitu hneď,
+  // útočník rozhoduje o zajatí, kým súhrn ešte beží — ponuka by súhrn zo stola vytlačila uprostred kroku.
   const ponukaZajatia: MoznostZajatia[] | null =
-    vyberZajatia && pohladStarsich === null && !liniaPriZajati
+    vyberZajatia && !suhrnBezi && pohladStarsich === null && !liniaPriZajati
       ? moznePokusyJa.map((e) => {
           const vyber = (): void => setMode({ typ: "pokus", elderId: e.elderId });
           const n = nahladPokusu(view, e.elderId);
