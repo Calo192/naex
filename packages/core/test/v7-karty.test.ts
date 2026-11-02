@@ -71,15 +71,10 @@ describe("sada v7 — dáta", () => {
     for (const l of data.lokality) expect(cardVariants(l).total, l.id).toBe(1);
   });
 
-  it("hráčske karty majú 1 až 8 variantov, náradie najviac 2, Bzdocha 2 (sloty.json, Michal 2026-10-30; pozície Odporov B+ 2026-11-02)", () => {
+  it("hráčske karty majú 1 až 8 variantov, náradie najviac 2 (sloty.json, Michal 2026-10-30; pozície Odporov B+ 2026-11-02)", () => {
     for (const def of data.cards.values()) {
       if (["Lokalita", "Starešina", "Kliatba"].some((t) => def.tags.includes(t as never))) continue;
       const v = cardVariants(def).total;
-      // Bzdocha má od sady v8 (Michal 2026-11-02) len Víziu a Poveru vľavo — dve rozloženia.
-      if (def.id === "klebetnica") {
-        expect(v, def.id).toBe(2);
-        continue;
-      }
       if (def.tags.includes("Nástroj")) {
         expect(v, def.id).toBeGreaterThanOrEqual(1);
         expect(v, def.id).toBeLessThanOrEqual(2);
@@ -89,6 +84,18 @@ describe("sada v7 — dáta", () => {
       expect(v, def.id).toBeGreaterThanOrEqual(1);
       expect(v, def.id).toBeLessThanOrEqual(8);
     }
+  });
+
+  it("Bzdocha a Dievčina na vydaj majú pevné rozloženie, jediný variant (Michal 2026-11-02)", () => {
+    const rozlozenie = (id: string) => {
+      const v = cardVariants(data.cards.get(id)!);
+      expect(v.total, id).toBe(1);
+      return { lave: v.left[0], prave: v.right[0] };
+    };
+    // Bzdocha: Ľ2 Povera | P2 Vízia, po jednej akcii na stranu.
+    expect(rozlozenie("klebetnica")).toEqual({ lave: [null, null, "Povera", null], prave: [null, null, "Vízia", null] });
+    // Dievčina na vydaj: Ľ1 Dlh, Ľ2 Cigareta | P1 Dlh, P2 Povera.
+    expect(rozlozenie("dievcina_na_vydaj")).toEqual({ lave: [null, "Dlh", "Cigareta", null], prave: [null, "Dlh", "Povera", null] });
   });
 });
 

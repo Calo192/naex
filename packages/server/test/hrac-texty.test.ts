@@ -39,8 +39,9 @@ import { EMPTY, instanceFor, makeDef, setupSBalickom } from "../../core/test/hel
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const R2: Layout4 = ["Rana", "Rana", null, null];
 const R1: Layout4 = ["Rana", null, null, null];
+const D1: Layout4 = [null, "Rana", null, null];
 const sada = buildGameData(
-  new Map([...data.cards, ["ht_lavy", makeDef("ht_lavy", EMPTY, R2)], ["ht_pol", makeDef("ht_pol", R1, R1)]]),
+  new Map([...data.cards, ["ht_lavy", makeDef("ht_lavy", EMPTY, R2)], ["ht_pol", makeDef("ht_pol", R1, R1)], ["ht_d1", makeDef("ht_d1", D1, D1)]]),
   data.elders,
   parseScorecards(scorecardsJson),
 );
@@ -168,13 +169,47 @@ describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj
           const m = e.type === "log" ? /Dievčina na vydaj: hráč (\d) ju páli — hráč \d získava (\d+)/.exec(e.text) : null;
           if (m === null) continue;
           const porazeny = (Number(m[1]) - 1) as PlayerId;
-          for (const ja of [0, 1] as const) expect(efektyPrehry(data, viewFor(data, state, ja)).dievcina[porazeny]).toBe(Number(m[2]));
-          porovnane++;
+          for (const ja of [0, 1] as const) {
+            // Súperova skrytá Záverečná pri Dievčine sa otočí až v tom istom ťahu, ktorý bitku spustí —
+            // kto ju nevidí, Dlhy za jej spoj predpovedať nemôže (a nesmie, viewFor ju neposiela).
+            const v = viewFor(data, state, ja);
+            if (v.strany.flat().length !== state.strany.flat().length) continue;
+            expect(efektyPrehry(data, v).dievcina[porazeny], `seed ${seed}, hráč ${ja}`).toBe(Number(m[2]));
+            porovnane++;
+          }
         }
         state = r.state;
       }
     }
     expect(porovnane).toBeGreaterThan(0);
+  });
+
+  it("NA EX na Dievčine Dlhy po prehre nemení — poldeci sa vypijú (§9 krok 5) pred efektmi Prehra (krok 6c); motor aj náhľad", () => {
+    const dievcina: CardInstance = { uid: 891101, defId: "dievcina_na_vydaj", leftLayout: 0, rightLayout: 0 };
+    const sused = instanceFor(sada, "ht_d1", D1, D1);
+    // Rana suseda na spoji s Dlhom Dievčiny: Dlh aktívny (×1), hráč 1 má jediné poškodenie a vyhrá.
+    const { s } = doPitky(309, [], (x) => ({ ...x, strany: [[{ card: dievcina, playedBy: 0, naexBy: 1 }, { card: sused, playedBy: 1 }], []] }));
+    const aktivne = (x: GameState): number => {
+      const ev = evaluateLine(sada, lineState(x)).cards.get(dievcina.uid)!;
+      return [...ev.left, ...ev.right].reduce((a, y) => a + (y?.stav === "aktivna" ? y.nasobok : 0), 0);
+    };
+    // V Pitke NA EX platí: zruší Dlh na spoji a zdvojí 3 neaktívne akcie.
+    expect(aktivne(s)).toBe(6);
+    const bezNaex = { ...s, strany: [[{ card: dievcina, playedBy: 0 as PlayerId }, { card: sused, playedBy: 1 as PlayerId }], []] as GameState["strany"] };
+    expect(aktivne(bezNaex)).toBe(1);
+    for (const ja of [0, 1] as const) expect(efektyPrehry(sada, viewFor(sada, s, ja)).dievcina[0]).toBe(1);
+    let t = s;
+    const log: string[] = [];
+    for (let i = 0; i < 400 && t.koniec === null && t.kolo === s.kolo; i++) {
+      const q = ([0, 1] as const).find((x) => legalCommands(sada, t, x).length > 0);
+      if (q === undefined) break;
+      const legal = legalCommands(sada, t, q);
+      const cmd = legal.find((c) => c.type === "skipNaex") ?? legal.find((c) => c.type === "pass") ?? legal.find((c) => c.type === "bezReakcie") ?? (legal[0] as Command);
+      const r = apply(sada, t, cmd, q);
+      for (const e of r.events) if (e.type === "log") log.push(e.text);
+      t = r.state;
+    }
+    expect(log).toContain("Dievčina na vydaj: hráč 1 ju páli — hráč 2 získava 1 Dlh.");
   });
 
   it("náhľad NA EX na Dievčinu na vydaj povie, koľko Dlhov dá po prehre (Eva: „súper Dlh +1“, po prehre 3)", () => {

@@ -63,9 +63,8 @@ describe("scenár zajatia — rozdanie", () => {
 });
 
 describe("scenár zajatia — tok v jadre (§10)", () => {
-  const vysledky = new Set<string>();
-  // Rozdanie 11: človek bitku vyhrá (väzeň), rozdanie 13: nie (ústup na oranžovú) — oba výsledky (sada B+ 2026-11-02).
-  it.each([11, 13])("rozdanie %i: pred stavbou šenku sa pokus ponúkne, boss ide pokúšajúcemu do ruky (v10.1) a po bitke je väzeň alebo ústup", (rozdanie) => {
+  /** Pokus človeka o prvého staršieho a dohraté kolo; overí tok a vráti, ako bitka dopadla. */
+  function zajatie(rozdanie: number): "vazen" | "ustup" {
     const s0 = pouziScenar(setupGame(data, rozdanie), "zajatie", 0);
     const ciel = s0.starsi[0]!.elderId;
     // Krok zajatia, keď rozhoduje človek (hráč 1 = bot, jeho voľbu urobí bot).
@@ -85,17 +84,26 @@ describe("scenár zajatia — tok v jadre (§10)", () => {
     // Dohrá sa kolo: výsledok je väzeň človeka, alebo starší späť a strach človeka 0 (v11).
     const konec = hrajKym(po, (x) => x.pokusy[0] === null);
     const vazen = konec.vazni.find((v) => v.elderId === ciel);
-    vysledky.add(vazen === undefined ? "ustup" : "vazen");
     if (vazen !== undefined) {
       expect(vazen.hrac).toBe(0);
       expect(konec.starsi.some((e) => e.elderId === ciel)).toBe(false);
-    } else {
-      expect(strachZ(konec.starsi.find((e) => e.elderId === ciel)!, 0)).toBe(0);
-      expect(konec.hraci[0].ruka.some((k) => k.uid === karta.uid)).toBe(false);
+      return "vazen";
     }
+    expect(strachZ(konec.starsi.find((e) => e.elderId === ciel)!, 0)).toBe(0);
+    expect(konec.hraci[0].ruka.some((k) => k.uid === karta.uid)).toBe(false);
+    return "ustup";
+  }
+
+  it.each([2, 13])("rozdanie %i: pred stavbou šenku sa pokus ponúkne, boss ide pokúšajúcemu do ruky (v10.1) a po bitke je väzeň alebo ústup", (rozdanie) => {
+    expect(["vazen", "ustup"]).toContain(zajatie(rozdanie));
   });
 
+  // Výsledok bitky závisí od rozdaných kariet, takže každá zmena sady ho pri pevnom rozdaní
+  // môže otočiť; preto sa oba výsledky hľadajú v rade rozdaní (pri sade 2026-11-02 je väzeň
+  // v rozdaní 2, ústup v 1), nie v dvoch natvrdo.
   it("rozdania pokryli oba výsledky — väzeň aj ústup", () => {
+    const vysledky = new Set<string>();
+    for (let rozdanie = 1; rozdanie <= 30 && vysledky.size < 2; rozdanie++) vysledky.add(zajatie(rozdanie));
     expect([...vysledky].sort()).toEqual(["ustup", "vazen"]);
   });
 });
