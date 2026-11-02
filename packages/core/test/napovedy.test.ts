@@ -110,7 +110,7 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
     const s = { ...s0, starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, ...zPolohy(6 as number) } : e)) } as GameState;
     const e = s.starsi[0]!;
     const priazen = napovedy(data, katalog, viewFor(data, s, 1)).find((n) => n.id === "priazen");
-    expect(priazen?.text).toMatch(new RegExp(`^${data.cards.get(e.karta.defId)?.name} je na tvojej polovici`));
+    expect(priazen?.text).toMatch(new RegExp(`^${data.cards.get(e.karta.defId)?.name} sa bojí súpera viac ako teba`));
     expect(priazen?.zvyraznit).toEqual([`starsi:${e.elderId}`]);
     // Marker na 6 = vydesil ho hráč 0.
     const vyd = (p: 0 | 1) => napovedy(data, katalog, viewFor(data, s, p)).find((n) => n.id === "vydesenie")?.text ?? "";

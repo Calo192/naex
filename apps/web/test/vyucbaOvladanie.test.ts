@@ -27,11 +27,11 @@ describe("Kšeft vily", () => {
   });
 
   // Tlačidlo a ponuka vily ležia pod lokalitou (KseftPodKartou) — testuje ich kseftyNaStole.test.ts.
-  // Výučba Prvá hra je na pravidlách v10 (Vila posúvala marker k sebe / od seba) — čaká na prepis na v11.
-  it.skip("výučba rozsvieti presne tlačidlo, ktoré krok čaká", () => {
-    const c: Command = { type: "kseft", uid: 7, elderId: "starosta", kSebe: true };
-    expect(kluceZOcakavania(c)).toContain(klucVily("starosta", true));
-    expect(kluceZOcakavania(c)).not.toContain(klucVily("starosta", false));
+  // v11: Kšeft vily zdvihne moje reči pri staršom — smer (k sebe / od seba) už nie je.
+  it("výučba rozsvieti staršieho a tlačidlo Kšeftu, ktoré krok čaká", () => {
+    const c: Command = { type: "kseft", uid: 7, elderId: "starosta" };
+    expect(kluceZOcakavania(c)).toContain("starsi:starosta");
+    expect(kluceZOcakavania(c)).toContain(klucVily("starosta", false));
   });
 });
 

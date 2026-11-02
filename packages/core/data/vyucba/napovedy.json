@@ -150,7 +150,7 @@
         "podmienka": "pred.kolo === 1 && po.kolo === 2, alebo prvý koniec bitky",
         "jadro": ["packages/core/src/view.ts:413 spakyTeraz", "docs/PRAVIDLA.md §14 Špaky"]
       },
-      "melichar": "Špaky v bare rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí na konci kola, keď sa jeho strach udrží, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
+      "melichar": "Špaky v bare rozhodnú, kto vyhrá. Klikni na ne a uvidíš nástenku: za čo si ich dostal. Koľko ti ktorý starší zaplatí po vyhratej a po prehratej bitke, ukáže dlaždica Starší. Keď sa ti tie čísla nebudú páčiť, mne sa nesťažuj.",
       "zvyraznit": ["bar:body", "bar:starsi"]
     },
     {
@@ -158,14 +158,14 @@
       "poradie": 11,
       "uroven": "A",
       "spustac": {
-        "kedy": "prvá hádka v bitke, ktorú niekto vyhral (v10; id ostáva pohorsenie)",
-        "podmienka": "view.bitkaStav.krok === \"hadka\" && view.bitkaStav.hadka.vitaz !== null",
+        "kedy": "prvá hádka v bitke, ktorú niekto vyhral — kým víťaz rozdeľuje hádku na reči (v11; id ostáva pohorsenie)",
+        "podmienka": "view.bitkaStav.krok === \"reci\" && view.bitkaStav.hadka.vitaz !== null",
         "variant": "moje, keď view.bitkaStav.hadka.vitaz === ja, inak superove",
-        "jadro": ["packages/core/src/engine.ts:272 BitkaKrok hadka", "packages/core/src/engine.ts:4722 cmdHadka", "docs/PRAVIDLA.md §9.1 Hádka (v10)"]
+        "jadro": ["packages/core/src/engine.ts BitkaKrok reci", "packages/core/src/engine.ts cmdRozdelenie", "docs/PRAVIDLA.md §9.1 Hádka (v10, v11)"]
       },
       "melichar": {
-        "moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na priazne starších: zo stredu na žltú 1, ďalej 2 a 3, k stredu o jedno viac. Vyberieš staršieho a priazeň ide, kým body stačia. Platí hneď, ešte v tejto bitke, a do konca kola. Stupnica stojí. Užívaj, kým môžeš.",
-        "superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na priazne starších k sebe. Platia hneď, ešte v tejto bitke, a do konca kola, stupnica stojí. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
+        "moje": "Hádku si vyhral: máš viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1. Rozdiel minieš na svoje reči pri starších – vždy nad tvojím strachom, stupeň do žltej 1, do oranžovej 2, do červenej 3. Čo na ďalší stupeň nestačí, prepadne. Reči ti platia po každej bitke, aj prehratej, a potom slabnú. Užívaj, kým môžeš.",
+        "superove": "Hádku vyhral súper: má viac mäkkého poškodenia, [Pohoršenie] Pohoršenie 2, [Povera] Povera 1, a rozdiel minie na svoje reči pri starších. Tie mu platia po každej bitke, aj prehratej. Nabudúce si nechaj Vieru na jeho Povery. Nepozeraj tak na mňa, ja som ho nevyložil."
       },
       "zvyraznit": ["linia-starsich"]
     },
@@ -198,12 +198,12 @@
       "poradie": 14,
       "uroven": "B",
       "spustac": {
-        "kedy": "starší sa prvýkrát dostal na hráčovu polovicu do žltej alebo ďalej",
-        "podmienka": "marker staršieho na mojej polovici v zóne 1–3 (sila priazne pre mňa > 0)",
+        "kedy": "starší prvýkrát prejavuje hráčovi priazeň (bojí sa súpera viac ako jeho, v11)",
+        "podmienka": "priazenPre(starší, ja) > 0 — strach súpera mínus môj strach",
         "doplnit": "{starsi} = meno staršieho, {elderId}",
-        "jadro": ["packages/core/src/engine.ts:449 priazen", "docs/PRAVIDLA.md §10 Dvojaká úloha markera"]
+        "jadro": ["packages/core/src/elders.ts priazenPre, priazenHraca", "docs/PRAVIDLA.md §10 Priazeň"]
       },
-      "melichar": "{starsi} je na tvojej polovici a prejavuje ti priazeň: malý bonus, ten vidíš pri ňom. Bojí sa zato súpera, a keď sa to udrží do konca ďalšieho kola, dá mu špaky. Niekto ťa má rád, to by som nečakal.",
+      "melichar": "{starsi} sa bojí súpera viac ako teba, a preto ti prejavuje priazeň: malý bonus, ten vidíš pri ňom. Jej sila je rozdiel ich strachov. Súperovi za ten strach platí špaky, keď vyhrá bitku. Niekto ťa má rád, to by som nečakal.",
       "zvyraznit": ["starsi:{elderId}"]
     },
     {
@@ -225,9 +225,9 @@
       "spustac": {
         "kedy": "hráč smie prvýkrát skúsiť zajať staršieho (v9; kľúč patronat ostáva)",
         "podmienka": "view.draftStav.krok === \"zajatie\" (v10.1 pred stavbou šenku) && hráč má cigaretu a aspoň jedného staršieho, ktorého smie skúsiť zajať (pokusMozny)",
-        "jadro": ["packages/core/src/engine.ts:1555 moznyPatronat", "packages/core/src/view.ts:409 nahladPatronatu", "docs/PRAVIDLA.md §10 Patronát"]
+        "jadro": ["packages/core/src/elders.ts pokusMozny", "docs/PRAVIDLA.md §10 Zajatie a väzeň (v9, v11)"]
       },
-      "melichar": "Tento starší sa ťa bojí na trojke, tak ho smieš skúsiť zajať: stojí to [Cigareta] cigaretu a tú ti nikto nevráti. Jeho karta ide tebe do ruky a súper si za to pri stavbe šenku nechá jednu kartu do ruky, zadarmo. Vyhráš bitku a je to tvoj väzeň, prehráš a ustúpi ti o stupeň.",
+      "melichar": "Tento starší sa ťa bojí na červenej, tak ho smieš skúsiť zajať: stojí to [Cigareta] cigaretu a tú ti nikto nevráti. Jeho karta ide tebe do ruky a súper si za to pri stavbe šenku nechá jednu kartu do ruky, zadarmo. Vyhráš bitku a je to tvoj väzeň aj so súperovými špakmi za neho; prehráš a jeho strach z teba spadne na nulu.",
       "zvyraznit": ["linia-starsich"]
     },
     {
@@ -235,14 +235,14 @@
       "poradie": 17,
       "uroven": "B",
       "spustac": {
-        "kedy": "prvý vydesený starší v partii (marker na krajnej červenej)",
-        "podmienka": "marker staršieho prvýkrát na indexe 0 alebo 6 (v6: stupnica 7 polí)",
+        "kedy": "prvý vydesený starší v partii (niečí strach na červenej, v11)",
+        "podmienka": "vydesil(starší, 0) || vydesil(starší, 1) — strach hráča 3",
         "variant": "moje, keď sa starší bojí mňa, inak superove",
-        "jadro": ["packages/core/src/engine.ts:3711 prahVydesenia", "packages/core/src/engine.ts:286 ohlaseneVydesenie", "docs/PRAVIDLA.md §1 Podmienky konca"]
+        "jadro": ["packages/core/src/elders.ts vydesil", "packages/core/src/engine.ts cervenychHraca", "docs/PRAVIDLA.md §10 Výhra strachom (krok 4c)"]
       },
       "melichar": {
-        "moje": "Vydesený starší! Bojí sa ťa na trojke, takého smieš pred šenkom skúsiť zajať. Traja väzni a vyhral si hneď. Len.",
-        "superove": "Súper ti vydesil staršieho. Bojí sa ho na trojke, a tak ho súper smie pred šenkom skúsiť zajať. Traja väzni a vyhral. Ale to sa určite nestane. Však?"
+        "moje": "Vydesený starší! Bojí sa ťa na červenej, takého smieš pred šenkom skúsiť zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral si hneď. Len.",
+        "superove": "Súper ti vydesil staršieho. Bojí sa ho na červenej, a tak ho súper smie pred šenkom skúsiť zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral. Ale to sa určite nestane. Však?"
       },
       "zvyraznit": ["linia-starsich"]
     },
