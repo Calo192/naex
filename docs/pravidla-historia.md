@@ -2809,3 +2809,73 @@ zmenil zámerne. Staré znenia (v11):
 >
 > Slovník: | Vzbura | Odpor + Odpor na spoji: obe karty vyhodnotia svoje inak neaktívne akcie ako
 > aktívne; Nástroj nie, lokalita len hranu (§6) |
+
+## v11.2 — Schopnosť väzňa namiesto Kšeftu väzňa (Michal 2026-11-02, Zrejúca)
+
+Michal 2026-11-02: Kšeft väzňa (za vypitý poldeci, raz za Pitku) sa ruší; každý zajatý starší
+má schopnosť, ktorú hráč, ktorý ho má v pivnici, smie aktivovať raz za hru, kedy chce (aj vo
+finále). Po použití je minutá, starší ostáva v pivnici a ďalej sa ráta ako vydesený. Krádež
+špakov pri zajatí ostáva. Podklad docs/napady/bonus-zajatia.html, sada B — prestavená na „raz
+za hru“, znenia doslova od Michala (§10). Odtlačok hry sa zmenil zámerne. Staré znenia (v11.1):
+
+§7 Kšeft väzňa:
+
+> ### Kšeft väzňa (v9)
+>
+> Tretí druh Kšeftu (Michal 2026-10-30). Text karty staršieho začína „Väzeň — Kšeft:“
+> (spúšťač `Väzeň`) a platí **výhradne držiteľovi väzňa** (§10) — karta staršieho na
+> ukazovateli, v ruke ani v línii efekt nemá.
+>
+> - **Cena:** vypiť **1 plný poldeci zo svojej zásoby** (nie ten, čo leží na skrytom
+>   NA EX): poldeci sa otočí na vypitý, je to **nerest**, **+1 poškodenie pečene** v tejto
+>   Pitke a v ďalšom Zhromaždení je limit o 1 nižší. Bez plného poldeci Kšeft nie je.
+>   Kostol (nikto nevypije) ho nepustí.
+> - **Kedy:** v Pitke, kým ju hráč neskončil, aj keď súper už skončil; **každý väzeň
+>   raz za Pitku** (dva väzni = dva Kšefty za dva poldeci). Kšeft nie je ťah.
+> - **Nie naprázdno:** Kšeft, ktorý nemá čo urobiť, sa neponúkne (Hrobár pri súperovej
+>   prázdnej ruke, Autobusár pri prázdnom šenku, Poštárka bez priznaného Dlhu,
+>   Vychovávateľka na Krčme, Starosta a Farár, keď v tomto kole už platia). Veterinár
+>   bez Cirhózy v ruke či medzi priznanými ponúkne len časť o pečeni.
+> - **Trvanie:** okamžité (Hrobár, Autobusár, Poštárka, Veterinárova Cirhóza), „v tejto
+>   Pitke“ (Krčmárka, Vychovávateľka, Veterinárova pečeň), „do konca kola“ (Farár,
+>   Starosta — od vyhodnotenia tejto Pitky až po bitku, O1).
+>
+> **Poradie Kšeft vs. NA EX.** Kšeft sa vyhodnotí hneď a verejne; NA EX je skryté do
+> odkrytia. **Krčmárka:** od spustenia súper v tejto Pitke NA EX nedá (server zámer
+> odmietne); už dané skryté NA EX sa mu **vráti** — poldeci ostane plný, bez neresti
+> a pečene; prezradí sa tým len to, že NA EX mal, nie kam (O4). Na Krčme mu povinnosť
+> NA EX zruší; Vínna pivnica: zákaz platí na obe. **Vychovávateľka:** verejná hrozba —
+> pri odkrytí NA EX v tejto Pitke, ak súper dal aspoň jedno NA EX, má držiteľ v bitke
+> **+3 tuhé** („Petelica navyše“, jedna na Kšeft; Viera ju tlmí ako každé tuhé; nie je to
+> akcia, Silná žena ani NA EX ju nemenia, O6). **Farár, Starosta** platia do konca kola
+> a NA EX sa na ne skladá ako vždy: Viera zrušená NA EX nie je aktívna (Farár z nej
+> Hazard nespraví), NA EX na kartu pri lokalite hranu nemení (×2 ostáva).
+
+§16 Starší:
+
+> | **Starší** | Karta staršieho (boss) má v línii **len akcie**; efekt (Väzeň — Kšeft) platí výhradne držiteľovi väzňa (§7, §10). |
+> | Veterinár | Väzeň — Kšeft: Za vypitý poldeci spáľ 1 Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta poškodenie pečene. Nie z odhadzovacieho balíčka (O3). Pečeň držiteľa v tejto Pitke = 0 vrátane ceny Kšeftu, vlastného NA EX a súperovho NA EX na jeho karty. Bez Cirhózy platí len časť o pečeni. |
+> | Autobusár | Väzeň — Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku. Podľa voľby, do ruky; šenok sa nedopĺňa; pri prázdnom šenku sa neponúkne. |
+> | Starosta | Väzeň — Kšeft: Za vypitý poldeci sú do konca kola všetky aktívne akcie hrán lokality posilnené. Obe hrany, aj tá, ktorú prevahou dostáva súper (R8 A); ×2 sa násobí s ďalšími násobkami; do konca kola (O1) — poškodenie z hrán sa ráta v bitke. |
+> | Farár | Väzeň — Kšeft: Za vypitý poldeci sa do konca kola každá súperova aktívna Viera ráta ako posilnený Hazard. Od vyhodnotenia tejto Pitky do bitky: 2 zadĺženia za Vieru v každom vyhodnotení Pitky (O2), v bitke Viera chýba (neruší Povery, netlmí tuhé). Viera z priazne Veriaceho nie je akcia — ostáva. |
+> | Poštárka | Väzeň — Kšeft: Za vypitý poldeci prepíš 1 svoj priznaný Dlh na súpera. Bez priznaného Dlhu sa neponúkne. |
+> | Hrobár | Väzeň — Kšeft: Za vypitý poldeci súper odhodí náhodnú kartu z ruky. Náhoda zo seedovaného generátora; karta ide do súperovho odhadzovacieho balíčka; pri prázdnej ruke sa neponúkne. |
+> | Vychovávateľka | Väzeň — Kšeft: Za vypitý poldeci dostane súper v bitke Petelicu, ak v tejto Pitke dá NA EX. Pri odkrytí: aspoň jedno súperovo NA EX → držiteľ +3 tuhé v bitke kola (jedna Petelica na Kšeft, O6); na Krčme sa neponúkne; verejná hrozba. |
+> | Krčmárka | Väzeň — Kšeft: Za vypitý poldeci súper v tejto Pitke NA EX nedá. Už dané skryté NA EX sa mu vráti (O4); na Krčme mu povinnosť NA EX zruší; Vínna pivnica: zákaz platí na obe. |
+
+§10 Výklady Developera ku Kšeftu väzňa:
+
+> - Kšeft väzňa **Farár**: „posilnený Hazard“ sa násobí s ostatnými násobkami
+>   (posilnená či NA EX-om zdvojená Viera = 2 × 2 zadĺženia), ako pri Starostovi.
+> - Kšeft väzňa sa na **Kostole** (nikto nevypije) nedá — cena je vypiť poldeci.
+> - Kšefty **Farár a Starosta** sa v kole, v ktorom už platia, znova neponúknu (boli by
+>   naprázdno); Farár sa ponúkne aj súperovi bez Viery (zadanie).
+> - **Krčmárka** sa neponúkne, keď súper nemá plný poldeci (verejné — nič neprezradí);
+>   **Vychovávateľka** rovnako a navyše nie na Krčme (zadanie).
+
+> - **Veterinár:** kto má Cirhózu v ruke či medzi priznanými, jednu musí spáliť (voľba
+>   ktorej je jeho); len časť o pečeni sa ponúkne, keď takú nemá.
+> - **Kšeft Hrobára:** súper sa meno odhodenej karty dozvie, ostatným ide len „náhodná
+>   karta“ — odhadzovací balíček je verejný, preto ju súper vidí aj tam.
+
+§8 Nerest: | Kšeft väzňa (platí sa vypitým plným poldeci, §7) | 1 |

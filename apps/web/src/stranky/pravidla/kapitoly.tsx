@@ -279,7 +279,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </ul>
         <p className="zvyraznene">
           <strong>Vyhráš bitku</strong> — starší je tvoj <P k="vazen">väzeň</P>: leží medzi tvojimi priznanými kartami, zo stupnice
-          zmizne (priazeň ani strach už nedáva) a ty máš jeho <a href="#pitka-kseft">Kšeft väzňa</a>. <strong>Tretí väzeň = výhra
+          zmizne (priazeň ani strach už nedáva) a ty máš jeho <a href="#schopnost-vazna">schopnosť</a>. <strong>Tretí väzeň = výhra
           hneď.</strong> <strong>Prehráš alebo sekera</strong> — starší sa vráti a marker ustúpi o stupeň k stredu (nezaplatená
           červená prepadne). Po finále dajú väzni špaky podľa poradia zajatia v celej partii: prvý 8, druhý 6, tretí 4, štvrtý 2 —
           nech ho zajal ktokoľvek.
@@ -450,22 +450,22 @@ export const KAPITOLY: readonly Kapitola[] = [
           Na začiatku každého kola sa ti jeden vypitý poldeci doleje sám. Čo ti po finále ostane, sa vykúpi: plný poldeci
           1 špak, každých 5 cigariet 1 špak.
         </p>
-        <H3 id="pitka-kseft">Kšeft väzňa</H3>
+        <H3 id="schopnost-vazna">Schopnosť väzňa</H3>
         <p>
-          Kto má <P k="vazen">väzňa</P>, smie v Pitke, kým ju neskončí, spustiť jeho <strong>Kšeft</strong> — za{" "}
-          <strong>vypitý plný poldeci</strong> zo svojej zásoby (nerest, +1 pečeň, v ďalšom Zhromaždení limit o 1 nižší). Každý
-          väzeň raz za Pitku. Karta staršieho v ruke či v línii efekt nemá — len väzeň. Kšeft, ktorý by nič neurobil, hra
-          neponúkne.
+          Kto má <P k="vazen">väzňa</P>, smie jeho <strong>schopnosť</strong> použiť <strong>raz za hru, kedy chce</strong> — vo
+          svojom ťahu pri braní zo šenku, v Zhromaždení alebo v Pitke (aj vo finále). Nič nestojí. Potom je minutá a väzeň ostáva
+          v pivnici (ráta sa ďalej ako vydesený). Karta staršieho v ruke či v línii schopnosť nemá. Schopnosť, ktorá by nič
+          neurobila, hra neponúkne.
         </p>
         <ul>
-          <li><strong>Hrobár</strong> — súper odhodí náhodnú kartu z ruky.</li>
-          <li><strong>Farár</strong> — do konca kola je každá súperova aktívna Viera posilnený Hazard; v bitke mu Viera chýba.</li>
-          <li><strong>Autobusár</strong> — vezmi si 1 kartu zo šenku.</li>
-          <li><strong>Starosta</strong> — do konca kola sú všetky aktívne akcie hrán lokality posilnené (aj súperove).</li>
-          <li><strong>Poštárka</strong> — 1 tvoj priznaný Dlh prejde na súpera.</li>
-          <li><strong>Krčmárka</strong> — súper v tejto Pitke NA EX nedá; už dané skryté NA EX sa mu vráti.</li>
-          <li><strong>Vychovávateľka</strong> — ak súper v tejto Pitke dá NA EX, máš v bitke Petelicu navyše (+3 tuhé); na Krčme nie.</li>
-          <li><strong>Veterinár</strong> — spáľ Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta pečeň.</li>
+          <li><strong>Poštárka</strong> — Dostaneš 4 cigarety.</li>
+          <li><strong>Krčmárka</strong> — Nový plný poldeci.</li>
+          <li><strong>Farár</strong> — Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý.</li>
+          <li><strong>Starosta</strong> — Aktívne akcie lokality sa v tejto bitke považujú za posilnené (akcie Pitky nie).</li>
+          <li><strong>Veterinár</strong> — Odhoď všetky priznané Cirhózy a Cirhózy na ruke.</li>
+          <li><strong>Vychovávateľka</strong> — Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet.</li>
+          <li><strong>Autobusár</strong> — Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.</li>
+          <li><strong>Hrobár</strong> — Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka.</li>
         </ul>
       </>
     ),
@@ -501,7 +501,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
         <p>
           <P k="nerest">Nerest</P> je len to, čo vypiješ a vyfajčíš: <strong>Vypiť</strong> v Zhromaždení 1, každé <strong>NA EX 2</strong>{" "}
-          (je to väčšia dávka), každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2) a Kšeft väzňa 1 (vypitý poldeci).
+          (je to väčšia dávka) a každá vyfajčená cigareta 1 (druhé fajčenie v Pitke za 2 cigarety teda 2).
           Doliatie, barter, šenok, Záverečná, Dedičstvo ani cigarety za Kšefty lokalít nerest nie sú.
         </p>
         <p>
@@ -743,7 +743,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             <P k="vydesenie">Vydesený</P> starší (stupeň 3) sa dá pred stavbou šenku skúsiť <a href="#patronat">zajať</a>. Tretí{" "}
             <P k="vazen">väzeň</P> vyhráva hru. Karta staršieho je <strong>boss</strong>: 6 akcií a jedna neresť; v línii má len
-            akcie, jeho efekt je <a href="#pitka-kseft">Kšeft väzňa</a>.
+            akcie, jeho <a href="#schopnost-vazna">schopnosť</a> má len ten, kto ho drží ako väzňa.
           </li>
         </ul>
         <p className="tlmene">
