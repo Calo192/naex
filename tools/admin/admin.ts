@@ -78,6 +78,7 @@
 //   roadmapa [stlpec] [--json]    poradie položiek; stĺpce prijimac | teraz | dalej | potom | neskor | hotove
 //                                 Developer berie schválené návrhy v poradí stĺpca Teraz zhora
 //   roadmapa-pridaj <subor.json>  nová položka do Prijímača ({nazov, kratko, preco, hotovo, oblast, narocnost, zdroj})
+//   roadmapa-uprav <id> <subor.json>  zmení obsah položky (len uvedené polia; stĺpec ani poradie nie)
 // Novinky (stránka /novinky, Michal 2026-10-22) — píšu sa až po nasadení na živý web
 //   novinky [--json]              všetky novinky, najnovšie hore
 //   novinka-pridaj <subor.json> [--vydanie "Pravidlá v6"]   nová novinka alebo pole noviniek
@@ -1119,6 +1120,17 @@ async function main(): Promise<void> {
       const telo = { ...(JSON.parse(readFileSync(subor, "utf8")) as Record<string, unknown>), stlpec: "prijimac" };
       const r = await api<{ id: number }>("POST", "/roadmapa", telo);
       console.log(`Položka #${r.id} je v Prijímači — ${url}/vyvoj/roadmapa`);
+      break;
+    }
+
+    case "roadmapa-uprav": {
+      const id = Number(arg[0]);
+      const subor = arg[1];
+      if (!Number.isInteger(id) || subor === undefined || !existsSync(subor)) throw new Error("Použitie: roadmapa-uprav <id> <zmeny.json> (len polia, ktoré meníš)");
+      // Stĺpec a poradie sa tu nemenia — presun robí Michal na webe.
+      const { stlpec: _stlpec, poradie: _poradie, ...zmeny } = JSON.parse(readFileSync(subor, "utf8")) as Record<string, unknown>;
+      await api<{ ok: boolean }>("PATCH", `/roadmapa/${id}`, zmeny);
+      console.log(`Položka #${id} upravená — ${url}/vyvoj/roadmapa`);
       break;
     }
 
