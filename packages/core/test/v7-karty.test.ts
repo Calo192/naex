@@ -62,8 +62,8 @@ function vPitke(lok: string, strany: GameState["strany"], seed = 7): GameState {
 }
 
 describe("sada v7 — dáta", () => {
-  it("93 kariet (sada v51 bez Presbitera a Kohúta; v50 + Absťák, Opatrovateľka), 19 lokalít po úrovniach 5 / 6 / 5 / 3, akcia Pakt", () => {
-    expect(data.cards.size).toBe(93);
+  it("96 kariet (sada v51 bez Presbitera a Kohúta, + Poľovník, Predavačka a Vedúcko 2026-11-02), 19 lokalít po úrovniach 5 / 6 / 5 / 3, akcia Pakt", () => {
+    expect(data.cards.size).toBe(96);
     const urovne = [1, 2, 3, 4].map((u) => data.lokality.filter((l) => urovenLokality(data, l.id) === u).length);
     expect(urovne).toEqual([5, 6, 5, 3]);
     expect((cardsJson as { actions: string[] }).actions).toContain("Pakt");
@@ -71,16 +71,22 @@ describe("sada v7 — dáta", () => {
     for (const l of data.lokality) expect(cardVariants(l).total, l.id).toBe(1);
   });
 
-  it("hráčske karty majú 4 až 8 variantov, náradie najviac 2 (sloty.json, Michal 2026-10-30)", () => {
+  it("hráčske karty majú 1 až 8 variantov, náradie najviac 2, Bzdocha 2 (sloty.json, Michal 2026-10-30; pozície Odporov B+ 2026-11-02)", () => {
     for (const def of data.cards.values()) {
       if (["Lokalita", "Starešina", "Kliatba"].some((t) => def.tags.includes(t as never))) continue;
       const v = cardVariants(def).total;
+      // Bzdocha má od sady v8 (Michal 2026-11-02) len Víziu a Poveru vľavo — dve rozloženia.
+      if (def.id === "klebetnica") {
+        expect(v, def.id).toBe(2);
+        continue;
+      }
       if (def.tags.includes("Nástroj")) {
         expect(v, def.id).toBeGreaterThanOrEqual(1);
         expect(v, def.id).toBeLessThanOrEqual(2);
         continue;
       }
-      expect(v, def.id).toBeGreaterThanOrEqual(4);
+      // B+ (Michal 2026-11-02): pevné pozície Odporu, Posilnenia a zlých akcií za cenu menej variantov.
+      expect(v, def.id).toBeGreaterThanOrEqual(1);
       expect(v, def.id).toBeLessThanOrEqual(8);
     }
   });

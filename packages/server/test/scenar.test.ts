@@ -64,8 +64,8 @@ describe("scenár zajatia — rozdanie", () => {
 
 describe("scenár zajatia — tok v jadre (§10)", () => {
   const vysledky = new Set<string>();
-  // Rozdanie 11: človek bitku vyhrá (väzeň), rozdanie 12: nie (ústup na oranžovú) — oba výsledky.
-  it.each([11, 12])("rozdanie %i: pred stavbou šenku sa pokus ponúkne, boss ide pokúšajúcemu do ruky (v10.1) a po bitke je väzeň alebo ústup", (rozdanie) => {
+  // Rozdanie 11: človek bitku vyhrá (väzeň), rozdanie 13: nie (ústup na oranžovú) — oba výsledky (sada B+ 2026-11-02).
+  it.each([11, 13])("rozdanie %i: pred stavbou šenku sa pokus ponúkne, boss ide pokúšajúcemu do ruky (v10.1) a po bitke je väzeň alebo ústup", (rozdanie) => {
     const s0 = pouziScenar(setupGame(data, rozdanie), "zajatie", 0);
     const ciel = s0.starsi[0]!.elderId;
     // Krok zajatia, keď rozhoduje človek (hráč 1 = bot, jeho voľbu urobí bot).

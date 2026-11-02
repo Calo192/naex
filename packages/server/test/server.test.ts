@@ -240,8 +240,8 @@ describe("M12 — účty, profil a admin API", () => {
     expect((await api("/admin/obsah", { cookie })).status).toBe(403);
     expect((await api("/admin/obsah")).status).toBe(401);
     const sada = await api("/sada");
-    // Sada v51 bez Presbitera (v9.2, Kohút vyradený): 93 kariet.
-    expect((sada.telo?.karty as unknown[]).length).toBe(93);
+    // Sada v51 bez Presbitera (v9.2, Kohút vyradený) + Poľovník, Predavačka, Vedúcko (2026-11-02): 96 kariet.
+    expect((sada.telo?.karty as unknown[]).length).toBe(96);
     expect(sada.telo?.verzia).toBe(1);
     // Scorecardy z KartyAI sú v sade od prvého spustenia, ikony s významom v hre.
     expect((sada.telo?.bodovacie as unknown[]).length).toBe(8);
