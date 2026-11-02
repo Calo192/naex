@@ -132,5 +132,6 @@ describe("príbeh a účel karty — admin API", () => {
     } finally {
       await zmaz();
     }
-  });
+    // Celý server so zverejnením a exportom — pod záťažou celej sady predvolených 5 s nestačí.
+  }, 30_000);
 });
