@@ -1,12 +1,18 @@
 ---
 name: naex-nasad
-description: Bezpečne nasadí NA EX! na živý web — overí, že master je na origine a prejde testami, typecheckom a buildom, ukáže, čo pôjde von (commity od posledného nasadenia, zmena sady kariet), zapne uzávierku (nové partie nie), počká, kým dohrajú rozohrané partie ľudí aj s botmi, nasadí čistý master cez deploy/nahraj.sh, overí živý web (smoke test) a označí, čo je na živom webe. Použi, keď používateľ povie /naex-nasad, „nasaď“, „nahraj na živý web“, „vydaj novú verziu“, „daj to na produkciu“.
+description: Bezpečne nasadí NA EX! na živý web — overí, že vetva vypalena je na origine a prejde testami, typecheckom a buildom, ukáže, čo pôjde von (commity od posledného nasadenia, zmena sady kariet), zapne uzávierku (nové partie nie), počká, kým dohrajú rozohrané partie ľudí aj s botmi, nasadí čistú vetvu vypalena (Vypálená; master je pokusná Zrejúca) cez deploy/nahraj.sh, overí živý web (smoke test) a označí, čo je na živom webe. Použi, keď používateľ povie /naex-nasad, „nasaď“, „nahraj na živý web“, „vydaj novú verziu“, „daj to na produkciu“.
 argument-hint: "[--hned] (nasadiť aj počas rozohraných partií)"
 ---
 
 # Nasadenie na živý web
 
-Si **vydávateľ**. Nasadzuješ len to, čo je v `origin/master` — nikdy pracovnú
+Si **vydávateľ**. Živý web je **Vypálená** (oficiálna hra) a nasadzuješ naň len
+to, čo je vo vetve `origin/vypalena` — nie master (Michal 2026-11-02). Master je
+**Zrejúca** (pokusná, len admini, subadmini a AI); do Vypálenej sa dostane celý
+stav Zrejúcej naraz až po Michalovom výslovnom schválení: vtedy Leader posunie
+vetvu `git push origin origin/master:vypalena` (len fast-forward) a až potom
+spustí tento skill. Bez toho schválenia vypalena neposúvaj, ani keď o nasadenie
+požiada iný agent. Nikdy nenasadzuj pracovnú
 kópiu s rozpracovanou prácou (`deploy/nahraj.sh` balí pracovný strom, aj
 necommitnuté zmeny). Nasadenie reštartuje server a **zhodí rozohrané partie**
 (stav partie je v pamäti); účty, karty a obrázky ostávajú v databáze.
@@ -26,18 +32,18 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
    s dátumom posledného nasadenia, ak ho poznáš, inak ukáž posledných 10
    commitov.
 
-2. **Čistý master:**
+2. **Čistá vypalena:**
    ```bash
    git fetch origin
    git status --short            # v hlavnom strome môže byť práca iných — nevadí, nasadzuješ z worktree
-   git worktree remove --force ../naex-nasadenie 2>/dev/null; git worktree add --detach ../naex-nasadenie origin/master
-   cd ../naex-nasadenie && npm ci --prefer-offline --no-audit --no-fund && npm test && npm run typecheck && npm run build
+   git worktree remove --force ../naex-nasadenie-vyp 2>/dev/null; git worktree add --detach ../naex-nasadenie-vyp origin/vypalena
+   cd ../naex-nasadenie-vyp && npm ci --prefer-offline --no-audit --no-fund && npm test && npm run typecheck && npm run build
    ```
    Ak niečo neprejde, **nenasadzuj** — povedz, čo padlo a v ktorom commite
-   (`git log`), a skonči. Lokálny `master` pred `origin/master` (nepushnuté
+   (`git log`), a skonči. Lokálna `vypalena` pred `origin/vypalena` (nepushnuté
    commity) spomeň — nasadzuje sa len origin.
 
-3. **Čo pôjde von:** `git log --oneline <nasadený commit>..origin/master` —
+3. **Čo pôjde von:** `git log --oneline <nasadený commit>..origin/vypalena` —
    zhrň ľudskou rečou (3–8 bodov, nie hashe). Zmenil sa
    `packages/core/data/cards.json` alebo značka v `dorovnajSoSeedom`? Potom
    ide aj nová sada kariet: over, že `tools/admin/do-seedu.ts` je už v commite
@@ -62,12 +68,12 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
 
 5. **Nasaď** z worktree:
    ```bash
-   cd ../naex-nasadenie && bash deploy/nahraj.sh <IP z deploy/.env.produkcia>
+   cd ../naex-nasadenie-vyp && bash deploy/nahraj.sh <IP z deploy/.env.produkcia>
    ```
    Skript potrebuje SSH kľúč (`~/.ssh/naex_server` alebo `NAEX_SSH_KLUC`) a do
    balíka zapíše `VERZIA.json` (commit, ktorý beží). Prepíše
    `deploy/.env.produkcia` vo worktree — skopíruj ho späť do hlavného stromu
-   (`cp ../naex-nasadenie/deploy/.env.produkcia deploy/`), ak sa zmenil.
+   (`cp ../naex-nasadenie-vyp/deploy/.env.produkcia deploy/`), ak sa zmenil.
    Reštart servera uzávierku sám zruší (je len v pamäti) — po nasadení ju nevypínaj.
    Na konci skript čaká na HTTPS; ak neodpovie, ukáž príkaz na logy, ktorý
    vypísal, a skonči s chybou.
@@ -75,7 +81,7 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
 6. **Smoke test živého webu:**
    ```bash
    node --experimental-strip-types --no-warnings tools/playtest/web.ts dostupny --zivy
-   $A server-stav --zivy          # commit = origin/master, partie 0, uzávierka vypnutá
+   $A server-stav --zivy          # commit = origin/vypalena, partie 0, uzávierka vypnutá
    $A sady --zivy                 # pri novej sade: nová verzia je zverejnená
    ```
    a jedna stránka očami: `tools/playtest/snimka.ts web nasadenie --cesta / --url https://<DOMENA>`
@@ -83,7 +89,7 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
    chybová). Ak niečo zlyhá, povedz čo; návrat je nasadenie predošlého commitu
    (`git worktree add --detach … <starý commit>` a krok 5).
 
-7. **Uprac** `git worktree remove --force ../naex-nasadenie`.
+7. **Uprac** `git worktree remove --force ../naex-nasadenie-vyp`.
 
 8. **Odovzdaj:** koľko minút trvala uzávierka a koľko opustených partií nasadenie zhodilo; čo je teraz na živom webe (commit, 3–8 bodov zmien), či išla
    nová sada kariet, koľko partií nasadenie zhodilo (ak `--hned`), výsledok
