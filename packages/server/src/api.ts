@@ -1102,6 +1102,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       return ok({ verzia: sada.verzia, kariet: sada.karty.length });
     }
     if (sub === "GET /sady") return ok({ sady: ctx.obsah.historiaSad() });
+    if (sub === "GET /sady/mena") return ok({ mena: ctx.obsah.menaKarietVSadach() });
     // Návrat na staršiu sadu = jej opätovné zverejnenie ako nová verzia.
     if (metoda === "POST" && casti[2] === "sady" && casti[4] === "obnovit" && casti.length === 5) {
       const verzia = Number(casti[3]);
@@ -1199,6 +1200,29 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         ctx.navrhy.zmaz(ja2, Number(id));
         return ok({ ok: true });
       }
+    }
+    // Upratanie pri vypálení Zrejúcej (skill vypalit, Michal 2026-11-02): mäkké skrytie
+    // zastaraných príspevkov AI účtov a archív reportov a návrhov — nič sa nemaže.
+    if (metoda === "POST" && casti.length === 5 && /^\d+$/.test(id) && (casti[4] === "skry" || casti[4] === "vrat")) {
+      const druh = casti[2] === "nazory" ? "nazor" : casti[2] === "komentare" ? "komentar" : null;
+      if (druh !== null) {
+        if (casti[4] === "skry") ctx.nazory.skry(ja2, druh, Number(id), (await citajJson(req)).dovod, teraz);
+        else ctx.nazory.vrat(ja2, druh, Number(id), teraz);
+        return ok({ ok: true });
+      }
+    }
+    if (sub === "GET /nazory-archiv") return ok({ prispevky: ctx.nazory.archiv(ja2) });
+    if (metoda === "POST" && casti[2] === "navrhy" && casti.length === 5 && /^\d+$/.test(id) && (casti[4] === "archivuj" || casti[4] === "vrat")) {
+      if (casti[4] === "archivuj") ctx.navrhy.archivuj(ja2, Number(id), (await citajJson(req)).dovod, teraz);
+      else ctx.navrhy.vratZArchivu(ja2, Number(id), teraz);
+      return ok({ ok: true });
+    }
+    if (sub === "POST /playtesty/archivuj" || sub === "POST /playtesty/vrat") {
+      const b = await citajJson(req);
+      if (typeof b.subor !== "string") throw new ChybaVstupu("Chýba súbor reportu.");
+      if (sub === "POST /playtesty/archivuj") ctx.playtesty.archivuj(ja2, b.subor, b.dovod, teraz);
+      else ctx.playtesty.vratZArchivu(ja2, b.subor, teraz);
+      return ok({ ok: true });
     }
     if (sub === "GET /stav-servera") return ok(ctx.stavServera());
     if (sub === "PUT /uzavierka") {

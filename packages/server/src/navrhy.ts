@@ -11,6 +11,8 @@
 import type { Db } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
+import { transakcia } from "./db.ts";
+import { overDovodSkrytia, zapisSkrytie } from "./skrytie.ts";
 
 const STAVY_NAVRHU = ["nove", "implementovat", "odlozene", "zamietnute", "rozpracovane", "implementovane", "overene", "nezabralo"] as const;
 export type StavNavrhu = (typeof STAVY_NAVRHU)[number];
@@ -77,6 +79,8 @@ export interface Navrh extends ObsahNavrhu {
   /** Čo ukázal playtest po implementácii (stav overené / nezabralo). */
   readonly verdikt: string;
   readonly vytvoreny: number;
+  /** Archivovaný návrh (zaniknutá karta či mechanika, skill vypalit); null = v zozname. */
+  readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 
 const MAX_TEXT = 6000;
@@ -149,15 +153,15 @@ export class Navrhy {
 
   /** Koľko návrhov čaká na rozhodnutie človeka (nové a nezabraté) — počet pri Playteste v menu Správa. */
   naRozhodnutie(): number {
-    const r = this.db.prepare("SELECT COUNT(*) AS n FROM navrhy WHERE stav IN ('nove', 'nezabralo')").get() as { n: number };
+    const r = this.db.prepare("SELECT COUNT(*) AS n FROM navrhy WHERE stav IN ('nove', 'nezabralo') AND archivovany IS NULL").get() as { n: number };
     return Number(r.n);
   }
 
   zoznam(): Navrh[] {
     const riadky = this.db
       .prepare(
-        `SELECT n.*, u.meno AS rozhodol_meno, u.ai AS rozhodol_ai
-         FROM navrhy n LEFT JOIN pouzivatelia u ON u.id = n.rozhodol
+        `SELECT n.*, u.meno AS rozhodol_meno, u.ai AS rozhodol_ai, a.meno AS archivoval_meno
+         FROM navrhy n LEFT JOIN pouzivatelia u ON u.id = n.rozhodol LEFT JOIN pouzivatelia a ON a.id = n.archivoval
          ORDER BY n.davka DESC, n.poradie`,
       )
       .all() as Record<string, unknown>[];
@@ -176,7 +180,41 @@ export class Navrhy {
       vysledok: String(r.vysledok),
       verdikt: String(r.verdikt),
       vytvoreny: Number(r.vytvoreny),
+      archiv:
+        r.archivovany === null
+          ? null
+          : { kedy: Number(r.archivovany), dovod: String(r.archiv_dovod), kto: r.archivoval_meno === null ? null : String(r.archivoval_meno) },
     }));
+  }
+
+  /**
+   * Archív návrhov o zaniknutých kartách a mechanikách (skill vypalit, Michal
+   * 2026-11-02): návrh ostáva so stavom aj rozhodnutím, sekcia Playtest ho len
+   * štandardne nezobrazí a nečaká na rozhodnutie.
+   */
+  archivuj(ja: Pouzivatel, id: number, dovod: unknown, teraz: number): void {
+    if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Návrhy archivuje len admin alebo subadmin.", 403);
+    const d = overDovodSkrytia(dovod);
+    const r = this.db.prepare("SELECT davka, kluc, data, stav, archivovany FROM navrhy WHERE id = ?").get(id) as
+      | { davka: string; kluc: string; data: string; stav: string; archivovany: number | null }
+      | undefined;
+    if (r === undefined) throw new ChybaVstupu("Taký návrh neexistuje.", 404);
+    if (r.archivovany !== null) throw new ChybaVstupu(`Návrh #${id} už je v archíve.`);
+    transakcia(this.db, () => {
+      this.db.prepare("UPDATE navrhy SET archivovany = ?, archiv_dovod = ?, archivoval = ? WHERE id = ?").run(teraz, d, ja.id, id);
+      zapisSkrytie(this.db, { druh: "navrh", kluc: id, akcia: "skry", dovod: d, kto: ja.id, kedy: teraz, zaloha: { davka: r.davka, kluc: r.kluc, stav: r.stav, data: JSON.parse(r.data) as unknown } });
+    });
+  }
+
+  vratZArchivu(ja: Pouzivatel, id: number, teraz: number): void {
+    if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Návrhy z archívu vracia len admin alebo subadmin.", 403);
+    const r = this.db.prepare("SELECT archivovany, archiv_dovod FROM navrhy WHERE id = ?").get(id) as { archivovany: number | null; archiv_dovod: string } | undefined;
+    if (r === undefined) throw new ChybaVstupu("Taký návrh neexistuje.", 404);
+    if (r.archivovany === null) throw new ChybaVstupu(`Návrh #${id} nie je v archíve.`);
+    transakcia(this.db, () => {
+      this.db.prepare("UPDATE navrhy SET archivovany = NULL, archiv_dovod = '', archivoval = NULL WHERE id = ?").run(id);
+      zapisSkrytie(this.db, { druh: "navrh", kluc: id, akcia: "vrat", dovod: r.archiv_dovod, kto: ja.id, kedy: teraz });
+    });
   }
 
   /**

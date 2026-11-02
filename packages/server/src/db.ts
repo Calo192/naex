@@ -131,14 +131,20 @@ CREATE TABLE IF NOT EXISTS nazory (
   upraveny INTEGER,
   nadpis TEXT NOT NULL DEFAULT '',
   dovod TEXT NOT NULL DEFAULT '',
-  novinka INTEGER REFERENCES novinky(id) ON DELETE SET NULL
+  novinka INTEGER REFERENCES novinky(id) ON DELETE SET NULL,
+  skryty INTEGER,
+  skryty_dovod TEXT NOT NULL DEFAULT '',
+  skryl INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS nazory_komentare (
   id INTEGER PRIMARY KEY,
   nazor INTEGER NOT NULL REFERENCES nazory(id) ON DELETE CASCADE,
   autor INTEGER NOT NULL REFERENCES pouzivatelia(id) ON DELETE CASCADE,
   text TEXT NOT NULL,
-  vytvoreny INTEGER NOT NULL
+  vytvoreny INTEGER NOT NULL,
+  skryty INTEGER,
+  skryty_dovod TEXT NOT NULL DEFAULT '',
+  skryl INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL
 );
 CREATE INDEX IF NOT EXISTS nazory_komentare_nazor ON nazory_komentare(nazor);
 CREATE TABLE IF NOT EXISTS cigarety_nazorov (
@@ -169,7 +175,32 @@ CREATE TABLE IF NOT EXISTS navrhy (
   -- Čo ukázal playtest po implementácii (stav overene / nezabralo).
   verdikt TEXT NOT NULL DEFAULT '',
   vytvoreny INTEGER NOT NULL,
+  archivovany INTEGER,
+  archiv_dovod TEXT NOT NULL DEFAULT '',
+  archivoval INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
   UNIQUE (davka, kluc)
+);
+
+-- Archivované reporty playtestov (skill vypalit, Michal 2026-11-02): súbor ostáva,
+-- sekcia Playtest ho len štandardne nezobrazí.
+CREATE TABLE IF NOT EXISTS playtesty_archiv (
+  subor TEXT PRIMARY KEY,
+  dovod TEXT NOT NULL,
+  kto INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
+  kedy INTEGER NOT NULL
+);
+
+-- Záznam skrytí a návratov (skill vypalit): kto, kedy, prečo a obsah v čase
+-- skrytia — záloha, keby sa skrytý obsah neskôr zmenil či zmazal.
+CREATE TABLE IF NOT EXISTS archiv_zaznamy (
+  id INTEGER PRIMARY KEY,
+  druh TEXT NOT NULL,
+  kluc TEXT NOT NULL,
+  akcia TEXT NOT NULL,
+  dovod TEXT NOT NULL DEFAULT '',
+  kto INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL,
+  kedy INTEGER NOT NULL,
+  zaloha TEXT NOT NULL DEFAULT ''
 );
 
 -- Známky hry podľa 12 kritérií playtestu (Michal 2026-10-21). Každá zmena je
@@ -405,7 +436,13 @@ function migruj(db: Db): void {
   // Obnova hesla musí nájsť jediný účet — ten istý e-mail, ani s inými veľkými písmenami, nesmú mať dva účty.
   db.exec("CREATE UNIQUE INDEX IF NOT EXISTS pouzivatelia_email ON pouzivatelia(email COLLATE NOCASE) WHERE email IS NOT NULL");
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
-  doplnStlpce(db, "navrhy", [["verdikt", "TEXT NOT NULL DEFAULT ''"]]);
+  doplnStlpce(db, "navrhy", [
+    ["verdikt", "TEXT NOT NULL DEFAULT ''"],
+    // Archív návrhov o zaniknutých kartách a mechanikách (skill vypalit, Michal 2026-11-02); NULL = v zozname.
+    ["archivovany", "INTEGER"],
+    ["archiv_dovod", "TEXT NOT NULL DEFAULT ''"],
+    ["archivoval", "INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL"],
+  ]);
   // Vydanie novinky (Michal 2026-10-27), napr. „Pravidlá v6“ — nadpis dňa v Novinkách; '' = len dátum.
   doplnStlpce(db, "novinky", [["vydanie", "TEXT NOT NULL DEFAULT ''"]]);
   doplnStlpce(db, "nazory", [
@@ -415,6 +452,14 @@ function migruj(db: Db): void {
     ["dovod", "TEXT NOT NULL DEFAULT ''"],
     ["novinka", "INTEGER REFERENCES novinky(id) ON DELETE SET NULL"],
   ]);
+  // Mäkké skrytie zastaraných príspevkov AI účtov (skill vypalit, Michal 2026-11-02); NULL = viditeľný.
+  for (const tabulka of ["nazory", "nazory_komentare"]) {
+    doplnStlpce(db, tabulka, [
+      ["skryty", "INTEGER"],
+      ["skryty_dovod", "TEXT NOT NULL DEFAULT ''"],
+      ["skryl", "INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL"],
+    ]);
+  }
 }
 
 function stlpceTabulky(db: Db, tabulka: string): Set<string> {

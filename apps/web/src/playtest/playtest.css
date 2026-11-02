@@ -232,3 +232,42 @@
     height: calc(100vh - 240px);
   }
 }
+
+/* Archív (skill vypalit): prepínač „aj archív“ a archivovaný návrh či report. */
+.playtest-archiv-prepinac {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--tlmeny);
+  cursor: pointer;
+}
+
+.navrh-archiv {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px dashed var(--okraj-svetly);
+  border-radius: 8px;
+  background: var(--plocha-2);
+  font-size: 0.9rem;
+}
+
+.navrh-archiv p {
+  margin: 0;
+  flex: 1 1 320px;
+}
+
+.playtest-archivovany {
+  opacity: 0.6;
+}
+
+.playtest-archivovany .znacka-archiv {
+  margin-left: 6px;
+  font-size: 0.75rem;
+  color: var(--slaby);
+}

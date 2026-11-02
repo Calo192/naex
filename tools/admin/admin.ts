@@ -51,11 +51,11 @@
 //   sady                          história zverejnených sád
 //   vrat <verzia> --potvrdene [--aj-navrhy]   zverejní staršiu sadu znova (návrat po neúspešnom rebalanse)
 // Spätná väzba a web
-//   nazory [kategoria]            spätná väzba hráčov
+//   nazory [kategoria]            spätná väzba hráčov (skryté nie); --archiv = skryté príspevky AI s dôvodom
 //   komentar <id-nazoru> <subor>  komentár k názoru (ako Admin (AI))
 //   stav <id-nazoru> <stav> [--novinka <id>] [--dovod "…"]   nove | prijate | planovane | hotove | zamietnute;
 //                                 pri hotove voliteľne novinka, v ktorej to je; pri zamietnute povinne jedna veta prečo
-//   playtesty                     reporty playtestov
+//   playtesty [--archiv]          reporty playtestov (archivované len s --archiv)
 //   pouzivatelia                  účty na webe (e-mail len pri prihlásení ako admin, subadmin ho nedostane)
 //   zluc-ucty <z-id> <do-id> [--potvrdene]   zlúči duplicitný účet do hlavného (reporty, názory, partie…) a duplikát
 //                                 zmaže; bez --potvrdene len vypíše, čo by sa stalo. Prihlasuje sa heslom admina z .env
@@ -65,11 +65,22 @@
 //   avatar <subor>                avatar účtu Admin (AI)
 // Playtest (sekcia Playtest na webe — reporty a návrhy, Michal 2026-10-21)
 //   report-nahraj <subor>…        nahrá report / rozbor / návrhy z docs/playtesty (aj obrázky v podpriečinku)
-//   navrhy [stav] [--json]        návrhy zlepšení; stav: nove | implementovat | odlozene | zamietnute | rozpracovane
+//   navrhy [stav] [--json] [--archiv]   návrhy zlepšení (archivované len s --archiv); stav: nove | implementovat | odlozene | zamietnute | rozpracovane
 //                                 | implementovane (čaká na overenie) | overene | nezabralo
 //   navrhy-nahraj <subor.json>    nahrá dávku návrhov od navrhára alebo z dizajnu (tvar v .claude/agents/naex-navrhar.md)
 //   navrh <id> <stav> [--vysledok "text"]   Developer: rozpracovane | implementovane (+ čo spravil, commit) | spat
 //                                 organizátor playtestu: overene | nezabralo (--vysledok = verdikt: čo playtest ukázal)
+// Upratanie pri vypálení Zrejúcej (skill vypalit, krok 7) — nič sa nemaže, každé skrytie má dôvod a záznam
+//   zastarane [--json]            kandidáti na skrytie: AI názory a komentáre, reporty, návrhy a Prijímač, ktoré menujú
+//                                 kartu, čo v rozpracovanej sade nie je, alebo zrušenú mechaniku (tools/admin/zastarane.json);
+//                                 len zoznam na kontrolu, sám nič neskryje; príspevky ľudí ukáže zvlášť (len odpovedať)
+//   nazor-skry <id> --dovod "…"   skryje názor AI účtu (aj s komentármi) — názor človeka server odmietne
+//   komentar-skry <id> --dovod "…"   skryje komentár AI účtu — komentár človeka server odmietne
+//   nazor-vrat <id> | komentar-vrat <id>   vráti skrytý príspevok na web
+//   playtest-archivuj <subor | turnus> --dovod "…"   report do archívu (turnus RRRRMMDD-HHMMSS = report, rozbor aj návrhy)
+//   playtest-vrat <subor | turnus>   vráti report z archívu
+//   navrh-archivuj <id> --dovod "…"  návrh do archívu (stav a rozhodnutie ostanú, nečaká na rozhodnutie)
+//   navrh-vrat <id>               vráti návrh z archívu
 // Server a prehľad
 //   server-stav [--json]          nasadená verzia (commit), rozohrané partie a uzávierka — pred nasadením (skill naex-nasad);
 //                                 s --zrejuca aj riadok „Zrejúca: bez zmien / N commitov, M kariet navyše“
@@ -82,6 +93,8 @@
 //                                 Developer berie schválené návrhy v poradí stĺpca Teraz zhora
 //   roadmapa-pridaj <subor.json>  nová položka do Prijímača ({nazov, kratko, preco, hotovo, oblast, narocnost, zdroj})
 //   roadmapa-uprav <id> <subor.json>  zmení obsah položky (len uvedené polia; stĺpec ani poradie nie)
+//   roadmapa-presun <id> <stlpec> [--poradie N] [--commit "…"]   presun do stĺpca na N-té miesto (bez --poradie na koniec);
+//                                 do hotove s --commit (commit, sada); presúva len pri vypálení (skill vypalit) či na pokyn Michala
 // Novinky (stránka /novinky, Michal 2026-10-22) — píšu sa až po nasadení na živý web
 //   novinky [--json]              všetky novinky, najnovšie hore
 //   novinka-pridaj <subor.json> [--vydanie "Pravidlá v6"]   nová novinka alebo pole noviniek
@@ -114,6 +127,8 @@ import { MODEL, REFERENCIE, STYL_JADRO, REFERENCIE_PASU, STYL_PASU, cestyReferen
 import type { PartiaTempa } from "./tempo.ts";
 import { prehladTempa } from "./tempo.ts";
 import { doplnNahladyCezChrome } from "./nahlady.ts";
+import type { KonfiguraciaZastaranych, Zmienka } from "./zastarane.ts";
+import { hladane, popisZmienok, prvaVeta, textZHtml, zaniknuteKarty, zmienky } from "./zastarane.ts";
 
 export const MENO_AGENTA = "Admin";
 export const PRACOVNY = "admin-agent";
@@ -338,9 +353,122 @@ function suboryZmienok(): string[] {
 
 const bezDiakritiky = (s: string): string => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
+// ---- upratanie pri vypálení (skill vypalit, krok 7) -------------------------------
+
+/** Archív položky tak, ako ho vracia server (návrh, report). */
+interface ArchivCli {
+  readonly kedy: number;
+  readonly dovod: string;
+  readonly kto: string | null;
+}
+
+const popisArchivu = (a: ArchivCli): string => `skryl ${a.kto ?? "?"} ${new Date(a.kedy).toLocaleString("sk-SK")}: ${a.dovod}`;
+
+type Api = <T>(metoda: string, cesta: string, telo?: unknown, typ?: string) => Promise<T>;
+
+interface Kandidat {
+  readonly druh: "nazor" | "komentar" | "report" | "navrh" | "prijimac";
+  /** Id pre príkaz skrytia (pri reporte názov súboru). */
+  readonly id: string;
+  readonly text: string;
+  readonly zmienky: readonly Zmienka[];
+  /** Príspevok človeka — neskrýva sa, len sa naň odpovedá (Admin (AI)). */
+  readonly clovek?: boolean;
+  readonly stav?: string;
+}
+
+const PRIKAZ_SKRYTIA: Readonly<Record<Kandidat["druh"], string>> = {
+  nazor: "nazor-skry",
+  komentar: "komentar-skry",
+  report: "playtest-archivuj",
+  navrh: "navrh-archivuj",
+  prijimac: "roadmapa-uprav / ohlásiť Michalovi",
+};
+
+/**
+ * Kandidáti na skrytie: AI názory a komentáre, reporty, návrhy a Prijímač, ktoré
+ * menujú kartu, čo v rozpracovanej sade tvorcu nie je, alebo zrušenú mechaniku
+ * (zastarane.json). Nič neskrýva — rozhoduje ten, kto zoznam prejde.
+ */
+async function vypisZastarane(url: string, api: Api, akoJson: boolean): Promise<void> {
+  const konf = JSON.parse(readFileSync(new URL("./zastarane.json", import.meta.url), "utf8")) as KonfiguraciaZastaranych;
+  const { karty } = await api<{ karty: readonly KartaNavrh[] }>("GET", "/admin/obsah");
+  const { mena } = await api<{ mena: { meno: string }[] }>("GET", "/admin/sady/mena");
+  const zaniknute = zaniknuteKarty([...mena.map((m) => m.meno), ...konf.karty], karty.map((k) => k.nazov));
+  const co = hladane(konf, zaniknute);
+  const out: Kandidat[] = [];
+  const pridaj = (k: Omit<Kandidat, "zmienky">, text: string): void => {
+    const z = zmienky(text, co);
+    if (z.length > 0) out.push({ ...k, zmienky: z });
+  };
+
+  // Spätná väzba: server vracia najviac 200 názorov naraz — preto po záložkách stavu.
+  interface NazorCli {
+    readonly id: number;
+    readonly nadpis: string;
+    readonly text: string;
+    readonly stav: string;
+    readonly autor: { readonly ai: boolean };
+    readonly komentare: readonly { readonly id: number; readonly text: string; readonly autor: { readonly ai: boolean } }[];
+  }
+  const videne = new Set<number>();
+  for (const stav of ["otvorene", "planovane", "hotove", "zamietnute"]) {
+    const { nazory } = await api<{ nazory: NazorCli[] }>("GET", `/nazory?triedenie=nove&stav=${stav}`);
+    for (const n of nazory) {
+      if (videne.has(n.id)) continue;
+      videne.add(n.id);
+      pridaj({ druh: "nazor", id: String(n.id), text: prvaVeta(n.nadpis !== "" ? n.nadpis : n.text), clovek: !n.autor.ai, stav: n.stav }, `${n.nadpis}\n${n.text}`);
+      for (const c of n.komentare) pridaj({ druh: "komentar", id: String(c.id), text: prvaVeta(c.text), clovek: !c.autor.ai, stav: `pod názorom #${n.id}` }, c.text);
+    }
+  }
+
+  const { token, reporty } = await api<{ token: string; reporty: { subor: string; nazov: string; druh: string; archiv: unknown }[] }>("GET", "/admin/playtesty");
+  for (const r of reporty.filter((x) => x.archiv === null && x.druh !== "prehlad")) {
+    const res = await fetch(`${url}/playtesty/${token}/${encodeURIComponent(r.subor)}`);
+    if (!res.ok) continue;
+    const obsah = await res.text();
+    pridaj({ druh: "report", id: r.subor, text: r.nazov }, r.subor.endsWith(".html") ? textZHtml(obsah) : obsah);
+  }
+
+  const { navrhy } = await api<{ navrhy: (Record<string, unknown> & { id: number; nazov: string; stav: string; archiv: unknown })[] }>("GET", "/admin/navrhy");
+  for (const n of navrhy.filter((x) => x.archiv === null)) {
+    const { id: _id, archiv: _archiv, rozhodol: _rozhodol, ...obsah } = n;
+    pridaj({ druh: "navrh", id: String(n.id), text: n.nazov, stav: n.stav }, JSON.stringify(obsah));
+  }
+
+  const { polozky } = await api<{ polozky: { id: number; stlpec: string; nazov: string; kratko: string; preco: string; hotovo: string }[] }>("GET", "/roadmapa");
+  for (const p of polozky.filter((x) => x.stlpec === "prijimac")) {
+    pridaj({ druh: "prijimac", id: String(p.id), text: p.nazov }, [p.nazov, p.kratko, p.preco, p.hotovo].join("\n"));
+  }
+
+  if (akoJson) {
+    console.log(JSON.stringify({ zaniknuteKarty: zaniknute, mechaniky: konf.mechaniky.map((m) => m.pojem), kandidati: out }, null, 2));
+    return;
+  }
+  console.log(`Zaniknuté karty (v zverejnených sadách áno, v tvorcovi nie): ${zaniknute.length === 0 ? "žiadne" : zaniknute.join(", ")}`);
+  console.log(`Zrušené mechaniky (tools/admin/zastarane.json): ${konf.mechaniky.map((m) => m.pojem).join(", ")}`);
+  console.log("Len kandidáti — každý prečítaj a skry len to, čo naozaj neplatí. Nič sa neskrylo.");
+  const skupiny: readonly [string, (k: Kandidat) => boolean][] = [
+    ["Názory a komentáre AI", (k) => (k.druh === "nazor" || k.druh === "komentar") && k.clovek !== true],
+    ["Názory a komentáre ĽUDÍ — neskrývať, len odpovedať ako Admin (AI) (komentar)", (k) => (k.druh === "nazor" || k.druh === "komentar") && k.clovek === true],
+    ["Reporty playtestov", (k) => k.druh === "report"],
+    ["Návrhy z playtestov", (k) => k.druh === "navrh"],
+    ["Prijímač roadmapy", (k) => k.druh === "prijimac"],
+  ];
+  for (const [nadpis, patri] of skupiny) {
+    const v = out.filter(patri);
+    console.log(`\n== ${nadpis} (${v.length})`);
+    for (const k of v) {
+      const prikaz = k.clovek === true ? "" : `  → ${PRIKAZ_SKRYTIA[k.druh]} ${k.id}`;
+      console.log(`  ${k.druh === "report" ? k.id : `${k.druh === "komentar" ? "komentár" : k.druh === "nazor" ? "názor" : k.druh === "navrh" ? "návrh" : "položka"} #${k.id}`}${k.stav === undefined ? "" : ` [${k.stav}]`}: ${k.text}`);
+      console.log(`      ${popisZmienok(k.zmienky)}${prikaz}`);
+    }
+  }
+}
+
 // ---- príkazový riadok ------------------------------------------------------------
 
-const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok", "--vydanie", "--novinka", "--dovod"]);
+const S_HODNOTOU = new Set(["--url", "--od", "--seed", "--popis", "--nazov", "--kategoria", "--pocet", "--sila", "--vysledok", "--vydanie", "--novinka", "--dovod", "--poradie", "--commit"]);
 
 /** Štýl avatarov AI účtov — ako avatary offline protihráčov (seed/avatary/boti): dedinčan napoly robot. */
 const STYL_AVATARA =
@@ -939,6 +1067,18 @@ async function main(): Promise<void> {
     // ---- spätná väzba a web
 
     case "nazory": {
+      if (prep.has("--archiv")) {
+        const { prispevky } = await api<{
+          prispevky: { druh: string; id: number; nazor: number; autor: { meno: string }; nadpis: string; text: string; skryty: number; dovod: string; skryl: string | null }[];
+        }>("GET", "/admin/nazory-archiv");
+        if (prispevky.length === 0) console.log("Archív je prázdny — nič nie je skryté.");
+        for (const p of prispevky) {
+          const co = p.druh === "nazor" ? `názor #${p.id}` : `komentár #${p.id} (pod názorom #${p.nazor})`;
+          console.log(`${co} — ${p.autor.meno}: ${prvaVeta(p.druh === "nazor" && p.nadpis !== "" ? p.nadpis : p.text)}`);
+          console.log(`    ${popisArchivu({ kedy: p.skryty, dovod: p.dovod, kto: p.skryl })}`);
+        }
+        break;
+      }
       const k = arg[0] === undefined ? "" : `&kategoria=${arg[0]}`;
       const { nazory } = await api<{ nazory: { id: number; autor: { meno: string }; kategoria: string; stav: string; nadpis?: string; text: string; cigarety: number; komentare: { autor: { meno: string }; text: string }[] }[] }>("GET", `/nazory?triedenie=nove${k}`);
       for (const n of nazory) {
@@ -956,6 +1096,22 @@ async function main(): Promise<void> {
       break;
     }
 
+    case "nazor-skry":
+    case "komentar-skry":
+    case "nazor-vrat":
+    case "komentar-vrat": {
+      // Len príspevky AI účtov — server názor či komentár človeka odmietne (skill vypalit).
+      const [druh, akcia] = prikaz.split("-") as ["nazor" | "komentar", "skry" | "vrat"];
+      const id = arg[0];
+      const dovod = hodnota("--dovod");
+      if (id === undefined || !/^\d+$/.test(id) || (akcia === "skry" && (dovod ?? "").trim() === "")) {
+        throw new Error(akcia === "skry" ? `Použitie: ${prikaz} <id> --dovod "<prečo je zastaraný>"` : `Použitie: ${prikaz} <id>`);
+      }
+      await api("POST", `/admin/${druh === "nazor" ? "nazory" : "komentare"}/${id}/${akcia}`, akcia === "skry" ? { dovod } : {});
+      console.log(`${druh === "nazor" ? "Názor" : "Komentár"} #${id}: ${akcia === "skry" ? "skrytý (archív: nazory --archiv)" : "vrátený na web"}.`);
+      break;
+    }
+
     case "stav": {
       const [id, stav] = arg;
       if (id === undefined || stav === undefined) throw new Error("Použitie: stav <id-nazoru> <nove|prijate|planovane|hotove|zamietnute> [--novinka <id>] [--dovod \"…\"]");
@@ -967,8 +1123,30 @@ async function main(): Promise<void> {
     }
 
     case "playtesty": {
-      const { reporty } = await api<{ reporty: unknown[] }>("GET", "/admin/playtesty");
-      console.log(JSON.stringify(reporty, null, 2));
+      const { reporty } = await api<{ reporty: { archiv: ArchivCli | null }[] }>("GET", "/admin/playtesty");
+      // Archivované len s --archiv (ako prepínač „aj archív“ v sekcii Playtest).
+      const archiv = prep.has("--archiv");
+      console.log(JSON.stringify(reporty.filter((r) => (r.archiv !== null) === archiv), null, 2));
+      break;
+    }
+
+    case "playtest-archivuj":
+    case "playtest-vrat": {
+      const id = arg[0];
+      const archivuj = prikaz === "playtest-archivuj";
+      const dovod = hodnota("--dovod");
+      if (id === undefined || (archivuj && (dovod ?? "").trim() === "")) {
+        throw new Error(archivuj ? 'Použitie: playtest-archivuj <súbor reportu | turnus RRRRMMDD-HHMMSS> --dovod "<prečo>"' : "Použitie: playtest-vrat <súbor reportu | turnus>");
+      }
+      const { reporty } = await api<{ reporty: { subor: string; nazov: string; druh: string; archiv: ArchivCli | null }[] }>("GET", "/admin/playtesty");
+      // Turnus = report, rozbor stratéga aj návrhy jedného playtestu naraz (prehľady nie).
+      const turnus = /^\d{8}-\d{6}$/.test(id);
+      const subory = reporty.filter((r) => (r.subor === id || (turnus && r.druh !== "prehlad" && r.subor.includes(id))) && (r.archiv === null) === archivuj);
+      if (subory.length === 0) throw new Error(`Report „${id}“ ${archivuj ? "v sekcii Playtest nie je (alebo už je v archíve)" : "v archíve nie je"}.`);
+      for (const r of subory) {
+        await api("POST", `/admin/playtesty/${archivuj ? "archivuj" : "vrat"}`, archivuj ? { subor: r.subor, dovod } : { subor: r.subor });
+        console.log(`${r.subor} (${r.nazov}): ${archivuj ? "v archíve" : "vrátený z archívu"}`);
+      }
       break;
     }
 
@@ -998,9 +1176,24 @@ async function main(): Promise<void> {
 
     case "navrhy": {
       const { navrhy } = await api<{
-        navrhy: { id: number; davka: string; nazov: string; kritickost: string; stav: string; volba: string | null; poznamka: string; rozhodol: { meno: string; ai: boolean } | null; vysledok: string; overenie?: string[]; verdikt?: string }[];
+        navrhy: {
+          id: number;
+          davka: string;
+          nazov: string;
+          kritickost: string;
+          stav: string;
+          volba: string | null;
+          poznamka: string;
+          rozhodol: { meno: string; ai: boolean } | null;
+          vysledok: string;
+          overenie?: string[];
+          verdikt?: string;
+          archiv: ArchivCli | null;
+        }[];
       }>("GET", "/admin/navrhy");
-      const vybrane = navrhy.filter((n) => arg[0] === undefined || n.stav === arg[0]);
+      // Archivované (zaniknuté karty a mechaniky) len s --archiv — Developer ich nemá brať.
+      const archiv = prep.has("--archiv");
+      const vybrane = navrhy.filter((n) => (arg[0] === undefined || n.stav === arg[0]) && (n.archiv !== null) === archiv);
       if (prep.has("--json")) {
         console.log(JSON.stringify(vybrane, null, 2));
         break;
@@ -1013,7 +1206,21 @@ async function main(): Promise<void> {
         if (n.vysledok !== "") console.log(`    výsledok: ${n.vysledok.replace(/\n/g, " ")}`);
         for (const o of n.overenie ?? []) console.log(`    overiť: ${o}`);
         if ((n.verdikt ?? "") !== "") console.log(`    verdikt: ${(n.verdikt ?? "").replace(/\n/g, " ")}`);
+        if (n.archiv !== null) console.log(`    archív: ${popisArchivu(n.archiv)}`);
       }
+      break;
+    }
+
+    case "navrh-archivuj":
+    case "navrh-vrat": {
+      const id = arg[0];
+      const archivuj = prikaz === "navrh-archivuj";
+      const dovod = hodnota("--dovod");
+      if (id === undefined || !/^\d+$/.test(id) || (archivuj && (dovod ?? "").trim() === "")) {
+        throw new Error(archivuj ? 'Použitie: navrh-archivuj <id> --dovod "<prečo — ktorá karta či mechanika zanikla>"' : "Použitie: navrh-vrat <id>");
+      }
+      await api("POST", `/admin/navrhy/${id}/${archivuj ? "archivuj" : "vrat"}`, archivuj ? { dovod } : {});
+      console.log(`Návrh #${id}: ${archivuj ? "v archíve" : "vrátený z archívu"} — ${url}/playtest`);
       break;
     }
 
@@ -1097,7 +1304,9 @@ async function main(): Promise<void> {
         const r = spawnSync("git", a, { encoding: "utf8" });
         return r.status === 0 ? r.stdout.trim() : "";
       };
-      const { navrhy } = await api<{ navrhy: { id: number; nazov: string; stav: string; davka: string; rozhodol: { ai: boolean } | null }[] }>("GET", "/admin/navrhy");
+      const navrhy = (
+        await api<{ navrhy: { id: number; nazov: string; stav: string; davka: string; rozhodol: { ai: boolean } | null; archiv: unknown }[] }>("GET", "/admin/navrhy")
+      ).navrhy.filter((n) => n.archiv === null);
       const { polozky } = await api<{ polozky: { id: number; stlpec: string; nazov: string; stav: string; navrh: number | null }[] }>("GET", "/roadmapa");
       const { nazory } = await api<{ nazory: { id: number; stav: string; text: string; autor: { meno: string; ai: boolean } }[] }>("GET", "/nazory?triedenie=nove");
       const s = await api<StavServeraCli>("GET", "/admin/stav-servera");
@@ -1207,6 +1416,34 @@ async function main(): Promise<void> {
       const { stlpec: _stlpec, poradie: _poradie, ...zmeny } = JSON.parse(readFileSync(subor, "utf8")) as Record<string, unknown>;
       await api<{ ok: boolean }>("PATCH", `/roadmapa/${id}`, zmeny);
       console.log(`Položka #${id} upravená — ${url}/vyvoj/roadmapa`);
+      break;
+    }
+
+    case "roadmapa-presun": {
+      const id = Number(arg[0]);
+      const stlpec = arg[1];
+      const poradie = hodnota("--poradie");
+      if (!Number.isInteger(id) || stlpec === undefined || (poradie !== undefined && !/^[1-9]\d*$/.test(poradie))) {
+        throw new Error('Použitie: roadmapa-presun <id> <stlpec> [--poradie N] [--commit "<commit, sada>"]');
+      }
+      const { stlpce, polozky } = await api<{ stlpce: { kluc: string; nazov: string }[]; polozky: { id: number; stlpec: string; nazov: string }[] }>("GET", "/roadmapa");
+      const ciel = stlpce.find((s) => s.kluc === stlpec);
+      if (ciel === undefined) throw new Error(`Neznámy stĺpec „${stlpec}“: ${stlpce.map((s) => s.kluc).join(" | ")}.`);
+      const polozka = polozky.find((p) => p.id === id);
+      if (polozka === undefined) throw new Error(`Položka #${id} v roadmape nie je.`);
+      // Server presúva „pred položku“; N-té miesto = pred N-tú položku cieľového stĺpca (bez presúvanej).
+      const vStlpci = polozky.filter((p) => p.stlpec === stlpec && p.id !== id);
+      const pred = poradie === undefined ? null : (vStlpci[Number(poradie) - 1]?.id ?? null);
+      await api("POST", `/roadmapa/${id}/presun`, { stlpec, pred });
+      const commit = hodnota("--commit");
+      if (commit !== undefined) await api("PATCH", `/roadmapa/${id}`, { commit });
+      const miesto = pred === null ? vStlpci.length + 1 : Number(poradie);
+      console.log(`#${id} ${polozka.nazov}: ${ciel.nazov}, ${miesto}. miesto${commit === undefined ? "" : ` (commit: ${commit})`} — ${url}/vyvoj/roadmapa`);
+      break;
+    }
+
+    case "zastarane": {
+      await vypisZastarane(url, api, prep.has("--json"));
       break;
     }
 

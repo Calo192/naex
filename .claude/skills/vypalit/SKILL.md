@@ -73,6 +73,14 @@ Admin: položky, ktoré sú týmto vypálením hotové (rozpracované a overené
 v Zrejúcej), presuň do Hotové s commitom a sadou; položky, ktoré sa týkali
 len Zrejúcej (napr. „overiť v Zrejúcej“), uprav alebo presuň. Nič nemaž.
 
+- prehľad: `$A roadmapa --zivy` (poradie v stĺpcoch, id položiek),
+- do Hotové: `$A roadmapa-presun <id> hotove --commit "<commit> · sada v<N>" --zivy`
+  (server nastaví stav hotové a dátum dokončenia),
+- presun inde: `$A roadmapa-presun <id> <stlpec> [--poradie N] --zivy`
+  (stĺpce `prijimac | teraz | dalej | potom | neskor | hotove`; bez `--poradie`
+  na koniec stĺpca),
+- zmena textu: `$A roadmapa-uprav <id> <zmeny.json> --zivy`.
+
 ## 7. Upratanie zastaraných AI komentárov
 
 Admin: prejdi **komentáre a názory AI účtov** (Spätná väzba, `$A nazory`),
@@ -84,6 +92,32 @@ zmenila tak, že text už neplatí (porovnaj s PRAVIDLA.md a sadou). Také polo�
 komentáre ľudí nikdy nemeň** — len ak sa týkajú zaniknutej veci, odpovedz na
 ne ako Admin (AI), že vec zanikla. Výsledok: zoznam skrytých položiek
 s dôvodom (id, prvá veta, prečo).
+
+Príkazy (všetky s `--zivy`; nič sa nemaže — každé skrytie má dôvod a server
+si zapíše kto, kedy a obsah v čase skrytia):
+
+1. Kandidáti: `$A zastarane --zivy` (alebo `--json`) — AI názory a komentáre,
+   reporty, návrhy a Prijímač, ktoré menujú kartu, čo v rozpracovanej sade
+   nie je (porovná históriu zverejnených sád s tvorcom), alebo zrušenú
+   mechaniku zo zoznamu `tools/admin/zastarane.json`. Je to len návrh: každého
+   kandidáta prečítaj a skry len to, čo naozaj neplatí. Mechaniku, ktorá
+   týmto vypálením zanikla, najprv dopíš do `zastarane.json` (commit na master).
+   Príspevky ľudí vypíše zvlášť — tie sa neskrývajú.
+2. Názor / komentár AI: `$A nazor-skry <id> --dovod "<čo zaniklo>" --zivy`,
+   `$A komentar-skry <id> --dovod "…" --zivy`. Názor či komentár človeka
+   server odmietne (403). Skryté: `$A nazory --archiv --zivy`; späť
+   `$A nazor-vrat <id>` / `$A komentar-vrat <id>` (alebo Spätná väzba → Archív AI).
+3. Odpoveď človeku: `$A komentar <id-nazoru> <subor.txt> --zivy` (ako Admin (AI)).
+4. Report: `$A playtest-archivuj <súbor | turnus RRRRMMDD-HHMMSS> --dovod "…" --zivy`
+   (turnus = report, rozbor aj návrhy naraz); archív `$A playtesty --archiv`,
+   späť `$A playtest-vrat <súbor | turnus>`. V sekcii Playtest ich ukáže
+   prepínač „aj archív“.
+5. Návrh: `$A navrh-archivuj <id> --dovod "…" --zivy` (stav a rozhodnutie
+   ostanú, nečaká na rozhodnutie, Developer ho nevezme); archív
+   `$A navrhy --archiv`, späť `$A navrh-vrat <id>`.
+6. Prijímač roadmapy archív nemá: zastaranú položku prepíš na platné pojmy
+   (`$A roadmapa-uprav`), alebo ju uveď v odovzdaní Michalovi (zmazať môže on
+   na webe).
 
 ## 8. Nová Zrejúca
 

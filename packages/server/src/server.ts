@@ -400,7 +400,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   }
   ucty.prepocitajRanky(prava.nastavenie().postup);
   const nazory = new Nazory(db, prava);
-  const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"));
+  const playtesty = new Playtesty(opts.playtestyDir ?? fileURLToPath(new URL("../../../docs/playtesty", import.meta.url)), join(dataDir, "playtesty"), db);
   const navrhy = new Navrhy(db);
   const roadmapa = new Roadmapa(db);
   roadmapa.naplnAkTreba(fileURLToPath(new URL("../seed/roadmapa.json", import.meta.url)), teraz());
