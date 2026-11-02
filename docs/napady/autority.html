@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nové Autority — 8 kandidátov — NA EX!</title>
+<style>
+/* Rozvrhnutie: zhrnutie, 16 prerábok (dnes → plán → variant), 10 noviniek, WAU kombá, nechané karty, lišta so súhrnom. */
+:root {
+  --pozadie: #15120f; --plocha: #1f1a15; --plocha-2: #2a231c; --okraj: #43372c;
+  --text: #f1e8d8; --tlmeny: #b8a993;
+  --akcent: #e9ad45; --ok: #7fb069; --pozor: #e08a3a; --zle: #d0604f; --utok: #ef7d6a; --zla: #c49be0;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+    --text: #2a2016; --tlmeny: #5e4f3b;
+    --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b; --utok: #b0331f; --zla: #7a3fa0;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --pozadie: #f6f1e7; --plocha: #fffaf1; --plocha-2: #f0e7d6; --okraj: #d8c8ad;
+  --text: #2a2016; --tlmeny: #5e4f3b;
+  --akcent: #95590a; --ok: #3f7a2a; --pozor: #b5641a; --zle: #a3392b; --utok: #b0331f; --zla: #7a3fa0;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 12px; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 16px/1.55 var(--sans); }
+main { max-width: 900px; margin: 0 auto; padding-block: 24px 160px;
+  padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)); }
+h1, h2 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; }
+h1 { font-size: clamp(1.6rem, 5vw, 2.3rem); margin: 0 0 8px; }
+h2 { font-size: 1.3rem; margin: 30px 0 10px; }
+h3 { font-size: .78rem; margin: 12px 0 3px; text-transform: uppercase; letter-spacing: .06em; color: var(--tlmeny); }
+p, li { max-width: 74ch; }
+p { margin: 0 0 8px; }
+li { margin-bottom: 5px; }
+ul { padding-left: 20px; margin: 0; }
+a { color: var(--akcent); }
+:focus-visible { outline: 2px solid var(--akcent); outline-offset: 2px; }
+code { font-family: ui-monospace, Consolas, monospace; font-size: .84em; background: var(--plocha-2); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.hlavicka { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.uvod, .pozn { color: var(--tlmeny); }
+.pozn { font-size: .88rem; }
+.ramik { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin: 18px 0; }
+.ramik > h2 { margin-top: 0; }
+.ramik.citat { border-color: var(--akcent); }
+blockquote { margin: 0 0 10px; font-family: var(--serif); font-size: 1.02rem; }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 6px; border-bottom: 1px solid var(--okraj); }
+th { color: var(--tlmeny); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+.tab-obal { overflow-x: auto; }
+.obsah { columns: 2 220px; padding: 0; list-style: none; margin: 0; }
+.obsah li { margin: 0 0 4px; font-size: .92rem; break-inside: avoid; }
+.obsah small { color: var(--tlmeny); }
+.karta { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 14px; padding: 14px 16px; margin: 20px 0; }
+.karta-hlava h2 { margin: 0 0 6px; }
+.cislo { color: var(--akcent); margin-right: 8px; }
+.tagy { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 8px; }
+.tag { font-size: .74rem; border-radius: 999px; padding: 0 8px; border: 1px solid var(--okraj); color: var(--tlmeny); white-space: nowrap; }
+.arch { font-size: .74rem; border-radius: 999px; padding: 0 8px; font-weight: 700; background: var(--plocha-2); border: 1px solid var(--akcent); color: var(--akcent); }
+.arch.rez { border-color: var(--pozor); color: var(--pozor); }
+.zmena { font-weight: 600; }
+.stol { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 6px; padding: 10px; border-radius: 12px;
+  background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--ok) 18%, var(--plocha-2)), var(--plocha-2)); }
+.sipka { font-size: 1.4rem; color: var(--tlmeny); }
+.mk { margin: 0; width: 232px; max-width: 100%; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 10px; padding: 6px; box-shadow: 0 2px 6px rgb(0 0 0 / .25); }
+.mk-stitok { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--tlmeny); margin-bottom: 4px; }
+.mk-telo { display: grid; grid-template-columns: 52px 1fr 52px; gap: 4px; }
+.mk-strana { display: grid; grid-template-rows: repeat(4, 1fr); gap: 3px; }
+.slot { min-height: 30px; border: 1px solid var(--okraj); border-radius: 6px; font-size: .66rem; line-height: 1.15; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center; padding: 1px; background: var(--plocha-2); }
+.slot.blok { background: repeating-linear-gradient(45deg, var(--plocha-2), var(--plocha-2) 4px, var(--okraj) 4px, var(--okraj) 6px); color: var(--tlmeny); }
+.slot.volny { border-style: dashed; }
+.slot.prazdny { color: var(--tlmeny); }
+.slot.zm { outline: 2px solid var(--akcent); outline-offset: -1px; }
+.slot .utok { color: var(--utok); font-weight: 700; }
+.slot .zle { color: var(--zla); font-weight: 700; }
+.mk-stred { text-align: center; min-width: 0; }
+.mk-stred .obr, .bez-obr { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 3px; border: 1px solid var(--okraj); }
+.mk-stred .obr { background-size: cover; background-position: center; }
+.bez-obr { display: flex; align-items: center; justify-content: center; font-size: .7rem; color: var(--tlmeny); background: var(--plocha-2); }
+.mk-nazov { font-family: var(--serif); font-weight: 700; font-size: .82rem; margin: 0 0 2px; }
+.mk-efekt { font-size: .66rem; line-height: 1.25; margin: 0; color: var(--text); }
+.mk-efekt b { color: var(--akcent); }
+.mk-kod { font-size: .68rem; line-height: 1.3; color: var(--tlmeny); margin: 5px 0 0; overflow-wrap: anywhere; }
+.legenda { display: flex; flex-wrap: wrap; gap: 10px; font-size: .82rem; color: var(--tlmeny); }
+.legenda .utok { color: var(--utok); font-weight: 700; }
+.legenda .zle { color: var(--zla); font-weight: 700; }
+.efekty { list-style: none; padding: 0; }
+.efekty li { font-size: .92rem; }
+.ilu { font-size: .9rem; color: var(--tlmeny); font-style: italic; }
+.odporucanie { margin-top: 10px; }
+details { margin-top: 8px; font-size: .85rem; }
+details pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .74rem; background: var(--plocha-2); padding: 8px; border-radius: 8px; }
+.volba, .otazka { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--okraj); }
+.otazka { border-top-style: dashed; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.karta, .ramik, .stol, section { min-width: 0; overflow-wrap: anywhere; }
+legend { font-weight: 600; font-size: .92rem; margin-bottom: 6px; padding: 0; }
+legend .odp { font-weight: 400; color: var(--tlmeny); font-size: .82rem; margin-left: 6px; }
+.volby, .volby-q { display: flex; flex-wrap: wrap; gap: 6px; }
+.volby label, .volby-q label { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--okraj); border-radius: 999px; cursor: pointer; background: var(--plocha-2); min-height: 40px; font-size: .9rem; }
+.volby input, .volby-q input { accent-color: var(--akcent); width: 18px; height: 18px; margin: 0; }
+.volby label:has(input:checked), .volby-q label:has(input:checked) { border-color: var(--akcent); color: var(--akcent); font-weight: 600; }
+textarea { width: 100%; min-height: 3em; margin-top: 8px; font: inherit; font-size: .94rem; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--pozadie); color: var(--text); resize: vertical; }
+.lista { position: fixed; left: 0; right: 0; bottom: 0; background: var(--plocha-2); border-top: 1px solid var(--akcent); z-index: 5; }
+.lista-in { max-width: 900px; margin: 0 auto; padding: 10px max(14px, env(safe-area-inset-left, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.lista-text { flex: 1 1 200px; font-size: .9rem; }
+button { font: inherit; font-size: .9rem; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--akcent); background: var(--plocha); color: var(--akcent); cursor: pointer; min-height: 40px; }
+button.hlavne { background: var(--akcent); color: var(--pozadie); font-weight: 600; }
+.skryte { position: absolute; left: -9999px; width: 1px; height: 1px; }
+.roz { font-weight: 600; border-radius: 8px; padding: 6px 10px; margin: 6px 0 8px; }
+.roz-ano { background: color-mix(in srgb, var(--ok) 18%, var(--plocha)); color: var(--ok); }
+.roz-nie { background: color-mix(in srgb, var(--zle) 15%, var(--plocha)); color: var(--zle); }
+.roz-otv { background: color-mix(in srgb, var(--pozor) 18%, var(--plocha)); color: var(--pozor); }
+.karta-otvorene { border-color: var(--pozor); border-width: 2px; }
+.odpadlo { color: var(--tlmeny); }
+details.odpadla { margin: 12px 0; border: 1px dashed var(--okraj); border-radius: 12px; padding: 8px 12px; color: var(--tlmeny); }
+details.odpadla > summary { cursor: pointer; font-family: var(--serif); }
+details.odpadla[open] { color: var(--text); }
+.navrhy ol { padding-left: 20px; }
+.navrhy li { margin-bottom: 10px; }
+.s-ano { color: var(--ok); } .s-nie { color: var(--zle); } .s-otvorene { color: var(--pozor); font-weight: 700; }
+footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj); color: var(--tlmeny); font-size: .86rem; }
+@media (max-width: 560px) {
+  .karta, .ramik { padding: 12px 10px; }
+  .stol { padding: 6px; justify-content: center; }
+  .sipka { width: 100%; text-align: center; line-height: 1; }
+  .mk { width: 100%; max-width: 300px; }
+  .mk-telo { grid-template-columns: 58px 1fr 58px; }
+}
+
+.uvod-tab td:nth-child(3) { min-width: 220px; }
+</style>
+</head>
+<body>
+<main>
+<div class="hlavicka"><h1>Nové Autority: 8 kandidátov</h1>
+<button type="button" id="tema" aria-label="Prepnúť svetlý a tmavý režim">Svetlo / tma</button></div>
+<div class="ramik citat"><blockquote>„Máme strašne málo kariet autorít – navrhnúť aspoň 5 ďalších a dať na posúdenie – jedna z nich by bola poľovník.“ … „možno aj predavačka…?“</blockquote>
+<p class="pozn">Michal 2026-11-02. Vymyselník, vetva <code>napady/autority</code>. Kód hry sa nemení — toto sú len návrhy.</p></div>
+
+<p class="uvod">Dnes majú tag Autorita <b>Policajtka, Hasič, Svokra</b> a po prebiehajúcej zmene aj <b>Traktorista</b> (Pracujúci → Autorita). Navrhujem 8 Občanov s tagom Autorita — ľudí, čo majú na dedine slovo. Odporúčam <b>6 (Poľovník, Predavačka, Predseda družstva, Rozhlasárka, Kronikárka, Pani z obecného)</b>, Poslanec a Tréner sú rezerva. Všetky efekty používajú existujúce akcie, spúšťače a mechanizmy jadra. Každá karta má 4 varianty a v jadre prešla <code>parseCards</code> aj <code>sideLayouts</code>.</p>
+
+<section class="ramik"><h2>Prehľad</h2><div class="tab-obal"><table class="uvod-tab"><thead><tr><th>Karta</th><th>Tagy</th><th>Efekt</th><th>Sila</th><th>Odp.</th></tr></thead><tbody>
+<tr><td><a href="#polovnik">1. Poľovník</a></td><td>Chlap, Pamätník</td><td>Konflikt: Ak je priložená karta Zviera, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.</td><td>porovnateľná</td><td class="s-ano">áno</td></tr>
+<tr><td><a href="#predavacka">2. Predavačka</a></td><td>Žena, Pracujúci</td><td>Kšeft: Za 1 cigaretu si dober 1 kartu.</td><td>porovnateľná</td><td class="s-ano">áno</td></tr>
+<tr><td><a href="#predseda_druzstva">3. Predseda družstva</a></td><td>Chlap, Kriminál</td><td>Bitka: Za každú tvoju kartu Pracujúci v jeho okolí udelíš súperovi 1 Ranu navyše.</td><td>mierne silnejšia</td><td class="s-ano">áno</td></tr>
+<tr><td><a href="#rozhlasarka">4. Rozhlasárka</a></td><td>Žena, Influencer</td><td>Bitka: Za každé 2 súperove priznané Dlhy udelíš súperovi 1 Ranu navyše.</td><td>porovnateľná</td><td class="s-ano">áno</td></tr>
+<tr><td><a href="#kronikarka">5. Kronikárka</a></td><td>Žena, Pamätník</td><td>Bitka: Ak si prehral predošlú bitku, udelíš súperovi 1 Pecku navyše.</td><td>porovnateľná</td><td class="s-ano">áno</td></tr>
+<tr><td><a href="#pani_z_obecneho">6. Pani z obecného</a></td><td>Žena, Pracujúci</td><td>Furt: Efekty ostatných Autorít v jej okolí neplatia.</td><td>slabšia (rastie s počtom Autorít)</td><td class="s-ano">áno</td></tr>
+<tr><td><a href="#poslanec">7. Poslanec</a></td><td>Chlap, Influencer</td><td>Úplatok: Súper smie v Pitke dať na túto kartu 1 cigaretu, dostaneš ju ty. Do konca kola sa akcie tejto karty počítajú jemu.</td><td>porovnateľná</td><td class="s-otvorene">rezerva</td></tr>
+<tr><td><a href="#trener">8. Tréner</a></td><td>Chlap, Závislý</td><td>Nástup: Smieš odhodiť 1 kartu z ruky a vziať si 1 kartu zo šenku.</td><td>porovnateľná</td><td class="s-otvorene">rezerva</td></tr>
+</tbody></table></div>
+<p class="pozn">Pohlavie 4 : 4. Všetky majú tagy Občan + Autorita. Sila: bilancia akcií (útok a zdroje +, Hazard a Pečeň −) a odhad efektu na stupnici bota (<code>bot.ts</code> BONUS_EFEKTU, 0,2–0,6).</p></section>
+
+<section class="ramik"><h2>Čo dnes robí tag Autorita</h2>
+<ul>
+<li><b>V pravidlách nič.</b> „Tagy nemajú vlastné pravidlá, pokiaľ sa na ne neodvoláva pravidlo … alebo efekt karty“ (<code>docs/PRAVIDLA.md:281</code>). Žiadny paragraf sa na Autoritu neodvoláva.</li>
+<li><b>V efektoch nič.</b> Jediné miesto v jadre je <code>efektPotlaceny</code> (<code>packages/core/src/effects.ts:220–229</code>): súperov Praudovravec umlčí Autority — ale len so starým textom karty. V sade v56 je Praudovravec Dezinformátor, takže umlčanie nenastane. Výklad Policajtky to spomína ako „len stará sada“ (<code>docs/PRAVIDLA.md:1748</code>).</li>
+<li><b>Dôsledok:</b> tag je dnes len vizuálny. Herný zmysel mu dá <b>Pani z obecného</b> (efekty Autorít v jej okolí neplatia) alebo <b>Poslanec A2</b> (Rana za každú ďalšiu tvoju Autoritu). Mechanizmus umlčania Autorít v jadre už existuje, stačí ho napojiť.</li>
+<li><b>Traktorista Pracujúci → Autorita:</b> stratí výhodu Družstva (Pracujúci nemíňajú limit) a nebude sa rátať pre Predsedu družstva. Zmenu beriem ako hotovú.</li>
+</ul></section>
+
+<section class="ramik"><h2>Rozmiestnenie akcií</h2>
+<p>Podľa pripravovaného princípu sú <b>Odpor, Hazard a Pečeň v riadkoch 0–1</b> a dobré akcie v riadkoch 2–3. Vlastný Odpor tak na spoji s vlastnou kartou ruší jej zlé akcie. Keď kartu otočíš, riadky sa obrátia (0↔3, 1↔2), takže ten istý Odpor zruší súperove dobré akcie. Všetkých 8 kariet to dodržiava v každom variante (overené skriptom). Pakt je neutrálny, preto je dole.</p>
+<ul><li><b>Forsáž</b> (Posilnenie + Posilnenie → všetky aktívne akcie karty ×2): Posilnenie má len Predseda družstva, a to dole, takže Forsáž vznikne s vlastnou kartou. Pozor na Pakt Poslanca: Pakt + Posilnenie = dve Posilnenia (r. 303).</li>
+<li><b>Vzbura</b> (Odpor + Odpor): každá karta má najviac 1 Odpor (Poľovník, Predseda, Rozhlasárka, Pani z obecného).</li></ul></section>
+
+
+<section class="karta" id="polovnik" data-k="polovnik" data-nazov="Poľovník">
+<div class="karta-hlava"><h2><span class="cislo">1</span>Poľovník</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Chlap</span><span class="tag">Pamätník</span><span class="tag">spúšťač: Konflikt</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot volny"><span class="zle">Pečeň</span> / —</div><div class="slot volny"><span class="zle">Pečeň</span> / —</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="utok">Rana</span></div></div>
+<div class="mk-stred"><div class="bez-obr">Poľovník</div><p class="mk-nazov">Poľovník</p><p class="mk-efekt"><b>Konflikt:</b> Ak je priložená karta Zviera, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.</p></div>
+<div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="">Odpor</span></div><div class="slot volny"><span class="utok">Petelica</span> / —</div><div class="slot volny"><span class="utok">Petelica</span> / —</div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Konflikt: Ak je priložená karta Zviera, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.</p>
+<h3>Príbeh</h3><p class="ilu">Tridsať rokov v poľovníckom združení. Dvakrát trafil diviaka, raz suseda a štyrikrát vlastnú Škodovku. Na hon chodí kvôli gulášu a borovičke, flinta je na to, aby mu nikto neodvrával. Čo pobehuje po dedine bez obojku, je podľa neho zverina — a zverina končí v mrazáku alebo vypchatá nad gaučom, odkiaľ sklenými očami zíza na jeho ženu, ktorá ho tiež dávno nepočúva.</p>
+<h3>Účel v hre</h3><p>Konfliktná karta s Petelicou: súper k nemu nerád priloží Zviera, lebo by mu ho Poľovník po bitke vzal. Väčšina sily je v akciách (Petelica + Rana).</p>
+<ul><li>Polož ho na kraj, kam súper ťahá Psa, Koňa alebo Kapybaru — Zviera tam neprinesie zadarmo.</li><li>Ulovený Recidivista (Zviera aj Občan) prejde k tebe a po prehre sa vracia do tvojej ruky.</li><li>Otočený na súperovej strane: Odpor z riadku 1 padne na riadok 2 a ruší súperove dobré akcie.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Postrelil:</b> Konflikt: Ak je priložená karta Zviera alebo Chlap, po bitke ide z hry. <span class="pozn">— Širšie (Chlap je väčšina Občanov), blízko Veľmi smútiacej vdovy; potom ubrať Ranu.</span></li><li><b>A2 — Poľovačka so psom:</b> Bitka: Za každé Zviera v jeho okolí udelíš súperovi 1 Pecku navyše. <span class="pozn">— Odmeňuje aj vlastné Zvieratá; s Lesnou cestou a Poľovníckou chatou tematická línia.</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 3,5 b. / 4 kusy — pod Hasičom (5 / 3), nad Snúbenicou (1 / 3). Efekt spustí len 6 kariet so Zvieraťom → odhad ako Snúbenica (bot ≈ 0,4). Spolu porovnateľný s Hasičom. <b>Verdikt: porovnateľná.</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Dnes nič navyše (tag bez pravidla). Účinok dostane, len ak prejde Pani z obecného (umlčí ju) alebo Poslanec A2 (ráta ju).</p>
+<h3>Rozmiestnenie akcií</h3><p>Pečeň hore (0/1), Odpor vpravo hore (1), Rana a Petelica dole. Bez Posilnenia — Forsáž sám nespustí; Vzbura možná cez Odpor v riadku 1.</p>
+<h3>Overenie v jadre</h3><ul><li>Konflikt s presunom priloženej karty k majiteľovi po bitke = Snúbenica (<code>engine.ts:2669</code>), len podmienka tag Zviera namiesto Chlap.</li><li>Mäsiar efekt Poľovníka neumlčí (umlčí len efekty Zvierat); Krokodíl ani Recidivista nekolidujú.</li></ul>
+<h3>Riziko</h3><p>Efekt sa spustí zriedka (súper Zviera jednoducho neprikladá) — karta môže pôsobiť ako „Hasič bez efektu“. Mierni to alternatíva A1.</p>
+<p class="roz roz-ano">Odporúčanie: Áno — Michalovo zadanie; efekt je úzky, kartu nesie Petelica.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;polovnik&quot;,
+ &quot;index&quot;: 901,
+ &quot;name&quot;: &quot;Poľovník&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Chlap&quot;,
+  &quot;Pamätník&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Konflikt: Ak je priložená karta Zviera, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Konflikt&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   2
+  ],
+  &quot;actions&quot;: {
+   &quot;PoškodeniePečene&quot;: 1,
+   &quot;Rana&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;PoškodeniePečene&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;PoškodeniePečene&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Rana&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0
+  ],
+  &quot;actions&quot;: {
+   &quot;Odpor&quot;: 1,
+   &quot;Petelica&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;1&quot;: [
+    &quot;Odpor&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Petelica&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Petelica&quot;
+   ]
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="polovnik"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Poľovník"></textarea></fieldset>
+</section>
+
+<section class="karta" id="predavacka" data-k="predavacka" data-nazov="Predavačka">
+<div class="karta-hlava"><h2><span class="cislo">2</span>Predavačka</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Žena</span><span class="tag">Pracujúci</span><span class="tag">spúšťač: Kšeft</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot volny"><span class="zle">Hazard</span> / —</div><div class="slot volny"><span class="zle">Hazard</span> / —</div><div class="slot"><span class="">Cigareta</span></div><div class="slot blok" aria-label="blokovaný">✕</div></div>
+<div class="mk-stred"><div class="bez-obr">Predavačka</div><p class="mk-nazov">Predavačka</p><p class="mk-efekt"><b>Kšeft:</b> Za 1 cigaretu si dober 1 kartu.</p></div>
+<div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot volny"><span class="">Cigareta</span> / <span class="">Obmedzenie</span></div><div class="slot volny"><span class="">Obmedzenie</span> / <span class="">Cigareta</span></div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Kšeft: Za 1 cigaretu si dober 1 kartu.</p>
+<h3>Príbeh</h3><p class="ilu">V potravinách od sedemdesiateho štvrtého. Vie, kto koľko pije, kto platí na zošit a čia žena kupuje kondómy v utorok, keď je manžel na nočnej. Pondelkové rožky predáva vo štvrtok ako čerstvé a kto ceknie, nedostane už ani mäso spod pultu. Najmocnejšia žena v dedine: nikto ju nevolil, ale bez nej nikto nemá čo žrať.</p>
+<h3>Účel v hre</h3><p>Kšeft na premenu cigariet na karty — raz za Pitku 1 cigareta = 1 karta z doberacieho balíčka. Zúžitkuje hromadiace sa cigarety (AI hráči mali 12–26 cigariet bez využitia) bez stropu.</p>
+<ul><li>Cigareta za pas sa v ďalšej Pitke hneď mení na kartu.</li><li>Na Jednote (kto má viac Dlhov, nefajčí) ostane cigareta pre Predavačku — Kšeft nie je fajčenie.</li><li>Hazard vľavo hore: vlastný Odpor suseda ho zruší.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Na zošit:</b> Kšeft: Za 1 zadĺženie si dober 1 kartu. <span class="pozn">— Platba zadĺžením je nová mena Kšeftu (dnes cigarety a vypitý poldeci) — otázka pre Michala; satiricky najvernejšie.</span></li><li><b>A2 — Pokladňa:</b> Konflikt: Súper ti dá 1 cigaretu (koľko má). <span class="pozn">— Zrkadlo Policajtky bez Dlhu; nerieši prebytok, len presúva cigarety k tebe.</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 2 b. / 4 kusy (Hazard, 2× Cigareta, Obmedzenie) — slabšie ako Strýko z Ameriky (4 / 4). Kšeft ≈ Strýko (bot ≈ 0,5); pri prebytku cigariet silnejší, bez cigariet nič. <b>Verdikt: porovnateľná.</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Dnes nič navyše (tag bez pravidla). Účinok dostane, len ak prejde Pani z obecného (umlčí ju) alebo Poslanec A2 (ráta ju).</p>
+<h3>Rozmiestnenie akcií</h3><p>Hazard vľavo hore (0/1), Cigarety a Obmedzenie dole. Bez Odporu a Posilnenia — Forsáž ani Vzburu nespúšťa.</p>
+<h3>Overenie v jadre</h3><ul><li>Kšeft karty v partii: zoznam <code>KSEFTY_KARIET</code> (<code>engine.ts:3728</code>, dnes len Strýko z Ameriky), raz za Pitku, platba verejná (PRAVIDLA.md §7 Kšeft, r. 760).</li><li>Dobranie karty z doberacieho balíčka už robí Krabička cigariet (<code>engine.ts:3414</code>).</li></ul>
+<h3>Riziko</h3><p>Cena 1 cigareta môže byť lacná — karta za cigaretu je lepší kurz ako výkupné (5 cig = 1 špak). Pri cene 2 slabšia, no stále odbytisko.</p>
+<p class="roz roz-ano">Odporúčanie: Áno — Michalov tip; odbytisko prebytočných cigariet bez stropu.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;predavacka&quot;,
+ &quot;index&quot;: 902,
+ &quot;name&quot;: &quot;Predavačka&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Žena&quot;,
+  &quot;Pracujúci&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Kšeft: Za 1 cigaretu si dober 1 kartu.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Kšeft&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   3
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Cigareta&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Cigareta&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0,
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Obmedzenie&quot;: 1,
+   &quot;Cigareta&quot;: 1
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="predavacka"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Predavačka"></textarea></fieldset>
+</section>
+
+<section class="karta" id="predseda_druzstva" data-k="predseda_druzstva" data-nazov="Predseda družstva">
+<div class="karta-hlava"><h2><span class="cislo">3</span>Predseda družstva</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Chlap</span><span class="tag">Kriminál</span><span class="tag">spúšťač: Bitka</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot volny"><span class="">Odpor</span> / —</div><div class="slot volny"><span class="">Odpor</span> / —</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="">Robota</span></div></div>
+<div class="mk-stred"><div class="bez-obr">Predseda družstva</div><p class="mk-nazov">Predseda družstva</p><p class="mk-efekt"><b>Bitka:</b> Za každú tvoju kartu Pracujúci v jeho okolí udelíš súperovi 1 Ranu navyše.</p></div>
+<div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="zle">Hazard</span></div><div class="slot volny"><span class="utok">Pecka</span> / <span class="">Posilnenie</span></div><div class="slot volny"><span class="">Posilnenie</span> / <span class="utok">Pecka</span></div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Bitka: Za každú tvoju kartu Pracujúci v jeho okolí udelíš súperovi 1 Ranu navyše.</p>
+<h3>Príbeh</h3><p class="ilu">Družstvo skrachovalo v deväťdesiatom treťom, predsedom je dodnes. Stratili sa traktory, kravy aj strecha z kravína — a jeho vila má novú strechu, dva Fordy a bazén v tvare srdca. Na výročnej schôdzi vstane a povie: ‚Toto sme dokázali spolu, súdruhovia.‘ Spolu, áno. Chlapi makali, on to sčítal a odviezol.</p>
+<h3>Účel v hre</h3><p>Zbiera zásluhy za Pracujúcich vedľa seba: za každú svoju kartu Pracujúci v okolí 1 Rana navyše (susedia sú najviac dvaja).</p>
+<ul><li>Medzi Záhradkárom a Šoférom: +2 Rany v bitke.</li><li>Na Družstve (Pracujúci mimo limitu vykladania) si susedov vyložíš lacno.</li><li>Posilnenie v riadku 2/3 proti susedovmu Posilneniu = Forsáž: všetky aktívne akcie ×2.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Rozkrádanie:</b> Nástup: Vezmi si do ruky 1 kartu zo šenku. <span class="pozn">— Bez podmienky; mechanizmus Autobusára, silné v každej partii.</span></li><li><b>A2 — Normohodiny:</b> Furt: Aktívne Roboty tvojich kariet v jeho okolí sa rátajú dvakrát. <span class="pozn">— Podporí spaľovanie Dlhov; príbuzné Zámočníkovi.</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 3,5 b. / 5 kusov (Odpor, Robota, Hazard, Pecka, Posilnenie) — nad Vymáhačom (1 / 4) a Svokrou (3 / 4). Efekt 0–2 Rany → bot ≈ 0,4. Mierne silnejšia, ak máš Pracujúcich. <b>Verdikt: mierne silnejšia.</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Dnes nič navyše (tag bez pravidla). Účinok dostane, len ak prejde Pani z obecného (umlčí ju) alebo Poslanec A2 (ráta ju). Ako Kriminál dá pri priložení k súperovej Policajtke 2 cigarety namiesto Dlhu.</p>
+<h3>Rozmiestnenie akcií</h3><p>Odpor vľavo hore (0/1), Hazard vpravo v riadku 1, Robota, Pecka a Posilnenie dole. Posilnenie dole umožní Forsáž s vlastnou kartou.</p>
+<h3>Overenie v jadre</h3><ul><li>Rana navyše v bitke = <code>bitkaMody</code> (<code>effects.ts:488</code>, Vymáhač r. 511); okolie karty ako Mäsiar (<code>partia.ts:766</code>).</li><li>Tag Kriminál: k súperovej Policajtke ho priložíš za 2 cigarety namiesto Dlhu — satira sedí, kolízia nie.</li></ul>
+<h3>Riziko</h3><p>Pracujúcich je po zmene Traktoristu 7 (Finančná poradkyňa, Zámočník, Živnostník, Záhradkár, Šofér, Mäsiar, Opatrovateľka), s Predavačkou a Pani z obecného 9. Bez nich je to len karta s akciami.</p>
+<p class="roz roz-ano">Odporúčanie: Áno — dáva herný zmysel aj tagu Pracujúci.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;predseda_druzstva&quot;,
+ &quot;index&quot;: 903,
+ &quot;name&quot;: &quot;Predseda družstva&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Chlap&quot;,
+  &quot;Kriminál&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Bitka: Za každú tvoju kartu Pracujúci v jeho okolí udelíš súperovi 1 Ranu navyše.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Bitka&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   2
+  ],
+  &quot;actions&quot;: {
+   &quot;Odpor&quot;: 1,
+   &quot;Robota&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;Odpor&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;Odpor&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Robota&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Pecka&quot;: 1,
+   &quot;Posilnenie&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;1&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Pecka&quot;,
+    &quot;Posilnenie&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Pecka&quot;,
+    &quot;Posilnenie&quot;
+   ]
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="predseda_druzstva"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Predseda družstva"></textarea></fieldset>
+</section>
+
+<section class="karta" id="rozhlasarka" data-k="rozhlasarka" data-nazov="Rozhlasárka">
+<div class="karta-hlava"><h2><span class="cislo">4</span>Rozhlasárka</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Žena</span><span class="tag">Influencer</span><span class="tag">spúšťač: Bitka</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="zle">Hazard</span></div><div class="slot volny"><span class="utok">Pohoršenie</span> / <span class="utok">Povera</span></div><div class="slot volny"><span class="utok">Povera</span> / <span class="utok">Pohoršenie</span></div></div>
+<div class="mk-stred"><div class="bez-obr">Rozhlasárka</div><p class="mk-nazov">Rozhlasárka</p><p class="mk-efekt"><b>Bitka:</b> Za každé 2 súperove priznané Dlhy udelíš súperovi 1 Ranu navyše.</p></div>
+<div class="mk-strana"><div class="slot volny"><span class="">Odpor</span> / —</div><div class="slot volny"><span class="">Odpor</span> / —</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot blok" aria-label="blokovaný">✕</div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Bitka: Za každé 2 súperove priznané Dlhy udelíš súperovi 1 Ranu navyše.</p>
+<h3>Príbeh</h3><p class="ilu">Každé ráno o siedmej: ‚Vážení spoluobčania, oznamujeme, že pán Ďurica stále nezaplatil za vývoz žumpy.‘ Obecný rozhlas je jediné, čo v dedine funguje spoľahlivo. Medzi pohrebom a predajom kapusty z auta vždy vloží meno toho, kto jej neodzdravil. Mikrofón nepustí ani na smrteľnej posteli — oznámi aj vlastný pohreb, aj s menami tých, čo neprídu.</p>
+<h3>Účel v hre</h3><p>Trestá zadĺženého súpera: za každé 2 jeho priznané Dlhy 1 Rana navyše.</p>
+<ul><li>Proti hráčovi s Výherným automatom alebo Kulturistom (Hazard ×2).</li><li>Po prepise Dlhu na súpera (Obecný úrad, Poštárka) zarába dvakrát.</li><li>Pohoršenie a Povera dole idú do hádky.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Hlásenie:</b> Konflikt: Súper získa 1 zadĺženie. <span class="pozn">— Mäkšia Policajtka (zadĺženie, nie Dlh).</span></li><li><b>A2 — Dedina vie:</b> Pitka: Kto má viac priznaných Dlhov, získa 1 zadĺženie. <span class="pozn">— Mechanizmus Jednoty a Liberála; tlačí zadĺženého hlbšie.</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 2,5 b. / 4 kusy (Hazard, Pohoršenie, Povera, Odpor) — nad Vymáhačom (1 / 4). Efekt ako Vymáhač (bot ≈ 0,4), závisí však od súpera, nie od teba. <b>Verdikt: porovnateľná.</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Dnes nič navyše (tag bez pravidla). Účinok dostane, len ak prejde Pani z obecného (umlčí ju) alebo Poslanec A2 (ráta ju).</p>
+<h3>Rozmiestnenie akcií</h3><p>Hazard vľavo v riadku 1, Odpor vpravo hore (0/1), Pohoršenie a Povera dole. Bez Posilnenia.</p>
+<h3>Overenie v jadre</h3><ul><li>Počet priznaných Dlhov a Rana navyše = Vymáhač (<code>effects.ts:511</code>), len Dlhy súpera.</li><li>Exekútor trestá Dlhy tiež — dvojitý trest zadĺženého, žiadna kolízia pravidiel.</li></ul>
+<h3>Riziko</h3><p>Pomáha tomu, kto už vedie (súper v dlhoch), čo ide mierne proti zásade „odmena za väčšiu výzvu“.</p>
+<p class="roz roz-ano">Odporúčanie: Áno — verejný dlh dostane tvár.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;rozhlasarka&quot;,
+ &quot;index&quot;: 904,
+ &quot;name&quot;: &quot;Rozhlasárka&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Žena&quot;,
+  &quot;Influencer&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Bitka: Za každé 2 súperove priznané Dlhy udelíš súperovi 1 Ranu navyše.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Bitka&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   0
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Pohoršenie&quot;: 1,
+   &quot;Povera&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;1&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Pohoršenie&quot;,
+    &quot;Povera&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Pohoršenie&quot;,
+    &quot;Povera&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   2,
+   3
+  ],
+  &quot;actions&quot;: {
+   &quot;Odpor&quot;: 1
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="rozhlasarka"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Rozhlasárka"></textarea></fieldset>
+</section>
+
+<section class="karta" id="kronikarka" data-k="kronikarka" data-nazov="Kronikárka">
+<div class="karta-hlava"><h2><span class="cislo">5</span>Kronikárka</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Žena</span><span class="tag">Pamätník</span><span class="tag">spúšťač: Bitka</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot volny"><span class="zle">Pečeň</span> / —</div><div class="slot volny"><span class="zle">Pečeň</span> / —</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="">Viera</span></div></div>
+<div class="mk-stred"><div class="bez-obr">Kronikárka</div><p class="mk-nazov">Kronikárka</p><p class="mk-efekt"><b>Bitka:</b> Ak si prehral predošlú bitku, udelíš súperovi 1 Pecku navyše.</p></div>
+<div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot volny"><span class="utok">Povera</span> / <span class="">Vízia</span></div><div class="slot volny"><span class="">Vízia</span> / <span class="utok">Povera</span></div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Bitka: Ak si prehral predošlú bitku, udelíš súperovi 1 Pecku navyše.</p>
+<h3>Príbeh</h3><p class="ilu">Obecnú kroniku píše tridsať rokov krasopisom do zošita s kvetinkovou obálkou. Kto ju na hodoch nevyzval do tanca, je v kronike ‚občan pochybných mravov‘ až do tretieho kolena. Prehry dediny zapisuje dlhšie ako výhry, lebo sú zaujímavejšie a je ich viac. Štyri zväzky, ani jedna pravdivá strana — a aj tak jej každý verí viac ako televízii.</p>
+<h3>Účel v hre</h3><p>Doháňanie: ak si prehral predošlú bitku, v ďalšej Pecka navyše. Podľa zásady, že odmena patrí znevýhodnenému.</p>
+<ul><li>Vylož ju po prehratej bitke — súper vie, že prichádza Pecka.</li><li>Remíza (sekera) ani prvá bitka ju nespúšťa.</li><li>Viera vľavo dole tlmí súperove Povery; Povera a Vízia vpravo dole.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Zapísaná porážka:</b> Prehra: Dostaneš 1 špak za každú svoju kartu v línii. <span class="pozn">— Mechanizmus Kultúrneho domu; porazený neodíde naprázdno.</span></li><li><b>A2 — Kratší koniec:</b> Bitka: Ak máš menej špakov ako súper, udelíš súperovi 1 Pecku navyše. <span class="pozn">— Stav celej partie namiesto poslednej bitky; platí od začiatku.</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 2 b. / 4 kusy (Pečeň, Viera, Vízia, Povera) — ako Mäsiar (2 / 4), pod Šoférom (2,5 / 5, tiež Pecka navyše s podmienkou). Bot ≈ 0,3. <b>Verdikt: porovnateľná.</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Dnes nič navyše (tag bez pravidla). Účinok dostane, len ak prejde Pani z obecného (umlčí ju) alebo Poslanec A2 (ráta ju).</p>
+<h3>Rozmiestnenie akcií</h3><p>Pečeň vľavo hore (0/1), Viera, Vízia a Povera dole. Bez Odporu a Posilnenia.</p>
+<h3>Overenie v jadre</h3><ul><li>Víťaz predošlej bitky je na nástenke (<code>engine.ts:435</code>, <code>nastenka[].vitaz</code>; remíza = null).</li><li>Pecka navyše s podmienkou = Šofér (<code>effects.ts:503</code>).</li></ul>
+<h3>Riziko</h3><p>Prvá bitka partie efekt nemá — v krátkej hre (3 bitky) sú to 2 šance. A2 funguje od začiatku.</p>
+<p class="roz roz-ano">Odporúčanie: Áno — odmena za väčšiu výzvu.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;kronikarka&quot;,
+ &quot;index&quot;: 906,
+ &quot;name&quot;: &quot;Kronikárka&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Žena&quot;,
+  &quot;Pamätník&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Bitka: Ak si prehral predošlú bitku, udelíš súperovi 1 Pecku navyše.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Bitka&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   2
+  ],
+  &quot;actions&quot;: {
+   &quot;PoškodeniePečene&quot;: 1,
+   &quot;Viera&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;PoškodeniePečene&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;PoškodeniePečene&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Viera&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0,
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Vízia&quot;: 1,
+   &quot;Povera&quot;: 1
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="kronikarka"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Kronikárka"></textarea></fieldset>
+</section>
+
+<section class="karta" id="pani_z_obecneho" data-k="pani_z_obecneho" data-nazov="Pani z obecného">
+<div class="karta-hlava"><h2><span class="cislo">6</span>Pani z obecného</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Žena</span><span class="tag">Pracujúci</span><span class="tag">spúšťač: Furt</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot volny"><span class="">Odpor</span> / —</div><div class="slot volny"><span class="">Odpor</span> / —</div><div class="slot"><span class="">Obmedzenie</span></div><div class="slot blok" aria-label="blokovaný">✕</div></div>
+<div class="mk-stred"><div class="bez-obr">Pani z obecného</div><p class="mk-nazov">Pani z obecného</p><p class="mk-efekt"><b>Furt:</b> Efekty ostatných Autorít v jej okolí neplatia.</p></div>
+<div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="zle">Hazard</span></div><div class="slot volny"><span class="">Robota</span> / —</div><div class="slot volny"><span class="">Robota</span> / —</div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Furt: Efekty ostatných Autorít v jej okolí neplatia.</p>
+<h3>Príbeh</h3><p class="ilu">Úradné hodiny pondelok a streda od deviatej do jedenástej, z toho hodina desiata a pol hodiny káva. Pečiatku nedá ani vlastnému chlapovi, kým nemá kolok, a kolky predávajú v okrese, kam autobus nechodí. Pred jej okienkom sú si všetci rovní: rovnako nič nevybavia. Tag Pracujúci má len preto, že to tak stojí v pracovnej zmluve.</p>
+<h3>Účel v hre</h3><p>Byrokratická brzda: efekty ostatných Autorít v jej okolí (oboch hráčov) neplatia, kým s ňou susedia. Akcie ostávajú.</p>
+<ul><li>Polož ju k súperovej Policajtke — prikladanie k Policajtke prestane stáť Dlh.</li><li>Vedľa súperovej Svokry alebo Traktoristu zruší ich Rany a Pecky navyše.</li><li>Pozor na vlastné Autority — brzdí aj tie.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Úradné hodiny:</b> Konflikt: Súper v najbližšej Pitke nesmie fajčiť. <span class="pozn">— Mechanizmus Jednoty a Benzínky; bez väzby na tag.</span></li><li><b>A2 — Spis:</b> Furt: Efekty Kriminálov v jej okolí neplatia. <span class="pozn">— Iná cieľová skupina; tag Autorita ostane bez väzby.</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 1,5 b. / 4 kusy (Odpor, Obmedzenie, Hazard, Robota) — pod Mäsiarom (2 / 4), ktorý robí to isté pre Zvieratá (bot 0,2). Silu dáva počet Autorít (dnes 4, s novými až 11). <b>Verdikt: slabšia (rastie s počtom Autorít).</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Sama Autorita a zároveň jediná karta, ktorej efekt na tag Autorita mieri — umlčí aj ostatné Autority, nielen súperove.</p>
+<h3>Rozmiestnenie akcií</h3><p>Odpor vľavo hore (0/1), Hazard vpravo v riadku 1, Obmedzenie a Robota dole. Odpor + súperov Odpor = Vzbura.</p>
+<h3>Overenie v jadre</h3><ul><li>„Efekty v okolí neplatia“ = Mäsiar (<code>partia.ts:766</code>), filter tagu Autorita namiesto Zviera.</li><li>Tag Autorita v jadre: <code>efektPotlaceny</code> (<code>effects.ts:220–229</code>) — umlčanie Autorít už existuje (starý Praudovravec), dá sa naň napojiť.</li></ul>
+<h3>Riziko</h3><p>Ak prejde málo nových Autorít, karta má málo cieľov. Dve Pani z obecného vedľa seba sa umlčia navzájom („ostatných“ = seba nie, susednú áno).</p>
+<p class="roz roz-ano">Odporúčanie: Áno — jediná karta, pri ktorej tag Autorita niečo znamená.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;pani_z_obecneho&quot;,
+ &quot;index&quot;: 907,
+ &quot;name&quot;: &quot;Pani z obecného&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Žena&quot;,
+  &quot;Pracujúci&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Furt: Efekty ostatných Autorít v jej okolí neplatia.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Furt&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   3
+  ],
+  &quot;actions&quot;: {
+   &quot;Odpor&quot;: 1,
+   &quot;Obmedzenie&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;Odpor&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;Odpor&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Obmedzenie&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Robota&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;1&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Robota&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Robota&quot;
+   ]
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="pani_z_obecneho"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Pani z obecného"></textarea></fieldset>
+</section>
+
+<section class="karta" id="poslanec" data-k="poslanec" data-nazov="Poslanec">
+<div class="karta-hlava"><h2><span class="cislo">7</span>Poslanec</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Chlap</span><span class="tag">Influencer</span><span class="tag">spúšťač: Úplatok</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot"><span class="zle">Hazard</span></div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot volny"><span class="">Pakt</span> / <span class="utok">Rana</span></div><div class="slot volny"><span class="utok">Rana</span> / <span class="">Pakt</span></div></div>
+<div class="mk-stred"><div class="bez-obr">Poslanec</div><p class="mk-nazov">Poslanec</p><p class="mk-efekt"><b>Úplatok:</b> Súper smie v Pitke dať na túto kartu 1 cigaretu, dostaneš ju ty. Do konca kola sa akcie tejto karty počítajú jemu.</p></div>
+<div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot volny"><span class="">Cigareta</span> / <span class="utok">Pecka</span></div><div class="slot volny"><span class="utok">Pecka</span> / <span class="">Cigareta</span></div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Úplatok: Súper smie v Pitke dať na túto kartu 1 cigaretu, dostaneš ju ty. Do konca kola sa akcie tejto karty počítajú jemu.</p>
+<h3>Príbeh</h3><p class="ilu">Do zastupiteľstva sa dostal so štyridsiatimi hlasmi, z toho tridsať za guláš a sud piva pred voľbami. Odvtedy hlasuje s tým, kto naposledy zaplatil rundu. Na dedinskej stránke píše o boji proti korupcii, cez víkend mu obecní robotníci betónujú súkromnú cestu. Jeho slovo platí ako jeho názor: na predaj, a lacno.</p>
+<h3>Účel v hre</h3><p>Silné akcie (Pecka, Rana, Cigareta, Pakt), ale súper si ho kúpi za 1 cigaretu — majiteľ cigaretu dostane, akcie do konca kola idú súperovi (aj Hazard).</p>
+<ul><li>Kúp súperovho Poslanca, keď má na spoji Pecku — jeho Hazard berieš ako cenu.</li><li>Majiteľ: polož ho tam, kde je Hazard aktívny, nech kúpa súpera bolí.</li><li>Pakt dole kopíruje susedovu akciu; vedľa Posilnenia vzniknú dve Posilnenia.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Poplatok:</b> Konflikt: Súper ti dá 1 cigaretu (koľko má). <span class="pozn">— Bez prepínania majiteľa, jednoduché.</span></li><li><b>A2 — Kamarátšoft:</b> Bitka: Za každú ďalšiu tvoju Autoritu v línii udelíš súperovi 1 Ranu navyše. <span class="pozn">— Dá tagu Autorita herný zmysel (synergia Autorít).</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 3,5 b. / 5 kusov — nad Kulturistom (3 / 4, tiež Úplatok, bot 0,2). Nevýhodu (kúpa za 1 cig) vyrovnávajú akcie → porovnateľná. <b>Verdikt: porovnateľná.</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Dnes nič navyše (tag bez pravidla). Účinok dostane, len ak prejde Pani z obecného (umlčí ju) alebo Poslanec A2 (ráta ju).</p>
+<h3>Rozmiestnenie akcií</h3><p>Hazard vľavo hore (0), Pakt a Rana vľavo dole, Pecka a Cigareta vpravo dole. Bez Odporu.</p>
+<h3>Overenie v jadre</h3><ul><li>Úplatok (súper platí, raz za Pitku na kartu) = Kulturista (<code>engine.ts:4047</code>); cigareta ide majiteľovi namiesto prepadnutia — výnimka v texte karty.</li><li>Akcie počítané inému hráčovi = Kočovník (<code>partia.ts:875</code>).</li></ul>
+<h3>Riziko</h3><p>Pakt + Posilnenie = dve Posilnenia (PRAVIDLA.md r. 303) — s Forsážou by Pakt spúšťal Forsáž. Rozhodnúť, alebo Pakt vymeniť za Ranu.</p>
+<p class="roz roz-otv">Odporúčanie: Rezerva — najzábavnejší, ale Pakt pri Forsáži treba rozhodnúť.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;poslanec&quot;,
+ &quot;index&quot;: 905,
+ &quot;name&quot;: &quot;Poslanec&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Chlap&quot;,
+  &quot;Influencer&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Úplatok: Súper smie v Pitke dať na túto kartu 1 cigaretu, dostaneš ju ty. Do konca kola sa akcie tejto karty počítajú jemu.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Úplatok&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Pakt&quot;: 1,
+   &quot;Rana&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Pakt&quot;,
+    &quot;Rana&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Pakt&quot;,
+    &quot;Rana&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0,
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Pecka&quot;: 1,
+   &quot;Cigareta&quot;: 1
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="poslanec"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Poslanec"></textarea></fieldset>
+</section>
+
+<section class="karta" id="trener" data-k="trener" data-nazov="Tréner">
+<div class="karta-hlava"><h2><span class="cislo">8</span>Tréner</h2>
+<div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Chlap</span><span class="tag">Závislý</span><span class="tag">spúšťač: Nástup</span></div></div>
+<div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="zle">Hazard</span></div><div class="slot volny"><span class="">Poldeci</span> / <span class="utok">Rana</span></div><div class="slot volny"><span class="utok">Rana</span> / <span class="">Poldeci</span></div></div>
+<div class="mk-stred"><div class="bez-obr">Tréner</div><p class="mk-nazov">Tréner</p><p class="mk-efekt"><b>Nástup:</b> Smieš odhodiť 1 kartu z ruky a vziať si 1 kartu zo šenku.</p></div>
+<div class="mk-strana"><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot volny"><span class="utok">Pecka</span> / —</div><div class="slot volny"><span class="utok">Pecka</span> / —</div></div></div><p class="mk-kod">Variantov 4 (vľavo 2 × vpravo 2); „/“ = akcia sa v tom slote strieda podľa variantu, — = prázdny.</p></figure></div>
+<h3>Efekt</h3><p class="zmena">Nástup: Smieš odhodiť 1 kartu z ruky a vziať si 1 kartu zo šenku.</p>
+<h3>Príbeh</h3><p class="ilu">Tréner TJ Sokol, tretia trieda. Zostavu robí v pondelok podľa toho, kto mu v nedeľu kúpil pivo, a v polčase motivuje placatkou a krikom ‚Behajte, vy dobytok!‘. Dvadsať rokov nevyhral nič. Nikto v dedine sa však neodváži povedať, že by to robil lepšie — lebo by to potom musel robiť on.</p>
+<h3>Účel v hre</h3><p>Striedanie: pri vyložení smie vymeniť jednu kartu z ruky za kartu zo šenku. Opraví zlú ruku uprostred Zhromaždenia.</p>
+<ul><li>Odhoď kartu, ktorá sa nehodí, a vezmi si to, čo súper v šenku nechal.</li><li>Absťák odhodiť nemožno (zahodí ho len Vízia) — pozri riziko.</li><li>Rana a Poldeci vľavo dole, Pecka vpravo dole.</li></ul>
+<h3>Alternatívy efektu</h3><ul class="efekty"><li><b>A1 — Prevaha:</b> Bitka: Ak máš v jeho kraji prevahu, udelíš súperovi 1 Ranu navyše. <span class="pozn">— Ľahší Traktorista bez trestu.</span></li><li><b>A2 — Prestup:</b> Kšeft: Za 1 cigaretu odhoď 1 kartu z ruky a dober si 1 kartu. <span class="pozn">— Ďalšie odbytisko cigariet; prekrýva sa s Predavačkou.</span></li></ul>
+<h3>Sila voči podobným</h3><p>Akcie 3 b. / 4 kusy (Hazard, Rana, Poldeci, Pecka) — pod Hasičom (5 / 3), ktorý tiež mení ruku pri Nástupe. Bot ≈ 0,3. <b>Verdikt: porovnateľná.</b></p>
+<h3>Tag Autorita pri tejto karte</h3><p>Dnes nič navyše (tag bez pravidla). Účinok dostane, len ak prejde Pani z obecného (umlčí ju) alebo Poslanec A2 (ráta ju).</p>
+<h3>Rozmiestnenie akcií</h3><p>Hazard vľavo v riadku 1, Rana, Poldeci a Pecka dole. Bez Odporu a Posilnenia.</p>
+<h3>Overenie v jadre</h3><ul><li>Karta zo šenku do ruky = Autobusár (<code>engine.ts:3980</code>); voľba pri Nástupe, hra čaká ako pri Hasičovi (<code>engine.ts:2786</code>).</li><li>Šenok počas Zhromaždenia existuje (stavba pred Zhromaždením, PRAVIDLA.md §5).</li></ul>
+<h3>Riziko</h3><p>Treba rozhodnúť, či smie odhodiť kliatbu (Hasič kliatbu vrátiť smie). Prekrýva sa s Hasičom aj s Predavačkou (obaja menia ruku).</p>
+<p class="roz roz-otv">Odporúčanie: Rezerva — funguje, ale ako Autorita je najslabší.</p>
+<details><summary>Záznam pre cards.json (overený parseCards, 4 variantov)</summary><pre>{
+ &quot;id&quot;: &quot;trener&quot;,
+ &quot;index&quot;: 908,
+ &quot;name&quot;: &quot;Tréner&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Chlap&quot;,
+  &quot;Závislý&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Nástup: Smieš odhodiť 1 kartu z ruky a vziať si 1 kartu zo šenku.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Nástup&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   0
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Rana&quot;: 1,
+   &quot;Poldeci&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;1&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Rana&quot;,
+    &quot;Poldeci&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Rana&quot;,
+    &quot;Poldeci&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0,
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Pecka&quot;: 1
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<fieldset class="volba"><legend>Tvoje rozhodnutie</legend><div class="volby-q" data-volby="trener"></div>
+<textarea placeholder="Poznámka (iný názov, efekt, akcie…)" aria-label="Poznámka k Tréner"></textarea></fieldset>
+</section>
+
+<section class="ramik navrhy"><h2>Otázky pre Michala</h2><ol>
+<li>Ktoré karty (aspoň 5)? Odporúčam 6 so značkou „áno“.</li>
+<li>Predavačka: Kšeft za 1, alebo za 2 cigarety? Alebo A1 „na zošit“ — platba zadĺžením by bola nová mena Kšeftu.</li>
+<li>Má mať tag Autorita aj <b>vlastné pravidlo</b>, alebo stačí, že naň odkazujú efekty (Pani z obecného, Poslanec A2)?</li>
+<li>Poslanec: má Pakt + Posilnenie spustiť Forsáž? Ak nie, Pakt vymením za Ranu.</li>
+<li>Tréner: smie odhodiť aj kliatbu?</li>
+</ol></section>
+
+<footer>NA EX! — návrhy vymyselníka, 2026-11-02. Akcie a varianty overené proti <code>packages/core/src/data.ts</code> (parseCards) a <code>variants.ts</code> (sideLayouts). Do tvorcu karty pridá admin až po schválení.</footer>
+</main>
+
+<div class="lista" role="region" aria-label="Stav výberu"><div class="lista-in"><span class="lista-text" id="lista-text" aria-live="polite">Zatiaľ nič nie je vybrané.</span><button type="button" class="hlavne" id="kopiruj">Skopírovať rozhodnutia</button></div></div>
+<textarea id="schranka" class="skryte" aria-hidden="true" tabindex="-1"></textarea>
+
+<script>
+(function () {
+  "use strict";
+  var KLUC = "naex-autority-v1", koren = document.documentElement;
+  try { var t = localStorage.getItem(KLUC + "-tema"); if (t === "light" || t === "dark") koren.setAttribute("data-theme", t); } catch (e) { /* bez úložiska */ }
+  document.getElementById("tema").addEventListener("click", function () {
+    var teraz = koren.getAttribute("data-theme") || (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    var nova = teraz === "light" ? "dark" : "light";
+    koren.setAttribute("data-theme", nova);
+    try { localStorage.setItem(KLUC + "-tema", nova); } catch (e) { /* bez úložiska */ }
+  });
+  var MOZ = [["ano", "Áno"], ["a1", "Áno s A1"], ["a2", "Áno s A2"], ["prerobit", "Prerobiť"], ["nie", "Nie"]];
+  var stav = {};
+  try { var ul = JSON.parse(localStorage.getItem(KLUC) || "{}"); if (ul && typeof ul === "object") stav = ul; } catch (e) { /* bez úložiska */ }
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) { /* bez úložiska */ } }
+  function zaznam(k) { if (!stav[k] || typeof stav[k] !== "object") stav[k] = {}; return stav[k]; }
+  var karty = Array.prototype.slice.call(document.querySelectorAll("section[data-k]"));
+  karty.forEach(function (s) {
+    var k = s.getAttribute("data-k"), obal = s.querySelector("[data-volby]");
+    MOZ.forEach(function (m) {
+      var l = document.createElement("label"), i = document.createElement("input");
+      i.type = "radio"; i.name = "v-" + k; i.value = m[0]; i.checked = (stav[k] && stav[k].v) === m[0];
+      i.addEventListener("change", function () { zaznam(k).v = m[0]; uloz(); obnov(); });
+      l.appendChild(i); l.appendChild(document.createTextNode(m[1])); obal.appendChild(l);
+    });
+    var ta = s.querySelector("textarea");
+    ta.value = (stav[k] && stav[k].p) || "";
+    ta.addEventListener("input", function () { zaznam(k).p = ta.value; uloz(); });
+  });
+  function obnov() {
+    var vyb = karty.filter(function (s) { var x = stav[s.getAttribute("data-k")]; return x && x.v; }).length;
+    var ano = karty.filter(function (s) { var x = stav[s.getAttribute("data-k")]; return x && /^(ano|a1|a2)$/.test(x.v || ""); }).length;
+    document.getElementById("lista-text").textContent = vyb === 0 ? "Zatiaľ nič nie je vybrané." :
+      "Rozhodnuté " + vyb + " z " + karty.length + ", prijatých " + ano + (ano < 5 ? " (zadanie: aspoň 5)" : "") + ". Ukladá sa v tomto prehliadači.";
+  }
+  obnov();
+  function suhrn() {
+    var r = ["Michal — nové Autority (docs/napady/autority.html):", ""];
+    karty.forEach(function (s) {
+      var k = s.getAttribute("data-k"), x = stav[k] || {}, txt = "bez voľby", p = (x.p || "").trim();
+      MOZ.forEach(function (m) { if (m[0] === x.v) txt = m[1]; });
+      r.push(s.getAttribute("data-nazov") + ": " + txt + (p ? " — " + p : ""));
+    });
+    return r.join("\n");
+  }
+  function kopiruj(text, hlaska) {
+    var hotovo = function () { document.getElementById("lista-text").textContent = hlaska; };
+    var zaloha = function () {
+      var s = document.getElementById("schranka"); s.value = text; s.select();
+      try { if (document.execCommand("copy")) { hotovo(); return; } } catch (e) { /* ďalej prompt */ }
+      window.prompt("Skopíruj text:", text);
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(hotovo, zaloha);
+      else zaloha();
+    } catch (e) { zaloha(); }
+  }
+  document.getElementById("kopiruj").addEventListener("click", function () { kopiruj(suhrn(), "Rozhodnutia sú skopírované. Vlož ich Leaderovi."); });
+})();
+</script>
+</body>
+</html>
