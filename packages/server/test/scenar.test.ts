@@ -105,5 +105,6 @@ describe("scenár zajatia — tok v jadre (§10)", () => {
     const vysledky = new Set<string>();
     for (let rozdanie = 1; rozdanie <= 30 && vysledky.size < 2; rozdanie++) vysledky.add(zajatie(rozdanie));
     expect([...vysledky].sort()).toEqual(["ustup", "vazen"]);
-  });
+    // Prehráva viac rozdaní za sebou — pod záťažou celej sady predvolených 5 s nestačí.
+  }, 30_000);
 });
