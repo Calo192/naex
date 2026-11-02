@@ -289,8 +289,8 @@ Kód je jeden, rozdiel je v prostredí: Zrejúca `NAEX_INSTANCIA=zrejuca` a
 jej tvorcu); Vypálená `NAEX_ZREJUCA_ADRESA=/` (ponúka voľbu) a
 `NAEX_ZREJUCA_URL=http://naex-zrejuca:8787` (porovnanie verzií). Obrázky, ktoré
 Zrejúca nemá, podá z Vypálenej. Hudba a hlášky Melichara sú v dátach každej
-inštancie zvlášť — do Zrejúcej ich treba nahrať ako v častiach 5b a 5c, len v
-`/opt/naex-zrejuca/deploy` cez `docker compose -f docker-compose.zrejuca.yml … naex-zrejuca …`.
+inštancie zvlášť — importujú sa do Vypálenej (časti 5b a 5c) a `nahraj.sh --zrejuca`
+ich pri každom nasadení Zrejúcej skopíruje z Vypálenej (po importe teda stačí nasadiť Zrejúcu).
 
 **Prechod z adresy zrejuca.<DOMENA> na jednu adresu** (raz, infra bez zmeny hry):
 
