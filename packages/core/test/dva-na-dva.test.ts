@@ -173,6 +173,101 @@ describe("Zhromaždenie 2 na 2", () => {
   });
 });
 
+/**
+ * Pitka 2 na 2 po odkrytí NA EX: každý vyložil Pijana, všetci pasovali, kapitán obranného
+ * tímu dal NA EX a odpovedá útočný tím. `uprav` zmení stav tesne pred odkrytím.
+ */
+function vOdpovedi(uprav: (s: GameState) => GameState = (s) => s): GameState {
+  let s = vZhromazdeni(3);
+  for (let i = 0; i < 4; i++) s = vylozPijana(s);
+  while (s.faza === "zhromazdenie") s = apply(data, s, { type: "pass" }, miestoNaTahu(s) as Miesto).state;
+  expect(s.faza).toBe("pitka");
+  const u = s.utocnik;
+  const o = opponentOf(u);
+  const naex = legalCommands(data, s, kapitan(s, o)).find((c) => c.type === "naex");
+  if (naex === undefined) throw new Error("Bez NA EX.");
+  s = apply(data, s, naex, kapitan(s, o)).state;
+  s = apply(data, s, { type: "skipNaex" }, kapitan(s, o)).state;
+  s = uprav(s);
+  return apply(data, s, { type: "skipNaex" }, kapitan(s, u)).state;
+}
+
+/** Stav s vyprázdnenou rukou miesta. */
+function bezRuky(s: GameState, m: Miesto): GameState {
+  const t = timMiesta(m);
+  const h = s.hraci[t];
+  const hraci = [...s.hraci] as [GameState["hraci"][0], GameState["hraci"][1]];
+  hraci[t] = clenMiesta(m) === 0 ? { ...h, ruka: [] } : { ...h, rukaDruheho: [] };
+  return { ...s, hraci };
+}
+
+describe("odpoveď na NA EX 2 na 2 — kapitán určí (Michal 2026-11-02, Q10)", () => {
+  it("odpovedá kapitán; partner bez odovzdania nehrá", () => {
+    const s = vOdpovedi();
+    expect(s.pitkaStav?.reakcia).toBe(s.utocnik);
+    const u1 = kapitan(s, s.utocnik);
+    const u2 = partnerMiesta(u1);
+    expect(miestoNaTahu(s)).toBe(u1);
+    expect(s.pitkaStav?.odpoveda).toBe(u1);
+    const typy = legalCommands(data, s, u1).map((c) => c.type);
+    expect(typy).toContain("bezReakcie");
+    expect(typy).toContain("odovzdatOdpoved");
+    expect(typy).toContain("place");
+    expect(legalCommands(data, s, u2)).toEqual([]);
+    const karta = rukaMiesta(s, u2)[0];
+    expect(() => apply(data, s, { type: "place", uid: karta?.uid ?? -1, target: "vlastna" }, u2)).toThrow();
+    expect(() => apply(data, s, { type: "odovzdatOdpoved" }, u2)).toThrow();
+  });
+
+  it("kapitán odpovie sám kartou zo svojej ruky", () => {
+    let s = vOdpovedi();
+    const u1 = kapitan(s, s.utocnik);
+    const cmd = legalCommands(data, s, u1).find((c) => c.type === "place");
+    if (cmd?.type !== "place") throw new Error("Bez odpovede.");
+    const partnera = rukaMiesta(s, partnerMiesta(u1));
+    s = apply(data, s, cmd, u1).state;
+    expect(rukaMiesta(s, u1).some((k) => k.uid === cmd.uid)).toBe(false);
+    expect(rukaMiesta(s, partnerMiesta(u1))).toEqual(partnera);
+    expect(s.pitkaStav?.odpoveda).toBeUndefined();
+  });
+
+  it("kapitán odovzdá odpoveď jedným príkazom — partner odpovie zo svojej ruky", () => {
+    let s = vOdpovedi();
+    const u1 = kapitan(s, s.utocnik);
+    const u2 = partnerMiesta(u1);
+    s = apply(data, s, { type: "odovzdatOdpoved" }, u1).state;
+    expect(miestoNaTahu(s)).toBe(u2);
+    expect(legalCommands(data, s, u1)).toEqual([]);
+    expect(legalCommands(data, s, u2).map((c) => c.type)).not.toContain("odovzdatOdpoved");
+    const kapitana = rukaMiesta(s, u1);
+    const cmd = legalCommands(data, s, u2).find((c) => c.type === "place");
+    if (cmd?.type !== "place") throw new Error("Bez odpovede.");
+    s = apply(data, s, cmd, u2).state;
+    expect(rukaMiesta(s, u2).some((k) => k.uid === cmd.uid)).toBe(false);
+    expect(rukaMiesta(s, u1)).toEqual(kapitana);
+  });
+
+  it("kapitán bez odpovede v ruke: hra za tím neodpovie, kým má čím partner", () => {
+    const s = vOdpovedi((x) => bezRuky(x, kapitan(x, x.utocnik)));
+    const u1 = kapitan(s, s.utocnik);
+    expect(miestoNaTahu(s)).toBe(u1);
+    expect(legalCommands(data, s, u1).map((c) => c.type).sort()).toEqual(["bezReakcie", "odovzdatOdpoved"]);
+  });
+
+  it("partner bez odpovede v ruke: odovzdať sa nedá", () => {
+    const s = vOdpovedi((x) => bezRuky(x, partnerMiesta(kapitan(x, x.utocnik))));
+    const u1 = kapitan(s, s.utocnik);
+    expect(legalCommands(data, s, u1).map((c) => c.type)).not.toContain("odovzdatOdpoved");
+    expect(() => apply(data, s, { type: "odovzdatOdpoved" }, u1)).toThrow();
+  });
+
+  it("nikto z tímu nemá čím odpovedať — tím sa preskočí ako v 1 na 1", () => {
+    const s = vOdpovedi((x) => bezRuky(bezRuky(x, kapitan(x, x.utocnik)), partnerMiesta(kapitan(x, x.utocnik))));
+    expect(s.pitkaStav?.reakcia ?? null).toBeNull();
+    expect(s.pitkaStav?.odpoveda).toBeUndefined();
+  });
+});
+
 /** Partia 2 na 2 po voľbe cieľa — v drafte (pokus o zajatie nikto nemá, hra ho preskočí). */
 function vDrafte(): GameState {
   const s = setupGame(data, 7, { format: "2na2" });

@@ -253,6 +253,11 @@ export interface PitkaStav {
    * ten, kto NA EX dal.
    */
   readonly reakcia: PlayerId | null;
+  /**
+   * 2 na 2 (Michal 2026-11-02, Q10): miesto, ktoré za tím `reakcia` odpovedá — najprv
+   * kapitán, ten smie odpoveď odovzdať partnerovi. V 1 na 1 chýba.
+   */
+  readonly odpoveda?: Miesto;
   /** Poštárka a Starosta sa smú použiť raz za Pitku (do v7; od v9 sa nepoužíva). */
   readonly postarka: readonly [boolean, boolean];
   readonly starosta: readonly [boolean, boolean];
@@ -618,6 +623,8 @@ export type Command =
   | { readonly type: "skipNaex" }
   // Reakcia na súperovo NA EX: „place“ (jedna karta do línie) alebo nič.
   | { readonly type: "bezReakcie" }
+  // 2 na 2 (Michal 2026-11-02, Q10): kapitán odovzdá odpoveď na NA EX partnerovi.
+  | { readonly type: "odovzdatOdpoved" }
   // Veštica (Prehra): poradové čísla v odhalených doberacích balíčkoch.
   | { readonly type: "vestica"; readonly moja: number; readonly jeho: number }
   // Vízia na konci Pitky: vrchnú kartu doberacieho balíčka do ruky (true), alebo zahodiť (false).
@@ -1664,7 +1671,7 @@ function naTahuVoFaze(state: GameState): Miesto | null {
       if (state.vizia !== null) return tim(viziaNaTahu(state));
       const pk = state.pitkaStav;
       if (pk === null) return null;
-      if (pk.reakcia !== null) return tim(pk.reakcia);
+      if (pk.reakcia !== null) return pk.odpoveda ?? tim(pk.reakcia);
       // Pitka naraz: hrajú obaja — naTahu ukáže toho, na koho sa čaká, obrancu skôr.
       const obr = obranca(state);
       return tim([obr, state.utocnik].find((q) => hraVPitke(pk, q)) ?? null);
@@ -1688,9 +1695,9 @@ export function mozeHrat(state: GameState, kto: Miesto): boolean {
   if (state.faza === "draft" && state.draftStav?.krok === "stavba") {
     return vyberMiesta(state.draftStav, kto) === null;
   }
-  // 2 na 2: na NA EX odpovedá za tím jeden člen — ktorýkoľvek z dvoch (dohodnú sa).
+  // 2 na 2: na NA EX odpovedá za tím jeden člen — ten, koho určí kapitán (Q10).
   if (state.format === "2na2" && state.faza === "pitka" && state.vizia === null && state.pitkaStav !== null && state.pitkaStav.reakcia !== null) {
-    return state.pitkaStav.reakcia === p;
+    return state.pitkaStav.reakcia === p && (state.pitkaStav.odpoveda ?? kapitan(state, p)) === kto;
   }
   // Pitka naraz (Michal 2026-10-27): kým niekto neodpovedá na NA EX, hrajú obaja.
   if (state.faza === "pitka" && state.vizia === null && state.pitkaStav !== null && state.pitkaStav.reakcia === null) {
@@ -1804,6 +1811,9 @@ function applyPrikaz(
       break;
     case "bezReakcie":
       cmdBezReakcie(s, data, hracId, events);
+      break;
+    case "odovzdatOdpoved":
+      cmdOdovzdatOdpoved(s, data, kto, events);
       break;
     case "vestica":
       cmdVestica(s, data, cmd, hracId, events);
@@ -1928,8 +1938,6 @@ function nevyhnutnyTah(data: GameData, s: MutState, kto: Miesto, events: Event[]
     const p = timMiesta(kto);
     const moznosti = legalCommands(data, s as GameState, kto);
     const jedina = moznosti.length === 1 ? moznosti[0] : undefined;
-    // 2 na 2: za tím neodpovedá nikto, len keď nemá čím odpovedať ani partner.
-    if (jedina?.type === "bezReakcie" && s.format === "2na2" && legalCommands(data, s as GameState, partnerMiesta(kto)).length > 1) return false;
     if (jedina?.type === "pass") {
       events.push({ type: "log", text: `Hráč ${p + 1} už nemá čo vyložiť.` });
       events.push({ type: "autoPas", hrac: p, dovody: dovodyAutoPasu(data, s as GameState, p), pre: p });
@@ -3381,6 +3389,7 @@ function dalsiaReakcia(s: MutState, data: GameData, events: Event[]): boolean {
     pitka.frontaReakcii = fronta;
     pitka.reakcia = q;
     pitka.naTahu = q;
+    if (s.format === "2na2") pitka.odpoveda = kapitan(s, q);
     const kraj = pitka.krajOdpovede ?? null;
     events.push({
       type: "log",
@@ -3390,6 +3399,7 @@ function dalsiaReakcia(s: MutState, data: GameData, events: Event[]): boolean {
   }
   pitka.frontaReakcii = [];
   pitka.reakcia = null;
+  delete pitka.odpoveda;
   return false;
 }
 
@@ -3596,6 +3606,26 @@ export function cieleOdpovede(
 /** Hráč q má v ruke kartu, ktorú môže ako odpoveď vyložiť (mimo limitu, v9.2 aj s krajom). */
 function mozeReagovat(s: GameState, data: GameData, q: PlayerId): boolean {
   return kartyVRukach(s.hraci[q]).some((k) => cieleOdpovede(data, s, q, k).length > 0);
+}
+
+/** Miesto má vo svojej ruke kartu, ktorou môže za tím odpovedať (2 na 2). */
+function mozeOdpovedatMiesto(s: GameState, data: GameData, m: Miesto): boolean {
+  return rukaMiesta(s, m).some((k) => cieleOdpovede(data, s, timMiesta(m), k).length > 0);
+}
+
+/**
+ * Kapitán odovzdá odpoveď na NA EX partnerovi (2 na 2, Michal 2026-11-02, Q10) — len
+ * keď partner má čím odpovedať. Potom rozhoduje partner (odpoveď alebo nič), späť nie.
+ */
+function cmdOdovzdatOdpoved(s: MutState, data: GameData, kto: Miesto, events: Event[]): void {
+  const p = timMiesta(kto);
+  const pitka = s.pitkaStav;
+  need(s.format === "2na2" && s.faza === "pitka" && pitka !== null && pitka.reakcia === p, "Teraz sa na NA EX neodpovedá.");
+  need(kto === kapitan(s, p) && pitka.odpoveda === kto, "Odpoveď odovzdáva kapitán.");
+  const partner = partnerMiesta(kto);
+  need(mozeOdpovedatMiesto(s as GameState, data, partner), "Partner nemá čím odpovedať.");
+  pitka.odpoveda = partner;
+  events.push({ type: "log", text: `Kapitán tímu ${p + 1} odovzdáva odpoveď na NA EX partnerovi (hráč ${partner + 1}).` });
 }
 
 /** Odpoveď na NA EX (v9.2): karta lícom dole, zadarmo, mimo limitu; otočí sa až s odpoveďou súpera. */
@@ -5912,6 +5942,10 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
       if (pitka.reakcia === p) {
         // Odpoveď na NA EX (v9.2): jedna karta lícom dole mimo limitu (po súperovi len na druhý kraj), alebo nič.
         out.push({ type: "bezReakcie" });
+        // 2 na 2 (Q10): kapitán smie odpoveď odovzdať partnerovi, ktorý má čím odpovedať.
+        if (pitka.odpoveda === kto && kto === kapitan(state, p) && mozeOdpovedatMiesto(state, data, partnerMiesta(kto))) {
+          out.push({ type: "odovzdatOdpoved" });
+        }
         for (const karta of ruka) {
           for (const target of cieleOdpovede(data, state, p, karta)) out.push({ type: "place", uid: karta.uid, target });
         }
