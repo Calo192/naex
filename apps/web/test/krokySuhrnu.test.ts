@@ -8,7 +8,7 @@ import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { BitkaNaNastenke, ClientState, ElderState, GameState, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
 import { apply, loadGameData, naTahu, setupGame, tahBota, viewFor } from "@naex/core";
-import { fazaKroku, opisKroku, riadkyKroku, stitkyKroku, suhrnBitky, zaciatokKola, type KontextSuhrnu, type ZaciatokKola } from "../src/hra/krokySuhrnu.ts";
+import { dalsiPohladSuhrnu, fazaKroku, opisKroku, riadkyKroku, stitkyKroku, suhrnBitky, zaciatokKola, type KontextSuhrnu, type ZaciatokKola } from "../src/hra/krokySuhrnu.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
@@ -151,4 +151,83 @@ describe("súhrn po bitke v partii botov", () => {
     },
     120_000,
   );
+});
+
+describe("spúšťanie súhrnu po bitke (Michal 2026-11-02: „keď som rozdeľoval Nakladačku ja, súhrn akoby chýbal“)", () => {
+  type Rola = "ja" | "su";
+  /** Partia botov ako na serveri: po každom ťahu pohľad hráča ja; ku kolu, kto čo rozdelil. */
+  function partia(seed: number) {
+    let st: GameState = setupGame(data, seed, { lokalit: 3 });
+    const pohlady: [ClientState[], ClientState[]] = [[viewFor(data, st, 0)], [viewFor(data, st, 1)]];
+    const delenia = new Map<number, { readonly hrac: 0 | 1; readonly typ: "prebytok" | "reci" }[]>();
+    for (let n = 0; n < 8000 && st.koniec === null; n++) {
+      const kto = naTahu(st);
+      if (kto === null) break;
+      const cmd = tahBota(data, st, kto, seed * 7919 + n);
+      if ((cmd.type === "prebytok" || cmd.type === "reci") && cmd.zdvihy.length > 0) delenia.set(st.kolo, [...(delenia.get(st.kolo) ?? []), { hrac: kto, typ: cmd.type }]);
+      st = apply(data, st, cmd, kto).state;
+      pohlady[0].push(viewFor(data, st, 0));
+      pohlady[1].push(viewFor(data, st, 1));
+    }
+    return { pohlady, delenia };
+  }
+  /** Súhrny tak, ako ich stôl spustí z pohľadov, ktoré prišli. */
+  function suhrny(pohlady: readonly ClientState[]) {
+    let zac: ZaciatokKola | null = null;
+    const out = new Map<number, NonNullable<ReturnType<typeof dalsiPohladSuhrnu>["suhrn"]>>();
+    for (const v of pohlady) {
+      const x = dalsiPohladSuhrnu(zac, v);
+      zac = x.zaciatok;
+      if (x.suhrn !== null) out.set(x.suhrn.kolo, x.suhrn);
+    }
+    return out;
+  }
+
+  it(
+    "súhrn príde po každej bitke s rozdelením, nech rozdeľuje ktokoľvek, a ukáže Nakladačku aj hádku oboch",
+    () => {
+      const roly = new Set<string>();
+      for (const seed of [3, 11, 21]) {
+        const { pohlady, delenia } = partia(seed);
+        for (const ja of [0, 1] as const) {
+          const vsetky = pohlady[ja];
+          // Pohľad s voľbou cieľa môže prísť neskoro — keď ho stôl nedostane, súhrn sa nesmie stratiť.
+          const bezVolby = vsetky.filter((v, i) => i === 0 || v.faza !== "volbaCiela");
+          for (const prisli of [vsetky, bezVolby]) {
+            const s = suhrny(prisli);
+            for (const [kolo, d] of delenia) {
+              // Po poslednej bitke hry súhrn nie je — výsledky ukáže koniec hry.
+              if (!vsetky.some((v) => v.kolo === kolo + 1 && v.koniec === null)) continue;
+              const x = s.get(kolo);
+              expect(x, `seed ${seed}, hráč ${ja}, bitka ${kolo}`).toBeDefined();
+              const nakl = d.find((y) => y.typ === "prebytok");
+              const hadka = d.find((y) => y.typ === "reci");
+              expect(x!.kroky.includes("nakladacka")).toBe(nakl !== undefined);
+              expect(x!.kroky.includes("hadka")).toBe(hadka !== undefined);
+              expect(x!.nakladacka?.hrac ?? null).toBe(nakl?.hrac ?? null);
+              expect(x!.hadka?.hrac ?? null).toBe(hadka?.hrac ?? null);
+              const rola = (p: 0 | 1): Rola => (p === ja ? "ja" : "su");
+              roly.add(d.map((y) => `${rola(y.hrac)}:${y.typ}`).sort().join("+"));
+            }
+          }
+        }
+      }
+      // Obe roly z hlásenia: hráč rozdeľuje Nakladačku a súper hádku, aj naopak.
+      expect(roly).toContain("ja:prebytok+su:reci");
+      expect(roly).toContain("ja:reci+su:prebytok");
+    },
+    180_000,
+  );
+
+  it("začiatok kola sa pamätá z voľby cieľa alebo Draftu, súhrn až v ďalšom kole a nie po konci hry", () => {
+    const v = viewFor(data, s0, 0);
+    expect(dalsiPohladSuhrnu(null, { ...v, faza: "pitka" }).zaciatok).toBeNull();
+    const z = dalsiPohladSuhrnu(null, { ...v, faza: "draft" }).zaciatok;
+    expect(z?.kolo).toBe(v.kolo);
+    // To isté kolo: začiatok ostane, súhrn nie.
+    expect(dalsiPohladSuhrnu(z, { ...v, faza: "pitka" })).toEqual({ zaciatok: z, suhrn: null });
+    const dalsie = { ...v, kolo: v.kolo + 1, faza: "volbaCiela" as const, nastenka: [bitka({ kolo: v.kolo })] };
+    expect(dalsiPohladSuhrnu(z, dalsie).zaciatok?.kolo).toBe(v.kolo + 1);
+    expect(dalsiPohladSuhrnu(z, { ...dalsie, koniec: { vitaz: 0, dovod: "spaky" } as unknown as ClientState["koniec"] })).toEqual({ zaciatok: null, suhrn: null });
+  });
 });
