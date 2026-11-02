@@ -167,11 +167,39 @@ export interface ZobrataZoSenku {
 }
 
 export interface ZhromazdenieStav {
-  readonly naTahu: PlayerId;
+  readonly naTahu: Miesto;
+  /** Limit vykladania — v 2 na 2 tímový, míňa ho každý člen (Michal 2026-10-28). */
   readonly zostavaLimit: readonly [number, number];
+  /** Hráč (v 2 na 2 celý tím) už v tomto Zhromaždení nevykladá. */
   readonly pasoval: readonly [boolean, boolean];
   /** Koľko ďalších vyložení hráč ešte zahrá bez odovzdania ťahu (Vypiť). */
   readonly navyse: readonly [number, number];
+  /** 2 na 2: ktoré miesta už nevykladajú (pas, Záverečná tímu). V 1 na 1 chýba. */
+  readonly skoncili?: readonly [boolean, boolean, boolean, boolean];
+}
+
+/** Partner miesta v tíme. */
+export function partnerMiesta(m: Miesto): Miesto {
+  return ((m + 2) % 4) as Miesto;
+}
+
+/**
+ * Poradie vykladania U1 → O1 → U2 → O2, prví sú kapitáni (Michal 2026-10-28),
+ * otočené tak, aby začínalo miestom po `po` (a ním končilo). V 1 na 1 útočník, obranca.
+ */
+export function poradieVykladania(state: Pick<GameState, "format" | "kapitani" | "utocnik">, po?: Miesto): readonly Miesto[] {
+  const u = state.utocnik;
+  const o = opponentOf(u);
+  const poradie: Miesto[] =
+    formatHry(state) === "2na2" ? [kapitan(state, u), kapitan(state, o), partnerMiesta(kapitan(state, u)), partnerMiesta(kapitan(state, o))] : [u, o];
+  if (po === undefined) return poradie;
+  const i = poradie.indexOf(po);
+  return [...poradie.slice(i + 1), ...poradie.slice(0, i + 1)];
+}
+
+/** Miesto už v tomto Zhromaždení nevykladá — v 1 na 1 pas hráča. */
+export function skoncilVykladanie(z: Pick<ZhromazdenieStav, "pasoval" | "skoncili">, kto: Miesto): boolean {
+  return z.skoncili?.[kto] ?? z.pasoval[timMiesta(kto)];
 }
 
 /**
@@ -1582,52 +1610,62 @@ export function setupZRozdania(data: GameData, r: Rozdanie): GameState {
 // ---------------------------------------------------------------------------
 // Kto je na ťahu
 
+/** Hráč (v 2 na 2 tím), na ktorom je ťah. */
 export function naTahu(state: GameState): PlayerId | null {
+  const m = miestoNaTahu(state);
+  return m === null ? null : timMiesta(m);
+}
+
+/** Miesto na ťahu; tímovú voľbu robí v 2 na 2 kapitán (v 1 na 1 hráč sám). */
+export function miestoNaTahu(state: GameState): Miesto | null {
   if (state.koniec !== null) return null;
   const hasic = state.hasicVolby?.[0];
-  if (hasic !== undefined) return hasic.hrac;
+  if (hasic !== undefined) return kapitan(state, hasic.hrac);
   return naTahuVoFaze(state);
 }
 
 /** Kto je na ťahu podľa fázy — bez čakania na voľbu Hasiča. */
-function naTahuVoFaze(state: GameState): PlayerId | null {
+function naTahuVoFaze(state: GameState): Miesto | null {
+  const tim = (t: PlayerId | null): Miesto | null => (t === null ? null : kapitan(state, t));
   switch (state.faza) {
     case "volbaCiela":
       // Cieľ kola vyberá a natáča obranca, vykladať začína útočník (Michal 2026-10-20).
-      return obranca(state);
+      return tim(obranca(state));
     case "draft": {
       const d = state.draftStav;
       if (d === null) return null;
       // Stavbu šenku hrajú obaja naraz (mozeHrat); naTahu ukazuje toho, na
       // koho sa ešte čaká — obrancu skôr.
-      if (d.krok === "stavba") return d.vyber[obranca(state)] === null ? obranca(state) : state.utocnik;
-      return d.naTahu;
+      if (d.krok === "stavba") return tim(d.vyber[obranca(state)] === null ? obranca(state) : state.utocnik);
+      return tim(d.naTahu);
     }
     case "zhromazdenie":
       return state.zhromazdenieStav?.naTahu ?? null;
     case "pitka": {
-      if (state.vizia !== null) return viziaNaTahu(state);
+      if (state.vizia !== null) return tim(viziaNaTahu(state));
       const pk = state.pitkaStav;
       if (pk === null) return null;
-      if (pk.reakcia !== null) return pk.reakcia;
+      if (pk.reakcia !== null) return tim(pk.reakcia);
       // Pitka naraz: hrajú obaja — naTahu ukáže toho, na koho sa čaká, obrancu skôr.
       const obr = obranca(state);
-      return [obr, state.utocnik].find((q) => hraVPitke(pk, q)) ?? null;
+      return tim([obr, state.utocnik].find((q) => hraVPitke(pk, q)) ?? null);
     }
     case "bitka":
-      return state.bitkaStav?.caka ?? null;
+      return tim(state.bitkaStav?.caka ?? null);
     default:
       return null;
   }
 }
 
 /**
- * Smie hráč p teraz poslať príkaz? Zvyčajne len ten na ťahu; stavbu šenku
- * však hrajú obaja naraz — každý, kto v tomto kroku ešte nevybral.
+ * Smie miesto teraz poslať príkaz? Zvyčajne len to na ťahu; stavbu šenku
+ * však hrajú obaja naraz — každý, kto v tomto kroku ešte nevybral. Pitku
+ * v 2 na 2 hrajú obaja členovia tímu (Michal 2026-10-28).
  */
-export function mozeHrat(state: GameState, p: PlayerId): boolean {
+export function mozeHrat(state: GameState, kto: Miesto): boolean {
   if (state.koniec !== null) return false;
-  if (cakaHasic(state)) return naTahu(state) === p;
+  const p = timMiesta(kto);
+  if (cakaHasic(state)) return miestoNaTahu(state) === kto;
   if (state.faza === "draft" && state.draftStav?.krok === "stavba") {
     return state.draftStav.vyber[p] === null;
   }
@@ -1635,7 +1673,7 @@ export function mozeHrat(state: GameState, p: PlayerId): boolean {
   if (state.faza === "pitka" && state.vizia === null && state.pitkaStav !== null && state.pitkaStav.reakcia === null) {
     return hraVPitke(state.pitkaStav, p);
   }
-  return naTahu(state) === p;
+  return miestoNaTahu(state) === kto;
 }
 
 /**
@@ -1690,7 +1728,7 @@ function applyPrikaz(
       need(k.type === "place" || k.type === "vypit" || k.type === "zaverecna", "V ťahu smú byť len vyloženia, Vypiť a Záverečná.");
       // O vytiahnutej karte Hasiča hráč rozhodne po zvyšku ťahu (ten poslal skôr, než ju videl);
       // ťah sa preto posudzuje bez čakania na Hasiča.
-      need(st.faza === "zhromazdenie" && naTahuVoFaze(st) === hracId, "Ťah sa skončil skôr, než si vyložil všetky karty.");
+      need(st.faza === "zhromazdenie" && naTahuVoFaze(st) === kto, "Ťah sa skončil skôr, než si vyložil všetky karty.");
       const r = applyPrikaz(data, st, k, kto, true);
       st = r.state;
       vsetky.push(...r.events);
@@ -1704,7 +1742,7 @@ function applyPrikaz(
     return { state: s as GameState, events };
   }
 
-  need(mozeHrat(state, hracId), "Nie si na ťahu.");
+  need(mozeHrat(state, kto), "Nie si na ťahu.");
   need(state.vizia === null || cmd.type === "vizia", "Najprv rozhodni o karte z Vízie.");
   need(!cakaHasic(state) || ["hasic", "senok", "nastroj", "kapybara"].includes(cmd.type) || vTahu, HASIC_NAJPRV);
 
@@ -1757,7 +1795,7 @@ function applyPrikaz(
       cmdPass(s, data, kto, events);
       break;
     case "vypit":
-      cmdVypit(s, hracId, events);
+      cmdVypit(s, kto, events);
       break;
     case "naex":
       cmdNaex(s, data, cmd, hracId, events);
@@ -2375,10 +2413,11 @@ function zacniZhromazdenie(s: MutState, data: GameData, events: Event[], zacina:
   events.push({ type: "faza", faza: "zhromazdenie" });
   // Limit sa počíta nanovo na začiatku každého Zhromaždenia (PRAVIDLA §6); vinko pridáva poldeci navyše.
   s.zhromazdenieStav = {
-    naTahu: zacina,
+    naTahu: kapitan(s, zacina),
     zostavaLimit: [limitZhromazdenia(s as GameState, 0), limitZhromazdenia(s as GameState, 1)],
     pasoval: [false, false],
     navyse: [0, 0],
+    ...(s.format === "2na2" ? { skoncili: [false, false, false, false] as [boolean, boolean, boolean, boolean] } : {}),
   };
   manualEfekty(s, data, "Zhromaždenie", events);
 }
@@ -2386,6 +2425,19 @@ function zacniZhromazdenie(s: MutState, data: GameData, events: Event[], zacina:
 function posunTahZhromazdenia(s: MutState, data: GameData, p: PlayerId, events: Event[]): void {
   const z = s.zhromazdenieStav;
   if (z === null) return;
+  if (z.skoncili !== undefined) {
+    // 2 na 2: ťah ide ďalšiemu, kto ešte vykladá, v poradí U1 → O1 → U2 → O2 — aj späť
+    // tomu istému, keď ostatní skončili. Ťah končí vždy miesto na ťahu.
+    const poradie = poradieVykladania(s as GameState, z.naTahu);
+    const dalsi = poradie.find((m) => !z.skoncili?.[m]);
+    if (dalsi !== undefined) {
+      z.naTahu = dalsi;
+      return;
+    }
+    s.zhromazdenieStav = null;
+    zacniPitku(s, data, events);
+    return;
+  }
   const oppon = opponentOf(p);
   if (!z.pasoval[oppon]) {
     z.naTahu = oppon;
@@ -2406,7 +2458,7 @@ function cmdPlace(
   const p = timMiesta(kto);
   const z = s.zhromazdenieStav;
   need(s.faza === "zhromazdenie" && z !== null, "Teraz nie je Zhromaždenie.");
-  need(!z.pasoval[p], "Už si pasoval.");
+  need(!skoncilVykladanie(z, kto), "Už si pasoval.");
   const kartaVRuke = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.uid);
   need(kartaVRuke !== undefined, "Karta nie je v ruke.");
   const def = defOf(data, kartaVRuke as CardInstance);
@@ -2479,7 +2531,7 @@ function cmdZaverecna(
   const p = timMiesta(kto);
   const z = s.zhromazdenieStav;
   need(s.faza === "zhromazdenie" && z !== null, "Záverečná sa hrá len v Zhromaždení.");
-  need(!z.pasoval[p], "Už si pasoval.");
+  need(!skoncilVykladanie(z, kto), "Už si pasoval.");
   need(s.hraci[p].cigarety >= KONSTANTY.CENA_ZAVERECNEJ, `Záverečná stojí ${cigariet(KONSTANTY.CENA_ZAVERECNEJ)}.`);
   const kartaVRuke = rukaMiestaMut(s, kto).find((k) => k.uid === cmd.uid);
   need(kartaVRuke !== undefined, "Karta nie je v ruke.");
@@ -2492,6 +2544,11 @@ function cmdZaverecna(
   hrac(s, p).cigarety -= KONSTANTY.CENA_ZAVERECNEJ;
   z.pasoval[p] = true;
   z.navyse[p] = 0;
+  // 2 na 2: Záverečná (jedna za tím) ukončí vykladanie celého tímu (Michal 2026-10-28).
+  if (z.skoncili !== undefined) {
+    z.skoncili[kto] = true;
+    z.skoncili[partnerMiesta(kto)] = true;
+  }
   posunTahZhromazdenia(s, data, p, events);
 }
 
@@ -2956,14 +3013,25 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
   const p = timMiesta(kto);
   const z = s.zhromazdenieStav;
   need(s.faza === "zhromazdenie" && z !== null, "Teraz nie je Zhromaždenie.");
-  need(!z.pasoval[p], "Už si pasoval.");
-  z.pasoval[p] = true;
+  need(!skoncilVykladanie(z, kto), "Už si pasoval.");
   z.navyse[p] = 0;
+  if (z.skoncili !== undefined) {
+    // 2 na 2 (Michal 2026-11-02): pas člena len ukončí jeho vykladanie. Cigarety za zvyšok
+    // limitu dostane tím, až keď pasuje aj druhý — najviac toľko, koľko majú obaja v rukách.
+    z.skoncili[kto] = true;
+    if (!z.skoncili[partnerMiesta(kto)]) {
+      events.push({ type: "log", text: `Hráč ${kto + 1} pasuje do Pitky — tím vykladá ďalej.` });
+      posunTahZhromazdenia(s, data, p, events);
+      return;
+    }
+  }
+  z.pasoval[p] = true;
   // Pas (Michal 2026-10-20): cigareta za každú kartu, ktorú hráč ešte smel
   // vyložiť a má ju v ruke — aj keď pasuje hra za neho. Do Pitky už nehrá,
   // súper vykladá sám.
-  const karty = kartyZaPas(z, p, rukaMiestaMut(s, kto).length);
-  const ziska = cigaretyZaPas(data, s as GameState, p, rukaMiestaMut(s, kto).length);
+  const vRuke = kartyVRukach(s.hraci[p]).length;
+  const karty = kartyZaPas(z, p, vRuke);
+  const ziska = cigaretyZaPas(data, s as GameState, p, vRuke);
   const pistalka = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska;
   if (pistalka > 0) events.push({ type: "log", text: `Píšťalka: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
   hrac(s, p).cigarety += ziska;
@@ -2982,10 +3050,11 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
  * hneď klesne o 1 (poldeci už nie je plný), pečeň +1 a ráta sa ako nerest —
  * zato hráč ďalšou kartou neodovzdá ťah. Smie piť opakovane.
  */
-function cmdVypit(s: MutState, p: PlayerId, events: Event[]): void {
+function cmdVypit(s: MutState, kto: Miesto, events: Event[]): void {
+  const p = timMiesta(kto);
   const z = s.zhromazdenieStav;
   need(s.faza === "zhromazdenie" && z !== null, "Vypiť sa dá len v Zhromaždení.");
-  need(!z.pasoval[p], "Už si pasoval.");
+  need(!skoncilVykladanie(z, kto), "Už si pasoval.");
   need(!zakazVypit(s as GameState), "Kostol: nikto nesmie vypiť.");
   need(s.hraci[p].poldeciPlne > 0, "Nemáš plný poldeci.");
   const player = hrac(s, p);
