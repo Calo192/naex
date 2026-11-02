@@ -113,8 +113,8 @@ export interface PokusOZajatie {
 }
 
 /**
- * Účinky do konca kola zo schopností väzňov (v11.2, §10): Starosta — aktívne akcie lokality
- * sú v bitke posilnené (obom). Verejné. Názov z čias Kšeftu väzňa (v9).
+ * Účinky do konca kola zo schopností väzňov (v11.2, §10): Starosta — všetky aktívne akcie
+ * lokality sú od použitia do konca kola posilnené (obom, aj akcie Pitky). Verejné. Názov z čias Kšeftu väzňa (v9).
  */
 export interface KseftyKola {
   readonly hranyPosilnene?: boolean;
@@ -3960,7 +3960,7 @@ export function schopnostBezUcinku(state: StavSchopnostiVazna, p: PlayerId, defI
       return kartySNaexSupera(state, p).length > 0 ? null : "Na žiadnej karte neleží súperovo NA EX.";
     case "starosta":
       if (state.ciel?.lokalita == null) return "V tomto kole nie je lokalita.";
-      return state.kseftyKola?.hranyPosilnene === true ? "Akcie lokality sú v tejto bitke už posilnené." : null;
+      return state.kseftyKola?.hranyPosilnene === true ? "Akcie lokality sú v tomto kole už posilnené." : null;
     case "veterinar":
       return state.cirhozy > 0 ? null : "Nemáš Cirhózu na ruke ani priznanú.";
     case "vychovavatelka":
@@ -4043,7 +4043,7 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
     }
     case "starosta":
       s.kseftyKola = { ...(s.kseftyKola ?? {}), hranyPosilnene: true };
-      events.push({ type: "log", text: `${kto} — aktívne akcie lokality sú v tejto bitke posilnené (obom).` });
+      events.push({ type: "log", text: `${kto} — do konca kola sú všetky aktívne akcie lokality posilnené (obom).` });
       break;
     case "veterinar": {
       const odhod = new Set(cirhozyPreVeterinara(h as PlayerState).map((k) => k.uid));

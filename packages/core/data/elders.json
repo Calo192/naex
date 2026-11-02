@@ -18,7 +18,7 @@
   },
   {
    "id": "starosta",
-   "schopnost": "Aktívne akcie lokality sa v tejto bitke považujú za posilnené."
+   "schopnost": "Do konca kola sú všetky aktívne akcie lokality posilnené."
   },
   {
    "id": "postarka",
@@ -38,7 +38,7 @@
   },
   {
    "id": "vychovavatelka",
-   "schopnost": "Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet."
+   "schopnost": "Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety."
   }
  ]
 }

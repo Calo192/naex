@@ -96,13 +96,13 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   puska: "impl", // Dedičstvo (Náradie 2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2 (partia.ts puskaChrani)
   recidivista: "impl", // Prehra (v7): po bitke sa vráti do ruky (koniecBitky)
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
-  starosta: "impl", // Schopnosť väzňa: akcie hrán lokality v bitke posilnené (partia.ts hranyPosilnene)
+  starosta: "impl", // Schopnosť väzňa: do konca kola všetky akcie hrán lokality posilnené (partia.ts hranyPosilnene)
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
   veterinar: "impl", // Schopnosť väzňa: odhodí priznané Cirhózy a Cirhózy na ruke
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt (v10.3): súper odhodí 2 karty z balíčka za každého svojho Chlapa pri nej (konflikt)
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
-  vychovavatelka: "impl", // Schopnosť väzňa: súper v Zhromaždení pasuje bez cigariet
+  vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje bez cigariet
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
   vyherny_automat: "impl", // Dedičstvo (v7): prah Dlhu +1, v poslednej Pitke kola 1 Dlh
   zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta zo šenku zadarmo, najprv útočník (engine dokonciPitku)

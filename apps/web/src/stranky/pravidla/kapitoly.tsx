@@ -461,9 +461,9 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li><strong>Poštárka</strong> — Dostaneš 4 cigarety.</li>
           <li><strong>Krčmárka</strong> — Nový plný poldeci.</li>
           <li><strong>Farár</strong> — Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý.</li>
-          <li><strong>Starosta</strong> — Aktívne akcie lokality sa v tejto bitke považujú za posilnené (akcie Pitky nie).</li>
+          <li><strong>Starosta</strong> — Do konca kola sú všetky aktívne akcie lokality posilnené (obom, aj akcie Pitky).</li>
           <li><strong>Veterinár</strong> — Odhoď všetky priznané Cirhózy a Cirhózy na ruke.</li>
-          <li><strong>Vychovávateľka</strong> — Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet.</li>
+          <li><strong>Vychovávateľka</strong> — Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.</li>
           <li><strong>Autobusár</strong> — Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.</li>
           <li><strong>Hrobár</strong> — Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka.</li>
         </ul>

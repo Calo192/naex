@@ -6,23 +6,28 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, Command, GameState, LineState, PlayerId } from "../src/index.ts";
+import type { CardInstance, Command, Event, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   KONSTANTY,
   NOVE_MOMENTY,
   apply,
+  buildGameData,
   evaluateLine,
   legalCommands,
+  lineState,
   loadGameData,
   momenty,
+  naTahu,
   naladaMomentu,
   obmedzMomenty,
+  parseScorecards,
   ponukaSchopnostiVazna,
   schopnostiVazna,
   stavSchopnostiVaznaZPohladu,
   tahBota,
   viewFor,
 } from "../src/index.ts";
+import type { Layout4 } from "./helpers.ts";
 import { EMPTY, instanceFor, makeDef, setupSBalickom, syntheticData } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -143,7 +148,7 @@ describe("§10 Osem schopností", () => {
     expect([pl.naexBy, pl.naexBy2, pl.vytrznik]).toEqual([0, undefined, undefined]);
   });
 
-  it("Starosta: v tejto bitke akcie hrán lokality posilnené; druhýkrát v kole nie, bez lokality nie", () => {
+  it("Starosta: do konca kola akcie hrán lokality posilnené; druhýkrát v kole nie, bez lokality nie", () => {
     const s = sVaznom("starosta");
     const po = apply(data, s, { type: "schopnostVazna", elderId: "starosta" }, 0).state;
     expect(po.kseftyKola?.hranyPosilnene).toBe(true);
@@ -151,21 +156,85 @@ describe("§10 Osem schopností", () => {
     expect(ponuka(sVaznom("starosta", "pitka", 0, (st) => ({ ...st, ciel: null })))).toEqual([]);
   });
 
-  it("Starosta v línii: ×2 len akcie bitky na hranách lokality, akcie Pitky (Cigareta) nie", () => {
-    const lok = makeDef("lok", [null, "Cigareta", "Pecka", null], [null, null, null, null], { tags: ["Lokalita"] });
-    const a = makeDef("a", EMPTY, [null, "Rana", "Rana", null]);
-    const syn = syntheticData([lok, a]);
+  it("Starosta v línii: ×2 všetky aktívne akcie hrán lokality, obom — bitky aj Pitky; karty nie (Michal 2026-11-02)", () => {
+    const L: Layout4 = ["Cigareta", "Pecka", "Dlh", "PoškodeniePečene"];
+    const R: Layout4 = ["Obmedzenie", "Vízia", "Poldeci", null];
+    const RANY: Layout4 = ["Rana", "Rana", "Rana", "Rana"];
+    const lok = makeDef("lok", L, R, { tags: ["Lokalita"] });
+    const a = makeDef("a", EMPTY, RANY);
+    const b = makeDef("b", EMPTY, RANY);
+    const syn = syntheticData([lok, a, b]);
     const line: LineState = {
-      lokalita: instanceFor(syn, "lok", [null, "Cigareta", "Pecka", null], [null, null, null, null]),
+      lokalita: instanceFor(syn, "lok", L, R),
       lokalitaOtocena: false,
-      strany: [[{ card: instanceFor(syn, "a", EMPTY, [null, "Rana", "Rana", null]), playedBy: 0 }], []],
+      strany: [[{ card: instanceFor(syn, "a", EMPTY, RANY), playedBy: 0 }], [{ card: instanceFor(syn, "b", EMPTY, RANY), playedBy: 1 }]],
     };
-    const bez = evaluateLine(syn, line).sums[0];
-    const s = evaluateLine(syn, { ...line, hranyPosilnene: true }).sums[0];
-    expect(bez.Pecka).toBe(1);
-    expect(s.Pecka).toBe(2);
-    expect(s.Cigareta).toBe(bez.Cigareta);
-    expect(s.Rana).toBe(bez.Rana);
+    const bez = evaluateLine(syn, line);
+    const s = evaluateLine(syn, { ...line, hranyPosilnene: true });
+    for (const akcia of ["Cigareta", "Pecka", "Dlh", "PoškodeniePečene"] as const) {
+      expect(bez.sums[0][akcia]).toBe(1);
+      expect(s.sums[0][akcia]).toBe(2);
+    }
+    for (const akcia of ["Obmedzenie", "Vízia", "Poldeci"] as const) {
+      expect(bez.sums[1][akcia]).toBe(1);
+      expect(s.sums[1][akcia]).toBe(2);
+    }
+    // Akcie kariet ostávajú; počet Pitiek (aktivované akcie hrán) sa nemení.
+    expect(s.sums[0].Rana).toBe(bez.sums[0].Rana);
+    expect(s.sums[1].Rana).toBe(bez.sums[1].Rana);
+    expect(s.aktivneStredu).toEqual(bez.aktivneStredu);
+  });
+
+  it("Starosta použitý v Pitke: zdvojí jej Cigarety a platí aj v ďalšom Zhromaždení a Pitke kola", () => {
+    const L: Layout4 = ["Cigareta", "PoškodeniePečene", null, null];
+    const R: Layout4 = ["Cigareta", null, null, null];
+    // Karta na strane hráča 1 má sloty zrkadlovo — štyri Rany, nech na hranu lokality trafí isto.
+    const RANY: Layout4 = ["Rana", "Rana", "Rana", "Rana"];
+    const lok = makeDef("st_lok", L, R, { tags: ["Lokalita"] });
+    const a = makeDef("st_a", EMPTY, RANY);
+    const b = makeDef("st_b", EMPTY, RANY);
+    const cards = new Map(data.cards);
+    for (const d of [lok, a, b]) cards.set(d.id, d);
+    const sada = buildGameData(cards, data.elders, parseScorecards(scorecardsJson));
+    const s0 = setupSBalickom(sada, 6);
+    const elder = s0.starsi.find((e) => e.elderId === "starosta")!;
+    const s: GameState = {
+      ...s0,
+      faza: "pitka",
+      utocnik: 0,
+      starsi: s0.starsi.filter((e) => e.elderId !== "starosta"),
+      vazni: [{ elderId: "starosta", hrac: 0, poradie: 1, karta: elder.karta, scorecard: elder.scorecard, miesto: 0 }],
+      ciel: { typ: "lokalita", lokalita: instanceFor(sada, "st_lok", L, R) },
+      lokalitaOtocena: false,
+      strany: [[{ card: instanceFor(sada, "st_a", EMPTY, RANY), playedBy: 0 }], [{ card: instanceFor(sada, "st_b", EMPTY, RANY), playedBy: 1 }]],
+      pitkaCislo: 1,
+      pitkyCelkom: 2,
+      pitkaStav: PITKA,
+      zaciatokPitky: { pecen: [0, 0], cirhozy: [0, 0] },
+    };
+    const dopi = (st0: GameState): { state: GameState; events: Event[] } => {
+      const events: Event[] = [];
+      let st = st0;
+      for (let i = 0; i < 2 && st.faza === "pitka"; i++) {
+        const r = apply(sada, st, { type: "skipNaex" }, naTahu(st)!);
+        st = r.state;
+        events.push(...r.events);
+      }
+      return { state: st, events };
+    };
+    const cigarety = (events: readonly Event[]): readonly [number, number] => {
+      const e = events.find((x) => x.type === "pitkaVysledok");
+      if (e?.type !== "pitkaVysledok") throw new Error("Pitka sa nevyhodnotila");
+      return e.cigarety;
+    };
+    expect(cigarety(dopi(s).events)).toEqual([1, 1]);
+    const po = apply(sada, s, { type: "schopnostVazna", elderId: "starosta" }, 0).state;
+    const { state, events } = dopi(po);
+    expect(cigarety(events)).toEqual([2, 2]);
+    // Druhá Pitka kola: Zhromaždenie pred ňou ráta s posilnenými hranami ďalej.
+    expect(state.faza).toBe("zhromazdenie");
+    expect(lineState(state).hranyPosilnene).toBe(true);
+    expect(evaluateLine(sada, lineState(state)).sums[0].PoškodeniePečene).toBe(2);
   });
 
   it("Veterinár: odhodí všetky priznané Cirhózy a Cirhózy na ruke (nie z balíčkov); bez nich sa neponúkne", () => {
@@ -189,6 +258,28 @@ describe("§10 Osem schopností", () => {
     expect(legalCommands(data, po, 0).some((c) => c.type === "place")).toBe(true);
     // Keď súper už pasoval, nemá účinok.
     expect(ponuka(sVaznom("vychovavatelka", "zhromazdenie", 0, (st) => ({ ...st, zhromazdenieStav: { ...st.zhromazdenieStav!, pasoval: [false, true] } })))).toEqual([]);
+  });
+
+  it("Vychovávateľka prvým ťahom Zhromaždenia: súper nevyloží ani jednu kartu, za pas 0 cigariet; ja vykladám ďalej", () => {
+    const s = sVaznom("vychovavatelka", "zhromazdenie", 0, (st) => hracSo(st, 1, { cigarety: 0 }));
+    expect(s.zhromazdenieStav?.naTahu).toBe(0);
+    expect(s.strany.flat()).toHaveLength(0);
+    let st = apply(data, s, { type: "schopnostVazna", elderId: "vychovavatelka" }, 0).state;
+    expect(st.zhromazdenieStav?.pasoval[1]).toBe(true);
+    const vylozeneSuperom = (x: GameState): number => x.strany.flat().filter((pl: PlacedCard) => pl.playedBy === 1).length;
+    let mojich = 0;
+    for (let i = 0; i < 20 && st.faza === "zhromazdenie"; i++) {
+      expect(st.zhromazdenieStav?.naTahu).toBe(0);
+      expect(legalCommands(data, st, 1).some((c) => c.type === "place" || c.type === "pass")).toBe(false);
+      expect(() => apply(data, st, { type: "pass" }, 1)).toThrow();
+      const tah: Command = legalCommands(data, st, 0).find((c) => c.type === "place") ?? { type: "pass" };
+      if (tah.type === "place") mojich += 1;
+      st = apply(data, st, tah, 0).state;
+      expect(vylozeneSuperom(st)).toBe(0);
+      expect(st.hraci[1].cigarety).toBe(0);
+    }
+    expect(mojich).toBeGreaterThan(0);
+    expect(st.faza).not.toBe("zhromazdenie");
   });
 
   it("Autobusár: pri braní zo šenku koľko chcem, každá za cigaretu; potom s braním končím a berie súper", () => {

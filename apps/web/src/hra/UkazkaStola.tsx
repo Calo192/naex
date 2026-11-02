@@ -15,6 +15,8 @@
 //                  sám (k-ta taká bitka, hľadá sa aj v ďalších seedoch)
 //   &stop=po-bitke súhrn po k-tej bitke (&i=k, od 0) hneď po načítaní — kolo sa dohrá po voľbu cieľa ďalšieho
 //                  kola (súhrn krok po kroku na línii starších, R3)
+//   &stop=po-bitke-zajatie  ako po-bitke, ale kolo sa dohrá po krok zajatia, v ktorom hráč ?ja smie skúsiť
+//                  zajať — pečiatka „nezajímam“ čaká, kým súhrn beží (hľadá sa aj v ďalších seedoch)
 //   &stop=kolo     začiatok kola &i=k
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
 //                  z prebytku (stopa v línii starších)
@@ -62,7 +64,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, legalCommands, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -243,7 +245,7 @@ function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: 
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
+  const hlada = ["po-bitke-zajatie", "zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
   if (!hlada) return odohrajSeed(data, seed).odohrane;
   // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
@@ -363,6 +365,18 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       }
       return najdene({ zaciatok: x, dohraj: [], suhrn: zaciatokKola });
     }
+    if (stop === "po-bitke-zajatie" && bitka) {
+      let x = po;
+      let r2 = rng;
+      for (let k = 0; k < 200 && x.koniec === null && x.kolo <= s.kolo + 1; k++) {
+        const zajatie = x.kolo > s.kolo && x.faza === "draft" && x.draftStav?.krok === "zajatie";
+        if (zajatie && mozeHrat(x, ja) && legalCommands(data, x, ja).some((c) => c.type === "pokus")) return najdene({ zaciatok: x, dohraj: [], suhrn: zaciatokKola });
+        const u = tahy(data, x, r2, n + 1 + k);
+        if (u === null) break;
+        r2 = u.rng;
+        x = apply(data, x, u.cmd, u.kto).state;
+      }
+    }
     const rucne = p.get("rucne");
     if (stop === "suhrn" && bitka && rucne !== null) {
       // Kto čo rozdelí, ukáže dohranie kola botmi; hráč ?ja potom svoje rozdelí sám.
@@ -422,7 +436,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "po-bitke-zajatie"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
 export function UkazkaStola() {
