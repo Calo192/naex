@@ -35,7 +35,9 @@
 //   &stop=bzdocha-caka  ako pitka, hráč ?ja má Bzdochu a čaká, kým súper skončí Pitku
 //   &stop=kseft    prvá Pitka, v ktorej hráč ?ja hrá: v línii Strýko z Ameriky, lokalita &lok=defId
 //                  (predvolene predsedova_vila; sklad, obecny_urad, zberny_dvor), väzni &vazni=defId,…
-//                  (predvolene hrobar,veterinar) — tlačidlá Kšeftov pod kartami
+//                  (predvolene hrobar,veterinar) — tlačidlá Kšeftov pod kartami a schopnosti väzňov (v11.2);
+//                  na Strýkovi leží súperovo NA EX (Farár), súperov odhadzovací balíček nie je prázdny
+//                  (Hrobár); &pouzite=defId,… tieto schopnosti väzňov sú už minuté
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
@@ -65,6 +67,8 @@ import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
 import { Momenty } from "./Momenty.tsx";
+import { vzhladKarty } from "./HernaKarta.tsx";
+import { mediaUrl } from "../lib/api.ts";
 import type { HracInfo } from "./useHra.ts";
 import { useStolNaSirku } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
@@ -170,11 +174,13 @@ function sNastrojom(s: GameState, p: PlayerId): GameState {
  * Predsedova vila), väzňov zo starších (&vazni, predvolene Hrobár a Veterinár), Dlh, cigarety
  * a plné poldeci — každý Kšeft má tlačidlo pod svojou kartou.
  */
-function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly string[]): GameState {
+function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly string[], pouzite: readonly string[] = []): GameState {
   let uid = s.nextUid;
+  const su = opponentOf(p);
   const stryko: CardInstance = { uid: uid++, defId: "stryko_z_ameriky", leftLayout: 0, rightLayout: 0 };
   const strany: [GameState["strany"][0], GameState["strany"][1]] = [[...s.strany[0]], [...s.strany[1]]];
-  strany[p] = [...strany[p], { card: stryko, playedBy: p }];
+  // Na Strýkovi leží súperovo NA EX — schopnosť Farára má čo odstrániť.
+  strany[p] = [...strany[p], { card: stryko, playedBy: p, naexBy: su }];
   const zajati = s.starsi.filter((e) => vazni.includes(e.karta.defId));
   const noviVazni = zajati.map((e, i) => ({
     elderId: e.elderId,
@@ -183,7 +189,9 @@ function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly strin
     karta: e.karta,
     scorecard: e.scorecard,
     miesto: s.starsi.indexOf(e),
+    ...(pouzite.includes(e.karta.defId) ? { pouzita: true as const } : {}),
   }));
+  const sOdh = s.hraci[su].odhadzovaci.length > 0 ? s.hraci[su] : { ...s.hraci[su], odhadzovaci: [{ uid: uid++, defId: "pijan", leftLayout: 0, rightLayout: 0 }, { uid: uid++, defId: "ministrant", leftLayout: 0, rightLayout: 0 }] };
   const h = { ...s.hraci[p], cigarety: Math.max(s.hraci[p].cigarety, 9), poldeciPlne: Math.max(s.hraci[p].poldeciPlne, 3), dlhy: Math.max(s.hraci[p].dlhy, 1) };
   const ciel = s.ciel === null || s.ciel.lokalita == null ? s.ciel : { ...s.ciel, lokalita: { ...s.ciel.lokalita, defId: lok } };
   return {
@@ -193,7 +201,7 @@ function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly strin
     ciel,
     starsi: s.starsi.filter((e) => !zajati.includes(e)),
     vazni: [...s.vazni, ...noviVazni],
-    hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h],
+    hraci: p === 0 ? [h, sOdh] : [sOdh, h],
   };
 }
 
@@ -323,7 +331,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {
       const vazni = (p.get("vazni") ?? "hrobar,veterinar").split(",").filter((x) => x !== "");
-      return najdene({ zaciatok: sKseftami(s, ja, p.get("lok") ?? "predsedova_vila", vazni), dohraj: [] });
+      const pouzite = (p.get("pouzite") ?? "").split(",").filter((x) => x !== "");
+      return najdene({ zaciatok: sKseftami(s, ja, p.get("lok") ?? "predsedova_vila", vazni, pouzite), dohraj: [] });
     }
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
     if (bzdochaStop && s.faza === "pitka" && s.pitkaStav !== null && s.pitkaStav.reakcia === null && s.vizia === null && !s.pitkaStav.hotovy[0] && !s.pitkaStav.hotovy[1]) {
@@ -528,7 +537,17 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
       opustit={() => undefined}
       onPocitadlo={setSuhrn}
     />
-    <Momenty udalosti={udalosti} ja={ja} mena={hraci.map((h) => h.meno)} hovor={() => undefined} pocitadloBezi={suhrn} />
+    <Momenty
+      udalosti={udalosti}
+      ja={ja}
+      mena={hraci.map((h) => h.meno)}
+      hovor={() => undefined}
+      pocitadloBezi={suhrn}
+      portret={(elderId) => {
+        const o = vzhladKarty(sada, data, elderId).obrazok;
+        return o === null ? null : mediaUrl(o.nahlad);
+      }}
+    />
     </>
   );
 }

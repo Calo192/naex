@@ -1401,7 +1401,7 @@
     {
       "id": "8.nerest",
       "paragraf": "8. Pečeň, zadĺženie, nerest, Chuť a Absťák › Nerest, Chuť a Absťák (v9.1)",
-      "pravidlo": "Nerest je len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1 (za každú zaplatenú), Kšeft väzňa 1; doliatie, barter, šenok, Dedičstvo, Starosta a Kšefty lokalít nie.",
+      "pravidlo": "Nerest je len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1 (za každú zaplatenú); doliatie, barter, šenok, Dedičstvo, Starosta a Kšefty lokalít nie.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/abstak-chut.test.ts › fajčenie 1 za každú cigaretu; doliatie, barter, Dedičstvo ani šenok nie",
@@ -2337,33 +2337,37 @@
     },
     {
       "id": "7.kseft-vazna.cena",
-      "paragraf": "7. Pitka › Kšeft väzňa (v9)",
-      "pravidlo": "Kšeft väzňa má len držiteľ, za vypitý plný poldeci (nerest, pečeň +1, limit −1), raz za Pitku na väzňa, nie po skončení Pitky, nie naprázdno.",
+      "paragraf": "10. Zajatie a väzeň › Schopnosť väzňa (v11.2)",
+      "pravidlo": "Schopnosť väzňa má len držiteľ, raz za hru, vo svojom ťahu (branie zo šenku, Zhromaždenie, Pitka), aj vo finále; nič nestojí; po použití minutá, väzeň ostáva v pivnici; nie naprázdno; nevyhnutný ťah nezdrží.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vazen.test.ts › len držiteľ väzňa; cena = vypitý plný poldeci (nerest, +1 pečeň, limit nižší); raz za Pitku",
-        "packages/core/test/vazen.test.ts › bez plného poldeci (ten na skrytom NA EX sa neráta) Kšeft nie je; po skončení Pitky tiež nie",
-        "packages/core/test/vazen.test.ts › naprázdno sa neponúka: Hrobár pri prázdnej ruke súpera, Poštárka bez Dlhu, Autobusár pri prázdnom šenku"
+        "packages/core/test/schopnost-vazna.test.ts › len držiteľ, raz za hru; po použití je minutá, väzeň ostáva v pivnici",
+        "packages/core/test/schopnost-vazna.test.ts › vo vlastnom ťahu — v Zhromaždení na ťahu, v Pitke kým ju neskončil, pri braní zo šenku; inak nie",
+        "packages/core/test/schopnost-vazna.test.ts › aj vo finále",
+        "packages/core/test/schopnost-vazna.test.ts › nevyhnutný ťah nezdrží — legalCommands ju dáva na koniec",
+        "packages/core/test/schopnost-vazna.test.ts › viewFor: značka použitá je verejná a ponuka z pohľadu sedí so serverom",
+        "packages/core/test/schopnost-vazna.test.ts › pečiatka padne pri každom použití, obom, mimo stropu úseku"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v11.2 (Michal 2026-11-02) — programátor, na prejdenie rozhodcom."
     },
     {
       "id": "7.kseft-vazna.osem",
-      "paragraf": "7. Pitka › Kšeft väzňa (v9) / 16. Výklad kariet",
-      "pravidlo": "Hrobár, Farár, Autobusár, Starosta, Poštárka, Krčmárka (vrátenie skrytého NA EX, O4), Vychovávateľka (+3 tuhé, O6), Veterinár (Cirhóza z ruky či priznaná, O3).",
+      "paragraf": "10. Zajatie a väzeň › Schopnosť väzňa (v11.2)",
+      "pravidlo": "Poštárka 4 cigarety, Krčmárka nový plný poldeci, Farár odstráni súperovo NA EX (poldeci vypitý), Starosta akcie lokality v bitke posilnené (akcie Pitky nie), Veterinár odhodí Cirhózy z ruky a priznané, Vychovávateľka súper v Zhromaždení pasuje bez cigariet, Autobusár zo šenku koľko chce po cigarete a končí, Hrobár karta zo súperovho odhadzovacieho balíčka.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vazen.test.ts › Hrobár: súper odhodí náhodnú kartu z ruky do odhadzovacieho balíčka; meno karty vie len on",
-        "packages/core/test/vazen.test.ts › Autobusár: karta zo šenku podľa voľby do ruky, šenok sa nedopĺňa",
-        "packages/core/test/vazen.test.ts › Poštárka: 1 priznaný Dlh prejde na súpera",
-        "packages/core/test/vazen.test.ts › Starosta a Farár platia do konca kola (O1, O2) — raz spustené sa už neponúknu",
-        "packages/core/test/vazen.test.ts › Krčmárka: súper v tejto Pitke NA EX nedá, už dané skryté NA EX sa mu vráti (O4); na Krčme mu povinnosť zruší",
-        "packages/core/test/vazen.test.ts › Vychovávateľka: súperovo NA EX v tejto Pitke → držiteľ +3 tuhé v bitke (jedna Petelica); na Krčme sa neponúkne",
-        "packages/core/test/vazen.test.ts › Veterinár: Cirhóza z ruky alebo priznaná z hry (O3, nie z balíčka); pečeň v tejto Pitke 0 vrátane ceny",
-        "packages/core/test/vazen.test.ts › Starosta: aktívne akcie hrán lokality ×2, ostatné nie",
-        "packages/core/test/vazen.test.ts › Farár: súperova aktívna Viera je posilnený Hazard (2 zadĺženia za Vieru), v bitke Viera chýba"
+        "packages/core/test/schopnost-vazna.test.ts › Poštárka: 4 cigarety",
+        "packages/core/test/schopnost-vazna.test.ts › Krčmárka: nový plný poldeci natrvalo (aj v Zhromaždení)",
+        "packages/core/test/schopnost-vazna.test.ts › Farár: odstráni súperovo NA EX z karty, poldeci súpera ostáva vypitý; bez NA EX sa neponúkne",
+        "packages/core/test/schopnost-vazna.test.ts › Farár pri zrážke (Výtržník): ostane moje NA EX a karta prestane byť Výtržníkom",
+        "packages/core/test/schopnost-vazna.test.ts › Starosta: v tejto bitke akcie hrán lokality posilnené; druhýkrát v kole nie, bez lokality nie",
+        "packages/core/test/schopnost-vazna.test.ts › Starosta v línii: ×2 len akcie bitky na hranách lokality, akcie Pitky (Cigareta) nie",
+        "packages/core/test/schopnost-vazna.test.ts › Veterinár: odhodí všetky priznané Cirhózy a Cirhózy na ruke (nie z balíčkov); bez nich sa neponúkne",
+        "packages/core/test/schopnost-vazna.test.ts › Vychovávateľka: v Zhromaždení súper hneď pasuje bez cigariet, ja vykladám ďalej; mimo Zhromaždenia nie",
+        "packages/core/test/schopnost-vazna.test.ts › Autobusár: pri braní zo šenku koľko chcem, každá za cigaretu; potom s braním končím a berie súper",
+        "packages/core/test/schopnost-vazna.test.ts › Hrobár: 1 karta zo súperovho odhadzovacieho balíčka do ruky; pri prázdnom sa neponúkne"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30) — Developer, na prejdenie rozhodcom."
+      "poznamka": "v11.2 (Michal 2026-11-02) — Kšeft väzňa nahradila schopnosť raz za hru; programátor, na prejdenie rozhodcom."
     },
     {
       "id": "16.starsi.len-akcie",

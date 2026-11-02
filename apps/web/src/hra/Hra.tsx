@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { DlzkaHry, NaladaMomentu } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA, opponentOf } from "@naex/core";
 import { api, mediaUrl } from "../lib/api.ts";
+import { vzhladKarty } from "./HernaKarta.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { chod, Odkaz, useTitulok } from "../lib/router.tsx";
 import { sNavratom } from "../lib/navrat.ts";
@@ -569,7 +570,18 @@ export function Hra() {
     {/* Vo výučbe len na jej konci — achievement Prvá hra (Michal 2026-10-25). */}
     {(hra.vyucba === null || hra.vyucba.hotovo) && <OznamZiskov zisky={hra.achievementy.zisky} />}
     {hra.vyucba === null && (
-      <Momenty udalosti={hra.udalosti} ja={hra.view.ja} mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)} hovor={hovorPriMomente} pocitadloBezi={pocitadloBezi} />
+      <Momenty
+        udalosti={hra.udalosti}
+        ja={hra.view.ja}
+        mena={hra.hraci.map((h, i) => h?.meno ?? `Hráč ${i + 1}`)}
+        hovor={hovorPriMomente}
+        pocitadloBezi={pocitadloBezi}
+        portret={(elderId) => {
+          // Starší má id svojej karty (elders.json) — portrét je jej ilustrácia.
+          const o = hra.data === null ? null : vzhladKarty(m.sada, hra.data, elderId).obrazok;
+          return o === null ? null : mediaUrl(o.nahlad);
+        }}
+      />
     )}
     {/* Nápovedy Melichara (Michal 2026-10-24): v každej partii, nie vo výučbe — tam hovorí scenár. */}
     {hra.vyucba === null && <NapovedaMelichara data={hra.data} view={hra.view} udalosti={hra.udalosti} pocitadloBezi={pocitadloBezi} sada={m.sada} jednaNaFazu={naSirku} />}

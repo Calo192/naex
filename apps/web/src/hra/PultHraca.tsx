@@ -40,7 +40,7 @@ export interface StlpecHracaProps {
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void };
   /** Ťuk na hráča: tabuľa porovnania ty | súper. */
   readonly tabula: { readonly otvorena: boolean; readonly prepni: () => void };
-  /** Pivnica (len vlastný stĺpec): väzni a ich Kšefty v okne; svieti, keď je Kšeft väzňa dostupný. */
+  /** Pivnica (len vlastný stĺpec): väzni a ich schopnosti v okne; svieti, keď schopnosť väzňa teraz ide (v11.2). */
   readonly pivnica?: { readonly vazni: number; readonly naVyhru: number; readonly dostupna: boolean; readonly otvor: () => void };
 }
 
@@ -92,8 +92,8 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
         <button
           type="button"
           className={`stlpec-cip stlpec-pivnica${pivnica.vazni === 0 ? " prazdna" : ""}${pivnica.dostupna ? " dostupna" : ""}`}
-          aria-label={`Pivnica — väzni ${pivnica.vazni} z ${pivnica.naVyhru}${pivnica.dostupna ? ", Kšeft väzňa je teraz dostupný" : ""}`}
-          title="Pivnica — tvoji väzni a ich Kšefty"
+          aria-label={`Pivnica — väzni ${pivnica.vazni} z ${pivnica.naVyhru}${pivnica.dostupna ? ", schopnosť väzňa môžeš teraz použiť" : ""}`}
+          title="Pivnica — tvoji väzni a ich schopnosti"
           onClick={pivnica.otvor}
         >
           <IkonaMrezi />

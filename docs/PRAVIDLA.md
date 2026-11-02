@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.1 (platné od 2026-11-02)** — Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.2 (platné od 2026-11-02)** — Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2; platí v Zrejúcej, hráči na Vypálenej ostávajú na v10.4, kým Michal neschváli) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,20 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.2 oproti v11.1** (Michal 2026-11-02, Zrejúca; podklad docs/napady/bonus-zajatia.html, sada B
+prestavená na „raz za hru, kedy chceš“; staré znenia v `docs/pravidla-historia.md`, sekcia v11.2):
+
+- **Schopnosť väzňa namiesto Kšeftu väzňa** (§7, §10, §16): Kšeft väzňa za vypitý poldeci zanikol.
+  Každý zajatý starší má **schopnosť**, ktorú hráč, ktorý ho má v pivnici, smie použiť **raz za hru,
+  kedy chce** — vo svojom ťahu pri braní zo šenku, v Zhromaždení alebo v Pitke, aj vo finále.
+  Nič nestojí, nie je to ťah. Po použití je **minutá**; starší **ostáva v pivnici** a ráta sa ďalej
+  ako vydesený (červená). **Krádež špakov pri zajatí ostáva.**
+- Poštárka: 4 cigarety. Krčmárka: nový plný poldeci (natrvalo). Farár: odstráni jedno súperovo NA EX
+  z karty. Starosta: akcie lokality v tejto bitke posilnené. Veterinár: odhodí Cirhózy na ruke
+  a priznané. Vychovávateľka: súper v Zhromaždení pasuje bez cigariet. Autobusár: zo šenku koľko
+  chceš, po cigarete. Hrobár: karta zo súperovho odhadzovacieho balíčka (znenia v §10).
+- Kšeft väzňa už nie je nerest (§8).
 
 **Zmeny v11.1 oproti v11** (Michal 2026-11-02, Zrejúca: „Majú sa aktivovať akcie naopak, nie
 aktivovať všetky.“; staré znenia v `docs/pravidla-historia.md`, sekcia v11.1):
@@ -889,41 +903,10 @@ spustí sám **v Pitke, kým ju neskončil** (nie počas odpovede na NA EX, nie 
 „končím“), **každú kartu raz za Pitku**. Platí karta odkrytá v hráčovej
 partii (aj podstrčená k súperovi, nie skrytá Záverečná) a Kšeft lokality — ten smie
 použiť **každý hráč**, každý raz za Pitku. Kšeft nie je ťah; platba je verejná.
-Účinok „v tejto bitke“ sa pripočíta v bitke kola. Kšeft majú Strýko z Ameriky, Predavačka (v10.4),
-väzni (Kšeft väzňa, nižšie) a lokality Zberný dvor, Sklad, Obecný úrad
-a Predsedova vila (§15, §16). Cigarety za Kšeft karty ani lokality nie sú nerest
-(od v9.1, §8); nerest je len Kšeft väzňa (vypitý poldeci).
-
-### Kšeft väzňa (v9)
-
-Tretí druh Kšeftu (Michal 2026-10-30). Text karty staršieho začína „Väzeň — Kšeft:“
-(spúšťač `Väzeň`) a platí **výhradne držiteľovi väzňa** (§10) — karta staršieho na
-ukazovateli, v ruke ani v línii efekt nemá.
-
-- **Cena:** vypiť **1 plný poldeci zo svojej zásoby** (nie ten, čo leží na skrytom
-  NA EX): poldeci sa otočí na vypitý, je to **nerest**, **+1 poškodenie pečene** v tejto
-  Pitke a v ďalšom Zhromaždení je limit o 1 nižší. Bez plného poldeci Kšeft nie je.
-  Kostol (nikto nevypije) ho nepustí.
-- **Kedy:** v Pitke, kým ju hráč neskončil, aj keď súper už skončil; **každý väzeň
-  raz za Pitku** (dva väzni = dva Kšefty za dva poldeci). Kšeft nie je ťah.
-- **Nie naprázdno:** Kšeft, ktorý nemá čo urobiť, sa neponúkne (Hrobár pri súperovej
-  prázdnej ruke, Autobusár pri prázdnom šenku, Poštárka bez priznaného Dlhu,
-  Vychovávateľka na Krčme, Starosta a Farár, keď v tomto kole už platia). Veterinár
-  bez Cirhózy v ruke či medzi priznanými ponúkne len časť o pečeni.
-- **Trvanie:** okamžité (Hrobár, Autobusár, Poštárka, Veterinárova Cirhóza), „v tejto
-  Pitke“ (Krčmárka, Vychovávateľka, Veterinárova pečeň), „do konca kola“ (Farár,
-  Starosta — od vyhodnotenia tejto Pitky až po bitku, O1).
-
-**Poradie Kšeft vs. NA EX.** Kšeft sa vyhodnotí hneď a verejne; NA EX je skryté do
-odkrytia. **Krčmárka:** od spustenia súper v tejto Pitke NA EX nedá (server zámer
-odmietne); už dané skryté NA EX sa mu **vráti** — poldeci ostane plný, bez neresti
-a pečene; prezradí sa tým len to, že NA EX mal, nie kam (O4). Na Krčme mu povinnosť
-NA EX zruší; Vínna pivnica: zákaz platí na obe. **Vychovávateľka:** verejná hrozba —
-pri odkrytí NA EX v tejto Pitke, ak súper dal aspoň jedno NA EX, má držiteľ v bitke
-**+3 tuhé** („Petelica navyše“, jedna na Kšeft; Viera ju tlmí ako každé tuhé; nie je to
-akcia, Silná žena ani NA EX ju nemenia, O6). **Farár, Starosta** platia do konca kola
-a NA EX sa na ne skladá ako vždy: Viera zrušená NA EX nie je aktívna (Farár z nej
-Hazard nespraví), NA EX na kartu pri lokalite hranu nemení (×2 ostáva).
+Účinok „v tejto bitke“ sa pripočíta v bitke kola. Kšeft majú Strýko z Ameriky, Predavačka (v10.4)
+a lokality Zberný dvor, Sklad, Obecný úrad a Predsedova vila (§15, §16). Cigarety
+za Kšeft karty ani lokality nie sú nerest (od v9.1, §8). Kšeft väzňa (v9) zanikol
+v11.2 — väzeň má schopnosť raz za hru (§10).
 
 
 ### Počet Pitiek
@@ -991,7 +974,6 @@ vlastného tela — kto si zvykne, musí pokračovať.
 | Vypiť v Zhromaždení (poldeci navyše, §13) | 1 |
 | **NA EX** (poldeci sa vypije v bitke; každé NA EX hráča, pri zrážke Výtržníka každý za svoje) | **2** |
 | vyfajčená cigareta (za každú zaplatenú — druhé fajčenie v Pitke 2 atď.) | 1 |
-| Kšeft väzňa (platí sa vypitým plným poldeci, §7) | 1 |
 
 **Nie sú nerest:** doliatie, barter, šenok, Záverečná, Dedičstvo, pokus o zajatie,
 cigarety za Kšefty kariet a lokalít (Strýko z Ameriky, Zberný dvor, Sklad,
@@ -1307,7 +1289,7 @@ nechá 1 kartu zadarmo** (§5) — aj keď pokus zlyhá; keď skúšajú obaja, 
 **v ohrození**: v tomto kole naň nikto strach ani reči nedvíha (O7). Pokúšajúci smie bossa
 v kole vyložiť ako ktorúkoľvek kartu (tag Starešina: ráta sa do prevahy, dá sa naň NA EX),
 bez efektu — len akcie. Boss sa po bitke vracia vždy, aj keby ho efekt spálil či poslal do
-balíčka (Krokodíl, Dievčina, Kšeft Hrobára) — je nezničiteľný. V bodovaní (krok 4b) starší
+balíčka (Krokodíl, Dievčina) — je nezničiteľný. V bodovaní (krok 4b) starší
 v ohrození boduje ako každý.
 
 **Výsledok (krok 6d bitky).** Pokúšajúci **vyhral bitku** → starší ide do jeho priznaných
@@ -1320,12 +1302,37 @@ porazeného zlyhá; pri sekere zlyhajú oba.
 
 **Väzeň.** Leží v priznaných kartách držiteľa („v pivnici“). Nedáva priazeň, nie je cieľom
 Nakladačky ani hádky, nikto ho nevyslobodí. **Ráta sa ako červená** držiteľa (výhra strachom).
-Držiteľ má jeho **Kšeft väzňa** (§7). Nie je karta v línii (špaky za bitku nie), nie je kliatba
+Držiteľ má jeho **schopnosť** (nižšie). Nie je karta v línii (špaky za bitku nie), nie je kliatba
 (Exekútor nie), do výkupného sa neráta a po finále špaky nedáva (8 / 6 / 4 / 2 zaniklo v11).
 
 **Výhra väzňami.** Kto po zajatí (krok 6d) má **väzňov aspoň (lokality + finále) / 2** —
 **Tretia liga 2, Druhá 3, Prvá 4** (`vazniNaVyhru`) —, vyhráva hneď (aj vo finále, pred
 konečnými špakmi).
+
+**Schopnosť väzňa (v11.2, Michal 2026-11-02).** Každý zajatý starší má schopnosť (znenie doslova,
+`elders.json`). Hráč, ktorý ho má v pivnici, ju smie použiť **raz za hru, kedy chce**:
+
+- **Kedy:** vo **svojom ťahu** — pri braní zo šenku (je na rade), v Zhromaždení (je na ťahu
+  a nepasoval) alebo v Pitke (kým ju neskončil; nie pri odpovedi na NA EX ani pri Vízii) —, aj
+  vo finále. Nie je to ťah a nič nestojí; ťah ostáva hráčovi.
+- **Nie naprázdno:** schopnosť, ktorá by teraz nemala účinok, sa neponúkne (dôvod v tabuľke).
+- **Po použití** je schopnosť **minutá** (verejná značka „použitá“). Starší **ostáva v pivnici**,
+  ráta sa ďalej ako červená držiteľa a do väzňov na výhru.
+- Každé použitie oznámi stôl obom pečiatkou (moment „schopnosť väzňa“, mimo stropu pečiatok).
+
+| Starší | Schopnosť (doslova) | Kedy má účinok, spresnenie |
+|---|---|---|
+| Poštárka | Dostaneš 4 cigarety. | vždy |
+| Krčmárka | Nový plný poldeci. | vždy; poldeci navyše **natrvalo** (ako Stokársky barter) |
+| Farár | Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý. | keď na niektorej karte leží súperovo (odkryté) NA EX — v Pitke aj v Zhromaždení ďalšej Pitky; súperovi sa poldeci odpíše ako vypitý (nerest NA EX ostáva, ako pri spálenej karte). Pri zrážke (Výtržník) ostane NA EX držiteľa a karta prestane byť Výtržníkom. |
+| Starosta | Aktívne akcie lokality sa v tejto bitke považujú za posilnené. | keď je cieľom lokalita a v tomto kole ešte neplatí; ×2 podľa Posilnenia (§6) na obe hrany (aj súperovu), násobí sa s ostatnými násobkami (Forsáž, NA EX). „V bitke“: akcie Pitky (Hazard, Poškodenie pečene, Poldeci, Cigareta, Vízia, Obmedzenie) sa nezdvoja. |
+| Veterinár | Odhoď všetky priznané Cirhózy a Cirhózy na ruke. | keď má Cirhózu na ruke či priznanú; odhodiť = do odhadzovacieho balíčka (§17) |
+| Vychovávateľka | Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet. | len v Zhromaždení, keď súper ešte nepasoval: súper hneď pasuje (ďalej nevykladá) a cigarety za pas nedostane; držiteľ vykladá ďalej |
+| Autobusár | Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper. | len pri braní zo šenku, keď je šenok neprázdny a hráč má cigaretu; jedným rozhodnutím vyberie karty (každá 1 cigareta, bez stropu 1–2 kariet a bez obmedzenia prvého ťahu obrancu), potom s braním končí a súper berie ďalej podľa §5 |
+| Hrobár | Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka. | keď súperov odhadzovací balíček nie je prázdny (je verejný); karta odteraz patrí novému majiteľovi (ako Sklad) |
+
+Hra, ktorá za hráča urobí jediný možný ťah (pas, koniec Pitky, koniec brania), naňho pre
+nepoužitú schopnosť nečaká.
 
 **Šenok.** N = 8 vždy (§5), väzni ho nezmenšujú.
 
@@ -1336,17 +1343,6 @@ konečnými špakmi).
 
 - **Kapybara** smie znížiť súperove reči aj pri staršom v ohrození — zákaz O7 je na dvíhanie.
   Dohadzovačka (výmena scorecardov) staršieho v ohrození zasiahnuť smie.
-- Kšeft väzňa **Farár**: „posilnený Hazard“ sa násobí s ostatnými násobkami
-  (posilnená či NA EX-om zdvojená Viera = 2 × 2 zadĺženia), ako pri Starostovi.
-- Kšeft väzňa sa na **Kostole** (nikto nevypije) nedá — cena je vypiť poldeci.
-- Kšefty **Farár a Starosta** sa v kole, v ktorom už platia, znova neponúknu (boli by
-  naprázdno); Farár sa ponúkne aj súperovi bez Viery (zadanie).
-- **Krčmárka** sa neponúkne, keď súper nemá plný poldeci (verejné — nič neprezradí);
-  **Vychovávateľka** rovnako a navyše nie na Krčme (zadanie).
-- **Veterinár:** kto má Cirhózu v ruke či medzi priznanými, jednu musí spáliť (voľba
-  ktorej je jeho); len časť o pečeni sa ponúkne, keď takú nemá.
-- **Kšeft Hrobára:** súper sa meno odhodenej karty dozvie, ostatným ide len „náhodná
-  karta“ — odhadzovací balíček je verejný, preto ju súper vidí aj tam.
 - Priazeň **Robota** sú akcie Robota, takže na ne platí aj Fúrik (o 1 Dlh viac za kus).
 
 ---
@@ -1451,7 +1447,7 @@ jeden Dlh a neodpočíta žiadne špaky.
 Nespáli sa, po bitke sa vráti ako každá karta (§16).
 
 Zvyšné priznané Dlhy na konci hry nestoja nič. Priznané Dlhy pália len Robota
-a Exekútor; Obecný úrad, Podvodník, Kšeft väzňa Poštárky a priazeň Kmotra ich presúvajú
+a Exekútor; Obecný úrad, Podvodník a priazeň Kmotra ich presúvajú
 k súperovi.
 
 ---
@@ -1774,15 +1770,7 @@ nie Konflikt.
 | Kôň | Furt: Nástroj vedľa neho s ním tvorí spoj ako s Občanom. |
 | Čierna mačka | (v8.3, P5 rozhodol Michal 2026-10-30) Furt: majiteľove Povery sa Vierou nerušia — v hádke dajú vždy mäkké (v10), súperova Viera ostáva na tuhé. |
 | Strýko z Ameriky | Kšeft: za 2 cigarety Rana navyše v bitke kola. |
-| **Starší** | Karta staršieho (boss) má v línii **len akcie**; efekt (Väzeň — Kšeft) platí výhradne držiteľovi väzňa (§7, §10). |
-| Veterinár | Väzeň — Kšeft: Za vypitý poldeci spáľ 1 Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta poškodenie pečene. Nie z odhadzovacieho balíčka (O3). Pečeň držiteľa v tejto Pitke = 0 vrátane ceny Kšeftu, vlastného NA EX a súperovho NA EX na jeho karty. Bez Cirhózy platí len časť o pečeni. |
-| Autobusár | Väzeň — Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku. Podľa voľby, do ruky; šenok sa nedopĺňa; pri prázdnom šenku sa neponúkne. |
-| Starosta | Väzeň — Kšeft: Za vypitý poldeci sú do konca kola všetky aktívne akcie hrán lokality posilnené. Obe hrany, aj tá, ktorú prevahou dostáva súper (R8 A); ×2 sa násobí s ďalšími násobkami; do konca kola (O1) — poškodenie z hrán sa ráta v bitke. |
-| Farár | Väzeň — Kšeft: Za vypitý poldeci sa do konca kola každá súperova aktívna Viera ráta ako posilnený Hazard. Od vyhodnotenia tejto Pitky do bitky: 2 zadĺženia za Vieru v každom vyhodnotení Pitky (O2), v bitke Viera chýba (neruší Povery, netlmí tuhé). Viera z priazne Veriaceho nie je akcia — ostáva. |
-| Poštárka | Väzeň — Kšeft: Za vypitý poldeci prepíš 1 svoj priznaný Dlh na súpera. Bez priznaného Dlhu sa neponúkne. |
-| Hrobár | Väzeň — Kšeft: Za vypitý poldeci súper odhodí náhodnú kartu z ruky. Náhoda zo seedovaného generátora; karta ide do súperovho odhadzovacieho balíčka; pri prázdnej ruke sa neponúkne. |
-| Vychovávateľka | Väzeň — Kšeft: Za vypitý poldeci dostane súper v bitke Petelicu, ak v tejto Pitke dá NA EX. Pri odkrytí: aspoň jedno súperovo NA EX → držiteľ +3 tuhé v bitke kola (jedna Petelica na Kšeft, O6); na Krčme sa neponúkne; verejná hrozba. |
-| Krčmárka | Väzeň — Kšeft: Za vypitý poldeci súper v tejto Pitke NA EX nedá. Už dané skryté NA EX sa mu vráti (O4); na Krčme mu povinnosť NA EX zruší; Vínna pivnica: zákaz platí na obe. |
+| **Starší** | Karta staršieho (boss) má v línii **len akcie**; schopnosť (raz za hru) má výhradne držiteľ väzňa (§10, v11.2). Znenia a spresnenia schopností sú v §10 (tabuľka Schopnosť väzňa); text karty v sade je ešte zo znenia Kšeftu väzňa (v9), kým ho admin v tvorcovi neprepíše. |
 | **Nástroje** | Efekt Nástroja platí len v Dedičstve (§12). |
 | Noviny | Dedičstvo: Prehra (Titulka, návrh #40, Michal 2026-10-28): za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak. Dlhy sa rátajú pred exekúciou (§9, krok 4a). Víťazovi sa nič neberie — svoje špaky za bitku dostane celé. |
 | Krabička cigariet | Dedičstvo: Pitka: za každé 2 cigarety, ktoré súper v Pitke vyfajčí (rátajú sa zaplatené cigarety), si hneď doberieš 1 kartu. Nie je to nerest. |
@@ -1821,7 +1809,7 @@ nie Konflikt.
 | Línia | celý rad kariet v kole; lokalita v strede (§6) |
 | NA EX | plný poldeci na Občana či Starešinu v línii, vybraný v Pitke skryto: zruší jeho aktívne akcie a zdvojí neaktívne (§7) |
 | Nástup | vyhodnotenie pri zahraní karty |
-| Nerest | len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1, Kšeft väzňa 1 — porovnávajú sa s Chuťou (§8) |
+| Nerest | len konzumácia (v9.1): Vypiť 1, NA EX 2, vyfajčená cigareta 1 — porovnávajú sa s Chuťou (§8) |
 | Furt | platí, kým je karta odhalená kdekoľvek v hracom priestore |
 | Odhodenie (odhodiť) | do odhadzovacieho balíčka hráča, ktorý kartu zahral — vráti sa do hry, keď sa doberací minie a odhadzovací zamieša; opak spálenia |
 | Odpoveď na NA EX | po odkrytí za každé súperovo NA EX jedna karta z ruky do línie lícom dole, zadarmo a mimo limitu; najprv útočník, potom obranca na druhý kraj línie, obe sa otočia naraz (§7) |
@@ -1834,10 +1822,10 @@ nie Konflikt.
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane (§6) |
 | Pokus o zajatie | pred stavbou šenku za 1 cigaretu skús zajať staršieho, pri ktorom je tvoj strach 3; karta ide tebe do ruky (boss), súper si pri stavbe nechá kartu zadarmo, starší je v ohrození (§5, §10) |
 | Karta zadarmo | pri súperovom pokuse o zajatie si zo svojej stavby šenku tajne necháš 1 kartu do ruky (4 do šenku, 3 naspodok); keď skúšate obaja, nikto (§5) |
-| Väzeň | zajatý starší v priznaných kartách držiteľa („v pivnici“) — nedáva priazeň ani strach, držiteľ má jeho Kšeft; ráta sa ako jeho červená; väzni na výhru podľa ligy (2 / 3 / 4); pri zajatí krádež špakov (v11) |
+| Väzeň | zajatý starší v priznaných kartách držiteľa („v pivnici“) — nedáva priazeň ani strach, držiteľ má jeho schopnosť (raz za hru); ráta sa ako jeho červená; väzni na výhru podľa ligy (2 / 3 / 4); pri zajatí krádež špakov (v11) |
 | V ohrození | starší, o ktorého zajatie sa v tomto kole hrá — jeho markerom nič nehýbe; silu jeho priazne smie hádka meniť (§10) |
 | Boss | karta staršieho: 6 akcií, 2 blokované sloty, 1 neresť; v línii len akcie (§10, §16) |
-| Kšeft väzňa | efekt staršieho, ktorý má len držiteľ väzňa, za vypitý plný poldeci, raz za Pitku (§7) |
+| Schopnosť väzňa | schopnosť zajatého staršieho; jeho držiteľ ju použije raz za hru vo svojom ťahu, potom je minutá a väzeň ostáva v pivnici (§10, v11.2; Kšeft väzňa v9–v11.1 zanikol) |
 | Nástenka | krčmová nástenka: odohrané bitky s víťazom a špakmi (§14) |
 | Náradie | balíček kariet s tagom Nástroj lícom dole; pri stavbe šenku z neho každý dostane 2 karty (§3, §5) |
 | Občania | balíček všetkých ostatných kariet šenku lícom dole; pri stavbe šenku z neho každý dostane 6 kariet (§3, §5) |

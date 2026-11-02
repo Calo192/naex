@@ -94,7 +94,7 @@ export interface ObsahNapovedy {
   readonly dalsi: { readonly nazov: string; readonly text: string } | null;
 }
 
-/** Obsah nápovedy nad väzňom (R3): v pivnici u koho, krádež pri zajatí a Kšeft väzňa doslova. */
+/** Obsah nápovedy nad väzňom (R3): v pivnici u koho, krádež pri zajatí a schopnosť väzňa doslova (v11.2). */
 export interface ObsahNapovedyVazna {
   readonly druh: "vazen";
   readonly meno: string;
@@ -110,8 +110,10 @@ export interface ObsahNapovedyVazna {
   readonly vazniNaVyhru: number;
   /** Krádež pri zajatí (nástenka): bitka a koľko špakov držiteľ dostal; null = nevedno. */
   readonly kradez: { readonly kolo: number; readonly spaky: number; readonly obet: string } | null;
-  /** Kšeft väzňa — text karty bez „Väzeň — Kšeft:“ (PRAVIDLA §16). */
-  readonly kseft: string | null;
+  /** Schopnosť väzňa (v11.2) — znenie z elders.json. */
+  readonly schopnost: string | null;
+  /** Schopnosť je minutá (raz za hru). */
+  readonly pouzita: boolean;
 }
 
 export interface VstupNapovedy {
@@ -227,7 +229,7 @@ export function vetaZajatia(z: ZajatieVNapovede, rod: Rod): string {
 
 export interface VstupNapovedyVazna {
   readonly data: GameData;
-  readonly vazen: Pick<Vazen, "elderId" | "hrac" | "karta" | "scorecard">;
+  readonly vazen: Pick<Vazen, "elderId" | "hrac" | "karta" | "scorecard" | "pouzita">;
   readonly meno: string;
   readonly ja: PlayerId;
   readonly mena: readonly [string, string];
@@ -239,8 +241,7 @@ export function obsahNapovedyVazna(v: VstupNapovedyVazna): ObsahNapovedyVazna {
   const h = v.vazen.hrac;
   const k = kradezPriZajati(v.nastenka, v.vazen.elderId, h);
   const kradez = k === null ? null : { ...k, obet: kratkeMeno(v.mena[opponentOf(h)]) };
-  const text = v.data.cards.get(v.vazen.karta.defId)?.effectText ?? "";
-  const kseft = text.replace(/^\s*Väzeň\s*[—–-]\s*Kšeft:\s*/, "").trim();
+  const schopnost = v.data.elders.get(v.vazen.karta.defId)?.schopnost ?? "";
   const fav = v.data.scorecards.find((x) => x.id === v.vazen.scorecard)?.favour;
   return {
     druh: "vazen",
@@ -255,7 +256,8 @@ export function obsahNapovedyVazna(v: VstupNapovedyVazna): ObsahNapovedyVazna {
     vazni: v.vyhry.vazni[h],
     vazniNaVyhru: v.vyhry.vazniNaVyhru,
     kradez,
-    kseft: kseft === "" ? null : kseft,
+    schopnost: schopnost === "" ? null : schopnost,
+    pouzita: v.vazen.pouzita === true,
   };
 }
 

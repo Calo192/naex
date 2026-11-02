@@ -144,7 +144,7 @@ export function parseElders(json: unknown, cards: ReadonlyMap<string, CardDef>):
     if (card === undefined) fail(path, "nemá kartu v cards.json");
     if (!card.tags.includes("Starešina")) fail(path, "karta nemá tag Starešina");
     if (elders.has(id)) fail(path, "duplicitné id");
-    elders.set(id, { id });
+    elders.set(id, { id, schopnost: asString(raw.schopnost, `${path}.schopnost`) });
   }
   return elders;
 }

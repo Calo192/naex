@@ -927,7 +927,11 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   // NA EX naraz (v5): súperove skryté NA EX bot nevidí, rovnako ako hráč.
   const state: GameState =
     stav.pitkaStav === null ? stav : { ...stav, pitkaStav: { ...stav.pitkaStav, skryteNaex: (stav.pitkaStav.skryteNaex ?? []).filter((x) => x.hrac === ja) } };
-  const legal = legalCommands(data, state, ja);
+  const vsetky = legalCommands(data, state, ja);
+  // Schopnosť väzňa (v11.2) je raz za hru — bot ju použije len podľa jednoduchého pravidla, inak ju šetrí.
+  const schopnost = schopnostBota(data, state, ja, vsetky);
+  if (schopnost !== null) return schopnost;
+  const legal = vsetky.filter((c) => c.type !== "schopnostVazna");
   const prvy = legal[0];
   if (prvy === undefined) throw new Error("Bot nemá legálny ťah.");
   if (legal.length === 1) return prvy;
@@ -957,6 +961,65 @@ export function tahBota(data: GameData, stav: GameState, ja: PlayerId, seed: num
   if (typ === "kapybara" || typ === "nastroj") return najlepsi(volba, legal, (po) => hodnotaStavu(k, po, 1.5)) ?? prvy;
   const cmd = rozhodni(volba);
   return cmd ?? prvy;
+}
+
+/**
+ * Schopnosť väzňa (v11.2): jednoduché pravidlá, nech ju bot nepoužije naprázdno ani hneď
+ * zbytočne. Krčmárka a Veterinár hneď; Poštárka s málom cigariet či vo finále; Hrobár
+ * na kartu, ktorá nie je kliatba a nie je horšia ako priemer jeho kariet; Farár na súperovo
+ * NA EX na vlastnej karte (alebo v poslednej Pitke na akomkoľvek); Starosta v poslednej Pitke,
+ * keď posilnené hrany bitku pohnú v jeho prospech; Vychovávateľka, keď má súper v ruke
+ * aspoň 2 karty; Autobusár na aspoň 2 karty nad priemerom (jedna cigareta ostane).
+ */
+function schopnostBota(data: GameData, state: GameState, ja: PlayerId, legal: readonly Command[]): Command | null {
+  const ponuka = legal.filter((c): c is Extract<Command, { type: "schopnostVazna" }> => c.type === "schopnostVazna");
+  if (ponuka.length === 0) return null;
+  const opp = opponentOf(ja);
+  const h = state.hraci[ja];
+  const defId = (c: { readonly elderId: string }): string | undefined => state.vazni.find((x) => x.elderId === c.elderId)?.karta.defId;
+  const poslednaPitka = state.faza === "pitka" && state.pitkaCislo >= state.pitkyCelkom;
+  const finale = state.ciel?.typ === "finale";
+  for (const c of ponuka) {
+    switch (defId(c)) {
+      case "krcmarka":
+      case "veterinar":
+        return c;
+      case "postarka":
+        if (h.cigarety <= 2 || finale) return c;
+        break;
+      case "hrobar": {
+        const karta = state.hraci[opp].odhadzovaci.find((k) => k.uid === c.uid);
+        if (karta !== undefined && !defOf(data, karta).tags.includes("Kliatba") && hodnotaKarty(data, karta) >= priemernaKarta(data, state, ja)) return c;
+        break;
+      }
+      case "farar": {
+        const pl = state.strany.flat().find((x) => x.card.uid === c.uid);
+        if (pl !== undefined && (pl.playedBy === ja || poslednaPitka)) return c;
+        break;
+      }
+      case "starosta": {
+        if (!poslednaPitka) break;
+        const rozdiel = (s: GameState): number => {
+          const t = poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums).tuhe;
+          return t[ja] - t[opp];
+        };
+        const posilnene: GameState = { ...state, kseftyKola: { ...(state.kseftyKola ?? {}), hranyPosilnene: true } };
+        if (rozdiel(posilnene) >= rozdiel(state) + 2) return c;
+        break;
+      }
+      case "vychovavatelka":
+        if (state.hraci[opp].ruka.length >= 2) return c;
+        break;
+      case "autobusar": {
+        const priemer = priemernaKarta(data, state, ja);
+        const dobre = [...state.senok].filter((k) => hodnotaKarty(data, k) > priemer).sort((a, b) => hodnotaKarty(data, b) - hodnotaKarty(data, a));
+        const kolko = Math.min(dobre.length, h.cigarety - 1);
+        if (kolko >= 2) return { type: "schopnostVazna", elderId: c.elderId, uids: dobre.slice(0, kolko).map((k) => k.uid) };
+        break;
+      }
+    }
+  }
+  return null;
 }
 
 /** Hasič: kliatbu bot vráti do odhadzovacieho balíčka, inú kartu si nechá. */
@@ -1265,8 +1328,7 @@ function pitka(v: Volba): Command | null {
   if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length <= 2 && h.cigarety >= cenaFajc + 1) return smoke;
 
   // Kšeft (v7): zahrá si ho nanečisto; berie, keď stav zlepší viac než o povahový prah.
-  // Poštárka (Dlh za kartu) len s tenkou rukou — cenu Dlhu (istú exekúciu) ráta hodnotaStavu.
-  const ksefty = v.legal.filter((c) => c.type === "kseft" || c.type === "kseftVazna");
+  const ksefty = v.legal.filter((c) => c.type === "kseft");
   if (ksefty.length > 0) {
     const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 1.5);
     const best = najlepsi(v, ksefty, ohodnot);

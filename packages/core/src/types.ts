@@ -207,6 +207,8 @@ export function priazenZKluca(kluc: string): Favour | null {
 
 export interface ElderDef {
   readonly id: string;
+  /** Schopnosť väzňa (v11.2) — znenie z elders.json; držiteľ ju použije raz za hru. */
+  readonly schopnost: string;
 }
 
 /**

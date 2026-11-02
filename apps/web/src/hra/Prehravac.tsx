@@ -45,6 +45,7 @@ const NAZOV_TAHU: Readonly<Record<string, string>> = {
   pokus: "pokus o zajatie",
   bezPokusu: "bez pokusu o zajatie",
   kseftVazna: "Kšeft väzňa",
+  schopnostVazna: "schopnosť väzňa",
   stavbaSenku: "stavia šenok",
   draftBer: "berie zo šenku",
   draftStop: "končí so šenkom",

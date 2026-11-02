@@ -66,7 +66,7 @@ describe("nápoveda nad staršom", () => {
     expect(vetaZajatia(o.zajatie[0]!, "m")).toBe("Jano ho môže pred stavbou šenku skúsiť zajať za 1 cigaretu (strach vydesený). Keď vyhrá bitku, Fero mu odovzdá 5 špakov za vrch svojho teplomera.");
   });
 
-  it("väzeň: v pivnici u koho, krádež z nástenky a Kšeft väzňa doslova", () => {
+  it("väzeň: v pivnici u koho, krádež z nástenky a schopnosť väzňa doslova (v11.2)", () => {
     const vazen = { elderId: id, hrac: 1 as const, karta: { ...e0.karta, defId: "starosta" }, scorecard: e0.scorecard };
     const o = obsahNapovedyVazna({
       data,
@@ -81,7 +81,9 @@ describe("nápoveda nad staršom", () => {
       ],
     });
     expect(o).toMatchObject({ druh: "vazen", kto: "Fero", komu: "su", kradez: { kolo: 2, spaky: 3, obet: "Jano" } });
-    expect(o.kseft).toBe("Za vypitý poldeci sú do konca kola všetky aktívne akcie hrán lokality posilnené.");
+    expect(o.schopnost).toBe("Aktívne akcie lokality sa v tejto bitke považujú za posilnené.");
+    expect(o.pouzita).toBe(false);
+    expect(obsahNapovedyVazna({ data, vazen: { ...vazen, pouzita: true }, meno: "Starosta", ja: 0, mena: ["Jano", FERO], vyhry: { cervene: [0, 1], cervenychNaVyhru: 4, vazni: [0, 1], vazniNaVyhru: 2 }, nastenka: [] }).pouzita).toBe(true);
     const t = text(renderToStaticMarkup(createElement(ObsahNapovedyStarsieho, { o })));
     expect(t).toContain("Fero: je z neho stále vydesený");
     expect(t).toContain("Krádež pri zajatí (bitka 2): Jano → Fero 3 špaky");

@@ -32,7 +32,7 @@ const CIGARETY_NAVYSE = 4;
  * Upraví čerstvo rozdanú partiu: prvý starší sa človeka bojí na červenej (strach 3 — človek
  * ho smie skúsiť zajať), druhý sa na červenej bojí bota (pokus smie skúsiť bot). Obaja
  * dostanú cigarety navyše. „zajatie-vyhra“ dá človeku o jedného väzňa menej, než treba na
- * výhru (v11 podľa ligy) — ďalší zajatý vyhráva a Kšeft väzňa sa dá skúsiť hneď v prvej Pitke.
+ * výhru (v11 podľa ligy) — ďalší zajatý vyhráva a schopnosť väzňa sa dá skúsiť hneď v prvom ťahu.
  */
 export function pouziScenar(state: GameState, scenar: Scenar, clovek: PlayerId): GameState {
   const bot = opponentOf(clovek);

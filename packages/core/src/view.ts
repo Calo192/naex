@@ -27,7 +27,7 @@ import type {
   KoniecHry,
   KseftyKola,
   PitkaStav,
-  StavKseftuVazna,
+  StavSchopnostiVazna,
   StavHadky,
   PokusOZajatie,
   ZdvihVBitke,
@@ -213,7 +213,7 @@ export interface ClientState {
   readonly rozpis?: readonly number[];
   /** Rany navyše z Kšeftu Strýka z Ameriky v tomto kole (v7) — verejné. */
   readonly kseftRany?: readonly [number, number];
-  /** Kšefty väzňov s účinkom do konca kola (v9: Starosta, Farár, Vychovávateľka); verejné. */
+  /** Účinky schopností väzňov do konca kola (v11.2: Starosta); verejné. */
   readonly kseftyKola?: KseftyKola;
   /** Priloženia súpera ku kartám hráča v tomto kole (Pasca v7); verejné. */
   readonly prilozeniaKu?: readonly [number, number];
@@ -640,20 +640,23 @@ export function cenaKliatby(defId: "dlh" | "cirhoza"): number {
   return defId === "cirhoza" ? -KONSTANTY.SPAKY_ZA_CIRHOZU : 0;
 }
 
-/** Ponuka Kšeftu väzňa z pohľadu hráča (v9) — ten istý výpočet ako legalCommands (ponukaKseftuVazna). */
-export function stavKseftuVaznaZPohladu(view: ClientState): StavKseftuVazna {
+/** Schopnosti väzňa z pohľadu hráča (v11.2) — ten istý výpočet ako legalCommands (ponukaSchopnostiVazna). */
+export function stavSchopnostiVaznaZPohladu(view: ClientState): StavSchopnostiVazna {
   return {
     faza: view.faza,
+    hra: view.mozemHrat && view.hasicVolba === null && view.volbaNastupu === null,
     vizia: view.vizia,
+    draftStav: view.draftStav,
+    zhromazdenieStav: view.zhromazdenieStav,
     pitkaStav: view.pitkaStav,
     ciel: view.ciel,
     senok: view.senok,
     vazni: view.vazni,
     ...(view.kseftyKola !== undefined ? { kseftyKola: view.kseftyKola } : {}),
-    poldeciPlne: [view.hraci[0].poldeciPlne, view.hraci[1].poldeciPlne],
-    dlhy: [view.hraci[0].dlhy, view.hraci[1].dlhy],
-    rukaPocet: [view.hraci[0].rukaPocet, view.hraci[1].rukaPocet],
-    cirhozy: cirhozyPreVeterinara({ ruka: view.ruka, priznane: view.hraci[view.ja].priznane }),
+    strany: view.strany,
+    cigarety: view.hraci[view.ja].cigarety,
+    superovOdhadzovaci: view.hraci[view.ja === 0 ? 1 : 0].odhadzovaci,
+    cirhozy: cirhozyPreVeterinara({ ruka: view.ruka, priznane: view.hraci[view.ja].priznane }).length,
   };
 }
 

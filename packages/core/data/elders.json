@@ -3,32 +3,42 @@
   "Osem starších, ktorí ležia na ukazovateľoch.",
   "",
   "Priazeň a bodovacie podmienky nie sú vlastnosťou staršieho — určuje ich",
-  "scorecard, ktorý starší dostane pri príprave hry náhodne (viď scorecards.json)."
+  "scorecard, ktorý starší dostane pri príprave hry náhodne (viď scorecards.json).",
+  "",
+  "Schopnosť väzňa (v11.2, Michal 2026-11-02): znenie doslova; hráč, ktorý staršieho má v Pivnici, ju smie použiť raz za hru (PRAVIDLA §10, engine.ts schopnostiVazna)."
  ],
  "elders": [
   {
-   "id": "farar"
+   "id": "farar",
+   "schopnost": "Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý."
   },
   {
-   "id": "krcmarka"
+   "id": "krcmarka",
+   "schopnost": "Nový plný poldeci."
   },
   {
-   "id": "starosta"
+   "id": "starosta",
+   "schopnost": "Aktívne akcie lokality sa v tejto bitke považujú za posilnené."
   },
   {
-   "id": "postarka"
+   "id": "postarka",
+   "schopnost": "Dostaneš 4 cigarety."
   },
   {
-   "id": "hrobar"
+   "id": "hrobar",
+   "schopnost": "Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka."
   },
   {
-   "id": "autobusar"
+   "id": "autobusar",
+   "schopnost": "Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper."
   },
   {
-   "id": "veterinar"
+   "id": "veterinar",
+   "schopnost": "Odhoď všetky priznané Cirhózy a Cirhózy na ruke."
   },
   {
-   "id": "vychovavatelka"
+   "id": "vychovavatelka",
+   "schopnost": "Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet."
   }
  ]
 }

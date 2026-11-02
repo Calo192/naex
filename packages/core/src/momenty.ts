@@ -7,7 +7,7 @@
 // výsledok bitky. Ruka, balíčky ani skrytá karta do nej nevstupujú (pravidlo 2)
 // — moment je preto rovnaký pre oboch hráčov a server ho smie poslať obom.
 // Strop (najviac 1 pečiatka za úsek kola, zlato najviac 2 za partiu) stráži
-// obmedzMomenty, aby oslavy neotravovali.
+// obmedzMomenty, aby oslavy neotravovali — schopnosť väzňa (v11.2) padne vždy.
 
 import type { PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
@@ -30,7 +30,9 @@ export type TypMomentu =
   | "zachranene"
   | "zajatie"
   | "bitkaOVsetko"
-  | "vyprask";
+  | "vyprask"
+  // Schopnosť väzňa (v11.2): pečiatka pri každom použití (Michal 2026-11-02), mimo stropu.
+  | "schopnostVazna";
 
 export interface Moment {
   readonly typ: TypMomentu;
@@ -41,6 +43,8 @@ export interface Moment {
   readonly nazov: string;
   /** Veta do logu — hráč vždy v tvare „Hráč N“ (nominatív), klient ho nahradí menom. */
   readonly popis: string;
+  /** Starší, ktorého schopnosť väzňa sa použila — portrét na pečiatke. */
+  readonly elderId?: string;
 }
 
 /** Stupeň a text pečiatky každého momentu — aj pre ukážku v klientovi. */
@@ -55,6 +59,19 @@ export const MOMENTY: Readonly<Record<TypMomentu, { readonly stupen: StupenMomen
   zajatie: { stupen: "zlato", nazov: "ZAJATIE" },
   bitkaOVsetko: { stupen: "striebro", nazov: "BITKA O VŠETKO" },
   vyprask: { stupen: "bronz", nazov: "VÝPRASK" },
+  schopnostVazna: { stupen: "striebro", nazov: "SCHOPNOSŤ VÄZŇA" },
+};
+
+/** Čo schopnosť väzňa urobila — druhá časť textu pečiatky („FARÁR · zrušil NA EX“). */
+export const PECIATKA_SCHOPNOSTI: Readonly<Record<string, string>> = {
+  postarka: "+4 cigarety",
+  krcmarka: "nový poldeci",
+  farar: "zrušil NA EX",
+  starosta: "lokalita posilnená",
+  veterinar: "Cirhózy preč",
+  vychovavatelka: "súper pasuje",
+  autobusar: "karty zo šenku",
+  hrobar: "karta zo šrotu",
 };
 
 /**
@@ -81,6 +98,7 @@ export const NALADY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: Nalada
   zajatie: { pre: "pohoda", proti: "smola" },
   bitkaOVsetko: { pre: "udiv", proti: "udiv" },
   vyprask: { pre: "pohoda", proti: "smola" },
+  schopnostVazna: { pre: "pohoda", proti: "smola" },
 };
 
 /** Nálada momentu pre hráča ja. */
@@ -202,6 +220,20 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
     out.push({ typ: "zajatie", ...MOMENTY.zajatie, hrac: p, popis: `Zajatie — Hráč ${p + 1} má v pivnici ${pocet(po)}. väzňa.` });
   }
 
+  // Schopnosť väzňa (v11.2): väzňovi pribudla značka „použitá“ — pečiatka vždy, obom.
+  for (const v of po.vazni ?? []) {
+    if (v.pouzita !== true || (pred.vazni ?? []).find((x) => x.elderId === v.elderId)?.pouzita === true) continue;
+    const meno = data.cards.get(v.karta.defId)?.name ?? v.elderId;
+    out.push({
+      typ: "schopnostVazna",
+      stupen: MOMENTY.schopnostVazna.stupen,
+      nazov: `${meno.toLocaleUpperCase("sk")} · ${PECIATKA_SCHOPNOSTI[v.karta.defId] ?? "schopnosť"}`,
+      hrac: v.hrac,
+      popis: `Schopnosť väzňa ${meno} — Hráč ${v.hrac + 1}: ${data.elders.get(v.elderId)?.schopnost ?? ""}`.trim(),
+      elderId: v.elderId,
+    });
+  }
+
   // Bitka o všetko: na sekere sú špaky aspoň z dvoch bitiek, keď sa začína bitka.
   if (pred.faza !== "bitka" && po.faza === "bitka" && bitkyNaSekere(po.nastenka) >= 2) {
     out.push({ typ: "bitkaOVsetko", ...MOMENTY.bitkaOVsetko, hrac: null, popis: `Bitka o všetko — víťaz berie aj ${po.spakyNaSekere} špakov zo sekery.` });
@@ -236,10 +268,13 @@ function usekKola(s: GameState): string {
  * najviac ZLATO_ZA_PARTIU za partiu — ďalšie zlato sa nepečiatkuje.
  */
 export function obmedzMomenty(kandidati: readonly Moment[], stav: StavMomentov, po: GameState): { vybrane: Moment[]; stav: StavMomentov } {
+  // Schopnosť väzňa padne vždy (Michal 2026-11-02) a strop úseku nemíňa.
+  const vzdy = kandidati.filter((m) => m.typ === "schopnostVazna");
+  const ostatne = kandidati.filter((m) => m.typ !== "schopnostVazna");
   const usek = usekKola(po);
-  if (stav.usek === usek) return { vybrane: [], stav };
-  const povolene = kandidati.filter((m) => m.stupen !== "zlato" || stav.zlate < ZLATO_ZA_PARTIU);
-  if (povolene.length === 0) return { vybrane: [], stav };
+  if (stav.usek === usek) return { vybrane: vzdy, stav };
+  const povolene = ostatne.filter((m) => m.stupen !== "zlato" || stav.zlate < ZLATO_ZA_PARTIU);
+  if (povolene.length === 0) return { vybrane: vzdy, stav };
   const najlepsi = [...povolene].sort((a, b) => PORADIE_STUPNOV[b.stupen] - PORADIE_STUPNOV[a.stupen])[0] as Moment;
-  return { vybrane: [najlepsi], stav: { usek, zlate: stav.zlate + (najlepsi.stupen === "zlato" ? 1 : 0) } };
+  return { vybrane: [...vzdy, najlepsi], stav: { usek, zlate: stav.zlate + (najlepsi.stupen === "zlato" ? 1 : 0) } };
 }

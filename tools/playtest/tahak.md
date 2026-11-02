@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11 Strach a reči, 2026-11-02, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.2 Strach a reči, schopnosť väzňa, 2026-11-02, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -111,18 +111,19 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   odpovedi na NA EX; každá karta raz za Pitku, Kšeft lokality smie každý hráč. Strýko z Ameriky
   (2 cigarety → v bitke kola +1 Rana), **Predavačka (v10.4): 1 cigareta → 1 karta z tvojho doberacieho balíčka**
   (nie je to fajčenie — nerest ani Krabička nie), Zberný dvor, Sklad, Obecný úrad, Predsedova vila.
-- **Kšeft väzňa (v9, 2026-10-30):** má ho **len držiteľ väzňa** — starší v ruke, v línii ani na
-  ukazovateli efekt nemá (v línii len akcie). Cena: **vypiť 1 plný poldeci** zo zásoby (nie ten na
-  skrytom NA EX): nerest, +1 pečeň, limit ďalšieho Zhromaždenia −1. V Pitke, kým ju neskončíš, **každý
-  väzeň raz za Pitku**, `{"type":"kseftVazna","elderId":…}` (Autobusár s `kartaUid` karty zo šenku,
-  Veterinár s `kartaUid` Cirhózy). Naprázdno sa neponúkne. Hrobár: súper odhodí náhodnú kartu z ruky.
-  Farár: do konca kola je každá súperova aktívna Viera **posilnený Hazard** (2 zadĺženia v každej Pitke),
-  v bitke mu Viera chýba. Autobusár: 1 karta zo šenku. Starosta: do konca kola sú **všetky aktívne akcie
-  hrán lokality posilnené** (aj súperove). Poštárka: 1 tvoj priznaný Dlh prejde na súpera. Krčmárka:
-  súper v tejto Pitke NA EX nedá (už dané skryté sa mu vráti; na Krčme mu povinnosť zruší).
-  Vychovávateľka: ak súper v tejto Pitke dá NA EX, máš v bitke **Petelicu navyše (+3 tuhé)** — na Krčme
-  sa neponúka. Veterinár: spáľ Cirhózu **z ruky alebo priznanú** a v tejto Pitke sa ti pečeň
-  nepočíta (aj cena Kšeftu a NA EX).
+- **Schopnosť väzňa (v11.2, 2026-11-02; Kšeft väzňa zanikol):** každý tvoj väzeň má schopnosť, ktorú
+  použiješ **raz za hru, kedy chceš** — vo **svojom ťahu** pri braní zo šenku, v Zhromaždení alebo v Pitke
+  (kým ju neskončíš, nie pri odpovedi na NA EX), aj vo finále; nie je to ťah a nič nestojí. Potom je
+  **minutá**, väzeň ostáva v pivnici (ráta sa ako tvoja červená). Naprázdno sa neponúkne.
+  `{"type":"schopnostVazna","elderId":…}` (Farár a Hrobár s `uid`, Autobusár s `uids`).
+  **Poštárka:** dostaneš **4 cigarety**. **Krčmárka:** **nový plný poldeci** (natrvalo, +1 poldeci).
+  **Farár:** odstráň jedno súperovo NA EX z karty (`uid` karty); jeho poldeci ostáva vypitý.
+  **Starosta:** aktívne akcie lokality sú **v tejto bitke posilnené** (obom; akcie Pitky — Hazard, pečeň,
+  Poldeci, Cigareta, Vízia, Obmedzenie — nie). **Veterinár:** odhoď všetky priznané Cirhózy a Cirhózy na ruke
+  (do odhadzovacieho balíčka). **Vychovávateľka** (len v Zhromaždení): súper hneď pasuje **bez cigariet za pas**,
+  ty vykladáš ďalej. **Autobusár** (len pri braní zo šenku): ber zo šenku, koľko chceš, **každú kartu za 1
+  cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
+  odhadzovacieho balíčka do ruky (`uid`).
 - **Sypač (Pitka, v10.3):** keď sa z neho stane Výtržník, jeho akcie sú **Pecky**, nie Rany.
 - **Konflikt (v7):** efekt **ležiacej** karty, keď k nej **súper** priloží svoju (aj odpoveďou na NA EX;
   Záverečná až pri otočení). Keď prikladáš ty k svojej, nič; priložený Nástroj nič; NA EX ani zrážka nič.
@@ -175,7 +176,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   — prizná ju hneď, alebo riskuješ, že sa ti do konca nevráti do ruky. Kým ju nepriznáš, súper za ňu tuhé
   nedostáva. Počet súperových
   nepriznaných Cirhóz je verejný (stav ho ukazuje). Dlh pália Robota (1 Dlh za aktívnu Robotu; **za každý Dlh, ktorý nemá čo spáliť, 1 špak** — v8.4) a Exekútor
-  (v každej bitke); Obecný úrad, Podvodník, Kšeft väzňa Poštárky a Kmotor ho presunú súperovi. Anonymný
+  (v každej bitke); Obecný úrad, Podvodník a Kmotor ho presunú súperovi. Anonymný
   alkoholik (Nástup, v7) prizná všetky Cirhózy z tvojho odhadzovacieho balíčka (Absťák nie). Kliatba do línie nepatrí. Priznanie nemíňa
   limit ani neodovzdá ťah. Za priznané Dlhy príde v každej bitke Exekútor.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
@@ -192,14 +193,14 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Vízia:** na konci Pitky za každú aktívnu Víziu uvidíš vrchnú kartu svojho
   balíčka — `{"type":"vizia","vziat":true}` do ruky, alebo `false` = spáliť
   (navždy z hry).
-- **Spáliť vs. odhodiť (v10.4):** **spáliť** = karta ide navždy z hry (Vízia, Poľovník, Krokodíl, Dievčina,
-  Veterinárova Cirhóza; Robota a Exekútor pália Dlhy); **odhodiť** = do odhadzovacieho balíčka (vráti sa).
+- **Spáliť vs. odhodiť (v10.4):** **spáliť** = karta ide navždy z hry (Vízia, Poľovník, Krokodíl, Dievčina;
+  Robota a Exekútor pália Dlhy); **odhodiť** = do odhadzovacieho balíčka (vráti sa).
 - **Hasič (Nástup, 2026-10-26):** vytiahne náhodnú kartu z tvojho odhadzovacieho
   balíčka (aj kliatbu; súper ju vidí, odhadzovací je verejný) —
   `{"type":"hasic","nechat":true}` do ruky,
   alebo `false` = vráti sa do odhadzovacieho. Kým nerozhodneš, hra čaká; v ťahu
   naraz rozhoduješ po zvyšku ťahu. Prázdny odhadzovací = nič.
-- **Starší (v9):** karta staršieho (boss) má v línii **len akcie** — efekt je Kšeft väzňa. Bossovia
+- **Starší (v9):** karta staršieho (boss) má v línii **len akcie** — jeho schopnosť má len držiteľ väzňa (v11.2). Bossovia
   majú 6 akcií a presne 1 neresť (Hazard alebo Pečeň).
 - **Dedičstvo** (Nástroj do hracej oblasti, `target` `dedicstvo`): cena rastie
   pre oboch spolu — 1., 2., 3. Nástroj v hre stojí 1, 2, 3 cigarety. Efekt
@@ -251,7 +252,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (zadĺženie 8 pri prahu 2 = 4 Dlhy). Milujúca manželka (v7) v línii: tvoja pečeň v Pitke −1.
   Riadok „VÝHĽAD PITKY“ v stave ukazuje, čo pripíšu karty na stole a koľko kliatob z toho bude.
 - **Chuť a Absťák (v9.1, 2026-10-30):** **Chuť** je tvoja verejná latka nerestí, na začiatku **0**. Nerest je
-  len konzumácia: **Vypiť 1, NA EX 2, vyfajčená cigareta 1**, Kšeft väzňa (vypitý poldeci) 1 — doliatie,
+  len konzumácia: **Vypiť 1, NA EX 2, vyfajčená cigareta 1** — doliatie,
   barter, šenok, Dedičstvo ani cigarety za Kšefty lokalít nie. **Na konci kola:** keď si v kole mal
   **menej nerestí, než je tvoja Chuť**, dostaneš **kartu Absťák do odhadzovacieho balíčka**; potom
   **Chuť = väčšie z (Chuť, neresti kola) − 1** (nie pod 0). Súper latku neurčuje. Po finále nič.

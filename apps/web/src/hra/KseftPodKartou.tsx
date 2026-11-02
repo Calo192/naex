@@ -1,5 +1,5 @@
-// Tlačidlo Kšeftu pod kartou, ktorá ho ponúka (Michal 2026-11-02) — Strýko v línii, lokalita
-// a väzeň v Pivnici. Na tlačidle len „Kšeft“ a cena („Kšeft bude obsahovať len minimum textu
+// Tlačidlo Kšeftu pod kartou, ktorá ho ponúka (Michal 2026-11-02) — Strýko v línii, lokalita;
+// to isté tlačidlo nesie schopnosť väzňa v Pivnici (v11.2, raz za hru, „Schopnosť“ namiesto „Kšeft“). Na tlačidle len „Kšeft“ a cena („Kšeft bude obsahovať len minimum textu
 // a pri mouseover sa otvoria detaily“); čo dá, celé znenie a prečo teraz nie, je v nápovede.
 // Voľba (Kšeft vily: starší a smer; Autobusár, Veterinár: karta) sa otvorí nad tlačidlom
 // (playtest výučby 20261030, k-kseft: rozbaľovač nezabral). Na telefóne ťuk otvorí ponuku
@@ -7,11 +7,12 @@
 // (overflow) a harmonika ju posúva transformom.
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { cigariet } from "@naex/core";
 import { createPortal } from "react-dom";
 import type { Command } from "@naex/core";
 import type { KseftNaStole, TlacidloVolby } from "./kseftyNaStole.ts";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
-import { CenaCigariet, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
+import { CenaCigariet, Vymena } from "./ikonyZdrojov.tsx";
 
 export interface KseftPodKartouProps {
   readonly kseft: KseftNaStole;
@@ -44,17 +45,21 @@ function Detail({ k }: { readonly k: KseftNaStole }) {
   );
 }
 
+/** „Kšeft“, pri väzňovi „Schopnosť“ (v11.2). */
+function druhNazov(k: Pick<KseftNaStole, "druh">): string {
+  return k.druh === "vazen" ? "Schopnosť" : "Kšeft";
+}
+
 export function obsahNapovedy(k: KseftNaStole): TipObsah {
-  return { nadpis: `Kšeft · ${k.nazov}`, text: <Detail k={k} /> };
+  return { nadpis: `${druhNazov(k)} · ${k.nazov}`, text: <Detail k={k} /> };
 }
 
 function Cena({ k }: { readonly k: KseftNaStole }) {
   return "cigarety" in k.cena ? (
     <CenaCigariet n={k.cena.cigarety} />
   ) : (
-    <span className="cena-poldeci" title="vypitý plný poldeci">
-      −1
-      <IkonaPoldeci plny={false} />
+    <span className="cena-raz" title="raz za hru, zadarmo">
+      1× za hru
     </span>
   );
 }
@@ -65,8 +70,9 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
   const ponuka = useRef<HTMLDivElement>(null);
   const [poloha, setPoloha] = useState<{ readonly left: number; readonly top: number } | null>(null);
   const ne = k.dovod !== null;
-  // Voľba (vila, karta) sa ponúkne, len keď Kšeft ide; inak ponuka ukáže detail s dôvodom.
-  const ponukaVolby = k.akcia.typ === "volba" && !ne;
+  // Voľba (vila, karta, karty Autobusára) sa ponúkne, len keď Kšeft ide; inak ponuka ukáže detail s dôvodom.
+  const ponukaVolby = (k.akcia.typ === "volba" || k.akcia.typ === "karty") && !ne;
+  const [vybrane, setVybrane] = useState<readonly number[]>([]);
   const napoveda = useTip();
 
   // Ponuka sa zavrie klikom mimo nej alebo Esc — ako lupa či výber karty.
@@ -110,6 +116,7 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
 
   const posli = (c: Command): void => {
     setOtvorena(false);
+    setVybrane([]);
     cmd(c);
   };
   const vykonaj = (): void => {
@@ -126,7 +133,38 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
     </button>
   );
   const obsahPonuky =
-    ponukaVolby && k.akcia.typ === "volba" ? (
+    ponukaVolby && k.akcia.typ === "karty" ? (
+      // Autobusár: karty zo šenku po jednej do výberu, potom jedno potvrdenie s cenou.
+      <>
+        <span className="kseft-ponuka-nadpis">{k.akcia.nadpis}</span>
+        {k.akcia.karty.map((karta) => {
+          const ano = vybrane.includes(karta.uid);
+          const plne = !ano && vybrane.length >= (k.akcia.typ === "karty" ? k.akcia.najviac : 0);
+          return (
+            <span key={karta.uid} className="kseft-ponuka-riadok bez-vlavo">
+              <span className="kseft-ponuka-meno">{karta.meno}</span>
+              <button
+                type="button"
+                aria-pressed={ano}
+                disabled={plne}
+                title={plne ? "Na ďalšiu kartu nemáš cigaretu." : undefined}
+                onClick={() => setVybrane((v) => (ano ? v.filter((u) => u !== karta.uid) : [...v, karta.uid]))}
+              >
+                {ano ? "✓ beriem" : "vziať"}
+              </button>
+            </span>
+          );
+        })}
+        <span className="kseft-ponuka-riadok potvrdenie">
+          <button type="button" className="kseft-ponuka-hlavne" disabled={vybrane.length === 0} onClick={() => k.akcia.typ === "karty" && posli(k.akcia.prikaz(vybrane))}>
+            {vybrane.length === 0 ? "vyber karty" : `vziať ${vybrane.length} za ${cigariet(vybrane.length * k.akcia.cenaZaKus)}`}
+          </button>
+          <button type="button" onClick={() => setOtvorena(false)}>
+            zrušiť
+          </button>
+        </span>
+      </>
+    ) : ponukaVolby && k.akcia.typ === "volba" ? (
       <>
         <span className="kseft-ponuka-nadpis">{k.akcia.nadpis}</span>
         {k.akcia.riadky.map((r) => (
@@ -140,7 +178,9 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
     ) : (
       // Telefón: detail a veľké tlačidlo — štítok pod kartou je len pozvánka; nedostupný povie prečo.
       <>
-        <span className="kseft-ponuka-nadpis">Kšeft · {k.nazov}</span>
+        <span className="kseft-ponuka-nadpis">
+          {druhNazov(k)} · {k.nazov}
+        </span>
         <span className="kseft-ponuka-tip">
           <Detail k={k} />
         </span>
@@ -163,7 +203,7 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
       ref={ponuka}
       className="kseft-ponuka"
       role="group"
-      aria-label={ponukaVolby && k.akcia.typ === "volba" ? k.akcia.nadpis : `Kšeft · ${k.nazov}`}
+      aria-label={ponukaVolby && (k.akcia.typ === "volba" || k.akcia.typ === "karty") ? k.akcia.nadpis : `${druhNazov(k)} · ${k.nazov}`}
       style={poloha === null ? { visibility: "hidden", left: 0, top: 0 } : { left: poloha.left, top: poloha.top }}
     >
       {obsahPonuky}
@@ -178,7 +218,7 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
         aria-disabled={ne}
         aria-expanded={ponukaVolby || naDotyk ? otvorena : undefined}
         aria-haspopup={ponukaVolby || naDotyk ? "true" : undefined}
-        aria-label={`Kšeft · ${k.nazov}: ${k.zisk}${k.dovod === null ? "" : ` — ${k.dovod}`}`}
+        aria-label={`${druhNazov(k)} · ${k.nazov}: ${k.zisk}${k.dovod === null ? "" : ` — ${k.dovod}`}`}
         onMouseEnter={(e) => !naDotyk && napoveda.ukaz(e.currentTarget, obsahNapovedy(k))}
         onMouseLeave={napoveda.skry}
         onFocus={(e) => !naDotyk && napoveda.ukaz(e.currentTarget, obsahNapovedy(k))}
@@ -198,8 +238,9 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
           else vykonaj();
         }}
       >
-        <span className="kseft-pod-nazov">Kšeft{k.pouzity ? " ✓" : ""}</span>
-        {!k.pouzity && <Cena k={k} />}
+        {/* Schopnosť väzňa po použití nesie značku „použitá“ (raz za hru); Kšeft len ✓ do konca Pitky. */}
+        <span className="kseft-pod-nazov">{k.druh === "vazen" && k.pouzity ? "použitá" : `${druhNazov(k)}${k.pouzity ? " ✓" : ""}`}</span>
+        {!k.pouzity && k.druh !== "vazen" && <Cena k={k} />}
         {ponukaVolby && <span aria-hidden="true">{otvorena ? "▾" : "▴"}</span>}
       </button>
       {napoveda.tip}

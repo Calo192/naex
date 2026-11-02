@@ -229,7 +229,7 @@ export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: Obsa
   );
 }
 
-/** Nápoveda nad väzňom (R3): je z neho stále vydesený, krádež pri zajatí a Kšeft väzňa doslova. */
+/** Nápoveda nad väzňom (R3): je z neho stále vydesený, krádež pri zajatí a schopnosť väzňa doslova (v11.2). */
 function ObsahNapovedyVaznaEl({ o, obrazok }: { readonly o: ObsahNapovedyVazna; readonly obrazok: string | null }) {
   return (
     <div className="np-r3" style={FARBY_NAPOVEDY}>
@@ -257,10 +257,12 @@ function ObsahNapovedyVaznaEl({ o, obrazok }: { readonly o: ObsahNapovedyVazna; 
         <span className="np-vazen">
           Teplomery nemá, nebojuje, špaky ani priazeň{o.nazovPriazne === null ? "" : ` ${o.nazovPriazne}`} nedáva. Nikto ho nevyslobodí.
         </span>
-        {o.kseft !== null && (
+        {o.schopnost !== null && (
           <>
-            <span className="np-h4">Kšeft väzňa (má ho {o.kto})</span>
-            <span className="np-vazen">{o.kseft}</span>
+            <span className="np-h4">
+              Schopnosť väzňa ({o.kto}, raz za hru){o.pouzita ? " · použitá" : ""}
+            </span>
+            <span className="np-vazen">{o.schopnost}</span>
           </>
         )}
       </div>

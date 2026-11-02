@@ -1,34 +1,27 @@
 // Krok 2 revízie starších (pravidlá v9, Michal 2026-10-30): pokus o zajatie, väzeň,
-// tretí väzeň = výhra, špaky 8 / 6 / 4 / 2, Kšeft väzňa, priazne, viewFor.
+// tretí väzeň = výhra, špaky 8 / 6 / 4 / 2, priazne, viewFor (Kšeft väzňa zrušený v11.2).
 // Zadanie: docs/napady/starsi-krok2-zadanie.html (O1–O10).
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, Command, ElderState, GameState, LineState, PlayerId, Vazen } from "../src/index.ts";
+import type { BitkaStav, Command, ElderState, GameState, PlayerId, Vazen } from "../src/index.ts";
 import {
-  KONSTANTY,
   MOMENTY,
   naladaMomentu,
   apply,
   eventsFor,
-  evaluateLine,
   kartaZadarmo,
-  krcmaVyzaduje,
   krokStavby,
   legalCommands,
-  lineState,
   metrika,
   loadGameData,
-  moznostiKseftuVazna,
-  moznostiNaex,
   naTahu,
   setupGame,
-  stranyBitky,
   viewFor,
 } from "../src/index.ts";
-import { EMPTY, instanceFor, makeDef, setupSBalickom, syntheticData, zPolohy } from "./helpers.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -335,175 +328,7 @@ describe("§10 Výsledok pokusu (krok 6d)", () => {
 
 // Špaky za väzňov 8 / 6 / 4 / 2 (v9) zanikli s v11 — nahradila ich krádež (strach-reci.test.ts).
 
-// ---------------------------------------------------------------------------
-// Kšeft väzňa (§7)
-
-/** Stav v Pitke: hráč `p` drží väzňa `elderId`. */
-function vPitke(elderId: string, p: PlayerId = 0, upravy: (s: GameState) => GameState = (s) => s): GameState {
-  const s0 = setupSBalickom(data, 6);
-  const elder = s0.starsi.find((e) => e.elderId === elderId)!;
-  const lok = s0.lokalityVHre.find((k) => k.defId !== "krcma" && k.defId !== "kostol")!;
-  const s: GameState = {
-    ...s0,
-    faza: "pitka",
-    starsi: s0.starsi.filter((e) => e.elderId !== elderId),
-    vazni: [{ elderId, hrac: p, poradie: 1, karta: elder.karta, scorecard: elder.scorecard, miesto: 0 }],
-    ciel: { typ: "lokalita", lokalita: lok },
-    pitkaCislo: 1,
-    pitkyCelkom: 2,
-    senok: s0.naradie.slice(0, 2),
-    pitkaStav: { naTahu: 1, hotovy: [false, false], naexPouzity: [false, false], fajcenie: [0, 0], reakcia: null, postarka: [false, false], starosta: [false, false], naexPocet: [0, 0], vykup: [false, false] },
-    zaciatokPitky: { pecen: [0, 0], cirhozy: [0, 0] },
-  };
-  return upravy(s);
-}
-
-const kseft = (s: GameState, p: PlayerId = 0): Command[] => moznostiKseftuVazna(s, p);
-
-describe("§7 Kšeft väzňa — kto, cena, raz za Pitku", () => {
-  it("len držiteľ väzňa; cena = vypitý plný poldeci (nerest, +1 pečeň, limit nižší); raz za Pitku", () => {
-    const s = vPitke("hrobar");
-    expect(kseft(s, 1)).toEqual([]);
-    const cmd = kseft(s)[0]!;
-    expect(cmd).toEqual({ type: "kseftVazna", elderId: "hrobar" });
-    const po = apply(data, s, cmd, 0).state;
-    expect(po.hraci[0].poldeciPlne).toBe(s.hraci[0].poldeciPlne - 1);
-    expect(po.hraci[0].poldeciVypite).toBe(s.hraci[0].poldeciVypite + 1);
-    expect(po.hraci[0].nerestiTotoKolo).toBe(s.hraci[0].nerestiTotoKolo + 1);
-    expect(po.hraci[0].pecen).toBe(s.hraci[0].pecen + 1);
-    expect(kseft(po)).toEqual([]);
-    expect(() => apply(data, po, cmd, 0)).toThrow();
-  });
-
-  it("bez plného poldeci (ten na skrytom NA EX sa neráta) Kšeft nie je; po skončení Pitky tiež nie", () => {
-    const s = vPitke("hrobar", 0, (st) => ({ ...st, hraci: [{ ...st.hraci[0], poldeciPlne: 0 }, st.hraci[1]] }));
-    expect(kseft(s)).toEqual([]);
-    const hotovo = vPitke("hrobar", 0, (st) => ({ ...st, pitkaStav: { ...st.pitkaStav!, hotovy: [true, false] } }));
-    expect(kseft(hotovo)).toEqual([]);
-  });
-
-  it("naprázdno sa neponúka: Hrobár pri prázdnej ruke súpera, Poštárka bez Dlhu, Autobusár pri prázdnom šenku", () => {
-    expect(kseft(vPitke("hrobar", 0, (st) => ({ ...st, hraci: [st.hraci[0], { ...st.hraci[1], ruka: [] }] })))).toEqual([]);
-    expect(kseft(vPitke("postarka"))).toEqual([]);
-    expect(kseft(vPitke("autobusar", 0, (st) => ({ ...st, senok: [] })))).toEqual([]);
-  });
-});
-
-describe("§7 Kšefty ôsmich väzňov", () => {
-  it("Hrobár: súper odhodí náhodnú kartu z ruky do odhadzovacieho balíčka; meno karty vie len on", () => {
-    const s = vPitke("hrobar");
-    const r = apply(data, s, { type: "kseftVazna", elderId: "hrobar" }, 0);
-    expect(r.state.hraci[1].ruka).toHaveLength(s.hraci[1].ruka.length - 1);
-    expect(r.state.hraci[1].odhadzovaci).toHaveLength(s.hraci[1].odhadzovaci.length + 1);
-    const karta = r.state.hraci[1].odhadzovaci.at(-1)!;
-    const meno = data.cards.get(karta.defId)!.name;
-    const verejne = eventsFor(r.events, 0).filter((e) => e.type === "log").map((e) => (e as { text: string }).text);
-    expect(verejne.some((t) => t.includes(`odhodil ${meno}`))).toBe(false);
-    expect(eventsFor(r.events, 1).some((e) => e.type === "log" && e.text.includes(meno))).toBe(true);
-  });
-
-  it("Autobusár: karta zo šenku podľa voľby do ruky, šenok sa nedopĺňa", () => {
-    const s = vPitke("autobusar");
-    const k = s.senok[1]!;
-    const po = apply(data, s, { type: "kseftVazna", elderId: "autobusar", kartaUid: k.uid }, 0).state;
-    expect(po.hraci[0].ruka.some((x) => x.uid === k.uid)).toBe(true);
-    expect(po.senok).toHaveLength(s.senok.length - 1);
-  });
-
-  it("Poštárka: 1 priznaný Dlh prejde na súpera", () => {
-    const s = vPitke("postarka", 0, (st) => ({ ...st, hraci: [{ ...st.hraci[0], dlhy: 2 }, { ...st.hraci[1], dlhy: 0 }] }));
-    const po = apply(data, s, { type: "kseftVazna", elderId: "postarka" }, 0).state;
-    expect([po.hraci[0].dlhy, po.hraci[1].dlhy]).toEqual([1, 1]);
-  });
-
-  it("Starosta a Farár platia do konca kola (O1, O2) — raz spustené sa už neponúknu", () => {
-    const s = vPitke("starosta");
-    const po = apply(data, s, { type: "kseftVazna", elderId: "starosta" }, 0).state;
-    expect(po.kseftyKola?.hranyPosilnene).toBe(true);
-    expect(lineState(po).hranyPosilnene).toBe(true);
-    const f = vPitke("farar");
-    const pf = apply(data, f, { type: "kseftVazna", elderId: "farar" }, 0).state;
-    expect(pf.kseftyKola?.vieraAkoHazard).toEqual([false, true]);
-    expect(kseft({ ...pf, pitkaStav: { ...pf.pitkaStav!, kseft: [[], []] } })).toEqual([]);
-  });
-
-  it("Krčmárka: súper v tejto Pitke NA EX nedá, už dané skryté NA EX sa mu vráti (O4); na Krčme mu povinnosť zruší", () => {
-    const s0 = vPitke("krcmarka");
-    const ciel = moznostiNaex(data, { ...s0, pitkaStav: { ...s0.pitkaStav!, naTahu: 1 } }, 1);
-    const s: GameState = ciel.length === 0 ? s0 : { ...s0, pitkaStav: { ...s0.pitkaStav!, skryteNaex: [{ hrac: 1, uid: ciel[0]! }] } };
-    const r = apply(data, s, { type: "kseftVazna", elderId: "krcmarka" }, 0);
-    expect(r.state.pitkaStav?.zakazNaex).toEqual([false, true]);
-    expect((r.state.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === 1)).toEqual([]);
-    expect(r.state.hraci[1].poldeciPlne).toBe(s.hraci[1].poldeciPlne);
-    expect(moznostiNaex(data, r.state, 1)).toEqual([]);
-    expect(krcmaVyzaduje(data, r.state, 1)).toBe(false);
-  });
-
-  it("Vychovávateľka: súperovo NA EX v tejto Pitke → držiteľ +3 tuhé v bitke (jedna Petelica); na Krčme sa neponúkne", () => {
-    const s = vPitke("vychovavatelka");
-    const po = apply(data, s, { type: "kseftVazna", elderId: "vychovavatelka" }, 0).state;
-    expect(po.pitkaStav?.hrozbaPetelice).toEqual([1, 0]);
-    const sPetelicou: GameState = { ...po, kseftyKola: { petelice: [1, 0] } };
-    const sums = evaluateLine(data, lineState(po)).sums;
-    expect(stranyBitky(data, sPetelicou, sums)[0].tuheBonus - stranyBitky(data, po, sums)[0].tuheBonus).toBe(3);
-    const krcma = data.lokality.find((l) => l.id === "krcma");
-    if (krcma !== undefined) {
-      const naKrcme = vPitke("vychovavatelka", 0, (st) => ({ ...st, ciel: { typ: "lokalita", lokalita: { uid: 99991, defId: "krcma", leftLayout: 0, rightLayout: 0 } } }));
-      expect(kseft(naKrcme)).toEqual([]);
-    }
-  });
-
-  it("Veterinár: Cirhóza z ruky alebo priznaná z hry (O3, nie z balíčka); pečeň v tejto Pitke 0 vrátane ceny", () => {
-    const cirhoza = (uid: number): CardInstance => ({ uid, defId: "cirhoza", leftLayout: 0, rightLayout: 0 });
-    const s = vPitke("veterinar", 0, (st) => ({
-      ...st,
-      hraci: [{ ...st.hraci[0], ruka: [...st.hraci[0].ruka, cirhoza(99001)], priznane: [cirhoza(99002)], odhadzovaci: [cirhoza(99003)], pecen: 2 }, st.hraci[1]],
-    }));
-    const moznosti = kseft(s);
-    expect(moznosti).toEqual([
-      { type: "kseftVazna", elderId: "veterinar", kartaUid: 99001 },
-      { type: "kseftVazna", elderId: "veterinar", kartaUid: 99002 },
-    ]);
-    const po = apply(data, s, moznosti[1]!, 0).state;
-    expect(po.hraci[0].priznane.some((k) => k.uid === 99002)).toBe(false);
-    expect(po.hraci[0].odhadzovaci.some((k) => k.uid === 99003)).toBe(true);
-    expect(po.hraci[0].pecen).toBe(0);
-    expect(po.pitkaStav?.bezPecene).toEqual([true, false]);
-    // Bez Cirhózy v ruke či medzi priznanými sa ponúkne len časť o pečeni.
-    expect(kseft(vPitke("veterinar"))).toEqual([{ type: "kseftVazna", elderId: "veterinar" }]);
-  });
-});
-
-describe("§7 Starosta a Farár v línii (partia.ts)", () => {
-  const lok = makeDef("lok", [null, "Cigareta", null, null], ["Pecka", null, null, null], { tags: ["Lokalita"] });
-  const a = makeDef("a", EMPTY, [null, "Rana", null, null]);
-  const vl = makeDef("vl", EMPTY, ["Viera", null, null, null]);
-  const vr = makeDef("vr", ["Viera", null, null, null], EMPTY);
-  const syn = syntheticData([lok, a, vl, vr]);
-
-  it("Starosta: aktívne akcie hrán lokality ×2, ostatné nie", () => {
-    const line: LineState = {
-      lokalita: instanceFor(syn, "lok", [null, "Cigareta", null, null], ["Pecka", null, null, null]),
-      lokalitaOtocena: false,
-      strany: [[{ card: instanceFor(syn, "a", EMPTY, [null, "Rana", null, null]), playedBy: 0 }], []],
-    };
-    expect(evaluateLine(syn, line).sums[0]).toEqual({ Rana: 1, Cigareta: 1 });
-    expect(evaluateLine(syn, { ...line, hranyPosilnene: true }).sums[0]).toEqual({ Rana: 1, Cigareta: 2 });
-  });
-
-  it("Farár: súperova aktívna Viera je posilnený Hazard (2 zadĺženia za Vieru), v bitke Viera chýba", () => {
-    const line: LineState = {
-      lokalita: null,
-      lokalitaOtocena: false,
-      strany: [[], [{ card: instanceFor(syn, "vl", EMPTY, ["Viera", null, null, null]), playedBy: 0 }, { card: instanceFor(syn, "vr", ["Viera", null, null, null], EMPTY), playedBy: 0 }]],
-    };
-    const bez = evaluateLine(syn, line).sums[0];
-    expect(bez.Viera).toBe(2);
-    const s = evaluateLine(syn, { ...line, vieraAkoHazard: [true, false] }).sums[0];
-    expect(s.Viera ?? 0).toBe(0);
-    expect(s.Dlh).toBe(4);
-  });
-});
+// Kšeft väzňa (v9) zrušila v11.2 schopnosť väzňa — testy v schopnost-vazna.test.ts.
 
 describe("viewFor (nemenné pravidlo 2) — pokus, boss a väzni", () => {
   it("pokus, väzni a Kšefty kola sú verejné; zvyšok súperovej ruky nie", () => {

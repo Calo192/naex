@@ -35,7 +35,7 @@ export interface VerejnyStav {
   readonly naexVKole?: readonly [boolean, boolean];
   /** Rany navyše kúpené Kšeftom v tomto kole (Strýko z Ameriky v7). */
   readonly kseftRany?: readonly [number, number];
-  /** Kšefty väzňov, ktoré platia do konca kola (v9: Starosta, Farár, Vychovávateľka). */
+  /** Účinky schopností väzňov do konca kola (v11.2: Starosta). */
   readonly kseftyKola?: KseftyKola;
   /** Koľkokrát súper v tomto kole priložil kartu ku karte hráča (Pasca v7). */
   readonly prilozeniaKu?: readonly [number, number];
@@ -63,8 +63,9 @@ export type EfektStatus = "native" | "impl" | "manual";
 export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Texty podľa tlačovej sady (docs/KartyAI_PrintFile_20260716). Zmenený text
   // karty v tvorcovi → skontroluj, či implementácia ešte sedí.
-  // Starší (v9, krok 2 revízie): v línii len akcie, efekt je Kšeft väzňa (engine.ts cmdKseftVazna).
-  autobusar: "impl", // Väzeň — Kšeft: za vypitý poldeci 1 karta zo šenku
+  // Starší (v9, krok 2 revízie): v línii len akcie; od v11.2 schopnosť väzňa raz za hru
+  // (elders.json, engine.ts cmdSchopnostVazna) — text karty v cards.json je z čias Kšeftu väzňa.
+  autobusar: "impl", // Schopnosť väzňa: karty zo šenku po cigarete, potom koniec brania
   benzinka: "impl", // Pitka (v7): fajčí len hráč, ktorého Občan či Starešina leží najďalej od lokality (dovodZakazuFajcit)
   cigorky: "impl", // Dedičstvo: Pitka (v7): za každé 2 cigarety, ktoré súper vyfajčí, karta (cmdSmoke)
   kocovnik: "native", // Furt: jeho akcie sa počítajú hráčovi s prevahou v jeho kraji (Michal 2026-10-24; evaluateLine)
@@ -72,13 +73,13 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   abstak: "native", // Bitka (v9.1): −1 tuhé za každý Absťák v balíčku, remíza v tuhom (stranyBitky); nedá sa priznať (cieleVykladania)
   opatrovatelka: "impl", // Furt (v9.1): na konci kola sa Chuť majiteľa porovnáva o 2 nižšia (engine latkaChuti)
   dievcina_na_vydaj: "impl", // Prehra (v7): spáli sa, súper získa Dlhy podľa jej aktívnych akcií (koniecBitky)
-  farar: "impl", // Väzeň — Kšeft: súperova aktívna Viera do konca kola posilnený Hazard (partia.ts vieraAkoHazard)
+  farar: "impl", // Schopnosť väzňa: odstráni súperovo NA EX z karty, poldeci ostáva vypitý
   financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
   hasic: "impl", // Nástup: náhodná karta z odhadzovacieho — nechať v ruke, alebo vrátiť (príkaz hasic)
-  hrobar: "impl", // Väzeň — Kšeft: súper odhodí náhodnú kartu z ruky
+  hrobar: "impl", // Schopnosť väzňa: karta zo súperovho odhadzovacieho balíčka do ruky
   ihrisko: "impl", // Bitka: v každom kraji +2 tuhé tomu, kto tam má viac svojich Občanov, Zvierat a Starešinov (Michal 2026-10-20; Dvojčatá za dve, v8)
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2
-  krcmarka: "impl", // Väzeň — Kšeft: súper v tejto Pitke NA EX nedá (zakazNaex)
+  krcmarka: "impl", // Schopnosť väzňa: nový plný poldeci
   lesna_cesta: "impl", // Bitka (v7): +1 tuhé za každé svoje Zviera v súperovom kraji
   liberal: "impl", // Furt (v10.3): s rovnako ženami a chlapmi v partii majiteľa sú jeho aktívne akcie posilnené (partia.ts kartoveEfekty)
   milujuca_manzelka: "impl", // Pitka (v7, M2): tvoje poškodenie pečene v Pitke −1 (prirastkyPitky)
@@ -89,19 +90,19 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody)
   pijan: "impl", // Bitka (v7): Rana navyše za každé vlastné NA EX v kole (bitkaMody)
   policajtka: "impl", // Pitka (Michal 2026-11-02): súperovi zadĺženie za každú jeho akciu zrušenú tvojím Odporom (pokutaPolicajtky); sada so starým Konfliktom: Dlh, za Kriminála 2 cigarety (konflikt)
-  postarka: "impl", // Väzeň — Kšeft: 1 tvoj priznaný Dlh na súpera
+  postarka: "impl", // Schopnosť väzňa: 4 cigarety
   praudovravec: "impl", // Furt (v7, Dezinformátor): Odpor na jeho spojoch posilní (partia.ts)
   dvojcata: "impl", // Furt: do prevahy sa rátajú za dvoch (partia.ts, Michal 2026-10-20)
   puska: "impl", // Dedičstvo (Náradie 2026-10-30): prepojenú Petelicu namiesto zrušenia ráta za 2 (partia.ts puskaChrani)
   recidivista: "impl", // Prehra (v7): po bitke sa vráti do ruky (koniecBitky)
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
-  starosta: "impl", // Väzeň — Kšeft: do konca kola hrany lokality posilnené (partia.ts hranyPosilnene)
+  starosta: "impl", // Schopnosť väzňa: akcie hrán lokality v bitke posilnené (partia.ts hranyPosilnene)
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
-  veterinar: "impl", // Väzeň — Kšeft: spáli Cirhózu z ruky či priznanú, v tejto Pitke pečeň 0 (bezPecene)
+  veterinar: "impl", // Schopnosť väzňa: odhodí priznané Cirhózy a Cirhózy na ruke
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt (v10.3): súper odhodí 2 karty z balíčka za každého svojho Chlapa pri nej (konflikt)
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
-  vychovavatelka: "impl", // Väzeň — Kšeft: súperovo NA EX v tejto Pitke → držiteľ +3 tuhé v bitke
+  vychovavatelka: "impl", // Schopnosť väzňa: súper v Zhromaždení pasuje bez cigariet
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
   vyherny_automat: "impl", // Dedičstvo (v7): prah Dlhu +1, v poslednej Pitke kola 1 Dlh
   zastavka: "impl", // Pitka (v9.1): po prvej Pitke kola každý 1 karta zo šenku zadarmo, najprv útočník (engine dokonciPitku)
