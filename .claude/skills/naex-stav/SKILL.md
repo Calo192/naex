@@ -1,6 +1,6 @@
 ---
 name: naex-stav
-description: Ranný prehľad linky NA EX! — čo čaká na Michala (návrhy na rozhodnutie, nezabraté zmeny, Prijímač roadmapy, nové názory ľudí), čo na Developera (stĺpec Teraz, návrhy na implementáciu), čo na overenie playtestom, čo na nasadenie (commity, ktoré nie sú na živom webe, rozohrané partie), výsledky cloudových routines (otvorené PR, nezlúčené vetvy, nočná kontrola zdravia, zlyhané behy, nálezy strážcu) a stav pracovného stromu — s jedným odporúčaným ďalším krokom. Použi, keď používateľ povie /naex-stav, „čo čaká“, „ako sme na tom“, „čo mám rozhodnúť“, „prehľad“, „čo ďalej“.
+description: Ranný prehľad linky NA EX! — čo čaká na Michala (návrhy na rozhodnutie, nezabraté zmeny, Prijímač roadmapy, nové názory ľudí), čo na Developera (stĺpec Teraz, návrhy na implementáciu), čo na overenie playtestom, čo na nasadenie (commity, ktoré nie sú vo Vypálenej a v Zrejúcej, rozohrané partie), výsledky cloudových routines (otvorené PR, nezlúčené vetvy, nočná kontrola zdravia, zlyhané behy, nálezy strážcu) a stav pracovného stromu — s jedným odporúčaným ďalším krokom. Použi, keď používateľ povie /naex-stav, „čo čaká“, „ako sme na tom“, „čo mám rozhodnúť“, „prehľad“, „čo ďalej“.
 argument-hint: "(bez argumentov)"
 ---
 
@@ -17,11 +17,17 @@ Rýchly prehľad bez agentov a bez partie — pár volaní API a gitu.
    návrhy, Prijímač roadmapy, nové názory ľudí na Spätnej väzbe), **čaká na
    Developera** (stĺpec Teraz, návrhy na implementáciu — upozorní na
    rozhodnutia účtu AI), **čaká na playtest** (implementované, neoverené),
-   **server a nasadenie** (nasadený commit, rozohrané partie, commity
-   v `origin/master`, ktoré nie sú na živom webe) a **pracovný strom**
+   **server a nasadenie** — dve inštancie (Michal 2026-11-02): **Vypálená**
+   (oficiálna hra, nasadený commit, rozohrané partie, commity v
+   `origin/vypalena`, ktoré na nej nie sú) a **Zrejúca** (pokusná, len testeri;
+   commity v `origin/master`, ktoré na nej nie sú; „neodpovedá“ = ešte nie je
+   nasadená) — a **pracovný strom**
    (necommitnuté súbory, nepushnutý master, `TODO` v herných dátach).
    Ak živý web nebeží, povedz to a spusti príkaz bez `--zivy` (lokálny web
    `npm run dev`), ak beží.
+   Rozdiel Zrejúca vs. Vypálená zhrň aj ako `git log --oneline origin/vypalena..origin/master`
+   — to je všetko, čo čaká na Michalovo schválenie (do Vypálenej ide celý stav
+   Zrejúcej naraz, so zverejnením sady).
 2. Doplň, čo príkaz nevie:
    - bežiace lokálne relácie: `git worktree list` (rozpracované varianty
      stratéga, nasadzovací worktree) a `ls -t playtest | head` (dnešné relácie),
@@ -68,7 +74,9 @@ Rýchly prehľad bez agentov a bez partie — pár volaní API a gitu.
       overovači, report playtestu nahrá na web,
    4. návrhy na rozhodnutie alebo nezabraté → Michal v `<živý web>/playtest`,
    5. návrhy na implementáciu / Teraz → `/naex-implementacia`,
-   6. nenasadené commity → `/naex-nasad`,
+   6. commity v master, ktoré nie sú v Zrejúcej → `/naex-nasad zrejuca`;
+      rozdiel Zrejúca → Vypálená → Michal schváli (potom Leader posunie
+      `vypalena` a `/naex-nasad`), sám ho neponúkaj ako hotovú vec,
    7. implementované, neoverené → `/naex-playtest` (predvolený alebo `max`),
    8. nič nečaká → `/naex-playtest 2 max` alebo `/naex-strategia`.
    Nič nemeň, nič nespúšťaj — len odporuč.

@@ -8,7 +8,7 @@ import { Layout } from "./Layout.tsx";
 import { HlavaStranky } from "./HlavaStranky.tsx";
 import { Nacitavanie } from "./komponenty.tsx";
 import { Odkaz, useCesta } from "./lib/router.tsx";
-import { jeSpravca, maPravo, useUcet } from "./lib/ucet.tsx";
+import { jeSpravca, jeZrejuca, maPravo, useUcet } from "./lib/ucet.tsx";
 import { Domov } from "./stranky/Domov.tsx";
 import { Glosar } from "./stranky/Glosar.tsx";
 import { Heatmapa } from "./stranky/Heatmapa.tsx";
@@ -63,7 +63,7 @@ function Nenajdene() {
 
 export function App() {
   const cesta = useCesta();
-  const { ja, nacitane } = useUcet();
+  const { ja, nacitane, instancia } = useUcet();
 
   const chranene = (obsah: ReactNode, admin = false): ReactNode => {
     if (!nacitane) return <Nacitavanie />;
@@ -71,6 +71,16 @@ export function App() {
     if (admin && !jeSpravca(ja.rola)) return <Nenajdene />;
     return obsah;
   };
+
+  // Zrejúca (Michal 2026-11-02) je len pre testerov: kým sa neprihlási, každá stránka je prihlásenie
+  // (server neprihlásenému aj tak nič nepošle).
+  if (jeZrejuca(instancia) && nacitane && ja === null) {
+    return (
+      <Layout>
+        <Prihlasenie vypalena={instancia.vypalena ?? ""} />
+      </Layout>
+    );
+  }
 
   // Reporty playtestov vidí aj rank s právom (Michal 2026-10-22); návrhy len správca (Playtest to rozlíši).
   if (cesta === "/playtest" || cesta.startsWith("/playtest/")) {

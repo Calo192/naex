@@ -466,6 +466,33 @@ img.avatar-hraca {
   flex: none;
 }
 
+/* Zrejúca (Michal 2026-11-02): pokusná verzia sa nesmie dať pomýliť s Vypálenou. */
+.zrejuca-pas {
+  padding: 4px var(--okraj-stranky);
+  background: color-mix(in oklab, var(--info-silna) 22%, var(--pozadie));
+  border-bottom: 1px solid color-mix(in oklab, var(--info-silna) 50%, var(--pozadie));
+  color: var(--info);
+  font-size: 0.85rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.zrejuca-pas a {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.zrejuca-znacka {
+  padding: 2px 7px;
+  border: 1px solid color-mix(in oklab, var(--info-silna) 60%, var(--pozadie));
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--info-silna) 18%, var(--pozadie));
+  color: var(--info);
+  font: 700 0.62rem/1.2 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .logo-pohar {
   width: 18px;
   height: 24px;

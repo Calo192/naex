@@ -1,5 +1,7 @@
 # Caddy sám vybaví HTTPS certifikát pre doménu z premennej DOMENA
 # a presmeruje HTTP → HTTPS. WebSocket (/ws) prechádza bez ďalšieho nastavenia.
+
+# Vypálená — oficiálna hra (vetva vypalena).
 {$DOMENA} {
 	encode zstd gzip
 	header Strict-Transport-Security "max-age=31536000"
@@ -7,4 +9,18 @@
 		max_size 16MB
 	}
 	reverse_proxy naex:8787
+}
+
+# Zrejúca — pokusná verzia len pre testerov (master, Michal 2026-11-02). Beží ako samostatný
+# projekt (deploy/docker-compose.zrejuca.yml) v sieti Vypálenej; kým nie je nasadená, odpovie 502.
+zrejuca.{$DOMENA} {
+	encode zstd gzip
+	header Strict-Transport-Security "max-age=31536000"
+	request_body {
+		max_size 16MB
+	}
+	reverse_proxy naex-zrejuca:8787
+	handle_errors {
+		respond "Zrejúca práve nebeží (nasadzuje sa?). Oficiálna hra: https://{$DOMENA}" 502
+	}
 }

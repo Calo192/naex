@@ -2,7 +2,7 @@
 // (krok, špaky, posledná zmena) a kontumácia v menu Partia.
 
 import { describe, expect, it } from "vitest";
-import { hlavneMenu, jeAktivna, menuUctu, spravaWebu } from "../src/lib/navigacia.ts";
+import { hlavneMenu, jeAktivna, jeVonkajsi, menuUctu, spravaWebu } from "../src/lib/navigacia.ts";
 import { KONTUMACIA_PO_MS, krokPartie, minSek, stavKontumacie, textZmeny } from "../src/hra/stitokPartie.ts";
 import type { Pouzivatel, Pravo, Rola } from "../src/lib/ucet.tsx";
 
@@ -109,5 +109,32 @@ describe("kontumácia v menu Partia", () => {
     expect(minSek(108_000)).toBe("1:48");
     expect(minSek(500)).toBe("0:01");
     expect(minSek(KONTUMACIA_PO_MS)).toBe("3:00");
+  });
+});
+
+describe("navigácia Zrejúcej (Michal 2026-11-02)", () => {
+  const zrejuca = { nazov: "zrejuca", vypalena: "https://vyp.test" } as const;
+
+  it("komunita, Playtest a tvorca kariet vedú do Vypálenej; hra ostáva tu", () => {
+    expect(hrefy(hlavneMenu(ucet("subadmin"), null, zrejuca))).toEqual([
+      "/hra",
+      "/pravidla",
+      "/karty",
+      "/rebricek",
+      "https://vyp.test/novinky",
+      "https://vyp.test/vyvoj",
+      "https://vyp.test/spatna-vazba",
+    ]);
+    const sprava = spravaWebu(ucet("admin"), zrejuca);
+    expect(hrefy(sprava)).toEqual(["https://vyp.test/playtest", "https://vyp.test/admin", "/hraci"]);
+    expect(sprava.some((s) => s.pocet !== undefined)).toBe(false);
+    expect(jeVonkajsi("https://vyp.test/admin")).toBe(true);
+    expect(jeVonkajsi("/admin")).toBe(false);
+  });
+
+  it("Vypálená má odkazy ako doteraz", () => {
+    const vypalena = { nazov: "vypalena", vypalena: null } as const;
+    expect(hrefy(hlavneMenu(ucet("hrac"), null, vypalena))).toEqual(hrefy(hlavneMenu(ucet("hrac"), null)));
+    expect(spravaWebu(ucet("admin"), vypalena)).toEqual(spravaWebu(ucet("admin")));
   });
 });

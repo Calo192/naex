@@ -99,6 +99,7 @@ import { ObnovaHesla } from "./obnovaHesla.ts";
 import { emailDoLogu, type PosliEmail } from "./email.ts";
 import { titul } from "./frajerina.ts";
 import { Achievementy, nacitajKatalog, type AchievementyMiestnosti } from "./achievementy.ts";
+import type { Vypalena } from "./zrejuca.ts";
 
 // ---------------------------------------------------------------------------
 // Dáta z repozitára (testy jadra a nástroje ich používajú priamo)
@@ -303,6 +304,15 @@ export interface ServerOpts {
   readonly adresa?: string;
   /** Hodiny servera (testy platnosti odkazov); predvolene Date.now. */
   readonly teraz?: () => number;
+  /**
+   * Zrejúca (Michal 2026-11-02, zrejuca.ts): pokusná inštancia len pre testerov — účty overuje
+   * a rozpracovanú sadu berie z Vypálenej. Bez nej je server Vypálená.
+   */
+  readonly zrejuca?: {
+    readonly vypalena: Vypalena;
+    /** Ako často sa preberá rozpracovaná sada (predvolene minúta; 0 = len pri štarte a na požiadanie). */
+    readonly synchronizaciaMs?: number;
+  };
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -400,6 +410,23 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   obsah.zjednotNazvyAkcii(teraz());
   obsah.dorovnajSoSeedom(teraz());
 
+  // Zrejúca hrá rozpracovaný stav tvorcu Vypálenej; kým sa nepodarí prevziať, hrá posledný prevzatý
+  // (pri prvom štarte východiskovú sadu z repozitára).
+  const zrejuca = opts.zrejuca ?? null;
+  const prevezmiSadu = async (): Promise<{ verzia: number; zmena: boolean }> => {
+    if (zrejuca === null) throw new Error("Rozpracovanú sadu preberá len Zrejúca.");
+    const r = obsah.prevezmiRozpracovanu(await zrejuca.vypalena.tvorca(), teraz());
+    if (r.zmena) console.log(`Zrejúca: rozpracovaná sada Vypálenej prevzatá ako v${r.verzia}.`);
+    return r;
+  };
+  const skusPrevziatSadu = (): Promise<void> =>
+    zrejuca === null ? Promise.resolve() : prevezmiSadu().then(
+      () => undefined,
+      (err: unknown) => console.warn("Zrejúca: rozpracovanú sadu sa nepodarilo prevziať —", err instanceof Error ? err.message : err),
+    );
+  const synchronizaciaMs = zrejuca?.synchronizaciaMs ?? 60_000;
+  const synchronizacia = zrejuca !== null && synchronizaciaMs > 0 ? setInterval(() => void skusPrevziatSadu(), synchronizaciaMs) : null;
+
   const rooms = new Map<string, Room>();
   const infos = new WeakMap<WebSocket, SocketInfo>();
 
@@ -495,6 +522,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           stavServera,
           nastavUzavierku,
           zlucUcty: (z, doId, skusobne) => zlucUcty(db, z, doId, skusobne),
+          zrejuca: zrejuca === null ? null : { vypalena: zrejuca.vypalena, prevezmiSadu },
           vyucbaKrokov: scenarVyucby.kroky.length,
           vyucbaVerzia: scenarVyucby.verzia ?? null,
           postupVyucby,
@@ -508,7 +536,13 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       return;
     }
     if (url.pathname.startsWith("/media/")) {
-      media.posli(url.pathname.slice("/media/".length), res, url.searchParams.has("n"));
+      const id = url.pathname.slice("/media/".length);
+      // Ilustrácie rozpracovanej sady a avatary účtov sú vo Vypálenej.
+      if (zrejuca !== null && media.zaznam(id) === null) {
+        void zrejuca.vypalena.posliMedia(id, url.search, res);
+        return;
+      }
+      media.posli(id, res, url.searchParams.has("n"));
       return;
     }
     if (url.pathname.startsWith("/hudba/")) {
@@ -1418,7 +1452,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
   }, 10 * 60 * 1000);
 
-  return new Promise((resolveP) => {
+  return skusPrevziatSadu().then(() => new Promise((resolveP) => {
     http.listen(opts.port, () => {
       const address = http.address();
       const port = typeof address === "object" && address !== null ? address.port : opts.port;
@@ -1429,6 +1463,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           new Promise<void>((done) => {
             clearInterval(pingInterval);
             clearInterval(cleanupInterval);
+            if (synchronizacia !== null) clearInterval(synchronizacia);
             for (const room of rooms.values()) if (room.botTimer !== null) clearTimeout(room.botTimer);
             for (const ws of wss.clients) ws.terminate();
             wss.close(() =>
@@ -1440,7 +1475,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           }),
       });
     });
-  });
+  }));
 }
 
 // ---------------------------------------------------------------------------

@@ -32,8 +32,12 @@ import { nacitajHlasky, urlHlasky } from "../hra/Melichar.tsx";
 import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
 import { VyberParu } from "./VyberParu.tsx";
 
-export function Prihlasenie() {
-  useTitulok("Prihlásenie");
+/**
+ * Prihlásenie. Zrejúca (vypalena = adresa Vypálenej) ho ukáže namiesto každej stránky, kým
+ * sa tester neprihlási (Michal 2026-11-02): účet je ten istý ako vo Vypálenej, hráči tam.
+ */
+export function Prihlasenie({ vypalena = null }: { readonly vypalena?: string | null } = {}) {
+  useTitulok(vypalena === null ? "Prihlásenie" : "Zrejúca");
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [heslo, setHeslo] = useState("");
@@ -47,7 +51,8 @@ export function Prihlasenie() {
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/prihlasenie", { login, heslo });
       nastav(r.pouzivatel);
-      chod(navratZ(location.search) ?? "/hra", true);
+      // V Zrejúcej ostane tester na stránke, ktorú otvoril.
+      if (vypalena === null || location.pathname === "/prihlasenie") chod(navratZ(location.search) ?? "/hra", true);
     } catch (err) {
       setChyba(err instanceof Error ? err.message : String(err));
     } finally {
@@ -57,7 +62,14 @@ export function Prihlasenie() {
 
   return (
     <>
-    <HlavaStranky nadpis="Vitaj späť" uvod="Prihlás sa a pokračuj tam, kde si prestal." />
+    {vypalena === null ? (
+      <HlavaStranky nadpis="Vitaj späť" uvod="Prihlás sa a pokračuj tam, kde si prestal." />
+    ) : (
+      <HlavaStranky
+        nadpis="Zrejúca je len pre testerov"
+        uvod="Pokusná verzia hry — pravidlá a karty, ktoré sa ešte skúšajú. Hrajú ju admin, subadmini a AI playtesteri; prihlasuješ sa tým istým účtom ako vo Vypálenej."
+      />
+    )}
     <div className="formular-stred">
       <form className="panel" onSubmit={(e) => void odosli(e)}>
         {chyba !== null && <Hlaska>{chyba}</Hlaska>}
@@ -71,12 +83,18 @@ export function Prihlasenie() {
           {caka ? "Prihlasujem…" : "Prihlásiť sa"}
         </button>
         <p className="prihlasenie-zabudol">
-          <Odkaz href="/zabudnute-heslo">Zabudol som heslo</Odkaz>
+          {vypalena === null ? <Odkaz href="/zabudnute-heslo">Zabudol som heslo</Odkaz> : <a href={`${vypalena}/zabudnute-heslo`}>Zabudol som heslo</a>}
         </p>
       </form>
-      <p className="formular-paticka">
-        Ešte nemáš účet? <Odkaz href={`/registracia${location.search}`}>Zaregistruj sa</Odkaz>
-      </p>
+      {vypalena === null ? (
+        <p className="formular-paticka">
+          Ešte nemáš účet? <Odkaz href={`/registracia${location.search}`}>Zaregistruj sa</Odkaz>
+        </p>
+      ) : (
+        <p className="formular-paticka">
+          Chceš si zahrať? Oficiálna hra je vo <a href={vypalena}>Vypálenej</a>.
+        </p>
+      )}
     </div>
     </>
   );

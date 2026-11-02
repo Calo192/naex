@@ -1,6 +1,6 @@
 ---
 name: naex-playtest
-description: Spustí playtest hry NA EX! — 1 až 3 partie naraz, v každej dvaja AI playtesteri náhodne vybraní zo šiestich postáv s rôznym herným štýlom (poznajú všetky pravidlá, hrajú cez skutočný server bez znalosti súperovej ruky) a spätnú väzbu zverejnia na živom webe. Podľa parametra followup potom nič (min), spisovateľ napíše report zo všetkých partií (predvolene), alebo navyše stratég s navrhárom spoločne pripravia návrhy zmien, o ktorých Michal rozhoduje v sekcii Playtest na webe (max); ULTRA = ako max, všetci agenti na modeli fable s effortom xhigh, len na výslovný pokyn Michala. S parametrom vyucba namiesto partie traja nováčikovia prejdú výučbu „Prvá hra“ v prehliadači. Použi, keď používateľ povie /naex-playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi", „otestuj výučbu nováčikmi".
+description: Spustí playtest hry NA EX! — 1 až 3 partie naraz, v každej dvaja AI playtesteri náhodne vybraní zo šiestich postáv s rôznym herným štýlom (poznajú všetky pravidlá, hrajú na pokusnej Zrejúcej bez znalosti súperovej ruky) a spätnú väzbu zverejnia na živom webe (Vypálenej). Podľa parametra followup potom nič (min), spisovateľ napíše report zo všetkých partií (predvolene), alebo navyše stratég s navrhárom spoločne pripravia návrhy zmien, o ktorých Michal rozhoduje v sekcii Playtest na webe (max); ULTRA = ako max, všetci agenti na modeli fable s effortom xhigh, len na výslovný pokyn Michala. S parametrom vyucba namiesto partie traja nováčikovia prejdú výučbu „Prvá hra“ v prehliadači. Použi, keď používateľ povie /naex-playtest, „spusti playtest", „nech to zahrajú agenti", „otestuj hru agentmi", „otestuj výučbu nováčikmi".
 argument-hint: "[počet partií 1–3] [min|max|ULTRA] [kratka|stredna|dlha] | vyucba [1–3]"
 ---
 
@@ -60,9 +60,16 @@ a do partií nezasahuješ.
 
 Hru proti človeku zakladá skill `naex-protihrac`.
 
-**Živý web** = `https://<DOMENA z deploy/.env.produkcia>` (dnes
-https://15-235-242-12.sslip.io). Nástroje naň idú prepínačom `--zivy`. Účty
-playtesterov („<meno> (AI)“) sú tam hráči so značkou AI a vlastným avatarom.
+**Živý web** = **Vypálená**, `https://<DOMENA z deploy/.env.produkcia>` (dnes
+https://15-235-242-12.sslip.io), prepínač `--zivy`: Spätná väzba, sekcia
+Playtest, roadmapa, známky na /vyvoj. Účty playtesterov („<meno> (AI)“) sú tam
+hráči so značkou AI a vlastným avatarom.
+
+**Playtest ide na Zrejúcu** (Michal 2026-11-02): `https://zrejuca.<DOMENA>`,
+prepínač `--zrejuca` — pokusná inštancia len pre testerov, ktorá hrá kód
+`origin/master` (nasadený `/naex-nasad zrejuca`) a **rozpracovaný** stav
+tvorcu kariet. Partie sa tam zakladajú pod AI účtami postáv (tie isté ako vo
+Vypálenej, účty sú spoločné); dohraté ostanú v štatistikách Zrejúcej.
 
 **Hlavná téma (Michal 2026-10-19): strategickosť.** Hra má odmeňovať skill,
 nie náhodu. Playtesteri hrajú ako experti, rozoberú náhodu vs. zručnosť,
@@ -74,27 +81,35 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
 `A` = `node --experimental-strip-types --no-warnings tools/admin/admin.ts`,
 `P` = `node --experimental-strip-types --no-warnings tools/playtest`.
 
-1. **Živý web** — over `$P/web.ts dostupny --zivy`. Ak nebeží, playtest aj tak
-   spusti a playtesterom povedz „Web: nedostupný“ (názory ostanú v súboroch).
+1. **Weby** — over `$P/web.ts dostupny --zrejuca` (tam sa hrá) a
+   `$P/web.ts dostupny --zivy` (tam ide spätná väzba). Nebeží Vypálená →
+   playtest aj tak spusti a playtesterom povedz „Web: nedostupný“ (názory
+   ostanú v súboroch). Nebeží Zrejúca → povedz to a spýtaj sa, či hrať na
+   dočasných lokálnych serveroch (bez `--zrejuca`, hrá sa lokálny kód a sada
+   z `cards.json`, nie rozpracovaný tvorca). Pred turnusom
+   `$A server-stav --zrejuca`: commit Zrejúcej má byť `origin/master`, inak
+   navrhni najprv `/naex-nasad zrejuca`.
 
-2. **Založ turnus** (každá partia vlastný server na voľnom porte a dočasná
-   databáza; postavy náhodne):
+2. **Založ turnus** na Zrejúcej (postavy náhodne):
    ```bash
-   $P/turnus.ts <počet> <dĺžka>
+   $P/turnus.ts <počet> <dĺžka> --zrejuca
    ```
    Výpis dá id turnusu (`playtest/turnus-<id>/turnus.json`) a pre každú partiu
-   reláciu `R` (`playtest/<id>-<n>`), port a oboch hráčov so štýlom
-   a zameraním. Ak zlyhá, pozri `R/server.log` a povedz používateľovi prečo.
-   Klient musí byť zbuildovaný (`npm run build --workspace=@naex/web`).
+   reláciu `R` (`playtest/<id>-<n>`), adresu a oboch hráčov so štýlom
+   a zameraním. Ak zlyhá, povedz používateľovi prečo (výpis `zaloz.ts`).
+   Bez `--zrejuca` (náhradne, keď Zrejúca nebeží) má každá partia vlastný
+   dočasný server na voľnom porte (`R/server.log`) a klient musí byť
+   zbuildovaný (`npm run build --workspace=@naex/web`).
 
 2b. **Návrhy na overenie** (Michal 2026-10-21: návrh sa uzavrie, až keď
    playtest ukáže, že zabral):
    ```bash
    $A navrhy implementovane --zivy --json
    ```
-   Ber tie, ktorých commit (vo `vysledok`) je v kóde, ktorý sa hrá
-   (`git merge-base --is-ancestor <hash> HEAD`) — inak by sa overovalo staré
-   správanie. Z každého si zober id, názov a otázky `overenie` (návrh bez nich:
+   Ber tie, ktorých commit (vo `vysledok`) je v kóde, ktorý sa hrá — na
+   Zrejúcej jej nasadený commit (`$A server-stav --zrejuca`,
+   `git merge-base --is-ancestor <hash> <commit Zrejúcej>`), pri lokálnych
+   serveroch `HEAD` — inak by sa overovalo staré správanie. Z každého si zober id, názov a otázky `overenie` (návrh bez nich:
    jedna otázka „Trvá problém <problem jednou vetou>?“). Pri followupe `min`
    sa neoveruje (nie je spisovateľ) — preskoč.
 
@@ -117,8 +132,9 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
    feedback.md, časť Overenie zmien): #<id> <názov>: <otázky>; …“.
 
    Používateľovi povedz: koľko partií beží, kto proti komu (mená postáv),
-   followup a že partia trvá desiatky minút. Upozorni, aby sa na porty
-   playtestu neprihlasoval za hráčov — prevzal by im spojenie.
+   followup a že partia trvá desiatky minút. Upozorni, aby sa do Zrejúcej
+   (ani na porty lokálneho playtestu) neprihlasoval za AI účty hráčov —
+   prevzal by im spojenie; ako admin sa pozerať môže.
 
 4. **Čakaj** — agenti ti dajú vedieť sami, nepolluj. Keď dohrajú oba hráči
    partie, ulož jej posledný stav a zastav jej server:
@@ -127,8 +143,9 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
    $P/hrac.ts R 2 stav > R/koniec-hrac2.txt
    $P/ukonci.ts R
    ```
+   (Na Zrejúcej `ukonci.ts` server nezastaví, len to oznámi.)
    Ak agent skončí bez dohranej partie, pozri `R/koniec-hrac*.txt`
-   a `R/server.log`, zapíš, čo sa stalo, do `R/organizator.md` a pokračuj —
+   (pri lokálnom serveri aj `R/server.log`), zapíš, čo sa stalo, do `R/organizator.md` a pokračuj —
    aj nedohraná partia je podklad. Keď sú hotové všetky partie, pokračuj
    podľa followupu.
 

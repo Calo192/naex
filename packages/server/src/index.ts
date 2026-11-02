@@ -13,13 +13,32 @@
 //                        starší na stupni 3 pre tok zajatia; pri NODE_ENV=production sa ignoruje
 //   NAEX_EMAIL_REZIM     ako posielať e-maily (obnova hesla); zatiaľ len log = vypísať do logu (predvolene)
 //   NAEX_ADRESA          verejná adresa webu do odkazov v e-mailoch (https://naex.sk); bez nej len cesta
+//   NAEX_INSTANCIA       vypalena (predvolene, oficiálna hra) | zrejuca (pokusná, len admin, subadmini a AI;
+//                        Michal 2026-11-02, zrejuca.ts) — Zrejúca potrebuje aj:
+//   NAEX_VYPALENA        adresa, na ktorej Zrejúca volá Vypálenú (v Dockeri http://naex:8787)
+//   NAEX_VYPALENA_ADRESA verejná adresa Vypálenej pre odkazy hráčom (predvolene NAEX_VYPALENA);
+//                        heslo admina Vypálenej je to isté NAEX_ADMIN_LOGIN / NAEX_ADMIN_HESLO
 
 import { fileURLToPath } from "node:url";
 import { createGameServer } from "./server.ts";
 import { scenarZProstredia } from "./scenar.ts";
 import { odosielacZProstredia } from "./email.ts";
+import { Vypalena, instanciaZProstredia } from "./zrejuca.ts";
 
 const PORT = Number(process.env.PORT ?? 8787);
+const admin = { login: process.env.NAEX_ADMIN_LOGIN ?? "Admin", heslo: process.env.NAEX_ADMIN_HESLO || null };
+
+const instancia = instanciaZProstredia(process.env);
+const urlVypalenej = process.env.NAEX_VYPALENA;
+if (instancia === "zrejuca" && (urlVypalenej === undefined || urlVypalenej === "")) {
+  console.error("NAEX_INSTANCIA=zrejuca potrebuje NAEX_VYPALENA (adresu Vypálenej) — účty a tvorca sú tam.");
+  process.exit(1);
+}
+const zrejuca =
+  instancia === "zrejuca" && urlVypalenej !== undefined
+    ? { vypalena: new Vypalena(urlVypalenej, process.env.NAEX_VYPALENA_ADRESA || urlVypalenej, admin) }
+    : undefined;
+if (zrejuca !== undefined) console.log(`Zrejúca — pokusná inštancia; účty a tvorca: ${urlVypalenej}`);
 
 // Scenár mení rozdanie — na živom webe nikdy (scenarZProstredia).
 const { scenar, ignorovany } = scenarZProstredia(process.env);
@@ -29,7 +48,7 @@ if (scenar !== undefined) console.log(`Vývojový scenár partií proti botovi: 
 createGameServer({
   port: PORT,
   dataDir: process.env.NAEX_DATA ?? fileURLToPath(new URL("../../../data", import.meta.url)),
-  admin: { login: process.env.NAEX_ADMIN_LOGIN ?? "Admin", heslo: process.env.NAEX_ADMIN_HESLO || null },
+  admin,
   bezpecneCookie: process.env.NAEX_SECURE_COOKIE === "1",
   ...(process.env.NAEX_VYUCBA === "1" ? { vyucbaZapnuta: true } : {}),
   ...(process.env.NAEX_ACHIEVEMENTY === "1" ? { achievementyZapnute: true } : {}),
@@ -37,6 +56,7 @@ createGameServer({
   ...(scenar !== undefined ? { scenar } : {}),
   posliEmail: odosielacZProstredia(process.env.NAEX_EMAIL_REZIM),
   ...(process.env.NAEX_ADRESA ? { adresa: process.env.NAEX_ADRESA } : {}),
+  ...(zrejuca !== undefined ? { zrejuca } : {}),
 })
   .then((server) => {
     console.log(`NA EX server počúva na http://localhost:${server.port}`);

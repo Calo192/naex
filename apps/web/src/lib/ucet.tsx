@@ -86,8 +86,23 @@ export const LUPA_PREDVOLENA = 200;
 export const HUDBA_PREDVOLENA = 30;
 export const MELICHAR_PREDVOLENY = 70;
 
+/**
+ * Inštancia hry (Michal 2026-11-02): Vypálená je oficiálna, Zrejúca pokusná len pre testerov
+ * (admin, subadmini, AI). Zrejúca nesie adresu Vypálenej — tam sú účty, tvorca a komunita.
+ */
+export interface Instancia {
+  readonly nazov: "vypalena" | "zrejuca";
+  readonly vypalena: string | null;
+}
+
+const VYPALENA: Instancia = { nazov: "vypalena", vypalena: null };
+
+export const jeZrejuca = (i: Instancia): boolean => i.nazov === "zrejuca";
+
 interface UcetKontext {
   readonly ja: Pouzivatel | null;
+  /** Kým sa /api/ja nenačíta (a pri starom serveri), Vypálená. */
+  readonly instancia: Instancia;
   readonly nacitane: boolean;
   /** Práva neprihláseného (Nealko) — podľa nich hlavička skrýva odkazy; null = server ich neposlal. */
   readonly pravaNavstevnika: readonly Pravo[] | null;
@@ -103,6 +118,7 @@ export function UcetProvider({ children }: { children: ReactNode }) {
   const [ja, setJaStav] = useState<Pouzivatel | null>(null);
   const [nacitane, setNacitane] = useState(false);
   const [pravaNavstevnika, setPravaNavstevnika] = useState<readonly Pravo[] | null>(null);
+  const [instancia, setInstancia] = useState<Instancia>(VYPALENA);
 
   // Schéma a pár farieb uložené v účte majú prednosť pred prehliadačom — platia na každom zariadení.
   const setJa = useCallback((p: Pouzivatel | null): void => {
@@ -113,9 +129,10 @@ export function UcetProvider({ children }: { children: ReactNode }) {
 
   const obnov = useCallback((): void => {
     api
-      .get<{ pouzivatel: Pouzivatel | null; prava?: readonly Pravo[] }>("/ja")
+      .get<{ pouzivatel: Pouzivatel | null; prava?: readonly Pravo[]; instancia?: Instancia }>("/ja")
       .then((r) => {
         setPravaNavstevnika(r.pouzivatel === null ? (r.prava ?? null) : null);
+        setInstancia(r.instancia ?? VYPALENA);
         setJa(r.pouzivatel);
       })
       .catch(() => setJa(null))
@@ -131,7 +148,7 @@ export function UcetProvider({ children }: { children: ReactNode }) {
     obnov();
   }, [obnov]);
 
-  return <Kontext.Provider value={{ ja, nacitane, pravaNavstevnika, nastav: setJa, obnov, odhlas }}>{children}</Kontext.Provider>;
+  return <Kontext.Provider value={{ ja, instancia, nacitane, pravaNavstevnika, nastav: setJa, obnov, odhlas }}>{children}</Kontext.Provider>;
 }
 
 export function useUcet(): UcetKontext {
