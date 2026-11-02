@@ -289,6 +289,16 @@ describe("§9 bodovanie, sekera, finále a cigareta (v11)", () => {
     expect(z.hadkaSpaky).toEqual([0, 3]);
     expect(t.starsi.every((e) => e.strach[0] === 0 && e.strach[1] === 0 && e.reci[0] === 0 && e.reci[1] === 0)).toBe(true);
   });
+
+  it("porazený dostane cigaretu po bitke o lokalitu, po finále nie (Michal 2026-11-02)", () => {
+    const s0 = pred({ sums: [{ Rana: 2 }, {}] });
+    const lokalita = dohraj(spustBitku(data, s0).state);
+    expect(lokalita.hraci[1].cigarety).toBe(s0.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
+    const s: GameState = { ...s0, ciel: { typ: "finale", lokalita: s0.ciel!.lokalita! } };
+    const finale = dohraj(spustBitku(data, s).state);
+    expect(finale.koniec).not.toBeNull();
+    expect(finale.hraci[1].cigarety).toBe(s.hraci[1].cigarety);
+  });
 });
 
 describe("§16 Kapybara a Predsedova vila (v11)", () => {

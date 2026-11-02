@@ -301,7 +301,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Poradie bitky (v11):** **hádka** (kto ju vyhral a o koľko) → poškodenie → výsledok → **4a** špaky za karty
   v línii → **4b starší bodujú** (víťaz najvyšší marker, porazený reči; reči potom −1) → **4c výhra strachom**
   (víťaz so 4 červenými končí hru) → **4d** exekúcia (Robota, Exekútor) → **4e Nakladačka a reči** → poldeci,
-  Veštica, Cintorín, **porazený 1 cigareta**, Kmotor, Fajčiar → **zajatie** (krádež, výhra väzňami) → návrat
+  Veštica, Cintorín, **porazený 1 cigareta** (po finále nie), Kmotor, Fajčiar → **zajatie** (krádež, výhra väzňami) → návrat
   kariet, Chuť a Absťák.
 - **Nakladačka a hádka (v11, 2026-11-02):** Nakladačku (rozdiel tuhého) **rozdelí víťaz bitky na svoj strach**,
   hádku (rozdiel mäkkého) **víťaz hádky na svoje reči** — **ľubovoľne medzi starších**, stupeň stojí **do žltej 1,

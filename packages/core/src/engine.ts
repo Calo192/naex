@@ -5297,8 +5297,9 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   const porazeny = vitaz === null ? null : opponentOf(vitaz);
 
   // v11 (Michal 2026-11-02, O6): porazený dostane cigaretu — namiesto cigarety za každého
-  // staršieho, ktorého mu posunula Nakladačka. Pri sekere nikto neprehral, nedostane nik.
-  if (porazeny !== null) {
+  // staršieho, ktorého mu posunula Nakladačka. Pri sekere nikto neprehral, nedostane nik; po finále
+  // tiež nie (Michal 2026-11-02) — cigareta by mu len pridala výkupné.
+  if (porazeny !== null && !jeFinale(s)) {
     hrac(s, porazeny).cigarety += KONSTANTY.CIGARETY_PORAZENEMU;
     events.push({ type: "log", text: `Porazený hráč ${porazeny + 1} dostáva ${cigariet(KONSTANTY.CIGARETY_PORAZENEMU)}.` });
   }

@@ -23,7 +23,8 @@ v `docs/pravidla-historia.md`, sekcia v11):
   vyhráva hneď. **Väzni na výhru podľa ligy** (Tretia 2, Druhá 3, Prvá 4).
 - **Zajatie** (§10): podmienka je tvoj strach 3; úspech = väzeň a **krádež špakov**, neúspech =
   tvoj strach pri ňom 0. Špaky za väzňov 8 / 6 / 4 / 2 zanikli.
-- **Porazený dostane 1 cigaretu** (§9, krok 6c) — namiesto cigarety za posunutého staršieho.
+- **Porazený dostane 1 cigaretu** (§9, krok 6c) — namiesto cigarety za posunutého staršieho;
+  po finále nie.
 - **Finále** (§14b): markery sa nedvíhajú — Nakladačka aj hádka idú 1 : 1 na špaky.
 - **Kapybara** (Nástup): súperove reči pri jednom staršom klesnú o stupeň. **Predsedova vila**
   (Kšeft): za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň; staršieho v ohrození nie.
@@ -995,7 +996,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 5 | Poldeci (aj Na zdravie „do dna“) | §9.5 |
 | 5b | Veštica | §9.5b |
 | 6 | Cintorín (Nástroj do Dedičstva porazenému) | §15 |
-| 6c | **Porazený dostane 1 cigaretu** (pri sekere nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), efekty Výhra a Prehra (Recidivista, Dievčina, Podvodník), Krokodíl | §9.4, §10, §16 |
+| 6c | **Porazený dostane 1 cigaretu** (pri sekere a po finále nikto), priazne Kmotra (Dlhy súperovi) a Fajčiara (cigarety, v9), efekty Výhra a Prehra (Recidivista, Dievčina, Podvodník), Krokodíl | §9.4, §10, §16 |
 | 6d | Zajatie: výsledok pokusu — úspech = väzeň a krádež špakov, neúspech = strach pokúšajúceho 0; väzni na výhru = koniec hry | §10 |
 | 7 | Návrat kariet; nepriznaná Cirhóza a Absťák z ruky do odhadzovacieho balíčka | §9.7 |
 | 8 | Koniec kola: Chuť a Absťák (v9.1) | §4, §8 |
@@ -1124,8 +1125,8 @@ nemení roly (útočník ostáva útočníkom), pokus o zajatie zlyhá (strach p
 dostane za každý bod Nakladačky 1 špak** spolu so špakmi za bitku (krok 4a). Pri sekere vo finále
 Nakladačka nie je.
 
-**Cigareta porazenému** (v11, krok 6c): porazený dostane po bitke **1 cigaretu**, aj vo finále;
-pri sekere nikto. Do v10 dostal cigaretu za každého staršieho, ktorého mu posunula Nakladačka.
+**Cigareta porazenému** (v11, krok 6c): porazený dostane po bitke **1 cigaretu**; pri sekere
+nikto a **po finále nikto** (Michal 2026-11-02). Do v10 dostal cigaretu za každého staršieho, ktorého mu posunula Nakladačka.
 
 > Napätie hry: každý stupeň tvojho strachu ti v každej vyhratej bitke boduje, ale súperovi dáva
 > priazeň (rozdiel strachov). Reči bodujú aj pri prehre, priazeň nedávajú, no slabnú.
@@ -1276,8 +1277,6 @@ konečnými špakmi).
 
 - **Kapybara** smie znížiť súperove reči aj pri staršom v ohrození — zákaz O7 je na dvíhanie.
   Dohadzovačka (výmena scorecardov) staršieho v ohrození zasiahnuť smie.
-- **Cigareta porazenému** sa dáva aj po finále (pravidlo ju nevynecháva; po finále ju vykúpi
-  výkupné).
 - Kšeft väzňa **Farár**: „posilnený Hazard“ sa násobí s ostatnými násobkami
   (posilnená či NA EX-om zdvojená Viera = 2 × 2 zadĺženia), ako pri Starostovi.
 - Kšeft väzňa sa na **Kostole** (nikto nevypije) nedá — cena je vypiť poldeci.

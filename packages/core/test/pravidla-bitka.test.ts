@@ -248,10 +248,10 @@ describe("§14 Koniec hry po finále (v6)", () => {
     const po = poFinale([4, 10], { poldeciPlne: 3, poldeciVypite: 2, cigarety: 14 }, { poldeciPlne: 0, poldeciVypite: 4, cigarety: 4 });
     expect(po.koniec?.vykupne).toEqual([
       { poldeci: 3, cigarety: 14, spaky: 3 + 2 },
-      // Porazený dostane po finále cigaretu (v11): 4 + 1 = 5 → 1 špak.
-      { poldeci: 0, cigarety: 5, spaky: 1 },
+      // Porazený po finále cigaretu nedostane (Michal 2026-11-02): 4 cigarety → 0 špakov.
+      { poldeci: 0, cigarety: 4, spaky: 0 },
     ]);
-    expect(po.koniec?.body).toEqual([9, 11]);
+    expect(po.koniec?.body).toEqual([9, 10]);
     expect(po.koniec?.vitaz).toBe(1);
     // Bez stropu: 9 plných poldeci a 40 cigariet = 17 špakov.
     expect(poFinale([0, 0], { poldeciPlne: 9, cigarety: 40 }).koniec?.body).toEqual([17, 0]);
@@ -259,8 +259,8 @@ describe("§14 Koniec hry po finále (v6)", () => {
 
   it("§14: výkupné rozhodne aj o víťazovi a ráta sa pred určením víťaza, spolu s Cirhózou", () => {
     const po = poFinale([6, 6], { poldeciPlne: 1, cigarety: 5, ruka: [inst("cirhoza")] }, { cigarety: 9 });
-    // Hráč 1: 6 + 1 + 1 − 3 = 5; hráč 2 (porazený, +1 cigareta, v11): 6 + 2 = 8.
-    expect(po.koniec?.body).toEqual([5, 8]);
+    // Hráč 1: 6 + 1 + 1 − 3 = 5; hráč 2 (porazený, po finále bez cigarety): 6 + 1 = 7.
+    expect(po.koniec?.body).toEqual([5, 7]);
     expect(po.koniec?.vitaz).toBe(1);
     const remiza = poFinale([5, 6], { poldeciPlne: 1 });
     expect(remiza.koniec).toMatchObject({ vitaz: null, body: [6, 6] });
