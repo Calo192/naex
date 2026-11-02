@@ -6,9 +6,10 @@
 //   nápoveda — všetko celou vetou (myš, fokus, podržanie prsta).
 // Bez Reactu, aby sa dalo otestovať.
 
-import type { ElderState, Favour, GameData, PlayerId, ZmenaMarkera } from "@naex/core";
-import { NAZVY_ZON, STAV_STARSIEHO, favourStarsieho, opponentOf, priazenHraca, priazenSila, scorecardStarsieho, spakyOdStarsieho as spakyOdStarsiehoJadra, stupenStavu } from "@naex/core";
-import { UCINOK_KRATKO } from "./Scorecard.tsx";
+import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
+import { NAZVY_ZON, favourStarsieho, najvyssiMarker, opponentOf, pocet, pokusMozny, priazenHraca, priazenSila, reciNizsie, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen } from "@naex/core";
+import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
+import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 
 /** Komu priazeň patrí z pohľadu hráča, ktorý sa pozerá. */
 export type KomuPriazen = "ja" | "su" | null;
@@ -45,31 +46,72 @@ export function textMarkerov(strach: number, reci: number): string {
   return [strach > 0 ? `strach ${NAZVY_ZON[strach]}` : null, reci > 0 ? `reči ${NAZVY_ZON[reci]}` : null].filter((x) => x !== null).join(", ");
 }
 
-/** Riadok hráča v nápovede: markery a špaky po bitke (výhra / prehra). */
+/** Riadok hráča v nápovede (R3, Michal 2026-11-02): strach, reči a špaky po bitke — menom hráča, nie „ty“. */
 export interface RiadokHraca {
   readonly komu: "ja" | "su";
+  readonly hrac: PlayerId;
+  /** Krátke meno hráča (ako nad čiarou hladiny). */
   readonly kto: string;
-  readonly markery: string;
+  readonly strach: Stupen;
+  readonly reci: Stupen;
+  /** Vrchol teplomera (strach + reči) — stupeň staršieho pre tohto hráča. */
+  readonly vrchol: Stupen;
   readonly vyhra: number;
   readonly prehra: number;
+  /** Na aký stupeň reči po bodovaní klesnú (0 = zaniknú); null = rečí niet. */
+  readonly reciPotom: Stupen | null;
 }
 
-/** Obsah nápovedy nad staršom — kreslí ho ObsahNapovedyStarsieho (KruzokPriazne.tsx). */
+/** Pokus o zajatie, ktorý by hráč smel skúsiť (jeho strach je 3): koľko by mu súper odovzdal. */
+export interface ZajatieVNapovede {
+  readonly hrac: PlayerId;
+  readonly komu: "ja" | "su";
+  readonly kto: string;
+  /** Súper — ten, kto by špaky odovzdal. */
+  readonly obet: string;
+  readonly kradez: number;
+}
+
+/** Obsah nápovedy nad staršom (R3) — kreslí ho ObsahNapovedyStarsieho (KruzokPriazne.tsx). */
 export interface ObsahNapovedy {
+  readonly druh: "starsi";
   readonly meno: string;
+  readonly rod: Rod;
   /** Meno priazne zo scorecardu („Bitkár“). */
   readonly nazovPriazne: string;
+  /** Kedy sa priazeň uplatní („v bitke“, „po bitke“, „pri exekúcii“). */
+  readonly kedyPriazne: string;
   readonly favour: Favour;
   readonly priazen: PriazenKola;
-  readonly ucinok: ReturnType<typeof ucinokKola>;
   /** Strach a reči oboch hráčov — ja prvý. */
   readonly hraci: readonly [RiadokHraca, RiadokHraca];
-  /** Stav staršieho podľa vyššieho strachu („vystrašený“). */
-  readonly stav: string;
+  /** Účinok priazne pri sile 1, 2, 3 celou vetou (UCINOK_PRIAZNE). */
+  readonly sily: readonly [string, string, string];
+  readonly zajatie: readonly ZajatieVNapovede[];
   /** Čo urobí klik v kroku (zajatie, Kapybara) — inak null. */
   readonly akcia: string | null;
   /** Ďalší riadok (koniec partie: koľko špakov starší komu dal; pokus o zajatie). */
   readonly dalsi: { readonly nazov: string; readonly text: string } | null;
+}
+
+/** Obsah nápovedy nad väzňom (R3): v pivnici u koho, krádež pri zajatí a Kšeft väzňa doslova. */
+export interface ObsahNapovedyVazna {
+  readonly druh: "vazen";
+  readonly meno: string;
+  readonly rod: Rod;
+  readonly hrac: PlayerId;
+  readonly komu: "ja" | "su";
+  /** Krátke meno držiteľa. */
+  readonly kto: string;
+  readonly nazovPriazne: string | null;
+  readonly cervene: number;
+  readonly cervenychNaVyhru: number;
+  readonly vazni: number;
+  readonly vazniNaVyhru: number;
+  /** Krádež pri zajatí (nástenka): bitka a koľko špakov držiteľ dostal; null = nevedno. */
+  readonly kradez: { readonly kolo: number; readonly spaky: number; readonly obet: string } | null;
+  /** Kšeft väzňa — text karty bez „Väzeň — Kšeft:“ (PRAVIDLA §16). */
+  readonly kseft: string | null;
 }
 
 export interface VstupNapovedy {
@@ -77,34 +119,143 @@ export interface VstupNapovedy {
   readonly elder: ElderState;
   readonly meno: string;
   readonly ja: PlayerId;
-  /** Mená hráčov podľa miesta (0, 1) — súper menom, ja sa píše „ty“. */
+  /** Mená hráčov podľa miesta (0, 1) — v nápovede krátko, aj pri sebe meno (nie „ty“). */
   readonly mena: readonly [string, string];
   readonly akcia?: string | null;
   readonly dalsi?: { readonly nazov: string; readonly text: string } | null;
 }
 
+/**
+ * Meno priazne podľa jej druhu (PRAVIDLA §10) — nie zo scorecardu: staré sady nesú „Exekútor“,
+ * ktorý sa pri načítaní stal Advokátom (účinok by nesedel s menom).
+ */
+export const NAZOV_PRIAZNE: Readonly<Record<Favour, string>> = {
+  UZERNIK: "Kmotor",
+  LAKOMEC: "Abstinent",
+  ROBOTA: "Robota",
+  BITKAR: "Bitkár",
+  VERIACI: "Veriaci",
+  FAJCIAR: "Fajčiar",
+  ALKOHOLIK: "Alkoholik",
+  ADVOKAT: "Advokát",
+};
+
+/** Kedy sa priazeň uplatní (PRAVIDLA §10, stĺpec „Uplatňuje sa pri“) — krátko do nadpisu nápovedy. */
+export const KEDY_PRIAZNE: Readonly<Record<Favour, string>> = {
+  UZERNIK: "po bitke",
+  LAKOMEC: "v bitke",
+  ROBOTA: "pri exekúcii",
+  BITKAR: "v bitke",
+  VERIACI: "v bitke",
+  FAJCIAR: "po bitke",
+  ALKOHOLIK: "po bitke",
+  ADVOKAT: "pri exekúcii",
+};
+
+/** Účinok priazne celou vetou bez názvu na začiatku („Kmotor: …“ je už v nadpise). */
+export function silaPriazne(fav: Favour, sila: number): string {
+  const t = UCINOK_PRIAZNE[fav](sila).replace(/^(Kmotor|Abstinent|Robota|Na zdravie|Advokát): /, "");
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
 export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
   const su = opponentOf(v.ja);
-  const m = { ja: "ty", su: v.mena[su] };
   const fav = favourStarsieho(v.data, v.elder);
   const p = priazenKola(v.elder, v.ja);
-  const riadok = (h: PlayerId): RiadokHraca => ({
-    komu: h === v.ja ? "ja" : "su",
-    kto: h === v.ja ? "ty" : v.mena[h],
-    markery: textMarkerov(v.elder.strach[h], v.elder.reci[h]),
-    vyhra: spakyOdStarsiehoJadra(v.elder, h, true),
-    prehra: spakyOdStarsiehoJadra(v.elder, h, false),
-  });
+  const kto = (h: PlayerId): string => kratkeMeno(v.mena[h]);
+  const riadok = (h: PlayerId): RiadokHraca => {
+    const strach = v.elder.strach[h];
+    const reci = v.elder.reci[h];
+    return {
+      komu: h === v.ja ? "ja" : "su",
+      hrac: h,
+      kto: kto(h),
+      strach,
+      reci,
+      vrchol: najvyssiMarker(v.elder, h),
+      vyhra: spakyOdStarsiehoJadra(v.elder, h, true),
+      prehra: spakyOdStarsiehoJadra(v.elder, h, false),
+      reciPotom: reci === 0 ? null : reciNizsie(v.elder, h),
+    };
+  };
+  const zajatie = ([v.ja, su] as const).flatMap((h): ZajatieVNapovede[] =>
+    pokusMozny(v.elder, h) ? [{ hrac: h, komu: h === v.ja ? "ja" : "su", kto: kto(h), obet: kto(opponentOf(h)), kradez: kradezPokusu(v.elder, h) }] : [],
+  );
   return {
+    druh: "starsi",
     meno: v.meno,
-    nazovPriazne: scorecardStarsieho(v.data, v.elder).nazov,
+    rod: rodStarsieho(v.elder.karta.defId, v.meno),
+    nazovPriazne: NAZOV_PRIAZNE[fav],
+    kedyPriazne: KEDY_PRIAZNE[fav],
     favour: fav,
     priazen: p,
-    ucinok: ucinokKola(fav, p, m),
     hraci: [riadok(v.ja), riadok(su)],
-    stav: STAV_STARSIEHO[stupenStavu(v.elder)],
+    sily: [silaPriazne(fav, 1), silaPriazne(fav, 2), silaPriazne(fav, 3)],
+    zajatie,
     akcia: v.akcia ?? null,
     dalsi: v.dalsi ?? null,
+  };
+}
+
+/**
+ * Špaky hráča po bitke celou vetou (Michal 2026-11-02): „pri výhre +5 (vydesený — reči), pri
+ * prehre +5 (reči), potom reči klesnú na vystrašený“; bez rečí „pri prehre 0“.
+ */
+export function vetaSpakov(r: Pick<RiadokHraca, "strach" | "reci" | "vrchol" | "vyhra" | "prehra" | "reciPotom">, rod: Rod): string {
+  const plus = (n: number): string => (n > 0 ? `+${n}` : "0");
+  const za = r.vrchol === 0 ? "teplomer je prázdny" : r.reci > 0 ? `${slovoStupna(r.reci, rod)} — reči` : slovoStupna(r.strach, rod);
+  const prehra = r.reci > 0 ? `pri prehre ${plus(r.prehra)} (reči)` : `pri prehre ${plus(r.prehra)}`;
+  const potom = r.reciPotom === null ? "" : r.reciPotom === 0 ? ", potom reči zaniknú" : `, potom reči klesnú na ${slovoStupna(r.reciPotom, rod)}`;
+  return `pri výhre ${plus(r.vyhra)} (${za}), ${prehra}${potom}`;
+}
+
+/** Komu priazeň patrí a prečo — celou vetou, menami hráčov. */
+export function vetaPriazne(o: Pick<ObsahNapovedy, "priazen" | "hraci" | "rod">): string {
+  const [a, b] = o.hraci;
+  const strachSlovom = (r: RiadokHraca): string => (r.strach === 0 ? "žiadny" : slovoStupna(r.strach, o.rod));
+  if (o.priazen.komu === null) {
+    return `Zatiaľ ju nemá nikto. Strach majú ${a.kto} aj ${b.kto} rovnaký (${a.strach === 0 ? "žiadny" : slovoStupna(a.strach, o.rod)}). Dostane ju ten, koho sa bojí menej: keď strach zdvihne ${a.kto}, dostane ju ${b.kto}, a naopak.`;
+  }
+  const ma = o.priazen.komu === "ja" ? a : b;
+  return `Má ju ${ma.kto}, sila +${o.priazen.sila}. Strach: ${a.kto} ${strachSlovom(a)}, ${b.kto} ${strachSlovom(b)}. Sila je rozdiel strachov, reči sa nerátajú.`;
+}
+
+/** Riziko zajatia s krádežou celou vetou. */
+export function vetaZajatia(z: ZajatieVNapovede, rod: Rod): string {
+  return `${z.kto} ho môže pred stavbou šenku skúsiť zajať za 1 cigaretu (strach ${slovoStupna(3, rod)}). Keď vyhrá bitku, ${z.obet} mu odovzdá ${pocet(z.kradez, "špak", "špaky", "špakov")} za vrch svojho teplomera.`;
+}
+
+export interface VstupNapovedyVazna {
+  readonly data: GameData;
+  readonly vazen: Pick<Vazen, "elderId" | "hrac" | "karta" | "scorecard">;
+  readonly meno: string;
+  readonly ja: PlayerId;
+  readonly mena: readonly [string, string];
+  readonly vyhry: StavVyhier;
+  readonly nastenka: readonly Pick<BitkaNaNastenke, "kolo" | "bodovanie" | "kradez">[];
+}
+
+export function obsahNapovedyVazna(v: VstupNapovedyVazna): ObsahNapovedyVazna {
+  const h = v.vazen.hrac;
+  const k = kradezPriZajati(v.nastenka, v.vazen.elderId, h);
+  const kradez = k === null ? null : { ...k, obet: kratkeMeno(v.mena[opponentOf(h)]) };
+  const text = v.data.cards.get(v.vazen.karta.defId)?.effectText ?? "";
+  const kseft = text.replace(/^\s*Väzeň\s*[—–-]\s*Kšeft:\s*/, "").trim();
+  const fav = v.data.scorecards.find((x) => x.id === v.vazen.scorecard)?.favour;
+  return {
+    druh: "vazen",
+    meno: v.meno,
+    rod: rodStarsieho(v.vazen.karta.defId, v.meno),
+    hrac: h,
+    komu: h === v.ja ? "ja" : "su",
+    kto: kratkeMeno(v.mena[h]),
+    nazovPriazne: fav === undefined ? null : NAZOV_PRIAZNE[fav],
+    cervene: v.vyhry.cervene[h],
+    cervenychNaVyhru: v.vyhry.cervenychNaVyhru,
+    vazni: v.vyhry.vazni[h],
+    vazniNaVyhru: v.vyhry.vazniNaVyhru,
+    kradez,
+    kseft: kseft === "" ? null : kseft,
   };
 }
 
@@ -187,3 +338,15 @@ export function favourPodlaId(
   const sc = stol.starsi.find((e) => e.elderId === elderId)?.scorecard ?? stol.vazni.find((v) => v.elderId === elderId)?.scorecard;
   return data.scorecards.find((x) => x.id === sc)?.favour ?? null;
 }
+
+/**
+ * Krádež pri zajatí (§10, krok 6d) z nástenky: zajatý bol v poslednej bitke, v ktorej ešte bodoval
+ * (bodovanie je pred zajatím, 4b → 6d); koľko špakov držiteľ dostal. null = záznam chýba (archív).
+ */
+export function kradezPriZajati(nastenka: readonly Pick<BitkaNaNastenke, "kolo" | "bodovanie" | "kradez">[], elderId: string, hrac: PlayerId): { readonly kolo: number; readonly spaky: number } | null {
+  const bitka = [...nastenka].reverse().find((b) => b.bodovanie?.some((x) => x.elderId === elderId) === true);
+  return bitka === undefined ? null : { kolo: bitka.kolo, spaky: Math.max(0, bitka.kradez?.[hrac] ?? 0) };
+}
+
+/** Koľko špakov pokúšajúcemu odovzdá súper, keď zajatie vyjde: jeho vrch teplomera pred bodovaním. */
+export const kradezPokusu = (elder: Pick<ElderState, "strach" | "reci">, pokusa: PlayerId): number => spakyZaStupen(najvyssiMarker(elder, opponentOf(pokusa)));

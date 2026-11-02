@@ -89,7 +89,7 @@ describe("línia starších", () => {
   const view = { ...v0, starsi, vazni: [vazen] } as ClientState;
   const rad: MiestoVLinii[] = [
     ...starsi.map((e): MiestoVLinii => ({ typ: "starsi", s: { elder: e, meno: e.karta.defId, obrazok: null, patron: e === starsi[1] ? { kto: 1 } : null } })),
-    { typ: "vazen", v: { elderId: "vaz", meno: "Hrobár", obrazok: null, hrac: 1 } },
+    { typ: "vazen", v: { elderId: "vaz", defId: vazen.karta.defId, scorecard: vazen.scorecard, meno: "Hrobár", obrazok: null, hrac: 1 } },
   ];
   const linia = (rezim: "teplomery" | "pult"): string =>
     renderToStaticMarkup(
@@ -102,26 +102,60 @@ describe("línia starších", () => {
         krok: null,
         zmenene: new Set<string>(),
         vyhry: { cervene: [0, 2], cervenychNaVyhru: 4, vazni: [0, 1], vazniNaVyhru: 3 },
+        nastenka: [],
         pult: pultStarsich(view),
         rezim,
         onRezim: () => {},
       }),
     );
 
-  it("Teplomery: tvoj teplomer vľavo, súperov vpravo; reči s počtom špakov; priazeň; väzeň a ohrozenie", () => {
+  it("Teplomery R3: tvoj pás vľavo, súperov vpravo; strach plný, reči šrafované nad ním; hladiny s menom; zátvorka priazne", () => {
     const html = linia("teplomery");
     expect(html).toContain('data-vyucba="starsi-stupnica"');
     expect(html).toContain(`data-vyucba="strach:${starsi[0]!.elderId}"`);
-    // Môj strach žltá (1 stupeň), súperov červená (3), moje reči oranžová = 3 špaky.
-    expect(html).toMatch(/tp-bar ja.*?tp-seg z1 on/);
-    expect(html.match(/tp-seg z\d on/g)).toHaveLength(4);
-    expect(html).toMatch(/tp-reci"><svg class="tp-bub"[^>]*><path[^>]*><\/path><text[^>]*>3<\/text>/);
-    // Priazeň 2 pre mňa (Fero sa bojí viac).
-    expect(html).toMatch(/class="kr ja"[^>]*>.*?\+2/);
-    expect(html).toContain("v ohrození · skúša Fero");
-    expect(html).toContain("v pivnici u Fero");
+    // Môj strach 1 (plný), moje reči 2 (šrafovaný diel nad ním), súperov strach 3 (tri plné).
+    const moj = /r3-pas ja"[^>]*>(.*?)<\/span><span class="r3-pas su/.exec(html)?.[1] ?? "";
+    expect(moj.match(/r3-vypln plna/g)).toHaveLength(1);
+    expect(moj.match(/r3-vypln reci/g)).toHaveLength(1);
+    expect(html.match(/r3-vypln plna/g)).toHaveLength(4);
+    // Hladiny s menom hráča (nie „ty“), zátvorka priazne +2 pre mňa (Fero sa bojí viac).
+    expect(html).toMatch(/r3-hladina ja" style="--h:1[^"]*"><b class="r3-meno">Jano</);
+    expect(html).toMatch(/r3-hladina su" style="--h:3[^"]*"><b class="r3-meno">Fero</);
+    expect(html).toMatch(/r3-zatvorka ja" style="--a:1;--b:3"><b>\+2</);
+    // Pri teplomeroch slová stupňov nie sú — sú pod menom staršieho, menom hráča.
+    for (const cast of html.split('class="ls-stav').slice(0, -1)) expect(cast.slice(cast.lastIndexOf('class="r3"'))).not.toMatch(/znepokojen|vystrašen|vydesen/);
+    expect(html).toMatch(/r3-riadok ja"><b class="kto">Jano<\/b>.*?vystrašen.*? — reči/);
+    expect(html).not.toMatch(/class="(kto|r3-meno)">ty</);
+    expect(html).toContain("skúša Fero · vezme ti 0 špakov");
     expect(html).toContain("2/4");
     expect(html).toContain("⛓ 1/3");
+  });
+
+  it("väzeň: bez teplomerov a mreží, len pečiatka „V PIVNICI u …“ a krádež", () => {
+    const html = linia("teplomery");
+    const vaz = /tp-vazen su"[^]*$/.exec(html)?.[0] ?? "";
+    expect(vaz).toContain("<b>V PIVNICI</b><span>u Fero</span>");
+    expect(vaz).not.toContain("r3-pas");
+    expect(vaz).not.toContain("mreze");
+    expect(vaz).toContain("je z neho stále");
+    // Krádež z nástenky: zajatý v poslednej bitke, v ktorej ešte bodoval.
+    const s = renderToStaticMarkup(
+      createElement(LiniaStarsich, {
+        rad: [rad[2]!],
+        data,
+        ja: 0,
+        pohlad: 0,
+        mena: ["Jano", "Fero"],
+        krok: null,
+        zmenene: new Set<string>(),
+        vyhry: view.vyhry,
+        nastenka: [{ kolo: 2, bodovanie: [{ elderId: "vaz", defId: "x", stupen: [2, 0], reci: [false, false], spaky: [3, 0] }], kradez: [-3, 3] }],
+        pult: pultStarsich(view),
+        rezim: "teplomery",
+        onRezim: () => {},
+      }),
+    );
+    expect(s).toContain("<small>vzal ti 3 špaky</small>");
   });
 
   it("Pult: riadok na staršieho, priazeň a súčty pri výhre a prehre", () => {
@@ -167,13 +201,14 @@ describe("línia starších", () => {
         krok: "Nakladačka",
         zmenene: new Set<string>(),
         vyhry: view.vyhry,
+        nastenka: [],
         pult: pultStarsich(view),
         rezim: "teplomery",
         onRezim: () => {},
       }),
     );
     expect(html).toContain(`data-vyucba="stupen:${e.elderId}:2"`);
-    expect(html).toMatch(/tp-cena">3</);
+    expect(html).toMatch(/r3-cena">3</);
     expect(html).toContain('aria-disabled="true"');
     expect(html).toContain("−1");
   });

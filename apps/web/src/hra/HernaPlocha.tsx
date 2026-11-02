@@ -54,11 +54,11 @@ import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKar
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
-import { CENA_POLA, NAZOV_DELENIA } from "./textyStarsich.ts";
-import { IkonaDelenia, LiniaStarsich, ucinokPriazne, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii } from "./LiniaStarsich.tsx";
+import { CENA_POLA, NAZOV_DELENIA, rodStarsieho } from "./textyStarsich.ts";
+import { IkonaDelenia, LiniaStarsich, ucinokPriazne, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii, type SuhrnNaLinii } from "./LiniaStarsich.tsx";
 import { klikNaStupen, radStarsich, stupneRozdelenia, suhrnRozdelenia, zdvihStarsieho } from "./teplomery.ts";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
-import { favourPodlaId, kratkeMeno, pocetPriazniKola, priazenKola, reciZHadky, type PriazneBitky } from "./priazenKola.ts";
+import { NAZOV_PRIAZNE, favourPodlaId, kratkeMeno, pocetPriazniKola, priazenKola, reciZHadky, type PriazneBitky } from "./priazenKola.ts";
 import { PonukaZajatia, type MoznostZajatia } from "./PonukaZajatia.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
@@ -79,9 +79,7 @@ import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole
 import { peciatkyKrokov, textPeciatkyKroku, type PeciatkaKroku } from "./peciatkyKrokov.ts";
 import { Medziobrazovka } from "./Medziobrazovka.tsx";
 import { SuhrnLokality } from "./SuhrnLokality.tsx";
-import { SuhrnPosunov, SuhrnPosunovTelefon } from "./SuhrnPosunov.tsx";
-import type { SuhrnDlazdice } from "./Starsi.tsx";
-import { suhrnPosunov, zaciatokKola, type PolozkaSuhrnu, type ZaciatokKola } from "./obsahSuhrnu.ts";
+import { suhrnBitky, zaciatokKola, type KontextSuhrnu, type SuhrnBitky, type ZaciatokKola } from "./krokySuhrnu.ts";
 import { PAUZA_CIELA_MS, pauzaPoVolbeCiela, type PauzaCiela } from "./pauzaCiela.ts";
 import type { Sada } from "@naex/tvorba";
 import { HernaKarta, ZarStolaKontext, vzhladKarty, type HernaKartaProps } from "./HernaKarta.tsx";
@@ -387,6 +385,8 @@ export interface HernaPlochaProps {
   readonly prehravanie?: ReactNode;
   /** Počítadlo bitky beží / skončilo — pečiatka momentu z bitky (Momenty) počká na jeho koniec. */
   readonly onPocitadlo?: (bezi: boolean) => void;
+  /** Ukážka stola: začiatok predošlého kola — súhrn po bitke sa ukáže hneď po načítaní (snímky). */
+  readonly ukazkaSuhrnu?: ZaciatokKola | undefined;
   /** Výučba „Prvá hra“: okno konca partie neukazovať — záver povie Melichar v bubline. */
   readonly bezOknaKonca?: boolean;
   /** Výučba „Prvá hra“ beží — pas bez odpočtu na vrátenie, „končím“ bez druhého potvrdenia. */
@@ -495,6 +495,7 @@ export function HernaPlocha({
   vHlavicke,
   prehravanie,
   onPocitadlo,
+  ukazkaSuhrnu,
   bezOknaKonca,
   vyucbaOcakava,
   vyucba,
@@ -2239,21 +2240,22 @@ export function HernaPlocha({
     return () => window.removeEventListener("naex:zavri-lupu", zavriLupuHned);
   }, [zavriLupuHned]);
 
-  // Súhrn posunov starších pred výberom lokality (Michal 2026-10-30/31, mock 5): po zavretí
-  // vyhodnotenia bitky ukáže pri dlaždici Starší, čo sa so staršími v kole stalo. Začiatok kola
-  // si stôl zapamätá z prvého pohľadu kola (voľba cieľa); kto sa pripojil uprostred kola, súhrn
-  // tohto kola nedostane. Výučba ho zatiaľ nemá (text Melichara chýba), prehrávač ide svojím tempom.
+  // Súhrn po bitke krok po kroku na línii starších (Michal 2026-11-02, návrh c): po zavretí
+  // vyhodnotenia bitky ukáže na teplomeroch v poradí pravidiel, čo sa so staršími stalo. Krok sa
+  // neprehráva sám — Ďalej a Preskočiť (Michal). Začiatok kola si stôl zapamätá z prvého pohľadu
+  // kola (voľba cieľa); kto sa pripojil uprostred kola, súhrn tohto kola nedostane. Výučba ho
+  // zatiaľ nemá (text Melichara chýba), prehrávač ide svojím tempom.
   const suhrnZapnuty = vyucba !== true && prehravanie === undefined;
-  const zaciatokTohtoKola = useRef<ZaciatokKola | null>(null);
-  const [suhrn, setSuhrn] = useState<{ readonly kolo: number; readonly zaciatok: ZaciatokKola; readonly polozky: readonly PolozkaSuhrnu[] } | null>(null);
+  const zaciatokTohtoKola = useRef<ZaciatokKola | null>(ukazkaSuhrnu ?? null);
+  const [suhrn, setSuhrn] = useState<{ readonly kolo: number; readonly bitka: SuhrnBitky; readonly krok: number } | null>(null);
   useEffect(() => {
     if (!suhrnZapnuty) return;
     const v = viewZoServera;
     const z = zaciatokTohtoKola.current;
     if (z !== null && z.kolo === v.kolo) return;
     if (z !== null && v.kolo === z.kolo + 1 && v.faza === "volbaCiela" && v.koniec === null) {
-      const polozky = suhrnPosunov(z, v);
-      if (polozky.length > 0) setSuhrn({ kolo: z.kolo, zaciatok: z, polozky });
+      const bitka = suhrnBitky(z, v);
+      if (bitka !== null) setSuhrn({ kolo: z.kolo, bitka, krok: 0 });
     }
     zaciatokTohtoKola.current = v.faza === "volbaCiela" ? zaciatokKola(v) : null;
   }, [viewZoServera]);
@@ -2268,7 +2270,6 @@ export function HernaPlocha({
     // Koniec hry (vzdanie) alebo kolo, ktoré súhrn prebehlo, ho zahodí.
     if (suhrn !== null && (view.koniec !== null || view.kolo > suhrn.kolo + 1)) setSuhrn(null);
   }, [suhrn, view.koniec, view.kolo]);
-  const [suhrnDlazdice, setSuhrnDlazdice] = useState<SuhrnDlazdice | null>(null);
 
   // Pauza po súperovej voľbe cieľa (roadmapa #102): stavbu šenku robia obaja naraz, takže
   // hráč by súperovu voľbu prebehol. Michal 2026-10-30 („nevidel som, akú lokalitu súper
@@ -2346,7 +2347,6 @@ export function HernaPlocha({
   const koniecSuhrnu = (): void => {
     if (medziTeraz?.kluc === `${view.kolo}|lokalita`) setPotvrdenaMedzi(medziTeraz.kluc);
     setSuhrn(null);
-    setSuhrnDlazdice(null);
   };
   useEffect(() => {
     if (pauzaBezi) zavriLupuHned();
@@ -4575,11 +4575,12 @@ export function HernaPlocha({
   // Pauza po súperovej voľbe cieľa líniu starších na chvíľu skryje — rámik pauzy by inak svietil
   // na medzeru medzi staršími a vybranú lokalitu by nebolo vidno (Michal 2026-10-26). Po pauze
   // sa línia vráti sama: stav, ktorý ju otvoril (zajatie, Starší), sa nemení.
+  // Súhrn po bitke ide na línii starších (návrh c) — pred nástenkou s voľbou lokality.
   const starsiViditelni =
     !pauzaBezi &&
     tahanie === null &&
     pocitadlo === null &&
-    starsiNaStole({ krok: krokStarsich !== null, nahliadnutie, rucne: pohladStarsich !== null, vyucba: ukazStarsich });
+    (suhrnBezi || starsiNaStole({ krok: krokStarsich !== null, nahliadnutie, rucne: pohladStarsich !== null, vyucba: ukazStarsich }));
   const pohladLinie = pohladStarsich ?? ja;
   // Krčmová nástenka leží na mieste hracej plochy (Michal 2026-10-27), nie v okne nad stolom.
   // Pri voľbe cieľa sa ukáže sama a vyberá sa v nej lokalita (obranca klikne, útočník čaká).
@@ -4675,7 +4676,8 @@ export function HernaPlocha({
     return o === null ? null : mediaUrl(o.nahlad);
   };
   const radLinie: MiestoVLinii[] = radStarsich(view.starsi, view.vazni).map((m): MiestoVLinii => {
-    if (m.typ === "vazen") return { typ: "vazen", v: { elderId: m.vazen.elderId, meno: menoKarty(m.vazen.karta.defId), obrazok: obrazokStarsieho(m.vazen.karta.defId), hrac: m.vazen.hrac } };
+    if (m.typ === "vazen")
+      return { typ: "vazen", v: { elderId: m.vazen.elderId, defId: m.vazen.karta.defId, scorecard: m.vazen.scorecard, meno: menoKarty(m.vazen.karta.defId), obrazok: obrazokStarsieho(m.vazen.karta.defId), hrac: m.vazen.hrac } };
     const e = m.elder;
     const rozdelenie = rozdelenieStarsieho(e);
     const klik = rozdelenie === undefined ? klikStarsi(e) : undefined;
@@ -4754,6 +4756,29 @@ export function HernaPlocha({
         </button>
       )
     ) : null;
+  // Súhrn po bitke na línii (návrh c): krok drží stôl, Ďalej ide na ďalší krok, po poslednom hra
+  // pokračuje; Preskočiť súhrn zavrie hneď.
+  const kontextSuhrnu: KontextSuhrnu = {
+    mena: [kratkeMeno(menoHraca(0)), kratkeMeno(menoHraca(1))],
+    menoStarsieho: menoKarty,
+    rod: (defId) => rodStarsieho(defId, menoKarty(defId)),
+    nazovPriazne: (scorecard) => {
+      const fav = data.scorecards.find((x) => x.id === scorecard)?.favour;
+      return fav === undefined ? "" : NAZOV_PRIAZNE[fav];
+    },
+  };
+  const suhrnNaLinii: SuhrnNaLinii | undefined =
+    suhrnBezi && suhrn !== null
+      ? {
+          bitka: suhrn.bitka,
+          krok: suhrn.krok,
+          kontext: kontextSuhrnu,
+          // Každý svojím tempom: obranca po súhrne vyberá, útočníka čaká lokalita súpera alebo čakanie.
+          posledne: viewZoServera.faza === "volbaCiela" && viewZoServera.utocnik !== ja ? "Vybrať lokalitu" : "Ďalej",
+          onDalej: () => (suhrn.krok + 1 < suhrn.bitka.kroky.length ? setSuhrn({ ...suhrn, krok: suhrn.krok + 1 }) : koniecSuhrnu()),
+          onPreskocit: koniecSuhrnu,
+        }
+      : undefined;
   const prahy = (p: PlayerId) => prahyHraca(data, stol, p);
   const zavislost = (p: PlayerId) => stavZavislosti(data, { ...stol, kolo: view.kolo, hraci: view.hraci }, p);
   const b = view.bitkaStav;
@@ -5958,6 +5983,7 @@ export function HernaPlocha({
           karty={kartyDlazdica(super_)}
           rezim={rezimBaru}
           menoSupera={menoHraca(super_)}
+          mena={[menoHraca(0), menoHraca(1)]}
           pocitadloBezi={pocitadloBezi}
           // Stav súpera je bodkou na jeho avatare, nie v lište (dizajn timeline-lista A); bot sa neodpája.
           spojenie={hraci[super_]?.bot === true || vyucba === true || prehravanie !== undefined ? undefined : { pripojeny: superPripojeny, odpojenyOd: superOdpojenyOd }}
@@ -6063,7 +6089,9 @@ export function HernaPlocha({
                   pult={pultLinie}
                   rezim={rezimLinie}
                   onRezim={zmenRezimLinie}
-                  tlacidlo={tlacidloLinieStarsich}
+                  tlacidlo={suhrnNaLinii === undefined ? tlacidloLinieStarsich : null}
+                  nastenka={view.nastenka}
+                  suhrn={suhrnNaLinii}
                 />
               )}
             </div>
@@ -6110,6 +6138,7 @@ export function HernaPlocha({
             zavislost={zavislost(ja)}
             menoKarty={menoKarty}
             menoSupera={menoHraca(super_)}
+            mena={[menoHraca(0), menoHraca(1)]}
             vyhlad={vyhladPitky(ja)}
             obchodCigariet={{
               mozno: somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === null && view.koniec === null,
@@ -6123,7 +6152,6 @@ export function HernaPlocha({
               prepni: () => prepniStarsich(ja),
               id: idLinieStarsich,
               posuny: new Set(view.zmenyMarkerov.map((x) => x.elderId)).size,
-              suhrn: suhrnBezi && suhrnDlazdice !== null ? suhrnDlazdice : undefined,
             }}
             spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === ja, prepni: () => otvorNastenku(ja) }}
             karty={kartyDlazdica(ja)}
@@ -6630,48 +6658,6 @@ export function HernaPlocha({
             </ul>
           )}
         </Medziobrazovka>
-      )}
-      {/* Telefón: jeden zoznam všetkých starších s Ďalej v pruhu hore (oprava 5) — nie bublina po jednom. */}
-      {suhrnBezi && naSirku && (
-        <SuhrnPosunovTelefon
-          key={suhrn.kolo}
-          data={data}
-          polozky={suhrn.polozky}
-          kolo={suhrn.kolo}
-          ja={ja}
-          mena={[menoHraca(0), menoHraca(1)]}
-          vazni={view.vazni}
-          vazniNaVyhru={view.vyhry.vazniNaVyhru}
-          menoKarty={menoKarty}
-          obrazok={(defId) => {
-            const o = vzhladKarty(sada, data, defId).obrazok;
-            return o === null ? null : mediaUrl(o.nahlad);
-          }}
-          posledne={viewZoServera.faza === "volbaCiela" && viewZoServera.utocnik !== ja ? "Vybrať lokalitu" : "Ďalej"}
-          onKoniec={koniecSuhrnu}
-        />
-      )}
-      {suhrnBezi && !naSirku && (
-        <SuhrnPosunov
-          key={suhrn.kolo}
-          data={data}
-          polozky={suhrn.polozky}
-          zaciatok={suhrn.zaciatok.starsi}
-          ja={ja}
-          mena={[menoHraca(0), menoHraca(1)]}
-          vazni={view.vazni}
-          vazniNaVyhru={view.vyhry.vazniNaVyhru}
-          menoKarty={menoKarty}
-          obrazok={(defId) => {
-            const o = vzhladKarty(sada, data, defId).obrazok;
-            return o === null ? null : mediaUrl(o.nahlad);
-          }}
-          mobil={mobil || naSirku}
-          // Každý svojím tempom: obranca po súhrne vyberá, útočníka čaká lokalita súpera alebo čakanie.
-          posledne={viewZoServera.faza === "volbaCiela" && viewZoServera.utocnik !== ja ? "Vybrať lokalitu" : "Ďalej"}
-          onDlazdica={setSuhrnDlazdice}
-          onKoniec={koniecSuhrnu}
-        />
       )}
       {pocitadlo !== null && !medziCaka && (
         <PocitadloSLiniou

@@ -64,11 +64,11 @@ function StarsiVPase({
   const fav = favourStarsieho(data, e);
   const pk = priazenKola(e, ja);
   const spaky = spakyOdStarsieho(view.nastenka, e.elderId);
-  const textSpakov = `ty +${spaky[ja]} · ${kratkeMeno(mena[su])} +${spaky[su]}`;
+  const textSpakov = `${kratkeMeno(mena[ja])} +${spaky[ja]} · ${kratkeMeno(mena[su])} +${spaky[su]}`;
   const napoveda = useNapovedaStarsieho(
     () => obsahNapovedy({ data, elder: e, meno, ja, mena, dalsi: { nazov: "Dal špaky", text: textSpakov } }),
     {
-      menoSupera: mena[su],
+      obrazok,
       zvacsenina: () => (
         <span className="np-zoom-karta">
           <span className="np-zoom-portret">

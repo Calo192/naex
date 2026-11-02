@@ -1624,14 +1624,6 @@ html.stol-na-sirku .lokalita-supera :is(.tlacidlo-hlavne, .medziobrazovka-caka) 
   min-width: 48px;
 }
 
-/* ---- súhrn posunov starších: tlačidlo pulzuje len svetlom, nerastie cez okraj ---- */
-html.stol-na-sirku .suhrn-bublina .sb-dalej {
-  max-width: 220px;
-  margin-right: 12px;
-  animation: none;
-  rotate: none;
-}
-
 /* Ciele vybranej karty: len kam a spoj — podrobnosti dopadu sú v pruhu pokynu (pretekali cez okraj). */
 .hra.mobil-sirka:not(.stol-scroll) .ciel-miesto .nahlad-miesto {
   gap: 2px;
@@ -2073,55 +2065,6 @@ html.stol-na-sirku .okno-zdroja .medziobrazovka-okno > .tlacidlo-hlavne {
   align-self: center;
 }
 
-/* ---- súhrn posunov starších na telefóne: meno a Ďalej v hornom riadku, stupnica a dôsledky pod nimi ---- */
-html.stol-na-sirku .suhrn-bublina.mobil {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 6px 12px;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-}
-
-html.stol-na-sirku .suhrn-bublina.mobil > * {
-  grid-column: 1 / -1;
-}
-
-html.stol-na-sirku .suhrn-bublina.mobil > .sb-hlava {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-html.stol-na-sirku .suhrn-bublina.mobil > .sb-pata {
-  grid-column: 2;
-  grid-row: 1;
-  min-height: 0;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-html.stol-na-sirku .suhrn-bublina.mobil > .sb-pata.s-dosledkami {
-  grid-column: 1 / -1;
-  grid-row: auto;
-}
-
-html.stol-na-sirku .suhrn-bublina.mobil .sb-portret {
-  width: 36px;
-  height: 36px;
-}
-
-html.stol-na-sirku .suhrn-bublina .sb-dalej {
-  min-height: 40px;
-  margin-right: 0;
-  padding: 4px 16px;
-}
-
-/* Šírku a polohu bubliny počíta SuhrnPosunov pre počítač (inline štýl) — na telefóne je to pás medzi okrajmi displeja. */
-html.stol-na-sirku .suhrn-bublina.mobil {
-  left: max(6px, env(safe-area-inset-left)) !important;
-  right: max(6px, env(safe-area-inset-right));
-  width: auto !important;
-}
-
 /* ---- koniec partie na telefóne: nadpis a tlačidlá v hornom pruhu (prilepené), obsah sa posúva pod nimi ---- */
 html.stol-na-sirku .koniec-okno {
   display: grid;
@@ -2171,90 +2114,6 @@ html.stol-na-sirku .koniec-okno .koniec-verzia {
 }
 
 /* ==== oprava 5 (playtest mobilu 20261031-191322) ==== */
-
-/* ---- súhrn posunov starších na telefóne: jeden zoznam, pred → po slovami, čipy s textom ---- */
-.suhrn-tel-zoznam {
-  display: flex;
-  flex-direction: column;
-  padding: 4px 8px;
-}
-
-.st-riadok {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 6px 2px;
-  border-bottom: 1px solid color-mix(in srgb, var(--okraj) 70%, transparent);
-}
-
-.st-riadok:last-child {
-  border-bottom: 0;
-}
-
-.st-portret {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--plocha-3);
-}
-
-.st-portret img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.st-telo {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.st-hlava {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 2px 10px;
-  font-size: 13px;
-}
-
-.st-hlava b {
-  font: 800 14px/1.2 var(--nadpis);
-  color: var(--text);
-}
-
-.st-posun {
-  color: var(--tlmeny);
-}
-
-.st-cipy {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 6px;
-}
-
-.st-cip {
-  padding: 2px 8px;
-  border: 1px solid var(--okraj-svetly);
-  border-radius: 999px;
-  font-size: 12px;
-  line-height: 1.35;
-  color: var(--text);
-  background: var(--plocha-2);
-}
-
-.st-cip.ja {
-  border-color: var(--ja);
-}
-
-.st-cip.su {
-  border-color: var(--su);
-}
 
 html.stol-na-sirku .rk-tel-akcia:disabled {
   opacity: 0.6;

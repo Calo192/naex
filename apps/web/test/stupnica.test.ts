@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import type { ZmenaMarkera } from "@naex/core";
 import { stitokZmien } from "../src/hra/LiniaStarsich.tsx";
-import { CENA_POLA, PRAVIDLO_STRACHU, nazovStupna, riadokDlazdice, riadokPriazne, textZmeny } from "../src/hra/textyStarsich.ts";
+import { CENA_POLA, PRAVIDLO_STRACHU, nazovStupna, riadokDlazdice, riadokPriazne, rodStarsieho, slovoStupna, textZmeny, vrcholTeplomera } from "../src/hra/textyStarsich.ts";
 
 const MENA = ["Jano", "Fero"] as const;
 
@@ -39,7 +39,24 @@ describe("riadky pri staršom", () => {
     expect(nazovStupna(0)).toBe("nič");
     expect(nazovStupna(3)).toBe("červená");
     expect(CENA_POLA).toBe("stupeň stojí 1 / 2 / 3 (žltá / oranžová / červená)");
-    expect(PRAVIDLO_STRACHU).toMatch(/žltá 1, oranžová 3, červená 5/);
+    expect(PRAVIDLO_STRACHU).toMatch(/znepokojený 1, vystrašený 3, vydesený 5/);
+    expect(PRAVIDLO_STRACHU).toMatch(/stupeň staršieho pre hráča je jej vrchol/);
     expect(PRAVIDLO_STRACHU).toMatch(/porazenému len za reči/);
+  });
+});
+
+describe("stupne slovami (R3)", () => {
+  it("v rode staršieho; ženský rod podľa karty aj mena na -ka, Starosta mužský", () => {
+    expect(slovoStupna(3, "m")).toBe("vydesený");
+    expect(slovoStupna(2, "z")).toBe("vystrašená");
+    expect(slovoStupna(0, "z")).toBe("pokojná");
+    expect(rodStarsieho("krcmarka", "Krčmárka")).toBe("z");
+    expect(rodStarsieho("starosta", "Starosta")).toBe("m");
+    expect(rodStarsieho("nahrada", "Upratovačka")).toBe("z");
+  });
+
+  it("stupeň staršieho pre hráča je vrchol teplomera (strach + reči)", () => {
+    expect(vrcholTeplomera(1, 3)).toBe(3);
+    expect(vrcholTeplomera(2, 0)).toBe(2);
   });
 });

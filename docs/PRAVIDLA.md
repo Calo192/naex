@@ -309,8 +309,9 @@ výhrou strachom alebo väzňami, alebo po finále väčším počtom špakov. P
 | Odohrá sa finále (po 3 / 5 / 7 bitkách o lokality podľa dĺžky hry) | vykúpia sa zvyšné plné poldeci a cigarety, odpočíta sa nepriznaná Cirhóza a vyhrá viac špakov (§14); väzni od v11 špaky nedávajú |
 
 Obe okamžité výhry platia len v bitke, ktorú hráč vyhral — štyri červené porazeného hru
-neukončia. Exekúcia prehru nespôsobí — stojí Dlhy a špaky (§11). „Vydesený“ je stav staršieho,
-ktorý sa niekoho bojí na červenej (§10).
+neukončia. Exekúcia prehru nespôsobí — stojí Dlhy a špaky (§11). „Vydesený“ je stupeň staršieho
+pre hráča, ktorého stupnica (strach + reči) siaha na červenú; do výhry strachom a zajatia sa ráta len
+červený strach (§10).
 Malý balíček prehru nespôsobí:
 keď sa doberací aj odhadzovací balíček minú, hráč len nemá čo ťahať (a fajčiť
 sa vtedy nedá, §7).
@@ -1236,8 +1237,13 @@ Markery sú verejné.
 - **Cena stupňa** (Nakladačka aj hádka): vstup do žltej **1**, do oranžovej **2**, do červenej **3**
   (`KONSTANTY.CENA_STUPNA`). Rozdeľuje sa voľne medzi starších; zvyšok, ktorý na žiadny stupeň
   nestačí, prepadne.
-- **Stav staršieho** podľa vyššieho strachu: **pokojný (0), znepokojený (1), vystrašený (2),
-  vydesený (3)**.
+- **Jedna stupnica** (Michal 2026-11-02): strach a reči hráča plnia **tú istú stupnicu** 0–3 pri
+  staršom — strach zdola, reči nad vlastným strachom (na stole plná a šrafovaná časť jedného
+  teplomera).
+- **Stupeň staršieho pre hráča** — **pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)** — je
+  **vrchol** jeho stupnice, teda **strach + reči** (reči, ak ich má, inak strach; Michal 2026-11-02).
+  Ten istý stupeň hovorí, za koľko špakov starší boduje víťazovi (krok 4b nižšie). Do **priazne**,
+  **výhry strachom** a **podmienky zajatia** sa rátajú **len strach** — reči nie.
 - **Starší v ohrození** (pokus o zajatie): v tom kole naň **nikto strach ani reči nedvíha**
   (Nakladačka, hádka, Kšeft vily). Kapybara jeho reči znížiť smie (nedvíha ich).
 
@@ -1823,7 +1829,7 @@ nie Konflikt.
 | Povera | akcia: 1 mäkké poškodenie do hádky (v10; s Horoskopom 2); ruší sa so súperovou Vierou 1 : 1 (§2, §9.1) |
 | Mäkké poškodenie | Pohoršenie × 2 + zvyšné Povery × sila Povery; tuhé nerobí, rozhoduje len hádku (v10, §9.1) |
 | Hádka | krok bitky (v10, v11): kto má viac mäkkého, vyhral hádku o rozdiel („Ana vyhrala hádku o 3“); po bodovaní ho rozdelí na svoje reči (1 / 2 / 3 za stupeň), vo finále 1 : 1 na špaky (§9.1) |
-| Reči | druhý marker hráča pri staršom, vždy nad jeho strachom; dvíha ich hádka a Predsedova vila, bodujú aj porazenému, po bodovaní klesnú o stupeň, priazeň nedávajú (§10, v11) |
+| Reči | druhý marker hráča pri staršom na tej istej stupnici, vždy nad jeho strachom; dvíha ich hádka a Predsedova vila, bodujú aj porazenému, po bodovaní klesnú o stupeň, priazeň nedávajú (§10, v11) |
 | Strach | marker hráča pri staršom 0–3 — ako veľmi sa ho starší bojí; neklesá (výnimka: neúspešný pokus o zajatie); dvíha ho Nakladačka; priazeň = strach súpera − tvoj strach (§10, v11) |
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane (§6) |
 | Pokus o zajatie | pred stavbou šenku za 1 cigaretu skús zajať staršieho, pri ktorom je tvoj strach 3; karta ide tebe do ruky (boss), súper si pri stavbe nechá kartu zadarmo, starší je v ohrození (§5, §10) |
@@ -1842,7 +1848,7 @@ nie Konflikt.
 | Sekera | bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch); jej špaky (karty v línii) berie víťaz najbližšej bitky, vo finále prepadnú (§9.4) |
 | Špak | za bitku (karty v línii), za udržaný strach starších, výkupné zvyšných poldeci a cigariet; mínus Exekútor a nepriznaná Cirhóza; po finále vyhrá, kto má viac (§14) |
 | Stupeň | poloha markera (strachu či rečí) na stupnici staršieho: 0 sivá, 1 žltá, 2 oranžová, 3 červená; cena vstupu 1 / 2 / 3, špaky po bitke 1 / 3 / 5 (§10, v11) |
-| Stav staršieho | podľa stupňa pokojný (0), znepokojený (1), vystrašený (2), vydesený (3) (§10) |
+| Stav staršieho | stupeň staršieho pre hráča: pokojný (0), znepokojený (1), vystrašený (2), vydesený (3) — vrchol jeho stupnice, strach + reči; do priazne, výhry strachom a zajatia sa ráta len strach (§10, Michal 2026-11-02) |
 | Od seba / k sebe | smer posunu markera na stupnici; od seba staršieho desí, k sebe upokojuje (§10) |
 | Zaplatený / držaný stupeň | stupeň, ktorý starší už zaplatil, a stupeň, na ktorom marker stál na konci minulého kola a neustúpil; ústup ich zmaže (§10) |
 | Strana | polovica línie od lokality — tvoja a súperova (§6) |

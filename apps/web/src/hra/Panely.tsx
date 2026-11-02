@@ -393,6 +393,8 @@ export interface HracDoskaProps {
   readonly spojenie?: { readonly pripojeny: boolean; readonly odpojenyOd: number | null } | undefined;
   /** Meno súpera toho, kto sa pozerá — nápoveda a lístok Hádky v bare starších. */
   readonly menoSupera?: string;
+  /** Mená hráčov podľa miesta (0, 1) — nápoveda starších volá hráčov menom. */
+  readonly mena?: readonly [string, string];
 }
 
 /**
@@ -455,6 +457,7 @@ export function HracDoska({
   pocitadloBezi = false,
   spojenie,
   menoSupera = "súper",
+  mena,
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
@@ -579,7 +582,7 @@ export function HracDoska({
       {/* display: contents — dlaždice sú priamo v mriežke baru (poradie v hra.css). */}
       <div className="doska-zdroje">
         {rezim === "spaky" && <BarSpakov view={view} p={p} body={body} menoKarty={menoKarty} />}
-        {rezim === "starsi" && <BarStarsich view={view} data={data} p={p} menoKarty={menoKarty} menoSupera={menoSupera} />}
+        {rezim === "starsi" && <BarStarsich view={view} data={data} p={p} menoKarty={menoKarty} menoSupera={menoSupera} mena={mena} />}
         <Zdroj
           nazov="Poldeci"
           trieda="zdroj-poldeci"

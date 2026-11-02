@@ -9,6 +9,8 @@
 //   &stop=koniec   tesne pred koncom hry — posledný ťah sa dohrá po načítaní
 //   &stop=suhrn    začiatok kola k-tej bitky (&i=k, od 0); po načítaní sa kolo rýchlo dohrá po bitku —
 //                  po zavretí vyhodnotenia príde súhrn posunov starších
+//   &stop=po-bitke súhrn po k-tej bitke (&i=k, od 0) hneď po načítaní — kolo sa dohrá po voľbu cieľa ďalšieho
+//                  kola (súhrn krok po kroku na línii starších, R3)
 //   &stop=kolo     začiatok kola &i=k
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi
 //                  z prebytku (stopa v línii starších)
@@ -50,9 +52,10 @@
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 //   &markery=i:s0.s1.r0.r1,… strach a reči i-teho staršieho (od 0): strach hráča 1 a 2, reči hráča 1 a 2
 //                  (0–3; reči len nad strachom, inak 0) — snímky teplomerov a Pultu
+//   &vazen=i:p,…   i-teho staršieho (od 0) zajme hráč p (0 / 1) — snímka väzňa s pečiatkou (R3)
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, Stupen, TypMomentu } from "@naex/core";
+import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
 import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
@@ -62,6 +65,7 @@ import type { HracInfo } from "./useHra.ts";
 import { useStolNaSirku } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
 import { ULOZENY_REZIM_LINIE } from "./HernaPlocha.tsx";
+import { zaciatokKola as zaciatokKolaSuhrnu } from "./krokySuhrnu.ts";
 
 interface Krok {
   readonly stav: GameState;
@@ -77,6 +81,8 @@ interface Odohrane {
   readonly dohraj: readonly Krok[];
   /** História lokalít k začiatku (súhrn lokality na nástenke) — ako ju skladá server. */
   readonly historia?: HistoriaLokalit;
+  /** Začiatok kola s bitkou — súhrn po bitke sa ukáže hneď (stop=po-bitke). */
+  readonly suhrn?: GameState;
 }
 
 const q = (): URLSearchParams => new URLSearchParams(window.location.search);
@@ -96,6 +102,19 @@ function sMarkermi(s: GameState, spec: string): GameState {
   }
   if (na.size === 0) return s;
   return { ...s, starsi: s.starsi.map((e, i) => ({ ...e, ...(na.get(i) ?? {}) })) };
+}
+
+/** Starší z parametra &vazen=i:p,… idú do pivnice hráča p (i-ty v rade, od 0) — snímky väzňa (R3). */
+function sVaznami(s: GameState, spec: string): GameState {
+  let st = s;
+  for (const cast of spec.split(",")) {
+    const [i, p] = cast.split(":").map(Number);
+    const e = s.starsi[i ?? -1];
+    if (e === undefined || (p !== 0 && p !== 1)) continue;
+    const vazen: Vazen = { elderId: e.elderId, hrac: p, poradie: st.vazni.length + 1, karta: e.karta, scorecard: e.scorecard, miesto: i ?? 0 };
+    st = { ...st, starsi: st.starsi.filter((x) => x.elderId !== e.elderId), vazni: [...st.vazni, vazen] };
+  }
+  return st;
 }
 
 /** Hráčovi p dá do Dedičstva Krištáľovú guľu — Vízia ukáže dve vrchné karty. */
@@ -309,6 +328,18 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     const bitka = events.some((e) => e.type === "bitkaVysledok");
     const autopas = po.faza === "zhromazdenie" && events.some((e) => e.type === "autoPas" && e.hrac === autopasKto);
     if (stop === "autopas" && autopas && autopasov++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
+    // Súhrn po bitke hneď (R3, návrh c): kolo sa dohrá po voľbu cieľa ďalšieho kola bez prehrávania.
+    if (stop === "po-bitke" && bitka && bitiek++ === i) {
+      let x = po;
+      let r2 = rng;
+      for (let k = 0; k < 200 && x.koniec === null && !(x.kolo > s.kolo && x.faza === "volbaCiela"); k++) {
+        const u = tahy(data, x, r2, n + 1 + k);
+        if (u === null) break;
+        r2 = u.rng;
+        x = apply(data, x, u.cmd, u.kto).state;
+      }
+      return najdene({ zaciatok: x, dohraj: [], suhrn: zaciatokKola });
+    }
     if (stop === "suhrn" && bitka && bitiek++ === i) {
       // Za bitkou aj rozdeľovanie Nakladačky, kým kolo neskončí — súhrn ho má ukázať.
       const dohraj: Krok[] = [...tahyKola, { stav: s, cmd: t.cmd, kto: t.kto }];
@@ -361,7 +392,9 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   const odohrane = useMemo(() => {
     const o = odohraj(data);
     const mk = q().get("markery");
-    const sM = mk === null ? o : { ...o, zaciatok: sMarkermi(o.zaciatok, mk) };
+    const sM0 = mk === null ? o : { ...o, zaciatok: sMarkermi(o.zaciatok, mk) };
+    const vz = q().get("vazen");
+    const sM = vz === null ? sM0 : { ...sM0, zaciatok: sVaznami(sM0.zaciatok, vz) };
     // Rozloženie línie starších sa pamätá v prehliadači — &pult=1 ho prepne pred prvým kreslením.
     if (q().get("pult") !== null) localStorage.setItem(ULOZENY_REZIM_LINIE, q().get("pult") === "1" ? "pult" : "teplomery");
     return q().get("zerava") === "1" ? { ...sM, zaciatok: sZeravou(sM.zaciatok, ja) } : sM;
@@ -433,6 +466,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   }, [stav, ja, data, dohrate]);
 
   const view = useMemo(() => viewFor(data, stav, ja), [data, stav, ja]);
+  const ukazkaSuhrnu = useMemo(() => (odohrane.suhrn === undefined ? undefined : zaciatokKolaSuhrnu(viewFor(data, odohrane.suhrn, ja))), [odohrane, data, ja]);
   // &avatar=<id médiá hráča>,<id médiá súpera> — snímky avatarov s fotkou (prstenec vo farbe hráča).
   const [avJa = null, avSu = null] = q().get("avatar")?.split(",") ?? [];
   const hraci: readonly [HracInfo, HracInfo] = ja === 0
@@ -442,6 +476,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     <>
     {otoc && <OtocTelefon />}
     <HernaPlocha
+      ukazkaSuhrnu={ukazkaSuhrnu}
       naSirku={naSirku}
       view={view}
       data={data}
