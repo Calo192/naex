@@ -1,0 +1,293 @@
+/* Heatmapa akcií (/karty/heatmapa, Michal 2026-11-02). Farby len cez tokeny zo schemy.css —
+   sýtosť bunky je podiel akcentu (--sila) v ploche, takže funguje v každej schéme. */
+
+.hm-ovladanie {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.hm-pocet {
+  font-size: 0.78em;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-akcie .cip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 0.4rem;
+}
+
+.hm-akcie .cip.nevyskytuje {
+  opacity: 0.45;
+}
+
+.hm-ikona {
+  display: inline-flex;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  border-radius: 6px;
+  background: var(--slaby);
+  vertical-align: middle;
+}
+
+.hm-ikona .ikona-akcie {
+  width: 100%;
+  height: 100%;
+}
+
+.hm-otocene {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.hm-hlavna {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 40px;
+  align-items: flex-start;
+}
+
+.hm-karta-obal {
+  flex: none;
+}
+
+.hm-suhrn {
+  margin: 0 0 10px;
+  color: var(--tlmeny);
+}
+
+.hm-zvolena {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Silueta karty: dva stĺpce pozícií pri hranách, v strede typ alebo akcia. */
+.hm-karta {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: stretch;
+  width: min(460px, calc(100vw - 2 * var(--okraj-stranky)));
+  padding: 14px;
+  border: 2px solid var(--okraj-svetly);
+  border-radius: 18px;
+  background: var(--plocha);
+}
+
+.hm-stlpec {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hm-lava {
+  grid-column: 1;
+}
+
+.hm-prava {
+  grid-column: 3;
+}
+
+.hm-stred {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  place-items: center;
+  color: var(--slaby);
+  font-weight: 700;
+  text-align: center;
+}
+
+.hm-stred .hm-ikona {
+  width: 64px;
+  height: 64px;
+  padding: 6px;
+  border-radius: 14px;
+}
+
+.hm-nazov-strany {
+  font-size: 0.78rem;
+  color: var(--slaby);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.hm-riadok {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hm-prava .hm-riadok {
+  flex-direction: row-reverse;
+}
+
+.hm-index {
+  width: 1ch;
+  color: var(--slaby);
+  font-variant-numeric: tabular-nums;
+}
+
+button.hm-bunka {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 108px;
+  height: 74px;
+  padding: 4px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: color-mix(in srgb, var(--akcent) var(--sila, 0%), var(--plocha-2));
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.hm-bunka b {
+  font-size: 1.35rem;
+}
+
+.hm-bunka span {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+/* Blokovaná pozícia aspoň na jednej karte: šrafovaný roh s počtom. */
+.hm-bunka small {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: var(--tma);
+  color: var(--text);
+  font-size: 0.7rem;
+}
+
+.hm-bunka.s-blokom {
+  background-image: repeating-linear-gradient(135deg, transparent 0 7px, color-mix(in srgb, var(--tma) 35%, transparent) 7px 9px);
+}
+
+button.hm-bunka.oznacena,
+button.hm-bunka:hover {
+  border-color: var(--text);
+}
+
+.hm-zoznam {
+  flex: 1 1 280px;
+  min-height: 120px;
+}
+
+.hm-zoznam h3 {
+  margin: 0 0 8px;
+}
+
+.hm-zoznam ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2 220px;
+  column-gap: 24px;
+}
+
+.hm-zoznam li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--okraj);
+  break-inside: avoid;
+}
+
+.hm-blokovane {
+  margin-top: 12px;
+  color: var(--tlmeny);
+}
+
+.hm-prehlad h2 {
+  margin: 12px 0 4px;
+}
+
+.hm-tabulka-obal {
+  overflow-x: auto;
+}
+
+.hm-tabulka {
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hm-tabulka th {
+  font-weight: 600;
+  text-align: center;
+  padding: 4px 6px;
+  color: var(--tlmeny);
+}
+
+.hm-tabulka tbody th {
+  text-align: left;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.hm-tabulka tbody tr {
+  cursor: pointer;
+}
+
+.hm-tabulka tbody tr.aktivny th {
+  color: var(--akcent-svetly);
+}
+
+.hm-tabulka tbody tr:hover th {
+  text-decoration: underline;
+}
+
+.hm-td {
+  min-width: 48px;
+  padding: 6px 4px;
+  text-align: center;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--akcent) var(--sila, 0%), var(--plocha-2));
+}
+
+/* Medzera medzi ľavou a pravou stranou karty. */
+.hm-tabulka .hm-zaciatok-prava {
+  border-left: 10px solid transparent;
+  background-clip: padding-box;
+}
+
+.hm-td-pocet {
+  padding-left: 12px;
+  color: var(--tlmeny);
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  button.hm-bunka {
+    width: 84px;
+    height: 64px;
+  }
+
+  .hm-bunka b {
+    font-size: 1.1rem;
+  }
+
+  .hm-stred .hm-ikona {
+    width: 40px;
+    height: 40px;
+  }
+}

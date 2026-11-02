@@ -1,9 +1,8 @@
 // Žeravá ikona (Michal 2026-10-30, mock 3): akcia posilnená Nástrojom v Dedičstve
-// majiteľa karty žhne ako uhlík, útok znížený Úplatkom je vyhasnutý.
-// Údaje dáva jadro (vplyvyNaAkcie, utokPoUplatku); tu sa len priradia slotom.
+// majiteľa karty žhne ako uhlík (vyhasnutý útok z Úplatku zanikol vo v10.3).
+// Údaje dáva jadro (vplyvyNaAkcie); tu sa len priradia slotom.
 
 import type { VplyvNaAkciu } from "@naex/core";
-import { utokPoUplatku } from "@naex/core";
 
 /** Zmena akcie v slote karty — KartaLico ju kreslí ako žeravú či vyhasnutú ikonu. */
 export interface ZarSlotu {
@@ -16,29 +15,13 @@ export interface ZarSlotu {
   readonly pricina: string;
 }
 
-/**
- * Zmena akcie `akcia` na karte hráča, ktorý má `vplyvy` (Nástroje v Dedičstve);
- * `uplatky` = Úplatky na karte (Kulturista). Znížený útok sa ráta ako slabší,
- * takže posilnenie pôvodného útoku ho už netýka — vyhrá vyhasnutie.
- */
+/** Zmena akcie `akcia` na karte hráča, ktorý má `vplyvy` (Nástroje v Dedičstve). */
 export function zarSlotu(
   akcia: string,
   vplyvy: readonly VplyvNaAkciu[],
-  uplatky: number,
   menoKarty: (defId: string) => string,
   uid?: number,
 ): ZarSlotu | null {
-  if (uplatky > 0) {
-    const ako = utokPoUplatku(akcia as VplyvNaAkciu["akcia"], uplatky);
-    if (ako !== akcia) {
-      return {
-        smer: "minus",
-        stitok: ako === null ? "Úplatok: nič" : `Úplatok: ${ako}`,
-        popis: ako === null ? `Úplatok (${uplatky}×): útok sa nepočíta.` : `Úplatok (${uplatky}×): ráta sa len ako ${ako}.`,
-        pricina: `uplatok${uplatky}`,
-      };
-    }
-  }
   // Vplyv viazaný na kartu (Zámočník pri Nástroji) platí len na nej.
   const v = vplyvy.find((x) => x.akcia === akcia && (x.uid === undefined || x.uid === uid));
   if (v === undefined) return null;

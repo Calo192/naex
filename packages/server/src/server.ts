@@ -236,7 +236,7 @@ export const MELICHAR_PAUZA_MS = 2_000;
 /** Koľko udalostí histórie si miestnosť pamätá na jedno miesto. */
 const HISTORIA_MAX = 600;
 /** Udalosti, z ktorých klient skladá log — súkromné karty (kartyTahane) sa neukladajú. */
-const DO_HISTORIE: ReadonlySet<Event["type"]> = new Set(["log", "tahal", "manualEfekt", "bitkaVysledok", "moment", "koniec"]);
+const DO_HISTORIE: ReadonlySet<Event["type"]> = new Set(["log", "autoPas", "tahal", "manualEfekt", "bitkaVysledok", "moment", "koniec"]);
 
 /** Bez O/0/I/1 — kód sa diktuje cez telefón. */
 const ABECEDA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";

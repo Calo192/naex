@@ -257,6 +257,9 @@ export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [
   switch (e.type) {
     case "log":
       return textHlasky(e.text, mena, rody);
+    case "autoPas":
+      // Dôvody má len pasujúci (eventsFor); súperovi stačí verejné „už nemá čo vyložiť“.
+      return e.dovody.length > 0 ? `Hra pasovala za teba: ${e.dovody.join(" ")}` : null;
     case "tahal":
       return `${meno(e.hrac)} ťahá ${kariet(e.pocet)}.`;
     case "manualEfekt":

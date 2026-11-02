@@ -21,16 +21,21 @@ import type { DetailNavrhu, NavrhDielne, ObsahNavrhu, Pozicie, StavZobrazeny, Zo
 import { STAVY, kartaZNavrhu, kedy, poziciZoStrany, stranaZPozicii } from "./typy.ts";
 import "./dielna.css";
 
-/** Záložky stránky Karty: glosár a Dielňa (Michal 2026-10-22: nie nová položka navigácie). */
-export function KartyZalozky({ aktivna }: { readonly aktivna: "karty" | "dielna" }) {
+/** Záložky stránky Karty: glosár, Dielňa (Michal 2026-10-22: nie nová položka navigácie) a heatmapa akcií (2026-11-02). */
+const ZALOZKY_KARIET = [
+  { id: "karty", href: "/karty", nazov: "Karty v hre" },
+  { id: "dielna", href: "/karty/dielna", nazov: "Dielňa" },
+  { id: "heatmapa", href: "/karty/heatmapa", nazov: "Heatmapa" },
+] as const;
+
+export function KartyZalozky({ aktivna }: { readonly aktivna: (typeof ZALOZKY_KARIET)[number]["id"] }) {
   return (
     <nav className="karty-zalozky" aria-label="Karty">
-      <Odkaz href="/karty" className={aktivna === "karty" ? "aktivna" : undefined} aria-current={aktivna === "karty" ? "page" : undefined}>
-        Karty v hre
-      </Odkaz>
-      <Odkaz href="/karty/dielna" className={aktivna === "dielna" ? "aktivna" : undefined} aria-current={aktivna === "dielna" ? "page" : undefined}>
-        Dielňa
-      </Odkaz>
+      {ZALOZKY_KARIET.map((z) => (
+        <Odkaz key={z.id} href={z.href} className={aktivna === z.id ? "aktivna" : undefined} aria-current={aktivna === z.id ? "page" : undefined}>
+          {z.nazov}
+        </Odkaz>
+      ))}
     </nav>
   );
 }
