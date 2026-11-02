@@ -139,7 +139,7 @@ export const KONSTANTY = {
     VDOVA_ODHOD_ZA_CHLAPA: 2,
     /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
     CIGORKY_ZA_KARTU: 2,
-    /** Kšefty v7 (plan.md 14.0): Strýko, Obecný úrad (Kšeft Vychovávateľky od v9 len ako väzeň). */
+    /** Kšefty v7 (plan.md 14.0): Strýko, Obecný úrad. */
     STRYKO_CENA: 2,
     /** Kšeft Predavačky (Michal 2026-11-02): za toľko cigariet 1 karta z doberacieho balíčka. */
     PREDAVACKA_CENA: 1,
@@ -163,8 +163,10 @@ export const KONSTANTY = {
   CERVENYCH_NA_VYHRU: 4,
   /** Porazený bitky dostane toľkoto cigariet (v11 — do v10 cigaretu za každého posunutého staršieho). */
   CIGARETY_PORAZENEMU: 1,
-  /** Vychovávateľka (Väzeň — Kšeft): „Petelica“ navyše = toľko tuhého držiteľovi v bitke. */
-  VYCHOVAVATELKA_TUHE: 3,
+  /** Schopnosť väzňa Poštárky (v11.2, Michal 2026-11-02): toľko cigariet držiteľovi. */
+  POSTARKA_CIGARETY: 4,
+  /** Schopnosť väzňa Autobusára (v11.2): každá karta zo šenku za toľko cigariet. */
+  AUTOBUSAR_CENA: 1,
 
   /** Stokársky barter: cigarety → nový plný poldeci (PRAVIDLA §7); Lakomec zlacní. */
   BARTER_CENA: 5,
@@ -246,13 +248,15 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.1 (Michal 2026-11-02, Zrejúca) bez novej značky: Vzbura obráti aktivitu karty — nespojené
 // akcie aktívne, spojené neaktívne; Odpor proti Posilneniu = Vzbura karty s Odporom, posilnená;
 // na kartu so Vzburou NA EX nejde.
+// v11.2 (Michal 2026-11-02, Zrejúca) bez novej značky: Kšeft väzňa zrušený — každý väzeň má
+// schopnosť, ktorú držiteľ použije raz za hru (elders.json, engine.ts schopnostiVazna).
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.1";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.2";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-02";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

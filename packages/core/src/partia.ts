@@ -96,13 +96,8 @@ export interface LineState {
    * Chýba = žiadne (testy, ukážky).
    */
   readonly nastroje?: readonly [readonly string[], readonly string[]];
-  /** Väzeň Starosta (Kšeft, v9): do konca kola sú všetky aktívne akcie hrán lokality posilnené. */
+  /** Schopnosť väzňa Starosta (v11.2): aktívne akcie hrán lokality sú v bitke posilnené (AKCIE_PITKY nie). */
   readonly hranyPosilnene?: boolean;
-  /**
-   * Väzeň Farár (Kšeft, v9): do konca kola sa aktívna Viera hráča (index) ráta ako
-   * posilnený Hazard — v bitke Viera chýba.
-   */
-  readonly vieraAkoHazard?: readonly [boolean, boolean];
 }
 
 export type SlotStav = "neaktivna" | "aktivna" | "zrusena";
@@ -176,6 +171,12 @@ export interface LineEval {
  * akciu partnera (resolveJunction), takže v súčtoch sa ráta už ako ona.
  */
 const TUHE: Partial<Record<Action, number>> = { Rana: 1, Pecka: 2, Petelica: 3 };
+
+/**
+ * Akcie, ktoré sa vyhodnocujú v Pitke (§7) — schopnosť Starostu (posilnené „v tejto bitke“)
+ * ich nezdvojí (ten istý zoznam ako rekapitulacia.ts). Poldeci otáča vypité aj v bitke, patrí však Pitke.
+ */
+const AKCIE_PITKY: readonly Action[] = ["Dlh", "PoškodeniePečene", "Poldeci", "Cigareta", "Vízia", "Obmedzenie"];
 
 const MODIFIERS: readonly Action[] = ["Posilnenie", "Odpor", "Pakt"];
 
@@ -1015,10 +1016,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const tiper = elem.tiper[side]![k] ?? null;
         // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
         const vedRobota = tiper === null && action === "Robota" && elem.robotaAkoPecka;
-        const akoPred = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : akciaPoPremene(elem, action);
-        // Väzeň Farár (v9): súperova Viera je do konca kola posilnený Hazard (zrušená ostáva zrušenou Vierou).
-        const farar = akoPred === "Viera" && zrusil == null && line.vieraAkoHazard?.[target] === true;
-        const ako: Action = farar ? "Dlh" : akoPred;
+        const ako: Action = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : akciaPoPremene(elem, action);
         if (zrusil != null) {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
           // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
@@ -1032,17 +1030,17 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         }
         // Poľovnícka chata (Furt, v7): aktívne Rany, Pecky a Petelice z jej hrán sa rátajú dvakrát.
         const chata = elem.isLokalita && elem.defId === "polovnicka_chata" && TUHE[ako] !== undefined;
-        // Väzeň Starosta (v9): hrany lokality posilnené — ×2 sa násobí s ostatnými násobkami.
-        const starosta = elem.isLokalita && line.hranyPosilnene === true;
-        const hodnota = nasobok * (chata ? 2 : 1) * (starosta ? 2 : 1) * (farar ? 2 : 1);
+        // Väzeň Starosta (v11.2): akcie hrán lokality sú „v tejto bitke“ posilnené — ×2 sa násobí
+        // s ostatnými násobkami; akcie, ktoré sa vyhodnocujú v Pitke, nie.
+        const starosta = elem.isLokalita && line.hranyPosilnene === true && !AKCIE_PITKY.includes(ako);
+        const hodnota = nasobok * (chata ? 2 : 1) * (starosta ? 2 : 1);
         sums[target][ako] = (sums[target][ako] ?? 0) + hodnota;
         const dovody = [...(elem.dovody[side]![k] ?? [])];
         if (chata) dovody.push("karta:polovnicka_chata");
         if (starosta) dovody.push("karta:starosta");
-        if (farar) dovody.push("karta:farar");
         if (tiper !== null) dovody.push("karta:profesionalny_tiper");
         else if (vedRobota) dovody.push("karta:veducko");
-        else if (akoPred !== action) dovody.push(`karta:${elem.premena ?? "sarlatan"}`);
+        else if (ako !== action) dovody.push(`karta:${elem.premena ?? "sarlatan"}`);
         pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota, vStrede: elem.isLokalita, dovody });
       }
     }

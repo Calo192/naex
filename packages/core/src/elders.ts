@@ -73,8 +73,8 @@ export interface ZmenaMarkera {
 
 /**
  * Väzeň (v9, Michal 2026-10-30, §10): zajatý starší v priznaných kartách držiteľa —
- * „v pivnici“. Nedáva priazeň, držiteľ má jeho Kšeft a ráta sa mu ako červený strach
- * (v11, výhra strachom). Verejné.
+ * „v pivnici“. Nedáva priazeň, ráta sa držiteľovi ako červený strach (v11, výhra strachom)
+ * a držiteľ smie raz za hru použiť jeho schopnosť (v11.2). Verejné.
  */
 export interface Vazen {
   readonly elderId: string;
@@ -86,6 +86,8 @@ export interface Vazen {
   readonly scorecard: string;
   /** Miesto ukazovateľa v rade starších (poradie elders.json) — tam ostane prázdne miesto. */
   readonly miesto: number;
+  /** Schopnosť väzňa je minutá (v11.2) — väzeň ostáva v pivnici. */
+  readonly pouzita?: true;
 }
 
 type Strach = Pick<ElderState, "strach">;
