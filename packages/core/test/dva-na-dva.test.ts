@@ -8,6 +8,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import {
   DLZKY_HRY,
+  apply,
   KONSTANTY,
   clenMiesta,
   kapitan,
@@ -15,13 +16,17 @@ import {
   loadGameData,
   miestaHry,
   miestoClena,
+  miestoNaTahu,
+  opponentOf,
+  partnerMiesta,
+  poradieVykladania,
   prahCirhozyBonus,
   prahDlhuBonus,
   rukaMiesta,
   setupGame,
   timMiesta,
 } from "../src/index.ts";
-import type { Miesto } from "../src/index.ts";
+import type { GameState, Miesto } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -64,6 +69,104 @@ describe("príprava 2 na 2", () => {
     expect(s.kapitani).toBeDefined();
     expect(timMiesta(kapitan(s, 0))).toBe(0);
     expect(timMiesta(kapitan(s, 1))).toBe(1);
+  });
+});
+
+/** Zhromaždenie 2 na 2 s tímovým limitom `limit`, na ťahu kapitán útočného tímu. */
+function vZhromazdeni(limit: number): GameState {
+  const s = setupGame(data, 7, { format: "2na2" });
+  const lokalita = s.lokalityVHre[0];
+  if (lokalita === undefined) throw new Error("Bez lokality.");
+  return {
+    ...s,
+    faza: "zhromazdenie",
+    ciel: { typ: "lokalita", lokalita },
+    pitkyCelkom: 1,
+    pitkaCislo: 0,
+    zhromazdenieStav: {
+      naTahu: kapitan(s, s.utocnik),
+      zostavaLimit: [limit, limit],
+      pasoval: [false, false],
+      navyse: [0, 0],
+      skoncili: [false, false, false, false],
+    },
+  };
+}
+
+/** Miesto na ťahu vyloží svoju Pijana na vlastnú stranu. */
+function vylozPijana(s: GameState): GameState {
+  const kto = miestoNaTahu(s);
+  if (kto === null) throw new Error("Nikto nie je na ťahu.");
+  const pijan = rukaMiesta(s, kto).find((k) => k.defId === "pijan");
+  if (pijan === undefined) throw new Error("Bez Pijana.");
+  return apply(data, s, { type: "place", uid: pijan.uid, target: "vlastna" }, kto).state;
+}
+
+describe("Zhromaždenie 2 na 2", () => {
+  it("poradie U1 → O1 → U2 → O2, prví sú kapitáni; karta ide z ruky toho, kto vykladá", () => {
+    let s = vZhromazdeni(3);
+    const poradie = poradieVykladania(s);
+    const u = s.utocnik;
+    expect(poradie).toEqual([kapitan(s, u), kapitan(s, opponentOf(u)), partnerMiesta(kapitan(s, u)), partnerMiesta(kapitan(s, opponentOf(u)))]);
+    const tahy: Miesto[] = [];
+    for (let i = 0; i < 4; i++) {
+      const kto = miestoNaTahu(s) as Miesto;
+      tahy.push(kto);
+      const pred = rukaMiesta(s, kto).length;
+      const partnera = rukaMiesta(s, partnerMiesta(kto));
+      s = vylozPijana(s);
+      expect(rukaMiesta(s, kto)).toHaveLength(pred - 1);
+      expect(rukaMiesta(s, partnerMiesta(kto))).toEqual(partnera);
+    }
+    expect(tahy).toEqual(poradie);
+    // Limit je tímový: každý tím vyložil dve karty z troch.
+    expect(s.zhromazdenieStav?.zostavaLimit).toEqual([1, 1]);
+  });
+
+  it("cudzie miesto ťahať nesmie", () => {
+    const s = vZhromazdeni(3);
+    const partner = partnerMiesta(miestoNaTahu(s) as Miesto);
+    const karta = rukaMiesta(s, partner)[0];
+    expect(() => apply(data, s, { type: "place", uid: karta?.uid ?? -1, target: "vlastna" }, partner)).toThrow();
+  });
+
+  it("pas člena je bez cigariet, tím dostane cigarety až za posledného", () => {
+    let s = vZhromazdeni(3);
+    const u = s.utocnik;
+    const u1 = miestoNaTahu(s) as Miesto;
+    const cig = s.hraci[u].cigarety;
+    s = apply(data, s, { type: "pass" }, u1).state;
+    expect(s.hraci[u].cigarety).toBe(cig);
+    expect(s.zhromazdenieStav?.pasoval[u]).toBe(false);
+    // O1 vyloží, U1 už nehrá — na ťahu je U2, potom O2.
+    s = vylozPijana(s);
+    expect(miestoNaTahu(s)).toBe(partnerMiesta(u1));
+    s = apply(data, s, { type: "pass" }, partnerMiesta(u1)).state;
+    // Tím nevyložil nič: zvyšok limitu 3, v rukách 8 kariet → 3 cigarety.
+    expect(s.hraci[u].cigarety).toBe(cig + 3);
+    expect(s.zhromazdenieStav?.pasoval[u]).toBe(true);
+    expect(miestoNaTahu(s)).toBe(partnerMiesta(kapitan(s, opponentOf(u))));
+  });
+
+  it("keď skončia ostatní, hrá posledný sám a potom príde Pitka", () => {
+    let s = vZhromazdeni(4);
+    for (let i = 0; i < 3; i++) s = apply(data, s, { type: "pass" }, miestoNaTahu(s) as Miesto).state;
+    const posledny = miestoNaTahu(s) as Miesto;
+    s = vylozPijana(s);
+    expect(miestoNaTahu(s)).toBe(posledny);
+    s = apply(data, s, { type: "pass" }, posledny).state;
+    expect(s.faza).toBe("pitka");
+  });
+
+  it("Záverečná ukončí vykladanie celého tímu", () => {
+    let s = vZhromazdeni(3);
+    const u1 = miestoNaTahu(s) as Miesto;
+    const karta = rukaMiesta(s, u1).find((k) => k.defId === "pijan");
+    s = apply(data, s, { type: "zaverecna", uid: karta?.uid ?? -1, target: "vlastna" }, u1).state;
+    expect(s.zhromazdenieStav?.skoncili?.[partnerMiesta(u1)]).toBe(true);
+    s = vylozPijana(s);
+    // Útočný tím skončil — po O1 je na ťahu O2.
+    expect(miestoNaTahu(s)).toBe(partnerMiesta(kapitan(s, opponentOf(s.utocnik))));
   });
 });
 
