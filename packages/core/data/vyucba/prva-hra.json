@@ -118,7 +118,7 @@
       "vinko/0/0",
       "vyherny_automat/0/0",
       "lievik/0/0",
-      "puska/0/0",
+      "puska/0/1",
       "nealko/0/0",
       "zapalovac/0/0",
       "vyherne_zreby/0/0",
@@ -129,7 +129,7 @@
       "svaty_text/0/0",
       "jogurt/0/0",
       "vidly/0/0",
-      "puska/0/1",
+      "puska/0/0",
       "energetak/0/0",
       "noviny/0/0",
       "horoskop/0/0",
@@ -2062,7 +2062,7 @@
           }
         ]
       },
-      "melichar": "Teraz Pušku za Miňištranta; Nástroj limit nemíňa. Jej [Petelica] Petelica sa spojí s Miňištrantovou [Viera] Vierou a je tvoja, lebo Miňištrant je tvoj. 3 : 2.",
+      "melichar": "Teraz Pušku za Miňištranta; Nástroj limit nemíňa. Jej [Petelica] Petelica sa spojí s Miňištrantovou [Viera] Vierou a [Rana] Rana s jeho pečeňou. Obe sú tvoje, lebo Miňištrant je tvoj, a Rana s Vidlami udrie za dve. 5 : 2.",
       "hlaskaChyby": "urazky/ty_marha",
       "zvyraznit": [
         "ruka:puska"
@@ -2099,7 +2099,7 @@
           }
         ]
       },
-      "melichar": "Teraz Pijana za Pušku. Puškina [Pecka] Pecka sa spojí s jeho [Poldeci] Poldeci a dostaneš ju ty, lebo Pijan je tvoj. Odhad 5 : 2.",
+      "melichar": "Teraz Pijana za Pušku. Puškina [Rana] Rana sa spojí s jeho [Rana] Ranou a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami po dve: odhad 9 : 2.",
       "hlaskaChyby": "nervy/16_to_zas_bude_vyzerat",
       "zvyraznit": [
         "ruka:pijan"
@@ -2204,7 +2204,7 @@
         "type": "hadka",
         "elderId": "autobusar"
       },
-      "melichar": "Klikni na Autobusára a za 3 si ho ťahaj k sebe: na žltú 1, na oranžovú 2. Jeho priazeň je Fajčiar: po bitke ti dá 2 [Cigareta] cigarety. Bitku máš aj tak, 5 : 2, a cigarety budeš vo finále potrebovať.",
+      "melichar": "Klikni na Autobusára a za 3 si ho ťahaj k sebe: na žltú 1, na oranžovú 2. Jeho priazeň je Fajčiar: po bitke ti dá 2 [Cigareta] cigarety. Bitku máš aj tak, 9 : 2, a cigarety budeš vo finále potrebovať.",
       "hlaskaChyby": "nervy/16_to_zas_bude_vyzerat",
       "zvyraznit": [
         "starsi:autobusar"
@@ -2233,7 +2233,7 @@
               "type": "hadka",
               "elderId": "starosta"
             },
-            "text": "Bitkára nepotrebuješ, 5 : 2 stačí. Autobusár."
+            "text": "Bitkára nepotrebuješ, 9 : 2 stačí. Autobusár."
           }
         ],
         "inak": "Autobusár, za všetky tri. Cigarety."
@@ -2242,7 +2242,7 @@
     {
       "id": "i-vyhra3",
       "kto": "info",
-      "melichar": "Bitka je tvoja, 5 : 2: štyri špaky za karty v línii. Exekútor: tebe Dlh aj so špakom, Štamgastovi Dlh bez špaku, Advokát. Štamgast dostal špak aj za prehru – Kultúrny dom platí porazenému za každú jeho kartu v línii. A po bitke ti Autobusár dá 2 cigarety, Fajčiar.",
+      "melichar": "Bitka je tvoja, 9 : 2: štyri špaky za karty v línii. Exekútor: tebe Dlh aj so špakom, Štamgastovi Dlh bez špaku, Advokát. Štamgast dostal špak aj za prehru – Kultúrny dom platí porazenému za každú jeho kartu v línii. A po bitke ti Autobusár dá 2 cigarety, Fajčiar.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",
@@ -2286,15 +2286,35 @@
       ]
     },
     {
-      "id": "k-prebytok3-bot",
+      "id": "k-prebytok3-bot-farar",
       "kto": "bot",
       "prikaz": {
         "type": "prebytok",
         "elderId": "farar"
       },
-      "melichar": "Nakladačka 3 je tvoja a rozdeľuje ju Štamgast: celú dal Farárovi, z oranžovej na červenú. Advokát je teraz jeho v sile 3 – lenže Farár sa ťa bojí na trojke, a to je pozvánka na zajatie. Za posunutého staršieho dostal Štamgast cigaretu.",
+      "melichar": ""
+    },
+    {
+      "id": "k-prebytok3-bot-krcmarka",
+      "kto": "bot",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "krcmarka"
+      },
+      "melichar": ""
+    },
+    {
+      "id": "k-prebytok3-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "prebytok",
+        "elderId": "veterinar"
+      },
+      "melichar": "Nakladačka 7 je tvoja a rozdeľuje ju Štamgast, celú: Farára z oranžovej na červenú za 3, Krčmárku zo stredu na oranžovú za 1 + 2 a Veterinára na žltú za 1. Advokát je teraz jeho v sile 3 – lenže Farár sa ťa bojí na trojke, a to je pozvánka na zajatie. Za každého posunutého staršieho dostal Štamgast cigaretu, tri.",
       "zvyraznit": [
         "starsi:farar",
+        "starsi:krcmarka",
+        "starsi:veterinar",
         "bar-supera:cigarety"
       ]
     },
@@ -2751,7 +2771,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Finále je tvoje, 12 : 5, a Farár je tvoj väzeň, prvý v partii: leží v pivnici, nehýbe sa, priazeň nedáva a nikto ho nevyslobodí. Špaky: päť za karty v línii a Nakladačka 7 sa vo finále mení na špaky jedna ku jednej. Exekútor ti zobral jeden. A Farár ti zaplatil udržanú trojku.",
+      "melichar": "Finále je tvoje, 12 : 5, a Farár je tvoj väzeň, prvý v partii: leží v pivnici, nehýbe sa, priazeň nedáva a nikto ho nevyslobodí. Špaky: päť za karty v línii a Nakladačka 7 sa vo finále mení na špaky jedna ku jednej. Exekútor ti zobral jeden. A udržaný strach ti zaplatili traja: Farár 3 za trojku, Krčmárka 1 + 2 za žltú a oranžovú, Veterinár 1 za žltú.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body"
@@ -2760,7 +2780,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Väzni sa vyplatia podľa poradia zajatia: prvý 8 špakov, druhý 6, tretí 4, štvrtý 2 – Farár bol prvý. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 4. A Cirhóza z finále leží v balíčku nepriznaná a stojí ťa 3 špaky. 41 : 4.",
+      "melichar": "Koniec hry. Väzni sa vyplatia podľa poradia zajatia: prvý 8 špakov, druhý 6, tretí 4, štvrtý 2 – Farár bol prvý. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5. A Cirhóza z finále leží v balíčku nepriznaná a stojí ťa 3 špaky. 45 : 5.",
       "zvyraznit": [
         "bar:body",
         "nastenka"
