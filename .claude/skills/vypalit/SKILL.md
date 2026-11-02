@@ -37,7 +37,8 @@ a skonči. Nestabilné testy (časový limit pod záťažou) spusti samostatne.
 
 ## 2. Výučba
 
-Výučba pre novú verziu sa robí pri vypálení (Michal 2026-11-02). Over, že
+Výučba pre novú verziu sa robí pri vypálení (Michal 2026-11-02). V master sú
+testy výučby vypnuté (`exclude` vo `vitest.config.ts`) — najprv výnimku zruš. Over, že
 scenár „Prvá hra“ sedí s pravidlami mastera (`tools/vyucba/prehraj.ts` →
 „Scenár sedí“, testy výučby). Ak nie, daj `naex-vymyselnik`-ovi prepísať
 výučbu na master (texty Melichara čo najbližšie k pôvodným, návrh do
