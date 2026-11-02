@@ -74,8 +74,17 @@ push a merge do master bez pýtania (Michal 2026-10-21). Implementovaný návrh
 sa uzavrie až verdiktom ďalšieho playtestu (overené / nezabralo — nezabratý
 sa vráti Michalovi); návrhy z dizajnu (`naex-dizajn`) a rozpory pravidiel
 s kódom (`naex-rozhodca`) idú tou istou cestou. Na živý web nasadzuje
-`/naex-nasad` (len čistý `origin/master`, počká na rozohrané partie), čo kde
-čaká ukáže `/naex-stav`.
+`/naex-nasad` (počká na rozohrané partie), čo kde čaká ukáže `/naex-stav`.
+
+**Dve inštancie** (Michal 2026-11-02): **Vypálená** = živý web vyššie,
+oficiálna, vetva `vypalena`, hrá zverejnenú sadu; **Zrejúca** =
+https://zrejuca.15-235-242-12.sslip.io, pokusná, len admin, subadmini a AI,
+kód z `master`, hrá rozpracovaný tvorca Vypálenej, účty overuje vo Vypálenej,
+vlastná databáza. Nástroje: `--zivy` = Vypálená, `--zrejuca` = Zrejúca;
+nasadenie `/naex-nasad` resp. `/naex-nasad zrejuca`; playtest
+`turnus.ts … --zrejuca`. Do Vypálenej ide celý stav Zrejúcej naraz až po
+Michalovom schválení (posun `vypalena` + zverejnenie sady + Novinky), nikdy
+na žiadosť agenta. Detail v docs/NASADENIE.md, časť 9.
 
 Verejná stránka **Vývoj** (`/vyvoj`, Michal 2026-10-21): priemery známok hry
 podľa 12 kritérií playtestu v čase (ľudia, AI, spolu; ľudia až od 3
