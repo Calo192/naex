@@ -67,8 +67,13 @@ v `tools/playtest/skusenosti/README.md`. Prečítaj si ho pred zápisom.
 
 `S` = `node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts`.
 
-1. `$S over-verziu`: overené skúsenosti z inej verzie pravidiel, než má
-   jadro, sa označia ako `neoverená`.
+1. `$S over-verziu`: dorovná verziu Vypálenej z `origin/vypalena` a overené
+   skúsenosti len z verzií, ktoré nehrá Zrejúca ani Vypálená, označí ako
+   `neoverená`. `$S verzie` ukáže obe verzie. Playtest ide na Zrejúcu —
+   verzia partie je verzia Zrejúcej (`VERZIA_PRAVIDIEL` jadra v `master`).
+   Skúsenosti overené na verzii Vypálenej používa protihráč proti ľuďom;
+   nepreváž ich na Zrejúcu, len pridaj verziu, keď ich potvrdí aj playtest
+   (README, časť Dve verzie pravidiel).
 2. `$S cakajuce` vypíše feedbacky v `playtest/`, ktorých návrhy ešte nik
    nezapísal. Okrem tvojho turnusu to môžu byť aj staršie turnusy
    s followupom `min`, ktoré nemali spisovateľa. Spracuj ich spolu
@@ -76,9 +81,9 @@ v `tools/playtest/skusenosti/README.md`. Prečítaj si ho pred zápisom.
 3. **Použité skúsenosti** (každý hráč, časť „Použité skúsenosti“). Tvrdenie
    hráča over v denníku a `priebeh.log`:
    - **potvrdená**: `potvrdenia` + 1, id partie na koniec `partie`, nový
-     `dátum`. Neoverená, ktorá sa potvrdila na aktuálnych pravidlách
-     a pravidlám neodporuje, dostane `stav: overená` a `pravidlá` = aktuálna
-     `VERZIA_PRAVIDIEL`.
+     `dátum`. Overenej na inej hranej verzii (Vypálenej) pridaj verziu
+     partie (`v10` → `v10, v11`). Neoverená, ktorá sa potvrdila a pravidlám
+     partie neodporuje, dostane `stav: overená` a `pravidlá` = verzia partie.
    - **vyvrátená**: `vyvrátenia` + 1. Ak má viac vyvrátení ako potvrdení,
      vyraď ju.
    - **zlá** (odporuje `docs/PRAVIDLA.md` alebo vznikla zo zle pochopeného
@@ -92,7 +97,7 @@ v `tools/playtest/skusenosti/README.md`. Prečítaj si ho pred zápisom.
    - **proti priebehu**: stalo sa to v partii tak, ako hráč píše?
    Potom:
    - **Prejde**: zapíš ho do zošita postavy (vlastná) alebo do `spolocne.md`
-     (spoločná) so `stav: overená`, aktuálnou verziou, `potvrdenia: 1` a
+     (spoločná) so `stav: overená`, verziou partie, `potvrdenia: 1` a
      dôkazom v `prečo`. Ak už v zošite je podobná skúsenosť, je to jej
      potvrdenie, nie nová položka.
    - **Neprejde** (omyl v pravidlách, partia to neukázala, náhoda vydávaná

@@ -105,9 +105,10 @@ dostaneš, a druhý stav nadviaž na prvý.
   Ak pri práci nájdeš chybu mimo návrhu, zapíš ju do výsledku, neopravuj.
 - Karty v tvorcovi (`tools/admin/admin.ts uloz/zverejni`) a ilustrácie
   nemeníš — to robí `naex-admin`. Ručne neupravuješ
-  `packages/core/data/cards.json`; po zverejnení novej sady ho podľa zadania
-  skopíruješ zo sady a spustíš `tools/admin/do-seedu.ts` (docs/NASADENIE.md,
-  „Karty na produkciu“), vrátane novej značky migrácie v kóde.
+  `packages/core/data/cards.json`; keď to zadanie chce, skopíruješ doň sadu
+  z tvorcu (v `master` rozpracovanú — Zrejúca, CLAUDE.md pravidlo 5), novú
+  značku migrácie v kóde až potom, a spustíš `tools/admin/do-seedu.ts`
+  (docs/NASADENIE.md, „Karty na produkciu“).
 - Nenasadzuješ na živý web (`deploy/nahraj.sh`) — to robí skill `naex-nasad`,
   keď to Michal povolí.
 - Hooky a podpisovanie commitov neobchádzaš (`--no-verify` nie).

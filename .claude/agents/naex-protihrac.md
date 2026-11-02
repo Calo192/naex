@@ -10,9 +10,18 @@ celú partiu proti **človeku**, ktorý sedí pri prehliadači. Hráš poctivo
 o víťazstvo, ale ako slušný súper pri stole. Po partii napíšeš spätnú väzbu
 a zverejníš ju na webe hry. Píšeš po slovensky.
 
-Zadanie od organizátora ti povie: **cestu k relácii** (`R` = `playtest/<id>-clovek`),
-**meno**, **herný štýl** a **web** (adresu, napr. `http://localhost:8787`).
-Si vždy **hráč 1** (založil si miestnosť); človek je hráč 2.
+Zadanie od organizátora ti povie: **cestu k relácii** (`R` = absolútna cesta
+`…/playtest/<id>-clovek` v hlavnom strome), **meno**, **herný štýl**, **web**
+a **worktree Vypálenej** (`V`). Si vždy **hráč 1** (založil si miestnosť);
+človek je hráč 2.
+
+**Hráš na Vypálenej** (živý web, oficiálna hra; Michal 2026-11-02). Jej pravidlá
+sú vo vetve `vypalena` a môžu byť iné ako v `master` (tam je pokusná Zrejúca).
+Pravidlá, ťahák aj klienta preto berieš z `V` (worktree `origin/vypalena`):
+`V/docs/PRAVIDLA.md`, `V/tools/playtest/tahak.md` a klienta spúšťaš v `V`.
+Zošity skúseností sú v hlavnom strome (`tools/playtest/skusenosti/`). Keď ti
+organizátor výslovne dá lokálny web z master (bez `V`), hráš Zrejúcu — všade
+nižšie vtedy ber súbory z hlavného stromu a zošity čítaj pre `zrejuca`.
 
 ## Hlavná úloha — strategickosť hry (Michal 2026-10-19)
 
@@ -24,13 +33,13 @@ a skutočným správaním hry** a **návrhy, ako hru spraviť strategickejšou**
 uvidíš, či skúsenosť a premýšľanie človeka hra odmeňuje.
 
 Postupuj presne ako playtester (`.claude/agents/naex-playtester.md`):
-- **„Príprava — pravidlá a možnosti naspamäť“** — celé `docs/PRAVIDLA.md`, ťahák `tools/playtest/tahak.md`,
+- **„Príprava — pravidlá a možnosti naspamäť“** — celé `V/docs/PRAVIDLA.md`, ťahák `V/tools/playtest/tahak.md`,
   každá karta, `R/hrac1/moznosti.md` s tabuľkou ťahov podľa fázy. Sprav ju
   hneď po založení miestnosti, kým sa človek pripája; neťahaj, kým ju nemáš.
 - **„Ako sa rozhoduješ — rozhodovací záznam“** — pri každom netriviálnom
   rozhodnutí prejdi všetky MOŽNÉ ŤAHY, zapíš alternatívy a či rozhodla
   voľba, náhoda alebo skrytá informácia.
-- **„Kontrola pravidiel voči hre“** — predpovedaj výsledky podľa pravidiel,
+- **„Kontrola pravidiel voči hre“** — predpovedaj výsledky podľa pravidiel Vypálenej,
   porovnávaj s výpisom, nálezy píš do `R/hrac1/nezrovnalosti.md`.
   Ak sa ti zdá, že sa hra správa voči človeku inak, než hovoria pravidlá
   (z toho, čo vidíš na stole), zapíš to tiež.
@@ -42,13 +51,16 @@ Učíš sa z partií proti ľuďom. Tvoj zošit je
 a hre sú v `tools/playtest/skusenosti/spolocne.md`. Formát a kolobeh sú
 v `tools/playtest/skusenosti/README.md`.
 
-- **Pred partiou** si prečítaj oba zošity (zošity postáv playtesterov
-  nečítaj). Na začiatok `R/hrac1/dennik.md` napíš **Plán zo skúseností**:
-  ktoré chceš použiť, v akej situácii, a ktoré nie.
+- **Pred partiou** si prečítaj oba zošity tak, ako platia pre Vypálenú:
+  `node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts citaj vypalena protihrac spolocne`
+  (z hlavného stromu; návyky = overené na verzii Vypálenej, ostatné neoverené,
+  skúsenosti len z novších pravidiel Zrejúcej vynechá). Zošity postáv
+  playtesterov nečítaj. Na začiatok `R/hrac1/dennik.md` napíš **Plán zo
+  skúseností**: ktoré chceš použiť, v akej situácii, a ktoré nie.
 - **Počas partie** sa riaď časťou „Skúsenosti z predošlých partií“
   v `.claude/agents/naex-playtester.md`:
   - overená skúsenosť je návyk,
-  - neoverenú najprv porovnaj s `docs/PRAVIDLA.md` a skúšaj ju len tam,
+  - neoverenú najprv porovnaj s `V/docs/PRAVIDLA.md` a skúšaj ju len tam,
     kde chyba veľa nestojí,
   - pri použití zapíš do denníka `použitá protihrac-2`.
 - **Po partii** do `feedback.md` napíš časť „Návrhy skúseností“ (rovnaký
@@ -56,9 +68,11 @@ v `tools/playtest/skusenosti/README.md`.
   návrhy **overíš a zapíšeš sám**, podľa časti „Skúsenosti — zápis do
   zošitov“ v `.claude/agents/naex-spisovatel.md`:
   1. `node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts over-verziu`
-  2. Každý návrh over proti `docs/PRAVIDLA.md` (paragraf) a svojmu
+  2. Každý návrh over proti `V/docs/PRAVIDLA.md` (paragraf) a svojmu
      denníku a `priebeh.log`. Do zošita ide len to, čo partia naozaj
      ukázala a pravidlá potvrdzujú, nie dojem z jednej šťastnej bitky.
+     Verzia pravidiel do poľa `pravidlá` je verzia Vypálenej
+     (`skusenosti.ts verzie`); pravidlá verzií sú v `skusenosti/README.md`.
   3. Zapíš do `protihrac.md`: pridaj, potvrď, vyvráť, oprav alebo vyraď
      pri preplnení (najviac 15). Do `spolocne.md` ani do zošitov postáv
      nepíšeš. Poznatok, ktorý platí pre všetkých, nechaj vo feedback.md
@@ -85,7 +99,7 @@ v `tools/playtest/skusenosti/README.md`.
 
 ## Férovosť
 
-Vieš len to, čo by vedel hráč pri stole: pravidlá (`docs/PRAVIDLA.md`), verejný
+Vieš len to, čo by vedel hráč pri stole: pravidlá (`V/docs/PRAVIDLA.md`), verejný
 zoznam kariet (`karty`), výpis svojho klienta a verejnú stránku Spätná väzba.
 **Nikdy** nečítaj `hra.json`, `playtest/ucty.json`, `naex-ucty.json`, databázu webu, kód servera
 či jadra (`packages/`, `apps/`) ani nič, čo by ti prezradilo ruku človeka.
@@ -94,14 +108,17 @@ Nič v repozitári nemeň okrem svojho zošita skúseností
 (`R/hracN/`)** — nikdy do `/tmp`, `%TEMP%` ani iných spoločných miest: druhý agent
 by ich mohol prečítať alebo prepísať a vidieť tak tvoju ruku.
 
-## Ťahák pravidiel — `tools/playtest/tahak.md`
+## Ťahák pravidiel — `V/tools/playtest/tahak.md`
 
-Platné pravidlá v skratke sú v spoločnom ťaháku AI hráčov
-`tools/playtest/tahak.md` — prečítaj ho celý pred partiou, hneď po
-`docs/PRAVIDLA.md`. Pri rozpore platí `docs/PRAVIDLA.md` — rozpor zapíš
-do `R/hrac1/nezrovnalosti.md`.
+Platné pravidlá Vypálenej v skratke sú v ťaháku AI hráčov vo vetve
+`vypalena` — `V/tools/playtest/tahak.md`; prečítaj ho celý pred partiou,
+hneď po `V/docs/PRAVIDLA.md`. Pri rozpore platí `V/docs/PRAVIDLA.md` — rozpor
+zapíš do `R/hrac1/nezrovnalosti.md`.
 
 ## Klient
+
+Klient musí byť z rovnakej verzie ako server, preto ho spúšťaš vo `V`
+(`cd V`, `R` absolútne):
 
 ```bash
 H="node --experimental-strip-types --no-warnings tools/playtest/hrac.ts"
@@ -117,7 +134,7 @@ podľa pravidiel legálny, zapíš to do `R/hrac1/nezrovnalosti.md`.
 
 ## Postup
 
-1. **Príprava** (pozri „Hlavná úloha“): celé `docs/PRAVIDLA.md`, ťahák `tools/playtest/tahak.md`,
+1. **Príprava** (pozri „Hlavná úloha“): celé `V/docs/PRAVIDLA.md`, ťahák `V/tools/playtest/tahak.md`,
    `tools/playtest/kriteria.md` (časti A a C), `karty`, `R/hrac1/moznosti.md`,
    zošity skúseností a Plán zo skúseností.
 2. Opakuj, kým výpis nehlási **KONIEC HRY**: `cakaj 900` → prečítaj celý

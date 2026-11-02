@@ -15,7 +15,8 @@ Spustíš agenta `naex-korektor` (nástroj Agent, na pozadí) so zadaním:
 Pracovisko netreba: agent nič nemení, číta z hlavného stromu `F:\Projects\naex`.
 
 **Keď skončí:** zoznamy opráv z reportu rozdaj:
-- karty → `naex-admin` (zmeny v tvorcovi, zverejnenie len so súhlasom Michala),
+- karty → `naex-admin` (zmeny v tvorcovi ako koncept pre Zrejúcu, zverejnenie
+  len pri vypálení),
 - rozhranie, výučba, Melichar → `naex-programator` (Michalove texty len so
   súhlasom Michala),
 - `docs/PRAVIDLA.md`, `tools/playtest/tahak.md` → Leader sám alebo jeden

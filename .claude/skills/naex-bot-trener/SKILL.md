@@ -18,5 +18,6 @@ a odovzdáš výsledok. Sám bota nemeníš.
    porazí starého (≥ 55 % pri každej povahe).
 3. **Odovzdaj:** čo agent zmenil v správaní bota (1–3 body ľudskou rečou),
    výhry nového proti starému po povahách, rýchlosť, commit. Ak sa bot zmenil,
-   povedz, že (a) na živom webe bude až po nasadení (`/naex-nasad`) a (b) čísla
+   povedz, že (a) v Zrejúcej bude po nasadení (`/naex-nasad zrejuca`), hráčom vo
+   Vypálenej až pri vypálení, a (b) čísla
    strategickosti sa posunú — ďalší `/naex-strategia` zmeria nové východisko.

@@ -7,7 +7,7 @@ vo feedback.md (návrh označí ako spoločný).
 ## Skúsenosti
 
 ### spolocne-1 · Keď chcem súperovi pokaziť hranu lokality, podstrčím mu ako prvú kartu pri lokalite kartu bez párových akcií, lebo prvá karta pri lokalite určuje, ktoré akcie hrany sa aktivujú.
-- stav: neoverená
+- stav: overená
 - pravidlá: v10
 - potvrdenia: 23
 - vyvrátenia: 0
@@ -54,7 +54,7 @@ vo feedback.md (návrh označí ako spoločný).
 
 - oprava: 2026-11-01 20261101-084841-1: pôvodné znenie („keď beriem prvý (útočník)“) odporovalo PRAVIDLÁM §5 v9.2 — prvý berie obranca, útočník druhý; hlásili Fero aj Šimon (v K5 a finále Šimon ako obranca nevzal nič a útočník Fero mal šenok pre seba). Zmysel (ponuka je dar tomu, kto berie prvý) ostáva, role sa prehodili.
 ### spolocne-7 · Keď môžem všetky akcie svojej karty spárovať (alebo zrušiť Odporom), súper na ňu nemôže dať NA EX, preto líniu stavam tak, aby nezostala neaktívna akcia na kartách, ktoré chcem chrániť.
-- stav: neoverená
+- stav: overená
 - pravidlá: v10
 - potvrdenia: 14
 - vyvrátenia: 0
@@ -63,7 +63,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §7 (NA EX len na kartu s aspoň jednou aktívnou a jednou neaktívnou akciou; zrušená Odporom sa nepočíta, v6.1). 105422-2 K1: Vilo odpovedal Miňištrantom, Recidivista mala všetky akcie aktívne alebo zrušené Odporom a hrozba NA EX zmizla z výhľadu; 062058-1 K2 opak (Miňištrant dal Hasičovi platný cieľ). 131033: P1 K3 NA EX na Hasiča server odmietol (po Janovom Miňištrantovi všetky akcie aktívne), P2 Hasič s všetkými aktívnymi akciami Šimon neriešil ako cieľ, P3 K5 Evina Recidivista s oboma akciami spárovanými — Vilo NA EX nemohol. 161907: P3 K5 Praudovravec pri Kulturistovi aktivoval obe Dlh, NA EX naňho nešiel (Vilo aj Hela); P2 finále Fero odpovedal Strýkom, ktorý spároval vonkajšie neaktívne akcie Vymáhača, a Šimonovo NA EX sa zmarilo. 090549: P1 K3 a K6 Vilo Hasič s Poradkyňou — všetky akcie aktívne alebo zrušené, NA EX naň nebol možný a 6 tuhých ostalo. 115654: P1 K4 Zámočník a Starosta so všetkými akciami aktívnymi boli imúnne (Vilo dával NA EX len na Hasiča a Tipéra), finále Miňištrant so 4 spárovanými akciami bez ponuky NA EX; P2 K2 Veterán bez aktívnej akcie ako zátka, K5 Šimonov Záhradkár spároval Helinu zdvojenú Robotu. 004030: P1 K1 Vzbura (Recidivista + Manželka), K4 Hasič spojený s Miňištrantom bez cieľa pre NA EX; P2 K3 Vilov Pijan bez spoja imúnny, K1 Manželka všetky akcie aktívne. 084841-1 (v10): K1 Šimonova Vdova a Šofér a K5 Ferova Policajtka (všetky akcie ✓) nemali cieľ pre NA EX.
 
 ### spolocne-8 · Keď som porazený a rozdeľujem Nakladačku (v8.3; vo finále sa nerozdeľuje), vyberám len staršieho — prvý vybraný ide, kým body stačia (6 bodov zo stredu = rovno červená, zastaviť sa nedá), zvyšok ide ďalším; cigaretu dostanem za každého rôzneho posunutého staršieho, preto body delím medzi viac starších podľa priazní, ktoré potrebujem hneď (Bitkár, Abstinent, Veriaci), a pozerám, či červený starší na mojej polovici nedá víťazovi cieľ pokusu o zajatie (starší na červenej sa bojí súpera, ten ho smie za 1 cigaretu zajať, v9 §10).
-- stav: neoverená
+- stav: overená
 - pravidlá: v10
 - potvrdenia: 7
 - vyvrátenia: 0
@@ -94,7 +94,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §6 (akcie hrany dostane hráč s prevahou). 062058-2 K4: Fero položil Starostu k hrane, Jano doložil Dvojčatá a Petelicu hrany (3 tuhé) dostal on. 131033: P1 K3 Jano doložil Mäsiara do Ferovho kraja a hranu zobral; P3 K3–K5 Vilo Dvojčatami (2 telá za slot) trikrát prehodil prevahu v Evinom kraji. 161907: P2 K2 Šimon vrátil prevahu 2 : 2 Bzdochou proti Ferovmu Miňištrantovi + Strýkovi; P3 K2 a K3 Vilo Dvojčatami (2 telá za slot) prehodil prevahu z 0 : 8 na 4 : 2 a prekonal Helinu Bzdochu. 090549: P1 K5 Vilo Dvojčatá pre prevahu; P2 K4 Jano a Eva Dvojčatá proti podstrčenej prvej karte; P3 K2 a K4 Helina prevaha po podstrčení Šoféra. 115654: P1 K5 Fero Manželka + Miňištrant + Podvodník (3 : 2) vrátili Pecku hrany proti Psovi, K4 Vilova Snúbenica 1 : 1 → jeho; P2 K4 Heline Dvojčatá pri Šimonovej lokalite = prevaha 2 tiel (potreboval 3). 004030: P1 K4 a finále Fero tretím telom (Silná) prehodil prevahu v Šimonovom kraji — Pecka hrany prešla k nemu (11 : 0 → 12 : 9, finále 5 : 4); P3 K1 Janove Dvojčatá po Manželke (3 : 2) vzali Hele hranu, K4 Hela držala kraj Vdovou a Strýkom.
 
 ### spolocne-17 · Keď kladiem kartu s Pečeňou či Poldeci (Pijan…) alebo plánujem Kšeft Oslávenec, rátam pečeň v každej zostávajúcej Pitke kola (karta v línii ju pripisuje znova) a po každom položení si pozriem VÝHĽAD PITKY, lebo Cirhóza z poslednej Pitky finále sa už nedá priznať (−3 za kus).
-- stav: neoverená
+- stav: overená
 - pravidlá: v10
 - potvrdenia: 14
 - vyvrátenia: 0
@@ -104,7 +104,7 @@ vo feedback.md (návrh označí ako spoločný).
 - oprava: 2026-10-28 20261028-090549-1, -2, -3: v pravidle bolo „−5 za kus“, v8 má −3 (§14); číslo opravené, zvyšok partie potvrdili.
 
 ### spolocne-18 · Keď kladiem Nástroj, kartu s Posilnením alebo akciou na vonkajší koniec či vedľa súperovej karty, najprv v náhľade zistím, čo tým súperovej karte aktivujem (aktívna akcia = oprávnenie na NA EX, Posilnenie zdvojí jeho akciu) a čo naň môže súper priložiť (Nástroj tvorí spoj s Občanom toho, kto ho podoprie), lebo vonkajší koniec je rukojemník.
-- stav: neoverená
+- stav: overená
 - pravidlá: v10
 - potvrdenia: 14
 - vyvrátenia: 0
@@ -113,7 +113,7 @@ vo feedback.md (návrh označí ako spoločný).
 - prečo: PRAVIDLA §6, §7, §12. 131033-1 K2 Jano: Kôňovo Posilnenie na konci → Ferova Manželka Viera ×2 (3 : 7), K4 Puška na konci → Ferov Kulturista dal Petelicu a Janovu Pecku (13 : 7); -3 K3 Evina Kapybara vedľa Dvojčiat aktivovala ich Pečeň (Vilo NA EX +6), K4 jej Hasičovo Posilnenie zdvojilo Vilovej Smetiarke Cigaretu (+4). 161907: P2 K2 Ferov Pes vedľa Šimonovho Veterána zdvojil Ferovi Ranu pri aktívnej Pečeni; P3 K4 Vilov Záhradkár vedľa Helinej Silnej aktivoval jej Dlh ×2, K5 Pes na spoji s Dvojčatami (Mäsiar ho vypol). 090549: P1 K4 Vilov Praudovravec zdvojil Ferovu Pecku z podstrčeného Vymáhača (0 : 6); P2 K4 Eva Záhradkár prvý pri Janovej hrane; P3 K1 a K3 podstrčený Pes + Šimonovo Posilnenie/Odpor = Rana ×4 (0 : 11, 4 : 13). 115654: P1 finále Ferov Strýko priložený k Šarlatánovi spustil Konflikt (Fero: „rukojemník som bol tentoraz ja“), K5 Vilova Bzdocha odpoveďou spárovala Šoférov Poldeci → Cirhóza; P2 K5 Šimonova Puška za Psom bez spoja → Helina Svokra vzala Petelicu 3, finále Helina Puška pri jeho lokalite → Kôň (Šimonov návrh „Nástroj k Zvieraťu či lokalite je dar súperovi“ je potvrdenie). 004030: P1 K4 Ferov Miňištrant dal Šimonovmu Hasičovi Petelicu a Ranu (+4), Šimonov Hasič s Posilnením na vonkajšej hrane → Pes ×8; P2 K2 Vilov Kulturista s Dlh, Dlh na konci bol rukojemník Evinho NA EX; P3 K1 podstrčené Dvojčatá/Manželka zdvojili Hele Dlh a Jano dostal Pecku. 084841-1 (v10): K1 Šimonov Hasič so Posilnením zdvojil Ferovi Vieru z podstrčeného Miňištranta (Šimonove tuhé 5 → 3).
 
 ### spolocne-21 · Keď dávam NA EX (aj s dobrým náhľadom), počítam, že súper odpovie kartou z ruky aj mimo limitu — spáruje neaktívne akcie na vonkajšej hrane alebo pridá vlastné — preto NA EX dávam len tam, kde neaktívne akcie sú na vnútornej hrane pri lokalite, alebo keď bitka ostane moja aj po odpovedi, alebo keď súper nemá čo odpovedať (prázdna ruka); náhľad „po najhoršej odpovedi“ nepozná jeho ruku.
-- stav: neoverená
+- stav: overená
 - pravidlá: v10
 - potvrdenia: 12
 - vyvrátenia: 0
@@ -132,7 +132,7 @@ vo feedback.md (návrh označí ako spoločný).
 
 ### spolocne-26 · Keď zvažujem pokus o zajatie (1 cigareta), najprv prepočítam bitku tak, že súper vyloží bossa ako svoju prvú kartu pri lokalite do môjho kraja (6 akcií, rovnosť telies patrí prvej karte), a pokus beriem len vtedy, keď bitku vyhrám aj tak (viac kariet v ruke aj v línii, istá prevaha); inak je pokus dar, lebo pri neúspechu ide boss k súperovi, cigareta prepadne a ústup markera zmaže nezaplatený stupeň.
 
-- stav: neoverená
+- stav: overená
 - pravidlá: v10
 - potvrdenia: 4
 - vyvrátenia: 0

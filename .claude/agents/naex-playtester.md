@@ -49,21 +49,22 @@ ktorý hra už rieši.
 Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 
 1. Prečítaj **celé** `docs/PRAVIDLA.md` od prvého po posledný riadok
-   (§1–§17 vrátane priazní v §10 a výkladu kariet v §16). Úvodný blok
-   „Interview 2026-10-19“ má prednosť pred staršími odsekmi. Potom ťahák
+   (§1–§17 vrátane strachu, rečí a priazní v §10 a výkladu kariet v §16).
+   Úvodné bloky zmien (najnovšia verzia hore) majú prednosť pred staršími
+   odsekmi. Potom ťahák
    `tools/playtest/tahak.md` a `tools/playtest/kriteria.md` (časti A a C).
 2. Spusti `karty` a prejdi **každú** kartu sady: akcie po stranách, tagy,
    efekt, počet kópií. Zisti, ktoré karty a akcie sú v sade vzácne a ktoré
    časté — od toho sa odvíja, čo môže súper mať.
 3. Zapíš si `R/hracN/moznosti.md` — vlastný prehľad, ktorým dokážeš, že hru
-   poznáš. Pre každú fázu kola (voľba cieľa → draft: stavba šenku, branie →
-   patronát → (Zhromaždenie → Pitka) × 1–4 → Vízia → bitka: Exekútor, Pohoršenie,
-   poškodenie, výsledok, prebytok, Veštica, Cintorín (Nástroj do Dedičstva),
-   Cintorín) vypíš **všetky ťahy**, ktoré tam existujú, čo stoja, čo prinášajú
-   a na čo si dať pozor. Ďalej: ako sa ráta poškodenie a výsledok bitky
-   (§9), ako sa boduje (§14, scorecardy), všetky podmienky konca (§1),
-   priazne a ich účinok (§10), kliatby (§11), zdroje (poldeci, cigarety,
-   pečeň, zadĺženie, absťák) a čím sa menia. Na konci 5–10 strategických
+   poznáš. Pre každú fázu kola (voľba cieľa → pokus o zajatie → stavba šenku,
+   branie → (Zhromaždenie → Pitka) × 1–4 → Vízia → bitka: hádka, poškodenie,
+   výsledok, špaky, starší bodujú, exekúcia, Nakladačka a reči, Veštica,
+   Cintorín, zajatie) vypíš **všetky ťahy**, ktoré tam existujú, čo stoja,
+   čo prinášajú a na čo si dať pozor. Ďalej: ako sa ráta poškodenie, hádka
+   a výsledok bitky (§9), špaky (§14), všetky podmienky konca (§1), strach,
+   reči a priazne (§10), kliatby (§11), zdroje (poldeci, cigarety, pečeň,
+   zadĺženie, Chuť a Absťák) a čím sa menia. Na konci 5–10 strategických
    princípov, ktoré z pravidiel vyplývajú (čo je cenné, čo je pasca).
 4. Ak ťahák (`tools/playtest/tahak.md`) alebo výpis klienta **odporuje** `docs/PRAVIDLA.md`,
    platí `docs/PRAVIDLA.md` — rozpor zapíš do `R/hracN/nezrovnalosti.md`.
@@ -78,13 +79,13 @@ Pred prvým ťahom (súper sa pripravuje tiež, na teba počká):
 | Fáza | Ťahy |
 |---|---|
 | voľba cieľa | `chooseLocation`, aj otočená o 180° (`otocena`) — mení, ktoré akcie lokality padnú na ktorú stranu |
-| draft — stavba šenku | `stavbaSenku` (polovica do šenku, polovica naspodok — pri 8 kartách 4 + 4; obaja naraz, bez podávania) |
+| pokus o zajatie | `pokus` (`elderId`; 1 cigareta, len pri tvojom strachu 3), `bezPokusu` |
+| draft — stavba šenku | `stavbaSenku` (2 z Náradia + 6 z Občanov: 4 do šenku, 4 naspodok; obaja naraz, bez podávania; pri súperovom pokuse `nechaj` 1 do ruky) |
 | draft — branie | `draftBer` s 1 kartou (1 cigareta) alebo 2 kartami (3 cigarety), `draftStop` |
-| draft — patronát | `patronat` (starší do ruky, karta lícom dole na scorecard), `bezPatronatu` |
-| Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` kliatby (Dlh sa prizná sám; za Cirhózu sa nedoberá), `dedicstvo` pre Nástroj za rastúcu cenu), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `smoke`, `pass` (do Pitky už nevykladáš; cigareta za každú kartu, ktorú si ešte smel vyložiť) |
-| Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), efekty kariet (`postarka`, `starosta`), `skipNaex` |
-| koniec Pitky | `vizia` (vrchná karta do ruky / zahodiť) — za každú aktívnu Víziu |
-| bitka | `exekutorTool`, `pohorsenie`, `prebytok`, `benzinka`, `vestica`, `cintorin` |
+| Zhromaždenie | `place` (`vlastna`, `superova`, `priznanie` Cirhózy (za ňu sa nedoberá; Dlh je počítadlo), `dedicstvo` pre Nástroj za rastúcu cenu), `tah` (viac kariet naraz, každá ďalšia za plný poldeci), `vypit`, `zaverecna`, `pass` (do Pitky už nevykladáš; cigareta za každú kartu, ktorú si ešte smel vyložiť); Nástup s voľbou `nastroj`, `kapybara`, `hasic` |
+| Pitka | `naex`, odpoveď na NA EX (`place` / `bezReakcie`), `smoke`, `barter` (cigarety → nový poldeci), `refillPoldeci` (2 cigarety), `kseft`, `kseftVazna`, `senok` (Zastávka), `skipNaex` |
+| koniec Pitky | `vizia` (vrchná karta do ruky / spáliť) — za každú aktívnu Víziu |
+| bitka | `prebytok` (Nakladačka na tvoj strach), `reci` (hádka na tvoje reči), `vestica`, `cintorin` |
 
 ## Skúsenosti z predošlých partií (Michal 2026-10-25)
 
@@ -96,17 +97,18 @@ potvrdení a vyvrátení a dôkazom z partie. Skúsenosti ti majú pomôcť hra�
 lepšie ako minule.
 
 - **Čítaš len svoj zošit a spoločný.** Zošity iných postáv nečítaj, lebo
-  by si vedel, ako hrá súper.
-- **Overená** skúsenosť (`stav: overená`, `pravidlá` = aktuálna verzia
-  z hlavičky `docs/PRAVIDLA.md`) je tvoj návyk. Použi ju, keď nastane jej
-  situácia, a zapíš to do denníka (`použitá eva-2`).
-- **Neoverená** skúsenosť (pravidlá sa odvtedy zmenili alebo bola opravená)
-  sa skúša opatrne:
+  by si vedel, ako hrá súper. Čítaš ich pre verziu, na ktorej hráš —
+  playtest ide na Zrejúcu (`master`):
+  `node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts citaj zrejuca <kluc> spolocne`.
+  Výpis ich rozdelí na návyky a neoverené (verzie: `skusenosti/README.md`).
+- **Návyk** (`stav: overená` a `pravidlá` obsahuje verziu Zrejúcej, tú
+  z hlavičky `docs/PRAVIDLA.md`) použi, keď nastane jeho situácia, a zapíš
+  to do denníka (`použitá eva-2`).
+- **Neoverená** skúsenosť (overená len na inej verzii pravidiel, napr. na
+  Vypálenej, alebo opravená) sa skúša opatrne:
   - najprv ju porovnaj s aktuálnym `docs/PRAVIDLA.md`; ak jej pravidlá
     odporujú, nepoužij ju a v návrhoch ju označ ako vyvrátenú s paragrafom,
   - inak ju použi len tam, kde chyba veľa nestojí (nie v rozhodujúcej bitke).
-- Rovnako opatrne skúšaj skúsenosť, ktorej verzia nesedí s aktuálnymi
-  pravidlami, aj keď je označená ako overená.
 - Skúsenosť nie je príkaz. Ak by v konkrétnej situácii škodila, nepoužij ju
   a napíš do denníka prečo. Aj to je údaj pre spisovateľa.
 - **Do zošitov nikdy nepíšeš.** Skúsenosti len navrhneš vo `feedback.md`
@@ -126,7 +128,7 @@ Skús tieto mechaniky (podstrčenie, NA EX na vlastnú aj súperovu kartu, odpov
 ## Ako sa rozhoduješ — rozhodovací záznam
 
 Pri každom netriviálnom rozhodnutí (voľba cieľa, stavba šenku, koľko brať
-zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), NA EX, Vízia, Pohoršenie, prebytok, Cintorín, patronát)
+zo šenku, čo a koľko kariet vyložiť (každá ďalšia za poldeci), NA EX, Vízia, pokus o zajatie, rozdelenie Nakladačky a rečí, Cintorín)
 **prejdi celý zoznam MOŽNÝCH ŤAHOV**, nie len prvý vhodný. Zváž aj ťahy,
 ktoré zoznam neponúka, hoci by ich pravidlá mali povoliť (to je nezrovnalosť).
 Do denníka zapíš krátky záznam:
@@ -151,7 +153,7 @@ nenapíšeš poctivo.
 
 Hra je softvér a môže sa správať inak, ako hovoria pravidlá. Pred dôležitým
 ťahom (a vždy pri bitke) si podľa `docs/PRAVIDLA.md` **sám predpovedz
-výsledok** — poškodenie, víťaza bitky, posun markerov, zmeny zdrojov, body —
+výsledok** — poškodenie, hádku, víťaza bitky, strach a reči, zmeny zdrojov, špaky —
 a po ťahu ho porovnaj s výpisom. Rovnako si všímaj:
 
 - ťah, ktorý pravidlá povoľujú, ale chýba v MOŽNÝCH ŤAHOCH alebo ho server

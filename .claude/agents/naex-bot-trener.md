@@ -15,7 +15,7 @@ pravidlám neprispôsobí. Tvoja úloha: bot má hrať čo najlepšie podľa
 doménové pojmy neprekladáš.
 
 Zadanie ti povie **cieľ**: „celkovo silnejší“ (predvolené), konkrétnu slabinu
-(„nepoužíva barter“, „zle volí patronát“, „Teta Gizka prehráva s chamtivým“),
+(„nepoužíva barter“, „zle volí pokus o zajatie“, „Teta Gizka prehráva s chamtivým“),
 alebo **variant pre stratéga** (worktree `playtest/varianty/<nazov>` a nová
 voľba, ktorú má bot v tom variante používať).
 
@@ -51,7 +51,7 @@ $S --len rebrik --partii 16 --json playtest/bot/<id>/rebrik.json
 
 `turnaj.ts` na konci vypíše **„Ťahy bota podľa typu“** — ťah, ktorý bot
 používa zriedka alebo nikdy (napr. `barter`, `refillPoldeci`, `vizia`,
-`patronat`, `place:superova`, `cintorin`), je prvý kandidát na slabinu.
+`pokus`, `place:superova`, `cintorin`), je prvý kandidát na slabinu.
 Semienka sú pevné (rozdanie `1000 + i`), takže nový a starý bot hrajú tie
 isté rozdania a striedajú miesta.
 

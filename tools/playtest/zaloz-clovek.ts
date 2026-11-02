@@ -7,10 +7,11 @@
 // servera, takže reštart vývojového servera po zmene kódu by rozohranú partiu
 // zhodil. Prihlásenie z localhost:8787 platí aj tu (relácie sú v databáze,
 // cookie nerozlišuje porty). Server zastaví tools/playtest/ukonci.ts <relacia>.
-// S --url sa partia založí na existujúcom webe (napr. produkčnom) bez servera.
+// S --url sa partia založí na existujúcom webe bez servera, s --zivy na živom
+// webe (Vypálená — tam protihráč hrá proti ľuďom, Michal 2026-11-02).
 //
 // Použitie (z koreňa repozitára):
-//   node --experimental-strip-types --no-warnings tools/playtest/zaloz-clovek.ts "<meno agenta>" [kratka|stredna|dlha] [--url <web>]
+//   node --experimental-strip-types --no-warnings tools/playtest/zaloz-clovek.ts "<meno agenta>" [kratka|stredna|dlha] [--zivy | --url <web>]
 //
 // Agent potom hrá ako hráč 1: tools/playtest/hrac.ts <relacia> 1 cakaj|stav|tah …
 
@@ -19,17 +20,22 @@ import { existsSync, mkdirSync, openSync, readdirSync, statSync, writeFileSync }
 import { createServer } from "node:net";
 import { join, resolve } from "node:path";
 import WebSocket from "ws";
-import { prihlasAgenta, webDostupny } from "./web.ts";
+import { prihlasAgenta, webDostupny, zivyWeb } from "./web.ts";
 
 const DLZKY = ["kratka", "stredna", "dlha"] as const;
 type Dlzka = (typeof DLZKY)[number];
 
 const argv = process.argv.slice(2);
 const iUrl = argv.indexOf("--url");
-const volne = argv.filter((a, i) => a !== "--url" && argv[i - 1] !== "--url");
+const zivy = argv.includes("--zivy");
+const volne = argv.filter((a, i) => a !== "--url" && a !== "--zivy" && argv[i - 1] !== "--url");
 const [meno, dlzkaArg = "stredna"] = volne;
 if (meno === undefined || meno.trim().length < 2) {
-  console.error('Použitie: zaloz-clovek.ts "<meno agenta>" [kratka|stredna|dlha] [--url <web>]');
+  console.error('Použitie: zaloz-clovek.ts "<meno agenta>" [kratka|stredna|dlha] [--zivy | --url <web>]');
+  process.exit(1);
+}
+if (zivy && iUrl !== -1) {
+  console.error("Buď --zivy, alebo --url — nie oboje.");
   process.exit(1);
 }
 if (!(DLZKY as readonly string[]).includes(dlzkaArg)) {
@@ -79,8 +85,8 @@ function buildKlienta(): void {
 
 let url: string;
 let pid: number | undefined;
-if (iUrl !== -1) {
-  url = (argv[iUrl + 1] ?? "").replace(/\/+$/, "");
+if (zivy || iUrl !== -1) {
+  url = zivy ? zivyWeb() : (argv[iUrl + 1] ?? "").replace(/\/+$/, "");
   if (!(await webDostupny(url))) {
     console.error(`Web ${url} nebeží.`);
     process.exit(1);

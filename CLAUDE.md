@@ -6,9 +6,10 @@ Dvaja hráči, dva prehliadače, cez internet. Web má tri časti: **pravidlá**
 a **hra**; k tomu účty s úrovňami admin / subadmin / hráč / návštevník a profil
 (herné meno, avatar).
 
-**Prečítaj najprv `docs/BRIEF.md`** — je to zadanie s míľnikmi a akceptačnými
-kritériami (M0–M10). Rozšírenie o platformu (M11–M14) popisuje `README.md`.
-`docs/PRAVIDLA.md` je špecifikácia pravidiel (v11 + zmeny z pravidiel v2).
+`docs/PRAVIDLA.md` je špecifikácia pravidiel — v `master` v11 Strach a reči
+(Zrejúca), vo vetve `vypalena` v10.4 (Vypálená, hrajú ju hráči). Kto čo robí
+a o aké zdroje sa nebiť: `docs/SESSIONS.md`. Pôvodné zadanie (M0–M10, otvorené
+otázky) je `docs/BRIEF.md` — história; platforma M11–M14 je v `README.md`.
 
 ## Rozsah
 
@@ -28,15 +29,13 @@ Kým nie je § Formát 2 na 2 v PRAVIDLA.md, platí všetko pre 1 na 1.
    `viewFor()` a musí byť otestované.
 3. **Klient posiela zámery, nikdy výsledky.** Server počíta, klient kreslí.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
-5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
-   zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy — kópia konceptu tvorcu nad lokálnou sadou v12 pracoviska naex-admin bez Presbitera a karty Dlh, nezverejnené (2026-11-02 Strach a reči v2: nové texty Kapybary a Predsedovej vily o rečiach, jadro ich robí vetva pravidla/strach-reci; v11 pozície Odporov B+ na 41 kartách, Posilnenie Hasiča a Koňa v slote 3 kvôli Forsáži, nové Autority Poľovník, Predavačka a Vedúcko s ilustráciami, Snúbenica a Policajtka s novými akciami, 4 akcie Novín, Krabičky, Pasce, Svätého textu a Výherného automatu, Rany namiesto Pecky u Dvojčiat, Vymáhača, Svokry a Vandala, pojem Spáliť v textoch; v8 1. kolo náradia: Nástroje so 4 akciami, Píšťalka → Izolačka s novou ilustráciou, Kulturista → Sypač, nové texty Vdovy a Liberála, Kočovník s Paktom, Bzdocha len s 2 akciami, Traktorista Autorita namiesto Pracujúceho; v56 Svätý text vrátený na „Hodnota tvojej Viery je o 1 vyššia.“; v55 texty Telefónu a Horoskopu podľa pravidiel v10 Hádka; v53 Lievik premenovaný na Injekciu s novou ilustráciou; v51 pravidlá v9.2:
-   Kohút vyradený; v45 bossovia — 8 starších so 6 akciami a spúšťačom Väzeň; predtým v31 živého webu / lokálne v43
-   s náradím; `cardsJson` z `/api/sada` — lokálne a živé číslovanie sád sa líši, číslo živého webu dostane po nasadení;
-   produkcia ho prevezme pri štarte cez novú značku v `dorovnajSoSeedom`, zmeny vzhľadu
-   a ilustrácií navyše `tools/admin/do-seedu.ts`, viď docs/NASADENIE.md). Značku meň až
-   po skopírovaní cards.json, inak bežiaci dev server preseeduje tvorcu starou sadou.
-   Predtým ju generoval `tools/import_print_pdf.py` z tlačového PDF.
+5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite): Vypálená hrá
+   zverejnenú sadu, Zrejúca rozpracovaný stav tvorcu. `packages/core/data/cards.json`
+   (východisko pre prvé spustenie a testy) je kópia sady z tvorcu bez Presbitera
+   a karty Dlh, ručne sa neupravuje: v `master` rozpracovanej, vo `vypalena`
+   zverejnenej. Značku v `dorovnajSoSeedom` meň až po skopírovaní cards.json (inak
+   bežiaci dev server preseeduje tvorcu starou sadou); ilustrácie a vzhľad prenesie
+   `tools/admin/do-seedu.ts` (docs/NASADENIE.md). História sád je v gite.
 6. **Server púšťa `.ts` priamo (strip-types)** — len vymazateľná syntax
    (`erasableSyntaxOnly`): žiadne parametrické vlastnosti, enumy, namespaces.
 
@@ -136,8 +135,8 @@ naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      96 kariet — koncept nad lokálnou sadou v12 pracoviska naex-admin (Strach a reči: Kapybara, Predsedova vila; Odpory B+, Poľovník, Predavačka, Vedúcko, Spáliť; náradie so 4 akciami; v10 Hádka, bez Kohúta) bez Presbitera (neupravuj ručne)
-  data/elders.json     8 starších; priazeň a body nesie scorecard (scorecards.json)
+  data/cards.json      sada kariet (master = Zrejúca, vypalena = zverejnená; pravidlo 5, neupravuj ručne)
+  data/elders.json     8 starších; priazeň nesie scorecard (scorecards.json)
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
                        Gizka; server losuje. Skryté info pred výpočtom zamieša
@@ -149,8 +148,8 @@ packages/server/     server: hra (ws), REST API (/api), SQLite, médiá (/media)
 apps/web/            klient (React + Vite): stranky/, hra/, admin/, karta/,
                      playtest/ (sekcia Playtest: návrhy na rozhodnutie, reporty)
 deploy/, Dockerfile  nasadenie (docs/NASADENIE.md)
-docs/BRIEF.md        zadanie M0–M10
-docs/PRAVIDLA.md     špecifikácia pravidiel
+docs/BRIEF.md        pôvodné zadanie M0–M10 (história) a otvorené otázky
+docs/PRAVIDLA.md     špecifikácia pravidiel (staré znenia v docs/pravidla-historia.md)
 tools/               import z tlačového PDF, piktogramy akcií
   bot/turnaj.ts        turnaj offline protihráča (proti náhodnému / chamtivému / sebe /
                        starej verzii bota z iného worktree); vypíše, ktoré ťahy bot používa
