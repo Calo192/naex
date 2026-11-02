@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { kontrolaTextov, variantyKarty } from "@naex/tvorba";
+import eldersJson from "@naex/core/data/elders.json";
 import { api } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
@@ -63,7 +64,7 @@ export function Prehlad() {
   const problemy = problemyNavrhov(obsah);
   const vytlacenych = obsah.karty.reduce((s, k) => s + variantyKarty(k).pocet * k.kopie, 0);
   // Texty efektov: preklepy, spúšťače a zmenený text efektu, ktorý hra vyhodnocuje kódom.
-  const texty = kontrolaTextov(obsah.karty, { klucoveSlova: obsah.klucoveSlova, akcie: obsah.akcie, zverejnene: sada?.karty ?? [] });
+  const texty = kontrolaTextov(obsah.karty, { klucoveSlova: obsah.klucoveSlova, akcie: obsah.akcie, zverejnene: sada?.karty ?? [], starsi: eldersJson.elders });
   const chybyTextov = texty.filter((t) => t.uroven === "chyba").length;
   const stav = problemy.length > 0 ? "blokovane" : zmenene.length > 0 ? "pripravene" : "aktualne";
   const dalsia = obsah.zverejnenaVerzia + 1;

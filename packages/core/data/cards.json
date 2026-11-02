@@ -45,7 +45,9 @@
         "Chlap"
       ],
       "effect_text": "Väzeň — raz za hru: Odhoď všetky priznané Cirhózy a Cirhózy na ruke.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           0
@@ -103,7 +105,9 @@
         "Chlap"
       ],
       "effect_text": "Väzeň — raz za hru: Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           3
@@ -1344,7 +1348,9 @@
         "Chlap"
       ],
       "effect_text": "Väzeň — raz za hru: Aktívne akcie lokality sa v tejto bitke považujú za posilnené.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           3
@@ -1402,7 +1408,9 @@
         "Chlap"
       ],
       "effect_text": "Väzeň — raz za hru: Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           0
@@ -1459,7 +1467,9 @@
         "Žena"
       ],
       "effect_text": "Väzeň — raz za hru: Dostaneš 4 cigarety.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           0
@@ -1517,7 +1527,9 @@
         "Chlap"
       ],
       "effect_text": "Väzeň — raz za hru: Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           3
@@ -1575,7 +1587,9 @@
         "Žena"
       ],
       "effect_text": "Väzeň — raz za hru: Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           3
@@ -1791,7 +1805,9 @@
         "Žena"
       ],
       "effect_text": "Väzeň — raz za hru: Nový plný poldeci.",
-      "triggers": [],
+      "triggers": [
+        "Väzeň"
+      ],
       "left": {
         "blocked": [
           0

@@ -792,7 +792,7 @@ async function main(): Promise<void> {
       console.log(`${stara === undefined ? "Nová karta" : "Upravená karta"} ${ulozena.id} — ${ulozena.nazov} (${variantyKarty(ulozena).pocet} permutácií, efekt: ${stavEfektu(ulozena)}).`);
       const p = problemyKarty(ulozena);
       if (p.length > 0) console.log(`⚠ ${p.join("; ")}`);
-      for (const t of kontrolaTextov([ulozena], { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: (await api<{ karty: KartaNavrh[] }>("GET", "/sada")).karty })) {
+      for (const t of kontrolaTextov([ulozena], { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: (await api<{ karty: KartaNavrh[] }>("GET", "/sada")).karty, starsi: eldersJson.elders })) {
         console.log(`⚠ text: ${t.text}`);
       }
       break;
@@ -862,7 +862,7 @@ async function main(): Promise<void> {
     case "texty": {
       const o = await obsah();
       const sada = await api<{ karty: KartaNavrh[] }>("GET", "/sada");
-      const problemy = kontrolaTextov(o.karty, { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: sada.karty });
+      const problemy = kontrolaTextov(o.karty, { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: sada.karty, starsi: eldersJson.elders });
       if (problemy.length === 0) console.log("Texty efektov sú v poriadku.");
       for (const p of problemy) console.log(`${p.id} [${p.uroven}] ${p.text}`);
       break;
@@ -1017,7 +1017,7 @@ async function main(): Promise<void> {
       const problemy = overZverejnenie(o);
       console.log(problemy.length === 0 ? "Sada sa dá zverejniť — žiadne problémy." : `Zverejnenie by zlyhalo:\n${problemy.map((p) => `  - ${p}`).join("\n")}`);
       const sada = await api<{ karty: KartaNavrh[] }>("GET", "/sada");
-      const texty = kontrolaTextov(o.karty, { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: sada.karty });
+      const texty = kontrolaTextov(o.karty, { klucoveSlova: o.klucoveSlova, akcie: o.akcie, zverejnene: sada.karty, starsi: eldersJson.elders });
       if (texty.length > 0) console.log(`Texty efektov (${texty.length}): ${texty.map((t) => `${t.id}: ${t.text}`).join(" · ")}`);
       // Zverejnenie vydá VŠETKY návrhy — aj rozpracované od Michala či subadminov.
       const { sady } = await api<{ sady: { verzia: number; cas: number }[] }>("GET", "/admin/sady");
