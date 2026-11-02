@@ -5001,44 +5001,8 @@ export function HernaPlocha({
   // Vydesenie ako výhra zaniklo (v9) — os baru ukazuje väzňov, tretí vyhráva.
   const prahVyd = KONSTANTY.VAZNI_NA_VYHRU;
   const vydeseni = [0, 1].map((p) => view.vazni.filter((v) => v.hrac === p).length) as [number, number];
-  // Ohlásené vydesenie: kto ho udrží do konca nasledujúceho kola, vyhrá.
-  // Ohlásené vydesenie je toast na stole (Michal 2026-10-28: pásy nad stolom zmenšovali plochu) —
-  // zmizne sám alebo klikom; ďalej ho drží odznak vydesených na dlaždici Starší.
-  const klucHrozby = (p: PlayerId): string => `${p}-${vydeseni[p]}`;
-  const [zavreteHrozby, setZavreteHrozby] = useState<ReadonlySet<string>>(new Set());
-  // Väzeň pred výhrou (druhý) sa ohlási toastom ako kedysi ohlásené vydesenie.
-  const otvoreneHrozby = ([ja, super_] as const).filter((p) => vydeseni[p] >= prahVyd - 1 && view.koniec === null && !zavreteHrozby.has(klucHrozby(p)));
-  const klucOtvorenych = otvoreneHrozby.map(klucHrozby).join(" ");
-  useEffect(() => {
-    if (klucOtvorenych === "" || vyucba === true) return;
-    const t = setTimeout(() => setZavreteHrozby((z) => new Set([...z, ...klucOtvorenych.split(" ")])), TOAST_STOLA_MS + 3000);
-    return () => clearTimeout(t);
-  }, [klucOtvorenych, vyucba]);
-  const hrozbaVydesenia = otvoreneHrozby.map((p) => {
-      return (
-        <button
-          key={p}
-          type="button"
-          className={`toast-stola hrozba-vydesenia ${p === ja ? "moja" : "superova"}`}
-          role="alert"
-          title="Klik zavrie — väzňov ukazuje aj dlaždica Starší."
-          onClick={() => setZavreteHrozby((z) => new Set([...z, klucHrozby(p)]))}
-        >
-          {p === ja ? (
-            <>
-              <strong>Máš {vydeseni[p]} väzňov!</strong> Tretí väzeň vyhráva — skús zajať staršieho, ktorý sa ťa bojí na stupni 3.
-            </>
-          ) : (
-            <>
-              <strong>
-                {menoHraca(p)} má {vydeseni[p]} väzňov!
-              </strong>{" "}
-              Tretí väzeň vyhráva — odtlač starších, ktorí sa ho boja na stupni 3, a pri pokuse o zajatie vyhraj bitku.
-            </>
-          )}
-        </button>
-      );
-    });
+  // Bublina „Máš 2 väzňov!“ na stole zanikla (Michal 2026-11-02: „robí to bordel na stole“) — počet
+  // z troch ukazuje Pivnica (2/3) a jej okno povie, ako vyhrať; súperovu hrozbu tiež.
 
   // Keď hráčovi pribudne priazeň (posun k nemu), povie mu to hra hneď aj s účinkom —
   // v playteste 20261016-134912 to porazená nepochopila. Michal 2026-10-23: plávajúci
@@ -5812,7 +5776,7 @@ export function HernaPlocha({
       type="button"
       className={["hrana-pivnica", mojiVazni.length === 0 ? "prazdna" : "", kseftVaznaTeraz ? "dostupna" : "", vrstva === "pivnica" ? "otvorena" : ""].filter((x) => x !== "").join(" ")}
       data-vyucba="hrana:pivnica"
-      aria-label={`Pivnica — väzni: ${mojiVazni.length}${kseftVaznaTeraz ? ", Kšeft väzňa je teraz dostupný" : ""}`}
+      aria-label={`Pivnica — väzni ${mojiVazni.length} z ${prahVyd}${kseftVaznaTeraz ? ", Kšeft väzňa je teraz dostupný" : ""}`}
       title={
         mojiVazni.length === 0
           ? "Pivnica: zatiaľ prázdna — zajatý starší (väzeň) bude tu aj s Kšeftom."
@@ -5824,7 +5788,7 @@ export function HernaPlocha({
     >
       <span className="hrana-pivnica-cislo">
         <IkonaMrezi />
-        <b>{mojiVazni.length}</b>
+        <b>{mojiVazni.length}</b>/{prahVyd}
       </span>
       pivnica
     </button>
@@ -5962,7 +5926,7 @@ export function HernaPlocha({
       detail={(zdroj) => setOknoZdroja({ p, zdroj })}
       starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === p, prepni: () => prepniStarsich(p) }}
       tabula={{ otvorena: tabulaOtvorena, prepni: () => setTabulaOtvorena((o) => !o) }}
-      {...(p === ja ? { pivnica: { vazni: mojiVazni.length, dostupna: kseftVaznaTeraz, otvor: () => setVrstva("pivnica") } } : {})}
+      {...(p === ja ? { pivnica: { vazni: mojiVazni.length, naVyhru: prahVyd, dostupna: kseftVaznaTeraz, otvor: () => setVrstva("pivnica") } } : {})}
     />
   );
   const oknoZdrojaEl =
@@ -6182,13 +6146,8 @@ export function HernaPlocha({
               </div>
             )}
             {toastPriazneEl}
-            {/* Výsledok bitky a ohlásené vydesenie sú toasty na stole — plochu nezmenšujú (Michal 2026-10-28). */}
-            {(ucetBitkyEl !== null || hrozbaVydesenia.length > 0) && (
-              <div className="toasty-stola">
-                {hrozbaVydesenia}
-                {ucetBitkyEl}
-              </div>
-            )}
+            {/* Výsledok bitky je toast na stole — plochu nezmenšuje (Michal 2026-10-28). */}
+            {ucetBitkyEl !== null && <div className="toasty-stola">{ucetBitkyEl}</div>}
             {prelety.map((x) => (
               <LetiacaKarta key={x.kluc} prelet={x} koniec={() => setPrelety((p) => p.filter((y) => y.kluc !== x.kluc))}>
                 {karta({ karta: { uid: UID_TIENA - 500, ...x.karta }, sirka: Math.round(x.z.width) })}
@@ -6575,12 +6534,24 @@ export function HernaPlocha({
       {vrstva === "pivnica" && (
         <VrstvaPanel
           nazov="Pivnica — tvoji väzni"
-          pozn={`Kšeft väzňa spustíš v Pitke za vypitý plný poldeci, každého raz za Pitku · väzni ${mojiVazni.length}/${KONSTANTY.VAZNI_NA_VYHRU}, tretí vyhráva`}
+          pozn={
+            <>
+              Tretí väzeň vyhráva – zajať môžeš staršieho, ktorý sa ťa bojí na stupni 3.
+              {vydeseni[super_] >= prahVyd - 1 && view.koniec === null && (
+                <span className="pivnica-hrozba">
+                  {" "}
+                  {menoHraca(super_)} má {vydeseni[super_]}/{prahVyd} — odtlač starších, ktorí sa ho boja na stupni 3.
+                </span>
+              )}
+            </>
+          }
           skryta={tahanie !== null}
           onZavri={() => setVrstva(null)}
         >
           <div className="pivnica-okno">
             {mojiVazni.length === 0 && <span className="popis">Nemáš väzňa.</span>}
+            {/* Na telefóne by riadok odsunul tlačidlá Kšeftu pod okraj — pravidlo povie detail po ťuknutí. */}
+            {mojiVazni.length > 0 && !naSirku && <span className="pivnica-pravidlo">Kšeft väzňa spustíš v Pitke za vypitý plný poldeci, každého raz za Pitku.</span>}
             {mojiVazni.map((v) => {
               const k = kseftyStola.find((x) => x.uid === v.karta.uid);
               return (
