@@ -44,10 +44,8 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci spáľ 1 Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta poškodenie pečene.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Odhoď všetky priznané Cirhózy a Cirhózy na ruke.",
+      "triggers": [],
       "left": {
         "blocked": [
           0
@@ -104,10 +102,8 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper.",
+      "triggers": [],
       "left": {
         "blocked": [
           3
@@ -1347,10 +1343,8 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci sú do konca kola všetky aktívne akcie hrán lokality posilnené.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Aktívne akcie lokality sa v tejto bitke považujú za posilnené.",
+      "triggers": [],
       "left": {
         "blocked": [
           3
@@ -1407,10 +1401,8 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci sa do konca kola každá súperova aktívna Viera ráta ako posilnený Hazard.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý.",
+      "triggers": [],
       "left": {
         "blocked": [
           0
@@ -1466,10 +1458,8 @@
         "Starešina",
         "Žena"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci prepíš 1 svoj priznaný Dlh na súpera.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Dostaneš 4 cigarety.",
+      "triggers": [],
       "left": {
         "blocked": [
           0
@@ -1526,10 +1516,8 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci súper odhodí náhodnú kartu z ruky.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka.",
+      "triggers": [],
       "left": {
         "blocked": [
           3
@@ -1586,10 +1574,8 @@
         "Starešina",
         "Žena"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci dostane súper v bitke Petelicu, ak v tejto Pitke dá NA EX.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet.",
+      "triggers": [],
       "left": {
         "blocked": [
           3
@@ -1804,10 +1790,8 @@
         "Starešina",
         "Žena"
       ],
-      "effect_text": "Väzeň — Kšeft: Za vypitý poldeci súper v tejto Pitke NA EX nedá.",
-      "triggers": [
-        "Väzeň"
-      ],
+      "effect_text": "Väzeň — raz za hru: Nový plný poldeci.",
+      "triggers": [],
       "left": {
         "blocked": [
           0
