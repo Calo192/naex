@@ -2677,16 +2677,6 @@ button.dlzka-volba.aktivna {
   animation: oznam-prichod 0.22s ease;
 }
 
-.hrozba-vydesenia {
-  border: 2px solid var(--cervena);
-  background: color-mix(in srgb, var(--cervena) 18%, var(--plocha-2));
-}
-
-.hrozba-vydesenia.moja {
-  border-color: color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie));
-  background: color-mix(in srgb, color-mix(in oklab, var(--zelena-ziariva) 68%, var(--pozadie)) 18%, var(--plocha-2));
-}
-
 /* Toast priazne (Michal 2026-10-23): pláva na hornej hrane stola vedľa pilulky
    pokynu (alebo tesne pod ňou v pravom rohu), nemení rozloženie, jeden riadok —
    celé znenie v titulku a v Logu. Polohu nastaví HernaPlocha podľa pilulky. */
@@ -3186,6 +3176,12 @@ body:not(.tahanie-aktivne) .ruka-rad > .tahatelna.nemoze:hover > .kl {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+.hrana-pivnica-cislo {
+  font: 800 0.95rem/1 var(--nadpis);
+  letter-spacing: 0;
+  color: var(--slaby);
 }
 
 .hrana-pivnica-cislo b {
@@ -9410,6 +9406,19 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   justify-items: center;
   align-content: start;
   gap: 8px;
+}
+
+/* Súper má väzňa pred výhrou — v hlavičke Pivnice, nie bublinou na stole. */
+.pivnica-hrozba {
+  font-weight: 700;
+  color: var(--cervena);
+}
+
+.pivnica-pravidlo {
+  flex-basis: 100%;
+  text-align: center;
+  font: 500 0.82rem/1.3 var(--pismo);
+  color: var(--slaby);
 }
 
 .pivnica-poradie,
