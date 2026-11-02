@@ -20,6 +20,7 @@
 //   node ... web.ts cigareta --ako "<meno>" <id-nazoru>               dá cigaretu (páči sa mi)
 //   node ... web.ts avatar   --ako "<meno>" <obrazok.jpg|png|webp>    nastaví agentovi avatar (do 2 MB)
 //   node ... web.ts znamky   --ako "<meno>" <feedback.md> [--zdroj <id-playtestu>] [--cas <ISO>]
+//                            (partia na Zrejúcej — hra.json „zrejuca“, alebo --zrejuca: nezapíše nič, Michal 2026-11-02)
 //                            12 známok z tabuľky „Hodnotenie podľa kritérií“ do časovej osi na /vyvoj
 //   node ... web.ts zluc-ucty                                       zlúči playtest/ucty.json pracovísk F:\Projects\naex*
 //                            do spoločného súboru hesiel (existujúce heslá neprepíše)
@@ -31,7 +32,7 @@
 
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
-import { extname, join } from "node:path";
+import { dirname, extname, join } from "node:path";
 import { type WebUcet, klucWebu, korenPracovisk, nacitajUcty, najdiUlozeny, suborUctov, ulozUcet, zlucPracoviska } from "./ucty.ts";
 
 export type { WebUcet } from "./ucty.ts";
@@ -138,6 +139,27 @@ export function znamkyZFeedbacku(text: string): Record<string, number> {
   }
   return out;
 }
+
+/**
+ * Partia relácie hrala na Zrejúcej (zaloz.ts --zrejuca zapíše do hra.json „zrejuca“: true)?
+ * `subor` je feedback.md hráča (R/hracN/feedback.md) alebo priečinok relácie R.
+ */
+export function jePartiaZrejucej(subor: string): boolean {
+  for (const relacia of [dirname(dirname(subor)), dirname(subor), subor]) {
+    const hra = join(relacia, "hra.json");
+    if (!existsSync(hra)) continue;
+    try {
+      return (JSON.parse(readFileSync(hra, "utf8")) as { zrejuca?: boolean }).zrejuca === true;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+/** Prečo sa známky z partie na Zrejúcej nezapisujú — vypíše web.ts znamky. */
+export const ZNAMKY_ZREJUCEJ =
+  "Partia bola na Zrejúcej — známky sa do /vyvoj nezapisujú (Michal 2026-11-02), ostávajú vo feedback.md a v reporte playtestu.";
 
 /** Úroveň, ktorú agent na webe potrebuje: hráč píše spätnú väzbu, subadmin tvorí karty. */
 export type UrovenAgenta = "hrac" | "subadmin";
@@ -300,6 +322,11 @@ async function main(): Promise<void> {
     console.log(ok ? `Web ${url} beží.` : `Web ${url} nebeží — spätnú väzbu nemožno zverejniť (spusti npm run dev).`);
     // exitCode namiesto exit(): na Windows exit() počas zatvárania spojenia padá v libuv.
     process.exitCode = ok ? 0 : 1;
+    return;
+  }
+  // Známky hry sú len z Vypálenej; partie na Zrejúcej hodnotí len report playtestu (Michal 2026-11-02).
+  if (prikaz === "znamky" && (argv.includes("--zrejuca") || (a1 !== undefined && jePartiaZrejucej(a1)) || (await vypalenaZrejucej(url)) !== null)) {
+    console.log(ZNAMKY_ZREJUCEJ);
     return;
   }
   if (ako === undefined) throw new Error("Chýba --ako \"<meno agenta>\".");

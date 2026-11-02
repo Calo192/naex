@@ -70,6 +70,11 @@ prepínač `--zrejuca` — pokusná inštancia len pre testerov, ktorá hrá kó
 `origin/master` (nasadený `/naex-nasad zrejuca`) a **rozpracovaný** stav
 tvorcu kariet. Partie sa tam zakladajú pod AI účtami postáv (tie isté ako vo
 Vypálenej, účty sú spoločné); dohraté ostanú v štatistikách Zrejúcej.
+**Známky** (12 kritérií) z partií na Zrejúcej sa do /vyvoj **nezapisujú**
+(Michal 2026-11-02) — ostávajú vo `feedback.md` a v reporte playtestu.
+`web.ts znamky` partiu Zrejúcej spozná (`hra.json` „zrejuca“) a nič nezapíše;
+playtesteri ho preto môžu volať ako doteraz. Názory a komentáre idú na
+Spätnú väzbu Vypálenej (`--zivy`) ako doteraz.
 
 **Hlavná téma (Michal 2026-10-19): strategickosť.** Hra má odmeňovať skill,
 nie náhodu. Playtesteri hrajú ako experti, rozoberú náhodu vs. zručnosť,
@@ -123,7 +128,9 @@ nezrovnalosti pravidiel a hry a navrhnú zmeny (`tools/playtest/kriteria.md`,
    zameranie. Zošit skúseností: tools/playtest/skusenosti/<kluc>.md
    a spolocne.md — prečítaj ich pred partiou, v pláne napíš, ktoré
    použiješ, a vo feedback.md navrhni nové (časť Návrhy skúseností). Napíš
-   spätnú väzbu a zverejni ju na webe.“ Kľúč postavy je v `turnus.json`
+   spätnú väzbu a zverejni ju na webe. Partia je na Zrejúcej — známky na
+   /vyvoj nezapisuj, ostanú vo feedback.md a v reporte.“ (posledná veta len
+   pri turnuse `--zrejuca`) Kľúč postavy je v `turnus.json`
    (výpis turnusu ho ukáže ako riadok „Zošit:“).
 
    Ak existuje predošlý rozbor `docs/playtesty/strategia-*.html`, pridaj do
