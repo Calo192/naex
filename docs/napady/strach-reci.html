@@ -61,140 +61,124 @@ pre { background: var(--plocha-2); border: 1px solid var(--okraj); border-radius
 <body>
 <main>
 <h1>Strach a reči — každý svoj marker</h1>
-<p class="mini">nápad Michala · verzia 1 · 2026-11-02 · pravidlá (v10.2) ani kód sa zatiaľ nemenia · nahradil by stupnicu s jedným markerom (§10), udržaný strach (§10), rozdelenie hádky na priazne a klebety (§9.1 krok 4) · súvisí s návrhom N2 „Reči“ v <code>docs/napady/trojuholnik-cielov.html</code> (vetva <code>origin/ccr-06c80f9e-492iq4</code>) · mocky stola: <a href="strach-reci-mocky.html">strach-reci-mocky.html</a></p>
+<p class="mini">nápad Michala · verzia 2 · 2026-11-02 · <b>všetko rozhodnuté</b>, implementovať a nasadiť najprv do <b>Zrejúcej</b> (pokusná verzia pre adminov a AI playtesterov; hráči ostávajú na v10, kým Michal neschváli) · nahrádza stupnicu s jedným markerom (§10), udržaný strach (§10), rozdelenie hádky na priazne a klebety (§9.1 krok 4), väzňov 8/6/4/2 (§10) · mocky: <a href="strach-reci-mocky.html">strach-reci-mocky.html</a> (vybraté: Teplomery + Pult s prepínačom)</p>
 
 <div class="box zv">
-  <p><b>Michalov nápad:</b> zrušiť „preťahovanie“ o priazeň a strach staršieho. Namiesto jednej stupnice s dvoma koncami bude <b>stupnica 0–3</b> (sivá, žltá, oranžová, červená) a na ňu si hráči dávajú markery <b>každý zvlášť, nezávisle od seba</b>. Starší sa bojí každého hráča zvlášť a <b>priazeň je rozdiel strachov</b>. Strach je trvalý a nikdy neklesá. Mäkké poškodenie dvíha druhý marker, <b>reči</b>, ktorý priazeň nedáva, ale boduje aj pri prehratej bitke a po bodovaní klesne.</p>
-<pre>pri každom staršom má každý hráč:  strach 0–3 (neklesá)   reči 0–3 (po bodovaní −1)
+  <p><b>Michalov nápad:</b> zrušiť „preťahovanie“ o priazeň a strach staršieho. Namiesto jednej stupnice s dvoma koncami bude <b>stupnica 0–3</b> (sivá, žltá, oranžová, červená) a na ňu si hráči dávajú markery <b>každý zvlášť, nezávisle od seba</b>. Starší sa bojí každého hráča zvlášť a <b>priazeň je rozdiel strachov</b>. Strach je trvalý. Mäkké poškodenie dvíha <b>reči</b> — druhý marker hráča, ktorý leží vždy <b>nad jeho strachom</b>, priazeň nedáva, ale boduje aj pri prehratej bitke a po bodovaní klesne.</p>
+<pre>pri každom staršom má každý hráč:  strach 0–3 (neklesá)   reči: nič, alebo stupeň NAD strachom (strach+1 … 3)
 
 priazeň pre mňa = max(0, strach_súpera − môj_strach)      reči sa nerátajú
 stav staršieho  = podľa vyššieho strachu: pokojný · znepokojený · vystrašený · vydesený
 
 špaky za staršieho (po bitke, stav PRED zdvihnutím):  žltá 1 · oranžová 3 · červená 5
-  víťaz bitky:      najvyšší z (strach, reči) — pri rovnosti bodujú reči
+  víťaz bitky:      najvyšší marker — reči, ak ich má, inak strach
   porazený, sekera: len reči
-  reči, ktoré bodovali, klesnú o stupeň; strach nikdy</pre>
+  reči, ktoré bodovali, klesnú o stupeň; keď klesnú na stupeň strachu, zaniknú
+  strach neklesá nikdy — výnimka: neúspešný pokus o zajatie ho vynuluje</pre>
 </div>
 
 <nav class="skupiny" aria-label="Časti">
-  <a href="#rozhodnute">Rozhodnuté</a><a href="#vyklad">Výklad</a><a href="#bitka">Poradie bitky</a><a href="#vyhra">Výhra strachom</a><a href="#sibnuty">Obaja na červenej</a><a href="#karty">Karty</a><a href="#rusi">Čo sa ruší</a><a href="#priklad">Príklad</a><a href="#rizika">Riziká</a><a href="#otazky">Otázky</a>
+  <a href="#rozhodnute">Rozhodnuté</a><a href="#bitka">Poradie bitky</a><a href="#reci">Reči</a><a href="#vyhra">Výhry a zajatie</a><a href="#karty">Karty</a><a href="#stol">Stôl</a><a href="#rusi">Čo sa ruší</a><a href="#priklad">Príklad</a><a href="#otvorene">Otvorené</a><a href="#rizika">Riziká</a>
 </nav>
 
 <div class="box rec" id="rozhodnute">
-  <h2 style="margin-top:0;border:0;padding:0">Rozhodnuté (Michal 2026-11-02, v chate)</h2>
+  <h2 style="margin-top:0;border:0;padding:0">Rozhodnuté (Michal 2026-11-02)</h2>
   <ol class="kroky">
-    <li><b>Strach dvíha ten, kto Nakladačku spôsobil</b> — víťaz bitky (vyššie tuhé), nie porazený ako dnes (§9.4 bod 2). Zdvíha <b>svoj</b> strach pri starších, ktorých si vyberie. „Uvidíme, čo to spôsobí.“</li>
-    <li><b>Reči dvíha víťaz hádky rozdielom mäkkého</b>, rovnako ako Nakladačku (cena podľa zóny, rozdeliť celú; výklad V1). Viera ďalej ruší Povery 1 : 1, Pohoršenie 2, Povera 1.</li>
-    <li><b>Pri prehre a pri rovnosti bodujú reči</b> a po bodovaní klesnú o stupeň.</li>
-    <li><b>Boduje sa stav pred zdvihnutím</b> — Nakladačka a hádka tejto bitky sa prejavia až v ďalšej.</li>
-    <li><b>Špaky za karty v línii aj Nakladačka 1 : 1 vo finále ostávajú</b> a pribúda <b>rozdiel hádky tomu, kto hádku vyhral</b>.</li>
-    <li><b>Neúspešný pokus o zajatie: strach pokúšajúceho klesne na 0</b> — stratí bodovanie toho staršieho v ďalších bitkách. Jediná výnimka z „strach nikdy neklesá“.</li>
-    <li><b>Obaja na červenej:</b> treba vymyslieť mechaniku, napríklad „antipriazeň“ pre oboch → <a href="#sibnuty">návrhy nižšie</a>.</li>
-    <li><b>Okamžitá výhra:</b> hráč vyhráva hru hneď, keď <b>vyhrá bitku, v ktorej má strach na maxime aspoň u polovice starších</b>. Tým sa rieši aj prebytok strachu nad červenou.</li>
-    <li><b>Udržaný strach sa ruší</b> (zaplatené a držané stupne, výplata na konci kola aj porazenému).</li>
-    <li><b>Karty, ktoré hýbu markerom späť, prerobiť</b> → <a href="#karty">návrhy</a>.</li>
-    <li><b>Hustota stola:</b> aspoň 4 mocky rozloženia → <a href="strach-reci-mocky.html">strach-reci-mocky.html</a>.</li>
+    <li><b>Strach dvíha víťaz bitky</b> (ten, kto Nakladačku spôsobil) — svoj strach. Nie porazený ako dnes.</li>
+    <li><b>Reči dvíha víťaz hádky</b> rozdielom mäkkého (V1). Viera ďalej ruší Povery 1 : 1, Pohoršenie 2, Povera 1.</li>
+    <li><b>Voľné rozdelenie:</b> body Nakladačky aj hádky hráč rozdelí <b>ľubovoľne</b> medzi starších — nemusí ísť pole po poli na jedného. Cena stupňa: do žltej 1, do oranžovej 2, do červenej 3. <b>Rozdelí, čo sa dá, zvyšok prepadne.</b></li>
+    <li><b>Reči sú vždy nad strachom:</b> prvé reči idú na stupeň nad strachom (strach oranžová → reči až na červenú, cena 3). Rovnosť strachu a rečí nenastane. Na staršieho so strachom na červenej sa reči dať nedajú. Keď hráčov strach dorastie na stupeň jeho rečí, <b>reči zaniknú</b>.</li>
+    <li><b>Bodovanie po bitke</b> (stav pred zdvihnutím): víťaz za každého staršieho najvyšší marker, porazený a pri sekere obaja len reči (V2); reči po bodovaní klesnú o stupeň.</li>
+    <li><b>Špaky za karty v línii ostávajú.</b> Vo finále sa markery nedvíhajú: Nakladačka aj rozdiel hádky idú 1 : 1 na špaky víťazovi bitky, resp. hádky (V3).</li>
+    <li><b>Výhra strachom:</b> kto <b>vyhrá bitku</b> a má červený strach aspoň u <b>4 z 8</b> starších, vyhráva hneď. Väzeň sa ráta ako červená svojho držiteľa (V4).</li>
+    <li><b>Výhra väzňami sprísnená:</b> väzni na výhru = (lokality + finále) / 2 — Tretia liga <b>2</b>, Druhá <b>3</b>, Prvá <b>4</b>.</li>
+    <li><b>Zajatie:</b> podmienka „môj strach 3“. Úspech → väzeň a <b>ukradneš súperovi špaky</b> za toho staršieho: hodnota jeho najvyššieho markera pred bodovaním (žltá 1, oranžová 3, červená 5), najviac toľko, koľko má. <b>8/6/4/2 po finále zaniká.</b> Neúspech → strach pokúšajúceho na 0.</li>
+    <li><b>Starší v ohrození:</b> nikto naň v tom kole strach ani reči nedvíha (O7).</li>
+    <li><b>Porazený dostane 1 cigaretu</b> — namiesto cigarety za každého posunutého staršieho (O6).</li>
+    <li><b>Udržaný strach sa ruší</b>, rovnako klebety a hádka ako posun priazní.</li>
+    <li><b>Obaja na červenej:</b> zatiaľ bez mechaniky (priazeň 0, obaja ho bodujú). Antipriazeň zatiaľ nie (O1, O2).</li>
+    <li><b>Rečami znížiť súperov strach:</b> zatiaľ nie.</li>
+    <li><b>Kapybara</b> → „Nástup: Súperove reči pri jednom staršom klesnú o stupeň.“ <b>Predsedova vila</b> → „Kšeft: Za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň.“</li>
+    <li><b>Stôl:</b> <b>Teplomery</b> (mock 3) <b>v jednom riadku</b> vedľa seba ako dnes starší, a <b>prepínač na Pult</b> (mock 5, tabuľka).</li>
+    <li><b>Nasadenie:</b> implementovať a hneď nasadiť — do <b>Zrejúcej</b>, ktorá sa postaví najprv. Do Vypálenej (hráčom) až po schválení.</li>
   </ol>
-</div>
-
-<h2 id="vyklad">Výklad — potvrď, či to sedí</h2>
-<div class="box">
-  <p>Štyri miesta, kde som odpoveď doplnil výkladom. Ak je niektorý zlý, oprav ho v <a href="#otazky">otázkach</a> (V1–V4).</p>
-  <ul>
-    <li><b>V1 · Reči dvíha víťaz hádky</b>, nie víťaz bitky. V odpovedi stálo „ten, kto bitku vyhral“; reči sú z mäkkého, preto ich beriem ako rozdiel hádky v rukách jej víťaza (hádku môže vyhrať aj porazený v bitke — dnes asi v 20 %).</li>
-    <li><b>V2 · Rovnosť = strach a reči na rovnakom stupni</b> u víťaza bitky. Bodujú reči (5 za červenú) a klesnú; strach ostane. <b>Sekera</b> sa ráta ako prehra pre oboch — obaja bodujú len reči.</li>
-    <li><b>V3 · Rozdiel hádky ako špaky 1 : 1 len vo finále</b>, rovnako ako Nakladačka — vo finále sa už reči nezdvíhajú, tak sa hádka premení na špaky. Mimo finále hádka dvíha reči a špaky nedáva.</li>
-    <li><b>V4 · „Polovica starších“ = 4 z 8</b> a <b>väzeň sa ráta ako červená svojho držiteľa</b> („boja sa ťa naplno — v pivnici alebo na červenej“). Inak by zajatie brzdilo výhru strachom. Výhra tromi väzňami ostáva ako dnes.</li>
-  </ul>
 </div>
 
 <h2 id="bitka">Nové poradie bitky (§9)</h2>
 <div class="box">
 <pre>0  efekty na začiatku bitky (Traktorista)
 1  hádka: Viera ruší Povery 1 : 1 · mäkké = Pohoršenie×2 + Povera×sila · víťaz hádky, hádka = |rozdiel|
-   (priazne sa nemenia, klebety zanikajú; Veriaci len jedna sila — bez „pred a po hádke“)
+   (priazne sa nemenia, klebety zanikajú; Veriaci len jedna sila)
 3  poškodenie: tuhé ako dnes, priazne z rozdielu strachov (Bitkár, Veriaci, Abstinent)
 4  výsledok: vyššie tuhé · remíza → Absťáky → Dlhy → sekera
 4a špaky za karty v línii víťazovi (Kultúrny dom aj porazenému) · Herňa, Noviny
 4b ŠPAKY ZA STARŠÍCH — stav pred zdvihnutím:
-     víťaz:     každý starší max(strach, reči) → 1 / 3 / 5;  pri rovnosti bodujú reči
-     porazený:  každý starší reči → 1 / 3 / 5;  sekera = obaja ako porazený
-     reči, ktoré bodovali, klesnú o stupeň
-4c VÝHRA STRACHOM: víťaz má červený strach u ≥ 4 starších (väzni sa rátajú) → koniec hry
+     víťaz:     každý starší → reči, ak má, inak strach → 1 / 3 / 5
+     porazený:  každý starší → reči → 1 / 3 / 5;  sekera = obaja ako porazený
+     reči, ktoré bodovali, klesnú o stupeň (na stupni strachu zaniknú)
+4c VÝHRA STRACHOM: víťaz má červený strach u ≥ 4 z 8 starších (väzni držiteľa sa rátajú) → koniec hry
 4d exekúcia (Robota, Exekútor)
-4e NAKLADAČKA: víťaz zdvihne svoj strach (cena 1 / 2 / 3, rozdeliť celú, starší po jednom)
-   REČI: víťaz hádky zdvihne svoje reči (cena 1 / 2 / 3, rozdeliť celú)
-   finále: Nakladačka aj hádka → špaky 1 : 1 víťazovi (V3), markery sa nehýbu
-5–6c poldeci, Veštica, Cintorín, cigarety za Nakladačku (?), Kmotor, Fajčiar, Výhra/Prehra
-6d zajatie: výhra → väzeň · prehra alebo sekera → pokúšajúcemu strach 0
+4e NAKLADAČKA: víťaz bitky rozdelí body na svoj strach (1 / 2 / 3 za stupeň, ľubovoľne), zvyšok prepadne
+   REČI: víťaz hádky rozdelí hádku na svoje reči (stupeň nad strachom, 1 / 2 / 3), zvyšok prepadne
+   nie na staršieho v ohrození; strach, ktorý dorastie na reči, ich zruší
+   finále: Nakladačka aj hádka → špaky 1 : 1, markery sa nehýbu
+5–6c poldeci, Veštica, Cintorín, porazenému 1 cigareta, Kmotor, Fajčiar, Výhra/Prehra
+6d zajatie: výhra → väzeň + krádež špakov (súperov najvyšší marker pred 4b), väzni ≥ (L+1)/2 → koniec hry
+   prehra alebo sekera → strach pokúšajúceho 0
 7  návrat kariet
 8  koniec kola: Chuť a Absťák (udržaný strach a klebety už nie)</pre>
-  <p class="mini">Cena „k stredu o 1 drahšia“ zaniká — markery idú len nahor. Stupnica má 4 polia: zo sivej na červenú 1 + 2 + 3 = 6.</p>
 </div>
 
-<h2 id="vyhra">Výhra strachom a zajatie</h2>
+<h2 id="reci">Reči — ako ležia a ako sa hýbu</h2>
 <div class="box">
-  <p><b>Podmienka zajatia</b> (§10) sa mení zo „súper má priazeň 3“ na <b>„môj strach je 3“</b>. Pokus ostáva v drafte pred stavbou šenku, 1 cigareta, boss do ruky, súper si nechá 1 kartu zo stavby.</p>
   <ul>
-    <li><b>Úspech</b> → väzeň (8 / 6 / 4 / 2 po finále, Kšeft väzňa). Zo stupnice zmiznú <b>markery oboch</b> — súper tým príde o body z toho staršieho. Zajatie je teda aj útok na súperove špaky.</li>
-    <li><b>Neúspech</b> → môj strach 0. Ak súper má na ňom strach, starší mi odteraz dáva <b>priazeň</b> (rozdiel). Z neúspechu je teda útecha, ale súperovi tým otvorím jeho vlastný pokus.</li>
-    <li><b>Napätie:</b> zajať (väzeň, istota) alebo nechať staršieho bodovať 5 za každú vyhratú bitku a rátať ho do výhry strachom? Väzeň sa do výhry ráta (V4), takže zajatie ťa k nej neposunie ani nevzdiali.</li>
-    <li><b>Výhra strachom</b> je verejná hrozba: kto má 4 červené, vyhrá najbližšiu bitku, ktorú vyhrá. Tie isté červené však dávajú súperovi priazne až sily 3 — čím je hráč bližšie k výhre, tým ťažšie sa mu bitka vyhráva. To je zásada „odmena za väčšiu výzvu“ v čistej podobe.</li>
-    <li><b>Prebytok:</b> keď má hráč červenú všade, kam môže, prebytok Nakladačky by prepadol. Taký hráč už spĺňa podmienku výhry (4 z 8), takže prípad je okrajový; navrhujem prebytok <b>1 : 1 na špaky</b> ako vo finále (otázka O5).</li>
+    <li>Reči sú druhý marker hráča na tej istej stupnici. Ležia <b>vždy vyššie</b> ako jeho strach: strach 0 → reči 1–3, strach 1 → reči 2–3, strach 2 → reči 3, strach 3 → reči nie.</li>
+    <li><b>Dvíhanie</b> stojí ako strach podľa stupňa, do ktorého sa vstupuje: prvé reči nad strachom oranžová stoja 3 (červená); zo žltého strachu na červené reči 2 + 3 = 5.</li>
+    <li><b>Pokles</b>: po bodovaní o stupeň; keď by klesli na stupeň strachu (alebo pod sivú), zaniknú. Kapybara súperove reči zníži o stupeň s rovnakým pravidlom.</li>
+    <li><b>Strach cez reči</b>: hráč smie svoj strach zdvihnúť aj na stupeň svojich rečí alebo nad ne — reči tým zaniknú (vie to dopredu, dvíha sám).</li>
+    <li>Reči <b>nedávajú priazeň ani strach</b> a nerátajú sa do výhry strachom ani do podmienky zajatia.</li>
   </ul>
 </div>
 
-<h2 id="sibnuty">Obaja na červenej — „šibnutý“ starší</h2>
+<h2 id="vyhra">Výhry a zajatie</h2>
 <div class="box">
-  <p>Keď má na staršom červený strach každý hráč, priazeň je 0 a obaja ho bodujú 5 za každú vyhratú bitku. Bez novej mechaniky je to mŕtvy bod. Michal navrhol „antipriazeň pre oboch“. Pracovný názov stavu: <b>šibnutý</b> (bojí sa oboch naplno, „šibe mu“). Alternatívy názvu: besný, zúfalý, paranoidný.</p>
-
-  <h3>A · Antipriazeň obom <span class="chip ok">odporúčam</span></h3>
-  <p>Šibnutý starší dáva obom hráčom <b>antipriazeň</b> — opak svojej priazne — so silou <b>S</b> (návrh 3, TODO). Platí, kým je šibnutý. Vzniká <b>horúci zemiak</b>: oboch ťaží, obaja ho chcú zajať (väzeň a koniec antipriazne). Kto pokus pokazí, spadne na 0 a dostane od neho priazeň 3 — ale súper má otvorený pokus na staršieho, ktorý už nie je šibnutý. Proti seba sa rušiace antipriazne (Bitkár −3 obom) sa porovnaním v bitke takmer zrušia; ťažia tie, ktoré sú len pre teba (Fajčiar, Advokát, Robota).</p>
-  <div class="tab"><table>
-    <thead><tr><th>Priazeň</th><th>Antipriazeň sily S (návrh)</th></tr></thead>
-    <tbody>
-      <tr><th>Bitkár</th><td>tvoje tuhé −S (najmenej 0)</td></tr>
-      <tr><th>Veriaci</th><td>tvoja Viera −S (najmenej 0), aj proti Poverám</td></tr>
-      <tr><th>Abstinent</th><td>v bitke sa ti ráta o S Absťákov viac (tuhé aj remíza)</td></tr>
-      <tr><th>Advokát</th><td>exekúcia ti odpočíta o S špakov viac (len keď ťa exekvuje)</td></tr>
-      <tr><th>Robota</th><td>v exekúcii sa ti neráta S akcií Robota</td></tr>
-      <tr><th>Fajčiar</th><td>po bitke odovzdáš S cigariet do banky (koľko máš)</td></tr>
-      <tr><th>Kmotor</th><td>po bitke získaš S zadĺženia</td></tr>
-      <tr><th>Alkoholik</th><td>po bitke sa ti S plných poldeci vypije</td></tr>
-    </tbody>
-  </table></div>
-
-  <h3>B · Antipriazeň rastie <span class="chip v2">variant A</span></h3>
-  <p>Ako A, ale sila začne na 1 a každý koniec kola, keď je stále šibnutý, stúpne o 1 (najviac 3 — stupnica). Prvé kolo je varovanie, potom tlak rastie. Lepšie čitateľné tempo, o pravidlo viac.</p>
-
-  <h3>C · Rozhodnú reči</h3>
-  <p>Šibnutý starší „verí klebetám“: priazeň dostane hráč s <b>viac</b> rečami na ňom, silou rozdielu rečí. Reči tak dostanú druhú úlohu práve tam, kde strach už nerozhoduje. Antipriazeň netreba. Proti: porušuje „reči nedávajú priazeň“ (len pri 3 : 3) a mäkké by bolo o čosi silnejšie.</p>
-
-  <h3>D · Ujde</h3>
-  <p>Šibnutého, ktorého do konca nasledujúceho kola nikto nezajme, vezmú z dediny: odíde zo stupnice bez väzňa, obaja prídu o jeho body. Čistá časomiera na zajatie, bez nových efektov. Proti: ubúdajú starší a s nimi aj cesta k výhre strachom (4 z 8 → treba prepočítať na „polovicu zostávajúcich“).</p>
+  <ul>
+    <li><b>Dve okamžité výhry</b> (obe v bitke, ktorú hráč vyhral): 4 červené strachy z 8 (krok 4c, väzni sa rátajú), alebo (lokality + finále) / 2 väzňov (krok 6d). Inak rozhodnú špaky po finále.</li>
+    <li><b>Pokus o zajatie</b> ostáva v drafte pred stavbou šenku, 1 cigareta, boss do ruky, súper si nechá 1 kartu zo stavby; podmienka je <b>môj strach 3</b> (súperov strach nerozhoduje).</li>
+    <li><b>Úspech</b>: väzeň (Kšeft väzňa), zo stupnice zmiznú markery oboch, a <b>krádež</b> — súper ti odovzdá špaky podľa svojho najvyššieho markera na tom staršom pred bodovaním (žltá 1, oranžová 3, červená 5), najviac toľko, koľko má. Swing až 10.</li>
+    <li><b>Neúspech</b>: môj strach na tom staršom 0 (moje reči ostávajú, ak sú nad 0). Ak má súper na ňom strach, starší mi odteraz dáva priazeň.</li>
+    <li><b>V ohrození</b> nikto na staršieho strach ani reči nedvíha. (Nastať to môže len u víťaza bitky, ktorý nie je pokúšajúci — pokus vtedy aj tak zlyhá.)</li>
+  </ul>
 </div>
 
-<h2 id="karty">Karty na prerobenie</h2>
+<h2 id="karty">Karty</h2>
 <div class="box">
-  <p>V sade v56 hýbu markerom len <b>Kapybara</b> a <b>Predsedova vila</b> (overené v <code>cards.json</code>). Telefón, Horoskop a Svätý text na hádku neodkazujú — mäkké z Telefónu a Horoskopu po novom dvíha reči, texty ostávajú. Úpravu v tvorcovi urobí Admin po schválení.</p>
   <div class="tab"><table>
-    <thead><tr><th>Karta</th><th>Dnes</th><th>Návrh</th></tr></thead>
+    <thead><tr><th>Karta</th><th>Dnes</th><th>Nové znenie (rozhodnuté)</th></tr></thead>
     <tbody>
-      <tr><th>Kapybara</th><td>Nástup: Posuň marker jedného staršieho o 1 pole k stredu.</td><td><b>K1</b> <span class="chip ok">odporúčam</span> Nástup: Jeden starší do konca kola nedáva priazeň ani antipriazeň. <span class="mini">(upokojí ho — strach sa nemení)</span><br><b>K2</b> Nástup: Súperove reči pri jednom staršom klesnú o stupeň.</td></tr>
-      <tr><th>Predsedova vila</th><td>Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole od seba alebo k sebe. Marker staršieho v ohrození takto posunúť nesmieš.</td><td><b>P1</b> <span class="chip ok">odporúčam</span> Kšeft: Za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň. <span class="mini">(miesto na minutie cigariet; reči sú dočasné)</span><br><b>P2</b> Kšeft: Za 3 cigarety zdvihni svoj strach pri jednom staršom o stupeň. <span class="mini">(trvalé, priamo k výhre strachom — silné)</span></td></tr>
+      <tr><th>Kapybara</th><td>Nástup: Posuň marker jedného staršieho o 1 pole k stredu.</td><td>Nástup: Súperove reči pri jednom staršom klesnú o stupeň.</td></tr>
+      <tr><th>Predsedova vila</th><td>Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole od seba alebo k sebe. Marker staršieho v ohrození takto posunúť nesmieš.</td><td>Kšeft: Za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň. Staršieho v ohrození nie.</td></tr>
     </tbody>
   </table></div>
-  <p class="mini">Neúspešný pokus o zajatie po novom vráti strach na 0 (rozhodnuté). Dohadzovačka (výmena scorecardov) ostáva bez zmeny.</p>
+  <p class="mini">Texty v tvorcovi zmení Admin v rozpracovanej sade — tú hrá Zrejúca. Telefón, Horoskop a Svätý text ostávajú (mäkké po novom dvíha reči).</p>
+</div>
+
+<h2 id="stol">Stôl</h2>
+<div class="box">
+  <ul>
+    <li><b>Teplomery</b> (mock 3): karta staršieho, vľavo teplomer môjho strachu, vpravo súperovho; reči ako bublina pri teplomeri; dole stuha priazne. <b>Všetkých 8 v jednom riadku</b> vedľa seba ako dnes starší — nie v dvoch riadkoch.</li>
+    <li><b>Prepínač na Pult</b> (mock 5): tabuľka strach, reči, priazeň a špaky pri výhre a prehre, súčty a stav výhier (červené 3 / 4, väzni 1 / 3).</li>
+    <li>Rozdelenie Nakladačky a hádky: hráč klikom pridáva stupne vybraným starším, stôl ukazuje cenu a zvyšok, ktorý prepadne; potvrdenie jedným ťahom.</li>
+  </ul>
 </div>
 
 <h2 id="rusi">Čo sa ruší a zjednoduší</h2>
 <div class="box">
   <ul>
-    <li>Stupnica 7 polí s dvoma polovicami, cena „k stredu o 1 drahšia“, odtláčanie markera (§10 Stupnica, Smer posunu, Krajná pozícia).</li>
+    <li>Stupnica 7 polí s dvoma polovicami, cena „k stredu o 1 drahšia“, odtláčanie markera, rozdeľovanie Nakladačky porazeným (§10, §9.4).</li>
     <li>Udržaný strach — zaplatené a držané stupne, <code>strachNaVyplatu</code>, <code>poKonciKola</code>, <code>sPosunutymMarkerom</code>.</li>
     <li>Rozdelenie hádky na sily priazní, klebety, <code>ucinnaPriazen</code> s klebetami, výnimka „priazeň aj strach tomu istému“, Veriaci „pred a po hádke“ (H2), zákaz O8 pre hádku (H4).</li>
-    <li>„Porazený rozdeľuje Nakladačku“ (v8) — po novom víťaz.</li>
-    <li>Kroky výpočtu ostávajú: hádka (Viera vs. Povery, mäkké), tuhé, výsledok, sekera, väzeň, Kšefty väzňov.</li>
+    <li>Cigarety za každého posunutého staršieho (→ 1 cigareta porazenému), špaky za väzňov 8/6/4/2 (→ krádež), <code>VAZNI_NA_VYHRU: 3</code> (→ podľa ligy).</li>
   </ul>
 </div>
 
@@ -203,106 +187,39 @@ stav staršieho  = podľa vyššieho strachu: pokojný · znepokojený · vystra
   <div class="tab"><table>
     <thead><tr><th>Starší (priazeň)</th><th>Ana strach / reči</th><th>Boris strach / reči</th><th>Priazeň</th><th>Ana výhra · prehra</th><th>Boris výhra · prehra</th></tr></thead>
     <tbody>
-      <tr><th>Farár (Veriaci)</th><td class="z3">3 / 0</td><td class="z3">3 / 1</td><td>šibnutý — antipriazeň obom</td><td>5 · 0</td><td>5 · 1</td></tr>
-      <tr><th>Krčmárka (Fajčiar)</th><td>2 / 3</td><td>0 / 0</td><td>Boris 2</td><td>5 (reči) · 5</td><td>0 · 0</td></tr>
-      <tr><th>Starosta (Bitkár)</th><td>0 / 0</td><td>2 / 1</td><td>Ana 2</td><td>0 · 0</td><td>3 · 1</td></tr>
-      <tr><th>Poštárka (Advokát)</th><td class="z3">3 / 0</td><td>0 / 2</td><td>Boris 3 · v ohrození (Ana skúša)</td><td>5 · 0</td><td>3 (reči) · 3</td></tr>
+      <tr><th>Farár (Veriaci)</th><td class="z3">3 / —</td><td class="z3">3 / —</td><td>nikto (obaja na červenej)</td><td>5 · 0</td><td>5 · 0</td></tr>
+      <tr><th>Krčmárka (Fajčiar)</th><td>2 / 3</td><td>0 / —</td><td>Boris 2</td><td>5 (reči) · 5</td><td>0 · 0</td></tr>
+      <tr><th>Starosta (Bitkár)</th><td>0 / —</td><td>1 / 2</td><td>Ana 1</td><td>0 · 0</td><td>3 (reči) · 3</td></tr>
+      <tr><th>Poštárka (Advokát)</th><td class="z3">3 / —</td><td>0 / 2</td><td>Boris 3 · v ohrození (Ana skúša)</td><td>5 · 0</td><td>3 (reči) · 3</td></tr>
       <tr><th>Hrobár</th><td colspan="3">väzeň Borisa</td><td>—</td><td>—</td></tr>
-      <tr><th>Autobusár (Robota)</th><td>1 / 1</td><td>1 / 0</td><td>nikto</td><td>1 (rovnosť → reči) · 1</td><td>1 · 0</td></tr>
-      <tr><th>Veterinár (Kmotor)</th><td>0 / 2</td><td class="z3">3 / 0</td><td>Ana 3</td><td>3 (reči) · 3</td><td>5 · 0</td></tr>
-      <tr><th>Vychovávateľka (Alkoholik)</th><td class="z3">3 / 0</td><td>1 / 0</td><td>Boris 2</td><td>5 · 0</td><td>1 · 0</td></tr>
-      <tr><th>Spolu</th><td colspan="3">červené: Ana 3 / 4 · Boris 3 / 4 (Farár, Veterinár + väzeň)</td><td><b>24 · 9</b></td><td><b>18 · 5</b></td></tr>
+      <tr><th>Autobusár (Robota)</th><td>1 / —</td><td>1 / —</td><td>nikto</td><td>1 · 0</td><td>1 · 0</td></tr>
+      <tr><th>Veterinár (Kmotor)</th><td>0 / 2</td><td class="z3">3 / —</td><td>Ana 3</td><td>3 (reči) · 3</td><td>5 · 0</td></tr>
+      <tr><th>Vychovávateľka (Alkoholik)</th><td class="z3">3 / —</td><td>1 / —</td><td>Boris 2</td><td>5 · 0</td><td>1 · 0</td></tr>
+      <tr><th>Spolu</th><td colspan="3">červené: Ana 3 / 4 · Boris 3 / 4 (Farár, Veterinár + väzeň) · väzni na výhru 3: Boris 1</td><td><b>24 · 8</b></td><td><b>18 · 6</b></td></tr>
     </tbody>
   </table></div>
-  <p>Obaja sú krok od výhry strachom. Kto vyhrá túto bitku, ešte nevyhráva (má 3 z 4), ale jeho Nakladačka môže dotiahnuť štvrtú červenú — a najbližšia vyhratá bitka ukončí hru. Ana skúša zajať Poštárku: keď vyhrá, väzeň sa jej ráta ako červená a Boris príde o 3 za reči na Poštárke. Keď prehrá, jej strach na Poštárke klesne na 0 a Poštárka jej dá priazeň 0 (Boris na nej strach nemá). Borisovi dávajú Krčmárka, Poštárka a Vychovávateľka spolu priazeň 7 — cena, ktorú Ana platí za svoje červené.</p>
-  <p class="mini">Plus špaky za karty v línii víťazovi. Reči, ktoré bodovali, klesnú: Ana Krčmárka 3 → 2, Autobusár 1 → 0 a Veterinár 2 → 1 (pri prehre aj pri výhre), Boris pri výhre Poštárka, pri prehre Farár, Starosta a Poštárka o stupeň.</p>
+  <p><b>Ana vyhrá bitku:</b> 24 špakov za starších (+ karty v línii), Boris 6 za reči (Starosta, Poštárka). Ana ešte nevyhráva (3 z 4 červených), ale zajme Poštárku: ukradne Borisovi 3 (jeho reči na oranžovej) a väzeň sa jej ráta ako štvrtá červená — najbližšia vyhratá bitka ukončí hru. Nakladačkou môže dvíhať svoj strach, napríklad Krčmárku na červenú (3) — jej reči tým zaniknú.</p>
+  <p><b>Boris vyhrá bitku:</b> 18 za starších, Ana 8 za reči. Anin pokus o Poštárku zlyhá — jej strach na Poštárke 0, priazeň Borisa z Poštárky zanikne. Boris Nakladačkou môže dotiahnuť štvrtú červenú (Starosta 1 → 3 stojí 2 + 3 = 5) a ďalšia vyhratá bitka je jeho výhra.</p>
+  <p class="mini">Reči po bodovaní: Ana Krčmárka 3 → zanikne (klesla by na strach 2), Veterinár 2 → 1; Boris Starosta 2 → zanikne, Poštárka 2 → 1. Borisovi dávajú Krčmárka, Poštárka a Vychovávateľka spolu priazeň 7 — cena, ktorú Ana platí za svoje červené.</p>
 </div>
 
-<h2 id="rizika">Riziká a čo zmerať</h2>
+<h2 id="otvorene">Otvorené</h2>
+<div class="box zv">
+  <ul>
+    <li><b>Zvyšok vs. O5:</b> „rozdeliť, čo sa dá, zvyšok prepadne“ platí aj vtedy, keď hráč nemá kam dvíhať vôbec (všetky jeho strachy na červenej)? Skôr bola odpoveď O5 „špaky 1 : 1“. Implementujem „prepadne“ vo všetkých prípadoch, kým Michal nepovie inak.</li>
+    <li><b>Sekera a cigareta:</b> pri sekere nikto neprehral → nikto nedostane cigaretu (predpoklad).</li>
+  </ul>
+</div>
+
+<h2 id="rizika">Riziká a čo sledovať v playteste</h2>
 <div class="box riz">
   <ul>
-    <li><b>Víťaz rozdeľuje Nakladačku</b> — dá porazenému najneškodnejšie priazne a sústredí strach. Spolu s trvalým strachom môže vzniknúť snehová guľa. Brzdou sú priazne súpera z rozdielu; či stačia, ukáže turnaj botov (Michal: „uvidíme“).</li>
-    <li><b>Výška bodovania:</b> 8 starších × 5 = až 40 špakov za bitku (dnes bitka ≈ 8 za karty v línii). Bodovanie za starších prevezme hlavnú úlohu; finále (dnes rozhoduje 85 % partií) môže oslabiť alebo posilniť.</li>
-    <li><b>Priazne neskoro miznú:</b> strach len rastie, takže na konci majú obaja na viacerých starších rovnako a priazeň je 0. Šibnutý (A) to čiastočne vracia.</li>
-    <li><b>Reči môžu byť bezpečnejšie ako strach</b> — bodujú vždy a nedávajú súperovi priazeň. Brzdou je pokles po bodovaní a to, že ich dvíha len víťaz hádky.</li>
-    <li><b>Hustota stola:</b> 8 starších × 4 markery. Riešia mocky.</li>
-    <li><b>Bot</b> (<code>bot.ts</code>): rozdelenie strachu a rečí, hodnota výhry strachom (dnes +200 za tretieho väzňa), obrana proti hrozbe 4 červených, zajatie šibnutého. Bez toho meranie strategickosti ani playtest proti botovi nebude hovoriť pravdu.</li>
+    <li><b>Víťaz rozdeľuje Nakladačku</b> a dá porazenému najneškodnejšie priazne; spolu s trvalým strachom môže vzniknúť snehová guľa. Brzdou sú priazne súpera z rozdielu.</li>
+    <li><b>Výška bodovania:</b> 8 starších × 5 = až 40 špakov za bitku (dnes ≈ 8 za karty v línii).</li>
+    <li><b>Výhry pred finále:</b> 4 červené a 2/3/4 väzni — koľko partií skončí pred finále a v ktorom kole.</li>
+    <li><b>Bot</b> (<code>bot.ts</code>): rozdelenie strachu a rečí, hodnota oboch okamžitých výhier, obrana pred hrozbou 4 červených, krádež pri zajatí.</li>
   </ul>
-  <p><b>Merať</b> (stratég vo worktree, 60 partií na ligu): podiel výhier strachom a v ktorom kole, víťaz finále → výhra %, vedúci pred finále %, priemerný počet červených na konci, podiel hádok, ktoré vyhral porazený v bitke, priemerná výška Nakladačky po kolách, strategickosť (rebrík, duplikát) nesmie klesnúť.</p>
 </div>
-
-<h2 id="otazky">Otázky na rozhodnutie</h2>
-<p class="mini">Klikni na voľbu a na konci skopíruj odpovede do chatu.</p>
-<div id="otazky-zoznam"></div>
-<p><button class="akcia" id="kopiruj" type="button">Skopírovať odpovede</button></p>
-<textarea id="vystup" readonly aria-label="Odpovede"></textarea>
-
-<script>
-const OTAZKY = [
-  { id: "V1", t: "Reči dvíha víťaz hádky (rozdiel mäkkého), nie víťaz bitky?", m: [
-    ["Áno, víťaz hádky", "Hádku môže vyhrať aj porazený v bitke — reči sú jeho cesta.", 1],
-    ["Nie, víťaz bitky", "Víťaz bitky rozdeľuje Nakladačku aj rozdiel hádky."] ] },
-  { id: "V2", t: "Rovnosť strachu a rečí u víťaza: bodujú reči a klesnú. Sekera = prehra pre oboch?", m: [
-    ["Áno, oboje", "", 1],
-    ["Pri rovnosti boduje strach", "Reči ostanú, poistka na prehru."],
-    ["Sekera inak", "Napíš do poznámky."] ] },
-  { id: "V3", t: "Rozdiel hádky ako špaky 1 : 1 — len vo finále (ako Nakladačka)?", m: [
-    ["Len vo finále", "Mimo finále hádka dvíha reči.", 1],
-    ["V každej bitke", "Navyše k rečiam — hádka bude dávať špaky aj reči."] ] },
-  { id: "V4", t: "Výhra strachom: 4 z 8, väzeň sa ráta ako červená svojho držiteľa?", m: [
-    ["Áno", "Zajatie výhru strachom nebrzdí.", 1],
-    ["Väzni sa nerátajú", "Treba 4 červené na stupnici."],
-    ["Polovica zostávajúcich", "Napr. 2 väzni → polovica zo 6 = 3."] ] },
-  { id: "O1", t: "Obaja na červenej (šibnutý starší)", m: [
-    ["A · Antipriazeň obom (sila 3)", "Horúci zemiak: oboch ťaží, obaja ho chcú zajať.", 1],
-    ["B · Antipriazeň rastie 1 → 2 → 3", "Prvé kolo varovanie."],
-    ["C · Rozhodnú reči", "Priazeň dostane, kto má viac rečí."],
-    ["D · Ujde", "Kto ho do konca ďalšieho kola nezajme, starší odíde zo stupnice."] ] },
-  { id: "O2", t: "Antipriazne podľa tabuľky (Bitkár −S tuhé, Fajčiar −S cigariet, …)?", m: [
-    ["Áno, ako návrh na meranie", "Admin a stratég doladia.", 1],
-    ["Upraviť", "Napíš do poznámky ktoré."] ] },
-  { id: "O3", t: "Kapybara", m: [
-    ["K1 · starší do konca kola nedáva priazeň ani antipriazeň", "", 1],
-    ["K2 · súperove reči −1 stupeň", ""] ] },
-  { id: "O4", t: "Predsedova vila", m: [
-    ["P1 · 2 cigarety → svoje reči +1", "", 1],
-    ["P2 · 3 cigarety → svoj strach +1", "Trvalé, silné."],
-    ["Obe možnosti na výber", "2 cig reči alebo 3 cig strach."] ] },
-  { id: "O5", t: "Prebytok Nakladačky / hádky, keď nie je kam dvíhať", m: [
-    ["Špaky 1 : 1", "Ako vo finále.", 1],
-    ["Prebytok strachu do rečí", "Zvyšok Nakladačky zdvihne reči."] ] },
-  { id: "O6", t: "Cigarety za Nakladačku (porazenému 1 za každého staršieho, ktorého marker sa pohol)", m: [
-    ["Ostávajú", "Útecha porazenému, víťaz dvíha svoj strach.", 1],
-    ["Rušia sa", "Porazený má priazne z rozdielu."] ] },
-  { id: "O7", t: "Smie víťaz dvíhať svoj strach pri staršom v ohrození (súper ho práve skúša zajať)?", m: [
-    ["Áno", "Dvíha len svoj marker, pokus to nemení — starší môže zošalieť.", 1],
-    ["Nie", "Ako dnes O8 — v ohrození sa nehýbe nič."] ] },
-  { id: "O8", t: "Ďalší krok", m: [
-    ["Najprv meranie stratégom (variant vo worktree)", "Potom implementácia, nasadenie, playtest.", 1],
-    ["Implementovať a hneď nasadiť", "Ako v10 — meranie až playtestom."] ] },
-];
-const zoznam = document.getElementById("otazky-zoznam");
-for (const o of OTAZKY) {
-  const d = document.createElement("details"); d.className = "q"; d.open = true;
-  d.innerHTML = `<summary><span class="qid">${o.id}</span><span class="qt">${o.t}</span><span class="volba" id="v-${o.id}"></span></summary>` +
-    `<ol class="moznosti">${o.m.map(([l, p, r], i) => `<li class="moz${r ? " rec" : ""}"><label><input type="radio" name="${o.id}" value="${i}"> ${l}${r ? ' <span class="chip ok">odporúčam</span>' : ""}${p ? `<span>${p}</span>` : ""}</label></li>`).join("")}</ol>` +
-    `<label class="pozn">Poznámka<textarea rows="2" data-q="${o.id}"></textarea></label>`;
-  zoznam.appendChild(d);
-}
-function vystup() {
-  const riadky = OTAZKY.map(o => {
-    const v = document.querySelector(`input[name="${o.id}"]:checked`);
-    const n = document.querySelector(`textarea[data-q="${o.id}"]`).value.trim();
-    const volba = v ? o.m[+v.value][0] : "—";
-    document.getElementById("v-" + o.id).textContent = v ? "✓ " + volba : "";
-    return `${o.id}: ${volba}${n ? " — " + n : ""}`;
-  });
-  document.getElementById("vystup").value = "Strach a reči — odpovede\n" + riadky.join("\n");
-}
-zoznam.addEventListener("change", vystup); zoznam.addEventListener("input", vystup);
-document.getElementById("kopiruj").addEventListener("click", () => { vystup(); const t = document.getElementById("vystup"); t.select(); try { navigator.clipboard.writeText(t.value); } catch (e) { document.execCommand("copy"); } });
-vystup();
-</script>
 </main>
 </body>
 </html>
