@@ -82,15 +82,16 @@ describe("Kšefty pod kartou", () => {
     }
   });
 
-  it("Kšeft vily otvorí voľbu staršieho a smeru s kľúčmi výučby", () => {
+  it("Kšeft vily otvorí voľbu staršieho s kľúčom výučby kseft:<elderId>:0 (v11: jedno tlačidlo)", () => {
     const { s } = sKseftami(zaklad, { lok: "predsedova_vila", vazni: [] });
     const vila = kseftyNaStole(data, viewFor(data, s, ja)).find((k) => k.druh === "lokalita");
     expect(vila?.akcia.typ).toBe("volba");
     if (vila?.akcia.typ !== "volba") return;
     const e = s.starsi[0]?.elderId ?? "";
     const riadok = vila.akcia.riadky.find((r) => r.kluc === e);
-    expect(riadok?.vlavo?.vyucba).toBe(klucVily(e, true));
-    expect(riadok?.vpravo.vyucba).toBe(klucVily(e, false));
+    expect(riadok?.vlavo).toBeUndefined();
+    expect(riadok?.vpravo.vyucba).toBe(`kseft:${e}:0`);
+    expect(riadok?.vpravo.text).toMatch(/^reči (nič|žltá|oranžová) → (žltá|oranžová|červená)$/);
     expect(klucVyucbyKseftu(vila)).toBe("tlacidlo:kseft");
   });
 
@@ -162,9 +163,9 @@ describe("tlačidlo Kšeftu", () => {
     expect(zavreta).toContain('data-vyucba="tlacidlo:kseft"');
     const otvorena = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: vilaK, cmd: () => {}, otvorena: true }));
     const e = vila.s.starsi[0]?.elderId ?? "";
-    expect(otvorena).toContain(`data-vyucba="${klucVily(e, true)}"`);
-    expect(otvorena).toContain(`data-vyucba="${klucVily(e, false)}"`);
-    expect(otvorena).toContain("reči ↑");
+    expect(otvorena).toContain(`data-vyucba="${klucVily(e)}"`);
+    expect(otvorena).not.toContain(`data-vyucba="${klucVily(e, true)}"`);
+    expect(otvorena).toContain("reči ");
   });
 
   it("na telefóne ťuk otvorí ponuku s celým znením a veľkým tlačidlom", () => {

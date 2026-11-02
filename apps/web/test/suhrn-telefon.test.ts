@@ -43,16 +43,16 @@ describe("výsledok bitky na telefóne", () => {
   });
 });
 
-describe("súhrn posunov starších na telefóne — dôsledky slovami", () => {
+describe("súhrn kola pri starších na telefóne — dôsledky slovami (v11)", () => {
   const mena = ["Jano", "Fero"] as const;
-  it("špaky na udržanie sú špaky, nie cigarety, a čakajú na koniec ďalšieho kola", () => {
-    expect(textDosledku({ druh: "naUdrzanie", hrac: 0, spaky: 3 }, 0, mena, [])).toBe("+3 š tebe, ak sa udrží do konca ďalšieho kola");
-    expect(textDosledku({ druh: "vyplata", hrac: 1, spaky: 1, stupen: 1 }, 0, mena, [])).toBe("+1 š Fero za udržaný strach (vyplatené)");
+  it("strach, reči a bodovanie", () => {
+    expect(textDosledku({ druh: "strach", hrac: 0, z: 1, na: 3 }, 0, mena, [], 3)).toBe("tvoj strach žltá → červená");
+    expect(textDosledku({ druh: "reci", hrac: 1, z: 2, na: 0 }, 0, mena, [], 3)).toBe("Fero — reči oranžová → zanikli");
+    expect(textDosledku({ druh: "vyplata", hrac: 1, spaky: 3, reci: true }, 0, mena, [], 3)).toBe("+3 š Fero za reči po bitke");
   });
 
-  it("priazeň, hádka a väzeň s textom", () => {
-    expect(textDosledku({ druh: "priazen", hrac: 0, sila: 3, bolo: 2 }, 0, mena, [])).toBe("priazeň ty 3 (predtým 2)");
-    expect(textDosledku({ druh: "hadka", hrac: 1, stupne: 1 }, 0, mena, [])).toBe("hádka Fero: priazeň do konca kola (+1)");
-    expect(textDosledku({ druh: "vazen", hrac: 0, poradie: 1 }, 0, mena, [])).toMatch(/^uväznený · väzeň tvoj 0\/\d$/);
+  it("priazeň a väzeň s textom", () => {
+    expect(textDosledku({ druh: "priazen", hrac: 0, sila: 3, bolo: 2 }, 0, mena, [], 3)).toBe("priazeň ty 3 (predtým 2)");
+    expect(textDosledku({ druh: "vazen", hrac: 0, poradie: 1 }, 0, mena, [], 3)).toBe("uväznený · väzeň tvoj 0/3");
   });
 });

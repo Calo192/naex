@@ -17,8 +17,11 @@ export interface MoznostZajatia {
   /** Priazeň, ktorú starší hráčovi teraz prejavuje (scorecard a jej účinok). */
   readonly priazen: { readonly sila: number; readonly nazov: string; readonly kratko: string; readonly cely: string };
   readonly cigarety: number;
-  /** Čo väzeň dá: poradie zajatia v partii, špaky po finále a či je to tretí (výhra). */
-  readonly vazen: { readonly poradie: number; readonly spaky: number; readonly vyhra: boolean };
+  /**
+   * Náhľad pokusu (nahladPokusu, v11): poradie zajatia, krádež — špaky, ktoré súper odovzdá za svoj
+   * najvyšší marker pri staršom — a koľkého väzňa by hráč mal (vyhra = dosť na výhru vo vyhratej bitke).
+   */
+  readonly vazen: { readonly poradie: number; readonly spaky: number; readonly vyhra: boolean; readonly mojich: number; readonly naVyhru: number };
   readonly vyber: () => void;
 }
 
@@ -66,7 +69,7 @@ export function PonukaZajatia({
               <div className="pp-text" style={textPod ? { width: sirka } : undefined}>
                 <b className="pp-meno">{m.meno}</b>
                 <span className="pp-priazen" title={m.priazen.cely}>
-                  <IkonaPriazne /> {menoSupera} +{m.priazen.sila} · {m.priazen.nazov}: {m.priazen.kratko}
+                  <IkonaPriazne /> {m.priazen.sila > 0 ? `${menoSupera} +${m.priazen.sila}` : "nikto"} · {m.priazen.nazov}: {m.priazen.kratko}
                 </span>
                 <span className="pp-cena">
                   {m.cigarety > 0 ? (
@@ -76,7 +79,8 @@ export function PonukaZajatia({
                   ) : (
                     "zadarmo · "
                   )}
-                  väzeň {m.vazen.poradie}. v partii: {m.vazen.spaky} {m.vazen.spaky === 1 ? "špak" : m.vazen.spaky <= 4 ? "špaky" : "špakov"}{m.vazen.vyhra ? " · tretí = výhra" : ""}
+                  ukradneš {m.vazen.spaky} {m.vazen.spaky === 1 ? "špak" : m.vazen.spaky > 1 && m.vazen.spaky <= 4 ? "špaky" : "špakov"} · väzeň {m.vazen.mojich}/{m.vazen.naVyhru}
+                  {m.vazen.vyhra ? " = výhra vo vyhratej bitke" : ""}
                 </span>
                 <button type="button" className="tlacidlo-hlavne pp-vziat" onClick={m.vyber}>
                   zajať {m.meno}

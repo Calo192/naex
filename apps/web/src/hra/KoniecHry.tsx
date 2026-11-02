@@ -13,7 +13,6 @@ import { favourPodlaId } from "./priazenKola.ts";
 import { SuhrnPoPartii } from "../achievementy/VPartii.tsx";
 import type { SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
 import { textHlasky } from "./useHra.ts";
-import { SPAKY_ZA_VAZNOV } from "./staraStupnica.ts";
 
 export interface KoniecHryProps {
   readonly view: ClientState;
@@ -111,7 +110,7 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             )}
             {(koniec.vazni?.[0] ?? 0) + (koniec.vazni?.[1] ?? 0) > 0 && (
               <p className="koniec-cirhozy">
-                Väzni po finále (poradie zajatia {SPAKY_ZA_VAZNOV.join(" / ")}): ty +{koniec.vazni?.[ja] ?? 0}, {mena[su]} +{koniec.vazni?.[su] ?? 0}.
+                Väzni po finále (archívna partia do v10): ty +{koniec.vazni?.[ja] ?? 0}, {mena[su]} +{koniec.vazni?.[su] ?? 0}.
               </p>
             )}
             {(koniec.cirhozy?.[0] ?? 0) + (koniec.cirhozy?.[1] ?? 0) > 0 && (

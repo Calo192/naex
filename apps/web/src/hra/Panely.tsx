@@ -22,7 +22,7 @@ import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
 import { CENA_POLA } from "./textyStarsich.ts";
-import { type SpakyTeraz } from "./staraStupnica.ts";
+import type { SpakyTeraz } from "@naex/core";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
 // aby ich mohli použiť aj malé komponenty testované bez prehliadača (KseftPodKartou).
@@ -754,9 +754,8 @@ export function HracDoska({
           title={
             spakyKlik.stlacene
               ? "Zavrieť nástenku (Esc)"
-              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Na konci kola ${ja ? "ti" : "mu"} starší, ktorí sa ${ja ? "ťa" : "ho"} boja, dajú za udržané stupne ${body.zaStarsich[p]}, nech bitku vyhrá ktokoľvek (dlaždica Starší).` +
+              : `${ja ? "Tvoje špaky" : `Špaky ${meno}`}: ${body.spaky[p]}. Po najbližšej bitke ${ja ? "ti" : "mu"} starší dajú ${body.zaStarsichVyhra[p]} pri výhre a ${body.zaStarsichPrehra[p]} pri prehre (dlaždica Starší).` +
                 (body.vykupne[p].spaky > 0 && view.koniec === null ? ` Výkupné poldeci a cigariet na konci hry: +${body.vykupne[p].spaky}.` : "") +
-                (body.vazni[p] > 0 && view.koniec === null ? ` Väzni po finále: +${body.vazni[p]}.` : "") +
                 (body.cirhozy[p] > 0 ? ` Nepriznaná Cirhóza ×${body.cirhozy[p]}: na konci hry −${body.cirhozy[p] * KONSTANTY.SPAKY_ZA_CIRHOZU}.` : "") +
                 " Klik ukáže nástenku: odkiaľ sú špaky po bitkách."
           }
@@ -773,7 +772,7 @@ export function HracDoska({
             )}
           </span>
         </button>
-        <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsich[p]} naUdrzanie={body.naUdrzanie[p]} starsi={starsi} />
+        <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsichVyhra[p]} zaStarsichPrehra={body.zaStarsichPrehra[p]} starsi={starsi} />
       </div>
 
     </section>

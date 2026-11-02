@@ -10,7 +10,8 @@ import type { Action, AkciaRekapitulacie, AkciaTuha, CielVykladania, Moment, Nae
 import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky, opponentOf } from "@naex/core";
 import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 import { PriazenStarsiehoVRiadku } from "./KruzokPriazne.tsx";
-import { popisHadkyNaStarsom, prechodPriazne, type PriazneBitky } from "./priazenKola.ts";
+import { popisReciZHadky, type PriazneBitky } from "./priazenKola.ts";
+import { nazovStupna } from "./textyStarsich.ts";
 
 /** Piktogram akcie a jej názov zo sady (HernaPlocha). */
 export interface PiktogramyRekapitulacie {
@@ -931,12 +932,12 @@ function RiadokHadky({
           <>
             {kto === "ja" ? "vyhral si" : `vyhral ${menoSupera}`} o <b>{h.velkost}</b> ({h.makke[ja]} : {h.makke[su]} mäkké)
             {starsi.map((x) => (
-              <Cip key={x.elderId} trieda={`${kto} rk-hadka`} title={popisHadkyNaStarsom(x, menoSupera)}>
-                <PriazenStarsiehoVRiadku fav={x.fav} p={x.teraz} meno={x.meno} prechod={prechodPriazne(x.z, x.teraz, menoSupera)} />
+              <Cip key={x.elderId} trieda={`${kto} rk-hadka`} title={popisReciZHadky(x, menoSupera)}>
+                <PriazenStarsiehoVRiadku fav={x.fav} p={{ komu: null, sila: 0 }} meno={x.meno} prechod={`reči ${nazovStupna(x.z)} → ${nazovStupna(x.na)}`} />
               </Cip>
             ))}
             {zJadra.map((x) => (
-              <Cip key={x.elderId} trieda={`${kto} rk-hadka`} title="priazeň do konca kola, marker sa nehýbe">
+              <Cip key={x.elderId} trieda={`${kto} rk-hadka`} title="hádka">
                 {menoKarty(x.defId)} {sila(x.pred)} → {sila(x.po)}
               </Cip>
             ))}
