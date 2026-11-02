@@ -7,6 +7,39 @@ export function opponentOf(p: PlayerId): PlayerId {
   return p === 0 ? 1 : 0;
 }
 
+/**
+ * Formát partie (Michal 2026-10-28): 1 na 1, alebo 2 na 2 — dva tímy po dvoch
+ * hráčoch. V 2 na 2 je PlayerId tím: všetko, čo pravidlá hovoria o hráčovi,
+ * platí pre tím; osobná je len ruka a ťah.
+ */
+export type Format = "1na1" | "2na2";
+
+/** Člen tímu — v 1 na 1 vždy 0. */
+export type Clen = 0 | 1;
+
+/**
+ * Miesto pri stole: tím = miesto % 2, člen = miesto ÷ 2. Miesta 0 a 1 sú prví
+ * členovia tímov, takže v 1 na 1 je miesto to isté číslo ako hráč.
+ */
+export type Miesto = 0 | 1 | 2 | 3;
+
+export function timMiesta(m: Miesto): PlayerId {
+  return (m % 2) as PlayerId;
+}
+
+export function clenMiesta(m: Miesto): Clen {
+  return (m >> 1) as Clen;
+}
+
+export function miestoClena(tim: PlayerId, clen: Clen): Miesto {
+  return (tim + 2 * clen) as Miesto;
+}
+
+/** Miesta pri stole: v 1 na 1 [0, 1], v 2 na 2 [0, 1, 2, 3]. */
+export function miestaFormatu(format: Format): readonly Miesto[] {
+  return format === "2na2" ? [0, 1, 2, 3] : [0, 1];
+}
+
 /** Akcie v slotoch po stranách karty (kľúče z cards.json). */
 export type Action =
   | "Rana"

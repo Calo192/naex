@@ -9,8 +9,8 @@
 // Rozhodnutia pri nejasných pravidlách sú vypísané v README (sekcia
 // „Rozhodnuté nejasnosti“) a označené v komentároch ako [R#].
 
-import type { CardDef, CardInstance, Phase, PlayerId, Tag } from "./types.ts";
-import { opponentOf, priazenZKluca } from "./types.ts";
+import type { CardDef, CardInstance, Clen, Format, Miesto, Phase, PlayerId, Tag } from "./types.ts";
+import { clenMiesta, miestaFormatu, miestoClena, opponentOf, priazenZKluca, timMiesta } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { RngState } from "./rng.ts";
@@ -23,9 +23,11 @@ import {
   cenaBarteru,
   freshPlayer,
   hodnotaViery,
+  kartyVRukach,
   pocetAbstakov,
   prahCirhozy,
   prahDlhu,
+  rukaClena,
   textNeresti,
 } from "./player.ts";
 import type { BattleOutcome, BattleSide, DamageResult, RozhodnutieBitky } from "./battle.ts";
@@ -440,6 +442,16 @@ export interface GameState {
   readonly faza: Phase;
   readonly kolo: number;
   readonly utocnik: PlayerId;
+  /**
+   * Formát 2 na 2 (Michal 2026-10-28): hraci sú tímy, ruky a ťahy majú miesta
+   * (types.ts Miesto). Chýba v 1 na 1 — stav 1 na 1 sa nezmenil.
+   */
+  readonly format?: "2na2";
+  /**
+   * 2 na 2: kapitán kola v každom tíme (člen), robí tímové voľby. Strieda sa
+   * každé kolo, v prvom kole zo semienka (Michal 2026-10-28).
+   */
+  readonly kapitani?: readonly [Clen, Clen];
   readonly hraci: readonly [PlayerState, PlayerState];
   /** Balíček Náradie (v8.5): karty s tagom Nástroj, zhora nadol. */
   readonly naradie: readonly CardInstance[];
@@ -755,6 +767,32 @@ function hrac(s: MutState, p: PlayerId): DeepMutable<PlayerState> {
   return s.hraci[p] as DeepMutable<PlayerState>;
 }
 
+export function formatHry(state: Pick<GameState, "format">): Format {
+  return state.format ?? "1na1";
+}
+
+/** Miesta pri stole — v 1 na 1 hráči 0 a 1. */
+export function miestaHry(state: Pick<GameState, "format">): readonly Miesto[] {
+  return miestaFormatu(formatHry(state));
+}
+
+/** Ruka miesta (v 2 na 2 člena tímu). */
+export function rukaMiesta(state: Pick<GameState, "hraci">, m: Miesto): readonly CardInstance[] {
+  return rukaClena(state.hraci[timMiesta(m)], clenMiesta(m));
+}
+
+function rukaMiestaMut(s: MutState, m: Miesto): DeepMutable<CardInstance>[] {
+  const h = hrac(s, timMiesta(m));
+  if (clenMiesta(m) === 0) return h.ruka;
+  if (h.rukaDruheho === undefined) throw new Error(`Miesto ${m} v partii 1 na 1 nie je.`);
+  return h.rukaDruheho;
+}
+
+/** Kapitán tímu v tomto kole (2 na 2); v 1 na 1 hráč sám. */
+export function kapitan(state: Pick<GameState, "kapitani">, tim: PlayerId): Miesto {
+  return miestoClena(tim, state.kapitani?.[tim] ?? 0);
+}
+
 /** Spáli najviac `najviac` priznaných Dlhov hráča (z hry); vráti, koľko ich naozaj bolo. */
 function odoberDlhy(s: MutState, p: PlayerId, najviac: number): number {
   const odobrate = Math.max(0, Math.min(najviac, s.hraci[p].dlhy));
@@ -908,10 +946,11 @@ function najdiVLinii(s: MutState, uid: number): { strana: PlayerId; index: numbe
   return null;
 }
 
-function vezmiZRuky(s: MutState, p: PlayerId, uid: number): CardInstance {
-  const idx = hrac(s, p).ruka.findIndex((k) => k.uid === uid);
+function vezmiZRuky(s: MutState, kto: Miesto, uid: number): CardInstance {
+  const ruka = rukaMiestaMut(s, kto);
+  const idx = ruka.findIndex((k) => k.uid === uid);
   need(idx !== -1, "Karta nie je v ruke.");
-  return hrac(s, p).ruka.splice(idx, 1)[0] as CardInstance;
+  return ruka.splice(idx, 1)[0] as CardInstance;
 }
 
 /** Nová inštancia karty s náhodným variantom. */
@@ -944,14 +983,16 @@ function doplnDoberaci(s: MutState, p: PlayerId): boolean {
  * Ťahanie z vlastného doberacieho balíčka, s premiešaním odhadzovacieho.
  * Dlh od v8.2 v balíčku nie je (počítadlo). Vracia karty v ruke.
  */
-function tahaj(s: MutState, p: PlayerId, pocet: number, events: Event[]): CardInstance[] {
+function tahaj(s: MutState, kto: Miesto, pocet: number, events: Event[]): CardInstance[] {
+  // Doberací balíček je tímu, karta ide do ruky toho, kto ťahá (2 na 2).
+  const p = timMiesta(kto);
   const player = hrac(s, p);
   const tahane: CardInstance[] = [];
   for (let i = 0; i < pocet; i++) {
     doplnDoberaci(s, p);
     const karta = player.doberaci.shift();
     if (karta === undefined) break;
-    player.ruka.push(karta);
+    rukaMiestaMut(s, kto).push(karta);
     tahane.push(karta as CardInstance);
   }
   if (tahane.length > 0) {
@@ -962,8 +1003,8 @@ function tahaj(s: MutState, p: PlayerId, pocet: number, events: Event[]): CardIn
 }
 
 /** Karta mimo ťahania (Zberný dvor, Sklad) ide do ruky. */
-function doRuky(s: MutState, p: PlayerId, karta: DeepMutable<CardInstance>): void {
-  hrac(s, p).ruka.push(karta);
+function doRuky(s: MutState, kto: Miesto, karta: DeepMutable<CardInstance>): void {
+  rukaMiestaMut(s, kto).push(karta);
 }
 
 /**
@@ -1331,6 +1372,8 @@ export interface SetupOptions {
   readonly lokalit?: number;
   /** Bez Chuti a Absťáku (výučba Prvá hra, v9.1). */
   readonly bezChuti?: boolean;
+  /** Formát partie; predvolene 1 na 1. */
+  readonly format?: Format;
 }
 
 /** Dĺžky hry, na ktoré má sada dosť lokalít. */
@@ -1349,13 +1392,14 @@ function naspodok(s: MutState, data: GameData, karty: readonly DeepMutable<CardI
 }
 
 export function setupGame(data: GameData, seed: number, opts?: SetupOptions): GameState {
+  const format = opts?.format ?? "1na1";
   const s: MutState = {
     rng: rngSeed(seed),
     nextUid: 1,
     faza: "volbaCiela",
     kolo: 1,
     utocnik: 0,
-    hraci: [freshPlayer(), freshPlayer()] as MutState["hraci"],
+    hraci: [freshPlayer(format), freshPlayer(format)] as MutState["hraci"],
     naradie: [],
     obcania: [],
     senok: [],
@@ -1385,6 +1429,7 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
     pitkyKola: [],
     zaciatokPitky: null,
     ...(opts?.bezChuti === true ? { bezChuti: true as const } : {}),
+    ...(format === "2na2" ? { format: "2na2" as const } : {}),
   };
 
   // Náhodný útočník prvého kola (PRAVIDLA §3, §4).
@@ -1404,7 +1449,8 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
   });
 
   // Lokality: v7 podľa úrovní (všetky v hre, obranca vyberá z úrovne kola), inak náhodný výber.
-  const pocetLokalit = opts?.lokalit ?? DLZKY_HRY[PREDVOLENA_DLZKA];
+  // 2 na 2 má predvolenú Tretiu ligu (Michal 2026-10-28).
+  const pocetLokalit = opts?.lokalit ?? DLZKY_HRY[format === "2na2" ? "kratka" : PREDVOLENA_DLZKA];
   if (pocetLokalit > data.lokality.length) {
     throw new Error(`Sada má len ${data.lokality.length} lokalít, hra potrebuje ${pocetLokalit}.`);
   }
@@ -1441,10 +1487,19 @@ export function setupGame(data: GameData, seed: number, opts?: SetupOptions): Ga
 
   // Počiatočná ruka (v6, Michal 2026-10-26): štartovacie karty idú rovno do
   // ruky, doberací balíček je prázdny — naplní ho až odhadzovací.
-  for (const p of [0, 1] as const) {
+  // V 2 na 2 má štartovacie karty každý hráč (Michal 2026-10-28).
+  for (const m of miestaFormatu(format)) {
     for (const [defId, pocet] of Object.entries(KONSTANTY.START_RUKA)) {
-      for (let i = 0; i < pocet; i++) hrac(s, p).ruka.push(novaInstancia(s, data, defId) as DeepMutable<CardInstance>);
+      for (let i = 0; i < pocet; i++) rukaMiestaMut(s, m).push(novaInstancia(s, data, defId) as DeepMutable<CardInstance>);
     }
+  }
+
+  // Kapitán prvého kola v každom tíme zo semienka (Michal 2026-10-28), potom sa strieda.
+  if (format === "2na2") {
+    const [k0, rk0] = rngInt(s.rng, 2);
+    const [k1, rk1] = rngInt(rk0, 2);
+    s.rng = rk1;
+    s.kapitani = [k0 as Clen, k1 as Clen];
   }
 
   // Šenok sa na začiatku nevykladá — postavia ho hráči v prvom drafte.
@@ -5451,6 +5506,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
 
   // Ďalšie kolo: útočníkom je porazený; po sekere ostáva ten istý.
   s.kolo += 1;
+  if (s.kapitani !== undefined) s.kapitani = [(1 - s.kapitani[0]) as Clen, (1 - s.kapitani[1]) as Clen];
   if (s.rozpis !== undefined && s.kolo > s.lokalitCelkom) {
     // Finále na pinnacle (v7, Michal 2026-10-27): útočí zaostávajúci (menej špakov),
     // pri rovnosti porazený poslednej bitky, po sekere ostáva útočník. Obranca —
