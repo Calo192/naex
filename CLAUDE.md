@@ -30,7 +30,7 @@ Kým nie je § Formát 2 na 2 v PRAVIDLA.md, platí všetko pre 1 na 1.
 4. **Náhoda je deterministická.** Jeden seedovaný generátor v `GameState`.
 5. **Dáta, nie kód.** Karty upravuje admin v tvorcovi (SQLite); hra beží na
    zverejnenej sade. `packages/core/data/cards.json` je východisková sada
-   pre prvé spustenie a testy — kópia lokálnej sady v10 pracoviska naex-admin bez Presbitera (2026-11-02: pozície Odporov B+ na 41 kartách, Posilnenie Hasiča a Koňa v slote 3 kvôli Forsáži, nové Autority Poľovník, Predavačka a Vedúcko, Snúbenica a Policajtka s novými akciami, 4 akcie Novín, Krabičky, Pasce, Svätého textu a Výherného automatu, Rany namiesto Pecky u Dvojčiat, Vymáhača, Svokry a Vandala, pojem Spáliť v textoch; v8 1. kolo náradia: Nástroje so 4 akciami, Píšťalka → Izolačka s novou ilustráciou, Kulturista → Sypač, nové texty Vdovy a Liberála, Kočovník s Paktom, Bzdocha len s 2 akciami, Traktorista Autorita namiesto Pracujúceho; v56 Svätý text vrátený na „Hodnota tvojej Viery je o 1 vyššia.“; v55 texty Telefónu a Horoskopu podľa pravidiel v10 Hádka; v53 Lievik premenovaný na Injekciu s novou ilustráciou; v51 pravidlá v9.2:
+   pre prvé spustenie a testy — kópia lokálnej sady v11 pracoviska naex-admin bez Presbitera (2026-11-02: pozície Odporov B+ na 41 kartách, Posilnenie Hasiča a Koňa v slote 3 kvôli Forsáži, nové Autority Poľovník, Predavačka a Vedúcko s ilustráciami, Snúbenica a Policajtka s novými akciami, 4 akcie Novín, Krabičky, Pasce, Svätého textu a Výherného automatu, Rany namiesto Pecky u Dvojčiat, Vymáhača, Svokry a Vandala, pojem Spáliť v textoch; v8 1. kolo náradia: Nástroje so 4 akciami, Píšťalka → Izolačka s novou ilustráciou, Kulturista → Sypač, nové texty Vdovy a Liberála, Kočovník s Paktom, Bzdocha len s 2 akciami, Traktorista Autorita namiesto Pracujúceho; v56 Svätý text vrátený na „Hodnota tvojej Viery je o 1 vyššia.“; v55 texty Telefónu a Horoskopu podľa pravidiel v10 Hádka; v53 Lievik premenovaný na Injekciu s novou ilustráciou; v51 pravidlá v9.2:
    Kohút vyradený; v45 bossovia — 8 starších so 6 akciami a spúšťačom Väzeň; predtým v31 živého webu / lokálne v43
    s náradím; `cardsJson` z `/api/sada` — lokálne a živé číslovanie sád sa líši, číslo živého webu dostane po nasadení;
    produkcia ho prevezme pri štarte cez novú značku v `dorovnajSoSeedom`, zmeny vzhľadu
@@ -115,7 +115,7 @@ naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
 
 ```
 packages/core/       jadro pravidiel — čistý TS, bez I/O
-  data/cards.json      96 kariet — kópia lokálnej sady v10 pracoviska naex-admin (Odpory B+, Poľovník, Predavačka, Vedúcko, Spáliť; náradie so 4 akciami; v10 Hádka, bez Kohúta) bez Presbitera (neupravuj ručne)
+  data/cards.json      96 kariet — kópia lokálnej sady v11 pracoviska naex-admin (Odpory B+, Poľovník, Predavačka, Vedúcko, Spáliť; náradie so 4 akciami; v10 Hádka, bez Kohúta) bez Presbitera (neupravuj ručne)
   data/elders.json     8 starších; priazeň a body nesie scorecard (scorecards.json)
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
                        LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
