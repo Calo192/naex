@@ -7,7 +7,7 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, LineState, PlayerId } from "../src/index.ts";
-import { KONSTANTY, apply, buildGameData, evaluateLine, loadGameData, parseScorecards, setupGame } from "../src/index.ts";
+import { KONSTANTY, apply, buildGameData, dovodyAutoPasu, evaluateLine, eventsFor, loadGameData, parseScorecards, setupGame } from "../src/index.ts";
 import { EMPTY, makeDef } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -137,6 +137,26 @@ describe("automatický pas", () => {
     // Obaja pasovali → Zhromaždenie skončilo bez ďalšieho ťahu hráča 0.
     expect(po.state.faza).not.toBe("zhromazdenie");
     expect(po.events.some((e) => e.type === "log" && e.text.includes("už nemá čo vyložiť"))).toBe(true);
+  });
+
+  it("hráč vie, prečo hra pasovala za neho — súper len to, že pasovala (Michal 2026-11-02)", () => {
+    const [a, b] = [inst("pijan"), inst("ministrant")];
+    const s = zhromazdenie([a, b], 1, 0);
+    const po = apply(data, s, { type: "place", uid: a.uid, target: "vlastna" }, 0 as PlayerId);
+    const pre = (q: PlayerId) => eventsFor(po.events, q).filter((e) => e.type === "autoPas");
+    expect(pre(0)).toEqual([{ type: "autoPas", hrac: 0, dovody: ["Miňištrant — limit vykladania máš v tomto Zhromaždení vyčerpaný."], pre: 0 }]);
+    // Súper sa nedozvie, čo má pasujúci v ruke.
+    expect(pre(1)).toEqual([{ type: "autoPas", hrac: 0, dovody: [], pre: 1 }]);
+  });
+
+  it("dôvody: prázdna ruka, Nástroj bez podpory, limit", () => {
+    const s0 = zhromazdenie([], 0, 0);
+    expect(dovodyAutoPasu(data, s0, 0)).toEqual(["Nemáš v ruke žiadnu kartu."]);
+    const [a, n] = [inst("pijan"), inst("noviny")];
+    const s = zhromazdenie([a, n], 0, 0);
+    const d = dovodyAutoPasu(data, s, 0);
+    expect(d[0]).toMatch(/^Pijan — limit vykladania/);
+    expect(d[1]).toBe("Noviny do línie nemá kam (obe strany: prázdne, Nástroj sa vedľa lokality nevykladá) a Dedičstvo stojí 1 cigaretu, máš 0.");
   });
 
   it("kliatba v ruke auto-pas zastaví — priznanie je stále možnosť", () => {

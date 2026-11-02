@@ -31,6 +31,9 @@
 //                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
 //   &exekutor=1    hráčovi ?ja v prvej Pitke pridá 10 priznaných Dlhov (bar ukáže exekúciu v bitke)
 //                  (voľba Záhradkára pri exekúcii)
+//   &stop=autopas  ťah, po ktorom hra za hráča ?ja pasuje (nemá čo vyložiť) a súper vykladá ďalej —
+//                  po načítaní sa dohrá, stôl ukáže okno „Pasuješ“ s dôvodmi (&i=k: k-tý taký, od 0);
+//                  &kto=super: pasuje súper — hráč ?ja vidí pečiatku „nemá čo vyložiť“
 //   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
 //   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
@@ -52,7 +55,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, MarkerPos, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -215,6 +218,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let bitiek = 0;
   let hadok = 0;
   let hadokSupera = 0;
+  let autopasov = 0;
+  const autopasKto = p.get("kto") === "super" ? opponentOf(ja) : ja;
   const exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1";
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
@@ -288,6 +293,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     rng = t.rng;
     const { state: po, events } = apply(data, s, t.cmd, t.kto);
     const bitka = events.some((e) => e.type === "bitkaVysledok");
+    const autopas = po.faza === "zhromazdenie" && events.some((e) => e.type === "autoPas" && e.hrac === autopasKto);
+    if (stop === "autopas" && autopas && autopasov++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
     if (stop === "suhrn" && bitka && bitiek++ === i) {
       // Za bitkou aj rozdeľovanie Nakladačky, kým kolo neskončí — súhrn ho má ukázať.
       const dohraj: Krok[] = [...tahyKola, { stav: s, cmd: t.cmd, kto: t.kto }];
@@ -374,7 +381,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
       const koniecPitky = events.some((e) => e.type === "bitkaVysledok") || (s.faza === "pitka" && state.faza !== "pitka");
       const pecate = typ !== null && typ in MOMENTY && koniecPitky ? [{ typ, ...MOMENTY[typ], hrac: 0 as PlayerId, popis: `${MOMENTY[typ].nazov} — ukážka pečiatky nad súhrnom.` }] : strop.vybrane;
       if (typ !== null && koniecPitky) vynuteny.current = null;
-      setUdalosti((u) => ({ id: u.id + 1, events: [...events, ...pecate.map((moment): Event => ({ type: "moment", moment }))] }));
+      setUdalosti((u) => ({ id: u.id + 1, events: [...eventsFor(events, ja), ...pecate.map((moment): Event => ({ type: "moment", moment }))] }));
       return state;
     } catch (e) {
       console.error(e);
