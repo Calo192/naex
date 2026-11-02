@@ -6,7 +6,6 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { BitkaNaNastenke, RekapitulaciaBitky } from "@naex/core";
 import { StitkyMomentov, VysledokBitky } from "../src/hra/Rekapitulacia.tsx";
-import { textDosledku } from "../src/hra/SuhrnPosunov.tsx";
 
 const spaky = (x: Partial<BitkaNaNastenke>): BitkaNaNastenke =>
   ({ zaBitku: [0, 0], zaStarsich: [0, 0], prebytok: [0, 0], exekutor: [0, 0], ...x }) as BitkaNaNastenke;
@@ -40,19 +39,5 @@ describe("výsledok bitky na telefóne", () => {
     );
     expect(html).toContain("VÝPRASK");
     expect(html).toContain("superov");
-  });
-});
-
-describe("súhrn kola pri starších na telefóne — dôsledky slovami (v11)", () => {
-  const mena = ["Jano", "Fero"] as const;
-  it("strach, reči a bodovanie", () => {
-    expect(textDosledku({ druh: "strach", hrac: 0, z: 1, na: 3 }, 0, mena, [], 3)).toBe("tvoj strach žltá → červená");
-    expect(textDosledku({ druh: "reci", hrac: 1, z: 2, na: 0 }, 0, mena, [], 3)).toBe("Fero — reči oranžová → zanikli");
-    expect(textDosledku({ druh: "vyplata", hrac: 1, spaky: 3, reci: true }, 0, mena, [], 3)).toBe("+3 š Fero za reči po bitke");
-  });
-
-  it("priazeň a väzeň s textom", () => {
-    expect(textDosledku({ druh: "priazen", hrac: 0, sila: 3, bolo: 2 }, 0, mena, [], 3)).toBe("priazeň ty 3 (predtým 2)");
-    expect(textDosledku({ druh: "vazen", hrac: 0, poradie: 1 }, 0, mena, [], 3)).toBe("uväznený · väzeň tvoj 0/3");
   });
 });

@@ -1,31 +1,38 @@
-// Línia starších (Michal 2026-10-23, roadmapa #68 + #69 variant A; v11 Strach a reči 2026-11-02,
-// docs/napady/strach-reci-mocky.html): osem starších v rade na mieste línie kariet. Ukáže sa po
-// kliku na dlaždicu Starší a sama pri krokoch na staršom (Nakladačka, hádka, pokus o zajatie).
+// Línia starších (Michal 2026-10-23, roadmapa #68 + #69 variant A; v11 Strach a reči 2026-11-02):
+// osem starších v rade na mieste línie kariet. Ukáže sa po kliku na dlaždicu Starší, sama pri
+// krokoch na staršom (Nakladačka, hádka, pokus o zajatie) a v súhrne po bitke.
 //
 // Dve rozloženia s prepínačom v hlavičke:
-//  - Teplomery (mock 3): portrét staršieho a po jeho okrajoch dva teplomery 0–3 — vľavo tvoj,
-//    vpravo súperov. Strach plní teplomer zdola (žltá, oranžová, červená), reči sú bublina nad
-//    strachom s počtom špakov. Dole krúžok priazne (komu a akú silnú) a špaky výhra / prehra.
+//  - Teplomery R3 „Okraje s hladinami“ (Michal 2026-11-02, docs/napady/starsi-ram-mocky.html):
+//    pri okrajoch portrétu pás každého hráča v jeho farbe — ty vľavo, súper vpravo. Strach je plná
+//    výplň, reči šrafovaná nad ním. Od vrchu strachu ide do stredu čiara hladiny s menom hráča,
+//    medzi hladinami zátvorka priazne so silou; dole krúžok priazne. Slová stupňov pri teplomeroch
+//    nie sú — sú pod menom staršieho a v nápovede.
 //  - Pult (mock 5): tabuľka — riadok na staršieho, strach a reči oboch, priazeň od stredu
 //    k hráčovi, špaky pri výhre a prehre a súčty.
-// Väzeň ostáva na svojom mieste v rade ako prázdne miesto „v pivnici“.
+// Väzeň ostáva na svojom mieste v rade: bez teplomerov, len pečiatka „V PIVNICI u …“.
 //
 // Rozdeľovanie (v11): víťaz bitky dvíha Nakladačkou svoj strach, víťaz hádky svoje reči. Klik
 // na stupeň v tvojom teplomeri (aj v Pulte) ho zdvihne, klik na najvyšší vybraný ho vráti;
 // klik na portrét pridá stupeň. Zdvihy sú nepotvrdené, kým ich Potvrdiť na hrane stola nepošle
 // — cenu a zvyšok ráta jadro (teplomery.ts, rozdelenie.ts).
+//
+// Súhrn po bitke (návrh c, docs/napady/suhrn-po-bitke-mocky.html): pás nad radom vedie krokmi
+// pravidiel (krokySuhrnu.ts), teplomery ukazujú stav v kroku a pohnú sa na mieste; dotknutí
+// starší svietia, ostatní stmavnú. Ďalej a Preskočiť sú v páse — krok sa neprehráva sám.
 
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useState } from "react";
-import type { Action, DruhMarkera, ElderState, GameData, PlayerId, PultStarsich, StarsiVerejne, StavVyhier, Stupen, ZmenaMarkera } from "@naex/core";
-import { NAZVY_ZON, STAV_STARSIEHO, favourStarsieho, opponentOf, priazenSila, spakyStarsieho, stupenStavu } from "@naex/core";
+import type { Action, BitkaNaNastenke, DruhMarkera, ElderState, GameData, PlayerId, PultStarsich, StarsiVerejne, StavVyhier, Stupen, ZmenaMarkera } from "@naex/core";
+import { NAZVY_ZON, STAV_STARSIEHO, favourStarsieho, opponentOf, pocet, priazenHraca, priazenSila, spakyStarsieho, stupenStavu } from "@naex/core";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
-import { KruzokPriazne, spojUdalosti, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
-import { kratkeMeno, ktoPriazen, obsahNapovedy, priazenKola } from "./priazenKola.ts";
-import { NAZOV_ZDROJA, PRAVIDLO_STRACHU, nazovStupna } from "./textyStarsich.ts";
-import { spakyStupna, type StupenRozdelenia } from "./teplomery.ts";
+import { KruzokPriazne, SlovoStupna, Stvorcek, spojUdalosti, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
+import { kradezPokusu, kradezPriZajati, kratkeMeno, ktoPriazen, obsahNapovedy, obsahNapovedyVazna, priazenKola } from "./priazenKola.ts";
+import { NAZOV_ZDROJA, PRAVIDLO_STRACHU, rodStarsieho, slovoStupna, vrcholTeplomera, type Rod } from "./textyStarsich.ts";
+import type { StupenRozdelenia } from "./teplomery.ts";
+import { NAZOV_KROKU, dotknuty, fazaKroku, opisKroku, riadkyKroku, stitkyKroku, type KontextSuhrnu, type KrokSuhrnu, type Markery, type StitokSuhrnu, type SuhrnBitky } from "./krokySuhrnu.ts";
 import "./teplomery.css";
 
 export { IKONA_PRIAZNE } from "./KruzokPriazne.tsx";
@@ -67,6 +74,8 @@ export interface StarsiVLinii {
 /** Väzeň na mieste svojho ukazovateľa. */
 export interface VazenVLinii {
   readonly elderId: string;
+  readonly defId: string;
+  readonly scorecard: string;
   readonly meno: string;
   readonly obrazok: string | null;
   readonly hrac: PlayerId;
@@ -75,6 +84,18 @@ export interface VazenVLinii {
 export type MiestoVLinii = { readonly typ: "starsi"; readonly s: StarsiVLinii } | { readonly typ: "vazen"; readonly v: VazenVLinii };
 
 export type RezimLinie = "teplomery" | "pult";
+
+/** Súhrn po bitke na línii (HernaPlocha drží krok): pás s krokmi a tlačidlami. */
+export interface SuhrnNaLinii {
+  readonly bitka: SuhrnBitky;
+  /** Index kroku v bitka.kroky. */
+  readonly krok: number;
+  readonly kontext: KontextSuhrnu;
+  /** Text tlačidla v poslednom kroku („Vybrať lokalitu“ obrancovi, inak „Ďalej“). */
+  readonly posledne: string;
+  readonly onDalej: () => void;
+  readonly onPreskocit: () => void;
+}
 
 export interface LiniaStarsichProps {
   readonly rad: readonly MiestoVLinii[];
@@ -89,13 +110,19 @@ export interface LiniaStarsichProps {
   readonly zmenene: ReadonlySet<string>;
   /** Okamžité výhry: červené a väzni oboch (ClientState.vyhry). */
   readonly vyhry: StavVyhier;
+  /** Odohrané bitky — krádež pri zajatí v nápovede väzňa. */
+  readonly nastenka: readonly Pick<BitkaNaNastenke, "kolo" | "bodovanie" | "kradez">[];
   /** Pult starších (pultStarsich) — súčty pri výhre a prehre. */
   readonly pult: PultStarsich;
   readonly rezim: RezimLinie;
   readonly onRezim: (r: RezimLinie) => void;
   /** Tlačidlo vľavo v hlavičke: späť na stôl, nahliadnuť, ďalej. */
   readonly tlacidlo?: ReactNode;
+  /** Súhrn po bitke — línia ukazuje stav v kroku súhrnu. */
+  readonly suhrn?: SuhrnNaLinii | undefined;
 }
+
+const spakov = (n: number): string => pocet(n, "špak", "špaky", "špakov");
 
 /**
  * Farba stupňa 0–3 (farby stupnice sú pevné, ako na tlačenom scorecarde). FARBY_STUPNICE tvorcu
@@ -106,7 +133,9 @@ export const farbaZony = (uroven: number): string => FARBY_STUPNICE[3 - uroven] 
 /** Farby stupňov ako premenné pre CSS (teplomery.css). */
 const FARBY: CSSProperties = { "--tp-z1": farbaZony(1), "--tp-z2": farbaZony(2), "--tp-z3": farbaZony(3) } as CSSProperties;
 
-export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhry, pult, rezim, onRezim, tlacidlo }: LiniaStarsichProps) {
+type StarsiSuhrnu = SuhrnBitky["starsi"][number];
+
+export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhry, nastenka, pult, rezim, onRezim, tlacidlo, suhrn }: LiniaStarsichProps) {
   const su = opponentOf(ja);
   // Náhľad kroku v hlavičke — celý text, karta sa neoreže (UI U3).
   const [nahlad, setNahlad] = useState<string | null>(null);
@@ -115,7 +144,9 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
   const rozdeluje = rad.some((m) => m.typ === "starsi" && m.s.rozdelenie !== undefined);
   // Pri rozdeľovaní hlavička nič nehovorí — zvyšok a pokyn sú v bubline na hrane stola.
   const stred =
-    krok === null || rozdeluje ? null : (
+    suhrn !== undefined ? (
+      <span className="ls-tlmene">po bitke {suhrn.bitka.kolo}</span>
+    ) : krok === null || rozdeluje ? null : (
       <span className="ls-nahlad" aria-live="polite">
         {nahladovany !== undefined && akciaNahladu !== undefined ? (
           <>
@@ -132,45 +163,125 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
         )}
       </span>
     );
+  // Súhrn ide vždy na teplomeroch — Pult sa nehýbe.
+  const naPulte = rezim === "pult" && suhrn === undefined;
+  const krokSuhrnu: KrokSuhrnu | null = suhrn === undefined ? null : (suhrn.bitka.kroky[suhrn.krok] ?? "koniec");
+  const kartaSuhrnu = (elderId: string): { readonly e: StarsiSuhrnu; readonly karta: SuhrnKarty } | null => {
+    if (suhrn === undefined || krokSuhrnu === null) return null;
+    const e = suhrn.bitka.starsi.find((x) => x.elderId === elderId);
+    if (e === undefined) return null;
+    const f = fazaKroku(krokSuhrnu);
+    return {
+      e,
+      karta: {
+        kluc: `${suhrn.bitka.kolo}-${suhrn.krok}`,
+        od: f.od === null ? null : e.fazy[f.od]!,
+        duch: f.duch,
+        tlmeny: !dotknuty(e, krokSuhrnu),
+        stitky: stitkyKroku(e, krokSuhrnu, ja, suhrn.kontext),
+        riadky: riadkyKroku(e, krokSuhrnu, suhrn.kontext),
+      },
+    };
+  };
+  /** Starší v stave kroku súhrnu (aj zajatý v tejto bitke, kým súhrn nedošiel na koniec). */
+  const vStaveKroku = (s: StarsiVLinii, e: StarsiSuhrnu): StarsiVLinii => {
+    const f = e.fazy[fazaKroku(krokSuhrnu ?? "koniec").stav]!;
+    return { elder: { ...s.elder, strach: f.strach, reci: f.reci }, meno: s.meno, obrazok: s.obrazok, patron: null };
+  };
 
   return (
-    <div className={`linia-starsich tp-linia${pohlad === su ? " pohlad-su" : ""}${krok !== null ? " v-kroku" : ""}${rozdeluje ? " rozdeluje" : ""}`} style={FARBY}>
+    <div className={`linia-starsich tp-linia${pohlad === su ? " pohlad-su" : ""}${krok !== null ? " v-kroku" : ""}${rozdeluje ? " rozdeluje" : ""}${suhrn !== undefined ? " v-suhrne" : ""}`} style={FARBY}>
       <div className="ls-hlava">
         {tlacidlo}
         {stred}
         <StavVyhierLinie vyhry={vyhry} ja={ja} mena={mena} />
-        <span className="tp-prepinac" role="group" aria-label="Zobrazenie starších" title={PRAVIDLO_STRACHU}>
-          <button type="button" aria-pressed={rezim === "teplomery"} onClick={() => onRezim("teplomery")}>
-            Teplomery
-          </button>
-          <button type="button" aria-pressed={rezim === "pult"} onClick={() => onRezim("pult")}>
-            Pult
-          </button>
-        </span>
+        {suhrn === undefined && (
+          <span className="tp-prepinac" role="group" aria-label="Zobrazenie starších" title={PRAVIDLO_STRACHU}>
+            <button type="button" aria-pressed={rezim === "teplomery"} onClick={() => onRezim("teplomery")}>
+              Teplomery
+            </button>
+            <button type="button" aria-pressed={rezim === "pult"} onClick={() => onRezim("pult")}>
+              Pult
+            </button>
+          </span>
+        )}
       </div>
-      {rezim === "pult" ? (
+      {suhrn !== undefined && krokSuhrnu !== null && <PasSuhrnu suhrn={suhrn} krok={krokSuhrnu} />}
+      {naPulte ? (
         <PultLinie rad={rad} data={data} ja={ja} mena={mena} pult={pult} vyhry={vyhry} />
       ) : (
         <div className="ls-rad" data-vyucba="starsi-stupnica">
-          {rad.map((m) =>
-            m.typ === "vazen" ? (
-              <KartaVazna key={m.v.elderId} v={m.v} ja={ja} mena={mena} />
-            ) : (
+          {rad.map((m) => {
+            if (m.typ === "vazen") {
+              const x = kartaSuhrnu(m.v.elderId);
+              // Zajatý v tejto bitke je do posledného kroku ešte na stupnici.
+              if (x !== null && x.e.vazen !== null && krokSuhrnu !== "koniec") {
+                const fav = data.scorecards.find((sc) => sc.id === m.v.scorecard)?.favour ?? "BITKAR";
+                const s: StarsiVLinii = {
+                  elder: { elderId: m.v.elderId, karta: { uid: -1, defId: m.v.defId, leftLayout: 0, rightLayout: 0 }, scorecard: m.v.scorecard, strach: [0, 0], reci: [0, 0], priazen: fav },
+                  meno: m.v.meno,
+                  obrazok: m.v.obrazok,
+                  patron: null,
+                };
+                return <TeplomerStarsieho key={m.v.elderId} s={vStaveKroku(s, x.e)} data={data} ja={ja} mena={mena} krok={null} zmeneny={false} nahlad={false} onNahlad={() => undefined} suhrn={x.karta} />;
+              }
+              return <KartaVazna key={m.v.elderId} v={m.v} data={data} ja={ja} mena={mena} vyhry={vyhry} nastenka={nastenka} tlmeny={suhrn !== undefined && (x === null || x.karta.tlmeny)} />;
+            }
+            const x = kartaSuhrnu(m.s.elder.elderId);
+            return (
               <TeplomerStarsieho
                 key={m.s.elder.elderId}
-                s={m.s}
+                s={x === null ? m.s : vStaveKroku(m.s, x.e)}
                 data={data}
                 ja={ja}
                 mena={mena}
-                krok={krok}
-                zmeneny={zmenene.has(m.s.elder.elderId)}
+                krok={x === null ? krok : null}
+                zmeneny={x === null && zmenene.has(m.s.elder.elderId)}
                 nahlad={nahlad === m.s.elder.elderId}
-                onNahlad={(n) => setNahlad(n ? m.s.elder.elderId : (x) => (x === m.s.elder.elderId ? null : x))}
+                onNahlad={(n) => setNahlad(n ? m.s.elder.elderId : (y) => (y === m.s.elder.elderId ? null : y))}
+                suhrn={x?.karta}
               />
-            ),
-          )}
+            );
+          })}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Pás súhrnu po bitke nad radom: výsledok, kroky, Preskočiť a Ďalej; pod nimi veta kroku. */
+function PasSuhrnu({ suhrn, krok }: { readonly suhrn: SuhrnNaLinii; readonly krok: KrokSuhrnu }) {
+  const { bitka, kontext } = suhrn;
+  const posledny = suhrn.krok >= bitka.kroky.length - 1;
+  const vysledok = bitka.vitaz === null ? "na sekeru" : `víťaz ${kontext.mena[bitka.vitaz]}`;
+  return (
+    <div className="r3-pas-suhrnu" role="group" aria-label={`Súhrn po bitke ${bitka.kolo}`}>
+      <span className="r3-ps-bitka">
+        Bitka {bitka.kolo} · <b className={bitka.vitaz === null ? undefined : "vyhra"}>{vysledok}</b>
+      </span>
+      <span className="r3-ps-kroky" aria-hidden="true">
+        {bitka.kroky.map((k, i) => (
+          <span key={k} className={i === suhrn.krok ? "on" : i < suhrn.krok ? "bol" : undefined}>
+            {i + 1} {NAZOV_KROKU[k]}
+          </span>
+        ))}
+      </span>
+      <span className="r3-ps-tlacidla">
+        {!posledny && (
+          <button type="button" className="r3-ps-preskocit" onClick={suhrn.onPreskocit}>
+            Preskočiť
+          </button>
+        )}
+        <button type="button" className="r3-ps-dalej" onClick={suhrn.onDalej}>
+          {posledny ? suhrn.posledne : "Ďalej"}
+        </button>
+      </span>
+      <span className="r3-ps-opis" aria-live="polite">
+        <b>
+          {suhrn.krok + 1}. {NAZOV_KROKU[krok]}:
+        </b>{" "}
+        {opisKroku(bitka, krok, kontext)}
+      </span>
     </div>
   );
 }
@@ -220,6 +331,18 @@ export function stitokZmien(zmeny: readonly Pick<ZmenaMarkera, "zdroj" | "kto">[
   return out.map((x) => `${NAZOV_ZDROJA[x.zdroj]}${x.pocet > 1 ? ` ×${x.pocet}` : ""}`).join(" · ");
 }
 
+/** Súhrn po bitke na jednej karte staršieho: stav v kroku, predošlý stav pre pohyb a štítky. */
+export interface SuhrnKarty {
+  /** Kľúč kroku — nový krok kartu prekreslí, nech sa pohyb prehrá znova. */
+  readonly kluc: string;
+  readonly od: Markery | null;
+  /** Prerušovaná hladina spred bitky (posledný krok). */
+  readonly duch: boolean;
+  readonly tlmeny: boolean;
+  readonly stitky: readonly StitokSuhrnu[];
+  readonly riadky: readonly string[];
+}
+
 function TeplomerStarsieho({
   s,
   data,
@@ -229,6 +352,7 @@ function TeplomerStarsieho({
   zmeneny,
   nahlad,
   onNahlad,
+  suhrn,
 }: {
   readonly s: StarsiVLinii;
   readonly data: GameData;
@@ -239,6 +363,7 @@ function TeplomerStarsieho({
   /** Myš či fokus je na tomto staršom — v kroku ho zvýrazní a hlavička povie, čo klik urobí. */
   readonly nahlad: boolean;
   readonly onNahlad: (n: boolean) => void;
+  readonly suhrn?: SuhrnKarty | undefined;
 }) {
   const su = opponentOf(ja);
   const { elder, klik } = s;
@@ -246,7 +371,8 @@ function TeplomerStarsieho({
   const po = s.po ?? elder;
   const fav = favourStarsieho(data, elder);
   const pk = priazenKola(po, ja);
-  const body = spakyStarsieho(po);
+  const rod = rodStarsieho(elder.karta.defId, s.meno);
+  const kratke: readonly [string, string] = [kratkeMeno(mena[0]), kratkeMeno(mena[1])];
   const napoveda = useNapovedaStarsieho(
     () =>
       obsahNapovedy({
@@ -256,9 +382,9 @@ function TeplomerStarsieho({
         ja,
         mena,
         akcia: klik?.akcia ?? null,
-        dalsi: s.patron === null ? null : { nazov: "Ohrozenie", text: `zajať ho skúša ${s.patron.kto === ja ? "ty" : mena[s.patron.kto]} — v tomto kole sa nedvíha` },
+        dalsi: s.patron === null ? null : { nazov: "Ohrozenie", text: `zajať ho skúša ${kratke[s.patron.kto]} — v tomto kole sa nedvíha` },
       }),
-    { menoSupera: mena[su], zvacsenina: () => <Zvacsenina s={s} fav={fav} pk={pk} /> },
+    { obrazok: s.obrazok, zvacsenina: () => <Zvacsenina s={s} fav={fav} pk={pk} /> },
   );
 
   // Rozdeľovanie: klik na portrét pridá stupeň nad najvyšší vybraný (veľký cieľ pre prst).
@@ -274,19 +400,20 @@ function TeplomerStarsieho({
           : klik !== undefined
             ? ` klik${nahlad ? " nahl" : ""}`
             : " nedost";
+  const slovo = (h: PlayerId): string => slovoStupna(vrcholTeplomera(elder.strach[h], elder.reci[h]), rod);
   const popis =
-    `${s.meno} — ${STAV_STARSIEHO[stupenStavu(elder)]}. Priazeň ${ktoPriazen(pk, { ja: "ty", su: mena[su] })}. ` +
-    `Ty: strach ${nazovStupna(elder.strach[ja])}, reči ${nazovStupna(elder.reci[ja])}; ${mena[su]}: strach ${nazovStupna(elder.strach[su])}, reči ${nazovStupna(elder.reci[su])}.` +
-    (r?.zdvih != null ? ` Návrh: ${r.marker === "strach" ? "strach" : "reči"} ${nazovStupna(r.zdvih.z)} → ${nazovStupna(r.zdvih.na)} za ${r.zdvih.cena}.` : "") +
+    `${s.meno} — priazeň ${ktoPriazen(pk, { ja: kratke[ja], su: kratke[su] })}. ` +
+    `${kratke[ja]}: ${slovo(ja)}${elder.reci[ja] > 0 ? " (reči)" : ""}; ${kratke[su]}: ${slovo(su)}${elder.reci[su] > 0 ? " (reči)" : ""}.` +
+    (r?.zdvih != null ? ` Návrh: ${r.marker === "strach" ? "strach" : "reči"} ${slovoStupna(r.zdvih.z, rod)} → ${slovoStupna(r.zdvih.na, rod)} za ${r.zdvih.cena}.` : "") +
     (s.dovod !== undefined ? ` — ${s.dovod}` : "") +
     (klik !== undefined && r === undefined ? ` — klikni: ${klik.akcia}` : "");
-  const zmeny = s.zmeny ?? [];
+  const zmeny = suhrn === undefined ? (s.zmeny ?? []) : [];
   const ktoMenil = new Set(zmeny.map((x) => x.kto));
   const farbaZmien = ktoMenil.size !== 1 ? "" : ktoMenil.has(ja) ? " moje" : " superove";
 
   return (
     <div
-      className={`ls-sc tp-k${krokTrieda}${zmeneny ? " zmena" : ""}`}
+      className={`ls-sc tp-k${krokTrieda}${zmeneny ? " zmena" : ""}${suhrn?.tlmeny === true ? " suhrn-tlmeny" : ""}${suhrn !== undefined && !suhrn.tlmeny ? " suhrn-svieti" : ""}`}
       data-vyucba={`starsi:${elder.elderId}`}
       {...spojUdalosti(napoveda.props, {
         tabIndex: 0,
@@ -298,7 +425,7 @@ function TeplomerStarsieho({
               onClick: (e: { readonly target: EventTarget }) => {
                 // Ťuk po podržaní prsta otvoril zväčšeninu; klik na stupeň má vlastnú obsluhu.
                 if (napoveda.poPodrzani()) return;
-                if (e.target instanceof Element && e.target.closest(".tp-seg") !== null) return;
+                if (e.target instanceof Element && e.target.closest(".r3-seg") !== null) return;
                 klikKarty();
               },
               onKeyDown: (e: ReactKeyboardEvent) => {
@@ -317,28 +444,56 @@ function TeplomerStarsieho({
         <span className="ls-portret">
           {s.obrazok !== null ? <img src={s.obrazok} alt="" draggable={false} /> : <span className="ls-portret-prazdny" />}
           <span className="tp-tien" aria-hidden="true" />
-          <Teplomer strana="ja" elderId={elder.elderId} strach={elder.strach[ja]} reci={elder.reci[ja]} r={r} meno={s.meno} />
-          <Teplomer strana="su" elderId={elder.elderId} strach={elder.strach[su]} reci={elder.reci[su]} meno={s.meno} />
-          {s.patron !== null ? (
-            <span className={`tp-ohrozenie ${s.patron.kto === ja ? "ja" : "su"}`}>⛓ v ohrození · {s.patron.kto === ja ? "skúšaš ty" : `skúša ${kratkeMeno(mena[s.patron.kto])}`}</span>
+          <TeplomerR3
+            key={suhrn?.kluc}
+            elderId={elder.elderId}
+            ja={ja}
+            v={po}
+            pred={r !== undefined ? elder : (suhrn?.od ?? null)}
+            duch={suhrn?.duch === true}
+            mena={kratke}
+            r={r}
+            meno={s.meno}
+            rod={rod}
+            suhrn={suhrn !== undefined}
+          />
+          {suhrn !== undefined ? (
+            suhrn.stitky.length > 0 && (
+              <span className="r3-stitky" key={suhrn.kluc}>
+                {suhrn.stitky.map((x, i) => (
+                  <span key={i} className={`r3-stitok ${x.trieda}`} style={{ "--d": `${0.2 + i * 0.15}s` } as CSSProperties}>
+                    <span className="dlhe">{x.text}</span>
+                    <span className="kratke">{x.kratko}</span>
+                  </span>
+                ))}
+              </span>
+            )
+          ) : s.patron !== null ? (
+            <span className={`tp-ohrozenie ${s.patron.kto === ja ? "ja" : "su"}`}>
+              ⛓ skúša {kratke[s.patron.kto]} · {s.patron.kto === ja ? `vezmeš ${spakov(kradezPokusu(elder, ja))}` : `vezme ti ${spakov(kradezPokusu(elder, su))}`}
+            </span>
           ) : zmeny.length > 0 ? (
             <span className={`ls-listok tp-zmeny${farbaZmien}`}>⇄ {stitokZmien(zmeny)}</span>
           ) : null}
           {r?.zdvih != null && <span className="tp-cena-navrhu">−{r.zdvih.cena}</span>}
-          <KruzokPriazne fav={fav} p={pk} trieda="ls-kruzok tp-kruzok" />
+          <KruzokPriazne key={suhrn === undefined ? undefined : `kr-${suhrn.kluc}`} fav={fav} p={pk} trieda={`ls-kruzok tp-kruzok${suhrn?.od != null && !rovnakaPriazen(suhrn.od, po) ? " nove" : ""}`} />
         </span>
       </div>
       <span className="ls-stav tp-stav" aria-hidden="true">
         <b className="ls-meno">{s.meno}</b>
-        <span className="tp-body" title="špaky po bitke: pri výhre / pri prehre — ty · súper">
-          <b className="ja">
-            {body.vyhra[ja]}/{body.prehra[ja]}
-          </b>
-          <span> · </span>
-          <b className="su">
-            {body.vyhra[su]}/{body.prehra[su]}
-          </b>
-        </span>
+        {suhrn !== undefined ? (
+          <span className="r3-riadky suhrn">
+            {suhrn.riadky.slice(0, 3).map((x, i) => (
+              <span key={i}>{x}</span>
+            ))}
+          </span>
+        ) : (
+          <span className="r3-riadky">
+            {([ja, su] as const).map((h) => (
+              <RiadokStupna key={h} kto={kratke[h]} komu={h === ja ? "ja" : "su"} strach={po.strach[h]} reci={po.reci[h]} rod={rod} />
+            ))}
+          </span>
+        )}
       </span>
       {s.dovod !== undefined && r === undefined && (
         <div className="ls-pata">
@@ -350,32 +505,134 @@ function TeplomerStarsieho({
   );
 }
 
+const rovnakaPriazen = (a: Markery, b: Markery): boolean => priazenHraca(a) === priazenHraca(b) && priazenSila(a) === priazenSila(b);
+
+/** Riadok pod menom staršieho: meno hráča, štvorčeky plnej a šrafovanej časti a stupeň slovom (vrchol). */
+function RiadokStupna({ kto, komu, strach, reci, rod }: { readonly kto: string; readonly komu: "ja" | "su"; readonly strach: number; readonly reci: number; readonly rod: Rod }) {
+  const vrchol = vrcholTeplomera(strach, reci);
+  return (
+    <span className={`r3-riadok ${komu}`}>
+      <b className="kto">{kto}</b>
+      {vrchol === 0 ? (
+        <span className="np-st s0">{slovoStupna(0, rod)}</span>
+      ) : (
+        <>
+          {strach > 0 && <Stvorcek druh="strach" n={strach} />}
+          {reci > 0 && <Stvorcek druh="reci" n={reci} />}
+          <SlovoStupna n={vrchol} rod={rod} />
+          {reci > 0 && <span className="r3-pozn"> — reči</span>}
+        </>
+      )}
+    </span>
+  );
+}
+
+/** Výplň stupňa z pre hráča: plná (strach), šrafovaná (reči nad strachom), alebo prázdny. */
+const vyplnStupna = (z: number, strach: number, reci: number): "plna" | "reci" | null => (z <= strach ? "plna" : z <= reci ? "reci" : null);
+
 /**
- * Teplomer jedného hráča: tri stupne zdola (žltá, oranžová, červená), strach ich plní, reči sú
- * bublina na svojom stupni s počtom špakov. V rozdeľovaní sú stupne tlačidlá s cenou.
+ * Teplomery R3 „Okraje s hladinami“ (docs/napady/starsi-ram-mocky.html): pás hráča pri okraji
+ * portrétu vo farbe hráča (ty vľavo, súper vpravo), strach plný, reči šrafované nad ním. Od vrchu
+ * strachu ide do stredu čiara hladiny s menom hráča, medzi hladinami zátvorka priazne so silou —
+ * priazeň meria len plnú časť. `pred` = stav pred krokom (súhrn po bitke, nepotvrdený zdvih):
+ * nové diely narastú, zmiznuté ostanú prerušované a hladina sa posunie.
  */
-function Teplomer({ strana, elderId, strach, reci, r, meno }: { readonly strana: "ja" | "su"; readonly elderId: string; readonly strach: number; readonly reci: number; readonly r?: RozdelenieStarsieho | undefined; readonly meno: string }) {
-  const na = r?.zdvih?.na ?? null;
-  // Náhľad po zdvihu: strach dorastie, reči sa presunú (pod strachom zaniknú).
-  const strachPo = r?.marker === "strach" && na !== null ? na : strach;
-  const reciPo = r?.marker === "reci" && na !== null ? na : reci > strachPo ? reci : 0;
+function TeplomerR3({
+  elderId,
+  ja,
+  v,
+  pred,
+  duch,
+  mena,
+  r,
+  meno,
+  rod,
+  suhrn,
+}: {
+  readonly elderId: string;
+  readonly ja: PlayerId;
+  readonly v: Markery;
+  readonly pred: Markery | null;
+  readonly duch: boolean;
+  /** Krátke mená podľa miesta (0, 1). */
+  readonly mena: readonly [string, string];
+  readonly r?: RozdelenieStarsieho | undefined;
+  readonly meno: string;
+  readonly rod: Rod;
+  /** V súhrne sa pohyb prehrá (rast, posun), pri rozdeľovaní len bliká návrh. */
+  readonly suhrn: boolean;
+}) {
+  const su = opponentOf(ja);
+  const rovnako = v.strach[ja] === v.strach[su];
+  const pk = priazenKola(v, ja);
+  const prPred = pred === null ? null : priazenKola(pred, ja);
+  const prNova = prPred !== null && (prPred.komu !== pk.komu || prPred.sila !== pk.sila);
+  const a = Math.min(v.strach[ja], v.strach[su]);
+  const b = Math.max(v.strach[ja], v.strach[su]);
+  const hladina = (h: PlayerId) => {
+    const strana = h === ja ? "ja" : "su";
+    const posun = pred !== null && pred.strach[h] !== v.strach[h];
+    const dy = rovnako ? (h === ja ? -2 : 2) : 0;
+    return (
+      <span key={strana}>
+        {posun && duch && <span className={`r3-hladina ${strana} duch`} style={{ "--h": pred.strach[h], "--dy": `${pred.strach[0] === pred.strach[1] ? dy : 0}px` } as CSSProperties} />}
+        <span className={`r3-hladina ${strana}${posun && suhrn ? " posun" : ""}`} style={{ "--h": v.strach[h], "--h-od": pred?.strach[h] ?? v.strach[h], "--dy": `${dy}px` } as CSSProperties}>
+          <b className="r3-meno">{mena[h]}</b>
+        </span>
+      </span>
+    );
+  };
+  return (
+    <span className={`r3${r !== undefined ? ` rozdel ${r.marker}` : ""}`}>
+      <PasR3 strana="ja" elderId={elderId} strach={v.strach[ja]} reci={v.reci[ja]} pred={pred === null ? null : { strach: pred.strach[ja], reci: pred.reci[ja] }} r={r} meno={meno} rod={rod} suhrn={suhrn} />
+      <PasR3 strana="su" elderId={elderId} strach={v.strach[su]} reci={v.reci[su]} pred={pred === null ? null : { strach: pred.strach[su], reci: pred.reci[su] }} meno={meno} rod={rod} suhrn={suhrn} />
+      {hladina(ja)}
+      {hladina(su)}
+      {pk.komu !== null && (
+        <span className={`r3-zatvorka ${pk.komu}${prNova && suhrn ? " vyskoc" : ""}${prNova ? " nova" : ""}`} style={{ "--a": a, "--b": b } as CSSProperties}>
+          <b>+{pk.sila}</b>
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** Jeden pás hráča: tri stupne zdola; v rozdeľovaní sú stupne tlačidlá s cenou. */
+function PasR3({
+  strana,
+  elderId,
+  strach,
+  reci,
+  pred,
+  r,
+  meno,
+  rod,
+  suhrn,
+}: {
+  readonly strana: "ja" | "su";
+  readonly elderId: string;
+  readonly strach: number;
+  readonly reci: number;
+  readonly pred: { readonly strach: number; readonly reci: number } | null;
+  readonly r?: RozdelenieStarsieho | undefined;
+  readonly meno: string;
+  readonly rod: Rod;
+  readonly suhrn: boolean;
+}) {
   return (
     // Kľúče výučby: môj teplomer strach:<id>, pri rozdeľovaní rečí reci:<id>; stupne stupen:<id>:<n>.
-    <span className={`tp-bar ${strana}${r !== undefined ? ` rozdel ${r.marker}` : ""}`} data-vyucba={strana === "ja" ? `${r?.marker === "reci" ? "reci" : "strach"}:${elderId}` : undefined}>
+    <span className={`r3-pas ${strana}`} data-vyucba={strana === "ja" ? `${r?.marker === "reci" ? "reci" : "strach"}:${elderId}` : undefined}>
       {([3, 2, 1] as const).map((z) => {
         const st = r?.stupne.find((x) => x.stupen === z);
-        const on = strachPo >= z;
-        const nove = on && strach < z;
-        const reciTu = reciPo === z;
-        const trieda = `tp-seg z${z}${on ? " on" : ""}${nove ? " nove" : ""}${st !== undefined ? ` ${st.stav}` : ""}`;
+        const teraz = vyplnStupna(z, strach, reci);
+        const predtym = pred === null ? teraz : vyplnStupna(z, pred.strach, pred.reci);
+        const zmena = teraz !== predtym;
+        const trieda = `r3-seg z${z}${zmena && teraz !== null ? " nove" : ""}${zmena && predtym !== null && teraz === null ? " duch" : ""}${st !== undefined ? ` ${st.stav}` : ""}`;
         const obsah = (
           <>
-            {reciTu && (
-              <span className={`tp-reci${r?.marker === "reci" && na === z ? " nove" : ""}`}>
-                <BublinaReci n={spakyStupna(z)} />
-              </span>
-            )}
-            {st !== undefined && st.stav === "dosah" && <i className="tp-cena">{st.cena}</i>}
+            {zmena && predtym !== null && <i className={`r3-vypln ${predtym}${suhrn ? " mizne" : " stara"}`} />}
+            {teraz !== null && <i className={`r3-vypln ${teraz}${zmena && suhrn ? " rast" : ""}`} style={{ "--d": `${0.15 + (z - 1) * 0.18}s` } as CSSProperties} />}
+            {st !== undefined && st.stav === "dosah" && <em className="r3-cena">{st.cena}</em>}
           </>
         );
         if (st === undefined || r === undefined || st.stav === "pod" || st.stav === "zamknuty") {
@@ -388,12 +645,12 @@ function Teplomer({ strana, elderId, strach, reci, r, meno }: { readonly strana:
         const co = r.marker === "strach" ? "strach" : "reči";
         const label =
           st.stav === "vybrany"
-            ? z === na
+            ? z === r.zdvih?.na
               ? `${meno}: vrátiť ${co} o stupeň`
-              : `${meno}: ${co} len na ${NAZVY_ZON[z]}`
+              : `${meno}: ${co} len po ${slovoStupna(z, rod)}`
             : st.stav === "dosah"
-              ? `${meno}: ${co} na ${NAZVY_ZON[z]} za ${st.cena}`
-              : `${meno}: na ${NAZVY_ZON[z]} (${st.cena}) zvyšok nestačí`;
+              ? `${meno}: ${co} po ${slovoStupna(z, rod)} za ${st.cena}`
+              : `${meno}: po ${slovoStupna(z, rod)} (${st.cena}) zvyšok nestačí`;
         return (
           <button key={z} type="button" className={trieda} data-vyucba={`stupen:${elderId}:${z}`} aria-label={label} title={label} aria-disabled={st.stav === "mimo"} aria-pressed={st.stav === "vybrany"} onClick={() => r.klik(z)}>
             {obsah}
@@ -404,49 +661,70 @@ function Teplomer({ strana, elderId, strach, reci, r, meno }: { readonly strana:
   );
 }
 
-/** Bublina rečí s počtom špakov (mock 3) — vo farbe hráča podľa teplomera (CSS). */
-function BublinaReci({ n }: { readonly n: number | null }) {
-  return (
-    <svg className="tp-bub" viewBox="0 0 20 20" aria-hidden="true">
-      <path d="M3 3h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 4v-4H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
-      {n !== null && (
-        <text x="10" y="11.5" textAnchor="middle">
-          {n}
-        </text>
-      )}
-    </svg>
+/**
+ * Väzeň na mieste ukazovateľa (R3, Michal 2026-11-02): bez teplomerov a mreží, len pečiatka
+ * „V PIVNICI u …“ vo farbe držiteľa; v nápovede „je z neho stále vydesený“, krádež a Kšeft väzňa.
+ */
+function KartaVazna({
+  v,
+  data,
+  ja,
+  mena,
+  vyhry,
+  nastenka,
+  tlmeny,
+}: {
+  readonly v: VazenVLinii;
+  readonly data: GameData;
+  readonly ja: PlayerId;
+  readonly mena: readonly [string, string];
+  readonly vyhry: StavVyhier;
+  readonly nastenka: readonly Pick<BitkaNaNastenke, "kolo" | "bodovanie" | "kradez">[];
+  readonly tlmeny?: boolean;
+}) {
+  const kto = kratkeMeno(mena[v.hrac]);
+  // Krádež na pečiatke (Michal 2026-11-02): koľko špakov držiteľ pri zajatí dostal.
+  const kradez = kradezPriZajati(nastenka, v.elderId, v.hrac);
+  const rod = rodStarsieho(v.defId, v.meno);
+  const napoveda = useNapovedaStarsieho(
+    () => obsahNapovedyVazna({ data, vazen: { elderId: v.elderId, hrac: v.hrac, karta: { uid: -1, defId: v.defId, leftLayout: 0, rightLayout: 0 }, scorecard: v.scorecard }, meno: v.meno, ja, mena, vyhry, nastenka }),
+    { obrazok: v.obrazok, zvacsenina: () => <Zvacsenina s={{ meno: v.meno, obrazok: v.obrazok }} /> },
   );
-}
-
-/** Väzeň na mieste ukazovateľa: v pivnici držiteľa, ráta sa mu ako červená. */
-function KartaVazna({ v, ja, mena }: { readonly v: VazenVLinii; readonly ja: PlayerId; readonly mena: readonly [string, string] }) {
-  const kto = v.hrac === ja ? "teba" : kratkeMeno(mena[v.hrac]);
   return (
-    <div className={`ls-sc tp-k tp-vazen ${v.hrac === ja ? "ja" : "su"}`} tabIndex={0} aria-label={`${v.meno} — väzeň v pivnici u ${kto}, ráta sa ${v.hrac === ja ? "ti" : "mu"} ako červená`}>
+    <div
+      className={`ls-sc tp-k tp-vazen ${v.hrac === ja ? "ja" : "su"}${tlmeny === true ? " suhrn-tlmeny" : ""}`}
+      {...spojUdalosti(napoveda.props, { tabIndex: 0, "aria-label": `${v.meno} — v pivnici u ${kto}: je z neho stále ${slovoStupna(3, rod)}, ráta sa ako červená` })}
+    >
       <div className="ls-telo">
         <span className="ls-portret">
           {v.obrazok !== null ? <img src={v.obrazok} alt="" draggable={false} /> : <span className="ls-portret-prazdny" />}
-          <span className="tp-mreze" aria-hidden="true" />
-          <span className="tp-vazen-text">
-            ⛓ v pivnici u {kto}
-            <small>ráta sa ako červená</small>
+          <span className="tp-peciatka" role="img" aria-label={`V pivnici u ${kto}${kradez === null ? "" : ` · ${v.hrac === ja ? "vzal si" : "vzal ti"} ${spakov(kradez.spaky)}`}`}>
+            <b>V PIVNICI</b>
+            <span>u {kto}</span>
+            {kradez !== null && <small>{v.hrac === ja ? `vzal si ${spakov(kradez.spaky)}` : `vzal ti ${spakov(kradez.spaky)}`}</small>}
           </span>
         </span>
       </div>
       <span className="ls-stav tp-stav" aria-hidden="true">
         <b className="ls-meno">{v.meno}</b>
+        <span className="r3-riadky">
+          <span className={`r3-riadok ${v.hrac === ja ? "ja" : "su"}`}>
+            <b className="kto">{kto}:</b> je z neho stále <SlovoStupna n={3} rod={rod} />
+          </span>
+        </span>
       </span>
+      {napoveda.vrstva}
     </div>
   );
 }
 
 /** Zväčšenina staršieho na telefóne (podržanie prsta) — pod ňou je nápoveda. */
-function Zvacsenina({ s, fav, pk }: { readonly s: StarsiVLinii; readonly fav: ReturnType<typeof favourStarsieho>; readonly pk: ReturnType<typeof priazenKola> }) {
+function Zvacsenina({ s, fav, pk }: { readonly s: Pick<StarsiVLinii, "meno" | "obrazok">; readonly fav?: ReturnType<typeof favourStarsieho>; readonly pk?: ReturnType<typeof priazenKola> }) {
   return (
     <span className="np-zoom-karta">
       <span className="np-zoom-portret">
         {s.obrazok !== null ? <img src={s.obrazok} alt="" draggable={false} /> : null}
-        <KruzokPriazne fav={fav} p={pk} velkost={46} />
+        {fav !== undefined && pk !== undefined && <KruzokPriazne fav={fav} p={pk} velkost={46} />}
       </span>
       <b>{s.meno}</b>
     </span>

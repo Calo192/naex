@@ -8,8 +8,11 @@ import "./priazen-kola.css";
 import { createContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type FocusEvent, type HTMLAttributes, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Action, Favour } from "@naex/core";
+import { pocet } from "@naex/core";
+import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
-import { kratkeMeno, riadkyKruzkov, type KomuPriazen, type ObsahNapovedy, type PriazenKola } from "./priazenKola.ts";
+import { riadkyKruzkov, vetaPriazne, vetaSpakov, vetaZajatia, type KomuPriazen, type ObsahNapovedy, type ObsahNapovedyVazna, type PriazenKola } from "./priazenKola.ts";
+import { slovoStupna, type Rod } from "./textyStarsich.ts";
 
 /** Ikona akcie, ktorú priazeň staršieho posilňuje — v krúžku priazne (mock C · Pečať). */
 export const IKONA_PRIAZNE: Readonly<Record<Favour, Action>> = {
@@ -127,39 +130,141 @@ export function IkonaHadky({ trieda = "lst-ikona" }: { readonly trieda?: string 
   );
 }
 
-/** Obsah nápovedy nad staršom: krúžok, účinok priazne, strach a reči oboch a stav (v11). */
-export function ObsahNapovedyStarsieho({ o, menoSupera }: { readonly o: ObsahNapovedy; readonly menoSupera: string }) {
-  const su = kratkeMeno(menoSupera);
+/** Farby stupňov pre nápovedu v portáli (mimo línie starších) — pevné ako na scorecarde. */
+const FARBY_NAPOVEDY = { "--tp-z1": FARBY_STUPNICE[2], "--tp-z2": FARBY_STUPNICE[1], "--tp-z3": FARBY_STUPNICE[0] } as CSSProperties;
+
+/** Stupeň slovom vo farbe stupňa (nie názvom farby); 0 tlmene. */
+export function SlovoStupna({ n, rod }: { readonly n: number; readonly rod: Rod }) {
+  return <b className={`np-st s${n}`}>{slovoStupna(n, rod)}</b>;
+}
+
+/** Štvorček plnej (strach) či šrafovanej (reči) časti teplomera — legenda v texte. */
+export function Stvorcek({ druh, n }: { readonly druh: "strach" | "reci"; readonly n: number }) {
+  return <i className={`np-kv ${druh} s${n}`} aria-hidden="true" />;
+}
+
+/**
+ * Obsah nápovedy nad staršom (R3, docs/napady/starsi-ram-mocky.html): strach a reči oboch,
+ * špaky po bitke vetou, priazeň komu a všetky tri sily, riziko zajatia. Hráči menom.
+ */
+export function ObsahNapovedyStarsieho({ o, obrazok = null }: { readonly o: ObsahNapovedy | ObsahNapovedyVazna; readonly obrazok?: string | null }) {
+  if (o.druh === "vazen") return <ObsahNapovedyVaznaEl o={o} obrazok={obrazok} />;
   return (
-    <>
-      <span className="np-hlava">
-        <KruzokPriazne fav={o.favour} p={o.priazen} velkost={34} />
-        <span>
-          <b className="np-meno">{o.meno}</b>
-          <small className="np-nazov">
-            priazeň {o.nazovPriazne} · {o.stav}
-          </small>
-        </span>
-      </span>
-      {o.akcia !== null && <span className="np-akcia">Klik: {o.akcia}</span>}
-      <span className="np-ucinok">
-        {o.ucinok.kto !== null && <b className={`np-kto ${trieda(o.ucinok.komu)}`}>{o.ucinok.kto}:</b>} {o.ucinok.text}
-      </span>
-      {o.hraci.map((h) => (
-        <span key={h.komu} className="np-r">
-          <span className={`np-l np-kto ${h.komu}`}>{h.komu === "ja" ? "ty" : su}</span>
+    <div className="np-r3" style={FARBY_NAPOVEDY}>
+      <div className="np-a">
+        <span className="np-hlava">
+          {obrazok !== null && <img src={obrazok} alt="" draggable={false} />}
           <span>
-            {h.markery} · po bitke výhra <b>{h.vyhra}</b> / prehra <b>{h.prehra}</b> š
+            <b className="np-meno">{o.meno}</b>
+            <small className="np-nazov">plná = strach, šrafovaná = reči</small>
+          </span>
+          <KruzokPriazne fav={o.favour} p={o.priazen} velkost={34} />
+        </span>
+        {o.akcia !== null && <span className="np-akcia">Klik: {o.akcia}</span>}
+        <table className="np-tab">
+          <thead>
+            <tr>
+              <th />
+              <th>stupeň</th>
+              <th>
+                <Stvorcek druh="strach" n={2} />
+                strach
+              </th>
+              <th>
+                <Stvorcek druh="reci" n={2} />
+                reči
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {o.hraci.map((h) => (
+              <tr key={h.komu} className={h.komu}>
+                <th>{h.kto}</th>
+                <td>{h.vrchol === 0 ? <span className="np-st s0">{slovoStupna(0, o.rod)}</span> : <SlovoStupna n={h.vrchol} rod={o.rod} />}</td>
+                <td>{h.strach === 0 ? <span className="np-st s0">—</span> : `po ${slovoStupna(h.strach, o.rod)}`}</td>
+                <td>{h.reci === 0 ? <span className="np-st s0">—</span> : `po ${slovoStupna(h.reci, o.rod)}`}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <span className="np-h4">Špaky po bitke</span>
+        <ul className="np-sp">
+          {o.hraci.map((h) => (
+            <li key={h.komu} className={h.komu}>
+              <b>{h.kto}</b>
+              <span>{vetaSpakov(h, o.rod)}</span>
+            </li>
+          ))}
+        </ul>
+        <span className="np-pozn">Víťaz bitky dostane za vrch teplomera, porazený len za reči. Pri sekere obaja len za reči.</span>
+      </div>
+      <div className="np-b">
+        <span className="np-h4">
+          <IkonaPriazneKruzku fav={o.favour} /> Priazeň {o.nazovPriazne} · {o.kedyPriazne}
+        </span>
+        <span className={`np-komu ${trieda(o.priazen.komu)}`}>{vetaPriazne(o)}</span>
+        <span className="np-pozn">Kto ju má, tomu platí podľa sily:</span>
+        <ol className="np-sily">
+          {o.sily.map((t, i) => (
+            <li key={i} className={o.priazen.sila === i + 1 ? `on ${trieda(o.priazen.komu)}` : undefined}>
+              <b>sila {i + 1}</b>
+              <span>{t}</span>
+            </li>
+          ))}
+        </ol>
+        <span className="np-pozn">Priazeň ráta len strach (plnú časť). Reči priazeň nedávajú a nerátajú sa ani do výhry strachom, ani do zajatia.</span>
+        {o.zajatie.map((z) => (
+          <span key={z.hrac} className={`np-zajatie ${z.komu}`}>
+            ⛓ {vetaZajatia(z, o.rod)}
+          </span>
+        ))}
+        {o.dalsi !== null && (
+          <span className="np-r">
+            <span className="np-l">{o.dalsi.nazov}</span>
+            <span>{o.dalsi.text}</span>
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Nápoveda nad väzňom (R3): je z neho stále vydesený, krádež pri zajatí a Kšeft väzňa doslova. */
+function ObsahNapovedyVaznaEl({ o, obrazok }: { readonly o: ObsahNapovedyVazna; readonly obrazok: string | null }) {
+  return (
+    <div className="np-r3" style={FARBY_NAPOVEDY}>
+      <div className="np-a">
+        <span className="np-hlava">
+          {obrazok !== null && <img src={obrazok} alt="" draggable={false} />}
+          <span>
+            <b className="np-meno">{o.meno}</b>
+            <small className="np-nazov">
+              v pivnici · <b className={`np-kto ${o.komu}`}>{o.kto}</b>
+            </small>
           </span>
         </span>
-      ))}
-      {o.dalsi !== null && (
-        <span className="np-r">
-          <span className="np-l">{o.dalsi.nazov}</span>
-          <span>{o.dalsi.text}</span>
+        <span className="np-vazen">
+          <b className={`np-kto ${o.komu}`}>{o.kto}:</b> je z neho stále <SlovoStupna n={3} rod={o.rod} />. Ráta sa ako červená do výhry strachom (červené {o.cervene} z {o.cervenychNaVyhru}) a je väzeň (väzni {o.vazni} z {o.vazniNaVyhru}).
         </span>
-      )}
-    </>
+        {o.kradez !== null && (
+          <span className="np-vazen">
+            Krádež pri zajatí (bitka {o.kradez.kolo}): {o.kradez.obet} → {o.kto} {pocet(o.kradez.spaky, "špak", "špaky", "špakov")} za vrch teplomera.
+          </span>
+        )}
+      </div>
+      <div className="np-b">
+        <span className="np-h4">Čo už nerobí</span>
+        <span className="np-vazen">
+          Teplomery nemá, nebojuje, špaky ani priazeň{o.nazovPriazne === null ? "" : ` ${o.nazovPriazne}`} nedáva. Nikto ho nevyslobodí.
+        </span>
+        {o.kseft !== null && (
+          <>
+            <span className="np-h4">Kšeft väzňa (má ho {o.kto})</span>
+            <span className="np-vazen">{o.kseft}</span>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -187,7 +292,7 @@ export interface NapovedaStarsieho {
  * Nápoveda nad staršom: myš (prejdenie), klávesnica (fokus) a dotyk (podržanie → zväčšenina
  * s nápovedou pod ňou, zavrie ju ťuk). Obsah sa skladá až pri otvorení.
  */
-export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | null, moznosti: { readonly menoSupera: string; readonly zvacsenina?: () => ReactNode }): NapovedaStarsieho {
+export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | ObsahNapovedyVazna | null, moznosti: { readonly obrazok?: string | null; readonly zvacsenina?: () => ReactNode } = {}): NapovedaStarsieho {
   const [stav, setStav] = useState<StavNapovedy | null>(null);
   const kotvaStarsieho = useRef<HTMLElement | null>(null);
   const casovac = useRef<number | null>(null);
@@ -291,9 +396,9 @@ export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | null, moznosti
               <div className="np-zoom">
                 {moznosti.zvacsenina?.()}
                 {o !== null && (
-                  <span className="np-tip np-tip-zoom">
-                    <ObsahNapovedyStarsieho o={o} menoSupera={moznosti.menoSupera} />
-                  </span>
+                  <div className="np-tip np-tip-zoom">
+                    <ObsahNapovedyStarsieho o={o} obrazok={moznosti.obrazok ?? null} />
+                  </div>
                 )}
               </div>
             </div>,
@@ -308,7 +413,7 @@ export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | null, moznosti
                   </span>
                 ))
               ) : o !== null ? (
-                <ObsahNapovedyStarsieho o={o} menoSupera={moznosti.menoSupera} />
+                <ObsahNapovedyStarsieho o={o} obrazok={moznosti.obrazok ?? null} />
               ) : null}
             </TipPriKotve>,
             document.body,
@@ -326,30 +431,43 @@ export function useNapovedaStarsieho(obsah: () => ObsahNapovedy | null, moznosti
   };
 }
 
-/** Nápoveda nad kotvou so šípkou; keď sa nad ňu nezmestí (horný bar), je pod ňou. */
+/**
+ * Nápoveda pri kotve so šípkou: nad ňou, keď sa nezmestí (horný bar), pod ňou; vysoký starší
+ * v línii (R3) nemá miesto ani nad, ani pod — nápoveda je vedľa neho (vpravo, inak vľavo).
+ */
 function TipPriKotve({ kotva, kratky, children }: { readonly kotva: HTMLElement; readonly kratky: boolean; readonly children: ReactNode }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const [poloha, setPoloha] = useState<{ readonly left: number; readonly top: number; readonly sipka: number; readonly pod: boolean } | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const [poloha, setPoloha] = useState<{ readonly left: number; readonly top: number; readonly sipka: number; readonly kde: "nad" | "pod" | "vpravo" | "vlavo" } | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
     if (el === null) return;
     const k = kotva.getBoundingClientRect();
     const t = el.getBoundingClientRect();
-    const pod = k.top - t.height - 12 < 4;
-    const stred = k.left + k.width / 2;
-    const left = Math.max(6, Math.min(window.innerWidth - t.width - 6, stred - t.width / 2));
-    const top = pod ? Math.min(window.innerHeight - t.height - 4, k.bottom + 10) : k.top - t.height - 10;
-    setPoloha({ left, top, sipka: Math.max(12, Math.min(t.width - 12, stred - left)), pod });
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const nad = k.top - t.height - 12 >= 4;
+    const pod = k.bottom + t.height + 14 <= vh;
+    if (nad || pod) {
+      const stred = k.left + k.width / 2;
+      const left = Math.max(6, Math.min(vw - t.width - 6, stred - t.width / 2));
+      const top = nad ? k.top - t.height - 10 : k.bottom + 10;
+      setPoloha({ left, top, sipka: Math.max(12, Math.min(t.width - 12, stred - left)), kde: nad ? "nad" : "pod" });
+      return;
+    }
+    const vpravo = k.right + 12 + t.width <= vw - 4 || k.left - 12 - t.width < 4;
+    const left = vpravo ? Math.min(vw - t.width - 4, k.right + 12) : k.left - t.width - 12;
+    const top = Math.max(4, Math.min(vh - t.height - 4, k.top));
+    setPoloha({ left, top, sipka: Math.max(14, Math.min(t.height - 14, k.top + 24 - top)), kde: vpravo ? "vpravo" : "vlavo" });
   }, [kotva, kratky, children]);
   return (
-    <span
+    <div
       ref={ref}
-      className={`np-tip${kratky ? " kratky" : ""}${poloha?.pod === true ? " pod" : ""}`}
+      className={`np-tip${kratky ? " kratky" : ""}${poloha === null || poloha.kde === "nad" ? "" : ` ${poloha.kde}`}`}
       role="tooltip"
       style={{ left: poloha?.left ?? 0, top: poloha?.top ?? 0, visibility: poloha === null ? "hidden" : undefined, "--sipka": `${poloha?.sipka ?? 0}px` } as CSSProperties}
     >
       {children}
-    </span>
+    </div>
   );
 }
 

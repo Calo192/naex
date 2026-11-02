@@ -5,7 +5,7 @@
 // bar starších — po dlaždici na každého staršieho: priazeň, strach a reči hráča.
 
 import type { CSSProperties } from "react";
-import type { ClientState, ElderState, GameData, PlayerId, Stupen } from "@naex/core";
+import type { ClientState, ElderState, GameData, PlayerId } from "@naex/core";
 import { favourStarsieho, opponentOf, spakyOdStarsieho } from "@naex/core";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { KruzokPriazne, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
@@ -28,34 +28,13 @@ export interface DlazdicaStarsichProps {
     readonly prepni: () => void;
     readonly id: string;
     readonly posuny?: number;
-    readonly suhrn?: SuhrnDlazdice | undefined;
   };
-}
-
-/**
- * Dlaždica počas súhrnu kola (mock 5): svieti, svetlo ide stĺpčekmi zľava doprava a stĺpček
- * zobrazeného staršieho sa mení spolu so strachmi v bubline. Stĺpčeky sú starší zo začiatku kola.
- */
-export interface SuhrnDlazdice {
-  /** Strachy, ktoré stĺpček práve ukazuje; null = starší je už väzeň. */
-  readonly stlpce: readonly { readonly elderId: string; readonly strach: readonly [Stupen, Stupen] | null }[];
-  /** Stĺpček pod svetlom. */
-  readonly sken: string | null;
-  /** Stĺpček, z ktorého vyskočila bublina. */
-  readonly aktivny: string | null;
-  /** Stĺpčeky, ktoré svetlo prešlo bez bubliny. */
-  readonly preskoceni: ReadonlySet<string>;
 }
 
 export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi }: DlazdicaStarsichProps) {
   const ja = p === view.ja;
-  const suhrn = starsi.suhrn;
-  const { strach, stlpce: stlpceTeraz } = stupienkyStarsich(view.starsi, p);
+  const { strach, stlpce } = stupienkyStarsich(view.starsi, p);
   const priazen = pocetPriazniKola(view.starsi, p);
-  const stlpce =
-    suhrn === undefined
-      ? stlpceTeraz
-      : suhrn.stlpce.map((s) => (s.strach === null ? { elderId: s.elderId, smer: "vazen" as const, zona: 0 } : stupienkyStarsich([{ elderId: s.elderId, strach: s.strach }], p).stlpce[0]!));
   // Výkričníky pred špakmi: najvyšší strach hráča pri niektorom staršom.
   const najStrach = Math.max(0, ...view.starsi.map((e) => e.strach[p]));
   const posuny = starsi.posuny ?? 0;
@@ -70,7 +49,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
   return (
     <button
       type="button"
-      className={`zdroj zdroj-starsi${starsi.stlacene ? " stlacene" : ""}${suhrn === undefined ? "" : " suhrn-ziari"}`}
+      className={`zdroj zdroj-starsi${starsi.stlacene ? " stlacene" : ""}`}
       aria-pressed={starsi.stlacene}
       aria-controls={starsi.id}
       data-vyucba-prvok="starsi"
@@ -94,20 +73,14 @@ export function DlazdicaStarsich({ view, p, zaStarsich, zaStarsichPrehra, starsi
       <span className="zdroj-hodnota">
         <span className="velke-cislo starsi-priazen">
           <IkonaPriazne />
-          {/* Počas súhrnu číslo ide so stĺpčekmi, nie dopredu. */}
-          {suhrn === undefined ? priazen : stlpce.filter((s) => s.smer === "hore").length}
+          {priazen}
         </span>
         <span className="stupienky" aria-hidden="true">
           {stlpce.map((s) => (
             <i
               key={s.elderId}
-              className={
-                suhrn === undefined
-                  ? s.smer
-                  : `${s.smer}${suhrn.sken === s.elderId ? " sken" : ""}${suhrn.aktivny === s.elderId ? " aktivny" : ""}${suhrn.preskoceni.has(s.elderId) ? " sedy" : ""}`
-              }
+              className={s.smer}
               style={{ "--zona": s.zona, "--farba-zony": farbaZony(s.zona) } as CSSProperties}
-              data-suhrn-stlpcek={suhrn === undefined ? undefined : s.elderId}
             />
           ))}
         </span>
@@ -140,17 +113,18 @@ export interface BarStarsichProps {
   readonly menoKarty: (defId: string) => string;
   /** Meno súpera toho, kto sa pozerá (nápoveda). */
   readonly menoSupera: string;
+  readonly mena?: readonly [string, string] | undefined;
 }
 
 /**
  * Bar starších (Michal 2026-10-27): pri každom staršom krúžok priazne (Michal 2026-10-31 —
  * vždy), špaky, ktoré hráčovi dá po vyhratej bitke, a krátke slovo pod ním. Vety sú v nápovede.
  */
-export function BarStarsich({ view, data, p, menoKarty, menoSupera }: BarStarsichProps) {
+export function BarStarsich({ view, data, p, menoKarty, menoSupera, mena }: BarStarsichProps) {
   return (
     <div className="bar-starsich" style={{ "--n": view.starsi.length } as CSSProperties} role="list" aria-label="Starší">
       {view.starsi.map((e) => (
-        <DlazdicaStarsieho key={e.elderId} view={view} data={data} p={p} e={e} meno={menoKarty(e.karta.defId)} menoSupera={menoSupera} />
+        <DlazdicaStarsieho key={e.elderId} view={view} data={data} p={p} e={e} meno={menoKarty(e.karta.defId)} menoSupera={menoSupera} mena={mena} />
       ))}
     </div>
   );
@@ -163,6 +137,7 @@ function DlazdicaStarsieho({
   e,
   meno,
   menoSupera,
+  mena: menaHracov,
 }: {
   readonly view: ClientState;
   readonly data: GameData;
@@ -170,6 +145,7 @@ function DlazdicaStarsieho({
   readonly e: ElderState;
   readonly meno: string;
   readonly menoSupera: string;
+  readonly mena?: readonly [string, string] | undefined;
 }) {
   const ja = p === view.ja;
   const su = opponentOf(p);
@@ -179,8 +155,8 @@ function DlazdicaStarsieho({
   const zmeny = view.zmenyMarkerov.filter((x) => x.elderId === e.elderId);
   const fav = favourStarsieho(data, e);
   const pk = priazenKola(e, view.ja);
-  const mena: readonly [string, string] = view.ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"];
-  const napoveda = useNapovedaStarsieho(() => obsahNapovedy({ data, elder: e, meno, ja: view.ja, mena }), { menoSupera });
+  const mena: readonly [string, string] = menaHracov ?? (view.ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]);
+  const napoveda = useNapovedaStarsieho(() => obsahNapovedy({ data, elder: e, meno, ja: view.ja, mena }));
   const riadok = patron !== null ? `v ohrození${patron === p ? "" : " (súper)"}` : smer === "dole" ? riadokDlazdice(smer, ja) : riadokPriazneDlazdice(pk.hrac, p, view.ja);
   const popis =
     `${meno}: priazeň ${ktoPriazen(pk, { ja: "ty", su: menoSupera })}. ${ja ? "Ty" : menoSupera}: ${textMarkerov(e.strach[p], e.reci[p])}, po vyhratej bitke ${vyhra} š.` +

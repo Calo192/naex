@@ -50,9 +50,35 @@ export function riadokDlazdice(smer: "hore" | "dole" | "nic", ja: boolean): stri
 
 /** Ako sa čítajú teplomery (v11) — titulok v hlavičke línie a v ukážkach. */
 export const PRAVIDLO_STRACHU =
-  `Každý hráč má pri staršom strach a reči na stupnici 0–3 (sivá, žltá, oranžová, červená). Strach dvíha víťaz bitky Nakladačkou a neklesá; ` +
-  `reči dvíha víťaz hádky a sú vždy nad strachom. Priazeň dáva starší tomu, koho sa bojí menej — sila je rozdiel strachov. ` +
-  `Po bitke dá starší víťazovi špaky za najvyšší marker, porazenému len za reči: žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}.`;
+  `Každý hráč má pri staršom svoj teplomer: plná časť je strach, šrafovaná nad ním reči — jedna stupnica, stupeň ` +
+  `staršieho pre hráča je jej vrchol (znepokojený, vystrašený, vydesený). Strach dvíha víťaz bitky Nakladačkou a neklesá; ` +
+  `reči dvíha víťaz hádky. Priazeň dáva starší tomu, koho sa bojí menej — sila je rozdiel strachov, reči sa nerátajú. ` +
+  `Po bitke dá starší víťazovi špaky za vrch teplomera, porazenému len za reči: znepokojený ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, vystrašený ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, vydesený ${KONSTANTY.SPAKY_ZA_STUPEN[3]}.`;
+
+/** Rod staršieho pre slová stupňov („vydesený“ / „vydesená“). */
+export type Rod = "m" | "z";
+
+const ZENSKY_ROD: ReadonlySet<string> = new Set(["krcmarka", "postarka", "vychovavatelka"]);
+
+/**
+ * Rod karty staršieho: známi starší podľa karty, inak podľa mena (náhrada bossa) — „-ka“ je
+ * ženský rod; „Starosta“ na „-a“ je mužský, preto len „-ka“.
+ */
+export function rodStarsieho(defId: string, meno: string): Rod {
+  if (ZENSKY_ROD.has(defId)) return "z";
+  return /ka$/i.test(meno.trim()) ? "z" : "m";
+}
+
+const SLOVA_STUPNOV: Readonly<Record<Rod, readonly [string, string, string, string]>> = {
+  m: ["pokojný", "znepokojený", "vystrašený", "vydesený"],
+  z: ["pokojná", "znepokojená", "vystrašená", "vydesená"],
+};
+
+/** Stupeň slovom v rode staršieho — nikdy farbou (Michal 2026-11-02). */
+export const slovoStupna = (s: number, rod: Rod): string => SLOVA_STUPNOV[rod][s] ?? SLOVA_STUPNOV[rod][0];
+
+/** Vrchol teplomera hráča: reči, ak sú (vždy nad strachom), inak strach — stupeň staršieho pre hráča (§10). */
+export const vrcholTeplomera = (strach: number, reci: number): number => Math.max(strach, reci);
 
 /**
  * Názov kroku rozdeľovania na stole (bublina, línia starších) — na jednom mieste. Prebytok

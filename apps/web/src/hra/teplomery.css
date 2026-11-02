@@ -1,4 +1,4 @@
-/* Línia starších v11 — Teplomery (mock 3) a Pult (mock 5), docs/napady/strach-reci-mocky.html.
+/* Línia starších v11 — Teplomery R3 (docs/napady/starsi-ram-mocky.html), Pult (mock 5) a súhrn po bitke.
    Farby stupňov sú pevné ako na tlačenom scorecarde (--tp-z1..3 z FARBY_STUPNICE, LiniaStarsich.tsx),
    ostatné len tokeny zo schemy.css. */
 
@@ -105,9 +105,14 @@
   outline-offset: -2px;
 }
 
-/* ---- Teplomery ---- */
+/* ---- Teplomery R3 „Okraje s hladinami“ (Michal 2026-11-02, docs/napady/starsi-ram-mocky.html) ----
+   Pás hráča pri okraji portrétu vo farbe hráča, strach plný, reči šrafované; hladina strachu ide
+   do stredu s menom hráča, medzi hladinami zátvorka priazne. Rozmery podľa šírky karty (cqw). */
 .tp-k {
-  --tp-w: clamp(11px, 11cqw, 18px);
+  --tp-w: clamp(8px, 6.3cqw, 14px);
+  --r3-fs: clamp(9.5px, 3px + 4.5cqw, 13px);
+  --r3-pr: clamp(10px, 5.9cqw, 13px);
+  --r3-srafa: clamp(2.5px, 1.6cqw, 3.5px);
   position: relative;
 }
 
@@ -115,102 +120,158 @@
   isolation: isolate;
 }
 
-/* Tmavý prechod pod teplomermi a pod krúžkom — teplomery cez obrázok potrebujú kontrast. */
+/* Tmavý prechod hore a dole — mená nad hladinami a krúžok priazne potrebujú kontrast. */
 .tp-tien {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background:
-    linear-gradient(to right, color-mix(in srgb, var(--tma) 62%, transparent) 0, transparent 24%, transparent 76%, color-mix(in srgb, var(--tma) 62%, transparent) 100%),
-    linear-gradient(to bottom, transparent 62%, color-mix(in srgb, var(--tma) 55%, transparent) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tma) 30%, transparent), transparent 18%, transparent 62%, color-mix(in srgb, var(--tma) 55%, transparent));
 }
 
-.tp-bar {
+.r3 {
+  --pas-ja: var(--tp-w);
+  --pas-su: var(--tp-w);
   position: absolute;
   z-index: 2;
-  top: 14%;
-  bottom: 22%;
-  width: var(--tp-w);
+  left: 3px;
+  right: 3px;
+  top: clamp(8px, 4.5%, 18px);
+  bottom: 16%;
+  pointer-events: none;
+}
+
+/* Rozdeľovanie: tvoj pás je širší — stupne sú tlačidlá. */
+.r3.rozdel {
+  --pas-ja: clamp(20px, 15cqw, 28px);
+}
+
+.r3-pas {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  border-radius: 3px;
+  outline: 2px solid var(--ja);
+  outline-offset: 1px;
 }
 
-.tp-bar.ja {
-  left: 4px;
+.r3-pas.ja {
+  left: 0;
+  width: var(--pas-ja);
 }
 
-.tp-bar.su {
-  right: 4px;
+.r3-pas.su {
+  right: 0;
+  width: var(--pas-su);
+  outline-color: var(--su);
 }
 
-/* Rozdeľovanie: tvoj teplomer je širší — stupne sú tlačidlá. */
-.tp-bar.rozdel {
-  --tp-w: clamp(20px, 17cqw, 30px);
-}
-
-.tp-seg {
+/* Stupeň = tretina pásu; medzera 2 px je presne na čiare stupňa, kam sadne hladina. */
+.r3-seg {
   position: relative;
   flex: 1 1 0;
   min-height: 0;
-  margin: 0;
+  margin: 1px 0;
   padding: 0;
-  border-radius: 4px;
-  border: 1.5px solid color-mix(in srgb, var(--text) 70%, transparent);
-  background: color-mix(in srgb, var(--pozadie) 62%, transparent);
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--tma) 70%, transparent);
-  font: 800 0.7rem/1 var(--pismo);
+  border: 0;
+  border-radius: 1.5px;
+  background: rgb(14 11 9 / 0.8);
   color: var(--text);
+  font: 800 0.7rem/1 var(--pismo);
 }
 
-.tp-seg.z1.on {
-  background: var(--tp-z1);
-  border-color: var(--tp-z1);
+.r3-seg.z1 {
+  --zc: var(--tp-z1);
 }
 
-.tp-seg.z2.on {
-  background: var(--tp-z2);
-  border-color: var(--tp-z2);
+.r3-seg.z2 {
+  --zc: var(--tp-z2);
 }
 
-.tp-seg.z3.on {
-  background: var(--tp-z3);
-  border-color: var(--tp-z3);
+.r3-seg.z3 {
+  --zc: var(--tp-z3);
 }
 
-/* Nepotvrdený zdvih — šrafa cez farbu stupňa. */
-.tp-seg.nove {
-  background-image: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in srgb, var(--pozadie) 45%, transparent) 4px 7px);
-  outline: 2px solid var(--akcent-svetly);
-  outline-offset: 1px;
+/* Ryska stupňa na vnútornej strane pásu. */
+.r3-seg::before {
+  content: "";
+  position: absolute;
+  top: -1.75px;
+  width: 5px;
+  height: 1.5px;
+  background: var(--zc);
 }
 
-button.tp-seg {
+.r3-pas.ja .r3-seg::before {
+  left: calc(100% + 4px);
+}
+
+.r3-pas.su .r3-seg::before {
+  right: calc(100% + 4px);
+}
+
+.r3-vypln {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.r3-vypln.plna {
+  background: var(--zc);
+}
+
+.r3-vypln.reci {
+  background: repeating-linear-gradient(45deg, var(--zc) 0 var(--r3-srafa), rgb(14 11 9 / 0.85) var(--r3-srafa) calc(2 * var(--r3-srafa)));
+}
+
+/* Nový diel (súhrn, nepotvrdený zdvih) je obtiahnutý; zmiznutý ostane prerušovaný. */
+.r3-seg.nove {
+  outline: 1.6px solid #fff;
+  outline-offset: -1px;
+}
+
+.r3-seg.duch {
+  outline: 1.2px dashed color-mix(in srgb, var(--text) 70%, transparent);
+  outline-offset: -1px;
+}
+
+.r3-vypln.stara {
+  opacity: 0.35;
+}
+
+.r3-vypln.mizne {
+  opacity: 0;
+}
+
+button.r3-seg {
+  pointer-events: auto;
   cursor: pointer;
 }
 
-button.tp-seg.dosah {
-  border: 2px dashed var(--akcent-svetly);
-  background: color-mix(in srgb, var(--akcent) 22%, color-mix(in srgb, var(--pozadie) 55%, transparent));
+button.r3-seg.dosah {
+  outline: 2px dashed var(--akcent-svetly);
+  outline-offset: -2px;
+  background: color-mix(in srgb, var(--akcent) 22%, rgb(14 11 9 / 0.8));
 }
 
-button.tp-seg.dosah:hover,
-button.tp-seg:focus-visible {
+button.r3-seg.dosah:hover,
+button.r3-seg:focus-visible {
   outline: 2px solid var(--akcent-svetly);
   outline-offset: 1px;
 }
 
-button.tp-seg.mimo {
+button.r3-seg.mimo {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.tp-seg.zamknuty {
+.r3-seg.zamknuty {
   opacity: 0.45;
 }
 
-.tp-cena {
+.r3-cena {
   position: absolute;
   inset: 0;
   display: grid;
@@ -220,66 +281,124 @@ button.tp-seg.mimo {
   text-shadow: 0 1px 2px var(--tma);
 }
 
-/* Bublina rečí na stupni, vedľa teplomera smerom do portrétu. */
-.tp-reci {
+/* Hladina strachu: od vnútorného okraja pásu do stredu, bodka v strede, meno hráča nad ňou. */
+.r3-hladina {
   position: absolute;
-  z-index: 3;
+  z-index: 1;
+  bottom: calc(var(--h) * 100% / 3);
+  height: 0;
+  margin-bottom: -1.3px;
+  translate: 0 var(--dy, 0px);
+  border-top: 2.6px solid currentColor;
+}
+
+.r3-hladina.ja {
+  left: calc(var(--pas-ja) + 4px);
+  right: 50%;
+  color: var(--ja);
+}
+
+.r3-hladina.su {
+  left: 50%;
+  right: calc(var(--pas-su) + 4px);
+  color: var(--su);
+}
+
+.r3-hladina::after {
+  content: "";
+  position: absolute;
+  top: -4.3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.r3-hladina.ja::after {
+  right: -3px;
+}
+
+.r3-hladina.su::after {
+  left: -3px;
+}
+
+.r3-hladina.duch {
+  border-top: 1.8px dashed currentColor;
+  opacity: 0.55;
+}
+
+.r3-hladina.duch::after {
+  display: none;
+}
+
+.r3-meno {
+  position: absolute;
+  bottom: 3px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 800 var(--r3-fs) / 1.1 var(--pismo);
+  text-shadow:
+    1px 1px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    0 0 3px #000;
+}
+
+.r3-hladina.ja .r3-meno {
+  left: 1px;
+}
+
+.r3-hladina.su .r3-meno {
+  right: 1px;
+}
+
+/* Zátvorka priazne: medzi hladinami v strede, vo farbe toho, komu priazeň patrí. */
+.r3-zatvorka {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: calc(var(--a) * 100% / 3 + 3px);
+  height: calc((var(--b) - var(--a)) * 100% / 3 - 6px);
+  translate: -1.2px 0;
+  border-left: 2.4px dashed var(--ja);
+}
+
+.r3-zatvorka.su {
+  border-left-color: var(--su);
+}
+
+.r3-zatvorka > b {
+  position: absolute;
   top: 50%;
-  translate: 0 -50%;
-  pointer-events: none;
+  left: -1.2px;
+  translate: -50% -50%;
+  padding: 0 0.42em;
+  border-radius: 999px;
+  background: var(--ja);
+  color: #10100e;
+  font: 800 var(--r3-pr) / 1.5 var(--pismo);
+  white-space: nowrap;
 }
 
-.tp-bar.ja .tp-reci {
-  left: calc(100% + 2px);
+.r3-zatvorka.su > b {
+  background: var(--su);
 }
 
-.tp-bar.su .tp-reci {
-  right: calc(100% + 2px);
+.r3-zatvorka.nova > b {
+  box-shadow: 0 0 0 2px #fff;
 }
 
-.tp-bub {
-  display: block;
-  width: clamp(18px, 20cqw, 30px);
-  height: clamp(18px, 20cqw, 30px);
-}
-
-.tp-bub path {
-  fill: var(--plocha);
-  stroke-width: 2.4;
-}
-
-.tp-bub text {
-  font: 800 10px var(--pismo);
-}
-
-.tp-bar.ja .tp-bub path {
-  stroke: var(--ja);
-}
-
-.tp-bar.ja .tp-bub text {
-  fill: var(--ja);
-}
-
-.tp-bar.su .tp-bub path {
-  stroke: var(--su);
-}
-
-.tp-bar.su .tp-bub text {
-  fill: var(--su);
-}
-
-.tp-reci.nove .tp-bub {
-  filter: drop-shadow(0 0 3px var(--akcent));
-}
-
-/* Ohrozenie a štítok zmien hore, krúžok priazne dole v strede. */
+/* Ohrozenie a štítok zmien hore, krúžok priazne dole v strede pod pásmi. */
 .tp-ohrozenie {
   position: absolute;
   z-index: 3;
   top: 3px;
   left: 50%;
   translate: -50% 0;
-  max-width: calc(100% - 2 * var(--tp-w) - 12px);
+  max-width: calc(100% - 2 * var(--tp-w) - 16px);
   padding: 1px 6px;
   border-radius: 999px;
   border: 1px dashed currentColor;
@@ -304,7 +423,7 @@ button.tp-seg.mimo {
   bottom: auto;
   left: 50%;
   translate: -50% 0;
-  max-width: calc(100% - 2 * var(--tp-w) - 12px);
+  max-width: calc(100% - 2 * var(--tp-w) - 16px);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -326,35 +445,81 @@ button.tp-seg.mimo {
 .tp-k .ls-portret > .tp-kruzok {
   right: auto;
   left: 50%;
-  bottom: 4px;
-  translate: -50% 0;
+  bottom: 8%;
+  translate: -50% 50%;
 }
 
+.tp-k .tp-kruzok .kr {
+  --kr-d: clamp(20px, 16cqw, 36px);
+}
+
+/* Pod portrétom meno a riadok každého hráča: stupeň slovom je vrchol teplomera. */
 .tp-stav {
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1px;
 }
 
 .tp-stav > .ls-meno {
-  flex: 1 1 auto;
+  flex: none;
   text-align: left;
 }
 
-.tp-body {
-  flex: none;
+.r3-riadky {
+  display: grid;
   font-size: 0.72rem;
-  color: var(--slaby-text);
-  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+  min-height: 2.6em;
 }
 
-.tp-body > b.ja {
+.r3-riadky > span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.r3-riadok {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.r3-riadok .kto {
+  flex: none;
+  min-width: 2.8em;
+  max-width: 6em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 800;
+}
+
+.r3-riadok.ja .kto {
   color: var(--ja);
 }
 
-.tp-body > b.su {
+.r3-riadok.su .kto {
   color: var(--su);
+}
+
+.r3-riadok .np-kv {
+  margin-right: 0;
+}
+
+.r3-pozn {
+  color: var(--tlmeny);
+}
+
+.r3-riadky.suhrn {
+  color: var(--text);
+  min-height: 3.9em;
+}
+
+/* Nízky stôl (1366 × 650, telefón): pod portrétom len meno — stupne slovami sú v nápovede. */
+@container linia-starsich (height < 420px) {
+  .r3-riadky {
+    display: none;
+  }
 }
 
 .tp-k.rozdel.mrtvy {
@@ -365,45 +530,329 @@ button.tp-seg.mimo {
   border-color: var(--akcent);
 }
 
-/* Väzeň: prázdne miesto v rade, za mrežami. */
+/* Väzeň (R3): bez teplomerov a mreží — len pečiatka „V PIVNICI u …“ vo farbe držiteľa. */
 .tp-vazen {
-  border-style: dashed;
-  border-color: var(--okraj-svetly);
+  border-color: color-mix(in srgb, var(--su) 60%, transparent);
+  background: color-mix(in srgb, var(--pozadie) 70%, var(--plocha));
 }
 
 .tp-vazen.ja {
-  border-color: var(--ja);
-}
-
-.tp-vazen.su {
-  border-color: var(--su);
+  border-color: color-mix(in srgb, var(--ja) 60%, transparent);
 }
 
 .tp-vazen .ls-portret img {
-  filter: grayscale(1) brightness(0.55);
+  filter: grayscale(0.55) brightness(0.6);
 }
 
-.tp-mreze {
+.tp-peciatka {
   position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(90deg, transparent 0 14px, color-mix(in srgb, var(--tma) 80%, transparent) 14px 18px);
+  z-index: 5;
+  left: 50%;
+  top: 46%;
+  translate: -50% -50%;
+  rotate: -11deg;
+  padding: 0.3em 0.6em 0.35em;
+  border: 3px double currentColor;
+  border-radius: 8px;
+  background: rgb(20 14 12 / 0.55);
+  box-shadow: 0 0 0 2px rgb(20 14 12 / 0.55);
+  color: var(--su);
+  font-family: var(--nadpis);
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.tp-vazen-text {
+.tp-vazen.ja .tp-peciatka {
+  color: var(--ja);
+}
+
+.tp-peciatka > b {
+  display: block;
+  font-size: clamp(11px, 10cqw, 22px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.tp-peciatka > span {
+  display: block;
+  max-width: 9em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: clamp(9.5px, 6.8cqw, 15px);
+  font-weight: 700;
+}
+
+/* Krádež pri zajatí na pečiatke (Michal 2026-11-02). */
+.tp-peciatka > small {
+  display: block;
+  margin-top: 2px;
+  font: 700 clamp(8.5px, 5cqw, 12px) / 1.2 var(--pismo);
+  letter-spacing: 0;
+}
+
+/* ---- Súhrn po bitke krok po kroku (návrh c, docs/napady/suhrn-po-bitke-mocky.html) ---- */
+.r3-pas-suhrnu {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--okraj-svetly);
+  background: color-mix(in srgb, var(--pozadie) 82%, transparent);
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.r3-ps-bitka {
+  white-space: nowrap;
+}
+
+.r3-ps-bitka > b.vyhra {
+  color: var(--zelena, #7cbf74);
+}
+
+.r3-ps-kroky {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.r3-ps-kroky > span {
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj-svetly);
+  color: var(--tlmeny);
+  font-weight: 700;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.r3-ps-kroky > span.on {
+  background: var(--akcent);
+  border-color: var(--akcent);
+  color: var(--na-akcente);
+}
+
+.r3-ps-kroky > span.bol {
+  color: var(--text);
+  border-color: var(--okraj-svetly);
+}
+
+.r3-ps-tlacidla {
+  display: inline-flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.r3-ps-tlacidla > button {
+  min-height: 30px;
+  padding: 4px 14px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.r3-ps-preskocit {
+  border: 1px solid var(--okraj-svetly);
+  background: transparent;
+  color: var(--tlmeny);
+  font: 600 0.78rem/1.2 var(--pismo);
+}
+
+.r3-ps-dalej {
+  border: 0;
+  background: var(--akcent);
+  color: var(--na-akcente);
+  font: 800 0.86rem/1.2 var(--nadpis);
+  box-shadow: 0 3px 0 var(--akcent-tmavy);
+}
+
+.r3-ps-tlacidla > button:focus-visible {
+  outline: 2px solid var(--akcent-svetly);
+  outline-offset: 2px;
+}
+
+.r3-ps-opis {
+  flex-basis: 100%;
+}
+
+.ls-sc.suhrn-tlmeny {
+  opacity: 0.42;
+  filter: saturate(0.6);
+}
+
+.r3-stitky {
   position: absolute;
-  inset: auto 0 0;
+  z-index: 6;
+  left: 4px;
+  right: 4px;
+  top: 22px;
   display: flex;
   flex-direction: column;
-  padding: 6px;
-  text-align: center;
-  font: 700 0.72rem/1.25 var(--pismo);
-  color: var(--text);
-  background: color-mix(in srgb, var(--pozadie) 80%, transparent);
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
 }
 
-.tp-vazen-text > small {
-  font-weight: 400;
-  color: var(--tlmeny);
+.r3-stitok {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1.5px solid var(--akcent);
+  background: var(--pozadie);
+  color: var(--akcent-svetly);
+  font: 800 0.72rem/1.3 var(--pismo);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.7);
+}
+
+.r3-stitok.ja {
+  border-color: var(--ja);
+  color: var(--ja);
+}
+
+.r3-stitok.su {
+  border-color: var(--su);
+  color: var(--su);
+}
+
+.r3-stitok.chip-ja {
+  border-color: var(--ja);
+  background: var(--ja);
+  color: #0f0d0b;
+}
+
+.r3-stitok.chip-su {
+  border-color: var(--su);
+  background: var(--su);
+  color: #0f0d0b;
+}
+
+.r3-stitok > .kratke {
+  display: none;
+}
+
+@container ls-sc (width < 175px) {
+  .r3-stitky {
+    top: 6px;
+  }
+
+  .r3-stitok {
+    padding: 1px 5px;
+    font-size: 0.6rem;
+  }
+
+  .r3-stitok > .dlhe {
+    display: none;
+  }
+
+  .r3-stitok > .kratke {
+    display: inline;
+  }
+}
+
+/* Nízky stôl: pás súhrnu hustejší; na telefóne bez vety kroku, len práve bežiaci krok a bez hlavičky línie. */
+@container linia-starsich (height < 420px) {
+  .r3-pas-suhrnu {
+    gap: 2px 10px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .r3-ps-kroky > span {
+    padding: 1px 7px;
+    font-size: 0.66rem;
+  }
+
+  .r3-ps-tlacidla > button {
+    min-height: 26px;
+    padding: 2px 12px;
+  }
+}
+
+@container linia-starsich (height < 260px) {
+  .r3-ps-opis,
+  .r3-ps-kroky > span:not(.on),
+  .tp-linia.v-suhrne > .ls-hlava {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .r3-vypln.rast {
+    transform-origin: 50% 100%;
+    animation: r3-rast 0.7s ease-out both;
+    animation-delay: var(--d, 0.15s);
+  }
+
+  .r3-vypln.mizne {
+    animation: r3-mizne 0.8s ease-in 0.1s backwards;
+  }
+
+  .r3-hladina.posun {
+    animation: r3-posun 0.8s ease-in-out 0.15s backwards;
+  }
+
+  .r3-zatvorka.vyskoc,
+  .r3-stitok {
+    animation: r3-vyskoc 0.45s ease-out backwards;
+    animation-delay: var(--d, 0.9s);
+  }
+
+  .tp-kruzok.nove .kr {
+    animation: r3-blik 1.4s ease-in-out 3;
+  }
+
+  /* Nepotvrdený zdvih bliká, kým ho hráč nepotvrdí. */
+  .r3.rozdel .r3-seg.nove {
+    animation: r3-navrh 1.4s ease-in-out infinite;
+  }
+
+  @keyframes r3-rast {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes r3-mizne {
+    from {
+      opacity: 1;
+    }
+  }
+
+  @keyframes r3-posun {
+    from {
+      bottom: calc(var(--h-od) * 100% / 3);
+    }
+  }
+
+  @keyframes r3-vyskoc {
+    0% {
+      opacity: 0;
+      transform: translateY(8px) scale(0.6);
+    }
+
+    60% {
+      opacity: 1;
+      transform: translateY(-3px) scale(1.08);
+    }
+  }
+
+  @keyframes r3-blik {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @keyframes r3-navrh {
+    50% {
+      outline-color: transparent;
+    }
+  }
 }
 
 /* ---- Pult ---- */
@@ -663,12 +1112,11 @@ button.tp-seg.mimo {
   overflow-x: auto;
 }
 
-.hra.mobil-sirka .tp-bar.rozdel {
-  --tp-w: 28px;
+.hra.mobil-sirka .r3.rozdel {
+  --pas-ja: 28px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .tp-seg.nove,
   .tp-pipy-pult > .nove {
     animation: tp-nove 1.4s ease-in-out infinite;
   }
