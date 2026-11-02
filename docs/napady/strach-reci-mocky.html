@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="sk" data-schema="krcma">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strach a reči — mocky stola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Tokeny zo schemy.css — tmavá Krčma a svetlý Lístok. Farby stupnice sú pevné ako na scorecarde. */
+:root, :root[data-schema="krcma"] {
+  --pozadie: #14110e; --plocha: #1e1914; --plocha-2: #28211a; --plocha-3: #332a21;
+  --okraj: #3d3229; --okraj-svetly: #57483a;
+  --text: #f1e8d8; --tlmeny: #b6a790; --slaby: #8b7d6a;
+  --akcent: #e9ad45; --cervena: #d0563f; --zelena: #7cbf74;
+  --ja: #5cc0cf; --ja-tmava: #1d3b40; --su: #e0805f; --su-tmava: #43261d;
+  --stol: radial-gradient(ellipse at 50% 40%, #2c2219 0%, #1a140f 75%);
+  color-scheme: dark;
+}
+:root[data-schema="listok"] {
+  --pozadie: #f5ecd9; --plocha: #fef9ee; --plocha-2: #f0e5cf; --plocha-3: #e7dbc2;
+  --okraj: #d9ccb4; --okraj-svetly: #bdb093;
+  --text: #312317; --tlmeny: #624e3f; --slaby: #917c6b;
+  --akcent: #723f00; --cervena: #b8452f; --zelena: #256d2f;
+  --ja: #006a77; --ja-tmava: #d2ecee; --su: #a3401d; --su-tmava: #f5ddd2;
+  --stol: radial-gradient(ellipse at 50% 40%, #fbf3e3 0%, #eadcc0 80%);
+  color-scheme: light;
+}
+:root { --nadpis: "Bitter", Georgia, serif; --pismo: "Roboto", system-ui, sans-serif;
+  --z0: #6b6259; --z1: #facc15; --z2: #f97316; --z3: #dc2626; }
+:root[data-schema="listok"] { --z0: #c9bfae; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 400 1rem/1.5 var(--pismo); overflow-x: hidden; }
+.obal { max-width: 1480px; margin: 0 auto; padding: 20px clamp(12px, 3vw, 32px) 80px; }
+h1, h2, h3 { font-family: var(--nadpis); line-height: 1.2; margin: 0 0 .4em; }
+h1 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.2rem); }
+h2 { font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem); }
+.uvod { max-width: 80ch; color: var(--tlmeny); }
+.uvod b { color: var(--text); }
+a { color: var(--akcent); }
+nav.lista { position: sticky; top: 0; z-index: 5; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 8px 0; background: var(--pozadie); border-bottom: 1px solid var(--okraj); margin: 12px 0 18px; }
+nav.lista a, nav.lista button { font: 500 .85rem var(--pismo); text-decoration: none; color: var(--tlmeny); background: var(--plocha); border: 1px solid var(--okraj); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+nav.lista .medz { flex: 1; }
+.legenda { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .85rem; color: var(--tlmeny); margin: 0 0 14px; align-items: center; }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+section.mock { margin: 0 0 44px; scroll-margin-top: 56px; }
+.popis { display: grid; grid-template-columns: 1fr; gap: 6px 24px; font-size: .9rem; color: var(--tlmeny); margin-bottom: 10px; max-width: 110ch; }
+.popis b { color: var(--text); }
+.plus { color: var(--zelena); } .minus { color: var(--cervena); }
+.stol { background: var(--stol); border: 1px solid var(--okraj); border-radius: 16px; padding: clamp(10px, 2vw, 22px); overflow-x: auto; }
+
+/* hrozba výhry strachom */
+.hrozby { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-bottom: 14px; font-size: .88rem; }
+.hrozba { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 999px; background: var(--plocha); border: 1px solid var(--okraj); }
+.hrozba b { font-family: var(--nadpis); }
+.hrozba .pip { width: 12px; height: 12px; border-radius: 3px; background: var(--plocha-3); border: 1px solid var(--okraj-svetly); }
+.hrozba .pip.on { background: var(--z3); border-color: var(--z3); }
+.hrozba .pip.vaz { background: repeating-linear-gradient(45deg, var(--z3) 0 3px, #000 3px 5px); border-color: var(--z3); }
+
+/* žetóny */
+.disk { display: inline-block; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #0008; box-shadow: 0 1px 2px #0008; }
+.disk.a { background: var(--ja); } .disk.b { background: var(--su); }
+.bub { display: inline-block; vertical-align: middle; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font: 700 .72rem var(--pismo); padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+.chip.a { background: var(--ja-tmava); color: var(--ja); border: 1px solid var(--ja); }
+.chip.b { background: var(--su-tmava); color: var(--su); border: 1px solid var(--su); }
+.chip.n { background: var(--plocha-2); color: var(--slaby); border: 1px solid var(--okraj); }
+.chip.sib { background: repeating-linear-gradient(135deg, #5a1010 0 6px, #7a1a1a 6px 12px); color: #ffd7d0; border: 1px solid var(--z3); }
+.chip.ohr { background: #3a2a05; color: var(--z1); border: 1px dashed var(--z1); }
+.body { font-size: .74rem; color: var(--slaby); }
+.body .a { color: var(--ja); font-weight: 700; } .body .b { color: var(--su); font-weight: 700; }
+
+/* ---------- Mock 1 · Pás pod kartami ---------- */
+.m1 { display: grid; grid-template-columns: repeat(8, minmax(128px, 1fr)); gap: 10px; min-width: 1080px; }
+.m1 .st { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 6px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+.m1 .st.sib { border-color: var(--z3); box-shadow: 0 0 0 2px #dc262655; }
+.m1 .obr { position: relative; aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; background: var(--plocha-3); }
+.m1 .obr img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.m1 .obr .chip { position: absolute; left: 4px; top: 4px; }
+.m1 .obr .chip + .chip { top: 26px; }
+.m1 .meno { font: 700 .86rem var(--nadpis); line-height: 1.1; }
+.m1 .sc { font-size: .72rem; color: var(--slaby); }
+.m1 .dr { display: grid; grid-template-columns: 14px repeat(4, 1fr); gap: 2px; align-items: center; }
+.m1 .dr .l { font: 700 .66rem var(--pismo); }
+.m1 .dr .l.a { color: var(--ja); } .m1 .dr .l.b { color: var(--su); }
+.m1 .pole { height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; gap: 1px; }
+.m1 .z0 { background: color-mix(in srgb, var(--z0) 45%, transparent); } .m1 .z1 { background: color-mix(in srgb, var(--z1) 40%, transparent); }
+.m1 .z2 { background: color-mix(in srgb, var(--z2) 45%, transparent); } .m1 .z3 { background: color-mix(in srgb, var(--z3) 50%, transparent); }
+.m1 .pole .disk { width: 13px; height: 13px; border-width: 1.5px; }
+.m1 .vazen { aspect-ratio: 3/4; border: 2px dashed var(--okraj-svetly); border-radius: 8px; display: grid; place-items: center; text-align: center; color: var(--slaby); font-size: .8rem; padding: 8px; }
+
+/* ---------- Mock 2 · Zrkadlo ---------- */
+.m2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(560px, 1fr)); gap: 8px 22px; }
+.m2 .r { display: grid; grid-template-columns: 1fr 150px 1fr; align-items: center; gap: 8px; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 6px 10px; }
+.m2 .r.sib { border-color: var(--z3); }
+.m2 .tr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+.m2 .tr .pole { position: relative; height: 34px; border-radius: 6px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 3px; font: 700 .7rem var(--pismo); color: #0009; }
+.m2 .tr .pole .n { position: absolute; top: 2px; left: 4px; }
+.m2 .tr .pole .t { display: flex; gap: 2px; align-items: center; }
+.m2 .z0 { background: var(--z0); } .m2 .z1 { background: var(--z1); } .m2 .z2 { background: var(--z2); } .m2 .z3 { background: var(--z3); }
+.m2 .tr .pole.off { filter: saturate(.25) brightness(.55); }
+.m2 .str { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.m2 .str img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--okraj-svetly); }
+.m2 .str .meno { font: 700 .82rem var(--nadpis); line-height: 1.1; }
+.m2 .sip { font: 800 .8rem var(--nadpis); display: flex; align-items: center; gap: 3px; }
+.m2 .hrac { font: 700 .72rem var(--pismo); text-align: center; }
+.m2 .hrac.a { color: var(--ja); } .m2 .hrac.b { color: var(--su); }
+
+/* ---------- Mock 3 · Teplomery ---------- */
+.m3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.m3 .k { position: relative; border-radius: 14px; overflow: hidden; background: var(--plocha-3); aspect-ratio: 4/5; border: 1px solid var(--okraj); }
+.m3 .k.sib { outline: 3px solid var(--z3); outline-offset: -3px; }
+.m3 .k img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.m3 .k::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, #0000 40%, #000c 100%), linear-gradient(to right, #0009 0, #0000 22%, #0000 78%, #0009 100%); }
+.m3 .bar { position: absolute; top: 14%; bottom: 20%; width: 16px; z-index: 2; display: flex; flex-direction: column-reverse; gap: 3px; }
+.m3 .bar.a { left: 10px; } .m3 .bar.b { right: 10px; }
+.m3 .seg { flex: 1; border-radius: 4px; background: #ffffff1f; border: 1px solid #ffffff33; position: relative; }
+.m3 .seg.z1.on { background: var(--z1); } .m3 .seg.z2.on { background: var(--z2); } .m3 .seg.z3.on { background: var(--z3); }
+.m3 .seg .rc { position: absolute; top: 50%; transform: translateY(-50%); }
+.m3 .bar.a .rc { left: 20px; } .m3 .bar.b .rc { right: 20px; }
+.m3 .cap { position: absolute; top: calc(14% - 18px); z-index: 2; font: 800 .7rem var(--pismo); }
+.m3 .cap.a { left: 10px; color: var(--ja); } .m3 .cap.b { right: 10px; color: var(--su); }
+.m3 .spod { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 8px 10px; color: #fff; }
+.m3 .spod .meno { font: 800 1rem var(--nadpis); }
+.m3 .stuha { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 3px; font-size: .75rem; }
+.m3 .sipka { flex: 1; height: 8px; border-radius: 4px; background: #ffffff22; position: relative; }
+.m3 .sipka i { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+.m3 .vrch { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); z-index: 2; }
+.m3 .k.vaz { display: grid; place-items: center; border: 2px dashed var(--okraj-svetly); background: var(--plocha); color: var(--slaby); text-align: center; padding: 14px; }
+.m3 .k.vaz::after { display: none; }
+
+/* ---------- Mock 4 · Ciferník okolo stola ---------- */
+.m4 { position: relative; height: 620px; min-width: 900px; }
+.m4 .doska { position: absolute; left: 50%; top: 58%; width: 46%; height: 34%; transform: translate(-50%, -50%); border-radius: 50%; background: var(--plocha); border: 1px solid var(--okraj-svetly); display: grid; place-items: center; text-align: center; padding: 20px; }
+.m4 .doska .stav { font: 700 .95rem var(--nadpis); }
+.m4 .cif { position: absolute; width: 150px; transform: translate(-50%, -50%); text-align: center; }
+.m4 .cif svg { width: 150px; height: 150px; display: block; }
+.m4 .cif .meno { font: 700 .82rem var(--nadpis); margin-top: -4px; }
+.m4 .cif .chip { margin-top: 2px; }
+
+/* ---------- Mock 5 · Pult (tabuľka) ---------- */
+.m5 { width: 100%; border-collapse: separate; border-spacing: 0 4px; min-width: 860px; font-size: .88rem; }
+.m5 th { font: 600 .74rem var(--pismo); color: var(--slaby); text-align: center; padding: 2px 6px; text-transform: uppercase; letter-spacing: .04em; }
+.m5 th.a { color: var(--ja); } .m5 th.b { color: var(--su); }
+.m5 td { background: var(--plocha); padding: 6px 8px; text-align: center; border-top: 1px solid var(--okraj); border-bottom: 1px solid var(--okraj); }
+.m5 td:first-child { border-left: 1px solid var(--okraj); border-radius: 10px 0 0 10px; text-align: left; }
+.m5 td:last-child { border-right: 1px solid var(--okraj); border-radius: 0 10px 10px 0; }
+.m5 tr.sib td { border-color: var(--z3); }
+.m5 .kto { display: flex; align-items: center; gap: 8px; }
+.m5 .kto img { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; }
+.m5 .kto b { font-family: var(--nadpis); display: block; line-height: 1.1; }
+.m5 .kto small { color: var(--slaby); }
+.m5 .pips { display: inline-flex; gap: 3px; }
+.m5 .pips i { width: 14px; height: 14px; border-radius: 3px; background: var(--plocha-3); border: 1px solid var(--okraj-svetly); }
+.m5 .pips i.z1 { background: var(--z1); border-color: var(--z1); } .m5 .pips i.z2 { background: var(--z2); border-color: var(--z2); } .m5 .pips i.z3 { background: var(--z3); border-color: var(--z3); }
+.m5 .pips.reci i { border-radius: 50%; }
+.m5 .pips.reci i.on { background: transparent; border: 3px solid var(--z1); }
+.m5 .pips.reci i.on.z2 { border-color: var(--z2); } .m5 .pips.reci i.on.z3 { border-color: var(--z3); }
+.m5 .div { position: relative; width: 140px; height: 16px; margin: 0 auto; background: var(--plocha-2); border-radius: 8px; }
+.m5 .div::before { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--okraj-svetly); }
+.m5 .div i { position: absolute; top: 2px; bottom: 2px; border-radius: 6px; }
+.m5 .div span { position: absolute; top: -1px; font: 800 .74rem var(--pismo); }
+.m5 .bd { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.m5 .bd b { font-size: .95rem; }
+.m5 tfoot td { font-weight: 700; }
+
+@media (max-width: 700px) { .m2 { grid-template-columns: 1fr; } .m2 .r { grid-template-columns: 1fr 96px 1fr; padding: 6px; } .m2 .str img { width: 40px; height: 40px; } }
+</style>
+</head>
+<body>
+<div class="obal">
+<h1>Strach a reči — 5 rozložení starších na stole</h1>
+<p class="uvod">Mocky k <a href="strach-reci.html">strach-reci.html</a> (Michal 2026-11-02). Všetky ukazujú <b>ten istý stav</b> z príkladu: Ana (ty) a Boris, 4. kolo Druhej ligy. Pri každom staršom sú <b>4 markery</b>: strach Any, reči Any, strach Borisa, reči Borisa. K tomu priazeň z rozdielu strachov, šibnutý Farár (obaja na červenej), Poštárka v ohrození (Ana skúša zajať), Hrobár ako Borisov väzeň a koľko špakov by dal každý starší pri výhre a pri prehre. Prejdi myšou nad staršieho — rozpis v bublinke.</p>
+
+<nav class="lista">
+  <a href="#m1">1 · Pás pod kartami</a><a href="#m2">2 · Zrkadlo</a><a href="#m3">3 · Teplomery</a><a href="#m4">4 · Ciferník okolo stola</a><a href="#m5">5 · Pult</a>
+  <span class="medz"></span>
+  <button type="button" id="schema">Schéma: Krčma / Lístok</button>
+</nav>
+
+<div class="legenda" id="legenda"></div>
+
+<section class="mock" id="m1">
+  <h2>1 · Pás pod kartami</h2>
+  <div class="popis"><span><b>Rad 8 kariet</b> na hrane stola, pod každou stupnica 0–3 v dvoch dráhach (A Ana, B Boris). Strach = disk, reči = bublina, na tom istom poli. Priazeň a stav ako pečiatka na karte.</span>
+  <span><span class="plus">+</span> najbližšie dnešnému stolu (karta a pod ňou ukazovateľ), čitateľné ilustrácie. <span class="minus">−</span> zaberá celú šírku, na notebooku 1366 treba posúvať alebo zmenšiť karty.</span></div>
+  <div class="stol"><div class="hrozby" data-hrozby></div><div class="m1" id="r1"></div></div>
+</section>
+
+<section class="mock" id="m2">
+  <h2>2 · Zrkadlo</h2>
+  <div class="popis"><span><b>Dnešná stupnica rozpolená:</b> v strede starší, vľavo Anina dráha (červená na kraji), vpravo Borisova. Kraje sú červené ako dnes, takže hráč číta „čím ďalej od stredu, tým viac sa ťa bojí“. Šípka v strede = komu priazeň a akú.</span>
+  <span><span class="plus">+</span> nič sa nemusí učiť nanovo, priazeň „ťahá“ k strane hráča. <span class="minus">−</span> ľahko sa pomýli so starým preťahovaním (dva markery vyzerajú ako jeden posunutý); menšie ilustrácie.</span></div>
+  <div class="stol"><div class="hrozby" data-hrozby></div><div class="m2" id="r2"></div></div>
+</section>
+
+<section class="mock" id="m3">
+  <h2>3 · Teplomery</h2>
+  <div class="popis"><span><b>Veľká karta staršieho</b> a po jej okrajoch dva teplomery — vľavo Ana, vpravo Boris. Strach plní teplomer zdola (len rastie, ako ortuť), reči sú bublina s číslom vedľa teplomeru. Dole stuha priazne.</span>
+  <span><span class="plus">+</span> „strach nikdy neklesá“ je vidieť z tvaru; ilustrácie sú hrdinami. <span class="minus">−</span> najväčšia plocha; teplomery cez obrázok potrebujú tmavý prechod.</span></div>
+  <div class="stol"><div class="hrozby" data-hrozby></div><div class="m3" id="r3"></div></div>
+</section>
+
+<section class="mock" id="m4">
+  <h2>4 · Ciferník okolo stola</h2>
+  <div class="popis"><span><b>Starší sedia okolo stola</b> ako okrúhle portréty. Ľavý polkruh = Anin strach (3 dieliky), pravý = Borisov; reči sú bodky na vonkajšom okraji. Číslo pod portrétom = priazeň vo farbe hráča. Uprostred stola stav výhry strachom.</span>
+  <span><span class="plus">+</span> najkompaktnejšie, hodí sa na mobil na šírku; starší „sa pozerajú“ na stôl. <span class="minus">−</span> dieliky oblúka sú menšie, reči ako bodky sú najmenej výrazné.</span></div>
+  <div class="stol"><div class="hrozby" data-hrozby></div><div class="m4" id="r4"></div></div>
+</section>
+
+<section class="mock" id="m5">
+  <h2>5 · Pult (tabuľka)</h2>
+  <div class="popis"><span><b>Prehľad ako výsledková tabuľa:</b> riadok = starší, stĺpce = strach a reči oboch, priazeň ako stĺpec od stredu k hráčovi a špaky pri výhre a prehre. Súčty dole.</span>
+  <span><span class="plus">+</span> všetko spočítané, najlepšie na rozhodovanie (kam dať Nakladačku, čo stojí prehra), dobre prístupné. <span class="minus">−</span> najmenej „hracie“ — vhodné ako rozbaľovací panel k inému rozloženiu, nie ako jediné.</span></div>
+  <div class="stol"><div class="hrozby" data-hrozby></div><div style="overflow-x:auto"><table class="m5" id="r5"></table></div></div>
+</section>
+</div>
+
+<script>
+const IMG = id => `../../packages/server/seed/karty/${id}@512.jpg`;
+const H = { a: "Ana", b: "Boris" };
+const SPAKY = [0, 1, 3, 5];
+const ZONA = ["sivá", "žltá", "oranžová", "červená"];
+const STAV = ["pokojný", "znepokojený", "vystrašený", "vydesený"];
+const PRIAZEN = {
+  Veriaci: s => `+${s} Viera`, Fajčiar: s => `+${s} cigarety po bitke`, Bitkár: s => `+${s} tuhé`,
+  Advokát: s => `exekúcia −${s} špaky`, Robota: s => `${s} Roboty v exekúcii`, Kmotor: s => `${s + 1} Dlhy súperovi`,
+  Alkoholik: s => `${s} poldeci späť plné`, Abstinent: s => `${s} Absťáky sa nerátajú`,
+};
+const ANTI = { Veriaci: s => `−${s} Viera obom` };
+// Stav z príkladu v strach-reci.html: [strach, reči]
+const E = [
+  { id: "farar", n: "Farár", p: "Veriaci", a: [3, 0], b: [3, 1] },
+  { id: "krcmarka", n: "Krčmárka", p: "Fajčiar", a: [2, 3], b: [0, 0] },
+  { id: "starosta", n: "Starosta", p: "Bitkár", a: [0, 0], b: [2, 1] },
+  { id: "postarka", n: "Poštárka", p: "Advokát", a: [3, 0], b: [0, 2], ohr: "a" },
+  { id: "hrobar", n: "Hrobár", p: "Abstinent", vazen: "b" },
+  { id: "autobusar", n: "Autobusár", p: "Robota", a: [1, 1], b: [1, 0] },
+  { id: "veterinar", n: "Veterinár", p: "Kmotor", a: [0, 2], b: [3, 0] },
+  { id: "vychovavatelka", n: "Vychovávateľka", p: "Alkoholik", a: [3, 0], b: [1, 0] },
+];
+const sib = e => !e.vazen && e.a[0] === 3 && e.b[0] === 3;
+function priazen(e) {
+  if (e.vazen || sib(e)) return null;
+  const d = e.b[0] - e.a[0];
+  return d > 0 ? { komu: "a", s: d } : d < 0 ? { komu: "b", s: -d } : null;
+}
+function body([s, r], vyhra) { return vyhra ? (r >= s ? SPAKY[r] : SPAKY[s]) : SPAKY[r]; }
+function cervene(h) { return E.filter(e => e.vazen === h || (!e.vazen && e[h][0] === 3)); }
+function sucet(h, vyhra) { return E.reduce((x, e) => x + (e.vazen ? 0 : body(e[h], vyhra)), 0); }
+
+function bub(h, n, vel = 18) {
+  const c = h === "a" ? "var(--ja)" : "var(--su)";
+  return `<svg class="bub" width="${vel}" height="${vel}" viewBox="0 0 20 20" aria-label="reči ${H[h]}${n != null ? " " + n : ""}"><path d="M3 3h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 4v-4H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="var(--plocha)" stroke="${c}" stroke-width="2.4"/>${n != null ? `<text x="10" y="11.5" text-anchor="middle" font-size="9" font-weight="800" fill="${c}" font-family="Roboto, sans-serif">${n}</text>` : ""}</svg>`;
+}
+function stitok(e) {
+  if (e.vazen) return `<span class="chip n">väzeň · ${H[e.vazen]}</span>`;
+  if (sib(e)) return `<span class="chip sib">ŠIBNUTÝ · ${ANTI[e.p](3)}</span>`;
+  const p = priazen(e);
+  return p ? `<span class="chip ${p.komu}">♥ ${p.s} ${H[p.komu]}</span>` : `<span class="chip n">bez priazne</span>`;
+}
+const ohr = e => e.ohr ? `<span class="chip ohr">⛓ v ohrození · ${H[e.ohr]} skúša</span>` : "";
+function tip(e) {
+  if (e.vazen) return `${e.n} — väzeň ${H[e.vazen]}a, ráta sa mu ako červená. Nedáva priazeň ani body za bitku.`;
+  const p = priazen(e);
+  const r = [`${e.n} (${e.p}) — ${STAV[Math.max(e.a[0], e.b[0])]}`];
+  for (const h of ["a", "b"]) r.push(`${H[h]}: strach ${ZONA[e[h][0]]}, reči ${ZONA[e[h][1]]} → výhra ${body(e[h], true)}, prehra ${body(e[h], false)}`);
+  r.push(sib(e) ? `Šibnutý: antipriazeň obom (${ANTI[e.p](3)})` : p ? `Priazeň ${H[p.komu]} sily ${p.s}: ${PRIAZEN[e.p](p.s)}` : "Nikomu nedáva priazeň");
+  if (e.ohr) r.push(`V ohrození: ${H[e.ohr]} skúša zajať (neúspech → jej strach 0)`);
+  return r.join("\n");
+}
+const bodyRiadok = e => e.vazen ? "" : `<div class="body">výhra · prehra <span class="a">${body(e.a, true)}·${body(e.a, false)}</span> | <span class="b">${body(e.b, true)}·${body(e.b, false)}</span></div>`;
+
+document.getElementById("legenda").innerHTML = `
+  <span><i class="disk a"></i> strach Any</span><span>${bub("a")} reči Any</span>
+  <span><i class="disk b"></i> strach Borisa</span><span>${bub("b")} reči Borisa</span>
+  <span>stupnica: ${[0, 1, 2, 3].map(z => `<i style="display:inline-block;width:14px;height:14px;border-radius:3px;background:var(--z${z})"></i>`).join("")} sivá · žltá 1 · oranžová 3 · červená 5 špakov</span>`;
+
+for (const el of document.querySelectorAll("[data-hrozby]")) {
+  el.innerHTML = ["a", "b"].map(h => {
+    const c = cervene(h);
+    return `<span class="hrozba"><b style="color:var(--${h === "a" ? "ja" : "su"})">${H[h]}</b> výhra strachom ${[0, 1, 2, 3].map(i => `<i class="pip ${c[i] ? (c[i].vazen ? "vaz" : "on") : ""}"></i>`).join("")} ${c.length} / 4 · pri výhre ${sucet(h, true)}, pri prehre ${sucet(h, false)} špakov</span>`;
+  }).join("");
+}
+
+// 1 · Pás pod kartami
+document.getElementById("r1").innerHTML = E.map(e => {
+  if (e.vazen) return `<div class="st" title="${tip(e)}"><div class="vazen">v pivnici u ${H[e.vazen]}a<br><br>${e.n}</div><div class="meno">${e.n}</div><div class="sc">priazeň ${e.p} — otočený</div></div>`;
+  const draha = h => `<div class="dr"><span class="l ${h}">${h.toUpperCase()}</span>${[0, 1, 2, 3].map(z =>
+    `<span class="pole z${z}">${e[h][0] === z ? `<i class="disk ${h}"></i>` : ""}${e[h][1] === z && z > 0 ? bub(h, null, 15) : ""}</span>`).join("")}</div>`;
+  return `<div class="st${sib(e) ? " sib" : ""}" title="${tip(e)}"><div class="obr"><img src="${IMG(e.id)}" alt="">${stitok(e)}${ohr(e)}</div>
+    <div class="meno">${e.n}</div><div class="sc">priazeň ${e.p}</div>${draha("a")}${draha("b")}${bodyRiadok(e)}</div>`;
+}).join("");
+
+// 2 · Zrkadlo
+document.getElementById("r2").innerHTML = E.map(e => {
+  if (e.vazen) return `<div class="r" title="${tip(e)}"><div class="hrac a">—</div><div class="str"><img src="${IMG(e.id)}" alt="" style="filter:grayscale(1)"><span class="meno">${e.n}</span><span class="chip n">väzeň · ${H[e.vazen]}</span></div><div class="hrac b">—</div></div>`;
+  const draha = (h, poradie) => `<div><div class="hrac ${h}">${H[h]}</div><div class="tr">${poradie.map(z =>
+    `<span class="pole z${z}${z > e[h][0] && z > e[h][1] ? " off" : ""}"><span class="n">${z || ""}</span><span class="t">${e[h][0] === z ? `<i class="disk ${h}"></i>` : ""}${e[h][1] === z && z > 0 ? bub(h, null, 16) : ""}</span></span>`).join("")}</div></div>`;
+  const p = priazen(e);
+  const sip = sib(e) ? `<span class="chip sib">ŠIBNUTÝ</span>` : p ? `<span class="sip" style="color:var(--${p.komu === "a" ? "ja" : "su"})">${p.komu === "a" ? "◀◀ " + p.s : p.s + " ▶▶"}</span>` : `<span class="sip" style="color:var(--slaby)">—</span>`;
+  return `<div class="r${sib(e) ? " sib" : ""}" title="${tip(e)}">${draha("a", [3, 2, 1, 0])}<div class="str"><img src="${IMG(e.id)}" alt=""><span class="meno">${e.n}</span><span class="body">${e.p}</span>${sip}${ohr(e)}</div>${draha("b", [0, 1, 2, 3])}</div>`;
+}).join("");
+
+// 3 · Teplomery
+document.getElementById("r3").innerHTML = E.map(e => {
+  if (e.vazen) return `<div class="k vaz" title="${tip(e)}"><div><b style="font-family:var(--nadpis)">${e.n}</b><br>v pivnici u ${H[e.vazen]}a<br><span class="body">ráta sa mu ako červená</span></div></div>`;
+  const bar = h => `<span class="cap ${h}">${H[h]}</span><div class="bar ${h}">${[1, 2, 3].map(z =>
+    `<span class="seg z${z}${e[h][0] >= z ? " on" : ""}">${e[h][1] === z ? `<span class="rc">${bub(h, SPAKY[z], 22)}</span>` : ""}</span>`).join("")}</div>`;
+  const p = priazen(e);
+  const stuha = sib(e) ? `<span class="chip sib">ŠIBNUTÝ · ${ANTI[e.p](3)}</span>`
+    : `<span style="color:var(--ja);font-weight:700">${p && p.komu === "a" ? "♥" + p.s : ""}</span><span class="sipka">${p ? `<i style="background:var(--${p.komu === "a" ? "ja" : "su"});${p.komu === "a" ? "right:50%" : "left:50%"};width:${p.s * 16.6}%"></i>` : ""}</span><span style="color:var(--su);font-weight:700">${p && p.komu === "b" ? "♥" + p.s : ""}</span>`;
+  return `<div class="k${sib(e) ? " sib" : ""}" title="${tip(e)}"><img src="${IMG(e.id)}" alt=""><div class="vrch">${ohr(e)}</div>${bar("a")}${bar("b")}
+    <div class="spod"><div class="meno">${e.n}</div><div class="body" style="color:#ddd">priazeň ${e.p} · výhra/prehra <b style="color:var(--ja)">${body(e.a, true)}/${body(e.a, false)}</b> · <b style="color:var(--su)">${body(e.b, true)}/${body(e.b, false)}</b></div><div class="stuha">${stuha}</div></div></div>`;
+}).join("");
+
+// 4 · Ciferník okolo stola
+(function () {
+  const W = 0.5, cx = 50, cy = 58, rx = 40, ry = 44;
+  const html = E.map((e, i) => {
+    const uhol = Math.PI * (1.05 + i * 0.9 / 7);                 // oblúk nad stolom
+    const x = cx + rx * Math.cos(uhol) * 1.08, y = cy + ry * Math.sin(uhol) * 1.0;
+    const R = 62, C = 75;
+    const seg = (h, z) => {                                          // ľavý polkruh Ana (dole → hore), pravý Boris
+      const z0 = h === "a" ? 180 - (z - 1) * 60 - 4 : (z - 1) * 60 + 4, z1 = h === "a" ? z0 - 52 : z0 + 52;
+      const p = d => [C + R * Math.cos((d + 90) * Math.PI / 180), C + R * Math.sin((d + 90) * Math.PI / 180)];
+      const [x0, y0] = p(z0), [x1, y1] = p(z1), sweep = h === "a" ? 0 : 1;
+      const on = !e.vazen && e[h][0] >= z;
+      return `<path d="M${x0} ${y0} A${R} ${R} 0 0 ${sweep} ${x1} ${y1}" fill="none" stroke="${on ? `var(--z${z})` : "var(--plocha-3)"}" stroke-width="11" stroke-linecap="round"/>`;
+    };
+    const bod = (h) => {
+      if (e.vazen || !e[h][1]) return "";
+      const z = e[h][1], d = h === "a" ? 180 - (z - 1) * 60 - 30 : (z - 1) * 60 + 30;
+      const px = C + (R + 11) * Math.cos((d + 90) * Math.PI / 180), py = C + (R + 11) * Math.sin((d + 90) * Math.PI / 180);
+      return `<circle cx="${px}" cy="${py}" r="5" fill="var(--plocha)" stroke="var(--${h === "a" ? "ja" : "su"})" stroke-width="3"/>`;
+    };
+    const p = priazen(e);
+    const stred = e.vazen ? "" : sib(e) ? `<circle cx="${C}" cy="${C}" r="${R - 9}" fill="none" stroke="var(--z3)" stroke-width="3" stroke-dasharray="4 4"/>` : "";
+    const svg = `<svg viewBox="0 0 150 150" aria-hidden="true"><defs><clipPath id="c${i}"><circle cx="${C}" cy="${C}" r="${R - 10}"/></clipPath></defs>
+      ${[1, 2, 3].map(z => seg("a", z) + seg("b", z)).join("")}${bod("a")}${bod("b")}
+      <image href="${IMG(e.id)}" x="${C - R + 10}" y="${C - R + 10}" width="${2 * (R - 10)}" height="${2 * (R - 10)}" clip-path="url(#c${i})" preserveAspectRatio="xMidYMid slice" ${e.vazen ? 'style="filter:grayscale(1) brightness(.5)"' : ""}/>${stred}
+      ${p ? `<circle cx="${C}" cy="${C + R - 6}" r="13" fill="var(--${p.komu === "a" ? "ja" : "su"})"/><text x="${C}" y="${C + R - 1.5}" text-anchor="middle" font-size="14" font-weight="800" fill="#111" font-family="Roboto, sans-serif">${p.s}</text>` : ""}
+      <text x="12" y="16" font-size="10" font-weight="800" fill="var(--ja)" font-family="Roboto">A</text><text x="132" y="16" font-size="10" font-weight="800" fill="var(--su)" font-family="Roboto">B</text></svg>`;
+    return `<div class="cif" style="left:${x}%;top:${y}%" title="${tip(e)}">${svg}<div class="meno">${e.n}</div>${e.vazen ? stitok(e) : sib(e) ? stitok(e) : e.ohr ? ohr(e) : `<span class="body">${e.p}</span>`}</div>`;
+  }).join("");
+  const stav = ["a", "b"].map(h => `<div class="stav" style="color:var(--${h === "a" ? "ja" : "su"})">${H[h]}: ${cervene(h).length} / 4 červené</div>`).join("");
+  document.getElementById("r4").innerHTML = html + `<div class="doska"><div>${stav}<div class="body" style="margin-top:6px">kto má 4 a vyhrá bitku, vyhráva hru</div></div></div>`;
+})();
+
+// 5 · Pult
+(function () {
+  const pips = (n, reci) => `<span class="pips${reci ? " reci" : ""}">${[1, 2, 3].map(z => `<i class="${n >= z ? (reci ? (n === z ? "on z" + z : "") : "z" + z) : ""}"></i>`).join("")}</span>`;
+  const div = e => {
+    if (e.vazen) return `<span class="chip n">väzeň · ${H[e.vazen]}</span>`;
+    if (sib(e)) return `<span class="chip sib">ŠIBNUTÝ · ${ANTI[e.p](3)}</span>`;
+    const p = priazen(e);
+    if (!p) return `<div class="div"></div>`;
+    const w = p.s * 16.6, c = p.komu === "a" ? "ja" : "su";
+    return `<div class="div"><i style="background:var(--${c});${p.komu === "a" ? `right:50%` : `left:50%`};width:${w}%"></i><span style="color:var(--${c});${p.komu === "a" ? `right:calc(50% + ${w}% + 4px)` : `left:calc(50% + ${w}% + 4px)`}">${p.s}</span></div><div class="body">${PRIAZEN[e.p](p.s)}</div>`;
+  };
+  const bd = h => e => e.vazen ? "—" : `<span class="bd"><b>${body(e[h], true)}</b> · ${body(e[h], false)}</span>`;
+  document.getElementById("r5").innerHTML = `<thead><tr><th style="text-align:left">Starší</th><th class="a">Ana strach</th><th class="a">Ana reči</th><th>Priazeň ◀ Ana · Boris ▶</th><th class="b">Boris reči</th><th class="b">Boris strach</th><th class="a">Ana výhra · prehra</th><th class="b">Boris výhra · prehra</th></tr></thead><tbody>` +
+    E.map(e => `<tr class="${sib(e) ? "sib" : ""}" title="${tip(e)}"><td><div class="kto"><img src="${IMG(e.id)}" alt="" ${e.vazen ? 'style="filter:grayscale(1)"' : ""}><div><b>${e.n}</b><small>${e.p}</small> ${ohr(e)}</div></div></td>
+      <td>${e.vazen ? "" : pips(e.a[0])}</td><td>${e.vazen ? "" : pips(e.a[1], true)}</td><td>${div(e)}</td><td>${e.vazen ? "" : pips(e.b[1], true)}</td><td>${e.vazen ? "" : pips(e.b[0])}</td><td>${bd("a")(e)}</td><td>${bd("b")(e)}</td></tr>`).join("") +
+    `</tbody><tfoot><tr><td>Spolu (bez kariet v línii)</td><td colspan="2" style="color:var(--ja)">${cervene("a").length} / 4 červené</td><td></td><td colspan="2" style="color:var(--su)">${cervene("b").length} / 4 červené</td><td><span class="bd"><b>${sucet("a", true)}</b> · ${sucet("a", false)}</span></td><td><span class="bd"><b>${sucet("b", true)}</b> · ${sucet("b", false)}</span></td></tr></tfoot>`;
+})();
+
+document.getElementById("schema").addEventListener("click", () => {
+  const r = document.documentElement; r.dataset.schema = r.dataset.schema === "krcma" ? "listok" : "krcma";
+});
+</script>
+</body>
+</html>

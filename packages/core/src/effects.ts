@@ -259,6 +259,32 @@ export function zadlzenieZLinie(data: GameData, state: Pick<VerejnyStav, "strany
 }
 
 
+/**
+ * Policajtka (Pitka, „Pokutový blok“, Michal 2026-11-02): za každú súperovu akciu, ktorú v tejto
+ * Pitke zruší tvoj Odpor, získa súper 1 zadĺženie — každá tvoja odkrytá Policajtka zvlášť.
+ * Vráti zadĺženie pre [hráča 0, hráča 1]. Policajtka so starým Konfliktom (sada do v10.3) tu nie je.
+ */
+export function pokutaPolicajtky(data: GameData, s: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): [number, number] {
+  const out: [number, number] = [0, 0];
+  if (data.cards.get("policajtka")?.triggers.includes("Pitka") !== true) return out;
+  for (const p of [0, 1] as const) {
+    const n = partiaHraca(s, p).filter((pl) => pl.card.defId === "policajtka" && pl.zaverecna !== true && !efektPotlaceny(data, s, p, "policajtka")).length;
+    out[opponentOf(p)] += n * vyhodnotenie.zruseneOdporom[p];
+  }
+  return out;
+}
+
+/**
+ * Celé zadĺženie, ktoré Pitka pripíše z kariet v línii: Dlh (aj presmerovaný Finančnou
+ * poradkyňou) a pokuta Policajtky. Jeden výpočet pre Pitku (prirastkyPitky) aj náhľad
+ * vyloženia — náhľad predtým pokutu Policajtky vynechal (vymyselník 2026-11-02).
+ */
+export function zadlzeniePitkyZLinie(data: GameData, state: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): [number, number] {
+  const zLinie = zadlzenieZLinie(data, state, vyhodnotenie);
+  const pokuta = pokutaPolicajtky(data, state, vyhodnotenie);
+  return [zLinie[0] + pokuta[0], zLinie[1] + pokuta[1]];
+}
+
 // ---------------------------------------------------------------------------
 // Háčiky — motor ich volá na presne určených miestach
 
