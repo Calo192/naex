@@ -71,10 +71,15 @@ describe("sada v7 — dáta", () => {
     for (const l of data.lokality) expect(cardVariants(l).total, l.id).toBe(1);
   });
 
-  it("hráčske karty majú 4 až 8 variantov, náradie najviac 2 (sloty.json, Michal 2026-10-30)", () => {
+  it("hráčske karty majú 4 až 8 variantov, náradie najviac 2, Bzdocha 2 (sloty.json, Michal 2026-10-30 a 2026-11-02)", () => {
     for (const def of data.cards.values()) {
       if (["Lokalita", "Starešina", "Kliatba"].some((t) => def.tags.includes(t as never))) continue;
       const v = cardVariants(def).total;
+      // Bzdocha má od sady v8 (Michal 2026-11-02) len Víziu a Poveru vľavo — dve rozloženia.
+      if (def.id === "klebetnica") {
+        expect(v, def.id).toBe(2);
+        continue;
+      }
       if (def.tags.includes("Nástroj")) {
         expect(v, def.id).toBeGreaterThanOrEqual(1);
         expect(v, def.id).toBeLessThanOrEqual(2);

@@ -71,7 +71,11 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
       const vytlacena = printedSides(data, karta)[n.vnutornaVytlacena];
       expect(n.vnutorna).toEqual([...vytlacena]);
       const sparovane = new Set(n.pary.map((x) => x.index));
-      for (let k = 0; k < 4; k++) {
+      // Odpor proti susedovmu Posilneniu aktivuje neprepojené akcie karty s Odporom ako Vzbura
+      // (partia.ts markVzbura, nie skutočná) — páry sa vtedy s aktívnymi slotmi nekryjú, súčty áno.
+      // Od sady v8 (Nástroje so 4 akciami) má Posilnenie aj Nástroj v línii, napr. Vínko vedľa Živnostníka.
+      const odporProtiPosilneniu = n.pary.some((x) => x.moja === "Odpor" && x.susedova === "Posilnenie");
+      for (let k = 0; k < 4 && !odporProtiPosilneniu; k++) {
         const slot = ev[n.vnutornaVytlacena][k];
         if (slot === null || slot === undefined) continue;
         expect(slot.stav !== "neaktivna", `${karta.defId} index ${k}`).toBe(sparovane.has(k));
