@@ -100,6 +100,7 @@ import { emailDoLogu, type PosliEmail } from "./email.ts";
 import { titul } from "./frajerina.ts";
 import { Achievementy, nacitajKatalog, type AchievementyMiestnosti } from "./achievementy.ts";
 import type { Vypalena } from "./zrejuca.ts";
+import { PrenosPrihlasenia } from "./zrejuca.ts";
 
 // ---------------------------------------------------------------------------
 // Dáta z repozitára (testy jadra a nástroje ich používajú priamo)
@@ -313,6 +314,8 @@ export interface ServerOpts {
     /** Ako často sa preberá rozpracovaná sada (predvolene minúta; 0 = len pri štarte a na požiadanie). */
     readonly synchronizaciaMs?: number;
   };
+  /** Vypálená: verejná adresa Zrejúcej — správcovia ju majú v menu Správa a prenesú tam prihlásenie. */
+  readonly zrejucaAdresa?: string;
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -425,6 +428,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       (err: unknown) => console.warn("Zrejúca: rozpracovanú sadu sa nepodarilo prevziať —", err instanceof Error ? err.message : err),
     );
   const synchronizaciaMs = zrejuca?.synchronizaciaMs ?? 60_000;
+  const prenos = new PrenosPrihlasenia();
   const synchronizacia = zrejuca !== null && synchronizaciaMs > 0 ? setInterval(() => void skusPrevziatSadu(), synchronizaciaMs) : null;
 
   const rooms = new Map<string, Room>();
@@ -523,6 +527,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           nastavUzavierku,
           zlucUcty: (z, doId, skusobne) => zlucUcty(db, z, doId, skusobne),
           zrejuca: zrejuca === null ? null : { vypalena: zrejuca.vypalena, prevezmiSadu },
+          zrejucaAdresa: zrejuca === null ? (opts.zrejucaAdresa?.replace(/\/+$/, "") ?? null) : null,
+          prenos,
           vyucbaKrokov: scenarVyucby.kroky.length,
           vyucbaVerzia: scenarVyucby.verzia ?? null,
           postupVyucby,

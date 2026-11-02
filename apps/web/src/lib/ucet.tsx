@@ -93,6 +93,8 @@ export const MELICHAR_PREDVOLENY = 70;
 export interface Instancia {
   readonly nazov: "vypalena" | "zrejuca";
   readonly vypalena: string | null;
+  /** Vo Vypálenej adresa Zrejúcej (odkaz v menu Správa); inak null alebo chýba. */
+  readonly zrejuca?: string | null;
 }
 
 const VYPALENA: Instancia = { nazov: "vypalena", vypalena: null };

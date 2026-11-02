@@ -55,6 +55,8 @@ export interface PolozkaSpravy {
   readonly text: string;
   /** Pri Playteste počet návrhov na rozhodnutie. */
   readonly pocet?: "navrhy";
+  /** Odkaz do Zrejúcej s prenosom prihlásenia (Layout si vyžiada jednorazový odkaz). */
+  readonly prenos?: true;
 }
 
 /** Menu „Správa ▾“ — admin aj subadmin vidia všetko (stránky si práva strážia samé). */
@@ -66,7 +68,10 @@ export function spravaWebu(ja: Pouzivatel | null, instancia?: Instancia): Polozk
     { href: "/hraci", text: "Hráči" },
   ];
   // Počet návrhov na rozhodnutie pozná Vypálená, nie Zrejúca.
-  return instancia?.nazov === "zrejuca" ? doVypalenej(polozky, instancia).map(({ pocet: _, ...p }) => p) : polozky;
+  if (instancia?.nazov === "zrejuca") return doVypalenej(polozky, instancia).map(({ pocet: _, ...p }) => p);
+  // Vypálená: správca prejde do pokusnej Zrejúcej tým istým účtom (Michal 2026-11-02).
+  const zrejuca = instancia?.zrejuca ?? null;
+  return zrejuca === null ? polozky : [...polozky, { href: zrejuca, text: "Zrejúca (pokusná verzia) ↗", prenos: true }];
 }
 
 /**

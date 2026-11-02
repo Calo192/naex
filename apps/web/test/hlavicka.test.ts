@@ -138,3 +138,15 @@ describe("navigácia Zrejúcej (Michal 2026-11-02)", () => {
     expect(spravaWebu(ucet("admin"), vypalena)).toEqual(spravaWebu(ucet("admin")));
   });
 });
+
+describe("odkaz do Zrejúcej vo Vypálenej (Michal 2026-11-02)", () => {
+  const vypalena = { nazov: "vypalena", vypalena: null, zrejuca: "https://zrejuca.vyp.test" } as const;
+
+  it("správca má v menu Správa Zrejúcu s prenosom prihlásenia, hráč nie", () => {
+    const sprava = spravaWebu(ucet("subadmin"), vypalena);
+    expect(sprava.at(-1)).toEqual({ href: "https://zrejuca.vyp.test", text: "Zrejúca (pokusná verzia) ↗", prenos: true });
+    expect(spravaWebu(ucet("hrac"), vypalena)).toEqual([]);
+    // Bez adresy (vývoj) položka nie je.
+    expect(hrefy(spravaWebu(ucet("admin"), { nazov: "vypalena", vypalena: null, zrejuca: null }))).toEqual(["/playtest", "/admin", "/hraci"]);
+  });
+});
