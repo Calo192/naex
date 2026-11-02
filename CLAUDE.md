@@ -80,8 +80,8 @@ s kódom (`naex-rozhodca`) idú tou istou cestou. Na živý web nasadzuje
 (živý web vyššie, vetva `vypalena`, zverejnená sada). **Zrejúca** = ďalšia
 verzia hry v testovaní, „aktuálna + 1“, ktorá raz celá nahradí Vypálenú; kód
 z `master`, samostatný kontajner s vlastnou databázou, účty z Vypálenej.
-- **Jedna adresa:** Zrejúca je ďalšia voľba hry na hlavnej stránke (cesta
-  `/zrejuca/`; do 2026-11-02 dočasne subdoména zrejuca.*). Hrá ten, komu admin
+- **Jedna adresa:** Zrejúca je ďalšia voľba hry na stránke Hrať; prehliadač
+  prepne cookie `naex_instancia` (Caddy), nástroje agentov idú na `<doména>/zrejuca`. Hrá ten, komu admin
   udelí oprávnenie — predvolene admin, subadmini, AI účty a hráči s rankom
   Sedmička.
 - **Nasadenie:** `/naex-nasad zrejuca` okamžite na Michalov pokyn, bez
