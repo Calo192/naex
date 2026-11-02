@@ -1040,6 +1040,17 @@ function doRuky(s: MutState, kto: Miesto, karta: DeepMutable<CardInstance>): voi
   rukaMiestaMut(s, kto).push(karta);
 }
 
+/** Vezme náhodnú kartu z rúk hráča — v 2 na 2 z oboch rúk tímu spolu. Prázdne ruky = null. */
+function vezmiNahodnuZRuk(s: MutState, p: PlayerId): DeepMutable<CardInstance> | null {
+  const h = hrac(s, p);
+  const spolu = h.ruka.length + (h.rukaDruheho?.length ?? 0);
+  if (spolu === 0) return null;
+  const [i, rng] = rngInt(s.rng, spolu);
+  s.rng = rng;
+  const karta = i < h.ruka.length ? h.ruka.splice(i, 1)[0] : h.rukaDruheho?.splice(i - h.ruka.length, 1)[0];
+  return karta ?? null;
+}
+
 /**
  * Nový Dlh (PRAVIDLA §11, „verejný dlh“ Michal 2026-10-21; v8.2 počítadlo bez
  * karty, Michal 2026-10-30): hneď priznaný, kartu zaň hráč nedobere; špaky berie
@@ -2922,10 +2933,9 @@ function odhodZBalicka(s: MutState, p: PlayerId, n: number): CardInstance[] {
       odhodene.push(vrchna);
       continue;
     }
-    if (player.ruka.length === 0) break;
-    const [i, rng] = rngInt(s.rng, player.ruka.length);
-    s.rng = rng;
-    odhodene.push(player.ruka.splice(i, 1)[0] as DeepMutable<CardInstance>);
+    const zRuky = vezmiNahodnuZRuk(s, p);
+    if (zRuky === null) break;
+    odhodene.push(zRuky);
   }
   player.odhadzovaci.push(...odhodene);
   return odhodene as CardInstance[];
@@ -3585,7 +3595,7 @@ export function cieleOdpovede(
 
 /** Hráč q má v ruke kartu, ktorú môže ako odpoveď vyložiť (mimo limitu, v9.2 aj s krajom). */
 function mozeReagovat(s: GameState, data: GameData, q: PlayerId): boolean {
-  return s.hraci[q].ruka.some((k) => cieleOdpovede(data, s, q, k).length > 0);
+  return kartyVRukach(s.hraci[q]).some((k) => cieleOdpovede(data, s, q, k).length > 0);
 }
 
 /** Odpoveď na NA EX (v9.2): karta lícom dole, zadarmo, mimo limitu; otočí sa až s odpoveďou súpera. */
@@ -3998,7 +4008,7 @@ function volbyNastupu(data: GameData, state: GameState): Command[] {
     const strana = state.strany[volba.strana ?? volba.hrac];
     const posledna = strana[strana.length - 1];
     const smie = posledna?.card.defId === "zivnostnik" && posledna.playedBy === volba.hrac;
-    const nastroje = smie ? state.hraci[volba.hrac].ruka.filter((k) => defOf(data, k).tags.includes("Nástroj")) : [];
+    const nastroje = smie ? rukaMiesta(state, kapitan(state, volba.hrac)).filter((k) => defOf(data, k).tags.includes("Nástroj")) : [];
     return [{ type: "nastroj", uid: null }, ...nastroje.map((k) => ({ type: "nastroj", uid: k.uid }) as Command)];
   }
   return [{ type: "hasic", nechat: true }, { type: "hasic", nechat: false }];
@@ -4143,8 +4153,8 @@ function cmdKseft(s: MutState, data: GameData, cmd: { uid: number; kartaUid?: nu
 // Kšeft, ktorý nemá čo urobiť, sa neponúka (Veterinár má aspoň časť o pečeni).
 
 /** Cirhózy hráča p, ktoré smie zahodiť Veterinárov Kšeft: z ruky alebo priznané (O3), nie z balíčkov. */
-export function cirhozyPreVeterinara(h: Pick<PlayerState, "ruka" | "priznane">): CardInstance[] {
-  return [...h.ruka, ...h.priznane].filter((k) => k.defId === "cirhoza");
+export function cirhozyPreVeterinara(h: Pick<PlayerState, "ruka" | "rukaDruheho" | "priznane">): CardInstance[] {
+  return [...kartyVRukach(h), ...h.priznane].filter((k) => k.defId === "cirhoza");
 }
 
 /**
@@ -4178,7 +4188,7 @@ export function stavKseftuVazna(state: GameState, p: PlayerId): StavKseftuVazna 
     ...(state.kseftyKola !== undefined ? { kseftyKola: state.kseftyKola } : {}),
     poldeciPlne: [state.hraci[0].poldeciPlne, state.hraci[1].poldeciPlne],
     dlhy: [state.hraci[0].dlhy, state.hraci[1].dlhy],
-    rukaPocet: [state.hraci[0].ruka.length, state.hraci[1].ruka.length],
+    rukaPocet: [kartyVRukach(state.hraci[0]).length, kartyVRukach(state.hraci[1]).length],
     cirhozy: cirhozyPreVeterinara(state.hraci[p]),
   };
 }
@@ -4262,10 +4272,8 @@ function cmdKseftVazna(s: MutState, data: GameData, cmd: { elderId: string; kart
   const zaPoldeci = `Kšeft väzňa ${meno}: hráč ${p + 1} vypíja poldeci`;
   switch (vazen.karta.defId) {
     case "hrobar": {
-      const ruka = s.hraci[opp].ruka;
-      const [i, rng] = rngInt(s.rng, ruka.length);
-      s.rng = rng;
-      const karta = hrac(s, opp).ruka.splice(i, 1)[0] as DeepMutable<CardInstance>;
+      const karta = vezmiNahodnuZRuk(s, opp);
+      need(karta !== null, "Súper nemá v ruke kartu.");
       hrac(s, opp).odhadzovaci.push(karta);
       events.push({ type: "log", text: `${zaPoldeci} — hráč ${opp + 1} odhadzuje náhodnú kartu z ruky.` });
       events.push({ type: "log", pre: opp, text: `Hrobár ti z ruky odhodil ${defOf(data, karta as CardInstance).name}.` });
@@ -4316,11 +4324,11 @@ function cmdKseftVazna(s: MutState, data: GameData, cmd: { elderId: string; kart
     case "veterinar": {
       let zahodena: string | null = null;
       if (cmd.kartaUid !== undefined) {
-        for (const kopa of [h.ruka, h.priznane]) {
+        for (const kopa of [h.ruka, ...(h.rukaDruheho === undefined ? [] : [h.rukaDruheho]), h.priznane]) {
           const i = kopa.findIndex((k) => k.uid === cmd.kartaUid);
           if (i === -1) continue;
           kopa.splice(i, 1);
-          zahodena = kopa === h.ruka ? "z ruky" : "priznanú";
+          zahodena = kopa === h.priznane ? "priznanú" : "z ruky";
           break;
         }
       }
@@ -4709,7 +4717,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
       porazeny !== null &&
       jeCielLokalita(s as GameState, "cintorin") &&
       data.cards.get("cintorin")?.triggers.includes("Prehra") === true &&
-      [...s.hraci[porazeny].ruka, ...s.senok].some((k) => defOf(data, k as CardInstance).tags.includes("Nástroj"))
+      [...kartyVRukach(s.hraci[porazeny]), ...s.senok].some((k) => defOf(data, k as CardInstance).tags.includes("Nástroj"))
     ) {
       b.caka = porazeny;
       return;
@@ -5632,11 +5640,15 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
   // Michal 2026-10-25): kto ju neprizná hneď, riskuje, že sa mu do konca hry
   // nevráti do ruky a na konci ho bude stáť body (ráta sa aj v balíčkoch).
   // Absťák (v9.1) tiež — priznať sa nedá, ostáva v balíčku a ťahá sa znova.
-  for (const p of [0, 1] as const) {
-    const cirhozy = s.hraci[p].ruka.filter((k) => k.defId === "cirhoza");
-    const abstaky = s.hraci[p].ruka.filter((k) => k.defId === "abstak");
+  // 2 na 2: z ruky každého hráča do odhadzovacieho balíčka tímu.
+  for (const m of miestaHry(s)) {
+    const p = timMiesta(m);
+    const ruka = rukaMiestaMut(s, m);
+    const cirhozy = ruka.filter((k) => k.defId === "cirhoza");
+    const abstaky = ruka.filter((k) => k.defId === "abstak");
     if (cirhozy.length + abstaky.length === 0) continue;
-    hrac(s, p).ruka = s.hraci[p].ruka.filter((k) => k.defId !== "cirhoza" && k.defId !== "abstak");
+    const zvysok = ruka.filter((k) => k.defId !== "cirhoza" && k.defId !== "abstak");
+    ruka.splice(0, ruka.length, ...zvysok);
     hrac(s, p).odhadzovaci.push(...cirhozy, ...abstaky);
     if (cirhozy.length > 0) {
       events.push({
@@ -5756,8 +5768,8 @@ function ukonciHru(
 }
 
 /** Nepriznané Cirhózy hráča — v ruke a v oboch balíčkoch (§11, koniec hry v6). */
-export function nepriznaneCirhozy(h: Pick<PlayerState, "ruka" | "doberaci" | "odhadzovaci">): number {
-  return [...h.ruka, ...h.doberaci, ...h.odhadzovaci].filter((k) => k.defId === "cirhoza").length;
+export function nepriznaneCirhozy(h: Pick<PlayerState, "ruka" | "rukaDruheho" | "doberaci" | "odhadzovaci">): number {
+  return [...kartyVRukach(h), ...h.doberaci, ...h.odhadzovaci].filter((k) => k.defId === "cirhoza").length;
 }
 
 /**
