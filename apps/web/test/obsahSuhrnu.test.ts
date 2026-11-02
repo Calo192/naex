@@ -148,13 +148,25 @@ describe("súhrn v partii botov", () => {
           const kto = naTahu(s);
           if (kto === null) break;
           const predTahom = s;
-          s = apply(data, s, tahBota(data, s, kto, seed + n), kto).state;
-          // v10: klebety z hádky idú na nástenku pod víťaza hádky (pole povery).
-          const klebety = predTahom.bitkaStav?.klebety;
-          const vitazHadky = predTahom.bitkaStav?.hadka?.vitaz ?? null;
-          if (s.bitkaStav === null && predTahom.bitkaStav !== null && vitazHadky !== null && klebety !== undefined && Object.keys(klebety).length > 0) {
+          const cmd = tahBota(data, s, kto, seed + n);
+          s = apply(data, s, cmd, kto).state;
+          // v10: posuny priazne z hádky idú na nástenku pod víťaza hádky (pole povery) — z výberov hádky,
+          // nie z klebiet: tie po hádke vyrovnáva posun markera (Nakladačka, prebytok), aby sila ostala pevná.
+          const hadka = predTahom.bitkaStav?.hadka;
+          const vitazHadky = hadka?.vitaz ?? null;
+          if (s.bitkaStav === null && predTahom.bitkaStav !== null && hadka !== undefined && vitazHadky !== null && hadka.posuny.length > 0) {
             const zaznam = s.nastenka.find((x) => x.kolo === predTahom.kolo);
-            for (const [id, n] of Object.entries(klebety)) expect(zaznam?.povery?.[vitazHadky][id]).toBe(n);
+            const znam = (u: { readonly hrac: number | null; readonly sila: number }): number => (u.hrac === null ? 0 : u.hrac === 0 ? u.sila : -u.sila);
+            const posun: Record<string, number> = {};
+            for (const x of hadka.posuny) posun[x.elderId] = (posun[x.elderId] ?? 0) + znam(x.po) - znam(x.pred);
+            // Posledný výber hádky (ten istý ťah bitku dokončí) v predTahom ešte nie je — jeho staršieho len overíme, že je na nástenke.
+            const naNastenke = { ...(zaznam?.povery?.[vitazHadky] ?? {}) };
+            if (cmd.type === "hadka") {
+              expect(naNastenke[cmd.elderId]).toBeDefined();
+              delete naNastenke[cmd.elderId];
+              delete posun[cmd.elderId];
+            }
+            expect(naNastenke).toEqual(posun);
             poveryVidno = true;
           }
           if (s.kolo === z.kolo + 1 && s.koniec === null) {

@@ -111,35 +111,32 @@ function dohrajKolo(s0: GameState): GameState {
 }
 
 describe("Konflikt (v7, plan.md 13.1)", () => {
-  it("Policajtka: súper, ktorý k nej priloží kartu, získa Dlh; za Kriminála jej majiteľ dostane 2 cigarety", () => {
-    const pol = inst("policajtka");
-    const masiar = inst("masiar");
-    const s = vZhromazdeni("zastavka", [[lezi(pol, 1)], []], [masiar]);
-    const po = apply(data, s, { type: "place", uid: masiar.uid, target: "vlastna" }, 0).state;
-    expect(dlhy(po, 0)).toBe(dlhy(s, 0) + 1);
-    const vandal = inst("vandal"); // Kriminál
-    const s2 = vZhromazdeni("zastavka", [[lezi(pol, 1)], []], [vandal]);
-    const po2 = apply(data, s2, { type: "place", uid: vandal.uid, target: "vlastna" }, 0).state;
-    expect(dlhy(po2, 0)).toBe(dlhy(s2, 0));
-    expect([po2.hraci[0].cigarety, po2.hraci[1].cigarety]).toEqual([s2.hraci[0].cigarety - 2, s2.hraci[1].cigarety + 2]);
-  });
+  // Policajtka od sady B+ (Michal 2026-11-02) nemá Konflikt, ale Pitku „Za každú súperovu akciu, ktorú v tejto
+  // Pitke zruší tvoj Odpor, získa súper 1 zadĺženie.“ — test patrí k jej implementácii v jadre.
+  it.todo("Policajtka (P-B): súper získa zadĺženie za každú akciu zrušenú jej majiteľovým Odporom");
+
+  // Mechaniku Konfliktu skúša Snúbenica (priložený Chlap ide po bitke k jej majiteľovi: poBitkeK).
+  const poBitkeK = (st: GameState, uid: number): PlayerId | undefined => [...st.strany[0], ...st.strany[1]].find((pl) => pl.card.uid === uid)?.poBitkeK;
 
   it("vlastné priloženie a priložený Nástroj Konflikt nevyvolajú", () => {
-    const pol = inst("policajtka");
+    const snub = inst("snubenica");
     const masiar = inst("masiar");
-    const vlastna = vZhromazdeni("zastavka", [[lezi(pol, 0)], []], [masiar]);
-    expect(dlhy(apply(data, vlastna, { type: "place", uid: masiar.uid, target: "vlastna" }, 0).state, 0)).toBe(dlhy(vlastna, 0));
+    const vlastna = vZhromazdeni("zastavka", [[lezi(snub, 0)], []], [masiar]);
+    expect(poBitkeK(apply(data, vlastna, { type: "place", uid: masiar.uid, target: "vlastna" }, 0).state, masiar.uid)).toBeUndefined();
+    const cudzia = vZhromazdeni("zastavka", [[lezi(inst("snubenica"), 1)], []], [inst("masiar")]);
+    const chlap = cudzia.hraci[0].ruka[0]!;
+    expect(poBitkeK(apply(data, cudzia, { type: "place", uid: chlap.uid, target: "vlastna" }, 0).state, chlap.uid)).toBe(1);
     const pasca = inst("pasca");
-    const nastroj = vZhromazdeni("zastavka", [[lezi(pol, 1)], []], [pasca]);
-    expect(dlhy(apply(data, nastroj, { type: "place", uid: pasca.uid, target: "vlastna" }, 0).state, 0)).toBe(dlhy(nastroj, 0));
+    const nastroj = vZhromazdeni("zastavka", [[lezi(inst("snubenica"), 1)], []], [pasca]);
+    const po = apply(data, nastroj, { type: "place", uid: pasca.uid, target: "vlastna" }, 0).state;
+    expect([...po.strany[0], ...po.strany[1]].some((pl) => pl.poBitkeK !== undefined)).toBe(false);
   });
 
   it("NA EX na kartu vedľa Konfliktu ho nespustí", () => {
-    const pol = inst("policajtka");
-    const s = vPitke("zastavka", [[lezi(inst("zamocnik"), 1), lezi(pol, 1)], []]);
+    const s = vPitke("zastavka", [[lezi(inst("zamocnik"), 1), lezi(inst("snubenica"), 1)], []]);
     for (const uid of moznostiNaex(data, s, 0)) {
       const po = apply(data, s, { type: "naex", uid }, 0).state;
-      expect(dlhy(po, 0)).toBe(dlhy(s, 0));
+      expect([...po.strany[0], ...po.strany[1]].some((pl) => pl.poBitkeK !== undefined)).toBe(false);
     }
   });
 
@@ -174,25 +171,25 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
 
   it("Miňištrant: Nástup — vyvolal Konflikt, jeho Viera sa ráta ako Pecka", () => {
     const min = inst("ministrant");
-    const s = vZhromazdeni("zastavka", [[lezi(inst("policajtka"), 1)], []], [min]);
+    const s = vZhromazdeni("zastavka", [[lezi(inst("snubenica"), 1)], []], [min]);
     const po = apply(data, s, { type: "place", uid: min.uid, target: "vlastna" }, 0).state;
     expect(po.strany[0].find((pl) => pl.card.uid === min.uid)?.premena).toBe("ministrant");
     expect((evaluateLine(data, lineState(po)).zdroje[0].Viera ?? []).some((z) => z.uid === min.uid)).toBe(false);
   });
 
   it("Záverečná vyvolá Konflikt až pri otočení na konci Pitky", () => {
-    const pol = inst("policajtka");
+    const snub = inst("snubenica");
     const masiar = inst("masiar");
-    const s = vZhromazdeni("zastavka", [[lezi(pol, 1)], []], [masiar]);
+    const s = vZhromazdeni("zastavka", [[lezi(snub, 1)], []], [masiar]);
     const po = apply(data, s, { type: "zaverecna", uid: masiar.uid, target: "vlastna" }, 0).state;
-    expect(dlhy(po, 0)).toBe(dlhy(s, 0));
+    expect(poBitkeK(po, masiar.uid)).toBeUndefined();
     let t = apply(data, po, { type: "pass" }, 1).state;
     for (let i = 0; i < 4 && t.faza === "pitka"; i++) {
       const q = ([0, 1] as const).find((x) => legalCommands(data, t, x).some((c) => c.type === "skipNaex" || c.type === "bezReakcie"));
       if (q === undefined) break;
       t = apply(data, t, legalCommands(data, t, q).find((c) => c.type === "skipNaex" || c.type === "bezReakcie")!, q).state;
     }
-    expect(dlhyAjZhorene(t, 0)).toBeGreaterThanOrEqual(dlhy(s, 0) + 1);
+    expect(poBitkeK(t, masiar.uid)).toBe(1);
   });
 });
 
