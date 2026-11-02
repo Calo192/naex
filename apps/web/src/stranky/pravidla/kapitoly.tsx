@@ -911,15 +911,19 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Odpor</strong> zruší prepojenú akciu.
           </li>
           <li>
-            <strong>Odpor proti Odporu = <P k="vzbura">Vzbura</P>:</strong> obe karty vyhodnotia všetky svoje inak neaktívne akcie
-            ako aktívne.
+            <strong>Odpor proti Odporu = <P k="vzbura">Vzbura</P>:</strong> obe karty sa obrátia — aktívne sú ich nespojené
+            akcie, spojené sú neaktívne. Ich Odpor či Posilnenie na druhom spoji pôsobí ďalej.
           </li>
           <li>
             <strong>Posilnenie proti Posilneniu = <P k="forsaz">Forsáž</P>:</strong> obe karty majú všetky svoje aktívne akcie
-            posilnené (×2) — aj tie, ktoré aktivovala Vzbura, aj zlé ako Hazard. Akcia, ktorú navyše posilní Posilnenie suseda
+            posilnené (×2) — aj tie, ktoré sú aktívne po Vzbure, aj zlé ako Hazard. Akcia, ktorú navyše posilní Posilnenie suseda
             z druhej strany, má ×4.
           </li>
-          <li>Ak Posilnenie ovplyvní Odpor, neprepojené akcie aktivuje iba karta s Odporom.</li>
+          <li>
+            Ak sa Odpor stretne s Posilnením, vznikne Vzbura len pre kartu s Odporom: obráti sa a všetky jej aktívne akcie
+            sú posilnené (×2). Posilnenie je zrušené.
+          </li>
+          <li>Na kartu so Vzburou sa nedá dať NA EX.</li>
           <li>
             Pri lokalite platí Vzbura aj Forsáž len pre jej hranu v tom kraji. <strong>Nástroj</strong> nedostane ani jednu —
             na spoji s Občanom ju dostane len Občan.

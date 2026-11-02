@@ -132,7 +132,7 @@ describe("M2 — modifikátory na spoji", () => {
     expect(evaluated.cards.get(cardA.uid)?.left[1]?.stav).toBe("zrusena");
   });
 
-  it("Odpor + Odpor → Vzbura: obe karty aktivujú neprepojené akcie", () => {
+  it("Odpor + Odpor → Vzbura: obe karty sa obrátia — nespojené akcie aktívne (v11.1)", () => {
     const a = makeDef("a", [null, "Odpor", null, null], [null, null, null, "Pecka"]);
     const b = makeDef("b", [null, null, "Rana", null], [null, "Odpor", null, null]);
     const data = syntheticData([a, b]);
@@ -170,7 +170,7 @@ describe("M2 — modifikátory na spoji", () => {
     expect(evaluateLine(data, line).sums[0]).toEqual({ Dlh: 2 });
   });
 
-  it("Posilnenie + Odpor → neprepojené akcie aktivuje iba karta s Odporom", () => {
+  it("Posilnenie + Odpor → Vzbura iba karty s Odporom, nespojené akcie posilnené (v11.1)", () => {
     const a = makeDef("a", [null, "Odpor", null, null], [null, null, null, "Pecka"]);
     const b = makeDef("b", [null, null, "Rana", null], [null, "Posilnenie", null, null]);
     const data = syntheticData([a, b]);
@@ -178,13 +178,14 @@ describe("M2 — modifikátory na spoji", () => {
     const cardB = instanceFor(data, "b", [null, null, "Rana", null], [null, "Posilnenie", null, null]);
     const line = lineP0(own(cardA), own(cardB));
     const evaluated = evaluateLine(data, line);
-    // Pecka (karta s Odporom) áno, Rana (karta s Posilnením) nie.
-    expect(evaluated.sums[0]).toEqual({ Pecka: 1 });
+    // Pecka (karta s Odporom) áno ×2, Rana (karta s Posilnením) nie.
+    expect(evaluated.sums[0]).toEqual({ Pecka: 2 });
     expect(evaluated.cards.get(cardB.uid)?.right[1]?.stav).toBe("zrusena");
     expect(evaluated.cards.get(cardB.uid)?.left[2]?.stav).toBe("neaktivna");
-    // Názor #91: nie je to Vzbura — ani štítok karty, ani dôvod aktivácie v rozpise.
-    expect(evaluated.cards.get(cardA.uid)?.vzbura).toBe(false);
-    expect(evaluated.zdroje[0].Pecka?.map((z) => z.dovody)).toEqual([["Odpor proti Posilneniu"]]);
+    // v11.1 (Michal 2026-11-02): je to Vzbura karty s Odporom (do v11 nie, názor #91).
+    expect(evaluated.cards.get(cardA.uid)?.vzbura).toBe(true);
+    expect(evaluated.cards.get(cardB.uid)?.vzbura).toBe(false);
+    expect(evaluated.zdroje[0].Pecka?.map((z) => z.dovody)).toEqual([["Vzbura", "Posilnenie"]]);
   });
 
   it("Posilnenie + Posilnenie → Forsáž (v10.3); neaktívne akcie ostávajú neaktívne", () => {
@@ -279,7 +280,7 @@ describe("M2 — lokalita v línii", () => {
     expect(evaluated.cards.get(lokCard.uid)).toBeDefined();
   });
 
-  it("vzbura na spoji s lokalitou aktivuje len stranu patriacu partii (rozhodnutie č. 4)", () => {
+  it("vzbura na spoji s lokalitou obráti len stranu patriacu partii (rozhodnutie č. 4)", () => {
     const lok = makeDef("lok", [null, "Odpor", null, "Povera"], ["Pecka", null, null, null], {
       tags: ["Lokalita"],
     });

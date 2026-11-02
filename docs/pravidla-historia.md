@@ -2772,3 +2772,40 @@ nové znenie. Staré znenia (v10.4):
 > - Potom dostanú hráči špaky za väzňov (8 / 6 / 4 / 2 podľa poradia zajatia), vykúpia sa zvyšné zdroje (plný poldeci 1 špak, každých celých
 >   5 cigariet 1 špak, §14), odpočíta sa nepriznaná Cirhóza (−3 za kus) a vyhrá
 >   hráč s viac špakmi.
+
+## v11.1 — Vzbura obráti aktivitu karty (Michal 2026-11-02, Zrejúca)
+
+Michal (Zrejúca, master v11): „Mám pocit, že Vzbura nefunguje. Majú sa aktivovať akcie naopak,
+nie aktivovať všetky. V priloženom prípade majú Policajtka a Manželka Vzburu. Obe by mali mať
+teda aktivované NESPOJENÉ akcie, Policajtka má aktívnu Robotu a Ranu navyše, Manželka zas
+Poveru.“ Na karte so Vzburou sú odteraz aktívne len nespojené akcie a spojené sú neaktívne
+(predtým aktívne všetky). Doplnil (Michal 2026-11-02): „Ak je Odpor spojený s Posilnením, vznikne Vzbura, ale len pre kartu, na ktorej je Odpor, jej
+akcie sa aktivujú naopak, ale sú posilnené. Ďalšie pravidlo – na karty so Vzburou – či už
+Odpor/Odpor alebo Odpor/Posilnenie – sa nedá dať NA EX.“ Odpor proti Posilneniu je
+teda Vzbura karty s Odporom (predtým len aktivoval jej neprepojené akcie a Vzburou nebol, názor
+#91) a jej aktívne akcie sú ×2; Nástroj ju nedostane (predtým dostal). Rozhodnuté pri
+implementácii (Leader a programátor, na schválenie): NA EX, ktorý zruší Posilnenie partnera,
+zruší aj zdvojenie (obrátenie ostáva); zákaz NA EX platí v okamihu výberu (Vzbura vzniknutá
+potom NA EX nezruší; skrytá Záverečná ostáva cieľom); modifikátory karty na jej ďalších spojoch
+pôsobia ďalej (Odpor ruší, Posilnenie zdvojí, Forsáž); Odpory spoja Vzbury ostávajú ako doteraz
+(nič nedajú, Odpor hrany lokality sa ráta do Pitiek); poradie Vzbura → Forsáž → NA EX; Telefón
+spojené Pohoršenie pod Vzburou nezachráni a Puška sa pod Vzburou neuplatní. Odtlačok hry sa
+zmenil zámerne. Staré znenia (v11):
+
+> úvod: **Pravidlá v11 (platné od 2026-11-02)** — Strach a reči …
+>
+> §6 Modifikátory: | Odpor + Odpor | **Vzbura**: obe karty vyhodnotia všetky svoje inak neaktívne
+> akcie ako aktívne; lokalita len hranu pri tom kraji, nie obe; Nástroj Vzburu nedostane (v10.3) |
+>
+> §6 Modifikátory: | Posilnenie + Odpor | neprepojené akcie aktivuje **iba karta s Odporom** |
+>
+> §6 Forsáž: - Akcie aktivované **Vzburou** (aj Výhernými žrebmi) sú aktívne — Forsáž ich zdvojí tiež.
+>
+> §7 NA EX: (zákaz NA EX na kartu so Vzburou nebol)
+>
+> §16 Policajtka: … nie modifikátory (Posilnenie, Odpor, Pakt); Vzbura nič neruší.
+>
+> §16 Puška: Prepojená = má na spoji partnera (aktívna len zo Vzbury nie).
+>
+> Slovník: | Vzbura | Odpor + Odpor na spoji: obe karty vyhodnotia svoje inak neaktívne akcie ako
+> aktívne; Nástroj nie, lokalita len hranu (§6) |

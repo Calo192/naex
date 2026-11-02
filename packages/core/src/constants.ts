@@ -243,13 +243,16 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11 (Michal 2026-11-02, docs/napady/strach-reci.html): Strach a reči — každý hráč má pri staršom
 // vlastný strach a reči, priazeň = rozdiel strachov, bodovanie starších po bitke, výhra strachom
 // (4 červené), väzni na výhru podľa ligy, krádež pri zajatí; platí v Zrejúcej.
+// v11.1 (Michal 2026-11-02, Zrejúca) bez novej značky: Vzbura obráti aktivitu karty — nespojené
+// akcie aktívne, spojené neaktívne; Odpor proti Posilneniu = Vzbura karty s Odporom, posilnená;
+// na kartu so Vzburou NA EX nejde.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.1";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-02";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

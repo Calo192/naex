@@ -143,6 +143,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Praudovravca (ráta sa ako Posilnenie) Forsáž vytvára. NA EX na jednu z kariet spoja jej Posilnenie
   zruší, a tým aj Forsáž (Energeťák a Veterán to zastavia). **Vzbura s Nástrojom (v10.3):** Odpor
   Nástroja proti Odporu Občana — Vzburu dostane len Občan/Starešina.
+- **Vzbura (v11.1):** Odpor + Odpor na spoji **obráti** obe karty — aktívne sú ich **nespojené** akcie
+  (aj celá vonkajšia hrana), **spojené sú neaktívne** (aj posilnené susedom); zrušené Odporom ostávajú.
+  **Odpor proti Posilneniu** = Vzbura len karty s Odporom a jej aktívne (nespojené) akcie sú **×2**
+  (s Forsážou ×4); karta s Posilnením nič. Odpor a Posilnenie karty na jej druhom spoji pôsobia ďalej.
+  **Na kartu so Vzburou NA EX nedáš.** Vzbura sa oplatí karte s veľa voľnými akciami; karte s dobrými
+  spojmi uškodí.
 - **Draft (v8.5):** karty šenku sú v dvoch balíčkoch — **Náradie** (Nástroje) a **Občania** (ostatné).
   Stavba šenku naraz, bez podávania: dostaneš **2 karty z Náradia a 6 z Občanov**, dáš **4 do šenku**
   v ľubovoľnom mixe a 4 naspodok (Nástroj k Náradiu, ostatné k Občanom;
@@ -218,7 +224,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   karte aktívne akcie a zdvojí neaktívne; akcie sa rátajú majiteľovi karty.
   Pečeň +1 je tvoja. Súper smie po odkrytí odpovedať jednou kartou mimo limitu, **lícom dole a zadarmo**
   (`place` / `bezReakcie`) — po otočení smie zmeniť prevahu v kraji aj počet Pitiek; Nástup až pri otočení. Nie na kartu, na ktorej
-  už poldeci leží. NA EX na kartu
+  už poldeci leží, ani na kartu so Vzburou (v11.1). NA EX na kartu
   pri lokalite mení len akcie karty, akcie hrany lokality ostávajú aktívne. NA EX na kartu
   s Posilnením zruší Posilnenie aj ×2 partnera na spoji (2026-10-24; partner ostáva ×1,
   aj hrana lokality). Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju

@@ -185,9 +185,9 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
     break;
   }
 
-  // Vzbura: Odpor proti Odporu na novom spoji.
+  // Vzbura: Odpor proti Odporu alebo Posilneniu na novom spoji (v11.1).
   if (vzbury(evPo) > vzbury(evPred)) {
-    out.push({ typ: "vzbura", ...MOMENTY.vzbura, hrac: null, popis: "Vzbura — Odpor narazil na Odpor a obe karty sa rozbehli naplno." });
+    out.push({ typ: "vzbura", ...MOMENTY.vzbura, hrac: null, popis: "Vzbura — Odpor narazil na Odpor či Posilnenie a karta sa obrátila: nespojené akcie ožili, spojené zhasli." });
   }
 
   // Forsáž (v10.3): Posilnenie proti Posilneniu na novom spoji.
