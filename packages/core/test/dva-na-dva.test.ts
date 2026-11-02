@@ -267,6 +267,28 @@ describe("draft 2 na 2", () => {
   });
 });
 
+describe("celá partia 2 na 2", () => {
+  it.each([1, 2, 3, 4, 5])("náhodné legálne ťahy všetkých štyroch dohrajú partiu (semienko %i)", (seed) => {
+    let s = setupGame(data, seed, { format: "2na2" });
+    let x = seed * 7919;
+    const nahoda = (n: number): number => {
+      x = (x * 1103515245 + 12345) % 2147483648;
+      return x % n;
+    };
+    let krokov = 0;
+    for (; s.koniec === null && krokov < 4000; krokov++) {
+      const moznosti = miestaHry(s).flatMap((m) => legalCommands(data, s, m).map((cmd) => ({ m, cmd })));
+      expect(moznosti.length, `faza ${s.faza}, krok ${krokov}`).toBeGreaterThan(0);
+      const { m, cmd } = moznosti[nahoda(moznosti.length)] as (typeof moznosti)[number];
+      s = apply(data, s, cmd, m).state;
+      // Tímové zdroje, ruky oboch členov — karty sa nestrácajú ani nezdvojujú.
+      const uid = miestaHry(s).flatMap((q) => rukaMiesta(s, q).map((k) => k.uid));
+      expect(new Set(uid).size).toBe(uid.length);
+    }
+    expect(s.koniec).not.toBeNull();
+  });
+});
+
 describe("1 na 1 sa nemení", () => {
   const s = setupGame(data, 7);
 
