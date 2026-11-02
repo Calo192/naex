@@ -18,8 +18,9 @@ prestavená na „raz za hru, kedy chceš“; staré znenia v `docs/pravidla-his
   Nič nestojí, nie je to ťah. Po použití je **minutá**; starší **ostáva v pivnici** a ráta sa ďalej
   ako vydesený (červená). **Krádež špakov pri zajatí ostáva.**
 - Poštárka: 4 cigarety. Krčmárka: nový plný poldeci (natrvalo). Farár: odstráni jedno súperovo NA EX
-  z karty. Starosta: akcie lokality v tejto bitke posilnené. Veterinár: odhodí Cirhózy na ruke
-  a priznané. Vychovávateľka: súper v Zhromaždení pasuje bez cigariet. Autobusár: zo šenku koľko
+  z karty. Starosta: do konca kola všetky aktívne akcie lokality posilnené, aj akcie Pitky (spresnené
+  2026-11-02). Veterinár: odhodí Cirhózy na ruke a priznané. Vychovávateľka: súper v tomto
+  Zhromaždení hneď pasuje (vynútený pas, už nevyloží nič) a za pas nedostane cigarety. Autobusár: zo šenku koľko
   chceš, po cigarete. Hrobár: karta zo súperovho odhadzovacieho balíčka (znenia v §10).
 - Kšeft väzňa už nie je nerest (§8).
 
@@ -1325,9 +1326,9 @@ konečnými špakmi).
 | Poštárka | Dostaneš 4 cigarety. | vždy |
 | Krčmárka | Nový plný poldeci. | vždy; poldeci navyše **natrvalo** (ako Stokársky barter) |
 | Farár | Odstráň jedno súperovo NA EX z karty. Jeho poldeci ostáva vypitý. | keď na niektorej karte leží súperovo (odkryté) NA EX — v Pitke aj v Zhromaždení ďalšej Pitky; súperovi sa poldeci odpíše ako vypitý (nerest NA EX ostáva, ako pri spálenej karte). Pri zrážke (Výtržník) ostane NA EX držiteľa a karta prestane byť Výtržníkom. |
-| Starosta | Aktívne akcie lokality sa v tejto bitke považujú za posilnené. | keď je cieľom lokalita a v tomto kole ešte neplatí; ×2 podľa Posilnenia (§6) na obe hrany (aj súperovu), násobí sa s ostatnými násobkami (Forsáž, NA EX). „V bitke“: akcie Pitky (Hazard, Poškodenie pečene, Poldeci, Cigareta, Vízia, Obmedzenie) sa nezdvoja. |
+| Starosta | Do konca kola sú všetky aktívne akcie lokality posilnené. | keď je cieľom lokalita a v tomto kole ešte neplatí; **od použitia do konca kola** ×2 podľa Posilnenia (§6) na obe hrany (aj súperovu), násobí sa s ostatnými násobkami (Forsáž, NA EX). Platí pre **všetky** aktívne akcie hrán — v bitke aj v každej ďalšej Pitke kola (Hazard, Poškodenie pečene, Poldeci, Cigareta, Vízia, Obmedzenie); Pitky vyhodnotené pred použitím sa nemenia. Počet Pitiek nemení (posilnená akcia je stále jedna). |
 | Veterinár | Odhoď všetky priznané Cirhózy a Cirhózy na ruke. | keď má Cirhózu na ruke či priznanú; odhodiť = do odhadzovacieho balíčka (§17) |
-| Vychovávateľka | Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet. | len v Zhromaždení, keď súper ešte nepasoval: súper hneď pasuje (ďalej nevykladá) a cigarety za pas nedostane; držiteľ vykladá ďalej |
+| Vychovávateľka | Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety. | len v Zhromaždení, vo svojom ťahu, keď súper ešte nepasoval: pas súpera je **vynútený** — v tomto Zhromaždení už nevyloží žiadnu kartu, aj keď ju držiteľ použije hneď prvým ťahom, a cigarety za pas nedostane; držiteľ vykladá ďalej. Ďalšie Zhromaždenie (ďalšia Pitka) je bežné. |
 | Autobusár | Zo šenku berieš kariet, koľko chceš, každú za jednu cigaretu; keď skončíš, môže pokračovať súper. | len pri braní zo šenku, keď je šenok neprázdny a hráč má cigaretu; jedným rozhodnutím vyberie karty (každá 1 cigareta, bez stropu 1–2 kariet a bez obmedzenia prvého ťahu obrancu), potom s braním končí a súper berie ďalej podľa §5 |
 | Hrobár | Vezmi si do ruky 1 kartu zo súperovho odhadzovacieho balíčka. | keď súperov odhadzovací balíček nie je prázdny (je verejný); karta odteraz patrí novému majiteľovi (ako Sklad) |
 

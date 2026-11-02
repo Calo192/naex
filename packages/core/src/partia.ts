@@ -96,7 +96,7 @@ export interface LineState {
    * Chýba = žiadne (testy, ukážky).
    */
   readonly nastroje?: readonly [readonly string[], readonly string[]];
-  /** Schopnosť väzňa Starosta (v11.2): aktívne akcie hrán lokality sú v bitke posilnené (AKCIE_PITKY nie). */
+  /** Schopnosť väzňa Starosta (v11.2): všetky aktívne akcie hrán lokality sú posilnené — aj tie, ktoré sa vyhodnocujú v Pitke. */
   readonly hranyPosilnene?: boolean;
 }
 
@@ -171,12 +171,6 @@ export interface LineEval {
  * akciu partnera (resolveJunction), takže v súčtoch sa ráta už ako ona.
  */
 const TUHE: Partial<Record<Action, number>> = { Rana: 1, Pecka: 2, Petelica: 3 };
-
-/**
- * Akcie, ktoré sa vyhodnocujú v Pitke (§7) — schopnosť Starostu (posilnené „v tejto bitke“)
- * ich nezdvojí (ten istý zoznam ako rekapitulacia.ts). Poldeci otáča vypité aj v bitke, patrí však Pitke.
- */
-const AKCIE_PITKY: readonly Action[] = ["Dlh", "PoškodeniePečene", "Poldeci", "Cigareta", "Vízia", "Obmedzenie"];
 
 const MODIFIERS: readonly Action[] = ["Posilnenie", "Odpor", "Pakt"];
 
@@ -1030,9 +1024,9 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         }
         // Poľovnícka chata (Furt, v7): aktívne Rany, Pecky a Petelice z jej hrán sa rátajú dvakrát.
         const chata = elem.isLokalita && elem.defId === "polovnicka_chata" && TUHE[ako] !== undefined;
-        // Väzeň Starosta (v11.2): akcie hrán lokality sú „v tejto bitke“ posilnené — ×2 sa násobí
-        // s ostatnými násobkami; akcie, ktoré sa vyhodnocujú v Pitke, nie.
-        const starosta = elem.isLokalita && line.hranyPosilnene === true && !AKCIE_PITKY.includes(ako);
+        // Väzeň Starosta (v11.2, Michal 2026-11-02): od použitia do konca kola sú posilnené všetky
+        // aktívne akcie hrán lokality, aj Pitky (Hazard, pečeň, Cigareta…) — ×2 sa násobí s ostatnými.
+        const starosta = elem.isLokalita && line.hranyPosilnene === true;
         const hodnota = nasobok * (chata ? 2 : 1) * (starosta ? 2 : 1);
         sums[target][ako] = (sums[target][ako] ?? 0) + hodnota;
         const dovody = [...(elem.dovody[side]![k] ?? [])];

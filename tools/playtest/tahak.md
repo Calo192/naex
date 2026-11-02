@@ -118,10 +118,10 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   `{"type":"schopnostVazna","elderId":…}` (Farár a Hrobár s `uid`, Autobusár s `uids`).
   **Poštárka:** dostaneš **4 cigarety**. **Krčmárka:** **nový plný poldeci** (natrvalo, +1 poldeci).
   **Farár:** odstráň jedno súperovo NA EX z karty (`uid` karty); jeho poldeci ostáva vypitý.
-  **Starosta:** aktívne akcie lokality sú **v tejto bitke posilnené** (obom; akcie Pitky — Hazard, pečeň,
-  Poldeci, Cigareta, Vízia, Obmedzenie — nie). **Veterinár:** odhoď všetky priznané Cirhózy a Cirhózy na ruke
-  (do odhadzovacieho balíčka). **Vychovávateľka** (len v Zhromaždení): súper hneď pasuje **bez cigariet za pas**,
-  ty vykladáš ďalej. **Autobusár** (len pri braní zo šenku): ber zo šenku, koľko chceš, **každú kartu za 1
+  **Starosta:** **do konca kola** sú všetky aktívne akcie lokality **posilnené** (obom; v bitke aj v ďalších
+  Pitkách — aj Hazard, pečeň, Poldeci, Cigareta, Vízia, Obmedzenie). **Veterinár:** odhoď všetky priznané Cirhózy a Cirhózy na ruke
+  (do odhadzovacieho balíčka). **Vychovávateľka** (len v Zhromaždení): súper v tomto Zhromaždení hneď pasuje
+  (**už nevyloží nič**, aj keď ju použiješ prvým ťahom) a **za pas nedostane cigarety**; ty vykladáš ďalej. **Autobusár** (len pri braní zo šenku): ber zo šenku, koľko chceš, **každú kartu za 1
   cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
   odhadzovacieho balíčka do ruky (`uid`).
 - **Sypač (Pitka, v10.3):** keď sa z neho stane Výtržník, jeho akcie sú **Pecky**, nie Rany.

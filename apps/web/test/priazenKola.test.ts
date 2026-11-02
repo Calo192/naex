@@ -81,7 +81,7 @@ describe("nápoveda nad staršom", () => {
       ],
     });
     expect(o).toMatchObject({ druh: "vazen", kto: "Fero", komu: "su", kradez: { kolo: 2, spaky: 3, obet: "Jano" } });
-    expect(o.schopnost).toBe("Aktívne akcie lokality sa v tejto bitke považujú za posilnené.");
+    expect(o.schopnost).toBe("Do konca kola sú všetky aktívne akcie lokality posilnené.");
     expect(o.pouzita).toBe(false);
     expect(obsahNapovedyVazna({ data, vazen: { ...vazen, pouzita: true }, meno: "Starosta", ja: 0, mena: ["Jano", FERO], vyhry: { cervene: [0, 1], cervenychNaVyhru: 4, vazni: [0, 1], vazniNaVyhru: 2 }, nastenka: [] }).pouzita).toBe(true);
     const t = text(renderToStaticMarkup(createElement(ObsahNapovedyStarsieho, { o })));

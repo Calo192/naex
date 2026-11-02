@@ -1347,7 +1347,7 @@
         "Starešina",
         "Chlap"
       ],
-      "effect_text": "Väzeň — raz za hru: Aktívne akcie lokality sa v tejto bitke považujú za posilnené.",
+      "effect_text": "Väzeň — raz za hru: Do konca kola sú všetky aktívne akcie lokality posilnené.",
       "triggers": [
         "Väzeň"
       ],
@@ -1586,7 +1586,7 @@
         "Starešina",
         "Žena"
       ],
-      "effect_text": "Väzeň — raz za hru: Keď použiješ jej schopnosť, súper v Zhromaždení pasuje bez dobratia cigariet.",
+      "effect_text": "Väzeň — raz za hru: Súper v tomto Zhromaždení hneď pasuje a za pas nedostane cigarety.",
       "triggers": [
         "Väzeň"
       ],

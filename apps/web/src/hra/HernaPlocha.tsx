@@ -3737,7 +3737,11 @@ export function HernaPlocha({
                 ))}
               </>
             ),
-            stred: pecatTahu({ text: "nezajímam", druh: "pas", tip: "Bez pokusu o zajatie — starší ostanú, kde sú.", akcia: () => posli({ type: "bezPokusu" }) }),
+            // Kým beží súhrn po bitke, pečiatka čaká (Michal 2026-11-02) — ponuku zajatia súhrn zo stola
+            // vytlačil, tak by hráč klikol „nezajímam“ naslepo; ukáže sa po Ďalej/Preskočiť.
+            stred: suhrnBezi
+              ? null
+              : pecatTahu({ text: "nezajímam", druh: "pas", tip: "Bez pokusu o zajatie — starší ostanú, kde sú.", akcia: () => posli({ type: "bezPokusu" }) }),
           };
         }
         if (draft.krok === "stavba" && naneisto) {
