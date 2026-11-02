@@ -20,6 +20,8 @@ export interface KseftPodKartouProps {
   readonly onVykup?: () => void;
   /** Nedostupný Kšeft povie prečo aj na ťuk (nápoveda pod myšou na dotyku nie je). */
   readonly onNedostupny?: (text: string, x: number, y: number) => void;
+  /** Úzka karta: na štítku len cena, čo dostaneš, povie nápoveda (na telefóne ponuka po ťuknutí). */
+  readonly kratko?: boolean;
   /** Len pre test — na stole sa ponuka otvorí klikom. */
   readonly otvorena?: boolean;
 }
@@ -40,7 +42,7 @@ function Cena({ k }: { readonly k: KseftNaStole }) {
   );
 }
 
-export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedostupny, otvorena: otvorenaNaZaciatku = false }: KseftPodKartouProps) {
+export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, kratko = false, onVykup, onNedostupny, otvorena: otvorenaNaZaciatku = false }: KseftPodKartouProps) {
   const [otvorena, setOtvorena] = useState(otvorenaNaZaciatku);
   const obal = useRef<HTMLSpanElement>(null);
   const ponuka = useRef<HTMLDivElement>(null);
@@ -167,7 +169,7 @@ export function KseftPodKartou({ kseft: k, cmd, naDotyk = false, onVykup, onNedo
         {k.pouzity ? (
           <span className="kseft-pod-zisk">použitý</span>
         ) : (
-          <Vymena das={<Cena k={k} />} dostanes={<span className="kseft-pod-zisk">{k.zisk}</span>} />
+          <Vymena das={<Cena k={k} />} dostanes={kratko ? undefined : <span className="kseft-pod-zisk">{k.zisk}</span>} />
         )}
       </button>
       {/* Server (test) nemá document — ponuka sa vykreslí na mieste. */}
