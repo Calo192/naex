@@ -220,15 +220,19 @@ export function kartyZaPas(z: Pick<ZhromazdenieStav, "zostavaLimit">, p: PlayerI
  * Cigarety, ktoré hráč p dostane, keď teraz pasuje — jeden výpočet pre motor aj
  * náhľad pasu: karty za pas (kartyZaPas) a Píšťalka v súperovom
  * Dedičstve (Náradie 2026-10-30): súperove aktívne Obmedzenia v línii ich uberajú, najmenej 0.
+ * V 2 na 2 pasuje miesto `kto`: kým partner vykladá, pas cigarety nedá (Michal 2026-11-02, Q1);
+ * `vRuke` sú karty v oboch rukách tímu.
  */
 export function cigaretyZaPas(
   data: GameData,
-  s: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval" | "zostavaLimit"> | null },
-  p: PlayerId,
+  s: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zhromazdenieStav: Pick<ZhromazdenieStav, "pasoval" | "zostavaLimit" | "skoncili"> | null },
+  kto: Miesto,
   vRuke: number,
 ): number {
   const z = s.zhromazdenieStav;
   if (z === null) return 0;
+  const p = timMiesta(kto);
+  if (z.skoncili !== undefined && !z.skoncili[partnerMiesta(kto)]) return 0;
   const karty = kartyZaPas(z, p, vRuke);
   const zaPas = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU;
   const q = opponentOf(p);
@@ -3137,7 +3141,7 @@ function cmdPass(s: MutState, data: GameData, kto: Miesto, events: Event[]): voi
   // súper vykladá sám.
   const vRuke = kartyVRukach(s.hraci[p]).length;
   const karty = kartyZaPas(z, p, vRuke);
-  const ziska = cigaretyZaPas(data, s as GameState, p, vRuke);
+  const ziska = cigaretyZaPas(data, s as GameState, kto, vRuke);
   const pistalka = karty * KONSTANTY.CIGARETY_ZA_PAS_NA_KARTU - ziska;
   if (pistalka > 0) events.push({ type: "log", text: `Píšťalka: súperove Obmedzenia uberajú hráčovi ${p + 1} ${cigariet(pistalka)} za pas.` });
   hrac(s, p).cigarety += ziska;

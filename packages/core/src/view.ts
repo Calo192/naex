@@ -11,8 +11,12 @@
 // sa TU a testuje sa to. Súperova skrytá Záverečná (lícom dole) v strany
 // vôbec nie je — súper dostane len jej stranu a náhradné uid (zaverecne).
 // Špaky, ich história (nástenka) a sekera sú verejné (v6).
+//
+// 2 na 2 (Michal 2026-10-28): pohľad je pre miesto pri stole. Tím vidí všetko svoje —
+// ruku partnera, jeho balíček stavby a výber, skryté NA EX, odpovede a Záverečnú tímu;
+// zo súperského tímu len to, čo súper v 1 na 1 (ruky len počtom). Test: view-2na2.test.ts.
 
-import type { CardInstance, Favour, Phase, PlayerId } from "./types.ts";
+import type { CardInstance, Clen, Favour, Miesto, Phase, PlayerId } from "./types.ts";
 import { opponentOf, timMiesta } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
@@ -35,9 +39,9 @@ import type {
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, cervenychHraca, cirhozyPreVeterinara, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vazniHraca } from "./engine.ts";
+import { balicekMiesta, cenaDedicstva, cervenychHraca, cirhozyPreVeterinara, hotovoMiesta, lokalityNaVyber, miestaHry, miestoNaTahu, partnerMiesta, rukaMiesta, skoncilVykladanie, vyberMiesta, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vazniHraca } from "./engine.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
-import { pocetAbstakov } from "./player.ts";
+import { kartyVRukach, pocetAbstakov, rukaClena } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
 import { favourStarsieho, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, stupenStavu } from "./elders.ts";
@@ -45,7 +49,10 @@ import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia }
 import type { DamageResult } from "./battle.ts";
 
 export interface HracVerejne {
+  /** Karty v ruke — v 2 na 2 v oboch rukách tímu. */
   readonly rukaPocet: number;
+  /** 2 na 2: karty v ruke každého člena tímu [prvý, druhý]. */
+  readonly rukyPocet?: readonly [number, number];
   readonly doberaciPocet: number;
   /** Odhadzovací balíček je verejný — karty doň padajú lícom nahor. */
   readonly odhadzovaci: readonly CardInstance[];
@@ -110,9 +117,18 @@ export interface DraftVerejne {
   readonly mojBalicek: readonly CardInstance[];
   readonly balicekPocet: readonly [number, number];
   readonly mojVyber: VyberStavby | null;
+  /** Vybral hráč (v 2 na 2 obaja členovia tímu) v tomto kroku stavby? */
   readonly vybral: readonly [boolean, boolean];
   readonly naTahu: PlayerId;
+  /** Hráč (v 2 na 2 celý tím) už zo šenku neberie. */
   readonly hotovo: readonly [boolean, boolean];
+  /**
+   * 2 na 2: balíček stavby a výber partnera — tím vidí svoje karty (Michal 2026-10-28);
+   * súperove nie. Po miestach: veľkosť balíčka stavby, či vybral a či už neberie.
+   */
+  readonly partner?: { readonly balicek: readonly CardInstance[]; readonly vyber: VyberStavby | null };
+  readonly miesta?: { readonly balicekPocet: readonly number[]; readonly vybral: readonly boolean[]; readonly hotovo: readonly boolean[] };
+  readonly miestoNaTahu?: Miesto;
   readonly noveKarty: readonly [number, number];
   /**
    * Karty vzaté zo šenku v tomto drafte (#111) — branie je verejné, karta ležala
@@ -174,7 +190,16 @@ export function stavVyhier(state: { readonly starsi: readonly Pick<ElderState, "
 }
 
 export interface ClientState {
+  /** Môj hráč — v 2 na 2 môj tím. */
   readonly ja: PlayerId;
+  /** 2 na 2: formát, moje miesto pri stole a kapitáni kola (chýbajú v 1 na 1). */
+  readonly format?: "2na2";
+  readonly miesto?: Miesto;
+  readonly kapitani?: readonly [Clen, Clen];
+  /** 2 na 2: miesto na ťahu (naTahu je tím). */
+  readonly miestoNaTahu?: Miesto | null;
+  /** 2 na 2: ruka partnera — tím vidí obe svoje ruky, súperove len počtom. */
+  readonly rukaPartnera?: readonly CardInstance[];
   readonly faza: Phase;
   /** Partia bez Chuti a Absťáku (výučba Prvá hra, v9.1). */
   readonly bezChuti?: true;
@@ -306,9 +331,9 @@ export function zlozenie(karty: readonly CardInstance[]): ZlozeniePolozka[] {
     .map(([defId, pocet]) => ({ defId, pocet }));
 }
 
-/** Nepriznané kliatby hráča — v ruke a v oboch balíčkoch. */
+/** Nepriznané kliatby hráča — v ruke (v 2 na 2 v oboch rukách tímu) a v oboch balíčkoch. */
 export function nepriznaneKliatbyHraca(hrac: GameState["hraci"][number]): KliatbyHraca {
-  const vsetky = [...hrac.ruka, ...hrac.doberaci, ...hrac.odhadzovaci];
+  const vsetky = [...kartyVRukach(hrac), ...hrac.doberaci, ...hrac.odhadzovaci];
   return { cirhoza: vsetky.filter((k) => k.defId === "cirhoza").length };
 }
 
@@ -323,11 +348,15 @@ export function vidiVolbuSupera(data: GameData, state: VerejnyStav & { readonly 
   return efektHraca(state, ja, "klebetnica") && !efektPotlaceny(data, state, ja, "klebetnica");
 }
 
-export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientState {
+export function viewFor(data: GameData, state: GameState, miesto: Miesto): ClientState {
+  // Všetko tímové (strany, NA EX, balíčky, voľby) patrí tímu; osobná je len ruka a ťah.
+  const ja = timMiesta(miesto);
+  const dva = state.format === "2na2";
   const publicPlayer = (p: PlayerId): HracVerejne => {
     const hrac = state.hraci[p];
     return {
-      rukaPocet: hrac.ruka.length,
+      rukaPocet: kartyVRukach(hrac).length,
+      ...(dva ? { rukyPocet: [rukaClena(hrac, 0).length, rukaClena(hrac, 1).length] as const } : {}),
       doberaciPocet: hrac.doberaci.length,
       odhadzovaci: hrac.odhadzovaci,
       priznane: hrac.priznane,
@@ -357,21 +386,24 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     }
   }
   const d = state.draftStav;
+  const pocetTimu = (t: PlayerId, f: (m: Miesto) => number): number => f(t) + f((t + 2) as Miesto);
   const bitka = state.bitkaStav;
   const mojaBitkovaVolba = bitka !== null && bitka.caka === ja;
   const hasic = state.hasicVolby?.[0];
+  const partner = partnerMiesta(miesto);
   return {
     ja,
+    ...(dva ? { format: "2na2" as const, miesto, kapitani: state.kapitani ?? [0, 0], miestoNaTahu: miestoNaTahu(state), rukaPartnera: rukaMiesta(state, partner) } : {}),
     faza: state.faza,
     kolo: state.kolo,
     utocnik: state.utocnik,
     naTahu: naTahu(state),
-    mozemHrat: mozeHrat(state, ja),
+    mozemHrat: mozeHrat(state, miesto),
     pitkaCislo: state.pitkaCislo,
     pitkyCelkom: state.pitkyCelkom,
     cenaDedicstva: cenaDedicstva(state),
     dedicstvaVylozene: state.dedicstvaVylozene,
-    ruka: state.hraci[ja].ruka,
+    ruka: rukaMiesta(state, miesto),
     hraci: [publicPlayer(0), publicPlayer(1)],
     vplyvyAkcii: [vplyvyNaAkcie(state, 0, data), vplyvyNaAkcie(state, 1, data)],
     naradiePocet: state.naradie.length,
@@ -397,20 +429,31 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     zaverecnaMozna:
       state.faza === "zhromazdenie" &&
       state.zhromazdenieStav !== null &&
-      mozeHrat(state, ja) &&
-      !state.zhromazdenieStav.pasoval[ja] &&
+      mozeHrat(state, miesto) &&
+      !skoncilVykladanie(state.zhromazdenieStav, miesto) &&
       state.hraci[ja].cigarety >= KONSTANTY.CENA_ZAVERECNEJ,
     draftStav:
       d === null
         ? null
         : {
             krok: d.krok,
-            mojBalicek: d.balicky[ja],
-            balicekPocet: [d.balicky[0].length, d.balicky[1].length],
-            mojVyber: d.vyber[ja],
-            vybral: [d.vyber[0] !== null, d.vyber[1] !== null],
+            mojBalicek: balicekMiesta(d, miesto),
+            balicekPocet: dva ? [pocetTimu(0, (m) => balicekMiesta(d, m).length), pocetTimu(1, (m) => balicekMiesta(d, m).length)] : [d.balicky[0].length, d.balicky[1].length],
+            mojVyber: vyberMiesta(d, miesto),
+            vybral: dva ? [pocetTimu(0, (m) => (vyberMiesta(d, m) === null ? 1 : 0)) === 0, pocetTimu(1, (m) => (vyberMiesta(d, m) === null ? 1 : 0)) === 0] : [d.vyber[0] !== null, d.vyber[1] !== null],
             naTahu: timMiesta(d.naTahu),
-            hotovo: d.hotovo,
+            hotovo: dva ? [hotovoMiesta(d, 0) && hotovoMiesta(d, 2), hotovoMiesta(d, 1) && hotovoMiesta(d, 3)] : d.hotovo,
+            ...(dva
+              ? {
+                  partner: { balicek: balicekMiesta(d, partner), vyber: vyberMiesta(d, partner) },
+                  miesta: {
+                    balicekPocet: miestaHry(state).map((m) => balicekMiesta(d, m).length),
+                    vybral: miestaHry(state).map((m) => vyberMiesta(d, m) !== null),
+                    hotovo: miestaHry(state).map((m) => hotovoMiesta(d, m)),
+                  },
+                  miestoNaTahu: d.naTahu,
+                }
+              : {}),
             noveKarty: d.noveKarty,
             zobrate: (d.zobrate ?? []).map((z) => ({
               karta: { defId: z.karta.defId, leftLayout: z.karta.leftLayout, rightLayout: z.karta.rightLayout },
@@ -653,7 +696,7 @@ export function stavKseftuVaznaZPohladu(view: ClientState): StavKseftuVazna {
     poldeciPlne: [view.hraci[0].poldeciPlne, view.hraci[1].poldeciPlne],
     dlhy: [view.hraci[0].dlhy, view.hraci[1].dlhy],
     rukaPocet: [view.hraci[0].rukaPocet, view.hraci[1].rukaPocet],
-    cirhozy: cirhozyPreVeterinara({ ruka: view.ruka, priznane: view.hraci[view.ja].priznane }),
+    cirhozy: cirhozyPreVeterinara({ ruka: [...view.ruka, ...(view.rukaPartnera ?? [])], priznane: view.hraci[view.ja].priznane }),
   };
 }
 
