@@ -5,21 +5,7 @@
 // pečeň, dlhy, poškodenie), je veľké, pomenované a vždy na tom istom mieste.
 
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
-import type {
-  Action,
-  ActionSums,
-  ClientState,
-  DamageResult,
-  Favour,
-  GameData,
-  NahladPitkyHraca,
-  PlayerId,
-  RozpisPoskodenia,
-  SpakyTeraz,
-  StavZavislosti,
-  StavkaBitky as StavkaBitkyCisla,
-  ZdrojeAkcii,
-} from "@naex/core";
+import type { Action, ActionSums, ClientState, DamageResult, Favour, GameData, NahladPitkyHraca, PlayerId, RozpisPoskodenia, StavZavislosti, StavkaBitky as StavkaBitkyCisla, ZdrojeAkcii } from "@naex/core";
 import { KONSTANTY, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, spakov, tvar, vidiVolbuSupera, opponentOf } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
@@ -36,6 +22,7 @@ import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
 import { CENA_POLA } from "./textyStarsich.ts";
+import { type SpakyTeraz } from "./staraStupnica.ts";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
 // aby ich mohli použiť aj malé komponenty testované bez prehliadača (KseftPodKartou).

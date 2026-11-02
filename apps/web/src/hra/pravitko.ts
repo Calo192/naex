@@ -3,7 +3,8 @@
 // dielik = pole, do ktorého marker vojde (šírka = cena, farba = zóna), a prvé pole, na ktoré
 // už nestačí, je za čiarou rozpočtu so zámkom. Ráta to isté ako posunZaBody v jadre.
 
-import { STUPNICA_ZONY, cenaKroku, posunMarker, type MarkerPos, type PlayerId } from "@naex/core";
+import { type PlayerId } from "@naex/core";
+import { STUPNICA_ZONY, cenaKroku, posunMarker, type MarkerPos } from "./staraStupnica.ts";
 
 /** Pole na ceste markera: kam vojde, v akej zóne a za koľko. */
 export interface DielikPravitka {

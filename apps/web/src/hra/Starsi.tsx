@@ -6,8 +6,8 @@
 // alebo strach so špakmi, pokus o zajatie a posun od poslednej bitky. Odznak počíta väzňov (v9).
 
 import type { CSSProperties } from "react";
-import type { ClientState, ElderState, GameData, Klebety, MarkerPos, PlayerId } from "@naex/core";
-import { KONSTANTY, STUPNICA_ZONY, favourStarsieho, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu, vydesil, opponentOf } from "@naex/core";
+import type { ClientState, ElderState, GameData, PlayerId } from "@naex/core";
+import { KONSTANTY, favourStarsieho, opponentOf } from "@naex/core";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { KruzokPriazne, ListokHadky, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import { ktoPriazen, listokHadky, obsahNapovedy, pocetPriazniKola, priazenKola, riadokPriazneDlazdice } from "./priazenKola.ts";
@@ -16,6 +16,8 @@ import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaSpaku } from "./Spaky.tsx";
 import { smerStarsieho, stupienkyStarsich } from "./spakyAStarsi.ts";
 import { NAZOV_ZDROJA, riadokDlazdice, textStupna, titulStrachu, titulStrachuSpolu } from "./textyStarsich.ts";
+import { type Klebety, type MarkerPos, STUPNICA_ZONY, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu, vydesil, markerStarsieho, posunyZoZmien } from "./staraStupnica.ts";
+import { vazniNaVyhru } from "@naex/core";
 
 export interface DlazdicaStarsichProps {
   readonly view: ClientState;
@@ -63,7 +65,7 @@ export function DlazdicaStarsich({ view, p, zaStarsich, naUdrzanie, starsi }: Dl
   const posuny = starsi.posuny ?? 0;
   // Väzni (v9): tretí vyhráva. Vydesení starší (stupeň 3) sú ciele pokusu o zajatie.
   const vyd = view.vazni.filter((v) => v.hrac === p).length;
-  const prah = KONSTANTY.VAZNI_NA_VYHRU;
+  const prah = vazniNaVyhru(view.lokalitCelkom);
   const ciele = view.starsi.filter((e) => vydesil(e, p)).length;
   const desiHrozi = vyd >= prah - 1;
   const desiTitul =
@@ -185,12 +187,12 @@ function DlazdicaStarsieho({
   const ja = p === view.ja;
   const su = opponentOf(p);
   const smer = smerStarsieho(e, p);
-  const zona = STUPNICA_ZONY[e.marker];
+  const zona = STUPNICA_ZONY[markerStarsieho(e)];
   // v8.3: udržané nezaplatené stupne (koniec kola) a nové, ktoré čakajú na udržanie.
   const strach = strachNaVyplatu(e, p);
   const caka = strachNaUdrzanie(e, p);
   const patron = view.pokusy[p]?.elderId === e.elderId ? p : view.pokusy[su]?.elderId === e.elderId ? su : null;
-  const posuny = (view.posunyMarkerov ?? []).filter((x) => x.elderId === e.elderId);
+  const posuny = posunyZoZmien(view.zmenyMarkerov, view.starsi).filter((x) => x.elderId === e.elderId);
   const fav = favourStarsieho(data, e);
   const pk = priazenKola(e, klebety, view.ja);
   const listok = listokHadky(e.elderId, klebety, view.ja);

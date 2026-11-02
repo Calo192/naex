@@ -29,6 +29,7 @@ import {
   stavkaBitky,
   viewFor,
 } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -229,28 +230,21 @@ describe("efekty v línii (v7)", () => {
     expect(overene).toBeGreaterThan(0);
   });
 
-  it("Kapybara je povinná: aj keď je mimo stredu len marker na polovici majiteľa, iná voľba nie je (§16, návrh #41 A)", () => {
+  it("Kapybara (v11): súperove reči pri jednom staršom o stupeň nižšie — bez súperových rečí prepadne, partia sa nezasekne", () => {
     const kapy = inst("kapybara");
     const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
-    const starsi = sk.starsi.map((e, i) => (i === 0 ? { ...e, marker: 1 as const } : { ...e, marker: 3 as const }));
-    const pk = apply(data, { ...sk, starsi }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0).state;
-    const volby = legalCommands(data, pk, 0);
-    expect(volby).toEqual([{ type: "kapybara", elderId: starsi[0]!.elderId }]);
-  });
-
-  it("Kapybara bez možného cieľa (mimo stredu len starší v ohrození) prepadne — partia sa nezasekne (2026-11-01)", () => {
-    const kapy = inst("kapybara");
-    const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
-    const starsi = sk.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 0 : i === 1 ? 6 : 3) as 0 | 3 | 6 }));
-    const pokusy: GameState["pokusy"] = [{ elderId: starsi[1]!.elderId }, { elderId: starsi[0]!.elderId }];
-    const r = apply(data, { ...sk, starsi, pokusy }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0);
+    // Vlastné reči sa neponúkajú, len súperove.
+    const starsi = sk.starsi.map((e, i) => (i === 0 ? { ...e, strach: [0, 0] as const, reci: [2, 0] as const } : e));
+    const r = apply(data, { ...sk, starsi }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0);
     expect(r.state.hasicVolby ?? []).toEqual([]);
-    expect(r.state.starsi.map((e) => e.marker)).toEqual(starsi.map((e) => e.marker));
-    expect(r.events.some((e) => e.type === "log" && e.text.startsWith("Kapybara nemá koho posunúť"))).toBe(true);
-    // Hra ide ďalej: niekto má legálny ťah (pred opravou bola voľba bez možností a legalCommands prázdne).
+    expect(r.events.some((e) => e.type === "log" && e.text.startsWith("Kapybara: súper nemá pri nikom reči"))).toBe(true);
     const p = ([0, 1] as const).find((q) => mozeHrat(r.state, q)) ?? naTahu(r.state);
     expect(p).not.toBeNull();
     expect(legalCommands(data, r.state, p!).length).toBeGreaterThan(0);
+    const sReciami = sk.starsi.map((e, i) => (i === 1 ? { ...e, strach: [0, 1] as const, reci: [0, 3] as const } : e));
+    const pk = apply(data, { ...sk, starsi: sReciami }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0).state;
+    expect(legalCommands(data, pk, 0)).toEqual([{ type: "kapybara", elderId: sReciami[1]!.elderId }]);
+    expect(apply(data, pk, { type: "kapybara", elderId: sReciami[1]!.elderId }, 0).state.starsi[1]!.reci).toEqual([0, 2]);
   });
 
   it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)", () => {
@@ -404,18 +398,11 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 2);
   });
 
-  it("Starosta v línii od v9 Nástup nemá; Kapybara (marker k stredu), Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)", () => {
+  it("Starosta v línii od v9 Nástup nemá; Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)", () => {
     const starosta = inst("starosta");
     const s = vZhromazdeni("zastavka", [[], []], [starosta]);
     const po = apply(data, s, { type: "place", uid: starosta.uid, target: "vlastna" }, 0).state;
     expect(legalCommands(data, po, 0).some((c) => c.type === "senok")).toBe(false);
-
-    const kapy = inst("kapybara");
-    const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
-    const starsi = sk.starsi.map((e, i) => (i === 0 ? { ...e, marker: 1 as const } : e));
-    const pk = apply(data, { ...sk, starsi }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0).state;
-    const ck = legalCommands(data, pk, 0).find((x) => x.type === "kapybara" && x.elderId === starsi[0]!.elderId)!;
-    expect(apply(data, pk, ck, 0).state.starsi[0]!.marker).toBe(2);
 
     const ziv = inst("zivnostnik");
     const pasca = inst("pasca");
@@ -457,7 +444,7 @@ describe("Kšeft (v7)", () => {
     const s0 = vPitke("zastavka", [[], []]);
     const i = s0.starsi.findIndex((e) => e.karta.defId === "postarka");
     if (i === -1) return;
-    const starsi = s0.starsi.map((e, j) => (j === i ? { ...e, marker: 6 as const } : e));
+    const starsi = s0.starsi.map((e, j) => (j === i ? { ...e, ...zPolohy(6 as const) } : e));
     const s = sHracom({ ...s0, starsi }, 0, { doberaci: [inst("masiar")] });
     expect(legalCommands(data, s, 0).some((c) => c.type === "kseft")).toBe(false);
   });

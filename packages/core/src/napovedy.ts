@@ -107,9 +107,10 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
 
   body: (_d, v) => (v.kolo >= 2 ? ANO : null),
 
-  // v10 (Hádka, texty schválil Michal 2026-11-01): id ostáva „pohorsenie“; variant podľa víťaza hádky.
+  // v10 (Hádka, texty schválil Michal 2026-11-01): id ostáva „pohorsenie“; variant podľa víťaza hádky
+  // (v11: kým víťaz rozdeľuje hádku na reči).
   pohorsenie: (_d, v, ja) => {
-    const h = v.faza === "bitka" && v.bitkaStav?.krok === "hadka" ? v.bitkaStav.hadka : undefined;
+    const h = v.faza === "bitka" && v.bitkaStav?.krok === "reci" ? v.bitkaStav.hadka : undefined;
     return h === undefined || h.vitaz === null ? null : { variant: h.vitaz === ja ? "moje" : "superove" };
   },
 

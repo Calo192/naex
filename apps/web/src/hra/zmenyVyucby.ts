@@ -4,6 +4,7 @@
 // krátky štítok do stĺpca Melichara.
 
 import type { CardInstance, ClientState, PlayerId } from "@naex/core";
+import { markerStarsieho } from "./staraStupnica.ts";
 
 /** Kde karta leží — zmena miesta (aj NA EX na karte v línii) = karta sa pohla. */
 function miestaKariet(v: ClientState): Map<number, string> {
@@ -56,7 +57,7 @@ export function zmenyStola(pred: ClientState, po: ClientState): string[] {
   }
   for (const s of po.starsi) {
     const a = pred.starsi.find((x) => x.elderId === s.elderId);
-    if (a !== undefined && a.marker !== s.marker) out.push(`starsi:${s.elderId}`);
+    if (a !== undefined && markerStarsieho(a) !== markerStarsieho(s)) out.push(`starsi:${s.elderId}`);
   }
   return out;
 }

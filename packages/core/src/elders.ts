@@ -1,89 +1,80 @@
-// Starší, ukazovatele a špaky za strach.
+// Starší, strach a reči (v11 Strach a reči, Michal 2026-11-02, docs/napady/strach-reci.html).
 //
-// Stupnica má od v6 7 polí (Michal 2026-10-26): stupne 3-2-1-0-1-2-3 —
-// červená, oranžová, žltá, sivý stred, žltá, oranžová, červená. Konvencia
-// strán: indexy 0–2 = polovica hráča 0, 4–6 = polovica hráča 1, 3 = stred.
-// Pojmy (v8.3, Michal 2026-10-30, R14): stupeň 0–3 a farba; stav staršieho
-// pokojný / znepokojený / vystrašený / vydesený; smer „od seba / k sebe“.
-//
-//  - Priazeň: marker na polovici hráča → TEN hráč má priazeň sily = stupeň.
-//  - Strach: starší sa bojí hráča na OPAČNEJ strane, na stupni markera. Stupeň
-//    zaplatí (žltá 1, oranžová 2, červená 3) až vtedy, keď sa na ňom marker
-//    udrží do konca nasledujúceho kola (v8.3, variant 6A) — obávanému hráčovi,
-//    nech bitku vyhral ktokoľvek. Ústup k stredu zmaže zaplatené aj držané
-//    stupne (sPosunutymMarkerom).
-//  - Väzeň (krok 2, Michal 2026-10-30): starší, ktorého sa hráč bojí na stupni 3,
-//    sa dá zajať; zajatý odchádza zo stupnice (GameState.vazni) a nedáva priazeň
-//    ani strach — na ukazovateli ostane prázdne miesto.
+// Stupnica staršieho má stupne 0–3 (sivá, žltá, oranžová, červená). Každý hráč má pri
+// každom staršom vlastné dva markery:
+//  - strach 0–3: neklesá (výnimka: neúspešný pokus o zajatie ho vynuluje); dvíha ho víťaz
+//    bitky Nakladačkou. Priazeň pre mňa = max(0, strach súpera − môj strach).
+//  - reči: nič (0), alebo stupeň NAD vlastným strachom; dvíha ich víťaz hádky. Priazeň
+//    nedávajú, bodujú aj porazenému a po bodovaní klesnú o stupeň; keď by klesli na
+//    stupeň strachu (alebo strach dorastie na ich stupeň), zaniknú.
+// Po bitke dá starší víťazovi špaky za najvyšší marker (reči, inak strach), porazenému
+// a pri sekere obom len za reči — žltá 1, oranžová 3, červená 5 (KONSTANTY.SPAKY_ZA_STUPEN).
+// Väzeň (v9): starší, ktorého sa hráč bojí na stupni 3, sa dá zajať; zajatý odchádza
+// zo stupnice (GameState.vazni) a ráta sa ako červená svojho držiteľa (výhra strachom).
 
 import type { CardInstance, Favour, PlayerId } from "./types.ts";
+import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { ScorecardDef } from "./types.ts";
+import { KONSTANTY } from "./constants.ts";
 
-/** Sila priazne podľa pozície markera. */
-export const STUPNICA_HODNOTY = [3, 2, 1, 0, 1, 2, 3] as const;
+/** Stupeň markera na stupnici staršieho: 0 sivá, 1 žltá, 2 oranžová, 3 červená. */
+export type Stupen = 0 | 1 | 2 | 3;
+export const STUPNE: readonly Stupen[] = [0, 1, 2, 3];
+/** Najvyšší stupeň — červená. */
+export const CERVENA: Stupen = 3;
 
-/** Zóna pozície: 0 = sivá, 1 = žltá, 2 = oranžová, 3 = červená. */
-export const STUPNICA_ZONY = [3, 2, 1, 0, 1, 2, 3] as const;
+/** Názvy farieb stupňov (§10). */
+export const NAZVY_ZON = ["sivá", "žltá", "oranžová", "červená"] as const;
 
-export type MarkerPos = 0 | 1 | 2 | 3 | 4 | 5 | 6;
-export const MARKER_STRED: MarkerPos = 3;
-/** Krajné pozície stupnice — červená na polovici hráča 0 a hráča 1. */
-export const MARKER_KRAJ = [0, 6] as const;
-
-/** Zóny podľa stupňa (§10, v8.3): stred 0, žltá 1, oranžová 2, červená 3. */
-export const NAZVY_ZON = ["stred", "žltá", "oranžová", "červená"] as const;
-
-/** Stav staršieho podľa stupňa (§10, v8.3) — prídavné meno, nie názov zóny. */
+/** Stav staršieho podľa vyššieho strachu (§10) — prídavné meno, nie názov farby. */
 export const STAV_STARSIEHO = ["pokojný", "znepokojený", "vystrašený", "vydesený"] as const;
 
-/**
- * Posun markera (roadmapa #95, Michal 2026-10-26): odkiaľ kam, prečo a kto ho
- * urobil. Pozícia markera je verejná, preto aj posun — posiela sa obom.
- */
-export interface PosunMarkera {
-  readonly elderId: string;
-  readonly z: MarkerPos;
-  readonly na: MarkerPos;
-  /**
-   * kseft = Predsedova vila (v7), nastup = Kapybara (v7), zajatie = ústup po neúspešnom
-   * pokuse (v9); patronat len v záznamoch partií do v8, pohorsenie do v9 (v10 markerom
-   * hýbe len Nakladačka).
-   */
-  readonly zdroj: "pohorsenie" | "prebytok" | "patronat" | "zajatie" | "kseft" | "nastup";
-  /** Hráč, ktorého akcia marker posunula (pri prebytku držiteľ prebytku). */
-  readonly kto: PlayerId;
-}
+/** Ktorý z dvoch markerov hráča. */
+export type DruhMarkera = "strach" | "reci";
 
 export interface ElderState {
   /** Starší (kľúč do elders.json). */
   readonly elderId: string;
-  /** Karta staršieho — na ukazovateli, alebo počas pokusu o zajatie v súperovej ruke či línii. */
+  /** Karta staršieho — na ukazovateli, alebo počas pokusu o zajatie v ruke či línii pokúšajúceho. */
   readonly karta: CardInstance;
-  readonly marker: MarkerPos;
   /** Id scorecardu, na ktorom ukazovateľ leží (rozdaný pri príprave). */
   readonly scorecard: string;
-  /**
-   * Po ktorý stupeň (1 žltá … 3 červená) už starší zaplatil strach hráčovi, ktorého
-   * sa bojí (v8, Michal 2026-10-28). Nikdy nie je väčší ako stupeň markera; chýba = 0.
-   */
-  readonly vyplatene?: number;
-  /**
-   * Po ktorý stupeň marker stál na strane obávaného na konci minulého kola a odvtedy
-   * neustúpil (v8.3, Michal 2026-10-30) — tieto stupne sa na konci kola udržia
-   * a zaplatia. Nikdy nie je väčší ako stupeň markera; chýba = 0.
-   */
-  readonly drzane?: number;
+  /** Strach [hráč 0, hráč 1] — ako veľmi sa starší bojí ktorého hráča. Verejné. */
+  readonly strach: readonly [Stupen, Stupen];
+  /** Reči [hráč 0, hráč 1] — 0 = žiadne, inak vždy vyššie ako strach toho hráča. Verejné. */
+  readonly reci: readonly [Stupen, Stupen];
 }
 
 export function freshElder(elderId: string, karta: CardInstance, scorecard: string): ElderState {
-  return { elderId, karta, scorecard, marker: MARKER_STRED };
+  return { elderId, karta, scorecard, strach: [0, 0], reci: [0, 0] };
+}
+
+/**
+ * Zmena markera (stopa na stupnici a účtenka, #95; v11): kto, ktorý marker, odkiaľ kam
+ * a prečo. Markery sú verejné, preto aj ich zmeny — posielajú sa obom.
+ */
+export interface ZmenaMarkera {
+  readonly elderId: string;
+  /** Čí marker sa zmenil. */
+  readonly hrac: PlayerId;
+  readonly marker: DruhMarkera;
+  readonly z: Stupen;
+  readonly na: Stupen;
+  /**
+   * nakladacka = víťaz bitky dvíha strach, hadka = víťaz hádky dvíha reči, bodovanie = reči
+   * po bodovaní klesli, zanik = reči zanikli pod dorastajúcim strachom, zajatie = neúspešný
+   * pokus vynuloval strach, kseft = Predsedova vila, nastup = Kapybara.
+   */
+  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "zanik" | "zajatie" | "kseft" | "nastup";
+  /** Hráč, ktorého ťah či efekt zmenu spôsobil (Kapybara mení súperove reči). */
+  readonly kto: PlayerId;
 }
 
 /**
  * Väzeň (v9, Michal 2026-10-30, §10): zajatý starší v priznaných kartách držiteľa —
- * „v pivnici“. Nehýbe sa, nedáva priazeň ani strach; držiteľ má jeho Kšeft a po finále
- * špaky podľa poradia zajatia v celej partii. Verejné.
+ * „v pivnici“. Nedáva priazeň, držiteľ má jeho Kšeft a ráta sa mu ako červený strach
+ * (v11, výhra strachom). Verejné.
  */
 export interface Vazen {
   readonly elderId: string;
@@ -97,236 +88,122 @@ export interface Vazen {
   readonly miesto: number;
 }
 
-/**
- * Smie hráč p skúsiť zajať staršieho (v9, §10): starší sa ho bojí na stupni 3 —
- * marker na červenej na súperovej polovici.
- */
-export function pokusMozny(elder: Pick<ElderState, "marker">, p: PlayerId): boolean {
-  return strachZ(elder, p) === 3;
+type Strach = Pick<ElderState, "strach">;
+type Markery = Pick<ElderState, "strach" | "reci">;
+
+/** Ako veľmi sa starší bojí hráča p (strach hráča p). */
+export function strachZ(elder: Strach, p: PlayerId): Stupen {
+  return elder.strach[p];
 }
 
-/** Hráč, ktorý sa teší priazni tohto staršieho (marker na jeho polovici). */
-export function priazenHraca(elder: Pick<ElderState, "marker">): PlayerId | null {
-  if (elder.marker < MARKER_STRED) return 0;
-  if (elder.marker > MARKER_STRED) return 1;
-  return null;
+/** Reči hráča p pri staršom (0 = žiadne). */
+export function reciZ(elder: Pick<ElderState, "reci">, p: PlayerId): Stupen {
+  return elder.reci[p];
 }
 
-/** Sila priazne = hodnota pozície markera. */
-export function priazenSila(elder: Pick<ElderState, "marker">): number {
-  return STUPNICA_HODNOTY[elder.marker];
+/** Hráč p desí staršieho naplno — strach na červenej. */
+export function vydesil(elder: Strach, p: PlayerId): boolean {
+  return elder.strach[p] === CERVENA;
 }
 
-/**
- * Klebety staršieho (v10 Hádka, Michal 2026-11-01; zaviedli ich Povery v8.3): o koľko
- * stupňov víťaz hádky v tomto kole posunul silu jeho priazne — kladne k hráčovi 0,
- * záporne k hráčovi 1. Marker sa nehýbe; po kole klebety zaniknú. Ukladá sa posun,
- * nie pevné číslo, lebo Nakladačka po hádke marker ešte pohne (Kmotor a Fajčiar po nej).
- */
-export type Klebety = Readonly<Record<string, number>>;
-
-/** Priazeň ako jedno číslo −3 … +3: kladná patrí hráčovi 0, záporná hráčovi 1. */
-function priazenSoZnamienkom(elder: Pick<ElderState, "marker">): number {
-  return MARKER_STRED - elder.marker;
+/** Smie hráč p skúsiť zajať staršieho (v11): jeho strach je 3 — súperov nerozhoduje. */
+export function pokusMozny(elder: Strach, p: PlayerId): boolean {
+  return vydesil(elder, p);
 }
 
-/**
- * Účinná priazeň staršieho v tomto kole: sila z markera posunutá klebetami
- * a orezaná na −3 … +3 (v8.3). Bez klebiet je to priazeň z markera. Na jedno
- * kolo môže mať priazeň aj hráč, ktorého sa starší bojí.
- */
-export function ucinnaPriazen(elder: Pick<ElderState, "marker" | "elderId">, klebety?: Klebety): { readonly hrac: PlayerId | null; readonly sila: number } {
-  const v = Math.max(-3, Math.min(3, priazenSoZnamienkom(elder) + (klebety?.[elder.elderId] ?? 0)));
-  return { hrac: v > 0 ? 0 : v < 0 ? 1 : null, sila: Math.abs(v) };
+/** Sila priazne staršieho pre hráča p: o koľko sa starší bojí súpera viac než jeho. */
+export function priazenPre(elder: Strach, p: PlayerId): number {
+  return Math.max(0, elder.strach[opponentOf(p)] - elder.strach[p]);
 }
 
-/**
- * Účinná priazeň ako poloha na stupnici (0–6) — hádka sa platí podľa zóny ako Nakladačka,
- * len sa posúva táto poloha, nie marker.
- */
-export function polohaPriazne(elder: Pick<ElderState, "marker" | "elderId">, klebety?: Klebety): MarkerPos {
-  const u = ucinnaPriazen(elder, klebety);
-  return (u.hrac === null ? MARKER_STRED : u.hrac === 0 ? MARKER_STRED - u.sila : MARKER_STRED + u.sila) as MarkerPos;
+/** Hráč, ktorému starší dáva priazeň (null = strachy sú rovnaké). */
+export function priazenHraca(elder: Strach): PlayerId | null {
+  return elder.strach[0] === elder.strach[1] ? null : elder.strach[0] < elder.strach[1] ? 0 : 1;
 }
 
-/** Smie víťaz hádky p ešte posunúť priazeň tohto staršieho k sebe? (strop sila 3) */
-export function hadkaMozna(elder: Pick<ElderState, "marker" | "elderId">, p: PlayerId, klebety?: Klebety): boolean {
-  const u = ucinnaPriazen(elder, klebety);
-  return !(u.hrac === p && u.sila >= 3);
+/** Sila priazne — rozdiel strachov. */
+export function priazenSila(elder: Strach): number {
+  return Math.abs(elder.strach[0] - elder.strach[1]);
 }
 
-/** Posun priazne hádkou: kam sa dostane poloha priazne (polohaPriazne), za koľko a nové klebety staršieho. */
-export interface PosunHadkou extends PosunZaBody {
-  /** Klebety staršieho po posune (posun od markera). */
-  readonly klebety: number;
+/** Stav staršieho (STAV_STARSIEHO) podľa vyššieho strachu. */
+export function stupenStavu(elder: Strach): Stupen {
+  return Math.max(elder.strach[0], elder.strach[1]) as Stupen;
 }
 
-/**
- * Hádka (v10): víťaz p vyberá len staršieho — sila jeho priazne ide k p pole po poli
- * podľa ceny zóny (cenaKroku, ako Nakladačka), kým zvyšok `body` stačí, najviac na silu 3.
- * null, keď nevyjde ani jeden krok.
- */
-export function posunHadkou(elder: Pick<ElderState, "marker" | "elderId">, p: PlayerId, body: number, klebety?: Klebety): PosunHadkou | null {
-  const posun = posunZaBody({ marker: polohaPriazne(elder, klebety) }, p, body);
-  return posun === null ? null : { ...posun, klebety: elder.marker - posun.marker };
+/** Najvyšší marker hráča p pri staršom — reči, ak ich má (sú vždy nad strachom), inak strach. */
+export function najvyssiMarker(elder: Markery, p: PlayerId): Stupen {
+  return elder.reci[p] > elder.strach[p] ? elder.reci[p] : elder.strach[p];
 }
 
-/** Hráč, ktorého sa starší bojí — ten na opačnej strane, než leží marker (v sivom nikto). */
-export function obavanyHrac(elder: Pick<ElderState, "marker">): PlayerId | null {
-  const p = priazenHraca(elder);
-  return p === null ? null : p === 0 ? 1 : 0;
+/** Stupeň, za ktorý starší po bitke boduje hráčovi p: víťaz najvyšší marker, inak len reči. */
+export function stupenNaBodovanie(elder: Markery, p: PlayerId, vyhral: boolean): Stupen {
+  return vyhral ? najvyssiMarker(elder, p) : elder.reci[p];
 }
 
-/** Hráč p desí staršieho na stupni 3 (stav „vydesený“) = marker na krajnej pozícii súperovej polovice. */
-export function vydesil(elder: Pick<ElderState, "marker">, p: PlayerId): boolean {
-  return elder.marker === MARKER_KRAJ[p === 0 ? 1 : 0];
+/** Špaky za marker na stupni (žltá 1, oranžová 3, červená 5). */
+export function spakyZaStupen(stupen: number): number {
+  return KONSTANTY.SPAKY_ZA_STUPEN[stupen] ?? 0;
 }
 
-/** Ako veľmi sa starší bojí hráča p: stupeň markera na súperovej polovici, inak 0. */
-export function strachZ(elder: Pick<ElderState, "marker">, p: PlayerId): 0 | 1 | 2 | 3 {
-  return obavanyHrac(elder) === p ? STUPNICA_ZONY[elder.marker] : 0;
+/** Špaky, ktoré starší dá hráčovi p po bitke, ktorú p vyhral (vyhral = true), alebo nie. */
+export function spakyOdStarsieho(elder: Markery, p: PlayerId, vyhral: boolean): number {
+  return spakyZaStupen(stupenNaBodovanie(elder, p, vyhral));
 }
 
-/** Súčet hodnôt zón od (od + 1) po `po` — žltá 1, oranžová 2, červená 3. */
-function hodnotaZon(od: number, po: number): number {
-  return (po * (po + 1)) / 2 - (od * (od + 1)) / 2;
-}
-
-type StavStrachu = Pick<ElderState, "marker" | "vyplatene" | "drzane">;
-
-/**
- * Strach na konci kola (v8.3, Michal 2026-10-30, variant 6A): koľko špakov dá
- * starší hráčovi p na konci tohto kola, ak marker dovtedy neustúpi — stupne,
- * ktoré držal už na konci minulého kola a ešte ich nezaplatil. Platí obávanému
- * aj po prehre; zaparkovaný marker po výplate nedá nič.
- */
-export function strachNaVyplatu(elder: StavStrachu, p: PlayerId): number {
-  const drzane = Math.min(elder.drzane ?? 0, strachZ(elder, p));
-  return hodnotaZon(Math.min(elder.vyplatene ?? 0, drzane), drzane);
-}
-
-/**
- * Strach, ktorý čaká na udržanie (v8.3): stupne, kam sa marker dostal až v tomto
- * kole — zaplatia sa na konci NASLEDUJÚCEHO kola, ak sa na nich marker udrží.
- */
-export function strachNaUdrzanie(elder: StavStrachu, p: PlayerId): number {
-  const zona = strachZ(elder, p);
-  const od = Math.max(elder.vyplatene ?? 0, Math.min(elder.drzane ?? 0, zona));
-  return hodnotaZon(Math.min(od, zona), zona);
-}
-
-/**
- * Špaky za starších na konci kola: každý starší, ktorý sa hráča bojí, mu zaplatí
- * udržané a ešte nezaplatené stupne (v8.3), nech bitku vyhral ktokoľvek (väzeň už nie je na stupnici).
- */
-export function spakyZaStarsich(starsi: readonly StavStrachu[], p: PlayerId): number {
-  return starsi.reduce((a, e) => a + strachNaVyplatu(e, p), 0);
-}
-
-/** Strach všetkých starších, ktorý čaká na udržanie (strachNaUdrzanie). */
-export function strachNaUdrzanieSpolu(starsi: readonly StavStrachu[], p: PlayerId): number {
-  return starsi.reduce((a, e) => a + strachNaUdrzanie(e, p), 0);
-}
-
-/**
- * Starší s markerom na novej pozícii — jediné miesto, kde sa ráta, čo ostane
- * zaplatené a držané (v8, v8.3): ústup k stredu zmaže stupne, z ktorých marker
- * odišiel, prechod cez stred zmaže všetko (druhá polovica platí nanovo druhému
- * hráčovi). Postup od stredu nič nemaže ani nepridáva.
- */
-export function sPosunutymMarkerom<E extends StavStrachu>(elder: E, na: MarkerPos): E {
-  const ista = obavanyHrac(elder) === obavanyHrac({ marker: na });
-  const bez: E = { ...elder, marker: na };
-  delete (bez as { vyplatene?: number }).vyplatene;
-  delete (bez as { drzane?: number }).drzane;
-  const vyplatene = ista ? Math.min(elder.vyplatene ?? 0, STUPNICA_ZONY[na]) : 0;
-  const drzane = ista ? Math.min(elder.drzane ?? 0, STUPNICA_ZONY[na]) : 0;
-  return { ...bez, ...(vyplatene > 0 ? { vyplatene } : {}), ...(drzane > 0 ? { drzane } : {}) };
-}
-
-/**
- * Starší na konci kola (v8.3): udržané stupne sú zaplatené a stupeň, na ktorom
- * marker teraz stojí, sa začína udržiavať do konca nasledujúceho kola.
- */
-export function poKonciKola<E extends StavStrachu>(elder: E): E {
-  const bez: E = { ...elder };
-  delete (bez as { vyplatene?: number }).vyplatene;
-  delete (bez as { drzane?: number }).drzane;
-  const zona = STUPNICA_ZONY[elder.marker];
-  const vyplatene = Math.min(zona, Math.max(elder.vyplatene ?? 0, elder.drzane ?? 0));
-  return { ...bez, ...(vyplatene > 0 ? { vyplatene } : {}), ...(zona > 0 ? { drzane: zona } : {}) };
-}
-
-/**
- * Posun markera o jedno pole k hráčovi `smerK` (Kšeft Predsedovej vily; Nakladačka
- * od v8.2 a hádka od v10 cez posunZaBody).
- * Zamknutie krajnej pozície sa ruší (Michal 2026-10-26): na červenú smie marker
- * aj viac posunmi v jednom kole a z červenej ho smie súper odtlačiť. Vracia
- * novú pozíciu, alebo null, keď je marker už na kraji v tom smere.
- */
-export function posunMarker(elder: Pick<ElderState, "marker">, smerK: PlayerId): MarkerPos | null {
-  const pos = elder.marker;
-  if (pos === MARKER_KRAJ[smerK]) return null;
-  return (smerK === 0 ? pos - 1 : pos + 1) as MarkerPos;
-}
-
-/**
- * Cena posunu o jedno pole z `z` na susedné `na` — Nakladačka aj hádka (v8.2, Michal
- * 2026-10-30; hádka v10): smerom von zo stredu toľko, aká je cieľová zóna —
- * stred → žltá 1, žltá → oranžová 2, oranžová → červená 3 (zo stredu na červenú 6);
- * smerom k stredu o 1 viac — červená → oranžová 4, oranžová → žltá 3, žltá → stred 2.
- */
-export function cenaKroku(z: MarkerPos, na: MarkerPos): number {
-  const zo = STUPNICA_ZONY[z];
-  const doZony = STUPNICA_ZONY[na];
-  return doZony > zo ? doZony : zo + 1;
-}
-
-/** Kam sa marker dostane za body a koľko to stojí (posunZaBody). */
-export interface PosunZaBody {
-  readonly marker: MarkerPos;
-  readonly cena: number;
-  readonly kroky: number;
-}
-
-/**
- * Posun za body (v8.2): hráč vyberá len staršieho, nie počet polí —
- * marker ide k hráčovi `smerK`, kým zvyšok bodov stačí na ďalší krok (cenaKroku)
- * a kým nie je na kraji. null, keď nevyjde ani jeden krok.
- */
-export function posunZaBody(elder: Pick<ElderState, "marker">, smerK: PlayerId, body: number): PosunZaBody | null {
-  let marker = elder.marker;
+/** Cena dvihnutia markera zo stupňa `z` na `na` — súčet cien stupňov, do ktorých vstupuje (1 / 2 / 3). */
+export function cenaDvihnutia(z: number, na: number): number {
   let cena = 0;
-  let kroky = 0;
-  for (let dalsi = posunMarker({ marker }, smerK); dalsi !== null; dalsi = posunMarker({ marker }, smerK)) {
-    const c = cenaKroku(marker, dalsi);
-    if (cena + c > body) break;
-    cena += c;
-    marker = dalsi;
-    kroky++;
-  }
-  return kroky === 0 ? null : { marker, cena, kroky };
-}
-
-/** Cena posunu z pozície `z` o `d` polí (záporné k hráčovi 0, kladné k hráčovi 1). */
-export function cenaPosunuOPoli(z: MarkerPos, d: number): number {
-  let cena = 0;
-  for (let m = z, i = 0; i < Math.abs(d); i++) {
-    const na = (d < 0 ? m - 1 : m + 1) as MarkerPos;
-    cena += cenaKroku(m, na);
-    m = na;
-  }
+  for (let st = z + 1; st <= na; st++) cena += KONSTANTY.CENA_STUPNA[st] ?? 0;
   return cena;
 }
 
+/** Odkiaľ sa dvíha marker hráča p: strach od strachu, reči od vyššieho z rečí a strachu. */
+export function stupenOdkial(elder: Markery, p: PlayerId, marker: DruhMarkera): Stupen {
+  return marker === "strach" ? elder.strach[p] : najvyssiMarker(elder, p);
+}
+
+/**
+ * Najvyšší stupeň, na ktorý smie hráč p marker zdvihnúť (v11): strach do červenej, reči
+ * nad strachom do červenej — pri červenom strachu reči nie. null = dvíhať sa nedá.
+ */
+export function moznyZdvih(elder: Markery, p: PlayerId, marker: DruhMarkera): { readonly od: Stupen; readonly najviac: Stupen } | null {
+  const od = stupenOdkial(elder, p, marker);
+  return od >= CERVENA ? null : { od, najviac: CERVENA };
+}
+
+/** Starší s markerom hráča p zdvihnutým na stupeň `na` — strach na stupni rečí či nad nimi reči zruší. */
+export function sMarkerom<E extends Markery>(elder: E, p: PlayerId, marker: DruhMarkera, na: Stupen): E {
+  const strach: [Stupen, Stupen] = [elder.strach[0], elder.strach[1]];
+  const reci: [Stupen, Stupen] = [elder.reci[0], elder.reci[1]];
+  if (marker === "strach") strach[p] = na;
+  else reci[p] = na;
+  if (reci[p] <= strach[p]) reci[p] = 0;
+  return { ...elder, strach, reci };
+}
+
+/** Reči hráča p o stupeň nižšie (po bodovaní, Kapybara) — na stupni strachu zaniknú. */
+export function reciNizsie(elder: Markery, p: PlayerId): Stupen {
+  const r = elder.reci[p];
+  if (r === 0) return 0;
+  const na = r - 1;
+  return (na <= elder.strach[p] ? 0 : na) as Stupen;
+}
+
+/** Zdvihnutie markera jedného staršieho pri rozdelení (zámer klienta, v11): na ktorý stupeň. */
+export interface Zdvih {
+  readonly elderId: string;
+  readonly na: Stupen;
+}
+
 /** Scorecard, na ktorom starší leží; chýbajúci je chyba dát, nie hry. */
-export function scorecardStarsieho(data: GameData, elder: ElderState): ScorecardDef {
+export function scorecardStarsieho(data: GameData, elder: Pick<ElderState, "elderId" | "scorecard">): ScorecardDef {
   const sc = data.scorecards.find((x) => x.id === elder.scorecard);
   if (sc === undefined) throw new Error(`Chybné dáta: starší ${elder.elderId} leží na neznámom scorecarde ${elder.scorecard}`);
   return sc;
 }
 
 /** Priazeň, ktorú starší dáva — určuje ju jeho scorecard. */
-export function favourStarsieho(data: GameData, elder: ElderState): Favour {
+export function favourStarsieho(data: GameData, elder: Pick<ElderState, "elderId" | "scorecard">): Favour {
   return scorecardStarsieho(data, elder).favour;
 }

@@ -4,8 +4,8 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { DLZKY_HRY, KONSTANTY } from "../src/constants.ts";
-import { cenaKroku } from "../src/elders.ts";
+import { DLZKY_HRY, KONSTANTY, vazniNaVyhru } from "../src/constants.ts";
+import { cenaDvihnutia } from "../src/elders.ts";
 import { cenaFajcenia, krokStavby } from "../src/engine.ts";
 import { pocet } from "../src/jazyk.ts";
 
@@ -20,10 +20,18 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["špaky za bitku (v8)", "1 špak za každú kartu v línii"],
-    ["strach až po udržaní (v8.3)", "až na konci nasledujúceho kola, ak sa na ňom marker dovtedy udrží"],
-    ["strach každý stupeň raz (v8.3)", "Každý stupeň raz: **žltá 1, oranžová 2, červená 3 (zo stredu na červenú spolu 6)**"],
-    ["Nakladačka vo finále (v8.3)", "**Vo finále sa rozdeľuje len hádka, Nakladačka nie (v8.3)"],
-    ["Nakladačka vo finále na špaky (v9.1)", `dostane za každý bod Nakladačky ${pocet(KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE, "špak", "špaky", "špakov")} (v9.1)`],
+    [
+      "starší po bitke (v11)",
+      `**porazený a pri sekere obaja len za reči**: **žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}**`,
+    ],
+    [
+      "finále bez dvíhania (v11)",
+      `víťaz bitky dostane za každý bod Nakladačky ${pocet(KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE, "špak", "špaky", "špakov")}, víťaz hádky za každý bod hádky ${pocet(KONSTANTY.SPAKY_ZA_HADKU_VO_FINALE, "špak", "špaky", "špakov")}`,
+    ],
+    ["priazeň z rozdielu strachov (v11)", "**Priazeň pre teba = strach súpera − tvoj strach**"],
+    ["výhra strachom (v11)", `**červený strach aspoň u ${KONSTANTY.CERVENYCH_NA_VYHRU} starších**`],
+    ["väzni podľa ligy (v11)", `Tretia liga ${vazniNaVyhru(DLZKY_HRY.kratka)}, Druhá ${vazniNaVyhru(DLZKY_HRY.stredna)}, Prvá ${vazniNaVyhru(DLZKY_HRY.dlha)}`],
+    ["cigareta porazenému (v11)", `**porazený ${pocet(KONSTANTY.CIGARETY_PORAZENEMU, "cigareta", "cigarety", "cigariet")}**`],
     ["Chuť a neresti (v9.1)", `**Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, vyfajčená cigareta 1**`],
     ["Chuť na konci kola (v9.1)", `**Chuť = väčšie z (Chuť, neresti kola) − ${KONSTANTY.CHUT_UBYTOK}**`],
     ["Opatrovateľka (v9.1)", `Opatrovateľka v tvojej partii porovná tvoju Chuť o ${KONSTANTY.OPATROVATELKA_CHUT} nižšiu`],
@@ -40,8 +48,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Zastávka (v9.1)", "Zastávka (v9.1: po **prvej Pitke kola** si každý vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca"],
     ["pojmy stupnice (v8.3)", "**pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**"],
     ["mäkké poškodenie (v10)", `**mäkké = Pohoršenie × ${KONSTANTY.HADKA.POHORSENIE_MAKKE} + zvyšné Povery × ${KONSTANTY.HADKA.POVERA_MAKKE}**`],
-    ["hádka len k sebe (v10)", "**Víťaz hádky rozdelí rozdiel mäkkého na sily priazní starších len k sebe**"],
-    ["hádka strop a marker (v10)", "**najviac na silu 3, marker sa nehýbe**"],
+    ["hádka na reči (v11)", "**Priazne hádka nemení** — víťaz ju po bitke rozdelí na svoje reči"],
     ["Abstinent (v10)", "Abstinent: v bitke sa ti neráta 1 / 2 / 3 Absťákov"],
     ["Horoskop (v10)", `Horoskop: tvoje Povery majú silu ${KONSTANTY.HADKA.HOROSKOP_POVERA}`],
     ["Svätý text (v10)", "Svätý text: hodnota tvojej Viery je o 1 vyššia (len v tlmení tuhého; Povery ruší 1 : 1)"],
@@ -49,8 +56,10 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Robota bez Dlhu (v8.4)", "**za každý Dlh, ktorý nemá čo spáliť, 1 špak**"],
     ["Telefón (v10)", "Telefón: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX"],
     ["Kmotor (v9)", "Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove"],
-    ["tretí väzeň (v9)", `kto **zajme tretieho staršieho, vyhráva hneď**`],
-    ["väzni po finále (v9)", `**1. väzeň ${KONSTANTY.SPAKY_ZA_VAZNOV[0]}, 2. ${KONSTANTY.SPAKY_ZA_VAZNOV[1]}, 3. ${KONSTANTY.SPAKY_ZA_VAZNOV[2]}, 4. ${KONSTANTY.SPAKY_ZA_VAZNOV[3]}**`],
+    [
+      "krádež pri zajatí (v11)",
+      `marker pri ňom pred bodovaním (žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}), najviac koľko má**`,
+    ],
     ["cena pokusu (v9)", `Cena **${pocet(KONSTANTY.CENA_POKUSU, "cigareta", "cigarety", "cigariet")}**, prepadne vždy`],
     ["Kšeft väzňa (v9)", "Cena: **vypiť 1 plný poldeci** zo zásoby"],
     ["Vychovávateľka (v9)", `**Petelicu navyše (+${KONSTANTY.VYCHOVAVATELKA_TUHE} tuhé)**`],
@@ -77,8 +86,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["barter", `${KONSTANTY.BARTER_CENA} cigariet → nový plný poldeci`],
     [
-      "cena posunu markera (v8.2)",
-      `pole von zo stredu stojí ${cenaKroku(3, 4)} / ${cenaKroku(4, 5)} / ${cenaKroku(5, 6)}, k stredu ${cenaKroku(6, 5)} / ${cenaKroku(5, 4)} / ${cenaKroku(4, 3)} (z červenej, z oranžovej, zo žltej); zo stredu na červenú ${cenaKroku(3, 4) + cenaKroku(4, 5) + cenaKroku(5, 6)}`,
+      "cena stupňa (v11)",
+      `stupeň stojí **do žltej ${cenaDvihnutia(0, 1)}, do oranžovej ${cenaDvihnutia(1, 2)}, do červenej ${cenaDvihnutia(2, 3)}** (strach zo žltej na červenú ${cenaDvihnutia(1, 2)} + ${cenaDvihnutia(2, 3)} = ${cenaDvihnutia(1, 3)}`,
     ],
     ["Dlh ako počítadlo (v8.2), Absťák karta (v9.1)", "**Dlh je počítadlo, nie karta**"],
     ["Strýko (v7)", `(${KONSTANTY.EFEKT.STRYKO_CENA} cigarety → v bitke kola +1 Rana)`],

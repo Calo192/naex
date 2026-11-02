@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, kartaZadarmo, krokStavby, lineState, hadkaNaStarsieho, naexCieleVLinii, posunZaBody, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, kartaZadarmo, krokStavby, lineState, navrhRozdelenia, naexCieleVLinii, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -97,11 +97,11 @@ export class Robot {
     if (view.hasicVolba !== null) return { type: "hasic", nechat: true };
     const nv = view.volbaNastupu;
     if (nv !== null && nv.hrac === ja) {
-      // v7: karta zo šenku, Nástroj za Živnostníka (robot nič), Kapybara (prvý marker mimo stredu).
+      // v7: karta zo šenku, Nástroj za Živnostníka (robot nič), Kapybara (v11: prvý starší so súperovými rečami).
       const zoSenku = view.senok[0];
       if (nv.typ === "senok" && zoSenku !== undefined) return { type: "senok", uid: zoSenku.uid };
       if (nv.typ === "nastroj") return { type: "nastroj", uid: null };
-      const kapybara = view.starsi.find((e) => e.marker !== 3);
+      const kapybara = view.starsi.find((e) => e.reci[ja === 0 ? 1 : 0] > 0);
       if (nv.typ === "kapybara" && kapybara !== undefined) return { type: "kapybara", elderId: kapybara.elderId };
     }
 
@@ -173,18 +173,11 @@ export class Robot {
         const b = view.bitkaStav;
         if (b === null) throw new Error("bitka bez stavu");
         if (b.krok === "vestica") return { type: "vestica", moja: 0, jeho: 0 };
-        // v10: hádku rozdeľuje víťaz — robot ju dá na prvého staršieho, kam smie (klient z verejného pohľadu).
-        if (b.krok === "hadka") {
-          const elder = view.starsi.find((e) => hadkaNaStarsieho(view, e, ja));
-          if (elder === undefined) throw new Error("hádka: žiadny cieľ");
-          return { type: "hadka", elderId: elder.elderId };
-        }
-        if (b.krok === "prebytok") {
-          // Prebytok ide k súperovi držiteľa — od v8 ho rozdeľuje spravidla porazený, teda k nemu.
-          const smerK = b.prebytokDrzi !== null ? (b.prebytokDrzi === 0 ? 1 : 0) : ja === 0 ? 1 : 0;
-          const elder = view.starsi.find((e) => !view.pokusy.some((x) => x?.elderId === e.elderId) && posunZaBody(e, smerK, b.prebytokZostava) !== null);
-          if (elder === undefined) throw new Error("prebytok: žiadny posúvateľný marker");
-          return { type: "prebytok", elderId: elder.elderId };
+        // v11: Nakladačku (strach) a hádku (reči) rozdeľuje víťaz — robot vezme návrh jadra z pohľadu.
+        if (b.krok === "prebytok" || b.krok === "reci") {
+          const n = navrhRozdelenia(view);
+          if (n === null) throw new Error(`${b.krok}: žiadne rozdelenie ${JSON.stringify({ ja, caka: b.caka, mozem: view.mozemHrat, hadka: b.hadka, pz: b.prebytokZostava, st: view.starsi.map((e) => [e.strach, e.reci]), pokusy: view.pokusy })}`);
+          return n.prikaz;
         }
         // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.
         if (b.krok === "cintorin") return { type: "cintorin", uid: null };

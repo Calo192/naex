@@ -9,6 +9,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, evaluateLine, lineState, loadGameData, poskodenieBitky, setupGame, spojVznikne, zvieraPlati, zvieratAUmlcane } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 let uidSeq = 660000;
@@ -71,7 +72,8 @@ describe("Mäsiar (Furt, Michal 2026-10-28): efekty Zvierat v jeho okolí neplat
     });
     const s: GameState = {
       ...s0,
-      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker: 5 } : e)),
+      // Kapybara (v11) potrebuje súperove reči.
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, strach: [0, 0] as const, reci: [0, 2] as const } : e)),
       hraci: [{ ...s0.hraci[0], ruka: [kap] }, s0.hraci[1]],
     };
     const { state, events } = apply(data, s, { type: "place", uid: kap.uid, target: "vlastna" }, 0);

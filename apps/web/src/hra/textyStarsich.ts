@@ -2,17 +2,22 @@
 // Línia starších, lupa, dlaždice v baroch aj titulok stupnice skladajú vety o priazni, strachu
 // a posunoch odtiaľto — keď sa zmení, kedy a koľko starší platí za strach, mení sa len tu.
 
-import type { Favour, PosunMarkera } from "@naex/core";
+import type { Favour } from "@naex/core";
 import { NAZVY_ZON, STAV_STARSIEHO } from "@naex/core";
 import { UCINOK_KRATKO } from "./Scorecard.tsx";
+import { type PosunMarkera } from "./staraStupnica.ts";
 
-export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"], string>> = {
+export const NAZOV_ZDROJA: Readonly<Record<PosunMarkera["zdroj"] | "pohorsenie" | "prebytok" | "patronat", string>> = {
   pohorsenie: "Pohoršenie",
   prebytok: "Nakladačka",
   patronat: "Patronát",
   zajatie: "Zajatie zlyhalo",
   kseft: "Predsedova vila",
   nastup: "Kapybara",
+  nakladacka: "Nakladačka",
+  hadka: "Hádka",
+  bodovanie: "Bodovanie",
+  zanik: "Reči zanikli",
 };
 
 const spakov = (n: number): string => (n === 1 ? "špak" : n < 5 ? "špaky" : "špakov");
@@ -84,7 +89,7 @@ export function stitokStopy(zdroje: readonly { readonly zdroj: PosunMarkera["zdr
  * Názov kroku rozdeľovania na stole (bublina, línia starších) — na jednom mieste. Prebytok
  * poškodenia sa hráčovi volá Nakladačka (Michal 2026-10-30); v kóde ostáva „prebytok“.
  */
-export const NAZOV_DELENIA = { hadka: "Hádka", prebytok: "Nakladačka" } as const;
+export const NAZOV_DELENIA = { hadka: "Hádka", reci: "Hádka", prebytok: "Nakladačka" } as const;
 
 /** Cena posunu o pole (v8.2, Michal 2026-10-30) — Nakladačka aj hádka (v10). */
 export const CENA_POLA = "pole von zo stredu stojí 1 / 2 / 3, k stredu 2 / 3 / 4";

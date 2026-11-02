@@ -69,7 +69,7 @@ function partia(seed: number, lokalit = 5): Partia {
     for (const e of events) {
       if (e.type === "bitkaVysledok") bitky.push(e);
       if (e.type === "odpovedNaNaex") odpovede++;
-      if (e.type === "posunMarkera") posuny++;
+      if (e.type === "zmenaMarkera") posuny++;
     }
     s = po;
   }

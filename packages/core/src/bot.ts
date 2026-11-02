@@ -30,10 +30,10 @@ import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
 import { rngInt, rngNext, rngSeed, rngShuffle } from "./rng.ts";
 import { evaluateLine } from "./partia.ts";
-import { KONSTANTY } from "./constants.ts";
+import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
-import type { ElderState, MarkerPos } from "./elders.ts";
-import { sPosunutymMarkerom, spakyZaStarsich, strachNaUdrzanieSpolu, strachZ, vydesil } from "./elders.ts";
+import type { ElderState } from "./elders.ts";
+import { najvyssiMarker, priazenPre, sMarkerom, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
 import { jeCielLokalita, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -50,7 +50,6 @@ import {
   legalCommands,
   sNaexNaKartach,
   silaPriazne,
-  klebetyKola,
   lineState,
   poskodenieBitky,
   jeFinale,
@@ -58,13 +57,12 @@ import {
   zahradkarChrani,
   jeKartaBossa,
   prahyHraca,
-  spakyZaVaznov,
+  cervenychHraca,
   vazniHraca,
   priazen,
   verejneAbstaky,
   nepriznaneCirhozy,
   vykupneHraca,
-  vyplatZaStarsich,
   cenaFajceniaHraca,
 } from "./engine.ts";
 
@@ -381,8 +379,8 @@ interface Kontext {
 
 /**
  * Odhad konečných špakov (v6), moje mínus súperove: špaky v popolníku,
- * nepriznané Cirhózy (ich počet je verejný), výkupné zdrojov a strach starších
- * (strachVOdhade) a väzni (v9). Starší sa smú nahradiť (pokus o zajatie, náhľad posunu).
+ * nepriznané Cirhózy (ich počet je verejný), výkupné zdrojov a bodovanie starších
+ * v bitkách, ktoré ešte prídu (bodyStarsichVOdhade, v11). Starší sa smú nahradiť (pokus o zajatie).
  */
 function rozdielBodov(_data: GameData, s: GameState, ja: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
   const su = opponentOf(ja);
@@ -390,8 +388,7 @@ function rozdielBodov(_data: GameData, s: GameState, ja: PlayerId, starsi: reado
     s.spaky[p] -
     KONSTANTY.SPAKY_ZA_CIRHOZU * nepriznaneCirhozy(s.hraci[p]) +
     vykupneVOdhade(s, p) +
-    strachVOdhade(s, p, starsi) +
-    spakyZaVaznov(s, p) -
+    bodyStarsichVOdhade(s, p, starsi) -
     exekucieDoKonca(_data, s, p);
   return odhad(ja) - odhad(su);
 }
@@ -415,16 +412,30 @@ function exekucieDoKonca(data: GameData, s: GameState, p: PlayerId): number {
   return spolu;
 }
 
+/** Bitky, v ktorých starší ešte budú bodovať (v11, krok 4b) — vrátane prebiehajúcej, kým nebodovala. */
+function bitiekNaBodovanie(s: GameState): number {
+  const tato = s.koniec === null && (s.faza !== "bitka" || s.bitkaStav === null || s.bitkaStav.damage === null) ? 1 : 0;
+  return kolPoTomto(s) + tato;
+}
+
 /**
- * Strach v odhade (v8.3, Michal 2026-10-30): stupne držané od minulého kola zaplatí
- * koniec tohto kola naplno (súper ich ešte môže odtlačiť, to už vidí výpočet dopredu),
- * nové stupne až koniec ďalšieho kola, ak sa udržia (VYDRZ_POSUNU); keď ďalší koniec
- * kola nepríde (finále), nové stupne nič. Výhra bitky na strachu nič nemení.
+ * Bodovanie starších v odhade (v11, Michal 2026-11-02): v každej bitke, ktorá ešte príde,
+ * dá starší víťazovi špaky za najvyšší marker, porazenému za reči. Reči bodujú hneď (aj pri
+ * prehre) a po každej bitke klesnú o stupeň; strach je trvalý, ale boduje len víťazovi —
+ * bot ráta polovičnú šancu na výhru (výsledok prebiehajúcej bitky ráta hodnotaBitky).
  */
-function strachVOdhade(s: GameState, p: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
-  const n = vyplatZaStarsich(s);
-  if (n === 0) return 0;
-  return spakyZaStarsich(starsi, p) + (n > 1 ? VYDRZ_POSUNU * strachNaUdrzanieSpolu(starsi, p) : 0);
+function bodyStarsichVOdhade(s: GameState, p: PlayerId, starsi: readonly ElderState[] = s.starsi): number {
+  const n = bitiekNaBodovanie(s);
+  let spolu = 0;
+  for (const e of starsi) {
+    const strach = e.strach[p];
+    let reci: number = e.reci[p];
+    for (let i = 0; i < n; i++) {
+      spolu += reci > strach ? spakyZaStupen(reci) : 0.5 * spakyZaStupen(strach);
+      reci = reci - 1 > strach ? reci - 1 : 0;
+    }
+  }
+  return spolu;
 }
 
 /**
@@ -468,16 +479,23 @@ function buducnostHry(s: GameState): number {
 /**
  * Čo získa víťaz prebiehajúcej bitky oproti porazenému (v špakoch) okrem kariet
  * v línii (tie ráta hodnotaBitky zo stavu, ktorý hodnotí — v8): sekera, výhra
- * oproti prehre je dvojnásobok. Strach starších od v8.3 v stávke nie je — platí
- * za udržanie na konci kola, nech bitku vyhrá ktokoľvek.
+ * oproti prehre je dvojnásobok. Starší (v11) dajú víťazovi strach navyše oproti
+ * rečiam porazeného; kto má 4 červené, výhrou končí hru (výhra strachom).
  */
 function stavkaBitky(s: GameState): number {
   if (s.ciel === null) return 0;
   // Pokus o zajatie (v9): víťaz bitky rozhodne, či bude väzeň.
   let pokusy = 0;
   for (const q of [0, 1] as const) if (s.pokusy[q] !== null) pokusy += hodnotaVazna(s, q);
-  return 2 * s.spakyNaSekere + pokusy;
+  let starsi = 0;
+  for (const e of s.starsi) for (const q of [0, 1] as const) starsi += spakyZaStupen(najvyssiMarker(e, q)) - spakyZaStupen(e.reci[q]);
+  let strach = 0;
+  for (const q of [0, 1] as const) if (cervenychHraca(s, q) >= KONSTANTY.CERVENYCH_NA_VYHRU) strach += VYHRA_HNED;
+  return 2 * s.spakyNaSekere + pokusy + starsi + strach;
 }
+
+/** Okamžitá výhra (4 červené, väzni) v jednotkách stávky — prehrať ju nesmie bot nikdy lacno. */
+const VYHRA_HNED = 200;
 
 /**
  * Karty v línii v stávke bitky (v8): víťaz dostane 1 špak za každú, takže pri
@@ -514,10 +532,10 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const prebytok = jeFinale(s) ? celk : Math.max(-PREBYTOK_STROP, Math.min(PREBYTOK_STROP, celk));
   let v = k.povaha.bitka * (k.stavka * (sanca - 0.5) + kartyVStavke(s, q, sanca) + cenaBoduPrebytku(s) * prebytok);
 
-  // Hádka (v10): víťaz posunie priazne k sebe do konca kola — bod hádky ≈ stupeň priazne
-  // na jedno kolo (v bitke ho bot ráta presne, najlepsi). Kým bitka nezačala, ide z línie.
+  // Hádka (v11): víťaz ju po bitke rozdelí na svoje reči (vo finále špaky 1 : 1) — v bitke
+  // ju bot ráta presne (najlepsi). Kým bitka nezačala, ide z línie.
   if (s.faza === "zhromazdenie" || s.faza === "pitka") {
-    v += k.povaha.bitka * ZA_BOD_HADKY * Math.max(-HADKA_STROP, Math.min(HADKA_STROP, dmg.makke[q] - dmg.makke[o]));
+    v += k.povaha.bitka * cenaBoduHadky(s) * Math.max(-HADKA_STROP, Math.min(HADKA_STROP, dmg.makke[q] - dmg.makke[o]));
   }
 
   // Akcie, ktoré sa vyhodnotia až v Pitke — po nej už sú v stave.
@@ -592,13 +610,12 @@ function chybajuceNeresti(k: Kontext, s: GameState, ja: PlayerId): number {
 const TENKY_BALICEK = 7;
 
 /**
- * Priazne hráča p v bitkách, ktoré ešte prídu — z markera; klebety z hádky (v10) platia len
- * do konca tohto kola (klebetyTohtoKola). Prebiehajúcu bitku ráta hodnotaBitky so skutočnou
- * priazňou (hádka platí hneď).
+ * Priazne hráča p v bitkách, ktoré ešte prídu — z rozdielu strachov (v11). Prebiehajúcu
+ * bitku ráta hodnotaBitky so skutočnou priazňou.
  */
 function hodnotaPriazni(k: Kontext, s: GameState, p: PlayerId): number {
   const n = kolPoTomto(s);
-  let v = klebetyTohtoKola(k, s, p);
+  let v = 0;
   if (n === 0) return v;
   let bitiek = 0;
   for (let j = 0; j < n; j++) bitiek += VYDRZ_PRIAZNE ** j;
@@ -644,48 +661,44 @@ function hodnotaSilyPriazne(k: Kontext, s: GameState, p: PlayerId, fav: Favour, 
 }
 
 /**
- * Klebety z hádky (v10) v tomto kole: o koľko účinná priazeň hráča p prevyšuje priazeň
- * z markera v krokoch, ktoré ešte len prídu — exekúcia (Advokát, Robota) pred výsledkom
- * bitky, Kmotor, Fajčiar a Alkoholik po nej. Priazne bitky (Bitkár, Veriaci, Abstinent)
- * ráta hodnotaBitky priamo z poškodenia.
+ * Postup k okamžitým výhram (v11): väzni (Kšefty, výhra väzňami podľa ligy) a červené strachy
+ * (výhra strachom pri 4 — ďalšia vyhratá bitka končí hru), starší na červenej, ktorých sa dá
+ * skúsiť zajať. Bodovanie starších je v rozdiele bodov, tu je len hodnota výhier navyše.
  */
-function klebetyTohtoKola(k: Kontext, s: GameState, p: PlayerId): number {
-  const b = s.bitkaStav;
-  if (b === null || klebetyKola(s) === undefined) return 0;
-  const zMarkera = { starsi: s.starsi };
-  let v = 0;
-  const poBitke: readonly Favour[] = ["FAJCIAR", "UZERNIK", "ALKOHOLIK"];
-  const exekucia: readonly Favour[] = ["ADVOKAT", "ROBOTA"];
-  for (const fav of [...(b.damage === null ? exekucia : []), ...poBitke]) {
-    const rozdiel = silaPriazne(k.data, s, fav, p) - silaPriazne(k.data, zMarkera, fav, p);
-    if (rozdiel !== 0) v += Math.sign(rozdiel) * hodnotaSilyPriazne(k, s, p, fav, Math.abs(rozdiel));
+function hodnotaVydesenia(s: GameState, p: PlayerId): number {
+  const vazni = vazniHraca(s, p).length;
+  const naVyhru = vazniNaVyhru(s.lokalitCelkom);
+  const ciele = s.starsi.filter((e) => vydesil(e, p)).length;
+  const cervene = cervenychHraca(s, p);
+  const zostava = kolPoTomto(s) + (s.ciel === null ? 1 : 0);
+  let v = vazni * (2 + 1.5 * Math.min(zostava, 3));
+  if (zostava > 0) {
+    if (vazni >= naVyhru - 1) v += VAZEN_PRED_VYHROU + (ciele > 0 ? 10 : 0);
+    if (cervene >= KONSTANTY.CERVENYCH_NA_VYHRU) v += CERVENE_NA_VYHRU;
+    else if (cervene === KONSTANTY.CERVENYCH_NA_VYHRU - 1) v += CERVENE_PRED_VYHROU;
+    v += 1.5 * ciele + 0.4 * s.starsi.filter((e) => strachZ(e, p) === 2).length;
   }
   return v;
 }
 
-/**
- * Postup k výhre väzňami (v9): špaky za väzňov sú v rozdiele bodov, tu je ich
- * hodnota navyše — blízkosť tretieho väzňa (výhra), Kšefty a starší na stupni 3,
- * ktorých sa dá skúsiť zajať.
- */
-function hodnotaVydesenia(s: GameState, p: PlayerId): number {
-  const vazni = vazniHraca(s, p).length;
-  const ciele = s.starsi.filter((e) => vydesil(e, p)).length;
-  const zostava = kolPoTomto(s) + (s.ciel === null ? 1 : 0);
-  let v = vazni * (2 + 1.5 * Math.min(zostava, 3));
-  if (vazni >= KONSTANTY.VAZNI_NA_VYHRU - 1 && zostava > 0) v += VAZEN_PRED_VYHROU + (ciele > 0 ? 10 : 0);
-  if (zostava > 0) v += 1.5 * ciele + 0.4 * s.starsi.filter((e) => strachZ(e, p) === 2).length;
-  return v;
-}
-
-/** Druhý väzeň — tretí vyhráva. */
+/** Väzeň pred výhrou väzňami. */
 const VAZEN_PRED_VYHROU = 20;
+/** 4 červené — ďalšia vyhratá bitka je výhra (polovičná šanca na ňu). */
+const CERVENE_NA_VYHRU = 60;
+/** Tretia červená zo štyroch. */
+const CERVENE_PRED_VYHROU = 12;
 
-/** Čo pokúšajúcemu q prinesie väzeň, ak vyhrá bitku (v9) — pre stávku bitky aj voľbu pokusu. */
-function hodnotaVazna(s: Pick<GameState, "vazni">, q: PlayerId): number {
-  const poradie = s.vazni.length + 1;
-  const vyhra = vazniHraca(s, q).length + 1 >= KONSTANTY.VAZNI_NA_VYHRU;
-  return (KONSTANTY.SPAKY_ZA_VAZNOV[poradie - 1] ?? 0) + 4 + (vyhra ? 200 : 0);
+/**
+ * Čo pokúšajúcemu q prinesie väzeň, ak vyhrá bitku (v11) — pre stávku bitky aj voľbu pokusu:
+ * krádež súperových špakov za jeho najvyšší marker, Kšeft a výhra väzňami. Že starší zmizne
+ * zo stupnice (priazeň, bodovanie), ráta volajúci zo stavu bez neho.
+ */
+function hodnotaVazna(s: Pick<GameState, "vazni" | "starsi" | "pokusy" | "spaky" | "lokalitCelkom">, q: PlayerId, elderId: string | undefined = s.pokusy[q]?.elderId): number {
+  const su = opponentOf(q);
+  const elder = s.starsi.find((e) => e.elderId === elderId);
+  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(spakyZaStupen(najvyssiMarker(elder, su)), s.spaky[su]));
+  const vyhra = vazniHraca(s, q).length + 1 >= vazniNaVyhru(s.lokalitCelkom);
+  return 2 * kradez + 4 + (vyhra ? VYHRA_HNED : 0);
 }
 
 /** Koľko bitiek príde po tejto (v6 aj finále). */
@@ -722,44 +735,37 @@ function hodnotaStavu(k: Kontext, s: GameState, ostrost: number): number {
  * nevidelo, že priazeň z hádky (Bitkár, Veriaci, Abstinent) bitku vyhrá.
  */
 function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bitkaStav"]>): number {
-  // Špaky za bitku sú po výsledku už v popolníkoch, strach na konci kola ráta rozdielBodov.
-  // Nerozdelený prebytok ako v hodnotaBitky; cigarety za prebytok dostane súper držiteľa až po bitke.
+  // Špaky za bitku a za starších sú po výsledku už v popolníkoch. Nerozdelenú Nakladačku
+  // a hádku ráta ako v hodnotaBitky — rozdelenie samo bot zahrá nanečisto (najlepsi).
   const ja = k.ja;
   const drzi = b.prebytokDrzi;
-  const prebytok = drzi === null ? 0 : (drzi === ja ? 1 : -1) * Math.min(6, b.prebytokZostava);
-  const cigarety = drzi === null ? 0 : (drzi === ja ? -1 : 1) * 0.3 * k.buducnost * k.povaha.zdroje * b.prebytokPosunute.length;
-  return k.povaha.bitka * cenaBoduPrebytku(s) * prebytok + cigarety;
+  const prebytok = drzi === null ? 0 : (drzi === ja ? 1 : -1) * Math.min(PREBYTOK_STROP, b.prebytokZostava);
+  const hd = b.hadka;
+  const hadka = hd === undefined || hd.vitaz === null ? 0 : (hd.vitaz === ja ? 1 : -1) * Math.min(HADKA_STROP, hd.zostava);
+  return k.povaha.bitka * (cenaBoduPrebytku(s) * prebytok + cenaBoduHadky(s) * hadka);
 }
 
 /**
- * Čo jeden bod prebytku (posun markera po špakoch tejto bitky) prinesie
- * držiteľovi v špakoch (cenaPosunu). Vo finále sa nerozdeľuje — víťaz zaň dostane
- * špaky 1 : 1 (v9.1).
+ * Čo jeden bod Nakladačky prinesie víťazovi (v11): stupeň strachu za 1 / 2 / 3 boduje
+ * v každej ďalšej vyhratej bitke (≈ ZA_BOD_NAKLADACKY za bod a bitku), ale súperovi dá
+ * priazeň. Vo finále je bod priamo 1 špak.
  */
 function cenaBoduPrebytku(s: GameState): number {
-  return jeFinale(s) ? KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE : cenaPosunu(s);
+  if (jeFinale(s)) return KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE;
+  return ZA_BOD_NAKLADACKY * Math.min(3, Math.max(0, kolPoTomto(s)));
 }
 
 /**
- * Čo prinesie jeden bod posunu markera od seba (bod Nakladačky) v špakoch,
- * v8.3: nový stupeň zaplatí raz (ZONA_ZA_BOD), až keď sa udrží do konca ďalšieho
- * kola (VYDRZ_POSUNU). Keď ďalší koniec kola nepríde (finále), posun má len obrannú
- * cenu — odtlačiť súperov držaný stupeň skôr, než ho koniec kola zaplatí.
+ * Čo jeden bod hádky prinesie jej víťazovi (v11): reči bodujú v najbližšej bitke aj pri
+ * prehre a potom klesajú — bod ≈ ZA_BOD_HADKY, keď ešte bitka príde. Vo finále 1 špak.
  */
-function cenaPosunu(s: GameState): number {
-  const dalsichKoncovKola = vyplatZaStarsich(s) - (s.ciel === null ? 0 : 1);
-  return dalsichKoncovKola > 0 ? ZONA_ZA_BOD * VYDRZ_POSUNU : OBRANA_ZA_BOD;
+function cenaBoduHadky(s: GameState): number {
+  if (jeFinale(s)) return KONSTANTY.SPAKY_ZA_HADKU_VO_FINALE;
+  return kolPoTomto(s) > 0 ? ZA_BOD_HADKY : 0;
 }
 
-/** Bod posunu, ktorý už nový stupeň nezaplatí — odtlačenie súperovho držaného stupňa (turnaj v8.3). */
-const OBRANA_ZA_BOD = 0.5;
-
-/**
- * Špaky zóny na jeden bod posunu (v8.2, Michal 2026-10-30): pole von zo stredu stojí
- * toľko bodov, koľko zóna zaplatí (žltá 1, oranžová 2, červená 3), ústup k stredu je
- * drahší a nezaplatí nič — bod teda vynesie najviac 1. Do v8.1 bolo pole za bod (1,5).
- */
-const ZONA_ZA_BOD = 1;
+/** Bod Nakladačky na jednu ďalšiu bitku (stupeň 1 / 3 / 5 špakov za 1 / 2 / 3 body, polovičná šanca na výhru). */
+const ZA_BOD_NAKLADACKY = 0.4;
 
 /**
  * Cirhóza, ktorá z Pitky ešte len príde (v špakoch). Nepriznaná stojí na konci
@@ -772,13 +778,11 @@ function cenaNovejCirhozy(k: Kontext, s: GameState): number {
   return k.povaha.body * KONSTANTY.SPAKY_ZA_CIRHOZU * (zostava === 0 ? 1 : zostava === 1 ? 0.8 : 0.6);
 }
 
-/** Koľko z hodnoty posunu markera ostane, keď ho súper môže odtlačiť späť (turnaj v6). */
-const VYDRZ_POSUNU = 0.6;
 /**
- * Bod hádky (v10) pred bitkou: posun priazne na jedno kolo stojí 1–4 body podľa zóny, takže
- * bod je menej než stupeň priazne. Jemné ladenie patrí naex-bot-trener.
+ * Bod hádky (v11): reči 1 / 3 / 5 za 1 / 3 / 6 bodov bodujú hneď v ďalšej bitke a potom klesajú
+ * (spolu ≈ 1–1,5 špaku za bod). Jemné ladenie patrí naex-bot-trener.
  */
-const ZA_BOD_HADKY = 0.4;
+const ZA_BOD_HADKY = 1;
 /** Strop prebytku a hádky v odhade bitky — starších a polí je konečne veľa. */
 const PREBYTOK_STROP = 8;
 const HADKA_STROP = 8;
@@ -1065,9 +1069,8 @@ function draft(v: Volba): Command | null {
 }
 
 /**
- * Pokus o zajatie (v9, Michal 2026-10-30) — odhad zo špakov: pri výhre väzeň (špaky
- * podľa poradia, Kšeft, tretí vyhráva) a starší zmizne zo stupnice, pri prehre marker
- * ustúpi o stupeň (nezaplatená červená prepadne). Cigareta prepadne vždy, boss ide
+ * Pokus o zajatie (v9; v11) — odhad zo špakov: pri výhre väzeň (krádež, Kšeft, výhra
+ * väzňami) a starší zmizne zo stupnice, pri prehre môj strach pri ňom klesne na 0. Cigareta prepadne vždy, boss ide
  * mne do ruky (v10.1 — v kole je to karta navyše) a súper si pri stavbe šenku nechá
  * kartu zadarmo; keď už skúša on, prídem o tú svoju. Výsledok bitky je pred Zhromaždením neistý.
  */
@@ -1089,9 +1092,9 @@ function pokus(v: Volba): Command | null {
     if (cmd.type !== "pokus") continue;
     const elder = state.starsi.find((e) => e.elderId === cmd.elderId);
     if (elder === undefined) continue;
-    const poVyhre = hodnotaStarsich(state.starsi.filter((e) => e.elderId !== elder.elderId)) + k.povaha.body * hodnotaVazna(state, ja);
-    const spat = (elder.marker < 3 ? elder.marker + 1 : elder.marker - 1) as MarkerPos;
-    const poPrehre = hodnotaStarsich(state.starsi.map((e) => (e.elderId === elder.elderId ? sPosunutymMarkerom(e, spat) : e)));
+    const poVyhre = hodnotaStarsich(state.starsi.filter((e) => e.elderId !== elder.elderId)) + k.povaha.body * hodnotaVazna(state, ja, elder.elderId);
+    // Neúspech (v11): môj strach pri ňom klesne na 0.
+    const poPrehre = hodnotaStarsich(state.starsi.map((e) => (e.elderId === elder.elderId ? sMarkerom(e, ja, "strach", 0) : e)));
     const hodnota =
       sanca * (poVyhre - teraz) +
       (1 - sanca) * (poPrehre - teraz) -
@@ -1335,9 +1338,10 @@ function bitka(v: Volba): Command | null {
   const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 3);
 
   switch (b.krok) {
-    case "hadka":
     case "prebytok":
-      return najlepsi(v, v.legal, ohodnot);
+    case "reci":
+      // Rozdelenie (v11) má veľa podôb — skryté karty ho takmer nemenia, stačí jedna vzorka.
+      return najlepsi({ ...v, vzorky: v.vzorky.slice(0, 1) }, v.legal, ohodnot);
     case "cintorin": {
       // Cintorín: zadarmo do Dedičstva najcennejší Nástroj z ruky alebo zo šenku.
       let best: Command | null = null;

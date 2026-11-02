@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, Command, ElderState, GameState, LineState, MarkerPos, PlayerId, Vazen } from "../src/index.ts";
+import type { BitkaStav, CardInstance, Command, ElderState, GameState, LineState, PlayerId, Vazen } from "../src/index.ts";
 import {
   KONSTANTY,
   MOMENTY,
@@ -25,11 +25,10 @@ import {
   moznostiNaex,
   naTahu,
   setupGame,
-  spakyZaVaznov,
   stranyBitky,
   viewFor,
 } from "../src/index.ts";
-import { EMPTY, instanceFor, makeDef, setupSBalickom, syntheticData } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, setupSBalickom, syntheticData, zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -45,17 +44,15 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: 0,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
   };
 }
 
-const sMarkerom = (e: ElderState, marker: MarkerPos, drzane?: number): ElderState => {
-  const { vyplatene: _v, drzane: _d, ...bez } = e;
-  return { ...bez, marker, ...(drzane !== undefined ? { drzane } : {}) };
-};
+/** Strach podľa polohy starej stupnice (zPolohy): 6 = strach hráča 0 na červenej, 0 = hráča 1. */
+const sMarkerom = (e: ElderState, marker: number): ElderState => ({ ...e, ...zPolohy(marker) });
 
 /** Stav v kroku pokusu o zajatie: prvý starší sa bojí hráča 0 na stupni 3 (marker 6), druhý hráča 1 (marker 0). */
 function predPokusom(seed = 3, cigarety: readonly [number, number] = [2, 2]): GameState {
@@ -73,13 +70,13 @@ function predPokusom(seed = 3, cigarety: readonly [number, number] = [2, 2]): Ga
 }
 
 /**
- * Bitka na konci (krok prebytok, rozdeľuje porazený): hráč `p` sa pokúša zajať staršieho
- * `i` (boss v jeho ruke, v10.1), bitku vyhral `vitaz`. Prebytok 1 posunie staršieho 7 —
- * po ňom sa bitka dohrá.
+ * Bitka na konci (krok prebytok, v11 rozdeľuje víťaz na svoj strach): hráč `p` sa pokúša zajať
+ * staršieho `i` (boss v jeho ruke, v10.1), bitku vyhral `vitaz`. Nakladačka 1 zdvihne strach
+ * posledného staršieho — po nej sa bitka dohrá.
  */
 function poBitke(p: PlayerId, i: number, vitaz: PlayerId | null, upravy: (s: GameState) => GameState = (s) => s): GameState {
   const s0 = setupGame(data, 4);
-  const starsi = s0.starsi.map((e, j) => (j === i ? sMarkerom(e, p === 0 ? 6 : 0, 3) : e));
+  const starsi = s0.starsi.map((e, j) => (j === i ? sMarkerom(e, p === 0 ? 6 : 0) : e));
   const elder = starsi[i]!;
   const hraci = s0.hraci.map((h, q) => (q === p ? { ...h, ruka: [...h.ruka, elder.karta] } : h)) as unknown as GameState["hraci"];
   const drzi: PlayerId = vitaz ?? 0;
@@ -94,7 +91,7 @@ function poBitke(p: PlayerId, i: number, vitaz: PlayerId | null, upravy: (s: Gam
     nastenka: [
       { kolo: 1, lokalita: null, vitaz, rozhodlo: "tuhe", pitky: 1, zaBitku: [0, 0], zoSekery: 0, abstakZrazka: 0, prepadlo: 0, zaStarsich: [0, 0], exekutor: [0, 0], prebytok: [0, 0], spakyPo: [0, 0] },
     ],
-    bitkaStav: bitka({ krok: "prebytok", caka: drzi === 0 ? 1 : 0, vitaz, prebytokDrzi: drzi, prebytokZostava: 1 }),
+    bitkaStav: bitka({ krok: "prebytok", caka: drzi, vitaz, prebytokDrzi: drzi, prebytokZostava: 1 }),
   };
   return upravy(s);
 }
@@ -102,7 +99,7 @@ function poBitke(p: PlayerId, i: number, vitaz: PlayerId | null, upravy: (s: Gam
 function dohrajBitku(s: GameState): GameState {
   const b = s.bitkaStav as BitkaStav;
   const posledny = s.starsi.at(-1)!;
-  let po = apply(data, s, { type: "prebytok", elderId: posledny.elderId }, b.caka as PlayerId).state;
+  let po = apply(data, s, { type: "prebytok", zdvihy: [{ elderId: posledny.elderId, na: 1 }] }, b.caka as PlayerId).state;
   for (let i = 0; i < 30 && po.koniec === null && po.faza === "bitka"; i++) {
     const q = naTahu(po) as PlayerId;
     const c = legalCommands(data, po, q)[0];
@@ -147,7 +144,7 @@ describe("§10 Pokus o zajatie — podmienka, cena, poradie", () => {
     expect(r.state.draftStav?.krok).toBe("stavba");
   });
 
-  it("O8: starší v ohrození sa v kole pokusu nehýbe — Nakladačka naňho nesmie; hádka smie meniť silu priazne (v10, H4)", () => {
+  it("O7 (v11): na staršieho v ohrození nikto nedvíha — ani strach Nakladačkou, ani reči hádkou", () => {
     const s0 = predPokusom();
     const id = s0.starsi[0]!.elderId;
     const s: GameState = {
@@ -155,16 +152,14 @@ describe("§10 Pokus o zajatie — podmienka, cena, poradie", () => {
       faza: "bitka",
       draftStav: null,
       pokusy: [{ elderId: id }, null],
-      bitkaStav: bitka({ krok: "prebytok", caka: 0, prebytokDrzi: 1, prebytokZostava: 9 }),
+      bitkaStav: bitka({ krok: "prebytok", caka: 1, prebytokDrzi: 1, prebytokZostava: 9 }),
     };
-    expect(legalCommands(data, s, 0).some((c) => c.type === "prebytok" && c.elderId === id)).toBe(false);
-    expect(() => apply(data, s, { type: "prebytok", elderId: id }, 0)).toThrow();
-    // Hádka markerom nehýbe: víťaz hádky (hráč 0) smie priazeň hráča 1 sily 3 znížiť (červená → oranžová za 4).
-    const sHadka: GameState = { ...s, bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [4, 0], vitaz: 0, velkost: 4, zostava: 4, prepadlo: 0, posuny: [] } }) };
-    expect(legalCommands(data, sHadka, 0).some((c) => c.type === "hadka" && c.elderId === id)).toBe(true);
-    const { events } = apply(data, sHadka, { type: "hadka", elderId: id }, 0);
-    expect(events.some((e) => e.type === "log" && e.text.includes("priazeň do konca kola hráč 2 +3 → hráč 2 +2; marker sa nehýbe"))).toBe(true);
-    expect(events.some((e) => e.type === "posunMarkera" && e.elderId === id && e.zdroj !== "zajatie")).toBe(false);
+    const zdvihy = (c: Command): readonly string[] => (c.type === "prebytok" || c.type === "reci" ? c.zdvihy.map((z) => z.elderId) : []);
+    expect(legalCommands(data, s, 1).some((c) => zdvihy(c).includes(id))).toBe(false);
+    expect(() => apply(data, s, { type: "prebytok", zdvihy: [{ elderId: id, na: 1 }] }, 1)).toThrow(/pokus o zajatie/);
+    const sReci: GameState = { ...s, bitkaStav: bitka({ krok: "reci", caka: 1, hadka: { makke: [0, 4], vitaz: 1, velkost: 4, zostava: 4, prepadlo: 0, zdvihy: [] } }) };
+    expect(legalCommands(data, sReci, 1).some((c) => zdvihy(c).includes(id))).toBe(false);
+    expect(() => apply(data, sReci, { type: "reci", zdvihy: [{ elderId: id, na: 1 }] }, 1)).toThrow(/pokus o zajatie/);
   });
 });
 
@@ -284,7 +279,7 @@ describe("§5 Pokus pred stavbou šenku a karta zadarmo (v10.1, Michal 2026-11-0
 });
 
 describe("§10 Výsledok pokusu (krok 6d)", () => {
-  it("víťaz zajme: starší zmizne zo stupnice, je väzeň (1. v partii), karta odíde z jeho ruky; udržaný strach zaplatí", () => {
+  it("víťaz zajme: starší zmizne zo stupnice, je väzeň (1. v partii), karta odíde z jeho ruky; súper bez markera nič neodovzdá", () => {
     const s = poBitke(0, 0, 0);
     const elder = s.starsi[0]!;
     const po = dohrajBitku(s);
@@ -293,28 +288,25 @@ describe("§10 Výsledok pokusu (krok 6d)", () => {
     expect(po.vazni[0]).toMatchObject({ elderId: elder.elderId, hrac: 0, poradie: 1 });
     expect(po.hraci[0].ruka.some((k) => k.uid === elder.karta.uid)).toBe(false);
     expect(po.hraci[0].odhadzovaci.some((k) => k.uid === elder.karta.uid)).toBe(false);
-    // drzane 3 z minulého kola: 1 + 2 + 3 = 6 špakov za udržaný strach.
-    expect(po.nastenka.at(-1)?.zaStarsichRozpis?.[0].some((x) => x.elderId === elder.elderId && x.spaky === 6)).toBe(true);
+    expect(po.nastenka.at(-1)?.kradez).toBeUndefined();
     expect(po.pokusy).toEqual([null, null]);
   });
 
-  it("porazený: starší späť na ukazovateľ, marker o stupeň späť a nezaplatená červená sa zmaže (O9)", () => {
+  it("porazený: starší späť na ukazovateľ a strach pokúšajúceho pri ňom klesne na 0 (v11)", () => {
     const s = poBitke(0, 0, 1);
     const elder = s.starsi[0]!;
     const po = dohrajBitku(s);
     const e = po.starsi.find((x) => x.elderId === elder.elderId)!;
-    expect(e.marker).toBe(5);
+    expect(e.strach).toEqual([0, 0]);
     expect(e.karta.uid).toBe(elder.karta.uid);
     expect(po.vazni).toHaveLength(0);
     expect(po.hraci[0].ruka.some((k) => k.uid === elder.karta.uid)).toBe(false);
-    // Udržané boli 3 stupne, po ústupe ostali 2 — zaplatia sa 1 + 2.
-    expect(po.nastenka.at(-1)?.zaStarsichRozpis?.[0].find((x) => x.elderId === elder.elderId)?.spaky).toBe(3);
   });
 
   it("sekera: pokus zlyhá", () => {
     const po = dohrajBitku(poBitke(0, 0, null));
     expect(po.vazni).toHaveLength(0);
-    expect(po.starsi[0]!.marker).toBe(5);
+    expect(po.starsi[0]!.strach[0]).toBe(0);
   });
 
   it("boss vyložený pokúšajúcim do línie sa po bitke vráti aj tak — nezostane v odhadzovacom balíčku", () => {
@@ -329,7 +321,7 @@ describe("§10 Výsledok pokusu (krok 6d)", () => {
     expect(po.starsi.find((e) => e.elderId === s.starsi[0]!.elderId)?.karta.uid).toBe(uid);
   });
 
-  it("tretí väzeň jedného hráča = výhra hneď, bez konečných špakov", () => {
+  it("väzni na výhru (Druhá liga 3) = výhra hneď, bez konečných špakov", () => {
     const s = poBitke(0, 0, 0, (st) => {
       const vazni: Vazen[] = [5, 6].map((j, i) => ({ elderId: st.starsi[j]!.elderId, hrac: 0, poradie: i + 1, karta: st.starsi[j]!.karta, scorecard: st.starsi[j]!.scorecard, miesto: j }));
       return { ...st, vazni, starsi: st.starsi.filter((_, j) => j !== 5 && j !== 6) };
@@ -337,19 +329,11 @@ describe("§10 Výsledok pokusu (krok 6d)", () => {
     const po = dohrajBitku(s);
     expect(po.koniec?.vitaz).toBe(0);
     expect(po.koniec?.body).toBeNull();
-    expect(po.koniec?.dovod).toMatch(/tretieho staršieho/);
+    expect(po.koniec?.dovod).toMatch(/výhra väzňami/);
   });
 });
 
-describe("§14 Špaky za väzňov podľa poradia zajatia v partii", () => {
-  it("1. väzeň 8, 2. 6, 3. 4, 4. 2 — nech ho zajal ktokoľvek", () => {
-    const v = (hrac: PlayerId, poradie: number): Vazen => ({ elderId: `e${poradie}`, hrac, poradie, karta: { uid: poradie, defId: "farar", leftLayout: 0, rightLayout: 0 }, scorecard: "sc", miesto: 0 });
-    const vazni = [v(1, 1), v(0, 2), v(0, 3), v(1, 4)];
-    expect(KONSTANTY.SPAKY_ZA_VAZNOV).toEqual([8, 6, 4, 2]);
-    expect(spakyZaVaznov({ vazni }, 0)).toBe(6 + 4);
-    expect(spakyZaVaznov({ vazni }, 1)).toBe(8 + 2);
-  });
-});
+// Špaky za väzňov 8 / 6 / 4 / 2 (v9) zanikli s v11 — nahradila ich krádež (strach-reci.test.ts).
 
 // ---------------------------------------------------------------------------
 // Kšeft väzňa (§7)

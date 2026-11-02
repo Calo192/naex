@@ -128,3 +128,23 @@ export function setupSBalickom(data: GameData, seed: number, opts?: SetupOptions
   const hraci = s.hraci.map((h) => ({ ...h, doberaci: [...h.doberaci, ...doplnok()] })) as unknown as GameState["hraci"];
   return { ...s, hraci, nextUid: uid };
 }
+
+/**
+ * Strach z polohy markera starej stupnice (do v10: 0–6, 3 = stred) — testy zo starých pravidiel
+ * stavajú priazeň takto: marker na polovici hráča p = priazeň p sily = stupeň a súper má strach
+ * toho istého stupňa (v11 priazeň = rozdiel strachov). Reči žiadne.
+ */
+export function zPolohy(m: number): { strach: readonly [0 | 1 | 2 | 3, 0 | 1 | 2 | 3]; reci: readonly [0, 0] } {
+  const s = Math.abs(m - 3) as 0 | 1 | 2 | 3;
+  return { strach: m < 3 ? [0, s] : m > 3 ? [s, 0] : [0, 0], reci: [0, 0] };
+}
+
+/**
+ * Rozbehne bitku zostavenú v teste (krok „hadka“): ako po voľbe Hasiča odloženej na bitku —
+ * motor pokračuje hádkou, poškodením, bodovaním a čaká na prvé rozhodnutie (v11 bez čakania
+ * v hádke). Bitka s nastavenou hádkou si súčty z línie neprepočíta.
+ */
+export function spustBitku(data: GameData, s: GameState): { state: GameState; events: Event[] } {
+  const r = apply(data, { ...s, hasicVolby: [{ hrac: 0, uid: -1, potom: "bitka" }] }, { type: "hasic", nechat: false }, 0);
+  return { state: r.state, events: [...r.events] };
+}

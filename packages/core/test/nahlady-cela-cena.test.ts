@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { CardInstance, ClientState, Event, GameState, MarkerPos, PlacedCard, PlayerId } from "../src/index.ts";
+import type { CardInstance, ClientState, Event, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   apply,
   buildGameData,
@@ -21,7 +21,7 @@ import {
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { instanceFor, makeDef } from "./helpers.ts";
+import { instanceFor, makeDef, zPolohy } from "./helpers.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -168,13 +168,13 @@ describe("náhľad pokusu o zajatie (v9)", () => {
   it("pokúšajúci zaplatí cigaretu ako v hre, starší je v ohrození", () => {
     const s0 = setupSBalickom(data, 31);
     const u = s0.utocnik;
-    const marker = (u === 0 ? 6 : 0) as MarkerPos;
+    const marker = (u === 0 ? 6 : 0) as number;
     const s: GameState = {
       ...s0,
       faza: "draft",
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
-      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker } : e)),
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, ...zPolohy(marker) } : e)),
       draftStav: { krok: "zajatie", balicky: [[], []], vyber: [null, null], naTahu: u, hotovo: [false, false], noveKarty: [0, 0] },
     };
     const elder = s.starsi[0]!;

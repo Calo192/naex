@@ -26,7 +26,7 @@ import {
   parseScorecards,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { EMPTY, instanceFor, makeDef, syntheticData, naexOdkryte } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, syntheticData, naexOdkryte, zPolohy } from "./helpers.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -306,7 +306,7 @@ describe("§7 Pitka — poradie vyhodnotenia", () => {
     const idx = s0.starsi.findIndex((e) => favourStarsieho(data, e) === "FAJCIAR");
     expect(idx).toBeGreaterThanOrEqual(0);
     // Marker na indexe 1 = oranžová zóna na polovici hráča 0 → sila 2.
-    const starsi = s0.starsi.map((e, i) => (i === idx ? { ...e, marker: 1 as const} : e));
+    const starsi = s0.starsi.map((e, i) => (i === idx ? { ...e, ...zPolohy(1 as const) } : e));
     const zaklad: Partial<GameState> = { starsi, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, lokalityVHre: s0.lokalityVHre.slice(1) };
     const prva = vysledokPitky(dopiPitku(data, vPitke(data, 11, [[], []], zaklad)).events);
     expect(prva.cigarety).toEqual([0, 0]);
@@ -338,7 +338,7 @@ describe("§3 Príprava hry", () => {
   it("§3: 8 starších s markerom v strede, bez väzňov a pokusov", () => {
     const s = setupSBalickom(data, 21);
     expect(s.starsi).toHaveLength(8);
-    expect(s.starsi.every((e) => e.marker === 3)).toBe(true);
+    expect(s.starsi.every((e) => e.strach.every((x) => x === 0) && e.reci.every((x) => x === 0))).toBe(true);
     expect(s.spaky).toEqual([0, 0]);
     expect(s.nastenka).toEqual([]);
     expect(s.vazni).toEqual([]);

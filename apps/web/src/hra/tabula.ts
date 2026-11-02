@@ -1,7 +1,9 @@
 // Čísla pultu a tabule ty | súper na šírku telefónu (PultHraca.tsx) — čisté funkcie bez DOM.
 
-import type { ClientState, PlayerId, SpakyTeraz, StavZavislosti } from "@naex/core";
+import type { ClientState, PlayerId, StavZavislosti } from "@naex/core";
 import { KONSTANTY, cenaFajceniaHraca, limitZhromazdenia, spakov } from "@naex/core";
+import { VAZNI_NA_VYHRU_ZOBRAZENIE } from "./staraStupnica.ts";
+import { type SpakyTeraz } from "./staraStupnica.ts";
 
 /** Prahy hráča (prahyHraca) — to, čo z nich pult a tabuľa ukazujú. */
 export interface PrahyPultu {
@@ -131,7 +133,7 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
     r("balicek", "Balíček · odhodené", (c) => `${c.balicek} · ${c.odhodene}`),
     r("priznane", "Priznané kliatby", (c) => String(c.priznane)),
     r("dedicstvo", "Dedičstvo (náradie)", (c) => String(c.dedicstvo)),
-    r("vazni", "Väzni", (c) => `${c.vazni}/${KONSTANTY.VAZNI_NA_VYHRU}`),
+    r("vazni", "Väzni", (c) => `${c.vazni}/${VAZNI_NA_VYHRU_ZOBRAZENIE}`),
   );
   return riadky;
 }
@@ -223,7 +225,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean): De
           ["špaky", String(c.spaky)],
           ["za starších po bitke", c.zaStarsich > 0 ? `+${c.zaStarsich}` : "0"],
           ["priazeň starších", String(c.priazen)],
-          ["väzni", `${c.vazni} z ${KONSTANTY.VAZNI_NA_VYHRU}`],
+          ["väzni", `${c.vazni} z ${VAZNI_NA_VYHRU_ZOBRAZENIE}`],
         ],
       };
   }

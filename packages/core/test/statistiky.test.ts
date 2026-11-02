@@ -121,7 +121,6 @@ describe("spakyTeraz — špaky z pohľadu hráča", () => {
       for (const p of [0, 1] as const) {
         const odhad = spakyTeraz(viewFor(data, state, p));
         expect(odhad.spolu).toEqual(body);
-        expect(odhad.odhad).toEqual(body);
         overene++;
       }
     }

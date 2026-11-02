@@ -220,7 +220,7 @@ describe("klient AI hráčov: Nakladačka a starší v ohrození (playtest 20261
     const id = s0.starsi[0]!.elderId;
     const bitkaStav: BitkaStav = {
       krok: "prebytok",
-      caka: 0,
+      caka: 1,
       sums: [{}, {}],
       exekutorHotovy: [true, true],
      
@@ -229,16 +229,18 @@ describe("klient AI hráčov: Nakladačka a starší v ohrození (playtest 20261
       vitaz: 1,
       prebytokDrzi: 1,
       prebytokZostava: 4,
-      prebytokPosunute: [],
+      prebytokZdvihy: [], prebytokPrepadlo: 0,
       spalit: [],
       vesticaHotova: true,
     };
     const s: GameState = { ...s0, faza: "bitka", draftStav: null, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, pokusy: [{ elderId: id }, null], bitkaStav };
-    const ponuka = starsiNaNakladacku(viewFor(data, s, 0)).map((e) => e.elderId);
+    const ponuka = starsiNaNakladacku(viewFor(data, s, 1)).map((e) => e.elderId);
     expect(ponuka).not.toContain(id);
     expect(ponuka.length).toBeGreaterThan(0);
-    expect(ponuka).toEqual(legalCommands(data, s, 0).flatMap((c) => (c.type === "prebytok" ? [c.elderId] : [])));
-    expect(() => apply(data, s, { type: "prebytok", elderId: id }, 0)).toThrow();
+    // Server ponúka celé rozdelenia (v11) — žiadne nezdvihne staršieho v ohrození.
+    const vPonuke = new Set(legalCommands(data, s, 1).flatMap((c) => (c.type === "prebytok" ? c.zdvihy.map((z) => z.elderId) : [])));
+    expect([...vPonuke].every((x) => ponuka.includes(x))).toBe(true);
+    expect(() => apply(data, s, { type: "prebytok", zdvihy: [{ elderId: id, na: 1 }] }, 1)).toThrow();
   });
 });
 

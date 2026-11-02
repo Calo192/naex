@@ -5,9 +5,10 @@
 // Súčet dlaždíc doteraz dá popolník; čísla ráta jadro (nástenka, spakyTeraz, rozpisSpakov).
 
 import type { CSSProperties } from "react";
-import type { ClientState, PlayerId, SpakyTeraz } from "@naex/core";
+import type { ClientState, PlayerId } from "@naex/core";
 import { KONSTANTY, pocet } from "@naex/core";
 import { spakyPodlaZdroja } from "./spakyAStarsi.ts";
+import { type SpakyTeraz } from "./staraStupnica.ts";
 
 export interface BarSpakovProps {
   readonly view: ClientState;

@@ -172,14 +172,14 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
     if (lok.defId === "predsedova_vila") {
       const moznosti = moznostiVily(view);
       out.push(
-        spolu(VILA_CENA, "posun", `Kšeft Predsedovej vily: za ${cigariet(VILA_CENA)} posunieš marker jedného staršieho o pole k sebe alebo od seba — vyberieš ktorého a kam.`, moznosti.length === 0 ? "Niet staršieho, ktorého by Vila smela posunúť." : null, {
+        spolu(VILA_CENA, "reči", `Kšeft Predsedovej vily: za ${cigariet(VILA_CENA)} zdvihneš svoje reči pri jednom staršom o stupeň — vyberieš ktorého.`, moznosti.length === 0 ? "Niet staršieho, pri ktorom by Vila smela zdvihnúť tvoje reči." : null, {
           typ: "volba",
-          nadpis: "Kšeft vily · posuň marker o pole",
+          nadpis: "Kšeft vily · reči o stupeň",
           riadky: moznosti.map((m) => ({
             kluc: m.elderId,
             meno: meno(m.defId),
-            vlavo: { text: "‹ k sebe", prikaz: { type: "kseft", uid, elderId: m.elderId, kSebe: true }, vyucba: klucVily(m.elderId, true) },
-            vpravo: { text: "od seba ›", prikaz: { type: "kseft", uid, elderId: m.elderId, kSebe: false }, vyucba: klucVily(m.elderId, false) },
+            vlavo: { text: "reči ↑", prikaz: { type: "kseft", uid, elderId: m.elderId }, vyucba: klucVily(m.elderId, true) },
+            vpravo: { text: "reči ↑", prikaz: { type: "kseft", uid, elderId: m.elderId }, vyucba: klucVily(m.elderId, false) },
           })),
         }),
       );

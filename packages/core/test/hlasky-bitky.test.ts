@@ -8,6 +8,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { BitkaStav, CardInstance, ElderState, Event, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, loadGameData, setupGame } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -27,7 +28,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: null,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -36,7 +37,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
 
 function vBitke(strany: GameState["strany"], b: Partial<BitkaStav>, uprav: (s: GameState) => GameState = (s) => s): GameState {
   const s0 = setupGame(data, 17);
-  const stred = (e: ElderState): ElderState => ({ ...e, marker: 3 });
+  const stred = (e: ElderState): ElderState => ({ ...e, ...zPolohy(3) });
   return uprav({
     ...s0,
     faza: "bitka",

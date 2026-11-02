@@ -156,7 +156,7 @@ describe("tlačidlo Kšeftu", () => {
     expect(html).not.toContain("kseft-ponuka-hlavne");
   });
 
-  it("Kšeft vily je tlačidlo s ponukou „k sebe“ a „od seba“, nie rozbaľovač", () => {
+  it("Kšeft vily je tlačidlo s ponukou starších (v11: reči o stupeň), nie rozbaľovač", () => {
     const zavreta = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: vilaK, cmd: () => {} }));
     expect(zavreta).not.toContain("<select");
     expect(zavreta).toContain('data-vyucba="tlacidlo:kseft"');
@@ -164,8 +164,7 @@ describe("tlačidlo Kšeftu", () => {
     const e = vila.s.starsi[0]?.elderId ?? "";
     expect(otvorena).toContain(`data-vyucba="${klucVily(e, true)}"`);
     expect(otvorena).toContain(`data-vyucba="${klucVily(e, false)}"`);
-    expect(otvorena).toContain("k sebe");
-    expect(otvorena).toContain("od seba");
+    expect(otvorena).toContain("reči ↑");
   });
 
   it("na telefóne ťuk otvorí ponuku s celým znením a veľkým tlačidlom", () => {

@@ -4,10 +4,11 @@
 
 import type { CSSProperties } from "react";
 import type { ClientState, ElderState, GameData } from "@naex/core";
-import { STUPNICA_ZONY, favourStarsieho, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu, opponentOf } from "@naex/core";
+import { favourStarsieho, opponentOf } from "@naex/core";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { KruzokPriazne, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import { dvojityMarker, ktoPriazen, kratkeMeno, obsahNapovedy, priazenKola, spakyOdStarsieho } from "./priazenKola.ts";
+import { STUPNICA_ZONY, klebetyKola, obavanyHrac, strachNaUdrzanie, strachNaVyplatu } from "./staraStupnica.ts";
 
 export interface PasStarsichProps {
   readonly view: ClientState;

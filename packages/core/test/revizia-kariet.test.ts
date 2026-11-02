@@ -16,10 +16,9 @@ import {
   efektPotlaceny,
   evaluateLine,
   loadGameData,
-  posunMarker,
   setupGame,
 } from "../src/index.ts";
-import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { instanceFor, makeDef, syntheticData, zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -115,51 +114,40 @@ describe("Policajtka, Praudovravec, Puška, Noviny, Lakomec", () => {
   });
 
 
-  it("v6: Pohoršenie smie na krajnú pozíciu vždy (Noviny majú nový efekt — špak za väčšinu strachu)", () => {
-    const e = { ...setupGame(data, 9).starsi[0]!, marker: 1 } as ElderState;
-    expect(posunMarker(e, 0)).toBe(0);
-    expect(posunMarker({ ...e, marker: 0 }, 0)).toBeNull();
-  });
-
   it("v5: barter stojí vždy 5 cigariet (Lakomec je Abstinent, barter nezlacňuje)", () => {
     expect(cenaBarteru()).toBe(5);
   });
 });
 
-// Michal 2026-10-18 (po revízii): Pitky podľa lokality, cigarety za prebytok.
-describe("cigarety porazenému za Nakladačku", () => {
-  it("1 cigareta za každého posunutého staršieho, viac posunov toho istého = 1", () => {
+// v11 (Michal 2026-11-02, O6): porazený dostane 1 cigaretu — namiesto cigarety za každého staršieho
+// posunutého Nakladačkou (Michal 2026-10-18). Stráži strach-reci.test.ts.
+describe("cigareta porazenému (v11)", () => {
+  it("porazený dostane práve 1 cigaretu, nech víťaz rozdelí Nakladačku akokoľvek", () => {
     const s0 = setupGame(data, 12);
-    const [e1, e2] = s0.starsi;
-    const stred = (e: ElderState) => ({ ...e, marker: 3 }) as ElderState;
     const s: GameState = {
       ...s0,
       faza: "bitka",
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre.find((k) => k.defId !== "kulturny_dom")! },
-      starsi: [stred(e1!), stred(e2!), ...s0.starsi.slice(2)],
       bitkaStav: {
         krok: "prebytok",
         caka: 0,
         sums: [{}, {}],
         exekutorHotovy: [true, true],
-       
         exekutor: [0, 0],
         damage: { tuhe: [5, 0], makke: [0, 0], celkove: [5, 0], zvysnaViera: [0, 0], zvysnaPovera: [0, 0] },
         vitaz: 0,
         prebytokDrzi: 0,
         prebytokZostava: 4,
-        prebytokPosunute: [],
+        prebytokZdvihy: [],
+        prebytokPrepadlo: 0,
         spalit: [],
         vesticaHotova: true,
       },
     } as GameState;
     const cig = s.hraci[1].cigarety;
-    // v8: prebytok víťaza rozdeľuje porazený (hráč 2).
-    // v8.2: prvý starší ide zo stredu o dve polia (1 + 2), zvyšok 1 na druhého.
-    let t = apply(data, { ...s, bitkaStav: { ...s.bitkaStav!, caka: 1 } }, { type: "prebytok", elderId: e1!.elderId }, 1).state;
-    expect(t.starsi[0]!.marker).toBe(5);
-    t = apply(data, t, { type: "prebytok", elderId: e2!.elderId }, 1).state;
-    // Bitka sa dohrá sama (ostatné kroky sú hotové) — porazený dostane 2 cigarety.
-    expect(t.hraci[1].cigarety - cig).toBe(2);
+    const [e1, e2] = s0.starsi;
+    const t = apply(data, s, { type: "prebytok", zdvihy: [{ elderId: e1!.elderId, na: 2 }, { elderId: e2!.elderId, na: 1 }] }, 0).state;
+    expect(t.starsi[0]!.strach).toEqual([2, 0]);
+    expect(t.hraci[1].cigarety - cig).toBe(KONSTANTY.CIGARETY_PORAZENEMU);
   });
 });

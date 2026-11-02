@@ -11,8 +11,6 @@ import type { VerejnyStav } from "./effects.ts";
 import { naexZaPitku } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
 import { lineState, naexCieleVLinii, poskodenieBitky, stranyBitky } from "./engine.ts";
-import type { ElderState, Klebety } from "./elders.ts";
-import { MARKER_KRAJ, cenaPosunuOPoli, polohaPriazne } from "./elders.ts";
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
@@ -110,7 +108,6 @@ export type StolHadky = StolBitky & {
     readonly damage: DamageResult | null;
     readonly caka: PlayerId | null;
     readonly hadka?: { readonly vitaz: PlayerId | null; readonly zostava: number };
-    readonly klebety?: Klebety;
   } | null;
 };
 
@@ -128,73 +125,5 @@ export function nerozdelenaHadka(data: GameData, stol: StolHadky, sums: readonly
   return { vitaz: b.hadka.vitaz, zostava: b.hadka.zostava };
 }
 
-export interface RozsahHadky {
-  /** Kto hádku rozdeľuje (jej víťaz). */
-  readonly hrac: PlayerId;
-  readonly pocet: number;
-  /** Najlepšia bitka pre víťaza hádky. */
-  readonly damage: DamageResult;
-  readonly vysledok: BattleOutcome;
-}
-
-/**
- * Najlepšia bitka, akú víťaz hádky p dosiahne jej rozdelením (len k sebe, cena podľa zóny,
- * strop 3) — len ak zmení víťaza alebo Nakladačku v jeho prospech, inak null. Ten istý
- * výpočet ako vyhodnotPoskodenie: súčty línie stoja, poškodenie sa ráta s klebetami.
- * Že priazeň ide, kým body stačia, odhad zanedbá — zvyšok víťaz minie najprv na iného
- * staršieho. Prehľadáva len starších, ktorých posun mení vstupy bitky.
- */
-export function rozsahHadky(
-  data: GameData,
-  stol: StolHadky,
-  sums: readonly [ActionSums, ActionSums],
-  nerozdelena: NerozdelenaHadka,
-  p: PlayerId,
-): RozsahHadky | null {
-  const n = nerozdelena.zostava;
-  if (stol.ciel === null || nerozdelena.vitaz !== p || n <= 0) return null;
-  const zaklad = stol.bitkaStav?.klebety ?? {};
-  const sKlebetami = (k: Klebety): StolHadky => ({ ...stol, bitkaStav: { krok: "hadka", damage: null, caka: null, ...(stol.bitkaStav ?? {}), klebety: k } });
-  const bitka = (k: Klebety): DamageResult => poskodenieBitky(data, sKlebetami(k), sums);
-  const teraz = hodnota(battleOutcome(bitka(zaklad)), p);
-  // Porovnáva sa vstup bitky, nie poškodenie: priazeň skrytá pod súperovou Vierou
-  // (tuhé orezané na 0) poškodenie sama nezmení, s posunom iného staršieho však áno.
-  const strany = (k: Klebety): string => JSON.stringify(stranyBitky(data, sKlebetami(k), sums));
-  const zakladStrany = strany(zaklad);
-  const smer = p === 0 ? -1 : 1;
-  const sPosunom = (k: Klebety, e: ElderState, d: number): Klebety => {
-    // Poloha priazne ide o d polí k p; klebety = marker − nová poloha (elders.ts posunHadkou).
-    const na = polohaPriazne(e, k) + smer * d;
-    return { ...k, [e.elderId]: e.marker - na };
-  };
-  const kandidati = stol.starsi
-    .map((e) => {
-      const z = polohaPriazne(e, zaklad);
-      const max = Math.min(n, p === 0 ? z - MARKER_KRAJ[0] : MARKER_KRAJ[1] - z);
-      const meni = Array.from({ length: max }, (_, i) => i + 1).some((d) => strany(sPosunom(zaklad, e, d)) !== zakladStrany);
-      return { e, z, max, meni };
-    })
-    .filter((k) => k.meni);
-  let najlepsia: RozsahHadky | null = null;
-  let najlepsiaHodnota = teraz;
-  const skus = (i: number, zostava: number, k: Klebety): void => {
-    const kand = kandidati[i];
-    if (kand === undefined) {
-      const damage = bitka(k);
-      const vysledok = battleOutcome(damage);
-      const h = hodnota(vysledok, p);
-      if (h > najlepsiaHodnota) {
-        najlepsiaHodnota = h;
-        najlepsia = { hrac: p, pocet: n, damage, vysledok };
-      }
-      return;
-    }
-    for (let d = 0; d <= kand.max; d++) {
-      const cena = cenaPosunuOPoli(kand.z, smer * d);
-      if (cena > zostava) break;
-      skus(i + 1, zostava - cena, d === 0 ? k : sPosunom(k, kand.e, d));
-    }
-  };
-  skus(0, n, zaklad);
-  return najlepsia;
-}
+// Rozsah hádky (do v10: najlepšia bitka po rozdelení priazní) zanikol s v11 — hádka dvíha
+// reči až po výsledku bitky, poškodenie nemení.

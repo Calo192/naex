@@ -6,14 +6,15 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { GameState, MarkerPos } from "../src/index.ts";
+import type { GameState } from "../src/index.ts";
 import { loadGameData, setupGame, zaznamyPriazne } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 const sMarkerom = (s: GameState, i: number, marker: number): GameState => ({
   ...s,
-  starsi: s.starsi.map((e, j) => (j === i ? { ...e, marker: marker as MarkerPos } : e)),
+  starsi: s.starsi.map((e, j) => (j === i ? { ...e, ...zPolohy(marker as number) } : e)),
 });
 
 describe("záznam priazne v logu", () => {

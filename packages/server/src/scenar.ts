@@ -1,11 +1,11 @@
 // Vývojový scenár rozdania (2026-11-01): partia proti botovi so staršími na stupni 3, aby sa
-// dal v prehliadači prejsť celý tok zajatia (§10) — od v10 hýbe markerom už len Nakladačka
+// dal v prehliadači prejsť celý tok zajatia (§10) — strach dvíha len Nakladačka (v11)
 // a stupeň 3 prirodzene príde až v neskorších kolách. Zapína ho len premenná prostredia
 // NAEX_SCENAR na lokálnom serveri (index.ts ho na produkcii ignoruje); jadro sa nemení,
 // scenár len upraví stav po rozdaní.
 
 import type { GameState, PlayerId, Vazen } from "@naex/core";
-import { opponentOf } from "@naex/core";
+import { opponentOf, vazniNaVyhru } from "@naex/core";
 
 export const SCENARE = ["zajatie", "zajatie-vyhra"] as const;
 export type Scenar = (typeof SCENARE)[number];
@@ -29,16 +29,19 @@ export function scenarZProstredia(env: Readonly<Record<string, string | undefine
 const CIGARETY_NAVYSE = 4;
 
 /**
- * Upraví čerstvo rozdanú partiu: prvý starší sa človeka bojí na stupni 3 (červená na
- * botovej polovici — človek ho smie skúsiť zajať), druhý sa na stupni 3 bojí bota (pokus
- * smie skúsiť bot). Obaja dostanú cigarety navyše. „zajatie-vyhra“ dá človeku navyše dvoch väzňov — tretí zajatý vyhráva
- * a Kšeft väzňa sa dá skúsiť hneď v prvej Pitke.
+ * Upraví čerstvo rozdanú partiu: prvý starší sa človeka bojí na červenej (strach 3 — človek
+ * ho smie skúsiť zajať), druhý sa na červenej bojí bota (pokus smie skúsiť bot). Obaja
+ * dostanú cigarety navyše. „zajatie-vyhra“ dá človeku o jedného väzňa menej, než treba na
+ * výhru (v11 podľa ligy) — ďalší zajatý vyhráva a Kšeft väzňa sa dá skúsiť hneď v prvej Pitke.
  */
 export function pouziScenar(state: GameState, scenar: Scenar, clovek: PlayerId): GameState {
   const bot = opponentOf(clovek);
-  // Stupeň 3 strachu z hráča = červená na súperovej polovici (0 = kraj hráča 0, 6 = kraj hráča 1).
-  const cervenaNaPolovici = (p: PlayerId) => (p === 0 ? 0 : 6) as 0 | 6;
-  const vazniCloveka = scenar === "zajatie-vyhra" ? state.starsi.slice(2, 4) : [];
+  const sCervenou = (e: GameState["starsi"][number], p: PlayerId): GameState["starsi"][number] => {
+    const strach: [0 | 1 | 2 | 3, 0 | 1 | 2 | 3] = [e.strach[0], e.strach[1]];
+    strach[p] = 3;
+    return { ...e, strach, reci: [0, 0] };
+  };
+  const vazniCloveka = scenar === "zajatie-vyhra" ? state.starsi.slice(2, 2 + vazniNaVyhru(state.lokalitCelkom) - 1) : [];
   const vazni: Vazen[] = vazniCloveka.map((e, i) => ({
     elderId: e.elderId,
     hrac: clovek,
@@ -48,7 +51,7 @@ export function pouziScenar(state: GameState, scenar: Scenar, clovek: PlayerId):
     miesto: state.starsi.indexOf(e),
   }));
   const starsi = state.starsi
-    .map((e, i) => (i === 0 ? { ...e, marker: cervenaNaPolovici(bot) } : i === 1 ? { ...e, marker: cervenaNaPolovici(clovek) } : e))
+    .map((e, i) => (i === 0 ? sCervenou(e, clovek) : i === 1 ? sCervenou(e, bot) : e))
     .filter((e) => !vazniCloveka.some((v) => v.elderId === e.elderId));
   const [h0, h1] = state.hraci;
   const hraci: GameState["hraci"] = [

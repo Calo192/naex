@@ -87,8 +87,18 @@ describe("§16 Šarlatán: Hazard premenený Konfliktom nedáva zadĺženie", ()
     t = apply(data, t, { type: "pass" }, 1).state;
     expect(t.faza).toBe("pitka");
     expect(t.strany[1].find((pl) => pl.card.uid === sar.uid)?.premena).toBeUndefined();
-    t = dohrajPitku(t, (cmds, q) => (q === 0 ? cmds.find((c) => c.type === "naex" && c.uid === sar.uid) : undefined));
-    expect(zadlzenieHraca1(t)).toBe(2);
+    // Bitka v11 nečaká pred exekúciou (hádka sa rozdeľuje až po bodovaní) — Dlh z Pitky je v jej účte.
+    const dlhyZPitky: number[] = [];
+    for (let i = 0; i < 20 && t.faza === "pitka"; i++) {
+      const q = ([0, 1] as const).find((x) => legalCommands(data, t, x).length > 0);
+      if (q === undefined) break;
+      const cmds = legalCommands(data, t, q);
+      const c = (q === 0 ? cmds.find((c) => c.type === "naex" && c.uid === sar.uid) : undefined) ?? cmds.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || c.type === "pass") ?? cmds[0]!;
+      const r = apply(data, t, c, q);
+      for (const e of r.events) if (e.type === "pitkaVysledok") dlhyZPitky.push(e.dlhy[1]);
+      t = r.state;
+    }
+    expect(dlhyZPitky.reduce((a, b) => a + b, 0)).toBe(1);
     // Po otočení Záverečnej platí premena do konca kola — bitka ráta Hazard ako Vieru.
     expect(t.strany[1].find((pl) => pl.card.uid === sar.uid)?.premena).toBe("sarlatan");
     const zdroje = evaluateLine(data, lineState(t)).zdroje[1];

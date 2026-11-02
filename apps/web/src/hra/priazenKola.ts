@@ -9,10 +9,11 @@
 //   nápoveda — všetko celou vetou (myš, fokus, podržanie prsta).
 // Bez Reactu, aby sa dalo otestovať. Klebety sú verejné a už sú v pohľade — server neposiela nič nové.
 
-import type { BitkaNaNastenke, ElderState, Favour, GameData, Klebety, MarkerPos, PlayerId } from "@naex/core";
-import { MARKER_STRED, STUPNICA_ZONY, favourStarsieho, scorecardStarsieho, ucinnaPriazen, opponentOf } from "@naex/core";
+import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId } from "@naex/core";
+import { favourStarsieho, scorecardStarsieho, opponentOf } from "@naex/core";
 import { UCINOK_KRATKO } from "./Scorecard.tsx";
 import { riadokStrachu, textStupna } from "./textyStarsich.ts";
+import { type Klebety, type MarkerPos, MARKER_STRED, STUPNICA_ZONY, ucinnaPriazen, markerStarsieho, type SMarkerom } from "./staraStupnica.ts";
 
 /** Komu priazeň patrí z pohľadu hráča, ktorý sa pozerá. */
 export type KomuPriazen = "ja" | "su" | null;
@@ -24,7 +25,7 @@ export interface PriazenKola {
   readonly sila: number;
 }
 
-type StarsiNaStupnici = Pick<ElderState, "marker" | "elderId">;
+type StarsiNaStupnici = Pick<ElderState, "elderId"> & SMarkerom;
 
 const komuZ = (hrac: PlayerId | null, ja: PlayerId): KomuPriazen => (hrac === null ? null : hrac === ja ? "ja" : "su");
 
@@ -63,7 +64,7 @@ export const polohaPreHraca = (m: number, ja: PlayerId): number => (ja === 0 ? m
 export function dvojityMarker(elder: StarsiNaStupnici, klebety: Klebety | undefined, ja: PlayerId): DvojityMarker {
   const p = priazenKola(elder, klebety, ja);
   const bodka = poziciaPriazne(p.hrac, p.sila);
-  return { prsten: polohaPreHraca(elder.marker, ja), bodka: polohaPreHraca(bodka, ja), komu: p.komu, posunute: bodka !== elder.marker };
+  return { prsten: polohaPreHraca(markerStarsieho(elder), ja), bodka: polohaPreHraca(bodka, ja), komu: p.komu, posunute: bodka !== markerStarsieho(elder) };
 }
 
 /**
@@ -184,7 +185,7 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
       komu: komuZ(obavany, v.ja),
       text: riadokStrachu(obavany === null ? null : v.mena[obavany], obavany === v.ja, v.spaky, v.naUdrzanie),
     },
-    stupen: textStupna(STUPNICA_ZONY[v.elder.marker]),
+    stupen: textStupna(STUPNICA_ZONY[markerStarsieho(v.elder)]),
     akcia: v.akcia ?? null,
     dalsi: v.dalsi ?? null,
   };

@@ -1,192 +1,210 @@
-// Rozdelenie hádky a Nakladačky naraz (mock C · Pečať, Michal 2026-10-30; hádka v10): hráč
-// pri starších vyberie, koho posunie, nepotvrdené výbery drží klient a Potvrdiť ich pošle
-// jedným ťahom ({ type: "tah" }). Server ich vykoná po jednom v poradí, ako prišli — každý
-// posun ide tak ďaleko, ako zvyšok stačí (posunZaBody). Plán tu je ten istý výpočet, preto
-// náhľad v klientovi (cieľ, cena, zvyšok) ukáže presne to, čo server urobí.
+// Rozdelenie Nakladačky a hádky (v11 Strach a reči, Michal 2026-11-02): víťaz bitky rozdelí
+// body Nakladačky na svoj strach, víťaz hádky body hádky na svoje reči — ľubovoľne medzi
+// starších, stupeň za 1 / 2 / 3 (cenaDvihnutia). Rozdelí sa, čo sa dá, zvyšok prepadne:
+// po rozdelení nesmie ostať zvyšok, ktorý by ešte stačil na ďalší stupeň niektorého staršieho.
+// Na staršieho v ohrození (pokus o zajatie) nikto nedvíha (O7).
 //
-// Nakladačka posúva marker (k súperovi držiteľa), hádka len polohu účinnej priazne
-// (polohaPriazne) k víťazovi hádky — z, na a ceny v pláne hádky sú polohy priazne, marker stojí.
+// Klient drží rozpracované zdvihy a pošle ich jedným zámerom ({ type: "prebytok" | "reci",
+// zdvihy }); server ich overí tou istou funkciou (overRozdelenie), takže náhľad v klientovi
+// (cena, zvyšok, chyba) ukáže presne to, čo server prijme.
 
-import type { DamageResult } from "./battle.ts";
-import type { GameData } from "./data.ts";
-import type { VerejnyStav } from "./effects.ts";
 import type { BitkaKrok, Command, PokusOZajatie } from "./engine.ts";
-import { klebetyKola, lineState, poskodenieBitky, vOhrozeni } from "./engine.ts";
-import { evaluateLine } from "./partia.ts";
-import type { ElderState, Klebety, MarkerPos } from "./elders.ts";
-import { polohaPriazne, posunZaBody } from "./elders.ts";
-import { opponentOf, type PlayerId } from "./types.ts";
+import type { DruhMarkera, ElderState, Stupen, Zdvih } from "./elders.ts";
+import { CERVENA, cenaDvihnutia, moznyZdvih, sMarkerom, stupenOdkial } from "./elders.ts";
+import type { PlayerId } from "./types.ts";
 
-/** Voľba hráča: starší (smer určuje krok — hádka k víťazovi, Nakladačka k súperovi držiteľa). */
-export interface VolbaRozdelenia {
-  readonly elderId: string;
-}
-
-/** Jeden posun plánu tak, ako ho server vykoná. */
-export interface KrokRozdelenia {
-  readonly elderId: string;
-  /** Ku komu marker (pri hádke priazeň) ide. */
-  readonly smer: PlayerId;
-  readonly z: MarkerPos;
-  readonly na: MarkerPos;
-  readonly cena: number;
-  /** Koľko bodov mal posun k dispozícii — z toho klient ukáže ceny polí na stupnici. */
-  readonly body: number;
-}
-
-export interface PlanRozdelenia {
-  readonly kroky: readonly KrokRozdelenia[];
-  /** Voľby, na ktoré zvyšok už nestačil — server by ich odmietol, plán ich vynechá. */
-  readonly nevyslo: readonly VolbaRozdelenia[];
-  /** Body, ktoré po pláne ostanú. */
-  readonly zvysok: number;
-  /** Ťah pre server; null, keď v pláne nie je nič. */
-  readonly prikaz: Command | null;
-}
-
-/** Čo plán potrebuje zo stavu — ClientState aj GameState. */
+/** Čo rozdelenie potrebuje zo stavu — ClientState aj GameState. */
 export interface StavRozdelenia {
-  /** Pokusy o zajatie tohto kola (v9) — pri Nakladačke sa starší v ohrození nehýbe. */
-  readonly pokusy?: readonly (PokusOZajatie | null)[];
-  readonly starsi: readonly Pick<ElderState, "elderId" | "marker">[];
+  /** Pokusy o zajatie tohto kola (v9) — na staršieho v ohrození sa nedvíha. */
+  readonly pokusy: readonly (PokusOZajatie | null)[];
+  readonly starsi: readonly Pick<ElderState, "elderId" | "strach" | "reci">[];
   readonly bitkaStav: {
     readonly krok: BitkaKrok | null;
     readonly caka: PlayerId | null;
     readonly prebytokDrzi: PlayerId | null;
     readonly prebytokZostava: number;
     readonly hadka?: { readonly vitaz: PlayerId | null; readonly zostava: number };
-    readonly klebety?: Klebety;
   } | null;
 }
 
-export type DruhRozdelenia = "hadka" | "prebytok";
+/** Krok bitky, v ktorom sa rozdeľuje: prebytok = Nakladačka na strach, reci = hádka na reči. */
+export type DruhRozdelenia = "prebytok" | "reci";
+
+/** Marker, ktorý krok dvíha. */
+export function markerRozdelenia(krok: DruhRozdelenia): DruhMarkera {
+  return krok === "prebytok" ? "strach" : "reci";
+}
 
 /** Krok, v ktorom hráč p práve rozdeľuje, alebo null. */
-export function krokRozdelenia(state: StavRozdelenia, p: PlayerId): DruhRozdelenia | null {
+export function krokRozdelenia(state: Pick<StavRozdelenia, "bitkaStav">, p: PlayerId): DruhRozdelenia | null {
   const b = state.bitkaStav;
   if (b === null || b.caka !== p) return null;
-  if (b.krok === "hadka" && b.hadka?.vitaz === p && b.hadka.zostava > 0) return "hadka";
-  if (b.krok === "prebytok" && b.prebytokDrzi !== null && b.prebytokZostava > 0) return "prebytok";
+  if (b.krok === "prebytok" && b.prebytokDrzi === p && b.prebytokZostava > 0) return "prebytok";
+  if (b.krok === "reci" && b.hadka?.vitaz === p && b.hadka.zostava > 0) return "reci";
   return null;
 }
 
-/** Smer kroku: hádka k víťazovi (rozdeľujúcemu), Nakladačka k súperovi držiteľa. */
-export function smerRozdelenia(state: StavRozdelenia, p: PlayerId): PlayerId | null {
-  const krok = krokRozdelenia(state, p);
-  if (krok === "hadka") return p;
-  const drzi = state.bitkaStav?.prebytokDrzi ?? null;
-  return krok === "prebytok" && drzi !== null ? opponentOf(drzi) : null;
-}
-
-/** Body na rozdelenie v kroku (zvyšok hádky alebo Nakladačky). */
-export function bodyRozdelenia(state: StavRozdelenia, p: PlayerId): number {
+/** Body na rozdelenie v kroku (Nakladačka alebo hádka). */
+export function bodyRozdelenia(state: Pick<StavRozdelenia, "bitkaStav">, p: PlayerId): number {
   const krok = krokRozdelenia(state, p);
   const b = state.bitkaStav;
   if (krok === null || b === null) return 0;
-  return krok === "hadka" ? (b.hadka?.zostava ?? 0) : b.prebytokZostava;
+  return krok === "prebytok" ? b.prebytokZostava : (b.hadka?.zostava ?? 0);
+}
+
+/** Je starší v ohrození — pokúša sa ho niekto zajať (v tom kole naň nikto nedvíha)? */
+function vOhrozeniPokusov(pokusy: readonly (PokusOZajatie | null)[], elderId: string): boolean {
+  return pokusy.some((x) => x?.elderId === elderId);
+}
+
+/** Cena ďalšieho stupňa markera hráča p pri staršom, alebo null (červená, v ohrození). */
+export function cenaDalsiehoStupna(
+  elder: Pick<ElderState, "elderId" | "strach" | "reci">,
+  pokusy: readonly (PokusOZajatie | null)[],
+  p: PlayerId,
+  marker: DruhMarkera,
+): number | null {
+  if (vOhrozeniPokusov(pokusy, elder.elderId)) return null;
+  const z = moznyZdvih(elder, p, marker);
+  return z === null ? null : cenaDvihnutia(z.od, z.od + 1);
+}
+
+/** Overené rozdelenie: čo sa zmení a koľko prepadne. */
+export interface PlanRozdelenia {
+  readonly marker: DruhMarkera;
+  readonly body: number;
+  /** Zdvihy so stupňom odkiaľ a cenou, v poradí zámeru. */
+  readonly zdvihy: readonly { readonly elderId: string; readonly z: Stupen; readonly na: Stupen; readonly cena: number }[];
+  readonly cena: number;
+  /** Body, ktoré po rozdelení ostanú a prepadnú. */
+  readonly zvysok: number;
+  /**
+   * Starší, na ktorých by zvyšok ešte stačil (ďalší stupeň). Prázdne = rozdelenie je úplné
+   * a server ho prijme; inak ho odmietne („rozdelí sa, čo sa dá“).
+   */
+  readonly esteSaDa: readonly string[];
+  /** Chyba zámeru (neznámy starší, v ohrození, nie nad markerom, cena nad body) — server odmietne. */
+  readonly chyba: string | null;
 }
 
 /**
- * Poloha, ktorú krok posúva: pri hádke účinná priazeň (klebety kola), pri Nakladačke marker.
- * Pri Nakladačke sa starší v ohrození (pokus o zajatie, v9 O8) nehýbe — undefined.
+ * Overí rozdelenie `zdvihy` bodov `body` na marker hráča p (server aj náhľad klienta). Každý
+ * starší najviac raz, na stupeň vyšší, ako je teraz (reči nad strachom), nie v ohrození;
+ * cena spolu najviac body; po rozdelení zvyšok nesmie stačiť na ďalší stupeň.
  */
-export function polohyRozdelenia(state: StavRozdelenia, p: PlayerId): ReadonlyMap<string, MarkerPos> {
-  const krok = krokRozdelenia(state, p);
-  const klebety = klebetyKola(state);
-  const out = new Map<string, MarkerPos>();
-  for (const e of state.starsi) {
-    if (krok === "prebytok" && state.pokusy !== undefined && vOhrozeni({ pokusy: state.pokusy }, e.elderId)) continue;
-    out.set(e.elderId, krok === "hadka" ? polohaPriazne(e, klebety) : e.marker);
-  }
-  return out;
-}
-
-/**
- * Plán rozdelenia: voľby v poradí, každá zo zvyšku po predošlých (ako server pri ťahu).
- * Hádka priazeň posúva len k víťazovi a najviac na silu 3 — to je kraj stupnice.
- */
-export function planRozdelenia(state: StavRozdelenia, p: PlayerId, volby: readonly VolbaRozdelenia[]): PlanRozdelenia {
-  const krok = krokRozdelenia(state, p);
-  const smer = smerRozdelenia(state, p);
-  if (krok === null || smer === null) return { kroky: [], nevyslo: [...volby], zvysok: 0, prikaz: null };
-  let zvysok = bodyRozdelenia(state, p);
-  const polohy = new Map(polohyRozdelenia(state, p));
-  const kroky: KrokRozdelenia[] = [];
-  const nevyslo: VolbaRozdelenia[] = [];
-  for (const v of volby) {
-    const z = polohy.get(v.elderId);
-    const posun = z === undefined || zvysok <= 0 ? null : posunZaBody({ marker: z }, smer, zvysok);
-    if (z === undefined || posun === null) {
-      nevyslo.push(v);
+export function overRozdelenie(
+  state: Pick<StavRozdelenia, "pokusy" | "starsi">,
+  p: PlayerId,
+  marker: DruhMarkera,
+  body: number,
+  zdvihy: readonly Zdvih[],
+): PlanRozdelenia {
+  const vysledok: { elderId: string; z: Stupen; na: Stupen; cena: number }[] = [];
+  let chyba: string | null = null;
+  const videne = new Set<string>();
+  let cena = 0;
+  for (const zd of zdvihy) {
+    const elder = state.starsi.find((e) => e.elderId === zd.elderId);
+    if (elder === undefined) {
+      chyba ??= "Taký starší na stupnici nie je.";
       continue;
     }
-    kroky.push({ elderId: v.elderId, smer, z, na: posun.marker, cena: posun.cena, body: zvysok });
-    polohy.set(v.elderId, posun.marker);
-    zvysok -= posun.cena;
+    if (videne.has(zd.elderId)) {
+      chyba ??= "Každého staršieho uveď v rozdelení najviac raz.";
+      continue;
+    }
+    videne.add(zd.elderId);
+    if (vOhrozeniPokusov(state.pokusy, zd.elderId)) {
+      chyba ??= "O tohto staršieho sa hrá (pokus o zajatie) — v tomto kole naň nikto nedvíha.";
+      continue;
+    }
+    const z = stupenOdkial(elder, p, marker);
+    if (!Number.isInteger(zd.na) || zd.na <= z || zd.na > CERVENA) {
+      chyba ??= marker === "reci" ? "Reči idú len nad tvoj strach a najvyššie na červenú." : "Strach sa dá len zdvihnúť, najvyššie na červenú.";
+      continue;
+    }
+    const c = cenaDvihnutia(z, zd.na);
+    cena += c;
+    vysledok.push({ elderId: zd.elderId, z, na: zd.na, cena: c });
   }
-  const prikazy: Command[] = kroky.map((k) => (krok === "prebytok" ? { type: "prebytok", elderId: k.elderId } : { type: "hadka", elderId: k.elderId }));
-  return { kroky, nevyslo, zvysok, prikaz: prikazy.length === 0 ? null : { type: "tah", kroky: prikazy } };
+  if (chyba === null && cena > body) chyba = `Rozdelenie stojí ${cena}, máš len ${body}.`;
+  const zvysok = Math.max(0, body - cena);
+  const po = state.starsi.map((e) => {
+    const zd = vysledok.find((x) => x.elderId === e.elderId);
+    return zd === undefined ? e : sMarkerom(e, p, marker, zd.na);
+  });
+  const esteSaDa = po.filter((e) => {
+    const c = cenaDalsiehoStupna(e, state.pokusy, p, marker);
+    return c !== null && c <= zvysok;
+  }).map((e) => e.elderId);
+  return { marker, body, zdvihy: vysledok, cena, zvysok, esteSaDa, chyba };
 }
 
-/** Koľko bodov by mal po pláne ďalší posun tohto staršieho (0 = nikam, aj v ohrození pri Nakladačke). */
-export function rozpocetPoPlane(state: StavRozdelenia, p: PlayerId, plan: PlanRozdelenia, elderId: string): number {
-  if (krokRozdelenia(state, p) === null || plan.zvysok <= 0 || !polohyRozdelenia(state, p).has(elderId)) return 0;
-  return plan.zvysok;
+/** Plán rozdelenia z pohľadu hráča p v práve čakajúcom kroku (null = p nerozdeľuje). */
+export function planRozdelenia(state: StavRozdelenia, p: PlayerId, zdvihy: readonly Zdvih[]): (PlanRozdelenia & { readonly prikaz: Command | null }) | null {
+  const krok = krokRozdelenia(state, p);
+  if (krok === null) return null;
+  const plan = overRozdelenie(state, p, markerRozdelenia(krok), bodyRozdelenia(state, p), zdvihy);
+  const ok = plan.chyba === null && plan.esteSaDa.length === 0;
+  return { ...plan, prikaz: ok ? { type: krok, zdvihy: plan.zdvihy.map((z) => ({ elderId: z.elderId, na: z.na })) } : null };
 }
 
-/**
- * Starší mimo plánu, ktorých zvyšok ešte niekam posunie (bublina „stačí ešte pre N starších“).
- * Nula pri kladnom zvyšku = zvyšok prepadne.
- */
-export function starsiPreZvysok(state: StavRozdelenia, p: PlayerId, plan: PlanRozdelenia): readonly string[] {
-  const vPlane = new Set(plan.kroky.map((k) => k.elderId));
-  const smer = smerRozdelenia(state, p);
-  const polohy = polohyRozdelenia(state, p);
-  if (smer === null || plan.zvysok <= 0) return [];
-  return [...polohy].filter(([id, z]) => !vPlane.has(id) && posunZaBody({ marker: z }, smer, plan.zvysok) !== null).map(([id]) => id);
-}
-
-/**
- * Ťuk pri staršom (mock C): ten istý starší výber zruší, nový sa pridá na koniec. Voľby, na
- * ktoré by potom zvyšok nestačil, vypadnú — zoznam drží len to, čo server naozaj vykoná.
- */
-export function prepniVolbu(state: StavRozdelenia, p: PlayerId, volby: readonly VolbaRozdelenia[], volba: VolbaRozdelenia): readonly VolbaRozdelenia[] {
-  const i = volby.findIndex((v) => v.elderId === volba.elderId);
-  const dalsie = i < 0 ? [...volby, { elderId: volba.elderId }] : volby.filter((_, j) => j !== i);
-  const plan = planRozdelenia(state, p, dalsie);
-  return dalsie.filter((v) => !plan.nevyslo.includes(v));
+/** Dá sa body vôbec niekam minúť (aspoň jeden stupeň niektorého staršieho)? */
+export function rozdelenieMozne(state: Pick<StavRozdelenia, "pokusy" | "starsi">, p: PlayerId, marker: DruhMarkera, body: number): boolean {
+  return overRozdelenie(state, p, marker, body, []).esteSaDa.length > 0;
 }
 
 /**
- * Prepadne zvyšok po pláne? Áno, keď ho server nemôže minúť na žiadneho staršieho — ani na
- * toho, ktorý sa v pláne už posunul (od novej polohy). Vtedy server krok po ťahu uzavrie.
+ * Úplné rozdelenia (žiadny zvyšok, ktorý by ešte niekam stačil) — ponuka legálnych zámerov
+ * pre bota a testy, najviac `limit`. Prehľadáva starších postupne od každého z nich (inak by
+ * ponuka zvýhodnila prvých na stupnici); rovnaké rozdelenie sa neopakuje.
  */
-export function zvysokPrepadne(state: StavRozdelenia, p: PlayerId, plan: PlanRozdelenia): boolean {
-  if (plan.zvysok <= 0) return false;
-  const smer = smerRozdelenia(state, p);
-  if (smer === null) return true;
-  const po = new Map(plan.kroky.map((k) => [k.elderId, k.na]));
-  return ![...polohyRozdelenia(state, p)].some(([id, z]) => posunZaBody({ marker: po.get(id) ?? z }, smer, plan.zvysok) !== null);
-}
-
-/**
- * Bitka pred a po pláne hádky — priazeň sa mení hneď a platí už v tejto bitke (Bitkár,
- * Veriaci, Abstinent). null, keď plán poškodenie nezmení alebo bitka už je vyhodnotená.
- */
-export function bitkaPoPlane(
-  data: GameData,
-  view: VerejnyStav & { readonly lokalitaOtocena: boolean; readonly bitkaStav: { readonly damage: DamageResult | null; readonly klebety?: Klebety } | null },
-  plan: PlanRozdelenia,
-): { readonly pred: DamageResult; readonly po: DamageResult } | null {
-  if (view.ciel === null || view.bitkaStav === null || view.bitkaStav.damage !== null || plan.kroky.length === 0) return null;
-  const klebety: Record<string, number> = { ...(view.bitkaStav.klebety ?? {}) };
-  for (const k of plan.kroky) {
-    const e = view.starsi.find((x) => x.elderId === k.elderId);
-    if (e !== undefined) klebety[k.elderId] = e.marker - k.na;
+export function kandidatiRozdelenia(
+  state: Pick<StavRozdelenia, "pokusy" | "starsi">,
+  p: PlayerId,
+  marker: DruhMarkera,
+  body: number,
+  limit = 48,
+): readonly (readonly Zdvih[])[] {
+  const volni = state.starsi.filter((e) => cenaDalsiehoStupna(e, state.pokusy, p, marker) !== null);
+  if (volni.length === 0) return [];
+  const out: Zdvih[][] = [];
+  const kluce = new Set<string>();
+  const naZaciatok = Math.max(1, Math.ceil(limit / volni.length));
+  for (let r = 0; r < volni.length && out.length < limit; r++) {
+    const poradie = [...volni.slice(r), ...volni.slice(0, r)];
+    // Koľko sa ešte dá minúť na starších od i-teho ďalej — vetva, ktorej zvyšok by aj tak
+    // stačil na ďalší stupeň už prejdeného staršieho, sa nedoprehľadáva.
+    const kapacita = poradie.map((e) => cenaDvihnutia(stupenOdkial(e, p, marker), CERVENA));
+    for (let i = kapacita.length - 2; i >= 0; i--) kapacita[i]! += kapacita[i + 1]!;
+    const zdvihy: Zdvih[] = [];
+    let pridane = 0;
+    const skus = (i: number, zostava: number, najlacnejsiDalsi: number): void => {
+      if (pridane >= naZaciatok || out.length >= limit) return;
+      if (zostava - (kapacita[i] ?? 0) >= najlacnejsiDalsi) return;
+      if (i === poradie.length) {
+        if (zdvihy.length === 0 || overRozdelenie(state, p, marker, body, zdvihy).esteSaDa.length > 0) return;
+        const kluc = [...zdvihy].map((z) => `${z.elderId}:${z.na}`).sort().join(",");
+        if (kluce.has(kluc)) return;
+        kluce.add(kluc);
+        out.push([...zdvihy]);
+        pridane++;
+        return;
+      }
+      const e = poradie[i]!;
+      const od = stupenOdkial(e, p, marker);
+      const dalsi = (na: number): number => (na >= CERVENA ? Number.POSITIVE_INFINITY : cenaDvihnutia(na, na + 1));
+      // Vyššie stupne najprv — sústredené rozdelenia prídu na rad skôr než rozdrobené.
+      for (let na = CERVENA as number; na > od; na--) {
+        const c = cenaDvihnutia(od, na);
+        if (c > zostava) continue;
+        zdvihy.push({ elderId: e.elderId, na: na as Stupen });
+        skus(i + 1, zostava - c, Math.min(najlacnejsiDalsi, dalsi(na)));
+        zdvihy.pop();
+      }
+      skus(i + 1, zostava, Math.min(najlacnejsiDalsi, dalsi(od)));
+    };
+    skus(0, body, Number.POSITIVE_INFINITY);
   }
-  const sums = evaluateLine(data, lineState(view)).sums;
-  const pred = poskodenieBitky(data, view, sums);
-  const po = poskodenieBitky(data, { ...view, bitkaStav: { ...view.bitkaStav, klebety } } as typeof view, sums);
-  const rovnake = pred.tuhe[0] === po.tuhe[0] && pred.tuhe[1] === po.tuhe[1];
-  return rovnake ? null : { pred, po };
+  return out;
 }

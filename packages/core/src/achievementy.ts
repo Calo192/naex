@@ -19,7 +19,7 @@ import type { PlayerId } from "./types.ts";
 import { ALL_ACTIONS, ALL_PODMIENKY, opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { Command, Event, GameState } from "./engine.ts";
-import { bitkyNaSekere } from "./engine.ts";
+import { bitkyNaSekere, cervenychHraca } from "./engine.ts";
 import type { DvojicaStatistik, StatistikyHraca } from "./statistiky.ts";
 import { noveStatistiky, prazdneStatistiky, uzavriStatistiky, zapisTah } from "./statistiky.ts";
 import type { StavKroniky } from "./kronika.ts";
@@ -28,7 +28,7 @@ import type { TypMomentu } from "./momenty.ts";
 import { MOMENTY, momenty } from "./momenty.ts";
 import { priazenHraca } from "./elders.ts";
 import { prevahaStran } from "./partia.ts";
-import { DLZKY_HRY, KONSTANTY } from "./constants.ts";
+import { DLZKY_HRY, KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { POVAHY } from "./bot.ts";
 
 export const ROZSAHY = ["bitka", "pitka", "kolo", "partia", "kariera"] as const;
@@ -116,9 +116,13 @@ const ak = (b: boolean, v = 1): number | null => (b ? v : null);
 const dohrata = (k: KrokMetriky): boolean => k.pred.koniec === null && k.po.koniec !== null && !k.vzdane;
 const vyhral = (k: KrokMetriky, p: PlayerId): boolean => dohrata(k) && k.po.koniec?.vitaz === p;
 const bitky = (k: KrokMetriky) => k.udalosti.flatMap((e) => (e.type === "bitkaVysledok" ? [e] : []));
-/** Výhra tretím väzňom (v9; do v8 udržané vydesenie) — partia skončila bez konečných špakov. */
+/**
+ * Okamžitá výhra väzňami alebo strachom (v11; v9–v10 tretím väzňom, do v8 udržané vydesenie) —
+ * partia skončila bez konečných špakov.
+ */
 const vydesenim = (k: KrokMetriky, p: PlayerId): boolean =>
-  k.po.koniec?.body == null && (k.po.vazni ?? []).filter((v) => v.hrac === p).length >= KONSTANTY.VAZNI_NA_VYHRU;
+  k.po.koniec?.body == null &&
+  ((k.po.vazni ?? []).filter((v) => v.hrac === p).length >= vazniNaVyhru(k.po.lokalitCelkom) || cervenychHraca(k.po, p) >= KONSTANTY.CERVENYCH_NA_VYHRU);
 /** NA EX hráča p v kronike s daným výsledkom (všetky kolá). */
 const naexy = (kr: StavKroniky, p: PlayerId, uspech: boolean): number =>
   [...kr.kola, kr.kolo].reduce((n, kolo) => n + kolo.naex.filter((x) => x.kto === p && x.uspech === uspech).length, 0);
@@ -171,7 +175,7 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
         return ak(skoncil && vazni(k.po) === vazni(k.pred) && k.po.nastenka.at(-1)?.vitaz === p);
       }),
   },
-  vyhraVydesenim: { druh: "sucet", popis: "výhra tretím väzňom (do v8 udržaným vydesením starších)", zmer: (k) => pre((p) => ak(vyhral(k, p) && vydesenim(k, p))) },
+  vyhraVydesenim: { druh: "sucet", popis: "okamžitá výhra väzňami alebo strachom (v9–v10 tretím väzňom, do v8 udržaným vydesením)", zmer: (k) => pre((p) => ak(vyhral(k, p) && vydesenim(k, p))) },
   vyhraKnockoutom: {
     druh: "sucet",
     popis: "výhra, lebo súper nečelil exekúcii alebo mu balíček klesol pod 5",

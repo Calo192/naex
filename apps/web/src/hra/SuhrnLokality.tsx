@@ -5,8 +5,8 @@
 // na svoju rekapituláciu. Čísla skladá obsahSuhrnuLokality.ts, históriu posiela server.
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import type { BitkaNaNastenke, Favour, LokalitaVHistorii, MarkerPos, PitkaVHistorii, PlayerId } from "@naex/core";
-import { STAV_STARSIEHO, STUPNICA_ZONY, jeFinaleNaNastenke, obavanyHrac, priazenHraca, priazenSila, opponentOf } from "@naex/core";
+import type { BitkaNaNastenke, Favour, LokalitaVHistorii, PitkaVHistorii, PlayerId } from "@naex/core";
+import { STAV_STARSIEHO, jeFinaleNaNastenke, opponentOf } from "@naex/core";
 import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { RekapBitky, RekapitulaciaPitkyVrstva, type PiktogramyRekapitulacie } from "./Rekapitulacia.tsx";
@@ -14,6 +14,7 @@ import { SpakyBitky, spakyPredBitkou, rozpisLokality } from "./Spaky.tsx";
 import { odpovedeKola, riadkySuhrnuLokality } from "./obsahSuhrnuLokality.ts";
 import { NAZOV_ZDROJA } from "./textyStarsich.ts";
 import "./suhrn-lokality.css";
+import { type MarkerPos, STUPNICA_ZONY, obavanyHrac, priazenHraca, priazenSila } from "./staraStupnica.ts";
 
 export interface SuhrnLokalityProps {
   /** Záznam nástenky — špaky po celom kole (aj starší a Robota). */

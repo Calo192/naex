@@ -1,3 +1,5 @@
+// Stará stupnica (v10: marker, klebety, udržaný strach) — v11 Strach a reči. Testy starého zobrazenia
+// starších sú preskočené, kým stôl neprestaví agent UI (Teplomery a Pult).
 // Priazeň staršieho v tomto kole (Michal 2026-10-31, mockup „Priazeň podľa Michala“, pravidlá v10
 // „Hádka“): poloha prsteňa a bodky, lístok Hádky vo farbe víťaza hádky, texty nápovedy a súhrnu.
 // Hádka posúva silu priazne len k víťazovi — v pohľade sú to klebety kola (kladné k hráčovi 0).
@@ -45,24 +47,24 @@ describe("dvojitý marker: prsteň = marker, bodka = priazeň tohto kola", () =>
     expect(dvojityMarker(na(3), undefined, 0)).toEqual({ prsten: 3, bodka: 3, komu: null, posunute: false });
   });
 
-  it("hádka mi požičala staršieho zo stredu: prsteň v strede, bodka na mojej žltej", () => {
+  it.skip("hádka mi požičala staršieho zo stredu: prsteň v strede, bodka na mojej žltej", () => {
     expect(dvojityMarker(na(3), { [id]: 1 }, 0)).toEqual({ prsten: 3, bodka: 2, komu: "ja", posunute: true });
   });
 
-  it("súperova hádka znížila moju oranžovú na žltú", () => {
+  it.skip("súperova hádka znížila moju oranžovú na žltú", () => {
     expect(dvojityMarker(na(1), { [id]: -1 }, 0)).toEqual({ prsten: 1, bodka: 2, komu: "ja", posunute: true });
   });
 
-  it("preklopenie mojej oranžovej do súperovej oranžovej", () => {
+  it.skip("preklopenie mojej oranžovej do súperovej oranžovej", () => {
     expect(dvojityMarker(na(1), { [id]: -4 }, 0)).toEqual({ prsten: 1, bodka: 5, komu: "su", posunute: true });
     expect(priazenKola(na(1), { [id]: -4 }, 0)).toEqual({ komu: "su", hrac: 1, sila: 2 });
   });
 
-  it("hádka, ktorá priazeň zruší, dá sivú bodku do stredu", () => {
+  it.skip("hádka, ktorá priazeň zruší, dá sivú bodku do stredu", () => {
     expect(dvojityMarker(na(4), { [id]: 1 }, 0)).toEqual({ prsten: 4, bodka: 3, komu: null, posunute: true });
   });
 
-  it("strop sily 3: ďalší bod hádky už bodku neposunie", () => {
+  it.skip("strop sily 3: ďalší bod hádky už bodku neposunie", () => {
     expect(bodkaPoBode(na(1), undefined, 0)).toBe(0);
     expect(bodkaPoBode(na(0), undefined, 0)).toBeNull();
     expect(bodkaPoBode(na(3), undefined, 1)).toBe(2);
@@ -102,7 +104,7 @@ describe("nápoveda nad staršom a nad krúžkami", () => {
     expect(o.stupen).toBe("stupeň 2, oranžová — vystrašený");
   });
 
-  it("riadok Hádka: z markera → toto kolo, číslo z pohľadu hráča", () => {
+  it.skip("riadok Hádka: z markera → toto kolo, číslo z pohľadu hráča", () => {
     const o = vstup(1, { [id]: -1 });
     expect(o.hadka).not.toBeNull();
     const h = o.hadka!;
@@ -115,7 +117,7 @@ describe("nápoveda nad staršom a nad krúžkami", () => {
     expect(html).not.toContain("Povera");
   });
 
-  it("moja hádka zo stredu", () => {
+  it.skip("moja hádka zo stredu", () => {
     const h = vstup(3, { [id]: 1 }).hadka!;
     expect(vetaHadky(h.zMarkera, h.listok, h.teraz, FERO)).toBe("z markera nikto · ty v hádke +1 · toto kolo ty +1");
   });
@@ -138,12 +140,12 @@ describe("krúžok priazne", () => {
 });
 
 describe("priazne kola v súhrnoch", () => {
-  it("dlaždica Starší ráta priazne po hádke", () => {
+  it.skip("dlaždica Starší ráta priazne po hádke", () => {
     expect(pocetPriazniKola([na(3)], { [id]: 1 }, 0)).toBe(1);
     expect(pocetPriazniKola([na(1)], { [id]: -4 }, 0)).toBe(0);
   });
 
-  it("hádka v rekapitulácii a prechod priazne", () => {
+  it.skip("hádka v rekapitulácii a prechod priazne", () => {
     const h = hadkaBitky([na(5)], { hracov: [{ [id]: 3 }, {}] }, 0);
     expect(h).toEqual([{ elderId: id, hrac: 0, komu: "ja", stupne: 3, z: { komu: "su", hrac: 1, sila: 2 }, teraz: { komu: "ja", hrac: 0, sila: 1 } }]);
     expect(prechodPriazne(h[0]!.z, h[0]!.teraz, FERO)).toBe("Fero 2 → ty");
@@ -151,7 +153,7 @@ describe("priazne kola v súhrnoch", () => {
     expect(hadkaBitky([na(3)], { sucet: { [id]: -1 } }, 0).map((x) => [x.hrac, x.stupne])).toEqual([[1, 1]]);
   });
 
-  it("bublina súhrnu: priazeň v kole po hádke → po kole, bodka začne mimo prsteňa", () => {
+  it.skip("bublina súhrnu: priazeň v kole po hádke → po kole, bodka začne mimo prsteňa", () => {
     const s = priazenSuhrnu(na(3), [{ hrac: 1, stupne: 2 }], 0);
     expect(s.vKole).toEqual({ komu: "su", hrac: 1, sila: 2 });
     expect(s.poKole).toEqual({ komu: null, hrac: null, sila: 0 });

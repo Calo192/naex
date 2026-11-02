@@ -8,7 +8,7 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import katalogJson from "../data/vyucba/napovedy.json";
 import scenarJson from "../data/vyucba/prva-hra.json";
-import type { CardInstance, Command, GameState, KatalogNapoved, MarkerPos, ScenarVyucby } from "../src/index.ts";
+import type { CardInstance, Command, GameState, KatalogNapoved, ScenarVyucby } from "../src/index.ts";
 import {
   apply,
   dalsiaNapoveda,
@@ -23,6 +23,7 @@ import {
   SPUSTACE_NAPOVED,
   viewFor,
 } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const katalog = katalogJson as unknown as KatalogNapoved;
@@ -95,18 +96,18 @@ describe("nápovedy — rozpoznanie z pohľadu hráča", () => {
       ...s0,
       faza: "bitka",
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] },
-      bitkaStav: { krok: "hadka", caka: 1, sums: [{}, {}], exekutorHotovy: [true, true], hadka: { makke: [0, 2], vitaz: 1, velkost: 2, zostava: 2, prepadlo: 0, posuny: [] } },
+      bitkaStav: { krok: "reci", caka: 1, sums: [{}, {}], exekutorHotovy: [true, true], hadka: { makke: [0, 2], vitaz: 1, velkost: 2, zostava: 2, prepadlo: 0, zdvihy: [] } },
     } as unknown as GameState;
     const text = (p: 0 | 1) => napovedy(data, katalog, viewFor(data, s, p)).find((n) => n.id === "pohorsenie")?.text ?? "";
     expect(text(1)).toMatch(/^Hádku si vyhral: máš viac mäkkého poškodenia/);
     expect(text(0)).toMatch(/^Hádku vyhral súper: má viac mäkkého poškodenia/);
     // Remíza v hádke: nikto nerozdeľuje, nápoveda nie je.
-    const remiza = { ...s, bitkaStav: { ...(s.bitkaStav as object), hadka: { makke: [1, 1], vitaz: null, velkost: 0, zostava: 0, prepadlo: 0, posuny: [] } } } as unknown as GameState;
+    const remiza = { ...s, bitkaStav: { ...(s.bitkaStav as object), hadka: { makke: [1, 1], vitaz: null, velkost: 0, zostava: 0, prepadlo: 0, zdvihy: [] } } } as unknown as GameState;
     expect(napovedy(data, katalog, viewFor(data, remiza, 0)).some((n) => n.id === "pohorsenie")).toBe(false);
   });
 
   it("priazeň a vydesenie: meno staršieho z karty a variant podľa toho, koho sa bojí", () => {
-    const s = { ...s0, starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, marker: 6 as MarkerPos } : e)) } as GameState;
+    const s = { ...s0, starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, ...zPolohy(6 as number) } : e)) } as GameState;
     const e = s.starsi[0]!;
     const priazen = napovedy(data, katalog, viewFor(data, s, 1)).find((n) => n.id === "priazen");
     expect(priazen?.text).toMatch(new RegExp(`^${data.cards.get(e.karta.defId)?.name} je na tvojej polovici`));

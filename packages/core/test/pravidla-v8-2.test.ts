@@ -6,73 +6,13 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, Command, GameState, MarkerPos } from "../src/index.ts";
-import { apply, cenaKroku, cenaPosunuOPoli, legalCommands, loadGameData, naTahu, posunZaBody, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
+import type { BitkaStav, Command, GameState } from "../src/index.ts";
+import { apply, legalCommands, loadGameData, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
-describe("§10 cena posunu markera (v8.2)", () => {
-  it("von zo stredu podľa cieľovej zóny 1 / 2 / 3, k stredu o 1 viac 4 / 3 / 2 — na oboch polovicach rovnako", () => {
-    expect([cenaKroku(3, 4), cenaKroku(4, 5), cenaKroku(5, 6)]).toEqual([1, 2, 3]);
-    expect([cenaKroku(6, 5), cenaKroku(5, 4), cenaKroku(4, 3)]).toEqual([4, 3, 2]);
-    expect([cenaKroku(3, 2), cenaKroku(2, 1), cenaKroku(1, 0)]).toEqual([1, 2, 3]);
-    expect([cenaKroku(0, 1), cenaKroku(1, 2), cenaKroku(2, 3)]).toEqual([4, 3, 2]);
-    expect(cenaPosunuOPoli(3, 3)).toBe(6);
-    expect(cenaPosunuOPoli(6, -3)).toBe(9);
-    // Cez stred: oranžová hráča 1 → oranžová hráča 0 = 3 + 2 + 1 + 2.
-    expect(cenaPosunuOPoli(5, -4)).toBe(8);
-  });
-
-  it("posunZaBody: marker ide, kým zvyšok stačí na ďalšie pole, a vráti cenu; bez jediného poľa null", () => {
-    const zo = (marker: MarkerPos) => ({ marker });
-    expect(posunZaBody(zo(3), 1, 6)).toEqual({ marker: 6, cena: 6, kroky: 3 });
-    expect(posunZaBody(zo(3), 1, 5)).toEqual({ marker: 5, cena: 3, kroky: 2 });
-    expect(posunZaBody(zo(3), 1, 1)).toEqual({ marker: 4, cena: 1, kroky: 1 });
-    expect(posunZaBody(zo(5), 0, 2)).toBeNull();
-    expect(posunZaBody(zo(6), 1, 10)).toBeNull();
-  });
-});
-
-describe("§9 hádka, ktorá na žiadny posun nestačí, prepadne (v10; do v9 Pohoršenia)", () => {
-  function bitka(b: Partial<BitkaStav>): BitkaStav {
-    return {
-      krok: "hadka",
-      caka: 0,
-      sums: [{}, {}],
-      exekutorHotovy: [true, true],
-      hadka: { makke: [2, 0], vitaz: 0, velkost: 2, zostava: 2, prepadlo: 0, posuny: [] },
-      exekutor: [0, 0],
-      damage: null,
-      vitaz: null,
-      prebytokDrzi: null,
-      prebytokZostava: 0,
-      prebytokPosunute: [],
-      spalit: [],
-      vesticaHotova: true,
-      ...b,
-    };
-  }
-
-  it("zvyšok 1 pri markeroch mimo stredu prepadne a log to povie", () => {
-    const s0 = setupGame(data, 21);
-    // Víťaz hádky posunie priazeň jediného staršieho v strede (1 bod) — ďalšie pole stojí 2, zvyšok 1 nevyjde nikde.
-    const s: GameState = {
-      ...s0,
-      faza: "bitka",
-      kolo: 2,
-      utocnik: 1,
-      strany: [[], []],
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      lokalityVHre: s0.lokalityVHre.slice(1),
-      starsi: s0.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 3 : i % 2 === 0 ? 1 : 5) as MarkerPos })),
-      bitkaStav: bitka({ }),
-    };
-    const { state, events } = apply(data, s, { type: "hadka", elderId: s.starsi[0]!.elderId }, 0);
-    // Marker sa nehýbe; priazeň do konca kola je hráča 0 v sile 1 (klebety +1 k hráčovi 0).
-    expect(state.starsi.map((e) => e.marker)).toEqual(s.starsi.map((e) => e.marker));
-    expect(events.some((e) => e.type === "log" && e.text.includes("Hádka 1 prepadla"))).toBe(true);
-  });
-});
+// Cena posunu markera (v8.2) a prepadnutie hádky (v10) zanikli s v11 — strach-reci.test.ts.
 
 describe("§11 Dlh je počítadlo — jadro sa na kartu dlh nespolieha (v8.2); Absťák je od v9.1 karta", () => {
   // Admin kartu Dlh zo sady vyradil; hra musí bežať aj bez nej — aj bez karty Absťák (staršia sada).
