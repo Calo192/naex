@@ -606,6 +606,20 @@ export class Obsah {
     return { verzia: novaVerzia, kariet: stara.karty.length, mimoSady: this.karty.vsetky().filter((k) => !ids.has(k.id)).map((k) => k.id) };
   }
 
+  /**
+   * Mená kariet zo všetkých zverejnených sád — admin.ts zastarane z nich zistí,
+   * ktoré karty od niektorej sady zanikli (skill vypalit).
+   */
+  menaKarietVSadach(): { meno: string; poslednaVerzia: number }[] {
+    const mena = new Map<string, number>();
+    for (const r of this.db.prepare("SELECT verzia, data FROM sady ORDER BY verzia").iterate() as Iterable<{ verzia: number; data: string }>) {
+      for (const k of (JSON.parse(r.data) as { karty: readonly { nazov?: unknown }[] }).karty) {
+        if (typeof k.nazov === "string" && k.nazov.trim() !== "") mena.set(k.nazov.trim(), Number(r.verzia));
+      }
+    }
+    return [...mena].map(([meno, poslednaVerzia]) => ({ meno, poslednaVerzia })).sort((a, b) => a.meno.localeCompare(b.meno, "sk"));
+  }
+
   historiaSad(): { verzia: number; cas: number; autor: number | null; kariet: number }[] {
     const rows = this.db.prepare("SELECT verzia, cas, autor, data FROM sady ORDER BY verzia DESC LIMIT 50").all() as {
       verzia: number;

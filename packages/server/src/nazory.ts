@@ -12,6 +12,27 @@ import type { Db } from "./db.ts";
 import type { Pouzivatel } from "./auth.ts";
 import { ChybaVstupu, jeSpravca } from "./auth.ts";
 import { Prava } from "./prava.ts";
+import { transakcia } from "./db.ts";
+import { overDovodSkrytia, zapisSkrytie } from "./skrytie.ts";
+
+const TABULKA = { nazor: "nazory", komentar: "nazory_komentare" } as const;
+
+/** Skrytý názor či komentár AI účtu v archíve (skill vypalit). */
+export interface SkrytyPrispevok {
+  readonly druh: "nazor" | "komentar";
+  readonly id: number;
+  /** Id názoru — pri komentári názor, pod ktorým je. */
+  readonly nazor: number;
+  readonly autor: Autor;
+  /** Nadpis názoru (pri komentári nadpis názoru, pod ktorým je). */
+  readonly nadpis: string;
+  readonly text: string;
+  readonly vytvoreny: number;
+  readonly skryty: number;
+  readonly dovod: string;
+  /** Meno toho, kto skryl. */
+  readonly skryl: string | null;
+}
 
 /** Poradie = poradie vo formulári „O čom píšeš?“ (Chyba prvá). Kľúče sa nemenia — staré názory ostávajú, ako boli. */
 export const KATEGORIE = ["chyba", "pravidla", "karty", "hranie", "web", "napad", "ine"] as const;
@@ -145,10 +166,10 @@ export class Nazory {
                 u.id AS autor_id, u.meno AS autor_meno, u.avatar AS autor_avatar, u.rola AS autor_rola, u.ai AS autor_ai,
                 (SELECT COUNT(*) FROM cigarety_nazorov c WHERE c.nazor = n.id) AS cigarety,
                 (SELECT COUNT(*) FROM cigarety_nazorov c WHERE c.nazor = n.id AND c.pouzivatel = ?) AS moja,
-                (SELECT COUNT(*) FROM nazory_komentare k WHERE k.nazor = n.id) AS komentarov
+                (SELECT COUNT(*) FROM nazory_komentare k WHERE k.nazor = n.id AND k.skryty IS NULL) AS komentarov
          FROM nazory n JOIN pouzivatelia u ON u.id = n.autor
          LEFT JOIN novinky v ON v.id = n.novinka
-         WHERE (? IS NULL OR n.kategoria = ?)
+         WHERE n.skryty IS NULL AND (? IS NULL OR n.kategoria = ?)
            ${stavy.length === 0 ? "" : `AND n.stav IN (${stavy.map(() => "?").join(",")})`}
            ${ai.length === 0 ? "" : "AND u.ai = ?"}
          ORDER BY ${poradie}
@@ -165,7 +186,7 @@ export class Nazory {
                 (SELECT COUNT(*) FROM cigarety_komentarov c WHERE c.komentar = k.id) AS cigarety,
                 (SELECT COUNT(*) FROM cigarety_komentarov c WHERE c.komentar = k.id AND c.pouzivatel = ?) AS moja
          FROM nazory_komentare k JOIN pouzivatelia u ON u.id = k.autor
-         WHERE k.nazor IN (${ids.map(() => "?").join(",")})
+         WHERE k.skryty IS NULL AND k.nazor IN (${ids.map(() => "?").join(",")})
          ORDER BY k.id`,
       )
       .all(ja.id, ...ids) as Record<string, unknown>[];
@@ -205,7 +226,7 @@ export class Nazory {
     const riadky = this.db
       .prepare(
         `SELECT n.stav, u.ai, COUNT(*) AS n FROM nazory n JOIN pouzivatelia u ON u.id = n.autor
-         WHERE (? IS NULL OR n.kategoria = ?) GROUP BY n.stav, u.ai`,
+         WHERE n.skryty IS NULL AND (? IS NULL OR n.kategoria = ?) GROUP BY n.stav, u.ai`,
       )
       .all(kategoria, kategoria) as { stav: string; ai: number; n: number }[];
     const out = Object.fromEntries(SKUPINY_STAVU.map((s) => [s, { ludia: 0, ai: 0 }])) as Record<SkupinaStavu, { ludia: number; ai: number }>;
@@ -291,9 +312,83 @@ export class Nazory {
     this.db.prepare("DELETE FROM nazory WHERE id = ?").run(id);
   }
 
+  /**
+   * Mäkké skrytie zastaraného príspevku (skill vypalit, Michal 2026-11-02) —
+   * len správca a len príspevok AI účtu. Názor či komentár človeka sa nikdy
+   * neskrýva: na zaniknutú vec mu Admin (AI) odpovie komentárom.
+   */
+  skry(ja: Pouzivatel, druh: "nazor" | "komentar", id: number, dovod: unknown, teraz: number): void {
+    if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Skrývať smie len admin alebo subadmin.", 403);
+    const d = overDovodSkrytia(dovod);
+    const r = this.prispevok(druh, id);
+    if (r.ai !== 1) throw new ChybaVstupu(`${druh === "nazor" ? "Názor" : "Komentár"} človeka sa neskrýva — odpovedz naň komentárom.`, 403);
+    if (r.skryty !== null) throw new ChybaVstupu(`${druh === "nazor" ? "Názor" : "Komentár"} #${id} už je skrytý.`);
+    transakcia(this.db, () => {
+      this.db.prepare(`UPDATE ${TABULKA[druh]} SET skryty = ?, skryty_dovod = ?, skryl = ? WHERE id = ?`).run(teraz, d, ja.id, id);
+      zapisSkrytie(this.db, { druh, kluc: id, akcia: "skry", dovod: d, kto: ja.id, kedy: teraz, zaloha: { autor: r.autor, nadpis: r.nadpis, text: r.text } });
+    });
+  }
+
+  /** Vráti skrytý príspevok späť na web. */
+  vrat(ja: Pouzivatel, druh: "nazor" | "komentar", id: number, teraz: number): void {
+    if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Vracať smie len admin alebo subadmin.", 403);
+    const r = this.prispevok(druh, id);
+    if (r.skryty === null) throw new ChybaVstupu(`${druh === "nazor" ? "Názor" : "Komentár"} #${id} nie je skrytý.`);
+    transakcia(this.db, () => {
+      this.db.prepare(`UPDATE ${TABULKA[druh]} SET skryty = NULL, skryty_dovod = '', skryl = NULL WHERE id = ?`).run(id);
+      zapisSkrytie(this.db, { druh, kluc: id, akcia: "vrat", dovod: r.skryty_dovod, kto: ja.id, kedy: teraz });
+    });
+  }
+
+  private prispevok(
+    druh: "nazor" | "komentar",
+    id: number,
+  ): { autor: number; ai: number; nadpis: string; text: string; skryty: number | null; skryty_dovod: string } {
+    const nadpis = druh === "nazor" ? "p.nadpis" : "''";
+    const r = this.db
+      .prepare(`SELECT p.autor, u.ai, ${nadpis} AS nadpis, p.text, p.skryty, p.skryty_dovod FROM ${TABULKA[druh]} p JOIN pouzivatelia u ON u.id = p.autor WHERE p.id = ?`)
+      .get(id) as { autor: number; ai: number; nadpis: string; text: string; skryty: number | null; skryty_dovod: string } | undefined;
+    if (r === undefined) throw new ChybaVstupu(druh === "nazor" ? "Taký názor neexistuje." : "Taký komentár neexistuje.", 404);
+    return { ...r, ai: Number(r.ai) };
+  }
+
+  /** Skryté príspevky pre správcu — archív na stránke Spätná väzba a admin.ts nazory --archiv. */
+  archiv(ja: Pouzivatel): SkrytyPrispevok[] {
+    if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Archív vidí len admin alebo subadmin.", 403);
+    const riadky = this.db
+      .prepare(
+        `SELECT 'nazor' AS druh, n.id AS id, n.id AS nazor, n.nadpis, n.text, n.vytvoreny, n.skryty AS skryty, n.skryty_dovod, s.meno AS skryl,
+                u.id AS autor_id, u.meno AS autor_meno, u.avatar AS autor_avatar, u.rola AS autor_rola, u.ai AS autor_ai
+         FROM nazory n JOIN pouzivatelia u ON u.id = n.autor LEFT JOIN pouzivatelia s ON s.id = n.skryl
+         WHERE n.skryty IS NOT NULL
+         UNION ALL
+         SELECT 'komentar', k.id, k.nazor, n.nadpis, k.text, k.vytvoreny, k.skryty, k.skryty_dovod, s.meno,
+                u.id, u.meno, u.avatar, u.rola, u.ai
+         FROM nazory_komentare k JOIN nazory n ON n.id = k.nazor JOIN pouzivatelia u ON u.id = k.autor LEFT JOIN pouzivatelia s ON s.id = k.skryl
+         WHERE k.skryty IS NOT NULL
+         ORDER BY skryty DESC, id DESC`,
+      )
+      .all() as Record<string, unknown>[];
+    return riadky.map((r) => ({
+      druh: r.druh as "nazor" | "komentar",
+      id: Number(r.id),
+      nazor: Number(r.nazor),
+      autor: autorZ(r),
+      nadpis: String(r.nadpis),
+      text: String(r.text),
+      vytvoreny: Number(r.vytvoreny),
+      skryty: Number(r.skryty),
+      dovod: String(r.skryty_dovod),
+      skryl: r.skryl === null ? null : String(r.skryl),
+    }));
+  }
+
   komentuj(ja: Pouzivatel, nazor: number, text: unknown, teraz: number): number {
     this.prava.vyzaduj(ja, "spatna_vazba_reagovat");
     this.autorNazoru(nazor);
+    if (this.db.prepare("SELECT 1 FROM nazory WHERE id = ? AND skryty IS NOT NULL").get(nazor) !== undefined) {
+      throw new ChybaVstupu("Názor je v archíve — najprv ho vráť.");
+    }
     const t = overText(text, MAX_KOMENTAR, "Komentár");
     this.brzda("nazory_komentare", ja.id, teraz, LIMIT_KOMENTAROV);
     const r = this.db.prepare("INSERT INTO nazory_komentare (nazor, autor, text, vytvoreny) VALUES (?, ?, ?, ?)").run(nazor, ja.id, t, teraz);

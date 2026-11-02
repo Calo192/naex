@@ -77,6 +77,20 @@ interface Nazor {
   readonly komentare: readonly Komentar[];
 }
 
+/** Skrytý príspevok AI účtu (skill vypalit) — archív vidí len správca. */
+interface SkrytyPrispevok {
+  readonly druh: "nazor" | "komentar";
+  readonly id: number;
+  readonly nazor: number;
+  readonly autor: Autor;
+  readonly nadpis: string;
+  readonly text: string;
+  readonly vytvoreny: number;
+  readonly skryty: number;
+  readonly dovod: string;
+  readonly skryl: string | null;
+}
+
 /** Novinka na výber pri „hotovo“. */
 interface NovinkaVyber {
   readonly id: number;
@@ -634,6 +648,60 @@ function NovyNazor({ pridany, zrus, chyba }: { readonly pridany: (id: number) =>
   );
 }
 
+/**
+ * Archív skrytých príspevkov AI účtov (skill vypalit, Michal 2026-11-02): pri
+ * vypálení Zrejúcej sa skryjú tie, čo hovoria o zaniknutých kartách a mechanikách.
+ * Skrýva admin.ts nazor-skry / komentar-skry; tu ich správca len vráti.
+ */
+function ArchivSkrytych({ zmena, chyba }: { readonly zmena: () => void; readonly chyba: (e: unknown) => void }) {
+  const [prispevky, setPrispevky] = useState<readonly SkrytyPrispevok[] | null>(null);
+  const nacitaj = useCallback(() => {
+    api
+      .get<{ prispevky: SkrytyPrispevok[] }>("/admin/nazory-archiv")
+      .then((r) => setPrispevky(r.prispevky))
+      .catch(chyba);
+  }, [chyba]);
+  useEffect(nacitaj, [nacitaj]);
+
+  if (prispevky === null) return <Nacitavanie />;
+  if (prispevky.length === 0) return <div className="panel nazory-prazdne">Nič nie je skryté.</div>;
+  const vrat = (p: SkrytyPrispevok): void => {
+    api
+      .post(`/admin/${p.druh === "nazor" ? "nazory" : "komentare"}/${p.id}/vrat`, {})
+      .then(() => {
+        nacitaj();
+        zmena();
+      })
+      .catch(chyba);
+  };
+  return (
+    <div className="nazory">
+      <p className="tlmene">
+        Zastarané príspevky AI playtesterov (o kartách a pravidlách, ktoré už neplatia). Hráči ich nevidia; príspevky ľudí sa nikdy neskrývajú.
+      </p>
+      {prispevky.map((p) => (
+        <article key={`${p.druh}-${p.id}`} className="panel nazor-riadok">
+          {p.nadpis !== "" && <h3 className="nazor-titul">{p.nadpis}</h3>}
+          <div className="nazor-meta">
+            <span className="nazor-kategoria">{p.druh === "nazor" ? `názor #${p.id}` : `komentár #${p.id} k názoru #${p.nazor}`}</span>
+            <MenoAutora autor={p.autor} />
+            <span className="tlmene">{kedy(p.vytvoreny)}</span>
+          </div>
+          <p className="nazor-ukazka">{p.text}</p>
+          <p className="tlmene">
+            Skryl {p.skryl ?? "?"} {kedy(p.skryty)}: {p.dovod}
+          </p>
+          <div className="riadok-tlacidiel">
+            <button type="button" className="tlacidlo-jemne" onClick={() => vrat(p)}>
+              Vrátiť na web
+            </button>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export function SpatnaVazba() {
   useTitulok("Spätná väzba");
   const { ja, obnov: obnovUcet } = useUcet();
@@ -648,6 +716,7 @@ export function SpatnaVazba() {
   const [oznam, setOznam] = useState("");
   const [fokus, setFokus] = useState<number | null>(null);
   const [novinky, setNovinky] = useState<readonly NovinkaVyber[]>([]);
+  const [archiv, setArchiv] = useState(false);
   const tlacidloPisat = useRef<HTMLButtonElement>(null);
   const spravca = ja !== null && jeSpravca(ja.rola);
 
@@ -761,14 +830,30 @@ export function SpatnaVazba() {
 
           <div className="nazory-zalozky" role="group" aria-label="Stav názorov">
             {(Object.keys(ZALOZKY) as Zalozka[]).map((z) => (
-              <button key={z} type="button" className={zalozka === z ? "aktivna" : undefined} aria-pressed={zalozka === z} onClick={() => setZalozka(z)}>
+              <button
+                key={z}
+                type="button"
+                className={!archiv && zalozka === z ? "aktivna" : undefined}
+                aria-pressed={!archiv && zalozka === z}
+                onClick={() => {
+                  setArchiv(false);
+                  setZalozka(z);
+                }}
+              >
                 {ZALOZKY[z]}
                 <small>{pocet(z) ?? ""}</small>
               </button>
             ))}
+            {spravca && (
+              <button type="button" className={archiv ? "aktivna" : undefined} aria-pressed={archiv} onClick={() => setArchiv(true)} title="Skryté zastarané príspevky AI — vidí len správca">
+                Archív AI
+              </button>
+            )}
           </div>
 
-          <div className="nazory-filtre">
+          {archiv && <ArchivSkrytych zmena={obnov} chyba={ukazChybu} />}
+
+          <div className="nazory-filtre" hidden={archiv}>
             <label>
               <span className="tlmene">Kategória</span>
               <select value={filter ?? ""} onChange={(e) => setFilter(e.target.value === "" ? null : (e.target.value as Kategoria))}>
@@ -800,7 +885,7 @@ export function SpatnaVazba() {
 
           {chyba !== null && <Hlaska>{chyba}</Hlaska>}
 
-          {nazory === null ? (
+          {archiv ? null : nazory === null ? (
             chyba === null && <Nacitavanie />
           ) : nazory.length === 0 ? (
             <div className="panel nazory-prazdne">

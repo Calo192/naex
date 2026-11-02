@@ -47,6 +47,8 @@ export interface Navrh {
   readonly rozhodnuty: number | null;
   readonly vysledok: string;
   readonly verdikt: string;
+  /** Archív (zaniknutá karta či mechanika, skill vypalit); null = v zozname. */
+  readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 
 const STAVY: Readonly<Record<Stav, string>> = {
@@ -137,6 +139,7 @@ function NavrhKarta({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n: N
         </div>
         <h3>{n.nazov}</h3>
       </header>
+      {n.archiv !== null && <ArchivNavrhu n={n} zmenene={zmenene} />}
 
       <div className="navrh-rozbor">
         <section>
@@ -270,12 +273,42 @@ function NavrhKarta({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n: N
   );
 }
 
+/** Archivovaný návrh: prečo a kto; vrátiť ho smie správca (archivuje admin.ts navrh-archivuj). */
+function ArchivNavrhu({ n, zmenene }: { readonly n: Navrh; readonly zmenene: (n: Navrh) => void }) {
+  const [posiela, setPosiela] = useState(false);
+  const [chyba, setChyba] = useState<string | null>(null);
+  if (n.archiv === null) return null;
+  const vrat = async () => {
+    setPosiela(true);
+    setChyba(null);
+    try {
+      await api.post(`/admin/navrhy/${n.id}/vrat`, {});
+      zmenene({ ...n, archiv: null });
+    } catch (e) {
+      setChyba(e instanceof Error ? e.message : String(e));
+      setPosiela(false);
+    }
+  };
+  return (
+    <div className="navrh-archiv">
+      <p>
+        <strong>V archíve</strong> — {n.archiv.dovod} <span className="tlmene">({n.archiv.kto ?? "?"}, {kedy(n.archiv.kedy)})</span>
+      </p>
+      <button type="button" className="tlacidlo-jemne" disabled={posiela} onClick={() => void vrat()}>
+        Vrátiť z archívu
+      </button>
+      {chyba !== null && <Hlaska>{chyba}</Hlaska>}
+    </div>
+  );
+}
+
 export function Navrhy() {
   useTitulok("Playtest — návrhy");
   const { ja } = useUcet();
   const [navrhy, setNavrhy] = useState<readonly Navrh[] | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
   const [filter, setFilter] = useState<(typeof FILTRE)[number]["kluc"]>("rozhodnut");
+  const [ajArchiv, setAjArchiv] = useState(false);
 
   useEffect(() => {
     api
@@ -289,13 +322,20 @@ export function Navrhy() {
   const zmenene = (novy: Navrh) =>
     setNavrhy((stare) =>
       (stare ?? []).map((n) =>
-        n.id === novy.id ? { ...novy, rozhodol: ja === null ? n.rozhodol : { id: ja.id, meno: ja.meno, ai: false }, rozhodnuty: Date.now() } : n,
+        n.id !== novy.id
+          ? n
+          : novy.archiv === null && n.archiv !== null
+            ? novy
+            : { ...novy, rozhodol: ja === null ? n.rozhodol : { id: ja.id, meno: ja.meno, ai: false }, rozhodnuty: Date.now() },
       ),
     );
   const aktivny = FILTRE.find((f) => f.kluc === filter) ?? FILTRE[0];
-  const zobrazene = navrhy.filter((n) => aktivny.stavy === null || (aktivny.stavy as readonly Stav[]).includes(n.stav));
+  // Archív (zaniknuté karty a mechaniky) len na požiadanie — inak by staré návrhy zavadzali v rozhodovaní.
+  const vZozname = navrhy.filter((n) => ajArchiv || n.archiv === null);
+  const vArchive = navrhy.length - navrhy.filter((n) => n.archiv === null).length;
+  const zobrazene = vZozname.filter((n) => aktivny.stavy === null || (aktivny.stavy as readonly Stav[]).includes(n.stav));
   const davky = [...new Set(zobrazene.map((n) => n.davka))];
-  const pocet = (stavy: readonly Stav[] | null) => navrhy.filter((n) => stavy === null || stavy.includes(n.stav)).length;
+  const pocet = (stavy: readonly Stav[] | null) => vZozname.filter((n) => stavy === null || stavy.includes(n.stav)).length;
 
   return (
     <div>
@@ -310,6 +350,11 @@ export function Navrhy() {
             {f.text} ({pocet(f.stavy)})
           </button>
         ))}
+        {vArchive > 0 && (
+          <label className="playtest-archiv-prepinac">
+            <input type="checkbox" checked={ajArchiv} onChange={(e) => setAjArchiv(e.target.checked)} /> aj archív ({vArchive})
+          </label>
+        )}
       </div>
       {davky.length === 0 && <p className="tlmene navrhy-prazdne">Tu nič nie je. Návrhy pribudnú po playteste s parametrom max (/naex-playtest 2 max).</p>}
       {davky.map((d) => {

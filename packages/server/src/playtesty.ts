@@ -14,7 +14,11 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import type { ServerResponse } from "node:http";
 import { dirname, extname, join, normalize, sep } from "node:path";
-import { ChybaVstupu } from "./auth.ts";
+import type { Pouzivatel } from "./auth.ts";
+import { ChybaVstupu, jeSpravca } from "./auth.ts";
+import type { Db } from "./db.ts";
+import { transakcia } from "./db.ts";
+import { overDovodSkrytia, zapisSkrytie } from "./skrytie.ts";
 
 export interface Report {
   /** Cesta v priečinku reportov, napr. „20261012-101447.html“. */
@@ -24,6 +28,8 @@ export interface Report {
   readonly cas: number | null;
   /** report spisovateľa, rozbor stratéga, návrhy navrhára, alebo prehľad naprieč playtestami. */
   readonly druh: "prehlad" | "report" | "strategia" | "navrhy";
+  /** Archivovaný report (zaniknuté karty či mechaniky, skill vypalit); null = v zozname. */
+  readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 
 /** Platnosť tokenu — dosť na prečítanie reportu, krátko pre prípad úniku odkazu. */
@@ -52,10 +58,13 @@ export class Playtesty {
   /** Nahraté reporty (dátový adresár); null = nahrávanie vypnuté. */
   private readonly nahrateDir: string | null;
   private readonly tajomstvo = randomBytes(32);
+  /** Databáza archívu reportov; null = bez archívu (všetko v zozname). */
+  private readonly db: Db | null;
 
-  constructor(dir: string, nahrateDir: string | null = null) {
+  constructor(dir: string, nahrateDir: string | null = null, db: Db | null = null) {
     this.dir = normalize(dir);
     this.nahrateDir = nahrateDir === null ? null : normalize(nahrateDir);
+    this.db = db;
   }
 
   /** Nahraté najprv — majú prednosť pred rovnomenným súborom z repozitára. */
@@ -66,6 +75,7 @@ export class Playtesty {
   zoznam(): Report[] {
     const out: Report[] = [];
     const videne = new Set<string>();
+    const archiv = this.archivovane();
     for (const dir of this.priecinky()) {
       for (const subor of readdirSync(dir)) {
         const cesta = join(dir, subor);
@@ -78,11 +88,51 @@ export class Playtesty {
         const cas = m === null ? null : Date.UTC(Number(m[2]), Number(m[3]) - 1, Number(m[4]), Number(m[5]), Number(m[6]), Number(m[7]));
         videne.add(subor);
         const druh = prehlad !== undefined ? "prehlad" : m?.[1] === "strategia" ? "strategia" : m?.[1] === "navrhy" ? "navrhy" : "report";
-        out.push({ subor, nazov: prehlad ?? this.nazov(cesta, subor), cas, druh });
+        out.push({ subor, nazov: prehlad ?? this.nazov(cesta, subor), cas, druh, archiv: archiv.get(subor) ?? null });
       }
     }
     const prehladNavrch = (r: Report): number => (r.druh === "prehlad" ? 0 : 1);
     return out.sort((a, b) => prehladNavrch(a) - prehladNavrch(b) || (b.cas ?? 0) - (a.cas ?? 0) || a.subor.localeCompare(b.subor));
+  }
+
+  private archivovane(): Map<string, NonNullable<Report["archiv"]>> {
+    if (this.db === null) return new Map();
+    const riadky = this.db
+      .prepare("SELECT a.subor, a.dovod, a.kedy, u.meno FROM playtesty_archiv a LEFT JOIN pouzivatelia u ON u.id = a.kto")
+      .all() as { subor: string; dovod: string; kedy: number; meno: string | null }[];
+    return new Map(riadky.map((r) => [r.subor, { kedy: Number(r.kedy), dovod: r.dovod, kto: r.meno }]));
+  }
+
+  /**
+   * Archív reportov (skill vypalit, Michal 2026-11-02): súbor ostáva a dá sa
+   * otvoriť, sekcia Playtest ho len štandardne nezobrazí (prepínač „aj archív“).
+   */
+  archivuj(ja: Pouzivatel, subor: string, dovod: unknown, teraz: number): void {
+    const db = this.dbSpravcu(ja);
+    const d = overDovodSkrytia(dovod);
+    const r = this.zoznam().find((x) => x.subor === subor);
+    if (r === undefined) throw new ChybaVstupu(`Report „${subor}“ v sekcii Playtest nie je.`, 404);
+    if (r.archiv !== null) throw new ChybaVstupu(`Report „${subor}“ už je v archíve.`);
+    transakcia(db, () => {
+      db.prepare("INSERT INTO playtesty_archiv (subor, dovod, kto, kedy) VALUES (?, ?, ?, ?)").run(subor, d, ja.id, teraz);
+      zapisSkrytie(db, { druh: "report", kluc: subor, akcia: "skry", dovod: d, kto: ja.id, kedy: teraz, zaloha: { nazov: r.nazov, druh: r.druh } });
+    });
+  }
+
+  vratZArchivu(ja: Pouzivatel, subor: string, teraz: number): void {
+    const db = this.dbSpravcu(ja);
+    const r = db.prepare("SELECT dovod FROM playtesty_archiv WHERE subor = ?").get(subor) as { dovod: string } | undefined;
+    if (r === undefined) throw new ChybaVstupu(`Report „${subor}“ nie je v archíve.`, 404);
+    transakcia(db, () => {
+      db.prepare("DELETE FROM playtesty_archiv WHERE subor = ?").run(subor);
+      zapisSkrytie(db, { druh: "report", kluc: subor, akcia: "vrat", dovod: r.dovod, kto: ja.id, kedy: teraz });
+    });
+  }
+
+  private dbSpravcu(ja: Pouzivatel): Db {
+    if (!jeSpravca(ja.rola)) throw new ChybaVstupu("Reporty archivuje len admin alebo subadmin.", 403);
+    if (this.db === null) throw new ChybaVstupu("Archív reportov je na tomto serveri vypnutý.");
+    return this.db;
   }
 
   /** Uloží nahratý report alebo jeho obrázok (PUT /api/admin/playtesty/subor/<cesta>). */

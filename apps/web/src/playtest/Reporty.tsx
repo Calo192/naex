@@ -13,6 +13,8 @@ export interface Report {
   readonly nazov: string;
   readonly cas: number | null;
   readonly druh: "prehlad" | "report" | "strategia" | "navrhy";
+  /** Archív (zaniknuté karty či mechaniky, skill vypalit); null = v zozname. */
+  readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 
 export const kedy = (cas: number): string =>
@@ -27,6 +29,7 @@ export function Reporty({ subor }: { readonly subor: string | null }) {
   useTitulok("Playtest — reporty");
   const [data, setData] = useState<{ token: string; reporty: readonly Report[] } | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
+  const [ajArchiv, setAjArchiv] = useState(false);
 
   // Token platí 2 hodiny — pri každom otvorení sekcie či reportu sa načíta nový.
   useEffect(() => {
@@ -56,15 +59,26 @@ export function Reporty({ subor }: { readonly subor: string | null }) {
     );
   }
 
-  const prehlady = data.reporty.filter((r) => r.druh === "prehlad");
+  // Archivované (staré pravidlá, zaniknuté karty) len na požiadanie; súbor sa dá otvoriť aj tak.
+  const vArchive = data.reporty.filter((r) => r.archiv !== null).length;
+  const reporty = data.reporty.filter((r) => ajArchiv || r.archiv === null);
+  const prehlady = reporty.filter((r) => r.druh === "prehlad");
   const turnusy = new Map<string, { cas: number | null; report?: Report; strategia?: Report; navrhy?: Report }>();
-  for (const r of data.reporty) {
+  for (const r of reporty) {
     if (r.druh === "prehlad") continue;
     const t = turnus(r.subor);
     const riadok = turnusy.get(t) ?? { cas: r.cas };
     turnusy.set(t, { ...riadok, [r.druh]: r });
   }
-  const bunka = (r: Report | undefined, text?: string) => (r === undefined ? <span className="tlmene">—</span> : <Odkaz href={odkazNaReport(r.subor)}>{text ?? r.nazov}</Odkaz>);
+  const bunka = (r: Report | undefined, text?: string) =>
+    r === undefined ? (
+      <span className="tlmene">—</span>
+    ) : (
+      <span className={r.archiv === null ? undefined : "playtest-archivovany"} title={r.archiv === null ? undefined : `V archíve: ${r.archiv.dovod}`}>
+        <Odkaz href={odkazNaReport(r.subor)}>{text ?? r.nazov}</Odkaz>
+        {r.archiv !== null && <span className="znacka-archiv">archív</span>}
+      </span>
+    );
 
   return (
     <div>
@@ -78,13 +92,20 @@ export function Reporty({ subor }: { readonly subor: string | null }) {
           <ul className="playtest-zoznam">
             {prehlady.map((r) => (
               <li key={r.subor}>
-                <Odkaz href={odkazNaReport(r.subor)}>{r.nazov}</Odkaz>
+                {bunka(r)}
               </li>
             ))}
           </ul>
         </>
       )}
-      <h2>Playtesty ({turnusy.size})</h2>
+      <div className="riadok-tlacidiel">
+        <h2>Playtesty ({turnusy.size})</h2>
+        {vArchive > 0 && (
+          <label className="playtest-archiv-prepinac">
+            <input type="checkbox" checked={ajArchiv} onChange={(e) => setAjArchiv(e.target.checked)} /> aj archív ({vArchive})
+          </label>
+        )}
+      </div>
       {turnusy.size === 0 ? (
         <p className="tlmene">Zatiaľ žiadny report — spusti playtest (/naex-playtest).</p>
       ) : (

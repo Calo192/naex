@@ -1,0 +1,74 @@
+{
+  "_popis": "Zrušené mechaniky a pojmy pre admin.ts zastarane (skill vypalit, krok 7). vzory = začiatky slov bez diakritiky a malými písmenami (regulárny výraz; medzera = ľubovoľné medzery, zvyšok slova sa doplní sám). Karty, ktoré zo sady zanikli, netreba písať — nástroj ich zistí z histórie zverejnených sád; do „karty“ patria len vyradené karty, ktoré v žiadnej zverejnenej sade webu neboli. Pojem, ktorý sa vrátil do hry, vymaž.",
+  "mechaniky": [
+    {
+      "pojem": "Úplatok",
+      "vzory": [
+        "uplat(?:ok|k)"
+      ],
+      "pozn": "zrušený (PRAVIDLA.md: Úplatok zrušený, Kulturista je Sypač)"
+    },
+    {
+      "pojem": "klebety",
+      "vzory": [
+        "klebet"
+      ],
+      "pozn": "prenášanie klebiet zaniklo v10 (Hádka)"
+    },
+    {
+      "pojem": "udržaný strach",
+      "vzory": [
+        "udrzan\\w* strach",
+        "strach\\w* po udrzan"
+      ],
+      "pozn": "v11 Strach a reči"
+    },
+    {
+      "pojem": "posun priazne",
+      "vzory": [
+        "posun\\w* priazn",
+        "priazn\\w* sa posun"
+      ],
+      "pozn": "v11 Strach a reči"
+    },
+    {
+      "pojem": "Pohreb",
+      "vzory": [
+        "pohreb"
+      ],
+      "pozn": "zrušený (Michal 2026-10-27)"
+    },
+    {
+      "pojem": "patronát",
+      "vzory": [
+        "patron"
+      ],
+      "pozn": "väzeň namiesto patronátu (v10, Michal 2026-10-30)"
+    },
+    {
+      "pojem": "výhra vydesením",
+      "vzory": [
+        "vyhr\\w* vydesen",
+        "vydesenim"
+      ],
+      "pozn": "väzeň namiesto vydesenia ako výhry (Michal 2026-10-30); stav „vydesený (3)“ ostáva"
+    },
+    {
+      "pojem": "Nervák",
+      "vzory": [
+        "nervak"
+      ],
+      "pozn": "zrušený pri Absťák → Chuť (Michal 2026-10-30)"
+    },
+    {
+      "pojem": "špaky za väzňov",
+      "vzory": [
+        "spak\\w* za vazn"
+      ],
+      "pozn": "8 / 6 / 4 / 2 zanikli v v11"
+    }
+  ],
+  "karty": [
+    "Kohút"
+  ]
+}
