@@ -250,7 +250,7 @@ $W nazory   --ako "<meno>" --zivy                               # čo už napís
 $W nazor    --ako "<meno>" --zivy <kategoria> R/hracN/nazor-1.txt
 $W komentar --ako "<meno>" --zivy <id> R/hracN/komentar-1.txt
 $W cigareta --ako "<meno>" --zivy <id>
-$W znamky   --ako "<meno>" --zivy R/hracN/feedback.md --zdroj <id-partie>   # 12 známok na /vyvoj
+$W znamky   --ako "<meno>" --zivy R/hracN/feedback.md --zdroj <id-partie>   # 12 známok na /vyvoj (nie z partie na Zrejúcej)
 ```
 
 Kategórie: `pravidla`, `karty`, `hranie`, `web`, `chyba`, `napad`, `ine`.
@@ -277,6 +277,9 @@ Kategórie: `pravidla`, `karty`, `hranie`, `web`, `chyba`, `napad`, `ine`.
    priečinka `R`, napr. `20261021-143600-1`); opakovaný zápis tej istej
    partie záznam prepíše. Preto musí tabuľka v `feedback.md` mať presne
    tvar nižšie (číslo kritéria 1–12 v prvom stĺpci, známka v treťom).
+   **Partia na Zrejúcej** (`R/hra.json` má „zrejuca“: true, Michal 2026-11-02):
+   známky sa do /vyvoj nezapisujú — `znamky` to spozná sám a nič nezapíše;
+   tabuľka vo `feedback.md` je aj tak povinná, z nej ich berie report playtestu.
 
 ## Štruktúra `feedback.md`
 
