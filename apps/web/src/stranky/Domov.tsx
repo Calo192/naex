@@ -7,6 +7,7 @@ import { IkonaPoldeci } from "../hra/Panely.tsx";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { useUcet } from "../lib/ucet.tsx";
+import { VolbaZrejucej } from "../VolbaZrejucej.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import { adresaVyucby, bezPrvejCasti, napisVyucby, rozpracovana, useVyucbaUctu } from "../hra/Vyucba.tsx";
 
@@ -59,6 +60,8 @@ export function Domov() {
               <Odkaz href="/hra" className="tlacidlo tlacidlo-hlavne">
                 {ja === null ? "Prihlás sa a hraj" : "Hrať teraz"}
               </Odkaz>
+              {/* Pokusná verzia pre hráčov s oprávnením (Michal 2026-11-02). */}
+              <VolbaZrejucej tvar="tlacidlo" />
               {/* Výučba pri stole (Michal 2026-10-23) — /hra?vyucba=1 ju rovno spustí. */}
               {vyucba !== null && vyucba.dostupna && (
                 <Odkaz href="/hra?vyucba=1" className="tlacidlo" data-vyucba-vstup="titulka">

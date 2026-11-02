@@ -9,7 +9,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, type AnchorHTMLAttributes, type MouseEvent as ReactMouseEvent, type ReactNode, type RefObject } from "react";
 import { api } from "./lib/api.ts";
 import { NOVINKY_VIDENE, citajVidene } from "./lib/novinky.ts";
-import { hlavneMenu, jeAktivna, jeVonkajsi, menuUctu, spravaWebu, type PolozkaNavigacie } from "./lib/navigacia.ts";
+import { hlavneMenu, jeAktivna, menuUctu, spravaWebu, type PolozkaNavigacie } from "./lib/navigacia.ts";
+import { prepniInstanciu } from "./lib/instancia.ts";
 import { KLUC_MIESTNOSTI, ZAVES_ODCHODU, useJeStolVHlavicke, useStrazenaPartia, type StrazenaPartia } from "./lib/odchod.ts";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
 import { NAZOV_UROVNE, jeSpravca, jeZrejuca, useUcet } from "./lib/ucet.tsx";
@@ -230,48 +231,32 @@ function OdchodZPartie({
   );
 }
 
-/** Odkaz v hlavičke: do Vypálenej (plná adresa) obyčajný, inak cez router. */
-function OdkazMenu(props: AnchorHTMLAttributes<HTMLAnchorElement> & { readonly href: string }) {
-  return jeVonkajsi(props.href) ? <a {...props} /> : <Odkaz {...props} />;
-}
-
 /**
- * Do Zrejúcej bez nového hesla (Michal 2026-11-02): Vypálená vydá jednorazový odkaz, ktorý
- * Zrejúca overí. Keď sa nepodarí, otvorí sa obyčajná adresa a tester sa prihlási heslom.
+ * Odkaz v hlavičke cez router. V Zrejúcej vedú stránky Vypálenej (doVypalenej) najprv cez
+ * prepnutie inštancie — adresa je tá istá, rozhoduje cookie (lib/instancia.ts).
  */
-function doZrejucej(e: ReactMouseEvent<HTMLAnchorElement>, adresa: string): void {
-  if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-  e.preventDefault();
-  // Okno sa otvára ešte v kliku — po čakaní na server by ho prehliadač zablokoval.
-  const okno = window.open("about:blank", "_blank");
-  if (okno !== null) okno.opener = null;
-  void api
-    .post<{ url: string }>("/zrejuca/odkaz")
-    .then(
-      (r) => r.url,
-      () => adresa,
-    )
-    .then((url) => {
-      if (okno === null) location.href = url;
-      else okno.location.href = url;
-    });
+function OdkazMenu({ doVypalenej = false, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { readonly href: string; readonly doVypalenej?: boolean }) {
+  if (!doVypalenej) return <Odkaz {...props} />;
+  const klik = (e: ReactMouseEvent<HTMLAnchorElement>): void => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    void prepniInstanciu("vypalena", props.href);
+  };
+  return <a {...props} onClick={klik} />;
 }
 
 /**
  * Pás Zrejúcej (Michal 2026-11-02) — na každej stránke okrem stola, kde by ubral výšku;
- * tam ostáva značka pri logu.
+ * tam ostáva značka pri logu. Späť do Vypálenej prepne cookie inštancie.
  */
-function PasZrejucej({ vypalena }: { readonly vypalena: string | null }) {
+function PasZrejucej() {
   return (
     <div className="zrejuca-pas" role="note">
       <strong>Zrejúca – pokusná verzia</strong>
-      <span className="skryt-mobil"> · pravidlá a karty sa tu skúšajú, partie sa nerátajú do Vypálenej.</span>
-      {vypalena !== null && (
-        <>
-          {" "}
-          <a href={vypalena}>Oficiálna hra: Vypálená</a>
-        </>
-      )}
+      <span className="skryt-mobil"> · pravidlá a karty sa tu skúšajú, partie sa nerátajú do Vypálenej.</span>{" "}
+      <button type="button" className="zrejuca-spat" onClick={() => void prepniInstanciu("vypalena")}>
+        Späť do Vypálenej
+      </button>
     </div>
   );
 }
@@ -388,6 +373,7 @@ export function Layout({
         href={n.href}
         className={[trieda, n.hlavna === true ? "nav-hlavna" : "", aktivna ? "aktivna" : ""].filter((t) => t !== "").join(" ") || undefined}
         aria-current={aktivna ? "page" : undefined}
+        doVypalenej={n.doVypalenej === true}
         {...(sPrioritou && n.hlavna !== true ? { "data-priorita": n.priorita, "data-href": n.href, "data-skupina": n.skupina } : {})}
       >
         {n.text}
@@ -408,7 +394,7 @@ export function Layout({
 
   return (
     <div className={nastroj && !stol && !priStole ? "aplikacia nastroj" : "aplikacia"}>
-      {zrejuca && !celaSirka && <PasZrejucej vypalena={instancia.vypalena} />}
+      {zrejuca && !celaSirka && <PasZrejucej />}
       <header className="hlavicka" onClickCapture={strazOdchodu}>
         <div className={`hlavicka-vnutro${priStole ? " pri-stole" : ""}${kostra}`}>
           <Odkaz href="/" className="logo" aria-label="NA EX! — domov" data-nazov="úvodnú stránku">
@@ -484,7 +470,7 @@ export function Layout({
                         href={s.href}
                         role="menuitem"
                         className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}
-                        {...(s.prenos === true ? { target: "_blank", rel: "noopener", onClick: (e: ReactMouseEvent<HTMLAnchorElement>) => doZrejucej(e, s.href) } : {})}
+                        doVypalenej={s.doVypalenej === true}
                       >
                         {s.text}
                         {s.pocet === "navrhy" && pocetNavrhov}
@@ -564,7 +550,7 @@ export function Layout({
                 key={s.href}
                 href={s.href}
                 className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}
-                {...(s.prenos === true ? { target: "_blank", rel: "noopener", onClick: (e: ReactMouseEvent<HTMLAnchorElement>) => doZrejucej(e, s.href) } : {})}
+                doVypalenej={s.doVypalenej === true}
               >
                 {s.text}
                 {s.pocet === "navrhy" && pocetNavrhov}

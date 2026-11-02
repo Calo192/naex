@@ -398,6 +398,9 @@ function migruj(db: Db): void {
     // Nepovinný e-mail (Michal 2026-11-01), zatiaľ len na obnovu zabudnutého hesla.
     // Vidí ho len hráč sám a admin; NULL = neuviedol.
     ["email", "TEXT"],
+    // Oprávnenie hrať Zrejúcu (Michal 2026-11-02): výnimka, ktorú dá admin konkrétnemu účtu —
+    // 1 = udelené, 0 = odobraté, NULL = podľa ranku (matica práv, hrat_zrejucu).
+    ["zrejuca", "INTEGER"],
   ]);
   // Obnova hesla musí nájsť jediný účet — ten istý e-mail, ani s inými veľkými písmenami, nesmú mať dva účty.
   db.exec("CREATE UNIQUE INDEX IF NOT EXISTS pouzivatelia_email ON pouzivatelia(email COLLATE NOCASE) WHERE email IS NOT NULL");

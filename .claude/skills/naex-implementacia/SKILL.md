@@ -75,9 +75,9 @@ všetky v stave `implementovat`.
    rozhodnutie ostane — a povedz používateľovi prečo.
 
 6. **Nasadenie** — implementované ide na **Zrejúcu** (Michal 2026-11-02):
-   pokusnú inštanciu len pre testerov, ktorá hrá `origin/master` a rozpracovaný
-   stav tvorcu. Spusti `/naex-nasad zrejuca` (hráčov nezhodí, len partie
-   testerov); zmeny kariet od Admina v tvorcovi Zrejúca prevezme do minúty sama
+   pokusnú inštanciu na tej istej adrese pre hráčov s oprávnením, ktorá hrá
+   `origin/master` a rozpracovaný stav tvorcu. Spusti `/naex-nasad zrejuca` hneď
+   (bez čakania; Vypálenú nezhodí, len partie v Zrejúcej); zmeny kariet od Admina v tvorcovi Zrejúca prevezme do minúty sama
    (`$A sada-zrejuca --zrejuca` hneď) — sadu kvôli Zrejúcej **nezverejňuj**.
    Do **Vypálenej** (živý web pre hráčov) sa nič nenasadzuje: tam ide celý stav
    Zrejúcej naraz až po Michalovom schválení (posun vetvy `vypalena`,

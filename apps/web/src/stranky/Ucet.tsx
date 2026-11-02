@@ -5,6 +5,7 @@ import { api, mediaUrl } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { navratZ } from "../lib/navrat.ts";
+import { prepniInstanciu } from "../lib/instancia.ts";
 import {
   HUDBA_PREDVOLENA,
   LUPA_DO,
@@ -33,16 +34,20 @@ import { SCHEMY, aktualnaSchema, pouziSchemu } from "../lib/schemy.ts";
 import { VyberParu } from "./VyberParu.tsx";
 
 /**
- * Prihlásenie. Zrejúca (vypalena = adresa Vypálenej) ho ukáže namiesto každej stránky, kým
- * sa tester neprihlási (Michal 2026-11-02): účet je ten istý ako vo Vypálenej, hráči tam.
+ * Prihlásenie. Zrejúca ho ukáže namiesto každej stránky, kým v nej nie je nikto s oprávnením
+ * (Michal 2026-11-02): účet aj relácia sú tie isté ako vo Vypálenej, prihlásenie robí ona.
+ * bezPrava = prihlásený vo Vypálenej, ale Zrejúcu hrať nesmie — formulár netreba.
  */
-export function Prihlasenie({ vypalena = null }: { readonly vypalena?: string | null } = {}) {
-  useTitulok(vypalena === null ? "Prihlásenie" : "Zrejúca");
+export function Prihlasenie({ zrejuca = null }: { readonly zrejuca?: { readonly bezPrava: boolean } | null } = {}) {
+  useTitulok(zrejuca === null ? "Prihlásenie" : "Zrejúca");
   const { nastav } = useUcet();
   const [login, setLogin] = useState("");
   const [heslo, setHeslo] = useState("");
   const [chyba, setChyba] = useState<string | null>(null);
   const [caka, setCaka] = useState(false);
+  const doVypalenej = (cesta?: string): void => {
+    prepniInstanciu("vypalena", cesta).catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)));
+  };
 
   const odosli = async (e: FormEvent) => {
     e.preventDefault();
@@ -51,8 +56,8 @@ export function Prihlasenie({ vypalena = null }: { readonly vypalena?: string | 
     try {
       const r = await api.post<{ pouzivatel: Pouzivatel }>("/prihlasenie", { login, heslo });
       nastav(r.pouzivatel);
-      // V Zrejúcej ostane tester na stránke, ktorú otvoril.
-      if (vypalena === null || location.pathname === "/prihlasenie") chod(navratZ(location.search) ?? "/hra", true);
+      // V Zrejúcej ostane hráč na stránke, ktorú otvoril.
+      if (zrejuca === null || location.pathname === "/prihlasenie") chod(navratZ(location.search) ?? "/hra", true);
     } catch (err) {
       setChyba(err instanceof Error ? err.message : String(err));
     } finally {
@@ -60,14 +65,28 @@ export function Prihlasenie({ vypalena = null }: { readonly vypalena?: string | 
     }
   };
 
+  if (zrejuca?.bezPrava === true) {
+    return (
+      <HlavaStranky
+        nadpis="Zrejúca nie je pre tvoj účet"
+        uvod="Pokusnú verziu hry hrajú hráči s oprávnením — dáva ho admin (predvolene Sedmička, správcovia a AI playtesteri)."
+        akcia={
+          <button type="button" className="tlacidlo tlacidlo-hlavne" onClick={() => doVypalenej()}>
+            Späť do Vypálenej
+          </button>
+        }
+      />
+    );
+  }
+
   return (
     <>
-    {vypalena === null ? (
+    {zrejuca === null ? (
       <HlavaStranky nadpis="Vitaj späť" uvod="Prihlás sa a pokračuj tam, kde si prestal." />
     ) : (
       <HlavaStranky
-        nadpis="Zrejúca je len pre testerov"
-        uvod="Pokusná verzia hry — pravidlá a karty, ktoré sa ešte skúšajú. Hrajú ju admin, subadmini a AI playtesteri; prihlasuješ sa tým istým účtom ako vo Vypálenej."
+        nadpis="Zrejúca — pokusná verzia"
+        uvod="Pravidlá a karty, ktoré sa ešte skúšajú. Hrajú ju hráči s oprávnením; prihlasuješ sa tým istým účtom ako vo Vypálenej."
       />
     )}
     <div className="formular-stred">
@@ -83,16 +102,26 @@ export function Prihlasenie({ vypalena = null }: { readonly vypalena?: string | 
           {caka ? "Prihlasujem…" : "Prihlásiť sa"}
         </button>
         <p className="prihlasenie-zabudol">
-          {vypalena === null ? <Odkaz href="/zabudnute-heslo">Zabudol som heslo</Odkaz> : <a href={`${vypalena}/zabudnute-heslo`}>Zabudol som heslo</a>}
+          {zrejuca === null ? (
+            <Odkaz href="/zabudnute-heslo">Zabudol som heslo</Odkaz>
+          ) : (
+            <a href="/zabudnute-heslo" onClick={(e) => (e.preventDefault(), doVypalenej("/zabudnute-heslo"))}>
+              Zabudol som heslo
+            </a>
+          )}
         </p>
       </form>
-      {vypalena === null ? (
+      {zrejuca === null ? (
         <p className="formular-paticka">
           Ešte nemáš účet? <Odkaz href={`/registracia${location.search}`}>Zaregistruj sa</Odkaz>
         </p>
       ) : (
         <p className="formular-paticka">
-          Chceš si zahrať? Oficiálna hra je vo <a href={vypalena}>Vypálenej</a>.
+          Chceš si zahrať oficiálnu hru?{" "}
+          <a href="/" onClick={(e) => (e.preventDefault(), doVypalenej())}>
+            Späť do Vypálenej
+          </a>
+          .
         </p>
       )}
     </div>

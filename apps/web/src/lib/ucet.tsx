@@ -38,7 +38,8 @@ export type Pravo =
   | "vlastna_fotka"
   | "reporty_playtestov"
   | "navrhovat_karty"
-  | "vidiet_vyvoj";
+  | "vidiet_vyvoj"
+  | "hrat_zrejucu";
 
 /** Má prihlásený používateľ právo? Bez zoznamu (starý server) áno — server aj tak overí. */
 export const maPravo = (ja: Pick<Pouzivatel, "prava"> | null, pravo: Pravo): boolean => ja !== null && (ja.prava === undefined || ja.prava.includes(pravo));
@@ -78,6 +79,8 @@ export interface Pouzivatel {
   readonly pohlavie?: Pohlavie | null;
   /** Nepovinný e-mail na obnovu hesla — server ho posiela len hráčovi samému a adminovi. */
   readonly email?: string | null;
+  /** Výnimka admina pre Zrejúcu: true udelená, false odobratá, null/chýba = podľa ranku. */
+  readonly zrejuca?: boolean | null;
 }
 
 export const LUPA_OD = 150;
@@ -92,10 +95,17 @@ export const MELICHAR_PREDVOLENY = 70;
  */
 export interface Instancia {
   readonly nazov: "vypalena" | "zrejuca";
+  /** V Zrejúcej adresa Vypálenej, keď nie je tá istá (vývoj); inak null. */
   readonly vypalena: string | null;
-  /** Vo Vypálenej adresa Zrejúcej (odkaz v menu Správa); inak null alebo chýba. */
+  /** Vo Vypálenej: Zrejúca beží a dá sa do nej prepnúť (hodnota je jej adresa, "/" = tá istá); null = nie. */
   readonly zrejuca?: string | null;
+  /** V Zrejúcej: prihlásený vo Vypálenej, ale bez oprávnenia hrať Zrejúcu. */
+  readonly bezPrava?: boolean;
 }
+
+/** Smie prepnúť do Zrejúcej — len keď to server výslovne povie (starý server oprávnenie nepozná). */
+export const smieZrejucu = (ja: Pouzivatel | null, i: Instancia): boolean =>
+  i.nazov === "vypalena" && (i.zrejuca ?? null) !== null && ja?.prava?.includes("hrat_zrejucu") === true;
 
 const VYPALENA: Instancia = { nazov: "vypalena", vypalena: null };
 
