@@ -893,9 +893,9 @@ function znamienko(n: number): string {
   return n > 0 ? `+${n}` : `−${-n}`;
 }
 
-/** Dôvody, ktoré akciu karty zdvojujú (NA EX, Posilnenie, efekt karty ako Silná žena). */
+/** Dôvody, ktoré akciu karty zdvojujú (NA EX, Posilnenie, Forsáž, efekt karty ako Silná žena). */
 function jeZdvojenie(dovod: string): boolean {
-  return dovod === "NA EX" || dovod === "Posilnenie" || dovod.startsWith("karta:");
+  return dovod === "NA EX" || dovod === "Posilnenie" || dovod === "Forsáž" || dovod.startsWith("karta:");
 }
 
 /** Dlaždica efektu: ikona, hodnota pod ňou, zmeny v zátvorke, nápoveda pri prejdení myšou. */
@@ -965,7 +965,9 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
         ? "zdvojená cez NA EX"
         : d === "Vzbura"
           ? "aktivovaná Vzburou"
-          : d === "Odpor proti Posilneniu"
+          : d === "Forsáž"
+            ? "zdvojená Forsážou"
+            : d === "Odpor proti Posilneniu"
             ? "aktivovaná Odporom proti Posilneniu"
             : d.startsWith("karta:")
               ? `efekt karty ${menoKarty(d.slice(6))}`

@@ -161,7 +161,8 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Cigareta: 0.4,
   Vízia: 0.15,
   Poldeci: 0.5,
-  Posilnenie: 0.6,
+  // v10.3: Posilnenie proti Posilneniu je Forsáž (obe karty ×2) — už nikdy nie je hluché.
+  Posilnenie: 0.7,
   Odpor: 0.3,
   // v8.4: Robota bez Dlhu dá špak — nikdy nie je hluchá.
   Robota: 0.6,
@@ -217,6 +218,7 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   // Nástup presunie súperovu kartu z druhej strany — účinok ráta simulácia vyloženia (sPrilozenou).
   dohadzovacka: 0.3,
   masiar: 0.2,
+  // Sypač (v10.3): Pecky namiesto Rán, len keď je Výtržníkom — zrážku vidí odhad bitky.
   kulturista: 0.2,
   vandal: 0.2,
   traktoristka: 0.3,
@@ -1240,9 +1242,9 @@ function pitka(v: Volba): Command | null {
   // v5: fajčí sa len v Pitke — s prázdnou rukou si kartu na ďalšie kolo dober aj za poslednú cigaretu navyše.
   if (smoke !== undefined && !fajcenieStoji && maCoTahat && cenaFajc <= fajcitDo && h.ruka.length <= 2 && h.cigarety >= cenaFajc + 1) return smoke;
 
-  // Kšeft a Úplatok (v7): zahrá si ich nanečisto; berie, keď stav zlepší viac než o povahový prah.
+  // Kšeft (v7): zahrá si ho nanečisto; berie, keď stav zlepší viac než o povahový prah.
   // Poštárka (Dlh za kartu) len s tenkou rukou — cenu Dlhu (istú exekúciu) ráta hodnotaStavu.
-  const ksefty = v.legal.filter((c) => c.type === "kseft" || c.type === "kseftVazna" || c.type === "uplatok");
+  const ksefty = v.legal.filter((c) => c.type === "kseft" || c.type === "kseftVazna");
   if (ksefty.length > 0) {
     const ohodnot = (po: GameState): number => hodnotaStavu(k, po, 1.5);
     const best = najlepsi(v, ksefty, ohodnot);

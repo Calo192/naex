@@ -62,7 +62,7 @@ export const PREDVOLENE_AKCIE: readonly AkciaDef[] = [
   A("Viera", "Viera", "Najprv zruší súperove Povery 1 : 1 (aj vylepšenú Horoskopom), zvyšná znižuje súperovo tuhé poškodenie o 1 za kus; Veriaci pridá Vieru navyše +1 / +2 / +3. Proti Pohoršeniu nepomáha."),
   A("Pohoršenie", "Pohoršenie", "2 mäkké poškodenie do hádky; Viera ho nezruší. Víťaz hádky (viac mäkkého) rozdelí rozdiel na sily priazní starších len k sebe — pole stojí ako pri Nakladačke, najviac sila 3, do konca kola; marker sa nehýbe."),
   ...AKCIE_20261019.map((a) => A(a.kluc, a.nazov, a.popis)),
-  A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú."),
+  A("Posilnenie", "Posilnenie", "Zdvojnásobí prepojenú akciu — priaznivú aj nepriaznivú. Posilnenie proti Posilneniu = Forsáž: obe karty majú všetky aktívne akcie posilnené."),
   A("Odpor", "Odpor", "Zruší prepojenú akciu. Odpor proti Odporu = Vzbura: obe karty aktivujú všetky inak neaktívne akcie."),
   A("Robota", "Robota", "V bitke v kroku exekúcie, pred Exekútorom, spáli 1 tvoj priznaný Dlh (z hry). Za Dlh, ktorý nemá čo spáliť, ti dá 1 špak."),
   A("Pakt", "Pakt", "Na spoji sa správa ako akcia, s ktorou je v páre. Pakt s Paktom nerobí nič; Odpor ho zruší."),
@@ -101,9 +101,8 @@ export const PREDVOLENE_KLUCOVE_SLOVA: readonly KlucoveSlovo[] = [
   S("Prehra", "Uplatní sa, keď prehráš bitku o lokalitu: máš nižšie tuhé poškodenie, pri rovnakom tuhom viac Absťákov a pri ich rovnosti viac priznaných Dlhov. Keď nerozhodne ani to, neprehrá nikto — špaky kola idú na sekeru."),
   // Kšeft (v7, Michal 2026-10-27): aktívny efekt za cenu; Prestávka a Exekúcia zanikli (nemali kartu).
   S("Kšeft", "Aktívny efekt: za cenu (cigarety, poldeci, Dlh, karta) ho spustíš sám v Pitke, kým ju neskončíš — každú kartu raz za Pitku; Kšeft nie je ťah. Kšeft lokality smie použiť každý hráč, Kšeft väzňa (Väzeň — Kšeft) len hráč, ktorý toho staršieho drží ako väzňa."),
-  // Konflikt, Úplatok a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14).
+  // Konflikt a Exekúcia (v7, Michal 2026-10-27, plan.md 13 a 14); Úplatok zanikol vo v10.3.
   S("Konflikt", "Spustí sa, keď táto karta leží v línii a súper k nej priloží svoju kartu. Keď prikladáš ty, Konflikt nevyvoláš; priložený Nástroj, NA EX ani zrážka ho nespúšťajú."),
-  S("Úplatok", "Súper smie v Pitke, kým ju neskončil, dať na túto kartu cigaretu, raz za Pitku; cigareta prepadne. Kým je karta Výtržníkom, úplatky na nej neplatia a nový sa na ňu dať nedá."),
   S("Exekúcia", "Uplatní sa v bitke v kroku exekúcie (po poškodení a špakoch za bitku), keď Exekútor prichádza ku každému hráčovi s priznaným Dlhom."),
   P("zahoď", ["zahodiť", "zahodí", "zahodia"], "Zahodenie — kartu odstrániš z hry (spáliš)."),
   P("odhoď", ["odhodiť", "odhodí", "odhodia"], "Odhodenie — karta ide do odhadzovacieho balíčka hráča, ktorý ju zahral."),

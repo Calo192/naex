@@ -80,7 +80,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   krcma: "impl", // Pitka: s plným poldeci povinný NA EX (bez NA EX sa Pitka neskončí); prah Cirhózy +2
   krcmarka: "impl", // Väzeň — Kšeft: súper v tejto Pitke NA EX nedá (zakazNaex)
   lesna_cesta: "impl", // Bitka (v7): +1 tuhé za každé svoje Zviera v súperovom kraji
-  liberal: "impl", // Pitka (v7): súper bez rovnováhy žien a chlapov získa 1 zadĺženie (prirastkyPitky)
+  liberal: "impl", // Furt (v10.3): s rovnako ženami a chlapmi v partii majiteľa sú jeho aktívne akcie posilnené (partia.ts kartoveEfekty)
   milujuca_manzelka: "impl", // Pitka (v7, M2): tvoje poškodenie pečene v Pitke −1 (prirastkyPitky)
   ministrant: "impl", // Nástup (v7): ak vyvolá Konflikt, jeho Viera sa do konca kola ráta ako Pecka (partia.ts)
   nealko: "impl", // Dedičstvo: tvoj prah Cirhózy je o 2 vyšší (prahCirhozyBonus)
@@ -99,7 +99,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
   veterinar: "impl", // Väzeň — Kšeft: Cirhóza z ruky či priznaná z hry, v tejto Pitke pečeň 0 (bezPecene)
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
-  velmi_smutiaca_vdova: "impl", // Konflikt (v7): priložený Chlap ide po bitke z hry (konflikt)
+  velmi_smutiaca_vdova: "impl", // Konflikt (v10.3): súper odhodí 2 karty z balíčka za každého svojho Chlapa pri nej (konflikt)
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
   vychovavatelka: "impl", // Väzeň — Kšeft: súperovo NA EX v tejto Pitke → držiteľ +3 tuhé v bitke
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
@@ -155,7 +155,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   vandal: "impl", // Nástup: otoč lokalitu o 180°
   stryko_z_ameriky: "impl", // Kšeft: za 2 cigarety Rana navyše v bitke kola
   masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
-  kulturista: "impl", // Úplatok (v7): súper cigaretou zníži jeho útoky o stupeň (príkaz uplatok)
+  kulturista: "impl", // Sypač, Pitka (v10.3): ako Výtržník má Pecky namiesto Rán (partia.ts akciaVytrznika)
   traktoristka: "impl", // Bitka: s prevahou v jej kraji Pecka navyše, inak Dlh
   vymahac: "impl", // Bitka: za každé 2 priznané Dlhy Rana navyše
   sklad: "impl", // Kšeft: za cigaretu vrchná karta zo súperovho odhadzovacieho balíčka
@@ -254,22 +254,6 @@ export function zadlzenieZLinie(data: GameData, state: Pick<VerejnyStav, "strany
   return [pre(0), pre(1)];
 }
 
-/**
- * Liberál (Pitka, v7): súper, ktorého partia nemá rovnako žien a chlapov,
- * získa 1 zadĺženie za každého Liberála — [hráč 0, hráč 1]. Skrytá Záverečná sa
- * neráta. Pre Pitku (prirastkyPitky) aj náhľad vyloženia.
- */
-export function liberalZadlzenie(data: GameData, state: Pick<VerejnyStav, "strany">): readonly [number, number] {
-  const out: [number, number] = [0, 0];
-  for (const p of [0, 1] as const) {
-    const liberali = partiaHraca(state, p).filter((pl) => pl.card.defId === "liberal" && pl.zaverecna !== true).length;
-    if (liberali === 0 || efektPotlaceny(data, state, p, "liberal")) continue;
-    const opp = opponentOf(p);
-    const jeho = partiaHraca(state, opp).filter((pl) => pl.zaverecna !== true).map((pl) => defOf(data, pl.card).tags);
-    if (jeho.filter((t) => t.includes("Žena")).length !== jeho.filter((t) => t.includes("Chlap")).length) out[opp] += liberali;
-  }
-  return out;
-}
 
 // ---------------------------------------------------------------------------
 // Háčiky — motor ich volá na presne určených miestach

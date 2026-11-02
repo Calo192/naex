@@ -24,6 +24,7 @@ export type TypMomentu =
   | "bomba"
   | "zaverecna"
   | "vzbura"
+  | "forsaz"
   // prebudenie a zachranene len v partiách do v8 (prebudenie a vydesenie zanikli v9).
   | "prebudenie"
   | "zachranene"
@@ -48,6 +49,7 @@ export const MOMENTY: Readonly<Record<TypMomentu, { readonly stupen: StupenMomen
   bomba: { stupen: "striebro", nazov: "BOMBA ×4" },
   zaverecna: { stupen: "striebro", nazov: "ZÁVEREČNÁ!" },
   vzbura: { stupen: "bronz", nazov: "VZBURA!" },
+  forsaz: { stupen: "bronz", nazov: "FORSÁŽ!" },
   prebudenie: { stupen: "striebro", nazov: "PREBUDENIE" },
   zachranene: { stupen: "zlato", nazov: "ZACHRÁNENÉ" },
   zajatie: { stupen: "zlato", nazov: "ZAJATIE" },
@@ -73,6 +75,7 @@ export const NALADY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: Nalada
   bomba: { pre: "pohoda", proti: "smola" },
   zaverecna: { pre: "pohoda", proti: "smola" },
   vzbura: { pre: "udiv", proti: "udiv" },
+  forsaz: { pre: "udiv", proti: "udiv" },
   prebudenie: { pre: "pohoda", proti: "smola" },
   zachranene: { pre: "pohoda", proti: "smola" },
   zajatie: { pre: "pohoda", proti: "smola" },
@@ -137,6 +140,12 @@ function vzbury(ev: LineEval): number {
   return n;
 }
 
+function forsaze(ev: LineEval): number {
+  let n = 0;
+  for (const karta of ev.cards.values()) if (karta.forsaz) n++;
+  return n;
+}
+
 /**
  * Momenty, ktoré priniesol jeden príkaz (stav pred, stav po a jeho udalosti).
  * Kandidáti — strop drží obmedzMomenty.
@@ -179,6 +188,11 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
   // Vzbura: Odpor proti Odporu na novom spoji.
   if (vzbury(evPo) > vzbury(evPred)) {
     out.push({ typ: "vzbura", ...MOMENTY.vzbura, hrac: null, popis: "Vzbura — Odpor narazil na Odpor a obe karty sa rozbehli naplno." });
+  }
+
+  // Forsáž (v10.3): Posilnenie proti Posilneniu na novom spoji.
+  if (forsaze(evPo) > forsaze(evPred)) {
+    out.push({ typ: "forsaz", ...MOMENTY.forsaz, hrac: null, popis: "Forsáž — Posilnenie narazilo na Posilnenie a obe karty idú dvojnásobne." });
   }
 
   // Zajatie (v9): hráčovi pribudol väzeň.

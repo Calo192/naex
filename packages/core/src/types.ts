@@ -77,8 +77,7 @@ export type Trigger =
   | "Kšeft"
   // Konflikt (v7, plan.md 13.1): ležiaca karta, ku ktorej súper priloží svoju.
   | "Konflikt"
-  // Úplatok (v7, Kulturista): opak Kšeftu — platí súper, aby kartu oslabil.
-  | "Úplatok"
+
   // Exekúcia (Záhradkár, Michal 2026-10-28): exekúcia v tomto kole pre majiteľa neplatí.
   | "Exekúcia"
   // Väzeň (krok 2 revízie starších, Michal 2026-10-30): Kšeft karty staršieho platí len držiteľovi väzňa.
@@ -95,7 +94,6 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Prehra",
   "Kšeft",
   "Konflikt",
-  "Úplatok",
   "Exekúcia",
   "Väzeň",
 ];
