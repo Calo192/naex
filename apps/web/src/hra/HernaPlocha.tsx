@@ -198,7 +198,7 @@ import {
   type VyhladPitky,
 } from "./Panely.tsx";
 import { KseftPodKartou } from "./KseftPodKartou.tsx";
-import { kseftyNaStole, vazniNaStole } from "./kseftyNaStole.ts";
+import { kseftyNaStole } from "./kseftyNaStole.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import type { HracInfo, SuhrnAchievementov, ZmenyFrajeriny } from "./useHra.ts";
@@ -258,7 +258,7 @@ const PORADIE = "poradie:";
  * Čo netreba mať na stole stále — otvára sa ako vrstva cez obrazovku.
  * „vestica“ ukazuje doberacie balíčky, ktoré hráčovi podľa karty odhalil server.
  */
-type Vrstva = "senok" | "lokality" | "log" | "vestica" | "karty";
+type Vrstva = "senok" | "lokality" | "log" | "vestica" | "karty" | "pivnica";
 /** Záložky vrstvy Karty (Michal 2026-10-23, #76) — súper ukazuje len Priznané a Dedičstvo. */
 type ZalozkaKariet = "balicek" | "odhodene" | "priznane" | "dedicstvo";
 
@@ -334,8 +334,11 @@ const SIRKA_CITATELNA = 72;
 const ONESKORENIE_SCROLLU_MS = 200;
 /** Miesto na klik na konci strany — zlomok šírky karty v línii. */
 const MIESTO_VOLBY = 0.42;
-/** Väzeň v pivnici na stole — menší než karta v línii, aby sa nepletol s ňou. */
-const POMER_PIVNICE = 0.85;
+/** Výška pod kartami v línii pre štítok Kšeftu (Michal 2026-11-02: celú kartu musí byť vidno). */
+const REZERVA_KSEFTU = 30;
+/** Karty v okne Pivnica — veľké a čitateľné (na telefóne menšie). */
+const SIRKA_PIVNICE = 210;
+const SIRKA_PIVNICE_NA_SIRKU = 120;
 /** Karty v šenku a lokalitách — väčšie než kedysi v bočnom paneli. */
 const SIRKA_VO_VRSTVE = 150;
 /** Výška / šírka karty (54 × 80 mm) — výška línie určuje veľkosť kariet (Stôl bez scrollovania, #67). */
@@ -741,9 +744,14 @@ export function HernaPlocha({
   const lokalitaRef = useRef<HTMLDivElement>(null);
   // Línia môže byť dlhá — lokalitu drž v strede pohľadu.
   const pocetVLinii = view.strany[0].length + view.strany[1].length;
-  // Pivnica s väzňami leží v Pitke pred tvojou stranou (Kšeft väzňa pod kartou) — línia jej uvoľní miesto.
-  const pivnica = prehravanie === undefined ? vazniNaStole(view) : [];
-  const slotyPivnice = pivnica.length === 0 ? 0 : pivnica.length * POMER_PIVNICE + 0.3;
+  // Kšeft leží pod kartou, ktorá ho ponúka (Michal 2026-11-02) — nie na hrane medzi Fajčiť a Doliať.
+  // Väzni nie sú na stole, ale v okne Pivnica (ikona v nástrojoch stola) — plocha sa nezmenší.
+  const kseftyStola = prehravanie === undefined ? kseftyNaStole(data, view) : [];
+  const kseftyVLinii = kseftyStola.filter((k) => k.druh !== "vazen");
+  const mojiVazni = view.vazni.filter((v) => v.hrac === ja);
+  const kseftVaznaTeraz = kseftyStola.some((k) => k.druh === "vazen" && k.dovod === null);
+  // Pod kartami ostane riadok na štítok Kšeftu, len keď nejaký v línii je — karty sa o toľko zmenšia.
+  const rezervaKseftu = kseftyVLinii.length > 0 ? REZERVA_KSEFTU : 0;
   // Dlhá línia sa zmenší na šírku stola (karty sa nezrežú), až po minimum.
   const [sirkaLinie, setSirkaLinie] = useState(0);
   useEffect(() => {
@@ -848,7 +856,7 @@ export function HernaPlocha({
     ? SIRKA_CITATELNA
     : mobil || vyskaPlste === 0
       ? SIRKA_V_LINII
-      : Math.floor((vyskaPlste - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu)));
+      : Math.floor((vyskaPlste - rezervaKseftu - (vyskaOkna < NIZKE_OKNO ? PRIDAVOK_NIZKE : vyskaOkna < NOTEBOOK ? PRIDAVOK_NOTEBOOK : PRIDAVOK_LINIE)) / (POMER_KARTY * (1 + rezervaPosunu)));
   useEffect(() => {
     // Výučba stôl na scroll neprepína: návrh ťahu so spojom (vysunuté karty, pokyn v dvoch riadkoch
     // úzkeho stola) ho prepol natrvalo a pás hráča s rukou ostali pod okrajom okna (UI inšpekcia
@@ -868,7 +876,7 @@ export function HernaPlocha({
           // a „+“ zmizlo) — karty sa rovnomerne zmenšia podľa šírky aj výšky plste.
           Math.max(
             SIRKA_NA_SIRKU_MIN_LINIA,
-            Math.min(SIRKA_V_LINII, sirkaPodlaVysky, Math.floor((sirkaLinie - 24) / (pocetVLinii + 1 + slotyPivnice + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 4),
+            Math.min(SIRKA_V_LINII, sirkaPodlaVysky, Math.floor((sirkaLinie - 24) / (pocetVLinii + 1 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 4),
           )
         : // Minimum platí pre šírku (dlhá línia sa radšej posúva); výška stola ho prebije —
         // na nízkom notebooku sa karty inak orezali dole (Michal 2026-10-23) — no nie pod
@@ -877,7 +885,7 @@ export function HernaPlocha({
           SIRKA_CITATELNA,
           Math.min(
             sirkaPodlaVysky,
-            Math.max(SIRKA_V_LINII_MIN, Math.min(SIRKA_V_LINII, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + slotyPivnice + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12)),
+            Math.max(SIRKA_V_LINII_MIN, Math.min(SIRKA_V_LINII, Math.floor((sirkaLinie - 60) / (pocetVLinii + 2 + (vykladam ? 2 * MIESTO_VOLBY : 0))) - 12)),
           ),
         );
   useEffect(() => {
@@ -2778,21 +2786,25 @@ export function HernaPlocha({
     return undefined;
   };
 
-  // Kšeft leží pod kartou, ktorá ho ponúka (Michal 2026-11-02) — nie na hrane medzi Fajčiť a Doliať.
-  const kseftyStola = prehravanie === undefined ? kseftyNaStole(data, view) : [];
+  const kseftNaKarte = (k: (typeof kseftyStola)[number], kratko = false): ReactNode => (
+    <KseftPodKartou
+      kseft={k}
+      cmd={cmd}
+      naDotyk={naSirku}
+      kratko={kratko}
+      onVykup={() => setMode({ typ: "vykup" })}
+      onNedostupny={(text, x, y) => setChybaTahania({ text, x, y })}
+    />
+  );
+  // Štítok leží celý pod kartou (v rezerve pod líniou) — text karty ani susedov nezakryje.
   const kseftPod = (uid: number, obsah: ReactNode): ReactNode => {
-    const k = kseftyStola.find((x) => x.uid === uid);
+    const k = kseftyVLinii.find((x) => x.uid === uid);
     if (k === undefined) return obsah;
     return (
-      <div key={uid} className="s-kseftom">
+      <div key={uid} className="s-kseftom" style={{ paddingBottom: REZERVA_KSEFTU }}>
         {obsah}
-        <KseftPodKartou
-          kseft={k}
-          cmd={cmd}
-          naDotyk={naSirku}
-          onVykup={() => setMode({ typ: "vykup" })}
-          onNedostupny={(text, x, y) => setChybaTahania({ text, x, y })}
-        />
+        {/* Na úzkej karte len cena — čo dostaneš, povie nápoveda (na telefóne ponuka po ťuknutí). */}
+        {kseftNaKarte(k, sirkaVLinii < 130)}
       </div>
     );
   };
@@ -5610,8 +5622,24 @@ export function HernaPlocha({
   );
   // Log a ? — tlačidlo Šenok zaniklo (Michal 2026-10-27): šenok sa ukáže sám, keď ho treba
   // (draft na stole, Starosta, Cintorín), a pokyn má naň tlačidlo.
+  // Pivnica (Michal 2026-11-02): väzni a ich Kšefty v samostatnom okne, nie na stole. Ikona je len
+  // pri väzňovi; v Pitke, keď je Kšeft väzňa dostupný, svieti.
+  const tlacidloPivnice =
+    mojiVazni.length === 0 ? null : (
+      <button
+        type="button"
+        className={["hlava-vrstva", "pivnica-tlacidlo", vrstva === "pivnica" ? "otvorena" : "", kseftVaznaTeraz ? "pivnica-dostupna" : ""].join(" ")}
+        data-vyucba="hlavicka:pivnica"
+        aria-label={`Pivnica — väzni: ${mojiVazni.length}${kseftVaznaTeraz ? ", Kšeft väzňa je teraz dostupný" : ""}`}
+        title={kseftVaznaTeraz ? "Pivnica: tvoji väzni — Kšeft väzňa môžeš teraz spustiť (za vypitý plný poldeci)." : "Pivnica: tvoji väzni a ich Kšefty (v Pitke za vypitý plný poldeci)."}
+        onClick={() => setVrstva(vrstva === "pivnica" ? null : "pivnica")}
+      >
+        Pivnica <span className="pocet">{mojiVazni.length}</span>
+      </button>
+    );
   const nastrojeStola = (
     <div className="hlava-vrstvy">
+      {tlacidloPivnice}
       <button
         className={["hlava-vrstva", vrstva === "log" ? "otvorena" : ""].join(" ")}
         data-vyucba="hlavicka:log"
@@ -6136,6 +6164,7 @@ export function HernaPlocha({
             {naSirku && (
               <div className="pruh-riadok">
                 {!ukazStarsich && pruhPokynu}
+                {tlacidloPivnice}
                 {hlavickaPartie}
               </div>
             )}
@@ -6165,16 +6194,6 @@ export function HernaPlocha({
             <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
             {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}
             <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined} data-vyucba="linia">
-              {pivnica.length > 0 && (
-                <div className="linia-skupina pivnica" data-vyucba="pivnica-stol">
-                  <span className="partia-popis" title="Tvoji väzni ležia v priznaných kartách. Kšeft väzňa spustíš v Pitke za vypitý plný poldeci, každého raz za Pitku.">
-                    pivnica
-                  </span>
-                  <div className="pivnica-rad">
-                    {pivnica.map((v) => kseftPod(v.karta.uid, sLupou({ karta: v.karta, sirka: Math.round(sirkaVLinii * POMER_PIVNICE) }, { kluc: v.karta.uid })))}
-                  </div>
-                </div>
-              )}
               <div className="linia-skupina moja">
                 {popisKraja(ja, "vlavo")}
                 <div className="partia-rad harmonika">{radStrany(ja)}</div>
@@ -6549,6 +6568,31 @@ export function HernaPlocha({
             </VrstvaPanel>
           );
         })()}
+
+      {vrstva === "pivnica" && (
+        <VrstvaPanel
+          nazov="Pivnica — tvoji väzni"
+          pozn={`Kšeft väzňa spustíš v Pitke za vypitý plný poldeci, každého raz za Pitku · väzni ${mojiVazni.length}/${KONSTANTY.VAZNI_NA_VYHRU}, tretí vyhráva`}
+          skryta={tahanie !== null}
+          onZavri={() => setVrstva(null)}
+        >
+          <div className="pivnica-okno">
+            {mojiVazni.length === 0 && <span className="popis">Nemáš väzňa.</span>}
+            {mojiVazni.map((v) => {
+              const k = kseftyStola.find((x) => x.uid === v.karta.uid);
+              return (
+                <div key={v.elderId} className="pivnica-vazen">
+                  {karta({ karta: v.karta, sirka: naSirku ? SIRKA_PIVNICE_NA_SIRKU : SIRKA_PIVNICE })}
+                  <span className="pivnica-poradie">
+                    {v.poradie}. zajatý · po finále {KONSTANTY.SPAKY_ZA_VAZNOV[v.poradie - 1] ?? 0} š.
+                  </span>
+                  {k !== undefined ? kseftNaKarte(k) : <span className="pivnica-mimo">Kšeft len v Pitke, kým ju neskončíš</span>}
+                </div>
+              );
+            })}
+          </div>
+        </VrstvaPanel>
+      )}
 
       {vrstva === "log" && (
         <VrstvaPanel nazov="Log" skryta={tahanie !== null} onZavri={() => setVrstva(null)}>

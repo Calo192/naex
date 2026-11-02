@@ -1,6 +1,6 @@
 // Kšeft pod kartou, ktorá ho ponúka (Michal 2026-11-02): tlačidlo nie je na hrane stola medzi
-// Fajčiť a Doliať, ale pod Strýkom v línii, pod lokalitou a pod väzňom v pivnici. Ponuka musí
-// sedieť s jadrom (legalCommands) a čo sa nedá, povie prečo.
+// Fajčiť a Doliať, ale celé pod Strýkom v línii a pod lokalitou; väzni majú Kšeft v okne Pivnica.
+// Ponuka musí sedieť s jadrom (legalCommands) a čo sa nedá, povie prečo.
 
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -10,7 +10,7 @@ import eldersJson from "../../../packages/core/data/elders.json";
 import scorecardsJson from "../../../packages/core/data/scorecards.json";
 import type { CardInstance, Command, GameState, PlayerId } from "@naex/core";
 import { apply, legalCommands, loadGameData, mozeHrat, naTahu, opponentOf, setupGame, tahBota, viewFor } from "@naex/core";
-import { kseftyNaStole, vazniNaStole, type KseftNaStole } from "../src/hra/kseftyNaStole.ts";
+import { kseftyNaStole, type KseftNaStole } from "../src/hra/kseftyNaStole.ts";
 import { KseftPodKartou, klucVyucbyKseftu } from "../src/hra/KseftPodKartou.tsx";
 import { klucVily } from "../src/hra/volbaVily.ts";
 
@@ -117,13 +117,11 @@ describe("Kšefty pod kartou", () => {
     expect(kseftyNaStole(data, viewFor(data, superov.s, ja)).some((k) => k.uid === superov.stryko)).toBe(false);
   });
 
-  it("po „Skončiť Pitku“ Kšefty ani pivnica na stole nie sú", () => {
+  it("po „Skončiť Pitku“ Kšefty nie sú — ani v Pivnici (ikona nesvieti)", () => {
     const { s } = sKseftami(zaklad, { lok: "sklad", vazni: ["hrobar"] });
-    expect(vazniNaStole(viewFor(data, s, ja))).toHaveLength(1);
+    expect(kseftyNaStole(data, viewFor(data, s, ja)).filter((k) => k.druh === "vazen" && k.dovod === null)).toHaveLength(1);
     const po = apply(data, s, { type: "skipNaex" }, ja).state;
-    const view = viewFor(data, po, ja);
-    expect(kseftyNaStole(data, view)).toEqual([]);
-    expect(vazniNaStole(view)).toEqual([]);
+    expect(kseftyNaStole(data, viewFor(data, po, ja))).toEqual([]);
   });
 });
 
@@ -139,6 +137,13 @@ describe("tlačidlo Kšeftu", () => {
     expect(html).toContain("+1 Rana");
     expect(html).toContain('aria-disabled="true"');
     expect(html).toContain("máš 1");
+  });
+
+  it("na úzkej karte je štítok krátky — len cena, zisk v nápovede", () => {
+    const stryko = ksefty.find((k) => k.druh === "karta") as KseftNaStole;
+    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: { ...stryko, dovod: null }, cmd: () => {}, kratko: true }));
+    expect(html).not.toContain("kseft-pod-zisk");
+    expect(html).toContain("1 Ranu navyše");
   });
 
   it("Kšeft vily je tlačidlo s ponukou „k sebe“ a „od seba“, nie rozbaľovač", () => {

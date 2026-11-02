@@ -9246,34 +9246,37 @@ button.auto-hotovo-odkaz {
 }
 
 /* ---- Kšeft pod kartou (Michal 2026-11-02) ----
- * Pečiatka leží cez spodnú hranu karty, ktorá Kšeft ponúka (Strýko, lokalita, väzeň) — na jej
- * texte, nie na akciách pri ilustrácii; šírka nanajvýš karta, aby nesiahla na susedov. */
+ * Štítok leží celý POD kartou, ktorá Kšeft ponúka (Strýko, lokalita) — v rezerve pod ňou
+ * (REZERVA_KSEFTU v HernaPlocha), aby bolo vidno celú kartu aj s efektom. Jeden riadok, šírka
+ * nanajvýš karta, aby nesiahol na susedov. Väzni majú Kšeft v okne Pivnica. */
 .s-kseftom {
   position: relative;
   display: flex;
   flex: none;
+  box-sizing: content-box;
 }
 
-/* Pod kartu presahuje o pevných 14 px (k hrane stola na nízkom notebooku ostane miesto);
-   vyššia pečiatka úzkej karty rastie nahor cez text karty, nie dole. */
-.kseft-pod {
+.s-kseftom > .kseft-pod {
   position: absolute;
   left: 50%;
-  bottom: -14px;
+  bottom: 3px;
   z-index: 5;
   display: flex;
   justify-content: center;
-  width: calc(100% - 6px);
+  width: 100%;
   translate: -50% 0;
   pointer-events: none;
 }
 
 button.pecat.kseft-pod-tlacidlo {
-  gap: 1px;
+  flex-direction: row;
+  gap: 5px;
   min-width: 0;
   max-width: 100%;
   min-height: 0;
-  padding: 3px 8px 4px;
+  height: 24px;
+  padding: 0 8px;
+  overflow: hidden;
   border-width: 1px;
   font-size: 0.62rem;
   pointer-events: auto;
@@ -9285,29 +9288,21 @@ button.pecat.kseft-pod-tlacidlo::after {
 
 .kseft-pod-tlacidlo .vymena {
   display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
-  gap: 0 4px;
+  gap: 3px;
   min-width: 0;
-  max-width: 100%;
 }
 
 .kseft-pod-nazov {
+  flex: none;
   letter-spacing: 0.1em;
   opacity: 0.75;
 }
 
-/* Úzka karta (pivnica, nízky notebook): zisk sa zalomí na dva riadky, neoreže sa. */
 .kseft-pod-zisk {
-  display: -webkit-box;
   overflow: hidden;
-  white-space: normal;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  /* Kratší zvyšok riadku za cenou ho nezúži na písmená — radšej celý na ďalší riadok. */
-  min-width: 4.5em;
-  text-align: center;
+  min-width: 0;
+  text-overflow: ellipsis;
   text-transform: none;
   letter-spacing: 0;
   font: 800 0.74rem/1.1 var(--pismo);
@@ -9318,6 +9313,7 @@ button.pecat.kseft-pod-tlacidlo::after {
 .kseft-pod-tlacidlo .cena-poldeci,
 .kseft-ponuka .cena-poldeci {
   display: inline-flex;
+  flex: none;
   align-items: center;
   font: 800 0.8rem/1 var(--nadpis);
   color: var(--cervena);
@@ -9340,39 +9336,59 @@ button.pecat.kseft-pod-tlacidlo::after {
   fill: var(--slaby);
 }
 
-/* Nedá sa (málo cigariet, použitý v tejto Pitke): obrys ako nákupy na hrane, ale s tmavým
-   podkladom — leží na svetlom texte karty a bez neho by sa nedal prečítať. */
+/* Nedá sa (málo cigariet, použitý v tejto Pitke): obrys ako nákupy na hrane, na tmavom podklade. */
 button.pecat.kseft-pod-tlacidlo.ne,
 button.pecat.kseft-pod-tlacidlo.ne:hover {
   color: var(--text);
   background: color-mix(in srgb, var(--pozadie) 88%, transparent);
 }
 
-/* Vybraná na NA EX: štítok „vybraná“ nad pečiatkou Kšeftu, nie pod ňou. */
-.hra .linia .s-kseftom > .s-lupou > .vybrana-pod {
-  bottom: 30px;
+/* ---- Pivnica (Michal 2026-11-02): väzni a ich Kšefty v okne, nie na stole ---- */
+.pivnica-okno {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 24px;
+  padding: 8px 4px 4px;
 }
 
-/* Pivnica: väzni pred tvojou stranou línie, len v tvojej Pitke (Kšeft väzňa pod kartou). Prerušovaná
-   čiara ju oddeľuje od línie — väzeň v línii nie je. */
-.linia-skupina.pivnica {
-  grid-column: 1;
-  justify-self: end;
+.pivnica-vazen {
+  display: grid;
   justify-items: center;
-  margin-right: 14px;
-  padding-right: 14px;
-  border-right: 2px dashed color-mix(in srgb, var(--text) 25%, transparent);
+  align-content: start;
+  gap: 8px;
 }
 
-.linia-skupina.pivnica .partia-popis {
+.pivnica-poradie,
+.pivnica-mimo {
+  font: 600 0.8rem/1.3 var(--pismo);
   color: var(--slaby);
 }
 
-.pivnica-rad {
-  display: flex;
-  align-self: center;
-  gap: 8px;
-  padding-bottom: 18px;
+/* V okne je miesto — tlačidlo Kšeftu v plnej veľkosti a ťukateľné (44 px). */
+.pivnica-vazen button.pecat.kseft-pod-tlacidlo {
+  height: auto;
+  min-height: 44px;
+  padding: 4px 14px;
+  font-size: 0.7rem;
+}
+
+/* Ikona Pivnica v nástrojoch stola: svieti, keď je v Pitke Kšeft väzňa dostupný. */
+:is(.partia-hlavicka, .jbar, .pruh-riadok) button.hlava-vrstva.pivnica-dostupna {
+  color: var(--akcent);
+  border-color: var(--akcent-tmavy);
+  animation: treba 1.6s ease-in-out infinite;
+}
+
+.pivnica-tlacidlo .pocet {
+  margin-left: 4px;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.partia-hlavicka, .jbar, .pruh-riadok) button.hlava-vrstva.pivnica-dostupna {
+    animation: none;
+  }
 }
 
 /* Ponuka Kšeftu nad tlačidlom (v <body>): voľba vily či karty, na telefóne aj potvrdenie. */
@@ -9465,22 +9481,22 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   }
 }
 
-/* Telefón: pod malou kartou len „Kšeft“ a cena — čo dostaneš, povie ponuka po ťuknutí. */
-.hra.mobil-sirka .kseft-pod-tlacidlo :is(.kseft-pod-zisk, .pecat-sipka) {
+/* Telefón: štítok pod malou kartou je „Kšeft“ a cena; ťuk otvorí ponuku s celým znením
+   a veľkým tlačidlom (44 px) — to je zväčšenie pri ťuknutí. */
+.hra.mobil-sirka .s-kseftom button.pecat.kseft-pod-tlacidlo {
+  height: 22px;
+  padding: 0 4px;
+  font-size: 0.52rem;
+}
+
+.hra.mobil-sirka .s-kseftom .kseft-pod-tlacidlo :is(.kseft-pod-zisk, .pecat-sipka) {
   display: none;
 }
 
-/* Ťukateľné aj pod malou kartou (aspoň 44 px); ťuk otvorí ponuku s veľkým tlačidlom. */
-.hra.mobil-sirka button.pecat.kseft-pod-tlacidlo {
+.hra.mobil-sirka .pruh-riadok button.pivnica-tlacidlo {
+  flex: none;
   min-width: 44px;
   min-height: 44px;
-  padding: 2px 5px 3px;
-  font-size: 0.56rem;
-}
-
-.hra.mobil-sirka .linia-skupina.pivnica {
-  margin-right: 6px;
-  padding-right: 6px;
 }
 
 /* ---- bar hráča na mobile ----

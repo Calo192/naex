@@ -1,7 +1,7 @@
 // Kšefty pod kartou (Michal 2026-11-02: „Chcem, aby to bolo vidno pod kartou, ktorá Kšeft
 // ponúka.“) — predtým stáli na hrane stola medzi Fajčiť a Doliať. Tu je bez Reactu, čo pod
 // ktorou kartou leží: Strýko v línii, lokalita s Kšeftom a väzni v pivnici. Ponuka je tá istá
-// ako v legalCommands (jadro); čo sa nedá, ostane pod kartou ako obrys s dôvodom.
+// ako v legalCommands (jadro); čo sa nedá, ostane ako obrys s dôvodom. Väzni sú v okne Pivnica.
 
 import {
   KONSTANTY,
@@ -159,7 +159,7 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
     if (lok.defId === "predsedova_vila") {
       const moznosti = moznostiVily(view);
       out.push(
-        spolu(VILA_CENA, "posun staršieho", `Kšeft Predsedovej vily: za ${cigariet(VILA_CENA)} posunieš marker jedného staršieho o pole k sebe alebo od seba — vyberieš ktorého a kam.`, moznosti.length === 0 ? "Niet staršieho, ktorého by Vila smela posunúť." : null, {
+        spolu(VILA_CENA, "posun", `Kšeft Predsedovej vily: za ${cigariet(VILA_CENA)} posunieš marker jedného staršieho o pole k sebe alebo od seba — vyberieš ktorého a kam.`, moznosti.length === 0 ? "Niet staršieho, ktorého by Vila smela posunúť." : null, {
           typ: "volba",
           nadpis: "Kšeft vily · posuň marker o pole",
           riadky: moznosti.map((m) => ({
@@ -225,9 +225,3 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
   return out;
 }
 
-/** Väzni hráča, ktorých pivnica leží na stole — len v jeho Pitke, keď smie Kšeftovať. */
-export function vazniNaStole(view: ClientState): readonly ClientState["vazni"][number][] {
-  const pitka = view.pitkaStav;
-  if (view.faza !== "pitka" || pitka === null || pitka.reakcia !== null || pitka.hotovy[view.ja]) return [];
-  return view.vazni.filter((v) => v.hrac === view.ja);
-}
