@@ -406,3 +406,47 @@ chick“ (č. 3–4). Predlohy všetkých: Krčmárka, Veterinár, Poštárka.
   z predmetov vedľa. Ak fajčenie nenesie pointu, píš „nobody is smoking, no
   smoke anywhere, no ashtray“. Pri zošite píš „illegible scribbles with no
   readable words“. Aj tak ostáva riziko.
+
+### Vedúcko (Občan, Autorita, Chlap) — 2026-11-02
+
+`H10` = `F:\Projects\naex-tmp\ilustracie\veducko\`, koláž `H10\kolaz.jpg`,
+finál `H10\veducko-final.jpg` (bez rámika a podpisu, neorezaný). Efekt (Furt):
+Roboty susedných kariet sa rátajú ako Pecky. Príbeh: vedúci partie, ktorý sám
+nerobí, len rozkazuje. Spoločný opis postavy: chudý šľachovitý vedúci okolo
+päťdesiatpäťky, úzka kostnatá tvár, prepadnuté líca, hrubé tmavosivé kefové
+fúzy, „clean-shaven chin, no beard“, sivé strnisko, sivé učesané vlasy
+s cestičkou, čistá biela košeľa s krátkym rukávom, lacná hnedá kravata,
+oranžová reflexná vesta, tri perá vo vrecku, lacné zlaté hodinky, vyleštené
+topánky, „slim build, not fat, realistic proportions, normal-sized head“.
+Predlohy: kolo 1 Veterinár, Zámočník, Krčmárka; kolo 2 Veterinár, Podvodník,
+Krčmárka.
+
+- **Schválené (č. 3):** `H10\veducko-hra-3.jpg` (`veducko-b`, kolo 2-2).
+  Námet: sedí rozvalený v popraskanom kancelárskom kresle v špinavej
+  unimobunke, nohy v čistých topánkach na stole, prilba leží na stole, cigareta
+  v ústach s jedným prúžkom dymu, v ruke studený poldecák číreho slivovice
+  („nothing rises from the glass“), za oknom zablatení robotníci nosia tehly
+  v lejaku; na stole fľaša bez etikety, termoska, podložka s čmáranicami;
+  jedna holá žiarovka, „no ashtray“. Michal dôvod neuviedol.
+  Predlohy: Veterinár, Podvodník, Krčmárka.
+  **Lekcia:** Michal znova nevybral variant podľa efektu (bitka robotníkov),
+  ale príbeh a neresť: vedúci v teple pri pálenke, robotníci v daždi za oknom.
+  Druhé postavy prešli, lebo sú malé a za oknom. Je to aj najtmavší, najmenej
+  kreslený z kandidátov.
+- **Nevybrané:**
+  - č. 1–2 (`veducko-a`, kolo 1-1 a 2-1): stojí s cigaretou, opiera sa
+    o lopatu pri jame, za ním kopú dvaja robotníci. Lopata nikdy nevyšla
+    čistá, ako chcel námet.
+  - č. 4 (`veducko-c`, kolo 2-1): s poldecákom sedí na tehlách, ukazuje prstom,
+    v jame sa robotníci bijú (satira priamo z efektu).
+- **Zamietnuté pred kolážou:** `veducko-b` kolo 1-1 a 1-2 (dym stúpal
+  z poldecáka, pri popolníku na stole), `veducko-b` kolo 2-1 (jantárová
+  pálenka, etiketa), `veducko-a` kolo 1-2 (podpis), `veducko-a` kolo 2-2
+  a `veducko-c` kolo 1-2 a 2-2 (kužeľ svetla z lampy priamo na postave,
+  č. 2-2 má aj biele oči a čierny rámik), `veducko-c` kolo 1-1 (čierny rámik,
+  kužeľ). Pri lampe na stĺpe alebo nad scénou model kreslí kužeľ aj
+  s „no beam or cone of light“.
+  **Lekcia:** keď postava fajčí, nedávaj na stôl popolník a píš „nothing
+  rises from the glass“. Interiér s jednou žiarovkou vyšiel tmavší a bližšie
+  vzorom než vonkajšia scéna v noci. Zámočník ako predloha ťahal svetlejší,
+  kreslenejší výraz.
