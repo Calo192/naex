@@ -9453,3 +9453,128 @@ button.auto-hotovo-odkaz {
     display: none;
   }
 }
+
+/* ---- Vízia: veľké okno s kartou (Michal 2026-11-02) ------------------------------------ */
+/* Nad rukou aj pásom pokynov (rozhoduje sa len tu), pod lupou a obrazovkou konca. */
+.vizia-okno {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 16px 24px;
+  background: rgba(10, 8, 6, 0.8);
+  backdrop-filter: blur(4px);
+  animation: vrstva-in 0.16s ease-out;
+}
+
+.vizia-okno-hlava {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 14px;
+  max-width: min(980px, 100%);
+  padding-right: 44px;
+  text-align: center;
+}
+
+.vizia-okno-hlava h2 {
+  margin: 0;
+  font: 800 1.1rem/1.2 var(--pismo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.vizia-okno-hlava p {
+  margin: 0;
+  color: var(--tlmeny);
+}
+
+.vizia-okno-hlava button.vizia-okno-skryt {
+  position: absolute;
+  top: -6px;
+  right: 0;
+  padding: 0.3rem 0.6rem;
+  background: transparent;
+  border-color: transparent;
+  color: var(--tlmeny);
+}
+
+.vizia-okno-karty {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+}
+
+.vizia-okno-karta {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.vizia-okno-karta figcaption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.vizia-okno-popis {
+  font-size: 0.8rem;
+  color: var(--slaby);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.vizia-okno-tlacidla {
+  display: flex;
+  gap: 10px;
+}
+
+.vizia-okno-tlacidla button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 128px;
+  padding: 0.45rem 1.1rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.vizia-okno-tlacidla small {
+  font-weight: 400;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Telefón na šírku: menej vzduchu, nech je karta čo najväčšia. */
+@media (max-height: 519.98px) {
+  .vizia-okno {
+    gap: 6px;
+    padding: 6px 12px;
+  }
+
+  .vizia-okno-hlava p {
+    font-size: 0.8rem;
+  }
+
+  .vizia-okno-karta {
+    gap: 6px;
+  }
+
+  .vizia-okno-tlacidla button {
+    min-width: 0;
+    padding: 0.25rem 0.8rem;
+  }
+
+  .vizia-okno-tlacidla small {
+    display: none;
+  }
+}

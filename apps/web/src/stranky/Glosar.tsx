@@ -20,6 +20,9 @@ import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 
+/** Vodorovná medzera kariet na počítači — rovnaká ako column-gap .mriezka-kariet v stranky.css. */
+const MEDZERA_KARIET = 26;
+
 const TYPY: readonly { readonly nazov: string; readonly tag: string | null }[] = [
   { nazov: "Všetky", tag: null },
   { nazov: "Starší", tag: "Starešina" },
@@ -198,7 +201,13 @@ export function Glosar() {
   const [mriezkaRef, sirkaMriezky] = useSirkaPrvku();
   // Kým mriežka nie je zmeraná, platí šírka z posuvníka (na telefóne je skrytý).
   const naTelefone = telefon && sirkaMriezky > 0;
-  const sirkaKarty = naTelefone ? sirkaKartyNaTelefone(sirkaMriezky, naVysku) : sirka;
+  // Na počítači Veľkosť určí počet stĺpcov a karty sa rozšíria, aby rad vyplnil celú šírku obsahu (Michal 2026-11-02).
+  const stlpcov = sirkaMriezky > 0 ? Math.max(1, Math.floor((sirkaMriezky + MEDZERA_KARIET) / (sirka + MEDZERA_KARIET))) : 0;
+  const sirkaKarty = naTelefone
+    ? sirkaKartyNaTelefone(sirkaMriezky, naVysku)
+    : stlpcov > 0
+      ? Math.floor((sirkaMriezky - (stlpcov - 1) * MEDZERA_KARIET) / stlpcov)
+      : sirka;
   useEffect(() => {
     api
       .get<{ autori: AutoriKariet }>("/dielna/autori")
@@ -233,29 +242,28 @@ export function Glosar() {
     <div className="glosar">
       {hlava}
       <div className="mriezka">
-      <aside className="st-bok glosar-bok" aria-label="Filter kariet">
-        <div className="glosar-ovladanie">
-          <div className="cipy" role="group" aria-label="Typ karty">
-            {TYPY.map((t) => (
-              <button key={t.nazov} className={typ === t.tag ? "cip aktivny" : "cip"} onClick={() => setTyp(t.tag)}>
-                {t.nazov}
-              </button>
-            ))}
-          </div>
-          <input type="search" placeholder="Hľadať názov, tag, efekt alebo príbeh…" value={hladat} onChange={(e) => setHladat(e.target.value)} />
-          <label className="glosar-velkost" hidden={telefon}>
-            <span className="tlmene">Veľkosť</span>
-            <input type="range" min={150} max={420} step={10} value={sirka} onChange={(e) => setSirka(Number(e.target.value))} />
-          </label>
+      {/* Filtre sú pás nad kartami (Michal 2026-11-02) — karty majú celú šírku kostry, stĺpcov je podľa šírky a Veľkosti. */}
+      <div className="glosar-ovladanie" role="search" aria-label="Filter kariet">
+        <div className="cipy" role="group" aria-label="Typ karty">
+          {TYPY.map((t) => (
+            <button key={t.nazov} className={typ === t.tag ? "cip aktivny" : "cip"} onClick={() => setTyp(t.tag)}>
+              {t.nazov}
+            </button>
+          ))}
         </div>
-      </aside>
-      <div className="st-obsah">
+        <input type="search" placeholder="Hľadať názov, tag, efekt alebo príbeh…" value={hladat} onChange={(e) => setHladat(e.target.value)} />
+        <label className="glosar-velkost" hidden={telefon}>
+          <span className="tlmene">Veľkosť</span>
+          <input type="range" min={150} max={420} step={10} value={sirka} onChange={(e) => setSirka(Number(e.target.value))} />
+        </label>
+      </div>
+      <div>
 
       <div
         ref={mriezkaRef}
         className={telefon ? "mriezka-kariet na-telefone" : "mriezka-kariet"}
         style={{
-          gridTemplateColumns: naTelefone ? `repeat(${naVysku ? 1 : 3}, ${sirkaKarty}px)` : `repeat(auto-fill, ${sirka}px)`,
+          gridTemplateColumns: naTelefone ? `repeat(${naVysku ? 1 : 3}, ${sirkaKarty}px)` : stlpcov > 0 ? `repeat(${stlpcov}, ${sirkaKarty}px)` : `repeat(auto-fill, ${sirka}px)`,
           columnGap: naTelefone ? MEDZERA_KARIET_TELEFON : undefined,
         }}
       >
