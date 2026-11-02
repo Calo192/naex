@@ -6,6 +6,7 @@
 import {
   KONSTANTY,
   VILA_CENA,
+  jeCoTahat,
   opponentOf,
   ponukaKseftuVazna,
   stavKseftuVaznaZPohladu,
@@ -63,6 +64,7 @@ export interface KseftNaStole {
 
 const KSEFT_KARTY: Readonly<Record<string, { readonly cena: number; readonly zisk: string; readonly tip: string }>> = {
   stryko_z_ameriky: { cena: KONSTANTY.EFEKT.STRYKO_CENA, zisk: "+1 Rana", tip: "Kšeft Strýka: za 2 cigarety udelíš v bitke tohto kola súperovi 1 Ranu navyše." },
+  predavacka: { cena: KONSTANTY.EFEKT.PREDAVACKA_CENA, zisk: "+1 karta", tip: "Kšeft Predavačky: za 1 cigaretu si doberieš 1 kartu." },
 };
 
 /** Krátky zisk Kšeftu väzňa na tlačidle — celé znenie je v texte karty staršieho. */
@@ -119,7 +121,14 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
       cena: { cigarety: k.cena },
       zisk: k.zisk,
       tip: k.tip,
-      dovod: pouzity ? pouzityText : vizia ?? (h.cigarety < k.cena ? `${meno(pl.card.defId)} chce ${cigariet(k.cena)}, máš ${h.cigarety}.` : null),
+      dovod: pouzity
+        ? pouzityText
+        : vizia ??
+          (h.cigarety < k.cena
+            ? `${meno(pl.card.defId)} chce ${cigariet(k.cena)}, máš ${h.cigarety}.`
+            : pl.card.defId === "predavacka" && !jeCoTahat(h.doberaciPocet, h.odhadzovaci.length)
+              ? "Nemáš z čoho ťahať."
+              : null),
       pouzity,
       akcia: { typ: "prikaz", prikaz: { type: "kseft", uid } },
     });

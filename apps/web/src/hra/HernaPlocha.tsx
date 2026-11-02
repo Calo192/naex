@@ -3588,7 +3588,7 @@ export function HernaPlocha({
         nadpis: "Vízia",
         text: (
           <span className="cakanie-text">
-            <strong>{menoHraca(super_)}</strong> sa pozerá na vrchnú kartu svojho balíčka — vezme si ju, alebo ju zahodí
+            <strong>{menoHraca(super_)}</strong> sa pozerá na vrchnú kartu svojho balíčka — vezme si ju, alebo ju spáli
             <span className="bodky" aria-hidden="true" />
           </span>
         ),
@@ -4055,7 +4055,7 @@ export function HernaPlocha({
                   <span className="vizia-karta">{sLupou({ karta: k2, sirka: 72 })}</span>
                   <span>
                     Dve vrchné karty: <strong>{k === null ? "?" : menoKarty(k.defId)}</strong> a <strong>{menoKarty(k2.defId)}</strong>. Jednu si vezmi
-                    do ruky alebo ju zahoď — navždy z hry; druhá ostane navrchu balíčka.{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}
+                    do ruky alebo ju spáľ — navždy z hry; druhá ostane navrchu balíčka.{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}
                   </span>
                 </span>
               ),
@@ -4064,8 +4064,8 @@ export function HernaPlocha({
               vpravo: (
                 <>
                   <button onClick={() => posli({ type: "vizia", vziat: true, druha: true })}>druhú do ruky</button>{" "}
-                  <button onClick={() => posli({ type: "vizia", vziat: false })}>zahodiť prvú</button>{" "}
-                  <button onClick={() => posli({ type: "vizia", vziat: false, druha: true })}>zahodiť druhú</button>
+                  <button onClick={() => posli({ type: "vizia", vziat: false })}>spáliť prvú</button>{" "}
+                  <button onClick={() => posli({ type: "vizia", vziat: false, druha: true })}>spáliť druhú</button>
                 </>
               ),
             };
@@ -4076,15 +4076,15 @@ export function HernaPlocha({
               <span className="vizia-text">
                 {k !== null && <span className="vizia-karta">{sLupou({ karta: k, sirka: 72 })}</span>}
                 <span>
-                  Vrchná karta tvojho balíčka: <strong>{k === null ? "?" : menoKarty(k.defId)}</strong>. Vezmi si ju do ruky, alebo ju zahoď
+                  Vrchná karta tvojho balíčka: <strong>{k === null ? "?" : menoKarty(k.defId)}</strong>. Vezmi si ju do ruky, alebo ju spáľ
                   — navždy z hry (kliatba, slabá karta).{zostava > 1 ? ` Ešte ${zostava - 1}× Vízia.` : ""}
                 </span>
               </span>
             ),
             vlavo: <button onClick={() => setViziaSkrytaPre(null)}>karta</button>,
-            // „zahodiť“ je druhá voľba, nie zrušenie — preto nie je ✕ na pečiatke.
+            // „spáliť“ je druhá voľba, nie zrušenie — preto nie je ✕ na pečiatke.
             stred: pecatTahu({ text: "do ruky", tip: "Vrchnú kartu balíčka si vezmeš do ruky.", akcia: () => posli({ type: "vizia", vziat: true }) }),
-            ...(naSirku ? { druha: <button onClick={() => posli({ type: "vizia", vziat: false })}>zahodiť</button> } : { vpravo: <button onClick={() => posli({ type: "vizia", vziat: false })}>zahodiť</button> }),
+            ...(naSirku ? { druha: <button onClick={() => posli({ type: "vizia", vziat: false })}>spáliť</button> } : { vpravo: <button onClick={() => posli({ type: "vizia", vziat: false })}>spáliť</button> }),
           };
         }
         const hracJa = view.hraci[ja];
@@ -6360,8 +6360,8 @@ export function HernaPlocha({
           nadpis={viziaK2 !== null ? "Vízia — Krištáľová guľa" : "Vízia"}
           text={
             viziaK2 !== null
-              ? "Dve vrchné karty tvojho balíčka. O jednej rozhodni — nechaj si ju do ruky, alebo ju zahoď navždy z hry; druhá ostane navrchu balíčka."
-              : "Vrchná karta tvojho balíčka. Nechaj si ju do ruky, alebo ju zahoď — navždy z hry (kliatba, slabá karta)."
+              ? "Dve vrchné karty tvojho balíčka. O jednej rozhodni — nechaj si ju do ruky, alebo ju spáľ — navždy z hry; druhá ostane navrchu balíčka."
+              : "Vrchná karta tvojho balíčka. Nechaj si ju do ruky, alebo ju spáľ — navždy z hry (kliatba, slabá karta)."
           }
           karty={[
             {

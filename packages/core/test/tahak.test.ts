@@ -33,6 +33,9 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Nástroj nie vedľa lokality (v10.2)", "**Vedľa lokality sa Nástroj nevykladá (v10.2):** na prázdnu stranu"],
     ["Forsáž (v10.3)", "Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky aktívne akcie posilnené ×2**"],
     ["Vdova (v10.3)", `súper odhodí **${pocet(KONSTANTY.EFEKT.VDOVA_ODHOD_ZA_CHLAPA, "kartu", "karty", "kariet")} z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí**`],
+    ["Predavačka (v10.4)", `**Predavačka (v10.4): ${pocet(KONSTANTY.EFEKT.PREDAVACKA_CENA, "cigareta", "cigarety", "cigariet")} → 1 karta z tvojho doberacieho balíčka**`],
+    ["Poľovník (v10.4)", "**spáli súperovo Zviera, ktoré je od lokality najďalej**"],
+    ["Policajtka (v10.4)", "za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor (aj Nástroja), získa súper **1 zadĺženie**"],
     ["Sypač (v10.3)", "Kulturista je teraz **Sypač** (Pitka): keď sa z neho stane Výtržník, jeho akcie sú **Pecky**, nie Rany."],
     ["Zastávka (v9.1)", "Zastávka (v9.1: po **prvej Pitke kola** si každý vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca"],
     ["pojmy stupnice (v8.3)", "**pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**"],
@@ -79,7 +82,6 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["Dlh ako počítadlo (v8.2), Absťák karta (v9.1)", "**Dlh je počítadlo, nie karta**"],
     ["Strýko (v7)", `(${KONSTANTY.EFEKT.STRYKO_CENA} cigarety → v bitke kola +1 Rana)`],
-    ["Policajtka (v7)", `Policajtka (súper Dlh; za Kriminála ti dá ${KONSTANTY.EFEKT.POLICAJTKA_CIGARETY} cigarety)`],
     ["Obecný úrad (v7)", `Obecný úrad (v7 Kšeft: ${KONSTANTY.EFEKT.URAD_CENA} cigarety`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);

@@ -830,16 +830,16 @@ function moznosti(v: ClientState): string[] {
     }
     case "pitka": {
       if (v.vizia !== null) {
-        // Vízia (Michal 2026-10-19): vrchnú kartu do ruky, alebo zahodiť.
+        // Vízia (Michal 2026-10-19): vrchnú kartu do ruky, alebo spáliť.
         const k = v.volbaVizia;
         const zostava = v.vizia.zostava[ja];
         c({ type: "vizia", vziat: true }, `VÍZIA: vrchnú kartu balíčka ${k === null ? "" : popisKarty(k)} si vezmi do ruky${zostava > 1 ? ` (ešte ${zostava - 1} Vízie)` : ""}`);
-        c({ type: "vizia", vziat: false }, "VÍZIA: vrchnú kartu ZAHOĎ — je navždy preč z hry (kliatba, slabá karta)");
+        c({ type: "vizia", vziat: false }, "VÍZIA: vrchnú kartu SPÁĽ — je navždy preč z hry (kliatba, slabá karta)");
         const k2 = v.volbaViziaDruha ?? null;
         if (k2 !== null) {
           // Krištáľová guľa (Náradie 2026-10-30): o druhej karte zhora; vrchná ostane navrchu.
           c({ type: "vizia", vziat: true, druha: true }, `VÍZIA (Krištáľová guľa): DRUHÚ kartu zhora ${popisKarty(k2)} si vezmi do ruky — vrchná ostane navrchu`);
-          c({ type: "vizia", vziat: false, druha: true }, "VÍZIA (Krištáľová guľa): DRUHÚ kartu zhora ZAHOĎ — vrchná ostane navrchu");
+          c({ type: "vizia", vziat: false, druha: true }, "VÍZIA (Krištáľová guľa): DRUHÚ kartu zhora SPÁĽ — vrchná ostane navrchu");
         }
         break;
       }
@@ -911,6 +911,8 @@ function moznosti(v: ClientState): string[] {
           if (pl.playedBy !== ja || pl.zaverecna === true || pouzite.includes(pl.card.uid)) continue;
           const uid = pl.card.uid;
           if (pl.card.defId === "stryko_z_ameriky" && h.cigarety >= KONSTANTY.EFEKT.STRYKO_CENA) c({ type: "kseft", uid }, `KŠEFT Strýko z Ameriky: za ${cigariet(KONSTANTY.EFEKT.STRYKO_CENA)} udelíš v bitke tohto kola súperovi 1 Ranu navyše (raz za Pitku)`);
+          if (pl.card.defId === "predavacka" && h.cigarety >= KONSTANTY.EFEKT.PREDAVACKA_CENA && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length))
+            c({ type: "kseft", uid }, `KŠEFT Predavačka: za ${cigariet(KONSTANTY.EFEKT.PREDAVACKA_CENA)} si doberieš 1 kartu (raz za Pitku, nie je to fajčenie)`);
         }
         // Kšeft väzňa (v9): len držiteľ, za vypitý plný poldeci, raz za Pitku na väzňa — ten istý výpočet ako jadro.
         for (const k of ponukaKseftuVazna(stavKseftuVaznaZPohladu(v), ja)) {

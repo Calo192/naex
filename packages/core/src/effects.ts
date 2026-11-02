@@ -71,7 +71,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   cirhoza: "native", // Bitka: dodatočná rana od súpera (cirhozaBonus)
   abstak: "native", // Bitka (v9.1): −1 tuhé za každý Absťák v balíčku, remíza v tuhom (stranyBitky); nedá sa priznať (cieleVykladania)
   opatrovatelka: "impl", // Furt (v9.1): na konci kola sa Chuť majiteľa porovnáva o 2 nižšia (engine latkaChuti)
-  dievcina_na_vydaj: "impl", // Prehra (v7): zahodí sa, súper získa Dlhy podľa jej aktívnych akcií (koniecBitky)
+  dievcina_na_vydaj: "impl", // Prehra (v7): spáli sa, súper získa Dlhy podľa jej aktívnych akcií (koniecBitky)
   farar: "impl", // Väzeň — Kšeft: súperova aktívna Viera do konca kola posilnený Hazard (partia.ts vieraAkoHazard)
   financna_poradkyna: "impl", // Pitka: Dlh z jej akcií dostáva súper, nie jej majiteľ (Michal 2026-10-18; spúšťač z Prestávky 2026-10-24)
   hasic: "impl", // Nástup: náhodná karta z odhadzovacieho — nechať v ruke, alebo vrátiť (príkaz hasic)
@@ -88,7 +88,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   noviny: "impl", // Dedičstvo: Prehra (Titulka, 2026-10-28): porazený +1 špak za každý Dlh víťaza navyše (spakyZaVyhru)
   pasca: "impl", // Dedičstvo: Bitka (v7): súper v kole priložil kartu k tvojej → Rana navyše (bitkaMody)
   pijan: "impl", // Bitka (v7): Rana navyše za každé vlastné NA EX v kole (bitkaMody)
-  policajtka: "impl", // Konflikt (v7): súper Dlh, za Kriminála namiesto toho 2 cigarety (konflikt)
+  policajtka: "impl", // Pitka (Michal 2026-11-02): súperovi zadĺženie za každú jeho akciu zrušenú tvojím Odporom (pokutaPolicajtky); sada so starým Konfliktom: Dlh, za Kriminála 2 cigarety (konflikt)
   postarka: "impl", // Väzeň — Kšeft: 1 tvoj priznaný Dlh na súpera
   praudovravec: "impl", // Furt (v7, Dezinformátor): Odpor na jeho spojoch posilní (partia.ts)
   dvojcata: "impl", // Furt: do prevahy sa rátajú za dvoch (partia.ts, Michal 2026-10-20)
@@ -97,7 +97,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   silna_nezavisla_zena: "impl", // Furt: akcie len s podporou dvoch chlapov
   starosta: "impl", // Väzeň — Kšeft: do konca kola hrany lokality posilnené (partia.ts hranyPosilnene)
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
-  veterinar: "impl", // Väzeň — Kšeft: Cirhóza z ruky či priznaná z hry, v tejto Pitke pečeň 0 (bezPecene)
+  veterinar: "impl", // Väzeň — Kšeft: spáli Cirhózu z ruky či priznanú, v tejto Pitke pečeň 0 (bezPecene)
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
   velmi_smutiaca_vdova: "impl", // Konflikt (v10.3): súper odhodí 2 karty z balíčka za každého svojho Chlapa pri nej (konflikt)
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
@@ -117,7 +117,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   energetak: "impl", // Dedičstvo: tvoje Posilnenie nemožno zrušiť NA EX (partia.ts)
   horoskop: "impl", // Dedičstvo (v10): tvoje Povery majú silu 2 — mäkké (stranyBitky)
   furik: "impl", // Dedičstvo: tvoje Roboty pália o 1 Dlh viac (exekucieBitky)
-  kristalova_gula: "impl", // Dedičstvo: Vízia ukáže 2 vrchné karty, jednu vezmi či zahoď, druhú vráť navrch (cmdVizia)
+  kristalova_gula: "impl", // Dedičstvo: Vízia ukáže 2 vrchné karty, jednu vezmi či spáľ, druhú vráť navrch (cmdVizia)
   profesionalny_tiper: "impl", // Furt: posilnené akcie na jeho spojoch — súperove posilnený Hazard, tvoje posilnená Robota (partia.ts)
   zberny_dvor: "impl", // Kšeft: za cigaretu ľubovoľná karta z vlastného odhadzovacieho balíčka
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
@@ -145,7 +145,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   // Sada v7 (revízia, Michal 2026-10-27) — schválené novinky, nové karty a lokality.
   vidly: "impl", // Dedičstvo (v7): Rany o 1 poškodenie viac (nastrojeTuhe)
   lievik: "impl", // Dedičstvo: NA EX aj na Zviera (naexCieleVLinii)
-  krokodil: "impl", // Bitka (v7): na konci bitky z hry Občania a Zvieratá v jeho okolí (koniecBitky)
+  krokodil: "impl", // Bitka (v7): na konci bitky spáli Občanov a Zvieratá v jeho okolí (koniecBitky)
   kapybara: "impl", // Nástup (v7): marker staršieho o 1 k stredu (voľba kapybara)
   kon: "impl", // Furt: Nástroj s ním tvorí spoj (partia.ts spojVznikne)
   kohut: "impl", // Pitka (v7): posledné slovo pri odpovediach na NA EX má majiteľ (odhalNaex)
@@ -154,6 +154,10 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   dohadzovacka: "impl", // Nástup (Michal 2026-10-28): najvzdialenejší Občan opačného pohlavia ako jej sused z druhej strany sa presunie za ňu (presunDohadzovackou)
   vandal: "impl", // Nástup: otoč lokalitu o 180°
   stryko_z_ameriky: "impl", // Kšeft: za 2 cigarety Rana navyše v bitke kola
+  // Autority, kolo 2 (Michal 2026-11-02) — v sade ich pridá admin.
+  polovnik: "impl", // Nástup: spáli súperovo Zviera na druhej strane, najďalej od lokality (spalPolovnikom)
+  predavacka: "impl", // Kšeft: za 1 cigaretu 1 karta z doberacieho balíčka (cmdKseft)
+  veducko: "impl", // Furt: Roboty susedných kariet sa rátajú ako Pecky (partia.ts robotaAkoPecka)
   masiar: "impl", // Furt (Michal 2026-10-28): efekty Zvierat v jeho okolí neplatia (partia.ts zvieratAUmlcane)
   kulturista: "impl", // Sypač, Pitka (v10.3): ako Výtržník má Pecky namiesto Rán (partia.ts akciaVytrznika)
   traktoristka: "impl", // Bitka: s prevahou v jej kraji Pecka navyše, inak Dlh

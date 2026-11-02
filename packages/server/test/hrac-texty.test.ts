@@ -165,7 +165,7 @@ describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj
         rng = dalsi;
         const r = apply(data, state, cmds[idx] as Command, hrac);
         for (const e of r.events) {
-          const m = e.type === "log" ? /Dievčina na vydaj: hráč (\d) ju zahadzuje — hráč \d získava (\d+)/.exec(e.text) : null;
+          const m = e.type === "log" ? /Dievčina na vydaj: hráč (\d) ju páli — hráč \d získava (\d+)/.exec(e.text) : null;
           if (m === null) continue;
           const porazeny = (Number(m[1]) - 1) as PlayerId;
           for (const ja of [0, 1] as const) expect(efektyPrehry(data, viewFor(data, state, ja)).dievcina[porazeny]).toBe(Number(m[2]));

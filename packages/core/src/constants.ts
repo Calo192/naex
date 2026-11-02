@@ -139,6 +139,8 @@ export const KONSTANTY = {
     CIGORKY_ZA_KARTU: 2,
     /** Kšefty v7 (plan.md 14.0): Strýko, Obecný úrad (Kšeft Vychovávateľky od v9 len ako väzeň). */
     STRYKO_CENA: 2,
+    /** Kšeft Predavačky (Michal 2026-11-02): za toľko cigariet 1 karta z doberacieho balíčka. */
+    PREDAVACKA_CENA: 1,
     URAD_CENA: 3,
   },
 
@@ -217,13 +219,15 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // Abstinent odpúšťa Absťáky, nové Telefón, Horoskop (Svätý text ostáva len na tuhé).
 // v10.3 (Michal 2026-11-02) bez novej značky: Forsáž (Posilnenie + Posilnenie), Nástroj bez Vzbury
 // a Forsáže, Sypač namiesto Kulturistu s Úplatkom (Úplatok zrušený), nová Vdova a Liberál.
+// v10.4 (Michal 2026-11-02) bez novej značky: pojem Spáliť, Autority Poľovník, Predavačka a Vedúcko,
+// Policajtka s pokutovým blokom (Pitka), Profesionálny tipér ráta aj Forsáž.
 export const VERZIA_PRAVIDIEL = "v10";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v10.3";
+export const VERZIA_PRAVIDIEL_PRESNA = "v10.4";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-02";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
