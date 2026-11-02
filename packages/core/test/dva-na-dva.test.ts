@@ -8,17 +8,20 @@ import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import {
   DLZKY_HRY,
-  apply,
   KONSTANTY,
+  apply,
+  balicekMiesta,
   clenMiesta,
   kapitan,
   kartyVRukach,
+  legalCommands,
   loadGameData,
   miestaHry,
   miestoClena,
   miestoNaTahu,
   opponentOf,
   partnerMiesta,
+  poradieSenku,
   poradieVykladania,
   prahCirhozyBonus,
   prahDlhuBonus,
@@ -167,6 +170,100 @@ describe("Zhromaždenie 2 na 2", () => {
     s = vylozPijana(s);
     // Útočný tím skončil — po O1 je na ťahu O2.
     expect(miestoNaTahu(s)).toBe(partnerMiesta(kapitan(s, opponentOf(s.utocnik))));
+  });
+});
+
+/** Partia 2 na 2 po voľbe cieľa — v drafte (pokus o zajatie nikto nemá, hra ho preskočí). */
+function vDrafte(): GameState {
+  const s = setupGame(data, 7, { format: "2na2" });
+  const kto = miestoNaTahu(s) as Miesto;
+  expect(kto).toBe(kapitan(s, opponentOf(s.utocnik)));
+  const ciel = legalCommands(data, s, timMiesta(kto))[0];
+  if (ciel === undefined) throw new Error("Bez voľby cieľa.");
+  return apply(data, s, ciel, kto).state;
+}
+
+/** Všetci štyria postavia šenok: prvé 2 karty do šenku, zvyšok naspodok. */
+function postavSenok(s: GameState): GameState {
+  for (const m of poradieSenku(s)) {
+    const d = s.draftStav;
+    if (d === null) throw new Error("Bez draftu.");
+    const b = balicekMiesta(d, m).map((k) => k.uid);
+    s = apply(data, s, { type: "stavbaSenku", doSenku: b.slice(0, 2), odhod: b.slice(2) }, m).state;
+  }
+  return s;
+}
+
+describe("draft 2 na 2", () => {
+  it("stavba: každý hráč 1 Nástroj + 3 Občania, 2 do šenku; šenok má 8", () => {
+    const s = vDrafte();
+    expect(s.draftStav?.krok).toBe("stavba");
+    for (const m of poradieSenku(s)) {
+      const b = balicekMiesta(s.draftStav ?? { balicky: [[], []] }, m);
+      expect(b).toHaveLength(4);
+      expect(b.filter((k) => data.cards.get(k.defId)?.tags.includes("Nástroj"))).toHaveLength(1);
+    }
+    const po = postavSenok(s);
+    expect(po.senok).toHaveLength(8);
+    expect(po.draftStav?.krok).toBe("beranie");
+    expect(miestoNaTahu(po)).toBe(kapitan(po, opponentOf(po.utocnik)));
+  });
+
+  it("každý stavia naraz a len zo svojho balíčka", () => {
+    const s = vDrafte();
+    const [o1, u1] = poradieSenku(s) as Miesto[];
+    const cudzi = balicekMiesta(s.draftStav ?? { balicky: [[], []] }, o1 as Miesto).map((k) => k.uid);
+    expect(() => apply(data, s, { type: "stavbaSenku", doSenku: cudzi.slice(0, 2), odhod: cudzi.slice(2) }, u1 as Miesto)).toThrow();
+  });
+
+  it("karta zadarmo: každý člen tímu, na ktorý sa skúša, si nechá 1 (Michal 2026-11-02)", () => {
+    const pred = vDrafte();
+    const u = pred.utocnik;
+    const pokusy: GameState["pokusy"] = u === 0 ? [{ elderId: pred.starsi[0]?.elderId ?? "" }, null] : [null, { elderId: pred.starsi[0]?.elderId ?? "" }];
+    let s: GameState = { ...pred, pokusy };
+    for (const m of poradieSenku(s)) {
+      const b = balicekMiesta(s.draftStav ?? { balicky: [[], []] }, m).map((k) => k.uid);
+      const zadarmo = timMiesta(m) !== u;
+      if (zadarmo) {
+        expect(() => apply(data, s, { type: "stavbaSenku", doSenku: b.slice(0, 2), odhod: b.slice(2) }, m)).toThrow();
+        s = apply(data, s, { type: "stavbaSenku", doSenku: b.slice(0, 2), odhod: b.slice(2, 3), nechaj: b[3] ?? -1 }, m).state;
+      } else {
+        s = apply(data, s, { type: "stavbaSenku", doSenku: b.slice(0, 2), odhod: b.slice(2) }, m).state;
+      }
+    }
+    expect(s.senok).toHaveLength(8);
+    const o = opponentOf(u);
+    for (const m of [kapitan(s, o), partnerMiesta(kapitan(s, o))]) expect(rukaMiesta(s, m)).toHaveLength(5);
+    for (const m of [kapitan(s, u), partnerMiesta(kapitan(s, u))]) expect(rukaMiesta(s, m)).toHaveLength(4);
+  });
+
+  it("branie O1 → U1 → O2 → U2, O1 na prvom ťahu len 1 karta, karta do ruky toho, kto berie", () => {
+    let s = postavSenok(vDrafte());
+    const poradie = poradieSenku(s);
+    const o1 = poradie[0] as Miesto;
+    const prve = s.senok.slice(0, 2).map((k) => k.uid);
+    expect(() => apply(data, s, { type: "draftBer", uids: prve }, o1)).toThrow();
+    for (const m of poradie) {
+      expect(miestoNaTahu(s)).toBe(m);
+      const uid = s.senok[0]?.uid ?? -1;
+      s = apply(data, s, { type: "draftBer", uids: [uid] }, m).state;
+      expect(rukaMiesta(s, m).some((k) => k.uid === uid)).toBe(true);
+    }
+    expect(miestoNaTahu(s)).toBe(o1);
+  });
+
+  it("keď prestane celý tím, každý člen druhého tímu má poslednú šancu", () => {
+    let s = postavSenok(vDrafte());
+    const [o1, u1, o2, u2] = poradieSenku(s) as Miesto[];
+    s = apply(data, s, { type: "draftStop" }, o1 as Miesto).state;
+    expect(miestoNaTahu(s)).toBe(u1);
+    s = apply(data, s, { type: "draftStop" }, u1 as Miesto).state;
+    expect(miestoNaTahu(s)).toBe(o2);
+    s = apply(data, s, { type: "draftStop" }, o2 as Miesto).state;
+    // Obranný tím prestal — U2 má jeden posledný ťah, potom draft končí.
+    expect(miestoNaTahu(s)).toBe(u2);
+    s = apply(data, s, { type: "draftBer", uids: [s.senok[0]?.uid ?? -1] }, u2 as Miesto).state;
+    expect(s.faza).toBe("zhromazdenie");
   });
 });
 

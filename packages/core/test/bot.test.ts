@@ -2,7 +2,7 @@
 // a rozhoduje sa len z toho, čo by vedel hráč pri stole.
 
 import { spustBitku } from "./helpers.ts";
-import { cervenychHraca } from "../src/index.ts";
+import { cervenychHraca, timMiesta } from "../src/index.ts";
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
@@ -82,7 +82,7 @@ describe("offline protihráč", () => {
       if (p === null) break;
       s = apply(data, s, tahBota(data, s, p, krok), p).state;
     }
-    const p = s.draftStav?.naTahu;
+    const p = s.draftStav === null ? undefined : timMiesta(s.draftStav.naTahu);
     expect(p).toBeDefined();
     if (p === undefined) return;
     const hrac = { ...s.hraci[p], cigarety: 4 };
