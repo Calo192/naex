@@ -468,7 +468,7 @@
   filter: sepia(1) saturate(7) hue-rotate(-20deg) brightness(1.05);
 }
 
-/* Znížená akcia (Úplatok): len vyhasnutá (Michal 2026-10-30: bez dymu). */
+/* Znížená akcia: len vyhasnutá (Michal 2026-10-30: bez dymu; dával ju Úplatok, zanikol vo v10.3). */
 .kl-slot.kl-zar-minus .ikona-akcie {
   fill: #5e554c;
 }

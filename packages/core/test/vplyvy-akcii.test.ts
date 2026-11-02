@@ -1,12 +1,12 @@
 // Žeravé ikony (Michal 2026-10-30, mock 3): akcie posilnené Nástrojmi v Dedičstve
-// a útoky znížené Úplatkom. Údaj pre stôl dáva jadro, view ho posiela pre oboch.
+// (Úplatok zrušený vo v10.3). Údaj pre stôl dáva jadro, view ho posiela pre oboch.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, GameState, PlayerId, PlayerState } from "../src/index.ts";
-import { KONSTANTY, loadGameData, nastrojeTuhe, setupGame, utokPoUplatku, viewFor, vplyvyNaAkcie } from "../src/index.ts";
+import { KONSTANTY, loadGameData, nastrojeTuhe, setupGame, viewFor, vplyvyNaAkcie } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -47,16 +47,5 @@ describe("vplyvyNaAkcie — Nástroje v Dedičstve", () => {
     const v1 = viewFor(data, s, 1);
     expect(v0.vplyvyAkcii).toEqual([[{ akcia: "Petelica", zdroj: "puska", o: 0, popis: "prepojenú Petelicu namiesto zrušenia (Odpor, NA EX) udelí o 1 poškodenie menej" }], [{ akcia: "Viera", zdroj: "svaty_text", o: KONSTANTY.EFEKT.SVATY_TEXT_VIERA }]]);
     expect(v1.vplyvyAkcii).toEqual(v0.vplyvyAkcii);
-  });
-});
-
-describe("utokPoUplatku — Úplatok Kulturistu", () => {
-  it("útok klesá o stupeň Petelica → Pecka → Rana → nič, iné akcie ostávajú", () => {
-    expect(utokPoUplatku("Petelica", 0)).toBe("Petelica");
-    expect(utokPoUplatku("Petelica", 1)).toBe("Pecka");
-    expect(utokPoUplatku("Petelica", 2)).toBe("Rana");
-    expect(utokPoUplatku("Pecka", 2)).toBeNull();
-    expect(utokPoUplatku("Rana", 1)).toBeNull();
-    expect(utokPoUplatku("Viera", 3)).toBe("Viera");
   });
 });

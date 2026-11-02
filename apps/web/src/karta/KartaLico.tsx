@@ -41,7 +41,7 @@ export interface KartaLicoProps {
   /** Lokálny náhľad obrázka (tvorca pred nahraním). */
   readonly nahladObrazka?: string | null;
   readonly sloty?: { readonly lava: readonly (SlotStav | null)[]; readonly prava: readonly (SlotStav | null)[] } | null;
-  /** Akcie zmenené Nástrojom v Dedičstve či Úplatkom (sloty vytlačených strán, indexy zhora). */
+  /** Akcie zmenené Nástrojom v Dedičstve (sloty vytlačených strán, indexy zhora). */
   readonly zar?: { readonly lava: readonly (ZarNaKarte | null)[]; readonly prava: readonly (ZarNaKarte | null)[] } | undefined;
   readonly odznaky?: ReactNode;
   readonly onClick?: (() => void) | undefined;

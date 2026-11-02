@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v10, 2026-11-01; sada v8 pracoviska naex-admin, náradie so 4 akciami)
+# Ťahák — platné pravidlá NA EX! (v10.3, 2026-11-02; sada v8 pracoviska naex-admin, náradie so 4 akciami)
 
 Spoločný ťahák AI hráčov (`naex-playtester`, `naex-protihrac`) — čítajú ho pri
 príprave pred partiou. Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -84,7 +84,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Poradie (2026-10-20):** cieľ kola vyberá a natáča **obranca** (víťaz
   poslednej bitky) a **berie zo šenku prvý (v9.2)**; **útočník** (porazený) berie zo šenku druhý a **vykladá
   prvý**. **Pitka naraz (2026-10-27):** v Pitke hráte **obaja súčasne** —
-  fajčíte, dolievate, barterujete, Kšefty, Úplatky a skryto NA EX; každý skončí
+  fajčíte, dolievate, barterujete, Kšefty a skryto NA EX; každý skončí
   sám („hotovo“, nevratné, zapíše sa do logu). NA EX vyberáte skryto — súper
   nevidí, či a kam ste ho dali; odkryjú sa **naraz**, keď ste hotoví obaja (v9.2). Jediná výnimka je **Bzdocha**: jej majiteľ čaká, kým súper
   skončí, a potom hrá a vidí jeho NA EX (majú ju obaja → nečaká nikto). Potom odpovede **lícom dole (v9.2)**: najprv **útočník**, potom **obranca na druhý kraj línie** (ak útočník
@@ -125,19 +125,25 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Vychovávateľka: ak súper v tejto Pitke dá NA EX, máš v bitke **Petelicu navyše (+3 tuhé)** — na Krčme
   sa neponúka. Veterinár: zahoď z hry Cirhózu **z ruky alebo priznanú** a v tejto Pitke sa ti pečeň
   nepočíta (aj cena Kšeftu a NA EX).
-- **Úplatok (v7, Kulturista):** na súperovho Kulturistu smieš v každej Pitke dať 1 cigaretu
-  (`{"type":"uplatok","uid":…}`); každá zníži do konca kola jeho útoky o stupeň (Petelica → Pecka →
-  Rana → nič). Cigareta prepadne. **Výtržník prebíja Úplatok** (v9.3): na Kulturistu-Výtržníka
-  Úplatok dať nemožno a úplatky spred zrážky jeho Rany neoslabia.
+- **Úplatok je zrušený (v10.3).** Kulturista je teraz **Sypač** (Pitka): keď sa z neho stane Výtržník,
+  jeho akcie sú **Pecky**, nie Rany.
 - **Konflikt (v7):** efekt **ležiacej** karty, keď k nej **súper** priloží svoju (aj odpoveďou na NA EX;
   Záverečná až pri otočení). Keď prikladáš ty k svojej, nič; priložený Nástroj nič; NA EX ani zrážka nič.
-  Najprv Nástup priloženej karty, potom Konflikt. Veľmi smútiaca vdova (priložený Chlap po bitke z hry),
+  Najprv Nástup priloženej karty, potom Konflikt. **Veľmi smútiaca vdova (v10.3):** súper odhodí **2 karty
+  z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí** (najviac 2 Chlapi = 4 karty; keď
+  balíček nestačí, zamieša odhadzovací, potom zvyšok z ruky — náhodne),
   Policajtka (súper Dlh; za Kriminála ti dá 2 cigarety), Šarlatán (do konca kola jeho Hazardy = Viera,
   Povery = Rana), Snúbenica (priložený Chlap po bitke do tvojho odhadzovacieho balíčka — je tvoj),
   Miňištrant (Nástup): ak vyvolá
   Konflikt, jeho Viera sa ráta ako Pecka.
 - **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
-  Pakt s Paktom nerobí nič, s Posilnením nič nezdvojí, Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
+  Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
+- **Forsáž (v10.3):** Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky
+  aktívne akcie posilnené ×2** (aj Hazard a Pečeň); akcia posilnená ešte Posilnením suseda **×4**.
+  Lokalita len hranu pri tom kraji, **Nástroj Forsáž nedostane** (len Občan/Starešina pri ňom). Odpor
+  Praudovravca (ráta sa ako Posilnenie) Forsáž vytvára. NA EX na jednu z kariet spoja jej Posilnenie
+  zruší, a tým aj Forsáž (Energeťák a Veterán to zastavia). **Vzbura s Nástrojom (v10.3):** Odpor
+  Nástroja proti Odporu Občana — Vzburu dostane len Občan/Starešina.
 - **Draft (v8.5):** karty šenku sú v dvoch balíčkoch — **Náradie** (Nástroje) a **Občania** (ostatné).
   Stavba šenku naraz, bez podávania: dostaneš **2 karty z Náradia a 6 z Občanov**, dáš **4 do šenku**
   v ľubovoľnom mixe a 4 naspodok (Nástroj k Náradiu, ostatné k Občanom;
@@ -270,8 +276,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky idú z hry všetci Občania a Zvieratá
   v jeho okolí; Vidly (Dedičstvo) — tvoje Rany z vyložených akcií o 1 poškodenie viac (Rany navyše z efektov nie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca
   (Dedičstvo) — keď súper v kole priložil kartu k tvojej, Rana navyše (v9.1); Krabička (Dedičstvo) — za každé
-  2 cigarety, ktoré súper vyfajčí, karta; Liberál (Pitka) — súper bez rovnováhy žien a chlapov
-  +1 zadĺženie; Recidivista (Prehra) — po bitke späť do ruky; Dievčina na vydaj (Prehra) — zahodí sa,
+  2 cigarety, ktoré súper vyfajčí, karta; **Liberál (Furt, v10.3)** — keď máš v partii rovnako žien
+  a chlapov (on sa ráta za oboch, skrytá Záverečná nie), všetky jeho aktívne akcie sú posilnené ×2; Recidivista (Prehra) — po bitke späť do ruky; Dievčina na vydaj (Prehra) — zahodí sa,
   víťaz získa Dlhy podľa jej aktívnych akcií.
 - **Pokus o zajatie (v9, 2026-10-30, nahradil patronát a vydesenie):** od v10.1 **pred stavbou šenku**, hneď
   po voľbe cieľa (útočník, potom obranca; `{"type":"pokus","elderId":…}` / `bezPokusu`) smieš skúsiť zajať staršieho, ktorý sa ťa

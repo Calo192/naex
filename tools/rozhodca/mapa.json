@@ -1,6 +1,6 @@
 {
   "pravidlaCommit": "e832dad38119bd7cf966223c11d09046e478333e",
-  "aktualizovane": "2026-11-01",
+  "aktualizovane": "2026-11-02",
   "pravidla": [
     {
       "id": "1.zaklad.dvaja-hraci",
@@ -251,11 +251,12 @@
     {
       "id": "6.modifikatory.vzbura",
       "paragraf": "6. Zhromaždenie › Modifikátory na spoji",
-      "pravidlo": "Odpor + Odpor = Vzbura: obe karty aktivujú neaktívne akcie; lokalita len hranu pri tom kraji.",
+      "pravidlo": "Odpor + Odpor = Vzbura: obe karty aktivujú neaktívne akcie; lokalita len hranu pri tom kraji; Nástroj Vzburu nedostane (v10.3).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/partia.test.ts › Odpor + Odpor → Vzbura: obe karty aktivujú neprepojené akcie",
-        "packages/core/test/partia.test.ts › vzbura na spoji s lokalitou aktivuje len stranu patriacu partii (rozhodnutie č. 4)"
+        "packages/core/test/partia.test.ts › vzbura na spoji s lokalitou aktivuje len stranu patriacu partii (rozhodnutie č. 4)",
+        "packages/core/test/pravidla-v103.test.ts › Odpor Nástroja proti Odporu Občana: Vzburu dostane len Občan"
       ]
     },
     {
@@ -270,11 +271,22 @@
     {
       "id": "6.modifikatory.posilnenie-posilnenie",
       "paragraf": "6. Zhromaždenie › Modifikátory na spoji",
-      "pravidlo": "Posilnenie + Posilnenie: nič sa nedeje.",
+      "pravidlo": "Posilnenie + Posilnenie = Forsáž (v10.3): obe karty majú všetky aktívne akcie posilnené (×2, s Posilnením suseda ×4), aj Hazard; lokalita len hranu, Nástroj nie; Odpor Praudovravca ju vytvára; NA EX na jedno z Posilnení ju zruší (Energeťák nie); zdvojí aj akcie zo Vzbury.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/partia.test.ts › Posilnenie + Posilnenie → nič (rozhodnutie k otvorenej otázke č. 1)"
-      ]
+        "packages/core/test/partia.test.ts › Posilnenie + Posilnenie → Forsáž (v10.3); neaktívne akcie ostávajú neaktívne",
+        "packages/core/test/pravidla-v103.test.ts › obe karty spoja majú všetky aktívne akcie ×2 — aj Hazard; tretia karta nie",
+        "packages/core/test/pravidla-v103.test.ts › akcia posilnená ešte Posilnením suseda má ×4",
+        "packages/core/test/pravidla-v103.test.ts › NA EX na kartu Forsáže zruší jej Posilnenie, a tým Forsáž; NA EX na suseda zruší len jeho ×2",
+        "packages/core/test/pravidla-v103.test.ts › Energeťák: NA EX tvoje Posilnenie nezruší, Forsáž ostáva",
+        "packages/core/test/pravidla-v103.test.ts › Nástroj Forsáž nedostane — pri spoji Nástroj–Občan ju má len Občan",
+        "packages/core/test/pravidla-v103.test.ts › Odpor Praudovravca sa ráta ako Posilnenie — s Posilnením aj s Odporom vytvorí Forsáž",
+        "packages/core/test/pravidla-v103.test.ts › Pakt proti Posilneniu sa stane Posilnením — Forsáž",
+        "packages/core/test/pravidla-v103.test.ts › akcie aktivované Vzburou Forsáž tiež zdvojí",
+        "packages/core/test/pravidla-v103.test.ts › lokalita má Forsáž len na hrane pri tom kraji",
+        "packages/core/test/pravidla-v103.test.ts › nový spoj Posilnenie + Posilnenie hlási moment FORSÁŽ!"
+      ],
+      "poznamka": "v10.3 (Michal 2026-11-02) — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "16.karta.veteran",
@@ -1557,11 +1569,14 @@
     {
       "id": "16.karta.liberal",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Liberál: pri rovnakom počte žien a chlapov v partii (on sa neráta) sa jeho aktívne akcie rátajú dvakrát. NA EX naň smie (2026-10-26).",
+      "pravidlo": "Liberál (Furt, v10.3): ak máš v partii rovnako žien a chlapov (on sa ráta za oboch, skrytá Záverečná nie, súperove karty nie), jeho aktívne akcie sú posilnené (×2). NA EX naň smie (2026-10-26).",
       "stav": "pokryte",
       "testy": [
+        "packages/core/test/pravidla-v103.test.ts › rovnako žien a chlapov (on sa ráta za oboch) — jeho aktívne akcie ×2, partnerove nie",
+        "packages/core/test/pravidla-v103.test.ts › nerovnosť — ×1; súperove karty a skrytá Záverečná sa nerátajú",
         "packages/core/test/playtest-055944.test.ts › na Liberála NA EX dať smie (Michal 2026-10-26)"
-      ]
+      ],
+      "poznamka": "v10.3 (Michal 2026-11-02) — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "16.karta.kocovnik",
@@ -1740,10 +1755,24 @@
     {
       "id": "16.karta.vdova",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Veľmi smútiaca vdova: muž navrchu súperovho balíčka ide z hry a majiteľ zahodí 2 Dlhy (ruka, odhadzovací, priznané); log vždy oznámi kartu.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "pravidlo": "Veľmi smútiaca vdova (Konflikt, v10.3): súper odhodí 2 karty z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí (najviac 2; skrytá Záverečná nie); keď nestačí, zamieša odhadzovací, potom zvyšok náhodne z ruky; všetko do jeho odhadzovacieho balíčka.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v103.test.ts › 0 Chlapov pri nej — nič; 1 Chlap — súper odhodí 2 karty z vrchu doberacieho balíčka",
+        "packages/core/test/pravidla-v103.test.ts › 2 Chlapi pri nej (z oboch strán) — 4 karty; Chlap majiteľa Vdovy sa neráta",
+        "packages/core/test/pravidla-v103.test.ts › málo kariet: zamieša odhadzovací do doberacieho, potom zvyšok z ruky; všetko do odhadzovacieho"
+      ],
+      "poznamka": "v10.3 (Michal 2026-11-02) — Developer, na prejdenie rozhodcom."
+    },
+    {
+      "id": "16.karta.sypac",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Sypač (id kulturista, Pitka, v10.3): ako Výtržník má všetky akcie na hranách aktívne Pecky namiesto Rán. Úplatok zanikol.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v103.test.ts › ako Výtržník má všetky akcie aktívne Pecky, nie Rany; iný Výtržník Rany"
+      ],
+      "poznamka": "v10.3 (Michal 2026-11-02) — Developer, na prejdenie rozhodcom."
     },
     {
       "id": "16.karta.zivnostnik",
@@ -2032,9 +2061,11 @@
       "id": "16.karta.liberal.nula",
       "paragraf": "16. Výklad kariet",
       "pravidlo": "Liberál pri 0 žien a 0 chlapov v partii (okrem neho): zdvojuje, alebo nie?",
-      "stav": "nejasne",
-      "testy": [],
-      "poznamka": "Roadmapa #54, playtest 20261027-062058 O6. Hra (partia.ts, zeny === chlapi) zdvojuje aj pri 0 : 0. Liberál sa prerába v revízii v7 (session Brainstorming) — len zapísané, znenie sa nenavrhuje."
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/pravidla-v103.test.ts › rovnako žien a chlapov (on sa ráta za oboch) — jeho aktívne akcie ×2, partnerove nie"
+      ],
+      "poznamka": "v10.3: Liberál sa ráta za ženu aj chlapa, takže pri 0 : 0 ostatných je rovnosť a posilňuje (PRAVIDLA §16)."
     },
     {
       "id": "16.karta.pes.finale",
@@ -2077,23 +2108,14 @@
     {
       "id": "16.karta.v7.konflikt-karty",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Konflikt kariet v7: Policajtka (Dlh / 2 cigarety za Kriminála), Vdova a Hrobár (z hry, posledná), Snúbenica (Chlap k nej), Šarlatán (Dlh = Viera, Povera = Rana), Miňištrant (Nástup, Viera = Pecka).",
+      "pravidlo": "Konflikt kariet v7: Policajtka (Dlh / 2 cigarety za Kriminála), Vdova (od v10.3 odhodenie kariet, 16.karta.vdova), Snúbenica (Chlap k nej), Šarlatán (Dlh = Viera, Povera = Rana), Miňištrant (Nástup, Viera = Pecka); Hrobár v línii od v9 Konflikt nemá.",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/v7-efekty.test.ts › Policajtka: súper, ktorý k nej priloží kartu, získa Dlh; za Kriminála jej majiteľ dostane 2 cigarety",
         "packages/core/test/v7-efekty.test.ts › Snúbenica: priložený Chlap ide po bitke do odhadzovacieho balíčka jej majiteľa",
         "packages/core/test/v7-efekty.test.ts › Šarlatán: po Konflikte sa do konca kola jeho Dlhy rátajú ako Viera a Povery ako Rana",
         "packages/core/test/v7-efekty.test.ts › Miňištrant: Nástup — vyvolal Konflikt, jeho Viera sa ráta ako Pecka",
-        "packages/core/test/v7-efekty.test.ts › Vdova: priložená karta ide po bitke z hry; Hrobár v línii od v9 Konflikt nemá (len akcie)"
-      ]
-    },
-    {
-      "id": "7.uplatok",
-      "paragraf": "7. Pitka › Úplatok (v7)",
-      "pravidlo": "Úplatok (Kulturista): súper cigaretou zníži útoky karty o stupeň do konca kola, raz za Pitku na kartu; vlastný Kulturista Úplatok neponúka.",
-      "stav": "pokryte",
-      "testy": [
-        "packages/core/test/v7-efekty.test.ts › Úplatok: súper cigaretou zníži útoky Kulturistu o stupeň, raz za Pitku"
+        "packages/core/test/v7-efekty.test.ts › Hrobár v línii od v9 Konflikt nemá (len akcie); Vdovu od v10.3 skúša pravidla-v103.test.ts"
       ]
     },
     {
@@ -2114,10 +2136,10 @@
     {
       "id": "16.karta.v7.pitka",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Pitka v7: Stryná, Liberál, Veterinár, Kar, Krčmárka, Kohút, Cintorín, Jednota, Benzínka, Bzdocha, Krabička cigariet.",
+      "pravidlo": "Pitka v7: Stryná, Veterinár, Kar, Krčmárka, Kohút, Cintorín, Jednota, Benzínka, Bzdocha, Krabička cigariet.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/v7-efekty.test.ts › Stryná: hráč bez NA EX v Pitke +1 pečeň; Liberál: súper bez rovnováhy žien a chlapov +1 zadĺženie",
+        "packages/core/test/v7-efekty.test.ts › Stryná: hráč bez NA EX v Pitke +1 pečeň (Liberál od v10.3 zadĺženie nedáva)",
         "packages/core/test/v7-efekty.test.ts › Veterinár v línii od v9 pečeň okolia nemaže — jeho efekt je len Kšeft väzňa",
         "packages/core/test/v7-efekty.test.ts › Kar: pečeň za NA EX dostane súper toho, kto ho dal",
         "packages/core/test/v7-efekty.test.ts › Cintorín: nová Cirhóza je hneď priznaná",
@@ -2303,7 +2325,7 @@
       "pravidlo": "Karta staršieho v línii má len akcie — žiadny Konflikt, Nástup, Pitka, Kšeft ani prebudenie.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/v7-efekty.test.ts › Vdova: priložená karta ide po bitke z hry; Hrobár v línii od v9 Konflikt nemá (len akcie)",
+        "packages/core/test/v7-efekty.test.ts › Hrobár v línii od v9 Konflikt nemá (len akcie); Vdovu od v10.3 skúša pravidla-v103.test.ts",
         "packages/core/test/v7-efekty.test.ts › Krčmárka v línii od v9 odpoveď na NA EX nezakazuje (jej efekt je Kšeft väzňa)",
         "packages/core/test/v7-efekty.test.ts › Autobusár v línii od v9 cigarety za pas neberie (jeho efekt je Kšeft väzňa)",
         "packages/core/test/v7-efekty.test.ts › v9: prebudenie zaniklo — Poštárka na kraji stupnice Kšeft nedáva"

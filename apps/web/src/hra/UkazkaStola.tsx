@@ -18,6 +18,9 @@
 //   &stop=hadka-super krok Hádka, keď ju rozdeľuje súper (čakanie hráča ?ja)
 //   &stop=posledna-pitka  posledná Pitka kola, hráč ?ja má prázdnu ruku a môže dať NA EX — súper
 //                  odpovie a bitka sa vyhodnotí v jeho ťahu
+//   &stop=vizia    Vízia: hráč ?ja rozhoduje o vrchnej karte balíčka (veľké okno, Michal 2026-11-02);
+//                  &gula=1 mu dá do Dedičstva Krištáľovú guľu — okno ukáže dve karty
+//   &stop=vestica  Veštica po prehratej bitke: hráč ?ja vyberá karty z oboch doberacích balíčkov
 //   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
@@ -28,13 +31,16 @@
 //                  pečiatky nad súhrnom; inak padajú momenty, ktoré vyberie jadro ako na serveri
 //   &exekutor=1    hráčovi ?ja v prvej Pitke pridá 10 priznaných Dlhov (bar ukáže exekúciu v bitke)
 //                  (voľba Záhradkára pri exekúcii)
+//   &stop=autopas  ťah, po ktorom hra za hráča ?ja pasuje (nemá čo vyložiť) a súper vykladá ďalej —
+//                  po načítaní sa dohrá, stôl ukáže okno „Pasuješ“ s dôvodmi (&i=k: k-tý taký, od 0);
+//                  &kto=super: pasuje súper — hráč ?ja vidí pečiatku „nemá čo vyložiť“
 //   &stop=nastroj  Zhromaždenie od 2. kola, hráč ?ja na ťahu — do ruky dostane Vidly
 //                  a cigarety na Dedičstvo (tlačidlo „odkazujem“)
 //   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &zerava=1      žeravé ikony (Michal 2026-10-30): hráč ?ja má v Dedičstve Pušku a Vidly, súper
 //                  Svätý text a Vidly; do ruky Hasič, Recidivista, Policajtka, Kulturista, do línie
-//                  súperova Milujúca manželka a Pes a hráčov Kulturista s Úplatkom
+//                  súperova Milujúca manželka a Pes
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 //   &klebety=i:n,… posun priazne hádkou na i-tom staršom (od 0), n stupňov k hráčovi 1 (kladné)
@@ -49,7 +55,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, MarkerPos, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -114,6 +120,13 @@ function sMarkermi(s: GameState, spec: string): GameState {
   return { ...s, starsi: s.starsi.map((e, i) => (na.has(i) ? { ...e, marker: na.get(i) as MarkerPos, vyplatene: 0, drzane: 0 } : e)) };
 }
 
+/** Hráčovi p dá do Dedičstva Krištáľovú guľu — Vízia ukáže dve vrchné karty. */
+function sGulou(s: GameState, p: PlayerId): GameState {
+  const gula: CardInstance = { uid: s.nextUid, defId: "kristalova_gula", leftLayout: 0, rightLayout: 0 };
+  const h = { ...s.hraci[p], dedicstvo: [...s.hraci[p].dedicstvo, gula] };
+  return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] };
+}
+
 /** Hráč p vyloží Hasiča s neprázdnym odhadzovacím balíčkom — stav čaká na jeho voľbu. */
 function sHasicom(data: GameData, s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
@@ -158,7 +171,7 @@ function sExekuciou(s: GameState, p: PlayerId): GameState {
   return { ...s, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
-/** Žeravé ikony: Nástroje v Dedičstve oboch, karty s posilnenými akciami v ruke a línii, Úplatok. */
+/** Žeravé ikony: Nástroje v Dedičstve oboch, karty s posilnenými akciami v ruke a línii. */
 function sZeravou(s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
   const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
@@ -167,7 +180,7 @@ function sZeravou(s: GameState, p: PlayerId): GameState {
   const on = { ...s.hraci[su], dedicstvo: [...s.hraci[su].dedicstvo, karta("svaty_text"), karta("vidly")] };
   const strany: [GameState["strany"][0], GameState["strany"][1]] = [[...s.strany[0]], [...s.strany[1]]];
   strany[su] = [...strany[su], { card: karta("milujuca_manzelka"), playedBy: su }, { card: karta("pes"), playedBy: su }];
-  strany[p] = [...strany[p], { card: karta("kulturista"), playedBy: p, uplatky: 1 }];
+
   return { ...s, nextUid: uid, strany, hraci: p === 0 ? [ja, on] : [on, ja] };
 }
 
@@ -180,8 +193,8 @@ function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: 
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  if (!["zaverecna", "hadka", "hadka-super", "pohorsenie"].includes(q().get("stop") ?? "")) return odohrajSeed(data, seed).odohrane;
-  // Súperova Záverečná ani hádka určitého víťaza nepadne v každej partii — skúša sa od zadaného seedu ďalej.
+  if (!["zaverecna", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "")) return odohrajSeed(data, seed).odohrane;
+  // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
     const x = odohrajSeed(data, seed + pokus);
     if (x.najdene) return x.odohrane;
@@ -205,6 +218,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let bitiek = 0;
   let hadok = 0;
   let hadokSupera = 0;
+  let autopasov = 0;
+  const autopasKto = p.get("kto") === "super" ? opponentOf(ja) : ja;
   const exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1";
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
@@ -258,6 +273,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "hadka-super" && s.faza === "bitka" && s.bitkaStav?.krok === "hadka" && s.bitkaStav.caka === opponentOf(ja) && (s.bitkaStav.hadka?.zostava ?? 0) > 0) {
       if (hadokSupera++ === i) return najdene({ zaciatok: s, dohraj: [] });
     }
+    if (stop === "vizia" && s.vizia !== null && naTahu(s) === ja && s.hraci[ja].doberaci.length >= 2)
+      return najdene({ zaciatok: p.get("gula") === "1" ? sGulou(s, ja) : s, dohraj: [] });
+    if (stop === "vestica" && s.faza === "bitka" && s.bitkaStav?.krok === "vestica" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
@@ -275,6 +293,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     rng = t.rng;
     const { state: po, events } = apply(data, s, t.cmd, t.kto);
     const bitka = events.some((e) => e.type === "bitkaVysledok");
+    const autopas = po.faza === "zhromazdenie" && events.some((e) => e.type === "autoPas" && e.hrac === autopasKto);
+    if (stop === "autopas" && autopas && autopasov++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
     if (stop === "suhrn" && bitka && bitiek++ === i) {
       // Za bitkou aj rozdeľovanie Nakladačky, kým kolo neskončí — súhrn ho má ukázať.
       const dohraj: Krok[] = [...tahyKola, { stav: s, cmd: t.cmd, kto: t.kto }];
@@ -312,7 +332,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: stop !== "zaverecna" };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica"].includes(stop) };
 }
 
 export function UkazkaStola() {
@@ -361,7 +381,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
       const koniecPitky = events.some((e) => e.type === "bitkaVysledok") || (s.faza === "pitka" && state.faza !== "pitka");
       const pecate = typ !== null && typ in MOMENTY && koniecPitky ? [{ typ, ...MOMENTY[typ], hrac: 0 as PlayerId, popis: `${MOMENTY[typ].nazov} — ukážka pečiatky nad súhrnom.` }] : strop.vybrane;
       if (typ !== null && koniecPitky) vynuteny.current = null;
-      setUdalosti((u) => ({ id: u.id + 1, events: [...events, ...pecate.map((moment): Event => ({ type: "moment", moment }))] }));
+      setUdalosti((u) => ({ id: u.id + 1, events: [...eventsFor(events, ja), ...pecate.map((moment): Event => ({ type: "moment", moment }))] }));
       return state;
     } catch (e) {
       console.error(e);

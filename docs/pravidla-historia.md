@@ -2219,3 +2219,56 @@ Staré znenia:
 >
 > §12 Nástroj v línii: Nástroj nesmie susediť s Nástrojom na konci strany, kam sa vykladá
 > (susedstvo je fyzické). (Na prázdnu stranu, hneď k lokalite, sa Nástroj vyložiť smel.)
+
+## v10.3 — Forsáž, Úplatok zrušený, nová Vdova a Liberál (Michal 2026-11-02)
+
+Michal: Posilnenie + Posilnenie = **Forsáž** (obe karty spoja majú všetky aktívne akcie posilnené,
+s Posilnením suseda ×4; lokalita len hranu, Nástroj nie; Odpor Praudovravca ju vytvára; zdvojuje aj
+Hazard a pečeň). Vzbura s Nástrojom len Občanovi / Starešinovi. Kulturista → Sypač („Pitka: Ak sa
+stane Výtržníkom, jeho akcie sú Pecky, nie Rany.“), Úplatok úplne zrušený. Veľmi smútiaca vdova:
+„Konflikt: Súper odhodí 2 karty z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou
+susedí.“ Liberál: „Furt: Ak máš v partii rovnako žien a chlapov, všetky jeho aktívne akcie sú
+posilnené.“ Odvodené (Leader): NA EX, ktorý zruší jedno z dvoch Posilnení, zruší Forsáž (Energeťák
+to zastaví); akcie aktivované Vzburou Forsáž zdvojí. Doplnené pri implementácii: Pakt proti
+Posilneniu je Posilnenie, teda Forsáž; Profesionálny tipér Forsáž za „posilnenú“ akciu nepovažuje;
+Vdova pri prázdnom balíčku berie zvyšok z ruky náhodne (ako Hrobár).
+
+Staré znenia:
+
+> §6 Modifikátory: | Posilnenie + Posilnenie | nič sa nedeje — niet čo zdvojnásobiť |
+>
+> §6 Modifikátory: | Odpor + Odpor | **Vzbura**: obe karty vyhodnotia všetky svoje inak neaktívne
+> akcie ako aktívne; lokalita len hranu pri tom kraji, nie obe | (Nástroj Vzburu dostával tiež.)
+>
+> §2 Pakt: Premení sa ešte pred násobkami: Pakt + Posilnenie = dve Posilnenia, nič sa nezdvojí.
+>
+> §7 Odkrytie NA EX a Výtržník: **Výtržník prebíja Úplatok** (v9.3, Michal 2026-10-31): kým je karta
+> Výtržníkom, úplatky na nej sa na jej akcie neuplatnia — ani tie, ktoré dostala pred zrážkou — a nový
+> Úplatok na ňu dať nemožno (nižšie).
+>
+> §7 Úplatok (v7): **Úplatok** je opak Kšeftu: platí **súper**. Na súperovu odkrytú kartu
+> s Úplatkom (Kulturista) smie hráč v Pitke, kým ju neskončil, dať 1 cigaretu, raz
+> za Pitku na kartu; účinok je na karte (§16), cigareta prepadne. Na **Výtržníka**
+> Úplatok dať nemožno — hra ho neponúkne (v9.3): Výtržník úplatky neberie na vedomie
+> a cigareta by prepadla naprázdno.
+>
+> §16 Úplatok (v7, Kulturista): opak Kšeftu — platí súper. V Pitke na svojom
+> ťahu (nie pri odpovedi na NA EX) smie dať na súperovu kartu s Úplatkom
+> 1 cigaretu, raz za Pitku na kartu. Každá zníži do konca kola útoky karty
+> o stupeň: Petelica → Pecka → Rana → nič (akcia ostáva spárovaná, len sa
+> neráta). Cigareta prepadne (nikto ju nedostane). **Výtržník prebíja Úplatok** (v9.3,
+> Michal 2026-10-31): keď je z Kulturistu Výtržník (§7), všetky jeho Rany platia bez ohľadu
+> na úplatky — aj na tie z predošlej Pitky kola, ktoré na karte ležia ďalej — a ďalší Úplatok
+> naňho dať nemožno. Výtržníkom ostáva do konca bitky, takže úplatky spred zrážky
+> už neplatia vôbec.
+>
+> §16 Kulturista: Úplatok (vyššie).
+>
+> §16 Veľmi smútiaca vdova: Konflikt: ak je priložená karta Chlap, po bitke ide z hry (nevráti sa
+> do balíčka). Jej akcie v bitke platia.
+>
+> §16 Liberál: Pitka: ak v súperovej partii nie je rovnako žien a chlapov (karty s tagom Žena /
+> Chlap, skrytá Záverečná sa neráta), súper získa pri vyhodnotení 1 zadĺženie za každého Liberála.
+>
+> §17 Úplatok: spúšťač (v7): súper platí cigaretou za oslabenie tvojej karty, raz za Pitku;
+> cigareta prepadne; na Výtržníka nie (v9.3, §7, §16)

@@ -187,7 +187,7 @@ describe("M2 — modifikátory na spoji", () => {
     expect(evaluated.zdroje[0].Pecka?.map((z) => z.dovody)).toEqual([["Odpor proti Posilneniu"]]);
   });
 
-  it("Posilnenie + Posilnenie → nič (rozhodnutie k otvorenej otázke č. 1)", () => {
+  it("Posilnenie + Posilnenie → Forsáž (v10.3); neaktívne akcie ostávajú neaktívne", () => {
     const a = makeDef("a", [null, "Posilnenie", null, null], [null, null, null, "Pecka"]);
     const b = makeDef("b", EMPTY, [null, "Posilnenie", null, null]);
     const data = syntheticData([a, b]);
@@ -197,6 +197,7 @@ describe("M2 — modifikátory na spoji", () => {
     const evaluated = evaluateLine(data, line);
     expect(evaluated.sums[0]).toEqual({});
     expect(evaluated.cards.get(cardA.uid)?.vzbura).toBe(false);
+    expect(evaluated.cards.get(cardA.uid)?.forsaz).toBe(true);
   });
 });
 
