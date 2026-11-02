@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Výučba Prvá hra na sade B+ — návrh textov</title>
+<style>
+:root{--bg:#f6f1e7;--karta:#fffdf8;--ink:#2b2118;--muted:#7a6a58;--pred:#fbe9e7;--po:#e8f5e9;--akc:#8a3b12}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:1.45rem;margin:.2em 0}h2{font-size:1.15rem;margin:1.6em 0 .5em;color:var(--akc)}h3{font-size:1rem;margin:0 0 .4em}
+.lead{color:var(--muted)}
+.krok{background:var(--karta);border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:0 1px 3px #0002}
+.cast{display:inline-block;font-size:.75rem;background:#efe3cf;border-radius:6px;padding:0 6px;margin-right:4px;color:var(--muted)}
+.stitok{font-size:.75rem;background:var(--akc);color:#fff;border-radius:6px;padding:0 6px}
+.pole{font-size:.78rem;color:var(--muted);margin-top:8px;text-transform:uppercase;letter-spacing:.03em}
+.pred,.po{padding:8px 10px;border-radius:8px;margin:4px 0}
+.pred{background:var(--pred);text-decoration:line-through;text-decoration-color:#c6282855}
+.po{background:var(--po)}
+.pred::before{content:"pôvodný ";font-weight:600;text-decoration:none;display:inline-block;margin-right:4px;color:#c62828}
+.po::before{content:"návrh ";font-weight:600;color:#2e7d32;margin-right:4px}
+.preco{font-size:.9rem;color:#4a3d30;margin:.5em 0 0}
+.ik{display:inline-block;font-size:.75em;border:1px solid #c9b79c;border-radius:4px;padding:0 4px;background:#fff6e5}
+table{border-collapse:collapse;width:100%;background:var(--karta);border-radius:10px;overflow:hidden;font-size:.9rem}
+th,td{padding:6px 8px;border-bottom:1px solid #eadfcd;text-align:left;vertical-align:top}th{background:#efe3cf}
+ol li{margin:.4em 0}
+@media(max-width:560px){table,thead,tbody,tr,th,td{display:block}thead{display:none}td{border:0;padding:2px 8px}tr{border-bottom:1px solid #eadfcd;padding:6px 0}}
+</style></head><body><main>
+<h1>Výučba „Prvá hra“ na sade B+</h1>
+<p class="lead">Vymyselník, 2026-11-02 · vetva <code>vyucba/sada-bplus</code> · jadro v10.4, lokálna sada v11 (Odpory B+, nová Puška). Michal schvaľuje texty; čísla sú z jadra (<code>tools/vyucba/prehraj.ts</code>: „Scenár sedí“, testy zelené).</p>
+
+<h2>V skratke</h2>
+<ul>
+<li><b>1. časť</b> ostáva bez zmeny textov; Dievčina má iný variant, čísla rovnaké.</li>
+<li><b>2. časť</b>: nový Pijan a nové Dvojčatá znížia hráčovi tuhé o 1 a pridajú pečeň. Hádku preto Štamgast dá <b>Hrobárovi a Veterinárovi</b>, nie Starostovi: Bitkár by mu dal bitku a zmizla by lekcia o remíze, ktorú rozhodnú Dlhy. Hráč dostane <b>druhú Cirhózu</b>.</li>
+<li><b>3. časť</b>: nová Puška (5 : 2 → 9 : 2), Nakladačka 7 rozdelená na troch starších. Finále 16 : 9, finálová hádka je <b>remíza</b> (obaja po Povere), krok Štamgasta s Poštárkou zanikol. Koniec 43 : −1.</li>
+<li>Zmenených krokov: 32. Verzia scenára <code>v10-4-bplus-2026-11-02</code> (postup hráčov sa hľadá podľa id kroku).</li>
+</ul>
+
+<h2>Otázky pre Michala</h2>
+<ol>
+<li>Hádka v 2. kole: súhlasíš, že Štamgast ťahá Hrobára (Alkoholik) a Veterinára (Robota) namiesto Starostu? Lekcia „hádka mení priazeň hneď“ potom stojí na Robote, ktorá mu v tej bitke spáli Dlh.</li>
+<li>Finále: hádka 1 : 1 je remíza – lekcia „bitku prehrá, hádku vyhral“ zmizne. Nechať tak, alebo hľadať inú Policajtku/poradie kariet?</li>
+<li>Hráč aj Štamgast majú na konci po dve nepriznané Cirhózy (43 : −1). Je záporné skóre Štamgasta vo výučbe v poriadku?</li>
+</ol>
+
+<h2>Zmenené kroky</h2>
+
+<section class="krok" id="k-vypit">
+  <h3><span class="cast">2. časť</span> k-vypit </h3>
+  <div class="pole">text</div>
+  <div class="pred">Teraz dve karty v jednom ťahu: Pijana k Ihrisku – toho, ktorého <span class="ik">Poldeci</span> Poldeci sa stretne s <span class="ik">Pecka</span> Peckou a <span class="ik">Rana</span> Rana s <span class="ik">Rana</span> Ranou – a za neho Miňištranta, potom potvrď. Druhá karta v ťahu stojí plný <span class="ik">Poldeci</span> poldeci: hra ho vypije sama, limit klesne o jedna, pečeň stúpne o jedna.</div>
+  <div class="po">Teraz dve karty v jednom ťahu: Pijana k Ihrisku – toho, ktorého <span class="ik">Poldeci</span> Poldeci sa stretne s <span class="ik">Pecka</span> Peckou a <span class="ik">PoškodeniePečene</span> pečeň s <span class="ik">Rana</span> Ranou – a za neho Miňištranta, potom potvrď. Druhá karta v ťahu stojí plný <span class="ik">Poldeci</span> poldeci: hra ho vypije sama, limit klesne o jedna, pečeň stúpne o jedna.</div>
+  <div class="pole">rada pri zlom ťahu (ruka:pijan#2)</div>
+  <div class="pred">Tento Pijan má hore <span class="ik">PoškodeniePečene</span> Poškodenie pečene: s Peckou by sa ti spojila pečeň a dole <span class="ik">Poldeci</span> Poldeci namiesto Rany. Zober toho druhého.</div>
+  <div class="po">Tento Pijan by spojil s <span class="ik">Pecka</span> Peckou pečeň a dole <span class="ik">Poldeci</span> Poldeci. Vyšlo by to nastejno, ale toho si odlož na tretie kolo. Zober toho druhého.</div>
+  <p class="preco"><b>Prečo:</b> Nový Pijan nemá variant s Poldeci hore a Ranou dole – Rana je vždy v 3. riadku, pečeň alebo Poldeci v 4. Vybraný Pijan spojí Poldeci s Peckou a pečeň s Ranou Ihriska; jadro 5 : 2. Poldeci je nutný: bez neho by hráč do 3. kola nemal 2 plné poldeci a limit by mu nedovolil pasovať s Miňištrantom.</p><p class="preco"><b>Prečo:</b> Druhý Pijan v ruke spojí tie isté akcie, len prehodené – rada už nesmie tvrdiť, že príde o Ranu. Práve tohto Pijana hráč vyloží v 3. kole za Pušku.</p>
+</section>
+
+<section class="krok" id="i-prevaha-tvoja">
+  <h3><span class="cast">2. časť</span> i-prevaha-tvoja </h3>
+  <div class="pole">text</div>
+  <div class="pred">Na trávniku máš dvoch, Štamgast nikoho: prevaha je tvoja a s ňou akcie tvojej hrany aj 2 tuhé z Ihriska, 6 : 2. Limit je minutý, ďalej za teba pasuje hra.</div>
+  <div class="po">Na trávniku máš dvoch, Štamgast nikoho: prevaha je tvoja a s ňou akcie tvojej hrany aj 2 tuhé z Ihriska, 5 : 2. Limit je minutý, ďalej za teba pasuje hra.</div>
+  <p class="preco"><b>Prečo:</b> Pijan už nespojí vlastnú Ranu (pozri k-vypit): jadro 5 : 2.</p>
+</section>
+
+<section class="krok" id="i-remiza-kraj">
+  <h3><span class="cast">2. časť</span> i-remiza-kraj </h3>
+  <div class="pole">text</div>
+  <div class="pred">Pri rovnosti v kraji má prevahu ten, koho karta leží hneď pri lokalite: tvoj Pijan. Akcie hrany ostali tebe, ale 2 tuhé z Ihriska chcú viac ľudí, nie rovnako – sú preč. 4 : 2.</div>
+  <div class="po">Pri rovnosti v kraji má prevahu ten, koho karta leží hneď pri lokalite: tvoj Pijan. Akcie hrany ostali tebe, ale 2 tuhé z Ihriska chcú viac ľudí, nie rovnako – sú preč. 3 : 2.</div>
+  <p class="preco"><b>Prečo:</b> Bez 2 tuhých z Ihriska: jadro 3 : 2.</p>
+</section>
+
+<section class="krok" id="k-hotovo3-bot">
+  <h3><span class="cast">2. časť</span> k-hotovo3-bot </h3>
+  <div class="pole">text</div>
+  <div class="pred">Záverečná sa otočila: Silná nezávislá žena, Občan. Na trávniku má Štamgast troch proti tvojim dvom, prevaha je jeho – akcie tvojej hrany aj 2 tuhé. A Silná žena zdvojuje akcie jeho kariet vedľa seba: 1 : 9. Hovoril som ti, že nevieš, čo to je.</div>
+  <div class="po">Záverečná sa otočila: Silná nezávislá žena, Občan. Na trávniku má Štamgast troch proti tvojim dvom, prevaha je jeho – akcie tvojej hrany aj 2 tuhé. A Silná žena zdvojuje akcie jeho kariet vedľa seba: 0 : 9. Hovoril som ti, že nevieš, čo to je.</div>
+  <p class="preco"><b>Prečo:</b> Jadro: 0 : 9 – hráčovi ostali na hrane len pečeň a Poldeci, Pecka a Rana Ihriska sú teraz Štamgastove.</p>
+</section>
+
+<section class="krok" id="i-cirhoza2">
+  <h3><span class="cast">2. časť</span> i-cirhoza2 </h3>
+  <div class="pole">text</div>
+  <div class="pred">A tebe pretiekla pečeň: vypitý poldeci a dve akcie Pijana, spolu 3. Máš Cirhózu. Leží v tvojom odhadzovacom balíčku, do ruky príde, keď sa balíček zamieša – a kým sa jej nezbavíš, stojí ťa na konci hry 3 špaky.</div>
+  <div class="po">A tebe pretiekla pečeň: vypitý poldeci, tri akcie Pijana a pečeň Miňištranta, ktorú ti spojili Dvojčatá – spolu 5. Máš Cirhózu. Leží v tvojom odhadzovacom balíčku, do ruky príde, keď sa balíček zamieša – a kým sa jej nezbavíš, stojí ťa na konci hry 3 špaky.</div>
+  <p class="preco"><b>Prečo:</b> Nové Dvojčatá majú Hazard proti Miňištrantovej pečeni a Odpor proti jeho Viere. Pečeň: vypitý poldeci 1 + dve pečene a Poldeci Pijana 3 + pečeň Miňištranta 1 = 5, prah je 3.</p>
+</section>
+
+<section class="krok" id="i-nastup">
+  <h3><span class="cast">2. časť</span> i-nastup </h3>
+  <div class="pole">text</div>
+  <div class="pred">Všimni si Alkoholika: priznal ti Cirhózu z balíčka. To je jeho Nástup – slovo pred dvojbodkou hovorí, kedy efekt platí, Nástup pri vyložení. Priznaná Cirhóza sa ti nevráti a 3 špaky ťa stáť nebude, zato Štamgast za ňu bije v každej bitke o 1 tuhé viac: 6 : 5, nie 6 : 4.</div>
+  <div class="po">Všimni si Alkoholika: priznal ti Cirhózu z balíčka. To je jeho Nástup – slovo pred dvojbodkou hovorí, kedy efekt platí, Nástup pri vyložení. Priznaná Cirhóza sa ti nevráti a 3 špaky ťa stáť nebude, zato Štamgast za ňu bije v každej bitke o 1 tuhé viac: 5 : 5, nie 5 : 4.</div>
+  <p class="preco"><b>Prečo:</b> Jadro po Alkoholikovi: 5 : 5.</p>
+</section>
+
+<section class="krok" id="k-naex1">
+  <h3><span class="cast">2. časť</span> k-naex1 </h3>
+  <div class="pole">rada pri zlom ťahu (liniaSupera:dvojcata)</div>
+  <div class="pred">Na Dvojčatách by NA EX Štamgastovi zrušilo spojenú <span class="ik">Rana</span> Ranu, ale zdvojilo osamotenú <span class="ik">Pecka</span> Pecku. Tuhé by mu skočilo nahor. Gratulujem.</div>
+  <div class="po">Na Dvojčatách by NA EX Štamgastovi zrušilo spojenú <span class="ik">Rana</span> Ranu, ale zdvojilo osamotené <span class="ik">Rana</span> Rany. Tuhé by mu skočilo nahor. Gratulujem.</div>
+  <div class="pole">rada pri zlom ťahu (linia:ministrant)</div>
+  <div class="pred">Na Miňištrantovi by NA EX zrušilo <span class="ik">Cigareta</span> Cigaretu a <span class="ik">Povera</span> Poveru a zdvojilo pečeň. Na pečeň máš talent aj bez toho.</div>
+  <div class="po">—</div>
+  <p class="preco"><b>Prečo:</b> Nové Dvojčatá nemajú Pecku. NA EX by zdvojilo ich osamotené Rany (zdvojené aj Silnou ženou), jadro by ukázalo 6 : 12.</p><p class="preco"><b>Prečo:</b> Na Miňištranta sa NA EX dať nedá: Vieru mu ruší Odpor Dvojčiat a ostatné akcie sú spojené. Jadro odmietne: „NA EX smie len na kartu, ktorá má aspoň jednu aktívnu a aspoň jednu neaktívnu akciu“.</p>
+</section>
+
+<section class="krok" id="i-odpovede">
+  <h3><span class="cast">2. časť</span> i-odpovede </h3>
+  <div class="pole">text</div>
+  <div class="pred">Odpovede sa otočili naraz: Štamgast tam mal svoju manželku. Tá spojila dve osamotené akcie tvojho Alkoholika, aj <span class="ik">Robota</span> Robotu, a tvoje NA EX ich namiesto zdvojenia zrušilo – Robota je preč. A jeho manželka sa ráta do trávnika: zas 4 : 4.</div>
+  <div class="po">Odpovede sa otočili naraz: Štamgast tam mal svoju manželku. Tá spojila dve osamotené akcie tvojho Alkoholika, aj <span class="ik">Robota</span> Robotu, a tvoje NA EX ich namiesto zdvojenia zrušilo – Robota je preč. A jeho manželka sa ráta do trávnika: zas 4 : 4. A pečeň ti v druhej Pitke zas pretiekla – druhá Cirhóza ide do balíčka.</div>
+  <p class="preco"><b>Prečo:</b> V druhej Pitke hráčovi pretečie pečeň znova (NA EX 1 + 2 z kariet = 3). Druhá Cirhóza ho na konci stojí 3 špaky, Melichar ju musí spomenúť skôr, než ju zráta.</p>
+</section>
+
+<section class="krok" id="k-pohorsenie-bot1">
+  <h3><span class="cast">2. časť</span> k-pohorsenie-bot1 </h3>
+  <div class="pole">text</div>
+  <div class="pred">Štamgast si za 3 ťahá Starostovu priazeň k sebe: zo stredu na žltú 1, na oranžovú 2, ako pri Nakladačke. Starostova priazeň je Bitkár: tuhé navyše, tu 2. A hádka mení priazeň hneď, ešte v tejto bitke: z 5 : 3 je 5 : 5.</div>
+  <div class="po">Štamgast si za 3 ťahá Hrobárovu priazeň k sebe: zo stredu na žltú 1, na oranžovú 2, ako pri Nakladačke. Hrobárova priazeň je Alkoholik: po bitke mu vráti poldeci z NA EX plný. A hádka mení priazeň hneď, ešte pre túto bitku.</div>
+  <div class="pole">ťah Štamgasta</div>
+  <div class="pred">{"type":"hadka","elderId":"starosta"}</div>
+  <div class="po">{"type":"hadka","elderId":"hrobar"}</div>
+  <p class="preco"><b>Prečo:</b> Pred hádkou je tuhé 4 : 4. Bitkár by Štamgastovi dal bitku (4 : 5 alebo 4 : 6) a zmizla by lekcia o remíze, ktorú rozhodnú Dlhy. Hrobár a Veterinár tuhé nemenia.</p>
+</section>
+
+<section class="krok" id="k-hadka-bot2">
+  <h3><span class="cast">2. časť</span> k-hadka-bot2 </h3>
+  <div class="pole">text</div>
+  <div class="pred">Posledný bod dal Hrobárovi: jeho Alkoholik mu po bitke vráti poldeci z NA EX plný. Stupnica sa nepohla – čo vyhráš v hádke, platí len do konca kola.</div>
+  <div class="po">Posledný bod dal Veterinárovi: jeho priazeň Robota mu ešte v tejto bitke spáli Dlh. Stupnica sa nepohla – čo vyhráš v hádke, platí len do konca kola.</div>
+  <div class="pole">ťah Štamgasta</div>
+  <div class="pred">{"type":"hadka","elderId":"hrobar"}</div>
+  <div class="po">{"type":"hadka","elderId":"veterinar"}</div>
+  <p class="preco"><b>Prečo:</b> Zvyšný bod hádky ide Veterinárovi (Robota 1): v exekúcii spáli Štamgastovi Dlh, tuhé sa nezmení. Špaky po kole ostanú 17 : −1.</p>
+</section>
+
+<section class="krok" id="i-remiza2">
+  <h3><span class="cast">2. časť</span> i-remiza2 </h3>
+  <div class="pole">text</div>
+  <div class="pred">Remíza v tuhom. Vtedy vyhrá, kto má menej priznaných Dlhov: Štamgast tri, ty jeden – jeho vlastné NA EX mu ich zdvojilo. Bitka je tvoja; hovoril som, nech mu ich necháš. A Nakladačka je pri remíze nula, takže sa po tejto bitke žiadny starší nepohne.</div>
+  <div class="po">Remíza v tuhom. Vtedy vyhrá, kto má menej priznaných Dlhov: Štamgast päť, ty jeden – jeho vlastné NA EX mu ich zdvojilo. Bitka je tvoja; hovoril som, nech mu ich necháš. A Nakladačka je pri remíze nula, takže sa po tejto bitke žiadny starší nepohne.</div>
+  <p class="preco"><b>Prečo:</b> Jadro: pri bitke Dlhy 1 : 5 – Hazard Dvojčiat zdvojený Silnou ženou a NA EX na Dievčinu.</p>
+</section>
+
+<section class="krok" id="q-remiza2">
+  <h3><span class="cast">2. časť</span> q-remiza2 </h3>
+  <div class="pole">text</div>
+  <div class="pred">Prečo je bitka pri 5 : 5 tvoja?</div>
+  <div class="po">Prečo je bitka pri 4 : 4 tvoja?</div>
+  <p class="preco"><b>Prečo:</b> Remíza je 4 : 4.</p>
+</section>
+
+<section class="krok" id="q-makke">
+  <h3><span class="cast">2. časť</span> q-makke </h3>
+  <div class="pole">text</div>
+  <div class="pred">Keby bitka skončila 5 : 6 pre Štamgasta, kto by mal Nakladačku?</div>
+  <div class="po">Keby bitka skončila 4 : 5 pre Štamgasta, kto by mal Nakladačku?</div>
+  <p class="preco"><b>Prečo:</b> O jedno tuhé od remízy 4 : 4.</p>
+</section>
+
+<section class="krok" id="i-strach-starosta">
+  <h3><span class="cast">2. časť</span> i-strach-starosta </h3>
+  <div class="pole">text</div>
+  <div class="pred">A pozri na Starostu: stojí v strede, kde stál. Hádka stupnicou nehýbe, Bitkára mal Štamgast len na dnes – starších posúva Nakladačka. Farár stojí v oranžovej na Štamgastovej strane: priazeň jemu, strach z teba. Starší na červenej, na stupni 3, je vydesený: toho smieš skúsiť zajať, ukážem ti v tretej časti. A traja väzni jedného hráča sú výhra hneď.</div>
+  <div class="po">A pozri na Hrobára: stojí v strede, kde stál. Hádka stupnicou nehýbe, Alkoholika mal Štamgast len na dnes – starších posúva Nakladačka. Farár stojí v oranžovej na Štamgastovej strane: priazeň jemu, strach z teba. Starší na červenej, na stupni 3, je vydesený: toho smieš skúsiť zajať, ukážem ti v tretej časti. A traja väzni jedného hráča sú výhra hneď.</div>
+  <p class="preco"><b>Prečo:</b> Hádku dostal Hrobár, nie Starosta (pozri k-pohorsenie-bot1). Starosta ostáva v strede pre Kšeft vily vo finále.</p>
+</section>
+
+<section class="krok" id="k-nastroj">
+  <h3><span class="cast">3. časť</span> k-nastroj </h3>
+  <div class="pole">text</div>
+  <div class="pred">Teraz Pušku za Miňištranta; Nástroj limit nemíňa. Jej <span class="ik">Petelica</span> Petelica sa spojí s Miňištrantovou <span class="ik">Viera</span> Vierou a je tvoja, lebo Miňištrant je tvoj. 3 : 2.</div>
+  <div class="po">Teraz Pušku za Miňištranta; Nástroj limit nemíňa. Jej <span class="ik">Petelica</span> Petelica sa spojí s Miňištrantovou <span class="ik">Viera</span> Vierou a <span class="ik">Rana</span> Rana s jeho pečeňou. Obe sú tvoje, lebo Miňištrant je tvoj, a Rana s Vidlami udrie za dve. 5 : 2.</div>
+  <p class="preco"><b>Prečo:</b> Nová Puška má vpravo Petelicu a Ranu; obe sa spoja s Miňištrantovou ľavou stranou. Variant 0/0: Petelica – Viera, Rana – pečeň. Petelica 3 + Rana 1 + Vidly 1 = 5; Štamgast 3 − Viera 1 = 2. Jadro: 5 : 2.</p>
+</section>
+
+<section class="krok" id="k-zh3-2">
+  <h3><span class="cast">3. časť</span> k-zh3-2 </h3>
+  <div class="pole">text</div>
+  <div class="pred">Teraz Pijana za Pušku. Puškina <span class="ik">Pecka</span> Pecka sa spojí s jeho <span class="ik">Poldeci</span> Poldeci a dostaneš ju ty, lebo Pijan je tvoj. Odhad 5 : 2.</div>
+  <div class="po">Teraz Pijana za Pušku. Puškina <span class="ik">Rana</span> Rana sa spojí s jeho <span class="ik">Rana</span> Ranou a dostaneš ju ty, lebo Pijan je tvoj. S Vidlami po dve: odhad 9 : 2.</div>
+  <p class="preco"><b>Prečo:</b> Puška má vľavo dve Rany, Pijan má 2. riadok zablokovaný, preto sa spojí jedna Puškina Rana s Pijanovou Ranou. Každá s Vidlami za 2: 5 + 4 = 9 : 2 (jadro).</p>
+</section>
+
+<section class="krok" id="k-povera5">
+  <h3><span class="cast">3. časť</span> k-povera5 </h3>
+  <div class="pole">text</div>
+  <div class="pred">Klikni na Autobusára a za 3 si ho ťahaj k sebe: na žltú 1, na oranžovú 2. Jeho priazeň je Fajčiar: po bitke ti dá 2 <span class="ik">Cigareta</span> cigarety. Bitku máš aj tak, 5 : 2, a cigarety budeš vo finále potrebovať.</div>
+  <div class="po">Klikni na Autobusára a za 3 si ho ťahaj k sebe: na žltú 1, na oranžovú 2. Jeho priazeň je Fajčiar: po bitke ti dá 2 <span class="ik">Cigareta</span> cigarety. Bitku máš aj tak, 9 : 2, a cigarety budeš vo finále potrebovať.</div>
+  <div class="pole">rada pri zlom ťahu (starosta)</div>
+  <div class="pred">Bitkára nepotrebuješ, 5 : 2 stačí. Autobusár.</div>
+  <div class="po">Bitkára nepotrebuješ, 9 : 2 stačí. Autobusár.</div>
+  <p class="preco"><b>Prečo:</b> Bitka je 9 : 2 (jadro), aj v rade pri zlej voľbe Starostu.</p>
+</section>
+
+<section class="krok" id="i-vyhra3">
+  <h3><span class="cast">3. časť</span> i-vyhra3 </h3>
+  <div class="pole">text</div>
+  <div class="pred">Bitka je tvoja, 5 : 2: štyri špaky za karty v línii. Exekútor: tebe Dlh aj so špakom, Štamgastovi Dlh bez špaku, Advokát. Štamgast dostal špak aj za prehru – Kultúrny dom platí porazenému za každú jeho kartu v línii. A po bitke ti Autobusár dá 2 cigarety, Fajčiar.</div>
+  <div class="po">Bitka je tvoja, 9 : 2: štyri špaky za karty v línii. Exekútor: tebe Dlh aj so špakom, Štamgastovi Dlh bez špaku, Advokát. Štamgast dostal špak aj za prehru – Kultúrny dom platí porazenému za každú jeho kartu v línii. A po bitke ti Autobusár dá 2 cigarety, Fajčiar.</div>
+  <p class="preco"><b>Prečo:</b> Bitka 9 : 2 (jadro); špaky, exekúcia a Kultúrny dom sa nemenia.</p>
+</section>
+
+<section class="krok" id="k-prebytok3-bot-farar">
+  <h3><span class="cast">3. časť</span> k-prebytok3-bot-farar <span class="stitok">nový krok</span></h3>
+  <div class="pole">ťah Štamgasta</div>
+  <div class="pred">—</div>
+  <div class="po">{"type":"prebytok","elderId":"farar"}</div>
+  
+</section>
+
+<section class="krok" id="k-prebytok3-bot-krcmarka">
+  <h3><span class="cast">3. časť</span> k-prebytok3-bot-krcmarka <span class="stitok">nový krok</span></h3>
+  <div class="pole">ťah Štamgasta</div>
+  <div class="pred">—</div>
+  <div class="po">{"type":"prebytok","elderId":"krcmarka"}</div>
+  
+</section>
+
+<section class="krok" id="k-prebytok3-bot">
+  <h3><span class="cast">3. časť</span> k-prebytok3-bot </h3>
+  <div class="pole">text</div>
+  <div class="pred">Nakladačka 3 je tvoja a rozdeľuje ju Štamgast: celú dal Farárovi, z oranžovej na červenú. Advokát je teraz jeho v sile 3 – lenže Farár sa ťa bojí na trojke, a to je pozvánka na zajatie. Za posunutého staršieho dostal Štamgast cigaretu.</div>
+  <div class="po">Nakladačka 7 je tvoja a rozdeľuje ju Štamgast, celú: Farára z oranžovej na červenú za 3, Krčmárku zo stredu na oranžovú za 1 + 2 a Veterinára na žltú za 1. Advokát je teraz jeho v sile 3 – lenže Farár sa ťa bojí na trojke, a to je pozvánka na zajatie. Za každého posunutého staršieho dostal Štamgast cigaretu, tri.</div>
+  <div class="pole">ťah Štamgasta</div>
+  <div class="pred">{"type":"prebytok","elderId":"farar"}</div>
+  <div class="po">{"type":"prebytok","elderId":"veterinar"}</div>
+  <p class="preco"><b>Prečo:</b> Nakladačka = 9 − 2 = 7 a rozdeliť treba celú (§9.4 bod 5): Farár 3, Krčmárka 1 + 2, Veterinár 1. Pribudli dva tiché ťahy Štamgasta (k-prebytok3-bot-farar, k-prebytok3-bot-krcmarka). Štamgast dostane cigaretu za každého posunutého staršieho, spolu 3.</p>
+</section>
+
+<section class="krok" id="k-pijan-finale">
+  <h3><span class="cast">3. časť</span> k-pijan-finale </h3>
+  <div class="pole">text</div>
+  <div class="pred">Polož Pijana k vile. Spojí tri jej akcie: <span class="ik">Cigareta</span> Cigaretu, <span class="ik">Pecka</span> Pecku a <span class="ik">Dlh</span> Hazard. Pitky budú tri. 3 : 5, zatiaľ.</div>
+  <div class="po">Polož Pijana k vile. Spojí tri jej akcie: <span class="ik">Cigareta</span> Cigaretu, <span class="ik">Pecka</span> Pecku a <span class="ik">Dlh</span> Hazard. Pitky budú tri. 4 : 9, zatiaľ.</div>
+  <p class="preco"><b>Prečo:</b> Nový Recidivista má Ranu a Petelicu proti Posilneniu a Petelici vily: Štamgast 9. Pijan spojí tie isté tri akcie vily, hráč 4.</p>
+</section>
+
+<section class="krok" id="k-kseft">
+  <h3><span class="cast">3. časť</span> k-kseft </h3>
+  <div class="pole">text</div>
+  <div class="pred">Kšeft vily: za 2 <span class="ik">Cigareta</span> cigarety posuň Starostu o pole k sebe, zo stredu do žltej. Jeho Bitkár je hneď tvoj, v sile 1: 4 : 5. Kšeft nie je ťah, posúva o pole bez ohľadu na cenu a každý ho smie raz za Pitku.</div>
+  <div class="po">Kšeft vily: za 2 <span class="ik">Cigareta</span> cigarety posuň Starostu o pole k sebe, zo stredu do žltej. Jeho Bitkár je hneď tvoj, v sile 1: 5 : 9. Kšeft nie je ťah, posúva o pole bez ohľadu na cenu a každý ho smie raz za Pitku.</div>
+  <p class="preco"><b>Prečo:</b> Jadro po Kšefte: 5 : 9.</p>
+</section>
+
+<section class="krok" id="k-finale-p1-bot">
+  <h3><span class="cast">3. časť</span> k-finale-p1-bot </h3>
+  <div class="pole">text</div>
+  <div class="pred">Prvá Pitka finále: tebe cigareta a zadĺženie z vily, Štamgastovi Dlh. Druhé Zhromaždenie, Štamgast začína.</div>
+  <div class="po">Prvá Pitka finále: tebe cigareta a z Hazardu vily Dlh – zadĺženie z minulého kola ti ostalo. Druhé Zhromaždenie, Štamgast začína.</div>
+  <p class="preco"><b>Prečo:</b> Jadro: hráč prišiel do finále so zadĺžením 1, Hazard vily z neho spraví Dlh. Štamgast v prvej Pitke Dlh nedostane.</p>
+</section>
+
+<section class="krok" id="k-vypit-finale">
+  <h3><span class="cast">3. časť</span> k-vypit-finale </h3>
+  <div class="pole">text</div>
+  <div class="pred">Vypi a polož Policajtku za Pijana a Miňištranta za ňu, v jednom ťahu. 4 : 5, zatiaľ. Neboj sa, Štamgast ešte nevie, čo ho čaká.</div>
+  <div class="po">Vypi a polož Policajtku za Pijana a Miňištranta za ňu, v jednom ťahu. 7 : 9, zatiaľ. Neboj sa, Štamgast ešte nevie, čo ho čaká.</div>
+  <p class="preco"><b>Prečo:</b> Policajtka zo sady B+ sa spojí s Pijanom aj s Miňištrantom: Rana navyše. Jadro 7 : 9.</p>
+</section>
+
+<section class="krok" id="k-finale-p2-bot">
+  <h3><span class="cast">3. časť</span> k-finale-p2-bot </h3>
+  <div class="pole">text</div>
+  <div class="pred">Druhá Pitka finále: vypitý poldeci a pečeň z kariet – pečeň ti pretiekla, Cirhóza ide do balíčka. Druhý Hazard vily ti dal Dlh, Štamgastovi tiež jeden. Posledné Zhromaždenie.</div>
+  <div class="po">Druhá Pitka finále: vypitý poldeci a pečeň z kariet – pečeň ti pretiekla, Cirhóza ide do balíčka. Druhý Hazard vily ti dal zadĺženie, Štamgastovi Dlh. Posledné Zhromaždenie.</div>
+  <p class="preco"><b>Prečo:</b> Jadro: hráčovi ostane zadĺženie 1 na účte, Štamgast dostane Dlh.</p>
+</section>
+
+<section class="krok" id="k-finale-p3-bot">
+  <h3><span class="cast">3. časť</span> k-finale-p3-bot </h3>
+  <div class="pole">text</div>
+  <div class="pred">Odkryté: Štamgast dal NA EX na tvojho Pijana, chcel ti zrušiť spojené akcie. Lenže tam bolo aj tvoje – zrážka, z Pijana je Výtržník a všetky jeho akcie sú tvoje Rany: 13 : 5. Hovoril som, že ho poznám.</div>
+  <div class="po">Odkryté: Štamgast dal NA EX na tvojho Pijana, chcel ti zrušiť spojené akcie. Lenže tam bolo aj tvoje – zrážka, z Pijana je Výtržník a všetky jeho akcie sú tvoje Rany: 16 : 9. Hovoril som, že ho poznám.</div>
+  <p class="preco"><b>Prečo:</b> Jadro po zrážke: 16 : 9.</p>
+</section>
+
+<section class="krok" id="k-hadka-finale-bot">
+  <h3><span class="cast">3. časť</span> k-hadka-finale-bot <span class="stitok">zrušený krok</span></h3>
+  <div class="pole">text</div>
+  <div class="pred">Najprv hádka: Štamgast má <span class="ik">Povera</span> Poveru a ty nemáš Vieru, čo by ju zrušila. Hádku vyhral o 1 a vzal si Poštárku: Veriaci mu dá <span class="ik">Viera</span> Vieru navyše a tá ti uberie 1 tuhé, 12 : 5. Bitku prehrá, hádku vyhral. Aj tak sa dá.</div>
+  <div class="po">— (nahrádza i-hadka-finale)</div>
+  <div class="pole">ťah Štamgasta</div>
+  <div class="pred">{"type":"hadka","elderId":"postarka"}</div>
+  <div class="po">— (nahrádza i-hadka-finale)</div>
+  <p class="preco"><b>Prečo:</b> Policajtka zo sady B+ spojí aj Miňištrantovu Poveru hráča: mäkké 1 : 1. Hádka je remíza a Štamgast nemá čo rozdeľovať – jadro ukončí hru hneď po „bez odpovede“.</p>
+</section>
+
+<section class="krok" id="i-hadka-finale">
+  <h3><span class="cast">3. časť</span> i-hadka-finale <span class="stitok">nový krok</span></h3>
+  <div class="pole">text</div>
+  <div class="pred">—</div>
+  <div class="po">Najprv hádka: ty máš <span class="ik">Povera</span> Poveru z Miňištranta, Štamgast tiež jednu a Vieru, čo by ju zrušila, nemá nikto. 1 : 1 je remíza – hádku nevyhral nikto a nikto nič nerozdeľuje.</div>
+  <p class="preco"><b>Prečo:</b> Policajtka zo sady B+ spojí aj Miňištrantovu Poveru hráča: mäkké 1 : 1. Hádka je remíza a Štamgast nemá čo rozdeľovať – jadro ukončí hru hneď po „bez odpovede“.</p>
+</section>
+
+<section class="krok" id="i-bitka-finale">
+  <h3><span class="cast">3. časť</span> i-bitka-finale </h3>
+  <div class="pole">text</div>
+  <div class="pred">Finále je tvoje, 12 : 5, a Farár je tvoj väzeň, prvý v partii: leží v pivnici, nehýbe sa, priazeň nedáva a nikto ho nevyslobodí. Špaky: päť za karty v línii a Nakladačka 7 sa vo finále mení na špaky jedna ku jednej. Exekútor ti zobral jeden. A Farár ti zaplatil udržanú trojku.</div>
+  <div class="po">Finále je tvoje, 16 : 9, a Farár je tvoj väzeň, prvý v partii: leží v pivnici, nehýbe sa, priazeň nedáva a nikto ho nevyslobodí. Špaky: päť za karty v línii a Nakladačka 7 sa vo finále mení na špaky jedna ku jednej. Exekútor ti zobral jeden. A udržaný strach ti zaplatili traja: Farár 3 za trojku, Krčmárka 1 + 2 za žltú a oranžovú, Veterinár 1 za žltú.</div>
+  <p class="preco"><b>Prečo:</b> Krčmárka (oranžová) a Veterinár (žltá) z Nakladačky 3. kola sa vo finále udržia a zaplatia 3 + 1 špak; Farár 3 ako predtým.</p><p class="preco"><b>Prečo:</b> Bez Poštárky ostane 16 : 9. Nakladačka je náhodou znova 7.</p>
+</section>
+
+<section class="krok" id="i-koniec">
+  <h3><span class="cast">3. časť</span> i-koniec </h3>
+  <div class="pole">text</div>
+  <div class="pred">Koniec hry. Väzni sa vyplatia podľa poradia zajatia: prvý 8 špakov, druhý 6, tretí 4, štvrtý 2 – Farár bol prvý. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 4. A Cirhóza z finále leží v balíčku nepriznaná a stojí ťa 3 špaky. 41 : 4.</div>
+  <div class="po">Koniec hry. Väzni sa vyplatia podľa poradia zajatia: prvý 8 špakov, druhý 6, tretí 4, štvrtý 2 – Farár bol prvý. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 3, Štamgastovi 5. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho dve tiež. 43 : −1.</div>
+  <p class="preco"><b>Prečo:</b> Jadro: hráč 38 + väzeň 8 + vykúpenie 3 (11 cigariet a plný poldeci) − 2 Cirhózy 6 = 43; Štamgast 0 + vykúpenie 5 − 2 Cirhózy 6 = −1.</p>
+</section>
+
+<section class="krok" id="q-koniec">
+  <h3><span class="cast">3. časť</span> q-koniec </h3>
+  <div class="pole">text</div>
+  <div class="pred">Koľko ťa stála tvoja nepriznaná Cirhóza?</div>
+  <div class="po">Koľko ťa stáli tvoje nepriznané Cirhózy?</div>
+  <div class="pole">odpoveď 1</div>
+  <div class="pred">3 špaky. — Áno. Nepriznaná stojí špaky na konci, priznaná tuhé v bitkách.</div>
+  <div class="po">6 špakov, 3 za každú. — Áno. Nepriznaná stojí špaky na konci, priznaná tuhé v bitkách.</div>
+  <div class="pole">odpoveď 2</div>
+  <div class="pred">Nič, nikto ju nevidí. — Hra ju vidí: ráta sa ruka aj oba balíčky. Ja som to skúšal.</div>
+  <div class="po">Nič, nikto ich nevidí. — Hra ich vidí: ráta sa ruka aj oba balíčky. Ja som to skúšal.</div>
+  <p class="preco"><b>Prečo:</b> Hráč má na konci dve nepriznané Cirhózy.</p>
+</section>
+
+<h2>Rozdanie – varianty kariet</h2>
+<p class="lead">Pre karty, ktoré sa v scenári hrajú. Ostatné dostali najbližšie rozloženie zo sady B+ (sloty zhora nadol, ľavá | pravá strana).</p>
+<table><thead><tr><th>Karta</th><th>Predtým</th><th>Teraz</th><th>Prečo</th></tr></thead><tbody>
+<tr><td>Pijan (hráč, 2. kolo)</td><td>Poldeci · pečeň Rana</td><td>Poldeci · Rana pečeň</td><td>Variant „Poldeci hore, Rana dole“ v sade nie je. Poldeci musí ostať spojený, inak hráč nemá v 3. kole 2 plné poldeci a limit mu nedovolí pasovať s Miňištrantom.</td></tr>
+<tr><td>Pijan (Štamgast, 2. kolo)</td><td>Rana · pečeň Poldeci</td><td>Rana · Poldeci pečeň</td><td>Pečeň v 3. riadku už nie je; spojí sa Poldeci, tuhé ostane 0 : 2 („Pijan nič nespojil“).</td></tr>
+<tr><td>Miňištrant (oba)</td><td>pečeň Viera (vľavo)</td><td>Viera pečeň (jediný variant)</td><td>Štamgastovi Miňištrant s Poverou dole (0/1), aby sa vo finále spojila jeho Povera s Recidivistom.</td></tr>
+<tr><td>Milujúca manželka (hráč)</td><td>Dlh Viera · ·</td><td>Viera Dlh · ·</td><td>Alkoholikova Viera ostane osamotená – NA EX ju zdvojí (k-naex1).</td></tr>
+<tr><td>Dievčina na vydaj (hráč)</td><td>· Povera · Pohoršenie</td><td>· Pohoršenie · Povera</td><td>Hasičovo Posilnenie je teraz v 4. riadku – zdvojí Poveru ako doteraz (1. časť bez zmeny čísel).</td></tr>
+<tr><td>Anonymný alkoholik</td><td>· · Odpor Robota</td><td>· Odpor Robota ·</td><td>Odpoveď Štamgastovej manželky zruší Robotu (i-odpovede bez zmeny).</td></tr>
+<tr><td>Recidivista (finále)</td><td>Petelica Rana · ·</td><td>· · Petelica Rana</td><td>Všetky nové varianty dajú Štamgastovi viac; tento je najmenej (9).</td></tr>
+<tr><td>Puška (3. kolo)</td><td>Pecka / Petelica</td><td>Rana Rana | Petelica Rana (0/0)</td><td>Petelica proti Miňištrantovej Viere, ako hovorí text.</td></tr>
+<tr><td>Semienko rozdania</td><td>15</td><td>111</td><td>Dvojčatá (Hazard proti Miňištrantovej pečeni, zdvojené Silnou ženou) dajú hráčovi aj Štamgastovi Cirhózy navyše a tie zmenia miešanie balíčka. Semienko 111 dá v 3. kole aj vo finále rovnaké ruky ako doteraz (Pijan + 2 Miňištranti, vo finále Miňištrant + Pijan); 1. a 2. časť sa semienkom nemenia.</td></tr>
+</tbody></table>
+</main></body></html>

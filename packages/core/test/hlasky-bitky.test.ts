@@ -62,6 +62,8 @@ describe("bitka hlási, čo zmenší či zruší Nakladačka a Pohoršenia", () 
     }));
     const { state, events } = apply(data, s, { type: "hasic", nechat: false }, 0);
     expect(logy(events).some((t) => t.startsWith("Policajtka") || t.startsWith("Praudovravec umlčal"))).toBe(false);
-    expect(events.some((e) => e.type === "bitkaVysledok")).toBe(true);
+    // Bitka po Hasičovi pokračuje: výsledok, alebo hádka čaká na víťaza (od sady B+ 2026-11-02 dá
+    // Policajtkina hrana s lokalitou hráčovi 2 Poveru).
+    expect(events.some((e) => e.type === "bitkaVysledok") || (state.bitkaStav?.krok === "hadka" && state.bitkaStav.hadka?.vitaz != null)).toBe(true);
   });
 });

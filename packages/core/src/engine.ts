@@ -79,7 +79,8 @@ import {
   naexZaPitku,
   prahCirhozyBonus,
   zakazVypit,
-  zadlzenieZLinie,
+  zadlzeniePitkyZLinie,
+  pokutaPolicajtky,
   vDedicstve,
   partiaHraca,
   zvieraPlati,
@@ -1053,29 +1054,11 @@ export function prirastkyPitky(
     pecen[p] = 0;
     poldeci[p] = 0;
   }
-  const zLinie = zadlzenieZLinie(data, s, vyhodnotenie);
-  const pokuta = pokutaPolicajtky(data, s, vyhodnotenie);
-  const zadlzenie: [number, number] = [zLinie[0] + pokuta[0], zLinie[1] + pokuta[1]];
   return {
-    zadlzenie,
+    zadlzenie: zadlzeniePitkyZLinie(data, s, vyhodnotenie),
     poskodeniePecene: pecen,
     poldeci,
   };
-}
-
-/**
- * Policajtka (Pitka, „Pokutový blok“, Michal 2026-11-02): za každú súperovu akciu, ktorú v tejto
- * Pitke zruší tvoj Odpor, získa súper 1 zadĺženie — každá tvoja odkrytá Policajtka zvlášť.
- * Vráti zadĺženie pre [hráča 0, hráča 1]. Policajtka so starým Konfliktom (sada do v10.3) tu nie je.
- */
-export function pokutaPolicajtky(data: GameData, s: Pick<VerejnyStav, "strany">, vyhodnotenie: LineEval): [number, number] {
-  const out: [number, number] = [0, 0];
-  if (data.cards.get("policajtka")?.triggers.includes("Pitka") !== true) return out;
-  for (const p of [0, 1] as const) {
-    const n = partiaHraca(s, p).filter((pl) => pl.card.defId === "policajtka" && pl.zaverecna !== true && !efektPotlaceny(data, s, p, "policajtka")).length;
-    out[opponentOf(p)] += n * vyhodnotenie.zruseneOdporom[p];
-  }
-  return out;
 }
 
 /** Náhľad konca Pitky pre jedného hráča — „ak sa do konca Pitky na stole nič nezmení“. */
