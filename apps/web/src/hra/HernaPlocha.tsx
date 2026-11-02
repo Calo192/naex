@@ -198,6 +198,7 @@ import {
   type VyhladPitky,
 } from "./Panely.tsx";
 import { KseftPodKartou } from "./KseftPodKartou.tsx";
+import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { kseftyNaStole } from "./kseftyNaStole.ts";
 import { StavkaBitky } from "./StavkaBitky.tsx";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
@@ -2786,12 +2787,11 @@ export function HernaPlocha({
     return undefined;
   };
 
-  const kseftNaKarte = (k: (typeof kseftyStola)[number], kratko = false): ReactNode => (
+  const kseftNaKarte = (k: (typeof kseftyStola)[number]): ReactNode => (
     <KseftPodKartou
       kseft={k}
       cmd={cmd}
       naDotyk={naSirku}
-      kratko={kratko}
       onVykup={() => setMode({ typ: "vykup" })}
       onNedostupny={(text, x, y) => setChybaTahania({ text, x, y })}
     />
@@ -2803,8 +2803,7 @@ export function HernaPlocha({
     return (
       <div key={uid} className="s-kseftom" style={{ paddingBottom: REZERVA_KSEFTU }}>
         {obsah}
-        {/* Na úzkej karte len cena — čo dostaneš, povie nápoveda (na telefóne ponuka po ťuknutí). */}
-        {kseftNaKarte(k, sirkaVLinii < 130)}
+        {kseftNaKarte(k)}
       </div>
     );
   };
@@ -3896,11 +3895,7 @@ export function HernaPlocha({
           ...(mobil
             ? {}
             : {
-                vlavo: (
-                  <span className="hrana-zasoba" title={`Máš ${cigariet(cigJa)}. 1 karta = ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty = ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`}>
-                    <b>{cigJa}</b>cigarety
-                  </span>
-                ),
+                // Počet cigariet je na bare hráča — ľavý kraj hrany patrí Pivnici (Michal 2026-11-02).
                 stred:
                   zoSenku.length > 0
                     ? pecatTahu({
@@ -4248,9 +4243,6 @@ export function HernaPlocha({
         // Nákupy za cigarety (Michal 2026-10-21): každý je samostatná pečiatka vľavo na hrane stola — jeden klik.
         const nakupy = (
           <>
-            <span className="hrana-zasoba" title={`Máš ${cigariet(cig)}.`}>
-              <b>{cig}</b>cigarety
-            </span>
             {pecatNakupu({
               kluc: "fajcit",
               // Pečiatka ukazuje, čo hráč dostane (Michal 2026-10-27): cena v cigaretách → karta.
@@ -5622,24 +5614,8 @@ export function HernaPlocha({
   );
   // Log a ? — tlačidlo Šenok zaniklo (Michal 2026-10-27): šenok sa ukáže sám, keď ho treba
   // (draft na stole, Starosta, Cintorín), a pokyn má naň tlačidlo.
-  // Pivnica (Michal 2026-11-02): väzni a ich Kšefty v samostatnom okne, nie na stole. Ikona je len
-  // pri väzňovi; v Pitke, keď je Kšeft väzňa dostupný, svieti.
-  const tlacidloPivnice =
-    mojiVazni.length === 0 ? null : (
-      <button
-        type="button"
-        className={["hlava-vrstva", "pivnica-tlacidlo", vrstva === "pivnica" ? "otvorena" : "", kseftVaznaTeraz ? "pivnica-dostupna" : ""].join(" ")}
-        data-vyucba="hlavicka:pivnica"
-        aria-label={`Pivnica — väzni: ${mojiVazni.length}${kseftVaznaTeraz ? ", Kšeft väzňa je teraz dostupný" : ""}`}
-        title={kseftVaznaTeraz ? "Pivnica: tvoji väzni — Kšeft väzňa môžeš teraz spustiť (za vypitý plný poldeci)." : "Pivnica: tvoji väzni a ich Kšefty (v Pitke za vypitý plný poldeci)."}
-        onClick={() => setVrstva(vrstva === "pivnica" ? null : "pivnica")}
-      >
-        Pivnica <span className="pocet">{mojiVazni.length}</span>
-      </button>
-    );
   const nastrojeStola = (
     <div className="hlava-vrstvy">
-      {tlacidloPivnice}
       <button
         className={["hlava-vrstva", vrstva === "log" ? "otvorena" : ""].join(" ")}
         data-vyucba="hlavicka:log"
@@ -5829,6 +5805,30 @@ export function HernaPlocha({
         {pokyn?.vpravo}
       </>
     );
+  // Pivnica (Michal 2026-11-02) na mieste, kde bol počet cigariet: väzni a ich Kšefty v okne. Bez väzňa
+  // ostane tlmená, aby kraj hrany neposkakoval; svieti, keď je v Pitke Kšeft väzňa dostupný.
+  const pivnicaNaHrane = (
+    <button
+      type="button"
+      className={["hrana-pivnica", mojiVazni.length === 0 ? "prazdna" : "", kseftVaznaTeraz ? "dostupna" : "", vrstva === "pivnica" ? "otvorena" : ""].filter((x) => x !== "").join(" ")}
+      data-vyucba="hrana:pivnica"
+      aria-label={`Pivnica — väzni: ${mojiVazni.length}${kseftVaznaTeraz ? ", Kšeft väzňa je teraz dostupný" : ""}`}
+      title={
+        mojiVazni.length === 0
+          ? "Pivnica: zatiaľ prázdna — zajatý starší (väzeň) bude tu aj s Kšeftom."
+          : kseftVaznaTeraz
+            ? "Pivnica: Kšeft väzňa môžeš teraz spustiť (za vypitý plný poldeci)."
+            : "Pivnica: tvoji väzni a ich Kšefty (v Pitke za vypitý plný poldeci)."
+      }
+      onClick={() => setVrstva(vrstva === "pivnica" ? null : "pivnica")}
+    >
+      <span className="hrana-pivnica-cislo">
+        <IkonaMrezi />
+        <b>{mojiVazni.length}</b>
+      </span>
+      pivnica
+    </button>
+  );
   const maHranaTlacidla = hranaVlavo !== null || hranaStred !== null || hranaVpravo !== null;
   // Na stole (Michal 2026-10-25) je hrana jeden rad stredom na čiare okraja plste.
   // Na telefóne hrana nie je — ťahy sú v pruhu pokynu (spodok patrí ruke, Michal 2026-10-31).
@@ -5840,7 +5840,10 @@ export function HernaPlocha({
     // je vtedy skrytá pod staršími a Potvrdiť musí ostať na očiach aj pri dvoch stĺpcoch na telefóne.
     <div className={`${view.faza === "draft" || (!liniaVidno && krokDelenia === null) ? "stol-hrana neprilepena" : "stol-hrana"} s-tlacidlami${pauzaBezi ? " pocas-pauzy" : ""}`}>
       <div className="hrana-rad">
-        <div className="hrana-vlavo">{hranaVlavo}</div>
+        <div className="hrana-vlavo">
+          {pivnicaNaHrane}
+          {hranaVlavo}
+        </div>
         <div className="hrana-stred">{hranaStred}</div>
         <div className="hrana-vpravo">{hranaVpravo}</div>
       </div>
@@ -5959,6 +5962,7 @@ export function HernaPlocha({
       detail={(zdroj) => setOknoZdroja({ p, zdroj })}
       starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === p, prepni: () => prepniStarsich(p) }}
       tabula={{ otvorena: tabulaOtvorena, prepni: () => setTabulaOtvorena((o) => !o) }}
+      {...(p === ja ? { pivnica: { vazni: mojiVazni.length, dostupna: kseftVaznaTeraz, otvor: () => setVrstva("pivnica") } } : {})}
     />
   );
   const oknoZdrojaEl =
@@ -6164,7 +6168,6 @@ export function HernaPlocha({
             {naSirku && (
               <div className="pruh-riadok">
                 {!ukazStarsich && pruhPokynu}
-                {tlacidloPivnice}
                 {hlavickaPartie}
               </div>
             )}

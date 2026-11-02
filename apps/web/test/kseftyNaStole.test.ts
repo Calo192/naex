@@ -131,7 +131,7 @@ describe("tlačidlo Kšeftu", () => {
   const vila = sKseftami(zaklad, { lok: "predsedova_vila", vazni: [] });
   const vilaK = kseftyNaStole(data, viewFor(data, vila.s, ja)).find((k) => k.druh === "lokalita") as KseftNaStole;
 
-  it("ukáže cenu a zisk; nedostupné je obrys s dôvodom v nápovede", () => {
+  it("nedostupné je obrys; zisk a dôvod nesie aj popis pre čítačku", () => {
     const stryko = ksefty.find((k) => k.druh === "karta") as KseftNaStole;
     const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: stryko, cmd: () => {} }));
     expect(html).toContain("+1 Rana");
@@ -139,11 +139,21 @@ describe("tlačidlo Kšeftu", () => {
     expect(html).toContain("máš 1");
   });
 
-  it("na úzkej karte je štítok krátky — len cena, zisk v nápovede", () => {
+  it("na tlačidle len „Kšeft“ a cena — zisk a celé znenie sú v nápovede (Michal 2026-11-02)", () => {
     const stryko = ksefty.find((k) => k.druh === "karta") as KseftNaStole;
-    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: { ...stryko, dovod: null }, cmd: () => {}, kratko: true }));
-    expect(html).not.toContain("kseft-pod-zisk");
+    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: { ...stryko, dovod: null }, cmd: () => {} }));
+    const text = html.replace(/<[^>]*>/g, "");
+    expect(text).toBe("Kšeft−2");
+    expect(html).not.toContain("title=");
+    expect(stryko.nazov).toBe("Strýko z Ameriky");
+  });
+
+  it("na telefóne ťuk na nedostupný Kšeft ukáže detail s dôvodom, bez tlačidla Kšeftu", () => {
+    const stryko = ksefty.find((k) => k.druh === "karta") as KseftNaStole;
+    const html = renderToStaticMarkup(createElement(KseftPodKartou, { kseft: stryko, cmd: () => {}, naDotyk: true, otvorena: true }));
+    expect(html).toContain("máš 1");
     expect(html).toContain("1 Ranu navyše");
+    expect(html).not.toContain("kseft-ponuka-hlavne");
   });
 
   it("Kšeft vily je tlačidlo s ponukou „k sebe“ a „od seba“, nie rozbaľovač", () => {
