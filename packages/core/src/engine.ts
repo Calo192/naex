@@ -654,6 +654,12 @@ export type Event =
     }
   /** Posun markera staršieho — verejný ako marker sám; klient z neho kreslí stopu a účtenku. */
   | ({ readonly type: "posunMarkera" } & PosunMarkera)
+  /**
+   * Automatický pas v Zhromaždení (Michal 2026-11-02: „nech nie je zmätený, čo sa to deje“) —
+   * dvakrát, každému hráčovi zvlášť: pasujúci dostane dôvody (menujú karty z jeho ruky),
+   * súper len to, že pas urobila hra (dovody prázdne).
+   */
+  | { readonly type: "autoPas"; readonly hrac: PlayerId; readonly dovody: readonly string[]; readonly pre: PlayerId }
   /** Pečiatka momentu (momenty.ts) — verejná, rovnaká pre oboch; server ju pridá po príkaze. */
   | { readonly type: "moment"; readonly moment: Moment }
   | {
@@ -1807,6 +1813,8 @@ function nevyhnutnyTah(data: GameData, s: MutState, p: PlayerId, events: Event[]
     const jedina = moznosti.length === 1 ? moznosti[0] : undefined;
     if (jedina?.type === "pass") {
       events.push({ type: "log", text: `Hráč ${p + 1} už nemá čo vyložiť.` });
+      events.push({ type: "autoPas", hrac: p, dovody: dovodyAutoPasu(data, s as GameState, p), pre: p });
+      events.push({ type: "autoPas", hrac: p, dovody: [], pre: opponentOf(p) });
       cmdPass(s, data, p, events);
     } else if (jedina?.type === "skipNaex") {
       // Len pre hráča (pravidlo 2): po skrytom NA EX býva „hotovo“ jediný ťah, takže
@@ -4627,6 +4635,49 @@ export function cieleVykladania(
   if (def.tags.includes("Kliatba")) out.push("priznanie");
   if (doDedicstva) out.push("dedicstvo");
   return out;
+}
+
+/**
+ * Prečo hráč p v Zhromaždení nemá čo vyložiť (automatický pas, Michal 2026-11-02) — vety pre
+ * neho samého, menujú karty z jeho ruky, preto idú len jemu. Kontroly kopírujú
+ * cieleVykladania: karta dostane prvú prekážku, ktorá ju zastavila.
+ */
+export function dovodyAutoPasu(data: GameData, state: GameState, p: PlayerId): string[] {
+  const z = state.zhromazdenieStav;
+  const ruka = state.hraci[p].ruka;
+  if (z === null) return [];
+  if (ruka.length === 0) return ["Nemáš v ruke žiadnu kartu."];
+  const lokalita = cielLokalitaId(state);
+  /** Prečo strana kartu neprijme (limit zvlášť); null = prijme. */
+  const prekazka = (strana: PlayerId, jeNastroj: boolean): string | null => {
+    if (strana !== p && lenVlastnaStrana(lokalita)) return "na tejto lokalite sa vykladá len na vlastnú";
+    const koniec = susedNaKonci(state.strany, strana);
+    if (koniec?.zaverecna === true) return "na konci leží skrytá Záverečná";
+    if (koniec?.posledna === true) return "za poslednú kartu sa už nepriloží";
+    if (jeNastroj && koniec === null) return "prázdna, Nástroj sa vedľa lokality nevykladá";
+    if (jeNastroj && koniec !== null && defOf(data, koniec.card).tags.includes("Nástroj")) return "na konci je Nástroj";
+    return null;
+  };
+  const strany = (jeNastroj: boolean): string => {
+    const [moja, superova] = [prekazka(p, jeNastroj), prekazka(opponentOf(p), jeNastroj)];
+    if (moja !== null && moja === superova) return `obe strany: ${moja.replace(/^prázdna/, "prázdne")}`;
+    return [moja === null ? null : `tvoja strana: ${moja}`, superova === null ? null : `súperova strana: ${superova}`].filter((x) => x !== null).join("; ");
+  };
+  const skupiny = new Map<string, string[]>();
+  const pridaj = (dovod: string, meno: string): void => {
+    const mena = skupiny.get(dovod) ?? [];
+    if (!mena.includes(meno)) skupiny.set(dovod, [...mena, meno]);
+  };
+  for (const karta of ruka) {
+    const def = defOf(data, karta);
+    if (def.id === "abstak") pridaj("sa nevykladá.", def.name);
+    else if (def.tags.includes("Nástroj")) {
+      const cena = cenaDedicstva(state);
+      pridaj(`do línie nemá kam (${strany(true)}) a Dedičstvo stojí ${cigariet(cena)}, máš ${state.hraci[p].cigarety}.`, def.name);
+    } else if (z.zostavaLimit[p] <= 0 && !bezLimituPracujuci(lokalita, def.tags)) pridaj("— limit vykladania máš v tomto Zhromaždení vyčerpaný.", def.name);
+    else pridaj(`nemá kam (${strany(false)}).`, def.name);
+  }
+  return [...skupiny].map(([dovod, mena]) => `${mena.join(", ")} ${dovod}`);
 }
 
 /**

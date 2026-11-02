@@ -25,6 +25,7 @@ describe("pečiatky krokov", () => {
       const { state, events } = apply(data, s, cmd, p);
       const pec = peciatkyKrokov(events);
       if (cmd.type === "pass") expect(pec).toContainEqual({ hrac: p, druh: "pas" });
+      for (const e of events) if (e.type === "autoPas") expect(pec).toContainEqual({ hrac: e.hrac, druh: "pas", auto: true });
       if (cmd.type === "draftStop") expect(pec).toContainEqual({ hrac: p, druh: "dost" });
       // Pečiatka len tomu, kto ešte nepasoval či ešte bral (aj keď ho hra zastavila sama).
       for (const x of pec) {
@@ -42,5 +43,20 @@ describe("pečiatky krokov", () => {
     const ja: PlayerId = 0;
     expect(textPeciatkyKroku({ hrac: 1, druh: "pas" }, ja, "Fero")).toEqual({ nazov: "PAS", popis: "Fero pasuje do Pitky." });
     expect(textPeciatkyKroku({ hrac: 0, druh: "dost" }, ja, "Jano")).toEqual({ nazov: "DOSŤ", popis: "Už neberieš zo šenku." });
+  });
+
+  it("pas, ktorý urobila hra, povie súperovi aj hráčovi, že nemal čo vyložiť (Michal 2026-11-02)", () => {
+    const udalosti = [
+      { type: "log", text: "Hráč 2 už nemá čo vyložiť." },
+      { type: "autoPas", hrac: 1, dovody: [], pre: 0 },
+      { type: "log", text: "Hráč 2 pasuje do Pitky." },
+      { type: "log", text: "Hráč 1 pasuje do Pitky." },
+    ] as const;
+    expect(peciatkyKrokov(udalosti)).toEqual([
+      { hrac: 1, druh: "pas", auto: true },
+      { hrac: 0, druh: "pas" },
+    ]);
+    expect(textPeciatkyKroku({ hrac: 1, druh: "pas", auto: true }, 0, "Bot Fero").popis).toBe("Bot Fero nemá čo vyložiť — pasuje do Pitky.");
+    expect(textPeciatkyKroku({ hrac: 1, druh: "pas", auto: true }, 1, "Jano").popis).toBe("Nemáš čo vyložiť — pasuješ do Pitky.");
   });
 });

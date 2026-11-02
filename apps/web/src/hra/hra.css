@@ -9195,6 +9195,24 @@ button.auto-hotovo-odkaz {
   color: var(--slaby-text);
 }
 
+/* Automatický pas (Michal 2026-11-02): pod vetou dôvody — každá karta z ruky, prečo nejde von. */
+.auto-pas-dovody {
+  margin: 0 0 6px;
+  padding: 10px 16px 10px 30px;
+  max-height: 40vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--akcent) 10%, transparent);
+  text-align: left;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.auto-pas-dovody li + li {
+  margin-top: 4px;
+}
+
 /* ---- ovládanie po playteste výučby 20261030 ---- */
 
 /* Herné prvky sa pri klikaní a ťahaní neoznačujú (modré pruhy cez stôl po neúspešnom ťahaní);

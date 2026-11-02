@@ -309,6 +309,8 @@ const MEDZIOBRAZOVKA_MS = 400;
 const TOAST_STOLA_MS = 7000;
 /** Malá pečiatka pasu či konca brania zo šenku — dopad a chvíľa na prečítanie, potom zmizne sama. */
 const PECIATKA_KROKU_MS = 2000;
+/** Súperov pas, ktorý urobila hra, ostane dlhšie — hráč má pochopiť, prečo súper vykladá sám. */
+const PECIATKA_AUTO_PASU_MS = 3500;
 
 /** Šírka karty v ruke — nastavuje aj --ruka-w v hra.css (na mobile menšia). */
 const SIRKA_V_RUKE = 120;
@@ -1727,7 +1729,11 @@ export function HernaPlocha({
   // hráč (Ďalej). Stôl bitky je ten s líniou — keď bitka hneď skončila
   // a línia už zmizla, predošlý pohľad.
   const [frontaVrstiev, setFrontaVrstiev] = useState<readonly VrstvaVyhodnotenia[]>([]);
-  const vrstvaVyhodnotenia = frontaVrstiev[0] ?? null;
+  // Automatický pas (Michal 2026-11-02: „hra pasne za neho a zrazu súper vyloží 3 karty a ani
+  // nevie prečo“): okno s dôvodom, kým ho hráč nezavrie, stôl stojí a vyhodnotenia čakajú za ním.
+  const oknoAutoPasu = prehravanie === undefined && vyucba !== true;
+  const [autoPas, setAutoPas] = useState<{ readonly id: number; readonly dovody: readonly string[]; readonly superVyklada: boolean } | null>(null);
+  const vrstvaVyhodnotenia = autoPas === null ? (frontaVrstiev[0] ?? null) : null;
   const pocitadlo = vrstvaVyhodnotenia?.druh === "bitka" ? vrstvaVyhodnotenia : null;
   const pocitadloAktivne = useRef(false);
   const koniecPocitadla = useCallback(() => {
@@ -1842,19 +1848,27 @@ export function HernaPlocha({
   const [peciatkaKroku, setPeciatkaKroku] = useState<{ readonly id: number; readonly p: readonly PeciatkaKroku[] } | null>(null);
   useEffect(() => {
     if (prehravanie !== undefined) return;
-    const nove = peciatkyKrokov(udalosti?.events ?? []);
+    // Vlastný pas, ktorý urobila hra, vysvetlí okno — pečiatka by svietila nad ním.
+    const nove = peciatkyKrokov(udalosti?.events ?? []).filter((x) => !(oknoAutoPasu && x.auto === true && x.hrac === ja));
     if (nove.length > 0) setPeciatkaKroku({ id: udalosti?.id ?? 0, p: nove });
+    const mojAutoPas = oknoAutoPasu ? (udalosti?.events ?? []).find((e) => e.type === "autoPas" && e.hrac === ja) : undefined;
+    if (mojAutoPas?.type === "autoPas") {
+      // Stôl ostane taký, aký bol pri pase — súperove ďalšie ťahy prídu až po Rozumiem.
+      setZadrzanyView((z) => z ?? viewZoServera);
+      setAutoPas({ id: udalosti?.id ?? 0, dovody: mojAutoPas.dovody, superVyklada: viewZoServera.faza === "zhromazdenie" });
+    }
     // Len nové udalosti.
   }, [udalosti?.id]);
   useEffect(() => {
     if (peciatkaKroku === null) return;
-    const t = setTimeout(() => setPeciatkaKroku((x) => (x?.id === peciatkaKroku.id ? null : x)), PECIATKA_KROKU_MS);
+    const ms = peciatkaKroku.p.some((x) => x.auto === true) ? PECIATKA_AUTO_PASU_MS : PECIATKA_KROKU_MS;
+    const t = setTimeout(() => setPeciatkaKroku((x) => (x?.id === peciatkaKroku.id ? null : x)), ms);
     return () => clearTimeout(t);
   }, [peciatkaKroku]);
   // Vyhodnotenie zavreté (Ďalej) — stôl dobehne na to, čo medzitým poslal server.
   useEffect(() => {
-    if (zadrzanyView !== null && !cakaOdhalenie && frontaVrstiev.length === 0) setZadrzanyView(null);
-  }, [zadrzanyView, cakaOdhalenie, frontaVrstiev]);
+    if (zadrzanyView !== null && !cakaOdhalenie && frontaVrstiev.length === 0 && autoPas === null) setZadrzanyView(null);
+  }, [zadrzanyView, cakaOdhalenie, frontaVrstiev, autoPas]);
   const [ucetBitky, setUcetBitky] = useState<UcetBitky | null>(null);
   const [ucetBitkyZavrety, setUcetBitkyZavrety] = useState(false);
   const predoslyView = useRef<ClientState | null>(null);
@@ -2417,6 +2431,7 @@ export function HernaPlocha({
     !pauzaBezi &&
     !suhrnBezi &&
     !cakaOdhalenie &&
+    autoPas === null &&
     (vrstvaVyhodnotenia === null || pocitadlo !== null);
   // Po súhrne ide hra rovno na výber lokality (Michal 2026-10-30) — medziobrazovka „Výber lokality“
   // by bola ďalší klik navyše. Pred finále ostane: hovorí, kto útočí a kto vyberá.
@@ -6644,6 +6659,27 @@ export function HernaPlocha({
         </div>
       )}
       {medziViditelna && medziTeraz !== null && <Medziobrazovka obsah={medziTeraz} onRozumiem={() => potvrdMedzi(medziTeraz.kluc)} />}
+      {autoPas !== null && (
+        <Medziobrazovka
+          obsah={{
+            kluc: `autopas-${autoPas.id}`,
+            nadnadpis: "Zhromaždenie",
+            nadpis: "Pasuješ",
+            text: `Nemáš čo vyložiť, tak hra pasovala za teba. ${autoPas.superVyklada ? "Súper vykladá ďalej — jeho ťahy uvidíš, keď okno zavrieš." : "Ide sa na Pitku."}`,
+          }}
+          onRozumiem={() => setAutoPas(null)}
+          vypinac={false}
+          trieda="auto-pas"
+        >
+          {autoPas.dovody.length > 0 && (
+            <ul className="auto-pas-dovody">
+              {autoPas.dovody.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ul>
+          )}
+        </Medziobrazovka>
+      )}
       {/* Telefón: jeden zoznam všetkých starších s Ďalej v pruhu hore (oprava 5) — nie bublina po jednom. */}
       {suhrnBezi && naSirku && (
         <SuhrnPosunovTelefon
