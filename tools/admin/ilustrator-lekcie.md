@@ -295,3 +295,44 @@ pills, no powder“ + veta o rovnomernom svetle bez spotlightu.
   red)“, inak model kreslí ružovú ako krv. ~~Striekačku vždy polož naležato
   na podložku, postavená sa rozpadá.~~ Vyvrátené 2026-10-31: vybraná č. 7 stojí
   opretá o demižón. Rozpadá sa len voľne stojaca alebo visiaca striekačka.
+
+### Izolačka (Nástroj, predtým Píšťalka) — 2026-11-02
+
+`H7` = `F:\Projects\naex-tmp\ilustracie\izolacka\`, koláž `H7\kolaz.jpg`.
+Píšťalka premenovaná na Izolačka (izolačná lepiaca páska). Efekt (Dedičstvo):
+„Tvoje Obmedzenia uberajú aj cigarety, ktoré súper dostane za pas.“ Satira:
+páskou sa na dedine „opraví“ všetko. Predlohy všetkých: Puška, Vinko.
+Spoločný opis: „one big fat roll of shiny black electrical insulating tape with
+a plain unprinted cardboard core“ + veta o rovnomernom svetle bez spotlightu,
+„no people, no hands … nobody is smoking, no smoke anywhere“.
+
+- **Schválené (č. 3):** `H7\izolacka-hra-3.jpg` (`izolacka-b`, kolo 2-2).
+  Námet: kotúč pásky na kuchynskom stole s kvetovanou voskovanou dečkou,
+  vedľa prasknutá fľaša bez etikety s čírou slivovicou („clear colourless
+  plum brandy (not red, not brown)“) obviazaná páskou cez prasklinu
+  a staré okuliare. Kotúč leží naplocho, nad stolom visí žiarovka v tienidle.
+  Michal dôvod neuviedol. Predlohy: Puška, Vinko.
+  **Lekcia:** domácka „oprava“ pálenky páskou v kuchyni zabrala. Žiarovka
+  v tienidle v obraze Michalovi neprekážala, lebo nesvieti na predmet ako
+  kužeľ.
+- **Nevybrané:**
+  - č. 1 (`izolacka-a`, kolo 2-1): páska na stole v krčme, balíček cigariet
+    omotaný páskou, aby sa nedal otvoriť, a zlepený prasknutý poldecák.
+    Satira priamo z efektu (zalepené súperove cigarety).
+  - č. 2 (`izolacka-b`, kolo 1-2): ten istý kuchynský námet, kotúč stojí na
+    hrane, pálenka jantárová.
+  - č. 4–6 (`izolacka-c`, kolo 2-1, 2-2, 1-2): kotúč na klinci vedľa
+    otvorenej poistkovej skrinky s drôtmi zmotanými páskou.
+
+  **Lekcia:** ani pri Injekcii, ani tu Michal nevybral satiru doslova
+  z efektu karty (zalepené cigarety). Vybral všeobecnú dedinskú neresť
+  (pálenka).
+- **Zamietnuté pred kolážou (moja kontrola):** `izolacka-a` kolo 1-1 (biely
+  rám, pseudotext „cm“ na balíčku; z kola vyšiel len 1 obrázok), `izolacka-a`
+  kolo 2-2 (pseudotext na plagáte), `izolacka-c` kolo 1-1 (fotorealistický,
+  ušiel zo štýlu), `izolacka-b` kolo 1-1 (červená pálenka, žiara ako
+  reflektor na stene), `izolacka-b` kolo 2-1 (okuliare dvakrát, za kotúčom).
+  Model kreslí izolačku široko ako lepiacu pásku (duct tape) aj s pokynom
+  „only one finger wide“.
+  **Lekcia:** pri pálenke vždy píš „clear colourless … (not red, not
+  brown)“, inak býva červená alebo jantárová.
