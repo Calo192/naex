@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../../core/data/cards.json";
+import eldersJson from "../../core/data/elders.json";
 import type { KartaNavrh, StranaNavrhu } from "../src/index.ts";
 import { ALL_TRIGGERS } from "@naex/core";
 import { PREDVOLENE_AKCIE, PREDVOLENE_KLUCOVE_SLOVA, kontrolaTextov, spustaceVTexte } from "../src/index.ts";
@@ -60,18 +61,43 @@ describe("kontrola textov efektov", () => {
   });
 });
 
-describe("Kšeft väzňa (v9): „Väzeň — Kšeft:“ je spúšťač Väzeň", () => {
+describe("Schopnosť väzňa (v11.2): „Väzeň — raz za hru:“ je spúšťač Väzeň", () => {
   const podklady = { klucoveSlova: PREDVOLENE_KLUCOVE_SLOVA, akcie: PREDVOLENE_AKCIE };
-  const text = "Väzeň — Kšeft: Za vypitý poldeci súper odhodí náhodnú kartu z ruky.";
-  it("spustaceVTexte dá Väzeň (nie Kšeft) — aj s krátkou pomlčkou či spojovníkom", () => {
+  const starsi = (eldersJson as { elders: { id: string; schopnost: string }[] }).elders;
+  const hrobar = starsi.find((s) => s.id === "hrobar")!;
+  const text = `Väzeň — raz za hru: ${hrobar.schopnost}`;
+  const karta = (efekt: string): KartaNavrh => ({ ...navrhy.find((k) => k.id === "hrobar")!, efekt });
+
+  it("spustaceVTexte dá Väzeň — aj s krátkou pomlčkou či spojovníkom", () => {
     expect(spustaceVTexte(text, ALL_TRIGGERS)).toEqual(["Väzeň"]);
-    expect(spustaceVTexte("Väzeň – Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
-    expect(spustaceVTexte("Väzeň - Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
+    expect(spustaceVTexte("Väzeň – raz za hru: Dostaneš 4 cigarety.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
+    expect(spustaceVTexte("Väzeň - raz za hru: Dostaneš 4 cigarety.", ALL_TRIGGERS)).toEqual(["Väzeň"]);
     // Kšeft karty v línii ostáva Kšeftom.
     expect(spustaceVTexte("Kšeft: Za 2 cigarety udelíš v bitke Ranu navyše.", ALL_TRIGGERS)).toEqual(["Kšeft"]);
   });
-  it("kontrola textov text so spúšťačom Väzeň prijme bez chyby", () => {
-    const karta: KartaNavrh = { ...navrhy.find((k) => k.id === "hrobar")!, efekt: text };
-    expect(kontrolaTextov([karta], podklady).filter((p) => p.uroven === "chyba")).toEqual([]);
+
+  it("karty starších v cards.json majú spúšťač Väzeň", () => {
+    const cards = (cardsJson as unknown as { cards: { id: string; effect_text: string; triggers: string[] }[] }).cards;
+    for (const s of starsi) {
+      const c = cards.find((k) => k.id === s.id)!;
+      expect(c.triggers, s.id).toEqual(["Väzeň"]);
+      expect(spustaceVTexte(c.effect_text, ALL_TRIGGERS), s.id).toEqual(["Väzeň"]);
+    }
+  });
+
+  it("kontrola textov prijme text staršieho bez chyby — aj keď sa líši od zverejnenej sady", () => {
+    const zverejnene = [{ id: "hrobar", efekt: "Väzeň — Kšeft: Za vypitý poldeci si vezmi kartu zo súperovho odhadzovacieho balíčka." }];
+    expect(kontrolaTextov([karta(text)], podklady).filter((p) => p.uroven === "chyba")).toEqual([]);
+    expect(kontrolaTextov([karta(text)], { ...podklady, zverejnene }).filter((p) => p.uroven === "chyba")).toEqual([]);
+    expect(kontrolaTextov([karta(text)], { ...podklady, zverejnene, starsi }).filter((p) => p.uroven === "chyba")).toEqual([]);
+  });
+
+  it("text staršieho, ktorý nesedí s elders.json, je chyba", () => {
+    const p = kontrolaTextov([karta("Väzeň — raz za hru: Vezmi si 2 karty zo súperovho odhadzovacieho balíčka.")], { ...podklady, starsi });
+    expect(p.some((x) => x.uroven === "chyba" && x.text.includes("elders.json"))).toBe(true);
+  });
+
+  it("stará predpona „Väzeň — Kšeft:“ už nie je spúšťač", () => {
+    expect(spustaceVTexte("Väzeň — Kšeft: Za vypitý poldeci si vezmi 1 kartu zo šenku.", ALL_TRIGGERS)).not.toContain("Väzeň");
   });
 });

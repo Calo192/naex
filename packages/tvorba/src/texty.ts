@@ -18,6 +18,11 @@ export interface PodkladyTextov {
   readonly akcie: readonly AkciaDef[];
   /** Karty zverejnenej sady — na odhalenie zmeneného textu implementovaného efektu. */
   readonly zverejnene?: readonly Pick<KartaNavrh, "id" | "efekt">[];
+  /**
+   * Schopnosti väzňa (elders.json) — hra berie znenie odtiaľ, nie z karty; text karty
+   * staršieho sa preto porovná s nimi, nie so zverejnenou sadou.
+   */
+  readonly starsi?: readonly { readonly id: string; readonly schopnost: string }[];
 }
 
 /** Herné pojmy, ktoré sa často píšu bez diakritiky (doplnok ku kľúčovým slovám). */
@@ -53,7 +58,7 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
   const out: ProblemTextu[] = [];
   const mapa = slovnik(podklady, karty);
   for (const k of karty) {
-    // „Väzeň — Kšeft:“ (v9) je jeden spúšťač Väzeň — kontroluje sa ako „Väzeň:“.
+    // „Väzeň — raz za hru:“ (v11.2) je jeden spúšťač Väzeň — kontroluje sa ako „Väzeň:“.
     const t = sPredponouVazna(k.efekt);
     const problem = (uroven: ProblemTextu["uroven"], text: string): void => {
       out.push({ id: k.id, nazov: k.nazov, uroven, text });
@@ -81,7 +86,15 @@ export function kontrolaTextov(karty: readonly KartaNavrh[], podklady: PodkladyT
 
     const stav = REGISTER[k.id];
     const zverejneny = podklady.zverejnene?.find((z) => z.id === k.id);
-    if (zverejneny !== undefined && zverejneny.efekt.trim() !== k.efekt.trim() && (stav === "impl" || stav === "native")) {
+    // Schopnosť väzňa (v11.2) hra berie z elders.json, nie z textu karty: zmena oproti
+    // zverejnenej sade nie je chybou, chybou je len nesúlad s elders.json.
+    const schopnost = /^\s*Väzeň:\s*(.*)$/su.exec(t)?.[1]?.trim();
+    const starsi = podklady.starsi?.find((s) => s.id === k.id);
+    if (starsi !== undefined) {
+      if (schopnost !== starsi.schopnost.trim()) {
+        problem("chyba", `Text nesedí so schopnosťou väzňa v elders.json — hra vyhodnotí a ukáže „Väzeň — raz za hru: ${starsi.schopnost}“, kým sa neupraví jadro.`);
+      }
+    } else if (schopnost === undefined && zverejneny !== undefined && zverejneny.efekt.trim() !== k.efekt.trim() && (stav === "impl" || stav === "native")) {
       problem("chyba", "Zmenený text efektu, ktorý hra vyhodnocuje kódom — správanie sa nezmení, kým sa neupraví jadro (effects.ts).");
     }
     if (zverejneny === undefined && stav === undefined) {

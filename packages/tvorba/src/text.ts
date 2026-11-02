@@ -77,13 +77,14 @@ export function formatujEfekt(text: string, pravidla: readonly KlucoveSlovo[]): 
 }
 
 /**
- * Predpona Kšeftu väzňa (v9, Michal 2026-10-30): „Väzeň — Kšeft:“ je jeden spúšťač
- * Väzeň — jadro tak odlíši efekt staršieho od Kšeftu karty v línii. Pomlčka smie byť
- * dlhá, krátka aj spojovník.
+ * Predpona schopnosti väzňa (v11.2, Michal 2026-11-02): „Väzeň — raz za hru:“ je jeden
+ * spúšťač Väzeň — inak by karta staršieho v cards.json stratila spúšťač Väzeň a kontrola
+ * textov by hlásila chýbajúci spúšťač. Pomlčka smie byť dlhá, krátka aj spojovník.
+ * „Väzeň — Kšeft:“ (v9–v11.1) zanikla: zverejnená sada má spúšťače už uložené v cardsJson.
  */
-const PREDPONA_VAZNA = /(^|[\s.!?])Väzeň\s*[—–-]\s*Kšeft:/gu;
+const PREDPONA_VAZNA = /(^|[\s.!?])Väzeň\s*[—–-]\s*raz za hru:/gu;
 
-/** Text, v ktorom je „Väzeň — Kšeft:“ zapísané ako spúšťač „Väzeň:“ (pre spustaceVTexte a kontrolu textov). */
+/** Text, v ktorom je „Väzeň — raz za hru:“ zapísané ako spúšťač „Väzeň:“ (pre spustaceVTexte a kontrolu textov). */
 export function sPredponouVazna(text: string): string {
   return text.replace(PREDPONA_VAZNA, "$1Väzeň:");
 }
