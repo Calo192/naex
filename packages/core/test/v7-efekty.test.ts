@@ -18,6 +18,7 @@ import {
   loadGameData,
   moznostiNaex,
   nastrojeTuhe,
+  pokutaPolicajtky,
   poskodenieBitky,
   prirastkyPitky,
   setupGame,
@@ -112,8 +113,17 @@ function dohrajKolo(s0: GameState): GameState {
 
 describe("Konflikt (v7, plan.md 13.1)", () => {
   // Policajtka od sady B+ (Michal 2026-11-02) nemá Konflikt, ale Pitku „Za každú súperovu akciu, ktorú v tejto
-  // Pitke zruší tvoj Odpor, získa súper 1 zadĺženie.“ — test patrí k jej implementácii v jadre.
-  it.todo("Policajtka (P-B): súper získa zadĺženie za každú akciu zrušenú jej majiteľovým Odporom");
+  // Pitke zruší tvoj Odpor, získa súper 1 zadĺženie.“ (jadro v10.4; syntetické dáta v autority-v104.test.ts).
+  it("Policajtka (P-B): súper získa zadĺženie za každú akciu zrušenú jej majiteľovým Odporom", () => {
+    expect(data.cards.get("policajtka")?.triggers).toEqual(["Pitka"]);
+    // Policajtka hráča 0 pri lokalite, za ňou súperov Miňištrant otočený k súperovi: jej Odpor zruší jeho akciu.
+    const s0 = setupGame(data, 5);
+    const s: GameState = { ...s0, strany: [[lezi(inst("policajtka"), 0), lezi(inst("ministrant"), 1)], []] };
+    const ev = evaluateLine(data, lineState(s));
+    expect(ev.zruseneOdporom).toEqual([1, 0]);
+    expect(pokutaPolicajtky(data, s, ev)).toEqual([0, 1]);
+    expect(prirastkyPitky(data, s).zadlzenie).toEqual([0, 1]);
+  });
 
   // Mechaniku Konfliktu skúša Snúbenica (priložený Chlap ide po bitke k jej majiteľovi: poBitkeK).
   const poBitkeK = (st: GameState, uid: number): PlayerId | undefined => [...st.strany[0], ...st.strany[1]].find((pl) => pl.card.uid === uid)?.poBitkeK;

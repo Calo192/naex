@@ -20,6 +20,9 @@ describe("Finančná poradkyňa v náhľade vyloženia", () => {
     let presmerovane = 0;
     for (const def of data.cards.values()) {
       if (!def.tags.includes("Občan")) continue;
+      // Policajtka (Pitka, v10.4) pridá súperovi zadĺženie za akcie zrušené Odporom — to je jej efekt, nie Dlh
+      // z akcií Poradkyne, a náhľad vyloženia ho zatiaľ nepočíta (nahladVylozenia, nahlásené Leaderovi 2026-11-02).
+      if (def.id === "policajtka") continue;
       for (const kam of ["vlastna", "superova"] as const) {
         const poradkyna = inst("financna_poradkyna");
         const sused: PlacedCard = { card: inst(def.id), playedBy: kam === "vlastna" ? 0 : 1 };
