@@ -3,7 +3,8 @@
 // Prejde playtest/<id>/hra.json a hracN/feedback.md, z tabuľky „Hodnotenie podľa
 // kritérií“ vezme 12 známok a zapíše ich za účet AI postavy („<meno> (AI)“)
 // s časom partie a zdrojom = id playtestu. Opakovaný import záznam prepíše,
-// neduplikuje (server: jeden záznam na postavu a playtest).
+// neduplikuje (server: jeden záznam na postavu a playtest). Partie na Zrejúcej (hra.json
+// „zrejuca“: true) sa preskočia — do /vyvoj sa nerátajú (Michal 2026-11-02).
 //
 //   node --experimental-strip-types --no-warnings tools/playtest/znamky-import.ts [--zivy | --url <adresa>] [--nasucho]
 
@@ -15,6 +16,7 @@ interface Hra {
   readonly id?: string;
   readonly zalozena?: string;
   readonly hraci?: readonly { readonly meno: string }[];
+  readonly zrejuca?: boolean;
 }
 
 const ID_RE = /^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/;
@@ -35,7 +37,7 @@ async function main(): Promise<void> {
     if (!existsSync(subor)) continue;
     const hra = JSON.parse(readFileSync(subor, "utf8")) as Hra;
     const cas = casPartie(id, hra);
-    if (cas === null) continue;
+    if (cas === null || hra.zrejuca === true) continue;
     (hra.hraci ?? []).forEach((h, i) => {
       const feedback = join("playtest", id, `hrac${i + 1}`, "feedback.md");
       // Testovacie behy („Hráč“) a už označené účty („… (AI)“) nie sú postavy playtestu.
