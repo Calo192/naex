@@ -8,7 +8,7 @@
 
 import { createContext, useContext } from "react";
 import type { CardInstance, CardLineEval, ClientState, GameData, PlayerId } from "@naex/core";
-import { printedSides } from "@naex/core";
+import { akciaVytrznika, printedSides } from "@naex/core";
 import type { KartaNavrh, RozlozenieStrany, Sada } from "@naex/tvorba";
 import { PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import { KartaLico, type SlotStav, type ZarNaKarte } from "../karta/KartaLico.tsx";
@@ -31,12 +31,12 @@ export const ZarStolaKontext = createContext<ZarStola | null>(null);
 const TRVANIE_ISKRY_MS = 1200;
 
 /** Kde karta leží a komu patrí — len ruka hráča a línia. */
-function miestoKarty(view: ZarStola["view"], uid: number): { readonly majitel: PlayerId; readonly miesto: "ruka" | "linia"; readonly uplatky: number } | null {
+function miestoKarty(view: ZarStola["view"], uid: number): { readonly majitel: PlayerId; readonly miesto: "ruka" | "linia" } | null {
   for (const strana of view.strany) {
     const pl = strana.find((x) => x.card.uid === uid);
-    if (pl !== undefined) return { majitel: pl.playedBy, miesto: "linia", uplatky: pl.vytrznik === true ? 0 : (pl.uplatky ?? 0) };
+    if (pl !== undefined) return { majitel: pl.playedBy, miesto: "linia" };
   }
-  return view.ruka.some((k) => k.uid === uid) ? { majitel: view.ja, miesto: "ruka", uplatky: 0 } : null;
+  return view.ruka.some((k) => k.uid === uid) ? { majitel: view.ja, miesto: "ruka" } : null;
 }
 
 export function vzhladKarty(sada: Sada, data: GameData, defId: string): KartaNavrh {
@@ -85,10 +85,10 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   // Lupa a karta na stole majú rovnaký kľúč — lupa otvorená po iskre ju už nezopakuje.
   const teraz = Date.now();
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
-    // Výtržník kreslí Rany na miestach vytlačených akcií — hráč má vidieť, čo karta naozaj robí.
+    // Výtržník kreslí Rany (Sypač Pecky) na miestach vytlačených akcií — hráč má vidieť, čo karta naozaj robí.
     const roz = [0, 1, 2, 3].map((k) => {
       const a = vytlacene[ps][k] ?? null;
-      return vytrznik && a !== null ? "Rana" : a;
+      return vytrznik && a !== null ? akciaVytrznika(karta.defId) : a;
     }) as unknown as RozlozenieStrany;
     const sloty =
       ev === undefined || ev === null
@@ -106,7 +106,7 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
     [0, 1, 2, 3].map((k) => {
       const a = roz[k] ?? null;
       if (stol === null || kde === null || a === null) return null;
-      const z = zarSlotu(a, stol.view.vplyvyAkcii?.[kde.majitel] ?? [], kde.uplatky, (id) => data.cards.get(id)?.name ?? id, karta.uid);
+      const z = zarSlotu(a, stol.view.vplyvyAkcii?.[kde.majitel] ?? [], (id) => data.cards.get(id)?.name ?? id, karta.uid);
       if (z === null) return null;
       const kluc = `${karta.uid}:${kde.miesto}:${ps}${k}:${z.pricina}`;
       const prvy = stol.videne.get(kluc) ?? teraz;
@@ -116,7 +116,11 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   const zarL = zar("left", l.roz);
   const zarP = zar("right", p.roz);
   // NA EX na karte ukazuje štítok nad kartou v línii (HernaPlocha), nie odznak v nej.
-  const odznaky = vytrznik ? <span className="odznak-vytrznik">Výtržník!</span> : ev?.vzbura === true ? <span>Vzbura!</span> : undefined;
+  const odznaky = vytrznik ? (
+    <span className="odznak-vytrznik">Výtržník!</span>
+  ) : ev?.vzbura === true || ev?.forsaz === true ? (
+    <span>{[ev.vzbura ? "Vzbura!" : null, ev.forsaz ? "Forsáž!" : null].filter((x) => x !== null).join(" ")}</span>
+  ) : undefined;
 
   return (
     <KartaLico

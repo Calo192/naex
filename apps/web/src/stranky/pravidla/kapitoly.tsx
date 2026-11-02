@@ -365,7 +365,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </p>
         <H3 id="pitka-poradie">Poradie Pitky</H3>
         <p>
-          <strong>Pitku hráte obaja naraz.</strong> Kým ju neskončíš, smieš fajčiť, doliať, barterovať, použiť Kšefty a Úplatky
+          <strong>Pitku hráte obaja naraz.</strong> Kým ju neskončíš, smieš fajčiť, doliať, barterovať, použiť Kšefty
           a skryto vybrať NA EX — súperove nákupy vidíš hneď, jeho NA EX nie. Keď skončíš, nedá sa to vrátiť. Keď ste hotoví
           obaja, NA EX sa odkryjú <strong>naraz</strong> a odpovedáte na ne lícom dole — najprv útočník, potom obranca na druhý kraj línie; obe sa otočia naraz. Jediná výnimka
           je <strong>Bzdocha</strong>: jej majiteľ čaká, kým súper skončí, a potom hrá a vidí jeho NA EX. Potom sa Pitka vyhodnotí:
@@ -421,9 +421,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p className="zvyraznene">
           <strong>Zrážka:</strong> ak ste obaja vybrali tú istú kartu, je z nej <P k="vytrznik">Výtržník</P>. So susedmi sa
           najprv spáruje ako obvykle, potom sa <strong>všetky jej akcie zmenia na Rany</strong> pre jej majiteľa — aj tie bez
-          partnera. Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí za svoje NA EX (pečeň, poldeci). Výtržník prebíja{" "}
-          <P k="uplatok">Úplatok</P>: úplatky na ňom neplatia (ani tie spred zrážky) a nový naňho dať nemožno. Po bitke Výtržník
-          vytriezvie a karta má znova pôvodné akcie.
+          partnera (Sypačovi na Pecky). Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí
+          za svoje NA EX (pečeň, poldeci). Po bitke Výtržník vytriezvie a karta má znova pôvodné akcie.
         </p>
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
         <p>
@@ -864,7 +863,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       "Vypiť: každá ďalšia karta v ťahu stojí plný poldeci.",
       "Záverečná: karta lícom dole za 1 cigaretu, otočí sa na konci Pitky.",
       "Podstrčenie: karta na súperovej strane ostáva tvoja.",
-      "Posilnenie zdvojí, Odpor zruší, Odpor proti Odporu = Vzbura.",
+      "Posilnenie zdvojí, Odpor zruší, Odpor proti Odporu = Vzbura, Posilnenie proti Posilneniu = Forsáž.",
     ],
     obsah: () => (
       <>
@@ -903,7 +902,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           svojmu majiteľovi, pri rovnosti rozhoduje karta hneď pri lokalite. Škodlivé akcie sa súperovi dajú podhodiť, ale
           súper to vie ovplyvniť kartami, ktoré do kraja vyloží.
         </p>
-        <H3 id="pokrocile-modifikatory">Posilnenie, Odpor a Vzbura</H3>
+        <H3 id="pokrocile-modifikatory">Posilnenie, Odpor, Vzbura a Forsáž</H3>
         <ul>
           <li>
             <strong>Posilnenie</strong> zdvojnásobí akúkoľvek prepojenú akciu — priaznivú aj nepriaznivú.
@@ -915,7 +914,19 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Odpor proti Odporu = <P k="vzbura">Vzbura</P>:</strong> obe karty vyhodnotia všetky svoje inak neaktívne akcie
             ako aktívne.
           </li>
+          <li>
+            <strong>Posilnenie proti Posilneniu = <P k="forsaz">Forsáž</P>:</strong> obe karty majú všetky svoje aktívne akcie
+            posilnené (×2) — aj tie, ktoré aktivovala Vzbura, aj zlé ako Hazard. Akcia, ktorú navyše posilní Posilnenie suseda
+            z druhej strany, má ×4.
+          </li>
           <li>Ak Posilnenie ovplyvní Odpor, neprepojené akcie aktivuje iba karta s Odporom.</li>
+          <li>
+            Pri lokalite platí Vzbura aj Forsáž len pre jej hranu v tom kraji. <strong>Nástroj</strong> nedostane ani jednu —
+            na spoji s Občanom ju dostane len Občan.
+          </li>
+          <li>
+            NA EX na kartu s Posilnením zruší jej Posilnenie: partnerovi už nič nezdvojí a Forsáž zanikne obom kartám.
+          </li>
         </ul>
       </>
     ),

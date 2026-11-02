@@ -1427,7 +1427,7 @@ export function HernaPlocha({
     if (mode.typ !== "naexCiel" || odhad === null || nahladyPitky === null) return out;
     const nazov = (k: string): string => sada.akcie.find((a) => a.kluc === k)?.nazov ?? k;
     const dovod = (d: string): string =>
-      d === "NA EX" ? "×2 NA EX" : d === "Posilnenie" ? "×2 Posilnenie" : d.startsWith("karta:") ? `×2 ${menoKarty(d.slice(6))}` : d;
+      d === "NA EX" ? "×2 NA EX" : d === "Posilnenie" ? "×2 Posilnenie" : d === "Forsáž" ? "×2 Forsáž" : d.startsWith("karta:") ? `×2 ${menoKarty(d.slice(6))}` : d;
     for (const uid of naexCiele) {
       const strana = view.strany[0].some((pl) => pl.card.uid === uid) ? 0 : 1;
       const index = view.strany[strana].findIndex((pl) => pl.card.uid === uid);
@@ -6907,7 +6907,7 @@ type PecatNakupu = (p: {
 }) => ReactNode;
 
 /**
- * Kšefty a Úplatky v Pitke (v7). Ponúka presne to, čo jadro dovolí — rovnaký
+ * Kšefty v Pitke (v7). Ponúka presne to, čo jadro dovolí — rovnaký
  * zoznam ako legalCommands, vyrátaný z pohľadu hráča. Zberný dvor má vlastnú
  * pečiatku (výber karty z odhadzovacieho balíčka).
  */
@@ -6964,12 +6964,7 @@ function KseftyPitky({ data, view, cmd, pecatNakupu }: { readonly data: GameData
       </span>,
     );
   }
-  // Úplatok (v7): cigareta na súperovho Kulturistu, raz za Pitku na kartu; na Výtržníka nie (v9.3).
-  for (const pl of [...view.strany[0], ...view.strany[1]]) {
-    if (pl.playedBy !== su || pl.card.defId !== "kulturista" || pl.zaverecna === true || pl.vytrznik === true || (pitka.uplatok ?? []).includes(pl.card.uid)) continue;
-    const uid = pl.card.uid;
-    out.push(pecatNakupu({ kluc: `uplatok${uid}`, nazov: "Úplatok", cena: 1, dovod: h.cigarety < 1 ? "Úplatok stojí cigaretu." : null, tip: `Úplatok: cigareta na súperovho Kulturistu — jeho útoky budú do konca kola o stupeň slabšie (teraz ${pl.uplatky ?? 0}).`, akcia: () => cmd({ type: "uplatok", uid }) }));
-  }
+
   const lok = view.ciel?.lokalita ?? null;
   if (lok !== null && !pouzite.includes(lok.uid)) {
     const uid = lok.uid;

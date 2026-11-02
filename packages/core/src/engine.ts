@@ -84,7 +84,6 @@ import {
   partiaHraca,
   zvieraPlati,
   naexNaZviera,
-  liberalZadlzenie,
   traktoristkyBezPrevahy,
 } from "./effects.ts";
 import type { VerejnyHrac, VerejnyStav } from "./effects.ts";
@@ -236,8 +235,7 @@ export interface PitkaStav {
   readonly vykup?: readonly [boolean, boolean];
   /** Kšefty (v7) použité v tejto Pitke — uid kariet (aj lokality) za každého hráča. */
   readonly kseft?: readonly [readonly number[], readonly number[]];
-  /** Úplatky (v7) v tejto Pitke — uid Kulturistov, na ktoré už súper cigaretu dal. */
-  readonly uplatok?: readonly number[];
+
   /** Cigarety vyfajčené v tejto Pitke (Krabička cigariet v7). */
   readonly vyfajcene?: readonly [number, number];
   /**
@@ -562,8 +560,7 @@ export type Command =
   | { readonly type: "nastroj"; readonly uid: number | null }
   // Kapybara (Nástup, v7): starší, ktorého marker sa posunie o 1 pole k stredu.
   | { readonly type: "kapybara"; readonly elderId: string }
-  // Úplatok (v7): cigareta na súperovho Kulturistu (uid v línii).
-  | { readonly type: "uplatok"; readonly uid: number }
+
   // Fajčenie: pocet kariet naraz (chýba = 1).
   | { readonly type: "smoke"; readonly pocet?: number }
   | { readonly type: "barter" }
@@ -1056,10 +1053,8 @@ export function prirastkyPitky(
     pecen[p] = 0;
     poldeci[p] = 0;
   }
-  // Liberál (Pitka, v7): súper, ktorého partia nemá rovnako žien a chlapov, získa 1 zadĺženie.
   const zLinie = zadlzenieZLinie(data, s, vyhodnotenie);
-  const liberal = liberalZadlzenie(data, s);
-  const zadlzenie: [number, number] = [zLinie[0] + liberal[0], zLinie[1] + liberal[1]];
+  const zadlzenie: [number, number] = [zLinie[0], zLinie[1]];
   return {
     zadlzenie,
     poskodeniePecene: pecen,
@@ -1714,9 +1709,7 @@ function applyPrikaz(
     case "smoke":
       cmdSmoke(s, data, cmd, hracId, events);
       break;
-    case "uplatok":
-      cmdUplatok(s, data, cmd, hracId, events);
-      break;
+
     case "senok":
       cmdSenok(s, data, cmd, hracId, events);
       break;
@@ -2617,9 +2610,6 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
           hraci = (kto === 0 ? [{ ...s.hraci[0], dlhy: s.hraci[0].dlhy + 1 }, s.hraci[1]] : [s.hraci[0], { ...s.hraci[1], dlhy: s.hraci[1].dlhy + 1 }]) as unknown as T["hraci"];
         }
         break;
-      case "velmi_smutiaca_vdova":
-        if (jeho.includes("Chlap")) nova = { ...nova, poBitkeZHry: true };
-        break;
       case "snubenica":
         if (jeho.includes("Chlap")) nova = { ...nova, poBitkeK: sused.playedBy };
         break;
@@ -2641,7 +2631,7 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
 /**
  * Konflikt (v7, plan.md 13.1): efekt ležiacej karty, keď k nej súper priloží
  * svoju — aj odpoveďou na NA EX; Záverečná až pri otočení. NA EX ani zrážka
- * ho nespúšťajú. Vdova, Policajtka, Šarlatán, Snúbenica, Hrobár.
+ * ho nespúšťajú. Vdova, Policajtka, Šarlatán, Snúbenica.
  */
 function konflikt(s: MutState, data: GameData, lezi: DeepMutable<PlacedCard>, prilozena: DeepMutable<PlacedCard>, events: Event[]): void {
   if (!vyvolaKonflikt(data, lezi as PlacedCard, prilozena as PlacedCard)) return;
@@ -2654,11 +2644,15 @@ function konflikt(s: MutState, data: GameData, lezi: DeepMutable<PlacedCard>, pr
   }
   const jeho = defOf(data, prilozena.card as CardInstance);
   switch (def.id) {
-    case "velmi_smutiaca_vdova":
-      if (!jeho.tags.includes("Chlap")) break;
-      prilozena.poBitkeZHry = true;
-      events.push({ type: "log", text: `Konflikt — Veľmi smútiaca vdova: ${jeho.name} hráča ${opp + 1} ide po bitke z hry.` });
+    case "velmi_smutiaca_vdova": {
+      const chlapi = chlapiPriVdove(data, s as GameState, lezi.card.uid as number, opp);
+      if (chlapi === 0) break;
+      const n = KONSTANTY.EFEKT.VDOVA_ODHOD_ZA_CHLAPA * chlapi;
+      const odhodene = odhodZBalicka(s, opp, n);
+      events.push({ type: "log", text: `Konflikt — Veľmi smútiaca vdova: pri nej ${chlapi === 1 ? "leží 1 Chlap" : `ležia ${chlapi} Chlapi`} hráča ${opp + 1}, odhadzuje ${odhodene.length} ${odhodene.length === 1 ? "kartu" : odhodene.length < 5 && odhodene.length > 0 ? "karty" : "kariet"} z balíčka.` });
+      if (odhodene.length > 0) events.push({ type: "log", pre: opp, text: `Vdova ti odhodila: ${odhodene.map((k) => defOf(data, k).name).join(", ")}.` });
       break;
+    }
     case "policajtka":
       if (jeho.tags.includes("Kriminál")) {
         const n = Math.min(KONSTANTY.EFEKT.POLICAJTKA_CIGARETY, s.hraci[opp].cigarety);
@@ -2682,6 +2676,42 @@ function konflikt(s: MutState, data: GameData, lezi: DeepMutable<PlacedCard>, pr
     default:
       events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
   }
+}
+
+/**
+ * Veľmi smútiaca vdova (Konflikt, v10.3): súperove karty s tagom Chlap, ktoré s ňou
+ * susedia v línii (najviac dve). Skrytá Záverečná sa neráta — prezradila by sa.
+ */
+export function chlapiPriVdove(data: GameData, state: Pick<GameState, "strany" | "ciel">, vdova: number, su: PlayerId): number {
+  const line: LineState = { lokalita: state.ciel?.lokalita ?? null, lokalitaOtocena: false, strany: state.strany };
+  return okolieVLinii(line, vdova).filter(
+    (pl) => pl !== null && pl.playedBy === su && pl.zaverecna !== true && defOf(data, pl.card).tags.includes("Chlap"),
+  ).length;
+}
+
+/**
+ * Hráč p odhodí n kariet z vrchu doberacieho balíčka (Vdova, v10.3). Keď dôjde,
+ * odhadzovací sa zamieša do doberacieho; keď nestačí ani to, zvyšok ide z ruky
+ * (náhodne — ako Hrobár). Odhodené karty idú do jeho odhadzovacieho balíčka.
+ */
+function odhodZBalicka(s: MutState, p: PlayerId, n: number): CardInstance[] {
+  const player = hrac(s, p);
+  const odhodene: DeepMutable<CardInstance>[] = [];
+  while (odhodene.length < n) {
+    // Už odhodené ešte neležia v odhadzovacom — zamiešanie ich nevráti do hry.
+    doplnDoberaci(s, p);
+    const vrchna = player.doberaci.shift();
+    if (vrchna !== undefined) {
+      odhodene.push(vrchna);
+      continue;
+    }
+    if (player.ruka.length === 0) break;
+    const [i, rng] = rngInt(s.rng, player.ruka.length);
+    s.rng = rng;
+    odhodene.push(player.ruka.splice(i, 1)[0] as DeepMutable<CardInstance>);
+  }
+  player.odhadzovaci.push(...odhodene);
+  return odhodene as CardInstance[];
 }
 
 /**
@@ -4043,37 +4073,6 @@ function cmdKseftVazna(s: MutState, data: GameData, cmd: { elderId: string; kart
   pitka.kseft = pouzite;
 }
 
-/**
- * Súperove Kulturistovia, na ktoré hráč p smie v tejto Pitke dať Úplatok (v7).
- * Na Výtržníka nie (v9.3): Výtržník úplatky neberie na vedomie, cigareta by prepadla naprázdno.
- */
-export function moznostiUplatku(data: GameData, state: GameState, p: PlayerId): Command[] {
-  const pitka = state.pitkaStav;
-  if (state.faza !== "pitka" || pitka === null || pitka.reakcia !== null || state.vizia !== null || pitka.hotovy[p]) return [];
-  if (state.hraci[p].cigarety < 1) return [];
-  const opp = opponentOf(p);
-  if (efektPotlaceny(data, state, opp, "kulturista")) return [];
-  return partiaHraca(state, opp)
-    .filter((pl) => pl.card.defId === "kulturista" && pl.zaverecna !== true && pl.vytrznik !== true && !(pitka.uplatok ?? []).includes(pl.card.uid))
-    .map((pl) => ({ type: "uplatok", uid: pl.card.uid }) as Command);
-}
-
-/**
- * Úplatok (v7, Kulturista): súper dá na kartu 1 cigaretu, raz za Pitku. Každý
- * zníži do konca kola jej útoky o stupeň (Petelica → Pecka → Rana → nič);
- * cigareta prepadne.
- */
-function cmdUplatok(s: MutState, data: GameData, cmd: { uid: number }, p: PlayerId, events: Event[]): void {
-  need(moznostiUplatku(data, s as GameState, p).some((c) => c.type === "uplatok" && c.uid === cmd.uid), "Úplatok teraz dať nemôžeš.");
-  const pitka = s.pitkaStav as DeepMutable<PitkaStav>;
-  const kde = najdiVLinii(s, cmd.uid) as { strana: PlayerId; index: number };
-  const pl = s.strany[kde.strana][kde.index] as DeepMutable<PlacedCard>;
-  hrac(s, p).cigarety -= 1;
-  pl.uplatky = (pl.uplatky ?? 0) + 1;
-  pitka.uplatok = [...(pitka.uplatok ?? []), cmd.uid];
-  events.push({ type: "log", text: `Úplatok: hráč ${p + 1} dáva cigaretu na Kulturistu hráča ${opponentOf(p) + 1} — jeho útoky sú do konca kola o ${pl.uplatky} ${pl.uplatky === 1 ? "stupeň" : "stupne"} slabšie.` });
-}
-
 /** Karta zo šenku zadarmo (Zastávka). */
 function cmdSenok(s: MutState, data: GameData, cmd: { uid: number }, p: PlayerId, events: Event[]): void {
   const [volba, ...dalsie] = s.hasicVolby ?? [];
@@ -5362,7 +5361,7 @@ function koniecBitky(s: MutState, data: GameData, events: Event[]): void {
         events.push({ type: "log", text: `Výtržník ${defOf(data, placed.card as CardInstance).name} vytriezvel — karta má znova svoje akcie.` });
         delete (placed as { vytrznik?: true }).vytrznik;
       }
-      // Vdova a Hrobár (Konflikt v7) posielajú kartu z hry, Snúbenica k sebe.
+      // Z hry (Vdova a Hrobár do v10.2, Konflikt v7) — len partie rozohrané pred v10.3; Snúbenica k sebe.
       if (b.spalit.includes(placed.card.uid) || placed.poBitkeZHry === true) continue;
       const karta = placed.card as DeepMutable<CardInstance>;
       if (doRukyPoBitke.has(karta.uid)) hrac(s, placed.playedBy as PlayerId).ruka.push(karta);
@@ -5671,7 +5670,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       ) {
         out.push({ type: "refillPoldeci" });
       }
-      out.push(...moznostiKseftu(state, p), ...moznostiKseftuVazna(state, p), ...moznostiUplatku(data, state, p));
+      out.push(...moznostiKseftu(state, p), ...moznostiKseftuVazna(state, p));
       break;
     }
     case "bitka": {

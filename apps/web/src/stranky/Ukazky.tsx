@@ -133,6 +133,7 @@ export function UkazkaSpajania({ sada }: { readonly sada: Sada }) {
           </>
         )}
         {ev.cards.get(1)?.vzbura === true && <strong className="ukazka-vzbura"> · Vzbura!</strong>}
+        {ev.cards.get(1)?.forsaz === true && <strong className="ukazka-vzbura"> · Forsáž!</strong>}
       </div>
     </div>
   );

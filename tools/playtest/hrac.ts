@@ -272,7 +272,7 @@ function kartaVLinii(
       })
       .join(", ");
   };
-  return `  #${k.uid} ${meno(k.defId)}${otocena ? " (otočená k tebe nohami hore)" : ""}${poznamka}${e?.vzbura === true ? " VZBURA" : ""}\n      ${popisHran[0]}: ${strana("left")}\n      ${popisHran[1]}: ${strana("right")}`;
+  return `  #${k.uid} ${meno(k.defId)}${otocena ? " (otočená k tebe nohami hore)" : ""}${poznamka}${e?.vzbura === true ? " VZBURA" : ""}${e?.forsaz === true ? " FORSÁŽ (všetky aktívne akcie ×2)" : ""}\n      ${popisHran[0]}: ${strana("left")}\n      ${popisHran[1]}: ${strana("right")}`;
 }
 
 /**
@@ -493,13 +493,11 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
       : `, NA EX: ${kto(pl.naexBy)}${pl.naexBy2 !== undefined ? ` aj ${kto(pl.naexBy2)} — zrážka${pl.vytrznik === true ? ", z karty je Výtržník" : ""}` : ""}${skryteText(pl.card.uid)}`;
   const zaverecnaText = (pl: PlacedCard): string =>
     pl.zaverecna !== true ? "" : pl.odpoved === true ? ", TVOJA ODPOVEĎ NA NA EX lícom dole — súper ju nevidí, otočí sa s jeho odpoveďou" : ", TVOJA ZÁVEREČNÁ lícom dole — súper ju nevidí";
-  // Úplatok na karte (playtest 20261030-184957: Rany Výtržníka zmizli zo súčtov a na karte nebolo prečo).
-  const uplatokText = (pl: PlacedCard): string =>
-    (pl.uplatky ?? 0) > 0 ? `, ÚPLATOK ×${pl.uplatky}: útoky karty do konca kola o ${pl.uplatky} ${pl.uplatky === 1 ? "stupeň" : "stupne"} slabšie (Petelica → Pecka → Rana → nič)` : "";
+
   const moja = [...vs.strany[ja]].reverse();
   for (const pl of moja)
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na tvojej strane${zaverecnaText(pl)}${naexText(pl)}${uplatokText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na tvojej strane${zaverecnaText(pl)}${naexText(pl)}]`, [
         "vonkajšia hrana",
         "vnútorná hrana (k lokalite)",
       ]),
@@ -510,7 +508,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   } else out.push("  (stred línie — ešte nič)");
   for (const pl of vs.strany[su])
     out.push(
-      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na súperovej strane${zaverecnaText(pl)}${naexText(pl)}${uplatokText(pl)}]`, [
+      kartaVLinii(pl.card, pl.playedBy !== ja, lineEval, ` [${majitel(pl.playedBy)} na súperovej strane${zaverecnaText(pl)}${naexText(pl)}]`, [
         "vnútorná hrana (k lokalite)",
         "vonkajšia hrana",
       ]),
@@ -922,13 +920,7 @@ function moznosti(v: ClientState): string[] {
           const karta = k.kartaUid === undefined ? "" : ` — karta ${meno([...v.senok, ...v.ruka, ...h.priznane].find((x) => x.uid === k.kartaUid)?.defId ?? "")}`;
           c(k, `KŠEFT VÄZŇA ${meno(vazen?.karta.defId ?? "")}${karta}: za vypitý plný poldeci (nerest, +1 pečeň, limit ďalšieho Zhromaždenia −1). ${text}`);
         }
-        // Úplatok (v7): cigareta na súperovho Kulturistu, raz za Pitku na kartu.
-        if (h.cigarety >= 1) {
-          for (const pl of [...v.strany[0], ...v.strany[1]]) {
-            if (pl.playedBy !== su || pl.card.defId !== "kulturista" || pl.zaverecna === true || (pk.uplatok ?? []).includes(pl.card.uid)) continue;
-            c({ type: "uplatok", uid: pl.card.uid }, `ÚPLATOK: 1 cigareta na súperovho Kulturistu — jeho útoky do konca kola o stupeň slabšie (Petelica → Pecka → Rana → nič; teraz ${pl.uplatky ?? 0}); cigareta prepadne`);
-          }
-        }
+
         const lok = v.ciel?.lokalita ?? null;
         if (lok !== null && !pouzite.includes(lok.uid)) {
           if (lok.defId === "zberny_dvor" && h.cigarety >= KONSTANTY.EFEKT.ZBERNY_DVOR_CENA)

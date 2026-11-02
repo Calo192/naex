@@ -1,5 +1,5 @@
 // Efekty kariet v7, druhá fáza revízie sady (Michal 2026-10-27, plan.md časť 14):
-// Konflikt (jednosmerný spúšťač, časť 13), Úplatok, nové efekty občanov, starších,
+// Konflikt (jednosmerný spúšťač, časť 13), nové efekty občanov, starších,
 // Nástrojov a lokalít, útočník finále.
 
 import { describe, expect, it } from "vitest";
@@ -143,12 +143,7 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     }
   });
 
-  it("Vdova: priložená karta ide po bitke z hry; Hrobár v línii od v9 Konflikt nemá (len akcie)", () => {
-    const vdova = inst("velmi_smutiaca_vdova");
-    const chlap = inst("masiar");
-    const s = vZhromazdeni("zastavka", [[lezi(vdova, 1)], []], [chlap]);
-    const po = apply(data, s, { type: "place", uid: chlap.uid, target: "vlastna" }, 0).state;
-    expect(po.strany[0].find((pl) => pl.card.uid === chlap.uid)?.poBitkeZHry).toBe(true);
+  it("Hrobár v línii od v9 Konflikt nemá (len akcie); Vdovu od v10.3 skúša pravidla-v103.test.ts", () => {
     const hrobar = inst("hrobar");
     const karta = inst("zamocnik");
     const dalsia = inst("vandal");
@@ -285,34 +280,6 @@ describe("efekty v línii (v7)", () => {
     expect(sucet(priMasiarovi, 1)).toBe(pocet(priMasiarovi, 1));
   });
 
-  it("Úplatok: súper cigaretou zníži útoky Kulturistu o stupeň, raz za Pitku", () => {
-    const kult = inst("kulturista");
-    const s = { ...vPitke("zastavka", [[], [lezi(inst("zamocnik"), 0), lezi(kult, 1)]]), pitkaStav: pitkaStav(0) };
-    const legal = legalCommands(data, s, 0);
-    expect(legal).toContainEqual({ type: "uplatok", uid: kult.uid });
-    const po = apply(data, s, { type: "uplatok", uid: kult.uid }, 0).state;
-    expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety - 1);
-    expect(po.strany[1].find((pl) => pl.card.uid === kult.uid)?.uplatky).toBe(1);
-    expect(legalCommands(data, po, 0).some((c) => c.type === "uplatok")).toBe(false);
-    // Vlastný Kulturista Úplatok neponúka.
-    expect(legalCommands(data, { ...s, pitkaStav: pitkaStav(1) }, 1).some((c) => c.type === "uplatok")).toBe(false);
-    const tri = { ...s, strany: [[], [lezi(inst("zamocnik"), 0), lezi(kult, 1, { uplatky: 3 })]] } as GameState;
-    const ev = evaluateLine(data, lineState(tri));
-    for (const a of ["Petelica", "Pecka", "Rana"] as const) expect((ev.zdroje[1][a] ?? []).some((z) => z.uid === kult.uid)).toBe(false);
-  });
-
-  it("Výtržník prebíja Úplatok (v9.3): staré úplatky Rany neoslabia a nový sa ponúknuť nedá", () => {
-    const kult = inst("kulturista");
-    const vytrznik = (x: Partial<PlacedCard>): GameState =>
-      ({ ...vPitke("zastavka", [[], [lezi(inst("zamocnik"), 0), lezi(kult, 1, { naexBy: 0, naexBy2: 1, vytrznik: true, ...x })]]), pitkaStav: pitkaStav(0) }) as GameState;
-    const rany = (s: GameState): number => (evaluateLine(data, lineState(s)).zdroje[1].Rana ?? []).filter((z) => z.uid === kult.uid).length;
-    const bez = vytrznik({});
-    expect(rany(bez)).toBeGreaterThan(0);
-    // Úplatky spred zrážky (z predošlej Pitky kola) na karte ležia, ale Výtržníkove Rany ostávajú všetky.
-    expect(rany(vytrznik({ uplatky: 2 }))).toBe(rany(bez));
-    expect(legalCommands(data, bez, 0).some((c) => c.type === "uplatok")).toBe(false);
-    expect(() => apply(data, bez, { type: "uplatok", uid: kult.uid }, 0)).toThrow();
-  });
 
   it("Krokodíl: na konci bitky idú z hry Občania a Zvieratá v jeho okolí (oboch hráčov)", () => {
     const kroko = inst("krokodil");
@@ -332,12 +299,11 @@ describe("efekty v línii (v7)", () => {
 });
 
 describe("Pitka (v7)", () => {
-  it("Stryná: hráč bez NA EX v Pitke +1 pečeň; Liberál: súper bez rovnováhy žien a chlapov +1 zadĺženie", () => {
-    const s = vPitke("zastavka", [[lezi(inst("niekoho_stryna"), 0), lezi(inst("liberal"), 0)], [lezi(inst("masiar"), 1)]]);
+  it("Stryná: hráč bez NA EX v Pitke +1 pečeň (Liberál od v10.3 zadĺženie nedáva)", () => {
+    const s = vPitke("zastavka", [[lezi(inst("niekoho_stryna"), 0), lezi(inst("zamocnik"), 0)], [lezi(inst("masiar"), 1)]]);
     const bez = prirastkyPitky(data, { ...s, strany: [[lezi(inst("zamocnik"), 0)], [lezi(inst("masiar"), 1)]] }, undefined, [false, false]);
     const so = prirastkyPitky(data, s, undefined, [true, false]);
     expect(so.poskodeniePecene[1] - bez.poskodeniePecene[1]).toBeGreaterThanOrEqual(1);
-    expect(so.zadlzenie[1] - bez.zadlzenie[1]).toBe(1);
   });
 
   it("Veterinár v línii od v9 pečeň okolia nemaže — jeho efekt je len Kšeft väzňa", () => {

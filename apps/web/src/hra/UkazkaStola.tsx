@@ -40,7 +40,7 @@
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &zerava=1      žeravé ikony (Michal 2026-10-30): hráč ?ja má v Dedičstve Pušku a Vidly, súper
 //                  Svätý text a Vidly; do ruky Hasič, Recidivista, Policajtka, Kulturista, do línie
-//                  súperova Milujúca manželka a Pes a hráčov Kulturista s Úplatkom
+//                  súperova Milujúca manželka a Pes
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
 //                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
 //   &klebety=i:n,… posun priazne hádkou na i-tom staršom (od 0), n stupňov k hráčovi 1 (kladné)
@@ -171,7 +171,7 @@ function sExekuciou(s: GameState, p: PlayerId): GameState {
   return { ...s, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
-/** Žeravé ikony: Nástroje v Dedičstve oboch, karty s posilnenými akciami v ruke a línii, Úplatok. */
+/** Žeravé ikony: Nástroje v Dedičstve oboch, karty s posilnenými akciami v ruke a línii. */
 function sZeravou(s: GameState, p: PlayerId): GameState {
   let uid = s.nextUid;
   const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
@@ -180,7 +180,7 @@ function sZeravou(s: GameState, p: PlayerId): GameState {
   const on = { ...s.hraci[su], dedicstvo: [...s.hraci[su].dedicstvo, karta("svaty_text"), karta("vidly")] };
   const strany: [GameState["strany"][0], GameState["strany"][1]] = [[...s.strany[0]], [...s.strany[1]]];
   strany[su] = [...strany[su], { card: karta("milujuca_manzelka"), playedBy: su }, { card: karta("pes"), playedBy: su }];
-  strany[p] = [...strany[p], { card: karta("kulturista"), playedBy: p, uplatky: 1 }];
+
   return { ...s, nextUid: uid, strany, hraci: p === 0 ? [ja, on] : [on, ja] };
 }
 
