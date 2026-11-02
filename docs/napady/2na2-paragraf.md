@@ -5,8 +5,8 @@ Návrh kapitoly do `docs/PRAVIDLA.md` (Zrejúca). Prepísaný 2026-11-02 na prav
 nové pravidlá a 2v2 postaviť na nich.“ Návrh na v8 je v histórii gitu (e7801caa).
 
 Zdroje rozhodnutí: interview 2026-10-28 (vlna 1 a 2, `2na2-otazky.html`),
-zladenie 2026-10-31 a odpovede 2026-11-02. Body, ktoré Michal ešte nepotvrdil, sú
-označené **[otázka Qn]** a zhrnuté na konci. PRAVIDLA.md sa zatiaľ nemení.
+zladenie 2026-10-31 a odpovede 2026-11-02 (karta zadarmo, väzni, otázky Q1–Q9 — všetky
+rozhodnuté, tabuľka na konci). PRAVIDLA.md sa zatiaľ nemení.
 
 Jadro sa stavia súbežne (vetva `2na2/v11`): miesto pri stole 0–3, tím = miesto % 2,
 člen = miesto ÷ 2; v 1 na 1 sú miesta 0 a 1 hráči, takže 1 na 1 sa nemení.
@@ -26,10 +26,10 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 - Tímy sedia striedavo. Útočný tím je **U**, obranný **O**; členovia U1, U2, O1, O2.
 - Každý tím má v každom kole **kapitána**; strieda sa **každé kolo**. Kapitán prvého
   kola sa určí zo semienka hry. Kapitán je **U1**, resp. **O1** — prvý v poradí
-  ťahov. V tíme človek + bot je kapitánom **vždy človek**. **[otázka Q3]**
+  ťahov. V tíme človek + bot je kapitánom **vždy človek**.
 - **Kapitán robí tímové voľby:** voľba a natočenie cieľa (O1), pokus o zajatie,
   koniec Pitky a NA EX tímu, kto odpovie na NA EX, rozdelenie Nakladačky (na strach
-  tímu) a hádky (na reči tímu), Vízia. **[otázka Q6]**
+  tímu) a hádky (na reči tímu), Vízia.
 - **Partner vidí všetko, čo vidí tím:** ruku partnera, kartu zadarmo, karty zo stavby
   šenku, Záverečnú, skryté NA EX a odpovede tímu, vrch balíčka z Vízie. Súperský tím
   z toho nevidí nič (`viewFor` filtruje podľa tímu).
@@ -45,7 +45,7 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 | cigarety, cena fajčenia v Pitke | — |
 | zadĺženie a Dlhy, pečeň a Cirhózy | — |
 | neresti, Chuť a Absťáky | — |
-| Dedičstvo **[otázka Q5]** | — |
+| Dedičstvo | — |
 | strach a reči pri každom staršom, priazeň, väzni | — |
 | špaky, krčmová nástenka | — |
 
@@ -63,10 +63,10 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 
 - **Poradie ťahov** je vždy **U1 → O1 → U2 → O2** (vykladanie) a **O1 → U1 → O2 → U2**
   (branie zo šenku, Michal 2026-10-31).
-- **Začiatok kola:** tímu sa otočí **jeden** vypitý poldeci na plný. **[otázka Q2]**
+- **Začiatok kola:** tímu sa otočí **jeden** vypitý poldeci na plný.
   Od druhého kola si **každý hráč** dobere 1 kartu z balíčka tímu (U1, O1, U2, O2).
 - Karta z fajčenia, Vízie, Zastávky, Kšeftu či efektu „dober / vezmi do ruky“ ide do
-  ruky **hráča, ktorý to spustil** (zahral kartu, fajčil, použil Kšeft). **[otázka Q4]**
+  ruky **hráča, ktorý to spustil** (zahral kartu, fajčil, použil Kšeft).
 - **Koniec kola:** neresti oboch členov sa sčítajú a porovnajú s **Chuťou tímu**;
   Absťák dostane tím (Michal 2026-10-31).
 
@@ -86,7 +86,7 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
   (1 karta za 1, 2 za 3), karty idú do ruky toho, kto berie. Len **O1 na svojom prvom
   ťahu** vezme 1 kartu (Michal 2026-10-31). Kto prestane, už neberie; keď prestanú
   obaja členovia tímu, každý ešte neprestavší člen druhého tímu má **jednu poslednú
-  šancu**. **[otázka Q7]**
+  šancu**.
 
 ### 18.6 Zhromaždenie (k §6, §13)
 
@@ -94,11 +94,11 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
   tímu. Karta je natočená k jeho tímu a patrí do partie tímu.
 - **Limit vykladania je tímový:** plné poldeci tímu + 1 (Michal 2026-10-28). Míňa ho
   každé vyloženie ktoréhokoľvek člena. **Vypiť** platí plným poldeci tímu.
-- **Pas hráča** (Michal 2026-10-28: „cigarety hneď každému za seba“). Návrh
-  **[otázka Q1]**: kto pasuje, vyberie počet *k* ≤ min(zvyšok limitu tímu, karty v jeho
-  ruke), tím dostane *k* cigariet a zvyšok limitu tímu klesne o *k*. Partner hrá zo
-  zvyšku. Každá jednotka limitu sa teda buď vyloží, alebo vyplatí. Zhromaždenie
-  končí, keď skončili všetci štyria.
+- **Pas hráča** (Michal 2026-11-02, Q1 — nahrádza „cigarety hneď každému za seba“
+  z 2026-10-28): pas člena len ukončí jeho vykladanie, **bez cigariet**. Keď pasuje aj
+  druhý člen, tím dostane **1 cigaretu za každú kartu, ktorú ešte smel vyložiť**
+  (zvyšok limitu tímu), **najviac toľko, koľko majú obaja v rukách** spolu. Keď tím
+  limit vyčerpá, cigarety nedostane. Zhromaždenie končí, keď skončili všetci štyria.
 - **Záverečná:** najviac **jedna za tím**, za 1 cigaretu tímu; ukončí vykladanie
   **celého tímu** bez cigariet (Michal 2026-10-28).
 - **Priznanie:** Cirhózu z ruky smie priznať jej držiteľ; ide medzi priznané karty tímu.
@@ -115,7 +115,7 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
   otočia sa naraz (Michal 2026-10-28, poradie podľa v9.2).
 - **Kšeft lokality** smie tím použiť raz za Pitku; **Kšeft väzňa** raz za Pitku za tím
   (Michal 2026-10-31). Kšeft karty ako v 1 na 1 (každá karta raz za Pitku).
-- Zrážka vzniká len medzi tímami. Bzdocha: čaká celý tím majiteľa. **[otázka Q8]**
+- Zrážka vzniká len medzi tímami. Bzdocha: čaká celý tím majiteľa.
 - Vyhodnotenie (zadĺženie, pečeň, Cirhóza, Vízia) je tímové s prahmi z 18.3.
 
 ### 18.8 Bitka (k §9, §10)
@@ -123,7 +123,7 @@ platí pre tím. Osobná je len **ruka** a **ťah**.
 - Poškodenie, hádka aj výsledok sa rátajú **súčtom tímu** (akcie oboch členov; Viera,
   Povery, Absťáky, Dlhy tímu) (Michal 2026-10-28).
 - **Nakladačku** rozdelí kapitán víťazného tímu na **strach tímu**; **hádku** kapitán
-  tímu, ktorý vyhral hádku, na **reči tímu**. **[otázka Q6]**
+  tímu, ktorý vyhral hádku, na **reči tímu**.
 - Bodovanie starších, výhra strachom (červený strach tímu u 4 starších) a krádež pri
   zajatí sú tímové. **Väzni na výhru ako v 1 na 1** podľa ligy — Tretia 2, Druhá 3,
   Prvá 4 (Michal 2026-11-02).
@@ -142,26 +142,26 @@ z oboch rúk a balíčkov tímu. Vo finále útočí tím s menej špakmi.
   **raz** — zdroje, kliatby aj balíček má tím jedny.
 - **„Ty“, „tvoj“, „tvoja partia“** = tvoj tím. Partner nie je súper: jeho priloženie
   nespúšťa Konflikt tvojich kariet.
-- **„Do ruky“** = do ruky hráča, ktorý efekt spustil (18.4). **[otázka Q4]**
+- **„Do ruky“** = do ruky hráča, ktorý efekt spustil (18.4).
 - Lokality a karty, ktoré rátajú hráčov (Zastávka, Autobusár, Krčma, Stryná, Jednota,
   Benzínka, Cintorín, Most, Ihrisko, Lesná cesta, Kultúrny dom, Herňa), rátajú
-  **tímy**. Zastávka: zadarmo si kartu zo šenku vezme **kapitán** tímu. **[otázka Q9]**
+  **tímy**. Zastávka: zadarmo si kartu zo šenku vezme **kapitán** tímu.
 
 ---
 
-## Otázky pre Michala (s odporúčaním)
+## Rozhodnuté otázky (Michal 2026-11-02)
 
-| # | Otázka | Odporúčam |
+| # | Otázka | Rozhodnutie |
 |---|---|---|
-| Q1 | Pas hráča: predaj limitu tímu (*k* cigariet, limit −*k*) | áno — každá jednotka limitu sa vyloží alebo vyplatí, nikdy oboje |
-| Q2 | Začiatok kola: koľko poldeci sa tímu otočí | 1 (tím = hráč; 2 by zvyšovali limit rýchlejšie ako v 1 na 1) |
-| Q3 | Kapitán = U1/O1, prvý zo semienka, strieda sa | áno (už v jadre) |
+| Q1 | Pas hráča | **cigarety až za posledného** člena tímu (zvyšok limitu, najviac karty v oboch rukách) |
+| Q2 | Začiatok kola: koľko poldeci sa tímu otočí | **1 za tím** |
+| Q3 | Kapitán = U1/O1, prvý zo semienka, strieda sa každé kolo | áno |
 | Q4 | Karta „do ruky“ ide tomu, kto efekt spustil | áno |
 | Q5 | Dedičstvo tímové, cena (1, 2, 3…) spoločná pre oba tímy | áno |
 | Q6 | Nakladačku, hádku a Víziu rozdeľuje kapitán | áno |
 | Q7 | Posledná šanca v šenku pre neprestavších členov druhého tímu | áno |
-| Q8 | Bzdocha: čaká celý tím majiteľa a jeho kapitán vidí NA EX súpera | áno |
-| Q9 | Lokality „rátajú tímy“; Zastávka — kartu berie kapitán | áno; Zastávka po jednej karte na tím |
+| Q8 | Bzdocha: čaká celý tím majiteľa, jeho kapitán vidí NA EX súpera | áno |
+| Q9 | Lokality a karty „rátajú tímy“; Zastávka — jednu kartu berie kapitán | áno |
 
 Vlna 3 (komunikácia medzi partnermi, stôl pre štyroch, bot, štatistiky a rebríček)
 príde až s roadmapou #26–#29.
