@@ -1770,7 +1770,7 @@ nie Konflikt.
 | Kôň | Furt: Nástroj vedľa neho s ním tvorí spoj ako s Občanom. |
 | Čierna mačka | (v8.3, P5 rozhodol Michal 2026-10-30) Furt: majiteľove Povery sa Vierou nerušia — v hádke dajú vždy mäkké (v10), súperova Viera ostáva na tuhé. |
 | Strýko z Ameriky | Kšeft: za 2 cigarety Rana navyše v bitke kola. |
-| **Starší** | Karta staršieho (boss) má v línii **len akcie**; schopnosť (raz za hru) má výhradne držiteľ väzňa (§10, v11.2). Znenia a spresnenia schopností sú v §10 (tabuľka Schopnosť väzňa); text karty v sade je ešte zo znenia Kšeftu väzňa (v9), kým ho admin v tvorcovi neprepíše. |
+| **Starší** | Karta staršieho (boss) má v línii **len akcie**; schopnosť (raz za hru) má výhradne držiteľ väzňa (§10, v11.2). Znenia a spresnenia schopností sú v §10 (tabuľka Schopnosť väzňa); na karte stojí „Väzeň — raz za hru: …“. |
 | **Nástroje** | Efekt Nástroja platí len v Dedičstve (§12). |
 | Noviny | Dedičstvo: Prehra (Titulka, návrh #40, Michal 2026-10-28): za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak. Dlhy sa rátajú pred exekúciou (§9, krok 4a). Víťazovi sa nič neberie — svoje špaky za bitku dostane celé. |
 | Krabička cigariet | Dedičstvo: Pitka: za každé 2 cigarety, ktoré súper v Pitke vyfajčí (rátajú sa zaplatené cigarety), si hneď doberieš 1 kartu. Nie je to nerest. |
