@@ -90,7 +90,7 @@
           "pijan/0/0",
           "ministrant/0/0",
           "milujuca_manzelka/1/0",
-          "dievcina_na_vydaj/0/0"
+          "milujuca_manzelka/1/0"
         ],
         "doberaci": [
           "pijan/0/2",
@@ -161,7 +161,7 @@
       "svokra/0/0",
       "recidivista/0/0",
       "vymahac/0/0",
-      "silna_nezavisla_zena/0/0",
+      "silna_nezavisla_zena/5/0",
       "kon/0/0",
       "dvojcata/0/0",
       "traktoristka/0/0",
@@ -723,14 +723,14 @@
         "kroky": [
           {
             "type": "place",
-            "uid": "ruka:dievcina_na_vydaj",
+            "uid": "ruka:milujuca_manzelka",
             "target": "vlastna"
           }
         ]
       },
-      "melichar": "Teraz polož Dievčinu na vydaj za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí akciu, s ktorou sa spojí – jej [Povera] Poveru. V bitke budeš mať dve Povery, Štamgast jednu.",
+      "melichar": "Teraz polož Milujúcu manželku za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí akciu, s ktorou sa spojí – jej [Povera] Poveru. V bitke budeš mať dve Povery, Štamgast jednu.",
       "zvyraznit": [
-        "ruka:dievcina_na_vydaj"
+        "ruka:milujuca_manzelka"
       ]
     },
     {
@@ -744,9 +744,9 @@
           "vysvetlenie": "Áno. Čo leží na stole, ťa dobehne v každej Pitke, a zadĺženie sa nikam nestratí."
         },
         {
-          "text": "Lebo na stole leží Dievčina.",
+          "text": "Lebo na stole leží manželka.",
           "spravna": false,
-          "vysvetlenie": "Dievčina sa spojila len s Posilnením. Hazard je Hasičov a platíš ho druhú Pitku po sebe."
+          "vysvetlenie": "Manželka sa spojila len s Posilnením. Hazard je Hasičov a platíš ho druhú Pitku po sebe."
         }
       ]
     },
@@ -1391,7 +1391,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Záverečná sa otočila: Silná nezávislá žena, Občan. Na trávniku má Štamgast troch proti tvojim dvom, prevaha je jeho – akcie tvojej hrany aj 2 tuhé. A Silná žena zdvojuje akcie jeho kariet vedľa seba: 0 : 9. Hovoril som ti, že nevieš, čo to je.",
+      "melichar": "Záverečná sa otočila: Silná nezávislá žena, Občan. Na trávniku má Štamgast troch proti tvojim dvom, prevaha je jeho – akcie tvojej hrany aj 2 tuhé. A Silná žena zdvojuje akcie jeho kariet vedľa seba: 0 : 7. Hovoril som ti, že nevieš, čo to je.",
       "zvyraznit": [
         "linia:silna_nezavisla_zena",
         "prevaha",
@@ -1414,12 +1414,12 @@
         "kroky": [
           {
             "type": "place",
-            "uid": "ruka:dievcina_na_vydaj",
+            "uid": "ruka:ministrant",
             "target": "vlastna"
           }
         ]
       },
-      "melichar": "Druhé Zhromaždenie, Štamgast začína: Dievčina na vydaj k jeho Pijanovi."
+      "melichar": "Druhé Zhromaždenie, Štamgast začína: Miňištrant k jeho Pijanovi."
     },
     {
       "id": "k-prevaha",
@@ -1442,12 +1442,19 @@
       ]
     },
     {
-      "id": "k-pas2-bot",
+      "id": "k-zh2-bot4",
       "kto": "bot",
       "prikaz": {
-        "type": "pass"
+        "type": "tah",
+        "kroky": [
+          {
+            "type": "place",
+            "uid": "ruka:dievcina_na_vydaj",
+            "target": "vlastna"
+          }
+        ]
       },
-      "melichar": ""
+      "melichar": "Štamgast pridal za Miňištranta Dievčinu na vydaj."
     },
     {
       "id": "k-prevaha2",
@@ -1470,9 +1477,17 @@
       ]
     },
     {
+      "id": "k-pas2-bot",
+      "kto": "bot",
+      "prikaz": {
+        "type": "pass"
+      },
+      "melichar": ""
+    },
+    {
       "id": "i-nastup",
       "kto": "info",
-      "melichar": "Všimni si Alkoholika: priznal ti Cirhózu z balíčka. To je jeho Nástup – slovo pred dvojbodkou hovorí, kedy efekt platí, Nástup pri vyložení. Priznaná Cirhóza sa ti nevráti a 3 špaky ťa stáť nebude, zato Štamgast za ňu bije v každej bitke o 1 tuhé viac: 5 : 5, nie 5 : 4.",
+      "melichar": "Všimni si Alkoholika: priznal ti Cirhózu z balíčka. To je jeho Nástup – slovo pred dvojbodkou hovorí, kedy efekt platí, Nástup pri vyložení. Priznaná Cirhóza sa ti nevráti a 3 špaky ťa stáť nebude, zato Štamgast za ňu bije v každej bitke o 1 tuhé viac: 5 : 3, nie 5 : 2.",
       "zvyraznit": [
         "linia:anonymny_alkoholik",
         "bitka-ucet"
@@ -1572,7 +1587,7 @@
       "kto": "bot",
       "prikaz": {
         "type": "naex",
-        "uid": "linia:dievcina_na_vydaj"
+        "uid": "linia:silna_nezavisla_zena"
       },
       "melichar": ""
     },
@@ -1582,9 +1597,9 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Obaja ste skončili a NA EX sa odkryli naraz. Štamgast dal svoje na vlastnú Dievčinu na vydaj: zdvojil jej osamotené [Pohoršenie] Pohoršenie. Aj [Dlh] Hazard, ale Dlhy mu zjavne nevadia.",
+      "melichar": "Obaja ste skončili a NA EX sa odkryli naraz. Štamgast dal svoje na vlastnú Silnú ženu: zdvojil jej osamotené [Pohoršenie] Pohoršenie.",
       "zvyraznit": [
-        "linia:dievcina_na_vydaj"
+        "linia:silna_nezavisla_zena"
       ]
     },
     {
@@ -1606,7 +1621,7 @@
       "prikaz": {
         "type": "bezReakcie"
       },
-      "melichar": "Klikni BEZ ODPOVEDE. Ty smieš odpovedať len na druhý kraj, Štamgastov, a tam by sa mu Hazard Dievčiny len spojil. Odpoveď robí toto: spojí osamotenú akciu karty s NA EX a NA EX ju potom zruší namiesto zdvojenia.",
+      "melichar": "Klikni BEZ ODPOVEDE. Ty smieš odpovedať len na druhý kraj, Štamgastov, a tam jeho NA EX neleží. Odpoveď robí toto: spojí osamotenú akciu karty s NA EX a NA EX ju potom zruší namiesto zdvojenia.",
       "hlaskaChyby": "urazky/ty_spina",
       "zvyraznit": [
         "tlacidlo:bez-odpovede"
@@ -1621,7 +1636,7 @@
               "type": "place",
               "target": "superova"
             },
-            "text": "Takto by sa mu Hazard spojil a NA EX by mu ho zrušilo. Nechaj mu ho.",
+            "text": "Na jeho kraji NA EX neleží, odpoveď tam nič nezruší. Nechaj to tak.",
             "hlaska": "urazky/ty_spina"
           }
         ],
@@ -1657,7 +1672,7 @@
     {
       "id": "i-exekutor2",
       "kto": "info",
-      "melichar": "Bitka: najprv hádka, a v nej je aj [Pohoršenie] Pohoršenie. Povera dáva 1, Pohoršenie 2 – spolu je to mäkké poškodenie a kto ho má viac, vyhrá hádku. Štamgast má Pohoršenia tri: dve zo zdvojenej Dievčiny a jedno zo Silnej ženy.",
+      "melichar": "Bitka: najprv hádka, a v nej je aj [Pohoršenie] Pohoršenie. Povera dáva 1, Pohoršenie 2 – spolu je to mäkké poškodenie a kto ho má viac, vyhrá hádku. Štamgast má Pohoršenia dve, obe zo zdvojenej Silnej ženy.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -1665,7 +1680,7 @@
     {
       "id": "k-povera3",
       "kto": "info",
-      "melichar": "Ty máš dve Povery, Štamgastovu jedinú zrušila tvoja [Viera] Viera: máš 2 mäkké. Štamgast tri Pohoršenia, to je 6. Hádku vyhral o 4 a po bitke ju minie na svoje reči. Ty tentoraz len pozeráš.",
+      "melichar": "Ty máš dve Povery, jednu ti zrušila Viera jeho Miňištranta: máš 1 mäkké. Jeho dve Povery zrušila tvoja [Viera] Viera. Štamgast dve Pohoršenia, to sú 4. Hádku vyhral o 3 a po bitke ju minie na svoje reči. Ty tentoraz len pozeráš.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -1673,7 +1688,7 @@
     {
       "id": "i-remiza2",
       "kto": "info",
-      "melichar": "Remíza v tuhom, 4 : 4. Vtedy vyhrá, kto má menej priznaných Dlhov: Štamgast päť, ty jeden – jeho vlastné NA EX mu ich zdvojilo. Bitka je tvoja; hovoril som, nech mu ich necháš. A Nakladačka je pri remíze nula, svoj strach dnes nezdvihneš.",
+      "melichar": "Remíza v tuhom, 4 : 4. Vtedy vyhrá, kto má menej priznaných Dlhov: Štamgast tri, ty jeden. Bitka je tvoja. A Nakladačka je pri remíze nula, svoj strach dnes nezdvihneš.",
       "zvyraznit": [
         "nastenka",
         "bar-supera:dlhy",
@@ -1688,7 +1703,7 @@
         {
           "text": "Štamgast mal viac priznaných Dlhov.",
           "spravna": true,
-          "vysvetlenie": "Áno. Remízu v tuhom rozhodujú Dlhy. Jeho NA EX mu pridalo Pohoršenie a zároveň ho potopilo."
+          "vysvetlenie": "Áno. Remízu v tuhom rozhodujú Dlhy. Jeho NA EX mu pridalo Pohoršenie, bitku mu nezachránilo."
         },
         {
           "text": "Mám viac Povier.",
@@ -1717,17 +1732,12 @@
           {
             "elderId": "farar",
             "na": 2
-          },
-          {
-            "elderId": "hrobar",
-            "na": 1
           }
         ]
       },
-      "melichar": "Štamgast minul hádku 4: reči pri Farárovi na oranžovú za 1 + 2 a pri Hrobárovi na žltú za 1. Reči platia aj porazenému – najbližšie mu dajú 4 špaky, nech bitku vyhrá, či nie.",
+      "melichar": "Štamgast minul hádku 3: reči pri Farárovi na oranžovú za 1 + 2. Reči platia aj porazenému – najbližšie mu dajú 3 špaky, nech bitku vyhrá, či nie.",
       "zvyraznit": [
-        "starsi:farar",
-        "starsi:hrobar"
+        "starsi:farar"
       ]
     },
     {
@@ -1778,7 +1788,7 @@
     {
       "id": "i-spaky2",
       "kto": "info",
-      "melichar": "Špaky: 9 za karty v línii, aj za jeho, a 4 od Farára a Krčmárky. Exekútor: tebe Dlh aj so špakom, Štamgastovi tri Dlhy, ale len jeden špak – Farárov Advokát. 17 : −2. Jeho Dievčina na vydaj ti po jeho prehre dala Dlh, taký má efekt. A on za prehru dostal cigaretu, aby sa neutrápil.",
+      "melichar": "Špaky: 10 za karty v línii, aj za jeho, a 4 od Farára a Krčmárky. Exekútor: tebe Dlh aj so špakom, Štamgastovi dva Dlhy, ale ani jeden špak – Farárov Advokát. 18 : −1. Jeho Dievčina na vydaj ti po jeho prehre dala Dlh, taký má efekt. A on za prehru dostal cigaretu, aby sa neutrápil.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body"
@@ -2236,7 +2246,7 @@
     {
       "id": "i-vyhra3",
       "kto": "info",
-      "melichar": "Bitka je tvoja, 9 : 2: štyri špaky za karty v línii a Farár 3 za strach. Exekútor: tebe Dlh aj so špakom, Štamgastovi Dlh bez špaku, Advokát. Štamgast prehral, a predsa dostal 4 za reči pri Farárovi a Hrobárovi a 1 za kartu v línii – Kultúrny dom platí aj porazenému.",
+      "melichar": "Bitka je tvoja, 9 : 2: štyri špaky za karty v línii a Farár 3 za strach. Exekútor: tebe Dlh aj so špakom, Štamgastovi Dlh bez špaku, Advokát. Štamgast prehral, a predsa dostal 3 za reči pri Farárovi a 1 za kartu v línii – Kultúrny dom platí aj porazenému.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",
@@ -2342,7 +2352,7 @@
     {
       "id": "i-po-bitke3",
       "kto": "info",
-      "melichar": "Štamgastove reči po zaplatení klesli o stupeň: pri Farárovi z oranžovej na žltú, Hrobárove zanikli. Za prehru dostal cigaretu. A priazeň mu teraz dáva Farár v sile 3, Krčmárka 2 a Veterinár 1 – to je cena tvojho strachu.",
+      "melichar": "Štamgastove reči po zaplatení klesli o stupeň: pri Farárovi z oranžovej na žltú. Za prehru dostal cigaretu. A priazeň mu teraz dáva Farár v sile 3, Krčmárka 2 a Veterinár 1 – to je cena tvojho strachu.",
       "zvyraznit": [
         "linia-starsich",
         "bar-supera:cigarety"
@@ -2697,7 +2707,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Druhá Pitka finále: vypitý poldeci a pečeň z kariet – pečeň ti pretiekla, Cirhóza ide do balíčka. Druhý Hazard vily ti dal zadĺženie, Štamgastovi Dlh. Posledné Zhromaždenie.",
+      "melichar": "Druhá Pitka finále: vypitý poldeci a pečeň z kariet – pečeň ti pretiekla, Cirhóza ide do balíčka. Druhý Hazard vily ti dal zadĺženie, Štamgastovi tiež. Posledné Zhromaždenie.",
       "zvyraznit": [
         "bar-supera:cigarety"
       ]
@@ -2823,7 +2833,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 5. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho dve tiež. 43 : 2.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 4. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho dve tiež. 44 : 1.",
       "zvyraznit": [
         "bar:body",
         "nastenka"
