@@ -288,13 +288,17 @@ try {
       }
       // Kšeft vily a NA EX hrá myšou cez tlačidlá stola — tie sa v playteste 20261030 zasekli; ostatné
       // ťahy idú cez WebSocket. Keď klik krok neposunie, pošle ťah cez WebSocket a zapíše to.
-      const c = krok.ocakava as { type?: string; uid?: number; elderId?: string; kSebe?: boolean } | null;
+      // Kšeft vily (v11) je { type: "kseft", uid, elderId } — zdvihne moje reči, smer (kSebe) zanikol.
+      const c = krok.ocakava as { type?: string; uid?: number; elderId?: string } | null;
       let klikom = false;
       if (c?.type === "kseft" && c.elderId !== undefined) {
         await klik('[data-vyucba="tlacidlo:kseft"] > button');
         await pockaj(400);
         if (fotoKrokov.has(krok.id)) await foto(`krok-${krok.id}-ponuka`);
-        klikom = await klik(`[data-vyucba="kseft:${c.elderId}:${c.kSebe === true ? 1 : 0}"]`);
+        // Tlačidlo, ktoré rozsvieti Vyucba.tsx (klucVily(elderId, false)); inak ktorékoľvek tlačidlo vily pri tomto staršom.
+        klikom =
+          (await klik(`[data-vyucba="kseft:${c.elderId}:0"]`)) ||
+          (await klik(`[data-vyucba="kseft:${c.elderId}"], [data-vyucba^="kseft:${c.elderId}:"]`));
       } else if (c?.type === "naex" && c.uid !== undefined) {
         await klik(`.linia [data-vyucba-uid="${c.uid}"]`);
         await pockaj(500);
