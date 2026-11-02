@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet 2026-11-02T09:36:01.674Z",
+  "source": "tvorca kariet — koncept nad lokálnou sadou v12 (Strach a reči: Kapybara, Predsedova vila) 2026-11-02T11:13:01.247Z",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -3216,7 +3216,7 @@
       "tags": [
         "Zviera"
       ],
-      "effect_text": "Nástup: Posuň marker jedného staršieho o 1 pole k stredu.",
+      "effect_text": "Nástup: Súperove reči pri jednom staršom klesnú o stupeň.",
       "triggers": [
         "Nástup"
       ],
@@ -3825,7 +3825,7 @@
       "tags": [
         "Lokalita"
       ],
-      "effect_text": "Kšeft: Za 2 cigarety posuň marker ľubovoľného staršieho o 1 pole od seba alebo k sebe. Marker staršieho v ohrození takto posunúť nesmieš.",
+      "effect_text": "Kšeft: Za 2 cigarety zdvihni svoje reči pri jednom staršom o stupeň. Staršieho v ohrození nie.",
       "triggers": [
         "Kšeft"
       ],
