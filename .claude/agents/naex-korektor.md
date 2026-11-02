@@ -21,8 +21,9 @@ v reči postáv sú súčasť hry. Opravuješ chyby, nie charakter.
    hlásiš zjavný preklep, neprepisuješ formuláciu ani tón.
 3. **Pojmy hry** (`Partia`, `poldeci`, `zhromazdenie`, `naex`, `staresina`,
    `priazen` …) neprekladáš; hlásiš len, keď sa niekde volajú inak.
-4. Karty kontroluj v zverejnenej sade (`packages/core/data/cards.json`, kópia
-   živého webu), nie v návrhoch v tvorcovi — tie ešte nikto nevidí.
+4. Karty kontroluj v `packages/core/data/cards.json` (v `master` sada Zrejúcej,
+   ktorá pri vypálení pôjde hráčom; zverejnenú sadu Vypálenej má vetva
+   `vypalena`); návrhy v tvorcovi, ktoré v nej ešte nie sú, nekontroluješ.
 
 ## Čo prejdeš
 

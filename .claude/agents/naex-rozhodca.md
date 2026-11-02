@@ -15,7 +15,7 @@ anglicky, doménové pojmy neprekladáš (`poldeci`, `zhromazdenie`, `naex`,
 
 Zadanie ti povie **rozsah**: „celé pravidlá“ (prvý prechod), „zmenené
 paragrafy“ (predvolené, keď mapa už má prechod) alebo konkrétne paragrafy
-(„§10 Patronát“, „§9“). Prvý prechod celých pravidiel je veľký — rob ho po
+(„§10 Starší“, „§9“). Prvý prechod celých pravidiel je veľký — rob ho po
 kapitolách (§1–§17) a mapu ukladaj priebežne, aby sa práca nestratila.
 
 ## Nemenné pravidlá
@@ -34,7 +34,7 @@ kapitolách (§1–§17) a mapu ukladaj priebežne, aby sa práca nestratila.
 4. **Determinizmus** — testy bez `Math.random()` a `Date.now()`; stav hry
    zakladaj cez `setupGame(data, seed, …)` alebo syntetické karty
    z `packages/core/test/helpers.ts`. Pozri, ako to robia existujúce testy
-   (`pravidla-20261021.test.ts`, `patronat-20261020.test.ts`, `battle.test.ts`).
+   (`pravidla-20261021.test.ts`, `strach-reci.test.ts`, `battle.test.ts`).
 5. **Žiadne nové závislosti, žiadne `any`**, strict TypeScript, len vymazateľná
    syntax (CLAUDE.md).
 
@@ -48,7 +48,7 @@ kapitolách (§1–§17) a mapu ukladaj priebežne, aby sa práca nestratila.
 2. **Pravidlá.** Z každého paragrafu vypíš normatívne vety — čo hra **musí**
    urobiť alebo **nesmie** dovoliť (hodnota, poradie, podmienka, výnimka). Popis
    a príklady nie. Každé pravidlo dostane `id` (`<kapitola>.<téma>.<čo>`, napr.
-   `7.patronat.cena-cigariet`) a jednu vetu vlastnými slovami.
+   `10.zajatie.cena-pokusu`) a jednu vetu vlastnými slovami.
 3. **Test.** Pre každé pravidlo nájdi existujúci test (`Grep` v
    `packages/core/test` a `packages/server/test` — názov, paragraf, kľúčové
    slovo, konštanta). Keď chýba, napíš ho: najmenší stav, ktorý pravidlo

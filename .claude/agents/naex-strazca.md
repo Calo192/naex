@@ -38,7 +38,7 @@ nájde hráč s otvorenou konzolou.
 - Všetky správy servera klientovi počas celej partie (človek proti človeku aj
   proti botovi, výučba, prehrávač, divák, ak existuje): je v nich súperova
   ruka, poradie balíčka, odložené skryté karty, semienko alebo stav RNG,
-  budúce ťahy bota, skryté voľby (Vízia, šenok, patronát…)? Porovnaj s tým,
+  budúce ťahy bota, skryté voľby (Vízia, šenok, karta zadarmo pri pokuse o zajatie…)? Porovnaj s tým,
   čo smie hráč vedieť podľa `docs/PRAVIDLA.md`.
 - `viewFor()` v `packages/core/src/view.ts`: čo z `GameState` prechádza.
   Hľadaj polia pridané do stavu, ktoré view zabudlo odfiltrovať, a polia,

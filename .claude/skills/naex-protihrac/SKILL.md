@@ -22,22 +22,28 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
 
 ## Postup
 
-1. **Založ partiu**:
-   ```bash
-   node --experimental-strip-types --no-warnings tools/playtest/zaloz-clovek.ts "<meno>" <dlzka>
-   ```
-   Skript spustí **vlastný server partie** (port od 8800, bez `--watch`) nad
-   databázou `data/` — reštart vývojového servera po zmene kódu ho nezhodí,
-   miestnosti totiž žijú len v pamäti servera. Ak je build klienta starší než
-   zdrojáky, najprv ho zbuildí (chvíľu trvá). Vývojový server `npm run dev`
-   netreba. Z výpisu si zober reláciu `R`, adresu servera partie `<web>`
-   a odkaz na pripojenie. (`--url <web>` založí partiu na existujúcom webe
-   bez vlastného servera — len na výslovnú žiadosť, viď Poznámky.)
+Protihráč hrá proti ľuďom na **Vypálenej** (živý web, vetva `vypalena`;
+Michal 2026-11-02) — `master` je pokusná Zrejúca s inými pravidlami.
 
-2. **AI účet musí byť hráč**, inak nezverejní spätnú väzbu (nový účet je
+1. **Založ partiu** na živom webe (z hlavného stromu):
+   ```bash
+   node --experimental-strip-types --no-warnings tools/playtest/zaloz-clovek.ts "<meno>" <dlzka> --zivy
+   ```
+   Z výpisu si zober reláciu `R` (v `playtest/`, absolútnu cestu dáš agentovi)
+   a odkaz na pripojenie. Lokálny server partie z `master` (bez `--zivy`, hrá
+   Zrejúcu) len na výslovnú žiadosť používateľa — viď Poznámky.
+
+2. **Worktree Vypálenej `V`** (klient musí byť z rovnakej verzie ako server,
+   pravidlá a ťahák tiež): `git fetch -q origin`, potom
+   `git worktree add --detach ../naex-protihrac-vyp origin/vypalena` (ak už
+   existuje: `git -C ../naex-protihrac-vyp checkout --detach origin/vypalena`)
+   a v ňom `npm ci`. `V` = jeho absolútna cesta.
+
+   **AI účet musí byť hráč**, inak nezverejní spätnú väzbu (nový účet je
    návštevník). Nástroj ho pri prihlásení sám zaradí ako hráča so značkou AI
-   heslom admina z `.env` (`NAEX_ADMIN_HESLO`); ak heslo chýba, povedz
-   používateľovi, nech ho v Tvorba → Hráči povýši — dá sa to aj počas partie.
+   heslom admina (živý web: `deploy/.env.produkcia`, lokálne `.env`); ak heslo
+   chýba, povedz používateľovi, nech ho v Tvorba → Hráči povýši — dá sa to aj
+   počas partie.
 
 3. **Daj používateľovi odkaz** — povedz mu: odkaz (`…/hra?kod=XXXX`), proti
    komu hrá a aký má agent štýl, dĺžku hry a že partia sa počíta do Frajeriny.
@@ -45,26 +51,24 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
    na jeho ťahy trpezlivo čaká.
 
 4. **Spusti agenta** `naex-protihrac` na pozadí (`run_in_background: true`):
-   „Relácia: R. Meno: …, štýl: …. Web: <url>. Pred partiou si prečítaj
-   zošity skúseností (tools/playtest/skusenosti/protihrac.md a spolocne.md).
-   Odohraj partiu proti človeku, napíš spätnú väzbu, zverejni ju na webe
-   a nakoniec over a zapíš skúsenosti do protihrac.md."
+   „Relácia: R (absolútne). Meno: …, štýl: …. Web: <url> (Vypálená).
+   Worktree Vypálenej: V — pravidlá, ťahák aj klient sú odtiaľ. Pred partiou
+   si prečítaj zošity skúseností (`skusenosti.ts citaj vypalena protihrac
+   spolocne`). Odohraj partiu proti človeku, napíš spätnú väzbu, zverejni ju
+   na webe a nakoniec over a zapíš skúsenosti do protihrac.md."
    Kým hrá, nepolluj. Ak sa používateľ medzitým ozve, odpovedz mu — agent
    beží ďalej.
 
-5. **Po partii** ulož posledný stav:
+5. **Po partii** ulož posledný stav (klient z `V`):
    ```bash
-   node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R 1 stav > R/koniec.txt
+   cd V && node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R 1 stav > R/koniec.txt
    ```
-   zastav server partie:
-   ```bash
-   node --experimental-strip-types --no-warnings tools/playtest/ukonci.ts R
-   ```
+   lokálny server partie (len bez `--zivy`) zastav
+   `node --experimental-strip-types --no-warnings tools/playtest/ukonci.ts R`
    a odovzdaj používateľovi: výsledok partie, čo agent na hru povedal (3–5
    bodov), jeho odhad zručnosť : náhoda, nezrovnalosti medzi pravidlami
    a hrou (`R/hrac1/nezrovnalosti.md`), najsilnejšie návrhy na strategickosť
-   a odkaz na stránku Spätná väzba (`http://localhost:8787/spatna-vazba`
-   alebo `npm start`, server partie je už zastavený), kde sú
+   a odkaz na stránku Spätná väzba (`<web>/spatna-vazba`), kde sú
    jeho názory, a čo sa agent naučil (zmeny v
    `tools/playtest/skusenosti/protihrac.md`). Zošit je v gite. Zmenu over
    (`node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts kontrola`)
@@ -77,10 +81,16 @@ Meno do 19 znakov (web doň pridá „ (AI)"), štýl jednou-dvoma vetami.
 - Agent vidí len to, čo hráč — ruku človeka nepozná.
 - Protihráč sa učí (Michal 2026-10-25): jeden zošit `protihrac.md` pre všetky
   štýly. Overenie skúseností robí sám na konci partie, lebo spisovateľ tu
-  nebeží. Formát je v `tools/playtest/skusenosti/README.md`.
-- Prihlásenie z `localhost:8787` platí aj na serveri partie (relácie sú
-  v databáze, cookie nerozlišuje porty). Log servera je v `R/server.log`.
-- Ak miestnosť zmizne („Miestnosť s týmto kódom neexistuje"), pozri
-  `R/server.log` — server partie spadol.
-- Na produkčný web (iný než localhost) zakladaj partiu len, keď to používateľ
-  výslovne chce — AI účet tam bude verejne viditeľný.
+  nebeží; skúsenosti nesú verziu pravidiel Vypálenej. Formát a verzie sú
+  v `tools/playtest/skusenosti/README.md`.
+- Partia na živom webe sa počíta do Frajeriny a štatistík a AI účet je tam
+  verejne viditeľný — to je zámer.
+- **Lokálne (len na výslovnú žiadosť):** `zaloz-clovek.ts` bez `--zivy` spustí
+  vlastný server partie z hlavného stromu (port od 8800, bez `--watch`, nad
+  databázou `data/`; ak je build klienta starší než zdrojáky, zbuildí ho).
+  Hrá sa Zrejúca (`master`): agentovi nedávaj `V`, nech číta pravidlá
+  a zošity pre `zrejuca`. Prihlásenie z `localhost:8787` tam platí (cookie
+  nerozlišuje porty); keď miestnosť zmizne („Miestnosť s týmto kódom
+  neexistuje“), server partie spadol — pozri `R/server.log`.
+- Po partii worktree `V` nechaj (ďalšia partia ho len prepne na
+  `origin/vypalena`), nič v ňom nemeň.

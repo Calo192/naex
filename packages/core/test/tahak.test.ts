@@ -44,7 +44,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Predavačka (v10.4)", `**Predavačka (v10.4): ${pocet(KONSTANTY.EFEKT.PREDAVACKA_CENA, "cigareta", "cigarety", "cigariet")} → 1 karta z tvojho doberacieho balíčka**`],
     ["Poľovník (v10.4)", "**spáli súperovo Zviera, ktoré je od lokality najďalej**"],
     ["Policajtka (v10.4)", "za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor (aj Nástroja), získa súper **1 zadĺženie**"],
-    ["Sypač (v10.3)", "Kulturista je teraz **Sypač** (Pitka): keď sa z neho stane Výtržník, jeho akcie sú **Pecky**, nie Rany."],
+    ["Sypač (v10.3)", "**Sypač (Pitka, v10.3):** keď sa z neho stane Výtržník, jeho akcie sú **Pecky**, nie Rany."],
     ["Zastávka (v9.1)", "Zastávka (v9.1: po **prvej Pitke kola** si každý vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca"],
     ["pojmy stupnice (v8.3)", "**pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**"],
     ["mäkké poškodenie (v10)", `**mäkké = Pohoršenie × ${KONSTANTY.HADKA.POHORSENIE_MAKKE} + zvyšné Povery × ${KONSTANTY.HADKA.POVERA_MAKKE}**`],

@@ -14,9 +14,41 @@ Nováčikovia výučby (`naex-novacik`) zošity nečítajú. Majú byť vždy č
 Playtester číta len svoj zošit a spoločný. Cudzí zošit by mu prezradil, ako
 hrá súper.
 
+## Dve verzie pravidiel — Zrejúca a Vypálená (2026-11-02)
+
+Playtesty idú na **Zrejúcu** (kód `master`, verzia = `VERZIA_PRAVIDIEL`
+jadra), protihráč hrá proti ľuďom na **Vypálenej** (vetva `vypalena`, verzia
+v `verzie.json`). Zošity sú jedny (v `master`) a rozlíšenie nesie pole
+**`pravidlá`** každej položky — verzie, na ktorých je overená (`v10`, alebo
+`v10, v11`, keď ju potvrdili partie oboch). Inštancia z neho vyplýva, osobitné
+pole netreba. `$S` = `node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts`
+(príkazy na konci).
+
+- **Návyk** pre hráča verzie X = `stav: overená` a `pravidlá` obsahuje X.
+  Ostatné sú pre neho neoverené. Skúsenosť overená **len na novšej** verzii
+  (Zrejúca pred Vypálenou) hráč Vypálenej vôbec nedostane — opiera sa
+  o pravidlá, ktoré jeho hra ešte nemá.
+- Každý hráč číta zošity cez `citaj` s **verziou svojej partie**:
+  playtester `citaj zrejuca <kluc> spolocne`, protihráč na Vypálenej
+  `citaj vypalena protihrac spolocne`. Výpis delí položky na návyky
+  a neoverené.
+- **Zápis:** nová skúsenosť dostane verziu partie, z ktorej je (`$S verzie`:
+  playtest = Zrejúca, protihráč na živom webe = Vypálená). Potvrdenie
+  overenej skúsenosti na inej hranej verzii verziu **pridá** (`v10` →
+  `v10, v11`); neoverenú potvrdenú na verzii X prepíše na `overená`, `pravidlá: X`.
+- `over-verziu` dorovná `verzie.json` z `origin/vypalena` a na `neoverená`
+  prepne len skúsenosti overené výhradne na verziách, ktoré už nehrá ani
+  Zrejúca, ani Vypálená.
+- **Vypálenie** (skill `vypalit`, krok 8.3): `vypalena` = master, `over-verziu`
+  zapíše verziu Zrejúcej ako verziu Vypálenej a skúsenosti zo starej Vypálenej
+  spadnú na neoverené. Kto mení `VERZIA_PRAVIDIEL` v master, spustí
+  `over-verziu` hneď (skúsenosti overené na verzii Vypálenej ostanú overené —
+  protihráč ich ďalej používa).
+
 ## Kolobeh
 
-1. **Pred partiou** si playtester prečíta svoj zošit a `spolocne.md`.
+1. **Pred partiou** si playtester prečíta svoj zošit a `spolocne.md`
+   (`$S citaj zrejuca <kluc> spolocne`).
    V pláne v `dennik.md` napíše, ktoré skúsenosti chce použiť.
 2. **Po partii** do `feedback.md`, časť `## Návrhy skúseností`, napíše:
    - pri použitých skúsenostiach, či sa potvrdili alebo vyvrátili,
@@ -48,12 +80,12 @@ hrá súper.
   o 1 vyššie ako najvyššie v zošite. Pravidlo má tvar „Keď X, robím Y,
   lebo Z“ a zmestí sa do jednej vety.
 - **stav**:
-  - `overená` znamená, že spisovateľ ju overil proti pravidlám verzie
-    v poli `pravidlá` a priebeh partie ju podporil.
-  - `neoverená` znamená, že sa odvtedy zmenila verzia pravidiel (alebo bola
+  - `overená` znamená, že spisovateľ (protihráč) ju overil proti pravidlám
+    verzií v poli `pravidlá` a priebeh partie ju podporil.
+  - `neoverená` znamená, že verzie z poľa `pravidlá` sa už nehrajú (alebo bola
     opravená) a ešte ju nik neoveril.
-- **pravidlá** je `VERZIA_PRAVIDIEL` z `packages/core/src/constants.ts`
-  v čase posledného overenia.
+- **pravidlá** sú verzie (`VERZIA_PRAVIDIEL` jadra partie), na ktorých bola
+  overená: `v11`, alebo `v10, v11` (vzostupne, oddelené čiarkou a medzerou).
 - **potvrdenia / vyvrátenia** sú počty partií, v ktorých sa skúsenosť
   osvedčila alebo zlyhala. Partia, z ktorej skúsenosť vznikla, je prvé
   potvrdenie.
@@ -66,22 +98,26 @@ hrá súper.
 
 ## Zmena pravidiel
 
-Keď jadro dostane novú `VERZIA_PRAVIDIEL`, `over-verziu` prepne každú
-overenú skúsenosť z inej verzie na `neoverená`. Pole `pravidlá` nechá, aby
-bolo vidieť, z ktorej verzie skúsenosť pochádza.
+Keď jadro dostane novú `VERZIA_PRAVIDIEL` (alebo sa vypáli Zrejúca),
+`over-verziu` prepne každú overenú skúsenosť, ktorej žiadnu verziu už nehrá
+Zrejúca ani Vypálená, na `neoverená`. Pole `pravidlá` nechá, aby bolo vidieť,
+z ktorej verzie skúsenosť pochádza.
 
 Playtester neoverenú skúsenosť skúša opatrne:
 - najprv ju porovná s aktuálnym `docs/PRAVIDLA.md`,
 - použije ju len tam, kde chyba veľa nestojí.
 
-Spisovateľ ju potom potvrdí (`overená`, `pravidlá` = nová verzia) alebo
+Spisovateľ ju potom potvrdí (`overená`, `pravidlá` = verzia partie) alebo
 zahodí. Test `packages/server/test/skusenosti.test.ts` zlyhá, kým overená
-skúsenosť nesie inú verziu, než má jadro. Kto mení verziu pravidiel, spustí
-`over-verziu` hneď.
+skúsenosť nesie len verzie, ktoré nehrá Zrejúca (jadro) ani Vypálená
+(`verzie.json`). Kto mení verziu pravidiel, spustí `over-verziu` hneď.
 
 ```bash
 S="node --experimental-strip-types --no-warnings tools/playtest/skusenosti.ts"
-$S over-verziu [--nasucho]   # neoverené po zmene pravidiel
+$S verzie                    # verzia Zrejúcej (master) a Vypálenej (verzie.json)
+$S citaj zrejuca jano spolocne      # čo číta playtester (návyky / neoverené)
+$S citaj vypalena protihrac spolocne # čo číta protihráč na Vypálenej
+$S over-verziu [--nasucho]   # verzie.json z origin/vypalena; neoverené po zmene pravidiel
 $S kontrola                  # formát, limit 15, verzie; kto vypadne pri plnom zošite
 $S cakajuce                  # feedbacky v playtest/ s nezapísanými návrhmi
 ```

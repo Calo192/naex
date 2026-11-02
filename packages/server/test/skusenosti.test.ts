@@ -1,7 +1,9 @@
 // Zošity skúseností AI hráčov (tools/playtest/skusenosti/, Michal 2026-10-25).
 // Pri novej VERZIA_PRAVIDIEL musia overené skúsenosti zo starých pravidiel
 // spadnúť na „neoverená“ — inak by playtesteri hrali podľa neplatných pravidiel
-// ako podľa istoty. Preto tu stráž aj nad skutočnými zošitmi.
+// ako podľa istoty. Preto tu stráž aj nad skutočnými zošitmi. Od 2026-11-02 sa
+// hrajú dve verzie naraz (Zrejúca = jadro, Vypálená = verzie.json): skúsenosť
+// overená na verzii Vypálenej ostáva overená, kým ju Vypálená hrá.
 
 import { readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
@@ -10,10 +12,14 @@ import { VERZIA_PRAVIDIEL } from "../../core/src/constants.ts";
 import {
   MAX_POLOZIEK,
   PRIECINOK,
+  hraneVerzie,
   maNezapisaneNavrhy,
+  nacitajVerzie,
   nacitajZosit,
   najslabsia,
   oznacNeoverene,
+  platiPre,
+  rozdelPre,
   skontrolujZosit,
 } from "../../../tools/playtest/skusenosti.ts";
 
@@ -43,26 +49,57 @@ describe("zošity skúseností", () => {
 
   it("over-verziu označí overené skúsenosti zo starej verzie, ostatné nechá", () => {
     const text = zosit(polozka("fero-1", "overená", "v4"), polozka("fero-2", "overená", "v5"), polozka("fero-3", "neoverená", "v3"));
-    const { text: novy, zmenene } = oznacNeoverene(text, "v5");
+    const { text: novy, zmenene } = oznacNeoverene(text, ["v5"]);
     expect(zmenene).toEqual(["fero-1"]);
     const polozky = nacitajZosit(novy);
     expect(polozky.map((s) => s.polia["stav"])).toEqual(["neoverená", "overená", "neoverená"]);
     // Verzia ostane — je z nej vidieť, z ktorých pravidiel skúsenosť pochádza.
     expect(polozky[0]?.polia["pravidlá"]).toBe("v4");
-    expect(oznacNeoverene(novy, "v5").zmenene).toEqual([]);
+    expect(oznacNeoverene(novy, ["v5"]).zmenene).toEqual([]);
   });
 
   it("over-verziu zachová koniec riadkov súboru", () => {
     const crlf = zosit(polozka("eva-1", "overená", "v4")).replace(/\n/g, "\r\n");
-    expect(oznacNeoverene(crlf, "v5").text).toBe(crlf.replace("- stav: overená", "- stav: neoverená"));
+    expect(oznacNeoverene(crlf, ["v5"]).text).toBe(crlf.replace("- stav: overená", "- stav: neoverená"));
   });
 
   it("kontrola odhalí overenú skúsenosť z inej verzie, zlé id aj preplnenie", () => {
-    expect(skontrolujZosit(zosit(polozka("eva-1", "overená", "v5")), "eva", "v5")).toEqual([]);
-    expect(skontrolujZosit(zosit(polozka("eva-1", "overená", "v4")), "eva", "v5")).toEqual([expect.stringContaining("over-verziu")]);
-    expect(skontrolujZosit(zosit(polozka("jano-1", "istá", "v5")), "eva", "v5")).toHaveLength(2);
+    expect(skontrolujZosit(zosit(polozka("eva-1", "overená", "v5")), "eva", ["v5"])).toEqual([]);
+    expect(skontrolujZosit(zosit(polozka("eva-1", "overená", "v4")), "eva", ["v5"])).toEqual([expect.stringContaining("over-verziu")]);
+    expect(skontrolujZosit(zosit(polozka("jano-1", "istá", "v5")), "eva", ["v5"])).toHaveLength(2);
     const plny = zosit(...Array.from({ length: MAX_POLOZIEK + 1 }, (_, i) => polozka(`eva-${i + 1}`, "overená", "v5")));
-    expect(skontrolujZosit(plny, "eva", "v5")).toEqual([expect.stringContaining(`najviac ${MAX_POLOZIEK}`)]);
+    expect(skontrolujZosit(plny, "eva", ["v5"])).toEqual([expect.stringContaining(`najviac ${MAX_POLOZIEK}`)]);
+  });
+
+  it("skúsenosť overená na verzii Vypálenej alebo Zrejúcej ostáva overená, na inej spadne", () => {
+    const text = zosit(polozka("fero-1", "overená", "v10"), polozka("fero-2", "overená", "v10, v11"), polozka("fero-3", "overená", "v9"));
+    expect(oznacNeoverene(text, ["v11", "v10"]).zmenene).toEqual(["fero-3"]);
+    // Po vypálení hrajú obe inštancie v11 — v10 už nikto.
+    expect(oznacNeoverene(text, ["v11"]).zmenene).toEqual(["fero-1", "fero-3"]);
+    expect(skontrolujZosit(text, "fero", ["v11", "v10"])).toEqual([expect.stringContaining("fero-3: overená na v9")]);
+    expect(skontrolujZosit(zosit(polozka("fero-1", "overená", "v10,v11")), "fero", ["v11"])).toEqual([expect.stringContaining("pravidlá v tvare")]);
+  });
+
+  it("hráč verzie dostane návyky svojej verzie, staršie opatrne, len novšie vôbec", () => {
+    const polozky = nacitajZosit(
+      zosit(
+        polozka("spolocne-1", "overená", "v10"),
+        polozka("spolocne-2", "overená", "v11"),
+        polozka("spolocne-3", "overená", "v10, v11"),
+        polozka("spolocne-4", "neoverená", "v9"),
+        polozka("spolocne-5", "neoverená", "v11"),
+      ),
+    );
+    const ids = (x: readonly { id: string }[]): string[] => x.map((s) => s.id);
+    const vypalena = rozdelPre(polozky, "v10");
+    expect(ids(vypalena.platne)).toEqual(["spolocne-1", "spolocne-3"]);
+    expect(ids(vypalena.opatrne)).toEqual(["spolocne-4"]);
+    expect(ids(vypalena.novsie)).toEqual(["spolocne-2", "spolocne-5"]);
+    const zrejuca = rozdelPre(polozky, "v11");
+    expect(ids(zrejuca.platne)).toEqual(["spolocne-2", "spolocne-3"]);
+    expect(ids(zrejuca.opatrne)).toEqual(["spolocne-1", "spolocne-4", "spolocne-5"]);
+    expect(zrejuca.novsie).toEqual([]);
+    expect(polozky.filter((s) => platiPre(s, "v11"))).toHaveLength(2);
   });
 
   it("najslabšia: najmenej potvrdení oproti vyvráteniam, potom neoverená, potom najstaršia", () => {
@@ -84,12 +121,18 @@ describe("zošity skúseností", () => {
     expect(maNezapisaneNavrhy("# F\n\n## Výsledok\n")).toBe(false);
   });
 
-  it(`skutočné zošity sedia s pravidlami ${VERZIA_PRAVIDIEL} (inak spusti skusenosti.ts over-verziu)`, () => {
+  it("verzia Vypálenej vo verzie.json nie je novšia než jadro (Zrejúca)", () => {
+    const v = nacitajVerzie();
+    expect(v.zrejuca).toBe(VERZIA_PRAVIDIEL);
+    expect(Number(v.vypalena.slice(1))).toBeLessThanOrEqual(Number(v.zrejuca.slice(1)));
+  });
+
+  it(`skutočné zošity sedia s pravidlami Zrejúcej ${VERZIA_PRAVIDIEL} a Vypálenej (inak spusti skusenosti.ts over-verziu)`, () => {
     const subory = readdirSync(PRIECINOK).filter((f) => f.endsWith(".md") && f !== "README.md");
     const hraci = (JSON.parse(readFileSync(join(PRIECINOK, "..", "hraci.json"), "utf8")) as { hraci: { kluc: string }[] }).hraci;
     expect(subory.map((f) => basename(f, ".md")).sort()).toEqual([...hraci.map((h) => h.kluc), "protihrac", "spolocne"].sort());
     for (const f of subory) {
-      expect(skontrolujZosit(readFileSync(join(PRIECINOK, f), "utf8"), basename(f, ".md"), VERZIA_PRAVIDIEL)).toEqual([]);
+      expect(skontrolujZosit(readFileSync(join(PRIECINOK, f), "utf8"), basename(f, ".md"), hraneVerzie(nacitajVerzie()))).toEqual([]);
     }
   });
 });

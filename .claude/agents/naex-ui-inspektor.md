@@ -58,7 +58,8 @@ Zadanie ti povie **url** lokálneho servera (napr. `http://localhost:8793`),
    ```
    Vypíše reláciu `R`. Zmeraj stôl v **každej fáze**, ktorú dosiahneš, s `--relacia R --hrac 1 --stav <faza>`:
    výber cieľa, Zhromaždenie (aj s vybranou kartou), Pitka (aj okno NA EX),
-   bitka a jej účet, stavba a branie zo šenku, patronát, koniec hry. Ťahy hráš
+   bitka a jej účet, pokus o zajatie, stavba a branie zo šenku, rozdeľovanie
+   strachu a rečí, koniec hry. Ťahy hráš
    cez `tools/playtest/hrac.ts R 1 stav` (vypíše možné ťahy) a
    `hrac.ts R 1 tah '<json>'`, na bota čakáš `hrac.ts R 1 cakaj 60`.
    Otvorené vrstvy zmeraj cez `--klik`: rozpis bodov (dlaždica Body),
