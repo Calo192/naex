@@ -2,9 +2,9 @@
 // (krok, špaky, posledná zmena) a kontumácia v menu Partia.
 
 import { describe, expect, it } from "vitest";
-import { hlavneMenu, jeAktivna, jeVonkajsi, menuUctu, spravaWebu } from "../src/lib/navigacia.ts";
+import { hlavneMenu, jeAktivna, menuUctu, spravaWebu } from "../src/lib/navigacia.ts";
 import { KONTUMACIA_PO_MS, krokPartie, minSek, stavKontumacie, textZmeny } from "../src/hra/stitokPartie.ts";
-import type { Pouzivatel, Pravo, Rola } from "../src/lib/ucet.tsx";
+import { smieZrejucu, type Pouzivatel, type Pravo, type Rola } from "../src/lib/ucet.tsx";
 
 const VSETKY: readonly Pravo[] = [
   "hrat_bot",
@@ -20,6 +20,7 @@ const VSETKY: readonly Pravo[] = [
   "reporty_playtestov",
   "navrhovat_karty",
   "vidiet_vyvoj",
+  "hrat_zrejucu",
 ];
 
 const ucet = (rola: Rola, prava: readonly Pravo[] = VSETKY): Pouzivatel => ({ id: 7, login: "jano", meno: "Jano", avatar: null, rola, prava });
@@ -113,40 +114,30 @@ describe("kontumácia v menu Partia", () => {
 });
 
 describe("navigácia Zrejúcej (Michal 2026-11-02)", () => {
-  const zrejuca = { nazov: "zrejuca", vypalena: "https://vyp.test" } as const;
+  const zrejuca = { nazov: "zrejuca", vypalena: null } as const;
 
-  it("komunita, Playtest a tvorca kariet vedú do Vypálenej; hra ostáva tu", () => {
-    expect(hrefy(hlavneMenu(ucet("subadmin"), null, zrejuca))).toEqual([
-      "/hra",
-      "/pravidla",
-      "/karty",
-      "/rebricek",
-      "https://vyp.test/novinky",
-      "https://vyp.test/vyvoj",
-      "https://vyp.test/spatna-vazba",
-    ]);
+  it("komunita, Playtest a tvorca sú vo Vypálenej (klik prepne inštanciu); hra ostáva tu", () => {
+    const menu = hlavneMenu(ucet("subadmin"), null, zrejuca);
+    expect(hrefy(menu)).toEqual(["/hra", "/pravidla", "/karty", "/rebricek", "/novinky", "/vyvoj", "/spatna-vazba"]);
+    expect(menu.filter((p) => p.doVypalenej === true).map((p) => p.href)).toEqual(["/novinky", "/vyvoj", "/spatna-vazba"]);
     const sprava = spravaWebu(ucet("admin"), zrejuca);
-    expect(hrefy(sprava)).toEqual(["https://vyp.test/playtest", "https://vyp.test/admin", "/hraci"]);
+    expect(sprava.filter((s) => s.doVypalenej === true).map((s) => s.href)).toEqual(["/playtest", "/admin"]);
     expect(sprava.some((s) => s.pocet !== undefined)).toBe(false);
-    expect(jeVonkajsi("https://vyp.test/admin")).toBe(true);
-    expect(jeVonkajsi("/admin")).toBe(false);
   });
 
-  it("Vypálená má odkazy ako doteraz", () => {
-    const vypalena = { nazov: "vypalena", vypalena: null } as const;
-    expect(hrefy(hlavneMenu(ucet("hrac"), null, vypalena))).toEqual(hrefy(hlavneMenu(ucet("hrac"), null)));
+  it("Vypálená má odkazy ako doteraz, bez prepínania", () => {
+    const vypalena = { nazov: "vypalena", vypalena: null, zrejuca: "/" } as const;
+    expect(hlavneMenu(ucet("hrac"), null, vypalena)).toEqual(hlavneMenu(ucet("hrac"), null));
     expect(spravaWebu(ucet("admin"), vypalena)).toEqual(spravaWebu(ucet("admin")));
   });
-});
 
-describe("odkaz do Zrejúcej vo Vypálenej (Michal 2026-11-02)", () => {
-  const vypalena = { nazov: "vypalena", vypalena: null, zrejuca: "https://zrejuca.vyp.test" } as const;
-
-  it("správca má v menu Správa Zrejúcu s prenosom prihlásenia, hráč nie", () => {
-    const sprava = spravaWebu(ucet("subadmin"), vypalena);
-    expect(sprava.at(-1)).toEqual({ href: "https://zrejuca.vyp.test", text: "Zrejúca (pokusná verzia) ↗", prenos: true });
-    expect(spravaWebu(ucet("hrac"), vypalena)).toEqual([]);
-    // Bez adresy (vývoj) položka nie je.
-    expect(hrefy(spravaWebu(ucet("admin"), { nazov: "vypalena", vypalena: null, zrejuca: null }))).toEqual(["/playtest", "/admin", "/hraci"]);
+  it("voľba Zrejúcej len s oprávnením od servera a keď Zrejúca beží", () => {
+    const vypalena = { nazov: "vypalena", vypalena: null, zrejuca: "/" } as const;
+    expect(smieZrejucu(ucet("sedmicka"), vypalena)).toBe(true);
+    expect(smieZrejucu(ucet("hrac", VSETKY.filter((p) => p !== "hrat_zrejucu")), vypalena)).toBe(false);
+    expect(smieZrejucu({ ...ucet("admin"), prava: undefined } as unknown as Pouzivatel, vypalena)).toBe(false);
+    expect(smieZrejucu(ucet("sedmicka"), { ...vypalena, zrejuca: null })).toBe(false);
+    expect(smieZrejucu(ucet("sedmicka"), { nazov: "zrejuca", vypalena: null })).toBe(false);
+    expect(smieZrejucu(null, vypalena)).toBe(false);
   });
 });

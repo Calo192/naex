@@ -12,7 +12,11 @@ import { PravaLig } from "./PravaLig.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 
 /** email posiela server len adminovi (Michal 2026-11-01), subadminovi chýba. */
-type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number; readonly rolaRucne?: boolean };
+/** zrejucaPodlaRanku: či smie hrať Zrejúcu bez výnimky admina (server, matica práv). */
+type Riadok = Pouzivatel & { readonly vytvoreny: number; readonly dohrate: number; readonly rolaRucne?: boolean; readonly zrejucaPodlaRanku?: boolean };
+
+type VolbaZrejucej = "rank" | "ano" | "nie";
+const volbaZrejucej = (p: Riadok): VolbaZrejucej => (p.zrejuca === true ? "ano" : p.zrejuca === false ? "nie" : "rank");
 
 const FILTRE: readonly (Rola | "ai")[] = ["admin", "subadmin", "sedmicka", "deci", "hrac", "navstevnik", "ai"];
 const jeRankHraca = (r: Rola): boolean => RANKY_HRACOV.includes(r);
@@ -36,7 +40,7 @@ export function Hraci() {
       .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
   useEffect(nacitaj, []);
 
-  const uprav = async (p: Riadok, zmena: { rola?: Rola; ai?: boolean; automaticky?: true }) => {
+  const uprav = async (p: Riadok, zmena: { rola?: Rola; ai?: boolean; automaticky?: true; zrejuca?: boolean | null }) => {
     try {
       await api.patch(`/admin/pouzivatelia/${p.id}`, zmena);
       nacitaj();
@@ -54,7 +58,9 @@ export function Hraci() {
           Nový účet je Nealko; po výučbe alebo prvej dohratej partii (aj proti počítaču) je z neho Poldeci, potom Deci a Sedmička podľa hviezd
           achievementov (percentá v Ranky a práva). Rank nastavený ručne (značka „ručne“) automatika nemení, kým ho nevrátiš na automatický. Účty AI
           agentov majú značku AI — ich spätnú väzbu web predvolene skrýva.{" "}
-          {somAdmin ? "Rank aj značku AI meníš v tabuľke." : "Hráčske ranky meníš v tabuľke; subadminov a značku AI mení len admin."}
+          {somAdmin ? "Rank aj značku AI meníš v tabuľke." : "Hráčske ranky meníš v tabuľke; subadminov a značku AI mení len admin."} Oprávnenie
+          hrať pokusnú Zrejúcu má predvolene Sedmička, správcovia a AI (pravidlo pre ranky je v Ranky a práva); admin ho v stĺpci Zrejúca
+          konkrétnemu hráčovi udelí alebo odoberie.
         </p>
       }
     />
@@ -95,6 +101,7 @@ export function Hraci() {
               <th className="cislo">Dohraté</th>
               <th>Rank</th>
               <th>AI</th>
+              <th>Zrejúca</th>
             </tr>
           </thead>
           <tbody>
@@ -144,6 +151,24 @@ export function Hraci() {
                     <input type="checkbox" checked={p.ai === true} onChange={(e) => void uprav(p, { ai: e.target.checked })} aria-label={`${p.meno} je AI agent`} />
                   ) : (
                     p.ai === true && <span className="odznak odznak-ai">AI</span>
+                  )}
+                </td>
+                <td>
+                  {somAdmin && p.rola !== "admin" ? (
+                    <select
+                      value={volbaZrejucej(p)}
+                      onChange={(e) => {
+                        const v = e.target.value as VolbaZrejucej;
+                        void uprav(p, { zrejuca: v === "rank" ? null : v === "ano" });
+                      }}
+                      aria-label={`Zrejúca pre ${p.meno}`}
+                    >
+                      <option value="rank">rank: {p.zrejucaPodlaRanku === true ? "áno" : "nie"}</option>
+                      <option value="ano">udelená</option>
+                      <option value="nie">odobratá</option>
+                    </select>
+                  ) : (
+                    (p.rola === "admin" || (p.zrejuca ?? p.zrejucaPodlaRanku) === true) && <span className="odznak">áno</span>
                   )}
                 </td>
               </tr>

@@ -65,8 +65,9 @@ https://15-235-242-12.sslip.io), prepínač `--zivy`: Spätná väzba, sekcia
 Playtest, roadmapa, známky na /vyvoj. Účty playtesterov („<meno> (AI)“) sú tam
 hráči so značkou AI a vlastným avatarom.
 
-**Playtest ide na Zrejúcu** (Michal 2026-11-02): `https://zrejuca.<DOMENA>`,
-prepínač `--zrejuca` — pokusná inštancia len pre testerov, ktorá hrá kód
+**Playtest ide na Zrejúcu** (Michal 2026-11-02): tá istá adresa, pre nástroje
+`https://<DOMENA>/zrejuca`, prepínač `--zrejuca` — pokusná inštancia pre hráčov
+s oprávnením (AI účty ho majú vždy), ktorá hrá kód
 `origin/master` (nasadený `/naex-nasad zrejuca`) a **rozpracovaný** stav
 tvorcu kariet. Partie sa tam zakladajú pod AI účtami postáv (tie isté ako vo
 Vypálenej, účty sú spoločné); dohraté ostanú v štatistikách Zrejúcej.

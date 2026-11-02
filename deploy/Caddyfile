@@ -1,26 +1,48 @@
 # Caddy sám vybaví HTTPS certifikát pre doménu z premennej DOMENA
 # a presmeruje HTTP → HTTPS. WebSocket (/ws) prechádza bez ďalšieho nastavenia.
-
-# Vypálená — oficiálna hra (vetva vypalena).
+#
+# Na jednej adrese bežia dve inštancie hry (Michal 2026-11-02), každá vo vlastnom kontajneri,
+# aby nasadenie pokusnej Zrejúcej nezhodilo partie oficiálnej Vypálenej:
+#   - prehliadač s cookie naex_instancia=zrejuca (prepínač na stránke Hrať) → Zrejúca,
+#   - /zrejuca/… (nástroje agentov: API, WebSocket) → Zrejúca bez predpony,
+#   - všetko ostatné → Vypálená.
+# Kým Zrejúca nebeží, jej požiadavky dostanú stránku s cestou späť; Vypálenú to nezasiahne.
 {$DOMENA} {
 	encode zstd gzip
 	header Strict-Transport-Security "max-age=31536000"
 	request_body {
 		max_size 16MB
 	}
-	reverse_proxy naex:8787
+
+	# Núdzový návrat do Vypálenej, keby Zrejúca neodpovedala: zmaže cookie inštancie.
+	handle /vypalena {
+		header Set-Cookie "naex_instancia=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Secure"
+		redir / 302
+	}
+
+	handle_path /zrejuca/* {
+		reverse_proxy naex-zrejuca:8787
+	}
+
+	@zrejuca header_regexp Cookie (^|;\s*)naex_instancia=zrejuca(;|$)
+	handle @zrejuca {
+		reverse_proxy naex-zrejuca:8787
+	}
+
+	handle {
+		reverse_proxy naex:8787
+	}
+
+	handle_errors 502 503 504 {
+		@zrejucaChyba header_regexp Cookie (^|;\s*)naex_instancia=zrejuca(;|$)
+		handle @zrejucaChyba {
+			header Content-Type "text/html; charset=utf-8"
+			respond `<!doctype html><meta charset="utf-8"><title>Zrejúca</title><body style="font:16px sans-serif;padding:40px;background:#14110e;color:#eee">Zrejúca – pokusná verzia sa práve nasadzuje. Obnov stránku o chvíľu, alebo <a style="color:#e9ad45" href="/vypalena">sa vráť do Vypálenej</a>.</body>` 502
+		}
+	}
 }
 
-# Zrejúca — pokusná verzia len pre testerov (master, Michal 2026-11-02). Beží ako samostatný
-# projekt (deploy/docker-compose.zrejuca.yml) v sieti Vypálenej; kým nie je nasadená, odpovie 502.
+# Zrejúca mala do 2026-11-02 vlastnú adresu — staré odkazy vedú na spoločnú.
 zrejuca.{$DOMENA} {
-	encode zstd gzip
-	header Strict-Transport-Security "max-age=31536000"
-	request_body {
-		max_size 16MB
-	}
-	reverse_proxy naex-zrejuca:8787
-	handle_errors {
-		respond "Zrejúca práve nebeží (nasadzuje sa?). Oficiálna hra: https://{$DOMENA}" 502
-	}
+	redir https://{$DOMENA}{uri} 308
 }

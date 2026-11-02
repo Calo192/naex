@@ -19,7 +19,7 @@ Rýchly prehľad bez agentov a bez partie — pár volaní API a gitu.
    rozhodnutia účtu AI), **čaká na playtest** (implementované, neoverené),
    **server a nasadenie** — dve inštancie (Michal 2026-11-02): **Vypálená**
    (oficiálna hra, nasadený commit, rozohrané partie, commity v
-   `origin/vypalena`, ktoré na nej nie sú) a **Zrejúca** (pokusná, len testeri;
+   `origin/vypalena`, ktoré na nej nie sú) a **Zrejúca** (pokusná, s oprávnením;
    commity v `origin/master`, ktoré na nej nie sú; „neodpovedá“ = ešte nie je
    nasadená) — a **pracovný strom**
    (necommitnuté súbory, nepushnutý master, `TODO` v herných dátach).
@@ -28,6 +28,8 @@ Rýchly prehľad bez agentov a bez partie — pár volaní API a gitu.
    Rozdiel Zrejúca vs. Vypálená zhrň aj ako `git log --oneline origin/vypalena..origin/master`
    — to je všetko, čo čaká na Michalovo schválenie (do Vypálenej ide celý stav
    Zrejúcej naraz, so zverejnením sady).
+   `$A server-stav --zrejuca` dá aj riadok „Zrejúca: bez zmien / N commitov,
+   M kariet navyše“ — bez zmien sa hráčom neponúka (po `vypalit`).
 2. Doplň, čo príkaz nevie:
    - bežiace lokálne relácie: `git worktree list` (rozpracované varianty
      stratéga, nasadzovací worktree) a `ls -t playtest | head` (dnešné relácie),

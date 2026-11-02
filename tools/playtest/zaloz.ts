@@ -10,7 +10,7 @@
 // (NPC na serveri); meno hráča 2 sa vtedy ignoruje a účet hráča 2 nevzniká.
 //
 // S prepínačom --zrejuca (Michal 2026-11-02) sa partia nezakladá na dočasnom serveri, ale na
-// pokusnej Zrejúcej (zrejuca.<DOMENA z deploy/.env.produkcia>): hrajú ju AI účty postáv
+// pokusnej Zrejúcej (<DOMENA z deploy/.env.produkcia>/zrejuca): hrajú ju AI účty postáv
 // (tie isté, ktorými píšu spätnú väzbu, tools/playtest/web.ts) a hrá sa tam rozpracovaná sada
 // tvorcu. Mená hráčov musia byť mená postáv z hraci.json (turnus.ts ich dáva sám).
 //

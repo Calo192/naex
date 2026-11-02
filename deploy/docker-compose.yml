@@ -2,7 +2,8 @@
 #   cd deploy && cp .env.example .env && (uprav .env) && docker compose up -d --build
 # Toto je Vypálená (oficiálna hra). Pokusná Zrejúca beží vedľa ako projekt naex-zrejuca
 # (docker-compose.zrejuca.yml) a pripája sa do siete tohto projektu „deploy_default“ —
-# preto sa projekt (priečinok deploy) nepremenúva. Caddy smeruje obe adresy (Caddyfile).
+# preto sa projekt (priečinok deploy) nepremenúva. Adresa je jedna; Caddy posiela do Zrejúcej
+# podľa cookie naex_instancia a cesty /zrejuca/ (Caddyfile).
 
 services:
   naex:
@@ -13,6 +14,10 @@ services:
       NAEX_SECURE_COOKIE: "1"
       # Odkazy v e-mailoch (obnova hesla); odosielanie je zatiaľ len do logu (docs/NASADENIE.md 8).
       NAEX_ADRESA: https://${DOMENA}
+      # Prepínač „Zrejúca“ na stránke Hrať (Michal 2026-11-02): "/" = tá istá adresa, smeruje Caddy.
+      NAEX_ZREJUCA_ADRESA: "/"
+      # Vypálená sa pýta Zrejúcej na verziu — bez zmien ju hráčom neponúkne.
+      NAEX_ZREJUCA_URL: http://naex-zrejuca:8787
       NAEX_EMAIL_REZIM: ${NAEX_EMAIL_REZIM:-log}
     volumes:
       - naex-data:/data

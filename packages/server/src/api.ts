@@ -38,8 +38,8 @@ import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
 import type { VysledokZlucenia } from "./zlucenie.ts";
 import { overKategoriu as overKategoriuNazoru, overSkupinu } from "./nazory.ts";
-import type { PrenosPrihlasenia, Vypalena } from "./zrejuca.ts";
-import { LEN_PRE_TESTEROV, jeTester } from "./zrejuca.ts";
+import type { Vypalena } from "./zrejuca.ts";
+import { LEN_PRE_TESTEROV, cookieInstancie } from "./zrejuca.ts";
 
 /** Rozohraná partia hráča — pilulka „Partia beží · Späť ku stolu“ v hlavičke mimo stola. */
 export interface RozohranaPartia {
@@ -151,17 +151,45 @@ export interface ApiKontext {
    * sady; null = tento server je Vypálená.
    */
   readonly zrejuca: { readonly vypalena: Vypalena; readonly prevezmiSadu: () => Promise<{ verzia: number; zmena: boolean }> } | null;
-  /** Vypálená: verejná adresa Zrejúcej pre odkaz v menu Správa; null = nie je (vývoj, alebo toto je Zrejúca). */
+  /**
+   * Vypálená: kam prepínač „Zrejúca“ pošle prehliadač — "/" pri spoločnej adrese (Caddy smeruje
+   * podľa cookie), vo vývoji adresa druhého servera; null = Zrejúca nebeží, voľba sa neponúka.
+   */
   readonly zrejucaAdresa: string | null;
-  /** Vypálená: jednorazové tokeny, ktorými sa správca prihlási do Zrejúcej bez hesla. */
-  readonly prenos: PrenosPrihlasenia;
+  /**
+   * Kto je prihlásený. Vypálená z vlastnej relácie; Zrejúca overí reláciu prehliadača cez Vypálenú
+   * a pustí len toho, kto má oprávnenie hrat_zrejucu (bezPrava = prihlásený, ale bez neho).
+   */
+  readonly overRelaciu: (req: IncomingMessage) => Promise<{ readonly ja: Pouzivatel | null; readonly bezPrava: boolean }>;
+  /** Nasadená verzia tohto servera (VERZIA.json) — Vypálená ňou porovná Zrejúcu. */
+  readonly verzia: () => StavServera["verzia"];
+  /** Vypálená: má Zrejúca niečo nové oproti nej? null = neoveruje sa. */
+  readonly stavZrejucej: () => Promise<StavZrejucej | null>;
 }
 
-/** Čo Zrejúca nerobí, lebo to patrí Vypálenej (účty, tvorca, známky hry) — odpoveď s odkazom tam. */
-const voVypalenej = (co: string, adresa: string): ChybaVstupu => new ChybaVstupu(`${co} je vo Vypálenej (${adresa}) — Zrejúca je len pokusná hra.`, 409);
+/** Zrejúca oproti Vypálenej (Michal 2026-11-02) — admin.ts server-stav --zrejuca a prepínač na Hrať. */
+export interface StavZrejucej {
+  /** Zrejúca odpovedá. */
+  readonly dostupna: boolean;
+  /** Nasadené commity; null = server verziu nepozná. */
+  readonly vypalena: string | null;
+  readonly zrejuca: string | null;
+  /** Karty v tvorcovi iné, nové alebo zmazané oproti zverejnenej sade. */
+  readonly kariet: number;
+  /** Líši sa aj iné v tvorcovi (akcie, kľúčové slová, kategórie, bodovacie karty). */
+  readonly ineZmeny: boolean;
+  /** Ten istý kód a nič nezverejnené — Zrejúca sa hráčom neponúka. */
+  readonly bezZmien: boolean;
+}
 
-/** Cesty Zrejúcej, ktoré smie aj neprihlásený: kto je prihlásený, prihlásenie a odhlásenie. */
-const ZREJUCA_BEZ_UCTU = new Set(["GET /ja", "POST /prihlasenie", "POST /odhlasenie", "GET /prihlasenie-z-vypalenej"]);
+/** Čo Zrejúca nerobí, lebo to patrí Vypálenej (účty, tvorca, známky hry). */
+const voVypalenej = (co: string): ChybaVstupu => new ChybaVstupu(`${co} je vo Vypálenej — Zrejúca je len pokusná hra (prepni sa späť v páse hore).`, 409);
+
+/** Cesty Zrejúcej, ktoré smie aj ten, koho nepustí: kto je prihlásený, prihlásenie, odhlásenie a návrat do Vypálenej. */
+const ZREJUCA_BEZ_UCTU = new Set(["GET /ja", "POST /prihlasenie", "POST /odhlasenie", "POST /instancia", "GET /verzia"]);
+
+/** Hláška, keď Zrejúca nemá nič nové (Michal 2026-11-02). */
+export const ZREJUCA_BEZ_ZMIEN = "Aktuálna verzia Vypálená je posledná — Zrejúca nemá žiadne zmeny. Hraj Vypálenú.";
 
 /** Zápisy do tvorcu kariet — v Zrejúcej nie, tvorca je jeden vo Vypálenej. */
 const ZAPIS_DO_TVORCU = /^(PUT|DELETE|POST) \/(karty|akcie|klucove-slova|kategorie|nastavenia|bodovacie|media|zverejnit|sady|import)(\/|$)/;
@@ -390,7 +418,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     return;
   }
   const teraz = ctx.teraz();
-  const ja = ctx.ucty.zRequestu(req, teraz);
+  const { ja, bezPrava } = await ctx.overRelaciu(req);
   const prihlaseny = (): Pouzivatel => {
     if (ja === null) throw new ChybaVstupu("Musíš sa prihlásiť.", 401);
     return ja;
@@ -407,48 +435,71 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
   const casti = cesta.split("/").filter((c) => c !== "").map(decodeURIComponent);
   const r = `${metoda} /${casti.slice(1).join("/")}`;
 
-  // Klient podľa inštancie kreslí pás „Zrejúca – pokusná verzia“ a vedie odkazy do Vypálenej.
+  // Klient podľa inštancie kreslí pás „Zrejúca – pokusná verzia“ alebo ponúkne prepnutie do nej.
   const instancia =
     ctx.zrejuca === null
       ? { nazov: "vypalena", vypalena: null, zrejuca: ctx.zrejucaAdresa }
-      : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa, zrejuca: null };
+      : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa, zrejuca: null, bezPrava };
 
   try {
-    // Prenos prihlásenia do Zrejúcej (Michal 2026-11-02): Vypálená vydá testerovi jednorazový
-    // odkaz, Zrejúca ho cez /zrejuca/over overí a prihlási ho bez hesla.
-    if (ctx.zrejuca === null && r === "POST /zrejuca/odkaz") {
-      const p = prihlaseny();
-      if (!jeTester(p)) throw new ChybaVstupu(LEN_PRE_TESTEROV, 403);
-      if (ctx.zrejucaAdresa === null) throw new ChybaVstupu("Adresa Zrejúcej nie je nastavená.", 404);
-      return ok({ url: `${ctx.zrejucaAdresa}/api/prihlasenie-z-vypalenej?token=${ctx.prenos.vydaj(p.id, teraz)}` });
-    }
-    if (ctx.zrejuca === null && r === "POST /zrejuca/over") {
+    // Prepnutie inštancie (Michal 2026-11-02): jedna adresa, Caddy posiela prehliadač s cookie
+    // naex_instancia=zrejuca do Zrejúcej. Do Zrejúcej len s oprávnením; späť smie každý.
+    if (r === "POST /instancia") {
       const b = await citajJson(req);
-      const id = typeof b.token === "string" ? ctx.prenos.uplatni(b.token, teraz) : null;
-      const p = id === null ? null : ctx.ucty.podlaId(id);
-      if (p === null) throw new ChybaVstupu("Odkaz do Zrejúcej neplatí — prihlás sa heslom.", 401);
-      return ok({ pouzivatel: { login: p.login, meno: p.meno, rola: p.rola, ai: p.ai, avatar: p.avatar, pohlavie: p.pohlavie } });
-    }
-    if (ctx.zrejuca !== null && r === "GET /prihlasenie-z-vypalenej") {
-      const v = await ctx.zrejuca.vypalena.overPrenos(query.get("token") ?? "");
-      // Neplatný odkaz alebo netester skončí na prihlásení Zrejúcej.
-      const hlavicky: Record<string, string> = { location: "/", "cache-control": "no-store" };
-      if (v.stav === "ok" && jeTester(v.ucet)) {
-        const p = ctx.ucty.zrkadli(v.ucet, teraz);
-        hlavicky["set-cookie"] = cookieRelacie(ctx.ucty.novaRelacia(p.id, teraz), ctx.bezpecneCookie);
+      if (b.nazov === "zrejuca") {
+        if (ctx.zrejuca === null) {
+          ctx.prava.vyzaduj(ja, "hrat_zrejucu");
+          if (ctx.zrejucaAdresa === null) throw new ChybaVstupu("Zrejúca na tomto serveri nebeží.", 404);
+          const stav = await ctx.stavZrejucej();
+          if (stav !== null && !stav.dostupna) throw new ChybaVstupu("Zrejúca práve neodpovedá (nasadzuje sa?) — skús to o chvíľu.", 503);
+          // Bez zmien sa neprepína — klient ukáže hlášku a ostane vo Vypálenej.
+          if (stav?.bezZmien === true) return ok({ bezZmien: true, sprava: ZREJUCA_BEZ_ZMIEN });
+        }
+        const kam = `${(ctx.zrejucaAdresa ?? "").replace(/\/+$/, "")}/hra`;
+        return ok({ kam }, 200, { "set-cookie": cookieInstancie(true, ctx.bezpecneCookie) });
       }
-      res.writeHead(302, hlavicky);
-      res.end();
-      return;
+      if (b.nazov !== "vypalena") throw new ChybaVstupu("Inštancia je vypalena alebo zrejuca.");
+      const kam = `${ctx.zrejuca?.vypalena.adresa ?? ""}/`;
+      return ok({ kam }, 200, { "set-cookie": cookieInstancie(false, ctx.bezpecneCookie) });
     }
 
-    // Účty sú spoločné (Michal 2026-11-02): v Zrejúcej sa nezakladajú a heslo overí Vypálená.
+    // Nasadený commit — Vypálená podľa neho pozná, či má Zrejúca nový kód (ten je aj tak verejný).
+    if (r === "GET /verzia") return ok({ verzia: ctx.verzia() });
+    if (ctx.zrejuca === null && r === "GET /zrejuca/stav") {
+      if (!ctx.prava.smie(ja, "hrat_zrejucu")) throw new ChybaVstupu(LEN_PRE_TESTEROV, ja === null ? 401 : 403);
+      const stav = await ctx.stavZrejucej();
+      if (stav === null) throw new ChybaVstupu("Zrejúca sa na tomto serveri neoveruje (chýba NAEX_ZREJUCA_URL).", 404);
+      return ok(stav);
+    }
+
+    // Účty sú spoločné: v Zrejúcej sa nezakladajú ani nemení heslo.
     if (ctx.zrejuca !== null && (r === "POST /registracia" || r.startsWith("POST /obnova-hesla") || r === "POST /profil/heslo")) {
-      throw voVypalenej("Účet", ctx.zrejuca.vypalena.adresa);
+      throw voVypalenej("Účet");
     }
 
-    // Zrejúca púšťa len testerov (reláciu tu majú len oni) — ostatným ani dáta.
-    if (ctx.zrejuca !== null && ja === null && !ZREJUCA_BEZ_UCTU.has(r)) throw new ChybaVstupu(LEN_PRE_TESTEROV, 401);
+    // Prihlásenie a odhlásenie v Zrejúcej robí Vypálená — jej relácia (cookie) platí v oboch.
+    if (ctx.zrejuca !== null && (r === "POST /prihlasenie" || r === "POST /odhlasenie")) {
+      const telo = r === "POST /prihlasenie" ? await citajJson(req) : undefined;
+      let v: Response;
+      try {
+        v = await ctx.zrejuca.vypalena.preposli(r === "POST /prihlasenie" ? "/prihlasenie" : "/odhlasenie", req.headers.cookie ?? "", telo, ipZRequestu(req));
+      } catch {
+        throw new ChybaVstupu("Vypálená práve neodpovedá — skús to o chvíľu.", 503);
+      }
+      const setCookie = v.headers.get("set-cookie");
+      const hlavicky: Record<string, string> = setCookie === null ? {} : { "set-cookie": setCookie };
+      const data = (await v.json().catch(() => ({}))) as Record<string, unknown>;
+      if (!v.ok || r === "POST /odhlasenie") return ok(data, v.status, hlavicky);
+      // Prihlásený je vo Vypálenej v každom prípade; do Zrejúcej ho pustí len oprávnenie.
+      const novy = setCookie === null ? null : await ctx.zrejuca.vypalena.relacia(setCookie.split(";")[0] ?? "");
+      if (novy === null || !novy.prava.includes("hrat_zrejucu")) return ok({ chyba: LEN_PRE_TESTEROV }, 403, hlavicky);
+      return ok({ pouzivatel: vlastny(ctx.ucty.zrkadli(novy, teraz)) }, 200, hlavicky);
+    }
+
+    // Zrejúca púšťa len oprávnených — ostatným ani dáta.
+    if (ctx.zrejuca !== null && ja === null && !ZREJUCA_BEZ_UCTU.has(r)) {
+      throw new ChybaVstupu(bezPrava ? LEN_PRE_TESTEROV : "Musíš sa prihlásiť.", bezPrava ? 403 : 401);
+    }
 
     // ----- účet ----------------------------------------------------------
     // Počet dohratých partií — návštevník vidí, koľko mu chýba do úrovne hráč.
@@ -456,22 +507,6 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       // Neprihlásený má práva Nealka — klient podľa nich skryje odkazy (Vývoj), ktoré by server odmietol.
       if (ja === null) return ok({ pouzivatel: null, prava: ctx.prava.zoznam(null), instancia });
       return ok({ pouzivatel: { ...vlastny(ja), dohrate: ctx.ucty.dohrate(ja.id), prava: ctx.prava.zoznam(ja) }, instancia });
-    }
-
-    if (ctx.zrejuca !== null && r === "POST /prihlasenie") {
-      brzda(req, teraz, false);
-      const b = await citajJson(req);
-      const v = await ctx.zrejuca.vypalena.overPrihlasenie(String(b.login ?? "").trim(), String(b.heslo ?? ""), ipZRequestu(req));
-      if (v.stav === "brzda") throw new ChybaVstupu("Príliš veľa neúspešných pokusov. Skús to o pár minút.", 429);
-      if (v.stav === "nedostupna") throw new ChybaVstupu("Vypálená práve neodpovedá — prihlásenie do Zrejúcej skús o chvíľu.", 503);
-      if (v.stav === "zle") {
-        brzda(req, teraz, true);
-        throw new ChybaVstupu("Nesprávne meno alebo heslo.", 401);
-      }
-      if (!jeTester(v.ucet)) throw new ChybaVstupu(LEN_PRE_TESTEROV, 403);
-      const p = ctx.ucty.zrkadli(v.ucet, teraz);
-      const token = ctx.ucty.novaRelacia(p.id, teraz);
-      return ok({ pouzivatel: vlastny(p) }, 200, { "set-cookie": cookieRelacie(token, ctx.bezpecneCookie) });
     }
 
     if (r === "POST /registracia") {
@@ -685,7 +720,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
     if (r === "GET /znamky/moje") return ok(ctx.hodnotenia.moje(prihlaseny()));
     // Známky hry sa počítajú len z Vypálenej (Michal 2026-11-02).
-    if (r === "PUT /znamky" && ctx.zrejuca !== null) throw voVypalenej("Hodnotenie hry", ctx.zrejuca.vypalena.adresa);
+    if (r === "PUT /znamky" && ctx.zrejuca !== null) throw voVypalenej("Hodnotenie hry");
     if (r === "PUT /znamky") return ok(ctx.hodnotenia.uloz(prihlaseny(), await citajJson(req), teraz));
 
     if (casti[1] === "roadmapa") {
@@ -939,7 +974,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     const id = casti[3] ?? "";
 
     if (ctx.zrejuca !== null) {
-      if (ZAPIS_DO_TVORCU.test(sub)) throw voVypalenej("Tvorca kariet", `${ctx.zrejuca.vypalena.adresa}/admin`);
+      if (ZAPIS_DO_TVORCU.test(sub)) throw voVypalenej("Tvorca kariet");
       // Rozpracovaná sada sa preberá sama každú minútu; toto hneď (admin.ts sada-zrejuca).
       if (sub === "POST /sada-z-vypalenej") return ok(await ctx.zrejuca.prevezmiSadu());
     }
@@ -1128,7 +1163,11 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
     }
 
     // E-maily hráčov vidí len admin (Michal 2026-11-01), subadmin nie.
-    if (sub === "GET /pouzivatelia") return ok({ pouzivatelia: ctx.ucty.zoznam(ja2.rola === "admin") });
+    // zrejucaPodlaRanku: či by smel hrať Zrejúcu bez výnimky — správa účtov ho ukáže pri voľbe „podľa ranku“.
+    if (sub === "GET /pouzivatelia") {
+      const pouzivatelia = ctx.ucty.zoznam(ja2.rola === "admin").map((p) => ({ ...p, zrejucaPodlaRanku: ctx.prava.smie({ ...p, zrejuca: null }, "hrat_zrejucu") }));
+      return ok({ pouzivatelia });
+    }
     // Tempo partií — kde ide čas (roadmapa #9, admin.ts tempo).
     if (sub === "GET /tempo") return ok({ partie: ctx.tempoPartii.zoznam() });
     // Štatistiky kariet z odohraných partií (rebalans); ?od=<verzia sady>.
@@ -1208,10 +1247,16 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       if (b.automaticky !== undefined && b.automaticky !== true) throw new ChybaVstupu("Automatický rank: len true.");
       if (b.ai !== undefined && typeof b.ai !== "boolean") throw new ChybaVstupu("Príznak AI musí byť áno/nie.");
       if (b.ai !== undefined && ja2.rola !== "admin") throw new ChybaVstupu("Príznak AI mení len admin.", 403);
-      if (b.rola === undefined && b.ai === undefined && b.automaticky === undefined) throw new ChybaVstupu("Chýba úroveň účtu, automatický rank alebo príznak AI.");
+      // Oprávnenie hrať Zrejúcu udeľuje a odoberá admin (Michal 2026-11-02); null = podľa ranku.
+      if (b.zrejuca !== undefined && b.zrejuca !== null && typeof b.zrejuca !== "boolean") throw new ChybaVstupu("Zrejúca: áno, nie, alebo podľa ranku.");
+      if (b.zrejuca !== undefined && ja2.rola !== "admin") throw new ChybaVstupu("Oprávnenie na Zrejúcu udeľuje len admin.", 403);
+      if (b.rola === undefined && b.ai === undefined && b.automaticky === undefined && b.zrejuca === undefined) {
+        throw new ChybaVstupu("Chýba úroveň účtu, automatický rank, príznak AI alebo Zrejúca.");
+      }
       if (b.rola !== undefined) ctx.ucty.nastavRolu(ciel.id, b.rola as Rola);
       if (b.automaticky === true) ctx.ucty.automatickyRank(ciel.id, ctx.prava.nastavenie().postup);
       if (b.ai !== undefined) ctx.ucty.nastavAi(ciel.id, b.ai);
+      if (b.zrejuca !== undefined) ctx.ucty.nastavZrejucu(ciel.id, b.zrejuca as boolean | null);
       return ok({ ok: true });
     }
 

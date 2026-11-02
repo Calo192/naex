@@ -477,9 +477,42 @@ img.avatar-hraca {
   text-align: center;
 }
 
-.zrejuca-pas a {
+.zrejuca-pas .zrejuca-spat {
+  padding: 0;
+  border: none;
+  background: none;
   color: var(--text);
+  font: inherit;
   font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Voľba Zrejúcej na stránke Hrať (Michal 2026-11-02) — vedľa obyčajnej hry, nie namiesto nej. */
+.zrejuca-volba {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  border-color: color-mix(in oklab, var(--info-silna) 45%, var(--okraj));
+}
+
+.zrejuca-volba h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 4px;
+}
+
+.zrejuca-volba p {
+  margin: 0;
+}
+
+.zrejuca-tlacidlo {
+  border-color: color-mix(in oklab, var(--info-silna) 60%, var(--okraj));
+  color: var(--info);
+  white-space: nowrap;
 }
 
 .zrejuca-znacka {

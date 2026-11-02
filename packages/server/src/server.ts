@@ -71,12 +71,12 @@ import { otvorDb } from "./db.ts";
 import { pouziScenar, type Scenar } from "./scenar.ts";
 import { zlucUcty } from "./zlucenie.ts";
 import type { Pouzivatel } from "./auth.ts";
-import { Ucty, jeSpravca } from "./auth.ts";
+import { Ucty, citajCookie, jeSpravca } from "./auth.ts";
 import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
 import { Obsah, nacitajElders, nacitajScorecards } from "./obsah.ts";
-import type { OtvorenaHra, PostupVyucby, RozohranaPartia, StavServera, Uzavierka } from "./api.ts";
+import type { OtvorenaHra, PostupVyucby, RozohranaPartia, StavServera, StavZrejucej, Uzavierka } from "./api.ts";
 import { OZNAM_UZAVIERKY, spracujApi } from "./api.ts";
 import type { ZmenaFrajeriny } from "./archiv.ts";
 import { Archiv } from "./archiv.ts";
@@ -100,7 +100,6 @@ import { emailDoLogu, type PosliEmail } from "./email.ts";
 import { titul } from "./frajerina.ts";
 import { Achievementy, nacitajKatalog, type AchievementyMiestnosti } from "./achievementy.ts";
 import type { Vypalena } from "./zrejuca.ts";
-import { PrenosPrihlasenia } from "./zrejuca.ts";
 
 // ---------------------------------------------------------------------------
 // Dáta z repozitára (testy jadra a nástroje ich používajú priamo)
@@ -306,16 +305,29 @@ export interface ServerOpts {
   /** Hodiny servera (testy platnosti odkazov); predvolene Date.now. */
   readonly teraz?: () => number;
   /**
-   * Zrejúca (Michal 2026-11-02, zrejuca.ts): pokusná inštancia len pre testerov — účty overuje
-   * a rozpracovanú sadu berie z Vypálenej. Bez nej je server Vypálená.
+   * Zrejúca (Michal 2026-11-02, zrejuca.ts): pokusná inštancia len s oprávnením hrat_zrejucu —
+   * reláciu a oprávnenie overuje a rozpracovanú sadu berie z Vypálenej. Bez nej je server Vypálená.
    */
   readonly zrejuca?: {
     readonly vypalena: Vypalena;
     /** Ako často sa preberá rozpracovaná sada (predvolene minúta; 0 = len pri štarte a na požiadanie). */
     readonly synchronizaciaMs?: number;
+    /** Ako dlho si pamätá overenú reláciu (predvolene 20 s; 0 = vždy sa pýta Vypálenej). */
+    readonly relaciaMs?: number;
   };
-  /** Vypálená: verejná adresa Zrejúcej — správcovia ju majú v menu Správa a prenesú tam prihlásenie. */
+  /**
+   * Vypálená: kam pošle prepínač „Zrejúca“ — "/" na spoločnej adrese za Caddy, vo vývoji adresa
+   * servera Zrejúcej. Bez neho sa voľba Zrejúcej neponúka.
+   */
   readonly zrejucaAdresa?: string;
+  /**
+   * Vypálená: kde sa pýta Zrejúcej na jej verziu (v Dockeri http://naex-zrejuca:8787) — keď Zrejúca
+   * nemá oproti Vypálenej nič nové, hráčom sa neponúkne (Michal 2026-11-02). Bez neho sa neoveruje.
+   * Funkcia pre testy, kde Zrejúca vzniká až po Vypálenej.
+   */
+  readonly zrejucaUrl?: string | (() => string);
+  /** Nasadená verzia namiesto VERZIA.json (testy). */
+  readonly verzia?: StavServera["verzia"];
 }
 
 export function createGameServer(opts: ServerOpts): Promise<GameServer> {
@@ -428,7 +440,23 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       (err: unknown) => console.warn("Zrejúca: rozpracovanú sadu sa nepodarilo prevziať —", err instanceof Error ? err.message : err),
     );
   const synchronizaciaMs = zrejuca?.synchronizaciaMs ?? 60_000;
-  const prenos = new PrenosPrihlasenia();
+  // Zrejúca: kto je prihlásený a či smie hrať, vie Vypálená. Krátka pamäť šetrí volania pri
+  // každej požiadavke; odobraté oprávnenie sa tak prejaví do pár sekúnd.
+  const relacieZrejucej = new Map<string, { readonly ja: Pouzivatel | null; readonly bezPrava: boolean; readonly do: number }>();
+  const overRelaciu = async (req: IncomingMessage): Promise<{ readonly ja: Pouzivatel | null; readonly bezPrava: boolean }> => {
+    if (zrejuca === null) return { ja: ucty.zRequestu(req, teraz()), bezPrava: false };
+    const token = citajCookie(req);
+    if (token === null) return { ja: null, bezPrava: false };
+    const t = teraz();
+    const pamat = relacieZrejucej.get(token);
+    if (pamat !== undefined && pamat.do > t) return pamat;
+    const ucet = await zrejuca.vypalena.relacia(`naex_sid=${encodeURIComponent(token)}`);
+    const smie = ucet !== null && ucet.prava.includes("hrat_zrejucu");
+    const vysledok = { ja: smie ? ucty.zrkadli(ucet, t) : null, bezPrava: ucet !== null && !smie, do: t + (zrejuca.relaciaMs ?? 20_000) };
+    for (const [k, v] of relacieZrejucej) if (v.do <= t) relacieZrejucej.delete(k);
+    relacieZrejucej.set(token, vysledok);
+    return vysledok;
+  };
   const synchronizacia = zrejuca !== null && synchronizaciaMs > 0 ? setInterval(() => void skusPrevziatSadu(), synchronizaciaMs) : null;
 
   const rooms = new Map<string, Room>();
@@ -439,7 +467,35 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   // VERZIA.json zapíše deploy/nahraj.sh do balíka — na vývojovom stroji chýba.
   const spusteny = teraz();
   const suborVerzie = fileURLToPath(new URL("../../../VERZIA.json", import.meta.url));
-  const verzia = existsSync(suborVerzie) ? (JSON.parse(readFileSync(suborVerzie, "utf8")) as StavServera["verzia"]) : null;
+  const verzia =
+    opts.verzia !== undefined ? opts.verzia : existsSync(suborVerzie) ? (JSON.parse(readFileSync(suborVerzie, "utf8")) as StavServera["verzia"]) : null;
+  /**
+   * Vypálená: má Zrejúca niečo nové? Bez zmien = beží na tom istom commite (bez necommitnutých
+   * zmien) a tvorca nemá nič nezverejnené. null = neoveruje sa (vývoj bez NAEX_ZREJUCA_URL).
+   */
+  const stavZrejucej = async (): Promise<StavZrejucej | null> => {
+    const url = typeof opts.zrejucaUrl === "function" ? opts.zrejucaUrl() : opts.zrejucaUrl;
+    if (opts.zrejuca !== undefined || url === undefined) return null;
+    const zmeny = obsah.zmenyTvorcu();
+    let jej: StavServera["verzia"] = null;
+    let dostupna = true;
+    try {
+      const r = await fetch(`${url.replace(/\/+$/, "")}/api/verzia`, { signal: AbortSignal.timeout(5000) });
+      if (r.ok) jej = ((await r.json()) as { verzia: StavServera["verzia"] }).verzia;
+      else dostupna = false;
+    } catch {
+      dostupna = false;
+    }
+    const rovnakyKod = verzia !== null && jej !== null && jej.commit === verzia.commit && !verzia.necommitnute && !jej.necommitnute;
+    return {
+      dostupna,
+      vypalena: verzia?.commit ?? null,
+      zrejuca: jej?.commit ?? null,
+      kariet: zmeny.kariet,
+      ineZmeny: zmeny.ine,
+      bezZmien: dostupna && rovnakyKod && zmeny.kariet === 0 && !zmeny.ine,
+    };
+  };
   // Verzia jadra, ktorú nesie archivovaná partia: hash packages/core/src — prehrávač prehrá
   // partiu, kým sa nezmení jadro (nie commit, ten sa mení pri každom nasadení).
   const verziaJadra = hashJadra(fileURLToPath(new URL("../../core/src", import.meta.url)));
@@ -527,8 +583,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           nastavUzavierku,
           zlucUcty: (z, doId, skusobne) => zlucUcty(db, z, doId, skusobne),
           zrejuca: zrejuca === null ? null : { vypalena: zrejuca.vypalena, prevezmiSadu },
-          zrejucaAdresa: zrejuca === null ? (opts.zrejucaAdresa?.replace(/\/+$/, "") ?? null) : null,
-          prenos,
+          zrejucaAdresa: zrejuca === null ? (opts.zrejucaAdresa ?? null) : null,
+          overRelaciu,
+          verzia: () => verzia,
+          stavZrejucej,
           vyucbaKrokov: scenarVyucby.kroky.length,
           vyucbaVerzia: scenarVyucby.verzia ?? null,
           postupVyucby,
@@ -565,7 +623,25 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     }
     serveStatic(staticDir, req, res);
   });
-  const wss = new WebSocketServer({ server: http, path: "/ws" });
+  // Zrejúca overuje reláciu u Vypálenej (asynchrónne) ešte pred pripojením.
+  const ucetSpojenia = new WeakMap<IncomingMessage, Pouzivatel>();
+  const wss = new WebSocketServer({
+    server: http,
+    path: "/ws",
+    ...(zrejuca === null
+      ? {}
+      : {
+          verifyClient: (info: { req: IncomingMessage }, hotovo: (vysledok: boolean) => void): void => {
+            void overRelaciu(info.req).then(
+              ({ ja }) => {
+                if (ja !== null) ucetSpojenia.set(info.req, ja);
+                hotovo(true);
+              },
+              () => hotovo(true),
+            );
+          },
+        }),
+  });
 
   const send = (ws: WebSocket, msg: unknown): void => {
     if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
@@ -1395,7 +1471,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   };
 
   wss.on("connection", (ws, req) => {
-    const pouzivatel = ucty.zRequestu(req, teraz());
+    const pouzivatel = zrejuca === null ? ucty.zRequestu(req, teraz()) : (ucetSpojenia.get(req) ?? null);
     if (pouzivatel === null) {
       sendError(ws, "Na hranie sa musíš prihlásiť.");
       ws.close(4001, "neprihlaseny");

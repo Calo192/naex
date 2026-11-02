@@ -25,7 +25,7 @@
 //   node ... web.ts zluc-ucty                                       zlúči playtest/ucty.json pracovísk F:\Projects\naex*
 //                            do spoločného súboru hesiel (existujúce heslá neprepíše)
 // Všade možno pridať --zivy (živý web = Vypálená), --zrejuca (pokusná Zrejúca na
-// zrejuca.<DOMENA>, Michal 2026-11-02) alebo --url <adresa>. Účty sú spoločné: v Zrejúcej
+// <DOMENA>/zrejuca, Michal 2026-11-02) alebo --url <adresa>. Účty sú spoločné: v Zrejúcej
 // sa agent prihlási účtom z Vypálenej (nástroj ho tam prípadne založí a zaradí). Známky hry
 // sa zo Zrejúcej nezapisujú — počítajú sa len z Vypálenej.
 // Kategórie: pravidla, karty, hranie, web, chyba, napad, ine.
@@ -56,9 +56,15 @@ export function zivyWeb(): string {
   return `https://${domena}`;
 }
 
-/** Adresa Zrejúcej (pokusná inštancia na tom istom serveri), napr. https://zrejuca.15-235-242-12.sslip.io. */
+/**
+ * Adresa Zrejúcej pre nástroje: https://<DOMENA>/zrejuca — Caddy cestu /zrejuca/ odreže a pošle
+ * do Zrejúcej (API, WebSocket). Prehliadač ide na tú istú adresu ako Vypálená s cookie
+ * naex_instancia=zrejuca (snimka.ts ju nastaví sama).
+ */
+export const PREDPONA_ZREJUCEJ = "/zrejuca";
+
 export function zrejucaWeb(): string {
-  return zivyWeb().replace("https://", "https://zrejuca.");
+  return `${zivyWeb()}${PREDPONA_ZREJUCEJ}`;
 }
 
 const jeLokalny = (url: string): boolean => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(url);
@@ -92,7 +98,7 @@ export function loginAgenta(meno: string): string {
 /** Prihlasovacie údaje admina pre daný web: lokálne z .env, živý web aj Zrejúca z deploy/.env.produkcia. */
 export function adminWebu(url: string): { login: string; heslo: string | undefined } {
   const p = produkcia();
-  if (!jeLokalny(url) && p.DOMENA !== undefined && (url === `https://${p.DOMENA}` || url === `https://zrejuca.${p.DOMENA}`)) {
+  if (!jeLokalny(url) && p.DOMENA !== undefined && (url === `https://${p.DOMENA}` || url === `https://${p.DOMENA}${PREDPONA_ZREJUCEJ}`)) {
     return { login: p.NAEX_ADMIN_LOGIN ?? "Admin", heslo: p.NAEX_ADMIN_HESLO };
   }
   nacitajEnv();
@@ -202,7 +208,10 @@ export async function vypalenaZrejucej(url: string): Promise<string | null> {
   try {
     const r = await fetch(`${url}/api/ja`, { signal: AbortSignal.timeout(8000) });
     const i = r.ok ? ((await r.json()) as { instancia?: { nazov: string; vypalena: string | null } }).instancia : undefined;
-    return i?.nazov === "zrejuca" && i.vypalena !== null ? i.vypalena.replace(/\/+$/, "") : null;
+    if (i?.nazov !== "zrejuca") return null;
+    // Za Caddy je Vypálená na tej istej adrese bez /zrejuca; vo vývoji ju Zrejúca pozná (iný port).
+    const vypalena = i.vypalena ?? (url.endsWith(PREDPONA_ZREJUCEJ) ? url.slice(0, -PREDPONA_ZREJUCEJ.length) : url);
+    return vypalena.replace(/\/+$/, "");
   } catch {
     return null;
   }

@@ -32,7 +32,7 @@ import { createServer } from "node:net";
 import { join } from "node:path";
 import WebSocket from "ws";
 import { spustiChrome } from "../docasne.ts";
-import { prihlasAgenta, webUrl } from "./web.ts";
+import { PREDPONA_ZREJUCEJ, prihlasAgenta, webUrl } from "./web.ts";
 
 const args = process.argv.slice(2);
 /** Prepínače bez hodnoty — argument za nimi je voľný (relácia, názov). */
@@ -169,7 +169,11 @@ try {
       userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
       platform: "iPhone",
     });
-  const { zaklad } = ucet;
+  // Zrejúca za Caddy (…/zrejuca): prehliadač ide na spoločnú adresu s cookie inštancie — klienta
+  // aj jeho súbory dostane zo Zrejúcej (Michal 2026-11-02).
+  const zrejucaZaCaddy = ucet.zaklad.endsWith(PREDPONA_ZREJUCEJ);
+  const zaklad = zrejucaZaCaddy ? ucet.zaklad.slice(0, -PREDPONA_ZREJUCEJ.length) : ucet.zaklad;
+  if (zrejucaZaCaddy) await posli("Network.setCookie", { name: "naex_instancia", value: "zrejuca", url: `${zaklad}/`, httpOnly: true });
   await posli("Page.navigate", { url: `${zaklad}/` });
   await pockaj(1500);
   const miestnost =

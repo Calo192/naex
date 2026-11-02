@@ -1,5 +1,6 @@
 // Herná časť (/hra): lobby → čakáreň → partia. Len pre prihlásených.
 
+import { VolbaZrejucej } from "../VolbaZrejucej.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DlzkaHry, NaladaMomentu } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, PREDVOLENA_DLZKA, opponentOf } from "@naex/core";
@@ -128,6 +129,7 @@ function Lobby({
   return (
     <>
       <HlavaStranky nadpis="Hrať" uvod="Založ hru a pošli kamarátovi kód, alebo sa pridaj k niekomu, kto čaká na súpera." />
+      <VolbaZrejucej tvar="panel" />
       {uzavierka !== null && <Hlaska druh="info">{uzavierka}</Hlaska>}
       {chyba !== null && chyba !== uzavierka && <Hlaska>{chyba}</Hlaska>}
       {vyucba !== null && vyucba.dostupna && !zavrete && !vyucbaNaPocitaci && <VyucbaVLobby vyucba={vyucba} zacni={zacniVyucbu} />}
