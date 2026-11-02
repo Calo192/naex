@@ -109,7 +109,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Nakladačka sa rozdeľuje ako inde), Vínna pivnica (NA EX 2× za Pitku), Družstvo (Pracujúci
   nemíňajú limit).
 - **Kšeft (v7):** aktívny efekt za cenu `{"type":"kseft","uid":…}` (uid karty v línii alebo
-  lokality; Zberný dvor s `kartaUid`, Vila s `elderId` a `kSebe`) — v Pitke na svojom ťahu, nie pri
+  lokality; Zberný dvor s `kartaUid`, Vila s `elderId`) — v Pitke na svojom ťahu, nie pri
   odpovedi na NA EX; každá karta raz za Pitku, Kšeft lokality smie každý hráč. Strýko z Ameriky
   (2 cigarety → v bitke kola +1 Rana), **Predavačka (v10.4): 1 cigareta → 1 karta z tvojho doberacieho balíčka**
   (nie je to fajčenie — nerest ani Krabička nie), Zberný dvor, Sklad, Obecný úrad, Predsedova vila.
@@ -309,7 +309,9 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   pri oranžovom strachu len červené za 3). Rozdelíš **jedným ťahom**: `{"type":"prebytok","zdvihy":[{"elderId":…,"na":2},…]}`,
   pre reči `{"type":"reci","zdvihy":[…]}` (`na` = cieľový stupeň). **Rozdeľ, čo sa dá** — server neprijme
   rozdelenie, po ktorom by zvyšok ešte stačil na ďalší stupeň; **čo sa nedá, prepadne** (aj keď nemáš kam
-  dvíhať vôbec). Nie na staršieho v ohrození. Vyšší strach tebe body, ale súperovi priazeň.
+  dvíhať vôbec). Nie na staršieho v ohrození. Vyšší strach tebe body, ale súperovi priazeň. Výpis pri rozdeľovaní
+  ukáže cenník každého staršieho a hotové úplné rozdelenia (prvé je NÁVRH jadra); vlastné rozdelenie klient pred
+  odoslaním overí a povie, kde by zvyšok ešte stačil.
 - **Hádka (v10, v11) — mäkké poškodenie:** Povera a Pohoršenie **tuhé nerobia**, sú mäkké poškodenie.
   Na začiatku bitky sa Viera (aj z Veriaceho) a Povery vyrušia 1 : 1 na kusy — jedna Viera zruší jednu Poveru,
   aj vylepšenú Horoskopom; **mäkké = Pohoršenie × 2 + zvyšné Povery × 1** (Horoskop: Povera 2). Viera proti
