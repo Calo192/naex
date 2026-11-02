@@ -40,7 +40,7 @@ describe("M10 — register", () => {
   // data/cards.json je jej kópia a doplní sa po zverejnení.
   // Náradie (Michal 2026-10-30) je v sade v39 — nič nečaká.
   // Kohút je vyradený zo sady v51 (v9.2, Michal 2026-10-30) a prerobí sa — efekt v registri ostáva.
-  const CAKAJU_NA_ZVEREJNENIE: string[] = ["kohut"];
+  const CAKAJU_NA_ZVEREJNENIE: string[] = ["kohut", "polovnik", "predavacka", "veducko"];
 
   it("pokrýva všetky id sady, navyše len karty čakajúce na zverejnenie", () => {
     const vRegistri = new Set(Object.keys(REGISTER));

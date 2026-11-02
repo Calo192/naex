@@ -210,6 +210,12 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   niekoho_stryna: 0.3,
   kapybara: 0.4,
   stryko_z_ameriky: 0.5,
+  // Kšeft: karta za cigaretu (Michal 2026-11-02) — ako Strýko, odbytisko cigariet.
+  predavacka: 0.5,
+  // Nástup spáli súperovo Zviera — bitku ráta simulácia vyloženia, zvyšok hry SPALENIE_ZA_KARTU.
+  polovnik: 0.4,
+  // Furt: Roboty susedov ako Pecky — tuhé ráta odhad bitky, Dlh, ktorý Robota nespáli, tiež.
+  veducko: 0.3,
   krokodil: 0.4,
   kon: 0.3,
   pijan: 0.3,
@@ -1154,8 +1160,19 @@ function zhromazdenie(v: Volba): Command | null {
   // (súper za ňu nepriloží); utajenie karty do konca Pitky má malú cenu navyše.
   const sZaverecnou = (po: GameState): number =>
     po.strany.some((strana) => strana.some((pl) => pl.zaverecna === true && pl.playedBy === ja)) ? BONUS_ZAVERECNEJ * k.buducnost : 0;
-  return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9) + sZaverecnou(po));
+  // Poľovník: súperova karta spálená z línie mu chýba v balíčku do konca hry — tým viac, čím je lepšia.
+  // Skrytú Záverečnú Poľovník nestrieľa (a vo vzorkách má iné uid).
+  const superove = [...state.strany[0], ...state.strany[1]].filter((pl) => pl.playedBy !== ja && pl.zaverecna !== true);
+  const spalene = (po: GameState): number => {
+    const ostali = new Set([...po.strany[0], ...po.strany[1]].map((pl) => pl.card.uid));
+    const zmizli = superove.filter((pl) => !ostali.has(pl.card.uid));
+    return zmizli.reduce((a, pl) => a + Math.max(0, hodnotaKarty(data, pl.card)), 0) * SPALENIE_ZA_KARTU * k.buducnost;
+  };
+  return najlepsi(v, moznosti, (po) => hodnotaStavu(k, dohrajZhromazdenie(k, po), 0.9) + sZaverecnou(po) + spalene(po));
 }
+
+/** Koľko z hodnoty súperovej karty v balíčku zarobí jej spálenie (Poľovník) — hrubý odhad. */
+const SPALENIE_ZA_KARTU = 0.5;
 
 /** Hodnota jedného tuhého navyše pre súpera v jednej bitke (v bodoch) — hrubý odhad. */
 const CENA_TUHEHO_ZA_BITKU = 0.9;

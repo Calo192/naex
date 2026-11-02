@@ -378,7 +378,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>Cigarety — za akcie Cigareta (mínus súperove Obmedzenia).</li>
           <li>
             <P k="vizia">Vízia</P> — za každú aktívnu Víziu pozrieš vrchnú kartu svojho balíčka a vezmeš si ju do ruky, alebo ju
-            navždy zahodíš.
+            navždy spáliš.
           </li>
           <li>Záverečné karty sa otočia lícom hore (kapitola <a href="#pokrocile">Pokročilé ťahy</a>).</li>
         </ol>
@@ -465,7 +465,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li><strong>Poštárka</strong> — 1 tvoj priznaný Dlh prejde na súpera.</li>
           <li><strong>Krčmárka</strong> — súper v tejto Pitke NA EX nedá; už dané skryté NA EX sa mu vráti.</li>
           <li><strong>Vychovávateľka</strong> — ak súper v tejto Pitke dá NA EX, máš v bitke Petelicu navyše (+3 tuhé); na Krčme nie.</li>
-          <li><strong>Veterinár</strong> — zahoď z hry Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta pečeň.</li>
+          <li><strong>Veterinár</strong> — spáľ Cirhózu z ruky alebo priznanú a v tejto Pitke sa ti nepočíta pečeň.</li>
         </ul>
       </>
     ),
@@ -495,7 +495,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           Každá akcia <strong>Hazard</strong> v Pitke zvýši zadĺženie o 1. Každé 2 zadĺženia ti dajú jeden{" "}
           <P k="dlh">Dlh</P> — nie je to karta, ale počítadlo: je hneď priznaný, neťaháš ho a kartu zaň nedoberáš. Zvyšok zadĺženia sa po Pitke nemaže — krčmár píše čiarky
           a ostávajú ti na účte do ďalšej Pitky aj kola. Dlhy, ktoré dáva
-          priamo karta (napríklad Policajtka či Dievčina na vydaj), idú rovno. Viac Pitiek v bitke teda znamená viac pečene aj Dlhov. Doska ti vopred
+          priamo karta (napríklad Dievčina na vydaj), idú rovno. Viac Pitiek v bitke teda znamená viac pečene aj Dlhov. Doska ti vopred
           ukazuje, čo karty na stole pripíšu a koľko kliatob z toho bude.
         </p>
         <H3 id="cena-abstak">Neresti, Chuť a Absťák</H3>
@@ -518,7 +518,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p>
           Súper ti latku neurčuje. Absťák sa <strong>nedá priznať</strong> ani vyložiť; po bitke sa z ruky vráti do odhadzovacieho
           balíčka a ťaháš ho znova. Každý Absťák v tvojom balíčku (ruka, doberací, odhadzovací) ti v bitke uberie{" "}
-          <strong>1 tuhé</strong> — trasú sa ti ruky — a pri remíze v tuhom prehráva, kto ich má viac. Zahodiť ho smie len Vízia.
+          <strong>1 tuhé</strong> — trasú sa ti ruky — a pri remíze v tuhom prehráva, kto ich má viac. Spáliť ho smie len Vízia.
           Po finále sa nerieši nič a na konci hry Absťák nestojí nič. Hra si pamätá, koľko Absťákov si <strong>získal za hru</strong>{" "}
           (štatistika).
         </p>
@@ -794,7 +794,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             <strong>Absťák</strong> — karta, ktorá sa <strong>nedá priznať</strong> ani vyložiť (kapitola Cena pitia). Po bitke sa
             z ruky vráti do odhadzovacieho balíčka; každý v tvojom balíčku ti v bitke uberie 1 tuhé a remízu prehrá, kto ich má viac.
-            Zahodiť ho smie len Vízia.
+            Spáliť ho smie len Vízia.
           </li>
           <li>
             <strong>Milujúca manželka</strong> už kliatba nie je — je to Občan, ktorý sa kladie do línie (a tam ti zníži pečeň

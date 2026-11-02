@@ -185,7 +185,7 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
             </span>
             Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, NA EX {KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1 (doliatie, barter ani platby nie). Na konci kola:
             menej nerestí než Chuť = karta Absťák do odhadzovacieho balíčka; potom Chuť = väčšie z (Chuť, neresti) − {KONSTANTY.CHUT_UBYTOK}. Absťák sa nedá
-            priznať, po bitke ide z ruky späť do odhadzovacieho a každý v balíčku ti v bitke uberie 1 tuhé. Zahodiť ho smie Vízia. Po finále sa nič nerieši.
+            priznať, po bitke ide z ruky späť do odhadzovacieho a každý v balíčku ti v bitke uberie 1 tuhé. Spáliť ho smie Vízia. Po finále sa nič nerieši.
           </>
         ),
       }}

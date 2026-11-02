@@ -1604,11 +1604,12 @@
     {
       "id": "16.karta.profesionalny-tiper",
       "paragraf": "16. Výklad kariet",
-      "pravidlo": "Profesionálny tipér (Furt, v8.4): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako posilnená Robota.",
+      "pravidlo": "Profesionálny tipér (Furt, v8.4): posilnené akcie na jeho spojoch — súperove ako posilnený Hazard, tvoje ako posilnená Robota; posilnená aj Forsážou (v10.4).",
       "stav": "pokryte",
       "testy": [
         "packages/core/test/naradie.test.ts › Profesionálny tipér: tvoja posilnená akcia na jeho spoji sa ráta ako posilnená Robota",
-        "packages/core/test/naradie.test.ts › Profesionálny tipér: súperova posilnená akcia na jeho spoji sa ráta ako posilnený Hazard"
+        "packages/core/test/naradie.test.ts › Profesionálny tipér: súperova posilnená akcia na jeho spoji sa ráta ako posilnený Hazard",
+        "packages/core/test/autority-v104.test.ts › Profesionálny tipér ráta aj Forsáž (v10.4) › akcie spoja s Forsážou sú pre jeho majiteľa posilnená Robota"
       ],
       "poznamka": "O4: rozsah na jeho spojoch."
     },
@@ -2216,6 +2217,51 @@
         "packages/core/test/dohadzovacka.test.ts › nič sa nestane: O2 nie je Občan ani Starešina, nemá pohlavie, alebo na druhej strane nie je vhodný O1",
         "packages/core/test/dohadzovacka.test.ts › skrytá Záverečná sa nepresúva — presunie sa najvzdialenejší z ostatných; karta s oboma tagmi sa ráta ako oboje",
         "packages/core/test/dohadzovacka.test.ts › náhľad a bot (sPrilozenou) ukážu ten istý presun ako motor"
+      ]
+    },
+    {
+      "id": "16.karta.polovnik",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Poľovník (Nástup, v10.4): na druhej strane lokality spáli súperovo Zviera najďalej od lokality; povinné, nie priloženie, skrytá Záverečná a karty otáčané naraz nie, poldeci z NA EX sa vypije.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › spáli súperovo Zviera na druhej strane, ktoré je od lokality najďalej — navždy z hry, medzera sa uzavrie",
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › vlastné Zvieratá nestrieľa; Recidivista je Zviera aj Občan; bez súperovho Zvieraťa sa nič nestane",
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › podstrčený na súperovu stranu strieľa súperove Zvieratá na mojej strane",
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › skrytú Záverečnú nestrieľa — spáli najvzdialenejšie z odkrytých",
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › spálenie nie je priloženie: Konflikt súseda sa nespustí, Pasca ho neráta",
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › poldeci z NA EX na spálenej karte sa vypije tomu, kto NA EX dal",
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › ako Záverečná strieľa pri otočení na konci Pitky",
+        "packages/core/test/autority-v104.test.ts › Poľovník (Nástup, v10.4) › náhľad a bot (sPrilozenou) ukážu to isté spálenie ako motor"
+      ]
+    },
+    {
+      "id": "16.karta.predavacka",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Predavačka (Kšeft, v10.4): za 1 cigaretu 1 karta z doberacieho balíčka, raz za Pitku, nie nerest; bez kariet sa neponúka.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/autority-v104.test.ts › Predavačka (Kšeft, v10.4) › za 1 cigaretu si hráč doberie 1 kartu, raz za Pitku; platba nie je nerest",
+        "packages/core/test/autority-v104.test.ts › Predavačka (Kšeft, v10.4) › bez cigarety alebo bez kariet v balíčkoch sa neponúka; súperova Predavačka nie"
+      ]
+    },
+    {
+      "id": "16.karta.veducko",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Vedúcko (Furt, v10.4): aktívne Roboty susedných kariet (aj súperových) sa rátajú ako Pecky ich majiteľa; Posilnenie ich zdvojí; hrana lokality nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/autority-v104.test.ts › Vedúcko (Furt, v10.4) › aktívne Roboty susednej karty sú Pecky jej majiteľa (aj súperovej) — posilnená ×2; bez Vedúcka Roboty"
+      ]
+    },
+    {
+      "id": "16.karta.policajtka",
+      "paragraf": "16. Výklad kariet",
+      "pravidlo": "Policajtka (Pitka, v10.4): súper získa 1 zadĺženie za každú svoju akciu, ktorú v tejto Pitke zruší tvoj Odpor; každá Policajtka zvlášť, Odpor lokality nie.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/autority-v104.test.ts › Policajtka — pokutový blok (Pitka, v10.4) › za každú súperovu akciu zrušenú tvojím Odporom získa súper 1 zadĺženie",
+        "packages/core/test/autority-v104.test.ts › Policajtka — pokutový blok (Pitka, v10.4) › Policajtka so starým Konfliktom (sada do v10.3) pokutu nedáva"
       ]
     },
     {

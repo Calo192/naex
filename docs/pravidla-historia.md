@@ -2272,3 +2272,39 @@ Staré znenia:
 >
 > §17 Úplatok: spúšťač (v7): súper platí cigaretou za oslabenie tvojej karty, raz za Pitku;
 > cigareta prepadne; na Výtržníka nie (v9.3, §7, §16)
+
+## v10.4 — pojem Spáliť, Autority (Poľovník, Predavačka, Vedúcko), Policajtka, Tipér a Forsáž (Michal 2026-11-02)
+
+Michal (docs/napady/autority.html, kolo 2): **Spáliť** = karta ide navždy z hry, **odhodiť** = do
+odhadzovacieho balíčka; „zahodiť“ zaniká (Vízia, Veterinár, Krištáľová guľa, Krokodíl, Dievčina,
+Absťák — správanie sa nemení, len slovo). Nové Autority: **Poľovník** („Nástup: Spáľ súperovo Zviera
+na druhej strane lokality, ktoré je od nej najďalej.“), **Predavačka** („Kšeft: Za 1 cigaretu si
+dober 1 kartu.“, bez akcie Cigareta), **Vedúcko** („Furt: Roboty kariet, ktoré s ním susedia, sa
+rátajú ako Pecky.“). Z docs/napady/odpor-vzbura-poc.html Michal prijal odporúčania: **Policajtka**
+„Pokutový blok“ („Pitka: Za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor, získa súper
+1 zadĺženie.“); Snúbenica, Noviny, Krabička cigariet, Pasca, Svätý text, Výherný automat a karty so
+slabším poškodením menia len akcie (dáta, admin). **Profesionálny tipér** ráta za posilnené aj Forsáž.
+Doplnené pri implementácii (Leader a programátor): Poľovník nestrieľa skrytú Záverečnú ani kartu,
+ktorá sa otáča v tej istej chvíli ako on; poldeci z NA EX na spálenej karte sa hneď vypije; Vedúcko
+nemení Robotu hrany lokality (ako Silná nezávislá žena); Policajtka ráta Odpor každej tvojej karty
+(aj Nástroja), nie lokality, každá Policajtka zvlášť; Predavačka sa neponúka bez kariet v balíčkoch.
+
+Staré znenia:
+
+> §2 Vízia: … vezme si ju do ruky, alebo ju **zahodí** (z hry).
+>
+> §8 Absťák: zahodiť ju smie len **Vízia** alebo efekt, ktorý to výslovne povie.
+>
+> §16 Policajtka: Konflikt: súper, ktorý k nej priložil kartu, získa 1 Dlh (hneď priznaný, §11). Ak je
+> priložená karta Kriminál, namiesto toho dá majiteľovi Policajtky 2 cigarety (koľko má).
+>
+> §16 Profesionálny tipér: Posilnená = ×2 z Posilnenia suseda na spoji, ktoré NA EX nezrušil (Forsáž
+> sa neráta).
+>
+> §16 Krokodíl: na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí.
+>
+> §16 Dievčina na vydaj: keď jej majiteľ prehrá, zahodí sa (z hry).
+>
+> §16 Veterinár: Za vypitý poldeci zahoď z hry 1 Cirhózu z ruky alebo priznanú …
+>
+> §17 Zahodenie: odstrániť kartu z hry (spáliť)

@@ -1,5 +1,5 @@
 // Okno Vízie (Michal 2026-11-02): jediné rozhodnutie je nechať si vrchnú kartu
-// balíčka alebo ju zahodiť, preto je karta veľká (väčšina výšky obrazovky,
+// balíčka alebo ju spáliť, preto je karta veľká (väčšina výšky obrazovky,
 // čitateľný efekt aj akcie) a tlačidlá sú hneď pod ňou. Krištáľová guľa
 // ukáže dve karty, každú so svojimi tlačidlami. Okno sa dá skryť (pozrieť
 // stôl) a znova otvoriť z pásu pokynov.
@@ -78,7 +78,7 @@ export function OknoVizie({
                   <small>do ruky</small>
                 </button>
                 <button onClick={k.zahodit}>
-                  Zahodiť
+                  Spáliť
                   <small>navždy z hry</small>
                 </button>
               </span>

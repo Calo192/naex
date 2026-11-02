@@ -161,6 +161,11 @@ export interface LineEval {
    * („Odpor“, „NA EX“). Podrobná rekapitulácia ich ukáže sivé (Michal 2026-10-30).
    */
   readonly zrusene: readonly [ZdrojeAkcii, ZdrojeAkcii];
+  /**
+   * Koľko súperových akcií (bez modifikátorov) zrušil Odpor hráča — akcie, ktoré by inak patrili
+   * súperovi; Odpor lokality sa neráta (Policajtka, Pitka: zadĺženie za každú).
+   */
+  readonly zruseneOdporom: readonly [number, number];
 }
 
 /**
@@ -217,6 +222,8 @@ interface Elem {
   readonly tiper: (PlayerId | null)[][];
   /** puska[side][k]: Petelica, ktorú Puška zachránila pred zrušením — ráta sa o 1 poškodenie menej. */
   readonly puska: boolean[][];
+  /** Vedúcko v okolí: vytlačené Roboty karty sa rátajú ako Pecky. */
+  robotaAkoPecka: boolean;
 }
 
 /** Má hráč p v Dedičstve Nástroj defId? (LineState.nastroje) */
@@ -381,6 +388,7 @@ function makeElem(
     zrusilOdporom: [0, 1].map(() => [null, null, null, null]),
     tiper: [0, 1].map(() => [null, null, null, null]),
     puska: [0, 1].map(() => [false, false, false, false]),
+    robotaAkoPecka: false,
   };
 }
 
@@ -576,15 +584,18 @@ function vyherneZreby(elem: Elem, line: Pick<LineState, "nastroje">): void {
 /**
  * Profesionálny tipér (Furt, Náradie 2026-10-30): posilnené akcie na jeho spojoch
  * sa rátajú inak — súperove ako posilnený Hazard, tvoje ako posilnená Robota.
- * Rozsah: jeho strany a strany susedov k nemu. Posilnená = ×2 z Posilnenia (po NA EX).
+ * Rozsah: jeho strany a strany susedov k nemu. Posilnená = ×2 z Posilnenia (po NA EX) alebo
+ * z Forsáže (Michal 2026-11-02; Forsáž, ktorú NA EX zrušil, sa nepočíta).
  */
+const jePosilnena = (dovody: readonly string[]): boolean => dovody.includes("Posilnenie") || dovody.includes("Forsáž");
+
 function profesionalnyTiper(segments: readonly (readonly Elem[])[]): void {
   for (const seg of segments) {
     seg.forEach((t, i) => {
       if (t.isLokalita || t.defId !== "profesionalny_tiper") return;
       const oznac = (e: Elem, side: 0 | 1): void => {
         for (let k = 0; k < 4; k++) {
-          if (e.stav[side]![k] === "aktivna" && (e.dovody[side]![k] ?? []).includes("Posilnenie")) e.tiper[side]![k] = t.owner;
+          if (e.stav[side]![k] === "aktivna" && jePosilnena(e.dovody[side]![k] ?? [])) e.tiper[side]![k] = t.owner;
         }
       };
       const lavy = seg[i - 1];
@@ -744,6 +755,10 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: Readonly
       for (const [side, sused] of [[0, lavy], [1, pravy]] as const) {
         if (sused !== null && !sused.isLokalita && sused.owner !== e.owner) zdvojStranu(e, side, e.defId);
       }
+    } else if (e.defId === "veducko") {
+      // Vedúcko (Furt, Michal 2026-11-02): Roboty susedných kariet (oboch hráčov, lokalita nie —
+      // ako Silná nezávislá žena) sa rátajú ako Pecky; Dlh nepália, dávajú tuhé.
+      for (const s of okolie(e)) if (!s.isLokalita) s.robotaAkoPecka = true;
     } else if (e.defId === "liberal" && rovnovaha[e.owner]) {
       // Liberál (Furt, v10.3): s rovnako ženami a chlapmi v partii majiteľa sú jeho aktívne akcie posilnené.
       zdvojAktivne(e, e.defId);
@@ -921,6 +936,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   const sums: [Partial<Record<Action, number>>, Partial<Record<Action, number>>] = [{}, {}];
   const zdroje: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
   const zrusene: [Partial<Record<Action, ZdrojAkcie[]>>, Partial<Record<Action, ZdrojAkcie[]>>] = [{}, {}];
+  const zruseneOdporom: [number, number] = [0, 0];
   const pridajZdroj = (p: PlayerId, a: Action, z: ZdrojAkcie): void => {
     (zdroje[p][a] ??= []).push(z);
   };
@@ -944,7 +960,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const target: PlayerId = elem.isLokalita ? (susedLokality[side] ?? side) : (kocovnik ?? nastroj ?? elem.owner);
         const tiper = elem.tiper[side]![k] ?? null;
         // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
-        const akoPred = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] ? "Pecka" : akciaPoPremene(elem, action);
+        const vedRobota = tiper === null && action === "Robota" && elem.robotaAkoPecka;
+        const akoPred = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : akciaPoPremene(elem, action);
         // Väzeň Farár (v9): súperova Viera je do konca kola posilnený Hazard (zrušená ostáva zrušenou Vierou).
         const farar = akoPred === "Viera" && zrusil == null && line.vieraAkoHazard?.[target] === true;
         const ako: Action = farar ? "Dlh" : akoPred;
@@ -952,6 +969,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
           // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
           const odporom = elem.zrusilOdporom[side]![k] ?? null;
+          if (zrusil === "Odpor" && odporom !== null && odporom !== target) zruseneOdporom[odporom] += 1;
           if (zrusil === "Odpor" && odporom !== null && maNastroj(line, odporom, "hrable")) {
             sums[odporom][ako] = (sums[odporom][ako] ?? 0) + 2;
             pridajZdroj(odporom, ako, { defId: elem.defId, uid: elem.uid, hodnota: 2, vStrede: elem.isLokalita, dovody: ["Odpor", "karta:hrable"] });
@@ -969,6 +987,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         if (starosta) dovody.push("karta:starosta");
         if (farar) dovody.push("karta:farar");
         if (tiper !== null) dovody.push("karta:profesionalny_tiper");
+        else if (vedRobota) dovody.push("karta:veducko");
         else if (akoPred !== action) dovody.push(`karta:${elem.premena ?? "sarlatan"}`);
         pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota, vStrede: elem.isLokalita, dovody });
       }
@@ -983,7 +1002,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
 
   presbiter([partia0, partia1], susedLokality, elems, sums, zdroje);
 
-  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene };
+  return { sums, cards, aktivneStredu: [aktivne(0), aktivne(1)], zdroje, zrusene, zruseneOdporom };
 }
 
 /** Príspevok karty v línii k bitke — štatistiky partií a simulácia sily kariet v tvorcovi. */
