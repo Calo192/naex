@@ -254,6 +254,8 @@ const REZERVA_KSEFTU = 30;
 /** Karty v okne Pivnica — veľké a čitateľné (na telefóne menšie). */
 const SIRKA_PIVNICE = 210;
 const SIRKA_PIVNICE_NA_SIRKU = 120;
+/** Výška okna mimo karty v Pivnici (lišta, hlavička okna, pravidlo, poradie a tlačidlo schopnosti). */
+const PIVNICA_OKREM_KARTY = 430;
 /** Karty v šenku a lokalitách — väčšie než kedysi v bočnom paneli. */
 const SIRKA_VO_VRSTVE = 150;
 /** Výška / šírka karty (54 × 80 mm) — výška línie určuje veľkosť kariet (Stôl bez scrollovania, #67). */
@@ -665,6 +667,8 @@ export function HernaPlocha({
   // Kšeft leží pod kartou, ktorá ho ponúka (Michal 2026-11-02) — nie na hrane medzi Fajčiť a Doliať.
   // Väzni nie sú na stole, ale v okne Pivnica (ikona v nástrojoch stola) — plocha sa nezmenší.
   const kseftyStola = prehravanie === undefined ? kseftyNaStole(data, view) : [];
+  // Na nízkom notebooku (1366 × 650) by veľké karty väzňov odsunuli tlačidlá schopností pod okraj okna.
+  const sirkaPivnice = Math.max(SIRKA_PIVNICE_NA_SIRKU, Math.min(SIRKA_PIVNICE, Math.floor((vyskaOkna - PIVNICA_OKREM_KARTY) / POMER_KARTY)));
   const kseftyVLinii = kseftyStola.filter((k) => k.druh !== "vazen");
   const mojiVazni = view.vazni.filter((v) => v.hrac === ja);
   // Schopnosť väzňa (v11.2) teraz ide — Pivnica na hrane svieti.
@@ -6453,7 +6457,7 @@ export function HernaPlocha({
               const k = kseftyStola.find((x) => x.uid === v.karta.uid);
               return (
                 <div key={v.elderId} className="pivnica-vazen">
-                  {karta({ karta: v.karta, sirka: naSirku ? SIRKA_PIVNICE_NA_SIRKU : SIRKA_PIVNICE })}
+                  {karta({ karta: v.karta, sirka: naSirku ? SIRKA_PIVNICE_NA_SIRKU : sirkaPivnice })}
                   <span className="pivnica-poradie">
                     {v.poradie}. zajatý
                   </span>
