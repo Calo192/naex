@@ -4,24 +4,9 @@
 
 import type { Command } from "./engine.ts";
 import type { PlayerId } from "./types.ts";
-import type { GameData } from "./data.ts";
 import type { ClientState } from "./view.ts";
-import { hltavyPrebytok } from "./view.ts";
 
-/**
- * Prebytok jedným klikom: celé rozdelenie prebytku ako jeden príkaz „tah“
- * (posuny tam, kde rozdielu bodov najviac pridajú — ten istý výpočet ako stávka
- * bitky). null, keď hráč prebytok práve nerozdeľuje.
- */
-export function navrhPrebytku(data: GameData, view: ClientState): { readonly kroky: readonly string[]; readonly prikaz: Command } | null {
-  const b = view.bitkaStav;
-  const ja = view.ja;
-  if (view.faza !== "bitka" || b === null || b.krok !== "prebytok" || b.caka !== ja || !view.mozemHrat) return null;
-  if (b.prebytokDrzi === null) return null;
-  const { kroky } = hltavyPrebytok(data, view, b.prebytokDrzi, ja, b.prebytokZostava);
-  if (kroky.length === 0) return null;
-  return { kroky, prikaz: { type: "tah", kroky: kroky.map((elderId) => ({ type: "prebytok", elderId })) } };
-}
+// Rozdelenie Nakladačky a hádky na jeden klik (v11) je navrhRozdelenia vo view.ts.
 
 /**
  * „V tejto bitke už NA EX nedám“: v kole `kolo` klient za hráča ukončí jeho

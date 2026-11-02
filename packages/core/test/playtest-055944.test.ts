@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "./data/cards-v6.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
+import { KONSTANTY } from "../src/index.ts";
 import type {
   BitkaStav,
   CardDef,
@@ -90,7 +91,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: 0,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -165,7 +166,8 @@ describe("limit ruky zrušený (Michal 2026-10-19)", () => {
     };
     const po = apply(data, s, { type: "cintorin", uid: null }, 0).state;
     expect(po.hraci[0].ruka.length).toBeGreaterThanOrEqual(8);
-    expect(po.hraci[1].cigarety).toBe(0);
+    // Hrobár nedá nič; 1 cigareta je porazenému (v11).
+    expect(po.hraci[1].cigarety).toBe(KONSTANTY.CIGARETY_PORAZENEMU);
     expect(po.kolo).toBe(s0.kolo + 1);
   });
 });

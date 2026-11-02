@@ -7,8 +7,9 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, GameState, MarkerPos, PlacedCard, PlayerId } from "../src/index.ts";
+import type { BitkaStav, CardInstance, GameState, PlacedCard, PlayerId } from "../src/index.ts";
 import { apply, bitkaMody, legalCommands, loadGameData, setupGame } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -27,7 +28,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: null,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -41,7 +42,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
 function predPoskodenim(o: {
   sums: BitkaStav["sums"];
   pohorsenia?: number;
-  markery?: readonly (readonly [number, MarkerPos, number?])[];
+  markery?: readonly (readonly [number, number, number?])[];
   uprav?: (s: GameState) => GameState;
 }): GameState {
   const s0 = setupGame(data, 5);
@@ -55,48 +56,17 @@ function predPoskodenim(o: {
     lokalityVHre: s0.lokalityVHre.filter((k) => k.defId !== "krcma"),
     starsi: s0.starsi.map((e, i) => {
       const m = o.markery?.find(([j]) => j === i);
-      if (m === undefined) return { ...e, marker: 3 as MarkerPos };
-      return m[2] === undefined ? { ...e, marker: m[1] } : { ...e, marker: m[1], vyplatene: m[2] };
+      if (m === undefined) return { ...e, ...zPolohy(3 as number) };
+      return { ...e, ...zPolohy(m[1]) };
     }),
-    bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [o.pohorsenia ?? 1, 0], vitaz: 0, velkost: o.pohorsenia ?? 1, zostava: o.pohorsenia ?? 1, prepadlo: 0, posuny: [] }, sums: o.sums }),
+    bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [o.pohorsenia ?? 1, 0], vitaz: 0, velkost: o.pohorsenia ?? 1, zostava: o.pohorsenia ?? 1, prepadlo: 0, zdvihy: [] }, sums: o.sums }),
   };
   return o.uprav === undefined ? s : o.uprav(s);
 }
 
 const elder = (s: GameState, i: number): string => s.starsi[i]!.elderId;
 
-describe("v8: Nakladačku rozdeľuje porazený", () => {
-  it("víťaz drží Nakladačku, vyberá porazený; markery idú k nemu a cigarety za posunutých dostane on", () => {
-    const s = predPoskodenim({ sums: [{ Rana: 5 }, {}] });
-    const st = apply(data, s, { type: "hadka", elderId: elder(s, 0) }, 0).state;
-    expect(st.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1, prebytokZostava: 5 });
-    expect(legalCommands(data, st, 0)).toEqual([]);
-    expect(() => apply(data, st, { type: "prebytok", elderId: elder(s, 3) }, 0)).toThrow();
-    let t = st;
-    const cig = st.hraci[1].cigarety;
-    // v8.2: porazený vyberá len staršieho — 5 vyjde zo stredu na oranžovú (1 + 2), zvyšok 2
-    // na žltú ďalšieho (na oranžovú by treba 2 navyše) a posledný bod na žltú tretieho.
-    t = apply(data, t, { type: "prebytok", elderId: elder(s, 3) }, 1).state;
-    expect(t.bitkaStav?.prebytokZostava).toBe(2);
-    for (const i of [4, 5]) t = apply(data, t, { type: "prebytok", elderId: elder(s, i) }, 1).state;
-    // Markery k porazenému (index rastie) — boja sa víťaza.
-    expect([t.starsi[3]?.marker, t.starsi[4]?.marker, t.starsi[5]?.marker]).toEqual([5, 4, 4]);
-    expect(t.hraci[1].cigarety - cig).toBe(3);
-    expect(t.posunyMarkerov.filter((x) => x.zdroj === "prebytok").every((x) => x.kto === 0)).toBe(true);
-  });
-
-  it("pri sekere Nakladačku nedrží nikto — mäkké do tuhého nevstupuje (v10)", () => {
-    // Tuhé 2 : 2; Povera hráča 1 je mäkké (hádka), nie tuhé — Nakladačka nie je.
-    const s = predPoskodenim({
-      sums: [{ Rana: 2 }, { Rana: 2, Povera: 1 }],
-      uprav: (t) => ({ ...t, hraci: [{ ...t.hraci[0], dlhy: 1 }, { ...t.hraci[1], dlhy: 1 }] }),
-    });
-    const st = apply(data, s, { type: "hadka", elderId: elder(s, 0) }, 0).state;
-    expect(st.nastenka.at(-1)?.vitaz).toBeNull();
-    expect(st.bitkaStav?.prebytokDrzi ?? null).toBeNull();
-    expect(st.posunyMarkerov.filter((x) => x.zdroj === "prebytok")).toEqual([]);
-  });
-});
+// Nakladačku od v11 rozdeľuje víťaz na svoj strach — strach-reci.test.ts.
 
 describe("v8: Kmotor presúva Dlhy súperovi (návrh #34 B)", () => {
   /** Bitka po Cintoríne — „nič“ ju dokončí a vyrieši krok 6c. */
@@ -110,7 +80,7 @@ describe("v8: Kmotor presúva Dlhy súperovi (návrh #34 B)", () => {
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
       // Priazeň Kmotra má hráč 0 (marker na jeho polovici).
-      starsi: s0.starsi.map((e, i) => ({ ...e, marker: (i === kmotor ? 3 - silaKmotra : 3) as MarkerPos })),
+      starsi: s0.starsi.map((e, i) => ({ ...e, ...zPolohy((i === kmotor ? 3 - silaKmotra : 3) as number) })),
       hraci: [{ ...s0.hraci[0], dlhy: dlhy }, s0.hraci[1]],
       bitkaStav: bitka({ krok: "cintorin", caka: 0, vitaz: 0 }),
     };

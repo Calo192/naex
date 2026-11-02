@@ -6,12 +6,12 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { Command, GameState } from "../src/index.ts";
-import { apply, autoKoniecPitky, legalCommands, loadGameData, navrhPrebytku, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
+import { apply, autoKoniecPitky, legalCommands, loadGameData, navrhRozdelenia, naTahu, rngInt, rngSeed, setupGame, viewFor } from "../src/index.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
 describe("menej klikov (roadmapa #9 B)", () => {
-  it("návrh Nakladačky prejde ako jeden „tah“ a rozdelí celú Nakladačku", () => {
+  it("návrh rozdelenia Nakladačky a hádky (v11) prejde ako jeden zámer a rozdelí všetko, čo sa dá", () => {
     let navrhov = 0;
     for (const seed of [2, 3, 5, 7, 11, 13]) {
       let s: GameState = setupGame(data, seed);
@@ -19,15 +19,14 @@ describe("menej klikov (roadmapa #9 B)", () => {
       for (let i = 0; i < 20000 && s.koniec === null; i++) {
         const p = naTahu(s);
         if (p === null) break;
-        const n = navrhPrebytku(data, viewFor(data, s, p));
+        const n = navrhRozdelenia(viewFor(data, s, p));
         if (n !== null) {
           navrhov++;
-          const posunov = s.bitkaStav!.prebytokZostava;
+          const krok = s.bitkaStav!.krok;
           const po = apply(data, s, n.prikaz, p).state;
-          expect(n.kroky.length).toBeGreaterThan(0);
-          expect(n.kroky.length).toBeLessThanOrEqual(posunov);
-          // Po návrhu sa už na prebytok tohto hráča nečaká.
-          expect(po.bitkaStav?.krok === "prebytok" && po.bitkaStav.caka === p).toBe(false);
+          expect(n.zdvihy.length).toBeGreaterThan(0);
+          // Po návrhu sa už na toto rozdelenie hráča nečaká.
+          expect(po.bitkaStav?.krok === krok && po.bitkaStav.caka === p).toBe(false);
           s = po;
           continue;
         }

@@ -1,6 +1,8 @@
 // Offline protihráč: hrá len legálne, dohrá partiu, porazí náhodného hráča
 // a rozhoduje sa len z toho, čo by vedel hráč pri stole.
 
+import { spustBitku } from "./helpers.ts";
+import { cervenychHraca } from "../src/index.ts";
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
@@ -147,63 +149,37 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       vitaz: null,
       prebytokDrzi: null,
       prebytokZostava: 0,
-      prebytokPosunute: [],
+      prebytokZdvihy: [],
+      prebytokPrepadlo: 0,
       spalit: [],
       vesticaHotova: false,
       ...b,
     };
   }
-  /** Bitka s prázdnou líniou v kroku hádky (v10); hráč 0 (obranca) vyhral hádku o 1. */
-  function vHadke(seed: number, markery: (e: ElderState) => ElderState["marker"]): GameState {
-    const s0 = setupGame(data, seed);
-    return {
-      ...s0,
-      faza: "bitka",
-      kolo: 2,
-      utocnik: 1,
-      strany: [[], []],
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
-      lokalityVHre: s0.lokalityVHre.slice(1),
-      starsi: s0.starsi.map((e) => ({ ...e, marker: markery(e) })),
-      bitkaStav: bitka({ krok: "hadka", caka: 0, hadka: { makke: [2, 1], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
-    };
-  }
-  const priazenStarsieho = (s: GameState, elderId: string): string => favourStarsieho(data, s.starsi.find((e) => e.elderId === elderId) as ElderState);
-
-  it("v10: hádku za 1 dá na Bitkára — priazeň do konca kola vyhrá bitku 1 : 0", () => {
-    for (const seed of [71, 72, 73]) {
-      // Všetci v strede, prázdna línia 0 : 0. Bitkár k sebe na toto kolo vyhrá bitku (aspoň 1 špak).
-      const s = vHadke(seed, () => 3);
+  it("v11: Nakladačku dá na štvrtú červenú — ďalšia vyhratá bitka je výhra strachom", () => {
+    for (const seed of [81, 82]) {
+      const s0 = setupGame(data, seed);
+      // Hráč 0 má 3 červené strachy a štvrtého staršieho na oranžovej; Nakladačka 3 ho dotiahne.
+      const starsi: ElderState[] = s0.starsi.map((e, i) => ({ ...e, strach: [i < 3 ? 3 : i === 3 ? 2 : 0, 0], reci: [0, 0] }));
+      const s: GameState = {
+        ...s0,
+        faza: "bitka",
+        kolo: 2,
+        utocnik: 1,
+        strany: [[], []],
+        ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
+        lokalityVHre: s0.lokalityVHre.slice(1),
+        starsi,
+        // Súper má od troch červených priazeň 3 (Bitkár, Veriaci) — Rán dosť na istú výhru.
+        bitkaStav: bitka({ krok: "hadka", sums: [{ Rana: 12 }, {}], hadka: { makke: [0, 0], vitaz: null, velkost: 0, zostava: 0, prepadlo: 0, zdvihy: [] } }),
+      };
+      const po = spustBitku(data, s).state;
+      expect(po.bitkaStav).toMatchObject({ krok: "prebytok", caka: 0 });
       for (const povaha of POVAHY) {
-        const cmd = tahBota(data, s, 0, seed, { povaha: povaha.id });
-        expect(cmd.type, povaha.id).toBe("hadka");
-        if (cmd.type !== "hadka") continue;
-        expect(priazenStarsieho(s, cmd.elderId), `${povaha.id} ${seed}`).toBe("BITKAR");
-        const po = apply(data, s, cmd, 0).state;
-        expect(po.spaky[0]).toBe(1);
-        // Marker sa nehýbe.
-        expect(po.starsi.map((e) => e.marker)).toEqual(s.starsi.map((e) => e.marker));
-      }
-    }
-  }, 30_000);
-
-  it("v8: Nakladačku rozdeľuje porazený — vezme víťazovi Bitkára, ktorý mu v bitke škodí", () => {
-    for (const seed of [81, 82, 83]) {
-      // Po výhre Rana + Bitkár (k sebe) drží hráč 0 prebytok 2; rozdeľuje ho porazený hráč 1.
-      // Žltá → stred stojí od v8.2 dva body (Michal 2026-10-30), preto Rana navyše.
-      const bitkar = (e: ElderState): boolean => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR";
-      // Bitkár už je víťazov (žltá, sila 1); hádka ide na Alkoholika, ktorý bitku nemení.
-      const s0 = vHadke(seed, (e) => (bitkar(e) ? 2 : 3));
-      const s: GameState = { ...s0, bitkaStav: { ...s0.bitkaStav!, sums: [{ Rana: 1 }, {}] } };
-      const alkoholik = s.starsi.find((e) => priazenStarsieho(s, e.elderId) === "ALKOHOLIK")?.elderId as string;
-      const po = apply(data, s, { type: "hadka", elderId: alkoholik }, 0).state;
-      expect(po.bitkaStav).toMatchObject({ krok: "prebytok", prebytokDrzi: 0, caka: 1 });
-      for (const povaha of POVAHY) {
-        const cmd = tahBota(data, po, 1, seed, { povaha: povaha.id });
+        const cmd = tahBota(data, po, 0, seed, { povaha: povaha.id });
         expect(cmd.type, povaha.id).toBe("prebytok");
         if (cmd.type !== "prebytok") continue;
-        // Posun k porazenému vráti Bitkára do stredu: víťaz o priazeň príde a strach nevznikne.
-        expect(priazenStarsieho(po, cmd.elderId), `${povaha.id} ${seed}`).toBe("BITKAR");
+        expect(cervenychHraca(apply(data, po, cmd, 0).state, 0), `${povaha.id} ${seed}`).toBeGreaterThanOrEqual(4);
       }
     }
   }, 30_000);

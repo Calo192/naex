@@ -9,7 +9,7 @@ import {
   efektyPrehry,
   opponentOf,
   poOdkrytiNaex,
-  prebytokNaStarsieho,
+  cenaDalsiehoStupna,
   sMojimiSkrytymiNaex,
   spakov,
   stavkaBitky,
@@ -27,15 +27,15 @@ export function superoveSkryteNaex(v: ClientState): readonly { readonly hrac: Pl
 }
 
 /**
- * Starší, ktorých marker smie Nakladačka teraz posunúť — ten istý filter ako ponuka
- * servera (prebytokNaStarsieho): starší v ohrození (pokus o zajatie, §9.4 bod 7, §10)
- * nie (playtest 20261030-184957: výpis ho ponúkal). Mimo kroku Nakladačky prázdne.
+ * Starší, pri ktorých smie víťaz Nakladačkou zdvihnúť svoj strach (v11) — ten istý filter ako
+ * server (cenaDalsiehoStupna): starší v ohrození (pokus o zajatie, §10) nie (playtest
+ * 20261030-184957: výpis ho ponúkal), strach na červenej nie. Mimo kroku Nakladačky prázdne.
  */
 export function starsiNaNakladacku(v: ClientState): readonly ElderState[] {
   const b = v.bitkaStav;
   if (b === null || b.krok !== "prebytok" || b.prebytokDrzi === null || b.prebytokZostava < 1) return [];
   const drzi = b.prebytokDrzi;
-  return v.starsi.filter((e) => prebytokNaStarsieho(v, e, drzi, b.prebytokZostava));
+  return v.starsi.filter((e) => cenaDalsiehoStupna(e, v.pokusy, drzi, "strach") !== null);
 }
 
 /**

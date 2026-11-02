@@ -155,7 +155,8 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         // Porovnáva sa stav, kde bitka čaká pred poškodením: zúčtovaná Pitka a súčty bitky, NA EX ešte na kartách.
         const b1 = s1.bitkaStav;
         const b0 = bez.bitkaStav;
-        if (s1.faza !== "bitka" || bez.faza !== "bitka" || b1 === null || b0 === null || b1.damage !== null || b0.damage !== null) continue;
+        // v11 bitka nečaká pred poškodením — porovná sa aj stav, kde čaká na rozdelenie (NA EX ešte na kartách).
+        if (s1.faza !== "bitka" || bez.faza !== "bitka" || b1 === null || b0 === null) continue;
         const kde = `seed ${seed} kolo ${s.kolo}, hráč ${p}, NA EX na ${uid}`;
         expect(n.liniaPo.sums, `${kde}: súčty akcií v bitke`).toEqual(b1.sums);
         for (const q of [0, 1] as const) {
@@ -195,7 +196,7 @@ describe("náhľad NA EX == zúčtovanie motora (seedy)", () => {
         const vysledok = battleOutcome(pA);
         expect(n.prebytokPo.drzi, `${kde}: Nakladačku drží`).toBe(vysledok.prebytokDrzi);
         expect(n.prebytokPo.naRozdelenie, `${kde}: Nakladačka na rozdelenie (Puška)`).toBe(prebytokNaRozdelenie(sNaex.s, vysledok));
-        if (dA.damage !== null && dA.krok === "prebytok" && dA.prebytokPosunute.length === 0 && dA.caka !== null) {
+        if (dA.damage !== null && dA.krok === "prebytok" && dA.prebytokZdvihy.length === 0 && dA.caka !== null) {
           expect(n.prebytokPo.naRozdelenie, `${kde}: Nakladačka v bitke`).toBe(dA.prebytokZostava);
         }
         bitky++;

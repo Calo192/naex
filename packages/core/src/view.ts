@@ -16,11 +16,12 @@ import type { CardInstance, Favour, Phase, PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
-import type { ElderState, Klebety, MarkerPos, PosunMarkera, Vazen } from "./elders.ts";
+import type { DruhMarkera, ElderState, Stupen, Vazen, Zdvih, ZmenaMarkera } from "./elders.ts";
 import type {
   BitkaKrok,
   BitkaNaNastenke,
   CielKola,
+  Command,
   GameState,
   HasicVolba,
   KoniecHry,
@@ -29,27 +30,18 @@ import type {
   StavKseftuVazna,
   StavHadky,
   PokusOZajatie,
+  ZdvihVBitke,
   Vykupne,
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, cirhozyPreVeterinara, lokalityNaVyber, vykupneHraca, spakyZaVaznov, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vyplatZaStarsich } from "./engine.ts";
-import { KONSTANTY } from "./constants.ts";
+import { cenaDedicstva, cervenychHraca, cirhozyPreVeterinara, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vazniHraca } from "./engine.ts";
+import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { pocetAbstakov } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
-import {
-  favourStarsieho,
-  posunZaBody,
-  priazenHraca,
-  priazenSila,
-  sPosunutymMarkerom,
-  spakyZaStarsich,
-  strachNaUdrzanie,
-  strachNaUdrzanieSpolu,
-  strachNaVyplatu,
-  vydesil,
-} from "./elders.ts";
+import { favourStarsieho, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, stupenStavu } from "./elders.ts";
+import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia } from "./rozdelenie.ts";
 import type { DamageResult } from "./battle.ts";
 
 export interface HracVerejne {
@@ -88,13 +80,21 @@ export interface BitkaVerejne {
   readonly damage: DamageResult | null;
   readonly vitaz: PlayerId | null;
   readonly prebytokDrzi: PlayerId | null;
+  /** Nakladačka, ktorú víťaz bitky ešte rozdeľuje na svoj strach (v11, krok prebytok). */
   readonly prebytokZostava: number;
-  /** Starší, ktorých prebytok už posunul — za každého porazený raz dostane cigaretu (verejné). */
-  readonly prebytokPosunute: readonly string[];
-  /** Hádka tohto kola (v10) — mäkké, víťaz, zvyšok a rozdelené výbery; verejné. */
+  /** Nakladačka rozdelená na strach víťaza (v11) a body, ktoré prepadli. */
+  readonly prebytokZdvihy: readonly ZdvihVBitke[];
+  readonly prebytokPrepadlo: number;
+  /**
+   * Hádka tohto kola (v10) — mäkké, víťaz, veľkosť, zvyšok na reči a rozdelené reči (v11,
+   * krok reci); verejné.
+   */
   readonly hadka?: StavHadky;
-  /** Klebety tohto kola z hádky (v10) — verejné. */
-  readonly klebety: Klebety;
+  /**
+   * Najvyšší marker oboch pri staršom v ohrození pred bodovaním (v11) — z neho je krádež
+   * pri zajatí. Chýba pred bodovaním.
+   */
+  readonly predBodovanim?: Readonly<Record<string, readonly [Stupen, Stupen]>>;
   /** Špaky, ktoré hráčom v tejto bitke zhoreli pri exekúcii (v6). */
   readonly exekutor: readonly [number, number];
   /** Karty v línii, ktoré sa po bitke spália (Dievčina na vydaj). */
@@ -143,11 +143,34 @@ export interface ZaverecnaVerejna {
 }
 
 /**
- * Starší tak, ako ho vidí hráč: stav ukazovateľa a priazeň, ktorú dáva (v6,
- * Michal 2026-10-26: „ostala len priazeň a na tú scorecard netreba“).
+ * Starší tak, ako ho vidí hráč (v11): strach a reči oboch hráčov (ElderState) a priazeň,
+ * ktorú dáva (v6, Michal 2026-10-26: „ostala len priazeň a na tú scorecard netreba“). Komu
+ * a akú silu priazne starší dáva, ráta priazenHraca / priazenSila z rozdielu strachov.
  */
 export interface StarsiVerejne extends ElderState {
   readonly priazen: Favour;
+}
+
+/**
+ * Okamžité výhry (v11, Michal 2026-11-02), obe len vo vyhratej bitke: červené strachy
+ * (väzni držiteľa sa rátajú) aspoň cervenychNaVyhru, alebo väzni aspoň vazniNaVyhru (podľa
+ * ligy). Verejné — odvodené z markerov a väzňov.
+ */
+export interface StavVyhier {
+  readonly cervene: readonly [number, number];
+  readonly cervenychNaVyhru: number;
+  readonly vazni: readonly [number, number];
+  readonly vazniNaVyhru: number;
+}
+
+/** Stav okamžitých výhier z verejného stavu (GameState aj ClientState). */
+export function stavVyhier(state: { readonly starsi: readonly Pick<ElderState, "strach">[]; readonly vazni: readonly Vazen[]; readonly lokalitCelkom: number }): StavVyhier {
+  return {
+    cervene: [cervenychHraca(state, 0), cervenychHraca(state, 1)],
+    cervenychNaVyhru: KONSTANTY.CERVENYCH_NA_VYHRU,
+    vazni: [vazniHraca(state, 0).length, vazniHraca(state, 1).length],
+    vazniNaVyhru: vazniNaVyhru(state.lokalitCelkom),
+  };
 }
 
 export interface ClientState {
@@ -201,7 +224,10 @@ export interface ClientState {
   /** Odohrané bitky v poradí: lokalita, víťaz a špaky — krčmová nástenka. */
   readonly nastenka: readonly BitkaNaNastenke[];
   readonly naexVKole: readonly [boolean, boolean];
+  /** Starší na stupnici so strachom a rečami oboch hráčov (v11) — väzni sú vo `vazni`. */
   readonly starsi: readonly StarsiVerejne[];
+  /** Okamžité výhry (v11): červené a väzni oboch a koľko treba. */
+  readonly vyhry: StavVyhier;
   readonly ciel: CielKola | null;
   readonly lokalitaOtocena: boolean;
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
@@ -257,8 +283,8 @@ export interface ClientState {
    */
   readonly nepriznaneKliatby: readonly [KliatbyHraca, KliatbyHraca];
   readonly koniec: KoniecHry | null;
-  /** Posuny markerov od poslednej bitky do konca Zhromaždenia (verejné, stopa na stupnici). */
-  readonly posunyMarkerov: readonly PosunMarkera[];
+  /** Zmeny strachu a rečí od poslednej bitky do konca Zhromaždenia (v11; verejné, stopa na stupnici). */
+  readonly zmenyMarkerov: readonly ZmenaMarkera[];
 }
 
 /** Nepriznané kliatby hráča — od v8.2 len Cirhózy (Dlh a Absťák sú počítadlá). */
@@ -363,6 +389,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     naexVKole: state.naexVKole,
     ...(state.bezChuti === true ? { bezChuti: true as const } : {}),
     starsi: state.starsi.map((e) => ({ ...e, priazen: favourStarsieho(data, e) })),
+    vyhry: stavVyhier(state),
     ciel: state.ciel,
     lokalitaOtocena: state.lokalitaOtocena,
     strany: [skrySuperove(0), skrySuperove(1)],
@@ -417,9 +444,10 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             vitaz: bitka.vitaz,
             prebytokDrzi: bitka.prebytokDrzi,
             prebytokZostava: bitka.prebytokZostava,
-            prebytokPosunute: bitka.prebytokPosunute,
+            prebytokZdvihy: bitka.prebytokZdvihy,
+            prebytokPrepadlo: bitka.prebytokPrepadlo,
             ...(bitka.hadka === undefined ? {} : { hadka: bitka.hadka }),
-            klebety: bitka.klebety ?? {},
+            ...(bitka.predBodovanim === undefined ? {} : { predBodovanim: bitka.predBodovanim }),
             exekutor: bitka.exekutor,
             spalit: bitka.spalit,
           },
@@ -440,7 +468,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
     mojBalicekZlozenie: zlozenie(state.hraci[ja].doberaci),
     nepriznaneKliatby: [nepriznaneKliatbyHraca(state.hraci[0]), nepriznaneKliatbyHraca(state.hraci[1])],
     koniec: state.koniec,
-    posunyMarkerov: state.posunyMarkerov,
+    zmenyMarkerov: state.zmenyMarkerov,
   };
 }
 
@@ -449,21 +477,20 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
 // klient AI hráčov aj kroniku.
 
 /** Stav, z ktorého sa rátajú špaky — ClientState ho spĺňa. */
-export type PohladSpakov = Pick<ClientState, "spaky" | "vazni" | "nepriznaneKliatby" | "lokalityVHre" | "ciel" | "koniec" | "pitkaStav" | "kolo" | "lokalitCelkom" | "rozpis"> & {
+export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "koniec" | "pitkaStav"> & {
   readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">, Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">];
-  readonly starsi: readonly ElderState[];
-  readonly bitkaStav: { readonly damage: DamageResult | null; readonly krok?: BitkaKrok | null } | null;
+  readonly starsi: readonly Pick<ElderState, "elderId" | "strach" | "reci">[];
 };
 
 /**
- * Strach jedného staršieho [hráč 0, hráč 1] (v8.3): `spaky` dá tomu, koho sa bojí,
- * na konci tohto kola (udržané stupne), `naUdrzanie` na konci ďalšieho, ak sa marker
- * na nových stupňoch udrží. Nech bitku vyhrá ktokoľvek.
+ * Bodovanie jedného staršieho po najbližšej bitke (v11): koľko dá ktorému hráčovi, keď
+ * bitku vyhrá (najvyšší marker — reči, inak strach), a keď ju prehrá alebo pri sekere
+ * (len reči). [hráč 0, hráč 1].
  */
 export interface SpakyStarsieho {
   readonly elderId: string;
-  readonly spaky: readonly [number, number];
-  readonly naUdrzanie: readonly [number, number];
+  readonly vyhra: readonly [number, number];
+  readonly prehra: readonly [number, number];
 }
 
 export interface SpakyTeraz {
@@ -476,31 +503,25 @@ export interface SpakyTeraz {
    * poldeci pod skrytým NA EX sa nevykúpi). Po konci hry výkupné z konca.
    */
   readonly vykupne: readonly [Vykupne, Vykupne];
-  /** Špaky za väzňov (v9), keby sa hra skončila teraz — podľa poradia zajatia; po konci hry z konca. */
-  readonly vazni: readonly [number, number];
-  /** Keby sa hra skončila teraz: špaky mínus nepriznané Cirhózy plus výkupné a väzni. */
+  /** Keby sa hra skončila teraz: špaky mínus nepriznané Cirhózy plus výkupné. */
   readonly spolu: readonly [number, number];
-  /**
-   * Koľko špakov dajú starší hráčovi na konci tohto kola za udržané stupne (v8.3),
-   * keby sa markery už nepohli — nech bitku vyhrá ktokoľvek.
-   */
-  readonly zaStarsich: readonly [number, number];
-  /** Strach, ktorý čaká na udržanie — zaplatí ho koniec ďalšieho kola (vo finále nič). */
-  readonly naUdrzanie: readonly [number, number];
+  /** Starší po najbližšej bitke spolu [hráč 0, hráč 1], keď ju ten hráč vyhrá (v11). */
+  readonly zaStarsichVyhra: readonly [number, number];
+  /** Starší po najbližšej bitke spolu, keď ju ten hráč prehrá alebo pri sekere — len reči (v11). */
+  readonly zaStarsichPrehra: readonly [number, number];
   readonly starsi: readonly SpakyStarsieho[];
-  /** Koľko koncov kola s výplatou strachu ešte príde (vrátane prebiehajúceho); 0 = už nikdy. */
-  readonly vyplat: number;
-  /**
-   * Odhad konečných špakov, keby sa markery už nepohli: spolu + strach, ktorý
-   * zaplatí koniec tohto kola, a ak ešte príde ďalší, aj strach čakajúci na
-   * udržanie (v8.3). Špaky za
-   * bitky nepredvída — je to podklad pre náhľady, nie sľub (bot si strach váži
-   * sám, rozdielBodov).
-   */
-  readonly odhad: readonly [number, number];
 }
 
 const BEZ_VYKUPNEHO: Vykupne = { poldeci: 0, cigarety: 0, spaky: 0 };
+
+/** Bodovanie staršieho po bitke pre oboch hráčov (SpakyStarsieho). */
+export function spakyStarsieho(e: Pick<ElderState, "elderId" | "strach" | "reci">): SpakyStarsieho {
+  return {
+    elderId: e.elderId,
+    vyhra: [spakyOdStarsieho(e, 0, true), spakyOdStarsieho(e, 1, true)],
+    prehra: [spakyOdStarsieho(e, 0, false), spakyOdStarsieho(e, 1, false)],
+  };
+}
 
 export function spakyTeraz(view: PohladSpakov): SpakyTeraz {
   const cirhozy: [number, number] = [view.nepriznaneKliatby[0].cirhoza, view.nepriznaneKliatby[1].cirhoza];
@@ -511,29 +532,68 @@ export function spakyTeraz(view: PohladSpakov): SpakyTeraz {
     view.koniec === null
       ? [vykupneHraca(view.hraci[0], skryte(0)), vykupneHraca(view.hraci[1], skryte(1))]
       : [view.koniec.vykupne?.[0] ?? BEZ_VYKUPNEHO, view.koniec.vykupne?.[1] ?? BEZ_VYKUPNEHO];
-  const vazni: [number, number] =
-    view.koniec === null ? [spakyZaVaznov(view, 0), spakyZaVaznov(view, 1)] : [view.koniec.vazni?.[0] ?? 0, view.koniec.vazni?.[1] ?? 0];
-  const navyse = (p: PlayerId): number => (view.koniec === null ? vykupne[p].spaky + vazni[p] : 0);
+  const navyse = (p: PlayerId): number => (view.koniec === null ? vykupne[p].spaky : 0);
   const spolu: [number, number] = [view.spaky[0] - odpocet(0) + navyse(0), view.spaky[1] - odpocet(1) + navyse(1)];
-  const zaStarsich: [number, number] = [spakyZaStarsich(view.starsi, 0), spakyZaStarsich(view.starsi, 1)];
-  const naUdrzanie: [number, number] = [strachNaUdrzanieSpolu(view.starsi, 0), strachNaUdrzanieSpolu(view.starsi, 1)];
-  const vyplat = vyplatZaStarsich(view);
-  const strach = (p: PlayerId): number => (vyplat > 0 ? zaStarsich[p] : 0) + (vyplat > 1 ? naUdrzanie[p] : 0);
+  const starsi = view.starsi.map(spakyStarsieho);
+  const sucet = (f: (x: SpakyStarsieho) => number): number => starsi.reduce((a, x) => a + f(x), 0);
   return {
     spaky: view.spaky,
     cirhozy,
     vykupne,
-    vazni,
     spolu,
-    zaStarsich,
-    naUdrzanie,
-    starsi: view.starsi.map((e) => ({
-      elderId: e.elderId,
-      spaky: [strachNaVyplatu(e, 0), strachNaVyplatu(e, 1)],
-      naUdrzanie: [strachNaUdrzanie(e, 0), strachNaUdrzanie(e, 1)],
-    })),
-    vyplat,
-    odhad: [spolu[0] + strach(0), spolu[1] + strach(1)],
+    zaStarsichVyhra: [sucet((x) => x.vyhra[0]), sucet((x) => x.vyhra[1])],
+    zaStarsichPrehra: [sucet((x) => x.prehra[0]), sucet((x) => x.prehra[1])],
+    starsi,
+  };
+}
+
+/**
+ * Riadok pultu starších (v11, mock 5 Pult): strach a reči oboch, priazeň z rozdielu
+ * strachov, stav, pokus o zajatie a špaky pri výhre a prehre.
+ */
+export interface RiadokStarsieho extends SpakyStarsieho {
+  readonly defId: string;
+  readonly priazen: Favour;
+  readonly strach: readonly [Stupen, Stupen];
+  readonly reci: readonly [Stupen, Stupen];
+  /** Komu starší dáva priazeň (null = strachy sú rovnaké) a akú silu. */
+  readonly priazenHrac: PlayerId | null;
+  readonly priazenSila: number;
+  /** Stav staršieho podľa vyššieho strachu — index do STAV_STARSIEHO. */
+  readonly stav: Stupen;
+  /** Kto sa ho v tomto kole pokúša zajať (v ohrození), alebo null. */
+  readonly pokus: PlayerId | null;
+}
+
+/** Pult starších (v11): riadky, súčty pri výhre a prehre a stav okamžitých výhier. */
+export interface PultStarsich {
+  readonly riadky: readonly RiadokStarsieho[];
+  readonly vyhra: readonly [number, number];
+  readonly prehra: readonly [number, number];
+  readonly vyhry: StavVyhier;
+}
+
+export function pultStarsich(view: Pick<ClientState, "starsi" | "pokusy" | "vazni" | "lokalitCelkom">): PultStarsich {
+  const riadky = view.starsi.map((e): RiadokStarsieho => {
+    const pokus = view.pokusy[0]?.elderId === e.elderId ? 0 : view.pokusy[1]?.elderId === e.elderId ? 1 : null;
+    return {
+      ...spakyStarsieho(e),
+      defId: e.karta.defId,
+      priazen: e.priazen,
+      strach: e.strach,
+      reci: e.reci,
+      priazenHrac: priazenHraca(e),
+      priazenSila: priazenSila(e),
+      stav: stupenStavu(e),
+      pokus,
+    };
+  });
+  const sucet = (f: (x: RiadokStarsieho) => number): number => riadky.reduce((a, x) => a + f(x), 0);
+  return {
+    riadky,
+    vyhra: [sucet((x) => x.vyhra[0]), sucet((x) => x.vyhra[1])],
+    prehra: [sucet((x) => x.prehra[0]), sucet((x) => x.prehra[1])],
+    vyhry: stavVyhier(view),
   };
 }
 
@@ -580,11 +640,6 @@ export function cenaKliatby(defId: "dlh" | "cirhoza"): number {
   return defId === "cirhoza" ? -KONSTANTY.SPAKY_ZA_CIRHOZU : 0;
 }
 
-/** Pohľad, v ktorom marker staršieho `elderId` stojí na `marker` (vyplatené zóny ako v jadre). */
-function sMarkerom(view: ClientState, elderId: string, marker: MarkerPos): ClientState {
-  return { ...view, starsi: view.starsi.map((e) => (e.elderId === elderId ? sPosunutymMarkerom(e, marker) : e)) };
-}
-
 /** Ponuka Kšeftu väzňa z pohľadu hráča (v9) — ten istý výpočet ako legalCommands (ponukaKseftuVazna). */
 export function stavKseftuVaznaZPohladu(view: ClientState): StavKseftuVazna {
   return {
@@ -602,122 +657,71 @@ export function stavKseftuVaznaZPohladu(view: ClientState): StavKseftuVazna {
   };
 }
 
-/** Náhľad pokusu o zajatie (v9) z pohľadu `view.ja`: čo väzeň dá, ak sa pokus podarí. */
+/** Náhľad pokusu o zajatie (v9, v11) z pohľadu `view.ja`: čo väzeň dá, ak sa pokus podarí. */
 export interface NahladPokusu {
   /** Poradie zajatia v partii, ak sa podarí teraz (rátajú sa aj súperove pokusy pred ním — odhad). */
   readonly poradie: number;
-  /** Špaky za tohto väzňa po finále (8 / 6 / 4 / 2). */
-  readonly spaky: number;
-  /** Koľkého väzňa by mal hráč — 3 = výhra hneď. */
+  /**
+   * Krádež (v11): špaky, ktoré súper odovzdá za svoj najvyšší marker pri tomto staršom —
+   * podľa markerov teraz (rozhoduje stav pred bodovaním v bitke), najviac toľko, koľko má.
+   */
+  readonly kradez: number;
+  /** Koľkého väzňa by mal hráč — vazniNaVyhru = výhra hneď. */
   readonly mojichVaznov: number;
+  readonly vazniNaVyhru: number;
   readonly vyhra: boolean;
 }
 
-export function nahladPokusu(view: Pick<ClientState, "vazni" | "ja">): NahladPokusu {
+export function nahladPokusu(view: Pick<ClientState, "vazni" | "ja" | "starsi" | "spaky" | "lokalitCelkom">, elderId?: string): NahladPokusu {
   const poradie = view.vazni.length + 1;
   const mojichVaznov = view.vazni.filter((v) => v.hrac === view.ja).length + 1;
-  return { poradie, spaky: KONSTANTY.SPAKY_ZA_VAZNOV[poradie - 1] ?? 0, mojichVaznov, vyhra: mojichVaznov >= KONSTANTY.VAZNI_NA_VYHRU };
+  const naVyhru = vazniNaVyhru(view.lokalitCelkom);
+  const su = opponentOf(view.ja);
+  const elder = elderId === undefined ? undefined : view.starsi.find((e) => e.elderId === elderId);
+  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(spakyOdStarsieho(elder, su, true), view.spaky[su]));
+  return { poradie, kradez, mojichVaznov, vazniNaVyhru: naVyhru, vyhra: mojichVaznov >= naVyhru };
 }
 
-/** Odhad špakov a priazeň po posune markera jedného staršieho (Nakladačka). */
-export interface NahladPosunu {
-  /** Odhad konečných špakov [hráč 0, hráč 1] po posune (spakyTeraz.odhad). */
-  readonly odhad: readonly [number, number];
-  /** Zmena odhadu oproti stavu pred posunom. */
-  readonly zmena: readonly [number, number];
-  /** Špaky za tohto staršieho na konci kola [hráč 0, hráč 1] — udržané stupne (v8.3). */
-  readonly spakyZaStarsieho: readonly [number, number];
-  /** Čo z tohto staršieho po posune čaká na udržanie [hráč 0, hráč 1] — zaplatí koniec ďalšieho kola. */
-  readonly naUdrzanie: readonly [number, number];
-  /** Komu patrí priazeň staršieho po posune a s akou silou. */
-  readonly priazen: PlayerId | null;
-  readonly sila: number;
-  /**
-   * Starší na stupni 3 po posune [desí hráč 0, hráč 1] (v9) — toľkých sa dá v ďalšom
-   * kole skúsiť zajať.
-   */
-  readonly vydeseni: readonly [number, number];
+/** Pohľad po rozdelení (v11): markery hráča p zdvihnuté podľa zdvihov — náhľad pred potvrdením. */
+export function pohladPoRozdeleni<V extends { readonly starsi: readonly StarsiVerejne[] }>(view: V, p: PlayerId, marker: DruhMarkera, zdvihy: readonly Zdvih[]): V {
+  return { ...view, starsi: view.starsi.map((e) => {
+    const zd = zdvihy.find((x) => x.elderId === e.elderId);
+    return zd === undefined ? e : sMarkerom(e, p, marker, zd.na);
+  }) };
 }
 
 /**
- * Náhľad posunu markera k hráčovi k za `body` Nakladačky (Michal
- * 2026-10-19 — hráči nevedeli, komu posun pomôže; v8.2 marker ide, kým body
- * stačia, posunZaBody). null, keď nevyjde ani jedno pole.
+ * Hodnota markerov pre hráča p pri návrhu rozdelenia: bodovanie po bitke (priemer výhry
+ * a prehry) jeho mínus súperovo, červené strachy (výhra strachom) a ako slabé priazne dáva
+ * súperovi.
  */
-export function nahladPosunuMarkera(_data: GameData, view: ClientState, elderId: string, k: PlayerId, body: number): NahladPosunu | null {
-  const elder = view.starsi.find((e) => e.elderId === elderId);
-  if (elder === undefined) return null;
-  const marker = posunZaBody(elder, k, body)?.marker ?? null;
-  if (marker === null) return null;
-  const posunuty = sPosunutymMarkerom(elder, marker);
-  const pred = spakyTeraz(view).odhad;
-  const poPosune = sMarkerom(view, elderId, marker);
-  const po = spakyTeraz(poPosune).odhad;
-  const vydeseni = (p: PlayerId): number => poPosune.starsi.filter((e) => vydesil(e, p)).length;
-  return {
-    odhad: po,
-    zmena: [po[0] - pred[0], po[1] - pred[1]],
-    spakyZaStarsieho: [strachNaVyplatu(posunuty, 0), strachNaVyplatu(posunuty, 1)],
-    naUdrzanie: [strachNaUdrzanie(posunuty, 0), strachNaUdrzanie(posunuty, 1)],
-    priazen: priazenHraca(posunuty),
-    sila: priazenSila(posunuty),
-    vydeseni: [vydeseni(0), vydeseni(1)],
-  };
-}
-
-/** Náhľad posunu zvyškom prebytku k súperovi držiteľa (ten za prvý posun staršieho dostane cigaretu). */
-export function nahladPosunuPrebytkom(data: GameData, view: ClientState, elderId: string): NahladPosunu | null {
-  const drzi = view.bitkaStav?.prebytokDrzi ?? null;
-  if (drzi === null) return null;
-  return nahladPosunuMarkera(data, view, elderId, opponentOf(drzi), view.bitkaStav?.prebytokZostava ?? 0);
-}
-
-/**
- * Hodnota posunu pre hráča p pri hltavom výbere: rozdiel odhadov (p − súper),
- * pri zhode radšej posun, ktorý vydesí staršieho (pokus o zajatie, v9), a ten, po
- * ktorom má súper slabšie priazne.
- */
-function hodnotaPohladu(view: ClientState, p: PlayerId): number {
+function hodnotaPohladu(view: Pick<ClientState, "starsi" | "vazni">, p: PlayerId): number {
   const su: PlayerId = p === 0 ? 1 : 0;
-  const o = spakyTeraz(view).odhad;
-  const vydeseni = view.starsi.filter((e) => vydesil(e, p)).length;
-  const priazneSupera = view.starsi.reduce((a, e) => a + (priazenHraca(e) === su ? priazenSila(e) : 0), 0);
-  return o[p] - o[su] + 0.5 * vydeseni - 0.01 * priazneSupera;
+  let v = 0;
+  for (const e of view.starsi) {
+    const x = spakyStarsieho(e);
+    v += (x.vyhra[p] + x.prehra[p]) / 2 - (x.vyhra[su] + x.prehra[su]) / 2;
+    v -= 0.5 * Math.max(0, e.strach[p] - e.strach[su]);
+  }
+  return v + 2 * cervenychHraca(view, p);
 }
 
 /**
- * Hltavé rozdelenie prebytku: markery idú k súperovi držiteľa `drzi` a hráč
- * `vybera`, ktorý prebytok rozdeľuje (v8: spravidla porazený, vo finále držiteľ),
- * dá každý výber staršieho tam, kde jemu najviac pridá (hodnotaPohladu). Vráti
- * poradie starších (marker ide, kým zvyšok stačí — v8.2; starší sa môže opakovať)
- * a stav po nich — klient z toho robí návrh rozdelenia na jeden klik (roadmapa #9 B).
+ * Návrh rozdelenia na jeden klik (roadmapa #9 B; v11): hráč, ktorý práve rozdeľuje
+ * Nakladačku alebo hádku, dostane úplné rozdelenie — z ponuky úplných rozdelení
+ * (kandidatiRozdelenia) to, po ktorom má najlepšiu hodnotu markerov. null, keď nerozdeľuje.
  */
-export function hltavyPrebytok(
-  _data: GameData,
-  view: ClientState,
-  drzi: PlayerId,
-  vybera: PlayerId,
-  prebytok: number,
-): { readonly kroky: readonly string[]; readonly view: ClientState } {
-  const super_ = opponentOf(drzi);
-  let v = view;
-  const kroky: string[] = [];
-  for (let zostava = prebytok; zostava > 0; ) {
-    let najlepsi: { readonly v: ClientState; readonly hodnota: number; readonly elderId: string; readonly cena: number } | null = null;
-    for (const e of v.starsi) {
-      if (v.pokusy.some((x) => x?.elderId === e.elderId)) continue;
-      const posun = posunZaBody(e, super_, zostava);
-      if (posun === null) continue;
-      const po = sMarkerom(v, e.elderId, posun.marker);
-      const hodnota = hodnotaPohladu(po, vybera);
-      if (najlepsi === null || hodnota > najlepsi.hodnota) najlepsi = { v: po, hodnota, elderId: e.elderId, cena: posun.cena };
-    }
-    if (najlepsi === null) break;
-    v = najlepsi.v;
-    kroky.push(najlepsi.elderId);
-    zostava -= najlepsi.cena;
+export function navrhRozdelenia(view: ClientState): { readonly zdvihy: readonly Zdvih[]; readonly prikaz: Command } | null {
+  const ja = view.ja;
+  const krok = krokRozdelenia(view, ja);
+  if (view.faza !== "bitka" || krok === null || !view.mozemHrat) return null;
+  const marker = markerRozdelenia(krok);
+  let najlepsie: { readonly zdvihy: readonly Zdvih[]; readonly v: number } | null = null;
+  for (const zdvihy of kandidatiRozdelenia(view, ja, marker, bodyRozdelenia(view, ja), 64)) {
+    const v = hodnotaPohladu(pohladPoRozdeleni(view, ja, marker, zdvihy), ja);
+    if (najlepsie === null || v > najlepsie.v) najlepsie = { zdvihy, v };
   }
-  return { kroky, view: v };
+  return najlepsie === null ? null : { zdvihy: najlepsie.zdvihy, prikaz: { type: krok, zdvihy: najlepsie.zdvihy } };
 }
 
 /** Stávka bitky z pohľadu `view.ja` (v6) — špaky za výhru a čo dostane súper, keď vyhrá on. */
@@ -736,14 +740,19 @@ export interface StavkaBitky {
   readonly noviny: readonly [number, number];
   /** Špaky na sekere, ktoré vezme víťaz (vo finále pri sekere prepadnú). */
   readonly naSekere: number;
+  /**
+   * Starší po bitke (v11, krok 4b): [moje, súperove], keď bitku vyhrá ten hráč (najvyšší
+   * marker), a keď ju prehrá (len reči).
+   */
+  readonly starsiVyhra: readonly [number, number];
+  readonly starsiPrehra: readonly [number, number];
 }
 
 /**
  * Stávka bitky (Michal 2026-10-22, návrh 3 A; v6 v špakoch): čo hráč získa
  * výhrou a čo získa súper, keď vyhrá on. Špaky za bitku ráta spakyZaVyhru ako
  * výplata (Herňa, Noviny), s priznanými Dlhmi teraz. Absťáky špaky za bitku od
- * v8.1 neuberajú. Strach starších od v8.3 v stávke nie je — platí za udržanie
- * na konci kola, nech bitku vyhrá ktokoľvek.
+ * v8.1 neuberajú. Starší (v11) bodujú víťazovi najvyšší marker, porazenému len reči.
  */
 export function stavkaBitky(view: ClientState): StavkaBitky | null {
   if (view.ciel === null || view.koniec !== null) return null;
@@ -752,7 +761,10 @@ export function stavkaBitky(view: ClientState): StavkaBitky | null {
   const karty = kartyBitky(view);
   const moja = spakyZaVyhru(view, ja, karty);
   const jeho = spakyZaVyhru(view, su, karty);
+  const st = spakyTeraz(view);
   return {
+    starsiVyhra: [st.zaStarsichVyhra[ja], st.zaStarsichVyhra[su]],
+    starsiPrehra: [st.zaStarsichPrehra[ja], st.zaStarsichPrehra[su]],
     karty: karty.spolu,
     porazenemu: [jeho.porazenemu, moja.porazenemu],
     vyhra: moja.spolu,

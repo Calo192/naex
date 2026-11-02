@@ -121,20 +121,6 @@ describe("lokality podľa úrovní a finále na pinnacle (plan.md 7)", () => {
     expect(pocetPitiek(data, po)).toBe(1);
   });
 
-  it("starší ešte vyplatia: vo Voľbe cieľa finále raz (finále je pred nami), v poslednom kole o lokalitu dvakrát", () => {
-    const s0 = setupGame(data, 4);
-    const L = s0.lokalitCelkom;
-    const volbaFinale: GameState = { ...s0, kolo: L + 1, faza: "volbaCiela", ciel: null };
-    expect(vyplatZaStarsich(volbaFinale)).toBe(1);
-    const view = viewFor(data, volbaFinale, 0);
-    expect(spakyTeraz(view).vyplat).toBe(1);
-    expect(vyplatZaStarsich({ ...s0, kolo: L, faza: "volbaCiela", ciel: null } as GameState)).toBe(2);
-    // Po výbere pinnacle: finále je cieľ tohto kola — stále jedna výplata.
-    const vila = s0.lokalityVHre.find((k) => k.defId === "predsedova_vila")!;
-    const po = apply(data, { ...volbaFinale, utocnik: 0 }, { type: "chooseLocation", uid: vila.uid, otocena: false }, 1).state;
-    expect(vyplatZaStarsich(po)).toBe(1);
-  });
-
   it("lokality na výber nie sú lokality v hre: vo finále klient nedostane zvyšok sady, nevybraných je 0", () => {
     const s0 = setupGame(data, 4);
     const L = s0.lokalitCelkom;
@@ -179,17 +165,7 @@ describe("Kšeft (v7)", () => {
     expect(po.hraci[0].cigarety).toBe(0);
   });
 
-  it("Predsedova vila: za 2 cigarety posun markera, nie staršieho v ohrození (pokus o zajatie, v9)", () => {
-    const s0 = sHracom(vPitke("predsedova_vila", [[], []]), 0, { cigarety: 2 });
-    const e = s0.starsi[0]!;
-    const s: GameState = { ...s0, pokusy: [null, { elderId: s0.starsi[1]!.elderId }] };
-    const volby = legalCommands(data, s, 0).filter((c) => c.type === "kseft");
-    expect(volby.some((c) => c.type === "kseft" && c.elderId === s0.starsi[1]!.elderId)).toBe(false);
-    const po = apply(data, s, { type: "kseft", uid: s.ciel!.lokalita!.uid, elderId: e.elderId, kSebe: false }, 0).state;
-    expect(po.starsi[0]!.marker).toBe(e.marker + 1);
-    expect(po.hraci[0].cigarety).toBe(0);
-  });
-
+  // Predsedova vila v11 (reči o stupeň) stráži strach-reci.test.ts.
 });
 
 describe("efekty v bitke (v7)", () => {

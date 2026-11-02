@@ -3,7 +3,7 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, GameData, LineEval } from "@naex/core";
-import { STUPNICA_HODNOTY, STUPNICA_ZONY, battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
+import { battleOutcome, computeDamage, evaluateLine, loadGameData } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
 import type { KartaNavrh, RozlozenieStrany, Sada, Vzhlad } from "@naex/tvorba";
@@ -12,6 +12,7 @@ import { ZnackaStrachu } from "../hra/IkonaStrachu.tsx";
 import { IkonaPriazne } from "../hra/IkonaPriazne.tsx";
 import { KartaLico, type SlotStav } from "../karta/KartaLico.tsx";
 import { vzhladSady } from "../lib/sada.tsx";
+import { STUPNICA_HODNOTY, STUPNICA_ZONY } from "../hra/staraStupnica.ts";
 
 export function useHerneData(sada: Sada): GameData {
   return useMemo(() => loadGameData(sada.cardsJson, eldersJson, sada.scorecardsJson ?? scorecardsJson), [sada]);

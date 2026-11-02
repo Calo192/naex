@@ -8,7 +8,7 @@ import scorecardsJson from "../data/scorecards.json";
 import type { Command, Event, GameState, Moment, PlacedCard, PlayerId, StavMomentov } from "../src/index.ts";
 import { parseScorecards, MOMENTY, NALADY, NALADY_MOMENTOV, NOVE_MOMENTY, ZLATO_ZA_PARTIU, apply, buildGameData, legalCommands, loadGameData, momenty, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, naladaMomentu } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { EMPTY, instanceFor, makeDef, naexOdkryte } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, naexOdkryte, zPolohy } from "./helpers.ts";
 
 const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const R: Layout4 = ["Rana", null, null, null];
@@ -69,8 +69,8 @@ describe("momenty — rozpoznanie", () => {
 
   it("v9: marker na krajnej pozícii už prebudenie nehlási", () => {
     const s = setupGame(zaklad, 44);
-    const po: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 6 as const } : e)) };
-    const pred: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, marker: 5 as const } : e)) };
+    const po: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, ...zPolohy(6 as const) } : e)) };
+    const pred: GameState = { ...s, starsi: s.starsi.map((e, i) => (i === 0 ? { ...e, ...zPolohy(5 as const) } : e)) };
     expect(momenty(zaklad, pred, po, [])).toEqual([]);
   });
 

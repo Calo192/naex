@@ -2,13 +2,15 @@
 // silnejšia priazeň, Cigareta dáva fyzické cigarety, fajčenie kedykoľvek,
 // ohlásené vydesenie a oprava ceny prebytku pri Miňištrantovi.
 
+import { cervenychHraca } from "../src/index.ts";
+import { spustBitku } from "./helpers.ts";
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, ElderState, Event, GameState, MarkerPos, PlayerId } from "../src/index.ts";
+import type { BitkaStav, CardInstance, ElderState, Event, GameState, PlayerId } from "../src/index.ts";
 import { apply, evaluateLine, legalCommands, loadGameData, naTahu, priazen, viewFor } from "../src/index.ts";
-import { setupSBalickom } from "./helpers.ts";
+import { setupSBalickom, zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
@@ -27,23 +29,23 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: 0,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
   };
 }
 
-const sMarkerom = (e: ElderState, marker: MarkerPos): ElderState => ({ ...e, marker});
+const sMarkerom = (e: ElderState, marker: number): ElderState => ({ ...e, ...zPolohy(marker) });
 
 describe("priazeň: sila 1 / 2 / 3 a dvojnásobný účinok", () => {
   it("bonus = 2 × sila podľa zóny na polovici hráča", () => {
     const s0 = setupSBalickom(data, 3);
     const e0 = s0.starsi[0]!;
     const favour = data.scorecards.find((sc) => sc.id === e0.scorecard)!.favour;
-    const s = (m: MarkerPos): GameState => ({ ...s0, starsi: [sMarkerom(e0, m), ...s0.starsi.slice(1)] });
-    expect([4, 5, 6].map((m) => priazen(data, s(m as MarkerPos), favour, 1))).toEqual([2, 4, 6]);
-    expect([2, 1, 0].map((m) => priazen(data, s(m as MarkerPos), favour, 0))).toEqual([2, 4, 6]);
+    const s = (m: number): GameState => ({ ...s0, starsi: [sMarkerom(e0, m), ...s0.starsi.slice(1)] });
+    expect([4, 5, 6].map((m) => priazen(data, s(m as number), favour, 1))).toEqual([2, 4, 6]);
+    expect([2, 1, 0].map((m) => priazen(data, s(m as number), favour, 0))).toEqual([2, 4, 6]);
     expect(priazen(data, s(3), favour, 0)).toBe(0);
     expect(priazen(data, s(6), favour, 0)).toBe(0);
   });
@@ -138,23 +140,27 @@ describe("cigarety: Cigareta ich dáva, fajčenie dáva karty", () => {
 });
 
 describe("vydesenie (v9)", () => {
-  it("polovica starších na stupni 3 hru neukončí ani na konci kola — vyhráva sa tretím väzňom", () => {
+  it("v11: štyri červené strachy porazeného hru neukončia — výhra strachom je len vo vyhratej bitke", () => {
     const s0 = setupSBalickom(data, 7);
-    const starsi = s0.starsi.map((e, i) => (i < 4 ? sMarkerom(e, 6) : e));
+    // Hráč 1 desí naplno štyroch starších (marker 0 = jeho strach 3), bitku vyhrá hráč 0.
+    const starsi = s0.starsi.map((e, i) => (i < 4 ? sMarkerom(e, 0) : e));
     const s = {
       ...s0,
       faza: "bitka",
       starsi,
+      strany: [[], []],
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      bitkaStav: bitka({ krok: "prebytok", caka: 1, vitaz: 0, prebytokDrzi: 0, prebytokZostava: 1 }),
+      bitkaStav: bitka({ krok: "hadka", vitaz: null, sums: [{ Rana: 2 }, {}], hadka: { makke: [0, 0], vitaz: null, velkost: 0, zostava: 0, prepadlo: 0, zdvihy: [] } }),
     } as GameState;
-    let po = apply(data, s, { type: "prebytok", elderId: s.starsi[6]!.elderId }, 1).state;
+    expect(cervenychHraca(s, 1)).toBe(4);
+    let po = spustBitku(data, s).state;
     for (let i = 0; i < 20 && po.koniec === null && po.faza === "bitka"; i++) {
       const p = naTahu(po) as PlayerId;
       const c = legalCommands(data, po, p)[0];
       if (c === undefined) break;
       po = apply(data, po, c, p).state;
     }
+    expect(po.nastenka.at(-1)?.vitaz).toBe(0);
     expect(po.koniec).toBeNull();
   });
 });

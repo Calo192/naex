@@ -5,7 +5,7 @@
 
 import { useContext, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { BitkaNaNastenke, CardInstance, CielKola, Favour, PlayerId, SpakyTeraz } from "@naex/core";
+import type { BitkaNaNastenke, CardInstance, CielKola, Favour, PlayerId } from "@naex/core";
 import { KONSTANTY, jeFinaleNaNastenke, pocet, rozpisSpakov, spakov, opponentOf } from "@naex/core";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
@@ -13,6 +13,7 @@ import { ZnackaStrachu } from "./IkonaStrachu.tsx";
 import { FavourStarsich, PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { POMER, type ListokNaVyber } from "./rozlozenieNastenky.ts";
 import "./spaky.css";
+import { type SpakyTeraz } from "./staraStupnica.ts";
 
 export { IkonaSpaku };
 

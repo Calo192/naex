@@ -5,7 +5,7 @@
 // Berie len verejné udalosti a verejné počty zo stavu — server ju posiela obom hráčom
 // (nemenné pravidlo 2), preto žiadna súkromná udalosť (pre) ani karta z ruky.
 
-import type { PosunMarkera } from "./elders.ts";
+import type { ZmenaMarkera } from "./elders.ts";
 import type { CielVykladania, Command, Event, GameState } from "./engine.ts";
 import { pocetAbstakov } from "./player.ts";
 import type { RekapitulaciaBitky, RekapitulaciaPitky } from "./rekapitulacia.ts";
@@ -46,8 +46,8 @@ export interface PitkaVHistorii {
   readonly po: readonly [ZdrojeVHistorii, ZdrojeVHistorii];
 }
 
-/** Posun markera s menom karty staršieho v čase posunu (väzeň zo stupnice zmizne). */
-export interface PosunVHistorii extends PosunMarkera {
+/** Zmena strachu či rečí v kole (v11) s kartou staršieho, ktorá vtedy ležala na ukazovateli. */
+export interface PosunVHistorii extends ZmenaMarkera {
   readonly defId: string | null;
 }
 
@@ -61,6 +61,7 @@ export interface LokalitaVHistorii {
   /** Rekapitulácia bitky (null, kým sa nebilo). Špaky v nej sú z okamihu výsledku — konečné nesie nástenka. */
   readonly bitka: RekapitulaciaBitky | null;
   /** Posuny markerov počas kola (zajatie, Kšeft, Kapybara, po bitke Nakladačka; do v9 aj Pohoršenie). */
+  /** Zmeny strachu a rečí v kole (v11; do v10 posuny markerov). */
   readonly posuny: readonly PosunVHistorii[];
   /** Zdroje oboch po konci kola; null, kým kolo beží. */
   readonly koniec: readonly [ZdrojeVHistorii, ZdrojeVHistorii] | null;
@@ -141,9 +142,9 @@ export function zapisDoHistorie(h: HistoriaLokalit, pred: GameState, cmd: Comman
     } else if (e.type === "bitkaVysledok" && e.rekap !== undefined) {
       kolo = { ...kolo, bitka: e.rekap };
       zmena = true;
-    } else if (e.type === "posunMarkera") {
+    } else if (e.type === "zmenaMarkera") {
       const elder = po.starsi.find((x) => x.elderId === e.elderId) ?? pred.starsi.find((x) => x.elderId === e.elderId);
-      const posun: PosunVHistorii = { elderId: e.elderId, z: e.z, na: e.na, zdroj: e.zdroj, kto: e.kto, defId: elder?.karta.defId ?? null };
+      const posun: PosunVHistorii = { elderId: e.elderId, hrac: e.hrac, marker: e.marker, z: e.z, na: e.na, zdroj: e.zdroj, kto: e.kto, defId: elder?.karta.defId ?? null };
       kolo = { ...kolo, posuny: [...kolo.posuny, posun] };
       zmena = true;
     }

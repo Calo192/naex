@@ -57,7 +57,7 @@
 //                  zaplatené a udržané stupne sa vynulujú
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, MarkerPos, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
+import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlayerId, StavMomentov, TypMomentu } from "@naex/core";
 import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, setupGame, tahBota, viewFor, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
@@ -66,6 +66,7 @@ import { Momenty } from "./Momenty.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { useStolNaSirku } from "./zariadenie.ts";
 import { OtocTelefon } from "./OtocTelefon.tsx";
+import { type MarkerPos } from "./staraStupnica.ts";
 
 interface Krok {
   readonly stav: GameState;
@@ -96,7 +97,8 @@ function sKlebetami(s: GameState, spec: string): GameState {
     const e = s.starsi[Number(i)];
     if (e !== undefined && Number.isFinite(Number(n)) && Number(n) !== 0) klebety[e.elderId] = Number(n);
   }
-  return Object.keys(klebety).length === 0 || s.bitkaStav === null ? s : { ...s, bitkaStav: { ...s.bitkaStav, klebety: { ...(s.bitkaStav.klebety ?? {}), ...klebety } } };
+  // Klebety (v10) v11 nie sú — ukážka ich ignoruje.
+  return s;
 }
 
 /** Záznam bitky kola `kolo` s posunom z hádky podľa &hadka=i:n,… (bublina súhrnu posunov). */

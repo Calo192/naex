@@ -29,7 +29,7 @@ import {
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { instanceFor, makeDef, syntheticData } from "./helpers.ts";
+import { instanceFor, makeDef, syntheticData, zPolohy } from "./helpers.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -56,7 +56,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: 0,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -173,7 +173,7 @@ describe("Úžerník (Michal 2026-10-20): prah Dlhu 2 + sila, Zberateľ zanikol"
     const s0 = setupSBalickom(data, 42);
     const uzernik = s0.starsi.find((e) => favourStarsieho(data, e) === "UZERNIK")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
-    const s: GameState = { ...s0, starsi: s0.starsi.map((e) => (e === uzernik ? { ...e, marker: 1} : e)) };
+    const s: GameState = { ...s0, starsi: s0.starsi.map((e) => (e === uzernik ? { ...e, ...zPolohy(1) } : e)) };
     expect(prahyHraca(data, s, 0).dlh).toBe(2);
     expect(prahyHraca(data, s, 1).dlh).toBe(2);
   });
@@ -442,7 +442,7 @@ describe("Veriaci (Michal 2026-10-20): Viera navyše rovná sile", () => {
     const s0 = setupSBalickom(data, 49);
     const veriaci = s0.starsi.find((e) => favourStarsieho(data, e) === "VERIACI")!;
     // Marker na 1 = priazeň hráča 0, sila 2.
-    const s: GameState = { ...s0, strany: [[], []], starsi: s0.starsi.map((e) => (e === veriaci ? { ...e, marker: 1} : e)) };
+    const s: GameState = { ...s0, strany: [[], []], starsi: s0.starsi.map((e) => (e === veriaci ? { ...e, ...zPolohy(1) } : e)) };
     const dmg = poskodenieBitky(data, s, [{ Viera: 2 }, { Petelica: 4 }]);
     expect(dmg.zvysnaViera[0]).toBe(4);
     expect(dmg.tuhe[1]).toBe(12 - 4);

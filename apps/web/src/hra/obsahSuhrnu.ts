@@ -7,13 +7,14 @@
 // Kolo sa porovnáva po stavoch, nie po zázname posunov: stopa posunov (posunyMarkerov) sa
 // maže na začiatku každej Pitky, takže v kole s viac Pitkami by Kšefty z prvej chýbali.
 
-import type { BitkaNaNastenke, ClientState, ElderState, MarkerPos, PlayerId, Vazen } from "@naex/core";
-import { STUPNICA_ZONY, obavanyHrac, pokusMozny, priazenHraca, priazenSila, strachNaVyplatu, strachZ } from "@naex/core";
+import type { BitkaNaNastenke, ClientState, ElderState, PlayerId, Vazen } from "@naex/core";
+import { pokusMozny } from "@naex/core";
+import { type MarkerPos, STUPNICA_ZONY, obavanyHrac, priazenHraca, priazenSila, strachNaVyplatu, strachZ, markerStarsieho, type SMarkerom } from "./staraStupnica.ts";
 
 /** Starší a väzni na začiatku kola — prvý pohľad kola je pri voľbe cieľa, keď sa ešte nič nepohlo. */
 export interface ZaciatokKola {
   readonly kolo: number;
-  readonly starsi: readonly Pick<ElderState, "elderId" | "marker" | "karta">[];
+  readonly starsi: readonly ({ readonly elderId: string; readonly karta: ElderState["karta"] } & SMarkerom)[];
   /** Starší, ktorí už boli väzňami. */
   readonly vazni: readonly string[];
 }
@@ -21,7 +22,7 @@ export interface ZaciatokKola {
 export function zaciatokKola(view: Pick<ClientState, "kolo" | "starsi" | "vazni">): ZaciatokKola {
   return {
     kolo: view.kolo,
-    starsi: view.starsi.map((e) => ({ elderId: e.elderId, marker: e.marker, karta: e.karta })),
+    starsi: view.starsi.map((e) => ({ elderId: e.elderId, marker: markerStarsieho(e), karta: e.karta })),
     vazni: view.vazni.map((v) => v.elderId),
   };
 }
@@ -71,16 +72,16 @@ export function suhrnPosunov(
     if (e === undefined) {
       const v = pred.vazni.includes(a.elderId) ? undefined : po.vazni.find((x) => x.elderId === a.elderId);
       if (v === undefined) continue;
-      out.push({ elderId: a.elderId, defId: v.karta.defId, posun: null, elder: null, vyplata: vyplata(a.elderId, a.marker, a.marker), hadka: hadka(a.elderId), vazen: { hrac: v.hrac, poradie: v.poradie } });
+      out.push({ elderId: a.elderId, defId: v.karta.defId, posun: null, elder: null, vyplata: vyplata(a.elderId, markerStarsieho(a), markerStarsieho(a)), hadka: hadka(a.elderId), vazen: { hrac: v.hrac, poradie: v.poradie } });
       continue;
     }
-    const polozka = polozkaStarsieho(a.marker, e, vyplata(e.elderId, a.marker, e.marker), hadka(e.elderId));
+    const polozka = polozkaStarsieho(markerStarsieho(a), e, vyplata(e.elderId, markerStarsieho(a), markerStarsieho(e)), hadka(e.elderId));
     if (polozka !== null) out.push(polozka);
   }
   // Starší, ktorý na začiatku kola nebol na stupnici (zatiaľ ho nič nepridáva), ide na koniec.
   for (const e of po.starsi) {
     if (videni.has(e.elderId)) continue;
-    const polozka = polozkaStarsieho(e.marker, e, vyplata(e.elderId, e.marker, e.marker), hadka(e.elderId));
+    const polozka = polozkaStarsieho(markerStarsieho(e), e, vyplata(e.elderId, markerStarsieho(e), markerStarsieho(e)), hadka(e.elderId));
     if (polozka !== null) out.push(polozka);
   }
   return out;
@@ -88,7 +89,7 @@ export function suhrnPosunov(
 
 function polozkaStarsieho(z: MarkerPos, e: ElderState, vyplata: PolozkaSuhrnu["vyplata"], hadka: PolozkaSuhrnu["hadka"]): PolozkaSuhrnu | null {
   // Tam a späť (Michal 2026-10-31) je ako nepohnutý.
-  const posun = z === e.marker ? null : { z, na: e.marker };
+  const posun = z === markerStarsieho(e) ? null : { z, na: markerStarsieho(e) };
   if (posun === null && vyplata.length === 0 && hadka.length === 0) return null;
   return { elderId: e.elderId, defId: e.karta.defId, posun, elder: e, vyplata, hadka, vazen: null };
 }

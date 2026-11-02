@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { BitkaStav, CardInstance, GameState, LineState, MarkerPos, PlacedCard, PlayerId } from "../src/index.ts";
+import type { BitkaStav, CardInstance, GameState, LineState, PlacedCard, PlayerId } from "../src/index.ts";
 import {
   apply,
   favourStarsieho,
@@ -22,7 +22,7 @@ import {
   viewFor,
   vplyvyNaAkcie,
 } from "../src/index.ts";
-import { EMPTY, instanceFor, makeDef, syntheticData, type Layout4 } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, spustBitku, syntheticData, type Layout4, zPolohy } from "./helpers.ts";
 
 let uidSeq = 870000;
 const nastroj = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
@@ -136,7 +136,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: null,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -198,12 +198,12 @@ describe("Náradie mimo línie (§11, §12)", () => {
         ciel: { typ: "lokalita", lokalita: ciel },
         lokalityVHre: s0.lokalityVHre.slice(1),
         hraci: [{ ...s0.hraci[0], dlhy }, s0.hraci[1]],
-        // Bitka čaká na hádku hráča 0 (v10); súčty s Robotou hráča 0 sa po nej vyhodnotia (exekucieBitky).
-        bitkaStav: bitka({ krok: "hadka", caka: 0, sums: [{ Robota: 1, Rana: 3 }, {}], hadka: { makke: [1, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
+        // Bitka s vyhodnotenou hádkou; súčty s Robotou hráča 0 sa vyhodnotia (exekucieBitky).
+        bitkaStav: bitka({ krok: "hadka", caka: 0, sums: [{ Robota: 1, Rana: 3 }, {}], hadka: { makke: [1, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, zdvihy: [] } }),
       };
       return sDedicstvom(s, 0, nastroje);
     };
-    const po = (s: GameState): GameState => apply(data, s, { type: "hadka", elderId: s.starsi.filter((e) => favourStarsieho(data, e) !== "ROBOTA").at(-1)!.elderId }, 0).state;
+    const po = (s: GameState): GameState => spustBitku(data, s).state;
     // Bez Fúrika: 3 Dlhy → spáli 1; 0 Dlhov → 1 špak.
     const a = po(zaklad(3, []));
     expect(a.hraci[0].dlhy).toBeLessThanOrEqual(2);
@@ -268,10 +268,10 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(t.hraci[0].doberaci[0]?.defId).toBe("pijan");
   });
 
-  it("Horoskop (v10): tvoje Povery majú silu 2 — klebety z hádky do ďalšieho kola neprejdú", () => {
+  it("Horoskop (v10): tvoje Povery majú silu 2; hádka (v11) priazeň nemení ani v tomto, ani v ďalšom kole", () => {
     const s0 = sDedicstvom(setupGame(data, 5), 0, ["horoskop"]);
     const ciel = s0.lokalityVHre.find((k) => k.defId === "krcma")!;
-    const stred = s0.starsi.map((e) => ({ ...e, marker: 3 as MarkerPos }));
+    const stred = s0.starsi.map((e) => ({ ...e, ...zPolohy(3 as number) }));
     const s: GameState = {
       ...s0,
       faza: "bitka",
@@ -280,15 +280,14 @@ describe("Náradie mimo línie (§11, §12)", () => {
       starsi: stred,
       ciel: { typ: "lokalita", lokalita: ciel },
       lokalityVHre: s0.lokalityVHre.filter((k) => k.defId !== "krcma"),
-      bitkaStav: bitka({ krok: "hadka", caka: 0, exekutorHotovy: [true, true], hadka: { makke: [2, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
+      bitkaStav: bitka({ krok: "hadka", caka: 0, exekutorHotovy: [true, true], hadka: { makke: [2, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, zdvihy: [] } }),
     };
     // Povera hráča s Horoskopom dá 2 mäkké, bez neho 1.
     expect(poskodenieBitky(data, s, [{ Povera: 1 }, { Povera: 1 }]).makke).toEqual([2, 1]);
     const elder = s.starsi[0]!;
-    const r = apply(data, s, { type: "hadka", elderId: elder.elderId }, 0);
+    const r = spustBitku(data, s);
     let t = r.state;
     const favour = data.scorecards.find((x) => x.id === elder.scorecard)!.favour;
-    expect(r.events.some((e) => e.type === "log" && e.text.includes("priazeň do konca kola nikto → hráč 1 +1"))).toBe(true);
     for (let i = 0; i < 60 && t.bitkaStav !== null && t.koniec === null; i++) {
       const p = naTahu(t) as PlayerId;
       t = apply(data, t, legalCommands(data, t, p)[0]!, p).state;

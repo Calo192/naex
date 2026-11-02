@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
-import type { Command, GameState, MarkerPos, PlayerId } from "../src/index.ts";
+import type { Command, GameState, PlayerId } from "../src/index.ts";
 import {
   apply,
   cenaKliatby,
@@ -14,7 +14,6 @@ import {
   loadGameData,
   naTahu,
   nahladNaexNaKartu,
-  nahladPosunuMarkera,
   naexCieleVLinii,
   lineState,
   rngInt,
@@ -22,7 +21,10 @@ import {
   setupGame,
   textHrozbyKliatob,
   viewFor,
+  pohladPoRozdeleni,
+  stavVyhier,
 } from "../src/index.ts";
+import { zPolohy } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const ceny = () => ([0, 1] as const).map(() => ({ cirhoza: cenaKliatby("cirhoza"), dlh: cenaKliatby("dlh") })) as [{ cirhoza: number; dlh: number }, { cirhoza: number; dlh: number }];
@@ -87,13 +89,13 @@ describe("hrozba kliatob na stole (#38 B)", () => {
   });
 });
 
-describe("náhľad posunu povie, koľko starších bude vydesených (#38 B)", () => {
-  it("posun na červenú pridá vydeseného tomu, koho sa starší bojí (v9: toho sa dá skúsiť zajať)", () => {
+describe("náhľad posunu povie, koľko starších bude vydesených (#38 B; v11 stav výhier)", () => {
+  it("strach na červenú pridá červenú hráčovi, ktorý ho dvíha — toho staršieho smie skúsiť zajať", () => {
     const s0 = setupGame(data, 11);
-    const s: GameState = { ...s0, starsi: s0.starsi.map((e, i) => ({ ...e, marker: (i === 0 ? 5 : 3) as MarkerPos })) };
+    const s: GameState = { ...s0, starsi: s0.starsi.map((e, i) => ({ ...e, ...zPolohy((i === 0 ? 5 : 3) as number) })) };
     const v = viewFor(data, s, 0);
-    const n = nahladPosunuMarkera(data, v, s.starsi[0]!.elderId, 1, 3);
-    // Marker 5 → 6 (oranžová → červená stojí 3): vydesil ho hráč 0.
-    expect(n?.vydeseni).toEqual([1, 0]);
+    expect(v.vyhry.cervene).toEqual([0, 0]);
+    const po = pohladPoRozdeleni(v, 0, "strach", [{ elderId: s.starsi[0]!.elderId, na: 3 }]);
+    expect(stavVyhier(po).cervene).toEqual([1, 0]);
   });
 });

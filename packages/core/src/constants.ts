@@ -111,6 +111,8 @@ export const KONSTANTY = {
    * okolo polovice partií (predtým ~81 %, Nakladačka vo finále prepadla).
    */
   SPAKY_ZA_NAKLADACKU_VO_FINALE: 1,
+  /** Hádka vo finále (v11): reči sa už nedvíhajú, víťaz hádky dostane toľkoto špakov za každý jej bod. */
+  SPAKY_ZA_HADKU_VO_FINALE: 1,
   /**
    * Výkupné zvyšných zdrojov na konci hry (Michal 2026-10-27): každý plný
    * poldeci dá toľkoto špakov a každých CIGARIET_ZA_SPAK cigariet 1 špak.
@@ -145,13 +147,22 @@ export const KONSTANTY = {
   },
 
   /**
-   * Väzeň (krok 2 revízie starších, Michal 2026-10-30, PRAVIDLA §10): pokus o zajatie
-   * stojí cigaretu, tretí väzeň jedného hráča vyhráva, väzni bez výhry dajú po finále
-   * špaky podľa poradia zajatia v celej partii (1. väzeň 8, 2. 6, 3. 4, 4. 2).
+   * Väzeň (krok 2 revízie starších, Michal 2026-10-30; v11 Strach a reči, Michal 2026-11-02,
+   * PRAVIDLA §10): pokus o zajatie stojí cigaretu. Väzni na výhru podľa ligy (vazniNaVyhru);
+   * špaky za väzňov 8 / 6 / 4 / 2 v11 zanikli — nahradila ich krádež pri zajatí.
    */
   CENA_POKUSU: 1,
-  VAZNI_NA_VYHRU: 3,
-  SPAKY_ZA_VAZNOV: [8, 6, 4, 2] as readonly number[],
+  /**
+   * Strach a reči (v11, Michal 2026-11-02, docs/napady/strach-reci.html): vstup na stupeň
+   * 1 / 2 / 3 (žltá, oranžová, červená) stojí pri dvíhaní toľko bodov Nakladačky či hádky,
+   * koľko je číslo stupňa; po bitke marker na ňom dá SPAKY_ZA_STUPEN špakov. Kto vyhrá bitku
+   * a má červený strach u CERVENYCH_NA_VYHRU starších (väzni sa rátajú), vyhráva hneď.
+   */
+  CENA_STUPNA: [0, 1, 2, 3] as readonly number[],
+  SPAKY_ZA_STUPEN: [0, 1, 3, 5] as readonly number[],
+  CERVENYCH_NA_VYHRU: 4,
+  /** Porazený bitky dostane toľkoto cigariet (v11 — do v10 cigaretu za každého posunutého staršieho). */
+  CIGARETY_PORAZENEMU: 1,
   /** Vychovávateľka (Väzeň — Kšeft): „Petelica“ navyše = toľko tuhého držiteľovi v bitke. */
   VYCHOVAVATELKA_TUHE: 3,
 
@@ -193,6 +204,14 @@ export const KONSTANTY = {
 export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 
 /**
+ * Väzni na výhru (v11, Michal 2026-11-02): (lokality + finále) / 2 — Tretia liga 2,
+ * Druhá 3, Prvá 4. Do v10 vždy 3.
+ */
+export function vazniNaVyhru(lokalitCelkom: number): number {
+  return Math.max(1, Math.ceil((lokalitCelkom + 1) / 2));
+}
+
+/**
  * Verzia pravidiel, ktorú nesie každá archivovaná partia (Michal 2026-10-22) —
  * podľa nej sa dajú oddeliť partie hrané na iných pravidlách. Do zmrazenia v4
  * bola značkou dátum zmeny („2026-10-24.2“); od v4 (Michal 2026-10-24) sa
@@ -221,13 +240,16 @@ export const DLZKY_HRY = { kratka: 3, stredna: 5, dlha: 7 } as const;
 // a Forsáže, Sypač namiesto Kulturistu s Úplatkom (Úplatok zrušený), nová Vdova a Liberál.
 // v10.4 (Michal 2026-11-02) bez novej značky: pojem Spáliť, Autority Poľovník, Predavačka a Vedúcko,
 // Policajtka s pokutovým blokom (Pitka), Profesionálny tipér ráta aj Forsáž.
-export const VERZIA_PRAVIDIEL = "v10";
+// v11 (Michal 2026-11-02, docs/napady/strach-reci.html): Strach a reči — každý hráč má pri staršom
+// vlastný strach a reči, priazeň = rozdiel strachov, bodovanie starších po bitke, výhra strachom
+// (4 červené), väzni na výhru podľa ligy, krádež pri zajatí; platí v Zrejúcej.
+export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v10.4";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-02";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

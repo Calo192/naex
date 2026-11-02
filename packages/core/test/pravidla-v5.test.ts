@@ -2,6 +2,7 @@
 // po bitke, Pohoršenie oboma smermi, scorecardy a bodovanie v5, priazne v5.
 // Očakávané hodnoty sú z dávky, nie z kódu.
 
+import { spustBitku } from "./helpers.ts";
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
@@ -30,7 +31,7 @@ import {
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
-import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
+import { EMPTY, instanceFor, makeDef, zPolohy } from "./helpers.ts";
 import { setupSBalickom } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
@@ -57,7 +58,7 @@ function bitka(b: Partial<BitkaStav>): BitkaStav {
     vitaz: 0,
     prebytokDrzi: null,
     prebytokZostava: 0,
-    prebytokPosunute: [],
+    prebytokZdvihy: [], prebytokPrepadlo: 0,
     spalit: [],
     vesticaHotova: true,
     ...b,
@@ -110,62 +111,7 @@ describe("v5 bod 8: nepriznaná Cirhóza po bitke do odhadzovacieho balíčka", 
   });
 });
 
-describe("v10: hádka posúva silu priazne len k víťazovi (predtým v5 bod 7 Pohoršenie oboma smermi)", () => {
-  /** Bitka v kroku hádky, hráč 0 ju vyhral o `n`, línia prázdna. */
-  function vHadke(seed: number, uprav: (s: GameState) => GameState = (s) => s, n = 1): GameState {
-    const s0 = setupSBalickom(data, seed);
-    return uprav({
-      ...s0,
-      faza: "bitka",
-      kolo: 2,
-      utocnik: 1,
-      strany: [[], []],
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      lokalityVHre: s0.lokalityVHre.slice(1),
-      bitkaStav: bitka({ krok: "hadka", caka: 0, vitaz: null, vesticaHotova: false, hadka: { makke: [n, 0], vitaz: 0, velkost: n, zostava: n, prepadlo: 0, posuny: [] } }),
-    });
-  }
-  const sMarkerom = (s: GameState, elderId: string, marker: ElderState["marker"]): GameState => ({
-    ...s,
-    starsi: s.starsi.map((e) => (e.elderId === elderId ? { ...e, marker} : e)),
-  });
-  const bitkarId = (s: GameState): string => s.starsi.find((e) => data.scorecards.find((x) => x.id === e.scorecard)?.favour === "BITKAR")!.elderId;
-
-  it("víťaz vyberá len staršieho; priazeň ide k nemu a platí už v poškodení tejto bitky, marker stojí", () => {
-    const s = vHadke(71);
-    const id = bitkarId(s);
-    const st = sMarkerom(s, id, 3);
-    expect(legalCommands(data, st, 0)).toContainEqual({ type: "hadka", elderId: id });
-    expect(legalCommands(data, st, 1).filter((c) => c.type === "hadka")).toEqual([]);
-    const po = apply(data, st, { type: "hadka", elderId: id }, 0).state;
-    expect(po.starsi.find((e) => e.elderId === id)?.marker).toBe(3);
-    // Bitkár hráča 0 (sila 1 do konca kola) mu dal tuhé navyše už v tejto bitke — prázdna línia, inak 0 : 0.
-    expect(po.bitkaStav?.damage?.tuhe[0]).toBe(1);
-    expect(po.bitkaStav?.vitaz).toBe(0);
-  });
-
-  it("strop 3: na staršieho, ktorého priazeň je už víťazova v sile 3, hádka nesmie", () => {
-    const s = vHadke(72, (x) => x, 3);
-    const id = s.starsi[0]!.elderId;
-    const st = sMarkerom(s, id, 1);
-    expect(legalCommands(data, st, 0)).toContainEqual({ type: "hadka", elderId: id });
-    const naKraji = sMarkerom(s, id, 0);
-    expect(legalCommands(data, naKraji, 0)).not.toContainEqual({ type: "hadka", elderId: id });
-    expect(() => apply(data, naKraji, { type: "hadka", elderId: id }, 0)).toThrow(IllegalCommandError);
-  });
-
-  it("cena podľa zóny ako Nakladačka: súperovu silu 3 na stred za 4 + 3 + 2 = 9, potom k sebe na 1 za 1", () => {
-    const s = vHadke(73, (x) => x, 10);
-    const id = s.starsi[0]!.elderId;
-    // Marker na červenej hráča 1 — priazeň hráča 1 sily 3.
-    let st = sMarkerom(s, id, 6);
-    // Ostatní starší na víťazovej červenej: zvyšok ide len na tohto staršieho.
-    st = { ...st, starsi: st.starsi.map((e) => (e.elderId === id ? e : { ...e, marker: 0 as const })) };
-    const { state, events } = apply(data, st, { type: "hadka", elderId: id }, 0);
-    expect(events.some((e) => e.type === "log" && e.text.includes("(hráč 1, 10 z hádky)") && e.text.includes("hráč 2 +3 → hráč 1 +1"))).toBe(true);
-    expect(state.starsi.find((e) => e.elderId === id)?.marker).toBe(6);
-  });
-});
+// Hádka posúvala silu priazne (v10, predtým v5 bod 7) — od v11 dvíha reči: strach-reci.test.ts.
 
 describe("v5 bod 5 a v6: scorecardy nesú len priazeň", () => {
   it("východisková sada má 8 scorecardov bez podmienok (v6) a mená Kmotor, Abstinent, Robota a Advokát (v9)", () => {
@@ -208,8 +154,8 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
   );
   /** Priazeň `favour` hráčovi p so silou sila (marker na jeho polovici). */
   const sPriaznou = (s: GameState, favour: Favour, p: PlayerId, sila: 1 | 2 | 3): GameState => {
-    const marker = (p === 0 ? 3 - sila : 3 + sila) as ElderState["marker"];
-    return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, marker} : e)) };
+    const marker = (p === 0 ? 3 - sila : 3 + sila) as number;
+    return { ...s, starsi: s.starsi.map((e) => (favourStarsieho(sada, e) === favour ? { ...e, ...zPolohy(marker) } : e)) };
   };
   /** Pitka: hráč 1 na ťahu, na jeho strane dve karty, na ktoré smie dať NA EX. Ruky prázdne (bez odpovedí). */
   function pitkaSNaex(seed: number): { s: GameState; ciel: number } {
@@ -270,10 +216,9 @@ describe("v5 bod 6: priazne v5 (sila 1 / 2 / 3)", () => {
       ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
       lokalityVHre: s0.lokalityVHre.slice(1),
       hraci: [{ ...s0.hraci[0], dlhy: 5 }, { ...s0.hraci[1], dlhy: 5 }],
-      bitkaStav: bitka({ krok: "hadka", caka: 0, exekutorHotovy: [false, false], hadka: { makke: [1, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, posuny: [] } }),
+      bitkaStav: bitka({ krok: "hadka", caka: 0, exekutorHotovy: [false, false], hadka: { makke: [1, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, zdvihy: [] } }),
     };
-    const iny = s.starsi.find((e) => e.marker === 3 && !["ADVOKAT", "ROBOTA"].includes(favourStarsieho(data, e)))!;
-    const po = apply(data, s, { type: "hadka", elderId: iny.elderId }, 0).state;
+    const po = spustBitku(data, s).state;
     expect([po.hraci[0].dlhy, po.hraci[1].dlhy]).toEqual([2, 2]);
     expect(po.nastenka.at(-1)?.exekutor).toEqual([1, 3]);
     expect(prahyHraca(data, s, 0).exekucia).toBe(3);

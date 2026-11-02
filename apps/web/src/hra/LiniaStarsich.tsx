@@ -24,8 +24,8 @@
 import type { CSSProperties, HTMLAttributes, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Action, ElderState, GameData, Klebety, PlayerId, PosunMarkera, SpakyStarsieho } from "@naex/core";
-import { NAZVY_ZON, STUPNICA_ZONY, favourStarsieho, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, strachNaUdrzanie, strachNaVyplatu, opponentOf, type MarkerPos } from "@naex/core";
+import type { Action, ElderState, GameData, PlayerId } from "@naex/core";
+import { NAZVY_ZON, favourStarsieho, opponentOf } from "@naex/core";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
@@ -34,6 +34,8 @@ import { IkonaPriazneKruzku, KruzokPriazne, ListokHadky, ObsahNapovedyStarsieho,
 import type { Pravitko } from "./pravitko.ts";
 import { dvojityMarker, ktoPriazen, listokHadky, obsahNapovedy, polohaPreHraca, priazenKola, type DvojityMarker, type ListokHadky as ListokHadkyData, type PriazenKola } from "./priazenKola.ts";
 import { riadokStrachu, stitokStopy } from "./textyStarsich.ts";
+import { type Klebety, type PosunMarkera, STUPNICA_ZONY, obavanyHrac, priazenHraca, priazenSila, sPosunutymMarkerom, strachNaUdrzanie, strachNaVyplatu, type MarkerPos, markerStarsieho } from "./staraStupnica.ts";
+import { type SpakyStarsieho } from "./staraStupnica.ts";
 
 export { IKONA_PRIAZNE } from "./KruzokPriazne.tsx";
 
@@ -128,7 +130,7 @@ export interface LiniaStarsichProps {
 
 /** Vzťah staršieho k hráčom pri danej polohe markera. */
 function vztah(elder: ElderState, marker: MarkerPos) {
-  const e = marker === elder.marker ? elder : { ...elder, marker };
+  const e = marker === markerStarsieho(elder) ? elder : { ...elder, marker };
   return { priazen: priazenHraca(e), sila: priazenSila(e), obavany: obavanyHrac(e), uroven: STUPNICA_ZONY[marker] };
 }
 
@@ -249,7 +251,7 @@ function ScorecardVLinii({
 
   const krokTrieda =
     krok === null ? "" : s.vybrany === true ? " vybrany" : klik !== undefined ? ` klik${nahlad ? " nahl" : ""}` : " nedost";
-  const teraz = vztah(elder, elder.marker);
+  const teraz = vztah(elder, markerStarsieho(elder));
   const vydeseny = teraz.uroven === 3;
   const pk = priazenKola(elder, klebety, ja);
   const dm = dvojityMarker(elder, klebety, ja);
@@ -308,8 +310,8 @@ function ScorecardVLinii({
         </span>
       </div>
       <Stupnica
-        marker={polohaPreHraca(elder.marker, ja)}
-        stopa={stopa === undefined || stopa.z === elder.marker ? null : polohaPreHraca(stopa.z, ja)}
+        marker={polohaPreHraca(markerStarsieho(elder), ja)}
+        stopa={stopa === undefined || stopa.z === markerStarsieho(elder) ? null : polohaPreHraca(stopa.z, ja)}
         dm={dm}
         kruzky={napoveda.kruzky(dm.posunute)}
       />
@@ -353,9 +355,9 @@ function ZvacseninaStarsieho({
  * Ikona kroku v bubline a na žetónoch — piktogram akcie: hádka Pohoršenie (mäkké), Nakladačka
  * je prebytok poškodenia, preto Rana (Michal 2026-10-30).
  */
-const AKCIA_DELENIA: Readonly<Record<"hadka" | "prebytok", Action>> = { hadka: "Pohoršenie", prebytok: "Rana" };
+const AKCIA_DELENIA: Readonly<Record<"hadka" | "reci" | "prebytok", Action>> = { hadka: "Pohoršenie", reci: "Pohoršenie", prebytok: "Rana" };
 
-export function IkonaDelenia({ krok }: { readonly krok: "hadka" | "prebytok" }) {
+export function IkonaDelenia({ krok }: { readonly krok: "hadka" | "reci" | "prebytok" }) {
   return (
     <svg className="ikona-delenia" viewBox="0 0 100 100" aria-hidden="true">
       {IKONY[AKCIA_DELENIA[krok]].map((c, i) => (
@@ -400,7 +402,7 @@ function KartaRozdelenia({
   const su = opponentOf(ja);
   // Posun markera hýbe prsteňom a bodka ide s ním o rovnaký kus — rozdiel z hádky ostáva.
   const dm = dvojityMarker(r.navrh === null ? elder : { ...elder, marker: r.navrh.na }, klebety, ja);
-  const teraz = vztah(elder, elder.marker);
+  const teraz = vztah(elder, markerStarsieho(elder));
   const navrh = r.navrh;
   const zobraz = navrh === null ? teraz : vztah(elder, navrh.na);
   const spaky = (v: Vztah, poPosune: boolean): number =>
@@ -487,7 +489,7 @@ function KartaRozdelenia({
           />
         </span>
       </div>
-      <StupnicaRozdelenia r={r} marker={elder.marker} bodka={dm} ja={ja} />
+      <StupnicaRozdelenia r={r} marker={markerStarsieho(elder)} bodka={dm} ja={ja} />
       <PravitkaRozdelenia r={r} meno={s.meno} />
       {/* Klávesnica: pás je tlačidlo (Enter, medzerník); klik z neho prebuble na kartu a urobí výber. */}
       {pas !== null && (
@@ -664,7 +666,7 @@ function PecatPriazne({
   const su = opponentOf(ja);
   const fav = favourStarsieho(data, elder);
   const a = priazenKola(elder, klebety, ja);
-  const b = na === null || na === elder.marker ? null : priazenKola({ ...elder, marker: na }, klebety, ja);
+  const b = na === null || na === markerStarsieho(elder) ? null : priazenKola({ ...elder, marker: na }, klebety, ja);
   const p = b ?? a;
   const vz = (x: PriazenKola) => ({ priazen: x.hrac, sila: x.sila });
   const zmena = b === null ? null : zmenaPriazne(vz(a), vz(b), ja);

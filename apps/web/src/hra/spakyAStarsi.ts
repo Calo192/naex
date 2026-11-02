@@ -2,7 +2,8 @@
 // otestovať: odkiaľ hráč špaky má (súčet dá popolník) a ako stoja starší k hráčovi.
 
 import type { BitkaNaNastenke, CardInstance, ClientState, ElderState, PlayerId } from "@naex/core";
-import { STUPNICA_ZONY, jeFinaleNaNastenke, obavanyHrac, priazenHraca, strachZ } from "@naex/core";
+import { jeFinaleNaNastenke } from "@naex/core";
+import { STUPNICA_ZONY, obavanyHrac, priazenHraca, strachZ, type SMarkerom, markerStarsieho } from "./staraStupnica.ts";
 
 export interface SpakyPodlaZdroja {
   /** Špaky za vyhraté bitky o lokality (so sekerou, ktorú víťaz zobral). */
@@ -45,7 +46,7 @@ export function spakyPodlaZdroja(view: Pick<ClientState, "nastenka">, p: PlayerI
 export type SmerStarsieho = "hore" | "dole" | "nic";
 
 /** Ako starší stojí k hráčovi: hore = dáva mu priazeň (krígeľ), dole = bojí sa ho (špaky po bitke), nic = stred. */
-export function smerStarsieho(e: Pick<ElderState, "marker">, p: PlayerId): SmerStarsieho {
+export function smerStarsieho(e: SMarkerom, p: PlayerId): SmerStarsieho {
   return priazenHraca(e) === p ? "hore" : obavanyHrac(e) === p ? "dole" : "nic";
 }
 
@@ -58,11 +59,11 @@ export interface StupienkyStarsich {
   readonly stlpce: readonly { readonly elderId: string; readonly smer: SmerStarsieho; readonly zona: number }[];
 }
 
-export function stupienkyStarsich(starsi: readonly Pick<ElderState, "elderId" | "marker">[], p: PlayerId): StupienkyStarsich {
+export function stupienkyStarsich(starsi: readonly (Pick<ElderState, "elderId"> & SMarkerom)[], p: PlayerId): StupienkyStarsich {
   return {
     priazen: starsi.filter((e) => priazenHraca(e) === p).length,
     strach: starsi.filter((e) => strachZ(e, p) > 0).length,
-    stlpce: starsi.map((e) => ({ elderId: e.elderId, smer: smerStarsieho(e, p), zona: STUPNICA_ZONY[e.marker] })),
+    stlpce: starsi.map((e) => ({ elderId: e.elderId, smer: smerStarsieho(e, p), zona: STUPNICA_ZONY[markerStarsieho(e)] })),
   };
 }
 

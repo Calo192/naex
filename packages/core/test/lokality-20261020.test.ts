@@ -18,7 +18,6 @@ import {
   legalCommands,
   loadGameData,
   naexZaPitku,
-  rozdelujePrebytok,
   parseScorecards,
   planVykladania,
   evaluateLine,
@@ -155,11 +154,6 @@ describe("Vínna pivnica, Jednota, Obecný úrad, Kultúrny dom", () => {
     expect(naex("zberny_dvor")).toBe(true);
     expect(naex("krcma")).toBe(false);
   });
-
-  it("Kultúrny dom (v8): Nakladačka sa rozdeľuje ako inde — vyberá porazený (súper držiteľa)", () => {
-    expect(rozdelujePrebytok(vKole("kulturny_dom"), 0)).toBe(1);
-    expect(rozdelujePrebytok(vKole("krcma"), 1)).toBe(0);
-  });
 });
 
 // --- Bitka --------------------------------------------------------------------
@@ -210,7 +204,7 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
       vitaz: 1,
       prebytokDrzi: null,
       prebytokZostava: 0,
-      prebytokPosunute: [],
+      prebytokZdvihy: [], prebytokPrepadlo: 0,
       spalit: [],
       vesticaHotova: true,
     };
@@ -226,7 +220,8 @@ describe("Cintorín: porazený dá Nástroj z ruky do Dedičstva zadarmo", () =>
     const pred = s.dedicstvaVylozene;
     const po = apply(data, s, { type: "cintorin", uid: puska.uid }, 0).state;
     expect(po.hraci[0].dedicstvo.map((k) => k.uid)).toContain(puska.uid);
-    expect(po.hraci[0].cigarety).toBe(0);
+    // Cigarety neplatí; 1 dostane ako porazený (v11).
+    expect(po.hraci[0].cigarety).toBe(KONSTANTY.CIGARETY_PORAZENEMU);
     expect(po.dedicstvaVylozene).toBe(pred + 1);
   });
 

@@ -186,7 +186,7 @@ export function kluceZOcakavania(c: Command | null): string[] {
   if (Array.isArray(zoznam)) for (const u of zoznam) if (typeof u === "number") out.push(c.type === "stavbaSenku" ? `senok:${u}` : `uid:${u}`);
   if (typeof o.elderId === "string") out.push(`starsi:${o.elderId}`);
   // Kšeft vily: v ponuke pečiatky svieti presne tlačidlo, ktoré krok čaká (playtest výučby 20261030, k-kseft).
-  if (c.type === "kseft" && c.elderId !== undefined) out.push(klucVily(c.elderId, c.kSebe === true));
+  if (c.type === "kseft" && c.elderId !== undefined) out.push(klucVily(c.elderId, false));
   // Dedičstvo a priznanie: cieľom je dlaždica Karty v bare — svieti od začiatku kroku (playtest 20261030, k-dedicstvo).
   if (c.type === "place" && (c.target === "dedicstvo" || c.target === "priznanie")) out.push("bar:karty");
   if (c.type === "tah") for (const k of c.kroky) out.push(...kluceZOcakavania(k as Command));

@@ -571,9 +571,9 @@ export function popisKroku(data: GameData, state: GameState, c: Command): PopisK
       case "chooseLocation":
         return `vyber ${nazov}`;
       case "prebytok":
-        return `posuň Nakladačkou staršieho „${menoStarsieho(data, state, c.elderId)}“`;
-      case "hadka":
-        return `daj hádkou priazeň staršieho „${menoStarsieho(data, state, c.elderId)}“ k sebe`;
+        return `rozdeľ Nakladačku na strach: ${c.zdvihy.map((z) => `„${menoStarsieho(data, state, z.elderId)}“`).join(", ")}`;
+      case "reci":
+        return `rozdeľ hádku na reči: ${c.zdvihy.map((z) => `„${menoStarsieho(data, state, z.elderId)}“`).join(", ")}`;
       case "pokus":
         return `skús zajať staršieho „${menoStarsieho(data, state, c.elderId)}“`;
       case "bezPokusu":
