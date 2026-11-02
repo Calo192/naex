@@ -9,7 +9,7 @@
 //
 // Oprava 4 (Michal 2026-10-31): nič nepláva cez líniu — hlásenie o súperovom ťahu sa ukáže
 // na chvíľu v pruhu namiesto textu pokynu a odhad bitky je malý segment vľavo (ťuk = okno).
-// Pri binárnej voľbe (Vízia „zahodiť“, Hasič „vrátiť“) je druhá voľba tmavý segment vedľa hlavnej.
+// Pri binárnej voľbe (Vízia „spáliť“, Hasič „vrátiť“) je druhá voľba tmavý segment vedľa hlavnej.
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 

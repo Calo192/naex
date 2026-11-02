@@ -10,7 +10,7 @@ export interface PojemSlovnika {
 }
 
 export const SLOVNIK: readonly PojemSlovnika[] = [
-  { id: "abstak", pojem: "Absťák", popis: "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Zahodí ho Vízia." },
+  { id: "abstak", pojem: "Absťák", popis: "Karta s tagom Kliatba za menej nerestí v kole, než je tvoja Chuť: ide do odhadzovacieho balíčka, nedá sa priznať; každý v tvojom balíčku ti v bitke uberie 1 tuhé. Rozhoduje remízu v tuhom. Spáli ho Vízia." },
   { id: "chut", pojem: "Chuť", popis: "Tvoja verejná latka nerestí, na začiatku 0. Na konci kola: menej nerestí než Chuť = karta Absťák; potom Chuť = väčšie z (Chuť, neresti kola) − 1." },
   { id: "akcia", pojem: "Akcia", popis: "Symbol na hrane karty; platí, len keď sa na spoji stretne s akciou suseda v rovnakej výške." },
   { id: "barter", pojem: "Stokársky barter", popis: "Počas Pitky za 5 cigariet nový plný poldeci." },
@@ -47,6 +47,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "natocenie", pojem: "Natočenie", popis: "Ako obranca otočí lokalitu — určuje, ktorá jej hrana patrí ktorému kraju." },
   { id: "nerest", pojem: "Nerest", popis: "Len konzumácia: Vypiť 1, NA EX 2, vyfajčená cigareta 1, Kšeft väzňa 1. Na konci kola sa porovnáva s tvojou Chuťou." },
   { id: "obcania", pojem: "Občania", popis: "Balíček všetkých ostatných kariet šenku (Občania, Zvieratá…) lícom dole; pri stavbe šenku z neho dostaneš 6 kariet." },
+  { id: "odhodenie", pojem: "Odhodiť", popis: "Karta ide do odhadzovacieho balíčka svojho majiteľa — keď sa doberací minie, zamieša sa a vráti do hry. Opak spálenia." },
   { id: "odpoved", pojem: "Odpoveď na NA EX", popis: "Po odkrytí jedna karta za každé súperovo NA EX, lícom dole, zadarmo a mimo limitu; najprv odpovedá útočník, potom obranca na druhý kraj línie; obe sa otočia naraz." },
   { id: "partia", pojem: "Partia", popis: "Všetky tvoje karty v línii, nech ležia na ktorejkoľvek strane; ich akcie sa rátajú tebe." },
   { id: "pas", pojem: "Pas", popis: "Skončíš vykladanie v Zhromaždení a za každú kartu, ktorú si ešte smel vyložiť, dostaneš cigaretu — najviac toľko, koľko máš kariet v ruke." },
@@ -66,6 +67,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "priznanie", pojem: "Priznanie", popis: "Kliatbu vyložíš mimo línie do svojej hracej oblasti — natrvalo z balíčka." },
   { id: "sekera", pojem: "Na sekeru", popis: "Bitka bez víťaza (remíza v tuhom, Absťákoch aj Dlhoch): jej špaky vezme víťaz najbližšej bitky, vo finále prepadnú." },
   { id: "senok", pojem: "Šenok", popis: "Ponuka kariet lícom nahor; beriete z nej 1 kartu za 1 cigaretu alebo 2 za 3." },
+  { id: "spalenie", pojem: "Spáliť", popis: "Karta ide navždy z hry — nevracia sa do žiadneho balíčka (napr. Vízia). Spálený Dlh zmizne z počítadla." },
   { id: "spoj", pojem: "Spoj", popis: "Miesto, kde sa dotknú hrany dvoch kariet alebo karty a lokality." },
   { id: "starsi", pojem: "Starší", popis: "Vážená osoba dediny so stupnicou strachu (7 polí); desíš ho posúvaním markera od seba, upokojuješ k sebe." },
   { id: "stupen", pojem: "Stupeň", popis: "Poloha markera od stredu: 0 sivý stred (pokojný), 1 žltá (znepokojený), 2 oranžová (vystrašený), 3 červená (vydesený). Pre jedného sila priazne, pre druhého strach." },
@@ -77,7 +79,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "tuhe", pojem: "Tuhé poškodenie", popis: "Poškodenie z Rany (1), Pecky (2) a Petelice (3); kto má viac, vyhrá bitku." },
   { id: "utocnik", pojem: "Útočník a obranca", popis: "Útočník prehral poslednú bitku: vykladá prvý a na NA EX odpovedá prvý; obranca vyberá cieľ a berie zo šenku prvý (na prvom ťahu 1 kartu); Pitku hrajú obaja naraz; vo finále útočí, kto má menej špakov, a pinnacle vyberá vedúci." },
   { id: "viera", pojem: "Viera", popis: "Akcia, ktorá ruší súperove Povery 1 : 1 (aj vylepšené Horoskopom) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha." },
-  { id: "vizia", pojem: "Vízia", popis: "Na konci Pitky pozrieš vrchnú kartu balíčka a vezmeš si ju alebo ju navždy zahodíš." },
+  { id: "vizia", pojem: "Vízia", popis: "Na konci Pitky pozrieš vrchnú kartu balíčka a vezmeš si ju alebo ju navždy spáliš." },
   { id: "vydesenie", pojem: "Vydesený", popis: "Starší na stupni 3 (krajná červená): bojí sa hráča na opačnej strane — ten ho smie pred stavbou šenku skúsiť zajať." },
   { id: "vytrznik", pojem: "Výtržník", popis: "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke: všetky jej akcie sú Rany pre majiteľa (Sypačove Pecky), do konca bitky." },
   { id: "vypit", pojem: "Vypiť", popis: "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1." },
