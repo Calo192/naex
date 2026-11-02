@@ -38,7 +38,7 @@ import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
 import type { VysledokZlucenia } from "./zlucenie.ts";
 import { overKategoriu as overKategoriuNazoru, overSkupinu } from "./nazory.ts";
-import type { Vypalena } from "./zrejuca.ts";
+import type { PrenosPrihlasenia, Vypalena } from "./zrejuca.ts";
 import { LEN_PRE_TESTEROV, jeTester } from "./zrejuca.ts";
 
 /** Rozohraná partia hráča — pilulka „Partia beží · Späť ku stolu“ v hlavičke mimo stola. */
@@ -151,13 +151,17 @@ export interface ApiKontext {
    * sady; null = tento server je Vypálená.
    */
   readonly zrejuca: { readonly vypalena: Vypalena; readonly prevezmiSadu: () => Promise<{ verzia: number; zmena: boolean }> } | null;
+  /** Vypálená: verejná adresa Zrejúcej pre odkaz v menu Správa; null = nie je (vývoj, alebo toto je Zrejúca). */
+  readonly zrejucaAdresa: string | null;
+  /** Vypálená: jednorazové tokeny, ktorými sa správca prihlási do Zrejúcej bez hesla. */
+  readonly prenos: PrenosPrihlasenia;
 }
 
 /** Čo Zrejúca nerobí, lebo to patrí Vypálenej (účty, tvorca, známky hry) — odpoveď s odkazom tam. */
 const voVypalenej = (co: string, adresa: string): ChybaVstupu => new ChybaVstupu(`${co} je vo Vypálenej (${adresa}) — Zrejúca je len pokusná hra.`, 409);
 
 /** Cesty Zrejúcej, ktoré smie aj neprihlásený: kto je prihlásený, prihlásenie a odhlásenie. */
-const ZREJUCA_BEZ_UCTU = new Set(["GET /ja", "POST /prihlasenie", "POST /odhlasenie"]);
+const ZREJUCA_BEZ_UCTU = new Set(["GET /ja", "POST /prihlasenie", "POST /odhlasenie", "GET /prihlasenie-z-vypalenej"]);
 
 /** Zápisy do tvorcu kariet — v Zrejúcej nie, tvorca je jeden vo Vypálenej. */
 const ZAPIS_DO_TVORCU = /^(PUT|DELETE|POST) \/(karty|akcie|klucove-slova|kategorie|nastavenia|bodovacie|media|zverejnit|sady|import)(\/|$)/;
@@ -404,9 +408,40 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
   const r = `${metoda} /${casti.slice(1).join("/")}`;
 
   // Klient podľa inštancie kreslí pás „Zrejúca – pokusná verzia“ a vedie odkazy do Vypálenej.
-  const instancia = ctx.zrejuca === null ? { nazov: "vypalena", vypalena: null } : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa };
+  const instancia =
+    ctx.zrejuca === null
+      ? { nazov: "vypalena", vypalena: null, zrejuca: ctx.zrejucaAdresa }
+      : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa, zrejuca: null };
 
   try {
+    // Prenos prihlásenia do Zrejúcej (Michal 2026-11-02): Vypálená vydá testerovi jednorazový
+    // odkaz, Zrejúca ho cez /zrejuca/over overí a prihlási ho bez hesla.
+    if (ctx.zrejuca === null && r === "POST /zrejuca/odkaz") {
+      const p = prihlaseny();
+      if (!jeTester(p)) throw new ChybaVstupu(LEN_PRE_TESTEROV, 403);
+      if (ctx.zrejucaAdresa === null) throw new ChybaVstupu("Adresa Zrejúcej nie je nastavená.", 404);
+      return ok({ url: `${ctx.zrejucaAdresa}/api/prihlasenie-z-vypalenej?token=${ctx.prenos.vydaj(p.id, teraz)}` });
+    }
+    if (ctx.zrejuca === null && r === "POST /zrejuca/over") {
+      const b = await citajJson(req);
+      const id = typeof b.token === "string" ? ctx.prenos.uplatni(b.token, teraz) : null;
+      const p = id === null ? null : ctx.ucty.podlaId(id);
+      if (p === null) throw new ChybaVstupu("Odkaz do Zrejúcej neplatí — prihlás sa heslom.", 401);
+      return ok({ pouzivatel: { login: p.login, meno: p.meno, rola: p.rola, ai: p.ai, avatar: p.avatar, pohlavie: p.pohlavie } });
+    }
+    if (ctx.zrejuca !== null && r === "GET /prihlasenie-z-vypalenej") {
+      const v = await ctx.zrejuca.vypalena.overPrenos(query.get("token") ?? "");
+      // Neplatný odkaz alebo netester skončí na prihlásení Zrejúcej.
+      const hlavicky: Record<string, string> = { location: "/", "cache-control": "no-store" };
+      if (v.stav === "ok" && jeTester(v.ucet)) {
+        const p = ctx.ucty.zrkadli(v.ucet, teraz);
+        hlavicky["set-cookie"] = cookieRelacie(ctx.ucty.novaRelacia(p.id, teraz), ctx.bezpecneCookie);
+      }
+      res.writeHead(302, hlavicky);
+      res.end();
+      return;
+    }
+
     // Účty sú spoločné (Michal 2026-11-02): v Zrejúcej sa nezakladajú a heslo overí Vypálená.
     if (ctx.zrejuca !== null && (r === "POST /registracia" || r.startsWith("POST /obnova-hesla") || r === "POST /profil/heslo")) {
       throw voVypalenej("Účet", ctx.zrejuca.vypalena.adresa);

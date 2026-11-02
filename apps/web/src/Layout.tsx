@@ -236,6 +236,28 @@ function OdkazMenu(props: AnchorHTMLAttributes<HTMLAnchorElement> & { readonly h
 }
 
 /**
+ * Do Zrejúcej bez nového hesla (Michal 2026-11-02): Vypálená vydá jednorazový odkaz, ktorý
+ * Zrejúca overí. Keď sa nepodarí, otvorí sa obyčajná adresa a tester sa prihlási heslom.
+ */
+function doZrejucej(e: ReactMouseEvent<HTMLAnchorElement>, adresa: string): void {
+  if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  // Okno sa otvára ešte v kliku — po čakaní na server by ho prehliadač zablokoval.
+  const okno = window.open("about:blank", "_blank");
+  if (okno !== null) okno.opener = null;
+  void api
+    .post<{ url: string }>("/zrejuca/odkaz")
+    .then(
+      (r) => r.url,
+      () => adresa,
+    )
+    .then((url) => {
+      if (okno === null) location.href = url;
+      else okno.location.href = url;
+    });
+}
+
+/**
  * Pás Zrejúcej (Michal 2026-11-02) — na každej stránke okrem stola, kde by ubral výšku;
  * tam ostáva značka pri logu.
  */
@@ -457,7 +479,13 @@ export function Layout({
                       <span>{ja !== null ? NAZOV_UROVNE[ja.rola] : ""}</span>
                     </div>
                     {sprava.map((s) => (
-                      <OdkazMenu key={s.href} href={s.href} role="menuitem" className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}>
+                      <OdkazMenu
+                        key={s.href}
+                        href={s.href}
+                        role="menuitem"
+                        className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}
+                        {...(s.prenos === true ? { target: "_blank", rel: "noopener", onClick: (e: ReactMouseEvent<HTMLAnchorElement>) => doZrejucej(e, s.href) } : {})}
+                      >
                         {s.text}
                         {s.pocet === "navrhy" && pocetNavrhov}
                       </OdkazMenu>
@@ -532,7 +560,12 @@ export function Layout({
             {komunita.map((n) => odkaz(n, "", false))}
             {sprava.length > 0 && <div className="nav-skupina">Správa</div>}
             {sprava.map((s) => (
-              <OdkazMenu key={s.href} href={s.href} className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}>
+              <OdkazMenu
+                key={s.href}
+                href={s.href}
+                className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}
+                {...(s.prenos === true ? { target: "_blank", rel: "noopener", onClick: (e: ReactMouseEvent<HTMLAnchorElement>) => doZrejucej(e, s.href) } : {})}
+              >
                 {s.text}
                 {s.pocet === "navrhy" && pocetNavrhov}
               </OdkazMenu>

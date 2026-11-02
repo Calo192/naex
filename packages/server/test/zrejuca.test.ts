@@ -12,9 +12,10 @@ let vypalena: GameServer;
 let zrejuca: GameServer;
 const upratanie: (() => Promise<void>)[] = [];
 const VEREJNA = "https://vypalena.test";
+const ZREJUCA_VEREJNA = "https://zrejuca.test";
 
 beforeAll(async () => {
-  const v = await testovaciServer();
+  const v = await testovaciServer(TEST_ADMIN, { zrejucaAdresa: ZREJUCA_VEREJNA });
   vypalena = v.server;
   upratanie.push(v.zmaz);
   const z = await testovaciServer(TEST_ADMIN, {
@@ -54,13 +55,13 @@ describe("Zrejúca — prístup len pre testerov", () => {
   it("neprihlásený vidí len, kde je a ako sa prihlásiť; dáta nie", async () => {
     const ja = (await (await volaj(zrejuca, "GET", "/ja")).json()) as { pouzivatel: unknown; instancia: unknown };
     expect(ja.pouzivatel).toBeNull();
-    expect(ja.instancia).toEqual({ nazov: "zrejuca", vypalena: VEREJNA });
+    expect(ja.instancia).toEqual({ nazov: "zrejuca", vypalena: VEREJNA, zrejuca: null });
     const sada = await volaj(zrejuca, "GET", "/sada");
     expect(sada.status).toBe(401);
     expect(((await sada.json()) as { chyba: string }).chyba).toBe(LEN_PRE_TESTEROV);
     expect((await volaj(zrejuca, "GET", "/hry/otvorene")).status).toBe(401);
     // Vypálená ostáva verejná a o Zrejúcej nevie.
-    expect(((await (await volaj(vypalena, "GET", "/ja")).json()) as { instancia: unknown }).instancia).toEqual({ nazov: "vypalena", vypalena: null });
+    expect(((await (await volaj(vypalena, "GET", "/ja")).json()) as { instancia: unknown }).instancia).toEqual({ nazov: "vypalena", vypalena: null, zrejuca: ZREJUCA_VEREJNA });
     expect((await volaj(vypalena, "GET", "/sada")).status).toBe(200);
   });
 
@@ -96,6 +97,45 @@ describe("Zrejúca — prístup len pre testerov", () => {
     const ai = cookieZ(await prihlasenie(await ucetVoVypalenej("hrac", true), "tajneheslo"));
     expect((await volaj(zrejuca, "POST", "/profil/heslo", ai, { stare: "tajneheslo", nove: "inetajneheslo" })).status).toBe(409);
     expect((await volaj(zrejuca, "PUT", "/znamky", ai, { zabava: 7 })).status).toBe(409);
+  });
+});
+
+describe("Zrejúca — prenos prihlásenia z Vypálenej (menu Správa)", () => {
+  const odkaz = (cookie: string) => volaj(vypalena, "POST", "/zrejuca/odkaz", cookie);
+  const prenes = (token: string) => fetch(`http://127.0.0.1:${zrejuca.port}/api/prihlasenie-z-vypalenej?token=${encodeURIComponent(token)}`, { redirect: "manual" });
+
+  it("správca dostane jednorazový odkaz a Zrejúca ho prihlási bez hesla", async () => {
+    const subadmin = await ucetVoVypalenej("subadmin");
+    const cookieV = await prihlas(vypalena.port, subadmin, "tajneheslo");
+    const r = await odkaz(cookieV);
+    expect(r.status).toBe(200);
+    const { url } = (await r.json()) as { url: string };
+    const predpona = `${ZREJUCA_VEREJNA}/api/prihlasenie-z-vypalenej?token=`;
+    expect(url.startsWith(predpona)).toBe(true);
+    const token = decodeURIComponent(url.slice(predpona.length));
+
+    const prvy = await prenes(token);
+    expect(prvy.status).toBe(302);
+    expect(prvy.headers.get("location")).toBe("/");
+    const sessia = cookieZ(prvy);
+    expect(sessia).not.toBe("");
+    const ja = (await (await volaj(zrejuca, "GET", "/ja", sessia)).json()) as { pouzivatel: { login: string; rola: string } };
+    expect(ja.pouzivatel).toMatchObject({ login: subadmin, rola: "subadmin" });
+
+    // Jednorazový: druhý pokus už neprihlási.
+    const druhy = await prenes(token);
+    expect(druhy.status).toBe(302);
+    expect(cookieZ(druhy)).toBe("");
+    expect(cookieZ(await prenes("vymysleny-token"))).toBe("");
+  });
+
+  it("hráč ani neprihlásený odkaz nedostanú", async () => {
+    const hrac = await prihlas(vypalena.port, await ucetVoVypalenej("hrac"), "tajneheslo");
+    expect((await odkaz(hrac)).status).toBe(403);
+    expect((await odkaz("")).status).toBe(401);
+    // Zrejúca odkaz nevydáva (tvorca aj účty sú vo Vypálenej).
+    const adminZ = cookieZ(await prihlasenie(TEST_ADMIN.login, TEST_ADMIN.heslo));
+    expect((await volaj(zrejuca, "POST", "/zrejuca/odkaz", adminZ)).status).toBe(404);
   });
 });
 

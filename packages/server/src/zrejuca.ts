@@ -5,6 +5,7 @@
 // a hrá rozpracovaný stav jej tvorcu (/api/admin/obsah). Vypálená o Zrejúcej nevie —
 // netreba ju kvôli tomu meniť ani nasadzovať.
 
+import { createHash, randomBytes } from "node:crypto";
 import type { ServerResponse } from "node:http";
 import type { Pohlavie } from "@naex/core";
 import type { Rola } from "./auth.ts";
@@ -37,6 +38,43 @@ export type OverenieVypalenej =
   | { readonly stav: "nedostupna" };
 
 const CAKAJ_MS = 10_000;
+
+/** Ako dlho platí odkaz z Vypálenej do Zrejúcej — stačí na jeden klik a presmerovanie. */
+export const PRENOS_PLATI_MS = 60_000;
+
+/**
+ * Prenos prihlásenia z Vypálenej do Zrejúcej (Michal 2026-11-02): správca klikne v menu
+ * Správa a Vypálená mu vydá jednorazový token do odkazu. Zrejúca ho overí u Vypálenej
+ * (POST /api/zrejuca/over) a prihlási ho bez hesla. Token platí minútu a len raz; v pamäti
+ * je len jeho hash — reštart ho zruší, čo nevadí.
+ */
+export class PrenosPrihlasenia {
+  private readonly tokeny = new Map<string, { readonly pouzivatel: number; readonly plati: number }>();
+
+  vydaj(pouzivatel: number, teraz: number): string {
+    for (const [k, v] of this.tokeny) if (v.plati < teraz) this.tokeny.delete(k);
+    const token = randomBytes(32).toString("base64url");
+    this.tokeny.set(createHash("sha256").update(token).digest("hex"), { pouzivatel, plati: teraz + PRENOS_PLATI_MS });
+    return token;
+  }
+
+  /** Id účtu, ktorému token patrí; token tým zanikne. null = neplatný, použitý alebo starý. */
+  uplatni(token: string, teraz: number): number | null {
+    const kluc = createHash("sha256").update(token).digest("hex");
+    const z = this.tokeny.get(kluc);
+    this.tokeny.delete(kluc);
+    return z === undefined || z.plati < teraz ? null : z.pouzivatel;
+  }
+}
+
+const ucetZOdpovede = (p: Partial<UcetVypalenej> & { login: string }): UcetVypalenej => ({
+  login: p.login,
+  meno: p.meno ?? p.login,
+  rola: p.rola ?? "navstevnik",
+  ai: p.ai === true,
+  avatar: p.avatar ?? null,
+  pohlavie: p.pohlavie ?? null,
+});
 
 const cookieZOdpovede = (r: Response): string => (r.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
 
@@ -85,13 +123,23 @@ export class Vypalena {
         const ja = await this.volaj("GET", "/ja", cookie);
         const p = ja.ok ? ((await ja.json()) as { pouzivatel: (Partial<UcetVypalenej> & { login: string }) | null }).pouzivatel : null;
         if (p === null) return { stav: "nedostupna" };
-        return {
-          stav: "ok",
-          ucet: { login: p.login, meno: p.meno ?? p.login, rola: p.rola ?? "navstevnik", ai: p.ai === true, avatar: p.avatar ?? null, pohlavie: p.pohlavie ?? null },
-        };
+        return { stav: "ok", ucet: ucetZOdpovede(p) };
       } finally {
         await this.volaj("POST", "/odhlasenie", cookie).catch(() => undefined);
       }
+    } catch {
+      return { stav: "nedostupna" };
+    }
+  }
+
+  /** Overí jednorazový token z odkazu Vypálenej (PrenosPrihlasenia); token tým zanikne. */
+  async overPrenos(token: string): Promise<OverenieVypalenej> {
+    try {
+      const r = await this.volaj("POST", "/zrejuca/over", "", { token });
+      if (r.status === 401) return { stav: "zle" };
+      if (!r.ok) return { stav: "nedostupna" };
+      const { pouzivatel } = (await r.json()) as { pouzivatel: Partial<UcetVypalenej> & { login: string } };
+      return { stav: "ok", ucet: ucetZOdpovede(pouzivatel) };
     } catch {
       return { stav: "nedostupna" };
     }

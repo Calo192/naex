@@ -18,6 +18,8 @@
 //   NAEX_VYPALENA        adresa, na ktorej Zrejúca volá Vypálenú (v Dockeri http://naex:8787)
 //   NAEX_VYPALENA_ADRESA verejná adresa Vypálenej pre odkazy hráčom (predvolene NAEX_VYPALENA);
 //                        heslo admina Vypálenej je to isté NAEX_ADMIN_LOGIN / NAEX_ADMIN_HESLO
+//   NAEX_ZREJUCA_ADRESA  Vypálená: verejná adresa Zrejúcej pre menu Správa (predvolene NAEX_ADRESA
+//                        s „zrejuca.“ pred doménou, bez NAEX_ADRESA žiadna)
 
 import { fileURLToPath } from "node:url";
 import { createGameServer } from "./server.ts";
@@ -38,6 +40,8 @@ const zrejuca =
   instancia === "zrejuca" && urlVypalenej !== undefined
     ? { vypalena: new Vypalena(urlVypalenej, process.env.NAEX_VYPALENA_ADRESA || urlVypalenej, admin) }
     : undefined;
+const zrejucaAdresa =
+  process.env.NAEX_ZREJUCA_ADRESA || (process.env.NAEX_ADRESA ? process.env.NAEX_ADRESA.replace("://", "://zrejuca.") : undefined);
 if (zrejuca !== undefined) console.log(`Zrejúca — pokusná inštancia; účty a tvorca: ${urlVypalenej}`);
 
 // Scenár mení rozdanie — na živom webe nikdy (scenarZProstredia).
@@ -57,6 +61,7 @@ createGameServer({
   posliEmail: odosielacZProstredia(process.env.NAEX_EMAIL_REZIM),
   ...(process.env.NAEX_ADRESA ? { adresa: process.env.NAEX_ADRESA } : {}),
   ...(zrejuca !== undefined ? { zrejuca } : {}),
+  ...(zrejuca === undefined && zrejucaAdresa !== undefined ? { zrejucaAdresa } : {}),
 })
   .then((server) => {
     console.log(`NA EX server počúva na http://localhost:${server.port}`);

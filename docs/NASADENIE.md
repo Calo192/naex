@@ -270,7 +270,10 @@ smeruje obe adresy (`deploy/Caddyfile`) a Zrejúca volá Vypálenú priamo.
 Heslo admina berie z `.env` Vypálenej (`nahraj.sh --zrejuca` ho skopíruje); tým
 sa prihlasuje do jej tvorcu. Neprihlásený v Zrejúcej vidí len stránku
 „Zrejúca je len pre testerov“ s prihlásením; API mu nič nepošle. Na každej
-stránke je pás „Zrejúca – pokusná verzia“ (pri stole značka pri logu).
+stránke je pás „Zrejúca – pokusná verzia“ (pri stole značka pri logu) s odkazom
+späť do Vypálenej. Vo Vypálenej majú admin a subadmini v menu Správa položku
+„Zrejúca (pokusná verzia) ↗“: Vypálená vydá jednorazový odkaz (platí minútu),
+Zrejúca ho overí u nej (`POST /api/zrejuca/over`) a prihlási ich bez hesla.
 Obrázky (ilustrácie, avatary), ktoré Zrejúca nemá, podá zo svojej adresy
 z Vypálenej. Hudba a hlášky Melichara sú v dátach každej inštancie zvlášť —
 do Zrejúcej ich treba nahrať rovnako ako v častiach 5b a 5c, len v
@@ -320,3 +323,4 @@ Dáta sú v priečinku `data/` (databáza `naex.sqlite` a `media/`).
 | `NAEX_INSTANCIA` | `vypalena` (oficiálna) alebo `zrejuca` (pokusná, len testeri) — časť 9 | `vypalena` |
 | `NAEX_VYPALENA` | Zrejúca: adresa, na ktorej volá Vypálenú (účty, tvorca, obrázky) | compose Zrejúcej: `http://naex:8787` |
 | `NAEX_VYPALENA_ADRESA` | Zrejúca: verejná adresa Vypálenej do odkazov | `NAEX_VYPALENA` |
+| `NAEX_ZREJUCA_ADRESA` | Vypálená: adresa Zrejúcej pre odkaz v menu Správa | `NAEX_ADRESA` so `zrejuca.` pred doménou |
