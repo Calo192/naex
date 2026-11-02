@@ -36,7 +36,7 @@ import { prihlasAgenta, webUrl } from "./web.ts";
 
 const args = process.argv.slice(2);
 /** Prepínače bez hodnoty — argument za nimi je voľný (relácia, názov). */
-const BEZ_HODNOTY = new Set(["--tvorba", "--plna", "--mobil", "--prehod", "--iphone"]);
+const BEZ_HODNOTY = new Set(["--tvorba", "--plna", "--mobil", "--prehod", "--iphone", "--zivy", "--zrejuca"]);
 const volba = (k: string): string | undefined => {
   const i = args.indexOf(k);
   return i < 0 ? undefined : args[i + 1];
@@ -59,7 +59,7 @@ const sirka = Number(volba("--sirka") ?? (mobil ? "390" : "1600"));
 const vyska = Number(volba("--vyska") ?? (mobil ? "844" : "1000"));
 // --hover x,y alebo CSS selektor (myš na stred prvku, napr. ".nastenka-listok[tabindex]").
 const hoverArg = volba("--hover");
-const hover = hoverArg !== undefined && /^d+,d+$/.test(hoverArg) ? hoverArg.split(",").map(Number) : undefined;
+const hover = hoverArg !== undefined && /^\d+,\d+$/.test(hoverArg) ? hoverArg.split(",").map(Number) : undefined;
 const hoverSel = hoverArg !== undefined && hover === undefined ? hoverArg : undefined;
 // Git Bash (MSYS) na Windows prepíše argument „/pravidla" na „C:/Program Files/Git/pravidla" —
 // vrátime pôvodnú cestu; bez lomky na začiatku ju doplníme.
@@ -91,14 +91,16 @@ async function prihlasenie(): Promise<Prihlasenie> {
     return { zaklad: url, login: ucet.login, heslo: ucet.heslo, miestnost: volba("--miestnost") ?? null, vystup: volba("--vystup") ?? join("playtest", "dizajn", "snimky"), predpona: "" };
   }
   const hra = JSON.parse(readFileSync(join(relacia ?? "", "hra.json"), "utf8")) as {
-    port: number;
+    port?: number;
+    /** Partia na Zrejúcej (zaloz.ts --zrejuca) — adresa webu namiesto portu. */
+    url?: string;
     kod: string;
     hraci: { login: string; heslo: string }[];
   };
   const ucet = hra.hraci[Number(hracArg) - 1];
   if (ucet === undefined) throw new Error("Neznámy hráč.");
   return {
-    zaklad: `http://localhost:${hra.port}`,
+    zaklad: hra.url ?? `http://localhost:${hra.port ?? 8787}`,
     login: ucet.login,
     heslo: ucet.heslo,
     miestnost: hra.kod,

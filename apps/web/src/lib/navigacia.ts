@@ -3,7 +3,7 @@
 // účtu bez položiek, ktoré sú inde. Kto čo vidí, rozhoduje tu — Layout len kreslí.
 // Práva stráži server; skrytý odkaz len šetrí hráča od stránky, ktorá ho odmietne.
 
-import { jeSpravca, maPravo, type Pouzivatel, type Pravo } from "./ucet.tsx";
+import { jeSpravca, maPravo, type Instancia, type Pouzivatel, type Pravo } from "./ucet.tsx";
 
 export interface PolozkaNavigacie {
   readonly href: string;
@@ -19,6 +19,18 @@ interface Definicia extends PolozkaNavigacie {
   readonly pravo?: Pravo;
 }
 
+/**
+ * Zrejúca (Michal 2026-11-02) je len hra: komunita, Vývoj, tvorca kariet a Playtest sú vo
+ * Vypálenej — odkaz vedie tam (plná adresa; Layout ju kreslí ako obyčajný odkaz).
+ */
+const VO_VYPALENEJ = new Set(["/novinky", "/vyvoj", "/spatna-vazba", "/playtest", "/admin"]);
+
+const doVypalenej = <T extends { readonly href: string }>(polozky: readonly T[], instancia: Instancia | undefined): T[] =>
+  polozky.map((p) => (instancia?.nazov === "zrejuca" && VO_VYPALENEJ.has(p.href) ? { ...p, href: `${instancia.vypalena ?? ""}${p.href}` } : p));
+
+/** Odkaz von zo stránky (do Vypálenej) — nejde cez router. */
+export const jeVonkajsi = (href: string): boolean => /^https?:\/\//.test(href);
+
 const NAVIGACIA: readonly Definicia[] = [
   { href: "/hra", text: "Hrať", skupina: "hra", priorita: 99, hlavna: true },
   { href: "/pravidla", text: "Pravidlá", skupina: "hra", priorita: 6 },
@@ -33,9 +45,9 @@ const NAVIGACIA: readonly Definicia[] = [
  * Hlavné menu. Neprihlásený má práva Nealka (/api/ja ich pošle aj bez účtu);
  * bez nich (starý server) sa ukáže všetko ako doteraz — server aj tak overí.
  */
-export function hlavneMenu(ja: Pouzivatel | null, pravaNavstevnika: readonly Pravo[] | null): PolozkaNavigacie[] {
+export function hlavneMenu(ja: Pouzivatel | null, pravaNavstevnika: readonly Pravo[] | null, instancia?: Instancia): PolozkaNavigacie[] {
   const smie = (p: Pravo): boolean => (ja !== null ? maPravo(ja, p) : pravaNavstevnika === null || pravaNavstevnika.includes(p));
-  return NAVIGACIA.filter((n) => n.pravo === undefined || smie(n.pravo));
+  return doVypalenej(NAVIGACIA.filter((n) => n.pravo === undefined || smie(n.pravo)), instancia);
 }
 
 export interface PolozkaSpravy {
@@ -46,13 +58,15 @@ export interface PolozkaSpravy {
 }
 
 /** Menu „Správa ▾“ — admin aj subadmin vidia všetko (stránky si práva strážia samé). */
-export function spravaWebu(ja: Pouzivatel | null): PolozkaSpravy[] {
+export function spravaWebu(ja: Pouzivatel | null, instancia?: Instancia): PolozkaSpravy[] {
   if (ja === null || !jeSpravca(ja.rola)) return [];
-  return [
+  const polozky: PolozkaSpravy[] = [
     { href: "/playtest", text: "Playtest", pocet: "navrhy" },
     { href: "/admin", text: "Tvorba kariet" },
     { href: "/hraci", text: "Hráči" },
   ];
+  // Počet návrhov na rozhodnutie pozná Vypálená, nie Zrejúca.
+  return instancia?.nazov === "zrejuca" ? doVypalenej(polozky, instancia).map(({ pocet: _, ...p }) => p) : polozky;
 }
 
 /**

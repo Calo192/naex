@@ -430,6 +430,30 @@ export class Ucty {
     return this.podlaId(r.id);
   }
 
+  /**
+   * Zrejúca (zrejuca.ts): účet overený vo Vypálenej sa sem zrkadlí pod tým istým loginom.
+   * Meno, rank, značka AI, avatar a pohlavie idú z Vypálenej pri každom prihlásení;
+   * nastavenia (lupa, hudba, schéma…) ostávajú tunajšie. Heslo tu účet nemá — overuje ho
+   * vždy Vypálená ("zrkadlo" nie je scrypt, overHeslo ho nikdy neprijme).
+   */
+  zrkadli(u: { login: string; meno: string; rola: Rola; ai: boolean; avatar: string | null; pohlavie: Pohlavie | null }, teraz: number): Pouzivatel {
+    const meno = u.meno.slice(0, 24);
+    const r = this.db.prepare("SELECT id FROM pouzivatelia WHERE login = ?").get(u.login) as { id: number } | undefined;
+    const id =
+      r?.id ??
+      Number(
+        this.db
+          .prepare("INSERT INTO pouzivatelia (login, heslo, meno, avatar, rola, vytvoreny) VALUES (?, 'zrkadlo', ?, ?, ?, ?)")
+          .run(u.login, meno, u.avatar ?? this.predvoleny(), u.rola, teraz).lastInsertRowid,
+      );
+    this.db
+      .prepare("UPDATE pouzivatelia SET meno = ?, rola = ?, rola_rucne = 1, ai = ?, pohlavie = ?, avatar = COALESCE(?, avatar) WHERE id = ?")
+      .run(meno, u.rola, u.ai ? 1 : 0, u.pohlavie, u.avatar, id);
+    const p = this.podlaId(id);
+    if (p === null) throw new Error("Účet sa nepodarilo zrkadliť.");
+    return p;
+  }
+
   zmenHeslo(id: number, stare: string, nove: string): void {
     const r = this.db.prepare("SELECT heslo FROM pouzivatelia WHERE id = ?").get(id) as { heslo: string } | undefined;
     if (r === undefined || !overHeslo(stare, r.heslo)) throw new ChybaVstupu("Súčasné heslo nesedí.");

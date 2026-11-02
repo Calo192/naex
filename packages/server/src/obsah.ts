@@ -104,6 +104,16 @@ function stranaZJson(s: RawSide): StranaNavrhu {
   };
 }
 
+/** Obsah tvorcu kariet, z ktorého sa skladá sada (tunajší, alebo Vypálenej pre Zrejúcu). */
+export interface ObsahTvorcu {
+  readonly karty: readonly KartaNavrh[];
+  readonly akcie: readonly AkciaDef[];
+  readonly klucoveSlova: readonly KlucoveSlovo[];
+  readonly kategorie: readonly Kategoria[];
+  readonly bodovacie: readonly BodovaciaKarta[];
+  readonly ikonyBodovania: readonly IkonaBodovania[];
+}
+
 export class Obsah {
   readonly karty: JsonTabulka<KartaNavrh>;
   readonly akcie: JsonTabulka<AkciaDef>;
@@ -435,9 +445,10 @@ export class Obsah {
   }
 
   /** Scorecardy pre sadu z bodovacích kariet tvorcu (prázdny tvorca → východiskové z repozitára). */
-  private bodovanieSady(): { scorecardsJson: unknown; bodovacie: BodovaciaKarta[]; ikonyBodovania: IkonaBodovania[]; problemy: string[] } {
-    const bodovacie = this.bodovacie.vsetky();
-    const ikonyBodovania = this.ikonyBodovania.vsetky();
+  private bodovanieSady(
+    bodovacie: BodovaciaKarta[] = this.bodovacie.vsetky(),
+    ikonyBodovania: IkonaBodovania[] = this.ikonyBodovania.vsetky(),
+  ): { scorecardsJson: unknown; bodovacie: BodovaciaKarta[]; ikonyBodovania: IkonaBodovania[]; problemy: string[] } {
     if (bodovacie.length === 0) return { scorecardsJson: this.scorecardsPredvolene, bodovacie, ikonyBodovania, problemy: [] };
     const body = parseScorecards(this.scorecardsPredvolene).body;
     const { json, problemy } = doScorecardsJson(bodovacie, ikonyBodovania, body);
@@ -485,20 +496,25 @@ export class Obsah {
   // -------------------------------------------------------------------------
   // Zverejnenie
 
-  /** Overí návrhy a uloží novú sadu; pri chybe vyhodí zoznam problémov. */
-  zverejni(autor: number | null, teraz: number): Sada {
-    const karty = this.karty.vsetky();
+  /** Tvorca tohto servera — z neho sa zverejňuje. */
+  private tvorca(): ObsahTvorcu {
+    return { karty: this.karty.vsetky(), ...this.vzhlad(), bodovacie: this.bodovacie.vsetky(), ikonyBodovania: this.ikonyBodovania.vsetky() };
+  }
+
+  /** Sada z obsahu tvorcu a problémy, pre ktoré by ju hra nenačítala (zverejnenie aj Zrejúca). */
+  private zostavSadu(t: ObsahTvorcu, teraz: number): { obsah: Omit<Sada, "verzia">; problemy: string[] } {
+    const karty = [...t.karty];
     const problemy: string[] = [];
     for (const k of karty) {
       for (const ch of chybyNavrhu(k)) problemy.push(`${k.nazov}: ${ch}`);
       const nezname = neznameAkcie(k);
       if (nezname.length > 0) {
-        const nazvy = nezname.map((a) => this.akcie.jeden(a)?.nazov ?? a).join(", ");
+        const nazvy = nezname.map((a) => t.akcie.find((x) => x.kluc === a)?.nazov ?? a).join(", ");
         problemy.push(`${k.nazov}: akcia ${nazvy} nemá v hre pravidlá — najprv ju treba naprogramovať v jadre.`);
       }
     }
     const cardsJson = doCardsJson(karty, `tvorca kariet ${new Date(teraz).toISOString()}`);
-    const { problemy: problemyBodovania, ...bodovanie } = this.bodovanieSady();
+    const { problemy: problemyBodovania, ...bodovanie } = this.bodovanieSady([...t.bodovacie], [...t.ikonyBodovania]);
     problemy.push(...problemyBodovania);
     if (problemy.length === 0) {
       try {
@@ -507,10 +523,30 @@ export class Obsah {
         problemy.push(err instanceof Error ? err.message : String(err));
       }
     }
-    if (problemy.length > 0) throw new ChybaVstupu(`Sadu nemožno zverejniť:\n${problemy.join("\n")}`, 422);
+    const vzhlad = { akcie: [...t.akcie].sort((a, b) => a.poradie - b.poradie), klucoveSlova: [...t.klucoveSlova], kategorie: [...t.kategorie] };
+    return { obsah: { cas: teraz, karty, cardsJson, ...bodovanie, ...vzhlad }, problemy };
+  }
 
-    const obsah = { cas: teraz, karty, cardsJson, ...bodovanie, ...this.vzhlad() };
+  /** Overí návrhy a uloží novú sadu; pri chybe vyhodí zoznam problémov. */
+  zverejni(autor: number | null, teraz: number): Sada {
+    const { obsah, problemy } = this.zostavSadu(this.tvorca(), teraz);
+    if (problemy.length > 0) throw new ChybaVstupu(`Sadu nemožno zverejniť:\n${problemy.join("\n")}`, 422);
     return { verzia: this.ulozSadu(obsah, autor, teraz), ...obsah };
+  }
+
+  /**
+   * Zrejúca (Michal 2026-11-02) hrá rozpracovaný stav tvorcu Vypálenej: keď sa zmenil,
+   * uloží sa tu ako nová verzia sady — partie a prehrávač sa na ňu odkazujú číslom ako
+   * na zverejnenú. Stav, ktorý hra nenačíta, sa odmietne a hrá sa ďalej posledný dobrý.
+   */
+  prevezmiRozpracovanu(t: ObsahTvorcu, teraz: number): { verzia: number; zmena: boolean } {
+    const { obsah, problemy } = this.zostavSadu(t, teraz);
+    if (problemy.length > 0) throw new ChybaVstupu(`Rozpracovanú sadu Vypálenej hra nenačíta:\n${problemy.join("\n")}`, 422);
+    // Čas zostavenia je v sade dvakrát (cas, cardsJson.source) — zmenou nie je.
+    const bezCasu = (o: Omit<Sada, "verzia">): string => JSON.stringify({ ...o, cas: 0, cardsJson: { ...(o.cardsJson as Record<string, unknown>), source: null } });
+    const stara = this.poslednaSada();
+    if (stara !== null && bezCasu(stara) === bezCasu(obsah)) return { verzia: this.aktualnaSada().sada.verzia, zmena: false };
+    return { verzia: this.ulozSadu(obsah, null, teraz), zmena: true };
   }
 
   aktualnaSada(): { sada: Sada; data: GameData } {

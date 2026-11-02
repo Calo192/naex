@@ -74,6 +74,8 @@
 //   server-stav [--json]          nasadená verzia (commit), rozohrané partie a uzávierka — pred nasadením (skill naex-nasad)
 //   uzavierka zapni|vypni|stav    uzávierka pred nasadením: nové partie nie, rozohrané dohrajú (reštart ju zruší)
 //   linka                         čo čaká na Michala, Developera a nasadenie (skill naex-stav); s --zivy aj nenasadené commity
+//                                 Vypálenej (origin/vypalena) a Zrejúcej (origin/master)
+//   sada-zrejuca                  --zrejuca: Zrejúca hneď prevezme rozpracovanú sadu z tvorcu Vypálenej (inak do minúty sama)
 // Roadmapa (stránka Vývoj → Roadmapa, Michal 2026-10-21)
 //   roadmapa [stlpec] [--json]    poradie položiek; stĺpce prijimac | teraz | dalej | potom | neskor | hotove
 //                                 Developer berie schválené návrhy v poradí stĺpca Teraz zhora
@@ -88,7 +90,10 @@
 // Avatary AI účtov (Leonardo.Ai, v štýle avatarov offline protihráčov)
 //   avatar-generuj <kluc> "<námet po anglicky>" [--seed N]   jedno kolo (2 obrázky) do admin-agent/avatary/<kluc>/
 //
-// Na živý web (https://<DOMENA z deploy/.env.produkcia>) prepínač --zivy.
+// Na živý web (https://<DOMENA z deploy/.env.produkcia>) prepínač --zivy — to je Vypálená (oficiálna hra,
+// tvorca kariet, Spätná väzba, Playtest, roadmapa, novinky). Prepínač --zrejuca = pokusná Zrejúca
+// (https://zrejuca.<DOMENA>, Michal 2026-11-02): jej hra, partie a server (server-stav, uzavierka,
+// sada-zrejuca); tvorca je len vo Vypálenej a Zrejúca hrá jeho rozpracovaný stav.
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
@@ -99,7 +104,7 @@ import eldersJson from "../../packages/core/data/elders.json" with { type: "json
 import scorecardsJson from "../../packages/core/data/scorecards.json" with { type: "json" };
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia } from "@naex/tvorba";
 import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkcie, variantyKarty } from "@naex/tvorba";
-import { adminWebu, nacitajEnv, prihlasAgenta, webUrl } from "../playtest/web.ts";
+import { adminWebu, nacitajEnv, prihlasAgenta, webUrl, zivyWeb, zrejucaWeb } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
 import { MODEL, REFERENCIE, STYL_JADRO, REFERENCIE_PASU, STYL_PASU, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
@@ -1026,6 +1031,12 @@ async function main(): Promise<void> {
       break;
     }
 
+    case "sada-zrejuca": {
+      const r = await api<{ verzia: number; zmena: boolean }>("POST", "/admin/sada-z-vypalenej");
+      console.log(r.zmena ? `Zrejúca hrá rozpracovanú sadu Vypálenej ako v${r.verzia}.` : `Bez zmeny — Zrejúca už hrá aktuálny stav tvorcu (v${r.verzia}).`);
+      break;
+    }
+
     case "server-stav": {
       const s = await api<StavServeraCli>("GET", "/admin/stav-servera");
       if (prep.has("--json")) {
@@ -1070,13 +1081,36 @@ async function main(): Promise<void> {
       console.log("\n== Čaká na playtest (overenie zmien)");
       skupina("  Implementované, neoverené", navrhy.filter((n) => n.stav === "implementovane").map(riadok));
 
-      console.log("\n== Server a nasadenie");
+      // Vypálená sa nasadzuje z vetvy vypalena, Zrejúca z master (Michal 2026-11-02).
+      const nenasadene = (stav: StavServeraCli, vetva: string, kde: string): void => {
+        if (stav.verzia !== null && git("rev-parse", "--verify", "--quiet", `${stav.verzia.commit}^{commit}`) !== "") {
+          const commity = git("log", "--oneline", `${stav.verzia.commit}..${vetva}`).split("\n").filter((r) => r !== "");
+          skupina(`  Commity v ${vetva}, ktoré nie sú ${kde} (/naex-nasad)`, commity.map((r) => `    ${r}`));
+        } else if (stav.verzia === null) {
+          console.log("  Server nevie svoju verziu (nasadený pred VERZIA.json, alebo vývojový) — nenasadené commity nezistím.");
+        }
+      };
+      let vypalena: string | null = null;
+      try {
+        vypalena = zivyWeb();
+      } catch {
+        // bez deploy/.env.produkcia je to len lokálny server
+      }
+      const jeVypalena = url === vypalena;
+      console.log(`\n== Server a nasadenie${jeVypalena ? " — Vypálená (oficiálna, z vetvy vypalena)" : ""}`);
       vypisStavServera(s);
-      if (s.verzia !== null && git("rev-parse", "--verify", "--quiet", `${s.verzia.commit}^{commit}`) !== "") {
-        const nenasadene = git("log", "--oneline", `${s.verzia.commit}..origin/master`).split("\n").filter((r) => r !== "");
-        skupina("  Commity v origin/master, ktoré nie sú nasadené (/naex-nasad)", nenasadene.map((r) => `    ${r}`));
-      } else if (s.verzia === null) {
-        console.log("  Server nevie svoju verziu (nasadený pred VERZIA.json, alebo vývojový) — nenasadené commity nezistím.");
+      nenasadene(s, jeVypalena ? "origin/vypalena" : "origin/master", jeVypalena ? "vo Vypálenej" : "nasadené");
+      if (jeVypalena) {
+        console.log("\n== Zrejúca (pokusná, z master)");
+        try {
+          const z = zrejucaWeb();
+          const { cookie: cookieZ } = await prihlasAdmina(z);
+          const sz = await json<StavServeraCli>(await volaj(z, "GET", "/api/admin/stav-servera", cookieZ));
+          vypisStavServera(sz);
+          nenasadene(sz, "origin/master", "v Zrejúcej");
+        } catch (err) {
+          console.log(`  Zrejúca neodpovedá (${err instanceof Error ? err.message : String(err)}) — ešte nie je nasadená?`);
+        }
       }
 
       console.log("\n== Pracovný strom");

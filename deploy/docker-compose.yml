@@ -1,5 +1,8 @@
 # Produkčné nasadenie: aplikácia + Caddy (automatické HTTPS cez Let's Encrypt).
 #   cd deploy && cp .env.example .env && (uprav .env) && docker compose up -d --build
+# Toto je Vypálená (oficiálna hra). Pokusná Zrejúca beží vedľa ako projekt naex-zrejuca
+# (docker-compose.zrejuca.yml) a pripája sa do siete tohto projektu „deploy_default“ —
+# preto sa projekt (priečinok deploy) nepremenúva. Caddy smeruje obe adresy (Caddyfile).
 
 services:
   naex:

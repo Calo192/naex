@@ -23,7 +23,10 @@
 //                            12 známok z tabuľky „Hodnotenie podľa kritérií“ do časovej osi na /vyvoj
 //   node ... web.ts zluc-ucty                                       zlúči playtest/ucty.json pracovísk F:\Projects\naex*
 //                            do spoločného súboru hesiel (existujúce heslá neprepíše)
-// Všade možno pridať --zivy (živý web) alebo --url <adresa>.
+// Všade možno pridať --zivy (živý web = Vypálená), --zrejuca (pokusná Zrejúca na
+// zrejuca.<DOMENA>, Michal 2026-11-02) alebo --url <adresa>. Účty sú spoločné: v Zrejúcej
+// sa agent prihlási účtom z Vypálenej (nástroj ho tam prípadne založí a zaradí). Známky hry
+// sa zo Zrejúcej nezapisujú — počítajú sa len z Vypálenej.
 // Kategórie: pravidla, karty, hranie, web, chyba, napad, ine.
 
 import { randomBytes } from "node:crypto";
@@ -45,17 +48,24 @@ function produkcia(): Record<string, string> {
   return out;
 }
 
-/** Adresa živého webu, napr. https://15-235-242-12.sslip.io. */
+/** Adresa živého webu (Vypálenej), napr. https://15-235-242-12.sslip.io. */
 export function zivyWeb(): string {
   const domena = produkcia().DOMENA;
   if (domena === undefined || domena === "") throw new Error(`Živý web nepoznám — chýba DOMENA v ${PRODUKCIA} (vytvorí ho deploy/nahraj.sh).`);
   return `https://${domena}`;
 }
 
+/** Adresa Zrejúcej (pokusná inštancia na tom istom serveri), napr. https://zrejuca.15-235-242-12.sslip.io. */
+export function zrejucaWeb(): string {
+  return zivyWeb().replace("https://", "https://zrejuca.");
+}
+
 const jeLokalny = (url: string): boolean => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(url);
 
 export function webUrl(argv: readonly string[] = process.argv): string {
+  if (argv.includes("--zivy") && argv.includes("--zrejuca")) throw new Error("Buď --zivy (Vypálená), alebo --zrejuca — nie oboje.");
   if (argv.includes("--zivy")) return zivyWeb();
+  if (argv.includes("--zrejuca")) return zrejucaWeb();
   const i = argv.indexOf("--url");
   const url = (i !== -1 ? argv[i + 1] : undefined) ?? process.env.NAEX_WEB_URL ?? "http://localhost:8787";
   return url.replace(/\/+$/, "");
@@ -78,10 +88,10 @@ export function loginAgenta(meno: string): string {
   return `ai-${slug || "agent"}`;
 }
 
-/** Prihlasovacie údaje admina pre daný web: lokálne z .env, živý web z deploy/.env.produkcia. */
+/** Prihlasovacie údaje admina pre daný web: lokálne z .env, živý web aj Zrejúca z deploy/.env.produkcia. */
 export function adminWebu(url: string): { login: string; heslo: string | undefined } {
   const p = produkcia();
-  if (!jeLokalny(url) && p.DOMENA !== undefined && url === `https://${p.DOMENA}`) {
+  if (!jeLokalny(url) && p.DOMENA !== undefined && (url === `https://${p.DOMENA}` || url === `https://zrejuca.${p.DOMENA}`)) {
     return { login: p.NAEX_ADMIN_LOGIN ?? "Admin", heslo: p.NAEX_ADMIN_HESLO };
   }
   nacitajEnv();
@@ -163,10 +173,32 @@ async function zaradAgenta(url: string, cookie: string, uroven: UrovenAgenta): P
 }
 
 /**
+ * Zrejúca (Michal 2026-11-02) nemá vlastné účty — overuje ich vo Vypálenej. Vráti adresu
+ * Vypálenej, keď je `url` Zrejúca (povie to jej /api/ja), inak null.
+ */
+export async function vypalenaZrejucej(url: string): Promise<string | null> {
+  try {
+    const r = await fetch(`${url}/api/ja`, { signal: AbortSignal.timeout(8000) });
+    const i = r.ok ? ((await r.json()) as { instancia?: { nazov: string; vypalena: string | null } }).instancia : undefined;
+    return i?.nazov === "zrejuca" && i.vypalena !== null ? i.vypalena.replace(/\/+$/, "") : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Prihlási agenta na web; pri prvom použití mu založí účet a zaradí ho
  * (aspoň `uroven`, značka AI). Vracia údaje účtu a cookie relácie.
+ * Na Zrejúcej sa účet založí a zaradí vo Vypálenej a prihlási sa ním tu.
  */
 export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAgenta = "hrac"): Promise<WebUcet & { cookie: string }> {
+  const vypalena = await vypalenaZrejucej(url);
+  if (vypalena !== null) {
+    const { cookie: _, ...ucet } = await prihlasAgenta(vypalena, meno, uroven);
+    const r = await volaj(url, "POST", "/prihlasenie", "", { login: ucet.login, heslo: ucet.heslo });
+    if (!r.ok) throw new Error(`Prihlásenie ${ucet.login} do Zrejúcej ${url}: ${await r.text()}`);
+    return { ...ucet, cookie: (r.headers.get("set-cookie") ?? "").split(";")[0] ?? "" };
+  }
   const subor = suborUctov();
   const kluc = klucWebu(url);
   const zaklad = loginAgenta(meno);
@@ -254,7 +286,7 @@ async function main(): Promise<void> {
     return k === -1 ? undefined : argv[k + 1];
   };
   const sHodnotou = new Set(["--url", "--zdroj", "--cas"]);
-  const volne = argv.filter((a, j) => (i === -1 || (j !== i && j !== i + 1)) && a !== "--zivy" && !sHodnotou.has(a) && !sHodnotou.has(argv[j - 1] ?? ""));
+  const volne = argv.filter((a, j) => (i === -1 || (j !== i && j !== i + 1)) && a !== "--zivy" && a !== "--zrejuca" && !sHodnotou.has(a) && !sHodnotou.has(argv[j - 1] ?? ""));
   const [prikaz, a1, a2] = volne;
 
   if (prikaz === "zluc-ucty") {

@@ -6,13 +6,13 @@
 // webu nie je (#23) — v pravej zóne je štítok partie a menu Partia (portál z hernej
 // plochy). Mimo stola s rozohranou partiou je tam pilulka „Späť ku stolu“.
 
-import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type AnchorHTMLAttributes, type MouseEvent as ReactMouseEvent, type ReactNode, type RefObject } from "react";
 import { api } from "./lib/api.ts";
 import { NOVINKY_VIDENE, citajVidene } from "./lib/novinky.ts";
-import { hlavneMenu, jeAktivna, menuUctu, spravaWebu, type PolozkaNavigacie } from "./lib/navigacia.ts";
+import { hlavneMenu, jeAktivna, jeVonkajsi, menuUctu, spravaWebu, type PolozkaNavigacie } from "./lib/navigacia.ts";
 import { KLUC_MIESTNOSTI, ZAVES_ODCHODU, useJeStolVHlavicke, useStrazenaPartia, type StrazenaPartia } from "./lib/odchod.ts";
 import { Odkaz, chod, useCesta } from "./lib/router.tsx";
-import { NAZOV_UROVNE, jeSpravca, useUcet } from "./lib/ucet.tsx";
+import { NAZOV_UROVNE, jeSpravca, jeZrejuca, useUcet } from "./lib/ucet.tsx";
 import { Avatar } from "./komponenty.tsx";
 
 /**
@@ -230,6 +230,30 @@ function OdchodZPartie({
   );
 }
 
+/** Odkaz v hlavičke: do Vypálenej (plná adresa) obyčajný, inak cez router. */
+function OdkazMenu(props: AnchorHTMLAttributes<HTMLAnchorElement> & { readonly href: string }) {
+  return jeVonkajsi(props.href) ? <a {...props} /> : <Odkaz {...props} />;
+}
+
+/**
+ * Pás Zrejúcej (Michal 2026-11-02) — na každej stránke okrem stola, kde by ubral výšku;
+ * tam ostáva značka pri logu.
+ */
+function PasZrejucej({ vypalena }: { readonly vypalena: string | null }) {
+  return (
+    <div className="zrejuca-pas" role="note">
+      <strong>Zrejúca – pokusná verzia</strong>
+      <span className="skryt-mobil"> · pravidlá a karty sa tu skúšajú, partie sa nerátajú do Vypálenej.</span>
+      {vypalena !== null && (
+        <>
+          {" "}
+          <a href={vypalena}>Oficiálna hra: Vypálená</a>
+        </>
+      )}
+    </div>
+  );
+}
+
 const pocetNovych = (n: number): string => `${n} ${n === 1 ? "nová" : n < 5 ? "nové" : "nových"}`;
 
 /** Pilulka „● Partia HZ3T beží · Späť ku stolu“ — na mobile len jej tlačidlo. */
@@ -258,7 +282,8 @@ export function Layout({
   readonly nastroj?: boolean;
 }) {
   const cesta = useCesta();
-  const { ja, nacitane, odhlas, pravaNavstevnika } = useUcet();
+  const { ja, nacitane, odhlas, pravaNavstevnika, instancia } = useUcet();
+  const zrejuca = jeZrejuca(instancia);
   const [otvoreneMenu, setOtvoreneMenu] = useState<"ucet" | "sprava" | "viac" | null>(null);
   const [mobilne, setMobilne] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -275,8 +300,9 @@ export function Layout({
   const strazenaPartia = useStrazenaPartia();
   const priStole = useJeStolVHlavicke();
   const rozohrana = useRozohranaPartia(cesta, prihlaseny, priStole);
-  const polozky = nacitane ? hlavneMenu(ja, pravaNavstevnika) : [];
-  const sprava = spravaWebu(ja);
+  // Zrejúca bez prihláseného testera ukazuje len prihlásenie — menu by viedlo na to isté.
+  const polozky = nacitane && !(zrejuca && ja === null) ? hlavneMenu(ja, pravaNavstevnika, instancia) : [];
+  const sprava = spravaWebu(ja, instancia);
   const skryte = useViac(navRef, viacTlacidlo, pravaRef, `${priStole}|${polozky.map((p) => p.href).join()}|${noveNovinky}|${dielna}|${navrhy}|${rozohrana?.kod ?? ""}|${ja?.meno ?? ""}`);
   const celaSirka = stol || priStole || plna;
   const kostra = celaSirka ? "" : " kostra";
@@ -335,7 +361,7 @@ export function Layout({
   const odkaz = (n: PolozkaNavigacie, trieda: string, sPrioritou: boolean): ReactNode => {
     const aktivna = jeAktivna(cesta, n.href);
     return (
-      <Odkaz
+      <OdkazMenu
         key={n.href}
         href={n.href}
         className={[trieda, n.hlavna === true ? "nav-hlavna" : "", aktivna ? "aktivna" : ""].filter((t) => t !== "").join(" ") || undefined}
@@ -344,7 +370,7 @@ export function Layout({
       >
         {n.text}
         {znacka(n.href)}
-      </Odkaz>
+      </OdkazMenu>
     );
   };
   const hra = polozky.filter((p) => p.skupina === "hra");
@@ -360,11 +386,17 @@ export function Layout({
 
   return (
     <div className={nastroj && !stol && !priStole ? "aplikacia nastroj" : "aplikacia"}>
+      {zrejuca && !celaSirka && <PasZrejucej vypalena={instancia.vypalena} />}
       <header className="hlavicka" onClickCapture={strazOdchodu}>
         <div className={`hlavicka-vnutro${priStole ? " pri-stole" : ""}${kostra}`}>
           <Odkaz href="/" className="logo" aria-label="NA EX! — domov" data-nazov="úvodnú stránku">
             <span className="logo-pohar" aria-hidden="true" />
             <span className="logo-text">NA EX!</span>
+            {zrejuca && (
+              <span className="zrejuca-znacka" title="Zrejúca – pokusná verzia">
+                Zrejúca
+              </span>
+            )}
           </Odkaz>
           {!priStole && (
             <>
@@ -425,10 +457,10 @@ export function Layout({
                       <span>{ja !== null ? NAZOV_UROVNE[ja.rola] : ""}</span>
                     </div>
                     {sprava.map((s) => (
-                      <Odkaz key={s.href} href={s.href} role="menuitem" className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}>
+                      <OdkazMenu key={s.href} href={s.href} role="menuitem" className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}>
                         {s.text}
                         {s.pocet === "navrhy" && pocetNavrhov}
-                      </Odkaz>
+                      </OdkazMenu>
                     ))}
                   </div>
                 )}
@@ -441,9 +473,11 @@ export function Layout({
                 <Odkaz href="/prihlasenie" className="tlacidlo tlacidlo-jemne">
                   Prihlásiť
                 </Odkaz>
-                <Odkaz href="/registracia" className="tlacidlo tlacidlo-hlavne skryt-mobil">
-                  Registrovať
-                </Odkaz>
+                {!zrejuca && (
+                  <Odkaz href="/registracia" className="tlacidlo tlacidlo-hlavne skryt-mobil">
+                    Registrovať
+                  </Odkaz>
+                )}
               </>
             ) : (
               <>
@@ -498,10 +532,10 @@ export function Layout({
             {komunita.map((n) => odkaz(n, "", false))}
             {sprava.length > 0 && <div className="nav-skupina">Správa</div>}
             {sprava.map((s) => (
-              <Odkaz key={s.href} href={s.href} className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}>
+              <OdkazMenu key={s.href} href={s.href} className={jeAktivna(cesta, s.href) ? "aktivna" : undefined}>
                 {s.text}
                 {s.pocet === "navrhy" && pocetNavrhov}
-              </Odkaz>
+              </OdkazMenu>
             ))}
           </nav>
         )}

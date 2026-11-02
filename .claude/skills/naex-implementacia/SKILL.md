@@ -16,7 +16,9 @@ pozbieraš, čo Michal schválil, a rozdelíš prácu:
 
 **Trvalé súhlasy Michala (2026-10-21):** implementácia = hneď commit, push
 a merge do master bez pýtania; zverejnenie sady pri návrhu schválenom na webe
-je povolené (sady sa dajú vrátiť `admin.ts vrat`); Leonardo smie generovať
+bolo povolené (sady sa dajú vrátiť `admin.ts vrat`) — od 2026-11-02 je však
+zverejnenie súčasťou Michalovho schválenia Zrejúcej (krok 6), zmeny kariet
+ostávajú v tvorcovi rozpracované a hrá ich Zrejúca; Leonardo smie generovať
 každý nový obrázok, ktorý návrh potrebuje.
 
 Argumenty: `$ARGUMENTS` — voliteľne id návrhov (čísla z webu). Bez nich
@@ -72,13 +74,18 @@ všetky v stave `implementovat`.
    implementovať (`$A navrh <id> spat --zivy --vysledok "<prečo>"`) — Michalovo
    rozhodnutie ostane — a povedz používateľovi prečo.
 
-6. **Nasadenie** — implementované zmeny sú na živom webe až po nasadení.
-   Reštart zhodí rozohrané partie, preto nasadenie **ponúkni** a keď
-   používateľ súhlasí, spusti skill `/naex-nasad` (skontroluje master, testy,
-   rozohrané partie, nasadí a overí živý web).
+6. **Nasadenie** — implementované ide na **Zrejúcu** (Michal 2026-11-02):
+   pokusnú inštanciu len pre testerov, ktorá hrá `origin/master` a rozpracovaný
+   stav tvorcu. Spusti `/naex-nasad zrejuca` (hráčov nezhodí, len partie
+   testerov); zmeny kariet od Admina v tvorcovi Zrejúca prevezme do minúty sama
+   (`$A sada-zrejuca --zrejuca` hneď) — sadu kvôli Zrejúcej **nezverejňuj**.
+   Do **Vypálenej** (živý web pre hráčov) sa nič nenasadzuje: tam ide celý stav
+   Zrejúcej naraz až po Michalovom schválení (posun vetvy `vypalena`,
+   zverejnenie sady a `/naex-nasad`).
 
 7. **Odovzdaj** používateľovi: pre každý návrh jednu-dve vety (čo sa zmenilo,
    commit, dôkaz), čo ostalo otvorené (hodnoty s `TODO`, chyby mimo návrhu, ktoré
    Developer našiel) a že návrh teraz čaká na **overenie**: najbližší
    `/naex-playtest` (predvolený alebo `max`) dostane jeho otázky `overenie`
-   a podľa výsledku ho uzavrie (zabralo) alebo vráti na rozhodnutie (nezabralo).
+   a podľa výsledku ho uzavrie (zabralo) alebo vráti na rozhodnutie (nezabralo);
+   playtest hrá na Zrejúcej, kde už zmena beží.

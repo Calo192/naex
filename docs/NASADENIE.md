@@ -187,7 +187,8 @@ k sebe (`scp -r root@IP_SERVERA:/opt/naex-zalohy .`).
 ### 7. Aktualizácia hry
 
 ```bash
-deploy/nahraj.sh <IP-servera>
+deploy/nahraj.sh <IP-servera>              # Vypálená (z vetvy vypalena, skill /naex-nasad)
+deploy/nahraj.sh <IP-servera> --zrejuca    # Zrejúca (z master, /naex-nasad zrejuca) — časť 9
 ```
 
 **Karty na produkciu.** Server má vlastnú databázu tvorcu — nasadenie prenesie
@@ -249,6 +250,52 @@ inak vyžiadal obnovu cudzieho účtu s odkazom na vlastnú doménu.
 E-mail hráča vidí len on sám (profil) a admin (Hráči → pod loginom,
 `admin.ts pouzivatelia` pri prihlásení ako admin); subadmin ani ostatní hráči nie.
 
+### 9. Vypálená a Zrejúca — dve inštancie na jednom serveri (Michal 2026-11-02)
+
+| | **Vypálená** | **Zrejúca** |
+|---|---|---|
+| čo to je | oficiálna hra pre všetkých | pokusná verzia len pre admina, subadminov a AI účty |
+| adresa | `https://<DOMENA>` | `https://zrejuca.<DOMENA>` |
+| kód | vetva `vypalena` (posúva sa len po Michalovom schválení) | `master` |
+| na serveri | `/opt/naex`, projekt `deploy`, zväzok `deploy_naex-data` | `/opt/naex-zrejuca`, projekt `naex-zrejuca`, zväzok `naex-zrejuca_naex-zrejuca-data` |
+| účty | vlastné | spoločné — heslo overí Vypálená (jej `/api/prihlasenie`), účet sa zrkadlí; registrácia a zmena hesla len vo Vypálenej |
+| sada kariet | posledná **zverejnená** | **rozpracovaný** stav tvorcu Vypálenej (prevezme ho do minúty, hneď `admin.ts sada-zrejuca --zrejuca`) |
+| tvorca, Spätná väzba, Playtest, Vývoj, Novinky | tu | len odkazy do Vypálenej |
+| partie a štatistiky | vlastná databáza | vlastná databáza; do /vyvoj a známok hry sa nerátajú |
+
+Kód je jeden, rozdiel je v prostredí: `NAEX_INSTANCIA=zrejuca`, `NAEX_VYPALENA`
+(v Dockeri `http://naex:8787`) a `NAEX_VYPALENA_ADRESA` (verejná adresa pre
+odkazy). Zrejúca beží v sieti Vypálenej (`deploy_default`) — Caddy Vypálenej
+smeruje obe adresy (`deploy/Caddyfile`) a Zrejúca volá Vypálenú priamo.
+Heslo admina berie z `.env` Vypálenej (`nahraj.sh --zrejuca` ho skopíruje); tým
+sa prihlasuje do jej tvorcu. Neprihlásený v Zrejúcej vidí len stránku
+„Zrejúca je len pre testerov“ s prihlásením; API mu nič nepošle. Na každej
+stránke je pás „Zrejúca – pokusná verzia“ (pri stole značka pri logu).
+Obrázky (ilustrácie, avatary), ktoré Zrejúca nemá, podá zo svojej adresy
+z Vypálenej. Hudba a hlášky Melichara sú v dátach každej inštancie zvlášť —
+do Zrejúcej ich treba nahrať rovnako ako v častiach 5b a 5c, len v
+`/opt/naex-zrejuca/deploy` cez `docker compose -f docker-compose.zrejuca.yml … naex-zrejuca …`.
+
+**Prvé nasadenie Zrejúcej:**
+
+1. Vypálená musí bežať (`/opt/naex/deploy/.env`). Ideálne už s týmto `deploy/`
+   (Caddyfile s blokom `zrejuca.{$DOMENA}`, záloha aj databázy Zrejúcej) — vtedy
+   jej nasadenie Caddy samo reštartuje. Ak ho ešte nemá, `nahraj.sh --zrejuca`
+   blok do jej Caddyfile doplní a reštartuje len Caddy; ďalšie nasadenie
+   Vypálenej zo staršej vetvy `vypalena` ho však zmaže (Zrejúca potom vráti
+   502, kým ju znova nenasadíš).
+2. Z čistého worktree `origin/master`: `bash deploy/nahraj.sh <IP> --zrejuca` —
+   skript skopíruje kód do `/opt/naex-zrejuca`, postaví a spustí kontajner
+   a počká na `https://zrejuca.<DOMENA>/api/ja` (certifikát vybaví Caddy).
+3. Over: `web.ts dostupny --zrejuca`, `admin.ts server-stav --zrejuca`,
+   `admin.ts sada-zrejuca --zrejuca` (prevezme rozpracovanú sadu), prihlásenie
+   adminom v prehliadači.
+
+**Schválenie Zrejúcej** (do Vypálenej ide celý stav naraz — módy, pravidlá, karty):
+Leader posunie `vypalena` na schválený master (`git push origin origin/master:vypalena`,
+len fast-forward), Admin zverejní sadu v tvorcovi (Vypálená ju potom hrá) a
+`/naex-nasad` nasadí Vypálenú.
+
 ## Lokálne bez Dockera
 
 ```bash
@@ -270,3 +317,6 @@ Dáta sú v priečinku `data/` (databáza `naex.sqlite` a `media/`).
 | `NAEX_SECURE_COOKIE` | `1` = prihlásenie len cez HTTPS (za Caddy vždy) | — |
 | `NAEX_EMAIL_REZIM` | ako posielať e-maily (obnova hesla); zatiaľ len `log` = zapísať do logu | `log` |
 | `NAEX_ADRESA` | verejná adresa webu do odkazov v e-mailoch | compose: `https://${DOMENA}`, inak len cesta |
+| `NAEX_INSTANCIA` | `vypalena` (oficiálna) alebo `zrejuca` (pokusná, len testeri) — časť 9 | `vypalena` |
+| `NAEX_VYPALENA` | Zrejúca: adresa, na ktorej volá Vypálenú (účty, tvorca, obrázky) | compose Zrejúcej: `http://naex:8787` |
+| `NAEX_VYPALENA_ADRESA` | Zrejúca: verejná adresa Vypálenej do odkazov | `NAEX_VYPALENA` |

@@ -4,7 +4,10 @@
 // nevzali ten istý port.
 //
 // Použitie (z koreňa repozitára):
-//   node --experimental-strip-types --no-warnings tools/playtest/turnus.ts <1|2|3> [kratka|stredna|dlha]
+//   node --experimental-strip-types --no-warnings tools/playtest/turnus.ts <1|2|3> [kratka|stredna|dlha] [--zrejuca]
+//
+// --zrejuca (Michal 2026-11-02): partie idú na pokusnú Zrejúcu (rozpracovaná sada, AI účty postáv),
+// nie na dočasné lokálne servery.
 //
 // Vypíše turnus (playtest/turnus-<id>/turnus.json) a pre každú partiu reláciu,
 // port a oboch hráčov so štýlom. Servery zastaví tools/playtest/ukonci.ts <relacia>.
@@ -24,7 +27,8 @@ interface Postava {
 const { hraci } = JSON.parse(readFileSync("tools/playtest/hraci.json", "utf8")) as { hraci: readonly Postava[] };
 const MAX_PARTII = Math.floor(hraci.length / 2);
 
-const [pocetArg = "1", dlzka = "stredna"] = process.argv.slice(2);
+const naZrejucej = process.argv.includes("--zrejuca");
+const [pocetArg = "1", dlzka = "stredna"] = process.argv.slice(2).filter((a) => a !== "--zrejuca");
 const pocet = Number(pocetArg);
 if (!Number.isInteger(pocet) || pocet < 1 || pocet > MAX_PARTII) {
   console.error(`Počet partií musí byť 1 až ${MAX_PARTII} (${hraci.length} playtesterov, v partii dvaja).`);
@@ -43,13 +47,14 @@ for (let i = poradie.length - 1; i > 0; i--) {
 }
 
 const id = new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "-");
-const partie: { relacia: string; port: number; hrac1: Postava; hrac2: Postava }[] = [];
+/** port len pri dočasnom lokálnom serveri; adresa vždy. */
+const partie: { relacia: string; adresa: string; port?: number; hrac1: Postava; hrac2: Postava }[] = [];
 for (let n = 1; n <= pocet; n++) {
   const hrac1 = poradie[2 * n - 2] as Postava;
   const hrac2 = poradie[2 * n - 1] as Postava;
   const r = spawnSync(
     process.execPath,
-    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n}`],
+    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n}`, ...(naZrejucej ? ["--zrejuca"] : [])],
     { encoding: "utf8" },
   );
   if (r.status !== 0) {
@@ -58,9 +63,10 @@ for (let n = 1; n <= pocet; n++) {
     process.exit(1);
   }
   const relacia = /Playtest založený: (\S+)/.exec(r.stdout)?.[1];
-  const port = Number(/localhost:(\d+)/.exec(r.stdout)?.[1]);
-  if (relacia === undefined || !Number.isInteger(port)) throw new Error(`Nečakaný výstup zaloz.ts:\n${r.stdout}`);
-  partie.push({ relacia, port, hrac1, hrac2 });
+  const adresa = /Server: (\S+)/.exec(r.stdout)?.[1];
+  if (relacia === undefined || adresa === undefined) throw new Error(`Nečakaný výstup zaloz.ts:\n${r.stdout}`);
+  const port = /^http:\/\/localhost:(\d+)$/.exec(adresa)?.[1];
+  partie.push({ relacia, adresa, ...(port === undefined ? {} : { port: Number(port) }), hrac1, hrac2 });
 }
 
 const turnus = join("playtest", `turnus-${id}`);
@@ -69,7 +75,7 @@ writeFileSync(join(turnus, "turnus.json"), `${JSON.stringify({ id, dlzka, zaloze
 
 console.log(`Turnus ${id}: ${pocet} ${pocet === 1 ? "partia" : "partie"}, dĺžka ${dlzka} — ${turnus.split("\\").join("/")}/turnus.json`);
 for (const [i, p] of partie.entries()) {
-  console.log(`\nPartia ${i + 1}: ${p.relacia} (http://localhost:${p.port})`);
+  console.log(`\nPartia ${i + 1}: ${p.relacia} (${p.adresa})`);
   for (const [cislo, h] of [[1, p.hrac1], [2, p.hrac2]] as const) {
     console.log(`  Hráč ${cislo}: ${h.meno} — ${h.styl}\n           Zameranie: ${h.zameranie}\n           Zošit: tools/playtest/skusenosti/${h.kluc}.md`);
   }
