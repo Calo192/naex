@@ -26,6 +26,7 @@ export const PRAVA = [
   "reporty_playtestov",
   "navrhovat_karty",
   "vidiet_vyvoj",
+  "hrat_zrejucu",
 ] as const;
 export type Pravo = (typeof PRAVA)[number];
 
@@ -44,6 +45,7 @@ export const POPIS_PRAVA: Readonly<Record<Pravo, string>> = {
   reporty_playtestov: "vidieť reporty playtestov",
   navrhovat_karty: "navrhovať karty (Dielňa)",
   vidiet_vyvoj: "vidieť stránku Vývoj (známky hry a roadmapu)",
+  hrat_zrejucu: "hrať pokusnú verziu Zrejúca",
 };
 
 /** Ranky, ktorým sa práva prideľujú, od najnižšieho. */
@@ -93,7 +95,8 @@ export interface NastaveniePrav {
  * a Sedmička od 50 % všetkých hviezd (Michal 2026-10-25).
  */
 export const PREDVOLENE_PRAVA: NastaveniePrav = {
-  matica: Object.fromEntries(PRAVA.map((p) => [p, [...RANKY_HRACOV]])) as Record<Pravo, RankHraca[]>,
+  // Zrejúcu (pokusná verzia, Michal 2026-11-02) predvolene len Sedmička; správcovia a AI vždy (smie).
+  matica: Object.fromEntries(PRAVA.map((p) => [p, p === "hrat_zrejucu" ? ["sedmicka"] : [...RANKY_HRACOV]])) as Record<Pravo, RankHraca[]>,
   postup: { deci: 35, sedmicka: 50 },
 };
 
@@ -124,6 +127,9 @@ export function dalsiRank(postup: PostupRankov, rank: RankHraca, h: HviezdyHraca
   if (prahy === null || rank === "sedmicka") return null;
   return rank === "deci" ? { rank: "sedmicka", prah: prahy.sedmicka } : { rank: "deci", prah: prahy.deci };
 }
+
+/** Čo o účte rozhoduje o práve; zrejuca = výnimka admina pre Zrejúcu (null/chýba = podľa ranku). */
+export type KtoSmie = Pick<Pouzivatel, "rola" | "ai"> & { readonly zrejuca?: boolean | null };
 
 export class Prava {
   private readonly nastavenia: JsonTabulka<unknown>;
@@ -188,21 +194,24 @@ export class Prava {
    * Neprihlásený (null) má práva Nealka — verejnú stránku (Vývoj) tak admin
    * zatvorí aj návštevníkom bez účtu, keď ju Nealkovi odoberie.
    */
-  smie(ja: Pick<Pouzivatel, "rola" | "ai"> | null, pravo: Pravo): boolean {
+  smie(ja: KtoSmie | null, pravo: Pravo): boolean {
     if (ja === null) return this.nastavenie().matica[pravo].includes("navstevnik");
+    // Zrejúca: výnimku konkrétnemu účtu dáva admin (udelí aj odoberie); admina nezamkne.
+    if (pravo === "hrat_zrejucu" && ja.rola !== "admin" && typeof ja.zrejuca === "boolean") return ja.zrejuca;
+    if (pravo === "hrat_zrejucu" && ja.ai) return true;
     if (jeSpravca(ja.rola)) return true;
     if (pravo === "hodnotit_hru" && ja.ai) return true;
     return jeRankHraca(ja.rola) && this.nastavenie().matica[pravo].includes(ja.rola);
   }
 
-  vyzaduj(ja: Pick<Pouzivatel, "rola" | "ai"> | null, pravo: Pravo): void {
+  vyzaduj(ja: KtoSmie | null, pravo: Pravo): void {
     if (this.smie(ja, pravo)) return;
     if (ja === null) throw new ChybaVstupu(`Prihlás sa — bez účtu sa nedá ${POPIS_PRAVA[pravo]}.`, 401);
     throw new ChybaVstupu(`Na toto tvoj rank nemá právo: ${POPIS_PRAVA[pravo]}.`, 403);
   }
 
   /** Zoznam práv používateľa — pre /api/ja (klient podľa neho skrýva tlačidlá). */
-  zoznam(ja: Pick<Pouzivatel, "rola" | "ai"> | null): Pravo[] {
+  zoznam(ja: KtoSmie | null): Pravo[] {
     return PRAVA.filter((p) => this.smie(ja, p));
   }
 }

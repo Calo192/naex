@@ -5,9 +5,11 @@
 #   deploy/nahraj.sh <IP-servera> [používateľ] [doména] [--zrejuca]
 #
 # Bez prepínača nasadí Vypálenú (oficiálna hra, /opt/naex, nasadzuje sa z vetvy vypalena).
-# --zrejuca nasadí pokusnú Zrejúcu (Michal 2026-11-02; /opt/naex-zrejuca, z master) na adresu
-# zrejuca.<doména> — samostatný kontajner s vlastnou databázou v sieti Vypálenej. Vypálená
-# musí byť nasadená skôr (heslo admina, sieť, Caddy); jej beh Zrejúca nezastaví.
+# --zrejuca nasadí pokusnú Zrejúcu (Michal 2026-11-02; /opt/naex-zrejuca, z master) — samostatný
+# kontajner s vlastnou databázou v sieti Vypálenej, na tej istej adrese (Caddy smeruje podľa
+# cookie a cesty /zrejuca/). Mení LEN kontajner Zrejúcej: Vypálenú ani Caddy nereštartuje, jej
+# partie bežia ďalej; nasadzuje sa hneď, bez čakania. Vypálená musí byť nasadená skôr s týmto
+# deploy/ (heslo admina, sieť, Caddyfile so Zrejúcou).
 #
 # používateľ: predvolene ubuntu (OVH, Ubuntu 24.04), root pri iných VPS.
 # doména:     predvolene <ip-s-pomlčkami>.sslip.io — zadarmo, Caddy na ňu
@@ -62,43 +64,37 @@ echo "Posielam na $CIEL…"
 scp -i "$KLUC" -o StrictHostKeyChecking=accept-new "$ARCHIV" "$CIEL:/tmp/naex.tgz"
 
 if $ZREJUCA; then
-  # Kód do /opt/naex-zrejuca, .env (heslo admina, doména) z Vypálenej. Vypálenú ani jej
-  # databázu nemení; Caddyfile Vypálenej doplní o Zrejúcu, ak ho ešte nemá (Vypálená
-  # nasadená pred zavedením Zrejúcej) — trvalo ho prinesie jej ďalšie nasadenie s týmto deploy/.
+  # Kód do /opt/naex-zrejuca, .env (heslo admina, doména) z Vypálenej. Vypálenú, jej databázu ani
+  # Caddy nemení — Caddyfile so Zrejúcou prináša nasadenie Vypálenej.
   "${SSH[@]}" "sudo bash -s" <<'SKRIPT' | tee "$VYSTUP"
 set -euo pipefail
 if [ ! -f /opt/naex/deploy/.env ]; then
   echo "CHYBA: Vypálená nie je nasadená (/opt/naex/deploy/.env chýba) — najprv deploy/nahraj.sh <IP>."
   exit 1
 fi
+if ! grep -q "naex_instancia" /opt/naex/deploy/Caddyfile; then
+  echo "CHYBA: Caddyfile Vypálenej ešte nepozná Zrejúcu na spoločnej adrese — najprv nasaď Vypálenú s týmto deploy/ (docs/NASADENIE.md, časť 9)."
+  exit 1
+fi
 mkdir -p /opt/naex-zrejuca
 find /opt/naex-zrejuca -mindepth 1 -maxdepth 1 -exec rm -rf {} +
 tar -xzf /tmp/naex.tgz -C /opt/naex-zrejuca && rm /tmp/naex.tgz
 cp /opt/naex/deploy/.env /opt/naex-zrejuca/deploy/.env && chmod 600 /opt/naex-zrejuca/deploy/.env
-CADDY=0
-if ! grep -q "naex-zrejuca:8787" /opt/naex/deploy/Caddyfile; then
-  echo "Caddyfile Vypálenej nepozná Zrejúcu — dopĺňam jej blok."
-  { echo; sed -n '/^# Zrejúca/,$p' /opt/naex-zrejuca/deploy/Caddyfile; } >> /opt/naex/deploy/Caddyfile
-  CADDY=1
-fi
 cd /opt/naex-zrejuca/deploy
 docker compose -f docker-compose.zrejuca.yml build
 docker compose -f docker-compose.zrejuca.yml run -T --rm --no-deps --user root --entrypoint chown naex-zrejuca -R node:node /data </dev/null
 docker compose -f docker-compose.zrejuca.yml up -d
 docker image prune -f >/dev/null
-# Caddyfile je pripojený ako súbor — nový obsah uvidí až nový kontajner Caddy.
-if [ "$CADDY" = 1 ]; then cd /opt/naex/deploy && docker compose up -d --no-deps --force-recreate caddy; fi
 SKRIPT
-  DOMENA_Z="zrejuca.$DOMENA"
-  echo "Čakám na HTTPS Zrejúcej…"
+  echo "Čakám na Zrejúcu…"
   for i in $(seq 1 60); do
-    if curl -fsS -o /dev/null "https://$DOMENA_Z/api/ja"; then
-      echo "Zrejúca beží: https://$DOMENA_Z"
+    if curl -fsS -o /dev/null "https://$DOMENA/zrejuca/api/ja"; then
+      echo "Zrejúca beží: https://$DOMENA (prepínač na stránke Hrať; nástroje https://$DOMENA/zrejuca)"
       exit 0
     fi
     sleep 5
   done
-  echo "HTTPS Zrejúcej ešte neodpovedá — pozri: ssh -i $KLUC $CIEL 'cd /opt/naex-zrejuca/deploy && sudo docker compose -f docker-compose.zrejuca.yml logs --tail 80'"
+  echo "Zrejúca ešte neodpovedá — pozri: ssh -i $KLUC $CIEL 'cd /opt/naex-zrejuca/deploy && sudo docker compose -f docker-compose.zrejuca.yml logs --tail 80'"
   exit 1
 fi
 
@@ -127,6 +123,9 @@ fi
 sed -i "s|^DOMENA=.*|DOMENA=$DOMENA|" .env
 chmod +x zaloha.sh
 ( crontab -l 2>/dev/null | grep -v naex/deploy/zaloha.sh || true; echo "0 4 * * * /opt/naex/deploy/zaloha.sh" ) | crontab -
+if [ "\$CADDY_PRED" != "\$(sha256sum Caddyfile | cut -d' ' -f1)" ]; then
+  docker compose run -T --rm --no-deps --entrypoint caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile </dev/null
+fi
 docker compose build
 # Zväzok vytvorený staršou verziou obrazu patrí rootovi — server beží ako node.
 docker compose run -T --rm --no-deps --user root --entrypoint chown naex -R node:node /data </dev/null

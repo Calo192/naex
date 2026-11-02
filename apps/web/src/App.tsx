@@ -77,7 +77,7 @@ export function App() {
   if (jeZrejuca(instancia) && nacitane && ja === null) {
     return (
       <Layout>
-        <Prihlasenie vypalena={instancia.vypalena ?? ""} />
+        <Prihlasenie zrejuca={{ bezPrava: instancia.bezPrava === true }} />
       </Layout>
     );
   }

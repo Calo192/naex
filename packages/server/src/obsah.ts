@@ -549,6 +549,25 @@ export class Obsah {
     return { verzia: this.ulozSadu(obsah, null, teraz), zmena: true };
   }
 
+  /**
+   * Čo má tvorca navyše oproti zverejnenej sade (Michal 2026-11-02: Zrejúca bez zmien sa
+   * hráčom neponúka): koľko kariet je iných, nových alebo zmazaných, a či sa líši aj niečo
+   * iné (akcie, kľúčové slová, kategórie, bodovacie karty).
+   */
+  zmenyTvorcu(): { readonly kariet: number; readonly ine: boolean } {
+    const sada = this.poslednaSada();
+    const t = this.tvorca();
+    if (sada === null) return { kariet: t.karty.length, ine: true };
+    const vSade = new Map(sada.karty.map((k) => [k.id, JSON.stringify(k)]));
+    const ids = new Set([...vSade.keys(), ...t.karty.map((k) => k.id)]);
+    const vTvorcovi = new Map(t.karty.map((k) => [k.id, JSON.stringify(k)]));
+    const kariet = [...ids].filter((id) => vSade.get(id) !== vTvorcovi.get(id)).length;
+    const ine = (o: Pick<ObsahTvorcu, "akcie" | "klucoveSlova" | "kategorie" | "bodovacie" | "ikonyBodovania">): string =>
+      JSON.stringify([o.akcie, o.klucoveSlova, o.kategorie, o.bodovacie, o.ikonyBodovania]);
+    const zSady = { ...sada, akcie: [...sada.akcie].sort((a, b) => a.poradie - b.poradie), bodovacie: sada.bodovacie ?? [], ikonyBodovania: sada.ikonyBodovania ?? [] };
+    return { kariet, ine: ine(t) !== ine(zSady) };
+  }
+
   aktualnaSada(): { sada: Sada; data: GameData } {
     if (this.cache !== null) return this.cache;
     const r = this.db.prepare("SELECT verzia, data FROM sady ORDER BY verzia DESC LIMIT 1").get() as

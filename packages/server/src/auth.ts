@@ -62,6 +62,8 @@ export interface Pouzivatel {
   readonly napovedy: boolean;
   /** Súhrn štatistík skrytý pred ostatnými (Michal 2026-10-22). */
   readonly skrytySuhrn: boolean;
+  /** Výnimka admina pre Zrejúcu (prava.ts hrat_zrejucu): true/false, null = podľa ranku. */
+  readonly zrejuca: boolean | null;
 }
 
 export const LUPA_OD = 150;
@@ -376,12 +378,13 @@ export class Ucty {
       napovedy: vypinac(r.napovedy),
       pohlavie: POHLAVIA.includes(r.pohlavie as Pohlavie) ? (r.pohlavie as Pohlavie) : null,
       skrytySuhrn: Number(r.skryty_suhrn) === 1,
+      zrejuca: r.zrejuca === null || r.zrejuca === undefined ? null : Number(r.zrejuca) === 1,
     };
   }
 
   podlaId(id: number): Pouzivatel | null {
     return this.riadok(
-      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, par, skratky, medziobrazovky, napovedy, pohlavie, skryty_suhrn FROM pouzivatelia WHERE id = ?").get(id) as
+      this.db.prepare("SELECT id, login, meno, avatar, rola, lupa, hudba, melichar, ai, schema, par, skratky, medziobrazovky, napovedy, pohlavie, skryty_suhrn, zrejuca FROM pouzivatelia WHERE id = ?").get(id) as
         | Record<string, unknown>
         | undefined,
     );
@@ -432,11 +435,11 @@ export class Ucty {
 
   /**
    * Zrejúca (zrejuca.ts): účet overený vo Vypálenej sa sem zrkadlí pod tým istým loginom.
-   * Meno, rank, značka AI, avatar a pohlavie idú z Vypálenej pri každom prihlásení;
-   * nastavenia (lupa, hudba, schéma…) ostávajú tunajšie. Heslo tu účet nemá — overuje ho
-   * vždy Vypálená ("zrkadlo" nie je scrypt, overHeslo ho nikdy neprijme).
+   * Meno, rank, značka AI, avatar a pohlavie idú z Vypálenej pri overení relácie;
+   * nastavenia (lupa, hudba, schéma…) ostávajú tunajšie. Heslo ani reláciu tu účet nemá —
+   * oboje je vo Vypálenej ("zrkadlo" nie je scrypt, overHeslo ho nikdy neprijme).
    */
-  zrkadli(u: { login: string; meno: string; rola: Rola; ai: boolean; avatar: string | null; pohlavie: Pohlavie | null }, teraz: number): Pouzivatel {
+  zrkadli(u: { readonly login: string; readonly meno: string; readonly rola: Rola; readonly ai: boolean; readonly avatar: string | null; readonly pohlavie: Pohlavie | null }, teraz: number): Pouzivatel {
     const meno = u.meno.slice(0, 24);
     const r = this.db.prepare("SELECT id FROM pouzivatelia WHERE login = ?").get(u.login) as { id: number } | undefined;
     const id =
@@ -554,7 +557,7 @@ export class Ucty {
   /** Zoznam účtov pre správu; e-maily len pre admina (sEmailom), subadmin ich nevidí. */
   zoznam(sEmailom = false): (Pouzivatel & { vytvoreny: number; dohrate: number; rolaRucne: boolean; email?: string | null })[] {
     const rows = this.db
-      .prepare(`SELECT id, login, meno, avatar, rola, rola_rucne, ai, vytvoreny, email, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia ORDER BY id`)
+      .prepare(`SELECT id, login, meno, avatar, rola, rola_rucne, ai, zrejuca, vytvoreny, email, (${DOHRATE_SQL}) AS dohrate FROM pouzivatelia ORDER BY id`)
       .all() as Record<string, unknown>[];
     return rows.map((r) => ({
       ...(this.riadok(r) as Pouzivatel),
@@ -568,6 +571,11 @@ export class Ucty {
   /** Ručné nastavenie úrovne — hráčsky rank potom automatika nemení (rola_rucne). */
   nastavRolu(id: number, rola: Rola): void {
     this.db.prepare("UPDATE pouzivatelia SET rola = ?, rola_rucne = ? WHERE id = ?").run(rola, jeRankHraca(rola) ? 1 : 0, id);
+  }
+
+  /** Výnimka pre Zrejúcu: true udelí, false odoberie, null = späť podľa ranku. */
+  nastavZrejucu(id: number, zrejuca: boolean | null): void {
+    this.db.prepare("UPDATE pouzivatelia SET zrejuca = ? WHERE id = ?").run(zrejuca === null ? null : zrejuca ? 1 : 0, id);
   }
 
   nastavAi(id: number, ai: boolean): void {

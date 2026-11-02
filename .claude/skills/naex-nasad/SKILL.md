@@ -1,6 +1,6 @@
 ---
 name: naex-nasad
-description: Bezpečne nasadí NA EX! na živý web — overí, že vetva vypalena je na origine a prejde testami, typecheckom a buildom, ukáže, čo pôjde von (commity od posledného nasadenia, zmena sady kariet), zapne uzávierku (nové partie nie), počká, kým dohrajú rozohrané partie ľudí aj s botmi, nasadí čistú vetvu vypalena (Vypálená; master je pokusná Zrejúca) cez deploy/nahraj.sh, overí živý web (smoke test) a označí, čo je na živom webe. S argumentom zrejuca nasadí origin/master na pokusnú Zrejúcu (zrejuca.<doména>, len testeri). Použi, keď používateľ povie /naex-nasad, „nasaď“, „nahraj na živý web“, „vydaj novú verziu“, „daj to na produkciu“, „nasaď do Zrejúcej“.
+description: Bezpečne nasadí NA EX! na živý web — overí, že vetva vypalena je na origine a prejde testami, typecheckom a buildom, ukáže, čo pôjde von (commity od posledného nasadenia, zmena sady kariet), zapne uzávierku (nové partie nie), počká, kým dohrajú rozohrané partie ľudí aj s botmi, nasadí čistú vetvu vypalena (Vypálená; master je pokusná Zrejúca) cez deploy/nahraj.sh, overí živý web (smoke test) a označí, čo je na živom webe. S argumentom zrejuca nasadí origin/master na pokusnú Zrejúcu (tá istá adresa, hrajú hráči s oprávnením) hneď, bez uzávierky a čakania — Vypálenú nezhodí. Použi, keď používateľ povie /naex-nasad, „nasaď“, „nahraj na živý web“, „vydaj novú verziu“, „daj to na produkciu“, „nasaď do Zrejúcej“.
 argument-hint: "[zrejuca] [--hned] (zrejuca = pokusná Zrejúca z master; --hned = aj počas rozohraných partií)"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "[zrejuca] [--hned] (zrejuca = pokusná Zrejúca z master; --hned
 
 Si **vydávateľ**. Živý web je **Vypálená** (oficiálna hra) a nasadzuješ naň len
 to, čo je vo vetve `origin/vypalena` — nie master (Michal 2026-11-02). Master je
-**Zrejúca** (pokusná, len admini, subadmini a AI); do Vypálenej sa dostane celý
+**Zrejúca** (pokusná, hrajú ju hráči s oprávnením); do Vypálenej sa dostane celý
 stav Zrejúcej naraz až po Michalovom výslovnom schválení: vtedy Leader posunie
 vetvu `git push origin origin/master:vypalena` (len fast-forward) a až potom
 spustí tento skill. Bez toho schválenia vypalena neposúvaj, ani keď o nasadenie
@@ -103,37 +103,40 @@ Adresa a IP servera sú v `deploy/.env.produkcia` (`IP=`, `DOMENA=`; mimo gitu).
 
 ## Zrejúca (`$ARGUMENTS` obsahuje `zrejuca`)
 
-**Zrejúca** (Michal 2026-11-02) je pokusná inštancia na tom istom serveri:
-`https://zrejuca.<DOMENA>`, kód z `origin/master`, vlastná databáza (partie,
-štatistiky), účty a tvorca kariet z Vypálenej (hrá **rozpracovaný** stav
-tvorcu, nie zverejnenú sadu). Hrajú ju len admin, subadmini a AI účty —
-ľudia-hráči sa do nej nedostanú, preto nasadenie Zrejúcej nikoho z hráčov
-nezhodí. Implementované zmeny idú najprv sem (`naex-implementacia`); do
-Vypálenej až po Michalovom schválení celého stavu Zrejúcej (posun `vypalena`
-vyššie). Postup je ten istý ako kroky 1–8, s týmito rozdielmi:
+**Zrejúca** (Michal 2026-11-02) je pokusná verzia na **tej istej adrese** ako
+Vypálená: hráč s oprávnením (predvolene Sedmička, admin, subadmini a AI účty;
+výnimky dáva admin v Hráči) si ju vyberie na stránke Hrať a Caddy ho podľa
+cookie `naex_instancia` pošle do jej kontajnera; nástroje agentov idú na
+`https://<DOMENA>/zrejuca` (`--zrejuca`). Kód z `origin/master`, vlastná
+databáza (partie, štatistiky), účty, relácie a tvorca kariet z Vypálenej (hrá
+**rozpracovaný** stav tvorcu). Beží v samostatnom kontajneri, aby jej nasadenie
+**nikdy nezhodilo partie Vypálenej**.
 
-- všade `--zrejuca` namiesto `--zivy` (`$A server-stav --zrejuca`,
-  `$A uzavierka zapni --zrejuca`, `web.ts dostupny --zrejuca`); čakáš na
-  partie testerov (AI playtesteri, admin) — bežiaci playtest na Zrejúcej
-  (`turnus.ts … --zrejuca`) nezhadzuj, počkaj alebo sa spýtaj,
-- worktree z `origin/master`:
-  `git worktree add --detach ../naex-nasadenie-zr origin/master` (testy,
-  typecheck, build ako v kroku 2), čo pôjde von: `git log --oneline <nasadený commit>..origin/master`,
-- nasadenie `cd ../naex-nasadenie-zr && bash deploy/nahraj.sh <IP> --zrejuca`
-  (Vypálenú nemení; ak jej Caddyfile ešte nepozná Zrejúcu, doplní ho a
-  reštartuje len Caddy),
-- smoke test: `web.ts dostupny --zrejuca`, `$A server-stav --zrejuca`
-  (commit = origin/master), `$A sada-zrejuca --zrejuca` (Zrejúca prevezme
-  aktuálny stav tvorcu Vypálenej; bez zmeny je v poriadku) a snímka
-  `snimka.ts web nasadenie-zrejuca --zrejuca --ako Admin --cesta /hra` —
-  na stránke musí byť pás „Zrejúca – pokusná verzia“,
-- `cards.json` a značka `dorovnajSoSeedom` sa v Zrejúcej neriešia (sadu berie
-  z tvorcu Vypálenej) — zmenu kariet robí Admin v tvorcovi Vypálenej,
-- uprac `git worktree remove --force ../naex-nasadenie-zr`; novinku pre hráčov
-  nepíš (hráči Zrejúcu nevidia).
+**Nasadzuje sa hneď, keď to Michal povie — nikdy sa na nič nečaká** (Michal
+2026-11-02): žiadna uzávierka, žiadne čakanie na partie (aj rozohrané partie
+testerov v Zrejúcej sa zhodia — to je v poriadku). Kroky 1, 3, 4 a 6 z Vypálenej
+neplatia; postup:
 
-**Prvé nasadenie Zrejúcej** potrebuje Vypálenú s týmto `deploy/` (Caddyfile
-s blokom `zrejuca.{$DOMENA}`) — `nahraj.sh --zrejuca` si blok inak doplní sám,
-ale ďalšie nasadenie Vypálenej zo staršej `vypalena` ho zmaže a Zrejúca
-odpovie 502, kým ju znova nenasadíš. Postup je v docs/NASADENIE.md, časť 9.
+1. Čistý master a overenie:
+   ```bash
+   git fetch origin
+   git worktree remove --force ../naex-nasadenie-zr 2>/dev/null; git worktree add --detach ../naex-nasadenie-zr origin/master
+   cd ../naex-nasadenie-zr && npm ci --prefer-offline --no-audit --no-fund && npm test && npm run typecheck && npm run build
+   ```
+   Ak niečo neprejde, nenasadzuj a povedz, čo padlo.
+2. Nasaď: `bash deploy/nahraj.sh <IP z deploy/.env.produkcia> --zrejuca` — mení
+   **len** kontajner Zrejúcej (Vypálenú ani Caddy nereštartuje). Ak hlási, že
+   Caddyfile Vypálenej nepozná Zrejúcu, Vypálená ešte nemá tento `deploy/` —
+   povedz to Leaderovi (docs/NASADENIE.md, časť 9), sám Vypálenú nenasadzuj.
+3. Smoke test: `web.ts dostupny --zrejuca`, `$A server-stav --zrejuca` (commit
+   = origin/master; riadok „Zrejúca: bez zmien / N commitov, M kariet navyše“),
+   `$A sada-zrejuca --zrejuca` (prevezme aktuálny stav tvorcu) a snímka
+   `snimka.ts web nasadenie-zrejuca --zrejuca --ako Admin --cesta /hra` — na
+   stránke musí byť pás „Zrejúca – pokusná verzia“.
+4. Uprac `git worktree remove --force ../naex-nasadenie-zr`. Novinku pre
+   hráčov nepíš.
 
+`cards.json` a značka `dorovnajSoSeedom` sa v Zrejúcej neriešia (sadu berie
+z tvorcu Vypálenej) — zmeny kariet robí Admin v tvorcovi Vypálenej ako
+rozpracovaný stav. Keď Zrejúca beží na tom istom commite ako Vypálená a tvorca
+nemá nič nezverejnené, hráčom sa neponúkne (hláška „Zrejúca nemá žiadne zmeny“).

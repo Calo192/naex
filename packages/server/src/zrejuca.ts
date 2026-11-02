@@ -1,27 +1,32 @@
-// Dve inštancie hry na jednom serveri (Michal 2026-11-02): Vypálená je oficiálna hra
-// pre všetkých, Zrejúca pokusná — len admin, subadmini a AI playtesteri. Kód je ten
-// istý, líši sa len prostredím (NAEX_INSTANCIA). Účty a tvorca kariet sú len vo
-// Vypálenej: Zrejúca overí heslo cez Vypálenú (server–server, jej bežné /api/prihlasenie)
-// a hrá rozpracovaný stav jej tvorcu (/api/admin/obsah). Vypálená o Zrejúcej nevie —
-// netreba ju kvôli tomu meniť ani nasadzovať.
+// Dve inštancie hry na jednom serveri a jednej adrese (Michal 2026-11-02): Vypálená je
+// oficiálna hra, Zrejúca pokusná — hrá ju len ten, kto má vo Vypálenej oprávnenie
+// hrat_zrejucu (prava.ts). Kód je ten istý, líši sa prostredím (NAEX_INSTANCIA). Bežia ako
+// dva procesy, aby nasadenie Zrejúcej nezhodilo partie Vypálenej; Caddy ich rozlišuje podľa
+// cookie naex_instancia (prepínač na stránke Hrať), nástroje agentov podľa cesty /zrejuca/.
+// Účty a tvorca kariet sú len vo Vypálenej: Zrejúca overí reláciu prehliadača (tá istá
+// cookie naex_sid, pôvod je spoločný) cez /api/ja Vypálenej a hrá rozpracovaný stav jej
+// tvorcu (/api/admin/obsah).
 
-import { createHash, randomBytes } from "node:crypto";
 import type { ServerResponse } from "node:http";
 import type { Pohlavie } from "@naex/core";
 import type { Rola } from "./auth.ts";
-import { jeSpravca } from "./auth.ts";
 import type { ObsahTvorcu } from "./obsah.ts";
 
 export type Instancia = "vypalena" | "zrejuca";
 
-/** Kto smie do Zrejúcej: admin, subadmin a účet AI (playtesteri, agenti). */
-export function jeTester(p: { readonly rola: Rola; readonly ai: boolean }): boolean {
-  return jeSpravca(p.rola) || p.ai;
+export const LEN_PRE_TESTEROV =
+  "Zrejúca je pokusná verzia hry len pre hráčov s oprávnením (admin ho udeľuje; predvolene Sedmička, správcovia a AI playtesteri). Hrať môžeš vo Vypálenej.";
+
+/** Cookie, podľa ktorej Caddy posiela prehliadač do Zrejúcej; bez nej (alebo prázdna) Vypálená. */
+export const COOKIE_INSTANCIE = "naex_instancia";
+
+/** Prepnutie inštancie v prehliadači — cookie čítajú len Caddy a server, preto HttpOnly. */
+export function cookieInstancie(zrejuca: boolean, bezpecne: boolean): string {
+  const zivot = zrejuca ? `Max-Age=${30 * 24 * 60 * 60}` : "Max-Age=0";
+  return `${COOKIE_INSTANCIE}=${zrejuca ? "zrejuca" : ""}; Path=/; HttpOnly; SameSite=Lax; ${zivot}${bezpecne ? "; Secure" : ""}`;
 }
 
-export const LEN_PRE_TESTEROV = "Zrejúca je pokusná verzia len pre testerov (admin, subadmini a AI playtesteri). Hrať môžeš vo Vypálenej.";
-
-/** Účet z Vypálenej tak, ako ho vráti jej /api/ja. */
+/** Účet z Vypálenej tak, ako ho vráti jej /api/ja — aj s právami (oprávnenie hrat_zrejucu). */
 export interface UcetVypalenej {
   readonly login: string;
   readonly meno: string;
@@ -29,52 +34,10 @@ export interface UcetVypalenej {
   readonly ai: boolean;
   readonly avatar: string | null;
   readonly pohlavie: Pohlavie | null;
+  readonly prava: readonly string[];
 }
-
-export type OverenieVypalenej =
-  | { readonly stav: "ok"; readonly ucet: UcetVypalenej }
-  | { readonly stav: "zle" }
-  | { readonly stav: "brzda" }
-  | { readonly stav: "nedostupna" };
 
 const CAKAJ_MS = 10_000;
-
-/** Ako dlho platí odkaz z Vypálenej do Zrejúcej — stačí na jeden klik a presmerovanie. */
-export const PRENOS_PLATI_MS = 60_000;
-
-/**
- * Prenos prihlásenia z Vypálenej do Zrejúcej (Michal 2026-11-02): správca klikne v menu
- * Správa a Vypálená mu vydá jednorazový token do odkazu. Zrejúca ho overí u Vypálenej
- * (POST /api/zrejuca/over) a prihlási ho bez hesla. Token platí minútu a len raz; v pamäti
- * je len jeho hash — reštart ho zruší, čo nevadí.
- */
-export class PrenosPrihlasenia {
-  private readonly tokeny = new Map<string, { readonly pouzivatel: number; readonly plati: number }>();
-
-  vydaj(pouzivatel: number, teraz: number): string {
-    for (const [k, v] of this.tokeny) if (v.plati < teraz) this.tokeny.delete(k);
-    const token = randomBytes(32).toString("base64url");
-    this.tokeny.set(createHash("sha256").update(token).digest("hex"), { pouzivatel, plati: teraz + PRENOS_PLATI_MS });
-    return token;
-  }
-
-  /** Id účtu, ktorému token patrí; token tým zanikne. null = neplatný, použitý alebo starý. */
-  uplatni(token: string, teraz: number): number | null {
-    const kluc = createHash("sha256").update(token).digest("hex");
-    const z = this.tokeny.get(kluc);
-    this.tokeny.delete(kluc);
-    return z === undefined || z.plati < teraz ? null : z.pouzivatel;
-  }
-}
-
-const ucetZOdpovede = (p: Partial<UcetVypalenej> & { login: string }): UcetVypalenej => ({
-  login: p.login,
-  meno: p.meno ?? p.login,
-  rola: p.rola ?? "navstevnik",
-  ai: p.ai === true,
-  avatar: p.avatar ?? null,
-  pohlavie: p.pohlavie ?? null,
-});
 
 const cookieZOdpovede = (r: Response): string => (r.headers.get("set-cookie") ?? "").split(";")[0] ?? "";
 
@@ -82,14 +45,17 @@ const cookieZOdpovede = (r: Response): string => (r.headers.get("set-cookie") ??
 export class Vypalena {
   /** Adresa, na ktorej ju Zrejúca volá (v Dockeri http://naex:8787). */
   readonly url: string;
-  /** Verejná adresa pre odkazy hráčom (https://15-235-242-12.sslip.io). */
-  readonly adresa: string;
+  /**
+   * Adresa Vypálenej pre prehliadač; null = tá istá adresa (Caddy, prepína cookie). Vo vývoji
+   * bežia na rôznych portoch, vtedy sem ide napr. http://localhost:8789.
+   */
+  readonly adresa: string | null;
   private readonly admin: { readonly login: string; readonly heslo: string | null };
   private cookieAdmina: string | null = null;
 
-  constructor(url: string, adresa: string, admin: { readonly login: string; readonly heslo: string | null }) {
+  constructor(url: string, adresa: string | null, admin: { readonly login: string; readonly heslo: string | null }) {
     this.url = url.replace(/\/+$/, "");
-    this.adresa = adresa.replace(/\/+$/, "");
+    this.adresa = adresa === null ? null : adresa.replace(/\/+$/, "");
     this.admin = admin;
   }
 
@@ -108,41 +74,33 @@ export class Vypalena {
     });
   }
 
-  /**
-   * Overí meno a heslo vo Vypálenej. Reláciu, ktorú tam prihlásenie založí, hneď zruší —
-   * hráč je prihlásený len v Zrejúcej.
-   */
-  async overPrihlasenie(login: string, heslo: string, ip: string): Promise<OverenieVypalenej> {
+  /** Kto je prihlásený reláciou `cookie` (hlavička Cookie prehliadača); null = nikto alebo Vypálená neodpovedá. */
+  async relacia(cookie: string): Promise<UcetVypalenej | null> {
     try {
-      const r = await this.volaj("POST", "/prihlasenie", "", { login, heslo }, ip);
-      if (r.status === 401) return { stav: "zle" };
-      if (r.status === 429) return { stav: "brzda" };
-      if (!r.ok) return { stav: "nedostupna" };
-      const cookie = cookieZOdpovede(r);
-      try {
-        const ja = await this.volaj("GET", "/ja", cookie);
-        const p = ja.ok ? ((await ja.json()) as { pouzivatel: (Partial<UcetVypalenej> & { login: string }) | null }).pouzivatel : null;
-        if (p === null) return { stav: "nedostupna" };
-        return { stav: "ok", ucet: ucetZOdpovede(p) };
-      } finally {
-        await this.volaj("POST", "/odhlasenie", cookie).catch(() => undefined);
-      }
+      const r = await this.volaj("GET", "/ja", cookie);
+      if (!r.ok) return null;
+      const p = ((await r.json()) as { pouzivatel: (Partial<UcetVypalenej> & { login: string }) | null }).pouzivatel;
+      if (p === null) return null;
+      return {
+        login: p.login,
+        meno: p.meno ?? p.login,
+        rola: p.rola ?? "navstevnik",
+        ai: p.ai === true,
+        avatar: p.avatar ?? null,
+        pohlavie: p.pohlavie ?? null,
+        prava: Array.isArray(p.prava) ? p.prava : [],
+      };
     } catch {
-      return { stav: "nedostupna" };
+      return null;
     }
   }
 
-  /** Overí jednorazový token z odkazu Vypálenej (PrenosPrihlasenia); token tým zanikne. */
-  async overPrenos(token: string): Promise<OverenieVypalenej> {
-    try {
-      const r = await this.volaj("POST", "/zrejuca/over", "", { token });
-      if (r.status === 401) return { stav: "zle" };
-      if (!r.ok) return { stav: "nedostupna" };
-      const { pouzivatel } = (await r.json()) as { pouzivatel: Partial<UcetVypalenej> & { login: string } };
-      return { stav: "ok", ucet: ucetZOdpovede(pouzivatel) };
-    } catch {
-      return { stav: "nedostupna" };
-    }
+  /**
+   * Prihlásenie a odhlásenie v Zrejúcej robí Vypálená — jej odpoveď (aj Set-Cookie relácie)
+   * ide prehliadaču bez zmeny; adresa je spoločná, relácia platí v oboch.
+   */
+  preposli(cesta: "/prihlasenie" | "/odhlasenie", cookie: string, telo: unknown, ip: string): Promise<Response> {
+    return this.volaj("POST", cesta, cookie, telo, ip);
   }
 
   private async prihlasAdmina(): Promise<string> {

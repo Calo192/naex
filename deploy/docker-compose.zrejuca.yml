@@ -1,8 +1,9 @@
 # Zrejúca — pokusná inštancia hry (Michal 2026-11-02) vedľa Vypálenej na tom istom serveri.
 # Samostatný projekt: kód z master v /opt/naex-zrejuca, vlastná databáza (zväzok
 # naex-zrejuca-data). Pripojí sa do siete Vypálenej (projekt „deploy“ v /opt/naex/deploy),
-# aby ju našiel Caddy Vypálenej (blok zrejuca.{$DOMENA} v Caddyfile) a ona Vypálenú
-# (účty a tvorca kariet). Heslo admina a doména sú z .env Vypálenej (nahraj.sh ho skopíruje).
+# aby ju našiel Caddy Vypálenej (cookie naex_instancia a cesta /zrejuca/ v Caddyfile) a ona
+# Vypálenú (relácie, oprávnenie, tvorca kariet). Adresa je spoločná. Heslo admina a doména sú
+# z .env Vypálenej (nahraj.sh ho skopíruje). Nasadenie mení len tento kontajner.
 #   deploy/nahraj.sh <IP> --zrejuca
 
 name: naex-zrejuca
@@ -14,10 +15,9 @@ services:
     environment:
       NAEX_INSTANCIA: zrejuca
       NAEX_VYPALENA: http://naex:8787
-      NAEX_VYPALENA_ADRESA: https://${DOMENA}
       NAEX_ADMIN_HESLO: ${NAEX_ADMIN_HESLO}
       NAEX_SECURE_COOKIE: "1"
-      NAEX_ADRESA: https://zrejuca.${DOMENA}
+      NAEX_ADRESA: https://${DOMENA}
       NAEX_EMAIL_REZIM: ${NAEX_EMAIL_REZIM:-log}
     volumes:
       - naex-zrejuca-data:/data

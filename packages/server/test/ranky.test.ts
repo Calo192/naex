@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { prazdneStatistiky } from "@naex/core";
 import { Archiv } from "../src/archiv.ts";
-import { Ucty } from "../src/auth.ts";
+import { Ucty, type Rola } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
 import type { KatalogAchievementov } from "@naex/core";
 import { Achievementy, nacitajKatalog } from "../src/achievementy.ts";
@@ -33,6 +33,8 @@ function partie(archiv: Archiv, hraci: [number, number], pocet: number, dohrata 
 }
 
 const POSTUP = PREDVOLENE_PRAVA.postup;
+/** Predvolené práva hráčov pod Sedmičkou — Zrejúcu (Michal 2026-11-02) predvolene len Sedmička. */
+const BEZ_ZREJUCEJ = PRAVA.filter((p) => p !== "hrat_zrejucu");
 
 /** Hráč má prvých n hviezd katalógu (ranky po poradí, riadky ako pri zisku v partii); ďalšie, čo už mal, sa pripočítajú. */
 function dajHviezdy(db: ReturnType<typeof otvorDb>, katalog: KatalogAchievementov, pouzivatel: number, n: number): void {
@@ -220,12 +222,33 @@ describe("výučba po častiach — hviezdička za každú časť (Michal 2026-1
 });
 
 describe("práva — matica rank × právo", () => {
-  it("predvolene smie každý všetko; odobraté právo platí, správca a AI pri hodnotení vždy", () => {
+  it("Zrejúca (Michal 2026-11-02): Sedmička, správcovia a AI; výnimka admina má prednosť, admina nezamkne", () => {
+    const { db, zmaz } = docasnaDb();
+    try {
+      const prava = new Prava(db);
+      const smie = (rola: Rola, ai = false, zrejuca: boolean | null = null) =>
+        prava.smie({ rola, ai, zrejuca }, "hrat_zrejucu");
+      expect([smie("navstevnik"), smie("hrac"), smie("deci"), smie("sedmicka")]).toEqual([false, false, false, true]);
+      expect([smie("subadmin"), smie("admin"), smie("hrac", true)]).toEqual([true, true, true]);
+      expect([smie("hrac", false, true), smie("sedmicka", false, false), smie("subadmin", false, false), smie("hrac", true, false)]).toEqual([true, false, false, false]);
+      expect(smie("admin", false, false)).toBe(true);
+      expect(prava.smie(null, "hrat_zrejucu")).toBe(false);
+      // Admin môže pravidlo pre ranky zmeniť v matici ako každé iné právo.
+      const admin = { id: 1, rola: "admin" } as Parameters<Prava["uloz"]>[0];
+      prava.uloz(admin, { matica: { hrat_zrejucu: ["deci", "sedmicka"] } });
+      expect(smie("deci")).toBe(true);
+    } finally {
+      zmaz();
+    }
+  });
+
+
+  it("predvolene smie každý všetko (Zrejúcu len Sedmička); odobraté právo platí, správca a AI pri hodnotení vždy", () => {
     const { db, zmaz } = docasnaDb();
     try {
       const prava = new Prava(db);
       for (const rola of ["navstevnik", "hrac", "deci", "sedmicka"] as const) {
-        expect(prava.zoznam({ rola, ai: false })).toEqual([...PRAVA]);
+        expect(prava.zoznam({ rola, ai: false })).toEqual(rola === "sedmicka" ? [...PRAVA] : BEZ_ZREJUCEJ);
       }
       const admin = { id: 1, rola: "admin" } as Parameters<Prava["uloz"]>[0];
       prava.uloz(admin, { matica: { hodnotit_hru: ["deci", "sedmicka"], reporty_playtestov: [] } });
@@ -289,7 +312,7 @@ describe("ranky a práva — API", () => {
     const sub2 = (await registruj(server.port)).cookie;
     await nastavUroven(server.port, admin, sub, "subadmin");
     await nastavUroven(server.port, admin, sub2, "subadmin");
-    expect((await volaj(hrac, "GET", "/ja")).data.pouzivatel).toMatchObject({ rola: "navstevnik", prava: [...PRAVA] });
+    expect((await volaj(hrac, "GET", "/ja")).data.pouzivatel).toMatchObject({ rola: "navstevnik", prava: BEZ_ZREJUCEJ });
 
     const idHraca = await idUctu(hrac);
     expect((await volaj(sub, "PATCH", `/admin/pouzivatelia/${idHraca}`, { rola: "deci" })).status).toBe(200);

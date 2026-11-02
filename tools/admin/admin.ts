@@ -71,7 +71,8 @@
 //   navrh <id> <stav> [--vysledok "text"]   Developer: rozpracovane | implementovane (+ čo spravil, commit) | spat
 //                                 organizátor playtestu: overene | nezabralo (--vysledok = verdikt: čo playtest ukázal)
 // Server a prehľad
-//   server-stav [--json]          nasadená verzia (commit), rozohrané partie a uzávierka — pred nasadením (skill naex-nasad)
+//   server-stav [--json]          nasadená verzia (commit), rozohrané partie a uzávierka — pred nasadením (skill naex-nasad);
+//                                 s --zrejuca aj riadok „Zrejúca: bez zmien / N commitov, M kariet navyše“
 //   uzavierka zapni|vypni|stav    uzávierka pred nasadením: nové partie nie, rozohrané dohrajú (reštart ju zruší)
 //   linka                         čo čaká na Michala, Developera a nasadenie (skill naex-stav); s --zivy aj nenasadené commity
 //                                 Vypálenej (origin/vypalena) a Zrejúcej (origin/master)
@@ -93,9 +94,10 @@
 //
 // Na živý web (https://<DOMENA z deploy/.env.produkcia>) prepínač --zivy — to je Vypálená (oficiálna hra,
 // tvorca kariet, Spätná väzba, Playtest, roadmapa, novinky). Prepínač --zrejuca = pokusná Zrejúca
-// (https://zrejuca.<DOMENA>, Michal 2026-11-02): jej hra, partie a server (server-stav, uzavierka,
+// (https://<DOMENA>/zrejuca, Michal 2026-11-02): jej hra, partie a server (server-stav,
 // sada-zrejuca); tvorca je len vo Vypálenej a Zrejúca hrá jeho rozpracovaný stav.
 
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
@@ -105,7 +107,7 @@ import eldersJson from "../../packages/core/data/elders.json" with { type: "json
 import scorecardsJson from "../../packages/core/data/scorecards.json" with { type: "json" };
 import type { AkciaDef, BodovaciaKarta, IkonaBodovania, KartaNavrh, Kategoria, KlucoveSlovo, Nastavenia } from "@naex/tvorba";
 import { chybyNavrhu, doCardsJson, doScorecardsJson, kontrolaTextov, neznameAkcie, variantyKarty } from "@naex/tvorba";
-import { adminWebu, nacitajEnv, prihlasAgenta, webUrl, zivyWeb, zrejucaWeb } from "../playtest/web.ts";
+import { adminWebu, nacitajEnv, prihlasAgenta, vypalenaZrejucej, webUrl, zivyWeb, zrejucaWeb } from "../playtest/web.ts";
 import { MAX_KOL_NA_KARTU, generuj, nacitajZaznam } from "./leonardo.ts";
 import type { Sila } from "./leonardo.ts";
 import { MODEL, REFERENCIE, STYL_JADRO, REFERENCIE_PASU, STYL_PASU, cestyReferencii, kategoriaPodlaTagov, zostavPrompt } from "./styl.ts";
@@ -361,6 +363,38 @@ interface StavServeraCli {
     readonly opustene: number;
   };
   readonly uzavierka: { readonly od: number } | null;
+}
+
+/** Odpoveď GET /api/zrejuca/stav Vypálenej (packages/server/src/api.ts StavZrejucej). */
+interface StavZrejucejCli {
+  readonly dostupna: boolean;
+  readonly vypalena: string | null;
+  readonly zrejuca: string | null;
+  readonly kariet: number;
+  readonly ineZmeny: boolean;
+  readonly bezZmien: boolean;
+}
+
+/** „bez zmien“ alebo „N commitov, M kariet navyše“ — commity spočíta git, ak oba commity pozná. */
+export function textZmienZrejucej(z: StavZrejucejCli, pocetCommitov: (od: string, po: string) => number | null = gitPocetCommitov): string {
+  if (!z.dostupna) return "neodpovedá (nasadzuje sa, alebo ešte nie je nasadená)";
+  if (z.bezZmien) return "bez zmien (hráčom sa neponúka)";
+  const commity =
+    z.vypalena === null || z.zrejuca === null
+      ? "commit nepoznám"
+      : z.vypalena === z.zrejuca
+        ? "0 commitov"
+        : (() => {
+            const n = pocetCommitov(z.vypalena, z.zrejuca);
+            return n === null ? `iný commit (${z.zrejuca.slice(0, 7)})` : `${n} commitov`;
+          })();
+  return `${commity}, ${z.kariet} kariet navyše${z.ineZmeny ? ", aj iné zmeny v tvorcovi" : ""}`;
+}
+
+function gitPocetCommitov(od: string, po: string): number | null {
+  const r = spawnSync("git", ["rev-list", "--count", `${od}..${po}`], { encoding: "utf8" });
+  const n = Number(r.stdout.trim());
+  return r.status === 0 && Number.isInteger(n) ? n : null;
 }
 
 function vypisStavServera(s: StavServeraCli): void {
@@ -1045,6 +1079,14 @@ async function main(): Promise<void> {
         break;
       }
       vypisStavServera(s);
+      // Zrejúca oproti Vypálenej (Michal 2026-11-02): bez zmien sa hráčom neponúka.
+      const vypalena = await vypalenaZrejucej(url);
+      if (vypalena !== null) {
+        const { cookie: cookieV } = await prihlasAdmina(vypalena);
+        const r = await volaj(vypalena, "GET", "/api/zrejuca/stav", cookieV);
+        if (!r.ok) console.log(`  Zrejúca: Vypálená ju neoveruje (${r.status} ${await r.text()})`);
+        else console.log(`  Zrejúca: ${textZmienZrejucej(await json<StavZrejucejCli>(r))}`);
+      }
       break;
     }
 

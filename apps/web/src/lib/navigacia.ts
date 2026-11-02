@@ -13,6 +13,8 @@ export interface PolozkaNavigacie {
   readonly priorita: number;
   /** Hlavná výzva (tlačidlo). */
   readonly hlavna?: boolean;
+  /** V Zrejúcej: stránka je vo Vypálenej — klik najprv prepne inštanciu (lib/instancia.ts). */
+  readonly doVypalenej?: true;
 }
 
 interface Definicia extends PolozkaNavigacie {
@@ -21,15 +23,12 @@ interface Definicia extends PolozkaNavigacie {
 
 /**
  * Zrejúca (Michal 2026-11-02) je len hra: komunita, Vývoj, tvorca kariet a Playtest sú vo
- * Vypálenej — odkaz vedie tam (plná adresa; Layout ju kreslí ako obyčajný odkaz).
+ * Vypálenej — na tej istej adrese, preto odkaz najprv prepne inštanciu.
  */
 const VO_VYPALENEJ = new Set(["/novinky", "/vyvoj", "/spatna-vazba", "/playtest", "/admin"]);
 
 const doVypalenej = <T extends { readonly href: string }>(polozky: readonly T[], instancia: Instancia | undefined): T[] =>
-  polozky.map((p) => (instancia?.nazov === "zrejuca" && VO_VYPALENEJ.has(p.href) ? { ...p, href: `${instancia.vypalena ?? ""}${p.href}` } : p));
-
-/** Odkaz von zo stránky (do Vypálenej) — nejde cez router. */
-export const jeVonkajsi = (href: string): boolean => /^https?:\/\//.test(href);
+  polozky.map((p) => (instancia?.nazov === "zrejuca" && VO_VYPALENEJ.has(p.href) ? { ...p, doVypalenej: true } : p));
 
 const NAVIGACIA: readonly Definicia[] = [
   { href: "/hra", text: "Hrať", skupina: "hra", priorita: 99, hlavna: true },
@@ -55,8 +54,8 @@ export interface PolozkaSpravy {
   readonly text: string;
   /** Pri Playteste počet návrhov na rozhodnutie. */
   readonly pocet?: "navrhy";
-  /** Odkaz do Zrejúcej s prenosom prihlásenia (Layout si vyžiada jednorazový odkaz). */
-  readonly prenos?: true;
+  /** V Zrejúcej: stránka je vo Vypálenej (pozri PolozkaNavigacie). */
+  readonly doVypalenej?: true;
 }
 
 /** Menu „Správa ▾“ — admin aj subadmin vidia všetko (stránky si práva strážia samé). */
@@ -68,10 +67,7 @@ export function spravaWebu(ja: Pouzivatel | null, instancia?: Instancia): Polozk
     { href: "/hraci", text: "Hráči" },
   ];
   // Počet návrhov na rozhodnutie pozná Vypálená, nie Zrejúca.
-  if (instancia?.nazov === "zrejuca") return doVypalenej(polozky, instancia).map(({ pocet: _, ...p }) => p);
-  // Vypálená: správca prejde do pokusnej Zrejúcej tým istým účtom (Michal 2026-11-02).
-  const zrejuca = instancia?.zrejuca ?? null;
-  return zrejuca === null ? polozky : [...polozky, { href: zrejuca, text: "Zrejúca (pokusná verzia) ↗", prenos: true }];
+  return instancia?.nazov === "zrejuca" ? doVypalenej(polozky, instancia).map(({ pocet: _, ...p }) => p) : polozky;
 }
 
 /**
