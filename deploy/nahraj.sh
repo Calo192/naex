@@ -109,7 +109,6 @@ if command -v ufw >/dev/null && ! ufw status | grep -q "Status: active"; then
   ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw --force enable
 fi
 mkdir -p /opt/naex
-CADDY_PRED=\$(sha256sum /opt/naex/deploy/Caddyfile 2>/dev/null | cut -d' ' -f1 || true)
 # Nový kód, ale .env (heslo admina, doména) ostáva.
 find /opt/naex -mindepth 1 -maxdepth 1 ! -name deploy -exec rm -rf {} +
 find /opt/naex/deploy -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf {} + 2>/dev/null || true
@@ -123,15 +122,20 @@ fi
 sed -i "s|^DOMENA=.*|DOMENA=$DOMENA|" .env
 chmod +x zaloha.sh
 ( crontab -l 2>/dev/null | grep -v naex/deploy/zaloha.sh || true; echo "0 4 * * * /opt/naex/deploy/zaloha.sh" ) | crontab -
-if [ "\$CADDY_PRED" != "\$(sha256sum Caddyfile | cut -d' ' -f1)" ]; then
+# Caddyfile je v kontajneri pripojený ako súbor: nový obsah na disku Caddy neuvidí, kým kontajner
+# nevznikne nanovo. Rozhoduje preto ten, s ktorým Caddy naozaj beží, nie predošlý na disku
+# (2026-11-02 tak ostal bežať starý — disk už mal nový z predošlého behu). </dev/null: exec by inak
+# zjedol zvyšok tohto skriptu zo stdin.
+CADDY_BEZI=\$(docker compose exec -T caddy sha256sum /etc/caddy/Caddyfile </dev/null 2>/dev/null | cut -d' ' -f1 || true)
+CADDY_NOVY=\$(sha256sum Caddyfile | cut -d' ' -f1)
+if [ "\$CADDY_BEZI" != "\$CADDY_NOVY" ]; then
   docker compose run -T --rm --no-deps --entrypoint caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile </dev/null
 fi
 docker compose build
 # Zväzok vytvorený staršou verziou obrazu patrí rootovi — server beží ako node.
 docker compose run -T --rm --no-deps --user root --entrypoint chown naex -R node:node /data </dev/null
 docker compose up -d
-# Caddyfile je pripojený ako súbor — zmenený (napr. nová adresa Zrejúcej) uvidí až nový kontajner Caddy.
-[ "\$CADDY_PRED" = "\$(sha256sum Caddyfile | cut -d' ' -f1)" ] || docker compose up -d --no-deps --force-recreate caddy
+[ "\$CADDY_BEZI" = "\$CADDY_NOVY" ] || docker compose up -d --no-deps --force-recreate caddy
 docker image prune -f >/dev/null
 SKRIPT
 
