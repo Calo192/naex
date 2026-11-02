@@ -25,6 +25,9 @@
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
 //   &stop=bzdocha-caka  ako pitka, hráč ?ja má Bzdochu a čaká, kým súper skončí Pitku
+//   &stop=kseft    prvá Pitka, v ktorej hráč ?ja hrá: v línii Strýko z Ameriky, lokalita &lok=defId
+//                  (predvolene predsedova_vila; sklad, obecny_urad, zberny_dvor), väzni &vazni=defId,…
+//                  (predvolene hrobar,veterinar) — tlačidlá Kšeftov pod kartami
 //   &stop=zaverecna koniec Pitky so súperovou Záverečnou lícom dole — po načítaní sa otočí;
 //                  &dalsia=1 dohrá aj súperovu ďalšiu Záverečnú na tú istú stranu
 //   &moment=typ    pečiatka momentu (napr. vyprask, zvrat) pri prvej dohranej bitke či Pitke — snímky
@@ -164,6 +167,38 @@ function sNastrojom(s: GameState, p: PlayerId): GameState {
   return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
 }
 
+/**
+ * Kšefty v Pitke: hráčovi p dá do línie Strýka z Ameriky, lokalitu s Kšeftom (&lok, predvolene
+ * Predsedova vila), väzňov zo starších (&vazni, predvolene Hrobár a Veterinár), Dlh, cigarety
+ * a plné poldeci — každý Kšeft má tlačidlo pod svojou kartou.
+ */
+function sKseftami(s: GameState, p: PlayerId, lok: string, vazni: readonly string[]): GameState {
+  let uid = s.nextUid;
+  const stryko: CardInstance = { uid: uid++, defId: "stryko_z_ameriky", leftLayout: 0, rightLayout: 0 };
+  const strany: [GameState["strany"][0], GameState["strany"][1]] = [[...s.strany[0]], [...s.strany[1]]];
+  strany[p] = [...strany[p], { card: stryko, playedBy: p }];
+  const zajati = s.starsi.filter((e) => vazni.includes(e.karta.defId));
+  const noviVazni = zajati.map((e, i) => ({
+    elderId: e.elderId,
+    hrac: p,
+    poradie: s.vazni.length + i + 1,
+    karta: e.karta,
+    scorecard: e.scorecard,
+    miesto: s.starsi.indexOf(e),
+  }));
+  const h = { ...s.hraci[p], cigarety: Math.max(s.hraci[p].cigarety, 9), poldeciPlne: Math.max(s.hraci[p].poldeciPlne, 3), dlhy: Math.max(s.hraci[p].dlhy, 1) };
+  const ciel = s.ciel === null || s.ciel.lokalita == null ? s.ciel : { ...s.ciel, lokalita: { ...s.ciel.lokalita, defId: lok } };
+  return {
+    ...s,
+    nextUid: uid,
+    strany,
+    ciel,
+    starsi: s.starsi.filter((e) => !zajati.includes(e)),
+    vazni: [...s.vazni, ...noviVazni],
+    hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h],
+  };
+}
+
 /** Hráčovi p pridá priznané Dlhy — exekúcia v najbližšej bitke. */
 function sExekuciou(s: GameState, p: PlayerId): GameState {
   const h = s.hraci[p];
@@ -278,6 +313,10 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "vestica" && s.faza === "bitka" && s.bitkaStav?.krok === "vestica" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
+    if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {
+      const vazni = (p.get("vazni") ?? "hrobar,veterinar").split(",").filter((x) => x !== "");
+      return najdene({ zaciatok: sKseftami(s, ja, p.get("lok") ?? "predsedova_vila", vazni), dohraj: [] });
+    }
     const bzdochaStop = stop === "bzdocha" || stop === "bzdocha-caka";
     if (bzdochaStop && s.faza === "pitka" && s.pitkaStav !== null && s.pitkaStav.reakcia === null && s.vizia === null && !s.pitkaStav.hotovy[0] && !s.pitkaStav.hotovy[1]) {
       const b = sBzdochou(data, s, ja, stop === "bzdocha-caka");

@@ -6,7 +6,6 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { CardInstance, Command, PolozkaVykladania } from "@naex/core";
-import { KseftVily } from "../src/hra/KseftVily.tsx";
 import { klucVily, moznostiVily } from "../src/hra/volbaVily.ts";
 import { kartaVyucbyDoOblasti } from "../src/hra/odkazTahu.ts";
 import { enterNaKonciCasti, kluceZOcakavania, kusOddeleny } from "../src/hra/Vyucba.tsx";
@@ -26,18 +25,7 @@ describe("Kšeft vily", () => {
     expect(moznostiVily(view).map((m) => m.elderId)).toEqual(["starosta"]);
   });
 
-  it("je tlačidlo, nie rozbaľovač; ponuka má pre staršieho „k sebe“ aj „od seba“", () => {
-    const zavreta = renderToStaticMarkup(createElement(KseftVily, { uid: 7, moznosti: moznostiVily(view), meno: (d: string) => d, cmd: () => {}, napis: "−2 → posun" }));
-    expect(zavreta).not.toContain("<select");
-    expect(zavreta).toContain('data-vyucba="tlacidlo:kseft"');
-    const otvorena = renderToStaticMarkup(createElement(KseftVily, { uid: 7, moznosti: moznostiVily(view), meno: (d: string) => d, cmd: () => {}, napis: "−2 → posun", otvorena: true }));
-    expect(otvorena).not.toContain("<select");
-    expect(otvorena).toContain(`data-vyucba="${klucVily("starosta", true)}"`);
-    expect(otvorena).toContain(`data-vyucba="${klucVily("starosta", false)}"`);
-    expect(otvorena).toContain("k sebe");
-    expect(otvorena).toContain("od seba");
-  });
-
+  // Tlačidlo a ponuka vily ležia pod lokalitou (KseftPodKartou) — testuje ich kseftyNaStole.test.ts.
   it("výučba rozsvieti presne tlačidlo, ktoré krok čaká", () => {
     const c: Command = { type: "kseft", uid: 7, elderId: "starosta", kSebe: true };
     expect(kluceZOcakavania(c)).toContain(klucVily("starosta", true));

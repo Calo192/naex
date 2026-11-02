@@ -9245,28 +9245,155 @@ button.auto-hotovo-odkaz {
   border: 1px solid var(--cervena);
 }
 
-/* Kšeft vily: pečiatka a nad ňou ponuka „‹ k sebe · starší · od seba ›“ (tlačidlá aspoň 44 px). */
-.kseft-vila {
+/* ---- Kšeft pod kartou (Michal 2026-11-02) ----
+ * Pečiatka leží cez spodnú hranu karty, ktorá Kšeft ponúka (Strýko, lokalita, väzeň) — na jej
+ * texte, nie na akciách pri ilustrácii; šírka nanajvýš karta, aby nesiahla na susedov. */
+.s-kseftom {
   position: relative;
-  display: inline-flex;
+  display: flex;
+  flex: none;
 }
 
-.kseft-vila-ponuka {
+/* Pod kartu presahuje o pevných 14 px (k hrane stola na nízkom notebooku ostane miesto);
+   vyššia pečiatka úzkej karty rastie nahor cez text karty, nie dole. */
+.kseft-pod {
   position: absolute;
-  right: 0;
-  bottom: calc(100% + 10px);
-  z-index: 40;
+  left: 50%;
+  bottom: -14px;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  width: calc(100% - 6px);
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+button.pecat.kseft-pod-tlacidlo {
+  gap: 1px;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  padding: 3px 8px 4px;
+  border-width: 1px;
+  font-size: 0.62rem;
+  pointer-events: auto;
+}
+
+button.pecat.kseft-pod-tlacidlo::after {
+  inset: 2px;
+}
+
+.kseft-pod-tlacidlo .vymena {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0 4px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.kseft-pod-nazov {
+  letter-spacing: 0.1em;
+  opacity: 0.75;
+}
+
+/* Úzka karta (pivnica, nízky notebook): zisk sa zalomí na dva riadky, neoreže sa. */
+.kseft-pod-zisk {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: normal;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  /* Kratší zvyšok riadku za cenou ho nezúži na písmená — radšej celý na ďalší riadok. */
+  min-width: 4.5em;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0;
+  font: 800 0.74rem/1.1 var(--pismo);
+}
+
+.kseft-pod-tlacidlo .cena-cig,
+.kseft-ponuka .cena-cig,
+.kseft-pod-tlacidlo .cena-poldeci,
+.kseft-ponuka .cena-poldeci {
+  display: inline-flex;
+  align-items: center;
+  font: 800 0.8rem/1 var(--nadpis);
+  color: var(--cervena);
+}
+
+.kseft-pod-tlacidlo .ikona-cigareta,
+.kseft-pod-tlacidlo .ikona-poldeci,
+.kseft-ponuka .ikona-cigareta,
+.kseft-ponuka .ikona-poldeci {
+  width: 16px;
+  height: 16px;
+}
+
+.kseft-ponuka .ikona-cigareta {
+  fill: currentColor;
+}
+
+.kseft-pod-tlacidlo .ikona-poldeci,
+.kseft-ponuka .ikona-poldeci {
+  fill: var(--slaby);
+}
+
+/* Nedá sa (málo cigariet, použitý v tejto Pitke): obrys ako nákupy na hrane, ale s tmavým
+   podkladom — leží na svetlom texte karty a bez neho by sa nedal prečítať. */
+button.pecat.kseft-pod-tlacidlo.ne,
+button.pecat.kseft-pod-tlacidlo.ne:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--pozadie) 88%, transparent);
+}
+
+/* Vybraná na NA EX: štítok „vybraná“ nad pečiatkou Kšeftu, nie pod ňou. */
+.hra .linia .s-kseftom > .s-lupou > .vybrana-pod {
+  bottom: 30px;
+}
+
+/* Pivnica: väzni pred tvojou stranou línie, len v tvojej Pitke (Kšeft väzňa pod kartou). Prerušovaná
+   čiara ju oddeľuje od línie — väzeň v línii nie je. */
+.linia-skupina.pivnica {
+  grid-column: 1;
+  justify-self: end;
+  justify-items: center;
+  margin-right: 14px;
+  padding-right: 14px;
+  border-right: 2px dashed color-mix(in srgb, var(--text) 25%, transparent);
+}
+
+.linia-skupina.pivnica .partia-popis {
+  color: var(--slaby);
+}
+
+.pivnica-rad {
+  display: flex;
+  align-self: center;
+  gap: 8px;
+  padding-bottom: 18px;
+}
+
+/* Ponuka Kšeftu nad tlačidlom (v <body>): voľba vily či karty, na telefóne aj potvrdenie. */
+.kseft-ponuka {
+  position: fixed;
+  z-index: 960;
   display: grid;
   gap: 4px;
-  min-width: 320px;
+  min-width: 280px;
+  max-width: min(440px, calc(100vw - 16px));
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
   padding: 8px;
   border: 1px solid var(--okraj-svetly);
   border-radius: 10px;
+  color: var(--text);
   background: var(--plocha);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
 }
 
-.kseft-vila-nadpis {
+.kseft-ponuka-nadpis {
   padding: 0 4px 2px;
   font: 700 0.72rem/1.3 var(--pismo);
   letter-spacing: 0.08em;
@@ -9274,35 +9401,86 @@ button.auto-hotovo-odkaz {
   color: var(--slaby);
 }
 
-.kseft-vila-riadok {
+.kseft-ponuka-tip {
+  padding: 0 4px 4px;
+  font: 500 0.86rem/1.35 var(--pismo);
+}
+
+.kseft-ponuka-riadok {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 6px;
 }
 
-.kseft-vila-riadok button {
+.kseft-ponuka-riadok.bez-vlavo {
+  grid-template-columns: 1fr auto;
+}
+
+.kseft-ponuka-riadok.potvrdenie {
+  grid-template-columns: 1fr auto;
+}
+
+.kseft-ponuka-riadok button {
   min-height: 44px;
   padding: 0 10px;
   white-space: nowrap;
 }
 
-.kseft-vila-meno {
+.kseft-ponuka-hlavne {
+  font-weight: 800;
+  color: var(--na-akcente);
+  background: var(--akcent);
+}
+
+.kseft-ponuka-hlavne :is(.cena-cig, .cena-poldeci) {
+  color: inherit;
+}
+
+.kseft-ponuka-hlavne .vymena {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kseft-ponuka-meno {
   min-width: 110px;
   font-weight: 700;
   text-align: center;
 }
 
+.kseft-ponuka-riadok.bez-vlavo .kseft-ponuka-meno {
+  text-align: left;
+}
+
 /* Na nízkom okne by 8 riadkov po 44 px siahlo cez bublinu Melichara — ponuka v dvoch stĺpcoch. */
 @media (min-width: 761px) and (max-height: 719px) {
-  .kseft-vila-ponuka {
+  .kseft-ponuka:has(.kseft-ponuka-riadok:nth-of-type(5)) {
     grid-template-columns: 1fr 1fr;
-    min-width: 640px;
+    max-width: min(680px, calc(100vw - 16px));
   }
 
-  .kseft-vila-nadpis {
+  .kseft-ponuka-nadpis {
     grid-column: 1 / -1;
   }
+}
+
+/* Telefón: pod malou kartou len „Kšeft“ a cena — čo dostaneš, povie ponuka po ťuknutí. */
+.hra.mobil-sirka .kseft-pod-tlacidlo :is(.kseft-pod-zisk, .pecat-sipka) {
+  display: none;
+}
+
+/* Ťukateľné aj pod malou kartou (aspoň 44 px); ťuk otvorí ponuku s veľkým tlačidlom. */
+.hra.mobil-sirka button.pecat.kseft-pod-tlacidlo {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 2px 5px 3px;
+  font-size: 0.56rem;
+}
+
+.hra.mobil-sirka .linia-skupina.pivnica {
+  margin-right: 6px;
+  padding-right: 6px;
 }
 
 /* ---- bar hráča na mobile ----
