@@ -1677,6 +1677,10 @@ export function mozeHrat(state: GameState, kto: Miesto): boolean {
   if (state.faza === "draft" && state.draftStav?.krok === "stavba") {
     return vyberMiesta(state.draftStav, kto) === null;
   }
+  // 2 na 2: na NA EX odpovedá za tím jeden člen — ktorýkoľvek z dvoch (dohodnú sa).
+  if (state.format === "2na2" && state.faza === "pitka" && state.vizia === null && state.pitkaStav !== null && state.pitkaStav.reakcia !== null) {
+    return state.pitkaStav.reakcia === p;
+  }
   // Pitka naraz (Michal 2026-10-27): kým niekto neodpovedá na NA EX, hrajú obaja.
   if (state.faza === "pitka" && state.vizia === null && state.pitkaStav !== null && state.pitkaStav.reakcia === null) {
     return hraVPitke(state.pitkaStav, p);
@@ -1751,6 +1755,10 @@ function applyPrikaz(
   }
 
   need(mozeHrat(state, kto), "Nie si na ťahu.");
+  // 2 na 2: NA EX tímu a koniec Pitky za tím volí kapitán (Michal 2026-10-28).
+  if (state.format === "2na2" && (cmd.type === "naex" || cmd.type === "skipNaex")) {
+    need(kto === kapitan(state, hracId), "NA EX a koniec Pitky za tím volí kapitán.");
+  }
   need(state.vizia === null || cmd.type === "vizia", "Najprv rozhodni o karte z Vízie.");
   need(!cakaHasic(state) || ["hasic", "senok", "nastroj", "kapybara"].includes(cmd.type) || vTahu, HASIC_NAJPRV);
 
@@ -1894,24 +1902,28 @@ function aktualizujPitky(s: MutState, data: GameData): void {
  */
 function dohrajNevyhnutne(data: GameData, s: MutState, events: Event[]): void {
   for (;;) {
-    const prvy = naTahu(s as GameState);
+    const prvy = miestoNaTahu(s as GameState);
     if (prvy === null) return;
-    // Pitka naraz: nevyhnutný ťah môže mať aj ten druhý, čo práve hrá.
-    const kandidati = s.faza === "pitka" ? [prvy, opponentOf(prvy)].filter((q) => mozeHrat(s as GameState, q)) : [prvy];
+    // Pitka naraz: nevyhnutný ťah môže mať aj ten druhý, čo práve hrá (v 2 na 2 ktokoľvek).
+    const ostatni: readonly Miesto[] = s.format === "2na2" ? miestaHry(s).filter((m) => m !== prvy) : [opponentOf(timMiesta(prvy))];
+    const kandidati = s.faza === "pitka" ? [prvy, ...ostatni].filter((q) => mozeHrat(s as GameState, q)) : [prvy];
     if (!kandidati.some((q) => nevyhnutnyTah(data, s, q, events))) return;
   }
 }
 
-/** Urobí za hráča p jediný možný ťah (pas, koniec Pitky, bez odpovede…); false = má voľbu. */
-function nevyhnutnyTah(data: GameData, s: MutState, p: PlayerId, events: Event[]): boolean {
+/** Urobí za miesto jediný možný ťah (pas, koniec Pitky, bez odpovede…); false = má voľbu. */
+function nevyhnutnyTah(data: GameData, s: MutState, kto: Miesto, events: Event[]): boolean {
   {
-    const moznosti = legalCommands(data, s as GameState, p);
+    const p = timMiesta(kto);
+    const moznosti = legalCommands(data, s as GameState, kto);
     const jedina = moznosti.length === 1 ? moznosti[0] : undefined;
+    // 2 na 2: za tím neodpovedá nikto, len keď nemá čím odpovedať ani partner.
+    if (jedina?.type === "bezReakcie" && s.format === "2na2" && legalCommands(data, s as GameState, partnerMiesta(kto)).length > 1) return false;
     if (jedina?.type === "pass") {
       events.push({ type: "log", text: `Hráč ${p + 1} už nemá čo vyložiť.` });
       events.push({ type: "autoPas", hrac: p, dovody: dovodyAutoPasu(data, s as GameState, p), pre: p });
       events.push({ type: "autoPas", hrac: p, dovody: [], pre: opponentOf(p) });
-      cmdPass(s, data, p, events);
+      cmdPass(s, data, kto, events);
     } else if (jedina?.type === "skipNaex") {
       // Len pre hráča (pravidlo 2): po skrytom NA EX býva „hotovo“ jediný ťah, takže
       // verejné „nemá čo urobiť“ prezrádzalo, že NA EX padlo (playtest 20261027-062058).
@@ -1929,7 +1941,7 @@ function nevyhnutnyTah(data: GameData, s: MutState, p: PlayerId, events: Event[]
       cmdBezReakcie(s, data, p, events);
     } else if (jedina?.type === "draftStop") {
       if (s.senok.length > 0) events.push({ type: "log", text: `Hráč ${p + 1} nemá cigaretu na kartu zo šenku.` });
-      cmdDraftStop(s, data, p, events);
+      cmdDraftStop(s, data, kto, events);
     } else if (jedina?.type === "bezPokusu") {
       const dovod = dovodBezPokusu(data, s as GameState, p);
       if (dovod !== null) events.push({ type: "log", pre: p, text: dovod });
@@ -5718,8 +5730,10 @@ function dolejNaZaciatkuKola(s: MutState, events: Event[]): void {
  * 2026-10-19 — namiesto doplnenia ruky na 5). Limit ruky nie je.
  */
 function doberPoBitke(s: MutState, events: Event[]): void {
-  for (const p of [0, 1] as const) {
-    const tahane = tahaj(s, p, KONSTANTY.KARTY_PO_BITKE, events);
+  // 2 na 2: každý hráč z balíčka tímu, v poradí U1 → O1 → U2 → O2 (Michal 2026-10-28).
+  for (const m of s.format === "2na2" ? poradieVykladania(s as GameState) : ([0, 1] as const)) {
+    const p = timMiesta(m);
+    const tahane = tahaj(s, m, KONSTANTY.KARTY_PO_BITKE, events);
     if (tahane.length > 0) {
       events.push({ type: "log", text: `Hráč ${p + 1} si po bitke doberá ${kariet(tahane.length)}.` });
     }
@@ -5799,8 +5813,10 @@ function mozeFajcit(data: GameData, state: GameState, p: PlayerId): boolean {
   return h.cigarety >= cenaFajceniaHraca(state, p) && dovodZakazuFajcit(data, state, p) === null && jeCoTahat(h.doberaci.length, h.odhadzovaci.length);
 }
 
-export function legalCommands(data: GameData, state: GameState, p: PlayerId): Command[] {
-  if (!mozeHrat(state, p)) return [];
+export function legalCommands(data: GameData, state: GameState, kto: Miesto): Command[] {
+  if (!mozeHrat(state, kto)) return [];
+  const p = timMiesta(kto);
+  const ruka = rukaMiesta(state, kto);
   if (cakaHasic(state)) return volbyNastupu(data, state);
   const out: Command[] = [];
 
@@ -5818,7 +5834,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       if (d.krok === "stavba") {
         // Všetky rozdelenia by boli tisíce príkazov — vypíšu sa súvislé okná
         // (každé je legálne; apply prijme ľubovoľný výber správnej veľkosti).
-        const b = d.balicky[p].map((k) => k.uid);
+        const b = balicekMiesta(d, kto).map((k) => k.uid);
         const krok = krokStavby(b.length, kartaZadarmo(state, p));
         if (krok.nechaj === 1) {
           // Karta zadarmo (v10.1): každá karta balíčka raz, zvyšok v dvoch rozdeleniach.
@@ -5836,13 +5852,13 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
           if (krok.odhod > 0) out.push({ type: "stavbaSenku", doSenku: okno.slice(krok.odhod), odhod: okno.slice(0, krok.odhod) });
         }
       } else if (d.krok === "zajatie") {
-        if (d.naTahu !== p || d.hotovo[p]) break;
+        if (d.naTahu !== kto || d.hotovo[p]) break;
         out.push({ type: "bezPokusu" });
         for (const elder of moznePokusy(state, p)) out.push({ type: "pokus", elderId: elder.elderId });
-      } else if (!d.hotovo[p]) {
+      } else if (!hotovoMiesta(d, kto)) {
         out.push({ type: "draftStop" });
         const senok = state.senok.map((k) => k.uid);
-        for (const pocet of moznostiZoSenku(state, p)) {
+        for (const pocet of moznostiZoSenku(state, kto)) {
           if (pocet === 1) for (const uid of senok) out.push({ type: "draftBer", uids: [uid] });
           else for (let i = 0; i < senok.length; i++) for (let j = i + 1; j < senok.length; j++) out.push({ type: "draftBer", uids: [senok[i]!, senok[j]!] });
         }
@@ -5854,7 +5870,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       if (z === null) break;
       out.push({ type: "pass" });
       const vylozenia: Command[] = [];
-      for (const karta of state.hraci[p].ruka) {
+      for (const karta of ruka) {
         for (const target of cieleVykladania(data, state.strany, p, karta, z.zostavaLimit[p], state.hraci[p].cigarety >= cenaDedicstva(state), cielLokalitaId(state), [false, false])) {
           vylozenia.push({ type: "place", uid: karta.uid, target });
           // Záverečná: tá istá karta lícom dole za cigaretu.
@@ -5866,7 +5882,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       // Vypiť len znižuje limit — keď sa nedá nič vyložiť, nepomôže (priznanie
       // ťah neodovzdáva, tomu vypitie tiež nepridá).
       const doLinie = vylozenia.some((c) => c.type === "place" && c.target !== "priznanie");
-      if (doLinie && state.hraci[p].poldeciPlne > 0 && !z.pasoval[p] && !zakazVypit(state)) out.push({ type: "vypit" });
+      if (doLinie && state.hraci[p].poldeciPlne > 0 && !skoncilVykladanie(z, kto) && !zakazVypit(state)) out.push({ type: "vypit" });
       // Fajčiť sa v Zhromaždení nesmie (v5, Michal 2026-10-24) — len v Pitke.
       out.push(...vylozenia);
       break;
@@ -5884,14 +5900,17 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       if (pitka.reakcia === p) {
         // Odpoveď na NA EX (v9.2): jedna karta lícom dole mimo limitu (po súperovi len na druhý kraj), alebo nič.
         out.push({ type: "bezReakcie" });
-        for (const karta of state.hraci[p].ruka) {
+        for (const karta of ruka) {
           for (const target of cieleOdpovede(data, state, p, karta)) out.push({ type: "place", uid: karta.uid, target });
         }
         break;
       }
       // Krčma: kým je NA EX možné a poldeci plný, skončiť Pitku sa nedá.
-      if (!krcmaVyzaduje(data, state, p)) out.push({ type: "skipNaex" });
-      for (const uid of moznostiNaex(data, state, p)) out.push({ type: "naex", uid });
+      // 2 na 2: NA EX a koniec Pitky za tím volí kapitán (Michal 2026-10-28).
+      if (kto === kapitan(state, p)) {
+        if (!krcmaVyzaduje(data, state, p)) out.push({ type: "skipNaex" });
+        for (const uid of moznostiNaex(data, state, p)) out.push({ type: "naex", uid });
+      }
       if (mozeFajcit(data, state, p)) out.push({ type: "smoke", pocet: 1 });
       if (state.hraci[p].cigarety >= barterCena(data, state, p)) {
         out.push({ type: "barter" });
@@ -5912,7 +5931,7 @@ export function legalCommands(data: GameData, state: GameState, p: PlayerId): Co
       if (b === null || b.caka !== p) break;
       if (b.krok === "cintorin") {
         out.push({ type: "cintorin", uid: null });
-        for (const k of [...state.hraci[p].ruka, ...state.senok]) if (defOf(data, k).tags.includes("Nástroj")) out.push({ type: "cintorin", uid: k.uid });
+        for (const k of [...ruka, ...state.senok]) if (defOf(data, k).tags.includes("Nástroj")) out.push({ type: "cintorin", uid: k.uid });
       } else if (b.krok === "vestica") {
         const opp = opponentOf(p);
         const prve = (karty: readonly CardInstance[]): number[] => {
