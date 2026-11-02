@@ -163,5 +163,20 @@ z oboch rúk a balíčkov tímu. Vo finále útočí tím s menej špakmi.
 | Q8 | Bzdocha: čaká celý tím majiteľa, jeho kapitán vidí NA EX súpera | áno |
 | Q9 | Lokality a karty „rátajú tímy“; Zastávka — jednu kartu berie kapitán | áno |
 
-Vlna 3 (komunikácia medzi partnermi, stôl pre štyroch, bot, štatistiky a rebríček)
-príde až s roadmapou #26–#29.
+| Q10 | Odpoveď na NA EX: kto za tím odpovie | **kapitán určí** — odpovie sám, alebo odpoveď odovzdá partnerovi |
+
+## Platforma 2 na 2 (Michal 2026-11-02)
+
+Nie sú to pravidlá hry (do PRAVIDLA.md nepatria), ale web a server:
+
+| Téma | Rozhodnutie |
+|---|---|
+| Komunikácia partnerov | **pevné signály aj tímový chat** — súper nevidí ani jedno |
+| Odpojenie hráča | **kontumácia tímu** (ako v 1 na 1) |
+| Založenie partie | **pozvánka odkazom**, **voľné miesta v herni** a **náhodné párovanie** |
+| Boti | **na každom mieste** (aj 1 človek + 3 boti); v tíme človek + bot je kapitánom vždy človek |
+| Štatistiky | **samostatný rebríček 2 na 2** — ranky a ligy 1 na 1 nemení |
+| Vzdanie | **musia obaja** — jeden navrhne, partner potvrdí |
+| Kto hrá v Zrejúcej | **ako Zrejúca** — oprávnenie hrať Zrejúcu musí mať každý hráč, aj pozvaný |
+
+Ešte otvorené (príde s #28 stôl a herňa): zoznam signálov, rozloženie stola pre štyroch.
