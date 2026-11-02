@@ -3039,7 +3039,7 @@ function cmdNaex(
     );
     need(
       naexMaZmysel(data, lineState(s as GameState)).has(placed.card.uid),
-      "NA EX smie len na kartu, ktorá má aspoň jednu aktívnu a aspoň jednu neaktívnu akciu.",
+      "NA EX smie len na kartu bez Vzbury, ktorá má aspoň jednu aktívnu a aspoň jednu neaktívnu akciu.",
     );
   }
   pitka.skryteNaex = [...(pitka.skryteNaex ?? []), { hrac: p, uid: placed.card.uid }];
@@ -3318,8 +3318,9 @@ export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId, na
 /**
  * Karty, na ktoré má NA EX zmysel (Michal 2026-10-23): aspoň jedna akcia
  * aktívna (spárovaná a nezrušená Odporom) a aspoň jedna neaktívna — v okamihu
- * NA EX, aj Veterán. Skryté Záverečné sa do vyhodnotenia nerátajú, inak by
- * odmietnutie NA EX na ich suseda prezradilo, čo leží lícom dole.
+ * NA EX, aj Veterán. Na kartu so Vzburou (Odpor + Odpor aj Odpor + Posilnenie)
+ * NA EX nejde (v11.1, Michal 2026-11-02). Skryté Záverečné sa do vyhodnotenia
+ * nerátajú, inak by odmietnutie NA EX na ich suseda prezradilo, čo leží lícom dole.
  */
 export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<number> {
   const verejne = line.strany.map((strana) => strana.filter((pl) => pl.zaverecna !== true)) as unknown as LineState["strany"];
@@ -3328,6 +3329,7 @@ export function naexMaZmysel(data: GameData, line: LineState): ReadonlySet<numbe
   for (const [uid, karta] of ev.cards) {
     const sloty = [...karta.left, ...karta.right];
     // Neaktívny Pakt NA EX nezdvojí (v7, plan.md 12.3 bod 6) — do „neaktívnej“ sa neráta.
+    if (karta.vzbura) continue;
     if (sloty.some((x) => x?.stav === "aktivna") && sloty.some((x) => x?.stav === "neaktivna" && x.action !== "Pakt")) out.add(uid);
   }
   return out;

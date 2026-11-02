@@ -46,9 +46,11 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
   for (const ja of [0, 1] as const)
     for (const kam of ["vlastna", "superova"] as const)
       for (const otocena of [false, true]) for (const sused of [false, true]) pripady.push({ ja, kam, otocena, sused });
+  const vsetkyObratene: number[] = [];
 
   it.each(pripady)("hráč $ja → $kam, lokalita otočená $otocena, sused $sused", ({ ja, kam, otocena, sused }) => {
     let skontrolovane = 0;
+    let obratene = 0;
     for (let i = 0; i < obcania.length; i++) {
       const karta = inst(obcania[i]!.id);
       const lokalita = inst(lokality[i % lokality.length]!.id);
@@ -63,22 +65,29 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
       const nova = [...strana, { card: karta, playedBy: ja }];
       const po = evaluateLine(data, { ...line, strany: p === 0 ? [nova, []] : [[], nova] });
       const ev = po.cards.get(karta.uid)!;
-      // Vzbura aktivuje aj sloty bez páru — tam sa páry s vyhodnotením nekryjú.
-      if (ev.vzbura) continue;
       skontrolovane++;
 
       expect(n.sused?.stred).toBe(!sused);
       const vytlacena = printedSides(data, karta)[n.vnutornaVytlacena];
       expect(n.vnutorna).toEqual([...vytlacena]);
       const sparovane = new Set(n.pary.map((x) => x.index));
-      // Odpor proti susedovmu Posilneniu aktivuje neprepojené akcie karty s Odporom ako Vzbura
-      // (partia.ts markVzbura, nie skutočná) — páry sa vtedy s aktívnymi slotmi nekryjú, súčty áno.
-      // Od sady v8 (Nástroje so 4 akciami) má Posilnenie aj Nástroj v línii, napr. Vínko vedľa Živnostníka.
-      const odporProtiPosilneniu = n.pary.some((x) => x.moja === "Odpor" && x.susedova === "Posilnenie");
-      for (let k = 0; k < 4 && !odporProtiPosilneniu; k++) {
+      // Vzbura (Odpor proti Odporu či Posilneniu suseda) kartu obráti (v11.1): aktívne sú práve
+      // nespojené akcie (aj celá vonkajšia hrana), spojené neaktívne; zrušené Odporom ostávajú.
+      const obratena = ev.vzbura;
+      if (obratena) obratene++;
+      for (let k = 0; k < 4; k++) {
         const slot = ev[n.vnutornaVytlacena][k];
         if (slot === null || slot === undefined) continue;
-        expect(slot.stav !== "neaktivna", `${karta.defId} index ${k}`).toBe(sparovane.has(k));
+        if (!obratena) {
+          expect(slot.stav !== "neaktivna", `${karta.defId} index ${k}`).toBe(sparovane.has(k));
+        } else if (slot.stav !== "zrusena" && !["Odpor", "Posilnenie", "Pakt"].includes(slot.action)) {
+          expect(slot.stav === "aktivna", `${karta.defId} index ${k} (obrátená)`).toBe(!sparovane.has(k));
+        }
+      }
+      const vonkajsiaStrana = n.vnutornaVytlacena === "left" ? "right" : "left";
+      for (const slot of obratena ? ev[vonkajsiaStrana] : []) {
+        if (slot === null || slot === undefined || slot.action === "Pakt") continue;
+        expect(slot.stav, `${karta.defId} vonkajšia (obrátená)`).toBe("aktivna");
       }
 
       const pred = evaluateLine(data, line);
@@ -94,6 +103,11 @@ describe("náhľad vyloženia sedí s vyhodnotením línie", () => {
       }
     }
     expect(skontrolovane).toBeGreaterThan(20);
+    vsetkyObratene.push(obratene);
+  });
+
+  it("karty so Vzburou sa vo výbere naozaj vyskytli", () => {
+    expect(vsetkyObratene.reduce((a, b) => a + b, 0)).toBeGreaterThan(0);
   });
 
   it("na súperovu stranu ide k lokalite tvoja ľavá hrana, na tvoju pravá", () => {

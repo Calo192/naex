@@ -84,7 +84,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "vytrznik", pojem: "Výtržník", popis: "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke: všetky jej akcie sú Rany pre majiteľa (Sypačove Pecky), do konca bitky." },
   { id: "vypit", pojem: "Vypiť", popis: "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1." },
   { id: "vykupne", pojem: "Výkupné", popis: "Po finále dostaneš 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, ktoré ti ostali." },
-  { id: "vzbura", pojem: "Vzbura", popis: "Odpor proti Odporu: obe karty vyhodnotia svoje inak neaktívne akcie ako aktívne; Nástroj ju nedostane." },
+  { id: "vzbura", pojem: "Vzbura", popis: "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. NA EX na ňu nejde; Nástroj ju nedostane." },
   { id: "zaverecna", pojem: "Záverečná", popis: "Karta lícom dole za 1 cigaretu; otočí sa na konci Pitky a potom už v Zhromaždení nevykladáš." },
   { id: "zhromazdenie", pojem: "Zhromaždenie", popis: "Fáza, v ktorej hráči striedavo vykladajú karty do línie; začína útočník." },
 ];

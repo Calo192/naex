@@ -20,7 +20,9 @@
 // Rozhodnutia pri nejasných pravidlách (viď README):
 //  - Posilnenie + Posilnenie = Forsáž (v10.3, Michal 2026-11-02): obe karty spoja majú
 //    všetky aktívne akcie posilnené; lokalita len hranu pri tom kraji, Nástroj nič.
-//  - Vzbura na lokalite aktivuje len stranu patriacu danej partii; Nástroj Vzburu nedostane (v10.3).
+//  - Vzbura obráti aktivitu karty (v11.1, Michal 2026-11-02): nespojené akcie sú aktívne,
+//    spojené neaktívne; na lokalite len strana patriaca danej partii; Nástroj Vzburu nedostane (v10.3).
+//    Odpor proti Posilneniu je Vzbura len karty s Odporom a jej aktívne akcie sú posilnené.
 //  - Vzbura ani NA EX neoživujú akcie zrušené Odporom.
 //  - NA EX mení len akcie cieľovej karty; zrušenie Odporom na susedovi
 //    ostáva. Výnimka: zrušené Posilnenie prestane zdvojovať partnera na spoji
@@ -138,7 +140,7 @@ export interface ZdrojAkcie {
   readonly hodnota: number;
   readonly vStrede: boolean;
   /**
-   * Prečo je akcia aktívna či zdvojená: "Posilnenie", "Forsáž", "Vzbura", "Odpor proti Posilneniu", "NA EX",
+   * Prečo je akcia aktívna či zdvojená: "Posilnenie", "Forsáž", "Vzbura", "NA EX",
    * alebo "karta:<defId>" pri efekte karty (Liberál, Zámočník, Pijan…).
    */
   readonly dovody: readonly string[];
@@ -196,11 +198,10 @@ interface Elem {
   /** vzbura[side] pre lokalitu; karta má vzburu vždy za obe strany naraz. */
   readonly vzbura: [boolean, boolean];
   /**
-   * Skutočná Vzbura (Odpor + Odpor). Odpor proti Posilneniu tiež aktivuje
-   * neprepojené akcie, ale Vzbura to nie je — štítok a moment ju nehlásia
-   * (playtest v7 131033) a ani dôvod aktivácie ju nemenuje (názor #91).
+   * Vzbura z Odporu proti Posilneniu (v11.1, Michal 2026-11-02): aktívne akcie karty sú
+   * posilnené — [side] pre lokalitu, karta za obe strany naraz.
    */
-  skutocnaVzbura: boolean;
+  readonly vzburaPosilnena: [boolean, boolean];
   /** forsaz[side] pre lokalitu (len hrana pri tom kraji); karta ju má za obe strany naraz. */
   readonly forsaz: [boolean, boolean];
   readonly naexBy: PlayerId | undefined;
@@ -376,7 +377,7 @@ function makeElem(
     stav: [freshStav(), freshStav()],
     nasobok: [freshNasobok(), freshNasobok()],
     vzbura: [false, false],
-    skutocnaVzbura: false,
+    vzburaPosilnena: [false, false],
     forsaz: [false, false],
     naexBy,
     vieraAkoVizia: false,
@@ -395,7 +396,8 @@ function makeElem(
 /**
  * Puška (Dedičstvo, Michal 2026-10-30): keď by tvoju prepojenú Petelicu zrušil iný
  * efekt (Odpor, NA EX…), namiesto zrušenia udeľuje o 1 poškodenie menej (3 → 2).
- * Prepojená = má na spoji partnera; Petelica aktívna len zo Vzbury nie. Výtržník
+ * Prepojená = má na spoji partnera; Petelica aktívna len zo Vzbury nie. Pod Vzburou
+ * (v11.1) by bola prepojená Petelica neaktívna — Puška nemá čo chrániť. Výtržník
  * Petelicu neruší — Puška sa ho netýka; súperove Hrable nemajú čo ukradnúť.
  */
 function puskaChrani(elem: Elem, line: Pick<LineState, "nastroje">): void {
@@ -403,7 +405,7 @@ function puskaChrani(elem: Elem, line: Pick<LineState, "nastroje">): void {
   for (const side of [0, 1] as const) {
     const actions = side === 0 ? elem.effLeft : elem.effRight;
     for (let k = 0; k < 4; k++) {
-      if (actions[k] !== "Petelica" || !elem.spojena[side]![k] || elem.stav[side]![k] !== "zrusena") continue;
+      if (actions[k] !== "Petelica" || !elem.spojena[side]![k] || elem.stav[side]![k] !== "zrusena" || elem.vzbura[side]) continue;
       elem.stav[side]![k] = "aktivna";
       elem.nasobok[side]![k] = 1;
       elem.zrusil[side]![k] = null;
@@ -419,10 +421,9 @@ function jeNastroj(elem: Elem): boolean {
   return !elem.isLokalita && elem.tags.includes("Nástroj");
 }
 
-function markVzbura(elem: Elem, side: 0 | 1, skutocna = true): void {
-  // Odpor Nástroja proti Odporu Občana: Vzburu dostane len Občan (v10.3).
-  if (skutocna && jeNastroj(elem)) return;
-  if (skutocna) elem.skutocnaVzbura = true;
+function markVzbura(elem: Elem, side: 0 | 1): void {
+  // Odpor Nástroja proti Odporu Občana: Vzburu dostane len Občan (v10.3); ani proti Posilneniu (v11.1).
+  if (jeNastroj(elem)) return;
   if (elem.isLokalita) {
     elem.vzbura[side] = true;
   } else {
@@ -454,11 +455,26 @@ interface SpojForsaze {
   readonly b: Elem;
 }
 
+/** Odpor proti Posilneniu — Vzbura karty s Odporom, posilnená, ak NA EX Posilnenie nezruší. */
+interface VzburaSPosilnenim {
+  readonly odpor: Elem;
+  readonly side: 0 | 1;
+  readonly posil: Elem;
+}
+
 /**
  * Spoj medzi susedmi: pravá strana `a` proti ľavej strane `b`; `umlcane` = Zvieratá vedľa
- * Mäsiara. Spoje s dvoma Posilneniami pribudnú do `forsaze` (vyhodnotí ich applyForsaz).
+ * Mäsiara. Spoje s dvoma Posilneniami pribudnú do `forsaze`, Odpor proti Posilneniu do
+ * `vzburyPosilnene` (vyhodnotí ich applyForsaz).
  */
-function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>, line: Pick<LineState, "nastroje">, forsaze: SpojForsaze[]): void {
+function resolveJunction(
+  a: Elem,
+  b: Elem,
+  umlcane: ReadonlySet<number>,
+  line: Pick<LineState, "nastroje">,
+  forsaze: SpojForsaze[],
+  vzburyPosilnene: VzburaSPosilnenim[],
+): void {
   const x = { tags: a.tags, stred: a.isLokalita, defId: a.defId, umlcany: umlcane.has(a.uid) };
   if (!spojVznikne(x, { tags: b.tags, stred: b.isLokalita, defId: b.defId, umlcany: umlcane.has(b.uid) })) return;
   // Praudovravec (Dezinformátor, v7): Odpor na jeho spojoch neruší, ale posilní.
@@ -503,7 +519,7 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>, line: P
     const posilB = actB === "Posilnenie";
 
     if (odporA && odporB) {
-      // Vzbura — oba Odpory sa vyrušia a obe karty aktivujú neprepojené akcie.
+      // Vzbura — oba Odpory sa vyrušia (do súčtov nič nedajú) a obe karty sa obrátia (applyVzbura).
       a.stav[1]![k] = "aktivna";
       b.stav[0]![k] = "aktivna";
       markVzbura(a, 1);
@@ -523,8 +539,11 @@ function resolveJunction(a: Elem, b: Elem, umlcane: ReadonlySet<number>, line: P
         otherElem.zrusil[otherSide]![k] = "Odpor";
         otherElem.zrusilOdporom[otherSide]![k] = odporElem.isLokalita ? null : odporElem.owner;
       }
-      // Posilnenie + Odpor: neprepojené akcie aktivuje IBA karta s Odporom.
-      if (otherAct === "Posilnenie") markVzbura(odporElem, odporSide, false);
+      // Posilnenie + Odpor (v11.1, Michal 2026-11-02): Vzbura IBA karty s Odporom, jej aktívne akcie posilnené.
+      if (otherAct === "Posilnenie") {
+        markVzbura(odporElem, odporSide);
+        vzburyPosilnene.push({ odpor: odporElem, side: odporSide, posil: otherElem });
+      }
     } else if (posilA && posilB) {
       // Posilnenie + Posilnenie = Forsáž (v10.3): akcie zdvojí až applyForsaz, keď vie,
       // či NA EX niektoré z Posilnení nezruší.
@@ -627,8 +646,17 @@ function naexRusiPosilnenie(elem: Elem, line: Pick<LineState, "nastroje">): bool
  * pri tom kraji, Nástroj ju nedostane. NA EX, ktorý zruší jedno z Posilnení, ju zruší
  * (ako ×2 partnerovi, §7) — preto sa ráta pred NA EX, ale len zo spojov, ktoré prežijú.
  * Beží po Vzbure a Výherných žreboch, aby zdvojila aj akcie, ktoré aktivovali.
+ *
+ * Rovnako Vzbura z Odporu proti Posilneniu (v11.1, Michal 2026-11-02): karta s Odporom má
+ * po obrátení všetky aktívne akcie posilnené (×2, s Forsážou ×4); NA EX, ktorý Posilnenie
+ * partnera zruší, ruší aj toto zdvojenie (§7), obrátenie ostáva.
  */
-function applyForsaz(forsaze: readonly SpojForsaze[], elems: readonly Elem[], line: Pick<LineState, "nastroje">): void {
+function applyForsaz(
+  forsaze: readonly SpojForsaze[],
+  vzburyPosilnene: readonly VzburaSPosilnenim[],
+  elems: readonly Elem[],
+  line: Pick<LineState, "nastroje">,
+): void {
   for (const { a, b } of forsaze) {
     if (naexRusiPosilnenie(a, line) || naexRusiPosilnenie(b, line)) continue;
     for (const [elem, side] of [[a, 1], [b, 0]] as const) {
@@ -637,28 +665,53 @@ function applyForsaz(forsaze: readonly SpojForsaze[], elems: readonly Elem[], li
       else elem.forsaz.fill(true);
     }
   }
+  for (const { odpor, side, posil } of vzburyPosilnene) {
+    if (naexRusiPosilnenie(posil, line) || jeNastroj(odpor)) continue;
+    if (odpor.isLokalita) odpor.vzburaPosilnena[side] = true;
+    else odpor.vzburaPosilnena.fill(true);
+  }
   for (const elem of elems) {
     for (const side of [0, 1] as const) {
-      if (!elem.forsaz[side]) continue;
-      for (let k = 0; k < 4; k++) {
-        const nasobok = elem.nasobok[side]![k] as number;
-        if (elem.stav[side]![k] !== "aktivna" || nasobok === 0) continue;
-        elem.nasobok[side]![k] = nasobok * 2;
-        elem.dovody[side]![k]!.push("Forsáž");
+      for (const [zapnute, dovod] of [
+        [elem.forsaz[side], "Forsáž"],
+        [elem.vzburaPosilnena[side], "Posilnenie"],
+      ] as const) {
+        if (!zapnute) continue;
+        for (let k = 0; k < 4; k++) {
+          const nasobok = elem.nasobok[side]![k] as number;
+          if (elem.stav[side]![k] !== "aktivna" || nasobok === 0) continue;
+          elem.nasobok[side]![k] = nasobok * 2;
+          elem.dovody[side]![k]!.push(dovod);
+        }
       }
     }
   }
 }
 
+/**
+ * Vzbura obráti aktivitu karty (v11.1, Michal 2026-11-02: „Majú sa aktivovať akcie naopak,
+ * nie aktivovať všetky.“): nespojené akcie sú aktívne ×1, spojené neaktívne — aj tie, ktoré
+ * zdvojilo Posilnenie suseda. Zrušené Odporom ostávajú zrušené. Modifikátory karty na spojoch
+ * pôsobia ďalej (Odpor ruší, Posilnenie zdvojí suseda, Forsáž) — inak by Vzbura menila aj
+ * susedov a spoj Vzbury by sám seba vyrušil. Odpory spoja Vzbury ostávajú aktívne ako doteraz
+ * (do súčtov nič nedajú, pri lokalite sa rátajú do Pitiek a NA EX ich zruší).
+ */
 function applyVzbura(elem: Elem): void {
   for (const side of [0, 1] as const) {
     if (!elem.vzbura[side]) continue;
     const actions = side === 0 ? elem.effLeft : elem.effRight;
     for (let k = 0; k < 4; k++) {
-      if (actions[k] != null && elem.stav[side]![k] === "neaktivna") {
+      const action = actions[k];
+      if (action == null) continue;
+      if (!elem.spojena[side]![k]) {
+        if (elem.stav[side]![k] !== "neaktivna") continue;
         elem.stav[side]![k] = "aktivna";
         elem.nasobok[side]![k] = 1;
-        elem.dovody[side]![k]!.push(elem.skutocnaVzbura ? "Vzbura" : "Odpor proti Posilneniu");
+        elem.dovody[side]![k]!.push("Vzbura");
+      } else if (elem.stav[side]![k] === "aktivna" && !MODIFIERS.includes(action)) {
+        elem.stav[side]![k] = "neaktivna";
+        elem.nasobok[side]![k] = 0;
+        elem.dovody[side]![k] = [];
       }
     }
   }
@@ -823,7 +876,7 @@ function elemEval(elem: Elem): CardLineEval {
   };
   return {
     uid: elem.uid,
-    vzbura: elem.skutocnaVzbura,
+    vzbura: elem.vzbura[0] || elem.vzbura[1],
     forsaz: elem.forsaz[0] || elem.forsaz[1],
     left: [0, 1, 2, 3].map((k) => printedSlot(0, k)),
     right: [0, 1, 2, 3].map((k) => printedSlot(1, k)),
@@ -890,14 +943,15 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   }
 
   const forsaze: SpojForsaze[] = [];
+  const vzburyPosilnene: VzburaSPosilnenim[] = [];
   for (const segment of segments) {
     for (let i = 0; i + 1 < segment.length; i++) {
-      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem, umlcane, line, forsaze);
+      resolveJunction(segment[i] as Elem, segment[i + 1] as Elem, umlcane, line, forsaze, vzburyPosilnene);
     }
   }
   for (const elem of elems) applyVzbura(elem);
   for (const elem of elems) vyherneZreby(elem, line);
-  applyForsaz(forsaze, elems, line);
+  applyForsaz(forsaze, vzburyPosilnene, elems, line);
   for (const elem of elems) zrusPosilnenie(elem, line);
   for (const elem of elems) applyNaex(elem, line);
   for (const elem of elems) puskaChrani(elem, line);

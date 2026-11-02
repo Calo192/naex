@@ -161,7 +161,9 @@ const VAHA_AKCIE: Readonly<Record<Action, number>> = {
   Poldeci: 0.5,
   // v10.3: Posilnenie proti Posilneniu je Forsáž (obe karty ×2) — už nikdy nie je hluché.
   Posilnenie: 0.7,
-  Odpor: 0.3,
+  // v11.1: Odpor proti Posilneniu dá posilnenú Vzburu a karta so Vzburou je chránená pred NA EX
+  // (turnaj stredna 200 partií: 0.45 proti 0.3 — 110 : 86 výhier; 0.6 nepridá).
+  Odpor: 0.45,
   // v8.4: Robota bez Dlhu dá špak — nikdy nie je hluchá.
   Robota: 0.6,
   // Pakt sa v súčtoch nikdy neobjaví — na spoji sa premení na akciu partnera.
