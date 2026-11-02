@@ -13,7 +13,7 @@
 // Špaky, ich história (nástenka) a sekera sú verejné (v6).
 
 import type { CardInstance, Favour, Phase, PlayerId } from "./types.ts";
-import { opponentOf } from "./types.ts";
+import { opponentOf, timMiesta } from "./types.ts";
 import type { GameData } from "./data.ts";
 import type { PlacedCard } from "./partia.ts";
 import type { DruhMarkera, ElderState, Stupen, Vazen, Zdvih, ZmenaMarkera } from "./elders.ts";
@@ -409,7 +409,7 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             balicekPocet: [d.balicky[0].length, d.balicky[1].length],
             mojVyber: d.vyber[ja],
             vybral: [d.vyber[0] !== null, d.vyber[1] !== null],
-            naTahu: d.naTahu,
+            naTahu: timMiesta(d.naTahu),
             hotovo: d.hotovo,
             noveKarty: d.noveKarty,
             zobrate: (d.zobrate ?? []).map((z) => ({
