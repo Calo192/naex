@@ -6862,6 +6862,28 @@ button.auto-hotovo-odkaz {
   border-width: 8px;
 }
 
+/* Schopnosť väzňa (v11.2): farba hráča, ktorý ju použil, portrét staršieho nad nápisom. */
+.moment-pecat.moment-schopnost.moja {
+  --moment: var(--ja);
+}
+
+.moment-pecat.moment-schopnost.superova {
+  --moment: var(--su);
+}
+
+.moment-schopnost .moment-nazov {
+  font-size: 2.6rem;
+}
+
+.moment-portret {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border: 4px solid var(--moment);
+  border-radius: 50%;
+  filter: sepia(0.35) contrast(1.1);
+}
+
 .moment-nazov {
   font: 900 3.6rem/1 var(--nadpis);
   letter-spacing: 0.1em;
@@ -6965,6 +6987,15 @@ button.auto-hotovo-odkaz {
 @media (max-height: 719px) {
   .moment-nazov {
     font-size: 2.6rem;
+  }
+
+  .moment-schopnost .moment-nazov {
+    font-size: 1.9rem;
+  }
+
+  .moment-portret {
+    width: 60px;
+    height: 60px;
   }
 
   .moment-popis {
@@ -9324,6 +9355,21 @@ button.pecat.kseft-pod-tlacidlo::after {
   flex: none;
   letter-spacing: 0.1em;
   opacity: 0.75;
+}
+
+/* Schopnosť väzňa (v11.2): nič nestojí, je raz za hru — v nápovede a ponuke namiesto ceny. */
+.cena-raz {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  font: 800 0.8rem/1 var(--nadpis);
+  color: var(--akcent);
+  white-space: nowrap;
+}
+
+/* Použitá schopnosť väzňa: značka „použitá“ ostane, tlačidlo už nič nespustí. */
+.kseft-pod.pouzity button.pecat.kseft-pod-tlacidlo .kseft-pod-nazov {
+  opacity: 1;
 }
 
 /* Detail Kšeftu v nápovede a v ponuke na telefóne: čo dáš → čo dostaneš, celé znenie, prečo nie. */

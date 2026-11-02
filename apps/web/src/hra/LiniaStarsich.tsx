@@ -79,6 +79,10 @@ export interface VazenVLinii {
   readonly meno: string;
   readonly obrazok: string | null;
   readonly hrac: PlayerId;
+  /** Schopnosť väzňa je minutá (v11.2) — značka „použitá“ pri pečiatke, obom. */
+  readonly pouzita?: boolean;
+  /** Tlačidlo schopnosti pod pečiatkou — len pri vlastnom väzňovi (HernaPlocha). */
+  readonly schopnost?: ReactNode;
 }
 
 export type MiestoVLinii = { readonly typ: "starsi"; readonly s: StarsiVLinii } | { readonly typ: "vazen"; readonly v: VazenVLinii };
@@ -662,7 +666,8 @@ function PasR3({
 
 /**
  * Väzeň na mieste ukazovateľa (R3, Michal 2026-11-02): bez teplomerov a mreží, len pečiatka
- * „V PIVNICI u …“ vo farbe držiteľa; v nápovede „je z neho stále vydesený“, krádež a Kšeft väzňa.
+ * „V PIVNICI u …“ vo farbe držiteľa; v nápovede „je z neho stále vydesený“, krádež a schopnosť väzňa.
+ * Pod pečiatkou tlačidlo schopnosti (vlastný väzeň) alebo značka „použitá“ (v11.2).
  */
 function KartaVazna({
   v,
@@ -686,7 +691,16 @@ function KartaVazna({
   const kradez = kradezPriZajati(nastenka, v.elderId, v.hrac);
   const rod = rodStarsieho(v.defId, v.meno);
   const napoveda = useNapovedaStarsieho(
-    () => obsahNapovedyVazna({ data, vazen: { elderId: v.elderId, hrac: v.hrac, karta: { uid: -1, defId: v.defId, leftLayout: 0, rightLayout: 0 }, scorecard: v.scorecard }, meno: v.meno, ja, mena, vyhry, nastenka }),
+    () =>
+      obsahNapovedyVazna({
+        data,
+        vazen: { elderId: v.elderId, hrac: v.hrac, karta: { uid: -1, defId: v.defId, leftLayout: 0, rightLayout: 0 }, scorecard: v.scorecard, ...(v.pouzita === true ? { pouzita: true as const } : {}) },
+        meno: v.meno,
+        ja,
+        mena,
+        vyhry,
+        nastenka,
+      }),
     { obrazok: v.obrazok, zvacsenina: () => <Zvacsenina s={{ meno: v.meno, obrazok: v.obrazok }} /> },
   );
   return (
@@ -704,6 +718,15 @@ function KartaVazna({
           </span>
         </span>
       </div>
+      {v.schopnost !== undefined ? (
+        <span className="tp-schopnost">{v.schopnost}</span>
+      ) : (
+        v.pouzita === true && (
+          <span className="tp-schopnost pouzita" title="Schopnosť väzňa je minutá (raz za hru).">
+            schopnosť použitá
+          </span>
+        )
+      )}
       <span className="ls-stav tp-stav" aria-hidden="true">
         <b className="ls-meno">{v.meno}</b>
         <span className="r3-riadky">

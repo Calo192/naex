@@ -667,7 +667,8 @@ export function HernaPlocha({
   const kseftyStola = prehravanie === undefined ? kseftyNaStole(data, view) : [];
   const kseftyVLinii = kseftyStola.filter((k) => k.druh !== "vazen");
   const mojiVazni = view.vazni.filter((v) => v.hrac === ja);
-  const kseftVaznaTeraz = kseftyStola.some((k) => k.druh === "vazen" && k.dovod === null);
+  // Schopnosť väzňa (v11.2) teraz ide — Pivnica na hrane svieti.
+  const schopnostTeraz = kseftyStola.some((k) => k.druh === "vazen" && k.dovod === null);
   // Pod kartami ostane riadok na štítok Kšeftu, len keď nejaký v línii je — karty sa o toľko zmenšia.
   const rezervaKseftu = kseftyVLinii.length > 0 ? REZERVA_KSEFTU : 0;
   // Dlhá línia sa zmenší na šírku stola (karty sa nezrežú), až po minimum.
@@ -4672,7 +4673,23 @@ export function HernaPlocha({
   };
   const radLinie: MiestoVLinii[] = radStarsich(view.starsi, view.vazni).map((m): MiestoVLinii => {
     if (m.typ === "vazen")
-      return { typ: "vazen", v: { elderId: m.vazen.elderId, defId: m.vazen.karta.defId, scorecard: m.vazen.scorecard, meno: menoKarty(m.vazen.karta.defId), obrazok: obrazokStarsieho(m.vazen.karta.defId), hrac: m.vazen.hrac } };
+    {
+      // Schopnosť väzňa (v11.2): tlačidlo pod pečiatkou „V PIVNICI“ — len pri mojom väzňovi.
+      const k = m.vazen.hrac === ja ? kseftyStola.find((x) => x.druh === "vazen" && x.uid === m.vazen.karta.uid) : undefined;
+      return {
+        typ: "vazen",
+        v: {
+          elderId: m.vazen.elderId,
+          defId: m.vazen.karta.defId,
+          scorecard: m.vazen.scorecard,
+          meno: menoKarty(m.vazen.karta.defId),
+          obrazok: obrazokStarsieho(m.vazen.karta.defId),
+          hrac: m.vazen.hrac,
+          pouzita: m.vazen.pouzita === true,
+          ...(k === undefined ? {} : { schopnost: kseftNaKarte(k) }),
+        },
+      };
+    }
     const e = m.elder;
     const rozdelenie = rozdelenieStarsieho(e);
     const klik = rozdelenie === undefined ? klikStarsi(e) : undefined;
@@ -5644,20 +5661,20 @@ export function HernaPlocha({
         {pokyn?.vpravo}
       </>
     );
-  // Pivnica (Michal 2026-11-02) na mieste, kde bol počet cigariet: väzni a ich Kšefty v okne. Bez väzňa
-  // ostane tlmená, aby kraj hrany neposkakoval; svieti, keď je v Pitke Kšeft väzňa dostupný.
+  // Pivnica (Michal 2026-11-02) na mieste, kde bol počet cigariet: väzni a ich schopnosti v okne. Bez väzňa
+  // ostane tlmená, aby kraj hrany neposkakoval; svieti, keď schopnosť väzňa teraz ide (v11.2).
   const pivnicaNaHrane = (
     <button
       type="button"
-      className={["hrana-pivnica", mojiVazni.length === 0 ? "prazdna" : "", kseftVaznaTeraz ? "dostupna" : "", vrstva === "pivnica" ? "otvorena" : ""].filter((x) => x !== "").join(" ")}
+      className={["hrana-pivnica", mojiVazni.length === 0 ? "prazdna" : "", schopnostTeraz ? "dostupna" : "", vrstva === "pivnica" ? "otvorena" : ""].filter((x) => x !== "").join(" ")}
       data-vyucba="hrana:pivnica"
-      aria-label={`Pivnica — väzni ${mojiVazni.length} z ${prahVyd}${kseftVaznaTeraz ? ", Kšeft väzňa je teraz dostupný" : ""}`}
+      aria-label={`Pivnica — väzni ${mojiVazni.length} z ${prahVyd}${schopnostTeraz ? ", schopnosť väzňa môžeš teraz použiť" : ""}`}
       title={
         mojiVazni.length === 0
-          ? "Pivnica: zatiaľ prázdna — zajatý starší (väzeň) bude tu aj s Kšeftom."
-          : kseftVaznaTeraz
-            ? "Pivnica: Kšeft väzňa môžeš teraz spustiť (za vypitý plný poldeci)."
-            : "Pivnica: tvoji väzni a ich Kšefty (v Pitke za vypitý plný poldeci)."
+          ? "Pivnica: zatiaľ prázdna — zajatý starší (väzeň) bude tu aj so svojou schopnosťou."
+          : schopnostTeraz
+            ? "Pivnica: schopnosť väzňa môžeš teraz použiť (raz za hru)."
+            : "Pivnica: tvoji väzni a ich schopnosti (každá raz za hru, vo tvojom ťahu)."
       }
       onClick={() => setVrstva(vrstva === "pivnica" ? null : "pivnica")}
     >
@@ -5801,7 +5818,7 @@ export function HernaPlocha({
       detail={(zdroj) => setOknoZdroja({ p, zdroj })}
       starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === p, prepni: () => prepniStarsich(p) }}
       tabula={{ otvorena: tabulaOtvorena, prepni: () => setTabulaOtvorena((o) => !o) }}
-      {...(p === ja ? { pivnica: { vazni: mojiVazni.length, naVyhru: prahVyd, dostupna: kseftVaznaTeraz, otvor: () => setVrstva("pivnica") } } : {})}
+      {...(p === ja ? { pivnica: { vazni: mojiVazni.length, naVyhru: prahVyd, dostupna: schopnostTeraz, otvor: () => setVrstva("pivnica") } } : {})}
     />
   );
   const oknoZdrojaEl =
@@ -6430,8 +6447,8 @@ export function HernaPlocha({
         >
           <div className="pivnica-okno">
             {mojiVazni.length === 0 && <span className="popis">Nemáš väzňa.</span>}
-            {/* Na telefóne by riadok odsunul tlačidlá Kšeftu pod okraj — pravidlo povie detail po ťuknutí. */}
-            {mojiVazni.length > 0 && !naSirku && <span className="pivnica-pravidlo">Kšeft väzňa spustíš v Pitke za vypitý plný poldeci, každého raz za Pitku.</span>}
+            {/* Na telefóne by riadok odsunul tlačidlá pod okraj — pravidlo povie detail po ťuknutí. */}
+            {mojiVazni.length > 0 && !naSirku && <span className="pivnica-pravidlo">Schopnosť väzňa použiješ raz za hru, kedy chceš — vo svojom ťahu pri braní zo šenku, v Zhromaždení alebo v Pitke.</span>}
             {mojiVazni.map((v) => {
               const k = kseftyStola.find((x) => x.uid === v.karta.uid);
               return (
@@ -6440,7 +6457,7 @@ export function HernaPlocha({
                   <span className="pivnica-poradie">
                     {v.poradie}. zajatý
                   </span>
-                  {k !== undefined ? kseftNaKarte(k) : <span className="pivnica-mimo">Kšeft len v Pitke, kým ju neskončíš</span>}
+                  {k !== undefined && kseftNaKarte(k)}
                 </div>
               );
             })}

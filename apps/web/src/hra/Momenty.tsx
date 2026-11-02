@@ -8,6 +8,9 @@
 // gumová pečiatka. Po chvíli na prečítanie sa zmenší do rohu súhrnu a ostane tam,
 // kým ho hráč nezavrie. Bez súhrnu po chvíli zmizne. Viac pečiatok naraz ide pod seba.
 // Ukážka na snímky a UI inšpekciu: /hra?ukazka-momentu=zvrat (len vzhľad, na minútu).
+//
+// Schopnosť väzňa (Michal 2026-11-02): pečiatka pri každom použití, obom — s portrétom staršieho
+// a vo farbe hráča, ktorý ju použil (jadro ju púšťa mimo stropu).
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Event, Moment, NaladaMomentu, PlayerId, TypMomentu } from "@naex/core";
@@ -34,6 +37,8 @@ const PANEL_SUHRNU = ".pocitadlo-bitky .pocitadlo-panel";
 function ukazkaZAdresy(): Moment | null {
   const typ = new URLSearchParams(location.search).get("ukazka-momentu") as TypMomentu | null;
   if (typ === null || !(typ in MOMENTY)) return null;
+  if (typ === "schopnostVazna")
+    return { typ, stupen: MOMENTY[typ].stupen, nazov: "FARÁR · zrušil NA EX", hrac: 0, popis: "Schopnosť väzňa Farár — Hráč 1: Odstráň jedno súperovo NA EX z karty.", elderId: "farar" };
   return { typ, ...MOMENTY[typ], hrac: 0, popis: "Ukážka pečiatky — takto sa ukáže moment, ktorý v partii práve nastal." };
 }
 
@@ -45,6 +50,8 @@ export interface MomentyProps {
   readonly hovor: (nalada: NaladaMomentu) => void;
   /** Je otvorený súhrn bitky či Pitky (alebo sa naň čaká) — pečiatka padne naň a ostane v jeho rohu. */
   readonly pocitadloBezi?: boolean;
+  /** Portrét staršieho (schopnosť väzňa) — adresa obrázka, null = bez portrétu. */
+  readonly portret?: (elderId: string) => string | null;
 }
 
 type Faza = "velka" | "roh" | "odchod";
@@ -56,7 +63,7 @@ interface Aktivne {
   readonly roh: { readonly x: number; readonly y: number } | null;
 }
 
-export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false }: MomentyProps) {
+export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false, portret }: MomentyProps) {
   const [aktivne, setAktivne] = useState<Aktivne | null>(() => {
     const u = ukazkaZAdresy();
     return u === null ? null : { id: -1, momenty: [u], faza: "velka", roh: null };
@@ -134,17 +141,23 @@ export function Momenty({ udalosti, ja, mena, hovor, pocitadloBezi = false }: Mo
   return (
     <div className="moment-vrstva" aria-live="polite" role="status">
       <div className={`moment-stoh moment-${aktivne.faza}`} style={poloha}>
-        {aktivne.momenty.map((moment, i) => (
-          <div
-            key={`${aktivne.id}-${i}`}
-            className={`moment-pecat moment-${moment.stupen}${aktivne.id === -1 ? " moment-ukazka" : ""}`}
-            style={{ "--poradie": i } as CSSProperties}
-            title={popisy[i]}
-          >
-            <span className="moment-nazov">{moment.nazov}</span>
-            <span className="moment-popis">{popisy[i]}</span>
-          </div>
-        ))}
+        {aktivne.momenty.map((moment, i) => {
+          const obrazok = moment.elderId === undefined ? null : (portret?.(moment.elderId) ?? null);
+          // Schopnosť väzňa: farba hráča, ktorý ju použil (moja / superova), a portrét staršieho.
+          const farba = moment.typ === "schopnostVazna" && moment.hrac !== null ? (moment.hrac === ja ? " moment-schopnost moja" : " moment-schopnost superova") : "";
+          return (
+            <div
+              key={`${aktivne.id}-${i}`}
+              className={`moment-pecat moment-${moment.stupen}${farba}${aktivne.id === -1 ? " moment-ukazka" : ""}`}
+              style={{ "--poradie": i } as CSSProperties}
+              title={popisy[i]}
+            >
+              {obrazok !== null && <img className="moment-portret" src={obrazok} alt="" draggable={false} />}
+              <span className="moment-nazov">{moment.nazov}</span>
+              <span className="moment-popis">{popisy[i]}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

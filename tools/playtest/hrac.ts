@@ -50,8 +50,8 @@ import {
   battleOutcome,
   nahladPokusu,
   pokusMozny,
-  ponukaKseftuVazna,
-  stavKseftuVaznaZPohladu,
+  ponukaSchopnostiVazna,
+  stavSchopnostiVaznaZPohladu,
   spakyTeraz,
   cenaKliatby,
   rozlozRod,
@@ -407,7 +407,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
           ? `na konci kola karta Absťák do odhadzovacieho balíčka, ak nepribudne ešte ${textNeresti(z.doBezpecia)}`
           : "Absťák nepríde";
     out.push(
-      `  CHUŤ ${z.chut}${z.latka < z.chut ? ` (Opatrovateľka: porovná sa ${Math.max(0, z.latka)})` : ""} | dnes ${z.teraz}${z.naexNaStole > 0 ? ` (z toho ${z.naexNaStole} NA EX na stole, každé za ${KONSTANTY.NEREST_NAEX})` : ""}${z.doBezpecia > 0 ? ` | chýba ${z.doBezpecia}` : ""} → ${vyhlad}; Chuť po kole ${z.chutPo}. ABSŤÁK v balíčku: ${z.abstaky} (v bitke −${z.ubera} tuhé). Nerest = Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1, Kšeft väzňa 1; doliatie, barter, šenok, Dedičstvo a Kšefty lokalít nie.`,
+      `  CHUŤ ${z.chut}${z.latka < z.chut ? ` (Opatrovateľka: porovná sa ${Math.max(0, z.latka)})` : ""} | dnes ${z.teraz}${z.naexNaStole > 0 ? ` (z toho ${z.naexNaStole} NA EX na stole, každé za ${KONSTANTY.NEREST_NAEX})` : ""}${z.doBezpecia > 0 ? ` | chýba ${z.doBezpecia}` : ""} → ${vyhlad}; Chuť po kole ${z.chutPo}. ABSŤÁK v balíčku: ${z.abstaky} (v bitke −${z.ubera} tuhé). Nerest = Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1; doliatie, barter, šenok, Dedičstvo a Kšefty lokalít nie.`,
     );
     if (h.priznane.length > 0) out.push(`  priznané: ${h.priznane.map((k) => meno(k.defId)).join(", ")}`);
     if (h.dedicstvo.length > 0) out.push(`  dedičstvo: ${h.dedicstvo.map((k) => meno(k.defId)).join(", ")}`);
@@ -994,14 +994,6 @@ function moznosti(v: ClientState): string[] {
           if (pl.card.defId === "predavacka" && h.cigarety >= KONSTANTY.EFEKT.PREDAVACKA_CENA && jeCoTahat(h.doberaciPocet, h.odhadzovaci.length))
             c({ type: "kseft", uid }, `KŠEFT Predavačka: za ${cigariet(KONSTANTY.EFEKT.PREDAVACKA_CENA)} si doberieš 1 kartu (raz za Pitku, nie je to fajčenie)`);
         }
-        // Kšeft väzňa (v9): len držiteľ, za vypitý plný poldeci, raz za Pitku na väzňa — ten istý výpočet ako jadro.
-        for (const k of ponukaKseftuVazna(stavKseftuVaznaZPohladu(v), ja)) {
-          if (k.type !== "kseftVazna") continue;
-          const vazen = v.vazni.find((x) => x.elderId === k.elderId);
-          const text = vazen === undefined ? "" : (DATA.cards.get(vazen.karta.defId)?.effectText ?? "");
-          const karta = k.kartaUid === undefined ? "" : ` — karta ${meno([...v.senok, ...v.ruka, ...h.priznane].find((x) => x.uid === k.kartaUid)?.defId ?? "")}`;
-          c(k, `KŠEFT VÄZŇA ${meno(vazen?.karta.defId ?? "")}${karta}: za vypitý plný poldeci (nerest, +1 pečeň, limit ďalšieho Zhromaždenia −1). ${text}`);
-        }
 
         const lok = v.ciel?.lokalita ?? null;
         if (lok !== null && !pouzite.includes(lok.uid)) {
@@ -1103,6 +1095,22 @@ function moznosti(v: ClientState): string[] {
     }
     default:
       break;
+  }
+  // Schopnosť väzňa (v11.2): raz za hru vo svojom ťahu (branie zo šenku, Zhromaždenie, Pitka) — ten istý výpočet ako jadro.
+  for (const k of ponukaSchopnostiVazna(stavSchopnostiVaznaZPohladu(v), ja)) {
+    if (k.type !== "schopnostVazna") continue;
+    const vazen = v.vazni.find((x) => x.elderId === k.elderId);
+    const text = DATA.elders.get(k.elderId)?.schopnost ?? "";
+    const kde = [...v.strany[0], ...v.strany[1]].find((x) => x.card.uid === k.uid);
+    const karta =
+      k.uids !== undefined
+        ? " (uids = ľubovoľné karty šenku, každá za 1 cigaretu; tu príklad s jednou)"
+        : kde !== undefined
+          ? ` — NA EX na karte ${meno(kde.card.defId)}`
+          : k.uid !== undefined
+            ? ` — karta ${meno(v.hraci[su].odhadzovaci.find((x) => x.uid === k.uid)?.defId ?? "")}`
+            : "";
+    c(k, `SCHOPNOSŤ VÄZŇA ${meno(vazen?.karta.defId ?? "")}${karta} — raz za hru, nič nestojí: ${text}`);
   }
   return out;
 }
