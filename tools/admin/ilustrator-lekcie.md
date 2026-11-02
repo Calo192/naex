@@ -49,6 +49,11 @@ Chvost promptu je vždy `STYL` z `tools/admin/styl.ts`, tu sa neopakuje.
   traktore, triezvy šofér so sladenkou medzi opitými kamarátmi.
 - **Pri postavách predlohy zo vzorov štýlu** (Krčmárka, Veterinár, Kočovník,
   Podvodník) so silou MID, **pri predmetoch Puška a Vinko**.
+- **Satiru ber z príbehu karty a dedinskej neresti, nie doslova z efektu.**
+  Injekcia, Izolačka aj Poľovník: Michal zakaždým nevybral variant, ktorý
+  kreslí text efektu (prasa, zalepené cigarety, strieľanie Zvieraťa). Vybral
+  pálenku, prípadne pompéznosť a trápnosť postavy (poľovník trafí vlastné auto).
+  Jeden variant podľa efektu do koláže daj, ale nestavaj naň.
 - **Rámik a podpis** sa dajú orezať. Nápis v strede obrazu orezať nejde, taký
   obrázok vygeneruj znova.
 
@@ -336,3 +341,68 @@ a plain unprinted cardboard core“ + veta o rovnomernom svetle bez spotlightu,
   „only one finger wide“.
   **Lekcia:** pri pálenke vždy píš „clear colourless … (not red, not
   brown)“, inak býva červená alebo jantárová.
+
+### Poľovník (Občan, Autorita, Chlap) — 2026-11-02
+
+`H8` = `F:\Projects\naex-tmp\ilustracie\polovnik\`, koláž `H8\kolaz.jpg`,
+finál `H8\polovnik-final.jpg`. Efekt (Nástup): zastrelí (spáli) súperovo
+Zviera na druhej strane lokality. Zadanie: nie krvavo, „viac pije, než
+strieľa“. Spoločný opis postavy: vychudnutý pompézny poľovník okolo
+šesťdesiatky, prepadnuté líca, dlhý zahnutý nos s červenými žilkami pijana,
+tenké šedé fúziky, „clean-shaven chin, no beard“, zelený klobúk
+s prehnane veľkou štetkou, loden kabát posiaty medailami a odznakmi,
+ďalekohľad. Predlohy všetkých: Veterinár, Podvodník, Zámočník, Puška.
+
+- **Schválené (č. 2):** `H8\polovnik-hra-2.jpg` (`polovnik-b`, kolo 1-1).
+  Námet: hrdo vypnutá hruď a nafúkaný výraz, flinta na pleci, v druhej ruke
+  ploskačka, stojí pri vlastnom starom hranatom východoeurópskom aute bez loga
+  a ŠPZ, dvere a kapota posiate dierami od brokov, rozbitý svetlomet; blatistá
+  cesta pri lese, jedna pouličná lampa. Satira z príbehu karty („štyrikrát
+  trafil vlastnú Škodovku“). Michal dôvod neuviedol.
+  **Lekcia:** Michal znova nevybral satiru doslova z efektu (strieľanie
+  Zvieraťa), ale z príbehu: pompézny poľovník, čo trafí len vlastné auto.
+- **Nevybrané:**
+  - č. 1 (`polovnik-a`, kolo 1-2): na posede si pripíja poldecákom, flinta
+    zabudnutá v kúte, cez okienko sa pokojne pasie jeleň.
+  - č. 3 (`polovnik-c`, kolo 1-1): opitý mieri na strašiak v kapuste, za
+    chrbtom na plote pohŕdavo sedí ryšavý kocúr. Podpis v rohu.
+- **Zamietnuté pred kolážou:** `polovnik-a` kolo 1-1 a `polovnik-c` kolo 1-2
+  (biely okraj a podpis, svetlejšie, utekajú zo štýlu), `polovnik-b` kolo 1-2
+  (ŠPZ s písmenami, inak takmer zhodný s č. 2).
+  **Lekcia:** pri aute píš „no logo and no licence plate“. Model to raz
+  dodržal, raz nie. S týmito predlohami vyšiel biely okraj v 2 zo 6 obrázkov.
+
+### Predavačka (Občan, Autorita, Žena) — 2026-11-02
+
+`H9` = `F:\Projects\naex-tmp\ilustracie\predavacka\`, koláž `H9\kolaz.jpg`,
+finál `H9\predavacka-final.jpg` (orezaný štvorec bez rámika a podpisu,
+1024 × 1024). Efekt (Kšeft): za 1 cigaretu si dober 1 kartu. Príbeh:
+v potravinách od roku 1974, zošit dlhov, staré rožky predáva ako čerstvé, mäso
+spod pultu. Typ ženy nebol jasný, preto oba: rašpľa (č. 1–2) a starnúca „hot
+chick“ (č. 3–4). Predlohy všetkých: Krčmárka, Veterinár, Poštárka.
+
+- **Schválené (č. 1):** `H9\predavacka-hra-1.jpg` (`predavacka-a`, kolo 1-2).
+  Námet: zatrpknutá vychudnutá predavačka okolo sedemdesiatky, úzka vráskavá
+  tvár, ostrá brada, chlpaté znamienko, tesná fialovo-bordová trvalá, **bez
+  šatky**, plastové okuliare na retiazke, ceruzka za uchom, vybledlý modrý
+  nylonový plášť s kvietkami. Za pultom zapisuje dlhy do ohmataného zošita,
+  vedľa debnička tvrdých rožkov s muchou, police bez jedla, len lacná pálenka;
+  jedna holá žiarovka. Nikto nefajčí. Michal dôvod neuviedol.
+  **Lekcia:** dedinská autorita v obchode = stará rašpľa so zošitom dlhov.
+  Aby sa nepodobala Svokre, Strynej, Klebetnici a Veštici, nemá šatku, má
+  farbenú trvalú a pracovný plášť.
+- **Nevybrané:**
+  - č. 2 (`predavacka-a`, kolo 2-2): ten istý námet s ostrejším výsmechom,
+    ukazuje ceruzkou, pokladnica vľavo.
+  - č. 3–4 (`predavacka-b`, kolo 2-1 a 2-2): šesťdesiatnička s čiernym
+    natupírovaným drdolom, modrými tieňmi, leopardou blúzkou a červenými
+    nechtami. Vyťahuje salámu spod pultu, na pulte smutný párok a pohár
+    nezapálených cigariet ako platidlo.
+- **Zamietnuté pred kolážou:** `predavacka-a` kolo 1-1 (nápis „DEBTS“ na
+  zošite v strede, chlpy na hrudi), `predavacka-a` kolo 2-1 (pseudotext
+  v zošite), `predavacka-b` kolo 1-1 (dym z konca salámy) a kolo 1-2 (dym
+  z pohára nezapálených cigariet, pseudotext na krabici).
+  **Lekcia:** s popolníkom a horiacou cigaretou model púšťa dym aj
+  z predmetov vedľa. Ak fajčenie nenesie pointu, píš „nobody is smoking, no
+  smoke anywhere, no ashtray“. Pri zošite píš „illegible scribbles with no
+  readable words“. Aj tak ostáva riziko.
