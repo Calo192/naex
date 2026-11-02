@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nové Autority — 8 kandidátov — NA EX!</title>
+<title>Nové Autority — kolo 2 — NA EX!</title>
 <style>
 /* Rozvrhnutie: zhrnutie, 16 prerábok (dnes → plán → variant), 10 noviniek, WAU kombá, nechané karty, lišta so súhrnom. */
 :root {
@@ -137,6 +137,17 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
 }
 
 .uvod-tab td:nth-child(3) { min-width: 220px; }
+
+.var-obal { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+table.var { width: auto; min-width: 150px; font-size: .8rem; background: var(--plocha-2); border-radius: 8px; }
+table.var caption { text-align: left; font-size: .74rem; color: var(--tlmeny); padding: 2px 4px; }
+table.var th, table.var td { padding: 3px 6px; }
+table.var .vb { color: var(--tlmeny); background: repeating-linear-gradient(45deg, transparent, transparent 4px, var(--okraj) 4px, var(--okraj) 6px); }
+table.var .vp { color: var(--tlmeny); }
+table.var .utok, .zmena .utok { color: var(--utok); font-weight: 700; }
+table.var .zle { color: var(--zla); font-weight: 700; }
+.kolo2 { border-color: var(--akcent); border-width: 2px; }
+.kolo2 blockquote { font-size: .95rem; }
 </style>
 </head>
 <body>
@@ -146,6 +157,237 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
 <div class="ramik citat"><blockquote>„Máme strašne málo kariet autorít – navrhnúť aspoň 5 ďalších a dať na posúdenie – jedna z nich by bola poľovník.“ … „možno aj predavačka…?“</blockquote>
 <p class="pozn">Michal 2026-11-02. Vymyselník, vetva <code>napady/autority</code>. Kód hry sa nemení — toto sú len návrhy.</p></div>
 
+
+<section class="ramik kolo2" id="kolo2"><h2>Kolo 2 (2026-11-02)</h2>
+<p class="pozn">Rozhodnutia Michala ku kolu 1: <b>Poľovník — prerobiť</b>, <b>Predavačka — áno, bez akcie Cigareta</b>. Ostatných 6 kariet je bez voľby a nemením ich (kolo 1 nižšie).</p>
+
+<h3>1. Poľovník — prerobený</h3>
+<blockquote>„Má extrémne silné akcie… treba trošku oslabiť – 1 Petelica, 1 Obmedzenie, 1 Odpor, 1 pečeň… a efekt: podobný Dohadzovačke, ale niečo takéto – ak je na druhej strane súperove zviera, poľovník ho zastrelí.“</blockquote>
+<p class="pozn">Na upresnenie kola 1: Poľovník mal <b>jednu</b> Petelicu (v riadku 2 alebo 3 podľa variantu) a jednu Ranu, spolu najviac 4 tuhé. Značka „Petelica / —“ v dvoch slotoch zvádzala čítať dve Petelice. Odteraz kreslím každý variant zvlášť. Nová verzia má najviac 3 tuhé (Petelica) a Rana sa mení na Obmedzenie, ako si chcel.</p>
+<p class="zmena">Nástup: Spáľ súperovo Zviera na druhej strane lokality, ktoré je od nej najďalej.</p>
+<p>Tagy: Občan, Autorita, Chlap, Pamätník. Spúšťač Nástup ako Dohadzovačka. Pečeň a Odpor sú hore (riadky 0–1), Petelica a Obmedzenie dole (2–3).</p>
+<div class="var-obal"><table class="var"><caption>Variant 1</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td class="vp">—</td><td><span class="">Odpor</span></td></tr><tr><th>1</th><td><span class="zle">Pečeň</span></td><td class="vb">✕</td></tr><tr><th>2</th><td class="vb">✕</td><td class="vp">—</td></tr><tr><th>3</th><td><span class="utok">Petelica</span></td><td><span class="">Obmedzenie</span></td></tr></tbody></table><table class="var"><caption>Variant 2</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td class="vp">—</td><td><span class="">Odpor</span></td></tr><tr><th>1</th><td><span class="zle">Pečeň</span></td><td class="vb">✕</td></tr><tr><th>2</th><td class="vb">✕</td><td><span class="">Obmedzenie</span></td></tr><tr><th>3</th><td><span class="utok">Petelica</span></td><td class="vp">—</td></tr></tbody></table><table class="var"><caption>Variant 3</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td><span class="zle">Pečeň</span></td><td><span class="">Odpor</span></td></tr><tr><th>1</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>2</th><td class="vb">✕</td><td class="vp">—</td></tr><tr><th>3</th><td><span class="utok">Petelica</span></td><td><span class="">Obmedzenie</span></td></tr></tbody></table><table class="var"><caption>Variant 4</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td><span class="zle">Pečeň</span></td><td><span class="">Odpor</span></td></tr><tr><th>1</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>2</th><td class="vb">✕</td><td><span class="">Obmedzenie</span></td></tr><tr><th>3</th><td><span class="utok">Petelica</span></td><td class="vp">—</td></tr></tbody></table></div><p class="pozn">4 variantov; každý je samostatná tlačená karta. Overené <code>parseCards</code> a <code>sideLayouts</code>.</p>
+<details><summary>Záznam pre cards.json</summary><pre>{
+ &quot;id&quot;: &quot;polovnik&quot;,
+ &quot;index&quot;: 901,
+ &quot;name&quot;: &quot;Poľovník&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Chlap&quot;,
+  &quot;Pamätník&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Nástup: Spáľ súperovo Zviera na druhej strane lokality, ktoré je od nej najďalej.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Nástup&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   2
+  ],
+  &quot;actions&quot;: {
+   &quot;PoškodeniePečene&quot;: 1,
+   &quot;Petelica&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;PoškodeniePečene&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;PoškodeniePečene&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Petelica&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Odpor&quot;: 1,
+   &quot;Obmedzenie&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;Odpor&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Obmedzenie&quot;
+   ],
+   &quot;3&quot;: [
+    &quot;Obmedzenie&quot;
+   ]
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<h3>Výklad (do §16)</h3>
+<ul>
+<li><b>Druhá strana</b> = strana lokality oproti tej, kde Poľovník leží (ako u Dohadzovačky). Platí, aj keď Poľovníka podstrčíš na súperovu stranu.</li>
+<li><b>Súperovo Zviera</b> = karta s tagom Zviera, ktorej majiteľom je súper (aj Recidivista: je Zviera aj Občan). Vlastné Zvieratá Poľovník nestrieľa.</li>
+<li><b>Ktoré, keď ich je viac:</b> navrhujem <b>najďalej od lokality</b>, povinne a bez voľby — rovnako ako pri Dohadzovačke. Text je kratší a hra nemusí čakať na voľbu.</li>
+<li><b>Kedy:</b> hneď pri Nástupe. Zviera odíde z línie, medzera sa uzavrie a spoje sa prepočítajú (ako presun Dohadzovačky). Spálené Zviera sa na špaky nepočíta (§14 to už pokrýva: „karty, ktoré z línie počas kola zmizli“).</li>
+<li>Spálenie <b>nie je priloženie</b>, takže Konflikt sa nespustí. Skrytú Záverečnú Poľovník nestrieľa. Ako Záverečná sa Poľovník vyhodnotí pri otočení. Ak na druhej strane nie je súperovo Zviera, nestane sa nič.</li>
+</ul>
+<h3>Alternatívy výberu Zvieraťa</h3>
+<ul class="efekty">
+<li><b>Najbližšie k lokalite:</b> „…, ktoré je k nej najbližšie.“ Je silnejšie: zasiahne prvú kartu pri lokalite, a tá rozhoduje prevahu pri rovnosti (§6).</li>
+<li><b>Podľa voľby majiteľa:</b> „Nástup: Spáľ jedno súperovo Zviera na druhej strane lokality.“ Je najsilnejšie a hra musí počkať na voľbu (ako pri Kapybare).</li>
+<li><b>Po bitke namiesto hneď:</b> akcie Zvieraťa v bitke ešte platia (ako pri Krokodílovi). Je slabšie a pôsobí menej ako „zastrelí“.</li>
+</ul>
+<p><b>Sila:</b> bilancia akcií je 3,5 b. / 4 kusy, no útok klesol zo 4 na 3 tuhé a Obmedzenie nie je poškodenie. Efekt je úzky (6 kariet so Zvieraťom: Pes, Čierna mačka, Krokodíl, Kapybara, Kôň, Recidivista), ale keď zaberie, je trvalý: súperovi ubudne karta z balíčka. Odhad bota ≈ 0,4, ako Dohadzovačka a Krokodíl. <b>Verdikt: porovnateľná s Hasičom, menej útočná ako v kole 1.</b></p>
+<p><b>Jadro:</b> karta odchádza z línie a medzera sa uzatvára ako pri presune Dohadzovačky (PRAVIDLA.md:1786). Odstránenie z hry v jadre už je pri Krokodílovi (<code>engine.ts:5332</code>), ten však strieľa až na konci bitky. Spálenie počas Zhromaždenia je teda nové spojenie dvoch hotových krokov.</p>
+<p class="roz roz-ano">Odporúčanie: verzia „najďalej od lokality, hneď“.</p>
+
+<h3>2. Jeden pojem pre „karta navždy z hry“</h3>
+<p>Dnes sa pre to isté používajú tri slová: <b>zahodiť</b> (Vízia, Dievčina na vydaj, Krištáľová guľa, Absťák, Veterinár „zahoď z hry“), <b>ide z hry</b> (Krokodíl, stará Vdova) a <b>spáliť</b> (Dlhy: Robota, Exekútor). Slovník PRAVIDLA.md má „Zahodenie = odstrániť kartu z hry (spáliť)“ (r. 1891) a „Odhodenie = do odhadzovacieho balíčka“ (r. 1856). <b>Zahodiť</b> a <b>odhodiť</b> sa líšia len predponou, a pritom jedno znamená „navždy preč“ a druhé „do balíčka, vráti sa“. To je presne miesto, kde sa dajú pomýliť.</p>
+<p><b>Odhodiť ostáva</b> pre „do odhadzovacieho balíčka“ (Hasič, Hrobár, nová Vdova v10.3). Tento pojem sa nemení a so spálením sa nezlieva.</p>
+<div class="tab-obal"><table><thead><tr><th>Pojem</th><th>Za</th><th>Proti</th></tr></thead><tbody>
+<tr><td><b>Spáliť</b> (odporúčam)</td><td>Na „odhodiť“ sa nepodobá. Už sa používa pre Dlhy (Robota, Exekútor: Dlh „zhorí“), takže „spálené = navždy preč“ platí pre karty aj Dlhy. Sedí k popolníku a špakom. Slovník ho už má v zátvorke a pri Krokodílovi si sám písal „zahodiť, zapáliť“.</td><td>Najviac zmien textov (zoznam nižšie), UI Vízie dostane nové tlačidlo.</td></tr>
+<tr><td>Zahodiť</td><td>Najmenej zmien: zjednotí sa len „ide z hry“ → „zahodí sa“. Slovník už platí.</td><td>Zahodiť a odhodiť sa ľahko pomýlia, najmä na telefóne a v rýchlom čítaní.</td></tr>
+<tr><td>Vyradiť z hry</td><td>Jednoznačné, neutrálne.</td><td>„Vyradený“ dnes znamená kartu vyradenú zo sady (Kohút). Úradnícke, mimo tónu.</td></tr>
+<tr><td>Pochovať</td><td>Humor (Poľovník, Krokodíl), dedinský tón.</td><td>Mieša sa s Hrobárom a Cintorínom. Pri Vízii („pochovaj vrchnú kartu“) a Cirhóze to znie čudne.</td></tr>
+</tbody></table></div>
+<h3>Zoznam zmien pri pojme „spáliť“</h3>
+<p class="pozn">Karty sa menia v tvorcovi (nie ručne v cards.json). Web a jadro mení developer, ja kód nemením. Správne použité „odhodiť“ (Hasič, Hrobár, Vdova v10.3) a „spáliť Dlh“ (Robota, Exekútor) ostávajú.</p>
+<h3>cards.json (cez tvorcu, admin)</h3><div class="tab-obal"><table><thead><tr><th>Kde</th><th>Dnes</th><th>Návrh</th></tr></thead><tbody><tr><td>Veterinár</td><td>zahoď z hry 1 Cirhózu</td><td>spáľ 1 Cirhózu</td></tr><tr><td>Dievčina na vydaj</td><td>Zahoď túto kartu.</td><td>Spáľ túto kartu.</td></tr><tr><td>Krokodíl</td><td>Na konci bitky idú z hry všetci Občania a Zvieratá v jeho okolí.</td><td>Na konci bitky sa spália všetci Občania a Zvieratá v jeho okolí.</td></tr><tr><td>Krištáľová guľa</td><td>jednu si vezmi alebo zahoď</td><td>jednu si vezmi alebo spáľ</td></tr><tr><td>Absťák</td><td>Zahodiť ju smie len Vízia alebo efekt, ktorý to výslovne povie.</td><td>Spáliť ju smie len Vízia alebo efekt, ktorý to výslovne povie.</td></tr></tbody></table></div>
+<h3>docs/PRAVIDLA.md</h3><div class="tab-obal"><table><thead><tr><th>Kde</th><th>Dnes</th><th>Návrh</th></tr></thead><tbody><tr><td><code>r. 82, 928, 1400, 1403, 1434, 1836 (Absťák)</code></td><td>zahodí ju Vízia / zahodiť ju smie / kým ju nezahodí</td><td>spáli ju Vízia / spáliť ju smie / kým ju nespáli</td></tr><tr><td><code>r. 314 (Vízia, tabuľka akcií) a r. 777 (§7)</code></td><td>alebo ju zahodí (z hry) / alebo zahodiť (z hry)</td><td>alebo ju spáli (navždy z hry)</td></tr><tr><td><code>r. 934, 1415</code></td><td>zahodením karty / zahodenie</td><td>spálením karty / spálenie</td></tr><tr><td><code>r. 1080 (špaky), 1156 (návrat kariet)</code></td><td>zahodené, odstránené efektom / Karty zahodené v bitke</td><td>spálené / Karty spálené v bitke</td></tr><tr><td><code>r. 1336 (boss)</code></td><td>aj keby ho efekt poslal z hry</td><td>aj keby ho efekt spálil</td></tr><tr><td><code>r. 1377, 1808 (Veterinár)</code></td><td>musí zahodiť / zahoď z hry</td><td>musí spáliť / spáľ</td></tr><tr><td><code>r. 1550 (Krištáľová guľa)</code></td><td>jednu si vezmi alebo zahoď</td><td>jednu si vezmi alebo spáľ</td></tr><tr><td><code>r. 1773 (Krokodíl), 1781 (Dievčina)</code></td><td>idú z hry / zahodí sa (z hry)</td><td>spália sa / spáli sa</td></tr><tr><td><code>r. 1891 (Slovník)</code></td><td>Zahodenie — odstrániť kartu z hry (spáliť)</td><td>Spálenie — karta navždy z hry, nevracia sa do žiadneho balíčka. Opak odhodenia (r. 1856).</td></tr></tbody></table></div>
+<h3>Web (kód — mení naex-developer)</h3><div class="tab-obal"><table><thead><tr><th>Kde</th><th>Dnes</th><th>Návrh</th></tr></thead><tbody><tr><td><code>apps/web/src/hra/OknoVizie.tsx:80–82</code></td><td>tlačidlo „Zahodiť — navždy z hry“</td><td>„Spáliť — navždy z hry“</td></tr><tr><td><code>apps/web/src/hra/HernaPlocha.tsx:3578, 4045, 4054–4055, 4066–4067, 4074, 6370–6371</code></td><td>zahodí / zahoď / zahodiť prvú / zahodiť druhú</td><td>spáli / spáľ / spáliť prvú / spáliť druhú</td></tr><tr><td><code>apps/web/src/hra/Panely.tsx:188</code></td><td>Zahodiť ho smie Vízia.</td><td>Spáliť ho smie Vízia.</td></tr><tr><td><code>apps/web/src/stranky/pravidla/kapitoly.tsx:381, 468, 521, 797</code></td><td>navždy zahodíš / zahoď z hry / Zahodiť ho smie</td><td>spáliš / spáľ / Spáliť ho smie</td></tr><tr><td><code>apps/web/src/stranky/pravidla/slovnik.ts:13, 80</code></td><td>Zahodí ho Vízia. / navždy zahodíš</td><td>Spáli ho Vízia. / spáliš; pridať heslá Spálenie a Odhodenie (dnes chýbajú)</td></tr><tr><td><code>packages/core/src/engine.ts:4066, 5332 (log)</code></td><td>zahadzuje z hry Cirhózu / ide z hry</td><td>spaľuje Cirhózu / ide do ohňa (spálená)</td></tr></tbody></table></div>
+<h3>Ťahák a výučba</h3><div class="tab-obal"><table><thead><tr><th>Kde</th><th>Dnes</th><th>Návrh</th></tr></thead><tbody><tr><td><code>tools/playtest/tahak.md:126, 186–187, 251, 276, 280</code></td><td>zahoď z hry / zahodiť (navždy z hry) / idú z hry / zahodí sa</td><td>spáľ / spáliť (navždy z hry) / spália sa / spáli sa</td></tr><tr><td><code>packages/core/data/vyucba/napovedy.json:181</code></td><td>zahodí ju len Vízia</td><td>spáli ju len Vízia</td></tr></tbody></table></div>
+
+<h3>3. Predavačka bez akcie Cigareta</h3>
+<blockquote>„Predavačka generuje cigarety a zároveň za tie cigarety dáva karty… treba jej odstrániť akciu Cigareta a nahradiť niečím iným.“</blockquote>
+<p>Obe Cigarety (ľavá r. 2, pravá r. 2/3) odchádzajú. Efekt sa nemení: <span class="zmena">Kšeft: Za 1 cigaretu si dober 1 kartu.</span></p>
+<h3>A (odporúčam): Robota + Obmedzenie</h3>
+<p>Vľavo Cigareta → <b>Robota</b> (zošit sa spláca: Hazard hore, Robota dole na tej istej strane). Vpravo Cigareta → <b>druhé Obmedzenie</b> („pre vás už nemáme“: súper dostane menej cigariet). Predavačka cigarety nerobí, len ich súperovi ubera — Kšeft sa platí z vlastných zásob. Bilancia akcií 2 b., rovnaká ako v kole 1.</p>
+<div class="var-obal"><table class="var"><caption>Variant 1</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>1</th><td><span class="zle">Hazard</span></td><td class="vb">✕</td></tr><tr><th>2</th><td><span class="">Robota</span></td><td><span class="">Obmedzenie</span></td></tr><tr><th>3</th><td class="vb">✕</td><td><span class="">Obmedzenie</span></td></tr></tbody></table><table class="var"><caption>Variant 2</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td><span class="zle">Hazard</span></td><td class="vb">✕</td></tr><tr><th>1</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>2</th><td><span class="">Robota</span></td><td><span class="">Obmedzenie</span></td></tr><tr><th>3</th><td class="vb">✕</td><td><span class="">Obmedzenie</span></td></tr></tbody></table></div><p class="pozn">2 varianty; každý je samostatná tlačená karta. Overené <code>parseCards</code> a <code>sideLayouts</code>.</p>
+<details><summary>Záznam pre cards.json</summary><pre>{
+ &quot;id&quot;: &quot;predavacka&quot;,
+ &quot;index&quot;: 902,
+ &quot;name&quot;: &quot;Predavačka&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Žena&quot;,
+  &quot;Pracujúci&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Kšeft: Za 1 cigaretu si dober 1 kartu.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Kšeft&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   3
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Robota&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Robota&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0,
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Obmedzenie&quot;: 2
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 2,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 1
+ }
+}</pre></details>
+<h3>B: Poldeci + Vízia</h3>
+<p>Vľavo <b>Poldeci</b> (borovička spod pultu), vpravo <b>Vízia</b> (vie, čo v stredu dovezú). Bilancia 2 b. Vízia však dáva karty rovnako ako Kšeft, takže karta by mala dva zdroje kariet naraz. Preto B odporúčam menej.</p>
+<div class="var-obal"><table class="var"><caption>Variant 1</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>1</th><td><span class="zle">Hazard</span></td><td class="vb">✕</td></tr><tr><th>2</th><td><span class="">Poldeci</span></td><td><span class="">Obmedzenie</span></td></tr><tr><th>3</th><td class="vb">✕</td><td><span class="">Vízia</span></td></tr></tbody></table><table class="var"><caption>Variant 2</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>1</th><td><span class="zle">Hazard</span></td><td class="vb">✕</td></tr><tr><th>2</th><td><span class="">Poldeci</span></td><td><span class="">Vízia</span></td></tr><tr><th>3</th><td class="vb">✕</td><td><span class="">Obmedzenie</span></td></tr></tbody></table><table class="var"><caption>Variant 3</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td><span class="zle">Hazard</span></td><td class="vb">✕</td></tr><tr><th>1</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>2</th><td><span class="">Poldeci</span></td><td><span class="">Obmedzenie</span></td></tr><tr><th>3</th><td class="vb">✕</td><td><span class="">Vízia</span></td></tr></tbody></table><table class="var"><caption>Variant 4</caption><thead><tr><th>r.</th><th>ľavá</th><th>pravá</th></tr></thead><tbody><tr><th>0</th><td><span class="zle">Hazard</span></td><td class="vb">✕</td></tr><tr><th>1</th><td class="vp">—</td><td class="vb">✕</td></tr><tr><th>2</th><td><span class="">Poldeci</span></td><td><span class="">Vízia</span></td></tr><tr><th>3</th><td class="vb">✕</td><td><span class="">Obmedzenie</span></td></tr></tbody></table></div><p class="pozn">4 variantov; každý je samostatná tlačená karta. Overené <code>parseCards</code> a <code>sideLayouts</code>.</p>
+<details><summary>Záznam pre cards.json</summary><pre>{
+ &quot;id&quot;: &quot;predavacka&quot;,
+ &quot;index&quot;: 903,
+ &quot;name&quot;: &quot;Predavačka&quot;,
+ &quot;tags&quot;: [
+  &quot;Občan&quot;,
+  &quot;Autorita&quot;,
+  &quot;Žena&quot;,
+  &quot;Pracujúci&quot;
+ ],
+ &quot;effect_text&quot;: &quot;Kšeft: Za 1 cigaretu si dober 1 kartu.&quot;,
+ &quot;triggers&quot;: [
+  &quot;Kšeft&quot;
+ ],
+ &quot;left&quot;: {
+  &quot;blocked&quot;: [
+   3
+  ],
+  &quot;actions&quot;: {
+   &quot;Dlh&quot;: 1,
+   &quot;Poldeci&quot;: 1
+  },
+  &quot;allowed&quot;: {
+   &quot;0&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;1&quot;: [
+    &quot;Dlh&quot;
+   ],
+   &quot;2&quot;: [
+    &quot;Poldeci&quot;
+   ]
+  }
+ },
+ &quot;right&quot;: {
+  &quot;blocked&quot;: [
+   0,
+   1
+  ],
+  &quot;actions&quot;: {
+   &quot;Obmedzenie&quot;: 1,
+   &quot;Vízia&quot;: 1
+  }
+ },
+ &quot;permutations&quot;: {
+  &quot;total&quot;: 4,
+  &quot;left&quot;: 2,
+  &quot;right&quot;: 2
+ }
+}</pre></details>
+<h3>Cena Kšeftu</h3>
+<p><b>Odporúčam 1 cigaretu.</b> Bez vlastných Cigariet si Predavačka sama nezaplatí, takže cena 1 už nie je slučka. Je to dobrý odbytisko pre hromadiace sa cigarety. Porovnanie: 5 cigariet = 1 špak pri výkupnom, Strýko z Ameriky = 2 cigarety za Ranu, Zberný dvor = 1 cigareta za vybranú kartu z odhadzovacieho balíčka, Predavačka = 1 cigareta za náhodnú kartu z doberacieho (slabšie ako Zberný dvor). Cenu 2 by som zvolil len vtedy, ak playtest ukáže, že sa Predavačka hrá v každej Pitke. Platba „na zošit“ (zadĺžením) by bola nová mena Kšeftu, a to by bola zmena pravidiel, nie len karta.</p>
+
+<h3>4. Upozornenie: pravidlá v10.3 a karty z kola 1</h3>
+<ul>
+<li><b>Poslanec</b> má spúšťač Úplatok, ktorý v10.3 zrušila (Kulturista je Sypač). Kartu teraz nemením, lebo je bez voľby. Ak by sa k nej vracal, potrebuje nový spúšťač: navrhol by som A1 „Poplatok“ (Konflikt).</li>
+<li>Otázka o Pakte z kola 1 je vyriešená: Pakt + Posilnenie = Forsáž (PRAVIDLA.md:319).</li>
+<li>Veľmi smútiaca vdova už kartu do hry nevráti (v10.3, odhodí). Alternatíva A1 Poľovníka z kola 1 „ako Vdova“ tým odpadá.</li>
+</ul>
+
+<h3>Tvoje voľby ku kolu 2</h3>
+<fieldset class="volba k2" data-k2="polovnik-text" data-nazov="Poľovník: ktoré Zviera" data-moznosti="najdalej:Najďalej, hneď (odp.)|najblizsie:Najbližšie, hneď|volba:Podľa voľby|pobitke:Po bitke|inak:Inak"><legend>Poľovník: ktoré Zviera</legend><div class="volby-q"></div><textarea placeholder="Poznámka" aria-label="Poznámka: Poľovník: ktoré Zviera"></textarea></fieldset>
+<fieldset class="volba k2" data-k2="pojem" data-nazov="Pojem pre „navždy z hry“" data-moznosti="spalit:Spáliť (odp.)|zahodit:Zahodiť|vyradit:Vyradiť z hry|pochovat:Pochovať|inak:Inak"><legend>Pojem pre „navždy z hry“</legend><div class="volby-q"></div><textarea placeholder="Poznámka" aria-label="Poznámka: Pojem pre „navždy z hry“"></textarea></fieldset>
+<fieldset class="volba k2" data-k2="predavacka-akcie" data-nazov="Predavačka: náhrada Cigariet" data-moznosti="a:A Robota + Obmedzenie (odp.)|b:B Poldeci + Vízia|inak:Inak"><legend>Predavačka: náhrada Cigariet</legend><div class="volby-q"></div><textarea placeholder="Poznámka" aria-label="Poznámka: Predavačka: náhrada Cigariet"></textarea></fieldset>
+<fieldset class="volba k2" data-k2="predavacka-cena" data-nazov="Predavačka: cena Kšeftu" data-moznosti="1:1 cigareta (odp.)|2:2 cigarety|zosit:Na zošit"><legend>Predavačka: cena Kšeftu</legend><div class="volby-q"></div><textarea placeholder="Poznámka" aria-label="Poznámka: Predavačka: cena Kšeftu"></textarea></fieldset>
+<p><button type="button" class="hlavne" id="kopiruj-k2">Skopírovať voľby kola 2</button> <span class="pozn" id="k2-stav" aria-live="polite"></span></p>
+</section>
+
+<h2 id="kolo1">Kolo 1 — pôvodná dávka</h2>
 <p class="uvod">Dnes majú tag Autorita <b>Policajtka, Hasič, Svokra</b> a po prebiehajúcej zmene aj <b>Traktorista</b> (Pracujúci → Autorita). Navrhujem 8 Občanov s tagom Autorita — ľudí, čo majú na dedine slovo. Odporúčam <b>6 (Poľovník, Predavačka, Predseda družstva, Rozhlasárka, Kronikárka, Pani z obecného)</b>, Poslanec a Tréner sú rezerva. Všetky efekty používajú existujúce akcie, spúšťače a mechanizmy jadra. Každá karta má 4 varianty a v jadre prešla <code>parseCards</code> aj <code>sideLayouts</code>.</p>
 
 <section class="ramik"><h2>Prehľad</h2><div class="tab-obal"><table class="uvod-tab"><thead><tr><th>Karta</th><th>Tagy</th><th>Efekt</th><th>Sila</th><th>Odp.</th></tr></thead><tbody>
@@ -175,6 +417,7 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
 
 
 <section class="karta" id="polovnik" data-k="polovnik" data-nazov="Poľovník">
+<p class="roz roz-otv">Kolo 2: Prerobiť — nová verzia je hore v sekcii <a href="#kolo2">Kolo 2</a>.</p>
 <div class="karta-hlava"><h2><span class="cislo">1</span>Poľovník</h2>
 <div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Chlap</span><span class="tag">Pamätník</span><span class="tag">spúšťač: Konflikt</span></div></div>
 <div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot volny"><span class="zle">Pečeň</span> / —</div><div class="slot volny"><span class="zle">Pečeň</span> / —</div><div class="slot blok" aria-label="blokovaný">✕</div><div class="slot"><span class="utok">Rana</span></div></div>
@@ -256,6 +499,7 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
 </section>
 
 <section class="karta" id="predavacka" data-k="predavacka" data-nazov="Predavačka">
+<p class="roz roz-ano">Kolo 2: Áno, bez akcie Cigareta — náhrada je hore v sekcii <a href="#kolo2">Kolo 2</a>.</p>
 <div class="karta-hlava"><h2><span class="cislo">2</span>Predavačka</h2>
 <div class="tagy"><span class="tag">Občan</span><span class="arch">Autorita</span><span class="tag">Žena</span><span class="tag">Pracujúci</span><span class="tag">spúšťač: Kšeft</span></div></div>
 <div class="stol"><figure class="mk"><div class="mk-stitok">Ľavá · riadky 0–3 · pravá</div><div class="mk-telo"><div class="mk-strana"><div class="slot volny"><span class="zle">Hazard</span> / —</div><div class="slot volny"><span class="zle">Hazard</span> / —</div><div class="slot"><span class="">Cigareta</span></div><div class="slot blok" aria-label="blokovaný">✕</div></div>
@@ -854,6 +1098,47 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--okraj)
     } catch (e) { zaloha(); }
   }
   document.getElementById("kopiruj").addEventListener("click", function () { kopiruj(suhrn(), "Rozhodnutia sú skopírované. Vlož ich Leaderovi."); });
+})();
+</script>
+
+<script>
+/* Kolo 2: voľby sa ukladajú zvlášť od kola 1. */
+(function () {
+  "use strict";
+  var KLUC = "naex-autority-k2-v1", stav = {};
+  try { var ul = JSON.parse(localStorage.getItem(KLUC) || "{}"); if (ul && typeof ul === "object") stav = ul; } catch (e) { /* bez úložiska */ }
+  function uloz() { try { localStorage.setItem(KLUC, JSON.stringify(stav)); } catch (e) { /* bez úložiska */ } }
+  function zaznam(k) { if (!stav[k] || typeof stav[k] !== "object") stav[k] = {}; return stav[k]; }
+  var bloky = Array.prototype.slice.call(document.querySelectorAll("[data-k2]"));
+  function moz(b) { return b.getAttribute("data-moznosti").split("|").map(function (m) { var p = m.indexOf(":"); return [m.slice(0, p), m.slice(p + 1)]; }); }
+  bloky.forEach(function (b) {
+    var k = b.getAttribute("data-k2"), obal = b.querySelector(".volby-q");
+    moz(b).forEach(function (m) {
+      var l = document.createElement("label"), i = document.createElement("input");
+      i.type = "radio"; i.name = "k2-" + k; i.value = m[0]; i.checked = (stav[k] && stav[k].v) === m[0];
+      i.addEventListener("change", function () { zaznam(k).v = m[0]; uloz(); });
+      l.appendChild(i); l.appendChild(document.createTextNode(m[1])); obal.appendChild(l);
+    });
+    var ta = b.querySelector("textarea");
+    ta.value = (stav[k] && stav[k].p) || "";
+    ta.addEventListener("input", function () { zaznam(k).p = ta.value; uloz(); });
+  });
+  document.getElementById("kopiruj-k2").addEventListener("click", function () {
+    var r = ["Michal — Autority, kolo 2 (docs/napady/autority.html):", ""];
+    bloky.forEach(function (b) {
+      var k = b.getAttribute("data-k2"), s = stav[k] || {}, txt = "bez voľby", p = (s.p || "").trim();
+      moz(b).forEach(function (m) { if (m[0] === s.v) txt = m[1]; });
+      r.push(b.getAttribute("data-nazov") + ": " + txt + (p ? " — " + p : ""));
+    });
+    var text = r.join("\n"), stavEl = document.getElementById("k2-stav");
+    var hotovo = function () { stavEl.textContent = "Skopírované. Vlož to Leaderovi."; };
+    var zaloha = function () {
+      var s = document.getElementById("schranka"); s.value = text; s.select();
+      try { if (document.execCommand("copy")) { hotovo(); return; } } catch (e) { /* ďalej prompt */ }
+      window.prompt("Skopíruj text:", text);
+    };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(hotovo, zaloha); else zaloha(); } catch (e) { zaloha(); }
+  });
 })();
 </script>
 </body>
