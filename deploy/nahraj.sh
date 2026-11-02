@@ -84,6 +84,18 @@ cd /opt/naex-zrejuca/deploy
 docker compose -f docker-compose.zrejuca.yml build
 docker compose -f docker-compose.zrejuca.yml run -T --rm --no-deps --user root --entrypoint chown naex-zrejuca -R node:node /data </dev/null
 docker compose -f docker-compose.zrejuca.yml up -d
+# Hudba a hlášky Melichara sa importujú do Vypálenej — Zrejúca má vlastný zväzok, tak ich sem
+# pri každom nasadení skopírujeme (inak by v Zrejúcej chýbali).
+VYP=$(cd /opt/naex/deploy && docker compose ps -q naex)
+ZR=$(docker compose -f docker-compose.zrejuca.yml ps -q naex-zrejuca)
+if [ -n "$VYP" ] && [ -n "$ZR" ]; then
+  T=$(mktemp -d)
+  for d in hudba melichar; do
+    if docker cp "$VYP:/data/$d" "$T/$d" 2>/dev/null; then docker cp "$T/$d/." "$ZR:/data/$d"; fi
+  done
+  rm -rf "$T"
+  docker exec -u 0 "$ZR" chown -R node:node /data/hudba /data/melichar 2>/dev/null || true
+fi
 docker image prune -f >/dev/null
 SKRIPT
   echo "Čakám na Zrejúcu…"
