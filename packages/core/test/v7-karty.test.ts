@@ -94,8 +94,8 @@ describe("sada v7 — dáta", () => {
     };
     // Bzdocha: Ľ2 Povera | P2 Vízia, po jednej akcii na stranu.
     expect(rozlozenie("klebetnica")).toEqual({ lave: [null, null, "Povera", null], prave: [null, null, "Vízia", null] });
-    // Dievčina na vydaj: Ľ1 Dlh, Ľ2 Cigareta | P1 Dlh, P2 Povera.
-    expect(rozlozenie("dievcina_na_vydaj")).toEqual({ lave: [null, "Dlh", "Cigareta", null], prave: [null, "Dlh", "Povera", null] });
+    // Dievčina na vydaj: Ľ1 Dlh, Ľ2 Cigareta | P1 Dlh, P2 Vízia (Povera → Vízia, Michal 2026-11-02).
+    expect(rozlozenie("dievcina_na_vydaj")).toEqual({ lave: [null, "Dlh", "Cigareta", null], prave: [null, "Dlh", "Vízia", null] });
   });
 });
 

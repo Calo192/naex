@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet — koncept nad lokálnou sadou v12 (Strach a reči: Kapybara, Predsedova vila; Dievčina na vydaj, Bzdocha zo živého tvorcu 2026-11-02) 2026-11-02T16:20:22.757Z",
+  "source": "tvorca kariet — koncept nad lokálnou sadou v12 (Strach a reči: Kapybara, Predsedova vila; Dievčina na vydaj, Bzdocha zo živého tvorcu 2026-11-02) + výskyt akcií Občanov (Pecka, Petelica, Pakt, Posilnenie, Vízia) 2026-11-02",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -707,14 +707,14 @@
         ],
         "actions": {
           "Odpor": 1,
-          "Povera": 1
+          "Pecka": 1
         },
         "allowed": {
           "1": [
             "Odpor"
           ],
           "3": [
-            "Povera"
+            "Pecka"
           ]
         }
       },
@@ -787,14 +787,14 @@
         ],
         "actions": {
           "Dlh": 2,
-          "Povera": 1
+          "Vízia": 1
         },
         "allowed": {
           "1": [
             "Dlh"
           ],
           "2": [
-            "Povera"
+            "Vízia"
           ]
         }
       },
@@ -861,13 +861,14 @@
           2
         ],
         "actions": {
-          "Pohoršenie": 2
+          "Petelica": 1,
+          "Pohoršenie": 1
         }
       },
       "permutations": {
-        "total": 2,
+        "total": 4,
         "left": 2,
-        "right": 1
+        "right": 2
       }
     },
     {
@@ -928,16 +929,25 @@
       ],
       "left": {
         "blocked": [
+          1,
           2
         ],
         "actions": {
           "Cigareta": 1,
-          "Pohoršenie": 1
+          "Pakt": 1
+        },
+        "allowed": {
+          "0": [
+            "Pakt"
+          ],
+          "3": [
+            "Cigareta"
+          ]
         }
       },
       "right": {
         "blocked": [
-          1,
+          2,
           3
         ],
         "actions": {
@@ -945,8 +955,8 @@
         }
       },
       "permutations": {
-        "total": 6,
-        "left": 6,
+        "total": 1,
+        "left": 1,
         "right": 1
       }
     },
@@ -966,13 +976,13 @@
       "left": {
         "blocked": [],
         "actions": {
-          "Obmedzenie": 1,
           "Odpor": 1,
+          "Pakt": 1,
           "Rana": 2
         },
         "allowed": {
           "0": [
-            "Obmedzenie"
+            "Pakt"
           ],
           "1": [
             "Odpor"
@@ -1029,7 +1039,7 @@
         "blocked": [
           0,
           1,
-          2
+          3
         ],
         "actions": {
           "Posilnenie": 1
@@ -1132,11 +1142,19 @@
       "left": {
         "blocked": [
           0,
-          3
+          1
         ],
         "actions": {
           "Cigareta": 1,
-          "Poldeci": 1
+          "Posilnenie": 1
+        },
+        "allowed": {
+          "2": [
+            "Posilnenie"
+          ],
+          "3": [
+            "Cigareta"
+          ]
         }
       },
       "right": {
@@ -1150,8 +1168,8 @@
         }
       },
       "permutations": {
-        "total": 4,
-        "left": 2,
+        "total": 2,
+        "left": 1,
         "right": 2
       }
     },
@@ -1651,7 +1669,7 @@
         ],
         "actions": {
           "Cigareta": 1,
-          "Povera": 1
+          "Vízia": 1
         }
       },
       "permutations": {
@@ -1698,14 +1716,14 @@
         ],
         "actions": {
           "Dlh": 1,
-          "Povera": 1
+          "Vízia": 1
         },
         "allowed": {
           "1": [
             "Dlh"
           ],
           "2": [
-            "Povera"
+            "Vízia"
           ]
         }
       },
@@ -1731,9 +1749,9 @@
       "left": {
         "blocked": [],
         "actions": {
+          "Cigareta": 1,
           "Dlh": 1,
           "Odpor": 1,
-          "Pakt": 1,
           "Robota": 1
         },
         "allowed": {
@@ -1744,12 +1762,10 @@
             "Odpor"
           ],
           "2": [
-            "Pakt",
             "Robota"
           ],
           "3": [
-            "Pakt",
-            "Robota"
+            "Cigareta"
           ]
         }
       },
@@ -1758,7 +1774,8 @@
           0
         ],
         "actions": {
-          "Cigareta": 2,
+          "Cigareta": 1,
+          "Pakt": 1,
           "PoškodeniePečene": 1
         },
         "allowed": {
@@ -1769,13 +1786,13 @@
             "Cigareta"
           ],
           "3": [
-            "Cigareta"
+            "Pakt"
           ]
         }
       },
       "permutations": {
-        "total": 2,
-        "left": 2,
+        "total": 1,
+        "left": 1,
         "right": 1
       }
     },
@@ -2138,11 +2155,11 @@
             "Pecka"
           ],
           "2": [
-            "Pakt"
-          ],
-          "3": [
             "Cigareta",
             "Pecka"
+          ],
+          "3": [
+            "Pakt"
           ]
         }
       },
@@ -2272,10 +2289,12 @@
         }
       },
       "right": {
-        "blocked": [],
+        "blocked": [
+          3
+        ],
         "actions": {
           "Dlh": 1,
-          "Rana": 2,
+          "Petelica": 1,
           "Viera": 1
         },
         "allowed": {
@@ -2286,10 +2305,7 @@
             "Dlh"
           ],
           "2": [
-            "Rana"
-          ],
-          "3": [
-            "Rana"
+            "Petelica"
           ]
         }
       },
@@ -2384,13 +2400,21 @@
         ],
         "actions": {
           "Obmedzenie": 1,
-          "Rana": 1
+          "Pakt": 1
+        },
+        "allowed": {
+          "2": [
+            "Obmedzenie"
+          ],
+          "3": [
+            "Pakt"
+          ]
         }
       },
       "permutations": {
-        "total": 4,
+        "total": 2,
         "left": 2,
-        "right": 2
+        "right": 1
       }
     },
     {
@@ -2460,6 +2484,7 @@
         ],
         "actions": {
           "Odpor": 1,
+          "Posilnenie": 1,
           "Robota": 1
         },
         "allowed": {
@@ -2467,7 +2492,7 @@
             "Odpor"
           ],
           "2": [
-            "Robota"
+            "Posilnenie"
           ],
           "3": [
             "Robota"
@@ -2493,8 +2518,8 @@
         }
       },
       "permutations": {
-        "total": 2,
-        "left": 2,
+        "total": 1,
+        "left": 1,
         "right": 1
       }
     },
@@ -3073,7 +3098,7 @@
         ],
         "actions": {
           "Odpor": 1,
-          "Pohoršenie": 1,
+          "Pecka": 1,
           "Viera": 1
         },
         "allowed": {
@@ -3084,7 +3109,7 @@
             "Viera"
           ],
           "3": [
-            "Pohoršenie"
+            "Pecka"
           ]
         }
       },
@@ -3271,7 +3296,7 @@
         "blocked": [
           0,
           1,
-          2
+          3
         ],
         "actions": {
           "Posilnenie": 1
@@ -3391,12 +3416,20 @@
       ],
       "left": {
         "blocked": [
-          0,
+          1,
           2
         ],
         "actions": {
           "Pakt": 1,
           "Viera": 1
+        },
+        "allowed": {
+          "0": [
+            "Pakt"
+          ],
+          "3": [
+            "Viera"
+          ]
         }
       },
       "right": {
@@ -3418,8 +3451,8 @@
         }
       },
       "permutations": {
-        "total": 2,
-        "left": 2,
+        "total": 1,
+        "left": 1,
         "right": 1
       }
     },
@@ -3438,21 +3471,19 @@
       ],
       "left": {
         "blocked": [
+          0,
           3
         ],
         "actions": {
-          "PoškodeniePečene": 1,
-          "Rana": 2
+          "Petelica": 1,
+          "PoškodeniePečene": 1
         },
         "allowed": {
-          "0": [
-            "Rana"
-          ],
           "1": [
             "PoškodeniePečene"
           ],
           "2": [
-            "Rana"
+            "Petelica"
           ]
         }
       },
@@ -3585,10 +3616,19 @@
       "left": {
         "blocked": [
           0,
-          3
+          1
         ],
         "actions": {
-          "Rana": 2
+          "Posilnenie": 1,
+          "Rana": 1
+        },
+        "allowed": {
+          "2": [
+            "Posilnenie"
+          ],
+          "3": [
+            "Rana"
+          ]
         }
       },
       "right": {
@@ -3699,14 +3739,14 @@
         ],
         "actions": {
           "Dlh": 1,
-          "Rana": 1
+          "Pecka": 1
         },
         "allowed": {
           "1": [
             "Dlh"
           ],
           "2": [
-            "Rana"
+            "Pecka"
           ]
         }
       },
@@ -4646,7 +4686,16 @@
           1
         ],
         "actions": {
-          "Obmedzenie": 2
+          "Obmedzenie": 1,
+          "Pakt": 1
+        },
+        "allowed": {
+          "2": [
+            "Obmedzenie"
+          ],
+          "3": [
+            "Pakt"
+          ]
         }
       },
       "permutations": {

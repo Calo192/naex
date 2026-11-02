@@ -174,6 +174,8 @@ describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj
             // kto ju nevidí, Dlhy za jej spoj predpovedať nemôže (a nesmie, viewFor ju neposiela).
             const v = viewFor(data, state, ja);
             if (v.strany.flat().length !== state.strany.flat().length) continue;
+            // Vlastná Záverečná Dievčina sa otočí v tom istom ťahu — efektyPrehry ráta len odkryté karty.
+            if (state.strany.flat().some((pl) => pl.card.defId === "dievcina_na_vydaj" && pl.zaverecna === true)) continue;
             expect(efektyPrehry(data, v).dievcina[porazeny], `seed ${seed}, hráč ${ja}`).toBe(Number(m[2]));
             porovnane++;
           }

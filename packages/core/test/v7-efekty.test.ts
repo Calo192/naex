@@ -258,13 +258,14 @@ describe("efekty v línii (v7)", () => {
     };
     let overene = 0;
     const pv = data.variants.get("pes")!;
-    const zv = data.variants.get("zamocnik")!;
+    // Sused bez Posilnenia, Paktu a Odporu (Zámočník má od 2026-11-02 Posilnenie, to by násobilo aj Psa).
+    const zv = data.variants.get("zahradkar")!;
     for (const [pl, pr] of [...pv.left.map((_, i) => [i, 0] as const), ...pv.right.map((_, i) => [0, i] as const)]) for (const strana of [0, 1] as const) {
       for (let zl = 0; zl < zv.left.length; zl++) {
         for (let zr = 0; zr < zv.right.length; zr++) {
           const pes: CardInstance = { uid: 1, defId: "pes", leftLayout: pl, rightLayout: pr };
           const st = (x: PlacedCard[]): GameState["strany"] => (strana === 0 ? [x, []] : [[], x]);
-          const sused = (kto: PlayerId): PlacedCard => lezi({ uid: 2, defId: "zamocnik", leftLayout: zl, rightLayout: zr }, kto);
+          const sused = (kto: PlayerId): PlacedCard => lezi({ uid: 2, defId: "zahradkar", leftLayout: zl, rightLayout: zr }, kto);
           const bez = vPitke("zastavka", st([lezi(pes, 0)]));
           const vlastny = vPitke("zastavka", st([lezi(pes, 0), sused(0)]));
           const cudzi = vPitke("zastavka", st([lezi(pes, 0), sused(1)]));
