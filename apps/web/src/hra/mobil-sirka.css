@@ -397,7 +397,7 @@ html.stol-na-sirku .obsah:has(> .hra) {
   pointer-events: none;
 }
 
-.pruh-menu :is(.hrana-zasoba, .hrana-skore, .vyucba-zamok) {
+.pruh-menu :is(.hrana-skore, .vyucba-zamok) {
   display: none;
 }
 

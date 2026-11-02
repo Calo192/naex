@@ -9,6 +9,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperti
 import type { GameData, MarkerPos, PlayerId, Vazen } from "@naex/core";
 import { KONSTANTY, STUPNICA_ZONY, cigariet, favourStarsieho, obavanyHrac, pocet, strachZ, opponentOf } from "@naex/core";
 import "./suhrn-posunov.css";
+import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { IKONY } from "../karta/ikony.ts";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
@@ -283,7 +284,7 @@ function Bublina({
           {obrazok !== null ? <img src={obrazok} alt="" draggable={false} /> : <span className="sb-portret-prazdny" />}
           {vazen !== null && (
             <span className={`sb-mreze ${vazen.hrac === ja ? "ja" : "su"}`}>
-              <IkonaMrezi />
+              <IkonaMrezi className="sb-ikona" />
             </span>
           )}
         </span>
@@ -413,7 +414,7 @@ function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: Player
         "zajatie",
         `Stupeň 3 — ${d.hrac === ja ? "môžeš ho" : `${mena[d.hrac]} ho môže`} pred šenkom skúsiť zajať za ${cigariet(KONSTANTY.CENA_POKUSU)}`,
         <>
-          <IkonaMrezi />
+          <IkonaMrezi className="sb-ikona" />
           <IkonaCigarety />
         </>,
       );
@@ -443,7 +444,7 @@ function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: Player
         "vazen",
         `Uväznený — ${d.hrac === ja ? "tvoj" : `${mena[d.hrac]} má`} väzeň (${n} z ${KONSTANTY.VAZNI_NA_VYHRU})`,
         <>
-          <IkonaMrezi />
+          <IkonaMrezi className="sb-ikona" />
           <b>
             {n}/{KONSTANTY.VAZNI_NA_VYHRU}
           </b>
@@ -451,14 +452,6 @@ function Cip({ d, ja, mena, vazni }: { readonly d: Dosledok; readonly ja: Player
       );
     }
   }
-}
-
-function IkonaMrezi() {
-  return (
-    <svg className="sb-ikona" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M3 2.5h18v2.2H3zm0 16.8h18v2.2H3zM5 4.7h2.2v14.6H5zm4.1 0h2.2v14.6H9.1zm4.1 0h2.2v14.6h-2.2zm4.1 0H19.5v14.6h-2.2z" />
-    </svg>
-  );
 }
 
 function IkonaHodin() {

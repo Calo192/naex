@@ -9,6 +9,7 @@ import { IKONY } from "../karta/ikony.ts";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaAbstak, IkonaCigareta, IkonaKarty, IkonaPoldeci, type KartyDlazdica } from "./Panely.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
+import { IkonaMrezi } from "./ikonyZdrojov.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { detailZdroja, riadkyTabule, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
@@ -39,13 +40,15 @@ export interface StlpecHracaProps {
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void };
   /** Ťuk na hráča: tabuľa porovnania ty | súper. */
   readonly tabula: { readonly otvorena: boolean; readonly prepni: () => void };
+  /** Pivnica (len vlastný stĺpec): väzni a ich Kšefty v okne; svieti, keď je Kšeft väzňa dostupný. */
+  readonly pivnica?: { readonly vazni: number; readonly dostupna: boolean; readonly otvor: () => void };
 }
 
 /**
  * Úzky zvislý stĺpec hráča (Michal 2026-10-31, po skúške na telefóne): ty vľavo, súper vpravo —
  * ako kraje línie. Len ikona a číslo každého zdroja; ťuk otvorí okno s podrobnosťami.
  */
-export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail, starsi, tabula }: StlpecHracaProps) {
+export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail, starsi, tabula, pivnica }: StlpecHracaProps) {
   const ja = p === view.ja;
   const utoci = view.utocnik === p;
   const c = karty.ciel;
@@ -84,6 +87,19 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
         <IkonaPriazne />
         <b>{cisla.priazen}</b>
       </button>
+      {/* Pivnica v stĺpci, nie v pruhu pokynu — tam by skrátila text pokynu (Michal 2026-11-02). */}
+      {pivnica !== undefined && (
+        <button
+          type="button"
+          className={`stlpec-cip stlpec-pivnica${pivnica.vazni === 0 ? " prazdna" : ""}${pivnica.dostupna ? " dostupna" : ""}`}
+          aria-label={`Pivnica — väzni: ${pivnica.vazni}${pivnica.dostupna ? ", Kšeft väzňa je teraz dostupný" : ""}`}
+          title="Pivnica — tvoji väzni a ich Kšefty"
+          onClick={pivnica.otvor}
+        >
+          <IkonaMrezi />
+          <b>{pivnica.vazni}</b>
+        </button>
+      )}
     </section>
   );
 }

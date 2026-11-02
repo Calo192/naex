@@ -71,3 +71,12 @@ export function Vymena({ das, dostanes }: { readonly das: ReactNode; readonly do
     </span>
   );
 }
+
+/** Mreže väzenia — väzeň v súhrne posunov, Pivnica na hrane stola a v stĺpci hráča. */
+export function IkonaMrezi({ className = "ikona-mrezi" }: { readonly className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 2.5h18v2.2H3zm0 16.8h18v2.2H3zM5 4.7h2.2v14.6H5zm4.1 0h2.2v14.6H9.1zm4.1 0h2.2v14.6h-2.2zm4.1 0H19.5v14.6h-2.2z" />
+    </svg>
+  );
+}

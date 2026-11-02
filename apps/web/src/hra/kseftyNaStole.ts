@@ -50,8 +50,10 @@ export interface KseftNaStole {
   readonly uid: number;
   readonly druh: "karta" | "lokalita" | "vazen";
   readonly defId: string;
+  /** Meno karty, ktorá Kšeft ponúka — nadpis nápovedy. */
+  readonly nazov: string;
   readonly cena: CenaKseftu;
-  /** Čo hráč dostane — krátko na tlačidle. */
+  /** Čo hráč dostane — krátko, v nápovede a v ponuke (na tlačidle je len cena). */
   readonly zisk: string;
   /** Celé znenie do nápovedy. */
   readonly tip: string;
@@ -118,6 +120,7 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
       uid,
       druh: "karta",
       defId: pl.card.defId,
+      nazov: meno(pl.card.defId),
       cena: { cigarety: k.cena },
       zisk: k.zisk,
       tip: k.tip,
@@ -143,6 +146,7 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
       uid,
       druh: "lokalita",
       defId: lok.defId,
+      nazov: meno(lok.defId),
       cena: { cigarety: cena },
       zisk,
       tip,
@@ -223,6 +227,7 @@ export function kseftyNaStole(data: GameData, view: ClientState): KseftNaStole[]
       uid,
       druh: "vazen",
       defId,
+      nazov: meno(defId),
       cena: { poldeci: 1 },
       zisk: defId === "veterinar" && sKartou.length > 0 ? "Cirhóza preč" : (ZISK_VAZNA[defId] ?? "Kšeft"),
       tip: `Kšeft väzňa — za vypitý plný poldeci (nerest, pečeň +1, v ďalšom Zhromaždení limit −1): ${(data.cards.get(defId)?.effectText ?? "").replace(/^Väzeň — Kšeft:\s*/, "")}`,
