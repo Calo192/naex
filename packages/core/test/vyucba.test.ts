@@ -402,7 +402,8 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     // v10 (2026-11-01): texty a kroky podľa Hádky (docs/napady/vyucba-hadka.html, schválil Michal).
     // v10.4 (2026-11-02): varianty sady B+ (docs/napady/vyucba-sada-bplus.html, texty na schválenie Michalovi).
     // v11 (2026-11-02): Strach a reči (docs/napady/vyucba-strach-reci.html, texty na schválenie Michalovi).
-    expect(scenar.verzia).toBe("v11-strach-reci-2026-11-02");
+    // v11.2 (2026-11-03): vypálenie — sada Zrejúcej (docs/napady/vyucba-vypalenie-v11-2.html).
+    expect(scenar.verzia).toBe("v11-2-vypalenie-2026-11-03");
     // v7: úroveň lokality = počet akcií na hrane; prvé kolo sa bije o lokalitu úrovne 1.
     expect(lokalityNaVyber(data, pri("k-ciel")).map((k) => k.defId)).toEqual(["lesna_cesta", "jednota", "cintorin"]);
     for (const k of lokalityNaVyber(data, pri("k-ciel"))) expect(urovenLokality(data, k.defId), k.defId).toBe(1);
@@ -444,7 +445,7 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(radaVyucby(s, scenar.kroky[i("k-pijan")]?.volba as VolbaKroku, zly).text).toMatch(/Poldeci/);
   });
 
-  it("čísla v hláškach sedia s jadrom: odhad bitky 0 : 2 → 3 : 2 → 3 : 3 → 7 : 3 → 7 : 4, Pitky 1 → 2, bitka 8 : 5", () => {
+  it("čísla v hláškach sedia s jadrom: odhad bitky 0 : 2 → 3 : 2 → 3 : 3 → 7 : 3 → 7 : 4, Pitky 1 → 2, bitka 7 : 4", () => {
     expect(odhad(po("k-zh-bot1"))).toEqual([0, 2]);
     expect(pocetPitiek(data, pri("k-pijan"))).toBe(1);
     expect(odhad(po("k-pijan"))).toEqual([3, 2]);
@@ -454,8 +455,10 @@ describe("výučba Prvá hra — 1. časť (návrh vyucba-cast1, Michal 2026-10-
     expect(odhad(po("k-zh-bot3"))).toEqual([7, 4]);
     // Štamgastova Povera z hrany Lesnej cesty — tuhé nerobí, v bitke ohovára staršieho (i-pecka-povera).
     expect(evaluateLine(data, lineState(po("k-zh-bot1"))).sums[1]).toMatchObject({ Pecka: 1, Povera: 1 });
-    // Povera Milujúcej manželky, zdvojená Hasičovým Posilnením (k-dievcina; nová Dievčina na vydaj sa s Posilnením nespojí).
+    // Povera Veštice, zdvojená Hasičovým Posilnením (k-dievcina; v sade v11.2 má Milujúca manželka Pecku namiesto Povery).
     expect(evaluateLine(data, lineState(po("k-dievcina"))).sums[0]).toMatchObject({ Povera: 2 });
+    // Zámočník (v11.2) má Posilnenie: Štamgastovi zdvojí Poldeci Pijana, Rana ostane 1 a pečeň pod prahom Cirhózy.
+    expect(evaluateLine(data, lineState(po("k-zh-bot2"))).sums[1]).toMatchObject({ Rana: 1, Cigareta: 1, Poldeci: 2 });
     // Bitka (v11): hádka — Povery hráča 2, Štamgasta 1 (mäkké 2 : 1), hráč ju vyhral o 1 a priazne nemení;
     // tuhé 7 : 4 — bitka čaká na hráčovu Nakladačku 3 (rozdiel tuhého), hádka 1 ostáva na reči.
     expect(pri("i-bitka").bitkaStav).toMatchObject({
@@ -692,10 +695,11 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     const koniec = prehrajVyucbu(data, cela, cela.kroky.length);
     expect(koniec.koniec?.vitaz).toBe(0);
     // v11: finále vyhrá hráč 15 : 9 a Farár je jeho väzeň (krádež 1 za Štamgastove reči, väzni po finále
-    // špaky nedávajú). Hráč aj Štamgast majú po dve nepriznané Cirhózy (−6): 48 + vykúpenie 2 − 6 = 44,
-    // Štamgast 3 + 4 − 6 = 1. Výhra strachom ani väzňami (2 v krátkej hre) nenastala.
-    expect(koniec.koniec?.body).toEqual([44, 1]);
-    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("44 : 1");
+    // špaky nedávajú). Hráč aj Štamgast majú po dve nepriznané Cirhózy (−6): 48 + vykúpenie 3 − 6 = 45
+    // (v11.2: Pakt Policajtky skopíruje Cigaretu Miňištranta, 11 cigariet), Štamgast 3 + 4 − 6 = 1.
+    // Výhra strachom ani väzňami (2 v krátkej hre) nenastala.
+    expect(koniec.koniec?.body).toEqual([45, 1]);
+    expect(cela.kroky[i("i-koniec")]?.melichar).toContain("45 : 1");
     expect(koniec.vazni.map((v) => [v.elderId, v.hrac])).toEqual([["farar", 0]]);
     // Nepriznané Cirhózy: hráčova z 2. kola a z finále (i-koniec, q-koniec), Štamgastove dve z Dvojčiat.
     expect(koniec.koniec?.cirhozy).toEqual([2, 2]);
@@ -727,17 +731,20 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(odhad(po("k-vypit"))).toEqual([5, 2]);
     expect(po("k-vypit").pitkyCelkom).toBe(2);
     expect(odhad(po("k-zh2-bot2"))).toEqual([3, 2]);
-    // Silná žena má Pohoršenie na kraji hrany (variant 5/0), Rana Dvojčiat ostane bez páru: 0 : 7.
+    // v11.2: Záverečná je Liberál (Silná žena už Pohoršenie nemá); prevaha na trávniku je Štamgastova: 0 : 7.
     expect(odhad(po("k-hotovo3-bot"))).toEqual([0, 7]);
+    expect(po("k-hotovo3-bot").strany[0].some((pl) => pl.card.defId === "liberal" && pl.playedBy === 1)).toBe(true);
     // Hazard Dvojčiat spojí Miňištrantovu pečeň: vypitý poldeci 1 + 4 z kariet — Cirhóza (i-cirhoza2).
     expect(po("k-hotovo3-bot").hraci[0].odhadzovaci.filter((k) => k.defId === "cirhoza")).toHaveLength(1);
-    expect(odhad(po("k-prevaha"))).toEqual([3, 2]);
-    expect(odhad(po("k-prevaha2"))).toEqual([5, 3]);
+    // Milujúca manželka (v11.2) má Pecku: hráčova pri Liberálovi, Štamgastova pri jeho Pijanovi.
+    expect(odhad(po("k-prevaha"))).toEqual([5, 4]);
+    // Priznaná Cirhóza: Štamgast o 1 tuhé viac (i-nastup 7 : 3, nie 7 : 2).
+    expect(odhad(po("k-prevaha2"))).toEqual([7, 3]);
     // Exekútor až po poškodení (master 3ab061b): pred bitkou sa špaky nemenia.
     expect(body(po("k-odpoved-bot"))).toEqual([5, -1]);
-    // Nová Dievčina (2026-11-02): Štamgast dal NA EX na Silnú ženu — zdvojené Pohoršenie. Viera jeho Miňištranta zrušila
-    // hráčovi jednu Poveru, hráčova Viera jeho dve: mäkké 1 : 4, hádku vyhral Štamgast o 3 — priazne nemení, tuhé 4 : 4.
-    // Remízu rozhodnú Dlhy (hráč 1, Štamgast 3) — bitka je hráčova; Nakladačka 0.
+    // v11.2: Štamgast dal NA EX na Liberála — zdvojené Pohoršenie (4 mäkké); hráč má Poveru Miňištranta, Viera mu ostala
+    // len u manželky (NA EX zrušilo spojenú Vieru Alkoholika) a uberie Štamgastovi 1 tuhé. Mäkké 1 : 4, hádku vyhral
+    // Štamgast o 3 — priazne nemení, tuhé 6 : 6. Remízu rozhodnú Dlhy (hráč 1, Štamgast 2) — bitka je hráčova; Nakladačka 0.
     const bitka = pri("k-povera3");
     expect(bitka.bitkaStav).toMatchObject({ krok: "reci", caka: 1, vitaz: 0, prebytokZostava: 0, hadka: { makke: [1, 4], vitaz: 1, velkost: 3, zostava: 3 } });
     expect(bitka.nastenka.at(-1)).toMatchObject({ kolo: 2, vitaz: 0, rozhodlo: "dlhy", exekutor: [1, 0] });
@@ -751,7 +758,7 @@ describe("výučba Prvá hra — 2. a 3. časť (pravidlá v8, exekúcia po poš
     expect(kolo3).toMatchObject({ kolo: 3, faza: "volbaCiela" });
     expect(kolo3.starsi.find((e) => e.elderId === "farar")).toMatchObject({ strach: [2, 0], reci: [0, 2] });
     expect(kolo3.starsi.find((e) => e.elderId === "hrobar")).toMatchObject({ strach: [0, 0], reci: [0, 0] });
-    // 10 za karty v línii, starší 4, exekútor 1 : 0 (Štamgastovi dva Dlhy, Advokát 2) — 18 : −1 (i-spaky2).
+    // 10 za karty v línii, starší 4, exekútor 1 : 0 (Štamgastovi Dlh, Advokát 2) — 18 : −1 (i-spaky2).
     expect(body(kolo3)).toEqual([18, -1]);
     expect(cela.kroky[i("i-spaky2")]?.melichar).toContain("18 : −1");
     // Hráč bez Hrobára: poldeci z NA EX sa vypil, Poldeci Pijana a doliatie kola ho vrátili — 2 plné ako v9
@@ -893,7 +900,7 @@ describe("výučba v troch častiach — hranice, hlášky pri chybe, lokalita k
     // nová verzia zabráni, aby starý index bez id ukázal na iný krok.
     expect(celyScenar.kroky.slice(0, 4).map((k) => k.id)).toEqual(["i-vitaj", "i-lokalita", "i-lokality", "k-ciel"]);
     expect(koniecPrvej).toBe(52);
-    expect(celyScenar.verzia).toBe("v11-strach-reci-2026-11-02");
+    expect(celyScenar.verzia).toBe("v11-2-vypalenie-2026-11-03");
   });
 
   it("overScenar stráži hranice častí: medzera, chýbajúci koniec, zlé číslo", () => {
@@ -1002,11 +1009,12 @@ describe("výučba — pravidlá v9.2 (šenok začína obranca, odpovede na NA E
     expect(i("k-odpoved-bot")).toBeLessThan(i("k-bez-odpovede"));
     expect(i("i-odpovede")).toBe(i("k-bez-odpovede") + 1);
     const s = prehrajVyucbu(data, celyScenar, i("k-bez-odpovede"));
-    const skryta = s.strany[0].find((pl) => pl.card.defId === "milujuca_manzelka" && pl.odpoved === true);
+    // v11.2: Štamgast odpovedá Pijanom — spojí osamotenú Robotu Alkoholika (i-odpovede).
+    const skryta = s.strany[0].find((pl) => pl.card.defId === "pijan" && pl.odpoved === true);
     expect(skryta?.zaverecna).toBe(true);
     // Hráč vidí len rub — karta Štamgasta lícom dole sa mu neposiela.
-    const manzelky = (strana: readonly { readonly card: { readonly defId: string } }[]): number => strana.filter((pl) => pl.card.defId === "milujuca_manzelka").length;
-    expect(manzelky(viewFor(data, s, 0).strany[0])).toBe(manzelky(s.strany[0]) - 1);
+    const pijani = (strana: readonly { readonly card: { readonly defId: string } }[]): number => strana.filter((pl) => pl.card.defId === "pijan").length;
+    expect(pijani(viewFor(data, s, 0).strany[0])).toBe(pijani(s.strany[0]) - 1);
     const po = prehrajVyucbu(data, celyScenar, i("k-bez-odpovede") + 1);
     expect(po.strany[0].some((pl) => pl.odpoved === true && pl.zaverecna === true)).toBe(false);
   });

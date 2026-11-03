@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Výučba Prvá hra pri vypálení v11.2 — zmenené texty</title>
+<style>
+:root{--bg:#f6f1e7;--karta:#fffdf8;--ink:#2b2118;--muted:#7a6a58;--pred:#fbe9e7;--po:#e8f5e9;--akc:#8a3b12}
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:.2em 0}h2{font-size:1.12rem;margin:1.5em 0 .5em;color:var(--akc)}h3{font-size:1rem;margin:0 0 .4em}
+.lead{color:var(--muted)}
+.krok{background:var(--karta);border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:0 1px 3px #0002}
+.cast{display:inline-block;font-size:.75rem;background:#efe3cf;border-radius:6px;padding:0 6px;margin-right:4px;color:var(--muted)}
+.pred,.po{padding:8px 10px;border-radius:8px;margin:4px 0}
+.pred{background:var(--pred)}.po{background:var(--po)}
+.pred::before{content:"pôvodný ";font-weight:600;color:#c62828}
+.po::before{content:"nový ";font-weight:600;color:#2e7d32}
+.preco{font-size:.9rem;color:#4a3d30;margin:.4em 0 0}
+table{border-collapse:collapse;width:100%;background:var(--karta);border-radius:10px;overflow:hidden;font-size:.9rem}
+th,td{padding:6px 8px;border-bottom:1px solid #eadfcd;text-align:left;vertical-align:top}th{background:#efe3cf}
+ol li,ul li{margin:.35em 0}
+@media(max-width:560px){table,thead,tbody,tr,th,td{display:block}thead{display:none}td{border:0;padding:2px 8px}tr{border-bottom:1px solid #eadfcd;padding:6px 0}}
+</style></head><body><main>
+<h1>Výučba „Prvá hra“ pri vypálení v11.2</h1>
+<p class="lead">Vymyselník, 2026-11-03 · vetva <code>vyucba/vypalenie-v11-2</code> · pravidlá v11.2, sada <code>cards.json</code> z master (Zrejúca). Výučbu robí Leader z Michalovho poverenia, Michal si ju prejde dodatočne. Čísla sú z jadra: <code>tools/vyucba/prehraj.ts</code> hlási „Scenár sedí“, testy výučby (jadro, server, web) sú zelené.</p>
+
+<h2>V skratke</h2>
+<ul>
+<li><b>Prečo:</b> v sade Zrejúcej majú nové rozloženia Zámočník (Posilnenie), Milujúca manželka (Pecka miesto Povery), Silná žena (Pakt, bez Pohoršenia), Anonymný alkoholik (Posilnenie) a Dievčina na vydaj (Vízia miesto Povery). Scenár padal v 1. bitke a 2. kolo by učilo nezmysly (Vzbura z Odporu proti Odporu, Vízia, ktorú výučba nevysvetľuje).</li>
+<li><b>1. časť:</b> čísla ostali (0 : 2 → 3 : 2 → 3 : 3 → 7 : 3 → 7 : 4, Nakladačka 3, hádka 1, 5 : −1). Hráč má v ruke <b>Vešticu</b> miesto druhej Milujúcej manželky, Štamgast <b>Psa</b> miesto druhého Pijana.</li>
+<li><b>2. časť:</b> Záverečná je <b>Liberál</b> miesto Silnej ženy (jeho osamotené Pohoršenie zdvojí Štamgastovo NA EX), Štamgast hrá Milujúcu manželku a odpovedá <b>Pijanom</b>, ktorý spojí Robotu Alkoholika. Remíza je 6 : 6 (predtým 4 : 4), Dlhy 2 : 1, hádka 4 : 1 ostala, 18 : −1 ostalo.</li>
+<li><b>3. časť:</b> bez zmeny okrem čísiel v cieli – Pakt Policajtky skopíruje Cigaretu Miňištranta, hráč má na konci o 2 cigarety viac: <b>45 : 1</b> (predtým 44 : 1). Pribudla veta o schopnosti väzňa (v11.2). Kšeft väzňa výučba nespomínala.</li>
+<li>Verzia scenára <code>v11-2-vypalenie-2026-11-03</code>; postup hráčov sa hľadá podľa id kroku, žiadny krok nepribudol ani nezanikol.</li>
+</ul>
+
+<h2>Otázky pre Michala</h2>
+<ol>
+<li>Liberál má Furt „rovnako žien a chlapov → posilnené“. Medzi odkrytím NA EX a Štamgastovou odpoveďou to na chvíľu platí (počítadlo ukáže 4 Pohoršenia, po odpovedi Pijanom 2). Nechať, alebo hľadať inú Záverečnú s Pohoršením?</li>
+<li>Veštica v hráčovej a Pes v Štamgastovej štartovej ruke nie sú bežné štartovky. Prijateľné vo výučbe?</li>
+<li>Zámočníkovo Posilnenie v 1. kole Štamgastovi potichu zdvojí Poldeci (pečeň 2, bez Cirhózy). Melichar to nekomentuje – stačí?</li>
+</ol>
+
+<h2>Zmeny rozdania (bez textu)</h2>
+<table><thead><tr><th>Čo</th><th>Predtým</th><th>Teraz</th></tr></thead><tbody>
+<tr><td>Ruka hráča</td><td>2× Milujúca manželka 1/0</td><td>Milujúca manželka 0/0 a Veštica 0/0</td></tr>
+<tr><td>Ruka Štamgasta</td><td>Pijan 0/0, Pijan 0/1, Miňištrant 0/1, Milujúca 0/0</td><td>Pijan 0/1, Pes 0/0, Pijan 0/3, Milujúca 1/0</td></tr>
+<tr><td>Občania (2. kolo, Štamgast)</td><td>Silná nezávislá žena</td><td>Liberál 1/0</td></tr>
+<tr><td>Ťahy Štamgasta 2. kola</td><td>Miňištrant, Dievčina; odpoveď manželkou; NA EX na Silnú ženu</td><td>Milujúca, Dievčina; odpoveď Pijanom; NA EX na Liberála</td></tr>
+</tbody></table>
+
+<h2>Zmenené texty Melichara</h2>
+
+<section class="krok"><h3><span class="cast">1. časť</span> k-zh-bot3</h3>
+<div class="pred">Štamgast pridal druhého Pijana: [Rana] Rana sa spojila s [Dlh] Hazardom a [PoškodeniePečene] pečeň s pečeňou, 7 : 4. Tri karty a viac nesmie, má dva plné poldeci.</div>
+<div class="po">Štamgast pridal Psa: jeho [Rana] Rana sa spojila s [Dlh] Hazardom Pijana, 7 : 4. Tri karty a viac nesmie, má dva plné poldeci.</div>
+<p class="preco">Druhý Pijan by pri novom Zámočníkovi dal Štamgastovi Cirhózu (pečeň 4). Pes spojí len Ranu s Hazardom.</p></section>
+
+<section class="krok"><h3><span class="cast">1. časť</span> k-dievcina</h3>
+<div class="pred">Teraz polož Milujúcu manželku za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí akciu, s ktorou sa spojí – jej [Povera] Poveru. …</div>
+<div class="po">Teraz polož Vešticu za Hasiča a potvrď. Hasičovo [Posilnenie] Posilnenie zdvojí akciu, s ktorou sa spojí – jej [Povera] Poveru. …</div>
+<p class="preco">Milujúca manželka už Poveru nemá. Veštica má Poveru presne oproti Hasičovmu Posilneniu.</p></section>
+
+<section class="krok"><h3><span class="cast">1. časť</span> q-dlh-karta (zlá odpoveď)</h3>
+<div class="pred">Lebo na stole leží manželka. – Manželka sa spojila len s Posilnením. …</div>
+<div class="po">Lebo na stole leží Veštica. – Veštica sa spojila len s Posilnením. …</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-kupa2-bot</h3>
+<div class="pred">Štamgast kúpil Silnú nezávislú ženu a Dvojčatá naraz, za tri [Cigareta] cigarety. …</div>
+<div class="po">Štamgast kúpil Liberála a Dvojčatá naraz, za tri [Cigareta] cigarety. …</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-hotovo3-bot</h3>
+<div class="pred">Záverečná sa otočila: Silná nezávislá žena, Občan. Na trávniku má Štamgast troch proti tvojim dvom, prevaha je jeho – akcie tvojej hrany aj 2 tuhé. A Silná žena zdvojuje akcie jeho kariet vedľa seba: 0 : 7. Hovoril som ti, že nevieš, čo to je.</div>
+<div class="po">Záverečná sa otočila: Liberál, Občan. Na trávniku má Štamgast troch proti tvojim dvom, prevaha je jeho – akcie tvojej hrany aj 2 tuhé: 0 : 7. Hovoril som ti, že nevieš, čo to je.</div>
+<p class="preco">Nová Silná žena nemá Pohoršenie, na ktorom stála lekcia o Štamgastovom NA EX a hádke. Liberál ho má na vonkajšej hrane, osamotené.</p></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-zh2-bot3</h3>
+<div class="pred">Druhé Zhromaždenie, Štamgast začína: Miňištrant k jeho Pijanovi.</div>
+<div class="po">Druhé Zhromaždenie, Štamgast začína: Milujúca manželka k jeho Pijanovi.</div>
+<p class="preco">Za Miňištrantom by Dievčina spojila Víziu, ktorú výučba nevysvetľuje (rozhodovanie o karte na konci Pitky).</p></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-prevaha</h3>
+<div class="pred">… polož Milujúcu manželku na koniec svojej strany, za Silnú ženu, a potvrď. …</div>
+<div class="po">… polož Milujúcu manželku na koniec svojej strany, za Liberála, a potvrď. …</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-zh2-bot4</h3>
+<div class="pred">Štamgast pridal za Miňištranta Dievčinu na vydaj.</div>
+<div class="po">Štamgast pridal za manželku Dievčinu na vydaj.</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> i-nastup</h3>
+<div class="pred">… zato Štamgast za ňu bije v každej bitke o 1 tuhé viac: 5 : 3, nie 5 : 2.</div>
+<div class="po">… zato Štamgast za ňu bije v každej bitke o 1 tuhé viac: 7 : 3, nie 7 : 2.</div>
+<p class="preco">Milujúca manželka má teraz Pecku – hráč aj Štamgast majú o 2 tuhé viac.</p></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-naex1</h3>
+<div class="pred">… Zruší jeho spojený [Dlh] Hazard a zdvojí osamotenú [Viera] Vieru aj [Robota] Robotu. Viera ruší súperove Povery a uberá mu tuhé, Robota ti v bitke spáli Dlh.</div>
+<div class="po">… Zruší jeho spojený [Dlh] Hazard aj [Viera] Vieru a zdvojí osamotenú [Robota] Robotu – tá ti v bitke spáli Dlh. Vieru máš ešte u manželky: ruší súperove Povery a uberá mu tuhé.</div>
+<p class="preco">Hráčova manželka je teraz variant 0/0: jej Viera sa spojí s Vierou Alkoholika. Hráč tak má v bitke Vieru 1, nie 2 – inak by remíza 6 : 6 nevyšla.</p></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-naex1 (rada pri zlom ťahu na Dvojčatá)</h3>
+<div class="pred">Na Dvojčatách by NA EX Štamgastovi zrušilo spojenú [Rana] Ranu, ale zdvojilo osamotené [Rana] Rany. …</div>
+<div class="po">Na Dvojčatách by NA EX Štamgastovi zrušilo spojený [Dlh] Hazard, ale zdvojilo tri osamotené [Rana] Rany. …</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-hotovo4-bot</h3>
+<div class="pred">… Štamgast dal svoje na vlastnú Silnú ženu: zdvojil jej osamotené [Pohoršenie] Pohoršenie.</div>
+<div class="po">… Štamgast dal svoje na vlastného Liberála: zdvojil jeho osamotené [Pohoršenie] Pohoršenie.</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> i-odpovede</h3>
+<div class="pred">Odpovede sa otočili naraz: Štamgast tam mal svoju manželku. Tá spojila dve osamotené akcie tvojho Alkoholika, aj [Robota] Robotu, a tvoje NA EX ich namiesto zdvojenia zrušilo – Robota je preč. A jeho manželka sa ráta do trávnika: zas 4 : 4. …</div>
+<div class="po">Odpovede sa otočili naraz: Štamgast tam mal Pijana. Ten spojil osamotenú [Robota] Robotu tvojho Alkoholika a tvoje NA EX ju namiesto zdvojenia zrušilo – Robota je preč. A jeho Pijan sa ráta do trávnika: zas 4 : 4. …</div>
+<p class="preco">Manželka by teraz postavila Odpor proti Odporu Alkoholika – Vzbura v11.1 by kartu obrátila a lekcia o odpovedi by neplatila. Pijan spojí Robotu bez Vzbury.</p></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> i-exekutor2</h3>
+<div class="pred">… Štamgast má Pohoršenia dve, obe zo zdvojenej Silnej ženy.</div>
+<div class="po">… Štamgast má Pohoršenia dve, obe zo zdvojeného Liberála.</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> k-povera3</h3>
+<div class="pred">Ty máš dve Povery, jednu ti zrušila Viera jeho Miňištranta: máš 1 mäkké. Jeho dve Povery zrušila tvoja [Viera] Viera. Štamgast dve Pohoršenia, to sú 4. Hádku vyhral o 3 …</div>
+<div class="po">Ty máš Poveru Miňištranta: 1 mäkké. Štamgast Povery nemá, tak mu tvoja [Viera] Viera uberie 1 tuhé. On má dve Pohoršenia, to sú 4. Hádku vyhral o 3 …</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> i-remiza2, q-remiza2</h3>
+<div class="pred">Remíza v tuhom, 4 : 4. Vtedy vyhrá, kto má menej priznaných Dlhov: Štamgast tri, ty jeden. … / Prečo je bitka pri 4 : 4 tvoja?</div>
+<div class="po">Remíza v tuhom, 6 : 6. Vtedy vyhrá, kto má menej priznaných Dlhov: Štamgast dva, ty jeden. … / Prečo je bitka pri 6 : 6 tvoja?</div></section>
+
+<section class="krok"><h3><span class="cast">2. časť</span> i-spaky2</h3>
+<div class="pred">… Exekútor: tebe Dlh aj so špakom, Štamgastovi dva Dlhy, ale ani jeden špak – Farárov Advokát. 18 : −1. …</div>
+<div class="po">… Exekútor: tebe Dlh aj so špakom, Štamgastovi Dlh, ale bez špaku – Farárov Advokát. 18 : −1. …</div></section>
+
+<section class="krok"><h3><span class="cast">3. časť</span> i-zajatie</h3>
+<div class="pred">… Vyhráš bitku a je to tvoj väzeň, prehráš a jeho strach z teba spadne na nulu. …</div>
+<div class="po">… Vyhráš bitku a je to tvoj väzeň – jeho schopnosť smieš raz za hru použiť, kedy chceš; prehráš a jeho strach z teba spadne na nulu. …</div>
+<p class="preco">Pravidlá v11.2 (§10): väzeň má schopnosť raz za hru namiesto Kšeftu väzňa.</p></section>
+
+<section class="krok"><h3><span class="cast">3. časť</span> k-finale-p2-bot</h3>
+<div class="pred">… Druhý Hazard vily ti dal zadĺženie, Štamgastovi tiež. …</div>
+<div class="po">… Druhý Hazard vily ti dal zadĺženie a Štamgastovi Dlh. …</div>
+<p class="preco">Štamgastovi ostalo zadĺženie z 2. kola, druhý Hazard vily ho dorovnal na Dlh.</p></section>
+
+<section class="krok"><h3><span class="cast">3. časť</span> i-koniec</h3>
+<div class="pred">… tebe to dalo 2, Štamgastovi 4. … 44 : 1.</div>
+<div class="po">… tebe to dalo 3, Štamgastovi 4. … 45 : 1.</div>
+<p class="preco">Policajtka má Pakt miesto Obmedzenia: skopíruje Cigaretu Miňištranta, hráč skončí s 11 cigaretami.</p></section>
+
+</main></body></html>
