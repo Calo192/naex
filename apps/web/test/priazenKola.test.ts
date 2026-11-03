@@ -63,7 +63,7 @@ describe("nápoveda nad staršom", () => {
   it("riziko zajatia s krádežou: vrch súperovho teplomera", () => {
     const o = obsahNapovedy({ data, elder: s([3, 1], [0, 3]), meno: "Farár", ja: 1, mena: ["Jano", FERO] });
     expect(o.zajatie).toEqual([{ hrac: 0, komu: "su", kto: "Jano", obet: "Fero", kradez: 5 }]);
-    expect(vetaZajatia(o.zajatie[0]!, "m")).toBe("Jano ho môže pred stavbou šenku skúsiť zajať za 1 cigaretu (strach vydesený). Keď vyhrá bitku, Fero mu odovzdá 5 špakov za vrch svojho teplomera.");
+    expect(vetaZajatia(o.zajatie[0]!, "m")).toBe("Jano ho môže po vyhratej bitke zajať za 5 z Nakladačky (strach vydesený). Fero mu vtedy odovzdá 5 špakov za vrch svojho teplomera (dnes).");
   });
 
   it("väzeň: v pivnici u koho, krádež z nástenky a schopnosť väzňa doslova (v11.2)", () => {

@@ -221,8 +221,7 @@ export const cakaNaDalej = (krok: KrokVyucby): boolean => (krok.kto === "bot" ||
 export const ktoVykona = (krok: KrokVyucby): PlayerId => (krok.kto === "bot" ? VYUCBA_BOT : VYUCBA_HRAC);
 
 /** Pole príkazu, ktoré nesie uid karty (alebo zoznam uid). */
-// `nechaj` = karta zadarmo pri stavbe šenku (v10.1, súper skúša zajatie).
-const UID_POLIA = ["uid", "rukaUid", "senokUid", "cirhozaUid", "kartaUid", "nechaj"] as const;
+const UID_POLIA = ["uid", "rukaUid", "senokUid", "cirhozaUid", "kartaUid"] as const;
 const UID_ZOZNAMY = ["uids", "doSenku", "odhod"] as const;
 
 function zona(state: GameState, kto: PlayerId, nazov: string): readonly CardInstance[] {
@@ -571,13 +570,9 @@ export function popisKroku(data: GameData, state: GameState, c: Command): PopisK
       case "chooseLocation":
         return `vyber ${nazov}`;
       case "prebytok":
-        return `rozdeľ Nakladačku na strach: ${c.zdvihy.map((z) => `„${menoStarsieho(data, state, z.elderId)}“`).join(", ")}`;
+        return `rozdeľ Nakladačku na strach: ${c.zdvihy.map((z) => `„${menoStarsieho(data, state, z.elderId)}“`).join(", ")}${(c.zajatia ?? []).map((id) => `, zajmi „${menoStarsieho(data, state, id)}“`).join("")}`;
       case "reci":
-        return `rozdeľ hádku na reči: ${c.zdvihy.map((z) => `„${menoStarsieho(data, state, z.elderId)}“`).join(", ")}`;
-      case "pokus":
-        return `skús zajať staršieho „${menoStarsieho(data, state, c.elderId)}“`;
-      case "bezPokusu":
-        return "pokus o zajatie vynechaj";
+        return `rozdeľ hádku na reči: ${c.zdvihy.map((z) => `„${menoStarsieho(data, state, z.elderId)}“`).join(", ")}${(c.presvedcenia ?? []).map((id) => `, presvedč „${menoStarsieho(data, state, id)}“`).join("")}`;
       case "schopnostVazna":
         return `použi schopnosť väzňa „${menoStarsieho(data, state, c.elderId)}“`;
       default:

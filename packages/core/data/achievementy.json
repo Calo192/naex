@@ -688,7 +688,7 @@
       "id": "patron",
       "nazov": "Patrón",
       "kategoria": "starsi",
-      "popis": "Skús zajať staršieho (pokus o zajatie) — spolu {prah}×.",
+      "popis": "Presvedč staršieho (za hádku) — spolu {prah}×.",
       "metrika": "stat.bitkyOStarsich",
       "rozsah": "kariera",
       "prahy": [
@@ -705,13 +705,13 @@
         "nezvycajne",
         "vzacne"
       ],
-      "zdroj": "príkaz pokus (v9; do v9 patronát)"
+      "zdroj": "presvedčenie pri rozdelení hádky (v11.4); v9–v11.3 pokus o zajatie, do v9 patronát"
     },
     {
       "id": "vazen-v-pivnici",
       "nazov": "Väzeň v pivnici",
       "kategoria": "starsi",
-      "popis": "Zajmi staršieho (vyhraj bitku pri pokuse o zajatie) — spolu {prah}×.",
+      "popis": "Zajmi staršieho (za Nakladačku) — spolu {prah}×.",
       "metrika": "stat.starsiZiskani",
       "rozsah": "kariera",
       "prahy": [
@@ -780,7 +780,7 @@
       "id": "zachranene",
       "nazov": "Zachránené",
       "kategoria": "starsi",
-      "popis": "Vyhraj bitku, v ktorej sa ťa súper pokúša zajať staršieho — spolu {prah}×.",
+      "popis": "Vyhraj bitku, keď sa súpera niektorý starší bojí na červenej (výhrou by ho mohol zajať) — spolu {prah}×.",
       "metrika": "zmarenyPokus",
       "rozsah": "kariera",
       "prahy": [
@@ -797,7 +797,7 @@
         "legendarne",
         "legendarne"
       ],
-      "zdroj": "pokus o zajatie súpera zlyhal tvojou výhrou (v9); do v9 zmarené ohlásené vydesenie — kto ho má, ponechá si ho"
+      "zdroj": "vyhratá bitka proti súperovi s červeným strachom pri staršom (v11.4); v9–v11.3 zmarený pokus o zajatie, do v9 zmarené ohlásené vydesenie — kto ho má, ponechá si ho"
     },
     {
       "id": "hroza-a-des",
@@ -1584,7 +1584,7 @@
     {
       "id": "zmarenyPokus",
       "typ": "počítadlo",
-      "popis": "súperov pokus o zajatie zlyhal, lebo si vyhral bitku (v9)"
+      "popis": "vyhratá bitka, v ktorej sa súpera niektorý starší bál na červenej (v11.4; v9–v11.3 zmarený pokus o zajatie)"
     },
     {
       "id": "vyhraVydesenim",

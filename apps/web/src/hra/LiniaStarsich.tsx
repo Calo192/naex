@@ -1,6 +1,6 @@
 // Línia starších (Michal 2026-10-23, roadmapa #68 + #69 variant A; v11 Strach a reči 2026-11-02):
 // osem starších v rade na mieste línie kariet. Ukáže sa po kliku na dlaždicu Starší, sama pri
-// krokoch na staršom (Nakladačka, hádka, pokus o zajatie) a v súhrne po bitke.
+// krokoch na staršom (Nakladačka so zajatím, hádka s presvedčením) a v súhrne po bitke.
 //
 // Dve rozloženia s prepínačom v hlavičke:
 //  - Teplomery R3 „Okraje s hladinami“ (Michal 2026-11-02, docs/napady/starsi-ram-mocky.html):
@@ -30,7 +30,7 @@ import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { KruzokPriazne, SlovoStupna, Stvorcek, spojUdalosti, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
-import { kradezPokusu, kradezPriZajati, kratkeMeno, ktoPriazen, obsahNapovedy, obsahNapovedyVazna, priazenKola } from "./priazenKola.ts";
+import { kradezPriZajati, kratkeMeno, ktoPriazen, obsahNapovedy, obsahNapovedyVazna, priazenKola } from "./priazenKola.ts";
 import { NAZOV_ZDROJA, PRAVIDLO_STRACHU, rodStarsieho, slovoStupna, vrcholTeplomera, type Rod } from "./textyStarsich.ts";
 import type { StupenRozdelenia } from "./teplomery.ts";
 import { NAZOV_KROKU, dotknuty, fazaKroku, opisKroku, riadkyKroku, stitkyKroku, type KontextSuhrnu, type KrokSuhrnu, type Markery, type StitokSuhrnu, type SuhrnBitky } from "./krokySuhrnu.ts";
@@ -56,13 +56,13 @@ export interface StarsiVLinii {
   readonly meno: string;
   /** Ilustrácia karty staršieho (portrét). */
   readonly obrazok: string | null;
-  /** Klik v kroku (pokus o zajatie, Kapybara) a čo urobí — rozdeľovanie nesie `rozdelenie`. */
+  /** Klik v kroku (Kapybara) a čo urobí — rozdeľovanie nesie `rozdelenie`. */
   readonly klik?: { readonly akcia: string; readonly klik: () => void } | undefined;
   /** Prečo sa v kroku nedá kliknúť (zamknutý starší). */
   readonly dovod?: string | undefined;
-  /** Pokus o zajatie (v10.1): kto skúša staršieho zajať — starší je v ohrození. */
-  readonly patron: { readonly kto: PlayerId } | null;
-  /** Vybraný pri pokuse o zajatie (čaká sa na potvrdenie). */
+  /** Kto staršieho presvedčil (v11.4) — značka pri ňom; jeho karta patrí tomu hráčovi. */
+  readonly presvedcil: { readonly kto: PlayerId } | null;
+  /** Zvolený na zajatie či presvedčenie v nepotvrdenom rozdelení (v11.4). */
   readonly vybrany?: boolean;
   /** Zmeny strachu a rečí od poslednej bitky (štítok na portréte). */
   readonly zmeny?: readonly ZmenaMarkera[];
@@ -105,7 +105,7 @@ export interface LiniaStarsichProps {
   /** Čí pohľad línia ukazuje — po kliku na súperovu dlaždicu Starší súperov. */
   readonly pohlad: PlayerId;
   readonly mena: readonly [string, string];
-  /** Krok na staršom, ktorý línia práve ukazuje (Nakladačka, hádka, pokus o zajatie) — inak null. */
+  /** Krok na staršom, ktorý línia práve ukazuje (Nakladačka, hádka) — inak null. */
   readonly krok: string | null;
   /** Starší, ktorým sa práve zmenil marker (blikne po kroku). */
   readonly zmenene: ReadonlySet<string>;
@@ -187,7 +187,7 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
   /** Starší v stave kroku súhrnu (aj zajatý v tejto bitke, kým súhrn nedošiel na koniec). */
   const vStaveKroku = (s: StarsiVLinii, e: StarsiSuhrnu): StarsiVLinii => {
     const f = e.fazy[fazaKroku(krokSuhrnu ?? "koniec").stav]!;
-    return { elder: { ...s.elder, strach: f.strach, reci: f.reci }, meno: s.meno, obrazok: s.obrazok, patron: null };
+    return { elder: { ...s.elder, strach: f.strach, reci: f.reci }, meno: s.meno, obrazok: s.obrazok, presvedcil: s.presvedcil };
   };
 
   return (
@@ -222,7 +222,7 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
                   elder: { elderId: m.v.elderId, karta: { uid: -1, defId: m.v.defId, leftLayout: 0, rightLayout: 0 }, scorecard: m.v.scorecard, strach: [0, 0], reci: [0, 0], priazen: fav },
                   meno: m.v.meno,
                   obrazok: m.v.obrazok,
-                  patron: null,
+                  presvedcil: null,
                 };
                 return <TeplomerStarsieho key={m.v.elderId} s={vStaveKroku(s, x.e)} data={data} ja={ja} mena={mena} krok={null} zmeneny={false} nahlad={false} onNahlad={() => undefined} suhrn={x.karta} />;
               }
@@ -372,7 +372,7 @@ function TeplomerStarsieho({
         ja,
         mena,
         akcia: klik?.akcia ?? null,
-        dalsi: s.patron === null ? null : { nazov: "Ohrozenie", text: `zajať ho skúša ${kratke[s.patron.kto]} — v tomto kole sa nedvíha` },
+        dalsi: s.presvedcil === null ? null : { nazov: "Presvedčený", text: `presvedčil ho ${kratke[s.presvedcil.kto]} — karta staršieho je v jeho balíčku; zajať ho smú obaja` },
       }),
     { obrazok: s.obrazok, zvacsenina: () => <Zvacsenina s={s} fav={fav} pk={pk} /> },
   );
@@ -382,7 +382,7 @@ function TeplomerStarsieho({
   const klikKarty = r !== undefined ? (dalsiStupen === undefined ? undefined : () => r.klik(dalsiStupen.stupen)) : klik?.klik;
   const krokTrieda =
     r !== undefined
-      ? ` rozdel${r.zdvih !== null ? " s-posunom" : ""}${dalsiStupen === undefined && r.zdvih === null ? " mrtvy" : ""}`
+      ? ` rozdel${r.zdvih !== null ? " s-posunom" : ""}${dalsiStupen === undefined && r.zdvih === null && s.vybrany !== true ? " mrtvy" : ""}${s.vybrany === true ? " vybrany" : ""}`
       : krok === null
         ? ""
         : s.vybrany === true
@@ -459,9 +459,9 @@ function TeplomerStarsieho({
                 ))}
               </span>
             )
-          ) : s.patron !== null ? (
-            <span className={`tp-ohrozenie ${s.patron.kto === ja ? "ja" : "su"}`}>
-              ⛓ skúša {kratke[s.patron.kto]} · {s.patron.kto === ja ? `vezmeš ${spakov(kradezPokusu(elder, ja))}` : `vezme ti ${spakov(kradezPokusu(elder, su))}`}
+          ) : s.presvedcil !== null ? (
+            <span className={`tp-ohrozenie ${s.presvedcil.kto === ja ? "ja" : "su"}`} title={`Presvedčil ${kratke[s.presvedcil.kto]} — karta staršieho je jeho; zajať ho smú obaja`}>
+              ✦ presvedčil {kratke[s.presvedcil.kto]}
             </span>
           ) : zmeny.length > 0 ? (
             <span className={`ls-listok tp-zmeny${farbaZmien}`}>⇄ {stitokZmien(zmeny)}</span>
@@ -853,9 +853,9 @@ function PultLinie({
             const po = s.po ?? e;
             const b = spakyStarsieho(po);
             const r = s.rozdelenie;
-            const ohrozenie = s.patron === null ? "" : ` · ⛓ v ohrození (${s.patron.kto === ja ? "ty" : menoSu})`;
+            const ohrozenie = s.presvedcil === null ? "" : ` · ✦ presvedčil ${s.presvedcil.kto === ja ? "ty" : menoSu}`;
             return (
-              <tr key={e.elderId} className={`${s.patron !== null ? "ohrozeny" : ""}${r?.zdvih != null ? " s-posunom" : ""}`} data-vyucba={`starsi:${e.elderId}`}>
+              <tr key={e.elderId} className={`${s.presvedcil !== null ? "ohrozeny" : ""}${r?.zdvih != null ? " s-posunom" : ""}`} data-vyucba={`starsi:${e.elderId}`}>
                 <td className="vlavo">
                   <PultMeno meno={s.meno} obrazok={s.obrazok} pod={`${STAV_STARSIEHO[stupenStavu(e)]}${ohrozenie}`} />
                 </td>
@@ -908,14 +908,14 @@ function PultLinie({
 }
 
 function PultMeno({ meno, obrazok, pod }: { readonly meno: string; readonly obrazok: string | null; readonly pod: string }) {
-  // Stav a ohrozenie v titulku — riadok Pultu musí ostať nízky (8 riadkov pri 1366 × 650).
+  // Stav a presvedčenie v titulku — riadok Pultu musí ostať nízky (8 riadkov pri 1366 × 650).
   return (
     <span className="tp-pult-kto" title={`${meno} — ${pod}`}>
       {obrazok !== null ? <img src={obrazok} alt="" draggable={false} /> : <span className="tp-pult-obr" />}
       <span>
         <b>
           {meno}
-          {pod.includes("⛓") && <span className="tp-pult-ohr">⛓</span>}
+          {pod.includes("✦") && <span className="tp-pult-ohr">✦</span>}
         </b>
         <small>{pod}</small>
       </span>

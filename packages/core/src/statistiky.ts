@@ -25,7 +25,7 @@ export interface StatistikyHraca {
   readonly bitkyVyhrane: number;
   readonly bitkyAkoUtocnik: number;
   readonly bitkyAkoUtocnikVyhrane: number;
-  /** Pokusy o zajatie (v9; do v9 patronáty, kľúč ostal z bitiek o starších). */
+  /** Presvedčení starší (v11.4; v9–v11.3 pokusy o zajatie, do v9 patronáty — kľúč ostal z bitiek o starších). */
   readonly bitkyOStarsich: number;
 
   readonly tuheUdelene: number;
@@ -306,8 +306,8 @@ function zapisJedneho(
         case "prebytok":
           s.posunyPrebytkom += 1;
           break;
-        case "pokus":
-          s.bitkyOStarsich += 1;
+        case "reci":
+          s.bitkyOStarsich += c.presvedcenia?.length ?? 0;
           break;
         case "pass":
           s.pasy += 1;

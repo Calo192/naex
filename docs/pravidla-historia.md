@@ -2899,3 +2899,91 @@ Chlapa. Odtlačok hry sa zmenil zámerne. Staré znenia (v11.2):
 
 > Slovník: | Konflikt | spúšťač (v7): efekt ležiacej karty, keď k nej súper priloží svoju; vlastné
 > priloženie, Nástroj, NA EX ani zrážka ho nespúšťajú (§6, §16) |
+
+## v11.4 — zajatie pri rozdelení Nakladačky, presvedčenie (Michal 2026-11-03, Zrejúca)
+
+Michal 2026-11-03: „Zajímanie bude prebiehať pri prerozdeľovaní nakladačky/rečí z hádky … Cena zajímania
+v cigaretách zaniká.“ a nová mechanika presvedčenie (znenie v §10). Pokus o zajatie v drafte zanikol aj
+s cigaretou, kartou zadarmo, ohrozením (O7) a krokom 6d. Odtlačok hry sa zmenil zámerne. Staré znenia (v11.3):
+
+§5 Pokus o zajatie a karta zadarmo:
+
+> ### Pokus o zajatie
+>
+> Hneď po voľbe cieľa, ešte pred stavbou šenku (v10.1, Michal 2026-11-01), sa rozhodne
+> o **pokuse o zajatie** (§10): najprv útočník, potom obranca (vidí voľbu prvého). Kto
+> skúša, zaplatí 1 cigaretu a karta staršieho (boss) mu ide do ruky. Kto pokus nemá
+> (nemá pri žiadnom staršom strach 3, alebo nemá cigaretu), tomu ho hra preskočí.
+>
+> **Karta zadarmo** (v10.1, Michal 2026-11-01): keď sa o zajatie pokúša **len jeden**
+> hráč, jeho súper si zo svojich 8 kariet **tajne nechá 1 do ruky** (aj Nástroj), **4 dá do
+> šenku** (mix ako vždy) a **3 naspodok**. Pokúšajúci vie len, že si súper kartu nechal,
+> nie ktorú. Kartu dostane za pokus — aj keď pokus potom zlyhá. Keď skúšajú obaja,
+> karta zadarmo nie je nikomu. Šenok má aj tak 8 kariet.
+>
+> Kto má kartu zadarmo, z menšieho balíčka si najprv nechá 1 a zvyšok rozdelí podľa
+> tohto pravidla — do šenku polovicu nahor, naspodok polovicu nadol (výklad Leadera
+> 2026-11-01; zo 6 kariet teda 1 + 3 + 2). Bez stavby karta zadarmo nie je.
+
+§9 tabuľka krokov bitky:
+
+> | 4e | **Nakladačka** — víťaz bitky ju rozdelí na svoj strach; potom **hádka** — víťaz hádky ju rozdelí na svoje reči (voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; nie na staršieho v ohrození); vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4 |
+> | 6d | Zajatie: výsledok pokusu — úspech = väzeň a krádež špakov, neúspech = strach pokúšajúceho 0; väzni na výhru = koniec hry | §10 |
+
+§10 Strach a reči:
+
+> - **Strach** (0–3) — ako veľmi sa starší bojí teba. **Neklesá**; jediná výnimka je neúspešný
+>   pokus o zajatie (strach pokúšajúceho → 0). Dvíha ho **Nakladačka** víťaza bitky (§9.4).
+>
+> - **Starší v ohrození** (pokus o zajatie): v tom kole naň **nikto strach ani reči nedvíha**
+>   (Nakladačka, hádka, Kšeft vily). Kapybara jeho reči znížiť smie (nedvíha ich).
+
+§10 Zajatie a väzeň (v9, v11):
+
+> ### Zajatie a väzeň (v9, v11)
+>
+> Nahradilo patronát a vydesenie ako výhru (Michal 2026-10-30); v11 podmienka, krádež
+> a väzni podľa ligy (Michal 2026-11-02).
+>
+> **Podmienka.** **Tvoj strach** pri staršom je **3** (červená); súperov strach nerozhoduje.
+>
+> **Kedy.** V drafte hneď po voľbe cieľa, **pred stavbou šenku** (§5; v10.1): útočník, potom
+> obranca. Každý najviac jeden pokus za kolo, obaja smú (každý iného staršieho).
+>
+> **Cena.** **1 cigareta**, prepadne do banky bez ohľadu na výsledok. Bez cigarety pokus
+> nie je — hra ho preskočí a dôvod povie len hráčovi.
+>
+> **Priebeh kola.** Karta staršieho (boss) ide **pokúšajúcemu do ruky** (v10.1) — verejne, každý
+> vie, ktorý starší to je; zvyšok ruky ostáva skrytý. Súper si za to pri stavbe šenku **tajne
+> nechá 1 kartu zadarmo** (§5) — aj keď pokus zlyhá; keď skúšajú obaja, nikto. Starší je
+> **v ohrození**: v tomto kole naň nikto strach ani reči nedvíha (O7). Pokúšajúci smie bossa
+> v kole vyložiť ako ktorúkoľvek kartu (tag Starešina: ráta sa do prevahy, dá sa naň NA EX),
+> bez efektu — len akcie. Boss sa po bitke vracia vždy, aj keby ho efekt spálil či poslal do
+> balíčka (Krokodíl, Dievčina) — je nezničiteľný. V bodovaní (krok 4b) starší
+> v ohrození boduje ako každý.
+>
+> **Výsledok (krok 6d bitky).** Pokúšajúci **vyhral bitku** → starší ide do jeho priznaných
+> kariet ako **väzeň** (z ruky aj z línie), scorecard sa otočí, zo stupnice zmiznú **markery
+> oboch**; **krádež:** súper mu odovzdá špaky za svoj **najvyšší marker** pri tom staršom
+> **pred bodovaním** (žltá 1, oranžová 3, červená 5), **najviac toľko, koľko má**. **Prehral
+> alebo sekera** → starší späť na ukazovateľ, **strach pokúšajúceho pri ňom klesne na 0** (jeho
+> reči ostávajú, ak sú nad 0); cigareta prepadla. Keď skúšali obaja, víťazov pokus uspeje,
+> porazeného zlyhá; pri sekere zlyhajú oba.
+>
+> **Výhra väzňami.** Kto po zajatí (krok 6d) má **väzňov aspoň (lokality + finále) / 2** —
+> **Tretia liga 2, Druhá 3, Prvá 4** (`vazniNaVyhru`) —, vyhráva hneď (aj vo finále, pred
+> konečnými špakmi).
+>
+> **2 na 2.** Pokus robí kapitán; boss ide do ruky jemu, kartu zadarmo dostane súperov tím
+> (paragraf 2 na 2 doplní, ktorá ruka).
+>
+> **Výklady Developera (2026-10-30 a 2026-11-02, zadanie ich neurčilo — na potvrdenie Michalom):**
+>
+> - **Kapybara** smie znížiť súperove reči aj pri staršom v ohrození — zákaz O7 je na dvíhanie.
+>   Dohadzovačka (výmena scorecardov) staršieho v ohrození zasiahnuť smie.
+
+§17 Slovník:
+
+> | Pokus o zajatie | pred stavbou šenku za 1 cigaretu skús zajať staršieho, pri ktorom je tvoj strach 3; karta ide tebe do ruky (boss), súper si pri stavbe nechá kartu zadarmo, starší je v ohrození (§5, §10) |
+> | Karta zadarmo | pri súperovom pokuse o zajatie si zo svojej stavby šenku tajne necháš 1 kartu do ruky (4 do šenku, 3 naspodok); keď skúšate obaja, nikto (§5) |
+> | V ohrození | starší, o ktorého zajatie sa v tomto kole hrá — jeho markerom nič nehýbe; silu jeho priazne smie hádka meniť (§10) |

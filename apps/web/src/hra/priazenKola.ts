@@ -7,7 +7,7 @@
 // Bez Reactu, aby sa dalo otestovať.
 
 import type { BitkaNaNastenke, ElderState, Favour, GameData, PlayerId, StavVyhier, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
-import { NAZVY_ZON, favourStarsieho, najvyssiMarker, opponentOf, pocet, pokusMozny, priazenHraca, priazenSila, reciNizsie, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen } from "@naex/core";
+import { KONSTANTY, NAZVY_ZON, favourStarsieho, najvyssiMarker, opponentOf, pocet, priazenHraca, priazenSila, reciNizsie, spakyOdStarsieho as spakyOdStarsiehoJadra, spakyZaStupen, vydesil } from "@naex/core";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
 import { rodStarsieho, slovoStupna, type Rod } from "./textyStarsich.ts";
 
@@ -62,7 +62,7 @@ export interface RiadokHraca {
   readonly reciPotom: Stupen | null;
 }
 
-/** Pokus o zajatie, ktorý by hráč smel skúsiť (jeho strach je 3): koľko by mu súper odovzdal. */
+/** Zajatie, ktoré by hráč smel pri vyhratej bitke Nakladačkou urobiť (jeho strach je 3, v11.4): koľko by mu súper odovzdal. */
 export interface ZajatieVNapovede {
   readonly hrac: PlayerId;
   readonly komu: "ja" | "su";
@@ -181,7 +181,7 @@ export function obsahNapovedy(v: VstupNapovedy): ObsahNapovedy {
     };
   };
   const zajatie = ([v.ja, su] as const).flatMap((h): ZajatieVNapovede[] =>
-    pokusMozny(v.elder, h) ? [{ hrac: h, komu: h === v.ja ? "ja" : "su", kto: kto(h), obet: kto(opponentOf(h)), kradez: kradezPokusu(v.elder, h) }] : [],
+    vydesil(v.elder, h) ? [{ hrac: h, komu: h === v.ja ? "ja" : "su", kto: kto(h), obet: kto(opponentOf(h)), kradez: kradezPokusu(v.elder, h) }] : [],
   );
   return {
     druh: "starsi",
@@ -224,7 +224,7 @@ export function vetaPriazne(o: Pick<ObsahNapovedy, "priazen" | "hraci" | "rod">)
 
 /** Riziko zajatia s krádežou celou vetou. */
 export function vetaZajatia(z: ZajatieVNapovede, rod: Rod): string {
-  return `${z.kto} ho môže pred stavbou šenku skúsiť zajať za 1 cigaretu (strach ${slovoStupna(3, rod)}). Keď vyhrá bitku, ${z.obet} mu odovzdá ${pocet(z.kradez, "špak", "špaky", "špakov")} za vrch svojho teplomera.`;
+  return `${z.kto} ho môže po vyhratej bitke zajať za ${KONSTANTY.CENA_ZAJATIA} z Nakladačky (strach ${slovoStupna(3, rod)}). ${z.obet} mu vtedy odovzdá ${pocet(z.kradez, "špak", "špaky", "špakov")} za vrch svojho teplomera (dnes).`;
 }
 
 export interface VstupNapovedyVazna {
@@ -342,13 +342,13 @@ export function favourPodlaId(
 }
 
 /**
- * Krádež pri zajatí (§10, krok 6d) z nástenky: zajatý bol v poslednej bitke, v ktorej ešte bodoval
- * (bodovanie je pred zajatím, 4b → 6d); koľko špakov držiteľ dostal. null = záznam chýba (archív).
+ * Krádež pri zajatí (§10, krok 4e) z nástenky: zajatý bol v poslednej bitke, v ktorej ešte bodoval
+ * (bodovanie je pred zajatím, 4b → 4e); koľko špakov držiteľ dostal. null = záznam chýba (archív).
  */
 export function kradezPriZajati(nastenka: readonly Pick<BitkaNaNastenke, "kolo" | "bodovanie" | "kradez">[], elderId: string, hrac: PlayerId): { readonly kolo: number; readonly spaky: number } | null {
   const bitka = [...nastenka].reverse().find((b) => b.bodovanie?.some((x) => x.elderId === elderId) === true);
   return bitka === undefined ? null : { kolo: bitka.kolo, spaky: Math.max(0, bitka.kradez?.[hrac] ?? 0) };
 }
 
-/** Koľko špakov pokúšajúcemu odovzdá súper, keď zajatie vyjde: jeho vrch teplomera pred bodovaním. */
+/** Koľko špakov zajímajúcemu odovzdá súper: jeho vrch teplomera pri staršom (v11.4 v čase zajatia). */
 export const kradezPokusu = (elder: Pick<ElderState, "strach" | "reci">, pokusa: PlayerId): number => spakyZaStupen(najvyssiMarker(elder, opponentOf(pokusa)));

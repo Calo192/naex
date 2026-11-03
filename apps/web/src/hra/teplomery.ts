@@ -2,12 +2,12 @@
 // mock 3 Teplomery a mock 5 Pult). Bez Reactu, aby sa dalo otestovať: rad starších s väzňami
 // na ich mieste a rozdeľovanie Nakladačky (strach) a hádky (reči) klikom na stupeň.
 //
-// Rozdelenie drží klient ako zdvihy (Zdvih[]) a posiela ich jedným zámerom; či ich server
-// prijme, ráta jadro (planRozdelenia) — klik tu len navrhne nové zdvihy a nikdy nepustí
-// rozdelenie drahšie, než sú body.
+// Rozdelenie drží klient ako zdvihy (Zdvih[]) a akcie — zajatia či presvedčenia (v11.4) — a posiela
+// ich jedným zámerom; či ich server prijme, ráta jadro (planRozdelenia) — klik tu len navrhne nové
+// zdvihy a nikdy nepustí rozdelenie drahšie, než sú body.
 
 import type { ClientState, DruhMarkera, ElderState, PlayerId, StarsiVerejne, Stupen, Vazen, Zdvih } from "@naex/core";
-import { CERVENA, KONSTANTY, bodyRozdelenia, cenaDalsiehoStupna, cenaDvihnutia, krokRozdelenia, markerRozdelenia, planRozdelenia, stupenOdkial } from "@naex/core";
+import { CERVENA, KONSTANTY, bodyRozdelenia, cenaAkcieRozdelenia, cenaDalsiehoStupna, cenaDvihnutia, krokRozdelenia, markerRozdelenia, planRozdelenia, stupenOdkial } from "@naex/core";
 
 /** Miesto v rade starších: starší na stupnici, alebo väzeň na mieste svojho ukazovateľa. */
 export type MiestoVRade = { readonly typ: "starsi"; readonly elder: StarsiVerejne } | { readonly typ: "vazen"; readonly vazen: Vazen };
@@ -34,14 +34,14 @@ export const spakyStupna = (s: number): number => KONSTANTY.SPAKY_ZA_STUPEN[s] ?
 // ---------------------------------------------------------------------------
 // Rozdeľovanie klikom na stupeň
 
-type StavPreRozdelenie = Pick<ClientState, "starsi" | "pokusy" | "bitkaStav">;
+type StavPreRozdelenie = Pick<ClientState, "starsi" | "bitkaStav">;
 
 /** Stupeň pri staršom v rozdeľovaní: čo by klik urobil a za koľko. */
 export interface StupenRozdelenia {
   readonly stupen: 1 | 2 | 3;
   /**
    * pod = už ho mám (strach, pri rečiach aj strach pod nimi), vybrany = v nepotvrdenom zdvihu,
-   * dosah = zvyšok naň stačí, mimo = nestačí, zamknuty = tu sa nedvíha (v ohrození, červená).
+   * dosah = zvyšok naň stačí, mimo = nestačí, zamknuty = tu sa nedvíha (červená).
    */
   readonly stav: "pod" | "vybrany" | "dosah" | "mimo" | "zamknuty";
   /** Cena od terajšieho stupňa po tento (1 / 2 / 3 za každý stupeň). */
@@ -60,16 +60,19 @@ const cenaZdvihov = (view: StavPreRozdelenie, ja: PlayerId, marker: DruhMarkera,
     return e === undefined ? a : a + cenaDvihnutia(stupenOdkial(e, ja, marker), z.na);
   }, 0);
 
+/** Body, ktoré zaberajú akcie (zajatia / presvedčenia, v11.4) — 5 za každú. */
+const cenaAkcii = (marker: DruhMarkera, akcie: readonly string[]): number => akcie.length * cenaAkcieRozdelenia(marker);
+
 /** Stupne 1–3 pri staršom: ktoré mám, ktoré sú vo výbere a na ktoré zvyšok stačí. */
-export function stupneRozdelenia(view: StavPreRozdelenie, ja: PlayerId, zdvihy: readonly Zdvih[], elderId: string): readonly StupenRozdelenia[] {
+export function stupneRozdelenia(view: StavPreRozdelenie, ja: PlayerId, zdvihy: readonly Zdvih[], elderId: string, akcie: readonly string[] = []): readonly StupenRozdelenia[] {
   const r = rozdelenieHraca(view, ja);
   const e = view.starsi.find((x) => x.elderId === elderId);
   if (r === null || e === undefined) return [];
   const od = stupenOdkial(e, ja, r.marker);
-  const zamknuty = cenaDalsiehoStupna(e, view.pokusy, ja, r.marker) === null;
+  const zamknuty = cenaDalsiehoStupna(e, ja, r.marker) === null;
   const moj = zdvihy.find((z) => z.elderId === elderId)?.na ?? od;
-  // Zvyšok pre tohto staršieho: body mínus zdvihy ostatných.
-  const volne = r.body - cenaZdvihov(view, ja, r.marker, zdvihy.filter((z) => z.elderId !== elderId));
+  // Zvyšok pre tohto staršieho: body mínus zdvihy ostatných a akcie.
+  const volne = r.body - cenaZdvihov(view, ja, r.marker, zdvihy.filter((z) => z.elderId !== elderId)) - cenaAkcii(r.marker, akcie);
   return ([1, 2, 3] as const).map((s) => {
     const cena = s > od ? cenaDvihnutia(od, s) : 0;
     const stav: StupenRozdelenia["stav"] = s <= od ? "pod" : zamknuty ? "zamknuty" : s <= moj ? "vybrany" : cena <= volne ? "dosah" : "mimo";
@@ -82,16 +85,16 @@ export function stupneRozdelenia(view: StavPreRozdelenie, ja: PlayerId, zdvihy: 
  * vráti (pod terajší stupeň zdvih zmizne). Keď zvyšok na `s` nestačí, zdvihne tak vysoko, ako
  * stačí; keď ani o stupeň, nič sa nezmení.
  */
-export function klikNaStupen(view: StavPreRozdelenie, ja: PlayerId, zdvihy: readonly Zdvih[], elderId: string, s: number): readonly Zdvih[] {
+export function klikNaStupen(view: StavPreRozdelenie, ja: PlayerId, zdvihy: readonly Zdvih[], elderId: string, s: number, akcie: readonly string[] = []): readonly Zdvih[] {
   const r = rozdelenieHraca(view, ja);
   const e = view.starsi.find((x) => x.elderId === elderId);
-  if (r === null || e === undefined || cenaDalsiehoStupna(e, view.pokusy, ja, r.marker) === null) return zdvihy;
+  if (r === null || e === undefined || cenaDalsiehoStupna(e, ja, r.marker) === null) return zdvihy;
   const od = stupenOdkial(e, ja, r.marker);
   if (s <= od || s > CERVENA) return zdvihy;
   const ostatne = zdvihy.filter((z) => z.elderId !== elderId);
   const teraz = zdvihy.find((z) => z.elderId === elderId)?.na ?? od;
   let na = s === teraz ? s - 1 : s;
-  const volne = r.body - cenaZdvihov(view, ja, r.marker, ostatne);
+  const volne = r.body - cenaZdvihov(view, ja, r.marker, ostatne) - cenaAkcii(r.marker, akcie);
   while (na > od && cenaDvihnutia(od, na) > volne) na--;
   if (na <= od) return s === teraz ? ostatne : zdvihy;
   const novy: Zdvih = { elderId, na: na as Stupen };
@@ -115,9 +118,9 @@ export interface SuhrnRozdelenia {
   readonly chyba: string | null;
 }
 
-export function suhrnRozdelenia(view: Parameters<typeof planRozdelenia>[0], ja: PlayerId, zdvihy: readonly Zdvih[]): SuhrnRozdelenia | null {
+export function suhrnRozdelenia(view: Parameters<typeof planRozdelenia>[0], ja: PlayerId, zdvihy: readonly Zdvih[], akcie: readonly string[] = []): SuhrnRozdelenia | null {
   const krok = krokRozdelenia(view, ja);
-  const plan = planRozdelenia(view, ja, zdvihy);
+  const plan = planRozdelenia(view, ja, zdvihy, akcie);
   if (krok === null || plan === null) return null;
   return {
     krok,

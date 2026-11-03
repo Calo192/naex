@@ -163,16 +163,16 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
     popis: "zajatie prvého staršieho v partii (väzeň s poradím 1)",
     zmer: (k) => pre((p) => ak((k.pred.vazni ?? []).length === 0 && (k.po.vazni ?? []).some((v) => v.hrac === p && v.poradie === 1))),
   },
-  // Zmarený pokus o zajatie (v9, Michal 2026-10-30 — nahrádza Zachránené): súper sa pokúšal zajať, bitku si vyhral ty.
+  // Zmarené zajatie (v11.4; v9–v11.3 zmarený pokus o zajatie): súpera sa niektorý starší bál na
+  // červenej — výhrou by ho mohol zajať Nakladačkou —, bitku si však vyhral ty.
   zmarenyPokus: {
     druh: "sucet",
-    popis: "súperov pokus o zajatie, ktorý zlyhal, lebo si vyhral bitku",
+    popis: "vyhratá bitka, v ktorej sa súpera niektorý starší bál na červenej (mohol by ho zajať)",
     zmer: (k) =>
       pre((p) => {
         const su = opponentOf(p);
-        const vazni = (s: GameState): number => (s.vazni ?? []).filter((v) => v.hrac === su).length;
-        const skoncil = (k.pred.pokusy?.[su] ?? null) !== null && (k.po.pokusy?.[su] ?? null) === null;
-        return ak(skoncil && vazni(k.po) === vazni(k.pred) && k.po.nastenka.at(-1)?.vitaz === p);
+        const bitka = k.po.nastenka.length > k.pred.nastenka.length && k.po.nastenka.at(-1)?.vitaz === p;
+        return ak(bitka && k.pred.starsi.some((e) => e.strach?.[su] === 3));
       }),
   },
   vyhraVydesenim: { druh: "sucet", popis: "okamžitá výhra väzňami alebo strachom (v9–v10 tretím väzňom, do v8 udržaným vydesením)", zmer: (k) => pre((p) => ak(vyhral(k, p) && vydesenim(k, p))) },

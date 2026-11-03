@@ -13,11 +13,11 @@ import type { PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
 import type { ClientState } from "./view.ts";
-import { pokusMozny, priazenHraca, priazenSila, vydesil } from "./elders.ts";
-import { kartaZadarmo, kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
+import { priazenHraca, priazenSila, vydesil } from "./elders.ts";
+import { kartyZaPas, lineState, nahladPitky, naexCieleVLinii, prahyHraca, verejneAbstaky } from "./engine.ts";
+import { bodyRozdelenia, krokRozdelenia, moznostiAkcie } from "./rozdelenie.ts";
 import { evaluateLine } from "./partia.ts";
 import { stavZavislosti } from "./zavislost.ts";
-import { KONSTANTY } from "./constants.ts";
 
 /** Jedna nápoveda v katalógu (napovedy.json). Text je jeden, alebo podľa variantu spúšťača. */
 export interface NapovedaDef {
@@ -60,11 +60,6 @@ const naMojomTahuVZhromazdeni = (v: ClientState, ja: PlayerId): boolean =>
 
 /** Spúšťače podľa id nápovede — špecifikácia v docs/napady/napovedy-prva-partia.html. */
 const SPUSTACE: Readonly<Record<string, Spustac>> = {
-  // v10.1: súper sa pokúša o zajatie — pri stavbe si hráč nechá 1 kartu zadarmo (ide pred stavba-senku).
-  "karta-zadarmo": (_d, v, ja) =>
-    v.faza === "draft" && v.draftStav?.krok === "stavba" && v.draftStav.mojBalicek.length > 0 && v.draftStav.mojVyber === null && kartaZadarmo(v, ja)
-      ? ANO
-      : null,
   "stavba-senku": (_d, v) =>
     v.faza === "draft" && v.draftStav?.krok === "stavba" && v.draftStav.mojBalicek.length > 0 && v.draftStav.mojVyber === null ? ANO : null,
 
@@ -133,14 +128,14 @@ const SPUSTACE: Readonly<Record<string, Spustac>> = {
     return ([0, 1] as const).some((i) => zmiesana(i) && stred[i] > 0) ? ANO : null;
   },
 
-  // Kľúč „patronat“ ostáva pre texty nápovied; od v9 je to pokus o zajatie (tie isté podmienky ako moznePokusy v jadre).
-  patronat: (_d, v, ja) => {
-    const ds = v.draftStav;
-    if (v.faza !== "draft" || ds === null || ds.krok !== "zajatie" || ds.hotovo[ja] || v.pokusy[ja] !== null) return null;
-    if (v.hraci[ja].cigarety < KONSTANTY.CENA_POKUSU) return null;
-    const zabrate = new Set(v.pokusy.flatMap((x) => (x === null ? [] : [x.elderId])));
-    return v.starsi.some((e) => pokusMozny(e, ja) && !zabrate.has(e.elderId)) ? ANO : null;
-  },
+  // Kľúč „patronat“ ostáva pre texty nápovied; od v11.4 je to zajatie pri rozdelení Nakladačky
+  // (tie isté podmienky ako moznostiAkcie v jadre).
+  patronat: (_d, v, ja) =>
+    v.faza === "bitka" && krokRozdelenia(v, ja) === "prebytok" && moznostiAkcie(v, ja, "strach", bodyRozdelenia(v, ja)).length > 0 ? ANO : null,
+
+  // Presvedčenie (v11.4) pri rozdelení hádky.
+  presvedcenie: (_d, v, ja) =>
+    v.faza === "bitka" && krokRozdelenia(v, ja) === "reci" && moznostiAkcie(v, ja, "reci", bodyRozdelenia(v, ja)).length > 0 ? ANO : null,
 
   vydesenie: (_d, v, ja) => {
     // Od v9 stav „vydesený“ (stupeň 3) — taký starší sa dá zajať.

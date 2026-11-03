@@ -1,7 +1,7 @@
 {
   "id": "prva-hra",
   "nazov": "Prvá hra",
-  "verzia": "v11-2-vypalenie-2026-11-03",
+  "verzia": "v11-4-zajatie-2026-11-03",
   "zverejnena": true,
   "casti": [
     {
@@ -1760,7 +1760,7 @@
     {
       "id": "i-strach-starosta",
       "kto": "info",
-      "melichar": "Pozri na Farára: pri ňom máš oranžový strach ty a oranžové reči Štamgast, každý svoje. Strach ostáva, reči slabnú. Starší, ktorý sa ťa bojí na červenej, je vydesený: toho smieš skúsiť zajať, ukážem ti v tretej časti. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď.",
+      "melichar": "Pozri na Farára: pri ňom máš oranžový strach ty a oranžové reči Štamgast, každý svoje. Strach ostáva, reči slabnú. Starší, ktorý sa ťa bojí na červenej, je vydesený: toho smieš po vyhratej bitke zajať, ukážem ti v tretej časti. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď.",
       "zvyraznit": [
         "linia-starsich",
         "starsi:farar"
@@ -1862,7 +1862,7 @@
     {
       "id": "i-zajatie",
       "kto": "info",
-      "melichar": "Pred šenkom je zajatie: staršieho, ktorý sa ťa bojí na červenej, smieš za [Cigareta] cigaretu skúsiť zajať. Vyhráš bitku a je to tvoj väzeň – jeho schopnosť smieš raz za hru použiť, kedy chceš; prehráš a jeho strach z teba spadne na nulu. Dvaja väzni v krátkej hre ako dnešná – a vyhral si hneď. Dnes sa ťa na červenej nebojí nikto.",
+      "melichar": "Zajatie: kto vyhrá bitku a rozdeľuje Nakladačku, smie staršieho, ktorý sa ho bojí na červenej, zajať za päť z nej. Je to tvoj väzeň – jeho schopnosť smieš raz za hru použiť, kedy chceš, a súper ti dá špaky za svoj marker pri ňom. A víťaz hádky smie za päť presvedčiť staršieho, ktorý sa súpera bojí viac než jeho: reči na červenú a jeho karta je tvoja. Dvaja väzni v krátkej hre ako dnešná – a vyhral si hneď. Dnes sa ťa na červenej nebojí nikto.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -1870,10 +1870,10 @@
     {
       "id": "q-zajatie",
       "kto": "otazka",
-      "melichar": "Koho smieš skúsiť zajať?",
+      "melichar": "Koho smieš zajať?",
       "moznosti": [
         {
-          "text": "Staršieho, ktorý sa ma bojí na červenej.",
+          "text": "Staršieho, ktorý sa ma bojí na červenej – za päť z Nakladačky.",
           "spravna": true,
           "vysvetlenie": "Áno. Kto sa ťa nebojí na smrť, toho do pivnice nedostaneš."
         },
@@ -2290,7 +2290,7 @@
           }
         ]
       },
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána: Farár z oranžovej na červenú za 3, Krčmárka zo sivej na oranžovú za 1 + 2 a Veterinár na žltú za 1. Farár sa ťa bojí na červenej – to je pozvánka na zajatie.",
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána: Farár z oranžovej na červenú za 3, Krčmárka zo sivej na oranžovú za 1 + 2 a Veterinár na žltú za 1. Farár sa ťa bojí na červenej – osem a bol by v pivnici. Na zajatie ti chýbal jeden bod.",
       "zvyraznit": [
         "starsi:farar",
         "starsi:krcmarka",
@@ -2425,34 +2425,6 @@
       }
     },
     {
-      "id": "k-pokus",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "pokus",
-        "elderId": "farar"
-      },
-      "melichar": "Zajatie, rad je na tebe. Farár sa ťa bojí na červenej: skús ho zajať za [Cigareta] cigaretu. Jeho karta pôjde tebe do ruky, smieš ju vyložiť len s akciami, a pri Farárovi v tomto kole nikto nič nezdvihne. Štamgast si za to pri stavbe šenku nechá jednu kartu do ruky, zadarmo. Vyhraj finále a je to tvoj väzeň.",
-      "hlaskaChyby": "nervy/20_uz_mam_v_pici_nervy_zas",
-      "zvyraznit": [
-        "ponuka-patronatu"
-      ],
-      "volba": {
-        "kandidati": [
-          "starsi:farar"
-        ],
-        "zle": [
-          {
-            "prikaz": {
-              "type": "bezPokusu"
-            },
-            "text": "Nie, dnes zajímaš. Farár, za jednu cigaretu.",
-            "hlaska": "urazky/ty_marha"
-          }
-        ],
-        "inak": "Farár, za cigaretu."
-      }
-    },
-    {
       "id": "k-stavba-finale",
       "kto": "auto",
       "prikaz": {
@@ -2486,9 +2458,9 @@
         "odhod": [
           "stavba:pasca",
           "stavba:cigorky",
-          "stavba:degustatorka"
-        ],
-        "nechaj": "stavba:podvodnik"
+          "stavba:degustatorka",
+          "stavba:podvodnik"
+        ]
       },
       "melichar": ""
     },
@@ -2555,7 +2527,7 @@
           }
         ]
       },
-      "melichar": "Finále sa hrá ako každé kolo. Štamgast útočí, vykladá prvý: Recidivista k vile. Farára držíš v ruke ty, nech sa trasie."
+      "melichar": "Finále sa hrá ako každé kolo. Štamgast útočí, vykladá prvý: Recidivista k vile."
     },
     {
       "id": "k-pijan-finale",
@@ -2720,18 +2692,6 @@
       "melichar": ""
     },
     {
-      "id": "k-finale-z3-pas",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "pass"
-      },
-      "melichar": "Farára nechaj v ruke a pasuj (P), dostaneš [Cigareta] cigaretu.",
-      "hlaskaChyby": "urazky/vyjebany",
-      "zvyraznit": [
-        "tlacidlo:pas"
-      ]
-    },
-    {
       "id": "k-doliatie",
       "kto": "hrac",
       "prikaz": {
@@ -2797,19 +2757,7 @@
       "prikaz": {
         "type": "bezReakcie"
       },
-      "melichar": "Štamgast bez odpovede."
-    },
-    {
-      "id": "k-bez-odpovede-finale",
-      "kto": "hrac",
-      "prikaz": {
-        "type": "bezReakcie"
-      },
-      "melichar": "Klikni BEZ ODPOVEDE, Farára nechaj v ruke. Finálová bitka – pozri na počítadlo, potom ti to zrátam.",
-      "hlaskaChyby": "urazky/ty_spina",
-      "zvyraznit": [
-        "tlacidlo:bez-odpovede"
-      ]
+      "melichar": "Štamgast bez odpovede a ty nemáš čím odpovedať. Finálová bitka – pozri na počítadlo, potom ti to zrátam."
     },
     {
       "id": "i-hadka-finale",
@@ -2822,7 +2770,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Finále je tvoje, 15 : 9. Špaky: päť za karty v línii a Nakladačka 6 sa vo finále mení na špaky jedna ku jednej. Starší: Farár 5 za červený strach, Krčmárka 5 za červené reči, Veterinár 3 za oranžové; exekútor ti zobral jeden. A Farár je tvoj väzeň: leží v pivnici, nikto ho nevyslobodí, a Štamgast ti za neho odovzdal 1 špak – toľko mu platili jeho reči na žltej.",
+      "melichar": "Finále je tvoje, 15 : 9. Špaky: päť za karty v línii a Nakladačka 6 sa vo finále mení na špaky jedna ku jednej. Starší: Farár 5 za červený strach, Krčmárka 5 za červené reči, Veterinár 3 za oranžové; exekútor ti zobral jeden. Vo finále sa nezajíma ani nepresviedča – Farár ostáva na stupnici.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body",
@@ -2832,7 +2780,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 3, Štamgastovi 4. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho dve tiež. 45 : 1.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 3, Štamgastovi 4. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho dve tiež. 44 : 2.",
       "zvyraznit": [
         "bar:body",
         "nastenka"

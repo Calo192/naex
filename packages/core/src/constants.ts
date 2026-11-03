@@ -147,11 +147,13 @@ export const KONSTANTY = {
   },
 
   /**
-   * Väzeň (krok 2 revízie starších, Michal 2026-10-30; v11 Strach a reči, Michal 2026-11-02,
-   * PRAVIDLA §10): pokus o zajatie stojí cigaretu. Väzni na výhru podľa ligy (vazniNaVyhru);
-   * špaky za väzňov 8 / 6 / 4 / 2 v11 zanikli — nahradila ich krádež pri zajatí.
+   * Zajatie a presvedčenie (v11.4, Michal 2026-11-03, PRAVIDLA §10): pri rozdelení Nakladačky
+   * stojí zajatie staršieho s červeným strachom toľko bodov, pri rozdelení hádky presvedčenie
+   * staršieho s rečami na červenej toľko bodov. Cena v cigaretách (pokus o zajatie) zanikla.
+   * Väzni na výhru podľa ligy (vazniNaVyhru).
    */
-  CENA_POKUSU: 1,
+  CENA_ZAJATIA: 5,
+  CENA_PRESVEDCENIA: 5,
   /**
    * Strach a reči (v11, Michal 2026-11-02, docs/napady/strach-reci.html): vstup na stupeň
    * 1 / 2 / 3 (žltá, oranžová, červená) stojí pri dvíhaní toľko bodov Nakladačky či hádky,
@@ -250,13 +252,15 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // na kartu so Vzburou NA EX nejde.
 // v11.2 (Michal 2026-11-02, Zrejúca) bez novej značky: Kšeft väzňa zrušený — každý väzeň má
 // schopnosť, ktorú držiteľ použije raz za hru (elders.json, engine.ts schopnostiVazna).
+// v11.4 (Michal 2026-11-03) bez novej značky: pokus o zajatie zanikol — zajíma sa za 5 bodov
+// Nakladačky, za 5 bodov hádky sa starší presvedčí (jeho karta do balíčka presvedčovateľa).
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.3";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.4";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-03";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

@@ -342,7 +342,6 @@ describe("§3 Príprava hry", () => {
     expect(s.spaky).toEqual([0, 0]);
     expect(s.nastenka).toEqual([]);
     expect(s.vazni).toEqual([]);
-    expect(s.pokusy).toEqual([null, null]);
     expect(s.kolo).toBe(1);
   });
 

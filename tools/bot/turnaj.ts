@@ -111,7 +111,9 @@ for (let i = 0; i < partii; i++) {
         casBota += dt;
         tahovBota++;
         najdlhsi = Math.max(najdlhsi, dt);
-        const typ = cmd.type === "place" ? `place:${cmd.target}` : cmd.type;
+        // Zajatie a presvedčenie (v11.4) sú súčasť rozdelenia — v štatistike zvlášť, nech vidno, či ich bot používa.
+        const typ =
+          cmd.type === "place" ? `place:${cmd.target}` : cmd.type === "prebytok" && (cmd.zajatia?.length ?? 0) > 0 ? "prebytok:zajatie" : cmd.type === "reci" && (cmd.presvedcenia?.length ?? 0) > 0 ? "reci:presvedcenie" : cmd.type;
         typyTahov.set(typ, (typyTahov.get(typ) ?? 0) + 1);
       }
     } else if (superTyp === "chamtivy") {

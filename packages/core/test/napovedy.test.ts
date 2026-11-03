@@ -177,30 +177,44 @@ describe("nápovedy — náhodné partie", () => {
   });
 });
 
-describe("nápovedy — karta zadarmo (v10.1)", () => {
-  /** Stavba šenku s danými pokusmi o zajatie (null = hráč neskúša). */
-  const stavba = (pokusy: GameState["pokusy"]): GameState => {
+describe("nápovedy — zajatie a presvedčenie (v11.4)", () => {
+  /** Rozdelenie v bitke: hráč 0 rozdeľuje 5 bodov Nakladačky (prebytok) či hádky (reci); prvý starší má strach [ja, súper]. */
+  const rozdelenie = (krok: "prebytok" | "reci", strach: readonly [0 | 1 | 2 | 3, 0 | 1 | 2 | 3], body = 5): GameState => {
     const s0 = setupGame(data, 7);
-    const balicky: [CardInstance[], CardInstance[]] = [s0.obcania.slice(0, 8), s0.obcania.slice(8, 16)];
-    return { ...s0, faza: "draft", pokusy, draftStav: { krok: "stavba", balicky, vyber: [null, null], naTahu: 0, hotovo: [false, false], noveKarty: [0, 0] } };
+    return {
+      ...s0,
+      faza: "bitka",
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, strach } : e)),
+      bitkaStav: {
+        krok,
+        caka: 0,
+        sums: [{}, {}],
+        exekutorHotovy: [true, true],
+        exekutor: [0, 0],
+        damage: null,
+        vitaz: 0,
+        prebytokDrzi: 0,
+        prebytokZostava: krok === "prebytok" ? body : 0,
+        prebytokZdvihy: [],
+        prebytokPrepadlo: 0,
+        ...(krok === "reci" ? { hadka: { makke: [body, 0] as const, vitaz: 0 as const, velkost: body, zostava: body, prepadlo: 0, zdvihy: [] } } : {}),
+        spalit: [],
+        vesticaHotova: true,
+      },
+    };
   };
-  const id = (s: GameState) => s.starsi[0]!.elderId;
 
-  it("súper sa pokúša o zajatie → hráčovi pred stavbou-senku; pokúšajúcemu nie", () => {
-    const s = stavba([null, null]);
-    const sPokusom = stavba([null, { elderId: id(s) }]);
-    expect(ids(sPokusom, 0)).toContain("karta-zadarmo");
-    expect(ids(sPokusom, 1)).not.toContain("karta-zadarmo");
-    expect(dalsiaNapoveda(data, katalog, viewFor(data, sPokusom, 0), new Set())?.id).toBe("karta-zadarmo");
-    expect(ids(s, 0)).not.toContain("karta-zadarmo");
+  it("patronat: pri rozdelení Nakladačky, keď sa dá zajať; súperovi nie", () => {
+    expect(ids(rozdelenie("prebytok", [3, 0]), 0)).toContain("patronat");
+    expect(ids(rozdelenie("prebytok", [3, 0]), 1)).not.toContain("patronat");
+    expect(ids(rozdelenie("prebytok", [2, 0]), 0)).not.toContain("patronat");
+    expect(ids(rozdelenie("prebytok", [2, 0], 8), 0)).toContain("patronat");
   });
 
-  it("keď skúšajú obaja, alebo hráč už vybral, nápoveda nie je", () => {
-    const s = stavba([null, null]);
-    const obaja = stavba([{ elderId: id(s) }, { elderId: s.starsi[1]!.elderId }]);
-    expect(ids(obaja, 0)).not.toContain("karta-zadarmo");
-    const sPokusom = stavba([null, { elderId: id(s) }]);
-    const vybral: GameState = { ...sPokusom, draftStav: { ...sPokusom.draftStav!, vyber: [{ doSenku: [], odhod: [] }, null] } };
-    expect(ids(vybral, 0)).not.toContain("karta-zadarmo");
+  it("presvedcenie: pri rozdelení hádky, keď sa súpera starší bojí viac a reči sa dajú dotiahnuť na červenú", () => {
+    expect(ids(rozdelenie("reci", [2, 3], 8), 0)).toContain("presvedcenie");
+    expect(ids(rozdelenie("reci", [2, 3], 7), 0)).not.toContain("presvedcenie");
+    expect(ids(rozdelenie("reci", [2, 2], 8), 0)).not.toContain("presvedcenie");
   });
 });

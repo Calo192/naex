@@ -88,7 +88,7 @@ describe("línia starších", () => {
   const vazen: Vazen = { elderId: "vaz", hrac: 1, poradie: 1, karta: v0.starsi[2]!.karta, scorecard: v0.starsi[2]!.scorecard, miesto: 2 };
   const view = { ...v0, starsi, vazni: [vazen] } as ClientState;
   const rad: MiestoVLinii[] = [
-    ...starsi.map((e): MiestoVLinii => ({ typ: "starsi", s: { elder: e, meno: e.karta.defId, obrazok: null, patron: e === starsi[1] ? { kto: 1 } : null } })),
+    ...starsi.map((e): MiestoVLinii => ({ typ: "starsi", s: { elder: e, meno: e.karta.defId, obrazok: null, presvedcil: e === starsi[1] ? { kto: 1 } : null } })),
     { typ: "vazen", v: { elderId: "vaz", defId: vazen.karta.defId, scorecard: vazen.scorecard, meno: "Hrobár", obrazok: null, hrac: 1 } },
   ];
   const linia = (rezim: "teplomery" | "pult"): string =>
@@ -126,7 +126,7 @@ describe("línia starších", () => {
     for (const cast of html.split('class="ls-stav').slice(0, -1)) expect(cast.slice(cast.lastIndexOf('class="r3"'))).not.toMatch(/znepokojen|vystrašen|vydesen/);
     expect(html).toMatch(/r3-riadok ja"><b class="kto">Jano<\/b>.*?vystrašen.*? — reči/);
     expect(html).not.toMatch(/class="(kto|r3-meno)">ty</);
-    expect(html).toContain("skúša Fero · vezme ti 0 špakov");
+    expect(html).toContain("✦ presvedčil Fero");
     expect(html).toContain("2/4");
     expect(html).toContain("⛓ 1/3");
   });
@@ -180,7 +180,7 @@ describe("línia starších", () => {
               elder: e,
               meno: "X",
               obrazok: null,
-              patron: null,
+              presvedcil: null,
               rozdelenie: {
                 marker: "strach",
                 stupne: [

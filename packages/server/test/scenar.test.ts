@@ -1,9 +1,9 @@
 // Vývojový scenár zajatia (scenar.ts): partia proti botovi so staršími na stupni 3 — tok
-// zajatia (§10) sa dá prejsť v prehliadači. Na živom webe sa nesmie zapnúť.
+// zajatia a presvedčenia (§10, v11.4) sa dá prejsť v prehliadači. Na živom webe sa nesmie zapnúť.
 
 import { describe, expect, it } from "vitest";
 import type { Command, GameState, PlayerId } from "@naex/core";
-import { KONSTANTY, apply, loadGameData, moznePokusy, mozeHrat, naTahu, rngInt, rngSeed, setupGame, strachZ, tahBota, viewFor, vazniNaVyhru } from "@naex/core";
+import { apply, kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, loadGameData, moznostiAkcie, mozeHrat, naTahu, rngInt, rngSeed, setupGame, strachZ, tahBota, vazniNaVyhru } from "@naex/core";
 import cardsJson from "../../core/data/cards.json" with { type: "json" };
 import eldersJson from "../../core/data/elders.json" with { type: "json" };
 import scorecardsJson from "../../core/data/scorecards.json" with { type: "json" };
@@ -40,11 +40,13 @@ describe("scenár zajatia — len mimo produkcie", () => {
 describe("scenár zajatia — rozdanie", () => {
   const s0 = setupGame(data, 11);
 
-  it("prvý starší sa človeka bojí na červenej (strach 3), druhý bota; obaja majú cigarety navyše", () => {
+  it("prvý starší sa človeka bojí na červenej (strach 3), druhý bota; posledné dvoch smie presvedčiť človek a bot; cigarety navyše", () => {
     const s = pouziScenar(s0, "zajatie", 0);
     expect(strachZ(s.starsi[0]!, 0)).toBe(3);
     expect(strachZ(s.starsi[1]!, 1)).toBe(3);
-    expect(s.starsi.slice(2).every((e) => JSON.stringify(e) === JSON.stringify(s0.starsi.find((x) => x.elderId === e.elderId)))).toBe(true);
+    expect(s.starsi.at(-2)!.strach).toEqual([2, 3]);
+    expect(s.starsi.at(-1)!.strach).toEqual([3, 2]);
+    expect(s.starsi.slice(2, -2).every((e) => JSON.stringify(e) === JSON.stringify(s0.starsi.find((x) => x.elderId === e.elderId)))).toBe(true);
     expect(s.hraci[0].cigarety).toBeGreaterThan(s0.hraci[0].cigarety);
     expect(s.hraci[1].cigarety).toBeGreaterThan(s0.hraci[1].cigarety);
     expect(s.vazni).toEqual([]);
@@ -62,49 +64,27 @@ describe("scenár zajatia — rozdanie", () => {
   });
 });
 
-describe("scenár zajatia — tok v jadre (§10)", () => {
-  /** Pokus človeka o prvého staršieho a dohraté kolo; overí tok a vráti, ako bitka dopadla. */
-  function zajatie(rozdanie: number): "vazen" | "ustup" {
+describe("scenár zajatia — tok v jadre (§10, v11.4)", () => {
+  /**
+   * Partia, kým človek (hráč 0) nerozdeľuje Nakladačku so zajatím na dosah; potom zajme prvého
+   * možného staršieho. null = v tomto rozdaní na to nedošlo (človek nevyhral s Nakladačkou aspoň 5).
+   */
+  function zajatie(rozdanie: number): boolean | null {
     const s0 = pouziScenar(setupGame(data, rozdanie), "zajatie", 0);
-    const ciel = s0.starsi[0]!.elderId;
-    // Krok zajatia, keď rozhoduje človek (hráč 1 = bot, jeho voľbu urobí bot).
-    const s = hrajKym(s0, (x) => x.faza === "draft" && x.draftStav?.krok === "zajatie" && x.draftStav.naTahu === 0);
-    expect(s.draftStav?.krok).toBe("zajatie");
-    expect(moznePokusy(s, 0).map((e) => e.elderId)).toContain(ciel);
-    const karta = s.starsi.find((e) => e.elderId === ciel)!.karta;
-    const po = apply(data, s, { type: "pokus", elderId: ciel }, 0).state;
-    expect(po.pokusy[0]).toEqual({ elderId: ciel });
-    expect(po.hraci[0].ruka.some((k) => k.uid === karta.uid)).toBe(true);
-    // Človek bossa v ruke vidí; súper vie, že je u človeka (pokus je verejný), ostatné karty nie.
-    const pohladCloveka = viewFor(data, po, 0);
-    expect(pohladCloveka.pokusy[0]).toEqual({ elderId: ciel });
-    expect(pohladCloveka.ruka.some((k) => k.uid === karta.uid)).toBe(true);
-    expect(viewFor(data, po, 1).ruka.some((k) => k.uid === karta.uid)).toBe(false);
-    expect(viewFor(data, po, 1).hraci[0].rukaPocet).toBe(po.hraci[0].ruka.length);
-    // Dohrá sa kolo: výsledok je väzeň človeka, alebo starší späť a strach človeka 0 (v11).
-    const konec = hrajKym(po, (x) => x.pokusy[0] === null);
-    const vazen = konec.vazni.find((v) => v.elderId === ciel);
-    if (vazen !== undefined) {
-      expect(vazen.hrac).toBe(0);
-      expect(konec.starsi.some((e) => e.elderId === ciel)).toBe(false);
-      return "vazen";
-    }
-    expect(strachZ(konec.starsi.find((e) => e.elderId === ciel)!, 0)).toBe(0);
-    expect(konec.hraci[0].ruka.some((k) => k.uid === karta.uid)).toBe(false);
-    return "ustup";
+    const s = hrajKym(s0, (x) => x.faza === "bitka" && krokRozdelenia(x, 0) === "prebytok" && moznostiAkcie(x, 0, "strach", bodyRozdelenia(x, 0)).length > 0);
+    if (s.koniec !== null || krokRozdelenia(s, 0) !== "prebytok") return null;
+    const ciel = moznostiAkcie(s, 0, "strach", bodyRozdelenia(s, 0))[0]!;
+    const zdvihy = kandidatiRozdelenia(s, 0, "strach", bodyRozdelenia(s, 0), 4, [ciel])[0]!;
+    const po = apply(data, s, { type: "prebytok", zdvihy, zajatia: [ciel] }, 0).state;
+    expect(po.vazni.find((v) => v.elderId === ciel)?.hrac).toBe(0);
+    expect(po.starsi.some((e) => e.elderId === ciel)).toBe(false);
+    return true;
   }
 
-  it.each([2, 13])("rozdanie %i: pred stavbou šenku sa pokus ponúkne, boss ide pokúšajúcemu do ruky (v10.1) a po bitke je väzeň alebo ústup", (rozdanie) => {
-    expect(["vazen", "ustup"]).toContain(zajatie(rozdanie));
-  });
-
-  // Výsledok bitky závisí od rozdaných kariet, takže každá zmena sady ho pri pevnom rozdaní
-  // môže otočiť; preto sa oba výsledky hľadajú v rade rozdaní (pri sade 2026-11-02 je väzeň
-  // v rozdaní 2, ústup v 1), nie v dvoch natvrdo.
-  it("rozdania pokryli oba výsledky — väzeň aj ústup", () => {
-    const vysledky = new Set<string>();
-    for (let rozdanie = 1; rozdanie <= 30 && vysledky.size < 2; rozdanie++) vysledky.add(zajatie(rozdanie));
-    expect([...vysledky].sort()).toEqual(["ustup", "vazen"]);
-    // Prehráva viac rozdaní za sebou — pod záťažou celej sady predvolených 5 s nestačí.
+  // Výsledok bitky závisí od rozdaných kariet — zajatie človeka sa hľadá v rade rozdaní.
+  it("v niektorom rozdaní človek vyhrá bitku s Nakladačkou aspoň 5 a zajme staršieho na červenej", () => {
+    let najdene = false;
+    for (let rozdanie = 1; rozdanie <= 30 && !najdene; rozdanie++) najdene = zajatie(rozdanie) === true;
+    expect(najdene).toBe(true);
   }, 30_000);
 });

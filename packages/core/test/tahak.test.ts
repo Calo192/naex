@@ -57,10 +57,15 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Telefón (v10)", "Telefón: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX"],
     ["Kmotor (v9)", "Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove"],
     [
-      "krádež pri zajatí (v11)",
-      `marker pri ňom pred bodovaním (žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}), najviac koľko má**`,
+      "krádež pri zajatí (v11.4)",
+      `marker pri ňom teraz (žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}), najviac koľko má**`,
     ],
-    ["cena pokusu (v9)", `Cena **${pocet(KONSTANTY.CENA_POKUSU, "cigareta", "cigarety", "cigariet")}**, prepadne vždy`],
+    ["cena zajatia (v11.4)", `ho **zajať za ${KONSTANTY.CENA_ZAJATIA} bodov** Nakladačky`],
+    ["cena presvedčenia (v11.4)", `ho **presvedčiť za ${KONSTANTY.CENA_PRESVEDCENIA} bodov** hádky`],
+    [
+      "príklad presvedčenia (v11.4)",
+      `hádka 10: reči na červenú za ${cenaDvihnutia(2, 3)} + ${KONSTANTY.CENA_PRESVEDCENIA}, ${10 - cenaDvihnutia(2, 3) - KONSTANTY.CENA_PRESVEDCENIA} body inam`,
+    ],
     ["schopnosť väzňa (v11.2)", "použiješ **raz za hru, kedy chceš**"],
     ["Poštárka (v11.2)", `**Poštárka:** dostaneš **${pocet(KONSTANTY.POSTARKA_CIGARETY, "cigaretu", "cigarety", "cigariet")}**`],
     ["Autobusár (v11.2)", `**každú kartu za ${KONSTANTY.AUTOBUSAR_CENA}`],
@@ -73,11 +78,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["doplnenie šenku", `doplní na ${KONSTANTY.SENOK_PO_BRANI}`],
     ["stavba šenku z dvoch balíčkov (v8.5)", `dostaneš **${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov**, dáš **${(KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA) / 2} do šenku**`],
     [
-      "karta zadarmo pri súperovom pokuse o zajatie (v10.1)",
-      ((n, k) => `z tvojich ${n} si **${k.nechaj} tajne necháš do ruky**, ${k.doSenku} dáš do šenku a ${k.odhod} naspodok`)(
-        KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA,
-        krokStavby(KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA, true),
-      ),
+      "stavba šenku napoly (v11.4 bez karty zadarmo)",
+      ((k) => `dáš **${k.doSenku} do šenku** v ľubovoľnom mixe a ${k.odhod} naspodok`)(krokStavby(KONSTANTY.STAVBA_NARADIE + KONSTANTY.STAVBA_OBCANIA)),
     ],
     ["doplnenie šenku v pomere (v8.5)", `najprv z Náradia, kým v ňom nie sú ${KONSTANTY.STAVBA_NARADIE} Nástroje, zvyšok z Občanov`],
     ["doliatie", `${KONSTANTY.REFILL_CENA} cigarety → vypitý poldeci`],

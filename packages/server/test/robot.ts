@@ -4,7 +4,7 @@
 import { expect } from "vitest";
 import { WebSocket } from "ws";
 import type { ClientState, Command } from "@naex/core";
-import { cieleVykladania, cielLokalitaId, kartaZadarmo, krokStavby, lineState, navrhRozdelenia, naexCieleVLinii, zablokovaneStrany } from "@naex/core";
+import { cieleVykladania, cielLokalitaId, krokStavby, lineState, navrhRozdelenia, naexCieleVLinii, zablokovaneStrany } from "@naex/core";
 import { loadDataFromDisk } from "../src/server.ts";
 
 /** Dáta sady pre pravidlá vykladania — robot ich pozná ako hráč (verejné karty). */
@@ -114,19 +114,11 @@ export class Robot {
       case "draft": {
         const d = view.draftStav;
         if (d?.krok === "stavba") {
-          // Polovica do šenku, polovica naspodok; pri súperovom pokuse o zajatie prvá karta zadarmo (v10.1).
+          // Polovica do šenku, polovica naspodok.
           const uids = d.mojBalicek.map((k) => k.uid);
-          const krok = krokStavby(uids.length, kartaZadarmo(view, ja));
-          const zvysok = uids.slice(krok.nechaj);
-          return {
-            type: "stavbaSenku",
-            doSenku: zvysok.slice(0, krok.doSenku),
-            odhod: zvysok.slice(krok.doSenku, krok.doSenku + krok.odhod),
-            ...(krok.nechaj === 1 ? { nechaj: uids[0] } : {}),
-          };
+          const krok = krokStavby(uids.length);
+          return { type: "stavbaSenku", doSenku: uids.slice(0, krok.doSenku), odhod: uids.slice(krok.doSenku, krok.doSenku + krok.odhod) };
         }
-        // Pokus o zajatie (v9) robot nevyužíva.
-        if (d?.krok === "zajatie") return { type: "bezPokusu" };
         // Najviac dve karty zo šenku, po jednej za cigaretu.
         const karta = view.senok[0];
         if (karta === undefined || d === null || d.noveKarty[ja] >= 2) return { type: "draftStop" };
@@ -176,7 +168,7 @@ export class Robot {
         // v11: Nakladačku (strach) a hádku (reči) rozdeľuje víťaz — robot vezme návrh jadra z pohľadu.
         if (b.krok === "prebytok" || b.krok === "reci") {
           const n = navrhRozdelenia(view);
-          if (n === null) throw new Error(`${b.krok}: žiadne rozdelenie ${JSON.stringify({ ja, caka: b.caka, mozem: view.mozemHrat, hadka: b.hadka, pz: b.prebytokZostava, st: view.starsi.map((e) => [e.strach, e.reci]), pokusy: view.pokusy })}`);
+          if (n === null) throw new Error(`${b.krok}: žiadne rozdelenie ${JSON.stringify({ ja, caka: b.caka, mozem: view.mozemHrat, hadka: b.hadka, pz: b.prebytokZostava, st: view.starsi.map((e) => [e.strach, e.reci]), presvedcili: view.starsi.map((e) => e.presvedcil ?? null) })}`);
           return n.prikaz;
         }
         // Cintorín (Michal 2026-10-20): robot nič do Dedičstva nedáva.

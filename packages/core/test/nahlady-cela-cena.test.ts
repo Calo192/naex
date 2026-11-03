@@ -17,7 +17,6 @@ import {
   nahladNaexNaKartu,
   parseScorecards,
   poskodenieBitky,
-  stavPoPokuse,
   viewFor,
 } from "../src/index.ts";
 import type { Layout4 } from "./helpers.ts";
@@ -164,29 +163,7 @@ describe("náhľad NA EX: cigarety a mäkké sedia so zúčtovaním", () => {
 
 });
 
-describe("náhľad pokusu o zajatie (v9)", () => {
-  it("pokúšajúci zaplatí cigaretu ako v hre, starší je v ohrození", () => {
-    const s0 = setupSBalickom(data, 31);
-    const u = s0.utocnik;
-    const marker = (u === 0 ? 6 : 0) as number;
-    const s: GameState = {
-      ...s0,
-      faza: "draft",
-      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! },
-      lokalityVHre: s0.lokalityVHre.slice(1),
-      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, ...zPolohy(marker) } : e)),
-      draftStav: { krok: "zajatie", balicky: [[], []], vyber: [null, null], naTahu: u, hotovo: [false, false], noveKarty: [0, 0] },
-    };
-    const elder = s.starsi[0]!;
-    const pred = viewFor(data, s, u);
-    const po = stavPoPokuse(pred, elder.elderId);
-    const d = dopadyNahladu(data, pred, po, 0);
-    const t = apply(data, s, { type: "pokus", elderId: elder.elderId }, u).state;
-    expect(d[u].cigarety).toBe(t.hraci[u].cigarety - s.hraci[u].cigarety);
-    expect(d[u].cigarety).toBe(-1);
-    expect(viewFor(data, t, u).pokusy).toEqual(po.pokusy);
-  });
-});
+// Náhľad pokusu o zajatie (v9–v11.3) zanikol s pokusom (v11.4).
 
 describe("náhľad NA EX nemlčí o tom, čo hra zúčtuje navyše (návrh #49)", () => {
   const karta = (uid: number, defId: string): CardInstance => ({ uid, defId, leftLayout: 0, rightLayout: 0 });

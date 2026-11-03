@@ -252,7 +252,7 @@ describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj
 });
 
 describe("klient AI hráčov: Nakladačka a starší v ohrození (playtest 20261030-184957, Eva N1, Šimon 5)", () => {
-  it("staršieho v ohrození výpis neponúkne — rovnako ako server", () => {
+  it("staršieho s červeným strachom výpis na Nakladačku neponúkne (strach nemá kam) — rovnako ako server", () => {
     const s0 = setupGame(data, 308);
     const id = s0.starsi[0]!.elderId;
     const bitkaStav: BitkaStav = {
@@ -270,11 +270,12 @@ describe("klient AI hráčov: Nakladačka a starší v ohrození (playtest 20261
       spalit: [],
       vesticaHotova: true,
     };
-    const s: GameState = { ...s0, faza: "bitka", draftStav: null, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, pokusy: [{ elderId: id }, null], bitkaStav };
+    const starsi = s0.starsi.map((e, i) => (i === 0 ? { ...e, strach: [0, 3] as const } : e));
+    const s: GameState = { ...s0, faza: "bitka", draftStav: null, starsi, ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0]! }, bitkaStav };
     const ponuka = starsiNaNakladacku(viewFor(data, s, 1)).map((e) => e.elderId);
     expect(ponuka).not.toContain(id);
     expect(ponuka.length).toBeGreaterThan(0);
-    // Server ponúka celé rozdelenia (v11) — žiadne nezdvihne staršieho v ohrození.
+    // Server ponúka celé rozdelenia (v11) — žiadne nezdvihne strach, ktorý je už na červenej.
     const vPonuke = new Set(legalCommands(data, s, 1).flatMap((c) => (c.type === "prebytok" ? c.zdvihy.map((z) => z.elderId) : [])));
     expect([...vPonuke].every((x) => ponuka.includes(x))).toBe(true);
     expect(() => apply(data, s, { type: "prebytok", zdvihy: [{ elderId: id, na: 1 }] }, 1)).toThrow();

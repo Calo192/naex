@@ -49,17 +49,16 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, dopadyNahladu, nahladPitky, pocet, stavPoPokuse, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, kartaZadarmo, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladPokusu, pokusMozny, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, vOhrozeni, jeKartaBossa, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie } from "@naex/core";
+import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, dopadyNahladu, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
 import { CENA_POLA, NAZOV_DELENIA, rodStarsieho } from "./textyStarsich.ts";
-import { IkonaDelenia, LiniaStarsich, ucinokPriazne, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii, type SuhrnNaLinii } from "./LiniaStarsich.tsx";
+import { IkonaDelenia, LiniaStarsich, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii, type SuhrnNaLinii } from "./LiniaStarsich.tsx";
 import { klikNaStupen, radStarsich, stupneRozdelenia, suhrnRozdelenia, zdvihStarsieho } from "./teplomery.ts";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { NAZOV_PRIAZNE, favourPodlaId, kratkeMeno, pocetPriazniKola, priazenKola, reciZHadky, type PriazneBitky } from "./priazenKola.ts";
-import { PonukaZajatia, type MoznostZajatia } from "./PonukaZajatia.tsx";
 import { LetiacaKarta, type Obdlznik, type Prelet } from "./LetiacaKarta.tsx";
 import { radSenku } from "./tieneSenku.ts";
 import { PocitadloSLiniou } from "./PocitadloBitky.tsx";
@@ -71,7 +70,7 @@ import { skupinyBalicka } from "./doberaciBalicek.ts";
 import { SkratkyNapoveda, escVratiNavrh, tlacidloNavratu, useSkratky, type VrstvyPreEsc } from "./skratky.tsx";
 import { klucFazy, predvolenyRezim, vyberSpravu, type RezimStran } from "./bar.ts";
 import { KARTA_MIN as NASTENKA_KARTA_MIN, rozmerNastenky, type ListokNaVyber } from "./rozlozenieNastenky.ts";
-import { prepniSNechanim, rozdelenieStavby } from "./stavbaSenku.ts";
+import { prepniVyber, rozdelenieStavby } from "./stavbaSenku.ts";
 import { JednotnyBar, type StranaBaru } from "./JednotnyBar.tsx";
 import { polozkySoZaverecnou, tahSoZaverecnou } from "./zaverecnaTahu.ts";
 import { kartaVyucbyDoOblasti, polozkyOdkazu, tahOdkazu } from "./odkazTahu.ts";
@@ -345,8 +344,7 @@ type Mode =
   | { typ: "ziadny" }
   // NA EX na dva kroky (dizajn hra-nezrovnalosti-20261021-1229, UX N3): vyber kartu, potom potvrď.
   | { typ: "naexCiel"; uid: number | null }
-  // Pokus o zajatie (v9): vybraný starší, potvrdí sa pečaťou.
-  | { typ: "pokus"; elderId: string }
+
   // Veštica: po jednej karte z oboch doberacích balíčkov.
   | { typ: "vestica"; moja: number | null; jeho: number | null }
   | { typ: "vykup" };
@@ -869,29 +867,17 @@ export function HernaPlocha({
   // (karta sa zdvihne), ďalší klik výber zruší; nevybrané idú naspodok Náradia a Občanov.
   // Pri plnom výbere sú ostatné zosivené a klik na ne nič neurobí. Koľko do Šenku, určuje
   // jadro (krokStavby: polovica nahor). Server dostane celé rozdelenie. Pravidlo §5 sa nemení.
-  // Karta zadarmo (v10.1): pri súperovom pokuse o zajatie prvý klik nechá kartu do ruky.
   const [senokStavby, setSenokStavby] = useState<readonly number[]>([]);
-  const [nechatStavby, setNechatStavby] = useState<number | null>(null);
   useEffect(() => {
     setSenokStavby([]);
-    setNechatStavby(null);
   }, [klucTahu]);
-  const zadarmoJa = draft?.krok === "stavba" && kartaZadarmo(view, ja);
-  const krokSt = krokStavby(draft?.krok === "stavba" ? draft.mojBalicek.length : 0, zadarmoJa);
-  const prepniStavbu = (uid: number): void => {
-    const po = prepniSNechanim({ doSenku: senokStavby, nechaj: nechatStavby }, uid, krokSt.doSenku, krokSt.nechaj === 1);
-    setSenokStavby(po.doSenku);
-    setNechatStavby(po.nechaj);
-  };
-  const { doSenku: doSenkuStavby, odhod: odhodStavby } = rozdelenieStavby(draft?.krok === "stavba" ? draft.mojBalicek : [], senokStavby, nechatStavby);
-  const stavbaHotova = doSenkuStavby.length === krokSt.doSenku && odhodStavby.length === krokSt.odhod && (krokSt.nechaj === 0 || nechatStavby !== null);
-  const zrusStavbu = (): void => {
-    setSenokStavby([]);
-    setNechatStavby(null);
-  };
+  const krokSt = krokStavby(draft?.krok === "stavba" ? draft.mojBalicek.length : 0);
+  const prepniStavbu = (uid: number): void => setSenokStavby((x) => prepniVyber(x, uid, krokSt.doSenku));
+  const { doSenku: doSenkuStavby, odhod: odhodStavby } = rozdelenieStavby(draft?.krok === "stavba" ? draft.mojBalicek : [], senokStavby);
+  const stavbaHotova = doSenkuStavby.length === krokSt.doSenku && odhodStavby.length === krokSt.odhod;
+  const zrusStavbu = (): void => setSenokStavby([]);
   const potvrdStavbu = (): void => {
-    if (stavbaHotova && !naneisto)
-      posli({ type: "stavbaSenku", doSenku: doSenkuStavby, odhod: odhodStavby, ...(krokSt.nechaj === 1 && nechatStavby !== null ? { nechaj: nechatStavby } : {}) });
+    if (stavbaHotova && !naneisto) posli({ type: "stavbaSenku", doSenku: doSenkuStavby, odhod: odhodStavby });
   };
 
   // Limit Zhromaždenia na jeho začiatku — pás nad stolom z neho ukazuje,
@@ -1040,11 +1026,7 @@ export function HernaPlocha({
       : 0;
   const dovodJednejKarty = prvyTahSenku ? `Berieš zo šenku prvý — na prvom ťahu len 1 kartu; 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)} až na ďalšom ťahu.` : null;
   const mozemBrat = kolkoMozemBrat > 0;
-  // Pokus o zajatie (v9): koho smiem skúsiť zajať — rovnaké podmienky ako v jadre (moznePokusy).
   const hJa = view.hraci[ja];
-  const bojaSaMaNaTrojke = view.starsi.filter((e) => pokusMozny(e, ja) && !vOhrozeni(view, e.elderId));
-  const moznePokusyJa =
-    view.faza === "draft" && draft?.krok === "zajatie" && somNaTahu && view.pokusy[ja] === null && hJa.cigarety >= KONSTANTY.CENA_POKUSU ? bojaSaMaNaTrojke : [];
   const limitTeraz = limitZhromazdenia(view, ja);
   const zoSenkuLimit = kolkoMozemBrat;
   // Keď hráč má vyberať kartu zo šenku (Starosta) či Vešticu, vrstva sa otvorí
@@ -1566,14 +1548,34 @@ export function HernaPlocha({
   // a úplnosť ráta jadro (planRozdelenia) — ten istý výpočet, aký urobí server.
   const krokDelenia = somNaTahu && view.koniec === null ? krokRozdelenia(view, ja) : null;
   const [zdvihyDelenia, setZdvihyDelenia] = useState<readonly Zdvih[]>([]);
+  // Zajatia (Nakladačka) či presvedčenia (hádka), v11.4 — starší, ktorých hráč zvolil tlačidlom.
+  const [akcieDelenia, setAkcieDelenia] = useState<readonly string[]>([]);
   const klucDelenia =
     krokDelenia === null
       ? null
       : `${view.kolo}|${krokDelenia}|${bodyRozdelenia(view, ja)}|${view.starsi.map((e) => `${e.strach.join("")}${e.reci.join("")}`).join("|")}`;
-  useEffect(() => setZdvihyDelenia([]), [klucDelenia]);
-  const planDelenia = krokDelenia === null ? null : suhrnRozdelenia(view, ja, zdvihyDelenia);
+  useEffect(() => {
+    setZdvihyDelenia([]);
+    setAkcieDelenia([]);
+  }, [klucDelenia]);
+  const planDelenia = krokDelenia === null ? null : suhrnRozdelenia(view, ja, zdvihyDelenia, akcieDelenia);
+  const resetDelenia = (): void => {
+    setZdvihyDelenia([]);
+    setAkcieDelenia([]);
+  };
+  /** Zajať / Presvedčiť (v11.4): prepne akciu pri staršom; zapnutá dotiahne jeho marker na červenú. */
+  const prepniAkciuDelenia = (elderId: string): void => {
+    if (planDelenia === null) return;
+    if (akcieDelenia.includes(elderId)) {
+      setAkcieDelenia(akcieDelenia.filter((x) => x !== elderId));
+      return;
+    }
+    setAkcieDelenia([...akcieDelenia, elderId]);
+    const nove = zdvihyPreAkcie(view, ja, planDelenia.marker, [elderId]);
+    setZdvihyDelenia((x) => [...x.filter((z) => z.elderId !== elderId), ...nove]);
+  };
   // Esc = Reset nepotvrdených zdvihov — až keď nie je otvorená lupa či dialóg (ten Esc zje skôr).
-  const maZdvihyDelenia = zdvihyDelenia.length > 0;
+  const maZdvihyDelenia = zdvihyDelenia.length + akcieDelenia.length > 0;
   useEffect(() => {
     if (!maZdvihyDelenia) return;
     const klaves = (e: KeyboardEvent): void => {
@@ -1582,11 +1584,12 @@ export function HernaPlocha({
       if (otvorene('.lupa:not(.doznieva), [role="dialog"]')) return;
       e.preventDefault();
       setZdvihyDelenia([]);
+      setAkcieDelenia([]);
     };
     window.addEventListener("keydown", klaves);
     return () => window.removeEventListener("keydown", klaves);
   }, [maZdvihyDelenia]);
-  const klikDelenia = (elderId: string, stupen: number): void => setZdvihyDelenia((x) => klikNaStupen(view, ja, x, elderId, stupen));
+  const klikDelenia = (elderId: string, stupen: number): void => setZdvihyDelenia((x) => klikNaStupen(view, ja, x, elderId, stupen, akcieDelenia));
   // Výučba čaká konkrétne rozdelenie (v11 jeden zámer so zdvihmi aj na viac starších) — zdvih na iného
   // staršieho, než scenár chce, server odmietne; Potvrdiť povie prečo.
   const chybaDeleniaVyucby = ((): string | null => {
@@ -3351,9 +3354,9 @@ export function HernaPlocha({
     // Rozdeľovanie (v11): Návrh vyplní úplné rozdelenie, Potvrdiť pošle len úplné (iné server
     // neprijme), v jeho rohu ↺ Reset. Keď je rozdelenie úplné, Potvrdiť pulzuje.
     if (planDelenia !== null && krokDelenia !== null) {
-      const n = zdvihyDelenia.length;
+      const n = zdvihyDelenia.length + akcieDelenia.length;
       const prikaz = planDelenia.prikaz;
-      const navrh = navrhRozdelenia(view);
+      const navrh = navrhRozdelenia(view, akcieDelenia);
       const dovod =
         chybaDeleniaVyucby ??
         planDelenia.chyba ??
@@ -3390,7 +3393,7 @@ export function HernaPlocha({
             >
               ✓ potvrdiť{n > 0 && <span className="poc">{n}</span>}
             </button>
-            <button type="button" className="pecat-reset" disabled={n === 0} aria-label="Reset — vrátiť nepotvrdené zdvihy" title="Reset — vrátiť nepotvrdené zdvihy (Esc)" onClick={() => setZdvihyDelenia([])}>
+            <button type="button" className="pecat-reset" disabled={n === 0} aria-label="Reset — vrátiť nepotvrdené zdvihy" title="Reset — vrátiť nepotvrdené zdvihy (Esc)" onClick={resetDelenia}>
               ↺
             </button>
           </span>
@@ -3526,17 +3529,7 @@ export function HernaPlocha({
         ),
       };
     }
-    if (!somNaTahu && view.faza === "draft" && draft?.krok === "zajatie") {
-      return {
-        nadpis: "Pokus o zajatie",
-        text: (
-          <span className="cakanie-text">
-            <strong>{menoHraca(super_)}</strong> rozhoduje, či skúsi zajať staršieho, ktorý sa ho bojí na stupni 3
-            <span className="bodky" aria-hidden="true" />
-          </span>
-        ),
-      };
-    }
+
     if (!somNaTahu && view.hasicVolba !== null && view.hasicVolba.hrac === super_) {
       const k = view.hasicVolba.karta;
       return {
@@ -3589,18 +3582,7 @@ export function HernaPlocha({
         ),
       };
     }
-    if (!somNaTahu && view.faza === "draft" && draft?.krok === "zajatie" && draft.naTahu === super_) {
-      return {
-        nadpis: "Pokus o zajatie — súper",
-        text: (
-          <span className="cakanie-text">
-            <strong>{menoHraca(super_)}</strong> sa rozhoduje, či skúsi zajať staršieho (karta by išla jemu do ruky a ty si pri stavbe šenku necháš 1 kartu
-            zadarmo; ak vyhráš bitku, pokus zlyhá)
-            <span className="bodky" aria-hidden="true" />
-          </span>
-        ),
-      };
-    }
+
     // Pitka naraz (Michal 2026-10-27): kto skončil, čaká na súpera; s Bzdochou sa čaká, kým súper skončí.
     const psCak = view.pitkaStav;
     if (!somNaTahu && view.faza === "pitka" && view.vizia === null && psCak !== null && psCak.reakcia === null && !psCak.hotovy[ja] && cakaSBzdochou(psCak, ja)) {
@@ -3731,57 +3713,6 @@ export function HernaPlocha({
 
       case "draft": {
         if (draft === null) return null;
-        if (draft.krok === "zajatie") {
-          const vybrany = mode.typ === "pokus" ? view.starsi.find((e) => e.elderId === mode.elderId) : undefined;
-          if (mode.typ === "pokus" && vybrany !== undefined) {
-            const cenaTahu = textDopadov(dopadyNahladu(data, view, stavPoPokuse(view, vybrany.elderId), 0));
-            const n = nahladPokusu(view, vybrany.elderId);
-            return {
-              nadpis: `Pokus o zajatie — ${menoKarty(vybrany.karta.defId)}`,
-              text: (
-                <>
-                  Karta staršieho pôjde tebe do ruky (smieš ju vyložiť, len akcie)
-                  {view.pokusy[super_] === null ? <>; {menoHraca(super_)} si pri stavbe šenku nechá 1 kartu zadarmo</> : null}. <strong>Vyhráš bitku — je tvoj väzeň</strong> ({n.poradie}. zajatý v partii)
-                  a {menoHraca(super_)} ti odovzdá {spakov(n.kradez)} za svoj najvyšší marker pri ňom; väzni {n.mojichVaznov}/{n.vazniNaVyhru}
-                  {n.vyhra ? " — vyhráš hneď" : ""}. Prehráš alebo sekera — vráti sa a tvoj strach pri ňom klesne na nič.
-                  {cenaTahu !== null && <> Cena: {cenaTahu}.</>}
-                </>
-              ),
-              stred: pecatTahu({
-                text: <Vymena das={<CenaCigariet n={KONSTANTY.CENA_POKUSU} />} dostanes="skúsiť zajať" />,
-                vyucba: "potvrdit",
-                dovod: null,
-                akcia: () => posli({ type: "pokus", elderId: vybrany.elderId }),
-                zrus: { akcia: zrus, popis: "Iný starší" },
-              }),
-            };
-          }
-          return {
-            nadpis: "Pokus o zajatie",
-            text: (
-              <>
-                Za {cigariet(KONSTANTY.CENA_POKUSU)} (prepadne) si vezmi do ruky staršieho, pri ktorom máš strach na červenej.{" "}
-                {view.pokusy[super_] === null ? `${menoHraca(super_)} si pri stavbe šenku nechá 1 kartu zadarmo.` : "Skúšate obaja — karta zadarmo nebude."}{" "}
-                <strong>Vyhráš bitku — je tvoj väzeň.</strong>
-              </>
-            ),
-            tlacidla: (
-              <>
-                {moznePokusyJa.map((e) => (
-                  <button key={e.elderId} onClick={() => setMode({ typ: "pokus", elderId: e.elderId })}>
-                    {menoKarty(e.karta.defId)}
-                    <span className="cena">−{cigariet(KONSTANTY.CENA_POKUSU)}</span>
-                  </button>
-                ))}
-              </>
-            ),
-            // Kým beží súhrn po bitke, pečiatka čaká (Michal 2026-11-02) — ponuku zajatia súhrn zo stola
-            // vytlačil, tak by hráč klikol „nezajímam“ naslepo; ukáže sa po Ďalej/Preskočiť.
-            stred: suhrnBezi
-              ? null
-              : pecatTahu({ text: "nezajímam", druh: "pas", tip: "Bez pokusu o zajatie — starší ostanú, kde sú.", akcia: () => posli({ type: "bezPokusu" }) }),
-          };
-        }
         if (draft.krok === "stavba" && naneisto) {
           return {
             nadpis: "Stavba šenku",
@@ -3791,18 +3722,12 @@ export function HernaPlocha({
         if (draft.krok === "stavba") {
           return {
             nadpis: "Stavba šenku",
-            text:
-              krokSt.nechaj === 1 ? (
-                <>
-                  <strong>Karta zadarmo:</strong> {menoHraca(super_)} skúša zajatie, preto si najprv klikni kartu, ktorú si <strong>necháš do ruky</strong>{" "}
-                  (nevie, ktorú). Potom {kariet(krokSt.doSenku)} do <strong>Šenku</strong>; {zvysnePojdu(krokSt.odhod)} naspodok balíčka.
-                </>
-              ) : (
-                <>
-                  Klikom vyber {kariet(krokSt.doSenku)} do <strong>Šenku</strong> (uvidia ich obaja) — zdvihnú sa, ďalší klik vráti.{" "}
-                  {zvysnePojdu(krokSt.odhod).replace(/^z/, "Z")} naspodok balíčka (súper ich neuvidí).
-                </>
-              ),
+            text: (
+              <>
+                Klikom vyber {kariet(krokSt.doSenku)} do <strong>Šenku</strong> (uvidia ich obaja) — zdvihnú sa, ďalší klik vráti.{" "}
+                {zvysnePojdu(krokSt.odhod).replace(/^z/, "Z")} naspodok balíčka (súper ich neuvidí).
+              </>
+            ),
             // Na mobile je „potvrdiť“ v pätičke panelu stavby.
             ...(mobil
               ? {}
@@ -3810,14 +3735,10 @@ export function HernaPlocha({
                   stred: pecatTahu({
                     text: "potvrdiť",
                     skratka: "k",
-                    dovod: stavbaHotova
-                      ? null
-                      : krokSt.nechaj === 1 && nechatStavby === null
-                        ? "Najprv klikni na kartu, ktorú si necháš zadarmo do ruky."
-                        : `Do Šenku ${doSenkuStavby.length} z ${krokSt.doSenku} — klikni na kartu, ktorá tam pôjde.`,
-                    tip: `${krokSt.nechaj === 1 ? "1 do ruky, " : ""}${zvysnePojdu(odhodStavby.length)} naspodok balíčka.`,
+                    dovod: stavbaHotova ? null : `Do Šenku ${doSenkuStavby.length} z ${krokSt.doSenku} — klikni na kartu, ktorá tam pôjde.`,
+                    tip: `${zvysnePojdu(odhodStavby.length)} naspodok balíčka.`,
                     akcia: potvrdStavbu,
-                    ...(senokStavby.length > 0 || nechatStavby !== null ? { zrus: { akcia: zrusStavbu, popis: "Zrušiť výber" } } : {}),
+                    ...(senokStavby.length > 0 ? { zrus: { akcia: zrusStavbu, popis: "Zrušiť výber" } } : {}),
                   }),
                 }),
           };
@@ -4493,8 +4414,44 @@ export function HernaPlocha({
           const zvysok = planDelenia.zvysok;
           const ide = planDelenia.cena;
           const m = planDelenia.esteSaDa.length;
+          // Zajať (Nakladačka) / Presvedčiť (hádka), v11.4: tlačidlo pri každom staršom, pri ktorom sa
+          // na body dá — s cenou (dotiahnutie na červenú + 5) a náhľadom. Zapnuté svieti, klik ho vráti.
+          const zajatie = krokDelenia === "prebytok";
+          const cenaAkcie = zajatie ? KONSTANTY.CENA_ZAJATIA : KONSTANTY.CENA_PRESVEDCENIA;
+          const ponukaAkcii = [...new Set([...moznostiAkcie(view, ja, planDelenia.marker, planDelenia.body), ...akcieDelenia])];
+          const tlacidlaAkcii =
+            ponukaAkcii.length === 0 ? undefined : (
+              <>
+                {ponukaAkcii.map((id) => {
+                  const e = view.starsi.find((x) => x.elderId === id);
+                  if (e === undefined) return null;
+                  const zapnuta = akcieDelenia.includes(id);
+                  const dotiahni = zdvihyPreAkcie(view, ja, planDelenia.marker, [id]).length > 0 && !zdvihyDelenia.some((z) => z.elderId === id && z.na === 3);
+                  const n = nahladZajatia(view, id);
+                  const nahlad = zajatie
+                    ? `Zajať ${menoKarty(e.karta.defId)} za ${cenaAkcie}${dotiahni ? " (s dotiahnutím strachu na červenú)" : ""}: väzeň v tvojej pivnici (${n.mojichVaznov}/${n.vazniNaVyhru}${n.vyhra ? " — vyhráš hneď" : ""}), ${menoHraca(super_)} ti odovzdá ${spakov(n.kradez)}.`
+                    : `Presvedčiť ${menoKarty(e.karta.defId)} za ${cenaAkcie}${dotiahni ? " (s rečami na červenú)" : ""}: jeho karta ide tebe do ruky a ostane v tvojom balíčku; tvoje reči pri ňom zaniknú, priazeň ostane.`;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      className={zapnuta ? "vybrane" : undefined}
+                      aria-pressed={zapnuta}
+                      data-vyucba={`${zajatie ? "zajat" : "presvedcit"}:${id}`}
+                      title={zapnuta ? `${nahlad} Klik zruší.` : nahlad}
+                      onClick={() => prepniAkciuDelenia(id)}
+                    >
+                      {zapnuta ? "✓ " : ""}
+                      {zajatie ? "Zajať" : "Presvedčiť"}: {menoKarty(e.karta.defId)}
+                      <span className="cena">−{cenaAkcie}{dotiahni && !zapnuta ? "+" : ""}</span>
+                    </button>
+                  );
+                })}
+              </>
+            );
           return {
             jednotny: true,
+            ...(tlacidlaAkcii === undefined ? {} : { tlacidla: tlacidlaAkcii }),
             nadpis: (
               <>
                 <span className="pil-nazov">
@@ -4571,14 +4528,6 @@ export function HernaPlocha({
     if (view.volbaNastupu?.typ === "kapybara" && view.volbaNastupu.hrac === ja && elder.reci[super_] > 0) {
       return { akcia: "Kapybara — súperove reči o stupeň nižšie", klik: () => posli({ type: "kapybara", elderId: elder.elderId }) };
     }
-    if (!somNaTahu) return undefined;
-    // Pokus o zajatie (v9): staršieho, ktorý sa ma bojí na stupni 3, skúsim zajať.
-    if (moznePokusyJa.some((e) => e.elderId === elder.elderId)) {
-      return {
-        akcia: `skúsiť zajať (−${cigariet(KONSTANTY.CENA_POKUSU)})`,
-        klik: () => setMode({ typ: "pokus", elderId: elder.elderId }),
-      };
-    }
     return undefined;
   };
 
@@ -4590,8 +4539,7 @@ export function HernaPlocha({
       ? null
       : {
           ...krokNa,
-          nazov:
-            krokNa.typ === "zajatie" ? "Pokus o zajatie" : NAZOV_DELENIA[krokNa.typ],
+          nazov: NAZOV_DELENIA[krokNa.typ],
         };
   const klucKroku = krokStarsich === null ? null : `${view.kolo}-${krokStarsich.typ}-${krokStarsich.kto}`;
   /** Čie čísla línia zvýrazní (Body hráča alebo súpera); null = línia kariet. */
@@ -4691,23 +4639,14 @@ export function HernaPlocha({
   }, [view.starsi]);
   const krokMoj = krokStarsich !== null && krokStarsich.kto === ja && somNaTahu;
 
-  /** Prečo sa na staršieho v mojom kroku nedá kliknúť — textom namiesto len vyblednutia (UI U12). */
-  const zamokStarsieho = (e: ElderState): string | undefined => {
-    if (!krokMoj || krokStarsich === null) return undefined;
-    if (krokStarsich.typ === "zajatie") {
-      if (vOhrozeni(view, e.elderId)) return "v ohrození";
-      if (!pokusMozny(e, ja)) return "tvoj strach nie je na červenej";
-      return hJa.cigarety < KONSTANTY.CENA_POKUSU ? "nemáš cigaretu" : "nedá sa zajať";
-    }
-    // Nakladačka a hádka: stupne, ktoré sa nedajú, nesie teplomer (zamknutý, mimo).
-    return undefined;
-  };
+  /** Prečo sa na staršieho v mojom kroku nedá kliknúť — Nakladačka a hádka: stupne, ktoré sa nedajú, nesie teplomer (zamknutý, mimo). */
+  const zamokStarsieho = (_e: ElderState): string | undefined => undefined;
   /** Starší pri rozdeľovaní (v11): stupne môjho markera a nepotvrdený zdvih z plánu jadra. */
   const rozdelenieStarsieho = (e: ElderState): RozdelenieStarsieho | undefined => {
     if (planDelenia === null || krokDelenia === null || !krokMoj) return undefined;
     return {
       marker: planDelenia.marker,
-      stupne: stupneRozdelenia(view, ja, zdvihyDelenia, e.elderId),
+      stupne: stupneRozdelenia(view, ja, zdvihyDelenia, e.elderId, akcieDelenia),
       zdvih: zdvihStarsieho(e, ja, planDelenia.marker, zdvihyDelenia),
       klik: (s) => klikDelenia(e.elderId, s),
     };
@@ -4739,7 +4678,6 @@ export function HernaPlocha({
     const e = m.elder;
     const rozdelenie = rozdelenieStarsieho(e);
     const klik = rozdelenie === undefined ? klikStarsi(e) : undefined;
-    const iPatron = view.pokusy.findIndex((x) => x?.elderId === e.elderId);
     const zmeny = view.zmenyMarkerov.filter((x) => x.elderId === e.elderId);
     const s: StarsiVLinii = {
       elder: e,
@@ -4747,8 +4685,8 @@ export function HernaPlocha({
       obrazok: obrazokStarsieho(e.karta.defId),
       klik,
       dovod: klik === undefined && rozdelenie === undefined ? zamokStarsieho(e) : undefined,
-      patron: iPatron === -1 ? null : { kto: iPatron as PlayerId },
-      vybrany: mode.typ === "pokus" && mode.elderId === e.elderId,
+      presvedcil: e.presvedcil === undefined ? null : { kto: e.presvedcil },
+      vybrany: akcieDelenia.includes(e.elderId),
       zmeny,
       rozdelenie,
       po: rozdelenie?.zdvih == null ? undefined : poDeleni.starsi.find((x) => x.elderId === e.elderId),
@@ -4770,47 +4708,11 @@ export function HernaPlocha({
   // meno a priazeň sú pod staršinom priamo v línii.
   const rezimBaru = rezimRadov({ nastenkaKlikom: vrstva === "lokality", nastenkaNaStole, liniaStarsich: bodovyRezim });
   const idLinieStarsich = useId();
-  // Ponuka pokusu o zajatie (v9, predtým patronátu #110): kým si hráč staršieho nevybral, stôl ukáže
-  // namiesto línie starších len tých, ktorých smie skúsiť zajať — kartu s akciami, priazeň a cenu.
-  const vyberZajatia = krokMoj && krokStarsich?.typ === "zajatie" && mode.typ !== "pokus" && moznePokusyJa.length > 0;
-  // „všetci starší“ prepne na líniu (markery, súboje) bez bodového režimu barov; nový krok začne ponukou.
-  const [liniaPriZajati, setLiniaPriZajati] = useState(false);
-  useEffect(() => setLiniaPriZajati(false), [klucKroku]);
-  // Súhrn po bitke má na línii prednosť (Michal 2026-11-02): keď súper ako obranca vyberie lokalitu hneď,
-  // útočník rozhoduje o zajatí, kým súhrn ešte beží — ponuka by súhrn zo stola vytlačila uprostred kroku.
-  const ponukaZajatia: MoznostZajatia[] | null =
-    vyberZajatia && !suhrnBezi && pohladStarsich === null && !liniaPriZajati
-      ? moznePokusyJa.map((e) => {
-          const vyber = (): void => setMode({ typ: "pokus", elderId: e.elderId });
-          const n = nahladPokusu(view, e.elderId);
-          const ucinok = ucinokPriazne(data, e);
-          return {
-            elderId: e.elderId,
-            meno: menoKarty(e.karta.defId),
-            karta: (sirka: number) => sLupou({ karta: e.karta, sirka, onClick: vyber }),
-            priazen: { sila: priazenSila(e), nazov: scorecardStarsieho(data, e).nazov, kratko: ucinok.kratko, cely: ucinok.cely },
-            cigarety: KONSTANTY.CENA_POKUSU,
-            vazen: { poradie: n.poradie, spaky: n.kradez, vyhra: n.vyhra, mojich: n.mojichVaznov, naVyhru: n.vazniNaVyhru },
-            vyber,
-          };
-        })
-      : null;
   // Mimo kroku tlačidlo nie je — na stôl sa vracia Esc a dlaždicou Starší; „← Späť na stôl“
   // zaberal miesto starším (Michal 2026-10-30).
   const tlacidloLinieStarsich: ReactNode =
     krokStarsich !== null ? (
-      vyberZajatia ? (
-        <button
-          type="button"
-          className="ls-tlacidlo"
-          onClick={() => {
-            setLiniaPriZajati(false);
-            setPohladStarsich(null);
-          }}
-        >
-          ← ponuka zajatia
-        </button>
-      ) : krokMoj ? null : (
+      krokMoj ? null : (
         <button type="button" className="ls-tlacidlo" onClick={() => setNahliadnutie(true)} title="Krok nezruší — vráti sa klikom alebo Esc">
           pozrieť stôl
         </button>
@@ -5164,14 +5066,10 @@ export function HernaPlocha({
     if (stavim) {
       // Na ťahu výber klikom; po potvrdení (čakanie na súpera) to, čo hráč poslal.
       const doSenku = somNaTahu ? doSenkuStavby : [...(draft.mojVyber?.doSenku ?? [])];
-      // Karta zadarmo (v10.1) — po potvrdení ju ukáže výber, ktorý hráč poslal.
-      const nechana = somNaTahu ? nechatStavby : (draft.mojVyber?.nechaj ?? null);
       const plny = doSenku.length >= krokSt.doSenku;
       const textStavby = !stavbaHotova
-        ? krokSt.nechaj === 1 && nechatStavby === null
-          ? "Karta zadarmo: najprv klikni na kartu, ktorú si necháš do ruky."
-          : `Do Šenku ${doSenku.length} z ${krokSt.doSenku}. Vybraná karta je zdvihnutá, ďalší klik ju vráti.`
-        : `Hotovo? ${krokSt.nechaj === 1 ? "1 do ruky, " : ""}${zvysnePojdu(krokSt.odhod)} naspodok balíčka.`;
+        ? `Do Šenku ${doSenku.length} z ${krokSt.doSenku}. Vybraná karta je zdvihnutá, ďalší klik ju vráti.`
+        : `Hotovo? ${zvysnePojdu(krokSt.odhod)} naspodok balíčka.`;
       const lokalita = view.ciel?.lokalita ?? null;
       // Lokalita, o ktorú sa bije, namiesto Smetiska (#147): väčšia než karty balíčka — hráč
       // vidí hrany, efekt a kraje, k čomu karty vyberá. Vysoká ako balíček s miestom na zdvihnutú
@@ -5187,7 +5085,7 @@ export function HernaPlocha({
               <strong>Stavba šenku</strong>
               <span>
                 {somNaTahu
-                  ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — klikom vyber ${krokSt.nechaj === 1 ? "najprv 1 kartu zadarmo do ruky, potom " : ""}${kariet(krokSt.doSenku)} do Šenku, ${zvysnePojdu(krokSt.odhod)} naspodok balíčka.`
+                  ? `Tvoj balíček: ${kariet(draft.mojBalicek.length)} — klikom vyber ${kariet(krokSt.doSenku)} do Šenku, ${zvysnePojdu(krokSt.odhod)} naspodok balíčka.`
                   : zaHracaHra && draft.mojVyber === null
                     ? "Šenok za teba stavia Melichar."
                     : `${tvar(rodHracaP(ja), "Vybral si", "Vybrala si", "Výber je hotový")} — čakáš, kým vyberie ${menoHraca(super_)}.`}
@@ -5206,35 +5104,19 @@ export function HernaPlocha({
             <div className={`stavba-balicek harmonika${plny ? " plny" : ""}`} role="group" aria-label={`Výber do Šenku: ${doSenku.length} z ${krokSt.doSenku}`}>
               <span className="stavba-balicek-nazov">
                 do Šenku <small>{doSenku.length}/{krokSt.doSenku}</small>
-                {krokSt.nechaj === 1 && (
-                  <>
-                    {" "}
-                    · do ruky <small>{nechana === null ? 0 : 1}/1</small>
-                  </>
-                )}
                 <span className="stavba-balicek-pozn" title="Nástroj ide naspodok Náradia, ostatné naspodok Občanov">
                   ostatné naspodok · Náradie {view.naradiePocet} · Občania {view.obcaniaPocet}
                 </span>
               </span>
               {draft.mojBalicek.map((k) => {
                 const vybrata = doSenku.includes(k.uid);
-                const nechanaK = nechana === k.uid;
-                // Plný výber: nevybraté karty sú zosivené — do Šenku už nepôjdu (#148); karta zadarmo nie.
-                const sediva = plny && !vybrata && !nechanaK && !(krokSt.nechaj === 1 && nechana === null);
-                const trieda = `stavba-vyber${vybrata ? " vybrata" : ""}${nechanaK ? " nechana" : ""}${sediva ? " zosivena" : ""}`;
-                const stitok = nechanaK ? <span className="nova-stitok">do ruky</span> : undefined;
-                if (!somNaTahu) return sLupou({ karta: k, sirka: sirkaDraftu }, { trieda, ...(stitok === undefined ? {} : { stitok }) });
-                const props = { karta: k, sirka: sirkaDraftu, onClick: () => prepniStavbu(k.uid), stlacena: vybrata || nechanaK, zakazana: sediva };
-                const titul = nechanaK
-                  ? "Necháš si ju zadarmo do ruky — klik vráti"
-                  : vybrata
-                    ? "Do Šenku — klik vráti"
-                    : krokSt.nechaj === 1 && nechana === null
-                      ? "Klik: necháš si ju zadarmo do ruky"
-                      : sediva
-                        ? "Do Šenku už máš plno — najprv niektorú vráť"
-                        : "Klik: do Šenku";
-                return sLupou(props, { trieda, titul, ...(stitok === undefined ? {} : { stitok }) });
+                // Plný výber: nevybraté karty sú zosivené — do Šenku už nepôjdu (#148).
+                const sediva = plny && !vybrata;
+                const trieda = `stavba-vyber${vybrata ? " vybrata" : ""}${sediva ? " zosivena" : ""}`;
+                if (!somNaTahu) return sLupou({ karta: k, sirka: sirkaDraftu }, { trieda });
+                const props = { karta: k, sirka: sirkaDraftu, onClick: () => prepniStavbu(k.uid), stlacena: vybrata, zakazana: sediva };
+                const titul = vybrata ? "Do Šenku — klik vráti" : sediva ? "Do Šenku už máš plno — najprv niektorú vráť" : "Klik: do Šenku";
+                return sLupou(props, { trieda, titul });
               })}
             </div>
           </div>
@@ -5692,9 +5574,7 @@ export function HernaPlocha({
   const hranaVlavo = stolTlacidla?.vlavo ?? pokyn?.vlavo ?? null;
   const hranaStred = stolTlacidla?.stred ?? pokyn?.stred ?? null;
   const vpravoTahu = stolTlacidla?.vpravo ?? null;
-  // Pri výbere patróna ležia starší na stole s kartou (ponuka) alebo v línii na klik — tlačidlá
-  // s menami by ich len opakovali a pri štyroch by pretiekli cez dosku hráča.
-  const tlacidlaPokynu = vyberZajatia ? undefined : pokyn?.tlacidla;
+  const tlacidlaPokynu = pokyn?.tlacidla;
   const hranaVpravo =
     vpravoTahu === null && tlacidlaPokynu === undefined && pokyn?.vpravo === undefined ? null : (
       <>
@@ -6129,10 +6009,7 @@ export function HernaPlocha({
               </div>
             )}
             <div className="vrstva-starsich" id={idLinieStarsich} hidden={!starsiViditelni} data-vyucba="linia-starsich">
-              {starsiViditelni && ponukaZajatia !== null && (
-                <PonukaZajatia moznosti={ponukaZajatia} menoSupera={menoHraca(super_)} superSkusa={view.pokusy[super_] !== null} vsetci={() => setLiniaPriZajati(true)} />
-              )}
-              {starsiViditelni && ponukaZajatia === null && (
+              {starsiViditelni && (
                 <LiniaStarsich
                   rad={radLinie}
                   data={data}
@@ -6581,7 +6458,7 @@ export function HernaPlocha({
                   </span>
                   {nova &&<span className="nova-stitok">zo šenku</span>}
                   {dobrata && <span className="nova-stitok">dobraná</span>}
-                  {jeKartaBossa(view, k.uid) && <span className="nova-stitok">starší · pokus o zajatie</span>}
+                  {majitelPresvedcenej(view, k.uid) !== null && <span className="nova-stitok">presvedčený starší</span>}
                   {pary.length > 0 && <span className="spoj-stitok">{pary.length === 1 ? "1 spoj" : `${pary.length} spoje`}</span>}
                 </>
               );

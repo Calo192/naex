@@ -7,10 +7,10 @@ import { CENA_POLA } from "./textyStarsich.ts";
 
 /**
  * Kľúč fázy stola: mení sa pri každom prechode, ktorý hráča posúva k ďalšej práci —
- * nové kolo, výber lokality, šenok, pokus o zajatie, Zhromaždenie, Pitka, bitka.
+ * nové kolo, výber lokality, šenok, Zhromaždenie, Pitka, bitka.
  */
 export function klucPrechodu(view: Pick<ClientState, "kolo" | "faza" | "draftStav" | "pitkaCislo">): string {
-  const krok = view.faza === "draft" ? (view.draftStav?.krok === "zajatie" ? "zajatie" : "senok") : "";
+  const krok = view.faza === "draft" ? "senok" : "";
   return `${view.kolo}|${view.faza}|${krok}|${view.faza === "pitka" ? view.pitkaCislo : ""}`;
 }
 
@@ -25,8 +25,8 @@ export interface Medziobrazovka {
 
 /**
  * Medziobrazovka pre to, čo sa na stole práve začína (Michal 2026-10-27: výber lokality,
- * šenok, Zhromaždenie, Pitka, hádka (v10), bitka, prebytok, nové kolo, finále). Pokus o zajatie
- * ju nemá — je to krok vnútri fázy. Finále nahradilo starý oznam finále.
+ * šenok, Zhromaždenie, Pitka, hádka (v10), bitka, prebytok, nové kolo, finále). Finále nahradilo
+ * starý oznam finále.
  * `bitkaKola` = kolo bitky, ktorej počítadlo čaká na stole — bitka sa často vyhodnotí
  * naraz s koncom kola a stôl je už v ďalšom kole, kým počítadlo len začína.
  */
@@ -114,10 +114,6 @@ export function medziobrazovka(
         nadnadpis: kolo,
         nadpis: "Šenok",
         text:
-          // v10.1: pokus o zajatie je pred stavbou — okno ho ohlási, keď sa oň niekto môže pokúsiť.
-          (view.draftStav?.krok === "zajatie"
-            ? "Najprv pokus o zajatie: útočník, potom obranca smie za cigaretu skúsiť zajať staršieho, pri ktorom má strach na červenej — vezme si ho do ruky a súper si pri stavbe nechá 1 kartu zadarmo. "
-            : "") +
           `Každý dostane ${KONSTANTY.STAVBA_NARADIE} karty z Náradia a ${KONSTANTY.STAVBA_OBCANIA} z Občanov a tajne ich rozdelí: polovica pôjde do šenku, polovica naspodok. ` +
           `Potom beriete zo šenku striedavo, začína obranca (na prvom ťahu len 1 kartu) — 1 karta za ${cigariet(KONSTANTY.CENA_SENKU[1] ?? 1)}, 2 karty za ${cigariet(KONSTANTY.CENA_SENKU[2] ?? 3)}.`,
       };
@@ -152,7 +148,7 @@ export function medziobrazovka(
       const text =
         drzi === ja
           ? vyberam
-            ? `Vyhral si bitku. Rozdeľ Nakladačku na svoj strach — klikni na stupeň v teplomeri pri staršom (${CENA_POLA}); čo už nikam nestačí, prepadne.`
+            ? `Vyhral si bitku. Rozdeľ Nakladačku na svoj strach — klikni na stupeň v teplomeri pri staršom (${CENA_POLA}); staršieho na červenom strachu smieš za ${KONSTANTY.CENA_ZAJATIA} zajať. Čo už nikam nestačí, prepadne.`
             : "Vyhral si bitku — Nakladačka ide na tvoj strach."
           : `${S} vyhral bitku a rozdeľuje Nakladačku na svoj strach — starší sa ho začnú báť viac a priazeň sa posunie k tebe.`;
       return { kluc: `${view.kolo}|Nakladačka`, nadnadpis: kolo, nadpis: "Nakladačka", text };
@@ -162,9 +158,9 @@ export function medziobrazovka(
   }
 }
 
-/** Krok, ktorý sa robí na staršom (hádka, Nakladačka, pokus o zajatie) — vtedy stôl ukazuje líniu starších. */
+/** Krok, ktorý sa robí na staršom (hádka, Nakladačka) — vtedy stôl ukazuje líniu starších. */
 export interface KrokNaStarsich {
-  readonly typ: "reci" | "prebytok" | "zajatie";
+  readonly typ: "reci" | "prebytok";
   readonly kto: PlayerId;
 }
 
@@ -174,7 +170,6 @@ export function krokNaStarsich(view: Pick<ClientState, "koniec" | "faza" | "bitk
   if (view.faza === "bitka" && bs !== null && bs.caka !== null && (bs.krok === "reci" || bs.krok === "prebytok")) {
     return { typ: bs.krok, kto: bs.caka };
   }
-  if (view.faza === "draft" && view.draftStav?.krok === "zajatie") return { typ: "zajatie", kto: view.draftStav.naTahu };
   return null;
 }
 

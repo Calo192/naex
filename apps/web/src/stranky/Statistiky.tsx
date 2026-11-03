@@ -429,7 +429,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
             hodnota={percento(s.bitkyVyhrane - s.bitkyAkoUtocnikVyhrane, s.bitky - s.bitkyAkoUtocnik)}
             pomoc={`Vyhral ${s.bitkyVyhrane - s.bitkyAkoUtocnikVyhrane} z ${s.bitky - s.bitkyAkoUtocnik} bitiek, v ktorých sa bránil.`}
           />
-          <Udaj nazov="pokusy o zajatie (do v9 patronáty)" hodnota={cislo(s.bitkyOStarsich)} />
+          <Udaj nazov="presvedčení starší (v9–v11.3 pokusy o zajatie)" hodnota={cislo(s.bitkyOStarsich)} />
           <Udaj nazov="získanej Nakladačky" hodnota={cislo(s.prebytokZiskany)} pomoc="Rozdiel celkového poškodenia, ktorý hráč rozdelil na posuny markerov." />
         </Sekcia>
 

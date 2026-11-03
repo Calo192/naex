@@ -183,6 +183,42 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
       }
     }
   }, 30_000);
+
+  /** Bitka o lokalitu v 2. kole, hráč 0 rozdeľuje: Nakladačku (prebytok) či hádku (reci) — body `body`. */
+  function rozdelenie(krok: "prebytok" | "reci", body: number, prvy: Pick<ElderState, "strach" | "reci">, seed = 83): GameState {
+    const s0 = setupGame(data, seed);
+    return {
+      ...s0,
+      faza: "bitka",
+      kolo: 2,
+      utocnik: 1,
+      strany: [[], []],
+      ciel: { typ: "lokalita", lokalita: s0.lokalityVHre[0] as CardInstance },
+      lokalityVHre: s0.lokalityVHre.slice(1),
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, ...prvy } : e)),
+      bitkaStav:
+        krok === "prebytok"
+          ? bitka({ krok, caka: 0, vitaz: 0, prebytokDrzi: 0, prebytokZostava: body })
+          : bitka({ krok, caka: 0, vitaz: 0, hadka: { makke: [body, 0], vitaz: 0, velkost: body, zostava: body, prepadlo: 0, zdvihy: [] } }),
+    };
+  }
+
+  it("v11.4: zajme staršieho na svojom červenom strachu, keď Nakladačka stačí (väzeň a krádež); opatrná povaha smie odmietnuť", () => {
+    const s = rozdelenie("prebytok", 5, { strach: [3, 1], reci: [0, 3] });
+    // Teta Gizka (prahStarsi 1,5) chce za zajatie viac — smie ostať pri strachu.
+    for (const povaha of POVAHY.filter((x) => x.prahStarsi <= 0.5)) {
+      const cmd = tahBota(data, s, 0, 7, { povaha: povaha.id });
+      expect(cmd.type === "prebytok" ? cmd.zajatia : null, povaha.id).toEqual([s.starsi[0]!.elderId]);
+    }
+  }, 30_000);
+
+  it("v11.4: presvedčí staršieho, ktorý mu dáva priazeň, keď hádka stačí na reči na červenú + 5", () => {
+    const s = rozdelenie("reci", 8, { strach: [2, 3], reci: [0, 0] });
+    for (const povaha of POVAHY) {
+      const cmd = tahBota(data, s, 0, 7, { povaha: povaha.id });
+      expect(cmd.type === "reci" ? cmd.presvedcenia : null, povaha.id).toEqual([s.starsi[0]!.elderId]);
+    }
+  }, 30_000);
 });
 
 describe("offline protihráč — výkupné zdrojov (2026-10-27)", () => {

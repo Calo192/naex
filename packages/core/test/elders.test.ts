@@ -11,7 +11,6 @@ import {
   freshElder,
   loadGameData,
   najvyssiMarker,
-  pokusMozny,
   setupGame,
   spakyOdStarsieho,
   strachZ,
@@ -51,11 +50,11 @@ describe("v11 — stupnica 0–3 a markery hráčov", () => {
   });
 });
 
-describe("v11 — pokus o zajatie (§10)", () => {
-  it("zajať smie hráč, ktorého strach pri staršom je 3 — súperov strach nerozhoduje", () => {
-    expect(pokusMozny(elder([3, 0]), 0)).toBe(true);
-    expect(pokusMozny(elder([3, 3]), 1)).toBe(true);
-    expect(pokusMozny(elder([2, 0], [3, 0]), 0)).toBe(false); // reči nestačia
+describe("v11.4 — podmienka zajatia (§10)", () => {
+  it("vydesený pre hráča = jeho strach 3 — súperov strach ani reči nerozhodujú", () => {
+    expect(vydesil(elder([3, 0]), 0)).toBe(true);
+    expect(vydesil(elder([3, 3]), 1)).toBe(true);
+    expect(vydesil(elder([2, 0], [3, 0]), 0)).toBe(false); // reči nestačia
     expect(vydesil(elder([0, 3]), 0)).toBe(false);
   });
 });

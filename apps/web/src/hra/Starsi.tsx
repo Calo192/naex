@@ -148,19 +148,19 @@ function DlazdicaStarsieho({
   readonly mena?: readonly [string, string] | undefined;
 }) {
   const ja = p === view.ja;
-  const su = opponentOf(p);
   const smer = smerStarsieho(e, p);
   const vyhra = spakyOdStarsieho(e, p, true);
-  const patron = view.pokusy[p]?.elderId === e.elderId ? p : view.pokusy[su]?.elderId === e.elderId ? su : null;
+  // Presvedčený (v11.4): kto ho presvedčil — verejné, pri staršom.
+  const presvedcil = e.presvedcil ?? null;
   const zmeny = view.zmenyMarkerov.filter((x) => x.elderId === e.elderId);
   const fav = favourStarsieho(data, e);
   const pk = priazenKola(e, view.ja);
   const mena: readonly [string, string] = menaHracov ?? (view.ja === 0 ? ["ty", menoSupera] : [menoSupera, "ty"]);
   const napoveda = useNapovedaStarsieho(() => obsahNapovedy({ data, elder: e, meno, ja: view.ja, mena }));
-  const riadok = patron !== null ? `v ohrození${patron === p ? "" : " (súper)"}` : smer === "dole" ? riadokDlazdice(smer, ja) : riadokPriazneDlazdice(pk.hrac, p, view.ja);
+  const riadok = presvedcil !== null ? `presvedčený${presvedcil === p ? "" : " (súper)"}` : smer === "dole" ? riadokDlazdice(smer, ja) : riadokPriazneDlazdice(pk.hrac, p, view.ja);
   const popis =
     `${meno}: priazeň ${ktoPriazen(pk, { ja: "ty", su: menoSupera })}. ${ja ? "Ty" : menoSupera}: ${textMarkerov(e.strach[p], e.reci[p])}, po vyhratej bitke ${vyhra} š.` +
-    (patron === null ? "" : ` V ohrození — zajať ho skúša ${patron === view.ja ? "ty" : "súper"}; v tomto kole sa nedvíha.`) +
+    (presvedcil === null ? "" : ` Presvedčil ho ${presvedcil === view.ja ? "ty" : "súper"} — karta staršieho je v jeho balíčku.`) +
     (zmeny.length === 0 ? "" : ` Od bitky ${zmeny.length}× zmena (${[...new Set(zmeny.map((x) => NAZOV_ZDROJA[x.zdroj]))].join(", ")}).`);
   return (
     <div role="listitem" tabIndex={0} className={`zdroj starsi-dlazdica ${smer}`} style={{ "--znakov": meno.length } as CSSProperties} aria-label={popis} {...napoveda.props}>

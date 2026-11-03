@@ -1399,7 +1399,7 @@ export function PriebehKola({
       id: "draft",
       nazov: "Draft",
       tip: {
-        nadpis: "Draft — šenok a pokus o zajatie",
+        nadpis: "Draft — šenok",
         text: (
           <>
             <b>Stavba šenku:</b> každý dostane {KONSTANTY.STAVBA_NARADIE} karty z Náradia a {KONSTANTY.STAVBA_OBCANIA} z Občanov; obaja
@@ -1409,9 +1409,8 @@ export function PriebehKola({
               cigarety. Bez cigariet sa nedá brať. Kto prestane, súperovi nechá už len jeden posledný ťah.
             </span>
             <span className="tip-riadok">
-              <b>Pokus o zajatie:</b> pred stavbou šenku smie hráč skúsiť zajať staršieho, ktorý sa ho bojí na stupni 3 — najprv útočník, potom obranca.
-              Stojí {KONSTANTY.CENA_POKUSU} cigaretu (prepadne), karta staršieho ide pokúšajúcemu do ruky a marker sa v kole nehýbe; súper si pri stavbe
-              tajne nechá 1 kartu zadarmo (keď skúšajú obaja, nikto). Vyhrá bitku = väzeň (tretí vyhráva); prehrá = starší sa vráti a marker ustúpi o stupeň.
+              <b>Zajatie a presvedčenie</b> sú po bitke pri rozdelení: za {KONSTANTY.CENA_ZAJATIA} z Nakladačky zajmeš staršieho na svojom červenom strachu,
+              za {KONSTANTY.CENA_PRESVEDCENIA} z hádky presvedčíš staršieho, ktorý sa súpera bojí viac než teba.
             </span>
             {view.faza !== "draft" && <span className="tip-stav">Klik ukáže, čo ostalo v šenku ({view.senok.length}).</span>}
           </>

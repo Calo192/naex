@@ -29,19 +29,18 @@ import type {
   PitkaStav,
   StavSchopnostiVazna,
   StavHadky,
-  PokusOZajatie,
   ZdvihVBitke,
   Vykupne,
   VyberStavby,
   ZhromazdenieStav,
 } from "./engine.ts";
-import { cenaDedicstva, cervenychHraca, cirhozyPreVeterinara, lokalityNaVyber, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vazniHraca } from "./engine.ts";
+import { cenaDedicstva, cervenychHraca, cirhozyPreVeterinara, lokalityNaVyber, majitelPresvedcenej, vykupneHraca, mozeHrat, naTahu, kartyBitky, spakyZaVyhru, uidZaverecnej, vazniHraca } from "./engine.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { pocetAbstakov } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
 import { favourStarsieho, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, stupenStavu } from "./elders.ts";
-import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia } from "./rozdelenie.ts";
+import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia, prikazRozdelenia } from "./rozdelenie.ts";
 import type { DamageResult } from "./battle.ts";
 
 export interface HracVerejne {
@@ -90,11 +89,8 @@ export interface BitkaVerejne {
    * krok reci); verejné.
    */
   readonly hadka?: StavHadky;
-  /**
-   * Najvyšší marker oboch pri staršom v ohrození pred bodovaním (v11) — z neho je krádež
-   * pri zajatí. Chýba pred bodovaním.
-   */
-  readonly predBodovanim?: Readonly<Record<string, readonly [Stupen, Stupen]>>;
+  /** Starší zajatí pri rozdelení Nakladačky (v11.4) — verejné. */
+  readonly zajatia?: readonly string[];
   /** Špaky, ktoré hráčom v tejto bitke zhoreli pri exekúcii (v6). */
   readonly exekutor: readonly [number, number];
   /** Karty v línii, ktoré sa po bitke spália (Dievčina na vydaj). */
@@ -106,7 +102,7 @@ export interface BitkaVerejne {
  * výber v kroku len ako „vybral“ (karty sa odhalia, až keď vyberú obaja).
  */
 export interface DraftVerejne {
-  readonly krok: "zajatie" | "stavba" | "beranie";
+  readonly krok: "stavba" | "beranie";
   readonly mojBalicek: readonly CardInstance[];
   readonly balicekPocet: readonly [number, number];
   readonly mojVyber: VyberStavby | null;
@@ -239,11 +235,7 @@ export interface ClientState {
   readonly zhromazdenieStav: ZhromazdenieStav | null;
   readonly pitkaStav: PitkaStav | null;
   readonly bitkaStav: BitkaVerejne | null;
-  /**
-   * Pokusy o zajatie v tomto kole (v9) — verejné: kto skúša zajať ktorého staršieho.
-   * Boss leží v súperovej ruke; ktorá je to karta, vie každý, zvyšok ruky ostáva skrytý.
-   */
-  readonly pokusy: readonly [PokusOZajatie | null, PokusOZajatie | null];
+
   /** Väzni oboch hráčov v poradí zajatia (v9) — verejné. */
   readonly vazni: readonly Vazen[];
   /** Veštica (Prehra): oba doberacie balíčky — len porazenému počas výberu. */
@@ -447,11 +439,11 @@ export function viewFor(data: GameData, state: GameState, ja: PlayerId): ClientS
             prebytokZdvihy: bitka.prebytokZdvihy,
             prebytokPrepadlo: bitka.prebytokPrepadlo,
             ...(bitka.hadka === undefined ? {} : { hadka: bitka.hadka }),
-            ...(bitka.predBodovanim === undefined ? {} : { predBodovanim: bitka.predBodovanim }),
+            ...(bitka.zajatia === undefined ? {} : { zajatia: bitka.zajatia }),
             exekutor: bitka.exekutor,
             spalit: bitka.spalit,
           },
-    pokusy: state.pokusy,
+
     vazni: state.vazni,
     volbaVestica:
       mojaBitkovaVolba && bitka.krok === "vestica"
@@ -549,7 +541,7 @@ export function spakyTeraz(view: PohladSpakov): SpakyTeraz {
 
 /**
  * Riadok pultu starších (v11, mock 5 Pult): strach a reči oboch, priazeň z rozdielu
- * strachov, stav, pokus o zajatie a špaky pri výhre a prehre.
+ * strachov, stav, presvedčenie a špaky pri výhre a prehre.
  */
 export interface RiadokStarsieho extends SpakyStarsieho {
   readonly defId: string;
@@ -561,8 +553,8 @@ export interface RiadokStarsieho extends SpakyStarsieho {
   readonly priazenSila: number;
   /** Stav staršieho podľa vyššieho strachu — index do STAV_STARSIEHO. */
   readonly stav: Stupen;
-  /** Kto sa ho v tomto kole pokúša zajať (v ohrození), alebo null. */
-  readonly pokus: PlayerId | null;
+  /** Kto ho presvedčil (v11.4), alebo null. */
+  readonly presvedcil: PlayerId | null;
 }
 
 /** Pult starších (v11): riadky, súčty pri výhre a prehre a stav okamžitých výhier. */
@@ -573,9 +565,8 @@ export interface PultStarsich {
   readonly vyhry: StavVyhier;
 }
 
-export function pultStarsich(view: Pick<ClientState, "starsi" | "pokusy" | "vazni" | "lokalitCelkom">): PultStarsich {
+export function pultStarsich(view: Pick<ClientState, "starsi" | "vazni" | "lokalitCelkom">): PultStarsich {
   const riadky = view.starsi.map((e): RiadokStarsieho => {
-    const pokus = view.pokusy[0]?.elderId === e.elderId ? 0 : view.pokusy[1]?.elderId === e.elderId ? 1 : null;
     return {
       ...spakyStarsieho(e),
       defId: e.karta.defId,
@@ -585,7 +576,7 @@ export function pultStarsich(view: Pick<ClientState, "starsi" | "pokusy" | "vazn
       priazenHrac: priazenHraca(e),
       priazenSila: priazenSila(e),
       stav: stupenStavu(e),
-      pokus,
+      presvedcil: e.presvedcil ?? null,
     };
   });
   const sucet = (f: (x: RiadokStarsieho) => number): number => riadky.reduce((a, x) => a + f(x), 0);
@@ -655,19 +646,17 @@ export function stavSchopnostiVaznaZPohladu(view: ClientState): StavSchopnostiVa
     ...(view.kseftyKola !== undefined ? { kseftyKola: view.kseftyKola } : {}),
     strany: view.strany,
     cigarety: view.hraci[view.ja].cigarety,
-    superovOdhadzovaci: view.hraci[view.ja === 0 ? 1 : 0].odhadzovaci,
+    // Hrobár presvedčeného staršieho nevezme (v11.4) — ako stavSchopnostiVazna v jadre.
+    superovOdhadzovaci: view.hraci[view.ja === 0 ? 1 : 0].odhadzovaci.filter((k) => majitelPresvedcenej(view, k.uid) === null),
     cirhozy: cirhozyPreVeterinara({ ruka: view.ruka, priznane: view.hraci[view.ja].priznane }).length,
   };
 }
 
-/** Náhľad pokusu o zajatie (v9, v11) z pohľadu `view.ja`: čo väzeň dá, ak sa pokus podarí. */
-export interface NahladPokusu {
-  /** Poradie zajatia v partii, ak sa podarí teraz (rátajú sa aj súperove pokusy pred ním — odhad). */
+/** Náhľad zajatia (v11.4) z pohľadu `view.ja`: čo väzeň dá, ak ho hráč teraz zajme. */
+export interface NahladZajatia {
+  /** Poradie zajatia v partii, ak zajme teraz. */
   readonly poradie: number;
-  /**
-   * Krádež (v11): špaky, ktoré súper odovzdá za svoj najvyšší marker pri tomto staršom —
-   * podľa markerov teraz (rozhoduje stav pred bodovaním v bitke), najviac toľko, koľko má.
-   */
+  /** Krádež: špaky, ktoré súper odovzdá za svoj najvyšší marker pri tomto staršom teraz, najviac toľko, koľko má. */
   readonly kradez: number;
   /** Koľkého väzňa by mal hráč — vazniNaVyhru = výhra hneď. */
   readonly mojichVaznov: number;
@@ -675,7 +664,7 @@ export interface NahladPokusu {
   readonly vyhra: boolean;
 }
 
-export function nahladPokusu(view: Pick<ClientState, "vazni" | "ja" | "starsi" | "spaky" | "lokalitCelkom">, elderId?: string): NahladPokusu {
+export function nahladZajatia(view: Pick<ClientState, "vazni" | "ja" | "starsi" | "spaky" | "lokalitCelkom">, elderId?: string): NahladZajatia {
   const poradie = view.vazni.length + 1;
   const mojichVaznov = view.vazni.filter((v) => v.hrac === view.ja).length + 1;
   const naVyhru = vazniNaVyhru(view.lokalitCelkom);
@@ -713,18 +702,19 @@ function hodnotaPohladu(view: Pick<ClientState, "starsi" | "vazni">, p: PlayerId
  * Návrh rozdelenia na jeden klik (roadmapa #9 B; v11): hráč, ktorý práve rozdeľuje
  * Nakladačku alebo hádku, dostane úplné rozdelenie — z ponuky úplných rozdelení
  * (kandidatiRozdelenia) to, po ktorom má najlepšiu hodnotu markerov. null, keď nerozdeľuje.
+ * Akcie (zajatia / presvedčenia, v11.4) vyberá hráč sám — návrh rozdelí zvyšok popri nich.
  */
-export function navrhRozdelenia(view: ClientState): { readonly zdvihy: readonly Zdvih[]; readonly prikaz: Command } | null {
+export function navrhRozdelenia(view: ClientState, akcie: readonly string[] = []): { readonly zdvihy: readonly Zdvih[]; readonly prikaz: Command } | null {
   const ja = view.ja;
   const krok = krokRozdelenia(view, ja);
   if (view.faza !== "bitka" || krok === null || !view.mozemHrat) return null;
   const marker = markerRozdelenia(krok);
   let najlepsie: { readonly zdvihy: readonly Zdvih[]; readonly v: number } | null = null;
-  for (const zdvihy of kandidatiRozdelenia(view, ja, marker, bodyRozdelenia(view, ja), 64)) {
+  for (const zdvihy of kandidatiRozdelenia(view, ja, marker, bodyRozdelenia(view, ja), 64, akcie)) {
     const v = hodnotaPohladu(pohladPoRozdeleni(view, ja, marker, zdvihy), ja);
     if (najlepsie === null || v > najlepsie.v) najlepsie = { zdvihy, v };
   }
-  return najlepsie === null ? null : { zdvihy: najlepsie.zdvihy, prikaz: { type: krok, zdvihy: najlepsie.zdvihy } };
+  return najlepsie === null ? null : { zdvihy: najlepsie.zdvihy, prikaz: prikazRozdelenia(krok, najlepsie.zdvihy, akcie) };
 }
 
 /** Stávka bitky z pohľadu `view.ja` (v6) — špaky za výhru a čo dostane súper, keď vyhrá on. */

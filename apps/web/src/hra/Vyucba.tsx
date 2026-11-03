@@ -410,7 +410,7 @@ export function VyucbaStol({
       const spaky = document.querySelector<HTMLElement>('.doska.moja [data-vyucba-prvok="body"]');
       if (nastenka && document.querySelector('[data-vyucba="nastenka"]') === null) spaky?.click();
       else if (!nastenka && spaky?.classList.contains("stlacene") === true) spaky.click();
-      const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:")) || typ === "pokus";
+      const vrstvu = kluceKroku.some((k) => k.startsWith("hlavicka:"));
       if (!vrstvu) document.querySelector<HTMLElement>(".vrstva:not(.skryta) .vrstva-zavriet")?.click();
     }, 350);
     return () => clearTimeout(t);

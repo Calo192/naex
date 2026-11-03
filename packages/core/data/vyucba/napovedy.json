@@ -15,18 +15,7 @@
     "vypinac": "tlačidlo „vypnúť nápovedy“ v bubline a prepínač v profile; „rozumiem“ zavrie jednu"
   },
   "napovedy": [
-    {
-      "id": "karta-zadarmo",
-      "poradie": 0,
-      "uroven": "A",
-      "spustac": {
-        "kedy": "prvá stavba šenku, v ktorej si hráč smie nechať kartu zadarmo (súper sa pokúša o zajatie, v10.1); ide pred stavba-senku",
-        "podmienka": "view.faza === \"draft\" && view.draftStav.krok === \"stavba\" && môj balíček stavby nie je prázdny && ešte som nevybral && kartaZadarmo(view, ja)",
-        "jadro": ["packages/core/src/engine.ts kartaZadarmo, krokStavby", "docs/PRAVIDLA.md §5 Karta zadarmo"]
-      },
-      "melichar": "Súper sa ťa pokúša zajať, tak si zo svojich ôsmich jednu necháš do ruky, zadarmo: klikni na ňu prvú. Potom štyri do šenku a tri naspodok. Súper vie, že si si niečo nechal, ale nevie čo.",
-      "zvyraznit": ["stavba"]
-    },
+
     {
       "id": "stavba-senku",
       "poradie": 1,
@@ -223,11 +212,23 @@
       "poradie": 16,
       "uroven": "B",
       "spustac": {
-        "kedy": "hráč smie prvýkrát skúsiť zajať staršieho (v9; kľúč patronat ostáva)",
-        "podmienka": "view.draftStav.krok === \"zajatie\" (v10.1 pred stavbou šenku) && hráč má cigaretu a aspoň jedného staršieho, ktorého smie skúsiť zajať (pokusMozny)",
-        "jadro": ["packages/core/src/elders.ts pokusMozny", "docs/PRAVIDLA.md §10 Zajatie a väzeň (v9, v11)"]
+        "kedy": "hráč smie prvýkrát zajať staršieho pri rozdelení Nakladačky (v11.4; kľúč patronat ostáva)",
+        "podmienka": "krokRozdelenia(view, ja) === \"prebytok\" && moznostiAkcie(view, ja, \"strach\", body) nie je prázdne",
+        "jadro": ["packages/core/src/rozdelenie.ts moznostiAkcie, overRozdelenie", "docs/PRAVIDLA.md §10 Zajatie a väzeň (v11.4)"]
       },
-      "melichar": "Tento starší sa ťa bojí na červenej, tak ho smieš skúsiť zajať: stojí to [Cigareta] cigaretu a tú ti nikto nevráti. Jeho karta ide tebe do ruky a súper si za to pri stavbe šenku nechá jednu kartu do ruky, zadarmo. Vyhráš bitku a je to tvoj väzeň aj so súperovými špakmi za neho; prehráš a jeho strach z teba spadne na nulu.",
+      "melichar": "Tento starší sa ťa bojí na červenej. Za päť z Nakladačky ho zajmeš – ide do tvojej pivnice a súper ti dá špaky za svoj marker pri ňom. Nemusíš, ale prečo by si nechcel.",
+      "zvyraznit": ["linia-starsich"]
+    },
+    {
+      "id": "presvedcenie",
+      "poradie": 21,
+      "uroven": "B",
+      "spustac": {
+        "kedy": "hráč smie prvýkrát presvedčiť staršieho pri rozdelení hádky (v11.4)",
+        "podmienka": "krokRozdelenia(view, ja) === \"reci\" && moznostiAkcie(view, ja, \"reci\", body) nie je prázdne",
+        "jadro": ["packages/core/src/rozdelenie.ts moznostiAkcie, overRozdelenie", "docs/PRAVIDLA.md §10 Presvedčenie (v11.4)"]
+      },
+      "melichar": "Tento starší sa súpera bojí viac než teba. Reči na červenú a päť navrch – a je presvedčený: jeho karta ide tebe do ruky a ostáva v tvojom balíčku. Tvoje reči pri ňom zhoria, priazeň ti ostane.",
       "zvyraznit": ["linia-starsich"]
     },
     {
@@ -241,8 +242,8 @@
         "jadro": ["packages/core/src/elders.ts vydesil", "packages/core/src/engine.ts cervenychHraca", "docs/PRAVIDLA.md §10 Výhra strachom (krok 4c)"]
       },
       "melichar": {
-        "moje": "Vydesený starší! Bojí sa ťa na červenej, takého smieš pred šenkom skúsiť zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral si hneď. Len.",
-        "superove": "Súper ti vydesil staršieho. Bojí sa ho na červenej, a tak ho súper smie pred šenkom skúsiť zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral. Ale to sa určite nestane. Však?"
+        "moje": "Vydesený starší! Bojí sa ťa na červenej, takého smieš po vyhratej bitke za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral si hneď. Len.",
+        "superove": "Súper ti vydesil staršieho. Bojí sa ho na červenej, a tak ho súper po vyhratej bitke smie za päť z Nakladačky zajať. Štyria vydesení a vyhratá bitka – väzni sa rátajú tiež – a vyhral. Ale to sa určite nestane. Však?"
       },
       "zvyraznit": ["linia-starsich"]
     },

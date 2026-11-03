@@ -29,6 +29,8 @@ export type TypMomentu =
   | "prebudenie"
   | "zachranene"
   | "zajatie"
+  // Presvedčenie (v11.4): hráčovi pribudol presvedčený starší.
+  | "presvedcenie"
   | "bitkaOVsetko"
   | "vyprask"
   // Schopnosť väzňa (v11.2): pečiatka pri každom použití (Michal 2026-11-02), mimo stropu.
@@ -57,6 +59,7 @@ export const MOMENTY: Readonly<Record<TypMomentu, { readonly stupen: StupenMomen
   prebudenie: { stupen: "striebro", nazov: "PREBUDENIE" },
   zachranene: { stupen: "zlato", nazov: "ZACHRÁNENÉ" },
   zajatie: { stupen: "zlato", nazov: "ZAJATIE" },
+  presvedcenie: { stupen: "striebro", nazov: "PRESVEDČENIE" },
   bitkaOVsetko: { stupen: "striebro", nazov: "BITKA O VŠETKO" },
   vyprask: { stupen: "bronz", nazov: "VÝPRASK" },
   schopnostVazna: { stupen: "striebro", nazov: "SCHOPNOSŤ VÄZŇA" },
@@ -96,6 +99,7 @@ export const NALADY_MOMENTOV: Readonly<Record<TypMomentu, { readonly pre: Nalada
   prebudenie: { pre: "pohoda", proti: "smola" },
   zachranene: { pre: "pohoda", proti: "smola" },
   zajatie: { pre: "pohoda", proti: "smola" },
+  presvedcenie: { pre: "pohoda", proti: "smola" },
   bitkaOVsetko: { pre: "udiv", proti: "udiv" },
   vyprask: { pre: "pohoda", proti: "smola" },
   schopnostVazna: { pre: "pohoda", proti: "smola" },
@@ -213,11 +217,19 @@ export function momenty(data: GameData, pred: GameState, po: GameState, udalosti
     out.push({ typ: "forsaz", ...MOMENTY.forsaz, hrac: null, popis: "Forsáž — Posilnenie narazilo na Posilnenie a obe karty idú dvojnásobne." });
   }
 
-  // Zajatie (v9): hráčovi pribudol väzeň.
+  // Zajatie (v9; v11.4 pri rozdelení Nakladačky): hráčovi pribudol väzeň.
   for (const p of [0, 1] as const) {
     const pocet = (st: GameState): number => (st.vazni ?? []).filter((v) => v.hrac === p).length;
     if (pocet(po) <= pocet(pred)) continue;
     out.push({ typ: "zajatie", ...MOMENTY.zajatie, hrac: p, popis: `Zajatie — Hráč ${p + 1} má v pivnici ${pocet(po)}. väzňa.` });
+  }
+
+  // Presvedčenie (v11.4): hráčovi pribudol presvedčený starší.
+  for (const p of [0, 1] as const) {
+    const pocet = (st: GameState): number => st.starsi.filter((e) => e.presvedcil === p).length;
+    if (pocet(po) <= pocet(pred)) continue;
+    const novy = po.starsi.find((e) => e.presvedcil === p && pred.starsi.find((x) => x.elderId === e.elderId)?.presvedcil !== p);
+    out.push({ typ: "presvedcenie", ...MOMENTY.presvedcenie, hrac: p, popis: `Presvedčenie — Hráč ${p + 1} má na svojej strane ${pocet(po)}. presvedčeného staršieho.`, ...(novy === undefined ? {} : { elderId: novy.elderId }) });
   }
 
   // Schopnosť väzňa (v11.2): väzňovi pribudla značka „použitá“ — pečiatka vždy, obom.

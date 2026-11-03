@@ -2,15 +2,16 @@
 //
 // Stupnica staršieho má stupne 0–3 (sivá, žltá, oranžová, červená). Každý hráč má pri
 // každom staršom vlastné dva markery:
-//  - strach 0–3: neklesá (výnimka: neúspešný pokus o zajatie ho vynuluje); dvíha ho víťaz
+//  - strach 0–3: neklesá; dvíha ho víťaz
 //    bitky Nakladačkou. Priazeň pre mňa = max(0, strach súpera − môj strach).
 //  - reči: nič (0), alebo stupeň NAD vlastným strachom; dvíha ich víťaz hádky. Priazeň
 //    nedávajú, bodujú aj porazenému a po bodovaní klesnú o stupeň; keď by klesli na
 //    stupeň strachu (alebo strach dorastie na ich stupeň), zaniknú.
 // Po bitke dá starší víťazovi špaky za najvyšší marker (reči, inak strach), porazenému
 // a pri sekere obom len za reči — žltá 1, oranžová 3, červená 5 (KONSTANTY.SPAKY_ZA_STUPEN).
-// Väzeň (v9): starší, ktorého sa hráč bojí na stupni 3, sa dá zajať; zajatý odchádza
-// zo stupnice (GameState.vazni) a ráta sa ako červená svojho držiteľa (výhra strachom).
+// Väzeň (v9; v11.4 za 5 bodov Nakladačky): starší, ktorý sa hráča bojí na stupni 3, sa dá zajať;
+// zajatý odchádza zo stupnice (GameState.vazni) a ráta sa ako červená svojho držiteľa (výhra strachom).
+// Presvedčený (v11.4, za 5 bodov hádky): ostáva na stupnici, jeho karta patrí presvedčovateľovi.
 
 import type { CardInstance, Favour, PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
@@ -36,7 +37,7 @@ export type DruhMarkera = "strach" | "reci";
 export interface ElderState {
   /** Starší (kľúč do elders.json). */
   readonly elderId: string;
-  /** Karta staršieho — na ukazovateli, alebo počas pokusu o zajatie v ruke či línii pokúšajúceho. */
+  /** Karta staršieho — na ukazovateli, u presvedčeného v ruke, balíčku či línii presvedčovateľa. */
   readonly karta: CardInstance;
   /** Id scorecardu, na ktorom ukazovateľ leží (rozdaný pri príprave). */
   readonly scorecard: string;
@@ -44,6 +45,11 @@ export interface ElderState {
   readonly strach: readonly [Stupen, Stupen];
   /** Reči [hráč 0, hráč 1] — 0 = žiadne, inak vždy vyššie ako strach toho hráča. Verejné. */
   readonly reci: readonly [Stupen, Stupen];
+  /**
+   * Kto staršieho presvedčil (v11.4, §10): jeho karta natrvalo patrí tomuto hráčovi (hrá ju
+   * ako ktorúkoľvek, bez efektu), starší ostáva na stupnici. Verejné; kde karta práve je, nie.
+   */
+  readonly presvedcil?: PlayerId;
 }
 
 export function freshElder(elderId: string, karta: CardInstance, scorecard: string): ElderState {
@@ -63,10 +69,10 @@ export interface ZmenaMarkera {
   readonly na: Stupen;
   /**
    * nakladacka = víťaz bitky dvíha strach, hadka = víťaz hádky dvíha reči, bodovanie = reči
-   * po bodovaní klesli, zanik = reči zanikli pod dorastajúcim strachom, zajatie = neúspešný
-   * pokus vynuloval strach, kseft = Predsedova vila, nastup = Kapybara.
+   * po bodovaní klesli, zanik = reči zanikli pod dorastajúcim strachom, presvedcenie = reči
+   * presvedčovateľa zanikli presvedčením (v11.4), kseft = Predsedova vila, nastup = Kapybara.
    */
-  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "zanik" | "zajatie" | "kseft" | "nastup";
+  readonly zdroj: "nakladacka" | "hadka" | "bodovanie" | "zanik" | "presvedcenie" | "kseft" | "nastup";
   /** Hráč, ktorého ťah či efekt zmenu spôsobil (Kapybara mení súperove reči). */
   readonly kto: PlayerId;
 }
@@ -108,10 +114,6 @@ export function vydesil(elder: Strach, p: PlayerId): boolean {
   return elder.strach[p] === CERVENA;
 }
 
-/** Smie hráč p skúsiť zajať staršieho (v11): jeho strach je 3 — súperov nerozhoduje. */
-export function pokusMozny(elder: Strach, p: PlayerId): boolean {
-  return vydesil(elder, p);
-}
 
 /** Sila priazne staršieho pre hráča p: o koľko sa starší bojí súpera viac než jeho. */
 export function priazenPre(elder: Strach, p: PlayerId): number {

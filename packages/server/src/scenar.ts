@@ -1,6 +1,7 @@
-// Vývojový scenár rozdania (2026-11-01): partia proti botovi so staršími na stupni 3, aby sa
-// dal v prehliadači prejsť celý tok zajatia (§10) — strach dvíha len Nakladačka (v11)
-// a stupeň 3 prirodzene príde až v neskorších kolách. Zapína ho len premenná prostredia
+// Vývojový scenár rozdania (2026-11-01; v11.4): partia proti botovi so staršími na stupni 3 a so
+// staršími, pri ktorých má súper vyšší strach, aby sa dal v prehliadači prejsť tok zajatia
+// a presvedčenia (§10) — strach dvíha len Nakladačka (v11) a stupeň 3 prirodzene príde až
+// v neskorších kolách. Zapína ho len premenná prostredia
 // NAEX_SCENAR na lokálnom serveri (index.ts ho na produkcii ignoruje); jadro sa nemení,
 // scenár len upraví stav po rozdaní.
 
@@ -25,13 +26,14 @@ export function scenarZProstredia(env: Readonly<Record<string, string | undefine
   return !produkcia && jeScenar(x) ? { scenar: x, ignorovany: null } : { scenar: undefined, ignorovany: x };
 }
 
-/** Cigarety navyše na pokus o zajatie (pred stavbou šenku, v10.1) aj na branie zo šenku. */
+/** Cigarety navyše na branie zo šenku a Kšefty — partia sa rozbehne rýchlejšie. */
 const CIGARETY_NAVYSE = 4;
 
 /**
  * Upraví čerstvo rozdanú partiu: prvý starší sa človeka bojí na červenej (strach 3 — človek
- * ho smie skúsiť zajať), druhý sa na červenej bojí bota (pokus smie skúsiť bot). Obaja
- * dostanú cigarety navyše. „zajatie-vyhra“ dá človeku o jedného väzňa menej, než treba na
+ * ho smie po vyhratej bitke Nakladačkou zajať), druhý sa na červenej bojí bota (zajať smie bot).
+ * Predposledný sa bota bojí viac než človeka (3 : 2 — človek ho smie presvedčiť hádkou),
+ * posledný naopak (presvedčiť smie bot). Obaja dostanú cigarety navyše. „zajatie-vyhra“ dá človeku o jedného väzňa menej, než treba na
  * výhru (v11 podľa ligy) — ďalší zajatý vyhráva a schopnosť väzňa sa dá skúsiť hneď v prvom ťahu.
  */
 export function pouziScenar(state: GameState, scenar: Scenar, clovek: PlayerId): GameState {
@@ -50,8 +52,15 @@ export function pouziScenar(state: GameState, scenar: Scenar, clovek: PlayerId):
     scorecard: e.scorecard,
     miesto: state.starsi.indexOf(e),
   }));
+  /** Strach [p] 3, druhého 2 — presvedčiť smie druhý hráč (v11.4). */
+  const sPresvedcenim = (e: GameState["starsi"][number], p: PlayerId): GameState["starsi"][number] => {
+    const strach: [0 | 1 | 2 | 3, 0 | 1 | 2 | 3] = [2, 2];
+    strach[p] = 3;
+    return { ...e, strach, reci: [0, 0] };
+  };
+  const n = state.starsi.length;
   const starsi = state.starsi
-    .map((e, i) => (i === 0 ? sCervenou(e, clovek) : i === 1 ? sCervenou(e, bot) : e))
+    .map((e, i) => (i === 0 ? sCervenou(e, clovek) : i === 1 ? sCervenou(e, bot) : i === n - 2 ? sPresvedcenim(e, bot) : i === n - 1 ? sPresvedcenim(e, clovek) : e))
     .filter((e) => !vazniCloveka.some((v) => v.elderId === e.elderId));
   const [h0, h1] = state.hraci;
   const hraci: GameState["hraci"] = [

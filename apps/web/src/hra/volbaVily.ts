@@ -11,10 +11,10 @@ export interface MoznostVily {
   readonly na: Stupen;
 }
 
-/** Starší, pri ktorých smie Kšeft vily (v11) zdvihnúť moje reči — nie v ohrození, nie na červenej. */
-export function moznostiVily(view: Pick<ClientState, "starsi" | "pokusy" | "ja">): readonly MoznostVily[] {
+/** Starší, pri ktorých smie Kšeft vily (v11) zdvihnúť moje reči — nie na červenej. */
+export function moznostiVily(view: Pick<ClientState, "starsi" | "ja">): readonly MoznostVily[] {
   return view.starsi
-    .filter((e) => vilaNaStarsieho(view, e, view.ja))
+    .filter((e) => vilaNaStarsieho(e, view.ja))
     .map((e) => {
       const z = najvyssiMarker(e, view.ja);
       return { elderId: e.elderId, defId: e.karta.defId, z, na: (z + 1) as Stupen };

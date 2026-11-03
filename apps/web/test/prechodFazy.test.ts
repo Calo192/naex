@@ -6,15 +6,14 @@ import type { ClientState } from "@naex/core";
 import { klucPrechodu, krokNaStarsich, medziobrazovka, starsiNaStole, tahNaStole } from "../src/hra/prechodFazy.ts";
 
 type Faza = Pick<ClientState, "kolo" | "faza" | "draftStav" | "pitkaCislo">;
-const draft = (krok: "stavba" | "beranie" | "zajatie") => ({ krok }) as unknown as ClientState["draftStav"];
+const draft = (krok: "stavba" | "beranie") => ({ krok }) as unknown as ClientState["draftStav"];
 const f = (faza: ClientState["faza"], ine: Partial<Faza> = {}): Faza => ({ kolo: 2, faza, draftStav: null, pitkaCislo: 1, ...ine });
 
 describe("klucPrechodu — kedy stôl prepne z línie starších späť na stôl", () => {
-  it("pokus o zajatie (v10.1 pred stavbou šenku), výber lokality, šenok aj Pitka menia kľúč", () => {
+  it("výber lokality, šenok aj Pitka menia kľúč", () => {
     const kroky = [
       f("bitka"),
       f("volbaCiela", { kolo: 3 }),
-      f("draft", { kolo: 3, draftStav: draft("zajatie") }),
       f("draft", { kolo: 3, draftStav: draft("stavba") }),
       f("zhromazdenie", { kolo: 3 }),
       f("pitka", { kolo: 3 }),
@@ -119,12 +118,10 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
     expect(cakam).toMatch(/priazeň sa posunie k tebe/);
   });
 
-  it("pokus o zajatie je krok šenku (ten istý kľúč, nová medziobrazovka nepríde); koniec hry ju nemá", () => {
-    const patronat = { krok: "zajatie" } as unknown as ClientState["draftStav"];
-    expect(medziobrazovka({ ...p({ faza: "draft" }), draftStav: patronat } as Pohlad, 0, "Eva", null)?.kluc).toBe("2|senok");
-    // v10.1: okno šenku začína pokusom (je pred stavbou) a hovorí o karte zadarmo.
-    expect(medziobrazovka({ ...p({ faza: "draft" }), draftStav: patronat } as Pohlad, 0, "Eva", null)?.text).toMatch(/^Najprv pokus o zajatie.*1 kartu zadarmo/);
+  it("okno šenku (v11.4 bez pokusu o zajatie) začína stavbou; koniec hry ho nemá", () => {
+    expect(medziobrazovka(p({ faza: "draft" }), 0, "Eva", null)?.kluc).toBe("2|senok");
     expect(medziobrazovka(p({ faza: "draft" }), 0, "Eva", null)?.text).toMatch(/^Každý dostane/);
+    expect(medziobrazovka(p({ faza: "draft" }), 0, "Eva", null)?.text).not.toMatch(/zajat|zadarmo/);
     expect(medziobrazovka(p({ koniec: { vitaz: 0 } as unknown as Pohlad["koniec"] }), 0, "Eva", null)).toBeNull();
   });
 });
@@ -132,7 +129,7 @@ describe("medziobrazovka — prechody fáz (výber lokality, šenok, Zhromažden
 type Tah = Parameters<typeof tahNaStole>[0];
 const t = (faza: ClientState["faza"], ine: Partial<Tah> = {}): Tah => ({ koniec: null, faza, bitkaStav: null, draftStav: null, ...ine });
 const krokBitky = (krok: string, caka: 0 | 1 = 0) => ({ krok, caka, poveryZostava: [1, 0] }) as unknown as ClientState["bitkaStav"];
-const draftNa = (krok: "stavba" | "beranie" | "zajatie", naTahu: 0 | 1 = 0) => ({ krok, naTahu }) as unknown as ClientState["draftStav"];
+const draftNa = (krok: "stavba" | "beranie", naTahu: 0 | 1 = 0) => ({ krok, naTahu }) as unknown as ClientState["draftStav"];
 
 describe("tahNaStole — línia starších nezakryje ťah (Michal 2026-10-30: pred stavbou šenku)", () => {
   it("stavba a branie šenku, voľba cieľa, Zhromaždenie, Pitka aj kroky bitky na kartách sú ťah na stole", () => {
@@ -149,13 +146,11 @@ describe("tahNaStole — línia starších nezakryje ťah (Michal 2026-10-30: pr
     }
   });
 
-  it("Reči z hádky, Nakladačka a pokus o zajatie sa robia na staršom (v11)", () => {
+  it("Reči z hádky a Nakladačka (so zajatím a presvedčením, v11.4) sa robia na staršom", () => {
     for (const krok of ["reci", "prebytok"]) {
       expect(krokNaStarsich(t("bitka", { bitkaStav: krokBitky(krok, 1) }))).toEqual({ typ: krok, kto: 1 });
       expect(tahNaStole(t("bitka", { bitkaStav: krokBitky(krok) }), true)).toBe(false);
     }
-    expect(krokNaStarsich(t("draft", { draftStav: draftNa("zajatie", 1) }))).toEqual({ typ: "zajatie", kto: 1 });
-    expect(tahNaStole(t("draft", { draftStav: draftNa("zajatie") }), true)).toBe(false);
   });
 
   it("po konci hry nie je ťah ani krok", () => {

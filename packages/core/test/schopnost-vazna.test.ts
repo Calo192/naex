@@ -93,7 +93,7 @@ describe("§10 Schopnosť väzňa — kto a kedy", () => {
     expect(ponuka(sVaznom("postarka", "pitka", 0, (s) => ({ ...s, pitkaStav: { ...PITKA, reakcia: 0 } })))).toEqual([]);
     expect(ponuka(sVaznom("postarka", "draft"))).toHaveLength(1);
     expect(ponuka(sVaznom("postarka", "draft", 0, (s) => ({ ...s, draftStav: { ...s.draftStav!, naTahu: 1 } })))).toEqual([]);
-    expect(ponuka(sVaznom("postarka", "draft", 0, (s) => ({ ...s, draftStav: { ...s.draftStav!, krok: "zajatie" } })))).toEqual([]);
+    expect(ponuka(sVaznom("postarka", "draft", 0, (s) => ({ ...s, draftStav: { ...s.draftStav!, krok: "stavba" } })))).toEqual([]);
     expect(ponuka(sVaznom("postarka", "pitka", 0, (s) => ({ ...s, faza: "bitka", pitkaStav: null })))).toEqual([]);
     expect(() => apply(data, sVaznom("postarka", "zhromazdenie", 0, (s) => ({ ...s, zhromazdenieStav: { ...s.zhromazdenieStav!, naTahu: 1 } })), { type: "schopnostVazna", elderId: "postarka" }, 0)).toThrow();
   });

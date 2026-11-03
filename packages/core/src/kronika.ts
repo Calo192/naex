@@ -36,7 +36,7 @@ export interface KoloKroniky {
   /** Karty zo šenku a cigarety za ne. */
   readonly senok: readonly [number, number];
   readonly cigaretySenok: readonly [number, number];
-  /** Pokus o zajatie v kole (v9; do v8 patronát). */
+  /** Zajatie v kole (v11.4 pri rozdelení Nakladačky; v9–v11.3 pokus o zajatie, do v8 patronát). */
   readonly patronat: readonly [boolean, boolean];
   /** Nové Dlhy a Cirhózy v kole. */
   readonly dlhy: readonly [number, number];
@@ -115,7 +115,7 @@ export function zapisDoKroniky(
         cigaretySenok: dvojica(kolo.cigaretySenok, autor, Math.max(0, pred.hraci[autor].cigarety - po.hraci[autor].cigarety)),
       };
     }
-    if (c.type === "pokus") kolo = { ...kolo, patronat: autor === 0 ? [true, kolo.patronat[1]] : [kolo.patronat[0], true] };
+    if (c.type === "prebytok" && (c.zajatia?.length ?? 0) > 0) kolo = { ...kolo, patronat: autor === 0 ? [true, kolo.patronat[1]] : [kolo.patronat[0], true] };
   }
   if (cmd.type === "naex") {
     const naKarte = [...pred.strany[0], ...pred.strany[1]].find((pl) => pl.card.uid === cmd.uid);
