@@ -676,39 +676,6 @@ button.r3-seg.mimo {
   border-color: var(--okraj-svetly);
 }
 
-.r3-ps-tlacidla {
-  display: inline-flex;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.r3-ps-tlacidla > button {
-  min-height: 30px;
-  padding: 4px 14px;
-  border-radius: 9px;
-  cursor: pointer;
-}
-
-.r3-ps-preskocit {
-  border: 1px solid var(--okraj-svetly);
-  background: transparent;
-  color: var(--tlmeny);
-  font: 600 0.78rem/1.2 var(--pismo);
-}
-
-.r3-ps-dalej {
-  border: 0;
-  background: var(--akcent);
-  color: var(--na-akcente);
-  font: 800 0.86rem/1.2 var(--nadpis);
-  box-shadow: 0 3px 0 var(--akcent-tmavy);
-}
-
-.r3-ps-tlacidla > button:focus-visible {
-  outline: 2px solid var(--akcent-svetly);
-  outline-offset: 2px;
-}
-
 .r3-ps-opis {
   flex-basis: 100%;
 }
@@ -801,11 +768,6 @@ button.r3-seg.mimo {
   .r3-ps-kroky > span {
     padding: 1px 7px;
     font-size: 0.66rem;
-  }
-
-  .r3-ps-tlacidla > button {
-    min-height: 26px;
-    padding: 2px 12px;
   }
 }
 

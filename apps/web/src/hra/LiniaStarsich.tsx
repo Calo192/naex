@@ -19,7 +19,8 @@
 //
 // Súhrn po bitke (návrh c, docs/napady/suhrn-po-bitke-mocky.html): pás nad radom vedie krokmi
 // pravidiel (krokySuhrnu.ts), teplomery ukazujú stav v kroku a pohnú sa na mieste; dotknutí
-// starší svietia, ostatní stmavnú. Ďalej a Preskočiť sú v páse — krok sa neprehráva sám.
+// starší svietia, ostatní stmavnú. Krok sa neprehráva sám — Ďalej a Preskočiť sú na mieste potvrdenia
+// v strede spodnej hrany stola (HernaPlocha); v rohu pásu sa prehliadali (Michal 2026-11-03).
 
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useState } from "react";
@@ -89,16 +90,12 @@ export type MiestoVLinii = { readonly typ: "starsi"; readonly s: StarsiVLinii } 
 
 export type RezimLinie = "teplomery" | "pult";
 
-/** Súhrn po bitke na línii (HernaPlocha drží krok): pás s krokmi a tlačidlami. */
+/** Súhrn po bitke na línii (HernaPlocha drží krok a tlačidlá na hrane stola): pás s krokmi. */
 export interface SuhrnNaLinii {
   readonly bitka: SuhrnBitky;
   /** Index kroku v bitka.kroky. */
   readonly krok: number;
   readonly kontext: KontextSuhrnu;
-  /** Text tlačidla v poslednom kroku („Vybrať lokalitu“ obrancovi, inak „Ďalej“). */
-  readonly posledne: string;
-  readonly onDalej: () => void;
-  readonly onPreskocit: () => void;
 }
 
 export interface LiniaStarsichProps {
@@ -253,10 +250,9 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
   );
 }
 
-/** Pás súhrnu po bitke nad radom: výsledok, kroky, Preskočiť a Ďalej; pod nimi veta kroku. */
+/** Pás súhrnu po bitke nad radom: výsledok a kroky; pod nimi veta kroku. */
 function PasSuhrnu({ suhrn, krok }: { readonly suhrn: SuhrnNaLinii; readonly krok: KrokSuhrnu }) {
   const { bitka, kontext } = suhrn;
-  const posledny = suhrn.krok >= bitka.kroky.length - 1;
   const vysledok = bitka.vitaz === null ? "na sekeru" : `víťaz ${kontext.mena[bitka.vitaz]}`;
   return (
     <div className="r3-pas-suhrnu" role="group" aria-label={`Súhrn po bitke ${bitka.kolo}`}>
@@ -269,16 +265,6 @@ function PasSuhrnu({ suhrn, krok }: { readonly suhrn: SuhrnNaLinii; readonly kro
             {i + 1} {NAZOV_KROKU[k]}
           </span>
         ))}
-      </span>
-      <span className="r3-ps-tlacidla">
-        {!posledny && (
-          <button type="button" className="r3-ps-preskocit" onClick={suhrn.onPreskocit}>
-            Preskočiť
-          </button>
-        )}
-        <button type="button" className="r3-ps-dalej" onClick={suhrn.onDalej}>
-          {posledny ? suhrn.posledne : "Ďalej"}
-        </button>
       </span>
       <span className="r3-ps-opis" aria-live="polite">
         <b>

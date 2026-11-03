@@ -2348,6 +2348,11 @@ export function HernaPlocha({
     if (medziTeraz?.kluc === `${view.kolo}|lokalita`) setPotvrdenaMedzi(medziTeraz.kluc);
     setSuhrn(null);
   };
+  const dalejSuhrnu = (): void => {
+    if (suhrn === null) return;
+    if (suhrn.krok + 1 < suhrn.bitka.kroky.length) setSuhrn({ ...suhrn, krok: suhrn.krok + 1 });
+    else koniecSuhrnu();
+  };
   useEffect(() => {
     if (pauzaBezi) zavriLupuHned();
   }, [pauzaBezi, zavriLupuHned]);
@@ -3295,7 +3300,8 @@ export function HernaPlocha({
   // ---- tlačidlá návrhu na stole (Michal 2026-10-20) ------------------------
   // Potvrdenie patrí k tomu, čo leží na stole — hráč nemusí pozerať dole na pás.
   const stolTlacidla = ((): HranaTahu | null => {
-    if (!somNaTahu || view.koniec !== null) return null;
+    // Súhrn po bitke drží hranu pre Ďalej a Preskočiť (pokyn).
+    if (!somNaTahu || view.koniec !== null || suhrnBezi) return null;
     if (view.faza === "volbaCiela" && lokalitaNavrh !== null) {
       const otocit = (
         <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
@@ -3452,6 +3458,38 @@ export function HernaPlocha({
               {prehravanie === undefined ? "späť do lobby" : "späť na detail partie"}
             </button>
           ),
+      };
+    }
+    // Súhrn po bitke (Michal 2026-11-03): pokyn a potvrdenie ďalšej fázy (stavby šenku) by sa ukazovali
+    // nad súhrnom, hoci na rade ešte nie sú. Ďalej a Preskočiť sú na mieste potvrdenia, v strede hrany.
+    if (suhrnBezi && suhrn !== null) {
+      const posledny = suhrn.krok >= suhrn.bitka.kroky.length - 1;
+      const preskocit = posledny ? null : (
+        <button type="button" className="pecat pecat-tichy" title="Zavrie súhrn hneď — hra pokračuje." onClick={koniecSuhrnu}>
+          preskočiť
+        </button>
+      );
+      // Každý svojím tempom: obranca po súhrne vyberá, útočníka čaká lokalita súpera alebo čakanie.
+      const posledne = viewZoServera.faza === "volbaCiela" && viewZoServera.utocnik !== ja ? "vybrať lokalitu" : "ďalej";
+      const dalej = pecatTahu({
+        text: posledny ? posledne : "ďalej",
+        skratka: "k",
+        tip: posledny ? "Súhrn sa zavrie a hra pokračuje." : "Ďalší krok súhrnu.",
+        akcia: dalejSuhrnu,
+      });
+      return {
+        nadpis: `Súhrn po bitke ${suhrn.bitka.kolo}`,
+        text: "čo bitka urobila so staršími, krok po kroku",
+        ...(naSirku
+          ? { stred: dalej, ...(preskocit === null ? {} : { druha: preskocit }) }
+          : {
+              stred: (
+                <>
+                  {preskocit}
+                  {dalej}
+                </>
+              ),
+            }),
       };
     }
     if (!somNaTahu && beriem) {
@@ -4778,8 +4816,8 @@ export function HernaPlocha({
         </button>
       )
     ) : null;
-  // Súhrn po bitke na línii (návrh c): krok drží stôl, Ďalej ide na ďalší krok, po poslednom hra
-  // pokračuje; Preskočiť súhrn zavrie hneď.
+  // Súhrn po bitke na línii (návrh c): krok drží stôl, Ďalej na hrane (pokyn) ide na ďalší krok, po
+  // poslednom hra pokračuje; Preskočiť súhrn zavrie hneď.
   const kontextSuhrnu: KontextSuhrnu = {
     mena: [kratkeMeno(menoHraca(0)), kratkeMeno(menoHraca(1))],
     menoStarsieho: menoKarty,
@@ -4795,10 +4833,6 @@ export function HernaPlocha({
           bitka: suhrn.bitka,
           krok: suhrn.krok,
           kontext: kontextSuhrnu,
-          // Každý svojím tempom: obranca po súhrne vyberá, útočníka čaká lokalita súpera alebo čakanie.
-          posledne: viewZoServera.faza === "volbaCiela" && viewZoServera.utocnik !== ja ? "Vybrať lokalitu" : "Ďalej",
-          onDalej: () => (suhrn.krok + 1 < suhrn.bitka.kroky.length ? setSuhrn({ ...suhrn, krok: suhrn.krok + 1 }) : koniecSuhrnu()),
-          onPreskocit: koniecSuhrnu,
         }
       : undefined;
   const prahy = (p: PlayerId) => prahyHraca(data, stol, p);
