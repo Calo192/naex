@@ -88,6 +88,42 @@
         "sedem pol"
       ],
       "pozn": "vlastný strach a reči každého hráča (v11 Strach a reči)"
+    },
+    {
+      "pojem": "prebudenie staršieho",
+      "vzory": [
+        "prebud"
+      ],
+      "pozn": "zaniklo vo v9 (väzeň); od v11.2 má väzeň schopnosť raz za hru"
+    },
+    {
+      "pojem": "ohlásené vydesenie",
+      "vzory": [
+        "ohlasen\\w* vydesen"
+      ],
+      "pozn": "zaniklo vo v9 (väzeň namiesto vydesenia)"
+    },
+    {
+      "pojem": "Nakladačku rozdeľuje porazený",
+      "vzory": [
+        "porazen\\w* (?:\\w+ ){0,3}rozdel",
+        "rozdel\\w* (?:\\w+ ){0,2}porazen"
+      ],
+      "pozn": "v11: Nakladačku rozdelí víťaz bitky na svoj strach"
+    },
+    {
+      "pojem": "Pohoršenie posúva marker",
+      "vzory": [
+        "pohorsen\\w* (?:\\w+ ){0,4}posun"
+      ],
+      "pozn": "od v10 Pohoršenie markerom nehýbe; v11 hádka ide na reči a priazne nemení"
+    },
+    {
+      "pojem": "Vzbura aktivuje všetky akcie",
+      "vzory": [
+        "vzbur\\w* (?:\\w+ ){0,4}(?:aktivuj|aktivn)\\w* (?:\\w+ ){0,2}vsetk"
+      ],
+      "pozn": "v11.1: Vzbura obráti aktivitu karty"
     }
   ],
   "karty": [
