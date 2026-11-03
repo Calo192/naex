@@ -1,0 +1,90 @@
+{
+  "_poznamka": "Herné štýly pre playtest štýlov (skill naex-styly, Michal 2026-11-03). Cieľ: zistiť, či každý štýl môže viesť k víťazstvu, a ak nie, čo zmeniť na kartách, akciách, mechanizmoch alebo bodovaní. Hráč štýlu (agent naex-hrac-stylu) hrá ako expert, ale štýl drží aj vtedy, keď by univerzálny ťah bol lepší — od štýlu smie odbočiť len v núdzi a odbočku zapíše. Páky sú východisko podľa pravidiel v11.5 (tahak.md); hráč si ich pred partiou overí v PRAVIDLA.md a karty si pozrie sám. meno = účet na webe „<meno> (AI)“ (najviac 19 znakov), pohlavie = tvary hlášok, avatar = námet pre Leonardo (admin.ts avatar-generuj). Zošit skúseností: tools/playtest/skusenosti/styl-<kluc>.md.",
+  "hypoteza": "Michal 2026-11-03: hráč, ktorý má najviac cigariet a Vízií, vždy vyhrá v poslednom kole (finále). Každá partia ju overí: podiel špakov z finále a výkupného, kto mal pred finále viac cigariet, kariet a Vízií a či vyhral.",
+  "styly": [
+    {
+      "kluc": "ekonom",
+      "nazov": "Ekonomický",
+      "meno": "Ekonóm Ďuro",
+      "pohlavie": "muz",
+      "ciel": "Hromadí karty (Vízia, šenok, Predavačka, Zastávka, fajčenie), cigarety a poldeci; v lokalitách berie len lacné bitky a body sústredí do finále (1 špak za každý bod Nakladačky a hádky) a výkupného.",
+      "paky": [
+        "Vízia (každá aktívna = karta do ruky alebo spálenie zlej karty — aj Absťáku), Krištáľová guľa",
+        "šenok (1 karta za 1 cigaretu), Predavačka (1 cigareta → karta z balíčka), Zastávka, Zberný dvor, Sklad, Hrobár",
+        "pas za cigarety, Fajčiar (priazeň), Poštárka a Krčmárka ako väzeň, barter a doliatie",
+        "finále: zaostávajúci útočí — prehraté lokality ho pustia do útoku; veľká ruka a plné poldeci = vysoký limit vo finále",
+        "výkupné: plný poldeci 1 špak, 5 cigariet 1 špak"
+      ],
+      "disciplina": "V lokalitách neminie zdroje na drahú výhru; vyhrá len to, čo príde lacno. Šetrí na finále. Nevzdáva bitky naprázdno — porazený dostáva body za reči, aj to je ekonomika.",
+      "ukazovatele": [
+        "karty v ruke, cigarety, plné poldeci a počet aktívnych Vízií pred každou bitkou a pred finále",
+        "špaky z lokalít oproti špakom z finále a výkupného",
+        "koľko súper získal v lokalitách, kým ekonóm šetril (náskok, ktorý musí finále dobehnúť)"
+      ],
+      "avatar": "a stout village grocer in a brown work coat with an abacus and a ledger, a pencil behind his ear, one eye replaced by a brass magnifying lens, piles of cigarette cartons and stacked shot glasses neatly counted on the shop counter, satisfied smirk"
+    },
+    {
+      "kluc": "agresor",
+      "nazov": "Agresívny",
+      "meno": "Bitkár Rudo",
+      "pohlavie": "muz",
+      "ciel": "Vyhráva bitky tuhým poškodením (Rany, Pecky, Petelice), Nakladačku dáva na svoj strach a starších zatvára do pivnice (zajatie za 5 bodov) — mieri na výhru strachom (4 červené) alebo väzňami (Tretia liga 2, Druhá 3, Prvá 4) skôr, než príde finále.",
+      "paky": [
+        "Rana, Pecka, Petelica, Valaška, Vidly, Puška, Pes, Pasca, Pijan (Rana za NA EX), Šofér, Traktorista, Sypač, Strýko z Ameriky, Vymáhač (len keď sám nesie Dlhy)",
+        "prevaha v krajoch a akcie hrany lokality, Lesná cesta, Ihrisko, Poľovnícka chata, Starosta (posilnené akcie lokality)",
+        "Forsáž (Posilnenie + Posilnenie), NA EX na vlastnú kartu so zdvojením neaktívnych Rán",
+        "Nakladačka na strach, zajatie pri červenom strachu z minulého kola, priazeň Bitkár",
+        "výhra strachom a výhra väzňami — obe len v bitke, ktorú vyhrá"
+      ],
+      "disciplina": "Ide do každej bitky o výhru; kolo bez útoku je výnimka a zapíše prečo. Nakladačku plánuje na zajatie, nie na rozptýlené body. Mäkké poškodenie a sabotáž len ako vedľajší efekt.",
+      "ukazovatele": [
+        "tuhé svoje : súperovo v každej bitke, víťaz bitky, veľkosť Nakladačky",
+        "červené strachy a väzni po každej bitke; ako blízko bol výhre strachom a väzňami",
+        "koľko špakov dalo zajatie a koľko víťazstvá v lokalitách oproti finále"
+      ],
+      "avatar": "a broad-shouldered village thug in a stained tank top with taped knuckles and a shaved head, a rusty iron jaw and hydraulic forearm, holding an old cellar key ring as big as his fist, a barred cellar door behind him in a dim pub"
+    },
+    {
+      "kluc": "klebetnik",
+      "nazov": "Klebetný",
+      "meno": "Klebetná Mara",
+      "pohlavie": "zena",
+      "ciel": "Hrá mäkké poškodenie (Povery, Pohoršenia), vyhráva hádky a hádku dáva na svoje reči; starších prehovára (presvedčenie za 5 bodov, karta staršieho do jej balíčka). Body zbiera aj z prehratých bitiek — porazený dostáva špaky za reči.",
+      "paky": [
+        "Povera (1 mäkké, Horoskop 2), Pohoršenie (2 mäkké), Čierna mačka, Telefón, Šarlatán, Noviny (víťaz hádky → súper odhodí kartu)",
+        "rušenie súperovej Viery, Kapybara (súperove reči o stupeň dole), Predsedova vila (2 cigarety → reči o stupeň)",
+        "reči: bodujú aj porazenému (žltá 1, oranžová 3, červená 5), po bodovaní klesnú o stupeň — treba ich dopĺňať",
+        "presvedčenie: súper má pri staršom vyšší strach a moje reči sú červené; karta staršieho hrá v mojom balíčku",
+        "finále: víťaz hádky dostane za každý bod hádky 1 špak"
+      ],
+      "disciplina": "Do tuhého investuje len toľko, koľko treba, aby prehra nebola drahá; prednosť majú karty s mäkkým poškodením a reči. Prehru bitky berie ako normálny výsledok, ak vyhrala hádku a reči bodujú.",
+      "ukazovatele": [
+        "mäkké svoje : súperovo a víťaz hádky v každej bitke, veľkosť hádky",
+        "špaky z rečí pri výhre a pri prehre bitky, počet presvedčených starších a čo ich karty v balíčku priniesli",
+        "koľko rečí zaniklo rastom vlastného strachu alebo Kapybarou"
+      ],
+      "avatar": "a chatty village gossip woman in a floral headscarf leaning over a fence, one ear replaced by a big brass ear trumpet with blinking antenna, whispering behind her hand, a telephone cord wrapped around her robotic fingers, curious neighbours peeking from windows"
+    },
+    {
+      "kluc": "saboter",
+      "nazov": "Sabotér",
+      "meno": "Sabotér Zdeno",
+      "pohlavie": "muz",
+      "ciel": "Škodí súperovi: robí mu dlhy (Exekútor mu berie špaky), Cirhózy (−3 špaky za nepriznanú na konci, +1 tuhé mne za priznanú) a Absťáky, ruší mu karty a NA EX a podstrkuje mu zlé karty. Vyhrá tým, že súper skončí s menej špakmi.",
+      "paky": [
+        "podstrčené karty s Hazardom a Poškodením pečene (akcie sa rátajú majiteľovi karty, kraj a spoj určujú, komu idú), sabotér s Odporom na súperovej strane",
+        "Policajtka, Podvodník, Dievčina na vydaj (keď prehrá, súper dostane Dlhy), Veľmi smútiaca vdova, Degustátorka (otočí súperov plný poldeci), Herňa, Obecný úrad, Kmotor (priazeň), Jednota",
+        "Kar (pečeň za NA EX dostane súper toho, kto ho dal), Krčma (povinné NA EX), Stryná",
+        "NA EX na súperove karty (zruší aktívne akcie), Farár ako väzeň (zruší súperovo NA EX), Snúbenica, Poľovník, Krokodíl, Mäsiar, Sklad, Hrobár",
+        "Vychovávateľka (súper hneď pasuje bez cigariet), Izolačka, Chuť súpera (menej nerestí → Absťák)"
+      ],
+      "disciplina": "Každé kolo aspoň jedno rozhodnutie, ktoré súperovi spraví dlh, Cirhózu, Absťák alebo mu zruší kartu či NA EX. Vlastné body len popri tom; bitku vyhrá, keď sa to dá lacno.",
+      "ukazovatele": [
+        "Dlhy, Cirhózy a Absťáky, ktoré súperovi spôsobil (po kolách), a koľko špakov ho stáli (exekúcia, −3 na konci, −1 tuhé)",
+        "zrušené súperove karty a NA EX a čo ho to stálo v bitke",
+        "cena sabotáže: koľko vlastných kariet, cigariet, poldeci a špakov do nej dal"
+      ],
+      "avatar": "a shifty skinny village prankster in a grey hoodie and flat cap, a wrench and a bag of sugar for the fuel tank in his robotic hands, one red blinking spy-camera eye, sneaking behind a parked tractor at the village pub at night"
+    }
+  ]
+}

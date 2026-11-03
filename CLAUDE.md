@@ -55,6 +55,8 @@ node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   #
                      # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit);
                      # Michal 2026-10-21: na AKÝKOĽVEK nový obrázok smieš Leonardo použiť bez pýtania
 node --experimental-strip-types --no-warnings tools/playtest/turnus.ts 2 stredna   # 2 partie AI playtesterov naraz (skill naex-playtest)
+node --experimental-strip-types --no-warnings tools/playtest/styly.ts 2 stredna --zrejuca   # playtest herných štýlov (skill naex-styly):
+                     # ekonóm, agresor, klebetník, sabotér (styly.json); report docs/playtesty/styly-<id>.html
 node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast   # sila povahy bota
 node --experimental-strip-types --no-warnings tools/bot/strategickost.ts   # náhoda vs. zručnosť (rebrík, duplikát), ≈ 8 min
 node --experimental-strip-types --no-warnings tools/upratovanie/odtlacok.ts   # odtlačok hry: partie botov s pevnými semienkami;
@@ -159,5 +161,8 @@ tools/               import z tlačového PDF, piktogramy akcií
   playtest/            klient AI playtesterov; hraci.json = 6 postáv (štýl, zameranie),
                        turnus.ts = 1–3 partie naraz s náhodnými dvojicami,
                        tahak.md = ťahák pravidiel AI hráčov (jediné miesto, čísla stráži test)
+                       styly.json = 4 herné štýly (ekonóm, agresor, klebetník, sabotér) pre playtest
+                       štýlov — či každý štýl vie vyhrať (skill naex-styly, agenti naex-hrac-stylu,
+                       naex-sudca-stylov; história zápasov docs/playtesty/styly-historia.json)
   rozhodca/            mapa „paragraf PRAVIDLA.md → test“ agenta naex-rozhodca
 ```

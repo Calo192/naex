@@ -265,11 +265,15 @@ export async function prihlasAgenta(url: string, meno: string, uroven: UrovenAge
   return { ...ucet, cookie };
 }
 
-/** Postavy playtesterov majú pohlavie (hraci.json) — hlášky v partii sa podľa neho skloňujú (Michal 2026-10-22). */
+/** Postavy playtesterov majú pohlavie (hraci.json, styly.json) — hlášky v partii sa podľa neho skloňujú (Michal 2026-10-22). */
 async function nastavPohlaviePostavy(url: string, cookie: string, meno: string): Promise<void> {
-  let postavy: readonly { readonly meno: string; readonly pohlavie?: "muz" | "zena" }[];
+  type Postavy = readonly { readonly meno: string; readonly pohlavie?: "muz" | "zena" }[];
+  let postavy: Postavy;
   try {
-    postavy = (JSON.parse(readFileSync("tools/playtest/hraci.json", "utf8")) as { hraci: typeof postavy }).hraci;
+    postavy = [
+      ...(JSON.parse(readFileSync("tools/playtest/hraci.json", "utf8")) as { hraci: Postavy }).hraci,
+      ...(JSON.parse(readFileSync("tools/playtest/styly.json", "utf8")) as { styly: Postavy }).styly,
+    ];
   } catch {
     return;
   }
