@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### fero-1 · Keď mám pred finále 8 alebo viac cigariet, minem ich radšej za karty v šenku (1 cigareta = 1 karta), doliatie poldeci, barter (5 cigariet = plný poldeci: výkupné ostane rovnaké a pribudne limit) či fajčenie, než ich nechám na výkupné, lebo výkupné dá len 1 špak za 5 cigariet.
-- stav: overená
+- stav: neoverená
 - pravidlá: v10
 - potvrdenia: 5
 - vyvrátenia: 0
@@ -63,7 +63,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §10 (ústup zmaže nezaplatený stupeň), §16 Kapybara. K5: Fero zobral Kapybaru a Psa za 3 cig., položil Kapybaru na vlastnú stranu a posunul Autobusára oranžová → žltá; Šimon: „Fero zrušil mojich +2 strachu“, Fero: „Šimonovi −2 špaky“ (Šimon udržal v K5 len Vychovávateľku +1).
 
 ### fero-7 · Keď obranca zo šenku nevezme nič a stopne, mám jediný posledný ťah, preto v ňom beriem 2 karty za 3 cigarety (nie 1 za 1), lebo druhý ťah už nebude (§5).
-- stav: overená
+- stav: neoverená
 - pravidlá: v10
 - potvrdenia: 1
 - vyvrátenia: 0

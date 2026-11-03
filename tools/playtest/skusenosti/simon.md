@@ -7,7 +7,7 @@ vo feedback.md.
 ## Skúsenosti
 
 ### simon-5 · Keď som porazený a rozdeľujem veľkú Nakladačku (v8.3), rátam, že každý bod na mojej polovici je čakajúci špak pre víťaza na konci ďalšieho kola, preto body najprv miniem na návrat súperových už zaplatených markerov z jeho polovice cez stred (z červenej 4 + 3 + 2: súper stratí priazeň a víťazovi nevznikne čakajúci strach) a zvyšok dám len priazni, ktorú potrebujem hneď v ďalšej bitke a viem obrániť.
-- stav: overená
+- stav: neoverená
 - pravidlá: v10
 - potvrdenia: 3
 - vyvrátenia: 0
@@ -26,7 +26,7 @@ vo feedback.md.
 - oprava: 2026-11-01 20261101-084841-1: pôvodné znenie (Povery zrážajú silu priazne o stupeň pred bitkou) odporovalo PRAVIDLÁM v10 §9.1 — Povery sú mäkké poškodenie do hádky a silu priazní mení len víťaz hádky; prepísané na hádku (K4 084841-1: Šimonova hádka o 5 vzala Ferovmu Veterinárovi silu 1 a dala ju sebe na 2, Advokát ušetril 2 špaky).
 
 ### simon-7 · Keď hrám finále na Predsedovej vile, nechám si cigarety na Kšefty vily (2 cig. za posun markera, raz za Pitku), lebo stupne dosiahnuté vo finále nedajú súperovi strach, takže posun je zadarmo a výkupné za 2 cigarety je len 0,4 špaku.
-- stav: overená
+- stav: neoverená
 - pravidlá: v10
 - potvrdenia: 1
 - vyvrátenia: 0
@@ -35,7 +35,7 @@ vo feedback.md.
 - prečo: PRAVIDLA §14b (stupne z finále nič), §15 Predsedova vila (Kšeft 2 cig.), §14 (výkupné 5 cig. = 1 špak). 084841-1 finále: Šimon v Pitkách 1–3 dal Kšefty — Farár → červená (Bitkár 3), Hrobár → červená (Robota 3), Veterinár → žltá (Advokát 1); Fero z toho nedostal žiadny strach, Šimon vyhral finále a partiu 51 : 23.
 
 ### simon-8 · Keď vyhrám hádku, rozdelím ju najprv na priazne s hneď vyplatenou hodnotou (Robota bez Dlhov = špak za silu, Advokát = menej špakov v exekúcii, Fajčiar = cigareta), lebo hádka platí len do konca kola a marker sa nehýbe.
-- stav: overená
+- stav: neoverená
 - pravidlá: v10
 - potvrdenia: 1
 - vyvrátenia: 0
