@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Štartovky, ktoré majú zmysel — knižnica mechaník NA EX!</title>
+<style>
+:root { --pozadie:#15120f; --plocha:#1f1a15; --plocha-2:#2a231c; --okraj:#43372c; --text:#f1e8d8; --tlmeny:#b8a993;
+  --akcent:#e9ad45; --dobre:#7fbf7a; --zle:#d8705f; --stred:#d9c04a;
+  --serif:Georgia,"Times New Roman",serif; --sans:system-ui,"Segoe UI",Roboto,sans-serif; --mono:ui-monospace,Consolas,monospace; color-scheme:dark; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --pozadie:#f6f1e7; --plocha:#fffaf1; --plocha-2:#f0e7d6; --okraj:#d8c8ad;
+  --text:#2a2016; --tlmeny:#5e4f3b; --akcent:#95590a; --dobre:#2f7a2b; --zle:#a8402f; --stred:#8a7410; color-scheme:light; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--pozadie); color:var(--text); font:16px/1.55 var(--sans); }
+main { max-width:980px; margin:0 auto; padding:28px max(16px, env(safe-area-inset-right,0px)) 56px max(16px, env(safe-area-inset-left,0px)); }
+h1,h2,h3 { font-family:var(--serif); line-height:1.2; text-wrap:balance; }
+h1 { font-size:clamp(1.7rem,4.6vw,2.5rem); margin:0 0 8px; }
+h2 { font-size:1.4rem; margin:40px 0 14px; padding-bottom:6px; border-bottom:1px solid var(--okraj); }
+h3 { font-size:1.08rem; margin:18px 0 6px; }
+p, ul, ol { max-width:74ch; } p { margin:0 0 10px; } li { margin-bottom:5px; }
+a { color:var(--akcent); } :focus-visible { outline:2px solid var(--akcent); outline-offset:2px; }
+.uvod, .pozn { color:var(--tlmeny); } .pozn { font-size:.9rem; }
+.skratka { background:var(--plocha); border:1px solid var(--akcent); border-radius:12px; padding:14px 16px; margin:18px 0; }
+.skratka h2 { margin:0 0 6px; border:0; padding:0; font-size:1.2rem; }
+.tab-obal { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.92rem; }
+th, td { padding:7px 6px; text-align:left; vertical-align:top; border-bottom:1px solid var(--okraj); }
+thead th { border-bottom:2px solid var(--okraj); font-size:.85rem; color:var(--tlmeny); font-weight:600; }
+.znamka { display:inline-block; font-size:.78rem; border-radius:999px; padding:0 8px; border:1px solid currentColor; white-space:nowrap; }
+.n { color:var(--dobre); } .s { color:var(--stred); } .v { color:var(--zle); }
+.filtre { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+button { appearance:none; font:inherit; font-size:.88rem; padding:6px 11px; border-radius:8px; border:1px solid var(--okraj); background:var(--plocha-2); color:var(--text); cursor:pointer; }
+button[aria-pressed="true"] { border-color:var(--akcent); color:var(--akcent); font-weight:600; }
+tr[hidden] { display:none; }
+details.mech { background:var(--plocha); border:1px solid var(--okraj); border-radius:12px; padding:12px 16px; margin:12px 0; }
+details.mech[open] { border-color:var(--akcent); }
+details.mech summary { cursor:pointer; font-family:var(--serif); font-size:1.12rem; }
+details.mech summary small { font-family:var(--sans); color:var(--tlmeny); font-size:.82rem; }
+.hra { border-left:3px solid var(--okraj); padding:2px 0 2px 12px; margin:8px 0; }
+.hra b { display:block; }
+.mriezka { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:4px 22px; }
+code { font-family:var(--mono); font-size:.86em; background:var(--plocha-2); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere; }
+footer { margin-top:40px; padding-top:12px; border-top:1px solid var(--okraj); color:var(--tlmeny); font-size:.88rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="pozn"><a href="index.html">Knižnica mechaník</a> · Študent · 3. 11. 2026 · téma z roadmapy (stĺpec Teraz: „Štartovky, ktoré majú zmysel“)</p>
+<h1>Štartovky, ktoré majú zmysel</h1>
+<p class="uvod">Pijan, Miňištrant, Milujúca manželka a Dievčina na vydaj sú v ruke každého hráča od prvého kola a v balíčku ostávajú do konca. Ako iné hry s budovaním balíčka riešia slabé štartové karty: vyhodiť ich za cenu, dať im vlastný odchod, odmenu za odchod, vylepšenie, vlastnú úlohu, alebo aspoň rovnaký štart pre oboch.</p>
+<section class="skratka">
+<h2>V skratke</h2>
+<ul>
+<li><b>11 hier</b> (Dominion so 4 rozšíreniami/kartami počítaný ako 4 položky), <b>6 mechaník</b> v <code>mechaniky.json</code> pod témou <code>startovky</code>.</li>
+<li>Najsľubnejšie: <a href="#platene-vyhodenie">platené vyhodenie s rastúcou osobnou cenou</a> — rieši naraz štartovky aj nahromadené cigarety z pasu a nemení žiadnu kartu; a <a href="#startovka-s-odchodom">štartovka s vlastným odchodom</a> — presne zadanie roadmapy „jedno dobré použitie alebo lacný odchod“.</li>
+<li>Lacná kontrola náhody: <a href="#rovnaky-start">rovnaké varianty štartoviek pre oboch</a>.</li>
+<li>Poznámka k zdrojom: v tomto behu nešlo otvárať stránky (WebFetch blokovaný sieťou cloudu), tvrdenia sú z výsledkov vyhľadávania s odkazom na stránku; čo z nich nevyplýva, je označené „z vlastných vedomostí, neoverené“.</li>
+</ul>
+</section>
+<h2>1. Problém v NA EX!</h2>
+<p>Podľa <code>docs/PRAVIDLA.md §3</code> má každý hráč na začiatku v ruke 4 štartovky (Miňištrant, Milujúca manželka, Pijan, Dievčina na vydaj, varianty podľa sady), doberací balíček je prázdny a štartovky nie sú v Občanoch ani v šenku. Od 2. kola sa dobiera len <b>1 karta</b> za kolo (§4); ďalšie karty sú zo šenku za cigarety. Po bitke sa všetky karty vrátia do odhadzovacieho balíčka majiteľa (§9.7) — natrvalo odchádza len spálená Dievčina na vydaj (pri prehre, súper dostane Dlhy) a Občania v okolí Krokodíla. Hráč teda nemá vlastný spôsob, ako sa štartoviek zbaviť, a každá z nich v balíčku znižuje šancu, že jediné dobratie za kolo bude kúpená karta.</p>
+<p>Roadmapa (<code>packages/server/seed/roadmapa.json</code>, stĺpec Teraz; živú roadmapu tento beh nevidel) to opisuje: „Prvé tri kolá nehrateľné.“ Na konci partie tvoria štartovky stále 55–60 % balíčka, Pijan dáva súperovi Ranu. Zadanie: každej štartovke jedno dobré použitie alebo lacný odchod z balíčka. Stratég zaradil štartovú ruku a obsah šenku v prvých kolách medzi zdroje náhody a playtester nazval štartovú ruku „najslabšou možnou“ — rovnaké druhy, iné varianty (<code>docs/playtesty/strategia-20261031-004030.html</code>). Súvisí s návrhom „Cigarety: pas ich nahrnie, minúť sa nedajú“ (<code>docs/playtesty/navrhy-20261031-004030.json</code>).</p>
+<h2>2. Hry v rešerši</h2>
+<div class="tab-obal"><table>
+<thead><tr><th>Hra</th><th>Čo rieši</th><th>Mechanika</th></tr></thead>
+<tbody>
+<tr><td>Dominion (základ)</td><td>Slabé štartové Estates riedia ruku</td><td><a href="#rovnaky-start">rovnaký štart</a></td></tr>
+<tr><td>Dominion — Chapel</td><td>Lacné vyhodenie bez rastu ceny a jeho kritika</td><td><a href="#platene-vyhodenie">vyhodenie</a></td></tr>
+<tr><td>Dominion: Dark Ages — Shelters</td><td>Štartovky s vlastným odchodom (Hovel, Overgrown Estate) a úlohou (Necropolis)</td><td><a href="#startovka-s-odchodom">odchod</a>, <a href="#startovka-s-rolou">úloha</a></td></tr>
+<tr><td>Dominion: Adventures — Travellers</td><td>Rebrík verzií mimo zásoby, výmena namiesto zahodenia</td><td><a href="#startovka-rastie">rast</a></td></tr>
+<tr><td>Star Realms</td><td>Rovnaký štart, Explorer, ktorý sa sám zošrotuje</td><td><a href="#startovka-s-odchodom">odchod</a>, <a href="#rovnaky-start">rovnaký štart</a></td></tr>
+<tr><td>Slay the Spire (1 a 2)</td><td>Platené odstránenie s rastúcou cenou ako páka obtiažnosti</td><td><a href="#platene-vyhodenie">vyhodenie</a></td></tr>
+<tr><td>Clank! a Clank! Legacy: Upper Management</td><td>Rovnaký štart; kozmetické štartovky postáv bez novej funkcie</td><td><a href="#rovnaky-start">rovnaký štart</a>, <a href="#startovka-s-rolou">úloha</a></td></tr>
+<tr><td>Valley of the Kings</td><td>Bodujú len karty vyradené z balíčka</td><td><a href="#odchod-za-body">odchod za body</a></td></tr>
+<tr><td>Tyrants of the Underdark</td><td>Promote: odchod z balíčka za body (prevzaté z Valley of the Kings)</td><td><a href="#odchod-za-body">odchod za body</a></td></tr>
+<tr><td>Mystic Vale</td><td>Vylepšenie na mieste, balíček sa nemení</td><td><a href="#startovka-rastie">rast</a></td></tr>
+<tr><td>Dune: Imperium</td><td>Štartovky s ikonami umiestnenia, vyhadzovanie štartoviek</td><td><a href="#startovka-s-rolou">úloha</a>, <a href="#startovka-s-odchodom">odchod</a></td></tr>
+</tbody></table></div>
+<h2>3. Porovnanie mechaník</h2>
+<div class="filtre" role="group" aria-label="Filtrovať podľa cesty">
+<button type="button" data-f="vsetko" aria-pressed="true">Všetky</button>
+<button type="button" data-f="vyhodenie" aria-pressed="false">Odchod z balíčka</button>
+<button type="button" data-f="rola" aria-pressed="false">Úloha štartovky</button>
+<button type="button" data-f="rast" aria-pressed="false">Rast</button>
+<button type="button" data-f="body" aria-pressed="false">Odmena za odchod</button>
+<button type="button" data-f="nahoda" aria-pressed="false">Náhoda štartu</button>
+</div>
+<div class="tab-obal"><table id="porov">
+<thead><tr><th>Mechanika</th><th>Rozhodnutie hráča</th><th>Zložitosť pre nováčika</th><th>Zásah do pravidiel</th><th>Hlavné riziko</th></tr></thead>
+<tbody>
+<tr data-riesi="vyhodenie"><td><a href="#platene-vyhodenie">Platené vyhodenie z balíčka s rastúcou cenou (card removal)</a></td><td>kedy zaplatiť za vyhodenie a čo vyhodiť; vyhodiť, alebo kúpiť</td><td><span class="znamka n">nízka</span></td><td><span class="znamka n">nový ťah v šenku, osobná rastúca cena</span></td><td>balíček zo samých dobrých kariet, ak je vyhodenie lacné</td></tr>
+<tr data-riesi="vyhodenie rola"><td><a href="#startovka-s-odchodom">Štartovka s vlastným odchodom a odmenou (scrap, Overgrown Estate, Hovel)</a></td><td>kedy štartovku obetovať: skoro (tenší balíček) alebo v kľúčovej chvíli</td><td><span class="znamka s">stredná</span></td><td><span class="znamka s">veta „Odchod:“ na 4 štartovkách, spúšťač po §9.7</span></td><td>odmeny sa nahromadia do posledného kola</td></tr>
+<tr data-riesi="vyhodenie body"><td><a href="#odchod-za-body">Vyradenie z balíčka ako bodovanie (entomb, promote)</a></td><td>sila balíčka teraz vs. špaky / priazeň neskôr</td><td><span class="znamka s">stredná</span></td><td><span class="znamka s">odmena v špakoch alebo priazni za spálenú štartovku</span></td><td>ďalší prameň špakov, rozptyl skóre</td></tr>
+<tr data-riesi="rast"><td><a href="#startovka-rastie">Štartovka, ktorá rastie (výmena za silnejšiu verziu, vylepšenie na mieste)</a></td><td>vylepšiť hneď, alebo ešte využiť slabú verziu</td><td><span class="znamka v">vyššia</span></td><td><span class="znamka v">4–8 nových kariet mimo šenku, výmena v §9.7</span></td><td>snowball, ak sa viaže na výhru</td></tr>
+<tr data-riesi="rola"><td><a href="#startovka-s-rolou">Štartovka s úlohou, ktorú kúpená karta nenahradí</a></td><td>kedy použiť štartovku na jej úlohu namiesto Občana</td><td><span class="znamka s">stredná</span></td><td><span class="znamka s">výnimka v pravidlách alebo nové texty</span></td><td>úloha sa stane povinnou</td></tr>
+<tr data-riesi="nahoda"><td><a href="#rovnaky-start">Rovnaký štart pre oboch (zrkadlové štartovky)</a></td><td>žiadne nové — odstraňuje náhodu</td><td><span class="znamka n">nízka</span></td><td><span class="znamka n">príprava hry (§3) alebo varianty v sade</span></td><td>menej rozmanitosti v 1. kole</td></tr>
+</tbody></table></div>
+<h2>4. Mechaniky podrobne</h2>
+<details class="mech" id="platene-vyhodenie">
+<summary>Platené vyhodenie z balíčka s rastúcou cenou (card removal) <small>· 3 zdrojov · <code>platene-vyhodenie</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Štartovky (Pijan, Miňištrant, Milujúca manželka, Dievčina na vydaj) sa po každej bitke vrátia do odhadzovacieho balíčka (PRAVIDLA §9.7) a riedia jediné dobratie za kolo (§4). Hráč nemá spôsob, ako sa ich zbaviť, a zároveň mu pas nahrnie cigarety, ktoré nemá na čo minúť.</p>
+<h3>Ako funguje</h3><ol><li>Hra ponúka vždy dostupnú službu: zaplať a jedna karta navždy opustí tvoj balíček.</li><li>Cena rastie s každým použitím (pre hráča, nie spoločne), takže prvé vyhodenie je lacné a ďalšie sú rozhodnutím.</li><li>Služba súperí o ten istý zdroj ako nákup kariet: vyhodiť slabú, alebo kúpiť dobrú.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Slay the Spire (Mega Crit, 2017) — Card Removal u obchodníka</b>Odstránenie karty stojí v pôvodnej hre 75 zlatých a každé ďalšie o 25 viac; relikvia Smiling Mask ho natrvalo zníži na 50. Hráč v obchode volí medzi vyhodením Striku a kúpou karty alebo relikvie, ktorá balíček dotvorí. <a href="https://steamcommunity.com/app/646570/discussions/0/3377008022038024604">zdroj</a></div>
+<div class="hra"><b>Slay the Spire 2 — Ascension 6 „Inflation“</b>V beta patchi pokračovania na vyššej obtiažnosti začína odstránenie na 100 a rastie o 50. Cena vyhodenia je teda páka, ktorou dizajnér ladí tlak na štartový balíček. <a href="https://sts2.untapped.gg/articles/slay-the-spire-2-v01020-beta-patch-notes-highlights-and-first-thoughts">zdroj</a></div>
+<div class="hra"><b>Dominion (Vaccarino, 2008) — Chapel</b>Chapel (zahoď až 4 karty z ruky) je podľa wiki komunity rýchly trasher, ktorý sa kupuje v 1.–2. ťahu na vyhodenie Coppers a Estates; Donald X. ho podľa wiki nazval asi najsilnejšou kartou za svoju cenu, aká kedy vyjde (citát z druhej ruky). Ukazuje, čo sa stane, keď je vyhodenie lacné a bez rastu ceny. <a href="https://wiki.dominionstrategy.com/index.php/Chapel">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Keď je vyhodenie lacné a neobmedzené, hra sa zúži na „vyhoď všetko, kúp dve karty“: podľa komentára o Chapel „streamlines the fun out“ (<a href="https://killtenrats.com/2014/04/01/tt-streamlining-in-the-chapel">zdroj</a>). Rastúca cena v Slay the Spire to brzdí, ale herné návody radia, že kúpa chýbajúcej kľúčovej karty je často dôležitejšia ako druhé vyhodenie (návod z výsledkov vyhľadávania, stránku som priamo neotvoril) — vyhodenie nesmie byť automatická voľba.</p></div>
+<div><h3>Riziká</h3><p>Spáliť sa dá aj kúpená karta (napr. Absťák alebo nepriznaná Cirhóza, ak by to pravidlá dovolili — treba rozhodnúť, či áno). Bez rastu ceny hra skĺzne k minimálnemu balíčku. Pre nováčika ďalšia voľba v šenku, kde už rozhoduje o cigaretách. Ak vyhodenie stojí ťah v braní, súper si medzitým vezme lepšiu kartu — to je zámer, ale treba ho vysvetliť.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>V šenku (PRAVIDLA §5, Branie zo šenku) pribudne namiesto brania ťah „Vyhodiť z krčmy“: zaplať cigarety a jednu kartu z ruky spáľ (navždy z hry, ako Dievčina pri prehre). Cena je osobná: 1, 2, 3… cigarety (rovnaká stupnica ako Dedičstvo §12, ale pre každého zvlášť, aby si hráči nezdražovali navzájom). Nejde o strop — každé ďalšie vyhodenie je len drahšie. Rieši naraz dve témy roadmapy: štartovky aj nahromadené cigarety z pasu (návrh „Cigarety: pas ich nahrnie, minúť sa nedajú“, docs/playtesty/navrhy-20261031-004030.json); zodpovedá pokynu Michala 2026-10-27 dať prebytku spôsob, ako ho minúť. Karty: žiadna zmena, len nový ťah v šenku; vo výučbe jedna veta pri šenku. Tón: Melichar „vyhodí z krčmy“ Pijana — satira sedí.</p>
+<h3>Čo zmerať</h3><p>(a) Kedy a koľkokrát boti vyhadzujú pri cenách 1/2/3… a pri cenách 2/3/4… (b) Podiel štartoviek v balíčku na konci partie (dnes 55–60 % podľa roadmapy) — cieľ pod 35 %. (c) Priemerná zásoba cigariet po 3. kole (má klesnúť). (d) Úspešnosť hráča, ktorý vyhodil aspoň 2 štartovky do 3. kola, proti tomu, kto nie — ak nad 65 %, je vyhodenie povinné, nie rozhodnutie.</p>
+</details>
+<details class="mech" id="startovka-s-odchodom">
+<summary>Štartovka s vlastným odchodom a odmenou (scrap, Overgrown Estate, Hovel) <small>· 5 zdrojov · <code>startovka-s-odchodom</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Štartovky nemajú dobrý okamih na odchod: hráč ich vyloží, lebo musí, a ony sa vrátia. Keď karta sama ponúkne „spáľ ma a dostaneš X“, štartovka má jedno dobré použitie a zároveň lacný odchod z balíčka — presne zadanie roadmapy.</p>
+<h3>Ako funguje</h3><ol><li>Štartová (alebo lacná) karta má dva režimy: bežný účinok, alebo jednorazový silnejší účinok, po ktorom sama opustí hru.</li><li>Odmena za odchod je malá, ale prichádza vo chvíli, keď ju hráč potrebuje (posledná rana, zlá ruka).</li><li>Hráč rozhoduje, kedy kartu „obetovať“ — skoro (tenší balíček), alebo neskoro (odmena v kľúčovej chvíli).</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Dominion: Dark Ages (2012) — Shelters</b>Tri Shelters nahradia štartové Estates. Hovel sa smie zahodiť, keď hráč získa Victory kartu; Overgrown Estate dá malú odmenu, keď ho hráč zahodí; Necropolis je užitočná akcia na začiatku. Nápad nahradiť štartové Estates niečím iným dal Tom Lehmann. Štartovka tak sama nesie spôsob a dôvod odísť. <a href="https://dominionstrategy.com/2013/01/28/dark-ages-shelters/">zdroj</a></div>
+<div class="hra"><b>Dominion: Dark Ages — pravidlá</b>Shelters sa nedajú kúpiť ani vrátiť (nemajú kôpku v zásobe); sú výlučne štartovky. Pri zmiešaných hrách o ich použití rozhodne náhodná karta kráľovstva. <a href="https://www.riograndegames.com/wp-content/uploads/2022/03/Dominion-Rules-DarkAges.pdf">zdroj</a></div>
+<div class="hra"><b>Star Realms (Wise Wizard Games, 2014) — Explorer a scrap</b>Štartový balíček je 8 Scout a 2 Viper. Vždy dostupný Explorer stojí 2 a dá 2 obchodu, alebo sa zošrotuje (scrap, karta opustí hru) za 2 bojovej sily: lacná karta, ktorá sa sama vyradí, keď treba dotlačiť útok. <a href="https://www.dlair.net/the-flexibility-of-star-realms-frontiers/">zdroj</a></div>
+<div class="hra"><b>Star Realms — recenzia (Opinionated Gamers)</b>Recenzia vyzdvihuje pevnú kôpku Explorerov dostupnú od začiatku ako lacnú voľbu, ktorú možno zošrotovať za boj. <a href="https://opinionatedgamers.com/2015/06/01/mary-dimercurio-prasad-review-of-star-realms/">zdroj</a></div>
+<div class="hra"><b>Dune: Imperium (Dire Wolf, 2020) — vyhadzovanie štartoviek</b>Štartový balíček má 10 kariet (Convincing Argument ×2, Dagger ×2, Diplomacy, Dune the Desert Planet ×2, Reconnaissance); pravidlá spomínajú „trash“ ako spôsob zlepšiť dobieranie. Hráči na fóre radia vyhadzovať práve štartovky, a to keď sú už odohrané alebo v odhadzovacom balíčku. <a href="https://steamcommunity.com/app/1689500/discussions/0/601892852260193742">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Ak je odmena za odchod priveľká, štartovky sa spália v 1. kole automaticky a rozhodnutie zmizne. Ak je primalá, nikto ich nespáli a nič sa nezmení. Pri Shelters komunita hodnotí ich silu rôzne podľa kráľovstva (z vlastných vedomostí, neoverené).</p></div>
+<div><h3>Riziká</h3><p>Štyri nové texty na prvých kartách, ktoré nováčik vidí — viac čítania na začiatku. Odmena za odchod v poslednej bitke môže zvýšiť váhu posledného kola (téma roadmapy „Posledná bitka nerozhoduje celú partiu“) — odchod nepovoliť vo finále, alebo dávať odmenu nezávislú od bitky. Dievčina by mala dva odlišné odchody — zmätok.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Každá zo 4 štartoviek dostane v texte efektu druhú vetu „Odchod: …“ — po vyhodnotení bitky ju majiteľ smie spáliť (namiesto návratu §9.7) a dostane malú odmenu. Príklady (čísla len na meranie): Pijan — „Odchod: udeľ súperovi 1 Ranu navyše“ (posledný drink); Milujúca manželka — „Odchod: zníž si poškodenie pečene o 1“ alebo +1 priazeň Pamätníka (odíde domov); Miňištrant — „Odchod: +1 cigareta“ (odnesie z kostola sviečky); Dievčina na vydaj už odchod má, ale ako trest pri prehre (súper dostane Dlhy) — dalo by sa doplniť aj „vydá sa“ pri výhre: spáli sa a majiteľ dostane 1 špak. Na kartách: nová veta efektu (tvorca, admin); engine: nový spúšťač Odchod po kroku 9.7. Výučba: Melichar raz ukáže odchod Pijana.</p>
+<h3>Čo zmerať</h3><p>(a) V ktorom kole boti štartovky spália (cieľ: rozptyl, nie vždy v 1. kole). (b) Podiel štartoviek v balíčku v 3. a 5. kole. (c) Vplyv odchodu na posledné kolo: či sa odmeny kumulujú do finále. (d) Úspešnosť hráča, ktorý spálil 0, 1–2 a 3–4 štartovky.</p>
+</details>
+<details class="mech" id="odchod-za-body">
+<summary>Vyradenie z balíčka ako bodovanie (entomb, promote) <small>· 3 zdrojov · <code>odchod-za-body</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Štartovka, ktorá z balíčka odíde, je dnes len strata (Dievčina na vydaj pri prehre dá súperovi Dlhy, PRAVIDLA §16). Keď je odchod karty zároveň zdroj bodov, slabá karta má neskoro v partii hodnotu a hráč rieši rovnováhu „sila balíčka teraz vs. body na konci“.</p>
+<h3>Ako funguje</h3><ol><li>Hráč smie kartu z balíčka (z ruky alebo z odohraných) odložiť do osobnej bodovacej zóny.</li><li>Odložená karta sa už nehrá, ale na konci partie dá body (často viac, ako by dala v balíčku).</li><li>Počet odložení za ťah je obmedzený akciou, takže hráč volí, čo a kedy uložiť.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Valley of the Kings (AEG, 2014)</b>Bodujú len karty uložené do hrobky (entomb); ruka, balíček a odhadzovací sú na konci bezcenné. Uloženie je spravidla 1 za ťah, niektoré karty dávajú viac. Napätie: uložená karta už nedá kúpnu silu ani akciu, ale kto čaká priveľmi, nechá body ležať. <a href="https://www.alderac.com/wp-content/uploads/2017/11/VotK_Rulebook.pdf">zdroj</a></div>
+<div class="hra"><b>Valley of the Kings — recenzia</b>Recenzia vysvetľuje rovnaké napätie: hrobka zmenšuje balíček a berie z neho silu. <a href="https://zatu.com/blogs/reviews/valley-of-the-kings-review">zdroj</a></div>
+<div class="hra"><b>Tyrants of the Underdark (Wizards/Gale Force Nine, 2016) — promote do Inner Circle</b>Povýšená karta opustí balíček (už sa nehrá), no na konci boduje viac, ako by bodovala v balíčku. Recenzia uvádza, že mechanika je prevzatá z Valley of the Kings. <a href="https://spacebiff.com/2016/09/13/tyrants-underdark/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Ak sa odkladajú hlavne silné karty, hra vytláča „najprv stavaj, potom ukladaj“ a začiatok je predvídateľný. Kritika z vlastných vedomostí, neoverené: v Tyrants sa povyšovanie niekedy stáva hlavnou bodovacou cestou, čo zatieni boj o mapu.</p></div>
+<div><h3>Riziká</h3><p>Ďalší prameň špakov zväčší rozptyl skóre. Ak sa odchod viaže na priazeň starších, prepojí sa s témou zajatia a strachu (§10) — zložité pre nováčika. Body za odchod v poslednom kole posilnia posledné kolo.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>V NA EX! by odchod štartovky dal priazeň alebo špaky, nie víťazné body (tie dnes dávajú špaky, PRAVIDLA §14). Návrh na meranie: Milujúca manželka má tag Pamätník — keď ju hráč spáli (napr. platným vyhodením alebo Odchodom), dostane +1 špak „za pamiatku“; Miňištrant pri odchode posunie jedného staršieho o 1 smerom k sebe (Farár ho poslal do seminára). Odmena za odchod viaže štartovky na os starších a špakov, nie na bitku. Karty: veta efektu; scorecardy bez zmeny.</p>
+<h3>Čo zmerať</h3><p>(a) Koľko špakov dá odchod štartoviek priemerne za partiu (cieľ do 5 % celkového skóre). (b) Či boti odkladajú štartovky až v posledných kolách (zlé — odchod má prečistiť balíček skôr).</p>
+</details>
+<details class="mech" id="startovka-rastie">
+<summary>Štartovka, ktorá rastie (výmena za silnejšiu verziu, vylepšenie na mieste) <small>· 2 zdrojov · <code>startovka-rastie</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Štartovky ostávajú do konca partie rovnako slabé a na konci tvoria väčšinu balíčka (roadmapa: 55–60 %). Namiesto vyhodenia sa dajú vylepšiť: balíček sa nezmenší, ale štartovky prestanú byť záťažou.</p>
+<h3>Ako funguje</h3><ol><li>Karta má rebrík verzií mimo bežnej ponuky.</li><li>Keď hráč splní podmienku (kartu odohrá, vyhrá s ňou, zaplatí), vymení ju za vyššiu verziu z odloženej kôpky.</li><li>Vyššie verzie sa nedajú kúpiť, takže rast je jediná cesta k nim.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Dominion: Adventures (2015) — Travellers</b>Page sa po odhodení z hry smie vymeniť za Treasure Hunter, ten za Warrior, Hero a Champion; Peasant za Soldier, Fugitive, Disciple a Teacher. Výmena nie je zahodenie a vyššie verzie nie sú v zásobe. Hráč volí, či kartu vymeniť hneď, alebo ešte využiť slabšiu verziu. <a href="https://www.riograndegames.com/wp-content/uploads/2022/03/Dominion-Rules-Adventures.pdf">zdroj</a></div>
+<div class="hra"><b>Mystic Vale (AEG, 2016) — card crafting</b>Vylepšenia sa vsúvajú do priehľadných obalov na existujúce karty; veľkosť balíčka sa celú partiu nemení, mení sa obsah kariet (niektoré štartovky sú prázdne a dajú sa vylepšiť trikrát, ostatné dvakrát). <a href="https://opinionatedgamers.com/2019/05/07/mystic-vale/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Vylepšovanie pridáva fyzické komponenty (Mystic Vale obaly, Travellers kôpky) a v digitálnej hre zase stav, ktorý treba ukázať. Rebrík Travellers je dlhý a pomalý — dosiahnuť Champion trvá veľa kôl (z vlastných vedomostí, neoverené).</p></div>
+<div><h3>Riziká</h3><p>4–8 nových kariet a nový pojem pre nováčika. Víťaz bitky by sa ešte posilnil (snowball) — preto viazať vylepšenie radšej na prehru alebo na cigarety, nie na výhru. Hráči chcú hlavne menej štartoviek v balíčku; vylepšenie balíček nezmenší.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>Štartovka sa po výhre v bitke, v ktorej bola v línii s aktívnou akciou, smie „zlepšiť“: Miňištrant → Kostolník, Pijan → Štamgast, Milujúca manželka → Gazdiná, Dievčina na vydaj → Nevesta (mená len ako príklad pre Vymyselníka). Vyššie verzie nie sú v Občanoch ani v šenku (§3), ležia bokom ako štartovky. Web tu má výhodu: stav karty vie ukázať bez obalov. Na kartách: 4 nové karty v tvorcovi s tagom štartovky; engine: výmena v kroku 9.7 namiesto návratu.</p>
+<h3>Čo zmerať</h3><p>(a) Úspešnosť víťaza 1. bitky so zapnutým a vypnutým rastom (snowball). (b) Podiel zahraných štartoviek v 1.–3. kole. (c) Dĺžka partie.</p>
+</details>
+<details class="mech" id="startovka-s-rolou">
+<summary>Štartovka s úlohou, ktorú kúpená karta nenahradí <small>· 3 zdrojov · <code>startovka-s-rolou</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Keď štartovky robia slabšiu verziu toho, čo robia kúpené karty, sú vždy horšie a hráč ich chce preč. Keď majú vlastnú úlohu (jediná lacná cesta k niečomu), majú zmysel celú partiu bez vyhadzovania.</p>
+<h3>Ako funguje</h3><ol><li>Štartovka dostane funkciu, ktorú kúpené karty nemajú alebo majú vzácne (ikona, typ, spúšťač).</li><li>Táto funkcia je stále potrebná aj neskoro v partii.</li><li>Kúpené karty sú silnejšie v hlavnej veci, štartovka je náhradník s istou úlohou.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Dune: Imperium — štartovky s ikonami umiestnenia</b>Štartovky nesú ikony, ktoré umožňujú poslať agenta na isté miesta dosky (napr. Fremen, Bene Gesserit, Spacing Guild, Emperor — prehľad zo Zatu). Podľa Zatu sa však ku koncu partie štartovky skôr zbavujú, lebo spomaľujú; úloha teda vydrží len čiastočne. <a href="https://zatu.com/en-ie/blogs/features/dune-imperium-tips-tricks">zdroj</a></div>
+<div class="hra"><b>Dominion: Dark Ages — Necropolis</b>Necropolis (Shelter namiesto Estate) dáva akcie navyše, takže hráč môže od začiatku hrať viac terminálnych akcií — štartovka s úlohou namiesto mŕtvej karty. <a href="https://dominionstrategy.com/2013/01/28/dark-ages-shelters/">zdroj</a></div>
+<div class="hra"><b>Clank! Legacy — Upper Management Pack</b>Rozšírenie dá každej postave vlastné štartovky (5 Prayer, 2 Stumble, Contract, Cure a karta postavy). Recenzent však poznamenal, že po nahradení základnými Burgle a Stumble by sa mechanicky nič nezmenilo — kozmetická asymetria úlohu nedáva. <a href="https://cannibalhalflinggaming.com/2019/04/09/a-glimpse-into-pax-east-clank-legacy-acquisitions-inc-upper-management-pack/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Clank! Upper Management ukazuje, že nové meno bez novej funkcie hráčovi nič nedá. Ak je úloha štartovky priveľmi dôležitá, kúpené karty strácajú zmysel.</p></div>
+<div><h3>Riziká</h3><p>Ťažko navrhnúť úlohu, ktorá je užitočná a zároveň nie povinná. Výnimka „štartovky nemíňajú limit“ je ďalšie pravidlo, ktoré si nováčik musí pamätať.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>V NA EX! majú štartovky akcie, ktoré majú aj Občania (Dlh, Viera, Odpor, Pecka, Cigareta, Vízia…). Úlohu by im dala viazanosť na systém, ktorý kúpené karty nemajú: napr. štartovky ako jediné smú ísť „pod stôl“ (Podstrčenie §13) zadarmo, alebo sú jediné karty, ktoré v Zhromaždení nemíňajú limit vykladania (§6). Miňištrant už má nástroj na úlohu (Konflikt → Viera ako Pecka); Dievčina má Víziu (karta navyše). Vymyselník by mal hľadať pre každú štartovku jednu situáciu, kde je lepšia ako ktorýkoľvek Občan.</p>
+<h3>Čo zmerať</h3><p>(a) Ako často boti vykladajú štartovky v 5.+ kole, keď majú v ruke aj Občanov (dnes vs. s úlohou). (b) Či sa úloha nestala povinnou: úspešnosť hráča, ktorý štartovku v kole nemal.</p>
+</details>
+<details class="mech" id="rovnaky-start">
+<summary>Rovnaký štart pre oboch (zrkadlové štartovky) <small>· 3 zdrojov · <code>rovnaky-start</code></small></summary>
+<p><b>Problém, ktorý rieši:</b> Obaja hráči majú tie isté 4 druhy štartoviek, ale varianty akcií sa líšia (PRAVIDLA §3 „variácie podľa sady“). Playtester to opísal ako „najslabšiu možnú ruku“ a stratég zaradil štartovú ruku a prvý šenok medzi zdroje náhody (docs/playtesty/strategia-20261031-004030.html).</p>
+<h3>Ako funguje</h3><ol><li>Obaja hráči začínajú s presne rovnakým balíčkom aj variantmi.</li><li>Asymetria vzniká až rozhodnutiami (nákupy, poradie).</li><li>Ak hra chce asymetriu, je verejná a vyvážená (postavy), nie náhodná.</li></ol>
+<h3>Kde funguje a prečo</h3>
+<div class="hra"><b>Clank! (Dire Wolf, 2016)</b>Každý hráč začína s rovnakými kartami (6 Burgle, 2 Stumble, 1 Sidestep, 1 Scramble); rozdiely vznikajú až nákupmi. <a href="https://cdn.shopify.com/s/files/1/2546/6116/files/rules-clank.pdf">zdroj</a></div>
+<div class="hra"><b>Star Realms</b>Obaja hráči majú rovnaký štartový balíček 8 Scout a 2 Viper. <a href="https://en.wikipedia.org/wiki/Star_Realms">zdroj</a></div>
+<div class="hra"><b>Dominion</b>Každý začína so 7 Copper a 3 Estates; Estates sú zámerne slabé (body bez účinku) a riedia ruku, cieľom je kúpiť toľko dobrých kariet, aby ich hráč dobral zriedka. <a href="https://hexagamers.com/dominion-how-to-play-simplified/">zdroj</a></div>
+<div class="mriezka">
+<div><h3>Kritika</h3><p>Rovnaký štart je nudnejší a ťahy prvých kôl sa opakujú (z vlastných vedomostí, neoverené). V Dominione o rozdieloch rozhoduje aj rozdelenie 5/2 alebo 4/3 mincí v prvých dvoch rukách — aj rovnaký balíček dá náhodu (z vlastných vedomostí, neoverené).</p></div>
+<div><h3>Riziká</h3><p>Menej rozmanitosti v prvom kole. Variant, ktorý dostanú obaja, môže byť lepší pre útočníka alebo obrancu — treba merať s pevným útočníkom.</p></div>
+</div>
+<h3>Prevod do NA EX!</h3><p>V NA EX! je štartová ruka celá v ruke (doberací balíček je prázdny, §3), takže pri rovnakých variantoch by bol štart úplne symetrický a náhodu by niesol len šenok a voľba útočníka. Dve cesty: (1) obaja dostanú tie isté varianty štartoviek (losované raz pre partiu), (2) varianty sú pevné v sade (jeden variant každej štartovky). Karty: v cards.json štartovky s jedným variantom alebo pravidlo prípravy; tvorca nemusí meniť text. Výučba: bez zmeny.</p>
+<h3>Čo zmerať</h3><p>(a) Duplikátne rozdania (tools/bot/strategickost.ts): zmena podielu náhody v prvých dvoch kolách pri rovnakých variantoch. (b) Úspešnosť útočníka 1. kola pri symetrickom štarte.</p>
+</details>
+<h2>5. Komu sa to hodí</h2>
+<ul>
+<li><b>Vymyselník:</b> texty „Odchod:“ pre 4 štartovky v hlase postáv (Pijan posledný drink, Manželka odíde domov, Miňištrant do seminára, Dievčina sa vydá); prípadne rebrík vylepšení s menami.</li>
+<li><b>Navrhár:</b> ťah „Vyhodiť z krčmy“ v šenku s osobnou rastúcou cenou v cigaretách ako odpoveď na štartovky aj nahromadené cigarety; rovnaké varianty štartoviek pre oboch ako lacná kontrola náhody.</li>
+<li><b>Stratég:</b> podiel štartoviek v balíčku v 3., 5. kole a na konci; kedy boti vyhadzujú pri rôznych cenách; úspešnosť podľa počtu vyhodených štartoviek (vyhodenie nesmie byť povinné); duplikátne rozdania so symetrickým štartom.</li>
+</ul>
+<footer>NA EX! · Študent · vetva <code>student/2026-11-03</code> · <code>docs/kniznica/2026-11-03-startovky.html</code> · tvrdenia bez odkazu sú označené „z vlastných vedomostí, neoverené“ · čísla v prevodoch sú len východisko na meranie, nie návrh hodnôt.</footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  // Filtrovanie porovnávacej tabuľky podľa problému.
+  var tlacidla = document.querySelectorAll(".filtre button");
+  tlacidla.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tlacidla.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      var f = b.getAttribute("data-f");
+      document.querySelectorAll("#porov tbody tr").forEach(function (tr) {
+        tr.hidden = f !== "vsetko" && tr.getAttribute("data-riesi").split(" ").indexOf(f) < 0;
+      });
+    });
+  });
+  // Odkaz na mechaniku otvorí jej detail.
+  function otvor() { var d = document.getElementById(location.hash.slice(1)); if (d && d.tagName === "DETAILS") d.open = true; }
+  window.addEventListener("hashchange", otvor); otvor();
+})();
+</script>
+</body>
+</html>
