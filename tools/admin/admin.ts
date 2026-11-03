@@ -70,7 +70,7 @@
 //   navrhy-nahraj <subor.json>    nahrá dávku návrhov od navrhára alebo z dizajnu (tvar v .claude/agents/naex-navrhar.md)
 //   navrh <id> <stav> [--vysledok "text"]   Developer: rozpracovane | implementovane (+ čo spravil, commit) | spat
 //                                 organizátor playtestu: overene | nezabralo (--vysledok = verdikt: čo playtest ukázal)
-// Upratanie pri vypálení Zrejúcej (skill vypalit, krok 7) — nič sa nemaže, každé skrytie má dôvod a záznam
+// Upratanie pri vypálení Zrejúcej (skill naex-vypalit, krok 7) — nič sa nemaže, každé skrytie má dôvod a záznam
 //   zastarane [--json]            kandidáti na skrytie: AI názory a komentáre, reporty, návrhy a Prijímač, ktoré menujú
 //                                 kartu, čo v rozpracovanej sade nie je, alebo zrušenú mechaniku (tools/admin/zastarane.json);
 //                                 len zoznam na kontrolu, sám nič neskryje; príspevky ľudí ukáže zvlášť (len odpovedať)
@@ -94,7 +94,7 @@
 //   roadmapa-pridaj <subor.json>  nová položka do Prijímača ({nazov, kratko, preco, hotovo, oblast, narocnost, zdroj})
 //   roadmapa-uprav <id> <subor.json>  zmení obsah položky (len uvedené polia; stĺpec ani poradie nie)
 //   roadmapa-presun <id> <stlpec> [--poradie N] [--commit "…"]   presun do stĺpca na N-té miesto (bez --poradie na koniec);
-//                                 do hotove s --commit (commit, sada); presúva len pri vypálení (skill vypalit) či na pokyn Michala
+//                                 do hotove s --commit (commit, sada); presúva len pri vypálení (skill naex-vypalit) či na pokyn Michala
 // Novinky (stránka /novinky, Michal 2026-10-22) — píšu sa až po nasadení na živý web
 //   novinky [--json]              všetky novinky, najnovšie hore
 //   novinka-pridaj <subor.json> [--vydanie "Pravidlá v6"]   nová novinka alebo pole noviniek
@@ -353,7 +353,7 @@ function suboryZmienok(): string[] {
 
 const bezDiakritiky = (s: string): string => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
-// ---- upratanie pri vypálení (skill vypalit, krok 7) -------------------------------
+// ---- upratanie pri vypálení (skill naex-vypalit, krok 7) -------------------------------
 
 /** Archív položky tak, ako ho vracia server (návrh, report). */
 interface ArchivCli {
@@ -1100,7 +1100,7 @@ async function main(): Promise<void> {
     case "komentar-skry":
     case "nazor-vrat":
     case "komentar-vrat": {
-      // Len príspevky AI účtov — server názor či komentár človeka odmietne (skill vypalit).
+      // Len príspevky AI účtov — server názor či komentár človeka odmietne (skill naex-vypalit).
       const [druh, akcia] = prikaz.split("-") as ["nazor" | "komentar", "skry" | "vrat"];
       const id = arg[0];
       const dovod = hodnota("--dovod");

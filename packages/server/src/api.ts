@@ -1201,7 +1201,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         return ok({ ok: true });
       }
     }
-    // Upratanie pri vypálení Zrejúcej (skill vypalit, Michal 2026-11-02): mäkké skrytie
+    // Upratanie pri vypálení Zrejúcej (skill naex-vypalit, Michal 2026-11-02): mäkké skrytie
     // zastaraných príspevkov AI účtov a archív reportov a návrhov — nič sa nemaže.
     if (metoda === "POST" && casti.length === 5 && /^\d+$/.test(id) && (casti[4] === "skry" || casti[4] === "vrat")) {
       const druh = casti[2] === "nazory" ? "nazor" : casti[2] === "komentare" ? "komentar" : null;

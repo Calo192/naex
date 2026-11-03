@@ -28,7 +28,7 @@ export interface Report {
   readonly cas: number | null;
   /** report spisovateľa, rozbor stratéga, návrhy navrhára, alebo prehľad naprieč playtestami. */
   readonly druh: "prehlad" | "report" | "strategia" | "navrhy";
-  /** Archivovaný report (zaniknuté karty či mechaniky, skill vypalit); null = v zozname. */
+  /** Archivovaný report (zaniknuté karty či mechaniky, skill naex-vypalit); null = v zozname. */
   readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 
@@ -104,7 +104,7 @@ export class Playtesty {
   }
 
   /**
-   * Archív reportov (skill vypalit, Michal 2026-11-02): súbor ostáva a dá sa
+   * Archív reportov (skill naex-vypalit, Michal 2026-11-02): súbor ostáva a dá sa
    * otvoriť, sekcia Playtest ho len štandardne nezobrazí (prepínač „aj archív“).
    */
   archivuj(ja: Pouzivatel, subor: string, dovod: unknown, teraz: number): void {

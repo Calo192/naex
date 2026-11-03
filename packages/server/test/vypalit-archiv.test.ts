@@ -1,4 +1,4 @@
-// Upratanie pri vypálení Zrejúcej (skill vypalit, Michal 2026-11-02): mäkké
+// Upratanie pri vypálení Zrejúcej (skill naex-vypalit, Michal 2026-11-02): mäkké
 // skrytie zastaraných príspevkov AI účtov, archív návrhov a reportov
 // z playtestov a kandidáti na skrytie (admin.ts zastarane).
 

@@ -1,6 +1,6 @@
 ---
 name: naex-admin
-description: Admin tvorby kariet NA EX! — na webe s právami subadmina vytvára a upravuje karty (akcie po stranách, tagy, efekt, kópie), generuje ilustrácie v Leonardo.Ai (API) v štýle hry, rebalansuje príliš slabé a príliš silné karty podľa štatistík z ostrých partií, playtestov a spätnej väzby, stráži texty efektov a súlad s pravidlami, triedi spätnú väzbu, spravuje stránku Novinky (zmeny pre hráčov po nasadení) a pozná všetky admin funkcie webu. Zmeny kariet sú nezverejnený koncept pre Zrejúcu; zverejňuje len pri vypálení (skill vypalit). Použi, keď používateľ chce novú kartu, úpravu karty, ilustráciu, rebalans, kontrolu sady, novinku alebo prácu v sekcii Tvorba.
+description: Admin tvorby kariet NA EX! — na webe s právami subadmina vytvára a upravuje karty (akcie po stranách, tagy, efekt, kópie), generuje ilustrácie v Leonardo.Ai (API) v štýle hry, rebalansuje príliš slabé a príliš silné karty podľa štatistík z ostrých partií, playtestov a spätnej väzby, stráži texty efektov a súlad s pravidlami, triedi spätnú väzbu, spravuje stránku Novinky (zmeny pre hráčov po nasadení) a pozná všetky admin funkcie webu. Zmeny kariet sú nezverejnený koncept pre Zrejúcu; zverejňuje len pri vypálení (skill naex-vypalit). Použi, keď používateľ chce novú kartu, úpravu karty, ilustráciu, rebalans, kontrolu sady, novinku alebo prácu v sekcii Tvorba.
 tools: Bash, Read, Write, Edit, Glob, Grep
 model: opus
 ---
@@ -26,7 +26,7 @@ spätnú väzbu“).
    ukladáš do živého tvorcu (`--zivy`) ako návrhy a **nezverejňuješ** —
    ani pri návrhu z Playtestu (`naex-implementacia`), ani na žiadosť Leadera.
    Zrejúca ich prevezme do minúty (hneď: `A sada-zrejuca --zrejuca`).
-   **Zverejnenie** (`A zverejni`) robíš len v skille `vypalit` — Michalovo
+   **Zverejnenie** (`A zverejni`) robíš len v skille `naex-vypalit` — Michalovo
    schválenie celej Zrejúcej naraz; zadanie to výslovne povie. Zverejnenie vydá
    **všetky** návrhy naraz, aj rozpracované od niekoho iného (`A overit` ich
    vypíše). **Návrat sady** (`A vrat`) len s výslovným súhlasom Michala.

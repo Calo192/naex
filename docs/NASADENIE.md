@@ -256,7 +256,7 @@ E-mail hráča vidí len on sám (profil) a admin (Hráči → pod loginom,
 |---|---|---|
 | čo to je | oficiálna hra pre všetkých | pokusná verzia pre hráčov s oprávnením |
 | adresa | `https://<DOMENA>` | tá istá — voľba na stránke Hrať; nástroje `https://<DOMENA>/zrejuca` |
-| kód | vetva `vypalena` (posúva ju skill `vypalit` po Michalovom schválení) | `master` |
+| kód | vetva `vypalena` (posúva ju skill `naex-vypalit` po Michalovom schválení) | `master` |
 | na serveri | `/opt/naex`, projekt `deploy`, zväzok `deploy_naex-data`, Caddy | `/opt/naex-zrejuca`, projekt `naex-zrejuca`, zväzok `naex-zrejuca_naex-zrejuca-data` |
 | účty a relácie | tu | z Vypálenej — tá istá cookie `naex_sid`; Zrejúca ju overí cez `/api/ja` Vypálenej |
 | sada kariet | posledná **zverejnená** | **rozpracovaný** stav tvorcu Vypálenej (prevezme ho do minúty, hneď `admin.ts sada-zrejuca --zrejuca`) |
@@ -310,7 +310,7 @@ ich pri každom nasadení Zrejúcej skopíruje z Vypálenej (po importe teda sta
 Ďalšie nasadenia Zrejúcej už Vypálenú ani Caddy nemenia.
 
 **Schválenie Zrejúcej** (do Vypálenej ide celý stav naraz — módy, pravidlá,
-karty) robí skill `vypalit`: posunie `vypalena` na schválený master, Admin
+karty) robí skill `naex-vypalit`: posunie `vypalena` na schválený master, Admin
 zverejní sadu, nasadí Vypálenú a znova Zrejúcu — potom je Zrejúca „bez zmien“.
 
 ## Lokálne bez Dockera

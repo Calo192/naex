@@ -1,4 +1,4 @@
-// Kandidáti na skrytie pri vypálení Zrejúcej (skill vypalit, krok 7): texty,
+// Kandidáti na skrytie pri vypálení Zrejúcej (skill naex-vypalit, krok 7): texty,
 // ktoré menujú kartu, čo v rozpracovanej sade už nie je, alebo zrušenú
 // mechaniku zo zastarane.json. Len návrh na kontrolu — nič neskrýva.
 //

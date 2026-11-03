@@ -15,7 +15,7 @@ prerozprávaš používateľovi. Karty sám neupravuješ.
    Lokálny web (`http://localhost:8787`, `web.ts dostupny`; ak nebeží, `npm run
    dev` na pozadí) len na skúšky, ktoré o to žiadajú.
 2. **Spusti agenta** (v popredí): „Úloha: $ARGUMENTS. Web: <url>.“
-   Zverejnenie sady patrí len do skillu `vypalit` (Michalovo schválenie celej
+   Zverejnenie sady patrí len do skillu `naex-vypalit` (Michalovo schválenie celej
    Zrejúcej) — vtedy to dopíš („Zverejnenie povolené — vypálenie.“). Návrat
    sady len s výslovným súhlasom Michala v tejto konverzácii.
 3. **Odovzdaj výsledok**: čo agent zmenil (karty, záloha), čo čaká na

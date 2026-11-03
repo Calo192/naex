@@ -47,7 +47,7 @@ export interface Navrh {
   readonly rozhodnuty: number | null;
   readonly vysledok: string;
   readonly verdikt: string;
-  /** Archív (zaniknutá karta či mechanika, skill vypalit); null = v zozname. */
+  /** Archív (zaniknutá karta či mechanika, skill naex-vypalit); null = v zozname. */
   readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 

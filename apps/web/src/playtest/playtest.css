@@ -233,7 +233,7 @@
   }
 }
 
-/* Archív (skill vypalit): prepínač „aj archív“ a archivovaný návrh či report. */
+/* Archív (skill naex-vypalit): prepínač „aj archív“ a archivovaný návrh či report. */
 .playtest-archiv-prepinac {
   display: inline-flex;
   align-items: center;

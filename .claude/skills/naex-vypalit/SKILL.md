@@ -1,6 +1,6 @@
 ---
-name: vypalit
-description: Vypáli Zrejúcu — z aktuálnej Zrejúcej (master) urobí novú Vypálenú (oficiálnu hru pre hráčov). Overí master, zverejní rozpracovanú sadu, posunie vetvu vypalena, nasadí Vypálenú, dopíše Novinky, aktualizuje roadmapu, skryje zastarané AI komentáre a návrhy z playtestov a Prijímača (o zaniknutých kartách a mechanikách), skontroluje výučbu a založí novú Zrejúcu (bez zmien oproti Vypálenej). Spúšťa ho len Michal. Použi, keď Michal povie /vypalit, „vypáľ Zrejúcu“, „Zrejúca do Vypálenej“, „schváľ Zrejúcu“, „vydaj Zrejúcu hráčom“.
+name: naex-vypalit
+description: Vypáli Zrejúcu — z aktuálnej Zrejúcej (master) urobí novú Vypálenú (oficiálnu hru pre hráčov). Overí master, zverejní rozpracovanú sadu, posunie vetvu vypalena, nasadí Vypálenú, dopíše Novinky, aktualizuje roadmapu, skryje zastarané AI komentáre a návrhy z playtestov a Prijímača (o zaniknutých kartách a mechanikách), skontroluje výučbu a založí novú Zrejúcu (bez zmien oproti Vypálenej). Spúšťa ho len Michal. Použi, keď Michal povie /naex-vypalit, „vypáľ Zrejúcu“, „Zrejúca do Vypálenej“, „schváľ Zrejúcu“, „vydaj Zrejúcu hráčom“.
 argument-hint: "[--hned] (nasadiť Vypálenú aj počas rozohraných partií)"
 ---
 

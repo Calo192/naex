@@ -79,7 +79,7 @@ export interface Navrh extends ObsahNavrhu {
   /** Čo ukázal playtest po implementácii (stav overené / nezabralo). */
   readonly verdikt: string;
   readonly vytvoreny: number;
-  /** Archivovaný návrh (zaniknutá karta či mechanika, skill vypalit); null = v zozname. */
+  /** Archivovaný návrh (zaniknutá karta či mechanika, skill naex-vypalit); null = v zozname. */
   readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 
@@ -188,7 +188,7 @@ export class Navrhy {
   }
 
   /**
-   * Archív návrhov o zaniknutých kartách a mechanikách (skill vypalit, Michal
+   * Archív návrhov o zaniknutých kartách a mechanikách (skill naex-vypalit, Michal
    * 2026-11-02): návrh ostáva so stavom aj rozhodnutím, sekcia Playtest ho len
    * štandardne nezobrazí a nečaká na rozhodnutie.
    */

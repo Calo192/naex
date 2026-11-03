@@ -1,4 +1,4 @@
-// Mäkké skrytie a archív (skill vypalit, Michal 2026-11-02): pri vypálení
+// Mäkké skrytie a archív (skill naex-vypalit, Michal 2026-11-02): pri vypálení
 // Zrejúcej sa skryjú zastarané príspevky AI účtov (Spätná väzba) a archivujú
 // reporty a návrhy z playtestov, ktoré sa týkajú zaniknutých kariet či
 // mechaník. Nič sa nemaže — každé skrytie aj návrat je riadok v archiv_zaznamy

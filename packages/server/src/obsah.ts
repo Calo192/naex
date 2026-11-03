@@ -627,7 +627,7 @@ export class Obsah {
 
   /**
    * Mená kariet zo všetkých zverejnených sád — admin.ts zastarane z nich zistí,
-   * ktoré karty od niektorej sady zanikli (skill vypalit).
+   * ktoré karty od niektorej sady zanikli (skill naex-vypalit).
    */
   menaKarietVSadach(): { meno: string; poslednaVerzia: number }[] {
     const mena = new Map<string, number>();

@@ -13,7 +13,7 @@ export interface Report {
   readonly nazov: string;
   readonly cas: number | null;
   readonly druh: "prehlad" | "report" | "strategia" | "navrhy";
-  /** Archív (zaniknuté karty či mechaniky, skill vypalit); null = v zozname. */
+  /** Archív (zaniknuté karty či mechaniky, skill naex-vypalit); null = v zozname. */
   readonly archiv: { readonly kedy: number; readonly dovod: string; readonly kto: string | null } | null;
 }
 

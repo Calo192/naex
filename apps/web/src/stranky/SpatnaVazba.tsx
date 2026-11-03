@@ -77,7 +77,7 @@ interface Nazor {
   readonly komentare: readonly Komentar[];
 }
 
-/** Skrytý príspevok AI účtu (skill vypalit) — archív vidí len správca. */
+/** Skrytý príspevok AI účtu (skill naex-vypalit) — archív vidí len správca. */
 interface SkrytyPrispevok {
   readonly druh: "nazor" | "komentar";
   readonly id: number;
@@ -649,7 +649,7 @@ function NovyNazor({ pridany, zrus, chyba }: { readonly pridany: (id: number) =>
 }
 
 /**
- * Archív skrytých príspevkov AI účtov (skill vypalit, Michal 2026-11-02): pri
+ * Archív skrytých príspevkov AI účtov (skill naex-vypalit, Michal 2026-11-02): pri
  * vypálení Zrejúcej sa skryjú tie, čo hovoria o zaniknutých kartách a mechanikách.
  * Skrýva admin.ts nazor-skry / komentar-skry; tu ich správca len vráti.
  */

@@ -39,7 +39,7 @@ pole netreba. `$S` = `node --experimental-strip-types --no-warnings tools/playte
 - `over-verziu` dorovná `verzie.json` z `origin/vypalena` a na `neoverená`
   prepne len skúsenosti overené výhradne na verziách, ktoré už nehrá ani
   Zrejúca, ani Vypálená.
-- **Vypálenie** (skill `vypalit`, krok 8.3): `vypalena` = master, `over-verziu`
+- **Vypálenie** (skill `naex-vypalit`, krok 8.3): `vypalena` = master, `over-verziu`
   zapíše verziu Zrejúcej ako verziu Vypálenej a skúsenosti zo starej Vypálenej
   spadnú na neoverené. Kto mení `VERZIA_PRAVIDIEL` v master, spustí
   `over-verziu` hneď (skúsenosti overené na verzii Vypálenej ostanú overené —

@@ -17,7 +17,7 @@ import { overDovodSkrytia, zapisSkrytie } from "./skrytie.ts";
 
 const TABULKA = { nazor: "nazory", komentar: "nazory_komentare" } as const;
 
-/** Skrytý názor či komentár AI účtu v archíve (skill vypalit). */
+/** Skrytý názor či komentár AI účtu v archíve (skill naex-vypalit). */
 export interface SkrytyPrispevok {
   readonly druh: "nazor" | "komentar";
   readonly id: number;
@@ -313,7 +313,7 @@ export class Nazory {
   }
 
   /**
-   * Mäkké skrytie zastaraného príspevku (skill vypalit, Michal 2026-11-02) —
+   * Mäkké skrytie zastaraného príspevku (skill naex-vypalit, Michal 2026-11-02) —
    * len správca a len príspevok AI účtu. Názor či komentár človeka sa nikdy
    * neskrýva: na zaniknutú vec mu Admin (AI) odpovie komentárom.
    */

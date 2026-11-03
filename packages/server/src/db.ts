@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS navrhy (
   UNIQUE (davka, kluc)
 );
 
--- Archivované reporty playtestov (skill vypalit, Michal 2026-11-02): súbor ostáva,
+-- Archivované reporty playtestov (skill naex-vypalit, Michal 2026-11-02): súbor ostáva,
 -- sekcia Playtest ho len štandardne nezobrazí.
 CREATE TABLE IF NOT EXISTS playtesty_archiv (
   subor TEXT PRIMARY KEY,
@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS playtesty_archiv (
   kedy INTEGER NOT NULL
 );
 
--- Záznam skrytí a návratov (skill vypalit): kto, kedy, prečo a obsah v čase
+-- Záznam skrytí a návratov (skill naex-vypalit): kto, kedy, prečo a obsah v čase
 -- skrytia — záloha, keby sa skrytý obsah neskôr zmenil či zmazal.
 CREATE TABLE IF NOT EXISTS archiv_zaznamy (
   id INTEGER PRIMARY KEY,
@@ -438,7 +438,7 @@ function migruj(db: Db): void {
   // Verdikt overenia návrhu ďalším playtestom (Michal 2026-10-21).
   doplnStlpce(db, "navrhy", [
     ["verdikt", "TEXT NOT NULL DEFAULT ''"],
-    // Archív návrhov o zaniknutých kartách a mechanikách (skill vypalit, Michal 2026-11-02); NULL = v zozname.
+    // Archív návrhov o zaniknutých kartách a mechanikách (skill naex-vypalit, Michal 2026-11-02); NULL = v zozname.
     ["archivovany", "INTEGER"],
     ["archiv_dovod", "TEXT NOT NULL DEFAULT ''"],
     ["archivoval", "INTEGER REFERENCES pouzivatelia(id) ON DELETE SET NULL"],
@@ -452,7 +452,7 @@ function migruj(db: Db): void {
     ["dovod", "TEXT NOT NULL DEFAULT ''"],
     ["novinka", "INTEGER REFERENCES novinky(id) ON DELETE SET NULL"],
   ]);
-  // Mäkké skrytie zastaraných príspevkov AI účtov (skill vypalit, Michal 2026-11-02); NULL = viditeľný.
+  // Mäkké skrytie zastaraných príspevkov AI účtov (skill naex-vypalit, Michal 2026-11-02); NULL = viditeľný.
   for (const tabulka of ["nazory", "nazory_komentare"]) {
     doplnStlpce(db, tabulka, [
       ["skryty", "INTEGER"],

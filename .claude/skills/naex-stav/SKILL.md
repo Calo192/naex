@@ -29,7 +29,7 @@ Rýchly prehľad bez agentov a bez partie — pár volaní API a gitu.
    — to je všetko, čo čaká na Michalovo schválenie (do Vypálenej ide celý stav
    Zrejúcej naraz, so zverejnením sady).
    `$A server-stav --zrejuca` dá aj riadok „Zrejúca: bez zmien / N commitov,
-   M kariet navyše“ — bez zmien sa hráčom neponúka (po `vypalit`).
+   M kariet navyše“ — bez zmien sa hráčom neponúka (po `naex-vypalit`).
 2. Doplň, čo príkaz nevie:
    - bežiace lokálne relácie: `git worktree list` (rozpracované varianty
      stratéga, nasadzovací worktree) a `ls -t playtest | head` (dnešné relácie),

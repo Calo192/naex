@@ -1,5 +1,5 @@
 {
-  "_popis": "Zrušené mechaniky a pojmy pre admin.ts zastarane (skill vypalit, krok 7). vzory = začiatky slov bez diakritiky a malými písmenami (regulárny výraz; medzera = ľubovoľné medzery, zvyšok slova sa doplní sám). Karty, ktoré zo sady zanikli, netreba písať — nástroj ich zistí z histórie zverejnených sád; do „karty“ patria len vyradené karty, ktoré v žiadnej zverejnenej sade webu neboli. Pojem, ktorý sa vrátil do hry, vymaž.",
+  "_popis": "Zrušené mechaniky a pojmy pre admin.ts zastarane (skill naex-vypalit, krok 7). vzory = začiatky slov bez diakritiky a malými písmenami (regulárny výraz; medzera = ľubovoľné medzery, zvyšok slova sa doplní sám). Karty, ktoré zo sady zanikli, netreba písať — nástroj ich zistí z histórie zverejnených sád; do „karty“ patria len vyradené karty, ktoré v žiadnej zverejnenej sade webu neboli. Pojem, ktorý sa vrátil do hry, vymaž.",
   "mechaniky": [
     {
       "pojem": "Úplatok",
