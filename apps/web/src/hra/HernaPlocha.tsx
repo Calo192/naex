@@ -1764,8 +1764,9 @@ export function HernaPlocha({
   const [peciatkaKroku, setPeciatkaKroku] = useState<{ readonly id: number; readonly p: readonly PeciatkaKroku[] } | null>(null);
   useEffect(() => {
     if (prehravanie !== undefined) return;
-    // Vlastný pas, ktorý urobila hra, vysvetlí okno — pečiatka by svietila nad ním.
-    const nove = peciatkyKrokov(udalosti?.events ?? []).filter((x) => !(oknoAutoPasu && x.auto === true && x.hrac === ja));
+    // Vlastný pas, ktorý urobila hra, vysvetlí okno — pečiatka by svietila nad ním. Hasič naprázdno
+    // len tomu, kto ho vyložil (Michal 2026-11-03) — súperovi stačí log.
+    const nove = peciatkyKrokov(udalosti?.events ?? []).filter((x) => !(oknoAutoPasu && x.auto === true && x.hrac === ja) && (x.druh !== "hasic" || x.hrac === ja));
     if (nove.length > 0) setPeciatkaKroku({ id: udalosti?.id ?? 0, p: nove });
     const mojAutoPas = oknoAutoPasu ? (udalosti?.events ?? []).find((e) => e.type === "autoPas" && e.hrac === ja) : undefined;
     if (mojAutoPas?.type === "autoPas") {
@@ -1777,7 +1778,8 @@ export function HernaPlocha({
   }, [udalosti?.id]);
   useEffect(() => {
     if (peciatkaKroku === null) return;
-    const ms = peciatkaKroku.p.some((x) => x.auto === true) ? PECIATKA_AUTO_PASU_MS : PECIATKA_KROKU_MS;
+    // Pečiatku, ktorá vysvetľuje, čo urobila hra (auto pas, Hasič naprázdno), treba aj dočítať.
+    const ms = peciatkaKroku.p.some((x) => x.auto === true || x.druh === "hasic") ? PECIATKA_AUTO_PASU_MS : PECIATKA_KROKU_MS;
     const t = setTimeout(() => setPeciatkaKroku((x) => (x?.id === peciatkaKroku.id ? null : x)), ms);
     return () => clearTimeout(t);
   }, [peciatkaKroku]);

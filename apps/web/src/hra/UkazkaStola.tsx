@@ -60,7 +60,8 @@
 //                  Svätý text a Vidly; do ruky Hasič, Recidivista, Policajtka, Kulturista, do línie
 //                  súperova Milujúca manželka a Pes
 //   &hasic=1       v prvom Zhromaždení, keď je hráč ?ja na ťahu, mu dá Hasiča a pár kariet
-//                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča
+//                  do odhadzovacieho balíčka a vyloží ho — stôl ukáže voľbu Hasiča; &hasic=prazdny:
+//                  odhadzovací balíček prázdny, Hasič sa vyloží po načítaní — stôl ukáže hlásenie
 //   &markery=i:s0.s1.r0.r1,… strach a reči i-teho staršieho (od 0): strach hráča 1 a 2, reči hráča 1 a 2
 //                  (0–3; reči len nad strachom, inak 0) — snímky teplomerov a Pultu
 //   &vazen=i:p,…   i-teho staršieho (od 0) zajme hráč p (0 / 1) — snímka väzňa s pečiatkou (R3)
@@ -137,15 +138,15 @@ function sGulou(s: GameState, p: PlayerId): GameState {
   return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] };
 }
 
-/** Hráč p vyloží Hasiča s neprázdnym odhadzovacím balíčkom — stav čaká na jeho voľbu. */
-function sHasicom(data: GameData, s: GameState, p: PlayerId): GameState {
+/** Hráč p dostane do ruky Hasiča a pár kariet do odhadzovacieho balíčka (alebo ho má prázdny); `tah` Hasiča vyloží. */
+function sHasicom(s: GameState, p: PlayerId, prazdny: boolean): { readonly stav: GameState; readonly tah: Command } {
   let uid = s.nextUid;
   const karta = (defId: string): CardInstance => ({ uid: uid++, defId, leftLayout: 0, rightLayout: 0 });
   const hasic = karta("hasic");
   const h = s.hraci[p];
-  const novy = { ...h, ruka: [...h.ruka, hasic], odhadzovaci: [...h.odhadzovaci, karta("cirhoza"), karta("ministrant"), karta("pijan")] };
-  const pred: GameState = { ...s, nextUid: uid, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
-  return apply(data, pred, { type: "place", uid: hasic.uid, target: "vlastna" }, p).state;
+  const novy = { ...h, ruka: [...h.ruka, hasic], odhadzovaci: prazdny ? [] : [...h.odhadzovaci, karta("cirhoza"), karta("ministrant"), karta("pijan")] };
+  const stav: GameState = { ...s, nextUid: uid, hraci: p === 0 ? [novy, s.hraci[1]] : [s.hraci[0], novy] };
+  return { stav, tah: { type: "place", uid: hasic.uid, target: "vlastna" } };
 }
 
 /**
@@ -299,9 +300,14 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let autopasov = 0;
   const autopasKto = p.get("kto") === "super" ? opponentOf(ja) : ja;
   const exekucia = p.get("exekutor") === "1";
-  const hasic = p.get("hasic") === "1";
+  const hasic = p.get("hasic") === "1" || p.get("hasic") === "prazdny" ? p.get("hasic") : null;
   for (let n = 0; n < 8000 && s.koniec === null; n++) {
-    if (hasic && s.faza === "zhromazdenie" && naTahu(s) === ja) return najdene({ zaciatok: sHasicom(data, s, ja), dohraj: [] });
+    if (hasic !== null && s.faza === "zhromazdenie" && naTahu(s) === ja) {
+      const x = sHasicom(s, ja, hasic === "prazdny");
+      // S prázdnym balíčkom sa Hasič vyloží až na stole, aby hráč videl hlásenie (pečiatku kroku).
+      if (hasic === "prazdny") return najdene({ zaciatok: x.stav, dohraj: [{ stav: x.stav, cmd: x.tah, kto: ja }] });
+      return najdene({ zaciatok: apply(data, x.stav, x.tah, ja).state, dohraj: [] });
+    }
     if (exekucia && s.faza === "pitka") return najdene({ zaciatok: sExekuciou(s, ja), dohraj: [] });
     if (stop === "finale" && s.ciel?.typ === "finale" && s.faza === "zhromazdenie" && s.strany[0].length + s.strany[1].length >= karty && naTahu(s) === ja)
       return najdene({ zaciatok: s, dohraj: [] });
