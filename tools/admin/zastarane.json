@@ -124,6 +124,19 @@
         "vzbur\\w* (?:\\w+ ){0,4}(?:aktivuj|aktivn)\\w* (?:\\w+ ){0,2}vsetk"
       ],
       "pozn": "v11.1: Vzbura obráti aktivitu karty"
+    },
+    {
+      "pojem": "pokus o zajatie",
+      "vzory": [
+        "pokus\\w* (?:\\w+ ){0,2}zajat",
+        "zajat\\w* (?:\\w+ ){0,3}v draft",
+        "cigaret\\w* za pokus",
+        "zadarmo (?:\\w+ ){0,4}pokus",
+        "pokus\\w* (?:\\w+ ){0,4}zadarmo",
+        "ohrozen",
+        "neuspesn\\w* (?:\\w+ ){0,2}pokus"
+      ],
+      "pozn": "v11.4: pokus o zajatie v drafte zanikol (cigareta, boss v ruke, ohrozenie, karta zadarmo, pád strachu na 0); zajíma sa pri rozdelení Nakladačky za 5 bodov"
     }
   ],
   "karty": [
