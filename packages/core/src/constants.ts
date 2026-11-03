@@ -135,8 +135,8 @@ export const KONSTANTY = {
     SVATY_TEXT_VIERA: 1,
     /** Konflikt Policajtky (v7): Kriminál jej majiteľovi dá toľko cigariet. */
     POLICAJTKA_CIGARETY: 2,
-    /** Konflikt Veľmi smútiacej vdovy (v10.3): súper odhodí toľko kariet z balíčka za každého svojho Chlapa pri nej. */
-    VDOVA_ODHOD_ZA_CHLAPA: 2,
+    /** Konflikt Veľmi smútiacej vdovy (v11.3, predtým 2): súper odhodí toľko kariet z balíčka za každého svojho Chlapa pri nej. */
+    VDOVA_ODHOD_ZA_CHLAPA: 1,
     /** Krabička cigariet (v7): za každých toľko cigariet, ktoré súper vyfajčí, 1 karta. */
     CIGORKY_ZA_KARTU: 2,
     /** Kšefty v7 (plan.md 14.0): Strýko, Obecný úrad. */
@@ -256,9 +256,9 @@ export const VERZIA_PRAVIDIEL = "v11";
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.2";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.3";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-02";
+export const PRAVIDLA_PLATNE_OD = "2026-11-03";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

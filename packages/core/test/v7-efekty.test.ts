@@ -126,28 +126,36 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     expect(prirastkyPitky(data, s).zadlzenie).toEqual([0, 1]);
   });
 
-  // Mechaniku Konfliktu skúša Snúbenica (priložený Chlap ide po bitke k jej majiteľovi: poBitkeK).
-  const poBitkeK = (st: GameState, uid: number): PlayerId | undefined => [...st.strany[0], ...st.strany[1]].find((pl) => pl.card.uid === uid)?.poBitkeK;
+  // Mechaniku Konfliktu skúša Šarlatán (premena po Konflikte); Snúbenica má od v11.3 Podporu
+  // (konflikt-podpora-v113.test.ts).
+  const premena = (st: GameState, uid: number): string | undefined => [...st.strany[0], ...st.strany[1]].find((pl) => pl.card.uid === uid)?.premena;
 
   it("vlastné priloženie a priložený Nástroj Konflikt nevyvolajú", () => {
-    const snub = inst("snubenica");
-    const masiar = inst("masiar");
-    const vlastna = vZhromazdeni("zastavka", [[lezi(snub, 0)], []], [masiar]);
-    expect(poBitkeK(apply(data, vlastna, { type: "place", uid: masiar.uid, target: "vlastna" }, 0).state, masiar.uid)).toBeUndefined();
-    const cudzia = vZhromazdeni("zastavka", [[lezi(inst("snubenica"), 1)], []], [inst("masiar")]);
+    const sar = inst("sarlatan");
+    const vlastna = vZhromazdeni("zastavka", [[lezi(sar, 0)], []], [inst("masiar")]);
+    const masiar = vlastna.hraci[0].ruka[0]!;
+    expect(premena(apply(data, vlastna, { type: "place", uid: masiar.uid, target: "vlastna" }, 0).state, sar.uid)).toBeUndefined();
+    const sar2 = inst("sarlatan");
+    const cudzia = vZhromazdeni("zastavka", [[lezi(sar2, 1)], []], [inst("masiar")]);
     const chlap = cudzia.hraci[0].ruka[0]!;
-    expect(poBitkeK(apply(data, cudzia, { type: "place", uid: chlap.uid, target: "vlastna" }, 0).state, chlap.uid)).toBe(1);
+    expect(premena(apply(data, cudzia, { type: "place", uid: chlap.uid, target: "vlastna" }, 0).state, sar2.uid)).toBe("sarlatan");
+    const sar3 = inst("sarlatan");
     const pasca = inst("pasca");
-    const nastroj = vZhromazdeni("zastavka", [[lezi(inst("snubenica"), 1)], []], [pasca]);
-    const po = apply(data, nastroj, { type: "place", uid: pasca.uid, target: "vlastna" }, 0).state;
-    expect([...po.strany[0], ...po.strany[1]].some((pl) => pl.poBitkeK !== undefined)).toBe(false);
+    const nastroj = vZhromazdeni("zastavka", [[lezi(sar3, 1)], []], [pasca]);
+    expect(premena(apply(data, nastroj, { type: "place", uid: pasca.uid, target: "vlastna" }, 0).state, sar3.uid)).toBeUndefined();
+  });
+
+  it("Konflikt oboma smermi (v11.3): Šarlatána priložený k súperovej karte sa premení tiež", () => {
+    const sar = inst("sarlatan");
+    const s = vZhromazdeni("zastavka", [[lezi(inst("masiar"), 1)], []], [sar]);
+    expect(premena(apply(data, s, { type: "place", uid: sar.uid, target: "vlastna" }, 0).state, sar.uid)).toBe("sarlatan");
   });
 
   it("NA EX na kartu vedľa Konfliktu ho nespustí", () => {
-    const s = vPitke("zastavka", [[lezi(inst("zamocnik"), 1), lezi(inst("snubenica"), 1)], []]);
+    const sar = inst("sarlatan");
+    const s = vPitke("zastavka", [[lezi(inst("zamocnik"), 1), lezi(sar, 1)], []]);
     for (const uid of moznostiNaex(data, s, 0)) {
-      const po = apply(data, s, { type: "naex", uid }, 0).state;
-      expect([...po.strany[0], ...po.strany[1]].some((pl) => pl.poBitkeK !== undefined)).toBe(false);
+      expect(premena(apply(data, s, { type: "naex", uid }, 0).state, sar.uid)).toBeUndefined();
     }
   });
 
@@ -159,14 +167,6 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
     const po2 = apply(data, s2, { type: "place", uid: karta.uid, target: "vlastna" }, 0).state;
     expect(po2.strany[0].at(-1)?.posledna).toBeUndefined();
     expect(po2.strany[0].at(-1)?.poBitkeZHry).toBeUndefined();
-  });
-
-  it("Snúbenica: priložený Chlap ide po bitke do odhadzovacieho balíčka jej majiteľa", () => {
-    const snub = inst("snubenica");
-    const chlap = inst("masiar");
-    const s = vZhromazdeni("zastavka", [[lezi(snub, 1)], []], [chlap]);
-    const koniec = dohrajKolo(apply(data, s, { type: "place", uid: chlap.uid, target: "vlastna" }, 0).state);
-    expect([...koniec.hraci[1].odhadzovaci, ...koniec.hraci[1].doberaci, ...koniec.hraci[1].ruka].some((k) => k.uid === chlap.uid)).toBe(true);
   });
 
   it("Šarlatán: po Konflikte sa do konca kola jeho Dlhy rátajú ako Viera a Povery ako Rana", () => {
@@ -182,25 +182,25 @@ describe("Konflikt (v7, plan.md 13.1)", () => {
 
   it("Miňištrant: Nástup — vyvolal Konflikt, jeho Viera sa ráta ako Pecka", () => {
     const min = inst("ministrant");
-    const s = vZhromazdeni("zastavka", [[lezi(inst("snubenica"), 1)], []], [min]);
+    const s = vZhromazdeni("zastavka", [[lezi(inst("sarlatan"), 1)], []], [min]);
     const po = apply(data, s, { type: "place", uid: min.uid, target: "vlastna" }, 0).state;
     expect(po.strany[0].find((pl) => pl.card.uid === min.uid)?.premena).toBe("ministrant");
     expect((evaluateLine(data, lineState(po)).zdroje[0].Viera ?? []).some((z) => z.uid === min.uid)).toBe(false);
   });
 
   it("Záverečná vyvolá Konflikt až pri otočení na konci Pitky", () => {
-    const snub = inst("snubenica");
+    const sar = inst("sarlatan");
     const masiar = inst("masiar");
-    const s = vZhromazdeni("zastavka", [[lezi(snub, 1)], []], [masiar]);
+    const s = vZhromazdeni("zastavka", [[lezi(sar, 1)], []], [masiar]);
     const po = apply(data, s, { type: "zaverecna", uid: masiar.uid, target: "vlastna" }, 0).state;
-    expect(poBitkeK(po, masiar.uid)).toBeUndefined();
+    expect(premena(po, sar.uid)).toBeUndefined();
     let t = apply(data, po, { type: "pass" }, 1).state;
     for (let i = 0; i < 4 && t.faza === "pitka"; i++) {
       const q = ([0, 1] as const).find((x) => legalCommands(data, t, x).some((c) => c.type === "skipNaex" || c.type === "bezReakcie"));
       if (q === undefined) break;
       t = apply(data, t, legalCommands(data, t, q).find((c) => c.type === "skipNaex" || c.type === "bezReakcie")!, q).state;
     }
-    expect(poBitkeK(t, masiar.uid)).toBe(1);
+    expect(premena(t, sar.uid)).toBe("sarlatan");
   });
 });
 

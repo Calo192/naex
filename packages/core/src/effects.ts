@@ -100,7 +100,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   svaty_text: "impl", // Dedičstvo: hodnota tvojej Viery o 1 vyššia v tlmení tuhého; Povery ruší 1 : 1 (computeDamage)
   veterinar: "impl", // Schopnosť väzňa: odhodí priznané Cirhózy a Cirhózy na ruke
   veteran: "impl", // Furt: NA EX naňho aktívne akcie zdvojí (nezruší), neaktívne nezdvojí (partia.ts, Michal 2026-10-23)
-  velmi_smutiaca_vdova: "impl", // Konflikt (v10.3): súper odhodí 2 karty z balíčka za každého svojho Chlapa pri nej (konflikt)
+  velmi_smutiaca_vdova: "impl", // Konflikt (v11.3): súper odhodí 1 kartu z balíčka za každého svojho Chlapa pri nej (konflikt)
   vestica: "impl", // Prehra: výmena kariet v balíčkoch
   vychovavatelka: "impl", // Schopnosť väzňa: súper v tomto Zhromaždení hneď pasuje bez cigariet
   vinko: "impl", // Dedičstvo: poldeci navyše; nedolieva poldeci za cigarety (Michal 2026-10-19)
@@ -133,7 +133,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   anonymny_alkoholik: "impl", // Nástup (v7): prizná nepriznané Cirhózy z odhadzovacieho balíčka
   // Roadmapa #71 (2026-10-23).
   sofer: "impl", // Bitka (v7): bez NA EX v kole Pecka navyše (bitkaMody)
-  snubenica: "impl", // Konflikt (v7): priložený Chlap ide po bitke k majiteľovi Snúbenice (konflikt)
+  snubenica: "impl", // Podpora (v11.3): z vlastného Chlapa vráti súperovo NA EX (podpora); do v11.2 Konflikt
   // Nové lokality (Michal 2026-10-20, docs/playtesty/navrh-lokality.html).
   most: "impl", // Zhromaždenie: karty len na vlastnú stranu
   cintorin: "impl", // Prehra (Michal 2026-10-27): Nástroj z ruky alebo zo šenku do Dedičstva zadarmo (krok bitky cintorin)

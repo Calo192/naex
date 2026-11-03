@@ -75,8 +75,10 @@ export type Trigger =
   | "Prehra"
   // Kšeft (v7): aktívny efekt — majiteľ ho spustí sám v Pitke na svojom ťahu, raz za Pitku.
   | "Kšeft"
-  // Konflikt (v7, plan.md 13.1): ležiaca karta, ku ktorej súper priloží svoju.
+  // Konflikt (v11.3): karta a súperova karta sa stretnú priložením — jedna k druhej.
   | "Konflikt"
+  // Podpora (v11.3): zrkadlo Konfliktu — priložením sa stretnú dve karty toho istého hráča.
+  | "Podpora"
 
   // Exekúcia (Záhradkár, Michal 2026-10-28): exekúcia v tomto kole pre majiteľa neplatí.
   | "Exekúcia"
@@ -94,6 +96,7 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Prehra",
   "Kšeft",
   "Konflikt",
+  "Podpora",
   "Exekúcia",
   "Väzeň",
 ];

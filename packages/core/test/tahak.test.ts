@@ -40,7 +40,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["odpovede lícom dole (v9.2)", "najprv **útočník**, potom **obranca na druhý kraj línie**"],
     ["Nástroj nie vedľa lokality (v10.2)", "**Vedľa lokality sa Nástroj nevykladá (v10.2):** na prázdnu stranu"],
     ["Forsáž (v10.3)", "Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky aktívne akcie posilnené ×2**"],
-    ["Vdova (v10.3)", `súper odhodí **${pocet(KONSTANTY.EFEKT.VDOVA_ODHOD_ZA_CHLAPA, "kartu", "karty", "kariet")} z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí**`],
+    ["Vdova (v11.3)", `súper odhodí **${pocet(KONSTANTY.EFEKT.VDOVA_ODHOD_ZA_CHLAPA, "kartu", "karty", "kariet")} z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí**`],
     ["Predavačka (v10.4)", `**Predavačka (v10.4): ${pocet(KONSTANTY.EFEKT.PREDAVACKA_CENA, "cigareta", "cigarety", "cigariet")} → 1 karta z tvojho doberacieho balíčka**`],
     ["Poľovník (v10.4)", "**spáli súperovo Zviera, ktoré je od lokality najďalej**"],
     ["Policajtka (v10.4)", "za každú súperovu akciu, ktorú v tejto Pitke zruší tvoj Odpor (aj Nástroja), získa súper **1 zadĺženie**"],

@@ -2010,7 +2010,7 @@
     {
       "id": "i-spustace",
       "kto": "info",
-      "melichar": "Slovo pred dvojbodkou na karte je spúšťač – Nástup a Furt už poznáš. Pitka a Bitka platia vo svojej fáze, Výhra a Prehra po bitke a Konflikt, keď k tvojej karte súper priloží svoju. Ostatné ti poviem, keď prídu."
+      "melichar": "Slovo pred dvojbodkou na karte je spúšťač – Nástup a Furt už poznáš. Pitka a Bitka platia vo svojej fáze, Výhra a Prehra po bitke, Konflikt, keď sa tvoja karta priložením ocitne vedľa súperovej – jedno, kto prikladal, a Podpora, keď sa tak stretnú dve tvoje. Ostatné ti poviem, keď prídu."
     },
     {
       "id": "q-spustace",
@@ -2018,14 +2018,14 @@
       "melichar": "Kedy sa spustí Konflikt na tvojej karte?",
       "moznosti": [
         {
-          "text": "Keď k nej súper priloží svoju kartu.",
+          "text": "Keď sa priložením ocitne vedľa súperovej karty – jedno, či prikladám ja, alebo súper.",
           "spravna": true,
-          "vysvetlenie": "Áno. Na vlastnej karte si ho nespustíš, na to máš súpera."
+          "vysvetlenie": "Áno. Konflikt chce súperovu kartu vedľa, bez súpera nič."
         },
         {
-          "text": "Keď ju vyložím.",
+          "text": "Keď ju priložím k svojej karte.",
           "spravna": false,
-          "vysvetlenie": "To je Nástup. Konflikt spustí súper, keď k tvojej karte priloží svoju.",
+          "vysvetlenie": "To je Podpora. Konflikt chce vedľa súperovu kartu.",
           "hlaska": "nervy/a_robia_si_picu_zomna"
         }
       ]

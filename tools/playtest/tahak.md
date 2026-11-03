@@ -125,17 +125,19 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
   odhadzovacieho balíčka do ruky (`uid`).
 - **Sypač (Pitka, v10.3):** keď sa z neho stane Výtržník, jeho akcie sú **Pecky**, nie Rany.
-- **Konflikt (v7):** efekt **ležiacej** karty, keď k nej **súper** priloží svoju (aj odpoveďou na NA EX;
-  Záverečná až pri otočení). Keď prikladáš ty k svojej, nič; priložený Nástroj nič; NA EX ani zrážka nič.
-  Najprv Nástup priloženej karty, potom Konflikt. **Policajtka (Pitka, v10.4):** za každú súperovu akciu, ktorú
+- **Konflikt (v11.3):** efekt karty, keď sa **priložením** ocitne vedľa **súperovej** karty — či ju prikladáš
+  ty k súperovej, alebo súper k nej (aj odpoveďou na NA EX; Záverečná až pri otočení). Priložený či ležiaci
+  Nástroj nič; NA EX, zrážka ani presun (Dohadzovačka, Poľovník) nič. Najprv Nástup priloženej karty, potom
+  Konflikt a Podpora priloženej, potom ležiacej. **Podpora (v11.3)** je zrkadlo: spustí sa, keď sa priložením
+  stretnú **dve tvoje** karty. **Policajtka (Pitka, v10.4):** za každú súperovu akciu, ktorú
   v tejto Pitke zruší tvoj Odpor (aj Nástroja), získa súper **1 zadĺženie** (každá tvoja Policajtka zvlášť; Odpor
-  hrany lokality nie). **Veľmi smútiaca vdova (v10.3):** súper odhodí **2 karty
-  z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí** (najviac 2 Chlapi = 4 karty; keď
+  hrany lokality nie). **Veľmi smútiaca vdova (v11.3):** súper odhodí **1 kartu
+  z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí** (najviac 2 Chlapi = 2 karty; keď
   balíček nestačí, zamieša odhadzovací, potom zvyšok z ruky — náhodne),
   Šarlatán (do konca kola jeho Hazardy = Viera,
-  Povery = Rana), Snúbenica (priložený Chlap po bitke do tvojho odhadzovacieho balíčka — je tvoj),
-  Miňištrant (Nástup): ak vyvolá
-  Konflikt, jeho Viera sa ráta ako Pecka.
+  Povery = Rana), **Snúbenica (Podpora):** keď sa stretne s tvojím Chlapom, na ktorom leží súperovo NA EX,
+  NA EX z neho zíde a súperov poldeci sa mu vráti vypitý (nerest ostáva).
+  Miňištrant (Nástup): ak vyvolá Konflikt (priloží sa k súperovej karte s Konfliktom), jeho Viera sa ráta ako Pecka.
 - **Pakt (v7, akcia):** na spoji sa správa ako akcia, s ktorou je v páre (aj zlá: Hazard, Pečeň).
   Pakt s Paktom nerobí nič, s Posilnením sa stane Posilnením (= Forsáž), Odpor ho zruší; neaktívny Pakt NA EX nezdvojí.
 - **Forsáž (v10.3):** Posilnenie + Posilnenie na spoji = **Forsáž** — obe karty spoja majú **všetky

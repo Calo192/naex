@@ -199,7 +199,7 @@ describe("Liberál (Furt, v10.3)", () => {
   });
 });
 
-describe("Veľmi smútiaca vdova (Konflikt, v10.3) a moment Forsáže v hre", () => {
+describe("Veľmi smútiaca vdova (Konflikt, v11.3) a moment Forsáže v hre", () => {
   const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
   const defs = [
     makeDef("velmi_smutiaca_vdova", EMPTY, EMPTY, { tags: ["Občan", "Žena"], triggers: ["Konflikt"] }),
@@ -239,7 +239,7 @@ describe("Veľmi smútiaca vdova (Konflikt, v10.3) a moment Forsáže v hre", ()
   const priloz = (s: GameState, uid: number): GameState => apply(data, s, { type: "place", uid, target: "vlastna" }, 0).state;
   const odhodene = (pred: GameState, po: GameState): number => po.hraci[0].odhadzovaci.length - pred.hraci[0].odhadzovaci.length;
 
-  it("0 Chlapov pri nej — nič; 1 Chlap — súper odhodí 2 karty z vrchu doberacieho balíčka", () => {
+  it("0 Chlapov pri nej — nič; 1 Chlap — súper odhodí 1 kartu z vrchu doberacieho balíčka (v11.3)", () => {
     const vdova = lezi(karta("velmi_smutiaca_vdova"), 1);
     const zena = karta("v_zena");
     const s = zhromazdenie([vdova], [zena], balik(5));
@@ -247,37 +247,50 @@ describe("Veľmi smútiaca vdova (Konflikt, v10.3) a moment Forsáže v hre", ()
     const chlap = karta("v_chlap");
     const s1 = zhromazdenie([vdova], [chlap], balik(5));
     const po = priloz(s1, chlap.uid);
-    expect(KONSTANTY.EFEKT.VDOVA_ODHOD_ZA_CHLAPA).toBe(2);
-    expect(po.hraci[0].doberaci.map((k) => k.uid)).toEqual(s1.hraci[0].doberaci.slice(2).map((k) => k.uid));
-    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).toEqual(s1.hraci[0].doberaci.slice(0, 2).map((k) => k.uid));
+    expect(KONSTANTY.EFEKT.VDOVA_ODHOD_ZA_CHLAPA).toBe(1);
+    expect(po.hraci[0].doberaci.map((k) => k.uid)).toEqual(s1.hraci[0].doberaci.slice(1).map((k) => k.uid));
+    expect(po.hraci[0].odhadzovaci.map((k) => k.uid)).toEqual(s1.hraci[0].doberaci.slice(0, 1).map((k) => k.uid));
   });
 
-  it("2 Chlapi pri nej (z oboch strán) — 4 karty; Chlap majiteľa Vdovy sa neráta", () => {
+  it("2 Chlapi pri nej (z oboch strán) — 2 karty; Chlap majiteľa Vdovy sa neráta", () => {
     const vdova = lezi(karta("velmi_smutiaca_vdova"), 1);
     const chlap = karta("v_chlap");
     const s = zhromazdenie([lezi(karta("v_chlap"), 0), vdova], [chlap], balik(6));
-    expect(odhodene(s, priloz(s, chlap.uid))).toBe(4);
+    expect(odhodene(s, priloz(s, chlap.uid))).toBe(2);
     const s2 = zhromazdenie([lezi(karta("v_chlap"), 1), vdova], [chlap], balik(6));
-    expect(odhodene(s2, priloz(s2, chlap.uid))).toBe(2);
+    expect(odhodene(s2, priloz(s2, chlap.uid))).toBe(1);
   });
 
   it("málo kariet: zamieša odhadzovací do doberacieho, potom zvyšok z ruky; všetko do odhadzovacieho", () => {
     const vdova = lezi(karta("velmi_smutiaca_vdova"), 1);
     const chlap = karta("v_chlap");
     const ruka = [chlap, ...balik(2)];
-    const s = zhromazdenie([lezi(karta("v_chlap"), 0), vdova], ruka, balik(1), balik(2));
+    const s = zhromazdenie([lezi(karta("v_chlap"), 0), vdova], ruka, [], balik(1));
     const po = priloz(s, chlap.uid);
-    // 1 z doberacieho, 2 po zamiešaní odhadzovacieho, 1 z ruky.
+    // 1 po zamiešaní odhadzovacieho, 1 z ruky.
     expect(po.hraci[0].doberaci).toEqual([]);
     expect(po.hraci[0].ruka).toHaveLength(1);
-    expect(po.hraci[0].odhadzovaci).toHaveLength(4);
+    expect(po.hraci[0].odhadzovaci).toHaveLength(2);
     const vsetky = (st: GameState): number[] => [...st.hraci[0].ruka, ...st.hraci[0].doberaci, ...st.hraci[0].odhadzovaci].map((k) => k.uid).sort();
     expect(vsetky(po)).toEqual(vsetky(s).filter((u) => u !== chlap.uid));
     // Ani ruka nestačí: odhodí, čo má.
-    const s2 = zhromazdenie([lezi(karta("v_chlap"), 0), vdova], [chlap], [], balik(1));
+    const s2 = zhromazdenie([lezi(karta("v_chlap"), 0), vdova], [chlap], [], []);
     const po2 = priloz(s2, chlap.uid);
-    expect(po2.hraci[0].odhadzovaci).toHaveLength(1);
+    expect(po2.hraci[0].odhadzovaci).toHaveLength(0);
     expect(po2.hraci[0].ruka).toEqual([]);
+  });
+
+  it("Konflikt oboma smermi (v11.3): Vdovu priloží jej majiteľ k súperovmu Chlapovi — súper odhodí", () => {
+    const vdova = karta("velmi_smutiaca_vdova");
+    const s0 = zhromazdenie([lezi(karta("v_chlap"), 1)], [vdova], balik(2));
+    // Súperov Chlap leží na strane hráča 0 (podstrčený); Vdova hráča 0 ide za neho, odhadzuje hráč 1.
+    const s = { ...s0, hraci: [s0.hraci[0], { ...s0.hraci[1], doberaci: balik(3), odhadzovaci: [] }] } as unknown as GameState;
+    const po = apply(data, s, { type: "place", uid: vdova.uid, target: "vlastna" }, 0).state;
+    expect(po.hraci[1].odhadzovaci).toHaveLength(1);
+    expect(po.hraci[0].odhadzovaci).toHaveLength(0);
+    // K vlastnému Chlapovi nič (to by bola Podpora, Vdova ju nemá).
+    const s2 = zhromazdenie([lezi(karta("v_chlap"), 0)], [vdova], balik(2));
+    expect(odhodene(s2, priloz(s2, vdova.uid))).toBe(0);
   });
 
   it("nový spoj Posilnenie + Posilnenie hlási moment FORSÁŽ!", () => {

@@ -2450,9 +2450,9 @@ function otocZaverecne(s: MutState, data: GameData, events: Event[]): boolean {
     events.push({ type: "log", text: `Záverečná hráča ${p + 1} sa otáča: ${def.name}.` });
     const odEfektov = events.length;
     if (def.triggers.includes("Nástup")) nastupEfekt(s, data, def.id, p, strana, events, naraz);
-    // Konflikt, ktorý Záverečná vyvolala priložením, sa odložil na jej otočenie (plan.md 13.2 bod 10).
+    // Konflikt a Podpora, ktoré Záverečná vyvolala priložením, sa odložili na jej otočenie (plan.md 13.2 bod 10).
     const sused = susedPrilozenej(s, strana);
-    if (sused !== null) konflikt(s, data, sused, placed as DeepMutable<PlacedCard>, events);
+    if (sused !== null) poPrilozeni(s, data, sused, placed as DeepMutable<PlacedCard>, events);
     odhalene.push({
       majitel: p,
       strana,
@@ -2545,8 +2545,7 @@ function vylozDoLinie(
   if (def.triggers.includes("Nástup")) {
     nastupEfekt(s, data, def.id, p, cielPartia, events);
   }
-  // Konflikt (v7, plan.md 13): najprv Nástup priloženej karty, potom Konflikt ležiacej.
-  if (sused != null) konflikt(s, data, sused as DeepMutable<PlacedCard>, nova, events);
+  if (sused != null) poPrilozeni(s, data, sused as DeepMutable<PlacedCard>, nova, events);
 }
 
 /** Dôvod pre server aj klienta, keď sa Nástroj vykladá na prázdnu stranu. */
@@ -2558,43 +2557,95 @@ function susedPrilozenej(s: MutState, strana: PlayerId): DeepMutable<PlacedCard>
   return partia.length >= 2 ? (partia[partia.length - 2] ?? null) : null;
 }
 
-/** Vyvolá ležiaca karta Konflikt, keď sa k nej priloží `prilozena`? (plan.md 13.1) */
+/**
+ * Spustí sa Konflikt alebo Podpora karty `nositel`, keď ju priloženie postavilo vedľa
+ * karty `druha`? (v11.3, Michal 2026-11-03) Konflikt = karty rôznych hráčov, Podpora =
+ * toho istého; je jedno, ktorá z nich sa prikladala. S Nástrojom sa nespúšťajú, skrytá
+ * Záverečná až pri otočení.
+ */
+export function spustiSpoj(data: GameData, spustac: "Konflikt" | "Podpora", nositel: Pick<PlacedCard, "card" | "playedBy" | "zaverecna">, druha: Pick<PlacedCard, "card" | "playedBy" | "zaverecna">): boolean {
+  if (nositel.zaverecna === true || druha.zaverecna === true) return false;
+  if ((nositel.playedBy !== druha.playedBy) !== (spustac === "Konflikt")) return false;
+  // Starší má v línii len akcie (v9) — jeho efekt je schopnosť väzňa.
+  if (!defOf(data, nositel.card).triggers.includes(spustac) || jeStarsi(data, nositel.card.defId)) return false;
+  return !defOf(data, druha.card).tags.includes("Nástroj");
+}
+
+/** Vyvolá ležiaca karta Konflikt, keď sa k nej priloží `prilozena`? (Miňištrant, plan.md 13.1) */
 export function vyvolaKonflikt(data: GameData, lezi: PlacedCard, prilozena: Pick<PlacedCard, "card" | "playedBy">): boolean {
-  if (lezi.zaverecna === true || lezi.playedBy === prilozena.playedBy) return false;
-  // Starší má v línii len akcie (v9) — jeho efekt je Kšeft väzňa.
-  if (!defOf(data, lezi.card).triggers.includes("Konflikt") || jeStarsi(data, lezi.card.defId)) return false;
-  // Priložený Nástroj Konflikt nevyvolá.
-  return !defOf(data, prilozena.card).tags.includes("Nástroj");
+  return spustiSpoj(data, "Konflikt", lezi, prilozena);
+}
+
+/** Karta bez NA EX hráča q (Farár, Snúbenica) — pri zrážke ostane druhé NA EX a Výtržník vytriezvie. */
+function bezNaex(pl: PlacedCard, q: PlayerId): PlacedCard {
+  const ostava = pl.naexBy === q ? pl.naexBy2 : pl.naexBy;
+  const kopia: { -readonly [K in keyof PlacedCard]: PlacedCard[K] } = { ...pl };
+  delete kopia.naexBy;
+  delete kopia.naexBy2;
+  delete kopia.vytrznik;
+  if (ostava !== undefined) kopia.naexBy = ostava;
+  return kopia;
+}
+
+/** Leží na karte NA EX hráča q? */
+function maNaex(pl: Pick<PlacedCard, "naexBy" | "naexBy2">, q: PlayerId): boolean {
+  return pl.naexBy === q || pl.naexBy2 === q;
+}
+
+/**
+ * NA EX hráča q zíde z karty (Farár, Snúbenica): poldeci sa mu vráti vypitý — ako pri
+ * spálenej karte; nerest NA EX sa ráta.
+ */
+function zlozNaex(s: MutState, placed: DeepMutable<PlacedCard>, q: PlayerId): void {
+  const bez = bezNaex(placed as PlacedCard, q);
+  delete placed.naexBy;
+  delete placed.naexBy2;
+  delete placed.vytrznik;
+  if (bez.naexBy !== undefined) placed.naexBy = bez.naexBy;
+  hrac(s, q).poldeciVypite += 1;
+  hrac(s, q).nerestiTotoKolo += KONSTANTY.NEREST_NAEX;
 }
 
 /**
  * Stôl po priložení karty `karta` hráča `kto` na koniec strany `strana` — pre
- * náhľady a bota (v7): to, čo z Konfliktu a Nástupu Miňištranta mení bitku,
+ * náhľady a bota (v7): to, čo z Konfliktu, Podpory a Nástupu Miňištranta mení bitku,
  * ako vylozDoLinie. Policajtkin Dlh ide medzi priznané s náhradným uid,
- * cigarety za Kriminála ani Nástupy s voľbou náhľad nepredvída.
+ * cigarety za Kriminála, odhodené karty ani Nástupy s voľbou náhľad nepredvída.
  */
 export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: boolean }>(data: GameData, s: T, strana: PlayerId, karta: CardInstance, kto: PlayerId): T {
   const sused = susedNaKonci(s.strany, strana);
   let nova: PlacedCard = { card: karta, playedBy: kto };
-  const konfl = sused !== null && vyvolaKonflikt(data, sused, nova) && !efektPotlaceny(data, s, sused.playedBy, sused.card.defId);
   if (karta.defId === "ministrant" && sused !== null && vyvolaKonflikt(data, sused, nova)) nova = { ...nova, premena: "ministrant" };
   let lezi = sused;
   let hraci = s.hraci;
-  if (konfl && sused !== null) {
-    const jeho = defOf(data, karta).tags;
-    switch (sused.card.defId) {
-      case "sarlatan":
-        lezi = { ...sused, premena: "sarlatan" };
-        break;
-      case "policajtka":
-        if (!jeho.includes("Kriminál")) {
-          hraci = (kto === 0 ? [{ ...s.hraci[0], dlhy: s.hraci[0].dlhy + 1 }, s.hraci[1]] : [s.hraci[0], { ...s.hraci[1], dlhy: s.hraci[1].dlhy + 1 }]) as unknown as T["hraci"];
-        }
-        break;
-      case "snubenica":
-        if (jeho.includes("Chlap")) nova = { ...nova, poBitkeK: sused.playedBy };
-        break;
+  /** Konflikt a Podpora karty a vedľa b (ako poPrilozeni) — vráti nové a, b. */
+  const spoj = (a: PlacedCard, b: PlacedCard): [PlacedCard, PlacedCard] => {
+    if (efektPotlaceny(data, s, a.playedBy, a.card.defId)) return [a, b];
+    const jeho = defOf(data, b.card).tags;
+    if (spustiSpoj(data, "Konflikt", a, b)) {
+      switch (a.card.defId) {
+        case "sarlatan":
+          return [{ ...a, premena: "sarlatan" }, b];
+        case "policajtka":
+          if (!jeho.includes("Kriminál")) {
+            const q = b.playedBy;
+            hraci = (q === 0 ? [{ ...hraci[0], dlhy: hraci[0].dlhy + 1 }, hraci[1]] : [hraci[0], { ...hraci[1], dlhy: hraci[1].dlhy + 1 }]) as unknown as T["hraci"];
+          }
+          return [a, b];
+        case "snubenica":
+          return [a, jeho.includes("Chlap") ? { ...b, poBitkeK: a.playedBy } : b];
+      }
     }
+    if (spustiSpoj(data, "Podpora", a, b) && a.card.defId === "snubenica" && jeho.includes("Chlap") && maNaex(b, opponentOf(a.playedBy))) {
+      return [a, bezNaex(b, opponentOf(a.playedBy))];
+    }
+    return [a, b];
+  };
+  if (sused !== null) {
+    let l: PlacedCard = sused;
+    [nova, l] = spoj(nova, l);
+    [l, nova] = spoj(l, nova);
+    lezi = l;
   }
   const zamen = (pl: PlacedCard): PlacedCard => (pl === sused && lezi !== null ? lezi : pl);
   let strany = ([0, 1] as const).map((q) => [...s.strany[q].map(zamen), ...(q === strana ? [nova] : [])]) as unknown as T["strany"];
@@ -2614,23 +2665,38 @@ export function sPrilozenou<T extends VerejnyStav & { readonly lokalitaOtocena: 
 }
 
 /**
- * Konflikt (v7, plan.md 13.1): efekt ležiacej karty, keď k nej súper priloží
- * svoju — aj odpoveďou na NA EX; Záverečná až pri otočení. NA EX ani zrážka
- * ho nespúšťajú. Vdova, Policajtka, Šarlatán, Snúbenica.
+ * Priloženie karty `nova` k ležiacej `lezi` (v11.3): Konflikt a Podpora najprv
+ * priloženej karty, potom ležiacej — po Nástupe priloženej; aj odpoveďou na NA EX,
+ * Záverečná až pri otočení. NA EX, zrážka ani presun karty ich nespúšťajú.
  */
-function konflikt(s: MutState, data: GameData, lezi: DeepMutable<PlacedCard>, prilozena: DeepMutable<PlacedCard>, events: Event[]): void {
-  if (!vyvolaKonflikt(data, lezi as PlacedCard, prilozena as PlacedCard)) return;
-  const p = lezi.playedBy as PlayerId;
-  const opp = opponentOf(p);
-  const def = defOf(data, lezi.card as CardInstance);
-  if (efektPotlaceny(data, s as GameState, p, def.id)) {
-    events.push({ type: "log", text: `Praudovravec: Konflikt karty ${def.name} sa neuplatní.` });
-    return;
+function poPrilozeni(s: MutState, data: GameData, lezi: DeepMutable<PlacedCard>, nova: DeepMutable<PlacedCard>, events: Event[]): void {
+  for (const [nositel, druha] of [[nova, lezi], [lezi, nova]] as const) {
+    if (spustiSpoj(data, "Konflikt", nositel as PlacedCard, druha as PlacedCard)) konflikt(s, data, nositel, druha, events);
+    if (spustiSpoj(data, "Podpora", nositel as PlacedCard, druha as PlacedCard)) podpora(s, data, nositel, druha, events);
   }
-  const jeho = defOf(data, prilozena.card as CardInstance);
+}
+
+/** Efekt potlačil súperov Praudovravec — zapíše to do logu. */
+function potlacenyPriPrilozeni(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, spustac: string, events: Event[]): boolean {
+  const def = defOf(data, nositel.card as CardInstance);
+  if (!efektPotlaceny(data, s as GameState, nositel.playedBy as PlayerId, def.id)) return false;
+  events.push({ type: "log", text: `Praudovravec: ${spustac} karty ${def.name} sa neuplatní.` });
+  return true;
+}
+
+/**
+ * Konflikt (v11.3): efekt karty `nositel`, ktorá sa priložením stretla so súperovou
+ * kartou `druha`. Vdova, Šarlatán; Policajtka a Snúbenica len v starých sadách.
+ */
+function konflikt(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): void {
+  if (potlacenyPriPrilozeni(s, data, nositel, "Konflikt", events)) return;
+  const p = nositel.playedBy as PlayerId;
+  const opp = opponentOf(p);
+  const def = defOf(data, nositel.card as CardInstance);
+  const jeho = defOf(data, druha.card as CardInstance);
   switch (def.id) {
     case "velmi_smutiaca_vdova": {
-      const chlapi = chlapiPriVdove(data, s as GameState, lezi.card.uid as number, opp);
+      const chlapi = chlapiPriVdove(data, s as GameState, nositel.card.uid as number, opp);
       if (chlapi === 0) break;
       const n = KONSTANTY.EFEKT.VDOVA_ODHOD_ZA_CHLAPA * chlapi;
       const odhodene = odhodZBalicka(s, opp, n);
@@ -2650,13 +2716,32 @@ function konflikt(s: MutState, data: GameData, lezi: DeepMutable<PlacedCard>, pr
       }
       break;
     case "sarlatan":
-      lezi.premena = "sarlatan";
+      nositel.premena = "sarlatan";
       events.push({ type: "log", text: `Konflikt — Šarlatán hráča ${p + 1}: do konca kola sa jeho akcie Hazard rátajú ako Viera a Povery ako Rana.` });
       break;
     case "snubenica":
       if (!jeho.tags.includes("Chlap")) break;
-      prilozena.poBitkeK = p;
+      druha.poBitkeK = p;
       events.push({ type: "log", text: `Konflikt — Snúbenica: ${jeho.name} ide po bitke do odhadzovacieho balíčka hráča ${p + 1} a je jeho.` });
+      break;
+    default:
+      events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
+  }
+}
+
+/** Podpora (v11.3): efekt karty `nositel`, ktorá sa priložením stretla s vlastnou kartou `druha`. */
+function podpora(s: MutState, data: GameData, nositel: DeepMutable<PlacedCard>, druha: DeepMutable<PlacedCard>, events: Event[]): void {
+  if (potlacenyPriPrilozeni(s, data, nositel, "Podpora", events)) return;
+  const p = nositel.playedBy as PlayerId;
+  const opp = opponentOf(p);
+  const def = defOf(data, nositel.card as CardInstance);
+  const jeho = defOf(data, druha.card as CardInstance);
+  switch (def.id) {
+    case "snubenica":
+      // Michal 2026-11-03: Snúbenica vráti súperovo NA EX z vlastného Chlapa.
+      if (!jeho.tags.includes("Chlap") || !maNaex(druha as PlacedCard, opp)) break;
+      zlozNaex(s, druha, opp);
+      events.push({ type: "log", text: `Podpora — Snúbenica hráča ${p + 1}: vracia NA EX hráča ${opp + 1} z karty ${jeho.name}; jeho poldeci sa vracia vypitý.` });
       break;
     default:
       events.push({ type: "manualEfekt", defId: def.id, nazov: def.name, text: def.effectText, hrac: p });
@@ -3163,7 +3248,7 @@ function otocOdpovede(s: MutState, data: GameData, events: Event[]): boolean {
     events.push({ type: "odpovedNaNaex", hrac: p, uid: placed.card.uid, defId: def.id, ciel: strana === p ? "vlastna" : "superova" });
     if (def.triggers.includes("Nástup")) nastupEfekt(s, data, def.id, p, strana, events, naraz);
     const sused = susedPrilozenej(s, strana);
-    if (sused !== null) konflikt(s, data, sused, placed as DeepMutable<PlacedCard>, events);
+    if (sused !== null) poPrilozeni(s, data, sused, placed as DeepMutable<PlacedCard>, events);
     if (odlozPoHasicovi(s, "odpovede")) {
       cakaNaHasica = true;
       break;
@@ -4027,17 +4112,8 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
     case "farar": {
       const kde = cmd.uid === undefined ? null : najdiVLinii(s, cmd.uid);
       const placed = kde === null ? undefined : (s.strany[kde.strana][kde.index] as DeepMutable<PlacedCard>);
-      need(placed !== undefined && (placed.naexBy === opp || placed.naexBy2 === opp), "Na tej karte neleží súperovo NA EX.");
-      // Zrážka (Výtržník): ostane NA EX hráča p a karta prestane byť Výtržníkom.
-      if (placed.naexBy2 === opp) delete placed.naexBy2;
-      else if (placed.naexBy2 !== undefined) {
-        placed.naexBy = placed.naexBy2;
-        delete placed.naexBy2;
-      } else delete placed.naexBy;
-      delete placed.vytrznik;
-      // Poldeci ostáva vypitý — ako pri spálenej karte; nerest NA EX sa ráta.
-      hrac(s, opp).poldeciVypite += 1;
-      hrac(s, opp).nerestiTotoKolo += KONSTANTY.NEREST_NAEX;
+      need(placed !== undefined && maNaex(placed as PlacedCard, opp), "Na tej karte neleží súperovo NA EX.");
+      zlozNaex(s, placed, opp);
       events.push({ type: "log", text: `${kto} odstraňuje NA EX hráča ${opp + 1} z karty ${defOf(data, placed.card as CardInstance).name}; jeho poldeci ostáva vypitý.` });
       break;
     }

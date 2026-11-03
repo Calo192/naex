@@ -1,5 +1,5 @@
 {
-  "source": "tvorca kariet 2026-11-03T07:53:47.906Z — zverejnená sada v42 živého webu (vypálenie v11.2), bez karty Dlh",
+  "source": "tvorca kariet 2026-11-03T07:53:47.906Z — zverejnená sada v42 živého webu (vypálenie v11.2), bez karty Dlh; v11.3 (2026-11-03): Vdova 1 karta, Snúbenica Podpora — tvorca sa dorovná pri štarte",
   "actions": [
     "Cigareta",
     "Dlh",
@@ -832,7 +832,7 @@
         "Kriminál",
         "Žena"
       ],
-      "effect_text": "Konflikt: Súper odhodí 2 karty z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí.",
+      "effect_text": "Konflikt: Súper odhodí 1 kartu z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí.",
       "triggers": [
         "Konflikt"
       ],
@@ -3088,9 +3088,9 @@
         "Žena",
         "Influencer"
       ],
-      "effect_text": "Konflikt: Ak je priložená karta Chlap, po bitke ide do tvojho odhadzovacieho balíčka a je tvoja.",
+      "effect_text": "Podpora: Ak na tvojom Chlapovi pri nej leží súperovo NA EX, vráti sa súperovi ako vypitý poldeci.",
       "triggers": [
-        "Konflikt"
+        "Podpora"
       ],
       "left": {
         "blocked": [

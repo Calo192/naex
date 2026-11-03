@@ -2879,3 +2879,23 @@ za hru“, znenia doslova od Michala (§10). Odtlačok hry sa zmenil zámerne. S
 >   karta“ — odhadzovací balíček je verejný, preto ju súper vidí aj tam.
 
 §8 Nerest: | Kšeft väzňa (platí sa vypitým plným poldeci, §7) | 1 |
+
+## v11.3 — Konflikt oboma smermi, Podpora, Vdova a Snúbenica (Michal 2026-11-03, Vypálená aj Zrejúca)
+
+Michal 2026-11-03: „Konflikt sa od teraz spúšťa vždy, keď sa karta ocitne vedľa súperovej karty
+(či už ju tam priložím ja, alebo súper priloží jeho kartu k mojej). Toto isté, ale opačne bude nový
+efekt — Podpora.“ Vdova: 1 karta za Chlapa. Snúbenica: Podpora — vráti súperovo NA EX z vlastného
+Chlapa. Odtlačok hry sa zmenil zámerne. Staré znenia (v11.2):
+
+> **Konflikt (v7):** keď súper priloží kartu k tvojej ležiacej karte so spúšťačom Konflikt, spustí sa
+> jej efekt — po Nástupe priloženej karty. Vlastné priloženie, priložený Nástroj, NA EX ani zrážka
+> Konflikt nespúšťajú (§16).
+
+> | Veľmi smútiaca vdova | Konflikt (v10.3): súper odhodí **2 karty z doberacieho balíčka za každého
+> svojho Chlapa, ktorý s ňou susedí** … aj práve priložená, teda najviac dvaja (4 karty) … |
+
+> | Snúbenica | Konflikt: ak je priložená karta Chlap, po bitke ide do odhadzovacieho balíčka majiteľa
+> Snúbenice a odteraz je jeho. |
+
+> Slovník: | Konflikt | spúšťač (v7): efekt ležiacej karty, keď k nej súper priloží svoju; vlastné
+> priloženie, Nástroj, NA EX ani zrážka ho nespúšťajú (§6, §16) |

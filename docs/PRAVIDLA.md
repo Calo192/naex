@@ -1,13 +1,24 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.2 (platné od 2026-11-02)** — Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
-verzia 2; platí v Zrejúcej, hráči na Vypálenej ostávajú na v10.4, kým Michal neschváli) na v10.4
+**Pravidlá v11.3 (platné od 2026-11-03)** — Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
 v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj nie vedľa lokality; v10.3
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.3 oproti v11.2** (Michal 2026-11-03, Vypálená aj Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.3):
+
+- **Konflikt oboma smermi** (§6, §16): Konflikt karty sa spustí, keď sa **priložením** ocitne vedľa
+  **súperovej** karty — či ju prikladáš ty k súperovej, alebo súper svoju k nej. Predtým len druhé.
+- **Podpora** (nový spúšťač, §6, §16): zrkadlo Konfliktu — spustí sa, keď sa priložením stretnú **dve
+  karty toho istého hráča**.
+- **Veľmi smútiaca vdova:** súper odhodí **1 kartu** (predtým 2) z doberacieho balíčka za každého
+  svojho Chlapa, ktorý s ňou susedí.
+- **Snúbenica** má Podporu: keď sa stretne s tvojím Chlapom, na ktorom leží súperovo NA EX, NA EX
+  zíde a súperov poldeci sa mu vráti vypitý. Predtým Konflikt (priložený Chlap prešiel k nej).
 
 **Zmeny v11.2 oproti v11.1** (Michal 2026-11-02, Zrejúca; podklad docs/napady/bonus-zajatia.html, sada B
 prestavená na „raz za hru, kedy chceš“; staré znenia v `docs/pravidla-historia.md`, sekcia v11.2):
@@ -567,9 +578,11 @@ Nástroja sa v striedaní počíta ako ťah, priznanie nie.
   s Nástrojom na konci strany, kam sa vykladá, ani s lokalitou — na prázdnu stranu
   sa nevyloží (v10.2, §12). Kliatba do línie nepatrí.
   Za skrytú Záverečnú ani odpoveď lícom dole sa nepriloží, kým sa neotočí (§7, §13).
-- **Konflikt (v7):** keď súper priloží kartu k tvojej ležiacej karte so
-  spúšťačom Konflikt, spustí sa jej efekt — po Nástupe priloženej karty. Vlastné
-  priloženie, priložený Nástroj, NA EX ani zrážka Konflikt nespúšťajú (§16).
+- **Konflikt (v11.3):** keď sa karta so spúšťačom Konflikt **priložením** ocitne
+  vedľa **súperovej** karty, spustí sa jej efekt — či ju prikladáš ty k súperovej
+  karte, alebo súper svoju k nej. **Podpora** je zrkadlo: spustí sa, keď sa
+  priložením stretnú **dve tvoje** karty. Oba po Nástupe priloženej karty; Nástroj
+  (priložený aj ležiaci), NA EX, zrážka ani presun karty ich nespúšťajú (§16).
 - Po bitke sa karta vracia do odhadzovacieho balíčka svojho majiteľa (§9.7).
 
 ### Spoj a aktivácia akcií
@@ -828,8 +841,8 @@ zadarmo** (v9.2, Michal 2026-10-30):
 1. Najprv **útočník** (na NA EX obrancu) vyloží odpoveď lícom dole na jeden kraj línie.
 2. Potom **obranca** (na NA EX útočníka) lícom dole — **len na druhý kraj línie**, než
    kam vyložil útočník. Keď útočník neodpovedal, obranca smie na ktorýkoľvek kraj.
-3. Obe odpovede sa **otočia naraz** — až vtedy sa vyhodnotí ich Nástup a Konflikt,
-   ktorý vyvolali priložením — a Pitka sa vyhodnotí.
+3. Obe odpovede sa **otočia naraz** — až vtedy sa vyhodnotí ich Nástup, Konflikt a Podpora,
+   ktoré vyvolali priložením — a Pitka sa vyhodnotí.
 
 Odpoveďou hráč v tejto Pitke končí s vykladaním. Kým odpoveď leží lícom dole, súper
 z nej nevidí nič a odhad bitky ju nezarátava (ako Záverečnú, §13). Keď NA EX dali obaja
@@ -886,7 +899,7 @@ Po „hotovo“ oboch hráčov:
    potom útočník; vrchnú kartu vidí len
    on.
 8. **Otočenie Záverečných** — karty lícom dole sa otočia; ich Nástup
-   a Konflikt, ktorý priložením vyvolali, sa vyhodnotia teraz (§13).
+   a Konflikt či Podpora, ktoré priložením vyvolali, sa vyhodnotia teraz (§13).
 
 Násobky akcií sa **násobia**: NA EX zdvojí neaktívnu akciu, Silná žena ju
 zdvojí tiež, spolu ×4 (aj pri Dlhu a Poškodení pečene). Klient aj konzolový
@@ -1567,7 +1580,7 @@ voliteľné a hráč tým v tomto Zhromaždení **končí s vykladaním** (ako p
   vyhodnotí sa ako na každej karte. Majiteľ na ňu NA EX dať nesmie.
 - **Otočí sa na konci Pitky**, ktorá nasleduje po jej Zhromaždení (pred
   ďalším Zhromaždením alebo bitkou, krok 8 v §7). Až vtedy sa vyhodnotí jej
-  **Nástup** a **Konflikt**, ktorý priložením vyvolala (§16); Kšeft
+  **Nástup** a **Konflikt** či **Podpora**, ktoré priložením vyvolala (§16); Kšeft
   karty lícom dole použiť nemožno. Živnostník smie Nástroj priložiť
   aj pri otočení.
 
@@ -1711,21 +1724,24 @@ vykladajú takto. „Okolie“ karty = jej susedia v línii na oboch stranách, 
 ohľadu na majiteľa (aj lokalita či starší v strede). Texty kariet sú od v7
 (Michal 2026-10-27, plan.md 14.0) „len spúšťač a efekt“ — výklad patrí sem.
 
-**Konflikt (v7, plan.md 13):** efekt **ležiacej** karty, keď k nej **súper**
-priloží svoju kartu (na koniec strany, v Zhromaždení aj odpoveďou na NA EX).
-Keď kartu prikladáš ty k svojej, Konflikt nevyvoláš; priložený **Nástroj**
-Konflikt nevyvolá; **NA EX** ani zrážka ho nespúšťajú. Najprv sa vyhodnotí
-Nástup priloženej karty, potom Konflikt. Záverečná priložená ku karte
-s Konfliktom ho vyvolá až pri otočení na konci Pitky (§13). Lokalita Konflikt
-neprepožičiava. **Vyvolať Konflikt** = priložiť kartu k súperovej ležiacej
-karte s Konfliktom (§17). Stav „na spoji so súperovou kartou“ (Pes) je Furt,
-nie Konflikt.
+**Konflikt (v11.3, Michal 2026-11-03):** efekt karty, ktorá sa **priložením**
+ocitne vedľa **súperovej** karty — je jedno, či ju prikladáš ty k súperovej
+karte, alebo súper svoju k nej (na koniec strany, v Zhromaždení aj odpoveďou na
+NA EX). Do v11.2 len druhé. **Podpora (v11.3)** je zrkadlo Konfliktu: efekt karty,
+ktorá sa priložením stretne s **vlastnou** kartou (s kartou toho istého hráča,
+na ktorejkoľvek strane). Ráta sa len priloženie: **NA EX**, zrážka ani presun či
+uzavretie medzery (Dohadzovačka, Poľovník) ich nespúšťajú. **Nástroj** ich
+nespúšťa — ani priložený, ani ležiaci. Poradie: Nástup priloženej karty, potom
+jej Konflikt a Podpora, potom Konflikt a Podpora ležiacej. Záverečná ich vyvolá
+až pri otočení na konci Pitky (§13). Lokalita ani starší ich neprepožičiavajú.
+**Vyvolať Konflikt** = priložiť kartu k súperovej ležiacej karte s Konfliktom
+(§17). Stav „na spoji so súperovou kartou“ (Pes) je Furt, nie Konflikt.
 
 **Úplatok** (v7) zanikol vo v10.3 (Michal 2026-11-02) — mal ho len Kulturista, ten je teraz Sypač.
 
 | Karta | Výklad |
 |---|---|
-| Veľmi smútiaca vdova | Konflikt (v10.3, Michal 2026-11-02): súper odhodí **2 karty z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí**. Rátajú sa súperove karty (natočené k nemu) s tagom Chlap, ktoré s Vdovou susedia v línii — aj práve priložená, teda najviac dvaja (4 karty); skrytá Záverečná sa neráta. Ak súper nemá v doberacom balíčku dosť kariet, zamieša odhadzovací do doberacieho a odhodí zvyšok; ak ani tak nemá, odhodí zvyšok **náhodne z ruky** (ako pri Hrobárovi). Odhodené karty idú do jeho odhadzovacieho balíčka. Vyhodnotí sa po Nástupe priloženej karty. Do v10.2: priložený Chlap išiel po bitke z hry. |
+| Veľmi smútiaca vdova | Konflikt (v11.3, Michal 2026-11-03; do v11.2 dve karty): súper odhodí **1 kartu z doberacieho balíčka za každého svojho Chlapa, ktorý s ňou susedí**. Spustí sa, keď súper priloží kartu k nej aj keď ju jej majiteľ priloží k súperovej karte. Rátajú sa súperove karty (natočené k nemu) s tagom Chlap, ktoré s Vdovou susedia v línii — aj práve priložená, teda najviac dvaja (2 karty); skrytá Záverečná sa neráta. Ak súper nemá v doberacom balíčku dosť kariet, zamieša odhadzovací do doberacieho a odhodí zvyšok; ak ani tak nemá, odhodí zvyšok **náhodne z ruky** (ako pri Hrobárovi). Odhodené karty idú do jeho odhadzovacieho balíčka. Vyhodnotí sa po Nástupe priloženej karty. Do v10.2: priložený Chlap išiel po bitke z hry. |
 | Policajtka | Pitka (v10.4, Michal 2026-11-02, „Pokutový blok“): pri vyhodnotení Pitky získa súper **1 zadĺženie za každú svoju akciu, ktorú v tejto Pitke zruší tvoj Odpor** — Odpor ktorejkoľvek tvojej karty v línii (aj Nástroja, aj podstrčenej), nie hrany lokality. Ráta sa akcia, ktorá by inak patrila súperovi (aj jeho zlá — Hazard, Pečeň), nie modifikátory (Posilnenie, Odpor, Pakt); Vzbura nič neruší (spojené akcie pod ňou sú neaktívne, nie zrušené). Každá tvoja odkrytá Policajtka platí zvlášť (dve = 2 za akciu), skrytá Záverečná nie. Zadĺženie ide do súčtu Pitky ako Hazard (každé 2 = Dlh, §8). Autorita — súperov Praudovravec ju umlčí (len stará sada). Do v10.3 Konflikt: súper Dlh, za Kriminála 2 cigarety. |
 | Stryná | Pitka: každý hráč, ktorý v tejto Pitke nedal NA EX (pri odkrytí), dostane pri vyhodnotení 1 poškodenie pečene — za každú Strynú v línii, bez ohľadu na majiteľa. |
 | Recidivista | Prehra: keď jeho majiteľ prehrá bitku, Recidivista sa po bitke vráti do jeho ruky (nie do balíčka). Pri sekere nie. |
@@ -1743,7 +1759,7 @@ nie Konflikt.
 | Absťák | Kliatba bez akcií (v9.1, §8): Bitka — každý Absťák v tvojom balíčku (ruka, doberací, odhadzovací) ti uberie 1 tuhé; remízu v tuhom prehráva, kto ich má viac. Nedá sa priznať ani vyložiť; po bitke ide z ruky do odhadzovacieho balíčka. Spáliť ju smie len Vízia alebo efekt, ktorý to výslovne povie. |
 | Miňištrant | Nástup: ak ho majiteľ priložil k súperovej karte s Konfliktom (vyvolal Konflikt), do konca kola sa jeho Viera ráta ako Pecka. |
 | Dievčina na vydaj | Prehra: keď jej majiteľ prehrá, spáli sa (navždy z hry) a víťaz získa toľko Dlhov, koľko mala aktívnych akcií (s násobkami; zdvojenie z NA EX sa neráta — poldeci sa vypijú skôr, krok 5 pred 6c). |
-| Snúbenica | Konflikt: ak je priložená karta Chlap, po bitke ide do odhadzovacieho balíčka majiteľa Snúbenice a odteraz je jeho. |
+| Snúbenica | Podpora (v11.3, Michal 2026-11-03): keď sa priložením stretne s **vlastným Chlapom, na ktorom leží súperovo NA EX**, NA EX z neho zíde — súperov poldeci sa mu vráti **vypitý** (nerest NA EX sa ráta, pečeň z odkrytia ostáva), akcie Chlapa sa odteraz rátajú bez NA EX. Pri zrážke (Výtržník) zíde len súperovo NA EX; tvoje ostáva a karta vytriezvie (ako schopnosť Farára). Typicky odpoveďou na NA EX (vyhodnotí sa pri otočení) alebo v ďalšom Zhromaždení kola. Do v11.2 Konflikt: priložený Chlap išiel po bitke k majiteľovi Snúbenice. |
 | Bzdocha | Pitka: Súper hrá Pitku pred tebou; vidíš jeho NA EX. Majiteľ čaká, kým súper skončí svoju časť Pitky, potom hrá a vidí súperove skryté NA EX; majú ju obaja → nečaká nikto (§7, Michal 2026-10-27). |
 | Záhradkár | Exekúcia (Michal 2026-10-28): „Exekúcia v tomto kole pre teba neplatí.“ Keď leží odkrytý v línii v partii majiteľa (jeho karta, aj na súperovej strane), Exekútor ho v kroku exekúcie (§9, 4c) obíde — nezhorí mu žiadny Dlh ani špak. Nespáli sa; v ruke či v balíčkoch nerobí nič. Súperov Záhradkár ťa nechráni. |
 | Anonymný alkoholik | Nástup: majiteľ prizná všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka (§11). |
@@ -1799,7 +1815,8 @@ nie Konflikt.
 | Finále | posledná bitka o pinnacle lokalitu, hrá sa ako o každú inú; útočí zaostávajúci (menej špakov) (§14b) |
 | Dedičstvo | Nástroj vyložený mimo línie za rastúcu cenu v cigaretách; platí jeho efekt Dedičstvo (§12) |
 | Dobratie po bitke | 1 karta na začiatku každého ďalšieho kola; limit ruky nie je (§4) |
-| Konflikt | spúšťač (v7): efekt ležiacej karty, keď k nej súper priloží svoju; vlastné priloženie, Nástroj, NA EX ani zrážka ho nespúšťajú (§6, §16) |
+| Konflikt | spúšťač (v11.3): efekt karty, keď sa priložením ocitne vedľa súperovej karty — prikladáš ty alebo súper; Nástroj, NA EX, zrážka ani presun ho nespúšťajú (§6, §16) |
+| Podpora | spúšťač (v11.3): zrkadlo Konfliktu — efekt karty, keď sa priložením stretne s inou kartou toho istého hráča (§6, §16) |
 | Vyvolať Konflikt | priložiť kartu k súperovej ležiacej karte so spúšťačom Konflikt (§16) |
 | Kšeft | spúšťač (v7): aktívny efekt za cenu, spustíš ho sám v Pitke, kým ju neskončíš, každú kartu raz za Pitku (§7) |
 | Forsáž | Posilnenie + Posilnenie na spoji (v10.3): obe karty majú všetky aktívne akcie posilnené (×2); Nástroj nie, lokalita len hranu; NA EX na jedno z Posilnení ju zruší (§6) |
