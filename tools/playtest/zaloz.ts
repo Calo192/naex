@@ -14,6 +14,9 @@
 // (tie isté, ktorými píšu spätnú väzbu, tools/playtest/web.ts) a hrá sa tam rozpracovaná sada
 // tvorcu. Mená hráčov musia byť mená postáv z hraci.json (turnus.ts ich dáva sám).
 //
+// S prepínačom --zivy (Michal 2026-11-03, playtest štýlov) rovnako, ale na Vypálenej (živý web,
+// zverejnená sada) — hrajú AI účty štýlov z styly.json (tools/playtest/styly.ts ich dáva sám).
+//
 // Vypíše cestu k relácii (playtest/<id>/); všetko ostatné je v <relacia>/hra.json.
 // Server zastaví tools/playtest/ukonci.ts <relacia>. Viac partií naraz zakladá
 // tools/playtest/turnus.ts — dáva im id prepínačom --id <id> (napr. 20261021-120000-2).
@@ -28,6 +31,11 @@ import { nastavDocasneEnv } from "../docasne.ts";
 
 const protiBotovi = process.argv.includes("--bot");
 const naZrejucej = process.argv.includes("--zrejuca");
+const naZivom = process.argv.includes("--zivy");
+if (naZrejucej && naZivom) {
+  console.error("Buď --zivy (Vypálená), alebo --zrejuca — nie oboje.");
+  process.exit(1);
+}
 const iId = process.argv.indexOf("--id");
 const danyId = iId === -1 ? undefined : process.argv[iId + 1];
 if (danyId !== undefined && !/^\d{8}-\d{6}(-\d)?$/.test(danyId)) {
@@ -36,7 +44,7 @@ if (danyId !== undefined && !/^\d{8}-\d{6}(-\d)?$/.test(danyId)) {
 }
 const [meno1 = "Playtester 1", meno2 = "Playtester 2", dlzka = "stredna"] = process.argv
   .slice(2)
-  .filter((a, j, v) => a !== "--bot" && a !== "--zrejuca" && a !== "--id" && v[j - 1] !== "--id");
+  .filter((a, j, v) => a !== "--bot" && a !== "--zrejuca" && a !== "--zivy" && a !== "--id" && v[j - 1] !== "--id");
 if (!["kratka", "stredna", "dlha"].includes(dlzka)) {
   console.error("Dĺžka hry musí byť kratka, stredna alebo dlha.");
   process.exit(1);
@@ -102,19 +110,20 @@ async function zalozPartiu(ws: string, cookies: readonly string[]): Promise<stri
   return kod;
 }
 
-if (naZrejucej) {
-  const { prihlasAgenta, zrejucaWeb } = await import("./web.ts");
-  const url = zrejucaWeb();
+if (naZrejucej || naZivom) {
+  const { prihlasAgenta, zrejucaWeb, zivyWeb } = await import("./web.ts");
+  const url = naZrejucej ? zrejucaWeb() : zivyWeb();
+  const nazov = naZrejucej ? "Zrejúca" : "Vypálená";
   const mena = [meno1, meno2].slice(0, protiBotovi ? 1 : 2);
-  if (mena.some((m) => /^Playtester \d$/.test(m))) throw new Error("Na Zrejúcej hrajú AI účty postáv — zadaj mená postáv z tools/playtest/hraci.json.");
+  if (mena.some((m) => /^Playtester \d$/.test(m))) throw new Error(`Na webe (${nazov}) hrajú AI účty postáv — zadaj mená postáv z tools/playtest/hraci.json alebo styly.json.`);
   const ucty = [];
   for (const m of mena) ucty.push(await prihlasAgenta(url, m));
   const kod = await zalozPartiu(url.replace(/^http/, "ws"), ucty.map((u) => u.cookie));
   const hraci = ucty.map(({ login, heslo, meno }) => ({ login, heslo, meno }));
   // Server nespúšťame — pid null; ukonci.ts ho preto nezastavuje.
-  writeFileSync(join(relacia, "hra.json"), JSON.stringify({ id, url, kod, dlzka, pid: null, zalozena: cas.toISOString(), hraci, protiBotovi, zrejuca: true }, null, 2));
+  writeFileSync(join(relacia, "hra.json"), JSON.stringify({ id, url, kod, dlzka, pid: null, zalozena: cas.toISOString(), hraci, protiBotovi, ...(naZrejucej ? { zrejuca: true } : { zivy: true }) }, null, 2));
   console.log(`Playtest založený: ${relacia.split("\\").join("/")}`);
-  console.log(`Server: ${url} (Zrejúca), miestnosť ${kod}`);
+  console.log(`Server: ${url} (${nazov}), miestnosť ${kod}`);
   console.log(`Hráč 1: ${hraci[0]?.meno ?? meno1} | Hráč 2: ${protiBotovi ? "Štamgast (offline protihráč)" : (hraci[1]?.meno ?? meno2)} | dĺžka hry: ${dlzka}`);
   process.exit(0);
 }

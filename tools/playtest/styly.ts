@@ -2,11 +2,14 @@
 // hráči štýlov z tools/playtest/styly.json (ekonóm, agresor, klebetník, sabotér). Každý štýl má jeden
 // AI účet, preto hrá v turnuse najviac raz — 2 partie = všetky štyri štýly, zrkadlový zápas sa nedá.
 //
-// Použitie (z koreňa repozitára):
-//   node --experimental-strip-types --no-warnings tools/playtest/styly.ts [1|2|<styl>-<styl>…] [kratka|stredna|dlha] [--zrejuca]
+// Hrá sa na Vypálenej (živý web, zverejnená sada; Michal 2026-11-03 — denníky štýlov sú len pre ňu).
+// --lokalne = dočasný lokálny server z tohto stromu (Zrejúca, len na skúšku nástroja, do denníkov nie).
 //
-//   styly.ts 2 stredna --zrejuca                 dve partie, dvojice podľa histórie (najmenej hrané zápasy)
-//   styly.ts ekonom-agresor --zrejuca            jedna konkrétna dvojica
+// Použitie (z koreňa repozitára):
+//   node --experimental-strip-types --no-warnings tools/playtest/styly.ts [1|2|<styl>-<styl>…] [kratka|stredna|dlha] [--lokalne]
+//
+//   styly.ts 2 stredna                           dve partie, dvojice podľa histórie (najmenej hrané zápasy)
+//   styly.ts ekonom-agresor                      jedna konkrétna dvojica
 //   styly.ts ekonom-agresor klebetnik-saboter    dve konkrétne dvojice
 //
 // Bez čísla ani dvojíc = 2 partie. História zápasov je docs/playtesty/styly-historia.json (vedie ju
@@ -32,8 +35,8 @@ const { styly, hypoteza } = JSON.parse(readFileSync("tools/playtest/styly.json",
 const HISTORIA = "docs/playtesty/styly-historia.json";
 const DLZKY = ["kratka", "stredna", "dlha"];
 
-const naZrejucej = process.argv.includes("--zrejuca");
-const argumenty = process.argv.slice(2).filter((a) => a !== "--zrejuca");
+const lokalne = process.argv.includes("--lokalne");
+const argumenty = process.argv.slice(2).filter((a) => a !== "--lokalne");
 const dlzka = argumenty.find((a) => DLZKY.includes(a)) ?? "stredna";
 const zvysne = argumenty.filter((a) => !DLZKY.includes(a));
 
@@ -104,7 +107,7 @@ for (const [n, dvojica] of dvojice.entries()) {
   const hrac2 = styl(b);
   const r = spawnSync(
     process.execPath,
-    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n + 1}`, ...(naZrejucej ? ["--zrejuca"] : [])],
+    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n + 1}`, ...(lokalne ? [] : ["--zivy"])],
     { encoding: "utf8" },
   );
   if (r.status !== 0) {
@@ -121,7 +124,7 @@ for (const [n, dvojica] of dvojice.entries()) {
 
 const turnus = join("playtest", `turnus-${id}`);
 mkdirSync(turnus, { recursive: true });
-writeFileSync(join(turnus, "turnus.json"), `${JSON.stringify({ id, druh: "styly", dlzka, zrejuca: naZrejucej, zalozeny: new Date().toISOString(), hypoteza, partie }, null, 2)}\n`);
+writeFileSync(join(turnus, "turnus.json"), `${JSON.stringify({ id, druh: "styly", dlzka, web: lokalne ? "lokalne" : "vypalena", zalozeny: new Date().toISOString(), hypoteza, partie }, null, 2)}\n`);
 
 console.log(`Turnus štýlov ${id}: ${partie.length} ${partie.length === 1 ? "partia" : "partie"}, dĺžka ${dlzka} — ${turnus.split("\\").join("/")}/turnus.json`);
 for (const [i, p] of partie.entries()) {

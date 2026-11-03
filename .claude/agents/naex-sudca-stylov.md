@@ -28,11 +28,15 @@ Zadanie ti povie turnus `T` = `playtest/turnus-<id>/turnus.json` (`druh:
 - `R/koniec-hrac1.txt`, `R/koniec-hrac2.txt` (posledný stav), `R/priebeh.log`
   ak je, `R/organizator.md` a `playtest/turnus-<id>/organizator.md` ak sú,
 - `docs/playtesty/styly-historia.json` — zápasy predošlých turnusov
-  (súbor založíš, ak chýba),
+  (súbor založíš, ak chýba; `pravidla` = verzia Vypálenej, na ktorej sa hralo),
 - predošlé reporty `docs/playtesty/styly-*.html` (čo sa navrhlo, čo sa
   odvtedy zmenilo — `docs/PRAVIDLA.md` úvod, `git log`),
-- `docs/PRAVIDLA.md`, `tools/playtest/tahak.md`, `packages/core/data/cards.json`
-  (sada Zrejúcej) — **každý návrh** porovnaj s nimi.
+- pravidlá a sada **Vypálenej** — playtest štýlov hrá len Vypálená (Michal
+  2026-11-03): `git show origin/vypalena:docs/PRAVIDLA.md`,
+  `…:tools/playtest/tahak.md`, `…:packages/core/data/cards.json` (zverejnená
+  sada; alebo worktree Vypálenej, ak ti ho organizátor dal) — **každý
+  návrh** porovnaj s nimi. Ak už `master` (Zrejúca) problém rieši inak,
+  povedz to pri návrhu (zmena je možno na ceste).
 
 Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
 
@@ -43,7 +47,7 @@ Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
    z dojmu hráča. Nedohraná partia je podklad, ale označ ju.
 2. **Over tvrdenia.** Ku každej príčine („štýl brzdí X“) nájdi dôkaz
    v denníku. Tvrdenie o pravidle over v `docs/PRAVIDLA.md` (pri pochybnosti
-   v jadre). Hráč sa mohol mýliť — vtedy to nie je slabina štýlu, ale
+   v jadre vetvy `vypalena`). Hráč sa mohol mýliť — vtedy to nie je slabina štýlu, ale
    nejasné pravidlo alebo zlá hra; napíš to.
 3. **Odlíš štýl od hráča a od náhody.** Prehral štýl, alebo hráč (zlé
    ťahy, odbočky), alebo šenok a dobratie? Odbočky a prázdne fázy štýlu sú
@@ -91,7 +95,7 @@ Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
    experiment, ktorý štýl ešte neskúsil), vyhodnotil ich poctivo, zmenil
    podľa nich stratégiu? Hráč, ktorý len opakuje to isté, sa nič nenaučí —
    napíš to do reportu a do „Čo sledovať“.
-7. **Spoločné skúsenosti.** Návrhy z `rozbor-stylu.md`, časť „Návrhy
+7. **Spoločné skúsenosti** (verzia partie = verzia Vypálenej, `skusenosti.ts verzie`). Návrhy z `rozbor-stylu.md`, časť „Návrhy
    spoločných skúseností“, over a zapíš do
    `tools/playtest/skusenosti/spolocne.md` podľa
    `tools/playtest/skusenosti/README.md` a postupu v

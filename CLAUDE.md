@@ -55,7 +55,7 @@ node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   #
                      # ilustrácie: Leonardo.Ai API, kľúč NAEX_LEONARDO_KEY v .env (stojí API kredit);
                      # Michal 2026-10-21: na AKÝKOĽVEK nový obrázok smieš Leonardo použiť bez pýtania
 node --experimental-strip-types --no-warnings tools/playtest/turnus.ts 2 stredna   # 2 partie AI playtesterov naraz (skill naex-playtest)
-node --experimental-strip-types --no-warnings tools/playtest/styly.ts 2 stredna --zrejuca   # playtest herných štýlov (skill naex-styly):
+node --experimental-strip-types --no-warnings tools/playtest/styly.ts 2 stredna   # playtest herných štýlov na Vypálenej (skill naex-styly):
                      # ekonóm, agresor, klebetník, sabotér (styly.json); report docs/playtesty/styly-<id>.html
 node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast   # sila povahy bota
 node --experimental-strip-types --no-warnings tools/bot/strategickost.ts   # náhoda vs. zručnosť (rebrík, duplikát), ≈ 8 min

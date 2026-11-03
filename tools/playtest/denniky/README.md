@@ -1,5 +1,8 @@
 # Strategické denníky štýlov
 
+Playtest štýlov hrá **len Vypálená** (živý web, vetva `vypalena`, zverejnená
+sada; Michal 2026-11-03) — denníky sú preto jedny a platia pre Vypálenú.
+
 Každý herný štýl z `../styly.json` má jeden denník (`<kluc>.md`). Hráč štýlu
 (`naex-hrac-stylu`, skill `naex-styly`) ho číta pred partiou a **sám ho
 prepisuje** po partii — je to jeho laboratórny zošit, z ktorého sa učí hrať
@@ -32,5 +35,6 @@ naraz nepíšu.
 6. **Partie** — jeden riadok za partiu: dátum, id, súper, výsledok, špaky,
    čo sa skúšalo.
 
-Pri novej verzii pravidiel (`VERZIA_PRAVIDIEL`) hráč pri príprave prejde
-položky so staršou verziou a označí, čo treba overiť znova.
+Po vypálení novej verzie (`/naex-vypalit`) hráč pri príprave porovná verziu
+položiek s hlavičkou `PRAVIDLA.md` Vypálenej a označí, čo treba overiť znova
+(zmeny sú v úvode `PRAVIDLA.md`).

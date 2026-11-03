@@ -84,16 +84,26 @@ partia neukázala. Denníky sú v gite, takže história učenia je v `git log`.
    obrázok `$P/web.ts avatar --ako "<meno>" --zivy <subor>`. Nie je to
    podmienka playtestu — môže sa dorobiť neskôr.
 
-1. **Weby** — rovnako ako `naex-playtest`, krok 1: hrá sa na **Zrejúcej**
-   (`$P/web.ts dostupny --zrejuca`, `$A server-stav --zrejuca` — commit
-   Zrejúcej má byť `origin/master`, inak navrhni najprv
-   `/naex-nasad zrejuca`). Nebeží Zrejúca → spýtaj sa, či hrať na dočasných
-   lokálnych serveroch (bez `--zrejuca`; klient musí byť zbuildovaný).
+1. **Web** — hrá sa na **Vypálenej** (živý web, oficiálna hra, zverejnená
+   sada; Michal 2026-11-03 — všetky playtesty štýlov idú tam a denníky sú
+   len pre ňu). Over `$P/web.ts dostupny --zivy` a `$A server-stav --zivy`
+   (nasadený commit má byť `origin/vypalena`). Nebeží → povedz to
+   používateľovi a skonči; na Zrejúcu ani lokálne sa nehrá (výsledky by
+   neplatili pre denníky). Ak práve beží `/naex-nasad` (uzávierka), počkaj.
 
-2. **Založ turnus:**
+1b. **Worktree Vypálenej `V`** — klient, pravidlá, ťahák a sada musia byť
+   z tej istej verzie ako server: `git fetch -q origin`, potom
+   `git worktree add --detach ../naex-styly-vyp origin/vypalena` (ak už
+   existuje: `git -C ../naex-styly-vyp checkout --detach origin/vypalena`)
+   a v ňom `npm ci`. `V` = jeho absolútna cesta. Vo `V` sa nič nemení.
+
+2. **Založ turnus** (z hlavného stromu):
    ```bash
-   $P/styly.ts <partie|dvojice> <dĺžka> --zrejuca
+   $P/styly.ts <partie|dvojice> <dĺžka>
    ```
+   Partie vzniknú na Vypálenej pod AI účtami štýlov (`zaloz.ts --zivy`).
+   `--lokalne` je len na skúšku nástroja (dočasný server z `master`) — taká
+   partia do denníkov ani do histórie nejde.
    Výpis dá id turnusu (`playtest/turnus-<id>/turnus.json`, `druh: "styly"`)
    a pre každú partiu reláciu `R`, oboch hráčov so štýlom, charakterom
    a denníkom.
@@ -103,15 +113,17 @@ partia neukázala. Denníky sú v gite, takže história učenia je v `git log`.
    playteste štýlov“, vezmi jej otázky a odporúčaný experiment pre každý
    štýl. Ak boli odvtedy implementované
    zmeny z návrhov štýlov (`$A navrhy implementovane --zivy --json`, návrhy
-   s pôvodom v reporte štýlov a commitom v kóde Zrejúcej — postup ako
-   `naex-playtest` krok 2b), pridaj ich otázky `overenie`.
+   s pôvodom v reporte štýlov, ktorých commit je už vo Vypálenej:
+   `git merge-base --is-ancestor <hash> origin/vypalena`), pridaj ich otázky
+   `overenie`.
 
 3. **Spusti hráčov naraz** — v jednej správe `2 × počet partií` volaní
    Agent (`naex-hrac-stylu`, `run_in_background: true`, pri `silni`
    `model: "opus"`), pre každého:
-   „Relácia: R. Si hráč N. Štýl: <kluc> (<názov>) — tvoj AI účet <meno>.
-   Súper hrá štýl <názov súpera>. Partia je na Zrejúcej (verzia pravidiel
-   z hlavičky docs/PRAVIDLA.md). Strategický denník štýlu:
+   „Relácia: R (absolútne). Si hráč N. Štýl: <kluc> (<názov>) — tvoj AI účet
+   <meno>. Súper hrá štýl <názov súpera>. Partia je na Vypálenej. Worktree
+   Vypálenej: V — pravidlá, ťahák, karty aj klient sú odtiaľ. Strategický
+   denník štýlu (hlavný strom):
    tools/playtest/denniky/<kluc>.md. Priprav sa (celé pravidlá, karty,
    moznosti.md, prieskum nástrojov, plan-stylu.md s 1–3 experimentmi),
    odohraj celú partiu ako expert, ktorý je svojím charakterom, veď
@@ -120,21 +132,22 @@ partia neukázala. Denníky sú v gite, takže história učenia je v `git log`.
    „Sudca odporúča vyskúšať: …“).
 
    Používateľovi povedz: kto proti komu (štýly a mená), dĺžku, followup
-   a že partia trvá desiatky minút. Upozorni, aby sa do Zrejúcej
-   neprihlasoval za AI účty štýlov (prevzal by im spojenie).
+   a že partia trvá desiatky minút. Upozorni, aby sa na živý web
+   neprihlasoval za AI účty štýlov (prevzal by im spojenie) a že kým partie
+   bežia, `/naex-nasad` Vypálenej na ne počká.
 
 4. **Čakaj** — agenti sa ozvú sami, nepolluj. Keď dohrajú oba hráči
    partie:
    ```bash
-   $P/hrac.ts R 1 stav > R/koniec-hrac1.txt
-   $P/hrac.ts R 2 stav > R/koniec-hrac2.txt
-   $P/ukonci.ts R
+   cd V && node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R 1 stav > R/koniec-hrac1.txt
+   cd V && node --experimental-strip-types --no-warnings tools/playtest/hrac.ts R 2 stav > R/koniec-hrac2.txt
    ```
+   (Server je živý web, nič sa nezastavuje.)
    Ak agent skončí bez dohranej partie, zapíš, čo sa stalo, do
    `R/organizator.md` a pokračuj — aj nedohraná partia je podklad.
 
 5. **Report** — spusti `naex-sudca-stylov` na pozadí: „Turnus:
-   playtest/turnus-<id>/turnus.json. Napíš report štýlov
+   playtest/turnus-<id>/turnus.json. Worktree Vypálenej: V. Napíš report štýlov
    docs/playtesty/styly-<id>.html, doplň docs/playtesty/styly-historia.json
    a zapíš overené skúsenosti štýlov.“ (spomeň `organizator.md`, ak vznikol;
    pri otázkach na overenie: „Daj každej verdikt zabralo / nezabralo / málo
@@ -148,6 +161,7 @@ partia neukázala. Denníky sú v gite, takže história učenia je v `git log`.
    turnus … . Report docs/playtesty/styly-<id>.html a história
    docs/playtesty/styly-historia.json. Odporúčané zmeny zo sekcie Návrhy
    zmien preveri: najsľubnejšie vyskúšaj ako varianty pravidiel vo worktree
+   nad origin/vypalena (playtest hral Vypálenú)
    (turnaje botov, tools/bot/turnaj.ts — povahy botov sa štýlom len
    približujú, povedz, nakoľko). Pre každú zmenu: mení výsledok, posúva
    výhody medzi štýlmi, nevznikne nový dominant? Napíš
@@ -190,6 +204,9 @@ partia neukázala. Denníky sú v gite, takže história učenia je v `git log`.
 
 ## Poznámky
 
+- Partie štýlov sú na Vypálenej medzi dvoma AI účtami: do Frajeriny ľudí
+  ani do štatistík kariet „len ľudia“ (rebalans) sa nerátajú — server AI
+  účty rozlišuje. Ľudia ich na webe môžu vidieť.
 - Relácie a turnusy sú v `playtest/` (v `.gitignore`); reporty
   a `styly-historia.json` v `docs/playtesty/` sú v gite.
 - Hráč štýlu vidí len výstup `tools/playtest/hrac.ts` (`viewFor`) — súperov
