@@ -49,13 +49,13 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, dopadyNahladu, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie } from "@naex/core";
+import { KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, dopadyNahladu, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
 import { IkonaPriazne, riadokPriazneLogu } from "./IkonaPriazne.tsx";
 import { CENA_POLA, NAZOV_DELENIA, rodStarsieho } from "./textyStarsich.ts";
-import { IkonaDelenia, LiniaStarsich, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii, type SuhrnNaLinii } from "./LiniaStarsich.tsx";
+import { IkonaDelenia, LiniaStarsich, type AkciaStarsieho, type MiestoVLinii, type RezimLinie, type RozdelenieStarsieho, type StarsiVLinii, type SuhrnNaLinii } from "./LiniaStarsich.tsx";
 import { klikNaStupen, radStarsich, stupneRozdelenia, suhrnRozdelenia, zdvihStarsieho } from "./teplomery.ts";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import { NAZOV_PRIAZNE, favourPodlaId, kratkeMeno, pocetPriazniKola, priazenKola, reciZHadky, type PriazneBitky } from "./priazenKola.ts";
@@ -1564,7 +1564,7 @@ export function HernaPlocha({
     setZdvihyDelenia([]);
     setAkcieDelenia([]);
   };
-  /** Zajať / Presvedčiť (v11.4): prepne akciu pri staršom; zapnutá dotiahne jeho marker na červenú. */
+  /** Pečiatka Zajať / Presvedčiť (v11.6): prepne akciu pri staršom; presvedčenie dotiahne reči na červenú. */
   const prepniAkciuDelenia = (elderId: string): void => {
     if (planDelenia === null) return;
     if (akcieDelenia.includes(elderId)) {
@@ -4417,44 +4417,9 @@ export function HernaPlocha({
           const zvysok = planDelenia.zvysok;
           const ide = planDelenia.cena;
           const m = planDelenia.esteSaDa.length;
-          // Zajať (Nakladačka) / Presvedčiť (hádka), v11.4: tlačidlo pri každom staršom, pri ktorom sa
-          // na body dá — s cenou (dotiahnutie na červenú + 5) a náhľadom. Zapnuté svieti, klik ho vráti.
-          const zajatie = krokDelenia === "prebytok";
-          const cenaAkcie = zajatie ? KONSTANTY.CENA_ZAJATIA : KONSTANTY.CENA_PRESVEDCENIA;
-          const ponukaAkcii = [...new Set([...moznostiAkcie(view, ja, planDelenia.marker, planDelenia.body), ...akcieDelenia])];
-          const tlacidlaAkcii =
-            ponukaAkcii.length === 0 ? undefined : (
-              <>
-                {ponukaAkcii.map((id) => {
-                  const e = view.starsi.find((x) => x.elderId === id);
-                  if (e === undefined) return null;
-                  const zapnuta = akcieDelenia.includes(id);
-                  const dotiahni = zdvihyPreAkcie(view, ja, planDelenia.marker, [id]).length > 0 && !zdvihyDelenia.some((z) => z.elderId === id && z.na === 3);
-                  const n = nahladZajatia(view, id);
-                  const nahlad = zajatie
-                    ? `Zajať ${menoKarty(e.karta.defId)} za ${cenaAkcie}${dotiahni ? " (s dotiahnutím strachu na červenú)" : ""}: väzeň v tvojej pivnici (${n.mojichVaznov}/${n.vazniNaVyhru}${n.vyhra ? " — vyhráš hneď" : ""}), ${menoHraca(super_)} ti odovzdá ${spakov(n.kradez)}.`
-                    : `Presvedčiť ${menoKarty(e.karta.defId)} za ${cenaAkcie}${dotiahni ? " (s rečami na červenú)" : ""}: jeho karta ide tebe do ruky a ostane v tvojom balíčku; tvoje reči pri ňom zaniknú, priazeň ostane.`;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      className={zapnuta ? "vybrane" : undefined}
-                      aria-pressed={zapnuta}
-                      data-vyucba={`${zajatie ? "zajat" : "presvedcit"}:${id}`}
-                      title={zapnuta ? `${nahlad} Klik zruší.` : nahlad}
-                      onClick={() => prepniAkciuDelenia(id)}
-                    >
-                      {zapnuta ? "✓ " : ""}
-                      {zajatie ? "Zajať" : "Presvedčiť"}: {menoKarty(e.karta.defId)}
-                      <span className="cena">−{cenaAkcie}{dotiahni && !zapnuta ? "+" : ""}</span>
-                    </button>
-                  );
-                })}
-              </>
-            );
+          // Zajať / Presvedčiť (v11.6) nie sú v bubline — pečiatka na staršom (akciaStarsieho).
           return {
             jednotny: true,
-            ...(tlacidlaAkcii === undefined ? {} : { tlacidla: tlacidlaAkcii }),
             nadpis: (
               <>
                 <span className="pil-nazov">
@@ -4659,6 +4624,21 @@ export function HernaPlocha({
     const o = vzhladKarty(sada, data, defId).obrazok;
     return o === null ? null : mediaUrl(o.nahlad);
   };
+  // Pečiatka ZAJAŤ / PRESVEDČIŤ (v11.6, Michal 2026-11-03): len pri mojom rozdelení a len na staršom,
+  // pri ktorom sa akcia na moje body dá (aj zvolený ostáva, nech sa dá vrátiť). Cena celá —
+  // pri presvedčení s dotiahnutím rečí na červenú.
+  const ponukaAkcii = planDelenia === null ? [] : [...new Set([...moznostiAkcie(view, ja, planDelenia.marker, planDelenia.body), ...akcieDelenia])];
+  const akciaStarsieho = (e: (typeof view.starsi)[number]): AkciaStarsieho | undefined => {
+    if (planDelenia === null || krokDelenia === null || !ponukaAkcii.includes(e.elderId)) return undefined;
+    const zajatie = krokDelenia === "prebytok";
+    const cena = cenaAkcieUplna(e, ja, planDelenia.marker) ?? (zajatie ? KONSTANTY.CENA_ZAJATIA : KONSTANTY.CENA_PRESVEDCENIA);
+    const meno = menoKarty(e.karta.defId);
+    const n = nahladZajatia(view, e.elderId);
+    const nahlad = zajatie
+      ? `Zajať ${meno} za ${cena}: väzeň v tvojej pivnici (${n.mojichVaznov}/${n.vazniNaVyhru}${n.vyhra ? " — vyhráš hneď" : ""}), ${menoHraca(super_)} ti odovzdá ${spakov(n.kradez)}.`
+      : `Presvedčiť ${meno} za ${cena}${cena > KONSTANTY.CENA_PRESVEDCENIA ? " (s rečami na červenú)" : ""}: jeho karta ide tebe do ruky a ostane v tvojom balíčku; tvoje reči pri ňom zaniknú, priazeň ostane.`;
+    return { druh: zajatie ? "zajat" : "presvedcit", cena, zapnuta: akcieDelenia.includes(e.elderId), nahlad, klik: () => prepniAkciuDelenia(e.elderId) };
+  };
   const radLinie: MiestoVLinii[] = radStarsich(view.starsi, view.vazni).map((m): MiestoVLinii => {
     if (m.typ === "vazen")
     {
@@ -4690,6 +4670,7 @@ export function HernaPlocha({
       dovod: klik === undefined && rozdelenie === undefined ? zamokStarsieho(e) : undefined,
       presvedcil: e.presvedcil === undefined ? null : { kto: e.presvedcil },
       vybrany: akcieDelenia.includes(e.elderId),
+      akcia: akciaStarsieho(e),
       zmeny,
       rozdelenie,
       po: rozdelenie?.zdvih == null ? undefined : poDeleni.starsi.find((x) => x.elderId === e.elderId),

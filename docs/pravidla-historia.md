@@ -3025,3 +3025,41 @@ zámerne. Staré znenia (v11.4):
 
 §11: „(Vízia ju môže spáliť, rovnako Absťák; Anonymný alkoholik prizná všetky z odhadzovacieho balíčka)“;
 „Obecný úrad, Podvodník a priazeň Kmotra ich presúvajú k súperovi.“
+
+## v11.6 — zajatie len staršieho na červenej od minulého kola, pečiatky ZAJAŤ / PRESVEDČIŤ (Michal 2026-11-03, Zrejúca)
+
+Michal 2026-11-03: „Zajať sa však NEDÁ v kole, kedy starší ešte nemal červený teplomer na stupnici u hráča,
+ktorý staršieho chce zajať. … Nie je možný scenár, že napríklad starší je na žltej a hráč ho hneď vytlačí
+hore a hneď aj zajme v tom istom kole.“ Presvedčenie sa nemení. Tlačidlá Zajať / Presvedčiť v bubline
+rozdelenia nahradili pečiatky na staršom. Staré znenia (v11.5):
+
+Zmeny v11.4 (úvod):
+
+> - **Zajatie pri rozdelení Nakladačky** (§9.4, §10): kto rozdeľuje Nakladačku, smie zajať staršieho, pri
+>   ktorom má **strach 3**, za **5 bodov** (na červenú sa smie dotiahnuť v tom istom rozdelení). …
+
+§9.4 Nakladačka, bod 6:
+
+> 6. **Zajatie** (v11.4, §10): za **5 bodov** Nakladačky smie víťaz zajať staršieho, pri ktorom má strach
+>    na červenej (dotiahnuť ho tam smie v tom istom rozdelení). Dobrovoľné, viac naraz smie byť; do „rozdelí
+>    sa, čo sa dá“ sa nerátajú. Keď Nakladačka inak nemá kam, ale zajať sa dá, bitka na rozhodnutie počká.
+
+§10 Zajatie a väzeň, Podmienka a cena:
+
+> **Podmienka a cena.** **Tvoj strach** pri staršom je **3** (červená); súperov strach nerozhoduje.
+> Zajatie stojí **5 bodov** Nakladačky (`KONSTANTY.CENA_ZAJATIA`). Na červenú sa smieš dotiahnuť v tom
+> istom rozdelení za bežnú cenu — zo strachu 2 teda 3 + 5 = 8 (výklad Leadera, na potvrdenie Michalom).
+
+§9 tabuľka krokov, 4e:
+
+> … smie **zajímať** (5 bodov za staršieho na červenom strachu; väzeň, krádež, výhra väzňami hneď); …
+
+§10 Výklady Developera:
+
+> - **Zajatie a presvedčenie v jednom rozdelení:** najprv sa vyhodnotia zdvihy, potom akcie. Starší, ktorého
+>   hráč zajíma či presviedča, je po zdvihoch na červenej — „rozdelí sa, čo sa dá“ ho pri zvyšku nevyžaduje
+>   (po presvedčení na neho zvyšok tých istých bodov nejde, hoci reči zanikli).
+
+§17 Slovník:
+
+> | Zajatie | pri rozdelení Nakladačky za 5 bodov staršieho, pri ktorom je tvoj strach 3 (dotiahnuť smieš v tom istom rozdelení): väzeň, krádež špakov; vo finále nie (§9.4, §10, v11.4; v9–v11.3 pokus o zajatie v drafte) |

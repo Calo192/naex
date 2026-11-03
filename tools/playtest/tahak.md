@@ -297,8 +297,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   víťaz získa Dlhy podľa jej aktívnych akcií. **Vedúcko (Furt, v10.4)** — Roboty kariet, ktoré s ním susedia (aj
   súperových; hrana lokality nie), sa rátajú ako **Pecky** ich majiteľa: Dlh nepália, dávajú 2 tuhé (posilnená ×2).
 - **Zajatie (v11.4, 2026-11-03):** pokus o zajatie v drafte a jeho cigareta **zanikli**. Kto **rozdeľuje
-  Nakladačku**, smie pri staršom, pri ktorom je **tvoj strach 3** (červená; smieš ho naň dotiahnuť v tom istom
-  rozdelení), ho **zajať za 5 bodov** Nakladačky — `{"type":"prebytok","zdvihy":[…],"zajatia":[elderId,…]}`.
+  Nakladačku**, smie pri staršom, pri ktorom je **tvoj strach 3** (červená) **už pred touto Nakladačkou** (od minulého kola, v11.6 — dotiahnutý v tom istom
+  rozdelení nestačí), ho **zajať za 5 bodov** Nakladačky — `{"type":"prebytok","zdvihy":[…],"zajatia":[elderId,…]}`.
   Dobrovoľné, viac naraz smie byť; zvyšok sa rozdelí ako vždy. Starší je tvoj **väzeň** (priznané karty; zo
   stupnice zmiznú markery oboch) a **súper ti odovzdá špaky za svoj najvyšší marker pri ňom teraz (žltá 1,
   oranžová 3, červená 5), najviac koľko má**. Väzni na výhru podľa ligy — overí sa hneď po rozdelení. Zajať

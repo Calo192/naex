@@ -16,9 +16,9 @@
 //   &stop=po-bitke súhrn po k-tej bitke (&i=k, od 0) hneď po načítaní — kolo sa dohrá po voľbu cieľa ďalšieho
 //                  kola (súhrn krok po kroku na línii starších, R3)
 //   &stop=zajatie  krok Nakladačka, v ktorom hráč ?ja smie zajať (v11.4): prvý starší sa ho bojí na červenej
-//                  a Nakladačky je aspoň 8 — stôl ukáže tlačidlá Zajať (stav sa na ukážku upraví)
+//                  už pred Nakladačkou (v11.6) a Nakladačky je aspoň 8 — stôl ukáže pečiatku ZAJAŤ (stav sa na ukážku upraví)
 //   &stop=presvedcenie  krok Reči, v ktorom hráč ?ja smie presvedčiť (v11.4): pri prvom staršom má strach 2,
-//                  súper 3, hádka aspoň 10 — tlačidlá Presvedčiť; &presvedceny=1 dá druhého staršieho
+//                  súper 3, hádka aspoň 10 — pečiatka PRESVEDČIŤ; &presvedceny=1 dá druhého staršieho
 //                  presvedčeného súperom (značka pri staršom)
 //   &stop=kolo     začiatok kola &i=k
 //   &stop=draft    stavba šenku od kola &i=k (predvolene 2), hráč ?ja vyberá — po bitke s posunmi

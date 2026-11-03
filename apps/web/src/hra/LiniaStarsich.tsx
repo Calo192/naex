@@ -50,6 +50,18 @@ export interface RozdelenieStarsieho {
   readonly klik: (stupen: number) => void;
 }
 
+/** Pečiatka ZAJAŤ / PRESVEDČIŤ na staršom pri mojom rozdelení (v11.6) — dáta pripraví HernaPlocha. */
+export interface AkciaStarsieho {
+  readonly druh: "zajat" | "presvedcit";
+  /** Celá cena pri tomto staršom (pri presvedčení s dotiahnutím rečí na červenú). */
+  readonly cena: number;
+  /** Zvolená v nepotvrdenom rozdelení — plná pečiatka ZAJATÝ / PRESVEDČENÝ. */
+  readonly zapnuta: boolean;
+  /** Čo akcia urobí (titulok). */
+  readonly nahlad: string;
+  readonly klik: () => void;
+}
+
 /** Jeden starší v línii — dáta pripraví HernaPlocha. */
 export interface StarsiVLinii {
   readonly elder: StarsiVerejne;
@@ -64,6 +76,8 @@ export interface StarsiVLinii {
   readonly presvedcil: { readonly kto: PlayerId } | null;
   /** Zvolený na zajatie či presvedčenie v nepotvrdenom rozdelení (v11.4). */
   readonly vybrany?: boolean;
+  /** Pečiatka akcie rozdelenia (v11.6) — len keď sa tu akcia na moje body dá. */
+  readonly akcia?: AkciaStarsieho | undefined;
   /** Zmeny strachu a rečí od poslednej bitky (štítok na portréte). */
   readonly zmeny?: readonly ZmenaMarkera[];
   /** Rozdeľovanie v mojom kroku. */
@@ -382,7 +396,7 @@ function TeplomerStarsieho({
   const klikKarty = r !== undefined ? (dalsiStupen === undefined ? undefined : () => r.klik(dalsiStupen.stupen)) : klik?.klik;
   const krokTrieda =
     r !== undefined
-      ? ` rozdel${r.zdvih !== null ? " s-posunom" : ""}${dalsiStupen === undefined && r.zdvih === null && s.vybrany !== true ? " mrtvy" : ""}${s.vybrany === true ? " vybrany" : ""}`
+      ? ` rozdel${r.zdvih !== null ? " s-posunom" : ""}${dalsiStupen === undefined && r.zdvih === null && s.vybrany !== true && s.akcia === undefined ? " mrtvy" : ""}${s.vybrany === true ? " vybrany" : ""}`
       : krok === null
         ? ""
         : s.vybrany === true
@@ -467,6 +481,7 @@ function TeplomerStarsieho({
             <span className={`ls-listok tp-zmeny${farbaZmien}`}>⇄ {stitokZmien(zmeny)}</span>
           ) : null}
           {r?.zdvih != null && <span className="tp-cena-navrhu">−{r.zdvih.cena}</span>}
+          {s.akcia !== undefined && suhrn === undefined && <PeciatkaAkcie a={s.akcia} elderId={elder.elderId} meno={s.meno} rod={rod} />}
           <KruzokPriazne key={suhrn === undefined ? undefined : `kr-${suhrn.kluc}`} fav={fav} p={pk} trieda={`ls-kruzok tp-kruzok${suhrn?.od != null && !rovnakaPriazen(suhrn.od, po) ? " nove" : ""}`} />
         </span>
       </div>
@@ -493,6 +508,44 @@ function TeplomerStarsieho({
       )}
       {napoveda.vrstva}
     </div>
+  );
+}
+
+/**
+ * Pečiatka ZAJAŤ / PRESVEDČIŤ na staršom (v11.6, Michal 2026-11-03) namiesto tlačidiel v bubline:
+ * pred klikom tlmený obrys s celou cenou, po kliku plný odtlačok ZAJATÝ / PRESVEDČENÝ (ten istý
+ * jazyk ako V PIVNICI a moment NA EX!); ďalší klik ju vráti. Udalosti ďalej nepúšťa — klik na
+ * pečiatku nesmie zdvihnúť stupeň v teplomeri ani podržanie otvoriť zväčšeninu.
+ */
+function PeciatkaAkcie({ a, elderId, meno, rod, vPulte = false }: { readonly a: AkciaStarsieho; readonly elderId: string; readonly meno: string; readonly rod: Rod; readonly vPulte?: boolean }) {
+  const zajat = a.druh === "zajat";
+  const nazov = zajat ? "ZAJAŤ" : "PRESVEDČIŤ";
+  const hotovo = zajat ? (rod === "z" ? "ZAJATÁ" : "ZAJATÝ") : rod === "z" ? "PRESVEDČENÁ" : "PRESVEDČENÝ";
+  const zastav = (e: { readonly stopPropagation: () => void }): void => e.stopPropagation();
+  return (
+    <button
+      type="button"
+      className={`tp-peciatka-akcie ${a.druh}${a.zapnuta ? " on" : ""}${vPulte ? " v-pulte" : ""}`}
+      aria-pressed={a.zapnuta}
+      aria-label={a.zapnuta ? `${meno}: ${hotovo.toLowerCase()} za ${a.cena} — klik zruší` : `${zajat ? "Zajať" : "Presvedčiť"} ${meno} za ${a.cena}`}
+      title={a.zapnuta ? `${a.nahlad} Klik zruší.` : a.nahlad}
+      data-vyucba={`${a.druh}:${elderId}`}
+      onPointerDown={zastav}
+      onKeyDown={zastav}
+      onClick={(e) => {
+        e.stopPropagation();
+        a.klik();
+      }}
+    >
+      {a.zapnuta ? (
+        <b>{hotovo}</b>
+      ) : (
+        <>
+          <b>{nazov}</b>
+          <span className="cena">−{a.cena}</span>
+        </>
+      )}
+    </button>
   );
 }
 
@@ -856,8 +909,9 @@ function PultLinie({
             const ohrozenie = s.presvedcil === null ? "" : ` · ✦ presvedčil ${s.presvedcil.kto === ja ? "ty" : menoSu}`;
             return (
               <tr key={e.elderId} className={`${s.presvedcil !== null ? "ohrozeny" : ""}${r?.zdvih != null ? " s-posunom" : ""}`} data-vyucba={`starsi:${e.elderId}`}>
-                <td className="vlavo">
+                <td className={`vlavo${s.akcia !== undefined ? " s-peciatkou" : ""}`}>
                   <PultMeno meno={s.meno} obrazok={s.obrazok} pod={`${STAV_STARSIEHO[stupenStavu(e)]}${ohrozenie}`} />
+                  {s.akcia !== undefined && <PeciatkaAkcie a={s.akcia} elderId={e.elderId} meno={s.meno} rod={rodStarsieho(e.karta.defId, s.meno)} vPulte />}
                 </td>
                 <td>
                   <Pipy hodnota={e.strach[ja]} reci={false} r={r?.marker === "strach" ? r : undefined} meno={s.meno} zrkadlo={false} />

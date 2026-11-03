@@ -212,7 +212,7 @@
       "poradie": 16,
       "uroven": "B",
       "spustac": {
-        "kedy": "hráč smie prvýkrát zajať staršieho pri rozdelení Nakladačky (v11.4; kľúč patronat ostáva)",
+        "kedy": "hráč smie prvýkrát zajať staršieho pri rozdelení Nakladačky — strach na červenej už pred Nakladačkou (v11.4, v11.6; kľúč patronat ostáva)",
         "podmienka": "krokRozdelenia(view, ja) === \"prebytok\" && moznostiAkcie(view, ja, \"strach\", body) nie je prázdne",
         "jadro": ["packages/core/src/rozdelenie.ts moznostiAkcie, overRozdelenie", "docs/PRAVIDLA.md §10 Zajatie a väzeň (v11.4)"]
       },

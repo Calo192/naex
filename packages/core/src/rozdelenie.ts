@@ -4,7 +4,8 @@
 // po rozdelení nesmie ostať zvyšok, ktorý by ešte stačil na ďalší stupeň niektorého staršieho.
 //
 // Akcie rozdelenia (v11.4, Michal 2026-11-03): za CENA_ZAJATIA bodov Nakladačky smie držiteľ
-// zajať staršieho, ktorý sa ho po zdvihoch bojí na červenej; za CENA_PRESVEDCENIA bodov hádky
+// zajať staršieho, ktorý sa ho bojí na červenej už pred touto Nakladačkou (v11.6 — strach dvíha
+// len Nakladačka, raz za kolo, takže je to červená od minulého kola); za CENA_PRESVEDCENIA bodov hádky
 // smie víťaz hádky presvedčiť staršieho, pri ktorom má súper vyšší strach a jeho reči sú po
 // zdvihoch na červenej. Obe sú dobrovoľné (do „rozdeľ, čo sa dá“ sa nerátajú) a smie ich byť viac.
 //
@@ -69,22 +70,28 @@ export function cenaAkcieRozdelenia(marker: DruhMarkera): number {
   return marker === "strach" ? KONSTANTY.CENA_ZAJATIA : KONSTANTY.CENA_PRESVEDCENIA;
 }
 
+/** Zajatie (v11.6): strach dotiahnutý v tej istej Nakladačke nestačí. */
+export const CHYBA_ZAJATIA_BEZ_CERVENEJ =
+  "Zajať sa dá len staršieho, ktorý sa ťa bojí na červenej už od minulého kola — strach dotiahnutý v tejto Nakladačke nestačí.";
+
 /**
  * Prečo hráč p pri tomto staršom akciu rozdelenia (zajatie / presvedčenie) neurobí bez ohľadu
- * na body — null = smie, keď dotiahne marker na červenú. Zajať sa dá každého staršieho na
- * stupnici (aj presvedčeného, aj vlastného presvedčeného); presvedčiť len nepresvedčeného,
- * pri ktorom má súper vyšší strach.
+ * na body — null = smie (presvedčenie, keď dotiahne reči na červenú). Zajať sa dá každého
+ * staršieho na stupnici (aj presvedčeného, aj vlastného presvedčeného), ktorý sa hráča bojí na
+ * červenej už pred rozdelením (v11.6, Michal 2026-11-03: dotiahnuť a hneď zajať v tom istom
+ * kole sa nedá). Presvedčiť len nepresvedčeného, pri ktorom má súper vyšší strach — reči sa
+ * smú dotiahnuť v tom istom rozdelení, lebo po bodovaní vždy klesnú o stupeň.
  */
 export function dovodBezAkcie(elder: StarsiRozdelenia, p: PlayerId, marker: DruhMarkera): string | null {
-  if (marker === "strach") return null;
+  if (marker === "strach") return elder.strach[p] === CERVENA ? null : CHYBA_ZAJATIA_BEZ_CERVENEJ;
   if (elder.presvedcil !== undefined) return "Tohto staršieho už niekto presvedčil.";
   if (elder.strach[opponentOf(p)] <= elder.strach[p]) return "Presvedčiť sa dá len staršieho, ktorý sa súpera bojí viac než teba.";
   return null;
 }
 
 /**
- * Celá cena akcie pri staršom: dotiahnutie markera na červenú za bežnú cenu + cena akcie;
- * null = akcia tu nejde (dovodBezAkcie).
+ * Celá cena akcie pri staršom: dotiahnutie markera na červenú za bežnú cenu + cena akcie
+ * (pri zajatí len cena akcie — strach už na červenej je); null = akcia tu nejde (dovodBezAkcie).
  */
 export function cenaAkcieUplna(elder: StarsiRozdelenia, p: PlayerId, marker: DruhMarkera): number | null {
   if (dovodBezAkcie(elder, p, marker) !== null) return null;
@@ -115,8 +122,9 @@ export interface PlanRozdelenia {
 /**
  * Overí rozdelenie `zdvihy` a akcie `akcie` bodov `body` na marker hráča p (server aj náhľad
  * klienta). Každý starší v zdvihoch najviac raz, na stupeň vyšší, ako je teraz (reči nad
- * strachom); akcia pri staršom, ktorého marker je po zdvihoch na červenej; cena spolu najviac
- * body; po rozdelení zvyšok nesmie stačiť na ďalší stupeň.
+ * strachom); presvedčenie pri staršom, ktorého reči sú po zdvihoch na červenej, zajatie pri
+ * staršom, ktorého strach bol na červenej už pred zdvihmi (v11.6); cena spolu najviac body;
+ * po rozdelení zvyšok nesmie stačiť na ďalší stupeň.
  */
 export function overRozdelenie(
   state: Pick<StavRozdelenia, "starsi">,
@@ -156,7 +164,8 @@ export function overRozdelenie(
   });
   const akcieOk: string[] = [];
   for (const id of akcie) {
-    const elder = po.find((e) => e.elderId === id);
+    // Zajatie sa posudzuje na stave pred zdvihmi tohto rozdelenia (v11.6), presvedčenie po nich.
+    const elder = (marker === "strach" ? state.starsi : po).find((e) => e.elderId === id);
     if (elder === undefined) {
       chyba ??= "Taký starší na stupnici nie je.";
       continue;
@@ -171,7 +180,7 @@ export function overRozdelenie(
       continue;
     }
     if (stupenOdkial(elder, p, marker) !== CERVENA) {
-      chyba ??= marker === "strach" ? "Zajať sa dá len staršieho, ktorý sa ťa bojí na červenej — dotiahni strach na červenú." : "Presvedčiť sa dá len s rečami na červenej — dotiahni reči na červenú.";
+      chyba ??= marker === "strach" ? CHYBA_ZAJATIA_BEZ_CERVENEJ : "Presvedčiť sa dá len s rečami na červenej — dotiahni reči na červenú.";
       continue;
     }
     akcieOk.push(id);
@@ -211,7 +220,7 @@ export function rozdelenieMozne(state: Pick<StavRozdelenia, "starsi">, p: Player
   return overRozdelenie(state, p, marker, body, []).esteSaDa.length > 0;
 }
 
-/** Starší, pri ktorých sa na body ešte dá akcia rozdelenia (zajatie / presvedčenie) aj s dotiahnutím na červenú. */
+/** Starší, pri ktorých sa na body ešte dá akcia rozdelenia (zajatie; presvedčenie aj s dotiahnutím rečí na červenú). */
 export function moznostiAkcie(state: Pick<StavRozdelenia, "starsi">, p: PlayerId, marker: DruhMarkera, body: number): readonly string[] {
   return state.starsi.filter((e) => {
     const c = cenaAkcieUplna(e, p, marker);
@@ -220,11 +229,13 @@ export function moznostiAkcie(state: Pick<StavRozdelenia, "starsi">, p: PlayerId
 }
 
 /**
- * Zdvihy, ktoré akcie vyžadujú — marker každého staršieho v akciách dotiahnutý na červenú
- * (ak tam ešte nie je). Klient ich pridá, keď hráč klikne Zajať či Presvedčiť.
+ * Zdvihy, ktoré akcie vyžadujú — reči každého staršieho v presvedčeniach dotiahnuté na
+ * červenú (ak tam ešte nie sú). Zajatie nevyžaduje nič: strach je na červenej už pred
+ * rozdelením (v11.6). Klient ich pridá, keď hráč klikne na pečiatku.
  */
 export function zdvihyPreAkcie(state: Pick<StavRozdelenia, "starsi">, p: PlayerId, marker: DruhMarkera, akcie: readonly string[]): readonly Zdvih[] {
   const out: Zdvih[] = [];
+  if (marker === "strach") return out;
   for (const id of akcie) {
     const e = state.starsi.find((x) => x.elderId === id);
     if (e !== undefined && stupenOdkial(e, p, marker) < CERVENA) out.push({ elderId: id, na: CERVENA });

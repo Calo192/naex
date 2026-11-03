@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.5 (platné od 2026-11-03)** — Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.6 (platné od 2026-11-03)** — Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,16 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.6 oproti v11.5** (Michal 2026-11-03, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.6):
+
+- **Zajatie len staršieho na červenej od minulého kola** (§9.4, §10): zajať smieš len staršieho, pri ktorom
+  je tvoj strach na červenej **už pred touto Nakladačkou**. Dotiahnuť strach na červenú a v tom istom
+  rozdelení zajať (zo strachu 2 za 3 + 5) už nejde. Presvedčenie sa nemení — reči sa smú dotiahnuť na
+  červenú v tom istom rozdelení hádky.
+- **Pečiatka namiesto tlačidiel** (hra): pri tvojom rozdelení sa na staršom, pri ktorom sa akcia na tvoje
+  body dá, ukáže pečiatka **ZAJAŤ** (Nakladačka) či **PRESVEDČIŤ** (hádka) s cenou; klik ju potvrdí
+  (ZAJATÝ / PRESVEDČENÝ), ďalší klik ju vráti.
 
 **Zmeny v11.5 oproti v11.4** (Michal 2026-11-03, Zrejúca, „Identita kariet“, docs/napady/identita-kariet;
 staré znenia v `docs/pravidla-historia.md`, sekcia v11.5):
@@ -1053,7 +1063,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 4b | **Starší bodujú** (stav pred zdvihnutím): víťaz za každého staršieho za svoj najvyšší marker (reči, ak ich má, inak strach), porazený a pri sekere obaja len za reči — žltá 1, oranžová 3, červená 5; reči, ktoré bodovali, klesnú o stupeň | §10, §14 |
 | 4c | **Výhra strachom:** víťaz s červeným strachom u aspoň 4 starších (väzni sa rátajú) vyhráva — hra končí | §1, §10 |
 | 4d | Exekúcia (Michal 2026-10-28): Robota (aj z priazne Robota, v9), potom Exekútor každému s priznaným Dlhom — Dlhy a špaky (Advokát ich uberie); Záhradkár ju obíde | §11 |
-| 4e | **Nakladačka** — víťaz bitky ju rozdelí na svoj strach a smie **zajímať** (5 bodov za staršieho na červenom strachu; väzeň, krádež, výhra väzňami hneď); potom **hádka** — víťaz hádky ju rozdelí na svoje reči a smie **presviedčať** (5 bodov, v11.4) — voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4, §10 |
+| 4e | **Nakladačka** — víťaz bitky ju rozdelí na svoj strach a smie **zajímať** (5 bodov za staršieho na červenom strachu už pred touto Nakladačkou, v11.6; väzeň, krádež, výhra väzňami hneď); potom **hádka** — víťaz hádky ju rozdelí na svoje reči a smie **presviedčať** (5 bodov, v11.4) — voľne medzi starších, 1 / 2 / 3 za stupeň, zvyšok prepadne; vo finále sa nerozdeľujú — špaky 1 : 1 dostali v kroku 4a | §9.1, §9.4, §10 |
 | 5 | Poldeci (aj Na zdravie „do dna“) | §9.5 |
 | 5b | Veštica | §9.5b |
 | 6 | Cintorín (Nástroj do Dedičstva porazenému) | §15 |
@@ -1188,9 +1198,9 @@ nemení roly (útočník ostáva útočníkom); bez Nakladačky sa nezajíma (§
    boduje až v ďalšej bitke.
 5. Rozdelenie (Nakladačka aj hádka) je **jeden ťah**: pri ktorom staršom na ktorý stupeň a koho
    zajímaš (Nakladačka) či presviedčaš (hádka).
-6. **Zajatie** (v11.4, §10): za **5 bodov** Nakladačky smie víťaz zajať staršieho, pri ktorom má strach
-   na červenej (dotiahnuť ho tam smie v tom istom rozdelení). Dobrovoľné, viac naraz smie byť; do „rozdelí
-   sa, čo sa dá“ sa nerátajú. Keď Nakladačka inak nemá kam, ale zajať sa dá, bitka na rozhodnutie počká.
+6. **Zajatie** (v11.4, v11.6, §10): za **5 bodov** Nakladačky smie víťaz zajať staršieho, pri ktorom má
+   strach na červenej **už pred touto Nakladačkou** (od minulého kola) — strach dotiahnutý na červenú
+   v tom istom rozdelení nestačí. Dobrovoľné, viac naraz smie byť; do „rozdelí sa, čo sa dá“ sa nerátajú. Keď Nakladačka inak nemá kam, ale zajať sa dá, bitka na rozhodnutie počká.
 
 **Nakladačka vo finále → špaky 1 : 1** (v9.1): markery sa vo finále nedvíhajú — **víťaz finále
 dostane za každý bod Nakladačky 1 špak** spolu so špakmi za bitku (krok 4a). Pri sekere vo finále
@@ -1318,9 +1328,22 @@ vydesený a funguje jeho jednorazový efekt raz za hru.“ „Cena zajímania v 
 **Kedy a kto.** Pri rozdelení Nakladačky (krok 4e, §9.4) — teda len víťaz bitky, ktorý ju drží.
 Vo finále nie (Nakladačka ide na špaky 1 : 1, §14b); pri sekere Nakladačka nie je.
 
-**Podmienka a cena.** **Tvoj strach** pri staršom je **3** (červená); súperov strach nerozhoduje.
-Zajatie stojí **5 bodov** Nakladačky (`KONSTANTY.CENA_ZAJATIA`). Na červenú sa smieš dotiahnuť v tom
-istom rozdelení za bežnú cenu — zo strachu 2 teda 3 + 5 = 8 (výklad Leadera, na potvrdenie Michalom).
+**Podmienka a cena.** **Tvoj strach** pri staršom je **3** (červená) **už pred touto Nakladačkou** —
+teda od minulého kola, lebo strach dvíha len Nakladačka a tá je raz za kolo (v11.6). Strach dotiahnutý
+na červenú v tom istom rozdelení nestačí; zajať ho smieš až pri ďalšej Nakladačke, ak tam vydrží.
+Súperov strach nerozhoduje. Zajatie stojí **5 bodov** Nakladačky (`KONSTANTY.CENA_ZAJATIA`).
+
+**V hre** (v11.6): pri tvojom rozdelení Nakladačky sa na staršom, ktorého zajať smieš a na ktorého ti
+body stačia, ukáže pečiatka **ZAJAŤ −5**; klik ju potvrdí (**ZAJATÝ**), ďalší klik ju vráti. Inak
+pečiatka na stole nie je.
+
+Michal 2026-11-03 (v11.6): „Tieto buttony zajatia sú na hovno. Chcem, aby zajatie bolo zobrazené až keď má
+starší na sebe strach v červenej hodnote teplomera. Potom sa cez neho zobrazí pečiatka ZAJAŤ. Na ňu môže
+hráč kliknúť a to bude fungovať ako tieto tlačidlá, ktoré sú v hre teraz ... Zajať sa však NEDÁ v kole,
+kedy starší ešte nemal červený teplomer na stupnici u hráča, ktorý staršieho chce zajať. Na zajatie
+treba, aby starší bol na červenej predchádzajúce kolo A NÁSLEDNE ďalšie kolo ho môže hráč zajať. Nie je
+možný scenár, že napríklad starší je na žltej a hráč ho hneď vytlačí hore a hneď aj zajme v tom istom
+kole.“
 
 **Dobrovoľné, aj viac naraz.** Zajať nemusíš; „rozdelí sa, čo sa dá“ (§9.4) sa na zajatie nevzťahuje.
 Za každých 5 bodov smieš zajať ďalšieho staršieho na červenej. Zvyšok Nakladačky sa rozdelí ďalej podľa
@@ -1381,9 +1404,13 @@ LEN ak má súper vyššiu hodnotu strachu ako ja. … markery strachu ostanú n
 
 - **Kedy a kto:** pri rozdelení hádky (krok 4e, §9.1) — len víťaz hádky. Vo finále nie.
 - **Podmienka:** pri staršom má **súper vyšší strach ako ty** (starší ti dáva priazeň) a tvoje **reči sú
-  na červenej** (vrchol stupnice). Smieš ich tam dotiahnuť v tom istom rozdelení za bežnú cenu.
+  na červenej** (vrchol stupnice). Smieš ich tam dotiahnuť v tom istom rozdelení za bežnú cenu — na rozdiel
+  od zajatia (v11.6), lebo reči po bodovaní vždy klesnú o stupeň.
 - **Cena:** **5 bodov** hádky (`KONSTANTY.CENA_PRESVEDCENIA`). Dobrovoľné, viac naraz smie byť; do „rozdelí
   sa, čo sa dá“ sa nerátajú.
+- **V hre** (v11.6): pri tvojom rozdelení hádky sa na staršom, ktorého presvedčiť smieš a na ktorého ti body
+  stačia, ukáže pečiatka **PRESVEDČIŤ** s celou cenou (s dotiahnutím rečí, napr. −8); klik ju potvrdí
+  (**PRESVEDČENÝ**) a reči dotiahne, ďalší klik ju vráti.
 - **Príklad (Michal):** súper strach 3, ty strach 2, hádka 10 → reči na červenú za 3 + presvedčenie 5,
   2 body inam.
 - **Následky:** tvoje **reči pri staršom zaniknú, strach oboch ostáva**. Starší ostáva na ukazovateli:
@@ -1406,8 +1433,8 @@ LEN ak má súper vyššiu hodnotu strachu ako ja. … markery strachu ostanú n
 
 - Priazeň **Robota** sú akcie Robota, takže na ne platí aj Fúrik (o 1 Dlh viac za kus).
 - **Zajatie a presvedčenie v jednom rozdelení:** najprv sa vyhodnotia zdvihy, potom akcie. Starší, ktorého
-  hráč zajíma či presviedča, je po zdvihoch na červenej — „rozdelí sa, čo sa dá“ ho pri zvyšku nevyžaduje
-  (po presvedčení na neho zvyšok tých istých bodov nejde, hoci reči zanikli).
+  hráč zajíma či presviedča, je na červenej (zajímaný už pred rozdelením, v11.6) — „rozdelí sa, čo sa dá“
+  ho pri zvyšku nevyžaduje (po presvedčení na neho zvyšok tých istých bodov nejde, hoci reči zanikli).
 
 ---
 
@@ -1892,7 +1919,7 @@ bitky, Noviny hneď po rozhodnutí hádky, Kôň v kroku Exekútora. Michal ich 
 | Reči | druhý marker hráča pri staršom na tej istej stupnici, vždy nad jeho strachom; dvíha ich hádka a Predsedova vila, bodujú aj porazenému, po bodovaní klesnú o stupeň, priazeň nedávajú (§10, v11) |
 | Strach | marker hráča pri staršom 0–3 — ako veľmi sa ho starší bojí; neklesá; dvíha ho Nakladačka; priazeň = strach súpera − tvoj strach (§10, v11) |
 | Partia | všetky karty natočené k hráčovi (jeho karty), na ktorejkoľvek strane (§6) |
-| Zajatie | pri rozdelení Nakladačky za 5 bodov staršieho, pri ktorom je tvoj strach 3 (dotiahnuť smieš v tom istom rozdelení): väzeň, krádež špakov; vo finále nie (§9.4, §10, v11.4; v9–v11.3 pokus o zajatie v drafte) |
+| Zajatie | pri rozdelení Nakladačky za 5 bodov staršieho, pri ktorom je tvoj strach 3 už pred touto Nakladačkou (od minulého kola; dotiahnutý v tom istom rozdelení nestačí, v11.6): väzeň, krádež špakov; vo finále nie (§9.4, §10, v11.4; v9–v11.3 pokus o zajatie v drafte) |
 | Presvedčenie | pri rozdelení hádky za 5 bodov staršieho, pri ktorom má súper vyšší strach, keď sú tvoje reči na červenej: reči zaniknú, priazeň ostáva, jeho karta natrvalo do tvojho balíčka; kto prvý, toho je (§9.1, §10, v11.4) |
 | Väzeň | zajatý starší v priznaných kartách držiteľa („v pivnici“) — nedáva priazeň ani strach, držiteľ má jeho schopnosť (raz za hru); ráta sa ako jeho červená; väzni na výhru podľa ligy (2 / 3 / 4); pri zajatí krádež špakov (v11) |
 | Boss | karta staršieho: 6 akcií, 2 blokované sloty, 1 neresť; v línii len akcie; do balíčka hráča ju dá presvedčenie (§10, §16) |

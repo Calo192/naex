@@ -209,7 +209,9 @@ describe("nápovedy — zajatie a presvedčenie (v11.4)", () => {
     expect(ids(rozdelenie("prebytok", [3, 0]), 0)).toContain("patronat");
     expect(ids(rozdelenie("prebytok", [3, 0]), 1)).not.toContain("patronat");
     expect(ids(rozdelenie("prebytok", [2, 0]), 0)).not.toContain("patronat");
-    expect(ids(rozdelenie("prebytok", [2, 0], 8), 0)).toContain("patronat");
+    // v11.6: strach dotiahnutý v tej istej Nakladačke nestačí — nápoveda sa neukáže ani s 8 bodmi.
+    expect(ids(rozdelenie("prebytok", [2, 0], 8), 0)).not.toContain("patronat");
+    expect(ids(rozdelenie("prebytok", [3, 0], 4), 0)).not.toContain("patronat");
   });
 
   it("presvedcenie: pri rozdelení hádky, keď sa súpera starší bojí viac a reči sa dajú dotiahnuť na červenú", () => {

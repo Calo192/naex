@@ -74,7 +74,10 @@ describe("scenár zajatia — tok v jadre (§10, v11.4)", () => {
     const s = hrajKym(s0, (x) => x.faza === "bitka" && krokRozdelenia(x, 0) === "prebytok" && moznostiAkcie(x, 0, "strach", bodyRozdelenia(x, 0)).length > 0);
     if (s.koniec !== null || krokRozdelenia(s, 0) !== "prebytok") return null;
     const ciel = moznostiAkcie(s, 0, "strach", bodyRozdelenia(s, 0))[0]!;
+    // v11.6: zajať sa dá len staršieho, ktorý bol na červenej už pred touto Nakladačkou — nič sa nedoťahuje.
+    expect(strachZ(s.starsi.find((e) => e.elderId === ciel)!, 0)).toBe(3);
     const zdvihy = kandidatiRozdelenia(s, 0, "strach", bodyRozdelenia(s, 0), 4, [ciel])[0]!;
+    expect(zdvihy.some((z) => z.elderId === ciel)).toBe(false);
     const po = apply(data, s, { type: "prebytok", zdvihy, zajatia: [ciel] }, 0).state;
     expect(po.vazni.find((v) => v.elderId === ciel)?.hrac).toBe(0);
     expect(po.starsi.some((e) => e.elderId === ciel)).toBe(false);

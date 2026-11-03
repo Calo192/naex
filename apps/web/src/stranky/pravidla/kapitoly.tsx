@@ -265,7 +265,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>
             <strong>Zajatie</strong> — kto rozdeľuje Nakladačku, zajme za <strong>5 bodov</strong> staršieho, pri ktorom má svoj{" "}
-            <strong>strach na červenej</strong>; dotiahnuť ho tam smie v tom istom rozdelení (zo strachu 2 teda 3 + 5). Smie aj viac naraz
+            <strong>strach na červenej už pred touto Nakladačkou</strong> — teda od minulého kola; strach dotiahnutý na červenú v tom
+            istom rozdelení nestačí. Na stole sa pri takom staršom ukáže pečiatka <strong>ZAJAŤ</strong>. Smie aj viac naraz
             a nemusí. Starší je jeho <P k="vazen">väzeň</P>: leží medzi jeho priznanými kartami, zo stupnice zmizne a súper mu odovzdá
             špaky za svoj najvyšší marker pri ňom (žltá 1, oranžová 3, červená 5), najviac koľko má. Väzeň sa ráta ako červená
             a má <a href="#schopnost-vazna">schopnosť</a>. Väzni na výhru podľa ligy — Tretia 2, Druhá 3, Prvá 4 — končia hru hneď.
@@ -273,7 +274,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             <strong>Presvedčenie</strong> — kto rozdeľuje hádku, presvedčí za <strong>5 bodov</strong> staršieho, ktorý sa{" "}
             <strong>súpera bojí viac než jeho</strong>, keď má pri ňom <strong>reči na červenej</strong> (dotiahnuť ich smie v tom istom
-            rozdelení). Jeho reči zaniknú, strach oboch a priazeň ostávajú. <strong>Karta staršieho ide do jeho ruky a natrvalo patrí
+            rozdelení; na stole pečiatka <strong>PRESVEDČIŤ</strong>). Jeho reči zaniknú, strach oboch a priazeň ostávajú. <strong>Karta staršieho ide do jeho ruky a natrvalo patrí
             do jeho balíčka</strong> — hrá sa ako Starešina, len akcie; schopnosť väzňa nemá. Kto prvý presvedčí, toho je; zajať
             presvedčeného smú obaja — karta potom zmizne odkiaľkoľvek do pivnice.
           </li>

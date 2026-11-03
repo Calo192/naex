@@ -2288,16 +2288,14 @@
     {
       "id": "10.zajatie.podmienka",
       "paragraf": "10. Starší › Zajatie a väzeň",
-      "pravidlo": "Pokus o zajatie len na staršieho, ktorý sa hráča bojí na stupni 3; cena 1 cigareta prepadne; od v10.1 pred stavbou šenku a boss ide pokúšajúcemu do ruky; útočník, potom obranca; najviac jeden pokus za kolo, obaja smú (každý iného).",
+      "pravidlo": "Zajatie pri rozdelení Nakladačky (krok 4e) za 5 bodov len staršieho, pri ktorom je tvoj strach 3 už pred touto Nakladačkou (od minulého kola); strach dotiahnutý na červenú v tom istom rozdelení nestačí (v11.6). Presvedčenie smie reči dotiahnuť v tom istom rozdelení.",
       "stav": "pokryte",
       "testy": [
-        "packages/core/test/vazen.test.ts › pokus len na staršieho, ktorý sa ťa bojí na stupni 3; cigareta prepadne a boss ide pokúšajúcemu do ruky (v10.1)",
-        "packages/core/test/vazen.test.ts › každý najviac jeden pokus za kolo; obaja smú, každý iného staršieho; potom stavba šenku (v10.1)",
-        "packages/core/test/vazen.test.ts › bez cigarety pokus nie je — hra ho preskočí a dôvod povie len hráčovi",
-        "packages/core/test/elders.test.ts › zajať smie len hráč, ktorého sa starší bojí na stupni 3 (červená na súperovej polovici)",
-        "packages/core/test/vazen.test.ts › poradie: voľba cieľa → pokus o zajatie (útočník, potom obranca) → stavba šenku → branie → Zhromaždenie"
+        "packages/core/test/vazen.test.ts › v11.6: strach dotiahnutý na červenú v tej istej Nakladačke nestačí — zo strachu 2 ani s 8 bodmi nie",
+        "packages/core/test/vazen.test.ts › v11.6: strach na červenej z minulého kola — zajatie za 5 prejde, na 4 body nie",
+        "packages/core/test/vazen.test.ts › za 5 bodov: starší na červenom strachu ide do pivnice, markery zmiznú, súper odovzdá špaky za svoj najvyšší marker teraz"
       ],
-      "poznamka": "v9 (krok 2 revízie starších, Michal 2026-10-30); v10.1 pokus pred šenkom, boss pokúšajúcemu (Michal 2026-11-01) — na prejdenie rozhodcom."
+      "poznamka": "v9 pokus o zajatie (Michal 2026-10-30), v11.4 zajatie pri rozdelení Nakladačky, v11.6 červená od minulého kola (Michal 2026-11-03) — na prejdenie rozhodcom."
     },
     {
       "id": "10.zajatie.v-ohrozeni",

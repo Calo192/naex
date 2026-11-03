@@ -1,6 +1,6 @@
 // Zajatie a presvedčenie (pravidlá v11.4, Michal 2026-11-03, PRAVIDLA §10): pokus o zajatie
 // v drafte zanikol. Držiteľ Nakladačky smie pri jej rozdelení zajať staršieho, ktorý sa ho bojí
-// na červenej, za 5 bodov (dotiahnuť na červenú smie v tom istom rozdelení); víťaz hádky smie
+// na červenej už pred touto Nakladačkou (v11.6 — od minulého kola), za 5 bodov; víťaz hádky smie
 // pri jej rozdelení presvedčiť staršieho, pri ktorom má súper vyšší strach, keď má reči na
 // červenej, za 5 bodov — karta staršieho mu natrvalo patrí. Vo finále ani jedno.
 // Očakávané hodnoty sú z pravidla, nie z kódu.
@@ -21,6 +21,8 @@ import {
   majitelPresvedcenej,
   metrika,
   moznostiAkcie,
+  cenaAkcieUplna,
+  zdvihyPreAkcie,
   naTahu,
   naladaMomentu,
   priazenHraca,
@@ -155,16 +157,27 @@ describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
     expect(t.bitkaStav?.zajatia ?? []).toEqual([]);
   });
 
-  it("na červenú sa smie dotiahnuť v tom istom rozdelení: zo strachu 2 za 3 + 5 = 8; so 7 bodmi nie", () => {
+  it("v11.6: strach dotiahnutý na červenú v tej istej Nakladačke nestačí — zo strachu 2 ani s 8 bodmi nie", () => {
     const s = vRozdeleni("prebytok", 0, 8, { 0: { strach: [2, 0] } });
-    expect(moznostiAkcie(s, 0, "strach", 8)).toContain(id(0));
-    expect(moznostiAkcie(s, 0, "strach", 7)).not.toContain(id(0));
-    // Bez dotiahnutia na červenú zajatie nejde.
-    expect(() => apply(data, s, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0)).toThrow(/červenej/);
-    const t = apply(data, s, { type: "prebytok", zdvihy: [{ elderId: id(0), na: 3 }], zajatia: [id(0)] }, 0).state;
+    expect(moznostiAkcie(s, 0, "strach", 8)).toEqual([]);
+    expect(cenaAkcieUplna(elder(s, 0)!, 0, "strach")).toBeNull();
+    expect(zdvihyPreAkcie(s, 0, "strach", [id(0)])).toEqual([]);
+    expect(() => apply(data, s, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0)).toThrow(/od minulého kola/);
+    expect(() => apply(data, s, { type: "prebytok", zdvihy: [{ elderId: id(0), na: 3 }], zajatia: [id(0)] }, 0)).toThrow(/od minulého kola/);
+    expect(legalCommands(data, s, 0).some((c) => c.type === "prebytok" && (c.zajatia?.length ?? 0) > 0)).toBe(false);
+    // Dotiahnutie bez zajatia ostáva — strach na červenej, zajať sa dá až v ďalšej Nakladačke.
+    const t = apply(data, vRozdeleni("prebytok", 0, 3, { 0: { strach: [2, 0] } }), { type: "prebytok", zdvihy: [{ elderId: id(0), na: 3 }] }, 0).state;
+    expect(elder(t, 0)?.strach[0]).toBe(3);
+    expect(t.vazni).toEqual([]);
+  });
+
+  it("v11.6: strach na červenej z minulého kola — zajatie za 5 prejde, na 4 body nie", () => {
+    const s = vRozdeleni("prebytok", 0, 5, { 0: { strach: [3, 0] } });
+    expect(cenaAkcieUplna(elder(s, 0)!, 0, "strach")).toBe(5);
+    expect(moznostiAkcie(s, 0, "strach", 5)).toEqual([id(0)]);
+    expect(moznostiAkcie(s, 0, "strach", 4)).toEqual([]);
+    const t = apply(data, s, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0).state;
     expect(t.vazni.map((v) => v.elderId)).toEqual([id(0)]);
-    const s7 = vRozdeleni("prebytok", 0, 7, { 0: { strach: [2, 0] } });
-    expect(() => apply(data, s7, { type: "prebytok", zdvihy: [{ elderId: id(0), na: 3 }], zajatia: [id(0)] }, 0)).toThrow(/stojí 8/);
   });
 
   it("viac zajatí v jednom rozdelení; zvyšok sa rozdelí ďalej (rozdeľ, čo sa dá) a prepadne, čo sa nedá", () => {
