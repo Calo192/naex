@@ -88,6 +88,29 @@ export interface Povaha {
   readonly prahStarsi: number;
   /** Rozdiel hodnôt, pod ktorým sú ťahy „rovnako dobré“ a vyberá medzi nimi náhodne. */
   readonly nahodnost: number;
+  // Páky štýlu (Michal 2026-11-03) — bez nich hrá povaha ako doteraz.
+  /** Hodnota každého bodu vlastného tuhého poškodenia v línii navyše (Igor: bije, kde sa dá). */
+  readonly tuhe?: number;
+  /** Násobok stávky bitky vo finále; inde platí `bitka` (Rudo: prežiť, rozhodnúť na konci). */
+  readonly bitkaFinale?: number;
+  /** Hodnota karty v ruke navyše pred finále (Rudo: karty šetrí na posledné kolo). */
+  readonly ruka?: number;
+  /** Hodnota každého poldeci navyše, plného aj vypitého; plný ešte raz (Rudo: nalieva). */
+  readonly poldeci?: number;
+  /** Násobok hádky — reči pri starších bodujú aj porazenému (Božena: Viera a Povery). */
+  readonly hadka?: number;
+  /** Súperove kliatby (Dlh, pečeň, Absťák) navyše k `kliatby` (Darina: škodí súperovi). */
+  readonly skoda?: number;
+}
+
+/** Násobok bitky — vo finále bitkaFinale, ak ho povaha má. */
+function nasobokBitky(k: Kontext, s: GameState): number {
+  return jeFinale(s) ? (k.povaha.bitkaFinale ?? k.povaha.bitka) : k.povaha.bitka;
+}
+
+/** Násobok kliatieb hráča p z pohľadu bota — súperove ťažia škodcu viac. */
+function nasobokKliatieb(k: Kontext, p: PlayerId): number {
+  return k.povaha.kliatby + (p === k.ja ? 0 : (k.povaha.skoda ?? 0));
 }
 
 export const POVAHY: readonly Povaha[] = [
@@ -126,6 +149,61 @@ export const POVAHY: readonly Povaha[] = [
     prahRiziko: 0.6,
     prahStarsi: 1.5,
     nahodnost: 0.1,
+  },
+  // Nové povahy (Michal 2026-11-03) — každá hrá jeden štýl.
+  {
+    id: "igor",
+    meno: "Bot Igor",
+    popis: "Útočník — dáva čo najviac tuhého poškodenia, bije sa o každú lokalitu.",
+    bitka: 1.4,
+    body: 0.8,
+    zdroje: 0.8,
+    kliatby: 0.6,
+    prahRiziko: -0.4,
+    prahStarsi: -0.3,
+    nahodnost: 0.15,
+    tuhe: 0.6,
+  },
+  {
+    id: "rudo",
+    meno: "Bot Rudo",
+    popis: "Zberač — hromadí cigarety, karty a poldeci, prvé kolá prežije a všetko nasadí vo finále.",
+    bitka: 0.6,
+    body: 1,
+    zdroje: 1.6,
+    kliatby: 1,
+    prahRiziko: 0.4,
+    prahStarsi: 1,
+    nahodnost: 0.1,
+    bitkaFinale: 1.6,
+    ruka: 0.5,
+    poldeci: 0.6,
+  },
+  {
+    id: "bozena",
+    meno: "Bot Božena",
+    popis: "Veriaca — hrá na Vieru a Povery, boduje u starších rečami, aj keď bitku prehrá.",
+    bitka: 0.8,
+    body: 1.5,
+    zdroje: 1,
+    kliatby: 1.1,
+    prahRiziko: 0.3,
+    prahStarsi: 0,
+    nahodnost: 0.1,
+    hadka: 2,
+  },
+  {
+    id: "darina",
+    meno: "Bot Darina",
+    popis: "Škodkyňa — súperovi aktivuje Pečeň a Dlhy a cez NA EX ho zadlží a opije.",
+    bitka: 0.9,
+    body: 1,
+    zdroje: 1,
+    kliatby: 1,
+    prahRiziko: -0.2,
+    prahStarsi: 0.5,
+    nahodnost: 0.15,
+    skoda: 1.5,
   },
 ];
 
@@ -532,12 +610,14 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
   const sanca = 1 / (1 + Math.exp(-ostrost * m));
   // Vo finále je Nakladačka priamo špaky (v9.1) — bez stropu, každý bod rozdielu sa ráta.
   const prebytok = jeFinale(s) ? celk : Math.max(-PREBYTOK_STROP, Math.min(PREBYTOK_STROP, celk));
-  let v = k.povaha.bitka * (k.stavka * (sanca - 0.5) + kartyVStavke(s, q, sanca) + cenaBoduPrebytku(s) * prebytok);
+  const bitka = nasobokBitky(k, s);
+  let v = bitka * (k.stavka * (sanca - 0.5) + kartyVStavke(s, q, sanca) + cenaBoduPrebytku(s) * prebytok);
+  v += (k.povaha.tuhe ?? 0) * dmg.tuhe[q];
 
   // Hádka (v11): víťaz ju po bitke rozdelí na svoje reči (vo finále špaky 1 : 1) — v bitke
   // ju bot ráta presne (najlepsi). Kým bitka nezačala, ide z línie.
   if (s.faza === "zhromazdenie" || s.faza === "pitka") {
-    v += k.povaha.bitka * cenaBoduHadky(s) * Math.max(-HADKA_STROP, Math.min(HADKA_STROP, dmg.makke[q] - dmg.makke[o]));
+    v += bitka * (k.povaha.hadka ?? 1) * cenaBoduHadky(s) * Math.max(-HADKA_STROP, Math.min(HADKA_STROP, dmg.makke[q] - dmg.makke[o]));
   }
 
   // Akcie, ktoré sa vyhodnotia až v Pitke — po nej už sú v stave.
@@ -560,7 +640,7 @@ function hodnotaBitky(k: Kontext, s: GameState, q: PlayerId, ostrost: number): n
       const prah = prahyHraca(data, s, p).cirhoza;
       const pecen = h.pecen + (sp.PoškodeniePečene ?? 0) + (sp.Poldeci ?? 0);
       const blizko = pecen % prah === prah - 1 ? 0.4 : 0;
-      w -= k.povaha.kliatby * (1.5 * (sp.Dlh ?? 0) + 0.15 * pecen + blizko);
+      w -= nasobokKliatieb(k, p) * (1.5 * (sp.Dlh ?? 0) + 0.15 * pecen + blizko);
       w -= cenaNovejCirhozy(k, s) * Math.floor(pecen / prah);
       v += p === q ? w : -w;
     }
@@ -578,12 +658,14 @@ function hodnotaZdrojov(k: Kontext, s: GameState, p: PlayerId): number {
   v += 0.3 * h.cigarety * f;
   v += 0.3 * h.ruka.length * f;
   v *= k.povaha.zdroje;
+  if (!jeFinale(s)) v += (k.povaha.ruka ?? 0) * h.ruka.length;
+  v += (k.povaha.poldeci ?? 0) * (2 * h.poldeciPlne + h.poldeciVypite);
   // Absťák (v9.1): karta v balíčku — o ranu menej v každej bitke a mŕtvy ťah.
   let postih = 0.7 * verejneAbstaky(s, p);
   // Priznaný Dlh: remíza v bitke; špaky, ktoré zhoria pri exekúcii, ráta rozdielBodov.
   postih += 0.3 * prahyHraca(k.data, s, p).priznaneDlhy;
   postih += hrozbaAbstaku(k, s, p);
-  v -= k.povaha.kliatby * postih;
+  v -= nasobokKliatieb(k, p) * postih;
   // Tenký balíček už neprehráva (v5), len sa z neho nedá fajčiť ani ťahať.
   const balicek = h.doberaci.length + h.odhadzovaci.length + h.ruka.length + partiaHraca(s, p).length;
   if (balicek < TENKY_BALICEK) v -= (TENKY_BALICEK - balicek) * 0.5;
@@ -744,7 +826,7 @@ function hodnotaVysledku(k: Kontext, s: GameState, b: NonNullable<GameState["bit
   const prebytok = drzi === null ? 0 : (drzi === ja ? 1 : -1) * Math.min(PREBYTOK_STROP, b.prebytokZostava);
   const hd = b.hadka;
   const hadka = hd === undefined || hd.vitaz === null ? 0 : (hd.vitaz === ja ? 1 : -1) * Math.min(HADKA_STROP, hd.zostava);
-  return k.povaha.bitka * (cenaBoduPrebytku(s) * prebytok + cenaBoduHadky(s) * hadka);
+  return nasobokBitky(k, s) * (cenaBoduPrebytku(s) * prebytok + (k.povaha.hadka ?? 1) * cenaBoduHadky(s) * hadka);
 }
 
 /**
