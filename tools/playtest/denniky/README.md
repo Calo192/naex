@@ -1,0 +1,36 @@
+# Strategické denníky štýlov
+
+Každý herný štýl z `../styly.json` má jeden denník (`<kluc>.md`). Hráč štýlu
+(`naex-hrac-stylu`, skill `naex-styly`) ho číta pred partiou a **sám ho
+prepisuje** po partii — je to jeho laboratórny zošit, z ktorého sa učí hrať
+svoj charakter lepšie (Michal 2026-11-03). Štýl nedostal zoznam kariet;
+nástroje si hľadá sám a zisťuje experimentmi, čo funguje.
+
+| Kto | Čo smie |
+|---|---|
+| hráč štýlu | čítať **len svoj** denník (cudzí by mu prezradil súperov plán); po partii ho aktualizovať |
+| sudca štýlov (`naex-sudca-stylov`) | čítať všetky; pod položku pridať `> Sudca <dátum>: …`, keď stojí na zle pochopenom pravidle alebo na čísle, ktoré partia neukázala. Stratégiu neprepisuje. |
+| organizátor | commitnúť denníky spolu s reportom |
+
+Každý štýl hrá v turnuse najviac raz, takže dvaja hráči do jedného denníka
+naraz nepíšu.
+
+## Štruktúra denníka
+
+1. **Aktuálna stratégia** — ako štýl teraz chce vyhrať (najviac ~1 strana),
+   po každej partii prepísaná podľa toho, čo sa naučil. Verzia pravidiel.
+2. **Nástroje** — karty, akcie, lokality, priazne, väzni, mechanizmy aj
+   nezvyčajné použitia, ktoré slúžia charakteru. Každý:
+   `- **<nástroj>** — ako slúži charakteru · stav: kandidát | sľubný | overený | zavrhnutý | podmienený (<kedy>) · dôkaz: <partia, kolo, čísla> · pravidlá: vN`
+3. **Experimenty** — `### E<n> · <hypotéza „Keď X, spravím Y, čakám Z“>`,
+   pod tým `- partie:`, `- výsledok: funguje | nefunguje | nejasné | závisí od …`,
+   `- čísla:`, `- čo ďalej:`, `- pravidlá: vN`. Číslo rastie, staré sa nemažú,
+   len uzavrú.
+4. **Nápady na vyskúšanie** — zásobník budúcich experimentov, najsľubnejší hore.
+5. **Čo štýlu chýba v hre** — miesta, kde charakter nemal žiadny dobrý ťah
+   (podklad pre návrhy zmien pravidiel a kariet).
+6. **Partie** — jeden riadok za partiu: dátum, id, súper, výsledok, špaky,
+   čo sa skúšalo.
+
+Pri novej verzii pravidiel (`VERZIA_PRAVIDIEL`) hráč pri príprave prejde
+položky so staršou verziou a označí, čo treba overiť znova.

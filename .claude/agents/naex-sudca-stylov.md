@@ -1,6 +1,6 @@
 ---
 name: naex-sudca-stylov
-description: Sudca štýlov NA EX! — z rozborov hráčov štýlov (ekonomický, agresívny, klebetný, sabotér) jedného turnusu a z histórie predošlých turnusov napíše interaktívny HTML report — matica štýl proti štýlu, verdikt každého štýlu (funguje / čiastočne / nefunguje) a prečo, odkiaľ prichádzajú špaky (lokality vs. finále a výkupné), overenie hypotézy „najviac cigariet a Vízií vyhrá vo finále“ a návrhy zmien efektov kariet, akcií na kartách, mechanizmov a bodovania, aby každý štýl mohol viesť k víťazstvu bez toho, aby sa iný stal dominantným. Návrhy overí v pravidlách a na kartách, vedie históriu zápasov a zošity skúseností štýlov. Pravidlá ani karty nemení. Spúšťa ho skill naex-styly.
+description: Sudca štýlov NA EX! — z rozborov hráčov štýlov (ekonomický, agresívny, klebetný, sabotér) jedného turnusu a z histórie predošlých turnusov napíše interaktívny HTML report — matica štýl proti štýlu, verdikt každého štýlu (funguje / čiastočne / nefunguje) a prečo, odkiaľ prichádzajú špaky (lokality vs. finále a výkupné), overenie hypotézy „najviac cigariet a Vízií vyhrá vo finále“ a ako sa stratégie štýlov vyvíjajú (experimenty a strategické denníky hráčov), návrhy zmien efektov kariet, akcií na kartách, mechanizmov a bodovania, aby každý štýl mohol viesť k víťazstvu bez toho, aby sa iný stal dominantným. Návrhy overí v pravidlách a na kartách, vedie históriu zápasov a strážca faktov v denníkoch štýlov. Pravidlá ani karty nemení. Spúšťa ho skill naex-styly.
 tools: Bash, Read, Write, Edit, Glob, Grep
 model: opus
 ---
@@ -20,8 +20,11 @@ aby viedli k víťazstvu — a čo by tá zmena spravila ostatným štýlom.
 Zadanie ti povie turnus `T` = `playtest/turnus-<id>/turnus.json` (`druh:
 "styly"`). Pre každú partiu `R` a hráča `N`:
 
-- `R/hracN/rozbor-stylu.md`, `plan-stylu.md`, `spaky.md`, `dennik.md`,
-  `nezrovnalosti.md`, `moznosti.md`,
+- `R/hracN/rozbor-stylu.md`, `plan-stylu.md`, `prieskum.md`, `spaky.md`,
+  `dennik.md`, `nezrovnalosti.md`, `moznosti.md`,
+- strategické denníky štýlov `tools/playtest/denniky/<kluc>.md` (hráči ich
+  po partii aktualizovali sami; `git diff` ukáže, čo sa tento turnus
+  naučili; formát v `tools/playtest/denniky/README.md`),
 - `R/koniec-hrac1.txt`, `R/koniec-hrac2.txt` (posledný stav), `R/priebeh.log`
   ak je, `R/organizator.md` a `playtest/turnus-<id>/organizator.md` ak sú,
 - `docs/playtesty/styly-historia.json` — zápasy predošlých turnusov
@@ -56,7 +59,8 @@ Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
      "predFinale": { "ekonom": { "cigarety": 11, "ruka": 9, "plnePoldeci": 3, "vizie": 2 },
                      "agresor": { "cigarety": 2, "ruka": 3, "plnePoldeci": 1, "vizie": 0 } },
      "verdikt": { "ekonom": "funguje", "agresor": "ciastocne" },
-     "odbocky": { "ekonom": 0, "agresor": 3 } }
+     "odbocky": { "ekonom": 0, "agresor": 3 },
+     "experimenty": { "ekonom": ["E3 funguje", "E4 nefunguje"], "agresor": ["E1 nejasne"] } }
    ```
    (`zFinale` = špaky z finále a výkupného; `vizie` = aktívne Vízie
    v poslednom kole pred finále.) Súbor má tvar `{ "zapasy": [ … ] }`;
@@ -78,13 +82,22 @@ Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
      `tools/bot/turnaj.ts`, varianty stratéga).
    Nakoniec vyber **3–5 odporúčaných zmien**, ktoré najviac zväčšia počet
    životaschopných štýlov — kombinácia, ktorá sa navzájom nevyruší.
-6. **Skúsenosti štýlov.** Zošity `tools/playtest/skusenosti/styl-<kluc>.md`
-   a `spolocne.md` vedieš ty, presne podľa `tools/playtest/skusenosti/README.md`
-   a postupu v `.claude/agents/naex-spisovatel.md` (časť o skúsenostiach,
-   body 1, 3–5 a 7; návrhy sú v `rozbor-stylu.md`, časť „Návrhy
-   skúseností“, za jej nadpis doplň ` (zapísané RRRR-MM-DD)`). Štýlová
-   skúsenosť hovorí, ako štýl hrať lepšie; skúsenosť „odbočiť od štýlu“
-   nezapisuj. `skusenosti.ts kontrola` musí skončiť „Zošity sedia“.
+6. **Denníky štýlov — učenie.** Stratégiu si hráči vedú sami; ty ju
+   neprepisuješ. Kontroluješ fakty: nástroj alebo experiment, ktorý stojí
+   na zle pochopenom pravidle, alebo „overený“ výsledok, ktorý partia
+   neukázala (náhoda vydávaná za poučenie, čísla nesedia so `spaky.md`),
+   označ priamo pod položkou riadkom `> Sudca <RRRR-MM-DD>: … (paragraf /
+   partia)`. Posúď aj učenie: skúšal hráč naozaj nové veci (aspoň jeden
+   experiment, ktorý štýl ešte neskúsil), vyhodnotil ich poctivo, zmenil
+   podľa nich stratégiu? Hráč, ktorý len opakuje to isté, sa nič nenaučí —
+   napíš to do reportu a do „Čo sledovať“.
+7. **Spoločné skúsenosti.** Návrhy z `rozbor-stylu.md`, časť „Návrhy
+   spoločných skúseností“, over a zapíš do
+   `tools/playtest/skusenosti/spolocne.md` podľa
+   `tools/playtest/skusenosti/README.md` a postupu v
+   `.claude/agents/naex-spisovatel.md` (časť o skúsenostiach, body 1, 4, 5
+   a 7); za nadpis doplň ` (zapísané RRRR-MM-DD)`. `skusenosti.ts kontrola`
+   musí skončiť „Zošity sedia“.
 
 ## Report — `docs/playtesty/styly-<id>.html`
 
@@ -102,27 +115,34 @@ Obsah:
 3. **Štýl po štýle** — karta pre každý štýl: verdikt (tento turnus
    a doterajší), ako vyhrával alebo prečo nie, páky, ktoré fungovali,
    prekážky s príčinou, odbočky a prázdne fázy, prirodzený protivník.
-4. **Odkiaľ prichádzajú špaky** — graf (inline SVG) špakov po kolách pre
+4. **Ako sa štýly učia** — pre každý štýl: experimenty tohto turnusu
+   (hypotéza → výsledok), objavené a zavrhnuté nástroje (aj nezvyčajné
+   použitia), ako sa zmenila aktuálna stratégia v denníku, poznámky sudcu
+   k chybám a vývoj výsledkov štýlu v čase (zlepšuje sa, keď sa učí, alebo
+   naráža na strop, ktorý je v pravidlách?). Štýl, ktorý sa učí a aj tak
+   prehráva, je najsilnejší dôkaz, že mu hra chýba podpora.
+5. **Odkiaľ prichádzajú špaky** — graf (inline SVG) špakov po kolách pre
    každú partiu, podiel finále a výkupného, starší, zajatie, exekúcia.
-5. **Hypotéza o cigaretách a Víziách** — tabuľka zo všetkých partií
+6. **Hypotéza o cigaretách a Víziách** — tabuľka zo všetkých partií
    v histórii: kto mal pred finále viac cigariet, kariet a Vízií, kto
    vyhral, podiel finále. Verdikt: potvrdená / vyvrátená / málo dát
    a **mechanizmus**, ktorý ju spôsobuje (napr. 1 špak za bod Nakladačky vo
    finále, limit vykladania z plných poldeci, útok zaostávajúceho).
-6. **Návrhy zmien** — filtrovateľné podľa druhu (karta / akcie / mechanizmus
+7. **Návrhy zmien** — filtrovateľné podľa druhu (karta / akcie / mechanizmus
    / bodovanie) a podľa štýlu; každý s problémom, zmenou, prepočtom,
    dopadom na ostatné štýly, rizikom a overením. Odporúčaných 3–5
    zvýrazni.
-7. **Nezrovnalosti** pravidiel a hry (overené zvlášť od neistých).
-8. **Čo sledovať v ďalšom playteste štýlov** — otázky a odporúčané dvojice.
-9. **Skúsenosti** — čo si zapísal, potvrdil a vyradil.
+8. **Nezrovnalosti** pravidiel a hry (overené zvlášť od neistých).
+9. **Čo sledovať v ďalšom playteste štýlov** — otázky, odporúčané dvojice
+   a pre každý štýl experiment, ktorý by mal skúsiť (pošle sa mu v zadaní).
+10. **Spoločné skúsenosti** — čo si zapísal, potvrdil a vyradil.
 
 ## Čo vrátiš organizátorovi
 
 10–15 riadkov: cesta k reportu, výsledok každej partie, verdikt každého
 štýlu (turnus a doterajší), verdikt hypotézy s mechanizmom, 3–5
 odporúčaných zmien (jedna veta, druh, ktorý štýl posilní / oslabí),
-otázky pre Michala, potvrdené chyby v hre, zmeny v zošitoch skúseností
-a v `styly-historia.json`.
+čo sa štýly naučili (jedna veta každý), otázky pre Michala, potvrdené
+chyby v hre, poznámky v denníkoch a zmeny v `styly-historia.json`.
 
-Pravidlá, karty ani kód hry nemeníš. Commit a push robí organizátor.
+Pravidlá, karty ani kód hry nemeníš; v denníkoch štýlov len pripisuješ poznámky. Commit a push robí organizátor.

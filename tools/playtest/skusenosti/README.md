@@ -9,7 +9,6 @@ poldeci, a v ďalšej partii si ho dokúpi za cigarety.
 | `<kluc>.md` (`jano`, `eva`, `fero`, `simon`, `hela`, `vilo` z `../hraci.json`) | playtester tej postavy | spisovateľ pri reporte |
 | `spolocne.md` — pravidlá a hra, platí pre všetkých | každý playtester aj protihráč | spisovateľ pri reporte |
 | `protihrac.md` — AI protihráč proti ľuďom (`naex-protihrac`) | protihráč | protihráč sám na konci partie |
-| `styl-<kluc>.md` (`ekonom`, `agresor`, `klebetnik`, `saboter` z `../styly.json`) — ako hrať herný štýl | hráč štýlu (`naex-hrac-stylu`, skill `naex-styly`) | sudca štýlov (`naex-sudca-stylov`) |
 
 Nováčikovia výučby (`naex-novacik`) zošity nečítajú. Majú byť vždy čerství.
 Playtester číta len svoj zošit a spoločný. Cudzí zošit by mu prezradil, ako

@@ -130,10 +130,7 @@ describe("zošity skúseností", () => {
   it(`skutočné zošity sedia s pravidlami Zrejúcej ${VERZIA_PRAVIDIEL} a Vypálenej (inak spusti skusenosti.ts over-verziu)`, () => {
     const subory = readdirSync(PRIECINOK).filter((f) => f.endsWith(".md") && f !== "README.md");
     const hraci = (JSON.parse(readFileSync(join(PRIECINOK, "..", "hraci.json"), "utf8")) as { hraci: { kluc: string }[] }).hraci;
-    const styly = (JSON.parse(readFileSync(join(PRIECINOK, "..", "styly.json"), "utf8")) as { styly: { kluc: string }[] }).styly;
-    expect(subory.map((f) => basename(f, ".md")).sort()).toEqual(
-      [...hraci.map((h) => h.kluc), ...styly.map((s) => `styl-${s.kluc}`), "protihrac", "spolocne"].sort(),
-    );
+    expect(subory.map((f) => basename(f, ".md")).sort()).toEqual([...hraci.map((h) => h.kluc), "protihrac", "spolocne"].sort());
     for (const f of subory) {
       expect(skontrolujZosit(readFileSync(join(PRIECINOK, f), "utf8"), basename(f, ".md"), hraneVerzie(nacitajVerzie()))).toEqual([]);
     }

@@ -161,8 +161,9 @@ tools/               import z tlačového PDF, piktogramy akcií
   playtest/            klient AI playtesterov; hraci.json = 6 postáv (štýl, zameranie),
                        turnus.ts = 1–3 partie naraz s náhodnými dvojicami,
                        tahak.md = ťahák pravidiel AI hráčov (jediné miesto, čísla stráži test)
-                       styly.json = 4 herné štýly (ekonóm, agresor, klebetník, sabotér) pre playtest
-                       štýlov — či každý štýl vie vyhrať (skill naex-styly, agenti naex-hrac-stylu,
-                       naex-sudca-stylov; história zápasov docs/playtesty/styly-historia.json)
+                       styly.json = 4 herné štýly ako charaktery (ekonóm, agresor, klebetník, sabotér)
+                       pre playtest štýlov — či každý štýl vie vyhrať (skill naex-styly, agenti
+                       naex-hrac-stylu, naex-sudca-stylov); denniky/<kluc>.md = strategický denník
+                       štýlu, ktorý si hráč sám vedie a zlepšuje experimentmi
   rozhodca/            mapa „paragraf PRAVIDLA.md → test“ agenta naex-rozhodca
 ```

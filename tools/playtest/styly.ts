@@ -21,8 +21,7 @@ interface Styl {
   readonly kluc: string;
   readonly nazov: string;
   readonly meno: string;
-  readonly ciel: string;
-  readonly disciplina: string;
+  readonly charakter: string;
 }
 
 interface ZapasHistorie {
@@ -128,6 +127,6 @@ console.log(`Turnus štýlov ${id}: ${partie.length} ${partie.length === 1 ? "pa
 for (const [i, p] of partie.entries()) {
   console.log(`\nPartia ${i + 1}: ${p.relacia} (${p.adresa}) — ${p.hrac1.nazov} proti ${p.hrac2.nazov}`);
   for (const [cislo, h] of [[1, p.hrac1], [2, p.hrac2]] as const) {
-    console.log(`  Hráč ${cislo}: ${h.meno} — štýl ${h.kluc} (${h.nazov})\n           Cieľ: ${h.ciel}\n           Zošit: tools/playtest/skusenosti/styl-${h.kluc}.md`);
+    console.log(`  Hráč ${cislo}: ${h.meno} — štýl ${h.kluc} (${h.nazov})\n           Charakter: ${h.charakter}\n           Denník: tools/playtest/denniky/${h.kluc}.md`);
   }
 }
