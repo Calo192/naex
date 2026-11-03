@@ -66,6 +66,28 @@
         "spak\\w* za vazn"
       ],
       "pozn": "8 / 6 / 4 / 2 zanikli v v11"
+    },
+    {
+      "pojem": "Kšeft väzňa",
+      "vzory": [
+        "kseft\\w* vazn"
+      ],
+      "pozn": "schopnosť väzňa raz za hru namiesto Kšeftu väzňa (v11.2)"
+    },
+    {
+      "pojem": "cigareta za posunutého staršieho",
+      "vzory": [
+        "cigaret\\w* za posun"
+      ],
+      "pozn": "porazený dostane 1 cigaretu (v11)"
+    },
+    {
+      "pojem": "marker so 7 poľami",
+      "vzory": [
+        "7 pol",
+        "sedem pol"
+      ],
+      "pozn": "vlastný strach a reči každého hráča (v11 Strach a reči)"
     }
   ],
   "karty": [
