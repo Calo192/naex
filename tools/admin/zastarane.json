@@ -137,6 +137,55 @@
         "neuspesn\\w* (?:\\w+ ){0,2}pokus"
       ],
       "pozn": "v11.4: pokus o zajatie v drafte zanikol (cigareta, boss v ruke, ohrozenie, karta zadarmo, pád strachu na 0); zajíma sa pri rozdelení Nakladačky za 5 bodov"
+    },
+    {
+      "pojem": "Noviny: špaky za Dlhy víťaza",
+      "vzory": [
+        "novin(?!k)w*[^.!?]{0,80}spak",
+        "spakw*[^.!?]{0,80}novin(?!k)",
+        "dlhw* (?:w+ ){0,3}vitazw* navyse"
+      ],
+      "pozn": "v11.5 Identita kariet: Noviny majú Hádku (súper odhodí 1 náhodnú kartu z ruky); Prehra so špakmi za Dlhy víťaza zanikla"
+    },
+    {
+      "pojem": "Opatrovateľka: Chuť o 2 nižšia",
+      "vzory": [
+        "opatrovatelw*[^.!?]{0,80}chut",
+        "chutw*[^.!?]{0,80}opatrovatel",
+        "chutw* (?:w+ ){0,4}o 2 nizs"
+      ],
+      "pozn": "v11.5: Opatrovateľka posilňuje aktívne akcie tvojich Pamätníkov v okolí; Chuť porovnávaná o 2 nižšie zanikla"
+    },
+    {
+      "pojem": "Podvodník presúva Dlh",
+      "vzory": [
+        "podvodnikw*[^.!?]{0,80}(?:presun|dlh)",
+        "(?:presun|dlh)w*[^.!?]{0,80}podvodnik"
+      ],
+      "pozn": "v11.5: Podvodník má Konflikt (súper ti dá 1 cigaretu, inak získa zadĺženie); presun priznaného Dlhu pri Prehre zanikol"
+    },
+    {
+      "pojem": "Anonymný alkoholik priznáva Cirhózy",
+      "vzory": [
+        "anonymnw*[^.!?]{0,80}(?:cirhoz|prizna|nastup)",
+        "cirhozw*[^.!?]{0,80}anonymn"
+      ],
+      "pozn": "v11.5: Anonymný alkoholik má Furt (Poškodenie pečene v jeho okolí sa ráta ako Viera); Nástup s priznaním Cirhóz z odhadzovacieho balíčka zanikol"
+    },
+    {
+      "pojem": "Sypač ako Výtržník",
+      "vzory": [
+        "(?:sypac|kulturist)w*[^.!?]{0,80}vytrznik",
+        "vytrznikw*[^.!?]{0,80}(?:sypac|kulturist)"
+      ],
+      "pozn": "v11.5: Sypač má Podporu (Chlap, s ktorým sa stretne, má do konca kola Rany ako Pecky); Pitka s Výtržníkom zanikla"
+    },
+    {
+      "pojem": "Kôň s Ranou",
+      "vzory": [
+        "kon(?:a|ovi|om)? (?:w+ ){0,4}ran(?:a|u|y|ou)?(?![a-z])"
+      ],
+      "pozn": "v11.5: Kôň má vpravo Robotu namiesto Rany a jeho Roboty pália o 1 Dlh viac; spoj s Nástrojom ostáva"
     }
   ],
   "karty": [
