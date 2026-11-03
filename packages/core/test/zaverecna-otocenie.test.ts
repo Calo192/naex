@@ -83,8 +83,11 @@ function dohrajPitku(s: GameState): GameState {
 function dohrajPitkuSUdalostami(s: GameState): { state: GameState; events: Event[] } {
   const events: Event[] = [];
   for (let i = 0; i < 20 && s.faza === "pitka"; i++) {
-    const p = s.vizia !== null ? (([0, 1] as const).find((q) => mozeHrat(s, q)) ?? 0) : (s.pitkaStav?.naTahu ?? 0);
-    const r = apply(data, s, s.vizia !== null ? { type: "vizia", vziat: true } : { type: "skipNaex" }, p);
+    // Otočený Hasič (Nástup) čaká na voľbu — kartu si nechá.
+    const hasic = s.hasicVolby?.[0];
+    const p = hasic !== undefined ? hasic.hrac : s.vizia !== null ? (([0, 1] as const).find((q) => mozeHrat(s, q)) ?? 0) : (s.pitkaStav?.naTahu ?? 0);
+    const cmd: Command = hasic !== undefined ? { type: "hasic", nechat: true } : s.vizia !== null ? { type: "vizia", vziat: true } : { type: "skipNaex" };
+    const r = apply(data, s, cmd, p);
     s = r.state;
     events.push(...r.events);
   }

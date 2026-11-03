@@ -17,17 +17,12 @@ export function StavkaBitky({ stavka, kratko = false }: { readonly stavka: Stavk
     stavka.herna[0] > 0 ? `${stavka.herna[0]} z Herne` : null,
   ].filter((x) => x !== null);
   const sekera = casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
-  // Noviny (Titulka): porazený majiteľ dostane špak za každý Dlh víťaza navyše.
-  const noviny = [
-    stavka.noviny[0] > 0 ? ` Keď prehráš, dostaneš +${stavka.noviny[0]} za Dlhy, ktoré má súper navyše — Noviny.` : "",
-    stavka.noviny[1] > 0 ? ` Keď prehrá súper, dostane +${stavka.noviny[1]} za tvoje Dlhy navyše — jeho Noviny.` : "",
-  ].join("");
   // Kultúrny dom (v8): aj porazený dostane špaky za svoje karty v línii.
   const kd =
     stavka.porazenemu[0] + stavka.porazenemu[1] > 0
       ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${stavka.porazenemu[0]}, súper +${stavka.porazenemu[1]}.`
       : "";
-  const titul = `Táto bitka (${pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra +${stavka.vyhra} špakov${sekera}, súperova +${-stavka.prehra}.${noviny}${kd} ${VYSVETLENIE}`;
+  const titul = `Táto bitka (${pocet(stavka.karty, "karta", "karty", "kariet")} v línii): tvoja výhra +${stavka.vyhra} špakov${sekera}, súperova +${-stavka.prehra}.${kd} ${VYSVETLENIE}`;
   // Hlavička stola: len „o +3 / +3“ s ohorkom — celé znenie v nápovede.
   if (kratko)
     return (

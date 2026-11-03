@@ -57,7 +57,7 @@ export interface PlacedCard {
   readonly naexBy2?: PlayerId;
   /**
    * Zrážka NA EX: z karty je Výtržník — všetky jej akcie sú aktívne Rany pre
-   * majiteľa (až po spárovaní), Sypačove Pecky (v10.3). Len do konca bitky, potom
+   * majiteľa (až po spárovaní). Len do konca bitky, potom
    * vytriezvie (Michal 2026-10-25).
    */
   readonly vytrznik?: true;
@@ -72,6 +72,11 @@ export interface PlacedCard {
    * Mení sa druh akcie, nie jej aktivita; po bitke ide karta do balíčka s pôvodnými.
    */
   readonly premena?: "sarlatan" | "ministrant";
+  /**
+   * Sypač (Podpora, v11.5): tvoj Chlap, s ktorým sa priložením stretol, má do konca kola
+   * Rany ako Pecky. Samostatne od premeny — Šarlatán či Miňištrant ju môžu mať tiež.
+   */
+  readonly ranyAkoPecky?: true;
   /** Hrobár (Konflikt, v7): za túto kartu sa na jej strane už nič nepriloží. */
   readonly posledna?: true;
   /** Po bitke ide karta z hry (Vdova, Hrobár — Konflikt v7). */
@@ -220,6 +225,10 @@ interface Elem {
   readonly puska: boolean[][];
   /** Vedúcko v okolí: vytlačené Roboty karty sa rátajú ako Pecky. */
   robotaAkoPecka: boolean;
+  /** Anonymný alkoholik majiteľa v okolí (v11.5): Poškodenie pečene karty sa ráta ako Viera. */
+  pecenAkoViera: boolean;
+  /** Sypač (PlacedCard.ranyAkoPecky): Rany karty sa rátajú ako Pecky. */
+  readonly ranyAkoPecky: boolean;
 }
 
 /** Má hráč p v Dedičstve Nástroj defId? (LineState.nastroje) */
@@ -385,6 +394,8 @@ function makeElem(
     tiper: [0, 1].map(() => [null, null, null, null]),
     puska: [0, 1].map(() => [false, false, false, false]),
     robotaAkoPecka: false,
+    pecenAkoViera: false,
+    ranyAkoPecky: pl?.ranyAkoPecky === true,
   };
 }
 
@@ -807,6 +818,12 @@ function kartoveEfekty(segments: readonly (readonly Elem[])[], umlcane: Readonly
       // Vedúcko (Furt, Michal 2026-11-02): Roboty susedných kariet (oboch hráčov, lokalita nie —
       // ako Silná nezávislá žena) sa rátajú ako Pecky; Dlh nepália, dávajú tuhé.
       for (const s of okolie(e)) if (!s.isLokalita) s.robotaAkoPecka = true;
+    } else if (e.defId === "opatrovatelka") {
+      // Opatrovateľka (Furt, v11.5): aktívne akcie tvojich Pamätníkov v jej okolí sú posilnené.
+      for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner && s.tags.includes("Pamätník")) zdvojAktivne(s, e.defId);
+    } else if (e.defId === "anonymny_alkoholik") {
+      // Anonymný alkoholik (Furt, v11.5): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako Viera.
+      for (const s of okolie(e)) if (!s.isLokalita && s.owner === e.owner) s.pecenAkoViera = true;
     } else if (e.defId === "liberal" && rovnovaha[e.owner]) {
       // Liberál (Furt, v10.3): s rovnako ženami a chlapmi v partii majiteľa sú jeho aktívne akcie posilnené.
       zdvojAktivne(e, e.defId);
@@ -823,12 +840,12 @@ function zdvojStranu(elem: Elem, side: 0 | 1, zdroj: string): void {
   }
 }
 
-/** Akcia, ktorou sa slot karty ráta (v7): premena Šarlatána a Miňištranta. */
+/** Akcia, ktorou sa slot karty ráta (v7): premena Šarlatána a Miňištranta, potom Sypač (Rany ako Pecky). */
 function akciaPoPremene(elem: Elem, action: Action): Action {
-  const a: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
-  if (elem.premena === "sarlatan") return a === "Dlh" ? "Viera" : a === "Povera" ? "Rana" : a;
-  if (elem.premena === "ministrant" && a === "Viera") return "Pecka";
-  return a;
+  let a: Action = elem.vieraAkoVizia && action === "Viera" ? "Vízia" : action;
+  if (elem.premena === "sarlatan") a = a === "Dlh" ? "Viera" : a === "Povera" ? "Rana" : a;
+  else if (elem.premena === "ministrant" && a === "Viera") a = "Pecka";
+  return elem.ranyAkoPecky && a === "Rana" ? "Pecka" : a;
 }
 
 /**
@@ -847,9 +864,9 @@ export function rovnovahaPohlavi(data: GameData, strany: LineState["strany"], p:
   return zeny === chlapi;
 }
 
-/** Akcie Výtržníka po zrážke: Rany, Sypačove (Kulturista, Pitka v10.3) Pecky. */
-export function akciaVytrznika(defId: string): Action {
-  return defId === "kulturista" ? "Pecka" : "Rana";
+/** Akcie Výtržníka po zrážke: Rany (Sypačove Pecky z v10.3 zanikli vo v11.5). */
+export function akciaVytrznika(): Action {
+  return "Rana";
 }
 
 function elemEval(elem: Elem): CardLineEval {
@@ -913,7 +930,7 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   // ako vytlačené — zmena na Rany príde až po spojoch (nižšie).
   for (const elem of [...partia0, ...partia1]) {
     if (!vytrznici.has(elem.uid)) continue;
-    const utok = akciaVytrznika(elem.defId);
+    const utok = akciaVytrznika();
     const bezModifikatora = (x: Slot): Slot => (x === "Posilnenie" || x === "Odpor" ? utok : x);
     const m = elem as { effLeft: readonly Slot[]; effRight: readonly Slot[] };
     m.effLeft = elem.effLeft.map(bezModifikatora);
@@ -953,11 +970,11 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
   profesionalnyTiper(segments);
   kartoveEfekty(segments, umlcane, [rovnovahaPohlavi(data, line.strany, 0), rovnovahaPohlavi(data, line.strany, 1)]);
   // Výtržník (zrážka NA EX naraz, v5): každá akcia karty je aktívna Rana pre
-  // majiteľa, Sypačova Pecka (v10.3). Spoje susedov sa rátajú s vytlačenými akciami
+  // majiteľa. Spoje susedov sa rátajú s vytlačenými akciami
   // (okrem Posilnenia a Odporu, vyššie) — Výtržník ich nemení.
   for (const elem of elems) {
     if (!vytrznici.has(elem.uid)) continue;
-    const utok = akciaVytrznika(elem.defId);
+    const utok = akciaVytrznika();
     const rana = (x: Slot): Slot => (x === null ? null : utok);
     const m = elem as { effLeft: readonly Slot[]; effRight: readonly Slot[] };
     m.effLeft = elem.effLeft.map(rana);
@@ -1010,7 +1027,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         const tiper = elem.tiper[side]![k] ?? null;
         // Puška: zachránená Petelica udeľuje 2 — v súčtoch sa ráta ako Pecka (2 tuhé).
         const vedRobota = tiper === null && action === "Robota" && elem.robotaAkoPecka;
-        const ako: Action = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : akciaPoPremene(elem, action);
+        const aaPecen = tiper === null && action === "PoškodeniePečene" && elem.pecenAkoViera;
+        const ako: Action = tiper !== null ? (target === tiper ? "Robota" : "Dlh") : elem.puska[side]![k] || vedRobota ? "Pecka" : aaPecen ? "Viera" : akciaPoPremene(elem, action);
         if (zrusil != null) {
           (zrusene[target][ako] ??= []).push({ defId: elem.defId, uid: elem.uid, hodnota: 0, vStrede: elem.isLokalita, dovody: [zrusil] });
           // Hrable (Dedičstvo, Náradie 2026-10-30): akcia zrušená tvojím Odporom sa ráta ako tvoja a je posilnená.
@@ -1034,7 +1052,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         if (starosta) dovody.push("karta:starosta");
         if (tiper !== null) dovody.push("karta:profesionalny_tiper");
         else if (vedRobota) dovody.push("karta:veducko");
-        else if (ako !== action) dovody.push(`karta:${elem.premena ?? "sarlatan"}`);
+        else if (aaPecen) dovody.push("karta:anonymny_alkoholik");
+        else if (ako !== action) dovody.push(`karta:${elem.premena ?? (elem.ranyAkoPecky ? "kulturista" : "sarlatan")}`);
         pridajZdroj(target, ako, { defId: elem.defId, uid: elem.uid, hodnota, vStrede: elem.isLokalita, dovody });
       }
     }

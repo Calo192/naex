@@ -9891,3 +9891,207 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
     display: none;
   }
 }
+
+/* ---- Veštica: výmena kariet medzi doberacími balíčkami (Michal 2026-11-03) ----
+ * Tvoj balíček vľavo v tvojej farbe, súperov vpravo v jeho, v strede výmena so šípkami.
+ * Panel ide na celú výšku vrstvy a karty sa zmenšia tak, aby sa zmestili bez posúvania. */
+
+.vrstva-panel.vestica-panel {
+  height: 100%;
+}
+
+.vestica-panel .vrstva-obsah {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 14px 16px;
+}
+
+.vestica {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 190px) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.vestica-balicek {
+  --farba: var(--ja);
+  --farba-tmava: var(--ja-tmava);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid color-mix(in srgb, var(--farba) 45%, transparent);
+  border-top: 4px solid var(--farba);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--farba-tmava) 55%, transparent);
+}
+
+.vestica-balicek.su {
+  --farba: var(--su);
+  --farba-tmava: var(--su-tmava);
+}
+
+.vestica-hlava {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-bottom: 10px;
+}
+
+.vestica-meno {
+  font: 800 0.86rem/1.2 var(--pismo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--farba);
+}
+
+.vestica-pocet {
+  font-size: 0.78rem;
+  color: var(--slaby);
+}
+
+.vestica-pokyn {
+  flex-basis: 100%;
+  font-size: 0.82rem;
+  color: var(--tlmeny);
+}
+
+.vestica-karty {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+}
+
+.vestica-karty .s-lupou {
+  position: relative;
+}
+
+/* Vybraná karta: obrys vo farbe hráča, ku ktorému odíde, a štítok nad ňou. */
+.vestica-balicek.ja .vestica-vybrana .kl {
+  outline: 3px solid var(--su);
+  outline-offset: 2px;
+}
+
+.vestica-balicek.su .vestica-vybrana .kl {
+  outline: 3px solid var(--ja);
+  outline-offset: 2px;
+}
+
+.vestica-stitok {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--plocha);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.vestica-stitok.ja {
+  background: var(--ja);
+}
+
+.vestica-stitok.su {
+  background: var(--su);
+}
+
+.vestica-vymena {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.vestica-vymena-nadpis {
+  font: 800 0.74rem/1 var(--pismo);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slaby);
+}
+
+.vestica-vymena-pozn {
+  font-size: 0.74rem;
+  color: var(--slaby);
+}
+
+.vestica-presun {
+  --farba: var(--su);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--farba) 60%, transparent);
+  background: color-mix(in srgb, var(--farba) 12%, transparent);
+}
+
+/* Do súperovho balíčka (doprava) súperova farba, do môjho (doľava) moja. */
+.vestica-presun.dolava {
+  --farba: var(--ja);
+}
+
+.vestica-presun.prazdny {
+  border-style: dashed;
+  background: transparent;
+  opacity: 0.7;
+}
+
+.vestica-presun-karta {
+  font-weight: 800;
+  color: var(--text);
+}
+
+.vestica-presun.prazdny .vestica-presun-karta {
+  font-weight: 400;
+  color: var(--slaby);
+}
+
+.vestica-sipka {
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--farba);
+}
+
+.vestica-presun-kam {
+  font-size: 0.76rem;
+  color: var(--farba);
+}
+
+/* Potvrdenie v strede spodnej hrany panela. */
+.vestica-paticka {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.vestica-paticka .vrstva-paticka-text {
+  margin: 0;
+}
+
+.vestica-paticka .tlacidlo-hlavne {
+  grid-column: 2;
+}
+
+.vestica-paticka .vestica-ja {
+  color: var(--ja);
+}
+
+.vestica-paticka .vestica-su {
+  color: var(--su);
+}

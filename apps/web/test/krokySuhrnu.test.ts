@@ -187,7 +187,8 @@ describe("spúšťanie súhrnu po bitke (Michal 2026-11-02: „keď som rozdeľo
     "súhrn príde po každej bitke s rozdelením, nech rozdeľuje ktokoľvek, a ukáže Nakladačku aj hádku oboch",
     () => {
       const roly = new Set<string>();
-      for (const seed of [3, 11, 21]) {
+      // Semienko 5: Nakladačku a hádku rozdeľujú rôzni hráči (sada s identitou kariet 2026-11-03).
+      for (const seed of [3, 5, 21]) {
         const { pohlady, delenia } = partia(seed);
         for (const ja of [0, 1] as const) {
           const vsetky = pohlady[ja];

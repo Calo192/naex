@@ -20,7 +20,7 @@ import {
   sPrilozenou,
   zablokovaneStrany,
 } from "./engine.ts";
-import { efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
+import { efektPotlaceny, naexPecenSuperovi, partiaHraca, silaDoDna, soferiBezNaex, svokraRany, traktoristkyBezPrevahy } from "./effects.ts";
 import { opponentOf } from "./types.ts";
 import type { LineEval } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
@@ -135,7 +135,7 @@ export function kliatbyNahladu(
 /**
  * Zvyšok ceny ťahu mimo kliatob a tuhého (návrh #1, playtest 20261024-075830):
  * cigarety a mäkké poškodenie hráča po ťahu oproti stavu bez neho. Cigarety ráta tá istá
- * funkcia ako zúčtovanie (cigaretyZPitky), mäkké poškodenieBitky (hádka v10).
+ * funkcia ako zúčtovanie (cigaretyZPitky) a Šofér na začiatku bitky, mäkké poškodenieBitky (hádka v10).
  */
 export interface DopadyNahladu {
   /** Cigarety navyše: priamo (patronát) a vo vyhodnotení tejto aj ďalších Pitiek kola. */
@@ -157,8 +157,10 @@ export function dopadyNahladu(
     // Vo Vízii je táto Pitka už vyhodnotená — ako nahladPitky.
     const tato = s.vizia === null ? cigaretyZPitky(sums)[p] : 0;
     const dalej = cigaretyZPitky(sums)[p] * dalsie;
+    // Šofér (v11.5): cigaretu dá na začiatku bitky, keď majiteľ v kole nedal NA EX.
+    const sofer = s.faza === "bitka" ? 0 : soferiBezNaex(s, p);
     return {
-      cigarety: s.hraci[p].cigarety + tato + dalej,
+      cigarety: s.hraci[p].cigarety + tato + dalej + sofer,
       makke: poskodenieBitky(data, stolPriPoskodeni(data, s, dalsie), sums).makke[p],
     };
   };
@@ -442,9 +444,6 @@ export function nahladNaexNaKartu(data: GameData, view: ClientState, uid: number
 export interface EfektyPrehry {
   /** Dievčina na vydaj: víťaz získa toľko Dlhov, koľko mala aktívnych akcií. */
   readonly dievcina: readonly [number, number];
-  /** Farár: víťaz získa zadĺženie za každú svoju aktívnu Poveru. */
-  /** Podvodník: toľko priznaných Dlhov porazeného prejde k víťazovi. */
-  readonly podvodnik: readonly [number, number];
 }
 
 /**
@@ -465,16 +464,13 @@ export function efektyPrehry(data: GameData, v: ClientState): EfektyPrehry {
     const ev = linia.cards.get(uid);
     return ev === undefined ? 0 : [...ev.left, ...ev.right].reduce((a, x) => a + (x?.stav === "aktivna" ? x.nasobok : 0), 0);
   };
-  const pre = (porazeny: PlayerId): [number, number] => {
+  const pre = (porazeny: PlayerId): number => {
     const partia = partiaHraca(v, porazeny).filter((pl) => pl.zaverecna !== true);
-    const dievcina = partia
+    return partia
       .filter((pl) => pl.card.defId === "dievcina_na_vydaj" && !spalit.has(pl.card.uid) && !efektPotlaceny(data, v, porazeny, pl.card.defId))
       .reduce((a, pl) => a + aktivne(pl.card.uid), 0);
-    const podvodnik = Math.min(v.hraci[porazeny].dlhy, partia.filter((pl) => pl.card.defId === "podvodnik").length);
-    return [dievcina, podvodnik];
   };
-  const [a, b] = [pre(0), pre(1)];
-  return { dievcina: [a[0], b[0]], podvodnik: [a[1], b[1]] };
+  return { dievcina: [pre(0), pre(1)] };
 }
 
 /** Efekty Prehra porazeného `porazeny` slovami z pohľadu hráča `ja`; prázdne pole, keď nič. */
@@ -483,7 +479,6 @@ export function textyEfektovPrehry(e: EfektyPrehry, porazeny: PlayerId, ja: Play
   const ziska = porazeny === ja ? "získa" : "získaš";
   return [
     e.dievcina[porazeny] > 0 ? `Dievčina na vydaj: ${vitaz} ${ziska} ${pocet(e.dievcina[porazeny], "Dlh", "Dlhy", "Dlhov")}` : "",
-    e.podvodnik[porazeny] > 0 ? `Podvodník: ${pocet(e.podvodnik[porazeny], "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")} ${porazeny === ja ? "tvoj prejde k súperovi" : "súpera prejde k tebe"}` : "",
   ].filter((x) => x !== "");
 }
 

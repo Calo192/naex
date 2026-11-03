@@ -85,10 +85,10 @@ export function HernaKarta({ karta, sada, data, sirka, otocena = false, eval: ev
   // Lupa a karta na stole majú rovnaký kľúč — lupa otvorená po iskre ju už nezopakuje.
   const teraz = Date.now();
   const strana = (ps: "left" | "right"): { roz: RozlozenieStrany; sloty: (SlotStav | null)[] | null } => {
-    // Výtržník kreslí Rany (Sypač Pecky) na miestach vytlačených akcií — hráč má vidieť, čo karta naozaj robí.
+    // Výtržník kreslí Rany na miestach vytlačených akcií — hráč má vidieť, čo karta naozaj robí.
     const roz = [0, 1, 2, 3].map((k) => {
       const a = vytlacene[ps][k] ?? null;
-      return vytrznik && a !== null ? akciaVytrznika(karta.defId) : a;
+      return vytrznik && a !== null ? akciaVytrznika() : a;
     }) as unknown as RozlozenieStrany;
     const sloty =
       ev === undefined || ev === null

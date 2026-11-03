@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.4 Strach a reči, zajatie a presvedčenie, 2026-11-03, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.5 Strach a reči, zajatie a presvedčenie, identita kariet, 2026-11-03, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -125,7 +125,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (**už nevyloží nič**, aj keď ju použiješ prvým ťahom) a **za pas nedostane cigarety**; ty vykladáš ďalej. **Autobusár** (len pri braní zo šenku): ber zo šenku, koľko chceš, **každú kartu za 1
   cigaretu** (`uids`); potom s braním končíš a pokračuje súper. **Hrobár:** 1 karta zo súperovho
   odhadzovacieho balíčka do ruky (`uid`).
-- **Sypač (Pitka, v10.3):** keď sa z neho stane Výtržník, jeho akcie sú **Pecky**, nie Rany.
+- **Identita kariet (v11.5):** **Sypač** (Podpora): keď sa priložením stretne s tvojím Chlapom, ten má do konca
+  kola **Rany ako Pecky**. **Podvodník** (Konflikt): súper ti dá **1 cigaretu**, ak žiadnu nemá, získa **1 zadĺženie**.
+  **Opatrovateľka** (Furt): tvoji Pamätníci v jej okolí majú aktívne akcie **posilnené** (×2). **Anonymný alkoholik**
+  (Furt): Poškodenie pečene tvojich kariet v jeho okolí sa ráta ako **Viera**. **Kôň** (Furt): Nástroj vedľa neho
+  s ním tvorí spoj; **Roboty Koňa pália o 1 Dlh viac**. **Noviny** (Dedičstvo: Hádka): keď vyhráš hádku, súper
+  odhodí **1 náhodnú kartu z ruky**. Výtržník má vždy Rany (aj Sypač).
 - **Konflikt (v11.3):** efekt karty, keď sa **priložením** ocitne vedľa **súperovej** karty — či ju prikladáš
   ty k súperovej, alebo súper k nej (aj odpoveďou na NA EX; Záverečná až pri otočení). Priložený či ležiaci
   Nástroj nič; NA EX, zrážka ani presun (Dohadzovačka, Poľovník) nič. Najprv Nástup priloženej karty, potom
@@ -177,8 +182,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   — prizná ju hneď, alebo riskuješ, že sa ti do konca nevráti do ruky. Kým ju nepriznáš, súper za ňu tuhé
   nedostáva. Počet súperových
   nepriznaných Cirhóz je verejný (stav ho ukazuje). Dlh pália Robota (1 Dlh za aktívnu Robotu; **za každý Dlh, ktorý nemá čo spáliť, 1 špak** — v8.4) a Exekútor
-  (v každej bitke); Obecný úrad, Podvodník a Kmotor ho presunú súperovi. Anonymný
-  alkoholik (Nástup, v7) prizná všetky Cirhózy z tvojho odhadzovacieho balíčka (Absťák nie). Kliatba do línie nepatrí. Priznanie nemíňa
+  (v každej bitke); Obecný úrad a Kmotor ho presunú súperovi. Kliatba do línie nepatrí. Priznanie nemíňa
   limit ani neodovzdá ťah. Za priznané Dlhy príde v každej bitke Exekútor.
 - **Záverečná (Zhromaždenie, za 1 cig.):** `{"type":"zaverecna","uid":…,"target":"vlastna"|"superova"}` —
   karta lícom dole, míňa limit, potom už v Zhromaždení nevykladáš (bez cigariet za pas). Súper ju
@@ -233,7 +237,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nezdvojí (v6.1).
   Súperova **Svokra** mu v bitke dá +1 tuhé
   (Ranu) za každú jeho kartu, na ktorej leží tvoj poldeci z NA EX — NA EX na svoje karty ju nespustí.
-  Šofér (v7): ak si v kole nedal NA EX, v bitke Pecka navyše. **Pijan** (v7): za každé tvoje NA EX v kole
+  Šofér (v11.5): ak si v kole nedal NA EX, v bitke Pecka navyše a na začiatku bitky 1 cigareta. **Pijan** (v7): za každé tvoje NA EX v kole
   Rana navyše. Injekcia v Dedičstve: NA EX aj na Zviera. **Stryná** (Pitka): kto v Pitke nedal NA EX,
   +1 pečeň. **Bzdocha** (Pitka): súper hrá Pitku pred tebou — čakáš, kým skončí, a vidíš jeho NA EX. Veterán (v4): NA EX mu
   aktívne akcie zdvojí (nezruší), neaktívne nechá.
@@ -257,7 +261,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   barter, šenok, Dedičstvo ani cigarety za Kšefty lokalít nie. **Na konci kola:** keď si v kole mal
   **menej nerestí, než je tvoja Chuť**, dostaneš **kartu Absťák do odhadzovacieho balíčka**; potom
   **Chuť = väčšie z (Chuť, neresti kola) − 1** (nie pod 0). Súper latku neurčuje. Po finále nič.
-  Opatrovateľka v tvojej partii porovná tvoju Chuť o 2 nižšiu. **Karta Absťák:** nedá sa priznať ani vyložiť,
+  **Karta Absťák:** nedá sa priznať ani vyložiť,
   po bitke ide z ruky späť do odhadzovacieho balíčka; v bitke **−1 tuhé za každý Absťák v tvojom balíčku**
   (ruka, doberací, odhadzovací); pri remíze v tuhom prehráva, kto ich má viac (obe po odpustení Abstinentom, v10). Spáliť
   ho smie len **Vízia**. Výpis ukazuje „CHUŤ 3 | dnes 1 | chýba 2“ a počet Absťákov oboch. Flám (veľa NA EX)
@@ -279,12 +283,11 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Výherný automat (Dedičstvo, v7): tvoj prah Dlhu +1, ale v poslednej Pitke kola získaš 1 Dlh.
 - **Exekútor bez prahu (2026-10-28):** Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor
   (aj jediný Dlh) a rovnako veľa špakov (Advokát ich uberie) — **až po
-  poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže remíza, Herňa a Noviny
+  poškodení a špakoch za bitku** (2026-10-28; Robota tesne pred ním), takže remíza a Herňa
   rátajú Dlhy pred exekúciou. Prehra nie je, na konci hry Dlhy nič. **Záhradkár** (Exekúcia, 2026-10-28):
   keď leží v línii v tvojej partii, exekúcia ťa v tomto kole obíde (žiadny Dlh ani špak); nespáli sa.
   Vymáhač: za každé 2 tvoje priznané Dlhy +1 Rana; Traktorista: s prevahou v jeho kraji Pecka navyše,
-  inak Dlh; Podvodník pri prehre presunie tvoj priznaný Dlh súperovi. **Noviny** (Dedičstvo: Prehra, 2026-10-28):
-  keď prehráš, dostaneš 1 špak za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe; víťaz nič nestratí.
+  inak Dlh.
 - **Karty v7 v bitke a po nej:** Pes — jeho aktívne akcie na spoji so súperovou kartou ×2 (platí aj podstrčený); Mäsiar —
   efekty Zvierat v jeho okolí neplatia (ich akcie platia; 2026-10-28); Krokodíl — na konci bitky sa spália všetci Občania a Zvieratá
   v jeho okolí; Vidly (Dedičstvo) — tvoje Rany z vyložených akcií o 1 poškodenie viac (Rany navyše z efektov nie); Puška (Dedičstvo, 2026-10-30) — tvoju prepojenú Petelicu, ktorú by zrušil Odpor či NA EX, ráta namiesto zrušenia za 2; Pasca

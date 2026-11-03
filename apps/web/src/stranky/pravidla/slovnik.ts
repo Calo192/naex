@@ -82,7 +82,7 @@ export const SLOVNIK: readonly PojemSlovnika[] = [
   { id: "viera", pojem: "Viera", popis: "Akcia, ktorá ruší súperove Povery 1 : 1 (aj vylepšené Horoskopom) a zvyšná znižuje jeho tuhé poškodenie; proti Pohoršeniu nepomáha." },
   { id: "vizia", pojem: "Vízia", popis: "Na konci Pitky pozrieš vrchnú kartu balíčka a vezmeš si ju alebo ju navždy spáliš." },
   { id: "vydesenie", pojem: "Vydesený", popis: "Stupeň 3 staršieho pre hráča (vrch teplomera, strach + reči). Len vydesený strach ťa pustí k zajatiu a ráta sa do výhry strachom." },
-  { id: "vytrznik", pojem: "Výtržník", popis: "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke: všetky jej akcie sú Rany pre majiteľa (Sypačove Pecky), do konca bitky." },
+  { id: "vytrznik", pojem: "Výtržník", popis: "Karta, na ktorú ste obaja dali NA EX v tej istej Pitke: všetky jej akcie sú Rany pre majiteľa, do konca bitky." },
   { id: "vypit", pojem: "Vypiť", popis: "Otočíš plný poldeci na vypitý, aby si v tom istom ťahu vyložil ďalšiu kartu: limit −1, pečeň +1." },
   { id: "vykupne", pojem: "Výkupné", popis: "Po finále dostaneš 1 špak za každý plný poldeci a 1 špak za každých celých 5 cigariet, ktoré ti ostali." },
   { id: "vzbura", pojem: "Vzbura", popis: "Odpor proti Odporu: obe karty sa obrátia — nespojené akcie sú aktívne, spojené neaktívne. Odpor proti Posilneniu: len karta s Odporom, navyše posilnená. NA EX na ňu nejde; Nástroj ju nedostane." },

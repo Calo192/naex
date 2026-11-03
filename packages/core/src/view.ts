@@ -729,8 +729,6 @@ export interface StavkaBitky {
   readonly porazenemu: readonly [number, number];
   /** Herňa (v7): koľko z výhry [moja, súperova] je za priznané Dlhy porazeného. */
   readonly herna: readonly [number, number];
-  /** Noviny porazeného (Titulka, 2026-10-28): [moje pri prehre, súperove pri jeho prehre] — 1 za každý Dlh víťaza navyše. */
-  readonly noviny: readonly [number, number];
   /** Špaky na sekere, ktoré vezme víťaz (vo finále pri sekere prepadnú). */
   readonly naSekere: number;
   /**
@@ -744,7 +742,7 @@ export interface StavkaBitky {
 /**
  * Stávka bitky (Michal 2026-10-22, návrh 3 A; v6 v špakoch): čo hráč získa
  * výhrou a čo získa súper, keď vyhrá on. Špaky za bitku ráta spakyZaVyhru ako
- * výplata (Herňa, Noviny), s priznanými Dlhmi teraz. Absťáky špaky za bitku od
+ * výplata (Herňa), s priznanými Dlhmi teraz. Absťáky špaky za bitku od
  * v8.1 neuberajú. Starší (v11) bodujú víťazovi najvyšší marker, porazenému len reči.
  */
 export function stavkaBitky(view: ClientState): StavkaBitky | null {
@@ -764,7 +762,6 @@ export function stavkaBitky(view: ClientState): StavkaBitky | null {
     prehra: -jeho.spolu,
     naSekere: view.spakyNaSekere,
     herna: [moja.herna, jeho.herna],
-    noviny: [jeho.noviny, moja.noviny],
   };
 }
 

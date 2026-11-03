@@ -187,8 +187,6 @@ export const KONSTANTY = {
    */
   NEREST_NAEX: 2,
   CHUT_UBYTOK: 1,
-  /** Opatrovateľka (Furt, v9.1): na konci kola sa Chuť majiteľa porovnáva o toľkoto nižšia. */
-  OPATROVATELKA_CHUT: 2,
   CENA_FAJCENIA_ZAKLAD: 1,
   CENA_FAJCENIA_PRIRASTOK: 1,
   /**
@@ -254,13 +252,15 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // schopnosť, ktorú držiteľ použije raz za hru (elders.json, engine.ts schopnostiVazna).
 // v11.4 (Michal 2026-11-03) bez novej značky: pokus o zajatie zanikol — zajíma sa za 5 bodov
 // Nakladačky, za 5 bodov hádky sa starší presvedčí (jeho karta do balíčka presvedčovateľa).
+// v11.5 (Michal 2026-11-03) bez novej značky: identita kariet — nové akcie sady a efekty Novín,
+// Opatrovateľky, Podvodníka, Anonymného alkoholika, Šoféra, Sypača a Koňa.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.4";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.5";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-03";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

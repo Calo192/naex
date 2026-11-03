@@ -10,7 +10,7 @@ import type { GameData } from "./data.ts";
 import type { VerejnyHrac, VerejnyStav } from "./effects.ts";
 import type { PlayerState } from "./player.ts";
 import { KONSTANTY } from "./constants.ts";
-import { chutPoKole, latkaChuti, opatrovatelkyHraca, verejneAbstaky } from "./engine.ts";
+import { chutPoKole, verejneAbstaky } from "./engine.ts";
 
 type HracZavislosti = VerejnyHrac & Pick<PlayerState, "nerestiTotoKolo" | "chut">;
 
@@ -23,7 +23,7 @@ export interface StavPreZavislost extends VerejnyStav {
 
 /**
  * Čo sa stane na konci kola, keby skončilo teraz:
- *  - ziska: menej nerestí než Chuť (s Opatrovateľkou nižšia) → karta Absťák,
+ *  - ziska: menej nerestí než Chuť → karta Absťák,
  *  - nic:   aspoň toľko, koľko je Chuť.
  */
 export type VyhladZavislosti = "ziska" | "nic";
@@ -31,8 +31,6 @@ export type VyhladZavislosti = "ziska" | "nic";
 export interface StavZavislosti {
   /** Chuť hráča — latka nerestí na konci kola. */
   readonly chut: number;
-  /** Latka, s ktorou sa neresti porovnajú (Chuť mínus Opatrovateľky v línii). */
-  readonly latka: number;
   /** Neresti tohto kola vrátane NA EX na stole (každé za 2, vypijú sa v bitke). */
   readonly teraz: number;
   /** Z toho NA EX na stole, ešte nezapočítané (počet NA EX, nie nerestí). */
@@ -55,22 +53,20 @@ function naexNaStole(s: StavPreZavislost, p: PlayerId): number {
   return naex;
 }
 
-export function stavZavislosti(data: GameData, s: StavPreZavislost, p: PlayerId): StavZavislosti {
+export function stavZavislosti(_data: GameData, s: StavPreZavislost, p: PlayerId): StavZavislosti {
   const naex = naexNaStole(s, p);
   const teraz = s.hraci[p].nerestiTotoKolo + naex * KONSTANTY.NEREST_NAEX;
   const chut = s.hraci[p].chut;
-  const latka = latkaChuti(chut, opatrovatelkyHraca(data, s, p));
   const abstaky = verejneAbstaky(s, p);
-  const vyhlad: VyhladZavislosti = s.bezChuti !== true && teraz < latka ? "ziska" : "nic";
+  const vyhlad: VyhladZavislosti = s.bezChuti !== true && teraz < chut ? "ziska" : "nic";
   return {
     chut,
-    latka,
     teraz,
     naexNaStole: naex,
     abstaky,
     ubera: abstaky,
     vyhlad,
-    doBezpecia: vyhlad === "ziska" ? latka - teraz : 0,
+    doBezpecia: vyhlad === "ziska" ? chut - teraz : 0,
     chutPo: s.bezChuti === true ? chut : chutPoKole(chut, teraz),
   };
 }

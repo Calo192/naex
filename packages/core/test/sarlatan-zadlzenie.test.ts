@@ -10,12 +10,27 @@ import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
 import type { CardInstance, Command, GameState, PitkaStav, PlacedCard, PlayerId } from "../src/index.ts";
-import { apply, evaluateLine, legalCommands, lineState, loadGameData, setupGame } from "../src/index.ts";
+import { apply, buildGameData, evaluateLine, legalCommands, lineState, loadGameData, parseScorecards, setupGame } from "../src/index.ts";
+import { EMPTY, instanceFor, makeDef } from "./helpers.ts";
 
-const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
+// Akcie Šarlatána a Mäsiara sú syntetické (sada sa mení): Šarlatán hráča 1 pri Zastávke má
+// aktívnu Poveru (proti hrane Pecka) a neaktívny Hazard na vonkajšej strane; Mäsiar je bez akcií.
+const zaklad = loadGameData(cardsJson, eldersJson, scorecardsJson);
+const SAR_L = ["Dlh", null, null, null] as const;
+const SAR_R = [null, null, null, "Povera"] as const;
+const data = buildGameData(
+  new Map([
+    ...zaklad.cards,
+    ["sarlatan", makeDef("sarlatan", SAR_L, SAR_R, { tags: ["Občan", "Influencer", "Chlap"], triggers: ["Konflikt"] })],
+    ["masiar", makeDef("masiar", EMPTY, EMPTY, { tags: ["Občan", "Pracujúci", "Chlap"], triggers: ["Furt"] })],
+  ]),
+  zaklad.elders,
+  { scorecards: zaklad.scorecards, body: parseScorecards(scorecardsJson).body },
+);
 
 let uidSeq = 990000;
-const inst = (defId: string): CardInstance => ({ uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 });
+const inst = (defId: string): CardInstance =>
+  defId === "sarlatan" ? instanceFor(data, defId, SAR_L, SAR_R) : defId === "masiar" ? instanceFor(data, defId, EMPTY, EMPTY) : { uid: ++uidSeq, defId, leftLayout: 0, rightLayout: 0 };
 const lezi = (card: CardInstance, playedBy: PlayerId, x: Partial<PlacedCard> = {}): PlacedCard => ({ card, playedBy, ...x });
 
 function pitkaStav(naTahu: PlayerId): PitkaStav {
@@ -45,20 +60,25 @@ function sSarlatanom(naTahuPitky: PlayerId): { readonly s: GameState; readonly s
 }
 
 /** Dohrá Pitku: `vyber` smie zvoliť ťah, inak sa preskakuje (NA EX, odpoveď, pas, šenok). */
+/** Dlhy hráča 1 z vyhodnotení Pitiek posledného dohrajPitku (bitka po nej ich môže exekúciou spáliť). */
+let dlhyZPitky1 = 0;
 function dohrajPitku(s: GameState, vyber: (cmds: readonly Command[], q: PlayerId) => Command | undefined = () => undefined): GameState {
   let t = s;
+  dlhyZPitky1 = 0;
   for (let i = 0; i < 20 && t.faza === "pitka"; i++) {
     const q = ([0, 1] as const).find((x) => legalCommands(data, t, x).length > 0);
     if (q === undefined) break;
     const cmds = legalCommands(data, t, q);
     const c = vyber(cmds, q) ?? cmds.find((c) => c.type === "skipNaex" || c.type === "bezReakcie" || c.type === "pass") ?? cmds[0]!;
-    t = apply(data, t, c, q).state;
+    const r = apply(data, t, c, q);
+    for (const e of r.events) if (e.type === "pitkaVysledok") dlhyZPitky1 += e.dlhy[1];
+    t = r.state;
   }
   return t;
 }
 
-/** Zadĺženie hráča 1 po Pitke (prah 2 → Dlh, zvyšok na účte). */
-const zadlzenieHraca1 = (t: GameState): number => t.hraci[1].dlhy * 2 + t.hraci[1].zadlzenie;
+/** Zadĺženie hráča 1 z Pitky (prah 2 → Dlh, zvyšok na účte). */
+const zadlzenieHraca1 = (t: GameState): number => dlhyZPitky1 * 2 + t.hraci[1].zadlzenie;
 
 describe("§16 Šarlatán: Hazard premenený Konfliktom nedáva zadĺženie", () => {
   it("odpoveď na NA EX vyvolá Konflikt pred vyhodnotením Pitky — Hazard ×2 je Viera, zadĺženie 0", () => {

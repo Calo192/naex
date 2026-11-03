@@ -40,8 +40,17 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const R2: Layout4 = ["Rana", "Rana", null, null];
 const R1: Layout4 = ["Rana", null, null, null];
 const D1: Layout4 = [null, "Rana", null, null];
+// Dievčina na vydaj s rozložením spred identity kariet (2026-11-03) — test stráži poradie krokov bitky, nie akcie sady.
+const DV_L: Layout4 = [null, "Dlh", "Cigareta", null];
+const DV_R: Layout4 = [null, "Dlh", "Vízia", null];
 const sada = buildGameData(
-  new Map([...data.cards, ["ht_lavy", makeDef("ht_lavy", EMPTY, R2)], ["ht_pol", makeDef("ht_pol", R1, R1)], ["ht_d1", makeDef("ht_d1", D1, D1)]]),
+  new Map([
+    ...data.cards,
+    ["ht_lavy", makeDef("ht_lavy", EMPTY, R2)],
+    ["ht_pol", makeDef("ht_pol", R1, R1)],
+    ["ht_d1", makeDef("ht_d1", D1, D1)],
+    ["dievcina_na_vydaj", makeDef("dievcina_na_vydaj", DV_L, DV_R, { tags: ["Občan", "Závislý", "Žena"], triggers: ["Prehra"] })],
+  ]),
   data.elders,
   parseScorecards(scorecardsJson),
 );
@@ -123,29 +132,7 @@ describe("klient AI hráčov: Bzdocha (playtest 20261028-090549, nezrovnalosť 2
   });
 });
 
-describe("klient AI hráčov: stávka bitky z jadra (nezrovnalosť 3, Noviny)", () => {
-  it("Noviny porazeného (Titulka): pri prehre +1 špak za každý Dlh, ktorý má víťaz navyše", () => {
-    const { s } = doPitky(304, [], (x) => ({
-      ...x,
-      hraci: [
-        { ...x.hraci[0], dlhy: 2 },
-        { ...x.hraci[1], dedicstvo: [{ uid: 891003, defId: "noviny", leftLayout: 0, rightLayout: 0 }] },
-      ],
-    }));
-    const v = viewFor(sada, s, 0);
-    const st = stavkaBitky(v);
-    // Hráč 0 má Dlhy navyše; Noviny má súper — dostane ich, keď prehrá.
-    expect(st?.noviny[0]).toBe(0);
-    expect(st?.noviny[1]).toBeGreaterThanOrEqual(2);
-    const text = stavkaText(sada, v) ?? "";
-    expect(text).toContain(`Keď prehrá súper, dostane +`);
-    expect(text).toContain(`tvoja výhra +${st?.vyhra} `);
-    // Súper vidí to isté z druhej strany.
-    const st1 = stavkaBitky(viewFor(sada, s, 1));
-    expect(st1?.noviny[0]).toBe(st?.noviny[1]);
-    expect(stavkaText(sada, viewFor(sada, s, 1))).toContain(`Keď prehráš, dostaneš +`);
-  });
-
+describe("klient AI hráčov: stávka bitky z jadra (nezrovnalosť 3; Noviny od v11.5 stávku nemenia)", () => {
   it("bez cieľa kola stávka nie je", () => {
     const s = setupGame(data, 305);
     expect(stavkaText(data, viewFor(data, s, 0))).toBeNull();
@@ -187,7 +174,7 @@ describe("klient AI hráčov: efekty Prehra (nezrovnalosť 3, Dievčina na vydaj
   });
 
   it("NA EX na Dievčine Dlhy po prehre nemení — poldeci sa vypijú (§9 krok 5) pred efektmi Prehra (krok 6c); motor aj náhľad", () => {
-    const dievcina: CardInstance = { uid: 891101, defId: "dievcina_na_vydaj", leftLayout: 0, rightLayout: 0 };
+    const dievcina: CardInstance = instanceFor(sada, "dievcina_na_vydaj", DV_L, DV_R);
     const sused = instanceFor(sada, "ht_d1", D1, D1);
     // Rana suseda na spoji s Dlhom Dievčiny: Dlh aktívny (×1), hráč 1 má jediné poškodenie a vyhrá.
     const { s } = doPitky(309, [], (x) => ({ ...x, strany: [[{ card: dievcina, playedBy: 0, naexBy: 1 }, { card: sused, playedBy: 1 }], []] }));

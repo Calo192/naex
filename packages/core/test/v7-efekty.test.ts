@@ -18,6 +18,7 @@ import {
   loadGameData,
   moznostiNaex,
   nastrojeTuhe,
+  paleneDlhyVBitke,
   pokutaPolicajtky,
   poskodenieBitky,
   prirastkyPitky,
@@ -399,7 +400,7 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     expect(po.hraci[0].cigarety).toBe(s.hraci[0].cigarety + 2);
   });
 
-  it("Starosta v línii od v9 Nástup nemá; Živnostník (Nástroj za neho), Anonymný alkoholik (Cirhózy)", () => {
+  it("Starosta v línii od v9 Nástup nemá; Živnostník (Nástroj za neho); Anonymný alkoholik od v11.5 Nástup nemá", () => {
     const starosta = inst("starosta");
     const s = vZhromazdeni("zastavka", [[], []], [starosta]);
     const po = apply(data, s, { type: "place", uid: starosta.uid, target: "vlastna" }, 0).state;
@@ -417,8 +418,8 @@ describe("Zhromaždenie a Nástup (v7)", () => {
     const aa = inst("anonymny_alkoholik");
     const sa = sHracom(vZhromazdeni("zastavka", [[], []], [aa]), 0, { odhadzovaci: [inst("cirhoza"), inst("cirhoza"), inst("masiar")] });
     const pa = apply(data, sa, { type: "place", uid: aa.uid, target: "vlastna" }, 0).state;
-    expect(pa.hraci[0].priznane.filter((k) => k.defId === "cirhoza")).toHaveLength(2);
-    expect(pa.hraci[0].odhadzovaci.some((k) => k.defId === "cirhoza")).toBe(false);
+    expect(pa.hraci[0].priznane.filter((k) => k.defId === "cirhoza")).toHaveLength(0);
+    expect(pa.hraci[0].odhadzovaci.filter((k) => k.defId === "cirhoza")).toHaveLength(2);
   });
 });
 
@@ -481,19 +482,7 @@ describe("Bitka a po bitke (v7)", () => {
     expect(vsetky(0)).not.toContain(dievc.uid);
   });
 
-  it("Noviny — Titulka (návrh #40): porazený majiteľ dostane 1 špak za každý Dlh víťaza navyše, víťaz špaky za bitku celé", () => {
-    const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
-    const s = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")], dlhy: 1 }), 1, { dlhy: 3 });
-    const po = dohrajKolo(s);
-    const bitka = po.nastenka.at(-1)!;
-    expect(bitka.vitaz).toBe(1);
-    // Dlhy pred exekúciou: víťaz 3 (aj s Dlhmi z Pitky), porazený 1 → aspoň 2.
-    expect(bitka.noviny ?? 0).toBeGreaterThanOrEqual(2);
-    expect(bitka.zaBitku[0]).toBe(bitka.noviny);
-    expect(bitka.zaBitku[1]).toBe(bitka.karty);
-  });
-
-  it("stávka bitky ráta Herňu a Noviny ako výplata (vyplatSpaky)", () => {
+  it("stávka bitky ráta Herňu ako výplata (vyplatSpaky); Noviny od v11.5 špaky nedávajú", () => {
     const silna = (n: number): PlacedCard[] => Array.from({ length: n }, () => lezi(inst("kulturista"), 1));
     // Herňa: hráč 1 vyhrá, hráč 0 má 3 priznané Dlhy → víťaz +3.
     const h = sHracom(vPitke("herna", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dlhy: 3 });
@@ -502,16 +491,13 @@ describe("Bitka a po bitke (v7)", () => {
     // 4 karty v línii (v8) + Herňa 3; výplata ráta Dlhy až po Pitke (D6 ich môže pridať), stávka tie teraz.
     expect(stavkaH.vyhra).toBe(4 + 3);
     expect(-stavkaBitky(viewFor(data, h, 0))!.prehra).toBe(stavkaH.vyhra);
-    // Noviny porazeného (Titulka): víťaz (hráč 1) má o 2 Dlhy viac — výhra celá, porazený +2.
+    // Noviny (v11.5 Dedičstvo: Hádka) už porazenému špaky za Dlhy víťaza nedajú.
     const n = sHracom(sHracom(vPitke("zastavka", [[lezi(inst("zamocnik"), 0)], silna(3)]), 0, { dedicstvo: [inst("noviny")] }), 1, { dlhy: 2 });
-    const stavkaN = stavkaBitky(viewFor(data, n, 1))!;
-    expect(stavkaN.vyhra).toBe(4);
-    expect(stavkaN.noviny).toEqual([0, 2]);
-    expect(stavkaBitky(viewFor(data, n, 0))!.noviny[0]).toBe(2);
+    expect(stavkaBitky(viewFor(data, n, 1))!.vyhra).toBe(4);
     const poN = dohrajKolo(n).nastenka.at(-1)!;
     expect(poN.vitaz).toBe(1);
-    expect(poN.zaBitku[0]).toBe(poN.noviny);
-    expect(poN.noviny ?? 0).toBeGreaterThanOrEqual(2);
+    expect(poN.zaBitku[0]).toBe(0);
+    expect(poN.noviny).toBeUndefined();
   });
 
   it("Výherný automat: prah Dlhu +1 a v poslednej Pitke kola Dlh", () => {
@@ -542,12 +528,14 @@ describe("Bitka a po bitke (v7)", () => {
     expect(t.bitkaStav?.krok === "exekutor" && t.bitkaStav.caka !== null).toBe(false);
     const zaznam = t.nastenka.at(-1);
     expect(zaznam?.exekutor[0] ?? 0).toBe(0);
-    expect(dlhy(t, 0)).toBe(8);
+    // Robota v línii (ak ju karty majú) Dlhy páli aj tak — Záhradkár ruší len exekúciu.
+    expect(dlhy(t, 0)).toBe(8 - Math.min(8, paleneDlhyVBitke(data, s)[0]));
     // Záhradkár sa nezahadzuje.
     expect(t.bitkaStav?.spalit ?? []).not.toContain(zah.uid);
     // Súperov Záhradkár (podstrčený do mojej strany) ma nechráni — rozhoduje partia.
-    const cudzi = skonciPitku(sHracom(vPitke("most", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { dlhy: 8 }));
-    expect(dlhy(cudzi, 0)).toBe(4);
+    const sCudzi = sHracom(vPitke("most", [[lezi(inst("vandal"), 0), lezi(inst("zahradkar"), 1)], []]), 0, { dlhy: 8 });
+    const poRobote = 8 - Math.min(8, paleneDlhyVBitke(data, sCudzi)[0]);
+    expect(dlhy(skonciPitku(sCudzi), 0)).toBe(poRobote - Math.ceil(poRobote / 2));
   });
 });
 

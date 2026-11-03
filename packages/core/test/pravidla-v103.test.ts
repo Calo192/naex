@@ -156,12 +156,12 @@ describe("Vzbura s Nástrojom (v10.3)", () => {
   });
 });
 
-describe("Sypač (Kulturista, v10.3)", () => {
-  it("ako Výtržník má všetky akcie aktívne Pecky, nie Rany; iný Výtržník Rany", () => {
+describe("Sypač (Kulturista, v10.3 — Pecky Výtržníka zanikli vo v11.5)", () => {
+  it("ako Výtržník má všetky akcie aktívne Rany ako každý Výtržník", () => {
     const L: Layout4 = ["Posilnenie", "Petelica", null, "Dlh"];
     const R: Layout4 = [null, "Odpor", "Viera", null];
     const data = syntheticData([makeDef("kulturista", L, R), makeDef("iny", L, R)]);
-    for (const [id, akcia] of [["kulturista", "Pecka"], ["iny", "Rana"]] as const) {
+    for (const [id, akcia] of [["kulturista", "Rana"], ["iny", "Rana"]] as const) {
       const ev = evaluateLine(data, lineP0(own(instanceFor(data, id, L, R), { naexBy: 0, naexBy2: 1, vytrznik: true })));
       expect(ev.sums[0], id).toEqual({ [akcia]: 5 });
     }

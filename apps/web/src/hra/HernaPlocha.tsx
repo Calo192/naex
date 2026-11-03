@@ -87,6 +87,7 @@ import { Lupa, maxMierkaLupy } from "./Lupa.tsx";
 import { LUPA_PREDVOLENA, useUcet } from "../lib/ucet.tsx";
 import { rezimRadov } from "./spakyAStarsi.ts";
 import { Vrstva as VrstvaPanel } from "./Vrstva.tsx";
+import { VesticaVyber } from "./Vestica.tsx";
 import { OknoVizie } from "./OknoVizie.tsx";
 import {
   AkcieStrany,
@@ -1263,11 +1264,11 @@ export function HernaPlocha({
     });
     return casti.length === 0 ? null : casti.join("; ");
   };
-  /** Efekty Prehra po NA EX na kartu `uid` — keď ich NA EX zmení, alebo mieri na kartu s Prehrou (Dievčina, Farár, Podvodník). */
+  /** Efekty Prehra po NA EX na kartu `uid` — keď ich NA EX zmení, alebo mieri na kartu s Prehrou (Dievčina, Farár). */
   const poBitkeNaex = (po: ClientState, uid: number | null): string | null => {
     const text = efektyPoBitke(po);
     const defId = uid === null ? undefined : zaklad.strany.flat().find((pl) => pl.card.uid === uid)?.card.defId;
-    const sPrehrou = defId === "dievcina_na_vydaj" || defId === "farar" || defId === "podvodnik";
+    const sPrehrou = defId === "dievcina_na_vydaj" || defId === "farar";
     return text !== efektyPoBitke(zaklad) || sPrehrou ? (text ?? "nič") : null;
   };
   /**
@@ -6193,9 +6194,10 @@ export function HernaPlocha({
 
       {vrstva === "vestica" && view.volbaVestica !== null && (
         <VrstvaPanel
-          nazov="Veštica — doberacie balíčky"
-          pozn="vyber po jednej karte z oboch — vymenia sa a balíčky sa zamiešajú"
+          nazov="Veštica — výmena kariet"
+          pozn="prehral si bitku: jednu kartu zo svojho doberacieho balíčka vymeníš za jednu súperovu"
           skryta={tahanie !== null}
+          trieda="vestica-panel"
           onZavri={() => setVrstva(null)}
           // Výmena sa potvrdí priamo tu (Michal 2026-11-02) — predtým bolo treba okno zavrieť a potvrdiť pečiatkou v páse.
           paticka={(() => {
@@ -6206,18 +6208,18 @@ export function HernaPlocha({
             const km = kartaV("moj", moja);
             const kj = kartaV("jeho", jeho);
             return (
-              <>
+              <div className="vestica-paticka">
                 <span className="vrstva-paticka-text">
                   {km !== undefined && kj !== undefined ? (
                     <>
-                      Dáš <strong>{menoKarty(km.defId)}</strong> za <strong>{menoKarty(kj.defId)}</strong>.
+                      <strong className="vestica-su">{menoKarty(km.defId)}</strong> odíde k {menoHraca(super_)}, <strong className="vestica-ja">{menoKarty(kj.defId)}</strong> príde k tebe.
                     </>
                   ) : km === undefined && kj === undefined ? (
-                    "Vyber po jednej karte z oboch balíčkov."
+                    "Vyber kartu vľavo (dáš) a kartu vpravo (vezmeš)."
                   ) : km === undefined ? (
-                    "Ešte vyber kartu zo svojho balíčka."
+                    "Ešte vyber vľavo kartu, ktorú dáš."
                   ) : (
-                    "Ešte vyber kartu z jeho balíčka."
+                    "Ešte vyber vpravo kartu, ktorú si vezmeš."
                   )}
                 </span>
                 <button
@@ -6232,34 +6234,33 @@ export function HernaPlocha({
                 >
                   vymeniť
                 </button>
-              </>
+              </div>
             );
           })()}
         >
-          {(["moj", "jeho"] as const).map((kto) => (
-            <div key={kto}>
-              <span className="oblast-nazov">{kto === "moj" ? "tvoj balíček" : `balíček – ${menoHraca(super_)}`}</span>
-              <div className="vrstva-karty harmonika">
-                {(view.volbaVestica?.[kto] ?? []).map((k, i) => {
-                  const v = mode.typ === "vestica" ? mode : null;
-                  const vybrana = v !== null && (kto === "moj" ? v.moja === i : v.jeho === i);
-                  const zrusVolbu = (): void => {
-                    if (v !== null) setMode(kto === "moj" ? { ...v, moja: null } : { ...v, jeho: null });
-                  };
-                  return sLupou(
-                    {
-                      karta: k,
-                      sirka: SIRKA_VO_VRSTVE,
-                      vybrana,
-                      onClick: () =>
-                        v !== null && setMode(kto === "moj" ? { ...v, moja: vybrana ? null : i } : { ...v, jeho: vybrana ? null : i }),
-                    },
-                    { odstran: vybrana ? zrusVolbu : undefined },
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+          <VesticaVyber
+            moj={view.volbaVestica.moj}
+            jeho={view.volbaVestica.jeho}
+            moja={mode.typ === "vestica" ? mode.moja : null}
+            jehoVyber={mode.typ === "vestica" ? mode.jeho : null}
+            menoSupera={menoHraca(super_)}
+            menoKarty={menoKarty}
+            najviac={SIRKA_VO_VRSTVE}
+            onVyber={(kto, i) => {
+              if (mode.typ !== "vestica") return;
+              setMode(kto === "moj" ? { ...mode, moja: i } : { ...mode, jeho: i });
+            }}
+            karta={(k, sirka, vybrana, onClick, stitok) =>
+              sLupou(
+                { karta: k, sirka, vybrana, onClick },
+                {
+                  stitok,
+                  ...(vybrana ? { trieda: "vestica-vybrana" } : {}),
+                  odstran: vybrana ? onClick : undefined,
+                },
+              )
+            }
+          />
         </VrstvaPanel>
       )}
 

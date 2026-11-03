@@ -415,7 +415,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p className="zvyraznene">
           <strong>Zrážka:</strong> ak ste obaja vybrali tú istú kartu, je z nej <P k="vytrznik">Výtržník</P>. So susedmi sa
           najprv spáruje ako obvykle, potom sa <strong>všetky jej akcie zmenia na Rany</strong> pre jej majiteľa — aj tie bez
-          partnera (Sypačovi na Pecky). Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí
+          partnera. Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí
           za svoje NA EX (pečeň, poldeci). Po bitke Výtržník vytriezvie a karta má znova pôvodné akcie.
         </p>
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
@@ -616,7 +616,7 @@ export const KAPITOLY: readonly Kapitola[] = [
           <li>
             <strong>Výhra a Prehra</strong> — cigarety za Nakladačku (súper dostane 1 cigaretu za každého staršieho,
             ktorého marker sa Nakladačkou posunul), Kmotor (kto má jeho priazeň, tomu prejdú 2 / 3 / 4 priznané Dlhy k súperovi), Fajčiar
-            (cigarety po bitke) a efekty Výhra a Prehra (Recidivista, Dievčina na vydaj, Podvodník), potom Krokodíl.
+            (cigarety po bitke) a efekty Výhra a Prehra (Recidivista, Dievčina na vydaj), potom Krokodíl.
           </li>
           <li>
             <strong>Zajatie a presvedčenie</strong> — sú súčasť rozdelenia Nakladačky a hádky hneď po bitke (kapitola{" "}
@@ -1003,7 +1003,6 @@ export const KAPITOLY: readonly Kapitola[] = [
             <tr><td>Vyhratá bitka</td><td>1 za každú kartu v línii na oboch stranách (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Prehratá bitka o Kultúrny dom</td><td>1 za každú svoju kartu v línii</td></tr>
             <tr><td>Starší, ktorí sa ťa boja</td><td>na konci kola za každý stupeň, na ktorom sa marker udržal od konca minulého kola: žltá 1, oranžová 2, červená 3 — nech bitku vyhral ktokoľvek; čo už zaplatil, druhýkrát nedá, kým marker neustúpi; odtlačený stupeň nič; sivý nikomu</td></tr>
-            <tr><td>Noviny v Dedičstve</td><td>keď prehráš, 1 za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe</td></tr>
             <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (s priazňou Advokáta o 1 / 2 / 3 menej)</td></tr>
             <tr><td><P k="vykupne">Výkupné</P> na konci hry</td><td>každý plný poldeci 1, každých celých 5 cigariet 1 (zvyšok prepadne); bez stropu — vypitý poldeci ani poldeci pod NA EX sa nerátajú</td></tr>
             <tr><td>Nepriznaná Cirhóza</td><td>mínus 3 za kus na konci hry (ruka aj oba balíčky)</td></tr>

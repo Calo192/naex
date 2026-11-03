@@ -187,8 +187,12 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   kocovnik: 0.5,
   sarlatan: 0.4,
   svokra: 0.4,
-  podvodnik: 0.3,
-  anonymny_alkoholik: 0.2,
+  // Identita kariet (v11.5): Konflikt — cigareta od súpera (bez nej zadĺženie); priloženie ráta sPrilozenou len v bitke.
+  podvodnik: 0.4,
+  // Furt (v11.5): pečeň susedov ako Viera — odhad bitky aj Pitky to vidí z evaluateLine.
+  anonymny_alkoholik: 0.3,
+  // Furt (v11.5): posilnení Pamätníci v okolí — tuhé vidí odhad bitky.
+  opatrovatelka: 0.2,
   farar: 0.4,
   starosta: 0.6,
   postarka: 0.4,
@@ -201,7 +205,8 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   zahradkar: 0.4,
   cierna_macka: 0.5,
   pes: 0.5,
-  sofer: 0.3,
+  // Bitka (v11.5): Pecku vidí odhad bitky, cigareta navyše je zvyšok.
+  sofer: 0.4,
   snubenica: 0.5,
   zivnostnik: 0.4,
   velmi_smutiaca_vdova: 0.4,
@@ -215,15 +220,16 @@ const BONUS_EFEKTU: Readonly<Record<string, number>> = {
   // Furt: Roboty susedov ako Pecky — tuhé ráta odhad bitky, Dlh, ktorý Robota nespáli, tiež.
   veducko: 0.3,
   krokodil: 0.4,
-  kon: 0.3,
+  // Furt: spoj s Nástrojom a (v11.5) Roboty o 1 Dlh viac (paleneDlhyVBitke).
+  kon: 0.4,
   pijan: 0.3,
   degustatorka: 0.3,
   klebetnica: 0.3,
   // Nástup presunie súperovu kartu z druhej strany — účinok ráta simulácia vyloženia (sPrilozenou).
   dohadzovacka: 0.3,
   masiar: 0.2,
-  // Sypač (v10.3): Pecky namiesto Rán, len keď je Výtržníkom — zrážku vidí odhad bitky.
-  kulturista: 0.2,
+  // Sypač (v11.5, Podpora): vlastný Chlap s Ranami ako Peckami — simulácia vyloženia (sPrilozenou).
+  kulturista: 0.3,
   vandal: 0.2,
   traktoristka: 0.3,
   vymahac: 0.4,
@@ -239,7 +245,7 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
   // Náradie 2026-10-30: Puška chráni prepojenú Petelicu pred zrušením (ráta za 2); Vidly Rany +1.
   puska: 0.4,
   vidly: 1,
-  // v7: špaky za prehranú bitku, keď má víťaz viac priznaných Dlhov.
+  // v11.5 (Dedičstvo: Hádka): víťaz hádky — súper odhodí náhodnú kartu z ruky.
   noviny: 0.5,
   // v7: Pecka navyše, keď súper priložil kartu k mojej.
   pasca: 0.8,

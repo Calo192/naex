@@ -46,7 +46,7 @@ export function IkonaAbstak() {
  * kola nepribudla karta Absťák; neresti za čiarou Chuť zvýšia.
  */
 function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
-  const latka = Math.max(0, z.latka);
+  const latka = Math.max(0, z.chut);
   const dieliky = Math.max(latka, z.teraz, 1);
   return (
     <span className="neresti-pruh" aria-hidden="true">
@@ -76,7 +76,6 @@ function vyhladChuti(z: StavZavislosti): { text: string; trieda: string } {
  */
 function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean }) {
   const vyhlad = vyhladChuti(z);
-  const opatrovatelka = z.latka < z.chut ? ` (Opatrovateľka: porovnáva sa ${Math.max(0, z.latka)})` : "";
   return (
     <Zdroj
       nazov="Chuť"
@@ -103,7 +102,7 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
         text: (
           <>
             <span className="tip-stav">
-              Chuť {z.chut}{opatrovatelka} · dnes {z.teraz} · {vyhlad.text}
+              Chuť {z.chut} · dnes {z.teraz} · {vyhlad.text}
               {z.abstaky > 0 && ` · ${ja ? "máš" : "má"} ${z.abstaky} Absťák${z.abstaky === 1 ? "" : z.abstaky < 5 ? "y" : "ov"} v balíčku, v bitke −${z.ubera} tuhé`}
             </span>
             Nerest je len to, čo vypiješ a vyfajčíš: Vypiť 1, NA EX {KONSTANTY.NEREST_NAEX}, každá vyfajčená cigareta 1 (doliatie, barter ani platby nie). Na konci kola:

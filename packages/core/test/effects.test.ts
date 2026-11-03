@@ -116,8 +116,7 @@ describe("M10 — MANUAL režim", () => {
 
 describe("pravidlá v2 a nová tlačová sada", () => {
   it("Robota je akcia a Záhradkár má spúšťač Exekúcia (v7)", () => {
-    // v9: Autobusár je boss — Robota je na ľavej strane (silueta A).
-    expect(data.cards.get("autobusar")?.left.actions.Robota).toBe(1);
+    expect([...data.cards.values()].some((d) => (d.left.actions.Robota ?? 0) + (d.right.actions.Robota ?? 0) > 0)).toBe(true);
     expect(data.cards.get("zahradkar")?.triggers).toEqual(["Exekúcia"]);
   });
 

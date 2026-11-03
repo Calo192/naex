@@ -13,10 +13,12 @@ export interface VrstvaProps {
   readonly onZavri: () => void;
   /** Tlačidlá dole vo vrstve (napr. „umiestniť“) — výber bez ťahania. */
   readonly paticka?: ReactNode;
+  /** Trieda panela navyše (Veštica: panel na celú výšku vrstvy). */
+  readonly trieda?: string;
   readonly children: ReactNode;
 }
 
-export function Vrstva({ nazov, pozn, skryta, onZavri, paticka, children }: VrstvaProps) {
+export function Vrstva({ nazov, pozn, skryta, onZavri, paticka, trieda, children }: VrstvaProps) {
   const zavriRef = useRef(onZavri);
   zavriRef.current = onZavri;
   const zavrietRef = useRef<HTMLButtonElement>(null);
@@ -42,7 +44,7 @@ export function Vrstva({ nazov, pozn, skryta, onZavri, paticka, children }: Vrst
       // Klik na pozadie zavrie; klik do panela nie.
       onClick={(e) => e.target === e.currentTarget && onZavri()}
     >
-      <div className="vrstva-panel">
+      <div className={trieda === undefined ? "vrstva-panel" : `vrstva-panel ${trieda}`}>
         <header className="vrstva-hlava">
           <h2>{nazov}</h2>
           {pozn !== undefined && <span className="vrstva-pozn">{pozn}</span>}

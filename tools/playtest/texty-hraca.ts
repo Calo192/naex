@@ -82,7 +82,7 @@ export function bzdochaText(data: GameData, v: ClientState): string | null {
 
 /**
  * Stávka bitky z jadra (stavkaBitky — ten istý výpočet ako výplata a web):
- * Noviny, Herňa, sekera a Kultúrny dom (strach starších v stávke od v8.3 nie je). Priznané Dlhy (Noviny, Herňa)
+ * Herňa, sekera a Kultúrny dom (strach starších v stávke od v8.3 nie je). Priznané Dlhy (Herňa)
  * také, aké budú pri poškodení — s Dlhmi z Pitiek kola, exekúcia príde až po
  * špakoch za bitku (stolPriPoskodeni). Bez cieľa null.
  */
@@ -96,15 +96,11 @@ export function stavkaText(data: GameData, v: ClientState): string | null {
     ].filter((x) => x !== "");
     return casti.length > 0 ? ` (z toho ${casti.join(", ")})` : "";
   };
-  const noviny = [
-    st.noviny[0] > 0 ? ` Keď prehráš, dostaneš +${spakov(st.noviny[0])} — tvoje Noviny, súper má o toľko priznaných Dlhov viac.` : "",
-    st.noviny[1] > 0 ? ` Keď prehrá súper, dostane +${spakov(st.noviny[1])} — jeho Noviny, máš o toľko priznaných Dlhov viac.` : "",
-  ].join("");
   const kd =
     st.porazenemu[0] + st.porazenemu[1] > 0
       ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${st.porazenemu[0]}, súper pri prehre +${st.porazenemu[1]}.`
       : "";
-  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1])}.${noviny}${kd}`;
+  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1])}.${kd}`;
 }
 
 /** Efekty Prehra porazeného slovami — ten istý text ako web (jadro, návrh #38 B). */
@@ -122,7 +118,7 @@ export function prehraText(data: GameData, v: ClientState): string | null {
 }
 
 /** Karty s efektom Prehra, ktorý efektyPrehry ráta. */
-const KARTY_PREHRY: ReadonlySet<string> = new Set(["dievcina_na_vydaj", "farar", "podvodnik"]);
+const KARTY_PREHRY: ReadonlySet<string> = new Set(["dievcina_na_vydaj", "farar"]);
 
 /**
  * Náhľad NA EX na kartu `uid`: efekty Prehra po bitke (playtest

@@ -129,14 +129,11 @@ describe("§8 Chuť: koniec kola (v9.1)", () => {
     expect(viewFor(data, s, 1).bezChuti).toBe(true);
   });
 
-  it("Opatrovateľka v línii (Furt): Chuť sa porovnáva o 2 nižšia — ubúda normálne", () => {
+  it("Opatrovateľka (v11.5 Furt na Pamätníkov) Chuť už nemení — Absťák príde aj s ňou v línii", () => {
     const opatr = (x: GameState): GameState => ({ ...x, strany: [[{ card: inst("opatrovatelka"), playedBy: 0 }], []] });
     const s = koniecKola(predKoncomKola(9, (x) => opatr(sHracom(x, 0, { chut: 3, nerestiTotoKolo: 1 }))));
-    expect(pocetAbstakov(s.hraci[0])).toBe(0);
+    expect(pocetAbstakov(s.hraci[0])).toBe(1);
     expect(s.hraci[0].chut).toBe(2);
-    // Bez nej Absťák príde; súperova Opatrovateľka nepomáha.
-    const cudzia = (x: GameState): GameState => ({ ...x, strany: [[{ card: inst("opatrovatelka"), playedBy: 1 }], []] });
-    expect(pocetAbstakov(koniecKola(predKoncomKola(9, (x) => cudzia(sHracom(x, 0, { chut: 3, nerestiTotoKolo: 1 })))).hraci[0])).toBe(1);
   });
 });
 

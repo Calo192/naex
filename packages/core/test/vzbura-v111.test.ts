@@ -199,14 +199,17 @@ describe("Vzbura obráti aktivitu karty (v11.1)", () => {
   });
 });
 
-describe("Vzbura s kartami sady (Michal 2026-11-02, snímka zo Zrejúcej)", () => {
-  const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
-  const karta = (defId: string, uid: number): CardInstance => ({ uid, defId, leftLayout: 0, rightLayout: 0 });
+describe("Vzbura s rozložením zo snímky Zrejúcej (Michal 2026-11-02; akcie kariet sa odvtedy zmenili)", () => {
+  const M_L: Layout4 = [null, "Dlh", "Viera", null];
+  const M_R: Layout4 = [null, "Odpor", null, "Povera"];
+  const P_L: Layout4 = ["Obmedzenie", "Odpor", "Rana", "Rana"];
+  const P_R: Layout4 = ["Obmedzenie", "Dlh", "Robota", null];
+  const data = syntheticData([makeDef("milujuca_manzelka", M_L, M_R), makeDef("policajtka", P_L, P_R)]);
 
   it("Milujúca manželka · Policajtka spojené Odporom: obe majú aktívne len nespojené akcie", () => {
     // Manželka.pravá [–, Odpor, –, Povera] ↔ Policajtka.ľavá [Obmedzenie, Odpor, Rana, Rana].
-    const manzelka = karta("milujuca_manzelka", 91001);
-    const policajtka = karta("policajtka", 91002);
+    const manzelka = instanceFor(data, "milujuca_manzelka", M_L, M_R);
+    const policajtka = instanceFor(data, "policajtka", P_L, P_R);
     const ev = evaluateLine(data, lineP0(own(policajtka), own(manzelka)));
     const ep = ev.cards.get(policajtka.uid)!;
     const em = ev.cards.get(manzelka.uid)!;

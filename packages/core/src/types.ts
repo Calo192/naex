@@ -79,6 +79,8 @@ export type Trigger =
   | "Konflikt"
   // Podpora (v11.3): zrkadlo Konfliktu — priložením sa stretnú dve karty toho istého hráča.
   | "Podpora"
+  // Hádka (v11.5, Noviny): efekt sa uplatní, keď sa v bitke rozhodne hádka (§9.1).
+  | "Hádka"
 
   // Exekúcia (Záhradkár, Michal 2026-10-28): exekúcia v tomto kole pre majiteľa neplatí.
   | "Exekúcia"
@@ -97,6 +99,7 @@ export const ALL_TRIGGERS: readonly Trigger[] = [
   "Kšeft",
   "Konflikt",
   "Podpora",
+  "Hádka",
   "Exekúcia",
   "Väzeň",
 ];

@@ -2987,3 +2987,41 @@ s cigaretou, kartou zadarmo, ohrozením (O7) a krokom 6d. Odtlačok hry sa zmeni
 > | Pokus o zajatie | pred stavbou šenku za 1 cigaretu skús zajať staršieho, pri ktorom je tvoj strach 3; karta ide tebe do ruky (boss), súper si pri stavbe nechá kartu zadarmo, starší je v ohrození (§5, §10) |
 > | Karta zadarmo | pri súperovom pokuse o zajatie si zo svojej stavby šenku tajne necháš 1 kartu do ruky (4 do šenku, 3 naspodok); keď skúšate obaja, nikto (§5) |
 > | V ohrození | starší, o ktorého zajatie sa v tomto kole hrá — jeho markerom nič nehýbe; silu jeho priazne smie hádka meniť (§10) |
+
+## v11.5 — identita kariet: nové akcie sady a efekty siedmich kariet (Michal 2026-11-03, Zrejúca)
+
+Michal 2026-11-03: „Zatiaľ takto — celé to treba naimplementovať a nasadiť HNEĎ, ako sa bude dať.“
+(docs/napady/identita-kariet, zadanie.md). Nové akcie všetkých kariet v sade; nové efekty Novín,
+Opatrovateľky, Podvodníka, Anonymného alkoholika, Šoféra, Sypača a Koňa. Odtlačok hry sa zmenil
+zámerne. Staré znenia (v11.4):
+
+§16 Výklad kariet:
+
+> | Opatrovateľka | Furt (v9.1): kým leží odhalená v línii, na konci kola sa Chuť jej majiteľa porovnáva, akoby bola **o 2 nižšia** (s nerestami kola, §8); Chuť ubúda normálne. Viac Opatrovateliek sa sčíta (−2 za každú). Ráta sa stav línie pri bitke (po bitke idú karty do balíčka). |
+
+> | Anonymný alkoholik | Nástup: majiteľ prizná všetky nepriznané Cirhózy zo svojho odhadzovacieho balíčka (§11). |
+
+> | Sypač (id `kulturista`) | Pitka (v10.3, Michal 2026-11-02): ak sa stane Výtržníkom (zrážka NA EX, §7), všetky akcie na jeho hranách sú aktívne **Pecky**, nie Rany — aj Posilnenie a Odpor (suseda nezdvojujú ani nerušia). Do v10.2 Kulturista s Úplatkom. |
+
+> | Šofér | Bitka: ak si v tomto kole nedal NA EX, udelíš súperovi Pecku navyše (+2 tuhé), za každého Šoféra. |
+
+> | Podvodník | Prehra: jeden tvoj priznaný Dlh prejde medzi súperove priznané (za každého Podvodníka). |
+
+> | Kôň | Furt: Nástroj vedľa neho s ním tvorí spoj ako s Občanom. |
+
+> | Noviny | Dedičstvo: Prehra (Titulka, návrh #40, Michal 2026-10-28): za každý priznaný Dlh, ktorý má víťaz navyše oproti tebe, dostaneš 1 špak. Dlhy sa rátajú pred exekúciou (§9, krok 4a). Víťazovi sa nič neberie — svoje špaky za bitku dostane celé. |
+
+§8 Chuť:
+
+> **Opatrovateľka** v línii porovná Chuť majiteľa o 2 nižšiu (§16) — Chuť ubúda normálne.
+
+§9 tabuľka krokov a §14 špaky:
+
+> | 4a | … Herňa a Noviny (porazenému za Dlhy víťaza navyše) podľa Dlhov pred exekúciou; … |
+> | 6c | … efekty Výhra a Prehra (Recidivista, Dievčina, Podvodník), Krokodíl |
+> | Noviny v Dedičstve porazeného (Titulka, 2026-10-28) | porazený dostane 1 špak za každý priznaný Dlh, ktorý má víťaz navyše oproti nemu (Dlhy pred exekúciou); víťazovi sa nič neberie | krok 4a |
+
+§7 Výtržník a Slovník: „… zmenia na aktívnu **Ranu** (Sypačovi na **Pecku**, §16) …“; „Rany (Sypačove Pecky, v10.3)“.
+
+§11: „(Vízia ju môže spáliť, rovnako Absťák; Anonymný alkoholik prizná všetky z odhadzovacieho balíčka)“;
+„Obecný úrad, Podvodník a priazeň Kmotra ich presúvajú k súperovi.“

@@ -33,7 +33,8 @@
 //                  odpovie a bitka sa vyhodnotí v jeho ťahu
 //   &stop=vizia    Vízia: hráč ?ja rozhoduje o vrchnej karte balíčka (veľké okno, Michal 2026-11-02);
 //                  &gula=1 mu dá do Dedičstva Krištáľovú guľu — okno ukáže dve karty
-//   &stop=vestica  Veštica po prehratej bitke: hráč ?ja vyberá karty z oboch doberacích balíčkov
+//   &stop=vestica  Veštica po prehratej bitke: hráč ?ja vyberá karty z oboch doberacích balíčkov; keď ju
+//                  partia nemá, prvá prehratá bitka od 2. kola sa na ukážku prepne na krok Veštica (&vynut=0 nie)
 //   &stop=pitka    Pitka od 2. kola, hrajú obaja naraz (cena fajčenia, nákupy na hrane stola)
 //   &stop=bzdocha  ako pitka, hráč ?ja má v línii Bzdochu a súper už skončil so skrytým NA EX —
 //                  stôl ukáže súperovu voľbu (Bzdocha, v7)
@@ -136,6 +137,18 @@ function sGulou(s: GameState, p: PlayerId): GameState {
   const gula: CardInstance = { uid: s.nextUid, defId: "kristalova_gula", leftLayout: 0, rightLayout: 0 };
   const h = { ...s.hraci[p], dedicstvo: [...s.hraci[p].dedicstvo, gula] };
   return { ...s, nextUid: s.nextUid + 1, hraci: p === 0 ? [h, s.hraci[1]] : [s.hraci[0], h] };
+}
+
+/**
+ * Veštica na ukážku: bitka, ktorú hráč p prehral (súper rozdeľuje Nakladačku), sa prepne na krok
+ * Veštica s hráčom p — Veštica v partii býva zriedka. Oba doberacie balíčky dostanú aj odhodené karty.
+ */
+function sVesticou(s: GameState, p: PlayerId): GameState {
+  const b = s.bitkaStav;
+  if (b === null) return s;
+  const balicek = (h: GameState["hraci"][number]) => ({ ...h, doberaci: [...h.doberaci, ...h.odhadzovaci], odhadzovaci: [] });
+  const hraci = [balicek(s.hraci[0]), balicek(s.hraci[1])] as unknown as GameState["hraci"];
+  return { ...s, hraci, bitkaStav: { ...b, krok: "vestica", caka: p, vitaz: opponentOf(p), prebytokZostava: 0, vesticaHotova: false } };
 }
 
 /** Hráč p dostane do ruky Hasiča a pár kariet do odhadzovacieho balíčka (alebo ho má prázdny); `tah` Hasiča vyloží. */
@@ -363,6 +376,9 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (stop === "vizia" && s.vizia !== null && naTahu(s) === ja && s.hraci[ja].doberaci.length >= 2)
       return najdene({ zaciatok: p.get("gula") === "1" ? sGulou(s, ja) : s, dohraj: [] });
     if (stop === "vestica" && s.faza === "bitka" && s.bitkaStav?.krok === "vestica" && s.bitkaStav.caka === ja) return najdene({ zaciatok: s, dohraj: [] });
+    // Bez Veštice v partii: prvá prehratá bitka od 2. kola (balíčky už nie sú prázdne) sa na ukážku prepne na ňu.
+    if (stop === "vestica" && p.get("vynut") !== "0" && s.kolo >= 2 && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === opponentOf(ja))
+      return najdene({ zaciatok: sVesticou(s, ja), dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {
