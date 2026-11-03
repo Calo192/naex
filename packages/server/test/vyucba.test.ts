@@ -338,10 +338,10 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
     const { cookie } = await registruj(server.port);
     const { k, prvy } = await zacni(cookie);
     expect(prvy.krok).toMatchObject({ id: "i-vitaj", kto: "info", tlacidlo: "Dať cigaretu", odovzdaCigaretu: true, preskocenie: true });
-    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(5);
+    expect(((await k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(7);
     k.posli({ type: "vyucbaDalej" });
     const po = (await k.cakaj("state")) as unknown as StavMsg;
-    expect(po.view.hraci[0]?.cigarety).toBe(4);
+    expect(po.view.hraci[0]?.cigarety).toBe(6);
     expect(po.events.some((e) => e.type === "log" && /Melichar/.test(e.text ?? ""))).toBe(true);
     expect((await k.cakaj("vyucba")).krok).toMatchObject({ id: "i-lokalita", tlacidlo: null, odovzdaCigaretu: false, preskocenie: false });
     k.zavri();
@@ -350,7 +350,7 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
     // Obnovenie stránky: výučba pokračuje od i-lokalita a cigareta ostala u Melichara.
     const znova = await zacni(cookie);
     expect(znova.prvy.krok).toMatchObject({ id: "i-lokalita" });
-    expect(((await znova.k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(4);
+    expect(((await znova.k.cakaj("state")) as unknown as StavMsg).view.hraci[0]?.cigarety).toBe(6);
     znova.k.zavri();
   });
 
@@ -375,7 +375,7 @@ describe("výučba — cigareta pre Melichara (Michal 2026-10-25)", () => {
       if (st === null) break;
       pred = st as unknown as StavMsg;
     }
-    expect(pred?.view.hraci[0]?.cigarety ?? -1).toBe(6);
+    expect(pred?.view.hraci[0]?.cigarety ?? -1).toBe(8);
     k.posli({ type: "vyucbaDalej" });
     expect((await k.cakaj("vyucba")).krok).toMatchObject({ id: "k-nakladacka1" });
     k.zavri();
