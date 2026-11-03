@@ -538,6 +538,13 @@ button.zdroj-starsi[aria-pressed="true"] {
   opacity: 0.6;
 }
 
+/* Poldeci z NA EX: vypitý pohár na čiarke stola — ráta sa k vypitým, no ešte leží na karte. */
+.ikona-poldeci .stol {
+  stroke: var(--akcent);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
 .ikona-poldeci .plus {
   stroke: currentColor;
   stroke-width: 12;
@@ -6485,6 +6492,17 @@ button.auto-hotovo-odkaz {
   .doska .poldeci-rad {
     min-width: 0;
     overflow: hidden;
+  }
+
+  /* Piktogramy sa radšej zúžia, než by orezanie skrylo vypité na konci radu — aj poldeci
+     na stole (Michal 2026-11-03: hráč má vidieť, že sa mu vráti). */
+  .doska .poldeci-rad > .ikona-poldeci {
+    flex: 0 1 auto;
+    min-width: 8px;
+  }
+
+  .doska .zdroj-poldeci .s-naex > .pod-plne {
+    display: none;
   }
 
   .doska .ikona-poldeci,

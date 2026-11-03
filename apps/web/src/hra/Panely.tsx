@@ -22,6 +22,7 @@ import { KartaHraca } from "./KartaHraca.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { PocetSpakov } from "./Spaky.tsx";
 import { CENA_POLA } from "./textyStarsich.ts";
+import { NA_STOLE_VYSVETLENIE, poldeciNaStole } from "./tabula.ts";
 import type { SpakyTeraz } from "@naex/core";
 
 // Ikony zdrojov a výmena „cena → zisk“ sú v ikonyZdrojov.tsx — bez ťažkých závislostí Panelov,
@@ -475,14 +476,14 @@ export function HracDoska({
   // NA EX naraz (v5): skryté NA EX vidí len jeho majiteľ (viewFor) — poldeci sa odpíše až pri odkrytí,
   // no hráč ho už dal, preto ho tu ukážeme ako ležiaci na stole. Zrážka = druhý poldeci na karte (naexBy2).
   // Súperove skryté NA EX prídu len s Bzdochou (hrám Pitku po ňom) — a moje vidí súper, keď ju má on.
-  const skryteNaex = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  const { naStole: naexNaStole, skryte: skryteNaex } = poldeciNaStole(view, p);
   const kSkrytemu = ja
     ? vidiVolbuSupera(data, view, opponentOf(p))
       ? ", súper ho vidí cez Bzdochu"
       : ", súper ho ešte nevidí"
     : ", skryté — vidíš ho cez Bzdochu";
-  const naexNaStole = view.strany[0].concat(view.strany[1]).filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length + skryteNaex;
   const plne = Math.max(0, hrac.poldeciPlne - skryteNaex);
+  const vypiteSoStolom = hrac.poldeciVypite + naexNaStole;
   // Limit, s ktorým hráč vstupuje do Zhromaždenia (so Zastávkou a Vínkom; NA EX na stole sa neráta).
   const limit = limitZhromazdenia(view, p);
   const buduci = limitBuduceKolo(view, p, false, data);
@@ -520,6 +521,8 @@ export function HracDoska({
 
   const poldeci: ReactNode[] = [];
   for (let i = 0; i < plne; i++) poldeci.push(<IkonaPoldeci key={`p${i}`} plny />);
+  // Poldeci z NA EX je už vypitý (Michal 2026-11-03) — hráč vidí, že sa mu vráti, no nie plný.
+  for (let i = 0; i < naexNaStole; i++) poldeci.push(<IkonaPoldeci key={`s${i}`} naStole />);
   for (let i = 0; i < hrac.poldeciVypite; i++) poldeci.push(<IkonaPoldeci key={`v${i}`} plny={false} />);
 
   return (
@@ -594,9 +597,11 @@ export function HracDoska({
           pod={
             <>
               {/* Každý riadok vo vlastnom prvku — v úzkej dlaždici sa skráti trojbodkou, nezalomí (malý notebook).
-                  „Na stole“ pred „vypité“: trojbodka zrezala práve ju (UI inšpekcia 2026-10-24). */}
-              <span>
-                plné{naexNaStole > 0 && ` · ${naexNaStole} na stole`} · {hrac.poldeciVypite} vypité
+                  Na stole sa ráta k vypitým; v nízkom okne „plné ·“ ustúpi, aby trojbodka nezrezala „na stole“
+                  (UI inšpekcia 2026-10-24). */}
+              <span className={naexNaStole > 0 ? "s-naex" : undefined}>
+                <span className="pod-plne">plné · </span>
+                {vypiteSoStolom} vypité{naexNaStole > 0 && ` (${naexNaStole} na stole)`}
               </span>
               <b>limit kariet {limit}</b>
             </>
@@ -606,12 +611,13 @@ export function HracDoska({
             text: (
               <>
                 <span className="tip-stav">
-                  {kto} {plne} plné, {hrac.poldeciVypite} vypité{naexNaStole > 0 && `, ${naexNaStole} na stole (NA EX${skryteNaex > 0 ? kSkrytemu : ""})`} · limit kariet{" "}
+                  {kto} {plne} plné, {vypiteSoStolom} vypité{naexNaStole > 0 && ` (z toho ${naexNaStole} na stole cez NA EX${skryteNaex > 0 ? kSkrytemu : ""})`} · limit kariet{" "}
                   {limit}
                   {jeCielLokalita(view, "zastavka") && " (Zastávka: spoločný pre oboch)"} · ďalšie kolo {buduci}
                 </span>
                 Limit vykladania = plné + 1; na začiatku kola sa {KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám. Plný poldeci platí ďalšiu
                 kartu v ťahu Zhromaždenia alebo NA EX v Pitke. Na konci hry je každý plný {KONSTANTY.SPAKY_ZA_POLDECI} špak (výkupné).
+                {naexNaStole > 0 && ` ${NA_STOLE_VYSVETLENIE}`}
               </>
             ),
           }}

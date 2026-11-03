@@ -19,6 +19,8 @@ export interface CislaHraca {
   readonly odhodene: number;
   readonly poldeci: number;
   readonly vypite: number;
+  /** Poldeci z NA EX na stole — rátajú sa k vypitým (poldeciNaStole). */
+  readonly naStole: number;
   readonly limit: number;
   readonly chut: number | null;
   readonly nerestiDnes: number;
@@ -55,6 +57,27 @@ export interface CislaHraca {
   readonly priazen: number;
 }
 
+/** Čo z pohľadu treba na poldeci hráča na stole. */
+export type PohladNaPoldeci = Pick<ClientState, "strany" | "pitkaStav" | "zaverecne">;
+
+/**
+ * Poldeci, ktoré hráč dal cez NA EX a ešte ležia na stole. Plné už nie sú — v bitke sa
+ * vypijú (§9.5), preto ich bar ráta k vypitým (Michal 2026-11-03).
+ * `skryte` = NA EX lícom dole v Pitke: z plných sa odpíše až pri odkrytí. Súperove skryté
+ * pohľad obsahuje len s Bzdochou, takže sa tu neprezradí nič, čo hráč nevidí.
+ */
+export function poldeciNaStole(view: PohladNaPoldeci, p: PlayerId): { readonly naStole: number; readonly skryte: number } {
+  const skryte = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  const strany = view.strany[0].concat(view.strany[1]);
+  const vLinii = strany.reduce((n, pl) => n + (pl.naexBy === p ? 1 : 0) + (pl.naexBy2 === p ? 1 : 0), 0);
+  // Súperova Záverečná lícom dole v strany nie je — NA EX na jej rube je len v zaverecne.
+  const naRube = view.zaverecne.filter((z) => z.naexBy === p && !strany.some((pl) => pl.card.uid === z.uid)).length;
+  return { naStole: vLinii + naRube + skryte, skryte };
+}
+
+/** Do vysvetlenia poldeci, keď hráč má NA EX na stole (§9.5, Alkoholik §10). */
+export const NA_STOLE_VYSVETLENIE = "Poldeci z NA EX leží na stole a ráta sa k vypitým: v bitke sa vypije a vráti sa vypitý (Alkoholik „do dna“: plný).";
+
 /**
  * Čísla hráča z pohľadu: plné poldeci bez skrytých NA EX (tie už ležia na stole,
  * ako v bare na počítači), Chuť len keď ju partia má.
@@ -68,13 +91,14 @@ export function cislaHraca(
   ine: { readonly cenaBarteru: number; readonly priazen: number } = { cenaBarteru: KONSTANTY.BARTER_CENA, priazen: 0 },
 ): CislaHraca {
   const h = view.hraci[p];
-  const skryte = (view.pitkaStav?.skryteNaex ?? []).filter((x) => x.hrac === p).length;
+  const { naStole, skryte } = poldeciNaStole(view, p);
   return {
     karty: h.rukaPocet,
     balicek: h.doberaciPocet,
     odhodene: h.odhadzovaci.length,
     poldeci: Math.max(0, h.poldeciPlne - skryte),
     vypite: h.poldeciVypite,
+    naStole,
     limit: limitZhromazdenia(view, p),
     chut: view.bezChuti === true ? null : z.chut,
     nerestiDnes: z.teraz,
@@ -125,7 +149,7 @@ export function riadkyTabule(ja: CislaHraca, su: CislaHraca): RiadokTabule[] {
   });
   const riadky: RiadokTabule[] = [
     r("karty", "Karty v ruke", (c) => String(c.karty)),
-    r("poldeci", "Poldeci plné · vypité", (c) => `${c.poldeci} · ${c.vypite}`),
+    r("poldeci", "Poldeci plné · vypité", (c) => `${c.poldeci} · ${c.vypite + c.naStole}`),
     r("limit", "Limit kariet", (c) => String(c.limit)),
     r("cigarety", "Cigarety", (c) => String(c.cigarety)),
     r("spaky", "Špaky", (c) => String(c.spaky)),
@@ -177,10 +201,11 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean): De
     case "poldeci":
       return {
         nadpis: "Poldeci",
-        text: `Limit vykladania = plné + 1; na začiatku kola sa ${KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám. Plný poldeci platí ďalšiu kartu v ťahu Zhromaždenia alebo NA EX v Pitke. Na konci hry je každý plný ${KONSTANTY.SPAKY_ZA_POLDECI} špak.`,
+        text: `Limit vykladania = plné + 1; na začiatku kola sa ${KONSTANTY.POLDECI_NA_ZACIATKU_KOLA} vypitý doleje sám. Plný poldeci platí ďalšiu kartu v ťahu Zhromaždenia alebo NA EX v Pitke. Na konci hry je každý plný ${KONSTANTY.SPAKY_ZA_POLDECI} špak.${c.naStole > 0 ? ` ${NA_STOLE_VYSVETLENIE}` : ""}`,
         riadky: [
           ["plné", String(c.poldeci)],
-          ["vypité", String(c.vypite)],
+          ["vypité", String(c.vypite + c.naStole)],
+          ...(c.naStole > 0 ? [["z toho na stole (NA EX)", String(c.naStole)] as const] : []),
           ["limit kariet", String(c.limit)],
           ["doliať vypitý", `${KONSTANTY.REFILL_CENA} cig.`],
           ["nový poldeci", `${c.cenaBarteru} cig.`],

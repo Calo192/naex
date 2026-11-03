@@ -111,6 +111,7 @@ const cisla = (x: Partial<CislaHraca>): CislaHraca => ({
   odhodene: 2,
   poldeci: 2,
   vypite: 1,
+  naStole: 0,
   limit: 3,
   chut: 2,
   nerestiDnes: 1,

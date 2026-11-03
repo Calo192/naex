@@ -11,11 +11,13 @@ import { IKONY } from "../karta/ikony.ts";
 const piktogram = (kluc: "Cigareta" | "Poldeci"): ReactNode =>
   IKONY[kluc].map((c, i) => <path key={i} d={c.d} fillRule={c.evenOdd ? "evenodd" : "nonzero"} />);
 
-export function IkonaPoldeci({ plny = true, novy = false }: { readonly plny?: boolean; readonly novy?: boolean }) {
+/** `naStole` = poldeci z NA EX: kreslí sa ako vypitý (v bitke sa vypije), s jemnou značkou. */
+export function IkonaPoldeci({ plny = true, novy = false, naStole = false }: { readonly plny?: boolean; readonly novy?: boolean; readonly naStole?: boolean }) {
   return (
-    <svg className={`ikona-poldeci ${plny ? "plny" : "vypity"}${novy ? " novy" : ""}`} viewBox="0 0 100 100" aria-hidden="true">
+    <svg className={`ikona-poldeci ${plny && !naStole ? "plny" : "vypity"}${novy ? " novy" : ""}${naStole ? " na-stole" : ""}`} viewBox="0 0 100 100" aria-hidden="true">
       {piktogram("Poldeci")}
       {novy && <path className="plus" d="M78 62v34M61 79h34" />}
+      {naStole && <path className="stol" d="M6 98H94" />}
     </svg>
   );
 }

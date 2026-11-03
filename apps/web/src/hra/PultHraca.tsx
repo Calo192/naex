@@ -77,7 +77,7 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
         <IkonaKarty />
         <b>{c !== null ? "sem" : cisla.karty}</b>
       </button>
-      {cip("poldeci", <IkonaPoldeci />, cisla.poldeci, `Poldeci plné ${cisla.poldeci}, vypité ${cisla.vypite}, limit kariet ${cisla.limit}`)}
+      {cip("poldeci", <IkonaPoldeci />, cisla.poldeci, `Poldeci plné ${cisla.poldeci}, vypité ${cisla.vypite + cisla.naStole}${cisla.naStole > 0 ? ` (${cisla.naStole} na stole)` : ""}, limit kariet ${cisla.limit}`)}
       {cisla.chut !== null && cip("chut", <IkonaAbstak />, cisla.chut, `Chuť ${cisla.chut}, neresti dnes ${cisla.nerestiDnes}`, cisla.chutHrozi)}
       {cip("pecen", <Pikto kluc="PoškodeniePečene" />, cisla.pecen, `Pečeň ${cisla.pecen} z ${cisla.prahPecene}`, cisla.pecen >= cisla.prahPecene - 1)}
       {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, `Dlhy ${cisla.dlhy}, zadĺženie ${cisla.zadlzenie} z ${cisla.prahDlhu}`, cisla.exekucia > 0)}
