@@ -1,0 +1,2544 @@
+[
+ {
+  "id": "veterinar",
+  "name": "Veterinár",
+  "identity": [
+   "OBR",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Viera": 2,
+    "Poldeci": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "Cigareta": 1,
+    "Viera": 1
+   }
+  }
+ },
+ {
+  "id": "autobusar",
+  "name": "Autobusár",
+  "identity": [
+   "EKO",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Rana": 1,
+    "Pecka": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Rana": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "starosta",
+  "name": "Starosta",
+  "identity": [
+   "POD",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Posilnenie": 2,
+    "Cigareta": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Pakt": 1,
+    "Vízia": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "farar",
+  "name": "Farár",
+  "identity": [
+   "OBR",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Viera": 2,
+    "Pohoršenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Pohoršenie": 1,
+    "Viera": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "postarka",
+  "name": "Poštárka",
+  "identity": [
+   "POD",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Vízia": 1,
+    "Povera": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Vízia": 1,
+    "Posilnenie": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "hrobar",
+  "name": "Hrobár",
+  "identity": [
+   "TUH",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Petelica": 1,
+    "Pohoršenie": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Rana": 1,
+    "Pohoršenie": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "vychovavatelka",
+  "name": "Vychovávateľka",
+  "identity": [
+   "SAB",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Obmedzenie": 2,
+    "Pecka": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Rana": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "krcmarka",
+  "name": "Krčmárka",
+  "identity": [
+   "EKO",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "Cigareta": 1,
+    "Obmedzenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Poldeci": 2,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "noviny",
+  "name": "Noviny",
+  "identity": [
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    3
+   ],
+   "actions": {
+    "Povera": 1,
+    "Dlh": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Pohoršenie": 1,
+    "Povera": 1
+   }
+  }
+ },
+ {
+  "id": "cigorky",
+  "name": "Krabička cigariet",
+  "identity": [
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Cigareta": 2
+   }
+  }
+ },
+ {
+  "id": "vinko",
+  "name": "Vínko",
+  "identity": [
+   "EKO",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Poldeci": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Posilnenie": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "pasca",
+  "name": "Pasca",
+  "identity": [
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Obmedzenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Obmedzenie": 1
+   }
+  }
+ },
+ {
+  "id": "puska",
+  "name": "Puška",
+  "identity": [
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Rana": 1,
+    "Dlh": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Petelica": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "svaty_text",
+  "name": "Svätý text",
+  "identity": [
+   "OBR"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    3
+   ],
+   "actions": {
+    "Viera": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Viera": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "nealko",
+  "name": "Nealko",
+  "identity": [
+   "SAB",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Pohoršenie": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Obmedzenie": 1
+   }
+  }
+ },
+ {
+  "id": "vyherny_automat",
+  "name": "Výherný automat",
+  "identity": [
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Dlh": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "vidly",
+  "name": "Vidly",
+  "identity": [
+   "TUH",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Rana": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Robota": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "lievik",
+  "name": "Injekcia",
+  "identity": [
+   "EKO",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Posilnenie": 2
+   }
+  }
+ },
+ {
+  "id": "boxer",
+  "name": "Valaška",
+  "identity": [
+   "TUH",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Rana": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "energetak",
+  "name": "Energeťák",
+  "identity": [
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Posilnenie": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "furik",
+  "name": "Fúrik",
+  "identity": [
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Robota": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Robota": 1
+   }
+  }
+ },
+ {
+  "id": "horoskop",
+  "name": "Horoskop",
+  "identity": [
+   "MAK",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Povera": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Vízia": 1,
+    "Povera": 1
+   }
+  }
+ },
+ {
+  "id": "hrable",
+  "name": "Hrable",
+  "identity": [
+   "SAB",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Odpor": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Robota": 1
+   }
+  }
+ },
+ {
+  "id": "jogurt",
+  "name": "Jogurt",
+  "identity": [
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "kristalova_gula",
+  "name": "Krištáľová guľa",
+  "identity": [
+   "POD",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Vízia": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Povera": 1,
+    "Vízia": 1
+   }
+  }
+ },
+ {
+  "id": "pistalka",
+  "name": "Izolačka",
+  "identity": [
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Obmedzenie": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Odpor": 1
+   }
+  }
+ },
+ {
+  "id": "telefon",
+  "name": "Telefón",
+  "identity": [
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Pohoršenie": 1,
+    "Povera": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Povera": 1,
+    "Pohoršenie": 1
+   }
+  }
+ },
+ {
+  "id": "vyherne_zreby",
+  "name": "Výherné žreby",
+  "identity": [
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Dlh": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Robota": 1
+   }
+  }
+ },
+ {
+  "id": "zapalovac",
+  "name": "Zapaľovač",
+  "identity": [
+   "EKO",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Cigareta": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Posilnenie": 1,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "zrkadlo",
+  "name": "Zrkadlo",
+  "identity": [
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Pakt": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1,
+    3
+   ],
+   "actions": {
+    "Pakt": 1
+   }
+  }
+ },
+ {
+  "id": "lesna_cesta",
+  "name": "Lesná cesta",
+  "identity": [
+   "TUH",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2,
+    3
+   ],
+   "actions": {
+    "Pecka": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    2,
+    3
+   ],
+   "actions": {
+    "Povera": 1
+   }
+  }
+ },
+ {
+  "id": "ihrisko",
+  "name": "Ihrisko",
+  "identity": [
+   "TUH",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Rana": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Poldeci": 1
+   }
+  }
+ },
+ {
+  "id": "zberny_dvor",
+  "name": "Zberný dvor",
+  "identity": [
+   "TUH",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    2
+   ],
+   "actions": {
+    "Petelica": 1,
+    "Robota": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    2
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Robota": 1
+   }
+  }
+ },
+ {
+  "id": "benzinka",
+  "name": "Benzínka",
+  "identity": [
+   "EKO",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Cigareta": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "zastavka",
+  "name": "Zastávka",
+  "identity": [
+   "EKO",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    2
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "krcma",
+  "name": "Krčma",
+  "identity": [
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Petelica": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Rana": 2
+   }
+  }
+ },
+ {
+  "id": "kostol",
+  "name": "Kostol",
+  "identity": [
+   "OBR",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Viera": 1,
+    "Vízia": 1,
+    "Posilnenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Viera": 1,
+    "Pakt": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "most",
+  "name": "Most",
+  "identity": [
+   "TUH",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    2
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Rana": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "obecny_urad",
+  "name": "Obecný úrad",
+  "identity": [
+   "SAB",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Robota": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Odpor": 1,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "jednota",
+  "name": "Jednota",
+  "identity": [
+   "EKO",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    2,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    2,
+    3
+   ],
+   "actions": {
+    "Pohoršenie": 1
+   }
+  }
+ },
+ {
+  "id": "kulturny_dom",
+  "name": "Kultúrny dom",
+  "identity": [
+   "MAK",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Pohoršenie": 1,
+    "Povera": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Poldeci": 1,
+    "Povera": 1
+   }
+  }
+ },
+ {
+  "id": "vinna_pivnica",
+  "name": "Vínna pivnica",
+  "identity": [
+   "EKO",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "Posilnenie": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "Cigareta": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "druzstvo",
+  "name": "Družstvo",
+  "identity": [
+   "EKO",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Robota": 2,
+    "Poldeci": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Odpor": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "cintorin",
+  "name": "Cintorín",
+  "identity": [
+   "OBR",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    2
+   ],
+   "actions": {
+    "Viera": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    2,
+    3
+   ],
+   "actions": {
+    "Robota": 1
+   }
+  }
+ },
+ {
+  "id": "kar",
+  "name": "Kar",
+  "identity": [
+   "OBR",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Viera": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Poldeci": 2
+   }
+  }
+ },
+ {
+  "id": "sklad",
+  "name": "Sklad",
+  "identity": [
+   "TUH",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    3
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Robota": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "polovnicka_chata",
+  "name": "Poľovnícka chata",
+  "identity": [
+   "TUH",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Rana": 1,
+    "Pakt": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Petelica": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "predsedova_vila",
+  "name": "Predsedova vila",
+  "identity": [
+   "EKO",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [],
+   "actions": {
+    "Cigareta": 1,
+    "Rana": 1,
+    "Dlh": 1,
+    "Pecka": 1
+   }
+  },
+  "right": {
+   "blocked": [],
+   "actions": {
+    "Dlh": 1,
+    "Pecka": 1,
+    "Robota": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "herna",
+  "name": "Herňa",
+  "identity": [
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Petelica": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Pecka": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "cierna_macka",
+  "name": "Čierna mačka",
+  "identity": [
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Pohoršenie": 1,
+    "Povera": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    3
+   ],
+   "actions": {
+    "Povera": 1
+   }
+  }
+ },
+ {
+  "id": "pes",
+  "name": "Pes",
+  "identity": [
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Rana": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Rana": 2
+   }
+  }
+ },
+ {
+  "id": "krokodil",
+  "name": "Krokodíl",
+  "identity": [
+   "SAB",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    2,
+    3
+   ],
+   "actions": {
+    "Odpor": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Pecka": 1
+   }
+  }
+ },
+ {
+  "id": "kapybara",
+  "name": "Kapybara",
+  "identity": [
+   "OBR",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Viera": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "kon",
+  "name": "Kôň",
+  "identity": [
+   "POD",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1,
+    3
+   ],
+   "actions": {
+    "Posilnenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Robota": 1
+   }
+  }
+ },
+ {
+  "id": "pijan",
+  "name": "Pijan",
+  "identity": [
+   "EKO",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Rana": 2,
+    "Poldeci": 1
+   }
+  }
+ },
+ {
+  "id": "milujuca_manzelka",
+  "name": "Milujúca manželka",
+  "identity": [
+   "OBR",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Viera": 2,
+    "Dlh": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Viera": 1
+   },
+   "pevny_odpor": 1
+  }
+ },
+ {
+  "id": "ministrant",
+  "name": "Miňištrant",
+  "identity": [
+   "OBR",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Viera": 2,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Povera": 1,
+    "Viera": 1
+   }
+  }
+ },
+ {
+  "id": "financna_poradkyna",
+  "name": "Finančná poradkyňa",
+  "identity": [
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Dlh": 2,
+    "Vízia": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Vízia": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "velmi_smutiaca_vdova",
+  "name": "Veľmi smútiaca vdova",
+  "identity": [
+   "SAB",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Rana": 1,
+    "Dlh": 1
+   },
+   "pevny_odpor": 1
+  },
+  "right": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Petelica": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "vestica",
+  "name": "Veštica",
+  "identity": [
+   "POD",
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Vízia": 1,
+    "PoškodeniePečene": 1,
+    "Povera": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Povera": 2
+   }
+  }
+ },
+ {
+  "id": "silna_nezavisla_zena",
+  "name": "Silná, nezávislá žena",
+  "identity": [
+   "POD",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Pakt": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Dlh": 2
+   }
+  }
+ },
+ {
+  "id": "policajtka",
+  "name": "Policajtka",
+  "identity": [
+   "SAB",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [],
+   "actions": {
+    "Odpor": 1,
+    "Rana": 2,
+    "Obmedzenie": 1
+   },
+   "pevny_odpor": 1
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "hasic",
+  "name": "Hasič",
+  "identity": [
+   "POD",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Posilnenie": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Petelica": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "praudovravec",
+  "name": "Praudovravec",
+  "identity": [
+   "POD",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Posilnenie": 1
+   },
+   "pevny_odpor": 1
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Dlh": 1
+   },
+   "pevny_odpor": 1
+  }
+ },
+ {
+  "id": "zamocnik",
+  "name": "Zámočník",
+  "identity": [
+   "EKO",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Posilnenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Robota": 2,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "niekoho_stryna",
+  "name": "Stryná",
+  "identity": [
+   "OBR",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Viera": 2,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "veteran",
+  "name": "Veterán",
+  "identity": [
+   "TUH",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Rana": 2
+   }
+  }
+ },
+ {
+  "id": "recidivista",
+  "name": "Recidivista",
+  "identity": [
+   "TUH",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Dlh": 2,
+    "Odpor": 1
+   },
+   "pevny_odpor": 2
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Petelica": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "liberal",
+  "name": "Liberál",
+  "identity": [
+   "MAK",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Povera": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Povera": 1
+   }
+  }
+ },
+ {
+  "id": "dievcina_na_vydaj",
+  "name": "Dievčina na vydaj",
+  "identity": [
+   "EKO",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Dlh": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Vízia": 1,
+    "Pakt": 1
+   }
+  }
+ },
+ {
+  "id": "zivnostnik",
+  "name": "Živnostník",
+  "identity": [
+   "EKO",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Cigareta": 1,
+    "Robota": 1
+   },
+   "pevny_odpor": 1
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Cigareta": 2,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "kocovnik",
+  "name": "Kočovník",
+  "identity": [
+   "TUH",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Odpor": 1,
+    "PoškodeniePečene": 1
+   },
+   "pevny_odpor": 2
+  },
+  "right": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Rana": 2
+   }
+  }
+ },
+ {
+  "id": "svokra",
+  "name": "Svokra",
+  "identity": [
+   "TUH",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2,
+    3
+   ],
+   "actions": {
+    "Obmedzenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Petelica": 1,
+    "Obmedzenie": 1
+   }
+  }
+ },
+ {
+  "id": "sarlatan",
+  "name": "Šarlatán",
+  "identity": [
+   "MAK"
+  ],
+  "left": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Povera": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Pohoršenie": 1,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "podvodnik",
+  "name": "Podvodník",
+  "identity": [
+   "EKO",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Cigareta": 2,
+    "Dlh": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "zahradkar",
+  "name": "Záhradkár",
+  "identity": [
+   "EKO",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Cigareta": 2,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Robota": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "anonymny_alkoholik",
+  "name": "Anonymný alkoholik",
+  "identity": [
+   "POD",
+   "OBR"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Posilnenie": 1,
+    "Viera": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Viera": 1
+   }
+  }
+ },
+ {
+  "id": "dvojcata",
+  "name": "Dvojčatá",
+  "identity": [
+   "TUH",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [],
+   "actions": {
+    "Dlh": 1,
+    "Odpor": 1,
+    "Rana": 2
+   },
+   "pevny_odpor": 1
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "PoškodeniePečene": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "sofer",
+  "name": "Šofér",
+  "identity": [
+   "EKO",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "Rana": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Rana": 1,
+    "Cigareta": 1
+   }
+  }
+ },
+ {
+  "id": "snubenica",
+  "name": "Snúbenica",
+  "identity": [
+   "POD",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Posilnenie": 1,
+    "Robota": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Cigareta": 2,
+    "Dlh": 1
+   }
+  }
+ },
+ {
+  "id": "degustatorka",
+  "name": "Degustátorka",
+  "identity": [
+   "EKO",
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Poldeci": 1
+   }
+  }
+ },
+ {
+  "id": "klebetnica",
+  "name": "Bzdocha",
+  "identity": [
+   "MAK",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Povera": 2,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Vízia": 1,
+    "Pakt": 1
+   }
+  }
+ },
+ {
+  "id": "dohadzovacka",
+  "name": "Dohadzovačka",
+  "identity": [
+   "POD",
+   "OBR"
+  ],
+  "left": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Pakt": 1,
+    "Viera": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Posilnenie": 1
+   }
+  }
+ },
+ {
+  "id": "vandal",
+  "name": "Vandal",
+  "identity": [
+   "TUH",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Petelica": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Odpor": 1,
+    "Rana": 1
+   },
+   "pevny_odpor": 1
+  }
+ },
+ {
+  "id": "stryko_z_ameriky",
+  "name": "Strýko z Ameriky",
+  "identity": [
+   "EKO",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Cigareta": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    1
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Vízia": 1
+   }
+  }
+ },
+ {
+  "id": "masiar",
+  "name": "Mäsiar",
+  "identity": [
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Pecka": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Pecka": 1,
+    "Rana": 1
+   }
+  }
+ },
+ {
+  "id": "kulturista",
+  "name": "Sypač",
+  "identity": [
+   "TUH",
+   "POD"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Posilnenie": 1,
+    "Rana": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Rana": 2
+   }
+  }
+ },
+ {
+  "id": "traktoristka",
+  "name": "Traktorista",
+  "identity": [
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Pecka": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    2
+   ],
+   "actions": {
+    "Rana": 2
+   }
+  }
+ },
+ {
+  "id": "vymahac",
+  "name": "Vymáhač",
+  "identity": [
+   "TUH"
+  ],
+  "left": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Rana": 2
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Pecka": 1
+   }
+  }
+ },
+ {
+  "id": "profesionalny_tiper",
+  "name": "Profesionálny tipér",
+  "identity": [
+   "POD",
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    0,
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Posilnenie": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    1,
+    2
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Pakt": 1
+   }
+  }
+ },
+ {
+  "id": "opatrovatelka",
+  "name": "Opatrovateľka",
+  "identity": [
+   "EKO",
+   "OBR"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Cigareta": 1,
+    "Robota": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Viera": 2,
+    "PoškodeniePečene": 1
+   }
+  }
+ },
+ {
+  "id": "polovnik",
+  "name": "Poľovník",
+  "identity": [
+   "TUH",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Petelica": 1,
+    "PoškodeniePečene": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Odpor": 1
+   },
+   "pevny_odpor": 1
+  }
+ },
+ {
+  "id": "predavacka",
+  "name": "Predavačka",
+  "identity": [
+   "EKO",
+   "SAB"
+  ],
+  "left": {
+   "blocked": [
+    2,
+    3
+   ],
+   "actions": {
+    "Dlh": 1,
+    "Robota": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0
+   ],
+   "actions": {
+    "Obmedzenie": 1,
+    "Cigareta": 2
+   }
+  }
+ },
+ {
+  "id": "veducko",
+  "name": "Vedúcko",
+  "identity": [
+   "EKO"
+  ],
+  "left": {
+   "blocked": [
+    3
+   ],
+   "actions": {
+    "Poldeci": 1,
+    "PoškodeniePečene": 1,
+    "Robota": 1
+   }
+  },
+  "right": {
+   "blocked": [
+    0,
+    1
+   ],
+   "actions": {
+    "Cigareta": 2
+   }
+  }
+ }
+]
