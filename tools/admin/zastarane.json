@@ -186,6 +186,15 @@
         "kon(?:a|ovi|om)? (?:w+ ){0,4}ran(?:a|u|y|ou)?(?![a-z])"
       ],
       "pozn": "v11.5: Kôň má vpravo Robotu namiesto Rany a jeho Roboty pália o 1 Dlh viac; spoj s Nástrojom ostáva"
+    },
+    {
+      "pojem": "dotiahnutie a zajatie v jednom rozdelení",
+      "vzory": [
+        "dotiahn\\w* (?:\\w+ ){0,6}zaja",
+        "zaja\\w* (?:\\w+ ){0,6}dotiahn",
+        "3 \\+ 5 = 8"
+      ],
+      "pozn": "v11.6: zajať sa dá len staršieho, ktorý sa ťa bojí na červenej už pred touto Nakladačkou (od minulého kola); dotiahnuť strach a hneď zajať zaniklo (presvedčenie s dotiahnutím rečí ostáva)"
     }
   ],
   "karty": [
