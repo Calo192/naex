@@ -44,7 +44,7 @@ export interface BattleSide {
 export interface DamageResult {
   readonly tuhe: readonly [number, number];
   /**
-   * Mäkké poškodenie (v10 Hádka): Pohoršenie × 2 + zvyšné Povery × sila Povery.
+   * Mäkké poškodenie (Hádka): Pohoršenie × POHORSENIE_MAKKE + zvyšné Povery × sila Povery (v11.7: 3 a 2).
    * Vyššie mäkké vyhrá hádku; v8.3–v9 vždy 0 (archív).
    */
   readonly makke: readonly [number, number];

@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.5 Strach a reči, zajatie a presvedčenie, identita kariet, 2026-11-03, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.7 Strach a reči, zajatie a presvedčenie, identita kariet, mäkké 3 a 2, 2026-11-04, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -215,8 +215,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Cigarety nemožno zrušiť NA EX), Výherné žreby (tvoje Hazardy aktívne, keď nie sú spojené, spojené neaktívne;
   NA EX potom zdvojí spojené), Izolačka (tvoje Obmedzenia uberajú aj súperove cigarety za pas), Hrable (akcia
   zrušená tvojím Odporom je tvoja ×2), Zrkadlo (tvoj Pakt kopíruje ×2), Valaška (Pecka +1 poškodenie), Telefón: tvoje Pohoršenia nemožno zrušiť Odporom a NA EX (v10), Jogurt (Poldeci otočia
-  vypitý poldeci hneď v Pitke), Energeťák (tvoje Posilnenie nemožno zrušiť NA EX), Horoskop: tvoje Povery majú silu 2
-  (v10; každá dá 2 mäkké), Svätý text: hodnota tvojej Viery je o 1 vyššia (len v tlmení tuhého; Povery ruší 1 : 1), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
+  vypitý poldeci hneď v Pitke), Energeťák (tvoje Posilnenie nemožno zrušiť NA EX), Horoskop: tvoje Povery majú silu 3
+  (v11.7; každá dá 3 mäkké), Svätý text: hodnota tvojej Viery je o 1 vyššia (len v tlmení tuhého; Povery ruší 1 : 1), Fúrik (Robota páli o 1 Dlh viac), Krištáľová guľa (Vízia ukáže 2 vrchné
   karty: o jednej rozhodneš — `{"type":"vizia","vziat":true,"druha":true}` je o druhej —, druhá ostane navrchu).
   **Profesionálny tipér** (Furt): posilnené akcie na jeho spojoch (Posilnením aj Forsážou, v10.4) — súperove ako
   posilnený Hazard, tvoje ako posilnená Robota.
@@ -328,7 +328,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   odoslaním overí a povie, kde by zvyšok ešte stačil.
 - **Hádka (v10, v11) — mäkké poškodenie:** Povera a Pohoršenie **tuhé nerobia**, sú mäkké poškodenie.
   Na začiatku bitky sa Viera (aj z Veriaceho) a Povery vyrušia 1 : 1 na kusy — jedna Viera zruší jednu Poveru,
-  aj vylepšenú Horoskopom; **mäkké = Pohoršenie × 2 + zvyšné Povery × 1** (Horoskop: Povera 2). Viera proti
+  aj vylepšenú Horoskopom; **mäkké = Pohoršenie × 3 + zvyšné Povery × 2** (v11.7; Horoskop: Povera 3). Viera proti
   Pohoršeniu nepomáha; zvyšná Viera tlmí tuhé. Kto má viac mäkkého, vyhral hádku o rozdiel; rovnosť = nikto.
   **Priazne hádka nemení** — víťaz ju po bitke rozdelí na svoje reči (vyššie). Víťaza bitky aj Nakladačku určuje
   tuhé. Čierna mačka: jej majiteľove Povery sa Vierou nerušia.

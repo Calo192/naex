@@ -116,7 +116,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   telefon: "impl", // Dedičstvo (v10): tvoje Pohoršenia nemožno zrušiť Odporom a NA EX (partia.ts)
   jogurt: "impl", // Dedičstvo: tvoje Poldeci otáčajú vypitý poldeci hneď v Pitke (vyhodnotPitku)
   energetak: "impl", // Dedičstvo: tvoje Posilnenie nemožno zrušiť NA EX (partia.ts)
-  horoskop: "impl", // Dedičstvo (v10): tvoje Povery majú silu 2 — mäkké (stranyBitky)
+  horoskop: "impl", // Dedičstvo (v11.7): tvoje Povery majú silu 3 — mäkké (stranyBitky)
   furik: "impl", // Dedičstvo: tvoje Roboty pália o 1 Dlh viac (exekucieBitky)
   kristalova_gula: "impl", // Dedičstvo: Vízia ukáže 2 vrchné karty, jednu vezmi či spáľ, druhú vráť navrch (cmdVizia)
   profesionalny_tiper: "impl", // Furt: posilnené akcie na jeho spojoch — súperove posilnený Hazard, tvoje posilnená Robota (partia.ts)
@@ -598,7 +598,7 @@ const VPLYVY_BEZ_CISLA: readonly { readonly zdroj: string; readonly akcia: Actio
   { zdroj: "zrkadlo", akcia: "Pakt", popis: "Pakt kopíruje prepojenú akciu dvakrát" },
   { zdroj: "telefon", akcia: "Pohoršenie", popis: "Pohoršenie nemožno zrušiť Odporom ani NA EX" },
   { zdroj: "jogurt", akcia: "Poldeci", popis: "Poldeci otočí vypitý poldeci hneď v Pitke" },
-  { zdroj: "horoskop", akcia: "Povera", popis: "Povera má silu 2 (2 mäkké)" },
+  { zdroj: "horoskop", akcia: "Povera", popis: `Povera má silu ${KONSTANTY.HADKA.HOROSKOP_POVERA} (${KONSTANTY.HADKA.HOROSKOP_POVERA} mäkké)` },
   { zdroj: "kristalova_gula", akcia: "Vízia", popis: "Vízia ukáže 2 vrchné karty" },
 ];
 

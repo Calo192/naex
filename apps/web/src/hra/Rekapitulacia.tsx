@@ -7,7 +7,7 @@
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import type { Action, AkciaRekapitulacie, AkciaTuha, CielVykladania, Moment, NaexRekapitulacie, PlayerId, PolozkaRekapitulacie, RekapitulaciaBitky, RekapitulaciaPitky, ZaverecnaOdhalena } from "@naex/core";
-import { AKCIE_TUHE, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky, opponentOf } from "@naex/core";
+import { AKCIE_TUHE, KONSTANTY, pecenPitky, prahDlhuPitky, rozlozRod, zadlzeniePitky, opponentOf } from "@naex/core";
 import { SpakyBitky, riadkovRozpisuStarsich } from "./Spaky.tsx";
 import { PriazenStarsiehoVRiadku } from "./KruzokPriazne.tsx";
 import { popisReciZHadky, type PriazneBitky } from "./priazenKola.ts";
@@ -723,7 +723,7 @@ export function RekapBitky({ r, ja, menoSupera, menoKarty, piktogramy, vlna, hot
             ucinkuje={hotovo || vlna >= vlnaUcinku}
           />
         )}
-        {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} pod="2 mäkké" />, true, undefined, "Pohoršenie")}
+        {tabulka && riadok("pohorsenie", r.pohorsenie.polozky, <Stred ikona={ikona("Pohoršenie")} nazov={nazov("Pohoršenie")} pod={`${KONSTANTY.HADKA.POHORSENIE_MAKKE} mäkké`} />, true, undefined, "Pohoršenie")}
         {tabulka && (hotovo || vlna >= vlnaUcinku) && <RiadokHadky r={r} ja={ja} menoSupera={menoSupera} priazne={priazne} menoKarty={menoKarty} />}
         {tabulka && riadok("naex-x2", naexX2, <Stred ikona={<ZnakNaex znak="×2" ikona={poldeci} />} nazov="NA EX" pod="zdvojilo" />, true, (kto) => titulNaex("zdvojilo", kto), undefined, (kto) => detailNaex(r.naex, "zdvojilo", kto, ja, piktogramy))}
         {tabulka && riadok("naex-zrus", naexZrus, <Stred ikona={<ZnakNaex znak="✕" ikona={poldeci} />} nazov="NA EX" pod="zrušilo" />, naexX2.length === 0, (kto) => titulNaex("zrusilo", kto), undefined, (kto) => detailNaex(r.naex, "zrusilo", kto, ja, piktogramy))}

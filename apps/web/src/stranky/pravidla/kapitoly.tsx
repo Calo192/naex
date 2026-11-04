@@ -527,7 +527,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     obrazok: "09-bitka",
     vSkratke: [
       "Tuhé: Rana 1, Pecka 2, Petelica 3. Viera ho znižuje.",
-      "Hádka: Pohoršenie dá 2 mäkké, Povera 1 (Viera ju zruší). Kto má viac mäkkého, posunie priazne starších k sebe do konca kola — marker stojí.",
+      "Hádka: Pohoršenie dá 3 mäkké, Povera 2 (Viera ju zruší). Kto má viac mäkkého, posunie priazne starších k sebe do konca kola — marker stojí.",
       "Viac tuhého vyhráva: víťaz dostane 1 špak za každú kartu v línii, lokalita ide na nástenku.",
       "Remízu rozhodne menej Absťákov, potom menej Dlhov, inak sekera.",
       "Nakladačka je rozdiel tuhého: drží ju víťaz, rozdeľuje ju porazený.",
@@ -546,7 +546,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             Horoskopom, a naopak. Proti Pohoršeniu Viera nepomáha.
           </li>
           <li>
-            <strong>Mäkké</strong> = Pohoršenie × 2 + zvyšné Povery × 1 (s Horoskopom × 2). Kto ho má viac, <strong>vyhral hádku</strong> o
+            <strong>Mäkké</strong> = Pohoršenie × 3 + zvyšné Povery × 2 (s Horoskopom × 3). Kto ho má viac, <strong>vyhral hádku</strong> o
             rozdiel; pri rovnosti nikto.
           </li>
           <li>

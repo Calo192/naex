@@ -66,8 +66,9 @@ function poNaex(strany: GameState["strany"], rukaReagujuceho: CardInstance[]): G
 describe("bot", () => {
   it("v8: v prehratej bitke nepridá do línie kartu, ktorá bitku nezmení — každá karta v línii je špak pre víťaza", () => {
     const snubenica = inst("snubenica");
-    // Svokra nie je Chlap — Snúbenica nič nevezme a 5 : 0 neotočí.
-    const s = { ...poNaex([[lezi("policajtka", 0), lezi("svokra", 0, 0)], []], [snubenica]), ciel: { typ: "lokalita", lokalita: inst("jednota") } } as GameState;
+    // Svokra nie je Chlap — Snúbenica nič nevezme a 5 : 0 neotočí. Krčma nemá na hranách mäkké
+    // (na Jednote by prevaha dala Pohoršenie, ktoré s mäkkým 3 hádku zmení, v11.7).
+    const s = { ...poNaex([[lezi("policajtka", 0), lezi("svokra", 0, 0)], []], [snubenica]), ciel: { typ: "lokalita", lokalita: inst("krcma") } } as GameState;
     expect(tahBota(data, s, 1, 7)).toEqual({ type: "bezReakcie" });
   });
 });

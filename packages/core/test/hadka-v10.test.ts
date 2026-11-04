@@ -32,40 +32,40 @@ function side(o: Partial<BattleSide> = {}): BattleSide {
 }
 
 describe("§9 krok Hádka — mäkké poškodenie (computeDamage)", () => {
-  it("Ana a Boris: Borisova Viera zruší jednu Aninu Poveru — mäkké 5 : 3, Ana vyhrala hádku o 2", () => {
+  it("Ana a Boris: Borisova Viera zruší jednu Aninu Poveru — mäkké 8 : 5, Ana vyhrala hádku o 3", () => {
     const d = computeDamage([side({ sums: { Pohoršenie: 2, Povera: 2 } }), side({ sums: { Pohoršenie: 1, Povera: 1, Viera: 1 } })]);
-    expect(d.makke).toEqual([5, 3]);
+    expect(d.makke).toEqual([8, 5]);
     expect(d.zrusenePovery).toEqual([1, 0]);
     // Viera, ktorá rušila Poveru, na tuhé nezostane.
     expect(d.zvysnaViera).toEqual([0, 0]);
-    expect(vysledokHadky(d.makke)).toEqual({ vitaz: 0, velkost: 2 });
+    expect(vysledokHadky(d.makke)).toEqual({ vitaz: 0, velkost: 3 });
   });
 
   it("rovnosť mäkkého = remíza, nikto nerozdeľuje (H5)", () => {
-    expect(vysledokHadky(computeDamage([side({ sums: { Pohoršenie: 1 } }), side({ sums: { Povera: 2 } })]).makke)).toEqual({ vitaz: null, velkost: 0 });
+    expect(vysledokHadky(computeDamage([side({ sums: { Pohoršenie: 2 } }), side({ sums: { Povera: 3 } })]).makke)).toEqual({ vitaz: null, velkost: 0 });
     expect(vysledokHadky([0, 0])).toEqual({ vitaz: null, velkost: 0 });
   });
 
   it("Viera proti Pohoršeniu nepomáha — zvyšná Viera tlmí tuhé", () => {
     const d = computeDamage([side({ sums: { Pohoršenie: 2, Rana: 3 } }), side({ sums: { Viera: 2 } })]);
-    expect(d.makke).toEqual([4, 0]);
+    expect(d.makke).toEqual([6, 0]);
     expect(d.tuhe[0]).toBe(1);
   });
 
-  it("Horoskop: Povera má silu 2; ruší sa stále 1 : 1 na kusy — jedna Viera zruší 2 mäkké", () => {
-    const d = computeDamage([side({ sums: { Povera: 3 }, silaPovery: 2 }), side({ sums: { Viera: 1 } })]);
+  it("Horoskop: Povera má silu 3; ruší sa stále 1 : 1 na kusy — jedna Viera zruší 3 mäkké", () => {
+    const d = computeDamage([side({ sums: { Povera: 3 }, silaPovery: 3 }), side({ sums: { Viera: 1 } })]);
     expect(d.zrusenePovery?.[0]).toBe(1);
-    expect(d.makke[0]).toBe(4);
+    expect(d.makke[0]).toBe(6);
   });
 
   it("Svätý text: jedna Viera zruší stále len jednu Poveru (aj vylepšenú Horoskopom); hodnota 2 len v tlmení tuhého", () => {
     // Michal 2026-11-01: „1 akcia Viera zruší jednu akciu Povera — vylepšenú, nevylepšenú“.
     const bez = computeDamage([side({ sums: { Povera: 2 } }), side({ sums: { Viera: 1 }, hodnotaViery: 2 })]);
     expect(bez.zrusenePovery?.[0]).toBe(1);
-    expect(bez.makke[0]).toBe(1);
-    const sHoroskopom = computeDamage([side({ sums: { Povera: 3, Rana: 4 }, silaPovery: 2 }), side({ sums: { Viera: 2 }, hodnotaViery: 2 })]);
-    // Dve Viery zrušia dve vylepšené Povery celé, tretia dá 2 mäkké; na tuhé Viera nezostane.
-    expect(sHoroskopom.makke[0]).toBe(2);
+    expect(bez.makke[0]).toBe(2);
+    const sHoroskopom = computeDamage([side({ sums: { Povera: 3, Rana: 4 }, silaPovery: 3 }), side({ sums: { Viera: 2 }, hodnotaViery: 2 })]);
+    // Dve Viery zrušia dve vylepšené Povery celé, tretia dá 3 mäkké; na tuhé Viera nezostane.
+    expect(sHoroskopom.makke[0]).toBe(3);
     expect(sHoroskopom.zvysnaViera[1]).toBe(0);
     expect(sHoroskopom.tuhe[0]).toBe(4);
     // Zvyšná Viera so Svätým textom tlmí tuhé dvakrát.
@@ -74,7 +74,7 @@ describe("§9 krok Hádka — mäkké poškodenie (computeDamage)", () => {
 
   it("Čierna mačka: jej Povery sa Vierou nerušia — vždy mäkké, Viera ostáva na tuhé", () => {
     const d = computeDamage([side({ sums: { Povera: 2, Rana: 3 }, poveryBezViery: true }), side({ sums: { Viera: 2 } })]);
-    expect(d.makke[0]).toBe(2);
+    expect(d.makke[0]).toBe(4);
     expect(d.tuhe[0]).toBe(1);
   });
 
