@@ -151,9 +151,21 @@ const hashTokenu = (t: string): string => createHash("sha256").update(t).digest(
 export function citajCookie(req: IncomingMessage, meno = COOKIE): string | null {
   for (const kus of (req.headers.cookie ?? "").split(";")) {
     const [k, ...v] = kus.trim().split("=");
-    if (k === meno) return decodeURIComponent(v.join("="));
+    if (k !== meno) continue;
+    // Pokazenú cookie (napr. podhodenú z inej *.sslip.io) preskočí a hľadá ďalej.
+    const hodnota = bezpecneDekoduj(v.join("="));
+    if (hodnota !== null) return hodnota;
   }
   return null;
+}
+
+/** decodeURIComponent bez výnimky — zlá cookie či cesta (%E0) nesmie zhodiť server (strážca 2026-11-04). */
+export function bezpecneDekoduj(s: string): string | null {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return null;
+  }
 }
 
 export function cookieRelacie(token: string, bezpecne: boolean): string {

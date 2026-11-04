@@ -4,7 +4,7 @@
 // (štatistiky hráča ako JSON z @naex/core). Profil je súčet týchto riadkov —
 // pri desiatkach či stovkách partií na hráča to zvládne aj prostý JS.
 
-import type { DvojicaStatistik, StatistikyHraca, StatistikyKariet } from "@naex/core";
+import type { DvojicaStatistik, Semienko, StatistikyHraca, StatistikyKariet } from "@naex/core";
 import { normalizujStatistiky, normalizujStatistikyKariet, prazdneStatistiky, scitajStatistiky, scitajStatistikyKariet } from "@naex/core";
 import type { Db } from "./db.ts";
 import { transakcia } from "./db.ts";
@@ -40,7 +40,7 @@ export interface ZaznamPartie {
   readonly verziaJadra?: string | null;
   /** Značka verzie pravidiel (VERZIA_PRAVIDIEL z jadra). */
   readonly verziaPravidiel?: string | null;
-  readonly seed?: number | null;
+  readonly seed?: Semienko | null;
   /** Príkazy partie v poradí: [miesto, príkaz]. */
   readonly prikazy?: readonly unknown[] | null;
   /** Záznam po kolách (bitkách) z jadra. */

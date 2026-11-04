@@ -7,6 +7,7 @@ import type { Command, Event, GameState } from "./engine.ts";
 import { apply, setupGame } from "./engine.ts";
 import type { GameData } from "./data.ts";
 import type { PlayerId } from "./types.ts";
+import type { Semienko } from "./rng.ts";
 
 export type PrikazPartie = readonly [PlayerId, Command];
 
@@ -17,7 +18,7 @@ export interface KrokPartie {
 }
 
 /** Stav partie po `krok` príkazoch (0 = rozdanie). Vyhodí chybu, keď príkaz na tomto jadre neprejde. */
-export function prehrajPartiu(data: GameData, seed: number, lokalit: number, prikazy: readonly PrikazPartie[], krok: number): KrokPartie {
+export function prehrajPartiu(data: GameData, seed: Semienko, lokalit: number, prikazy: readonly PrikazPartie[], krok: number): KrokPartie {
   let state = setupGame(data, seed, { lokalit });
   let events: readonly Event[] = [];
   const n = Math.max(0, Math.min(krok, prikazy.length));

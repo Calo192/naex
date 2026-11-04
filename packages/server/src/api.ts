@@ -13,7 +13,7 @@ import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategor
 import { MAX_TEXTU_KARTY, exportTxt, importTxt, sTextamiZImportu, slug, textyKarty, PREDVOLENE_NASTAVENIA } from "@naex/tvorba";
 import type { Pouzivatel, Rola, Ucty } from "./auth.ts";
 import type { Achievementy } from "./achievementy.ts";
-import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overIdNapovedy, overEmail, citajCookie, jeSpravca } from "./auth.ts";
+import { ChybaVstupu, cookieOdhlasenia, cookieRelacie, overHesloVstup, overLogin, overHlasitost, overLupu, overMeno, overSchemu, overPar, overPrepinac, overPohlavie, overIdNapovedy, overEmail, bezpecneDekoduj, citajCookie, jeSpravca } from "./auth.ts";
 import type { ObnovaHesla } from "./obnovaHesla.ts";
 import { ODPOVED_ZIADOSTI, textEmailuObnovy } from "./obnovaHesla.ts";
 import type { PosliEmail } from "./email.ts";
@@ -432,7 +432,12 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
   const ok = (telo: unknown, status = 200, hlavicky: Record<string, string> = {}) => odpoved(res, status, telo, hlavicky);
   // Vlastný účet s e-mailom — e-mail nie je v Pouzivatel, aby sa nedostal k iným (partia, profily, spätná väzba).
   const vlastny = (p: Pouzivatel | null) => (p === null ? null : { ...p, email: ctx.ucty.email(p.id) });
-  const casti = cesta.split("/").filter((c) => c !== "").map(decodeURIComponent);
+  const dekodovane = cesta.split("/").filter((c) => c !== "").map(bezpecneDekoduj);
+  if (dekodovane.includes(null)) {
+    odpoved(res, 400, { chyba: "Neplatná adresa." });
+    return;
+  }
+  const casti = dekodovane as string[];
   const r = `${metoda} /${casti.slice(1).join("/")}`;
 
   // Klient podľa inštancie kreslí pás „Zrejúca – pokusná verzia“ alebo ponúkne prepnutie do nej.

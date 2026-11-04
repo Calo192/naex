@@ -4,7 +4,7 @@
 // nedostane, lebo stav ide cez viewFor a udalosti cez eventsFor. Cudzí nič,
 // správca si vyberie miesto. Prehrať sa dá len partia z tej istej verzie jadra.
 
-import type { ClientState, Command, Event, PlayerId } from "@naex/core";
+import type { ClientState, Command, Event, PlayerId, Semienko } from "@naex/core";
 import { DLZKY_HRY, eventsFor, prehrajPartiu, viewFor } from "@naex/core";
 import type { Db } from "./db.ts";
 import type { Obsah } from "./obsah.ts";
@@ -38,7 +38,7 @@ export interface StavKroku {
 }
 
 interface RiadokPartie {
-  readonly seed: number | null;
+  readonly seed: Semienko | null;
   readonly prikazy: string | null;
   readonly verzia_jadra: string | null;
   readonly verzia_sady: number | null;
@@ -112,7 +112,7 @@ export class Prehravac {
     const lokalit = DLZKY_HRY[(p.riadok.dlzka ?? "stredna") as keyof typeof DLZKY_HRY] ?? DLZKY_HRY.stredna;
     const k = Math.max(0, Math.min(n, prikazy.length));
     try {
-      const { state, events } = prehrajPartiu(data, p.riadok.seed as number, lokalit, prikazy, k);
+      const { state, events } = prehrajPartiu(data, p.riadok.seed as Semienko, lokalit, prikazy, k);
       return { n: k, pocet: prikazy.length, miesto, view: viewFor(data, state, miesto), log: k === 0 ? [] : eventsFor(events, miesto), koniec: state.koniec !== null };
     } catch {
       return { chyba: "Partiu sa nepodarilo prehrať — záznam nesedí s touto verziou hry." };

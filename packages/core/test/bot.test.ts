@@ -125,7 +125,7 @@ describe("offline protihráč", () => {
       rng = r3;
       const inak: GameState = {
         ...s,
-        rng: s.rng + 12345,
+        rng: (s.rng as number) + 12345,
         naradie,
         obcania,
         hraci: [{ ...su, ruka: skryte.slice(0, su.ruka.length), doberaci: skryte.slice(su.ruka.length) }, { ...s.hraci[1], doberaci: moj }],

@@ -10,11 +10,11 @@
 
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { readFileSync, existsSync, statSync, mkdirSync } from "node:fs";
-import { randomInt } from "node:crypto";
+import { randomBytes, randomInt } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { join, normalize, extname, resolve } from "node:path";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, HistoriaLokalit, PlayerId, Pohlavie, ScenarVyucby, StatistikyKariet, StavKroniky, StavMomentov } from "@naex/core";
+import type { Command, DlzkaHry, DvojicaStatistik, Event, GameData, GameState, HistoriaLokalit, PlayerId, Pohlavie, ScenarVyucby, Semienko, StatistikyKariet, StavKroniky, StavMomentov } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import {
   DLZKY_HRY,
@@ -57,6 +57,7 @@ import {
   prehrajVyucbu,
   prikazZoScenara,
   vykonajKrok,
+  semienkoChacha,
   setupGame,
   textChybyKroku,
   VYUCBA_BOT,
@@ -71,7 +72,7 @@ import { otvorDb } from "./db.ts";
 import { pouziScenar, type Scenar } from "./scenar.ts";
 import { zlucUcty } from "./zlucenie.ts";
 import type { Pouzivatel } from "./auth.ts";
-import { Ucty, citajCookie, jeSpravca } from "./auth.ts";
+import { Ucty, bezpecneDekoduj, citajCookie, jeSpravca } from "./auth.ts";
 import { Media } from "./media.ts";
 import { Avatary } from "./avatary.ts";
 import { Hudba } from "./hudba.ts";
@@ -156,7 +157,7 @@ interface Room {
   /** Štatistiky rozohranej partie — zapisujú sa po každom ťahu. */
   statistiky: DvojicaStatistik | null;
   /** Seed partie a jej príkazy [miesto, príkaz] — do archívu pre budúci prehrávač (Michal 2026-10-22). */
-  seed: number | null;
+  seed: Semienko | null;
   readonly prikazy: [PlayerId, Command][];
   /** Záznam po kolách (kronika z jadra) — do archívu pre detail partie a súhrn. */
   kronika: StavKroniky | null;
@@ -238,6 +239,29 @@ export const MELICHAR_PAUZA_MS = 2_000;
 const HISTORIA_MAX = 600;
 /** Udalosti, z ktorých klient skladá log — súkromné karty (kartyTahane) sa neukladajú. */
 const DO_HISTORIE: ReadonlySet<Event["type"]> = new Set(["log", "autoPas", "tahal", "manualEfekt", "bitkaVysledok", "moment", "koniec"]);
+
+const LOKALNY_HOST = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
+
+/**
+ * Smie táto stránka otvoriť WebSocket? Prehliadač pošle Origin vždy a s ním aj
+ * hráčovu cookie — cudzia stránka (napr. iná *.sslip.io, SameSite ju nezastaví)
+ * by inak hrala za hráča a čítala jeho ruku (strážca 2026-11-04). Bez Origin
+ * sa pripájajú len nástroje a testy v Node, tie cookie obete nemajú.
+ */
+export function povolenyPovod(req: IncomingMessage): boolean {
+  const origin = req.headers.origin;
+  if (origin === undefined) return true;
+  let povod: string;
+  try {
+    povod = new URL(origin).host;
+  } catch {
+    return false;
+  }
+  const host = req.headers.host ?? "";
+  if (povod === host) return true;
+  // Vývoj: klient Vite (:5173) sa pripája cez proxy na server (:8787).
+  return LOKALNY_HOST.test(povod) && LOKALNY_HOST.test(host);
+}
 
 /** Bez O/0/I/1 — kód sa diktuje cez telefón. */
 const ABECEDA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -546,10 +570,16 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     return { kod: room.code, vyucba: room.vyucba !== null };
   };
 
-  const http = createServer((req, res) => {
+  // Chyba pri jednej požiadavke nesmie zhodiť proces — rozohrané partie sú len v pamäti (strážca 2026-11-04).
+  const zlyhaniePoziadavky = (res: ServerResponse, err: unknown): void => {
+    console.error("Chyba pri spracovaní požiadavky:", err);
+    if (!res.headersSent) res.writeHead(500);
+    if (!res.writableEnded) res.end();
+  };
+  const obsluzPoziadavku = (req: IncomingMessage, res: ServerResponse): void => {
     const url = new URL(req.url ?? "/", "http://localhost");
     if (url.pathname.startsWith("/api/")) {
-      void spracujApi(
+      spracujApi(
         {
           ucty,
           obnovaHesla,
@@ -596,7 +626,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         res,
         url.pathname,
         url.searchParams,
-      );
+      ).catch((err: unknown) => zlyhaniePoziadavky(res, err));
       return;
     }
     if (url.pathname.startsWith("/media/")) {
@@ -622,25 +652,36 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       return;
     }
     serveStatic(staticDir, req, res);
+  };
+  const http = createServer((req, res) => {
+    try {
+      obsluzPoziadavku(req, res);
+    } catch (err) {
+      zlyhaniePoziadavky(res, err);
+    }
   });
   // Zrejúca overuje reláciu u Vypálenej (asynchrónne) ešte pred pripojením.
   const ucetSpojenia = new WeakMap<IncomingMessage, Pouzivatel>();
   const wss = new WebSocketServer({
     server: http,
     path: "/ws",
-    ...(zrejuca === null
-      ? {}
-      : {
-          verifyClient: (info: { req: IncomingMessage }, hotovo: (vysledok: boolean) => void): void => {
-            void overRelaciu(info.req).then(
-              ({ ja }) => {
-                if (ja !== null) ucetSpojenia.set(info.req, ja);
-                hotovo(true);
-              },
-              () => hotovo(true),
-            );
-          },
-        }),
+    verifyClient: (info: { req: IncomingMessage }, hotovo: (vysledok: boolean, kod?: number) => void): void => {
+      if (!povolenyPovod(info.req)) {
+        hotovo(false, 403);
+        return;
+      }
+      if (zrejuca === null) {
+        hotovo(true);
+        return;
+      }
+      void overRelaciu(info.req).then(
+        ({ ja }) => {
+          if (ja !== null) ucetSpojenia.set(info.req, ja);
+          hotovo(true);
+        },
+        () => hotovo(true),
+      );
+    },
   });
 
   const send = (ws: WebSocket, msg: unknown): void => {
@@ -807,7 +848,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
 
   /** Rozdanie novej partie: seed, stav jadra a prázdne záznamy (štatistiky, tempo, kronika). */
   const rozdaj = (room: Room): void => {
-    room.seed = opts.seedRozdania ?? randomInt(2 ** 31);
+    // 256-bitové semienko ChaCha20 — 31-bitové sa dalo z prvého pohľadu dopočítať (strážca 2026-11-04).
+    room.seed = opts.seedRozdania ?? semienkoChacha(randomBytes(32));
     const rozdane = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
     room.state = opts.scenar !== undefined && room.bot !== null ? pouziScenar(rozdane, opts.scenar, room.bot === 1 ? 0 : 1) : rozdane;
     room.zaciatok = teraz();
@@ -1585,7 +1627,12 @@ function serveStatic(dir: string, req: IncomingMessage, res: ServerResponse): vo
     return;
   }
   const url = (req.url ?? "/").split("?")[0] ?? "/";
-  const cesta = normalize(join(dir, url === "/" ? "index.html" : decodeURIComponent(url)));
+  const dekodovana = url === "/" ? "index.html" : bezpecneDekoduj(url);
+  if (dekodovana === null) {
+    res.writeHead(400).end();
+    return;
+  }
+  const cesta = normalize(join(dir, dekodovana));
   // Žiadne úniky mimo dist adresára.
   if (!cesta.startsWith(normalize(dir))) {
     res.writeHead(403).end();

@@ -13,7 +13,7 @@ import type { CardDef, CardInstance, Phase, PlayerId, Tag } from "./types.ts";
 import { opponentOf, priazenZKluca } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf } from "./data.ts";
-import type { RngState } from "./rng.ts";
+import type { ChachaStav, RngState, Semienko } from "./rng.ts";
 import { rngInt, rngSeed, rngShuffle } from "./rng.ts";
 import type { ActionSums, KartaVBitke, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine, okolieVLinii, prevahaStran, prispevkyKariet, zvieratAUmlcane } from "./partia.ts";
@@ -524,7 +524,8 @@ export interface HasicVolba {
   readonly strana?: PlayerId;
 }
 
-type DeepMutable<T> = { -readonly [K in keyof T]: DeepMutable<T[K]> };
+// Stav ChaCha20 ostáva nemenný aj v pracovnej kópii — mení sa len celý (s.rng = …).
+type DeepMutable<T> = T extends ChachaStav ? T : { -readonly [K in keyof T]: DeepMutable<T[K]> };
 type MutState = DeepMutable<GameState>;
 
 // ---------------------------------------------------------------------------
@@ -1308,7 +1309,7 @@ function naspodok(s: MutState, data: GameData, karty: readonly DeepMutable<CardI
   for (const k of karty) (jeNaradie(data, k as CardInstance) ? s.naradie : s.obcania).push(k);
 }
 
-export function setupGame(data: GameData, seed: number, opts?: SetupOptions): GameState {
+export function setupGame(data: GameData, seed: Semienko, opts?: SetupOptions): GameState {
   const s: MutState = {
     rng: rngSeed(seed),
     nextUid: 1,
