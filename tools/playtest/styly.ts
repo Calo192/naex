@@ -2,15 +2,18 @@
 // hráči štýlov z tools/playtest/styly.json (ekonóm, agresor, klebetník, sabotér). Každý štýl má jeden
 // AI účet, preto hrá v turnuse najviac raz — 2 partie = všetky štyri štýly, zrkadlový zápas sa nedá.
 //
-// Hrá sa na Vypálenej (živý web, zverejnená sada; Michal 2026-11-03 — denníky štýlov sú len pre ňu).
-// --lokalne = dočasný lokálny server z tohto stromu (Zrejúca, len na skúšku nástroja, do denníkov nie).
+// Verziu hry vyberá Michal pred playtestom (2026-11-05): predvolene Vypálená (živý web, zverejnená
+// sada, vetva vypalena), --zrejuca = pokusná Zrejúca (kód master, rozpracovaná sada). Každá verzia má
+// vlastné denníky štýlov (tools/playtest/denniky/<verzia>/) a vlastnú maticu v histórii.
+// --lokalne = dočasný lokálny server z tohto stromu, len na skúšku nástroja (do denníkov ani histórie nie).
 //
 // Použitie (z koreňa repozitára):
-//   node --experimental-strip-types --no-warnings tools/playtest/styly.ts [1|2|<styl>-<styl>…] [kratka|stredna|dlha] [--lokalne]
+//   node --experimental-strip-types --no-warnings tools/playtest/styly.ts [1|2|<styl>-<styl>…] [kratka|stredna|dlha] [--zrejuca|--lokalne]
 //
 //   styly.ts 2 stredna                           dve partie, dvojice podľa histórie (najmenej hrané zápasy)
 //   styly.ts ekonom-agresor                      jedna konkrétna dvojica
 //   styly.ts ekonom-agresor klebetnik-saboter    dve konkrétne dvojice
+//   styly.ts 2 stredna --zrejuca                 dve partie na Zrejúcej
 //
 // Bez čísla ani dvojíc = 2 partie. História zápasov je docs/playtesty/styly-historia.json (vedie ju
 // agent naex-sudca-stylov); dvojice sa vyberajú tak, aby sa za tri turnusy odohrala celá matica.
@@ -29,6 +32,8 @@ interface Styl {
 
 interface ZapasHistorie {
   readonly styly: readonly [string, string];
+  /** Verzia hry (vypalena | zrejuca); staré záznamy bez nej sú z Vypálenej. */
+  readonly instancia?: string;
 }
 
 const { styly, hypoteza } = JSON.parse(readFileSync("tools/playtest/styly.json", "utf8")) as { styly: readonly Styl[]; hypoteza: string };
@@ -36,7 +41,13 @@ const HISTORIA = "docs/playtesty/styly-historia.json";
 const DLZKY = ["kratka", "stredna", "dlha"];
 
 const lokalne = process.argv.includes("--lokalne");
-const argumenty = process.argv.slice(2).filter((a) => a !== "--lokalne");
+const naZrejucej = process.argv.includes("--zrejuca");
+if (lokalne && naZrejucej) {
+  console.error("Buď --zrejuca, alebo --lokalne — nie oboje.");
+  process.exit(1);
+}
+const instancia = lokalne ? "lokalne" : naZrejucej ? "zrejuca" : "vypalena";
+const argumenty = process.argv.slice(2).filter((a) => a !== "--lokalne" && a !== "--zrejuca");
 const dlzka = argumenty.find((a) => DLZKY.includes(a)) ?? "stredna";
 const zvysne = argumenty.filter((a) => !DLZKY.includes(a));
 
@@ -55,7 +66,8 @@ function pocetyZapasov(): ReadonlyMap<string, number> {
   const pocty = new Map<string, number>();
   if (!existsSync(HISTORIA)) return pocty;
   const { zapasy } = JSON.parse(readFileSync(HISTORIA, "utf8")) as { zapasy: readonly ZapasHistorie[] };
-  for (const z of zapasy) pocty.set(kluc(...z.styly), (pocty.get(kluc(...z.styly)) ?? 0) + 1);
+  // Matica sa dopĺňa pre verziu, ktorá sa hrá — výsledky Vypálenej a Zrejúcej sa nemiešajú.
+  for (const z of zapasy.filter((x) => (x.instancia ?? "vypalena") === instancia)) pocty.set(kluc(...z.styly), (pocty.get(kluc(...z.styly)) ?? 0) + 1);
   return pocty;
 }
 
@@ -107,7 +119,7 @@ for (const [n, dvojica] of dvojice.entries()) {
   const hrac2 = styl(b);
   const r = spawnSync(
     process.execPath,
-    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n + 1}`, ...(lokalne ? [] : ["--zivy"])],
+    ["--experimental-strip-types", "--no-warnings", "tools/playtest/zaloz.ts", hrac1.meno, hrac2.meno, dlzka, "--id", `${id}-${n + 1}`, ...(lokalne ? [] : naZrejucej ? ["--zrejuca"] : ["--zivy"])],
     { encoding: "utf8" },
   );
   if (r.status !== 0) {
@@ -124,12 +136,14 @@ for (const [n, dvojica] of dvojice.entries()) {
 
 const turnus = join("playtest", `turnus-${id}`);
 mkdirSync(turnus, { recursive: true });
-writeFileSync(join(turnus, "turnus.json"), `${JSON.stringify({ id, druh: "styly", dlzka, web: lokalne ? "lokalne" : "vypalena", zalozeny: new Date().toISOString(), hypoteza, partie }, null, 2)}\n`);
+writeFileSync(join(turnus, "turnus.json"), `${JSON.stringify({ id, druh: "styly", dlzka, instancia, zalozeny: new Date().toISOString(), hypoteza, partie }, null, 2)}\n`);
 
-console.log(`Turnus štýlov ${id}: ${partie.length} ${partie.length === 1 ? "partia" : "partie"}, dĺžka ${dlzka} — ${turnus.split("\\").join("/")}/turnus.json`);
+const NAZVY: Readonly<Record<string, string>> = { vypalena: "Vypálená", zrejuca: "Zrejúca", lokalne: "lokálny server (skúška nástroja)" };
+const priecinokDennikov = instancia === "zrejuca" ? "zrejuca" : "vypalena";
+console.log(`Turnus štýlov ${id}: ${partie.length} ${partie.length === 1 ? "partia" : "partie"}, dĺžka ${dlzka}, verzia ${NAZVY[instancia] ?? instancia} — ${turnus.split("\\").join("/")}/turnus.json`);
 for (const [i, p] of partie.entries()) {
   console.log(`\nPartia ${i + 1}: ${p.relacia} (${p.adresa}) — ${p.hrac1.nazov} proti ${p.hrac2.nazov}`);
   for (const [cislo, h] of [[1, p.hrac1], [2, p.hrac2]] as const) {
-    console.log(`  Hráč ${cislo}: ${h.meno} — štýl ${h.kluc} (${h.nazov})\n           Charakter: ${h.charakter}\n           Denník: tools/playtest/denniky/${h.kluc}.md`);
+    console.log(`  Hráč ${cislo}: ${h.meno} — štýl ${h.kluc} (${h.nazov})\n           Charakter: ${h.charakter}\n           Denník: ${instancia === "lokalne" ? "žiadny (skúška nástroja)" : `tools/playtest/denniky/${priecinokDennikov}/${h.kluc}.md`}`);
   }
 }

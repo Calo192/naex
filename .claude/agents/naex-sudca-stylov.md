@@ -18,25 +18,28 @@ aby viedli k víťazstvu — a čo by tá zmena spravila ostatným štýlom.
 ## Podklady
 
 Zadanie ti povie turnus `T` = `playtest/turnus-<id>/turnus.json` (`druh:
-"styly"`). Pre každú partiu `R` a hráča `N`:
+"styly"`, `instancia` = `vypalena` | `zrejuca` — verzia, ktorú vybral Michal;
+v nadpise a zhrnutí reportu ju uveď). Pre každú partiu `R` a hráča `N`:
 
 - `R/hracN/rozbor-stylu.md`, `plan-stylu.md`, `prieskum.md`, `spaky.md`,
   `dennik.md`, `nezrovnalosti.md`, `moznosti.md`,
-- strategické denníky štýlov `tools/playtest/denniky/<kluc>.md` (hráči ich
+- strategické denníky štýlov hranej verzie `tools/playtest/denniky/<verzia>/<kluc>.md` (hráči ich
   po partii aktualizovali sami; `git diff` ukáže, čo sa tento turnus
   naučili; formát v `tools/playtest/denniky/README.md`),
 - `R/koniec-hrac1.txt`, `R/koniec-hrac2.txt` (posledný stav), `R/priebeh.log`
   ak je, `R/organizator.md` a `playtest/turnus-<id>/organizator.md` ak sú,
 - `docs/playtesty/styly-historia.json` — zápasy predošlých turnusov
-  (súbor založíš, ak chýba; `pravidla` = verzia Vypálenej, na ktorej sa hralo),
+  (súbor založíš, ak chýba; `instancia` = `vypalena` | `zrejuca` z `turnus.json`,
+  `pravidla` = verzia pravidiel tej inštancie; záznam bez `instancia` je z Vypálenej),
 - predošlé reporty `docs/playtesty/styly-*.html` (čo sa navrhlo, čo sa
   odvtedy zmenilo — `docs/PRAVIDLA.md` úvod, `git log`),
-- pravidlá a sada **Vypálenej** — playtest štýlov hrá len Vypálená (Michal
-  2026-11-03): `git show origin/vypalena:docs/PRAVIDLA.md`,
+- pravidlá a sada **hranej verzie** (`turnus.json` → `instancia`, Michal
+  2026-11-05): Vypálená = `git show origin/vypalena:docs/PRAVIDLA.md`,
   `…:tools/playtest/tahak.md`, `…:packages/core/data/cards.json` (zverejnená
-  sada; alebo worktree Vypálenej, ak ti ho organizátor dal) — **každý
-  návrh** porovnaj s nimi. Ak už `master` (Zrejúca) problém rieši inak,
-  povedz to pri návrhu (zmena je možno na ceste).
+  sada, alebo worktree Vypálenej od organizátora); Zrejúca = súbory
+  hlavného stromu (`master`, rozpracovaná sada) — **každý návrh** porovnaj
+  s nimi. Pri Vypálenej povedz, ak už Zrejúca problém rieši inak (zmena je
+  možno na ceste); pri Zrejúcej, či problém je už aj vo Vypálenej.
 
 Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
 
@@ -47,7 +50,7 @@ Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
    z dojmu hráča. Nedohraná partia je podklad, ale označ ju.
 2. **Over tvrdenia.** Ku každej príčine („štýl brzdí X“) nájdi dôkaz
    v denníku. Tvrdenie o pravidle over v `docs/PRAVIDLA.md` (pri pochybnosti
-   v jadre vetvy `vypalena`). Hráč sa mohol mýliť — vtedy to nie je slabina štýlu, ale
+   v jadre hranej verzie). Hráč sa mohol mýliť — vtedy to nie je slabina štýlu, ale
    nejasné pravidlo alebo zlá hra; napíš to.
 3. **Odlíš štýl od hráča a od náhody.** Prehral štýl, alebo hráč (zlé
    ťahy, odbočky), alebo šenok a dobratie? Odbočky a prázdne fázy štýlu sú
@@ -95,7 +98,7 @@ Ty smieš čítať všetko (aj `hra.json` a kód jadra) — hráči nie.
    experiment, ktorý štýl ešte neskúsil), vyhodnotil ich poctivo, zmenil
    podľa nich stratégiu? Hráč, ktorý len opakuje to isté, sa nič nenaučí —
    napíš to do reportu a do „Čo sledovať“.
-7. **Spoločné skúsenosti** (verzia partie = verzia Vypálenej, `skusenosti.ts verzie`). Návrhy z `rozbor-stylu.md`, časť „Návrhy
+7. **Spoločné skúsenosti** (verzia partie = verzia hranej inštancie, `skusenosti.ts verzie`). Návrhy z `rozbor-stylu.md`, časť „Návrhy
    spoločných skúseností“, over a zapíš do
    `tools/playtest/skusenosti/spolocne.md` podľa
    `tools/playtest/skusenosti/README.md` a postupu v
@@ -113,8 +116,10 @@ Obsah:
 1. **Zhrnutie** — 5 viet: ktoré štýly fungujú, ktoré nie, potvrdila sa
    hypotéza, top 3 zmeny.
 2. **Matica štýlov** — 4 × 4, bunka = výhry : prehry riadkového štýlu proti
-   stĺpcovému zo všetkých turnusov (aktuálna verzia pravidiel zvýraznená),
-   klik na bunku ukáže partie. Pod maticou počet partií a upozornenie, že
+   stĺpcovému zo všetkých turnusov, **zvlášť pre Vypálenú a Zrejúcu**
+   (prepínač; hraná verzia predvolená, aktuálna verzia pravidiel
+   zvýraznená), klik na bunku ukáže partie. Ak má štýl partie na oboch
+   verziách, porovnaj, či rozdiel v pravidlách pomohol alebo uškodil. Pod maticou počet partií a upozornenie, že
    pri malom počte je to signál, nie štatistika.
 3. **Štýl po štýle** — karta pre každý štýl: verdikt (tento turnus
    a doterajší), ako vyhrával alebo prečo nie, páky, ktoré fungovali,

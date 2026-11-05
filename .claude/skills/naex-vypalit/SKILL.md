@@ -130,9 +130,12 @@ si zapíše kto, kedy a obsah v čase skrytia):
 3. Skúsenosti AI hráčov (`tools/playtest/skusenosti/`): verzia Zrejúcej sa
    stala verziou Vypálenej — označ ich podľa toho (`tools/playtest/skusenosti.ts
    over-verziu`), aby protihráč na Vypálenej čítal platné.
-   Strategické denníky štýlov (`tools/playtest/denniky/`) sú len pre Vypálenú
-   a nič sa v nich nemení — hráč štýlu pri ďalšej partii sám porovná verziu
-   položiek s novou verziou Vypálenej a zmenené pravidlá overí znova.
+   Strategické denníky štýlov (`tools/playtest/denniky/`, README): Zrejúca sa
+   stala Vypálenou, takže `zrejuca/<kluc>.md` prepíš do `vypalena/<kluc>.md`
+   (v nadpise „Zrejúca“ → „Vypálená“; staré ostanú v gite) a nové
+   `zrejuca/<kluc>.md` sú ich kópia (nadpis „Zrejúca“). V
+   `docs/playtesty/styly-historia.json` sa nič nemení — záznamy nesú verziu
+   pravidiel.
 4. Uprac worktree.
 
 ## 9. Odovzdanie Michalovi

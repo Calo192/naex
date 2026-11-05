@@ -1,6 +1,6 @@
-# Strategický denník — Ekonóm Ďuro (štýl ekonom)
+# Strategický denník — Ekonóm Ďuro (štýl ekonom) — Vypálená
 
-Charakter štýlu: `../styly.json` (kľúč `ekonom`). Formát: `README.md`.
+Charakter štýlu: `../../styly.json` (kľúč `ekonom`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 
 ## Aktuálna stratégia

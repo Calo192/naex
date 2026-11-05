@@ -1,9 +1,20 @@
 # Strategické denníky štýlov
 
-Playtest štýlov hrá **len Vypálená** (živý web, vetva `vypalena`, zverejnená
-sada; Michal 2026-11-03) — denníky sú preto jedny a platia pre Vypálenú.
+## Dve verzie — dva denníky (Michal 2026-11-05)
 
-Každý herný štýl z `../styly.json` má jeden denník (`<kluc>.md`). Hráč štýlu
+Verziu hry pre playtest štýlov vyberá Michal pred každým turnusom:
+**Vypálená** (živý web, vetva `vypalena`, zverejnená sada) alebo **Zrejúca**
+(pokusná, kód `master`, rozpracovaná sada). Pravidlá sa medzi nimi líšia,
+preto má každá verzia vlastné denníky — čo štýl zistil na jednej, na druhej
+nemusí platiť. Hráč číta a píše len denník verzie, ktorú hrá.
+
+- **Nová Zrejúca** (po vypálení) začína kópiou denníkov Vypálenej.
+- **Vypálenie** (`/naex-vypalit`): Zrejúca sa stáva Vypálenou, takže
+  `zrejuca/*.md` nahradí `vypalena/*.md` (staré denníky Vypálenej ostanú
+  v gite) a nové `zrejuca/*.md` sú ich kópia.
+
+Každý herný štýl z `../styly.json` má jeden denník za každú verziu hry
+(`vypalena/<kluc>.md`, `zrejuca/<kluc>.md`). Hráč štýlu
 (`naex-hrac-stylu`, skill `naex-styly`) ho číta pred partiou a **sám ho
 prepisuje** po partii — je to jeho laboratórny zošit, z ktorého sa učí hrať
 svoj charakter lepšie (Michal 2026-11-03). Štýl nedostal zoznam kariet;
@@ -35,6 +46,8 @@ naraz nepíšu.
 6. **Partie** — jeden riadok za partiu: dátum, id, súper, výsledok, špaky,
    čo sa skúšalo.
 
-Po vypálení novej verzie (`/naex-vypalit`) hráč pri príprave porovná verziu
-položiek s hlavičkou `PRAVIDLA.md` Vypálenej a označí, čo treba overiť znova
-(zmeny sú v úvode `PRAVIDLA.md`).
+Keď sa pravidlá verzie zmenia (nový commit v `master` pre Zrejúcu, vypálenie
+pre Vypálenú), hráč pri príprave porovná verziu položiek s hlavičkou
+`PRAVIDLA.md` verzie, ktorú hrá, a označí, čo treba overiť znova (zmeny sú
+v úvode `PRAVIDLA.md`). Na Zrejúcej sa pravidlá menia často — tam je to
+pravidelná súčasť prípravy.

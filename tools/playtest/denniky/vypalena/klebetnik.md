@@ -1,6 +1,6 @@
-# Strategický denník — Bitkár Rudo (štýl agresor)
+# Strategický denník — Klebetná Mara (štýl klebetnik) — Vypálená
 
-Charakter štýlu: `../styly.json` (kľúč `agresor`). Formát: `README.md`.
+Charakter štýlu: `../../styly.json` (kľúč `klebetnik`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 
 ## Aktuálna stratégia

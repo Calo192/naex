@@ -1,6 +1,6 @@
-# Strategický denník — Klebetná Mara (štýl klebetnik)
+# Strategický denník — Sabotér Zdeno (štýl saboter) — Zrejúca
 
-Charakter štýlu: `../styly.json` (kľúč `klebetnik`). Formát: `README.md`.
+Charakter štýlu: `../../styly.json` (kľúč `saboter`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 
 ## Aktuálna stratégia
