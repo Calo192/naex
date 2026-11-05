@@ -1,7 +1,7 @@
 ---
 name: naex-styly
 description: Spustí playtest herných štýlov NA EX! — 1 alebo 2 partie naraz, v každej dvaja AI hráči rôznych charakterov (ekonomický — investuje a body berie na konci; agresívny — sila, strach a zatváranie starších; klebetný — hádky, reči a prehováranie starších, body aj z prehier; sabotér — dlhy, kliatby a rušenie súperových plánov). Štýl je správanie, nie zoznam kariet: nástroje si hráči hľadajú sami, v každej partii skúšajú nové veci ako experimenty a vedú si strategický denník štýlu, takže sa z turnusu na turnus zlepšujú. Sudca štýlov potom napíše report — matica štýl proti štýlu, prečo štýl funguje alebo nie, overenie hypotézy „najviac cigariet a Vízií vyhrá vo finále“ a návrhy zmien kariet, akcií, mechanizmov a bodovania, aby každý štýl mohol vyhrať; s max ich stratég preverí turnajmi botov a navrhár dá do sekcie Playtest na rozhodnutie. Použi, keď používateľ povie /naex-styly, „playtest štýlov“, „otestuj herné štýly“, „funguje agresívny / ekonomický / klebetný / sabotér štýl“, „dá sa vyhrať inak ako cigaretami“, „rôzne stratégie“.
-argument-hint: "[vypalena|zrejuca] [1|2|<styl>-<styl>…] [kratka|stredna|dlha] [max] [silni]"
+argument-hint: "[vypalena|zrejuca] [1|2|<styl>-<styl>…|kazdy] [kratka|stredna|dlha] [lokalne] [max] [silni]"
 ---
 
 # Playtest herných štýlov NA EX!
@@ -64,6 +64,22 @@ Ostatné sú voliteľné:
   ktoré sa v histórii (`docs/playtesty/styly-historia.json`) hrali najmenej
   — za tri turnusy sa odohrá celá matica 6 zápasov (každá verzia má vlastnú
   maticu).
+- **`kazdy`** — každý s každým: všetkých 6 zápasov v **troch kolách** za
+  sebou (každé kolo = turnus s 2 partiami, všetky štyri štýly):
+  `ekonom-agresor klebetnik-saboter`, potom `ekonom-klebetnik
+  agresor-saboter`, potom `ekonom-saboter agresor-klebetnik`. Ďalšie kolo
+  založ, až keď sú obe partie predošlého dohraté a hráči aktualizovali
+  denníky — ďalšie kolo sa tak učí z predošlého. Sudca píše na konci
+  **jeden** report za všetky tri turnusy (krok 5 dostane všetky
+  `turnus.json`). Trvá rádovo hodiny.
+- **`lokalne`** — len so `zrejuca`: Zrejúca na dočasných lokálnych
+  serveroch (`styly.ts … --zrejuca --lokalne`; kód `master`, sada
+  z `cards.json`, ktorá môže mierne zaostávať za tvorcom). Keď session
+  živý web nedosiahne (cloud bez siete na doménu a bez hesiel; Michal
+  2026-11-05). Ide do denníkov a histórie Zrejúcej; v reporte sa to uvedie.
+  Kroky 1 a 6 vtedy odpadnú (web), klient musí byť zbuildovaný
+  (`npm run build --workspace=@naex/web`), po partii `$P/ukonci.ts R`
+  zastaví jej server.
 - **dĺžka** — `kratka` | `stredna` (predvolená) | `dlha`. Štýly, ktoré
   stavajú na neskorej hre (ekonóm), a štýly na skorú výhru (agresor) sa
   na dĺžke líšia najviac — pri porovnávaní turnusov ju drž rovnakú.
@@ -177,7 +193,8 @@ verzie, `D` = `tools/playtest/denniky/<vypalena|zrejuca>/<kluc>.md`.
    pri otázkach na overenie: „Daj každej verdikt zabralo / nezabralo / málo
    dát.“)
 
-6. **Nahraj report na živý web** (sekcia Playtest → Reporty, len admin
+6. **Nahraj report na živý web** (ak ho session dosiahne; inak report
+   commitni a pushni a nahraje ho najbližšia session na Michalovom PC) (sekcia Playtest → Reporty, len admin
    a subadmin): `$A report-nahraj docs/playtesty/styly-<id>.html --zivy`.
    Verdikty overenia zapíš k návrhom ako v `naex-playtest`, krok 8b.
 

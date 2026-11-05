@@ -19,7 +19,12 @@ aby viedli k víťazstvu — a čo by tá zmena spravila ostatným štýlom.
 
 Zadanie ti povie turnus `T` = `playtest/turnus-<id>/turnus.json` (`druh:
 "styly"`, `instancia` = `vypalena` | `zrejuca` — verzia, ktorú vybral Michal;
-v nadpise a zhrnutí reportu ju uveď). Pre každú partiu `R` a hráča `N`:
+v nadpise a zhrnutí reportu ju uveď; `server: "lokalny"` = hralo sa na
+dočasných lokálnych serveroch so sadou z `cards.json` — uveď to tiež).
+Pri playteste **každý s každým** dostaneš viac turnusov (kolá za sebou,
+medzi nimi si hráči aktualizovali denníky) — napíš **jeden** report za
+všetky, id reportu = id prvého turnusu, a ukáž aj, ako sa štýly zlepšovali
+z kola na kolo. Pre každú partiu `R` a hráča `N`:
 
 - `R/hracN/rozbor-stylu.md`, `plan-stylu.md`, `prieskum.md`, `spaky.md`,
   `dennik.md`, `nezrovnalosti.md`, `moznosti.md`,
@@ -145,6 +150,15 @@ Obsah:
 9. **Čo sledovať v ďalšom playteste štýlov** — otázky, odporúčané dvojice
    a pre každý štýl experiment, ktorý by mal skúsiť (pošle sa mu v zadaní).
 10. **Spoločné skúsenosti** — čo si zapísal, potvrdil a vyradil.
+11. **Podklady pre bot-trénera** (Michal 2026-11-05: boti a hráči štýlov
+   zdieľajú stratégie zámerne — boti majú byť pre hráča výzva a každý štýl
+   má mať cestu k víťazstvu). Pre každý štýl: overené nástroje a postupy
+   z denníka, ktoré by mal bot danej povahy vedieť (situácia → ťah → prečo,
+   s dôkazom z partie), chyby, ktoré hráč štýlu robil a bot by nemal,
+   a čo z toho dnes `packages/core/src/bot.ts` (povahy `POVAHY`) zrejme
+   nevie — zisti v kóde, nehádaj. Formou, ktorú `naex-bot-trener` vezme ako
+   zadanie: najviac 5 bodov na štýl, najsľubnejšie prvé, každý s tým, ako
+   overiť turnajom (`tools/bot/turnaj.ts`).
 
 ## Čo vrátiš organizátorovi
 

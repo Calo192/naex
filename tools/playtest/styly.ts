@@ -6,6 +6,9 @@
 // sada, vetva vypalena), --zrejuca = pokusná Zrejúca (kód master, rozpracovaná sada). Každá verzia má
 // vlastné denníky štýlov (tools/playtest/denniky/<verzia>/) a vlastnú maticu v histórii.
 // --lokalne = dočasný lokálny server z tohto stromu, len na skúšku nástroja (do denníkov ani histórie nie).
+// --zrejuca --lokalne = Zrejúca na dočasných lokálnych serveroch (kód master, sada z cards.json) — keď
+// session živý web nedosiahne, napr. v cloude (Michal 2026-11-05); ide do denníkov a histórie Zrejúcej.
+// Aj lokálne hrá štýl v turnuse najviac raz — dvaja hráči jedného štýlu by naraz písali do jedného denníka.
 //
 // Použitie (z koreňa repozitára):
 //   node --experimental-strip-types --no-warnings tools/playtest/styly.ts [1|2|<styl>-<styl>…] [kratka|stredna|dlha] [--zrejuca|--lokalne]
@@ -42,11 +45,7 @@ const DLZKY = ["kratka", "stredna", "dlha"];
 
 const lokalne = process.argv.includes("--lokalne");
 const naZrejucej = process.argv.includes("--zrejuca");
-if (lokalne && naZrejucej) {
-  console.error("Buď --zrejuca, alebo --lokalne — nie oboje.");
-  process.exit(1);
-}
-const instancia = lokalne ? "lokalne" : naZrejucej ? "zrejuca" : "vypalena";
+const instancia = naZrejucej ? "zrejuca" : lokalne ? "lokalne" : "vypalena";
 const argumenty = process.argv.slice(2).filter((a) => a !== "--lokalne" && a !== "--zrejuca");
 const dlzka = argumenty.find((a) => DLZKY.includes(a)) ?? "stredna";
 const zvysne = argumenty.filter((a) => !DLZKY.includes(a));
@@ -106,7 +105,7 @@ if (zvysne.length > 0 && zvysne.every((a) => a.includes("-"))) {
 
 const pouzite = dvojice.flat();
 if (new Set(pouzite).size !== pouzite.length) {
-  console.error("Štýl smie v turnuse hrať najviac raz (jeden AI účet) — zrkadlový zápas ani dve partie toho istého štýlu sa nedajú.");
+  console.error("Štýl smie v turnuse hrať najviac raz (jeden AI účet, jeden denník) — zrkadlový zápas ani dve partie toho istého štýlu sa nedajú.");
   process.exit(1);
 }
 
@@ -136,9 +135,13 @@ for (const [n, dvojica] of dvojice.entries()) {
 
 const turnus = join("playtest", `turnus-${id}`);
 mkdirSync(turnus, { recursive: true });
-writeFileSync(join(turnus, "turnus.json"), `${JSON.stringify({ id, druh: "styly", dlzka, instancia, zalozeny: new Date().toISOString(), hypoteza, partie }, null, 2)}\n`);
+writeFileSync(join(turnus, "turnus.json"), `${JSON.stringify({ id, druh: "styly", dlzka, instancia, server: lokalne ? "lokalny" : "web", zalozeny: new Date().toISOString(), hypoteza, partie }, null, 2)}\n`);
 
-const NAZVY: Readonly<Record<string, string>> = { vypalena: "Vypálená", zrejuca: "Zrejúca", lokalne: "lokálny server (skúška nástroja)" };
+const NAZVY: Readonly<Record<string, string>> = {
+  vypalena: "Vypálená",
+  zrejuca: lokalne ? "Zrejúca (lokálne servery, sada z cards.json)" : "Zrejúca",
+  lokalne: "lokálny server (skúška nástroja)",
+};
 const priecinokDennikov = instancia === "zrejuca" ? "zrejuca" : "vypalena";
 console.log(`Turnus štýlov ${id}: ${partie.length} ${partie.length === 1 ? "partia" : "partie"}, dĺžka ${dlzka}, verzia ${NAZVY[instancia] ?? instancia} — ${turnus.split("\\").join("/")}/turnus.json`);
 for (const [i, p] of partie.entries()) {
