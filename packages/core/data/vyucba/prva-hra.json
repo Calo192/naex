@@ -801,7 +801,7 @@
     {
       "id": "i-hadka1",
       "kto": "info",
-      "melichar": "Najprv hádka: kto má viac [Povera] Povier, vyhrá. Povera dá 2. Ty máš dve, Štamgast jednu – 4 : 2, hádka je tvoja o 2. Tú si odlož, minieš ju po bitke.",
+      "melichar": "Najprv hádka: kto má viac [Povera] Povier, vyhrá. Ty dve, Štamgast jednu – hádka je tvoja o 1. Ten bod si odlož, minieš ho po bitke.",
       "zvyraznit": [
         "bitka-ucet"
       ]
@@ -878,23 +878,17 @@
           {
             "elderId": "krcmarka",
             "na": 1
-          },
-          {
-            "elderId": "veterinar",
-            "na": 1
           }
         ]
       },
-      "melichar": "Hádku minieš na reči, ohováranie. Aj reči majú pri staršom stupne, vždy nad tvojím strachom, a stupeň stojí rovnako. Máš 2: daj reči Krčmárke na žltú za 1 a Veterinárovi na žltú za 1, a potvrď.",
+      "melichar": "A bod z hádky minieš na reči, ohováranie. Aj reči majú pri staršom stupne, vždy nad tvojím strachom, a stupeň stojí rovnako. Daj reči Krčmárke na žltú, za 1, a potvrď.",
       "zvyraznit": [
         "starsi:krcmarka",
-        "starsi:veterinar",
         "tlacidlo:potvrdit-delenie"
       ],
       "volba": {
         "kandidati": [
-          "starsi:krcmarka",
-          "starsi:veterinar"
+          "starsi:krcmarka"
         ],
         "zle": [
           {
@@ -907,10 +901,10 @@
                 }
               ]
             },
-            "text": "Farár sa ťa bojí na oranžovej, reči by museli ísť až na červenú, za 3. Máš 2. Krčmárka a Veterinár."
+            "text": "Farár sa ťa bojí na oranžovej, reči by museli ísť až na červenú, za 3. Máš 1. Krčmárka."
           }
         ],
-        "inak": "Krčmárka a Veterinár, reči na žltú, každý za 1."
+        "inak": "Krčmárka, reči na žltú, za 1."
       }
     },
     {
@@ -1638,7 +1632,7 @@
     {
       "id": "i-exekutor2",
       "kto": "info",
-      "melichar": "Bitka: najprv hádka, a v nej je aj [Pohoršenie] Pohoršenie. Povera dáva 2, Pohoršenie 3 – spolu je to mäkké poškodenie a kto ho má viac, vyhrá hádku. Štamgastovi dala Pohoršenie Mačka, spojila sa s Vierou tvojho Alkoholika.",
+      "melichar": "Bitka: najprv hádka, a v nej je aj [Pohoršenie] Pohoršenie. Povera dáva 1, Pohoršenie 2 – spolu je to mäkké poškodenie a kto ho má viac, vyhrá hádku. Štamgastovi dala Pohoršenie Mačka, spojila sa s Vierou tvojho Alkoholika.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -1646,7 +1640,7 @@
     {
       "id": "k-povera3",
       "kto": "info",
-      "melichar": "Viera ruší Povery, ale Mačka má Furt – efekt, ktorý platí stále: Štamgastove Povery sa Vierou nerušia. Má dve a Pohoršenie, to je 2 + 2 + 3 = 7 mäkkého. Tvoju Poveru Miňištranta mu zrušila jeho [Viera] Viera. Hádku vyhral o 7 a po bitke ju minie na svoje reči. Ty tentoraz len pozeráš.",
+      "melichar": "Viera ruší Povery, ale Mačka má Furt – efekt, ktorý platí stále: Štamgastove Povery sa Vierou nerušia. Má dve a Pohoršenie, to sú 4 mäkké. Tvoju Poveru Miňištranta mu zrušila jeho [Viera] Viera. Hádku vyhral o 4 a po bitke ju minie na svoje reči. Ty tentoraz len pozeráš.",
       "zvyraznit": [
         "linia-starsich"
       ]
@@ -1701,7 +1695,7 @@
     {
       "id": "i-bodovanie2",
       "kto": "info",
-      "melichar": "Ale starší ti platia: Farár 3 za oranžový strach, Krčmárka a Veterinár po 1 za reči. Reči slabnú – po zaplatení klesnú o stupeň, a zo žltej zanikli. Štamgast prehral a reči nemal, nedostal nič.",
+      "melichar": "Ale starší ti platia: Farár 3 za oranžový strach a Krčmárka 1 za reči. Reči slabnú – po zaplatení klesnú o stupeň, a zo žltej zanikli. Štamgast prehral a reči nemal, nedostal nič.",
       "zvyraznit": [
         "linia-starsich",
         "bar:body",
@@ -1716,7 +1710,7 @@
         "zdvihy": [
           {
             "elderId": "farar",
-            "na": 3
+            "na": 2
           },
           {
             "elderId": "krcmarka",
@@ -1724,7 +1718,7 @@
           }
         ]
       },
-      "melichar": "Štamgast minul hádku 7: reči pri Farárovi až na červenú za 1 + 2 + 3 a pri Krčmárke na žltú za 1. Reči platia aj porazenému – Farár mu najbližšie dá 5 špakov, nech bitku vyhrá, či nie.",
+      "melichar": "Štamgast minul hádku 4: reči pri Farárovi na oranžovú za 1 + 2 a pri Krčmárke na žltú za 1. Reči platia aj porazenému – Farár mu najbližšie dá 3 špaky, nech bitku vyhrá, či nie.",
       "zvyraznit": [
         "starsi:farar",
         "starsi:krcmarka"
@@ -1733,7 +1727,7 @@
     {
       "id": "q-makke",
       "kto": "otazka",
-      "melichar": "Štamgast má reči pri Farárovi na červenej. Kedy mu za ne Farár zaplatí?",
+      "melichar": "Štamgast má reči pri Farárovi na oranžovej. Kedy mu za ne Farár zaplatí?",
       "moznosti": [
         {
           "text": "Po najbližšej bitke, aj keď ju prehrá.",
@@ -1751,7 +1745,7 @@
     {
       "id": "i-strach-starosta",
       "kto": "info",
-      "melichar": "Pozri na Farára: pri ňom máš červený strach ty a červené reči Štamgast, každý svoje. Strach ostáva, reči slabnú. Starší, ktorý sa ťa bojí na červenej, je vydesený: toho smieš po vyhratej bitke zajať, ukážem ti v tretej časti. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď.",
+      "melichar": "Pozri na Farára: pri ňom máš červený strach ty a oranžové reči Štamgast, každý svoje. Strach ostáva, reči slabnú. Starší, ktorý sa ťa bojí na červenej, je vydesený: toho smieš po vyhratej bitke zajať, ukážem ti v tretej časti. A kto vyhrá bitku, keď sa ho na červenej bojí štvorica starších, vyhral hneď.",
       "zvyraznit": [
         "linia-starsich",
         "starsi:farar"
@@ -1778,7 +1772,7 @@
     {
       "id": "i-spaky2",
       "kto": "info",
-      "melichar": "Špaky: 10 za karty v línii, aj za jeho, a 5 od Farára, Krčmárky a Veterinára. Exekútor: Štamgastovi Dlh, ale bez špaku – Farárov Advokát. 20 : −1. A on za prehru dostal cigaretu, aby sa neutrápil.",
+      "melichar": "Špaky: 10 za karty v línii, aj za jeho, a 4 od Farára a Krčmárky. Exekútor: Štamgastovi Dlh, ale bez špaku – Farárov Advokát. 19 : −1. A on za prehru dostal cigaretu, aby sa neutrápil.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body"
@@ -2248,7 +2242,7 @@
       "prikaz": {
         "type": "skipNaex"
       },
-      "melichar": "Bitka: najprv hádka. Miňištrantova [Povera] Povera ti ostala, Štamgast nemá Vieru, čo by ju zrušila, a k nej [Pohoršenie] Pohoršenie domu: 2 + 3 = 5 mäkkého. Štamgastovu Poveru ti zrušila tvoja [Viera] Viera. Hádka je tvoja o 5.",
+      "melichar": "Bitka: najprv hádka. Miňištrantova [Povera] Povera ti ostala, Štamgast nemá Vieru, čo by ju zrušila, a k nej [Pohoršenie] Pohoršenie domu: 3 mäkké. Štamgastovu Poveru ti zrušila tvoja [Viera] Viera. Hádka je tvoja o 3.",
       "zvyraznit": [
         "linia-starsich",
         "bitka-ucet"
@@ -2257,7 +2251,7 @@
     {
       "id": "i-vyhra3",
       "kto": "info",
-      "melichar": "Bitka je tvoja, 9 : 2: štyri špaky za karty v línii a Farár 5 za červený strach. Exekútor dnes nemá čo páliť. Štamgast prehral, a predsa dostal 5 za červené reči pri Farárovi, 1 za reči pri Krčmárke a 1 za kartu v línii – Kultúrny dom platí aj porazenému.",
+      "melichar": "Bitka je tvoja, 9 : 2: štyri špaky za karty v línii a Farár 5 za červený strach. Exekútor dnes nemá čo páliť. Štamgast prehral, a predsa dostal 3 za reči pri Farárovi, 1 za reči pri Krčmárke a 1 za kartu v línii – Kultúrny dom platí aj porazenému.",
       "zvyraznit": [
         "bar:body",
         "bar-supera:body",
@@ -2301,7 +2295,7 @@
           "farar"
         ]
       },
-      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Štamgast ti za svoj marker pri ňom dal 3 špaky, jeho reči tam boli na oranžovej. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Krčmárka a Starosta zo sivej na žltú, po 1.",
+      "melichar": "Nakladačku 7 som ti rozdelil ja, nech tu nesedíme do rána. Farár sa ťa bojí na červenej, tak som ho za 5 zajal – je tvoj väzeň a sedí v pivnici. Štamgast ti za svoj marker pri ňom dal špak, jeho reči tam boli na žltej. Farárovu schopnosť – zhodiť jedno súperovo NA EX z karty – smieš raz za hru použiť, kedy chceš. Zvyšné 2: Krčmárka a Starosta zo sivej na žltú, po 1.",
       "zvyraznit": [
         "starsi:krcmarka",
         "starsi:starosta",
@@ -2319,27 +2313,21 @@
             "na": 2
           },
           {
-            "elderId": "starosta",
-            "na": 2
-          },
-          {
             "elderId": "veterinar",
             "na": 1
           }
         ]
       },
-      "melichar": "Hádku 5 minieš ty. Reči ležia vždy nad tvojím strachom: Krčmárka a Starosta sa ťa boja na žltej, tak ich reči idú rovno na oranžovú, za 2. Každý z nich ti potom dá 3, vyhráš či prehráš. Zvyšný bod daj Veterinárovi, reči na žltú za 1. Klikni na nich a potvrď.",
+      "melichar": "Hádku 3 minieš ty. Reči ležia vždy nad tvojím strachom: Krčmárka sa ťa bojí na žltej, tak jej reči idú rovno na oranžovú, za 2. Krčmárka ti potom dá 3, vyhráš či prehráš. Zvyšný bod daj Veterinárovi, reči na žltú za 1. Klikni na nich a potvrď.",
       "hlaskaChyby": "nervy/16_to_zas_bude_vyzerat",
       "zvyraznit": [
         "starsi:krcmarka",
-        "starsi:starosta",
         "starsi:veterinar",
         "tlacidlo:potvrdit-delenie"
       ],
       "volba": {
         "kandidati": [
           "starsi:krcmarka",
-          "starsi:starosta",
           "starsi:veterinar"
         ],
         "zle": [
@@ -2353,10 +2341,22 @@
                 }
               ]
             },
-            "text": "Krčmárka na červenú by zjedla všetkých 5 – za 2 + 3. Rozdeľ: Krčmárke a Starostovi oranžovú, Veterinárovi žltú."
+            "text": "Krčmárka na červenú by stála 2 + 3. Máš 3: Krčmárke oranžovú, Veterinárovi žltú."
+          },
+          {
+            "prikaz": {
+              "type": "reci",
+              "zdvihy": [
+                {
+                  "elderId": "starosta",
+                  "na": 2
+                }
+              ]
+            },
+            "text": "Starosta sa ťa bojí na žltej, reči na oranžovú by ťa stáli 2 a Krčmárke by ostal 1. Krčmárka a Veterinár."
           }
         ],
-        "inak": "Krčmárka a Starosta na oranžovú, každý za 2, Veterinár na žltú za 1."
+        "inak": "Krčmárka na oranžovú za 2, Veterinár na žltú za 1."
       }
     },
     {
@@ -2774,7 +2774,7 @@
     {
       "id": "i-hadka-finale",
       "kto": "info",
-      "melichar": "Najprv hádka: Štamgast má [Povera] Poveru z Miňištranta, ty nič. Hádku vyhral o 2 – a vo finále sa hádka nerozdeľuje na reči, dostal za ňu 2 špaky.",
+      "melichar": "Najprv hádka: Štamgast má [Povera] Poveru z Miňištranta, ty nič. Hádku vyhral o 1 – a vo finále sa hádka nerozdeľuje na reči, dostal za ňu 1 špak.",
       "zvyraznit": [
         "bitka-ucet"
       ]
@@ -2782,7 +2782,7 @@
     {
       "id": "i-bitka-finale",
       "kto": "info",
-      "melichar": "Finále je tvoje, 22 : 8. Špaky: päť za karty v línii a Nakladačka 14 sa vo finále mení na špaky jedna ku jednej. Starší: Krčmárka, Starosta aj Veterinár po 3 za oranžové reči; exekútor ti zobral jeden. Vo finále sa nezajíma ani nepresviedča.",
+      "melichar": "Finále je tvoje, 22 : 8. Špaky: päť za karty v línii a Nakladačka 14 sa vo finále mení na špaky jedna ku jednej. Starší: Krčmárka 3 za oranžové reči, Veterinár 3 za oranžové a Starosta 1 za žltý strach; exekútor ti zobral jeden. Vo finále sa nezajíma ani nepresviedča.",
       "zvyraznit": [
         "bitka-ucet",
         "bar:body",
@@ -2792,7 +2792,7 @@
     {
       "id": "i-koniec",
       "kto": "info",
-      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 4. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 55 : 6.",
+      "melichar": "Koniec hry. Zvyšné plné poldeci a cigarety sa vykúpia: plný poldeci 1 špak, päť cigariet 1 špak; tebe to dalo 2, Štamgastovi 4. A dve Cirhózy – z druhého kola a z finále – ti ležia v balíčku nepriznané a stoja ťa 6 špakov; Štamgasta jeho jedna 3. 50 : 5.",
       "zvyraznit": [
         "bar:body",
         "nastenka"

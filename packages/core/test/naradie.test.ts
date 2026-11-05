@@ -268,7 +268,7 @@ describe("Náradie mimo línie (§11, §12)", () => {
     expect(t.hraci[0].doberaci[0]?.defId).toBe("pijan");
   });
 
-  it("Horoskop (v11.7): tvoje Povery majú silu 3; hádka (v11) priazeň nemení ani v tomto, ani v ďalšom kole", () => {
+  it("Horoskop (v10): tvoje Povery majú silu 2; hádka (v11) priazeň nemení ani v tomto, ani v ďalšom kole", () => {
     const s0 = sDedicstvom(setupGame(data, 5), 0, ["horoskop"]);
     const ciel = s0.lokalityVHre.find((k) => k.defId === "krcma")!;
     const stred = s0.starsi.map((e) => ({ ...e, ...zPolohy(3 as number) }));
@@ -282,8 +282,8 @@ describe("Náradie mimo línie (§11, §12)", () => {
       lokalityVHre: s0.lokalityVHre.filter((k) => k.defId !== "krcma"),
       bitkaStav: bitka({ krok: "hadka", caka: 0, exekutorHotovy: [true, true], hadka: { makke: [2, 0], vitaz: 0, velkost: 1, zostava: 1, prepadlo: 0, zdvihy: [] } }),
     };
-    // Povera hráča s Horoskopom dá 3 mäkké, bez neho 2.
-    expect(poskodenieBitky(data, s, [{ Povera: 1 }, { Povera: 1 }]).makke).toEqual([3, 2]);
+    // Povera hráča s Horoskopom dá 2 mäkké, bez neho 1.
+    expect(poskodenieBitky(data, s, [{ Povera: 1 }, { Povera: 1 }]).makke).toEqual([2, 1]);
     const elder = s.starsi[0]!;
     const r = spustBitku(data, s);
     let t = r.state;

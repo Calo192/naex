@@ -1159,7 +1159,7 @@ export function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [Acti
       // Veriaci (Michal 2026-10-20): Viera navyše rovná sile priazne, nie vyššia hodnota každej
       // Viery. Hádka od v11 priazne nemení — proti Poverám aj v tlmení tuhého tá istá sila.
       vieraVeriacehoPred: silaPriazne(data, s, "VERIACI", p),
-      // Horoskop (Dedičstvo): tvoje Povery majú silu KONSTANTY.HADKA.HOROSKOP_POVERA (v11.7: 3).
+      // Horoskop (Dedičstvo, v10): tvoje Povery majú silu 2.
       silaPovery: vDedicstve(s, p, "horoskop") ? KONSTANTY.HADKA.HOROSKOP_POVERA : KONSTANTY.HADKA.POVERA_MAKKE,
       // Abstinent (v10): v bitke sa ti neráta 1 / 2 / 3 Absťákov — účinnou silou po hádke.
       silaAbstinenta: silaPriazne(data, s, "LAKOMEC", p),
@@ -1194,7 +1194,7 @@ export interface RozpisPoskodenia {
   readonly poveraIgnorovana: number;
   /** Zvyšné Povery po vyrušení s Vierou — mäkké poškodenie (v10). */
   readonly zvysnaPovera: number;
-  /** Mäkké poškodenie: Pohoršenie × POHORSENIE_MAKKE + zvyšné Povery × sila Povery (v11.7: 3 a 2). */
+  /** Mäkké poškodenie (v10): Pohoršenie × 2 + zvyšné Povery × sila Povery. */
   readonly makke: number;
   /** Koľko mäkkého dá jedna zvyšná Povera (1, s Horoskopom 2). */
   readonly silaPovery: number;
@@ -4414,7 +4414,7 @@ function pokracujBitku(s: MutState, data: GameData, events: Event[]): void {
   b.caka = null;
 
   // 1. Hádka (v10, Michal 2026-11-01; v11 Strach a reči): Viera a Povery sa vyrušia 1 : 1,
-  // mäkké = Pohoršenie × POHORSENIE_MAKKE + zvyšné Povery × sila Povery; víťaz (vyššie mäkké) rozdelí rozdiel
+  // mäkké = Pohoršenie × 2 + zvyšné Povery × sila Povery; víťaz (vyššie mäkké) rozdelí rozdiel
   // na svoje reči až po bodovaní (krok reci). Priazne hádka od v11 nemení. Remíza = nikto.
   if (b.krok === "hadka") {
     if (b.hadka === undefined) {

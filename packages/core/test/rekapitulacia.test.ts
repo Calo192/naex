@@ -16,7 +16,6 @@ import {
   AKCIE_TUHE,
   evaluateLine,
   eventsFor,
-  KONSTANTY,
   loadGameData,
   naTahu,
   pitkaPredBitkou,
@@ -218,10 +217,10 @@ describe("rekapitulácia bitky", () => {
             // Čierna mačka (v8.3): Povery jej majiteľa sa Vierou nerušia.
             const macka = [...(e.strany?.[0] ?? []), ...(e.strany?.[1] ?? [])].some((pl) => pl.card.defId === "cierna_macka" && pl.playedBy === q);
             if (!macka) expect(r.zrusenaPovera[q]).toBe(Math.min(sucet(r.viera, p), sucet(r.povera, q)));
-            // Mäkké = Pohoršenie × 3 + zvyšné Povery × sila Povery (v11.7); celkové = tuhé.
+            // Mäkké (v10) = Pohoršenie × 2 + zvyšné Povery × sila Povery; celkové = tuhé.
             expect(r.zvysnaPovera[p]).toBe(d.zvysnaPovera[p]);
             expect(r.makke?.[p]).toBe(d.makke[p]);
-            expect(r.makke?.[p]).toBe(r.pohorsenie.spolu[p] * KONSTANTY.HADKA.POHORSENIE_MAKKE + r.zvysnaPovera[p] * (r.silaPovery?.[p] ?? KONSTANTY.HADKA.POVERA_MAKKE));
+            expect(r.makke?.[p]).toBe(r.pohorsenie.spolu[p] * 2 + r.zvysnaPovera[p] * (r.silaPovery?.[p] ?? 1));
             expect(r.celkove[p]).toBe(r.tuheSpolu[p]);
             expect(sucet(r.pohorsenie.polozky, p)).toBe(r.pohorsenie.spolu[p]);
             if (sucet(r.povera, p) > 0) sPoverou++;

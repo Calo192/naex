@@ -3064,30 +3064,11 @@ Zmeny v11.4 (úvod):
 
 > | Zajatie | pri rozdelení Nakladačky za 5 bodov staršieho, pri ktorom je tvoj strach 3 (dotiahnuť smieš v tom istom rozdelení): väzeň, krádež špakov; vo finále nie (§9.4, §10, v11.4; v9–v11.3 pokus o zajatie v drafte) |
 
-## v11.7 — mäkké 3 a 2 (Michal 2026-11-04, Zrejúca)
+## Pokus o mäkké 3 a 2 — vrátené (Zrejúca 2026-11-04 až 2026-11-05)
 
-Michal 2026-11-04: „Mäkké poškodenie je veľmi slabé – priam až extrémne slabé … zvýšiť mäkké poškodenie
-pohoršenia z 2 na 3, zvýšiť mäkké poškodenie povier z 1 na 2.“ Horoskop sa posunul o stupeň (sila 3).
-Staré znenia (v11.6):
-
-§2 tabuľka akcií:
-
-> | Povera | `Povera` | **1 mäkké poškodenie** (v10; s Horoskopom 2) do hádky (§9.1); ruší sa so súperovou Vierou 1 : 1 na kusy |
-> | Pohoršenie | `Pohoršenie` | **2 mäkké poškodenie** (v10) do hádky (§9.1); Viera ho nezruší, Telefón ho chráni pred Odporom a NA EX |
-
-§9.1 Hádka:
-
-> 2. mäkké[ja] = Pohoršenie × 2 + zvyšné_Povery × sila_Povery
->      sila_Povery = 1, s Horoskopom v Dedičstve 2
-
-> **Mäkké 2 a 1** (H3, pravidlo Michala): akcia, ktorej je v sade menej, dáva 2 mäkké, tá, ktorej
-> je viac, 1. V sade v53 je Povier viac (25 na bežných kartách, so staršími 28) ako Pohoršení (20,
-> so staršími 23), preto **Pohoršenie = 2, Povera = 1** (`KONSTANTY.HADKA`). Ak sa pomer akcií
-> v sade zmení, treba to prepočítať.
-
-> **Príklad (Ana a Boris):** … Ana: 2 × 2 + 1 = **5 mäkké**, Boris (Ana Vieru nemá): 1 × 2 + 1 = **3 mäkké**.
-> Ana vyhrala hádku o 2 …
-
-§16 Horoskop:
-
-> | Horoskop | Tvoje Povery majú silu 2. | (v10) Každá tvoja zvyšná Povera dá 2 mäkké namiesto 1. … |
+Michal 2026-11-04: mäkké poškodenie „priam až extrémne slabé“ — v Zrejúcej krátko platilo Pohoršenie 3,
+Povera 2, Horoskop 3 (značené v11.7, commit ce72d836), spolu s prerozdelením akcií kariet (Viera 29 → 22,
+Povera 25 → 28, Pohoršenie 14 → 18; docs/napady/makke-akcie.html). Michal 2026-11-05: „Povery a pohoršenie sú
+teraz EXTRÉMNE silné. Vráť to do stavu, kedy bolo pohoršenie za 2 a povery za 1.“ Platí znova v11.6
+(Pohoršenie 2, Povera 1, Horoskop 2); do Vypálenej pokus nikdy nešiel. Prerozdelenie akcií kariet v tvorcovi
+tým nebolo vrátené.

@@ -104,7 +104,7 @@ describe("M10 — vzorové efekty (háčiky)", () => {
     const d = computeDamage([strana({ Povera: 4 }, true), strana({ Viera: 1 })]);
     expect(d.zvysnaPovera[0]).toBe(4);
     expect(d.zvysnaViera[1]).toBe(1);
-    expect(d.makke).toEqual([8, 0]);
+    expect(d.makke).toEqual([4, 0]);
   });
 });
 

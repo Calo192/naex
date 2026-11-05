@@ -37,7 +37,7 @@ describe("M4 — poškodenie", () => {
     const damage = computeDamage([side({ sums: { Povera: 3 } }), side({ sums: { Viera: 2 } })]);
     expect(damage.zvysnaPovera[0]).toBe(1);
     expect(damage.zvysnaViera[1]).toBe(0);
-    expect(damage.makke).toEqual([2, 0]);
+    expect(damage.makke).toEqual([1, 0]);
     expect(damage.celkove).toEqual(damage.tuhe);
   });
 

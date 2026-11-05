@@ -939,9 +939,8 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
       if (zrusene > 0) stav.push(`${zrusene} zrušila súperova Viera`);
       stav.push(`zvyšné ${rozpis.zvysnaPovera} = ${rozpis.zvysnaPovera * rozpis.silaPovery} mäkké do hádky`);
     }
-    // Hádka: Pohoršenie je mäkké (v11.7: 3), Viera ho nezruší.
-    const pohorsenie = KONSTANTY.HADKA.POHORSENIE_MAKKE;
-    if (a === "Pohoršenie") stav.push(`${hodnota} × ${pohorsenie} = ${hodnota * pohorsenie} mäkké do hádky`);
+    // Hádka (v10): Pohoršenie je 2 mäkké, Viera ho nezruší.
+    if (a === "Pohoršenie") stav.push(`${hodnota} × 2 = ${hodnota * 2} mäkké do hádky`);
     dlazdice.push(
       <Dlazdica
         key={a}

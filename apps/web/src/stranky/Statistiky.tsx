@@ -435,7 +435,7 @@ export function Statistiky({ profil, vlastny }: { readonly profil: ProfilHraca; 
 
         <Sekcia nazov="Poškodenie" ikona={<Akcia kluc="Petelica" />}>
           <Udaj nazov="tuhého udeleného" hodnota={cislo(s.tuheUdelene)} vyrazny pomoc="Rany, Pecky, Petelice a bonusy po odpočítaní súperovej Viery." />
-          <Udaj nazov="mäkkého udeleného" hodnota={cislo(s.makkeUdelene)} pomoc="Pohoršenia a Povery, ktoré nezrušila súperova Viera (od pravidiel v10 — hádka; od v11.7 Pohoršenie 3, Povera 2)." />
+          <Udaj nazov="mäkkého udeleného" hodnota={cislo(s.makkeUdelene)} pomoc="Pohoršenia × 2 a Povery, ktoré nezrušila súperova Viera (od pravidiel v10 — hádka)." />
           <Udaj nazov="hádok vyhraných" hodnota={cislo(s.hadkyVyhrane)} pomoc="Bitky, v ktorých mal hráč viac mäkkého a rozdelil hádku (od v10)." />
           <Udaj nazov="na vyhratú hádku" hodnota={priemer(s.hadkaVyhrana, s.hadkyVyhrane)} pomoc="Priemerná veľkosť vyhratej hádky — o koľko mal viac mäkkého." />
           <Udaj nazov="tuhého na bitku" hodnota={bitkyPriemer(s.tuheUdelene)} pomoc="Priemerné tuhé poškodenie v jednej bitke." />
