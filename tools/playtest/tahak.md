@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.10 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.11 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -17,7 +17,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **neberie** (ide na nástenku).
   **Starší po bitke (v11):** za každého staršieho dostane **víťaz špaky za svoj najvyšší marker** (reči,
   ak ich má, inak strach), **porazený a pri sekere obaja len za reči**: **žltá 1, oranžová 3, červená 5**
-  (stav pred zdvihnutím Nakladačkou a hádkou). Reči, ktoré bodovali, klesnú o stupeň. Nepriznaná Cirhóza
+  (stav pred zdvihnutím Nakladačkou a hádkou). **Reči uberajú zo strachu (v11.11):** špaky porazeného za reči
+  sa odpočítajú zo špakov víťaza za strach pri tom istom staršom, najviac na 0 (červený strach 5 proti oranžovým
+  rečiam 3 = víťaz 2, porazený 3); výhra strachom, zajatie a krádež sa nemenia. Reči, ktoré bodovali, klesnú o stupeň.
+  **Víťaz hádky, ktorý prehral bitku (v11.11),** dostane 1 špak za každú svoju kartu v línii; pri sekere tiež, hneď,
+  a karty línie ďalej čakajú na sekere; s Kultúrnym domom sa to sčíta, vo finále navyše k 1 špaku za bod hádky.
+  Víťaz bitky dostane za všetky karty, aj keď hádku tiež vyhral, navyše nič. Nepriznaná Cirhóza
   na konci **−3 špaky za kus** (v8; ruka aj oba balíčky).
   Exekútor berie špaky (nižšie). Špaky smú ísť do mínusu; výpis ich ukazuje pri oboch hráčoch aj
   nástenku bitiek.
@@ -30,7 +35,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
 - **Lokality podľa úrovní (v7):** úroveň = počet akcií na hrane lokality (1 / 2 / 3, pinnacle 4),
   Pitiek je 1 + menší počet aktivovaných akcií hrán (úroveň 1: 1–2, úroveň 3: 1–4, pinnacle 1–5).
   Úrovne po kolách: krátka 1 · 2 · 3 · P, **stredná 1 · 2 · 2 · 3 · 3 · P**, dlhá 1 · 1 · 2 · 2 · 3 · 3 · 3 · P.
-  Nežrebuje sa: obranca vyberá a natáča cieľ zo **všetkých ešte neodohraných lokalít úrovne kola**
+  Nežrebuje sa: obranca vyberá cieľ (natočí ho **víťaz minulej hádky**, v11.11; v K1 a po remíze v hádke obranca) zo **všetkých ešte neodohraných lokalít úrovne kola**
   (výpis ukazuje len tie). Úroveň 1: Zastávka, Most, Lesná cesta, Cintorín, Jednota; 2: Ihrisko,
   Benzínka, Kar, Zberný dvor, Krčma, Sklad; 3: Obecný úrad, Kultúrny dom, Vínna pivnica, Družstvo,
   Kostol; pinnacle: Poľovnícka chata, Predsedova vila, Herňa.
@@ -38,7 +43,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   2 plné poldeci, 3 cigarety, 0 špakov. Kým nemáš odhadzovací balíček, ťahať ani fajčiť sa nedá.
 - **Finále (v7, 2026-10-27):** posledná bitka je o **pinnacle lokalitu** a hrá sa ako o každú inú:
   útočí **zaostávajúci — kto má menej špakov** (pri rovnosti porazený poslednej bitky, po sekere ostáva
-  útočník); **obranca (vedúci) vyberie a natočí pinnacle lokalitu** (jednu z troch), potom šenok ako
+  útočník); **obranca (vedúci) vyberie pinnacle lokalitu** (jednu z troch), natočí ju víťaz poslednej hádky (v11.11), potom šenok ako
   v každom kole. Kraje a prevaha platia, počet Pitiek podľa spojov s lokalitou (1–5),
   víťaz 1 špak za kartu v línii, starší bodujú ako po každej bitke. **Vo finále sa markery nedvíhajú (v11):
   víťaz bitky dostane za každý bod Nakladačky 1 špak, víťaz hádky za každý bod hádky 1 špak** — zajatie ani
@@ -79,7 +84,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Dvojčatá** — do prevahy sa rátajú za dvoch; **Kočovník** — Furt: jeho akcie
   (aj Rana, Hazard, Poškodenie pečene) sa počítajú hráčovi, ktorý má v jeho kraji
   prevahu; do prevahy sa ráta majiteľovi, pri rovnosti rozhoduje karta pri lokalite.
-- **Poradie (2026-10-20):** cieľ kola vyberá a natáča **obranca** (víťaz
+- **Poradie (2026-10-20, v11.11):** cieľ kola vyberá **obranca** a natáča ho víťaz minulej hádky (obranca = víťaz
   poslednej bitky) a **berie zo šenku prvý (v9.2)**; **útočník** (porazený) berie zo šenku druhý a **vykladá
   prvý**. **Pitka naraz (2026-10-27):** v Pitke hráte **obaja súčasne** —
   fajčíte, dolievate, barterujete, Kšefty a skryto NA EX; každý skončí

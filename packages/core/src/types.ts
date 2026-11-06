@@ -142,6 +142,8 @@ export type Phase =
   /** Päta, Lakeť, Otočka: draft starších pred prvým kolom. */
   | "pataDraft"
   | "volbaCiela"
+  /** v11.11: lokalitu vybral obranca, natáča ju víťaz minulej hádky. */
+  | "natocenieCiela"
   | "draft"
   | "zhromazdenie"
   | "pitka"

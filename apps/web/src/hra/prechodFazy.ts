@@ -97,6 +97,15 @@ export function medziobrazovka(
             : `${S} ako obranca vyberá a natáča lokalitu. Ty útočíš: zo šenku berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý.`,
       };
     }
+    case "natocenieCiela":
+      return {
+        kluc: `${view.kolo}|natocenie`,
+        nadnadpis: kolo,
+        nadpis: "Natočenie lokality",
+        text: !obranca
+          ? `Minulá hádka je tvoja, preto lokalitu natáčaš ty — natočenie určí, ktorá jej hrana pripadne ktorému kraju línie.`
+          : `Lokalita je vybraná. Natáča ju ${S}, víťaz minulej hádky.`,
+      };
     case "draft":
       // Finále sa ohlási až s vybranou vrcholovou lokalitou (návrh #32), namiesto šenku.
       if (view.ciel?.typ === "finale") {

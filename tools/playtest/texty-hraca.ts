@@ -125,7 +125,9 @@ export function stavkaText(data: GameData, v: ClientState): string | null {
     st.porazenemu[0] + st.porazenemu[1] > 0
       ? ` Kultúrny dom: aj porazený dostane 1 špak za každú svoju kartu v línii — ty pri prehre +${st.porazenemu[0]}, súper pri prehre +${st.porazenemu[1]}.`
       : "";
-  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1])}.${kd}`;
+  // v11.11: stávka nevie, kto vyhrá hádku — pravidlo pripomenie, čísla dá odhad bitky.
+  const hadka = " Kto vyhrá hádku a prehrá bitku (alebo je sekera), dostane navyše 1 špak za každú svoju kartu v línii.";
+  return `Stávka (${st.karty} ${st.karty === 1 ? "karta" : st.karty <= 4 ? "karty" : "kariet"} v línii): tvoja výhra +${spakov(st.vyhra)}${rozpis(st.naSekere, st.herna[0])}, súperova výhra +${spakov(-st.prehra)}${rozpis(st.naSekere, st.herna[1])}.${kd}${hadka}`;
 }
 
 /** Efekty Prehra porazeného slovami — ten istý text ako web (jadro, návrh #38 B). */

@@ -195,7 +195,7 @@ export interface PohladSuhrnu {
  */
 export function dalsiPohladSuhrnu(zaciatok: ZaciatokKola | null, v: Pick<ClientState, "kolo" | "faza" | "koniec" | "starsi" | "vazni" | "zmenyMarkerov" | "nastenka">): PohladSuhrnu {
   if (zaciatok !== null && zaciatok.kolo === v.kolo) return { zaciatok, suhrn: null };
-  const predZhromazdenim = v.koniec === null && (v.faza === "volbaCiela" || v.faza === "draft");
+  const predZhromazdenim = v.koniec === null && (v.faza === "volbaCiela" || v.faza === "natocenieCiela" || v.faza === "draft");
   return {
     zaciatok: predZhromazdenim ? zaciatokKola(v) : null,
     suhrn: predZhromazdenim && zaciatok !== null && v.kolo === zaciatok.kolo + 1 ? suhrnBitky(zaciatok, v) : null,

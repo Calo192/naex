@@ -67,6 +67,7 @@ import {
   priazenSila,
   reciNizsie,
   sMarkerom,
+  spakyOdStarsieho,
   spakyZaStupen,
   stupenNaBodovanie,
   vydesil,
@@ -534,6 +535,13 @@ export interface GameState {
   readonly starsi: readonly ElderState[];
   readonly ciel: CielKola | null;
   readonly lokalitaOtocena: boolean;
+  /** v11.11: víťaz hádky minulého kola; natáča ďalšiu lokalitu. Pri remíze null, v K1 chýba. */
+  readonly vitazPoslednejHadky?: PlayerId | null;
+  /**
+   * Výučba Prvá hra je scenár s číslami v hláškach a prerobí sa až pri vypálení (CLAUDE.md):
+   * dovtedy hrá bez zmien v11.11: hádka nedáva špaky za karty, lokalitu natáča obranca a reči nekrátia strach.
+   */
+  readonly vyucbaPredV1111?: true;
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
   /**
    * Pitiek v bitke (Michal 2026-10-19): 1 + menší z počtov aktivovaných
@@ -617,6 +625,8 @@ type MutState = DeepMutable<GameState>;
 
 export type Command =
   | { readonly type: "chooseLocation"; readonly uid: number; readonly otocena: boolean }
+  /** v11.11: víťaz minulej hádky natočí lokalitu, ktorú vybral obranca. */
+  | { readonly type: "natocLokalitu"; readonly otocena: boolean }
   // Schopnosť väzňa (v11.2): raz za hru; uid = karta so súperovým NA EX (Farár) či karta zo súperovho
   // odhadzovacieho balíčka (Hrobár), uids = karty zo šenku (Autobusár).
   | { readonly type: "schopnostVazna"; readonly elderId: string; readonly uid?: number; readonly uids?: readonly number[] }
@@ -798,6 +808,19 @@ function need(cond: boolean, msg: string): asserts cond {
 
 // ---------------------------------------------------------------------------
 // Pomocníci
+
+/** Kto vyberá cieľ kola: obranca; Má dosť Starostu v režime Päta vyberá jeho majiteľ, aj keď útočí. */
+function ktoVyberaCiel(state: Pick<GameState, "pata" | "utocnik">): PlayerId {
+  return state.pata !== undefined && maDost(state.pata, state.utocnik, "starosta") ? state.utocnik : obranca(state);
+}
+
+/**
+ * Kto natáča lokalitu (v11.11, Michal 2026-11-06): víťaz minulej hádky; po remíze, v prvom kole
+ * a v režime Päta (hádku nemá) ten, kto cieľ vyberá. Platí aj pre pinnacle vo finále.
+ */
+export function ktoNatacaLokalitu(state: Pick<GameState, "pata" | "utocnik" | "vitazPoslednejHadky">): PlayerId {
+  return (state.pata === undefined ? state.vitazPoslednejHadky : null) ?? ktoVyberaCiel(state);
+}
 
 function obranca(s: { utocnik: PlayerId }): PlayerId {
   return opponentOf(s.utocnik);
@@ -1744,7 +1767,9 @@ function naTahuVoFaze(state: GameState): Miesto | null {
     case "volbaCiela":
       // Cieľ kola vyberá a natáča obranca, vykladať začína útočník (Michal 2026-10-20).
       // Má dosť Starostu: vyberá jeho majiteľ, aj keď útočí.
-      return tim(state.pata !== undefined && maDost(state.pata, state.utocnik, "starosta") ? state.utocnik : obranca(state));
+      return tim(ktoVyberaCiel(state));
+    case "natocenieCiela":
+      return tim(ktoNatacaLokalitu(state));
     case "draft": {
       const d = state.draftStav;
       if (d === null) return null;
@@ -1887,6 +1912,9 @@ function applyPrikaz(
   switch (cmd.type) {
     case "chooseLocation":
       cmdChooseLocation(s, data, cmd, hracId, events);
+      break;
+    case "natocLokalitu":
+      cmdNatocLokalitu(s, data, cmd, hracId, events);
       break;
     case "schopnostVazna":
       cmdSchopnostVazna(s, data, cmd, kto, events);
@@ -2104,11 +2132,28 @@ function cmdChooseLocation(
   if (s.pata !== undefined) s.pata.lokality = odohrajLokalitu(s.pata.lokality as LokalityPata, cmd.uid) as DeepMutable<LokalityPata>;
   const finale = s.rozpis !== undefined && s.kolo > s.lokalitCelkom;
   s.ciel = finale ? { typ: "finale", lokalita: karta as DeepMutable<CardInstance> } : { typ: "lokalita", lokalita: karta as DeepMutable<CardInstance> };
-  s.lokalitaOtocena = cmd.otocena;
+  // v11.11: keď natáča súper (víťaz minulej hádky), začne z natočenia k sebe; voľba obrancu neplatí.
+  const nataca = ktoNatacaLokalitu(s as GameState);
+  s.lokalitaOtocena = nataca === p ? cmd.otocena : nataca === 1;
   events.push({
     type: "log",
     text: `Hráč ${p + 1} ${rodovo(p, "vybral", "vybrala", "vyberá")} ${finale ? "pre finále lokalitu" : "bitku o lokalitu"} ${defOf(data, karta).name}.`,
   });
+  if (nataca !== p) {
+    s.faza = "natocenieCiela";
+    events.push({ type: "faza", faza: "natocenieCiela" });
+    return;
+  }
+  s.faza = "draft";
+  events.push({ type: "faza", faza: "draft" });
+  zacniStavbu(s, data, events);
+}
+
+/** v11.11: víťaz minulej hádky natočí lokalitu, ktorú vybral obranca; potom sa stavia šenok. */
+function cmdNatocLokalitu(s: MutState, data: GameData, cmd: { otocena: boolean }, p: PlayerId, events: Event[]): void {
+  need(s.faza === "natocenieCiela", "Teraz sa lokalita nenatáča.");
+  s.lokalitaOtocena = cmd.otocena;
+  events.push({ type: "log", text: `Hráč ${p + 1} ako víťaz minulej hádky ${rodovo(p, "natočil", "natočila", "natáča")} lokalitu.` });
   s.faza = "draft";
   events.push({ type: "faza", faza: "draft" });
   zacniStavbu(s, data, events);
@@ -5449,8 +5494,9 @@ export function prebytokNaRozdelenie(s: VerejnyStav, outcome: BattleOutcome): nu
 /**
  * Bodovanie starších po bitke (v11, krok 4b, stav pred zdvihnutím): víťaz dostane za každého
  * staršieho špaky za svoj najvyšší marker (reči, ak ich má, inak strach), porazený a pri
- * sekere obaja len za reči — žltá 1, oranžová 3, červená 5. Reči potom klesnú o stupeň (na
- * stupni strachu zaniknú).
+ * sekere obaja len za reči — žltá 1, oranžová 3, červená 5. Špaky za súperove reči krátia
+ * špaky víťaza za strach pri tom istom staršom, najviac na 0 (v11.11). Reči potom klesnú
+ * o stupeň (na stupni strachu zaniknú).
  */
 function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, events: Event[]): void {
   const b = s.bitkaStav;
@@ -5461,7 +5507,7 @@ function bodujStarsich(s: MutState, data: GameData, vitaz: PlayerId | null, even
   for (const e of s.starsi) {
     const stupen: [Stupen, Stupen] = [stupenNaBodovanie(e as ElderState, 0, vitaz === 0), stupenNaBodovanie(e as ElderState, 1, vitaz === 1)];
     const reci: [boolean, boolean] = [stupen[0] > 0 && stupen[0] === e.reci[0], stupen[1] > 0 && stupen[1] === e.reci[1]];
-    const spaky: [number, number] = [spakyZaStupen(stupen[0]), spakyZaStupen(stupen[1])];
+    const spaky: [number, number] = [spakyOdStarsieho(e as ElderState, 0, vitaz === 0, s.vyucbaPredV1111 !== true), spakyOdStarsieho(e as ElderState, 1, vitaz === 1, s.vyucbaPredV1111 !== true)];
     if (spaky[0] + spaky[1] === 0) continue;
     bodovanie.push({ elderId: e.elderId, defId: e.karta.defId, stupen, reci, spaky });
     for (const p of [0, 1] as const) {
@@ -5502,6 +5548,7 @@ function vyhodnotPoskodenie(s: MutState, data: GameData, events: Event[]): void 
   b.prebytokDrzi = outcome.prebytokDrzi;
   b.prebytokZostava = prebytokNaRozdelenie(s, outcome);
   b.krok = "prebytok";
+  if (s.vyucbaPredV1111 !== true) s.vitazPoslednejHadky = b.hadka?.vitaz ?? null;
   const sums = b.sums as readonly [ActionSums, ActionSums];
   const line = lineState(s as GameState);
   const linia = evaluateLine(data, line);
@@ -5616,8 +5663,10 @@ export interface SpakyZaVyhru {
   /** Herňa (v7): toľko, koľko má porazený priznaných Dlhov. */
   readonly herna: number;
   readonly spolu: number;
-  /** Kultúrny dom (v8): porazený dostane 1 špak za každú svoju kartu v línii. */
+  /** Špaky porazeného za svoje karty v línii: Kultúrny dom (v8) a výhra hádky (v11.11), sčítajú sa. */
   readonly porazenemu: number;
+  /** Z toho za výhru hádky pri prehratej bitke (v11.11). */
+  readonly zaHadku: number;
 }
 
 /**
@@ -5629,6 +5678,7 @@ export function spakyZaVyhru(
   s: VerejnyStav & { readonly spakyNaSekere: number },
   vitaz: PlayerId,
   karty: KartyBitky,
+  vitazHadky: PlayerId | null = null,
 ): SpakyZaVyhru {
   const porazeny = opponentOf(vitaz);
   const zisk = spakyZaBitku(karty.spolu);
@@ -5636,8 +5686,11 @@ export function spakyZaVyhru(
   // Herňa (Bitka, v7): víťaz navyše toľko špakov, koľko má porazený priznaných Dlhov — bez stropu.
   const herna = jeCielLokalita(s, "herna") ? dlhy(porazeny) : 0;
   // Kultúrny dom (Bitka, v8 „Obaja bodujú“): porazený aj za svoje karty v línii.
-  const porazenemu = jeCielLokalita(s, "kulturny_dom") ? karty.vlastne[porazeny] : 0;
-  return { zisk, zoSekery: s.spakyNaSekere, herna, spolu: zisk + s.spakyNaSekere + herna, porazenemu };
+  const zaKulturnyDom = jeCielLokalita(s, "kulturny_dom") ? karty.vlastne[porazeny] : 0;
+  // Víťaz hádky, ktorý prehral bitku (v11.11, Michal 2026-11-06): 1 špak za každú svoju kartu v línii.
+  // Víťaz bitky dostane za všetky karty ako vždy, aj keď hádku tiež vyhral — navyše nič.
+  const zaHadku = vitazHadky === porazeny ? karty.vlastne[porazeny] : 0;
+  return { zisk, zoSekery: s.spakyNaSekere, herna, spolu: zisk + s.spakyNaSekere + herna, porazenemu: zaKulturnyDom + zaHadku, zaHadku };
 }
 
 /**
@@ -5661,8 +5714,8 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
   const vitaz = outcome.vitaz;
   if (vitaz !== null) {
     const porazeny = opponentOf(vitaz);
-    const v = spakyZaVyhru(s as GameState, vitaz, karty);
-    const { zisk, herna, spolu, porazenemu } = v;
+    const v = spakyZaVyhru(s as GameState, vitaz, karty, s.vyucbaPredV1111 === true ? null : (b.hadka?.vitaz ?? null));
+    const { zisk, herna, spolu, porazenemu, zaHadku } = v;
     zoSekery = s.spakyNaSekere;
     zaBitku[vitaz] += spolu;
     zaBitku[porazeny] += porazenemu;
@@ -5675,8 +5728,11 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
       // Zložky zvlášť (Michal 2026-10-27): karty v línii, Herňa za Dlhy porazeného, sekera.
       text: `Bitku ${rodovo(vitaz, "vyhral", "vyhrala", "vyhráva")} hráč ${vitaz + 1}${preco}: ${spakov(zisk + zoSekery + herna)} — 1 špak za kartu v línii (${kariet(karty.spolu)})${herna > 0 ? `, +${herna} za Dlhy porazeného (Herňa, ${pocet(herna, "priznaný Dlh", "priznané Dlhy", "priznaných Dlhov")})` : ""}${zoSekery > 0 ? `, +${zoSekery} zo sekery` : ""}.`,
     });
-    if (porazenemu > 0) {
-      events.push({ type: "log", text: `Kultúrny dom: aj porazený hráč ${porazeny + 1} dostáva ${spakov(porazenemu)} — 1 za každú svoju kartu v línii.` });
+    if (porazenemu - zaHadku > 0) {
+      events.push({ type: "log", text: `Kultúrny dom: aj porazený hráč ${porazeny + 1} dostáva ${spakov(porazenemu - zaHadku)} — 1 za každú svoju kartu v línii.` });
+    }
+    if (zaHadku > 0) {
+      events.push({ type: "log", text: `Vyhraná hádka: porazený hráč ${porazeny + 1} dostáva ${spakov(zaHadku)} — 1 za každú svoju kartu v línii.` });
     }
     // Nakladačka vo finále (v9.1, Michal 2026-10-30): markery sa už nehýbu — víťaz dostane
     // za každý jej bod 1 špak (predtým prepadla), aby zaostávajúci mohol finále dobehnúť.
@@ -5695,6 +5751,13 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
     hd.spaky = hadkaSpaky[hd.vitaz];
     hd.zostava = 0;
     events.push({ type: "log", text: `Hádka ${hd.velkost} vo finále: hráč ${hd.vitaz + 1} dostáva ${spakov(hadkaSpaky[hd.vitaz])} — 1 za každý bod.` });
+  }
+  // Sekera (v11.11): víťaz hádky dostane za svoje karty hneď; všetky karty línie ďalej idú na sekeru.
+  if (vitaz === null && hd?.vitaz != null && s.vyucbaPredV1111 !== true) {
+    const zaHadku = karty.vlastne[hd.vitaz];
+    zaBitku[hd.vitaz] += zaHadku;
+    s.spaky[hd.vitaz] += zaHadku;
+    if (zaHadku > 0) events.push({ type: "log", text: `Vyhraná hádka: hráč ${hd.vitaz + 1} dostáva ${spakov(zaHadku)} — 1 za každú svoju kartu v línii.` });
   }
   if (vitaz === null && finale) {
     prepadlo = karty.spolu + s.spakyNaSekere;
@@ -6087,12 +6150,17 @@ export function legalCommands(data: GameData, state: GameState, kto: Miesto): Co
 
   switch (state.faza) {
     case "volbaCiela": {
+      // Keď natáča súper (v11.11), natočenie obrancu nič neznamená — jeden príkaz na lokalitu.
+      const natacam = ktoNatacaLokalitu(state) === p;
       for (const lok of lokalityNaVyber(data, state)) {
         out.push({ type: "chooseLocation", uid: lok.uid, otocena: false });
-        out.push({ type: "chooseLocation", uid: lok.uid, otocena: true });
+        if (natacam) out.push({ type: "chooseLocation", uid: lok.uid, otocena: true });
       }
       break;
     }
+    case "natocenieCiela":
+      out.push({ type: "natocLokalitu", otocena: false }, { type: "natocLokalitu", otocena: true });
+      break;
     case "draft": {
       const d = state.draftStav;
       if (d === null) break;

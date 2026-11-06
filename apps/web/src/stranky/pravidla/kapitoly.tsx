@@ -183,7 +183,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </div>
         <ol className="kroky">
           <li>
-            <strong>Cieľ.</strong> <P k="utocnik">Obranca</P> (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
+            <strong>Cieľ.</strong> <P k="utocnik">Obranca</P> (víťaz poslednej bitky) vyberie lokalitu, natočí ju víťaz minulej hádky.
           </li>
           <li>
             <strong>Šenok.</strong> Spolu postavíte ponuku kariet a beriete z nej za cigarety.
@@ -227,7 +227,7 @@ export const KAPITOLY: readonly Kapitola[] = [
     nazov: "Cieľ a šenok",
     obrazok: "05-ciel-a-senok",
     vSkratke: [
-      "Obranca vyberie a natočí lokalitu.",
+      "Obranca vyberie lokalitu, víťaz minulej hádky ju natočí.",
       "Stavba šenku: polovica kariet do šenku, polovica naspodok balíčka.",
       "Branie striedavo: 1 karta za 1 cigaretu, 2 karty za 3.",
       "Zajatie a presvedčenie sú po bitke — pri rozdelení Nakladačky a hádky, za 5 bodov.",
@@ -236,7 +236,7 @@ export const KAPITOLY: readonly Kapitola[] = [
       <>
         <H3 id="ciel">Cieľ kola</H3>
         <p>
-          Obranca vyberie lokalitu, o ktorú sa bude biť, a <P k="natocenie">natočí</P> ju. Lokalita leží v strede línie a delí ju
+          Obranca vyberie lokalitu, o ktorú sa bude biť, a víťaz hádky z minulého kola ju <P k="natocenie">natočí</P> (v prvom kole a po remíze v hádke ten, kto vyberá). Lokalita leží v strede línie a delí ju
           na dve <P k="strana">strany</P>. Natočenie určuje, ktorá hrana lokality patrí ktorému <P k="kraj">kraju</P> — akcie
           hrany dostane, kto v tom kraji má <a href="#zhromazdenie-prevaha">prevahu</a>. Efekt lokality platí len v kole, keď sa
           o ňu bije (<a href="#lokality">tabuľka lokalít</a>). Vo finále vyberá obranca — kto vedie — z troch pinnacle lokalít a hrá sa o ňu ako o každú inú.
@@ -595,11 +595,11 @@ export const KAPITOLY: readonly Kapitola[] = [
             <strong>Výsledok</strong> — víťaz (pri remíze rozhodnú Absťáky, potom Dlhy), inak sekera.
           </li>
           <li>
-            <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje), vo finále aj špak za každý bod Nakladačky a víťaz hádky za každý bod hádky; lokalita ide na nástenku.
+            <strong>Špaky za bitku</strong> — víťaz dostane špak za každú kartu v línii (na Kultúrnom dome aj porazený za svoje); kto vyhral hádku a prehral bitku, dostane špak za každú svoju kartu; vo finále aj špak za každý bod Nakladačky a víťaz hádky za každý bod hádky; lokalita ide na nástenku.
           </li>
           <li>
             <strong>Starší bodujú</strong> podľa stavu pred zdvihnutím — víťaz za každého staršieho za svoj najvyšší marker (reči, ak ich má, inak strach), porazený a pri sekere obaja len za reči:
-            žltá 1, oranžová 3, červená 5. Reči, ktoré bodovali, klesnú o stupeň.
+            žltá 1, oranžová 3, červená 5. Špaky porazeného za reči uberajú zo špakov víťaza za strach pri tom istom staršom, najviac na 0. Reči, ktoré bodovali, klesnú o stupeň.
           </li>
           <li>
             <strong>Výhra strachom</strong> — víťaz s červeným strachom aspoň u 4 starších (väzni sa rátajú) vyhráva hneď.
@@ -1002,7 +1002,8 @@ export const KAPITOLY: readonly Kapitola[] = [
           <tbody>
             <tr><td>Vyhratá bitka</td><td>1 za každú kartu v línii na oboch stranách (aj finále), aspoň 1; k tomu špaky zo sekery</td></tr>
             <tr><td>Prehratá bitka o Kultúrny dom</td><td>1 za každú svoju kartu v línii</td></tr>
-            <tr><td>Starší po bitke</td><td>víťaz za každého staršieho za svoj najvyšší marker (reči, ak ich má, inak strach), porazený a pri sekere obaja len za reči: žltá 1, oranžová 3, červená 5; reči, ktoré bodovali, klesnú o stupeň</td></tr>
+            <tr><td>Vyhraná hádka pri prehratej bitke alebo sekere</td><td>1 za každú svoju kartu v línii; sčíta sa s Kultúrnym domom</td></tr>
+            <tr><td>Starší po bitke</td><td>víťaz za každého staršieho za svoj najvyšší marker (reči, ak ich má, inak strach), porazený a pri sekere obaja len za reči: žltá 1, oranžová 3, červená 5; špaky za súperove reči uberajú zo špakov za strach, najviac na 0; reči, ktoré bodovali, klesnú o stupeň</td></tr>
             <tr><td>Finále: Nakladačka a hádka</td><td>víťaz bitky 1 za bod Nakladačky, víťaz hádky 1 za bod hádky</td></tr>
             <tr><td>Krádež pri zajatí</td><td>zlodej dostane a okradnutý stratí špaky za okradnutého najvyšší marker pri zajatom staršom (1 / 3 / 5), najviac koľko má</td></tr>
             <tr><td>Exekútor</td><td>v každej bitke mínus polovica priznaných Dlhov nahor (s priazňou Advokáta o 1 / 2 / 3 menej)</td></tr>
@@ -1021,7 +1022,7 @@ export const KAPITOLY: readonly Kapitola[] = [
             Po poslednej bitke o lokalitu (3 / 5 / 7) je finále — posledná bitka o pinnacle lokalitu, ktorá sa hrá ako o každú
             inú: lokalita leží v strede línie, karty sa kladú k nej a platia jej hrany aj efekt.
           </li>
-          <li>Pinnacle vyberie a natočí obranca — hráč s viac špakmi; šenok a branie platia ako v každom kole. Vo finále sa nezajíma ani nepresviedča, cigareta za prehru ani výpalné sa po ňom neplatia.</li>
+          <li>Pinnacle vyberie obranca — hráč s viac špakmi, natočí ju víťaz poslednej hádky; šenok a branie platia ako v každom kole. Vo finále sa nezajíma ani nepresviedča, cigareta za prehru ani výpalné sa po ňom neplatia.</li>
           <li>
             <strong>Útočí zaostávajúci — kto má menej špakov</strong> (pri rovnosti ten, kto prehral poslednú bitku; po
             sekere ostáva útočník). Vykladá prvý a na NA EX odpovedá prvý.

@@ -1481,7 +1481,7 @@ export function PriebehKola({
     text: (
       <>
         Posledná bitka na vrcholovej lokalite (v7): útočí, kto má menej špakov (pri rovnosti porazený poslednej bitky), a vedúci
-        vyberie a natočí lokalitu. Kraje, prevaha aj počet Pitiek ako na každej lokalite.
+        vyberie lokalitu, natočí ju víťaz poslednej hádky. Kraje, prevaha aj počet Pitiek ako na každej lokalite.
         <span className="tip-riadok">Nakladačka a hádka sa vo finále nerozdeľujú — víťaz za ne dostane 1 špak za každý bod. Starší bodujú ako po každej bitke, výpalné a cigareta porazenému sa neplatia. Potom sa vykúpi, čo ostalo, a odpočíta sa nepriznaná Cirhóza.</span>
       </>
     ),
@@ -1498,7 +1498,7 @@ export function PriebehKola({
               nadpis: "Voľba cieľa",
               text: (
                 <>
-                  Obranca (víťaz poslednej bitky) vyberie lokalitu a natočí ju.
+                  Obranca (víťaz poslednej bitky) vyberie lokalitu, natočí ju víťaz minulej hádky (po remíze obranca).
                   <span className="tip-riadok">Natočenie určuje, ktoré akcie lokality sú obrátené ku ktorej strane.</span>
                 </>
               ),
@@ -1599,7 +1599,9 @@ export function PriebehKola({
       ? `zhromazdenie-${Math.min(pitiek, view.pitkaCislo + 1)}`
       : view.faza === "pitka"
         ? `pitka-${Math.max(1, view.pitkaCislo)}`
-        : view.faza;
+        : view.faza === "natocenieCiela"
+          ? "volbaCiela"
+          : view.faza;
   const aktualny = kroky.findIndex((k) => k.id === aktualneId);
   // Aktuálny krok vždy v zornom poli — pri 1280 px ho os orezávala (dizajn
   // hra-nezrovnalosti-20261021-1229, UI N1c). Hotové dvojice Zhromaždenie + Pitka

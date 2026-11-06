@@ -45,6 +45,7 @@ import {
   VILA_CENA,
   priazenPre,
   spakyOdStarsieho,
+  ktoNatacaLokalitu,
   cigariet,
   spakov,
   battleOutcome,
@@ -814,10 +815,24 @@ function moznosti(v: ClientState): string[] {
   }
   switch (v.faza) {
     case "volbaCiela": {
+      // v11.11: keď natáča víťaz minulej hádky (súper), obranca vyberá len lokalitu.
+      const natociSuper = ktoNatacaLokalitu(v) !== v.ja;
       for (const k of v.lokalityVHre) {
+        if (natociSuper) {
+          c({ type: "chooseLocation", uid: k.uid, otocena: false }, `bitka o lokalitu ${meno(k.defId)} — natočí ju súper (víťaz minulej hádky); na výber: ${popisStranLokality(v, k, false)} ALEBO ${popisStranLokality(v, k, true)}`);
+          continue;
+        }
         c({ type: "chooseLocation", uid: k.uid, otocena: false }, `bitka o lokalitu ${meno(k.defId)} — ${popisStranLokality(v, k, false)}`);
         c({ type: "chooseLocation", uid: k.uid, otocena: true }, `bitka o lokalitu ${meno(k.defId)}, otočenú o 180° — ${popisStranLokality(v, k, true)}`);
       }
+      break;
+    }
+    case "natocenieCiela": {
+      // v11.11: lokalitu vybral súper, natáča ju víťaz minulej hádky — ty.
+      const k = v.ciel?.lokalita;
+      if (k == null) break;
+      c({ type: "natocLokalitu", otocena: false }, `natoč lokalitu ${meno(k.defId)} — ${popisStranLokality(v, k, false)}`);
+      c({ type: "natocLokalitu", otocena: true }, `natoč lokalitu ${meno(k.defId)}, otočenú o 180° — ${popisStranLokality(v, k, true)}`);
       break;
     }
     case "draft": {

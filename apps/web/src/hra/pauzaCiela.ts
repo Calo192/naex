@@ -17,9 +17,10 @@ export interface PauzaCiela {
 /**
  * Pauza patrí len prechodu z voľby cieľa ďalej v tom istom kole, keď cieľ vyberal súper.
  * Svoju voľbu hráč pozná; po pripojení do rozohranej partie (bez predošlého pohľadu) nie je čo ukázať.
+ * v11.11: rovnako po súperovom natočení lokality — výsledok natočenia hráč ešte nevidel.
  */
 export function pauzaPoVolbeCiela(pred: ClientState | null, view: ClientState): PauzaCiela | null {
-  if (pred === null || pred.faza !== "volbaCiela" || view.faza === "volbaCiela") return null;
+  if (pred === null || (pred.faza !== "volbaCiela" && pred.faza !== "natocenieCiela") || view.faza === "volbaCiela" || (pred.faza === "natocenieCiela" && view.faza === "natocenieCiela")) return null;
   if (view.koniec !== null || view.kolo !== pred.kolo) return null;
   if (pred.naTahu === null || pred.naTahu === view.ja) return null;
   const lokalita = view.ciel?.lokalita ?? null;
