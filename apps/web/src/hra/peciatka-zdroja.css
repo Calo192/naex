@@ -1,15 +1,18 @@
-/* Pečiatka na dlaždici Cigarety: dopadne na pravý horný roh, nič iné v bare sa nepohne. */
+/* Pečiatka na dlaždici zdroja: dopadne na pravý horný roh, nič iné v bare sa nepohne. */
 .zdroj-cigarety,
-.stlpec-cigarety {
+.zdroj-poldeci,
+.stlpec-cigarety,
+.stlpec-poldeci {
   position: relative;
 }
 
 /* Roh pečiatky trčí von z dlaždice — dlaždica ju nesmie orezať. */
-.doska .zdroj-cigarety {
+.doska .zdroj-cigarety,
+.doska .zdroj-poldeci {
   overflow: visible;
 }
 
-.peciatka-cigariet {
+.peciatka-zdroja {
   position: absolute;
   top: -8px;
   right: -8px;
@@ -29,27 +32,27 @@
   transform: rotate(-7deg);
   /* Nápoveda dlaždice ide cez pečiatku. */
   pointer-events: none;
-  animation: peciatka-cigariet-dopad 0.32s cubic-bezier(0.2, 1.5, 0.5, 1) both;
+  animation: peciatka-zdroja-dopad 0.32s cubic-bezier(0.2, 1.5, 0.5, 1) both;
 }
 
-.peciatka-cigariet.zaporna {
+.peciatka-zdroja.zaporna {
   color: var(--cervena-text);
 }
 
-.peciatka-cigariet.cakajuca {
+.peciatka-zdroja.cakajuca {
   border-style: dashed;
   box-shadow: none;
   opacity: 0.85;
 }
 
-/* Prísun, ktorý už je na účte: krátky prechod, potom zmizne (časovač v usePrisunCigariet). */
-.peciatka-cigariet.dopad {
+/* Prísun, ktorý už je na účte: krátky prechod, potom zmizne (časovač v usePrisunZdroja). */
+.peciatka-zdroja.dopad {
   animation:
-    peciatka-cigariet-dopad 0.32s cubic-bezier(0.2, 1.5, 0.5, 1) both,
-    peciatka-cigariet-zhasni 0.35s ease-in 1.45s forwards;
+    peciatka-zdroja-dopad 0.32s cubic-bezier(0.2, 1.5, 0.5, 1) both,
+    peciatka-zdroja-zhasni 0.35s ease-in 1.45s forwards;
 }
 
-.peciatka-cigariet svg {
+.peciatka-zdroja svg {
   flex: none;
   width: 13px;
   height: 13px;
@@ -58,20 +61,25 @@
 
 /* Nízky bar: číslo stojí v rade s nadpisom priamo pod rohom — pečiatka je menšia a vyššie, nech ho nezakryje. */
 @media (min-width: 761px) and (max-height: 919px) {
-  .peciatka-cigariet {
+  .peciatka-zdroja {
     top: -13px;
     padding: 0 3px;
     font-size: 0.85rem;
     line-height: 1.1;
   }
 
-  .peciatka-cigariet svg {
+  .peciatka-zdroja svg {
     width: 11px;
     height: 11px;
   }
+
+  /* Poldeci majú pod sebou dva riadky, číslo stojí celkom hore — pečiatka mu ustúpi vyššie. */
+  .zdroj-poldeci .peciatka-zdroja {
+    top: -18px;
+  }
 }
 
-.stlpec-cigarety .peciatka-cigariet {
+:is(.stlpec-cigarety, .stlpec-poldeci) .peciatka-zdroja {
   top: -4px;
   right: -3px;
   gap: 1px;
@@ -80,39 +88,39 @@
   border-width: 1.5px;
 }
 
-.stlpec-cigarety .peciatka-cigariet svg {
+:is(.stlpec-cigarety, .stlpec-poldeci) .peciatka-zdroja svg {
   width: 9px;
   height: 9px;
 }
 
-@keyframes peciatka-cigariet-dopad {
+@keyframes peciatka-zdroja-dopad {
   from {
     opacity: 0;
     transform: rotate(-7deg) scale(2.6);
   }
 }
 
-@keyframes peciatka-cigariet-zhasni {
+@keyframes peciatka-zdroja-zhasni {
   to {
     opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .peciatka-cigariet,
-  .peciatka-cigariet.dopad {
+  .peciatka-zdroja,
+  .peciatka-zdroja.dopad {
     animation: none;
   }
 }
 
 /* Rozpis v nápovede dlaždice. */
-.rozpis-cigariet {
+.rozpis-zdroja {
   display: block;
   margin-bottom: 6px;
 }
 
 /* Nápoveda má svetlý papier v každej schéme (karta.css), tmavé odtiene sa miešajú z farieb schémy. */
-.rozpis-cigariet em {
+.rozpis-zdroja em {
   display: block;
   margin-top: 4px;
   font-style: normal;
@@ -120,29 +128,29 @@
   color: color-mix(in srgb, currentColor 65%, transparent);
 }
 
-.rozpis-cigariet em:first-child {
+.rozpis-zdroja em:first-child {
   margin-top: 0;
 }
 
-.rozpis-cigariet-riadok {
+.rozpis-zdroja-riadok {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-.rozpis-cigariet-riadok b {
+.rozpis-zdroja-riadok b {
   font-variant-numeric: tabular-nums;
 }
 
-.rozpis-cigariet-riadok .plus {
+.rozpis-zdroja-riadok .plus {
   color: color-mix(in srgb, var(--zelena) 55%, #000);
 }
 
-.rozpis-cigariet-riadok .minus {
+.rozpis-zdroja-riadok .minus {
   color: color-mix(in srgb, var(--cervena-text) 70%, #000);
 }
 
-.rozpis-cigariet-riadok.spolu {
+.rozpis-zdroja-riadok.spolu {
   margin-top: 2px;
   padding-top: 2px;
   border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);

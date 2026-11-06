@@ -1,10 +1,15 @@
-// Prísun cigariet pre dlaždicu Cigarety (Michal 2026-11-06): čo hráč dostal bez vlastnej platby
-// a odkiaľ. Čisté skladanie z účtovnej knihy motora (udalosť zmenaCigariet) a z náhľadu Pitky.
+// Prísun pre dlaždice Cigarety a Poldeci (Michal 2026-11-06): čo hráč dostal bez vlastnej platby
+// a odkiaľ. Čisté skladanie z účtovnej knihy motora (udalosti zmenaCigariet, zmenaPoldeci) a z náhľadu Pitky.
 
-import type { CigaretyPitky, Event, ZdrojCigariet } from "./engine.ts";
+import type { CigaretyPitky, Event, PoldeciPitky, ZdrojCigariet, ZdrojPoldeci } from "./engine.ts";
 import type { PlayerId } from "./types.ts";
 
-export type ZdrojPrisunu = Exclude<ZdrojCigariet, "platba">;
+/** Zdroj, ktorého stav dlaždica ukazuje. */
+export type DruhPrisunu = "cigarety" | "poldeci";
+
+export type ZdrojPrisunu = Exclude<ZdrojCigariet | ZdrojPoldeci, "platba">;
+
+const UDALOST_DRUHU = { cigarety: "zmenaCigariet", poldeci: "zmenaPoldeci" } as const;
 
 export const NAZVY_ZDROJOV_PRISUNU: Readonly<Record<ZdrojPrisunu, string>> = {
   akcie: "Akcie",
@@ -17,6 +22,12 @@ export const NAZVY_ZDROJOV_PRISUNU: Readonly<Record<ZdrojPrisunu, string>> = {
   podvodnik: "Podvodník",
   policajtka: "Policajtka",
   postarka: "Poštárka",
+  zaciatokKola: "Začiatok kola",
+  jogurt: "Jogurt",
+  doliatie: "Doliatie",
+  barter: "Nový poldeci",
+  krcmarka: "Krčmárka",
+  degustatorka: "Degustátorka",
 };
 
 export interface RiadokPrisunu {
@@ -33,12 +44,12 @@ export interface PrisunHraca {
 }
 
 /** Prísun oboch hráčov z udalostí jedného ťahu; null = hráčovi nič neprišlo ani neodišlo. Platba prísun nie je. */
-export function prisunZUdalosti(events: readonly Event[]): readonly [PrisunHraca | null, PrisunHraca | null] {
+export function prisunZUdalosti(events: readonly Event[], druh: DruhPrisunu = "cigarety"): readonly [PrisunHraca | null, PrisunHraca | null] {
   const pre = (p: PlayerId): PrisunHraca | null => {
     const riadky: RiadokPrisunu[] = [];
     let platba = 0;
     for (const e of events) {
-      if (e.type !== "zmenaCigariet" || e.hrac !== p) continue;
+      if ((e.type !== "zmenaCigariet" && e.type !== "zmenaPoldeci") || e.type !== UDALOST_DRUHU[druh] || e.hrac !== p) continue;
       if (e.zdroj === "platba") {
         platba -= e.suma;
         continue;
@@ -59,6 +70,11 @@ export function riadkyCakajuceho(c: CigaretyPitky): readonly RiadokPrisunu[] {
   if (c.akcie === 0) return [];
   const akcie: RiadokPrisunu = { zdroj: "akcie", suma: c.akcie };
   return c.obmedzenie === 0 ? [akcie] : [akcie, { zdroj: "obmedzenie", suma: -c.obmedzenie }];
+}
+
+/** Riadky čakajúcich poldeci z náhľadu Pitky — len to, čo akcie naozaj otočia. */
+export function riadkyCakajucichPoldeci(c: PoldeciPitky): readonly RiadokPrisunu[] {
+  return c.zisk === 0 ? [] : [{ zdroj: "akcie", suma: c.zisk }];
 }
 
 /** „+3“, „−1“ — pravé mínus ako na kartách a v bare. */

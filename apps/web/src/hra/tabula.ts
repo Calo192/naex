@@ -1,8 +1,8 @@
 // Čísla pultu a tabule ty | súper na šírku telefónu (PultHraca.tsx) — čisté funkcie bez DOM.
 
 import type { ClientState, PlayerId, RiadokPrisunu, StavZavislosti } from "@naex/core";
-import { KONSTANTY, NAZVY_ZDROJOV_PRISUNU, cenaFajceniaHraca, limitZhromazdenia, riadkyCakajuceho, spakov, sumaPrisunu } from "@naex/core";
-import type { PrisunDlazdice } from "./PeciatkaCigariet.tsx";
+import { KONSTANTY, NAZVY_ZDROJOV_PRISUNU, cenaFajceniaHraca, limitZhromazdenia, spakov, sumaPrisunu } from "@naex/core";
+import type { PrisunDlazdice } from "./PeciatkaZdroja.tsx";
 import type { SpakyTeraz } from "@naex/core";
 
 /** Prahy hráča (prahyHraca) — to, čo z nich pult a tabuľa ukazujú. */
@@ -199,15 +199,15 @@ export interface DetailZdroja {
   readonly riadky: readonly (readonly [string, string])[];
 }
 
-/** Rozpis prísunu do okna Cigariet: to isté, čo na počítači ukazuje nápoveda dlaždice. */
+/** Rozpis prísunu do okna zdroja: to isté, čo na počítači ukazuje nápoveda dlaždice. */
 function riadkyPrisunu(prisun: PrisunDlazdice | undefined): readonly (readonly [string, string])[] {
   if (prisun === undefined) return [];
   const riadky = (rr: readonly RiadokPrisunu[], kedy: string) => rr.map((r) => [`${kedy} ${NAZVY_ZDROJOV_PRISUNU[r.zdroj]}`, sumaPrisunu(r.suma)] as const);
-  const { cakajuci, nedavny, cigarety } = prisun;
-  const pride = cakajuci === null ? [] : riadkyCakajuceho(cakajuci);
+  const { cakajuci, nedavny, hodnota } = prisun;
+  const pride = cakajuci?.riadky ?? [];
   return [
     ...riadky(pride, "príde:"),
-    ...(pride.length > 0 && cakajuci !== null ? [["po Pitke", `${cigarety} ▸ ${cigarety + cakajuci.zisk}`] as const] : []),
+    ...(pride.length > 0 && cakajuci !== null ? [[cakajuci.po, `${hodnota} ▸ ${hodnota + cakajuci.suma}`] as const] : []),
     ...(nedavny === null ? [] : riadky(nedavny.riadky, "naposledy:")),
   ];
 }
@@ -236,6 +236,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, pri
           ["vypité", String(c.vypite + c.naStole)],
           ...(c.naStole > 0 ? [["z toho na stole (NA EX)", String(c.naStole)] as const] : []),
           ["limit kariet", String(c.limit)],
+          ...riadkyPrisunu(prisun),
           ["doliať vypitý", `${KONSTANTY.REFILL_CENA} cig.`],
           ["nový poldeci", `${c.cenaBarteru} cig.`],
         ],

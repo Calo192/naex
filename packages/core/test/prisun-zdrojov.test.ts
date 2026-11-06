@@ -1,5 +1,5 @@
-// Pečiatka a rozpis na dlaždici Cigarety (Michal 2026-11-06): účtovná kniha motora musí sedieť
-// so stavom pri každom ťahu, inak by rozpis klamal. Súperov prísun je verejný, platba nie je prísun.
+// Pečiatka a rozpis na dlaždiciach Cigarety a Poldeci (Michal 2026-11-06): účtovná kniha motora musí
+// sedieť so stavom pri každom ťahu, inak by rozpis klamal. Súperov prísun je verejný, platba nie je prísun.
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -19,6 +19,8 @@ import {
   nahladPitky,
   prisunZUdalosti,
   riadkyCakajuceho,
+  riadkyCakajucichPoldeci,
+  sMojimiSkrytymiNaex,
   rngInt,
   rngSeed,
   rozpisCigaretPitky,
@@ -93,7 +95,7 @@ describe("účtovná kniha cigariet", () => {
     for (const { pred, cmd, kto, po, events } of KROKY.slice(0, 400)) {
       const r = apply(data, pred, cmd, kto);
       expect(r.state).toEqual(po);
-      expect(r.events).toEqual(events.filter((e) => e.type !== "zmenaCigariet"));
+      expect(r.events).toEqual(events.filter((e) => e.type !== "zmenaCigariet" && e.type !== "zmenaPoldeci"));
     }
   });
 });
@@ -233,7 +235,189 @@ describe("zdroje prísunu z jadra", () => {
   });
 });
 
+const knihaPoldeci = (events: readonly Event[], p: PlayerId): number =>
+  events.reduce((a, e) => (e.type === "zmenaPoldeci" && e.hrac === p ? a + e.suma : a), 0);
+const zdrojePoldeci = (events: readonly Event[], p: PlayerId): readonly string[] =>
+  events.flatMap((e) => (e.type === "zmenaPoldeci" && e.hrac === p ? [e.zdroj] : []));
+const prisunPoldeci = (events: readonly Event[]) => prisunZUdalosti(events, "poldeci");
+
+describe("účtovná kniha poldeci", () => {
+  it("v každom ťahu náhodných partií sedí súčet rozpisu a platby so zmenou plných poldeci", () => {
+    expect(KROKY.length).toBeGreaterThan(300);
+    for (const { pred, po, events } of KROKY) {
+      const rozpis = prisunPoldeci(events);
+      for (const p of [0, 1] as const) {
+        const zmena = po.hraci[p].poldeciPlne - pred.hraci[p].poldeciPlne;
+        expect(knihaPoldeci(events, p)).toBe(zmena);
+        const platba = 0 - events.reduce((a, e) => (e.type === "zmenaPoldeci" && e.hrac === p && e.zdroj === "platba" ? a + e.suma : a), 0);
+        const r = rozpis[p];
+        expect((r?.suma ?? 0) - platba).toBe(zmena);
+        if (r !== null) {
+          expect(r.suma).toBe(r.riadky.reduce((a, x) => a + x.suma, 0));
+          expect(r.platba).toBe(platba);
+        }
+      }
+    }
+  });
+
+  it("náhodné partie prejdú hlavnými zdrojmi poldeci", () => {
+    const zdroje = new Set(KROKY.flatMap((k) => k.events.flatMap((e) => (e.type === "zmenaPoldeci" ? [e.zdroj] : []))));
+    for (const z of ["zaciatokKola", "doliatie", "akcie", "platba"] as const) expect(zdroje).toContain(z);
+  });
+
+  it("Vypiť a odkryté NA EX sú platba, prísun nespustia; doliatie a nový poldeci áno", () => {
+    const vypit = KROKY.filter((k) => k.cmd.type === "vypit");
+    expect(vypit.length).toBeGreaterThan(0);
+    for (const { events, kto } of vypit) {
+      expect(zdrojePoldeci(events, kto)).toEqual(["platba"]);
+      expect(prisunPoldeci(events)[kto]).toBeNull();
+    }
+    const nakup = KROKY.filter((k) => k.cmd.type === "refillPoldeci" || k.cmd.type === "barter");
+    expect(nakup.length).toBeGreaterThan(0);
+    for (const { events, kto, cmd } of nakup) {
+      expect(prisunPoldeci(events)[kto]?.riadky).toEqual([{ zdroj: cmd.type === "barter" ? "barter" : "doliatie", suma: 1 }]);
+    }
+  });
+
+  it("začiatok kola doleje cez knihu ako zdroj Začiatok kola", () => {
+    const krok = KROKY.find((k) => k.events.some((e) => e.type === "zmenaPoldeci" && e.zdroj === "zaciatokKola"));
+    expect(krok).toBeDefined();
+    const e = krok?.events.find((x) => x.type === "zmenaPoldeci" && x.zdroj === "zaciatokKola");
+    expect(e?.type === "zmenaPoldeci" ? e.suma : 0).toBe(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA);
+  });
+
+  it("Degustátorka je súperov efekt: záporný prísun, nie platba", () => {
+    const [a, b] = prisunZUdalosti([{ type: "zmenaPoldeci", hrac: 0, zdroj: "degustatorka", suma: -1 }], "poldeci");
+    expect(a).toEqual({ riadky: [{ zdroj: "degustatorka", suma: -1 }], suma: -1, platba: 0 });
+    expect(b).toBeNull();
+  });
+
+  it("knihy cigariet a poldeci sa nemiešajú", () => {
+    const events: Event[] = [
+      { type: "zmenaCigariet", hrac: 0, zdroj: "platba", suma: -2 },
+      { type: "zmenaPoldeci", hrac: 0, zdroj: "doliatie", suma: 1 },
+    ];
+    expect(prisunZUdalosti(events)).toEqual([null, null]);
+    expect(prisunZUdalosti(events, "poldeci")[0]?.suma).toBe(1);
+  });
+});
+
+describe("čakajúce poldeci a náhľad Pitky", () => {
+  it("najviac toľko, koľko je vypitých a na stole; riadok len keď niečo naozaj otočí", () => {
+    expect(riadkyCakajucichPoldeci({ akcie: 3, zisk: 1 })).toEqual([{ zdroj: "akcie", suma: 1 }]);
+    expect(riadkyCakajucichPoldeci({ akcie: 2, zisk: 0 })).toEqual([]);
+    for (const { pred } of KROKY) {
+      if (pred.faza !== "pitka" && pred.faza !== "zhromazdenie") continue;
+      if (pred.ciel === null) continue;
+      for (const n of nahladPitky(data, pred)) {
+        expect(n.poldeci.zisk).toBeLessThanOrEqual(n.poldeci.akcie);
+        expect(n.poldeci.zisk).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
+  it("posledný odhad pred bitkou bez skrytého NA EX sa zhoduje s tým, čo akcie v kole otočili", () => {
+    let porovnane = 0;
+    let zhody = 0;
+    for (const kroky of PARTIE) {
+      kroky.forEach(({ pred, events }, i) => {
+        if (!events.some((e) => e.type === "bitkaVysledok") || pred.faza !== "pitka" || pred.ciel === null) return;
+        if ((pred.pitkaStav?.skryteNaex?.length ?? 0) > 0) return;
+        const odhad = nahladPitky(data, pred);
+        // Bitka čaká na rozdelenie Nakladačky a Rečí — poldeci sa vypijú až po nich, nie v ťahu bitky.
+        const dalsie = kroky.slice(i).filter((k) => k.pred.kolo === pred.kolo);
+        for (const p of [0, 1] as const) {
+          const naozaj = dalsie.flatMap((k) => k.events).reduce((n, e) => (e.type === "zmenaPoldeci" && e.hrac === p && (e.zdroj === "akcie" || e.zdroj === "jogurt") ? n + e.suma : n), 0);
+          porovnane++;
+          if (odhad[p].poldeci.zisk === naozaj) zhody++;
+        }
+      });
+    }
+    expect(porovnane).toBeGreaterThan(10);
+    // Odhad smie minúť len to, čo sa ešte zmení v poslednom ťahu (odpoveď na NA EX, efekt bitky).
+    expect(zhody / porovnane).toBeGreaterThan(0.8);
+  });
+
+  it("Jogurt: čo akcie otočili už v Pitke, pečiatka nesľúbi druhýkrát", () => {
+    const s = KROKY.find((k) => k.pred.ciel !== null && k.pred.faza === "pitka")?.pred;
+    expect(s).toBeDefined();
+    if (s === undefined) return;
+    const bez = nahladPitky(data, s);
+    const otocene = [bez[0].poldeci.akcie, bez[1].poldeci.akcie] as const;
+    const po = nahladPitky(data, { ...s, poldeciOtoceneVKole: otocene });
+    for (const n of po) expect(n.poldeci).toEqual({ akcie: 0, zisk: 0 });
+  });
+});
+
+describe("skryté NA EX dlaždica Poldeci neprezradí", () => {
+  const skryte = KROKY.filter((k) => (k.po.pitkaStav?.skryteNaex?.length ?? 0) > 0);
+
+  it("v partiách skryté NA EX naozaj padne", () => {
+    expect(skryte.length).toBeGreaterThan(10);
+  });
+
+  it("položenie skrytého NA EX nedá do knihy nič — súper sa o ňom z udalostí nedozvie", () => {
+    const polozene = KROKY.filter((k) => (k.po.pitkaStav?.skryteNaex?.length ?? 0) > (k.pred.pitkaStav?.skryteNaex?.length ?? 0));
+    expect(polozene.length).toBeGreaterThan(0);
+    for (const { events, pred, po } of polozene) {
+      expect(events.some((e) => e.type === "zmenaPoldeci")).toBe(false);
+      for (const p of [0, 1] as const) expect(po.hraci[p].poldeciPlne).toBe(pred.hraci[p].poldeciPlne);
+    }
+  });
+
+  it("súperov pohľad a odhad z neho sú rovnaké so skrytým NA EX aj bez neho", () => {
+    let overene = 0;
+    for (const { po } of skryte) {
+      const pitka = po.pitkaStav;
+      if (pitka === null) continue;
+      const bez: GameState = { ...po, pitkaStav: { ...pitka, skryteNaex: [] } };
+      for (const x of pitka.skryteNaex ?? []) {
+        const pozorovatel = (x.hrac === 0 ? 1 : 0) as PlayerId;
+        // Bzdocha ukazuje súperovu voľbu zámerne.
+        const v = viewFor(data, po, pozorovatel);
+        if ((v.pitkaStav?.skryteNaex ?? []).some((y) => y.hrac === x.hrac)) continue;
+        const vBez = viewFor(data, bez, pozorovatel);
+        expect(v.hraci[x.hrac].poldeciPlne).toBe(vBez.hraci[x.hrac].poldeciPlne);
+        expect(v.hraci[x.hrac].poldeciVypite).toBe(vBez.hraci[x.hrac].poldeciVypite);
+        const stol = sMojimiSkrytymiNaex(data, v);
+        const stolBez = sMojimiSkrytymiNaex(data, vBez);
+        expect(nahladPitky(data, stol)[x.hrac].poldeci).toEqual(nahladPitky(data, stolBez)[x.hrac].poldeci);
+        overene++;
+      }
+    }
+    expect(overene).toBeGreaterThan(10);
+  });
+
+  it("odkrytie ide do knihy až pri odkrytí a obaja dostanú to isté", () => {
+    const odkrytia = KROKY.filter((k) => (k.pred.pitkaStav?.skryteNaex?.length ?? 0) > 0 && (k.po.pitkaStav?.skryteNaex?.length ?? 0) === 0 && k.events.some((e) => e.type === "zmenaPoldeci"));
+    expect(odkrytia.length).toBeGreaterThan(0);
+    for (const { events } of odkrytia) {
+      expect(eventsFor(events, 0).filter((e) => e.type === "zmenaPoldeci")).toEqual(eventsFor(events, 1).filter((e) => e.type === "zmenaPoldeci"));
+    }
+    for (const { events } of KROKY) {
+      for (const e of events) if (e.type === "zmenaPoldeci") expect(Object.keys(e).sort()).toEqual(["hrac", "suma", "type", "zdroj"]);
+    }
+  });
+
+  it("kniha ide rovnako obom a sedí s plnými poldeci v pohľade každého hráča", () => {
+    for (const { pred, po, events } of KROKY.slice(0, 800)) {
+      for (const pozorovatel of [0, 1] as const) {
+        const moje = eventsFor(events, pozorovatel);
+        const vpred = viewFor(data, pred, pozorovatel);
+        const vpo = viewFor(data, po, pozorovatel);
+        for (const p of [0, 1] as const) expect(knihaPoldeci(moje, p)).toBe(vpo.hraci[p].poldeciPlne - vpred.hraci[p].poldeciPlne);
+      }
+    }
+  });
+});
+
 describe("poistka knihy", () => {
+  it("motor mení plné poldeci len cez zmenPoldeci", () => {
+    const zdroj = readFileSync(new URL("../src/engine.ts", import.meta.url), "utf8");
+    const zmeny = zdroj.match(/\.poldeciPlne\s*(?:\+=|-=|=(?!=))/g) ?? [];
+    expect(zmeny).toHaveLength(1);
+  });
+
   it("motor mení cigarety len cez zmenCigarety — nový zdroj bez knihy by rozpis ticho rozbil", () => {
     const zdroj = readFileSync(new URL("../src/engine.ts", import.meta.url), "utf8");
     const zmeny = zdroj.match(/\.cigarety\s*(?:\+=|-=)/g) ?? [];

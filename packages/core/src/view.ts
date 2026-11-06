@@ -260,6 +260,8 @@ export interface ClientState {
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
   /** Skryté Záverečné — najviac jedna na stranu; za ňu sa nedá priložiť (zablokovaneStrany). */
   readonly zaverecne: readonly ZaverecnaVerejna[];
+  /** Poldeci, ktoré akcie Poldeci v tomto kole už otočili v Pitke (Jogurt). */
+  readonly poldeciOtoceneVKole?: readonly [number, number];
   /** Smiem teraz zahrať Záverečnú (Zhromaždenie, nepasoval som, mám cigaretu)? */
   readonly zaverecnaMozna: boolean;
   readonly draftStav: DraftVerejne | null;
@@ -426,6 +428,8 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
     lokalitaOtocena: state.lokalitaOtocena,
     strany: [skrySuperove(0), skrySuperove(1)],
     zaverecne,
+    // Jogurt otočil poldeci z verejných akcií — pečiatka nesmie sľúbiť to isté druhýkrát.
+    ...(state.poldeciOtoceneVKole === undefined ? {} : { poldeciOtoceneVKole: state.poldeciOtoceneVKole }),
     zaverecnaMozna:
       state.faza === "zhromazdenie" &&
       state.zhromazdenieStav !== null &&

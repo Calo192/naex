@@ -2929,22 +2929,6 @@ button.bot-volba.aktivna {
   background: color-mix(in srgb, #000 calc(var(--tma) * 25%), transparent);
 }
 
-.obchod-cigariet {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.obchod-cigariet button {
-  padding: 1px 6px;
-  font-size: 11px;
-}
-
-.obchod-cigariet button:not(:disabled) {
-  border-color: var(--akcent);
-  color: var(--akcent);
-}
-
 /* Voľba cieľa na stole (Michal 2026-10-19): lokality v paneli namiesto stavby
    šenku; starší, o ktorého sa teraz nedá biť, je sivý. */
 .volba-ciela-karty {
@@ -4274,9 +4258,8 @@ button.auto-hotovo-odkaz {
   flex-shrink: 0;
 }
 
-/* Obchod cigariet sa zalamuje, nie oreže — inak „nový poldeci −5“ zmizlo za „…“ (UI inšpekcia U01). */
-.doska .zdroj-pod > :not(.obchod-cigariet),
-.doska .zdroj-pod > :is(span, b):not(.obchod-cigariet) {
+.doska .zdroj .zdroj-pod > *,
+.doska .zdroj .zdroj-pod > :is(span, b) {
   display: block;
   max-width: 100%;
   overflow: hidden;
@@ -4453,22 +4436,6 @@ button.auto-hotovo-odkaz {
      nie v polovici; celé znenie je v nápovede. Prúžok k prahu tu aj tak nemal výšku (blok bez flexu). */
   .doska .zdroj-pod {
     max-height: 2.5em;
-  }
-
-  /* Cigarety majú pod textom rad tlačidiel obchodu (nižšie okno ich skryje a text zalomí na dva riadky). */
-  .doska .zdroj-cigarety > .zdroj-pod {
-    max-height: none;
-  }
-
-  /* Tlačidlá obchodu v jednom rade — v rade deviatich dlaždíc by sa druhé zalomilo pod okraj. */
-  .doska .obchod-cigariet {
-    flex-wrap: nowrap;
-    gap: 3px;
-  }
-
-  .doska .obchod-cigariet button {
-    padding: 0 4px;
-    white-space: nowrap;
   }
 
   /* Prúžok nerestí vedľa čísla Absťáku sa v užšej dlaždici zúži, nevytŕča. */
@@ -6531,10 +6498,6 @@ button.auto-hotovo-odkaz {
   }
 }
 
-.obchod-text {
-  display: none;
-}
-
 .stavka-kratke {
   display: none;
 }
@@ -6754,19 +6717,6 @@ button.auto-hotovo-odkaz {
 
   /* Počet a slovo v jednom riadku — v užšej dlaždici sa „odhodené“ zalomilo pod okraj. */
   /* Kliatby a náradie sa pod tri počty nezmestia — sú vo vrstve Karty (klik na dlaždicu). */
-  /* Tlačidlá obchodu cigariet sa do nízkeho baru nezmestia — v Pitke sú pečiatkami na hrane stola. */
-  .doska .obchod-cigariet {
-    display: none;
-  }
-
-  /* Bez tlačidiel obchodu je to jediný riadok — smie sa zalomiť („stačí na nový poldeci“). */
-  .doska .zdroj .zdroj-pod > .obchod-text {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    white-space: normal;
-  }
-
   .hra,
   .plocha,
   .stred {
@@ -9857,7 +9807,7 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
     overflow: visible;
   }
 
-  .doska .zdroj-pod > :is(span, b):not(.obchod-cigariet),
+  .doska .zdroj .zdroj-pod > :is(span, b),
   .doska .zdroj .zdroj-pod > :only-child,
   .doska .zdroj .zdroj-pod > .pruh + .vyhlad:last-child {
     display: block;
@@ -9869,10 +9819,6 @@ button.pecat.kseft-pod-tlacidlo.ne:hover {
   }
 
   /* Počet a slovo spolu — „0“ a „odhodené“ na dvoch riadkoch sa čítali ako dva údaje. */
-  /* Tlačidlá obchodu cigariet sú v Pitke aj pečiatkami na hrane stola — v dlaždici by mali 20 px. */
-  .doska .obchod-cigariet {
-    display: none;
-  }
 }
 
 /* ---- Vízia: veľké okno s kartou (Michal 2026-11-02) ------------------------------------ */

@@ -63,6 +63,9 @@
 //   &stop=cigarety-dopad  ťah, po ktorom sa obom pohnú cigarety (výpalné, porazený…) — po načítaní sa dohrá
 //                  a pečiatky krátko dopadnú; &zap=1: niekomu záporný rozdiel; &zdroj=pas: daný zdroj
 //                  prísunu (NAZVY_ZDROJOV_PRISUNU); &i=k: k-tý taký ťah
+//   &stop=poldeci-pride  Zhromaždenie alebo Pitka, v ktorej niekomu akcie Poldeci ešte otočia vypitý — čiarkovaná pečiatka
+//   &stop=poldeci-dopad  ťah, po ktorom sa niekomu pohnú plné poldeci mimo vlastnej platby — po načítaní sa dohrá;
+//                  &zap=1: záporný rozdiel; &zdroj=zaciatokKola: daný zdroj; &i=k: k-tý taký ťah
 //   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &zerava=1      žeravé ikony (Michal 2026-10-30): hráč ?ja má v Dedičstve Pušku a Vidly, súper
@@ -322,7 +325,7 @@ function sPresvedcenim(s: GameState, ja: PlayerId, druhyPresvedceny: boolean): G
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica", "cigarety-pride", "cigarety-dopad"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
+  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
   if (!hlada) return odohrajSeed(data, seed).odohrane;
   // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
@@ -422,6 +425,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     // Bez Veštice v partii: prvá prehratá bitka od 2. kola (balíčky už nie sú prázdne) sa na ukážku prepne na ňu.
     if (stop === "vestica" && p.get("vynut") !== "0" && s.kolo >= 2 && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === opponentOf(ja))
       return najdene({ zaciatok: sVesticou(s, ja), dohraj: [] });
+    if (stop === "poldeci-pride" && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && s.vizia === null && nahladPitky(data, s).some((n) => n.poldeci.zisk > 0))
+      return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "cigarety-pride" && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && s.vizia === null && nahladPitky(data, s).every((n) => n.cigarety.zisk > 0))
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
@@ -445,6 +450,12 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     if (t === null) break;
     rng = t.rng;
     const { state: po, events } = applySPrisunom(data, s, t.cmd, t.kto);
+    if (stop === "poldeci-dopad") {
+      const [a, b] = prisunZUdalosti(events, "poldeci");
+      const zdroj = p.get("zdroj");
+      const trafil = [a, b].some((x) => x !== null && (zdroj !== null ? x.riadky.some((r) => r.zdroj === zdroj) : p.get("zap") === "1" ? x.suma < 0 : x.suma !== 0));
+      if (trafil && dopadov++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
+    }
     if (stop === "cigarety-dopad") {
       const [a, b] = prisunZUdalosti(events);
       const zdroj = p.get("zdroj");
@@ -530,7 +541,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "cigarety-pride", "cigarety-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "cigarety-pride", "cigarety-dopad", "poldeci-pride", "poldeci-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
 export function UkazkaStola() {
@@ -613,7 +624,8 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     const t = setTimeout(() => {
       const [j, r] = rngInt(rng.current, 2 ** 31);
       rng.current = r;
-      setStav((s) => (mozeHrat(s, kto) ? pouzi(s, tahBota(data, s, kto, j, { povaha: "igor" }), kto) : s));
+      // Mimo updatera: StrictMode ho volá dvakrát a pouzi má vedľajšie účinky — pečiatka by prišla dvojnásobná.
+      setStav(pouzi(stav, tahBota(data, stav, kto, j, { povaha: "igor" }), kto));
     }, 700);
     return () => clearTimeout(t);
   }, [stav, ja, data, dohrate]);
@@ -641,7 +653,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
       chyba={null}
       superPripojeny
       kod="ukážka"
-      cmd={(c) => setStav((s) => pouzi(s, c, ja))}
+      cmd={(c) => setStav(pouzi(stav, c, ja))}
       opustit={() => undefined}
       onPocitadlo={setSuhrn}
     />
