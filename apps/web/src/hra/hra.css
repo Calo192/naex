@@ -2057,6 +2057,52 @@ button.dlzka-volba.aktivna {
   color: var(--akcent);
 }
 
+/* ---- lobby: súper proti počítaču ---------------------------------------------- */
+
+.vyber-bota {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+/* Text od kraja — pri 4 aj 8 voľbách majú mená a vety pod sebou rovnakú os. */
+.bot-volba,
+button.bot-volba {
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0.5rem 0.6rem;
+  min-height: 44px;
+  text-align: left;
+  white-space: normal;
+}
+
+.bot-volba .avatar {
+  flex: none;
+}
+
+.bot-volba-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bot-volba-text span {
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--tlmeny);
+}
+
+.bot-volba.aktivna,
+button.bot-volba.aktivna {
+  border-color: var(--akcent);
+  background: var(--akcent-podklad);
+  color: var(--akcent);
+}
+
 .znacka.body {
   background: color-mix(in srgb, var(--akcent) 18%, transparent);
   border-color: color-mix(in srgb, var(--akcent) 55%, transparent);

@@ -13,6 +13,14 @@ import type { Media } from "./media.ts";
 
 const ADRESAR = fileURLToPath(new URL("../seed/avatary/", import.meta.url));
 
+/** Súper na výber v lobby — len to, čo hráč uvidí, žiadne váhy povahy. */
+export interface BotNaVyber {
+  readonly id: string;
+  readonly meno: string;
+  readonly popis: string | null;
+  readonly avatar: string | null;
+}
+
 export class Avatary {
   /** Id médií predvolených avatarov hráčov. */
   readonly hracov: readonly string[];
@@ -38,5 +46,10 @@ export class Avatary {
   /** Podobizeň offline protihráča podľa id povahy. */
   bota(povaha: string): string | null {
     return this.botov.get(povaha) ?? null;
+  }
+
+  /** Súperi na výber v poradí povah; povaha bez opisu alebo podobizne ostáva v ponuke. */
+  botiNaVyber(povahy: readonly { readonly id: string; readonly meno: string; readonly popis?: string }[]): BotNaVyber[] {
+    return povahy.map((p) => ({ id: p.id, meno: p.meno, popis: p.popis?.trim() || null, avatar: this.bota(p.id) }));
   }
 }

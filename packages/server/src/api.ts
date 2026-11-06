@@ -38,6 +38,7 @@ import { KRABICKA, MAX_OTVORENYCH } from "./dielna.ts";
 import type { Hodnotenia } from "./znamky.ts";
 import type { VysledokZlucenia } from "./zlucenie.ts";
 import { overKategoriu as overKategoriuNazoru, overSkupinu } from "./nazory.ts";
+import type { BotNaVyber } from "./avatary.ts";
 import type { Vypalena } from "./zrejuca.ts";
 import { LEN_PRE_TESTEROV, cookieInstancie } from "./zrejuca.ts";
 
@@ -96,6 +97,8 @@ export interface ApiKontext {
   readonly media: Media;
   /** Predvolené avatary (dedinské trosky), z ktorých si hráč môže vybrať. */
   readonly predvoleneAvatary: readonly string[];
+  /** Súperi proti počítaču na výber v lobby (z POVAHY). */
+  readonly botiNaVyber: readonly BotNaVyber[];
   /** Hudba počas partie (skladby z playlistu na Suno). */
   readonly hudba: Hudba;
   /** Hlášky majstra Melichara v partii proti počítaču. */
@@ -710,6 +713,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
         // Ktoré ligy hráč smie a čo ho delí od zamknutých — lobby podľa toho kreslí zámky (server aj tak overí).
         ligy: ctx.ligy.stav(p),
         ligyAjProtiPocitacu: ctx.ligy.nastavenie().ajProtiPocitacu,
+        boti: ctx.botiNaVyber,
         dlzky: dostupneDlzky(ctx.obsah.aktualnaSada().data),
         uzavierka: ctx.stavServera().uzavierka === null ? null : OZNAM_UZAVIERKY,
       });

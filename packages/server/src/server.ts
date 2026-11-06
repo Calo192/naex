@@ -176,7 +176,7 @@ interface Room {
   lastActivity: number;
   /** Miesto offline protihráča (NPC), alebo null v partii dvoch ľudí. */
   readonly bot: PlayerId | null;
-  /** Povaha bota (POVAHY) — hráč si ju nevyberá, losuje sa pri založení. */
+  /** Povaha bota (POVAHY) — hráč si ju môže vybrať, inak sa losuje pri založení. */
   readonly botPovaha: string;
   /** Naplánovaný ťah bota — kým beží, ďalší sa neplánuje. */
   botTimer: ReturnType<typeof setTimeout> | null;
@@ -275,7 +275,7 @@ function novyKod(rooms: Map<string, Room>): string {
 }
 
 type ClientMsg =
-  | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry; bot?: boolean; vyucba?: boolean }
+  | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry; bot?: boolean; povaha?: string; vyucba?: boolean }
   | { type: "vyucbaDalej" }
   | { type: "vyucbaPokracuj" }
   | { type: "vyucbaOdpoved"; index: number }
@@ -588,6 +588,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           obsah,
           media,
           predvoleneAvatary: avatary.hracov,
+          botiNaVyber: avatary.botiNaVyber(POVAHY),
           hudba,
           melichar,
           archiv,
@@ -880,6 +881,12 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         // Práva rankov (Michal 2026-10-22): proti botovi, proti ľuďom, súkromná miestnosť.
         if (bezPrava(ws, ja, protiBotovi ? "hrat_bot" : "hrat_ludia")) return;
         if (!protiBotovi && msg.verejna !== true && bezPrava(ws, ja, "sukromne_miestnosti")) return;
+        // Voľba súpera je len zámer klienta: platí povaha z POVAHY, čokoľvek iné sa odmietne, bez voľby sa losuje.
+        const zvolenaPovaha = protiBotovi && msg.povaha !== undefined ? POVAHY.find((p) => p.id === msg.povaha) : undefined;
+        if (protiBotovi && msg.povaha !== undefined && zvolenaPovaha === undefined) {
+          sendError(ws, "Takého súpera tu nemáme.");
+          return;
+        }
         // Bez zvolenej ligy (partia s počítačom po výučbe) predvolená, a keď je hráčovi zamknutá, najvyššia, ktorú smie.
         const smieLigu = (d: DlzkaHry): boolean => ligy.preco(ja, d, protiBotovi) === null;
         const dlzka =
@@ -902,7 +909,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           verejna: msg.verejna === true && !protiBotovi,
           dlzka,
           bot: protiBotovi ? 1 : null,
-          botPovaha: POVAHY[randomInt(POVAHY.length)]?.id ?? "stamgast",
+          botPovaha: zvolenaPovaha?.id ?? POVAHY[randomInt(POVAHY.length)]?.id ?? "stamgast",
         });
         if (protiBotovi) {
           // Offline protihráč sedí hneď — partia začína bez čakania.
