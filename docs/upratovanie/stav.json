@@ -10,7 +10,7 @@
     "apps/web/src (ostatné: lib, karta, dielna, playtest, achievementy, App, Layout)",
     "tools"
   ],
-  "dalsia": 3,
+  "dalsia": 4,
   "behy": [
     {
       "datum": "2026-10-26",
@@ -63,6 +63,18 @@
       "poznamka": "Prejdené: jadro (makkeVBitke, komentáre o posunoch markera Pohoršením), línia starších (mŕtvy duch markera, bodka po kliku, prop lupa, CSS), mŕtve CSS stola (ls-strany, ls-cip, zárezy zón, pas-pitky-pocet, finale-miesto, kto-ja/su, prázdne sekcie), opponentOf v celom klientovi (55×), vOhrozeni/jeKartaBossa/VILA_CENA z jadra, PonukaPatronatu → PonukaZajatia, komentáre po v10 a mobile pre hráčov. Klebety Horoskopu ani ikony smeru po sebe v kóde nič nenechali (len test, ktorý stráži ich neprítomnosť). Nechané: bot.ts (rizikový súbor, nepoužitý import priazen), email.ts RezimEmailu (čerstvá práca na e-mailoch), testovacie švy bodkaPoBode, riadokPriazne, POPIS_STUPNICE, svgIkonyBodovania; nepoužitá premenná state v hlasky-bitky.test.ts a pole poveryZostava vo fixtúre prechodFazy.test.ts (testy sa menia len pri presune); nedosiahnuteľné vetvy hadka/prebytok v zamokStarsieho (závisia od invariantu jadra); identifikátory BitkaNaNastenke.povery a zdroj „pohorsenie“ (formát záznamov). Kandidát pre programátora: tools/playtest/hrac.ts hovorí AI hráčom, že Pohoršenie posúva marker (v10 nie). Ďalej apps/web/src/stranky; v hra ostáva HernaPlocha (≈ 6800 riadkov) na rozdelenie po komponentoch — mimo rozpočtu upratovania.",
       "zmenenychRiadkov": 562,
       "odtlacok": "7eb8cb39ece73a8ca3bc700c28778540d185b516bf8f29f843ae104d1c3182ef"
+    },
+    {
+      "datum": "2026-11-06",
+      "vetva": "upratovanie/2026-11-06",
+      "casti": [
+        "apps/web/src/stranky",
+        "čerstvé súbory master: apps/web/src/hra (nepoužité importy a premenné)",
+        "spoločné pomocníky klienta (lib/jazyk.ts, lib/datum.ts, textChyby v lib/api.ts)"
+      ],
+      "poznamka": "Prejdené: stranky — mŕtve CSS .nazor, Statistiky.tsx bez kópií formátovania z profil/typy.ts, tvar() do lib/jazyk.ts, datum()/kratkyDen() do lib/datum.ts, textChyby() v celom klientovi (55×), Glosar (typ medzi importmi, odsadenie), importy za kódom v Ucet a HernaPlocha; v hra nepoužité importy a premenné (tsc --noUnusedLocals). Nechané: exporty používané len vo vlastnom súbore (Seria, SERIE, rozsahOsi, slotyZEval, Cast), stav správy {druh, text} opakovaný v 5 súboroch admin/Ucet (patrí ku komponentu Hlaska — kandidát na spoločný typ), Statistiky.tsx a Profil.tsx kreslia súperov dvakrát inak (rozbaľovacie počítadlá vs. prehľad — zmena by bola vzhľadová), kedy() v SpatnaVazba/dielna/Reporty (rôzne texty), core pocet() vs. klientsky tvar() (iný výstup). Ucet.tsx, Roadmapa.tsx, Vyvoj.tsx a Heatmapa.tsx len zbežne. Nestabilný test packages/server/test/bot.test.ts (padá aj na čistom master). Ďalej packages/tvorba/src a apps/web/src/admin.",
+      "zmenenychRiadkov": 423,
+      "odtlacok": "2fccb7d87900186a056a3c94f7ee13a067a179b735928cba588ebeaa551137c3"
     }
   ]
 }
