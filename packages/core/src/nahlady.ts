@@ -6,7 +6,6 @@
 
 import type { CardInstance, PlayerId } from "./types.ts";
 import type { GameData } from "./data.ts";
-import { printedSides } from "./data.ts";
 import {
   cielLokalitaId,
   cieleVykladania,
@@ -536,12 +535,6 @@ export function hrozbaKliatob(data: GameData, view: ClientState, hrac: PlayerId,
   return najhorsia;
 }
 
-/** Karta s akciou Poškodenie pečene alebo Poldeci na niektorej hrane, aktívnou či nie. */
-export function maAkciuPecene(data: GameData, karta: CardInstance): boolean {
-  const { left, right } = printedSides(data, karta);
-  return [...left, ...right].some((a) => a === "PoškodeniePečene" || a === "Poldeci");
-}
-
 export interface VystrahaPecene {
   /** Cirhózy navyše do konca kola z tohto vyloženia, [hráč 0, hráč 1]. */
   readonly cirhozy: readonly [number, number];
@@ -556,6 +549,7 @@ export interface VystrahaPecene {
 
 /**
  * Výstraha pečene pred vyložením (Michal 2026-11-06; playtest 20261106: chodila až po vyložení).
+ * Platí pre každú kartu, aj bez vlastnej Pečene či Poldeci: Silná žena zdvojí Pečeň suseda.
  * `pred` je pohľad hráča bez karty, `po` s ňou. Počíta to isté čo náhľad ťahu (cenaTahu)
  * a HROZBA KLIATOB, len z pohľadu, takže súperovu ruku ani jeho skryté NA EX nepozná.
  * Null, keď karta žiadnu Cirhózu nehrozí.

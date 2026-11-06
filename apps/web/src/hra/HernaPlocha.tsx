@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { odhadSpakovKola, type StavOdhadu, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, maAkciuPecene, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { odhadSpakovKola, type StavOdhadu, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -1385,7 +1385,7 @@ export function HernaPlocha({
     const pred = reagujem ? zaklad : poNavrhu;
     const pamat = new Map<string, VystrahaPecene | null>();
     const vystrahaVylozenia = (k: CardInstance, kam: StranaLinie): VystrahaPecene | null => {
-      if (zaklad.ciel === null || !maAkciuPecene(data, k)) return null;
+      if (zaklad.ciel === null) return null;
       const kluc = `${k.uid}:${kam}`;
       const znama = pamat.get(kluc);
       if (znama !== undefined) return znama;
@@ -1397,7 +1397,7 @@ export function HernaPlocha({
       return v;
     };
     const vystrahaNavrhu =
-      plan === null || !vylozenia.some((x) => (x.ciel === "vlastna" || x.ciel === "superova") && maAkciuPecene(data, x.karta)) ? null : vystrahaPecene(data, zaklad, poNavrhu);
+      plan === null || zaklad.ciel === null || !vylozenia.some((x) => x.ciel === "vlastna" || x.ciel === "superova") ? null : vystrahaPecene(data, zaklad, poNavrhu);
     return { vystrahaVylozenia, vystrahaNavrhu };
     // vylozenia, plan a planTahu sú odvodené z navrh a view.
   }, [data, view, navrh, zaklad, stol, reagujem, ja, super_]);
@@ -3915,13 +3915,13 @@ export function HernaPlocha({
           };
         }
         const mojVyhlad = nahladyPitky?.[ja] ?? null;
-        const poslednaSPecenou = [...vylozenia].reverse().find((x) => maAkciuPecene(data, x.karta));
+        const poslednaVLinii = [...vylozenia].reverse().find((x) => x.ciel === "vlastna" || x.ciel === "superova");
         return {
           nadpis,
           text: (
             <>
-              {vystrahaNavrhu !== null && poslednaSPecenou !== undefined && (
-                <strong className="pecen-varovanie">{textVystrahy(vystrahaNavrhu, poslednaSPecenou.karta)} · </strong>
+              {vystrahaNavrhu !== null && poslednaVLinii !== undefined && (
+                <strong className="pecen-varovanie">{textVystrahy(vystrahaNavrhu, poslednaVLinii.karta)} · </strong>
               )}
               {vylozenia.map((x, i) => (
                 <span key={x.karta.uid} className="tah-polozka">

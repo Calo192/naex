@@ -118,10 +118,22 @@ describe("klient AI hráčov: výstraha pečene pri „vylož“ (playtest 20261
     expect(text).toContain(`VÝSTRAHA PEČENE: tebe do konca kola Cirhóza +${po - pred}`);
   });
 
-  it("karta bez Pečene a Poldeci výstrahu nemá, aj keď pečeň hrozí", () => {
-    const v = viewFor(sada, zhromazdenie(2), 0);
-    const bez = instanceFor(sada, "ht_lavy", EMPTY, R2);
-    expect(vystrahaPeceneText(sada, v, bez, "vlastna")).toBeNull();
+  it("povie to aj karta bez vlastnej Pečene, keď Cirhózu pridá cez suseda (Silná žena); pri prázdnej línii nič", () => {
+    const zena = sada.variants.get("silna_nezavisla_zena");
+    const sused = sada.variants.get("pijan");
+    expect(zena).toBeDefined();
+    expect(sused).toBeDefined();
+    const vsetky = zena!.left.flatMap((_, l) => zena!.right.map((_, r) => ({ uid: 880200 + l * 10 + r, defId: "silna_nezavisla_zena", leftLayout: l, rightLayout: r })));
+    const texty = sused!.left.flatMap((_, l) =>
+      sused!.right.flatMap((_, r) => {
+        const s = zhromazdenie(1);
+        const v = viewFor(sada, { ...s, strany: [[{ card: pijan(l, r), playedBy: 0 }], []] }, 0);
+        return vsetky.map((k) => vystrahaPeceneText(sada, v, k, "vlastna") ?? "");
+      }),
+    );
+    expect(texty.some((t) => t.startsWith("VÝSTRAHA PEČENE: tebe do konca kola Cirhóza +"))).toBe(true);
+    const prazdna = viewFor(sada, { ...zhromazdenie(1), strany: [[], []] }, 0);
+    expect(vsetky.map((k) => vystrahaPeceneText(sada, prazdna, k, "vlastna"))).toEqual(vsetky.map(() => null));
   });
 
   it("súperove skryté NA EX bez Bzdochy text nezmení", () => {
