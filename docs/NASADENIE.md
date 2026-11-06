@@ -279,10 +279,15 @@ nebeží, jej hráči dostanú stránku s odkazom späť; Vypálená beží ďal
 adresa `zrejuca.<DOMENA>` presmeruje na spoločnú.
 
 **Bez zmien:** keď Zrejúca beží na tom istom commite ako Vypálená (VERZIA.json
-oboch, bez necommitnutých zmien) a tvorca nemá nič nezverejnené, voľba Zrejúcej
-ukáže len hlášku „Aktuálna verzia Vypálená je posledná…“. Počíta to Vypálená
-(`GET /api/zrejuca/stav`, `NAEX_ZREJUCA_URL`); `admin.ts server-stav --zrejuca`
-vypíše „Zrejúca: bez zmien / N commitov, M kariet navyše“.
+oboch, bez necommitnutých zmien), tvorca nemá nič nezverejnené a žiadny režim nie je
+len v Zrejúcej, voľba Zrejúcej ukáže len hlášku „Aktuálna verzia Vypálená je
+posledná…“. Počíta to Vypálená (`GET /api/zrejuca/stav`, `NAEX_ZREJUCA_URL`);
+`admin.ts server-stav --zrejuca` vypíše „Zrejúca: bez zmien / N commitov, M kariet
+navyše, len v Zrejúcej: …“.
+
+**Režimy len v Zrejúcej** (Michal 2026-11-06): 2 na 2 a Päta, Lakeť, Otočka hrá len
+Zrejúca (`REZIMY_LEN_V_ZREJUCEJ` v `packages/server/src/zrejuca.ts`). Vypálená ich
+odmieta na serveri a klient ich neukáže, aj keď obe bežia na tom istom commite.
 
 Kód je jeden, rozdiel je v prostredí: Zrejúca `NAEX_INSTANCIA=zrejuca` a
 `NAEX_VYPALENA=http://naex:8787` (heslo admina z `.env` Vypálenej — ním číta

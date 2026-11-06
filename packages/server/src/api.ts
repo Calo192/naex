@@ -41,7 +41,7 @@ import type { VysledokZlucenia } from "./zlucenie.ts";
 import { overKategoriu as overKategoriuNazoru, overSkupinu } from "./nazory.ts";
 import type { BotNaVyber } from "./avatary.ts";
 import type { Vypalena } from "./zrejuca.ts";
-import { LEN_PRE_TESTEROV, cookieInstancie } from "./zrejuca.ts";
+import { LEN_PRE_TESTEROV, REZIM_LEN_V_ZREJUCEJ, cookieInstancie } from "./zrejuca.ts";
 
 /** Rozohraná partia hráča — pilulka „Partia beží · Späť ku stolu“ v hlavičke mimo stola. */
 export interface RozohranaPartia {
@@ -90,6 +90,8 @@ export interface ApiKontext {
   readonly ucty: Ucty;
   /** Samostatný rebríček 2 na 2 (Michal 2026-11-02). */
   readonly rebricek2na2: () => readonly RiadokRebricka2na2[];
+  /** Hrá sa tu 2 na 2 a Päta, Lakeť, Otočka (len Zrejúca, zrejuca.ts). */
+  readonly rezimyZrejucej: boolean;
   /** Obnova zabudnutého hesla cez e-mail z profilu (Michal 2026-11-01). */
   readonly obnovaHesla: ObnovaHesla;
   /** Odosielanie e-mailov — zatiaľ len do logu (email.ts, NAEX_EMAIL_REZIM). */
@@ -184,7 +186,9 @@ export interface StavZrejucej {
   readonly kariet: number;
   /** Líši sa aj iné v tvorcovi (akcie, kľúčové slová, kategórie, bodovacie karty). */
   readonly ineZmeny: boolean;
-  /** Ten istý kód a nič nezverejnené — Zrejúca sa hráčom neponúka. */
+  /** Režimy, ktoré sú len v Zrejúcej — na tom istom commite je to jediný rozdiel. */
+  readonly rezimy: readonly string[];
+  /** Ten istý kód, nič nezverejnené a žiadne režimy navyše — Zrejúca sa hráčom neponúka. */
   readonly bezZmien: boolean;
 }
 
@@ -449,8 +453,8 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
   // Klient podľa inštancie kreslí pás „Zrejúca – pokusná verzia“ alebo ponúkne prepnutie do nej.
   const instancia =
     ctx.zrejuca === null
-      ? { nazov: "vypalena", vypalena: null, zrejuca: ctx.zrejucaAdresa }
-      : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa, zrejuca: null, bezPrava };
+      ? { nazov: "vypalena", vypalena: null, zrejuca: ctx.zrejucaAdresa, ...(ctx.rezimyZrejucej ? { rezimyNavyse: true } : {}) }
+      : { nazov: "zrejuca", vypalena: ctx.zrejuca.vypalena.adresa, zrejuca: null, bezPrava, ...(ctx.rezimyZrejucej ? { rezimyNavyse: true } : {}) };
 
   try {
     // Prepnutie inštancie (Michal 2026-11-02): jedna adresa, Caddy posiela prehliadač s cookie
@@ -703,7 +707,10 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     // ----- verejné -------------------------------------------------------
     if (r === "GET /sada") return ok(ctx.obsah.aktualnaSada().sada);
-    if (r === "GET /rebricek-2na2") return ok(ctx.rebricek2na2());
+    if (r === "GET /rebricek-2na2") {
+      if (!ctx.rezimyZrejucej) throw new ChybaVstupu(REZIM_LEN_V_ZREJUCEJ, 404);
+      return ok(ctx.rebricek2na2());
+    }
 
     // Kód je z prehliadača hráča; cudziu ani skončenú partiu server neprezradí.
     if (r === "GET /hry/moja") {

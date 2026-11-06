@@ -59,7 +59,7 @@ describe("Zrejúca — oprávnenie hrat_zrejucu", () => {
   it("neprihlásený vidí len, kde je; dáta nie", async () => {
     const odpoved = await ja(zrejuca, "");
     expect(odpoved.pouzivatel).toBeNull();
-    expect(odpoved.instancia).toEqual({ nazov: "zrejuca", vypalena: null, zrejuca: null, bezPrava: false });
+    expect(odpoved.instancia).toEqual({ nazov: "zrejuca", vypalena: null, zrejuca: null, bezPrava: false, rezimyNavyse: true });
     expect((await volaj(zrejuca, "GET", "/sada")).status).toBe(401);
     expect((await volaj(zrejuca, "GET", "/hry/otvorene")).status).toBe(401);
     // Vypálená je verejná a ponúka prepnutie (adresa "/" = Caddy smeruje podľa cookie).
@@ -209,7 +209,8 @@ describe("Zrejúca bez zmien sa hráčom neponúka (Michal 2026-11-02)", () => {
   const zmazat: (() => Promise<void>)[] = [];
 
   beforeAll(async () => {
-    const v = await testovaciServer(TEST_ADMIN, { zrejucaAdresa: "/", verzia: VERZIA, zrejucaUrl: () => adresaZrejucej });
+    // Bez režimov navyše: tu sa skúša porovnanie kódu a tvorcu, režimy má vlastný test nižšie.
+    const v = await testovaciServer(TEST_ADMIN, { zrejucaAdresa: "/", verzia: VERZIA, zrejucaUrl: () => adresaZrejucej, rezimyLenVZrejucej: [] });
     v2 = v.server;
     zmazat.push(v.zmaz);
     const z = await testovaciServer(TEST_ADMIN, {
@@ -227,7 +228,7 @@ describe("Zrejúca bez zmien sa hráčom neponúka (Michal 2026-11-02)", () => {
   it("ten istý commit a nič nezverejnené = bez zmien; zmena v tvorcovi Zrejúcu znova ponúkne", async () => {
     const admin = await prihlas(v2.port, TEST_ADMIN.login, TEST_ADMIN.heslo);
     const stav = async () => (await (await volaj(v2, "GET", "/zrejuca/stav", admin)).json()) as Record<string, unknown>;
-    expect(await stav()).toEqual({ dostupna: true, vypalena: VERZIA.commit, zrejuca: VERZIA.commit, kariet: 0, ineZmeny: false, bezZmien: true });
+    expect(await stav()).toEqual({ dostupna: true, vypalena: VERZIA.commit, zrejuca: VERZIA.commit, kariet: 0, ineZmeny: false, rezimy: [], bezZmien: true });
     expect(await (await volaj(z2, "GET", "/verzia")).json()).toEqual({ verzia: VERZIA });
 
     const bez = await volaj(v2, "POST", "/instancia", admin, { nazov: "zrejuca" });

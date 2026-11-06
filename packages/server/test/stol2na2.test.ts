@@ -11,7 +11,7 @@ let server: GameServer;
 let zmaz: () => Promise<void>;
 
 beforeAll(async () => {
-  ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0 }));
+  ({ server, zmaz } = await testovaciServer(TEST_ADMIN, { botPauzaMs: 0, rezimyZrejucej: true }));
 });
 
 afterAll(async () => {

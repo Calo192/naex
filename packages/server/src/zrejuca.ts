@@ -147,6 +147,16 @@ export class Vypalena {
   }
 }
 
+/**
+ * Režimy, ktoré sú len v Zrejúcej (Michal 2026-11-06: hráči dostanú len novú verziu Kalamity 1 na 1).
+ * Vypálená ich odmieta a kým tu niečo je, Zrejúca nie je „bez zmien“, aj keď je na tom istom
+ * commite. Keď režim pôjde hráčom, vyškrtni ho tu a zapni ho aj vo Vypálenej (index.ts).
+ */
+export const REZIMY_LEN_V_ZREJUCEJ: readonly string[] = ["2 na 2", "Päta, Lakeť, Otočka"];
+
+/** Čo povie server tomu, kto chce taký režim tam, kde nie je. */
+export const REZIM_LEN_V_ZREJUCEJ = "Tento režim je len v Zrejúcej.";
+
 /** Nastavenie inštancie z prostredia (index.ts). */
 export function instanciaZProstredia(env: Readonly<Record<string, string | undefined>>): Instancia {
   const v = env.NAEX_INSTANCIA ?? "vypalena";

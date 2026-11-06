@@ -23,6 +23,9 @@
 //                        http://localhost:<port Zrejúcej>; bez nej sa Zrejúca neponúka
 //   NAEX_ZREJUCA_URL     Vypálená: kde sa pýta Zrejúcej na verziu (v Dockeri http://naex-zrejuca:8787) —
 //                        Zrejúca bez zmien sa hráčom neponúka; bez nej sa to neoveruje
+//   NAEX_REZIMY_ZREJUCEJ 2 na 2 a Päta, Lakeť, Otočka (zrejuca.ts) idú podľa NAEX_INSTANCIA: Zrejúca áno,
+//                        Vypálená nie, a tak aj predvolený `npm run dev`. 1 = zapnúť ich vývojárovi aj bez
+//                        druhého servera (Zrejúca potrebuje NAEX_VYPALENA); pri NODE_ENV=production sa ignoruje
 
 import { fileURLToPath } from "node:url";
 import { createGameServer } from "./server.ts";
@@ -63,6 +66,7 @@ createGameServer({
   posliEmail: odosielacZProstredia(process.env.NAEX_EMAIL_REZIM),
   ...(process.env.NAEX_ADRESA ? { adresa: process.env.NAEX_ADRESA } : {}),
   ...(zrejuca !== undefined ? { zrejuca } : {}),
+  rezimyZrejucej: zrejuca !== undefined || (process.env.NODE_ENV !== "production" && process.env.NAEX_REZIMY_ZREJUCEJ === "1"),
   ...(zrejuca === undefined && zrejucaAdresa !== undefined ? { zrejucaAdresa } : {}),
   ...(zrejuca === undefined && process.env.NAEX_ZREJUCA_URL ? { zrejucaUrl: process.env.NAEX_ZREJUCA_URL } : {}),
 })

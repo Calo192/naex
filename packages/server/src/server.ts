@@ -104,6 +104,7 @@ import { emailDoLogu, type PosliEmail } from "./email.ts";
 import { titul } from "./frajerina.ts";
 import { Achievementy, nacitajKatalog, type AchievementyMiestnosti } from "./achievementy.ts";
 import type { Vypalena } from "./zrejuca.ts";
+import { REZIMY_LEN_V_ZREJUCEJ, REZIM_LEN_V_ZREJUCEJ } from "./zrejuca.ts";
 
 // ---------------------------------------------------------------------------
 // Dáta z repozitára (testy jadra a nástroje ich používajú priamo)
@@ -367,6 +368,10 @@ export interface ServerOpts {
    * Funkcia pre testy, kde Zrejúca vzniká až po Vypálenej.
    */
   readonly zrejucaUrl?: string | (() => string);
+  /** Smie sa tu hrať 2 na 2 a Päta, Lakeť, Otočka; predvolene len v Zrejúcej. */
+  readonly rezimyZrejucej?: boolean;
+  /** Režimy, ktoré má Zrejúca navyše oproti Vypálenej, namiesto REZIMY_LEN_V_ZREJUCEJ (testy). */
+  readonly rezimyLenVZrejucej?: readonly string[];
   /** Nasadená verzia namiesto VERZIA.json (testy). */
   readonly verzia?: StavServera["verzia"];
 }
@@ -469,6 +474,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   // Zrejúca hrá rozpracovaný stav tvorcu Vypálenej; kým sa nepodarí prevziať, hrá posledný prevzatý
   // (pri prvom štarte východiskovú sadu z repozitára).
   const zrejuca = opts.zrejuca ?? null;
+  // Vypálená (Michal 2026-11-06) hrá len Kalamitu 1 na 1; 2 na 2 a Päta, Lakeť, Otočka sú v Zrejúcej.
+  const rezimyZrejucej = opts.rezimyZrejucej ?? zrejuca !== null;
+  const rezimyLenVZrejucej = opts.rezimyLenVZrejucej ?? REZIMY_LEN_V_ZREJUCEJ;
   const prevezmiSadu = async (): Promise<{ verzia: number; zmena: boolean }> => {
     if (zrejuca === null) throw new Error("Rozpracovanú sadu preberá len Zrejúca.");
     const r = obsah.prevezmiRozpracovanu(await zrejuca.vypalena.tvorca(), teraz());
@@ -534,7 +542,9 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       zrejuca: jej?.commit ?? null,
       kariet: zmeny.kariet,
       ineZmeny: zmeny.ine,
-      bezZmien: dostupna && rovnakyKod && zmeny.kariet === 0 && !zmeny.ine,
+      rezimy: rezimyLenVZrejucej,
+      // Ten istý commit po vypálení: Zrejúca má aj tak režimy navyše, hráč s oprávnením ju musí vedieť otvoriť.
+      bezZmien: dostupna && rovnakyKod && zmeny.kariet === 0 && !zmeny.ine && rezimyLenVZrejucej.length === 0,
     };
   };
   // Verzia jadra, ktorú nesie archivovaná partia: hash packages/core/src — prehrávač prehrá
@@ -604,6 +614,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           adresa: opts.adresa ?? null,
           obsah,
           rebricek2na2: () => rebricek2na2(db),
+          rezimyZrejucej,
           media,
           predvoleneAvatary: avatary.hracov,
           botiNaVyber: avatary.botiNaVyber(POVAHY),
@@ -911,6 +922,11 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       case "stol2na2Zaloz":
       case "stol2na2Pridaj":
       case "stol2na2Nahodne": {
+        // Skryť lobby nestačí: 2 na 2 je len v Zrejúcej, vo Vypálenej ho nezaloží ani ručne poslaná správa.
+        if (!rezimyZrejucej) {
+          sendError(ws, REZIM_LEN_V_ZREJUCEJ);
+          return;
+        }
         if (uzavierka !== null) {
           sendError(ws, OZNAM_UZAVIERKY);
           return;
@@ -986,6 +1002,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           sendError(ws, zamknuta);
           return;
         }
+        if (msg.rezim === "pata" && !rezimyZrejucej) {
+          sendError(ws, REZIM_LEN_V_ZREJUCEJ);
+          return;
+        }
         const room = novaMiestnost({
           data,
           sada,
@@ -1013,6 +1033,10 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         const room = rooms.get(String(msg.code ?? "").toUpperCase());
         if (room === undefined) {
           sendError(ws, "Miestnosť s týmto kódom neexistuje.");
+          return;
+        }
+        if (room.rezim === "pata" && !rezimyZrejucej) {
+          sendError(ws, REZIM_LEN_V_ZREJUCEJ);
           return;
         }
         // Hráč, ktorý už v miestnosti sedí, sa vracia na svoje miesto.

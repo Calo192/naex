@@ -500,6 +500,8 @@ interface StavZrejucejCli {
   readonly zrejuca: string | null;
   readonly kariet: number;
   readonly ineZmeny: boolean;
+  /** Režimy len v Zrejúcej; starý server ich nepošle. */
+  readonly rezimy?: readonly string[];
   readonly bezZmien: boolean;
 }
 
@@ -516,7 +518,8 @@ export function textZmienZrejucej(z: StavZrejucejCli, pocetCommitov: (od: string
             const n = pocetCommitov(z.vypalena, z.zrejuca);
             return n === null ? `iný commit (${z.zrejuca.slice(0, 7)})` : `${n} commitov`;
           })();
-  return `${commity}, ${z.kariet} kariet navyše${z.ineZmeny ? ", aj iné zmeny v tvorcovi" : ""}`;
+  const rezimy = (z.rezimy ?? []).length > 0 ? `, len v Zrejúcej: ${(z.rezimy ?? []).join(" a ")}` : "";
+  return `${commity}, ${z.kariet} kariet navyše${z.ineZmeny ? ", aj iné zmeny v tvorcovi" : ""}${rezimy}`;
 }
 
 function gitPocetCommitov(od: string, po: string): number | null {

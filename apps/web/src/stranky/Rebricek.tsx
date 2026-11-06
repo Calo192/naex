@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
-import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Rola } from "../lib/ucet.tsx";
+import { NAZOV_UROVNE, RANKY_HRACOV, maRezimyZrejucej, useUcet, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import { tvar } from "../lib/jazyk.ts";
@@ -85,7 +85,7 @@ const HODNOSTI: readonly [number, string][] = [
 
 export function Rebricek() {
   useTitulok("Rebríček");
-  const { ja } = useUcet();
+  const { ja, instancia } = useUcet();
   const [hraci, setHraci] = useState<readonly RiadokRebricka[] | null>(null);
   const [chyba, setChyba] = useState<string | null>(null);
 
@@ -163,7 +163,7 @@ export function Rebricek() {
       )}
       </div>
       <aside className="st-bok rebricek-bok">
-      <Rebricek2na2 />
+      {maRezimyZrejucej(instancia) && <Rebricek2na2 />}
       <section className="panel hodnosti">
         <h2>Ako sa počíta Frajerina</h2>
         <p className="tlmene">

@@ -9,7 +9,7 @@ import { vzhladKarty } from "./HernaKarta.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { chod, Odkaz, useTitulok } from "../lib/router.tsx";
 import { sNavratom } from "../lib/navrat.ts";
-import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
+import { jeSpravca, maPravo, maRezimyZrejucej, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -381,7 +381,7 @@ function useTriedaRezimu(trieda: string | null): void {
 
 export function Hra() {
   useTitulok("Hrať");
-  const { ja, nacitane, nastav: nastavUcet } = useUcet();
+  const { ja, nacitane, nastav: nastavUcet, instancia } = useUcet();
   // Telefón na šírku smie hráč od ranku Poldeci (Michal 2026-11-01; predtým len správca) — ostatným oznam.
   const spravca = ja !== null && jeSpravca(ja.rola);
   const mobil = smieTelefon(ja?.rola ?? null);
@@ -524,19 +524,23 @@ export function Hra() {
     return (
       <>
         <Lobby zaloz={zalozSPonukou} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} vyucbaNaPocitaci={vyucbaNaPocitaci} />
-        <Lobby2na2 zaloz={hra.zalozStol2na2} nahodne={hra.nahodne2na2} pripoj={hra.pripojStol2na2} />
-        <section className="panel">
-          <h2>Päta, Lakeť, Otočka</h2>
-          <p className="tlmene">Draft štyroch starších s pečeňou. Vyhrá, kto podrazí všetkých súperových. Zatiaľ sa nepočíta do Frajeriny.</p>
-          <div className="riadok-tlacidiel">
-            <button type="button" className="tlacidlo tlacidlo-hlavne pt-bot" onClick={() => hra.zalozPata(true)}>
-              Proti počítaču
-            </button>
-            <button type="button" className="tlacidlo" onClick={() => hra.zalozPata(false)}>
-              Založiť stôl s kódom
-            </button>
-          </div>
-        </section>
+        {maRezimyZrejucej(instancia) && (
+          <>
+            <Lobby2na2 zaloz={hra.zalozStol2na2} nahodne={hra.nahodne2na2} pripoj={hra.pripojStol2na2} />
+            <section className="panel">
+              <h2>Päta, Lakeť, Otočka</h2>
+              <p className="tlmene">Draft štyroch starších s pečeňou. Vyhrá, kto podrazí všetkých súperových. Zatiaľ sa nepočíta do Frajeriny.</p>
+              <div className="riadok-tlacidiel">
+                <button type="button" className="tlacidlo tlacidlo-hlavne pt-bot" onClick={() => hra.zalozPata(true)}>
+                  Proti počítaču
+                </button>
+                <button type="button" className="tlacidlo" onClick={() => hra.zalozPata(false)}>
+                  Založiť stôl s kódom
+                </button>
+              </div>
+            </section>
+          </>
+        )}
         {zalozPoPonuke !== null && vyucbaUctu !== null && !ponukaZavreta && (
           <PonukaVyucby vyucba={vyucbaUctu} zacni={() => zacniVyucbu(false)} preskoc={preskocPonuku} />
         )}

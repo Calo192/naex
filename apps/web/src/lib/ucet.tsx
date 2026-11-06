@@ -101,6 +101,8 @@ export interface Instancia {
   readonly zrejuca?: string | null;
   /** V Zrejúcej: prihlásený vo Vypálenej, ale bez oprávnenia hrať Zrejúcu. */
   readonly bezPrava?: boolean;
+  /** Hrá sa tu 2 na 2 a Päta, Lakeť, Otočka (len Zrejúca); server ich inde odmietne. */
+  readonly rezimyNavyse?: boolean;
 }
 
 /** Smie prepnúť do Zrejúcej — len keď to server výslovne povie (starý server oprávnenie nepozná). */
@@ -110,6 +112,9 @@ export const smieZrejucu = (ja: Pouzivatel | null, i: Instancia): boolean =>
 const VYPALENA: Instancia = { nazov: "vypalena", vypalena: null };
 
 export const jeZrejuca = (i: Instancia): boolean => i.nazov === "zrejuca";
+
+/** 2 na 2 a Päta, Lakeť, Otočka len tam, kde to server výslovne povie — hráči Vypálenej o nich nevedia. */
+export const maRezimyZrejucej = (i: Instancia): boolean => i.rezimyNavyse === true;
 
 interface UcetKontext {
   readonly ja: Pouzivatel | null;
