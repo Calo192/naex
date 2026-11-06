@@ -5,13 +5,17 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 
 ## Aktuálna stratégia (po partii 3, pravidlá v11.6, stredná partia 5+finále)
 **Cieľ:** vyhrať bitku K(n) s 3–4 červenými strachmi tak, aby si v K(n+1) mal 4 červených **už pred bitkou** (4c sa kontroluje PRED Nakladačkou 4e, takže 4. červenú musíš mať z predošlej Nakladačky) → výhra strachom hneď. P3: červení po K1 = 1, po K2 = 3 (Nakladačka 15), 4. (Hrobár) až v K5 → výhra sa nestihla; keby K3 (prehra 5:7) vyšla, výhra strachom v K4 bola reálna. Záložný plán = **špaky zo starších**: víťaz dostane za každého staršieho svoj najvyšší marker (červená 5, oranžová 3): so 4 červenými je to **+16 až +18 za jednu vyhratú bitku** (P3 K5 +18, K2 +5 pri 1 červenom). Strach teda nie je „ozdoba“ — je to najväčší zdroj špakov, ak vyhráš bitky po tom, čo ho máš.
+> Sudca 2026-11-06: Časovanie 4c pred 4e je správne (§9.4 Nakladačka bod 4, §10 Výhra strachom) — overené v partiách 20261106-010635-1 K5 aj 20261106-024710-2 K5.
 1. **Červené treba mať skoro (K1–K2) a bitky K3+ nesmieš prehrať** — P3: dve prehry (K3 5:7, K4 7:11) stáli ~25 špakov (jej starší +6/+4, karty +8/+10, Exekútor mne −3/−4). Prvá Nakladačka (K1, 6 b) na JEDNÉHO staršieho do červenej (Veterinár; pre súperku bezcenná priazeň Advokát), druhá (K2, 15 b): 6+6+3 (dve červené + oranžová) – zajatie už červeného staršieho nepridá červenú.
+> Sudca 2026-11-06: Priazeň nesie scorecard rozdaný náhodne pre každú partiu (§3, §10 Priazeň) — „Veterinár = Advokát“ platilo len v tej partii (v 20261106-015313-1 mal Veterinár Robotu). Pred rozdelením čítaj priazeň zo scorecardu.
 2. **Šetri na finále, nie na bitky: finále konvertuje tuhé 1 : 1 na špaky** (P3: 3:17 → ≈ +27 špakov súperke z 28 → 50, hoci som viedol 40:28). Do finále choď s ≥ 4 cigaretami a ≥ 3 kartami v ruke; prvý ťah draftu stojí 1 cigaretu a bez nej draft vypadne (P3: 0 cigariet = prázdna fáza). V K5 už vyhratú bitku nekupuj za posledné cigarety (minul som 4 na 3 karty pri 10:4).
+> Sudca 2026-11-06: Finále v 20261106-024710-2 bolo podľa priebeh.log tuhé 21 : 3 pre Klebetnú, Nakladačka 18 = 18 špakov, hádka 2 — jej finále dalo spolu 27 hrubých + výkupné 4 (nie „3 : 17“).
 3. **Finále: útočník (zaostávajúci) vykladá prvý a podstrčí Manželku/kartu ako prvú do MOJHO kraja → vezme mi hranu lokality** (P3: Petelica ×2 chaty jej, tuhé 3:17). Obranca musí mať v ruke aspoň 2 telá, alebo vybrať lokalitu s neškodnou hranou na svojej strane a ako prvú vyložiť Záverečnú.
 4. **Jej Bzdocha + Zrážka**: keď je na stole Bzdocha súperky, moje NA EX na JEJ kartu zničí zrážka (Výtržník len pre ňu, K3 5:7). NA EX dávaj len na VLASTNÉ karty (jej odpoveď tam je zrážka = Výtržník pre mňa, čo by jej uškodilo) alebo vôbec.
 5. **Pred NA EX na vlastnú kartu skontroluj pečeň:** karta s aktívnou Pečeňou (Pijan, Hasič, Traktorista) ju NA EX zdvojí → Cirhóza (K1 2× Cirhóza, Hasič v K3 +3). Lokalita **Kar** (pečeň za NA EX dostane súper) robí z NA EX zadarmo – vyber ju, keď plánuješ NA EX; Kostol/Kultúrny dom/Vandal sú súperkina odpoveď na NA EX štýl.
 6. **Tuhé bez lokality:** karty s Pecka/Pecka na spoji outer–inner (Mäsiar→Kočovník→Degustátorka, K5: 10 tuhých z 3 kariet) a Vymáhač + Sypač (Podpora: Vymáhač má Rany ako Pecky, K4: 11:3). Vymáhač rastie s priznanými Dlhmi (5 Dlhov = 2 Rany).
 7. **Nakladačka:** zajatie sa oplatí, keď súper má pri staršom vysoký marker (K5 Starosta: 3 špaky preč jej, 3 mne za 5 b; zmizne mu priazeň Kmotor) – ale vo finále potom z toho staršieho nebodujem (markery zanikli). Priazeň z môjho strachu dostáva súper: nezvyšuj strach u Vychovávateľky (Bitkár), Farára (Veriaci), Krčmárky (Robota), Autobusára (Fajčiar).
+> Sudca 2026-11-06: Zoznam „Vychovávateľka (Bitkár), Farár (Veriaci), Krčmárka (Robota), Autobusár (Fajčiar)“ platí len pre partiu 20261106-024710-2 — scorecardy s priazňou sa rozdávajú náhodne každú partiu (§3, §10).
 8. **Pas v Z (cigarety) je dobrý len pri prehratej bitke**; súperka (Klebetný) pasovala K1–K5 a vošla do finále s 8 cigaretami a 10 kartami – jej plán je hromadiť na finále.
 
 ## Nástroje
@@ -79,11 +83,13 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 - výsledok: +3 tuhé vo finále za 2 cig.; nutné nechať si cigarety po drafte (pasom v Z1 → cigarety → Dedičstvo v Z2)
 
 ### E1 (P3) · Zajať staršieho, pri ktorom má súper VYSOKÝ marker (krádež špakov) — Starosta v K5
+> Sudca 2026-11-06: Číslovanie experimentov má rásť (README denníkov: „číslo rastie, staré sa nemažú“); E1–E5 (P3) sú nové experimenty E9–E13, nie opakovania E1–E5. Krádež +3/−3 sedí s logom (zajatie Starostu, K5).
 - výsledok: funguje čiastočne — 5 b Nakladačky = +3 mne / −3 jej (rozdiel 6) a zmizla jej priazeň Kmotor; slabina: väzeň už nebodoval vo finále (markery zanikli) a väzni 1/3 sú ďaleko
 ### E2 (P3) · Vízia spáli Cirhózu — K1
 - výsledok: funguje (jednorazovo, náhoda vrchnej karty)
 ### E3 (P3) · Strýko Kšeft / cigarety na tuhé — nevyskúšané (cigarety vždy 0–3, minuté na draft)
 ### E4 (P3) · NA EX na vlastné karty s aktívnou Pečeňou + Kar — K1: 12 → 17 tuhé stálo 2 Cirhózy (−6 špakov, 1 spálená Víziou); K2: NA EX Traktorista 12 → 17 bez pečeňového trestu
+> Sudca 2026-11-06: Podľa priebeh.log bola K1 6 : 0 a 12 → 17 bolo K2 (Traktorista, 17 : 2, Nakladačka 15). Dve Cirhózy z K1 (Pijan) sedia.
 ### E5 (P3) · Podstrčiť Vymáhača ako prvú kartu na jej stranu vo finále (aby mi vrátil hranu) — nefungovalo: ona mala viac kariet (3 : 1)
 - čo ďalej: do finále prísť s 3+ kartami a 4+ cigaretami
 

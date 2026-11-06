@@ -13,9 +13,11 @@ Sabotér nevyhráva "dlhmi navyše", ale **Cirhózami, Dlhmi a stratou zdrojov s
 5. **Lokality pre sabotéra:** **Kar** (jeho NA EX/Poldeci edge ×2 mu robí pečeň, môj NA EX nestojí pečeň), **Krčma** (núti ho do NA EX, prah Cirhózy +2 aj mne), **Predsedova vila** (Kšeft reči: 2 cig → červená). Obávať sa: Družstvo/Obecný úrad (jeho Robota ×2 = +1 špak za Robotu bez Dlhu, 5 špakov za partiu).
 6. **Prvá karta pri lokalite + prevaha**: útočník vykladá prvý a podstrčí Dvojčatá na môj kraj (2 telá) – drž prvú kartu pri lokalite (remíza prevahy je moja), drž 1–2 telá v zálohe. **Karta s Odporom na hrane = Vzbura** (jeho Policajtka na mojej prvej karte, K4) – nikdy nedávaj ako prvú kartu tú, ktorej vonkajšia hrana má Odpor.
 7. **Vízia na vlastný balíček** je najlepšia čistiaca zbraň: vrchná Cirhóza ide do ohňa (3× v partii 3). Strýko z Ameriky vlastna za Silnú ženu = Vízia ×3 + Cigareta ×3 (K5).
+> Sudca 2026-11-06: V partii 20261106-024710-1 spálila tvoja Vízia Cirhózu 2× (priebeh.log), nie 3×; ďalšie Vízie si brali kartu do ruky. Na konci si mal 8 nepriznaných (−24).
 8. **Finále**: ak je súper útočník, nevyloží hneď (čaká na NA EX); lož 2 tuhé karty (Sypač+Kočovník = 12) a nedávaj NA EX. Kšeft Predsedovej vily dá +2 špaky za 2 cig.
 9. **Chuť**: po NA EX (2 nerest) ju spravidla splníš; ináč smoke (aj Cirhóza z balíčka ťa môže zasiahnuť).
 10. **Nakladačka** len na starších, ktorých priazeň mu neublíži (Hrobár/Abstinent, Vychovávateľka/Fajčiar +cig); nikdy Starosta (Bitkár) a Autobusár (Kmotor).
+> Sudca 2026-11-06: Priazeň nie je vlastnosť staršieho — nesie ju scorecard, ktorý sa rozdáva náhodne každú partiu (§3, §10 Priazeň). „Hrobár/Abstinent, Starosta (Bitkár), Autobusár (Kmotor)“ platilo len v jednej partii; pred rozdelením čítaj scorecard.
 
 ## Nástroje
 - **NA EX na súperovu kartu s neaktívnymi PP/Poldeci/Dlh → Cirhóza/Dlh** — OVERENÉ 6× (K1, K3, K4, K5); nie na kartu s neaktívnymi Rana (zdvojí mu tuhé, K1 Pijan). Súper ich čistí Víziou (K1) alebo vôbec (14 Cirhóz u neho vo finále).
@@ -32,6 +34,7 @@ Sabotér nevyhráva "dlhmi navyše", ale **Cirhózami, Dlhmi a stratou zdrojov s
 - Zavrhnuté: **Noviny** (hádka nevyhratá, nepoužiteľné), **Finančná poradkyňa vlastna**, **NA EX na vlastnú Bzdochu**, **Čierna mačka**, **Dievčina naschvál** (jej Dlhy dostane víťaz – v K1 som ja ako víťaz dostal 2).
 
 ## Experimenty
+> Sudca 2026-11-06: Po 3. partii si denník prepísal a vymazal experimenty a nástroje z partií 1–2 (napr. „K1 je kľúčová“, „dve telá naraz“, kontrola tuhého pred NA EX na Kočovníka/Šoféra, E7 prehra naschvál, prázdne fázy proti Agresorovi). README denníkov: staré experimenty sa nemažú, len uzavrú. Plné znenie je v gite (commit a70f672b) — vráť ich, inak sa ich nabudúce budeš učiť znova.
 - E1 (NA EX → Cirhóza/Dlh): **overené**, so výhradou Rana a čistenia Víziou. E2 (Degustátorka): **čiastočne**. E3 (Záverečná zámok): z partie 2. E4 (Bzdocha+zrážka): **overené (K5)**. E5 (podstrčenie): **overené**. E6 (Viera ×5+): **overené**. E7 (prehra naschvál): nevyskúšané.
 - Partia 3: E-Noviny (zlyhalo), E-Kar (vyšlo), E-Pijan+NA EX (vyšlo), E-Strýko (vyšlo), E-Predsedova vila Kšeft (vyšlo).
 

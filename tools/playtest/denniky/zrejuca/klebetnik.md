@@ -35,6 +35,7 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 - **Čierna mačka (Zviera, Povery sa Vierou nerušia)** — Zviera pre prevahu a mäkké v jednej karte · stav: sľubný · dôkaz: K5 (prvá karta na mojom kraji, 3 mäkké) · pravidlá: v11.6
 - **Kultúrny dom** — porazený berie špak za každú svoju kartu v línii, hrana Pohoršenie/Povera · stav: sľubný · dôkaz: K5 výhra 6:5 a hádka 6:0; pri prehre by dal +3 · pravidlá: v11.6
 - **Nealko do Dedičstva** (prah Cirhózy +2) — obrana pred pečeňovým motorom · stav: overený · dôkaz: K3–K6 pečeň 1–6 za Pitku, od K3 len 1 Cirhóza (K5), kým K1–K2 bez neho 6 Cirhóz · pravidlá: v11.6
+> Sudca 2026-11-06: Čísla sedia s priebehom (20261106-010635-2: po K2 6 Cirhóz, na konci 7), ale je to súvislosť, nie dôkaz: od K3 už súper nedal NA EX na tvojho Pijana. Prah +2 je podľa §8 správny.
 - **Reči na staršom, kde už mám strach** — červená reč za 3 namiesto 6 · stav: overený · dôkaz: K5 Krčmárka (strach oranžová → reči červená za 3) · pravidlá: v11.6
 - **Zberný dvor (Kšeft: karta zo zahodených za 1 cig)** — oprava prázdnej ruky (ruka 1 karta v K3) · stav: overený · dôkaz: K3 Manželka, Veterán · pravidlá: v11.6
 - **NA EX na súperovu kartu s jeho zlými neaktívnymi akciami (Dlh, Pečeň)** — sabotuje ho, platí 2 nerest, ktoré aj tak treba kvôli Chuti · stav: sľubný · dôkaz: K5 Recidivista (jeho Dlh ×2 → Exekútor −3 špaky), K2 Poradkyňa (zrušila 3 moje Dlhy); POZOR zdvojí aj jeho neaktívne Cigarety (K4 Podvodník +6 cig) · pravidlá: v11.6
@@ -43,6 +44,7 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 - **Nástroj (Telefón, Noviny) na koniec vlastného radu** — **zavrhnutý:** jeho vonkajšia hrana (Pohoršenie, Povera) pripadne majiteľovi ďalšej karty, ktorú súper priloží (K1 Pijan, K3 Policajtka: mäkké 3:3 a 1:2). Nástroj s mäkkými akciami patrí do Dedičstva alebo medzi dve moje karty · pravidlá: v11.6
 - **Nástroj s ZLÝMI akciami na súperov kraj** (Noviny: Dlh+Dlh) — Nástroj pracuje pre majiteľa suseda, takže mu dá Dlhy/Pečeň · stav: kandidát (K5 ponuka +2 Dlh súperovi, nepoužité) · pravidlá: v11.6
 - **Strach+reči: Nakladačka 1–2 na starších bez rečí** — vyhrám bitku → malú Nakladačku dám tam, kde mi priazeň neschádza (Krčmárka: Abstinent) · stav: overený (K4–K5) · pravidlá: v11.6
+> Sudca 2026-11-06: „Krčmárka: Abstinent“ platí len pre partiu, v ktorej to bolo — priazeň nesie scorecard rozdaný náhodne (§3, §10 Priazeň).
 - **NA EX na kartu s Pečeň/Poldeci zdvojí pečeň jej majiteľovi** (K1 moja Miňištrant: +2 pečeň, Cirhóza) — pasca pre mňa i pre súpera · stav: overené poučenie, nie nástroj · pravidlá: v11.6
 - **Finančná poradkyňa / Policajtka (Odpor → zadĺženie súperovi)** — sabotér ich proti mne použil (K2/K3, každé kolo +1–2 Dlhy); ja ich nemal · stav: kandidát (vzať ich zo šenku skôr, než ich vezme súper) · pravidlá: v11.6
 - **Čierna mačka podstrčená ako prvá na súperovu stranu (hrana s Posilnením)** — mäkké 5:0 · stav: overený (1×) · dôkaz: K5 Kostol, mäkké 5:0 pri tuhom 1:0, reči 5 bodov → Starosta/Poštárka oranžová + Farár žltá (7 špakov nominálne, vo finále +4 aj pri prehre) · pravidlá: v11.6

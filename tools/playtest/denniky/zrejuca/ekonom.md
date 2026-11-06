@@ -6,10 +6,12 @@ Verzia pravidiel všetkých záznamov nižšie: **v11.6** (Zrejúca, 2026-11-03)
 
 ## Aktuálna stratégia (po partii 3: prehra −12 : 30 proti Sabotérovi; partia 2 výhra 67 : 10 Klebetný, partia 1 prehra 38 : 59 Agresívny)
 Ekonóm vyhrá, keď si v K1 kúpi **motor, ktorý vypláca každé kolo**, a keď **nenakopí Cirhózy** — v partii 3 ho nezabil súper v bitkách, ale **14 nepriznaných Cirhóz = −42 špakov** (súper −24 → po Víziách 0).
+> Sudca 2026-11-06: Súper (Sabotér) Cirhózy Víziami neodstránil: spálil len 2 (priebeh.log „Vízia: hráč 2 páli vrchnú kartu — Cirhóza“ 2×) a na konci zaplatil −24 za 8 nepriznaných. „Súper −24 → po Víziách 0“ neplatí; keby nepočítali Cirhózy obom, partia by skončila 30 : 54, nie 30 : 30 (20261106-024710-1, §14).
 Motor = **Roboty + Fúrik** (Robota bez Dlhu = 1 špak, s Fúrikom 2; aktívna aj pri prehre). Funguje len keď (a) mám v K1–K2 **zdroj Robot** (karta Zámočník/Opatrovateľka/Záhradkár/Živnostník, hrana lokality) a (b) **nemám vlastné Dlhy** — každý môj priznaný Dlh zje jeden slot Roboty (p3 K4: 4 Roboty = 8 slotov, 6 spálilo vlastné Dlhy, 2 špaky). Fúrik sám (p3 K1–K2, bez Roboty) je mŕtva investícia.
 Plán:
 1. **K1: draft (1 cig) kartu s Robotou (Zámočník/Opatrovateľka) + Fúrik; Fúrik do Dedičstva za 1 cig LEN ak mám v ruke/šenku Robotu.** Inak daj radšej Vínko/Nealko (Nealko = prah Cirhózy +2) alebo nič.
 2. **Pečeň je hlavný nepriateľ Ekonóma (p3).** Akcie **Poldeci** a **Poškodenie pečene** dávajú PP v Pitke majiteľovi; súper dá NA EX na MOJU kartu s neaktívnym PP/Poldeci → ×2 (na Kar poldeci z NA EX ide k tomu, kto NA EX dal, takže útočník sa nebolí), s **Silnou ženou ×4**, a **NA EX zostáva na karte vo všetkých Pitkách kola**. Výsledok: Kar K3 5 Cirhóz, Družstvo K5 4 Cirhózy. Preto: (a) **nevyber/nehraj Kar, Vínnu pivnicu, Družstvo (Poldeci) a nedávaj Silnú ženu ani Opatrovateľku vedľa neaktívneho PP/Poldeci**; (b) pred každým položením čítaj „HROZBA KLIATOB“ a „VÝHĽAD PITKY“; (c) karta, na ktorej sú všetky akcie aktívne/zrušené, NA EX nedostane; (d) Cirhózy vyrieši len Vízia na vrchnej karte (nepriznané −3 aj z odhadzovacieho!) — Vízie nemám, preto prevencia.
+> Sudca 2026-11-06: „Cirhózy vyrieši len Vízia“ nie je celkom pravda: Cirhózu, ktorá ti príde do ruky, smieš priznať (§11 Priznanie — na konci nestojí nič, súper má +1 tuhé v každej bitke) a Veterinár ako väzeň odhodí priznané aj Cirhózy v ruke (§10, schopnosť väzňa). Do ruky sa však Cirhóza z odhadzovacieho balíčka dostane až po jeho zamiešaní (§11) — pri balíčku 30 kariet v partii 3 sa to nestihlo.
 3. **Strach starších:** nezdvíhaj starších, ktorých priazeň by pomohla súperovi (Veriaci = Viera pre Viera-bombu, Bitkár, Robota); Nakladačku na Krčmárku (Alkoholik, slabá priazeň) — oranžový strach = 3 špaky pri každej mojej výhre.
 4. **Cigarety bez ventilu:** p3 skončila s 24 cigaretami (Cigareta ×7 z Predavačky/Živnostníka/Silnej) = výkupné len 5. Kšefty lokalít sú jediný sink: **Predsedova vila (finále, 2 cig → reči o stupeň: Krčmárka na červenú = 5 špakov)**, Obecný úrad (3 cig → môj Dlh súperovi), Zberný dvor. Nehromaď cigarety bez ventilu — kupuj karty (2 za 3), Dedičstvo, smoke.
 5. **Prevaha a NA EX ako v p2:** prvá karta pri lokalite, Dvojčatá na jej stranu (prevaha ×2), NA EX na vlastnú kartu so zdvojiteľnými akciami, odpoveď lícom dole ako oprava (pár na Dlh/Pecku). Súper s **Bzdochou vidí môj NA EX skôr** — vtedy dávaj NA EX na kartu, ktorú nemôže zrážkou preplniť, a nechaj odpoveď v ruke.
@@ -21,6 +23,7 @@ Plán:
 - **Fúrik (Nástroj, Dedičstvo) + Roboty** — Robota páli o 1 Dlh viac → každá aktívna Robota = 2 špaky/bitka, aj prehraná · stav: **overený** · dôkaz: p2 K1 5, K3 4, K4 7, K5 6, finále 11 = 33 špakov za 1 cig. · pravidlá: v11.6
 - **Zámočník (pravá strana Robota×2)** — spoj s Robotou lokality = 3 Roboty z jednej karty · stav: **overený** · dôkaz: p2 K1, K3, finále (Robota 2–3) · v11.6
 - **Priazeň Robota (starší Robota) — nechaj súpera zvýšiť jeho strach** — 3 akcie Robota navyše, bez Dlhu 1 špak, s Fúrikom 2 · stav: **overený** · dôkaz: p1 +14, p2 K4–F: 3 Roboty × 2 × 4 bitky ≈ 24 · v11.6
+> Sudca 2026-11-06: Priazeň nesie scorecard, ktorý sa rozdáva náhodne každú partiu (§3, §10 Priazeň): Robotu mala v p1 Vychovávateľka, v p2 Veterinár — nie je to vlastnosť staršieho. Čísla z priebeh.log: p1 Robota dala 3 + 3 + 3 + 5 + 4 = 18 špakov (nie 14).
 - **Odpoveď na NA EX lícom dole ako zdroj prevahy** (aj na jej stranu) — mení prevahu v kraji a počet Pitiek · stav: **overený** · dôkaz: p2 K4 (Pijan + Vymáhač: 5:10 → 10:5), K6 Dievčina · v11.6
 - **Moje karty na JEJ stranu (prvá karta pri lokalite vyhráva rovnosť prevahy)** — Hasič Robota×3, Zámočník + Šofér hrana Petelica/Pecka mne, keď súper nemá čo doložiť · stav: **overený** (podmienený tým, že súper nemá viac Občanov/Dvojčatá) · dôkaz: p2 K4, finále 9:0 · v11.6
 - **NA EX na vlastnú kartu so zdvojiteľnou Vierou** (Manželka, Miňištrant, vonkajšie Viery) — zdvojí vonkajšiu Vieru a zníži jej tuhé (K1 0:4 → 0:0, K3 8 → 2) · stav: **overený** · dôkaz: p2 K1, K3 · v11.6
@@ -61,6 +64,7 @@ Plán:
 - výsledok: **funguje len keď súper nemá čo vyložiť**; p1 K2 pri vedení 7:5 → 1:9; p2 pasoval som 6× len keď súper už pasoval/nemal karty: +5 cig. bez straty
 - pravidlá: v11.6
 ### E2 · Prehrať naschvál (nechať súperovi bitku)
+> Sudca 2026-11-06: Z tých 40 špakov za starších (K2 8, K3 13, K5 19) prišlo z Nakladačky 9 v K1 (Vychovávateľka červená 5 + Starosta oranžová 3) 8 v každej ďalšej výhre, teda 24; zvyšok sú Nakladačky z K2–K3 (priebeh.log 20261106-010635-1). Záver „prehra o 9 je drahá“ platí, číslo treba čítať takto.
 - výsledok: **nefunguje** (p1: prehra o 9 = +40 špakov pre súpera). Prehra len s malým rozdielom a len s poistkou (reči/Robota): p2 K3 prehra 0:7 bola „lacná“ (+8 mne aj v prehre), ale dala súperke Veterinára červená — v jej prospech zlé, v mojom dobré
 ### E3 · Nástroj do Dedičstva hneď v K1 (Fúrik, 1 cig.)
 - výsledok: **funguje výborne** (33 špakov). Overený nástroj.
@@ -77,6 +81,7 @@ Plán:
 - výsledok: **nefunguje (chyba)** — oltár bol pri mne; nerotovaný Kostol dal oltár hráčovi 1 (mne)
 
 ### E11 · Pasca: NA EX na jeho kartu s neaktívnym PP/Poldeci (Cirhóza ako bomba)
+> Sudca 2026-11-06: „Vízie mu ich spálili“ — len 2 z 10; na konci mal 8 nepriznaných (−24). Pasca teda fungovala, len ťa súper prebil (14 : 8 Cirhóz), nie čistením.
 - partie: 20261106-024710-1 (K1 Degustátorka, K3 Degustátorka, K5 Pijan)
 - výsledok: **funguje, ale je symetrická a súper ju hrá lepšie** (Sabotér NA EX na môj Pijan na Kare: 5 Cirhóz mne vs 3 jemu; Vízie mu ich spálili)
 - čísla: K1 súper +2 Cirhózy za 1 NA EX; ja 14 Cirhóz na konci
