@@ -19,7 +19,9 @@
       "pojem": "udržaný strach",
       "vzory": [
         "udrzan\\w* strach",
-        "strach\\w* po udrzan"
+        "strach\\w* po udrzan",
+        "udrzan\\w* marker",
+        "strach\\w* (?:\\w+ ){0,3}po udrzan"
       ],
       "pozn": "v11 Strach a reči"
     },
@@ -85,7 +87,11 @@
       "pojem": "marker so 7 poľami",
       "vzory": [
         "7 pol",
-        "sedem pol"
+        "sedem pol",
+        "posun\\w* marker",
+        "marker\\w* (?:\\w+ ){0,2}o \\d pol",
+        "posunul\\w* marker",
+        "marker\\w* k sebe"
       ],
       "pozn": "vlastný strach a reči každého hráča (v11 Strach a reči)"
     },
@@ -195,6 +201,77 @@
         "3 \\+ 5 = 8"
       ],
       "pozn": "v11.6: zajať sa dá len staršieho, ktorý sa ťa bojí na červenej už pred touto Nakladačkou (od minulého kola); dotiahnuť strach a hneď zajať zaniklo (presvedčenie s dotiahnutím rečí ostáva)"
+    },
+    {
+      "pojem": "Exekútor s prahom, Dlh sa sám nepáli",
+      "vzory": [
+        "prah\\w* 7",
+        "prah\\w* exekut",
+        "exekut\\w*[^.!?]{0,40}prah(?! dlh)",
+        "dlh\\w* sa (?:\\w+ ){0,3}sam\\w* nepali",
+        "spali ho len"
+      ],
+      "pozn": "v8: Exekútor bez prahu, v každej bitke každému s priznaným Dlhom zhorí polovica Dlhov nahor a rovnako špakov"
+    },
+    {
+      "pojem": "Anonymný alkoholik chráni pred NA EX",
+      "vzory": [
+        "alkoholik\\w*[^.!?]{0,60}chran",
+        "chran\\w*[^.!?]{0,60}alkoholik"
+      ],
+      "pozn": "v11.5: Anonymný alkoholik má Furt (Poškodenie pečene v jeho okolí sa ráta ako Viera); ochrana pred NA EX zanikla"
+    },
+    {
+      "pojem": "Kapybara mení cigarety alebo hýbe markerom",
+      "vzory": [
+        "kapybar\\w*[^.!?]{0,80}(?:cigaret|spak|marker)"
+      ],
+      "pozn": "Kapybara má Nástup: súperove reči pri jednom staršom klesnú o stupeň"
+    },
+    {
+      "pojem": "Dohadzovačka vymieňa priazne",
+      "vzory": [
+        "dohadzovac\\w*[^.!?]{0,80}(?:vymen|scorecard|priazn|priazen)"
+      ],
+      "pozn": "od 28. 10.: Dohadzovačka má efekt s presunom karty, výmena priazní a scorecardov zanikla"
+    },
+    {
+      "pojem": "oltár Kostola, Kostol zakazuje NA EX",
+      "vzory": [
+        "oltar",
+        "kostol\\w*[^.!?]{0,80}na ex (?:\\w+ ){0,2}(?:neda|nesmie|nemoz)",
+        "kostol\\w*[^.!?]{0,30}zakaz\\w*[^.!?]{0,20}na ex"
+      ],
+      "pozn": "v11.7: na Kostole nikto nevypije a NA EX ide len na poslednú kartu línie na oboch stranách; oltár a otočenie Kostola zanikli. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "prah Dlhu 2 (každé 2 zadĺženia)",
+      "vzory": [
+        "(?:kazd\\w* )?(?:2|dve|druh\\w*) zadlzen",
+        "prah\\w* dlh",
+        "zadlzen\\w* (?:\\w+ ){0,3}prah"
+      ],
+      "pozn": "v11.8: každý aktívny Hazard dá 1 Dlh; prah 2 ostáva len pri Výhernom automate v Dedičstve, zmienku o ňom nechaj"
+    },
+    {
+      "pojem": "dobratie 1 karty po bitke",
+      "vzory": [
+        "dober\\w* (?:\\w+ ){0,3}1 kart",
+        "dobrat\\w* (?:\\w+ ){0,3}1 kart",
+        "1 kart\\w* za kolo"
+      ],
+      "pozn": "v11.9: od druhého kola doberáš do 3 kariet v ruke; kto ich má 3 a viac, nedoberá"
+    },
+    {
+      "pojem": "priazeň Alkoholik, Na zdravie do dna",
+      "vzory": [
+        "priazn\\w* alkoholik",
+        "priazen\\w* alkoholik",
+        "alkoholik\\w* ako priaz",
+        "scorecard\\w* alkoholik",
+        "do dna"
+      ],
+      "pozn": "v11.10: priazeň Ohováračka namiesto Alkoholika; karta Anonymný alkoholik ostáva"
     }
   ],
   "karty": [
