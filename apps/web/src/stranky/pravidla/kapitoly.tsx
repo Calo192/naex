@@ -213,7 +213,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <H3 id="kolo-utocnik">Útočník a obranca</H3>
         <p>
           <strong>Útočník</strong> je ten, kto prehral poslednú bitku: v Zhromaždení vykladá prvý a na odkryté NA EX odpovedá prvý.{" "}
-          <strong>Obranca</strong> vyberá a natáča cieľ kola a zo šenku berie prvý. Pitku hráte obaja naraz; odpovede na NA EX idú lícom dole a otočia sa naraz. Vo finále
+          <strong>Obranca</strong> vyberá cieľ kola (natáča ho víťaz minulej hádky) a zo šenku berie prvý. Pitku hráte obaja naraz; odpovede na NA EX idú lícom dole a otočia sa naraz. Vo finále
           útočí zaostávajúci — kto má menej špakov.
         </p>
       </>

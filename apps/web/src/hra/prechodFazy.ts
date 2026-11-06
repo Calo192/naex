@@ -31,7 +31,7 @@ export interface Medziobrazovka {
  * naraz s koncom kola a stôl je už v ďalšom kole, kým počítadlo len začína.
  */
 export function medziobrazovka(
-  view: Pick<ClientState, "kolo" | "faza" | "utocnik" | "pitkaCislo" | "pitkyCelkom" | "lokalitCelkom" | "rozpis" | "bitkaStav" | "koniec" | "ciel" | "spaky"> & {
+  view: Pick<ClientState, "kolo" | "faza" | "utocnik" | "pitkaCislo" | "pitkyCelkom" | "lokalitCelkom" | "rozpis" | "bitkaStav" | "koniec" | "ciel" | "spaky" | "vitazPoslednejHadky"> & {
     readonly pitkaStav?: { readonly bzdocha?: PlayerId | null } | null;
     readonly draftStav?: { readonly krok: string } | null;
   },
@@ -68,6 +68,11 @@ export function medziobrazovka(
     };
   }
   const obranca = view.utocnik !== ja;
+  // v11.11: minulú hádku vyhral útočník, takže lokalitu vyberá obranca a natáča útočník.
+  const natacaUtocnik = view.vitazPoslednejHadky === view.utocnik;
+  const vyberas = natacaUtocnik ? "vyberáš" : "vyberáš a natáčaš";
+  const vybera = natacaUtocnik ? "vyberá" : "vyberá a natáča";
+  const ktoNataca = !natacaUtocnik ? "" : obranca ? ` Natočí ju ${S}, víťaz minulej hádky.` : " Natočíš ju ty, víťaz minulej hádky.";
   switch (view.faza) {
     case "volbaCiela": {
       // Pred finále (§14b): vedúci vyberá vrcholovú lokalitu, útočí zaostávajúci. Okno Finále
@@ -76,11 +81,11 @@ export function medziobrazovka(
         const rovnako = view.spaky[0] === view.spaky[1];
         const kto = rovnako
           ? obranca
-            ? `Špakov máte rovnako, útočí ${S} — po prehre v poslednej bitke; ty vyberáš a natáčaš vrcholovú lokalitu.`
-            : `Špakov máte rovnako, útočíš ty — po prehre v poslednej bitke; ${S} vyberá a natáča vrcholovú lokalitu.`
+            ? `Špakov máte rovnako, útočí ${S} — po prehre v poslednej bitke; ty ${vyberas} vrcholovú lokalitu.${ktoNataca}`
+            : `Špakov máte rovnako, útočíš ty — po prehre v poslednej bitke; ${S} ${vybera} vrcholovú lokalitu.${ktoNataca}`
           : obranca
-            ? `Vedieš, preto vyberáš a natáčaš vrcholovú lokalitu; ${S} má menej špakov a útočí.`
-            : `Máš menej špakov, preto útočíš; ${S} vedie a vyberá a natáča vrcholovú lokalitu.`;
+            ? `Vedieš, preto ${vyberas} vrcholovú lokalitu; ${S} má menej špakov a útočí.${ktoNataca}`
+            : `Máš menej špakov, preto útočíš; ${S} vedie a ${vybera} vrcholovú lokalitu.${ktoNataca}`;
         return {
           kluc: `${view.kolo}|lokalita-finale`,
           nadnadpis: "Posledná bitka",
@@ -93,8 +98,10 @@ export function medziobrazovka(
         nadnadpis: kolo,
         nadpis: "Výber lokality",
         text: obranca
-            ? "Vyber lokalitu, o ktorú sa v tomto kole bije, a natoč ju — natočenie určí, ktorá jej hrana pripadne ktorému kraju línie."
-            : `${S} ako obranca vyberá a natáča lokalitu. Ty útočíš: zo šenku berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý.`,
+            ? natacaUtocnik
+              ? `Vyber lokalitu, o ktorú sa v tomto kole bije.${ktoNataca}`
+              : "Vyber lokalitu, o ktorú sa v tomto kole bije, a natoč ju — natočenie určí, ktorá jej hrana pripadne ktorému kraju línie."
+            : `${S} ako obranca ${vybera} lokalitu.${ktoNataca} Ty útočíš: zo šenku berieš druhý, vykladáš prvý a na NA EX odpovedáš prvý.`,
       };
     }
     case "natocenieCiela":

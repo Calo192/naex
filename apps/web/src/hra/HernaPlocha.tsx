@@ -3640,6 +3640,9 @@ export function HernaPlocha({
       };
     }
 
+    if (!somNaTahu && view.faza === "natocenieCiela") {
+      return { nadpis: "Natočenie lokality", text: `Lokalitu natáča ${menoHraca(super_)}, víťaz minulej hádky.` };
+    }
     if (!somNaTahu && view.hasicVolba !== null && view.hasicVolba.hrac === super_) {
       const k = view.hasicVolba.karta;
       return {
@@ -3814,7 +3817,7 @@ export function HernaPlocha({
                 </>
               ),
             }
-          : { nadpis: "Natočenie lokality", text: `Lokalitu natáča ${menoHraca(super_)}, víťaz minulej hádky.` };
+          : null;
       case "volbaCiela":
         return lokalitaNavrh === null
           ? {
