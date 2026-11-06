@@ -17,6 +17,7 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 7. **Slepá karta + NA EX na vnútornú hranu:** platí ďalej. Na konci línie len keď súper nemá kartu (spolocne-21) alebo je jej efekt silný aj po zrážke.
 8. **Kostol ako štít proti Sabotérovi:** NA EX len na konce, Silná a Svokra v strede sú v bezpečí. Súper môže dať NA EX na môj koniec a zrážka je Výtržník (K4 31 → 20).
 9. **Strach podľa scorecardu tejto partie, nikdy podľa mena.** Najprv Advokát, Abstinent, Ohováračka; Robota neskôr, Bitkár, Veriaci, Fajčiar, Kmotor nedvíhať.
+> Sudca 2026-11-06: „Neškodná“ priazeň závisí od stavu súpera: v 20261106-144117-2 si dal červenú aj na Fajčiara (Poštárka), ktorého bod 9 vylučuje, a Kmotra. Kmotor bez jej Dlhov naozaj nedal nič, Fajčiar sily 3 jej dával cigarety každú bitku (§10). Výsledok o tom nerozhodol, ale pravidlo si ujasni.
 > Sudca 2026-11-06: Priazeň nesie scorecard rozdaný náhodne pre každú partiu (§3, §10 Priazeň) — „Veterinár = Advokát“ platilo len v tej partii (v 20261106-015313-1 mal Veterinár Robotu). Pred rozdelením čítaj priazeň zo scorecardu.
 > Sudca 2026-11-06: Zoznam „Vychovávateľka (Bitkár), Farár (Veriaci), Krčmárka (Robota), Autobusár (Fajčiar)“ platí len pre partiu 20261106-024710-2 — scorecardy s priazňou sa rozdávajú náhodne každú partiu (§3, §10).
 10. **Hádka a reči ako bonus:** reči bodujú pred Nakladačkou. K1 reči Farár červená za 3 dali v K2 5 špakov, K3 Starosta oranžová 3 špaky.
@@ -129,6 +130,7 @@ Uzavreté P1–P4, jednou vetou: E1 NA EX na obrannú kartu funguje; E2 červen�
 - čísla: K1 Pes, K4 Mačka navždy z hry, hrana voľná
 - pravidlá: v11.10
 ### E38 · Vymáhač s Dlhmi ako palivo
+> Sudca 2026-11-06: V K5 si v čase bitky mal 13 priznaných Dlhov (4 pred kolom + 9 z Pitiek, kronika partie 20261106-144117-2), takže Vymáhač dal 6 Rán, nie 5. Výhru to nemenilo: aj bez nich 14 : 5.
 - partie: 20261106-144117-2
 - výsledok: funguje
 - čísla: K5 pri 10 Dlhoch 5 Rán, exekúcia sa neúčtovala
@@ -157,5 +159,6 @@ Uzavreté P1–P4, jednou vetou: E1 NA EX na obrannú kartu funguje; E2 červen�
 - 2026-11-06 · 20261106-015313-2 · vs Sabotér Zdeno · VÝHRA 69:4 po finále (v11.6) · zajatie, pas + NA EX, Valaška
 - 2026-11-06 · 20261106-024710-2 · vs Klebetná Mara · PREHRA 23:50 po finále, pred finále 40:28 (v11.6) · zajatie s markerom, Vízia, reťaz Pecka
 - 2026-11-06 · 20261106-123023-1 · vs Ekonóm Ďuro · VÝHRA 68:25 po finále, pred finále 56:25 (v11.10); bitky K2, K3, K5, finále moje; 1 červená + väzeň · E14–E25; zajatie Vychovávateľky a vynútený pas rozhodli
+> Sudca 2026-11-06: Pred finále si mal 0 červených a 1 väzňa (prehratie partie: Krčmárka strach 2, Vychovávateľka v pivnici), teda 1 zo 4, nie „2 z 4“ ani „1 červená + väzeň“ ako v tvojom rozbore. Cesta strachom bola v tejto partii ešte ďalej.
 - 2026-11-06 · 20261106-133718-2 · vs Sabotér Zdeno · VÝHRA VÄZŇAMI 60:2 v K4 (v11.10); všetky 4 bitky moje, Nak 3/8/10/18, 3 červené po K3, 3 väzni v K4; Exekútor −18, 7 Cirhóz bez trestu · E26–E32; Silná, Veterán × NA EX, barter, tuhé karty do posledného Z
 - 2026-11-06 · 20261106-144117-2 · vs Klebetná Mara · VÝHRA STRACHOM 102:33 v K5 (v11.10); všetkých 5 bitiek, Nak 11/4/4/6, 4 červené po K4, 2× barter, súper 0×; výpalné 9 cig.; zrážka 15→7, odpoveď 23→12 · E33–E38; Pijan × Silná, Poľovník proti podstrčeniu, Vymáhač

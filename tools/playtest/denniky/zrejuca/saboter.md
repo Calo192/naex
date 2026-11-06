@@ -28,6 +28,7 @@ Sabotér zarába na súperových kliatbách, zničenej hádke a kartách, ale **
 19. **Šenkový zásah negatívom:** bez cigariet aspoň zakop to, čo mu najviac pomôže. Kúpené mu: Zámočník K3, Bzdocha K6. Kúpená karta u mňa: Horoskop, Alkoholik, Bzdocha.
 20. **Priazeň:** Nakladačku podľa scorecardu tejto partie, neškodné sú Abstinent a Ohováračka; červená na Advokáta sa neoplatí pri Dlhoch; **keď mi ju dá súper, moje Dlhy sú zadarmo.** Súper Nakladačkou dorovná strach u mojej (Farár K3), rozdiel zmizne.
 21. **Zajatie ako sabotáž:** zajať Vychovávateľku pred finále, jeho prvá karta a vynútený pas (partia 4: 25:0).
+> Sudca 2026-11-06: Zvlášť zmeraj, či to je cesta štýlu: vynútený pas v 20261106-123023-2 prišiel pri vedení 87 : 13, takže partiu nerozhodol. Cena pre súperku bola 25 Nakladačky navyše (§14b).
 22. **Poldeci pod NA EX sa nedajú doliať.** Limit 2 v K3–K4 (1 plný) ma stál bombu K4; plánuj Vypiť a NA EX tak, aby v rozhodujúcom kole boli 2 plné. **Vlastná pečeň:** VÝHĽAD po každej karte. NA EX na vlastnú kartu zruší vlastnú PP, ale vonkajšia hrana sa odpoveďou spáruje. Vo finále NA EX + Občan s PP = Cirhóza bez priznania.
 23. **Finále:** keď vediem, NA EX len tam, kde ušetrí ≥ 2 za poldeci (K6 Zámočník −3 Nakl + Cirhóza −6 za −1 výkup). Pred finále priznaj Cirhózy z ruky. Nízky rozptyl: Herňa alebo Vila, nie Chata.
 
@@ -90,6 +91,7 @@ Sabotér zarába na súperových kliatbách, zničenej hádke a kartách, ale **
 - čísla: K3 2 Vízie (Vandal, Vdova), 2 Dlhy.
 - pravidlá: v11.10
 ### E32 · Finančná poradkyňa
+> Sudca 2026-11-06: Čísla preceňujú kartu. V 20261106-144117-1 F dala Poradkyňa 8 z 22 nových Dlhov súpera; zvyšok sú jeho vlastné karty a Herňa (pitkaRekap). Exekútor zobral 11 Dlhov a 10 špakov (Advokát −1), bez Poradkyne asi 7 Dlhov a 6 špakov. Karta má cenu ≈ −4 špaky, zvyšných −6 si súper spravil sám. Spolu s −18 za Cirhózy to stále rozhodlo o výške výhry, nie o víťazovi: pred finále si viedol 48 : 11.
 - partie: 20261106-144117-1
 - výsledok: funguje
 - čísla: K4 1 Dlh; K6 spoj 4 Dlhy za Pitku, 23 Dlhov spolu, Exekútor −10.

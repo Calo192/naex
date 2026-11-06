@@ -46,6 +46,7 @@ Ekonóm vyhráva **limitom, telami a čistým balíčkom**. Finále vie vyplati�
 - **Fúrik K2 (2 cig)** — p6 spálil 5, 7, 4, 2 Dlhy = −9 špakov ušetrených, ale ani 1 špak (Dlhy prišli z NA EX) · stav: **overený so zdrojom** · p2, p5, p6 · v11.10
 - **Záhradkár v línii** — exekúcia 0, aj keď sa Dlhy hromadia · stav: **overený** · p5 K2–K4, F · v11.10
 - **Vymáhač pri Dlhoch** — 7+ Rán vo finále · stav: **overený**, podozrivo silný · p5 F · v11.10
+> Sudca 2026-11-06: V 20261106-133718-1 F si mal v čase bitky 24 priznaných Dlhov (2 + 22 z Pitiek, Robota páli až po bitke, §11), Vymáhač teda dal 12 Rán, nie „7+“ (effects.ts: floor(Dlhy / 2)). Bez neho 42 : 6 a o 12 špakov menej. Partiu by to nezmenilo.
 - **Priložiť k Vzbure** — spojené neaktívne, Telefón nechráni · stav: **overený** · p5 K4, p6 K2, K4 · v11.10
 - **Prvá karta na súperovu stranu** — stav: **overený** · p2, p4, p5 K2, p6 K3, K5, F · v11.10
 - **Telá v kraji súpera vo finále** — stav: **overený** · p5 F 7:5, p6 F 18:7 · v11.10
@@ -54,6 +55,7 @@ Ekonóm vyhráva **limitom, telami a čistým balíčkom**. Finále vie vyplati�
 - **Nealko v Dedičstve** — prah 5 · stav: **overený** · p4, p5 K4 · v11.10
 - **Manželka + Dievčina/Pakt, Manželka + Pijan, Hasič, Kapybara, Odpoveď lícom dole, Vila, Mäsiar + Šofér, Družstvo, Valaška, Strýko** — p2–p5, odpoveď p6 4× · v11.10
 - **Výpalné** — stav: doplnok, nie motor · p5, p6 súper 1 · v11.10
+> Sudca 2026-11-06: Poradkyňa podstrčená v 20261106-144117-1 F mala 8 z tvojich 22 nových Dlhov (pitkaRekap), ostatné dali tvoje karty a Herňa (Recidivista 6, hrana 4, Dvojčatá 3). Exekútor by bez nej vzal 6 špakov namiesto 10. Rozdiel je −4, nie −10.
 - **Kar otočený, zviera ako zátka** — stav: podmienený · p4, p5 · v11.10
 - **Vlastné zajatie bez krádeže** — stav: zavrhnuté (≈ −7 špakov) · p5 K5 · v11.10
 - **Priazeň Robota** — stav: nepotrebná, ale bez nej p6 prehra · p1, p2, p5, p6 0 · v11.10
@@ -111,5 +113,7 @@ Uzavreté p5 (v11.10): E26 Most K1 áno, E27 výpalné doplnok a zajatie bez kr�
 - 2026-11-06 · 20261106-015313-1 · proti Klebetnému · **výhra 67 : 10** · finále a výkupné 41 % · Fúrik 33 špakov, odbočky 0.
 - 2026-11-06 · 20261106-024710-1 · proti Sabotérovi · **prehra −12 : 30** · finále a výkupné 29 % · E11, E13–E17.
 - 2026-11-06 · 20261106-123023-1 · proti Agresívnemu (Bitkár Rudo) · **prehra 25 : 68** (v11.10; K1 ja, K4 ja 16:5, 30:30 po K4; K5 zajatie Vychovávateľky; finále 0:11, 1 Pitka) · finále a výkupné ja 9 z 34 (26 %), súper 24 z 80 (30 %) · E18–E25 · odbočky 0, prázdne fázy 1, nezrovnalostí 4.
+> Sudca 2026-11-06: Kronika partie: tvoje hrubé špaky sú 42 (karty a Robota 24, starší 15, výkupné 3), súperove 84, teda finále a výkupné 9 z 42 (21 %) a 24 z 84 (29 %). Výpalné si zaplatil 4 cigarety, nie 3.
 - 2026-11-06 · 20261106-133718-1 · proti Klebetnému (Klebetná Mara) · **výhra 202 : 3** (v11.10; všetky bitky moje, 109 : −4 pred finále) · finále a výkupné 93 z 202 (46 %) · E26–E34 · odbočky 0, prázdne fázy 0, nezrovnalostí 3.
 - 2026-11-06 · 20261106-144117-1 · proti Sabotérovi (Sabotér Zdeno) · **prehra 17 : 45** (v11.10; K3 a F moje, 11 : 48 pred finále, finále 18 : 7 = +31, výkupné +3, Exekútor −10, Cirhózy −18) · finále a výkupné ja 34 z 49 kladných (69 %), súper 1 z 49 (2 %) · E35–E42 · odbočky 0, prázdne fázy 1, nezrovnalostí 3.
+> Sudca 2026-11-06: Súperov podiel je 1 z 53 hrubých (2 %), nie z 49; 49 sú tvoje hrubé.

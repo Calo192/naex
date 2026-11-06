@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playtest štýlov 20261106-123023 — Zrejúca v11.10, každý s každým</title>
+<style>
+:root{--bg:#14110e;--pl:#1e1914;--pl2:#272019;--tx:#f1e8d8;--tx2:#c9bba5;--jan:#e9ad45;--teh:#d0563f;--zel:#7cbf74;--ok:#7cbf74;--bad:#d0563f;--ciara:#3a3027;}
+@media (prefers-color-scheme: light){:root{--bg:#f6f0e6;--pl:#fffaf2;--pl2:#efe5d6;--tx:#24190f;--tx2:#5b4a36;--jan:#9a5f00;--teh:#a8341f;--zel:#2f7a2a;--ok:#2f7a2a;--bad:#a8341f;--ciara:#d8c9b2;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:10px}
+@media (max-width:600px){section{padding:2px 10px 10px}}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25}
+h1{font-size:1.7rem;margin:.4em 0;color:var(--jan)}
+h2{font-size:1.35rem;margin:1.6em 0 .5em;border-bottom:1px solid var(--ciara);padding-bottom:.2em;color:var(--jan)}
+h3{font-size:1.1rem;margin:1em 0 .3em}
+a{color:var(--jan)}
+section{background:var(--pl);border:1px solid var(--ciara);border-radius:10px;padding:4px 16px 14px;margin:14px 0}
+.mala{font-size:.85rem;color:var(--tx2)}
+code{background:var(--pl2);padding:0 .25em;border-radius:3px;font-size:.9em;overflow-wrap:anywhere}
+ul{padding-left:1.2em}
+.st{border-bottom:2px solid var(--c);font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--ciara);padding:5px 6px;text-align:left;vertical-align:top}
+thead th{background:var(--pl2)}
+.tabwrap{overflow-x:auto}
+.matica td,.matica th{text-align:center}
+.matica caption{caption-side:top;text-align:left;font-weight:600;padding:4px 0}
+.matica .diag{color:var(--tx2)}
+.matica .plus{background:rgba(124,191,116,.18)}.matica .minus{background:rgba(208,86,63,.18)}
+.bunka{background:none;border:0;color:var(--tx);font:inherit;font-weight:700;cursor:pointer;width:100%;padding:4px}
+.bunka:disabled{cursor:default;color:var(--tx2);font-weight:400}
+.bunka:focus-visible,button:focus-visible{outline:2px solid var(--jan);outline-offset:2px}
+.prepinac{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.prepinac button,.filtre button{background:var(--pl2);color:var(--tx);border:1px solid var(--ciara);border-radius:999px;padding:4px 12px;font:inherit;cursor:pointer}
+.prepinac button[aria-pressed=true],.filtre button[aria-pressed=true]{background:var(--jan);color:#14110e;border-color:var(--jan)}
+#detail{min-height:1.5em;margin-top:8px}
+.js .matica[data-inst=vypalena]{display:none}
+.js.inst-vypalena .matica[data-inst=zrejuca]{display:none}
+.js.inst-vypalena .matica[data-inst=vypalena]{display:table}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px}
+.karta{background:var(--pl2);border-radius:8px;padding:6px 12px;border-left:5px solid var(--c)}
+.karta h3{margin-top:.4em}
+.verdikt{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.85rem;font-weight:700;background:var(--pl);border:1px solid var(--ciara)}
+.v-ok{color:var(--ok)}.v-bad{color:var(--bad)}.v-mid{color:var(--jan)}
+.karta-grafu{margin:0;background:var(--pl2);border-radius:8px;padding:8px}
+.karta-grafu figcaption{font-size:.9rem;margin-bottom:4px}
+svg.graf{width:100%;height:auto;display:block}
+svg .mriezka{stroke:var(--ciara);stroke-width:1}svg .nula{stroke:var(--tx2)}
+svg .os{fill:var(--tx2);font-size:10px}
+svg .finale{fill:var(--jan);opacity:.08}
+.bars{margin-top:6px}
+.bar{margin:4px 0}
+.barname{font-size:.85rem}
+.bartrack{display:flex;height:12px;background:var(--pl);border-radius:3px;overflow:hidden}
+.barneg{width:50%;display:flex;justify-content:flex-end;border-right:2px solid var(--tx2)}
+.barpos{width:50%;display:flex}
+.seg{display:block;height:100%}
+.barpopis{font-size:.75rem;color:var(--tx2)}
+.leg{display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:.8rem}
+.leg i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.navrh{background:var(--pl2);border-radius:8px;padding:6px 12px;margin:10px 0;border-left:5px solid var(--ciara)}
+.navrh.odporucany{border-left-color:var(--jan);box-shadow:0 0 0 1px var(--jan) inset}
+.navrh h3{margin:.3em 0}
+.navrh dl{margin:.3em 0;display:grid;grid-template-columns:8.5em 1fr;gap:2px 10px}
+.navrh dt{font-weight:700;color:var(--tx2)}
+.navrh dd{margin:0}
+@media (max-width:600px){.navrh dl{grid-template-columns:1fr}.navrh dt{margin-top:4px}}
+.meta{font-size:.85rem;color:var(--tx2)}
+.druh{font-weight:700;color:var(--jan)}
+.odp{background:var(--jan);color:#14110e;border-radius:999px;padding:0 8px;font-size:.75rem;font-family:system-ui,sans-serif;vertical-align:middle}
+.filtre{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.filtre span{font-size:.85rem;color:var(--tx2);align-self:center;margin-right:4px}
+.skryty{display:none}
+.tag{display:inline-block;font-size:.75rem;border-radius:4px;padding:0 6px;margin-right:4px;background:var(--pl);border:1px solid var(--ciara)}
+.t-chyba{color:var(--bad);border-color:var(--bad)}.t-pravidla{color:var(--jan);border-color:var(--jan)}.t-nejasne{color:#5fa8d3;border-color:#5fa8d3}.t-omyl{color:var(--tx2)}
+details{margin:6px 0}
+summary{cursor:pointer;font-weight:600}
+.hl{background:rgba(233,173,69,.15)}
+.zhrnutie li{margin:4px 0}
+
+.bartrack2{display:flex;height:12px;background:var(--pl);border-radius:3px;overflow:hidden;margin:2px 0}
+.bartrack2.neg{height:7px;opacity:.9}
+.odpoved{background:var(--pl2);border-radius:8px;padding:6px 12px;margin:10px 0;border-left:5px solid var(--jan)}
+.upoz{border:1px solid var(--jan);border-radius:8px;padding:6px 12px;margin:10px 0}
+.tabwrap[data-tab]{margin-bottom:6px}
+.js .tabwrap[data-tab]:not(.vidno){display:none}
+td.cislo{text-align:right}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Playtest štýlov 20261106-123023 — Zrejúca v11.10, každý s každým</h1>
+<p><b>Verzia: Zrejúca</b> (pravidlá v11.10, sada v55, kód <code>origin/master</code> 0faedc02). Hralo sa na <b>dočasných lokálnych serveroch</b> (<code>server: "lokalny"</code>, sada z <code>cards.json</code>), stredná dĺžka (5 lokalít + finále), hráči na modeli Opus. Tri kolá za sebou: turnusy <code>20261106-123023</code>, <code>-133718</code>, <code>-144117</code>. Medzi kolami si hráči aktualizovali denníky.</p>
+<ul><li><b>P1</b> = <code>20261106-123023-1</code> (kolo 1): <span class="st" style="--c:#d0563f">Agresor</span> 68 : 25 <span class="st" style="--c:#e9ad45">Ekonóm</span> — vyhral <b>Agresor</b>, po finále, bitky 4 : 2.</li><li><b>P2</b> = <code>20261106-123023-2</code> (kolo 1): <span class="st" style="--c:#7cbf74">Sabotér</span> 120 : 22 <span class="st" style="--c:#b48ad8">Klebetník</span> — vyhral <b>Sabotér</b>, po finále, bitky 6 : 0.</li><li><b>P3</b> = <code>20261106-133718-1</code> (kolo 2): <span class="st" style="--c:#b48ad8">Klebetník</span> 3 : 202 <span class="st" style="--c:#e9ad45">Ekonóm</span> — vyhral <b>Ekonóm</b>, po finále, bitky 0 : 6.</li><li><b>P4</b> = <code>20261106-133718-2</code> (kolo 2): <span class="st" style="--c:#d0563f">Agresor</span> 60 : 2 <span class="st" style="--c:#7cbf74">Sabotér</span> — vyhral <b>Agresor</b>, výhra väzňami v K4, bitky 4 : 0.</li><li><b>P5</b> = <code>20261106-144117-1</code> (kolo 3): <span class="st" style="--c:#7cbf74">Sabotér</span> 45 : 17 <span class="st" style="--c:#e9ad45">Ekonóm</span> — vyhral <b>Sabotér</b>, po finále, bitky 4 : 2.</li><li><b>P6</b> = <code>20261106-144117-2</code> (kolo 3): <span class="st" style="--c:#d0563f">Agresor</span> 102 : 33 <span class="st" style="--c:#b48ad8">Klebetník</span> — vyhral <b>Agresor</b>, výhra strachom v K5, bitky 5 : 0.</li></ul>
+<p class="upoz"><b>6 partií je signál, nie štatistika.</b> Každý zápas má na v11.10 len <b>jednu</b> partiu a hrali ho AI hráči, nie ľudia. Výsledok jednej dvojice môže otočiť jedna bitka o 1 tuhé. Čísla sú presné, závery o sile štýlov nie.</p>
+<p class="mala">Čísla sú overené proti archívu partie v <code>server-data/naex.sqlite</code> (kronika a nástenka) a prehratím partie zo seedu a príkazov cez <code>apply</code>; všetkých 6 prehratí skončilo na presnom výsledku a súčet zdrojov sedí na špak. Kde sa rozbor hráča líši, platí server (časť 4 a poznámky v denníkoch). Predošlý report: <a href="styly-20261106-010635.html">styly-20261106-010635</a> (v11.6, Sonnet, skreslený chybou klienta pri zajatí).</p>
+</header>
+
+<section id="zhrnutie">
+<h2>1. Zhrnutie</h2>
+<ol class="zhrnutie">
+<li><b>Agresor 3 : 0</b> a vyhral 13 z 15 bitiek, <b>Sabotér 2 : 1</b>, <b>Ekonóm 1 : 2</b> (jediná výhra 202 : 3 proti Klebetníkovi), <b>Klebetník 0 : 3</b> a ani jedna bitka zo 17.</li>
+<li>Hypotéza „najviac cigariet a Vízií vyhrá vo finále“ sa v tejto podobe nepotvrdila: kto viedol pred finále, vyhral 4 zo 4, dvakrát sa do finále ani nedošlo a porazený mal pred finále rovnako alebo viac zdrojov v 2 zo 4 partií. Čistý plán „všetko na finále“ však nikto nehral.</li>
+<li>Skutočný mechanizmus je <b>snehová guľa z prvých bitiek</b>: víťaz 2. kola vyhral 6 zo 6 partií, zaostávajúci vyhral len 4 z 27 bitiek po K1 a priemerný rozdiel skóre stúpol zo 45 (v11.6) na 83.</li>
+<li>Klebetník vyhral 13 zo 17 hádok a 74 bodov, ale reči mu dali 66 špakov proti 372 špakom súperov za karty a starších: hádka nijako nezasahuje do bitky ani do Nakladačky.</li>
+<li>Odporúčam najprv <a href="#N21">N21</a> (polovica hádky tlmí Nakladačku), <a href="#N23">N23</a> (Vychovávateľka nie v 1. Zhromaždení finále) a <a href="#N24">N24</a> (NA EX na Veterána nezdvojí Cigaretu), k tomu drobnosť <a href="#N25">N25</a>; väčší zásah <a href="#N22">N22</a> (každý za svoje karty) skúsiť zvlášť, lebo spolu s N21 by mohol urobiť z Klebetníka nového dominanta.</li>
+</ol>
+
+<div class="odpoved" id="otazka1">
+<h3>Michal, otázka 1: dominuje plán „všetko na finále“ po dávke A a E?</h3>
+<p><b>V týchto partiách nie, ale tvoju partiu proti botovi tým nevyvraciam.</b> Nikto nehral plán „prehrávam bitky a šetrím“. Najbližšie bol Ekonóm v P5.</p>
+<div class="tabwrap"><table>
+<thead><tr><th>Partia</th><th>víťaz</th><th>viedol pred finále</th><th>finále + výkupné víťaza z hrubých</th><th>to isté u porazeného</th><th>zdroje pred finále (cig., ruka, plné) víťaz : porazený</th><th>rozdiel pred → po finále</th></tr></thead>
+<tbody>
+<tr><td>P1</td><td><span class="st" style="--c:#d0563f">Agresor</span></td><td>áno, 56 : 25</td><td>24 z 84 = 29 %</td><td>9 z 42 = 21 %</td><td>6 : 7, 3 : 3, 2 : 3</td><td>31 → 43</td></tr>
+<tr><td>P2</td><td><span class="st" style="--c:#7cbf74">Sabotér</span></td><td>áno, 87 : 13</td><td>55 z 151 = 36 %</td><td>12 z 31 = 39 %</td><td>7 : 1, 7 : 3, 3 : 2</td><td>74 → 98</td></tr>
+<tr><td>P3</td><td><span class="st" style="--c:#e9ad45">Ekonóm</span></td><td>áno, 109 : −4</td><td>93 z 202 = 46 %</td><td>11 z 17 = 65 %</td><td>10 : 9, 5 : 3, 5 : 2</td><td>113 → 199</td></tr>
+<tr><td>P4</td><td><span class="st" style="--c:#d0563f">Agresor</span></td><td>finále nebolo, 60 : 2</td><td>0 %</td><td>0 %</td><td>pred K4: 11 : 0, 3 : 3, 4 : 2</td><td>—</td></tr>
+<tr><td>P5</td><td><span class="st" style="--c:#7cbf74">Sabotér</span></td><td>áno, 48 : 11</td><td>1 z 53 = 2 %</td><td>34 z 49 = 69 %</td><td>5 : 5, 3 : 4, 1 : 2</td><td>37 → 28</td></tr>
+<tr><td>P6</td><td><span class="st" style="--c:#d0563f">Agresor</span></td><td>finále nebolo, 102 : 33</td><td>0 %</td><td>0 %</td><td>pred K5: 10 : 2, 3 : 3, 3 : 2</td><td>—</td></tr>
+</tbody></table></div>
+<ul>
+<li><b>Podiel víťaza z finále a výkupného: priemer 19 %</b> (29, 36, 46, 0, 2, 0). Na v11.6 mal Ekonóm 29–50 % a Sabotér 30–44 % podľa ich denníkov. Výkupné dalo 1–8 špakov.</li>
+<li><b>Finále neotočilo žiadnu partiu</b> (0 zo 4; na v11.6 1 zo 6). Rozdiel zväčšilo v 3 zo 4, skrátilo len v P5, a to o 9.</li>
+<li><b>Najbližšie k plánu bol Ekonóm v P5:</b> 69 % hrubých z finále, finále vyhral 18 : 7, dalo mu +34 hrubých, ale Exekútor −10 a Cirhózy −18 z toho nechali čistých +6. Stav 11 : 48 → 17 : 45.</li>
+<li><b>Prečo to dnes zberač nemá ľahké</b> (výpočet z pravidiel): kto prehráva bitky, dáva súperovi Nakladačku a tá robí červené. 4 červené stoja 24 bodov; Agresor mal v P6 25 bodov za 4 bitky, a to proti aktívnej obrane. Hra potom skončí skôr (§10, krok 4c). Výpalné berie 1 cigaretu za červenú (P2 11, P6 9, P3 7 cigariet), a kto drží v ruke 3 a viac kariet, po v11.9 nedoberá nič.</li>
+<li><b>Čo proti tomu hovorí:</b> jedno finále vie vyplatiť veľa: P3 dalo 93 špakov (limit 6 : 3, 18 kariet na stole od víťaza, Nakladačka 48). Kto príde do finále s 5 plnými poldeci proti súperovi bez zásob, môže otočiť veľký rozdiel. V týchto partiách to nikto neskúsil ako plán a Opus hráči sa bili od K1, teda nie ako bot, proti ktorému si hral. Preto navrhujem cielený pokus v <a href="#sledovat">časti 9</a>.</li>
+</ul>
+</div>
+
+<div class="odpoved" id="otazka2">
+<h3>Michal, otázka 2: dostal Agresor cestu k výhre?</h3>
+<p><b>Áno, ale len proti súperom, ktorí neboli v bitke rovnocenní. Dominantu z toho zatiaľ nerobím.</b> Je to štýlová cesta: vyhral silou a v P4 a P6 ukončil hru pred finále, ako chce charakter.</p>
+<div class="tabwrap"><table>
+<thead><tr><th>Kolo, súper</th><th>Výsledok</th><th>Nakladačky</th><th>Červené pred posledným kolom</th><th>Čo naozaj rozhodlo</th><th>Čo to znamená</th></tr></thead>
+<tbody>
+<tr><td>1, <span class="st" style="--c:#e9ad45">Ekonóm</span> (P1)</td><td>68 : 25 po finále, bitky 4 : 2</td><td>0, 9, 1, (súper 11), 5</td><td>0 + 1 väzeň</td><td>30 : 30 po K4. K5 Nakladačka presne 5 cez skrytú Záverečnú, krádež 5, väzeň Vychovávateľka, vo finále vynútený pas.</td><td>Cesta strachom nebola blízko. Vyhral špakmi a väzňom, nie rozbehom.</td></tr>
+<tr><td>2, <span class="st" style="--c:#7cbf74">Sabotér</span> (P4)</td><td>60 : 2, väzni v K4, bitky 4 : 0</td><td>3, 8, 10, 18</td><td>3 + 0</td><td>K1 len 12 : 9. Sabotér minul v K1 všetky cigarety, v K3 a K4 nekúpil nič a sám v K3 zvolil Vandala namiesto obrany (Nakladačka 10). Rudo mal v K2 z Veterána × Silná × NA EX 12 z 19 cigariet a 2 bartery.</td><td>Rozbeh, ale aj súperova chyba a jedna kombinácia kariet.</td></tr>
+<tr><td>3, <span class="st" style="--c:#b48ad8">Klebetník</span> (P6)</td><td>102 : 33, strach v K5, bitky 5 : 0</td><td>11, 4, 4, 6, 15</td><td>4 + 0</td><td>K1 11 : 0 (Pijan × Silná × NA EX) proti súperke bez tuhého. Zrážka 15 → 7 a odpoveď 23 → 12 ho spomalili, nie zastavili.</td><td>Výhra proti štýlu, ktorý tuhé zámerne nestavia.</td></tr>
+</tbody></table></div>
+<ul>
+<li><b>Neubrániteľný rozbeh to nie je:</b> Ekonóm v P1 držal Nakladačku na 1 Záverečnou (K3) a v K4 vyhral 16 : 5. Keď sa súper bije a má cigarety (pred K3 a K4 v P1 mal Ekonóm 6 a 9), cesta strachom nevznikne.</li>
+<li><b>Riziko nového dominanta je ale reálne:</b> 3 : 0 pri troch rôznych súperoch, 13 z 15 bitiek. Bez partií s Klebetníkom je to Agresor 2 : 0, Sabotér 1 : 1, Ekonóm 0 : 2, teda poradie stojí na dvoch partiách. A skorý koniec ruší trest: v P4 nezaplatil 7 Cirhóz (−21), v P6 6 Cirhóz a 13 Dlhov (−18 a exekúcia 7). Sabotérova zbraň proti nemu nestojí nič.</li>
+<li><b>Snehová guľa nie je jeho výsada:</b> Sabotér a Ekonóm vyhrali proti Klebetníkovi tiež všetky bitky (6 : 0 a 6 : 0) a mali 2 + väzeň a 1 + väzeň červených. Rozdiel je v tom, že Agresor Nakladačku nasmeroval na koniec.</li>
+<li><b>Čo treba overiť:</b> odvety Agresor–Ekonóm a Agresor–Sabotér, keď Sabotér hrá podľa nového plánu „hodiny väzňov“ a nehladuje.</li>
+</ul>
+</div>
+
+<div class="odpoved">
+<h3>Otázky na overenie zo zadania hráčov</h3>
+<div class="tabwrap"><table>
+<thead><tr><th>Otázka</th><th>Verdikt</th><th>Podklad</th></tr></thead>
+<tbody>
+<tr><td>Vyhrá Klebetník hádkou bez odbočky?</td><td class="v-bad"><b>nezabralo</b></td><td>0 : 3. Bez odbočky hrala len P3 a skončila 3 : 202. Odbočky 3, 0, 3. Bitky 0 zo 17.</td></tr>
+<tr><td>Vyhrá Ekonóm bez súperovho daru (priazne Robota)?</td><td class="v-mid"><b>málo dát</b></td><td>Áno raz: P3 202 : 3, Robota z priazne 0, Roboty kariet 6 špakov. Súperom bol Klebetník. P1 a P5 bez daru prehral. Na v11.6 jeho výhra stála na Robote (33 špakov), takže posun je, dôkaz nie.</td></tr>
+<tr><td>Koľko stoja Cirhózy pri známej pečeňovej bombe?</td><td class="v-mid"><b>meranie</b></td><td>Po finále −12 a −9, −21 a −3, 0 a 0, −3 a −18: priemer −8 na hráča (v11.6: −14, najviac −42). Vznikalo ich 5,2 na hráča. V P4 a P6 sa neplatili vôbec (7, 6 a 5 kusov). Výsledok by zmenili len v P5, kde spolu s Exekútorom urobili z remízy 45 : 45 výhru 45 : 17.</td></tr>
+<tr><td>Dosiahne Agresor výhru strachom pri 4 červených?</td><td class="v-mid"><b>zabralo 1×, málo dát</b></td><td>P6: 4 červené po K4 (25 bodov), výhra v K5. P4 skončila väzňami pri 3 červených, P1 mal 0 + 1 väzeň.</td></tr>
+<tr><td>Vyhráva vo vyrovnanej partii, kto má viac kariet a cigariet?</td><td class="v-mid"><b>málo dát</b></td><td>Pred finále nebola vyrovnaná žiadna partia (rozdiel 31–113). Jediný vyrovnaný bod je P1 po K4 (30 : 30): Rudo mal 9 : 6 cigariet a 3 : 2 plné a K5 vyhral. Po bitkách K2+: viac plných poldeci vyhralo 15, prehralo 3 (9× rovnako), viac cigariet 15 a 7 (5× rovnako). To je zmes príčiny a následku.</td></tr>
+</tbody></table></div>
+</div>
+</section>
+
+<section id="matica">
+<h2>2. Matica štýlov</h2>
+<div class="prepinac" role="group" aria-label="Verzia hry">
+<button type="button" data-inst="v1110" aria-pressed="true">Zrejúca v11.10 (hraná)</button>
+<button type="button" data-inst="v116" aria-pressed="false">Zrejúca v11.6 (staršie)</button>
+<button type="button" data-inst="vypalena" aria-pressed="false">Vypálená</button>
+</div>
+<div class="tabwrap" data-tab="v1110"><table class="matica"><caption>Zrejúca v11.10, hraná verzia: výhry : prehry riadkového štýlu proti stĺpcovému</caption><thead><tr><th scope="col">riadok proti stĺpcu</th><th scope="col" style="color:#e9ad45">Ekonóm</th><th scope="col" style="color:#d0563f">Agresor</th><th scope="col" style="color:#b48ad8">Klebetník</th><th scope="col" style="color:#7cbf74">Sabotér</th><th scope="col">spolu</th></tr></thead><tbody><tr><th scope="row" style="color:#e9ad45">Ekonóm</th><td class="diag">—</td><td class="minus"><button type="button" class="bunka" data-r="ekonom" data-c="agresor" data-ids="20261106-123023-1" >0 : 1</button></td><td class="plus"><button type="button" class="bunka" data-r="ekonom" data-c="klebetnik" data-ids="20261106-133718-1" >1 : 0</button></td><td class="minus"><button type="button" class="bunka" data-r="ekonom" data-c="saboter" data-ids="20261106-144117-1" >0 : 1</button></td><td class="spolu">1 : 2</td></tr><tr><th scope="row" style="color:#d0563f">Agresor</th><td class="plus"><button type="button" class="bunka" data-r="agresor" data-c="ekonom" data-ids="20261106-123023-1" >1 : 0</button></td><td class="diag">—</td><td class="plus"><button type="button" class="bunka" data-r="agresor" data-c="klebetnik" data-ids="20261106-144117-2" >1 : 0</button></td><td class="plus"><button type="button" class="bunka" data-r="agresor" data-c="saboter" data-ids="20261106-133718-2" >1 : 0</button></td><td class="spolu">3 : 0</td></tr><tr><th scope="row" style="color:#b48ad8">Klebetník</th><td class="minus"><button type="button" class="bunka" data-r="klebetnik" data-c="ekonom" data-ids="20261106-133718-1" >0 : 1</button></td><td class="minus"><button type="button" class="bunka" data-r="klebetnik" data-c="agresor" data-ids="20261106-144117-2" >0 : 1</button></td><td class="diag">—</td><td class="minus"><button type="button" class="bunka" data-r="klebetnik" data-c="saboter" data-ids="20261106-123023-2" >0 : 1</button></td><td class="spolu">0 : 3</td></tr><tr><th scope="row" style="color:#7cbf74">Sabotér</th><td class="plus"><button type="button" class="bunka" data-r="saboter" data-c="ekonom" data-ids="20261106-144117-1" >1 : 0</button></td><td class="minus"><button type="button" class="bunka" data-r="saboter" data-c="agresor" data-ids="20261106-133718-2" >0 : 1</button></td><td class="plus"><button type="button" class="bunka" data-r="saboter" data-c="klebetnik" data-ids="20261106-123023-2" >1 : 0</button></td><td class="diag">—</td><td class="spolu">2 : 1</td></tr></tbody></table></div>
+<div class="tabwrap" data-tab="v116"><table class="matica"><caption>Zrejúca v11.6, staršia verzia pravidiel (skreslené chybou klienta v 010635-1)</caption><thead><tr><th scope="col">riadok proti stĺpcu</th><th scope="col" style="color:#e9ad45">Ekonóm</th><th scope="col" style="color:#d0563f">Agresor</th><th scope="col" style="color:#b48ad8">Klebetník</th><th scope="col" style="color:#7cbf74">Sabotér</th><th scope="col">spolu</th></tr></thead><tbody><tr><th scope="row" style="color:#e9ad45">Ekonóm</th><td class="diag">—</td><td class="minus"><button type="button" class="bunka" data-r="ekonom" data-c="agresor" data-ids="20261106-010635-1" >0 : 1</button></td><td class="plus"><button type="button" class="bunka" data-r="ekonom" data-c="klebetnik" data-ids="20261106-015313-1" >1 : 0</button></td><td class="minus"><button type="button" class="bunka" data-r="ekonom" data-c="saboter" data-ids="20261106-024710-1" >0 : 1</button></td><td class="spolu">1 : 2</td></tr><tr><th scope="row" style="color:#d0563f">Agresor</th><td class="plus"><button type="button" class="bunka" data-r="agresor" data-c="ekonom" data-ids="20261106-010635-1" >1 : 0</button></td><td class="diag">—</td><td class="minus"><button type="button" class="bunka" data-r="agresor" data-c="klebetnik" data-ids="20261106-024710-2" >0 : 1</button></td><td class="plus"><button type="button" class="bunka" data-r="agresor" data-c="saboter" data-ids="20261106-015313-2" >1 : 0</button></td><td class="spolu">2 : 1</td></tr><tr><th scope="row" style="color:#b48ad8">Klebetník</th><td class="minus"><button type="button" class="bunka" data-r="klebetnik" data-c="ekonom" data-ids="20261106-015313-1" >0 : 1</button></td><td class="plus"><button type="button" class="bunka" data-r="klebetnik" data-c="agresor" data-ids="20261106-024710-2" >1 : 0</button></td><td class="diag">—</td><td class="minus"><button type="button" class="bunka" data-r="klebetnik" data-c="saboter" data-ids="20261106-010635-2" >0 : 1</button></td><td class="spolu">1 : 2</td></tr><tr><th scope="row" style="color:#7cbf74">Sabotér</th><td class="plus"><button type="button" class="bunka" data-r="saboter" data-c="ekonom" data-ids="20261106-024710-1" >1 : 0</button></td><td class="minus"><button type="button" class="bunka" data-r="saboter" data-c="agresor" data-ids="20261106-015313-2" >0 : 1</button></td><td class="plus"><button type="button" class="bunka" data-r="saboter" data-c="klebetnik" data-ids="20261106-010635-2" >1 : 0</button></td><td class="diag">—</td><td class="spolu">2 : 1</td></tr></tbody></table></div>
+<div class="tabwrap" data-tab="vypalena"><p>Na Vypálenej sa playtest štýlov nehral. Vypálená je podľa pamäti projektu v11.6 so sadou v45, teda matica v11.6 je jej najbližší obraz, nie meranie.</p></div>
+<div id="detail" aria-live="polite" class="mala">Klikni na bunku, ukážu sa partie.</div>
+<p class="mala"><b>6 partií na v11.10</b>, každá dvojica len raz. <b>Signál, nie štatistika.</b> Oproti v11.6: Agresor 2 : 1 → 3 : 0 (dávke A, E a Cigarete na útočných kartách to pomohlo, no v11.6 bol skreslený), Sabotér 2 : 1 → 2 : 1 (rovnaké, proti Agresorovi 0 : 2), Ekonóm 1 : 2 → 1 : 2, Klebetník 1 : 2 → 0 : 3, a to aj s 9 mäkkými kartami. Jediný zápas, ktorý sa otočil, je Klebetník – Agresor: na v11.6 ho rozhodlo finále, na v11.10 sa doňho nedošlo.</p>
+</section>
+
+<section id="styly">
+<h2>3. Štýl po štýle</h2>
+<div class="grid">
+<article class="karta" style="--c:#d0563f"><h3>Agresor</h3><p><span class="verdikt v-ok">funguje</span> tento turnus 3 : 0, doteraz 5 : 1 <span class="mala">(pozor na dominanciu)</span></p>
+<p><b>Ako vyhrával:</b> Nakladačka do červených, potom väzni alebo 4 červené. P1 špakmi a väzňom, P4 väzňami v K4, P6 strachom v K5.</p>
+<p><b>Páky:</b> Pijan alebo Veterán vedľa Silnej s NA EX na vnútornú hranu, tuhé karty až do posledného Zhromaždenia, barter z cigariet (K2 v P4), Poľovník proti podstrčenému Zvieraťu.</p>
+<p><b>Prekážky:</b> Záverečná na konci strany (P1 K3 Nakladačka 1), odpoveď, ktorá prehodí prevahu (P1 K4 Kočovník 9 : 7 → 2 : 15), Exekútor −18 v P4. Výsledok to nezmenilo.</p>
+<p><b>Odbočky a prázdne fázy:</b> 1 a 1 (P1), inak 0.</p>
+<p><b>Prirodzený protivník:</b> Ekonóm, ktorý sa bije. Klebetník a hladujúci Sabotér nie.</p></article>
+<article class="karta" style="--c:#7cbf74"><h3>Sabotér</h3><p><span class="verdikt v-ok">funguje</span> tento turnus 2 : 1, doteraz 4 : 2</p>
+<p><b>Ako vyhrával:</b> P5 je najčistejšia štýlová výhra: tesné bitky (4 : 3, 9 : 5, 7 : 6, 6 : 3), NA EX na súperovu najlepšiu kartu, −18 Cirhóz a −14 Exekútor súperovi. P2 viac snehová guľa strachu než sabotáž (starší 63, Dlhy a Cirhózy súperke ≈ −9).</p>
+<p><b>Páky:</b> NA EX na vnútornú Pečeň, Pečať kartou bez párov, Vandal, NA EX v poslednej Pitke, Krčma proti Vínku, Krokodíl podstrčený.</p>
+<p><b>Prekážky:</b> hra skončená pred finále: v P4 18 špakov exekúcie a 7 Cirhóz neprinieslo nič. Fúrik s Robotou páli Dlhy (P5 18 kusov).</p>
+<p><b>Odbočky a prázdne fázy:</b> 1, 0, 1 a 0, 3, 0. P4 K3 a K4 bez šenku.</p>
+<p><b>Prirodzený protivník:</b> Agresor, 0 : 2.</p></article>
+<article class="karta" style="--c:#e9ad45"><h3>Ekonóm</h3><p><span class="verdikt v-mid">čiastočne</span> tento turnus 1 : 2, doteraz 2 : 4</p>
+<p><b>Ako vyhrával:</b> P3 barter od K1, telá v oboch krajoch, finále s limitom 6 : 3 (54 : 6). Proti ostatným štýlom sa investícia nevrátila: P1 vynútený pas, P5 Exekútor a Cirhózy.</p>
+<p><b>Páky:</b> barter, Vínko, pas s plnou rukou (P5 12 cigariet), Most ako obranca, Záhradkár, Vymáhač, Vízia pri prázdnom balíčku.</p>
+<p><b>Prekážky:</b> karty v línii platia víťazovi (P5 K1, K2, K4: 15 z 29 kariet bolo jeho). Hráčske chyby: P1 K5 4 neminuté cigarety, P5 K4 NA EX na Pijana.</p>
+<p><b>Odbočky:</b> 0. Prázdne fázy 1, 0, 1.</p>
+<p><b>Prirodzený protivník:</b> Sabotér (0 : 2 spolu s v11.6), Agresor tesne.</p></article>
+<article class="karta" style="--c:#b48ad8"><h3>Klebetník</h3><p><span class="verdikt v-bad">nefunguje</span> tento turnus 0 : 3, doteraz 1 : 5</p>
+<p><b>Prečo:</b> hádka 13 zo 17, 74 bodov, reči 66 špakov. Bitky 0 zo 17, tuhé priemerne 4,5 proti súperovým 14,4. Rozbor v <a href="#klebetnik">časti 5</a>.</p>
+<p><b>Páky:</b> Manželka s Dievčinou či Šarlatánom (6 mäkkých), reťaz Silná alebo Opatrovateľka–Manželka–Pijan (8 mäkkých), Bzdocha so zrážkou, Nástroj do línie, Nástroj na konci Kostola.</p>
+<p><b>Prekážky:</b> Kapybara na reči (P3 z očakávaných 5 + 3 + 1 ostalo 5 + 1), voľba lokality súperom, vlastné karty platia súperovi (75 špakov za 3 partie).</p>
+<p><b>Odbočky a prázdne fázy:</b> 3, 0, 3 a 3, 2, 2.</p>
+<p><b>Prirodzený protivník:</b> všetci. Štýl je dnes korisť.</p></article>
+</div>
+</section>
+
+<section id="ucenie">
+<h2>4. Ako sa štýly učia</h2>
+<p>Učenie vidno v commitoch <code>4cd32751</code>, <code>cbc601ac</code>, <code>427939d2</code>. Všetci štyria skúšali v každej partii nové veci a záporné výsledky zapísali. Výsledky ale závisia viac od súpera než od kola, lebo každý zápas je iný.</p>
+<div class="tabwrap"><table>
+<thead><tr><th>Štýl</th><th>Kolo 1</th><th>Kolo 2</th><th>Kolo 3</th><th>Čo sa zmenilo v stratégii</th></tr></thead>
+<tbody>
+<tr><td><span class="st" style="--c:#d0563f">Agresor</span></td><td>68 : 25. Nakl. spolu 15. E14 „4 červené do K3–K4“ nefunguje; E17 zajatie funguje.</td><td>60 : 2. Nakl. 39. E31 červené pred väzňami funguje.</td><td>102 : 33. Nakl. 40. E33 Pijan × Silná, E37 Poľovník.</td><td>Od „výhra strachom nie je plán“ k „3 červené do K3, potom väzni alebo štvrtá červená“. Rýchle učenie, ale kolá 2 a 3 boli proti slabšie pripravenému súperovi.</td></tr>
+<tr><td><span class="st" style="--c:#7cbf74">Sabotér</span></td><td>120 : 22. E8 bomba na vnútornú hranu áno, E9 Dlhy ako hlavná zbraň nie.</td><td>2 : 60. E16 Vandal áno, E18 bomba len na špaky.</td><td>45 : 17. E28 Krčma, E32 Poradkyňa, E34 Krokodíl, E25 výpalné nie.</td><td>Pridal „hodiny väzňov“ a NA EX v poslednej Pitke. Plán proti Agresorovi zatiaľ neoverený.</td></tr>
+<tr><td><span class="st" style="--c:#e9ad45">Ekonóm</span></td><td>25 : 68. E18 Fúrik len so zdrojom, E21 NA EX na Cigarety, E24 červená pri súperovej červenej nie.</td><td>202 : 3. E28 barter od K1, E33 Vzbura, E34 Vymáhač.</td><td>17 : 45. E37 Vínko, E38 pas ako príjem, E41 Roboty proti Vandalovi nie.</td><td>Motor sa menil z Robôt na limit a telá, potom na „kliatby rátaj ako špaky“. Poctivo uzavrel E36 ako zbytočný. Závisí od súpera.</td></tr>
+<tr><td><span class="st" style="--c:#b48ad8">Klebetník</span></td><td>22 : 120. Hádka 19, reči 23, odbočky 3. E18 hlavný plán nie, E22 Opatrovateľka, E24 dvojitá zrážka.</td><td>3 : 202. Hádka 28, reči 11, odbočky 0. E27 Tichá línia nie, E28 Kapybara, E31 Tenký balíček.</td><td>33 : 102. Hádka 27, reči 32, odbočky 3. E34 Múr viery, E37 zrážka podľa čítania.</td><td><b>Najsilnejší dôkaz chýbajúcej podpory:</b> poctivo sa učí, pomer reči na bod stúpol na 1,39, a stále žiadna bitka. Sama to pomenovala: „Hádka bez výhry bitky nikdy neprešla.“</td></tr>
+</tbody></table></div>
+<h3>Poznámky sudcu k číslam</h3>
+<ul>
+<li><b>Agresor, P1:</b> rozbor píše pred finále „2 z 4“ a „1 červená + väzeň“. Server: 0 červených + 1 väzeň. <b>P6:</b> Vymáhač dal 6 Rán (13 Dlhov), nie 5.</li>
+<li><b>Ekonóm, P3:</b> Vymáhač dal 12 Rán (24 Dlhov v čase bitky), nie „7+“. <b>P1:</b> hrubé 42 a 84, nie 34 a 80; výpalné 4, nie 3. <b>P5:</b> súperov podiel je z 53, nie z 49.</li>
+<li><b>Sabotér, P5:</b> „Poradkyňa −10“ preceňuje kartu. Dala 8 z 22 Dlhov vo finále, jej skutočná cena je asi −4 špaky.</li>
+<li><b>Klebetník, P6:</b> rozbor píše „Rudo 1× barter“, server 2×. Text v denníku „proti výhre strachom nemám ťah“ je presný pre reči; výhra strachom platí len vo vyhratej bitke (§10).</li>
+<li><b>Organizátorské poznámky:</b> výpis Sabotérovej ruky v <code>/tmp</code> (P2, K2): v denníku Klebetnej ani v jej pomocných súboroch nie je stopa po <code>/tmp</code> a žiadny ťah nevyzerá ako znalosť jeho ruky; partiu prehrala 22 : 120, K4 o 1 tuhé. Bez vplyvu. Klebetník v P6 prebehol úvodné zmeny a §17: v jeho rozbore nie je omyl pravidla, ktorý by menil partiu, a prepočty K1–K4 mu sedeli.</li>
+</ul>
+<p class="mala">Poznámky sú v denníkoch ako <code>&gt; Sudca 2026-11-06</code>: agresor 3, ekonóm 4, klebetník 1, sabotér 2.</p>
+</section>
+
+<section id="spaky">
+<h2>5. Odkiaľ prichádzajú špaky</h2>
+<h3>Špaky po kolách</h3>
+<p class="mala">Plná čiara je prvý hráč, čiarkovaná druhý. Oranžový pás je finále, posledný bod je po výkupnom a Cirhózach. Osi majú rôznu mierku.</p>
+<div class="grid"><figure class="karta-grafu"><figcaption><b>P1</b> <span class="st" style="--c:#d0563f">Agresor</span> 68 : 25 <span class="st" style="--c:#e9ad45">Ekonóm</span></figcaption><svg class="graf" viewBox="0 0 320 170" role="img" aria-label="Špaky po kolách P1"><rect class="finale" x="230.3" y="8" width="81.7" height="144"/><line class="nula" x1="26" x2="312" y1="150.2" y2="150.2"/><text class="os" x="23" y="153.2" text-anchor="end">0</text><line class="mriezka" x1="26" x2="312" y1="113.2" y2="113.2"/><text class="os" x="23" y="116.2" text-anchor="end">20</text><line class="mriezka" x1="26" x2="312" y1="76.3" y2="76.3"/><text class="os" x="23" y="79.3" text-anchor="end">40</text><line class="mriezka" x1="26" x2="312" y1="39.4" y2="39.4"/><text class="os" x="23" y="42.4" text-anchor="end">60</text><path d="M26.0 150.2 L66.9 152.0 L107.7 128.0 L148.6 92.9 L189.4 94.8 L230.3 46.8 L271.1 8.0 L312.0 24.6" fill="none" stroke="#d0563f" stroke-width="2"/><path d="M26.0 150.2 L66.9 133.5 L107.7 131.7 L148.6 122.5 L189.4 94.8 L230.3 104.0 L271.1 92.9 L312.0 104.0" fill="none" stroke="#e9ad45" stroke-width="2" stroke-dasharray="5 3"/><circle cx="26.0" cy="150.2" r="2.2" fill="#d0563f"/><circle cx="66.9" cy="152.0" r="2.2" fill="#d0563f"/><circle cx="107.7" cy="128.0" r="2.2" fill="#d0563f"/><circle cx="148.6" cy="92.9" r="2.2" fill="#d0563f"/><circle cx="189.4" cy="94.8" r="2.2" fill="#d0563f"/><circle cx="230.3" cy="46.8" r="2.2" fill="#d0563f"/><circle cx="271.1" cy="8.0" r="2.2" fill="#d0563f"/><circle cx="312.0" cy="24.6" r="2.2" fill="#d0563f"/><circle cx="26.0" cy="150.2" r="2.2" fill="#e9ad45"/><circle cx="66.9" cy="133.5" r="2.2" fill="#e9ad45"/><circle cx="107.7" cy="131.7" r="2.2" fill="#e9ad45"/><circle cx="148.6" cy="122.5" r="2.2" fill="#e9ad45"/><circle cx="189.4" cy="94.8" r="2.2" fill="#e9ad45"/><circle cx="230.3" cy="104.0" r="2.2" fill="#e9ad45"/><circle cx="271.1" cy="92.9" r="2.2" fill="#e9ad45"/><circle cx="312.0" cy="104.0" r="2.2" fill="#e9ad45"/><text class="os" x="26.0" y="165" text-anchor="middle"></text><text class="os" x="66.9" y="165" text-anchor="middle">K1</text><text class="os" x="107.7" y="165" text-anchor="middle">K2</text><text class="os" x="148.6" y="165" text-anchor="middle">K3</text><text class="os" x="189.4" y="165" text-anchor="middle">K4</text><text class="os" x="230.3" y="165" text-anchor="middle">K5</text><text class="os" x="271.1" y="165" text-anchor="middle">F</text><text class="os" x="312.0" y="165" text-anchor="middle">kon.</text></svg></figure><figure class="karta-grafu"><figcaption><b>P2</b> <span class="st" style="--c:#7cbf74">Sabotér</span> 120 : 22 <span class="st" style="--c:#b48ad8">Klebetník</span></figcaption><svg class="graf" viewBox="0 0 320 170" role="img" aria-label="Špaky po kolách P2"><rect class="finale" x="230.3" y="8" width="81.7" height="144"/><line class="nula" x1="26" x2="312" y1="150.9" y2="150.9"/><text class="os" x="23" y="153.9" text-anchor="end">0</text><line class="mriezka" x1="26" x2="312" y1="98.4" y2="98.4"/><text class="os" x="23" y="101.4" text-anchor="end">50</text><line class="mriezka" x1="26" x2="312" y1="45.8" y2="45.8"/><text class="os" x="23" y="48.8" text-anchor="end">100</text><path d="M26.0 150.9 L66.9 142.5 L107.7 127.8 L148.6 107.9 L189.4 84.7 L230.3 59.5 L271.1 8.0 L312.0 24.8" fill="none" stroke="#7cbf74" stroke-width="2"/><path d="M26.0 150.9 L66.9 152.0 L107.7 150.9 L148.6 149.9 L189.4 141.5 L230.3 137.3 L271.1 127.8 L312.0 127.8" fill="none" stroke="#b48ad8" stroke-width="2" stroke-dasharray="5 3"/><circle cx="26.0" cy="150.9" r="2.2" fill="#7cbf74"/><circle cx="66.9" cy="142.5" r="2.2" fill="#7cbf74"/><circle cx="107.7" cy="127.8" r="2.2" fill="#7cbf74"/><circle cx="148.6" cy="107.9" r="2.2" fill="#7cbf74"/><circle cx="189.4" cy="84.7" r="2.2" fill="#7cbf74"/><circle cx="230.3" cy="59.5" r="2.2" fill="#7cbf74"/><circle cx="271.1" cy="8.0" r="2.2" fill="#7cbf74"/><circle cx="312.0" cy="24.8" r="2.2" fill="#7cbf74"/><circle cx="26.0" cy="150.9" r="2.2" fill="#b48ad8"/><circle cx="66.9" cy="152.0" r="2.2" fill="#b48ad8"/><circle cx="107.7" cy="150.9" r="2.2" fill="#b48ad8"/><circle cx="148.6" cy="149.9" r="2.2" fill="#b48ad8"/><circle cx="189.4" cy="141.5" r="2.2" fill="#b48ad8"/><circle cx="230.3" cy="137.3" r="2.2" fill="#b48ad8"/><circle cx="271.1" cy="127.8" r="2.2" fill="#b48ad8"/><circle cx="312.0" cy="127.8" r="2.2" fill="#b48ad8"/><text class="os" x="26.0" y="165" text-anchor="middle"></text><text class="os" x="66.9" y="165" text-anchor="middle">K1</text><text class="os" x="107.7" y="165" text-anchor="middle">K2</text><text class="os" x="148.6" y="165" text-anchor="middle">K3</text><text class="os" x="189.4" y="165" text-anchor="middle">K4</text><text class="os" x="230.3" y="165" text-anchor="middle">K5</text><text class="os" x="271.1" y="165" text-anchor="middle">F</text><text class="os" x="312.0" y="165" text-anchor="middle">kon.</text></svg></figure><figure class="karta-grafu"><figcaption><b>P3</b> <span class="st" style="--c:#b48ad8">Klebetník</span> 3 : 202 <span class="st" style="--c:#e9ad45">Ekonóm</span></figcaption><svg class="graf" viewBox="0 0 320 170" role="img" aria-label="Špaky po kolách P3"><rect class="finale" x="230.3" y="8" width="81.7" height="144"/><line class="nula" x1="26" x2="312" y1="147.2" y2="147.2"/><text class="os" x="23" y="150.2" text-anchor="end">0</text><line class="mriezka" x1="26" x2="312" y1="112.7" y2="112.7"/><text class="os" x="23" y="115.7" text-anchor="end">50</text><line class="mriezka" x1="26" x2="312" y1="78.3" y2="78.3"/><text class="os" x="23" y="81.3" text-anchor="end">100</text><line class="mriezka" x1="26" x2="312" y1="43.8" y2="43.8"/><text class="os" x="23" y="46.8" text-anchor="end">150</text><line class="mriezka" x1="26" x2="312" y1="9.4" y2="9.4"/><text class="os" x="23" y="12.4" text-anchor="end">200</text><path d="M26.0 147.2 L66.9 147.9 L107.7 149.9 L148.6 152.0 L189.4 148.6 L230.3 149.9 L271.1 146.5 L312.0 145.1" fill="none" stroke="#b48ad8" stroke-width="2"/><path d="M26.0 147.2 L66.9 141.0 L107.7 130.0 L148.6 115.5 L189.4 99.6 L230.3 72.1 L271.1 13.5 L312.0 8.0" fill="none" stroke="#e9ad45" stroke-width="2" stroke-dasharray="5 3"/><circle cx="26.0" cy="147.2" r="2.2" fill="#b48ad8"/><circle cx="66.9" cy="147.9" r="2.2" fill="#b48ad8"/><circle cx="107.7" cy="149.9" r="2.2" fill="#b48ad8"/><circle cx="148.6" cy="152.0" r="2.2" fill="#b48ad8"/><circle cx="189.4" cy="148.6" r="2.2" fill="#b48ad8"/><circle cx="230.3" cy="149.9" r="2.2" fill="#b48ad8"/><circle cx="271.1" cy="146.5" r="2.2" fill="#b48ad8"/><circle cx="312.0" cy="145.1" r="2.2" fill="#b48ad8"/><circle cx="26.0" cy="147.2" r="2.2" fill="#e9ad45"/><circle cx="66.9" cy="141.0" r="2.2" fill="#e9ad45"/><circle cx="107.7" cy="130.0" r="2.2" fill="#e9ad45"/><circle cx="148.6" cy="115.5" r="2.2" fill="#e9ad45"/><circle cx="189.4" cy="99.6" r="2.2" fill="#e9ad45"/><circle cx="230.3" cy="72.1" r="2.2" fill="#e9ad45"/><circle cx="271.1" cy="13.5" r="2.2" fill="#e9ad45"/><circle cx="312.0" cy="8.0" r="2.2" fill="#e9ad45"/><text class="os" x="26.0" y="165" text-anchor="middle"></text><text class="os" x="66.9" y="165" text-anchor="middle">K1</text><text class="os" x="107.7" y="165" text-anchor="middle">K2</text><text class="os" x="148.6" y="165" text-anchor="middle">K3</text><text class="os" x="189.4" y="165" text-anchor="middle">K4</text><text class="os" x="230.3" y="165" text-anchor="middle">K5</text><text class="os" x="271.1" y="165" text-anchor="middle">F</text><text class="os" x="312.0" y="165" text-anchor="middle">kon.</text></svg></figure><figure class="karta-grafu"><figcaption><b>P4</b> <span class="st" style="--c:#d0563f">Agresor</span> 60 : 2 <span class="st" style="--c:#7cbf74">Sabotér</span></figcaption><svg class="graf" viewBox="0 0 320 170" role="img" aria-label="Špaky po kolách P4"><line class="nula" x1="26" x2="312" y1="152.0" y2="152.0"/><text class="os" x="23" y="155.0" text-anchor="end">0</text><line class="mriezka" x1="26" x2="312" y1="128.0" y2="128.0"/><text class="os" x="23" y="131.0" text-anchor="end">10</text><line class="mriezka" x1="26" x2="312" y1="104.0" y2="104.0"/><text class="os" x="23" y="107.0" text-anchor="end">20</text><line class="mriezka" x1="26" x2="312" y1="80.0" y2="80.0"/><text class="os" x="23" y="83.0" text-anchor="end">30</text><line class="mriezka" x1="26" x2="312" y1="56.0" y2="56.0"/><text class="os" x="23" y="59.0" text-anchor="end">40</text><line class="mriezka" x1="26" x2="312" y1="32.0" y2="32.0"/><text class="os" x="23" y="35.0" text-anchor="end">50</text><line class="mriezka" x1="26" x2="312" y1="8.0" y2="8.0"/><text class="os" x="23" y="11.0" text-anchor="end">60</text><path d="M26.0 152.0 L97.5 140.0 L169.0 113.6 L240.5 63.2 L312.0 8.0" fill="none" stroke="#d0563f" stroke-width="2"/><path d="M26.0 152.0 L97.5 152.0 L169.0 152.0 L240.5 147.2 L312.0 147.2" fill="none" stroke="#7cbf74" stroke-width="2" stroke-dasharray="5 3"/><circle cx="26.0" cy="152.0" r="2.2" fill="#d0563f"/><circle cx="97.5" cy="140.0" r="2.2" fill="#d0563f"/><circle cx="169.0" cy="113.6" r="2.2" fill="#d0563f"/><circle cx="240.5" cy="63.2" r="2.2" fill="#d0563f"/><circle cx="312.0" cy="8.0" r="2.2" fill="#d0563f"/><circle cx="26.0" cy="152.0" r="2.2" fill="#7cbf74"/><circle cx="97.5" cy="152.0" r="2.2" fill="#7cbf74"/><circle cx="169.0" cy="152.0" r="2.2" fill="#7cbf74"/><circle cx="240.5" cy="147.2" r="2.2" fill="#7cbf74"/><circle cx="312.0" cy="147.2" r="2.2" fill="#7cbf74"/><text class="os" x="26.0" y="165" text-anchor="middle"></text><text class="os" x="97.5" y="165" text-anchor="middle">K1</text><text class="os" x="169.0" y="165" text-anchor="middle">K2</text><text class="os" x="240.5" y="165" text-anchor="middle">K3</text><text class="os" x="312.0" y="165" text-anchor="middle">K4</text></svg></figure><figure class="karta-grafu"><figcaption><b>P5</b> <span class="st" style="--c:#7cbf74">Sabotér</span> 45 : 17 <span class="st" style="--c:#e9ad45">Ekonóm</span></figcaption><svg class="graf" viewBox="0 0 320 170" role="img" aria-label="Špaky po kolách P5"><rect class="finale" x="230.3" y="8" width="81.7" height="144"/><line class="nula" x1="26" x2="312" y1="143.5" y2="143.5"/><text class="os" x="23" y="146.5" text-anchor="end">0</text><line class="mriezka" x1="26" x2="312" y1="115.3" y2="115.3"/><text class="os" x="23" y="118.3" text-anchor="end">10</text><line class="mriezka" x1="26" x2="312" y1="87.1" y2="87.1"/><text class="os" x="23" y="90.1" text-anchor="end">20</text><line class="mriezka" x1="26" x2="312" y1="58.8" y2="58.8"/><text class="os" x="23" y="61.8" text-anchor="end">30</text><line class="mriezka" x1="26" x2="312" y1="30.6" y2="30.6"/><text class="os" x="23" y="33.6" text-anchor="end">40</text><path d="M26.0 143.5 L66.9 123.8 L107.7 89.9 L148.6 89.9 L189.4 44.7 L230.3 8.0 L271.1 10.8 L312.0 16.5" fill="none" stroke="#7cbf74" stroke-width="2"/><path d="M26.0 143.5 L66.9 146.4 L107.7 152.0 L148.6 126.6 L189.4 118.1 L230.3 112.5 L271.1 53.2 L312.0 95.5" fill="none" stroke="#e9ad45" stroke-width="2" stroke-dasharray="5 3"/><circle cx="26.0" cy="143.5" r="2.2" fill="#7cbf74"/><circle cx="66.9" cy="123.8" r="2.2" fill="#7cbf74"/><circle cx="107.7" cy="89.9" r="2.2" fill="#7cbf74"/><circle cx="148.6" cy="89.9" r="2.2" fill="#7cbf74"/><circle cx="189.4" cy="44.7" r="2.2" fill="#7cbf74"/><circle cx="230.3" cy="8.0" r="2.2" fill="#7cbf74"/><circle cx="271.1" cy="10.8" r="2.2" fill="#7cbf74"/><circle cx="312.0" cy="16.5" r="2.2" fill="#7cbf74"/><circle cx="26.0" cy="143.5" r="2.2" fill="#e9ad45"/><circle cx="66.9" cy="146.4" r="2.2" fill="#e9ad45"/><circle cx="107.7" cy="152.0" r="2.2" fill="#e9ad45"/><circle cx="148.6" cy="126.6" r="2.2" fill="#e9ad45"/><circle cx="189.4" cy="118.1" r="2.2" fill="#e9ad45"/><circle cx="230.3" cy="112.5" r="2.2" fill="#e9ad45"/><circle cx="271.1" cy="53.2" r="2.2" fill="#e9ad45"/><circle cx="312.0" cy="95.5" r="2.2" fill="#e9ad45"/><text class="os" x="26.0" y="165" text-anchor="middle"></text><text class="os" x="66.9" y="165" text-anchor="middle">K1</text><text class="os" x="107.7" y="165" text-anchor="middle">K2</text><text class="os" x="148.6" y="165" text-anchor="middle">K3</text><text class="os" x="189.4" y="165" text-anchor="middle">K4</text><text class="os" x="230.3" y="165" text-anchor="middle">K5</text><text class="os" x="271.1" y="165" text-anchor="middle">F</text><text class="os" x="312.0" y="165" text-anchor="middle">kon.</text></svg></figure><figure class="karta-grafu"><figcaption><b>P6</b> <span class="st" style="--c:#d0563f">Agresor</span> 102 : 33 <span class="st" style="--c:#b48ad8">Klebetník</span></figcaption><svg class="graf" viewBox="0 0 320 170" role="img" aria-label="Špaky po kolách P6"><line class="nula" x1="26" x2="312" y1="152.0" y2="152.0"/><text class="os" x="23" y="155.0" text-anchor="end">0</text><line class="mriezka" x1="26" x2="312" y1="123.8" y2="123.8"/><text class="os" x="23" y="126.8" text-anchor="end">20</text><line class="mriezka" x1="26" x2="312" y1="95.5" y2="95.5"/><text class="os" x="23" y="98.5" text-anchor="end">40</text><line class="mriezka" x1="26" x2="312" y1="67.3" y2="67.3"/><text class="os" x="23" y="70.3" text-anchor="end">60</text><line class="mriezka" x1="26" x2="312" y1="39.1" y2="39.1"/><text class="os" x="23" y="42.1" text-anchor="end">80</text><line class="mriezka" x1="26" x2="312" y1="10.8" y2="10.8"/><text class="os" x="23" y="13.8" text-anchor="end">100</text><path d="M26.0 152.0 L83.2 144.9 L140.4 118.1 L197.6 89.9 L254.8 56.0 L312.0 8.0" fill="none" stroke="#d0563f" stroke-width="2"/><path d="M26.0 152.0 L83.2 152.0 L140.4 143.5 L197.6 130.8 L254.8 116.7 L312.0 105.4" fill="none" stroke="#b48ad8" stroke-width="2" stroke-dasharray="5 3"/><circle cx="26.0" cy="152.0" r="2.2" fill="#d0563f"/><circle cx="83.2" cy="144.9" r="2.2" fill="#d0563f"/><circle cx="140.4" cy="118.1" r="2.2" fill="#d0563f"/><circle cx="197.6" cy="89.9" r="2.2" fill="#d0563f"/><circle cx="254.8" cy="56.0" r="2.2" fill="#d0563f"/><circle cx="312.0" cy="8.0" r="2.2" fill="#d0563f"/><circle cx="26.0" cy="152.0" r="2.2" fill="#b48ad8"/><circle cx="83.2" cy="152.0" r="2.2" fill="#b48ad8"/><circle cx="140.4" cy="143.5" r="2.2" fill="#b48ad8"/><circle cx="197.6" cy="130.8" r="2.2" fill="#b48ad8"/><circle cx="254.8" cy="116.7" r="2.2" fill="#b48ad8"/><circle cx="312.0" cy="105.4" r="2.2" fill="#b48ad8"/><text class="os" x="26.0" y="165" text-anchor="middle"></text><text class="os" x="83.2" y="165" text-anchor="middle">K1</text><text class="os" x="140.4" y="165" text-anchor="middle">K2</text><text class="os" x="197.6" y="165" text-anchor="middle">K3</text><text class="os" x="254.8" y="165" text-anchor="middle">K4</text><text class="os" x="312.0" y="165" text-anchor="middle">K5</text></svg></figure></div>
+<h3>Podľa zdroja</h3>
+<p class="mala">Horný pruh sú hrubé špaky, tenší pod ním mínusy. <span class="leg"><i style="background:#e9ad45"></i>karty v línii</span><span class="leg"><i style="background:#d0563f"></i>starší: strach</span><span class="leg"><i style="background:#b48ad8"></i>starší: reči</span><span class="leg"><i style="background:#c9772e"></i>Nakladačka vo finále</span><span class="leg"><i style="background:#8a6fc0"></i>hádka vo finále</span><span class="leg"><i style="background:#6f9fc8"></i>Robota</span><span class="leg"><i style="background:#9c8b6c"></i>krádež</span><span class="leg"><i style="background:#7cbf74"></i>výkupné</span><span class="leg"><i style="background:#7a4a3a"></i>Exekútor</span><span class="leg"><i style="background:#a0303a"></i>Cirhózy</span></p>
+<div class="grid"><div class="bars"><h3>P1</h3><div class="bar"><div class="barname"><b style="color:#d0563f">Agresor</b> 68 (hrubých 84)</div><div class="bartrack2"><span class="seg" style="width:42.9%;background:#e9ad45" title="karty v línii 36"></span><span class="seg" style="width:20.2%;background:#d0563f" title="starší: strach 17"></span><span class="seg" style="width:13.1%;background:#b48ad8" title="starší: reči 11"></span><span class="seg" style="width:13.1%;background:#c9772e" title="Nakladačka vo finále 11"></span><span class="seg" style="width:1.2%;background:#6f9fc8" title="Robota 1"></span><span class="seg" style="width:6.0%;background:#9c8b6c" title="krádež 5"></span><span class="seg" style="width:3.6%;background:#7cbf74" title="výkupné 3"></span></div><div class="bartrack2 neg"><span class="seg" style="width:4.8%;background:#7a4a3a" title="Exekútor -4"></span><span class="seg" style="width:14.3%;background:#a0303a" title="Cirhózy -12"></span></div><div class="barpopis">karty v línii 36 · starší: strach 17 · starší: reči 11 · Nakladačka vo finále 11 · Robota 1 · krádež 5 · výkupné 3 · Exekútor −4 · Cirhózy −12</div></div><div class="bar"><div class="barname"><b style="color:#e9ad45">Ekonóm</b> 25 (hrubých 42)</div><div class="bartrack2"><span class="seg" style="width:25.0%;background:#e9ad45" title="karty v línii 21"></span><span class="seg" style="width:17.9%;background:#b48ad8" title="starší: reči 15"></span><span class="seg" style="width:3.6%;background:#6f9fc8" title="Robota 3"></span><span class="seg" style="width:3.6%;background:#7cbf74" title="výkupné 3"></span></div><div class="bartrack2 neg"><span class="seg" style="width:3.6%;background:#7a4a3a" title="Exekútor -3"></span><span class="seg" style="width:10.7%;background:#a0303a" title="Cirhózy -9"></span><span class="seg" style="width:6.0%;background:#5d5344" title="krádež -5"></span></div><div class="barpopis">karty v línii 21 · starší: reči 15 · Robota 3 · výkupné 3 · Exekútor −3 · Cirhózy −9 · krádež −5</div></div></div><div class="bars"><h3>P2</h3><div class="bar"><div class="barname"><b style="color:#7cbf74">Sabotér</b> 120 (hrubých 151)</div><div class="bartrack2"><span class="seg" style="width:38.4%;background:#e9ad45" title="karty v línii 58"></span><span class="seg" style="width:41.7%;background:#d0563f" title="starší: strach 63"></span><span class="seg" style="width:16.6%;background:#c9772e" title="Nakladačka vo finále 25"></span><span class="seg" style="width:3.3%;background:#7cbf74" title="výkupné 5"></span></div><div class="bartrack2 neg"><span class="seg" style="width:6.6%;background:#7a4a3a" title="Exekútor -10"></span><span class="seg" style="width:13.9%;background:#a0303a" title="Cirhózy -21"></span></div><div class="barpopis">karty v línii 58 · starší: strach 63 · Nakladačka vo finále 25 · výkupné 5 · Exekútor −10 · Cirhózy −21</div></div><div class="bar"><div class="barname"><b style="color:#b48ad8">Klebetník</b> 22 (hrubých 31)</div><div class="bartrack2"><span class="seg" style="width:15.2%;background:#b48ad8" title="starší: reči 23"></span><span class="seg" style="width:1.3%;background:#8a6fc0" title="hádka vo finále 2"></span><span class="seg" style="width:2.0%;background:#6f9fc8" title="Robota 3"></span><span class="seg" style="width:2.0%;background:#7cbf74" title="výkupné 3"></span></div><div class="bartrack2 neg"><span class="seg" style="width:4.0%;background:#7a4a3a" title="Exekútor -6"></span><span class="seg" style="width:2.0%;background:#a0303a" title="Cirhózy -3"></span></div><div class="barpopis">starší: reči 23 · hádka vo finále 2 · Robota 3 · výkupné 3 · Exekútor −6 · Cirhózy −3</div></div></div><div class="bars"><h3>P3</h3><div class="bar"><div class="barname"><b style="color:#b48ad8">Klebetník</b> 3 (hrubých 17)</div><div class="bartrack2"><span class="seg" style="width:5.4%;background:#b48ad8" title="starší: reči 11"></span><span class="seg" style="width:2.0%;background:#8a6fc0" title="hádka vo finále 4"></span><span class="seg" style="width:1.0%;background:#7cbf74" title="výkupné 2"></span></div><div class="bartrack2 neg"><span class="seg" style="width:6.9%;background:#7a4a3a" title="Exekútor -14"></span></div><div class="barpopis">starší: reči 11 · hádka vo finále 4 · výkupné 2 · Exekútor −14</div></div><div class="bar"><div class="barname"><b style="color:#e9ad45">Ekonóm</b> 202 (hrubých 202)</div><div class="bartrack2"><span class="seg" style="width:39.1%;background:#e9ad45" title="karty v línii 79"></span><span class="seg" style="width:26.7%;background:#d0563f" title="starší: strach 54"></span><span class="seg" style="width:3.5%;background:#b48ad8" title="starší: reči 7"></span><span class="seg" style="width:23.8%;background:#c9772e" title="Nakladačka vo finále 48"></span><span class="seg" style="width:3.0%;background:#6f9fc8" title="Robota 6"></span><span class="seg" style="width:4.0%;background:#7cbf74" title="výkupné 8"></span></div><div class="barpopis">karty v línii 79 · starší: strach 54 · starší: reči 7 · Nakladačka vo finále 48 · Robota 6 · výkupné 8</div></div></div><div class="bars"><h3>P4</h3><div class="bar"><div class="barname"><b style="color:#d0563f">Agresor</b> 60 (hrubých 78)</div><div class="bartrack2"><span class="seg" style="width:51.3%;background:#e9ad45" title="karty v línii 40"></span><span class="seg" style="width:35.9%;background:#d0563f" title="starší: strach 28"></span><span class="seg" style="width:12.8%;background:#b48ad8" title="starší: reči 10"></span></div><div class="bartrack2 neg"><span class="seg" style="width:23.1%;background:#7a4a3a" title="Exekútor -18"></span></div><div class="barpopis">karty v línii 40 · starší: strach 28 · starší: reči 10 · Exekútor −18</div></div><div class="bar"><div class="barname"><b style="color:#7cbf74">Sabotér</b> 2 (hrubých 2)</div><div class="bartrack2"><span class="seg" style="width:2.6%;background:#b48ad8" title="starší: reči 2"></span></div><div class="barpopis">starší: reči 2</div></div></div><div class="bars"><h3>P5</h3><div class="bar"><div class="barname"><b style="color:#7cbf74">Sabotér</b> 45 (hrubých 53)</div><div class="bartrack2"><span class="seg" style="width:60.0%;background:#e9ad45" title="karty v línii 36"></span><span class="seg" style="width:20.0%;background:#d0563f" title="starší: strach 12"></span><span class="seg" style="width:6.7%;background:#b48ad8" title="starší: reči 4"></span><span class="seg" style="width:1.7%;background:#7cbf74" title="výkupné 1"></span></div><div class="bartrack2 neg"><span class="seg" style="width:8.3%;background:#7a4a3a" title="Exekútor -5"></span><span class="seg" style="width:5.0%;background:#a0303a" title="Cirhózy -3"></span></div><div class="barpopis">karty v línii 36 · starší: strach 12 · starší: reči 4 · výkupné 1 · Exekútor −5 · Cirhózy −3</div></div><div class="bar"><div class="barname"><b style="color:#e9ad45">Ekonóm</b> 17 (hrubých 49)</div><div class="bartrack2"><span class="seg" style="width:36.7%;background:#e9ad45" title="karty v línii 22"></span><span class="seg" style="width:5.0%;background:#d0563f" title="starší: strach 3"></span><span class="seg" style="width:11.7%;background:#b48ad8" title="starší: reči 7"></span><span class="seg" style="width:18.3%;background:#c9772e" title="Nakladačka vo finále 11"></span><span class="seg" style="width:5.0%;background:#8a6fc0" title="hádka vo finále 3"></span><span class="seg" style="width:5.0%;background:#7cbf74" title="výkupné 3"></span></div><div class="bartrack2 neg"><span class="seg" style="width:23.3%;background:#7a4a3a" title="Exekútor -14"></span><span class="seg" style="width:30.0%;background:#a0303a" title="Cirhózy -18"></span></div><div class="barpopis">karty v línii 22 · starší: strach 3 · starší: reči 7 · Nakladačka vo finále 11 · hádka vo finále 3 · výkupné 3 · Exekútor −14 · Cirhózy −18</div></div></div><div class="bars"><h3>P6</h3><div class="bar"><div class="barname"><b style="color:#d0563f">Agresor</b> 102 (hrubých 111)</div><div class="bartrack2"><span class="seg" style="width:45.0%;background:#e9ad45" title="karty v línii 50"></span><span class="seg" style="width:55.0%;background:#d0563f" title="starší: strach 61"></span></div><div class="bartrack2 neg"><span class="seg" style="width:8.1%;background:#7a4a3a" title="Exekútor -9"></span></div><div class="barpopis">karty v línii 50 · starší: strach 61 · Exekútor −9</div></div><div class="bar"><div class="barname"><b style="color:#b48ad8">Klebetník</b> 33 (hrubých 33)</div><div class="bartrack2"><span class="seg" style="width:28.8%;background:#b48ad8" title="starší: reči 32"></span><span class="seg" style="width:0.9%;background:#6f9fc8" title="Robota 1"></span></div><div class="barpopis">starší: reči 32 · Robota 1</div></div></div></div>
+<details><summary>P1 po kolách: Agresor : Ekonóm</summary><div class="tabwrap"><table><thead><tr><th>kolo</th><th>lokalita</th><th>víťaz bitky</th><th>tuhé</th><th>mäkké</th><th>Nakl.</th><th>karty v línii (čie)</th><th>strach → špaky</th><th>reči → špaky</th><th>exekúcia</th><th>špaky po kole</th></tr></thead><tbody><tr><td>K1</td><td>Zastávka</td><td style="color:#e9ad45">Ekonóm</td><td>8 : 8</td><td>4 : 1</td><td>0</td><td>7 (3 : 4)</td><td>0 : 0</td><td>0 : 0</td><td>−1 : 0</td><td>−1 : 9</td></tr><tr><td>K2</td><td>Zberný dvor</td><td style="color:#d0563f">Agresor</td><td>13 : 4</td><td>0 : 6</td><td>9</td><td>9 (5 : 4)</td><td>0 : 0</td><td>3 : 0</td><td>0 : 0</td><td>12 : 10</td></tr><tr><td>K3</td><td>Ihrisko</td><td style="color:#d0563f">Agresor</td><td>6 : 5</td><td>0 : 0</td><td>1</td><td>12 (6 : 6)</td><td>8 : 0</td><td>0 : 5</td><td>−1 : 0</td><td>31 : 15</td></tr><tr><td>K4</td><td>Kostol</td><td style="color:#e9ad45">Ekonóm</td><td>5 : 16</td><td>2 : 0</td><td>11</td><td>14 (7 : 7)</td><td>0 : 0</td><td>0 : 3</td><td>−1 : −2</td><td>30 : 30</td></tr><tr><td>K5</td><td>Družstvo</td><td style="color:#d0563f">Agresor</td><td>14 : 9</td><td>1 : 2</td><td>5</td><td>11 (5 : 6)</td><td>8 : 0</td><td>3 : 1</td><td>−1 : −1</td><td>56 : 25</td></tr><tr><td>F</td><td>Predsedova vila</td><td style="color:#d0563f">Agresor</td><td>11 : 0</td><td>0 : 0</td><td>0</td><td>4 (3 : 1)</td><td>1 : 0</td><td>5 : 6</td><td>0 : 0</td><td>77 : 31</td></tr></tbody></table></div><p class="mala">Vo finále je „špaky po kole“ stav pred výkupným a Cirhózami. Konečný stav 68 : 25.</p></details><details><summary>P2 po kolách: Sabotér : Klebetník</summary><div class="tabwrap"><table><thead><tr><th>kolo</th><th>lokalita</th><th>víťaz bitky</th><th>tuhé</th><th>mäkké</th><th>Nakl.</th><th>karty v línii (čie)</th><th>strach → špaky</th><th>reči → špaky</th><th>exekúcia</th><th>špaky po kole</th></tr></thead><tbody><tr><td>K1</td><td>Jednota</td><td style="color:#7cbf74">Sabotér</td><td>9 : 2</td><td>2 : 6</td><td>7</td><td>11 (6 : 5)</td><td>0 : 0</td><td>0 : 0</td><td>−3 : −1</td><td>8 : −1</td></tr><tr><td>K2</td><td>Kar</td><td style="color:#7cbf74">Sabotér</td><td>8 : 6</td><td>2 : 4</td><td>2</td><td>10 (6 : 4)</td><td>6 : 0</td><td>0 : 4</td><td>−2 : −3</td><td>22 : 0</td></tr><tr><td>K3</td><td>Ihrisko</td><td style="color:#7cbf74">Sabotér</td><td>10 : 0</td><td>0 : 8</td><td>10</td><td>11 (8 : 3)</td><td>8 : 0</td><td>0 : 3</td><td>0 : −2</td><td>41 : 1</td></tr><tr><td>K4</td><td>Vínna pivnica</td><td style="color:#7cbf74">Sabotér</td><td>13 : 12</td><td>0 : 0</td><td>1</td><td>8 (5 : 3)</td><td>16 : 0</td><td>0 : 8</td><td>−2 : 0</td><td>63 : 9</td></tr><tr><td>K5</td><td>Kostol</td><td style="color:#7cbf74">Sabotér</td><td>9 : 0</td><td>5 : 8</td><td>9</td><td>9 (7 : 2)</td><td>17 : 0</td><td>0 : 4</td><td>−2 : 0</td><td>87 : 13</td></tr><tr><td>F</td><td>Poľovnícka chata</td><td style="color:#7cbf74">Sabotér</td><td>25 : 0</td><td>1 : 3</td><td>0</td><td>9 (7 : 2)</td><td>16 : 0</td><td>0 : 4</td><td>−1 : 0</td><td>136 : 22</td></tr></tbody></table></div><p class="mala">Vo finále je „špaky po kole“ stav pred výkupným a Cirhózami. Konečný stav 120 : 22.</p></details><details><summary>P3 po kolách: Klebetník : Ekonóm</summary><div class="tabwrap"><table><thead><tr><th>kolo</th><th>lokalita</th><th>víťaz bitky</th><th>tuhé</th><th>mäkké</th><th>Nakl.</th><th>karty v línii (čie)</th><th>strach → špaky</th><th>reči → špaky</th><th>exekúcia</th><th>špaky po kole</th></tr></thead><tbody><tr><td>K1</td><td>Most</td><td style="color:#e9ad45">Ekonóm</td><td>7 : 9</td><td>2 : 4</td><td>2</td><td>9 (5 : 4)</td><td>0 : 0</td><td>0 : 0</td><td>−1 : 0</td><td>−1 : 9</td></tr><tr><td>K2</td><td>Ihrisko</td><td style="color:#e9ad45">Ekonóm</td><td>9 : 16</td><td>1 : 2</td><td>7</td><td>12 (5 : 7)</td><td>0 : 1</td><td>0 : 3</td><td>−3 : 0</td><td>−4 : 25</td></tr><tr><td>K3</td><td>Kar</td><td style="color:#e9ad45">Ekonóm</td><td>4 : 12</td><td>9 : 3</td><td>8</td><td>12 (4 : 8)</td><td>0 : 8</td><td>0 : 1</td><td>−3 : 0</td><td>−7 : 46</td></tr><tr><td>K4</td><td>Družstvo</td><td style="color:#e9ad45">Ekonóm</td><td>0 : 3</td><td>0 : 2</td><td>3</td><td>8 (2 : 6)</td><td>0 : 15</td><td>5 : 0</td><td>0 : 0</td><td>−2 : 69</td></tr><tr><td>K5</td><td>Obecný úrad</td><td style="color:#e9ad45">Ekonóm</td><td>8 : 13</td><td>18 : 0</td><td>5</td><td>14 (7 : 7)</td><td>0 : 17</td><td>1 : 3</td><td>−3 : 0</td><td>−4 : 109</td></tr><tr><td>F</td><td>Poľovnícka chata</td><td style="color:#e9ad45">Ekonóm</td><td>6 : 54</td><td>10 : 6</td><td>0</td><td>24 (6 : 18)</td><td>0 : 13</td><td>5 : 0</td><td>−4 : 0</td><td>1 : 194</td></tr></tbody></table></div><p class="mala">Vo finále je „špaky po kole“ stav pred výkupným a Cirhózami. Konečný stav 3 : 202.</p></details><details><summary>P4 po kolách: Agresor : Sabotér</summary><div class="tabwrap"><table><thead><tr><th>kolo</th><th>lokalita</th><th>víťaz bitky</th><th>tuhé</th><th>mäkké</th><th>Nakl.</th><th>karty v línii (čie)</th><th>strach → špaky</th><th>reči → špaky</th><th>exekúcia</th><th>špaky po kole</th></tr></thead><tbody><tr><td>K1</td><td>Most</td><td style="color:#d0563f">Agresor</td><td>12 : 9</td><td>5 : 0</td><td>3</td><td>10 (7 : 3)</td><td>0 : 0</td><td>0 : 0</td><td>−5 : 0</td><td>5 : 0</td></tr><tr><td>K2</td><td>Ihrisko</td><td style="color:#d0563f">Agresor</td><td>15 : 7</td><td>0 : 2</td><td>8</td><td>10 (6 : 4)</td><td>0 : 0</td><td>7 : 0</td><td>−6 : 0</td><td>16 : 0</td></tr><tr><td>K3</td><td>Sklad</td><td style="color:#d0563f">Agresor</td><td>10 : 0</td><td>3 : 0</td><td>10</td><td>11 (8 : 3)</td><td>10 : 0</td><td>0 : 2</td><td>0 : 0</td><td>37 : 2</td></tr><tr><td>K4</td><td>Kostol</td><td style="color:#d0563f">Agresor</td><td>20 : 2</td><td>0 : 5</td><td>18</td><td>9 (6 : 3)</td><td>18 : 0</td><td>3 : 0</td><td>−7 : 0</td><td>60 : 2</td></tr></tbody></table></div><p class="mala">Vo finále je „špaky po kole“ stav pred výkupným a Cirhózami. Konečný stav 60 : 2.</p></details><details><summary>P5 po kolách: Sabotér : Ekonóm</summary><div class="tabwrap"><table><thead><tr><th>kolo</th><th>lokalita</th><th>víťaz bitky</th><th>tuhé</th><th>mäkké</th><th>Nakl.</th><th>karty v línii (čie)</th><th>strach → špaky</th><th>reči → špaky</th><th>exekúcia</th><th>špaky po kole</th></tr></thead><tbody><tr><td>K1</td><td>Most</td><td style="color:#7cbf74">Sabotér</td><td>4 : 3</td><td>4 : 1</td><td>1</td><td>7 (4 : 3)</td><td>0 : 0</td><td>0 : 0</td><td>0 : −1</td><td>7 : −1</td></tr><tr><td>K2</td><td>Krčma</td><td style="color:#7cbf74">Sabotér</td><td>9 : 5</td><td>0 : 2</td><td>4</td><td>11 (5 : 6)</td><td>1 : 0</td><td>3 : 0</td><td>−3 : −2</td><td>19 : −3</td></tr><tr><td>K3</td><td>Sklad</td><td style="color:#e9ad45">Ekonóm</td><td>4 : 7</td><td>0 : 3</td><td>3</td><td>8 (3 : 5)</td><td>0 : 0</td><td>1 : 2</td><td>−1 : −1</td><td>19 : 6</td></tr><tr><td>K4</td><td>Obecný úrad</td><td style="color:#7cbf74">Sabotér</td><td>7 : 6</td><td>0 : 1</td><td>1</td><td>11 (5 : 6)</td><td>5 : 0</td><td>0 : 3</td><td>0 : 0</td><td>35 : 9</td></tr><tr><td>K5</td><td>Vínna pivnica</td><td style="color:#7cbf74">Sabotér</td><td>6 : 3</td><td>1 : 1</td><td>3</td><td>7 (4 : 3)</td><td>6 : 0</td><td>0 : 2</td><td>0 : 0</td><td>48 : 11</td></tr><tr><td>F</td><td>Herňa</td><td style="color:#e9ad45">Ekonóm</td><td>7 : 18</td><td>0 : 3</td><td>0</td><td>13 (5 : 8)</td><td>0 : 3</td><td>0 : 0</td><td>−1 : −10</td><td>47 : 32</td></tr></tbody></table></div><p class="mala">Vo finále je „špaky po kole“ stav pred výkupným a Cirhózami. Konečný stav 45 : 17.</p></details><details><summary>P6 po kolách: Agresor : Klebetník</summary><div class="tabwrap"><table><thead><tr><th>kolo</th><th>lokalita</th><th>víťaz bitky</th><th>tuhé</th><th>mäkké</th><th>Nakl.</th><th>karty v línii (čie)</th><th>strach → špaky</th><th>reči → špaky</th><th>exekúcia</th><th>špaky po kole</th></tr></thead><tbody><tr><td>K1</td><td>Zastávka</td><td style="color:#d0563f">Agresor</td><td>11 : 0</td><td>0 : 7</td><td>11</td><td>6 (3 : 3)</td><td>0 : 0</td><td>0 : 0</td><td>−1 : 0</td><td>5 : 0</td></tr><tr><td>K2</td><td>Ihrisko</td><td style="color:#d0563f">Agresor</td><td>14 : 10</td><td>0 : 6</td><td>4</td><td>13 (6 : 7)</td><td>10 : 0</td><td>0 : 6</td><td>−4 : 0</td><td>24 : 6</td></tr><tr><td>K3</td><td>Zberný dvor</td><td style="color:#d0563f">Agresor</td><td>6 : 2</td><td>0 : 8</td><td>4</td><td>7 (3 : 4)</td><td>13 : 0</td><td>0 : 8</td><td>0 : 0</td><td>44 : 15</td></tr><tr><td>K4</td><td>Kostol</td><td style="color:#d0563f">Agresor</td><td>12 : 6</td><td>0 : 2</td><td>6</td><td>11 (6 : 5)</td><td>17 : 0</td><td>0 : 10</td><td>−4 : 0</td><td>68 : 25</td></tr><tr><td>K5</td><td>Vínna pivnica</td><td style="color:#d0563f">Agresor</td><td>20 : 5</td><td>0 : 4</td><td>15</td><td>13 (5 : 8)</td><td>21 : 0</td><td>0 : 8</td><td>0 : 0</td><td>102 : 33</td></tr></tbody></table></div><p class="mala">Vo finále je „špaky po kole“ stav pred výkupným a Cirhózami. Konečný stav 102 : 33.</p></details>
+
+<h3 id="snehova">Snehová guľa: má porazený návrat?</h3>
+<p><b>Tvrdenie hráčov potvrdzujem, s jednou výhradou: je silná, keď je v prvých kolách veľký rozdiel v tuhom.</b></p>
+<ul>
+<li><b>Víťaz K2 vyhral partiu 6 zo 6, víťaz K1 5 zo 6</b> (výnimka P1: K1 8 : 8 na Dlhy, Nakladačka 0).</li>
+<li><b>Zaostávajúci vyhral 4 z 27 bitiek po K1</b> a všetky v P1 a P5. V P2, P3, P4 a P6 ani raz. Bitky 6 : 0, 6 : 0, 4 : 0, 5 : 0 v štyroch partiách zo šiestich.</li>
+<li><b>Porazený platí kartami:</b> z 341 kariet v línii bolo 141 (41 %) porazeného a každá dala špak víťazovi. Klebetník tak daroval 19 + 29 + 27 = 75 špakov.</li>
+<li><b>Nevolí lokalitu a vykladá prvý:</b> v P3 a P6 útočil celú partiu, v P2 od K2.</li>
+<li><b>Výpalné plynie jedným smerom:</b> víťazi partií dostali 34 cigariet (4, 11, 7, 2, 1, 9), porazení 1. Príjem cigariet za partiu: víťazi priemerne 40 (32, 34, 88, 36, 10, 40), porazení 24 (40, 21, 27, 6, 30, 20).</li>
+<li><b>Strach sa úroční:</b> Nakladačky víťaza, ktoré ešte stihli bodovať (15, 29, 25, 21, 9, 25 bodov), dali od starších pred finále 22, 47, 48, 38, 16, 61 špakov, teda 1,5–2,4 špaku za bod. Stupeň neklesá a platí pri každej ďalšej výhre (§10).</li>
+<li><b>Skóre rastie, nie klesá:</b> priemerný rozdiel 83 (43, 98, 199, 58, 28, 69) oproti 45 na v11.6. Tvoj cieľ z 2026-10-24 bol okolo 15 : 13, „nie 88 : 10“.</li>
+</ul>
+<div class="tabwrap"><table>
+<thead><tr><th>Partia</th><th>Kedy je výsledok jasný</th><th>Dôkaz</th><th>Reálny návrat porazeného</th></tr></thead>
+<tbody>
+<tr><td>P1</td><td>K5</td><td>30 : 30 po K4, po K5 56 : 25 a väzeň</td><td>Áno, do K5. Ekonóm K4 vyhral 16 : 5.</td></tr>
+<tr><td>P2</td><td>K3</td><td>41 : 1, 3 červené</td><td>Malý. K4 o 1 tuhé (12 : 13) by dalo výkyv asi 40, partiu nie.</td></tr>
+<tr><td>P3</td><td>K3 (naznačené v K2)</td><td>46 : −7, po K2 25 : −4</td><td>Nie. Najbližšie K2 po 1. Pitke 5 : 5.</td></tr>
+<tr><td>P4</td><td>K3</td><td>37 : 2, 3 červené, cigarety 11 : 0</td><td>Do K2 áno (K1 12 : 9), po K3 nie.</td></tr>
+<tr><td>P5</td><td>K4–K5</td><td>35 : 9, potom 48 : 11</td><td>Áno. K1 a K4 sa rozhodli o 1 tuhé, opačná K4 by dala zhruba 19 : 25.</td></tr>
+<tr><td>P6</td><td>K3 (K1 už 11 bodov)</td><td>44 : 15, po K4 4 červené</td><td>Len K2 (10 : 14).</td></tr>
+</tbody></table></div>
+<p><b>Prečo nenastala v P5 (Sabotér 45 : 17 Ekonóm):</b> rozdiel je v Nakladačke. Tu boli K1–K5 1, 4, 3, 1, 3, spolu <b>12 bodov</b> oboch hráčov (inde 25–40), prvá červená až po K5, od starších víťaz 16 špakov namiesto 28–61, výpalné 1 cigareta, žiadny barter. Príčina je v oboch štýloch: Sabotér dával NA EX na súperovu najlepšiu kartu a Vandalom bral hrany (tuhé 4–9), Ekonóm mal vždy odpovede a cigarety (3–6 pred kolom, nikdy 0). Tesný bol priebeh, nie skóre: Sabotér viedol od K1 po koniec. Porazený v P5 aj vyhral dve bitky vrátane finále.</p>
+<p><b>Záver:</b> nie je to prirodzený zákon hry. Snehová guľa nastala, keď niekto v K1–K3 dal Nakladačku 7 a viac a súper nemal tuhú odpoveď. Kto v K1–K3 drží Nakladačku nízko, hrá do konca. Klebetník to štýlom nevie a Sabotér v P4 stratil cigarety.</p>
+
+<h3 id="klebetnik">Klebetník: štýl, hráč, alebo bodovanie?</h3>
+<div class="tabwrap"><table>
+<thead><tr><th>Partia</th><th>Bitky</th><th>Hádky</th><th>Body hádky</th><th>Reči → špaky</th><th>Špak na bod</th><th>Súper: karty + starší</th><th>Tuhé ona : súper (súčet)</th></tr></thead>
+<tbody>
+<tr><td>P2</td><td>0 z 6</td><td>5</td><td>19</td><td>23</td><td>1,21</td><td>58 + 63 = 121</td><td>20 : 74</td></tr>
+<tr><td>P3</td><td>0 z 6</td><td>3</td><td>28</td><td>11</td><td>0,39</td><td>79 + 61 = 140</td><td>34 : 107</td></tr>
+<tr><td>P6</td><td>0 z 5</td><td>5</td><td>27</td><td>32</td><td>1,19 (1,39 z rozdelených)</td><td>50 + 61 = 111</td><td>23 : 63</td></tr>
+<tr class="hl"><td>spolu</td><td>0 zo 17</td><td>13</td><td>74</td><td>66</td><td>0,89</td><td>372</td><td>77 : 244</td></tr>
+</tbody></table></div>
+<ul>
+<li><b>Nie je to najmä hráč.</b> Chyby urobila (P3 presvedčenie Hrobára v K5 za −11, P6 K4 Zviera proti Poľovníkovi), ale aj jej najlepšia verzia je ďaleko. Najtesnejšie bitky boli 12 : 13 (P2 K4, cez odbočku), 10 : 14 a 9 : 16.</li>
+<li><b>Štýl to zosilňuje:</b> charakter tuhé nestavia, takže hádku vyhráva preto, že súper na ňu kašle. V 21 z 33 bitiek vyhral hádku ten, kto bitku prehral (4× bola hádka remíza). Hádka je v tejto hre cena útechy.</li>
+<li><b>Hlavná príčina je bodovanie a chýbajúca väzba:</b> 372 : 66 je pomer 5,6 : 1. Keby sa špaky z rečí zdvojnásobili, stále je to 132. Hádka nezmení výsledok bitky, nezníži Nakladačku ani strach a platí o kolo neskôr. 9 mäkkých kariet pomohlo merateľne (reči 41 → 66, na v11.6 16 + 10 + 15), problém to nevyriešilo.</li>
+<li><b>Proti výhre strachom:</b> reči neznižujú strach. Jediná cesta je vyhrať bitku, a to štýl nerobí.</li>
+</ul>
+
+<h3 id="hlasenia">Čo ďalšie hráči hlásili</h3>
+<p><b>Zajatie Vychovávateľky a vynútený pas (P1, P2): overené, silné.</b> V P1 vyložil Ekonóm 1 kartu, 5 ostalo v ruke, 7 cigariet a 3 plné poldeci nemali využitie, finále 0 : 11 na 1 Pitku. V P2 vyložila Klebetná 1 kartu (hlásené 22 : 0 je medzistav, koniec 25 : 0). Oba razy to urobil vedúci proti zaostávajúcemu, ktorý vo finále vykladá prvý (§14b), takže schopnosť je vždy zatvorenie partie. P2 tým nerozhodla (87 : 13). P1 možno áno: ak by finále dopadlo ako K4 (16 : 5), odhadujem 55 : 52 pre Ekonóma. Je to odhad, nie výpočet.</p>
+<p><b>Barter poldeci ako rozhodujúci limit: zosilňovač, nie príčina.</b> Bartre: víťazi 10 (1, 2, 3, 2, 0, 2), porazení 1. V P3 rozhodol finále (limit 6 : 3, 18 kariet proti 6, Nakladačka 48), v P4 K3 (limit 5 : 2), v P2 K4 zachránil výhru o 1. P5 sa zaobišla bez bartru a Vínko za 2 cigarety tam dalo Ekonómovi limit 4 : 2–3, ktorý mu partiu nevyhral. Peniaze na barter pochádzajú z výhier (výpalné, Fajčiar, karty s Cigaretou). Dvaja hráči navrhli rastúcu cenu 5, 7, 9: <b>v týchto partiách by nezabrala</b>. Ekonóm v P3 skončil so 17 cigaretami a 3 bartre by zaplatil, Rudovi v P4 by sa druhý barter posunul najviac o kolo.</p>
+<p><b>Karty sady:</b></p>
+<div class="tabwrap"><table>
+<thead><tr><th>Karta</th><th>Kde</th><th>Čo urobila</th><th>Verdikt</th></tr></thead>
+<tbody>
+<tr><td><b>Veterán</b></td><td>všetkých 6 partií, víťaz ho kúpil v K1 alebo K2 v 5</td><td>Tuhé z jeho akcií: P1 23, P2 18, P3 23, P4 5, P5 2, P6 10 a 10 u súpera. V P1, P2 a P3 najväčší zdroj. NA EX na neho akcie zdvojí; s Cigaretou z dávky I a so Silnou to dalo v P4 K2 12 cigariet.</td><td><b>Skresľuje štýly:</b> kupujú ho všetci, ktorí sa bijú. <a href="#N24">N24</a>.</td></tr>
+<tr><td><b>Finančná poradkyňa</b></td><td>P3 (Klebetník), P5 (Sabotér), P6 (Klebetník)</td><td>8 z 22 Dlhov v P3 F, 8 z 22 v P5 F, 10 z 22 v P6. V P5 ≈ −4 špaky. V P3 a P6 sa obrátila proti majiteľke: Ekonóm mal Záhradkára a Vymáhača (12 Rán), Rudo Vymáhača (6 Rán).</td><td>Silná situačne, má protihru. Nechať.</td></tr>
+<tr><td><b>Exekútor</b> (Dlh bez prahu)</td><td>všade</td><td>Spolu −83 špakov: víťazi −46, porazení −37. Nezmenil žiadny výsledok. Najviac P4 −18 a P5 −14.</td><td>Dlh sa stal skutočnou cenou aj pre víťaza. Funguje podľa zámeru.</td></tr>
+<tr><td><b>Vymáhač</b></td><td>P3 (12 Rán), P5 (bez Dlhov), P6 (6 Rán)</td><td>Bez neho P3 42 : 6 a P6 14 : 5, teda rovnaký výsledok. Dlhy na konci hry nestoja nič, takže je to zadarmo.</td><td>Sledovať, zatiaľ nerozhoduje. 2 prípady. <a href="#N30">N30</a>.</td></tr>
+</tbody></table></div>
+<p class="mala"><b>Ostatné z dávky:</b> Ohováračka bola takmer neviditeľná (+1 mäkké v P1 K4 a P3 K5), Kostol v11.7 sa hral 4× a slúžil ako štít aj cieľ (P4 E32, P6 E38) bez sťažností, Dobratie do troch zásobuje každého (Agresor mal pred finále na v11.6 v ruke 1, 2, 1 kartu a 0, 2, 0 cigariet, na v11.10 pred posledným kolom 3 karty a 6, 11, 10 cigariet), čo bol cieľ dávky A, E a Cigarety na útočných kartách. Má to aj cenu: viac kariet v línii znamená viac špakov víťazovi.</p>
+</section>
+
+<section id="hypoteza">
+<h2>6. Hypotéza o cigaretách a Víziách</h2>
+<p><b>Verdikt: na týchto partiách vyvrátená ako príčina, potvrdená ako následok. Pre plán „všetko na finále“ málo dát.</b> ✓ znamená, že hodnotu mal vyššiu víťaz, ✗ porazený. Riadky v11.10 sú zvýraznené. Pri P4 a P6 je stav pred posledným kolom a špaky konečné.</p>
+<div class="tabwrap"><table>
+<thead><tr><th>Partia</th><th>verzia</th><th>štýly</th><th>špaky pred finále</th><th>cigarety</th><th>karty v ruke</th><th>plné poldeci</th><th>Vízie posl. kola</th><th>víťaz</th></tr></thead>
+<tbody><tr class=""><td>010635-1</td><td>v11.6</td><td><span class="st" style="--c:#e9ad45">Ekonóm</span> : <span class="st" style="--c:#d0563f">Agresor</span></td><td>19 : 63</td><td>7 : 0 ✗</td><td>0 : 1 ✓</td><td>3 : 2 ✗</td><td>0 : 0</td><td><span class="st" style="--c:#d0563f">Agresor</span></td></tr><tr class=""><td>010635-2</td><td>v11.6</td><td><span class="st" style="--c:#b48ad8">Klebetník</span> : <span class="st" style="--c:#7cbf74">Sabotér</span></td><td>18 : 39</td><td>2 : 16 ✓</td><td>1 : 6 ✓</td><td>2 : 2</td><td>0 : 0</td><td><span class="st" style="--c:#7cbf74">Sabotér</span></td></tr><tr class=""><td>015313-1</td><td>v11.6</td><td><span class="st" style="--c:#e9ad45">Ekonóm</span> : <span class="st" style="--c:#b48ad8">Klebetník</span></td><td>48 : 13</td><td>3 : 0 ✓</td><td>2 : 1 ✓</td><td>2 : 2</td><td>0 : 0</td><td><span class="st" style="--c:#e9ad45">Ekonóm</span></td></tr><tr class=""><td>015313-2</td><td>v11.6</td><td><span class="st" style="--c:#7cbf74">Sabotér</span> : <span class="st" style="--c:#d0563f">Agresor</span></td><td>11 : 64</td><td>4 : 2 ✗</td><td>2 : 2</td><td>2 : 2</td><td>0 : 0</td><td><span class="st" style="--c:#d0563f">Agresor</span></td></tr><tr class=""><td>024710-1</td><td>v11.6</td><td><span class="st" style="--c:#e9ad45">Ekonóm</span> : <span class="st" style="--c:#7cbf74">Sabotér</span></td><td>19 : 30</td><td>25 : 3 ✗</td><td>3 : 4 ✓</td><td>1 : 3 ✓</td><td>0 : 3 ✓</td><td><span class="st" style="--c:#7cbf74">Sabotér</span></td></tr><tr class=""><td>024710-2</td><td>v11.6</td><td><span class="st" style="--c:#b48ad8">Klebetník</span> : <span class="st" style="--c:#d0563f">Agresor</span></td><td>28 : 40</td><td>8 : 0 ✓</td><td>9 : 1 ✓</td><td>2 : 2</td><td>1 : 0 ✓</td><td><span class="st" style="--c:#b48ad8">Klebetník</span> <b>otočil</b></td></tr><tr class="hl"><td>P1</td><td>v11.10</td><td><span class="st" style="--c:#d0563f">Agresor</span> : <span class="st" style="--c:#e9ad45">Ekonóm</span></td><td>56 : 25</td><td>6 : 7 ✗</td><td>3 : 3</td><td>2 : 3 ✗</td><td>1 : 0 ✓</td><td><span class="st" style="--c:#d0563f">Agresor</span></td></tr><tr class="hl"><td>P2</td><td>v11.10</td><td><span class="st" style="--c:#7cbf74">Sabotér</span> : <span class="st" style="--c:#b48ad8">Klebetník</span></td><td>87 : 13</td><td>7 : 1 ✓</td><td>7 : 3 ✓</td><td>3 : 2 ✓</td><td>7 : 0 ✓</td><td><span class="st" style="--c:#7cbf74">Sabotér</span></td></tr><tr class="hl"><td>P3</td><td>v11.10</td><td><span class="st" style="--c:#b48ad8">Klebetník</span> : <span class="st" style="--c:#e9ad45">Ekonóm</span></td><td>−4 : 109</td><td>9 : 10 ✓</td><td>3 : 5 ✓</td><td>2 : 5 ✓</td><td>3 : 2 ✗</td><td><span class="st" style="--c:#e9ad45">Ekonóm</span></td></tr><tr class="hl"><td>P4</td><td>v11.10</td><td><span class="st" style="--c:#d0563f">Agresor</span> : <span class="st" style="--c:#7cbf74">Sabotér</span></td><td>60 : 2 (bez finále)</td><td>11 : 0 ✓</td><td>3 : 3</td><td>4 : 2 ✓</td><td>2 : 0 ✓</td><td><span class="st" style="--c:#d0563f">Agresor</span></td></tr><tr class="hl"><td>P5</td><td>v11.10</td><td><span class="st" style="--c:#7cbf74">Sabotér</span> : <span class="st" style="--c:#e9ad45">Ekonóm</span></td><td>48 : 11</td><td>5 : 5</td><td>3 : 4 ✗</td><td>1 : 2 ✗</td><td>0 : 0</td><td><span class="st" style="--c:#7cbf74">Sabotér</span></td></tr><tr class="hl"><td>P6</td><td>v11.10</td><td><span class="st" style="--c:#d0563f">Agresor</span> : <span class="st" style="--c:#b48ad8">Klebetník</span></td><td>102 : 33 (bez finále)</td><td>10 : 2 ✓</td><td>3 : 3</td><td>3 : 2 ✓</td><td>2 : 0 ✓</td><td><span class="st" style="--c:#d0563f">Agresor</span></td></tr></tbody></table></div>
+<ul>
+<li><b>v11.10:</b> vedúci pred finále vyhral 4 zo 4. Viac cigariet mal víťaz v 4 zo 6 (raz rovnako, raz menej), viac plných poldeci tiež v 4 zo 6. Vedúci mal často viac, lebo vyhrával.</li>
+<li><b>Cez obe verzie:</b> zo 12 partií otočil pred finále len 1 (Klebetník – Agresor na v11.6, 28 : 40 → 50 : 23), a tá istá dvojica dopadla na v11.10 opačne.</li>
+<li><b>Mechanizmus:</b> zdroje tečú k tomu, kto vyhráva (výpalné 34 : 1, cigarety víťazov 40 proti 24, bartre 10 : 1). Vo finále ich vie vypnúť vynútený pas (P1) a prevážiť kliatby (P5). Finále ich vyplatí, len keď sa nakopia (P3 93 špakov), a vtedy už víťaz vedie.</li>
+<li><b>Výhrada:</b> 1 špak za bod Nakladačky bez stropu (§14b) ostáva najväčšia páka hry. Kto by do finále prišiel s limitom 6 proti súperovi bez zdrojov, môže otočiť veľa. Tvoju skúsenosť proti botovi tieto partie nemerajú, ako si sám povedal.</li>
+</ul>
+</section>
+
+<section id="navrhy">
+<h2>7. Návrhy zmien</h2>
+<div class="filtre" role="group" aria-label="Druh">
+<span>Druh:</span>
+<button type="button" data-f="druh" data-v="" aria-pressed="true">všetky</button><button type="button" data-f="druh" data-v="karta" aria-pressed="false">efekt karty</button><button type="button" data-f="druh" data-v="akcie" aria-pressed="false">akcie</button><button type="button" data-f="druh" data-v="mechanizmus" aria-pressed="false">mechanizmus</button><button type="button" data-f="druh" data-v="bodovanie" aria-pressed="false">bodovanie</button>
+</div>
+<div class="filtre" role="group" aria-label="Štýl">
+<span>Štýl:</span>
+<button type="button" data-f="styl" data-v="" aria-pressed="true">všetky</button><button type="button" data-f="styl" data-v="ekonom" aria-pressed="false">Ekonóm</button><button type="button" data-f="styl" data-v="agresor" aria-pressed="false">Agresor</button><button type="button" data-f="styl" data-v="klebetnik" aria-pressed="false">Klebetník</button><button type="button" data-f="styl" data-v="saboter" aria-pressed="false">Sabotér</button>
+<button type="button" data-f="odp" aria-pressed="false">len odporúčané</button>
+</div>
+<p class="mala" id="pocet-navrhov"></p>
+<p class="mala">Čísla nadväzujú na N1–N14 z minulého reportu. Všetky prepočty sú prvého rádu: berú odohrané ťahy a menia len pravidlo, hráči by hrali inak. Rozhodnutia Michala z 2026-11-06 som rešpektoval; vrátené návrhy sú označené.</p>
+
+<article class="navrh odporucany" data-druh="mechanizmus" data-styly="klebetnik ekonom agresor" id="N21"><h3>N21 · Polovica hádky tlmí Nakladačku <span class="odp">odporúčaný</span></h3><p class="meta"><span class="druh">mechanizmus</span> · posilní: Klebetník, trochu Ekonóm · oslabí: Agresor · navrhol: sudca z návrhov Klebetníka</p><dl>
+<dt>Problém</dt><dd>Hádka a bitka sa míňajú: v 21 z 33 bitiek vyhral hádku porazený a hádka mu nedala nič proti následkom prehry. Klebetník nemá ťah proti strachu (P6). Reči strach neznižujú a tak to má ostať: „strach neklesá“ je pilier v11.4.</dd>
+<dt>Zmena</dt><dd>Keď hádku vyhrá porazený v bitke, Nakladačka víťaza klesne o polovicu bodov hádky, nadol. Hádka sa rozdelí na reči ako dnes. Vo finále nie, tam hádka aj Nakladačka platia 1 : 1 (§14b). <b>Otázka: polovica, alebo celé body?</b></dd>
+<dt>Prepočet</dt><dd><b>P6 s polovicou:</b> 11, 4, 4, 6, 15 → 8, 1, 0, 5, 13. Do K4 14 bodov, teda najviac 2 červené: výhra strachom v K5 nenastane a hrá sa finále. <b>P4:</b> K4 18 → 16, 3 väzni ostávajú. <b>P1:</b> K5 5 → 5, zajatie ostáva. <b>S celými bodmi</b> by zanikla aj väzenská výhra v P4 (13) a zajatie v P1 (4), P3 K5 5 → 0. Preto polovica: brzdí Agresora len tam, kde súper hádku naozaj hrá.</dd>
+<dt>Dopad na štýly</dt><dd>Vzniká trojuholník, ktorý si chcel: tuhé bije karty, hádka brzdí tuhé. Ekonóm získa v P1 a P5 pár bodov. Sabotér takmer nič, hádku vyhral 3×.</dd>
+<dt>Riziko</dt><dd>Mäkké môže byť zas príliš silné: v Zrejúcej 2026-11-05 si vrátil mäkké 3 a 2 ako „extrémne silné“. Ohováračka a Telefón sa stanú cennejšie. Spolu s N22 prepočet P6 dáva Klebetníkovi vedenie bez jedinej výhranej bitky, preto nie naraz.</dd>
+<dt>Overenie</dt><dd>Zápasy Klebetník–Agresor a Klebetník–Ekonóm po 2 partie. Turnaj botov s variantom: <code>tools/bot/turnaj.ts 20 chamtivy stredna stamgast</code>, sledovať podiel výhier strachom a väzňami.</dd>
+</dl></article>
+
+<article class="navrh odporucany" data-druh="mechanizmus" data-styly="ekonom klebetnik agresor saboter" id="N23"><h3>N23 · Vychovávateľka nie v 1. Zhromaždení finále <span class="odp">odporúčaný</span></h3><p class="meta"><span class="druh">mechanizmus</span> · posilní: Ekonóm, zaostávajúci · oslabí: Agresor, Sabotér · navrhli: Agresor, Ekonóm (P1)</p><dl>
+<dt>Problém</dt><dd>Vedúci zajme Vychovávateľku v K5 a vo finále vypne útočníka hneď po prvej karte. P1: 7 cigariet, 5 kariet, 3 plné poldeci bez využitia, finále 11 : 0. P2: 25 : 0. Oba denníky si to už zapísali ako postup. Je to opak tvojej zásady o brzdení snehovej gule.</dd>
+<dt>Zmena</dt><dd>Možnosti: <b>(a)</b> vo finále ju smie použiť až od 2. Zhromaždenia; <b>(b)</b> vo finále je pas za cigarety ako každý iný; <b>(c)</b> vo finále vôbec nie, ako sa nezajíma (§10). Odporúčam (a). Znenie schopnosti je tvoje doslovné, preto rozhodni ty.</dd>
+<dt>Prepočet</dt><dd><b>P1:</b> Ekonóm by v Zhromaždení 1 vyložil až 4 karty (limit pri 3 plných poldeci). Ak by finále dopadlo ako K4 (16 : 5, Nakladačka 11, 14 kariet), odhadom 55 : 52 pre neho namiesto 25 : 68. <b>P2:</b> mení len výšku.</dd>
+<dt>Dopad na štýly</dt><dd>Väzeň ostáva silný v K1–K5, v ktorých má schopnosť zmysel. Agresor stratí nástroj z P1.</dd>
+<dt>Riziko</dt><dd>Malé. Môže vrátiť časť plánu „všetko na finále“, lebo zberač už nepríde o finále jedným kliknutím. Sleduj spolu s pokusom z časti 9.</dd>
+<dt>Overenie</dt><dd>Agresor–Ekonóm a Sabotér–Ekonóm. Merať počet kariet útočníka vo finále pri väzňovi Vychovávateľka.</dd>
+</dl></article>
+
+<article class="navrh odporucany" data-druh="karta" data-styly="agresor ekonom saboter" id="N24"><h3>N24 · NA EX na Veterána nezdvojí Cigaretu <span class="odp">odporúčaný</span></h3><p class="meta"><span class="druh">efekt karty</span> · oslabí: Agresor, trochu Ekonóm a Sabotér · posilní: súpera bez cigariet · navrhli: Agresor, Sabotér (P4)</p><dl>
+<dt>Problém</dt><dd>Dávka I dala Veteránovi Cigaretu namiesto Poldeci (commit 061a5805) a jeho efekt ju zdvojuje. S Veteránom pri Silnej je to Cigareta ×4. P4 K2: 12 z 19 cigariet, 2 bartery, limit 5 : 2–3. Veterán je zároveň najväčší zdroj tuhého v P1, P2, P3. Cieľ dávky bol dať agresorovi palivo, nie 12 cigariet z jednej karty.</dd>
+<dt>Zmena</dt><dd>Efekt: „NA EX na neho jeho aktívne akcie nezruší; Rany a Pecky zdvojí.“ Akcie karty ostávajú. Cigareta pri NA EX ostane ×1 (so Silnou ×2). Rieši admin v tvorcovi ako rozpracovaný stav.</dd>
+<dt>Prepočet</dt><dd>P4 K2: Veterán 12 → 6 cigariet, kolo 19 → 13, K2 namiesto dvoch bartrov najviac jeden skôr, K3 limit 4 namiesto 5. V P1 K2 a P6 K2 dal Veterán po 4 cigarety, s N24 menej, ak ležal pod NA EX. Výsledok žiadnej partie to samo nemení.</dd>
+<dt>Dopad na štýly</dt><dd>Spomalí rozbeh, neberie tuhé. Agresor má ešte Podvodníka (P6 K4 8 cigariet) a Traktoristu.</dd>
+<dt>Riziko</dt><dd>Komplikuje text karty. Agresor môže opäť prísť o palivo, čo bol pôvodný problém.</dd>
+<dt>Overenie</dt><dd>Turnaj botov so sadou: cigarety za partiu a podiel výhier Fera. Playtest Agresor–Ekonóm.</dd>
+</dl></article>
+
+<article class="navrh odporucany" data-druh="mechanizmus" data-styly="saboter klebetnik" id="N25"><h3>N25 · Cigareta porazenému sa neodovzdá vo výpalnom <span class="odp">odporúčaný</span></h3><p class="meta"><span class="druh">mechanizmus</span> · posilní: hladujúceho porazeného · oslabí: Agresor mierne · navrhol: Sabotér (P4)</p><dl>
+<dt>Problém</dt><dd>§10: výpalné sa platí „zo stavu po cigarete porazenému“. Kto má 0, dostane 1 a hneď ju odovzdá. P4: Sabotér v K3 aj K4 0 kariet zo šenku, prázdne fázy. Pravidlo o cigarete porazenému sa tak práve u toho, kto ju najviac potrebuje, ruší.</dd>
+<dt>Zmena</dt><dd>Výpalné sa platí zo stavu pred cigaretou porazenému. Nie je to strop ani nová cigareta, len poradie v kroku 6c.</dd>
+<dt>Prepočet</dt><dd>P4: +1 v K3 a +1 v K4, teda 1 karta zo šenku v každom. Sabotér by mal v K4 kartu proti Nakladačke 18; podľa jeho odhadu hranica 15 mohla padnúť. P6: bez zmeny, Klebetná mala vždy z čoho platiť. Ostatné partie bez zmeny.</dd>
+<dt>Dopad na štýly</dt><dd>Zasiahne len súpera na nule. Malá zmena, malé riziko.</dd>
+<dt>Riziko</dt><dd>Podobá sa zamietnutému #30 (cigarety pre porazeného), ale nedáva žiadnu navyše. Hromadenie nepodporuje.</dd>
+<dt>Overenie</dt><dd>Test jadra na kroku 6c. V playteste počítať kolá s 0 kartami zo šenku.</dd>
+</dl></article>
+
+<article class="navrh odporucany" data-druh="bodovanie" data-styly="klebetnik ekonom agresor saboter" id="N22"><h3>N22 · Karty v línii: každý za svoje (samostatný pokus) <span class="odp">odporúčaný</span></h3><p class="meta"><span class="druh">bodovanie</span> · posilní: Klebetník, Ekonóm · oslabí: Agresor, Sabotér · navrhli: Klebetník, Ekonóm (2×), Sabotér</p><dl>
+<dt>Problém</dt><dd>41 % špakov za karty platí porazený vlastnými kartami (141 z 341). Klebetník 75 špakov, Ekonóm v P5 15 z 29. Ekonóm a Klebetník to hlásia v každej partii. Tichá línia (E27) to nevyriešila: dĺžku línie určuje súper. Mení rozhodnutie v8 z 2026-10-28, ktoré si potvrdil.</dd>
+<dt>Zmena</dt><dd>Ako Kultúrny dom všade: každý hráč 1 špak za svoju kartu v línii, víťaz aj porazený. Slabší variant: víťaz len za svoje, porazený nič. Súvisí s otvoreným návrhom G (pevne 7 špakov za bitku) z <code>docs/napady/agresivna-hra.html</code>.</dd>
+<dt>Prepočet</dt><dd><div class="tabwrap"><table><thead><tr><th></th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th><th>P6</th><th>priemerný rozdiel</th></tr></thead><tbody>
+<tr><td>dnes</td><td>68 : 25</td><td>120 : 22</td><td>3 : 202</td><td>60 : 2</td><td>45 : 17</td><td>102 : 33</td><td>83</td></tr>
+<tr class="hl"><td>každý za svoje</td><td>61 : 32</td><td>101 : 41</td><td>32 : 173</td><td>47 : 15</td><td>35 : 27</td><td>75 : 60</td><td>48</td></tr>
+<tr><td>víťaz len za svoje</td><td>51 : 15</td><td>101 : 22</td><td>3 : 173</td><td>47 : 2</td><td>27 : 9</td><td>75 : 33</td><td>65</td></tr>
+<tr><td>návrh G, pevne 7</td><td>60 : 18</td><td>104 : 22</td><td>3 : 165</td><td>48 : 2</td><td>37 : 10</td><td>87 : 33</td><td>69</td></tr>
+</tbody></table></div>Žiadna partia sa neotočí, ale rozdiel klesne takmer na polovicu.</dd>
+<dt>Dopad na štýly</dt><dd>Porazený má body za to, že sa zapojil. Výhra bitky ostáva cenná cez starších, lokalitu a Nakladačku. Víťazovi ubudne motivácia dokladať karty do cudzieho kraja a súperovi nestojí prehra toľko.</dd>
+<dt>Riziko</dt><dd><b>Veľké.</b> Môže posilniť „kto vyloží viac“, tvoj pôvodný dojem, a odmeňovať prehrávanie s plnou líniou. So N21 odhad P6 dáva Klebetníkovi asi 60 : 34 pred finále bez výhranej bitky: nový dominant. Preto ako samostatný pokus až po N21.</dd>
+<dt>Overenie</dt><dd>Stratég s variantom (<code>tools/bot/strategickost.ts</code>, duplikátne rozdania) a 3 partie každý s každým.</dd>
+</dl></article>
+
+<article class="navrh" data-druh="bodovanie" data-styly="klebetnik agresor" id="N26"><h3>N26 · Vrátený N1: hádka platí špaky hneď</h3><p class="meta"><span class="druh">bodovanie</span> · posilní: Klebetník · oslabí: Agresor relatívne</p><dl>
+<dt>Stav</dt><dd>Rozhodol si, že N1 sa vráti až po zmeraní 9 mäkkých kariet. Toto je meranie: reči 41 → 66, hádka 74 bodov za 3 partie, výsledok 0 : 3.</dd>
+<dt>Prepočet</dt><dd>1 špak za bod v K1–K5: P2 39 : 120, P3 27 : 207, P6 60 : 102 (K5 sa ráta), P1 73 : 32, P4 68 : 9, P5 48 : 23. Neotočí nič.</dd>
+<dt>Odporúčanie</dt><dd>Nie teraz. Pridáva špaky do hry, ktorá má už priveľké skóre, a neštartuje hádku proti Nakladačke. Ak N21 neprejde, je to druhá voľba, radšej polovica bodov.</dd>
+</dl></article>
+
+<article class="navrh" data-druh="bodovanie" data-styly="agresor saboter ekonom klebetnik" id="N27"><h3>N27 · Strach boduje 1 / 2 / 3, reči ostávajú 1 / 3 / 5</h3><p class="meta"><span class="druh">bodovanie</span> · posilní: Klebetník relatívne · oslabí: Agresor, víťazov · navrhol: Sabotér (P2)</p><dl>
+<dt>Prepočet</dt><dd>P1 62 : 25, P2 97 : 22, P3 3 : 187, P4 50 : 2, P5 43 : 16, P6 81 : 33. Priemerný rozdiel 83 → 70.</dd>
+<dt>Odporúčanie</dt><dd>Nie teraz. Priamo mieri na úročenie strachu, ale účinok je malý a oslabí motiváciu dvíhať strach, ktorú si v11 stavala. Dobrý záložný krok, ak skóre ostane priveľké.</dd>
+</dl></article>
+
+<article class="navrh" data-druh="mechanizmus" data-styly="agresor saboter" id="N28"><h3>N28 · Rastúca cena zajatia v jednom rozdelení: 5, 7, 9</h3><p class="meta"><span class="druh">mechanizmus</span> · oslabí: Agresor · navrhli: Agresor, Sabotér (P4)</p><dl>
+<dt>Prepočet</dt><dd>P4 K4: 18 &lt; 21, teda 2 väzni a hra pokračuje do K5. Je to cena, nie strop. Inde bez zmeny.</dd>
+<dt>Odporúčanie</dt><dd>Sledovať. Jediný prípad troch zajatí naraz a súper bol bez zdrojov. Keď sa zopakuje proti Ekonómovi, vrátiť sa k tomu.</dd>
+</dl></article>
+
+<article class="navrh" data-druh="mechanizmus" data-styly="ekonom agresor" id="N29"><h3>N29 · Rastúca cena barteru: 5, 7, 9</h3><p class="meta"><span class="druh">mechanizmus</span> · navrhli: Ekonóm, Agresor</p><dl>
+<dt>Prepočet</dt><dd>P3: 3 bartre = 21 cigariet, Ekonóm mal 88 za partiu a na konci 17, teda zaplatil by. P4: 5 + 7 = 12 zo 36, druhý barter najviac o kolo neskôr.</dd>
+<dt>Odporúčanie</dt><dd><b>Nie.</b> Tieto partie ho nepodporujú. Problém je príjem víťaza, nie cena. Účinnejší je N24.</dd>
+</dl></article>
+
+<article class="navrh" data-druh="bodovanie" data-styly="ekonom agresor" id="N30"><h3>N30 · Priznané Dlhy po finále: −1 špak za 2</h3><p class="meta"><span class="druh">bodovanie</span> · oslabí: Ekonóm (Záhradkár, Vymáhač) · posilní: Sabotér · navrhol: Ekonóm (P3)</p><dl>
+<dt>Prepočet</dt><dd>P3 Ekonóm 17 Dlhov −8. P5 10 Dlhov −5. Ostatní 0 Dlhov. Bez stropu.</dd>
+<dt>Odporúčanie</dt><dd>Sledovať. Dnes je hromadenie Dlhov so Záhradkárom a Vymáhačom zadarmo (§11), ale v 2 prípadoch to výsledok nezmenilo. Nesmie zlikvidovať Finančnú poradkyňu ako protihru.</dd>
+</dl></article>
+
+<article class="navrh" data-druh="mechanizmus" data-styly="klebetnik agresor" id="N31"><h3>N31 · Vrátené: reči znižujú strach (odložené v11 „zatiaľ nie“)</h3><p class="meta"><span class="druh">mechanizmus</span> · posilní: Klebetník · oslabí: Agresor · navrhol: Agresor (P6, presvedčenie zníži súperov strach)</p><dl>
+<dt>Prepočet</dt><dd>P6 K3: hádka 8, Poštárka presvedčená, Rudov strach 2 → 1. K4 Nakladačka 6 by nedala 4. červenú a koniec sa posunie na finále.</dd>
+<dt>Odporúčanie</dt><dd>Nie pred N21. Mení pilier „strach neklesá“, ktorý si v11.4 uzavrel bez výnimky. N21 dosiahne podobné bez dotyku stupnice.</dd>
+</dl></article>
+
+<details><summary>Návrhy hráčov, ktoré nezaraďujem a prečo</summary><ul>
+<li><b>Cirhóza z balíčka za cigarety</b> (Sabotér P5): zamietnuté 2026-11-06 ako N3, „parkovanie je zámer“. Nové dáta to nemenia.</li>
+<li><b>Karta zadarmo pre porazeného bez cigariet</b> (Sabotér P4): zamietnuté ako N9. Riešim menším N25.</li>
+<li><b>Nakladačka vo finále 1 špak za 2 body</b> (Klebetník P3): zamietnuté ako N8. Finále navyše nerozhodovalo.</li>
+<li><b>Porazený vyberá poradie alebo natáča lokalitu</b> (Klebetník P3, Ekonóm P3): má zmysel, ale výrazne mení rolu obrancu; bez merania ho nevieme prepočítať. Pre stratéga na duplikátne rozdania.</li>
+<li><b>Víťaz hádky volí lokalitu</b> (Klebetník P2): to isté, navyše by vzalo voľbu aj Ekonómovi. Pre stratéga.</li>
+<li><b>Reči neklesajú u víťaza hádky</b> (Klebetník P2, P3): prepočet +6 až +15 špakov na partiu pri 5,6 : 1 nestačí. Horší pomer zmeny k účinku než N21.</li>
+<li><b>Výhra väzňa za 2 červené, Záverečná za 2 cigarety</b> (Agresor P1): Agresor to po P4 a P6 nepotrebuje. Vlastný návrh z kola 1 sám zmenil v „Čo štýlu chýba“.</li>
+<li><b>Vandal drahší, Poľovník odhodí namiesto spáli, Výtržník len z aktívnych, Fúrik slabší, Snúbenica proti sebabombe</b>: každý mieri na nástroj, ktorý iný štýl práve overil. Príliš skoro, jedna partia.</li>
+</ul></details>
+</section>
+
+<section id="nezrovnalosti">
+<h2>8. Nezrovnalosti pravidiel a hry</h2>
+<p class="mala">Mechaniky sedeli: hráči prepočítali bitky, výpalné, krádež a koncové súčty a server to potvrdil. Nález v jadre je len text. Rozhodnutia v partiách to neovplyvnilo.</p>
+<h3>Overené</h3>
+<div class="tabwrap"><table><thead><tr><th>Čo</th><th>Kde</th><th>Zaradenie</th><th>Kto opraví</th></tr></thead><tbody>
+<tr><td>Scorecard „Alkoholik“ pri účinku Ohováračka (hlásilo 9 hráčov zo 12). Názov sa ukáže v logu hry.</td><td><code>packages/core/data/scorecards.json:63</code>, log v <code>engine.ts:1758</code>, výpis <code>hrac.ts:704</code>. §10 v11.10.</td><td><span class="tag t-chyba">chyba v dátach</span></td><td>Programátor a bodovacie karty v tvorcovi</td></tr>
+<tr><td>„do ruky len ako boss pri súperovom pokuse o zajatie“ (9 hráčov)</td><td><code>tools/playtest/hrac.ts:1199</code>. §10 v11.4: pokus zanikol.</td><td><span class="tag t-chyba">text nástroja</span></td><td>Programátor</td></tr>
+<tr><td>Predsedova vila: „Staršieho v ohrození nie.“ (9 hráčov)</td><td><code>cards.json:3454</code>. §15 to nemá, ohrozenie zaniklo v11.4.</td><td><span class="tag t-chyba">text karty</span></td><td>Admin v tvorcovi (rozpracovaný stav)</td></tr>
+<tr><td>Nápoveda zajatia „aj po zdvihu v tomto rozdelení“. Server správne odmieta (P4 K4). Pri presvedčení je ten text správny.</td><td><code>hrac.ts:1025</code>. §10 v11.6.</td><td><span class="tag t-chyba">text nástroja</span></td><td>Programátor</td></tr>
+<tr><td>Náhľad NA EX vo finále „Nakladačka N na tvoj strach (Puška −N)“. Výsledok bitky je správny.</td><td><code>hrac.ts:344</code>: vo finále je <code>naRozdelenie</code> 0. §14b.</td><td><span class="tag t-chyba">text nástroja</span></td><td>Programátor</td></tr>
+<tr><td>Píšťalka v pravidlách, Izolačka na karte a v ťaháku, efekt rovnaký.</td><td><code>cards.json:3833</code> oproti <code>PRAVIDLA.md:342, 1637, 1939</code>.</td><td><span class="tag t-pravidla">pravidlá</span></td><td>Leader</td></tr>
+<tr><td>„Dlh sa prizná sám, keď si ho dobereš“. Od v8.2 je Dlh počítadlo. Je to aj v klientovi hry.</td><td><code>hrac.ts:770</code>, <code>apps/web/src/hra/Panely.tsx:1582</code>. §8, §11.</td><td><span class="tag t-chyba">text hry</span></td><td>Programátor</td></tr>
+<tr><td>Log „vykladá … do súperovej partie“ pri karte, ktorá ostáva v partii toho, kto ju zahral.</td><td><code>engine.ts:2473</code>. §6: patrí do partie hráča, leží na súperovej strane.</td><td><span class="tag t-chyba">text hry</span></td><td>Programátor, korektor</td></tr>
+<tr><td>Text pasu „na Zastávke len z vlastného limitu“ aj mimo Zastávky.</td><td><code>hrac.ts:850</code>. §15 zaniklo v9.1.</td><td><span class="tag t-chyba">text nástroja</span></td><td>Programátor</td></tr>
+<tr><td>Staré odkazy v pravidlách: §7 „hrozba Kšeftu Vychovávateľky“, §17 Špak „za udržaný strach“, §11 Exekútor „krok 4c“ proti §9 a §14 „4d“.</td><td><code>PRAVIDLA.md:856, 1999, 1555</code>.</td><td><span class="tag t-pravidla">pravidlá</span></td><td>Leader</td></tr>
+</tbody></table></div>
+<h3>Nejasné pravidlá, otázka pre Michala</h3>
+<ul>
+<li><span class="tag t-nejasne">nejasné</span> <b>Veštica po finále</b> (P2): §9.5b platí po každej bitke, teda aj po finále. Klebetná vymenila Cirhózu za súperovu kartu tesne pred koncovým účtom, výkyv 6 špakov. Má to tak byť? Cigareta porazenému aj výpalné po finále neplatia.</li>
+<li><span class="tag t-nejasne">nejasné</span> <b>Fajčiar po finále</b> (P1, P2): §9 krok 6c vylučuje po finále cigaretu porazenému a výpalné, Fajčiara nie. Priazeň tak môže doplniť päticu výkupného. Vplyv najviac 1 špak.</li>
+</ul>
+<h3>Neisté</h3>
+<ul>
+<li><span class="tag t-omyl">neoverené v kóde</span> Náhľad vyloženia Vandala neráta s otočením lokality (P6 K5: sľúbil Petelica +2, po ťahu ×1). Hráč to overil v partii, kód som nekontroloval.</li>
+<li><span class="tag t-omyl">neisté</span> Výstraha pečene „Cirhóza +2, −5 špakov“ (P5 K2), kde by sedelo −6. Text pochádza z <code>texty-hraca.ts</code> a číslo z jadra, môže ísť o bilanciu s iným efektom.</li>
+<li><span class="tag t-omyl">neisté</span> Odhad bitky nezaráta efekt Bitka vlastnej skrytej Záverečnej (P1 K3 a K4 o 2 menej). Bitka samotná sedela.</li>
+<li><span class="tag t-omyl">neisté</span> Nápoveda NA EX na Kočovníka „rátajú sa súperovi“ bez ohľadu na prevahu (P1).</li>
+<li><span class="tag t-omyl">chýba vo výpise</span> Klient AI hráča neukazuje obsah odhadzovacích balíčkov, ktoré sú verejné (P2), a spálenie Krokodílom vidno len v logu (P5). Hráč tým nemá to, čo človek na stole.</li>
+</ul>
+<details><summary>Omyly hráčov (hra správne)</summary><ul>
+<li>P5 Sabotér: Krokodíl nespálil Predavačku. Spálil, hráč to sám opravil.</li>
+<li>P5 Ekonóm: Kšeft Skladu neponúknutý. Odhadzovací balíček bol prázdny.</li>
+<li>P6 Klebetník: Rudo barter 1×. Server 2×.</li>
+<li>P1 Agresor: „2 z 4 červených“. Server 1 zo 4.</li>
+</ul></details>
+</section>
+
+<section id="sledovat">
+<h2>9. Čo sledovať v ďalšom playteste štýlov</h2>
+<h3>Otázky</h3>
+<ul>
+<li><b>Tvoja hlavná otázka, cielene:</b> vydrží čistý plán „všetko na finále“ proti súperovi, ktorý sa bije? Doteraz ho nikto nehral. Merať: či sa vôbec dôjde do finále, súčet Nakladačiek, červené súpera, výpalné, výplata finále a konečný stav.</li>
+<li>Je Agresor dominantný, keď súper nehladuje? Odvety P1 a P4. Merať 3 červené do K3 a kolo konca.</li>
+<li>Má porazený návrat? Merať pre každú partiu, kedy je výsledok jasný a súčet Nakladačiek K1–K3 (dnes P5 8, inak 10–21).</li>
+<li>Pomer 372 : 66 u Klebetníka: mení sa so zmenami?</li>
+<li>Vychovávateľka: koľko kariet útočník vo finále vyloží. Vymáhač: počet Rán a či rozhodol.</li>
+</ul>
+<h3>Odporúčané dvojice</h3>
+<p><b>Ekonóm–Agresor</b> (jediná vyrovnaná partia), <b>Sabotér–Agresor</b> (nový plán proti väzňom), <b>Ekonóm–Sabotér</b> (najtesnejší priebeh). Klebetníka hrať až po rozhodnutí o N21, dnešné partie by zopakovali výsledok. Každý zápas má teraz 2 partie na Zrejúcej, z toho 1 na v11.10.</p>
+<h3>Experiment pre každý štýl (do zadania)</h3>
+<ul>
+<li><b>Ekonóm:</b> „Čistý plán na finále: K1–K5 vykladaj len lacné karty, nedaj sa vtiahnuť do drahej bitky, šetri cigarety, barter a karty pre finále. Zapíš si každú Nakladačku, ktorú si súperovi dal.“ V partii proti Agresorovi aj Sabotérovi. Je to v charaktere; rozhodne tvoju otázku.</li>
+<li><b>Agresor:</b> „Hraj 3 červené do K3 proti súperovi s plnými poldeci a cigaretami. Skús zajať staršieho s najvyššími súperovými rečami (E34). Stopni, keď výhra stojí viac než 2 Cirhózy za kolo.“</li>
+<li><b>Sabotér:</b> „Proti Agresorovi hodiny väzňov z denníka: v K2 a K3 drž Nakladačku pod 5 × červené a nikdy nie 0 cigariet pred K3. Merať Nakladačku K2 a K3.“</li>
+<li><b>Klebetník:</b> „Prvá výhra bitky v K2 zámerne (denník, nápad 1) a zapíš si, či zastavila snehovú guľu.“ Ak Michal schváli N21: „Hádku nasmeruj na bitky, kde hrozí Nakladačka ≥ 6.“</li>
+</ul>
+</section>
+
+<section id="skusenosti">
+<h2>10. Spoločné skúsenosti</h2>
+<p>Zošit <code>tools/playtest/skusenosti/spolocne.md</code> ostal plný (15/15), <code>kontrola</code> končí „Zošity sedia“. Značku „zapísané“ majú všetky rozbory turnusu.</p>
+<ul>
+<li><b>Nová spolocne-32</b> Vzbura: priložiť k vonkajšej hrane (Ekonóm P3, Sabotér P5, §6; dôkazy 4 → 0, 3 : 6 → 7 : 5, 8 → 5).</li>
+<li><b>Vyradená spolocne-31</b> Záverečná na remízu telies: najslabšia podľa pravidla zošita (2 potvrdenia). Sabotér v P4 navyše ukázal, že zámok súpera len presmeruje na druhú stranu.</li>
+<li><b>Prepísaná a potvrdená spolocne-28</b> rozšírená na oba skoré konce a súperove hodiny: zlúčené návrhy Ekonóma P1, Klebetníka P2, Sabotéra P4 a Klebetníka P6 (+4).</li>
+<li><b>Potvrdené:</b> spolocne-21 NA EX na vnútornú hranu (+4, spresnené: prázdna ruka nestačí, súper si vyfajčí kartu, P6 K4 23 → 12), spolocne-30 Bzdocha (+2), spolocne-29 priazeň podľa scorecardu (+2), spolocne-5 Silná a neaktívny Hazard (+1).</li>
+<li><b>Znova overená spolocne-22</b> NA EX na kartu vedľa Silnej (v9 → v11, P4 K1: 10 Dlhov, −18 špakov).</li>
+<li><b>Nezapísané, úzke alebo do denníka štýlu:</b> aktivovať hranu proti zámku (1 partia), Kočovník a telá (1 partia, oba smery), poldeci na karte sa nedá doliať (pravidlo je v §6), Bzdocha na Vínnej pivnici, Pečať (Sabotérov denník), tuhé do posledného Zhromaždenia (Agresorov), Vypiť a 2 prvé karty (Ekonómov), Poľovník na súperovu stranu (Agresorov), Nástroj na konci Kostola (Klebetníkov).</li>
+</ul>
+</section>
+
+<section id="bot">
+<h2>11. Podklady pre bot-trénera</h2>
+<p class="mala">Stav v <code>packages/core/src/bot.ts</code> v tomto strome: povahy Štamgast, Rapavý Fero, Teta Gizka s váhami bitka, body, zdroje, kliatby; hádka váhu nemá. Bot vie výhru strachom v hodnote stavu, zajatia a schopnosti väzňov, barter podľa výkupného a limitu. V kóde nie sú výpalné, Finančná poradkyňa, Veterán ani výber vnútornej hrany ako vlastné pravidlá; časť z toho môže dobehnúť výpočet dopredu, to treba zistiť. Overenie: <code>node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast</code>, proti starej verzii s rovnakými semienkami.</p>
+<div class="grid">
+<article class="karta" style="--c:#d0563f"><h3>Agresor → Rapavý Fero</h3><ol>
+<li>Silná vedľa karty s neaktívnymi Ranami na vnútornej hrane a NA EX: P6 K1 11 : 0. V kóde je Silná len hodnotou karty. Merať tuhé v K1.</li>
+<li>Nakladačku podľa cesty: 3 červené do K3, potom väzni pri Nakladačke ≥ 15 alebo štvrtá červená. P4, P6. Bot má <code>CERVENE_PRED_VYHROU</code>, overiť, či plán nasleduje. Merať podiel skorých koncov.</li>
+<li>Tuhé karty do posledného Zhromaždenia a pas v 1. za cigarety: P4 K2, K4. Merať počet zasiahnutých kariet NA EX.</li>
+<li>Vychovávateľku držať do finále a použiť po prvej karte súpera. Bot ju dnes berie pri súperovej ruke ≥ 2 kedykoľvek (<code>bot.ts:1119</code>). Zmeň až po rozhodnutí o N23.</li>
+<li>Nerobiť: NA EX na Kočovníka bez prevahy 2 tiel (P1 K4 9 : 7 → 2 : 15).</li>
+</ol></article>
+<article class="karta" style="--c:#7cbf74"><h3>Sabotér → pre ľubovoľnú povahu s vysokými kliatbami</h3><ol>
+<li>NA EX na neaktívnu Pečeň alebo Poldeci na vnútornej hrane súpera: P2 K1 3 Cirhózy, P5 6 Cirhóz.</li>
+<li>Pečať: kartou bez párov zatvoriť vonkajšiu hranu po súperovom NA EX, aj odpoveďou: P4 K3, P5 K2.</li>
+<li>NA EX v poslednej Pitke kola: P5 K1, K4, K5. Merať, koľko NA EX zostane bez odpovede.</li>
+<li>Poradkyňa na súperove Hazardy: P5 F 4 Dlhy za Pitku. V bote nie je, dnes hodnota 0. Merať Dlhy súpera.</li>
+<li>Nerobiť: 0 cigariet pred K3 (P4 K3, K4 bez šenku).</li>
+</ol></article>
+<article class="karta" style="--c:#e9ad45"><h3>Ekonóm → Teta Gizka</h3><ol>
+<li>Barter skoro pri plnej ruke a Vínko K1 za 2 cigarety: P3 K1, P5. Bot barter počíta, overiť, či ho dá už v K1.</li>
+<li>Pas v 1. Zhromaždení s plnou rukou a limitom ≥ 4: P5 12 cigariet bez straty kariet.</li>
+<li>Záhradkár v línii pri mnohých Dlhoch a Fúrik so zdrojom Robôt: P3 exekúcia 0, P5 18 spálených Dlhov.</li>
+<li>Prvá karta na súperovu stranu a telá v jeho kraji: P3 F 7 : 5, P5 F 12 : 1 po prvom ťahu.</li>
+<li>Nerobiť: NA EX na vlastného Pijana pri neistej bitke (P5 K2, K4: 4 Cirhózy, obe prehrané).</li>
+</ol></article>
+<article class="karta" style="--c:#b48ad8"><h3>Klebetník → žiadna povaha</h3><ol>
+<li>Žiadna povaha nehrá hádku ako plán, chýba jej váha. Ak má hráč dostať súpera so štýlom hádky, je to prvý krok.</li>
+<li>Reči na 2 starších a dolievať po bodovaní: P6 1,39 špaku na bod.</li>
+<li>Bzdocha a zrážka tam, kde súper dal NA EX: P3 3×, P2 K4 2 : 5 → 12 : 5. Hľadal som <code>zrazka</code> v bote, slovo nie je.</li>
+<li>Nástroj na koniec línie na Kostole: P6 K4 hrozba 18 preč, mimo limitu.</li>
+<li>Nerobiť: Zviera na hranu proti držiteľovi Poľovníka (P6 K1, K4) a presvedčenie v K5 (P3 −11).</li>
+</ol></article>
+</div>
+</section>
+</main>
+<script>
+(function(){
+  var SN={"ekonom":"Ekonóm","agresor":"Agresor","klebetnik":"Klebetník","saboter":"Sabotér"};
+  var P=[{"id":"20261106-010635-1","kolo":1,"pravidla":"v11.6","a":"ekonom","b":"agresor","sa":38,"sb":59,"v":"agresor","k":"spaky"},{"id":"20261106-010635-2","kolo":1,"pravidla":"v11.6","a":"klebetnik","b":"saboter","sa":8,"sb":66,"v":"saboter","k":"spaky"},{"id":"20261106-015313-1","kolo":2,"pravidla":"v11.6","a":"ekonom","b":"klebetnik","sa":67,"sb":10,"v":"ekonom","k":"spaky"},{"id":"20261106-015313-2","kolo":2,"pravidla":"v11.6","a":"saboter","b":"agresor","sa":4,"sb":69,"v":"agresor","k":"spaky"},{"id":"20261106-024710-1","kolo":3,"pravidla":"v11.6","a":"ekonom","b":"saboter","sa":-12,"sb":30,"v":"saboter","k":"spaky"},{"id":"20261106-024710-2","kolo":3,"pravidla":"v11.6","a":"klebetnik","b":"agresor","sa":50,"sb":23,"v":"klebetnik","k":"spaky"},{"id":"20261106-123023-1","kolo":1,"pravidla":"v11.10","a":"agresor","b":"ekonom","sa":68,"sb":25,"v":"agresor","k":"spaky"},{"id":"20261106-123023-2","kolo":1,"pravidla":"v11.10","a":"saboter","b":"klebetnik","sa":120,"sb":22,"v":"saboter","k":"spaky"},{"id":"20261106-133718-1","kolo":2,"pravidla":"v11.10","a":"klebetnik","b":"ekonom","sa":3,"sb":202,"v":"ekonom","k":"spaky"},{"id":"20261106-133718-2","kolo":2,"pravidla":"v11.10","a":"agresor","b":"saboter","sa":60,"sb":2,"v":"agresor","k":"vazni"},{"id":"20261106-144117-1","kolo":3,"pravidla":"v11.10","a":"saboter","b":"ekonom","sa":45,"sb":17,"v":"saboter","k":"spaky"},{"id":"20261106-144117-2","kolo":3,"pravidla":"v11.10","a":"agresor","b":"klebetnik","sa":102,"sb":33,"v":"agresor","k":"strach"}];
+  var root=document.documentElement;root.classList.add('js');
+  function ukaz(i){document.querySelectorAll('.tabwrap[data-tab]').forEach(function(t){t.classList.toggle('vidno',t.dataset.tab===i);});}
+  ukaz('v1110');
+  document.querySelectorAll('.prepinac button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.prepinac button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+      ukaz(b.dataset.inst);
+      document.getElementById('detail').textContent=b.dataset.inst==='vypalena'?'Na Vypálenej sa playtest štýlov zatiaľ nehral.':'Klikni na bunku, ukážu sa partie.';
+    });
+  });
+  document.querySelectorAll('.bunka').forEach(function(b){
+    b.addEventListener('click',function(){
+      var ids=(b.dataset.ids||'').split(' ').filter(Boolean);
+      var d=document.getElementById('detail');
+      if(!ids.length){d.textContent='Žiadna partia.';return;}
+      d.innerHTML='';
+      var h=document.createElement('b');h.textContent=SN[b.dataset.r]+' proti '+SN[b.dataset.c]+': ';d.appendChild(h);
+      ids.forEach(function(id){
+        var p=P.filter(function(x){return x.id===id;})[0]; if(!p)return;
+        var s=document.createElement('span');
+        s.textContent=p.id+' (kolo '+p.kolo+', '+p.pravidla+'): '+SN[p.a]+' '+p.sa+' : '+p.sb+' '+SN[p.b]+' — vyhral '+SN[p.v]+'. ';
+        d.appendChild(s);
+      });
+    });
+  });
+  var f={druh:'',styl:'',odp:''};
+  function filtruj(){
+    var n=0;
+    document.querySelectorAll('.navrh').forEach(function(a){
+      var ok=(!f.druh||a.dataset.druh===f.druh)&&(!f.styl||(' '+a.dataset.styly+' ').indexOf(' '+f.styl+' ')>=0)&&(!f.odp||a.classList.contains('odporucany'));
+      a.classList.toggle('skryty',!ok); if(ok)n++;
+    });
+    document.getElementById('pocet-navrhov').textContent='Zobrazené návrhy: '+n+'.';
+  }
+  document.querySelectorAll('.filtre button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var k=b.dataset.f;
+      if(k==='odp'){f.odp=f.odp?'':'1';b.setAttribute('aria-pressed',f.odp?'true':'false');}
+      else{f[k]=b.dataset.v;document.querySelectorAll('.filtre button[data-f="'+k+'"]').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});}
+      filtruj();
+    });
+  });
+  filtruj();
+})();
+</script>
+</body>
+</html>

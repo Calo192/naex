@@ -82,6 +82,7 @@ Uzavreté E18–E33 (v11.10, partie 123023-2, 133718-1): hádka ako hlavný plá
 
 ## Čo štýlu chýba v hre
 - **Proti výhre strachom nemám ťah:** reči, hádka ani priazeň červený strach neznižujú; K4 25 : 68 a K5 koniec.
+> Sudca 2026-11-06: Znenie je presné, len zaradenie treba spresniť: červený strach naozaj neklesá (§10), ale výhra strachom platí len vo vyhratej bitke. Po 4 červených súpera je jediná obrana vyhrať každú ďalšiu bitku tuhým alebo Vierou. V 20261106-144117-2 to bolo K5 5 : 20, teda ďaleko. Čo chýba, je cesta ku K4, nie ťah v K5.
 - **Porazený platí:** moje karty víťazovi (K4 11, K5 13), voľba lokality, výpalné (9 cig.), vykladám prvá. Prázdna ruka K4 Z2 = 3 voľné karty.
 - **Hádka nedáva nič hneď a slabne;** najlepšie 1,39 špaka/bod proti 20–34 za bitku.
 - **Priazne sú často naprázdno:** Kmotor a Advokát bez Dlhov, Abstinent bez Absťákov.
