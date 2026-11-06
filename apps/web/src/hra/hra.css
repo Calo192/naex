@@ -2059,6 +2059,28 @@ button.dlzka-volba.aktivna {
 
 /* ---- lobby: súper proti počítaču ---------------------------------------------- */
 
+.vyber-bota-zaves {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, #000 60%, transparent);
+}
+
+/* Telefón na šírku má málo výšky: okno sa posúva, tlačidlá ostanú dostupné. */
+.vyber-bota-okno {
+  width: min(680px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  border-color: var(--akcent);
+}
+
+.vyber-bota-okno h2 {
+  margin: 0 0 12px;
+}
+
 .vyber-bota {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));

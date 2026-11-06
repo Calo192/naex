@@ -696,6 +696,9 @@ async function akcia(): Promise<void> {
         if (!b) return 'Na /hra nie je tlačidlo „Hrať proti počítaču“ — beží už partia? Pozri snímku (pozri).';
         if (b.disabled) return 'Tlačidlo „Hrať proti počítaču“ je nedostupné' + (b.title ? ': ' + b.title : '');
         b.click();
+        await new Promise((ok) => setTimeout(ok, 250));
+        // Okno s výberom súpera: predvolený Náhodný, potvrdí sa bez voľby.
+        document.querySelector('[data-hrat-bot-start]')?.click();
         return '';
       })()`);
       if (chyba !== "") throw new Error(chyba);
