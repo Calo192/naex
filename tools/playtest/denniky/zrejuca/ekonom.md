@@ -2,26 +2,37 @@
 
 Charakter štýlu: `../../styly.json` (kľúč `ekonom`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
-Pri každej položke je verzia pravidiel. Partie 1–3: v11.6. Partie 4–6: **v11.10** (sada v55, 5 lokalít + finále); čo v nich nebolo overené, ostáva neoverené.
+Pri každej položke je verzia pravidiel. Partie 1–3: v11.6. Partie 4–6: v11.10. Partia 7: **v11.11** (sada v55, 5 lokalít + finále; hádka platí, natáča víťaz hádky, reči krátia strach); čo nebolo overené na v11.11, ostáva neoverené.
 
-## Aktuálna stratégia (po partii 6: prehra 17 : 45 proti Sabotérovi, finále som vyhral 18 : 7; po partii 5: výhra 202 : 3 proti Klebetnej)
-Ekonóm vyhráva **limitom, telami a čistým balíčkom**. Finále vie vyplatiť 30+ špakov, ale **náskok 30+ nedobehne, ak má na krku Dlhy a Cirhózy**: p6 výhra finále +34, Exekútor −10, Cirhózy −18. Pred každým šenkom a ťahom počítaj, čo prinesie o dve kolá, a **kliatby rátaj ako špaky hneď**.
-1. **K1 obranca: Most otočený, ak má k hrane Pecku** (nikto nepodstrčí). **Vínko K1 za 2 cig (šenok + Dedičstvo) namiesto barteru za 5**, ak príde. Karta s Petelicou na Pecke hrany (Svokra) 5 tuhých, ale neaktívny Dlh na vnútornej je cieľ NA EX.
-2. **Pas ako príjem:** pri limite 4 a plnej ruke pas v Zhr. 1 dá 3–4 cig a karty ostanú do Zhr. 2 (p6 spolu 11 cig). Barter až vtedy, keď mi chýba limit, nie karty.
-3. **Dve prvé karty naraz (Vypiť + 2):** moja hrana aj jeho hrana v jednom ťahu, keď som útočník. Stojí poldeci (1 špak výkupného), súper nestihne ani jedno (p6 F 12 : 1).
-4. **Hrana lokality nie je plán, kým má súper Vandala:** proti Sabotérovi rátaj obe natočenia (p6 3× otočil). Radšej tuhé z kariet než z hrany; Robota×Robota na hrane je sen, ktorý Vandal zruší.
-5. **Telá v oboch krajoch:** prvá karta na JEHO stranu (Dvojčatá, Mäsiar na Posilnenie hrany ×2). Prehodenie prevahy zátkou bez párov (p6 F Svokra: 11 : 8 → 16 : 3).
-6. **Šenok po 1 karte za 1 cig**, 2 za 3 keď sú dve karty, ktoré súper berie. Súper berie moju najlepšiu, ak ju dám (Zámočník K3): buď beriem prvý, alebo dám dve rovnocenné.
-7. **NA EX:** na vlastnú kartu s neaktívnymi Ranami na **vnútornej** hrane (Dvojčatá, aj podstrčené: p6 K3 +4). **Pijan s pečeňou nie**, ak bitka neostane moja aj po jeho NA EX (p6 K2 a K4: +5 tuhých, 4 Cirhózy, obe bitky prehrané = −12 nazmar). Odpoveď zadarmo drž v ruke, spáruj ňou jeho neaktívnu Petelicu (p6 K2 15 → 9).
-8. **Pečeň a Dlhy:** VÝHĽAD PITKY pred ťahom; Manželka −1 najlepšie v línii od Zhr. 1. Cirhóza v ruke: priznaj v K5 alebo F (cena 1–2 tuhé, ušetrí 3). Vízia na čistenie sa neoplatí bez kariet s Víziou: **do balíčka si kúp aspoň jednu Víziu** (p6 žiadna, Cirhóz 6).
-9. **Roboty:** Fúrik + Kôň + karta; Dlhy nevadia len do výšky Robôt. Záhradkár. Pozor, Vedúcko mení susedné Roboty na Pecky (niekedy chcem: p6 F +4 tuhé). Súperova Poradkyňa podstrčená na moju stranu je Dlhová bomba vo finále (p6 F +6 za Pitku, −10): **Záhradkára si drž na finále, alebo karta za Poradkyňu s Odporom**.
-10. **Strach k lacným priazniam podľa scorecardu**; žltá je najlacnejší špak, červená pre výpalné. Priazeň dostávam, keď súper dvíha (p6 Abstinent 2 mi kryl Absťák, Advokát −1 špak každé kolo, Ohováračka +1 hádka, Fajčiar +1 cig).
-11. **Reči bodujú aj porazenému:** oranž. reči za 3 = 3 + 1 špak cez dve bitky (p6 K4, K5). Vždy lepšie než 3 žlté, ak výhra nie je istá.
-12. **Finále:** limit 4+, karta v línii = špak, tuhé 1:1. Pas v Zhr. 1, telá v jeho kraji, výpočet prevahy pri každom ťahu.
+## Aktuálna stratégia (po partii 7: výhra 145 : 44 proti Klebetnej na v11.11; predtým prehra 17 : 45 Sabotér)
+Ekonóm vyhráva **motorom a NA EX na uzamknuté akcie**. Finále dá 50+, ale rozhoduje sa v K2–K4. Pred každým ťahom počítaj, čo prinesie o dve kolá, kliatby rátaj ako špaky hneď.
+1. **NA EX na vlastnú kartu, ktorej neaktívne akcie zablokovala susedná karta:** odpoveď ich nespáruje. Manželka (Poh ×2 ×2 = 8 mäkké), Dvojčatá medzi dvoma kartami (3 Rany ×2 + Vidly = +12, K4 20:0). Súper, ktorý mi plní kraj telami, mi to sám stavia.
+2. **NA EX na súperovu kartu s neaktívnou pečeňou, keď nemá čo odpovedať** alebo je uzamknutá: Pijan 2 Cirhózy K1, 4 Cirhózy K5. Prázdna ruka súpera = pozri výhľad. Na Kare navyše pečeň z môjho NA EX ide jemu.
+3. **Telá:** v kraji s mojou prvou kartou stačí rovnosť, v kraji so súperovou treba o telo viac. Prvá karta do JEHO kraja pri silnej hrane (Zámočník Posilnenie × Petelica ×2). Posledný ťah rátam: limit 4 proti 3 ho dá mne. Kočovníka až keď je prevaha istá.
+4. **Reči tam, kde má súper strach** (K1 Starosta, Vychovávateľka): pri jeho výhre −3 jemu, +3 mne. Moje reči sa nekrátia, jeho môj strach krátia na 0: pred finále si rátaj, kde má reči.
+5. **Hádka len lacno:** NA EX, Viera, Silná + Viera. Natáčanie mi dá hranu do ďalšej bitky.
+6. **Šenok:** kupuj, len keď to dobratie do 3 nezhltne. Pri hrane s Cig: reťaz Silná, Strýko, Opatrovateľka = Cig 7–8 za Pitku (K5 22 cig). Vo finále každá karta = špak, karta za 1–1,5 cig.
+7. **Barter vždy, keď máš 5 cig** (K2, K5 3×): limit aj výkupné. Doliatie vo finále: 2 cig = 1 špak.
+> Sudca 2026-11-06: Server ráta 5 barterov: K2 1, K5 4 (20261106-173331-1, „K5 3×“ nesedí). K5 teda minul na barter 20 cigariet.
+8. **Pas s plnou rukou** pred finále: K5 Zhr 3 +4 cig a 5 kariet do finále. Vízie spália Cirhózu, keď je balíček tenký (K2 2×, K5).
+9. **Dlhy:** Poradkyňa na súpera. Svoje Dlhy platia Exekútora (K5 −11), ale Vymáhač ich mení na Rany (22 Dlhov = 11) a Advokát (jeho strach) a Kmotor ich zrážajú. Môj strach mi tieto priazne berie, rátaj to.
+10. **Vidly K1** (aj cez prehru na Cintoríne): +5 K2, +6 K4.
+11. **Proti Bzdoche:** NA EX na jej kartu urobí zrážku a Rany jej. NA EX na vlastnú kartu ju nachytá.
+12. **Finále:** Vila, ak mám cig (2 cig = reči, Veterinár +5). Poľovník na Zviera v mojom kraji. Pozor na pečeň: bez Manželky 3 za Pitku = Cirhóza, priznávaj hneď.
 > Sudca 2026-11-06: Súper (Sabotér) Cirhózy Víziami neodstránil: spálil len 2 (priebeh.log „Vízia: hráč 2 páli vrchnú kartu — Cirhóza“ 2×) a na konci zaplatil −24 za 8 nepriznaných. „Súper −24 → po Víziách 0“ neplatí; keby nepočítali Cirhózy obom, partia by skončila 30 : 54, nie 30 : 30 (20261106-024710-1, §14).
 > Sudca 2026-11-06: „Cirhózy vyrieši len Vízia“ nie je celkom pravda: Cirhózu, ktorá ti príde do ruky, smieš priznať (§11 Priznanie — na konci nestojí nič, súper má +1 tuhé v každej bitke) a Veterinár ako väzeň odhodí priznané aj Cirhózy v ruke (§10, schopnosť väzňa). Do ruky sa však Cirhóza z odhadzovacieho balíčka dostane až po jeho zamiešaní (§11) — pri balíčku 30 kariet v partii 3 sa to nestihlo.
 
 ## Nástroje
+- **NA EX na vlastnú uzamknutú kartu** — stav: **overený, najsilnejší** · p7 K1 8 mäkké, K3 4 mäkké, K4 +12 · v11.11
+- **NA EX na súperovu kartu s neaktívnou pečeňou bez odpovede** — stav: **overený** · p7 K1, K5 spolu 4 nepriznané = −12 · v11.11
+- **Reťaz Silná + Strýko + Opatrovateľka** — Cig 7–8 za Pitku, Vízia 3 · stav: sľubný · p7 K5 +22 cig · v11.11
+- **Poľovník podstrčený k jeho hrane** — spáli Zviera z môjho kraja · stav: sľubný · p7 F Mačka, hádka 5 → 2 · v11.11
+- **Vila vo finále** — 2 cig = stupeň rečí, kde mi jeho reči krátia strach +5, inak +2 · stav: **overený** · p7 F +9 za 6 cig · v11.11
+- **Zámočník Posilnenie na jeho hrane** — Petelica ×2 mne, kým držím prevahu · stav: sľubný · p7 K3 · v11.11
+- **Miňištrant k jeho hrane** — Viera ×2, Poldeci vráti poldeci · stav: sľubný · p7 K2 · v11.11
+- **Vymáhač pri Dlhoch** — odhad ráta aj Dlhy zo zvyšných Pitiek · stav: **overený** · p5, p7 K5 11 Rán · v11.11
+- **Vidly K1 / Cintorín prehra** — zadarmo · stav: **overený** · p7 · v11.11
+- **Reči k jeho strachu** — stav: **overený** · p7 K1 · v11.11
 - **Vínko K1 (2 cig)** — limit +1 natrvalo, plus viac cig z pasu; nedá sa dolievať · stav: **overený** · p6 limit 4:2–3 celú partiu · v11.10
 - **Pas pri vysokom limite s plnou rukou** — príjem bez straty kariet · stav: **overený** · p6 K1 +5, K4 +2, K5 +3, F +1 · v11.10
 - **Vypiť + 2 prvé karty (obe hrany)** — stav: sľubný · p6 K5, F 12 : 1 · v11.10
@@ -89,17 +100,22 @@ Uzavreté p5 (v11.10): E26 Most K1 áno, E27 výpalné doplnok a zajatie bez kr�
 ### E42 · Vypiť na dve prvé karty (nový)
 - výsledok: funguje vo finále (12 : 1 po prvom ťahu), v K5 3:6 po NA EX. · pravidlá: v11.10
 
+Uzavreté p6 (v11.10): E35 Sklad neoverené, E36 barter nie proti Sabotérovi, E37 Vínko áno, E38 pas ako príjem áno, E39 Vzbura čiastočne, E40 NA EX na podstrčené áno, E41 Zámočník na hrane nie (Vandal), E42 Vypiť na dve prvé áno.
+Uzavreté p7 (v11.11): E43 Cintorín K1 čiastočne, E44 lacná hádka áno, E45 Vila áno, E46 NA EX na uzamknuté áno, E47 NA EX na Pijana áno, E48 Miňištrant pri hrane sľubný, E49 pri Bzdoche len na vlastnú, E50 Kar áno, E51 reťaz cigariet áno, E52 Poľovník áno.
+
 ## Nápady na vyskúšanie
-1. **Vízia v balíčku od K2** (Bzdocha, Krištáľová guľa, Poradkyňa, Veštica): spáliť Cirhózu a Absťák, čistý balíček na finále. Bez toho 18 špakov dole.
-2. **Záhradkár držaný na finále:** p6 Exekútor −10; zakúpiť a nevyložiť do F.
-3. **Karta s Odporom proti podstrčenej Poradkyni** (Manželka R Odpor) alebo Policajtka: Dlhy mu zaniknú a súper dostane Dlhy.
-4. **Kultúrny dom ako obranca** pri limite 4:2: prehra stojí špaky len jemu. V p6 som zvolil Obecný úrad (zlý kvôli Vandalovi).
-5. **Vínko + Nealko:** obmedziť Cirhózy pri Pijanovi.
-6. **Krištáľová guľa + Vízie**; Zberný dvor K3 pri plnom odhadzovacom.
-7. **Presvedčenie** (červené reči + jeho vyšší strach); stojí 8–11 bodov hádky, p6 nikdy, Ekonóm hádku nemá.
-8. **Zajatie s krádežou**, Finančná poradkyňa pre mňa + Herňa vo finále, Tipér + Fúrik.
+1. **E46 proti Agresorovi a Sabotérovi:** pomáha aj, keď súper neplní môj kraj? Skús Dvojčatá a Manželku položiť za jeho kartu sám.
+2. **Záhradkár držaný na K5 a F:** p7 Exekútor −20 v K5 a F, nemal som ho.
+3. **Manželku držať do finále** proti pečeni, Veštica ju môže vziať.
+4. **Výhra strachom ako záložný plán:** p7 mohol byť koniec v K5; Ekonóm odmietol, zmeraj cenu.
+5. **Krištáľová guľa + Vízie**; Zberný dvor K3 pri plnom odhadzovacom.
+6. **Presvedčenie** (červené reči + jeho vyšší strach): p7 cenník 10–11, K4 s hádkou by šlo len v lacnom kole.
+7. **Kultúrny dom ako obranca** pri limite 4:2, Herňa s Poradkyňou vo finále.
 
 ## Čo štýlu chýba v hre
+- **Vlastný strach berie vlastné priazne:** p7 K4 Nakladačka 20 sa musela rozdeliť celá, Mara dostala 7 priazní a ja stratil Advokáta a Kmotra; K5 Exekútor −11. Investor by chcel Nakladačku odložiť.
+- **Vidly s Výtržníkom** (p7 K2 5 Rán = 10): pozri nezrovnalosť, možno neúmyselné.
+> Sudca 2026-11-06: Hra dáva +1 za každú Ranu Výtržníka, §7 píše „vždy ×1 … ani iný násobok karty“ a §16 Vidly Výtržníka nespomína. Bez rozhodnutia Michala to nie je overený nástroj. Pri ×1 by K2 skončilo 11 : 12 a bitku by mala súperka.
 - **Línia dáva špaky len víťazovi aj za moje karty:** p6 K1 7, K2 11, K4 11 súperovi, z toho moje karty 3, 6, 6; bitky prehrané o 1, 4, 1 tuhé. Investor s najviac kartami kŕmi súpera.
 - **Finále nedobehne 37:** p6 vyhrané 18 : 7 dalo 34, ale súper bez kliatob stojí; výplata je ohraničená kartami a tuhým, kliatby nie.
 - **Poradkyňa podstrčená vo finále:** 6 Dlhov za Pitku, −10 špakov, bez obrany okrem Záhradkára; silné, kým Herňa navyše nedáva protihodnotu.
@@ -117,3 +133,4 @@ Uzavreté p5 (v11.10): E26 Most K1 áno, E27 výpalné doplnok a zajatie bez kr�
 - 2026-11-06 · 20261106-133718-1 · proti Klebetnému (Klebetná Mara) · **výhra 202 : 3** (v11.10; všetky bitky moje, 109 : −4 pred finále) · finále a výkupné 93 z 202 (46 %) · E26–E34 · odbočky 0, prázdne fázy 0, nezrovnalostí 3.
 - 2026-11-06 · 20261106-144117-1 · proti Sabotérovi (Sabotér Zdeno) · **prehra 17 : 45** (v11.10; K3 a F moje, 11 : 48 pred finále, finále 18 : 7 = +31, výkupné +3, Exekútor −10, Cirhózy −18) · finále a výkupné ja 34 z 49 kladných (69 %), súper 1 z 49 (2 %) · E35–E42 · odbočky 0, prázdne fázy 1, nezrovnalostí 3.
 > Sudca 2026-11-06: Súperov podiel je 1 z 53 hrubých (2 %), nie z 49; 49 sú tvoje hrubé.
+- 2026-11-06 · 20261106-173331-1 · proti Klebetnému (Klebetná Mara) · **výhra 145 : 44** (v11.11; K1 ona, ostatné ja, 91 : 34 pred finále, finále 27:3 = +52, výkupné +8, Cirhózy −6) · finále a výkupné 69 zo 175 hrubých (39 %), súper 22 zo 67 (33 %) · krátenie −21, jej karty +26 · E43–E52 · odbočky 0, prázdne fázy 0, nezrovnalostí 4.
