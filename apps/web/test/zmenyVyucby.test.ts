@@ -38,9 +38,9 @@ const tah = (id: string) => {
 describe("zmeny na stole po ťahu bota či hry vo výučbe", () => {
   it("karta, ktorú Štamgast priložil, svieti na stole", () => {
     const { po, kluce } = tah("k-zh-bot1");
-    const vymahac = po.strany[1].find((pl) => pl.card.defId === "vymahac");
-    expect(vymahac).toBeDefined();
-    expect(kluce).toContain(`uid:${vymahac?.card.uid}`);
+    const kocovnik = po.strany[1].find((pl) => pl.card.defId === "kocovnik");
+    expect(kocovnik).toBeDefined();
+    expect(kluce).toContain(`uid:${kocovnik?.card.uid}`);
   });
 
   it("cigarety za kúpu Štamgasta svietia na jeho bare, za tvoju na tvojom", () => {

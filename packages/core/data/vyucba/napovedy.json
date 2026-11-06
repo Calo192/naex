@@ -86,7 +86,7 @@
       "uroven": "A",
       "spustac": {
         "kedy": "výhľad Pitky prvýkrát ukáže hráčovi Dlh zo stola",
-        "podmienka": "nahladPitky(view)[ja].zadlzenie > 0",
+        "podmienka": "nahladPitky(view)[ja]: zadlzenie + zadlzenieZoStola > 0",
         "jadro": ["packages/core/src/engine.ts:700 nahladPitky", "packages/core/src/engine.ts:873 prahyHraca (dlh)", "docs/PRAVIDLA.md §8 Hazard a Dlh"]
       },
       "melichar": "Akcia [Dlh] Hazard ti v Pitke dá Dlh, za každú akciu jeden. Koľko ich prinesie stôl, vidíš vopred v bare. O dlžobách niečo vieš, však? Napríklad o jednej cigarete.",
