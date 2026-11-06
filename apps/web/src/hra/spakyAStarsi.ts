@@ -36,7 +36,8 @@ export function spakyPodlaZdroja(view: Pick<ClientState, "nastenka">, p: PlayerI
     zoSekery: sucet((b) => (b.vitaz === p ? b.zoSekery : 0)),
     // Krádež pri zajatí (v11.4) je za staršieho — inak bar nedá popolník (spakyAStarsi.test).
     zaStarsich: sucet((b) => b.zaStarsich[p] + (b.kradez?.[p] ?? 0)),
-    zaFinale: (finale?.zaBitku[p] ?? 0) + (finale?.robota?.[p] ?? 0) + prebytok,
+    // Hádka vo finále platí špaky 1 : 1 (§14b) a na nástenke je zvlášť, inak bar nedá popolník.
+    zaFinale: (finale?.zaBitku[p] ?? 0) + (finale?.robota?.[p] ?? 0) + (finale?.hadkaSpaky?.[p] ?? 0) + prebytok,
     finale,
     prebytok,
     exekutor: -sucet((b) => b.exekutor[p]),

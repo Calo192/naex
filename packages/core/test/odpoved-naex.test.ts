@@ -28,8 +28,8 @@ function partia(seed: number): { readonly pred: GameState; readonly cmd: Command
 }
 
 describe("odpoveď na NA EX", () => {
-  // Semienka s odpoveďou lícom dole cez ťah (v11.1; sada s identitou kariet 2026-11-03: 4 a 22).
-  const tahy = [3, 4, 21, 22].flatMap(partia);
+  // Semienka s odpoveďou lícom dole cez ťah (v11.1; bot a sada 2026-11-06: 2, 7, 8, 39).
+  const tahy = [2, 7, 8, 39].flatMap(partia);
 
   it("každá odpoveď sa ohlási udalosťou — vynechanie hneď, karta lícom dole až pri otočení (v9.2)", () => {
     // Len samotná odpoveď (karta alebo „bez odpovede“) — počas odpovede smú prísť aj voľby efektov (Hasič).
