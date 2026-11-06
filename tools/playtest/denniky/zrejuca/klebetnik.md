@@ -4,26 +4,17 @@ Charakter štýlu: `../../styly.json` (kľúč `klebetnik`). Formát: `../README
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 
 ## Aktuálna stratégia
-(pravidlá v11.6, po 1. partii 2026-11-06; 1 partia = málo dát, ber ako pracovnú hypotézu)
+(pravidlá v11.6, po 2. partii 2026-11-06 (prehra 10 : 67 proti Ekonómovi); 2 partie = málo dát, ber ako pracovnú hypotézu)
 
-**Čo som sa naučil o ekonomike štýlu:** hádka sa dá vyhrať vysoko (K4 mäkké 2:0, K5 6:0, K2 3:0), ale platí sa až v ďalšej bitke ako reči
-(1 / 3 / 5 špakov za starším, potom klesne o stupeň, ≈1,5 špaka na bod hádky). Víťaz bitky berie naraz 5–13 špakov za karty v línii
-a 6–23 za starších (jeho strachy z Nakladačiek). Súper vyhral K1 a K2 tuhým (7, 14), jeho Nakladačky 7 + 10 + 4 sa premenili na strachy
-(2× červená, 2× oranžová, 5× žltá) a každá ďalšia jeho výhra mu vyplatila 6 → 15 → 23 špakov. **Prvé dve bitky rozhodujú — kto má po K2 strach u
-dvoch–troch starších na červenej, ten sníva o 15–23 špakoch za bitku.** Reči do toho nedosiahnu.
+**Čo viem o ekonomike štýlu:** hádka platí až o kolo neskôr (reči 1/3/5 špakov, ≈1,5 špaka na bod) a zdroj mäkkého je vzácny (v 4 z 6 kôl som nemal v ruke ani jednu kartu s Povera/Pohoršenie). Súper (aj Ekonóm, aj Sabotér) naproti tomu bral špaky každú bitku: 4–9 za karty v línii víťazovi + **Robota bez Dlhu = 1 špak za akciu** (Ekonóm: 5 v K1, 6 za bitku od K4). Po dvoch kolách mal 18 : −3 a už sa nedobehol. **Prvé dve bitky + Robota rozhodujú.**
 
 **Plán na ďalšiu partiu:**
-1. **K1 neprehrať veľkou Nakladačkou.** V K1 (úroveň 1, ~1 Pitka) postaviť tuhé aspoň na remízu: Viera (Manželka), Odpor, a hlavne mať
-   o 1 Občana/Zviera viac v *každom* kraji než súper (prvá karta pri lokalite vyhráva remízu). Cieľ: Nakladačka súpera ≤ 4 a žiadne zajatie.
-2. **Hádku stavať vždy, keď je lacná**, ale nie na kartách s Nástrojom na konci radu (viď nástroje). Kultúrny dom (porazený berie špak za každú svoju kartu)
-   je lokalita štýlu: hádka 6:0 + výhra 6:5 (K5).
-3. **Reči a strach na tom istom staršom**: malá Nakladačka (aj 2–3) dá strach na oranžovú a reči sa potom dvíhajú z oranžovej na červenú
-   za 3 (nie za 6) — Krčmárka K5: 3 body hádky → červená. Presvedčenie tam stálo 8 (3 + 5), mne chýbali 2 body.
-4. **Pečeňový/Poldeci motor súpera je smrteľný:** nedávať do radu Pijan/Veterán/Dvojčatá-like karty s Pečeň a Poldeci na hranách, ktoré sa dajú
-   zdvojiť NA EX (K2: 3 Pitky × 4–7 pečene = 7 Cirhóz = −21 špakov na konci, rozhodlo to partiu aj bez finále). **Nealko do Dedičstva hneď v K1/K2** (prah Cirhózy 5).
-5. **Posledné slovo má obranca:** odpoveď na NA EX lícom dole (druhý) otočila prevahu v K2 (Manželka: 4:14) aj finále (Pes: 3:4). Ako útočník
-   nechávať marža ≥2 v prevahe/tuhom alebo mať v ruke Občana na odpoveď; ako obranca (som druhý) hrať odpoveď na koniec, kde zmení prevahu.
-6. Cirhózy: nenechať ich zahltiť balík — Zberný dvor/Sklad Kšeft, Hasič, Vízia, Veterinár (väzeň) alebo priznať v poslednom Zhromaždení pred finále.
+1. **K1–K2 nesmiem prehrať ani remízou:** remízu v tuhom rozhoduje Absťák, potom **priznané Dlhy** — nikdy nemať Dlh pred súperom (Dievčina na vydaj a Miňištrantov spoj Dvojčatám mi v K1 dali Dlh; 0:0 stálo 9 špakov). Počítať **jeho skryté NA EX** (Pijan: +1 Rana za každé jeho NA EX; Svokra) — odhad ho neráta.
+2. **Cigarety nesmú klesnúť na 0:** draft (1/kartu) + fajčenie (Chuť 3–4 ho núti) ma dostali na 0 od K4; vo finále som nemohol drafovať a nemal som ruku. Pasovať (cigareta za nevyloženú kartu) a drafovať max 1 kartu.
+3. **Strach ide súperovi ako priazeň, ak má môj strach vyšší:** priazeň ide tomu, kto má NIŽŠÍ strach pri staršom. Nakladačku dávať do strachu len pri starších, kde je súperov strach vyšší (alebo k zajatiu), inak radšej nič (Nakladačka prepadne, ale server núti rozdeliť, čo sa dá — vtedy dať 1 bod tam, kde je dopad najmenší) — Veterinár červená dala súperovi Robota 3 (≈6 špakov/bitka) a Bitkára 1. **Reči (hádka) žiadnu daň nemajú:** reči idú nad môj strach, lacné sú pri starších, kde mám žltú (oranžová za 2).
+4. **Hádka:** Čierna mačka podstrčená ako PRVÁ na súperovu stranu k lokalite s jeho Posilnením/Pakt (Kostol K5: mäkké 5:0, reči 5 bodov, finále +4 aj ako porazený). Nástroje s mäkkými akciami len do Dedičstva (cena 1–3 cig. — drahé pri 0 cigaretách).
+5. **Obrana pred jeho NA EX na vlastné karty s neaktívnou Petelicou/Pečeňou** (K4 Hasič: Petelica ×2 = 6, K1 Pijan): zapárovať jeho neaktívnu akciu kartou (aktívna ho NA EX nezdvojí, zruší) alebo mať v ruke odpoveď (karta lícom dole). **S prázdnou rukou a bez cigariet som bezbranný.**
+6. Cirhózy: pri bitke s 3 Pitkami sa NA EX s Pečeňou zopakuje v každej Pitke (K4: +1 Cirhóza za Pitku). Pred NA EX na vlastnú kartu skontrolovať počet Pitiek a Pečeň; na konci hry −3 za kus (ja 3, on 5).
 
 ## Nástroje
 - **Pohoršenie na hrane lokality + Povera na prvej karte (Kultúrny dom, Jednota)** — 3–6 mäkkých za kolo · stav: overený · dôkaz: K5 Kultúrny dom Čierna mačka (Povera+hrana Pohoršenie=3) + Pijan (Pohoršenie+Povera) + Noviny (Povera) = mäkké 6:0; K4 Obecný úrad 2:0 · pravidlá: v11.6
@@ -40,6 +31,12 @@ dvoch–troch starších na červenej, ten sníva o 15–23 špakoch za bitku.**
 - **Strach+reči: Nakladačka 1–2 na starších bez rečí** — vyhrám bitku → malú Nakladačku dám tam, kde mi priazeň neschádza (Krčmárka: Abstinent) · stav: overený (K4–K5) · pravidlá: v11.6
 - **NA EX na kartu s Pečeň/Poldeci zdvojí pečeň jej majiteľovi** (K1 moja Miňištrant: +2 pečeň, Cirhóza) — pasca pre mňa i pre súpera · stav: overené poučenie, nie nástroj · pravidlá: v11.6
 - **Finančná poradkyňa / Policajtka (Odpor → zadĺženie súperovi)** — sabotér ich proti mne použil (K2/K3, každé kolo +1–2 Dlhy); ja ich nemal · stav: kandidát (vzať ich zo šenku skôr, než ich vezme súper) · pravidlá: v11.6
+- **Čierna mačka podstrčená ako prvá na súperovu stranu (hrana s Posilnením)** — mäkké 5:0 · stav: overený (1×) · dôkaz: K5 Kostol, mäkké 5:0 pri tuhom 1:0, reči 5 bodov → Starosta/Poštárka oranžová + Farár žltá (7 špakov nominálne, vo finále +4 aj pri prehre) · pravidlá: v11.6
+- **Reči vo finále bodujú aj porazenému** (+4 pri prehre 3:7) — stav: overený · dôkaz: finále Herňa · pravidlá: v11.6
+- **Strach z Nakladačky na starších (K3: Veterinár červená, Starosta žltá)** — **zavrhnutý:** priazeň ide súperovi (Robota 3 = +6 špakov za bitku, Bitkár +1); ja som z neho mal +6 len v K5 · pravidlá: v11.6
+- **Robota bez Dlhu = špak** — cudzí nástroj, ktorý mám brať: súper 5 špakov v K1 a po 6 za bitku (Zámočník, Fúrik, priazeň Veterinára). Kandidát: Veterinár/Robota karty, Obecný úrad/Družstvo (Robota ×2 hrany) pre klebetníka · pravidlá: v11.6
+- **Dievčina na vydaj (Prehra: súper +Dlhy)** — pri prehre dá víťazovi 2 Dlhy (overené K1); ale súperov NA EX na ňu mi dal Dlh +2 (neaktívne Dlh ×2) · stav: podmienený (len keď vyhrávam) · pravidlá: v11.6
+- **Veľmi smútiaca vdova (Konflikt: odhodiť z balíčka za každého môjho Chlapa pri nej)** — súper ju podstrčil na môj kraj (K4: 2 karty z balíčka) · stav: cudzí nástroj, nevyskúšaný proti mne
 - **Prehra bitky naschvál** — neskúšané · stav: kandidát (len na Kultúrnom dome, kde porazený berie špaky)
 - **Presvedčenie (reči červená + 5)** — stav: nedosiahnuté; stálo 8–11, mal som 6 · podmienený (potrebuje hádku ≥ 8 alebo strach oranžový + hádku 8)
 - **Predsedova vila / Kapybara / Horoskop (Dedičstvo)** — neskúšané naplno (Horoskop v ruke K5–K6, 2 cigarety nebolo) · stav: kandidát
@@ -66,7 +63,19 @@ dvoch–troch starších na červenej, ten sníva o 15–23 špakoch za bitku.**
 ### E7 · Kultúrny dom ako lokalita štýlu
 - výsledok: sľubné (K5: mäkké 6:0 a tuhé 6:5); chýba pozorovanie prehry (+3 špaky)
 
+### E8 · Strach z Nakladačky na staršom (K3)
+- partia: 20261106-015313-1 (Ekonóm) · výsledok: **zavrhnuté** — priazeň ide súperovi (Robota 3 + Bitkár 1 do konca partie)
+### E9 · Čierna mačka ako prvá na súperovu stranu (K5)
+- výsledok: **funguje** — mäkké 5:0; reči 5 bodov (7 špakov nominálne, vo finále +4); chýba zdroj mäkkého v ruke v K1–K4
+### E10 · Sabotáž NA EX na jeho Pijan/Zámočník (K1, K6)
+- výsledok: čiastočne — jeho Cirhózy 5 (−15) proti mojim 3 (−9); súper robil to isté (NA EX na Dievčinu +2 Dlh mne, na vlastný Hasič Petelica ×2)
+### E11 · Dvojčatá podstrčené na súperovu stranu pre prevahu 2 (K2, K4)
+- výsledok: podmienený — vzali mu hranu Robota (+3) až kým nepoložil 3 karty / neurobil NA EX
+
 ## Nápady na vyskúšanie
+0. **Robota pre klebetníka:** karta/lokalita s Robota (Obecný úrad, Družstvo, Zámočník, Fúrik, Veterinár) = špak bez bitky; vyskúšať a porovnať s hádkou.
+0b. **Cigarety šetriť:** nedrafovať, pasovať a dopĺňať ruku Kšeftom (Zberný dvor K2) alebo Predavačkou; cieľ: ≥3 cigarety vo finále (výkupné + draft).
+0c. **Kapybara** proti jeho rečiam (Ekonóm ju vzal do finále) a **Predsedova vila** (reči +1 za 2 cig.) stále neskúšané.
 1. **Remíza/výhra v K1 cez Viera + Odpor** (Manželka, Miňištrant, Milujúca…) a malú Nakladačku — aby súper nezačal reťazou 7 → 10 → 4.
 2. **Horoskop + Čierna mačka + Noviny + Telefón** všetky v Dedičstve/rade bez Nástroja na konci: cieľ hádka ≥ 8, potom presvedčiť Krčmárku (strach oranžová, reči červená 3 + 5).
 3. **Kapybara** (zníži súperove reči) a **Predsedova vila** (Kšeft: reči +1 za 2 cig) — nevyskúšané.
@@ -76,6 +85,9 @@ dvoch–troch starších na červenej, ten sníva o 15–23 špakoch za bitku.**
 7. Priznať Cirhózy v poslednom Zhromaždení pred finále (cena +1 tuhé za kus súperovi), nie ich nechať −3 špaky.
 
 ## Čo štýlu chýba v hre
+- **Mäkký zdroj v ruke:** v 4 z 6 kôl žiadna karta s Povera/Pohoršenie; draft ponúka tuhé, mäkké sú v balíčku ≈ 6–8 z 50.
+- **Okamžitá odmena hádky:** 5:0 v K5 dalo +0 špakov hneď (+4 vo finále).
+- **Obrana pred Robotou:** súper berie 4–6 špakov za bitku z Robót bez Dlhu, klebetník nemá protinástroj.
 - **Žiadna okamžitá odmena za hádku:** hádka 6:0 = 9 špakov o kolo neskôr; víťaz bitky berie 5–13 za karty + 6–23 za starších. Mäkké sa nedajú premeniť na stratu súpera (Viera ich ruší 1:1, ale súper mäkké nemá — sabotér ich zruší NA EX alebo Odporom).
 - **Presvedčenie je nedosiahnuteľné** (8–11 bodov hádky; typická hádka 2–6).
 - **Mäkké akcie sú na Nástrojoch** (Telefón, Noviny, Horoskop) a Nástroj pracuje pre suseda: súper si ho vezme (bol to ich Pohoršenie v K1, K3).
@@ -84,3 +96,4 @@ dvoch–troch starších na červenej, ten sníva o 15–23 špakoch za bitku.**
 
 ## Partie
 - 2026-11-06 · 20261106-010635-2 · proti Sabotér Zdeno · prehra 8 : 66 (pred finále 18 : 39; finále +27 súper) · skúšané: Nealko Dedičstvo, Kultúrny dom, reťaz mäkkých (neúspech s Telefónom), NA EX sabotáž, Zberný dvor; 7 Cirhóz −21 rozhodlo dôsledok
+- 2026-11-06 · 20261106-015313-1 · proti Ekonóm Ďuro · prehra 10 : 67 (pred finále 13 : 48) · skúšané: Čierna mačka podstrčená (funguje), strach z Nakladačky (zavrhnuté), sabotáž NA EX, Dvojčatá na súperovu stranu; cigarety 0 od K4, Cirhózy 3 ja / 5 on
