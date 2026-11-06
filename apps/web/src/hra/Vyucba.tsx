@@ -398,7 +398,6 @@ export function VyucbaStol({
   useEffect(() => {
     if (krok === null) return;
     const kluceKroku = krok.zvyraznit;
-    const typ = krok.ocakava?.type ?? "";
     const t = setTimeout(() => {
       if (!krokSoStarsimi(krok) && !poBitke) document.querySelector<HTMLElement>('[data-vyucba-prvok="starsi"][aria-pressed="true"]')?.click();
       // Stupnice strachu sú na kartách starších — línia starších sa otvorí sama (playtest: krok 38 svietil Body).
