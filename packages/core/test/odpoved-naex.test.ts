@@ -28,16 +28,19 @@ function partia(seed: number): { readonly pred: GameState; readonly cmd: Command
 }
 
 describe("odpoveď na NA EX", () => {
-  // Semienka s odpoveďou lícom dole cez ťah (v11.1; sada s identitou kariet 2026-11-03: 4 a 22).
-  const tahy = [3, 4, 21, 22].flatMap(partia);
+  // Semienka s odpoveďou lícom dole cez ťah (v11.1; bot po dobratí do ruky, v11.9: 7 a 8).
+  const partie = [3, 7, 8, 21].map(partia);
+  const tahy = partie.flat();
 
   it("každá odpoveď sa ohlási udalosťou — vynechanie hneď, karta lícom dole až pri otočení (v9.2)", () => {
     // Len samotná odpoveď (karta alebo „bez odpovede“) — počas odpovede smú prísť aj voľby efektov (Hasič).
     const reakcie = tahy.filter((t) => t.pred.faza === "pitka" && t.pred.pitkaStav?.reakcia != null && (t.cmd.type === "place" || t.cmd.type === "bezReakcie"));
     expect(reakcie.length).toBeGreaterThan(0);
-    const otocene = new Map(
-      tahy.flatMap((t) => t.events.flatMap((e) => (e.type === "odpovedNaNaex" && e.uid !== null ? [[e.uid, e] as const] : []))),
-    );
+    // Karty sa párujú v rámci jednej partie: uid sa medzi partiami opakujú.
+    const otocenePre = (t: (typeof tahy)[number]): ReadonlyMap<number, Extract<Event, { type: "odpovedNaNaex" }>> =>
+      new Map(
+        (partie.find((p) => p.includes(t)) ?? []).flatMap((x) => x.events.flatMap((e) => (e.type === "odpovedNaNaex" && e.uid !== null ? [[e.uid, e] as const] : []))),
+      );
     let licomDole = 0;
     for (const t of reakcie) {
       const q = t.pred.pitkaStav?.reakcia as 0 | 1;
@@ -51,7 +54,7 @@ describe("odpoveď na NA EX", () => {
       if (t.cmd.type !== "place") continue;
       const uid = t.cmd.uid;
       // Karta sa ukáže pri otočení: z ruky toho, kto odpovedal, a rovnako pre oboch hráčov.
-      const o = otocene.get(uid);
+      const o = otocenePre(t).get(uid);
       expect(o?.hrac).toBe(q);
       expect(t.pred.hraci[q].ruka.find((k) => k.uid === uid)?.defId).toBe(o?.defId);
       if (!t.events.some((e) => e.type === "odpovedNaNaex" && e.uid === uid)) licomDole++;
