@@ -1,7 +1,8 @@
 // Čísla pultu a tabule ty | súper na šírku telefónu (PultHraca.tsx) — čisté funkcie bez DOM.
 
-import type { ClientState, PlayerId, StavZavislosti } from "@naex/core";
-import { KONSTANTY, cenaFajceniaHraca, limitZhromazdenia, spakov } from "@naex/core";
+import type { ClientState, PlayerId, RiadokPrisunu, StavZavislosti } from "@naex/core";
+import { KONSTANTY, NAZVY_ZDROJOV_PRISUNU, cenaFajceniaHraca, limitZhromazdenia, riadkyCakajuceho, spakov, sumaPrisunu } from "@naex/core";
+import type { PrisunDlazdice } from "./PeciatkaCigariet.tsx";
 import type { SpakyTeraz } from "@naex/core";
 
 /** Prahy hráča (prahyHraca) — to, čo z nich pult a tabuľa ukazujú. */
@@ -198,7 +199,20 @@ export interface DetailZdroja {
   readonly riadky: readonly (readonly [string, string])[];
 }
 
-export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean): DetailZdroja {
+/** Rozpis prísunu do okna Cigariet: to isté, čo na počítači ukazuje nápoveda dlaždice. */
+function riadkyPrisunu(prisun: PrisunDlazdice | undefined): readonly (readonly [string, string])[] {
+  if (prisun === undefined) return [];
+  const riadky = (rr: readonly RiadokPrisunu[], kedy: string) => rr.map((r) => [`${kedy} ${NAZVY_ZDROJOV_PRISUNU[r.zdroj]}`, sumaPrisunu(r.suma)] as const);
+  const { cakajuci, nedavny, cigarety } = prisun;
+  const pride = cakajuci === null ? [] : riadkyCakajuceho(cakajuci);
+  return [
+    ...riadky(pride, "príde:"),
+    ...(pride.length > 0 && cakajuci !== null ? [["po Pitke", `${cigarety} ▸ ${cigarety + cakajuci.zisk}`] as const] : []),
+    ...(nedavny === null ? [] : riadky(nedavny.riadky, "naposledy:")),
+  ];
+}
+
+export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean, prisun?: PrisunDlazdice): DetailZdroja {
   const kto = ja ? "Máš" : "Má";
   switch (zdroj) {
     case "karty":
@@ -262,6 +276,7 @@ export function detailZdroja(zdroj: ZdrojStlpca, c: CislaHraca, ja: boolean): De
         text: `Platíš nimi šenok (1 karta = ${KONSTANTY.CENA_SENKU[1] ?? 1}, 2 karty = ${KONSTANTY.CENA_SENKU[2] ?? 3}) a Dedičstvo; v Pitke fajčíš: karta za 1, ďalšia v tej istej Pitke za 2, potom 3… Na konci hry každých ${KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak.`,
         riadky: [
           ["cigarety", String(c.cigarety)],
+          ...riadkyPrisunu(prisun),
           ["fajčenie teraz", `${c.cenaFajcenia} cig.`],
           ["doliať poldeci", `${KONSTANTY.REFILL_CENA} cig.`],
           ["nový poldeci", `${c.cenaBarteru} cig.`],

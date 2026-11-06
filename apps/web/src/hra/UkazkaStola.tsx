@@ -59,6 +59,10 @@
 //                  pri vykladaní (štítok v ruke po kliku na +, miesto na stole pri ťahaní)
 //   &stop=pecen-sused  ako pecen, ale do ruky dostane Silnú ženu a na koniec jeho strany príde Pijan
 //                  v rozložení, v ktorom ona pridá Cirhózu — výstraha pri karte bez vlastnej Pečene
+//   &stop=cigarety-pride  Pitka, v ktorej obom ešte príde prísun cigariet — čiarkované pečiatky na dlaždiciach
+//   &stop=cigarety-dopad  ťah, po ktorom sa obom pohnú cigarety (výpalné, porazený…) — po načítaní sa dohrá
+//                  a pečiatky krátko dopadnú; &zap=1: niekomu záporný rozdiel; &zdroj=pas: daný zdroj
+//                  prísunu (NAZVY_ZDROJOV_PRISUNU); &i=k: k-tý taký ťah
 //   &avatar=a,b    fotky hráča a súpera (id médií) namiesto iniciálok
 //   &bot=0         súper po načítaní netiahne (snímka Pitky, v ktorej hrajú obaja naraz)
 //   &zerava=1      žeravé ikony (Michal 2026-10-30): hráč ?ja má v Dedičstve Pušku a Vidly, súper
@@ -73,7 +77,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CardInstance, Command, Event, GameData, GameState, HistoriaLokalit, LokalitaVHistorii, PlacedCard, PlayerId, StavMomentov, Stupen, TypMomentu, Vazen } from "@naex/core";
-import { MOMENTY, NOVE_MOMENTY, apply, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, sPrilozenou, setupGame, tahBota, viewFor, vystrahaPecene, opponentOf } from "@naex/core";
+import { MOMENTY, NOVE_MOMENTY, apply, applySPrisunom, nahladPitky, prisunZUdalosti, eventsFor, lokalityPreKlienta, novaHistoriaLokalit, zapisDoHistorie, momenty, moznostiNaex, mozeHrat, naTahu, obmedzMomenty, rngInt, rngSeed, sPrilozenou, setupGame, tahBota, viewFor, vystrahaPecene, opponentOf } from "@naex/core";
 import { useSada } from "../lib/sada.tsx";
 import { useHerneData } from "../stranky/Ukazky.tsx";
 import { HernaPlocha } from "./HernaPlocha.tsx";
@@ -318,7 +322,7 @@ function sPresvedcenim(s: GameState, ja: PlayerId, druhyPresvedceny: boolean): G
 
 function odohraj(data: GameData): Odohrane {
   const seed = Number(q().get("seed") ?? "8");
-  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
+  const hlada = ["zaverecna", "reci", "reci-super", "hadka", "hadka-super", "pohorsenie", "vizia", "vestica", "cigarety-pride", "cigarety-dopad"].includes(q().get("stop") ?? "") || (q().get("stop") === "suhrn" && q().get("rucne") !== null);
   if (!hlada) return odohrajSeed(data, seed).odohrane;
   // Súperova Záverečná, hádka určitého víťaza, Vízia ani Veštica nepadnú v každej partii — skúša sa od zadaného seedu ďalej.
   for (let pokus = 0; pokus < 40; pokus++) {
@@ -345,6 +349,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
   let hadok = 0;
   let hadokSupera = 0;
   let autopasov = 0;
+  let dopadov = 0;
   const autopasKto = p.get("kto") === "super" ? opponentOf(ja) : ja;
   const exekucia = p.get("exekutor") === "1";
   const hasic = p.get("hasic") === "1" || p.get("hasic") === "prazdny" ? p.get("hasic") : null;
@@ -417,6 +422,8 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     // Bez Veštice v partii: prvá prehratá bitka od 2. kola (balíčky už nie sú prázdne) sa na ukážku prepne na ňu.
     if (stop === "vestica" && p.get("vynut") !== "0" && s.kolo >= 2 && s.faza === "bitka" && s.bitkaStav?.krok === "prebytok" && s.bitkaStav.caka === opponentOf(ja))
       return najdene({ zaciatok: sVesticou(s, ja), dohraj: [] });
+    if (stop === "cigarety-pride" && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && s.vizia === null && nahladPitky(data, s).every((n) => n.cigarety.zisk > 0))
+      return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "pitka" && s.kolo >= 2 && s.faza === "pitka" && mozeHrat(s, ja) && s.pitkaStav?.hotovy[opponentOf(ja)] === false && s.pitkaStav.reakcia === null && s.vizia === null && s.hraci[ja].cigarety >= 1)
       return najdene({ zaciatok: s, dohraj: [] });
     if (stop === "kseft" && s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) {
@@ -437,7 +444,18 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     const t = tahy(data, s, rng, n);
     if (t === null) break;
     rng = t.rng;
-    const { state: po, events } = apply(data, s, t.cmd, t.kto);
+    const { state: po, events } = applySPrisunom(data, s, t.cmd, t.kto);
+    if (stop === "cigarety-dopad") {
+      const [a, b] = prisunZUdalosti(events);
+      const zdroj = p.get("zdroj");
+      const trafil =
+        zdroj !== null
+          ? [a, b].some((x) => x?.riadky.some((r) => r.zdroj === zdroj) === true)
+          : p.get("zap") === "1"
+            ? (a?.suma ?? 0) < 0 || (b?.suma ?? 0) < 0
+            : (a?.suma ?? 0) !== 0 && (b?.suma ?? 0) !== 0;
+      if (trafil && dopadov++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
+    }
     const bitka = events.some((e) => e.type === "bitkaVysledok");
     const autopas = po.faza === "zhromazdenie" && events.some((e) => e.type === "autoPas" && e.hrac === autopasKto);
     if (stop === "autopas" && autopas && autopasov++ === i) return najdene({ zaciatok: s, dohraj: [{ stav: s, cmd: t.cmd, kto: t.kto }] });
@@ -512,7 +530,7 @@ function odohrajSeed(data: GameData, seed: number): { readonly odohrane: Odohran
     historia = zapisDoHistorie(historia, s, t.cmd, t.kto, po, events);
     s = po;
   }
-  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
+  return { odohrane: { zaciatok: s, dohraj: [], historia }, najdene: !["zaverecna", "vizia", "vestica", "cigarety-pride", "cigarety-dopad"].includes(stop) && !(stop === "suhrn" && p.get("rucne") !== null) };
 }
 
 export function UkazkaStola() {
@@ -551,7 +569,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   const [suhrn, setSuhrn] = useState(false);
   const pouzi = (s: GameState, cmd: Command, kto: PlayerId): GameState => {
     try {
-      const vysledok = apply(data, s, cmd, kto);
+      const vysledok = applySPrisunom(data, s, cmd, kto);
       const state = vysledok.state;
       const events = vysledok.events;
       historia.current = zapisDoHistorie(historia.current, s, cmd, kto, state, events);

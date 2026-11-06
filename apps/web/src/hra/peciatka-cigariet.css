@@ -1,0 +1,150 @@
+/* Pečiatka na dlaždici Cigarety: dopadne na pravý horný roh, nič iné v bare sa nepohne. */
+.zdroj-cigarety,
+.stlpec-cigarety {
+  position: relative;
+}
+
+/* Roh pečiatky trčí von z dlaždice — dlaždica ju nesmie orezať. */
+.doska .zdroj-cigarety {
+  overflow: visible;
+}
+
+.peciatka-cigariet {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  /* Nad pásom hráčov (jbar, 45), ktorý leží hneď nad barom súpera; pod stmavením výučby (60). */
+  z-index: 46;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 5px;
+  font: 800 1rem/1.2 var(--nadpis);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--zelena);
+  background: color-mix(in srgb, var(--plocha) 88%, transparent);
+  border: 2px solid currentColor;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 45%, transparent);
+  transform: rotate(-7deg);
+  /* Nápoveda dlaždice ide cez pečiatku. */
+  pointer-events: none;
+  animation: peciatka-cigariet-dopad 0.32s cubic-bezier(0.2, 1.5, 0.5, 1) both;
+}
+
+.peciatka-cigariet.zaporna {
+  color: var(--cervena-text);
+}
+
+.peciatka-cigariet.cakajuca {
+  border-style: dashed;
+  box-shadow: none;
+  opacity: 0.85;
+}
+
+/* Prísun, ktorý už je na účte: krátky prechod, potom zmizne (časovač v usePrisunCigariet). */
+.peciatka-cigariet.dopad {
+  animation:
+    peciatka-cigariet-dopad 0.32s cubic-bezier(0.2, 1.5, 0.5, 1) both,
+    peciatka-cigariet-zhasni 0.35s ease-in 1.45s forwards;
+}
+
+.peciatka-cigariet svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+
+/* Nízky bar: číslo stojí v rade s nadpisom priamo pod rohom — pečiatka je menšia a vyššie, nech ho nezakryje. */
+@media (min-width: 761px) and (max-height: 919px) {
+  .peciatka-cigariet {
+    top: -13px;
+    padding: 0 3px;
+    font-size: 0.85rem;
+    line-height: 1.1;
+  }
+
+  .peciatka-cigariet svg {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+.stlpec-cigarety .peciatka-cigariet {
+  top: -4px;
+  right: -3px;
+  gap: 1px;
+  padding: 0 2px;
+  font-size: 0.68rem;
+  border-width: 1.5px;
+}
+
+.stlpec-cigarety .peciatka-cigariet svg {
+  width: 9px;
+  height: 9px;
+}
+
+@keyframes peciatka-cigariet-dopad {
+  from {
+    opacity: 0;
+    transform: rotate(-7deg) scale(2.6);
+  }
+}
+
+@keyframes peciatka-cigariet-zhasni {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peciatka-cigariet,
+  .peciatka-cigariet.dopad {
+    animation: none;
+  }
+}
+
+/* Rozpis v nápovede dlaždice. */
+.rozpis-cigariet {
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Nápoveda má svetlý papier v každej schéme (karta.css), tmavé odtiene sa miešajú z farieb schémy. */
+.rozpis-cigariet em {
+  display: block;
+  margin-top: 4px;
+  font-style: normal;
+  font-size: 13px;
+  color: color-mix(in srgb, currentColor 65%, transparent);
+}
+
+.rozpis-cigariet em:first-child {
+  margin-top: 0;
+}
+
+.rozpis-cigariet-riadok {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.rozpis-cigariet-riadok b {
+  font-variant-numeric: tabular-nums;
+}
+
+.rozpis-cigariet-riadok .plus {
+  color: color-mix(in srgb, var(--zelena) 55%, #000);
+}
+
+.rozpis-cigariet-riadok .minus {
+  color: color-mix(in srgb, var(--cervena-text) 70%, #000);
+}
+
+.rozpis-cigariet-riadok.spolu {
+  margin-top: 2px;
+  padding-top: 2px;
+  border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  font-weight: 700;
+}

@@ -10,6 +10,7 @@ import { Avatar } from "../komponenty.tsx";
 import { IkonaAbstak, IkonaCigareta, IkonaKarty, IkonaPoldeci, type KartyDlazdica } from "./Panely.tsx";
 import { IkonaPriazne } from "./IkonaPriazne.tsx";
 import { IkonaMrezi } from "./ikonyZdrojov.tsx";
+import { PeciatkaCigariet, type PrisunDlazdice } from "./PeciatkaCigariet.tsx";
 import { IkonaSpaku } from "./IkonaSpaku.tsx";
 import type { HracInfo } from "./useHra.ts";
 import { detailZdroja, riadkyTabule, ukazZadlzenie, type CislaHraca, type ZdrojStlpca } from "./tabula.ts";
@@ -40,6 +41,8 @@ export interface StlpecHracaProps {
   readonly starsi: { readonly stlacene: boolean; readonly prepni: () => void };
   /** Ťuk na hráča: tabuľa porovnania ty | súper. */
   readonly tabula: { readonly otvorena: boolean; readonly prepni: () => void };
+  /** Pečiatka v rohu zdroja Cigarety. */
+  readonly prisunCigariet?: PrisunDlazdice;
   /** Pivnica (len vlastný stĺpec): väzni a ich schopnosti v okne; svieti, keď schopnosť väzňa teraz ide (v11.2). */
   readonly pivnica?: { readonly vazni: number; readonly naVyhru: number; readonly dostupna: boolean; readonly otvor: () => void };
 }
@@ -48,14 +51,15 @@ export interface StlpecHracaProps {
  * Úzky zvislý stĺpec hráča (Michal 2026-10-31, po skúške na telefóne): ty vľavo, súper vpravo —
  * ako kraje línie. Len ikona a číslo každého zdroja; ťuk otvorí okno s podrobnosťami.
  */
-export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail, starsi, tabula, pivnica }: StlpecHracaProps) {
+export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail, starsi, tabula, pivnica, prisunCigariet }: StlpecHracaProps) {
   const ja = p === view.ja;
   const utoci = view.utocnik === p;
   const c = karty.ciel;
-  const cip = (zdroj: ZdrojStlpca, ikona: ReactNode, n: ReactNode, popis: string, zle = false): ReactNode => (
+  const cip = (zdroj: ZdrojStlpca, ikona: ReactNode, n: ReactNode, popis: string, zle = false, roh?: ReactNode): ReactNode => (
     <button type="button" className={`stlpec-cip stlpec-${zdroj}${zle ? " zle" : ""}`} aria-label={popis} title={popis} onClick={() => detail(zdroj)}>
       {ikona}
       <b>{n}</b>
+      {roh}
     </button>
   );
   return (
@@ -81,7 +85,7 @@ export function StlpecHraca({ view, p, info, meno, cisla, naTahu, karty, detail,
       {cisla.chut !== null && cip("chut", <IkonaAbstak />, cisla.chut, `Chuť ${cisla.chut}, neresti dnes ${cisla.nerestiDnes}`, cisla.chutHrozi)}
       {cip("pecen", <Pikto kluc="PoškodeniePečene" />, cisla.pecen, `Pečeň ${cisla.pecen} z ${cisla.prahPecene}`, cisla.pecen >= cisla.prahPecene - 1)}
       {cip("dlhy", <Pikto kluc="Dlh" />, cisla.dlhy, `Dlhy ${cisla.dlhy}${ukazZadlzenie(cisla.zadlzenie, cisla.prahDlhu) ? `, zadĺženie ${cisla.zadlzenie} z ${cisla.prahDlhu}` : ""}`, cisla.exekucia > 0)}
-      {cip("cigarety", <IkonaCigareta />, cisla.cigarety, `Cigarety ${cisla.cigarety}`)}
+      {cip("cigarety", <IkonaCigareta />, cisla.cigarety, `Cigarety ${cisla.cigarety}`, false, prisunCigariet !== undefined && <PeciatkaCigariet prisun={prisunCigariet} />)}
       {cip("spaky", <IkonaSpaku />, cisla.spaky, `Špaky ${cisla.spaky}`)}
       <button type="button" className={`stlpec-cip stlpec-starsi${starsi.stlacene ? " stlacene" : ""}`} aria-pressed={starsi.stlacene} aria-label={`Starší: priazeň ${cisla.priazen} — ťuk ukáže líniu starších`} title="Starší — línia starších" onClick={starsi.prepni}>
         <IkonaPriazne />
@@ -163,16 +167,18 @@ export interface OknoZdrojaProps {
   readonly zavri: () => void;
   /** Tlačidlo pod tabuľkou (napr. „Ukázať karty“, „Nástenka“). */
   readonly akcia?: { readonly text: string; readonly spusti: () => void } | undefined;
+  /** Rozpis prísunu v okne Cigariet — na dotyku namiesto nápovedy dlaždice. */
+  readonly prisunCigariet?: PrisunDlazdice | undefined;
 }
 
 /** Okno zdroja: čo na počítači ukazuje dlaždica baru a jej nápoveda — ako medziobrazovka. */
-export function OknoZdroja({ zdroj, cisla, ja, meno, zavri, akcia }: OknoZdrojaProps) {
-  const d = detailZdroja(zdroj, cisla, ja);
+export function OknoZdroja({ zdroj, cisla, ja, meno, zavri, akcia, prisunCigariet }: OknoZdrojaProps) {
+  const d = detailZdroja(zdroj, cisla, ja, prisunCigariet);
   return (
     <Medziobrazovka obsah={{ kluc: `zdroj-${zdroj}`, nadnadpis: ja ? "ty" : meno, nadpis: d.nadpis, text: d.text }} onRozumiem={zavri} vypinac={false} zavrietMimo trieda="okno-zdroja">
       <dl className="okno-zdroja-riadky">
-        {d.riadky.map(([k, v]) => (
-          <span key={k} className="okno-zdroja-riadok">
+        {d.riadky.map(([k, v], i) => (
+          <span key={`${k}${i}`} className="okno-zdroja-riadok">
             <dt>{k}</dt>
             <dd>{v}</dd>
           </span>
