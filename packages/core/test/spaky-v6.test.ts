@@ -207,7 +207,8 @@ describe("v6: špaky sú verejné", () => {
     const starsi: ElderState[] = s0.starsi.map((e, i) => (i === 0 ? { ...e, strach: [3, 0], reci: [0, 2] } : e));
     const s: GameState = { ...s0, starsi };
     const v0 = spakyTeraz(viewFor(data, s, 0));
-    expect(v0.zaStarsichVyhra).toEqual([5, 3]);
+    // v11.11: červený strach 5 − súperove oranžové reči 3 = 2; reči dajú 3 tak či tak.
+    expect(v0.zaStarsichVyhra).toEqual([2, 3]);
     expect(v0.zaStarsichPrehra).toEqual([0, 3]);
     expect(spakyTeraz(viewFor(data, s, 1))).toEqual(v0);
   });

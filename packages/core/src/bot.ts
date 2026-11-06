@@ -65,6 +65,7 @@ import {
   nepriznaneCirhozy,
   vykupneHraca,
   cenaFajceniaHraca,
+  ktoNatacaLokalitu,
 } from "./engine.ts";
 
 /**
@@ -1253,6 +1254,8 @@ function rozhodni(v: Volba): Command | null {
   switch (v.state.faza) {
     case "volbaCiela":
       return volbaCiela(v);
+    case "natocenieCiela":
+      return natocenieCiela(v);
     case "draft":
       return draft(v);
     case "zhromazdenie":
@@ -1272,18 +1275,31 @@ function hodnotaHrany(hrana: readonly (Action | null)[]): number {
   return hrana.reduce((a, x) => a + (x === null ? 0 : VAHA_AKCIE[x]), 0);
 }
 
+/** Hodnota lokality pre mňa pri danom natočení: hrana k mojej strane sa páruje skôr s mojimi kartami. */
+function hodnotaNatocenia(v: Volba, lok: CardInstance, otocena: boolean): number {
+  const hrany = stranyLokality(v.data, lok, otocena, v.ja);
+  return 0.6 * hodnotaHrany(hrany.kTebe) - 0.4 * hodnotaHrany(hrany.kSuperovi);
+}
+
+/** v11.11: bot ako víťaz minulej hádky natočí lokalitu, ktorú vybral súper, k sebe. */
+function natocenieCiela(v: Volba): Command | null {
+  const lok = v.state.ciel?.lokalita;
+  if (lok === undefined || lok === null) return null;
+  return { type: "natocLokalitu", otocena: hodnotaNatocenia(v, lok, true) > hodnotaNatocenia(v, lok, false) };
+}
+
 function volbaCiela(v: Volba): Command | null {
-  const { data, state, ja } = v;
-  // Lokalita: draft výsledok rozmaže, rozhoduje natočenie — hrana k mojej
-  // strane sa páruje skôr s mojimi kartami.
+  const { state, ja } = v;
+  // Lokalita: draft výsledok rozmaže, rozhoduje natočenie.
+  // Keď natáča súper (v11.11), ráta sa s natočením, ktoré je pre mňa horšie.
+  const natacam = ktoNatacaLokalitu(state) === ja;
   let lokalita: Command | null = null;
   let lokalitaV = Number.NEGATIVE_INFINITY;
   for (const cmd of v.legal) {
     if (cmd.type !== "chooseLocation") continue;
     const lok = state.lokalityVHre.find((x) => x.uid === cmd.uid);
     if (lok === undefined) continue;
-    const hrany = stranyLokality(data, lok, cmd.otocena, ja);
-    let h = 0.6 * hodnotaHrany(hrany.kTebe) - 0.4 * hodnotaHrany(hrany.kSuperovi);
+    let h = natacam ? hodnotaNatocenia(v, lok, cmd.otocena) : Math.min(hodnotaNatocenia(v, lok, false), hodnotaNatocenia(v, lok, true));
     if (lok.defId === "lesna_cesta" && verejneAbstaky(state, ja) > 0) h += 0.5;
     if (h > lokalitaV) {
       lokalitaV = h;

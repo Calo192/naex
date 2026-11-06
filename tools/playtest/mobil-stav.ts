@@ -95,6 +95,7 @@ export function odohraneKola(s: Pick<StavMobilu, "kolo" | "lokalitCelkom" | "faz
 
 const NAZVY_FAZ: Readonly<Record<string, string>> = {
   volbaCiela: "Voľba cieľa",
+  natocenieCiela: "Natočenie lokality",
   draft: "Stavba šenku",
   zhromazdenie: "Zhromaždenie",
   pitka: "Pitka",

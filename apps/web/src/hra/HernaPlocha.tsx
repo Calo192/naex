@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -433,6 +433,7 @@ export interface HernaPlochaProps {
 /** Názvy fáz pre titulok karty prehliadača. */
 const NAZOV_FAZY: Readonly<Record<string, string>> = {
   volbaCiela: "Cieľ kola",
+  natocenieCiela: "Natočenie lokality",
   draft: "Šenok",
   zhromazdenie: "Zhromaždenie",
   pitka: "Pitka",
@@ -1020,6 +1021,10 @@ export function HernaPlocha({
   /** Koľkatá karta do línie či do Dedičstva v ťahu (od 0) — od druhej stojí plný poldeci. */
   const poradieVTahu = (uid: number): number => vylozenia.filter((x) => x.ciel !== "priznanie").findIndex((x) => x.karta.uid === uid);
   const lokalitaNavrh = (() => {
+    // v11.11: lokalitu vybral súper a natáčam ja — návrh je jej natočenie, nie voľba.
+    if (somNaTahu && view.faza === "natocenieCiela" && view.ciel?.lokalita != null) {
+      return { karta: view.ciel.lokalita, otocena: navrh?.typ === "lokalita" ? navrh.otocena : view.lokalitaOtocena };
+    }
     if (navrh?.typ !== "lokalita" || !somNaTahu || view.faza !== "volbaCiela") return null;
     const k = view.lokalityVHre.find((x) => x.uid === navrh.uid);
     return k === undefined ? null : { karta: k, otocena: navrh.otocena };
@@ -1123,7 +1128,7 @@ export function HernaPlocha({
         hraci = ja === 0 ? [novy, hraci[1]] : [hraci[0], novy];
       }
     }
-    const ciel = lokalitaNavrh !== null ? { typ: "lokalita" as const, lokalita: lokalitaNavrh.karta } : view.ciel;
+    const ciel = lokalitaNavrh !== null && view.ciel === null ? { typ: "lokalita" as const, lokalita: lokalitaNavrh.karta } : view.ciel;
     // Šofér, Strýko, Vychovávateľka, Pasca a Vidly čítajú aj NA EX v kole, Kšefty a špaky (playtest v7 131033).
     const stol: VerejnyStav = {
       ciel,
@@ -1883,7 +1888,7 @@ export function HernaPlocha({
   // zmizne sám, klik ho zavrie, klik na Bitku v lište ho ukáže znova. Vo výučbe o ňom hovorí
   // Melichar, preto tam čaká na klik.
   const ukazUcetBitky =
-    ucetBitky !== null && !ucetBitkyZavrety && view.kolo === ucetBitky.kolo + 1 && (view.faza === "volbaCiela" || view.faza === "draft");
+    ucetBitky !== null && !ucetBitkyZavrety && view.kolo === ucetBitky.kolo + 1 && (view.faza === "volbaCiela" || view.faza === "natocenieCiela" || view.faza === "draft");
   useEffect(() => {
     if (!ukazUcetBitky || vyucba === true) return;
     const t = setTimeout(() => setUcetBitkyZavrety(true), TOAST_STOLA_MS);
@@ -1977,6 +1982,8 @@ export function HernaPlocha({
   }, [klucTahu, somNaTahu]);
 
   const volimLokalitu = somNaTahu && view.faza === "volbaCiela" && view.koniec === null;
+  /** v11.11: lokalitu vyberám, ale natočí ju súper — víťaz minulej hádky. */
+  const natociSuper = view.faza === "volbaCiela" && ktoNatacaLokalitu(view) !== ja;
   /** Klik na kartu v šenku: pridá ju do výberu (do limitu), opätovný klik ju vráti. */
   const prepniZoSenku = (uid: number): void => {
     const uids = zoSenku.map((k) => k.uid);
@@ -3199,7 +3206,7 @@ export function HernaPlocha({
             sirka: sirkaVLinii,
             otocena: lokalitaNavrhOtocena,
             eval: lineEval.cards.get(lokalitaNavrh.karta.uid) ?? null,
-            onClick: () => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena }),
+            ...(natociSuper ? {} : { onClick: () => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena }) }),
           }),
           undefined,
           "lokalita",
@@ -3392,6 +3399,33 @@ export function HernaPlocha({
   const stolTlacidla = ((): HranaTahu | null => {
     // Súhrn po bitke drží hranu pre Ďalej a Preskočiť (pokyn).
     if (!somNaTahu || view.koniec !== null || suhrnBezi) return null;
+    if (view.faza === "natocenieCiela" && lokalitaNavrh !== null) {
+      const otocit = (
+        <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
+          otočiť ↻
+        </button>
+      );
+      return {
+        ...(naSirku ? { druha: otocit } : { vlavo: otocit }),
+        stred: pecatTahu({
+          text: "potvrdiť",
+          skratka: "k",
+          tip: `Natočenie lokality ${menoKarty(lokalitaNavrh.karta.defId)}.`,
+          akcia: () => posli({ type: "natocLokalitu", otocena: lokalitaNavrh.otocena }),
+        }),
+      };
+    }
+    if (view.faza === "volbaCiela" && lokalitaNavrh !== null && natociSuper) {
+      return {
+        stred: pecatTahu({
+          text: "potvrdiť",
+          skratka: "k",
+          tip: `Bitka o ${menoKarty(lokalitaNavrh.karta.defId)}; natočí ju ${menoHraca(super_)}.`,
+          akcia: () => posli({ type: "chooseLocation", uid: lokalitaNavrh.karta.uid, otocena: false }),
+          zrus: { akcia: () => setNavrh(null), popis: "Späť na výber lokality" },
+        }),
+      };
+    }
     if (view.faza === "volbaCiela" && lokalitaNavrh !== null) {
       const otocit = (
         <button onClick={() => setNavrh({ typ: "lokalita", uid: lokalitaNavrh.karta.uid, otocena: !lokalitaNavrh.otocena })} data-vyucba="tlacidlo:otocit">
@@ -3617,6 +3651,9 @@ export function HernaPlocha({
       };
     }
 
+    if (!somNaTahu && view.faza === "natocenieCiela") {
+      return { nadpis: "Natočenie lokality", text: `Lokalitu natáča ${menoHraca(super_)}, víťaz minulej hádky.` };
+    }
     if (!somNaTahu && view.hasicVolba !== null && view.hasicVolba.hrac === super_) {
       const k = view.hasicVolba.karta;
       return {
@@ -3781,13 +3818,26 @@ export function HernaPlocha({
     }
 
     switch (view.faza) {
+      case "natocenieCiela":
+        return somNaTahu && lokalitaNavrh !== null
+          ? {
+              nadpis: "Natočenie lokality",
+              text: (
+                <>
+                  Minulá hádka je tvoja, preto natáčaš <strong>{menoKarty(lokalitaNavrh.karta.defId)}</strong>. Klikom na kartu ju otočíš a potvrdíš. {ikonyStranStredu}
+                </>
+              ),
+            }
+          : null;
       case "volbaCiela":
         return lokalitaNavrh === null
           ? {
               nadpis: "Cieľ kola",
-              text: mobil ? "Klikni na lokalitu v paneli Cieľ kola." : "Klikni na nástenke na lokalitu, o ktorú sa chceš biť.",
+              text: (mobil ? "Klikni na lokalitu v paneli Cieľ kola." : "Klikni na nástenke na lokalitu, o ktorú sa chceš biť.") + (natociSuper ? ` Natočí ju ${menoHraca(super_)}, víťaz minulej hádky.` : ""),
             }
-          : {
+          : natociSuper
+            ? { nadpis: "Cieľ kola", text: `${menoKarty(lokalitaNavrh.karta.defId)} — natočí ju ${menoHraca(super_)}, víťaz minulej hádky.` }
+            : {
               nadpis: "Cieľ kola",
               text: (
                 <>
@@ -4878,7 +4928,7 @@ export function HernaPlocha({
     });
   };
   const bitkaProps: BitkaPanelProps | null =
-    odhad === null || view.faza === "volbaCiela" || view.faza === "draft" || view.koniec !== null
+    odhad === null || view.faza === "volbaCiela" || view.faza === "natocenieCiela" || view.faza === "draft" || view.koniec !== null
       ? null
       : {
           rodJa: rodHracaP(ja),
@@ -5111,7 +5161,9 @@ export function HernaPlocha({
             {!somNaTahu
               ? `${menoHraca(super_)} vyberá, o čo sa bude v tomto kole bojovať.`
               : naStole !== null
-                ? `Na stole: ${menoKarty(naStole.defId)} — klikom ju otočíš a potvrdíš na stole (pravým klikom ju vrátiš). Alebo vyber inú.`
+                ? natociSuper
+                  ? `Na stole: ${menoKarty(naStole.defId)} — potvrď ju na stole (pravým klikom ju vrátiš). Natočí ju ${menoHraca(super_)}, víťaz minulej hádky.`
+                  : `Na stole: ${menoKarty(naStole.defId)} — klikom ju otočíš a potvrdíš na stole (pravým klikom ju vrátiš). Alebo vyber inú.`
                 : "Klikni na lokalitu, o ktorú sa chceš biť."}
           </span>
         </header>
@@ -5367,7 +5419,7 @@ export function HernaPlocha({
     const zs = view.zhromazdenieStav;
     const vyloz = p === ja ? "vyložíš" : "vyloží";
     if (view.faza === "zhromazdenie" && zs !== null) return { cislo: zs.zostavaLimit[p], popis: vyloz, tip: `ešte ${vyloz} ${kariet(zs.zostavaLimit[p])}` };
-    if (view.faza === "volbaCiela" || view.faza === "draft") {
+    if (view.faza === "volbaCiela" || view.faza === "natocenieCiela" || view.faza === "draft") {
       const n = limitZhromazdenia(view, p);
       return { cislo: n, popis: vyloz, tip: `v Zhromaždení ${vyloz} ${kariet(n)}` };
     }
@@ -5678,7 +5730,7 @@ export function HernaPlocha({
       </button>
     );
   const textUctuPitky = ((): string | null => {
-    if (ucetPitky === null || ucetPitky.kolo !== view.kolo || view.faza === "volbaCiela" || view.faza === "draft") return null;
+    if (ucetPitky === null || ucetPitky.kolo !== view.kolo || view.faza === "volbaCiela" || view.faza === "natocenieCiela" || view.faza === "draft") return null;
     const za = (p: PlayerId): string => {
       const casti: string[] = [];
       if (ucetPitky.cirhozy[p] > 0) casti.push(`+${ucetPitky.cirhozy[p]} Cirhóza`);

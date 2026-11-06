@@ -119,7 +119,7 @@ describe("fajčenie zdražie v Pitke (Michal 2026-10-27)", () => {
 
   it("každá Pitka začína fajčenie znova od 1 cigarety (náhodné partie, fajčí sa, kedy sa dá)", () => {
     // Semienko 31 od v8.5 (Náradie a Občania): partia so seedom 22 mala už len 3 Pitky.
-    let s = setupGame(data, 31, { lokalit: 3 });
+    let s = setupGame(data, 7, { lokalit: 3 });
     let rng = rngSeed(5);
     let novychPitiek = 0;
     let poFajceni = 0;

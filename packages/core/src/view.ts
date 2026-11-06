@@ -45,7 +45,7 @@ import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { kartyVRukach, pocetAbstakov, rukaClena } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
-import { favourStarsieho, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, stupenStavu } from "./elders.ts";
+import { favourStarsieho, najvyssiMarker, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, spakyZaStupen, stupenStavu } from "./elders.ts";
 import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia, prikazRozdelenia } from "./rozdelenie.ts";
 import type { DamageResult } from "./battle.ts";
 
@@ -257,6 +257,10 @@ export interface ClientState {
   readonly vyhry: StavVyhier;
   readonly ciel: CielKola | null;
   readonly lokalitaOtocena: boolean;
+  /** v11.11: víťaz hádky minulého kola; natáča ďalšiu lokalitu. Pri remíze null, v K1 chýba. */
+  readonly vitazPoslednejHadky?: PlayerId | null;
+  /** Výučba Prvá hra hrá bez zmien v11.11 (GameState.vyucbaPredV1111). */
+  readonly vyucbaPredV1111?: true;
   readonly strany: readonly [readonly PlacedCard[], readonly PlacedCard[]];
   /** Skryté Záverečné — najviac jedna na stranu; za ňu sa nedá priložiť (zablokovaneStrany). */
   readonly zaverecne: readonly ZaverecnaVerejna[];
@@ -422,10 +426,12 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
     nastenka: state.nastenka,
     naexVKole: state.naexVKole,
     ...(state.bezChuti === true ? { bezChuti: true as const } : {}),
+    ...(state.vyucbaPredV1111 === true ? { vyucbaPredV1111: true as const } : {}),
     starsi: state.starsi.map((e) => ({ ...e, priazen: favourStarsieho(data, e) })),
     vyhry: stavVyhier(state),
     ciel: state.ciel,
     lokalitaOtocena: state.lokalitaOtocena,
+    ...(state.vitazPoslednejHadky === undefined ? {} : { vitazPoslednejHadky: state.vitazPoslednejHadky }),
     strany: [skrySuperove(0), skrySuperove(1)],
     zaverecne,
     // Jogurt otočil poldeci z verejných akcií — pečiatka nesmie sľúbiť to isté druhýkrát.
@@ -725,7 +731,7 @@ export function nahladZajatia(view: Pick<ClientState, "vazni" | "ja" | "starsi" 
   const naVyhru = vazniNaVyhru(view.lokalitCelkom);
   const su = opponentOf(view.ja);
   const elder = elderId === undefined ? undefined : view.starsi.find((e) => e.elderId === elderId);
-  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(spakyOdStarsieho(elder, su, true), view.spaky[su]));
+  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(spakyZaStupen(najvyssiMarker(elder, su)), view.spaky[su]));
   return { poradie, kradez, mojichVaznov, vazniNaVyhru: naVyhru, vyhra: mojichVaznov >= naVyhru };
 }
 

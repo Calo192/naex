@@ -40,6 +40,7 @@ const TEMPO_MS = 1200;
 /** Ťahy hráča po slovensky (typ príkazu z jadra). */
 const NAZOV_TAHU: Readonly<Record<string, string>> = {
   chooseLocation: "volí cieľ kola",
+  natocLokalitu: "natáča lokalitu",
   patronat: "patronát staršieho",
   bezPatronatu: "bez patronátu",
   pokus: "pokus o zajatie",

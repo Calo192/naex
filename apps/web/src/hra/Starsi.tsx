@@ -149,7 +149,7 @@ function DlazdicaStarsieho({
 }) {
   const ja = p === view.ja;
   const smer = smerStarsieho(e, p);
-  const vyhra = spakyOdStarsieho(e, p, true);
+  const vyhra = spakyOdStarsieho(e, p, true, view.vyucbaPredV1111 !== true);
   // Presvedčený (v11.4): kto ho presvedčil — verejné, pri staršom.
   const presvedcil = e.presvedcil ?? null;
   const zmeny = view.zmenyMarkerov.filter((x) => x.elderId === e.elderId);

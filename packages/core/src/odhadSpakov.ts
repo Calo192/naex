@@ -39,7 +39,7 @@ export interface OdhadSpakov {
   readonly obrat: readonly [number, number] | null;
 }
 
-export type StavOdhadu = VerejnyStav & { readonly spakyNaSekere: number; readonly lokalitaOtocena: boolean };
+export type StavOdhadu = VerejnyStav & { readonly spakyNaSekere: number; readonly lokalitaOtocena: boolean; readonly vyucbaPredV1111?: true };
 
 /** Rozpis oboch hráčov, keď bitku vyhrá `vitaz` a Nakladačku má ako `nakladackaBodov`. */
 function rozpisVysledku(data: GameData, s: StavOdhadu, linia: LineEval, makke: readonly [number, number], vitaz: PlayerId | null, nakladackaBodov: number): readonly [RozpisOdhadu, RozpisOdhadu] {
@@ -47,13 +47,15 @@ function rozpisVysledku(data: GameData, s: StavOdhadu, linia: LineEval, makke: r
   const karty = kartyBitky(s);
   const palene = paleneDlhyVBitke(data, s, linia);
   const hd = vysledokHadky(makke);
-  const vyplata = vitaz === null ? null : spakyZaVyhru(s, vitaz, karty);
+  const vitazHadky = s.vyucbaPredV1111 === true ? null : hd.vitaz;
+  const vyplata = vitaz === null ? null : spakyZaVyhru(s, vitaz, karty, vitazHadky);
   const rozpis = (p: PlayerId): RozpisOdhadu => {
     const vyhral = vitaz === p;
-    const zaBitku = vyplata === null ? 0 : vyhral ? vyplata.spolu : vyplata.porazenemu;
+    // Pri sekere dostane víťaz hádky za svoje karty hneď (v11.11), línia čaká na sekere.
+    const zaBitku = vyplata === null ? (vitazHadky === p ? karty.vlastne[p] : 0) : vyhral ? vyplata.spolu : vyplata.porazenemu;
     const nakladacka = finale && vyhral ? nakladackaBodov * KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE : 0;
     const hadka = finale && hd.vitaz === p ? hd.velkost * KONSTANTY.SPAKY_ZA_HADKU_VO_FINALE : 0;
-    const starsi = s.starsi.reduce((a, e) => a + spakyOdStarsieho(e, p, vyhral), 0);
+    const starsi = s.starsi.reduce((a, e) => a + spakyOdStarsieho(e, p, vyhral, s.vyucbaPredV1111 !== true), 0);
     // Robota pred Exekútorom (§11): Exekútor už príde len k tomu, čo Robota nespálila.
     const dlhy = s.hraci[p].dlhy;
     const spalene = Math.min(palene[p], dlhy);

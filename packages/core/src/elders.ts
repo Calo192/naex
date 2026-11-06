@@ -150,9 +150,17 @@ export function spakyZaStupen(stupen: number): number {
   return KONSTANTY.SPAKY_ZA_STUPEN[stupen] ?? 0;
 }
 
-/** Špaky, ktoré starší dá hráčovi p po bitke, ktorú p vyhral (vyhral = true), alebo nie. */
-export function spakyOdStarsieho(elder: Markery, p: PlayerId, vyhral: boolean): number {
-  return spakyZaStupen(stupenNaBodovanie(elder, p, vyhral));
+/**
+ * Špaky, ktoré starší dá hráčovi p po bitke, ktorú p vyhral (vyhral = true), alebo nie.
+ * v11.11 (Michal 2026-11-06): špaky za súperove reči pri tom istom staršom uberajú zo špakov
+ * za strach víťaza, najviac na 0; víťazove reči a špaky za reči porazeného sa nekrátia.
+ * reciKratia = false len pre výučbu (GameState.vyucbaPredV1111).
+ */
+export function spakyOdStarsieho(elder: Markery, p: PlayerId, vyhral: boolean, reciKratia = true): number {
+  const stupen = stupenNaBodovanie(elder, p, vyhral);
+  const zaStrach = vyhral && elder.reci[p] <= elder.strach[p];
+  const ubrate = zaStrach && reciKratia ? spakyZaStupen(elder.reci[opponentOf(p)]) : 0;
+  return Math.max(0, spakyZaStupen(stupen) - ubrate);
 }
 
 /** Cena dvihnutia markera zo stupňa `z` na `na` — súčet cien stupňov, do ktorých vstupuje (1 / 2 / 3). */

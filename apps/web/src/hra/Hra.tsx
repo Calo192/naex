@@ -29,7 +29,8 @@ import { OtocTelefon } from "./OtocTelefon.tsx";
 import { VyzvaCelejObrazovky, useVyzvaTelefonu } from "./CelaObrazovka.tsx";
 import { UpozornenieTelefonu, upozornenieSkryte } from "./UpozornenieTelefonu.tsx";
 import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
-import { platnaVolbaBota, type BotNaVyber } from "./boti.ts";
+import type { BotNaVyber } from "./boti.ts";
+import { VyberBota } from "./VyberBota.tsx";
 import { Cakaren2na2, Lobby2na2, Panel2na2 } from "./Stol2na2.tsx";
 import { PortretyStarsich, RadNaPlsti, RadStarsich, RadyNaStole, RozhodnutiePata, RukaSupera, useRadyNaStole } from "./Pata.tsx";
 import "./hra.css";
@@ -57,45 +58,6 @@ function IkonaZamku() {
 /** Popis ligy: „Druhá liga · 5 lokalít“. */
 export function popisDlzky(d: DlzkaHry): string {
   return `${NAZOV_DLZKY[d]} · ${lokalit(DLZKY_HRY[d])}`;
-}
-
-/** Výber súpera proti počítaču (Michal 2026-11-06): Náhodný a povahy, ktoré ponúka server. */
-function VyberBota({
-  boti,
-  volba,
-  vyber,
-  vypnute,
-}: {
-  readonly boti: readonly BotNaVyber[];
-  readonly volba: string | null;
-  readonly vyber: (id: string | null) => void;
-  readonly vypnute: boolean;
-}) {
-  const moznosti: readonly (BotNaVyber & { readonly volba: string | null })[] = [
-    { id: "nahodny", volba: null, meno: "Náhodný", popis: "Koho dostaneš, uvidíš až pri stole.", avatar: null },
-    ...boti.map((b) => ({ ...b, volba: b.id })),
-  ];
-  return (
-    <div className="vyber-bota" role="radiogroup" aria-label="Súper proti počítaču">
-      {moznosti.map((m) => (
-        <button
-          key={m.id}
-          type="button"
-          role="radio"
-          aria-checked={volba === m.volba}
-          className={`bot-volba ${volba === m.volba ? "aktivna" : ""}`}
-          disabled={vypnute}
-          onClick={() => vyber(m.volba)}
-        >
-          <Avatar meno={m.volba === null ? "?" : m.meno} avatar={m.avatar} velkost={40} />
-          <span className="bot-volba-text">
-            <strong>{m.meno}</strong>
-            {m.popis !== null && <span>{m.popis}</span>}
-          </span>
-        </button>
-      ))}
-    </div>
-  );
 }
 
 function Lobby({
@@ -133,10 +95,9 @@ function Lobby({
   // Ligy, ktoré hráč smie (Michal 2026-10-28); null = ešte nedošli.
   const [ligy, setLigy] = useState<readonly StavLigy[] | null>(null);
   const [ligyAjProtiPocitacu, setLigyAjProtiPocitacu] = useState(false);
-  // Súper proti počítaču: zoznam od servera, voľba hráča (null = Náhodný).
+  // Súper proti počítaču: zoznam od servera; okno s výberom sa otvorí po voľbe hry proti počítaču.
   const [boti, setBoti] = useState<readonly BotNaVyber[]>([]);
-  const [volbaBota, setVolbaBota] = useState<string | null>(null);
-  const zvolenyBot = platnaVolbaBota(boti, volbaBota);
+  const [vyberBotaOtvoreny, setVyberBotaOtvoreny] = useState(false);
   // Kým hráč ligu sám nezvolí, predvolí sa taká, ktorú smie aj proti ľuďom — inak by mal
   // nováčik (zamknutá Druhá liga, voľná na počítač) založenie hry s ľuďmi hneď vypnuté.
   const ligaOdHraca = useRef(false);
@@ -237,15 +198,30 @@ function Lobby({
           )}
           <h2 style={{ marginTop: 28 }}>Proti počítaču</h2>
           <p className="tlmene">
-            Vyber si, s kým si sadneš, alebo nechaj náhodu. Počítačoví súperi hrajú podľa pravidiel, vidia len to, čo by videl hráč pri stole, a nevzdávajú sa.
-            Partia začne hneď a do Frajeriny sa neráta.
+            Počítačoví súperi hrajú podľa pravidiel, vidia len to, čo by videl hráč pri stole, a nevzdávajú sa. Partia sa do Frajeriny neráta.
           </p>
-          <VyberBota boti={boti} volba={zvolenyBot} vyber={setVolbaBota} vypnute={!maPravo(ja, "hrat_bot") || zavrete} />
           <div className="riadok-tlacidiel">
-            <button onClick={() => zaloz(false, dlzka, true, zvolenyBot ?? undefined)} disabled={!maPravo(ja, "hrat_bot") || zavrete} title={preco} data-hrat-bot="">
+            {/* Bez zoznamu (starší server) sa niet na čo pýtať: rovno náhodný súper. */}
+            <button
+              onClick={() => (boti.length > 0 ? setVyberBotaOtvoreny(true) : zaloz(false, dlzka, true))}
+              disabled={!maPravo(ja, "hrat_bot") || zavrete}
+              title={preco}
+              data-hrat-bot=""
+            >
               Hrať proti počítaču
             </button>
           </div>
+          {vyberBotaOtvoreny && (
+            <VyberBota
+              boti={boti}
+              vypnute={!maPravo(ja, "hrat_bot") || zavrete}
+              hraj={(povaha) => {
+                setVyberBotaOtvoreny(false);
+                zaloz(false, dlzka, true, povaha ?? undefined);
+              }}
+              zavri={() => setVyberBotaOtvoreny(false)}
+            />
+          )}
           <h2 style={{ marginTop: 28 }}>Mám kód</h2>
           <form
             className="lobby-kod"

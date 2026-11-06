@@ -3175,3 +3175,15 @@ Staré znenie §9.1, krok 2:
 Staré znenie §10, riadok tabuľky priazní:
 
 > | Alkoholik — Na zdravie „do dna“ | Poldeci v bitke (§9.5) | poldeci z tvojho NA EX sa vráti plný | 1 / 2 / 3 za kolo | `ALKOHOLIK` |
+
+## v11.11 — Hádka platí (Michal 2026-11-06, Zrejúca)
+
+Staré znenie §5:
+
+> Obranca vyberie lokalitu, o ktorú sa v kole bije, a **natočí ju**.
+
+Staré znenie §10, krok 4b (bez krátenia):
+
+> **porazený** a **pri sekere obaja** len za **reči**. Žltá **1**, oranžová **3**, červená **5**. Reči, ktoré bodovali, potom klesnú o stupeň.
+
+Staré znenie §9.4: špaky za karty v línii dostával len víťaz bitky, porazený len na Kultúrnom dome.

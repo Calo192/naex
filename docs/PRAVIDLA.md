@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.10 (platné od 2026-11-06)** — Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.11 (platné od 2026-11-06)** — Hádka platí (v11.11), Ohováračka namiesto Alkoholika (v11.10), Dobratie do troch a výpalné (v11.9), Každý Hazard je Dlh (v11.8), Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,13 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.11 oproti v11.10** (Michal 2026-11-06, Zrejúca, po playteste štýlov docs/playtesty/styly-20261106-123023.html, kde Klebetník vyhral 13 zo 17 hádok a ani jednu bitku; staré znenia v `docs/pravidla-historia.md`, sekcia v11.11):
+
+- **Víťaz hádky dostane špaky za svoje karty** (§9.4, §14): kto vyhrá hádku a prehrá bitku, dostane **1 špak za každú svoju kartu v línii**. Víťaz bitky dostane za všetky karty ako doteraz, aj keď hádku tiež vyhral — navyše nič. Pri **sekere** dostane víťaz hádky za svoje karty hneď a všetky karty línie ďalej čakajú na sekere. Na Kultúrnom dome sa to s jeho efektom **sčíta** (porazený, ktorý vyhral hádku, má svoje karty 2×). Platí aj vo finále, navyše k 1 špaku za bod hádky.
+- **Lokalitu natáča víťaz minulej hádky** (§4, §5, §14b): obranca lokalitu naďalej vyberá, natočí ju víťaz hádky z minulého kola. V prvom kole a po remíze v hádke natáča ten, kto vyberá. Platí aj pre pinnacle vo finále.
+- **Reči uberajú zo strachu** (§10, krok 4b): špaky, ktoré dostane porazený za reči pri staršom, sa odpočítajú zo špakov víťaza za strach pri tom istom staršom, **najviac na 0**. Príklad: víťaz má červený strach (5), porazený oranžové reči (3) — víťaz dostane 2, porazený 3. Víťazove reči sa nekrátia. Výhra strachom, zajatie a krádež sa nemenia.
+- **Výučba Prvá hra** zatiaľ hrá bez týchto zmien; prerobí sa pri vypálení.
 
 **Zmeny v11.10 oproti v11.9** (Michal 2026-11-06, Zrejúca, docs/napady/priazne-nove.html, návrh 1; staré znenia v `docs/pravidla-historia.md`, sekcia v11.10):
 
@@ -510,7 +517,7 @@ finále: voľba pinnacle → draft → (Zhromaždenie → Pitka) × 1–5 → bi
 **Útočník** = hráč, ktorý **prehral poslednú bitku** (v prvom kole náhodne;
 pri sekere ostáva útočníkom; vo finále útočí, kto má menej špakov, §14b). **Vykladá prvý
 a na odkryté NA EX odpovedá prvý** (lícom dole, §7) — jeho výhody slúžia na dobiehanie.
-**Obranca** je víťaz poslednej bitky: **vyberá a natáča cieľ** kola, **berie zo šenku
+**Obranca** je víťaz poslednej bitky: **vyberá cieľ** kola (natáča ho víťaz minulej hádky, v11.11, §5), **berie zo šenku
 prvý** (v9.2, na prvom ťahu len 1 kartu, §5) a na odkryté NA EX odpovedá druhý — na
 druhý kraj línie. Pitku hrajú obaja naraz (§7).
 
@@ -541,7 +548,8 @@ alebo preskočiť NA EX (v Pitke), hra ten ťah urobí za neho.
 
 ### Voľba cieľa
 
-Obranca vyberie lokalitu, o ktorú sa v kole bije, a **natočí ju**. Natočenie
+Obranca vyberie lokalitu, o ktorú sa v kole bije. **Natočí ju víťaz hádky z minulého
+kola** (v11.11); v prvom kole a po remíze v hádke ten, kto vyberá. Natočenie
 určuje, ktorá hrana lokality leží pri ktorom kraji línie (§6). **v7:** vyberá
 zo **všetkých ešte neodohraných lokalít úrovne tohto kola** (§3) — vždy aspoň
 z troch; vo finále z troch pinnacle (§14b).
@@ -1093,7 +1101,7 @@ Bitka sa vyhodnotí po poslednej Pitke kola, v tomto poradí (v11 Strach a reči
 | 1 | Hádka — Viera a Povery sa vyrušia, mäkké (Pohoršenie × 2 + Povery) rozhodne víťaza hádky a jej veľkosť; priazne sa **nemenia** (rozdelí sa až v kroku 4e); Noviny víťaza hádky (v11.5) | §9.1 |
 | 3 | Poškodenie — tuhé; zvyšná Viera, Bitkár, Veriaci a Abstinent podľa priazní z rozdielu strachov | §9.3 |
 | 4 | Výsledok (pri remíze Absťáky, potom Dlhy — pred exekúciou —, inak sekera) | §9.4 |
-| 4a | Špaky za bitku (karty v línii) víťazovi, vo finále aj Nakladačka a hádka 1 : 1, na Kultúrnom dome aj porazenému; Herňa podľa Dlhov pred exekúciou; lokalita ide na krčmovú nástenku | §9.4, §14 |
+| 4a | Špaky za bitku (karty v línii) víťazovi, vo finále aj Nakladačka a hádka 1 : 1, na Kultúrnom dome aj porazenému; víťaz hádky, ktorý bitku prehral alebo je sekera, za svoje karty (v11.11); Herňa podľa Dlhov pred exekúciou; lokalita ide na krčmovú nástenku | §9.4, §14 |
 | 4b | **Starší bodujú** (stav pred zdvihnutím): víťaz za každého staršieho za svoj najvyšší marker (reči, ak ich má, inak strach), porazený a pri sekere obaja len za reči — žltá 1, oranžová 3, červená 5; reči, ktoré bodovali, klesnú o stupeň | §10, §14 |
 | 4c | **Výhra strachom:** víťaz s červeným strachom u aspoň 4 starších (väzni sa rátajú) vyhráva — hra končí | §1, §10 |
 | 4d | Exekúcia (Michal 2026-10-28): Robota (aj z priazne Robota, v9), potom Exekútor každému s priznaným Dlhom — Dlhy a špaky (Advokát ich uberie); Záhradkár ju obíde | §11 |
@@ -1209,7 +1217,9 @@ jeho aj súperove, aj odkrytá Záverečná, aj vo finále. Nerátajú sa prizna
 (kliatby), Dedičstvo, lokalita ani karty, ktoré z línie počas kola zmizli
 (spálené efektom — Poľovník, Krokodíl, Dievčina). Počet Pitiek špaky neurčuje.
 Víťaz dostane **vždy aspoň 1 špak**. Absťáky špaky **neuberajú** (trestajú ranou
-menej, §8). Vo finále víťaz dostane navyše **1 špak za každý bod Nakladačky** (v9.1,
+menej, §8). **Víťaz hádky, ktorý prehral bitku** (v11.11), dostane 1 špak za každú svoju kartu
+v línii (svoju partiu, na ktorejkoľvek strane); víťaz bitky za všetky karty ako vždy, aj keď hádku
+tiež vyhral, navyše nič. Vo finále víťaz dostane navyše **1 špak za každý bod Nakladačky** (v9.1,
 nižšie). Na Kultúrnom dome dostane aj
 porazený 1 špak za každú svoju kartu v línii (§15). Víťaz si **lokalitu neberie** —
 karta lokality ide na **krčmovú nástenku** s jeho menom a počtom špakov.
@@ -1218,7 +1228,8 @@ karta lokality ide na **krčmovú nástenku** s jeho menom a počtom špakov.
 a špaky kola (karty v línii) **čakajú na sekere** — vezme ich víťaz najbližšej
 bitky navyše k svojim; viac sekier po sebe sa kopí.
 **Vo finále** špaky zo sekery **prepadnú**. Pri sekere starší bodujú obom len za reči (krok 4b),
-Nakladačka nie je a **cigaretu nedostane nikto** (nikto neprehral; rozhodnuté 2026-11-02). Sekera
+Nakladačka nie je a **cigaretu nedostane nikto** (nikto neprehral; rozhodnuté 2026-11-02). Víťaz hádky
+dostane za svoje karty špaky hneď (v11.11), karty línie sa kvôli tomu z nazbieraného nekrátia. Sekera
 nemení roly (útočník ostáva útočníkom); bez Nakladačky sa nezajíma (§10).
 
 **Nakladačka (krok 4e, v11 Strach a reči, Michal 2026-11-02):**
@@ -1349,7 +1360,9 @@ istom kroku neodovzdá ďalej (výklad, Michal to neurčil). Obmedzenie výpaln�
 Po každej bitke (aj vo finále) dá každý starší špaky — **podľa stavu pred zdvihnutím**
 Nakladačkou a hádkou: **víťaz** za svoj **najvyšší marker** (reči, ak ich má, inak strach),
 **porazený** a **pri sekere obaja** len za **reči**. Žltá **1**, oranžová **3**, červená **5**
-(`KONSTANTY.SPAKY_ZA_STUPEN`). Reči, ktoré bodovali, potom klesnú o stupeň (na stupni strachu
+(`KONSTANTY.SPAKY_ZA_STUPEN`). **Reči uberajú zo strachu (v11.11):** špaky porazeného za reči pri staršom
+sa odpočítajú zo špakov víťaza za strach pri tom istom staršom, najviac na 0 (červený strach 5 proti oranžovým
+rečiam 3 = víťaz 2, porazený 3). Víťazove reči sa nekrátia. Reči, ktoré bodovali, potom klesnú o stupeň (na stupni strachu
 zaniknú). Väzeň nebojuje — na stupnici nie je.
 
 ### Výhra strachom (krok 4c)
@@ -1728,7 +1741,8 @@ verejné. Vyhrá, kto má na konci hry (po finále) viac špakov; rovnosť je re
 |---|---|---|
 | Vyhratá bitka | 1 za každú kartu v línii na oboch stranách (v8; aj finále), **aspoň 1** (od v8.1 bez zrážky za Absťáky); plus špaky zo sekery | krok 4a (§9.4) |
 | Prehratá bitka o Kultúrny dom (v8) | 1 za každú svoju kartu v línii | krok 4a (§15) |
-| Starší po bitke (v11) | víťaz za každého staršieho za svoj najvyšší marker (reči, inak strach), porazený a pri sekere obaja za reči: žltá **1**, oranžová **3**, červená **5** | krok 4b (§10) |
+| Vyhraná hádka pri prehratej bitke alebo sekere (v11.11) | 1 za každú svoju kartu v línii; sčíta sa s Kultúrnym domom | krok 4a (§9.4) |
+| Starší po bitke (v11) | víťaz za každého staršieho za svoj najvyšší marker (reči, inak strach), porazený a pri sekere obaja za reči: žltá **1**, oranžová **3**, červená **5**; špaky za súperove reči uberajú zo špakov za strach, najviac na 0 (v11.11) | krok 4b (§10) |
 | Finále: Nakladačka a hádka (v9.1, v11) | víťaz bitky 1 za bod Nakladačky, víťaz hádky 1 za bod hádky | krok 4a (§14b) |
 | Krádež pri zajatí (v11, v11.4) | zlodej dostane, okradnutý stratí špaky za okradnutého najvyšší marker pri zajatom staršom v čase zajatia (1 / 3 / 5), najviac koľko má | krok 4e (§10) |
 | Exekútor | **−** polovica priznaných Dlhov nahor, mínus sila tvojej priazne Advokáta (najmenej 0) — v každej bitke, kým má hráč priznané Dlhy (Záhradkár v partii ju v tom kole obíde) | krok 4d (§11) |
@@ -1768,15 +1782,16 @@ jej hrany, efekt, kraje aj prevaha (Kočovník, Dvojčatá ako inde).
   rozhodnutie z 26. 10.). Pri rovnosti útočí ten, kto **prehral poslednú
   bitku**; keď posledná bitka skončila sekerou, útočník ostáva útočníkom.
   Útočník vykladá prvý a na NA EX odpovedá prvý (lícom dole); obranca berie zo šenku prvý.
-- **Obranca — hráč, ktorý vedie** (viac špakov) — vyberie a natočí pinnacle
-  lokalitu (z troch, §5). Potom šenok a branie ako v každom kole.
+- **Obranca — hráč, ktorý vedie** (viac špakov) — vyberie pinnacle
+  lokalitu (z troch, §5), natočí ju víťaz poslednej hádky (v11.11; po remíze obranca). Potom šenok a branie ako v každom kole.
 - Pitiek je ako na každej lokalite **1 + menší počet aktivovaných akcií hrán**
   (1–5) — teda podľa spojov s lokalitou. Víťaz dostane **1 špak za každú kartu
   v línii** (v8; aspoň 1); na Herni navyše toľko, koľko má
   porazený priznaných Dlhov (§15). Sekera vo finále špaky kola aj zo sekery
   **prepadnú**.
 - **Vo finále sa markery nedvíhajú** (v11): víťaz finále dostane za každý bod Nakladačky
-  **1 špak** (v9.1) a víťaz hádky za každý bod hádky **1 špak**; starší bodujú po finálovej
+  **1 špak** (v9.1) a víťaz hádky za každý bod hádky **1 špak**; víťaz hádky, ktorý prehral bitku,
+  navyše 1 špak za každú svoju kartu v línii (v11.11); starší bodujú po finálovej
   bitke ako po každej (krok 4b).
 - **Výhra strachom** (4 červené, krok 4c) platí aj vo finále — ešte pred konečnými špakmi (§1, §10).
   Vo finále sa nezajíma ani nepresviedča (v11.4), výhra väzňami tu teda nepríde. Po finále sa Chuť

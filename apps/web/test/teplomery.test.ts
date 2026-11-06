@@ -162,9 +162,9 @@ describe("línia starších", () => {
     const html = linia("pult");
     expect(html).toContain('class="tp-pult"');
     expect(html).toContain("ty výhra · prehra");
-    // Ja: reči oranžová → výhra 3, prehra 3; súper: strach červená → výhra 5, prehra 0.
+    // Ja: reči oranžová → výhra 3, prehra 3; súper: strach červená 5 − moje reči 3 → výhra 2, prehra 0 (v11.11).
     expect(html).toMatch(/tp-bd ja"><b>3<\/b> · 3/);
-    expect(html).toMatch(/tp-bd su"><b>5<\/b> · 0/);
+    expect(html).toMatch(/tp-bd su"><b>2<\/b> · 0/);
     expect(html).toContain("⛓ v pivnici u Fero");
     expect(html).toContain("červené 2/4");
   });

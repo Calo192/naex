@@ -313,7 +313,7 @@ export function zhodnyPrikaz(a: Command, b: Command): boolean {
 
 /** Začiatok výučby: pevné rozdanie scenára. */
 export function zacniVyucbu(data: GameData, scenar: ScenarVyucby): GameState {
-  return setupZRozdania(data, scenar.rozdanie);
+  return { ...setupZRozdania(data, scenar.rozdanie), vyucbaPredV1111: true };
 }
 
 /**

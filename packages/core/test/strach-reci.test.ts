@@ -185,10 +185,10 @@ describe("§10 strach, reči a priazeň (v11)", () => {
 });
 
 describe("§9 príklad Ana a Boris (Druhá liga, 4. kolo)", () => {
-  it("pult: Ana výhra 24 · prehra 8, Boris 18 · 6; červené Ana 3, Boris 3 (Farár, Veterinár a väzeň)", () => {
+  it("pult: Ana výhra 21 · prehra 8, Boris 15 · 6 (v11.11: súperove reči krátia strach); červené Ana 3, Boris 3 (Farár, Veterinár a väzeň)", () => {
     const v = viewFor(data, anaBoris(0), 0);
     const pult = pultStarsich(v);
-    expect(pult.vyhra).toEqual([24, 18]);
+    expect(pult.vyhra).toEqual([21, 15]);
     expect(pult.prehra).toEqual([8, 6]);
     expect(pult.vyhry).toEqual({ cervene: [3, 3], cervenychNaVyhru: 4, vazni: [0, 1], vazniNaVyhru: 3 });
     // Farár: obaja na červenej — priazeň nikto.
@@ -196,14 +196,14 @@ describe("§9 príklad Ana a Boris (Druhá liga, 4. kolo)", () => {
     expect(pult.riadky.find((r) => r.elderId === id(POSTARKA))).toMatchObject({ priazenHrac: 1, priazenSila: 3, presvedcil: null });
     // Strach a reči oboch sú verejné — súper ich vidí rovnako.
     expect(viewFor(data, anaBoris(0), 1).starsi).toEqual(v.starsi);
-    expect(stavkaBitky(v)).toMatchObject({ starsiVyhra: [24, 18], starsiPrehra: [8, 6] });
+    expect(stavkaBitky(v)).toMatchObject({ starsiVyhra: [21, 15], starsiPrehra: [8, 6] });
   });
 
-  it("Ana vyhrá: 24 za starších, Boris 6 za reči; Nakladačka 8 — Krčmárka na červenú za 3, zajme Poštárku za 5 a ukradne 1", () => {
+  it("Ana vyhrá: 21 za starších (v11.11), Boris 6 za reči; Nakladačka 8 — Krčmárka na červenú za 3, zajme Poštárku za 5 a ukradne 1", () => {
     const s = anaBoris(0, 8);
     const po = spustBitku(data, s).state;
     const zaznam = po.nastenka.at(-1)!;
-    expect(zaznam.zaStarsich).toEqual([24, 6]);
+    expect(zaznam.zaStarsich).toEqual([21, 6]);
     expect(zaznam.zaStarsichRozpis?.[1].map((x) => [x.elderId, x.spaky, x.reci])).toEqual([
       [id(STAROSTA), 3, true],
       [id(POSTARKA), 3, true],
@@ -235,10 +235,10 @@ describe("§9 príklad Ana a Boris (Druhá liga, 4. kolo)", () => {
     expect(t.hraci[1].cigarety).toBeGreaterThanOrEqual(s.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
   });
 
-  it("Boris vyhrá: 18 za starších, Ana 8 za reči; Poštárka ostáva (Anin strach 3); Starosta 1 → 3 za 5 a ďalšia vyhratá bitka je výhra strachom", () => {
+  it("Boris vyhrá: 15 za starších (v11.11), Ana 8 za reči; Poštárka ostáva (Anin strach 3); Starosta 1 → 3 za 5 a ďalšia vyhratá bitka je výhra strachom", () => {
     const s = anaBoris(1, 5);
     const po = spustBitku(data, s).state;
-    expect(po.nastenka.at(-1)?.zaStarsich).toEqual([8, 18]);
+    expect(po.nastenka.at(-1)?.zaStarsich).toEqual([8, 15]);
     const t = dohraj(po, (x, p) => (p === 1 && x.bitkaStav?.krok === "prebytok" ? apply(data, x, { type: "prebytok", zdvihy: [{ elderId: id(STAROSTA), na: 3 }] }, 1).state : null));
     expect(t.koniec).toBeNull();
     expect(elder(t, POSTARKA)!.strach).toEqual([3, 0]);

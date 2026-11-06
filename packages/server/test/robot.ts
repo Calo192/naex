@@ -189,6 +189,8 @@ export class Robot {
         if (b.krok === "cintorin") return { type: "cintorin", uid: null };
         throw new Error(`nečakaný krok bitky ${b.krok}`);
       }
+      case "natocenieCiela":
+        return { type: "natocLokalitu", otocena: false };
       default:
         throw new Error(`nečakaná fáza ${view.faza}`);
     }
