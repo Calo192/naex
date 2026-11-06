@@ -11,6 +11,7 @@ import {
   starsiNaNakladacku,
   stavkaText,
   sVidenymiSkrytymiNaex,
+  vystrahaPeceneText,
 } from "../../../tools/playtest/texty-hraca.ts";
 import cardsJson from "../../core/data/cards.json";
 import eldersJson from "../../core/data/elders.json";
@@ -23,12 +24,14 @@ import {
   legalCommands,
   lineState,
   loadGameData,
+  nahladPitky,
   nahladVylozenia,
   naTahu,
   parseScorecards,
   poOdkrytiNaex,
   rngInt,
   rngSeed,
+  sPrilozenou,
   setupGame,
   stavkaBitky,
   viewFor,
@@ -82,6 +85,54 @@ function doPitky(seed: number, bzdocha: readonly PlayerId[], uprav: (s: GameStat
   expect(s.faza).toBe("pitka");
   return { s, lavy: lavy.uid };
 }
+
+describe("klient AI hráčov: výstraha pečene pri „vylož“ (playtest 20261106)", () => {
+  const pijan = (l: number, r: number): CardInstance => ({ uid: 880100 + l * 10 + r, defId: "pijan", leftLayout: l, rightLayout: r });
+  /** Zhromaždenie hráča 0: Pijan na jeho strane, pečeň podľa `pecen`; súper má plný poldeci. */
+  const zhromazdenie = (pecen: number): GameState => {
+    const s0 = setupSBalickom(sada, 410);
+    return {
+      ...s0,
+      faza: "zhromazdenie",
+      kolo: 2,
+      utocnik: 0,
+      pitkyCelkom: 1,
+      pitkaCislo: 0,
+      ciel: { typ: "lokalita", lokalita: null },
+      strany: [[{ card: pijan(0, 0), playedBy: 0 }], []],
+      hraci: [
+        { ...s0.hraci[0], ruka: [], cigarety: 5, poldeciPlne: 1, poldeciVypite: 0, pecen },
+        { ...s0.hraci[1], ruka: [], cigarety: 5, poldeciPlne: 1, poldeciVypite: 0 },
+      ],
+      zhromazdenieStav: { naTahu: 0, zostavaLimit: [3, 3], pasoval: [false, false], navyse: [0, 0] },
+    };
+  };
+
+  it("povie Cirhózy z výhľadu Pitky ešte pred vyložením", () => {
+    const v = viewFor(sada, zhromazdenie(2), 0);
+    const pred = nahladPitky(sada, v)[0].cirhozy;
+    const karta = pijan(1, 1);
+    const text = vystrahaPeceneText(sada, v, karta, "vlastna");
+    const po = nahladPitky(sada, sPrilozenou(sada, v, 0, karta, 0))[0].cirhozy;
+    expect(po).toBeGreaterThan(pred);
+    expect(text).toContain(`VÝSTRAHA PEČENE: tebe do konca kola Cirhóza +${po - pred}`);
+  });
+
+  it("karta bez Pečene a Poldeci výstrahu nemá, aj keď pečeň hrozí", () => {
+    const v = viewFor(sada, zhromazdenie(2), 0);
+    const bez = instanceFor(sada, "ht_lavy", EMPTY, R2);
+    expect(vystrahaPeceneText(sada, v, bez, "vlastna")).toBeNull();
+  });
+
+  it("súperove skryté NA EX bez Bzdochy text nezmení", () => {
+    const { s, lavy } = doPitky(308, []);
+    const karta = pijan(0, 0);
+    const bezNaex = vystrahaPeceneText(sada, viewFor(sada, s, 1), karta, "vlastna");
+    const sNaex = apply(sada, s, { type: "naex", uid: lavy }, 0).state;
+    expect(viewFor(sada, sNaex, 1).pitkaStav?.skryteNaex).toEqual([]);
+    expect(vystrahaPeceneText(sada, viewFor(sada, sNaex, 1), karta, "vlastna")).toBe(bezNaex);
+  });
+});
 
 describe("klient AI hráčov: Bzdocha (playtest 20261028-090549, nezrovnalosť 2)", () => {
   it("majiteľ Bzdochy vidí, na čo dal súper skryto NA EX, a stôl ho ráta", () => {

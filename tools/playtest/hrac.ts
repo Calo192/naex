@@ -97,7 +97,7 @@ import {
   zablokovaneStrany,
   maxZoSenku,
 } from "@naex/core";
-import { bzdochaText, prehraNaexText, prehraText, stavkaText, superoveSkryteNaex, sVidenymiSkrytymiNaex } from "./texty-hraca.ts";
+import { bzdochaText, prehraNaexText, prehraText, stavkaText, superoveSkryteNaex, sVidenymiSkrytymiNaex, vystrahaPeceneText } from "./texty-hraca.ts";
 
 interface Relacia {
   /** Server dočasnej partie (playtest dvoch agentov). */
@@ -367,6 +367,9 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
   out.push(
     `=== Kolo ${v.kolo}, fáza ${v.faza}${v.faza === "pitka" ? ` ${v.pitkaCislo}/${v.pitkyCelkom}` : ""}${v.faza === "zhromazdenie" ? ` (pred Pitkou ${v.pitkaCislo + 1}/${v.pitkyCelkom})` : ""}${v.vizia !== null ? " (VÍZIA)" : ""}${v.hasicVolba !== null ? " (HASIČ)" : ""}${v.bitkaStav?.krok ? ` (krok ${v.bitkaStav.krok})` : ""} — na ťahu: ${v.draftStav?.krok === "stavba" ? "obaja naraz (stavba šenku)" : kto(v.naTahu)} ===`,
   );
+  // Súperovo NA EX z Bzdochy patrí do hlavičky: v strede dlhého výpisu ho Agresor prehliadol (playtest 20261106).
+  const bzdocha = bzdochaText(DATA, v);
+  if (bzdocha !== null) out.push(bzdocha);
   if (v.koniec !== null) {
     out.push(`KONIEC HRY: vyhral ${kto(v.koniec.vitaz)}. ${rozlozRod(v.koniec.dovod, rodyHracov)}${v.koniec.body ? ` Špaky: ty ${v.koniec.body[ja]}, súper ${v.koniec.body[su]}.` : ""}`);
   }
@@ -464,8 +467,6 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     out.push(
       `PITKA NARAZ — obaja hráte súčasne a každý skončí sám: ${kto(obr)} (obranca): ${stav(obr)} · ${kto(v.utocnik)} (útočník, na NA EX odpovedá prvý): ${stav(v.utocnik)}. „hotovo“ je nevratné; NA EX sa odkryjú naraz, keď skončia obaja. Odpovede (v9.2): najprv útočník lícom dole, potom obranca lícom dole na druhý kraj línie (ak útočník neodpovedal, na ktorýkoľvek); obe sa otočia naraz a Pitka sa vyhodnotí — posledné slovo nemá nikto.`,
     );
-    const bz = bzdochaText(DATA, v);
-    if (bz !== null) out.push(bz);
   }
 
   out.push("");
@@ -758,7 +759,8 @@ function popisVylozenia(v: ClientState, k: CardInstance, kam: "vlastna" | "super
         }`;
   // Tuhé navyše z kariet (Pes, Recidivista…) — bonus Psa náhľad vynechal (playtest 20261026-173610-1).
   const tuhe = (q: PlayerId): string => (n.tuhe[q] === 0 ? "" : `, tuhé navyše ${n.tuhe[q] > 0 ? "+" : "−"}${Math.abs(n.tuhe[q])}`);
-  return ` | vnútorná hrana ${hranaText(n.vnutorna)} ${spoj} | ty: ${zmenyText(n.zmeny[v.ja])}${tuhe(v.ja)} · súper: ${zmenyText(n.zmeny[su])}${tuhe(su)}`;
+  const vystraha = vystrahaPeceneText(DATA, v, k, kam);
+  return ` | vnútorná hrana ${hranaText(n.vnutorna)} ${spoj} | ty: ${zmenyText(n.zmeny[v.ja])}${tuhe(v.ja)} · súper: ${zmenyText(n.zmeny[su])}${tuhe(su)}${vystraha === null ? "" : ` | ${vystraha}`}`;
 }
 
 const POPIS_CIELA: Record<string, string> = {

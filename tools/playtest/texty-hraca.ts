@@ -3,19 +3,23 @@
 // aby sa výpis nerozišiel s pravidlami, keď sa jadro zmení (playtest
 // 20261028-090549: −5 za Cirhózu, Bzdocha naslepo, Noviny v odhade, „kolo 7“).
 
-import type { ClientState, ElderState, GameData, PlayerId } from "@naex/core";
+import type { CardInstance, ClientState, ElderState, GameData, PlayerId } from "@naex/core";
 import {
   dalsiePitkyKola,
   efektyPrehry,
+  maAkciuPecene,
   opponentOf,
   poOdkrytiNaex,
   cenaDalsiehoStupna,
   sMojimiSkrytymiNaex,
+  sPrilozenou,
   spakov,
   stavkaBitky,
   stolPriPoskodeni,
+  textHrozbyKliatob,
   textyEfektovPrehry,
   vidiVolbuSupera,
+  vystrahaPecene,
 } from "@naex/core";
 
 // Efekty Prehra ráta jadro (návrh #38 B) — test klienta ich berie odtiaľto.
@@ -65,6 +69,28 @@ function kartaPodNaex(data: GameData, v: ClientState, uid: number): string {
   const z = v.zaverecne.find((x) => x.uid === uid);
   if (z !== undefined) return `${z.majitel === v.ja ? "tvoju" : "svoju"} Záverečnú lícom dole (na ${z.strana === v.ja ? "tvojej" : "jeho"} strane)`;
   return `kartu [${uid}]`;
+}
+
+/**
+ * Výstraha pečene pri možnosti „vylož“ (Michal 2026-11-06, playtest 20261106: Sabotér a Ekonóm ju
+ * videli až po vyložení, vo VÝHĽADE PITKY). Ten istý výpočet ako web (vystrahaPecene), z pohľadu
+ * hráča — súperovu ruku ani jeho skryté NA EX nepozná. Null, keď karta žiadnu Cirhózu nehrozí.
+ */
+export function vystrahaPeceneText(data: GameData, v: ClientState, k: CardInstance, kam: "vlastna" | "superova"): string | null {
+  if (v.ciel === null || !maAkciuPecene(data, k)) return null;
+  const su = opponentOf(v.ja);
+  const pred = sMojimiSkrytymiNaex(data, v);
+  const po = sPrilozenou(data, pred, kam === "vlastna" ? v.ja : su, k, v.ja);
+  const x = vystrahaPecene(data, pred, po);
+  if (x === null) return null;
+  const cirhozy = (p: PlayerId): string => textHrozbyKliatob({ cirhozy: x.cirhozy[p], dlhy: 0, spaky: x.spaky[p] });
+  const naKartu = x.naex === null ? undefined : po.strany.flat().find((pl) => pl.card.uid === x.naex?.uid);
+  const casti = [
+    x.cirhozy[v.ja] > 0 ? `tebe do konca kola ${cirhozy(v.ja)}` : "",
+    x.naex !== null ? `ak súper dá NA EX na ${data.cards.get(naKartu?.card.defId ?? k.defId)?.name ?? k.defId} [${x.naex.uid}], tebe ešte ${textHrozbyKliatob(x.naex)}` : "",
+    x.cirhozy[su] > 0 ? `súperovi do konca kola ${cirhozy(su)}` : "",
+  ].filter((t) => t !== "");
+  return `VÝSTRAHA PEČENE: ${casti.join(" · ")} (ruka sa neráta)`;
 }
 
 /**
