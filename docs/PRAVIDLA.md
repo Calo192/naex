@@ -482,8 +482,8 @@ cigareta“ sa nepoužíva — cigareta je cigareta.
   počet akcií na jej hrane (obe hrany majú rovnako): 1 spodok, 2 dedina,
   3 sídla dedinskej šľachty, 4 pinnacle s korupciou.
 - **8 starších**, každý na **scorecarde** rozdanom náhodne (scorecard určuje
-  len priazeň staršieho, §10; bodovacie podmienky od v6 nie sú). Marker
-  každého staršieho začína **v strede stupnice** (index 3, jediné sivé pole).
+  len priazeň staršieho, §10; bodovacie podmienky od v6 nie sú). Strach
+  aj reči oboch hráčov pri každom staršom začínajú **na nule** (§10).
 - **Počiatočná ruka:** každý hráč má na začiatku v ruke **4 karty** —
   Miňištrant, Milujúca manželka, Pijan a Dievčina na vydaj (variácie podľa
   sady). **Doberací balíček je prázdny** — naplní ho až odhadzovací (§4).
