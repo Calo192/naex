@@ -3,9 +3,11 @@
 Charakter štýlu: `../../styly.json` (kľúč `agresor`). Formát: `../README.md`.
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 
-## Aktuálna stratégia (po partii 6, pravidlá v11.10, stredná partia 5+finále)
-**Cieľ:** skončiť hru **pred finále strachom alebo väzňami**, podľa Nakladačky. P6 (K5, 102:33): červené na neškodných priaznach, 4 červené po K4 (Nak 25 za 4 bitky), K5 stačí vyhrať bitku; P5 (K4, 60:2): 3 červené do K3, potom Nak ≥ 15 = 3 zajatia naraz. **Rozhodnutie v každej Nak:** chýbajúca červená za 3–5 (výhra strachom ďalšou výhranou bitkou) pred zajatím, ak Nak nestačí na všetky väzne naraz. Skorý koniec navyše zruší trest: P6 13 Dlhov a 6 Cirhóz (−7, −18) sa neúčtovali, P5 7 Cirhóz.
-**NA EX: vnútorná hrana, a čítaj súpera.** P6: Klebetná čítala hrozbu zo stola, K3 zrážka 15 → 7, K4 s prázdnou rukou vyfajčila kartu a odpovedala na vonkajšiu hranu 23 → 12. Ak výpis ukazuje veľkú hrozbu, ráta sa s tým, že ju súper uvidí.
+## Aktuálna stratégia (po partii 7, pravidlá v11.11, stredná partia 5+finále)
+**Cieľ:** skončiť hru **pred finále strachom alebo väzňami**, podľa Nakladačky. P7 (K3, 50:31, v11.11): Nak 15 + 9 = 4 červené po K2, K3 stačí vyhrať bitku; krátenie rečami a špaky súpera za karty skorý koniec neriešia, lebo výhra strachom ráta strach celý. P6 (K5, 102:33): 4 červené po K4. P5 (K4, 60:2): 3 červené do K3, potom Nak ≥ 15 = 3 zajatia naraz. **Rozhodnutie v každej Nak:** chýbajúca červená za 3–6 (výhra strachom ďalšou výhranou bitkou) pred zajatím, ak Nak nestačí na všetky väzne naraz. Štvrtá červená na priazeň, ktorá pôsobí až po 4c (Robota) a nedá cigarety hneď v 6c (nie Fajčiar). Skorý koniec navyše zruší trest: P7 9 Dlhov (bez 5 špakov), P6 13 Dlhov a 6 Cirhóz, P5 7 Cirhóz.
+**Klebetná na v11.11: nesnaž sa jej zobrať hádku kartami, zabi jej Pohoršenia NA EX.** P7 K2: NA EX na jej Manželku s Pohoršeniami 9 → 1 mäkkých, hádka 2 namiesto 10, navyše jej Hazard a Pečeň ×4. Obe hrany karty obsadené = odpoveď to nepokazí. Ona stavia aj múr Viery (K3 10 Vier cez Alkoholika a Opatrovateľku): NA EX na Opatrovateľku −4, moje Povery (Horoskop, Bzdocha) žerú Vieru a každá = +1 tuhé.
+**NA EX: vnútorná hrana, a čítaj súpera.** P6: Klebetná čítala hrozbu zo stola, K3 zrážka 15 → 7, K4 s prázdnou rukou vyfajčila kartu a odpovedala na vonkajšiu hranu 23 → 12. Ak výpis ukazuje veľkú hrozbu, ráta sa s tým, že ju súper uvidí. P7: Blokuje podstrčením aj odpoveďou na môj koniec (K2 Dievčina za Silnú, K3 Pijan za Vymáhača), preto plán línie vždy s náhradou, Silnú neplánovať len k jednej karte.
+**K1 ako obranca: Most.** P7 K1 18:3: nikto nepodstrčí, odpoveď len na vlastnú stranu; pas v Z1 (+2 cig.), Hasič bez páru na vnútornej + NA EX: Petelica ×2, Rana ×2.
 > Sudca 2026-11-06: Časovanie 4c pred 4e je správne (§9.4 Nakladačka bod 4, §10 Výhra strachom) — overené v partiách 20261106-010635-1 K5 aj 20261106-024710-2 K5.
 
 1. **K1–K2: cigarety do kariet, nie do zásoby.** 3 cig. v K1 = 3 karty (P5 Mäsiar, Silná, Svokra: výhľad 19 tuhých). Prázdna ruka po kole = dobratie 3 kariet z odhadzovacieho, ktorý som si práve nakúpil.
@@ -24,6 +26,14 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 11. **Finále, ak sa k nemu dôjde:** väzeň Vychovávateľka, vynútený pas, všetko do jeho kraja (P4 11:0).
 > Sudca 2026-11-06: Finále v 20261106-024710-2 bolo podľa priebeh.log tuhé 21 : 3 pre Klebetnú, Nakladačka 18 = 18 špakov, hádka 2 — jej finále dalo spolu 27 hrubých + výkupné 4 (nie „3 : 17“).
 
+## Overenie na v11.11 (P7)
+- Výhra strachom a väzňami dosiahnuteľná: **áno**, K3, Nak 15/9/10, 2 červené po K1, 4 po K2.
+- Krátenie rečami: K2 −7, K3 −6 = −13 špakov z možných 33; víťazstvo to nemení, po finále by to bolelo.
+- Súper natáča: K2 Ihrisko, K3 Zberný dvor; lepšie hrany si nechá, cena ≈ 3 tuhé za kolo (K2 skončilo Nak presne 9, K3 mi zobrala Petelicu 3). Vyberám lokalitu podľa toho, že dostanem horšiu hranu.
+- Špaky súpera za karty: 6 + 6 + 6 = 18 z jej 31; súper bez výhry bitky mala 31, nestačilo.
+- Výpalné: 6 cig. za K1 a K2, súper K3 3 cig. proti mojim 7.
+- Zajatie s krádežou: neskúšané (4 červené rýchlejšie, krádež K2 len 1 a 0).
+
 ## Overenie starých poučení na v11.10
 - Časovanie 4c pred 4e: **overené** (P6 K5: Nak 15 sa nerozdelila, hra skončila pred exekúciou).
 - „Výhra strachom je nereálna“: **vyvrátené** (P6 K5, Nak spolu len 25); väzni sú rýchlejší len pri Nak ≥ 15 pri 3 červených.
@@ -33,6 +43,15 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 - Každý Hazard je Dlh: **potvrdené ako hlavná cena sily**: P5 −18 špakov Exekútor za 4 kolá; hry to nerozhodlo.
 
 ## Nástroje
+- **NA EX na súperovu kartu s aktívnymi Pohoršeniami a obsadenými hranami** — zruší Pohoršenia (hádka klesne), zdvojí jej neaktívne Hazard a Pečeň; odpoveď to nepokazí · stav: overený (1×) · dôkaz: P7 K2 mäkké 9 → 1, hádka 2, súperke 4 Dlhy + Cirhóza za Pitku · pravidlá: v11.11
+- **Nástroj v línii ako krmivo na Vieru (Horoskop, moje Povery)** — súperova Viera ich musí zjesť a tuhé netlmí, Nástroj nemíňa limit, +1 špak · stav: overený · dôkaz: P7 K1 jej 2 Viery zjedli Povery, K3 Bzdocha odpoveďou +2 · pravidlá: v11.11
+- **Nástroj bez spoja ako štít vonkajšej hrany** — za kartou s NA EX, odpoveď ju nespáruje · stav: sľubný · dôkaz: P7 K2 Mäsiar: Rana ×2, Pecka ×2 ostali (súper mal prázdnu ruku) · pravidlá: v11.11
+- **Hasič bez páru na vnútornej + NA EX na Moste** — Petelica ×2, Rana ×2, odpoveď na moju stranu nejde · stav: overený (1×) · dôkaz: P7 K1 18:3 · pravidlá: v11.11
+- **Odpoveď Miňištrantom za Nástroj** — zadarmo Povera + Viera, presne 1 bod Nak · stav: overený (1×) · dôkaz: P7 K2 11:3 → 12:3, Nak 9 = 4. červená · pravidlá: v11.11
+- **Výber 4. červenej podľa toho, kedy priazeň pôsobí** — Robota v 4d je po konci, Fajčiar v 6c by jej dal cig. · stav: overený · dôkaz: P7 K2 Autobusár, K3 súper 3 cig. · pravidlá: v11.11
+- **Kmotor súperovi = palivo Vymáhača** — presunie mi Dlhy, K3 9 Dlhov = 4 Rany · stav: sľubný · dôkaz: P7 K2, K3 · pravidlá: v11.11
+- **Zberný dvor pri dobrom odhadzovacom** — Silná v Z2 za 1 cig. · stav: podmienený (blok súpera) · dôkaz: P7 K3 Silná + Kočovník +7 · pravidlá: v11.11
+- **Bzdocha v šenku: zober ju, aj keď ju nepoužiješ** — súperka tak nemá zrážku · stav: sľubný · dôkaz: P7 K3 · pravidlá: v11.11
 - **Pijan pri hrane s neaktívnymi Ranami na vnútornej + Silná, NA EX** — Rany ×4 = 8 + Pijan 1 + hrana; lokalitu vybrať podľa vnútornej hrany štartovky · stav: overený (1×) · dôkaz: P6 K1 11:0, odpoveď nepokazila, cena Cirhóza + Dlh · pravidlá: v11.10
 - **Poľovník na súperovu stranu proti podstrčenému Zvieraťu** — spáli ho navždy, hrana znova voľná; na Kostole Petelica × Pakt hrany 6 tuhých · stav: overený (2×) · dôkaz: P6 K1 Pes, K4 Čierna mačka · pravidlá: v11.10
 - **Veterán pri hrane s Posilnením či Peckou** — Pecka ×2 + Rany bez NA EX, 6 tuhých; súperovo NA EX na neho len pomôže · stav: overený · dôkaz: P6 K2, K4 · pravidlá: v11.10
@@ -135,24 +154,47 @@ Uzavreté P1–P4, jednou vetou: E1 NA EX na obrannú kartu funguje; E2 červen�
 - výsledok: funguje
 - čísla: K5 pri 10 Dlhoch 5 Rán, exekúcia sa neúčtovala
 - pravidlá: v11.10
+### E39 · Keď môžem lacno vyrovnať alebo zobrať hádku, spravím to; čakám, že jej zoberiem natáčanie aj 3–6 špakov za karty
+- partie: 20261106-165715-1
+- výsledok: čiastočne; hádku som nezobral ani raz (0:10, 0:2, 0:4), špaky za karty mala 3× po 6, natáčala 2×. Fungovalo len NA EX na jej Pohoršenia: hádka 10 → 2, ušetrených asi 8 špakov z rečí
+- čo ďalej: kartami sa nepretláčam, proti Pohoršeniam NA EX; ak zoberiem hádku, tak len keď to nič nestojí v tuhom
+- pravidlá: v11.11
+### E40 · Keď zajímam, vyberiem staršieho s najvyššími súperovými rečami; čakám krádež 3–5
+- partie: 20261106-165715-1
+- výsledok: nedotkla sa; K2 krádež 1 a 0, 4 červené boli lepšie
+- pravidlá: v11.11
+### E41 · Záverečná na súperov koniec, aby nemala kam dať odpoveď
+- partie: 20261106-165715-1
+- výsledok: nevyskúšané; K1 Most, K2 a K3 stačilo inak
+- pravidlá: v11.11
+### E42 · Keď má súper veľa Viery, dám do línie svoje Povery (aj z Nástroja); čakám, že zjedia Vieru
+- partie: 20261106-165715-1
+- výsledok: funguje
+- čísla: K1 2 Povery, K3 Bzdocha 2 Povery; +1 tuhé za Poveru (hrozba 12 → 15 s Vymáhačom)
+- pravidlá: v11.11
+### E43 · Keď dám NA EX na kartu s hodnotami na vonkajšej hrane, Nástroj bez spoja ju zakryje
+- partie: 20261106-165715-1
+- výsledok: funguje, slabý dôkaz (súper mal prázdnu ruku)
+- čísla: K2 Rana ×2, Pecka ×2 ostali, 15 pred odpočtom
+- pravidlá: v11.11
 
 ## Nápady na vyskúšanie
-1. Zajatie na najvyšších súperových rečiach: krádež 3–5, odoberie Klebetnej zdroj (E34).
-2. Výhra väzňami proti súperovi, ktorý má ≥ 3 poldeci a drží cigarety (Ekonóm): stačí Nak 15?
-3. Záverečná na súperov koniec hneď po jeho prvej karte (robí mi to každý).
-4. Vidly alebo Valaška v Dedičstve K1–K2 pri 3+ cig. (P6: nemal som cig. včas.)
-5. Sypač s Pijanom/Veteránom: Rany ako Pecky.
-6. Väzeň Vychovávateľka už v K3–K4 a schopnosť v bitke o červené.
-7. Farár väzeň: zrušiť jeho NA EX v rozhodujúcej Pitke.
-8. Hazard pre súpera: Finančná poradkyňa.
-9. Bzdocha v Pitke s veľkou hrozbou: vidím, či chce zrážku, a NA EX dám inam.
+1. Zajatie na najvyšších súperových rečiach: krádež 3–5, odoberie Klebetnej zdroj (E40).
+2. Záverečná na súperov koniec, kým nezablokuje môj (E41). Súper blokoval môj koniec 3×.
+3. Zapísať si, ktorá karta v mojom kraji má vonkajšiu hranu, ktorú súper nechce aktivovať (Mäsiar na jej konci ako rukojemník).
+4. Výhra väzňami proti súperovi, ktorý má ≥ 3 poldeci a drží cigarety (Ekonóm): stačí Nak 15?
+5. Vidly alebo Valaška v Dedičstve K1–K2 pri 3+ cig.
+6. Sypač s Pijanom/Veteránom: Rany ako Pecky.
+7. Väzeň Vychovávateľka už v K3–K4 a schopnosť v bitke o červené.
+8. Farár väzeň: zrušiť jeho NA EX v rozhodujúcej Pitke.
+9. Finančná poradkyňa v mojich rukách: súperka mi nimi dala 2 Dlhy za Pitku.
 
 ## Čo štýlu chýba v hre
-- **P5, P6 nič: štýl zvíťazil v K4 a K5.** Otázka je opačná, či nie je príliš silný, keď sa rozbehne: K2 12 cig. z jednej kombinácie, K4 3 väzni v jednej bitke, krádež 0; P6 porazená nevyhrala bitku, 9 cig. výpalného, strach na neškodné priazne je zadarmo (Abstinent, Kmotor, Advokát sily 3 s úžitkom 0).
+- **P5, P6, P7 nič: štýl zvíťazil v K4, K5 a K3.** Otázka je opačná, či nie je príliš silný, keď sa rozbehne: P7 K1 Nak 15 na lokalite úrovne 1 = 2 červené za jednu bitku, K2 výhra je už koniec v K3; K2 12 cig. z jednej kombinácie, K4 3 väzni v jednej bitke, krádež 0; P6 porazená nevyhrala bitku, 9 cig. výpalného, strach na neškodné priazne je zadarmo (Abstinent, Kmotor, Advokát sily 3 s úžitkom 0).
 - **Výhra strachom je pomalšia než väzni** pri tej istej Nakladačke: 3 väzni 15 b., 4. červená až o kolo.
 - **Obrana proti Záverečnej na mojom konci je len ďalšia Pitka** (P4); P5 sa to neopakovalo, lebo som mal limit 5.
 - **Odpoveď na NA EX vie zmeniť prevahu** (P4 K4).
-- Prázdne fázy P5, P6: žiadne.
+- Prázdne fázy P5, P6, P7: žiadne.
 
 ## Partie
 - 2026-11-06 · 20261106-010635-1 · vs Ekonóm Ďuro · VÝHRA 59:38 po finále (v11.6) · NA EX na obrannú kartu, podstrčenie Petelíc
@@ -162,3 +204,4 @@ Uzavreté P1–P4, jednou vetou: E1 NA EX na obrannú kartu funguje; E2 červen�
 > Sudca 2026-11-06: Pred finále si mal 0 červených a 1 väzňa (prehratie partie: Krčmárka strach 2, Vychovávateľka v pivnici), teda 1 zo 4, nie „2 z 4“ ani „1 červená + väzeň“ ako v tvojom rozbore. Cesta strachom bola v tejto partii ešte ďalej.
 - 2026-11-06 · 20261106-133718-2 · vs Sabotér Zdeno · VÝHRA VÄZŇAMI 60:2 v K4 (v11.10); všetky 4 bitky moje, Nak 3/8/10/18, 3 červené po K3, 3 väzni v K4; Exekútor −18, 7 Cirhóz bez trestu · E26–E32; Silná, Veterán × NA EX, barter, tuhé karty do posledného Z
 - 2026-11-06 · 20261106-144117-2 · vs Klebetná Mara · VÝHRA STRACHOM 102:33 v K5 (v11.10); všetkých 5 bitiek, Nak 11/4/4/6, 4 červené po K4, 2× barter, súper 0×; výpalné 9 cig.; zrážka 15→7, odpoveď 23→12 · E33–E38; Pijan × Silná, Poľovník proti podstrčeniu, Vymáhač
+- 2026-11-06 · 20261106-165715-1 · vs Klebetná Mara · VÝHRA STRACHOM 50:31 v K3 (v11.11); všetky 3 bitky, Nak 15/9/10, 4 červené po K2, hádka 0:3 (mäkké 0:10, 0:2, 0:4); krátenie −13, súper za karty 18, reči 15 · E39–E43; Most + Hasič, NA EX na Pohoršenia, Povery na Vieru
