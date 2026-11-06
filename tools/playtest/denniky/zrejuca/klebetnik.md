@@ -30,6 +30,7 @@ Overené na v11.11:
 - **Vymáhač ako odpoveď na NA EX** — stav: overený · dôkaz: 185402-1 K4 10 : 5, K2 +3 tuhé · pravidlá: v11.11
 - **Remíza v tuhom na Dlhy** — stav: overený · dôkaz: 185402-1 K1 6 : 6, Dlhy 1 : 2, +11 · pravidlá: v11.11
 - **NA EX na vlastnú Finančnú poradkyňu** — Dlhy jemu · stav: sľubný, Záhradkár ho odkladá · dôkaz: 185402-1 K2 +13 Dlhov, exekúcia K5 −9, Dlhy pred tým obišli Záhradkárom K2–K4 · pravidlá: v11.11
+> Sudca 2026-11-06: K2 mal Sabotér +15 Dlhov, nie +13: z Poradkyne 12 (4 za každú z 3 Pitiek), 3 z jeho vlastnej Predavačky (20261106-185402-1, zhrnutia Pitiek). Stav 1 → 16 v E64 sedí.
 - **NA EX na kartu s Petelicou súpera ako brzda Nakladačky** — stav: overený · dôkaz: 185402-1 K3 Vandal −3, K5 Recidivista −8, Svokra −2 · pravidlá: v11.11
 - **Reči pri súperovom strachu** — K5 −5, K3 −2 (spolu 7); skôr K5 6, K6 15 · stav: overený · dôkaz: 185402-1, 173331-1, 165715-1 · pravidlá: v11.11
 - **Karty pri vyhratej hádke** — K2 5, K3 4; K2 8, K4 7, K5 11 · stav: overený, pomôže aj súperovi · dôkaz: 185402-1, 173331-1 · pravidlá: v11.11
@@ -42,9 +43,11 @@ Overené na v11.11:
 - **Múr AA + Opatrovateľka + Miňištrant**, **NA EX na vlastnú kartu s neaktívnymi Vierami**, **Manželka + Liberál**, **Priazne z jeho strachu proti Dlhom**, **Nealko + Opatrovateľka**, **Dohadzovačka ako odpoveď**, **NA EX na vlastnú podstrčenú Veštitu** · dôkaz: 165715-1, 173331-1 · pravidlá: v11.11
 Overené na v11.10, na v11.11 neskúšané znova: **Manželka | Šarlatán**, **Odpoveď, ktorá spáruje neaktívnu akciu**, **NA EX na vlastného Veterána**, **Finančná poradkyňa pri hrane**.
 Podmienené: **Natáčanie** — K4 Pakt = Poh rozhodlo hádku 4 : 2; K3 aj K5 ho Vandal zrušil za 1 kartu, K5 ako odpoveď · **Kultúrny dom** — K5 +4 a pri remíze hádky nič navyše, pri výhre hádky 8 · **Krčma: povinné NA EX ako sabotáž** · **Podstrčená blokáda** · **Múr viery ako plán remízy** · **Dlhy jemu** (nie proti Vymáhaču; Záhradkár ich odkladá) · **Vandal**, **Telefón v Dedičstve**, **Karta na súperovu hranu v prvom ťahu**, **Pijan ako Záverečná**, **Šarlatán a jeho Konflikt**, **Obranná NA EX**.
+> Sudca 2026-11-06: Natáčanie nedáva špaky priamo a výpis ich neráta. V 3 z 9 natáčaných kôl by opačné natočenie pri rovnakých kartách znížilo počet Pitiek z 2 na 1 (20261106-165715-1 K2, 173331-1 K3, 185402-1 K3), takže páka môže byť väčšia, než sa zdá z tuhých. Porovnať sa dali len 2 kolá: 165715-1 K3 bez zmeny špakov, 173331-1 finále 8 špakov v tvoj prospech.
 Neoverené: **Horoskop**, **Ohováračka z karty**.
 Zavrhnuté:
 - **Presvedčenie v Druhej lige** (K3 hádka 10, cena 11; reči dali 10 + 5 a krátenie). **Noviny** (2 karty za 3 hádky). **Zviera na hranu proti Poľovníkovi.** **Tichá línia.** **Zrážka naslepo.** **Nástroj s mäkkými na koniec radu bez mojej karty.** **Kostol ako oltár.** **Strach z Nakladačky na starších so Kmotrom pri mojich Dlhoch.**
+> Sudca 2026-11-06: Zavrhnutie platí pre cenu 11 na v11.11. Pripravené nové reči cenu menia, pri novej verzii over znova.
 - **Reči mimo jeho červenej — VYVRÁTENÉ na v11.11.**
 - **„Hádka bez výhry bitky nikdy neprešla“ — na v11.11 už neplatí:** dáva 8–17 špakov za kolo.
 - **„Cigarety nehromadím“ — potvrdené:** výpalné K3, K4 po 3 cig.

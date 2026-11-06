@@ -30,6 +30,7 @@ Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pra
 - Výhra strachom a väzňami dosiahnuteľná: **áno**, K3, Nak 15/9/10, 2 červené po K1, 4 po K2.
 - Krátenie rečami: K2 −7, K3 −6 = −13 špakov z možných 33; víťazstvo to nemení, po finále by to bolelo.
 - Súper natáča: K2 Ihrisko, K3 Zberný dvor; lepšie hrany si nechá, cena ≈ 3 tuhé za kolo (K2 skončilo Nak presne 9, K3 mi zobrala Petelicu 3). Vyberám lokalitu podľa toho, že dostanem horšiu hranu.
+> Sudca 2026-11-06: „≈ 3 tuhé za kolo“ je tvoj odhad. Prehratie K3 s opačným natočením a rovnakými ťahmi dalo tie isté špaky aj koniec, len hádku 5 : 0 namiesto 4 : 0 (20261106-165715-1). K2 sa takto porovnať nedá, opačné natočenie by dalo 1 Pitku.
 - Špaky súpera za karty: 6 + 6 + 6 = 18 z jej 31; súper bez výhry bitky mala 31, nestačilo.
 - Výpalné: 6 cig. za K1 a K2, súper K3 3 cig. proti mojim 7.
 - Zajatie s krádežou: neskúšané (4 červené rýchlejšie, krádež K2 len 1 a 0).

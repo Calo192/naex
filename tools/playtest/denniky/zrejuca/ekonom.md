@@ -13,6 +13,7 @@ Ekonóm vyhráva **motorom a NA EX na uzamknuté akcie**. Finále dá 50+, ale r
 5. **Hádka len lacno:** NA EX, Viera, Silná + Viera. Natáčanie mi dá hranu do ďalšej bitky.
 6. **Šenok:** kupuj, len keď to dobratie do 3 nezhltne. Pri hrane s Cig: reťaz Silná, Strýko, Opatrovateľka = Cig 7–8 za Pitku (K5 22 cig). Vo finále každá karta = špak, karta za 1–1,5 cig.
 7. **Barter vždy, keď máš 5 cig** (K2, K5 3×): limit aj výkupné. Doliatie vo finále: 2 cig = 1 špak.
+> Sudca 2026-11-06: Server ráta 5 barterov: K2 1, K5 4 (20261106-173331-1, „K5 3×“ nesedí). K5 teda minul na barter 20 cigariet.
 8. **Pas s plnou rukou** pred finále: K5 Zhr 3 +4 cig a 5 kariet do finále. Vízie spália Cirhózu, keď je balíček tenký (K2 2×, K5).
 9. **Dlhy:** Poradkyňa na súpera. Svoje Dlhy platia Exekútora (K5 −11), ale Vymáhač ich mení na Rany (22 Dlhov = 11) a Advokát (jeho strach) a Kmotor ich zrážajú. Môj strach mi tieto priazne berie, rátaj to.
 10. **Vidly K1** (aj cez prehru na Cintoríne): +5 K2, +6 K4.
@@ -114,6 +115,7 @@ Uzavreté p7 (v11.11): E43 Cintorín K1 čiastočne, E44 lacná hádka áno, E45
 ## Čo štýlu chýba v hre
 - **Vlastný strach berie vlastné priazne:** p7 K4 Nakladačka 20 sa musela rozdeliť celá, Mara dostala 7 priazní a ja stratil Advokáta a Kmotra; K5 Exekútor −11. Investor by chcel Nakladačku odložiť.
 - **Vidly s Výtržníkom** (p7 K2 5 Rán = 10): pozri nezrovnalosť, možno neúmyselné.
+> Sudca 2026-11-06: Hra dáva +1 za každú Ranu Výtržníka, §7 píše „vždy ×1 … ani iný násobok karty“ a §16 Vidly Výtržníka nespomína. Bez rozhodnutia Michala to nie je overený nástroj. Pri ×1 by K2 skončilo 11 : 12 a bitku by mala súperka.
 - **Línia dáva špaky len víťazovi aj za moje karty:** p6 K1 7, K2 11, K4 11 súperovi, z toho moje karty 3, 6, 6; bitky prehrané o 1, 4, 1 tuhé. Investor s najviac kartami kŕmi súpera.
 - **Finále nedobehne 37:** p6 vyhrané 18 : 7 dalo 34, ale súper bez kliatob stojí; výplata je ohraničená kartami a tuhým, kliatby nie.
 - **Poradkyňa podstrčená vo finále:** 6 Dlhov za Pitku, −10 špakov, bez obrany okrem Záhradkára; silné, kým Herňa navyše nedáva protihodnotu.
