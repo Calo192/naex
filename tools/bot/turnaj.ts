@@ -3,7 +3,7 @@
 //   node --experimental-strip-types --no-warnings tools/bot/turnaj.ts [partii] [super] [dlzka] [povaha]
 //
 // super: nahodny (predvolený) | chamtivy | hromadic | ekonom | bot | bot:<povaha> | stary:<priečinok>. Bot (povaha,
-// predvolene stamgast) hrá striedavo za hráča 1 a 2. Povahy: POVAHY v bot.ts.
+// predvolene igor) hrá striedavo za hráča 1 a 2. Povahy: POVAHY v bot.ts.
 // Chamtivý vykladá kartu s najväčším okamžitým rozdielom tuhého poškodenia,
 // NA EX nedáva, zvyšok hrá náhodne — latka „hráč, ktorý vie vykladať“.
 // stary:<priečinok> = tá istá povaha, ale bot.ts z inej kópie repozitára (worktree
@@ -19,6 +19,7 @@ import { pathToFileURL } from "node:url";
 import type { Command, DlzkaHry, GameState, PlayerId } from "../../packages/core/src/index.ts";
 import {
   DLZKY_HRY,
+  POVAHY,
   apply,
   evaluateLine,
   legalCommands,
@@ -41,8 +42,11 @@ const data = loadGameData(citaj("cards.json"), citaj("elders.json"), citaj("scor
 const partii = Number(process.argv[2] ?? 10);
 const superTyp = process.argv[3] ?? "nahodny";
 const dlzka = (process.argv[4] ?? "stredna") as DlzkaHry;
-const povaha = process.argv[5] ?? "stamgast";
+const povaha = process.argv[5] ?? "igor";
+// Neznáme id by tahBota ticho zahral ako prvú povahu a turnaj by meral niečo iné.
+if (!POVAHY.some((p) => p.id === povaha)) throw new Error(`Neznáma povaha ${povaha} (${POVAHY.map((p) => p.id).join(", ")}).`);
 const povahaSupera = superTyp.startsWith("bot:") ? superTyp.slice(4) : superTyp === "bot" ? povaha : null;
+if (povahaSupera !== null && !POVAHY.some((p) => p.id === povahaSupera)) throw new Error(`Neznáma povaha ${povahaSupera} (${POVAHY.map((p) => p.id).join(", ")}).`);
 const staryBot: typeof tahBota | null = superTyp.startsWith("stary:")
   ? ((await import(pathToFileURL(resolve(superTyp.slice("stary:".length), "packages/core/src/bot.ts")).href)) as { tahBota: typeof tahBota }).tahBota
   : null;

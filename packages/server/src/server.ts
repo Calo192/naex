@@ -40,6 +40,7 @@ import {
   novaHistoriaLokalit,
   zapisDoHistorie,
   POVAHY,
+  menoPovahy,
   PREDVOLENA_DLZKA,
   ALL_DLZKY,
   applySPrisunom,
@@ -840,7 +841,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   /** Offline protihráč na mieste v miestnosti — meno a podobizeň podľa povahy. */
   const hracBot = (povaha: string): HracVMiestnosti => ({
     id: BOT_ID,
-    meno: POVAHY.find((p) => p.id === povaha)?.meno ?? "Štamgast",
+    meno: menoPovahy(povaha),
     avatar: avatary.bota(povaha),
     frajerina: 0,
     pohlavie: null,
@@ -909,7 +910,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           verejna: msg.verejna === true && !protiBotovi,
           dlzka,
           bot: protiBotovi ? 1 : null,
-          botPovaha: zvolenaPovaha?.id ?? POVAHY[randomInt(POVAHY.length)]?.id ?? "stamgast",
+          botPovaha: zvolenaPovaha?.id ?? POVAHY[randomInt(POVAHY.length)]?.id ?? "igor",
         });
         if (protiBotovi) {
           // Offline protihráč sedí hneď — partia začína bez čakania.
@@ -1222,6 +1223,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       zaciatok: teraz(),
       seed: scenarVyucby.rozdanie.seed,
       bot: VYUCBA_BOT,
+      // Štamgast je postava scenára (meno a podobizeň), ťahy idú zo skriptu, nie z tahBota.
       botPovaha: "stamgast",
       // Záložné hlášky začnú v každej partii inde — nie vždy tou istou.
       vyucba: { krok, vykonany: false, koniecCasti: null, zalohy: randomInt(1_000) },

@@ -35,16 +35,14 @@ describe("offline protihráč na serveri", () => {
     expect(await rola()).toBe("navstevnik");
     const a = new Robot(server.port, cookie);
     await a.otvorene();
-    // Štamgast má podobizeň v seede; nové povahy sú zatiaľ s iniciálami (vyber-bota.test.ts).
-    a.posli({ type: "create", bot: true, povaha: "stamgast" });
+    a.posli({ type: "create", bot: true });
     await cakaj(() => a.view !== null, "začiatok partie");
 
     // Bot sedí hneď, bez účtu a Frajeriny.
     const hraci = a.hraci as [{ meno: string } | null, { meno: string; avatar: string | null; bot: boolean } | null];
     expect(POVAHY.map((p) => p.meno)).toContain(hraci[1]?.meno);
     expect(hraci[1]?.bot).toBe(true);
-    // Hráč bez fotky má náhodnú dedinskú trosku, bot svoju podobizeň (seed/avatary).
-    expect(hraci[1]?.avatar).toEqual(expect.any(String));
+    // Hráč bez fotky má náhodnú dedinskú trosku; podobizeň bota stráži vyber-bota.test.ts.
     expect((hraci[0] as { avatar?: string | null } | null)?.avatar).toEqual(expect.any(String));
 
     let tahov = 0;

@@ -11,6 +11,8 @@ import type { BitkaStav, CardInstance, Command, ElderState, GameState, PlayerId 
 import {
   DLZKY_HRY,
   POVAHY,
+  VYRADENE_POVAHY,
+  menoPovahy,
   apply,
   favourStarsieho,
   hodnotaKarty,
@@ -37,7 +39,7 @@ function odohraj(
   seed: number,
   botSeat: PlayerId,
   super_: "nahodny" | "bot",
-  povahy: readonly [string, string] = ["stamgast", "stamgast"],
+  povahy: readonly [string, string] = ["igor", "igor"],
 ): { state: GameState; stavyBota: GameState[] } {
   // 5 lokalít (do 2026-10-24 krátka hra) — krátka s 3 dá málo ťahov bota na porovnania.
   let s = setupGame(data, seed, { lokalit: DLZKY_HRY.stredna });
@@ -185,6 +187,24 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
     }
   }, 30_000);
 
+  it("Veštica: bot nevymieňa presvedčeného staršieho, hoci je to jeho najhoršia či súperova najlepšia karta", () => {
+    const s0 = setupGame(data, 83);
+    const karta = (uid: number, defId: string): CardInstance => ({ uid, defId, leftLayout: 0, rightLayout: 0 });
+    const presvedceny = karta(990500, "abstak");
+    const dobra = karta(990501, "pijan");
+    const hraci = s0.hraci.map((h) => ({ ...h, doberaci: [presvedceny, dobra] })) as unknown as GameState["hraci"];
+    const s: GameState = {
+      ...s0,
+      faza: "bitka",
+      hraci,
+      starsi: s0.starsi.map((e, i) => (i === 0 ? { ...e, karta: presvedceny, presvedcil: 0 as const } : e)),
+      bitkaStav: bitka({ krok: "vestica", caka: 0 }),
+    };
+    const cmd = tahBota(data, s, 0, 7, { povaha: "igor" });
+    expect(cmd).toEqual({ type: "vestica", moja: 1, jeho: 1 });
+    expect(() => apply(data, s, cmd, 0)).not.toThrow();
+  });
+
   /** Bitka o lokalitu v 2. kole, hráč 0 rozdeľuje: Nakladačku (prebytok) či hádku (reci) — body `body`. */
   function rozdelenie(krok: "prebytok" | "reci", body: number, prvy: Pick<ElderState, "strach" | "reci">, seed = 83): GameState {
     const s0 = setupGame(data, seed);
@@ -206,8 +226,7 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
 
   it("v11.4: zajme staršieho na svojom červenom strachu, keď Nakladačka stačí (väzeň a krádež); opatrná povaha smie odmietnuť", () => {
     const s = rozdelenie("prebytok", 5, { strach: [3, 1], reci: [0, 3] });
-    // Teta Gizka a Rudo chcú za zajatie viac (prahStarsi), Božena radšej boduje u staršieho
-    // (body 1,5) — tie smú ostať pri strachu.
+    // Rudo chce za zajatie viac (prahStarsi), Božena radšej boduje u staršieho (body 1,5) — smú ostať pri strachu.
     for (const povaha of POVAHY.filter((x) => x.prahStarsi <= 0.5 && x.body <= 1)) {
       const cmd = tahBota(data, s, 0, 7, { povaha: povaha.id });
       expect(cmd.type === "prebytok" ? cmd.zajatia : null, povaha.id).toEqual([s.starsi[0]!.elderId]);
@@ -374,7 +393,8 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
       const tenka = v(2, 1);
       expect(legalCommands(data, tenka, 0).some((c) => c.type === "smoke")).toBe(true);
       expect(tahBota(data, tenka, 0, 5, { povaha: povaha.id }).type, povaha.id).not.toBe("smoke");
-      expect(tahBota(data, v(14, 3), 0, 5, { povaha: povaha.id }).type, povaha.id).toBe("smoke");
+      // Rudo z prebytku najprv nalieva — to je jeho štýl; ostatní si dokúpia kartu.
+      expect(tahBota(data, v(14, 3), 0, 5, { povaha: povaha.id }).type, povaha.id).toBe(povaha.poldeci === undefined ? "smoke" : "barter");
     }
   });
 });
@@ -382,11 +402,21 @@ describe("offline protihráč — celá partia vrátane finále (Michal 2026-11-
 describe("povahy na výber (Michal 2026-11-06)", () => {
   it("každá má jedinečné id a jednovetný opis; meno je bez „Bot“, ktoré pridáva stôl", () => {
     expect(new Set(POVAHY.map((p) => p.id)).size).toBe(POVAHY.length);
-    expect(POVAHY.map((p) => p.id)).toEqual(expect.arrayContaining(["igor", "rudo", "bozena", "darina"]));
+    expect(POVAHY.map((p) => p.id)).toEqual(["igor", "rudo", "bozena", "darina"]);
     for (const p of POVAHY) {
       expect(p.meno).not.toMatch(/^Bot\b/);
       expect(p.popis.trim().endsWith(".")).toBe(true);
       expect(p.popis.split(". ").length).toBe(1);
     }
+  });
+
+  it("vyradené povahy nehrajú, ale meno v archíve ostáva; partia bez zápisu povahy je Štamgast", () => {
+    for (const p of VYRADENE_POVAHY) {
+      expect(POVAHY.some((x) => x.id === p.id)).toBe(false);
+      expect(menoPovahy(p.id)).toBe(p.meno);
+    }
+    expect(VYRADENE_POVAHY.map((p) => p.id)).toEqual(["stamgast", "rapavy_fero", "teta_gizka"]);
+    expect(menoPovahy("igor")).toBe("Igor");
+    expect(menoPovahy(null)).toBe("Štamgast");
   });
 });

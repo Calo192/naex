@@ -514,7 +514,7 @@ export function HernaPlocha({
   const [zadrzanyView, setZadrzanyView] = useState<ClientState | null>(null);
   const view = zadrzanyView ?? viewZoServera;
   const ja = view.ja;
-  // Bot je vo vete „Bot Teta Gizka“; tvary podľa rodu hráča (Michal 2026-10-22).
+  // Bot je vo vete „Bot Božena“; tvary podľa rodu hráča (Michal 2026-10-22).
   const menoHraca = (p: PlayerId): string => menoVoVete(hraci[p], p);
   const rodHracaP = (p: PlayerId): Rod => rodHraca(hraci[p]);
   const karta = (props: Omit<HernaKartaProps, "sada" | "data"> & { readonly key?: number }) => {

@@ -30,7 +30,7 @@ const jsonSubor = volba("--json");
 const partii = Number(args[0] ?? 40);
 const superTyp = args[1] ?? "hromadic";
 const dlzka = (args[2] ?? "stredna") as DlzkaHry;
-const povaha = args[3] ?? "stamgast";
+const povaha = args[3] ?? "igor";
 
 const nacitajBota = async (dir: string): Promise<typeof tahBota> =>
   ((await import(pathToFileURL(resolve(dir, "packages/core/src/bot.ts")).href)) as { tahBota: typeof tahBota }).tahBota;

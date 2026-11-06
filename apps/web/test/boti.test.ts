@@ -5,8 +5,8 @@ import { describe, expect, it } from "vitest";
 import { platnaVolbaBota, type BotNaVyber } from "../src/hra/boti.ts";
 
 const BOTI: readonly BotNaVyber[] = [
-  { id: "stamgast", meno: "Štamgast", popis: "Vyvážený.", avatar: "m1" },
-  { id: "igor", meno: "Bot Igor", popis: null, avatar: null },
+  { id: "rudo", meno: "Rudo", popis: "Zberač.", avatar: "m1" },
+  { id: "igor", meno: "Igor", popis: null, avatar: null },
 ];
 
 describe("výber bota v lobby", () => {
@@ -17,6 +17,6 @@ describe("výber bota v lobby", () => {
 
   it("povaha, ktorú server neponúka, sa vráti na Náhodného", () => {
     expect(platnaVolbaBota(BOTI, "zmizla")).toBeNull();
-    expect(platnaVolbaBota([], "stamgast")).toBeNull();
+    expect(platnaVolbaBota([], "igor")).toBeNull();
   });
 });

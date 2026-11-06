@@ -23,7 +23,7 @@ function pitkaSNaex(): GameState {
     if (s.faza === "pitka" && mozeHrat(s, ja) && legalCommands(data, s, ja).some((c) => c.type === "naex")) return s;
     const kto = naTahu(s);
     if (kto === null) break;
-    s = apply(data, s, tahBota(data, s, kto, n * 7919, { povaha: "stamgast" }), kto).state;
+    s = apply(data, s, tahBota(data, s, kto, n * 7919, { povaha: "igor" }), kto).state;
   }
   throw new Error("Pitka s NA EX sa nenašla");
 }

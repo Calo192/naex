@@ -53,7 +53,7 @@ function partia(seed: number): readonly Krok[] {
     const [k, r2] = rngInt(r1, 100);
     rng = r2;
     const legalne = k < 25 ? legalCommands(data, s, kto) : [];
-    const cmd: Command = legalne[j % Math.max(1, legalne.length)] ?? tahBota(data, s, kto, j, { povaha: "stamgast" });
+    const cmd: Command = legalne[j % Math.max(1, legalne.length)] ?? tahBota(data, s, kto, j, { povaha: "igor" });
     const { state: po, events } = applySPrisunom(data, s, cmd, kto);
     kroky.push({ pred: s, po, cmd, kto, events });
     s = po;

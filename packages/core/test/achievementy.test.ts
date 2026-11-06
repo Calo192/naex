@@ -220,6 +220,8 @@ describe("achievementy — všetky metriky", () => {
       ),
     });
     for (const seed of [51, 52, 53]) {
+      // Vyradená povaha: staré výhry musia ostať čitateľné; aj nové povahy majú metriku.
+      expect(metriky.map((m) => m.id)).toEqual(expect.arrayContaining(["vyhraNad.stamgast", "vyhraNad.igor"]));
       const kontext = { botPovaha: "stamgast", superi: ["hrac-b", "hrac-a"] as const };
       let s = setupGame(data, seed);
       let rng = rngSeed(seed);

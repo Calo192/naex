@@ -9,6 +9,7 @@ import { prazdneStatistiky } from "@naex/core";
 import { Archiv } from "../src/archiv.ts";
 import { Ucty } from "../src/auth.ts";
 import { otvorDb } from "../src/db.ts";
+import { Profily } from "../src/profily.ts";
 
 function docasnaDb(): { db: ReturnType<typeof otvorDb>; zmaz: () => void } {
   const dir = mkdtempSync(join(tmpdir(), "naex-zber-"));
@@ -41,6 +42,10 @@ describe("archív — zber dát", () => {
       const p = archiv.profil(jano.id)!;
       expect(p.bilancia).toMatchObject({ ludia: { partie: 0 }, boti: { partie: 1, vyhry: 1 } });
       expect(p.statistiky.partie).toBe(0);
+      // Povaha, ktorá už nehrá, sa v histórii partií ukazuje ďalej pod svojím menom (aj zo starých riadkov).
+      expect(new Profily(db).partieHraca(jano.id, "boti", 0, 10, false).partie[0]?.super).toMatchObject({ meno: "Štamgast", bot: "stamgast" });
+      db.prepare("UPDATE partie SET bot_povaha = 'teta_gizka' WHERE id = ?").run(id);
+      expect(new Profily(db).partieHraca(jano.id, "boti", 0, 10, false).partie[0]?.super).toMatchObject({ meno: "Teta Gizka", bot: "teta_gizka" });
     } finally {
       zmaz();
     }

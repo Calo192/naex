@@ -1,7 +1,7 @@
 // Meranie strategickosti — koľko o partii rozhoduje zručnosť a koľko náhoda.
 //
 //   node --experimental-strip-types --no-warnings tools/bot/strategickost.ts [--partii 16] [--rozdania 10]
-//        [--behy 6] [--dlzka stredna] [--povaha stamgast] [--json cesta.json] [--len rebrik,miesto,rozdanie]
+//        [--behy 6] [--dlzka stredna] [--povaha igor] [--json cesta.json] [--len rebrik,miesto,rozdanie]
 //
 // Bez servera, nad jadrom pravidiel. Spúšťa sa aj vo worktree s upravenými
 // pravidlami (agent naex-strateg) — rovnaké semienka, takže čísla sa dajú
@@ -53,7 +53,7 @@ const partii = Number(arg("partii", "16"));
 const rozdani = Number(arg("rozdania", "10"));
 const behov = Number(arg("behy", "6"));
 const dlzka = arg("dlzka", "stredna") as DlzkaHry;
-const povaha = arg("povaha", "stamgast");
+const povaha = arg("povaha", "igor");
 const jsonCesta = arg("json", "");
 const casti = new Set(arg("len", "rebrik,miesto,rozdanie").split(","));
 

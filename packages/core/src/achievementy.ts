@@ -29,7 +29,7 @@ import { MOMENTY, momenty } from "./momenty.ts";
 import { priazenHraca } from "./elders.ts";
 import { prevahaStran } from "./partia.ts";
 import { DLZKY_HRY, KONSTANTY, vazniNaVyhru } from "./constants.ts";
-import { POVAHY } from "./bot.ts";
+import { POVAHY, VYRADENE_POVAHY } from "./bot.ts";
 
 export const ROZSAHY = ["bitka", "pitka", "kolo", "partia", "kariera"] as const;
 export type RozsahAchievementu = (typeof ROZSAHY)[number];
@@ -345,7 +345,8 @@ export function metrika(id: string): Metrika | null {
     return { druh: "sucet", popis: `body za podmienku ${nazov}`, zmer: (k) => pre((p) => rozdiel(k.statPo[p].bodyPodla[b], k.statPred[p].bodyPodla[b])) };
   }
   if (druh === "moment" && nazov in MOMENTY) return metrikaMomentu(nazov as TypMomentu);
-  if (druh === "vyhraNad" && POVAHY.some((x) => x.id === nazov)) return metrikaPovahy(nazov);
+  // Výhry nad vyradenými povahami ostávajú hráčom v štatistikách, preto sa musia dať prečítať.
+  if (druh === "vyhraNad" && [...POVAHY, ...VYRADENE_POVAHY].some((x) => x.id === nazov)) return metrikaPovahy(nazov);
   return null;
 }
 
@@ -358,7 +359,7 @@ export function zoznamMetrik(): { readonly id: string; readonly druh: Agregacia;
     ...ALL_ACTIONS.map((a) => `akcia.${a}`),
     ...ALL_PODMIENKY.map((b) => `body.${b}`),
     ...Object.keys(MOMENTY).map((t) => `moment.${t}`),
-    ...POVAHY.map((x) => `vyhraNad.${x.id}`),
+    ...[...POVAHY, ...VYRADENE_POVAHY].map((x) => `vyhraNad.${x.id}`),
   ];
   return ids.map((id) => {
     const m = metrika(id) as Metrika;

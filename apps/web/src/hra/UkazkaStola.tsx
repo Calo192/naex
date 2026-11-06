@@ -295,7 +295,7 @@ function tahy(data: GameData, s: GameState, rng: ReturnType<typeof rngSeed>, i: 
   const kto = naTahu(s);
   if (kto === null) return null;
   const [j, r] = rngInt(rng, 2 ** 31);
-  return { cmd: tahBota(data, s, kto, j, { povaha: i % 2 === 0 ? "stamgast" : "chamtivy" }), kto, rng: r };
+  return { cmd: tahBota(data, s, kto, j, { povaha: i % 2 === 0 ? "igor" : "chamtivy" }), kto, rng: r };
 }
 
 /** Ukážka zajatia (v11.4): hráča ja sa prvý starší bojí na červenej a Nakladačky je aspoň 8. */
@@ -613,7 +613,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     const t = setTimeout(() => {
       const [j, r] = rngInt(rng.current, 2 ** 31);
       rng.current = r;
-      setStav((s) => (mozeHrat(s, kto) ? pouzi(s, tahBota(data, s, kto, j, { povaha: "stamgast" }), kto) : s));
+      setStav((s) => (mozeHrat(s, kto) ? pouzi(s, tahBota(data, s, kto, j, { povaha: "igor" }), kto) : s));
     }, 700);
     return () => clearTimeout(t);
   }, [stav, ja, data, dohrate]);
@@ -623,8 +623,8 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
   // &avatar=<id médiá hráča>,<id médiá súpera> — snímky avatarov s fotkou (prstenec vo farbe hráča).
   const [avJa = null, avSu = null] = q().get("avatar")?.split(",") ?? [];
   const hraci: readonly [HracInfo, HracInfo] = ja === 0
-    ? [{ meno: "Jano", avatar: avJa }, { meno: "Rapavý Fero", avatar: avSu, bot: true, profil: "ziadny" }]
-    : [{ meno: "Rapavý Fero", avatar: avSu, bot: true, profil: "ziadny" }, { meno: "Jano", avatar: avJa }];
+    ? [{ meno: "Jano", avatar: avJa }, { meno: "Igor", avatar: avSu, bot: true, profil: "ziadny" }]
+    : [{ meno: "Igor", avatar: avSu, bot: true, profil: "ziadny" }, { meno: "Jano", avatar: avJa }];
   return (
     <>
     {otoc && <OtocTelefon />}

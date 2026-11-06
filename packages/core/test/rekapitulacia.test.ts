@@ -49,7 +49,7 @@ function partia(seed: number): Zaznam[] {
     if (p === null) break;
     const [j, r] = rngInt(rng, 2 ** 31);
     rng = r;
-    const cmd: Command = tahBota(data, s, p, j, { povaha: i % 2 === 0 ? "stamgast" : "chamtivy" });
+    const cmd: Command = tahBota(data, s, p, j, { povaha: i % 2 === 0 ? "igor" : "chamtivy" });
     const { state: po, events } = apply(data, s, cmd, p);
     out.push({ pred: s, po, events });
     s = po;

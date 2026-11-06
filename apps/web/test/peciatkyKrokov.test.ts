@@ -22,7 +22,7 @@ describe("pečiatky krokov", () => {
       if (p === null) break;
       const [j, r] = rngInt(rng, 2 ** 31);
       rng = r;
-      const cmd: Command = tahBota(data, s, p, j, { povaha: "stamgast" });
+      const cmd: Command = tahBota(data, s, p, j, { povaha: "igor" });
       const { state, events } = apply(data, s, cmd, p);
       const pec = peciatkyKrokov(events);
       if (cmd.type === "pass") expect(pec).toContainEqual({ hrac: p, druh: "pas" });
@@ -70,7 +70,7 @@ describe("pečiatky krokov", () => {
       if (p === null) break;
       const [j, r] = rngInt(rng, 2 ** 31);
       rng = r;
-      s = apply(data, s, tahBota(data, s, p, j, { povaha: "stamgast" }), p).state;
+      s = apply(data, s, tahBota(data, s, p, j, { povaha: "igor" }), p).state;
     }
     const p = naTahu(s) as PlayerId;
     expect(s.faza).toBe("zhromazdenie");

@@ -10,7 +10,7 @@ export const kariet = (n: number): string => pocet(n, "kartu", "karty", "kariet"
 
 // Rod v hláškach (Michal 2026-10-22): hráč si v profile voliteľne zvolí
 // pohlavie a hlášky sa skloňujú („Eva skončila“); bez voľby sú neutrálne.
-// Bot je „Bot Teta Gizka“ a sloveso je v mužskom rode („Bot … skončil“).
+// Bot je „Bot Božena“ a sloveso je v mužskom rode („Bot … skončil“).
 
 export const POHLAVIA = ["muz", "zena"] as const;
 export type Pohlavie = (typeof POHLAVIA)[number];

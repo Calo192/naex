@@ -11,7 +11,7 @@ export interface ZaverecneV5 {
   readonly spolu: readonly [number, number];
   readonly starsi: readonly unknown[];
 }
-import { POVAHY, normalizujStatistiky } from "@naex/core";
+import { menoPovahy, normalizujStatistiky } from "@naex/core";
 import type { Db } from "./db.ts";
 import type { Vysledok } from "./frajerina.ts";
 import type { PartiaSuhrnu, Suhrn } from "./suhrn.ts";
@@ -27,7 +27,7 @@ export interface SuperVPartii {
   readonly id: number | null;
   readonly meno: string;
   readonly avatar: string | null;
-  /** Povaha bota (POVAHY), ak hral bot. */
+  /** Povaha bota (POVAHY alebo VYRADENE_POVAHY), ak hral bot. */
   readonly bot?: string;
   readonly ai?: true;
 }
@@ -96,8 +96,6 @@ interface RiadokHraca {
   ai: number | null;
 }
 
-const menoBota = (povaha: string | null): string => POVAHY.find((p) => p.id === povaha)?.meno ?? "Štamgast";
-
 /** Štatistiky hráča z archívu; poškodený záznam = prázdne štatistiky. */
 function citajStatistiky(json: string): StatistikyHraca {
   try {
@@ -119,7 +117,7 @@ export class Profily {
   }
 
   private superVPartii(r: { pouzivatel: number | null; meno: string | null; avatar: string | null; ai: number | null }, botPovaha: string | null, sBotom: boolean, spravca: boolean): SuperVPartii {
-    if (r.pouzivatel === null && sBotom) return { id: null, meno: menoBota(botPovaha), avatar: null, bot: botPovaha ?? "stamgast" };
+    if (r.pouzivatel === null && sBotom) return { id: null, meno: menoPovahy(botPovaha), avatar: null, bot: botPovaha ?? "stamgast" };
     const ai = r.ai === 1;
     return {
       id: ai && !spravca ? null : r.pouzivatel,

@@ -26,7 +26,7 @@ function pitka(): GameState {
     if (s.faza === "pitka" && s.ciel?.lokalita != null && mozeHrat(s, ja) && s.pitkaStav?.reakcia === null && !s.pitkaStav.hotovy[ja] && s.vizia === null) return s;
     const kto = naTahu(s);
     if (kto === null) break;
-    s = apply(data, s, tahBota(data, s, kto, n * 7919, { povaha: "stamgast" }), kto).state;
+    s = apply(data, s, tahBota(data, s, kto, n * 7919, { povaha: "igor" }), kto).state;
   }
   throw new Error("Pitka sa nenašla");
 }

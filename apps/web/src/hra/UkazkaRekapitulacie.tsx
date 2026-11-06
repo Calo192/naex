@@ -29,7 +29,7 @@ function odohraj(data: GameData, seed: number): Najdene {
     if (p === null) break;
     const [j, r] = rngInt(rng, 2 ** 31);
     rng = r;
-    const cmd: Command = tahBota(data, s, p, j, { povaha: i % 2 === 0 ? "stamgast" : "chamtivy" });
+    const cmd: Command = tahBota(data, s, p, j, { povaha: i % 2 === 0 ? "igor" : "chamtivy" });
     const { state: po, events } = apply(data, s, cmd, p);
     for (const e of events as readonly Event[]) {
       const stol = po.ciel !== null && po.strany.some((x) => x.length > 0) ? po : s;
@@ -60,7 +60,7 @@ function Ukazka({ sada }: { readonly sada: NonNullable<ReturnType<typeof useSada
     nazov: (k) => sada.akcie.find((a) => a.kluc === k)?.nazov ?? k,
   };
   const menoKarty = (defId: string): string => data.cards.get(defId)?.name ?? defId;
-  const mena: readonly [string, string] = ja === 0 ? ["Ty", "Rapavý Fero"] : ["Rapavý Fero", "Ty"];
+  const mena: readonly [string, string] = ja === 0 ? ["Ty", "Igor"] : ["Igor", "Ty"];
   const iParam = q.get("i");
   const zavri = (): void => setKolo((k) => k + 1);
 

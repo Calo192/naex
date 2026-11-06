@@ -139,7 +139,7 @@ export type TahBota = (data: GameData, s: GameState, p: PlayerId, seed: number, 
 export function budovatel(data: GameData, s: GameState, p: PlayerId, seed: number, bot: TahBota): Command {
   const koloObety = Math.ceil((s.rozpis?.length ?? 6) / 3);
   if (s.kolo <= koloObety && !hroziKoniec(s, p)) return ekonom(data, s, p, seed);
-  return bot(data, s, p, seed, { povaha: "stamgast" });
+  return bot(data, s, p, seed, { povaha: "igor" });
 }
 
 export function hromadic(data: GameData, s: GameState, p: PlayerId, seed: number): Command {

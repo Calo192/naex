@@ -38,7 +38,7 @@ function partia(seed: number, bot: boolean): { s: GameState; k: StavKroniky; sta
     const [j, r] = rngInt(rng, 2 ** 31);
     rng = r;
     const cmds = legalCommands(data, s, p);
-    const cmd = bot ? tahBota(data, s, p, j, { povaha: "stamgast" }) : (cmds[j % cmds.length] as Command);
+    const cmd = bot ? tahBota(data, s, p, j, { povaha: "igor" }) : (cmds[j % cmds.length] as Command);
     const { state: po, events } = apply(data, s, cmd, p);
     k = zapisDoKroniky(data, k, s, cmd, p, po, events);
     stat = zapisTah(stat, s, cmd, p, po, events);

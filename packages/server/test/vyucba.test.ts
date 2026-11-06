@@ -69,6 +69,14 @@ async function hraj(k: Klient, msg: Msg, max = Number.POSITIVE_INFINITY): Promis
 }
 
 describe("výučba „Prvá hra“", () => {
+  it("oproti sedí Štamgast s menom a podobizňou, hoci ako povaha už súperom nie je", async () => {
+    const { cookie } = await registruj(server.port);
+    const { k } = await zacni(cookie);
+    const hraci = (await k.cakaj("hraci")).hraci as ({ meno: string; avatar: string | null; bot?: boolean } | null)[];
+    expect(hraci[1]).toMatchObject({ meno: "Štamgast", avatar: expect.any(String), bot: true });
+    k.zavri();
+  });
+
   it("návštevník ju dostane ponúknutú, prejde celý scenár a je z neho hráč — bez archívu", async () => {
     const { cookie } = await registruj(server.port);
     const ja = await api<{ pouzivatel: { id: number; rola: string } }>(cookie, "GET", "/ja");

@@ -43,7 +43,7 @@ let vyhierVaznami = 0;
 const najvyssiStupen = [0, 0, 0, 0];
 
 for (let i = 0; i < partii; i++) {
-  const povahy = [povahaArg ?? POVAHY[i % POVAHY.length]?.id ?? "stamgast", povahaArg ?? POVAHY[(i + 1) % POVAHY.length]?.id ?? "stamgast"] as const;
+  const povahy = [povahaArg ?? POVAHY[i % POVAHY.length]?.id ?? "igor", povahaArg ?? POVAHY[(i + 1) % POVAHY.length]?.id ?? "igor"] as const;
   let s: GameState = setupGame(data, 5000 + i, { lokalit: DLZKY_HRY[dlzka] });
   let rng = rngSeed(91 + i);
   let maxStupen = 0;

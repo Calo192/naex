@@ -31,7 +31,7 @@ export function rodHraca(h: HracInfo | null | undefined): Rod {
   return h?.bot === true ? "bot" : (h?.pohlavie ?? null);
 }
 
-/** Meno vo vete — bot je „Bot Teta Gizka“ (Michal 2026-10-22: „Bot … skončil“). */
+/** Meno vo vete — bot je „Bot Igor“ (Michal 2026-10-22: „Bot … skončil“). */
 export function menoVoVete(h: HracInfo | null | undefined, p: number): string {
   if (h === null || h === undefined) return `Hráč ${p + 1}`;
   return h.bot === true ? `Bot ${h.meno}` : h.meno;

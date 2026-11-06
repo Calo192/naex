@@ -61,6 +61,7 @@ import {
   vazniHraca,
   priazen,
   verejneAbstaky,
+  majitelPresvedcenej,
   nepriznaneCirhozy,
   vykupneHraca,
   cenaFajceniaHraca,
@@ -132,44 +133,8 @@ function nasobokKliatieb(k: Kontext, p: PlayerId): number {
   return k.povaha.kliatby + (p === k.ja ? 0 : (k.povaha.skoda ?? 0));
 }
 
+/** Súperi v hre: výber bota aj losovanie (Michal 2026-11-03 a 2026-11-06, nahradili pôvodné tri). Každý hrá jeden štýl. */
 export const POVAHY: readonly Povaha[] = [
-  {
-    id: "stamgast",
-    meno: "Štamgast",
-    popis: "Vyvážený — bije sa, keď sa oplatí, a ráta body.",
-    bitka: 1,
-    body: 1,
-    zdroje: 1,
-    kliatby: 1,
-    prahRiziko: 0.2,
-    prahStarsi: 0.5,
-    nahodnost: 0.15,
-  },
-  {
-    id: "rapavy_fero",
-    meno: "Rapavý Fero",
-    popis: "Agresívny — chce každú bitku, pije, dáva NA EX a o kliatby sa nestará.",
-    bitka: 1.35,
-    body: 0.85,
-    zdroje: 0.8,
-    kliatby: 0.7,
-    prahRiziko: -0.3,
-    prahStarsi: -0.5,
-    nahodnost: 0.2,
-  },
-  {
-    id: "teta_gizka",
-    meno: "Teta Gizka",
-    popis: "Šetrná a vypočítavá — hrá na body, šetrí cigarety a poldeci, vyhýba sa kliatbám.",
-    bitka: 0.85,
-    body: 1.3,
-    zdroje: 1.1,
-    kliatby: 1.4,
-    prahRiziko: 0.6,
-    prahStarsi: 1.5,
-    nahodnost: 0.1,
-  },
-  // Nové povahy (Michal 2026-11-03) — každá hrá jeden štýl.
   {
     id: "igor",
     meno: "Igor",
@@ -228,7 +193,22 @@ export const POVAHY: readonly Povaha[] = [
   },
 ];
 
-/** Povaha podľa id; neznáme id = Štamgast. */
+/**
+ * Povahy, ktoré už nehrajú — len meno. Ostávajú v archíve partií a v achievementoch;
+ * Štamgast je navyše postava výučby, tá hrá podľa skriptu bez výpočtu bota.
+ */
+export const VYRADENE_POVAHY: readonly Pick<Povaha, "id" | "meno">[] = [
+  { id: "stamgast", meno: "Štamgast" },
+  { id: "rapavy_fero", meno: "Rapavý Fero" },
+  { id: "teta_gizka", meno: "Teta Gizka" },
+];
+
+/** Meno bota aj z vyradenej povahy. Partie spred zápisu povahy (null) hral Štamgast. */
+export function menoPovahy(id: string | null | undefined): string {
+  return [...POVAHY, ...VYRADENE_POVAHY].find((p) => p.id === id)?.meno ?? "Štamgast";
+}
+
+/** Povaha podľa id; neznáme id = prvá v POVAHY. */
 export function povahaBota(id: string | undefined): Povaha {
   return POVAHY.find((p) => p.id === id) ?? (POVAHY[0] as Povaha);
 }
@@ -236,7 +216,7 @@ export function povahaBota(id: string | undefined): Povaha {
 export interface BotNastavenia {
   /** Koľko zamiešaní skrytých informácií sa prepočíta pri dôležitej voľbe. */
   readonly vzorky?: number;
-  /** Id povahy (POVAHY); predvolený je Štamgast. */
+  /** Id povahy (POVAHY); predvolená je prvá. */
   readonly povaha?: string;
 }
 
@@ -1649,16 +1629,11 @@ function bitka(v: Volba): Command | null {
       const su = opponentOf(ja);
       const moje = h.doberaci;
       const jeho = state.hraci[su].doberaci;
-      let moja = 0;
-      let jehoI = 0;
-      moje.forEach((x, i) => {
-        const m = moje[moja];
-        if (m !== undefined && hodnotaKarty(data, x) < hodnotaKarty(data, m)) moja = i;
-      });
-      jeho.forEach((x, i) => {
-        const m = jeho[jehoI];
-        if (m !== undefined && hodnotaKarty(data, x) > hodnotaKarty(data, m)) jehoI = i;
-      });
+      // Presvedčený starší (v11.4) sa nevymieňa — engine by taký ťah odmietol.
+      const volne = (karty: readonly CardInstance[]): number[] => karty.flatMap((x, i) => (majitelPresvedcenej(state, x.uid) === null ? [i] : []));
+      const hodnota = (karty: readonly CardInstance[], i: number): number => hodnotaKarty(data, karty[i] as CardInstance);
+      const moja = volne(moje).reduce((a, i) => (hodnota(moje, i) < hodnota(moje, a) ? i : a), volne(moje)[0] ?? 0);
+      const jehoI = volne(jeho).reduce((a, i) => (hodnota(jeho, i) > hodnota(jeho, a) ? i : a), volne(jeho)[0] ?? 0);
       return { type: "vestica", moja, jeho: jehoI };
     }
     default:

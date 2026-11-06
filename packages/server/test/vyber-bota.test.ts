@@ -76,9 +76,12 @@ describe("výber súpera proti počítaču", () => {
     expect(boti.map((b) => b.id)).toEqual(POVAHY.map((p) => p.id));
     expect(boti.map((b) => b.meno)).toEqual(POVAHY.map((p) => p.meno));
     expect(boti.map((b) => b.popis)).toEqual(POVAHY.map((p) => p.popis.trim() || null));
-    // Podobizne sú v seede pre tri pôvodné povahy; nová povaha smie byť zatiaľ bez nej.
-    expect(boti.find((b) => b.id === "stamgast")?.avatar).toEqual(expect.any(String));
-    for (const b of boti) expect(Object.keys(b).sort()).toEqual(["avatar", "id", "meno", "popis"]);
+    // Podobizeň z seed/avatary/boti/<id>.jpg príde od ilustrátora; kým nie je, klient ukáže iniciály.
+    for (const b of boti) {
+      expect(Object.keys(b).sort()).toEqual(["avatar", "id", "meno", "popis"]);
+      expect(b.popis).toEqual(expect.any(String));
+      expect(b.avatar === null || typeof b.avatar === "string").toBe(true);
+    }
   });
 
   it("platná povaha: oproti sedí práve ona, s menom a podobizňou z ponuky", async () => {
@@ -98,7 +101,8 @@ describe("výber súpera proti počítaču", () => {
     const { cookie } = await registruj(server.port);
     const r = new Robot(server.port, cookie);
     await r.otvorene();
-    for (const zla of ["neznamy", "", "__proto__", "STAMGAST", 1, null, ["stamgast"], { id: "stamgast" }]) {
+    // Vyradené povahy sú len v archíve — súpera z nich založiť nejde.
+    for (const zla of ["neznamy", "", "__proto__", "stamgast", "rapavy_fero", "teta_gizka", "IGOR", 1, null, ["igor"], { id: "igor" }]) {
       r.chyby.length = 0;
       r.posli({ type: "create", bot: true, povaha: zla });
       await cakaj(() => r.chyby.length > 0, `odmietnutie ${JSON.stringify(zla)}`);

@@ -60,7 +60,7 @@ function partia(seed: number, lokalit = 5): Partia {
     if (p === null) break;
     const [j, r] = rngInt(rng, 2 ** 31);
     rng = r;
-    const cmd = tahBota(data, s, p, j, { povaha: n % 2 === 0 ? "stamgast" : "chamtivy" });
+    const cmd = tahBota(data, s, p, j, { povaha: n % 2 === 0 ? "igor" : "chamtivy" });
     const { state: po, events } = apply(data, s, cmd, p);
     const pred = h;
     h = zapisDoHistorie(h, s, cmd, p, po, events);
@@ -153,7 +153,7 @@ describe("história lokalít", () => {
       if (p === null) break;
       const [j, r] = rngInt(rng, 2 ** 31);
       rng = r;
-      s = apply(data, s, tahBota(data, s, p, j, { povaha: n % 2 === 0 ? "stamgast" : "chamtivy" }), p).state;
+      s = apply(data, s, tahBota(data, s, p, j, { povaha: n % 2 === 0 ? "igor" : "chamtivy" }), p).state;
     }
     expect(JSON.stringify(s)).toBe(JSON.stringify(a));
   }, 60_000);

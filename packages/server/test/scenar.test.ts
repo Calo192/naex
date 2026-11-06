@@ -20,7 +20,7 @@ function hrajKym(s0: GameState, podmienka: (s: GameState) => boolean, seed = 7):
     if (p === null) break;
     const [n, r] = rngInt(rng, 2 ** 31);
     rng = r;
-    const cmd: Command = tahBota(data, s, p as PlayerId, n, { povaha: "stamgast" });
+    const cmd: Command = tahBota(data, s, p as PlayerId, n, { povaha: "igor" });
     s = apply(data, s, cmd, p).state;
   }
   return s;
