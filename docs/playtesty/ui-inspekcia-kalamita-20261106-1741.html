@@ -1,0 +1,86 @@
+<!doctype html><html lang="sk"><meta charset="utf-8"><title>UI inšpekcia kalamita-20261106-1741</title>
+<style>:root{--bg:#161210;--pl:#221b17;--okraj:#4a3a2d;--text:#f0e6d6;--tlm:#b8a58d;--zlt:#e8a838;--cerv:#d9604a;--zel:#6cbf6c}
+body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif;margin:0;padding:24px 32px;max-width:1200px}
+h1{margin:0 0 4px}h2{margin-top:28px}.m{color:var(--tlm)}
+.karta{background:var(--pl);border:1px solid var(--okraj);border-radius:10px;padding:14px 16px;margin:14px 0}
+.karta img{max-width:100%;border:1px solid var(--okraj);border-radius:6px;margin:8px 0}
+.z{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:700;color:#161210}
+.z.vysoka{background:var(--cerv)}.z.stredna{background:var(--zlt)}.z.nizka{background:var(--tlm)}
+code{background:#000;padding:1px 5px;border-radius:4px;font-size:13px}
+select{background:var(--pl);color:var(--text);border:1px solid var(--okraj);padding:4px 8px;border-radius:6px}
+li{margin:3px 0}</style>
+<h1>UI inšpekcia herného stola — režim Kalamita (1 na 1, Zrejúca v11.10)</h1>
+<div class="m">Dátum 2026-11-06 · commit 4d7b05cd · url http://localhost:8793 (lobby) a vlastný server playtestu :8800 (partia) · rozlíšenia 1920×1080, 1600×1000, 1512×860, 1440×800, 1366×650 (vrstvy len 1920, 1512, 1366) · stránky: 1 (/hra: lobby + stôl)</div>
+<h2>Súhrn</h2>
+<p>Overené nálezy: <b>10</b> — vysoká 0, stredná 4, nízka 6. Typy: nizky-kontrast, maly-ciel, skrateny-text, bez-fokusu, varovanie-konzola, prekryty-text.</p>
+<p>Vyradené ako zámer alebo falošný poplach: <b>68 skupín nálezov</b> (približne 1 190 hrubých nálezov nástroja): skryté karty lupy a línia pod nástenkou (prekryty-text / prekryty-prvok / prekryty-obsah), schodovitá línia (nezarovnany-rad), karty ruky vykúkajúce spod okna (orezany-text kl-tagy / kl-nazov), pokyn v pilulke skrátený trojbodkou, ktorý sa rozbalí pod myšou, odznaky jbar (maly-ciel — nie sú klikacie), nezarovnané avatary v nástenke (stred sedí), oddeľovač „·“ v pokyne, ✕ na pečati NA EX. Akceptované výnimky z vynimky.json: 14 – 62 nálezov na jeden stav.</p>
+<p>Nič nebránilo hre: žiadna chyba v konzole okrem varovania UI-9, žiadny rozbitý obrázok; kostra (kostra.ts, len /hra, 1920/1440/1366) drží.</p>
+<h2>Čo som zmeral</h2>
+<p><b>Zmerané fázy:</b> lobby, výber cieľa (aj s vybranou lokalitou), stavba šenku, branie zo šenku, Zhromaždenie (prázdne, s „+“ na výber karty, s kartami v línii), Pitka, Pitka s vybranou kartou na NA EX a s položeným NA EX, krok rozdeľovania reči (hádka), koniec hry (kolo 6, výhra strachom), vrstvy Log, skratky „?“ a rozpis bodov (dlaždica Špaky).</p>
+<p><b>Nezmerané:</b> výsledok bitky (toast účtu bitky) — zobrazuje sa krátko a pri meraní bol už preč; pokus o zajatie (nenastal); Soundboard Melichar (tlačidlo sa v hlavičke AI účtu neukázalo); Šenok a Lokality ako samostatné vrstvy (šenok je na stole v drafte, lokality = nástenka vo výbere cieľa — merané v týchto stavoch). Vrstvy Log, „?“ a Špaky len v 1920, 1512, 1366. Výber karty v Zhromaždení ťahom myšou sa nedal vykonať (nástroj klikne len click), preto len cez „+“.</p>
+<p>Filter: typ <select id="ft"><option value="">všetky</option><option>nizky-kontrast</option><option>maly-ciel</option><option>skrateny-text</option><option>bez-fokusu</option><option>varovanie-konzola</option><option>prekryty-text</option></select>
+závažnosť <select id="fz"><option value="">všetky</option><option value="vysoka">vysoká</option><option value="stredna">stredná</option><option value="nizka">nízka</option></select> stránka <select id="fs"><option value="">všetky</option><option>/hra</option></select></p>
+<div id="zoznam"><div class="karta" data-t="nizky-kontrast" data-z="stredna" data-s="/hra">
+<h3>UI-1 <span class="z stredna">stredná</span> <code>nizky-kontrast</code></h3>
+<div class="m">Kde: /hra lobby, všetky rozlíšenia</div>
+<p>Iniciála „?“ v avatare vybraného bota v lobby má kontrast 3,23 : 1 (16 px, treba 4,5 : 1). Platí vo všetkých piatich rozlíšeniach.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/hra.css:2081 (.bot-volba .avatar), apps/web/src/styles.css:310 (.avatar-inicialy, color #fff)</code></p>
+<p><b>Návrh:</b> Pre avatar vybranej voľby dať farbu textu s kontrastom aspoň 4,5 : 1 voči jeho podkladu (tmavý text na akcente alebo tmavší podklad).</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-zaklad-1920x1080-01-nizky-kontrast.png" alt="UI-1" loading="lazy"></div><div class="karta" data-t="maly-ciel" data-z="stredna" data-s="/hra">
+<h3>UI-2 <span class="z stredna">stredná</span> <code>maly-ciel</code></h3>
+<div class="m">Kde: /hra, rozdeľovanie reči, 1512×860, 1440×800, 1366×650</div>
+<p>Segmenty teplomera reči (tlačidlá stupňa 1 / 2 / 3 pri každom staršom) majú pri 1512, 1440 a 1366 šírku 23 px (výška 83 px), pod hranicou 24 px (WCAG 2.5.8). Je to hlavný ovládací prvok kroku „Hádka → tvoje reči“.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/teplomery.css:172 (.r3-seg, šírka z flex v .r3-pas)</code></p>
+<p><b>Návrh:</b> Dať .r3-seg min-width: 24px (alebo zväčšiť šírku pásu .r3-pas o 1–2 px) pri šírke okna do 1512 px.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-reci-1512x860-31-maly-ciel.png" alt="UI-2" loading="lazy"></div><div class="karta" data-t="skrateny-text" data-z="stredna" data-s="/hra">
+<h3>UI-3 <span class="z stredna">stredná</span> <code>skrateny-text</code></h3>
+<div class="m">Kde: /hra, Pitka, 1920×1080, 1600×1000</div>
+<p>V pokyne Pitky je za dlhým textom odkaz „Ďalšie Pitky tejto bitky bez NA EX“ (auto-hotovo-odkaz). V základnom stave ho skracuje trojbodka a vidno ho až po najazdení myšou alebo fokuse na pokyn; hráč nevie, že taký ovládač existuje (presah 18 px). Samotné skracovanie pokynu je zámer (rozbalí sa pod myšou), skrytý je len ovládací prvok.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/hra.css:6477 (.linia-stav > .pilulka-text, ellipsis) a apps/web/src/hra/HernaPlocha.tsx:4420 (button.auto-hotovo-odkaz)</code></p>
+<p><b>Návrh:</b> Odkaz vyniesť z pokynu na samostatné miesto (napr. vedľa tlačidla Skončiť Pitku), alebo ho dať na začiatok pokynu pred dlhý text.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-pitka-1920x1080-01-orezany-text.png" alt="UI-3" loading="lazy"></div><div class="karta" data-t="bez-fokusu" data-z="stredna" data-s="/hra">
+<h3>UI-4 <span class="z stredna">stredná</span> <code>bez-fokusu</code></h3>
+<div class="m">Kde: /hra výber cieľa (vybraná lokalita), 1920×1080</div>
+<p>Karta lokality (Lesná cesta) po výbere cieľa pri fokuse z klávesnice nijako nezmení vzhľad. Nástroj to zistil raz pri 1920×1080; na ostatných rozlíšeniach som tento stav nemeral.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/HernaPlocha.tsx:5107-5122 (.volba-ciela-karty, kl-klik) a hra.css (chýba :focus-visible pre kartu lokality)</code></p>
+<p><b>Návrh:</b> Pridať karte lokality viditeľný :focus-visible (obrys v akcente ako majú ostatné .s-lupou.naex-mozny).</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-volba-ciela-vyber-1920x1080-07-bez-fokusu.png" alt="UI-4" loading="lazy"></div><div class="karta" data-t="nizky-kontrast" data-z="nizka" data-s="/hra">
+<h3>UI-5 <span class="z nizka">nízka</span> <code>nizky-kontrast</code></h3>
+<div class="m">Kde: /hra, všetky fázy, všetky rozlíšenia</div>
+<p>Číslo súpera v tlačidle odhadu bitky (button.jbar-odhad) má kontrast 4,14 : 1 (písmo 14 px, pri .vedie 17 px; treba 4,5 : 1). Vo všetkých rozlíšeniach a fázach.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/jbar.css:355 (.jk-cislo.su, farba var(--su) = #e0805f, apps/web/src/schemy.css:39)</code></p>
+<p><b>Návrh:</b> Pre .jk-cislo.su použiť svetlejší odtieň farby súpera (mix s bielou ~12 %) alebo stmaviť podklad lišty.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-zhromazdenie-plus-1920x1080-09-nizky-kontrast.png" alt="UI-5" loading="lazy"></div><div class="karta" data-t="skrateny-text" data-z="nizka" data-s="/hra">
+<h3>UI-6 <span class="z nizka">nízka</span> <code>skrateny-text</code></h3>
+<div class="m">Kde: /hra, dlaždica Chuť, 1440×800 a 1366×650 (+2 po výhre pri všetkých)</div>
+<p>Výhľad Absťáka v dlaždici Chuť sa skracuje trojbodkou: pri 1366 „chýba 2 · inak +1 Ab…“ (obsah 123 px, box 112 px), pri 1440 o 2 px. Dôležité varovanie bez nápovedy; ďalej „+2 po výhre“ pod dlaždicou Starší (3 px výškový presah).</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/hra.css:4261-4268 (.doska .zdroj .zdroj-pod > *, nowrap + ellipsis) a hra.css:716 (.abstak-vyhlad)</code></p>
+<p><b>Návrh:</b> Skrátiť text („chýba 2 · +1 Absťák“) alebo povoliť zalomenie na dva riadky ako pri .zdroj-pod > :only-child (hra.css:4272); doplniť title s celým textom.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-koniec-1440x800-15-skrateny-text.png" alt="UI-6" loading="lazy"></div><div class="karta" data-t="skrateny-text" data-z="nizka" data-s="/hra">
+<h3>UI-7 <span class="z nizka">nízka</span> <code>skrateny-text</code></h3>
+<div class="m">Kde: /hra, karty v ruke, 1366×650</div>
+<p>Pri 1366×650 sú v ruke názvy „Milujúca manželka“ a „Dievčina na vydaj“ skrátené trojbodkou (92 px obsah v 78 px). Karta sa pri najazdení vysunie a ukáže celý názov, preto len nízka.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/hra.css:1553-1570 (.ruka-meno, nowrap + ellipsis, šírka karty − 6 px)</code></p>
+<p><b>Návrh:</b> Zmenšiť písmo .ruka-meno na malých oknách (0,56 rem) alebo dať title s celým názvom.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-zhromazdenie-1366x650-09-skrateny-text.png" alt="UI-7" loading="lazy"></div><div class="karta" data-t="skrateny-text" data-z="nizka" data-s="/hra">
+<h3>UI-8 <span class="z nizka">nízka</span> <code>skrateny-text</code></h3>
+<div class="m">Kde: /hra, koniec hry (Starší na konci partie), všetky rozlíšenia</div>
+<p>Meno staršieho „Vychovávateľka“ je v okne konca hry skrátené trojbodkou („Vychovávate…“, 85 px v 80 px).</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/priazen-kola.css:821 (.pas-st-meno, nowrap + ellipsis)</code></p>
+<p><b>Návrh:</b> Zmenšiť .pas-st-meno na 0,68 rem alebo rozšíriť stĺpec o 6 px.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-koniec-1920x1080-08-skrateny-text.png" alt="UI-8" loading="lazy"></div><div class="karta" data-t="varovanie-konzola" data-z="nizka" data-s="/hra">
+<h3>UI-9 <span class="z nizka">nízka</span> <code>varovanie-konzola</code></h3>
+<div class="m">Kde: /hra, Melichar bar, 1512×860 a 1440×800</div>
+<p>Konzola hlási „Melichar: veta sa do baru nezmestí ani sama — text treba skrátiť“ pre tri hlášky: „dlh“ („Prvý Dlh! Úprimne, nečudujem sa…“), „exekutor“ („Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor…“) a „body“ („Špaky v bare rozhodnú…“). Na snímke som orezanie nevidel (bar delí text na strany 1/3, 1/5), preto nízka.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/MelicharBar.tsx:196 (console.warn); text hlášok v packages/core/data/vyucba/napovedy.json:104 (dlh), :142 (body), :272 (exekutor)</code></p>
+<p><b>Návrh:</b> Skrátiť tri vety v napovedy.json na dĺžku, ktorá sa zmestí do jednej strany baru pri 1440 px, alebo ich rozdeliť na kratšie vety.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-pitka-naex-1440x800.png" alt="UI-9" loading="lazy"></div><div class="karta" data-t="prekryty-text" data-z="nizka" data-s="/hra">
+<h3>UI-10 <span class="z nizka">nízka</span> <code>prekryty-text</code></h3>
+<div class="m">Kde: /hra, Pitka (vybraná karta), 1440×800</div>
+<p>Pri 1440×800 sa vybraná karta (Miňištrant) v Pitke vysunie o ~10 px a štítok „NA EX“ nad ňou prekryje prvý riadok textu efektu („Nástup: Ak vyvoláš…“ je vidno len ako „Na…“). Nástroj to neoznačil, vidno na snímke; text karty je čitateľný v lupe, preto nízka.</p>
+<p><b>Zdroj:</b> <code>apps/web/src/hra/hra.css:3595 (.naex-nad) a štýl vybranej / vysunutej karty (.kl-vybrana)</code></p>
+<p><b>Návrh:</b> Pri vybranej karte posunúť štítok .naex-nad o výšku vysunutia vyššie, alebo mu dať vonkajší okraj nad kartu.</p>
+<img src="ui-inspekcia-kalamita-20261106-1741/hra-pitka-vyber-1440x800.png" alt="UI-10" loading="lazy"></div></div>
+<h2>Bez chýb</h2>
+<p>Žiadne vysoké závažnosti. Bez nálezov: stavba šenku, branie zo šenku, Zhromaždenie a línia kariet, vrstvy Log, „?“ a Špaky, výber lokality (okrem UI-4), Pitka (okrem UI-3, UI-5, UI-10), koniec hry (okrem UI-8).</p>
+<script>const f=()=>{const t=ft.value,z=fz.value,s=fs.value;document.querySelectorAll('.karta').forEach(k=>k.style.display=(!t||k.dataset.t===t)&&(!z||k.dataset.z===z)&&(!s||k.dataset.s===s)?'':'none')};ft.onchange=fz.onchange=fs.onchange=f</script>
