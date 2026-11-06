@@ -272,6 +272,58 @@
         "do dna"
       ],
       "pozn": "v11.10: priazeň Ohováračka namiesto Alkoholika; karta Anonymný alkoholik ostáva"
+    },
+    {
+      "pojem": "reči nad vlastným strachom",
+      "vzory": [
+        "rec\\w* (?:\\w+ ){0,3}nad (?:\\w+ ){0,1}strach",
+        "nad (?:svoj|vlastn|tvoj)\\w* strach"
+      ],
+      "pozn": "v11.12: reči obsadzujú súperov teplomer ako súvislý blok, od vrchu jeho strachu nadol, potom nad neho. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "reči bodujú 1 / 3 / 5, krátenie rečami",
+      "vzory": [
+        "rec\\w*[^.!?]{0,40}1 / 3 / 5",
+        "rec\\w* uberaj",
+        "uberaj\\w* zo strach",
+        "kraten\\w* (?:\\w+ ){0,2}(?:strach|rec)"
+      ],
+      "pozn": "v11.12: stupne 1 / 2 / 2 boduje ten, kto ich drží, pri každej bitke; krátenie z v11.11 zaniklo. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "reči klesajú po každom bodovaní",
+      "vzory": [
+        "rec\\w* (?:\\w+ ){0,3}bodoval\\w* (?:\\w+ ){0,3}klesn",
+        "po bodovani (?:\\w+ ){0,2}klesn\\w* o stup"
+      ],
+      "pozn": "v11.12: reči klesajú zospodu len tomu, kto prehral hádku; pri remíze nikomu. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "presvedčenie za 5 bodov, vyšší súperov strach",
+      "vzory": [
+        "presvedc\\w*[^.!?]{0,80}(?:5|8 az 11) bod",
+        "5 bod\\w*[^.!?]{0,60}presvedc",
+        "presvedc\\w*[^.!?]{0,80}vyssi\\w* strach",
+        "rec\\w* (?:\\w+ ){0,3}po presvedc\\w* zanik"
+      ],
+      "pozn": "v11.12: plný teplomer + 3 body pri ktoromkoľvek staršom, reči po presvedčení ostávajú. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "krádež za najvyšší marker",
+      "vzory": [
+        "kradez\\w*[^.!?]{0,80}(?:najvyss|marker)",
+        "(?:najvyss|marker)\\w*[^.!?]{0,80}kradez"
+      ],
+      "pozn": "v11.12: zlodej dostane toľko špakov, koľko bodov hádky má okradnutý v rečiach pri staršom. Vypálená ešte hrá v11.6, kým sa nevypáli"
+    },
+    {
+      "pojem": "lokalitu natáča obranca",
+      "vzory": [
+        "obranc\\w*[^.!?]{0,40}natoc",
+        "natoc\\w*[^.!?]{0,40}obranc"
+      ],
+      "pozn": "v11.11: obranca vyberá, natočí víťaz hádky z minulého kola; v prvom kole a po remíze ten, kto vyberá. Vypálená ešte hrá v11.6, kým sa nevypáli"
     }
   ],
   "karty": [
