@@ -50,28 +50,29 @@ describe("ranky — automatický postup podľa hviezd (Michal 2026-10-25)", () =
   it("prahy: Deci od 35 %, Sedmička od 50 % všetkých hviezd katalógu, zaokrúhlené nahor", () => {
     expect(POSTUP).toEqual({ deci: 35, sedmicka: 50 });
     const katalog = nacitajKatalog();
-    const spolu = katalog.achievementy.reduce((n, a) => n + a.prahy.length, 0);
+    const spolu = katalog.achievementy.reduce((n, a) => n + (a.legacy ? 0 : a.prahy.length), 0);
     const prahy = prahyRankov(POSTUP, spolu);
     expect(prahy).toEqual({ deci: Math.ceil(spolu * 0.35), sedmicka: Math.ceil(spolu * 0.5) });
-    // Dnešný katalóg: 62 achievementov so 186 hviezdami + Prvá hra s hviezdičkou za každú z 3 častí výučby = 189 → Deci 67, Sedmička 95.
-    expect(spolu).toBe(189);
-    expect(prahy).toEqual({ deci: 67, sedmicka: 95 });
+    // Dnešný katalóg: 63 získateľných achievementov so 189 hviezdami + Prvá hra s hviezdičkou za každú z 3 častí výučby = 192 → Deci 68, Sedmička 96.
+    // Legacy (3 staré povahy, 9 hviezd) sa do prahov nerátajú.
+    expect(spolu).toBe(192);
+    expect(prahy).toEqual({ deci: 68, sedmicka: 96 });
     // Presné percento sa nezaokrúhli nahor o hviezdu navyše; bez katalógu sa na hviezdy nepostupuje.
     expect(prahyRankov(POSTUP, 100)).toEqual({ deci: 35, sedmicka: 50 });
     expect(prahyRankov(POSTUP, 0)).toBeNull();
     const r = (hviezdy: number, poldeci: boolean) => rankPodlaHviezd(POSTUP, { hviezdy, spolu, poldeci });
     expect(r(0, false)).toBe("navstevnik");
-    expect(r(65, false)).toBe("navstevnik");
+    expect(r(66, false)).toBe("navstevnik");
     expect(r(0, true)).toBe("hrac");
-    expect(r(65, true)).toBe("hrac");
     expect(r(66, true)).toBe("hrac");
-    expect(r(67, true)).toBe("deci");
-    expect(r(94, true)).toBe("deci");
-    expect(r(95, true)).toBe("sedmicka");
-    expect(r(189, true)).toBe("sedmicka");
+    expect(r(67, true)).toBe("hrac");
+    expect(r(68, true)).toBe("deci");
+    expect(r(95, true)).toBe("deci");
+    expect(r(96, true)).toBe("sedmicka");
+    expect(r(192, true)).toBe("sedmicka");
     expect(rankPodlaHviezd(POSTUP, { hviezdy: 0, spolu: 0, poldeci: true })).toBe("hrac");
-    expect(dalsiRank(POSTUP, "hrac", { hviezdy: 40, spolu })).toEqual({ rank: "deci", prah: 67 });
-    expect(dalsiRank(POSTUP, "deci", { hviezdy: 70, spolu })).toEqual({ rank: "sedmicka", prah: 95 });
+    expect(dalsiRank(POSTUP, "hrac", { hviezdy: 40, spolu })).toEqual({ rank: "deci", prah: 68 });
+    expect(dalsiRank(POSTUP, "deci", { hviezdy: 70, spolu })).toEqual({ rank: "sedmicka", prah: 96 });
     expect(dalsiRank(POSTUP, "sedmicka", { hviezdy: 100, spolu })).toBeNull();
   });
 
@@ -91,7 +92,7 @@ describe("ranky — automatický postup podľa hviezd (Michal 2026-10-25)", () =
       ucty.ulozVyucbu(a.id, 99, "hotova");
       expect(achievementy.udelZaVyucbu(a.id, 5, 1).map((z) => [z.id, z.rank])).toEqual([["prva-hra", 1]]);
       expect(achievementy.udelZaVyucbu(a.id, 6, 1)).toEqual([]);
-      expect(achievementy.hviezdy(a.id)).toEqual({ hviezdy: 1, spolu: 189 });
+      expect(achievementy.hviezdy(a.id)).toEqual({ hviezdy: 1, spolu: 192 });
       expect(ucty.povysPoPartii(a.id, POSTUP)).toBe(true);
       expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
       // Kto výučbu preskočí, je Poldeci po prvej dohratej partii (aj s botom).
@@ -104,12 +105,12 @@ describe("ranky — automatický postup podľa hviezd (Michal 2026-10-25)", () =
       partie(archiv, [a.id, b.id], 40);
       ucty.prepocitajRanky(POSTUP);
       expect(ucty.podlaId(a.id)?.rola).toBe("hrac");
-      // …hviezdy áno (k Prvej hre ďalšie): 66 nie, 67 Deci, 95 Sedmička — hneď po zisku.
-      dajHviezdy(db, katalog, a.id, 65);
-      expect(ucty.povysPodlaHviezd(a.id, POSTUP)).toBeNull();
+      // …hviezdy áno (k Prvej hre ďalšie): 67 nie, 68 Deci, 96 Sedmička — hneď po zisku.
       dajHviezdy(db, katalog, a.id, 66);
+      expect(ucty.povysPodlaHviezd(a.id, POSTUP)).toBeNull();
+      dajHviezdy(db, katalog, a.id, 67);
       expect(ucty.povysPodlaHviezd(a.id, POSTUP)).toBe("deci");
-      dajHviezdy(db, katalog, a.id, 94);
+      dajHviezdy(db, katalog, a.id, 95);
       expect(ucty.povysPodlaHviezd(a.id, POSTUP)).toBe("sedmicka");
 
       // Nikoho neznížiť: Deci za partie (zo starých pravidiel) ostáva pri prepočte aj pri návrate na automatiku.
@@ -158,8 +159,8 @@ describe("ranky — automatický postup podľa hviezd (Michal 2026-10-25)", () =
         expect(prava.status).toBe(200);
         expect(await prava.json()).toMatchObject({
           postup: { deci: 35, sedmicka: 50 },
-          hviezdySpolu: 189,
-          prahyHviezd: { deci: 67, sedmicka: 95 },
+          hviezdySpolu: 192,
+          prahyHviezd: { deci: 68, sedmicka: 96 },
           matica: { hodnotit_hru: ["deci", "sedmicka"] },
         });
         const zoznam = (await (await fetch(`http://127.0.0.1:${s.port}/api/admin/pouzivatelia`, { headers: { cookie: admin } })).json()) as {

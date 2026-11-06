@@ -170,6 +170,8 @@ export interface AchievementPreKlienta {
   readonly rankov: number;
   /** Vzácnosť každého ranku: bezne | nezvycajne | vzacne | legendarne (podľa Navrhára). */
   readonly zriedkavost: readonly string[];
+  /** Už sa nedá získať; držiteľ ho má navždy so značkou LEGACY ACHIEVEMENT. */
+  readonly legacy: boolean;
 }
 
 /** Získaný rank — oznam v partii. vzacny = 3★ alebo tajný (Melichar sa ozve). */

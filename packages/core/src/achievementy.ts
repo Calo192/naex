@@ -56,6 +56,12 @@ export interface Achievement {
   readonly piktogram: string | null;
   /** Odhad vzácnosti ranku pre UI (bezne / nezvycajne / vzacne). */
   readonly zriedkavost: readonly string[];
+  /**
+   * Už sa nedá získať (Michal 2026-11-06): hráči, ktorí ho majú, ho majú navždy ako LEGACY
+   * ACHIEVEMENT; ostatní ho nikde neuvidia. Achievement sa z hry neodstraňuje mazaním z katalógu —
+   * tým by držitelia prišli o názov, popis aj hviezdy.
+   */
+  readonly legacy: boolean;
 }
 
 export interface KatalogAchievementov {
@@ -106,9 +112,12 @@ export interface Metrika {
   readonly zmer: (k: KrokMetriky) => Meranie;
   /** Pri druhu „rozne“: čo sa ráta ako rôzne (povaha, súper). */
   readonly stitok?: (k: KrokMetriky, p: PlayerId) => string | null;
+  /** Pri druhu „rozne“: ktoré štítky z kariéry ešte platia (povaha mohla z hry odísť); bez neho všetky. */
+  readonly platnyStitok?: (stitok: string) => boolean;
 }
 
 const OBA = [0, 1] as const;
+const jePovahaVHre = (id: string | null): boolean => POVAHY.some((x) => x.id === id);
 const pre = (f: (p: PlayerId) => number | null): Meranie => [f(0), f(1)];
 const ak = (b: boolean, v = 1): number | null => (b ? v : null);
 
@@ -279,9 +288,11 @@ const VLASTNE: Readonly<Record<string, Metrika>> = {
   },
   porazenePovahy: {
     druh: "rozne",
-    popis: "počet rôznych povah bota, nad ktorými hráč vyhral",
-    zmer: (k) => pre((p) => ak(vyhral(k, p) && k.kontext.botPovaha !== null)),
+    popis: "počet rôznych povah bota v hre, nad ktorými hráč vyhral (vyradené sa nerátajú)",
+    zmer: (k) => pre((p) => ak(vyhral(k, p) && jePovahaVHre(k.kontext.botPovaha))),
     stitok: (k) => k.kontext.botPovaha,
+    // Staré výhry ostávajú v databáze, ale na nové povahy sa nezapočítavajú (Michal 2026-11-06).
+    platnyStitok: jePovahaVHre,
   },
   rozniSuperi: {
     druh: "rozne",
@@ -438,6 +449,7 @@ export function nacitajAchievementy(json: unknown): KatalogAchievementov {
       tajnyText: typeof a.tajnyText === "string" ? a.tajnyText : null,
       piktogram: typeof a.piktogram === "string" ? a.piktogram : null,
       zriedkavost: Array.isArray(a.zriedkavost) ? a.zriedkavost.filter((x): x is string => typeof x === "string") : [],
+      legacy: a.legacy === true,
     });
   }
   if (chyby.length > 0) throw new Error(`achievementy.json:\n  ${chyby.join("\n  ")}`);
@@ -447,6 +459,17 @@ export function nacitajAchievementy(json: unknown): KatalogAchievementov {
 /** Rank pre hodnotu: koľko prahov dosiahla (0 = žiadny). */
 export function rankZaHodnotu(a: Achievement, hodnota: number): number {
   return a.prahy.filter((p) => hodnota >= p).length;
+}
+
+/** Achievementy, ktoré sa ešte dajú získať — všetko okrem legacy. */
+export function ziskatelne(katalog: KatalogAchievementov): readonly Achievement[] {
+  return katalog.achievementy.filter((a) => !a.legacy);
+}
+
+/** Štítky „rozne“ z kariéry, ktoré sa pre achievement ešte rátajú. */
+export function platneStitky(a: Achievement, stitky: Iterable<string>): string[] {
+  const plati = metrika(a.metrika)?.platnyStitok;
+  return [...stitky].filter((s) => plati === undefined || plati(s));
 }
 
 /** Popis ranku s dosadeným prahom. */
@@ -526,7 +549,8 @@ export function krokAchievementov(
   const bitka = udalosti.some((e) => e.type === "bitkaVysledok");
 
   const merania = new Map<string, Meranie>();
-  for (const a of katalog.achievementy) {
+  const aktivne = ziskatelne(katalog);
+  for (const a of aktivne) {
     if (!merania.has(a.metrika)) merania.set(a.metrika, (metrika(a.metrika) as Metrika).zmer(krok));
   }
 
@@ -538,7 +562,7 @@ export function krokAchievementov(
     const vPitke: Record<string, number> = stav.pitka === pitka ? { ...h.pitka } : {};
     const stitky: Record<string, readonly string[]> = { ...h.stitky };
     const vBitke: Record<string, number> = {};
-    for (const a of katalog.achievementy) {
+    for (const a of aktivne) {
       const k = klucKariery(a);
       if (k in vBitke) continue;
       const v = (merania.get(a.metrika) as Meranie)[p];
@@ -555,7 +579,7 @@ export function krokAchievementov(
       vPitke[k] = zluc(a.agregacia, vPitke[k], v);
     }
     const najlepsie: Record<string, number> = { ...h.najlepsie };
-    for (const a of katalog.achievementy) {
+    for (const a of aktivne) {
       const k = klucKariery(a);
       const hodnota =
         a.rozsah === "bitka" ? (bitka ? vBitke[k] : undefined) : a.rozsah === "pitka" ? vPitke[k] : a.rozsah === "kolo" ? vKole[k] : partia[k];
@@ -618,8 +642,8 @@ export const PODIEL_BLIZKO = 0.6;
 export const PRIBLIZENI_NAJVIAC = 3;
 
 /**
- * Achievementy, ku ktorých ďalšiemu ranku mal hráč v partii blízko — tajné
- * nie (nesmú sa prezradiť). hodnoty = hodnota achievementu (pri kariére
+ * Achievementy, ku ktorých ďalšiemu ranku mal hráč v partii blízko — tajné nie
+ * (nesmú sa prezradiť), legacy tiež nie (nedajú sa získať). hodnoty = hodnota achievementu (pri kariére
  * súčet všetkých partií), drzane = rank, ktorý už hráč má.
  */
 export function chybaloMalo(
@@ -629,7 +653,7 @@ export function chybaloMalo(
 ): Priblizenie[] {
   const out: (Priblizenie & { readonly podiel: number })[] = [];
   for (const a of katalog.achievementy) {
-    if (a.tajny) continue;
+    if (a.tajny || a.legacy) continue;
     const hodnota = hodnoty.get(a.id);
     if (hodnota === undefined || hodnota <= 0) continue;
     const rank = Math.max(drzane.get(a.id) ?? 0, rankZaHodnotu(a, hodnota));

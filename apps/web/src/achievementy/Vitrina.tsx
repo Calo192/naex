@@ -24,6 +24,17 @@ export interface PolozkaVitriny {
   readonly postup: { readonly hodnota: number; readonly prah: number; readonly aktualna?: number | null } | null;
   /** Vzácnosť získaného ranku („vzácne“), bežné null. */
   readonly vzacnost?: string | null;
+  /** Už sa nedá získať — odmena za vernosť tým, čo ho stihli (Michal 2026-11-06). */
+  readonly legacy?: boolean;
+}
+
+/** Značka achievementu, ktorý už z hry zmizol; hráčovi ostáva navždy. */
+export function ZnackaLegacy() {
+  return (
+    <span className="znacka-legacy" title="Tento achievement sa už nedá získať. Ostáva tým, čo ho stihli.">
+      LEGACY ACHIEVEMENT
+    </span>
+  );
 }
 
 export interface KategoriaVitriny {
@@ -78,9 +89,10 @@ export function Vitrina({
             const skryty = p.tajny && !ziskany;
             const postup = vlastna && p.postup !== null ? p.postup : null;
             return (
-              <li key={p.id} className={ziskany ? "ziskany" : "neziskany"}>
+              <li key={p.id} className={`${ziskany ? "ziskany" : "neziskany"}${p.legacy === true ? " legacy" : ""}`}>
                 <Podtacok rank={p.rank ?? p.rankCiela} ikona={p.ikona} obrazok={p.obrazok} nazov={p.nazov} ziskany={ziskany} tajny={p.tajny} velkost={120} />
                 <strong>{skryty ? "???" : p.nazov}</strong>
+                {p.legacy === true && <ZnackaLegacy />}
                 {/* Tajný bez zisku: nápoveda zo servera (tajnyText), inak všeobecná veta. */}
                 <span className="vitrina-popis">{skryty && p.popis === "???" ? "Tajný achievement — ukáže sa, až keď ho získaš." : p.popis}</span>
                 {ziskany && p.rank !== null && (

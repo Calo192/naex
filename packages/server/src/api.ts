@@ -902,7 +902,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
       const h = ctx.ucty.hviezdy(id);
       const postupRanku =
         pohlad === "vlastny" && h.spolu > 0
-          ? { hviezdy: h.hviezdy, spolu: h.spolu, dalsi: jeRankHraca(ciel.rola) ? dalsiRank(ctx.prava.nastavenie().postup, ciel.rola, h) : null }
+          ? { hviezdy: h.hviezdy, spolu: h.spolu + (ctx.achievementy?.legacyHviezdy(id) ?? 0), dalsi: jeRankHraca(ciel.rola) ? dalsiRank(ctx.prava.nastavenie().postup, ciel.rola, h) : null }
           : null;
       return ok({ ...profil, suhrnSkryty, suhrn: ctx.profily.suhrn(id, f as FilterPartii, !cudzi), achievementy: ctx.achievementy?.vitrina(id) ?? null, postupRanku, ligy: ctx.ligy.stav(ciel) });
     }
