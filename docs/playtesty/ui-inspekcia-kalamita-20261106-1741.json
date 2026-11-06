@@ -1,0 +1,122 @@
+[
+ {
+  "id": "UI-1",
+  "zavaznost": "stredna",
+  "typ": "nizky-kontrast",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:2081 (.bot-volba .avatar), apps/web/src/styles.css:310 (.avatar-inicialy, color #fff)",
+  "popis": "Iniciála „?“ v avatare vybraného bota v lobby má kontrast 3,23 : 1 (16 px, treba 4,5 : 1). Platí vo všetkých piatich rozlíšeniach.",
+  "navrh": "Pre avatar vybranej voľby dať farbu textu s kontrastom aspoň 4,5 : 1 voči jeho podkladu (tmavý text na akcente alebo tmavší podklad).",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-zaklad-1920x1080-01-nizky-kontrast.png"
+ },
+ {
+  "id": "UI-2",
+  "zavaznost": "stredna",
+  "typ": "maly-ciel",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/teplomery.css:172 (.r3-seg, šírka z flex v .r3-pas)",
+  "popis": "Segmenty teplomera reči (tlačidlá stupňa 1 / 2 / 3 pri každom staršom) majú pri 1512, 1440 a 1366 šírku 23 px (výška 83 px), pod hranicou 24 px (WCAG 2.5.8). Je to hlavný ovládací prvok kroku „Hádka → tvoje reči“.",
+  "navrh": "Dať .r3-seg min-width: 24px (alebo zväčšiť šírku pásu .r3-pas o 1–2 px) pri šírke okna do 1512 px.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-reci-1512x860-31-maly-ciel.png"
+ },
+ {
+  "id": "UI-3",
+  "zavaznost": "stredna",
+  "typ": "skrateny-text",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:6477 (.linia-stav > .pilulka-text, ellipsis) a apps/web/src/hra/HernaPlocha.tsx:4420 (button.auto-hotovo-odkaz)",
+  "popis": "V pokyne Pitky je za dlhým textom odkaz „Ďalšie Pitky tejto bitky bez NA EX“ (auto-hotovo-odkaz). V základnom stave ho skracuje trojbodka a vidno ho až po najazdení myšou alebo fokuse na pokyn; hráč nevie, že taký ovládač existuje (presah 18 px). Samotné skracovanie pokynu je zámer (rozbalí sa pod myšou), skrytý je len ovládací prvok.",
+  "navrh": "Odkaz vyniesť z pokynu na samostatné miesto (napr. vedľa tlačidla Skončiť Pitku), alebo ho dať na začiatok pokynu pred dlhý text.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-pitka-1920x1080-01-orezany-text.png"
+ },
+ {
+  "id": "UI-4",
+  "zavaznost": "stredna",
+  "typ": "bez-fokusu",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/HernaPlocha.tsx:5107-5122 (.volba-ciela-karty, kl-klik) a hra.css (chýba :focus-visible pre kartu lokality)",
+  "popis": "Karta lokality (Lesná cesta) po výbere cieľa pri fokuse z klávesnice nijako nezmení vzhľad. Nástroj to zistil raz pri 1920×1080; na ostatných rozlíšeniach som tento stav nemeral.",
+  "navrh": "Pridať karte lokality viditeľný :focus-visible (obrys v akcente ako majú ostatné .s-lupou.naex-mozny).",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-volba-ciela-vyber-1920x1080-07-bez-fokusu.png"
+ },
+ {
+  "id": "UI-5",
+  "zavaznost": "nizka",
+  "typ": "nizky-kontrast",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/jbar.css:355 (.jk-cislo.su, farba var(--su) = #e0805f, apps/web/src/schemy.css:39)",
+  "popis": "Číslo súpera v tlačidle odhadu bitky (button.jbar-odhad) má kontrast 4,14 : 1 (písmo 14 px, pri .vedie 17 px; treba 4,5 : 1). Vo všetkých rozlíšeniach a fázach.",
+  "navrh": "Pre .jk-cislo.su použiť svetlejší odtieň farby súpera (mix s bielou ~12 %) alebo stmaviť podklad lišty.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-zhromazdenie-plus-1920x1080-09-nizky-kontrast.png"
+ },
+ {
+  "id": "UI-6",
+  "zavaznost": "nizka",
+  "typ": "skrateny-text",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:4261-4268 (.doska .zdroj .zdroj-pod > *, nowrap + ellipsis) a hra.css:716 (.abstak-vyhlad)",
+  "popis": "Výhľad Absťáka v dlaždici Chuť sa skracuje trojbodkou: pri 1366 „chýba 2 · inak +1 Ab…“ (obsah 123 px, box 112 px), pri 1440 o 2 px. Dôležité varovanie bez nápovedy; ďalej „+2 po výhre“ pod dlaždicou Starší (3 px výškový presah).",
+  "navrh": "Skrátiť text („chýba 2 · +1 Absťák“) alebo povoliť zalomenie na dva riadky ako pri .zdroj-pod > :only-child (hra.css:4272); doplniť title s celým textom.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-koniec-1440x800-15-skrateny-text.png"
+ },
+ {
+  "id": "UI-7",
+  "zavaznost": "nizka",
+  "typ": "skrateny-text",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:1553-1570 (.ruka-meno, nowrap + ellipsis, šírka karty − 6 px)",
+  "popis": "Pri 1366×650 sú v ruke názvy „Milujúca manželka“ a „Dievčina na vydaj“ skrátené trojbodkou (92 px obsah v 78 px). Karta sa pri najazdení vysunie a ukáže celý názov, preto len nízka.",
+  "navrh": "Zmenšiť písmo .ruka-meno na malých oknách (0,56 rem) alebo dať title s celým názvom.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-zhromazdenie-1366x650-09-skrateny-text.png"
+ },
+ {
+  "id": "UI-8",
+  "zavaznost": "nizka",
+  "typ": "skrateny-text",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/priazen-kola.css:821 (.pas-st-meno, nowrap + ellipsis)",
+  "popis": "Meno staršieho „Vychovávateľka“ je v okne konca hry skrátené trojbodkou („Vychovávate…“, 85 px v 80 px).",
+  "navrh": "Zmenšiť .pas-st-meno na 0,68 rem alebo rozšíriť stĺpec o 6 px.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-koniec-1920x1080-08-skrateny-text.png"
+ },
+ {
+  "id": "UI-9",
+  "zavaznost": "nizka",
+  "typ": "varovanie-konzola",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/MelicharBar.tsx:196 (console.warn); text hlášok v packages/core/data/vyucba/napovedy.json:104 (dlh), :142 (body), :272 (exekutor)",
+  "popis": "Konzola hlási „Melichar: veta sa do baru nezmestí ani sama — text treba skrátiť“ pre tri hlášky: „dlh“ („Prvý Dlh! Úprimne, nečudujem sa…“), „exekutor“ („Máš priznaný Dlh, nechcem nič hovoriť. V každej bitke príde Exekútor…“) a „body“ („Špaky v bare rozhodnú…“). Na snímke som orezanie nevidel (bar delí text na strany 1/3, 1/5), preto nízka.",
+  "navrh": "Skrátiť tri vety v napovedy.json na dĺžku, ktorá sa zmestí do jednej strany baru pri 1440 px, alebo ich rozdeliť na kratšie vety.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-pitka-naex-1440x800.png"
+ },
+ {
+  "id": "UI-10",
+  "zavaznost": "nizka",
+  "typ": "prekryty-text",
+  "stranky": [
+   "/hra"
+  ],
+  "zdroj": "apps/web/src/hra/hra.css:3595 (.naex-nad) a štýl vybranej / vysunutej karty (.kl-vybrana)",
+  "popis": "Pri 1440×800 sa vybraná karta (Miňištrant) v Pitke vysunie o ~10 px a štítok „NA EX“ nad ňou prekryje prvý riadok textu efektu („Nástup: Ak vyvoláš…“ je vidno len ako „Na…“). Nástroj to neoznačil, vidno na snímke; text karty je čitateľný v lupe, preto nízka.",
+  "navrh": "Pri vybranej karte posunúť štítok .naex-nad o výšku vysunutia vyššie, alebo mu dať vonkajší okraj nad kartu.",
+  "vyrez": "ui-inspekcia-kalamita-20261106-1741/hra-pitka-vyber-1440x800.png"
+ }
+]
