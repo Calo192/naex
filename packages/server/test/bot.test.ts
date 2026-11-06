@@ -42,7 +42,8 @@ describe("offline protihráč na serveri", () => {
     const hraci = a.hraci as [{ meno: string } | null, { meno: string; avatar: string | null; bot: boolean } | null];
     expect(POVAHY.map((p) => p.meno)).toContain(hraci[1]?.meno);
     expect(hraci[1]?.bot).toBe(true);
-    // Hráč bez fotky má náhodnú dedinskú trosku; podobizeň bota stráži vyber-bota.test.ts.
+    // Hráč bez fotky má náhodnú dedinskú trosku, bot svoju podobizeň (seed/avatary).
+    expect(hraci[1]?.avatar).toEqual(expect.any(String));
     expect((hraci[0] as { avatar?: string | null } | null)?.avatar).toEqual(expect.any(String));
 
     let tahov = 0;

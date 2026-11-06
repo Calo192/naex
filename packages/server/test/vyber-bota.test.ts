@@ -76,11 +76,10 @@ describe("výber súpera proti počítaču", () => {
     expect(boti.map((b) => b.id)).toEqual(POVAHY.map((p) => p.id));
     expect(boti.map((b) => b.meno)).toEqual(POVAHY.map((p) => p.meno));
     expect(boti.map((b) => b.popis)).toEqual(POVAHY.map((p) => p.popis.trim() || null));
-    // Podobizeň z seed/avatary/boti/<id>.jpg príde od ilustrátora; kým nie je, klient ukáže iniciály.
     for (const b of boti) {
       expect(Object.keys(b).sort()).toEqual(["avatar", "id", "meno", "popis"]);
       expect(b.popis).toEqual(expect.any(String));
-      expect(b.avatar === null || typeof b.avatar === "string").toBe(true);
+      expect(b.avatar, `${b.id}: seed/avatary/boti/<id>.jpg`).toEqual(expect.any(String));
     }
   });
 
