@@ -14,7 +14,7 @@ import { NOVINKY_VIDENE, citajVidene, ulozVidene } from "../lib/novinky.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
-import { tvar } from "./Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
 import "./novinky.css";
 
 const KATEGORIE = { pravidla: "Pravidlá", karty: "Karty", dizajn: "Dizajn", web: "Web", opravy: "Opravy" } as const;

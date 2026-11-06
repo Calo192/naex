@@ -9,7 +9,7 @@ import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, NAZOV_DLZKY_GENITIV } from "@naex/co
 import { api } from "../lib/api.ts";
 import { NAZOV_UROVNE, RANKY_HRACOV, type Rola } from "../lib/ucet.tsx";
 import { Hlaska } from "../komponenty.tsx";
-import { tvar } from "./Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
 
 interface PravidloLigy {
   readonly podmienka: { readonly liga: DlzkaHry; readonly vyhier: number } | null;

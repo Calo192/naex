@@ -6,7 +6,8 @@ import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
-import { CisloFrajeriny, tvar } from "./Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
+import { CisloFrajeriny } from "./Statistiky.tsx";
 import "./statistiky.css";
 
 interface RiadokRebricka {

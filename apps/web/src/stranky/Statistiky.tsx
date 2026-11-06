@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Action, StatistikyHraca } from "@naex/core";
 import { rozlozRod } from "@naex/core";
+import { tvar } from "../lib/jazyk.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { Avatar } from "../komponenty.tsx";
@@ -62,12 +63,6 @@ const percento = (cast: number, celok: number): string => (celok === 0 ? "—" :
 
 /** Priemer na jednotku; bez menovateľa pomlčka. */
 const priemer = (sucet: number, pocet: number, des = 1): string => (pocet === 0 ? "—" : cislo(sucet / pocet, des));
-
-/** Slovenské tvary: 1 partia, 2–4 partie, 5 partií. */
-export function tvar(n: number, jeden: string, dva: string, pat: string): string {
-  const a = Math.abs(n);
-  return a === 1 ? jeden : a >= 2 && a <= 4 ? dva : pat;
-}
 
 // ---- Frajerina ------------------------------------------------------------------
 

@@ -14,7 +14,7 @@ import { HlavaStranky } from "../../HlavaStranky.tsx";
 import { KrcmovyUcet } from "../../hra/KrcmovyUcet.tsx";
 import { UcetSpakov } from "../../hra/UcetSpakov.tsx";
 import { Nastenka } from "../../hra/Spaky.tsx";
-import { tvar } from "../Statistiky.tsx";
+import { tvar } from "../../lib/jazyk.ts";
 import { TEXT_VYSLEDKU, datum, trvanie, type DetailPartieApi } from "./typy.ts";
 import "./profil.css";
 

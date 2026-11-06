@@ -16,7 +16,7 @@ import { HlavaStranky } from "../HlavaStranky.tsx";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { TlacidloCigarety } from "../stranky/SpatnaVazba.tsx";
-import { tvar } from "../stranky/Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
 import type { DetailNavrhu, NavrhDielne, ObsahNavrhu, Pozicie, StavZobrazeny, ZoznamDielne } from "./typy.ts";
 import { STAVY, kartaZNavrhu, kedy, poziciZoStrany, stranaZPozicii } from "./typy.ts";
 import "./dielna.css";

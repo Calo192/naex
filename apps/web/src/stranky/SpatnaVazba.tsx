@@ -12,7 +12,7 @@ import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { jeSpravca, maPravo, useUcet, type Pouzivatel } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
-import { tvar } from "./Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
 import { HodnotenieHry } from "./HodnotenieHry.tsx";
 import "./statistiky.css";
 

@@ -6,7 +6,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 import { createPortal } from "react-dom";
 import { api } from "../lib/api.ts";
 import { Avatar } from "../komponenty.tsx";
-import { CisloFrajeriny, tvar } from "../stranky/Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
+import { CisloFrajeriny } from "../stranky/Statistiky.tsx";
 import { FormaStvorce } from "../stranky/profil/Profil.tsx";
 import { hodnotaMetriky, type Bilancia, type ProfilApi } from "../stranky/profil/typy.ts";
 import type { HracInfo } from "./useHra.ts";
