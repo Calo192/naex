@@ -46,7 +46,7 @@ export const KONSTANTY = {
 
   // Základy odvodených hodnôt (PRAVIDLA §8 a §10).
   /**
-   * Prah Cirhózy (+ priazeň Alkoholika). Michal 2026-10-12 zvýšil z 2 na 3:
+   * Prah Cirhózy. Michal 2026-10-12 zvýšil z 2 na 3:
    * v playteste 20261011-183315 hráči priznávali kliatby po jednej a kolá sa
    * naťahovali (tempo 5,5).
    */
@@ -269,13 +269,14 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // v11.7 (Michal 2026-11-06) bez novej značky: Kostol — NA EX len na poslednú kartu línie (oba konce),
 // oltár a otočenie Kostola pre NA EX zanikli.
 // v11.9 (Michal 2026-11-06) bez novej značky: dobratie do 3 kariet v ruke, výpalné po bitke.
+// v11.10 (Michal 2026-11-06) bez novej značky: priazeň Ohováračka namiesto Alkoholika.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.9";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.10";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-06";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

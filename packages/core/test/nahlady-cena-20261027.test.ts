@@ -36,7 +36,6 @@ import {
   rngSeed,
   sPrilozenou,
   setupGame,
-  silaDoDna,
   stolPriPoskodeni,
   viewFor,
   vyhladDlhov,
@@ -203,8 +202,6 @@ describe("limit ďalšieho kola po NA EX ráta akciu Poldeci (playtest 20261026-
         if (n === null || n.dalsiePitky[1] !== 0) continue;
         const t = doDalsiehoKola(apply(data, s, { type: "naex", uid }, p).state);
         if (t.koniec !== null || t.kolo === s.kolo || t.faza === "draft") continue;
-        // Prebytok či Pohoršenie v tej bitke mohli presunúť priazeň Alkoholika („do dna“) — to náhľad nevie.
-        if (silaDoDna(data, t, p) !== silaDoDna(data, view, p)) continue;
         const ocakavane = limitBuduceKolo(n.odkrytie.view, p, false, data) - 1 - limitBonus(n.odkrytie.view, p);
         expect(t.hraci[p].poldeciPlne, `seed ${seed}: NA EX na ${uid}`).toBe(ocakavane);
         porovnane++;

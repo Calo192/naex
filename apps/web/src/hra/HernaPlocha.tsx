@@ -4274,7 +4274,6 @@ export function HernaPlocha({
                   </>
                 )}
                 {vybrana.odkrytie.kar && <> · Kar: pečeň za toto NA EX dostane {menoHraca(super_)}</>}
-                {vybrana.odkrytie.doDna && <> · Na zdravie: poldeci sa ti po bitke vráti plný</>}
                 {poBitkeNaex(vybrana.odkrytie.view, vybranaUid) !== null && <> · po bitke (efekty Prehra): {poBitkeNaex(vybrana.odkrytie.view, vybranaUid)}</>}
                 {view.zaverecne.some((z) => z.majitel === super_) && <> · bez súperovej Záverečnej lícom dole</>} · v ďalšom kole limit{" "}
                 {limitPoVybranej === limitBez ? `ostane ${limitBez}` : `${limitPoVybranej} namiesto ${limitBez}`} · skryto do konca Pitky; ak {menoHraca(super_)} dá NA EX
@@ -4806,12 +4805,12 @@ export function HernaPlocha({
       : polozkyHrozby.map((h) => ({ ...h, mini: h.zdroj === "hadka" || h.zdroj === "kliatby" ? h.mini : h.mini.replace(/ \(prebytok [^)]*\)$/, "").replace(/^(ty|súper) až/, "$1 NA EX až") }));
   // Odhad bitky len keď ho hráči ovplyvnia — v Zhromaždení, Pitke a bitke;
   // pri voľbe cieľa a v drafte mätie (Michal 2026-10-20).
-  // Priazne, ktoré pôsobia priamo v bitke (tuhé, Viera, Absťáky, Robota), po hádke — nápoveda odhadu.
+  // Priazne, ktoré pôsobia priamo v bitke (tuhé, Viera, Povery, Absťáky, Robota), po hádke — nápoveda odhadu.
   const priazneOdhadu = (): PriazenVOdhade[] => {
     const su = kratkeMeno(menoHraca(super_));
     return view.starsi.flatMap((e) => {
       const fav = favourStarsieho(data, e);
-      if (fav !== "BITKAR" && fav !== "VERIACI" && fav !== "LAKOMEC" && fav !== "ROBOTA") return [];
+      if (fav !== "BITKAR" && fav !== "VERIACI" && fav !== "OHOVARACKA" && fav !== "LAKOMEC" && fav !== "ROBOTA") return [];
       const pk = priazenKola(e, ja);
       if (pk.komu === null) return [];
       const meno = menoKarty(e.karta.defId);

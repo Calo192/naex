@@ -271,8 +271,8 @@ const DEDICSTVO: Readonly<Record<string, number>> = {
 /**
  * Čo jeden bod sily priazne urobí v jednej budúcej bitke (v jednotkách
  * hodnotaStavu). Priazne v5 nie sú rovnako silné v každej partii: Bitkár
- * a Veriaci menia tuhé, Abstinent odpúšťa Absťáky (v10), kým „do dna“
- * zaberú len pri NA EX a Kmotor len pri priznanom Dlhu. Súperovi tak bot
+ * a Veriaci menia tuhé, Abstinent odpúšťa Absťáky (v10), Ohováračka pridáva
+ * Povery do hádky a Kmotor zaberie len pri priznanom Dlhu. Súperovi tak bot
  * dáva tú, ktorá mu v tejto partii urobí najmenej (Michal 2026-10-24).
  * Exekútor tu nie je — nižší prah súpera už ráta hodnotaZdrojov.
  */
@@ -286,15 +286,13 @@ const PRIAZEN_ZA_BITKU = {
   ADVOKAT: 0.8,
   /** Za akciu Robota navyše — spáli Dlh, alebo dá špak. */
   ROBOTA: 0.9,
-  /** Plný poldeci namiesto vypitého. */
-  DO_DNA: 0.6,
+  /** Za Poveru navyše v hádke (v11.10) — ako akcia Povera, odhad bez merania. */
+  OHOVARACKA: 0.4,
   /** Za priznaný Dlh, ktorý Kmotor presunie súperovi (v8): mne ubudne, jemu pribudne. */
   UZERNIK: 1.0,
 } as const;
 /** Pravdepodobnosť, že priazeň vydrží do ďalšej bitky (Nakladačka markery hýbe). */
 const VYDRZ_PRIAZNE = 0.6;
-/** Koľko NA EX dá hráč priemerne za bitku (partie botov v5). */
-const NAEX_ZA_BITKU = 0.35;
 
 /** Hodnota karty v balíčku — čím vyššia, tým radšej ju bot má. */
 export function hodnotaKarty(data: GameData, karta: CardInstance): number {
@@ -654,9 +652,9 @@ function hodnotaSilyPriazne(k: Kontext, s: GameState, p: PlayerId, fav: Favour, 
     case "ROBOTA":
       // Akcie Robota navyše (v9): spália Dlh, alebo dajú špak.
       return sila * PRIAZEN_ZA_BITKU.ROBOTA * pv.body;
-    case "ALKOHOLIK":
-      // „Do dna“: plný poldeci namiesto vypitého, najviac za sila NA EX v kole — NA EX je zriedka viac.
-      return Math.min(sila, 1) * NAEX_ZA_BITKU * PRIAZEN_ZA_BITKU.DO_DNA * pv.zdroje;
+    case "OHOVARACKA":
+      // Povery navyše idú do hádky a tá cez reči na špaky.
+      return sila * PRIAZEN_ZA_BITKU.OHOVARACKA * pv.body;
     case "UZERNIK": {
       // Kmotor bez priznaného Dlhu nerobí nič; presunie ich súperovi najviac toľko, koľko mám.
       const dlhy = prahyHraca(k.data, s, p).priznaneDlhy;

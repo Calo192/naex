@@ -345,7 +345,6 @@ function cenaNaexText(v: ClientState, uid: number): string {
   const navyse = [
     o.svokra > 0 ? `Svokra súpera: za toto NA EX na jeho kartu ti v bitke udelí ${o.svokra === 1 ? "Ranu" : `${o.svokra} Rany`} (v tuhom už je)` : "",
     o.kar ? "Kar: pečeň za toto NA EX dostane súper, nie ty" : "",
-    o.doDna ? "Na zdravie: poldeci sa ti po bitke vráti plný" : "",
   ].filter((x) => x !== "");
   // Najhoršia verejne možná odpoveď (playtest 20261026-173610-3 N5) a limit po NA EX na túto kartu (akcie Poldeci).
   const odp = najhorsiaOdpovedNaNaex(DATA, n);
@@ -684,7 +683,7 @@ const UCINOK: Record<string, (s: number) => string> = {
   BITKAR: (s) => `+${s} tuhého poškodenia v bitke`,
   VERIACI: (s) => `+${s} Viery v každej bitke`,
   FAJCIAR: (s) => `+${s} ${s === 1 ? "cigareta" : "cigarety"} po bitke`,
-  ALKOHOLIK: (s) => `Na zdravie: poldeci z ${s} tvojich NA EX za kolo sa po bitke vráti plný`,
+  OHOVARACKA: (s) => `Ohováračka: +${s} ${s === 1 ? "Povera" : "Povery"} v hádke (súperova Viera ich ruší)`,
   ADVOKAT: (s) => `Advokát: exekúcia ti vezme o ${s} špakov menej (Dlhy zhoria ako vždy)`,
 };
 

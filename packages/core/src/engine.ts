@@ -1162,6 +1162,9 @@ export function stranyBitky(data: GameData, s: VerejnyStav, sums: readonly [Acti
       // Veriaci (Michal 2026-10-20): Viera navyše rovná sile priazne, nie vyššia hodnota každej
       // Viery. Hádka od v11 priazne nemení — proti Poverám aj v tlmení tuhého tá istá sila.
       vieraVeriacehoPred: silaPriazne(data, s, "VERIACI", p),
+      // Ohováračka (Michal 2026-11-06): Povery navyše sa správajú ako Povery z akcií kariet —
+      // ruší ich súperova Viera, Horoskop ich zosilní a Čierna mačka chráni.
+      poveryOhovaracky: silaPriazne(data, s, "OHOVARACKA", p),
       // Horoskop (Dedičstvo, v10): tvoje Povery majú silu 2.
       silaPovery: vDedicstve(s, p, "horoskop") ? KONSTANTY.HADKA.HOROSKOP_POVERA : KONSTANTY.HADKA.POVERA_MAKKE,
       // Abstinent (v10): v bitke sa ti neráta 1 / 2 / 3 Absťákov — účinnou silou po hádke.
@@ -1199,6 +1202,8 @@ export interface RozpisPoskodenia {
   readonly zvysnaPovera: number;
   /** Mäkké poškodenie (v10): Pohoršenie × 2 + zvyšné Povery × sila Povery. */
   readonly makke: number;
+  /** Povery navyše z priazne Ohováračky (v11.10). */
+  readonly poveryOhovaracky: number;
   /** Koľko mäkkého dá jedna zvyšná Povera (1, s Horoskopom 2). */
   readonly silaPovery: number;
   /** Viera navyše z Veriaceho pred hádkou a po nej (v10). */
@@ -1233,6 +1238,7 @@ export function rozpisPoskodenia(data: GameData, s: VerejnyStav, sums: readonly 
       poveraIgnorovana: 0,
       zvysnaPovera: dmg.zvysnaPovera[p],
       makke: dmg.makke[p],
+      poveryOhovaracky: ja.poveryOhovaracky ?? 0,
       silaPovery: ja.silaPovery ?? KONSTANTY.HADKA.POVERA_MAKKE,
       veriaciPred: ja.vieraVeriacehoPred ?? 0,
       veriaciPo: ja.vieraVeriaceho ?? 0,
@@ -5267,15 +5273,8 @@ function vyplatSpaky(s: MutState, outcome: BattleOutcome, events: Event[]): void
 function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
   const b = s.bitkaStav;
   if (b === null) return;
-  // Na zdravie „do dna“ (Alkoholik v5, Michal 2026-10-25): poldeci z toľkých
-  // tvojich NA EX za kolo, aká je sila priazne, sa ti vráti plný. Nerest ostáva.
-  const doDna: [number, number] = [silaPriazne(data, s as GameState, "ALKOHOLIK", 0), silaPriazne(data, s as GameState, "ALKOHOLIK", 1)];
-  const vratene: [number, number] = [0, 0];
   const vypiNaex = (q: PlayerId): void => {
-    if (vratene[q] < doDna[q]) {
-      hrac(s, q).poldeciPlne += 1;
-      vratene[q] += 1;
-    } else hrac(s, q).poldeciVypite += 1;
+    hrac(s, q).poldeciVypite += 1;
     hrac(s, q).nerestiTotoKolo += KONSTANTY.NEREST_NAEX;
   };
   for (const partia of s.strany) {
@@ -5290,9 +5289,6 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
         delete (placed as { naexBy2?: PlayerId }).naexBy2;
       }
     }
-  }
-  for (const q of [0, 1] as const) {
-    if (vratene[q] > 0) events.push({ type: "log", text: `Na zdravie (priazeň Alkoholika): hráčovi ${q + 1} sa ${vratene[q] === 1 ? "poldeci z NA EX vracia plný" : `${vratene[q]} poldeci z NA EX vracajú plné`}.` });
   }
   for (const p of [0, 1] as const) {
     // Jogurt: čo akcie Poldeci otočili už v Pitke, sa v bitke neotáča znova.

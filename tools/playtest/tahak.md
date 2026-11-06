@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.9 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.10 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -278,7 +278,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   ti odpočíta o 1 / 2 / 3 špaky menej (najmenej 0; Dlhy zhoria ako vždy); **Robota**: 1 / 2 / 3 akcie
   Robota navyše (pália Dlhy, za Dlh, ktorý nemá čo spáliť, 1 špak); Fajčiar +1 / +2 / +3 cigarety
   **po bitke** (Obmedzenie ich neuberá); **Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove** (koľko máš);
-  Alkoholik (Na zdravie „do dna“): 1 / 2 / 3 poldeci z tvojho NA EX za kolo sa vráti plných.
+  **Ohováračka (v11.10): +1 / +2 / +3 Povery v hádke** — správajú sa ako Povery z kariet (ruší ich súperova Viera, aj z Veriaceho; Horoskop aj Čierna mačka na ne platia).
   Prah Dlhu 1 (v11.8: Hazard aj „1 zadĺženie“ z efektu karty sú rovno Dlh), prah Cirhózy 3.
   Výherný automat (Dedičstvo, v7): tvoj prah Dlhu 2 (Dlh za každé 2 zadĺženia, zvyšok ostáva na účte do ďalšej Pitky aj kola), ale v poslednej Pitke kola získaš 1 Dlh.
 - **Exekútor bez prahu (2026-10-28):** Exekútor príde v každej bitke ku každému s priznaným Dlhom: zhorí polovica priznaných Dlhov zaokrúhlene nahor

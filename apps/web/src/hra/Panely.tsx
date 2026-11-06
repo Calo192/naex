@@ -358,7 +358,7 @@ function Rola({ utoci, tip, frajerina }: { readonly utoci: boolean; readonly tip
 
 export interface HracDoskaProps {
   readonly view: ClientState;
-  /** Dáta sady — priazne do výhľadu limitu (Na zdravie „do dna“, v5). */
+  /** Dáta sady — akcie Poldeci do výhľadu limitu. */
   readonly data: GameData;
   readonly p: PlayerId;
   readonly info: HracInfo | null;
@@ -911,12 +911,14 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
               ? `efekt karty ${menoKarty(d.slice(6))}`
               : d;
 
-  const aktivne = PORADIE_AKCII.filter((a) => (sums[a] ?? 0) !== 0 || (a === "Povera" && rozpis.poveraIgnorovana > 0) || (zdroje[a] ?? []).length > 0);
+  const aktivne = PORADIE_AKCII.filter((a) => (sums[a] ?? 0) !== 0 || (a === "Povera" && (rozpis.poveraIgnorovana > 0 || rozpis.poveryOhovaracky > 0)) || (zdroje[a] ?? []).length > 0);
   // Názvy sa zmestia len k pár akciám — pri viacerých by sa ikony na strane baru nezmestili.
   const sNazvami = sNazvom && aktivne.length <= 4;
   const dlazdice: ReactNode[] = [];
   for (const a of aktivne) {
-    const hodnota = sums[a] ?? 0;
+    // Povery z Ohováračky sa rátajú ako Povery z kariet — bez nich by rušenie vyšlo do mínusu.
+    const ohovaracka = a === "Povera" ? rozpis.poveryOhovaracky : 0;
+    const hodnota = (sums[a] ?? 0) + ohovaracka;
     const ignorovana = a === "Povera" ? rozpis.poveraIgnorovana : 0;
     const zoznam = zdroje[a] ?? [];
     // Zdvojenia (Posilnenie, NA EX, efekty kariet) — o koľko je súčet vyšší než počet aktívnych slotov;
@@ -934,6 +936,13 @@ export function AkcieStrany({ sums, zdroje, rozpis, sada, menoKarty, sNazvom = f
         {z.dovody.length > 0 ? ` — ${z.dovody.map(dovod).join(", ")}` : ""}
       </span>
     ));
+    if (ohovaracka > 0) {
+      riadky.push(
+        <span key="ohovaracka" className="tip-riadok">
+          Ohováračka (priazeň): <b>{znamienko(ohovaracka)}</b>
+        </span>,
+      );
+    }
     const sila = SILA[a];
     const stav: string[] = [];
     if (sila !== undefined) stav.push(`${hodnota} × ${sila} = ${hodnota * sila} tuhého poškodenia`);

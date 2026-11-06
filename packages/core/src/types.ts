@@ -171,7 +171,7 @@ export type Favour =
   | "BITKAR"
   | "VERIACI"
   | "FAJCIAR"
-  | "ALKOHOLIK"
+  | "OHOVARACKA"
   | "ADVOKAT";
 
 export const ALL_FAVOURS: readonly Favour[] = [
@@ -181,7 +181,7 @@ export const ALL_FAVOURS: readonly Favour[] = [
   "BITKAR",
   "VERIACI",
   "FAJCIAR",
-  "ALKOHOLIK",
+  "OHOVARACKA",
   "ADVOKAT",
 ];
 
@@ -193,7 +193,8 @@ export const ALL_FAVOURS: readonly Favour[] = [
  * na Abstinenta a Neprajníka na Výpalníka (priazeň Výpalné) — kľúč priazne
  * v hre ostáva, bodovacia karta v tvorcovi smie niesť nové meno. Krok 2 revízie
  * starších (Michal 2026-10-30) vyradil Exekútora a Výpalníka — staré sady
- * dostanú na ich mieste Advokáta a Robotu.
+ * dostanú na ich mieste Advokáta a Robotu. Pravidlá v11.10 (Michal 2026-11-06) vyradili
+ * Alkoholika — na jeho mieste je Ohováračka.
  */
 const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = {
   OCUMOVATEL: "UZERNIK",
@@ -203,6 +204,7 @@ const PRIAZNE_ALIAS: Readonly<Record<string, Favour>> = {
   VYPALNIK: "ROBOTA",
   NEPRAJNIK: "ROBOTA",
   EXEKUTOR: "ADVOKAT",
+  ALKOHOLIK: "OHOVARACKA",
 };
 
 /** Priazeň z kľúča (aj zrušeného), alebo null, ak taká nie je. */

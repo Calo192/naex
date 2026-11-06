@@ -72,9 +72,8 @@ describe("poldeci na stole", () => {
     const riadky = new Map(d.riadky);
     expect(riadky.get("vypité")).toBe("1");
     expect(riadky.get("z toho na stole (NA EX)")).toBe("1");
-    // Neklame: zo stola sa vracia vypitý, s Alkoholikom „do dna“ plný (§9.5).
+    // Neklame: zo stola sa vracia vypitý (§9.5).
     expect(d.text).toContain("vráti sa vypitý");
-    expect(d.text).toContain("Alkoholik");
     expect(new Map(detailZdroja("poldeci", { ...c, naStole: 0 }, true).riadky).has("z toho na stole (NA EX)")).toBe(false);
   });
 });
