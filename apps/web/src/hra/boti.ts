@@ -16,3 +16,8 @@ export interface BotNaVyber {
 export function platnaVolbaBota(boti: readonly BotNaVyber[], volba: string | null): string | null {
   return boti.some((b) => b.id === volba) ? volba : null;
 }
+
+/** Klik na dlaždicu bota: označí ho; klik na už označeného vráti Náhodného (null). */
+export function prepniVolbuBota(volba: string | null, id: string): string | null {
+  return volba === id ? null : id;
+}

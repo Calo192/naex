@@ -1,9 +1,9 @@
 // Výber súpera proti počítaču (Michal 2026-11-06): ponúkne sa až po voľbe hry proti počítaču.
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "../komponenty.tsx";
-import { platnaVolbaBota, type BotNaVyber } from "./boti.ts";
+import { platnaVolbaBota, prepniVolbuBota, type BotNaVyber } from "./boti.ts";
 
-/** Okno sa otvára vždy s Náhodným: kto si nevyberie, hrá proti náhodnému botovi. */
+/** Na výber sú len boti; kto nikoho neoznačí, hrá proti náhodnému. Okno sa otvára vždy bez označenia. */
 export function VyberBota({
   boti,
   vypnute,
@@ -20,10 +20,6 @@ export function VyberBota({
   const zvoleny = platnaVolbaBota(boti, volba);
   const hlavne = useRef<HTMLButtonElement>(null);
   useEffect(() => hlavne.current?.focus(), []);
-  const moznosti: readonly (BotNaVyber & { readonly volba: string | null })[] = [
-    { id: "nahodny", volba: null, meno: "Náhodný", popis: "Koho dostaneš, uvidíš až pri stole.", avatar: null },
-    ...boti.map((b) => ({ ...b, volba: b.id })),
-  ];
   return (
     <div
       className="vyber-bota-zaves"
@@ -39,24 +35,24 @@ export function VyberBota({
     >
       <div className="vyber-bota-okno panel">
         <h2 id="vyber-bota-nadpis">S kým si sadneš?</h2>
-        <div className="vyber-bota" role="radiogroup" aria-label="Súper proti počítaču">
-          {moznosti.map((m) => (
+        <div className="vyber-bota" role="group" aria-label="Súper proti počítaču">
+          {boti.map((b) => (
             <button
-              key={m.id}
+              key={b.id}
               type="button"
-              role="radio"
-              aria-checked={zvoleny === m.volba}
-              className={`bot-volba ${zvoleny === m.volba ? "aktivna" : ""}`}
-              onClick={() => setVolba(m.volba)}
+              aria-pressed={zvoleny === b.id}
+              className={`bot-volba ${zvoleny === b.id ? "aktivna" : ""}`}
+              onClick={() => setVolba(prepniVolbuBota(zvoleny, b.id))}
             >
-              <Avatar meno={m.volba === null ? "?" : m.meno} avatar={m.avatar} velkost={40} />
+              <Avatar meno={b.meno} avatar={b.avatar} velkost={40} />
               <span className="bot-volba-text">
-                <strong>{m.meno}</strong>
-                {m.popis !== null && <span>{m.popis}</span>}
+                <strong>{b.meno}</strong>
+                {b.popis !== null && <span>{b.popis}</span>}
               </span>
             </button>
           ))}
         </div>
+        <p className="tlmene vyber-bota-pozn">Ak nikoho neoznačíš, dostaneš náhodného súpera.</p>
         <div className="riadok-tlacidiel">
           <button ref={hlavne} type="button" className="tlacidlo-hlavne" disabled={vypnute} onClick={() => hraj(zvoleny)} data-hrat-bot-start="">
             Hrať

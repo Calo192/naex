@@ -2084,14 +2084,21 @@ button.dlzka-volba.aktivna {
   margin: 0 0 12px;
 }
 
+/* Rovnaké dlaždice: rovnaké stĺpce a riadky bez ohľadu na dĺžku vety. */
 .vyber-bota {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: 8px;
-  margin: 0 0 14px;
+  margin: 0 0 10px;
 }
 
-/* Text od kraja — pri 4 aj 8 voľbách majú mená a vety pod sebou rovnakú os. */
+.vyber-bota-pozn {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+}
+
+/* Text od kraja — mená a vety majú pod sebou rovnakú os. */
 .bot-volba,
 button.bot-volba {
   justify-content: flex-start;

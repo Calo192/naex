@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { platnaVolbaBota, type BotNaVyber } from "../src/hra/boti.ts";
+import { platnaVolbaBota, prepniVolbuBota, type BotNaVyber } from "../src/hra/boti.ts";
 import { VyberBota } from "../src/hra/VyberBota.tsx";
 
 const BOTI: readonly BotNaVyber[] = [
@@ -25,15 +25,22 @@ describe("výber bota v lobby", () => {
 });
 
 describe("okno výberu súpera", () => {
-  const hraj = (): void => undefined;
-  const html = renderToStaticMarkup(createElement(VyberBota, { boti: BOTI, vypnute: false, hraj, zavri: hraj }));
-  const zvolene = [...html.matchAll(/<button[^>]*aria-checked="true"[^>]*>.*?<strong>(.*?)<\/strong>/g)].map((m) => m[1]);
+  const nic = (): void => undefined;
+  const html = renderToStaticMarkup(createElement(VyberBota, { boti: BOTI, vypnute: false, hraj: nic, zavri: nic }));
 
-  it("predvolený je Náhodný a je označený len on", () => {
-    expect(zvolene).toEqual(["Náhodný"]);
+  it("ponúka len botov zo servera, Náhodný dlaždicu nemá", () => {
+    for (const meno of ["Rudo", "Igor"]) expect(html).toContain(`<strong>${meno}</strong>`);
+    expect(html).not.toContain("<strong>Náhodný</strong>");
+    expect(html.match(/class="bot-volba /g)).toHaveLength(BOTI.length);
   });
 
-  it("ponúkne Náhodného a všetkých botov zo servera", () => {
-    for (const meno of ["Náhodný", "Rudo", "Igor"]) expect(html).toContain(`<strong>${meno}</strong>`);
+  it("na začiatku nie je nikto označený, teda náhodný súper", () => {
+    expect(html).not.toContain('aria-pressed="true"');
+  });
+
+  it("klik označí bota, klik na označeného vráti náhodného", () => {
+    expect(prepniVolbuBota(null, "igor")).toBe("igor");
+    expect(prepniVolbuBota("igor", "rudo")).toBe("rudo");
+    expect(prepniVolbuBota("igor", "igor")).toBeNull();
   });
 });
