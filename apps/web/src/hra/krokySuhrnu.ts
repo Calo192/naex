@@ -8,13 +8,15 @@
 // z Kšeftov poslednej Pitky sú pred bitkou a ostanú v stave „pred“.
 
 import type { BitkaNaNastenke, ClientState, ElderState, PlayerId, Stupen, Vazen, ZmenaMarkera } from "@naex/core";
-import { cenaDvihnutia, najvyssiMarker, opponentOf, pocet, priazenHraca, priazenSila, spakyOdStarsieho, spakyZaStupen } from "@naex/core";
+import { cenaZdvihu, investovaneReci, kradezZaZajatie, najvyssiMarker, noveReci, pocet, priazenHraca, priazenSila, spakyOdStarsieho } from "@naex/core";
 import { slovoStupna, type Rod } from "./textyStarsich.ts";
 
 /** Strach a reči oboch hráčov. */
 export interface Markery {
   readonly strach: readonly [Stupen, Stupen];
   readonly reci: readonly [Stupen, Stupen];
+  /** Spodok bloku rečí (v11.12); chýba vo výučbe, ktorá hrá reči do v11.11. */
+  readonly reciOd?: readonly [Stupen, Stupen];
 }
 
 /** Starší a väzni na začiatku kola — prvý pohľad kola (voľba cieľa); z neho starší zajatý v bitke. */
@@ -28,7 +30,7 @@ export interface ZaciatokKola {
 export function zaciatokKola(view: Pick<ClientState, "kolo" | "starsi" | "vazni">): ZaciatokKola {
   return {
     kolo: view.kolo,
-    starsi: view.starsi.map((e) => ({ elderId: e.elderId, karta: e.karta, scorecard: e.scorecard, strach: e.strach, reci: e.reci })),
+    starsi: view.starsi.map((e) => ({ elderId: e.elderId, karta: e.karta, scorecard: e.scorecard, strach: e.strach, reci: e.reci, ...(e.reciOd !== undefined ? { reciOd: e.reciOd } : {}) })),
     vazni: view.vazni.map((v) => v.elderId),
   };
 }
@@ -87,13 +89,23 @@ export interface SuhrnBitky {
   readonly hadka: { readonly hrac: PlayerId; readonly cena: number } | null;
 }
 
-const ZDROJE_BITKY: ReadonlySet<ZmenaMarkera["zdroj"]> = new Set(["bodovanie", "zanik", "nakladacka", "hadka", "presvedcenie"]);
+const ZDROJE_BITKY: ReadonlySet<ZmenaMarkera["zdroj"]> = new Set(["bodovanie", "zanik", "nakladacka", "hadka", "presvedcenie", "posun"]);
 
-type Mut = { strach: [Stupen, Stupen]; reci: [Stupen, Stupen] };
-const kopia = (m: Markery): Mut => ({ strach: [m.strach[0], m.strach[1]], reci: [m.reci[0], m.reci[1]] });
-const nastav = (m: Mut, z: Pick<ZmenaMarkera, "hrac" | "marker">, na: Stupen): void => {
-  if (z.marker === "strach") m.strach[z.hrac] = na;
-  else m.reci[z.hrac] = na;
+type Mut = { strach: [Stupen, Stupen]; reci: [Stupen, Stupen]; reciOd?: [Stupen, Stupen] };
+const kopia = (m: Markery): Mut => ({
+  strach: [m.strach[0], m.strach[1]],
+  reci: [m.reci[0], m.reci[1]],
+  ...(m.reciOd !== undefined ? { reciOd: [m.reciOd[0], m.reciOd[1]] as [Stupen, Stupen] } : {}),
+});
+/** Stav pred zmenou (smer = z) alebo po nej (smer = na). */
+const nastav = (m: Mut, z: Pick<ZmenaMarkera, "hrac" | "marker" | "z" | "na" | "odZ" | "odNa">, smer: "z" | "na"): void => {
+  if (z.marker === "strach") {
+    m.strach[z.hrac] = z[smer];
+    return;
+  }
+  m.reci[z.hrac] = z[smer];
+  const od = smer === "z" ? z.odZ : z.odNa;
+  if (m.reciOd !== undefined && od !== undefined) m.reciOd[z.hrac] = od;
 };
 const priazenZ = (m: Markery): PriazenSuhrnu => ({ hrac: priazenHraca(m), sila: priazenSila(m) });
 const rovnakaPriazen = (a: PriazenSuhrnu, b: PriazenSuhrnu): boolean => a.hrac === b.hrac && a.sila === b.sila;
@@ -117,17 +129,17 @@ export function suhrnBitky(zaciatok: ZaciatokKola, view: Pick<ClientState, "star
     if (teraz !== undefined) koniec = kopia(teraz);
     else {
       koniec = kopia(a);
-      for (const z of view.zmenyMarkerov.filter((x) => x.elderId === a.elderId)) nastav(koniec, z, z.na);
+      for (const z of view.zmenyMarkerov.filter((x) => x.elderId === a.elderId)) nastav(koniec, z, "na");
     }
     const f0 = kopia(koniec);
-    for (const z of [...jeho].reverse()) nastav(f0, z, z.z);
+    for (const z of [...jeho].reverse()) nastav(f0, z, "z");
     const dalej = (od: Mut, zdroje: readonly ZmenaMarkera["zdroj"][]): Mut => {
       const m = kopia(od);
-      for (const z of jeho) if (zdroje.includes(z.zdroj)) nastav(m, z, z.na);
+      for (const z of jeho) if (zdroje.includes(z.zdroj)) nastav(m, z, "na");
       return m;
     };
     const f1 = dalej(f0, ["bodovanie"]);
-    const f2 = dalej(f1, ["nakladacka", "zanik"]);
+    const f2 = dalej(f1, ["nakladacka", "zanik", "posun"]);
     const f3 = dalej(f2, ["hadka"]);
     const f4 = dalej(f3, ["presvedcenie"]);
 
@@ -151,11 +163,11 @@ export function suhrnBitky(zaciatok: ZaciatokKola, view: Pick<ClientState, "star
       bodStupen,
       bodZaReci,
       pokles: jeho.filter((z) => z.zdroj === "bodovanie").map((z) => ({ hrac: z.hrac, z: z.z, na: z.na })),
-      nakladacka: nakl === undefined ? null : { hrac: nakl.hrac, z: nakl.z, na: nakl.na, cena: cenaDvihnutia(nakl.z, nakl.na), zanikli: jeho.some((z) => z.zdroj === "zanik" && z.hrac === nakl.hrac) },
-      hadka: hadka === undefined ? null : { hrac: hadka.hrac, z: najvyssiMarker(f2, hadka.hrac), na: hadka.na, cena: cenaDvihnutia(najvyssiMarker(f2, hadka.hrac), hadka.na) },
+      nakladacka: nakl === undefined ? null : { hrac: nakl.hrac, z: nakl.z, na: nakl.na, cena: cenaZdvihu(f1, nakl.hrac, "strach", nakl.na) ?? 0, zanikli: jeho.some((z) => z.zdroj === "zanik" && z.hrac === nakl.hrac) },
+      hadka: hadka === undefined ? null : { hrac: hadka.hrac, z: najvyssiMarker(f2, hadka.hrac), na: hadka.na, cena: noveReci(f2) ? investovaneReci(f3, hadka.hrac) - investovaneReci(f2, hadka.hrac) : (cenaZdvihu(f2, hadka.hrac, "reci", hadka.na) ?? 0) },
       presvedcil: presvedcenie === undefined ? null : presvedcenie.hrac,
       priazen: { od, na, zmena: !rovnakaPriazen(od, na) },
-      ohrozenie: vazen !== undefined ? [] : ([0, 1] as const).filter((p) => f4.strach[p] === 3).map((p) => ({ hrac: p, kradez: spakyZaStupen(najvyssiMarker(f4, opponentOf(p))) })),
+      ohrozenie: vazen !== undefined ? [] : ([0, 1] as const).filter((p) => f4.strach[p] === 3).map((p) => ({ hrac: p, kradez: kradezZaZajatie(f4, p) })),
     });
   }
   const kroky = PORADIE.filter((k) => starsi.some((e) => dotknuty(e, k)));
@@ -295,10 +307,17 @@ export function opisKroku(s: SuhrnBitky, k: KrokSuhrnu, c: KontextSuhrnu): strin
       })
       .join(", ");
   if (k === "bodovanie") {
-    const ako = s.vitaz === null ? "Na sekeru — obaja len za reči." : "Víťaz za vrch teplomera, porazený len za reči.";
+    const nove = s.starsi.some((e) => e.fazy[0] !== undefined && noveReci(e.fazy[0]));
+    const ako = nove
+      ? s.vitaz === null
+        ? "Na sekeru — obaja len za stupne, ktoré držia rečami."
+        : "Reči bodujú obom, víťaz navyše za svoj strach bez stupňov, ktoré drží súper."
+      : s.vitaz === null
+        ? "Na sekeru — obaja len za reči."
+        : "Víťaz za vrch teplomera, porazený len za reči.";
     return `Starší bodujú podľa stavu pred bitkou. ${ako} Spolu ${m[0]} +${s.spolu[0]}, ${m[1]} +${s.spolu[1]}.`;
   }
-  if (k === "reci") return "Reči, ktoré bodovali, klesnú o stupeň. Kde by klesli na vlastný strach, zaniknú.";
+  if (k === "reci") return s.starsi.some((e) => e.fazy[0] !== undefined && noveReci(e.fazy[0])) ? "Kto prehral hádku, tomu reči klesnú zospodu: spodný stupeň zanikne." : "Reči, ktoré bodovali, klesnú o stupeň. Kde by klesli na vlastný strach, zaniknú.";
   if (k === "nakladacka" && s.nakladacka !== null)
     return `${m[s.nakladacka.hrac]} dvíha Nakladačkou (${s.nakladacka.cena}) svoj strach: ${zoznam((e) => e.nakladacka?.cena ?? null)}. Plná časť rastie a hladina ide hore.`;
   if (k === "hadka" && s.hadka !== null) return `${m[s.hadka.hrac]} dvíha hádkou (${s.hadka.cena}) svoje reči: ${zoznam((e) => e.hadka?.cena ?? null)}. Šrafy rastú nad strachom.`;

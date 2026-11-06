@@ -4,6 +4,8 @@
 // (4c), krádež pri zajatí a väzni podľa ligy (v11.4 zajatie pri rozdelení Nakladačky). Očakávané
 // hodnoty sú z pravidla, nie z kódu.
 // Príklad „Ana a Boris“ z dokumentu: Ana je hráč 0, Boris hráč 1.
+// Od v11.12 tieto reči (nad vlastným strachom) hrá len výučba: starší bez reciOd. Reči na súperovom
+// teplomere overuje reci-teplomer.test.ts.
 
 import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
@@ -39,7 +41,8 @@ type Markery = readonly [readonly [Stupen, Stupen], readonly [Stupen, Stupen]];
 
 /** Starší so [Ana strach, reči] a [Boris strach, reči]. */
 function m(e: ElderState, ana: readonly [Stupen, Stupen], boris: readonly [Stupen, Stupen]): ElderState {
-  return { ...e, strach: [ana[0], boris[0]], reci: [ana[1], boris[1]] };
+  const { reciOd: _reciOd, ...bez } = e;
+  return { ...bez, strach: [ana[0], boris[0]], reci: [ana[1], boris[1]] };
 }
 
 /** Bitka pred poškodením (hádka už vyhodnotená), prázdna línia, súčty `sums`. */
@@ -146,7 +149,7 @@ describe("§10 strach, reči a priazeň (v11)", () => {
     expect(cenaDvihnutia(2, 3)).toBe(3);
     expect(cenaDvihnutia(0, 3)).toBe(6);
     expect(cenaDvihnutia(1, 3)).toBe(5);
-    const st: Pick<GameState, "starsi"> = { starsi: [{ ...setupGame(data, 11).starsi[0]!, strach: [1, 0], reci: [0, 0] }] };
+    const st: Pick<GameState, "starsi"> = { starsi: [m(setupGame(data, 11).starsi[0]!, [1, 0], [0, 0])] };
     const plan = overRozdelenie(st, 0, "reci", 5, [{ elderId: st.starsi[0]!.elderId, na: 3 }]);
     expect(plan).toMatchObject({ cena: 5, zvysok: 0, chyba: null, esteSaDa: [] });
     // Reči na stupni strachu ani pod ním nie sú.
@@ -163,7 +166,7 @@ describe("§10 strach, reči a priazeň (v11)", () => {
 
   it("na červený strach sa reči nedajú; kam dvíhať nie je, zvyšok prepadne celý", () => {
     const [a] = setupGame(data, 11).starsi;
-    const st: Pick<GameState, "starsi"> = { starsi: [{ ...a!, strach: [3, 0], reci: [0, 0] }] };
+    const st: Pick<GameState, "starsi"> = { starsi: [m(a!, [3, 0], [0, 0])] };
     expect(overRozdelenie(st, 0, "reci", 6, [{ elderId: a!.elderId, na: 3 }]).chyba).not.toBeNull();
     // Kam dvíhať nie je — zvyšok prepadne celý (rozhodnuté 2026-11-02).
     expect(overRozdelenie(st, 0, "reci", 6, [])).toMatchObject({ zvysok: 6, esteSaDa: [], chyba: null });
@@ -185,10 +188,10 @@ describe("§10 strach, reči a priazeň (v11)", () => {
 });
 
 describe("§9 príklad Ana a Boris (Druhá liga, 4. kolo)", () => {
-  it("pult: Ana výhra 21 · prehra 8, Boris 15 · 6 (v11.11: súperove reči krátia strach); červené Ana 3, Boris 3 (Farár, Veterinár a väzeň)", () => {
+  it("pult: Ana výhra 24 · prehra 8, Boris 18 · 6 (výučba: reči nekrátia); červené Ana 3, Boris 3 (Farár, Veterinár a väzeň)", () => {
     const v = viewFor(data, anaBoris(0), 0);
     const pult = pultStarsich(v);
-    expect(pult.vyhra).toEqual([21, 15]);
+    expect(pult.vyhra).toEqual([24, 18]);
     expect(pult.prehra).toEqual([8, 6]);
     expect(pult.vyhry).toEqual({ cervene: [3, 3], cervenychNaVyhru: 4, vazni: [0, 1], vazniNaVyhru: 3 });
     // Farár: obaja na červenej — priazeň nikto.
@@ -196,14 +199,14 @@ describe("§9 príklad Ana a Boris (Druhá liga, 4. kolo)", () => {
     expect(pult.riadky.find((r) => r.elderId === id(POSTARKA))).toMatchObject({ priazenHrac: 1, priazenSila: 3, presvedcil: null });
     // Strach a reči oboch sú verejné — súper ich vidí rovnako.
     expect(viewFor(data, anaBoris(0), 1).starsi).toEqual(v.starsi);
-    expect(stavkaBitky(v)).toMatchObject({ starsiVyhra: [21, 15], starsiPrehra: [8, 6] });
+    expect(stavkaBitky(v)).toMatchObject({ starsiVyhra: [24, 18], starsiPrehra: [8, 6] });
   });
 
-  it("Ana vyhrá: 21 za starších (v11.11), Boris 6 za reči; Nakladačka 8 — Krčmárka na červenú za 3, zajme Poštárku za 5 a ukradne 1", () => {
+  it("Ana vyhrá: 24 za starších, Boris 6 za reči; Nakladačka 8 — Krčmárka na červenú za 3, zajme Poštárku za 5 a ukradne 1", () => {
     const s = anaBoris(0, 8);
     const po = spustBitku(data, s).state;
     const zaznam = po.nastenka.at(-1)!;
-    expect(zaznam.zaStarsich).toEqual([21, 6]);
+    expect(zaznam.zaStarsich).toEqual([24, 6]);
     expect(zaznam.zaStarsichRozpis?.[1].map((x) => [x.elderId, x.spaky, x.reci])).toEqual([
       [id(STAROSTA), 3, true],
       [id(POSTARKA), 3, true],
@@ -235,10 +238,10 @@ describe("§9 príklad Ana a Boris (Druhá liga, 4. kolo)", () => {
     expect(t.hraci[1].cigarety).toBeGreaterThanOrEqual(s.hraci[1].cigarety + KONSTANTY.CIGARETY_PORAZENEMU);
   });
 
-  it("Boris vyhrá: 15 za starších (v11.11), Ana 8 za reči; Poštárka ostáva (Anin strach 3); Starosta 1 → 3 za 5 a ďalšia vyhratá bitka je výhra strachom", () => {
+  it("Boris vyhrá: 18 za starších, Ana 8 za reči; Poštárka ostáva (Anin strach 3); Starosta 1 → 3 za 5 a ďalšia vyhratá bitka je výhra strachom", () => {
     const s = anaBoris(1, 5);
     const po = spustBitku(data, s).state;
-    expect(po.nastenka.at(-1)?.zaStarsich).toEqual([8, 15]);
+    expect(po.nastenka.at(-1)?.zaStarsich).toEqual([8, 18]);
     const t = dohraj(po, (x, p) => (p === 1 && x.bitkaStav?.krok === "prebytok" ? apply(data, x, { type: "prebytok", zdvihy: [{ elderId: id(STAROSTA), na: 3 }] }, 1).state : null));
     expect(t.koniec).toBeNull();
     expect(elder(t, POSTARKA)!.strach).toEqual([3, 0]);

@@ -113,9 +113,9 @@ interface Odohrane {
 
 const q = (): URLSearchParams => new URLSearchParams(window.location.search);
 
-/** Strach a reči z parametra &markery=i:s0.s1.r0.r1,… (snímky teplomerov a Pultu). */
+/** Strach a reči z parametra &markery=i:s0.s1.r0.r1[.od0.od1],… (v11.12: blok rečí od..r na súperovom teplomere). */
 function sMarkermi(s: GameState, spec: string): GameState {
-  const na = new Map<number, { strach: readonly [Stupen, Stupen]; reci: readonly [Stupen, Stupen] }>();
+  const na = new Map<number, { strach: readonly [Stupen, Stupen]; reci: readonly [Stupen, Stupen]; reciOd: readonly [Stupen, Stupen] }>();
   const st = (x: number | undefined): Stupen => (x !== undefined && Number.isInteger(x) && x >= 0 && x <= 3 ? (x as Stupen) : 0);
   for (const cast of spec.split(",")) {
     const [i, m] = cast.split(":");
@@ -123,8 +123,7 @@ function sMarkermi(s: GameState, spec: string): GameState {
     if (i === undefined || !Number.isInteger(Number(i))) continue;
     const strach: [Stupen, Stupen] = [st(c[0]), st(c[1])];
     const reci: [Stupen, Stupen] = [st(c[2]), st(c[3])];
-    for (const p of [0, 1] as const) if (reci[p] <= strach[p]) reci[p] = 0;
-    na.set(Number(i), { strach, reci });
+    na.set(Number(i), { strach, reci, reciOd: [c[4] === undefined ? reci[0] : st(c[4]), c[5] === undefined ? reci[1] : st(c[5])] });
   }
   if (na.size === 0) return s;
   return { ...s, starsi: s.starsi.map((e, i) => ({ ...e, ...(na.get(i) ?? {}) })) };

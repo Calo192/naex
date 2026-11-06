@@ -146,6 +146,12 @@
   --pas-ja: clamp(24px, 15cqw, 28px);
 }
 
+/* Reči sa klikajú na teplomere súpera (v11.12), širší je preto jeho pás. */
+.r3.rozdel.na-supera {
+  --pas-ja: var(--tp-w);
+  --pas-su: clamp(24px, 15cqw, 28px);
+}
+
 .r3-pas {
   position: absolute;
   top: 0;
@@ -224,6 +230,27 @@
 
 .r3-vypln.reci {
   background: repeating-linear-gradient(45deg, var(--zc) 0 var(--r3-srafa), rgb(14 11 9 / 0.85) var(--r3-srafa) calc(2 * var(--r3-srafa)));
+}
+
+/* Súperove reči na teplomere (v11.12, mock A): šrafa vo farbe ich majiteľa, strach pod ňou ostáva vidno.
+   Tmavý lem drží šrafu čitateľnú aj na červenej a oranžovej. */
+.r3-pas.ja {
+  --r3-cudzia: var(--su);
+}
+
+.r3-pas.su {
+  --r3-cudzia: var(--ja);
+}
+
+.r3-vypln.srafa {
+  background: repeating-linear-gradient(
+    45deg,
+    rgb(14 11 9 / 0.9) 0 1px,
+    var(--r3-cudzia) 1px calc(1px + var(--r3-srafa)),
+    rgb(14 11 9 / 0.9) calc(1px + var(--r3-srafa)) calc(2px + var(--r3-srafa)),
+    transparent calc(2px + var(--r3-srafa)) calc(2px + 2.4 * var(--r3-srafa))
+  );
+  box-shadow: inset 0 0 0 1.5px var(--r3-cudzia);
 }
 
 /* Nový diel (súhrn, nepotvrdený zdvih) je obtiahnutý; zmiznutý ostane prerušovaný. */
@@ -1244,6 +1271,11 @@ button.r3-seg.mimo {
 
 .hra.mobil-sirka .r3.rozdel {
   --pas-ja: 28px;
+}
+
+.hra.mobil-sirka .r3.rozdel.na-supera {
+  --pas-ja: var(--tp-w);
+  --pas-su: 28px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

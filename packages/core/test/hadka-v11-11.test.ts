@@ -12,30 +12,6 @@ import { spustBitku } from "./helpers.ts";
 
 const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 
-describe("§10 reči uberajú zo strachu (v11.11)", () => {
-  it("príklad Michala: červený strach 5 − oranžové reči súpera 3 = 2; reči dajú 3 tak či tak", () => {
-    const e = { strach: [3, 0], reci: [0, 2] } as const;
-    expect(spakyOdStarsieho(e, 0, true)).toBe(2);
-    expect(spakyOdStarsieho(e, 1, false)).toBe(3);
-  });
-
-  it("reči vyššie ako strach: víťaz dostane 0, nikdy nie mínus", () => {
-    const e = { strach: [1, 0], reci: [0, 3] } as const;
-    expect(spakyOdStarsieho(e, 0, true)).toBe(0);
-    expect(spakyOdStarsieho(e, 1, false)).toBe(5);
-  });
-
-  it("víťazove reči sa nekrátia; porazený bez rečí nekráti nič", () => {
-    expect(spakyOdStarsieho({ strach: [1, 0], reci: [3, 2] }, 0, true)).toBe(5);
-    expect(spakyOdStarsieho({ strach: [3, 0], reci: [0, 0] }, 0, true)).toBe(5);
-  });
-
-  it("porazený strach neboduje, jeho špaky za reči sa nekrátia ani strachom súpera", () => {
-    expect(spakyOdStarsieho({ strach: [3, 3], reci: [0, 0] }, 0, false)).toBe(0);
-    expect(spakyOdStarsieho({ strach: [0, 3], reci: [2, 0] }, 0, false)).toBe(3);
-  });
-});
-
 describe("§5 lokalitu natáča víťaz minulej hádky (v11.11)", () => {
   const stav = (o: Partial<GameState>): GameState => ({ ...setupGame(data, 11, { lokalit: 5 }), faza: "volbaCiela", ...o });
 

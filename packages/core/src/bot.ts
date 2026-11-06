@@ -35,7 +35,7 @@ import { evaluateLine } from "./partia.ts";
 import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { abstakyVBitke, spakyPriExekucii, zhoriPriExekucii } from "./battle.ts";
 import type { ElderState } from "./elders.ts";
-import { najvyssiMarker, priazenPre, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
+import { kradezZaZajatie, noveReci, priazenPre, spakyOdStarsieho, spakyZaReci, spakyZaStrach, spakyZaStupen, strachZ, vydesil } from "./elders.ts";
 import { jeCielLokalita, partiaHraca } from "./effects.ts";
 import { stranyLokality } from "./hrany.ts";
 import { stavZavislosti } from "./zavislost.ts";
@@ -527,6 +527,11 @@ function bodyStarsichVOdhade(s: GameState, p: PlayerId, starsi: readonly ElderSt
   const n = bitiekNaBodovanie(s);
   let spolu = 0;
   for (const e of starsi) {
+    // v11.12: reči bodujú vždy a klesnú len po prehratej hádke, strach len víťazovi.
+    if (noveReci(e)) {
+      spolu += n * (spakyZaReci(e, p) + 0.5 * spakyZaStrach(e, p));
+      continue;
+    }
     const strach = e.strach[p];
     let reci: number = e.reci[p];
     for (let i = 0; i < n; i++) {
@@ -673,7 +678,7 @@ function stavkaBitky(s: GameState): number {
     zajatia += 0.5 * naj;
   }
   let starsi = 0;
-  for (const e of s.starsi) for (const q of [0, 1] as const) starsi += spakyZaStupen(najvyssiMarker(e, q)) - spakyZaStupen(e.reci[q]);
+  for (const e of s.starsi) for (const q of [0, 1] as const) starsi += spakyOdStarsieho(e, q, true) - spakyOdStarsieho(e, q, false);
   let strach = 0;
   for (const q of [0, 1] as const) if (cervenychHraca(s, q) >= KONSTANTY.CERVENYCH_NA_VYHRU) strach += VYHRA_HNED;
   return 2 * s.spakyNaSekere + zajatia + starsi + strach;
@@ -902,13 +907,13 @@ const CERVENE_PRED_VYHROU = 12;
 
 /**
  * Čo hráčovi q prinesie väzeň, ak ho zajme (v11.4 Nakladačkou) — pre stávku bitky:
- * krádež súperových špakov za jeho najvyšší marker, schopnosť a výhra väzňami. Že starší
+ * krádež súperových špakov za jeho reči, schopnosť a výhra väzňami. Že starší
  * zmizne zo stupnice (priazeň, bodovanie), ráta volajúci zo stavu bez neho.
  */
 function hodnotaVazna(s: Pick<GameState, "vazni" | "starsi" | "spaky" | "lokalitCelkom">, q: PlayerId, elderId: string): number {
   const su = opponentOf(q);
   const elder = s.starsi.find((e) => e.elderId === elderId);
-  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(spakyZaStupen(najvyssiMarker(elder, su)), s.spaky[su]));
+  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(kradezZaZajatie(elder, q), s.spaky[su]));
   const vyhra = vazniHraca(s, q).length + 1 >= vazniNaVyhru(s.lokalitCelkom);
   return 2 * kradez + 4 + (vyhra ? VYHRA_HNED : 0);
 }

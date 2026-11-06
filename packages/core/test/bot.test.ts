@@ -233,8 +233,8 @@ describe("offline protihráč — pravidlá v5 a v6", () => {
     }
   }, 30_000);
 
-  it("v11.4: presvedčí staršieho, ktorý mu dáva priazeň, keď hádka stačí na reči na červenú + 5", () => {
-    const s = rozdelenie("reci", 8, { strach: [2, 3], reci: [0, 0] });
+  it("v11.12: presvedčí staršieho, keď hádka stačí na reči na celý teplomer + 3", () => {
+    const s = rozdelenie("reci", 9, { strach: [2, 3], reci: [0, 0] });
     for (const povaha of POVAHY) {
       const cmd = tahBota(data, s, 0, 7, { povaha: povaha.id });
       expect(cmd.type === "reci" ? cmd.presvedcenia : null, povaha.id).toEqual([s.starsi[0]!.elderId]);

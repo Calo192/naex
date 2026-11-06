@@ -15,7 +15,11 @@ const s0 = setupGame(data, 5);
 const [a, b, c] = s0.starsi as unknown as [ElderState, ElderState, ElderState];
 
 type S = readonly [Stupen, Stupen];
-const s = (e: ElderState, strach: S, reci: S = [0, 0]): ElderState => ({ ...e, strach, reci });
+// Reči do v11.11 (výučba): starší bez reciOd. Výnimkou je partia botov nižšie, tá hrá v11.12.
+const s = (e: ElderState, strach: S, reci: S = [0, 0]): ElderState => {
+  const { reciOd: _reciOd, ...bez } = e;
+  return { ...bez, strach, reci };
+};
 const z = (elder: ElderState, x: Omit<ZmenaMarkera, "elderId" | "kto">): ZmenaMarkera => ({ elderId: elder.elderId, kto: x.hrac, ...x });
 
 function bitka(extra: Partial<BitkaNaNastenke> = {}): BitkaNaNastenke {

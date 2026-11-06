@@ -83,7 +83,11 @@ describe("rozdeľovanie klikom na stupeň", () => {
 describe("línia starších", () => {
   const s0 = setupGame(data, 5);
   const v0 = viewFor(data, s0, 0);
-  const st = (i: number, strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen]): StarsiVerejne => ({ ...v0.starsi[i]!, strach, reci });
+  // Reči do v11.11 (výučba): starší bez reciOd. Šrafu v11.12 overuje test nižšie.
+  const st = (i: number, strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen]): StarsiVerejne => {
+    const { reciOd: _reciOd, ...bez } = v0.starsi[i]!;
+    return { ...bez, strach, reci };
+  };
   const starsi = [st(0, [1, 3], [2, 0]), st(1, [0, 0], [0, 0])];
   const vazen: Vazen = { elderId: "vaz", hrac: 1, poradie: 1, karta: v0.starsi[2]!.karta, scorecard: v0.starsi[2]!.scorecard, miesto: 2 };
   const view = { ...v0, starsi, vazni: [vazen] } as ClientState;
@@ -158,13 +162,38 @@ describe("línia starších", () => {
     expect(s).toContain("<small>vzal ti 3 špaky</small>");
   });
 
+  it("Reči na súperovom teplomere (v11.12, mock A): šrafa leží na páse súpera, strach pod ňou ostáva", () => {
+    const e = { ...v0.starsi[0]!, strach: [0, 3] as const, reci: [3, 0] as const, reciOd: [2, 0] as const };
+    const html = renderToStaticMarkup(
+      createElement(LiniaStarsich, {
+        rad: [{ typ: "starsi", s: { elder: e, meno: e.karta.defId, obrazok: null, presvedcil: null } }] as readonly MiestoVLinii[],
+        data,
+        ja: 0,
+        mena: ["Jano", "Fero"],
+        krok: null,
+        zmenene: new Set<string>(),
+        vyhry: view.vyhry,
+        nastenka: [],
+        pult: pultStarsich(view),
+        rezim: "teplomery",
+        onRezim: () => {},
+      }),
+    );
+    const moj = /r3-pas ja"[^>]*>(.*?)<\/span><span class="r3-pas su/.exec(html)?.[1] ?? "";
+    expect(moj).not.toContain("srafa");
+    expect(html.match(/r3-vypln srafa/g)).toHaveLength(2);
+    expect(html.match(/r3-vypln plna/g)).toHaveLength(3);
+    // Stupne hráča pod menom sú jeho strach, reči ho nezvyšujú.
+    expect(html).not.toContain("r3-vypln reci");
+  });
+
   it("Pult: riadok na staršieho, priazeň a súčty pri výhre a prehre", () => {
     const html = linia("pult");
     expect(html).toContain('class="tp-pult"');
     expect(html).toContain("ty výhra · prehra");
-    // Ja: reči oranžová → výhra 3, prehra 3; súper: strach červená 5 − moje reči 3 → výhra 2, prehra 0 (v11.11).
+    // Výučba: ja reči oranžová → výhra 3, prehra 3; súper strach červená → výhra 5, prehra 0.
     expect(html).toMatch(/tp-bd ja"><b>3<\/b> · 3/);
-    expect(html).toMatch(/tp-bd su"><b>2<\/b> · 0/);
+    expect(html).toMatch(/tp-bd su"><b>5<\/b> · 0/);
     expect(html).toContain("⛓ v pivnici u Fero");
     expect(html).toContain("červené 2/4");
   });

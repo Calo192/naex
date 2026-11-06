@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { opisReci, sReciNizsie, sRadom, ktoNatacaLokalitu, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -1619,7 +1619,7 @@ export function HernaPlocha({
   const klucDelenia =
     krokDelenia === null
       ? null
-      : `${view.kolo}|${krokDelenia}|${bodyRozdelenia(view, ja)}|${view.starsi.map((e) => `${e.strach.join("")}${e.reci.join("")}`).join("|")}`;
+      : `${view.kolo}|${krokDelenia}|${bodyRozdelenia(view, ja)}|${view.starsi.map((e) => `${e.strach.join("")}${e.reci.join("")}${e.reciOd?.join("") ?? ""}`).join("|")}`;
   useEffect(() => {
     setZdvihyDelenia([]);
     setAkcieDelenia([]);
@@ -3781,7 +3781,7 @@ export function HernaPlocha({
                 const na = reciNizsie(e, super_);
                 return (
                   <button key={e.elderId} type="button" className="pecat pecat-nakup" data-vyucba={`tlacidlo:kapybara-${e.elderId}`} onClick={() => posli({ type: "kapybara", elderId: e.elderId })}>
-                    {defOf(data, e.karta).name}: {NAZVY_ZON[e.reci[super_]]} → {na === 0 ? "zaniknú" : NAZVY_ZON[na]}
+                    {defOf(data, e.karta).name}: {opisReci(e, super_)} → {na === 0 ? "zaniknú" : opisReci(sReciNizsie(e, super_), super_)}
                   </button>
                 );
               })}
@@ -4740,7 +4740,7 @@ export function HernaPlocha({
   const markeryPred = useRef<ReadonlyMap<string, string> | null>(null);
   const [zmeneniStarsi, setZmeneniStarsi] = useState<ReadonlySet<string>>(new Set());
   useEffect(() => {
-    const kluc = (e: ElderState): string => `${e.strach.join()}|${e.reci.join()}`;
+    const kluc = (e: ElderState): string => `${e.strach.join()}|${e.reci.join()}|${e.reciOd?.join() ?? ""}`;
     const teraz = new Map(view.starsi.map((e) => [e.elderId, kluc(e)]));
     const pred = markeryPred.current;
     markeryPred.current = teraz;
@@ -4782,7 +4782,7 @@ export function HernaPlocha({
     const n = nahladZajatia(view, e.elderId);
     const nahlad = zajatie
       ? `Zajať ${meno} za ${cena}: väzeň v tvojej pivnici (${n.mojichVaznov}/${n.vazniNaVyhru}${n.vyhra ? " — vyhráš hneď" : ""}), ${menoHraca(super_)} ti odovzdá ${spakov(n.kradez)}.`
-      : `Presvedčiť ${meno} za ${cena}${cena > KONSTANTY.CENA_PRESVEDCENIA ? " (s rečami na červenú)" : ""}: jeho karta ide tebe do ruky a ostane v tvojom balíčku; tvoje reči pri ňom zaniknú, priazeň ostane.`;
+      : `Presvedčiť ${meno} za ${cena}${cena > KONSTANTY.CENA_PRESVEDCENIA ? " (s rečami na celý teplomer)" : ""}: jeho karta ide tebe do ruky a ostane v tvojom balíčku; tvoje reči aj priazeň ostávajú.`;
     return { druh: zajatie ? "zajat" : "presvedcit", cena, zapnuta: akcieDelenia.includes(e.elderId), nahlad, klik: () => prepniAkciuDelenia(e.elderId) };
   };
   const radLinie: MiestoVLinii[] = radStarsich(view.starsi, view.vazni).map((m): MiestoVLinii => {

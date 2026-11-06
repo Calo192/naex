@@ -3187,3 +3187,53 @@ Staré znenie §10, krok 4b (bez krátenia):
 > **porazený** a **pri sekere obaja** len za **reči**. Žltá **1**, oranžová **3**, červená **5**. Reči, ktoré bodovali, potom klesnú o stupeň.
 
 Staré znenie §9.4: špaky za karty v línii dostával len víťaz bitky, porazený len na Kultúrnom dome.
+
+## v11.12 — Reči na súperovom teplomere (Michal 2026-11-06, Zrejúca)
+
+Staré znenie §9.1 Rozdelenie hádky:
+
+> **Rozdelenie hádky na reči (krok 4e)** — rovnako ako Nakladačka na strach (§9.4), len na reči:
+> víťaz hádky rozdelí jej body **ľubovoľne medzi starších**; stupeň stojí **do žltej 1, do oranžovej 2,
+> do červenej 3**. Reči sú vždy **nad tvojím strachom** — prvé reči pri staršom s oranžovým strachom
+> idú rovno na červenú za 3, pri červenom strachu sa reči nedajú. Rozdelí sa, čo sa dá; **zvyšok
+> prepadne**, aj keď hráč nemá kam dvíhať vôbec (rozhodnuté 2026-11-02). Pri rozdelení smie víťaz hádky
+> za 5 bodov **presvedčiť** staršieho, pri ktorom má súper vyšší strach a jeho reči sú na červenej (v11.4,
+> §10 Presvedčenie).
+
+Staré znenie §10 Strach a reči: reči, cena, jedna stupnica, stupeň:
+
+> - **Reči** — nič, alebo stupeň **nad tvojím strachom** (strach 0 → reči 1–3, strach 1 → 2–3,
+>   strach 2 → 3, strach 3 → reči nie). Dvíha ich **hádka** víťaza hádky (§9.1) a Kšeft
+>   Predsedovej vily. Po bodovaní klesnú o stupeň; keď by klesli na stupeň strachu (alebo pod sivú),
+>   **zaniknú**. Keď tvoj strach dorastie na stupeň tvojich rečí, reči zaniknú (vieš to dopredu,
+>   dvíhaš sám). Reči nedávajú priazeň ani strach, nerátajú sa do výhry strachom ani do podmienky
+>   zajatia.
+> - **Cena stupňa** (Nakladačka aj hádka): vstup do žltej **1**, do oranžovej **2**, do červenej **3**
+>   (`KONSTANTY.CENA_STUPNA`). Rozdeľuje sa voľne medzi starších; zvyšok, ktorý na žiadny stupeň
+>   nestačí, prepadne.
+> - **Jedna stupnica** (Michal 2026-11-02): strach a reči hráča plnia **tú istú stupnicu** 0–3 pri
+>   staršom — strach zdola, reči nad vlastným strachom (na stole plná a šrafovaná časť jedného
+>   teplomera).
+> - **Stupeň staršieho pre hráča** — **pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)** — je
+>   **vrchol** jeho stupnice, teda **strach + reči** (reči, ak ich má, inak strach; Michal 2026-11-02).
+>   Ten istý stupeň hovorí, za koľko špakov starší boduje víťazovi (krok 4b nižšie). Do **priazne**,
+>   **výhry strachom** a **podmienky zajatia** sa rátajú **len strach** — reči nie.
+
+Staré znenie §10 Bodovanie po bitke:
+
+> Po každej bitke (aj vo finále) dá každý starší špaky — **podľa stavu pred zdvihnutím**
+> Nakladačkou a hádkou: **víťaz** za svoj **najvyšší marker** (reči, ak ich má, inak strach),
+> **porazený** a **pri sekere obaja** len za **reči**. Žltá **1**, oranžová **3**, červená **5**
+> (`KONSTANTY.SPAKY_ZA_STUPEN`). **Reči uberajú zo strachu (v11.11):** špaky porazeného za reči pri staršom
+> sa odpočítajú zo špakov víťaza za strach pri tom istom staršom, najviac na 0 (červený strach 5 proti oranžovým
+> rečiam 3 = víťaz 2, porazený 3). Víťazove reči sa nekrátia. Reči, ktoré bodovali, potom klesnú o stupeň (na stupni strachu
+> zaniknú). Väzeň nebojuje — na stupnici nie je.
+
+Staré znenie §10 Krádež pri zajatí:
+
+> **krádež:** súper ti odovzdá špaky za svoj **najvyšší marker**
+> pri tom staršom **v čase zajatia** — po bodovaní (krok 4b), keď reči už klesli (výklad Leadera, na
+> potvrdenie Michalom) — žltá 1, oranžová 3, červená 5, **najviac toľko, koľko má**. Výhra väzňami sa
+> overí hneď po rozdelení.
+
+Staré znenie presvedčenia: 5 bodov hádky, súper má pri staršom vyšší strach, reči na červenej, reči po presvedčení zaniknú.

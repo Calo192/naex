@@ -214,9 +214,9 @@ describe("nápovedy — zajatie a presvedčenie (v11.4)", () => {
     expect(ids(rozdelenie("prebytok", [3, 0], 4), 0)).not.toContain("patronat");
   });
 
-  it("presvedcenie: pri rozdelení hádky, keď sa súpera starší bojí viac a reči sa dajú dotiahnuť na červenú", () => {
-    expect(ids(rozdelenie("reci", [2, 3], 8), 0)).toContain("presvedcenie");
-    expect(ids(rozdelenie("reci", [2, 3], 7), 0)).not.toContain("presvedcenie");
-    expect(ids(rozdelenie("reci", [2, 2], 8), 0)).not.toContain("presvedcenie");
+  it("presvedcenie (v11.12): pri rozdelení hádky, keď sa reči dajú dotiahnuť na celý teplomer + 3", () => {
+    expect(ids(rozdelenie("reci", [2, 3], 9), 0)).toContain("presvedcenie");
+    expect(ids(rozdelenie("reci", [2, 2], 9), 0)).toContain("presvedcenie");
+    expect(ids(rozdelenie("reci", [2, 3], 8), 0)).not.toContain("presvedcenie");
   });
 });

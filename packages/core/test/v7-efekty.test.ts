@@ -231,7 +231,7 @@ describe("efekty v línii (v7)", () => {
     expect(overene).toBeGreaterThan(0);
   });
 
-  it("Kapybara (v11): súperove reči pri jednom staršom o stupeň nižšie — bez súperových rečí prepadne, partia sa nezasekne", () => {
+  it("Kapybara (v11.12): súperove reči pri jednom staršom zospodu o stupeň nižšie — bez súperových rečí prepadne, partia sa nezasekne", () => {
     const kapy = inst("kapybara");
     const sk = vZhromazdeni("zastavka", [[], []], [kapy]);
     // Vlastné reči sa neponúkajú, len súperove.
@@ -242,10 +242,10 @@ describe("efekty v línii (v7)", () => {
     const p = ([0, 1] as const).find((q) => mozeHrat(r.state, q)) ?? naTahu(r.state);
     expect(p).not.toBeNull();
     expect(legalCommands(data, r.state, p!).length).toBeGreaterThan(0);
-    const sReciami = sk.starsi.map((e, i) => (i === 1 ? { ...e, strach: [0, 1] as const, reci: [0, 3] as const } : e));
+    const sReciami = sk.starsi.map((e, i) => (i === 1 ? { ...e, strach: [0, 1] as const, reci: [0, 3] as const, reciOd: [0, 2] as const } : e));
     const pk = apply(data, { ...sk, starsi: sReciami }, { type: "place", uid: kapy.uid, target: "vlastna" }, 0).state;
     expect(legalCommands(data, pk, 0)).toEqual([{ type: "kapybara", elderId: sReciami[1]!.elderId }]);
-    expect(apply(data, pk, { type: "kapybara", elderId: sReciami[1]!.elderId }, 0).state.starsi[1]!.reci).toEqual([0, 2]);
+    expect(apply(data, pk, { type: "kapybara", elderId: sReciami[1]!.elderId }, 0).state.starsi[1]!.reciOd).toEqual([0, 3]);
   });
 
   it("Pes: aktívne akcie na spoji so súperovou kartou sa rátajú dvakrát; vedľa Mäsiara nie (2026-10-28)", () => {

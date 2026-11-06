@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.11 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.12 Reči na súperovom teplomere, zajatie a presvedčenie, identita kariet, Kostol na konci línie, každý Hazard je Dlh, 2026-11-06, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -15,11 +15,12 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   2026-10-28; aj odkrytá Záverečná, nie priznané karty ani Dedičstvo, nie karty, ktoré z línie počas
   kola zmizli), aspoň 1 — Absťáky ich neuberajú; lokalitu si
   **neberie** (ide na nástenku).
-  **Starší po bitke (v11):** za každého staršieho dostane **víťaz špaky za svoj najvyšší marker** (reči,
-  ak ich má, inak strach), **porazený a pri sekere obaja len za reči**: **žltá 1, oranžová 3, červená 5**
-  (stav pred zdvihnutím Nakladačkou a hádkou). **Reči uberajú zo strachu (v11.11):** špaky porazeného za reči
-  sa odpočítajú zo špakov víťaza za strach pri tom istom staršom, najviac na 0 (červený strach 5 proti oranžovým
-  rečiam 3 = víťaz 2, porazený 3); výhra strachom, zajatie a krádež sa nemenia. Reči, ktoré bodovali, klesnú o stupeň.
+  **Starší po bitke (v11.12):** stupne strachu majú hodnotu **žltá 1, oranžová 2, červená 2** (spolu 1 / 3 / 5) a špaky
+  za stupeň dostane ten, kto ho drží. **Víťaz bitky** dostane za svoj strach bez stupňov, ktoré obsadil súper rečami,
+  **každý hráč pri každej bitke** (vyhratej, prehratej aj pri sekere) za stupne, ktoré obsadil rečami (červený strach
+  a tvoje reči na červenej a oranžovej: on 1, ty 4; plné reči na prázdnom teplomere: ty 5). Stav pred zdvihnutím
+  Nakladačkou a hádkou. Výhra strachom a zajatie rátajú strach celý. **Reči potom klesnú zospodu o stupeň len tomu, kto
+  prehral hádku**; pri remíze v hádke nikomu.
   **Víťaz hádky, ktorý prehral bitku (v11.11),** dostane 1 špak za každú svoju kartu v línii; pri sekere tiež, hneď,
   a karty línie ďalej čakajú na sekere; s Kultúrnym domom sa to sčíta, vo finále navyše k 1 špaku za bod hádky.
   Víťaz bitky dostane za všetky karty, aj keď hádku tiež vyhral, navyše nič. Nepriznaná Cirhóza
@@ -106,7 +107,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   medzi súperove priznané), Jednota (v7: kto má viac priznaných Dlhov, nesmie fajčiť ani dolievať),
   Sklad (v7 Kšeft: 1 cigareta → vrchná karta súperovho
   odhadzovacieho balíčka do tvojej ruky), Poľovnícka chata (tuhé z hrán ×2), Predsedova vila
-  (v11 Kšeft: 2 cigarety → **tvoje reči pri jednom staršom o stupeň** — nad vyšší z tvojich markerov,
+  (v11 Kšeft: 2 cigarety → **tvoje reči pri jednom staršom o ďalší stupeň** v bežnom poradí,
   `{"type":"kseft","uid":…,"elderId":…}`),
   Herňa (víťaz + toľko špakov, koľko má porazený priznaných Dlhov), Kultúrny dom (v8 „Obaja získajú
   špaky“: víťaz 1 špak za každú kartu v línii, **porazený 1 špak za každú svoju kartu v línii**;
@@ -195,7 +196,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   nevidí, za ňu nepriloží (ani odpoveď na NA EX), NA EX na ňu smie len on (prejde vždy); akciu jeho
   karty, ktorú spáruje, mu výpis ani odhad bitky neukáže. Otočí sa na konci Pitky — až vtedy Nástup a Konflikt, ktorý priložením vyvolala.
 - **Nástup s voľbou (v7):** Živnostník — za neho hneď smieš priložiť Nástroj z ruky mimo limitu
-  (`{"type":"nastroj","uid":…}`, nič = `"uid":null`; aj pri otočení Záverečnej); Kapybara (v11) — **súperove reči pri jednom staršom klesnú o stupeň** (povinne; bez súperových rečí nič)
+  (`{"type":"nastroj","uid":…}`, nič = `"uid":null`; aj pri otočení Záverečnej); Kapybara (v11) — **súperove reči pri jednom staršom klesnú zospodu o stupeň** (povinne; bez súperových rečí nič)
   (`{"type":"kapybara","elderId":…}`). Dohadzovačka (Nástup, 2026-10-28): keď ju priložíš k Občanovi či Starešinovi, z druhej strany
   lokality sa najvzdialenejší Občan alebo Starešina opačného pohlavia ako jej sused presunie za ňu
   (na koniec jej strany; povinné, karta ostáva majiteľovi, Konflikt sa nespustí). **Poľovník (Nástup, v10.4):**
@@ -271,12 +272,15 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   (ruka, doberací, odhadzovací); pri remíze v tuhom prehráva, kto ich má viac (obe po odpustení Abstinentom, v10). Spáliť
   ho smie len **Vízia**. Výpis ukazuje „CHUŤ 3 | dnes 1 | chýba 2“ a počet Absťákov oboch. Flám (veľa NA EX)
   zdvihne Chuť a ďalšie kolo ťa núti piť znova.
-- **Strach a reči (v11, 2026-11-02):** pri každom staršom má **každý hráč vlastné dva markery** na stupnici
-  0–3 (sivá, žltá, oranžová, červená): **strach** (neklesá)
-  a **reči** (nič, alebo stupeň **nad tvojím strachom**). **Priazeň pre teba = strach súpera − tvoj strach**
-  (najmenej 0; reči sa nerátajú). Obaja na červenej = priazeň nikto. Starší je podľa vyššieho strachu
-  **pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**. Keď tvoj strach dorastie na stupeň tvojich
-  rečí, reči zaniknú; na červený strach sa reči nedajú. Scorecard nesie priazeň.
+- **Strach a reči (v11, v11.12):** pri každom staršom má **každý hráč svoj teplomer** 0–3 (sivá, žltá, oranžová,
+  červená) so svojím **strachom** (neklesá). **Reči idú na teplomer SÚPERA** ako súvislý blok stupňov.
+  **Poradie (záväzné):** od vrchu jeho strachu nadol, potom nad neho; zo sivej zdola nahor. Ceny **1 / 2 / 3** za stupeň
+  (jeho červená: 3, s oranžovou 5, plný teplomer 6; jeho oranžová: 2, so žltou 3, s červenou 6). Keď súper dvíha strach
+  na stupeň s tvojimi rečami, platí **o 1 viac** (2 / 3 / 4). Keď strach reči prekoná, **blok sa posunie** a počet stupňov
+  ostáva (reči žltá a oranžová, jeho strach oranžová → červená: reči oranžová a červená; reči žltá, strach → oranžová:
+  reči oranžová). **Priazeň pre teba = strach súpera − tvoj strach** (najmenej 0; celý strach, aj obsadený,
+  reči sa nerátajú). Obaja na červenej = priazeň nikto. Starší je podľa vyššieho strachu
+  **pokojný (0), znepokojený (1), vystrašený (2), vydesený (3)**. Scorecard nesie priazeň.
   Výpis ukazuje pri staršom oba markery oboch a špaky pri tvojej výhre a prehre.
 - **Priazeň (v9)** sila 1 / 2 / 3 = stupeň, bez dvojnásobku: Bitkár +1 / +2 / +3
   tuhého; Veriaci +1 / +2 / +3 Viery (proti Poverám aj v tlmení tuhého); Abstinent: v bitke sa ti neráta 1 / 2 / 3 Absťákov (v10 — tuhé neklesne a nerátajú sa ani pri remíze); **Advokát**: exekúcia
@@ -305,30 +309,28 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   Nakladačku**, smie pri staršom, pri ktorom je **tvoj strach 3** (červená) **už pred touto Nakladačkou** (od minulého kola, v11.6 — dotiahnutý v tom istom
   rozdelení nestačí), ho **zajať za 5 bodov** Nakladačky — `{"type":"prebytok","zdvihy":[…],"zajatia":[elderId,…]}`.
   Dobrovoľné, viac naraz smie byť; zvyšok sa rozdelí ako vždy. Starší je tvoj **väzeň** (priznané karty; zo
-  stupnice zmiznú markery oboch) a **súper ti odovzdá špaky za svoj najvyšší marker pri ňom teraz (žltá 1,
-  oranžová 3, červená 5), najviac koľko má**. Väzni na výhru podľa ligy — overí sa hneď po rozdelení. Zajať
+  stupnice zmiznú markery oboch) a **súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom, najviac koľko má**
+  (bez rečí 0). Obsadeného staršieho sa dá zajať a ráta sa ako červená. Väzni na výhru podľa ligy — overí sa hneď po rozdelení. Zajať
   smieš aj presvedčeného (aj svojho) — jeho karta zmizne, nech je kdekoľvek. Po finále väzni špaky nedávajú.
-- **Presvedčenie (v11.4, 2026-11-03):** kto **rozdeľuje hádku**, smie pri staršom, pri ktorom má **súper vyšší
-  strach ako ty** (dáva ti priazeň) a tvoje **reči sú na červenej** (smieš ich dotiahnuť v tom istom rozdelení),
-  ho **presvedčiť za 5 bodov** hádky — `{"type":"reci","zdvihy":[…],"presvedcenia":[elderId,…]}`. Napr. súper strach
-  3, ty 2, hádka 10: reči na červenú za 3 + 5, 2 body inam. **Tvoje reči pri ňom zaniknú, strach oboch ostáva**,
+- **Presvedčenie (v11.4, v11.12):** kto **rozdeľuje hádku**, smie **ktoréhokoľvek staršieho**, pri ktorom má **reči na
+  celom teplomere** (smieš ich dotiahnuť v tom istom rozdelení), ho **presvedčiť za 3 body** hádky — `{"type":"reci","zdvihy":[…],"presvedcenia":[elderId,…]}`.
+  Napr. hádka 10 na prázdnom staršom: reči 1 + 2 + 3, presvedčenie 3, 1 bod inam. **Reči, strach oboch aj priazeň ostávajú**,
   starší ostáva na stupnici (priazeň aj bodovanie ďalej). **Jeho karta ide tebe do ruky a natrvalo patrí do tvojho
   balíčka**: hráš ju ako Starešinu (len akcie, ráta sa do prevahy, dá sa naň NA EX), po bitke do tvojho
   odhadzovacieho balíčka; nespáli sa (ide do odhadzovacieho) a Sklad, Hrobár ani Veštica ju nevezmú. Schopnosť
   väzňa pri presvedčenom neplatí. **Kto prvý presvedčí, toho je** — presvedčeného už nikto nepresvedčí, zajať ho
   smú obaja. Vo finále nie. Kto koho presvedčil, je verejné; kde karta práve je, nie.
 - **Poradie bitky (v11):** **hádka** (kto ju vyhral a o koľko) → poškodenie → výsledok → **4a** špaky za karty
-  v línii → **4b starší bodujú** (víťaz najvyšší marker, porazený reči; reči potom −1) → **4c výhra strachom**
+  v línii → **4b starší bodujú** (reči obom, víťaz navyše strach bez obsadených stupňov; reči porazeného v hádke potom −1 zospodu) → **4c výhra strachom**
   (víťaz so 4 červenými končí hru) → **4d** exekúcia (Robota, Exekútor) → **4e Nakladačka a reči** → poldeci,
   Veštica, Cintorín, **porazený 1 cigareta** (po finále nie), Kmotor, Fajčiar → návrat
   kariet, Chuť a Absťák. Zajatie (krádež, výhra väzňami) je súčasť rozdelenia Nakladačky, presvedčenie rozdelenia hádky (4e).
 - **Nakladačka a hádka (v11, 2026-11-02):** Nakladačku (rozdiel tuhého) **rozdelí víťaz bitky na svoj strach**,
-  hádku (rozdiel mäkkého) **víťaz hádky na svoje reči** — **ľubovoľne medzi starších**, stupeň stojí **do žltej 1,
-  do oranžovej 2, do červenej 3** (strach zo žltej na červenú 2 + 3 = 5; prvé reči idú na stupeň nad strach:
-  pri oranžovom strachu len červené za 3). Rozdelíš **jedným ťahom**: `{"type":"prebytok","zdvihy":[{"elderId":…,"na":2},…]}`,
-  pre reči `{"type":"reci","zdvihy":[…]}` (`na` = cieľový stupeň). **Rozdeľ, čo sa dá** — server neprijme
+  hádku (rozdiel mäkkého) **víťaz hádky na svoje reči na súperovom teplomere** — **ľubovoľne medzi starších**, stupeň stojí **do žltej 1,
+  do oranžovej 2, do červenej 3** (strach zo žltej na červenú 2 + 3 = 5; reči pri jeho oranžovom strachu najprv oranžová za 2). Rozdelíš **jedným ťahom**: `{"type":"prebytok","zdvihy":[{"elderId":…,"na":2},…]}`,
+  pre reči `{"type":"reci","zdvihy":[…]}` (`na` = stupeň, po ktorý v poradí obsadzuješ). **Rozdeľ, čo sa dá** — server neprijme
   rozdelenie, po ktorom by zvyšok ešte stačil na ďalší stupeň; **čo sa nedá, prepadne** (aj keď nemáš kam
-  dvíhať vôbec). Zajatie a presvedčenie (vyššie) sa do „rozdeľ, čo sa dá“ nerátajú. Vyšší strach tebe body, ale súperovi priazeň. Výpis pri rozdeľovaní
+  dvíhať vôbec). Zajatie a presvedčenie (vyššie) sa do „rozdeľ, čo sa dá“ nerátajú. Vyšší strach tebe body, ale súperovi priazeň a miesto na reči. Výpis pri rozdeľovaní
   ukáže cenník každého staršieho a hotové úplné rozdelenia (prvé je NÁVRH jadra); vlastné rozdelenie klient pred
   odoslaním overí a povie, kde by zvyšok ešte stačil.
 - **Hádka (v10, v11) — mäkké poškodenie:** Povera a Pohoršenie **tuhé nerobia**, sú mäkké poškodenie.

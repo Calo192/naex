@@ -1,7 +1,7 @@
 // Kšeft Predsedovej vily — čo ponúknuť a kľúč tlačidla pre výučbu. Bez Reactu a routera:
 // číta ho aj Vyucba.tsx, ktorá sa testuje bez prehliadača.
 
-import { najvyssiMarker, vilaNaStarsieho, type ClientState, type Stupen } from "@naex/core";
+import { dalsiStupenReci, najvyssiMarker, vilaNaStarsieho, type ClientState, type Stupen } from "@naex/core";
 
 export interface MoznostVily {
   readonly elderId: string;
@@ -17,7 +17,7 @@ export function moznostiVily(view: Pick<ClientState, "starsi" | "ja">): readonly
     .filter((e) => vilaNaStarsieho(e, view.ja))
     .map((e) => {
       const z = najvyssiMarker(e, view.ja);
-      return { elderId: e.elderId, defId: e.karta.defId, z, na: (z + 1) as Stupen };
+      return { elderId: e.elderId, defId: e.karta.defId, z, na: dalsiStupenReci(e, view.ja) ?? z };
     });
 }
 

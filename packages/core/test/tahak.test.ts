@@ -20,10 +20,7 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ],
     ["štart", `${KONSTANTY.START_POLDECI} plné poldeci, ${KONSTANTY.START_CIGARETY} cigarety`],
     ["špaky za bitku (v8)", "1 špak za každú kartu v línii"],
-    [
-      "starší po bitke (v11)",
-      `**porazený a pri sekere obaja len za reči**: **žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}**`,
-    ],
+    ["starší po bitke (v11.12)", `**žltá ${KONSTANTY.HODNOTA_STUPNA[1]}, oranžová ${KONSTANTY.HODNOTA_STUPNA[2]}, červená ${KONSTANTY.HODNOTA_STUPNA[3]}**`],
     [
       "finále bez dvíhania (v11)",
       `víťaz bitky dostane za každý bod Nakladačky ${pocet(KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE, "špak", "špaky", "špakov")}, víťaz hádky za každý bod hádky ${pocet(KONSTANTY.SPAKY_ZA_HADKU_VO_FINALE, "špak", "špaky", "špakov")}`,
@@ -63,13 +60,13 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Kmotor (v9)", "Kmotor: po bitke presunie 2 / 3 / 4 tvoje priznané Dlhy medzi súperove"],
     [
       "krádež pri zajatí (v11.4)",
-      `marker pri ňom teraz (žltá ${KONSTANTY.SPAKY_ZA_STUPEN[1]}, oranžová ${KONSTANTY.SPAKY_ZA_STUPEN[2]}, červená ${KONSTANTY.SPAKY_ZA_STUPEN[3]}), najviac koľko má**`,
+      `toľko špakov, koľko bodov hádky má v rečiach pri ňom, najviac koľko má**`,
     ],
     ["cena zajatia (v11.4)", `ho **zajať za ${KONSTANTY.CENA_ZAJATIA} bodov** Nakladačky`],
-    ["cena presvedčenia (v11.4)", `ho **presvedčiť za ${KONSTANTY.CENA_PRESVEDCENIA} bodov** hádky`],
+    ["cena presvedčenia (v11.12)", `ho **presvedčiť za ${KONSTANTY.CENA_PRESVEDCENIA} body** hádky`],
     [
       "príklad presvedčenia (v11.4)",
-      `hádka 10: reči na červenú za ${cenaDvihnutia(2, 3)} + ${KONSTANTY.CENA_PRESVEDCENIA}, ${10 - cenaDvihnutia(2, 3) - KONSTANTY.CENA_PRESVEDCENIA} body inam`,
+      `hádka 10 na prázdnom staršom: reči 1 + 2 + 3, presvedčenie ${KONSTANTY.CENA_PRESVEDCENIA}, ${10 - cenaDvihnutia(0, 3) - KONSTANTY.CENA_PRESVEDCENIA} bod inam`,
     ],
     ["schopnosť väzňa (v11.2)", "použiješ **raz za hru, kedy chceš**"],
     ["Poštárka (v11.2)", `**Poštárka:** dostaneš **${pocet(KONSTANTY.POSTARKA_CIGARETY, "cigaretu", "cigarety", "cigariet")}**`],

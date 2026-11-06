@@ -17,7 +17,9 @@ const data = loadGameData(cardsJson, eldersJson, scorecardsJson);
 const s0 = setupGame(data, 5);
 const e0 = s0.starsi[0] as ElderState;
 const id = e0.elderId;
-const s = (strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen] = [0, 0]): ElderState => ({ ...e0, strach, reci });
+// Reči do v11.11 (výučba): starší bez reciOd.
+const { reciOd: _reciOd, ...e0Bez } = e0;
+const s = (strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen] = [0, 0]): ElderState => ({ ...e0Bez, strach, reci });
 const FERO = "Bot Rapavý Fero";
 
 describe("priazeň z rozdielu strachov", () => {

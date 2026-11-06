@@ -55,7 +55,7 @@ function rozpisVysledku(data: GameData, s: StavOdhadu, linia: LineEval, makke: r
     const zaBitku = vyplata === null ? (vitazHadky === p ? karty.vlastne[p] : 0) : vyhral ? vyplata.spolu : vyplata.porazenemu;
     const nakladacka = finale && vyhral ? nakladackaBodov * KONSTANTY.SPAKY_ZA_NAKLADACKU_VO_FINALE : 0;
     const hadka = finale && hd.vitaz === p ? hd.velkost * KONSTANTY.SPAKY_ZA_HADKU_VO_FINALE : 0;
-    const starsi = s.starsi.reduce((a, e) => a + spakyOdStarsieho(e, p, vyhral, s.vyucbaPredV1111 !== true), 0);
+    const starsi = s.starsi.reduce((a, e) => a + spakyOdStarsieho(e, p, vyhral), 0);
     // Robota pred Exekútorom (§11): Exekútor už príde len k tomu, čo Robota nespálila.
     const dlhy = s.hraci[p].dlhy;
     const spalene = Math.min(palene[p], dlhy);

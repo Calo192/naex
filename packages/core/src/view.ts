@@ -45,7 +45,7 @@ import { KONSTANTY, vazniNaVyhru } from "./constants.ts";
 import { kartyVRukach, pocetAbstakov, rukaClena } from "./player.ts";
 import { efektHraca, efektPotlaceny, vplyvyNaAkcie } from "./effects.ts";
 import type { VerejnyStav, VplyvNaAkciu } from "./effects.ts";
-import { favourStarsieho, najvyssiMarker, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, spakyZaStupen, stupenStavu } from "./elders.ts";
+import { favourStarsieho, kradezZaZajatie, priazenHraca, priazenSila, sMarkerom, spakyOdStarsieho, stupenStavu } from "./elders.ts";
 import { kandidatiRozdelenia, krokRozdelenia, bodyRozdelenia, markerRozdelenia, prikazRozdelenia } from "./rozdelenie.ts";
 import type { DamageResult } from "./battle.ts";
 
@@ -532,7 +532,7 @@ export function viewFor(data: GameData, state: GameState, miesto: Miesto): Clien
 /** Stav, z ktorého sa rátajú špaky — ClientState ho spĺňa. */
 export type PohladSpakov = Pick<ClientState, "spaky" | "nepriznaneKliatby" | "koniec" | "pitkaStav"> & {
   readonly hraci: readonly [Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">, Pick<HracVerejne, "poldeciPlne" | "cigarety" | "dedicstvo">];
-  readonly starsi: readonly Pick<ElderState, "elderId" | "strach" | "reci">[];
+  readonly starsi: readonly Pick<ElderState, "elderId" | "strach" | "reci" | "reciOd">[];
 };
 
 /**
@@ -568,7 +568,7 @@ export interface SpakyTeraz {
 const BEZ_VYKUPNEHO: Vykupne = { poldeci: 0, cigarety: 0, spaky: 0 };
 
 /** Bodovanie staršieho po bitke pre oboch hráčov (SpakyStarsieho). */
-export function spakyStarsieho(e: Pick<ElderState, "elderId" | "strach" | "reci">): SpakyStarsieho {
+export function spakyStarsieho(e: Pick<ElderState, "elderId" | "strach" | "reci" | "reciOd">): SpakyStarsieho {
   return {
     elderId: e.elderId,
     vyhra: [spakyOdStarsieho(e, 0, true), spakyOdStarsieho(e, 1, true)],
@@ -717,7 +717,7 @@ export function stavSchopnostiVaznaZPohladu(view: ClientState): StavSchopnostiVa
 export interface NahladZajatia {
   /** Poradie zajatia v partii, ak zajme teraz. */
   readonly poradie: number;
-  /** Krádež: špaky, ktoré súper odovzdá za svoj najvyšší marker pri tomto staršom teraz, najviac toľko, koľko má. */
+  /** Krádež: špaky, ktoré súper odovzdá za reči pri tomto staršom teraz (v11.12), najviac toľko, koľko má. */
   readonly kradez: number;
   /** Koľkého väzňa by mal hráč — vazniNaVyhru = výhra hneď. */
   readonly mojichVaznov: number;
@@ -731,7 +731,7 @@ export function nahladZajatia(view: Pick<ClientState, "vazni" | "ja" | "starsi" 
   const naVyhru = vazniNaVyhru(view.lokalitCelkom);
   const su = opponentOf(view.ja);
   const elder = elderId === undefined ? undefined : view.starsi.find((e) => e.elderId === elderId);
-  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(spakyZaStupen(najvyssiMarker(elder, su)), view.spaky[su]));
+  const kradez = elder === undefined ? 0 : Math.max(0, Math.min(kradezZaZajatie(elder, view.ja), view.spaky[su]));
   return { poradie, kradez, mojichVaznov, vazniNaVyhru: naVyhru, vyhra: mojichVaznov >= naVyhru };
 }
 

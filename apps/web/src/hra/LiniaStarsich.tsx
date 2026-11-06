@@ -12,8 +12,9 @@
 //    k hráčovi, špaky pri výhre a prehre a súčty.
 // Väzeň ostáva na svojom mieste v rade: bez teplomerov, len pečiatka „V PIVNICI u …“.
 //
-// Rozdeľovanie (v11): víťaz bitky dvíha Nakladačkou svoj strach, víťaz hádky svoje reči. Klik
-// na stupeň v tvojom teplomeri (aj v Pulte) ho zdvihne, klik na najvyšší vybraný ho vráti;
+// Rozdeľovanie (v11): víťaz bitky dvíha Nakladačkou svoj strach, víťaz hádky svoje reči (v11.12
+// na teplomere súpera, šrafa vo farbe majiteľa). Klik
+// na stupeň v teplomeri (aj v Pulte) ho zdvihne, klik na najvyšší vybraný ho vráti;
 // klik na portrét pridá stupeň. Zdvihy sú nepotvrdené, kým ich Potvrdiť na hrane stola nepošle
 // — cenu a zvyšok ráta jadro (teplomery.ts, rozdelenie.ts).
 //
@@ -25,7 +26,7 @@
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { useState } from "react";
 import type { Action, BitkaNaNastenke, DruhMarkera, ElderState, GameData, PlayerId, PultStarsich, StarsiVerejne, StavVyhier, Stupen, ZmenaMarkera } from "@naex/core";
-import { NAZVY_ZON, STAV_STARSIEHO, favourStarsieho, opponentOf, pocet, priazenHraca, priazenSila, spakyStarsieho, stupenStavu } from "@naex/core";
+import { NAZVY_ZON, STAV_STARSIEHO, blokReci, favourStarsieho, noveReci, opponentOf, pocet, priazenHraca, priazenSila, spakyStarsieho, stupenStavu } from "@naex/core";
 import { FARBY_STUPNICE } from "@naex/tvorba";
 import { IKONY } from "../karta/ikony.ts";
 import { UCINOK_KRATKO, UCINOK_PRIAZNE } from "./Scorecard.tsx";
@@ -201,7 +202,7 @@ export function LiniaStarsich({ rad, data, ja, pohlad, mena, krok, zmenene, vyhr
   /** Starší v stave kroku súhrnu (aj zajatý v tejto bitke, kým súhrn nedošiel na koniec). */
   const vStaveKroku = (s: StarsiVLinii, e: StarsiSuhrnu): StarsiVLinii => {
     const f = e.fazy[fazaKroku(krokSuhrnu ?? "koniec").stav]!;
-    return { elder: { ...s.elder, strach: f.strach, reci: f.reci }, meno: s.meno, obrazok: s.obrazok, presvedcil: s.presvedcil };
+    return { elder: { ...s.elder, strach: f.strach, reci: f.reci, ...(f.reciOd !== undefined ? { reciOd: f.reciOd } : {}) }, meno: s.meno, obrazok: s.obrazok, presvedcil: s.presvedcil };
   };
 
   return (
@@ -404,7 +405,8 @@ function TeplomerStarsieho({
           : klik !== undefined
             ? ` klik${nahlad ? " nahl" : ""}`
             : " nedost";
-  const slovo = (h: PlayerId): string => slovoStupna(vrcholTeplomera(elder.strach[h], elder.reci[h]), rod);
+  // v11.12: reči ležia na súperovom teplomere, stupeň hráča je jeho strach.
+  const slovo = (h: PlayerId): string => slovoStupna(noveReci(elder) ? elder.strach[h] : vrcholTeplomera(elder.strach[h], elder.reci[h]), rod);
   const popis =
     `${s.meno} — priazeň ${ktoPriazen(pk, { ja: kratke[ja], su: kratke[su] })}. ` +
     `${kratke[ja]}: ${slovo(ja)}${elder.reci[ja] > 0 ? " (reči)" : ""}; ${kratke[su]}: ${slovo(su)}${elder.reci[su] > 0 ? " (reči)" : ""}.` +
@@ -496,7 +498,7 @@ function TeplomerStarsieho({
         ) : (
           <span className="r3-riadky">
             {([ja, su] as const).map((h) => (
-              <RiadokStupna key={h} kto={kratke[h]} komu={h === ja ? "ja" : "su"} strach={po.strach[h]} reci={po.reci[h]} rod={rod} />
+              <RiadokStupna key={h} kto={kratke[h]} komu={h === ja ? "ja" : "su"} strach={po.strach[h]} reci={po.reci[h]} nove={noveReci(po)} rod={rod} />
             ))}
           </span>
         )}
@@ -552,12 +554,12 @@ function PeciatkaAkcie({ a, elderId, meno, rod, vPulte = false }: { readonly a: 
 const rovnakaPriazen = (a: Markery, b: Markery): boolean => priazenHraca(a) === priazenHraca(b) && priazenSila(a) === priazenSila(b);
 
 /** Riadok pod menom staršieho: meno hráča, štvorčeky plnej a šrafovanej časti a stupeň slovom (vrchol). */
-function RiadokStupna({ kto, komu, strach, reci, rod }: { readonly kto: string; readonly komu: "ja" | "su"; readonly strach: number; readonly reci: number; readonly rod: Rod }) {
-  const vrchol = vrcholTeplomera(strach, reci);
+function RiadokStupna({ kto, komu, strach, reci, nove, rod }: { readonly kto: string; readonly komu: "ja" | "su"; readonly strach: number; readonly reci: number; readonly nove: boolean; readonly rod: Rod }) {
+  const vrchol = nove ? strach : vrcholTeplomera(strach, reci);
   return (
     <span className={`r3-riadok ${komu}`}>
       <b className="kto">{kto}</b>
-      {vrchol === 0 ? (
+      {vrchol === 0 && reci === 0 ? (
         <span className="np-st s0">{slovoStupna(0, rod)}</span>
       ) : (
         <>
@@ -607,6 +609,7 @@ function TeplomerR3({
   readonly suhrn: boolean;
 }) {
   const su = opponentOf(ja);
+  const nove = noveReci(v);
   const pk = priazenKola(v, ja);
   const prPred = pred === null ? null : priazenKola(pred, ja);
   const prNova = prPred !== null && (prPred.komu !== pk.komu || prPred.sila !== pk.sila);
@@ -625,9 +628,9 @@ function TeplomerR3({
     );
   };
   return (
-    <span className={`r3${r !== undefined ? ` rozdel ${r.marker}` : ""}`}>
-      <PasR3 strana="ja" elderId={elderId} strach={v.strach[ja]} reci={v.reci[ja]} pred={pred === null ? null : { strach: pred.strach[ja], reci: pred.reci[ja] }} r={r} meno={meno} rod={rod} suhrn={suhrn} />
-      <PasR3 strana="su" elderId={elderId} strach={v.strach[su]} reci={v.reci[su]} pred={pred === null ? null : { strach: pred.strach[su], reci: pred.reci[su] }} meno={meno} rod={rod} suhrn={suhrn} />
+    <span className={`r3${r !== undefined ? ` rozdel ${r.marker}${nove && r.marker === "reci" ? " na-supera" : ""}` : ""}`}>
+      <PasR3 strana="ja" elderId={elderId} strach={v.strach[ja]} reci={nove ? 0 : v.reci[ja]} blok={nove ? blokReci(v, su) : null} blokPred={nove && pred !== null ? blokReci(pred, su) : nove ? blokReci(v, su) : null} pred={pred === null ? null : { strach: pred.strach[ja], reci: nove ? 0 : pred.reci[ja] }} r={nove && r?.marker === "reci" ? undefined : r} meno={meno} rod={rod} suhrn={suhrn} />
+      <PasR3 strana="su" elderId={elderId} strach={v.strach[su]} reci={nove ? 0 : v.reci[su]} blok={nove ? blokReci(v, ja) : null} blokPred={nove && pred !== null ? blokReci(pred, ja) : nove ? blokReci(v, ja) : null} pred={pred === null ? null : { strach: pred.strach[su], reci: nove ? 0 : pred.reci[su] }} r={nove && r?.marker === "reci" ? r : undefined} meno={meno} rod={rod} suhrn={suhrn} />
       {hladina(ja)}
       {hladina(su)}
       {pk.komu !== null && (
@@ -645,6 +648,8 @@ function PasR3({
   elderId,
   strach,
   reci,
+  blok,
+  blokPred,
   pred,
   r,
   meno,
@@ -655,6 +660,9 @@ function PasR3({
   readonly elderId: string;
   readonly strach: number;
   readonly reci: number;
+  /** Súperove reči na tomto teplomere a ich stav pred krokom (v11.12): šrafa cez strach. */
+  readonly blok: { readonly od: number; readonly vrch: number } | null;
+  readonly blokPred: { readonly od: number; readonly vrch: number } | null;
   readonly pred: { readonly strach: number; readonly reci: number } | null;
   readonly r?: RozdelenieStarsieho | undefined;
   readonly meno: string;
@@ -669,11 +677,15 @@ function PasR3({
         const teraz = vyplnStupna(z, strach, reci);
         const predtym = pred === null ? teraz : vyplnStupna(z, pred.strach, pred.reci);
         const zmena = teraz !== predtym;
-        const trieda = `r3-seg z${z}${zmena && teraz !== null ? " nove" : ""}${zmena && predtym !== null && teraz === null ? " duch" : ""}${st !== undefined ? ` ${st.stav}` : ""}`;
+        const srafa = blok !== null && z >= blok.od && z <= blok.vrch;
+        const srafaPred = blokPred !== null && z >= blokPred.od && z <= blokPred.vrch;
+        const trieda = `r3-seg z${z}${(zmena && teraz !== null) || (srafa && !srafaPred) ? " nove" : ""}${(zmena && predtym !== null && teraz === null) || (srafaPred && !srafa) ? " duch" : ""}${st !== undefined ? ` ${st.stav}` : ""}`;
         const obsah = (
           <>
             {zmena && predtym !== null && <i className={`r3-vypln ${predtym}${suhrn ? " mizne" : " stara"}`} />}
             {teraz !== null && <i className={`r3-vypln ${teraz}${zmena && suhrn ? " rast" : ""}`} style={{ "--d": `${0.15 + (z - 1) * 0.18}s` } as CSSProperties} />}
+            {srafaPred && !srafa && <i className={`r3-vypln srafa${suhrn ? " mizne" : " stara"}`} />}
+            {srafa && <i className={`r3-vypln srafa${!srafaPred && suhrn ? " rast" : ""}`} style={{ "--d": `${0.15 + (3 - z) * 0.18}s` } as CSSProperties} />}
             {st !== undefined && st.stav === "dosah" && <em className="r3-cena">{st.cena}</em>}
           </>
         );
@@ -796,12 +808,17 @@ function Zvacsenina({ s, fav, pk }: { readonly s: Pick<StarsiVLinii, "meno" | "o
 function Pipy({
   hodnota,
   reci,
+  blok,
+  blokPred,
   r,
   meno,
   zrkadlo,
 }: {
   readonly hodnota: number;
   readonly reci: boolean;
+  /** Blok rečí po návrhu a pred ním (v11.12); undefined = výučba, reči na jednom stupni. */
+  readonly blok?: { readonly od: number; readonly vrch: number } | null;
+  readonly blokPred?: { readonly od: number; readonly vrch: number } | null;
   readonly r?: RozdelenieStarsieho | undefined;
   readonly meno: string;
   /** Súperove stĺpce idú od stredu doprava — poradie stupňov sa otočí. */
@@ -814,8 +831,10 @@ function Pipy({
     <span className={`tp-pipy-pult${reci ? " reci" : ""}`}>
       {stupne.map((z) => {
         const st = r?.stupne.find((x) => x.stupen === z);
-        const on = reci ? po === z : po >= z;
-        const trieda = `z${z}${on ? " on" : ""}${on && (reci ? hodnota !== z : hodnota < z) ? " nove" : ""}${st !== undefined ? ` ${st.stav}` : ""}`;
+        const v = (b: { readonly od: number; readonly vrch: number } | null): boolean => b !== null && z >= b.od && z <= b.vrch;
+        const on = blok !== undefined ? v(blok) : reci ? po === z : po >= z;
+        const novy = blok !== undefined ? !v(blokPred ?? null) : reci ? hodnota !== z : hodnota < z;
+        const trieda = `z${z}${on ? " on" : ""}${on && novy ? " nove" : ""}${st !== undefined ? ` ${st.stav}` : ""}`;
         if (r === undefined || st === undefined || st.stav === "pod" || st.stav === "zamknuty") return <i key={z} className={trieda} />;
         const label = `${meno}: ${reci ? "reči" : "strach"} na ${NAZVY_ZON[z]}${st.stav === "dosah" ? ` za ${st.cena}` : st.stav === "mimo" ? " — zvyšok nestačí" : ""}`;
         return (
@@ -917,13 +936,13 @@ function PultLinie({
                   <Pipy hodnota={e.strach[ja]} reci={false} r={r?.marker === "strach" ? r : undefined} meno={s.meno} zrkadlo={false} />
                 </td>
                 <td>
-                  <Pipy hodnota={e.reci[ja]} reci r={r?.marker === "reci" ? r : undefined} meno={s.meno} zrkadlo={false} />
+                  <Pipy hodnota={e.reci[ja]} reci {...(noveReci(e) ? { blok: blokReci(po, ja), blokPred: blokReci(e, ja) } : {})} r={r?.marker === "reci" ? r : undefined} meno={s.meno} zrkadlo={false} />
                 </td>
                 <td>
                   <PriazenPultu e={po} data={data} ja={ja} mena={mena} />
                 </td>
                 <td>
-                  <Pipy hodnota={e.reci[su]} reci meno={s.meno} zrkadlo />
+                  <Pipy hodnota={e.reci[su]} reci {...(noveReci(e) ? { blok: blokReci(e, su), blokPred: blokReci(e, su) } : {})} meno={s.meno} zrkadlo />
                 </td>
                 <td>
                   <Pipy hodnota={e.strach[su]} reci={false} meno={s.meno} zrkadlo />

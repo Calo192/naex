@@ -24,7 +24,9 @@ const starsiLayoutRight = [null, "Pecka", null, null] as const;
 const data = syntheticData([makeDef("starsi", starsiLayoutLeft, starsiLayoutRight, { tags: ["Starešina", "Chlap"] })]);
 
 function elder(strach: readonly [Stupen, Stupen], reci: readonly [Stupen, Stupen] = [0, 0]): ElderState {
-  return { ...freshElder("starsi", instanceFor(data, "starsi", starsiLayoutLeft, starsiLayoutRight), "sc"), strach, reci };
+  // Reči do v11.11 (výučba): starší bez reciOd. v11.12 overuje reci-teplomer.test.ts.
+  const { reciOd: _reciOd, ...e } = freshElder("starsi", instanceFor(data, "starsi", starsiLayoutLeft, starsiLayoutRight), "sc");
+  return { ...e, strach, reci };
 }
 
 describe("v11 — stupnica 0–3 a markery hráčov", () => {

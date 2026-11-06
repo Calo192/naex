@@ -6,8 +6,8 @@
 // Akcie rozdelenia (v11.4, Michal 2026-11-03): za CENA_ZAJATIA bodov Nakladačky smie držiteľ
 // zajať staršieho, ktorý sa ho bojí na červenej už pred touto Nakladačkou (v11.6 — strach dvíha
 // len Nakladačka, raz za kolo, takže je to červená od minulého kola); za CENA_PRESVEDCENIA bodov hádky
-// smie víťaz hádky presvedčiť staršieho, pri ktorom má súper vyšší strach a jeho reči sú po
-// zdvihoch na červenej. Obe sú dobrovoľné (do „rozdeľ, čo sa dá“ sa nerátajú) a smie ich byť viac.
+// smie víťaz hádky presvedčiť staršieho, pri ktorom má po zdvihoch reči na celom teplomere
+// (v11.12). Obe sú dobrovoľné (do „rozdeľ, čo sa dá“ sa nerátajú) a smie ich byť viac.
 //
 // Klient drží rozpracované zdvihy a akcie a pošle ich jedným zámerom ({ type: "prebytok",
 // zdvihy, zajatia } | { type: "reci", zdvihy, presvedcenia }); server ich overí tou istou
@@ -15,12 +15,12 @@
 
 import type { BitkaKrok, Command } from "./engine.ts";
 import type { DruhMarkera, ElderState, Stupen, Zdvih } from "./elders.ts";
-import { CERVENA, cenaDvihnutia, moznyZdvih, sMarkerom, stupenOdkial } from "./elders.ts";
+import { CERVENA, cenaZdvihu, krokyZdvihu, noveReci, plnyTeplomer, sMarkerom, stupenOdkial } from "./elders.ts";
 import { KONSTANTY } from "./constants.ts";
 import type { PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
 
-type StarsiRozdelenia = Pick<ElderState, "elderId" | "strach" | "reci" | "presvedcil">;
+type StarsiRozdelenia = Pick<ElderState, "elderId" | "strach" | "reci" | "reciOd" | "presvedcil">;
 
 /** Čo rozdelenie potrebuje zo stavu — ClientState aj GameState. */
 export interface StavRozdelenia {
@@ -60,9 +60,8 @@ export function bodyRozdelenia(state: Pick<StavRozdelenia, "bitkaStav">, p: Play
 }
 
 /** Cena ďalšieho stupňa markera hráča p pri staršom, alebo null (marker je na červenej). */
-export function cenaDalsiehoStupna(elder: Pick<ElderState, "strach" | "reci">, p: PlayerId, marker: DruhMarkera): number | null {
-  const z = moznyZdvih(elder, p, marker);
-  return z === null ? null : cenaDvihnutia(z.od, z.od + 1);
+export function cenaDalsiehoStupna(elder: Pick<ElderState, "strach" | "reci" | "reciOd">, p: PlayerId, marker: DruhMarkera): number | null {
+  return krokyZdvihu(elder, p, marker)[0]?.cena ?? null;
 }
 
 /** Cena akcie rozdelenia: zajatie pri strachu, presvedčenie pri rečiach (v11.4). */
@@ -79,23 +78,27 @@ export const CHYBA_ZAJATIA_BEZ_CERVENEJ =
  * na body — null = smie (presvedčenie, keď dotiahne reči na červenú). Zajať sa dá každého
  * staršieho na stupnici (aj presvedčeného, aj vlastného presvedčeného), ktorý sa hráča bojí na
  * červenej už pred rozdelením (v11.6, Michal 2026-11-03: dotiahnuť a hneď zajať v tom istom
- * kole sa nedá). Presvedčiť len nepresvedčeného, pri ktorom má súper vyšší strach — reči sa
- * smú dotiahnuť v tom istom rozdelení, lebo po bodovaní vždy klesnú o stupeň.
+ * kole sa nedá). Presvedčiť ktoréhokoľvek nepresvedčeného (v11.12) — reči sa smú dotiahnuť
+ * v tom istom rozdelení. Výučba (reči do v11.11): len keď má súper vyšší strach.
  */
 export function dovodBezAkcie(elder: StarsiRozdelenia, p: PlayerId, marker: DruhMarkera): string | null {
   if (marker === "strach") return elder.strach[p] === CERVENA ? null : CHYBA_ZAJATIA_BEZ_CERVENEJ;
   if (elder.presvedcil !== undefined) return "Tohto staršieho už niekto presvedčil.";
-  if (elder.strach[opponentOf(p)] <= elder.strach[p]) return "Presvedčiť sa dá len staršieho, ktorý sa súpera bojí viac než teba.";
+  if (!noveReci(elder) && elder.strach[opponentOf(p)] <= elder.strach[p]) return "Presvedčiť sa dá len staršieho, ktorý sa súpera bojí viac než teba.";
   return null;
 }
 
+/** Je marker po zdvihoch tam, kde akcia chce: strach na červenej, reči na celom teplomere (v11.12). */
+const markerNaAkciu = (elder: StarsiRozdelenia, p: PlayerId, marker: DruhMarkera): boolean =>
+  marker === "reci" && noveReci(elder) ? plnyTeplomer(elder, p) : stupenOdkial(elder, p, marker) === CERVENA;
+
 /**
- * Celá cena akcie pri staršom: dotiahnutie markera na červenú za bežnú cenu + cena akcie
+ * Celá cena akcie pri staršom: dotiahnutie markera tam, kde akcia chce, za bežnú cenu + cena akcie
  * (pri zajatí len cena akcie — strach už na červenej je); null = akcia tu nejde (dovodBezAkcie).
  */
 export function cenaAkcieUplna(elder: StarsiRozdelenia, p: PlayerId, marker: DruhMarkera): number | null {
   if (dovodBezAkcie(elder, p, marker) !== null) return null;
-  return cenaDvihnutia(stupenOdkial(elder, p, marker), CERVENA) + cenaAkcieRozdelenia(marker);
+  return (krokyZdvihu(elder, p, marker).at(-1)?.cena ?? 0) + cenaAkcieRozdelenia(marker);
 }
 
 /** Overené rozdelenie: čo sa zmení a koľko prepadne. */
@@ -121,8 +124,8 @@ export interface PlanRozdelenia {
 
 /**
  * Overí rozdelenie `zdvihy` a akcie `akcie` bodov `body` na marker hráča p (server aj náhľad
- * klienta). Každý starší v zdvihoch najviac raz, na stupeň vyšší, ako je teraz (reči nad
- * strachom); presvedčenie pri staršom, ktorého reči sú po zdvihoch na červenej, zajatie pri
+ * klienta). Každý starší v zdvihoch najviac raz, na stupeň, kam zdvih smie ísť (krokyZdvihu);
+ * presvedčenie pri staršom s rečami po zdvihoch na celom teplomere, zajatie pri
  * staršom, ktorého strach bol na červenej už pred zdvihmi (v11.6); cena spolu najviac body;
  * po rozdelení zvyšok nesmie stačiť na ďalší stupeň.
  */
@@ -150,11 +153,11 @@ export function overRozdelenie(
     }
     videne.add(zd.elderId);
     const z = stupenOdkial(elder, p, marker);
-    if (!Number.isInteger(zd.na) || zd.na <= z || zd.na > CERVENA) {
-      chyba ??= marker === "reci" ? "Reči idú len nad tvoj strach a najvyššie na červenú." : "Strach sa dá len zdvihnúť, najvyššie na červenú.";
+    const c = cenaZdvihu(elder, p, marker, zd.na);
+    if (c === null) {
+      chyba ??= marker === "reci" ? "Na tento stupeň reči nejdú — obsadzuje sa od vrchu súperovho strachu nadol, potom nad neho." : "Strach sa dá len zdvihnúť, najvyššie na červenú.";
       continue;
     }
-    const c = cenaDvihnutia(z, zd.na);
     cena += c;
     vysledok.push({ elderId: zd.elderId, z, na: zd.na, cena: c });
   }
@@ -179,8 +182,8 @@ export function overRozdelenie(
       chyba ??= dovod;
       continue;
     }
-    if (stupenOdkial(elder, p, marker) !== CERVENA) {
-      chyba ??= marker === "strach" ? CHYBA_ZAJATIA_BEZ_CERVENEJ : "Presvedčiť sa dá len s rečami na červenej — dotiahni reči na červenú.";
+    if (!markerNaAkciu(elder, p, marker)) {
+      chyba ??= marker === "strach" ? CHYBA_ZAJATIA_BEZ_CERVENEJ : "Presvedčiť sa dá len s rečami na celom teplomere — dotiahni ich.";
       continue;
     }
     akcieOk.push(id);
@@ -220,7 +223,7 @@ export function rozdelenieMozne(state: Pick<StavRozdelenia, "starsi">, p: Player
   return overRozdelenie(state, p, marker, body, []).esteSaDa.length > 0;
 }
 
-/** Starší, pri ktorých sa na body ešte dá akcia rozdelenia (zajatie; presvedčenie aj s dotiahnutím rečí na červenú). */
+/** Starší, pri ktorých sa na body ešte dá akcia rozdelenia (zajatie; presvedčenie aj s dotiahnutím rečí). */
 export function moznostiAkcie(state: Pick<StavRozdelenia, "starsi">, p: PlayerId, marker: DruhMarkera, body: number): readonly string[] {
   return state.starsi.filter((e) => {
     const c = cenaAkcieUplna(e, p, marker);
@@ -229,8 +232,8 @@ export function moznostiAkcie(state: Pick<StavRozdelenia, "starsi">, p: PlayerId
 }
 
 /**
- * Zdvihy, ktoré akcie vyžadujú — reči každého staršieho v presvedčeniach dotiahnuté na
- * červenú (ak tam ešte nie sú). Zajatie nevyžaduje nič: strach je na červenej už pred
+ * Zdvihy, ktoré akcie vyžadujú — reči každého staršieho v presvedčeniach dotiahnuté na celý
+ * teplomer (ak tam ešte nie sú). Zajatie nevyžaduje nič: strach je na červenej už pred
  * rozdelením (v11.6). Klient ich pridá, keď hráč klikne na pečiatku.
  */
 export function zdvihyPreAkcie(state: Pick<StavRozdelenia, "starsi">, p: PlayerId, marker: DruhMarkera, akcie: readonly string[]): readonly Zdvih[] {
@@ -238,7 +241,8 @@ export function zdvihyPreAkcie(state: Pick<StavRozdelenia, "starsi">, p: PlayerI
   if (marker === "strach") return out;
   for (const id of akcie) {
     const e = state.starsi.find((x) => x.elderId === id);
-    if (e !== undefined && stupenOdkial(e, p, marker) < CERVENA) out.push({ elderId: id, na: CERVENA });
+    const posledny = e === undefined ? undefined : krokyZdvihu(e, p, marker).at(-1);
+    if (e !== undefined && posledny !== undefined) out.push({ elderId: id, na: posledny.na });
   }
   return out;
 }
@@ -273,7 +277,7 @@ export function vyberyAkcii(state: Pick<StavRozdelenia, "starsi">, p: PlayerId, 
 /**
  * Úplné rozdelenia (žiadny zvyšok, ktorý by ešte niekam stačil) pri daných akciách — ponuka
  * legálnych zámerov pre bota a testy, najviac `limit`. Zdvihy obsahujú aj dotiahnutie
- * starších z akcií na červenú. Prehľadáva starších postupne od každého z nich (inak by
+ * starších z akcií. Prehľadáva starších postupne od každého z nich (inak by
  * ponuka zvýhodnila prvých na stupnici); rovnaké rozdelenie sa neopakuje. Keď sa nedá
  * dvíhať nikde, ponuka je jediné rozdelenie bez ďalších zdvihov (zvyšok prepadne).
  */
@@ -305,7 +309,7 @@ export function kandidatiRozdelenia(
     const poradie = [...volni.slice(r), ...volni.slice(0, r)];
     // Koľko sa ešte dá minúť na starších od i-teho ďalej — vetva, ktorej zvyšok by aj tak
     // stačil na ďalší stupeň už prejdeného staršieho, sa nedoprehľadáva.
-    const kapacita = poradie.map((e) => cenaDvihnutia(stupenOdkial(e, p, marker), CERVENA));
+    const kapacita = poradie.map((e) => krokyZdvihu(e, p, marker).at(-1)?.cena ?? 0);
     for (let i = kapacita.length - 2; i >= 0; i--) kapacita[i]! += kapacita[i + 1]!;
     const zdvihy: Zdvih[] = [];
     let pridane = 0;
@@ -322,17 +326,21 @@ export function kandidatiRozdelenia(
         return;
       }
       const e = poradie[i]!;
-      const od = stupenOdkial(e, p, marker);
-      const dalsi = (na: number): number => (na >= CERVENA ? Number.POSITIVE_INFINITY : cenaDvihnutia(na, na + 1));
+      const kroky = krokyZdvihu(e, p, marker);
+      // O koľko je ďalší krok po kroku j drahší (j = -1 je „nič“).
+      const dalsi = (j: number): number => {
+        const k = kroky[j + 1];
+        return k === undefined ? Number.POSITIVE_INFINITY : k.cena - (kroky[j]?.cena ?? 0);
+      };
       // Vyššie stupne najprv — sústredené rozdelenia prídu na rad skôr než rozdrobené.
-      for (let na = CERVENA as number; na > od; na--) {
-        const c = cenaDvihnutia(od, na);
-        if (c > zostava) continue;
-        zdvihy.push({ elderId: e.elderId, na: na as Stupen });
-        skus(i + 1, zostava - c, Math.min(najlacnejsiDalsi, dalsi(na)));
+      for (let j = kroky.length - 1; j >= 0; j--) {
+        const k = kroky[j]!;
+        if (k.cena > zostava) continue;
+        zdvihy.push({ elderId: e.elderId, na: k.na });
+        skus(i + 1, zostava - k.cena, Math.min(najlacnejsiDalsi, dalsi(j)));
         zdvihy.pop();
       }
-      skus(i + 1, zostava, Math.min(najlacnejsiDalsi, dalsi(od)));
+      skus(i + 1, zostava, Math.min(najlacnejsiDalsi, dalsi(-1)));
     };
     skus(0, zostatok, Number.POSITIVE_INFINITY);
   }

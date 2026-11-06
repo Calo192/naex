@@ -7,7 +7,7 @@
 // zdvihy a nikdy nepustí rozdelenie drahšie, než sú body.
 
 import type { ClientState, DruhMarkera, ElderState, PlayerId, StarsiVerejne, Stupen, Vazen, Zdvih } from "@naex/core";
-import { CERVENA, KONSTANTY, bodyRozdelenia, cenaAkcieRozdelenia, cenaDalsiehoStupna, cenaDvihnutia, krokRozdelenia, markerRozdelenia, planRozdelenia, stupenOdkial } from "@naex/core";
+import { KONSTANTY, bodyRozdelenia, cenaAkcieRozdelenia, cenaZdvihu, krokRozdelenia, krokyZdvihu, markerRozdelenia, planRozdelenia, stupenOdkial } from "@naex/core";
 
 /** Miesto v rade starších: starší na stupnici, alebo väzeň na mieste svojho ukazovateľa. */
 export type MiestoVRade = { readonly typ: "starsi"; readonly elder: StarsiVerejne } | { readonly typ: "vazen"; readonly vazen: Vazen };
@@ -40,7 +40,7 @@ type StavPreRozdelenie = Pick<ClientState, "starsi" | "bitkaStav">;
 export interface StupenRozdelenia {
   readonly stupen: 1 | 2 | 3;
   /**
-   * pod = už ho mám (strach, pri rečiach aj strach pod nimi), vybrany = v nepotvrdenom zdvihu,
+   * pod = už ho mám, vybrany = v nepotvrdenom zdvihu,
    * dosah = zvyšok naň stačí, mimo = nestačí, zamknuty = tu sa nedvíha (červená).
    */
   readonly stav: "pod" | "vybrany" | "dosah" | "mimo" | "zamknuty";
@@ -57,7 +57,7 @@ export function rozdelenieHraca(view: StavPreRozdelenie, ja: PlayerId): { readon
 const cenaZdvihov = (view: StavPreRozdelenie, ja: PlayerId, marker: DruhMarkera, zdvihy: readonly Zdvih[]): number =>
   zdvihy.reduce((a, z) => {
     const e = view.starsi.find((x) => x.elderId === z.elderId);
-    return e === undefined ? a : a + cenaDvihnutia(stupenOdkial(e, ja, marker), z.na);
+    return e === undefined ? a : a + (cenaZdvihu(e, ja, marker, z.na) ?? 0);
   }, 0);
 
 /** Body, ktoré zaberajú akcie (zajatia / presvedčenia, v11.4) — 5 za každú. */
@@ -68,14 +68,15 @@ export function stupneRozdelenia(view: StavPreRozdelenie, ja: PlayerId, zdvihy: 
   const r = rozdelenieHraca(view, ja);
   const e = view.starsi.find((x) => x.elderId === elderId);
   if (r === null || e === undefined) return [];
-  const od = stupenOdkial(e, ja, r.marker);
-  const zamknuty = cenaDalsiehoStupna(e, ja, r.marker) === null;
-  const moj = zdvihy.find((z) => z.elderId === elderId)?.na ?? od;
+  const kroky = krokyZdvihu(e, ja, r.marker);
+  const na = zdvihy.find((z) => z.elderId === elderId)?.na;
+  const moj = na === undefined ? -1 : kroky.findIndex((k) => k.na === na);
   // Zvyšok pre tohto staršieho: body mínus zdvihy ostatných a akcie.
   const volne = r.body - cenaZdvihov(view, ja, r.marker, zdvihy.filter((z) => z.elderId !== elderId)) - cenaAkcii(r.marker, akcie);
   return ([1, 2, 3] as const).map((s) => {
-    const cena = s > od ? cenaDvihnutia(od, s) : 0;
-    const stav: StupenRozdelenia["stav"] = s <= od ? "pod" : zamknuty ? "zamknuty" : s <= moj ? "vybrany" : cena <= volne ? "dosah" : "mimo";
+    const i = kroky.findIndex((k) => k.na === s);
+    const cena = kroky[i]?.cena ?? 0;
+    const stav: StupenRozdelenia["stav"] = i < 0 ? "pod" : i <= moj ? "vybrany" : cena <= volne ? "dosah" : "mimo";
     return { stupen: s, stav, cena };
   });
 }
@@ -88,16 +89,17 @@ export function stupneRozdelenia(view: StavPreRozdelenie, ja: PlayerId, zdvihy: 
 export function klikNaStupen(view: StavPreRozdelenie, ja: PlayerId, zdvihy: readonly Zdvih[], elderId: string, s: number, akcie: readonly string[] = []): readonly Zdvih[] {
   const r = rozdelenieHraca(view, ja);
   const e = view.starsi.find((x) => x.elderId === elderId);
-  if (r === null || e === undefined || cenaDalsiehoStupna(e, ja, r.marker) === null) return zdvihy;
-  const od = stupenOdkial(e, ja, r.marker);
-  if (s <= od || s > CERVENA) return zdvihy;
+  if (r === null || e === undefined) return zdvihy;
+  const kroky = krokyZdvihu(e, ja, r.marker);
+  const i = kroky.findIndex((k) => k.na === s);
+  if (i < 0) return zdvihy;
   const ostatne = zdvihy.filter((z) => z.elderId !== elderId);
-  const teraz = zdvihy.find((z) => z.elderId === elderId)?.na ?? od;
-  let na = s === teraz ? s - 1 : s;
+  const teraz = zdvihy.find((z) => z.elderId === elderId)?.na;
+  let ciel = s === teraz ? i - 1 : i;
   const volne = r.body - cenaZdvihov(view, ja, r.marker, ostatne) - cenaAkcii(r.marker, akcie);
-  while (na > od && cenaDvihnutia(od, na) > volne) na--;
-  if (na <= od) return s === teraz ? ostatne : zdvihy;
-  const novy: Zdvih = { elderId, na: na as Stupen };
+  while (ciel >= 0 && kroky[ciel]!.cena > volne) ciel--;
+  if (ciel < 0) return s === teraz ? ostatne : zdvihy;
+  const novy: Zdvih = { elderId, na: kroky[ciel]!.na };
   // Poradie zdvihov drží poradie klikov — nový starší ide na koniec.
   return zdvihy.some((z) => z.elderId === elderId) ? zdvihy.map((z) => (z.elderId === elderId ? novy : z)) : [...zdvihy, novy];
 }
@@ -136,9 +138,9 @@ export function suhrnRozdelenia(view: Parameters<typeof planRozdelenia>[0], ja: 
 }
 
 /** Zdvih staršieho v rozdelení: zo stupňa na stupeň (náhľad na karte a v Pulte). */
-export function zdvihStarsieho(e: Pick<ElderState, "elderId" | "strach" | "reci">, ja: PlayerId, marker: DruhMarkera, zdvihy: readonly Zdvih[]): { readonly z: Stupen; readonly na: Stupen; readonly cena: number } | null {
+export function zdvihStarsieho(e: Pick<ElderState, "elderId" | "strach" | "reci" | "reciOd">, ja: PlayerId, marker: DruhMarkera, zdvihy: readonly Zdvih[]): { readonly z: Stupen; readonly na: Stupen; readonly cena: number } | null {
   const zd = zdvihy.find((x) => x.elderId === e.elderId);
   if (zd === undefined) return null;
   const z = stupenOdkial(e, ja, marker);
-  return { z, na: zd.na, cena: cenaDvihnutia(z, zd.na) };
+  return { z, na: zd.na, cena: cenaZdvihu(e, ja, marker, zd.na) ?? 0 };
 }

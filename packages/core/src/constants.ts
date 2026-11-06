@@ -164,11 +164,11 @@ export const KONSTANTY = {
   /**
    * Zajatie a presvedčenie (v11.4, Michal 2026-11-03, PRAVIDLA §10): pri rozdelení Nakladačky
    * stojí zajatie staršieho s červeným strachom toľko bodov, pri rozdelení hádky presvedčenie
-   * staršieho s rečami na červenej toľko bodov. Cena v cigaretách (pokus o zajatie) zanikla.
+   * staršieho s rečami na celom teplomere toľko bodov (v11.12). Cena v cigaretách (pokus o zajatie) zanikla.
    * Väzni na výhru podľa ligy (vazniNaVyhru).
    */
   CENA_ZAJATIA: 5,
-  CENA_PRESVEDCENIA: 5,
+  CENA_PRESVEDCENIA: 3,
   /**
    * Strach a reči (v11, Michal 2026-11-02, docs/napady/strach-reci.html): vstup na stupeň
    * 1 / 2 / 3 (žltá, oranžová, červená) stojí pri dvíhaní toľko bodov Nakladačky či hádky,
@@ -177,6 +177,12 @@ export const KONSTANTY = {
    */
   CENA_STUPNA: [0, 1, 2, 3] as readonly number[],
   SPAKY_ZA_STUPEN: [0, 1, 3, 5] as readonly number[],
+  /**
+   * Reči na súperovom teplomere (v11.12, Michal 2026-11-06): stupeň je špakmi za strach rozdelený
+   * na 1 / 2 / 2, dostane ho ten, kto ho drží. Súper platí za stupeň s rečami o REC_PRIRAZKA viac.
+   */
+  HODNOTA_STUPNA: [0, 1, 2, 2] as readonly number[],
+  REC_PRIRAZKA: 1,
   CERVENYCH_NA_VYHRU: 4,
   /** Porazený bitky dostane toľkoto cigariet (v11 — do v10 cigaretu za každého posunutého staršieho). */
   CIGARETY_PORAZENEMU: 1,
@@ -288,7 +294,7 @@ export const VERZIA_PRAVIDIEL = "v11";
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.11";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.12";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
 export const PRAVIDLA_PLATNE_OD = "2026-11-06";
 export type DlzkaHry = keyof typeof DLZKY_HRY;

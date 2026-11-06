@@ -15,6 +15,7 @@ export const NAZOV_ZDROJA: Readonly<Record<ZmenaMarkera["zdroj"], string>> = {
   presvedcenie: "Presvedčenie",
   kseft: "Predsedova vila",
   nastup: "Kapybara",
+  posun: "Reči sa posunuli",
 };
 
 const spakov = (n: number): string => (n === 1 ? "špak" : n > 1 && n < 5 ? "špaky" : "špakov");

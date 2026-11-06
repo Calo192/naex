@@ -142,7 +142,7 @@ describe("§5 draft bez pokusu o zajatie (v11.4)", () => {
 });
 
 describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
-  it("za 5 bodov: starší na červenom strachu ide do pivnice, markery zmiznú, súper odovzdá špaky za svoj najvyšší marker teraz", () => {
+  it("za 5 bodov: starší na červenom strachu ide do pivnice, markery zmiznú, súper odovzdá špaky za investované reči (v11.12)", () => {
     const s = vRozdeleni("prebytok", 0, 5, { 0: { strach: [3, 1], reci: [0, 3] } });
     const cmd: Command = { type: "prebytok", zdvihy: [], zajatia: [id(0)] };
     expect(legalCommands(data, s, 0)).toContainEqual(cmd);
@@ -151,9 +151,9 @@ describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
     expect(elder(t, 0)).toBeUndefined();
     expect(t.vazni).toHaveLength(1);
     expect(t.vazni[0]).toMatchObject({ elderId: id(0), hrac: 0, poradie: 1 });
-    // Borisove reči na červenej = 5 špakov.
-    expect(t.spaky).toEqual([15, 5]);
-    expect(t.nastenka.at(-1)?.kradez).toEqual([5, -5]);
+    // Borisove reči na červenej = 3 body hádky.
+    expect(t.spaky).toEqual([13, 7]);
+    expect(t.nastenka.at(-1)?.kradez).toEqual([3, -3]);
     expect(t.bitkaStav?.zajatia ?? []).toEqual([]);
   });
 
@@ -243,31 +243,31 @@ describe("§10 zajatie pri rozdelení Nakladačky (v11.4)", () => {
   });
 });
 
-describe("§10 presvedčenie pri rozdelení hádky (v11.4)", () => {
-  it("príklad Michala: súper strach 3, ja 2, hádka 10 → reči na červenú za 3 + presvedčenie 5, 2 body inam", () => {
+describe("§10 presvedčenie pri rozdelení hádky (v11.12)", () => {
+  it("hádka 10: reči na celý teplomer za 6 + presvedčenie 3, 1 bod inam", () => {
     const s = vRozdeleni("reci", 0, 10, { 0: { strach: [2, 3] } });
-    const cmd: Command = { type: "reci", zdvihy: [{ elderId: id(0), na: 3 }, { elderId: id(1), na: 1 }, { elderId: id(2), na: 1 }], presvedcenia: [id(0)] };
+    const cmd: Command = { type: "reci", zdvihy: [{ elderId: id(0), na: 1 }, { elderId: id(1), na: 1 }], presvedcenia: [id(0)] };
     const t = apply(data, s, cmd, 0).state;
     const e = elder(t, 0)!;
     expect(e.presvedcil).toBe(0);
-    // Reči presvedčovateľa zaniknú, strach oboch ostáva, priazeň aj ďalej moja.
-    expect(e.reci[0]).toBe(0);
+    // Reči aj strach oboch ostávajú, priazeň aj ďalej moja.
+    expect(e.reci[0]).toBe(3);
+    expect(e.reciOd?.[0]).toBe(1);
     expect(e.strach).toEqual([2, 3]);
     expect(priazenHraca(e)).toBe(0);
-    expect(t.zmenyMarkerov.some((z) => z.elderId === id(0) && z.marker === "reci" && z.na === 0 && z.zdroj === "presvedcenie")).toBe(true);
     // Karta staršieho ide presvedčovateľovi do ruky a patrí jemu.
     expect(kdeJe(t, karta(0).uid)).toEqual(["ruka0"]);
     expect(majitelPresvedcenej(t, karta(0).uid)).toBe(0);
     expect(t.vazni).toHaveLength(0);
   });
 
-  it("len pri staršom, pri ktorom má súper vyšší strach; reči musia byť na červenej", () => {
-    const s = vRozdeleni("reci", 0, 11, { 0: { strach: [2, 2] }, 1: { strach: [1, 0] }, 2: { strach: [0, 1] } });
-    expect(moznostiAkcie(s, 0, "reci", 11)).toEqual([id(2)]);
-    expect(() => apply(data, s, { type: "reci", zdvihy: [{ elderId: id(0), na: 3 }, { elderId: id(1), na: 3 }], presvedcenia: [id(0)] }, 0)).toThrow(/súpera bojí viac/);
-    // Reči len na oranžovej — presvedčiť nejde.
-    expect(() => apply(data, s, { type: "reci", zdvihy: [{ elderId: id(2), na: 2 }], presvedcenia: [id(2)] }, 0)).toThrow(/červenej/);
-    // Zo strachu 0 na červené reči 6 + 5 = 11.
+  it("ktorýkoľvek starší (v11.12); reči musia byť na celom teplomere", () => {
+    const s = vRozdeleni("reci", 0, 9, { 0: { strach: [2, 2] }, 1: { strach: [1, 0] }, 2: { strach: [0, 0] } });
+    expect(moznostiAkcie(s, 0, "reci", 9)).toEqual(expect.arrayContaining([id(0), id(1), id(2)]));
+    expect(moznostiAkcie(s, 0, "reci", 8)).toEqual([]);
+    // Reči len na žltej a oranžovej — presvedčiť nejde.
+    expect(() => apply(data, s, { type: "reci", zdvihy: [{ elderId: id(2), na: 2 }], presvedcenia: [id(2)] }, 0)).toThrow(/celom teplomere/);
+    // Z prázdneho teplomera 6 + 3 = 9.
     const t = apply(data, s, { type: "reci", zdvihy: [{ elderId: id(2), na: 3 }], presvedcenia: [id(2)] }, 0).state;
     expect(elder(t, 2)!.presvedcil).toBe(0);
   });
@@ -368,8 +368,8 @@ describe("viewFor (nemenné pravidlo 2) — presvedčený a väzni", () => {
   });
 
   it("zajatia a presvedčenia v bitke sú verejné obom", () => {
-    const s = vRozdeleni("reci", 0, 8, { 0: { strach: [2, 3] } });
-    const t = apply(data, s, { type: "reci", zdvihy: [{ elderId: id(0), na: 3 }], presvedcenia: [id(0)] }, 0).state;
+    const s = vRozdeleni("reci", 0, 9, { 0: { strach: [2, 3] } });
+    const t = apply(data, s, { type: "reci", zdvihy: [{ elderId: id(0), na: 1 }], presvedcenia: [id(0)] }, 0).state;
     expect(viewFor(data, t, 1).starsi.find((e) => e.elderId === id(0))?.presvedcil).toBe(0);
   });
 });
@@ -392,8 +392,8 @@ describe("achievementy a Melichar pri zajatí a presvedčení", () => {
     }
     const z = vRozdeleni("prebytok", 0, 5, { 0: { strach: [3, 0] } });
     expect(momenty(data, z, apply(data, z, { type: "prebytok", zdvihy: [], zajatia: [id(0)] }, 0).state, []).some((m) => m.typ === "zajatie" && m.hrac === 0)).toBe(true);
-    const p = vRozdeleni("reci", 1, 8, { 0: { strach: [3, 2] } });
-    expect(momenty(data, p, apply(data, p, { type: "reci", zdvihy: [{ elderId: id(0), na: 3 }], presvedcenia: [id(0)] }, 1).state, []).some((m) => m.typ === "presvedcenie" && m.hrac === 1)).toBe(true);
+    const p = vRozdeleni("reci", 1, 9, { 0: { strach: [3, 2] } });
+    expect(momenty(data, p, apply(data, p, { type: "reci", zdvihy: [{ elderId: id(0), na: 1 }], presvedcenia: [id(0)] }, 1).state, []).some((m) => m.typ === "presvedcenie" && m.hrac === 1)).toBe(true);
   });
 });
 
@@ -411,8 +411,8 @@ describe("metriky zajatia (achievementy)", () => {
 });
 
 describe("konštanty v11.4", () => {
-  it("zajatie aj presvedčenie stoja 5 bodov", () => {
+  it("zajatie stojí 5 bodov, presvedčenie 3 (v11.12)", () => {
     expect(KONSTANTY.CENA_ZAJATIA).toBe(5);
-    expect(KONSTANTY.CENA_PRESVEDCENIA).toBe(5);
+    expect(KONSTANTY.CENA_PRESVEDCENIA).toBe(3);
   });
 });

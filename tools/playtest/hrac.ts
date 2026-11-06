@@ -34,12 +34,15 @@ import {
   markerRozdelenia,
   cenaDalsiehoStupna,
   cenaDvihnutia,
-  stupenOdkial,
+  cenaZdvihu,
+  dalsiStupenReci,
+  krokyZdvihu,
+  opisReci,
+  sMarkerom,
+  sReciNizsie,
   pohladPoRozdeleni,
   pultStarsich,
   vilaNaStarsieho,
-  najvyssiMarker,
-  reciNizsie,
   NAZVY_ZON,
   CERVENA,
   VILA_CENA,
@@ -253,7 +256,7 @@ const ZNAK = { aktivna: "✓", zrusena: "✗", neaktivna: "·" } as const;
 const stupenText = (st: number): string => `${NAZVY_ZON[st] ?? "?"} (${st})`;
 const reciText = (st: number): string => (st === 0 ? "žiadne" : stupenText(st));
 /** Špaky, ktoré starší dá hráčovi p po bitke pri jeho výhre a prehre. */
-const spakovStarsieho = (e: Pick<StarsiVerejne, "strach" | "reci">, p: PlayerId): { vyhra: number; prehra: number } => ({ vyhra: spakyOdStarsieho(e, p, true), prehra: spakyOdStarsieho(e, p, false) });
+const spakovStarsieho = (e: Pick<StarsiVerejne, "strach" | "reci" | "reciOd">, p: PlayerId): { vyhra: number; prehra: number } => ({ vyhra: spakyOdStarsieho(e, p, true), prehra: spakyOdStarsieho(e, p, false) });
 
 /** Ceny stupňov a špaky za ne z konštánt jadra (v11) — text pre AI nesmie mať čísla natvrdo. */
 /** Pády názvov stupňov — „do žltej“, „na žltú“. */
@@ -615,7 +618,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
     `  STRACH (0 sivá, 1 žltá, 2 oranžová, 3 červená) — ako veľmi sa starší bojí hráča; neklesá. REČI — žiadne, alebo stupeň NAD vlastným strachom; keď strach dorastie na stupeň rečí, reči zaniknú; pri červenom strachu reči nie sú. ` +
       `PRIAZEŇ pre teba = súperov strach − tvoj strach (najmenej 0; reči sa nerátajú) — vyšší strach ti teda dáva body, ale súperovi priazeň. Stav staršieho podľa vyššieho strachu: ${STAV_STARSIEHO.map((x, i) => `${i} ${x}`).join(", ")}. ` +
       `PO KAŽDEJ BITKE starší bodujú: víťaz dostane špaky za svoj NAJVYŠŠÍ marker (reči, ak ich má, inak strach), porazený a pri sekere obaja LEN ZA REČI (${SPAKY_STUPNOV}); reči, ktoré bodovali, potom klesnú o stupeň. ` +
-      `DVÍHANIE: víťaz bitky rozdelí Nakladačku na svoj strach, víťaz hádky hádku na svoje reči, Predsedova vila zdvihne tvoje reči o stupeň za ${cigariet(VILA_CENA)}, Kapybara zníži súperove reči o stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}). ` +
+      `DVÍHANIE: víťaz bitky rozdelí Nakladačku na svoj strach, víťaz hádky hádku na svoje reči na SÚPEROVOM teplomere, Predsedova vila pridá tvoje reči o stupeň za ${cigariet(VILA_CENA)}, Kapybara zhodí súperovým rečiam spodný stupeň. Stupeň stojí ${CENY_STUPNOV} (napr. strach zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}), strach na stupeň so súperovými rečami o ${KONSTANTY.REC_PRIRAZKA} viac. ` +
       `ZAJATIE (v11.4): pri rozdelení Nakladačky zajmeš za ${KONSTANTY.CENA_ZAJATIA} staršieho s tvojím červeným strachom (väzeň, súper ti odovzdá špaky za svoj najvyšší marker pri ňom). PRESVEDČENIE (v11.4): pri rozdelení hádky za ${KONSTANTY.CENA_PRESVEDCENIA} staršieho, ktorý sa súpera bojí viac než teba, keď sú tvoje reči pri ňom na červenej — reči zaniknú, priazeň ostane, jeho karta ide tebe do ruky a natrvalo do tvojho balíčka. Vo finále ani jedno.`,
   );
   out.push(
@@ -698,14 +701,14 @@ function popisStarsieho(e: StarsiVerejne, r: ReturnType<typeof pultStarsich>["ri
       : `priazeň ${kto(r.priazenHrac)} +${r.priazenSila} (${ucinok(r.priazenSila)})`;
   const dalsi = (marker: DruhMarkera): string => {
     const c = cenaDalsiehoStupna(e, ja, marker);
-    return c === null ? "nedá sa" : `na ${NA_STUPEN[stupenOdkial(e, ja, marker) + 1]} za ${c}`;
+    return c === null ? "nedá sa" : `na ${NA_STUPEN[krokyZdvihu(e, ja, marker)[0]?.na ?? 0]} za ${c}`;
   };
   const ohrozenie = r.presvedcil === null ? "" : ` | PRESVEDČIL ${r.presvedcil === ja ? "SI HO TY" : "HO SÚPER"} — jeho karta je v balíčku ${r.presvedcil === ja ? "tvojom" : "súpera"}, ďalej ho nikto nepresvedčí, zajať ho smú obaja`;
   return (
     `  ${e.elderId}: ${meno(e.karta.defId)} (scorecard ${sc.nazov}), ${STAV_STARSIEHO[r.stav]}${ohrozenie}\n` +
-    `      TY strach ${stupenText(e.strach[ja])}, reči ${reciText(e.reci[ja])} | SÚPER strach ${stupenText(e.strach[su])}, reči ${reciText(e.reci[su])} | ${priazen}\n` +
+    `      TY strach ${stupenText(e.strach[ja])}, tvoje reči na súperovom teplomere ${opisReci(e, ja)} | SÚPER strach ${stupenText(e.strach[su])}, jeho reči na tvojom teplomere ${opisReci(e, su)} | ${priazen}\n` +
     `      po bitke: keď vyhráš ty — ty +${r.vyhra[ja]}, súper +${r.prehra[su]}; keď vyhrá súper — súper +${r.vyhra[su]}, ty +${r.prehra[ja]}` +
-    ` | tvoj ďalší stupeň: strach ${dalsi("strach")}, reči ${dalsi("reci")}${e.reci[su] > 0 ? ` | Kapybara by súperove reči znížila na ${reciText(reciNizsie(e, su))}` : ""}`
+    ` | tvoj ďalší stupeň: strach ${dalsi("strach")}, reči ${dalsi("reci")}${e.reci[su] > 0 ? ` | Kapybara by súperove reči znížila na ${opisReci(sReciNizsie(e, su), su)}` : ""}`
   );
 }
 
@@ -716,8 +719,8 @@ function popisRozdelenia(v: ClientState, marker: DruhMarkera, zdvihy: readonly Z
   const casti = zdvihy.map((z) => {
     const e = v.starsi.find((x) => x.elderId === z.elderId);
     if (e === undefined) return z.elderId;
-    const od = stupenOdkial(e, ja, marker);
-    return `${meno(e.karta.defId)} ${marker === "strach" ? "strach" : "reči"} ${marker === "strach" ? stupenText(od) : reciText(e.reci[ja])} → ${stupenText(z.na)} za ${cenaDvihnutia(od, z.na)}`;
+    const po = sMarkerom(e, ja, marker, z.na);
+    return `${meno(e.karta.defId)} ${marker === "strach" ? `strach ${stupenText(e.strach[ja])} → ${stupenText(z.na)}` : `reči ${opisReci(e, ja)} → ${opisReci(po, ja)}`} za ${cenaZdvihu(e, ja, marker, z.na) ?? 0}`;
   });
   const po = pohladPoRozdeleni(v, ja, marker, zdvihy);
   const pultPred = pultStarsich(v);
@@ -794,10 +797,10 @@ function moznosti(v: ClientState): string[] {
     for (const e of v.starsi) {
       if (e.reci[su] === 0) continue;
       const pred = spakovStarsieho(e, su);
-      const po = spakovStarsieho({ ...e, reci: su === 0 ? [reciNizsie(e, su), e.reci[1]] : [e.reci[0], reciNizsie(e, su)] }, su);
+      const po = spakovStarsieho(sReciNizsie(e, su), su);
       c(
         { type: "kapybara", elderId: e.elderId },
-        `KAPYBARA: súperove reči pri ${meno(e.karta.defId)} ${reciText(e.reci[su])} → ${reciText(reciNizsie(e, su))} (súperove špaky od neho po bitke: pri jeho výhre ${pred.vyhra} → ${po.vyhra}, pri jeho prehre ${pred.prehra} → ${po.prehra})`,
+        `KAPYBARA: súperove reči pri ${meno(e.karta.defId)} ${opisReci(e, su)} → ${opisReci(sReciNizsie(e, su), su)} (súperove špaky od neho po bitke: pri jeho výhre ${pred.vyhra} → ${po.vyhra}, pri jeho prehre ${pred.prehra} → ${po.prehra})`,
       );
     }
     return out;
@@ -989,12 +992,14 @@ function moznosti(v: ClientState): string[] {
           if (lok.defId === "predsedova_vila" && h.cigarety >= VILA_CENA) {
             for (const e of v.starsi) {
               if (!vilaNaStarsieho(e, ja)) continue;
-              const na = (najvyssiMarker(e, ja) + 1) as Stupen;
+              const na = dalsiStupenReci(e, ja);
+              if (na === null) continue;
               const pred = spakovStarsieho(e, ja);
-              const po = spakovStarsieho({ ...e, reci: ja === 0 ? [na, e.reci[1]] : [e.reci[0], na] }, ja);
+              const eP = sMarkerom(e, ja, "reci", na);
+              const po = spakovStarsieho(eP, ja);
               c(
                 { type: "kseft", uid: lok.uid, elderId: e.elderId },
-                `KŠEFT Predsedova vila: za ${cigariet(VILA_CENA)} tvoje reči pri ${meno(e.karta.defId)} ${reciText(e.reci[ja])} → ${stupenText(na)} (tvoj strach ${stupenText(e.strach[ja])}; tvoje špaky od neho po bitke: pri výhre ${pred.vyhra} → ${po.vyhra}, pri prehre ${pred.prehra} → ${po.prehra}; raz za Pitku)`,
+                `KŠEFT Predsedova vila: za ${cigariet(VILA_CENA)} tvoje reči pri ${meno(e.karta.defId)} ${opisReci(e, ja)} → ${opisReci(eP, ja)} (súperov strach ${stupenText(e.strach[su])}; tvoje špaky od neho po bitke: pri výhre ${pred.vyhra} → ${po.vyhra}, pri prehre ${pred.prehra} → ${po.prehra}; raz za Pitku)`,
               );
             }
           }
@@ -1033,12 +1038,12 @@ function moznosti(v: ClientState): string[] {
         const coje = marker === "strach" ? "STRACH" : "REČI";
         const odkial =
           marker === "reci"
-            ? "Reči idú vždy NAD tvoj strach (dvíhajú sa od vyššieho z tvojich dvoch markerov); pri červenom strachu reči nejdú. Reči ti po bitke bodujú aj pri prehre (potom klesnú o stupeň)."
+            ? "Reči ležia na SÚPEROVOM teplomere: obsadzuješ od vrchu jeho strachu nadol, potom nad neho (zo sivej zdola nahor); `na` = stupeň, po ktorý v tomto poradí obsadzuješ. Každý stupeň má hodnotu 1 / 2 / 2 a špaky za neho dostaneš ty, nie súper; bodujú pri každej bitke, vyhratej aj prehratej, klesajú zospodu len po prehratej hádke. Obsadená červená sa súperovi ráta do výhry strachom a dá sa zajať; súper za obsadený stupeň platí o 1 viac."
             : "Strach neklesá. Vyšší strach ti po bitkách dáva špaky a červený strach vedie k výhre strachom a k zajatiu, ale súperovi dáva priazeň (súperov strach − tvoj).";
         const akciaText =
           krok === "prebytok"
-            ? `ZAJATIE (v11.4): staršieho, pri ktorom máš (aj po zdvihu v tomto rozdelení) strach na červenej, zajmeš za ${KONSTANTY.CENA_ZAJATIA} — pridaj "zajatia":["<id>",…]. Je tvoj väzeň, súper ti odovzdá špaky za svoj najvyšší marker pri ňom teraz; väzni na výhru podľa ligy vyhrávajú hneď. Dobrovoľné, aj viac naraz; do „rozdeľ, čo sa dá“ sa nerátajú. `
-            : `PRESVEDČENIE (v11.4): staršieho, ktorý sa súpera bojí viac než teba, presvedčíš za ${KONSTANTY.CENA_PRESVEDCENIA}, keď sú tvoje reči pri ňom (aj po zdvihu v tomto rozdelení) na červenej — pridaj "presvedcenia":["<id>",…]. Tvoje reči pri ňom zaniknú, strach a priazeň ostanú, jeho karta ide tebe do ruky a natrvalo patrí do tvojho balíčka (hráš ju ako Starešinu, len akcie). Kto prvý presvedčí, toho je; zajať ho smú obaja. Dobrovoľné, aj viac naraz. `;
+            ? `ZAJATIE (v11.4): staršieho, pri ktorom máš (aj po zdvihu v tomto rozdelení) strach na červenej, zajmeš za ${KONSTANTY.CENA_ZAJATIA} — pridaj "zajatia":["<id>",…]. Je tvoj väzeň, súper ti odovzdá toľko špakov, koľko bodov hádky má v rečiach pri ňom; väzni na výhru podľa ligy vyhrávajú hneď. Dobrovoľné, aj viac naraz; do „rozdeľ, čo sa dá“ sa nerátajú. `
+            : `PRESVEDČENIE (v11.12): ktoréhokoľvek staršieho presvedčíš za ${KONSTANTY.CENA_PRESVEDCENIA}, keď máš (aj po zdvihu v tomto rozdelení) reči na celom teplomere — pridaj "presvedcenia":["<id>",…]. Reči, strach aj priazeň ostanú, jeho karta ide tebe do ruky a natrvalo patrí do tvojho balíčka (hráš ju ako Starešinu, len akcie). Kto prvý presvedčí, toho je; zajať ho smú obaja. Dobrovoľné, aj viac naraz. `;
         out.push(
           `(ROZDEĽUJEŠ ${body} ${body === 1 ? "bod" : body <= 4 ? "body" : "bodov"} ${krok === "prebytok" ? `NAKLADAČKY (vyhral si bitku ${b?.damage?.tuhe[ja] ?? "?"} : ${b?.damage?.tuhe[su] ?? "?"} v tuhom)` : `HÁDKY (vyhral si hádku ${b?.hadka?.makke[ja] ?? "?"} : ${b?.hadka?.makke[su] ?? "?"} v mäkkom)`} na SVOJ ${coje} — ľubovoľne medzi starších. ` +
             `Stupeň stojí ${CENY_STUPNOV}; skok o viac stupňov = súčet (zo sivej na červenú ${cenaDvihnutia(0, CERVENA)}). ${odkial} ` +
@@ -1049,14 +1054,12 @@ function moznosti(v: ClientState): string[] {
         );
         out.push(`CENNÍK TVOJHO ${coje === "STRACH" ? "STRACHU" : "REČÍ"} (z ${body}):`);
         for (const e of v.starsi) {
-          const od = stupenOdkial(e, ja, marker);
-          const stav = `${marker === "strach" ? `strach ${stupenText(e.strach[ja])}` : `reči ${reciText(e.reci[ja])} nad strachom ${stupenText(e.strach[ja])}`}`;
+          const stav = `${marker === "strach" ? `strach ${stupenText(e.strach[ja])}${opisReci(e, su) === "nič" ? "" : `, súperove reči ${opisReci(e, su)}`}` : `tvoje reči ${opisReci(e, ja)}, súperov strach ${stupenText(e.strach[su])}`}`;
           const ceny =
             cenaDalsiehoStupna(e, ja, marker) === null
               ? "už na červenej — nedá sa"
-              : [1, 2, 3]
-                  .filter((na) => na > od)
-                  .map((na) => `na ${NA_STUPEN[na]} (${na}) za ${cenaDvihnutia(od, na)}${cenaDvihnutia(od, na) > body ? " (nestačí)" : ""}`)
+              : krokyZdvihu(e, ja, marker)
+                  .map((k) => `na ${NA_STUPEN[k.na]} (${k.na}) za ${k.cena}${k.cena > body ? " (nestačí)" : ""}`)
                   .join(", ");
           const akcia = cenaAkcieUplna(e, ja, marker);
           const akciaPopis = akcia === null ? "" : ` | ${krok === "prebytok" ? "ZAJATIE" : "PRESVEDČENIE"} za ${akcia}${akcia > body ? " (nestačí)" : ""}${krok === "prebytok" ? ` (súper odovzdá ${spakov(nahladZajatia(v, e.elderId).kradez)})` : ""}`;

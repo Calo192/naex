@@ -69,6 +69,8 @@ function partia(seed: number, lokalit = 5): Partia {
     for (const e of events) {
       if (e.type === "bitkaVysledok") bitky.push(e);
       if (e.type === "odpovedNaNaex") odpovede++;
+      // Odpoveď sa otočí pred bitkou v tom istom ťahu — lícom hore ju obaja videli, hoci v línii po ťahu už neleží.
+      if (e.type === "odpovedNaNaex" && !("pre" in e) && e.uid !== null) verejne.add(e.uid);
       if (e.type === "zmenaMarkera") posuny++;
     }
     s = po;
