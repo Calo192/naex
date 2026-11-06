@@ -29,6 +29,7 @@ import { OtocTelefon } from "./OtocTelefon.tsx";
 import { VyzvaCelejObrazovky, useVyzvaTelefonu } from "./CelaObrazovka.tsx";
 import { UpozornenieTelefonu, upozornenieSkryte } from "./UpozornenieTelefonu.tsx";
 import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
+import { platnaVolbaBota, type BotNaVyber } from "./boti.ts";
 import "./hra.css";
 
 interface OtvorenaHra {
@@ -56,6 +57,45 @@ export function popisDlzky(d: DlzkaHry): string {
   return `${NAZOV_DLZKY[d]} · ${lokalit(DLZKY_HRY[d])}`;
 }
 
+/** Výber súpera proti počítaču (Michal 2026-11-06): Náhodný a povahy, ktoré ponúka server. */
+function VyberBota({
+  boti,
+  volba,
+  vyber,
+  vypnute,
+}: {
+  readonly boti: readonly BotNaVyber[];
+  readonly volba: string | null;
+  readonly vyber: (id: string | null) => void;
+  readonly vypnute: boolean;
+}) {
+  const moznosti: readonly (BotNaVyber & { readonly volba: string | null })[] = [
+    { id: "nahodny", volba: null, meno: "Náhodný", popis: "Koho dostaneš, uvidíš až pri stole.", avatar: null },
+    ...boti.map((b) => ({ ...b, volba: b.id })),
+  ];
+  return (
+    <div className="vyber-bota" role="radiogroup" aria-label="Súper proti počítaču">
+      {moznosti.map((m) => (
+        <button
+          key={m.id}
+          type="button"
+          role="radio"
+          aria-checked={volba === m.volba}
+          className={`bot-volba ${volba === m.volba ? "aktivna" : ""}`}
+          disabled={vypnute}
+          onClick={() => vyber(m.volba)}
+        >
+          <Avatar meno={m.volba === null ? "?" : m.meno} avatar={m.avatar} velkost={40} />
+          <span className="bot-volba-text">
+            <strong>{m.meno}</strong>
+            {m.popis !== null && <span>{m.popis}</span>}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Lobby({
   zaloz,
   pripoj,
@@ -64,7 +104,7 @@ function Lobby({
   zacniVyucbu,
   vyucbaNaPocitaci,
 }: {
-  readonly zaloz: (verejna: boolean, dlzka: DlzkaHry, bot?: boolean) => void;
+  readonly zaloz: (verejna: boolean, dlzka: DlzkaHry, bot?: boolean, povaha?: string) => void;
   readonly pripoj: (kod: string) => void;
   readonly chyba: string | null;
   readonly vyucba: VyucbaUctu | null;
@@ -91,6 +131,10 @@ function Lobby({
   // Ligy, ktoré hráč smie (Michal 2026-10-28); null = ešte nedošli.
   const [ligy, setLigy] = useState<readonly StavLigy[] | null>(null);
   const [ligyAjProtiPocitacu, setLigyAjProtiPocitacu] = useState(false);
+  // Súper proti počítaču: zoznam od servera, voľba hráča (null = Náhodný).
+  const [boti, setBoti] = useState<readonly BotNaVyber[]>([]);
+  const [volbaBota, setVolbaBota] = useState<string | null>(null);
+  const zvolenyBot = platnaVolbaBota(boti, volbaBota);
   // Kým hráč ligu sám nezvolí, predvolí sa taká, ktorú smie aj proti ľuďom — inak by mal
   // nováčik (zamknutá Druhá liga, voľná na počítač) založenie hry s ľuďmi hneď vypnuté.
   const ligaOdHraca = useRef(false);
@@ -107,13 +151,14 @@ function Lobby({
     let zive = true;
     const nacitaj = () =>
       api
-        .get<{ hry: OtvorenaHra[]; dlzky: DlzkaHry[]; ligy?: StavLigy[]; ligyAjProtiPocitacu?: boolean; uzavierka: string | null }>("/hry/otvorene")
+        .get<{ hry: OtvorenaHra[]; dlzky: DlzkaHry[]; ligy?: StavLigy[]; ligyAjProtiPocitacu?: boolean; boti?: BotNaVyber[]; uzavierka: string | null }>("/hry/otvorene")
         .then((r) => {
           if (!zive) return;
           setHry(r.hry);
           setDostupne(r.dlzky);
           setLigy(r.ligy ?? null);
           setLigyAjProtiPocitacu(r.ligyAjProtiPocitacu ?? false);
+          setBoti(r.boti ?? []);
           // Zamknutá voľba (nový hráč a predvolená Druhá liga) sa prepne na najvyššiu, ktorú smie.
           setDlzka((d) => zvolenaLiga(r.ligy ?? null, ligaOdHraca.current ? (r.ligyAjProtiPocitacu ?? false) : true, r.dlzky, d));
           setUzavierka(r.uzavierka);
@@ -190,12 +235,12 @@ function Lobby({
           )}
           <h2 style={{ marginTop: 28 }}>Proti počítaču</h2>
           <p className="tlmene">
-            Pri stole ťa čaká jeden z troch počítačových súperov — vyvážený Štamgast, rabiátor Rapavý Fero alebo vypočítavá Teta Gizka.
-            Koho dostaneš, je náhoda. Hrajú podľa pravidiel, vidia len to, čo by videl hráč pri stole, a nevzdávajú sa. Partia začne
-            hneď a do Frajeriny sa neráta.
+            Vyber si, s kým si sadneš, alebo nechaj náhodu. Počítačoví súperi hrajú podľa pravidiel, vidia len to, čo by videl hráč pri stole, a nevzdávajú sa.
+            Partia začne hneď a do Frajeriny sa neráta.
           </p>
+          <VyberBota boti={boti} volba={zvolenyBot} vyber={setVolbaBota} vypnute={!maPravo(ja, "hrat_bot") || zavrete} />
           <div className="riadok-tlacidiel">
-            <button onClick={() => zaloz(false, dlzka, true)} disabled={!maPravo(ja, "hrat_bot") || zavrete} title={preco} data-hrat-bot="">
+            <button onClick={() => zaloz(false, dlzka, true, zvolenyBot ?? undefined)} disabled={!maPravo(ja, "hrat_bot") || zavrete} title={preco} data-hrat-bot="">
               Hrať proti počítaču
             </button>
           </div>
@@ -393,7 +438,7 @@ export function Hra() {
   const { vyucba: vyucbaUctu, obnov: obnovVyucbu } = useVyucbaUctu(ja !== null);
   const [ponukaZavreta, setPonukaZavreta] = useState(false);
   // Hra, ktorú nováčik zakladal, kým sa ho ponuka „Najprv výučba?“ pýta (#104); preskočenie ju založí.
-  const [zalozPoPonuke, setZalozPoPonuke] = useState<{ readonly verejna: boolean; readonly dlzka: DlzkaHry; readonly bot: boolean } | null>(null);
+  const [zalozPoPonuke, setZalozPoPonuke] = useState<{ readonly verejna: boolean; readonly dlzka: DlzkaHry; readonly bot: boolean; readonly povaha: string | undefined } | null>(null);
   const { zalozVyucbu, odid } = hra;
   const zacniVyucbu = useCallback(
     (odznova: boolean) => {
@@ -415,15 +460,15 @@ export function Hra() {
   }, [obnovVyucbu]);
   const { zaloz } = hra;
   const zalozSPonukou = useCallback(
-    (verejna: boolean, dlzka: DlzkaHry, bot = false) => {
-      if (vyucbaUctu?.ponuknut === true && !ponukaZavreta && !vyucbaNaPocitaci) setZalozPoPonuke({ verejna, dlzka, bot });
-      else zaloz(verejna, dlzka, bot);
+    (verejna: boolean, dlzka: DlzkaHry, bot = false, povaha?: string) => {
+      if (vyucbaUctu?.ponuknut === true && !ponukaZavreta && !vyucbaNaPocitaci) setZalozPoPonuke({ verejna, dlzka, bot, povaha });
+      else zaloz(verejna, dlzka, bot, povaha);
     },
     [vyucbaUctu, ponukaZavreta, zaloz, vyucbaNaPocitaci],
   );
   const preskocPonuku = useCallback(() => {
     preskocVyucbu();
-    if (zalozPoPonuke !== null) zaloz(zalozPoPonuke.verejna, zalozPoPonuke.dlzka, zalozPoPonuke.bot);
+    if (zalozPoPonuke !== null) zaloz(zalozPoPonuke.verejna, zalozPoPonuke.dlzka, zalozPoPonuke.bot, zalozPoPonuke.povaha);
     setZalozPoPonuke(null);
   }, [preskocVyucbu, zalozPoPonuke, zaloz]);
   const prerusVyucbu = useCallback(() => {

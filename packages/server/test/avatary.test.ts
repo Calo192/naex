@@ -61,6 +61,22 @@ describe("predvolené avatary", () => {
     expect(ucty.podlaId(s.id)?.avatar).toBe("vlastna-fotka");
   });
 
+  it("súper na výber: povaha bez opisu a podobizne nespadne, ostáva v ponuke", () => {
+    const { avatary } = priprav(0);
+    expect(
+      avatary.botiNaVyber([
+        { id: "stamgast", meno: "Štamgast", popis: "Vyvážený." },
+        { id: "bez_opisu", meno: "Bez opisu", popis: "  " },
+        { id: "nova", meno: "Nová" },
+      ]),
+    ).toEqual([
+      { id: "stamgast", meno: "Štamgast", popis: "Vyvážený.", avatar: avatary.bota("stamgast") },
+      { id: "bez_opisu", meno: "Bez opisu", popis: null, avatar: null },
+      { id: "nova", meno: "Nová", popis: null, avatar: null },
+    ]);
+    expect(avatary.bota("stamgast")).toEqual(expect.any(String));
+  });
+
   it("bez obrázkov ostáva avatar prázdny (iniciály)", () => {
     const { ucty, avatary } = priprav(0);
     ucty.pouziPredvoleneAvatary(() => avatary.nahodny());
