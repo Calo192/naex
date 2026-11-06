@@ -74,7 +74,7 @@ Pri playteste s parametrom **max** potom spolupracuješ s navrhárom (časť
 S="node --experimental-strip-types --no-warnings tools/bot/strategickost.ts"
 $S --json playtest/strategia/<id>/vychodisko.json          # všetko, ≈ 8 min
 $S --len rebrik --partii 16 --json …/rebrik.json            # časti sa dajú pustiť paralelne
-node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 bot:teta_gizka stredna rapavy_fero   # povahy proti sebe
+node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 bot:rudo stredna darina   # povahy proti sebe
 ```
 
 Dlhé behy púšťaj na pozadí (`run_in_background`) a medzitým čítaj podklady.

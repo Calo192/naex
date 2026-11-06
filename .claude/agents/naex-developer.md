@@ -59,7 +59,7 @@ robí agent `naex-admin`, nie ty).
    - **Zmena pravidla alebo bota:** turnaj pred a po s rovnakými parametrami
      ```bash
      T="node --experimental-strip-types --no-warnings tools/bot/turnaj.ts"
-     $T 20 chamtivy stredna stamgast > playtest/dokazy/<id>/turnaj-po.txt   # v worktree „pred“ to isté do turnaj-pred.txt
+     $T 20 chamtivy stredna igor > playtest/dokazy/<id>/turnaj-po.txt   # v worktree „pred“ to isté do turnaj-pred.txt
      ```
      Pozri riadok „Ťahy bota podľa typu“: nová voľba (napr. nový ťah) musí mať
      nenulový počet, inak ju bot nepoužíva — nauč ho, kým commitneš. Do výsledku

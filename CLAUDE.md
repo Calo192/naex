@@ -57,7 +57,7 @@ node --experimental-strip-types --no-warnings tools/admin/admin.ts <príkaz>   #
 node --experimental-strip-types --no-warnings tools/playtest/turnus.ts 2 stredna   # 2 partie AI playtesterov naraz (skill naex-playtest)
 node --experimental-strip-types --no-warnings tools/playtest/styly.ts 2 stredna [--zrejuca]   # playtest herných štýlov, verziu vyberá Michal (skill naex-styly):
                      # ekonóm, agresor, klebetník, sabotér (styly.json); report docs/playtesty/styly-<id>.html
-node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna stamgast   # sila povahy bota
+node --experimental-strip-types --no-warnings tools/bot/turnaj.ts 20 chamtivy stredna igor   # sila povahy bota
 node --experimental-strip-types --no-warnings tools/bot/strategickost.ts   # náhoda vs. zručnosť (rebrík, duplikát), ≈ 8 min
 node --experimental-strip-types --no-warnings tools/upratovanie/odtlacok.ts   # odtlačok hry: partie botov s pevnými semienkami;
                      # refaktor (agent naex-upratovac, piatok 04:00 SEČ, PR do master) ho nesmie zmeniť
@@ -124,6 +124,7 @@ naex-admin (`admin.ts novinka-pridaj`) — novinka sa píše až po nasadení na
   vstavané `node:sqlite` (rozhodnutie Michala 2026-10-10), heslá `node:crypto`.
 
 ## Čo nerobiť
+- **Hráčom sa nikdy neodoberajú achievementy** (Michal 2026-11-06). Keď sa achievement stane nedosiahnuteľným a odstráni sa z hry, hráčom, ktorí ho už majú, ostáva ako **„LEGACY ACHIEVEMENT“** — odmena za vernosť a za dosiahnutie, keď ešte existoval. Nikomu inému sa už neponúka.
 
 - **Žiadne umelé stropy a limity zdrojov** („najviac X cigariet“, „najviac N za Pitku“,
   „nad X prepadne“). Prebytok, ktorý sa hromadí, musí hra riešiť tým, že dá hráčovi
@@ -140,8 +141,8 @@ packages/core/       jadro pravidiel — čistý TS, bez I/O
   data/cards.json      sada kariet (master = Zrejúca, vypalena = zverejnená; pravidlo 5, neupravuj ručne)
   data/elders.json     8 starších; priazeň nesie scorecard (scorecards.json)
   src/bot.ts           offline protihráč (NPC: heuristiky + výpočet dopredu, žiadne
-                       LLM); tri povahy (POVAHY) — Štamgast, Rapavý Fero, Teta
-                       Gizka; server losuje. Skryté info pred výpočtom zamieša
+                       LLM); štyri povahy (POVAHY) — Igor, Rudo, Božena,
+                       Darina; hráč si vyberie, inak server losuje. Skryté info pred výpočtom zamieša
 packages/tvorba/     model tvorcu kariet — čistý TS (varianty, geometria karty,
                      farby, formát textu, export/import TXT)
 packages/server/     server: hra (ws), REST API (/api), SQLite, médiá (/media)

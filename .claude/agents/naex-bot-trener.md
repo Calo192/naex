@@ -15,7 +15,7 @@ pravidlám neprispôsobí. Tvoja úloha: bot má hrať čo najlepšie podľa
 doménové pojmy neprekladáš.
 
 Zadanie ti povie **cieľ**: „celkovo silnejší“ (predvolené), konkrétnu slabinu
-(„nepoužíva barter“, „zle volí pokus o zajatie“, „Teta Gizka prehráva s chamtivým“),
+(„nepoužíva barter“, „zle volí pokus o zajatie“, „Rudo prehráva s chamtivým“),
 alebo **variant pre stratéga** (worktree `playtest/varianty/<nazov>` a nová
 voľba, ktorú má bot v tom variante používať).
 
@@ -34,17 +34,16 @@ voľba, ktorú má bot v tom variante používať).
 5. **Rýchlosť:** bot ťahá na serveri počas živej partie. Priemerný ťah
    v `turnaj.ts` najviac **50 ms**, najdlhší najviac **1000 ms** (dnes ≈ 10 ms
    a ≈ 140 ms). Pomalší bot necommituješ.
-6. **Povahy ostanú rozlíšiteľné** (`POVAHY`: Štamgast vyvážený, Rapavý Fero
-   bitkár, Teta Gizka opatrná). Zlepšenie nesmie zmazať rozdiel — Fero má stále
-   viac bitiek, Gizka menej rizika.
+6. **Povahy ostanú rozlíšiteľné** (`POVAHY`: Igor útočník, Rudo zberač, Božena Viera a Povery,
+   Darina škodkyňa). Zlepšenie nesmie zmazať rozdiel — Igor má stále najviac tuhého, Božena najviac Povier, Rudo najviac kariet vo finále, Darina najviac Dlhov súpera.
 
 ## Nástroje
 
 ```bash
 T="node --experimental-strip-types --no-warnings tools/bot/turnaj.ts"
-$T 40 chamtivy stredna stamgast                     # proti latke „vie vykladať“
-$T 40 bot:teta_gizka stredna rapavy_fero            # povahy proti sebe
-$T 100 stary:playtest/varianty/bot-pred stredna stamgast   # NOVÝ bot (tento strom) proti STARÉMU (worktree)
+$T 40 chamtivy stredna igor                     # proti latke „vie vykladať“
+$T 40 bot:rudo stredna darina            # povahy proti sebe
+$T 100 stary:playtest/varianty/bot-pred stredna igor   # NOVÝ bot (tento strom) proti STARÉMU (worktree)
 S="node --experimental-strip-types --no-warnings tools/bot/strategickost.ts"
 $S --len rebrik --partii 16 --json playtest/bot/<id>/rebrik.json
 ```
