@@ -13,12 +13,12 @@ import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { api } from "../lib/api.ts";
 import { KartyZalozky } from "../dielna/Dielna.tsx";
 import { MEDZERA_KARIET_TELEFON, sirkaKartyNaTelefone, useTelefonStranky } from "../hra/zariadenie.ts";
-
-/** Autor karty z Dielne; „prerobena“ = tvorca ju po prevzatí zmenil, vtedy „nápad: X“. */
-type AutoriKariet = Readonly<Record<string, { readonly meno: string; readonly prerobena: boolean; readonly navrh: number }>>;
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
+
+/** Autor karty z Dielne; „prerobena“ = tvorca ju po prevzatí zmenil, vtedy „nápad: X“. */
+type AutoriKariet = Readonly<Record<string, { readonly meno: string; readonly prerobena: boolean; readonly navrh: number }>>;
 
 /** Vodorovná medzera kariet na počítači — rovnaká ako column-gap .mriezka-kariet v stranky.css. */
 const MEDZERA_KARIET = 26;
@@ -242,70 +242,68 @@ export function Glosar() {
     <div className="glosar">
       {hlava}
       <div className="mriezka">
-      {/* Filtre sú pás nad kartami (Michal 2026-11-02) — karty majú celú šírku kostry, stĺpcov je podľa šírky a Veľkosti. */}
-      <div className="glosar-ovladanie" role="search" aria-label="Filter kariet">
-        <div className="cipy" role="group" aria-label="Typ karty">
-          {TYPY.map((t) => (
-            <button key={t.nazov} className={typ === t.tag ? "cip aktivny" : "cip"} onClick={() => setTyp(t.tag)}>
-              {t.nazov}
-            </button>
-          ))}
+        {/* Filtre sú pás nad kartami (Michal 2026-11-02) — karty majú celú šírku kostry, stĺpcov je podľa šírky a Veľkosti. */}
+        <div className="glosar-ovladanie" role="search" aria-label="Filter kariet">
+          <div className="cipy" role="group" aria-label="Typ karty">
+            {TYPY.map((t) => (
+              <button key={t.nazov} className={typ === t.tag ? "cip aktivny" : "cip"} onClick={() => setTyp(t.tag)}>
+                {t.nazov}
+              </button>
+            ))}
+          </div>
+          <input type="search" placeholder="Hľadať názov, tag, efekt alebo príbeh…" value={hladat} onChange={(e) => setHladat(e.target.value)} />
+          <label className="glosar-velkost" hidden={telefon}>
+            <span className="tlmene">Veľkosť</span>
+            <input type="range" min={150} max={420} step={10} value={sirka} onChange={(e) => setSirka(Number(e.target.value))} />
+          </label>
         </div>
-        <input type="search" placeholder="Hľadať názov, tag, efekt alebo príbeh…" value={hladat} onChange={(e) => setHladat(e.target.value)} />
-        <label className="glosar-velkost" hidden={telefon}>
-          <span className="tlmene">Veľkosť</span>
-          <input type="range" min={150} max={420} step={10} value={sirka} onChange={(e) => setSirka(Number(e.target.value))} />
-        </label>
-      </div>
-      <div>
+        <div>
+          <div
+            ref={mriezkaRef}
+            className={telefon ? "mriezka-kariet na-telefone" : "mriezka-kariet"}
+            style={{
+              gridTemplateColumns: naTelefone ? `repeat(${naVysku ? 1 : 3}, ${sirkaKarty}px)` : stlpcov > 0 ? `repeat(${stlpcov}, ${sirkaKarty}px)` : `repeat(auto-fill, ${sirka}px)`,
+              columnGap: naTelefone ? MEDZERA_KARIET_TELEFON : undefined,
+            }}
+          >
+            {viditelne.map((k) => {
+              const vs = variantyKarty(k);
+              const i = varianty[k.id] ?? 0;
+              const roz = variant(vs, i);
+              if (roz === null) return null;
+              return (
+                <figure key={k.id} className="mriezka-polozka">
+                  <KartaLico karta={k} lava={roz.lava} prava={roz.prava} vzhlad={vzhlad} sirka={sirkaKarty} onClick={() => setDetail(k)} />
+                  <figcaption>
+                    <SipkyVariantov v={i} pocet={vs.pocet} nastav={(n) => setVarianty((s) => ({ ...s, [k.id]: n }))} />
+                  </figcaption>
+                </figure>
+              );
+            })}
+            {viditelne.length === 0 && <p className="tlmene">Žiadna karta nezodpovedá filtru.</p>}
+          </div>
 
-      <div
-        ref={mriezkaRef}
-        className={telefon ? "mriezka-kariet na-telefone" : "mriezka-kariet"}
-        style={{
-          gridTemplateColumns: naTelefone ? `repeat(${naVysku ? 1 : 3}, ${sirkaKarty}px)` : stlpcov > 0 ? `repeat(${stlpcov}, ${sirkaKarty}px)` : `repeat(auto-fill, ${sirka}px)`,
-          columnGap: naTelefone ? MEDZERA_KARIET_TELEFON : undefined,
-        }}
-      >
-        {viditelne.map((k) => {
-          const vs = variantyKarty(k);
-          const i = varianty[k.id] ?? 0;
-          const roz = variant(vs, i);
-          if (roz === null) return null;
-          return (
-            <figure key={k.id} className="mriezka-polozka">
-              <KartaLico karta={k} lava={roz.lava} prava={roz.prava} vzhlad={vzhlad} sirka={sirkaKarty} onClick={() => setDetail(k)} />
-              <figcaption>
-                <SipkyVariantov v={i} pocet={vs.pocet} nastav={(n) => setVarianty((s) => ({ ...s, [k.id]: n }))} />
-              </figcaption>
-            </figure>
-          );
-        })}
-        {viditelne.length === 0 && <p className="tlmene">Žiadna karta nezodpovedá filtru.</p>}
-      </div>
-
-      <section className="glosar-legenda" id="akcie">
-        <h2>Akcie</h2>
-        <p className="tlmene">
-          Akcia sa aktivuje, keď sa na spoji dvoch susedných kariet stretne s inou akciou na rovnakej výške (pravá strana
-          jednej karty sa dotýka ľavej strany ďalšej).
-        </p>
-        <ul className="legenda">
-          {sada.akcie.map((a) => (
-            <li key={a.kluc}>
-              <span className="legenda-ikona">
-                <IkonaAkcie kluc={a.kluc} akcia={a} />
-              </span>
-              <div>
-                <strong>{a.nazov}</strong>
-                <span>{a.popis}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      </div>
+          <section className="glosar-legenda" id="akcie">
+            <h2>Akcie</h2>
+            <p className="tlmene">
+              Akcia sa aktivuje, keď sa na spoji dvoch susedných kariet stretne s inou akciou na rovnakej výške (pravá strana
+              jednej karty sa dotýka ľavej strany ďalšej).
+            </p>
+            <ul className="legenda">
+              {sada.akcie.map((a) => (
+                <li key={a.kluc}>
+                  <span className="legenda-ikona">
+                    <IkonaAkcie kluc={a.kluc} akcia={a} />
+                  </span>
+                  <div>
+                    <strong>{a.nazov}</strong>
+                    <span>{a.popis}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
       {detail !== null && <Detail karta={detail} vzhlad={vzhlad} zavri={() => setDetail(null)} autor={autori[detail.id]} />}
     </div>
