@@ -560,7 +560,7 @@ export function HracDoska({
               view.ciel?.typ === "finale"
                 ? utoci
                   ? { nadpis: "Útočník finále", text: "Má menej špakov — dobieha (pri rovnosti prehral poslednú bitku). Vykladá prvý, na NA EX odpovedá prvý." }
-                  : { nadpis: "Obranca finále", text: "Vedie v špakoch: vybral a natočil vrcholovú lokalitu. V Pitke začína." }
+                  : { nadpis: "Obranca finále", text: "Vedie v špakoch: vybral vrcholovú lokalitu. V Pitke začína." }
                 : utoci
                 ? { nadpis: "Útočník", text: "Prehral poslednú bitku: vykladá prvý, zo šenku berie druhý. Na NA EX odpovedá prvý — lícom dole." }
                 : { nadpis: "Obranca", text: "Vyhral poslednú bitku: vyberá cieľ kola, zo šenku berie prvý (na prvom ťahu 1 kartu), na NA EX odpovedá druhý na druhý kraj. Remízu v tuhom vyhrá, kto má menej Absťákov, potom Dlhov; inak idú špaky na sekeru." }
