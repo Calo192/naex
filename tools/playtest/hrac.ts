@@ -1272,7 +1272,10 @@ async function main(): Promise<void> {
     const cmd = JSON.parse(arg) as Command;
     // Rozdelenie (v11) overí klient tou istou funkciou ako server — AI dostane konkrétne, čo chýba.
     if ((cmd.type === "prebytok" || cmd.type === "reci") && s.view !== null) {
-      const plan = planRozdelenia(s.view, s.view.ja, Array.isArray(cmd.zdvihy) ? cmd.zdvihy : []);
+      // Zajatia / presvedčenia sa platia z tých istých bodov — bez nich by kontrola zvyšok určený
+      // na akciu brala ako nerozdelený a zajatie by nikdy neprešlo (playtest štýlov 2026-11-06).
+      const akcie = cmd.type === "prebytok" ? cmd.zajatia : cmd.presvedcenia;
+      const plan = planRozdelenia(s.view, s.view.ja, Array.isArray(cmd.zdvihy) ? cmd.zdvihy : [], Array.isArray(akcie) ? akcie : []);
       const chyba =
         plan === null
           ? "Teraz nič nerozdeľuješ."
