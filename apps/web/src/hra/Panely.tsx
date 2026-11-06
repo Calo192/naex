@@ -6,13 +6,13 @@
 
 import { Fragment, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { Action, ActionSums, ClientState, DamageResult, Favour, GameData, NahladPitkyHraca, OdhadSpakov, PlayerId, RozpisPoskodenia, StavZavislosti, StavkaBitky as StavkaBitkyCisla, ZdrojeAkcii } from "@naex/core";
-import { KONSTANTY, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, spakov, tvar, vidiVolbuSupera, opponentOf } from "@naex/core";
+import { KONSTANTY, barterCena, battleOutcome, cenaFajceniaHraca, hraVPitke, jeCielLokalita, limitBuduceKolo, limitZhromazdenia, lokalitNevybranych, pocet, spakov, tvar, vidiVolbuSupera, opponentOf } from "@naex/core";
 import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./stitokPartie.ts";
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
-import { IkonaCigareta, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
-import { PeciatkaCigariet, RozpisCigariet, type PrisunDlazdice } from "./PeciatkaCigariet.tsx";
+import { IkonaCigareta, IkonaPoldeci } from "./ikonyZdrojov.tsx";
+import { PeciatkaZdroja, RozpisZdroja, type PrisunDlazdice } from "./PeciatkaZdroja.tsx";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import type { PriazenKola } from "./priazenKola.ts";
@@ -363,8 +363,9 @@ function Rola({ utoci, tip, frajerina }: { readonly utoci: boolean; readonly tip
 
 export interface HracDoskaProps {
   readonly view: ClientState;
-  /** Pečiatka a rozpis na dlaždici Cigarety. */
+  /** Pečiatka a rozpis na dlaždiciach Cigarety a Poldeci. */
   readonly prisunCigariet?: PrisunDlazdice;
+  readonly prisunPoldeci?: PrisunDlazdice;
   /** Dáta sady — akcie Poldeci do výhľadu limitu. */
   readonly data: GameData;
   readonly p: PlayerId;
@@ -375,10 +376,6 @@ export interface HracDoskaProps {
   readonly menoKarty: (defId: string) => string;
   /** Výhľad Pitky (Zhromaždenie a Pitka) — inak null. */
   readonly vyhlad: VyhladPitky | null;
-  /** Doliatie a nový poldeci za cigarety — len na tvojej doske (Michal 2026-10-18: nedali sa nájsť). */
-  readonly obchodCigariet?:
-    | { readonly mozno: boolean; readonly doliat: () => void; readonly novy: () => void; readonly cenaBarteru: number }
-    | undefined;
   /** Špaky „keby hra skončila teraz“ — dlaždica Body (v6: špaky mínus nepriznaná Cirhóza). */
   readonly body: SpakyTeraz;
   /**
@@ -451,6 +448,7 @@ function useOdpojenyCas(odpojenyOd: number | null, bezi: boolean): number {
 export function HracDoska({
   view,
   prisunCigariet,
+  prisunPoldeci,
   data,
   p,
   info,
@@ -458,7 +456,6 @@ export function HracDoska({
   zavislost,
   menoKarty,
   vyhlad,
-  obchodCigariet,
   body,
   starsi,
   spakyKlik,
@@ -498,8 +495,8 @@ export function HracDoska({
   const limit = limitZhromazdenia(view, p);
   const buduci = limitBuduceKolo(view, p, false, data);
   const kto = ja ? "Máš" : "Má";
-  const doNovehoPoldeci =
-    hrac.cigarety >= KONSTANTY.BARTER_CENA ? "stačí na nový poldeci" : `${KONSTANTY.BARTER_CENA - hrac.cigarety} do nového poldeci`;
+  const cenaNovehoPoldeci = barterCena(data, view, p);
+  const doNovehoPoldeci = hrac.cigarety >= cenaNovehoPoldeci ? "stačí na nový poldeci" : `${cenaNovehoPoldeci - hrac.cigarety} do nového poldeci`;
   const utoci = view.utocnik === p;
   const v = vyhlad?.nahlad ?? null;
   const pecenPo = v === null ? hrac.pecen : v.pecen + v.pecenZoStola;
@@ -598,6 +595,7 @@ export function HracDoska({
         <Zdroj
           nazov="Poldeci"
           trieda="zdroj-poldeci"
+          roh={prisunPoldeci !== undefined && <PeciatkaZdroja prisun={prisunPoldeci} />}
           hodnota={
             <>
               <span className="poldeci-rad">{poldeci.length > 0 ? poldeci : "—"}</span>
@@ -620,6 +618,7 @@ export function HracDoska({
             nadpis: "Poldeci",
             text: (
               <>
+                {prisunPoldeci !== undefined && <RozpisZdroja prisun={prisunPoldeci} />}
                 <span className="tip-stav">
                   {kto} {plne} plné, {vypiteSoStolom} vypité{naexNaStole > 0 && ` (z toho ${naexNaStole} na stole cez NA EX${skryteNaex > 0 ? kSkrytemu : ""})`} · limit kariet{" "}
                   {limit}
@@ -637,52 +636,17 @@ export function HracDoska({
           trieda="zdroj-cigarety"
           ikona={<IkonaCigareta />}
           hodnota={<span className="velke-cislo">{hrac.cigarety}</span>}
-          roh={prisunCigariet !== undefined && <PeciatkaCigariet prisun={prisunCigariet} />}
-          pod={
-            obchodCigariet === undefined ? (
-              doNovehoPoldeci
-            ) : (
-              <>
-                {/* Na nízkom okne sa tlačidlá do baru nezmestia — v Pitke sú aj pečiatkami na hrane stola. */}
-                <span className="obchod-text">{doNovehoPoldeci}</span>
-                <span className="obchod-cigariet">
-                <button
-                  disabled={!obchodCigariet.mozno || hrac.cigarety < KONSTANTY.REFILL_CENA || hrac.poldeciVypite === 0}
-                  title={
-                    obchodCigariet.mozno
-                      ? `Za ${KONSTANTY.REFILL_CENA} cigarety otočíš vypitý poldeci na plný.`
-                      : "Doliať poldeci sa dá v Pitke na tvojom ťahu."
-                  }
-                  onClick={obchodCigariet.doliat}
-                >
-                  <Vymena das={`−${KONSTANTY.REFILL_CENA}`} dostanes="doliať" />
-                </button>
-                <button
-                  disabled={!obchodCigariet.mozno || hrac.cigarety < obchodCigariet.cenaBarteru}
-                  title={
-                    obchodCigariet.mozno
-                      ? `Za ${obchodCigariet.cenaBarteru} cigariet nový plný poldeci navyše (natrvalo o jeden viac).`
-                      : "Nový poldeci za cigarety sa kupuje v Pitke na tvojom ťahu."
-                  }
-                  onClick={obchodCigariet.novy}
-                >
-                  <Vymena das={`−${obchodCigariet.cenaBarteru}`} dostanes="nový poldeci" />
-                </button>
-                </span>
-              </>
-            )
-          }
+          roh={prisunCigariet !== undefined && <PeciatkaZdroja prisun={prisunCigariet} />}
           tip={{
             nadpis: "Cigarety",
             text: (
               <>
-                {prisunCigariet !== undefined && <RozpisCigariet prisun={prisunCigariet} />}
+                {prisunCigariet !== undefined && <RozpisZdroja prisun={prisunCigariet} />}
                 <span className="tip-stav">
                   {kto} {hrac.cigarety} · {doNovehoPoldeci}
                 </span>
                 Platíš nimi šenok a Dedičstvo; v Pitke na svojom ťahu fajčíš: karta za 1 cigaretu, ďalšia v tej istej Pitke za 2, potom 3…
-                {view.faza === "pitka" && ` (${ja ? "tvoje" : "jeho"} ďalšie teraz za ${cenaFajceniaHraca(view, p)})`}. Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový
-                poldeci {obchodCigariet?.cenaBarteru ?? KONSTANTY.BARTER_CENA}. Na konci hry každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak (výkupné).
+                {view.faza === "pitka" && ` (${ja ? "tvoje" : "jeho"} ďalšie teraz za ${cenaFajceniaHraca(view, p)})`}. Doliatie poldeci stojí {KONSTANTY.REFILL_CENA}, nový poldeci {cenaNovehoPoldeci}{ja && " — v Pitke ich máš na hrane stola"}. Na konci hry každých {KONSTANTY.CIGARIET_ZA_SPAK} cigariet = 1 špak (výkupné).
               </>
             ),
           }}

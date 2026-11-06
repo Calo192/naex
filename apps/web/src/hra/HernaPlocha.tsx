@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { odhadSpakovKola, type StavOdhadu, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -119,8 +119,8 @@ import { NAHRADIT, textNepolozenejKarty } from "./nepolozenaKarta.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie, type Tahanie } from "./useTahanie.ts";
 import { NapovedaPodrzania, OknoZdroja, StlpecHraca, Tabula } from "./PultHraca.tsx";
-import { usePrisunCigariet, type PrisunDlazdice } from "./PeciatkaCigariet.tsx";
-import { cislaHraca, type ZdrojStlpca } from "./tabula.ts";
+import { usePrisunZdroja, type PrisunDlazdice } from "./PeciatkaZdroja.tsx";
+import { cislaHraca, poldeciNaStole, type ZdrojStlpca } from "./tabula.ts";
 import { preDotykUzol } from "./dotyk.ts";
 import { Avatar } from "../komponenty.tsx";
 import { TlacidloCelejObrazovky, useCelaObrazovka } from "./CelaObrazovka.tsx";
@@ -1182,7 +1182,16 @@ export function HernaPlocha({
     const h = zaklad.hraci;
     const hraci: ClientState["hraci"] =
       ja === 0 ? [{ ...h[0], pecen: h[0].pecen + vypijemVTahu }, h[1]] : [h[0], { ...h[1], pecen: h[1].pecen + vypijemVTahu }];
-    return nahladPitky(data, { ciel: stol.ciel, strany: stol.strany, starsi: view.starsi, hraci, lokalitaOtocena: otocenaTeraz, vizia: view.vizia });
+    return nahladPitky(data, {
+      ciel: stol.ciel,
+      strany: stol.strany,
+      starsi: view.starsi,
+      hraci,
+      lokalitaOtocena: otocenaTeraz,
+      vizia: view.vizia,
+      zaverecne: view.zaverecne,
+      ...(view.poldeciOtoceneVKole === undefined ? {} : { poldeciOtoceneVKole: view.poldeciOtoceneVKole }),
+    });
   }, [data, view, stol, ja, vypijemVTahu, otocenaTeraz, zaklad]);
   /** Špaky jednej Cirhózy a jedného Dlhu na konci hry (cenaKliatby: Cirhóza −SPAKY_ZA_CIRHOZU, Dlh 0). */
   const cenyKliatob = useMemo(
@@ -2374,19 +2383,39 @@ export function HernaPlocha({
     !cakaOdhalenie &&
     autoPas === null &&
     (vrstvaVyhodnotenia === null || pocitadlo !== null);
-  const { dopady: dopadyCigariet, nedavne: nedavneCigarety } = usePrisunCigariet(
-    udalosti,
-    [viewZoServera.hraci[0].cigarety, viewZoServera.hraci[1].cigarety],
-    // Pod stmaveným stolom by dopad nikto nevidel — počká, kým sa stôl uvoľní.
-    pocitadloBezi || zadrzanyView !== null || suhrnBezi || pauzaBezi || medziCaka || autoPas !== null,
-  );
+  // Pod stmaveným stolom by dopad nikto nevidel — počká, kým sa stôl uvoľní.
+  const pozdrzDopad = pocitadloBezi || zadrzanyView !== null || suhrnBezi || pauzaBezi || medziCaka || autoPas !== null;
+  const { dopady: dopadyCigariet, nedavne: nedavneCigarety } = usePrisunZdroja("cigarety", udalosti, [viewZoServera.hraci[0].cigarety, viewZoServera.hraci[1].cigarety], pozdrzDopad);
+  // Číslo dlaždice: skryté NA EX už hráčovi leží na stole (poldeciNaStole).
+  const plnePoldeci = (v: ClientState, p: PlayerId): number => Math.max(0, v.hraci[p].poldeciPlne - poldeciNaStole(v, p).skryte);
+  const { dopady: dopadyPoldeci, nedavne: nedavnePoldeci } = usePrisunZdroja("poldeci", udalosti, [plnePoldeci(viewZoServera, 0), plnePoldeci(viewZoServera, 1)], pozdrzDopad);
   // Po vyhodnotení Pitky (Vízia, otočené Záverečné, Zastávka) sú cigarety už na účte, nič nečaká.
   const pitkaVyhodnotena = view.faza === "pitka" && (view.pitkaStav === null || (ucetPitky?.kolo === view.kolo && ucetPitky.pitka === view.pitkaCislo));
   const prisunCigariet = (p: PlayerId): PrisunDlazdice => ({
-    cigarety: view.hraci[p].cigarety,
-    cakajuci: nahladyPitky === null || pitkaVyhodnotena ? null : nahladyPitky[p].cigarety,
+    druh: "cigarety",
+    hodnota: view.hraci[p].cigarety,
+    cakajuci:
+      nahladyPitky === null || pitkaVyhodnotena
+        ? null
+        : { suma: nahladyPitky[p].cigarety.zisk, riadky: riadkyCakajuceho(nahladyPitky[p].cigarety), kedy: "na konci Pitky", po: "po Pitke" },
     dopad: dopadyCigariet[p],
     nedavny: nedavneCigarety[p],
+  });
+  // Akcie Poldeci otáčajú až v bitke, preto čakajú aj po vyhodnotení Pitky; s Jogurtom už v nej.
+  const prisunPoldeci = (p: PlayerId): PrisunDlazdice => ({
+    druh: "poldeci",
+    hodnota: plnePoldeci(view, p),
+    cakajuci:
+      nahladyPitky === null
+        ? null
+        : {
+            suma: nahladyPitky[p].poldeci.zisk,
+            riadky: riadkyCakajucichPoldeci(nahladyPitky[p].poldeci),
+            kedy: view.hraci[p].dedicstvo.some((k) => k.defId === "jogurt") ? "najneskôr v bitke" : "v bitke",
+            po: "po bitke",
+          },
+    dopad: dopadyPoldeci[p],
+    nedavny: nedavnePoldeci[p],
   });
   // Po súhrne ide hra rovno na výber lokality (Michal 2026-10-30) — medziobrazovka „Výber lokality“
   // by bola ďalší klik navyše. Pred finále ostane: hovorí, kto útočí a kto vyberá.
@@ -5814,6 +5843,7 @@ export function HernaPlocha({
     <StlpecHraca
       view={view}
       prisunCigariet={prisunCigariet(p)}
+      prisunPoldeci={prisunPoldeci(p)}
       p={p}
       info={hraci[p]}
       meno={hraci[p]?.meno ?? `Hráč ${p + 1}`}
@@ -5829,7 +5859,7 @@ export function HernaPlocha({
   const oknoZdrojaEl =
     !naSirku || oknoZdroja === null ? null : (
       <OknoZdroja
-        prisunCigariet={oknoZdroja.zdroj === "cigarety" ? prisunCigariet(oknoZdroja.p) : undefined}
+        prisun={oknoZdroja.zdroj === "cigarety" ? prisunCigariet(oknoZdroja.p) : oknoZdroja.zdroj === "poldeci" ? prisunPoldeci(oknoZdroja.p) : undefined}
         zdroj={oknoZdroja.zdroj}
         cisla={cislaPultu(oknoZdroja.p)}
         ja={oknoZdroja.p === ja}
@@ -5997,6 +6027,7 @@ export function HernaPlocha({
           menoKarty={menoKarty}
           vyhlad={vyhladPitky(super_)}
           prisunCigariet={prisunCigariet(super_)}
+          prisunPoldeci={prisunPoldeci(super_)}
           body={body}
           starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === super_, prepni: () => prepniStarsich(super_), id: idLinieStarsich }}
           spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === super_, prepni: () => otvorNastenku(super_) }}
@@ -6160,12 +6191,7 @@ export function HernaPlocha({
             mena={[menoHraca(0), menoHraca(1)]}
             vyhlad={vyhladPitky(ja)}
             prisunCigariet={prisunCigariet(ja)}
-            obchodCigariet={{
-              mozno: somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === null && view.koniec === null,
-              doliat: () => cmd({ type: "refillPoldeci" }),
-              novy: () => cmd({ type: "barter" }),
-              cenaBarteru: barterCena(data, view, ja),
-            }}
+            prisunPoldeci={prisunPoldeci(ja)}
             body={body}
             starsi={{
               stlacene: starsiViditelni && krokStarsich === null && pohladLinie === ja,

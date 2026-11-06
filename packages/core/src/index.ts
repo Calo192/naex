@@ -31,7 +31,7 @@ export * from "./momenty.ts";
 export * from "./napovedy.ts";
 export * from "./achievementy.ts";
 export * from "./nahlady.ts";
-export * from "./prisunCigariet.ts";
+export * from "./prisun.ts";
 export * from "./hrozba.ts";
 export * from "./odhadSpakov.ts";
 export * from "./pocitadlo.ts";

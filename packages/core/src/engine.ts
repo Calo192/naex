@@ -689,6 +689,9 @@ export type CielVykladania = "vlastna" | "superova" | "priznanie" | "dedicstvo";
 /** Odkiaľ prišli cigarety; „platba“ je hráčova vlastná útrata (šenok, fajčenie…), prísun to nie je. */
 export type ZdrojCigariet = "akcie" | "obmedzenie" | "pas" | "porazeny" | "fajciar" | "vypalne" | "sofer" | "podvodnik" | "policajtka" | "postarka" | "platba";
 
+/** Odkiaľ prišiel plný poldeci; „platba“ = vlastné minutie, ktoré si hráč zvolil (Vypiť, NA EX, vyžrať v Päte). */
+export type ZdrojPoldeci = "akcie" | "zaciatokKola" | "jogurt" | "doliatie" | "barter" | "krcmarka" | "degustatorka" | "platba";
+
 export type Event =
   | { readonly type: "log"; readonly text: string; readonly pre?: PlayerId }
   | { readonly type: "faza"; readonly faza: Phase }
@@ -766,11 +769,13 @@ export type Event =
    */
   | { readonly type: "autoPas"; readonly hrac: PlayerId; readonly dovody: readonly string[]; readonly pre: PlayerId }
   /**
-   * Zmena cigariet s pôvodom — účtovná kniha pre pečiatku a rozpis na dlaždici Cigarety (prisunCigariet.ts).
+   * Zmena cigariet s pôvodom — účtovná kniha pre pečiatku a rozpis na dlaždici Cigarety (prisun.ts).
    * Vracia ju len applySPrisunom: apply ju vynechá, takže stopa partie (odtlačok, prehrávač) ostáva tá istá.
    * Verejná ako cigarety samy: platba nesie len sumu, nie to, za čo sa platilo.
    */
   | { readonly type: "zmenaCigariet"; readonly hrac: PlayerId; readonly zdroj: ZdrojCigariet; readonly suma: number }
+  /** Zmena plných poldeci s pôvodom — tá istá kniha pre dlaždicu Poldeci. Skryté NA EX ide do knihy až pri odkrytí, keď poldeci naozaj odíde zo zásoby. */
+  | { readonly type: "zmenaPoldeci"; readonly hrac: PlayerId; readonly zdroj: ZdrojPoldeci; readonly suma: number }
   /** Pečiatka momentu (momenty.ts) — verejná, rovnaká pre oboch; server ju pridá po príkaze. */
   | { readonly type: "moment"; readonly moment: Moment }
   | {
@@ -840,6 +845,13 @@ function zmenCigarety(s: MutState, p: PlayerId, zdroj: ZdrojCigariet, suma: numb
   if (suma === 0) return;
   hrac(s, p).cigarety += suma;
   events.push({ type: "zmenaCigariet", hrac: p, zdroj, suma });
+}
+
+/** Každá zmena plných poldeci ide tadiaľto, aby kniha (zmenaPoldeci) sedela so stavom. */
+function zmenPoldeci(s: MutState, p: PlayerId, zdroj: ZdrojPoldeci, suma: number, events: Event[]): void {
+  if (suma === 0) return;
+  hrac(s, p).poldeciPlne += suma;
+  events.push({ type: "zmenaPoldeci", hrac: p, zdroj, suma });
 }
 
 export function formatHry(state: Pick<GameState, "format">): Format {
@@ -1214,6 +1226,15 @@ export interface NahladPitkyHraca {
   readonly dlhy: number;
   /** Cigarety, ktoré vyhodnotenie ešte pripíše (rozpisCigaretPitky); po vyhodnotení nuly. */
   readonly cigarety: CigaretyPitky;
+  /** Vypité poldeci, ktoré akcie Poldeci v línii ešte otočia na plné (v bitke, s Jogurtom už v Pitke). */
+  readonly poldeci: PoldeciPitky;
+}
+
+export interface PoldeciPitky {
+  /** Aktívne akcie Poldeci, ktoré ešte nič neotočili. */
+  readonly akcie: number;
+  /** Čo z nich naozaj otočí: najviac toľko, koľko je vypitých a ležiacich na stole cez NA EX. */
+  readonly zisk: number;
 }
 
 /**
@@ -1225,8 +1246,10 @@ export function nahladPitky(
   data: GameData,
   s: VerejnyStav & {
     readonly lokalitaOtocena: boolean;
-    readonly hraci: readonly [VerejnyHrac & PecenHraca, VerejnyHrac & PecenHraca];
+    readonly hraci: readonly [VerejnyHrac & PecenHraca & VypitePoldeci, VerejnyHrac & PecenHraca & VypitePoldeci];
     readonly vizia: GameState["vizia"];
+    readonly poldeciOtoceneVKole?: readonly [number, number];
+    readonly zaverecne?: readonly { readonly uid: number; readonly naexBy: PlayerId | null }[];
   },
   /** Kto v tejto Pitke dal NA EX (Stryná) — klient pozná len to, čo vidí. */
   naexDal?: readonly [boolean, boolean],
@@ -1241,6 +1264,16 @@ export function nahladPitky(
   // a nulujú sa až v dokonciPitku. Rátať ich znova hlásilo kliatby, ktoré nevzniknú
   // (playtest 20261021-143600).
   const vyhodnotena = s.vizia !== null;
+  // Poradie motora (vypiPoldeci): poldeci z NA EX sa vypijú skôr, než ich akcie otočia. Skryté NA EX
+  // pozná len ten, kto ich dal — kto ich má rátať, pošle stôl s nimi (sMojimiSkrytymiNaex).
+  const poldeciPitky = (p: PlayerId): PoldeciPitky => {
+    const akcie = Math.max(0, (linia.sums[p].Poldeci ?? 0) - (s.poldeciOtoceneVKole?.[p] ?? 0));
+    const strany = s.strany.flat();
+    const naStole = strany.filter((pl) => pl.naexBy === p || pl.naexBy2 === p).length;
+    // Súperova Záverečná lícom dole v pohľade v strany nie je — NA EX na jej rube je len v zaverecne.
+    const naRube = (s.zaverecne ?? []).filter((z) => z.naexBy === p && !strany.some((pl) => pl.card.uid === z.uid)).length;
+    return { akcie, zisk: Math.min(akcie, s.hraci[p].poldeciVypite + naStole + naRube) };
+  };
   const pre = (p: PlayerId): NahladPitkyHraca => {
     const prahPecene = prahCirhozy() + prahCirhozyBonus(s, p);
     const prahD = prahDlhu() + prahDlhuBonus(s, p);
@@ -1257,6 +1290,7 @@ export function nahladPitky(
       cirhozy: Math.floor((h.pecen + pecenZoStola) / prahPecene),
       dlhy: Math.floor((h.zadlzenie + zadlzenieZoStola) / prahD),
       cigarety: vyhodnotena ? { akcie: 0, obmedzenie: 0, zisk: 0 } : cigarety[p],
+      poldeci: poldeciPitky(p),
     };
   };
   return [pre(0), pre(1)];
@@ -1265,6 +1299,9 @@ export function nahladPitky(
 interface PecenHraca {
   readonly pecen: number;
   readonly zadlzenie: number;
+}
+interface VypitePoldeci {
+  readonly poldeciVypite: number;
 }
 
 function pocetKariet(player: VerejnyHrac, defId: string, kde: "priznane"): number {
@@ -1786,10 +1823,10 @@ export function apply(
   kto: Miesto,
 ): { state: GameState; events: Event[] } {
   const { state: po, events } = applyPrikaz(data, state, cmd, kto, false);
-  return { state: po, events: events.filter((e) => e.type !== "zmenaCigariet") };
+  return { state: po, events: events.filter((e) => e.type !== "zmenaCigariet" && e.type !== "zmenaPoldeci") };
 }
 
-/** Ako apply, ale s účtovnou knihou cigariet (zmenaCigariet) medzi udalosťami — pre server a klienta. */
+/** Ako apply, ale s účtovnou knihou cigariet a poldeci (zmenaCigariet, zmenaPoldeci) medzi udalosťami — pre server a klienta. */
 export function applySPrisunom(
   data: GameData,
   state: GameState,
@@ -3188,7 +3225,7 @@ function nastupEfekt(
     case "degustatorka": {
       // v7: súper s viac plnými poldeci ako majiteľ — jeden mu ochutná (nie nerest ani pečeň).
       if (s.hraci[opp].poldeciPlne > s.hraci[p].poldeciPlne) {
-        hrac(s, opp).poldeciPlne -= 1;
+        zmenPoldeci(s, opp, "degustatorka", -1, events);
         hrac(s, opp).poldeciVypite += 1;
         events.push({ type: "log", text: `Degustátorka: hráčovi ${opp + 1} ochutná plný poldeci — je vypitý.` });
       } else events.push({ type: "log", text: `Degustátorka: hráč ${opp + 1} nemá viac plných poldeci — nič neochutná.` });
@@ -3267,7 +3304,7 @@ function cmdVypit(s: MutState, kto: Miesto, events: Event[]): void {
   need(!zakazVypit(s as GameState), "Kostol: nikto nesmie vypiť.");
   need(s.hraci[p].poldeciPlne > 0, "Nemáš plný poldeci.");
   const player = hrac(s, p);
-  player.poldeciPlne -= 1;
+  zmenPoldeci(s, p, "platba", -1, events);
   player.poldeciVypite += 1;
   player.nerestiTotoKolo += 1;
   uberLimit(z, p, 1);
@@ -3419,7 +3456,8 @@ function odhalNaex(s: MutState, data: GameData, events: Event[]): boolean {
         placed.naexBy2 = p;
         placed.vytrznik = true;
       } else placed.naexBy = p;
-      hrac(s, p).poldeciPlne = Math.max(0, s.hraci[p].poldeciPlne - 1);
+      // Degustátorka mohla medzitým ochutnať poldeci pod skrytým NA EX — do knihy ide len to, čo naozaj odišlo.
+      zmenPoldeci(s, p, "platba", -Math.min(1, s.hraci[p].poldeciPlne), events);
       s.naexVKole[p] = true;
       pocty[p] += 1;
       pije.push(p);
@@ -3842,7 +3880,7 @@ function cmdBarter(s: MutState, data: GameData, p: PlayerId, events: Event[]): v
   const cena = barterCena(data, s as GameState, p);
   need(s.hraci[p].cigarety >= cena, `Na barter treba ${cigariet(cena)}.`);
   zmenCigarety(s, p, "platba", -cena, events);
-  hrac(s, p).poldeciPlne += 1;
+  zmenPoldeci(s, p, "barter", 1, events);
   events.push({ type: "log", text: `Hráč ${p + 1} robí stokársky barter za ${cigariet(cena)} — nový plný poldeci.` });
 }
 
@@ -3854,7 +3892,7 @@ function cmdRefill(s: MutState, p: PlayerId, events: Event[]): void {
   need(s.hraci[p].poldeciVypite > 0, "Nemáš vypitý poldeci.");
   zmenCigarety(s, p, "platba", -KONSTANTY.REFILL_CENA, events);
   hrac(s, p).poldeciVypite -= 1;
-  hrac(s, p).poldeciPlne += 1;
+  zmenPoldeci(s, p, "doliatie", 1, events);
   events.push({ type: "log", text: `Hráč ${p + 1} otáča poldeci za 2 cigarety.` });
 }
 
@@ -3942,7 +3980,7 @@ function vyhodnotPitku(s: MutState, data: GameData, events: Event[]): void {
     const teraz = Math.min(Math.max(0, (sums[p].Poldeci ?? 0) - otocene), s.hraci[p].poldeciVypite);
     if (teraz <= 0) continue;
     hrac(s, p).poldeciVypite -= teraz;
-    hrac(s, p).poldeciPlne += teraz;
+    zmenPoldeci(s, p, "jogurt", teraz, events);
     const nove: [number, number] = [s.poldeciOtoceneVKole?.[0] ?? 0, s.poldeciOtoceneVKole?.[1] ?? 0];
     nove[p] += teraz;
     s.poldeciOtoceneVKole = nove;
@@ -4435,7 +4473,7 @@ function cmdSchopnostVazna(s: MutState, data: GameData, cmd: { elderId: string; 
       events.push({ type: "log", text: `${kto} dostáva ${cigariet(KONSTANTY.POSTARKA_CIGARETY)}.` });
       break;
     case "krcmarka":
-      h.poldeciPlne += 1;
+      zmenPoldeci(s, p, "krcmarka", 1, events);
       events.push({ type: "log", text: `${kto} má nový plný poldeci.` });
       break;
     case "farar": {
@@ -5714,7 +5752,7 @@ function vypiPoldeci(s: MutState, data: GameData, events: Event[]): void {
     let otocenia = Math.max(0, (b.sums[p].Poldeci ?? 0) - (s.poldeciOtoceneVKole?.[p] ?? 0));
     while (otocenia > 0 && s.hraci[p].poldeciVypite > 0) {
       hrac(s, p).poldeciVypite -= 1;
-      hrac(s, p).poldeciPlne += 1;
+      zmenPoldeci(s, p, "akcie", 1, events);
       otocenia--;
     }
   }
@@ -5946,7 +5984,7 @@ function dolejNaZaciatkuKola(s: MutState, events: Event[]): void {
     const pocet = Math.min(KONSTANTY.POLDECI_NA_ZACIATKU_KOLA, s.hraci[p].poldeciVypite);
     if (pocet <= 0) continue;
     hrac(s, p).poldeciVypite -= pocet;
-    hrac(s, p).poldeciPlne += pocet;
+    zmenPoldeci(s, p, "zaciatokKola", pocet, events);
     events.push({ type: "log", text: `Hráč ${p + 1} si na začiatku kola dolieva ${pocet} poldeci.` });
   }
 }
@@ -6482,7 +6520,7 @@ function cmdPataVyzrat(s: MutState, data: GameData, cmd: { elderId: string | nul
     const po = dajVyzrat(h as HraPata, p, cmd.elderId);
     need(po !== null, "Vyžrať smie len tvoj stojaci starší.");
     h.rady = po.rady as DeepMutable<HraPata["rady"]>;
-    hrac(s, p).poldeciPlne -= 1;
+    zmenPoldeci(s, p, "platba", -1, events);
     hrac(s, p).poldeciVypite += 1;
     events.push({ type: "log", text: `Hráč ${p + 1} dáva vyžrať staršiemu ${cmd.elderId}: +${PATA.VYZRAT_PECEN} pečene.` });
     if (s.hraci[p].poldeciPlne === 0) b.vyzrat[p] = true;
