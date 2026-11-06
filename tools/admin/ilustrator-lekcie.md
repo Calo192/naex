@@ -450,3 +450,23 @@ Krčmárka.
   rises from the glass“. Interiér s jednou žiarovkou vyšiel tmavší a bližšie
   vzorom než vonkajšia scéna v noci. Zámočník ako predloha ťahal svetlejší,
   kreslenejší výraz.
+
+### Ohováračka (pozadie bodovacej karty priazne) — 2026-11-06
+
+`H11` = `F:\Projects\naex-tmp\ohovaracka\`, koláž `H11\kolaz.jpg`. Efekt: +1 / +2 / +3
+Povery v hádke. Kategória pozadie, šesť kandidátov z troch námetov.
+
+- **Schválené (č. 6):** `H11\ohovaracka-okno-hra-2.jpg` (`okno`, kolo 1-2), v seede
+  `packages/server/seed/bodovanie/pozadia/ohovaracka.jpg`. Námet: zátišie bez ľudí, široký
+  vnútorný parapet starej dedinskej kuchyne za súmraku ako pozorovateľňa ohováračky:
+  vyšúchaný vyšívaný vankúš, na ňom ďalekohľad, čierny telefón s otočným číselníkom,
+  drevený ruženec, šálka kávy, odhrnutá záclona, cez okno susedov dom. Predlohy:
+  `puska.jpg`, `vinko.jpg`, `pozadia/kmotor.jpg`, `pozadia/veriaci.jpg`. Michalov dôvod
+  sa k zošitu nedostal, odovzdaná bola len voľba.
+- **Nevybrané:** č. 5 `H11\ohovaracka-okno-hra-1.jpg` (rovnaký námet, chladnejšie modré
+  okno, čierny ďalekohľad), č. 1, 2 `H11\ohovaracka-plot-hra-1.jpg`, `-2` (dve staré ženy
+  šepkajú cez plot), č. 3, 4 `H11\ohovaracka-kostol-hra-1.jpg`, `-2` (šepkajú v kostolnej
+  lavici, kolá 1-2 a 2-2). Dôvod neuvedený.
+  **Lekcia:** na pozadí priazne Michal zvolil zátišie, ktoré ohováranie povie predmetmi, pred
+  postavami pri tom istom čine; pri ďalšom pozadí ponúkni aj námet bez ľudí. Je to jeden
+  výber, do súhrnu zatiaľ nepatrí.
