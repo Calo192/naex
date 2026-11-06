@@ -1,5 +1,5 @@
 {
- "source": "tvorca kariet 2026-11-03T17:16:30.059Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v44 živého webu, bez karty Dlh; identita kariet (Michal 2026-11-03)",
+ "source": "tvorca kariet 2026-11-06T09:14:04.526Z — rozpracovaný stav (Zrejúca) nad zverejnenou sadou v45 živého webu, bez karty Dlh; mäkké akcie 9 kariet a Kostol v11.7 (Michal 2026-11-06)",
  "actions": [
   "Cigareta",
   "Dlh",
@@ -164,7 +164,8 @@
    ],
    "effect_text": "Dedičstvo: Hádka: Ak vyhráš hádku, súper odhodí 1 náhodnú kartu z ruky.",
    "triggers": [
-    "Dedičstvo"
+    "Dedičstvo",
+    "Hádka"
    ],
    "left": {
     "blocked": [
@@ -393,7 +394,8 @@
      1
     ],
     "actions": {
-     "Pohoršenie": 2
+     "Pohoršenie": 1,
+     "Povera": 1
     }
    },
    "right": {
@@ -407,8 +409,8 @@
     }
    },
    "permutations": {
-    "total": 2,
-    "left": 1,
+    "total": 4,
+    "left": 2,
     "right": 2
    }
   },
@@ -644,7 +646,7 @@
     ],
     "actions": {
      "Dlh": 1,
-     "Viera": 2
+     "Pohoršenie": 2
     }
    },
    "right": {
@@ -653,17 +655,17 @@
     ],
     "actions": {
      "Odpor": 1,
-     "Viera": 1
+     "PoškodeniePečene": 1
     },
     "allowed": {
      "1": [
       "Odpor"
      ],
      "2": [
-      "Viera"
+      "PoškodeniePečene"
      ],
      "3": [
-      "Viera"
+      "PoškodeniePečene"
      ]
     }
    },
@@ -1071,17 +1073,18 @@
    },
    "right": {
     "blocked": [
-     2
+     2,
+     3
     ],
     "actions": {
-     "Cigareta": 1,
-     "Viera": 2
+     "Pohoršenie": 1,
+     "Povera": 1
     }
    },
    "permutations": {
-    "total": 6,
+    "total": 4,
     "left": 2,
-    "right": 3
+    "right": 2
    }
   },
   {
@@ -1300,7 +1303,8 @@
      0
     ],
     "actions": {
-     "Povera": 2,
+     "Pohoršenie": 1,
+     "Povera": 1,
      "Vízia": 1
     },
     "allowed": {
@@ -1308,7 +1312,7 @@
       "Vízia"
      ],
      "2": [
-      "Povera"
+      "Pohoršenie"
      ],
      "3": [
       "Povera"
@@ -1491,7 +1495,7 @@
      3
     ],
     "actions": {
-     "Cigareta": 1,
+     "Dlh": 1,
      "Povera": 1
     }
    },
@@ -1975,7 +1979,7 @@
    "tags": [
     "Lokalita"
    ],
-   "effect_text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na kartu v kraji pri oltári.",
+   "effect_text": "Zhromaždenie: Nikto nesmie vypiť. Pitka: NA EX sa smie dať len na poslednú kartu línie na jednej alebo druhej strane.",
    "triggers": [
     "Zhromaždenie",
     "Pitka"
@@ -2348,11 +2352,11 @@
      3
     ],
     "actions": {
-     "Cigareta": 1
+     "Pohoršenie": 1
     },
     "allowed": {
      "1": [
-      "Cigareta"
+      "Pohoršenie"
      ]
     },
     "name": "pri pulte"
@@ -2708,14 +2712,15 @@
      3
     ],
     "actions": {
-     "Viera": 2
+     "Pohoršenie": 1,
+     "Povera": 1
     },
     "allowed": {
      "1": [
-      "Viera"
+      "Pohoršenie"
      ],
      "2": [
-      "Viera"
+      "Povera"
      ]
     },
     "name": "pri vdove"
@@ -3389,11 +3394,11 @@
      "Dlh": 1,
      "Pecka": 1,
      "Petelica": 1,
-     "Posilnenie": 1
+     "Povera": 1
     },
     "allowed": {
      "0": [
-      "Posilnenie"
+      "Povera"
      ],
      "1": [
       "Petelica"
@@ -3922,7 +3927,7 @@
      3
     ],
     "actions": {
-     "Pohoršenie": 1,
+     "Dlh": 1,
      "Povera": 1
     }
    },
