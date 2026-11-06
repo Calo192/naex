@@ -64,6 +64,7 @@ import {
   VYUCBA_BOT,
   VYUCBA_HRAC,
   tahBota,
+  tahBotaPata,
   uzavriStatistiky,
   viewFor,
   zapisTah,
@@ -89,6 +90,7 @@ import { POPIS_PRAVA, Prava } from "./prava.ts";
 import { Ligy } from "./ligy.ts";
 import { Profily } from "./profily.ts";
 import { Prehravac } from "./prehravac.ts";
+import { Stoly2na2, pripravTabulky2na2, rebricek2na2 } from "./stol2na2.ts";
 import { hashJadra } from "./verziaJadra.ts";
 import { Nazory } from "./nazory.ts";
 import { Playtesty } from "./playtesty.ts";
@@ -179,6 +181,8 @@ interface Room {
   readonly bot: PlayerId | null;
   /** Povaha bota (POVAHY) — hráč si ju môže vybrať, inak sa losuje pri založení. */
   readonly botPovaha: string;
+  /** Päta, Lakeť, Otočka; chýba = Kalamita. Do archívu, Frajeriny ani achievementov zatiaľ nejde. */
+  rezim?: "pata";
   /** Naplánovaný ťah bota — kým beží, ďalší sa neplánuje. */
   botTimer: ReturnType<typeof setTimeout> | null;
   /**
@@ -276,7 +280,7 @@ function novyKod(rooms: Map<string, Room>): string {
 }
 
 type ClientMsg =
-  | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry; bot?: boolean; povaha?: string; vyucba?: boolean }
+  | { type: "create"; verejna?: boolean; dlzka?: DlzkaHry; bot?: boolean; povaha?: string; vyucba?: boolean; rezim?: "pata" }
   | { type: "vyucbaDalej" }
   | { type: "vyucbaPokracuj" }
   | { type: "vyucbaOdpoved"; index: number }
@@ -285,7 +289,19 @@ type ClientMsg =
   | { type: "leave" }
   | { type: "kontumacia" }
   | { type: "cmd"; cmd: Command }
-  | { type: "melichar"; id: string };
+  | { type: "melichar"; id: string }
+  // 2 na 2 (stol2na2.ts): stoly sú oddelené od miestností 1 na 1.
+  | { type: "stol2na2Zaloz"; verejny?: boolean; boti?: readonly number[] }
+  | { type: "stol2na2Pridaj"; code: string; miesto?: number }
+  | { type: "stol2na2Nahodne" }
+  | { type: "stol2na2Boti" }
+  | { type: "stol2na2Odist" }
+  | { type: "stol2na2Cmd"; cmd: Command }
+  | { type: "stol2na2Chat"; text: string }
+  | { type: "stol2na2Signal"; id: string }
+  | { type: "stol2na2Vzdat" }
+  | { type: "stol2na2VzdatZrus" }
+  | { type: "stol2na2Kontumacia" };
 
 interface SocketInfo {
   readonly pouzivatel: Pouzivatel;
@@ -537,7 +553,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       verzia,
       spusteny,
       partie: {
-        ludia: bezi.filter((r) => r.bot === null).length,
+        ludia: bezi.filter((r) => r.bot === null).length + stoly2na2.rozohrane(),
         sBotom: bezi.filter((r) => r.bot !== null).length,
         cakajuce,
         poslednaAktivita: bezi.length === 0 ? null : Math.max(...bezi.map((r) => r.lastActivity)),
@@ -587,6 +603,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           posliEmail,
           adresa: opts.adresa ?? null,
           obsah,
+          rebricek2na2: () => rebricek2na2(db),
           media,
           predvoleneAvatary: avatary.hracov,
           botiNaVyber: avatary.botiNaVyber(POVAHY),
@@ -693,6 +710,30 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const sendError = (ws: WebSocket, text: string): void => {
     send(ws, { type: "error", text });
   };
+
+  pripravTabulky2na2(db);
+  const stoly2na2 = new Stoly2na2({
+    data: () => {
+      const { sada, data } = obsah.aktualnaSada();
+      return { data, sada: sada.verzia, sadaKlient: sada };
+    },
+    send,
+    chyba: sendError,
+    novyKod: (obsadene) => {
+      for (;;) {
+        const kod = novyKod(rooms);
+        if (!obsadene(kod)) return kod;
+      }
+    },
+    botHrac: (povaha) => {
+      const h = hracBot(povaha);
+      return { meno: h.meno, avatar: h.avatar };
+    },
+    teraz,
+    db,
+    ...(opts.botPauzaMs === undefined ? {} : { botPauzaMs: opts.botPauzaMs }),
+    ...(opts.seedRozdania === undefined ? {} : { seedRozdania: opts.seedRozdania }),
+  });
 
   /** Každému pripojenému hráčovi jeho pohľad + jeho udalosti. */
   const broadcast = (room: Room, events: readonly Event[]): void => {
@@ -852,7 +893,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const rozdaj = (room: Room): void => {
     // 256-bitové semienko ChaCha20 — 31-bitové sa dalo z prvého pohľadu dopočítať (strážca 2026-11-04).
     room.seed = opts.seedRozdania ?? semienkoChacha(randomBytes(32));
-    const rozdane = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka] });
+    const rozdane = setupGame(room.data, room.seed, { lokalit: DLZKY_HRY[room.dlzka], ...(room.rezim === "pata" ? { rezim: "pata" as const } : {}) });
     room.state = opts.scenar !== undefined && room.bot !== null ? pouziScenar(rozdane, opts.scenar, room.bot === 1 ? 0 : 1) : rozdane;
     room.zaciatok = teraz();
     room.statistiky = noveStatistiky();
@@ -867,6 +908,47 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     const ja = info.pouzivatel;
 
     switch (msg.type) {
+      case "stol2na2Zaloz":
+      case "stol2na2Pridaj":
+      case "stol2na2Nahodne": {
+        if (uzavierka !== null) {
+          sendError(ws, OZNAM_UZAVIERKY);
+          return;
+        }
+        // Partia len s botmi sa ráta ako hra proti botovi, inak ako hra proti ľuďom.
+        const lenBoti = msg.type === "stol2na2Zaloz" && (msg.boti?.length ?? 0) === 3;
+        if (bezPrava(ws, ja, lenBoti ? "hrat_bot" : "hrat_ludia")) return;
+        odist(ws);
+        stoly2na2.odist(ws);
+        if (msg.type === "stol2na2Zaloz") stoly2na2.zaloz(ws, ja, { verejny: msg.verejny === true, boti: msg.boti ?? [] });
+        else if (msg.type === "stol2na2Pridaj") stoly2na2.pridaj(ws, ja, msg.code, msg.miesto);
+        else stoly2na2.nahodne(ws, ja);
+        break;
+      }
+      case "stol2na2Boti":
+        stoly2na2.doplnBotmi(ws);
+        break;
+      case "stol2na2Odist":
+        stoly2na2.odist(ws);
+        break;
+      case "stol2na2Cmd":
+        stoly2na2.prikaz(ws, msg.cmd);
+        break;
+      case "stol2na2Chat":
+        stoly2na2.chat(ws, msg.text);
+        break;
+      case "stol2na2Signal":
+        stoly2na2.signal(ws, msg.id);
+        break;
+      case "stol2na2Vzdat":
+        stoly2na2.navrhniVzdanie(ws);
+        break;
+      case "stol2na2VzdatZrus":
+        stoly2na2.zrusVzdanie(ws);
+        break;
+      case "stol2na2Kontumacia":
+        stoly2na2.kontumacia(ws);
+        break;
       case "create": {
         // Uzávierka: nové partie nie (ľudia, boti ani AI playtesteri), rozohrané bežia.
         if (uzavierka !== null) {
@@ -912,6 +994,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           bot: protiBotovi ? 1 : null,
           botPovaha: zvolenaPovaha?.id ?? POVAHY[randomInt(POVAHY.length)]?.id ?? "igor",
         });
+        if (msg.rezim === "pata") room.rezim = "pata";
         if (protiBotovi) {
           // Offline protihráč sedí hneď — partia začína bez čakania.
           room.hraci[1] = hracBot(room.botPovaha);
@@ -920,7 +1003,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
         usadit(ws, room, 0);
         // Až po usadení — achievementy potrebujú účet hráča na mieste 0.
         if (protiBotovi) {
-          zacniAchievementy(room);
+          if (room.rezim !== "pata") zacniAchievementy(room);
           naplanujBota(room);
         }
         break;
@@ -1141,7 +1224,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
     if (dohrata && room.vyucba === null) for (const h of room.hraci) if (h !== null && h.id !== BOT_ID) ucty.povysPoPartii(h.id, prava.nastavenie().postup);
     // Do archívu ide každá partia, aj s botom (Michal 2026-10-22) — Frajerinu mení len hodnotená partia ľudí.
     // Výučba sa nezapisuje nikam (Michal 2026-10-23) — ani archív, ani tempo.
-    if (skoncila && room.vyucba === null) {
+    if (skoncila && room.vyucba === null && room.rezim !== "pata") {
       zapisDoArchivu(room, result.state, dohrata);
       zapisTempo(room, result.state, dohrata);
       // Výhra proti človeku môže odomknúť ďalšiu ligu — zapíše sa hneď, nech ju neskoršie sprísnenie nevezme.
@@ -1167,7 +1250,8 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       if (state === null || !rooms.has(room.code) || !mozeHrat(state, bot)) return;
       let cmd: Command;
       try {
-        cmd = tahBota(room.data, state, bot, randomInt(2 ** 31), { povaha: room.botPovaha });
+        const tahni = room.rezim === "pata" ? tahBotaPata : tahBota;
+        cmd = tahni(room.data, state, bot, randomInt(2 ** 31), { povaha: room.botPovaha });
       } catch (err) {
         console.error("Bot nevedel vybrať ťah:", err);
         const nahrada = legalCommands(room.data, state, bot)[0];
@@ -1549,6 +1633,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       }
     });
     ws.on("close", () => {
+      stoly2na2.odpojil(ws);
       const info = infos.get(ws);
       if (info === undefined) return;
       const { room, seat } = info;
@@ -1583,6 +1668,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
       const prazdna = room.sockets[0] === null && room.sockets[1] === null;
       if (prazdna && t - room.lastActivity > ZRUSIT_PRAZDNU_PO_MS) zrusMiestnost(room);
     }
+    stoly2na2.upratajPrazdne();
   }, 10 * 60 * 1000);
 
   return skusPrevziatSadu().then(() => new Promise((resolveP) => {
@@ -1596,6 +1682,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
           new Promise<void>((done) => {
             clearInterval(pingInterval);
             clearInterval(cleanupInterval);
+            stoly2na2.zavri();
             if (synchronizacia !== null) clearInterval(synchronizacia);
             for (const room of rooms.values()) if (room.botTimer !== null) clearTimeout(room.botTimer);
             for (const ws of wss.clients) ws.terminate();

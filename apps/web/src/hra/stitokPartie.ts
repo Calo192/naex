@@ -13,12 +13,14 @@ export const ID_TLACIDLA_PARTIE = "partia-menu-tlacidlo";
 export const ZMENA_SVIETI_MS = 2_500;
 
 /** Krok partie pre štítok: „Bitka 2 z 4“, posledná bitka je „Finále“. */
-export function krokPartie(view: Pick<ClientState, "nastenka" | "lokalitCelkom" | "ciel" | "koniec">): {
+export function krokPartie(view: Pick<ClientState, "nastenka" | "lokalitCelkom" | "ciel" | "koniec" | "kolo" | "pata">): {
   readonly text: string;
   readonly kratko: string;
   readonly finale: boolean;
 } {
   if (view.koniec !== null) return { text: "Koniec partie", kratko: "Koniec", finale: false };
+  // Päta, Lakeť, Otočka: lokality sa neminú, kôl je, koľko treba.
+  if (view.pata !== undefined) return { text: `Kolo ${view.kolo}`, kratko: `Kolo ${view.kolo}`, finale: false };
   const celkom = view.lokalitCelkom + 1;
   // Kým sa vyberá cieľ, ciel je null — ráta sa najbližšia bitka.
   const cislo = Math.min(celkom, view.nastenka.length + 1);

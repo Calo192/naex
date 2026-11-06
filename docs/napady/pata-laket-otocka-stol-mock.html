@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stôl Päta, Lakeť, Otočka</title>
+<style>
+:root {
+  --pozadie: #1d1712; --plocha: #2a2119; --panel: #352a20; --okraj: #57452f;
+  --text: #f1e6d3; --tlmene: #b7a68c; --my: #d9a441; --oni: #c9583f; --ok: #7fb069; --stit: #6fa8c9; --jed: #9c6fc9; --karta: #e9dcc0; --karta-text: #2a2119;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #efe6d4; --plocha: #e2d5bb; --panel: #f6efe0; --okraj: #bfa97f;
+    --text: #2a2119; --tlmene: #6c5a41; --my: #9a6a10; --oni: #a63d27; --ok: #4a7c3a; --stit: #2b6f94; --jed: #6b3fa0; --karta: #fffaf0;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 15px/1.45 system-ui, "Segoe UI", sans-serif; }
+main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 22px; margin: 0 0 4px; } h2 { font-size: 17px; margin: 24px 0 8px; }
+p { margin: 0 0 8px; max-width: 75ch; } .tlmene { color: var(--tlmene); }
+nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+nav button { font: inherit; padding: 8px 14px; min-height: 40px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--panel); color: var(--text); cursor: pointer; }
+nav button[aria-pressed="true"] { background: var(--my); color: #1d1712; border-color: var(--my); font-weight: 600; }
+.stol { display: none; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px; gap: 8px; min-height: 540px; }
+.stol.vidno { display: grid; }
+.panel { background: var(--panel); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.popis { font-size: 12px; color: var(--tlmene); margin-bottom: 4px; }
+.rad { display: flex; gap: 4px; }
+.rad.zvisle { flex-direction: column; }
+.st { background: var(--karta); color: var(--karta-text); border-radius: 6px; padding: 4px 6px; flex: 1; min-width: 92px; font-size: 12px; line-height: 1.25; position: relative; }
+.st b { display: block; font-size: 13px; }
+.st .pecen { font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; }
+.st .ukaz { height: 5px; background: #0002; border-radius: 3px; overflow: hidden; margin: 2px 0; }
+.st .ukaz i { display: block; height: 100%; background: var(--oni); }
+.st .zn { display: inline-block; font-size: 11px; font-weight: 600; padding: 0 5px; border-radius: 99px; color: #fff; margin-right: 2px; }
+.zn.stit { background: var(--stit); } .zn.jed { background: var(--jed); }
+.st.padol { background: var(--panel); color: var(--tlmene); border: 1px dashed var(--okraj); }
+.st.padol em { font-style: normal; color: var(--text); display: block; }
+.linia { display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; padding: 8px; background: #0002; border-radius: 8px; min-height: 104px; }
+.k { background: var(--karta); color: var(--karta-text); border-radius: 5px; width: 60px; height: 84px; padding: 4px; font-size: 11px; line-height: 1.15; }
+.k.nasa { outline: 2px solid var(--my); } .k.ich { outline: 2px solid var(--oni); }
+.lok { background: var(--ok); color: #1d1712; width: 74px; height: 98px; border-radius: 6px; padding: 5px; font-size: 12px; font-weight: 600; }
+.karty { display: flex; gap: 4px; flex-wrap: wrap; }
+.zdroje { display: flex; flex-wrap: wrap; gap: 3px 10px; font-size: 13px; } .zdroje b { font-variant-numeric: tabular-nums; }
+.riadok { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+#a { grid-template-rows: auto auto 1fr auto auto; }
+#b { grid-template-columns: 170px 1fr 170px; grid-template-rows: 1fr auto; grid-template-areas: "ich stred nasi" "ruka ruka ruka"; }
+#b .ich { grid-area: ich; } #b .nasi { grid-area: nasi; } #b .stred { grid-area: stred; display: flex; flex-direction: column; gap: 8px; justify-content: center; } #b .ruka { grid-area: ruka; }
+#c { grid-template-rows: auto 1fr auto auto; }
+#c .st { min-width: 0; }
+.mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+.mini .st { padding: 2px 4px; font-size: 11px; } .mini .st b { font-size: 11px; } .mini .st .pecen { font-size: 14px; }
+.bitka { display: grid; gap: 10px; background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 12px; }
+.ciele { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ciel { background: var(--karta); color: var(--karta-text); border-radius: 6px; padding: 6px; font-size: 13px; }
+.ciel b { display: block; }
+.ovl { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+.ovl button { font: inherit; width: 34px; height: 34px; border-radius: 6px; border: 1px solid #0004; background: #fff8; cursor: pointer; }
+.ovl output { font-weight: 700; min-width: 22px; text-align: center; font-variant-numeric: tabular-nums; }
+.po { font-size: 12px; margin-top: 3px; }
+.zvysok { font-weight: 600; } .tlacidlo { font: inherit; font-weight: 600; padding: 8px 18px; min-height: 40px; border-radius: 8px; border: 0; background: var(--my); color: #1d1712; cursor: pointer; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--okraj); padding: 6px 8px; text-align: left; vertical-align: top; }
+@media (max-width: 860px) {
+  #b { grid-template-columns: 1fr; grid-template-areas: "ich" "stred" "nasi" "ruka"; }
+  .ciele { grid-template-columns: repeat(2, 1fr); }
+  .rad { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Stôl Päta, Lakeť, Otočka: tri rozloženia</h1>
+  <p class="tlmene">Vymyslené čísla, pohľad hráča, ktorý už stratil Poštárku. Pri staršom je pečeň, štít z Viery a jed. Línia, šenok a ruka ostávajú ako v Kalamite, mení sa, kam ide rad starších.</p>
+  <nav aria-label="Rozloženie">
+    <button data-t="a" aria-pressed="true">A: rady nad a pod líniou</button>
+    <button data-t="b" aria-pressed="false">B: rady v bočných stĺpcoch</button>
+    <button data-t="c" aria-pressed="false">C: rady v baroch hráčov</button>
+  </nav>
+
+  <section class="stol vidno" id="a" aria-label="Rozloženie A">
+    <div class="riadok tlmene"><span>Súper Fero: poldeci 2/3, cigarety 5, Dlhy 1</span><span>Kolo 3 · Pitka 1 z 2</span></div>
+    <div class="rad">
+      <div class="st"><b>Hrobár</b><span class="pecen">21</span>/33<div class="ukaz"><i style="width:64%"></i></div></div>
+      <div class="st"><b>Autobusár</b><span class="pecen">30</span>/30<div class="ukaz"><i style="width:100%"></i></div><span class="zn jed">jed 2</span></div>
+      <div class="st"><b>Veterinár</b><span class="pecen">14</span>/27<div class="ukaz"><i style="width:52%"></i></div><span class="zn stit">štít 3</span></div>
+      <div class="st"><b>Vychovávateľka</b><span class="pecen">27</span>/27<div class="ukaz"><i style="width:100%"></i></div></div>
+    </div>
+    <div class="linia"><div class="k nasa">Pijan</div><div class="k ich">Vdova</div><div class="lok">Most</div><div class="k ich">Hasič</div><div class="k nasa">Pes</div></div>
+    <div class="rad">
+      <div class="st"><b>Farár</b><span class="pecen">30</span>/30<div class="ukaz"><i style="width:100%"></i></div><span class="zn stit">štít 2</span></div>
+      <div class="st padol"><b>Poštárka</b><em>Má dosť: súperova ruka je odkrytá</em></div>
+      <div class="st"><b>Krčmárka</b><span class="pecen">28</span>/36<div class="ukaz"><i style="width:78%"></i></div><span class="zn stit">štít 2</span></div>
+      <div class="st"><b>Starosta</b><span class="pecen">9</span>/33<div class="ukaz"><i style="width:27%"></i></div><span class="zn stit">štít 2</span><span class="zn jed">jed 1</span></div>
+    </div>
+    <div class="panel riadok"><div class="karty"><div class="k">Bitkár</div><div class="k">Fúrik</div><div class="k">Tiper</div></div><div class="zdroje"><span>Poldeci <b>3/4</b></span><span>Cigarety <b>4</b></span><span>Dlhy <b>0</b></span></div></div>
+  </section>
+
+  <section class="stol" id="b" aria-label="Rozloženie B">
+    <div class="ich panel"><div class="popis">Súperov rad</div><div class="rad zvisle">
+      <div class="st"><b>Hrobár</b><span class="pecen">21</span>/33<div class="ukaz"><i style="width:64%"></i></div></div>
+      <div class="st"><b>Autobusár</b><span class="pecen">30</span>/30<div class="ukaz"><i style="width:100%"></i></div><span class="zn jed">jed 2</span></div>
+      <div class="st"><b>Veterinár</b><span class="pecen">14</span>/27<div class="ukaz"><i style="width:52%"></i></div><span class="zn stit">štít 3</span></div>
+      <div class="st"><b>Vychovávateľka</b><span class="pecen">27</span>/27<div class="ukaz"><i style="width:100%"></i></div></div>
+    </div></div>
+    <div class="stred">
+      <div class="riadok tlmene"><span>Fero: poldeci 2/3, cigarety 5, Dlhy 1</span><span>Kolo 3 · Pitka 1 z 2</span></div>
+      <div class="linia"><div class="k nasa">Pijan</div><div class="k ich">Vdova</div><div class="lok">Most</div><div class="k ich">Hasič</div><div class="k nasa">Pes</div></div>
+    </div>
+    <div class="nasi panel"><div class="popis">Môj rad</div><div class="rad zvisle">
+      <div class="st"><b>Farár</b><span class="pecen">30</span>/30<div class="ukaz"><i style="width:100%"></i></div><span class="zn stit">štít 2</span></div>
+      <div class="st padol"><b>Poštárka</b><em>Má dosť: súperova ruka je odkrytá</em></div>
+      <div class="st"><b>Krčmárka</b><span class="pecen">28</span>/36<div class="ukaz"><i style="width:78%"></i></div><span class="zn stit">štít 2</span></div>
+      <div class="st"><b>Starosta</b><span class="pecen">9</span>/33<div class="ukaz"><i style="width:27%"></i></div><span class="zn stit">štít 2</span><span class="zn jed">jed 1</span></div>
+    </div></div>
+    <div class="ruka panel riadok"><div class="karty"><div class="k">Bitkár</div><div class="k">Fúrik</div><div class="k">Tiper</div></div><div class="zdroje"><span>Poldeci <b>3/4</b></span><span>Cigarety <b>4</b></span><span>Dlhy <b>0</b></span></div></div>
+  </section>
+
+  <section class="stol" id="c" aria-label="Rozloženie C">
+    <div class="panel riadok"><div class="zdroje"><span><b>Fero</b></span><span>Poldeci <b>2/3</b></span><span>Cigarety <b>5</b></span><span>Dlhy <b>1</b></span></div>
+      <div class="mini" style="flex:1;max-width:560px">
+        <div class="st"><b>Hrobár</b><span class="pecen">21</span></div>
+        <div class="st"><b>Autobusár</b><span class="pecen">30</span> <span class="zn jed">2</span></div>
+        <div class="st"><b>Veterinár</b><span class="pecen">14</span> <span class="zn stit">3</span></div>
+        <div class="st"><b>Vychovávateľka</b><span class="pecen">27</span></div>
+      </div></div>
+    <div class="linia"><div class="k nasa">Pijan</div><div class="k ich">Vdova</div><div class="lok">Most</div><div class="k ich">Hasič</div><div class="k nasa">Pes</div></div>
+    <div class="panel riadok"><div class="zdroje"><span><b>Ty</b></span><span>Poldeci <b>3/4</b></span><span>Cigarety <b>4</b></span><span>Dlhy <b>0</b></span></div>
+      <div class="mini" style="flex:1;max-width:560px">
+        <div class="st"><b>Farár</b><span class="pecen">30</span> <span class="zn stit">2</span></div>
+        <div class="st padol"><b>Poštárka</b>Má dosť</div>
+        <div class="st"><b>Krčmárka</b><span class="pecen">28</span> <span class="zn stit">2</span></div>
+        <div class="st"><b>Starosta</b><span class="pecen">9</span> <span class="zn stit">2</span> <span class="zn jed">1</span></div>
+      </div></div>
+    <div class="panel karty"><div class="k">Bitkár</div><div class="k">Fúrik</div><div class="k">Tiper</div></div>
+  </section>
+
+  <h2>V čom sa líšia</h2>
+  <table>
+    <tr><th>Rozloženie</th><th>Výhoda</th><th>Nevýhoda</th></tr>
+    <tr><td>A: rady nad a pod líniou</td><td>Rad vyzerá ako druhá, malá línia, spoje sa dajú čítať na šírku. Podrazený aj Má dosť majú miesto na text.</td><td>Na notebooku zaberie výšku, ruka a línia sa stiesnia.</td></tr>
+    <tr><td>B: rady v bočných stĺpcoch</td><td>Línia aj ruka ostávajú ako dnes, výška sa neminie. Dobre sa porovnávajú obe strany.</td><td>Zvislý rad sa číta inak ako spoj dvoch kariet vedľa seba, spoj nie je vidieť.</td></tr>
+    <tr><td>C: rady v baroch hráčov</td><td>Najmenej miesta, najbližšie dnešnému stolu s dvoma barmi.</td><td>Karta staršieho je malá: akcie a Má dosť treba čítať v bubline.</td></tr>
+  </table>
+  <p>Odporúčam <b>A</b>: rad je tu hlavná vec a spoje majú byť vidieť. Keď bude málo výšky, rad sa dá zmenšiť.</p>
+
+  <h2>Rozdelenie v bitke</h2>
+  <p class="tlmene">Rovnaká obrazovka pri všetkých rozloženiach, naraz s protihráčom a skryto. Najprv Robota a exekúcia, potom toto.</p>
+  <section class="bitka" aria-label="Rozdelenie poškodenia">
+    <div class="riadok"><strong>Rozdeľ tuhé a jed</strong><span class="zvysok">Tuhé ostáva <output id="ostT">7</output> · Jed ostáva <output id="ostJ">2</output></span></div>
+    <div class="ciele" id="ciele"></div>
+    <div class="riadok"><span class="tlmene">Povery 2: každému súperovmu staršiemu −2 samy, cez štít.</span><button class="tlacidlo" id="potvrd" disabled>Potvrdiť</button></div>
+  </section>
+</main>
+<script>
+for (const b of document.querySelectorAll("nav button")) {
+  b.addEventListener("click", () => {
+    for (const x of document.querySelectorAll("nav button")) x.setAttribute("aria-pressed", String(x === b));
+    for (const s of document.querySelectorAll(".stol")) s.classList.toggle("vidno", s.id === b.dataset.t);
+  });
+}
+const ciele = [
+  { n: "Hrobár", p: 21, s: 0 }, { n: "Autobusár", p: 30, s: 0 }, { n: "Veterinár", p: 14, s: 3 }, { n: "Vychovávateľka", p: 27, s: 0 },
+].map((c) => ({ ...c, t: 0, j: 0 }));
+const povery = 2, tuheSpolu = 7, jedSpolu = 2;
+const koren = document.getElementById("ciele");
+function kresli() {
+  const t = ciele.reduce((a, c) => a + c.t, 0), j = ciele.reduce((a, c) => a + c.j, 0);
+  document.getElementById("ostT").textContent = String(tuheSpolu - t);
+  document.getElementById("ostJ").textContent = String(jedSpolu - j);
+  document.getElementById("potvrd").disabled = t !== tuheSpolu || j !== jedSpolu;
+  koren.innerHTML = "";
+  ciele.forEach((c, i) => {
+    const body = povery + c.t, chyti = Math.min(c.s, body), pecen = c.p - (body - chyti) - c.j;
+    const el = document.createElement("div");
+    el.className = "ciel";
+    el.innerHTML = `<b>${c.n}</b>pečeň ${c.p}${c.s ? `, štít ${c.s}` : ""}
+      <div class="ovl">Tuhé <button aria-label="menej tuhého">−</button><output>${c.t}</output><button aria-label="viac tuhého">+</button></div>
+      <div class="ovl">Jed <button aria-label="menej jedu">−</button><output>${c.j}</output><button aria-label="viac jedu">+</button></div>
+      <div class="po">Po útoku: <b>${pecen}</b>${pecen <= 0 ? " · padne" : ""}</div>`;
+    const b = el.querySelectorAll("button");
+    b[0].onclick = () => { if (c.t > 0) { c.t--; kresli(); } };
+    b[1].onclick = () => { if (ciele.reduce((a, x) => a + x.t, 0) < tuheSpolu) { c.t++; kresli(); } };
+    b[2].onclick = () => { if (c.j > 0) { c.j--; kresli(); } };
+    b[3].onclick = () => { if (ciele.reduce((a, x) => a + x.j, 0) < jedSpolu) { c.j++; kresli(); } };
+    koren.appendChild(el);
+  });
+}
+kresli();
+</script>
+</body>
+</html>

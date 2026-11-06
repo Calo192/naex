@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stôl 2 na 2</title>
+<style>
+:root {
+  --pozadie: #1d1712; --plocha: #2a2119; --panel: #352a20; --okraj: #57452f;
+  --text: #f1e6d3; --tlmene: #b7a68c; --my: #d9a441; --oni: #c9583f; --ok: #7fb069; --karta: #e9dcc0; --karta-text: #2a2119;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --pozadie: #efe6d4; --plocha: #e2d5bb; --panel: #f6efe0; --okraj: #bfa97f;
+    --text: #2a2119; --tlmene: #6c5a41; --my: #9a6a10; --oni: #a63d27; --ok: #4a7c3a; --karta: #fffaf0; --karta-text: #2a2119;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--pozadie); color: var(--text); font: 15px/1.45 system-ui, "Segoe UI", sans-serif; }
+main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+h2 { font-size: 17px; margin: 24px 0 8px; }
+p { margin: 0 0 8px; max-width: 75ch; }
+.tlmene { color: var(--tlmene); }
+nav { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+nav button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--okraj); background: var(--panel); color: var(--text); cursor: pointer; min-height: 40px; }
+nav button[aria-pressed="true"] { background: var(--my); color: #1d1712; border-color: var(--my); font-weight: 600; }
+.stol { background: var(--plocha); border: 1px solid var(--okraj); border-radius: 12px; padding: 10px; min-height: 560px; display: none; gap: 10px; }
+.stol.vidno { display: grid; }
+.panel { background: var(--panel); border: 1px solid var(--okraj); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.hrac { display: flex; align-items: center; gap: 8px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--okraj); display: grid; place-items: center; font-weight: 700; flex: none; font-size: 13px; }
+.my .avatar { background: var(--my); color: #1d1712; } .oni .avatar { background: var(--oni); color: #fff; }
+.meno { font-weight: 600; }
+.znacka { font-size: 11px; padding: 1px 6px; border-radius: 99px; border: 1px solid var(--okraj); color: var(--tlmene); white-space: nowrap; }
+.znacka.kap { background: var(--my); color: #1d1712; border-color: var(--my); }
+.znacka.tah { background: var(--ok); color: #1d1712; border-color: var(--ok); }
+.zdroje { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13px; }
+.zdroje b { font-variant-numeric: tabular-nums; }
+.karty { display: flex; gap: 4px; flex-wrap: wrap; }
+.k { background: var(--karta); color: var(--karta-text); border-radius: 5px; width: 62px; height: 86px; padding: 4px; font-size: 11px; line-height: 1.15; box-shadow: 0 1px 2px #0006; overflow: hidden; }
+.k.male { width: 40px; height: 56px; font-size: 9px; padding: 3px; }
+.k.rub { background: repeating-linear-gradient(45deg, var(--okraj) 0 5px, var(--panel) 5px 10px); }
+.linia { display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; padding: 10px; background: #0002; border-radius: 8px; min-height: 120px; }
+.linia .lok { background: var(--ok); color: #1d1712; width: 78px; height: 104px; border-radius: 6px; padding: 5px; font-size: 12px; font-weight: 600; }
+.k.nasa { outline: 2px solid var(--my); } .k.ich { outline: 2px solid var(--oni); }
+.popis { font-size: 12px; color: var(--tlmene); margin-bottom: 4px; }
+.starsi { display: flex; gap: 4px; flex-wrap: wrap; font-size: 11px; justify-content: center; }
+.starsi span { border: 1px solid var(--okraj); border-radius: 5px; padding: 2px 5px; }
+.signaly { display: flex; flex-wrap: wrap; gap: 4px; }
+.signaly button { font: inherit; font-size: 12px; padding: 4px 8px; min-height: 30px; border-radius: 6px; border: 1px solid var(--okraj); background: var(--plocha); color: var(--text); cursor: pointer; }
+.chat { font-size: 13px; } .chat div { margin-bottom: 2px; } .chat i { color: var(--tlmene); font-style: normal; }
+.poradie { display: flex; gap: 4px; align-items: center; font-size: 12px; flex-wrap: wrap; }
+.poradie span { padding: 2px 7px; border-radius: 99px; border: 1px solid var(--okraj); }
+.poradie .ted { background: var(--ok); color: #1d1712; border-color: var(--ok); font-weight: 700; }
+.pokyn { background: var(--my); color: #1d1712; border-radius: 6px; padding: 5px 10px; font-weight: 600; text-align: center; font-size: 13px; }
+/* A: partner pri mne */
+#a { grid-template-columns: 1fr 230px; grid-template-rows: auto 1fr auto; grid-template-areas: "hore bok" "stred bok" "dole bok"; }
+/* B: krížom okolo stola */
+#b { grid-template-columns: 170px 1fr 170px; grid-template-rows: auto 1fr auto; grid-template-areas: "x hore y" "vlavo stred vpravo" "dole dole dole"; }
+/* C: tímové stĺpce */
+#c { grid-template-columns: 250px 1fr 210px; grid-template-rows: 1fr auto; grid-template-areas: "nasi stred oni" "ruka ruka ruka"; }
+.hore { grid-area: hore; } .bok { grid-area: bok; } .stred { grid-area: stred; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.dole { grid-area: dole; } .vlavo { grid-area: vlavo; } .vpravo { grid-area: vpravo; } .nasi { grid-area: nasi; } .oni-s { grid-area: oni; } .ruka { grid-area: ruka; }
+.stlpec { display: flex; flex-direction: column; gap: 8px; }
+.riadok { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+.medzera { flex: 1; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--okraj); padding: 6px 8px; text-align: left; vertical-align: top; }
+@media (max-width: 860px) {
+  #a, #b, #c { grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: none; display: none; }
+  #a.vidno, #b.vidno, #c.vidno { display: flex; flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Stôl 2 na 2: tri rozloženia</h1>
+  <p class="tlmene">Ukážka s vymyslenými kartami, pohľad hráča Michal (tím Naši). Karta s oranžovým okrajom je partie nášho tímu, s červeným súperovho. Vo všetkých rozloženiach vidíš ruku partnera, súperove len počty.</p>
+  <nav aria-label="Rozloženie">
+    <button data-t="a" aria-pressed="true">A: partner pri mne</button>
+    <button data-t="b" aria-pressed="false">B: štyria okolo stola</button>
+    <button data-t="c" aria-pressed="false">C: tímové stĺpce</button>
+  </nav>
+
+  <section class="stol vidno" id="a" aria-label="Rozloženie A">
+    <div class="hore panel riadok">
+      <div class="hrac oni"><div class="avatar">Fe</div><div><div class="meno">Fero</div><span class="znacka kap">kapitán</span> <span class="znacka">3 karty</span></div></div>
+      <div class="hrac oni"><div class="avatar">Gi</div><div><div class="meno">Gizka</div><span class="znacka">2 karty</span></div></div>
+      <div class="medzera"></div>
+      <div class="zdroje"><span>Ich poldeci <b>2/3</b></span><span>Cigarety <b>5</b></span><span>Dlhy <b>1</b></span><span>Špaky <b>12</b></span></div>
+    </div>
+    <div class="stred">
+      <div class="starsi"><span>Farár</span><span>Krčmárka</span><span>Starosta</span><span>Poštárka</span><span>Hrobár</span><span>Autobusár</span><span>Veterinár</span><span>Vychovávateľka</span></div>
+      <div class="linia">
+        <div class="k nasa">Pijan</div><div class="k nasa">Kováč</div><div class="k ich">Vdova</div>
+        <div class="lok">Most</div>
+        <div class="k ich">Hasič</div><div class="k nasa">Snúbenica</div>
+      </div>
+      <div class="poradie" style="justify-content:center"><span>U1 Fero</span>→<span class="ted">O1 Michal</span>→<span>U2 Gizka</span>→<span>O2 Jano</span></div>
+    </div>
+    <div class="dole panel">
+      <div class="pokyn" style="margin-bottom:6px">Si na ťahu: vylož kartu alebo pasuj. Limit tímu: 2 karty.</div>
+      <div class="riadok">
+        <div><div class="popis">Moja ruka</div><div class="karty"><div class="k">Pes</div><div class="k">Bitkár</div><div class="k">Fúrik</div><div class="k">Tiper</div></div></div>
+        <div><div class="popis">Ruka partnera Jano</div><div class="karty"><div class="k male">Šofér</div><div class="k male">Kňaz</div><div class="k male">Mačka</div></div></div>
+        <div class="medzera"></div>
+        <div class="zdroje"><span>Naše poldeci <b>3/3</b></span><span>Cigarety <b>4</b></span><span>Dlhy <b>0</b></span><span>Špaky <b>9</b></span></div>
+      </div>
+    </div>
+    <aside class="bok panel stlpec">
+      <div class="hrac my"><div class="avatar">Mi</div><div><div class="meno">Michal</div><span class="znacka kap">kapitán</span> <span class="znacka tah">na ťahu</span></div></div>
+      <div class="hrac my"><div class="avatar">Ja</div><div><div class="meno">Jano</div><span class="znacka">partner</span></div></div>
+      <div class="popis">Signál partnerovi</div>
+      <div class="signaly"><button>Mám silnú kartu</button><button>Nemám nič</button><button>Dám NA EX</button><button>Šetri poldeci</button><button>Tento kraj beriem ja</button><button>Biť tohto staršieho</button></div>
+      <div class="popis">Tímový chat, súper nevidí</div>
+      <div class="chat"><div><i>Jano:</i> mám Šoféra na ľavý kraj</div><div><i>Ty:</i> ok, ja idem Psa</div></div>
+    </aside>
+  </section>
+
+  <section class="stol" id="b" aria-label="Rozloženie B">
+    <div class="hore panel stlpec">
+      <div class="riadok"><div class="hrac my"><div class="avatar">Ja</div><div><div class="meno">Jano</div><span class="znacka">partner</span></div></div><div class="karty"><div class="k male">Šofér</div><div class="k male">Kňaz</div><div class="k male">Mačka</div></div></div>
+    </div>
+    <div class="vlavo panel stlpec">
+      <div class="hrac oni"><div class="avatar">Fe</div><div><div class="meno">Fero</div><span class="znacka kap">kapitán</span></div></div>
+      <div class="karty"><div class="k male rub"></div><div class="k male rub"></div><div class="k male rub"></div></div>
+      <div class="zdroje"><span>Tím: poldeci <b>2/3</b></span><span>Cigarety <b>5</b></span><span>Dlhy <b>1</b></span><span>Špaky <b>12</b></span></div>
+    </div>
+    <div class="stred">
+      <div class="starsi"><span>Farár</span><span>Krčmárka</span><span>Starosta</span><span>Poštárka</span><span>Hrobár</span><span>Autobusár</span><span>Veterinár</span><span>Vychovávateľka</span></div>
+      <div class="linia">
+        <div class="k nasa">Pijan</div><div class="k nasa">Kováč</div><div class="k ich">Vdova</div>
+        <div class="lok">Most</div>
+        <div class="k ich">Hasič</div><div class="k nasa">Snúbenica</div>
+      </div>
+      <div class="poradie" style="justify-content:center"><span>U1 Fero</span>→<span class="ted">O1 Michal</span>→<span>U2 Gizka</span>→<span>O2 Jano</span></div>
+    </div>
+    <div class="vpravo panel stlpec">
+      <div class="hrac oni"><div class="avatar">Gi</div><div><div class="meno">Gizka</div></div></div>
+      <div class="karty"><div class="k male rub"></div><div class="k male rub"></div></div>
+      <div class="popis">Signál partnerovi</div>
+      <div class="signaly"><button>Mám silnú</button><button>Nemám nič</button><button>Dám NA EX</button><button>Šetri</button></div>
+      <div class="chat"><div><i>Jano:</i> mám Šoféra</div></div>
+    </div>
+    <div class="dole panel">
+      <div class="pokyn" style="margin-bottom:6px">Si na ťahu: vylož kartu alebo pasuj. Limit tímu: 2 karty.</div>
+      <div class="riadok">
+        <div class="hrac my"><div class="avatar">Mi</div><div><div class="meno">Michal</div><span class="znacka kap">kapitán</span> <span class="znacka tah">na ťahu</span></div></div>
+        <div class="karty"><div class="k">Pes</div><div class="k">Bitkár</div><div class="k">Fúrik</div><div class="k">Tiper</div></div>
+        <div class="medzera"></div>
+        <div class="zdroje"><span>Tím: poldeci <b>3/3</b></span><span>Cigarety <b>4</b></span><span>Dlhy <b>0</b></span><span>Špaky <b>9</b></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stol" id="c" aria-label="Rozloženie C">
+    <aside class="nasi panel stlpec">
+      <div class="meno" style="color:var(--my)">Naši</div>
+      <div class="zdroje"><span>Poldeci <b>3/3</b></span><span>Cigarety <b>4</b></span><span>Dlhy <b>0</b></span><span>Špaky <b>9</b></span><span>Limit <b>2</b></span></div>
+      <div class="hrac my"><div class="avatar">Mi</div><div><div class="meno">Michal</div><span class="znacka kap">kapitán</span> <span class="znacka tah">na ťahu</span></div></div>
+      <div class="hrac my"><div class="avatar">Ja</div><div><div class="meno">Jano</div><span class="znacka">partner</span></div></div>
+      <div class="karty"><div class="k male">Šofér</div><div class="k male">Kňaz</div><div class="k male">Mačka</div></div>
+      <div class="popis">Signál partnerovi</div>
+      <div class="signaly"><button>Mám silnú kartu</button><button>Nemám nič</button><button>Dám NA EX</button><button>Šetri poldeci</button><button>Tento kraj</button><button>Biť tohto</button></div>
+      <div class="chat"><div><i>Jano:</i> mám Šoféra na ľavý kraj</div><div><i>Ty:</i> ok, ja idem Psa</div></div>
+    </aside>
+    <div class="stred">
+      <div class="starsi"><span>Farár</span><span>Krčmárka</span><span>Starosta</span><span>Poštárka</span><span>Hrobár</span><span>Autobusár</span><span>Veterinár</span><span>Vychovávateľka</span></div>
+      <div class="linia">
+        <div class="k nasa">Pijan</div><div class="k nasa">Kováč</div><div class="k ich">Vdova</div>
+        <div class="lok">Most</div>
+        <div class="k ich">Hasič</div><div class="k nasa">Snúbenica</div>
+      </div>
+      <div class="poradie" style="justify-content:center"><span>U1 Fero</span>→<span class="ted">O1 Michal</span>→<span>U2 Gizka</span>→<span>O2 Jano</span></div>
+      <div class="pokyn">Si na ťahu: vylož kartu alebo pasuj.</div>
+    </div>
+    <aside class="oni-s panel stlpec">
+      <div class="meno" style="color:var(--oni)">Súperi</div>
+      <div class="zdroje"><span>Poldeci <b>2/3</b></span><span>Cigarety <b>5</b></span><span>Dlhy <b>1</b></span><span>Špaky <b>12</b></span></div>
+      <div class="hrac oni"><div class="avatar">Fe</div><div><div class="meno">Fero</div><span class="znacka kap">kapitán</span> <span class="znacka">3 karty</span></div></div>
+      <div class="hrac oni"><div class="avatar">Gi</div><div><div class="meno">Gizka</div><span class="znacka">2 karty</span></div></div>
+    </aside>
+    <div class="ruka panel"><div class="popis">Moja ruka</div><div class="karty"><div class="k">Pes</div><div class="k">Bitkár</div><div class="k">Fúrik</div><div class="k">Tiper</div></div></div>
+  </section>
+
+  <h2>V čom sa líšia</h2>
+  <table>
+    <tr><th>Rozloženie</th><th>Výhoda</th><th>Nevýhoda</th></tr>
+    <tr><td>A: partner pri mne</td><td>Najbližšie dnešnému stolu, hráč z 1 na 1 je hneď doma. Bočný panel drží signály a chat.</td><td>Stôl je užší o bočný panel. Štyria hráči nie sú vidieť ako sedenie.</td></tr>
+    <tr><td>B: štyria okolo stola</td><td>Najviac pripomína skutočné sedenie, poradie ťahov sa číta okolo stola.</td><td>Na notebooku je tesno, zabrané všetky štyri hrany; výrazný rozdiel oproti 1 na 1.</td></tr>
+    <tr><td>C: tímové stĺpce</td><td>Tímové zdroje sú pohromade, jasne tím proti tímu. Línia má najviac miesta na šírku.</td><td>Ruka partnera je ďalej od mojej, ťažšie sa plánuje spoločný ťah.</td></tr>
+  </table>
+  <p>Odporúčam <b>A</b>: najmenej nového učenia a najmenej prestavby stola, keďže stôl má jednotnú kostru s 1 na 1.</p>
+
+  <h2>Signály partnerovi (návrh)</h2>
+  <p>Mám silnú kartu · Nemám nič · Dám NA EX · Šetri poldeci · Tento kraj beriem ja · Biť tohto staršieho. Súper ich nevidí, chat je popri nich.</p>
+</main>
+<script>
+for (const b of document.querySelectorAll("nav button")) {
+  b.addEventListener("click", () => {
+    for (const x of document.querySelectorAll("nav button")) x.setAttribute("aria-pressed", String(x === b));
+    for (const s of document.querySelectorAll(".stol")) s.classList.toggle("vidno", s.id === b.dataset.t);
+  });
+}
+</script>
+</body>
+</html>

@@ -383,6 +383,9 @@ export interface HernaPlochaProps {
   readonly kontumacia?: () => void;
   /** Ovládanie navyše v hlavičke webu pred menom súpera (soundboard Melichara). */
   readonly vHlavicke?: ReactNode;
+  /** Režim Päta, Lakeť, Otočka: rady starších nad a pod líniou. */
+  readonly nadLiniou?: ReactNode;
+  readonly podLiniou?: ReactNode;
   /** Prehrávač dohratej partie (roadmapa #18): ovládanie krokov nahradí v hlavičke spojenie, vzdanie a odchod. */
   readonly prehravanie?: ReactNode;
   /** Počítadlo bitky beží / skončilo — pečiatka momentu z bitky (Momenty) počká na jeho koniec. */
@@ -495,6 +498,8 @@ export function HernaPlocha({
   achievementy = null,
   kontumacia,
   vHlavicke,
+  nadLiniou,
+  podLiniou,
   prehravanie,
   onPocitadlo,
   ukazkaSuhrnu,
@@ -6049,6 +6054,7 @@ export function HernaPlocha({
             ))}
             <div className={`stol-plst${liniaSkryta ? " linia-skryta" : ""}${starsiViditelni && krokStarsich !== null ? " krok-starsich" : ""}`} ref={plstRef}>
             {/* Línia kariet ostáva v DOM a drží výšku stola — línia starších leží nad ňou (#68). */}
+            {nadLiniou}
             <div className="linia harmonika-skupiny" ref={liniaRef} inert={liniaSkryta} aria-hidden={liniaSkryta || undefined} data-vyucba="linia">
               <div className="linia-skupina moja">
                 {popisKraja(ja, "vlavo")}
@@ -6082,6 +6088,7 @@ export function HernaPlocha({
                 <div className="partia-rad harmonika">{radStrany(super_)}</div>
               </div>
             </div>
+            {podLiniou}
             {vrstvaFazy !== null && !starsiViditelni && !nastenkaNaStole && (
               <div className="vrstva-fazy" ref={setVrstvaFazyEl}>
                 {vrstvaFazy}

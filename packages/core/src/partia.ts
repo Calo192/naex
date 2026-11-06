@@ -33,7 +33,7 @@
 // a NA EX — „okolie“ karty sú jej susedia v línii (aj lokalita či starší
 // v strede). Výklad textov schválil Michal 2026-10-12.
 
-import type { Action, CardInstance, PlayerId, SideLayout, Slot, Tag } from "./types.ts";
+import type { Action, CardInstance, Miesto, PlayerId, SideLayout, Slot, Tag } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
@@ -83,6 +83,8 @@ export interface PlacedCard {
   readonly poBitkeZHry?: true;
   /** Po bitke ide karta do odhadzovacieho balíčka tohto hráča a je jeho (Snúbenica, Konflikt v7). */
   readonly poBitkeK?: PlayerId;
+  /** 2 na 2: člen tímu, ktorý kartu vyložil — karta „do ruky“ ide jemu (Michal 2026-11-02, Q4). */
+  readonly miesto?: Miesto;
 }
 
 export interface LineState {

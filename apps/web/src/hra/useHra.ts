@@ -4,7 +4,7 @@
 // pošle rejoin s kódom z localStorage a hráč pokračuje, kde prestal.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ClientState, Command, DlzkaHry, Event, GameData, LokalitaVHistorii, Pohlavie, Rod } from "@naex/core";
+import type { ClientState, Command, DlzkaHry, Event, GameData, LokalitaVHistorii, Miesto, Pohlavie, Rod } from "@naex/core";
 import { kariet, loadGameData, rozlozRod } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
@@ -45,6 +45,25 @@ export function textHlasky(text: string, mena: readonly string[], rody: readonly
 
 /** Zmena Frajeriny po dohraní partie (index = miesto hráča). */
 export type ZmenyFrajeriny = readonly [{ readonly pred: number; readonly po: number }, { readonly pred: number; readonly po: number }];
+
+/** Stôl 2 na 2 tak, ako ho posiela server (stol2na2.ts). */
+export interface Stol2na2Info {
+  readonly code: string;
+  readonly miesto: Miesto;
+  readonly verejny: boolean;
+  readonly sada: Sada;
+  readonly zacala: boolean;
+  readonly miesta: readonly ({ readonly meno: string; readonly avatar: string | null; readonly bot: boolean; readonly pripojeny: boolean } | null)[];
+  readonly signaly: readonly { readonly id: string; readonly text: string }[];
+  readonly navrhVzdania: Miesto | null;
+}
+
+/** Správa v tímovom chate alebo signál; súper ju nikdy nedostane. */
+export interface SpravaTimu {
+  readonly od: Miesto;
+  readonly text: string;
+  readonly signal: boolean;
+}
 
 export interface Miestnost {
   readonly code: string;
@@ -131,6 +150,9 @@ export interface HlaskaChybyVyucby {
 type ServerMsg =
   | { type: "privitanie"; code: string; seat: 0 | 1; started: boolean; verejna: boolean; dlzka: DlzkaHry; sada: Sada }
   | { type: "hraci"; hraci: [HracInfo | null, HracInfo | null] }
+  | ({ type: "stol2na2" } & Stol2na2Info)
+  | { type: "chat2na2"; od: Miesto; text: string }
+  | { type: "signal2na2"; od: Miesto; id: string; text: string }
   | { type: "state"; view: ClientState; events: Event[] }
   /** Doterajší log partie pri návrate (obnovenie stránky, výpadok) — nahrádza miestny. */
   | { type: "historia"; events: Event[] }
@@ -200,6 +222,18 @@ export interface HlaskaVPartii {
 }
 
 export interface HraHook {
+  readonly zalozPata: (bot: boolean) => void;
+  readonly stol2na2: Stol2na2Info | null;
+  readonly spravyTimu: readonly SpravaTimu[];
+  readonly zalozStol2na2: (verejny: boolean, boti: readonly number[]) => void;
+  readonly nahodne2na2: () => void;
+  readonly pripojStol2na2: (code: string) => void;
+  readonly botiDoStola: () => void;
+  readonly signal2na2: (id: string) => void;
+  readonly chat2na2: (text: string) => void;
+  readonly vzdat2na2: () => void;
+  readonly zrusVzdanie2na2: () => void;
+  readonly odovzdajOdpoved2na2: () => void;
   readonly pripojene: boolean;
   readonly miestnost: Miestnost | null;
   readonly data: GameData | null;
@@ -251,6 +285,8 @@ export interface HraHook {
 }
 
 const KLUC = KLUC_MIESTNOSTI;
+/** Kód stola 2 na 2 na návrat po obnovení stránky; miestnosti 1 na 1 sa ho netýkajú. */
+const KLUC_STOLA = "naex.stol2na2";
 
 export function textUdalosti(e: Event, mena: readonly string[], rody: readonly [Rod, Rod]): string | null {
   const meno = (p: number) => mena[p] ?? `Hráč ${p + 1}`;
@@ -308,6 +344,9 @@ export function useHra(aktivne: boolean): HraHook {
     hlaskaN.current++;
     setHlaskaChybyVyucby({ n: hlaskaN.current, hlaska });
   }, []);
+  const [stol2na2, setStol2na2] = useState<Stol2na2Info | null>(null);
+  const [spravyTimu, setSpravyTimu] = useState<readonly SpravaTimu[]>([]);
+  const vStoleRef = useRef(false);
   const wsRef = useRef<WebSocket | null>(null);
   const menaRef = useRef<string[]>([]);
   menaRef.current = hraci.map((h, i) => menoVoVete(h, i));
@@ -324,11 +363,37 @@ export function useHra(aktivne: boolean): HraHook {
       const kod = localStorage.getItem(KLUC);
       navratRef.current = kod !== null;
       if (kod !== null) ws.send(JSON.stringify({ type: "rejoin", code: kod }));
+      const stol = localStorage.getItem(KLUC_STOLA);
+      if (stol !== null && kod === null) ws.send(JSON.stringify({ type: "stol2na2Pridaj", code: stol }));
     };
 
     ws.onmessage = (raw) => {
       const msg = JSON.parse(String(raw.data)) as ServerMsg;
       switch (msg.type) {
+        case "stol2na2": {
+          const { type: _t, ...info } = msg;
+          vStoleRef.current = true;
+          setStol2na2(info);
+          localStorage.setItem(KLUC_STOLA, info.code);
+          setChyba(null);
+          setMiestnost({ code: info.code, seat: (info.miesto % 2) as 0 | 1, started: info.zacala, verejna: info.verejny, dlzka: "kratka", sada: info.sada });
+          // Stôl 1 na 1 ráta s dvoma hráčmi: tím je jeden hráč, meno sú obaja členovia.
+          const meno = (m: number): string => info.miesta[m]?.meno ?? "voľné miesto";
+          const hraciTimov: [HracInfo, HracInfo] = [
+            { meno: `${meno(0)} a ${meno(2)}`, avatar: info.miesta[0]?.avatar ?? null, profil: "ziadny" },
+            { meno: `${meno(1)} a ${meno(3)}`, avatar: info.miesta[1]?.avatar ?? null, profil: "ziadny" },
+          ];
+          setHraci(hraciTimov);
+          menaRef.current = hraciTimov.map((x) => x.meno);
+          rodyRef.current = [null, null];
+          break;
+        }
+        case "chat2na2":
+          setSpravyTimu((s) => [...s, { od: msg.od, text: msg.text, signal: false }]);
+          break;
+        case "signal2na2":
+          setSpravyTimu((s) => [...s, { od: msg.od, text: msg.text, signal: true }]);
+          break;
         case "privitanie":
           setMiestnost({ code: msg.code, seat: msg.seat, started: msg.started, verejna: msg.verejna, dlzka: msg.dlzka, sada: msg.sada });
           setFrajerina(null);
@@ -403,6 +468,8 @@ export function useHra(aktivne: boolean): HraHook {
           ozviChybu(msg.hlaska);
           break;
         case "error": {
+          // Stôl medzitým zanikol: návrat po obnovení stránky sa už nepokúša.
+          if (msg.text === "Taký stôl neexistuje.") localStorage.removeItem(KLUC_STOLA);
           // Server odpovedá v poradí správ — prvá chyba po rejoin patrí rejoinu.
           const reakcia = reakciaNaChybu(msg.text, { priStole: miestnostRef.current !== null, automatickyNavrat: navratRef.current });
           navratRef.current = false;
@@ -488,11 +555,35 @@ export function useHra(aktivne: boolean): HraHook {
       (verejna: boolean, dlzka: DlzkaHry | undefined, bot = false, povaha?: string) => posli({ type: "create", verejna, dlzka, bot, povaha }),
       [posli],
     ),
+    zalozPata: useCallback((bot: boolean) => posli({ type: "create", verejna: false, bot, rezim: "pata" }), [posli]),
     pripoj: useCallback((code: string) => posli({ type: "join", code: code.trim().toUpperCase() }), [posli]),
-    cmd: useCallback((command: Command) => posli({ type: "cmd", cmd: command }), [posli]),
-    kontumacia: useCallback(() => posli({ type: "kontumacia" }), [posli]),
+    cmd: useCallback(
+      (command: Command) => {
+        if (!vStoleRef.current) posli({ type: "cmd", cmd: command });
+        // Vzdanie v 2 na 2 musí potvrdiť aj partner, ide cez návrh.
+        else if (command.type === "vzdat") posli({ type: "stol2na2Vzdat" });
+        else posli({ type: "stol2na2Cmd", cmd: command });
+      },
+      [posli],
+    ),
+    kontumacia: useCallback(() => posli({ type: vStoleRef.current ? "stol2na2Kontumacia" : "kontumacia" }), [posli]),
+    stol2na2,
+    spravyTimu,
+    zalozStol2na2: useCallback((verejny: boolean, boti: readonly number[]) => posli({ type: "stol2na2Zaloz", verejny, boti }), [posli]),
+    nahodne2na2: useCallback(() => posli({ type: "stol2na2Nahodne" }), [posli]),
+    pripojStol2na2: useCallback((code: string) => posli({ type: "stol2na2Pridaj", code }), [posli]),
+    botiDoStola: useCallback(() => posli({ type: "stol2na2Boti" }), [posli]),
+    signal2na2: useCallback((id: string) => posli({ type: "stol2na2Signal", id }), [posli]),
+    chat2na2: useCallback((text: string) => posli({ type: "stol2na2Chat", text }), [posli]),
+    vzdat2na2: useCallback(() => posli({ type: "stol2na2Vzdat" }), [posli]),
+    zrusVzdanie2na2: useCallback(() => posli({ type: "stol2na2VzdatZrus" }), [posli]),
+    odovzdajOdpoved2na2: useCallback(() => posli({ type: "stol2na2Cmd", cmd: { type: "odovzdatOdpoved" } }), [posli]),
     odid: useCallback(() => {
-      posli({ type: "leave" });
+      posli({ type: vStoleRef.current ? "stol2na2Odist" : "leave" });
+      vStoleRef.current = false;
+      localStorage.removeItem(KLUC_STOLA);
+      setStol2na2(null);
+      setSpravyTimu([]);
       localStorage.removeItem(KLUC);
       setMiestnost(null);
       setView(null);

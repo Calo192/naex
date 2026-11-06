@@ -7,6 +7,7 @@
 // * admin cesty overujú rolu na serveri pri každej požiadavke.
 
 import type { IncomingMessage, ServerResponse } from "node:http";
+import type { RiadokRebricka2na2 } from "./stol2na2.ts";
 import type { CastScenara, DlzkaHry } from "@naex/core";
 import { dostupneDlzky, prazdneStatistiky } from "@naex/core";
 import type { KartaNavrh, Pozicia, StranaNavrhu, AkciaDef, KlucoveSlovo, Kategoria, BodovaciaKarta, Nastavenia } from "@naex/tvorba";
@@ -87,6 +88,8 @@ export const OZNAM_UZAVIERKY = "Pripravujeme aktualizáciu hry — nové partie 
 
 export interface ApiKontext {
   readonly ucty: Ucty;
+  /** Samostatný rebríček 2 na 2 (Michal 2026-11-02). */
+  readonly rebricek2na2: () => readonly RiadokRebricka2na2[];
   /** Obnova zabudnutého hesla cez e-mail z profilu (Michal 2026-11-01). */
   readonly obnovaHesla: ObnovaHesla;
   /** Odosielanie e-mailov — zatiaľ len do logu (email.ts, NAEX_EMAIL_REZIM). */
@@ -700,6 +703,7 @@ export async function spracujApi(ctx: ApiKontext, req: IncomingMessage, res: Ser
 
     // ----- verejné -------------------------------------------------------
     if (r === "GET /sada") return ok(ctx.obsah.aktualnaSada().sada);
+    if (r === "GET /rebricek-2na2") return ok(ctx.rebricek2na2());
 
     // Kód je z prehliadača hráča; cudziu ani skončenú partiu server neprezradí.
     if (r === "GET /hry/moja") {

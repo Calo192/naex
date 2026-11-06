@@ -1,0 +1,65 @@
+/* Stôl 2 na 2, rozloženie A: farby len z tém (schemy.css), stôl ostáva ako v 1 na 1. */
+:root { --st2-sirka: 232px; }
+
+body.st2-so-stolom { padding-right: var(--st2-sirka); }
+body.st2-so-stolom .ruka { right: var(--st2-sirka); }
+
+.st2-panel {
+  position: fixed;
+  /* Pod hlavičku stola, tá ostáva cez celú šírku. */
+  top: 53px;
+  right: 0;
+  bottom: 0;
+  width: var(--st2-sirka);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 10px;
+  overflow-y: auto;
+  background: var(--povrch, var(--panel, #2a2119));
+  border-left: 1px solid var(--okraj, #57452f);
+  font-size: 13px;
+}
+.st2-panel h3 { font-size: 13px; margin: 0 0 4px; }
+.st2-panel p { margin: 0 0 4px; }
+
+.st2-poradie { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.st2-poradie li {
+  border: 1px solid var(--okraj, #57452f);
+  border-radius: 5px;
+  padding: 2px 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st2-poradie li.nasi { font-weight: 600; }
+.st2-poradie li.ted { outline: 2px solid currentColor; font-weight: 700; }
+
+.st2-ruka { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.st2-karta { margin: 0; min-width: 0; }
+.st2-karta img { width: 100%; height: 52px; object-fit: cover; border-radius: 4px; display: block; }
+.st2-karta figcaption { font-size: 11px; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.st2-signaly { display: flex; flex-wrap: wrap; gap: 3px; }
+.st2-signaly button { font-size: 12px; padding: 3px 6px; min-height: 28px; text-align: left; }
+
+.st2-chat { flex: 1; display: flex; flex-direction: column; min-height: 120px; }
+.st2-chat ul { list-style: none; margin: 0 0 4px; padding: 0; flex: 1; overflow-y: auto; min-height: 40px; }
+.st2-chat li.signal { font-style: italic; }
+.st2-chat input { width: 100%; box-sizing: border-box; }
+
+.st2-pozor { border: 1px solid currentColor; border-radius: 6px; padding: 5px 7px; font-weight: 600; }
+
+.st2-timy { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+.st2-tim h3 { margin: 0 0 6px; font-size: 15px; }
+.st2-tim ul { list-style: none; margin: 0; padding: 0; }
+.st2-hrac { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.st2-znacka { font-size: 11px; border: 1px solid currentColor; border-radius: 99px; padding: 0 6px; }
+.st2-kod { font-size: 20px; letter-spacing: 0.1em; }
+
+/* Telefón sa hrá na šírku a ruka drží spodok: panel sa zmení na tenší pás. */
+@media (max-width: 900px) {
+  :root { --st2-sirka: 170px; }
+  .st2-ruka { grid-template-columns: repeat(2, 1fr); }
+}

@@ -30,6 +30,8 @@ import { VyzvaCelejObrazovky, useVyzvaTelefonu } from "./CelaObrazovka.tsx";
 import { UpozornenieTelefonu, upozornenieSkryte } from "./UpozornenieTelefonu.tsx";
 import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
 import { platnaVolbaBota, type BotNaVyber } from "./boti.ts";
+import { Cakaren2na2, Lobby2na2, Panel2na2 } from "./Stol2na2.tsx";
+import { RadStarsich, RozhodnutiePata, RukaSupera } from "./Pata.tsx";
 import "./hra.css";
 
 interface OtvorenaHra {
@@ -392,6 +394,15 @@ function VyucbaNaTelefone({ prerus }: { readonly prerus: () => void }) {
   );
 }
 
+/** Trieda režimu na body: stôl má rovnakú štruktúru DOM vo všetkých režimoch, nič sa okolo neho neobalí. */
+function useTriedaRezimu(trieda: string | null): void {
+  useEffect(() => {
+    if (trieda === null) return;
+    document.body.classList.add(trieda);
+    return () => document.body.classList.remove(trieda);
+  }, [trieda]);
+}
+
 export function Hra() {
   useTitulok("Hrať");
   const { ja, nacitane, nastav: nastavUcet } = useUcet();
@@ -409,6 +420,7 @@ export function Hra() {
   const [upozornenieVidel, setUpozornenieVidel] = useState<string | null>(null);
   // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
   const hra = useHra(ja !== null && nepodporovane === null);
+  useTriedaRezimu(hra.stol2na2 !== null ? "st2-so-stolom" : hra.view?.pata !== undefined ? "rezim-pata" : null);
 
   // Majster Melichar komentuje momenty len v partii proti počítaču — ľudia si nadávajú sami.
   // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23), a v každej
@@ -535,6 +547,19 @@ export function Hra() {
     return (
       <>
         <Lobby zaloz={zalozSPonukou} pripoj={hra.pripoj} chyba={hra.chyba} vyucba={vyucbaUctu} zacniVyucbu={zacniVyucbu} vyucbaNaPocitaci={vyucbaNaPocitaci} />
+        <Lobby2na2 zaloz={hra.zalozStol2na2} nahodne={hra.nahodne2na2} pripoj={hra.pripojStol2na2} />
+        <section className="panel">
+          <h2>Päta, Lakeť, Otočka</h2>
+          <p className="tlmene">Draft štyroch starších s pečeňou. Vyhrá, kto podrazí všetkých súperových. Zatiaľ sa nepočíta do Frajeriny.</p>
+          <div className="riadok-tlacidiel">
+            <button type="button" className="tlacidlo tlacidlo-hlavne pt-bot" onClick={() => hra.zalozPata(true)}>
+              Proti počítaču
+            </button>
+            <button type="button" className="tlacidlo" onClick={() => hra.zalozPata(false)}>
+              Založiť stôl s kódom
+            </button>
+          </div>
+        </section>
         {zalozPoPonuke !== null && vyucbaUctu !== null && !ponukaZavreta && (
           <PonukaVyucby vyucba={vyucbaUctu} zacni={() => zacniVyucbu(false)} preskoc={preskocPonuku} />
         )}
@@ -542,6 +567,9 @@ export function Hra() {
     );
   }
 
+  if (hra.stol2na2 !== null && !hra.stol2na2.zacala) {
+    return <Cakaren2na2 stol={hra.stol2na2} botmi={hra.botiDoStola} odist={hra.odid} />;
+  }
   if (hra.view === null || hra.data === null) {
     const [h0, h1] = hra.hraci;
     return (
@@ -651,6 +679,21 @@ export function Hra() {
         </p>
       </MelicharVBare>
     )}
+    {hra.stol2na2 !== null && (
+      <Panel2na2
+        stol={hra.stol2na2}
+        view={hra.view}
+        data={hra.data}
+        sada={m.sada}
+        spravy={hra.spravyTimu}
+        signal={hra.signal2na2}
+        chat={hra.chat2na2}
+        odovzdajOdpoved={hra.odovzdajOdpoved2na2}
+        potvrdVzdanie={hra.vzdat2na2}
+        zrusVzdanie={hra.zrusVzdanie2na2}
+      />
+    )}
+    {hra.view.pata !== undefined && <RozhodnutiePata view={hra.view} data={hra.data} sada={m.sada} cmd={cmd} />}
     <HernaPlocha
       naSirku={naSirku}
       onPocitadlo={setPocitadloBezi}
@@ -682,8 +725,18 @@ export function Hra() {
       frajerina={hra.frajerina}
       achievementy={hra.suhrnAchievementov}
       kontumacia={hra.kontumacia}
+      nadLiniou={
+        hra.view.pata === undefined ? undefined : (
+          <>
+            <RukaSupera view={hra.view} data={hra.data} />
+            <RadStarsich view={hra.view} p={opponentOf(hra.view.ja)} data={hra.data} sada={m.sada} />
+          </>
+        )
+      }
+      podLiniou={hra.view.pata === undefined ? undefined : <RadStarsich view={hra.view} p={hra.view.ja} data={hra.data} sada={m.sada} />}
       vHlavicke={
-        hra.view.koniec === null && maPravo(ja, "melichar_soundboard") && (
+        // Hlášky Melichara sú pre 1 na 1, stôl 2 na 2 ich zatiaľ nerozposiela.
+        hra.stol2na2 === null && hra.view.koniec === null && maPravo(ja, "melichar_soundboard") && (
           <Soundboard
             ja={m.seat}
             menoSupera={hra.hraci[opponentOf(m.seat)]?.meno ?? "Súper"}

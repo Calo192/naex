@@ -26,6 +26,51 @@ interface RiadokRebricka {
   readonly provizorna: boolean;
 }
 
+interface Riadok2na2 {
+  readonly id: number;
+  readonly meno: string;
+  readonly avatar: string | null;
+  readonly vyhry: number;
+  readonly prehry: number;
+}
+
+/** Samostatný rebríček 2 na 2 (Michal 2026-11-02): len partie štyroch ľudí, ranky 1 na 1 nemení. */
+function Rebricek2na2() {
+  const [riadky, setRiadky] = useState<readonly Riadok2na2[] | null>(null);
+  useEffect(() => {
+    api.get<readonly Riadok2na2[]>("/rebricek-2na2")
+      .then(setRiadky)
+      .catch(() => setRiadky([]));
+  }, []);
+  if (riadky === null || riadky.length === 0) return null;
+  return (
+    <section className="panel">
+      <h2>2 na 2</h2>
+      <p className="tlmene">Výhry a prehry v partiách štyroch ľudí.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Hráč</th>
+            <th className="cislo">Výhry</th>
+            <th className="cislo">Prehry</th>
+          </tr>
+        </thead>
+        <tbody>
+          {riadky.map((h, i) => (
+            <tr key={h.id}>
+              <td>{i + 1}</td>
+              <td>{h.meno}</td>
+              <td className="cislo">{h.vyhry}</td>
+              <td className="cislo">{h.prehry}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
 /** Hodnosti podľa Frajeriny — rovnaké hranice ako na serveri (frajerina.ts). */
 const HODNOSTI: readonly [number, string][] = [
   [2000, "Kráľ krčmy"],
@@ -118,6 +163,7 @@ export function Rebricek() {
       )}
       </div>
       <aside className="st-bok rebricek-bok">
+      <Rebricek2na2 />
       <section className="panel hodnosti">
         <h2>Ako sa počíta Frajerina</h2>
         <p className="tlmene">

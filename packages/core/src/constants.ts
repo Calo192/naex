@@ -18,6 +18,16 @@ export const KONSTANTY = {
   START_CIGARETY: 3,
 
   /**
+   * Formát 2 na 2 (Michal 2026-10-28): tím začína s 3 poldeci a 4 cigaretami
+   * a prah Dlhu aj Cirhózy má o 1 vyšší — zdroje a kliatby sú spoločné tímu.
+   */
+  DVA_NA_DVA: {
+    START_POLDECI: 3,
+    START_CIGARETY: 4,
+    PRAH_NAVYSE: 1,
+  },
+
+  /**
    * Počiatočná ruka každého hráča (v6, Michal 2026-10-26): len tieto štyri
    * karty, doberací balíček je na začiatku prázdny (predtým 7 štartoviek
    * 3/2/1/1 v balíčku a 5 v ruke). Tieto štyri druhy sú výhradne štartovacie —

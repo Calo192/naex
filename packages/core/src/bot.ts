@@ -26,7 +26,7 @@
 // dá volajúci (server).
 
 import type { Action, CardInstance, Favour, PlayerId } from "./types.ts";
-import { ALL_FAVOURS, opponentOf } from "./types.ts";
+import { ALL_FAVOURS, opponentOf, timMiesta } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
 import type { RngState } from "./rng.ts";
@@ -1058,7 +1058,7 @@ function dohrajZhromazdenie(k: Kontext, s: GameState): GameState {
   // ktorom sa v nanečisto dohranom Zhromaždení pasuje zadarmo — a vo v5
   // rozhoduje súboj o Cigarety (bot pasoval o poslednú bitku).
   const cigarety: [number, number] = [s.hraci[0].cigarety, s.hraci[1].cigarety];
-  let naTahu = z.naTahu;
+  let naTahu = timMiesta(z.naTahu);
   for (let krok = 0; krok < 30 && !(pasoval[0] && pasoval[1]); krok++) {
     const q = naTahu;
     const v = najlepsieVylozenie(k, { ...s, strany }, ruky[q], q, limit[q]);

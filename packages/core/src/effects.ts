@@ -5,7 +5,8 @@
 // MANUAL — motor ju v správnej fáze pripomenie v logu a hráči ju vyhodnotia
 // sami. Register MUSÍ pokrývať všetky id sady (kontroluje to test).
 
-import type { Action, PlayerId, Tag } from "./types.ts";
+import type { Action, Format, PlayerId, Tag } from "./types.ts";
+import type { HraPata } from "./pata.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
 import { defOf, printedSides } from "./data.ts";
@@ -28,6 +29,10 @@ export interface VerejnyStav {
   readonly strany: GameState["strany"];
   readonly starsi: readonly ElderState[];
   readonly hraci: readonly [VerejnyHrac, VerejnyHrac];
+  /** Formát partie — chýba v 1 na 1 (aj v archíve spred 2 na 2). */
+  readonly format?: Format;
+  /** Režim Päta, Lakeť, Otočka: rady starších; chýba = Kalamita. */
+  readonly pata?: Pick<HraPata, "rady">;
   /** Špaky (Vidly v7) — chýba v syntetických stavoch testov. */
   readonly spaky?: readonly [number, number];
   /** Hráč dal v tomto kole NA EX (Šofér). */
@@ -49,7 +54,7 @@ export type VerejnyHrac = {
   /** Pohľad klienta: počet kariet Absťák v balíčku — poloha je skrytá (v9.1). */
   | { readonly abstaky: number }
   /** Stav na serveri: Absťáky sa rátajú z kariet (pocetAbstakov). */
-  | Pick<PlayerState, "ruka" | "doberaci" | "odhadzovaci">
+  | Pick<PlayerState, "ruka" | "rukaDruheho" | "doberaci" | "odhadzovaci">
 );
 
 /**
@@ -288,12 +293,18 @@ export function zadlzeniePitkyZLinie(data: GameData, state: Pick<VerejnyStav, "s
 // ---------------------------------------------------------------------------
 // Háčiky — motor ich volá na presne určených miestach
 
+/** Prah Dlhu aj Cirhózy je v 2 na 2 o 1 vyšší (Michal 2026-10-28) — kliatby sú spoločné tímu. */
+function prahNavyseFormatu(state: Pick<VerejnyStav, "format">): number {
+  return state.format === "2na2" ? KONSTANTY.DVA_NA_DVA.PRAH_NAVYSE : 0;
+}
+
 /**
  * Prah Cirhózy navyše: nealko v Dedičstve hráča p (+2) a Krčma ako cieľ kola
  * (+2 obom — povinné NA EX tam už neznamená istú Cirhózu, Michal 2026-10-22).
  */
 export function prahCirhozyBonus(state: VerejnyStav, p: PlayerId): number {
   return (
+    prahNavyseFormatu(state) +
     (vDedicstve(state, p, "nealko") ? KONSTANTY.EFEKT.NEALKO_PRAH_CIRHOZY : 0) +
     (jeCielLokalita(state, "krcma") ? KONSTANTY.EFEKT.KRCMA_PRAH_CIRHOZY : 0)
   );
@@ -376,8 +387,8 @@ export function naexZaPitku(state: VerejnyStav): number {
 }
 
 /** Prah Dlhu hráča p (v7): Výherný automat v Dedičstve ho zvýši o 1. */
-export function prahDlhuBonus(state: Pick<VerejnyStav, "hraci">, p: PlayerId): number {
-  return state.hraci[p].dedicstvo.some((k) => k.defId === "vyherny_automat") ? 1 : 0;
+export function prahDlhuBonus(state: Pick<VerejnyStav, "hraci" | "format">, p: PlayerId): number {
+  return prahNavyseFormatu(state) + (state.hraci[p].dedicstvo.some((k) => k.defId === "vyherny_automat") ? 1 : 0);
 }
 
 /** Kar (Pitka, v7): pečeň za NA EX dostane súper toho, kto ho dal. */
