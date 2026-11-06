@@ -7,6 +7,7 @@ import type { ClientState, GameData, Rod, Vykupne } from "@naex/core";
 import { KONSTANTY, VERZIA_PRAVIDIEL, pocet, rozpisSpakov, tvar, opponentOf } from "@naex/core";
 import { Odkaz } from "../lib/router.tsx";
 import { UcetSpakov } from "./UcetSpakov.tsx";
+import { RadyNaKonci } from "./Pata.tsx";
 import { Nastenka, PocetSpakov } from "./Spaky.tsx";
 import { PasStarsich } from "./PasStarsich.tsx";
 import { favourPodlaId } from "./priazenKola.ts";
@@ -66,7 +67,8 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
         <h2 id="koniec-nadpis">{nadpis}</h2>
         <p className="koniec-dovod">{dovod}</p>
         {/* Špaky (v6): konečné špaky po finále, inak to, čo hráči nazbierali do konca. */}
-        <p className="koniec-skore koniec-spaky">
+        {view.pata !== undefined && starsi !== undefined && <RadyNaKonci view={view} data={starsi.data} mena={mena} obrazok={starsi.obrazok} />}
+        {view.pata === undefined && <p className="koniec-skore koniec-spaky">
           <span className="moje">
             ty
             <PocetSpakov n={koniec.body?.[ja] ?? view.spaky[ja]} kto="moj" velky />
@@ -76,8 +78,8 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             <PocetSpakov n={koniec.body?.[su] ?? view.spaky[su]} kto="superov" velky />
             {mena[su]}
           </span>
-        </p>
-        {view.nastenka.length > 0 && (
+        </p>}
+        {view.pata === undefined && view.nastenka.length > 0 && (
           <Nastenka
             nastenka={view.nastenka}
             zostava={[]}
@@ -91,8 +93,8 @@ export function KoniecHry({ view, mena, menoKarty, frajerina, achievementy = nul
             koniec
           />
         )}
-        {starsi !== undefined && <PasStarsich view={view} data={starsi.data} mena={mena} menoKarty={menoKarty} obrazok={starsi.obrazok} />}
-        {view.nastenka.length > 0 && rozpis !== null && (
+        {view.pata === undefined && starsi !== undefined && <PasStarsich view={view} data={starsi.data} mena={mena} menoKarty={menoKarty} obrazok={starsi.obrazok} />}
+        {view.pata === undefined && view.nastenka.length > 0 && rozpis !== null && (
           // Súčet čísel pri lokalitách nie je celkové skóre — playtest 20261031-191322 v tom hľadal chybu.
           <p className="koniec-cirhozy koniec-pozn-lokalit">
             Pri lokalite sú špaky jej víťaza za ňu (bitka, Robota, starší, Nakladačka, Exekútor). Spolu nižšie ráta aj porazeného v každej bitke, výkupné a

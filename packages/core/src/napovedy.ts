@@ -164,10 +164,24 @@ const dopln = (s: string, hodnoty: Readonly<Record<string, string>>): string => 
  * Nápovedy, ktorých situácia v tomto pohľade nastala, zoradené podľa poradia.
  * Ktoré už hráč videl, rieši volajúci (dalsiaNapoveda).
  */
+/** Nápovedy o špakoch, starších na stupniciach, hádke a Exekútorovi: v režime Päta, Lakeť, Otočka nič také nie je. */
+export const NAPOVEDY_MIMO_PATY: ReadonlySet<string> = new Set([
+  "dlh",
+  "body",
+  "pohorsenie",
+  "cirhoza",
+  "priazen",
+  "patronat",
+  "presvedcenie",
+  "vydesenie",
+  "exekutor",
+]);
+
 export function napovedy(data: GameData, katalog: KatalogNapoved, view: ClientState): Napoveda[] {
   if (view.koniec !== null) return [];
   const out: Napoveda[] = [];
   for (const def of katalog.napovedy) {
+    if (view.pata !== undefined && NAPOVEDY_MIMO_PATY.has(def.id)) continue;
     const s = SPUSTACE[def.id]?.(data, view, view.ja, def) ?? null;
     if (s === null) continue;
     const text = typeof def.melichar === "string" ? def.melichar : (def.melichar[s.variant ?? ""] ?? null);

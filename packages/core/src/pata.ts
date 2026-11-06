@@ -6,7 +6,7 @@
 import type { Action, CardInstance, PlayerId } from "./types.ts";
 import { opponentOf } from "./types.ts";
 import type { GameData } from "./data.ts";
-import type { ActionSums, LineState, PlacedCard } from "./partia.ts";
+import type { ActionSums, LineEval, LineState, PlacedCard } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import { abstakyVBitke } from "./battle.ts";
 
@@ -103,17 +103,25 @@ export function tuheHrobara(stav: PataStav, p: PlayerId): number {
   return [...stav.rady[0], ...stav.rady[1]].filter((s) => s.podrazeny).length;
 }
 
+/** Rad vyhodnotený ako línia: sloty kariet na vykreslenie a čo ktorý starší práve dáva. */
+export interface VyhodnotenieRadu {
+  readonly cards: LineEval["cards"];
+  /** Podľa uid karty; podrazený v mape nie je, jeho akcie neplatia. */
+  readonly naStarsom: ReadonlyMap<number, ActionSums>;
+  readonly sumy: ActionSums;
+}
+
 /**
  * Akcie radu ako malej línie bez lokality. Podrazený ostáva spojkou: sused na spoji s ním svoju akciu
  * dostane, jeho vlastné akcie neplatia a jeho Odpor ani Posilnenie suseda nemenia — preto sa mu na výpočet
  * prepíšu na Pakt, ktorý len kopíruje partnera, a jeho príspevky sa zo súčtov vynechajú.
  */
-export function sumyRadu(
+export function vyhodnotRad(
   data: GameData,
   rad: readonly StarsiPata[],
   p: PlayerId,
   nastroje?: LineState["nastroje"],
-): ActionSums {
+): VyhodnotenieRadu {
   const podrazeni = new Set(rad.filter((s) => s.podrazeny).map((s) => s.karta.uid));
   const variants = new Map(data.variants);
   for (const s of rad) {
@@ -134,15 +142,28 @@ export function sumyRadu(
     ...(nastroje === undefined ? {} : { nastroje }),
   };
   const ev = evaluateLine({ ...data, variants }, line);
-  const out: Partial<Record<Action, number>> = {};
+  const sumy: Partial<Record<Action, number>> = {};
+  const naStarsom = new Map<number, Partial<Record<Action, number>>>();
   const zdroje = ev.zdroje[p];
   for (const akcia of Object.keys(zdroje) as Action[]) {
     for (const z of zdroje[akcia] ?? []) {
       if (podrazeni.has(z.uid)) continue;
-      out[akcia] = (out[akcia] ?? 0) + z.hodnota;
+      sumy[akcia] = (sumy[akcia] ?? 0) + z.hodnota;
+      const m = naStarsom.get(z.uid) ?? {};
+      m[akcia] = (m[akcia] ?? 0) + z.hodnota;
+      naStarsom.set(z.uid, m);
     }
   }
-  return out;
+  return { cards: ev.cards, naStarsom, sumy };
+}
+
+export function sumyRadu(
+  data: GameData,
+  rad: readonly StarsiPata[],
+  p: PlayerId,
+  nastroje?: LineState["nastroje"],
+): ActionSums {
+  return vyhodnotRad(data, rad, p, nastroje).sumy;
 }
 
 /** Súčet dvoch súčtov akcií — línia + rad v Pitke aj v bitke. */

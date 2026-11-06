@@ -362,6 +362,8 @@ function Rola({ utoci, tip, frajerina }: { readonly utoci: boolean; readonly tip
 }
 
 export interface HracDoskaProps {
+  /** Režim Päta, Lakeť, Otočka: starší namiesto dlaždíc Špaky a Starší, ktoré v režime nie sú. */
+  readonly pult?: ReactNode;
   readonly view: ClientState;
   /** Pečiatka a rozpis na dlaždiciach Cigarety a Poldeci. */
   readonly prisunCigariet?: PrisunDlazdice;
@@ -465,6 +467,7 @@ export function HracDoska({
   spojenie,
   menoSupera = "súper",
   mena,
+  pult,
 }: HracDoskaProps) {
   const hrac = view.hraci[p];
   const ja = p === view.ja;
@@ -569,18 +572,20 @@ export function HracDoska({
           />
           {spojenie !== undefined && !spojenie.pripojeny && <span className="doska-odpojeny">○ odpojený {minSek(odpojenyMs)}</span>}
           {/* Nepriznané kliatby pod menom; priznané a Dedičstvo sú v dlaždici KARTY (Michal 2026-10-23, #76). */}
-          {(kliatby.cirhoza > 0 || zavislost.abstaky > 0) && (
+          {((view.pata === undefined && kliatby.cirhoza > 0) || zavislost.abstaky > 0) && (
             <span className="doska-oblast">
               <span
                 className="cip kliatba"
                 title={
-                  (ja
+                  view.pata !== undefined
+                    ? "Absťák sa nedá priznať — každý v balíčku uberie v bitke 1 tuhé."
+                    : (ja
                     ? `Tvoje nepriznané kliatby v ruke a v balíčkoch. Každá Cirhóza ti na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`
                     : `Súperove nepriznané kliatby podľa toho, čo bolo vidno na stole. Každá Cirhóza mu na konci hry zoberie ${pocet(KONSTANTY.SPAKY_ZA_CIRHOZU, "špak", "špaky", "špakov")}.`) +
                   (zavislost.abstaky > 0 ? " Absťák sa nedá priznať — každý v balíčku uberie v bitke 1 tuhé." : "")
                 }
               >
-                nepriznané{kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
+                nepriznané{view.pata === undefined && kliatby.cirhoza > 0 && ` · Cirhóza ×${kliatby.cirhoza}`}
                 {zavislost.abstaky > 0 && ` · Absťák ×${zavislost.abstaky}`}
               </span>
             </span>
@@ -707,7 +712,7 @@ export function HracDoska({
               {vyhladZadlzenia !== null ? (
                 <TextVyhladu x={vyhladZadlzenia} />
               ) : prahy.exekucia > 0 ? (
-                <span>exekúcia v bitke: −{spakov(prahy.exekucia)}</span>
+                <span>exekúcia v bitke: {view.pata === undefined ? `−${spakov(prahy.exekucia)}` : `každému staršiemu −${prahy.exekucia}`}</span>
               ) : prahy.priznaneDlhy > 0 ? (
                 <span>Záhradkár: exekúcia ťa obíde</span>
               ) : (
@@ -721,17 +726,23 @@ export function HracDoska({
               <>
                 <span className="tip-stav">
                   {prahy.priznaneDlhy} {prahy.priznaneDlhy === 1 ? "priznaný Dlh" : "priznané Dlhy"}
-                  {prahy.exekucia > 0 ? ` · exekúcia v tejto bitke: −${spakov(prahy.exekucia)}` : prahy.priznaneDlhy > 0 ? " · Záhradkár: exekúcia ťa obíde" : ""}
+                  {prahy.exekucia > 0 ? ` · exekúcia v tejto bitke: ${view.pata === undefined ? `−${spakov(prahy.exekucia)}` : `každému staršiemu −${prahy.exekucia} pečene`}` : prahy.priznaneDlhy > 0 ? " · Záhradkár: exekúcia ťa obíde" : ""}
                   {ukazZadlzenie(hrac.zadlzenie, prahy.dlh) && ` · zadĺženie ${hrac.zadlzenie}${v !== null && v.zadlzenieZoStola > 0 ? ` ▸ ${zadlzeniePo}` : ""} z ${prahy.dlh}`}
                   {vyhladZadlzenia !== null && ` · ${vyhladPitky(vyhladZadlzenia).cele.join(" · ")}`}
                 </span>
                 {prahy.dlh > 1 ? `Každé ${prahy.dlh} zadĺženia v Pitke = Dlh, hneď priznaný; zvyšok zadĺženia po Pitke ostáva a čaká na ďalší Dlh.` : "Každá akcia Hazard v Pitke = Dlh, hneď priznaný."} Za priznané Dlhy príde v každej bitke
-                Exekútor: zhorí polovica Dlhov (zaokrúhlene nahor) a toľko špakov, tvoja priazeň Advokáta z nich uberie 1 / 2 / 3. Záhradkár v tvojej partii ho v tom kole obíde.
+                {view.pata === undefined ? (
+                  <>Exekútor: zhorí polovica Dlhov (zaokrúhlene nahor) a toľko špakov, tvoja priazeň Advokáta z nich uberie 1 / 2 / 3. Záhradkár v tvojej partii ho v tom kole obíde.</>
+                ) : (
+                  "Exekúcia v bitke: zhorí polovica Dlhov nahor a každý stojaci starší stratí 1 pečeň za každý spálený Dlh; štít ju netlmí."
+                )}
               </>
             ),
           }}
         />
         <DlazdicaKariet hrac={hrac} ja={ja} karty={karty} />
+        {pult ?? (
+          <>
         <button
           type="button"
           className={`zdroj zdroj-body${spakyKlik.stlacene ? " stlacene" : ""}`}
@@ -759,6 +770,8 @@ export function HracDoska({
           </span>
         </button>
         <DlazdicaStarsich view={view} p={p} zaStarsich={body.zaStarsichVyhra[p]} zaStarsichPrehra={body.zaStarsichPrehra[p]} starsi={starsi} />
+          </>
+        )}
       </div>
 
     </section>

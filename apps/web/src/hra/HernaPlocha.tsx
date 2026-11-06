@@ -49,7 +49,7 @@ import type {
   ZobrataVerejne,
   Zdvih,
 } from "@naex/core";
-import { odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
+import { sRadom, odhadSpakovKola, type StavOdhadu, riadkyCakajuceho, riadkyCakajucichPoldeci, KONSTANTY, jeCoTahat, jeFinaleNaNastenke, cigaretyZaPas, spakov, efektyPrehry, hrozbaKliatob, mozeEsteNaex, textHrozbyKliatob, textyEfektovPrehry, cenaKliatby, battleOutcome, prebytokNaRozdelenie, nahladPitky, pocet, tvar, vyhladDlhov, evaluateLine, pocitadloBitky, pitkaPredBitkou, hrozbaNaex, krokStavby, planVykladania, barterCena, limitBuduceKolo, limitZhromazdenia, lineState, nahladZajatia, prevahaStran, krajeStran, dovodZakazuFajcit, defOf, jednotaZakazuje, cenaFajceniaHraca, naexLimitMinuty as naexLimitMinutyHraca, sMojimiSkrytymiNaex, sPrilozenou, vystrahaPecene, nahladNaexNaKartu, najhorsiaOdpovedNaNaex, cenaTahu, nahladVylozenia, moznostiNaexVPohlade, zablokovaneStrany, NASTROJ_PRI_LOKALITE, favourStarsieho, krokRozdelenia, cieleOdpovede, maxZoSenku, bodyRozdelenia, printedSides, poskodenieBitky, rozpisPoskodenia, prahyHraca, scorecardStarsieho, stavKraja, stavkaBitky, stavZavislosti, stranyLokality, vidiVolbuSupera, hraVPitke, cakaSBzdochou, opponentOf, majitelPresvedcenej, moznostiAkcie, cenaAkcieUplna, zdvihyPreAkcie, navrhRozdelenia, pohladPoRozdeleni, priazenHraca, priazenSila, pultStarsich, spakyTeraz, NAZVY_ZON, reciNizsie, vazniNaVyhru } from "@naex/core";
 import type { Moment, ActionSums, DopadyNahladu, KliatbyNahladu, NahladNaexNaKartu, PrebytokNahladu, NahladVylozenia, PolozkaVykladania, Rod, Slot, StranaLinie, VystrahaPecene } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { KoniecHry } from "./KoniecHry.tsx";
@@ -269,6 +269,9 @@ const PRIDAVOK_LINIE = 74;
 const PRIDAVOK_NOTEBOOK = 38;
 /** Pod NIZKE_OKNO: spodný okraj línie leží pod hranou stola (hra.css). */
 const PRIDAVOK_NIZKE = 28;
+/** Režim Päta, Lakeť, Otočka: výška dvoch pásov starších nad a pod líniou; pod NOTEBOOK sú v jednom riadku (pata.css). */
+const REZERVA_RADOV = 130;
+const REZERVA_RADOV_NOTEBOOK = 92;
 /** Najmenší posun kariet akcia ku akcii (zlomok výšky karty), kým ho línia nezmeria. */
 const REZERVA_POSUNU = 0.3;
 
@@ -386,6 +389,10 @@ export interface HernaPlochaProps {
   /** Režim Päta, Lakeť, Otočka: rady starších nad a pod líniou. */
   readonly nadLiniou?: ReactNode;
   readonly podLiniou?: ReactNode;
+  /** Režim Päta, Lakeť, Otočka: starší v paneli hráča. */
+  readonly portretyStarsich?: ((p: PlayerId) => ReactNode) | undefined;
+  /** Režim Päta, Lakeť, Otočka: krok, ktorý na chvíľu prekryje celú plsť (skladanie radu). */
+  readonly naPlsti?: ReactNode;
   /** Prehrávač dohratej partie (roadmapa #18): ovládanie krokov nahradí v hlavičke spojenie, vzdanie a odchod. */
   readonly prehravanie?: ReactNode;
   /** Počítadlo bitky beží / skončilo — pečiatka momentu z bitky (Momenty) počká na jeho koniec. */
@@ -500,6 +507,8 @@ export function HernaPlocha({
   vHlavicke,
   nadLiniou,
   podLiniou,
+  portretyStarsich,
+  naPlsti,
   prehravanie,
   onPocitadlo,
   ukazkaSuhrnu,
@@ -679,7 +688,7 @@ export function HernaPlocha({
   // Schopnosť väzňa (v11.2) teraz ide — Pivnica na hrane svieti.
   const schopnostTeraz = kseftyStola.some((k) => k.druh === "vazen" && k.dovod === null);
   // Pod kartami ostane riadok na štítok Kšeftu, len keď nejaký v línii je — karty sa o toľko zmenšia.
-  const rezervaKseftu = kseftyVLinii.length > 0 ? REZERVA_KSEFTU : 0;
+  const rezervaKseftu = (kseftyVLinii.length > 0 ? REZERVA_KSEFTU : 0) + (nadLiniou === undefined ? 0 : vyskaOkna < NOTEBOOK ? REZERVA_RADOV_NOTEBOOK : REZERVA_RADOV);
   // Dlhá línia sa zmenší na šírku stola (karty sa nezrežú), až po minimum.
   const [sirkaLinie, setSirkaLinie] = useState(0);
   useEffect(() => {
@@ -1128,7 +1137,8 @@ export function HernaPlocha({
       ...(prilozeniaKu === undefined ? {} : { prilozeniaKu }),
     };
     // lineState: rovnaká línia ako na serveri.
-    const lineEval = evaluateLine(data, lineState({ ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena }));
+    // V režime Päta, Lakeť, Otočka dávajú akcie aj rady starších: bar a odhad bitky rátajú ako server.
+    const lineEval = sRadom(data, view, evaluateLine(data, lineState({ ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena })));
     // Klebety z hádky (v10) platia už v tejto bitke — odhad ich ráta (priazeň po hádke).
     const stolSKlebetami = { ...stol, bitkaStav: view.bitkaStav } as VerejnyStav;
     const odhad = ciel === null ? null : poskodenieBitky(data, stolSKlebetami, lineEval.sums);
@@ -2598,7 +2608,8 @@ export function HernaPlocha({
     listokVyberu: ListokNaVyber | null = null,
   ): ReactNode => (
     <Nastenka
-      nastenka={view.nastenka}
+      nastenka={view.pata === undefined ? view.nastenka : []}
+      bezFinale={view.pata !== undefined}
       zostava={view.lokalityVHre}
       ciel={view.ciel}
       ja={ja}
@@ -2610,7 +2621,7 @@ export function HernaPlocha({
       sirkaKarty={Math.round(sirkaKarty)}
       kompaktna={kompaktna}
       koniec={view.koniec !== null}
-      ucet={ucet ? { body, zvyraznit: nastenkaPre } : undefined}
+      ucet={ucet && view.pata === undefined ? { body, zvyraznit: nastenkaPre } : undefined}
       vyber={vyber}
       mierka={mierka}
       sirkaVyberu={sirkaVyberu}
@@ -5125,7 +5136,7 @@ export function HernaPlocha({
             <strong>Na sekere:</strong> {spakov(view.spakyNaSekere)} — vezme ich víťaz tejto bitky. Vo finále pri sekere prepadnú.
           </p>
         )}
-        {view.nastenka.length > 0 && nastenkaEl(false)}
+        {view.pata === undefined && view.nastenka.length > 0 && nastenkaEl(false)}
       </section>
     );
   })();
@@ -5696,7 +5707,7 @@ export function HernaPlocha({
     );
   // Pivnica (Michal 2026-11-02) na mieste, kde bol počet cigariet: väzni a ich schopnosti v okne. Bez väzňa
   // ostane tlmená, aby kraj hrany neposkakoval; svieti, keď schopnosť väzňa teraz ide (v11.2).
-  const pivnicaNaHrane = (
+  const pivnicaNaHrane = view.pata !== undefined ? null : (
     <button
       type="button"
       className={["hrana-pivnica", mojiVazni.length === 0 ? "prazdna" : "", schopnostTeraz ? "dostupna" : "", vrstva === "pivnica" ? "otvorena" : ""].filter((x) => x !== "").join(" ")}
@@ -6018,6 +6029,7 @@ export function HernaPlocha({
           pult(super_)
         ) : (
         <HracDoska
+          pult={portretyStarsich?.(super_)}
           data={data}
           view={view}
           p={super_}
@@ -6120,6 +6132,7 @@ export function HernaPlocha({
               </div>
             </div>
             {podLiniou}
+            {naPlsti}
             {vrstvaFazy !== null && !starsiViditelni && !nastenkaNaStole && (
               <div className="vrstva-fazy" ref={setVrstvaFazyEl}>
                 {vrstvaFazy}
@@ -6180,6 +6193,7 @@ export function HernaPlocha({
 
           {naSirku ? pult(ja) : (
           <HracDoska
+            pult={portretyStarsich?.(ja)}
             data={data}
             view={view}
             p={ja}

@@ -4,9 +4,11 @@ import { describe, expect, it } from "vitest";
 import cardsJson from "../data/cards.json";
 import eldersJson from "../data/elders.json";
 import scorecardsJson from "../data/scorecards.json";
+import katalogJson from "../data/vyucba/napovedy.json";
 import type { CardInstance, KrokBitkyPata, PataStav, PlayerId, StarsiPata, ZamerLieceniaPata, ZamerUtokuPata } from "../src/index.ts";
 import {
   MA_DOST,
+  NAPOVEDY_MIMO_PATY,
   PATA,
   apply,
   dajVyzrat,
@@ -29,6 +31,7 @@ import {
   spocitajSumy,
   stojaci,
   sumyRadu,
+  vyhodnotRad,
   tuheHrobara,
   tuheStrany,
   vitazBitkyPata,
@@ -143,6 +146,19 @@ describe("rad", () => {
   it("presné akcie spojov: Poštárka vedľa Hrobára, Posilnenie zdvojí Pohoršenie", () => {
     // Poštárka pravá [Vízia, Dlh, Posilnenie, –] ↔ Hrobár ľavá [Petelica, Pečeň, Pohoršenie, –].
     expect(sumyRadu(data, rad(["postarka", "hrobar"]), 0)).toEqual({ Vízia: 1, Dlh: 1, Petelica: 1, PoškodeniePečene: 1, Pohoršenie: 2 });
+  });
+
+  it("akcie po starších: Poštárka vedľa Hrobára, súčet sedí s radom a podrazený v rozpise nie je", () => {
+    const r = rad(["postarka", "hrobar"]);
+    const [postarka, hrobar] = r as [StarsiPata, StarsiPata];
+    const v = vyhodnotRad(data, r, 0);
+    expect(v.naStarsom.get(postarka.karta.uid)).toEqual({ Vízia: 1, Dlh: 1 });
+    expect(v.naStarsom.get(hrobar.karta.uid)).toEqual({ Petelica: 1, PoškodeniePečene: 1, Pohoršenie: 2 });
+    expect(v.sumy).toEqual(sumyRadu(data, r, 0));
+    const spadnuty = rad(["postarka", "hrobar"], ["postarka"]);
+    const s = vyhodnotRad(data, spadnuty, 0);
+    expect(s.naStarsom.has((spadnuty[0] as StarsiPata).karta.uid)).toBe(false);
+    expect(s.naStarsom.get((spadnuty[1] as StarsiPata).karta.uid)).toEqual({ Petelica: 1, PoškodeniePečene: 1, Pohoršenie: 1 });
   });
 
   it("podrazený: jeho akcie neplatia, sused svoju dostane a jeho Posilnenie nezdvojuje", () => {
@@ -575,5 +591,16 @@ describe("celá partia v jadre", () => {
     expect(viewFor(data, st, 0).rukaSupera?.map((k) => k.uid)).toEqual([1]);
     expect(viewFor(data, st, 1).rukaSupera).toBeUndefined();
     expect(JSON.stringify(viewFor(data, st, 1))).not.toContain('"rukaSupera"');
+  });
+});
+
+const katalogNapoved = katalogJson as unknown as { readonly napovedy: readonly { readonly id: string; readonly melichar: string | Readonly<Record<string, string>> }[] };
+
+describe("nápovedy v režime", () => {
+  it("o špakoch, hádke a Exekútorovi sa v režime nehovorí", () => {
+    for (const def of katalogNapoved.napovedy) {
+      const text = typeof def.melichar === "string" ? def.melichar : Object.values(def.melichar).join(" ");
+      if (/špak|Exekút|Hádk|hádk|Nakladačk/.test(text)) expect(NAPOVEDY_MIMO_PATY, def.id).toContain(def.id);
+    }
   });
 });

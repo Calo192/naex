@@ -1,30 +1,123 @@
 /* Režim Päta, Lakeť, Otočka: rady nad a pod líniou, okná rozhodnutí. Farby z tém (schemy.css). */
-.pt-rad { list-style: none; margin: 2px 0; padding: 0 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; position: relative; z-index: 3; }
-.pt-st {
-  display: grid;
-  grid-template-columns: 34px 1fr auto;
-  grid-template-areas: "foto meno pecen" "foto ukaz ukaz" "foto znacky znacky";
-  column-gap: 6px;
+.pt-rad { list-style: none; margin: 2px 0; padding: 0 8px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; position: relative; z-index: 3; }
+.pt-st { display: flex; gap: 7px; min-width: 0; padding: 3px 7px 3px 3px; font-size: 13px; line-height: 1.2; background: var(--plocha-2); border: 1px solid var(--okraj-svetly); border-radius: 7px; }
+.pt-st > img { flex: none; width: 40px; height: 52px; object-fit: cover; border-radius: 4px; }
+.pt-st.padol { background: transparent; border-style: dashed; }
+.pt-st.padol > img { filter: grayscale(0.9) brightness(0.6); }
+.pt-telo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.pt-hore { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.pt-hore b { flex: none; white-space: nowrap; }
+.pt-dole { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 22px; }
+.pt-pecen { flex: none; font-size: 12px; color: var(--tlmeny); font-variant-numeric: tabular-nums; }
+.pt-pecen strong { font-size: 17px; color: var(--text); }
+.pt-ukaz { flex: 1; min-width: 12px; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--text) 14%, transparent); overflow: hidden; }
+.pt-ukaz i { display: block; height: 100%; background: var(--zelena); }
+.pt-ukaz i.nizka { background: var(--cervena); }
+.pt-znacky { flex: none; display: inline-flex; gap: 3px; }
+.pt-z { display: inline-flex; align-items: center; gap: 2px; padding: 0 5px 0 1px; border-radius: 99px; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; background: color-mix(in srgb, var(--pozadie) 80%, transparent); }
+.pt-z .pt-ikona { width: 15px; height: 15px; }
+.pt-padol { font-size: 11px; font-weight: 700; color: var(--cervena-text); text-transform: uppercase; letter-spacing: 0.04em; }
+.pt-md { font-size: 11.5px; line-height: 1.2; color: var(--tlmeny); overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.pt-akcie { display: inline-flex; flex-wrap: wrap; gap: 3px 6px; align-items: center; min-width: 0; }
+.pt-akcia { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.pt-ikona { display: inline-block; width: 19px; height: 19px; line-height: 0; }
+.pt-ikona .ikona-akcie { display: block; width: 100%; height: 100%; border-radius: 4px; }
+.pt-akcie.velke { gap: 4px 10px; }
+.pt-akcie.velke .pt-ikona { width: 25px; height: 25px; }
+.pt-akcie.velke .pt-akcia { font-size: 16px; }
+.pt-akcie-nic { font-size: 12px; color: var(--tlmeny); }
+.pt-lupa { position: fixed; z-index: 85; pointer-events: none; filter: drop-shadow(0 10px 22px #000c); }
+.pt-karta.padol .kl-ilustracia, .pt-tahaj.padol .kl-ilustracia { filter: grayscale(0.85) brightness(0.65); }
+
+/* Starší v paneli hráča, na mieste dlaždíc Špaky a Starší (Michal 2026-11-06). */
+.doska .pt-pult { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; }
+.doska.moja .pt-pult { grid-column: 2 / span 2; }
+.doska.superova .pt-pult { grid-column: 7 / span 2; }
+.pt-m { position: relative; display: block; min-width: 0; height: 100%; padding: 0; overflow: hidden; color: var(--text); font: inherit; text-align: left; background: var(--plocha-2); border: 1px solid var(--okraj-svetly); border-radius: 7px; }
+button.pt-m { cursor: pointer; }
+button.pt-m:hover, button.pt-m:focus-visible, button.pt-m[aria-expanded="true"] { border-color: var(--akcent); }
+.pt-m > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+.pt-m.padol { border-style: dashed; }
+.pt-m.padol > img { filter: grayscale(0.9) brightness(0.45); }
+.pt-m > .pt-znacky { position: absolute; top: 2px; right: 2px; flex-direction: column; align-items: flex-end; gap: 1px; }
+.pt-m .pt-z { padding: 0 3px 0 1px; font-size: 11px; }
+.pt-m .pt-z .pt-ikona { width: 12px; height: 12px; }
+.pt-m .pt-m-stav { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 1px; padding: 8px 3px 2px; line-height: 1; background: linear-gradient(transparent, color-mix(in srgb, var(--pozadie) 88%, transparent) 45%); }
+.pt-m-stav .pt-pecen { color: var(--tlmeny); }
+.pt-m-stav .pt-pecen small { font-size: 10px; }
+.pt-m-stav .pt-ukaz { flex: none; height: 3px; min-width: 0; }
+.pt-m > .pt-padol { position: absolute; left: 0; right: 0; bottom: 2px; text-align: center; font-size: 10px; }
+.pt-m-ruka { display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 52px; line-height: 1.1; }
+.pt-m-ruka small { font-size: 10px; color: var(--tlmeny); }
+.pt-m-ruka strong { font-size: 18px; }
+.pt-m.stlaceny { border: 2px solid var(--akcent); }
+.pt-detail-ruka { position: fixed; z-index: 85; display: flex; flex-direction: column; gap: 4px; width: 320px; padding: 8px; font-size: 13px; pointer-events: none; background: var(--plocha); border: 1px solid var(--okraj-svetly); border-radius: 10px; box-shadow: 0 10px 28px #000c; }
+.pt-detail-ruka ul { list-style: none; margin: 0; padding: 0; columns: 2; }
+/* Oba rady namiesto línie: súper hore, hráč dole, karty sa dotýkajú, aby bolo vidno spoje. */
+.pt-polovice { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; padding: 18px 0 20px; border-radius: 16px; background: radial-gradient(ellipse at center, var(--stol-svetlo), transparent 70%), var(--stol); }
+.pt-polovice-plocha { flex: 1; min-height: 0; display: grid; grid-template-rows: 1fr 1fr; }
+/* Stôl so scrollom (dlhá línia na nízkom okne) má plsť len na výšku malých kariet: rady potrebujú viac. */
+.stol-plst:has(.pt-polovice) { min-height: 300px; }
+.pt-polovica { position: relative; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.pt-polovica.moja { border-top: 1px solid var(--stol-okraj); }
+.pt-polovica-kto { position: absolute; left: 12px; top: 50%; translate: 0 -50%; font: 700 1.1rem/1.2 var(--nadpis); color: var(--stol-stav); }
+.pt-polovica-rad { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; }
+.pt-polovica-rad > li { flex: none; display: flex; flex-direction: column; }
+.pt-polovica.super .pt-polovica-rad > li { flex-direction: column-reverse; }
+.pt-polovica-rad > li.vybrany .pt-polovica-karta { outline: 3px solid var(--akcent); outline-offset: -2px; border-radius: 8px; }
+.pt-polovica-karta { position: relative; overflow: hidden; display: flex; flex-direction: column; line-height: 0; }
+.pt-polovica.super .pt-polovica-karta { justify-content: flex-end; }
+.pt-polovica-stav { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 4px; padding: 2px 5px; line-height: 1.1; background: color-mix(in srgb, var(--pozadie) 82%, transparent); }
+.pt-polovica.super .pt-polovica-stav { bottom: auto; top: 0; }
+.pt-polovica-pod { display: flex; flex-direction: column; align-items: center; gap: 1px; min-height: 22px; padding: 2px 1px; }
+.pt-polovica-pecen { display: flex; align-items: center; gap: 5px; line-height: 1.1; }
+.pt-polovica-pod .pt-akcie { flex-wrap: nowrap; justify-content: center; gap: 2px 5px; overflow: hidden; }
+.pt-polovica-pod .pt-ikona { width: 17px; height: 17px; }
+.pt-polovica-pod .pt-md { text-align: center; -webkit-line-clamp: 1; }
+.pt-polovica-pod { min-width: 0; overflow: hidden; }
+.pt-polovica-rad.orez .pt-polovica-pod .pt-akcie { gap: 1px 3px; }
+.pt-polovica-rad.orez .pt-polovica-pod .pt-ikona { width: 13px; height: 13px; }
+.pt-polovica-rad.orez .pt-polovica-pod .pt-akcia { gap: 1px; font-size: 11px; }
+.pt-polovice-spat { position: absolute; right: 10px; top: 50%; translate: 0 -50%; z-index: 2; }
+.pt-koniec { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+.pt-koniec-rad { display: grid; grid-template-columns: 90px repeat(4, 64px); align-items: center; gap: 4px; }
+.pt-koniec-rad > b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-koniec-rad .pt-m { height: 70px; }
+
+/* Rad na plsti (mock B): prekryje líniu aj pásy, karty sa dotýkajú, aby bolo vidno spoje. */
+.pt-rad-stol {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  min-width: 0;
-  padding: 3px 6px;
-  font-size: 12px;
-  line-height: 1.2;
-  background: var(--povrch, #352a20);
-  border: 1px solid var(--okraj, #57452f);
-  border-radius: 6px;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 18px 8px 8px;
+  border-radius: 16px;
+  background: radial-gradient(ellipse at center, var(--stol-svetlo), transparent 70%), var(--stol);
 }
-.pt-st img { grid-area: foto; width: 34px; height: 44px; object-fit: cover; border-radius: 4px; }
-.pt-st b { grid-area: meno; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pt-pecen { grid-area: pecen; font-variant-numeric: tabular-nums; }
-.pt-pecen strong { font-size: 15px; }
-.pt-ukaz { grid-area: ukaz; height: 4px; border-radius: 2px; background: color-mix(in srgb, currentColor 18%, transparent); overflow: hidden; margin: 2px 0; }
-.pt-ukaz i { display: block; height: 100%; background: currentColor; }
-.pt-znacky { grid-area: znacky; display: flex; gap: 3px; min-height: 14px; }
-.pt-z { font-size: 11px; font-weight: 600; padding: 0 5px; border-radius: 99px; border: 1px solid currentColor; }
-.pt-st.padol { display: block; opacity: 0.85; border-style: dashed; }
-.pt-st.padol b { display: block; }
-.pt-st.padol em { font-style: normal; font-weight: 600; }
+.pt-rad-super { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; font-size: 12.5px; }
+.pt-rub { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px 2px 2px; background: color-mix(in srgb, var(--pozadie) 45%, transparent); border: 1px solid var(--okraj-svetly); border-radius: 6px; font-variant-numeric: tabular-nums; }
+.pt-rub img { width: 22px; height: 28px; object-fit: cover; border-radius: 3px; }
+.pt-rub.padol { opacity: 0.6; border-style: dashed; }
+.pt-rad-karty { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; }
+.pt-rad-karty > li { flex: none; }
+.pt-tahaj { cursor: grab; touch-action: none; user-select: none; position: relative; line-height: 0; border-radius: 8px; }
+.pt-tahaj.taha { cursor: grabbing; z-index: 5; filter: drop-shadow(0 8px 14px #000a); }
+.pt-tahaj.vybrany { outline: 3px solid var(--akcent); outline-offset: -1px; z-index: 4; }
+.pt-tahaj:focus-visible { outline: 3px solid var(--akcent); outline-offset: -1px; }
+.pt-pod-kartou { display: flex; justify-content: center; padding: 4px 3px 0; min-height: 28px; }
+.pt-pod-kartou .pt-akcie { justify-content: center; }
+.pt-rad-hrana { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; width: 100%; max-width: 1200px; }
+.pt-rad-spolu { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; justify-self: end; }
+.pt-rad-tip { font-size: 12px; }
+.pt-rad-stol.nizka { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding-top: 14px; }
+.pt-rad-stol.nizka .pt-rad-super { flex-direction: column; align-items: flex-end; }
+.pt-rad-stol.nizka .pt-rad-super > .tlmene { text-align: right; max-width: 190px; }
+.pt-rad-stol.nizka .pt-rad-hrana { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.pt-rad-stol.nizka .pt-rad-spolu { justify-content: flex-start; justify-self: auto; }
 
 .pt-okno {
   position: fixed;
@@ -60,9 +153,6 @@
 .pt-volba img { width: 100%; height: 86px; object-fit: cover; border-radius: 5px; }
 .pt-vybrate { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .pt-vybrate h3 { margin: 0; font-size: 14px; }
-.pt-poradie { list-style: none; margin: 8px 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.pt-poradie li { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 4px; border: 1px solid var(--okraj, #57452f); border-radius: 6px; }
-.pt-poradie span { text-align: center; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .pt-ciele { list-style: none; margin: 8px 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .pt-ciele li { display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border: 1px solid var(--okraj, #57452f); border-radius: 6px; }
 .pt-pocitadlo { display: flex; align-items: center; gap: 6px; }
@@ -74,17 +164,36 @@
 /* Stupnice strachu a špaky v režime nie sú. */
 body.rezim-pata .vrstva-starsich { display: none; }
 
+/* Notebook: pás v jednom riadku, nech línia ostane čitateľná; hranica ako NOTEBOOK v HernaPlocha. */
+@media (max-height: 919.98px) {
+  .pt-rad { margin: 1px 0; }
+  .pt-rad.moj { margin-bottom: 16px; }
+  .pt-st { align-items: center; padding: 2px 6px 2px 2px; min-height: 32px; }
+  .pt-st > img { width: 22px; height: 28px; }
+  .pt-telo { flex-direction: row; align-items: center; gap: 8px; }
+  .pt-hore { flex: none; gap: 5px; }
+  .pt-hore .pt-ukaz { display: none; }
+  .pt-pecen strong { font-size: 15px; }
+  .pt-dole { flex: 1; min-width: 0; min-height: 0; }
+  .pt-akcie { flex-wrap: nowrap; overflow: hidden; gap: 3px 5px; }
+  .pt-ikona { width: 17px; height: 17px; }
+  .pt-md { -webkit-line-clamp: 1; }
+}
+
 @media (max-width: 900px) {
   .pt-draft { grid-template-columns: repeat(2, 1fr); }
-  .pt-poradie { grid-template-columns: repeat(2, 1fr); }
   .pt-ciele { grid-template-columns: 1fr; }
-  .pt-st img { display: none; }
-  .pt-st { grid-template-columns: 1fr auto; grid-template-areas: "meno pecen" "ukaz ukaz" "znacky znacky"; }
+  .pt-st > img { display: none; }
+  .pt-rad-hrana { grid-template-columns: 1fr auto; }
+  .pt-rad-tip { display: none; }
 }
 
 /* Čo v režime nie je: špaky, stupnice starších, pivnica väzňov, hádka a odhad špakov po kole. */
 body.rezim-pata .zdroj-body,
 body.rezim-pata .zdroj-starsi,
-body.rezim-pata .hrana-pivnica,
 body.rezim-pata .jk-kraj,
-body.rezim-pata .jk-riadky > :nth-child(2) { display: none; }
+/* Riadok baru má 5 prvkov: od šiesteho je hádka. */
+body.rezim-pata .jk-riadky > :nth-child(n + 6) { display: none; }
+
+/* Keď je línia skrytá (voľba lokality, šenok), pásy by ležali cez karty vrstvy nad plsťou. */
+.stol-plst.linia-skryta > :is(.pt-rad, .pt-ruka-supera) { visibility: hidden; }

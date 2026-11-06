@@ -120,6 +120,8 @@ export interface NastenkaProps {
   readonly mierka?: number;
   /** Šírka kariet na výber (voľba cieľa) — bez víťaza a účtenky smú byť väčšie. */
   readonly sirkaVyberu?: number;
+  /** Režim bez finále (Päta, Lakeť, Otočka): nástenka len ponúka lokality. */
+  readonly bezFinale?: boolean;
   /** Rozmer kariet na výber v jednom rade (rozmerNastenky); `vyber` dostane ich šírku. */
   readonly listokVyberu?: ListokNaVyber | null | undefined;
   /**
@@ -154,7 +156,7 @@ export function Nastenka(props: NastenkaProps) {
   return props.favour === undefined ? obsah : <FavourStarsich.Provider value={props.favour}>{obsah}</FavourStarsich.Provider>;
 }
 
-function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false }: NastenkaProps) {
+function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, menoKarty, sirkaKarty = 90, kompaktna = false, koniec = false, bezFinale = false, ucet, vyber, mierka = 1, sirkaVyberu = sirkaKarty, listokVyberu = null, suhrn, poStarom = false }: NastenkaProps) {
   const kto = (p: PlayerId): string => (p === ja ? "ty" : mena[p]);
   // Rozpis na myš aj na fokus klávesnicou: ktorý lístok a jeho prvok (poloha okienka).
   const [naMys, setNaMys] = useState<{ readonly i: number; readonly el: HTMLElement } | null>(null);
@@ -166,7 +168,7 @@ function NastenkaObsah({ nastenka, zostava, ciel, ja, mena, avatary, karta, meno
     ...(koniec ? [] : zostava.map((k): Listok => ({ kluc: `z${k.uid}`, lokalita: k, finale: false, stav: "caka" }))),
   ];
   const finaleHotove = listky.some((l) => l.finale);
-  if (!finaleHotove && !koniec) listky.push({ kluc: "finale", lokalita: null, finale: true, stav: "caka" });
+  if (!finaleHotove && !koniec && !bezFinale) listky.push({ kluc: "finale", lokalita: null, finale: true, stav: "caka" });
   // Finále sa boduje ako každá bitka (Michal 2026-10-30: „1 špak za kartu v línii — a normálne
   // to neplatí?“) — lístok to tak aj hovorí, pravidlo bodovania sa neopakuje len pri ňom.
   const finaleText = "posledná bitka, boduje sa ako každá";

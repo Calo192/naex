@@ -1952,7 +1952,7 @@ function applyPrikaz(
       cmdKapybara(s, data, cmd, hracId, events);
       break;
     case "pataVyber":
-      cmdPataVyber(s, cmd, hracId, events);
+      cmdPataVyber(data, s, cmd, hracId, events);
       break;
     case "pataRad":
       cmdPataRad(s, data, cmd, hracId, events);
@@ -6252,7 +6252,7 @@ function pripravPatu(s: MutState, data: GameData): void {
 }
 
 /** Línia + rad: akcie radu platia v každej Pitke aj v bitke (Michal 2026-11-01). */
-function sRadom(data: GameData, s: GameState, ev: LineEval): LineEval {
+export function sRadom(data: GameData, s: Pick<VerejnyStav, "pata" | "hraci">, ev: LineEval): LineEval {
   if (s.pata === undefined) return ev;
   return { ...ev, sums: [sucetSRadom(data, s, ev.sums, 0), sucetSRadom(data, s, ev.sums, 1)] };
 }
@@ -6314,14 +6314,14 @@ function legalnePata(h: HraPata, state: GameState, p: PlayerId): Command[] {
   }
 }
 
-function cmdPataVyber(s: MutState, cmd: { elderId: string }, p: PlayerId, events: Event[]): void {
+function cmdPataVyber(data: GameData, s: MutState, cmd: { elderId: string }, p: PlayerId, events: Event[]): void {
   const h = s.pata as DeepMutable<HraPata> | undefined;
   need(h !== undefined && h.krok === "draft" && mozeHratPata(h as HraPata, p), "Teraz si staršieho nevyberáš.");
   const i = h.ponuka.findIndex((k) => k.defId === cmd.elderId);
   need(i !== -1, "Tento starší už nie je na výber.");
   const karta = h.ponuka.splice(i, 1)[0] as DeepMutable<CardInstance>;
   h.rady[p].push(novyStarsi(karta as CardInstance) as DeepMutable<StarsiPata>);
-  events.push({ type: "log", text: `Hráč ${p + 1} si do radu berie staršieho ${karta.defId}.` });
+  events.push({ type: "log", text: `Hráč ${p + 1} si do radu berie staršieho ${defOf(data, karta).name}.` });
   if (h.ponuka.length > 0) return;
   h.krok = null;
   s.faza = "volbaCiela";

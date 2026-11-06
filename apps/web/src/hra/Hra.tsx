@@ -31,7 +31,7 @@ import { UpozornenieTelefonu, upozornenieSkryte } from "./UpozornenieTelefonu.ts
 import { popisZamku, smieLigu, volitelnaLiga, zvolenaLiga, type StavLigy } from "./ligy.ts";
 import { platnaVolbaBota, type BotNaVyber } from "./boti.ts";
 import { Cakaren2na2, Lobby2na2, Panel2na2 } from "./Stol2na2.tsx";
-import { RadStarsich, RozhodnutiePata, RukaSupera } from "./Pata.tsx";
+import { PortretyStarsich, RadNaPlsti, RadStarsich, RadyNaStole, RozhodnutiePata, RukaSupera, useRadyNaStole } from "./Pata.tsx";
 import "./hra.css";
 
 interface OtvorenaHra {
@@ -421,6 +421,7 @@ export function Hra() {
   // Na nepodporovanom zariadení sa ani nepripája — po roztiahnutí okna sa pripojí a vráti do partie.
   const hra = useHra(ja !== null && nepodporovane === null);
   useTriedaRezimu(hra.stol2na2 !== null ? "st2-so-stolom" : hra.view?.pata !== undefined ? "rezim-pata" : null);
+  const radyNaStole = useRadyNaStole(hra.view);
 
   // Majster Melichar komentuje momenty len v partii proti počítaču — ľudia si nadávajú sami.
   // Ozve sa pri pečiatke momentu (Momenty), nie po každom ťahu (Michal 2026-10-23), a v každej
@@ -630,6 +631,8 @@ export function Hra() {
   const zadrzBitku =
     krokVyucby !== null && (krokVyucby.kto === "bot" || krokVyucby.kto === "auto") && krokVyucby.melichar.trim() !== "" ? krokVyucby.id : null;
 
+  const viewPata = hra.view.pata === undefined ? null : hra.view;
+  const dataPata = hra.data;
   return (
     <>
     {ukazUpozornenie ? (
@@ -725,15 +728,24 @@ export function Hra() {
       frajerina={hra.frajerina}
       achievementy={hra.suhrnAchievementov}
       kontumacia={hra.kontumacia}
+      portretyStarsich={viewPata === null || dataPata === null || naSirku ? undefined : (p) => <PortretyStarsich view={viewPata} p={p} data={dataPata} sada={m.sada} rady={radyNaStole} />}
       nadLiniou={
-        hra.view.pata === undefined ? undefined : (
+        hra.view.pata === undefined || !naSirku ? undefined : (
           <>
             <RukaSupera view={hra.view} data={hra.data} />
             <RadStarsich view={hra.view} p={opponentOf(hra.view.ja)} data={hra.data} sada={m.sada} />
           </>
         )
       }
-      podLiniou={hra.view.pata === undefined ? undefined : <RadStarsich view={hra.view} p={hra.view.ja} data={hra.data} sada={m.sada} />}
+      podLiniou={hra.view.pata === undefined || !naSirku ? undefined : <RadStarsich view={hra.view} p={hra.view.ja} data={hra.data} sada={m.sada} />}
+      naPlsti={
+        hra.view.pata === undefined ? undefined : (
+          <>
+            <RadNaPlsti view={hra.view} data={hra.data} sada={m.sada} cmd={cmd} />
+            <RadyNaStole view={hra.view} data={hra.data} sada={m.sada} cmd={cmd} rady={radyNaStole} />
+          </>
+        )
+      }
       vHlavicke={
         // Hlášky Melichara sú pre 1 na 1, stôl 2 na 2 ich zatiaľ nerozposiela.
         hra.stol2na2 === null && hra.view.koniec === null && maPravo(ja, "melichar_soundboard") && (
