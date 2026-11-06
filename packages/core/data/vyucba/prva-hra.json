@@ -89,7 +89,7 @@
           "pijan/1/1",
           "pijan/1/0",
           "ministrant/2/1",
-          "milujuca_manzelka/1/0",
+          "praudovravec/0/0",
           "cierna_macka/0/0"
         ],
         "doberaci": [
@@ -103,11 +103,11 @@
           "pijan/1/1",
           "cierna_macka/0/0",
           "pijan/1/1",
-          "milujuca_manzelka/1/0",
+          "anonymny_alkoholik/1/0",
           "dievcina_na_vydaj/1/0"
         ],
         "doberaci": [
-          "pijan/1/1",
+          "anonymny_alkoholik/0/0",
           "ministrant/2/0"
         ],
         "cigarety": 3
@@ -161,7 +161,7 @@
       "svokra/0/2",
       "recidivista/0/0",
       "vymahac/0/0",
-      "liberal/1/0",
+      "liberal/1/1",
       "kon/0/0",
       "dvojcata/0/0",
       "traktoristka/0/0",
@@ -263,7 +263,7 @@
               "type": "chooseLocation",
               "uid": "lokality:jednota"
             },
-            "text": "Na Jednote sa nakupuje, nie bije: [Cigareta] Cigareta a [Pohoršenie] Pohoršenie, žiadne tuhé. Lesná cesta má [Pecka] Pecku, to sú 2. Počítať vieš, nie?",
+            "text": "Na Jednote sa nakupuje, nie bije: len [Pohoršenie] Pohoršenie, žiadne tuhé. Lesná cesta má [Pecka] Pecku, to sú 2. Počítať vieš, nie?",
             "hlaska": "urazky/ty_marha"
           },
           {
@@ -1400,12 +1400,12 @@
         "kroky": [
           {
             "type": "place",
-            "uid": "ruka:milujuca_manzelka",
+            "uid": "ruka:anonymny_alkoholik",
             "target": "vlastna"
           }
         ]
       },
-      "melichar": "Druhé Zhromaždenie, Štamgast začína: Milujúca manželka k jeho Pijanovi."
+      "melichar": "Druhé Zhromaždenie, Štamgast začína: Anonymný alkoholik k jeho Pijanovi."
     },
     {
       "id": "k-prevaha",
@@ -1415,15 +1415,15 @@
         "kroky": [
           {
             "type": "place",
-            "uid": "ruka:milujuca_manzelka",
+            "uid": "ruka:praudovravec",
             "target": "vlastna"
           }
         ]
       },
-      "melichar": "Vráť si trávnik: polož Milujúcu manželku na koniec svojej strany, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan.",
+      "melichar": "Vráť si trávnik: polož Praudovravca na koniec svojej strany, za Liberála, a potvrď. Na trávniku bude 3 : 3 a pri rovnosti rozhoduje karta pri lokalite – tvoj Pijan.",
       "hlaskaChyby": "urazky/ty_marha",
       "zvyraznit": [
-        "ruka:milujuca_manzelka",
+        "ruka:praudovravec",
         "prevaha"
       ]
     },
@@ -1435,12 +1435,12 @@
         "kroky": [
           {
             "type": "place",
-            "uid": "ruka:pijan",
+            "uid": "ruka:anonymny_alkoholik",
             "target": "vlastna"
           }
         ]
       },
-      "melichar": "Štamgast pridal za manželku druhého Pijana."
+      "melichar": "Štamgast pridal za Alkoholika druhého Alkoholika."
     },
     {
       "id": "k-prevaha2",
@@ -1455,7 +1455,7 @@
           }
         ]
       },
-      "melichar": "Teraz Anonymného alkoholika za manželku. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia.",
+      "melichar": "Teraz Anonymného alkoholika za Praudovravca. Na trávniku budeš mať štyroch proti trom: prevaha je tvoja a 2 tuhé z Ihriska sa vrátia.",
       "hlaskaChyby": "nervy/19_ach_boha",
       "zvyraznit": [
         "ruka:anonymny_alkoholik",
@@ -1496,7 +1496,7 @@
           "linia:anonymny_alkoholik",
           "linia:dvojcata",
           "linia:pijan",
-          "linia:milujuca_manzelka"
+          "linia:praudovravec"
         ],
         "zle": [
           {
