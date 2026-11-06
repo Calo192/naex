@@ -12,6 +12,7 @@ import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IkonaCigareta, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
+import { PeciatkaCigariet, RozpisCigariet, type PrisunDlazdice } from "./PeciatkaCigariet.tsx";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import type { PriazenKola } from "./priazenKola.ts";
@@ -215,6 +216,7 @@ function Zdroj({
   ikona,
   pod,
   trieda,
+  roh,
   tip,
 }: {
   readonly nazov: string;
@@ -222,6 +224,8 @@ function Zdroj({
   readonly ikona?: ReactNode;
   readonly pod?: ReactNode;
   readonly trieda?: string;
+  /** Pečiatka v rohu dlaždice. */
+  readonly roh?: ReactNode;
   readonly tip: TipObsah;
 }) {
   const { tip: okno, ukaz, skry } = useTip();
@@ -241,6 +245,7 @@ function Zdroj({
         {hodnota}
       </span>
       {pod !== undefined && <span className="zdroj-pod">{pod}</span>}
+      {roh}
       {okno}
     </div>
   );
@@ -358,6 +363,8 @@ function Rola({ utoci, tip, frajerina }: { readonly utoci: boolean; readonly tip
 
 export interface HracDoskaProps {
   readonly view: ClientState;
+  /** Pečiatka a rozpis na dlaždici Cigarety. */
+  readonly prisunCigariet?: PrisunDlazdice;
   /** Dáta sady — priazne do výhľadu limitu (Na zdravie „do dna“, v5). */
   readonly data: GameData;
   readonly p: PlayerId;
@@ -443,6 +450,7 @@ function useOdpojenyCas(odpojenyOd: number | null, bezi: boolean): number {
  */
 export function HracDoska({
   view,
+  prisunCigariet,
   data,
   p,
   info,
@@ -629,6 +637,7 @@ export function HracDoska({
           trieda="zdroj-cigarety"
           ikona={<IkonaCigareta />}
           hodnota={<span className="velke-cislo">{hrac.cigarety}</span>}
+          roh={prisunCigariet !== undefined && <PeciatkaCigariet prisun={prisunCigariet} />}
           pod={
             obchodCigariet === undefined ? (
               doNovehoPoldeci
@@ -667,6 +676,7 @@ export function HracDoska({
             nadpis: "Cigarety",
             text: (
               <>
+                {prisunCigariet !== undefined && <RozpisCigariet prisun={prisunCigariet} />}
                 <span className="tip-stav">
                   {kto} {hrac.cigarety} · {doNovehoPoldeci}
                 </span>

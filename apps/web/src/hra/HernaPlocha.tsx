@@ -119,6 +119,7 @@ import { NAHRADIT, textNepolozenejKarty } from "./nepolozenaKarta.ts";
 import { useBezNaexVBitke, useOdlozenyPrikaz } from "./usePohodlie.ts";
 import { useTahanie, type Tahanie } from "./useTahanie.ts";
 import { NapovedaPodrzania, OknoZdroja, StlpecHraca, Tabula } from "./PultHraca.tsx";
+import { usePrisunCigariet, type PrisunDlazdice } from "./PeciatkaCigariet.tsx";
 import { cislaHraca, type ZdrojStlpca } from "./tabula.ts";
 import { preDotykUzol } from "./dotyk.ts";
 import { Avatar } from "../komponenty.tsx";
@@ -2368,6 +2369,20 @@ export function HernaPlocha({
     !cakaOdhalenie &&
     autoPas === null &&
     (vrstvaVyhodnotenia === null || pocitadlo !== null);
+  const { dopady: dopadyCigariet, nedavne: nedavneCigarety } = usePrisunCigariet(
+    udalosti,
+    [viewZoServera.hraci[0].cigarety, viewZoServera.hraci[1].cigarety],
+    // Pod stmaveným stolom by dopad nikto nevidel — počká, kým sa stôl uvoľní.
+    pocitadloBezi || zadrzanyView !== null || suhrnBezi || pauzaBezi || medziCaka || autoPas !== null,
+  );
+  // Po vyhodnotení Pitky (Vízia, otočené Záverečné, Zastávka) sú cigarety už na účte, nič nečaká.
+  const pitkaVyhodnotena = view.faza === "pitka" && (view.pitkaStav === null || (ucetPitky?.kolo === view.kolo && ucetPitky.pitka === view.pitkaCislo));
+  const prisunCigariet = (p: PlayerId): PrisunDlazdice => ({
+    cigarety: view.hraci[p].cigarety,
+    cakajuci: nahladyPitky === null || pitkaVyhodnotena ? null : nahladyPitky[p].cigarety,
+    dopad: dopadyCigariet[p],
+    nedavny: nedavneCigarety[p],
+  });
   // Po súhrne ide hra rovno na výber lokality (Michal 2026-10-30) — medziobrazovka „Výber lokality“
   // by bola ďalší klik navyše. Pred finále ostane: hovorí, kto útočí a kto vyberá.
   const koniecSuhrnu = (): void => {
@@ -5794,6 +5809,7 @@ export function HernaPlocha({
   const pult = (p: PlayerId): ReactNode => (
     <StlpecHraca
       view={view}
+      prisunCigariet={prisunCigariet(p)}
       p={p}
       info={hraci[p]}
       meno={hraci[p]?.meno ?? `Hráč ${p + 1}`}
@@ -5809,6 +5825,7 @@ export function HernaPlocha({
   const oknoZdrojaEl =
     !naSirku || oknoZdroja === null ? null : (
       <OknoZdroja
+        prisunCigariet={oknoZdroja.zdroj === "cigarety" ? prisunCigariet(oknoZdroja.p) : undefined}
         zdroj={oknoZdroja.zdroj}
         cisla={cislaPultu(oknoZdroja.p)}
         ja={oknoZdroja.p === ja}
@@ -5975,6 +5992,7 @@ export function HernaPlocha({
           zavislost={zavislost(super_)}
           menoKarty={menoKarty}
           vyhlad={vyhladPitky(super_)}
+          prisunCigariet={prisunCigariet(super_)}
           body={body}
           starsi={{ stlacene: starsiViditelni && krokStarsich === null && pohladLinie === super_, prepni: () => prepniStarsich(super_), id: idLinieStarsich }}
           spakyKlik={{ stlacene: vrstva === "lokality" && nastenkaPre === super_, prepni: () => otvorNastenku(super_) }}
@@ -6135,6 +6153,7 @@ export function HernaPlocha({
             menoSupera={menoHraca(super_)}
             mena={[menoHraca(0), menoHraca(1)]}
             vyhlad={vyhladPitky(ja)}
+            prisunCigariet={prisunCigariet(ja)}
             obchodCigariet={{
               mozno: somNaTahu && view.faza === "pitka" && view.pitkaStav?.reakcia === null && view.koniec === null,
               doliat: () => cmd({ type: "refillPoldeci" }),

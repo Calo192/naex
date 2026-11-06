@@ -42,7 +42,7 @@ import {
   POVAHY,
   PREDVOLENA_DLZKA,
   ALL_DLZKY,
-  apply,
+  applySPrisunom,
   dostupneDlzky,
   eventsFor,
   legalCommands,
@@ -1108,7 +1108,7 @@ export function createGameServer(opts: ServerOpts): Promise<GameServer> {
   const vykonaj = (room: Room, cmd: Command, seat: PlayerId): void => {
     const pred = room.state;
     if (pred === null) return;
-    const result = apply(room.data, pred, cmd, seat);
+    const result = applySPrisunom(room.data, pred, cmd, seat);
     room.prikazy.push([seat, cmd]);
     if (room.kronika !== null) room.kronika = zapisDoKroniky(room.data, room.kronika, pred, cmd, seat, result.state, result.events);
     const lokalityPred = room.lokality;
