@@ -4,113 +4,105 @@ Charakter štýlu: `../../styly.json` (kľúč `klebetnik`). Formát: `../README
 Denník vedie hráč štýlu sám; sudca len pripisuje poznámky k chybám v pravidlách.
 
 ## Aktuálna stratégia
-(pravidlá v11.11, po 8. partii 2026-11-06 — prehra 44 : 145 s Ekonómom. Bilancia 1 výhra, 7 prehier. Hádky 3 z 6, mäkké 18 : 14, 1 bitka z 6.)
+(pravidlá v11.11, po 9. partii 2026-11-06 — prehra 45 : 48 so Sabotérom, výhra väzňami K5. Bilancia 1 výhra, 8 prehier, ale prvá vyrovnaná partia na v11.11: po K4 som viedla 37 : 33. Hádky 3 z 5, jedna remíza, mäkké 26 : 14, 2 bitky z 5.)
 
-**Čo viem na v11.11:** hádka bez bitky dáva 8–17 špakov za kolo, ale víťaz bitky pri 13–21 kartách v línii dostane 2× toľko. Klebetná s kartami v jeho kraji mu tie špaky sama napĺňa: každá moja karta v línii je +1 mne len pri vyhratej hádke, ale +1 jemu vždy. **Reči pri jeho strachu sú najlepší výnos v hre (K6: 8 bodov hádky + 3 Kšefty = 18 mne a −15 jemu, švih 33), ale prichádzajú neskoro.** Prehrala som na K2 a K3, nie vo finále.
+**Čo viem na v11.11:** hádka + lacná bitka spolu stačia na vedenie. Reči dali 17, karty pri hádke 9, dve výhry bitky 25. Prehrala som na dvoch veciach: **tri červené súpera po K3 sú hrozba konca (Nakladačka 15 = 3 väzni)** a **9 Cirhóz zanieslo ruku** (K5 ruka 3 Cirhózy, nula kariet).
 
 **Plán na ďalšiu partiu:**
-1. **Bitku K2 a K3 ber, keď je lacná:** výhra pri 14 kartách je švih 25+. Pred každou zrážkou a NA EX spočítaj jeho **Vidly**: Výtržník na JEHO karte = jeho Rany ×2 (K2: −16 špakov moja chyba).
-2. **Karty s neaktívnym Hazardom a Pečeňou nedávaj do stredu radu:** NA EX na zakrytú kartu sa nedá spárovať. Pijan v strede radu dostal NA EX 3× (K1 2 Cirhózy, K5 4 Cirhózy). Pijan len na koniec alebo vôbec.
-3. **Blokáda sa obracia:** karta za jeho Manželkou alebo Dvojčatami robí z ich neaktívnych akcií terč jeho NA EX (K1 8 mäkkých, K3 4, K4 12 tuhých). Blokovať len kartu bez dobrých neaktívnych akcií.
-4. **Bzdocha v línii vždy, keď sa dá:** K2 a K4 zmarila jeho plán alebo povedala, že NA EX je bez odpovede.
-5. **Reči kam:** najprv červené pri mojom oranžovom strachu za 3 (5 špakov + krátenie 5); nikdy žltá mimo jeho strachu. **Pozor: jeho reči sa nekrátia** (Vet K6: 5 jemu, moje reči nič).
-6. **Výmena Veštičkou:** moja Cirhóza za jeho Manželku alebo Poradkyňu pri každej prehre.
-7. **Keď príde veľká jeho Nakladačka, dostanem priazne:** K5 Robota 2 + Fúrik, Viera 2, Ohováračka. Priprav sa ich využiť v ďalšom kole.
-8. **Fúrik v Dedičstve** pri priazni Robota: 8 Dlhov spálených za kolo.
-9. **Prvá karta pri hrane a počet tiel** rozhodli každé kolo. Ekonóm vždy dorovnal na 2 krajoch (prvá karta vyhráva remízu); keď on má ruku 5+, neplať za prevahu v jeho kraji.
-10. **NIE:** Zviera, keď je Poľovník v šenku (K6 stratila Mačku); Presvedčenie v K5; zrážka na jeho karte s Vidlami; Manželka pri násobiči bez krytia; Svokra a Snúbenica s Hazardom, keď má Poradkyňu v partii (11 Dlhov za K3).
+1. **Od K1 rátaj väzni:** červené súpera × 5 je číslo, pod ktoré musí ísť Nakladačka. Pri 3 červených v Druhej lige je to 15. K3 13 bodov vyrobilo 3 červené, K5 18 ukončilo hru. Tuhé súpera tlmiť skôr, ako príde posledná Pitka: NA EX na kartu s Petelicou (K5 Recidivista 14 → 6, Svokra 18 → 16).
+2. **Hádku rob neaktívnymi Pohoršeniami cez NA EX:** Manželka vedľa hrany bez slotov 1, 2, alebo na konci strany, potom NA EX = Poh ×2 ×2 = 8 mäkkých (K3 hádka 10 : 0). Odpoveď to pokazí len za ňou, preto najlepšie pri hrane alebo tesne pred koncom ťahov.
+3. **Pakt × hrana s Pohoršením + Zrkadlo:** K1 Jednota 3 Poh z jedného slotu. Zrkadlo berieme pri prvom šenku, ak mám Dievčinu alebo Bzdochu.
+4. **Bitku ber na Dlhy:** súperove Dlhy sú remíza v môj prospech. K1 6 : 6 pri Dlhoch 1 : 2 = +11. Výtržník + Pijan cez Bzdochu to spravil za 1 poldeci.
+5. **Vymáhač ako odpoveď na NA EX:** K4 +3 Rany a párovanie jeho kariet: 6 : 10 → 10 : 5, výhra +24 špakov.
+6. **Kostol je pre mňa dobrý:** NA EX len na konce vypína jeho Veterána (K4 výhra); keď vyberám ja, beriem ho.
+7. **Reči na jeho strach rozkladaj po oranžovej:** 10 bodov K3 → K4 +10 (K5 ešte +5, krátenie −5). Červené reči na staršieho, ktorého môže zajať, sú strata; zajatie ich zmaže.
+8. **Pečeň:** rátaj pečeň po každom priložení súpera. Policajtka mi za Degustátorkou odomkla Pečeň a Poldeci: 7/3 = 2 Cirhózy za Pitku. Kartu s Pečeňou na vonkajšej hrane nedávam na koniec, keď má súper limit. Cirhózy pri 3 v ruke **priznať pred posledným Zhromaždením kola, ak nerozhoduje +3 tuhé**; K5 som ich držala kvôli hrozbe väzňov.
+9. **Karta do ruky na odpoveď:** fajčenie za 1 cig pred NA EX. K4 aj K5 sa to oplatilo.
+10. **Cigarety minúť pred výpalným:** refill, fajčenie, šenok; pri 3 jeho červených nechať 0.
+11. **Proti Sabotérovi:** Mäsiar pri kraji Krokodíla, karty s trvalou hodnotou nedávať vedľa konca, ktorý môže obsadiť Krokodíl (zhoreli Bzdocha, Poradkyňa, Vdova).
+12. **NIE:** Presvedčenie v Druhej lige (cena 10–11, K3 chýbal 1 bod, reči sú lepšie); Noviny; Zviera pri Poľovníkovi; Pijan v strede; zrážka pri Vidlách; Dievčina do línie v bitke, ktorú prehrám (zhorí a so Zrkadlom zaniká plán Paktu).
 
 ## Nástroje
 Overené na v11.11:
-- **Reči pri súperovom strachu** — K5 6, K6 15 krátenia (spolu 21) · stav: overený · dôkaz: 20261106-173331-1, 20261106-165715-1 · pravidlá: v11.11
-- **Karty pri vyhratej hádke** — K2 8, K4 7, K5 11 špakov; Nástroj v línii sa ráta · stav: overený, pomôže aj súperovi · dôkaz: 173331-1 · pravidlá: v11.11
-- **Rebrík strachu pod reči** — strach oranžová = červené reči za 3 bodov, nie 6; K5 → K6 St, Vych · stav: overený · dôkaz: 173331-1 K5, K6 · pravidlá: v11.11
+- **NA EX na vlastnú Manželku s neaktívnymi Pohoršeniami** — Poh ×2 ×2 · stav: overený · dôkaz: 20261106-185402-1 K3 8 mäkkých, hádka 10 : 0; K2 +2 pri spárovanej · pravidlá: v11.11
+- **Pakt × Pohoršenie hrany + Zrkadlo** — stav: overený · dôkaz: 185402-1 K1 Dievčina 3 Poh, 6 mäkkých za 2 cig · pravidlá: v11.11
+- **Šarlatán pri hrane s Paktom + Mäsiar za ním** — Poh + Pakt=Poh + Povera ×2, Rana, Pecka · stav: overený · dôkaz: 185402-1 K4 5 mäkkých, 3 tuhé · pravidlá: v11.11
+- **Vymáhač ako odpoveď na NA EX** — stav: overený · dôkaz: 185402-1 K4 10 : 5, K2 +3 tuhé · pravidlá: v11.11
+- **Remíza v tuhom na Dlhy** — stav: overený · dôkaz: 185402-1 K1 6 : 6, Dlhy 1 : 2, +11 · pravidlá: v11.11
+- **NA EX na vlastnú Finančnú poradkyňu** — Dlhy jemu · stav: sľubný, Záhradkár ho odkladá · dôkaz: 185402-1 K2 +13 Dlhov, exekúcia K5 −9, Dlhy pred tým obišli Záhradkárom K2–K4 · pravidlá: v11.11
+- **NA EX na kartu s Petelicou súpera ako brzda Nakladačky** — stav: overený · dôkaz: 185402-1 K3 Vandal −3, K5 Recidivista −8, Svokra −2 · pravidlá: v11.11
+- **Reči pri súperovom strachu** — K5 −5, K3 −2 (spolu 7); skôr K5 6, K6 15 · stav: overený · dôkaz: 185402-1, 173331-1, 165715-1 · pravidlá: v11.11
+- **Karty pri vyhratej hádke** — K2 5, K3 4; K2 8, K4 7, K5 11 · stav: overený, pomôže aj súperovi · dôkaz: 185402-1, 173331-1 · pravidlá: v11.11
+- **Rebrík strachu pod reči** — strach oranžová = červené reči za 3 bodov, nie 6 · stav: overený · dôkaz: 173331-1 K5, K6 · pravidlá: v11.11
 - **Kšeft Vily vo finále** — 2 cig: Farár žltá, oranžová, červená = +5 mne, −5 jemu za 6 cig · stav: overený · dôkaz: 173331-1 K6 · pravidlá: v11.11
-- **Veštica pri prehre** — Cirhóza za jeho Manželku: K4 švih 6, jeho trik preč · stav: overený · dôkaz: 173331-1 K4 · pravidlá: v11.11
-- **NA EX na vlastnú podstrčenú Veštitu** — R Povera, Povera ×2 + Vízia ×2 (K4 4 mäkké, 3 karty) · stav: sľubný, odpoveď ju znižuje na 2 · dôkaz: 173331-1 K4 · pravidlá: v11.11
-- **Dohadzovačka ako odpoveď** — presunie jeho Chlapa, Viera 6 → 2 · stav: sľubný · dôkaz: 173331-1 K5 · pravidlá: v11.11
+- **Veštica pri prehre** — Cirhóza za jeho Manželku: K4 švih 6 · stav: overený · dôkaz: 173331-1 K4 · pravidlá: v11.11
 - **Priazeň Robota + Fúrik** — 8 Dlhov za kolo · stav: overený · dôkaz: 173331-1 K5 · pravidlá: v11.11
-- **Praudovravec k Robotám hrany** — Odpor + Posilnenie = 4 Roboty; ale prevahu vzal Dvojčatami · stav: podmienený · dôkaz: 173331-1 K4 · pravidlá: v11.11
-- **Nealko + Opatrovateľka** — Nástroj s mojou kartou: Povera, Poh; Družstvo bez limitu · stav: overený · dôkaz: 173331-1 K5 · pravidlá: v11.11
-- **Bzdocha + zrážka** — K2 5 Rán, Cirhóza preč; pozri Vidly · stav: overený s podmienkou · pravidlá: v11.11
-- **Múr AA + Opatrovateľka + Miňištrant**, **NA EX na vlastnú kartu s neaktívnymi Vierami**, **Manželka + Liberál**, **Priazne z jeho strachu proti Dlhom** · dôkaz: 165715-1 · pravidlá: v11.11
-Overené na v11.10, na v11.11 neskúšané znova: **Manželka | Šarlatán**, **Nástroj s mäkkými v línii**, **Odpoveď, ktorá spáruje neaktívnu akciu**, **NA EX na vlastného Veterána**, **Vízia páli Cirhózy** (K3 1×, potvrdené), **Finančná poradkyňa pri hrane**.
-Podmienené: **Podstrčená blokáda** (pozri plán 3) · **Natáčanie** — K3 4 mäkké (vzal NA EX), K5 Roboty a Povera moje, K6 nič: dobré, keď položím prvú kartu · **Krčma: povinné NA EX ako sabotáž** — K3 Recidivista −5 tuhých, 6 Dlhov jemu · **Noviny** — 2 odhodené karty za 3 hádky, karty sa vrátia, slabé · **Múr viery ako plán remízy** · **Dlhy jemu** (nie proti Vymáhaču: K5 +12 tuhých) · **Vandal**, **Telefón v Dedičstve**, **Karta na súperovu hranu v prvom ťahu**, **Pijan ako Záverečná**, **Šarlatán a jeho Konflikt**, **Obranná NA EX**.
-Neoverené: **Presvedčenie do K3** (K5 sa dalo za 8, vzdala som to pre 26 špakov švihu), **Horoskop**, **Kultúrny dom**, **Ohováračka z karty**.
+- **Bzdocha + zrážka** — K1 výhra bitky, K2 5 Rán; pozri Vidly · stav: overený s podmienkou · dôkaz: 185402-1 K1 · pravidlá: v11.11
+- **Vízia páli Cirhózy po zamiešaní** — stav: overený · dôkaz: 185402-1 K1, K3 · pravidlá: v11.11
+- **Múr AA + Opatrovateľka + Miňištrant**, **NA EX na vlastnú kartu s neaktívnymi Vierami**, **Manželka + Liberál**, **Priazne z jeho strachu proti Dlhom**, **Nealko + Opatrovateľka**, **Dohadzovačka ako odpoveď**, **NA EX na vlastnú podstrčenú Veštitu** · dôkaz: 165715-1, 173331-1 · pravidlá: v11.11
+Overené na v11.10, na v11.11 neskúšané znova: **Manželka | Šarlatán**, **Odpoveď, ktorá spáruje neaktívnu akciu**, **NA EX na vlastného Veterána**, **Finančná poradkyňa pri hrane**.
+Podmienené: **Natáčanie** — K4 Pakt = Poh rozhodlo hádku 4 : 2; K3 aj K5 ho Vandal zrušil za 1 kartu, K5 ako odpoveď · **Kultúrny dom** — K5 +4 a pri remíze hádky nič navyše, pri výhre hádky 8 · **Krčma: povinné NA EX ako sabotáž** · **Podstrčená blokáda** · **Múr viery ako plán remízy** · **Dlhy jemu** (nie proti Vymáhaču; Záhradkár ich odkladá) · **Vandal**, **Telefón v Dedičstve**, **Karta na súperovu hranu v prvom ťahu**, **Pijan ako Záverečná**, **Šarlatán a jeho Konflikt**, **Obranná NA EX**.
+Neoverené: **Horoskop**, **Ohováračka z karty**.
 Zavrhnuté:
-- **Zviera na hranu proti Poľovníkovi** (znova K6). **Tichá línia.** **Presvedčenie v K5.** **Zrážka naslepo.** **Nástroj s mäkkými na koniec radu bez mojej karty.** **Kostol ako oltár.** **Strach z Nakladačky na starších so Kmotrom pri mojich Dlhoch** (Kmotor mi K2 prehodil Dlhy).
+- **Presvedčenie v Druhej lige** (K3 hádka 10, cena 11; reči dali 10 + 5 a krátenie). **Noviny** (2 karty za 3 hádky). **Zviera na hranu proti Poľovníkovi.** **Tichá línia.** **Zrážka naslepo.** **Nástroj s mäkkými na koniec radu bez mojej karty.** **Kostol ako oltár.** **Strach z Nakladačky na starších so Kmotrom pri mojich Dlhoch.**
 - **Reči mimo jeho červenej — VYVRÁTENÉ na v11.11.**
 - **„Hádka bez výhry bitky nikdy neprešla“ — na v11.11 už neplatí:** dáva 8–17 špakov za kolo.
-- **„Cigarety nehromadím“ — potvrdené:** výpalné K4, K5 po 3 cig.
+- **„Cigarety nehromadím“ — potvrdené:** výpalné K3, K4 po 3 cig.
 > Sudca 2026-11-06: Čísla sedia s priebehom (20261106-010635-2: po K2 6 Cirhóz, na konci 7), ale je to súvislosť, nie dôkaz: od K3 už súper nedal NA EX na tvojho Pijana. Prah +2 je podľa §8 správny.
 > Sudca 2026-11-06: „Krčmárka: Abstinent“ platí len pre partiu, v ktorej to bolo — priazeň nesie scorecard rozdaný náhodne (§3, §10 Priazeň).
 
 ## Experimenty
 Uzavreté E1–E17 (v11.6): hádka sama bitku nevyhrá; Nealko funguje; Mačka podstrčená, Manželka na koniec a Vandal fungujú; zrážka naslepo a strach na starších zavrhnuté.
-Uzavreté E18–E38 (v11.10): hádka ako hlavný plán prehráva (pred v11.11); Stryná + Manželka, Opatrovateľka, dvojitá zrážka, Veštica, Tenký balíček, Nástroj do línie fungujú; Tichá línia nefunguje; Prvá výhra do K3 nedosiahnutá; Múr viery podmienený; Dlhy jemu nejasné; Presvedčenie do K3 nejasné; zrážka podľa čítania 2 z 3; Nástroj na konci Kostola funguje.
-Uzavreté E39–E45 (v11.11, 165715-1): reči pri jeho strachu 28 špakov za 12 bodov; masa kariet 18 špakov; natáčanie do 6 tuhých, bitky neotočí; slučka priazne nedala nič; blokáda čiastočne; NA EX na Opatrovateľku a Múr AA fungujú.
-### E46 · Noviny do Dedičstva, čakám, že Ekonóm stratí zásobu
-- partie: 20261106-173331-1 · výsledok: slabé
-- čísla: 2 odhodené karty (K4, K5) za 2 cig. Mal ruku 5–9; karty mu idú do odhadzovacieho a Vízie ich vrátia.
-- čo ďalej: len ak mám Noviny zadarmo; radšej Povera a Poh v línii · pravidlá: v11.11
-### E47 · Nástroj v línii ako špak
-- partie: 173331-1 · výsledok: funguje
-- čísla: K3 Guľa: 15 = 9 + 6; K5 Nealko v mojich 11. Guľa za Pijanom 2 Vízie, spálila Cirhózu.
-- čo ďalej: Nástroj bez limitu v každom kole · pravidlá: v11.11
-### E48 · Presvedčenie pri hádke ≥ 8
-- partie: 173331-1 K5 · výsledok: vzdané
-- čísla: Starosta za 8 by dal kartu na 1 kolo, reči St + Vych + Vet švih 26.
-- čo ďalej: skúsiť v K2–K3, ak hádka 11+ · pravidlá: v11.11
-### E49, E50 · Reči do červených, rebrík strachu
-- partie: 173331-1 · výsledok: funguje
-- čísla: 8 bodov K5 → K6: St 5, Vych 5, Vet 3 mne, jemu −10 (St, Vych). Výnos 2,8 špaka/bod + krátenie. Vet: jeho reči sa nekrátia.
-- čo ďalej: plánuj Nakladačku K1 na oranžové, kde nedám Kmotra pri Dlhoch · pravidlá: v11.11
-### E51 · Krčma: NA EX na jeho Recidivistu
-- partie: 173331-1 K3 · výsledok: čiastočne
-- čísla: −5 tuhých, 2 × Dlh ×2; bitku to neotočilo (6 : 11)
+Uzavreté E18–E38 (v11.10): hádka ako hlavný plán prehráva (pred v11.11); Stryná + Manželka, Opatrovateľka, dvojitá zrážka, Veštica, Tenký balíček, Nástroj do línie fungujú; Tichá línia nefunguje; Múr viery podmienený; Dlhy jemu nejasné; zrážka podľa čítania 2 z 3; Nástroj na konci Kostola funguje.
+Uzavreté E39–E45 (v11.11, 165715-1): reči pri jeho strachu 28 špakov za 12 bodov; masa kariet 18 špakov; natáčanie do 6 tuhých; slučka priazne nedala nič; NA EX na Opatrovateľku a Múr AA fungujú.
+Uzavreté E46–E58 (v11.11, 173331-1): Noviny slabé; Nástroj v línii ako špak funguje; Presvedčenie K5 vzdané; rebrík strachu, reči do červených, Veštica, Robota + Fúrik, Dohadzovačka ako odpoveď, Kšeft Vily fungujú; Krčma a Praudovravec čiastočne.
+### E59 · Keď som obranca v K1, vyberiem Jednotu a Pakt spárujem s Pohoršením hrany, čakám hádku ≥ 6
+- partie: 20261106-185402-1 · výsledok: funguje, súper môže to isté
+- čísla: 8 mäkkých pred jeho NA EX; on 4 tým istým trikom; jeho NA EX na Dievčinu −4
+- čo ďalej: Zrkadlo a Manželka; držať odpoveď na NA EX · pravidlá: v11.11
+### E60 · Presvedčenie pri hádke ≥ 8 v K2–K3
+- partie: 185402-1 · výsledok: nedosiahnuté
+- čísla: K3 hádka 10, cena 11 (6 reči + 5). K5 remíza. 10 bodov do rečí dalo K4 +10
+- čo ďalej: zavrhnuté v Druhej lige · pravidlá: v11.11
+### E61 · Kultúrny dom a prehra s hádkou
+- partie: 185402-1 K5 · výsledok: nejasné
+- čísla: Kult. dom +4; hádka 4 : 4 (jeho prevaha 3 telami a Vandal odpoveďou), plné 2× som neoverila
+- čo ďalej: skúsiť, keď mám Manželku pri hrane · pravidlá: v11.11
+### E62 · Zrkadlo v Dedičstve, Pakt × hrana
+- partie: 185402-1 · výsledok: funguje
+- čísla: K1 +2 mäkké, +1 cig za Pitku; K3 +2 cig. Po spálení Dievčiny K3 už nedalo nič
+- čo ďalej: len s Dievčinou v balíčku a bez jej spálenia · pravidlá: v11.11
+### E63 · Vymáhač a vlastné Dlhy
+- partie: 185402-1 K2, K4 · výsledok: funguje
+- čísla: K2 Dlhy 3 → 7, tuhé 3 → 7; K4 odpoveď 4 : 7 → 10 : 5
 - pravidlá: v11.11
-### E52 · Praudovravec | Veštica, Roboty
-- partie: 173331-1 K4 · výsledok: čiastočne (Veštica za ním nestihla, 4 Roboty vzali Dvojčatá, potom 2 telami späť, 6 Dlhov spálených)
-- pravidlá: v11.11
-### E53 · NA EX na podstrčenú vlastnú Veštitu
-- partie: 173331-1 K4 · výsledok: funguje
-- čísla: 4 Povery, 2 Vízie (vzala som 2 karty); odpoveď Záhradkárom zachovala 2 Povery a exekúcia 0; hádka 4 : 0
-- pravidlá: v11.11
-### E54 · Veštica: Cirhóza za jeho Manželku
-- partie: 173331-1 K4 · výsledok: funguje
-- čísla: −3 jemu, +3 mne, jeho Manželka mi K5 dala Poh ×2; on v K5 mal 0 mäkkých
-- pravidlá: v11.11
-### E55 · Priazeň Robota + Fúrik
-- partie: 173331-1 K5, K6 · výsledok: funguje
-- čísla: 8 + 6 Dlhov spálených; bez Dlhov by to bolo 8 špakov
-- pravidlá: v11.11
-### E56 · Múr a hádka z priazní z jeho strachu
-- partie: 173331-1 K5 · výsledok: funguje
-- čísla: Viera 7, Ohováračka, hádka 8 : 0, tuhé 9 : 13 pri jeho 13 kartách proti mne
-- pravidlá: v11.11
-### E57 · Dohadzovačka ako odpoveď
-- partie: 173331-1 K5 · výsledok: funguje
-- čísla: jeho Viera 6 → 2, môj Pakt/Viera; hádka 8
-- pravidlá: v11.11
-### E58 · Kšeft Vily vo finále
-- partie: 173331-1 K6 · výsledok: funguje
-- čísla: 6 cig: Farár červená: +5 mne, jeho 5 → 0. Výkupné za 6 cig by dalo 1.
+### E64 · NA EX na vlastnú Poradkyňu
+- partie: 185402-1 K2 · výsledok: funguje čiastočne
+- čísla: Dlhy súpera 1 → 16 za 1 poldeci + Cirhóza z Karu; Záhradkár K2–K4 ich chránil, K5 −9; súper si potom kúpil Poradkyňu tiež
+- čo ďalej: kombinovať so spálením Záhradkára alebo finále Herňa · pravidlá: v11.11
+### E65 · NA EX na Manželku pri hrane bez slotov
+- partie: 185402-1 K3 · výsledok: funguje
+- čísla: 8 mäkkých, hádka 10 : 0, odpoveď nemala čo spárovať
 - pravidlá: v11.11
 
 ## Nápady na vyskúšanie
-1. **Bitka K2 lacno:** 2 telá na hrane a Rana, NA EX na vlastnú kartu so zakrytými Peckami (K1 fungovalo).
-2. **Presvedčenie v K2–K3**, keď hádka ≥ 11.
-3. **Kultúrny dom ako obranca:** za prehratú bitku 2× karty pri hádke.
-4. **Reči na Autobusára a Hrobára, keď ich má súper na oranžovej** pred jeho ďalším skokom.
-5. **Pijan len na koniec línie + Bzdocha.**
-6. **Horoskop proti súperovi bez Viery.**
+1. **Vedieť 2 kolá dopredu, kedy má súper 3 červené:** mať reči tam, kam skočí, a Nakladačku tlmiť Vierou.
+2. **Finále Herňa pri jeho 15+ Dlhoch:** ak vediem, vyberám ja; víťaz +Dlhy porazeného.
+3. **Priznať Cirhózy pri K4, keď vediem a idem do K5 s 9:** čo stojí +N tuhé proti −27.
+4. **Mäsiar vedľa Krokodíla** po podstrčení.
+5. **Horoskop proti súperovi bez Viery.**
+6. **Dohadzovačka: presun jeho Petelice na môj koniec za telá.**
 
 ## Čo štýlu chýba v hre
-- **Karty v línii sú najväčší zdroj hry a patria víťazovi bitky:** K5 21 kariet = 21 jemu, 11 mne. Keď hádku vyhrám, karty aj tak platím ja aj on.
-- **Viera ruší Povery, nič neruší Pohoršenia, ale NA EX ich zruší.** Mäkké postavené za 2 ťahy zhodí jeden poldeci (K3, K5).
+- **Výhra väzňami ide z jednej Nakladačky:** K5 18 bodov, 3 väzni naraz. Reči ani hádka proti nej nič nerobia; porazený má len NA EX na tuhé.
+- **Karty v línii sú najväčší zdroj hry a patria víťazovi bitky:** K5 13 jemu, K4 14 mne.
+- **Dobratie do 3 ráta Cirhózy:** K5 ruka 3 Cirhózy, šenok za 2 cig. Súper mal v tej chvíli 6 kariet.
+- **Viera ruší Povery, nič neruší Pohoršenia, ale NA EX ich zruší.** Mäkké postavené za 2 ťahy zhodí jeden poldeci (K1 −4).
+- **Natočenie je slabé proti Vandalovi:** K3 za 1 kartu, K5 ako zadarmo odpoveď na NA EX: +4 tuhé.
+- **Krokodíl podstrčený sa vracia každé kolo:** K1, K2, K3, K5; 3 moje karty spálené natrvalo.
 - **Proti výhre strachom nemám ťah:** reči, hádka ani priazeň červený strach neznižujú ani neblokujú.
 > Sudca 2026-11-06: Znenie je presné, len zaradenie treba spresniť: červený strach naozaj neklesá (§10), ale výhra strachom platí len vo vyhratej bitke. Po 4 červených súpera je jediná obrana vyhrať každú ďalšiu bitku tuhým alebo Vierou. V 20261106-144117-2 to bolo K5 5 : 20, teda ďaleko. Čo chýba, je cesta ku K4, nie ťah v K5.
-- **Víťazove reči sa nekrátia, moje strachy nie:** súper môže Kšeftom a hádkou uniknúť kráteniu (Vet K6).
+- **Víťazove reči sa nekrátia, moje strachy nie.**
 - **Porazený vykladá prvý**, súper odpovie podstrčením; výpalné 3 cig za kolo pri jeho 3 červených.
 - **Reči sú terč:** Kapybara, zajatie.
 
@@ -122,4 +114,5 @@ Uzavreté E39–E45 (v11.11, 165715-1): reči pri jeho strachu 28 špakov za 12 
 - 2026-11-06 · 20261106-133718-1 · proti Ekonóm Ďuro · prehra 3 : 202 (−4 : 109 pred finále) · hádka 28 : 5, reči 11 špakov, 0 odbočiek · v11.10
 - 2026-11-06 · 20261106-144117-2 · proti Agresor Rudo · prehra 33 : 102, výhra strachom K5, bez finále · hádka 23 rozdelených, reči 32 špakov, 3 odbočky · v11.10
 - 2026-11-06 · 20261106-165715-1 · proti Agresor Rudo · prehra 31 : 50, výhra strachom K3, bez finále · hádka 3 z 3 (10, 2, 4 bodov), karty 18 špakov, reči 15, krátenie 13, 0 odbočiek, po K2 19 : 24; múr AA + Opatrovateľka 10 Vier · v11.11
-- 2026-11-06 · 20261106-173331-1 · proti Ekonóm Ďuro · prehra 44 : 145 (34 : 91 pred finále) · hádky 3 z 6 (2 : 8, 4 : 2, 0 : 4, 4 : 0, 8 : 0, remíza), karty 26, reči 27, krátenie 21, Exekútor −11, 4 Cirhózy −12, 0 odbočiek; K2 zrážka s Vidlami −16 · v11.11
+- 2026-11-06 · 20261106-173331-1 · proti Ekonóm Ďuro · prehra 44 : 145 (34 : 91 pred finále) · hádky 3 z 6, karty 26, reči 27, krátenie 21, Exekútor −11, 4 Cirhózy −12, 0 odbočiek · v11.11
+- 2026-11-06 · 20261106-185402-1 · proti Sabotér Zdeno · prehra 45 : 48, výhra väzňami K5, bez finále · bitky 2 z 5 (K1, K4), hádky 3 z 5 (mäkké 26 : 14), bitky 25, karty pri hádke 9, Kult. dom 4, reči 17, krátenie 7, Exekútor −9, 9 Cirhóz nezapočítaných; po K4 37 : 33; 0 odbočiek · v11.11
