@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dlaždica Karty a odhad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@700;800&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pozadie:#14110e;--plocha:#1e1914;--plocha-2:#28211a;--plocha-3:#332a21;--okraj:#3d3229;--okraj-svetly:#57483a;
+  --text:#f1e8d8;--tlmeny:#b6a790;--slaby:#8b7d6a;--slaby-text:#9d8f7b;--akcent:#e9ad45;--akcent-svetly:#ffd08a;--na-akcente:#2b1b03;
+  --cervena-text:#e5735c;--zelena:#7cbf74;--info:#8fc3e0;--ja:#5cc0cf;--ja-tmava:#1d3b40;--su:#e0805f;--su-tmava:#43261d;--lesk:#fff;--tma:1;
+  --nadpis:"Bitter",Georgia,serif;--pismo:Roboto,"Segoe UI",system-ui,sans-serif;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--pozadie);color:var(--text);font:400 15px/1.5 var(--pismo)}
+h1,h2,h3{font-family:var(--nadpis);margin:0}
+.ovl{position:sticky;top:0;z-index:100;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;padding:8px 20px;background:var(--plocha-2);border-bottom:1px solid var(--okraj)}
+.ovl-sk{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.ovl-sk>span{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--tlmeny);margin-right:4px}
+.ovl-sk button{font:500 .84rem var(--pismo);color:var(--text);background:var(--plocha-3);border:1px solid var(--okraj);padding:5px 10px;cursor:pointer;min-height:30px}
+.ovl-sk button[aria-pressed=true]{background:var(--akcent);color:var(--na-akcente);border-color:var(--akcent);font-weight:700}
+.ovl a{color:var(--akcent-svetly);font-size:.86rem;text-decoration:none;padding:5px 4px}
+.ovl a:hover{text-decoration:underline}
+main{max-width:1960px;margin:0 auto;padding:22px 20px 70px}
+.uvod{max-width:82ch;margin-bottom:24px}
+.uvod h1{font-size:1.65rem;margin-bottom:6px}
+.uvod p{margin:0;color:var(--tlmeny)}
+.mock{margin:0 0 42px}
+.mock-hl{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.mock-hl h2{font-size:1.25rem}
+.mock-hl .cis{font:800 .8rem var(--pismo);color:var(--na-akcente);background:var(--akcent);padding:2px 8px}
+.mock-popis{max-width:100ch;margin:0 0 10px;color:var(--tlmeny)}
+.mock-pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px;margin:10px 0 0;max-width:1100px;font-size:.92rem}
+.mock-pc b{color:var(--text)}
+.mock-pc div{color:var(--tlmeny)}
+.ramik{position:relative}
+.ramik:hover,.ramik:focus-within{z-index:50}
+.stol{transform-origin:0 0;display:flex;flex-direction:column;background:var(--pozadie);position:relative;outline:1px solid var(--okraj)}
+
+/* ---- doska ---- */
+.doska{--farba:var(--ja);--farba-tmava:var(--ja-tmava);position:relative;display:grid;grid-template-columns:minmax(150px,215px) minmax(0,.8fr) repeat(6,minmax(0,1fr)) minmax(0,1.1fr);height:var(--bar-h);gap:6px;padding:var(--dp) 12px;background:linear-gradient(90deg,var(--farba-tmava),var(--plocha) 45%);border:1px solid color-mix(in srgb,var(--farba) 35%,var(--okraj));border-left:5px solid var(--farba)}
+.doska.su{--farba:var(--su);--farba-tmava:var(--su-tmava);grid-template-columns:minmax(0,1.1fr) repeat(6,minmax(0,1fr)) minmax(0,.8fr) minmax(150px,215px);background:linear-gradient(270deg,var(--farba-tmava),var(--plocha) 45%);border-left-width:1px;border-right:5px solid var(--farba)}
+.hrac{display:flex;align-items:center;gap:10px;min-width:0}
+.su .hrac{flex-direction:row-reverse;text-align:right}
+.avatar{flex:none;width:var(--av);height:var(--av);border-radius:50%;display:grid;place-items:center;font:800 1.1rem var(--nadpis);background:var(--plocha-3);border:2px solid var(--farba);color:var(--farba)}
+.hrac strong{display:block;font:700 .95rem/1.2 var(--nadpis);white-space:nowrap}
+.hrac small{color:var(--tlmeny);font-size:.76rem}
+.zdroj{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;padding:4px 7px;text-align:center;border-radius:10px;background:color-mix(in srgb,#000 28%,transparent);border:1px solid color-mix(in srgb,var(--lesk) 6%,transparent);overflow:hidden}
+.zdroj-n{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tlmeny);white-space:nowrap}
+.zdroj-v{font:800 var(--velke)/1 var(--nadpis);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px}
+.zdroj-p{font-size:.7rem;color:var(--slaby-text);white-space:nowrap}
+.nizky .zdroj-p{display:none}
+
+/* ---- dlaždica Karty ---- */
+.kd{position:relative;cursor:pointer;padding:4px 6px;outline:none;transition:background-color .15s,border-color .15s}
+.kd:hover,.kd:focus-visible,.kd.pin{background:color-mix(in srgb,var(--lesk) 6%,transparent);border-color:color-mix(in srgb,var(--farba) 55%,transparent)}
+.kd:focus-visible{outline:2px solid var(--akcent-svetly);outline-offset:-2px}
+.kd.ciel{border:2px dashed var(--akcent);background:color-mix(in srgb,var(--akcent) 14%,transparent);gap:0;cursor:copy}
+.kd.ciel .zdroj-n{color:var(--akcent-svetly)}
+.ciel-naz{font:800 1.25rem/1.15 var(--nadpis);color:var(--text)}
+.ciel-poz{font-size:.68rem;line-height:1.15;color:var(--tlmeny)}
+.nizky .ciel-naz{font-size:1.02rem}
+
+/* T1 — tri stĺpce */
+.t1{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;height:100%;align-items:center}
+.t1 div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;height:100%}
+.t1 div+div{border-left:1px solid color-mix(in srgb,var(--lesk) 10%,transparent)}
+.t1 b{font:800 var(--velke)/1 var(--nadpis);font-variant-numeric:tabular-nums}
+.t1 span{font-size:.64rem;line-height:1;color:var(--tlmeny);white-space:nowrap}
+.t1 .hl b{color:var(--farba)}
+.t1 .hl span{color:var(--text);font-weight:500}
+.t1 .nula b{color:var(--slaby)}
+
+/* T2 — vejár */
+.t2{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--t2g);width:100%;height:100%}
+.vejar{position:relative;height:var(--vh);width:100%}
+.vk{position:absolute;bottom:0;left:50%;width:var(--vs);height:var(--vh);margin-left:calc(var(--vs) / -2);border-radius:3px;transform-origin:50% 130%;border:1px solid color-mix(in srgb,var(--lesk) 22%,transparent);background:color-mix(in srgb,var(--lesk) 12%,var(--plocha-2))}
+.vk.zap{background:var(--farba);border-color:color-mix(in srgb,var(--lesk) 45%,var(--farba))}
+.vk.pr{background:none;border:1px dashed var(--farba);opacity:.75}
+.t2-t{font-size:.72rem;line-height:1.1;color:var(--tlmeny);white-space:nowrap}
+.t2-t b{font:800 .95rem/1 var(--nadpis);color:var(--text)}
+.t2-t b.hl{color:var(--farba)}
+.t2-p{position:absolute;top:0;right:0;display:flex;align-items:center;gap:2px;padding:1px 4px;font:700 .68rem/1.2 var(--pismo);color:var(--tlmeny);background:color-mix(in srgb,#000 40%,transparent);border-radius:4px}
+.su .t2-p{right:auto;left:0}
+.t2-p svg{width:10px;height:10px;fill:currentColor}
+
+/* T3 — veľké číslo */
+.t3{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:100%}
+.su .t3{flex-direction:row-reverse}
+.t3-v{display:flex;flex-direction:column;align-items:center;gap:2px;flex:none}
+.t3-v b{font:800 calc(var(--velke) * 1.35)/.95 var(--nadpis);color:var(--farba);font-variant-numeric:tabular-nums}
+.t3-v span{font-size:.66rem;line-height:1;color:var(--text);font-weight:500}
+.t3-r{display:flex;flex-direction:column;gap:4px;padding-left:9px;border-left:1px solid color-mix(in srgb,var(--lesk) 12%,transparent);font-size:.7rem;line-height:1;color:var(--tlmeny);text-align:left;white-space:nowrap}
+.su .t3-r{padding-left:0;padding-right:9px;border-left:0;border-right:1px solid color-mix(in srgb,var(--lesk) 12%,transparent);text-align:right}
+.t3-r b{display:inline-block;min-width:1.15em;font:800 .95rem/1 var(--nadpis);color:var(--text);font-variant-numeric:tabular-nums}
+
+/* T4 — riadky so slotmi */
+.t4{display:flex;flex-direction:column;justify-content:center;gap:var(--t4g);width:100%;height:100%;padding:0 3px}
+.t4-r{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:.72rem;line-height:1;color:var(--tlmeny);white-space:nowrap}
+.t4-r b{font:800 .98rem/1 var(--nadpis);color:var(--text);font-variant-numeric:tabular-nums}
+.t4-r.hl{color:var(--text)}
+.t4-r.hl b{color:var(--farba)}
+.sloty{display:inline-flex;gap:2px}
+.sloty i{display:block;width:8px;height:13px;border-radius:2px;background:var(--farba)}
+.sloty i.pouz{background:none;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--farba) 55%,transparent)}
+.t4-l{display:flex;align-items:center;gap:5px}
+
+/* ---- jednotný bar ---- */
+.jbar{position:relative;z-index:5;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);height:52px;border:1px solid var(--okraj);border-top:none;background:var(--plocha-2);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.strana{display:flex;align-items:center;gap:10px;min-width:0;padding:0 12px;overflow:hidden}
+.strana.ja{--e:var(--ja);box-shadow:inset 4px 0 var(--ja)}
+.strana.su{--e:var(--su);flex-direction:row-reverse;box-shadow:inset -4px 0 var(--su)}
+.kto{display:flex;flex:none;flex-direction:column;max-width:15ch;font:700 .86rem/1.15 var(--nadpis);white-space:nowrap;color:var(--e)}
+.su .kto{align-items:flex-end}
+.kto small{font:600 .6rem/1.3 var(--pismo);letter-spacing:.08em;text-transform:uppercase;color:var(--tlmeny)}
+.akcie{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden;white-space:nowrap}
+.su .akcie{flex-direction:row-reverse}
+.ef{flex:none;display:inline-flex;align-items:center;gap:5px;padding:2px 8px 2px 3px;border-radius:8px;background:color-mix(in srgb,#000 28%,transparent);border:1px solid color-mix(in srgb,var(--e) 30%,transparent)}
+.ef svg{display:block;width:28px;height:28px;border-radius:6px;fill:#fff;padding:3px}
+.ef b{font:800 1.05rem/1 var(--nadpis);color:var(--e)}
+.ef em{font:normal .8rem var(--pismo);color:var(--tlmeny);display:none}
+.siroky .ef em{display:inline}
+.ziadne{font-size:.82rem;color:var(--slaby-text);font-style:italic}
+
+.stred{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;padding:0 16px;background:var(--plocha-3);cursor:help;outline:none}
+.stred:hover,.stred.pin{background:color-mix(in srgb,var(--lesk) 5%,var(--plocha-3))}
+.stred:focus-visible{outline:2px solid var(--akcent-svetly);outline-offset:-2px}
+.sprava{max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:.76rem;line-height:1.25;color:var(--info)}
+.nadp{flex:none;font:700 .62rem/1 var(--pismo);letter-spacing:.11em;text-transform:uppercase;color:var(--tlmeny)}
+.ikspak{display:inline-block;vertical-align:-2px;width:22px;height:11px;fill:currentColor}
+.dobre{color:var(--zelena)}.zle{color:var(--cervena-text)}.remi{color:var(--akcent-svetly)}.nikto{color:var(--tlmeny)}
+.c-ja{color:var(--ja)}.c-su{color:var(--su)}
+
+/* B1 — trojica slovami */
+.b1{display:flex;align-items:baseline;white-space:nowrap}
+.b1>span{display:inline-flex;align-items:baseline;gap:6px;padding:0 11px}
+.b1>span+span{border-left:1px solid color-mix(in srgb,var(--lesk) 13%,transparent)}
+.b1>span:first-child{padding-left:0}.b1>span:last-child{padding-right:0}
+.b1 b{font:800 .98rem/1.2 var(--pismo);font-variant-numeric:tabular-nums}
+.b1 i{font-style:normal;font-size:.8rem;color:var(--tlmeny);font-variant-numeric:tabular-nums}
+
+/* B2 — tabuľka skóre */
+.b2{display:grid;grid-template-columns:auto 46px 46px 46px;align-items:center;column-gap:5px;row-gap:1px;white-space:nowrap}
+.b2 .hl{font:700 .58rem/1 var(--pismo);letter-spacing:.09em;text-transform:uppercase;color:var(--tlmeny);text-align:center;height:11px}
+.b2 .m{font:700 .78rem/1.15 var(--nadpis);max-width:11ch;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
+.b2 .n{font:600 .92rem/1.15 var(--nadpis);text-align:center;font-variant-numeric:tabular-nums;color:var(--tlmeny)}
+.b2 .n.ja{--farb:var(--ja)}.b2 .n.su{--farb:var(--su)}
+.b2 .n.vede{font-weight:800;color:var(--text);background:color-mix(in srgb,var(--farb) 28%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--farb) 55%,transparent)}
+.toast{position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);z-index:6;max-width:640px;padding:3px 12px;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--info);background:color-mix(in srgb,#000 72%,transparent);border:1px solid var(--okraj);pointer-events:none}
+
+/* B3 — pretlak */
+.b3{display:flex;align-items:center;gap:13px;white-space:nowrap}
+.b3-m{display:flex;align-items:center;gap:5px}
+.b3-m .cis{font:800 .86rem/1 var(--nadpis);font-variant-numeric:tabular-nums;min-width:1.15em;text-align:center}
+.b3-m .cis.vede{font-size:1.02rem}
+.trub{position:relative;width:74px;height:12px;background:color-mix(in srgb,#000 38%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lesk) 10%,transparent)}
+.trub::after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;margin-left:-1px;background:var(--text)}
+.trub i{position:absolute;top:1px;bottom:1px}
+.trub i.ja{right:50%;background:var(--ja)}
+.trub i.su{left:50%;background:var(--su)}
+.b3-sp{display:inline-flex;align-items:baseline;gap:5px;padding-left:12px;border-left:1px solid color-mix(in srgb,var(--lesk) 13%,transparent)}
+.b3-sp b{font:800 1.04rem/1 var(--nadpis);font-variant-numeric:tabular-nums}
+
+/* B4 — zápasy */
+.b4{display:flex;align-items:stretch;gap:6px;white-space:nowrap}
+.zap{display:grid;grid-template-columns:minmax(26px,auto) auto minmax(26px,auto);align-items:center;height:26px;background:color-mix(in srgb,#000 30%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--lesk) 8%,transparent)}
+.zap .n{padding:0 7px;text-align:center;font:600 .92rem/26px var(--nadpis);font-variant-numeric:tabular-nums;color:var(--slaby-text)}
+.zap .n.vede{font:800 1.08rem/26px var(--nadpis)}
+.zap .n.vede.ja{color:var(--na-akcente);background:var(--ja)}
+.zap .n.vede.su{color:var(--na-akcente);background:var(--su)}
+.zap .naz{padding:0 7px;font:700 .58rem/1 var(--pismo);letter-spacing:.1em;text-transform:uppercase;color:var(--tlmeny);display:inline-flex;align-items:center;gap:3px}
+.zap.spak{background:color-mix(in srgb,var(--akcent) 10%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--akcent) 34%,transparent)}
+.zap.spak .naz{color:var(--akcent-svetly)}
+.zap.spak .ikspak{width:20px;height:10px}
+
+/* stôl */
+.plst{position:relative;height:var(--plst);background:radial-gradient(ellipse at center,#31513a,#203527 75%);display:flex;align-items:center;justify-content:center;gap:5px;overflow:hidden}
+.mini{width:58px;height:82px;border-radius:5px;background:#e3d7bf;box-shadow:0 2px 5px rgba(0,0,0,.45);opacity:.5}
+.mini.lok{width:92px;height:62px;background:#caa96f;opacity:.75}
+
+/* nápoveda */
+.tip{position:absolute;z-index:40;width:max-content;max-width:470px;padding:11px 13px;font-size:.84rem;line-height:1.4;text-align:left;white-space:normal;color:var(--text);background:#120f0c;border:1px solid var(--okraj-svetly);box-shadow:0 10px 26px rgba(0,0,0,.6);display:none;pointer-events:none}
+.tip.vid{display:block}
+.tip h4{margin:0 0 6px;font:800 .95rem var(--nadpis)}
+.tip table{border-collapse:collapse;width:100%}
+.tip td,.tip th{padding:2px 8px 2px 0;font-size:.82rem;font-weight:400;text-align:left;vertical-align:baseline;white-space:nowrap}
+.tip th{color:var(--tlmeny);font-size:.72rem;font-weight:700;border-bottom:1px solid var(--okraj)}
+.tip td.c,.tip th.c{text-align:right;padding-left:12px;padding-right:0;font-variant-numeric:tabular-nums}
+.tip tr.sum td{border-top:1px solid var(--okraj);font-weight:700}
+.tip .riadok{display:block;margin-top:5px;color:var(--tlmeny);font-size:.8rem}
+.tip b.ja{color:var(--ja)}.tip b.su{color:var(--su)}
+.tip .sek{margin-top:9px;padding-top:7px;border-top:1px solid var(--okraj)}
+.tip .ak{display:block;margin-top:7px;color:var(--slaby-text);font-size:.76rem}
+
+/* záver */
+.spolocne,.porov{max-width:1100px;padding:16px 18px;background:var(--plocha);border:1px solid var(--okraj);margin-bottom:22px}
+.spolocne h2,.porov h2{font-size:1.1rem;margin-bottom:8px}
+.spolocne ul{margin:0;padding-left:20px;color:var(--tlmeny)}
+.spolocne li{margin:4px 0}
+.spolocne b,.porov b{color:var(--text)}
+.spolocne code{font-size:.86em;color:var(--akcent-svetly)}
+.porov table{width:100%;border-collapse:collapse;font-size:.9rem;color:var(--tlmeny)}
+.porov th,.porov td{padding:6px 12px 6px 0;text-align:left;vertical-align:top;border-bottom:1px solid var(--okraj)}
+.porov th{color:var(--text);font-size:.78rem;letter-spacing:.04em}
+.odpor{margin:12px 0 0;color:var(--text)}
+.sklad{display:flex;flex-wrap:wrap;gap:12px 28px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<nav class="ovl" aria-label="Nastavenia ukážky">
+  <div class="ovl-sk" id="prep-stav"><span>Situácia</span></div>
+  <div class="ovl-sk" id="prep-rozm"><span>Obrazovka</span></div>
+  <div class="ovl-sk"><span>Skoč na</span><a href="#m1">1</a><a href="#m2">2</a><a href="#m3">3</a><a href="#m4">4</a><a href="#sklad">poskladať</a><a href="#spol">spoločné</a><a href="#porov">porovnanie</a></div>
+</nav>
+<main>
+  <header class="uvod">
+    <h1>Dlaždica Karty a stredný bar</h1>
+    <p>Štyri rozloženia. Dlaždica ukáže ruku, koľko hráč ešte vyloží a koľko má priznaných, zvyšok je pod myšou alebo po kliku. Stredný bar sa už neprepína: strany vždy ukazujú aktivované akcie a stred odhad bitky, hádky a špakov po kole. Prejdi myšou po dlaždici a po strede baru a prepínaj situácie hore. Čísla sú vymyslený príklad.</p>
+  </header>
+  <div id="mocky"></div>
+  <section class="mock" id="sklad">
+    <div class="mock-hl"><span class="cis">+</span><h2>Poskladaj si: dlaždica z jedného, stred z druhého</h2></div>
+    <p class="mock-popis">Dlaždica a stred nezávisia od seba, takže sa dá postaviť ľubovoľná dvojica.</p>
+    <div class="sklad">
+      <div class="ovl-sk" id="sk-t"><span>Dlaždica</span></div>
+      <div class="ovl-sk" id="sk-b"><span>Stred</span></div>
+    </div>
+    <div class="ramik" data-t="1" data-b="4" id="sklad-ramik"></div>
+  </section>
+  <section class="spolocne" id="spol">
+    <h2>Spoločné pre všetky štyri</h2>
+    <ul>
+      <li><b>Prepínač „akcie | karty“ zmizne.</b> Strany baru ukazujú vždy aktivované akcie. Mobil sa nemení, ten má vlastný stĺpec a panel bitky.</li>
+      <li><b>Čo dnes nesie režim „karty“, nesmie zmiznúť</b>: pas, NA EX skryto, stavia šenok, ✓ vybrala. V mockoch to stojí v malom riadku pod menom, tam, kde je dnes „na ťahu“.</li>
+      <li><b>Z riadku odhadu odíde</b> „ešte môže: ty NA EX až 0 : 3 (Nakladačka…)“ a stávka „o +5/+5“. Hrozba je v nápovede stredu, stávka tiež, ako riadok „keď bitku otočíš“.</li>
+      <li><b>Odhad špakov po kole</b> = čo hráč dostane, keď bitka a hádka dopadnú ako teraz: karty v línii víťazovi, sekera, Herňa, Kultúrny dom, starší (víťaz najvyšší marker, porazený reči), vo finále Nakladačka a hádka 1 : 1, mínus Exekútor. Väčšinu už ráta jadro (<code>stavkaBitky</code>, <code>spakyTeraz</code>); Exekútor a finále treba doložiť a celé zložiť do jedného výpočtu s testom.</li>
+      <li><b>Odhad neráta krádež pri zajatí</b>, lebo o nej rozhodne víťaz až pri delení Nakladačky, a ani výkupné na konci hry.</li>
+      <li><b>Slovo „vyložíš“</b> ostalo zo súčasnej hry („vyložíš ešte 3 karty“). V Pitke sa stĺpec volá „ďalej“ a ukazuje limit ďalšieho Zhromaždenia.</li>
+      <li><b>Dlaždica ako cieľ</b> ostáva: pri ťahaní kliatby či Nástroja sa zmení na „pusti sem“ (situácia Ťahám kliatbu). Klik a kláves O otvárajú vrstvu Karty ako dnes; v mocku klik len pripne nápovedu.</li>
+    </ul>
+  </section>
+  <section class="porov" id="porov">
+    <h2>Porovnanie</h2>
+    <table>
+      <thead><tr><th>Mock</th><th>Dlaždica</th><th>Stred baru</th><th>Správa súpera</th><th>Šírka stredu</th></tr></thead>
+      <tbody id="porov-telo"></tbody>
+    </table>
+    <p class="odpor" id="odpor"></p>
+  </section>
+</main>
+<script>
+const IK = {"Rana":"<path d=\"M17.92 5.08C36.98 32.78 20.41 30.7 12.82 33.05C20.4 43.38 16.05 53.09 4.13 59.18C14.38 63.3 28.01 65.12 12.34 86.85C27.88 78.06 38.65 77.32 37.17 97.24C48.45 85.81 63.15 80.05 77.8 89.71C76.13 75.27 80.27 68.95 94.77 75.18C79.23 60.92 85.65 52.45 94.86 44.16C78.94 43.53 76.71 31.36 77.3 16.83C67.69 27.28 60.4 26.16 56.98 5.7C50.38 20.71 41.49 30.3 17.92 5.08L17.92 5.08M39.48 26.43C42.63 26.5 44.48 28.82 46.25 31.25L34.63 51.38C30.64 51.77 27.73 50.49 26.47 46.67L38.09 26.54C38.45 26.48 38.81 26.44 39.17 26.43C39.28 26.43 39.38 26.43 39.48 26.43M52.97 28.62C56.11 28.69 57.96 31 59.74 33.44L46.67 56.69C42.68 57.08 39.77 55.79 38.51 51.98L51.58 28.73C51.93 28.67 52.29 28.63 52.66 28.62C52.76 28.62 52.86 28.62 52.97 28.62L52.97 28.62M64.43 34.88C67.58 34.95 69.43 37.26 71.2 39.7L58.32 62.66C54.33 63.04 51.43 61.76 50.16 57.95L63.04 34.99C63.4 34.93 63.76 34.89 64.12 34.88C64.23 34.88 64.33 34.88 64.43 34.88L64.43 34.88M73.48 45.67C76.76 45.69 78.71 48.01 80.58 50.45L69.73 69.24C65.82 69.5 62.92 68.2 61.57 64.53L72.42 45.74C72.77 45.69 73.13 45.67 73.48 45.67L73.48 45.67M24.91 53.07L45.58 62.35C46.17 66.59 45.04 69.93 41.29 71.9L20.62 62.62C19.74 58.4 22.24 55.69 24.91 53.07L24.91 53.07\"/>","Pecka":"<path d=\"M17.26 36.86C11.05 43.07 11.02 53.18 17.21 59.37C17.27 59.43 17.33 59.47 17.38 59.53C14.63 60.2 12.02 61.58 9.87 63.73C3.66 69.94 3.63 80.08 9.83 86.27C16.02 92.46 26.15 92.44 32.36 86.21C34.86 83.71 36.37 80.55 36.86 77.29C38.11 78.87 38.75 80.21 39.06 81.37C39.47 82.95 39.3 84.2 38.89 85.43C38.48 86.66 37.81 87.77 37.25 89.02C36.97 89.65 36.72 90.31 36.68 91.21C36.64 92.09 37.03 93.2 37.73 93.91C38.81 94.98 40.33 94.92 41.39 94.61C42.44 94.32 43.46 93.77 44.55 93.07C46.78 91.66 49.39 89.55 52.27 87.01C57.99 81.95 64.65 75.29 69.98 69.98C75.29 64.65 81.95 57.99 87.01 52.27C89.55 49.39 91.66 46.78 93.07 44.55C93.77 43.44 94.32 42.44 94.61 41.39C94.92 40.33 94.98 38.81 93.91 37.73C93.2 37.03 92.09 36.64 91.21 36.68C90.31 36.72 89.65 36.97 89.02 37.25C87.77 37.79 86.66 38.48 85.43 38.89C84.2 39.3 82.95 39.47 81.37 39.06C80.21 38.75 78.87 38.11 77.29 36.86C80.55 36.37 83.71 34.86 86.21 32.36C92.44 26.15 92.46 16.02 86.27 9.82C80.08 3.63 69.94 3.66 63.73 9.87C61.58 12.02 60.2 14.63 59.53 17.38C59.47 17.33 59.43 17.27 59.38 17.21C53.18 11.02 43.07 11.05 36.86 17.26C32.66 21.45 31.29 27.4 32.73 32.73C27.4 31.29 21.45 32.66 17.26 36.86L17.26 36.86M20.25 39.84C24.86 35.23 32.23 35.21 36.8 39.79C41.37 44.36 41.37 51.74 36.76 56.35C32.15 60.96 24.79 60.96 20.21 56.39C15.63 51.82 15.65 44.43 20.25 39.84L20.25 39.84M39.84 20.25C44.43 15.65 51.82 15.63 56.39 20.21C60.96 24.79 60.94 32.15 56.35 36.76C51.74 41.37 44.36 41.37 39.79 36.8C35.21 32.23 35.23 24.86 39.84 20.25M12.86 66.72C17.47 62.13 24.84 62.11 29.41 66.68C33.98 71.25 33.96 78.63 29.38 83.22C24.77 87.83 17.39 87.85 12.82 83.28C8.24 78.71 8.26 71.33 12.86 66.72L12.86 66.72M66.72 12.86C71.33 8.26 78.71 8.24 83.28 12.82C87.85 17.39 87.83 24.77 83.22 29.38C78.63 33.96 71.25 33.98 66.68 29.41C62.09 23.98 63.26 16.54 66.72 12.86L66.72 12.86M43.87 43.87C49.2 45.29 55.16 43.93 59.34 39.75C60.29 38.79 61.09 37.73 61.76 36.62C68.24 39.12 72.09 42.5 73.07 46.39C74.14 50.66 72.05 56.6 64.32 64.32C56.6 72.05 50.66 74.14 46.39 73.07C42.5 72.09 39.1 68.24 36.62 61.76C37.73 61.09 38.79 60.29 39.75 59.34C43.93 55.16 45.29 49.2 43.87 43.87L43.87 43.87\"/>","Viera":"<path d=\"M46.02 88.5C45.88 88.5 45.77 88.39 45.77 88.26L45.77 51.2L30.3 51.2C30.24 51.2 30.2 51.15 30.2 51.1L30.2 42.85C30.2 42.79 30.24 42.75 30.3 42.75L45.77 42.75L45.77 26.2C45.77 26.07 45.88 25.96 46.02 25.96L53.98 25.96C54.12 25.96 54.23 26.07 54.23 26.2L54.23 42.75L69.7 42.75C69.76 42.75 69.8 42.79 69.8 42.85L69.8 51.1C69.8 51.15 69.76 51.2 69.7 51.2L54.23 51.2L54.23 88.26C54.23 88.39 54.12 88.5 53.98 88.5L46.02 88.5L46.02 88.5\"/><path d=\"M43.55 41.84L22.86 22.74L22.84 22.76L40.45 41.84L43.55 41.84\"/><path d=\"M44.86 35.09L35.32 14.42L35.29 14.43L44.86 40.43L44.86 35.09\"/><path d=\"M59.55 41.84L77.16 22.76L77.14 22.74L56.45 41.84L59.55 41.84\"/><path d=\"M69.7 41.84C69.99 41.84 70.26 41.96 70.44 42.16L85.48 35.22L85.47 35.19L67.42 41.84L69.7 41.84L69.7 41.84\"/><path d=\"M30.3 41.84L32.58 41.84L14.53 35.19L14.52 35.22L29.56 42.16C29.74 41.96 30.01 41.84 30.3 41.84\"/><path d=\"M55.14 40.43L64.71 14.43L64.68 14.42L55.14 35.09L55.14 40.43\"/><path d=\"M50.56 25.05L50.02 11.5L49.98 11.5L49.44 25.05L50.56 25.05\"/><path d=\"M55.14 52.11L55.14 56.75L77.14 77.06L77.16 77.04L55.5 53.57L85.47 64.61L85.48 64.58L58.48 52.11L55.14 52.11\"/><path d=\"M55.14 64.71L64.68 85.38L64.71 85.37L55.14 59.37L55.14 64.71\"/><path d=\"M70.71 49.18L70.71 50.62L88.4 49.91L88.4 49.88L70.71 49.18\"/><path d=\"M29.29 49.18L11.6 49.88L11.6 49.91L29.29 50.62L29.29 49.18\"/><path d=\"M44.86 52.11L41.52 52.11L14.52 64.58L14.53 64.61L44.5 53.57L22.84 77.04L22.86 77.06L44.86 56.75L44.86 52.11\"/><path d=\"M44.86 59.37L35.29 85.37L35.32 85.38L44.86 64.71L44.86 59.37\"/>","Povera":"<path d=\"M42.7 0.91C32.59 0.91 23.41 3.3 16.62 7.3C9.84 11.3 5.31 17.06 5.31 23.68C5.31 30.24 9.74 35.95 16.4 39.94L10.83 60.68L29.77 45.08C33.81 45.98 38.16 46.46 42.7 46.46C52.81 46.46 61.99 44.07 68.78 40.07C75.57 36.07 80.1 30.31 80.1 23.68C80.1 17.06 75.57 11.3 68.78 7.3C61.99 3.3 52.81 0.91 42.7 0.91L42.7 0.91M42.7 4.56C52.23 4.56 60.84 6.86 66.92 10.45C73.01 14.03 76.45 18.74 76.45 23.68C76.45 28.63 73.01 33.34 66.92 36.93C60.84 40.51 52.23 42.81 42.7 42.81C33.17 42.81 24.56 40.51 18.47 36.93C12.39 33.34 8.96 28.63 8.96 23.68C8.96 18.74 12.39 14.03 18.47 10.45C24.56 6.86 33.17 4.56 42.7 4.56L42.7 4.56M20.28 14.36L20.28 18.01L38.47 18.01L38.47 14.36L20.28 14.36L20.28 14.36M42.12 14.36L42.12 18.01L47.61 18.01L47.61 14.36L42.12 14.36L42.12 14.36M51.26 14.36L51.26 18.01L65.31 18.01L65.31 14.36L51.26 14.36L51.26 14.36M20.28 22.15L20.28 25.81L26.07 25.81L26.07 22.15L20.28 22.15L20.28 22.15M29.72 22.15L29.72 25.81L42.6 25.81L42.6 22.15L29.72 22.15M46.26 22.15L46.26 25.81L53.7 25.81L53.7 22.15L46.26 22.15L46.26 22.15M57.35 22.15L57.35 25.81L65.31 25.81L65.31 22.15L57.35 22.15L57.35 22.15M20.28 29.37L20.28 33.02L34.12 33.02L34.12 29.37L20.28 29.37L20.28 29.37M37.77 29.37L37.77 33.02L48.91 33.02L48.91 29.37L37.77 29.37M52.56 29.37L52.56 33.02L65.31 33.02L65.31 29.37L52.56 29.37M70.6 46.99C55.97 46.99 44.11 55.15 44.11 65.21C44.11 75.28 55.97 83.43 70.6 83.43C74.16 83.43 77.56 82.95 80.66 82.07L94.04 92.06L89.18 78.19C94.06 74.88 97.08 70.29 97.08 65.21C97.08 55.15 85.22 46.99 70.6 46.99L70.6 46.99M56.86 55.26L63.29 55.26L63.29 58.91L56.86 58.91L56.86 55.26L56.86 55.26M66.94 55.26L84.58 55.26L84.58 58.91L66.94 58.91L66.94 55.26M51.51 63.42L66.81 63.42L66.81 67.07L51.51 67.07L51.51 63.42L51.51 63.42M70.46 63.42L74.55 63.42L74.55 67.07L70.46 67.07L70.46 63.42M78.2 63.42L88.16 63.42L88.16 67.07L78.2 67.07L78.2 63.42M56.86 71.04L72.3 71.04L72.3 74.69L56.86 74.69L56.86 71.04L56.86 71.04M75.95 71.04L84.58 71.04L84.58 74.69L75.95 74.69L75.95 71.04\"/>","Pohoršenie":"<path d=\"M39.4 -1.78L34.08 12.78L17.49 7.26L20.84 23.59L3.98 28.62L14.14 39.32L2.56 48.83L20.89 53.77L6.76 66.91L16.72 69.46L12.27 79.59L24.17 72.28L21.52 89.12L41.25 77.17L48.89 91.99L56.54 80.05L71.72 89.09L71.19 70.73L87.86 77.64L81.74 63.96L91.24 64.2L82.87 54.03L95.34 50.19L83.03 43.02L94.24 28.76L80.38 26.36L93.43 6.72L72.14 15.41L74.75 2.63L60.85 14.06L58.28 1.32L50.23 11.55L39.4 -1.78L39.4 -1.78M49.62 15.99L49.63 15.99C65.67 15.99 78.26 26.19 78.26 38.12C78.26 41.91 76.46 44.1 73.23 46.21C70 48.33 65.41 50.03 60.76 52.13L59.31 52.78L64.56 71.11C62.93 71.62 61.23 72.07 59.46 72.45L55.46 63.39L54.93 73.23C53.35 73.45 51.77 73.6 50.19 73.7L48.13 63.62L45.66 73.81C44.09 73.79 42.51 73.71 40.95 73.56L40.43 63.81L36.52 72.94C34.6 72.57 32.76 72.1 31.03 71.5L37.72 53.49L36.39 52.72C32.58 50.51 28.57 48.45 25.65 46.11C22.74 43.77 21 41.38 21 38.12C21 26.19 33.59 16 49.62 15.99L49.62 15.99M61.91 26.84C56.14 26.81 50.96 31.61 52.07 39.61C54.08 54.11 78.75 44.01 72.23 33.29C69.55 28.86 65.61 26.86 61.91 26.84L61.91 26.84M34.38 26.93C30.96 26.98 27.65 29.02 26.04 34.1C22.87 44.11 40.25 53.2 44.67 39.22C46.65 32.96 40.61 27.06 34.71 26.93C34.6 26.93 34.49 26.93 34.38 26.93L34.38 26.93M35.09 31.05C38.33 31.05 41 33.71 41 36.95C41 40.19 38.33 42.85 35.09 42.85C31.85 42.85 29.19 40.19 29.19 36.95C29.19 33.71 31.85 31.05 35.09 31.05M35.09 34.7C33.83 34.7 32.84 35.68 32.84 36.95C32.84 38.22 33.82 39.2 35.09 39.2C36.36 39.2 37.35 38.22 37.35 36.95C37.35 35.68 36.36 34.7 35.09 34.7L35.09 34.7M62.39 34.7C63.66 34.7 64.64 35.68 64.64 36.95C64.64 38.22 63.66 39.2 62.39 39.2C61.12 39.2 60.14 38.22 60.14 36.95C60.14 35.68 61.12 34.7 62.39 34.7L62.39 34.7M48.6 45.46L44.22 55.21L51.48 55.21L48.6 45.46L48.6 45.46\"/>","Poldeci":"<path d=\"M51.53 2.14C42.08 2.14 33.53 3.27 27.18 5.17C24.01 6.12 21.39 7.25 19.43 8.64C17.47 10.03 16.01 11.84 16.01 14.06C16.01 14.29 16.03 14.51 16.06 14.73L16.03 14.73L16.22 16.73L22.64 83.06L22.65 83.06C22.75 84.88 24.04 86.21 25.59 87.2C27.18 88.22 29.24 89.04 31.73 89.73C36.71 91.12 43.39 91.96 50.76 91.96C58.14 91.96 64.81 91.12 69.79 89.73C72.28 89.04 74.35 88.22 75.94 87.2C77.49 86.21 78.78 84.9 78.91 83.1L78.91 83.1L86.58 16.77L86.67 15.97C86.91 15.37 87.05 14.73 87.05 14.06C87.05 11.84 85.59 10.03 83.63 8.64C81.67 7.25 79.05 6.12 75.88 5.17C69.54 3.27 60.98 2.14 51.53 2.14L51.53 2.14M51.53 5.79C60.69 5.79 68.98 6.92 74.83 8.67C77.76 9.55 80.07 10.59 81.52 11.62C82.97 12.64 83.4 13.49 83.4 14.06C83.4 14.63 82.97 15.47 81.52 16.49C80.07 17.52 77.76 18.57 74.83 19.44C68.98 21.19 60.69 22.32 51.53 22.32C42.37 22.32 34.09 21.19 28.23 19.44C25.31 18.57 22.99 17.52 21.54 16.49C20.1 15.47 19.66 14.63 19.66 14.06C19.66 13.49 20.1 12.64 21.54 11.62C22.99 10.59 25.31 9.55 28.23 8.67C34.09 6.92 42.37 5.79 51.53 5.79L51.53 5.79M20.2 19.99C22.06 21.14 24.41 22.11 27.18 22.94C33.53 24.84 42.08 25.97 51.53 25.97C58.19 25.97 64.4 25.41 69.71 24.41L68.93 39.3C63.95 38.38 57.77 37.84 51.09 37.84C37.63 37.84 26.24 40.05 22.44 43.1L20.2 19.99L20.2 19.99M82.51 20.2L79.85 43.19C79.02 42.49 77.77 41.83 76.2 41.23L78 22.25C79.71 21.64 81.22 20.96 82.51 20.2L82.51 20.2M79.31 47.88L77.45 63.99C76.67 65.76 75.35 67.31 73.61 68.64L75.4 49.72C77.02 49.16 78.35 48.54 79.31 47.88L79.31 47.88M22.91 47.9C27.11 50.77 38.14 52.82 51.09 52.82C57.5 52.82 63.43 52.32 68.3 51.46L67.22 72.01C52.77 77.3 28.72 74.79 24.43 63.68L22.91 47.9L22.91 47.9\"/>","Cigareta":"<path d=\"M41.38 6.5C43.15 11.33 62.28 17.97 71.87 19C64.63 20.54 61.51 21.06 60.63 25.25C58.08 37.44 98.03 37.06 83.23 54.98C96.73 51.9 94.55 32.29 86.34 29.62C81.02 27.9 73.89 27.34 77.01 22.13C80.83 17.46 95.99 11.92 85.13 6.5L41.38 6.5M3.12 57.28L3.12 69.78L20.11 69.78L20.11 57.28L3.12 57.28M23.63 57.28L23.63 69.78L77.14 69.78L77.14 57.28L23.63 57.28M80.66 57.28L80.66 69.78L83.78 69.78L83.78 57.28L80.66 57.28M87.3 57.28L87.3 69.78L90.62 69.78L90.62 57.28L87.3 57.28\"/>","Dlh":"<path d=\"M63.87 12.85L44.88 25.04L46.81 26.1L63.7 15.25L92.36 31.49L75.92 42.04L76.72 42.48L76.72 43.81L89.6 35.55L92.3 37.08L76.72 47.08L76.72 49.37L89.35 41.27L92.3 42.94L76.72 52.94L76.72 55.23L89.35 47.13L92.3 48.8L76.72 58.8L76.72 61.09L96.26 48.55L91.41 45.8L96.26 42.69L91.41 39.94L96.26 36.83L91.66 34.22L96.32 31.23L63.87 12.85L63.87 12.85M69.94 21.59C65.83 23.65 60.36 24 56.5 22.45L48.97 27.28L73.76 40.85L80.9 36.27C78.09 34.04 78.32 30.73 81.48 28.13L69.94 21.59L69.94 21.59M44.43 28.81L30.63 37.81L57.11 53.06L57.37 52.89C57.86 52.58 58.55 52.13 59.37 51.6C61.02 50.54 63.2 49.13 65.37 47.72C68.49 45.7 70.1 44.65 71.6 43.68L44.43 28.81M66.99 29.04C66.99 29.04 66.99 29.04 66.99 29.04C67.63 29.04 68.17 29.17 68.61 29.42C69.14 29.71 69.38 30.1 69.35 30.56C69.31 31.03 69.01 31.45 68.44 31.82C67.87 32.18 67.2 32.39 66.43 32.44C65.65 32.49 65.01 32.36 64.48 32.07C63.96 31.77 63.71 31.39 63.75 30.92C63.78 30.45 64.08 30.04 64.65 29.67C65.32 29.24 66.1 29.03 66.99 29.04M24.33 38.24L3.74 51.45L8.34 54.06L3.68 57.05L8.53 59.79L3.68 62.91L8.53 65.65L3.68 68.77L36.13 87.15L55.72 74.57L55.72 72.28L36.3 84.75L7.64 68.51L10.42 66.73L36.13 81.29L55.72 68.71L55.72 66.42L36.3 78.89L7.64 62.65L10.42 60.87L36.13 75.43L55.72 62.85L55.72 60.56L36.3 73.03L7.64 56.79L10.23 55.13L36.19 69.83L55.72 57.3L55.72 56.31L54.65 55.69L36.36 67.43L7.7 51.2L26.21 39.32L24.33 38.24L24.33 38.24M28.32 40.54L19.16 46.42C21.97 48.64 21.74 51.96 18.58 54.56L30.12 61.1C34.23 59.03 39.7 58.69 43.55 60.24L52.53 54.48L28.32 40.54L28.32 40.54M73.21 46.83C71.64 47.85 70.25 48.75 67.28 50.67C65.28 51.97 63.28 53.26 61.28 54.55C60.46 55.09 59.77 55.53 59.28 55.85C59.26 55.86 59.25 55.86 59.23 55.88L59.23 72.66L73.21 63.27L73.21 46.83L73.21 46.83M33.95 50.24C34.6 50.25 35.14 50.37 35.58 50.62C36.1 50.92 36.35 51.3 36.31 51.77C36.28 52.24 35.98 52.65 35.41 53.02C34.84 53.39 34.17 53.59 33.39 53.64C32.62 53.69 31.97 53.57 31.45 53.27C30.93 52.98 30.68 52.59 30.71 52.12C30.75 51.66 31.05 51.24 31.62 50.87C32.28 50.45 33.06 50.24 33.95 50.24L33.95 50.24\"/>","PoškodeniePečene":"<path d=\"M30.1 19.23C15.55 19.14 6.95 27.96 5.72 36.41C3.03 56.82 0.88 75 14.04 80.66C18.19 82.45 41.32 61.89 57.64 57.37C59.64 44.92 59.54 38.76 58.32 26.68C58.32 26.68 57.69 23.01 54.89 22.4C49.11 21.13 39.11 19.2 30.1 19.23L30.1 19.23M82.43 21.24C76.51 21.22 69.57 21.94 63.81 23.1C62.5 23.36 61.73 26.09 61.87 26.81C63 38.38 63.14 43.91 61.4 56.01C93.82 42.48 96.64 33.27 96.27 29.3C95.69 23.02 89.8 21.27 82.43 21.24L82.43 21.24M55.6 61.45C47.91 64.31 39.98 69.44 33.4 74.06C37.32 75.22 44.46 75.35 47.95 73.39C51.52 70.3 54.68 66.09 55.6 61.45L55.6 61.45\"/>","Robota":"<path d=\"M63.33 3.78C55.38 3.78 47.43 6.79 41.37 12.85C32.8 21.42 30.28 33.75 33.79 44.54L1.97 76.36L1.97 81.39L35.22 48.14C35.76 49.29 36.36 50.4 37.04 51.48L1.97 86.55L1.97 96.67L11.15 96.67L46.67 61.15C47.74 61.83 48.85 62.44 49.99 62.99L16.31 96.67L21.59 96.67L53.77 64.49C64.54 67.98 76.85 65.44 85.41 56.89C93.5 48.8 96.15 37.38 93.47 27.04L72.91 47.61L55.32 42.94L50.64 25.35L71.21 4.79C68.62 4.12 66 3.78 63.33 3.78L63.33 3.78\"/>","Posilnenie":"<path d=\"M35.12 4.05L35.12 19.92L26.52 14.77L29.95 23.94L7.36 19.85L23.91 29.6L3.91 29.6L3.91 34.94L25.48 37.84L44.35 32.14C42.14 29.82 40.72 26.14 40.72 21.98C40.72 14.97 44.79 9.28 49.82 9.28C54.85 9.28 58.93 14.97 58.93 21.98C58.93 26.06 57.55 29.68 55.42 32L74.76 37.84L96.73 34.88L96.73 29.6L76.99 29.6L93.54 19.85L70.01 24.1L73.5 14.78L64 20.47L64 4.05L35.12 4.05M96.73 43.62L74.76 48L63.94 45.44L58.47 68.55L61.71 96.87L71.8 96.87L64.31 68.6L73.39 74.04L69.23 62.92L93.54 67.31L75.74 56.82L96.73 56.82L96.73 43.62L96.73 43.62M3.91 43.7L3.91 56.82L25.16 56.82L7.36 67.31L30.72 63.08L26.63 74.02L34.14 69.53L28.56 96.87L37.96 96.87L40.48 68.66L36.25 45.45L25.48 48L3.91 43.7\"/>"};
+const SPAK = '<svg class="ikspak" viewBox="0 25 100 50" aria-hidden="true"><g transform="translate(50 50) rotate(-25) scale(0.93) translate(-50 -58)"><rect x="4" y="40" width="34" height="22" rx="3"/><path d="M43 40H66L84 52L87 56L82.5 59L86 63L79.5 64.5L78 69.5L71.8 70.3L59.4 62H43Z"/><circle cx="92" cy="72" r="4"/><circle cx="95" cy="62" r="2.6"/><circle cx="86" cy="79" r="2.4"/></g></svg>';
+const ikona = (k) => `<svg viewBox="0 0 100 100" aria-hidden="true">${IK[k]}</svg>`;
+const FARBA = { Rana: '#a8341f', Pecka: '#7d2415', Viera: '#2f6fa3', Povera: '#6a4a9c', 'Pohoršenie': '#a14c86' };
+const ef = (k, n) => `<span class="ef" title="${k}"><svg viewBox="0 0 100 100" style="background:${FARBA[k]}" aria-hidden="true">${IK[k]}</svg><b>${n}</b><em>${k}</em></span>`;
+const SUPER = 'Teta Gizka';
+
+/* Situácie: čísla sú vymyslené, ale zrátané podľa §14 (obaja 2 priznané Dlhy → Exekútor −1). */
+const RYCHLE = {
+  ja: { ruka: 4, vyl: 3, slotov: 3, pr: 1, bal: 9, odh: 2, nar: 1, pozn: 'na ťahu', akc: [['Viera', 1], ['Povera', 1], ['Pohoršenie', 1]] },
+  su: { ruka: 5, vyl: 2, slotov: 3, pr: 0, bal: 8, odh: 3, nar: 0, pozn: 'čaká', akc: [['Rana', 2], ['Pecka', 2], ['Povera', 1]] },
+  tuhe: [0, 6], makke: [3, 1], spaky: [1, 8],
+  rozpis: [['Karty v línii (5)', 0, 5], ['Starší: ty reči, súper najvyšší marker', 2, 4], ['Exekútor', -1, -1]],
+  otoc: 'Keď bitku otočíš: ty +10, súper 0.',
+  hrozba: 'Ešte môžeš: NA EX až na 0 : 3 (Nakladačka 3 → súper).',
+  naklad: 'Nakladačka 6 → súperovi na strach. Hádka 2 → tebe na reči.',
+};
+const STAVY = {
+  zhrom: { naz: 'Zhromaždenie', faza: 'zhrom', sprava: '↺ Bot Teta Gizka vyložila kartu. · Si na ťahu.', ...RYCHLE },
+  pitka: {
+    naz: 'Pitka, súper skryl NA EX', faza: 'pitka', sprava: '↺ Bot Teta Gizka pasuje do Pitky. · Bot Teta Gizka končí svoju časť Pitky.', skryta: true,
+    ja: { ruka: 2, vyl: 3, slotov: 0, pr: 1, bal: 8, odh: 3, nar: 1, pozn: 'pije', akc: [['Rana', 3], ['Pecka', 2], ['Viera', 1], ['Povera', 1]] },
+    su: { ruka: 3, vyl: 2, slotov: 0, pr: 0, bal: 7, odh: 4, nar: 0, pozn: 'NA EX skryto', akc: [['Rana', 2], ['Pecka', 1], ['Povera', 1]] },
+    tuhe: [7, 4], makke: [1, 1], spaky: [11, 0],
+    rozpis: [['Karty v línii (6)', 6, 0], ['Starší: ty najvyšší marker, súper reči', 6, 1], ['Exekútor', -1, -1]],
+    otoc: 'Keď súper bitku otočí: ty +1, súper +9. Súperovo NA EX je skryté, preto „?“.',
+    hrozba: 'Súper ešte môže: NA EX až na 3 : 8.',
+    naklad: 'Nakladačka 3 → tebe na strach. Hádka: remíza, reči nikto nedvíha.',
+  },
+  remiza: {
+    naz: 'Remíza a sekera', faza: 'zhrom', sprava: '↺ Bot Teta Gizka pasuje do Pitky.',
+    ja: { ruka: 3, vyl: 1, slotov: 3, pr: 1, bal: 9, odh: 2, nar: 1, pozn: 'na ťahu', akc: [['Rana', 2], ['Viera', 1], ['Povera', 2]] },
+    su: { ruka: 2, vyl: 0, slotov: 3, pr: 2, bal: 8, odh: 3, nar: 0, pozn: 'pasovala', akc: [['Rana', 4], ['Pohoršenie', 2], ['Povera', 1]] },
+    tuhe: [4, 4], makke: [2, 5], spaky: [1, 0], sekera: 5,
+    rozpis: [['Karty v línii (5): idú na sekeru', 0, 0], ['Starší: obaja len reči', 2, 1], ['Exekútor', -1, -1]],
+    otoc: 'Absťákov aj Dlhov máte rovnako, preto sekera.',
+    hrozba: 'Ešte môžeš: vyložiť poslednú kartu.',
+    naklad: 'Nakladačka: nikto. Hádka 3 → súperovi na reči.',
+  },
+  finale: {
+    naz: 'Finále', faza: 'zhrom', sprava: '↺ Bot Teta Gizka pasuje do Pitky.',
+    ja: { ruka: 3, vyl: 2, slotov: 4, pr: 1, bal: 6, odh: 5, nar: 2, pozn: 'na ťahu', akc: [['Rana', 4], ['Pecka', 2], ['Pohoršenie', 2]] },
+    su: { ruka: 4, vyl: 1, slotov: 3, pr: 2, bal: 5, odh: 7, nar: 1, pozn: 'čaká', akc: [['Rana', 3], ['Povera', 1]] },
+    tuhe: [8, 3], makke: [4, 1], spaky: [19, 0],
+    rozpis: [['Karty v línii (6)', 6, 0], ['Nakladačka 1 : 1', 5, 0], ['Hádka 1 : 1', 3, 0], ['Starší: ty najvyšší marker, súper reči', 6, 1], ['Exekútor', -1, -1]],
+    otoc: 'Keď súper bitku otočí, vezme karty v línii, Nakladačku aj starších; tebe ostane hádka a reči.',
+    hrozba: 'Súper ešte môže: NA EX až na 5 : 7.',
+    naklad: 'Vo finále sa markery nedvíhajú, Nakladačka aj hádka idú 1 : 1 na špaky.',
+  },
+  stavba: {
+    naz: 'Stavba šenku', faza: 'stavba', sprava: '↺ Bot Teta Gizka vybrala kartu do šenku.',
+    ja: { ruka: 3, vyl: 3, slotov: 0, pr: 1, bal: 9, odh: 2, nar: 1, pozn: 'stavia šenok', akc: [] },
+    su: { ruka: 3, vyl: 3, slotov: 0, pr: 0, bal: 8, odh: 3, nar: 0, pozn: '✓ vybrala', akc: [] },
+    ciel: 'Kultúrny dom', sekeraCiel: 2,
+  },
+  kliatba: { naz: 'Ťahám kliatbu', faza: 'zhrom', cielDlazdica: true, sprava: '↺ Bot Teta Gizka vyložila kartu. · Si na ťahu.', ...RYCHLE },
+};
+
+const ROZM = {
+  w1366: { n: '1366 × 650', w: 1366, bar: 94, dp: 5, av: 48, velke: 1.5, plst: 170, nizky: true },
+  w1920: { n: '1920 × 1080', w: 1920, bar: 132, dp: 8, av: 60, velke: 1.9, plst: 250, nizky: false },
+};
+const URLP = new URLSearchParams(location.search);
+let stav = STAVY[URLP.get('stav')] ? URLP.get('stav') : 'zhrom', rozm = ROZM[URLP.get('rozm')] ? URLP.get('rozm') : 'w1366';
+const zn = (n) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0');
+const q = () => (STAVY[stav].skryta ? '?' : '');
+const vyr = (x, y) => (x > y ? 'ja' : y > x ? 'su' : null);
+const labVyl = (jaHrac) => (STAVY[stav].faza === 'pitka' ? 'ďalej' : jaHrac ? 'vyložíš' : 'vyloží');
+
+function detailKariet(h, jaHrac) {
+  const riadokVyl = STAVY[stav].faza === 'pitka' ? 'V ďalšom Zhromaždení' : jaHrac ? 'Ešte vyložíš' : 'Ešte vyloží';
+  return `<h4>Karty${jaHrac ? '' : ' · ' + SUPER}</h4><table>
+    <tr><td>V ruke</td><td class="c"><b>${h.ruka}</b></td></tr>
+    <tr><td>${riadokVyl}</td><td class="c"><b>${h.vyl}</b></td></tr>
+    <tr><td>Priznané kliatby</td><td class="c"><b>${h.pr}</b></td></tr>
+    <tr><td>Balíček</td><td class="c">${h.bal}</td></tr>
+    <tr><td>Odhodené</td><td class="c">${h.odh}</td></tr>
+    <tr><td>Náradie v Dedičstve</td><td class="c">${h.nar}</td></tr></table>
+    <span class="ak">${jaHrac ? 'Klik alebo O ukáže balíček, odhodené, priznané a Dedičstvo. Kliatbu či Nástroj pustíš sem.' : 'Klik ukáže súperove priznané kliatby a Dedičstvo.'}</span>`;
+}
+function detailOdhadu(s) {
+  if (s.tuhe === undefined) return `<h4>Cieľ kola: ${s.ciel}</h4><span class="riadok" style="margin:0">Odhad príde s prvou kartou v línii. Na sekere čakajú ${s.sekeraCiel} špaky, vezme ich víťaz.</span>`;
+  const [ti, tj] = s.tuhe, [mi, mj] = s.makke, rb = vyr(ti, tj), rh = vyr(mi, mj), dB = Math.abs(ti - tj), dH = Math.abs(mi - mj);
+  const vb = rb === null ? 'Remíza' : rb === 'ja' ? `Vyhrávaš o ${dB}` : `Prehrávaš o ${dB}`;
+  const vh = rh === null ? 'Remíza' : rh === 'ja' ? `Vyhrávaš o ${dH}` : `Prehrávaš o ${dH}`;
+  const r = s.rozpis.map((x) => `<tr><td>${x[0]}</td><td class="c">${zn(x[1])}</td><td class="c">${zn(x[2])}</td></tr>`).join('');
+  return `<h4>Odhad kola</h4>
+    <table><tr><td>Bitka · tuhé</td><td class="c"><b class="ja">${ti}</b> : <b class="su">${tj}</b>${q()}</td><td class="c"><b>${vb}</b></td></tr>
+    <tr><td>Hádka · mäkké</td><td class="c"><b class="ja">${mi}</b> : <b class="su">${mj}</b></td><td class="c"><b>${vh}</b></td></tr></table>
+    <span class="riadok">${s.naklad}</span>
+    <span class="riadok">${s.hrozba}</span>
+    <div class="sek"><table><tr><th>Špaky po kole, keď to tak ostane</th><th class="c">ty</th><th class="c">${SUPER}</th></tr>${r}
+    <tr class="sum"><td>Spolu</td><td class="c">${zn(s.spaky[0])}</td><td class="c">${zn(s.spaky[1])}</td></tr></table>
+    <span class="riadok">${s.otoc}</span>${s.sekera ? `<span class="riadok">Na sekeru pôjde ${s.sekera}, vezme ich víťaz ďalšej bitky.</span>` : ''}</div>
+    <span class="ak">Bez krádeže pri zajatí (rozhodne sa až pri delení Nakladačky) a výkupného na konci hry.</span>`;
+}
+
+/* ---- dlaždice ---- */
+function telo1(h, jaHrac) {
+  const b = (n, l, hl) => `<div class="${hl ? 'hl' : ''}${n === 0 && !hl ? ' nula' : ''}"><b>${n}</b><span>${l}</span></div>`;
+  return `<div class="t1">${b(h.ruka, 'ruka')}${b(h.vyl, labVyl(jaHrac), true)}${b(h.pr, 'priznané')}</div>`;
+}
+function telo2(h, jaHrac) {
+  const n = Math.max(h.ruka, h.vyl), karty = [];
+  const krok = n > 6 ? 62 / (n - 1) : 12;
+  const sir = Math.min(n > 1 ? (n - 1) * 13 : 0, 66);
+  for (let i = 0; i < n; i++) {
+    const r = n === 1 ? 0 : -(krok * (n - 1)) / 2 + krok * i;
+    const dx = n === 1 ? 0 : -sir / 2 + (sir / (n - 1)) * i;
+    const cl = i >= h.ruka ? 'pr' : i < h.vyl ? 'zap' : '';
+    karty.push(`<i class="vk ${cl}" style="transform:translateX(${dx}px) rotate(${r}deg)"></i>`);
+  }
+  return `<div class="t2"><div class="vejar">${karty.join('')}</div><div class="t2-t"><b>${h.ruka}</b> ruka · <b class="hl">${h.vyl}</b> ${labVyl(jaHrac)}</div><span class="t2-p" title="Priznané kliatby">${ikona('Dlh')}${h.pr}</span></div>`;
+}
+function telo3(h, jaHrac) {
+  return `<div class="t3"><div class="t3-v"><b>${h.vyl}</b><span>${labVyl(jaHrac)}</span></div><div class="t3-r"><span><b>${h.ruka}</b> ruka</span><span><b>${h.pr}</b> priznané</span></div></div>`;
+}
+function telo4(h, jaHrac) {
+  const slotov = STAVY[stav].faza === 'zhrom' ? Math.max(h.slotov, h.vyl) : h.vyl;
+  const sl = Array.from({ length: slotov }, (_, i) => `<i class="${i < slotov - h.vyl ? 'pouz' : ''}"></i>`).join('');
+  return `<div class="t4"><div class="t4-r"><span>v ruke</span><b>${h.ruka}</b></div>
+    <div class="t4-r hl"><span class="t4-l">${labVyl(jaHrac)} <span class="sloty">${sl}</span></span><b>${h.vyl}</b></div>
+    <div class="t4-r"><span>priznané</span><b>${h.pr}</b></div></div>`;
+}
+const TELA = { 1: telo1, 2: telo2, 3: telo3, 4: telo4 };
+const NAZ_T = { 1: 'Tri stĺpce', 2: 'Vejár', 3: 'Veľké číslo', 4: 'Riadky so slotmi' };
+const NAZ_B = { 1: 'Tri slová', 2: 'Tabuľka skóre', 3: 'Pretlak', 4: 'Zápasy' };
+
+function dlazdica(t, kto) {
+  const s = STAVY[stav], h = s[kto], jaHrac = kto === 'ja';
+  if (jaHrac && s.cielDlazdica) return `<div class="zdroj kd ciel"><span class="zdroj-n">pusti sem</span><span class="ciel-naz">Priznať</span><span class="ciel-poz">dobereš kartu · nemíňa limit</span></div>`;
+  return `<div class="zdroj kd" tabindex="0" role="button" aria-label="Karty: ${h.ruka} v ruke, ${h.vyl} ešte vyloží, ${h.pr} priznané" data-tip="${jaHrac ? 'kj' : 'ks'}">${TELA[t](h, jaHrac)}</div>`;
+}
+
+/* ---- stred ---- */
+const verd = (a, b) => { const v = vyr(a, b), d = Math.abs(a - b); return { v, t: v === null ? 'Remíza' : v === 'ja' ? `Vyhrávaš o ${d}` : `Prehrávaš o ${d}` }; };
+const trFar = (v) => (v === null ? 'remi' : v === 'ja' ? 'dobre' : 'zle');
+const cielRiadok = (s) => `<div class="b1"><span><span class="nadp">cieľ</span><b>${s.ciel}</b><i>+ ${s.sekeraCiel} na sekere ${SPAK}</i></span></div>`;
+
+function b1(s) {
+  if (s.tuhe === undefined) return cielRiadok(s);
+  const vb = verd(...s.tuhe), vh = verd(...s.makke);
+  return `<div class="b1">
+    <span><span class="nadp">bitka</span><b class="${trFar(vb.v)}">${vb.t}${q() && ' ?'}</b><i>${s.tuhe[0]} : ${s.tuhe[1]}${q()}</i></span>
+    <span><span class="nadp">hádka</span><b class="${trFar(vh.v)}">${vh.t}</b><i>${s.makke[0]} : ${s.makke[1]}</i></span>
+    <span><span class="nadp">po kole</span><b class="c-ja">${zn(s.spaky[0])}</b><i>:</i><b class="c-su">${zn(s.spaky[1])}</b>${SPAK}</span>
+  </div>`;
+}
+function b2(s) {
+  if (s.tuhe === undefined) return cielRiadok(s);
+  const riad = (m, kl, a, b, c, vb, vh, vs) => `<span class="m c-${kl}">${m}</span><span class="n ${kl}${vb ? ' vede' : ''}">${a}</span><span class="n ${kl}${vh ? ' vede' : ''}">${b}</span><span class="n ${kl}${vs ? ' vede' : ''}">${c}</span>`;
+  const rb = vyr(...s.tuhe), rh = vyr(...s.makke), rs = vyr(...s.spaky);
+  return `<div class="b2"><span class="hl"></span><span class="hl">bitka</span><span class="hl">hádka</span><span class="hl">špaky</span>
+    ${riad('ty', 'ja', s.tuhe[0], s.makke[0], zn(s.spaky[0]), rb === 'ja', rh === 'ja', rs === 'ja')}
+    ${riad(SUPER, 'su', s.tuhe[1] + q(), s.makke[1], zn(s.spaky[1]), rb === 'su', rh === 'su', rs === 'su')}
+  </div>`;
+}
+function b3(s) {
+  if (s.tuhe === undefined) return cielRiadok(s);
+  const max = Math.max(8, ...s.tuhe, ...s.makke);
+  const met = (naz, a, b, sufix = '') => {
+    const v = vyr(a, b), pct = (Math.abs(a - b) / max) * 50;
+    const pr = v === null ? '' : `<i class="${v}" style="width:${Math.max(pct, 5)}%"></i>`;
+    return `<span class="b3-m"><span class="nadp">${naz}</span><span class="cis c-ja${v === 'ja' ? ' vede' : ''}">${a}</span><span class="trub">${pr}</span><span class="cis c-su${v === 'su' ? ' vede' : ''}">${b}${sufix}</span></span>`;
+  };
+  return `<div class="b3">${met('bitka', ...s.tuhe, q())}${met('hádka', ...s.makke)}
+    <span class="b3-sp"><span class="nadp">po kole</span><b class="c-ja">${zn(s.spaky[0])}</b><span class="nikto">:</span><b class="c-su">${zn(s.spaky[1])}</b>${SPAK}</span></div>`;
+}
+function b4(s) {
+  if (s.tuhe === undefined) return cielRiadok(s);
+  const zap = (naz, a, b, tA = a, tB = b, tr = '') => {
+    const v = vyr(a, b);
+    return `<span class="zap ${tr}"><span class="n ${v === 'ja' ? 'vede ja' : ''}">${tA}</span><span class="naz">${naz}</span><span class="n ${v === 'su' ? 'vede su' : ''}">${tB}</span></span>`;
+  };
+  return `<div class="b4">${zap('bitka', s.tuhe[0], s.tuhe[1], s.tuhe[0], s.tuhe[1] + q())}${zap('hádka', s.makke[0], s.makke[1])}${zap('po kole' + SPAK, s.spaky[0], s.spaky[1], zn(s.spaky[0]), zn(s.spaky[1]), 'spak')}</div>`;
+}
+const STRED = { 1: b1, 2: b2, 3: b3, 4: b4 };
+
+function stranaBaru(kto) {
+  const h = STAVY[stav][kto], m = kto === 'ja' ? 'ty' : SUPER;
+  const akc = h.akc.length ? h.akc.map((a) => ef(a[0], a[1])).join('') : '<span class="ziadne">zatiaľ žiadne akcie</span>';
+  return `<div class="strana ${kto}"><span class="kto">${m}<small>${h.pozn}</small></span><span class="akcie">${akc}</span></div>`;
+}
+function doska(t, kto) {
+  const jaHrac = kto === 'ja';
+  const v = jaHrac ? { sp: 14, st: 3, dl: 2, pe: '1/4', ch: 0, ci: 6, po: 3 } : { sp: 11, st: 2, dl: 2, pe: '2/4', ch: 1, ci: 4, po: 2 };
+  const tile = (n, h, p = '') => `<div class="zdroj"><span class="zdroj-n">${n}</span><span class="zdroj-v">${h}</span>${p ? `<span class="zdroj-p">${p}</span>` : ''}</div>`;
+  const dlaz = [tile('Špaky', v.sp), tile('Starší', v.st, 'priazeň'), tile('Dlhy', v.dl, 'zadĺženie 1/5'), tile('Pečeň', v.pe), tile('Chuť', v.ch), tile('Cigarety', v.ci), tile('Poldeci', v.po)];
+  const hrac = `<div class="hrac"><span class="avatar">${jaHrac ? 'M' : 'T'}</span><div><strong>${jaHrac ? 'Michal' : SUPER}</strong><small>${jaHrac ? 'obranca' : 'útočník'}</small></div></div>`;
+  const obsah = jaHrac ? [hrac, ...dlaz, dlazdica(t, kto)] : [dlazdica(t, kto), ...[...dlaz].reverse(), hrac];
+  return `<section class="doska ${kto}">${obsah.join('')}</section>`;
+}
+function ramec(t, b) {
+  const s = STAVY[stav], R = ROZM[rozm];
+  const sprava = b === 2 ? '' : `<span class="sprava">${s.sprava}</span>`;
+  const toast = b === 2 ? `<span class="toast">${s.sprava}</span>` : '';
+  const mini = '<i class="mini"></i><i class="mini"></i><i class="mini lok"></i><i class="mini"></i><i class="mini"></i><i class="mini"></i>';
+  return `<div class="stol${R.nizky ? ' nizky' : ''}${R.w >= 1700 ? ' siroky' : ''}" style="width:${R.w}px;--bar-h:${R.bar}px;--dp:${R.dp}px;--av:${R.av}px;--velke:${R.velke}rem;--plst:${R.plst}px;--vh:${R.nizky ? 34 : 50}px;--vs:${R.nizky ? 23 : 34}px;--t2g:${R.nizky ? 8 : 11}px;--t4g:${R.nizky ? 5 : 9}px">
+    ${doska(t, 'su')}
+    <header class="jbar">${stranaBaru('ja')}<div class="stred" tabindex="0" role="button" aria-label="Odhad kola, klik pripne podrobnosti" data-tip="od">${STRED[b](s)}${sprava}</div>${stranaBaru('su')}${toast}</header>
+    <div class="plst">${mini}</div>
+    ${doska(t, 'ja')}
+    <div class="tip" data-tip-okno="kj">${detailKariet(s.ja, true)}</div>
+    <div class="tip" data-tip-okno="ks">${detailKariet(s.su, false)}</div>
+    <div class="tip" data-tip-okno="od">${detailOdhadu(s)}</div>
+  </div>`;
+}
+
+/* ---- nápovede: mouseover ukáže, klik pripne ---- */
+function poloz(ramik, kotva, okno) {
+  const st = ramik.querySelector('.stol'), R = ROZM[rozm];
+  const z = st.getBoundingClientRect(), m = z.width / R.w, a = kotva.getBoundingClientRect();
+  okno.style.left = '0'; okno.style.top = '0'; okno.classList.add('vid');
+  const ow = okno.offsetWidth, oh = okno.offsetHeight;
+  const ax = (a.left - z.left) / m, ay = (a.top - z.top) / m, aw = a.width / m, ah = a.height / m;
+  const x = Math.max(6, Math.min(R.w - ow - 6, ax + aw / 2 - ow / 2));
+  const spodna = ay > z.height / m / 2;
+  okno.style.left = `${x}px`; okno.style.top = `${spodna ? ay - oh - 6 : ay + ah + 6}px`;
+}
+function napoj(ramik) {
+  ramik.querySelectorAll('[data-tip]').forEach((el) => {
+    const okno = ramik.querySelector(`[data-tip-okno="${el.dataset.tip}"]`);
+    const ukaz = () => poloz(ramik, el, okno);
+    const skry = () => { if (!el.classList.contains('pin')) okno.classList.remove('vid'); };
+    el.addEventListener('mouseenter', ukaz);
+    el.addEventListener('mouseleave', skry);
+    el.addEventListener('focus', ukaz);
+    el.addEventListener('blur', () => { el.classList.remove('pin'); okno.classList.remove('vid'); });
+    el.addEventListener('click', () => { if (el.classList.toggle('pin')) ukaz(); else okno.classList.remove('vid'); });
+  });
+}
+function mierka(ramik) {
+  const st = ramik.querySelector('.stol'), R = ROZM[rozm];
+  const m = Math.min(1, ramik.clientWidth / R.w);
+  st.style.transform = `scale(${m})`;
+  ramik.style.height = `${st.offsetHeight * m}px`;
+}
+function vykresli(ramik, t, b) {
+  ramik.innerHTML = ramec(t, b);
+  napoj(ramik);
+  mierka(ramik);
+}
+const MOCKY = [
+  { id: 1, t: 1, b: 1, naz: 'Tri stĺpce a tri slová', pop: 'Najbližšie k dnešku. Dlaždica má tri rovnocenné stĺpce, stred povie výsledok slovami ako teraz „Prehrávaš o 6“, len dvakrát a so špakmi.',
+    plus: 'Bez učenia: kto dnes hrá, hneď rozumie. Správa súpera ostáva na svojom mieste.', minus: 'Najdlhší text: pri 1366 stred zaberie najviac šírky, akcie sa môžu orezať. Čítaš, nevidíš na pohľad.' },
+  { id: 2, t: 3, b: 2, naz: 'Veľké číslo a tabuľka skóre', pop: 'V dlaždici dominuje to, o čom práve rozhoduješ: koľko ešte vyložíš. Stred je malá tabuľka ty a súper, kto vedie, má zvýraznené políčko.',
+    plus: 'Najužší stred, akcie majú najviac miesta. Čísla oboch hráčov stoja pod sebou, porovnáš ich okamžite.', minus: 'Do dvoch riadkov sa správa súpera nezmestí: pláva ako malý pás nad stolom a môže zakryť vrch línie.' },
+  { id: 3, t: 2, b: 3, naz: 'Vejár a pretlak', pop: 'Dlaždica kreslí ruku ako vejár, farebné karty sú tie, ktoré ešte vyložíš. Stred ukazuje prevahu ako pás, ktorý sa ťahá k tomu, kto vedie.',
+    plus: 'Bez čítania vidíš, kam sa bitka a hádka prikláňajú a o koľko. Vejár povie „4 v ruke, 3 z nich vyložím“ jedným obrazom.', minus: 'Vejár pri veľa kartách hustne a pri 94 px je malý. Pás pri malých rozdieloch hovorí menej než číslo. Najviac nového kódu.' },
+  { id: 4, t: 4, b: 4, naz: 'Riadky so slotmi a zápasy', pop: 'Dlaždica sú tri čitateľné riadky a dnešné sloty „vyložíš“ sa presunú do nej. Stred sú tri zápasy: číslo ty, názov, číslo súper, a kto vedie, má plné políčko vo svojej farbe.',
+    plus: 'Farbu vedúceho prečítaš z diaľky aj bez čísel. Sloty ukážu aj to, čo už je vyložené. Správa súpera ostáva.', minus: 'Tri riadky pri 94 px sú natesno. Plné bloky farby v strede baru sú výrazné a môžu prebíjať akcie.' },
+];
+function vsetko() {
+  document.querySelectorAll('[data-mock]').forEach((r) => { const m = MOCKY[+r.dataset.mock - 1]; vykresli(r, m.t, m.b); });
+  const sk = document.getElementById('sklad-ramik');
+  vykresli(sk, +sk.dataset.t, +sk.dataset.b);
+}
+function prepinac(kam, polozky, aktualne, zmen) {
+  const c = document.getElementById(kam);
+  for (const [k, n] of polozky) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = n; b.dataset.k = k; b.setAttribute('aria-pressed', String(k === aktualne));
+    b.addEventListener('click', () => { c.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); zmen(k); });
+    c.appendChild(b);
+  }
+}
+document.getElementById('mocky').innerHTML = MOCKY.map((m) => `<section class="mock" id="m${m.id}">
+  <div class="mock-hl"><span class="cis">${m.id}</span><h2>${m.naz}</h2></div>
+  <p class="mock-popis">${m.pop}</p>
+  <div class="ramik" data-mock="${m.id}"></div>
+  <div class="mock-pc"><div><b>Silné:</b> ${m.plus}</div><div><b>Slabé:</b> ${m.minus}</div></div>
+</section>`).join('');
+prepinac('prep-stav', Object.entries(STAVY).map(([k, v]) => [k, v.naz]), stav, (k) => { stav = k; vsetko(); });
+prepinac('prep-rozm', Object.entries(ROZM).map(([k, v]) => [k, v.n]), rozm, (k) => { rozm = k; vsetko(); });
+const skRamik = document.getElementById('sklad-ramik');
+prepinac('sk-t', Object.entries(NAZ_T), '1', (k) => { skRamik.dataset.t = k; vykresli(skRamik, +k, +skRamik.dataset.b); });
+prepinac('sk-b', Object.entries(NAZ_B), '4', (k) => { skRamik.dataset.b = k; vykresli(skRamik, +skRamik.dataset.t, +k); });
+document.getElementById('porov-telo').innerHTML = [
+  ['1', 'Tri stĺpce', 'Slová a čísla', 'pod odhadom', '564 px'],
+  ['2', 'Veľké číslo', 'Tabuľka ty a súper', 'plávajúci pás nad stolom', '259 px'],
+  ['3', 'Vejár', 'Pásy prevahy', 'pod odhadom', '529 px'],
+  ['4', 'Riadky so slotmi', 'Zápasy s farbou vedúceho', 'pod odhadom', '396 px'],
+].map((r) => `<tr>${r.map((x, i) => (i === 0 ? `<td><b>${x}</b></td>` : `<td>${x}</td>`)).join('')}</tr>`).join('');
+document.getElementById('odpor').innerHTML = "<b>Odporúčam dlaždicu z mocku 1 a stred z mocku 4</b> (v časti Poskladaj je táto dvojica predvolená). Tri stĺpce sa dajú prečítať aj pri 94 px a nepôsobia ako dnešný zoznam. Zápasy držia poradie baru: ty vľavo, súper vpravo, a farba vedúceho povie stav bez čítania, pričom správa súpera ostáva na svojom mieste.";
+vsetko();
+addEventListener('resize', () => document.querySelectorAll('.ramik').forEach(mierka));
+if (document.fonts) document.fonts.ready.then(() => document.querySelectorAll('.ramik').forEach(mierka));
+</script>
+</body>
+</html>
