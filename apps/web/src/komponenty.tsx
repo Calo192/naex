@@ -24,7 +24,8 @@ export function Avatar({
     .join("")
     .slice(0, 2)
     .toUpperCase();
-  // Stála farba podľa mena — hráč je rozpoznateľný aj bez fotky.
+  // Stála farba podľa mena — hráč je rozpoznateľný aj bez fotky. Svetlosť 34 %: biela iniciála má
+  // kontrast aspoň 4,5 : 1 pri každom odtieni (pri 42 % mal „?“ v lobby len 3,23 : 1).
   let h = 0;
   for (const ch of meno) h = (h * 31 + ch.charCodeAt(0)) % 360;
   const hraca = farba === undefined ? "" : ` avatar-hraca avatar-${farba}`;
@@ -33,7 +34,7 @@ export function Avatar({
   ) : (
     <span
       className={`avatar avatar-inicialy${hraca}`}
-      style={{ width: velkost, height: velkost, fontSize: velkost * 0.4, ...(farba === undefined ? { background: `hsl(${h} 38% 42%)` } : {}) }}
+      style={{ width: velkost, height: velkost, fontSize: velkost * 0.4, ...(farba === undefined ? { background: `hsl(${h} 38% 34%)` } : {}) }}
       aria-hidden="true"
     >
       {inicialy}

@@ -1,7 +1,7 @@
 // Jednotný bar nad stolom (Michal 2026-10-25, mock V2): Melichar v bare.
 
 import { describe, expect, it } from "vitest";
-import { castiVety, moznostiKvizu, rezimMelichara, rozdelNaStrany, vetyTextu } from "../src/hra/bar.ts";
+import { castiVety, moznostiKvizu, rezimMelichara, rozdelNaStrany, usekyVety, vetyTextu } from "../src/hra/bar.ts";
 
 describe("Melichar v bare", () => {
   it("piktogram akcie v texte: [Rana] sa nahradí ikonou, slovo za ním ostane", () => {
@@ -108,6 +108,23 @@ describe("text Melichara po stranách (v bare sa nescrolluje)", () => {
     expect(vetyTextu(text)).toEqual(["Petelica udrie dvakrát.", " Len sleduj pečeň!", " Kto vyhrá?", " 3 : 2"]);
     expect(vetyTextu(text).join("")).toBe(text);
     expect(vetyTextu("")).toEqual([]);
+  });
+});
+
+describe("dlhá veta Melichara po úsekoch", () => {
+  it("delí za čiarkou a dvojbodkou a nestratí ani znak", () => {
+    const veta = " V každej bitke príde Exekútor: zhorí ti polovica Dlhov, zaokrúhlene nahor, a rovnako veľa špakov.";
+    const useky = usekyVety(veta);
+    expect(useky).toEqual([" V každej bitke príde Exekútor: ", "zhorí ti polovica Dlhov, ", "zaokrúhlene nahor, ", "a rovnako veľa špakov."]);
+    expect(useky.join("")).toBe(veta);
+  });
+
+  it("veta bez čiarky ostáva celá a značku akcie nerozdelí", () => {
+    expect(usekyVety("Daj [Rana] súperovi.")).toEqual(["Daj [Rana] súperovi."]);
+  });
+
+  it("desatinná čiarka bez medzery nie je hranica úseku", () => {
+    expect(usekyVety("Kontrast 4,5 stačí.")).toEqual(["Kontrast 4,5 stačí."]);
   });
 });
 

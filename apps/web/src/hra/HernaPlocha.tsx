@@ -189,6 +189,8 @@ interface Pokyn {
   /** Bublina jedným písmom a jednou veľkosťou (rozdeľovanie, mock C · Pečať). */
   readonly jednotny?: boolean;
   readonly text?: ReactNode;
+  /** Ovládač v riadku pokynu vedľa textu — text sa skracuje trojbodkou, ovládač nesmie (počítač, telefón ho má v texte). */
+  readonly odkaz?: ReactNode;
   readonly tlacidla?: ReactNode;
   readonly vlavo?: ReactNode;
   readonly stred?: ReactNode;
@@ -4427,9 +4429,22 @@ export function HernaPlocha({
               </button>
             </span>
           );
+        // Voľba až na konci ako celá veta — na začiatku sa čítala ako odtrhnutý kus vety pred
+        // „Začínaš Pitku“ (playtest výučby 20261025). Výučba ju nevysvetľuje, tam nie je.
+        const odkazBezNaex =
+          !potvrdzujem && !krcma && textVyberu === null && !bezNaex.zapnute && vyucba !== true ? (
+            <button
+              className="auto-hotovo-odkaz"
+              title="Hra za teba v každej ďalšej Pitke tejto bitky ťukne „končím“ — bez NA EX, bez fajčenia. Na súperovo NA EX odpovedáš sám."
+              onClick={bezNaex.zapni}
+            >
+              Ďalšie Pitky tejto bitky bez NA EX
+            </button>
+          ) : null;
         return {
           nadpis,
           naliehavy: potvrdzujem,
+          ...(naSirku ? {} : { odkaz: odkazBezNaex }),
           text: potvrdzujem ? (
             <strong>Skončiť bez NA EX? Máš plný poldeci a v tejto Pitke ho už nedáš — klikni ešte raz, alebo Esc.</strong>
           ) : krcma ? (
@@ -4472,20 +4487,7 @@ export function HernaPlocha({
                     </span>
                   </>
                 )}
-                {/* Voľba až na konci ako celá veta — na začiatku sa čítala ako odtrhnutý kus vety pred
-                    „Začínaš Pitku“ (playtest výučby 20261025). Výučba ju nevysvetľuje, tam nie je. */}
-                {!bezNaex.zapnute && vyucba !== true && (
-                  <>
-                    {" "}
-                    <button
-                      className="auto-hotovo-odkaz"
-                      title="Hra za teba v každej ďalšej Pitke tejto bitky ťukne „končím“ — bez NA EX, bez fajčenia. Na súperovo NA EX odpovedáš sám."
-                      onClick={bezNaex.zapni}
-                    >
-                      Ďalšie Pitky tejto bitky bez NA EX
-                    </button>
-                  </>
-                )}
+                {naSirku && odkazBezNaex !== null && <> {odkazBezNaex}</>}
               </>
             )
           ),
@@ -6137,6 +6139,7 @@ export function HernaPlocha({
                   </strong>
                 )}
                 {pokyn?.text !== undefined && <span className="pilulka-text">{pokyn.text}</span>}
+                {pokyn?.odkaz != null && <span className="pilulka-odkaz">{pokyn.odkaz}</span>}
               </div>
             )}
             {toastPriazneEl}

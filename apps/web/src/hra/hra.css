@@ -6456,6 +6456,23 @@ button.auto-hotovo-odkaz {
     bottom: 4px;
   }
 
+  /* Efekt je na spodku neotočenej karty a na vrchu otočenej — pilulka aj značka NA EX patria na stranu
+     ilustrácie, inak zakrývali text efektu (UI inšpekcia kalamita-20261106-1741, UI-10). */
+  .stol-plst .s-lupou:not(:has(.kl-otocena)) > .vybrana-pod {
+    top: 4px;
+    bottom: auto;
+  }
+
+  .stol-plst .s-lupou.naex-mozny:has(.kl-otocena)::before {
+    top: auto;
+    bottom: 4px;
+  }
+
+  /* Vybranú kartu označuje rám a pilulka, značka by len zaberala miesto. */
+  .stol-plst .s-lupou.naex-mozny:has(> .vybrana-pod)::before {
+    display: none;
+  }
+
   /* Nadpis pilulky v riadku s textom (nie nad ním) — o riadok nižšia pilulka. */
   .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)) {
     flex-wrap: nowrap;
@@ -6514,6 +6531,23 @@ button.auto-hotovo-odkaz {
 
   .linia-stav:not(:has(.zberatel-ponuka, .vizia-karta)):is(:hover, :focus-within, :focus) > .pilulka-text {
     white-space: normal;
+  }
+
+  /* Ovládač vedľa textu pokynu: trojbodka skráti text, nie jeho (UI inšpekcia kalamita-20261106-1741, UI-3).
+     Dole, kde ostáva spodok rozbaleného pokynu, aby pod myšou neutiekol; okraj drží výšku pokynu v jednom riadku. */
+  .linia-stav:has(> .pilulka-odkaz) {
+    flex-wrap: nowrap;
+  }
+
+  .linia-stav > .pilulka-odkaz {
+    flex: none;
+    align-self: flex-end;
+    margin-block: -2px;
+    white-space: nowrap;
+  }
+
+  .linia-stav:has(> .pilulka-odkaz) > .pilulka-text {
+    min-width: 0;
   }
 
   /* Rozbalený pokyn rastie nahor (cez pás kola), spodok ostane v riadku pokynu — nadol
@@ -6831,7 +6865,14 @@ button.auto-hotovo-odkaz {
      (UI inšpekcia 20261026-1800, UI-4). Pri vysunutej karte zmizne, názov je na nej. */
   .ruka-rad .ruka-meno {
     display: block;
-    top: calc(var(--ruka-kh) - var(--ruka-skryte) - 11px);
+    /* Dlhý názov sa zalomí na dva riadky a rastie nahor, trojbodka z neho nechala polovicu
+       (UI inšpekcia kalamita-20261106-1741, UI-7). Spodok ostáva pri okraji okna. */
+    top: auto;
+    bottom: calc(var(--ruka-skryte) - 4px);
+    line-height: 1.15;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
   }
 
   /* Hrana stola leží cez spodok plste: karty v línii sú tu malé a línia krátka,

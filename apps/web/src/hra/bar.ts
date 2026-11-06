@@ -116,15 +116,23 @@ export function castiVety(text: string, jeAkcia: (kluc: string) => boolean): Cas
   return out;
 }
 
-/** Text Melichara po vetách (s medzerou pred vetou) — strana v bare sa delí len medzi vetami. */
+/** Text Melichara po vetách (s medzerou pred vetou) — strana v bare sa delí medzi vetami. */
 export function vetyTextu(text: string): string[] {
   return [...text.matchAll(VETA)].map((m) => m[0]).filter((v) => v.trim() !== "");
+}
+
+/**
+ * Veta po úsekoch za čiarkou, dvojbodkou a bodkočiarkou (bez straty znaku). Len pre vetu, ktorá sa
+ * do baru nezmestí ani sama: znenie Melichara ostáva doslova, strana sa zlomí vnútri vety.
+ */
+export function usekyVety(veta: string): string[] {
+  return veta.split(/(?<=[,:;]\s)/).filter((u) => u !== "");
 }
 
 export interface StranyTextu {
   /** Index prvého kusu každej strany (prvá strana začína nulou). */
   readonly zaciatky: readonly number[];
-  /** Kusy, ktoré sa nezmestia ani samy — problém textu, nie rozloženia. */
+  /** Kusy, ktoré sa nezmestia ani samy. */
   readonly pretecie: readonly number[];
 }
 

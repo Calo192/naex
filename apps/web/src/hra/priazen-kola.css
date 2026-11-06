@@ -823,7 +823,8 @@ b.np-kto {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: 700 0.72rem/1.2 var(--nadpis);
+  /* 0,72 rem skrátilo „Vychovávateľka“ — najdlhšie meno staršieho sa má zmestiť celé. */
+  font: 700 0.66rem/1.2 var(--nadpis);
 }
 
 .pas-st-stupnica {

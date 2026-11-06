@@ -67,10 +67,13 @@ function NerestiPruh({ z }: { readonly z: StavZavislosti }) {
 }
 
 /** Krátky výhľad pod počítadlom a jeho trieda (farba). */
-function vyhladChuti(z: StavZavislosti): { text: string; trieda: string } {
-  return z.vyhlad === "ziska"
-    ? { text: `chýba ${z.doBezpecia} · inak +1 Absťák`, trieda: "zly" }
-    : { text: `po kole Chuť ${z.chutPo}`, trieda: "" };
+function vyhladChuti(z: StavZavislosti): { text: string; naDlazdici: string; trieda: string } {
+  if (z.vyhlad !== "ziska") {
+    const text = `po kole Chuť ${z.chutPo}`;
+    return { text, naDlazdici: text, trieda: "" };
+  }
+  // Na dlaždici bez „inak“: pri 1366 a 1440 sa celé varovanie skrátilo na „…+1 Ab…“.
+  return { text: `chýba ${z.doBezpecia} · inak +1 Absťák`, naDlazdici: `chýba ${z.doBezpecia} · +1 Absťák`, trieda: "zly" };
 }
 
 /**
@@ -97,7 +100,7 @@ function ZdrojChut({ z, ja }: { readonly z: StavZavislosti; readonly ja: boolean
       pod={
         <>
           <span className="neresti-pocet">dnes {z.teraz}</span>
-          <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.text}</span>
+          <span className={`abstak-vyhlad ${vyhlad.trieda}`}>{vyhlad.naDlazdici}</span>
         </>
       }
       tip={{

@@ -352,8 +352,9 @@ button.jbar-odhad::before {
   color: var(--ja);
 }
 
+/* Pridaný --lesk zvýši kontrast v tmavých aj svetlých schémach (samotné --su malo 4,14 : 1). */
 .jk-cislo.su {
-  color: var(--su);
+  color: color-mix(in srgb, var(--su) 85%, var(--lesk));
 }
 
 .jk-pas {
@@ -1292,9 +1293,15 @@ button.jbar-odhad::before {
     font-size: 0.94rem;
     line-height: 1.28;
   }
+
+  /* Bar má pri tejto výške 40 px (os kola je v hlavičke): menovka a jeden riadok vety sa zmestia len
+     s tenším okrajom, pri 4 px ostalo 17 px na 19 px riadok a každá veta sa orezala. */
+  .mel-telo {
+    padding-block: 2px;
+  }
 }
 
-/* 1366 × 650: bar má 58 px — veta menším písmom, aby sa zmestili dva riadky. */
+/* 1366 × 650: bar má 34 px — veta menším písmom, aby sa zmestil jeden riadok s menovkou. */
 @media (min-width: 761px) and (max-height: 719px) {
   .mel {
     --mel-avatar: 44px;
@@ -1311,9 +1318,9 @@ button.jbar-odhad::before {
     letter-spacing: 0.06em;
   }
 
-  /* Dva riadky vety aj s menovkou sa do 51 px zmestia len s tenším okrajom. */
+  /* Menovka a riadok vety sa do 33 px zmestia len s tenším okrajom. */
   .mel-telo {
-    padding-block: 2px;
+    padding-block: 1px;
   }
 
   .mel-moznosti {

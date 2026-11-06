@@ -11,7 +11,7 @@ import { createPortal } from "react-dom";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { IKONY } from "../karta/ikony.ts";
-import { castiVety, rozdelNaStrany, vetyTextu, type RezimMelichara } from "./bar.ts";
+import { castiVety, rozdelNaStrany, usekyVety, vetyTextu, type RezimMelichara } from "./bar.ts";
 import { MELICHAR_PRIBEH } from "./melicharPribeh.ts";
 
 /** Miesto v bare (JednotnyBar), kam sa bublina vkladá. */
@@ -101,11 +101,20 @@ function AvatarMelichara() {
 export interface KusVety {
   readonly kluc: string;
   readonly obsah: ReactNode;
+  /** Ten istý kus po menších častiach, keď sa nezmestí do baru ani sám. */
+  readonly jemne?: readonly KusVety[];
 }
 
 /** Text Melichara ako kusy po vetách — s piktogramami akcií ako vo VetaMelichara. */
 export function kusyVety(kluc: string, text: string, sada: Sada | null): KusVety[] {
-  return vetyTextu(text).map((veta, i) => ({ kluc: `${kluc}-${i}`, obsah: <VetaMelichara text={veta} sada={sada} /> }));
+  return vetyTextu(text).map((veta, i) => {
+    const useky = usekyVety(veta);
+    return {
+      kluc: `${kluc}-${i}`,
+      obsah: <VetaMelichara text={veta} sada={sada} />,
+      ...(useky.length > 1 ? { jemne: useky.map((u, j) => ({ kluc: `${kluc}-${i}-${j}`, obsah: <VetaMelichara text={u} sada={sada} /> })) } : {}),
+    };
+  });
 }
 
 export interface Strany {
@@ -154,6 +163,8 @@ export function useStrany(kluc: string): Strany {
   return { strana, pocet, dalsiaJe: strana < pocet - 1, dalsia, predosla, setPocet };
 }
 
+const ZIADNE_KLUCE: readonly string[] = [];
+
 /**
  * Text v bare po stranách (Michal 2026-10-25: nescrolluje sa, bar sa nerozbalí). Merač s celým
  * textom je mimo toku a skrytý; pri zmene textu či šírky sa pred vykreslením na chvíľu zobrazí
@@ -171,6 +182,10 @@ export function StrankovanaVeta({
 }) {
   const merac = useRef<HTMLDivElement>(null);
   const [zaciatky, setZaciatky] = useState<readonly number[]>([0]);
+  // Kusy, ktoré sa nezmestili ani samy, idú po menších častiach; nový text začína odznova.
+  const [rozbite, setRozbite] = useState<{ readonly podpis: string; readonly kluce: readonly string[] }>({ podpis, kluce: [] });
+  const rozbiteKluce = rozbite.podpis === podpis ? rozbite.kluce : ZIADNE_KLUCE;
+  const naStrany = kusy.flatMap((k) => (rozbiteKluce.includes(k.kluc) ? (k.jemne ?? [k]) : [k]));
   const { setPocet } = strany;
   const zmeraj = useCallback(() => {
     const m = merac.current;
@@ -193,10 +208,15 @@ export function StrankovanaVeta({
     const r = rozdelNaStrany(spany.length, vyska, dostupne + 0.5);
     m.style.display = "";
     for (const el of spany) el.style.display = "";
-    if (r.pretecie.length > 0) console.warn(`Melichar: veta sa do baru nezmestí ani sama — text treba skrátiť: „${podpis.slice(0, 90)}…“`);
+    const naRozbitie = r.pretecie.map((p) => spany[p]).flatMap((el) => (el?.dataset.jemne === undefined || el.dataset.kluc === undefined ? [] : [el.dataset.kluc]));
+    if (naRozbitie.length > 0) {
+      setRozbite({ podpis, kluce: [...rozbiteKluce, ...naRozbitie] });
+      return;
+    }
+    if (r.pretecie.length > 0) console.warn(`Melichar: veta sa do baru nezmestí ani po častiach — text treba skrátiť: „${podpis.slice(0, 90)}…“`);
     setZaciatky((z) => (z.length === r.zaciatky.length && z.every((x, i) => x === r.zaciatky[i]) ? z : r.zaciatky));
     setPocet(r.zaciatky.length);
-  }, [podpis, setPocet]);
+  }, [podpis, setPocet, rozbiteKluce]);
   useLayoutEffect(zmeraj, [zmeraj]);
   useEffect(() => {
     const veta = merac.current?.closest(".mel-veta");
@@ -209,17 +229,19 @@ export function StrankovanaVeta({
   }, [zmeraj]);
   const i = Math.min(strany.strana, zaciatky.length - 1);
   const od = zaciatky[i] ?? 0;
-  const po = zaciatky[i + 1] ?? kusy.length;
+  const po = zaciatky[i + 1] ?? naStrany.length;
   return (
     <>
       <div className="mel-strana">
-        {kusy.slice(od, po).map((k) => (
+        {naStrany.slice(od, po).map((k) => (
           <Fragment key={k.kluc}>{k.obsah}</Fragment>
         ))}
       </div>
       <div className="mel-merac" ref={merac} aria-hidden="true">
-        {kusy.map((k) => (
-          <span key={k.kluc}>{k.obsah}</span>
+        {naStrany.map((k) => (
+          <span key={k.kluc} data-kluc={k.kluc} data-jemne={k.jemne === undefined ? undefined : ""}>
+            {k.obsah}
+          </span>
         ))}
       </div>
     </>

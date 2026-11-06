@@ -141,9 +141,9 @@
   pointer-events: none;
 }
 
-/* Rozdeľovanie: tvoj pás je širší — stupne sú tlačidlá. */
+/* Rozdeľovanie: tvoj pás je širší — stupne sú tlačidlá, aspoň 24 px (WCAG 2.5.8; pri 1366–1512 mali 23 px). */
 .r3.rozdel {
-  --pas-ja: clamp(20px, 15cqw, 28px);
+  --pas-ja: clamp(24px, 15cqw, 28px);
 }
 
 .r3-pas {
