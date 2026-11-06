@@ -5,7 +5,7 @@
 
 import { useRef, useState } from "react";
 import type { BodovaciaKarta } from "@naex/tvorba";
-import { mediaUrl } from "../lib/api.ts";
+import { mediaUrl, textChyby } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska, Pole } from "../komponenty.tsx";
@@ -75,7 +75,7 @@ function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly
                   await nahrajNahlad(id, img);
                   setB({ ...b, pozadie: id });
                 } catch (err) {
-                  setChyba(err instanceof Error ? err.message : String(err));
+                  setChyba(textChyby(err));
                 }
               })();
             }}
@@ -93,7 +93,7 @@ function Editor({ povodna, zavri }: { readonly povodna: BodovaciaKarta; readonly
             onClick={() =>
               void ulozBodovaciu(b)
                 .then(zavri)
-                .catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)))
+                .catch((err: unknown) => setChyba(textChyby(err)))
             }
           >
             Uložiť

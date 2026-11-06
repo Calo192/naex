@@ -11,7 +11,7 @@ import { ZMENA_SVIETI_MS, klikKrokuOsi, krokPartie, minSek, textZmeny } from "./
 import type { Rod } from "@naex/core";
 import type { Sada } from "@naex/tvorba";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
-import { CenaCigariet, IkonaCigareta, IkonaKarty, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
+import { IkonaCigareta, IkonaPoldeci, Vymena } from "./ikonyZdrojov.tsx";
 import { useTip, type TipObsah } from "../karta/Tip.tsx";
 import { PilulkaPriazne } from "./KruzokPriazne.tsx";
 import type { PriazenKola } from "./priazenKola.ts";

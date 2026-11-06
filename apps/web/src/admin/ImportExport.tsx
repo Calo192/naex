@@ -1,7 +1,7 @@
 // Textový export/import kariet — formát MAUI (kartyai_cards_*.txt).
 
 import { useRef, useState } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
@@ -29,7 +29,7 @@ export function ImportExport() {
       setVysledok(r);
       await obnov();
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 

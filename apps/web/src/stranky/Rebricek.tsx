@@ -1,12 +1,13 @@
 // Rebríček hráčov podľa Frajeriny (/rebricek).
 
 import { useEffect, useState } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
-import { CisloFrajeriny, tvar } from "./Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
+import { CisloFrajeriny } from "./Statistiky.tsx";
 import "./statistiky.css";
 
 interface RiadokRebricka {
@@ -47,7 +48,7 @@ export function Rebricek() {
     api
       .get<{ hraci: RiadokRebricka[] }>("/rebricek")
       .then((r) => setHraci(r.hraci))
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
 
   return (

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { kontrolaTextov, variantyKarty } from "@naex/tvorba";
 import eldersJson from "@naex/core/data/elders.json";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { Hlaska } from "../komponenty.tsx";
@@ -87,7 +87,7 @@ export function Prehlad() {
       obnovSady();
       await obnovObsah();
     } catch (e) {
-      setSprava({ druh: "chyba", text: e instanceof Error ? e.message : String(e) });
+      setSprava({ druh: "chyba", text: textChyby(e) });
     } finally {
       setCaka(false);
     }
@@ -104,7 +104,7 @@ export function Prehlad() {
       setSprava({ druh: "ok", text: `Zverejnená verzia ${v}. Nové hry, glosár a pravidlá už bežia na nej.` });
       obnovSadu();
     } catch (e) {
-      setSprava({ druh: "chyba", text: e instanceof Error ? e.message : String(e) });
+      setSprava({ druh: "chyba", text: textChyby(e) });
     } finally {
       setCaka(false);
     }

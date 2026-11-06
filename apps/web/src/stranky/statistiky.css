@@ -582,16 +582,6 @@ td.cislo {
   padding: 32px 0;
 }
 
-.nazor {
-  display: grid;
-  gap: 12px;
-  padding: 1.2rem 1.4rem;
-}
-
-.nazor.stav-hotove {
-  border-color: color-mix(in srgb, var(--zelena) 40%, transparent);
-}
-
 .nazor-meta {
   display: flex;
   flex-wrap: wrap;

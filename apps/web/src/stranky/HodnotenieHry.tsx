@@ -6,7 +6,8 @@
 // formulár s 12 kritériami sa otvorí v dialógu.
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
+import { datum } from "../lib/datum.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import "./vyvoj.css";
@@ -31,8 +32,6 @@ const rovnake = (a: Znamky, b: Znamky): boolean => {
   return ka.length === Object.keys(b).length && ka.every((k) => a[k] === b[k]);
 };
 
-const datum = (cas: number): string => new Date(cas).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
-
 export function HodnotenieHry({ smiePisat, kompaktne = false }: { readonly smiePisat: boolean; readonly kompaktne?: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [kriteria, setKriteria] = useState<readonly Kriterium[] | null>(null);
@@ -52,7 +51,7 @@ export function HodnotenieHry({ smiePisat, kompaktne = false }: { readonly smieP
         setUlozene({ znamky: m.znamky ?? {}, cas: m.cas });
         setZnamky(m.znamky ?? {});
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
 
   useEffect(() => {
@@ -76,7 +75,7 @@ export function HodnotenieHry({ smiePisat, kompaktne = false }: { readonly smieP
         setUlozene({ znamky, cas: r.cas });
         setHotovo(true);
       })
-      .catch((err: unknown) => setChyba(err instanceof Error ? err.message : String(err)))
+      .catch((err: unknown) => setChyba(textChyby(err)))
       .finally(() => setPosiela(false));
   };
 

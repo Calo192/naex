@@ -6,12 +6,13 @@
 // Známky sú len priemery, nikdy jednotlivci.
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
-import { api, ChybaApi } from "../lib/api.ts";
+import { api, ChybaApi, textChyby } from "../lib/api.ts";
 import { chod, Odkaz, useTitulok } from "../lib/router.tsx";
 import { maPravo, useUcet } from "../lib/ucet.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { HlavaStranky } from "../HlavaStranky.tsx";
-import { GrafZnamok, MiniGraf, TabulkaVyvoja, cislo, hodnota, kratkyDen, terajsiaHodnota, type BodVyvoja, type Vyvoj } from "./GrafZnamok.tsx";
+import { kratkyDen } from "../lib/datum.ts";
+import { GrafZnamok, MiniGraf, TabulkaVyvoja, cislo, hodnota, terajsiaHodnota, type BodVyvoja, type Vyvoj } from "./GrafZnamok.tsx";
 import { Roadmapa, type PoctyRoadmapy } from "./Roadmapa.tsx";
 import "./vyvoj.css";
 
@@ -302,7 +303,7 @@ export function Vyvoj({ cesta }: { readonly cesta: string }) {
     api
       .get<Vyvoj>("/znamky")
       .then(setVyvoj)
-      .catch((e: unknown) => setChyba({ text: e instanceof Error ? e.message : String(e), status: e instanceof ChybaApi ? e.status : 0 }));
+      .catch((e: unknown) => setChyba({ text: textChyby(e), status: e instanceof ChybaApi ? e.status : 0 }));
   }, []);
 
   // Skok na kotvu z adresy až keď je vykreslená roadmapa — inak by cieľ odplával.

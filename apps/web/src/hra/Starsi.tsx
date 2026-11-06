@@ -6,7 +6,7 @@
 
 import type { CSSProperties } from "react";
 import type { ClientState, ElderState, GameData, PlayerId } from "@naex/core";
-import { favourStarsieho, opponentOf, spakyOdStarsieho } from "@naex/core";
+import { favourStarsieho, spakyOdStarsieho } from "@naex/core";
 import { farbaZony } from "./LiniaStarsich.tsx";
 import { KruzokPriazne, useNapovedaStarsieho } from "./KruzokPriazne.tsx";
 import { ktoPriazen, obsahNapovedy, pocetPriazniKola, priazenKola, riadokPriazneDlazdice, textMarkerov } from "./priazenKola.ts";

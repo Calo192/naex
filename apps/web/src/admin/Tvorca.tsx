@@ -24,6 +24,7 @@ import {
 import { ALL_TRIGGERS } from "@naex/core";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
+import { textChyby } from "../lib/api.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { Hlaska, Pole } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
@@ -292,7 +293,7 @@ export function Tvorca({ id }: { readonly id: string }) {
       setSprava({ druh: "ok", text: "Uložené. Hráči zmenu uvidia po zverejnení sady." });
       if (nova) chod(`/admin/karty/${noveId}`, true);
     } catch (e) {
-      setSprava({ druh: "chyba", text: e instanceof Error ? e.message : String(e) });
+      setSprava({ druh: "chyba", text: textChyby(e) });
     } finally {
       setUklada(false);
     }

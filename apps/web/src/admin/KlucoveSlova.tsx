@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import type { KlucoveSlovo } from "@naex/tvorba";
 import { formatujEfekt } from "@naex/tvorba";
+import { textChyby } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import { useAdmin } from "./stav.tsx";
@@ -23,7 +24,7 @@ export function KlucoveSlova() {
       await ulozKlucoveSlova(zoznam.filter((k) => k.slovo.trim() !== ""));
       setSprava({ druh: "ok", text: "Uložené. Na kartách sa prejaví hneď v tvorcovi, hráčom po zverejnení." });
     } catch (e) {
-      setSprava({ druh: "chyba", text: e instanceof Error ? e.message : String(e) });
+      setSprava({ druh: "chyba", text: textChyby(e) });
     }
   };
 

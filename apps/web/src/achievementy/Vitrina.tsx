@@ -2,6 +2,7 @@
 // s dátumom, nezískané sivo s postupom, filter podľa kategórie. Dáta z API prevedie data.ts.
 
 import { useMemo, useState } from "react";
+import { datum } from "../lib/datum.ts";
 import { HVIEZDY_RANKU, NAZOV_RANKU, Podtacok, type RankPodtacka } from "./Podtacok.tsx";
 import "./podtacok.css";
 
@@ -29,8 +30,6 @@ export interface KategoriaVitriny {
   readonly id: string;
   readonly nazov: string;
 }
-
-const datum = (ms: number): string => new Date(ms).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
 
 export function Vitrina({
   polozky,

@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import type { AkciaDef } from "@naex/tvorba";
 import { ALL_ACTIONS } from "@naex/core";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
+import { textChyby } from "../lib/api.ts";
 import { useTitulok } from "../lib/router.tsx";
 import { Hlaska } from "../komponenty.tsx";
 import { nahrajMedia, useAdmin } from "./stav.tsx";
@@ -24,7 +25,7 @@ function RiadokAkcie({ akcia, pouzitie }: { readonly akcia: AkciaDef; readonly p
     try {
       await f();
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 
@@ -104,7 +105,7 @@ export function Akcie() {
       await ulozAkciu({ kluc, nazov, popis: "", ikona: { typ: "vstavana" }, poradie: obsah.akcie.length });
       setNova("");
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 

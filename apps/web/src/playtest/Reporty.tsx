@@ -4,7 +4,7 @@
 // krátkodobý token.
 
 import { useEffect, useState } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 
@@ -36,7 +36,7 @@ export function Reporty({ subor }: { readonly subor: string | null }) {
     api
       .get<{ token: string; reporty: Report[] }>("/playtesty")
       .then(setData)
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, [subor]);
 
   if (data === null) return chyba !== null ? <Hlaska>{chyba}</Hlaska> : <Nacitavanie />;

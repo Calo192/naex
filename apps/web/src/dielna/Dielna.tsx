@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNo
 import type { KartaNavrh, Sada, Vzhlad } from "@naex/tvorba";
 import { farbaKarty, variant, variantyKarty } from "@naex/tvorba";
 import { ALL_TRIGGERS } from "@naex/core";
-import { api, mediaUrl } from "../lib/api.ts";
+import { api, mediaUrl, textChyby } from "../lib/api.ts";
 import { Odkaz, chod, useTitulok } from "../lib/router.tsx";
 import { useSada, vzhladSady } from "../lib/sada.tsx";
 import { jeSpravca, maPravo, useUcet } from "../lib/ucet.tsx";
@@ -16,7 +16,7 @@ import { HlavaStranky } from "../HlavaStranky.tsx";
 import { KartaLico } from "../karta/KartaLico.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
 import { TlacidloCigarety } from "../stranky/SpatnaVazba.tsx";
-import { tvar } from "../stranky/Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
 import type { DetailNavrhu, NavrhDielne, ObsahNavrhu, Pozicie, StavZobrazeny, ZoznamDielne } from "./typy.ts";
 import { STAVY, kartaZNavrhu, kedy, poziciZoStrany, stranaZPozicii } from "./typy.ts";
 import "./dielna.css";
@@ -126,7 +126,7 @@ function Zoznam({ sada }: { readonly sada: Sada }) {
     api
       .get<ZoznamDielne>("/dielna")
       .then(setData)
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
 
   const viditelne = useMemo(() => {
@@ -335,13 +335,13 @@ function Posudok({ n, sada, obnov }: { readonly n: DetailNavrhu; readonly sada: 
         setDovod("");
         obnov();
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   };
   const skry = () => {
     api
       .post(`/dielna/${n.id}/skryt`, { skryty: !n.skryty })
       .then(obnov)
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   };
   const zhody = podobne(n.obsah, sada, n.zaklad);
 
@@ -426,7 +426,7 @@ function Detail({ id, sada }: { readonly id: number; readonly sada: Sada }) {
   const [komentar, setKomentar] = useState("");
   const [nahlasenie, setNahlasenie] = useState<string | null>(null);
   useTitulok(n === null ? "Dielňa" : `${n.obsah.nazov || "Návrh"} · Dielňa`);
-  const ukaz = (e: unknown) => setChyba(e instanceof Error ? e.message : String(e));
+  const ukaz = (e: unknown) => setChyba(textChyby(e));
 
   const obnov = useCallback(() => {
     api
@@ -845,7 +845,7 @@ function Editor({ id, zaklad, sada }: { readonly id: number | null; readonly zak
   const [uklada, setUklada] = useState(false);
   const mobil = useMobil();
   const [zvacseny, setZvacseny] = useState(false);
-  const ukaz = (e: unknown) => setChyba(e instanceof Error ? e.message : String(e));
+  const ukaz = (e: unknown) => setChyba(textChyby(e));
 
   useEffect(() => {
     if (!zvacseny) return;

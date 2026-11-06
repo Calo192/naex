@@ -3,7 +3,7 @@
 // → Poldeci → Deci → Sedmička mení admin aj subadmin, subadmina len admin.
 
 import { useEffect, useState } from "react";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { Odkaz, useTitulok } from "../lib/router.tsx";
 import { NAZOV_UROVNE, RANKY_HRACOV, useUcet, type Pouzivatel, type Rola } from "../lib/ucet.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../komponenty.tsx";
@@ -37,7 +37,7 @@ export function Hraci() {
     void api
       .get<{ pouzivatelia: Riadok[] }>("/admin/pouzivatelia")
       .then((r) => setZoznam(r.pouzivatelia))
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   useEffect(nacitaj, []);
 
   const uprav = async (p: Riadok, zmena: { rola?: Rola; ai?: boolean; automaticky?: true; zrejuca?: boolean | null }) => {
@@ -45,7 +45,7 @@ export function Hraci() {
       await api.patch(`/admin/pouzivatelia/${p.id}`, zmena);
       nacitaj();
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 

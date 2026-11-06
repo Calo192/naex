@@ -4,6 +4,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Hlaska } from "./komponenty.tsx";
+import { textChyby } from "./lib/api.ts";
 import { prepniInstanciu } from "./lib/instancia.ts";
 import { ZAVES_ODCHODU } from "./lib/odchod.ts";
 import { chod } from "./lib/router.tsx";
@@ -61,7 +62,7 @@ export function VolbaZrejucej({ tvar }: { readonly tvar: "panel" | "tlacidlo" })
         }
       },
       (err: unknown) => {
-        setChyba(err instanceof Error ? err.message : String(err));
+        setChyba(textChyby(err));
         setCaka(false);
       },
     );

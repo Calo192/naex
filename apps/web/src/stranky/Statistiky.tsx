@@ -4,15 +4,16 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Action, StatistikyHraca } from "@naex/core";
 import { rozlozRod } from "@naex/core";
+import { datum } from "../lib/datum.ts";
+import { tvar } from "../lib/jazyk.ts";
 import { Odkaz } from "../lib/router.tsx";
 import { useSada } from "../lib/sada.tsx";
 import { Avatar } from "../komponenty.tsx";
 import { IkonaAkcie } from "../karta/IkonaAkcie.tsx";
+import { TEXT_VYSLEDKU, trvanie, znamienko, type Vysledok } from "./profil/typy.ts";
 import "./statistiky.css";
 
 // ---- tvar odpovede /api/hraci/:id -------------------------------------------
-
-type Vysledok = "vyhra" | "prehra" | "remiza";
 
 interface HracVerejny {
   readonly id: number | null;
@@ -63,23 +64,6 @@ const percento = (cast: number, celok: number): string => (celok === 0 ? "—" :
 
 /** Priemer na jednotku; bez menovateľa pomlčka. */
 const priemer = (sucet: number, pocet: number, des = 1): string => (pocet === 0 ? "—" : cislo(sucet / pocet, des));
-
-function trvanie(ms: number): string {
-  const min = Math.round(ms / 60000);
-  if (min < 1) return "< 1 min";
-  if (min < 60) return `${min} min`;
-  return `${Math.floor(min / 60)} h ${min % 60} min`;
-}
-
-const datum = (cas: number): string => new Date(cas).toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
-
-/** Slovenské tvary: 1 partia, 2–4 partie, 5 partií. */
-export function tvar(n: number, jeden: string, dva: string, pat: string): string {
-  const a = Math.abs(n);
-  return a === 1 ? jeden : a >= 2 && a <= 4 ? dva : pat;
-}
-
-const ZNAK_ZMENY = (d: number): string => (d > 0 ? `+${d}` : d < 0 ? `−${-d}` : "±0");
 
 // ---- Frajerina ------------------------------------------------------------------
 
@@ -206,7 +190,7 @@ export function GrafFrajeriny({ historia }: { readonly historia: ProfilHraca["hi
       {a !== null && aktivny !== null && (
         <div className="graf-tooltip" style={{ left: Math.min(Math.max(x(aktivny), 70), sirka - 70), top: y(a.hodnota) }}>
           <strong>{a.hodnota}</strong>
-          {predA !== null && <span className={a.hodnota >= predA.hodnota ? "plus" : "minus"}> {ZNAK_ZMENY(a.hodnota - predA.hodnota)}</span>}
+          {predA !== null && <span className={a.hodnota >= predA.hodnota ? "plus" : "minus"}> {znamienko(a.hodnota - predA.hodnota)}</span>}
           <span className="tlmene">{aktivny === 0 ? `registrácia ${datum(a.cas)}` : `po ${aktivny}. partii · ${datum(a.cas)}`}</span>
         </div>
       )}
@@ -281,8 +265,6 @@ function AkcieVBitkach({ akcie, bitky }: { readonly akcie: StatistikyHraca["akci
 
 // ---- partie a súperi -------------------------------------------------------------
 
-const TEXT_VYSLEDKU: Record<Vysledok, string> = { vyhra: "výhra", prehra: "prehra", remiza: "remíza" };
-
 function PoslednePartie({ partie }: { readonly partie: readonly PartiaVProfile[] }) {
   return (
     <div className="tabulka-obal">
@@ -316,7 +298,7 @@ function PoslednePartie({ partie }: { readonly partie: readonly PartiaVProfile[]
                 </td>
                 <td className="cislo">{p.body === null ? <span className="tlmene">—</span> : `${p.body[0]} : ${p.body[1]}`}</td>
                 <td className="cislo">
-                  {p.frajerina.po} <span className={`zmena ${d > 0 ? "plus" : d < 0 ? "minus" : ""}`}>{ZNAK_ZMENY(d)}</span>
+                  {p.frajerina.po} <span className={`zmena ${d > 0 ? "plus" : d < 0 ? "minus" : ""}`}>{znamienko(d)}</span>
                 </td>
                 <td className="cislo skryt-mobil">{p.kola}</td>
                 <td className="cislo skryt-mobil">{trvanie(p.trvanie)}</td>

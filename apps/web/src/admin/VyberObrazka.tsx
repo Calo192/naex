@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ObrazokKarty } from "@naex/tvorba";
-import { api, mediaUrl } from "../lib/api.ts";
+import { api, mediaUrl, textChyby } from "../lib/api.ts";
 import { nacitajObrazok, stvorec } from "../lib/obrazky.ts";
 import { Hlaska, Nacitavanie } from "../komponenty.tsx";
 import { nahrajMedia, nahrajNahladBlob, useAdmin } from "./stav.tsx";
@@ -54,7 +54,7 @@ export function VyberObrazka({ nazov, zavri, vyber }: { readonly nazov: string; 
       vyber(await ulozObrazokKarty(img, posun, nazov || "karta"));
       zavri();
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     } finally {
       setCaka(false);
     }
@@ -67,7 +67,7 @@ export function VyberObrazka({ nazov, zavri, vyber }: { readonly nazov: string; 
       setKniznica(null);
       nacitajKniznicu();
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     } finally {
       setCaka(false);
     }

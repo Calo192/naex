@@ -6,10 +6,10 @@
 import { useEffect, useState } from "react";
 import type { DlzkaHry } from "@naex/core";
 import { ALL_DLZKY, DLZKY_HRY, NAZOV_DLZKY, NAZOV_DLZKY_GENITIV } from "@naex/core";
-import { api } from "../lib/api.ts";
+import { api, textChyby } from "../lib/api.ts";
 import { NAZOV_UROVNE, RANKY_HRACOV, type Rola } from "../lib/ucet.tsx";
 import { Hlaska } from "../komponenty.tsx";
-import { tvar } from "./Statistiky.tsx";
+import { tvar } from "../lib/jazyk.ts";
 
 interface PravidloLigy {
   readonly podmienka: { readonly liga: DlzkaHry; readonly vyhier: number } | null;
@@ -51,7 +51,7 @@ export function PravaLig() {
         setN(r);
         setForm(rozpis(r));
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   useEffect(nacitaj, []);
 
   const uloz = async (telo: object) => {
@@ -62,7 +62,7 @@ export function PravaLig() {
       setUlozene(true);
       nacitaj();
     } catch (e) {
-      setChyba(e instanceof Error ? e.message : String(e));
+      setChyba(textChyby(e));
     }
   };
 

@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Sada, Vzhlad } from "@naex/tvorba";
-import { api } from "./api.ts";
+import { api, textChyby } from "./api.ts";
 
 interface SadaKontext {
   readonly sada: Sada | null;
@@ -22,7 +22,7 @@ export function SadaProvider({ children }: { children: ReactNode }) {
         setSada(s);
         setChyba(null);
       })
-      .catch((e: unknown) => setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => setChyba(textChyby(e)));
   }, []);
   useEffect(obnov, [obnov]);
   const hodnota = useMemo(() => ({ sada, chyba, obnov }), [sada, chyba, obnov]);

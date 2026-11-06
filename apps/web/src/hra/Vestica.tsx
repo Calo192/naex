@@ -4,7 +4,7 @@
 // vpravo v jeho; v strede výmena so šípkami — ktorá karta odíde ku komu. Karty sa zmestia bez
 // posúvania: veľkosť sa ráta z miesta, ktoré balíček má, a lupa ukáže kartu celú.
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { CardInstance } from "@naex/core";
 
 /** Pomer výšky karty k šírke (ako na stole). */

@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NAZOV_DLZKY, loadGameData, opponentOf, type DlzkaHry, type PlayerId } from "@naex/core";
 import eldersJson from "@naex/core/data/elders.json";
 import scorecardsJson from "@naex/core/data/scorecards.json";
-import { api } from "../../lib/api.ts";
+import { api, textChyby } from "../../lib/api.ts";
 import { Odkaz, useTitulok } from "../../lib/router.tsx";
 import { useSada } from "../../lib/sada.tsx";
 import { Avatar, Hlaska, Nacitavanie } from "../../komponenty.tsx";
@@ -14,8 +14,9 @@ import { HlavaStranky } from "../../HlavaStranky.tsx";
 import { KrcmovyUcet } from "../../hra/KrcmovyUcet.tsx";
 import { UcetSpakov } from "../../hra/UcetSpakov.tsx";
 import { Nastenka } from "../../hra/Spaky.tsx";
-import { tvar } from "../Statistiky.tsx";
-import { TEXT_VYSLEDKU, datum, trvanie, type DetailPartieApi } from "./typy.ts";
+import { tvar } from "../../lib/jazyk.ts";
+import { datum } from "../../lib/datum.ts";
+import { TEXT_VYSLEDKU, trvanie, type DetailPartieApi } from "./typy.ts";
 import "./profil.css";
 
 /** Body oboch po kolách ako dve čiary (ty a súper). */
@@ -58,7 +59,7 @@ export function DetailPartie({ id }: { readonly id: number }) {
     api
       .get<DetailPartieApi>(`/partie/${id}`)
       .then((x) => zive && setD(x))
-      .catch((e: unknown) => zive && setChyba(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => zive && setChyba(textChyby(e)));
     return () => {
       zive = false;
     };

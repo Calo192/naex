@@ -5,6 +5,7 @@
 // aby bolo vidno, po ktorej zmene sa hodnotenie pohlo.
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { kratkyDen } from "../lib/datum.ts";
 import type { Kriterium } from "./HodnotenieHry.tsx";
 
 export interface Hodnota {
@@ -43,10 +44,6 @@ const DEN_MS = 24 * 60 * 60 * 1000;
 /** Poludnie dňa v Bratislave — deň z API je RRRR-MM-DD. */
 const casDna = (den: string): number => Date.parse(`${den}T12:00:00+02:00`);
 const dnes = (): string => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Bratislava" }).format(Date.now());
-export const kratkyDen = (den: string): string => {
-  const [, m, d] = den.split("-");
-  return `${Number(d)}. ${Number(m)}.`;
-};
 export const cislo = (x: number): string => x.toLocaleString("sk-SK", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 const M = { l: 38, r: 92, t: 14, b: 50 };
