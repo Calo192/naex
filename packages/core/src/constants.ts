@@ -257,15 +257,17 @@ export function vazniNaVyhru(lokalitCelkom: number): number {
 // Opatrovateľky, Podvodníka, Anonymného alkoholika, Šoféra, Sypača a Koňa.
 // v11.6 (Michal 2026-11-03) bez novej značky: zajať sa dá len staršieho, ktorý sa hráča bojí na
 // červenej už pred touto Nakladačkou (od minulého kola) — dotiahnuť a zajať naraz nejde.
+// v11.7 (Michal 2026-11-06) bez novej značky: Kostol — NA EX len na poslednú kartu línie (oba konce),
+// oltár a otočenie Kostola pre NA EX zanikli.
 export const VERZIA_PRAVIDIEL = "v11";
 /**
  * Presná verzia pravidiel vrátane dávky — hráč ju vidí na stránke Pravidlá, ktorá má
  * vždy odzrkadľovať správanie nasadenej hry (Michal 2026-10-31). Značka partií
  * (VERZIA_PRAVIDIEL) sa pri dávke nemení, táto áno.
  */
-export const VERZIA_PRAVIDIEL_PRESNA = "v11.6";
+export const VERZIA_PRAVIDIEL_PRESNA = "v11.7";
 /** Odkedy platí VERZIA_PRAVIDIEL_PRESNA — hráč ho vidí na stránke Pravidlá. */
-export const PRAVIDLA_PLATNE_OD = "2026-11-03";
+export const PRAVIDLA_PLATNE_OD = "2026-11-06";
 export type DlzkaHry = keyof typeof DLZKY_HRY;
 export const ALL_DLZKY: readonly DlzkaHry[] = ["kratka", "stredna", "dlha"];
 export const PREDVOLENA_DLZKA: DlzkaHry = "stredna";

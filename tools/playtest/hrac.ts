@@ -577,7 +577,7 @@ function vykresli(v: ClientState, mena: readonly string[]): string {
               ? ["súper ešte môže dať (alebo už skryto dal)", ""]
               : ["súper ešte môže dať", ""];
       for (const p of [su, ja]) {
-        const h = hrozbaNaex(DATA, { ...stol, lokalitaOtocena: v.lokalitaOtocena }, p === su ? priebehSupera : priebeh, p);
+        const h = hrozbaNaex(DATA, { ...stol, lokalitaOtocena: v.lokalitaOtocena, zaverecne: v.zaverecne }, p === su ? priebehSupera : priebeh, p);
         const pl = h === null ? undefined : vs.strany.flat().find((x) => x.card.uid === h.uid);
         if (h === null || pl === undefined) continue;
         const kto = h.vysledok.vitaz === null ? "remíza" : h.vysledok.vitaz === ja ? "vyhrávaš" : "prehrávaš";
@@ -906,7 +906,7 @@ function moznosti(v: ClientState): string[] {
         break;
       }
       let naexMoznosti = 0;
-      if (v.ciel?.lokalita?.defId === "kostol") out.push("(Kostol: NA EX len na kartu v kraji pri oltári)");
+      if (v.ciel?.lokalita?.defId === "kostol") out.push("(Kostol: NA EX len na poslednú kartu línie, najďalej od Kostola — na jednom alebo druhom konci)");
       // NA EX naraz (v5): moje skryté NA EX sa rátajú do limitu Pitky aj poldeci.
       // S Bzdochou prídu aj súperove — do môjho limitu a poldeci sa nerátajú.
       const mojeSkryte = (pk?.skryteNaex ?? []).filter((x) => x.hrac === ja);

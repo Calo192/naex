@@ -4,7 +4,7 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { DLZKY_HRY, KONSTANTY, vazniNaVyhru } from "../src/constants.ts";
+import { DLZKY_HRY, KONSTANTY, VERZIA_PRAVIDIEL_PRESNA, vazniNaVyhru } from "../src/constants.ts";
 import { cenaDvihnutia } from "../src/elders.ts";
 import { cenaFajcenia, krokStavby } from "../src/engine.ts";
 import { pocet } from "../src/jazyk.ts";
@@ -34,6 +34,8 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["cigareta porazenému (v11)", `**porazený ${pocet(KONSTANTY.CIGARETY_PORAZENEMU, "cigareta", "cigarety", "cigariet")}**`],
     ["Chuť a neresti (v9.1)", `**Vypiť 1, NA EX ${KONSTANTY.NEREST_NAEX}, vyfajčená cigareta 1**`],
     ["Chuť na konci kola (v9.1)", `**Chuť = väčšie z (Chuť, neresti kola) − ${KONSTANTY.CHUT_UBYTOK}**`],
+    ["Kostol (v11.7)", "**v11.7: NA EX len na poslednú kartu línie, najďalej od Kostola, na výber oba konce**"],
+    ["Výtržník a Silná žena (2026-11-06)", "Rany Výtržníka sú vždy ×1, nezdvojí ich ani Silná nezávislá žena"],
     ["Opatrovateľka (v11.5)", "**Opatrovateľka** (Furt): tvoji Pamätníci v jej okolí majú aktívne akcie **posilnené** (×2)"],
     ["Podvodník (v11.5)", "**Podvodník** (Konflikt): súper ti dá **1 cigaretu**, ak žiadnu nemá, získa **1 zadĺženie**"],
     ["šenok začína obranca (v9.2)", "Branie striedavo, **začína obranca (v9.2)**"],
@@ -98,6 +100,10 @@ describe("ťahák AI hráčov sedí s constants.ts", () => {
     ["Obecný úrad (v7)", `Obecný úrad (v7 Kšeft: ${KONSTANTY.EFEKT.URAD_CENA} cigarety`],
   ])("%s", (_, ocakavane) => {
     expect(tahak).toContain(ocakavane);
+  });
+
+  it("hlavička ťaháka hovorí o tej istej verzii pravidiel ako jadro", () => {
+    expect(tahak.slice(0, 60)).toContain("(" + VERZIA_PRAVIDIEL_PRESNA + " ");
   });
 
   it("klient agentov (hrac.ts) berie cenu Cirhózy z jadra, nie natvrdo (playtest 20261028-090549-3, názor #119)", () => {

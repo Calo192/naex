@@ -1133,7 +1133,7 @@ export function HernaPlocha({
       pitkyCelkom: view.pitkyCelkom,
       poldeciPlne: [view.hraci[0].poldeciPlne, view.hraci[1].poldeciPlne] as const,
     };
-    const stolBitky = { ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena };
+    const stolBitky = { ...stol, lokalitaOtocena: lokalitaNavrh?.otocena ?? view.lokalitaOtocena, zaverecne: view.zaverecne };
     const hrozby =
       ciel === null || view.bitkaStav !== null
         ? ([null, null] as const)
@@ -4070,7 +4070,7 @@ export function HernaPlocha({
             ? "Nemáš plný poldeci (doliať: 2 cigarety)."
             : naexCiele.size === 0
               ? view.ciel?.lokalita?.defId === "kostol"
-                ? "Kostol: NA EX smie len na kartu v kraji pri oltári — tam nie je karta, na ktorú by malo zmysel."
+                ? "Kostol: NA EX smie len na poslednú kartu línie — na žiadnom konci nie je karta, na ktorú by malo zmysel."
                 : "NA EX ide len na Občana či Starešinu v línii s aspoň jednou aktívnou a jednou neaktívnou akciou (nie Nástroj)."
               : null;
         // Krčma chce jedno NA EX; po ňom už končím nič neblokuje.

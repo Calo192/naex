@@ -10,13 +10,16 @@ import type { GameData } from "./data.ts";
 import type { VerejnyStav } from "./effects.ts";
 import { naexZaPitku } from "./effects.ts";
 import type { BitkaKrok, PitkaStav } from "./engine.ts";
-import { lineState, naexCieleVLinii, poskodenieBitky, stranyBitky } from "./engine.ts";
+import { lineState, naexCieleVLinii, poskodenieBitky, stranyBitky, zablokovaneStrany } from "./engine.ts";
 import type { ActionSums } from "./partia.ts";
 import { evaluateLine } from "./partia.ts";
 import type { Phase, PlayerId } from "./types.ts";
 
-/** Stôl bitky — verejný stav s otočením lokality (to isté, z čoho sa ráta odhad bitky). */
-export type StolBitky = VerejnyStav & { readonly lokalitaOtocena: boolean };
+/**
+ * Stôl bitky — verejný stav s otočením lokality (to isté, z čoho sa ráta odhad bitky).
+ * `zaverecne` dáva klient: súperovu skrytú Záverečnú v strany nemá a na Kostole je posledná ona.
+ */
+export type StolBitky = VerejnyStav & { readonly lokalitaOtocena: boolean; readonly zaverecne?: readonly { readonly strana: PlayerId }[] };
 
 /** Čo treba vedieť, či hráč ešte smie dať NA EX pred bitkou (všetko verejné). */
 export interface PriebehNaex {
@@ -75,7 +78,7 @@ export function hrozbaNaex(
   const bitka = (s: StolBitky): DamageResult => poskodenieBitky(data, s, evaluateLine(data, lineState(s)).sums);
   const teraz = hodnota(battleOutcome(bitka(stol)), p);
   let najlepsia: HrozbaNaex | null = null;
-  for (const uid of naexCieleVLinii(data, lineState(stol), p)) {
+  for (const uid of naexCieleVLinii(data, lineState(stol), p, false, zablokovaneStrany({ zaverecne: stol.zaverecne ?? [] }))) {
     const strany = stol.strany.map((strana) => strana.map((pl) => (pl.card.uid === uid ? { ...pl, naexBy: p } : pl))) as unknown as StolBitky["strany"];
     // NA EX v kole vypne Šoférov bonus (playtest v7 131033: hrozba 6 : 6, náhľad 4 : 6).
     const naexVKole: [boolean, boolean] = [stol.naexVKole?.[0] ?? false, stol.naexVKole?.[1] ?? false];

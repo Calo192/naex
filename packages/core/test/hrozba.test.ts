@@ -129,7 +129,7 @@ describe("hrozba na stole", () => {
     expect(mozeEsteNaex(s, { ...skryte, pitkyCelkom: 2 }, 0)).toBe(false);
     expect(mozeEsteNaex(s, { ...skryte, pitkyCelkom: 2, poldeciPlne: [2, 1] }, 0)).toBe(true);
     expect(mozeEsteNaex(s, skryte, 1)).toBe(true);
-    // Pred Pitkou (Zhromaždenie) áno; Kostol (v7) NA EX nezakazuje, len obmedzí na kraj pri oltári.
+    // Pred Pitkou (Zhromaždenie) áno; Kostol NA EX nezakazuje, len obmedzí na konce línie (v11.7).
     expect(mozeEsteNaex(s, { ...pr, faza: "zhromazdenie", pitkaStav: null }, 0)).toBe(true);
   });
 });

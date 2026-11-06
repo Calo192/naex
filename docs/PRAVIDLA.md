@@ -1,6 +1,6 @@
 # NA EX! — pravidlá (špecifikácia)
 
-**Pravidlá v11.6 (platné od 2026-11-03)** — Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
+**Pravidlá v11.7 (platné od 2026-11-06)** — Kostol a koniec línie (v11.7), Zajatie od minulého kola (v11.6), Identita kariet (v11.5), Zajatie Nakladačkou a presvedčenie (v11.4), Konflikt oboma smermi a Podpora (v11.3), Schopnosť väzňa (v11.2), Vzbura obráti kartu (v11.1) a Strach a reči (Michal 2026-11-02, docs/napady/strach-reci.html,
 verzia 2) na v10.4
 (Hádka v10 — Michal 2026-11-01, docs/napady/hadka.html, verzia 4; v9 zmrazené 2026-10-30, krok 2
 revízie starších, docs/napady/starsi-krok2-zadanie.html; dávky v9.1 Chuť, v9.2 šenok a NA EX naraz,
@@ -8,6 +8,15 @@ v9.3 Výtržník prebíja Úplatok; v10.1 zajatie pred šenkom; v10.2 Nástroj n
 Forsáž, Úplatok zrušený; v10.4 pojem Spáliť, Autority). Sada kariet v55 (`cards.json`). Pravidlá sa
 menia len v dávkach; celá dávka dostane ďalšiu verziu (značka partií `v11`; presnú verziu ukazuje
 stránka Pravidlá — `VERZIA_PRAVIDIEL_PRESNA`).
+
+**Zmeny v11.7 oproti v11.6** (Michal 2026-11-06, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.7):
+
+- **Kostol: NA EX len na koniec línie** (§15, §7): „V kostole sa nesmie piť — piť môžu len karty najďalej
+  od kostola — posledné v línii na jednej alebo druhej strane.“ Vypiť nesmie nikto, ako doteraz (v ťahu 1
+  karta). NA EX sa smie dať len na poslednú kartu línie, na výber sú oba konce. Oltár a otočenie Kostola
+  pre NA EX zanikli.
+- **Výtržník vedľa Silnej nezávislej ženy** (§7): Rany Výtržníka sa nezdvojujú. Hra to tak robila, teraz je
+  to zapísané.
 
 **Zmeny v11.6 oproti v11.5** (Michal 2026-11-03, Zrejúca; staré znenia v `docs/pravidla-historia.md`, sekcia v11.6):
 
@@ -773,8 +782,8 @@ v partii každý hráč, nečaká nikto (kto skončí neskôr, vidí NA EX toho 
 ### NA EX
 
 NA EX smie hráč dať **iba v Pitke**, kým ju neskončil, v základe **najviac raz
-za Pitku** (Vínna pivnica dvakrát; na Kostole len na kartu v kraji pri
-oltári, §15). Vyberie jednu kartu
+za Pitku** (Vínna pivnica dvakrát; na Kostole len na poslednú kartu línie,
+§15). Vyberie jednu kartu
 v línii s tagom **Občan alebo Starešina** — **svoju aj súperovu**, na
 ktorejkoľvek strane — a položí na ňu jeden plný poldeci. NA EX vyberá
 **skryto**: súper nevidí, či NA EX dal, ani kam (`viewFor` mu to nepošle),
@@ -841,7 +850,9 @@ jej hranách** zmenia na aktívnu **Ranu** pre jej majiteľa — aj akcie bez
 partnera na spoji. NA EX jej nič neruší ani nezdvojuje. **Posilnenie aj Odpor
 Výtržníka sú už len Rany** (v6.1, Michal 2026-10-27): suseda nezdvojujú ani
 nerušia (ani pri Veteránovi) — sused má spárovanú akciu aktívnu ×1 a Odpor
-Výtržníka nevyvolá Vzburu. Každý platí za svoje
+Výtržníka nevyvolá Vzburu. **Rany Výtržníka platia vždy ×1** (Michal 2026-11-06):
+nezdvojuje ich Furt efekt Silnej nezávislej ženy, keď s ňou susedí, ani iný násobok
+karty. Každý platí za svoje
 NA EX ako vždy: pečeň +1 tomu, kto NA EX dal,
 a v bitke sa vypijú oba poldeci (§9.5); Svokra majiteľa
 karty ju ráta ako kartu so súperovým NA EX. **Po bitke Výtržník
@@ -1759,7 +1770,7 @@ finále): Poľovnícka chata, Predsedova vila, Herňa. Hrany sú v `cards.json`
 | Jednota | Pitka | Kto má viac priznaných Dlhov, nesmie v tejto Pitke fajčiť ani dolievať (doliatie = 2 cigarety za vypitý poldeci; barter smie). Pri rovnosti smú obaja. |
 | Benzínka | Pitka | Fajčiť smie len hráč, ktorého Občan alebo Starešina leží **najďalej od lokality** (index na strane, na ktorejkoľvek strane, skrytá Záverečná sa neráta). Pri rovnakej vzdialenosti nefajčí nikto (Michal 2026-10-27). |
 | Kar | Pitka | Poškodenie pečene za NA EX dostane **súper** hráča, ktorý ho dal (poldeci a nerest ostávajú dávajúcemu). |
-| Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). NA EX sa smie dať len na kartu v kraji **pri oltári** (pri vytlačenej ľavej hrane; s otočeným Kostolom pri strane hráča 1). |
+| Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). **NA EX sa smie dať len na poslednú kartu línie** — najďalej od Kostola, na jednej alebo druhej strane; na výber sú oba konce (v11.7, Michal 2026-11-06). |
 | Zberný dvor | Kšeft | Za 1 cigaretu (od v9.1 nie nerest) ľubovoľná karta zo svojho odhadzovacieho balíčka do ruky, raz za Pitku. |
 | Sklad | Kšeft | Za 1 cigaretu (od v9.1 nie nerest) vrchná karta **súperovho** odhadzovacieho balíčka do tvojej ruky — odteraz je tvoja; pri prázdnom sa nedá. Kraje pri vreciach / pri strážnici. |
 | Obecný úrad | Kšeft | Za 3 cigarety (od v9.1 nie nerest) presuň 1 svoj priznaný Dlh medzi súperove priznané. Robota tu páli 1 Dlh ako inde. |
@@ -1780,6 +1791,24 @@ nikto ju neovláda.
 | Most | Zhromaždenie, Pitka | Karty sa smú vykladať len na vlastnú stranu — aj odpoveď na NA EX. |
 | Vínna pivnica | Pitka | NA EX smie hráč dať v Pitke až dvakrát (obe skryto, na dve rôzne karty). |
 | Družstvo | Zhromaždenie | Karty s tagom Pracujúci nemíňajú limit vykladania. |
+
+**Kostol a NA EX — ako to hra robí (v11.7):**
+
+- **Posledná karta** je karta na vonkajšom konci strany v okamihu výberu NA EX. Otočenie Kostola na NA EX
+  nemá vplyv (mení len, ktorá hrana prilieha ku ktorej strane). Keď posledná karta z línie zmizne, je
+  poslednou karta pred ňou.
+- **Strana bez karty** cieľ nemá — ostáva koniec druhej strany. V prázdnej línii sa NA EX dať nedá.
+- **Ostatné podmienky NA EX platia ďalej** (§7). Koniec, ktorý ich nespĺňa (Nástroj, už na ňom leží poldeci,
+  Vzbura, nemá aktívnu aj neaktívnu akciu), nie je cieľ a NA EX sa **neposúva** na kartu pred ním — tá strana
+  v tej chvíli cieľ nemá.
+- **Skrytá Záverečná** je posledná karta svojej strany, kým sa neotočí (za ňu sa nedá priložiť, §13). Súper na
+  ňu NA EX smie a prejde vždy; majiteľ na ňu nesmie, takže na tej strane cieľ nemá. **Karta pred ňou cieľom
+  nie je pre nikoho.** Po otočení je to bežná posledná karta. Výklad Developera 2026-11-06, na potvrdenie
+  Michalom.
+- **Zrážka:** obaja môžu vybrať ten istý koniec — je z neho Výtržník ako vždy. Súperovo skryté NA EX koniec
+  neobsadí. Kto hrá po súperovi s **Bzdochou** a vidí jeho NA EX, má na výber ten istý aj druhý koniec.
+- **NA EX dané legálne ostáva:** odpoveď na NA EX alebo iná karta, ktorá potom koniec línie zmení, NA EX nezruší —
+  leží a platí ďalej (§7). V ďalšej Pitke kola je koncom už nová karta, keď ju odpoveď na NA EX pridala.
 
 **Kraje lokalít** (vytlačená ľavá / pravá hrana): Krčma pri výčape / pri
 dverách · Kostol pri oltári / pri vchode · Benzínka pri pokladni / za budovou ·

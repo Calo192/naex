@@ -1,4 +1,4 @@
-# Ťahák — platné pravidlá NA EX! (v11.5 Strach a reči, zajatie a presvedčenie, identita kariet, 2026-11-03, Zrejúca; sada = cards.json v master)
+# Ťahák — platné pravidlá NA EX! (v11.7 Strach a reči, zajatie a presvedčenie, identita kariet, Kostol na konci línie, 2026-11-06, Zrejúca; sada = cards.json v master)
 
 Spoločný ťahák AI hráčov — playtester (Zrejúca) ho číta z master, protihráč na
 Vypálenej z vetvy `vypalena` (tam platí jej verzia pravidiel). Podrobne v `docs/PRAVIDLA.md` (zmeny v jeho úvode). Pri
@@ -88,8 +88,8 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   skončí, a potom hrá a vidí jeho NA EX (majú ju obaja → nečaká nikto). Potom odpovede **lícom dole (v9.2)**: najprv **útočník**, potom **obranca na druhý kraj línie** (ak útočník
   neodpovedal, na ktorýkoľvek); obe sa **otočia naraz** a Pitka sa vyhodnotí — posledné slovo nemá nikto.
 - **Lokality** — efekt platí v kole o ňu: Krčma (s plným
-  poldeci povinné NA EX; prah Cirhózy obom +2), Kostol (v7: nikto nevypije — v ťahu 1 karta; NA EX len
-  na kartu v kraji **pri oltári**), Benzínka (v7: fajčí len hráč, ktorého Občan alebo Starešina leží
+  poldeci povinné NA EX; prah Cirhózy obom +2), Kostol (nikto nevypije — v ťahu 1 karta; **v11.7: NA EX len
+  na poslednú kartu línie, najďalej od Kostola, na výber oba konce** — koniec bez podmienok NA EX sa neposúva na kartu pred ním, skrytá Záverečná je posledná, NA EX už dané ostáva), Benzínka (v7: fajčí len hráč, ktorého Občan alebo Starešina leží
   **najďalej od lokality**; pri rovnosti nikto), Zastávka (v9.1: po **prvej Pitke kola** si každý
   vezme **zadarmo 1 kartu zo šenku**, najprv útočník, potom obranca — `{"type":"senok","uid":…}`;
   z prázdneho šenku nič), Lesná cesta (v7: +1 tuhé za každé svoje Zviera v súperovom kraji, bez stropu),
@@ -244,7 +244,7 @@ rozpore s `docs/PRAVIDLA.md` platí `docs/PRAVIDLA.md` a rozpor zapíš do
   **Skryto (v5):** `naex` súper nevidí do odkrytia; odpovedáš po odkrytí za každé súperovo NA EX —
   najprv útočník lícom dole, potom obranca na druhý kraj; viac NA EX = viac kôl (v každom po jednej odpovedi, potom otočenie). **Zrážka** (obaja na tú istú kartu) = **Výtržník**: karta sa
   spáruje so susedmi s pôvodnými akciami, potom sú všetky jej akcie aktívne Rany pre majiteľa,
-  do konca bitky — aj jej Posilnenie a Odpor sú už len Rany, suseda nezdvojujú ani nerušia (v6.1); pečeň aj poldeci platí každý za svoje NA EX.
+  do konca bitky — aj jej Posilnenie a Odpor sú už len Rany, suseda nezdvojujú ani nerušia (v6.1); Rany Výtržníka sú vždy ×1, nezdvojí ich ani Silná nezávislá žena; pečeň aj poldeci platí každý za svoje NA EX.
   Krčma vynúti jedno NA EX. Násobky sa **násobia** (NA EX × Silná žena = ×4, aj Hazard
   a Poškodenie pečene) a NA EX leží na karte do bitky — vyhodnotí sa v každej
   Pitke kola. Každá možnosť `naex` v stave ukazuje cenu: bitku pred a po

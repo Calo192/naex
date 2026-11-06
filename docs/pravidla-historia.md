@@ -3072,3 +3072,21 @@ Povera 25 → 28, Pohoršenie 14 → 18; docs/napady/makke-akcie.html). Michal 2
 teraz EXTRÉMNE silné. Vráť to do stavu, kedy bolo pohoršenie za 2 a povery za 1.“ Platí znova v11.6
 (Pohoršenie 2, Povera 1, Horoskop 2); do Vypálenej pokus nikdy nešiel. Prerozdelenie akcií kariet v tvorcovi
 tým nebolo vrátené.
+
+## v11.7 — Kostol: NA EX len na koniec línie, Výtržník vedľa Silnej ženy (Michal 2026-11-06, Zrejúca)
+
+Michal 2026-11-06: „V kostole sa nesmie piť — piť môžu len karty najďalej od kostola — posledné v línii na
+jednej alebo druhej strane.“ Potvrdený výklad: nikto nesmie vypiť (ostáva), NA EX len na poslednú kartu línie,
+na výber oba konce; oltár a otočenie Kostola pre NA EX zanikli. K Výtržníkovi vedľa Silnej nezávislej ženy:
+„nezdvojuje, ako hra“ — zapísané v §7, správanie sa nemenilo. Číslo v11.7 mal predtým vrátený pokus o mäkké 3 a 2
+(sekcia vyššie), do Vypálenej nikdy nešiel. Staré znenia (v11.6):
+
+§7 NA EX:
+
+> NA EX smie hráč dať **iba v Pitke**, kým ju neskončil, v základe **najviac raz
+> za Pitku** (Vínna pivnica dvakrát; na Kostole len na kartu v kraji pri
+> oltári, §15).
+
+§15 Lokality, Kostol:
+
+> | Kostol | Zhromaždenie, Pitka | Nikto nesmie vypiť (v ťahu teda len jedna karta). NA EX sa smie dať len na kartu v kraji **pri oltári** (pri vytlačenej ľavej hrane; s otočeným Kostolom pri strane hráča 1). |

@@ -64,7 +64,7 @@ import {
   nastrojeTuhe,
   naexPecenSuperovi,
   prahDlhuBonus,
-  stranaOltara,
+  naexLenNaKonci,
   efektHraca,
   efektPotlaceny,
   jeCielLokalita,
@@ -2980,8 +2980,7 @@ function cmdNaex(
   need(s.hraci[p].poldeciPlne - moje.length > 0, "Nemáš plný poldeci.");
   const kde = najdiVLinii(s, uidCiela);
   need(kde !== null, "Karta neleží v žiadnej partii.");
-  const oltar = stranaOltara(lineState(s as GameState));
-  need(oltar === null || kde.strana === oltar, "Kostol: NA EX smie len na kartu v kraji pri oltári.");
+  need(!naexLenNaKonci(lineState(s as GameState)) || kde.index === s.strany[kde.strana].length - 1, "Kostol: NA EX smie len na poslednú kartu línie.");
   const placed = s.strany[kde.strana][kde.index] as DeepMutable<PlacedCard>;
   need(placed.naexBy === undefined && !moje.some((x) => x.uid === placed.card.uid), "Na karte už poldeci leží.");
   // NA EX na vlastnú aj súperovu kartu (Michal 2026-10-18 vrátil obmedzenie
@@ -3228,12 +3227,11 @@ export function moznostiNaexVPohlade(data: GameData, view: PohladNaNaex): number
   if (view.hraci[ja].poldeciPlne - moje.length <= 0) return [];
   const minuty = naexLimitMinuty(view, ja);
   // Súperovu skrytú Záverečnú klient v línii nemá — doplní ju zo zaverecne (náhradné uid).
-  // Kostol (v7): aj rub len v kraji pri oltári.
-  const oltar = stranaOltara(lineState(view));
+  // Za ňou sa nedá priložiť, takže je vždy posledná — na Kostole ostáva cieľom.
   const naRub = view.zaverecne
-    .filter((z) => z.majitel !== ja && z.naexBy === null && (oltar === null || z.strana === oltar) && !view.strany.some((st) => st.some((pl) => pl.card.uid === z.uid)))
+    .filter((z) => z.majitel !== ja && z.naexBy === null && !view.strany.some((st) => st.some((pl) => pl.card.uid === z.uid)))
     .map((z) => z.uid);
-  return [...naexCieleVLinii(data, lineState(view), ja, naexNaZviera(view, ja)), ...naRub].filter(
+  return [...naexCieleVLinii(data, lineState(view), ja, naexNaZviera(view, ja), zablokovaneStrany(view)), ...naRub].filter(
     (uid) => !moje.some((x) => x.uid === uid) && !minuty,
   );
 }
@@ -3243,15 +3241,17 @@ export function moznostiNaexVPohlade(data: GameData, view: PohladNaNaex): number
  * Súperova skrytá Záverečná ide vždy, a to náhradným uid (uidZaverecnej); klient
  * ju v strany nemá a doplní si ju zo zaverecne. Ostatné musia mať aspoň jednu
  * aktívnu a aspoň jednu neaktívnu akciu (naexMaZmysel, Michal 2026-10-23).
+ * `zaverecnaNaKonci` (zablokovaneStrany) potrebuje len klient: na Kostole rozhoduje
+ * posledná karta a súperovu skrytú Záverečnú v strany nemá.
  */
-export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId, naZviera = false): number[] {
+export function naexCieleVLinii(data: GameData, line: LineState, p: PlayerId, naZviera = false, zaverecnaNaKonci: readonly [boolean, boolean] = [false, false]): number[] {
   const out: number[] = [];
   const zmysel = naexMaZmysel(data, line);
-  // Kostol (Pitka, v7): len kraj pri oltári.
-  const oltar = stranaOltara(line);
+  const lenKonce = naexLenNaKonci(line);
   for (const [si, strana] of line.strany.entries()) {
-    if (oltar !== null && si !== oltar) continue;
-    for (const placed of strana) {
+    // Karta pred skrytou Záverečnou nie je posledná, hoci ju klient vidí ako poslednú.
+    const kandidati = !lenKonce ? strana : zaverecnaNaKonci[si] === true ? strana.filter((pl) => pl.zaverecna === true) : strana.slice(-1);
+    for (const placed of kandidati) {
       if (placed.zaverecna === true) {
         if (placed.naexBy === undefined && placed.playedBy !== p) out.push(uidZaverecnej(si as PlayerId));
         continue;

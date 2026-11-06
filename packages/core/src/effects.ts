@@ -124,7 +124,7 @@ export const REGISTER: Readonly<Record<string, EfektStatus>> = {
   zamocnik: "impl", // Furt: akcie nástrojov v okolí posilnené
   zivnostnik: "impl", // Nástup (v7): v tom istom ťahu smie za neho priložiť Nástroj z ruky (voľba nastroj)
   pes: "impl", // Furt (v7): aktívne akcie na spoji so súperovou kartou ×2 (partia.ts)
-  kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v7): NA EX len na kartu v kraji pri oltári
+  kostol: "impl", // Zhromaždenie: nikto nevypije; Pitka (v11.7): NA EX len na poslednú kartu línie
   zahradkar: "impl", // Exekúcia (Michal 2026-10-28): v línii v tvojej partii ťa exekúcia v tomto kole obíde (zahradkarChrani)
   svokra: "impl", // Bitka: za každú tvoju kartu so súperovým NA EX súperovi Rana (Michal 2026-10-26)
   sarlatan: "impl", // Konflikt (v7): jeho Dlhy sú Viera a Povery Rana do konca kola (partia.ts)
@@ -320,13 +320,11 @@ export function zakazVypit(state: Pick<VerejnyStav, "ciel">): boolean {
 }
 
 /**
- * Kostol (Pitka, v7): NA EX len na kartu v kraji pri oltári — pri ľavej
- * vytlačenej hrane; s otočenou lokalitou je ten kraj pri strane hráča 1.
- * null = NA EX smie na obe strany.
+ * Kostol (Pitka, v11.7, Michal 2026-11-06): NA EX len na poslednú kartu línie —
+ * najďalej od Kostola, na jednej alebo druhej strane.
  */
-export function stranaOltara(line: { readonly lokalita: CardInstance | null; readonly lokalitaOtocena: boolean }): PlayerId | null {
-  if (line.lokalita?.defId !== "kostol") return null;
-  return line.lokalitaOtocena ? 1 : 0;
+export function naexLenNaKonci(line: { readonly lokalita: CardInstance | null }): boolean {
+  return line.lokalita?.defId === "kostol";
 }
 
 /** Najväčšia vzdialenosť hráčovho Občana či Starešinu od lokality (Benzínka); −1 = žiadny. */

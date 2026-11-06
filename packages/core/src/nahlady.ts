@@ -512,7 +512,7 @@ export function hrozbaKliatob(data: GameData, view: ClientState, hrac: PlayerId,
   // Odkrytie NA EX hráča `hrac` tým istým kódom ako jeho náhľad (poOdkrytiNaex) — z verejného stavu.
   const zaHraca: ClientState = { ...view, ja: hrac };
   let najhorsia: HrozbaKliatob | null = null;
-  for (const uid of naexCieleVLinii(data, lineState(view), hrac)) {
+  for (const uid of naexCieleVLinii(data, lineState(view), hrac, false, zablokovaneStrany(view))) {
     const odkryte = poOdkrytiNaex(data, zaHraca, uid);
     if (odkryte === null) continue;
     const po: ClientState = { ...odkryte.view, ja: view.ja };

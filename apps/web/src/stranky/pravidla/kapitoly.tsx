@@ -395,7 +395,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         <ul>
           <li>Nedá sa dať na kartu, na ktorej už poldeci leží.</li>
           <li>Akcia zrušená Odporom nie je ani aktívna, ani neaktívna — NA EX ju nezdvojí.</li>
-          <li>Na Kostole len na kartu v kraji pri oltári.</li>
+          <li>Na Kostole len na poslednú kartu línie, najďalej od Kostola — na jednom alebo druhom konci.</li>
           <li>NA EX na kartu pri lokalite mení len akcie karty — akcie hrany lokality ostávajú aktívne.</li>
           <li>
             NA EX na kartu s Posilnením zruší Posilnenie aj ×2, ktoré dávalo partnerovi na spoji — partnerova akcia (aj hrana
@@ -416,8 +416,8 @@ export const KAPITOLY: readonly Kapitola[] = [
         <p className="zvyraznene">
           <strong>Zrážka:</strong> ak ste obaja vybrali tú istú kartu, je z nej <P k="vytrznik">Výtržník</P>. So susedmi sa
           najprv spáruje ako obvykle, potom sa <strong>všetky jej akcie zmenia na Rany</strong> pre jej majiteľa — aj tie bez
-          partnera. Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Každý platí
-          za svoje NA EX (pečeň, poldeci). Po bitke Výtržník vytriezvie a karta má znova pôvodné akcie.
+          partnera. Aj jej Posilnenie a Odpor sú už len Rany — suseda nezdvojujú ani nerušia. Rany Výtržníka platia vždy ×1,
+          nezdvojí ich ani Silná nezávislá žena. Každý platí za svoje NA EX (pečeň, poldeci). Po bitke Výtržník vytriezvie a karta má znova pôvodné akcie.
         </p>
         <H3 id="naex-odpoved">Odpoveď na NA EX</H3>
         <p>
@@ -952,7 +952,7 @@ export const KAPITOLY: readonly Kapitola[] = [
         </thead>
         <tbody>
           <tr><td>Krčma</td><td>Pitka</td><td>Kto má plný poldeci a kam ho dať, musí dať NA EX. Prah Cirhózy je obom o 2 vyšší.</td></tr>
-          <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na kartu v kraji pri oltári.</td></tr>
+          <tr><td>Kostol</td><td>Zhromaždenie, Pitka</td><td>Nikto nesmie vypiť (v ťahu len jedna karta). NA EX len na poslednú kartu línie, najďalej od Kostola — na jednom alebo druhom konci.</td></tr>
           <tr><td>Benzínka</td><td>Pitka</td><td>Fajčiť smie len hráč, ktorého Občan alebo Starešina leží najďalej od lokality (pri rovnosti nikto).</td></tr>
           <tr><td>Zastávka</td><td>Pitka</td><td>Po prvej Pitke kola si každý vezme zadarmo 1 kartu zo šenku — najprv útočník, potom obranca (z prázdneho šenku nič).</td></tr>
           <tr><td>Lesná cesta</td><td>Bitka</td><td>+1 tuhé za každé tvoje Zviera v súperovom kraji.</td></tr>

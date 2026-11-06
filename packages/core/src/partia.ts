@@ -985,6 +985,8 @@ export function evaluateLine(data: GameData, line: LineState): LineEval {
         if (akcie[k] === null) continue;
         elem.stav[side]![k] = "aktivna";
         elem.nasobok[side]![k] = 1;
+        // Dôvody zdvojenia z vytlačených akcií už neplatia — rozpis by ukázal ×2 pri Rane za 1.
+        elem.dovody[side]![k] = [];
       }
     }
   }

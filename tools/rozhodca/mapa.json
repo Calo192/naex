@@ -1448,10 +1448,27 @@
     {
       "id": "15.lokalita.kostol",
       "paragraf": "15. Lokality",
-      "pravidlo": "Kostol: nikto nesmie vypiť (v ťahu jedna karta) ani dať NA EX.",
-      "stav": "na-overenie",
-      "testy": [],
-      "poznamka": "Efekty v7 (2026-10-27, plan.md 14) zmenili kartu alebo pravidlo — testy starého znenia odpojené; nové v packages/core/test/v7-efekty.test.ts."
+      "pravidlo": "Kostol (v11.7): nikto nesmie vypiť (v ťahu jedna karta); NA EX len na poslednú kartu línie, najďalej od Kostola, na výber oba konce. Koniec bez podmienok NA EX sa neposúva, skrytá Záverečná je posledná, NA EX už dané ostáva.",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/kostol-konce-linie.test.ts › na výber sú oba konce, karty bližšie ku Kostolu motor odmietne — obom hráčom",
+        "packages/core/test/kostol-konce-linie.test.ts › strana bez karty cieľ nemá: ostáva koniec druhej strany, prázdna línia nedá nič",
+        "packages/core/test/kostol-konce-linie.test.ts › koniec, ktorý cieľom byť nemôže, sa neposúva na kartu pred ním: poldeci aj Nástroj",
+        "packages/core/test/kostol-konce-linie.test.ts › súperova skrytá Záverečná je posledná: súper ju smie aj cez náhradné uid, karta pred ňou cieľom nie je",
+        "packages/core/test/kostol-konce-linie.test.ts › majiteľ skrytej Záverečnej nemá na tej strane cieľ — jeho vlastná je posledná, NA EX na ňu nesmie",
+        "packages/core/test/kostol-konce-linie.test.ts › zrážka: obaja na ten istý koniec — Výtržník ako všade",
+        "packages/core/test/kostol-konce-linie.test.ts › odpoveď zmení koniec línie: NA EX dané legálne ostáva, novým cieľom je odpoveď",
+        "packages/core/test/naex-kostol.test.ts › v náhodných partiách v každom stave oboch hráčov (aj pri Kostole)"
+      ]
+    },
+    {
+      "id": "7.vytrznik.silna-zena",
+      "paragraf": "7. Pitka › Odkrytie NA EX a Výtržník",
+      "pravidlo": "Rany Výtržníka platia vždy ×1 — Furt efekt Silnej nezávislej ženy ani iný násobok karty ich nezdvojuje (Michal 2026-11-06).",
+      "stav": "pokryte",
+      "testy": [
+        "packages/core/test/vytrznik-silna-zena.test.ts › bez zrážky žena suseda zdvojí, z Výtržníka má jeho Rany ×1"
+      ]
     },
     {
       "id": "15.lokalita.benzinka",
